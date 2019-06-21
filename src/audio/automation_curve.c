@@ -202,9 +202,10 @@ automation_curve_set_curviness (AutomationCurve * ac, float curviness)
  * Destroys the widget and frees memory.
  */
 void
-automation_curve_free (AutomationCurve * ap)
+automation_curve_free (AutomationCurve * ac)
 {
-  gtk_widget_destroy (GTK_WIDGET (ap->widget));
-  free (ap);
+  if (GTK_IS_WIDGET (ac->widget))
+    gtk_widget_destroy (GTK_WIDGET (ac->widget));
+  free (ac);
 }
 

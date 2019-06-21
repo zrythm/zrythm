@@ -46,18 +46,54 @@
 
 static AutomationPoint *
 _create_new (
-  AutomationTrack * at,
   const Position *        pos)
 {
   AutomationPoint * ap =
     calloc (1, sizeof (AutomationPoint));
 
-  ap->at = at;
   position_set_to_pos (
     &ap->pos, pos);
-  ap->track_pos = at->track_pos;
+  ap->track_pos = -1;
+  ap->index = -1;
+  ap->at_index = -1;
 
   return ap;
+}
+
+/**
+ * Sets the AutomationTrack and the index in the
+ * AutomationTrack that the AutomationPoint
+ * belongs to, in all its counterparts.
+ */
+void
+automation_point_set_automation_track_and_index (
+  AutomationPoint * _ap,
+  AutomationTrack * at,
+  int               index)
+{
+  g_return_if_fail (at);
+
+  AutomationPoint * ap;
+  for (int i = 0; i < 4; i++)
+    {
+      if (i == 0)
+        ap = automation_point_get_main_automation_point (_ap);
+      else if (i == 1)
+        ap = automation_point_get_main_trans_automation_point (_ap);
+      else if (i == 2)
+        ap =
+          (AutomationPoint *)
+          _ap->obj_info.lane;
+      else if (i == 3)
+        ap =
+          (AutomationPoint *)
+          _ap->obj_info.lane_trans;
+
+      ap->at = at;
+      ap->at_index = at->index;
+      ap->index = index;
+      ap->track_pos = at->track_pos;
+    }
 }
 
 void
@@ -69,6 +105,16 @@ automation_point_init_loaded (
     /*project_get_automation_track (ap->at_id);*/
 }
 
+int
+automation_point_is_equal (
+  AutomationPoint * a,
+  AutomationPoint * b)
+{
+  return
+    position_is_equal (&a->pos, &b->pos) &&
+    a->fvalue == b->fvalue;
+}
+
 /**
  * Finds the automation point in the project matching
  * the params of the given one.
@@ -77,12 +123,26 @@ AutomationPoint *
 automation_point_find (
   AutomationPoint * src)
 {
+  g_warn_if_fail (
+    src->track_pos > -1 &&
+    src->at_index > -1 &&
+    src->index > -1);
   Track * track =
     TRACKLIST->tracks[src->track_pos];
-  g_warn_if_fail (track);
+  AutomationTrack * at =
+    track->automation_tracklist.ats[src->at_index];
+  g_warn_if_fail (track && at);
 
-  return track->automation_tracklist.
-    ats[src->at_index]->aps[src->index];
+  int i;
+  AutomationPoint * ap;
+  for (i = 0; i < at->num_aps; i++)
+    {
+      ap = at->aps[i];
+      if (automation_point_is_equal (src, ap))
+        return ap;
+    }
+
+  return NULL;
 }
 
 /**
@@ -91,13 +151,12 @@ automation_point_find (
  */
 AutomationPoint *
 automation_point_new_float (
-  AutomationTrack *   at,
   const float         value,
   const Position *    pos,
   int                 is_main)
 {
   AutomationPoint * self =
-    _create_new (at, pos);
+    _create_new (pos);
 
   self->fvalue = value;
 
@@ -128,7 +187,11 @@ automation_point_clone (
 
   AutomationPoint * ap =
     automation_point_new_float (
-      src->at, src->fvalue, &src->pos, is_main);
+      src->fvalue, &src->pos, is_main);
+
+  if (src->at)
+    automation_point_set_automation_track_and_index (
+      ap, src->at, src->index);
 
   position_set_to_pos (
     &ap->pos, &src->pos);
@@ -162,6 +225,8 @@ float
 automation_point_get_normalized_value (
   AutomationPoint * self)
 {
+  g_warn_if_fail (self->at);
+
   /* TODO convert to macro */
   return automatable_real_val_to_normalized (
     self->at->automatable,
@@ -285,15 +350,22 @@ ARRANGER_OBJ_DEFINE_SHIFT_TICKS (
 void
 automation_point_update_fvalue (
   AutomationPoint * self,
-  float             real_val)
+  float             real_val,
+  int               trans_only)
 {
-  self->fvalue = real_val;
+  if (!trans_only)
+    {
+      automation_point_get_main_automation_point (
+        self)->fvalue = real_val;
+    }
+  automation_point_get_main_trans_automation_point (
+    self)->fvalue = real_val;
 
   Automatable * a = self->at->automatable;
   automatable_set_val_from_normalized (
     a,
-    automatable_real_val_to_normalized (a,
-                                        real_val));
+    automatable_real_val_to_normalized (
+      a, real_val));
   AutomationCurve * ac =
     self->at->acs[self->index];
   if (ac && ac->widget)

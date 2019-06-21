@@ -319,6 +319,8 @@ automation_curve_widget_class_init (
 }
 
 static void
-automation_curve_widget_init (AutomationCurveWidget * self)
+automation_curve_widget_init (
+  AutomationCurveWidget * self)
 {
+  g_object_ref (self);
 }

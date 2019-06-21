@@ -203,6 +203,8 @@ timeline_arranger_widget_set_allocation (
       AutomationPoint * next_ap =
         automation_track_get_ap_after_curve (
           ac->at, ac);
+      if (!prev_ap || !next_ap)
+        g_return_if_reached ();
 
       allocation->x =
         ui_pos_to_px_timeline (
@@ -1009,6 +1011,8 @@ timeline_arranger_widget_on_drag_begin_ap_hit (
         1;
     }
 
+  self->start_ap = ap;
+
   /* update arranger action */
   ar_prv->action =
     UI_OVERLAY_ACTION_STARTING_MOVING;
@@ -1055,7 +1059,8 @@ timeline_arranger_widget_create_ap (
   /* create a new ap */
   AutomationPoint * ap =
     automation_point_new_float (
-      at, value, pos, F_MAIN);
+      value, pos, F_MAIN);
+  self->start_ap = ap;
 
   /* add it to automation track */
   automation_track_add_ap (
@@ -1807,7 +1812,8 @@ timeline_arranger_widget_move_items_x (
   int                      copy_moving)
 {
   timeline_selections_add_ticks (
-    TL_SELECTIONS, ticks_diff, F_USE_CACHED, 1);
+    TL_SELECTIONS, ticks_diff, F_USE_CACHED,
+    F_TRANS_ONLY);
 
   /* for MIDI arranger ruler */
   EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED,
@@ -1917,7 +1923,7 @@ timeline_arranger_widget_move_items_y (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (self->start_region)
+  if (TL_SELECTIONS->num_regions)
     {
       /* check if should be moved to new track */
       Track * track =
@@ -2033,36 +2039,24 @@ timeline_arranger_widget_move_items_y (
             }
         }
     }
-  else if (self->start_ap)
+  else if (TL_SELECTIONS->num_automation_points)
     {
       for (int i = 0;
-           i < TL_SELECTIONS->num_automation_points; i++)
+           i < TL_SELECTIONS->
+             num_automation_points; i++)
         {
           AutomationPoint * ap =
             TL_SELECTIONS->
               automation_points[i];
 
-          /* get adjusted y for this ap */
-          /*Position region_pos;*/
-          /*position_set_to_pos (&region_pos,*/
-                               /*&pos);*/
-          /*int diff = position_to_frames (&region->start_pos) -*/
-            /*position_to_frames (&self->tl_start_region->start_pos);*/
-          /*position_add_frames (&region_pos, diff);*/
-
-          /*int this_y =*/
-            /*automation_point_get_y_in_px (*/
-              /*ap);*/
-          /*int start_ap_y =*/
-            /*automation_point_get_y_in_px (*/
-              /*self->start_ap);*/
-          /*int diff = this_y - start_ap_y;*/
+          ap = automation_point_get_main_automation_point (ap);
 
           float fval =
             automation_lane_widget_get_fvalue_at_y (
               ap->at->al->widget,
               ar_prv->start_y + offset_y);
-          automation_point_update_fvalue (ap, fval);
+          automation_point_update_fvalue (
+            ap, fval, F_TRANS_ONLY);
         }
       automation_point_widget_update_tooltip (
         self->start_ap->widget, 1);
@@ -2258,6 +2252,8 @@ timeline_arranger_widget_on_drag_end (
     {
       timeline_selections_set_to_transient_poses (
         TL_SELECTIONS);
+      timeline_selections_set_to_transient_values (
+        TL_SELECTIONS);
 
       UndoableAction * ua =
         (UndoableAction *)
@@ -2277,6 +2273,7 @@ timeline_arranger_widget_on_drag_end (
   self->resizing_range = 0;
   self->resizing_range_start = 0;
   self->start_region = NULL;
+  self->start_ap = NULL;
   self->start_region_was_selected = 0;
   self->start_ap = NULL;
 

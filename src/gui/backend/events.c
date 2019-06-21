@@ -683,6 +683,7 @@ events_process (void * data)
         case ET_REGION_CREATED:
         case ET_MARKER_CREATED:
         case ET_AUTOMATION_POINT_CREATED:
+        case ET_AUTOMATION_CURVE_CREATED:
         case ET_CHORD_OBJECT_CREATED:
         case ET_SCALE_OBJECT_CREATED:
         case ET_CHORD_OBJECT_CHANGED:
@@ -699,6 +700,7 @@ events_process (void * data)
             Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
           break;
         case ET_AUTOMATION_POINT_REMOVED:
+        case ET_AUTOMATION_CURVE_REMOVED:
           /* FIXME automation track is passed so
            * only refresh the automation lane */
           arranger_widget_refresh (

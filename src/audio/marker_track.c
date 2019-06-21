@@ -89,6 +89,10 @@ marker_track_remove_marker (
   Marker *      marker,
   int           free)
 {
+  /* deselect */
+  timeline_selections_remove_marker (
+    TL_SELECTIONS, marker);
+
   array_delete (self->markers,
                 self->num_markers,
                 marker);

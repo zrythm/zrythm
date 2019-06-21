@@ -168,22 +168,25 @@ automation_track_get_next_ap (AutomationTrack * at,
                               AutomationPoint * _ap);
 
 AutomationPoint *
-automation_track_get_ap_before_curve (AutomationTrack * at,
-                                      AutomationCurve * ac);
+automation_track_get_ap_before_curve (
+  AutomationTrack * at,
+  AutomationCurve * ac);
 
 /**
  * Returns the ap after the curve point.
  */
 AutomationPoint *
-automation_track_get_ap_after_curve (AutomationTrack * at,
-                                     AutomationCurve * ac);
+automation_track_get_ap_after_curve (
+  AutomationTrack * at,
+  AutomationCurve * ac);
 
 /**
  * Returns the curve point right after the given ap
  */
 AutomationCurve *
-automation_track_get_next_curve_ac (AutomationTrack * at,
-                                    AutomationPoint * ap);
+automation_track_get_next_curve_ac (
+  AutomationTrack * at,
+  AutomationPoint * ap);
 
 /**
  * Removes automation point from automation track.

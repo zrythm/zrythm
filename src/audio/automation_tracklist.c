@@ -294,7 +294,6 @@ automation_tracklist_clone (
           src_ap = src_at->aps[j];
           dest_ap =
             automation_point_new_float (
-              dest_at,
               src_ap->fvalue,
               &src_ap->pos, F_MAIN);
           automation_track_add_ap (

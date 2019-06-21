@@ -153,7 +153,6 @@ automation_point_find (
  */
 AutomationPoint *
 automation_point_new_float (
-  AutomationTrack *   at,
   const float         value,
   const Position *    pos,
   int                 is_main);
@@ -163,11 +162,25 @@ automation_point_get_y_in_px (AutomationPoint * ap);
 
 /**
  * Updates the value and notifies interested parties.
+ *
+ * @param trans_only Only do transients.
  */
 void
 automation_point_update_fvalue (
   AutomationPoint * ap,
-  float             fval);
+  float             fval,
+  int               trans_only);
+
+/**
+ * Sets the AutomationTrack and the index in the
+ * AutomationTrack that the AutomationPoint
+ * belongs to, in all its counterparts.
+ */
+void
+automation_point_set_automation_track_and_index (
+  AutomationPoint * _ap,
+  AutomationTrack * at,
+  int               index);
 
 /**
  * Returns the normalized value (0.0 to 1.0).

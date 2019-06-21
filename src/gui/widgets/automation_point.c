@@ -35,18 +35,22 @@ G_DEFINE_TYPE (AutomationPointWidget,
                GTK_TYPE_DRAWING_AREA)
 
 static gboolean
-draw_cb (AutomationPointWidget * self,
-         cairo_t *cr, gpointer data)
+draw_cb (
+  GtkWidget * widget,
+  cairo_t *   cr,
+  AutomationPointWidget * self)
 {
   guint width, height;
   GtkStyleContext *context;
 
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
+  context =
+    gtk_widget_get_style_context (widget);
 
-  width = gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  width = gtk_widget_get_allocated_width (widget);
+  height = gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
   Track * track =
     self->automation_point->at->track;

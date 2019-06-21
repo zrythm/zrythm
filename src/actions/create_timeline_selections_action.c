@@ -167,7 +167,7 @@ create_timeline_selections_action_do (
 	for (i = 0;
        i < self->ts->num_automation_points; i++)
     {
-      /* check if the region already exists. due to
+      /* check if the ap already exists. due to
        * how the arranger creates regions, the region
        * should already exist the first time so no
        * need to do anything. when redoing we will
@@ -175,6 +175,8 @@ create_timeline_selections_action_do (
       if (automation_point_find (
             self->ts->automation_points[i]))
         continue;
+
+      g_message ("NOT FOUND");
 
       /* clone the clone */
       ap =
@@ -186,6 +188,11 @@ create_timeline_selections_action_do (
       automation_track_add_ap (
         ap->at, ap, F_GEN_WIDGET,
         F_GEN_CURVE_POINTS);
+
+      /* remember new index */
+      automation_point_set_automation_track_and_index (
+        self->ts->automation_points[i],
+        ap->at, ap->index);
     }
 
   EVENTS_PUSH (ET_TL_SELECTIONS_CREATED,
@@ -251,6 +258,7 @@ create_timeline_selections_action_undo (
       ap =
         automation_point_find (
           self->ts->automation_points[i]);
+      g_warn_if_fail (ap);
 
       /* remove it */
       automation_track_remove_ap (

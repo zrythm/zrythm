@@ -274,6 +274,15 @@ timeline_selections_set_to_transient_poses (
   TimelineSelections * ts);
 
 /**
+ * Similar to set_to_transient_poses, but handles
+ * values for objects that support them (like
+ * AutomationPoint's).
+ */
+void
+timeline_selections_set_to_transient_values (
+  TimelineSelections * ts);
+
+/**
  * Moves the TimelineSelections by the given
  * amount of ticks.
  *

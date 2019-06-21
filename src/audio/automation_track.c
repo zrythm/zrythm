@@ -123,9 +123,10 @@ add_and_show_curve_point (AutomationTrack * at,
 }
 
 static void
-create_curve_point_before (AutomationTrack * at,
-                           AutomationPoint * prev_ap,
-                           AutomationPoint * ap)
+create_curve_point_before (
+  AutomationTrack * at,
+  AutomationPoint * prev_ap,
+  AutomationPoint * ap)
 {
   Position mid_pos;
 
@@ -187,10 +188,9 @@ automation_track_force_sort (AutomationTrack * at)
     at->acs[i]->index = i;
 
   /* refresh indices */
-  for (int i = 0;
-       i < at->num_aps;
-       i++)
-    at->aps[i]->index = i;
+  for (int i = 0; i < at->num_aps; i++)
+    automation_point_set_automation_track_and_index (
+      at->aps[i], at, i);
 }
 
 /**
@@ -217,6 +217,8 @@ automation_track_add_ac (
        i < at->num_acs;
        i++)
     at->acs[i]->index = i;
+
+  EVENTS_PUSH (ET_AUTOMATION_CURVE_CREATED, ac);
 }
 
 /**
@@ -240,9 +242,17 @@ automation_track_add_ap (
          sizeof (AutomationPoint *),
          cmpfunc);
 
+  /* refresh indices */
+  for (int i = 0; i < at->num_aps; i++)
+    automation_point_set_automation_track_and_index (
+      at->aps[i], at, i);
+
+  g_warn_if_fail (ap->at);
+
   if (generate_curve_points)
     {
-      /* add midway automation point to control curviness */
+      /* add midway automation curve to control
+       * curviness */
       AutomationPoint * prev_ap =
         automation_track_get_prev_ap (at,
                                       ap);
@@ -268,29 +278,25 @@ automation_track_add_ap (
         }
       else  /* has next & prev */
         {
-          /* remove existing curve ap */
+          /* remove existing curve */
           AutomationCurve * prev_curve =
-            automation_track_get_next_curve_ac (at,
-                                                prev_ap);
-          automation_track_remove_ac (at, prev_curve);
+            automation_track_get_next_curve_ac (
+              at, prev_ap);
+          automation_track_remove_ac (
+            at, prev_curve);
 
-          create_curve_point_before (at,
-                                     prev_ap,
-                                     ap);
-          create_curve_point_after (at,
-                                    next_ap,
-                                    ap);
+          create_curve_point_before (
+            at, prev_ap, ap);
+          create_curve_point_after (
+            at, next_ap, ap);
         }
     }
 
   if (gen_widget)
     automation_point_gen_widget (ap);
 
-  /* refresh indices */
-  for (int i = 0;
-       i < at->num_aps;
-       i++)
-    at->aps[i]->index = i;
+  EVENTS_PUSH (ET_AUTOMATION_POINT_CREATED,
+               ap);
 }
 
 AutomationPoint *
@@ -418,9 +424,61 @@ automation_track_remove_ap (
   AutomationPoint * ap,
   int               free)
 {
+  /* deselect */
+  timeline_selections_remove_automation_point (
+    TL_SELECTIONS, ap);
+
+  /* remove the curves first */
+  AutomationPoint * prev_ap =
+    automation_track_get_prev_ap (at, ap);
+  AutomationPoint * next_ap =
+    automation_track_get_next_ap (at, ap);
+
+  AutomationCurve * ac;
+  /* 4 cases */
+  if (!prev_ap && !next_ap) /* only ap */
+    {
+      /* do nothing */
+    }
+  else if (prev_ap && !next_ap) /* last ap */
+    {
+      /* remove curve before */
+      ac =
+        automation_track_get_next_curve_ac (
+          at, prev_ap);
+      automation_track_remove_ac (at, ac);
+      g_message ("removed prev ac num acs %d",
+                 at->num_acs);
+    }
+  else if (!prev_ap && next_ap) /* first ap */
+    {
+      /* remove curve after */
+      ac =
+        automation_track_get_next_curve_ac (
+          at, ap);
+      automation_track_remove_ac (at, ac);
+    }
+  else  /* has next & prev */
+    {
+      /* remove curve before and after, and add
+       * a new curve at this ap's pos */
+      ac =
+        automation_track_get_next_curve_ac (
+          at, prev_ap);
+      automation_track_remove_ac (at, ac);
+      ac =
+        automation_track_get_next_curve_ac (
+          at, ap);
+      automation_track_remove_ac (at, ac);
+
+      create_curve_point_before (
+        at, prev_ap, next_ap);
+    }
+
   array_delete (at->aps,
                 at->num_aps,
                 ap);
+
 
   if (free)
     free_later (ap, automation_point_free);
@@ -438,7 +496,11 @@ automation_track_remove_ac (AutomationTrack * at,
   array_delete (at->acs,
                 at->num_acs,
                 ac);
-  free_later (ac, automation_curve_free);
+  g_warn_if_fail (ac);
+  free_later (ac,
+              automation_curve_free);
+
+  EVENTS_PUSH (ET_AUTOMATION_CURVE_REMOVED, at);
 }
 
 /*int*/

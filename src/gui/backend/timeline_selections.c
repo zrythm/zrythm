@@ -652,6 +652,27 @@ timeline_selections_clone ()
 }
 
 /**
+ * Similar to set_to_transient_poses, but handles
+ * values for objects that support them (like
+ * AutomationPoint's).
+ */
+void
+timeline_selections_set_to_transient_values (
+  TimelineSelections * ts)
+{
+  AutomationPoint * ap;
+  for (int i = 0; i < ts->num_automation_points;
+       i++)
+    {
+      ap = ts->automation_points[i];
+      ap->fvalue =
+        automation_point_get_main_trans_automation_point (
+          ap)->fvalue;
+    }
+}
+
+
+/**
  * Moves the TimelineSelections by the given
  * amount of ticks.
  *

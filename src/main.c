@@ -73,7 +73,7 @@ main (int    argc,
 {
   fprintf (
     stderr,
-    "Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n\n"
+    "Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou et al.\n\n"
   "Zrythm comes with ABSOLUTELY NO WARRANTY!\n\n"
   "This is free software, and you are welcome to redistribute it\n"
   "under certain conditions. Look at the file `COPYING' within this\n"

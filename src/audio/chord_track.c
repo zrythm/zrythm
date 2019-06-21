@@ -161,6 +161,10 @@ chord_track_remove_chord (
   ChordObject * chord,
   int           free)
 {
+  /* deselect */
+  timeline_selections_remove_chord_object (
+    TL_SELECTIONS, chord);
+
   array_delete (self->chords,
                 self->num_chords,
                 chord);
@@ -180,6 +184,10 @@ chord_track_remove_scale (
   ScaleObject * scale,
   int free)
 {
+  /* deselect */
+  timeline_selections_remove_scale_object (
+    TL_SELECTIONS, scale);
+
   array_delete (self->scales,
                 self->num_scales,
                 scale);
