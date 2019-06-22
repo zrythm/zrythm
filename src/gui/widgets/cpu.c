@@ -37,6 +37,8 @@
 #include <windows.h>
 #endif
 
+#include "utils/cairo.h"
+
 G_DEFINE_TYPE (CpuWidget,
                cpu_widget,
                GTK_TYPE_DRAWING_AREA)
@@ -51,6 +53,8 @@ static gint64 last_time_updated_dsp = 0;
 #define BAR_LENGTH 12
 #define BAR_WIDTH 3
 #define NUM_BARS 12
+#define PADDING 2
+#define ICON_SIZE BAR_LENGTH
 
 /**
  * Taken from
@@ -72,29 +76,28 @@ cpu_draw_cb (
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
-  /*cairo_translate(cr, 0, 7);*/
-
-  /*cairo_set_source_rgba(cr, 0, 0, 0, 0.1);*/
-  /*cairo_paint(cr);*/
-
-  cairo_text_extents_t te;
+  /*GdkRGBA color;*/
+  /*gdk_rgba_parse (&color, "#00ccff");*/
+  /*cairo_set_source_rgba (*/
+    /*cr, color.red, color.green, color.blue, 1.0);*/
   cairo_set_source_rgb(cr, 0.6, 1.0, 0);
-  cairo_select_font_face (cr, "Segment7",
-                          CAIRO_FONT_SLANT_NORMAL,
-                          CAIRO_FONT_WEIGHT_BOLD);
-  cairo_set_font_size (cr, 12.0);
-  cairo_text_extents (cr, "CPU", &te);
 
-  char * text = g_strdup ("CPU");
-  cairo_move_to (
-    cr, 4, 4 + te.height);
-  cairo_show_text (cr, text);
-  g_free (text);
-  text = g_strdup ("DSP");
-  cairo_move_to (
-    cr, 4, 4 + 2 + te.height * 2);
-  cairo_show_text (cr, text);
-  g_free (text);
+  cairo_surface_t * surface;
+  surface =
+    z_cairo_get_surface_from_icon_name (
+      "iconfinder_cpu_2561419",
+      ICON_SIZE, 0);
+  cairo_mask_surface(
+    cr, surface, PADDING, PADDING);
+  cairo_fill(cr);
+
+  surface =
+    z_cairo_get_surface_from_icon_name (
+      "wave-square-solid",
+      ICON_SIZE, 0);
+  cairo_mask_surface(
+    cr, surface, PADDING, 2 * PADDING + ICON_SIZE);
+  cairo_fill(cr);
 
   int limit, i;
 
@@ -111,8 +114,8 @@ cpu_draw_cb (
 
       cairo_rectangle(
         cr,
-        te.width + 2 + i * 4,
-        4,
+        ICON_SIZE + PADDING + i * PADDING * 2,
+        PADDING,
         BAR_WIDTH,
         BAR_LENGTH);
       cairo_fill(cr);
@@ -131,8 +134,8 @@ cpu_draw_cb (
 
       cairo_rectangle(
         cr,
-        te.width + 2 + i * 4,
-        4 + te.height + 2,
+        ICON_SIZE + PADDING + i * PADDING * 2,
+        PADDING * 2 + BAR_LENGTH,
         BAR_WIDTH,
         BAR_LENGTH);
       cairo_fill(cr);

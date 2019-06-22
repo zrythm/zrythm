@@ -59,10 +59,9 @@ timeline_selection_info_widget_refresh (
           24, _("start"));
       digital_meter_set_draw_line (dm, 1);
 
-      selection_info_widget_add_info_with_text (
+      selection_info_widget_add_info (
         self->selection_info,
-        _("Start Position"),
-        dm);
+        NULL, GTK_WIDGET (dm));
       gtk_stack_set_visible_child (
         GTK_STACK (self),
         GTK_WIDGET (self->selection_info));
@@ -112,5 +111,5 @@ timeline_selection_info_widget_init (
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
     -1,
-    51);
+    38);
 }

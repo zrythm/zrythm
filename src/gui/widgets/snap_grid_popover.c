@@ -65,9 +65,9 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
       &owner->snap_grid->note_length,
       &owner->snap_grid->note_type,
       "note type");
-  gtk_container_add (GTK_CONTAINER (self->note_type_box),
-                     GTK_WIDGET (self->dm_note_type));
-
+  gtk_container_add (
+    GTK_CONTAINER (self->note_type_box),
+    GTK_WIDGET (self->dm_note_type));
 
   return self;
 }

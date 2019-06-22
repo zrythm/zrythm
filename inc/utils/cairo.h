@@ -1,7 +1,5 @@
 /*
- * utils/cairo.h - Cairo utilities
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -48,24 +46,27 @@
 #define Z_CAIRO_TEXT_PADDING 2
 
 void
-z_cairo_draw_selection (cairo_t * cr,
-                        double    start_x,
-                        double    start_y,
-                        double    offset_x,
-                        double    offset_y);
+z_cairo_draw_selection (
+  cairo_t * cr,
+  double    start_x,
+  double    start_y,
+  double    offset_x,
+  double    offset_y);
 
 void
-z_cairo_draw_horizontal_line (cairo_t * cr,
-                              double    y,
-                              double    from_x,
-                              double    to_x,
-                              double    alpha);
+z_cairo_draw_horizontal_line (
+  cairo_t * cr,
+  double    y,
+  double    from_x,
+  double    to_x,
+  double    alpha);
 
 void
-z_cairo_draw_vertical_line (cairo_t * cr,
-                            double    x,
-                            double    from_y,
-                            double    to_y);
+z_cairo_draw_vertical_line (
+  cairo_t * cr,
+  double    x,
+  double    from_y,
+  double    to_y);
 
 /**
  * @param aspect Aspect ratio.
@@ -169,5 +170,14 @@ z_cairo_diamond (
   cairo_line_to (cr, x, height / 2);
   cairo_close_path (cr);
 }
+
+/**
+ * Returns a surface for the icon name.
+ */
+cairo_surface_t *
+z_cairo_get_surface_from_icon_name (
+  const char * icon_name,
+  int          size,
+  int          scale);
 
 #endif

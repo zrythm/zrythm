@@ -158,3 +158,31 @@ z_cairo_draw_text_full (
 
   cairo_translate (cr, - start_x, - start_y);
 }
+
+/**
+ * Returns a surface for the icon name.
+ */
+cairo_surface_t *
+z_cairo_get_surface_from_icon_name (
+  const char * icon_name,
+  int          size,
+  int          scale)
+{
+  GdkPixbuf * pixbuf =
+    gtk_icon_theme_load_icon (
+      gtk_icon_theme_get_default (),
+      icon_name,
+      size,
+      0,
+      NULL);
+  g_return_val_if_fail (pixbuf, NULL);
+
+  cairo_surface_t * surface =
+    gdk_cairo_surface_create_from_pixbuf (
+      pixbuf, 0,
+      NULL);
+
+  g_object_unref (pixbuf);
+
+  return surface;
+}

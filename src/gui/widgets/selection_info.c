@@ -68,10 +68,13 @@ selection_info_widget_add_info (
         l - 1, 0, 1, 2);
     }
 
-  gtk_grid_attach (
-    GTK_GRID (self),
-    label,
-    l, 0, 1, 1);
+  if (label)
+    {
+    gtk_grid_attach (
+      GTK_GRID (self),
+      label,
+      l, 0, 1, 1);
+    }
   gtk_grid_attach (
     GTK_GRID (self),
     widget,

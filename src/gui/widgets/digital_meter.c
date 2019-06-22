@@ -83,6 +83,10 @@ draw_cb (
 
   /* draw caption and get its extents */
   int caption_textw, caption_texth;
+  /*GdkRGBA color;*/
+  /*gdk_rgba_parse (&color, "#00ccff");*/
+  /*cairo_set_source_rgba (*/
+    /*cr, color.red, color.green, color.blue, 1.0);*/
   cairo_set_source_rgba (
     cr, 1.0, 1.0, 1.0, 1.0);
   z_cairo_get_text_extents_for_widget_full (
@@ -97,7 +101,6 @@ draw_cb (
     /*cr, self->caption, width / 2 - caption_textw / 2,*/
     /*PADDING_TOP, CAPTION_FONT);*/
 
-  cairo_text_extents_t te10, te5, te1, te3, te2;
   char * text = NULL;
   int num_part, dec_part, bars, beats, sixteenths, ticks;
   int textw, texth;
@@ -652,33 +655,22 @@ button_press_cb (GtkWidget      * event_box,
   return 0;
 }
 
-/**
- * Creates a digital meter with the given type (bpm or position).
- */
-DigitalMeterWidget *
-digital_meter_widget_new (
-  DigitalMeterType  type,
-  NoteLength *      note_length,
-  NoteType *        note_type,
-  const char *      caption)
+static void
+init_dm (
+  DigitalMeterWidget * self)
 {
-  g_message ("Creating digital meter...");
-  DigitalMeterWidget * self = g_object_new (DIGITAL_METER_WIDGET_TYPE, NULL);
-
-  self->type = type;
-  self->caption = g_strdup (caption);
+  int caption_textw, caption_texth;
+  z_cairo_get_text_extents_for_widget_full (
+    GTK_WIDGET (self), self->caption, &caption_textw,
+    &caption_texth, CAPTION_FONT);
   int textw, texth;
-  switch (type)
+  switch (self->type)
     {
     case DIGITAL_METER_TYPE_BPM:
       {
         gtk_widget_set_tooltip_text (
           GTK_WIDGET (self),
           _("BPM - Click and drag up/down to set"));
-        int caption_textw, caption_texth;
-        z_cairo_get_text_extents_for_widget_full (
-          GTK_WIDGET (self), caption, &caption_textw,
-          &caption_texth, CAPTION_FONT);
         z_cairo_get_text_extents_for_widget_full (
           GTK_WIDGET (self), "888888", &textw,
           &texth, SEG7_FONT);
@@ -691,14 +683,18 @@ digital_meter_widget_new (
       }
       break;
     case DIGITAL_METER_TYPE_POSITION:
-      /*gtk_widget_set_tooltip_text (*/
-        /*GTK_WIDGET (self),*/
-        /*_("Playhead Position - Click and drag up/down \*/
-/*to change"));*/
-      /*gtk_widget_set_size_request (*/
-        /*GTK_WIDGET (self),*/
-        /*160,*/
-        /*-1);*/
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (self),
+        _("BPM - Click and drag up/down to set"));
+      z_cairo_get_text_extents_for_widget_full (
+        GTK_WIDGET (self), "-888888888", &textw,
+        &texth, SEG7_FONT);
+      /* caption + padding between caption and
+       * BPM + padding top/bottom */
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self), textw + PADDING_W * 2,
+        caption_texth + HALF_SPACE_BETWEEN +
+        texth + PADDING_TOP * 2);
 
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
@@ -706,8 +702,6 @@ digital_meter_widget_new (
         GTK_WIDGET (self),
         -1,
         30);
-      self->note_length = note_length;
-      self->note_type = note_type;
       break;
 
     case DIGITAL_METER_TYPE_NOTE_TYPE:
@@ -715,8 +709,6 @@ digital_meter_widget_new (
         GTK_WIDGET (self),
         -1,
         30);
-      self->note_length = note_length;
-      self->note_type = note_type;
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
       {
@@ -724,11 +716,6 @@ digital_meter_widget_new (
           GTK_WIDGET (self),
           _("Time Signature - Click and drag "
             "up/down to change"));
-        int caption_textw, caption_texth;
-        z_cairo_get_text_extents_for_widget_full (
-          GTK_WIDGET (self), caption,
-          &caption_textw, &caption_texth,
-          CAPTION_FONT);
         z_cairo_get_text_extents_for_widget_full (
           GTK_WIDGET (self), "16/16", &textw,
           &texth, SEG7_FONT);
@@ -745,6 +732,26 @@ digital_meter_widget_new (
   g_signal_connect (
     G_OBJECT (self), "draw",
     G_CALLBACK (draw_cb), self);
+}
+
+/**
+ * Creates a digital meter with the given type (bpm or position).
+ */
+DigitalMeterWidget *
+digital_meter_widget_new (
+  DigitalMeterType  type,
+  NoteLength *      note_length,
+  NoteType *        note_type,
+  const char *      caption)
+{
+  g_message ("Creating digital meter...");
+  DigitalMeterWidget * self = g_object_new (DIGITAL_METER_WIDGET_TYPE, NULL);
+
+  self->type = type;
+  self->caption = g_strdup (caption);
+  self->note_length = note_length;
+  self->note_type = note_type;
+  init_dm (self);
 
   return self;
 }
@@ -761,7 +768,7 @@ digital_meter_widget_new (
  *   position.
  */
 DigitalMeterWidget *
-_digital_meter_widget_new_for_position(
+_digital_meter_widget_new_for_position (
   void * obj,
   void (*get_val)(void *, Position *),
   void (*set_val)(void *, Position *),
@@ -776,14 +783,7 @@ _digital_meter_widget_new_for_position(
   self->setter = set_val;
   self->caption = g_strdup (caption);
   self->type = DIGITAL_METER_TYPE_POSITION;
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self),
-    160,
-    -1);
-
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (draw_cb), self);
+  init_dm (self);
 
   return self;
 }
