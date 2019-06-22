@@ -43,8 +43,10 @@ top_bar_widget_refresh (TopBarWidget * self)
   self->digital_transport =
     digital_meter_widget_new_for_position (
       TRANSPORT,
+      NULL,
       transport_get_playhead_pos,
-      transport_set_playhead_pos, 24,
+      transport_set_playhead_pos,
+      NULL,
       _("playhead"));
   gtk_container_add (
     GTK_CONTAINER (self->digital_meters),

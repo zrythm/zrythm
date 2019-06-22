@@ -54,9 +54,9 @@ scale_draw_cb (
   GdkRGBA * color = &P_CHORD_TRACK->color;
   cairo_set_source_rgba (
     cr, color->red, color->green, color->blue,
-    scale_object_is_transient (self->scale) ?
+    scale_object_is_transient (self->scale_object) ?
       0.7 : 1);
-  if (scale_object_is_selected (self->scale))
+  if (scale_object_is_selected (self->scale_object))
     {
       cairo_set_source_rgba (
         cr, color->red + 0.4, color->green + 0.2,
@@ -81,9 +81,9 @@ scale_draw_cb (
 
   char * str =
     musical_scale_to_string (
-      self->scale->scale);
+      self->scale_object->scale);
   if (DEBUGGING &&
-      scale_object_is_transient (self->scale))
+      scale_object_is_transient (self->scale_object))
     {
       char * tmp =
         g_strdup_printf (
@@ -133,7 +133,7 @@ scale_object_widget_select (
 {
   ScaleObject * main_scale =
     scale_object_get_main_scale_object (
-      self->scale);
+      self->scale_object);
   if (select)
     {
       timeline_selections_add_scale_object (
@@ -183,7 +183,7 @@ scale_object_widget_new (ScaleObject * scale)
   ScaleObjectWidget * self =
     g_object_new (SCALE_OBJECT_WIDGET_TYPE, NULL);
 
-  self->scale = scale;
+  self->scale_object = scale;
 
   return self;
 }

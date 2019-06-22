@@ -372,18 +372,28 @@ drag_start (GtkGestureDrag * gesture,
                gpointer        user_data)
 {
   DigitalMeterWidget * self = (DigitalMeterWidget *) user_data;
-  if (self->type == DIGITAL_METER_TYPE_NOTE_LENGTH)
-    self->start_note_length =
-      *self->note_length;
-  if (self->type == DIGITAL_METER_TYPE_NOTE_TYPE)
-    self->start_note_type =
-      *self->note_type;
-  if (self->type == DIGITAL_METER_TYPE_TIMESIG)
+  switch (self->type)
     {
+    case DIGITAL_METER_TYPE_NOTE_LENGTH:
+      self->start_note_length =
+        *self->note_length;
+      break;
+    case DIGITAL_METER_TYPE_NOTE_TYPE:
+      self->start_note_type =
+        *self->note_type;
+      break;
+    case DIGITAL_METER_TYPE_TIMESIG:
       self->start_timesig_top =
         TRANSPORT->beats_per_bar;
       self->start_timesig_bot =
         TRANSPORT->ebeat_unit;
+      break;
+    case DIGITAL_METER_TYPE_POSITION:
+      if (self->on_drag_begin)
+        ((*self->on_drag_begin) (self->obj));
+      break;
+    default:
+      break;
     }
 }
 
@@ -432,7 +442,6 @@ drag_update (GtkGestureDrag * gesture,
       if (self->update_bars)
         {
           num = (int) diff / 4;
-          /*g_message ("updating num with %d", num);*/
           if (abs (num) > 0)
             {
               position_set_bar (
@@ -443,7 +452,6 @@ drag_update (GtkGestureDrag * gesture,
       else if (self->update_beats)
         {
           num = (int) diff / 4;
-          /*g_message ("updating num with %d", num);*/
           if (abs (num) > 0)
             {
               position_set_beat (
@@ -576,6 +584,16 @@ drag_end (GtkGestureDrag *gesture,
   self->update_note_type = 0;
   self->update_timesig_top = 0;
   self->update_timesig_bot = 0;
+
+  switch (self->type)
+    {
+    case DIGITAL_METER_TYPE_POSITION:
+      if (self->on_drag_end)
+        ((*self->on_drag_end) (self->obj));
+      break;
+    default:
+      break;
+    }
 }
 
 static gboolean
@@ -770,17 +788,20 @@ digital_meter_widget_new (
 DigitalMeterWidget *
 _digital_meter_widget_new_for_position (
   void * obj,
+  void (*on_drag_begin)(void *),
   void (*get_val)(void *, Position *),
   void (*set_val)(void *, Position *),
-  int  font_size,
+  void (*on_drag_end)(void *),
   const char * caption)
 {
   DigitalMeterWidget * self =
     g_object_new (DIGITAL_METER_WIDGET_TYPE, NULL);
 
   self->obj = obj;
+  self->on_drag_begin = on_drag_begin;
   self->getter = get_val;
   self->setter = set_val;
+  self->on_drag_end = on_drag_end;
   self->caption = g_strdup (caption);
   self->type = DIGITAL_METER_TYPE_POSITION;
   init_dm (self);

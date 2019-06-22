@@ -43,7 +43,7 @@ on_delete_event (
 {
   UndoableAction * ua =
     edit_scale_action_new (
-      self->scale->scale,
+      self->scale->scale_object,
       self->descr);
   undo_manager_perform (
     UNDO_MANAGER, ua);
@@ -120,7 +120,7 @@ setup_creator_tab (
   ScaleSelectorWindowWidget * self)
 {
   MusicalScale * descr =
-    self->scale->scale->scale;
+    self->scale->scale_object->scale;
 
 #define SELECT_CHILD(flowbox, child) \
   gtk_flow_box_select_child ( \
@@ -184,7 +184,7 @@ scale_selector_window_widget_new (
 
   self->scale =
     scale_object_get_main_scale_object (
-      owner->scale)->widget;
+      owner->scale_object)->widget;
 
   gtk_window_set_transient_for (
     GTK_WINDOW (self),
@@ -194,7 +194,7 @@ scale_selector_window_widget_new (
 
   self->descr =
     musical_scale_clone (
-      owner->scale->scale);
+      owner->scale_object->scale);
 
   return self;
 }

@@ -51,7 +51,7 @@ For any bugs please raise an issue or join a chatroom below
 zrythm-dev@nongnu.org for developers, zrythm-user@nongnu.org for users
 
 ## License
-Copyright (C) 2018-2019  Alexandros Theodotou
+Copyright (C) 2018-2019  Alexandros Theodotou et al.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

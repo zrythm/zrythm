@@ -54,8 +54,10 @@ piano_roll_selection_info_widget_refresh (
       DigitalMeterWidget * dm =
         digital_meter_widget_new_for_position (
           mn,
+          NULL,
           midi_note_get_start_pos,
-          midi_note_set_start_pos, 24,
+          midi_note_set_start_pos,
+          NULL,
           _("start position"));
       digital_meter_set_draw_line (dm, 1);
 

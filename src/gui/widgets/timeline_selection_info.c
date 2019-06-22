@@ -17,19 +17,95 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/move_timeline_selections_action.h"
+#include "audio/position.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/chord_object.h"
+#include "gui/widgets/marker.h"
+#include "gui/widgets/scale_object.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/selection_info.h"
 #include "gui/widgets/timeline_selection_info.h"
+#include "project.h"
+#include "utils/flags.h"
 
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (TimelineSelectionInfoWidget,
                timeline_selection_info_widget,
                GTK_TYPE_STACK)
+
+DEFINE_START_POS;
+
+/** Earliest start position on drag start. */
+static Position earliest_start_pos;
+
+static void
+on_drag_begin ()
+{
+  timeline_selections_set_cache_poses (
+    TL_SELECTIONS);
+  timeline_selections_get_start_pos (
+    TL_SELECTIONS, &earliest_start_pos,
+    F_NO_TRANSIENTS);
+}
+
+static void
+on_drag_end ()
+{
+  Position start_pos;
+  timeline_selections_get_start_pos (
+    TL_SELECTIONS, &start_pos,
+    F_NO_TRANSIENTS);
+  long ticks_diff =
+    position_to_ticks (
+      &start_pos) -
+    position_to_ticks (
+      &earliest_start_pos);
+  /* remove the diff since it will get added
+   * in the moving action */
+  timeline_selections_add_ticks (
+    TL_SELECTIONS, - ticks_diff,
+    0, F_NO_TRANS_ONLY);
+  UndoableAction * ua =
+    (UndoableAction *)
+    move_timeline_selections_action_new (
+      TL_SELECTIONS,
+      ticks_diff,
+      timeline_selections_get_highest_track (
+        TL_SELECTIONS, F_TRANSIENTS) -
+      timeline_selections_get_highest_track (
+        TL_SELECTIONS, F_NO_TRANSIENTS));
+  undo_manager_perform (
+    UNDO_MANAGER, ua);
+}
+
+static void
+get_pos (
+  const Position * obj,
+  Position * pos)
+{
+  position_set_to_pos (pos, obj);
+}
+
+static void
+set_pos (
+  Position * obj,
+  const Position * pos)
+{
+  if (position_is_after_or_equal (
+        pos, START_POS))
+    {
+      timeline_selections_add_ticks (
+        TL_SELECTIONS,
+        position_to_ticks (pos) -
+          position_to_ticks (obj),
+        0, F_NO_TRANS_ONLY);
+      position_set_to_pos (obj, pos);
+    }
+}
 
 void
 timeline_selection_info_widget_refresh (
@@ -39,6 +115,10 @@ timeline_selection_info_widget_refresh (
   GtkWidget * fo =
     timeline_selections_get_first_object (
       ts, 0);
+  GtkWidget * lo =
+    timeline_selections_get_last_object (
+      ts, 0);
+  int only_object = fo == lo;
 
   selection_info_widget_clear (
     self->selection_info);
@@ -46,33 +126,176 @@ timeline_selection_info_widget_refresh (
     GTK_STACK (self),
     GTK_WIDGET (self->no_selection_label));
 
-  if (Z_IS_REGION_WIDGET (fo))
+#define ADD_WIDGET(widget) \
+  selection_info_widget_add_info ( \
+    self->selection_info, \
+    NULL, GTK_WIDGET (widget)); \
+
+  /* if only object selected, show its specifics */
+  if (only_object)
     {
-      REGION_WIDGET_GET_PRIVATE (fo);
-      Region * r = rw_prv->region;
+      if (Z_IS_REGION_WIDGET (fo))
+        {
+          REGION_WIDGET_GET_PRIVATE (fo);
+          Region * r =
+            region_get_main_trans_region (
+              rw_prv->region);
 
-      DigitalMeterWidget * dm =
+          DigitalMeterWidget * dm;
+          dm =
+            digital_meter_widget_new_for_position (
+              r,
+              on_drag_begin,
+              region_get_start_pos,
+              region_start_pos_setter,
+              on_drag_end,
+              _("start"));
+          digital_meter_set_draw_line (dm, 1);
+          ADD_WIDGET (dm);
+          dm =
+            digital_meter_widget_new_for_position (
+              r,
+              on_drag_begin,
+              region_get_end_pos,
+              region_end_pos_setter,
+              on_drag_end,
+              _("end"));
+          digital_meter_set_draw_line (dm, 1);
+          ADD_WIDGET (dm);
+          dm =
+            digital_meter_widget_new_for_position (
+              r,
+              on_drag_begin,
+              region_get_clip_start_pos,
+              region_clip_start_pos_setter,
+              on_drag_end,
+              _("clip start (rel.)"));
+          digital_meter_set_draw_line (dm, 1);
+          ADD_WIDGET (dm);
+          dm =
+            digital_meter_widget_new_for_position (
+              r,
+              on_drag_begin,
+              region_get_loop_start_pos,
+              region_loop_start_pos_setter,
+              on_drag_end,
+              _("loop start (rel.)"));
+          digital_meter_set_draw_line (dm, 1);
+          ADD_WIDGET (dm);
+          dm =
+            digital_meter_widget_new_for_position (
+              r,
+              on_drag_begin,
+              region_get_loop_end_pos,
+              region_loop_end_pos_setter,
+              on_drag_end,
+              _("loop end (rel.)"));
+          digital_meter_set_draw_line (dm, 1);
+          ADD_WIDGET (dm);
+
+          gtk_stack_set_visible_child (
+            GTK_STACK (self),
+            GTK_WIDGET (self->selection_info));
+        }
+      else if (Z_IS_AUTOMATION_POINT_WIDGET (fo))
+        {
+
+        }
+      else if (Z_IS_CHORD_OBJECT_WIDGET (fo))
+        {
+          ChordObjectWidget * mw =
+            Z_CHORD_OBJECT_WIDGET (fo);
+          ChordObject * chord_object =
+            chord_object_get_main_chord_object (
+              mw->chord_object);
+
+          DigitalMeterWidget * dm;
+          dm =
+            digital_meter_widget_new_for_position (
+              chord_object,
+              on_drag_begin,
+              chord_object_get_pos,
+              chord_object_pos_setter,
+              on_drag_end,
+              _("position"));
+          digital_meter_set_draw_line (dm, 1);
+          ADD_WIDGET (dm);
+
+          gtk_stack_set_visible_child (
+            GTK_STACK (self),
+            GTK_WIDGET (self->selection_info));
+        }
+      else if (Z_IS_SCALE_OBJECT_WIDGET (fo))
+        {
+          ScaleObjectWidget * mw =
+            Z_SCALE_OBJECT_WIDGET (fo);
+          ScaleObject * scale_object =
+            scale_object_get_main_scale_object (
+              mw->scale_object);
+
+          DigitalMeterWidget * dm;
+          dm =
+            digital_meter_widget_new_for_position (
+              scale_object,
+              on_drag_begin,
+              scale_object_get_pos,
+              scale_object_pos_setter,
+              on_drag_end,
+              _("position"));
+          digital_meter_set_draw_line (dm, 1);
+          ADD_WIDGET (dm);
+
+          gtk_stack_set_visible_child (
+            GTK_STACK (self),
+            GTK_WIDGET (self->selection_info));
+        }
+      else if (Z_IS_MARKER_WIDGET (fo))
+        {
+          MarkerWidget * mw =
+            Z_MARKER_WIDGET (fo);
+          Marker * marker =
+            marker_get_main_marker (mw->marker);
+
+          DigitalMeterWidget * dm;
+          dm =
+            digital_meter_widget_new_for_position (
+              marker,
+              on_drag_begin,
+              marker_get_pos,
+              marker_pos_setter,
+              on_drag_end,
+              _("position"));
+          digital_meter_set_draw_line (dm, 1);
+          ADD_WIDGET (dm);
+
+          gtk_stack_set_visible_child (
+            GTK_STACK (self),
+            GTK_WIDGET (self->selection_info));
+        }
+    } /* endif only_object */
+  /* if > 1 objects selected, only show position
+   * for moving */
+  else
+    {
+      Position * pos =
+        calloc (1, sizeof (Position));
+      timeline_selections_get_start_pos (
+        TL_SELECTIONS, pos, F_NO_TRANSIENTS);
+      DigitalMeterWidget * dm;
+      dm =
         digital_meter_widget_new_for_position (
-          r,
-          region_get_start_pos,
-          region_set_start_pos,
-          24, _("start"));
+          pos,
+          on_drag_begin,
+          get_pos,
+          set_pos,
+          on_drag_end,
+          _("position"));
       digital_meter_set_draw_line (dm, 1);
+      ADD_WIDGET (dm);
 
-      selection_info_widget_add_info (
-        self->selection_info,
-        NULL, GTK_WIDGET (dm));
       gtk_stack_set_visible_child (
         GTK_STACK (self),
         GTK_WIDGET (self->selection_info));
-    }
-  else if (Z_IS_AUTOMATION_POINT_WIDGET (fo))
-    {
-
-    }
-  else if (Z_IS_CHORD_OBJECT_WIDGET (fo))
-    {
-
     }
 }
 

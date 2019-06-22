@@ -280,6 +280,26 @@ region_gen_widget (
     }
 }
 
+ARRANGER_OBJ_DEFINE_POS_GETTER (
+  Region, region, clip_start_pos);
+ARRANGER_OBJ_DEFINE_POS_GETTER (
+  Region, region, loop_start_pos);
+ARRANGER_OBJ_DEFINE_POS_GETTER (
+  Region, region, loop_end_pos);
+
+/**
+ * Used when a setter is needed.
+ */
+void
+region_start_pos_setter (
+  Region *         region,
+  const Position * pos)
+{
+  region_set_start_pos (
+    region, pos, F_NO_TRANS_ONLY, F_VALIDATE);
+}
+
+
 /**
  * Clamps position then sets it to its counterparts.
  *
@@ -305,17 +325,6 @@ region_set_start_pos (
     return;
 
   SET_POS (region, start_pos, pos, trans_only);
-}
-
-/**
- * Getter for start pos.
- */
-void
-region_get_start_pos (
-  Region * region,
-  Position * pos)
-{
-  position_set_to_pos (pos, &region->start_pos);
 }
 
 /**
@@ -391,6 +400,54 @@ region_set_end_pos (
   SET_POS (region, end_pos, pos, trans_only);
 }
 
+/**
+ * Setter.
+ */
+void
+region_loop_start_pos_setter (
+  Region *   region,
+  const Position * pos)
+{
+  region_set_loop_start_pos (
+    region, pos);
+}
+
+/**
+ * Setter.
+ */
+void
+region_loop_end_pos_setter (
+  Region *   region,
+  const Position * pos)
+{
+  region_set_loop_end_pos (
+    region, pos);
+}
+
+/**
+ * Setter.
+ */
+void
+region_clip_start_pos_setter (
+  Region *   region,
+  const Position * pos)
+{
+  region_set_clip_start_pos (
+    region, pos);
+}
+
+/**
+ * Setter.
+ */
+void
+region_end_pos_setter (
+  Region *   region,
+  const Position * pos)
+{
+  region_set_end_pos (
+    region, pos, F_NO_TRANS_ONLY, F_VALIDATE);
+}
+
 void
 region_set_true_end_pos (
   Region * region,
@@ -402,9 +459,14 @@ region_set_true_end_pos (
 void
 region_set_loop_end_pos (
   Region * region,
-  Position * pos)
+  const Position * pos)
 {
-  SET_POS (region, loop_end_pos, pos, 0);
+  /* validate */
+  if (position_is_after (
+        pos, &region->loop_start_pos))
+    {
+      SET_POS (region, loop_end_pos, pos, 0);
+    }
 }
 
 /**
@@ -413,9 +475,16 @@ region_set_loop_end_pos (
 void
 region_set_loop_start_pos (
   Region * region,
-  Position * pos)
+  const Position * pos)
 {
-  SET_POS (region, loop_start_pos, pos, 0);
+  /* validate */
+  if (position_is_before (
+        pos, &region->loop_end_pos) &&
+      position_is_after_or_equal (
+        pos, START_POS))
+    {
+      SET_POS (region, loop_start_pos, pos, 0);
+    }
 }
 
 /**
@@ -424,9 +493,16 @@ region_set_loop_start_pos (
 void
 region_set_clip_start_pos (
   Region * region,
-  Position * pos)
+  const Position * pos)
 {
-  SET_POS (region, clip_start_pos, pos, 0);
+  /* validate */
+  if (position_is_before (
+        pos, &region->loop_end_pos) &&
+      position_is_after_or_equal (
+        pos, START_POS))
+    {
+      SET_POS (region, clip_start_pos, pos, 0);
+    }
 }
 
 /**

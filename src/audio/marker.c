@@ -28,14 +28,26 @@
   ARRANGER_OBJ_SET_POS ( \
     marker, _c, pos_name, _pos, _trans_only)
 
+DEFINE_START_POS;
+
 void
 marker_init_loaded (Marker * self)
 {
   self->widget = marker_widget_new (self);
 }
 
-DEFINE_ARRANGER_OBJ_SET_POS (
-  Marker, marker);
+void
+marker_pos_setter (
+  Marker * marker,
+  const Position * pos)
+{
+  if (position_is_after_or_equal (
+        pos, START_POS))
+    {
+      marker_set_pos (
+        marker, pos, F_NO_TRANS_ONLY);
+    }
+}
 
 /**
  * Creates a Marker.
@@ -75,6 +87,9 @@ DEFINE_ARRANGER_OBJ_MOVE (
   Marker, marker);
 
 ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
+  Marker, marker);
+
+DEFINE_ARRANGER_OBJ_SET_POS (
   Marker, marker);
 
 /**

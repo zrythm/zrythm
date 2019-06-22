@@ -451,8 +451,8 @@ automation-lane
 /* statckswitcher in the inspector */
 stackswitcher button image
 {
-  padding-top: 1px;
-  padding-bottom: 1px;
+  padding-top: 0px;
+  padding-bottom: 0px;
   padding-left: 3px;
   padding-right: 3px;
 }

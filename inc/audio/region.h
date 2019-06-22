@@ -460,20 +460,30 @@ DECLARE_ARRANGER_OBJ_SET_POSES_W_LENGTH (
   Region, region);
 
 /**
- * Getter for start pos.
- */
-void
-region_get_start_pos (
-  Region * region,
-  Position * pos);
-
-/**
  * Sets the track lane.
  */
 void
 region_set_lane (
   Region * region,
   TrackLane * lane);
+
+ARRANGER_OBJ_DECLARE_POS_GETTER (
+  Region, region, clip_start_pos);
+
+ARRANGER_OBJ_DECLARE_POS_SETTER (
+  Region, region, clip_start_pos);
+
+ARRANGER_OBJ_DECLARE_POS_GETTER (
+  Region, region, loop_start_pos);
+
+ARRANGER_OBJ_DECLARE_POS_SETTER (
+  Region, region, loop_start_pos);
+
+ARRANGER_OBJ_DECLARE_POS_GETTER (
+  Region, region, loop_end_pos);
+
+ARRANGER_OBJ_DECLARE_POS_SETTER (
+  Region, region, loop_end_pos);
 
 /**
  * Moves the Region by the given amount of ticks.
@@ -501,22 +511,25 @@ region_set_true_end_pos (Region * region,
  * Checks if position is valid then sets it.
  */
 void
-region_set_loop_end_pos (Region * region,
-                         Position * pos);
+region_set_loop_end_pos (
+  Region * region,
+  const Position * pos);
 
 /**
  * Checks if position is valid then sets it.
  */
 void
-region_set_loop_start_pos (Region * region,
-                         Position * pos);
+region_set_loop_start_pos (
+  Region * region,
+  const Position * pos);
 
 /**
  * Checks if position is valid then sets it.
  */
 void
-region_set_clip_start_pos (Region * region,
-                         Position * pos);
+region_set_clip_start_pos (
+  Region * region,
+  const Position * pos);
 
 /**
  * Returns if Region is in MidiArrangerSelections.

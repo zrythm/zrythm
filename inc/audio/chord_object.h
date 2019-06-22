@@ -150,6 +150,9 @@ chord_object_set_track (
 ARRANGER_OBJ_DECLARE_GEN_WIDGET (
   ChordObject, chord_object);
 
+DECLARE_ARRANGER_OBJ_SET_POS (
+  ChordObject, chord_object);
+
 /**
  * Finds the ChordObject in the project
  * corresponding to the given one.

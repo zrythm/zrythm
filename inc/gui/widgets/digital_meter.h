@@ -113,6 +113,10 @@ typedef struct _DigitalMeterWidget
   void       (*getter)(void*, Position*);
   /** Setter for Position. */
   void       (*setter)(void*, Position*);
+  /** Function to call on drag begin. */
+  void       (*on_drag_begin)(void*);
+  /** Function to call on drag end. */
+  void       (*on_drag_end)(void*);
 
   /* ----------- position end --------------- */
 
@@ -136,12 +140,14 @@ digital_meter_widget_new (
 
 
 #define digital_meter_widget_new_for_position( \
-  obj,getter,setter, font_size, caption) \
+  obj,drag_begin,getter,setter,drag_end,caption) \
   _digital_meter_widget_new_for_position ( \
     (void *) obj, \
+    (void (*) (void *)) drag_begin, \
     (void (*) (void *, Position *)) getter, \
     (void (*) (void *, Position *)) setter, \
-    font_size, caption)
+    (void (*) (void *)) drag_end, \
+    caption)
 
 /**
  * Creates a digital meter for an arbitrary position.
@@ -153,13 +159,19 @@ digital_meter_widget_new (
  *   passing the obj and the position to save to.
  * @param set_val The setter function to set the
  *   position.
+ * @param drag_begin Function to call when
+ *   starting the action.
+ * @parram drag_end Function to call when ending
+ *   the action.
  */
 DigitalMeterWidget *
 _digital_meter_widget_new_for_position(
   void * obj,
+  void (*drag_begin)(void *),
   void (*get_val)(void *, Position *),
   void (*set_val)(void *, Position *),
-  int  font_size, const char * caption);
+  void (*drag_end)(void *),
+  const char * caption);
 
 void
 digital_meter_set_draw_line (

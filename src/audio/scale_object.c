@@ -30,6 +30,8 @@
   ARRANGER_OBJ_SET_POS ( \
     scale_object, _c, pos_name, _pos, _trans_only)
 
+DEFINE_START_POS;
+
 /**
  * Init the ScaleObject after the Project is loaded.
  */
@@ -37,20 +39,6 @@ void
 scale_object_init_loaded (
   ScaleObject * self)
 {
-}
-
-/**
- * Sets the ScaleObject position.
- *
- * @param trans_only Only do transients.
- */
-void
-scale_object_set_pos (
-  ScaleObject *   scale,
-  const Position * _pos,
-  int        trans_only)
-{
-  SET_POS (scale, pos, _pos, trans_only);
 }
 
 /**
@@ -136,6 +124,9 @@ scale_object_set_track (
 ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
   ScaleObject, scale_object);
 
+DEFINE_ARRANGER_OBJ_SET_POS (
+  ScaleObject, scale_object);
+
 /**
  * Moves the ScaleObject by the given amount of
  * ticks.
@@ -164,15 +155,17 @@ scale_object_move (
 ARRANGER_OBJ_DEFINE_SHIFT_TICKS (
   ScaleObject, scale_object);
 
-/**
- * Sets the cache Position.
- */
 void
-scale_object_set_cache_pos (
-  ScaleObject * scale,
-  const Position * _pos)
+scale_object_pos_setter (
+  ScaleObject * scale_object,
+  const Position * pos)
 {
-  SET_POS (scale, cache_pos, _pos, F_NO_TRANS_ONLY);
+  if (position_is_after_or_equal (
+        pos, START_POS))
+    {
+      scale_object_set_pos (
+        scale_object, pos, F_NO_TRANS_ONLY);
+    }
 }
 
 /**

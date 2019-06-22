@@ -31,6 +31,7 @@
       <object class="GtkBox" id="stack_switcher_box">
         <property name="visible">1</property>
         <property name="margin-top">4</property>
+        <property name="margin-bottom">4</property>
       </object>
     </child>
     <child>

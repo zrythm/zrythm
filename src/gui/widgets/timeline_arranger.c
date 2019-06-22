@@ -267,7 +267,7 @@ timeline_arranger_widget_set_allocation (
     {
       ScaleObjectWidget * cw =
         Z_SCALE_OBJECT_WIDGET (widget);
-      ScaleObject * so = cw->scale;
+      ScaleObject * so = cw->scale_object;
       Track * track = P_CHORD_TRACK;
 
       gint wx, wy;
@@ -909,7 +909,7 @@ timeline_arranger_widget_on_drag_begin_scale_hit (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  ScaleObject * scale = cw->scale;
+  ScaleObject * scale = cw->scale_object;
   self->start_scale = scale;
 
   /* update arranger action */
@@ -1463,7 +1463,7 @@ timeline_arranger_widget_select (
 
       scale_object =
         scale_object_get_main_scale_object (
-          scale_object_widget->scale);
+          scale_object_widget->scale_object);
 
       if (delete)
         chord_track_remove_scale (

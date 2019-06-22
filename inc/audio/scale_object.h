@@ -192,6 +192,9 @@ DECLARE_IS_ARRANGER_OBJ_SELECTED (
 ARRANGER_OBJ_DECLARE_SHIFT_TICKS (
  ScaleObject, scale_object);
 
+DECLARE_ARRANGER_OBJ_SET_POS (
+ ScaleObject, scale_object);
+
 /**
  * Moves the ScaleObject by the given amount of
  * ticks.

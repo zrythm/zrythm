@@ -47,8 +47,39 @@
                 self)); \
   }
 
+#define ARRANGER_OBJ_DECLARE_POS_GETTER( \
+  cc,sc,pos_name) \
+  void \
+  sc##_get_##pos_name ( \
+    const cc * sc, \
+    Position * pos)
+
+#define ARRANGER_OBJ_DEFINE_POS_GETTER( \
+  cc,sc,pos_name) \
+  void \
+  sc##_get_##pos_name ( \
+    const cc * sc, \
+    Position * pos) \
+  { \
+    position_set_to_pos ( \
+      pos, &sc->pos_name); \
+  }
+
 /**
- * For set_pos and set_cache_pos.
+ * The setter is for use in e.g. the digital meters
+ * whereas the set_pos func is used during
+ * arranger actions.
+ */
+#define ARRANGER_OBJ_DECLARE_POS_SETTER( \
+  cc,sc,pos_name) \
+  void \
+  sc##_##pos_name##_setter ( \
+    cc *             sc, \
+    const Position * pos)
+
+/**
+ * For set_pos and set_cache_pos and the getter /
+ * setter.
  */
 #define DECLARE_ARRANGER_OBJ_SET_POS(cc,sc) \
   /**
@@ -64,7 +95,11 @@
   void \
   sc##_set_cache_pos ( \
     cc *             sc, \
-    const Position * _pos) \
+    const Position * _pos); \
+  ARRANGER_OBJ_DECLARE_POS_GETTER ( \
+    cc, sc, pos); \
+  ARRANGER_OBJ_DECLARE_POS_SETTER ( \
+    cc, sc, pos)
 
 #define DEFINE_ARRANGER_OBJ_SET_POS(cc,sc) \
   void \
@@ -81,7 +116,9 @@
     const Position * _pos) \
   { \
     SET_POS (sc, cache_pos, _pos, F_NO_TRANS_ONLY); \
-  }
+  } \
+  ARRANGER_OBJ_DEFINE_POS_GETTER ( \
+    cc, sc, pos)
 
 /**
  * For set_start_pos/set_end_pos and
@@ -119,7 +156,15 @@
   void \
   sc##_set_cache_end_pos ( \
     cc *             sc, \
-    const Position * pos)
+    const Position * pos); \
+  ARRANGER_OBJ_DECLARE_POS_GETTER ( \
+    cc, sc, start_pos); \
+  ARRANGER_OBJ_DECLARE_POS_GETTER ( \
+    cc, sc, end_pos); \
+  ARRANGER_OBJ_DECLARE_POS_SETTER ( \
+    cc, sc, start_pos); \
+  ARRANGER_OBJ_DECLARE_POS_SETTER ( \
+    cc, sc, end_pos)
 
 /**
  * Definitions.
@@ -145,7 +190,11 @@
   { \
     SET_POS (sc, cache_end_pos, pos, \
              F_NO_TRANS_ONLY); \
-  }
+  } \
+  ARRANGER_OBJ_DEFINE_POS_GETTER ( \
+    cc, sc, start_pos); \
+  ARRANGER_OBJ_DEFINE_POS_GETTER ( \
+    cc, sc, end_pos)
 
 /**
  * Sets the Position pos to the earliest or latest

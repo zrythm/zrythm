@@ -30,6 +30,8 @@
   ARRANGER_OBJ_SET_POS ( \
     chord_object, _c, pos_name, _pos, _trans_only)
 
+DEFINE_START_POS;
+
 /**
  * Init the ChordObject after the Project is loaded.
  */
@@ -62,6 +64,19 @@ chord_object_new (
     }
 
   return self;
+}
+
+void
+chord_object_pos_setter (
+  ChordObject * chord_object,
+  const Position * pos)
+{
+  if (position_is_after_or_equal (
+        pos, START_POS))
+    {
+      chord_object_set_pos (
+        chord_object, pos, F_NO_TRANS_ONLY);
+    }
 }
 
 /**
