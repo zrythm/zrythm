@@ -54,14 +54,17 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
     digital_meter_widget_new (
       DIGITAL_METER_TYPE_NOTE_LENGTH,
       &owner->snap_grid->note_length,
-      &owner->snap_grid->note_type);
-  gtk_container_add (GTK_CONTAINER (self->note_length_box),
-                     GTK_WIDGET (self->dm_note_length));
+      &owner->snap_grid->note_type,
+      "note length");
+  gtk_container_add (
+    GTK_CONTAINER (self->note_length_box),
+    GTK_WIDGET (self->dm_note_length));
   self->dm_note_type =
     digital_meter_widget_new (
       DIGITAL_METER_TYPE_NOTE_TYPE,
       &owner->snap_grid->note_length,
-      &owner->snap_grid->note_type);
+      &owner->snap_grid->note_type,
+      "note type");
   gtk_container_add (GTK_CONTAINER (self->note_type_box),
                      GTK_WIDGET (self->dm_note_type));
 

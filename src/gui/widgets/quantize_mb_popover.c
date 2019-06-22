@@ -56,14 +56,16 @@ quantize_mb_popover_widget_new (QuantizeMbWidget * owner)
     digital_meter_widget_new (
       DIGITAL_METER_TYPE_NOTE_LENGTH,
       &owner->quantize->note_length,
-      &owner->quantize->note_type);
+      &owner->quantize->note_type,
+      "note length");
   gtk_container_add (GTK_CONTAINER (self->note_length_box),
                      GTK_WIDGET (self->dm_note_length));
   self->dm_note_type =
     digital_meter_widget_new (
       DIGITAL_METER_TYPE_NOTE_TYPE,
       &owner->quantize->note_length,
-      &owner->quantize->note_type);
+      &owner->quantize->note_type,
+      "note type");
   gtk_container_add (GTK_CONTAINER (self->note_type_box),
                      GTK_WIDGET (self->dm_note_type));
 

@@ -55,7 +55,9 @@ piano_roll_selection_info_widget_refresh (
         digital_meter_widget_new_for_position (
           mn,
           midi_note_get_start_pos,
-          midi_note_set_start_pos);
+          midi_note_set_start_pos, 24,
+          _("start position"));
+      digital_meter_set_draw_line (dm, 1);
 
       selection_info_widget_add_info_with_text (
         self->selection_info,

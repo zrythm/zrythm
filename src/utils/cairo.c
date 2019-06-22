@@ -85,6 +85,29 @@ z_cairo_get_text_extents_for_widget (
   int *        width,
   int *        height)
 {
+  z_cairo_get_text_extents_for_widget_full (
+    widget, text, width, height, Z_CAIRO_FONT);
+}
+
+/**
+ * Gets the width of the given text in pixels
+ * for the given widget when using the given font
+ * settings.
+ *
+ * @param widget The widget to derive a PangoLayout
+ *   from.
+ * @param text The text to draw.
+ * @param width The width to fill in.
+ * @param height The height to fill in.
+ */
+void
+z_cairo_get_text_extents_for_widget_full (
+  GtkWidget *  widget,
+  const char * text,
+  int *        width,
+  int *        height,
+  const char * font)
+{
   PangoLayout *layout;
   PangoFontDescription *desc;
 
@@ -95,7 +118,7 @@ z_cairo_get_text_extents_for_widget (
   pango_layout_set_markup (layout, text, -1);
   desc =
     pango_font_description_from_string (
-      Z_CAIRO_FONT);
+      font);
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 
@@ -103,4 +126,35 @@ z_cairo_get_text_extents_for_widget (
     layout, width, height);
 
   g_object_unref (layout);
+}
+
+void
+z_cairo_draw_text_full (
+  cairo_t *    cr,
+  const char * text,
+  int          start_x,
+  int          start_y,
+  const char * font)
+{
+
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+
+  cairo_translate (cr, start_x, start_y);
+
+  /* Create a PangoLayout, set the font and text */
+  layout = pango_cairo_create_layout (cr);
+
+  pango_layout_set_markup (layout, text, -1);
+  desc =
+    pango_font_description_from_string (font);
+  pango_layout_set_font_description (layout, desc);
+  pango_font_description_free (desc);
+
+  pango_cairo_show_layout (cr, layout);
+
+  /* free the layout object */
+  g_object_unref (layout);
+
+  cairo_translate (cr, - start_x, - start_y);
 }

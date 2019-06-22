@@ -71,4 +71,3 @@ marker_dialog_widget_new (
  */
 
 #endif
-

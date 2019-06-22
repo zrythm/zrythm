@@ -36,29 +36,25 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/cairo.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
 
 #include <glib/gi18n.h>
-/*#include <pango/pangofc-fontmap.h>*/
-
 
 G_DEFINE_TYPE (DigitalMeterWidget,
                digital_meter_widget,
                GTK_TYPE_DRAWING_AREA)
 
-/**
-* \file
-*
-* Digital Meter for BPM, positions, etc.
-*/
-
-#define FONT "Monospace"
 #define FONT_SIZE 16
+#define SEG7_FONT "Segment7 Bold 16"
+#define NORMAL_FONT "sans-serif Bold 11"
+#define CAPTION_FONT "sans-serif 7"
 #define SPACE_BETWEEN 6
-#define HALF_SPACE_BETWEEN 3
-#define PADDING 2
+#define HALF_SPACE_BETWEEN 2
+#define PADDING_W 4
+#define PADDING_TOP 0
 
 #define SET_POS \
   ((*self->setter) (self->obj, &pos))
@@ -66,65 +62,85 @@ G_DEFINE_TYPE (DigitalMeterWidget,
   ((*self->getter) (self->obj, &pos))
 
 static gboolean
-draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
+draw_cb (
+  GtkWidget * widget,
+  cairo_t *cr,
+  DigitalMeterWidget * self)
 {
   guint width, height;
   /*GdkRGBA color;*/
   GtkStyleContext *context;
 
   context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
-
+    gtk_widget_get_style_context (widget);
   width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+    gtk_widget_get_allocated_width (widget);
   height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
-  /*double bg_txt_alpha = 0.08;*/
+  /* draw caption and get its extents */
+  int caption_textw, caption_texth;
+  cairo_set_source_rgba (
+    cr, 1.0, 1.0, 1.0, 1.0);
+  z_cairo_get_text_extents_for_widget_full (
+    GTK_WIDGET (self), self->caption,
+    &caption_textw, &caption_texth,
+    CAPTION_FONT);
+  z_cairo_draw_text_full (
+    cr, self->caption, width / 2 - caption_textw / 2,
+    PADDING_TOP, CAPTION_FONT);
+  /* uncomment to make text slightly thickerr */
+  /*z_cairo_draw_text_full (*/
+    /*cr, self->caption, width / 2 - caption_textw / 2,*/
+    /*PADDING_TOP, CAPTION_FONT);*/
 
-  /* FIXME use pangocairo */
   cairo_text_extents_t te10, te5, te1, te3, te2;
-  /*char * test_text = "8";*/
   char * text = NULL;
   int num_part, dec_part, bars, beats, sixteenths, ticks;
+  int textw, texth;
   Position pos;
   switch (self->type)
     {
     case DIGITAL_METER_TYPE_BPM:
 
-      /* fill text */
       num_part = (int) TRANSPORT->bpm;
       dec_part = (int) (TRANSPORT->bpm * 100) % 100;
-      cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
-      cairo_select_font_face (cr, "Segment7",
-                              CAIRO_FONT_SLANT_NORMAL,
-                              CAIRO_FONT_WEIGHT_BOLD);
-      cairo_set_font_size (cr, 24.0);
-      cairo_text_extents (cr, "8", &te1);
-      cairo_text_extents (cr, "88", &te2);
-      cairo_text_extents (cr, "888", &te3);
-      cairo_text_extents (cr, "88888", &te5);
 
-      self->num_part_start_pos = ((width / 2) - te5.width / 2) - HALF_SPACE_BETWEEN;
-      self->num_part_end_pos = self->num_part_start_pos + te3.width;
-      self->dec_part_start_pos = self->num_part_end_pos + SPACE_BETWEEN;
-      self->dec_part_end_pos = self->dec_part_start_pos + te2.width;
-      self->height_start_pos = (height / 2 - te1.height / 2);
-      self->height_end_pos = self->height_start_pos + te1.height;
+      z_cairo_get_text_extents_for_widget_full (
+        widget, "88888", &textw, &texth,
+        SEG7_FONT);
+      self->num_part_start_pos =
+        ((width / 2) - textw / 2) -
+        HALF_SPACE_BETWEEN;
+      z_cairo_get_text_extents_for_widget_full (
+        widget, "888", &textw, &texth,
+        SEG7_FONT);
+      self->num_part_end_pos =
+        self->num_part_start_pos + textw;
+      self->dec_part_start_pos =
+        self->num_part_end_pos + SPACE_BETWEEN;
+      z_cairo_get_text_extents_for_widget_full (
+        widget, "88", &textw, &texth,
+        SEG7_FONT);
+      self->dec_part_end_pos =
+        self->dec_part_start_pos + textw;
+      self->height_start_pos =
+        PADDING_TOP +
+        caption_texth + HALF_SPACE_BETWEEN;
+      self->height_end_pos =
+        self->height_start_pos + texth;
 
       /* draw integer part */
       if (num_part < 100)
         text = g_strdup_printf (" %d", num_part);
       else
         text = g_strdup_printf ("%d", num_part);
-      cairo_move_to (cr,
-                     self->num_part_start_pos,
-                     self->height_end_pos);
-      cairo_show_text (cr, text);
+      z_cairo_draw_text_full (
+        cr, text, self->num_part_start_pos,
+        self->height_start_pos, SEG7_FONT);
       g_free (text);
 
       /* draw decimal part */
@@ -132,19 +148,12 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
         text = g_strdup_printf ("0%d", dec_part);
       else
         text = g_strdup_printf ("%d", dec_part);
-      cairo_move_to (cr,
-                     self->dec_part_start_pos,
-                     self->height_end_pos);
-      cairo_show_text (cr, text);
+      z_cairo_draw_text_full (
+        cr, text, self->dec_part_start_pos,
+        self->height_start_pos, SEG7_FONT);
       g_free (text);
 
-      /* draw line */
-      cairo_move_to (cr, 0, 0);
-      cairo_line_to (cr, width, 0);
-      cairo_stroke (cr);
-
       break;
-
     case DIGITAL_METER_TYPE_POSITION:
 
       GET_POS;
@@ -153,158 +162,139 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
       sixteenths = pos.sixteenths;
       ticks = pos.ticks;
 
-      /* fill text */
-      cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
-      cairo_select_font_face (cr, "Segment7",
-                              CAIRO_FONT_SLANT_NORMAL,
-                              CAIRO_FONT_WEIGHT_BOLD);
-      cairo_set_font_size (cr, 24.0);
-      cairo_text_extents (cr, "8", &te1);
-      cairo_text_extents (cr, "88", &te2);
-      cairo_text_extents (cr, "888", &te3);
-      cairo_text_extents (cr, "8888888888", &te10);
-      self->bars_start_pos = ((width / 2) - te10.width / 2) - HALF_SPACE_BETWEEN * 3;
-      self->bars_end_pos = self->bars_start_pos + te3.width;
-      self->beats_start_pos = self->bars_end_pos + SPACE_BETWEEN;
-      self->beats_end_pos = self->beats_start_pos + te1.width;
-      self->sixteenths_start_pos = self->beats_end_pos + SPACE_BETWEEN;
-      self->sixteenths_end_pos = self->sixteenths_start_pos + te1.width;
-      self->ticks_start_pos = self->sixteenths_end_pos + SPACE_BETWEEN;
-      self->ticks_end_pos = self->ticks_start_pos + te3.width;
-      self->height_start_pos = (height / 2 - te1.height / 2);
-      self->height_end_pos = self->height_start_pos + te1.height;
+      z_cairo_get_text_extents_for_widget_full (
+        widget, "-8888888888", &textw, &texth,
+        SEG7_FONT);
+      self->bars_start_pos =
+        ((width / 2) - textw / 2) -
+        HALF_SPACE_BETWEEN * 3;
+      z_cairo_get_text_extents_for_widget_full (
+        widget, "-888", &textw, &texth,
+        SEG7_FONT);
+      self->bars_end_pos =
+        self->bars_start_pos + textw;
+      self->beats_start_pos =
+        self->bars_end_pos + SPACE_BETWEEN;
+      z_cairo_get_text_extents_for_widget_full (
+        widget, "8", &textw, &texth,
+        SEG7_FONT);
+      self->beats_end_pos =
+        self->beats_start_pos + textw;
+      self->sixteenths_start_pos =
+        self->beats_end_pos + SPACE_BETWEEN;
+      self->sixteenths_end_pos =
+        self->sixteenths_start_pos + textw;
+      self->ticks_start_pos =
+        self->sixteenths_end_pos + SPACE_BETWEEN;
+      z_cairo_get_text_extents_for_widget_full (
+        widget, "888", &textw, &texth,
+        SEG7_FONT);
+      self->ticks_end_pos =
+        self->ticks_start_pos + textw;
+      self->height_start_pos =
+        PADDING_TOP +
+        caption_texth + HALF_SPACE_BETWEEN;
+      self->height_end_pos =
+        self->height_start_pos + texth;
 
-      if (bars < 10)
-        text = g_strdup_printf ("  %d", bars);
-      else if (bars < 100)
-        text = g_strdup_printf (" %d", bars);
-      else
+      if (bars < -100)
         text = g_strdup_printf ("%d", bars);
-      cairo_move_to (cr,
-                     self->bars_start_pos,
-                     self->height_end_pos);
-      cairo_show_text (cr, text);
-      g_free (text);
-
-      text = g_strdup_printf ("%d", beats);
-      cairo_move_to (cr,
-                     self->beats_start_pos,
-                     self->height_end_pos);
-      cairo_show_text (cr, text);
-      g_free (text);
-
-      text = g_strdup_printf ("%d", sixteenths);
-      cairo_move_to (cr,
-                     self->sixteenths_start_pos,
-                     self->height_end_pos);
-      cairo_show_text (cr, text);
-      g_free (text);
-
-      if (ticks < 10)
-        text = g_strdup_printf ("00%d", ticks);
-      else if (ticks < 100)
-        text = g_strdup_printf ("0%d", ticks);
+      else if (bars < -10)
+        text = g_strdup_printf (" %d", bars);
+      else if (bars < 0)
+        text = g_strdup_printf ("  %d", bars);
+      else if (bars < 10)
+        text = g_strdup_printf ("   %d", bars);
+      else if (bars < 100)
+        text = g_strdup_printf ("  %d", bars);
       else
-        text = g_strdup_printf ("%d", ticks);
-      cairo_move_to (cr,
-                     self->ticks_start_pos,
-                     self->height_end_pos);
-      cairo_show_text (cr, text);
+        text = g_strdup_printf (" %d", bars);
+      z_cairo_draw_text_full (
+        cr, text, self->bars_start_pos,
+        self->height_start_pos, SEG7_FONT);
       g_free (text);
 
-      cairo_move_to (cr, 0, 0);
-      cairo_line_to (cr, width, 0);
-      cairo_stroke (cr);
+      text =
+        g_strdup_printf ("%d", abs (beats));
+      z_cairo_draw_text_full (
+        cr, text, self->beats_start_pos,
+        self->height_start_pos, SEG7_FONT);
+      g_free (text);
+
+      text =
+        g_strdup_printf ("%d", abs (sixteenths));
+      z_cairo_draw_text_full (
+        cr, text, self->sixteenths_start_pos,
+        self->height_start_pos, SEG7_FONT);
+      g_free (text);
+
+      if (abs (ticks) < 10)
+        text = g_strdup_printf ("00%d", abs (ticks));
+      else if (abs (ticks) < 100)
+        text = g_strdup_printf ("0%d", abs (ticks));
+      else
+        text = g_strdup_printf ("%d", abs (ticks));
+      z_cairo_draw_text_full (
+        cr, text, self->ticks_start_pos,
+        self->height_start_pos, SEG7_FONT);
+      g_free (text);
 
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
-
-      /* fill text */
-      cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
-      /*cairo_select_font_face (cr, "Segment7",*/
-                              /*CAIRO_FONT_SLANT_NORMAL,*/
-                              /*CAIRO_FONT_WEIGHT_BOLD);*/
-      cairo_set_font_size (cr, 16.0);
-      cairo_text_extents (cr, "8", &te1);
-      cairo_text_extents (cr, "88", &te2);
-      cairo_text_extents (cr, "888", &te3);
-
-      /*self->num_part_start_pos = ((width / 2) - te5.width / 2) - HALF_SPACE_BETWEEN;*/
-      /*self->num_part_end_pos = self->num_part_start_pos + te3.width;*/
-      /*self->dec_part_start_pos = self->num_part_end_pos + SPACE_BETWEEN;*/
-      /*self->dec_part_end_pos = self->dec_part_start_pos + te2.width;*/
-      self->height_start_pos = (height / 2 - te1.height / 2);
-      self->height_end_pos = self->height_start_pos + te1.height;
-
-      /* draw integer part */
-      /*if (num_part < 100)*/
-        /*text = g_strdup_printf (" %d", num_part);*/
-      /*else*/
-        /*text = g_strdup_printf ("%d", num_part);*/
-      text = snap_grid_stringize (*self->note_length,
-                                  *self->note_type);
-      cairo_move_to (cr,
-                     0,
-                     self->height_end_pos);
-      cairo_show_text (cr, text);
+      text =
+        snap_grid_stringize (
+          *self->note_length,
+          *self->note_type);
+      z_cairo_get_text_extents_for_widget_full (
+        widget, text, &textw, &texth,
+        NORMAL_FONT);
+      self->height_start_pos =
+        PADDING_TOP +
+        caption_texth + HALF_SPACE_BETWEEN;
+      self->height_end_pos =
+        self->height_start_pos + texth;
+      z_cairo_draw_text_full (
+        cr, text, width / 2 - textw / 2,
+        self->height_start_pos, NORMAL_FONT);
       g_free (text);
-
-      /* draw line */
-      cairo_move_to (cr, 0, 0);
-      cairo_line_to (cr, width, 0);
-      cairo_stroke (cr);
 
       break;
     case DIGITAL_METER_TYPE_NOTE_TYPE:
-
-      /* fill text */
-      cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
-      cairo_set_font_size (cr, 16.0);
-      self->height_start_pos = (height / 2 - te1.height / 2);
-      self->height_end_pos = self->height_start_pos + te1.height;
-
       switch (*self->note_type)
         {
         case NOTE_TYPE_NORMAL:
-          text = "normal";
+          text = _("normal");
           break;
         case NOTE_TYPE_DOTTED:
-          text = "dotted";
+          text = _("dotted");
           break;
         case NOTE_TYPE_TRIPLET:
-          text = "triplet";
+          text = _("triplet");
           break;
         }
-      cairo_move_to (cr,
-                     0,
-                     self->height_end_pos);
-      cairo_show_text (cr, text);
-
-      /* draw line */
-      cairo_move_to (cr, 0, 0);
-      cairo_line_to (cr, width, 0);
-      cairo_stroke (cr);
+      z_cairo_get_text_extents_for_widget_full (
+        widget, text, &textw, &texth,
+        NORMAL_FONT);
+      self->height_start_pos =
+        PADDING_TOP +
+        caption_texth + HALF_SPACE_BETWEEN;
+      self->height_end_pos =
+        self->height_start_pos + texth;
+      z_cairo_draw_text_full (
+        cr, text, width / 2 - textw / 2,
+        self->height_start_pos, NORMAL_FONT);
 
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
 
-      /* fill text */
-      cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
-
-      cairo_select_font_face (cr, "Segment7",
-                              CAIRO_FONT_SLANT_NORMAL,
-                              CAIRO_FONT_WEIGHT_BOLD);
-      cairo_set_font_size (cr, 24.0);
-      cairo_text_extents (cr, "8", &te1);
-      cairo_text_extents (cr, "88", &te2);
-      cairo_text_extents (cr, "888", &te3);
-
-      /*self->num_part_start_pos = ((width / 2) - te5.width / 2) - HALF_SPACE_BETWEEN;*/
-      /*self->num_part_end_pos = self->num_part_start_pos + te3.width;*/
-      /*self->dec_part_start_pos = self->num_part_end_pos + SPACE_BETWEEN;*/
-      /*self->dec_part_end_pos = self->dec_part_start_pos + te2.width;*/
-      self->height_start_pos = (height / 2 - te1.height / 2);
-      self->height_end_pos = self->height_start_pos + te1.height;
+      z_cairo_get_text_extents_for_widget_full (
+        widget, "16/16", &textw, &texth,
+        SEG7_FONT);
+      self->height_start_pos =
+        PADDING_TOP +
+        caption_texth + HALF_SPACE_BETWEEN;
+      self->height_end_pos =
+        self->height_start_pos + texth;
 
       char * beat_unit = NULL;
       switch (TRANSPORT->beat_unit)
@@ -338,21 +328,38 @@ draw_cb (DigitalMeterWidget * self, cairo_t *cr, gpointer data)
                               beats_per_bar,
                               beat_unit);
       g_free (beats_per_bar);
-      cairo_move_to (cr,
-                     0,
-                     self->height_end_pos);
-      cairo_show_text (cr, text);
+      z_cairo_draw_text_full (
+        cr, text, width / 2 - textw / 2,
+        self->height_start_pos, SEG7_FONT);
       g_free (text);
-
-      /* draw line */
-      cairo_move_to (cr, 0, 0);
-      cairo_line_to (cr, width, 0);
-      cairo_stroke (cr);
 
       break;
     }
 
+  if (self->draw_line)
+    {
+      cairo_set_line_width (cr, 1.0);
+      cairo_move_to (
+        cr, 0,
+        caption_texth +
+        PADDING_TOP);
+      cairo_line_to (
+        cr, width,
+        caption_texth +
+        PADDING_TOP);
+      cairo_stroke (cr);
+    }
+
  return FALSE;
+}
+
+void
+digital_meter_set_draw_line (
+  DigitalMeterWidget * self,
+  int                  draw_line)
+{
+  self->draw_line = draw_line;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 static void
@@ -649,25 +656,39 @@ button_press_cb (GtkWidget      * event_box,
  * Creates a digital meter with the given type (bpm or position).
  */
 DigitalMeterWidget *
-digital_meter_widget_new (DigitalMeterType  type,
-                          NoteLength *      note_length,
-                          NoteType *        note_type)
+digital_meter_widget_new (
+  DigitalMeterType  type,
+  NoteLength *      note_length,
+  NoteType *        note_type,
+  const char *      caption)
 {
   g_message ("Creating digital meter...");
   DigitalMeterWidget * self = g_object_new (DIGITAL_METER_WIDGET_TYPE, NULL);
 
   self->type = type;
+  self->caption = g_strdup (caption);
+  int textw, texth;
   switch (type)
     {
     case DIGITAL_METER_TYPE_BPM:
-      gtk_widget_set_tooltip_text (
-        GTK_WIDGET (self),
-        _("BPM - Click and drag up/down to set"));
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        90,
-        34);
-
+      {
+        gtk_widget_set_tooltip_text (
+          GTK_WIDGET (self),
+          _("BPM - Click and drag up/down to set"));
+        int caption_textw, caption_texth;
+        z_cairo_get_text_extents_for_widget_full (
+          GTK_WIDGET (self), caption, &caption_textw,
+          &caption_texth, CAPTION_FONT);
+        z_cairo_get_text_extents_for_widget_full (
+          GTK_WIDGET (self), "888888", &textw,
+          &texth, SEG7_FONT);
+        /* caption + padding between caption and
+         * BPM + padding top/bottom */
+        gtk_widget_set_size_request (
+          GTK_WIDGET (self), textw + PADDING_W * 2,
+          caption_texth + HALF_SPACE_BETWEEN +
+          texth + PADDING_TOP * 2);
+      }
       break;
     case DIGITAL_METER_TYPE_POSITION:
       /*gtk_widget_set_tooltip_text (*/
@@ -698,19 +719,32 @@ digital_meter_widget_new (DigitalMeterType  type,
       self->note_type = note_type;
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
-      gtk_widget_set_tooltip_text (
-        GTK_WIDGET (self),
-        _("Time Signature - Click and drag up/down \
-to change"));
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        78,
-        -1);
+      {
+        gtk_widget_set_tooltip_text (
+          GTK_WIDGET (self),
+          _("Time Signature - Click and drag "
+            "up/down to change"));
+        int caption_textw, caption_texth;
+        z_cairo_get_text_extents_for_widget_full (
+          GTK_WIDGET (self), caption,
+          &caption_textw, &caption_texth,
+          CAPTION_FONT);
+        z_cairo_get_text_extents_for_widget_full (
+          GTK_WIDGET (self), "16/16", &textw,
+          &texth, SEG7_FONT);
+        /* caption + padding between caption and
+         * BPM + padding top/bottom */
+        gtk_widget_set_size_request (
+          GTK_WIDGET (self), textw + PADDING_W * 2,
+          caption_texth + HALF_SPACE_BETWEEN +
+          texth + PADDING_TOP * 2);
+      }
       break;
     }
 
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (draw_cb), self);
 
   return self;
 }
@@ -730,7 +764,9 @@ DigitalMeterWidget *
 _digital_meter_widget_new_for_position(
   void * obj,
   void (*get_val)(void *, Position *),
-  void (*set_val)(void *, Position *))
+  void (*set_val)(void *, Position *),
+  int  font_size,
+  const char * caption)
 {
   DigitalMeterWidget * self =
     g_object_new (DIGITAL_METER_WIDGET_TYPE, NULL);
@@ -738,14 +774,16 @@ _digital_meter_widget_new_for_position(
   self->obj = obj;
   self->getter = get_val;
   self->setter = set_val;
+  self->caption = g_strdup (caption);
   self->type = DIGITAL_METER_TYPE_POSITION;
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
     160,
     -1);
 
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (draw_cb), self);
 
   return self;
 }
@@ -776,37 +814,6 @@ digital_meter_widget_init (DigitalMeterWidget * self)
   g_signal_connect (
     G_OBJECT(self), "button_press_event",
     G_CALLBACK (button_press_cb),  self);
-
-  /* FIXME doesn't work */
-  /*FcConfig * font_config;*/
-
-  /*PangoFontMap *font_map;*/
-  /*PangoFontDescription *font_desc;*/
-
-  /*if (g_once_init_enter (&font_config))*/
-    /*{*/
-      /*FcConfig *config = FcInitLoadConfigAndFonts ();*/
-
-      /*const gchar * font_path = "resources/fonts/Segment7Standard/Segment7Standard.ttf";*/
-
-      /*if (!g_file_test (font_path, G_FILE_TEST_IS_REGULAR))*/
-        /*g_warning ("Failed to locate \"%s\"", font_path);*/
-
-
-      /*FcConfigAppFontAddFile (config, (const FcChar8 *)font_path);*/
-      /*g_message ("aa");*/
-
-      /*g_once_init_leave (&font_config, config);*/
-    /*}*/
-
-  /*font_map = pango_cairo_font_map_new_for_font_type (CAIRO_FONT_TYPE_FT);*/
-  /*pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (font_map), font_config);*/
-  /*gtk_widget_set_font_map (GTK_WIDGET (self), font_map);*/
-
-  /*g_warn_if_fail (font_config != NULL);*/
-  /*g_warn_if_fail (font_map != NULL);*/
-
-  /*g_object_unref (font_map);*/
 
   gtk_widget_set_visible (
     GTK_WIDGET (self), 1);

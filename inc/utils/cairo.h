@@ -110,37 +110,45 @@ z_cairo_get_text_extents_for_widget (
   int *        width,
   int *        height);
 
+/**
+ * Gets the width of the given text in pixels
+ * for the given widget when using the given font
+ * settings.
+ *
+ * @param widget The widget to derive a PangoLayout
+ *   from.
+ * @param text The text to draw.
+ * @param width The width to fill in.
+ * @param height The height to fill in.
+ */
+void
+z_cairo_get_text_extents_for_widget_full (
+  GtkWidget *  widget,
+  const char * text,
+  int *        width,
+  int *        height,
+  const char * font);
+
+/**
+ * Draws the given text using the given font
+ * starting at the given position.
+ */
+void
+z_cairo_draw_text_full (
+  cairo_t *    cr,
+  const char * text,
+  int          start_x,
+  int          start_y,
+  const char * font);
+
 static inline void
 z_cairo_draw_text (
   cairo_t *    cr,
   const char * text)
 {
-
-  PangoLayout *layout;
-  PangoFontDescription *desc;
-
-  cairo_translate (
-    cr, Z_CAIRO_TEXT_PADDING, Z_CAIRO_TEXT_PADDING);
-
-  /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
-
-  pango_layout_set_markup (layout, text, -1);
-  desc =
-    pango_font_description_from_string (
-      Z_CAIRO_FONT);
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
-
-  /* Inform Pango to re-layout the text with the new transformation */
-  /*pango_cairo_update_layout (cr, layout);*/
-
-  /*pango_layout_get_size (layout, &width, &height);*/
-  /*cairo_move_to (cr, - ((double)width / PANGO_SCALA) / 2, - RADIUS);*/
-  pango_cairo_show_layout (cr, layout);
-
-  /* free the layout object */
-  g_object_unref (layout);
+  z_cairo_draw_text_full (
+    cr, text, Z_CAIRO_TEXT_PADDING,
+    Z_CAIRO_TEXT_PADDING, Z_CAIRO_FONT);
 }
 
 /**

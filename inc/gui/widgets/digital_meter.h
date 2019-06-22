@@ -19,6 +19,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Digital meter used for displaying Position,
+ * BPM, etc.
+ */
+
 #ifndef __GUI_WIDGETS_DIGITAL_METER_H__
 #define __GUI_WIDGETS_DIGITAL_METER_H__
 
@@ -35,6 +42,12 @@ G_DECLARE_FINAL_TYPE (DigitalMeterWidget,
 typedef enum NoteLength NoteLength;
 typedef enum NoteType NoteType;
 typedef struct Position Position;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 typedef enum DigitalMeterType
 {
@@ -92,6 +105,7 @@ typedef struct _DigitalMeterWidget
   int                      update_timesig_bot;
   int                      start_timesig_bot;
 
+
   /* ---------- FOR POSITION ---------------- */
   void *     obj;
 
@@ -99,6 +113,14 @@ typedef struct _DigitalMeterWidget
   void       (*getter)(void*, Position*);
   /** Setter for Position. */
   void       (*setter)(void*, Position*);
+
+  /* ----------- position end --------------- */
+
+  /** Draw line above the meter or not. */
+  int        draw_line;
+
+  /** Caption to show above, NULL to not show. */
+  char *     caption;
 } DigitalMeterWidget;
 
 /**
@@ -109,15 +131,17 @@ DigitalMeterWidget *
 digital_meter_widget_new (
   DigitalMeterType  type,
   NoteLength *      note_length,
-  NoteType *        note_type);
+  NoteType *        note_type,
+  const char *      caption);
 
 
 #define digital_meter_widget_new_for_position( \
-  obj,getter,setter) \
+  obj,getter,setter, font_size, caption) \
   _digital_meter_widget_new_for_position ( \
     (void *) obj, \
     (void (*) (void *, Position *)) getter, \
-    (void (*) (void *, Position *)) setter)
+    (void (*) (void *, Position *)) setter, \
+    font_size, caption)
 
 /**
  * Creates a digital meter for an arbitrary position.
@@ -134,6 +158,16 @@ DigitalMeterWidget *
 _digital_meter_widget_new_for_position(
   void * obj,
   void (*get_val)(void *, Position *),
-  void (*set_val)(void *, Position *));
+  void (*set_val)(void *, Position *),
+  int  font_size, const char * caption);
+
+void
+digital_meter_set_draw_line (
+  DigitalMeterWidget * self,
+  int                  draw_line);
+
+/**
+ * @}
+ */
 
 #endif

@@ -28,6 +28,7 @@
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (TopBarWidget,
                top_bar_widget,
@@ -43,7 +44,8 @@ top_bar_widget_refresh (TopBarWidget * self)
     digital_meter_widget_new_for_position (
       TRANSPORT,
       transport_get_playhead_pos,
-      transport_set_playhead_pos);
+      transport_set_playhead_pos, 24,
+      _("playhead"));
   gtk_container_add (
     GTK_CONTAINER (self->digital_meters),
     GTK_WIDGET (self->digital_transport));
@@ -93,12 +95,12 @@ top_bar_widget_init (TopBarWidget * self)
     digital_meter_widget_new (
       DIGITAL_METER_TYPE_BPM,
       NULL,
-      NULL);
+      NULL, "bpm");
   self->digital_timesig =
     digital_meter_widget_new (
       DIGITAL_METER_TYPE_TIMESIG,
       NULL,
-      NULL);
+      NULL, _("time sig."));
   gtk_container_add (
     GTK_CONTAINER (self->digital_meters),
     GTK_WIDGET (self->digital_bpm));
