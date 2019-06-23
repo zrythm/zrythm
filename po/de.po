@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-06-22 23:20+0000\n"
-"Last-Translator: Wau <wau-wau@tutanota.de>\n"
+"PO-Revision-Date: 2019-06-24 04:16+0000\n"
+"Last-Translator: Waui <wau-wau@tutanota.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
 "\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7\n"
+"X-Generator: Weblate 3.7.1-dev\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
@@ -753,7 +753,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:228
 msgid "Test"
-msgstr ""
+msgstr "Teste"
 
 #: resources/ui/first_run_assistant.ui:232
 msgid "Tests the backends"
