@@ -687,6 +687,29 @@ region_resize (
 }
 
 /**
+ * Copies the data from src to dest.
+ *
+ * Used when doing/undoing changes in name,
+ * clip start point, loop start point, etc.
+ */
+void
+region_copy (
+  Region * src,
+  Region * dest)
+{
+  g_free (dest->name);
+  dest->name = g_strdup (src->name);
+
+  region_set_clip_start_pos (
+    dest, &src->clip_start_pos);
+  region_set_loop_start_pos (
+    dest, &src->loop_start_pos);
+  region_set_loop_end_pos (
+    dest, &src->loop_end_pos);
+}
+
+
+/**
  * Clone region.
  *
  * Creates a new region and either links to the

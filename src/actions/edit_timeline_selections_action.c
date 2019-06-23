@@ -30,7 +30,9 @@ UndoableAction *
 edit_timeline_selections_action_new (
   TimelineSelections * ts,
   EditTimelineSelectionsType type,
-  long                 ticks)
+  const long       ticks,
+  const char *     str,
+  const Position * pos)
 {
 	EditTimelineSelectionsAction * self =
     calloc (1, sizeof (
@@ -42,36 +44,70 @@ edit_timeline_selections_action_new (
   self->ts = timeline_selections_clone (ts);
   self->type = type;
   self->ticks = ticks;
+  if (str)
+    self->str = g_strdup (str);
+  if (pos)
+    position_set_to_pos (
+      &self->pos, pos);
 
   return ua;
 }
+
+#define PROCESS_POS_CHANGE( \
+  caps,sc,pos_name_caps,pos_name) \
+  case ETS_##caps##_##pos_name_caps: \
+    sc##_set_##pos_name ( \
+      sc, &self->pos); \
+    /* switch positions */ \
+    position_set_to_pos ( \
+      &self->pos, \
+      &self->ts->sc##s[i]->pos_name); \
+    position_set_to_pos ( \
+      &self->ts->sc##s[i]->pos_name, \
+      &sc->pos_name); \
+    break
 
 int
 edit_timeline_selections_action_do (
 	EditTimelineSelectionsAction * self)
 {
+  int i;
   Region * region;
-  for (int i = 0; i < self->ts->num_regions; i++)
+  for (i = 0; i < self->ts->num_regions; i++)
     {
       /* get the actual region */
       region = region_find (self->ts->regions[i]);
+      g_warn_if_fail (region);
 
       switch (self->type)
         {
-        case ETS_TYPE_RESIZE_L:
+        case ETS_RESIZE_L:
           /* resize */
           region_resize (
             region,
             1,
             self->ticks);
           break;
-        case ETS_TYPE_RESIZE_R:
+        case ETS_RESIZE_R:
           /* resize */
           region_resize (
             region,
             0,
             self->ticks);
           break;
+        case ETS_REGION_NAME:
+          region->name =
+            g_strdup (self->str);
+          break;
+        PROCESS_POS_CHANGE (
+          REGION, region, CLIP_START_POS,
+          clip_start_pos);
+        PROCESS_POS_CHANGE (
+          REGION, region, LOOP_START_POS,
+          loop_start_pos);
+        PROCESS_POS_CHANGE (
+          REGION, region, LOOP_END_POS,
+          loop_end_pos);
         default:
           g_warn_if_reached ();
           break;
@@ -87,28 +123,43 @@ int
 edit_timeline_selections_action_undo (
 	EditTimelineSelectionsAction * self)
 {
+  int i;
   Region * region;
-  for (int i = 0; i < self->ts->num_regions; i++)
+  for (i = 0; i < self->ts->num_regions; i++)
     {
       /* get the actual region */
       region = region_find (self->ts->regions[i]);
+      g_warn_if_fail (region);
 
       switch (self->type)
         {
-        case ETS_TYPE_RESIZE_L:
+        case ETS_RESIZE_L:
           /* resize */
           region_resize (
             region,
             1,
             - self->ticks);
           break;
-        case ETS_TYPE_RESIZE_R:
+        case ETS_RESIZE_R:
           /* resize */
           region_resize (
             region,
             0,
             - self->ticks);
           break;
+        case ETS_REGION_NAME:
+          region->name =
+            g_strdup (self->ts->regions[i]->name);
+          break;
+        PROCESS_POS_CHANGE (
+          REGION, region, CLIP_START_POS,
+          clip_start_pos);
+        PROCESS_POS_CHANGE (
+          REGION, region, LOOP_START_POS,
+          loop_start_pos);
+        PROCESS_POS_CHANGE (
+          REGION, region, LOOP_END_POS,
+          loop_end_pos);
         default:
           g_warn_if_reached ();
           break;
@@ -126,9 +177,17 @@ edit_timeline_selections_action_stringize (
 {
   switch (self->type)
     {
-      case ETS_TYPE_RESIZE_L:
-      case ETS_TYPE_RESIZE_R:
+      case ETS_RESIZE_L:
+      case ETS_RESIZE_R:
         return g_strdup (_("Resize Object(s)"));
+      case ETS_REGION_NAME:
+        return g_strdup (_("Change Name"));
+      case ETS_REGION_CLIP_START_POS:
+        return g_strdup (_("Change Clip Start Position"));
+      case ETS_REGION_LOOP_START_POS:
+        return g_strdup (_("Change Loop Start Position"));
+      case ETS_REGION_LOOP_END_POS:
+        return g_strdup (_("Change Loop End Position"));
       default:
         g_return_val_if_reached (
           g_strdup (""));

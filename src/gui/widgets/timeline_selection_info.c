@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/edit_timeline_selections_action.h"
 #include "actions/move_timeline_selections_action.h"
 #include "audio/position.h"
 #include "gui/backend/timeline_selections.h"
@@ -41,6 +42,118 @@ DEFINE_START_POS;
 
 /** Earliest start position on drag start. */
 static Position earliest_start_pos;
+
+/** Clone to fill in during drag_start. */
+static TimelineSelections * tl_clone;
+
+static void
+on_drag_begin_w_object ()
+{
+  tl_clone =
+    timeline_selections_clone (TL_SELECTIONS);
+}
+
+#define DEFINE_DRAG_END_POS_SET( \
+  caps,cc,sc,pos_name_caps,pos_name) \
+static void \
+on_drag_end_##sc##_##pos_name ( \
+  cc * sc) \
+{ \
+  Position new_pos; \
+  position_set_to_pos (&new_pos, &sc->pos_name); \
+  /* set the actual pos back to the prev pos */ \
+  position_set_to_pos ( \
+    &TL_SELECTIONS->sc##s[0]->pos_name, \
+    &tl_clone->sc##s[0]->pos_name); \
+  timeline_selections_free (tl_clone); \
+  if (position_is_equal ( \
+        &TL_SELECTIONS->sc##s[0]->pos_name, \
+        &new_pos)) \
+    return; \
+  UndoableAction * ua = \
+    (UndoableAction *) \
+    edit_timeline_selections_action_new ( \
+      TL_SELECTIONS, ETS_##caps##_##pos_name_caps, \
+      0, NULL, &new_pos); \
+  undo_manager_perform ( \
+    UNDO_MANAGER, ua); \
+}
+
+DEFINE_DRAG_END_POS_SET (
+  REGION, Region, region, CLIP_START_POS,
+  clip_start_pos);
+DEFINE_DRAG_END_POS_SET (
+  REGION, Region, region, LOOP_START_POS,
+  loop_start_pos);
+DEFINE_DRAG_END_POS_SET (
+  REGION, Region, region, LOOP_END_POS,
+  loop_end_pos);
+
+#define DEFINE_DRAG_END_POS_RESIZE_L( \
+  cc,sc) \
+static void \
+on_drag_end_##sc##_resize_l ( \
+  cc * sc) \
+{ \
+  Position new_pos; \
+  position_set_to_pos (&new_pos, &sc->start_pos); \
+  /* set the actual pos back to the prev pos */ \
+  position_set_to_pos ( \
+    &TL_SELECTIONS->sc##s[0]->start_pos, \
+    &tl_clone->sc##s[0]->start_pos); \
+  timeline_selections_free (tl_clone); \
+  if (position_is_equal ( \
+        &TL_SELECTIONS->sc##s[0]->start_pos, \
+        &new_pos)) \
+    return; \
+  long ticks_diff = \
+    position_to_ticks (&new_pos) - \
+    position_to_ticks ( \
+      &TL_SELECTIONS->sc##s[0]->start_pos); \
+  UndoableAction * ua = \
+    (UndoableAction *) \
+    edit_timeline_selections_action_new ( \
+      TL_SELECTIONS, ETS_RESIZE_L, \
+      ticks_diff, NULL, NULL); \
+  undo_manager_perform ( \
+    UNDO_MANAGER, ua); \
+}
+
+DEFINE_DRAG_END_POS_RESIZE_L (
+  Region, region);
+
+#define DEFINE_DRAG_END_POS_RESIZE_R( \
+  cc,sc) \
+static void \
+on_drag_end_##sc##_resize_r ( \
+  cc * sc) \
+{ \
+  Position new_pos; \
+  position_set_to_pos (&new_pos, &sc->end_pos); \
+  /* set the actual pos back to the prev pos */ \
+  position_set_to_pos ( \
+    &TL_SELECTIONS->sc##s[0]->end_pos, \
+    &tl_clone->sc##s[0]->end_pos); \
+  timeline_selections_free (tl_clone); \
+  if (position_is_equal ( \
+        &TL_SELECTIONS->sc##s[0]->end_pos, \
+        &new_pos)) \
+    return; \
+  long ticks_diff = \
+    position_to_ticks (&new_pos) - \
+    position_to_ticks ( \
+      &TL_SELECTIONS->sc##s[0]->end_pos); \
+  UndoableAction * ua = \
+    (UndoableAction *) \
+    edit_timeline_selections_action_new ( \
+      TL_SELECTIONS, ETS_RESIZE_R, \
+      ticks_diff, NULL, NULL); \
+  undo_manager_perform ( \
+    UNDO_MANAGER, ua); \
+}
+
+DEFINE_DRAG_END_POS_RESIZE_R (
+  Region, region);
 
 static void
 on_drag_begin ()
@@ -145,50 +258,50 @@ timeline_selection_info_widget_refresh (
           dm =
             digital_meter_widget_new_for_position (
               r,
-              on_drag_begin,
+              on_drag_begin_w_object,
               region_get_start_pos,
               region_start_pos_setter,
-              on_drag_end,
+              on_drag_end_region_resize_l,
               _("start"));
           digital_meter_set_draw_line (dm, 1);
           ADD_WIDGET (dm);
           dm =
             digital_meter_widget_new_for_position (
               r,
-              on_drag_begin,
+              on_drag_begin_w_object,
               region_get_end_pos,
               region_end_pos_setter,
-              on_drag_end,
+              on_drag_end_region_resize_r,
               _("end"));
           digital_meter_set_draw_line (dm, 1);
           ADD_WIDGET (dm);
           dm =
             digital_meter_widget_new_for_position (
               r,
-              on_drag_begin,
+              on_drag_begin_w_object,
               region_get_clip_start_pos,
               region_clip_start_pos_setter,
-              on_drag_end,
+              on_drag_end_region_clip_start_pos,
               _("clip start (rel.)"));
           digital_meter_set_draw_line (dm, 1);
           ADD_WIDGET (dm);
           dm =
             digital_meter_widget_new_for_position (
               r,
-              on_drag_begin,
+              on_drag_begin_w_object,
               region_get_loop_start_pos,
               region_loop_start_pos_setter,
-              on_drag_end,
+              on_drag_end_region_loop_start_pos,
               _("loop start (rel.)"));
           digital_meter_set_draw_line (dm, 1);
           ADD_WIDGET (dm);
           dm =
             digital_meter_widget_new_for_position (
               r,
-              on_drag_begin,
+              on_drag_begin_w_object,
               region_get_loop_end_pos,
               region_loop_end_pos_setter,
-              on_drag_end,
+              on_drag_end_region_loop_end_pos,
               _("loop end (rel.)"));
           digital_meter_set_draw_line (dm, 1);
           ADD_WIDGET (dm);

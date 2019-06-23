@@ -2131,11 +2131,12 @@ timeline_arranger_widget_on_drag_end (
             (UndoableAction *)
             edit_timeline_selections_action_new (
               TL_SELECTIONS,
-              ETS_TYPE_RESIZE_L,
+              ETS_RESIZE_L,
               position_to_ticks (
                 &main_trans_region->start_pos) -
               position_to_ticks (
-                &main_region->start_pos));
+                &main_region->start_pos),
+              NULL, NULL);
           undo_manager_perform (
             UNDO_MANAGER, ua);
         }
@@ -2154,11 +2155,12 @@ timeline_arranger_widget_on_drag_end (
             (UndoableAction *)
             edit_timeline_selections_action_new (
               TL_SELECTIONS,
-              ETS_TYPE_RESIZE_R,
+              ETS_RESIZE_R,
               position_to_ticks (
                 &main_trans_region->end_pos) -
               position_to_ticks (
-                &main_region->end_pos));
+                &main_region->end_pos),
+              NULL, NULL);
           undo_manager_perform (
             UNDO_MANAGER, ua);
         }

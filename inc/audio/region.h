@@ -501,6 +501,17 @@ region_move (
   int      trans_only);
 
 /**
+ * Copies the data from src to dest.
+ *
+ * Used when doing/undoing changes in name,
+ * clip start point, loop start point, etc.
+ */
+void
+region_copy (
+  Region * src,
+  Region * dest);
+
+/**
  * Checks if position is valid then sets it.
  */
 void
