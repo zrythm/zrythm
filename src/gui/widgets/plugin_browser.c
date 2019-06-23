@@ -20,6 +20,7 @@
 #include "actions/create_tracks_action.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
+#include "gui/widgets/expander_box.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
@@ -33,6 +34,7 @@
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (PluginBrowserWidget,
                plugin_browser_widget,
@@ -148,8 +150,27 @@ show_context_menu (
   gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
 }
 
+static int
+do_after_init (
+  PluginBrowserWidget * self)
+{
+  if (!GTK_IS_PANED (self))
+    return G_SOURCE_REMOVE;
+
+  /* set divider position */
+  int divider_pos =
+    g_settings_get_int (
+      S_UI,
+      "browser-divider-position");
+  gtk_paned_set_position (
+    GTK_PANED (self),
+    divider_pos);
+
+  return G_SOURCE_REMOVE;
+}
+
 static void
-on_plugins_right_click (
+on_plugin_right_click (
   GtkGestureMultiPress *gesture,
   gint                  n_press,
   gdouble               x,
@@ -164,9 +185,9 @@ on_plugins_right_click (
 
   GtkTreeSelection * selection =
     gtk_tree_view_get_selection (
-      (self->plugins_tree_view));
+      (self->plugin_tree_view));
   if (!gtk_tree_view_get_path_at_pos
-      (GTK_TREE_VIEW(self->plugins_tree_view),
+      (GTK_TREE_VIEW(self->plugin_tree_view),
        x, y,
        &path, &column, NULL, NULL))
 
@@ -178,11 +199,11 @@ on_plugins_right_click (
   gtk_tree_selection_select_path(selection, path);
   GtkTreeIter iter;
   gtk_tree_model_get_iter (
-    GTK_TREE_MODEL (self->plugins_tree_model),
+    GTK_TREE_MODEL (self->plugin_tree_model),
     &iter, path);
   GValue value = G_VALUE_INIT;
   gtk_tree_model_get_value (
-    GTK_TREE_MODEL (self->plugins_tree_model),
+    GTK_TREE_MODEL (self->plugin_tree_model),
     &iter,
     PL_COLUMN_DESCR,
     &value);
@@ -220,7 +241,7 @@ on_selection_changed (GtkTreeSelection * ts,
       GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
       /*gint * indices = gtk_tree_path_get_indices (tp);*/
       /*GtkTreeRowReference *rr =*/
-        /*gtk_tree_row_reference_new (MAIN_WINDOW->plugin_browser->plugins_tree_model,*/
+        /*gtk_tree_row_reference_new (MAIN_WINDOW->plugin_browser->plugin_tree_model,*/
                                     /*tp);*/
       GtkTreeIter iter;
       gtk_tree_model_get_iter (model,
@@ -237,10 +258,10 @@ on_selection_changed (GtkTreeSelection * ts,
           self->selected_category =
             g_value_get_string (&value);
           gtk_tree_model_filter_refilter (
-            self->plugins_tree_model);
+            self->plugin_tree_model);
         }
       else if (model ==
-               GTK_TREE_MODEL (self->plugins_tree_model))
+               GTK_TREE_MODEL (self->plugin_tree_model))
         {
           gtk_tree_model_get_value (model,
                                     &iter,
@@ -288,7 +309,7 @@ on_drag_data_get (GtkWidget        *widget,
 }
 
 static GtkTreeModel *
-create_model_for_types ()
+create_model_for_collections ()
 {
   GtkListStore *list_store;
   /*GtkTreePath *path;*/
@@ -390,46 +411,48 @@ create_model_for_plugins (PluginBrowserWidget * self)
   return model;
 }
 
-static void
-expander_callback (GObject    *object,
-                   GParamSpec *param_spec,
-                   gpointer    user_data)
+static gboolean
+plugin_search_equal_func (
+  GtkTreeModel *model,
+  gint column,
+  const gchar *key,
+  GtkTreeIter *iter,
+  PluginBrowserWidget * self)
 {
-  GtkExpander *expander;
+  char * str;
+  gtk_tree_model_get (
+    model, iter, column, &str, -1);
 
-  GtkWidget * scrolled_window = GTK_WIDGET (user_data);
-  expander = GTK_EXPANDER (object);
+  char * down_key =
+    g_utf8_strdown (key, -1);
+  char * down_str =
+    g_utf8_strdown (str, -1);
 
-  if (gtk_expander_get_expanded (expander))
-    {
-      gtk_widget_set_vexpand (GTK_WIDGET (scrolled_window),
-                             TRUE);
-    }
-  else
-    {
-      gtk_widget_set_vexpand (GTK_WIDGET (scrolled_window),
-                             FALSE);
-    }
+  int match =
+    g_strrstr (down_str, down_key) != NULL;
+
+  g_free (str);
+  g_free (down_key);
+  g_free (down_str);
+
+  return !match;
 }
 
-static GtkWidget *
-tree_view_create (PluginBrowserWidget * self,
-                  GtkTreeModel * model,
-                  int          allow_multi,
-                  int          dnd)
+static void
+tree_view_setup (
+  PluginBrowserWidget * self,
+  GtkTreeView *         tree_view,
+  GtkTreeModel *        model,
+  int                   allow_multi,
+  int                   dnd)
 {
-  /* instantiate tree view using model */
-  GtkWidget * tree_view =
-    gtk_tree_view_new_with_model (
-      GTK_TREE_MODEL (model));
-  gtk_widget_set_visible (
-    tree_view, 1);
+  gtk_tree_view_set_model (tree_view, model);
 
   /* init tree view */
   GtkCellRenderer * renderer;
   GtkTreeViewColumn * column;
-  if (GTK_TREE_MODEL (self->plugins_tree_model) ==
-      model)
+  if (model ==
+        GTK_TREE_MODEL (self->plugin_tree_model))
     {
       /* column for icon */
       renderer =
@@ -460,6 +483,13 @@ tree_view_create (PluginBrowserWidget * self,
         GTK_TREE_VIEW (tree_view),
         PL_COLUMN_NAME);
 
+      /* set search func */
+      gtk_tree_view_set_search_equal_func (
+        GTK_TREE_VIEW (tree_view),
+        (GtkTreeViewSearchEqualFunc)
+          plugin_search_equal_func,
+        self, NULL);
+
       /* connect right click handler */
       GtkGestureMultiPress * mp =
         GTK_GESTURE_MULTI_PRESS (
@@ -470,7 +500,7 @@ tree_view_create (PluginBrowserWidget * self,
         GDK_BUTTON_SECONDARY);
       g_signal_connect (
         G_OBJECT (mp), "pressed",
-        G_CALLBACK (on_plugins_right_click), self);
+        G_CALLBACK (on_plugin_right_click), self);
     }
   else
     {
@@ -489,13 +519,13 @@ tree_view_create (PluginBrowserWidget * self,
 
   /* hide headers and allow multi-selection */
   gtk_tree_view_set_headers_visible (
-            GTK_TREE_VIEW (tree_view),
-            FALSE);
+    GTK_TREE_VIEW (tree_view), FALSE);
 
   if (allow_multi)
     gtk_tree_selection_set_mode (
-        gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view)),
-        GTK_SELECTION_MULTIPLE);
+      gtk_tree_view_get_selection (
+        GTK_TREE_VIEW (tree_view)),
+      GTK_SELECTION_MULTIPLE);
 
   if (dnd)
     {
@@ -517,122 +547,63 @@ tree_view_create (PluginBrowserWidget * self,
     }
 
   g_signal_connect (
-    G_OBJECT (gtk_tree_view_get_selection (
-                GTK_TREE_VIEW (tree_view))),
-    "changed",
-     G_CALLBACK (on_selection_changed),
-     self);
-
-  return tree_view;
+    G_OBJECT (
+      gtk_tree_view_get_selection (
+        GTK_TREE_VIEW (tree_view))), "changed",
+     G_CALLBACK (on_selection_changed), self);
 }
 
-static GtkWidget *
-add_scroll_window (GtkTreeView * tree_view)
+static void
+toggles_changed (
+  GtkToggleToolButton * btn,
+  PluginBrowserWidget * self)
 {
-  /* add treeview to scroll window */
-  GtkWidget * scrolled_window =
-    gtk_scrolled_window_new (NULL, NULL);
-  gtk_container_add (
-    GTK_CONTAINER (scrolled_window),
-    GTK_WIDGET (tree_view));
-  gtk_widget_set_visible (
-    scrolled_window, 1);
-
-  return scrolled_window;
-}
-
-
-/**
- * Creates a GtkTreeView using the given model,
- * and puts it in the given expander in a GtkScrolledWindow
- *
- * @return the scroll window
- * TODO FIXME
- */
-static GtkScrolledWindow *
-create_tree_view_add_to_expander (
-  PluginBrowserWidget * self,
-  GtkTreeModel * model,
-  GtkExpander  * expander)
-{
-  GtkWidget * scrolled_window =
-    add_scroll_window (
-      GTK_TREE_VIEW (
-        tree_view_create (self, model, 1,0)));
-
-  /* add scroll window to expander */
-  gtk_container_add (
-      GTK_CONTAINER (expander),
-      scrolled_window);
-
-  /* connect signal to expand/hide */
-  g_signal_connect (expander, "notify::expanded",
-                  G_CALLBACK (expander_callback),
-                  scrolled_window);
-
-  return GTK_SCROLLED_WINDOW (scrolled_window);
+  gtk_tree_model_filter_refilter (
+    self->plugin_tree_model);
 }
 
 PluginBrowserWidget *
 plugin_browser_widget_new ()
 {
   PluginBrowserWidget * self =
-    g_object_new (PLUGIN_BROWSER_WIDGET_TYPE, NULL);
-
-  g_message (
-    "Instantiating plugin_browser widget...");
+    g_object_new (
+      PLUGIN_BROWSER_WIDGET_TYPE, NULL);
 
   gtk_label_set_xalign (self->plugin_info, 0);
 
-  /* set divider position */
-  int divider_pos =
-    g_settings_get_int (
-      S_UI,
-      "browser-divider-position");
-  gtk_paned_set_position (GTK_PANED (self),
-                          divider_pos);
+  /* setup collections */
+  self->collection_tree_model =
+    create_model_for_collections ();
+  tree_view_setup (
+    self, self->collection_tree_view,
+    self->collection_tree_model, 1,0);
 
-  /* create each tree */
-  create_tree_view_add_to_expander (
-    self,
-    create_model_for_types (),
-    GTK_EXPANDER (self->collections_exp));
-  create_tree_view_add_to_expander (
-    self,
-    create_model_for_types (),
-    GTK_EXPANDER (self->types_exp));
-  self->category_tree_model = create_model_for_categories ();
-  GtkScrolledWindow * scrolled_window =
-  create_tree_view_add_to_expander (
-    self,
-    self->category_tree_model,
-    GTK_EXPANDER (self->cat_exp));
-
-  /* expand category by default */
-  gtk_expander_set_expanded (GTK_EXPANDER (self->cat_exp),
-                             TRUE);
-  gtk_widget_set_vexpand (GTK_WIDGET (scrolled_window),
-                          TRUE);
+  /* setup categories */
+  self->category_tree_model =
+    create_model_for_categories ();
+  tree_view_setup (
+    self, self->category_tree_view,
+    self->category_tree_model, 1,0);
 
   /* populate plugins */
-  self->plugins_tree_model = GTK_TREE_MODEL_FILTER (create_model_for_plugins (self));
-  self->plugins_tree_view =
-    GTK_TREE_VIEW (tree_view_create (
-      self,
-      GTK_TREE_MODEL (
-        self->plugins_tree_model),
-      0,
-      1));
+  self->plugin_tree_model =
+    GTK_TREE_MODEL_FILTER (
+      create_model_for_plugins (self));
+  tree_view_setup (
+    self, self->plugin_tree_view,
+    GTK_TREE_MODEL (
+      self->plugin_tree_model), 0, 1);
   g_signal_connect (
-    G_OBJECT (self->plugins_tree_view),
+    G_OBJECT (self->plugin_tree_view),
     "row-activated",
     G_CALLBACK (on_row_activated),
-    self->plugins_tree_model);
-  GtkWidget * plugin_scroll_window =
-    add_scroll_window (self->plugins_tree_view);
-  gtk_box_pack_start (GTK_BOX (self->browser_bot),
-                      plugin_scroll_window,
-                      1, 1, 0);
+    self->plugin_tree_model);
+
+  /* for some reason setting the position here
+   * gets ignored, so set it after 1 sec */
+  g_timeout_add (
+    500,(GSourceFunc) do_after_init,
+    GTK_PANED (self));
 
   return self;
 }
@@ -649,34 +620,39 @@ plugin_browser_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "browser");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    PluginBrowserWidget,
-    browser_top);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PluginBrowserWidget,
-    browser_search);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PluginBrowserWidget,
-    collections_exp);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PluginBrowserWidget,
-    types_exp);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PluginBrowserWidget,
-    cat_exp);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PluginBrowserWidget,
-    browser_bot);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PluginBrowserWidget,
-    plugin_info);
+#define BIND_CHILD(name) \
+  gtk_widget_class_bind_template_child ( \
+    klass, \
+    PluginBrowserWidget, \
+    name)
+
+  BIND_CHILD (collection_scroll);
+  BIND_CHILD (protocol_scroll);
+  BIND_CHILD (category_scroll);
+  BIND_CHILD (plugin_scroll);
+  BIND_CHILD (collection_tree_view);
+  BIND_CHILD (protocol_tree_view);
+  BIND_CHILD (category_tree_view);
+  BIND_CHILD (plugin_tree_view);
+  BIND_CHILD (browser_bot);
+  BIND_CHILD (plugin_info);
+  BIND_CHILD (stack_switcher_box);
+  BIND_CHILD (stack);
+  BIND_CHILD (plugin_toolbar);
+  BIND_CHILD (toggle_instruments);
+  BIND_CHILD (toggle_effects);
+  BIND_CHILD (toggle_modulators);
+  BIND_CHILD (toggle_midi_modifiers);
+
+#undef BIND_CHILD
+
+#define BIND_SIGNAL(sig) \
+  gtk_widget_class_bind_template_callback ( \
+    klass, sig)
+
+  BIND_SIGNAL (toggles_changed);
+
+#undef BIND_SIGNAL
 }
 
 static void
@@ -685,5 +661,77 @@ plugin_browser_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  gtk_widget_set_visible (GTK_WIDGET (self), 1);
+  self->stack_switcher =
+    GTK_STACK_SWITCHER (gtk_stack_switcher_new ());
+  gtk_stack_switcher_set_stack (
+    self->stack_switcher,
+    self->stack);
+  gtk_widget_show_all (
+    GTK_WIDGET (self->stack_switcher));
+  gtk_box_pack_start (
+    self->stack_switcher_box,
+    GTK_WIDGET (self->stack_switcher),
+    TRUE, TRUE, 0);
+
+  /* set stackswitcher icons */
+  GValue iconval1 = G_VALUE_INIT;
+  GValue iconval2 = G_VALUE_INIT;
+  GValue iconval3 = G_VALUE_INIT;
+  g_value_init (&iconval1, G_TYPE_STRING);
+  g_value_init (&iconval2, G_TYPE_STRING);
+  g_value_init (&iconval3, G_TYPE_STRING);
+  g_value_set_string (
+    &iconval1, "z-favorites");
+  g_value_set_string(
+    &iconval2, "iconfinder_category_103432_edited");
+  g_value_set_string(
+    &iconval3, "plug-solid");
+
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->collection_scroll),
+    "icon-name", &iconval1);
+  g_value_set_string (
+    &iconval1, _("Collection"));
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->collection_scroll),
+    "title", &iconval1);
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->category_scroll),
+    "icon-name", &iconval2);
+  g_value_set_string (
+    &iconval2, _("Category"));
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->category_scroll),
+    "title", &iconval2);
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->protocol_scroll),
+    "icon-name", &iconval3);
+  g_value_set_string (
+    &iconval3, _("Protocol"));
+  gtk_container_child_set_property (
+    GTK_CONTAINER (self->stack),
+    GTK_WIDGET (self->protocol_scroll),
+    "title", &iconval3);
+
+  GList *children, *iter;
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (self->stack_switcher));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      if (!GTK_IS_RADIO_BUTTON (iter->data))
+        continue;
+
+      GtkWidget * radio = GTK_WIDGET (iter->data);
+      g_object_set (
+        radio, "hexpand", TRUE, NULL);
+    }
+  g_list_free (children);
 }

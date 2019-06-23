@@ -109,9 +109,23 @@ expander_box_widget_add_content (
     content);
 }
 
+/**
+ * Reveals or hides the expander box's contents.
+ */
+void
+expander_box_widget_set_reveal (
+  ExpanderBoxWidget * self,
+  int                 reveal);
+
 void
 expander_box_widget_set_orientation (
   ExpanderBoxWidget * self,
   GtkOrientation      orientation);
+
+ExpanderBoxWidget *
+expander_box_widget_new (
+  const char * label,
+  const char * icon_name,
+  GtkOrientation orientation);
 
 #endif

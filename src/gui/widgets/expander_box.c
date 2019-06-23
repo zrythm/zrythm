@@ -55,6 +55,20 @@ expander_box_widget_get_private (
 }
 
 /**
+ * Reveals or hides the expander box's contents.
+ */
+void
+expander_box_widget_set_reveal (
+  ExpanderBoxWidget * self,
+  int                 reveal)
+{
+  GET_PRIVATE (self);
+  gtk_revealer_set_reveal_child (
+    prv->revealer,
+    reveal);
+}
+
+/**
  * Sets the label to show.
  */
 void
@@ -128,6 +142,27 @@ expander_box_widget_set_icon_name (
     prv->btn_img,
     icon_name,
     GTK_ICON_SIZE_BUTTON);
+}
+
+ExpanderBoxWidget *
+expander_box_widget_new (
+  const char * label,
+  const char * icon_name,
+  GtkOrientation orientation)
+{
+  ExpanderBoxWidget * self =
+    g_object_new (EXPANDER_BOX_WIDGET_TYPE,
+                  "visible", 1,
+                  NULL);
+
+  expander_box_widget_set_icon_name (
+    self, icon_name);
+  expander_box_widget_set_orientation (
+    self, orientation);
+  expander_box_widget_set_label (
+    self, label);
+
+  return self;
 }
 
 static void

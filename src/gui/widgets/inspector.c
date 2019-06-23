@@ -132,7 +132,7 @@ inspector_widget_init (InspectorWidget * self)
   gtk_box_pack_start (
     self->stack_switcher_box,
     GTK_WIDGET (self->stack_switcher),
-    TRUE, FALSE, 0);
+    TRUE, TRUE, 0);
 
   /* set stackswitcher icons */
   GValue iconval1 = G_VALUE_INIT;
@@ -178,6 +178,24 @@ inspector_widget_init (InspectorWidget * self)
     GTK_CONTAINER (self->stack),
     GTK_WIDGET (self->plugin),
     "title", &iconval3);
+
+  GList *children, *iter;
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (self->stack_switcher));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      if (!GTK_IS_RADIO_BUTTON (iter->data))
+        continue;
+
+      GtkWidget * radio = GTK_WIDGET (iter->data);
+      g_object_set (
+        radio, "hexpand", TRUE, NULL);
+    }
+
+  g_list_free (children);
 
 
   /*self->size_group =*/

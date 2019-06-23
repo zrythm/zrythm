@@ -29,96 +29,56 @@
     <property name="position">220</property>
     <property name="position_set">True</property>
     <property name="wide_handle">True</property>
+    <property name="vexpand">True</property>
     <child>
-      <object class="GtkGrid" id="browser_top">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="vexpand">True</property>
-        <property name="height-request">240</property>
+      <object class="GtkBox">
+        <property name="visible">1</property>
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkSearchEntry" id="browser_search">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hexpand">True</property>
-            <property name="primary_icon_name">edit-find-symbolic</property>
-            <property name="primary_icon_activatable">False</property>
-            <property name="primary_icon_sensitive">False</property>
+          <object class="GtkBox" id="stack_switcher_box">
+            <property name="visible">1</property>
           </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
-            <property name="width">2</property>
-          </packing>
         </child>
         <child>
-          <object class="GtkExpander" id="collections_exp">
+          <object class="GtkStack" id="stack">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hexpand">True</property>
-            <property name="label_fill">True</property>
-            <child type="label">
-              <object class="GtkLabel" id="glabel-collections">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="hexpand">True</property>
-                <property name="label" translatable="yes">Collection</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">1</property>
-            <property name="width">2</property>
-            <property name="height">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkExpander" id="types_exp">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hexpand">True</property>
-            <property name="label_fill">True</property>
-            <child type="label">
-              <object class="GtkLabel" id="glabel-type">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Type</property>
-                <property name="justify">fill</property>
-                <property name="wrap">True</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">3</property>
-            <property name="width">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkExpander" id="cat_exp">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hexpand">True</property>
             <property name="vexpand">True</property>
-            <property name="label_fill">True</property>
-            <child type="label">
-              <object class="GtkLabel" id="glabel-category">
+            <child>
+              <object class="GtkScrolledWindow" id="collection_scroll">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Category</property>
+                <child>
+                  <object class="GtkTreeView" id="collection_tree_view">
+                    <property name="visible">1</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="category_scroll">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkTreeView" id="category_tree_view">
+                    <property name="visible">1</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="protocol_scroll">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkTreeView" id="protocol_tree_view">
+                    <property name="visible">1</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">4</property>
-            <property name="width">2</property>
-          </packing>
         </child>
       </object>
       <packing>
-        <property name="resize">False</property>
-        <property name="shrink">False</property>
+        <property name="resize">1</property>
+        <property name="shrink">0</property>
       </packing>
     </child>
     <child>
@@ -126,6 +86,67 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkToolbar" id="plugin_toolbar">
+            <property name="visible">1</property>
+            <property name="icon-size">small-toolbar</property>
+            <child>
+              <object class="GtkToggleToolButton" id="toggle_instruments">
+                <property name="visible">1</property>
+                <property name="icon-name">z-audio-midi</property>
+                <property name="tooltip-text" translatable="true">Instruments</property>
+                <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleToolButton" id="toggle_effects">
+                <property name="visible">1</property>
+                <property name="icon-name">z-kdenlive-show-audiothumb</property>
+                <property name="tooltip-text" translatable="true">Effects</property>
+                <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleToolButton" id="toggle_modulators">
+                <property name="visible">1</property>
+                <property name="icon-name">z-mathmode</property>
+                <property name="tooltip-text" translatable="true">Modulators</property>
+                <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleToolButton" id="toggle_midi_modifiers">
+                <property name="visible">1</property>
+                <property name="icon-name">midi-connector</property>
+                <property name="tooltip-text" translatable="true">MIDI Modifiers</property>
+                <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">1</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="plugin_scroll">
+            <property name="visible">1</property>
+            <property name="vexpand">True</property>
+            <child>
+              <object class="GtkTreeView" id="plugin_tree_view">
+                <property name="visible">1</property>
+              </object>
+            </child>
+          </object>
+        </child>
         <child>
           <object class="GtkLabel" id="plugin_info">
             <property name="visible">True</property>

@@ -211,9 +211,15 @@ timeline-selection-info,
 timeline-toolbar,
 piano-roll-selection-info,
 piano-roll-toolbar,
+browser toolbar,
 dialog
 {
 background-color: @bg_dark_variant2;
+}
+
+browser toolbar
+{
+  padding: 0px;
 }
 
 .header_notebook tabs,

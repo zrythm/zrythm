@@ -106,6 +106,9 @@ right_dock_edge_widget_init (
   control_room_widget_setup (
     self->control_room,
     CONTROL_ROOM);
+
+  gtk_notebook_set_current_page (
+    GTK_NOTEBOOK (self->right_notebook), 0);
 }
 
 static void

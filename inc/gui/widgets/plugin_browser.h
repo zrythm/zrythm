@@ -19,6 +19,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Plugin browser.
+ */
+
 #ifndef __GUI_WIDGETS_PLUGIN_BROWSER_H__
 #define __GUI_WIDGETS_PLUGIN_BROWSER_H__
 
@@ -26,32 +32,88 @@
 
 #define PLUGIN_BROWSER_WIDGET_TYPE \
   (plugin_browser_widget_get_type ())
-G_DECLARE_FINAL_TYPE (PluginBrowserWidget,
-                      plugin_browser_widget,
-                      Z,
-                      PLUGIN_BROWSER_WIDGET,
-                      GtkPaned)
+G_DECLARE_FINAL_TYPE (
+  PluginBrowserWidget,
+  plugin_browser_widget,
+  Z, PLUGIN_BROWSER_WIDGET,
+  GtkPaned)
 
-#define MW_PLUGIN_BROWSER MW_RIGHT_DOCK_EDGE->plugin_browser
+typedef struct _ExpanderBoxWidget ExpanderBoxWidget;
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define MW_PLUGIN_BROWSER \
+  MW_RIGHT_DOCK_EDGE->plugin_browser
+
+/**
+ * The plugin browser allows to browse and filter
+ * available Plugin's on the system.
+ *
+ * It contains references to PluginDescriptor's,
+ * which it uses to initialize Plugin's on row
+ * activation or drag-n-drop.
+ */
 typedef struct _PluginBrowserWidget
 {
-  GtkPaned                 parent_instance;
-  GtkGrid                  * browser_top;
-  GtkSearchEntry           * browser_search;
-  GtkExpander              * collections_exp;
-  GtkExpander              * types_exp;
-  GtkExpander              * cat_exp;
-  GtkBox                   * browser_bot;
-  GtkLabel                 * plugin_info;
-  const char *             selected_category; ///< selected category
-  GtkTreeModel             * category_tree_model;
-  GtkTreeModelFilter       * plugins_tree_model;
-  GtkTreeView *            plugins_tree_view;
-  GtkScrolledWindow *      plugin_scroll_window;
+  GtkPaned             parent_instance;
+
+  /** The stack switcher. */
+  GtkStackSwitcher *   stack_switcher;
+  GtkBox *             stack_switcher_box;
+
+  /** The stack containing collection/category/
+   * protocol. */
+  GtkStack *           stack;
+
+  /* The scrolls for each tree view */
+  GtkScrolledWindow *  collection_scroll;
+  GtkScrolledWindow *  category_scroll;
+  GtkScrolledWindow *  protocol_scroll;
+  GtkScrolledWindow *  plugin_scroll;
+
+  /* The tree views */
+  GtkTreeView *        collection_tree_view;
+  GtkTreeView *        category_tree_view;
+  GtkTreeView *        protocol_tree_view;
+  GtkTreeView *        plugin_tree_view;
+
+  /** Browser bot. */
+  GtkBox *             browser_bot;
+
+  /* The toolbar to toggle visibility of
+   * modulators/effects/instruments/midi modifiers */
+  GtkToolbar *         plugin_toolbar;
+
+  GtkToggleToolButton * toggle_instruments;
+  GtkToggleToolButton * toggle_effects;
+  GtkToggleToolButton * toggle_modulators;
+  GtkToggleToolButton * toggle_midi_modifiers;
+
+  /** A label to show info about the currently
+   * selected Plugin. */
+  GtkLabel *           plugin_info;
+
+  /** The selected category. */
+  const char *         selected_category;
+
+  GtkTreeModel *       collection_tree_model;
+  GtkTreeModel *       protocol_tree_model;
+  GtkTreeModel *       category_tree_model;
+  GtkTreeModelFilter * plugin_tree_model;
 } PluginBrowserWidget;
 
+/**
+ * Instantiates a new PluginBrowserWidget.
+ */
 PluginBrowserWidget *
 plugin_browser_widget_new ();
+
+/**
+ * @}
+ */
 
 #endif
