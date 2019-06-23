@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-03-23 13:18+0000\n"
-"Last-Translator: alex <alex at zrythm dot org>\n"
-"Language-Team: German\n"
+"PO-Revision-Date: 2019-06-22 23:20+0000\n"
+"Last-Translator: Wau <wau-wau@tutanota.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.7\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
@@ -1119,7 +1121,7 @@ msgstr ""
 
 #: resources/ui/donate_dialog.ui:7
 msgid "Donate"
-msgstr ""
+msgstr "Spende"
 
 #: resources/ui/donate_dialog.ui:49
 msgid "Choose a method to donate"
@@ -1207,7 +1209,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:120
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:131
 msgid "Electronic"

@@ -8,13 +8,17 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2019-06-17 21:07+0000\n"
+"Last-Translator: WaldiS <admin@sto.ugu.pl>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/zrythm/pl/>"
+"\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 3.7-dev\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
@@ -34,7 +38,7 @@ msgstr ""
 
 #: src/zrythm.c:272
 msgid "Loading project"
-msgstr ""
+msgstr "Wczytywanie projektu"
 
 #: src/project.c:159 src/audio/track.c:792
 msgid "Master"
@@ -47,7 +51,7 @@ msgstr ""
 
 #: src/project.c:437
 msgid "Project saved."
-msgstr ""
+msgstr "Projekt został zapisany."
 
 #: src/plugins/lv2_gtk.c:149
 msgid "Save State"
@@ -57,19 +61,19 @@ msgstr ""
 #: src/utils/dialogs.c:74 src/actions/actions.c:521
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
-msgstr ""
+msgstr "_Anuluj"
 
 #: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
 msgid "_Save"
-msgstr ""
+msgstr "_Zapisz"
 
 #: src/plugins/lv2_gtk.c:467
 msgid "URI (Optional):"
-msgstr ""
+msgstr "URI (Opcjonalnie):"
 
 #: src/plugins/lv2_gtk.c:471
 msgid "_Prefix plugin name"
-msgstr ""
+msgstr "_Prefix nazwa wtyczki"
 
 #: src/plugins/lv2_gtk.c:562
 msgid "Delete Preset?"
@@ -78,19 +82,19 @@ msgstr ""
 #: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
 #: resources/ui/port_selector_popover.ui:207
 msgid "_OK"
-msgstr ""
+msgstr "_OK"
 
 #: src/plugins/lv2_gtk.c:781
 msgid "Unknown widget type for value"
-msgstr ""
+msgstr "Nieznany typ widgetu dla wartości"
 
 #: src/plugins/lv2_gtk.c:807
 msgid "Unknown widget type for value\n"
-msgstr ""
+msgstr "Nieznany typ widgetu dla wartości\n"
 
 #: src/plugins/lv2_gtk.c:1436
 msgid "Close"
-msgstr ""
+msgstr "Zamknij"
 
 #: src/plugins/plugin_manager.c:223
 msgid "Error loading LV2 bundle dir: "
@@ -98,15 +102,15 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:59
 msgid "INPUTS"
-msgstr ""
+msgstr "Wejścia"
 
 #: src/gui/widgets/port_connections_popover.c:78
 msgid "OUTPUTS"
-msgstr ""
+msgstr "Wyjścia"
 
 #: src/gui/widgets/port_connections_popover.c:164
 msgid "Add"
-msgstr ""
+msgstr "Dodaj"
 
 #: src/gui/widgets/channel.c:918
 msgid "Inserts"
@@ -115,20 +119,20 @@ msgstr ""
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
 msgid "Select..."
-msgstr ""
+msgstr "Wybierz..."
 
 #: src/gui/widgets/midi_controller_mb.c:119
 msgid "Click to enable MIDI controllers to be connected automatically"
-msgstr ""
+msgstr "Kliknij, aby włączyć automatyczne podłączenie kontrolerów MIDI"
 
 #: src/gui/widgets/first_run_assistant.c:84
 #: src/gui/widgets/first_run_assistant.c:116
 msgid "JACK functionality is disabled"
-msgstr ""
+msgstr "Funkcja JACK jest wyłączona"
 
 #: src/gui/widgets/first_run_assistant.c:102
 msgid "PortAudio functionality is disabled"
-msgstr ""
+msgstr "Funkcja PortAudio jest wyłączona"
 
 #: src/gui/widgets/first_run_assistant.c:201
 #, c-format
@@ -1118,7 +1122,7 @@ msgstr ""
 
 #: resources/ui/donate_dialog.ui:7
 msgid "Donate"
-msgstr ""
+msgstr "Przekaż darowiznę"
 
 #: resources/ui/donate_dialog.ui:49
 msgid "Choose a method to donate"
