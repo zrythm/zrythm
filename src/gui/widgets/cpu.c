@@ -50,11 +50,15 @@ G_DEFINE_TYPE (CpuWidget,
 static gint64 last_time_updated_cpu = 0;
 static gint64 last_time_updated_dsp = 0;
 
-#define BAR_LENGTH 12
+#define BAR_HEIGHT 12
 #define BAR_WIDTH 3
 #define NUM_BARS 12
 #define PADDING 2
-#define ICON_SIZE BAR_LENGTH
+#define ICON_SIZE BAR_HEIGHT
+#define TOTAL_H \
+  (PADDING * 3 + BAR_HEIGHT * 2)
+#define TOTAL_W \
+  (ICON_SIZE + PADDING * 3 + NUM_BARS * PADDING * 2)
 
 /**
  * Taken from
@@ -117,7 +121,7 @@ cpu_draw_cb (
         ICON_SIZE + PADDING + i * PADDING * 2,
         PADDING,
         BAR_WIDTH,
-        BAR_LENGTH);
+        BAR_HEIGHT);
       cairo_fill(cr);
     }
 
@@ -135,9 +139,9 @@ cpu_draw_cb (
       cairo_rectangle(
         cr,
         ICON_SIZE + PADDING + i * PADDING * 2,
-        PADDING * 2 + BAR_LENGTH,
+        PADDING * 2 + BAR_HEIGHT,
         BAR_WIDTH,
-        BAR_LENGTH);
+        BAR_HEIGHT);
       cairo_fill(cr);
     }
 
@@ -338,6 +342,9 @@ cpu_widget_init (CpuWidget * self)
 {
   self->cpu = 0;
   self->dsp = 0;
+
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self), TOTAL_W, TOTAL_H);
 
   /* connect signals */
   g_signal_connect (

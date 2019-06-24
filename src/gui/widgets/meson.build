@@ -58,6 +58,7 @@ widget_srcs = [
   'knob.c',
   'knob_with_name.c',
   'left_dock_edge.c',
+  'live_waveform.c',
   'main_window.c',
   'marker.c',
   'marker_dialog.c',

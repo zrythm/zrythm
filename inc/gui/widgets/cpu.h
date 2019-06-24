@@ -30,6 +30,7 @@
 
 /**
  * @addtogroup widgets
+ *
  * @{
  */
 

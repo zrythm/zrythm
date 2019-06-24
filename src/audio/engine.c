@@ -460,6 +460,9 @@ receive_midi_events (
     default:
       break;
     }
+
+  if (self->midi_in->midi_events->num_events > 0)
+    self->trigger_midi_activity = 1;
 }
 
 static long count = 0;

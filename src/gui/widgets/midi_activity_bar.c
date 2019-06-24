@@ -17,11 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/engine.h"
 #include "audio/midi.h"
 #include "audio/track.h"
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_top_grid.h"
+#include "project.h"
 
 #include <gtk/gtk.h>
 
@@ -41,6 +43,8 @@ midi_activity_bar_draw_cb (
   cairo_t *         cr,
   MidiActivityBarWidget * self)
 {
+  GdkRGBA color;
+
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
@@ -52,20 +56,45 @@ midi_activity_bar_draw_cb (
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
-  /* get value */
-  int trigger =
-    self->track->trigger_midi_activity;
+  /* draw border */
+  if (self->draw_border)
+    {
+      gdk_rgba_parse (&color, "white");
+      color.alpha = 0.2;
+      gdk_cairo_set_source_rgba (cr, &color);
+      cairo_rectangle (cr, 0, 0, width, height);
+      cairo_stroke (cr);
+    }
 
-  GdkRGBA color;
+  /* get value */
+  int trigger;
+  switch (self->type)
+    {
+    case MAB_TYPE_TRACK:
+      trigger = self->track->trigger_midi_activity;
+      break;
+    case MAB_TYPE_ENGINE:
+      trigger = AUDIO_ENGINE->trigger_midi_activity;
+      break;
+    }
+
   gdk_rgba_parse (&color, "#11FF44");
   gdk_cairo_set_source_rgba (cr, &color);
   if (trigger)
     {
-      g_message ("TRIGGER");
       cairo_rectangle (cr, 0, 0, width, height);
       cairo_fill (cr);
 
-      self->track->trigger_midi_activity = 0;
+      switch (self->type)
+        {
+        case MAB_TYPE_TRACK:
+          self->track->trigger_midi_activity = 0;
+          break;
+        case MAB_TYPE_ENGINE:
+          AUDIO_ENGINE->trigger_midi_activity = 0;
+          break;
+        }
+
       self->last_trigger_time =
         g_get_real_time ();
     }
@@ -108,6 +137,30 @@ midi_activity_bar_widget_setup_track (
   Track *           track)
 {
   self->track = track;
+  self->type = MAB_TYPE_TRACK;
+  self->draw_border = 0;
+
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (midi_activity_bar_draw_cb), self);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self),
+    (GtkTickCallback) update_activity,
+    self, NULL);
+}
+
+/**
+ * Creates a MidiActivityBarWidget for the
+ * AudioEngine.
+ */
+void
+midi_activity_bar_widget_setup_engine (
+  MidiActivityBarWidget * self)
+{
+  self->type = MAB_TYPE_ENGINE;
+  self->draw_border = 1;
+
   g_signal_connect (
     G_OBJECT (self), "draw",
     G_CALLBACK (midi_activity_bar_draw_cb), self);

@@ -530,11 +530,11 @@ port_sum_signal_from_inputs (Port * port)
           g_message ("port %s has %d events",
                      port->identifier.label,
                      port->midi_events->num_events);
-          if (port == AUDIO_ENGINE->midi_in)
-            {
-              AUDIO_ENGINE->trigger_midi_activity = 1;
-            }
-          else if (port->identifier.owner_type ==
+          /*if (port == AUDIO_ENGINE->midi_in)*/
+            /*{*/
+              /*AUDIO_ENGINE->trigger_midi_activity = 1;*/
+            /*}*/
+          if (port->identifier.owner_type ==
                      PORT_OWNER_TYPE_TRACK)
             {
               port->track->trigger_midi_activity = 1;

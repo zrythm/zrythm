@@ -17,26 +17,24 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_MIDI_ACTIVITY_BAR_H__
-#define __GUI_WIDGETS_MIDI_ACTIVITY_BAR_H__
+#ifndef __GUI_WIDGETS_LIVE_WAVEFORM_H__
+#define __GUI_WIDGETS_LIVE_WAVEFORM_H__
 
 /**
  * \file
  *
- * MIDI activity bar for tracks.
+ * Live waveform display like LMMS.
  */
 
 #include <gtk/gtk.h>
 
-#define MIDI_ACTIVITY_BAR_WIDGET_TYPE \
-  (midi_activity_bar_widget_get_type ())
+#define LIVE_WAVEFORM_WIDGET_TYPE \
+  (live_waveform_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  MidiActivityBarWidget,
-  midi_activity_bar_widget,
-  Z, MIDI_ACTIVITY_BAR_WIDGET,
+  LiveWaveformWidget,
+  live_waveform_widget,
+  Z, LIVE_WAVEFORM_WIDGET,
   GtkDrawingArea)
-
-typedef struct Track Track;
 
 /**
  * @addtogroup widgets
@@ -44,46 +42,22 @@ typedef struct Track Track;
  * @{
  */
 
-typedef enum MidiActivityBarType
-{
-  MAB_TYPE_TRACK,
-  MAB_TYPE_ENGINE,
-} MidiActivityBarType;
-
-typedef struct _MidiActivityBarWidget
+typedef struct _LiveWaveformWidget
 {
   GtkDrawingArea parent_instance;
-
-  /** Track associated with this widget. */
-  Track  *       track;
-
-  MidiActivityBarType type;
-
-  /** System time at last trigger, so we know
-   * how to draw the bar (for fading down). */
-  gint64         last_trigger_time;
 
   /** Draw border or not. */
   int            draw_border;
 
-} MidiActivityBarWidget;
+} LiveWaveformWidget;
 
 /**
- * Creates a MidiActivityBarWidget for use inside
- * TrackWidget implementations.
- */
-void
-midi_activity_bar_widget_setup_track (
-  MidiActivityBarWidget * self,
-  Track *                 track);
-
-/**
- * Creates a MidiActivityBarWidget for the
+ * Creates a LiveWaveformWidget for the
  * AudioEngine.
  */
 void
-midi_activity_bar_widget_setup_engine (
-  MidiActivityBarWidget * self);
+live_waveform_widget_setup_engine (
+  LiveWaveformWidget * self);
 
 /**
  * @}

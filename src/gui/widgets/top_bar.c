@@ -21,6 +21,8 @@
 #include "audio/transport.h"
 #include "gui/widgets/cpu.h"
 #include "gui/widgets/digital_meter.h"
+#include "gui/widgets/live_waveform.h"
+#include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/transport_controls.h"
 #include "project.h"
@@ -63,18 +65,19 @@ top_bar_widget_class_init (TopBarWidgetClass * _klass)
   gtk_widget_class_set_css_name (klass,
                                  "top-bar");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    TopBarWidget,
-    digital_meters);
-  gtk_widget_class_bind_template_child (
-    klass,
-    TopBarWidget,
-    transport_controls);
-  gtk_widget_class_bind_template_child (
-    klass,
-    TopBarWidget,
-    cpu_load);
+#define BIND_CHILD(child) \
+  gtk_widget_class_bind_template_child ( \
+    klass, \
+    TopBarWidget, \
+    child)
+
+  BIND_CHILD (digital_meters);
+  BIND_CHILD (transport_controls);
+  BIND_CHILD (live_waveform);
+  BIND_CHILD (midi_activity);
+  BIND_CHILD (cpu_load);
+
+#undef BIND_CHILD
 }
 
 static void
@@ -113,6 +116,10 @@ top_bar_widget_init (TopBarWidget * self)
     GTK_WIDGET (self->digital_meters));
   gtk_widget_show_all (GTK_WIDGET (self));
 
+  live_waveform_widget_setup_engine (
+    self->live_waveform);
+  midi_activity_bar_widget_setup_engine (
+    self->midi_activity);
   cpu_widget_setup (
     self->cpu_load);
 }
