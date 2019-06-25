@@ -46,18 +46,50 @@
 
 typedef struct Channel Channel;
 
-enum PluginCategory
+typedef enum PluginCategory
 {
-  PC_UTILITY,
-  PC_GENERATOR,
-  PC_DELAY_REVERB,
-  PC_MODULATION,
-  PC_FILTER,
+  /* None specified */
+  PC_NONE,
+  PC_DELAY,
+  PC_REVERB,
   PC_DISTORTION,
+  PC_WAVESHAPER,
   PC_DYNAMICS,
-  PC_HARDWARE,
-  PC_AUDIO
-};
+  PC_AMPLIFIER,
+  PC_COMPRESSOR,
+  PC_ENVELOPE,
+  PC_EXPANDER,
+  PC_GATE,
+  PC_LIMITER,
+  PC_FILTER,
+  PC_ALLPASS_FILTER,
+  PC_BANDPASS_FILTER,
+  PC_COMB_FILTER,
+  PC_EQ,
+  PC_MULTI_EQ,
+  PC_PARA_EQ,
+  PC_HIGHPASS_FILTER,
+  PC_LOWPASS_FILTER,
+  PC_GENERATOR,
+  PC_CONSTANT,
+  PC_INSTRUMENT,
+  PC_OSCILLATOR,
+  PC_MIDI,
+  PC_MODULATOR,
+  PC_CHORUS,
+  PC_FLANGER,
+  PC_PHASER,
+  PC_SIMULATOR,
+  PC_SIMULATOR_REVERB,
+  PC_SPATIAL,
+  PC_SPECTRAL,
+  PC_PITCH,
+  PC_UTILITY,
+  PC_ANALYZER,
+  PC_CONVERTER,
+  PC_FUNCTION,
+  PC_MIXER,
+} PluginCategory;
 
 typedef enum PluginProtocol
 {
@@ -83,8 +115,9 @@ typedef struct PluginDescriptor
   char                 * author;
   char                 * name;
   char                 * website;
+  PluginCategory   category;
   /** Lv2 plugin subcategory. */
-  char                 * category;
+  char                 * category_str;
   /** Number of audio input ports. */
   int              num_audio_ins;
   /** Number of MIDI input ports. */
@@ -214,8 +247,8 @@ descriptor_fields_schema[] =
     PluginDescriptor, website,
    	0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
-    "category", CYAML_FLAG_POINTER,
-    PluginDescriptor, category,
+    "category_str", CYAML_FLAG_POINTER,
+    PluginDescriptor, category_str,
    	0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
     "num_audio_ins", CYAML_FLAG_DEFAULT,
@@ -335,8 +368,37 @@ plugin_clone (
  * Returns if the Plugin is an instrument or not.
  */
 int
-plugin_is_instrument (
+plugin_descriptor_is_instrument (
   PluginDescriptor * descr);
+
+/**
+ * Returns if the Plugin is an effect or not.
+ */
+int
+plugin_descriptor_is_effect (
+  PluginDescriptor * descr);
+
+/**
+ * Returns if the Plugin is a modulator or not.
+ */
+int
+plugin_descriptor_is_modulator (
+  PluginDescriptor * descr);
+
+/**
+ * Returns if the Plugin is a midi modifier or not.
+ */
+int
+plugin_descriptor_is_midi_modifier (
+  PluginDescriptor * descr);
+
+/**
+ * Returns the PluginCategory matching the given
+ * string.
+ */
+PluginCategory
+plugin_descriptor_string_to_category (
+  const char * str);
 
 /**
  * Moves the Plugin's automation from one Channel

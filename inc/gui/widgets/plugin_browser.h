@@ -97,8 +97,9 @@ typedef struct _PluginBrowserWidget
    * selected Plugin. */
   GtkLabel *           plugin_info;
 
-  /** The selected category. */
-  const char *         selected_category;
+  /** The selected categories. */
+  int                  selected_categories[60];
+  int                  num_selected_categories;
 
   GtkTreeModel *       collection_tree_model;
   GtkTreeModel *       protocol_tree_model;

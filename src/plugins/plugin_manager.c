@@ -109,7 +109,7 @@ print_plugins ()
                  i,
                  descr->name,
                  descr->uri,
-                 descr->category);
+                 descr->category_str);
     }
 }
 
@@ -142,7 +142,7 @@ scan_plugins (PluginManager * self)
         {
           PLUGIN_MANAGER->plugin_descriptors[PLUGIN_MANAGER->num_plugins++] =
             descriptor;
-          add_category (descriptor->category);
+          add_category (descriptor->category_str);
         }
     }
 

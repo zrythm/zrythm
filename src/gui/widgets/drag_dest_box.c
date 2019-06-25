@@ -174,8 +174,7 @@ on_drag_data_received (
           DRAG_DEST_BOX_TYPE_TRACKLIST)
         {
           TrackType tt;
-          if (g_strcmp0 (pd->category,
-                         "Instrument"))
+          if (plugin_descriptor_is_instrument (pd))
             tt = TRACK_TYPE_INSTRUMENT;
           else
             tt = TRACK_TYPE_BUS;

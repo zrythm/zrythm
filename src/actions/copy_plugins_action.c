@@ -72,7 +72,8 @@ copy_plugins_action_do (
           orig_pl->descr->name);
       track =
         track_new (
-          plugin_is_instrument (orig_pl->descr) ?
+          plugin_descriptor_is_instrument (
+            orig_pl->descr) ?
           TRACK_TYPE_INSTRUMENT :
           TRACK_TYPE_BUS, str);
       g_free (str);

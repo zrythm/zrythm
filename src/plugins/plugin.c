@@ -100,7 +100,8 @@ plugin_clone_descr (
   dest->author = g_strdup (src->author);
   dest->name = g_strdup (src->name);
   dest->website = g_strdup (src->website);
-  dest->category = g_strdup (src->category);
+  dest->category_str = g_strdup (src->category_str);
+  dest->category = src->category;
   dest->num_audio_ins = src->num_audio_ins;
   dest->num_midi_ins = src->num_midi_ins;
   dest->num_audio_outs = src->num_audio_outs;
@@ -241,16 +242,174 @@ plugin_generate_automatables (Plugin * plugin)
     }
 }
 
+#define IS_CAT(x) \
+  (descr->category == PC_##x)
+
 /**
  * Returns if the Plugin is an instrument or not.
  */
 int
-plugin_is_instrument (
+plugin_descriptor_is_instrument (
   PluginDescriptor * descr)
 {
-  return IS_PLUGIN_DESCR_CATEGORY (
-    descr,
-    LV2_INSTRUMENT_PLUGIN);
+  return
+    (descr->category > PC_NONE &&
+     descr->category == PC_INSTRUMENT) ||
+    (descr->category == PC_NONE &&
+     descr->num_midi_ins > 0 &&
+     descr->num_audio_outs > 0);
+}
+
+/**
+ * Returns if the Plugin is an effect or not.
+ */
+int
+plugin_descriptor_is_effect (
+  PluginDescriptor * descr)
+{
+
+  return
+    (descr->category > PC_NONE &&
+     (IS_CAT (DELAY) ||
+      IS_CAT (REVERB) ||
+      IS_CAT (DISTORTION) ||
+      IS_CAT (WAVESHAPER) ||
+      IS_CAT (DYNAMICS) ||
+      IS_CAT (AMPLIFIER) ||
+      IS_CAT (COMPRESSOR) ||
+      IS_CAT (ENVELOPE) ||
+      IS_CAT (EXPANDER) ||
+      IS_CAT (GATE) ||
+      IS_CAT (LIMITER) ||
+      IS_CAT (FILTER) ||
+      IS_CAT (ALLPASS_FILTER) ||
+      IS_CAT (BANDPASS_FILTER) ||
+      IS_CAT (COMB_FILTER) ||
+      IS_CAT (EQ) ||
+      IS_CAT (MULTI_EQ) ||
+      IS_CAT (PARA_EQ) ||
+      IS_CAT (HIGHPASS_FILTER) ||
+      IS_CAT (LOWPASS_FILTER) ||
+      IS_CAT (GENERATOR) ||
+      IS_CAT (CONSTANT) ||
+      IS_CAT (OSCILLATOR) ||
+      IS_CAT (MODULATOR) ||
+      IS_CAT (CHORUS) ||
+      IS_CAT (FLANGER) ||
+      IS_CAT (PHASER) ||
+      IS_CAT (SIMULATOR) ||
+      IS_CAT (SIMULATOR_REVERB) ||
+      IS_CAT (SPATIAL) ||
+      IS_CAT (SPECTRAL) ||
+      IS_CAT (PITCH) ||
+      IS_CAT (UTILITY) ||
+      IS_CAT (ANALYZER) ||
+      IS_CAT (CONVERTER) ||
+      IS_CAT (FUNCTION) ||
+      IS_CAT (MIXER))) ||
+    (descr->category == PC_NONE &&
+     descr->num_audio_ins > 0 &&
+     descr->num_audio_outs > 0);
+}
+
+/**
+ * Returns if the Plugin is a modulator or not.
+ */
+int
+plugin_descriptor_is_modulator (
+  PluginDescriptor * descr)
+{
+  return
+    (descr->category == PC_NONE ||
+     (descr->category > PC_NONE &&
+      (IS_CAT (ENVELOPE) ||
+       IS_CAT (GENERATOR) ||
+       IS_CAT (CONSTANT) ||
+       IS_CAT (OSCILLATOR) ||
+       IS_CAT (MODULATOR) ||
+       IS_CAT (UTILITY) ||
+       IS_CAT (CONVERTER) ||
+       IS_CAT (FUNCTION)))) &&
+    descr->num_cv_outs > 0;
+}
+
+/**
+ * Returns if the Plugin is a midi modifier or not.
+ */
+int
+plugin_descriptor_is_midi_modifier (
+  PluginDescriptor * descr)
+{
+  return
+    (descr->category > PC_NONE &&
+     descr->category == PC_MIDI) ||
+    (descr->category == PC_NONE &&
+     descr->num_midi_ins > 0 &&
+     descr->num_midi_outs > 0);
+}
+
+#undef IS_CAT
+
+/**
+ * Returns the PluginCategory matching the given
+ * string.
+ */
+PluginCategory
+plugin_descriptor_string_to_category (
+  const char * str)
+{
+  PluginCategory category = PC_NONE;
+
+#define CHECK_CAT(term,cat) \
+  if (g_strrstr (str, term)) \
+    category = PC_##cat
+
+  /* add category */
+  CHECK_CAT ("Delay", DELAY);
+  CHECK_CAT ("Reverb", REVERB);
+  CHECK_CAT ("Distortion", DISTORTION);
+  CHECK_CAT ("Waveshaper", WAVESHAPER);
+  CHECK_CAT ("Dynamics", DYNAMICS);
+  CHECK_CAT ("Amplifier", AMPLIFIER);
+  CHECK_CAT ("Compressor", COMPRESSOR);
+  CHECK_CAT ("Envelope", ENVELOPE);
+  CHECK_CAT ("Expander", EXPANDER);
+  CHECK_CAT ("Gate", GATE);
+  CHECK_CAT ("Limiter", LIMITER);
+  CHECK_CAT ("Filter", FILTER);
+  CHECK_CAT ("Allpass", ALLPASS_FILTER);
+  CHECK_CAT ("Bandpass", BANDPASS_FILTER);
+  CHECK_CAT ("Comb", COMB_FILTER);
+  CHECK_CAT ("Equaliser", EQ);
+  CHECK_CAT ("Equalizer", EQ);
+  CHECK_CAT ("Multiband", MULTI_EQ);
+  CHECK_CAT ("Para", PARA_EQ);
+  CHECK_CAT ("Highpass", HIGHPASS_FILTER);
+  CHECK_CAT ("Lowpass", LOWPASS_FILTER);
+  CHECK_CAT ("Generator", GENERATOR);
+  CHECK_CAT ("Constant", CONSTANT);
+  CHECK_CAT ("Instrument", INSTRUMENT);
+  CHECK_CAT ("Oscillator", OSCILLATOR);
+  CHECK_CAT ("MIDI", MIDI);
+  CHECK_CAT ("Modulator", MODULATOR);
+  CHECK_CAT ("Chorus", CHORUS);
+  CHECK_CAT ("Flanger", FLANGER);
+  CHECK_CAT ("Phaser", PHASER);
+  CHECK_CAT ("Simulator", SIMULATOR);
+  CHECK_CAT ("SimulatorReverb", SIMULATOR_REVERB);
+  CHECK_CAT ("Spatial", SPATIAL);
+  CHECK_CAT ("Spectral", SPECTRAL);
+  CHECK_CAT ("Pitch", PITCH);
+  CHECK_CAT ("Utility", UTILITY);
+  CHECK_CAT ("Analyser", ANALYZER);
+  CHECK_CAT ("Analyzer", ANALYZER);
+  CHECK_CAT ("Converter", CONVERTER);
+  CHECK_CAT ("Function", FUNCTION);
+  CHECK_CAT ("Mixer", MIXER);
+
+#undef CHECK_CAT
+
+  return category;
 }
 
 /**

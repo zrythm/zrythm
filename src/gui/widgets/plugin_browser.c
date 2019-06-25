@@ -31,6 +31,7 @@
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -79,7 +80,7 @@ on_row_activated (GtkTreeView       *tree_view,
     g_value_get_pointer (&value);
 
   TrackType tt;
-  if (plugin_is_instrument (descr))
+  if (plugin_descriptor_is_instrument (descr))
     tt = TRACK_TYPE_INSTRUMENT;
   else
     tt = TRACK_TYPE_BUS;
@@ -101,30 +102,79 @@ on_row_activated (GtkTreeView       *tree_view,
  * Used for filtering based on selected category.
  */
 static gboolean
-visible_func (GtkTreeModel *model,
-              GtkTreeIter  *iter,
-              gpointer      data)
+visible_func (
+  GtkTreeModel *model,
+  GtkTreeIter  *iter,
+  PluginBrowserWidget * self)
 {
-  PluginBrowserWidget * self = Z_PLUGIN_BROWSER_WIDGET (data);
-
-  // Visible if row is non-empty and category matches selected
+  // Visible if row is non-empty and category
+  // matches selected
   PluginDescriptor *descr;
-  gboolean visible = FALSE;
 
   gtk_tree_model_get (
     model, iter, PL_COLUMN_DESCR, &descr, -1);
-  if (!self->selected_category)
+
+  int instruments_active, effects_active,
+      modulators_active, midi_modifiers_active;
+  instruments_active =
+    gtk_toggle_tool_button_get_active (
+      self->toggle_instruments);
+  effects_active =
+    gtk_toggle_tool_button_get_active (
+      self->toggle_effects);
+  modulators_active =
+    gtk_toggle_tool_button_get_active (
+      self->toggle_modulators);
+  midi_modifiers_active =
+    gtk_toggle_tool_button_get_active (
+      self->toggle_midi_modifiers);
+
+  /* no filter, all visible */
+  if (self->num_selected_categories == 0 &&
+      !instruments_active &&
+      !effects_active &&
+      !modulators_active &&
+      !midi_modifiers_active)
+    return TRUE;
+
+  int visible = FALSE;
+
+  /* not visible if category selected and plugin
+   * doesn't match */
+  if (self->num_selected_categories > 0)
     {
-      visible = TRUE;
-    }
-  else if (descr->category &&
-           strcmp (descr->category,
-                   self->selected_category) == 0)
-    {
-      visible = TRUE;
+      for (int i = 0;
+           i < self->num_selected_categories; i++)
+        {
+          if (descr->category ==
+                self->selected_categories[i])
+            {
+              visible = TRUE;
+              break;
+            }
+        }
+
+      /* not visible if the category is not one
+       * of the selected categories */
+      if (!visible)
+        return FALSE;
     }
 
-  return visible;
+  /* not visibile if plugin type doesn't match */
+  if (instruments_active &&
+      !plugin_descriptor_is_instrument (descr))
+    return FALSE;
+  if (effects_active &&
+      !plugin_descriptor_is_effect (descr))
+    return FALSE;
+  if (modulators_active &&
+      !plugin_descriptor_is_modulator (descr))
+    return FALSE;
+  if (midi_modifiers_active &&
+      !plugin_descriptor_is_midi_modifier (descr))
+    return FALSE;
+
+  return TRUE;
 }
 
 static void
@@ -228,63 +278,87 @@ update_plugin_info_label (PluginBrowserWidget * self,
 }
 
 static void
-on_selection_changed (GtkTreeSelection * ts,
-                      gpointer         user_data)
+cat_selected_foreach (
+  GtkTreeModel *model,
+  GtkTreePath *path,
+  GtkTreeIter *iter,
+  PluginBrowserWidget * self)
 {
-  PluginBrowserWidget * self = Z_PLUGIN_BROWSER_WIDGET (user_data);
-  GtkTreeView * tv = gtk_tree_selection_get_tree_view (ts);
-  GtkTreeModel * model = gtk_tree_view_get_model (tv);
-  GList * selected_rows = gtk_tree_selection_get_selected_rows (ts,
-                                                                NULL);
-  if (selected_rows)
+  char * str;
+  gtk_tree_model_get (
+    model, iter, 0, &str, -1);
+
+  self->selected_categories[
+    self->num_selected_categories++] =
+      plugin_descriptor_string_to_category (
+        str);
+
+  g_free (str);
+}
+
+static void
+on_selection_changed (
+  GtkTreeSelection * ts,
+  PluginBrowserWidget * self)
+{
+  GtkTreeView * tv =
+    gtk_tree_selection_get_tree_view (ts);
+  GtkTreeModel * model =
+    gtk_tree_view_get_model (tv);
+  GList * selected_rows =
+    gtk_tree_selection_get_selected_rows (
+      ts,
+      NULL);
+
+  if (model == self->category_tree_model)
+    {
+      self->num_selected_categories = 0;
+
+      gtk_tree_selection_selected_foreach (
+        ts,
+        (GtkTreeSelectionForeachFunc)
+          cat_selected_foreach,
+        self);
+
+      gtk_tree_model_filter_refilter (
+        self->plugin_tree_model);
+    }
+  else if (selected_rows &&
+           model ==
+             GTK_TREE_MODEL (
+               self->plugin_tree_model))
     {
       GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
-      /*gint * indices = gtk_tree_path_get_indices (tp);*/
-      /*GtkTreeRowReference *rr =*/
-        /*gtk_tree_row_reference_new (MAIN_WINDOW->plugin_browser->plugin_tree_model,*/
-                                    /*tp);*/
       GtkTreeIter iter;
-      gtk_tree_model_get_iter (model,
-                               &iter,
-                               tp);
+      gtk_tree_model_get_iter (
+        model, &iter, tp);
       GValue value = G_VALUE_INIT;
 
-      if (model == self->category_tree_model)
-        {
-          gtk_tree_model_get_value (model,
-                                    &iter,
-                                    0,
-                                    &value);
-          self->selected_category =
-            g_value_get_string (&value);
-          gtk_tree_model_filter_refilter (
-            self->plugin_tree_model);
-        }
-      else if (model ==
-               GTK_TREE_MODEL (self->plugin_tree_model))
-        {
-          gtk_tree_model_get_value (model,
-                                    &iter,
-                                    PL_COLUMN_DESCR,
-                                    &value);
-          PluginDescriptor * descr =
-            g_value_get_pointer (&value);
-          char * label = g_strdup_printf (
-            "%s\n%s, %d\nAudio: %d, %d\nMidi: %d, "
-            "%d\nControls: %d, %d",
-            descr->author,
-            descr->category,
-            descr->protocol,
-            descr->num_audio_ins,
-            descr->num_audio_outs,
-            descr->num_midi_ins,
-            descr->num_midi_outs,
-            descr->num_ctrl_ins,
-            descr->num_ctrl_outs);
-          update_plugin_info_label (self,
-                                    label);
-        }
+      gtk_tree_model_get_value (model,
+                                &iter,
+                                PL_COLUMN_DESCR,
+                                &value);
+      PluginDescriptor * descr =
+        g_value_get_pointer (&value);
+      char * label = g_strdup_printf (
+        "%s\n%s, %d\nAudio: %d, %d\nMidi: %d, "
+        "%d\nControls: %d, %d",
+        descr->author,
+        descr->category_str,
+        descr->protocol,
+        descr->num_audio_ins,
+        descr->num_audio_outs,
+        descr->num_midi_ins,
+        descr->num_midi_outs,
+        descr->num_ctrl_ins,
+        descr->num_ctrl_outs);
+      update_plugin_info_label (self,
+                                label);
     }
+
+  g_list_free_full (
+    selected_rows,
+    (GDestroyNotify) gtk_tree_path_free);
 }
 
 static void
@@ -383,10 +457,10 @@ create_model_for_plugins (PluginBrowserWidget * self)
       PluginDescriptor * descr =
         PLUGIN_MANAGER->plugin_descriptors[i];
       gchar * icon_name = "z-plugins";
-      if (!strcmp (descr->category, "Instrument"))
+      if (plugin_descriptor_is_instrument (descr))
         icon_name = "z-audio-midi";
-      else if (!strcmp (descr->category, "Distortion"))
-        icon_name = "z-distortionfx";
+      /*else if (!strcmp (descr->category, "Distortion"))*/
+        /*icon_name = "z-distortionfx";*/
 
       // Add a new row to the model
       gtk_list_store_append (list_store, &iter);
@@ -404,9 +478,8 @@ create_model_for_plugins (PluginBrowserWidget * self)
       NULL);
   gtk_tree_model_filter_set_visible_func (
     GTK_TREE_MODEL_FILTER (model),
-    visible_func,
-    self,
-    NULL);
+    (GtkTreeModelFilterVisibleFunc) visible_func,
+    self, NULL);
 
   return model;
 }

@@ -1319,7 +1319,11 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
   const LilvNode * label =
     lilv_plugin_class_get_label(pclass);
   str = lilv_node_as_string (label);
-  pd->category = g_strdup (str);
+  pd->category_str = g_strdup (str);
+
+  pd->category =
+    plugin_descriptor_string_to_category (
+      pd->category_str);
 
   /* count atom-event-ports that feature
    * atom:supports <http://lv2plug.in/ns/ext/midi#MidiEvent>
