@@ -141,7 +141,7 @@ edit_midi_arranger_selections_action_stringize (
     {
       case EMAS_TYPE_RESIZE_L:
       case EMAS_TYPE_RESIZE_R:
-        return g_strdup (_("Resize Midi Note(s)"));
+        return g_strdup (_("Resize MIDI Note(s)"));
       default:
         g_return_val_if_reached (
           g_strdup (""));
