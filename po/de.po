@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-06-27 22:02+0000\n"
+"PO-Revision-Date: 2019-06-29 11:02+0000\n"
 "Last-Translator: Waui <wau-wau@tutanota.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
 "\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7.1-dev\n"
+"X-Generator: Weblate 3.7.1\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
@@ -41,7 +41,7 @@ msgstr "Lade Projekt"
 
 #: src/project.c:159 src/audio/track.c:792
 msgid "Master"
-msgstr ""
+msgstr "Master"
 
 #. create untitled project
 #: src/project.c:166
@@ -68,7 +68,7 @@ msgstr "_Speichern"
 
 #: src/plugins/lv2_gtk.c:467
 msgid "URI (Optional):"
-msgstr ""
+msgstr "URI (Optional):"
 
 #: src/plugins/lv2_gtk.c:471
 msgid "_Prefix plugin name"
@@ -101,11 +101,11 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:59
 msgid "INPUTS"
-msgstr ""
+msgstr "EINGÄNGE"
 
 #: src/gui/widgets/port_connections_popover.c:78
 msgid "OUTPUTS"
-msgstr ""
+msgstr "AUSGÄNGE"
 
 #: src/gui/widgets/port_connections_popover.c:164
 msgid "Add"
@@ -122,7 +122,7 @@ msgstr "Wähle…"
 
 #: src/gui/widgets/midi_controller_mb.c:119
 msgid "Click to enable MIDI controllers to be connected automatically"
-msgstr ""
+msgstr "Klick um Midi-Controller automatisch verbinden zu lassen"
 
 #: src/gui/widgets/first_run_assistant.c:84
 #: src/gui/widgets/first_run_assistant.c:116
@@ -153,7 +153,7 @@ msgstr ""
 
 #: src/gui/widgets/left_dock_edge.c:46
 msgid "Inspector"
-msgstr ""
+msgstr "Inspector"
 
 #: src/gui/widgets/left_dock_edge.c:56
 msgid "Visibility"
@@ -213,6 +213,8 @@ msgid ""
 "Region - Click and drag to move around (hold Shift to disable snapping) - "
 "Double click to bring up the clip editor"
 msgstr ""
+"Region – Klicke und ziehe um zu verschieben (halte die Umschalttaste um das "
+"Einrasten zu deaktivieren) – Doppelklick zum Aufrufen des Clip-Editors"
 
 #: src/gui/widgets/home_toolbar.c:58 resources/ui/home_toolbar.ui:14
 msgid "Undo"
@@ -220,15 +222,15 @@ msgstr "Rückgängig machen"
 
 #: src/gui/widgets/home_toolbar.c:59 resources/ui/home_toolbar.ui:27
 msgid "Redo"
-msgstr ""
+msgstr "Wiederherstellen"
 
 #: src/gui/widgets/right_dock_edge.c:51
 msgid "File Browser"
-msgstr ""
+msgstr "Dateibrowser"
 
 #: src/gui/widgets/right_dock_edge.c:67
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Erweiterungsbrowser"
 
 #: src/gui/widgets/route_target_selector.c:80
 msgid "Routed to Stereo Out"
@@ -317,7 +319,7 @@ msgstr ""
 
 #: src/gui/widgets/track.c:144
 msgid "Show Automation Lanes"
-msgstr ""
+msgstr "Zeige Automationsunterspuren"
 
 #: src/gui/widgets/track.c:151
 msgid ""
@@ -468,7 +470,7 @@ msgstr "PortAudio-Fehler: %s"
 #: src/audio/track_lane.c:43
 #, c-format
 msgid "Lane %d"
-msgstr ""
+msgstr "Unterspur %d"
 
 #: src/audio/track.c:783
 msgid "Instrument"
@@ -592,7 +594,7 @@ msgstr "Kopiere %d Erweiterungen"
 #: src/actions/move_midi_arranger_selections_action.c:115
 #: src/actions/move_timeline_selections_action.c:101
 msgid "Move Object(s)"
-msgstr ""
+msgstr "Objekt(e) verschieben"
 
 #: src/actions/duplicate_timeline_selections_action.c:119
 #: src/actions/duplicate_midi_arranger_selections_action.c:121
@@ -611,12 +613,12 @@ msgstr "Objekt(e) erstellen"
 #: src/actions/move_plugins_action.c:147
 #, c-format
 msgid "Move %s"
-msgstr ""
+msgstr "%s verschieben"
 
 #: src/actions/move_plugins_action.c:151
 #, c-format
 msgid "Move %d Plugins"
-msgstr ""
+msgstr "%d Erweiterungen verschieben"
 
 #: src/actions/edit_timeline_selections_action.c:131
 msgid "Resize Object(s)"
@@ -648,12 +650,12 @@ msgstr ""
 
 #: src/actions/move_tracks_action.c:128
 msgid "Move Track"
-msgstr ""
+msgstr "Spur verschieben"
 
 #: src/actions/move_tracks_action.c:131
 #, c-format
 msgid "Move %d Tracks"
-msgstr ""
+msgstr "%d Spuren verschieben"
 
 #: src/actions/create_tracks_action.c:52
 #, c-format
@@ -786,6 +788,9 @@ msgid ""
 "Finally, select the MIDI devices you wish to auto-connect when Zrythm starts "
 "(You can skip this step and set them up later)"
 msgstr ""
+"Zuletzt wähle die MIDI-Geräte, die du beim Start von Zrythm automatisch "
+"verbinden lassen möchtest (Du kannst diesen Schritt überspringen und sie "
+"später einrichten)"
 
 #: resources/ui/first_run_assistant.ui:287
 msgid "MIDI Devices"
@@ -809,7 +814,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:89
 msgid "Mixer"
-msgstr ""
+msgstr "Mixer"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Modulators"
@@ -897,7 +902,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:20 resources/ui/preferences.ui:27
 msgid "Preferences"
-msgstr ""
+msgstr "Einstellungen"
 
 #: resources/ui/shortcuts.ui:27
 msgid "Keyboard Shortcuts"
@@ -985,7 +990,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:184
 msgid "Tool"
-msgstr ""
+msgstr "Werkzeug"
 
 #: resources/ui/shortcuts.ui:188
 msgid "Select/Stretch tool"
@@ -1053,11 +1058,11 @@ msgstr ""
 
 #: resources/ui/midi_controller_popover.ui:79
 msgid "Rescan"
-msgstr ""
+msgstr "Erneut scannen"
 
 #: resources/ui/midi_controller_popover.ui:83
 msgid "Scan again for MIDI controllers"
-msgstr ""
+msgstr "Scanne erneut nach MIDI-Controllern"
 
 #: resources/ui/inspector_chord.ui:43
 msgid "Scale"
@@ -1124,11 +1129,11 @@ msgstr ""
 
 #: resources/ui/track_lane.ui:15
 msgid "Lane 1"
-msgstr ""
+msgstr "Unterspur 1"
 
 #: resources/ui/port_selector_popover.ui:16
 msgid "Select a port..."
-msgstr ""
+msgstr "Wähle einen Port…"
 
 #: resources/ui/port_selector_popover.ui:41
 msgid "Track"
@@ -1140,7 +1145,7 @@ msgstr "Erweiterung"
 
 #: resources/ui/port_selector_popover.ui:147
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: resources/ui/donate_dialog.ui:7
 msgid "Donate"
