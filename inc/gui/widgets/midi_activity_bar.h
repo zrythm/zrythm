@@ -50,6 +50,14 @@ typedef enum MidiActivityBarType
   MAB_TYPE_ENGINE,
 } MidiActivityBarType;
 
+typedef enum MidiActivityBarAnimation
+{
+  /** Shows a bars that decreases over time. */
+  MAB_ANIMATION_BAR,
+  /** Shows a flash that fades out over time. */
+  MAB_ANIMATION_FLASH,
+} MidiActivityBarAnimation;
+
 typedef struct _MidiActivityBarWidget
 {
   GtkDrawingArea parent_instance;
@@ -58,6 +66,8 @@ typedef struct _MidiActivityBarWidget
   Track  *       track;
 
   MidiActivityBarType type;
+
+  MidiActivityBarAnimation animation;
 
   /** System time at last trigger, so we know
    * how to draw the bar (for fading down). */
@@ -76,6 +86,14 @@ void
 midi_activity_bar_widget_setup_track (
   MidiActivityBarWidget * self,
   Track *                 track);
+
+/**
+ * Sets the animation.
+ */
+void
+midi_activity_bar_widget_set_animation (
+  MidiActivityBarWidget * self,
+  MidiActivityBarAnimation animation);
 
 /**
  * Creates a MidiActivityBarWidget for the
