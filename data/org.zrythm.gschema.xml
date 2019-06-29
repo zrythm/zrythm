@@ -68,6 +68,18 @@
     <value nick="notes" value="0"/>
     <value nick="numbers" value="1"/>
   </enum>
+  <enum id="org.zrythm.ui.plugin-browser-tab">
+    <value nick="collection" value="0"/>
+    <value nick="category" value="1"/>
+    <value nick="protocol" value="2"/>
+  </enum>
+  <enum id="org.zrythm.ui.plugin-browser-filter">
+    <value nick="none" value="0"/>
+    <value nick="instrument" value="1"/>
+    <value nick="effect" value="2"/>
+    <value nick="modulator" value="3"/>
+    <value nick="midi-effect" value="4"/>
+  </enum>
   <enum id="org.zrythm.ui.piano-roll-highlight-enum">
     <value nick="none" value="0"/>
     <value nick="chord" value="1"/>
@@ -279,7 +291,7 @@
     </key>
 
     <!-- KEY: browser divider position -->
-    <key name='browser-divider-position' type='i'>
+    <key name="browser-divider-position" type="i">
       <default>220</default>
       <summary>Divider position</summary>
       <description>
@@ -287,6 +299,25 @@
         the GtkPaned
       </description>
     </key>
+
+    <!-- KEY: plugin browser tab -->
+    <key name="plugin-browser-tab" enum="org.zrythm.ui.plugin-browser-tab">
+      <default>"category"</default>
+      <summary>Plugin Browser tab</summary>
+      <description>
+         Selected Plugin Browser tab.
+      </description>
+    </key>
+
+    <!-- KEY: plugin browser filter -->
+    <key name="plugin-browser-filter" enum="org.zrythm.ui.plugin-browser-filter">
+      <default>"none"</default>
+      <summary>Plugin Browser filter</summary>
+      <description>
+         Selected Plugin Browser filter.
+      </description>
+    </key>
+
   </schema>
 
 </schemalist>

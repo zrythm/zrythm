@@ -387,27 +387,13 @@ create_model_for_collections ()
 {
   GtkListStore *list_store;
   /*GtkTreePath *path;*/
-  GtkTreeIter iter;
-  gint i;
+  /*GtkTreeIter iter;*/
+  /*gint i;*/
 
   /* plugin name, index */
-  list_store = gtk_list_store_new (2,
-                                   G_TYPE_STRING, G_TYPE_INT);
-
-  for (i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
-    {
-      const gchar * name =
-        PLUGIN_MANAGER->plugin_descriptors[i]->name;
-
-      // Add a new row to the model
-      gtk_list_store_append (list_store, &iter);
-      gtk_list_store_set (list_store, &iter,
-                          0, name,
-                          -1);
-      gtk_list_store_set (list_store, &iter,
-                          1, i,
-                          -1);
-    }
+  list_store =
+    gtk_list_store_new (
+      2, G_TYPE_STRING, G_TYPE_INT);
 
   return GTK_TREE_MODEL (list_store);
 }
@@ -627,10 +613,125 @@ tree_view_setup (
 }
 
 static void
+on_visible_child_changed (
+  GtkStack * stack,
+  GParamSpec * pspec,
+  PluginBrowserWidget * self)
+{
+  GtkWidget * child =
+    gtk_stack_get_visible_child (stack);
+
+  if (child == GTK_WIDGET (self->collection_scroll))
+    {
+      S_UI_SET_ENUM (
+        "plugin-browser-tab",
+        PLUGIN_BROWSER_TAB_COLLECTION);
+    }
+  else if (child ==
+           GTK_WIDGET (self->category_scroll))
+    {
+      S_UI_SET_ENUM (
+        "plugin-browser-tab",
+        PLUGIN_BROWSER_TAB_CATEGORY);
+    }
+  else if (child ==
+           GTK_WIDGET (self->protocol_scroll))
+    {
+      S_UI_SET_ENUM (
+        "plugin-browser-tab",
+        PLUGIN_BROWSER_TAB_PROTOCOL);
+    }
+}
+
+static void
 toggles_changed (
   GtkToggleToolButton * btn,
   PluginBrowserWidget * self)
 {
+  if (gtk_toggle_tool_button_get_active (btn))
+    {
+      /* block signals, unset all, unblock */
+      g_signal_handlers_block_by_func (
+        self->toggle_instruments,
+        toggles_changed, self);
+      g_signal_handlers_block_by_func (
+        self->toggle_effects,
+        toggles_changed, self);
+      g_signal_handlers_block_by_func (
+        self->toggle_modulators,
+        toggles_changed, self);
+      g_signal_handlers_block_by_func (
+        self->toggle_midi_modifiers,
+        toggles_changed, self);
+
+      if (btn == self->toggle_instruments)
+        {
+          S_UI_SET_ENUM (
+            "plugin-browser-filter",
+            PLUGIN_BROWSER_FILTER_INSTRUMENT);
+          gtk_toggle_tool_button_set_active (
+            self->toggle_effects, 0);
+          gtk_toggle_tool_button_set_active (
+            self->toggle_modulators, 0);
+          gtk_toggle_tool_button_set_active (
+            self->toggle_midi_modifiers, 0);
+        }
+      else if (btn == self->toggle_effects)
+        {
+          S_UI_SET_ENUM (
+            "plugin-browser-filter",
+            PLUGIN_BROWSER_FILTER_EFFECT);
+          gtk_toggle_tool_button_set_active (
+            self->toggle_instruments, 0);
+          gtk_toggle_tool_button_set_active (
+            self->toggle_modulators, 0);
+          gtk_toggle_tool_button_set_active (
+            self->toggle_midi_modifiers, 0);
+        }
+      else if (btn == self->toggle_modulators)
+        {
+          S_UI_SET_ENUM (
+            "plugin-browser-filter",
+            PLUGIN_BROWSER_FILTER_MODULATOR);
+          gtk_toggle_tool_button_set_active (
+            self->toggle_instruments, 0);
+          gtk_toggle_tool_button_set_active (
+            self->toggle_effects, 0);
+          gtk_toggle_tool_button_set_active (
+            self->toggle_midi_modifiers, 0);
+        }
+      else if (btn == self->toggle_midi_modifiers)
+        {
+          S_UI_SET_ENUM (
+            "plugin-browser-filter",
+            PLUGIN_BROWSER_FILTER_MIDI_EFFECT);
+          gtk_toggle_tool_button_set_active (
+            self->toggle_instruments, 0);
+          gtk_toggle_tool_button_set_active (
+            self->toggle_effects, 0);
+          gtk_toggle_tool_button_set_active (
+            self->toggle_modulators, 0);
+        }
+
+      g_signal_handlers_unblock_by_func (
+        self->toggle_instruments,
+        toggles_changed, self);
+      g_signal_handlers_unblock_by_func (
+        self->toggle_effects,
+        toggles_changed, self);
+      g_signal_handlers_unblock_by_func (
+        self->toggle_modulators,
+        toggles_changed, self);
+      g_signal_handlers_unblock_by_func (
+        self->toggle_midi_modifiers,
+        toggles_changed, self);
+    }
+  else
+    {
+      S_UI_SET_ENUM (
+        "plugin-browser-filter",
+        PLUGIN_BROWSER_FILTER_NONE);
+    }
   gtk_tree_model_filter_refilter (
     self->plugin_tree_model);
 }
@@ -675,8 +776,63 @@ plugin_browser_widget_new ()
   /* for some reason setting the position here
    * gets ignored, so set it after 1 sec */
   g_timeout_add (
-    500,(GSourceFunc) do_after_init,
+    300,(GSourceFunc) do_after_init,
     GTK_PANED (self));
+
+  /* set the selected values */
+  PluginBrowserTab tab =
+    S_UI_GET_ENUM ("plugin-browser-tab");
+  PluginBrowserFilter filter =
+    S_UI_GET_ENUM ("plugin-browser-filter");
+
+  switch (tab)
+    {
+    case PLUGIN_BROWSER_TAB_COLLECTION:
+      gtk_stack_set_visible_child (
+        self->stack,
+        GTK_WIDGET (self->collection_scroll));
+      break;
+    case PLUGIN_BROWSER_TAB_CATEGORY:
+      gtk_stack_set_visible_child (
+        self->stack,
+        GTK_WIDGET (self->category_scroll));
+      break;
+    case PLUGIN_BROWSER_TAB_PROTOCOL:
+      gtk_stack_set_visible_child (
+        self->stack,
+        GTK_WIDGET (self->protocol_scroll));
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+
+  switch (filter)
+    {
+    case PLUGIN_BROWSER_FILTER_NONE:
+      break;
+    case PLUGIN_BROWSER_FILTER_INSTRUMENT:
+      gtk_toggle_tool_button_set_active (
+        self->toggle_instruments, 1);
+      break;
+    case PLUGIN_BROWSER_FILTER_EFFECT:
+      gtk_toggle_tool_button_set_active (
+        self->toggle_effects, 1);
+      break;
+    case PLUGIN_BROWSER_FILTER_MODULATOR:
+      gtk_toggle_tool_button_set_active (
+        self->toggle_modulators, 1);
+      break;
+    case PLUGIN_BROWSER_FILTER_MIDI_EFFECT:
+      gtk_toggle_tool_button_set_active (
+        self->toggle_midi_modifiers, 1);
+      break;
+    }
+
+  /* notify when tab changes */
+  g_signal_connect (
+    G_OBJECT (self->stack), "notify::visible-child",
+    G_CALLBACK (on_visible_child_changed), self);
 
   return self;
 }

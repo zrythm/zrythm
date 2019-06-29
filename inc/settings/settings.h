@@ -29,6 +29,14 @@
 #define S_IS_DEBUG (g_settings_get_int ( \
   S_GENERAL, "debug"))
 
+#define S_UI_SET_ENUM(key,val) \
+  g_settings_set_enum ( \
+    S_UI, key, val)
+
+#define S_UI_GET_ENUM(key) \
+  g_settings_get_enum ( \
+    S_UI, key)
+
 typedef struct Settings
 {
   GSettings * root;

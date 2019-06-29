@@ -49,6 +49,22 @@ typedef struct _ExpanderBoxWidget ExpanderBoxWidget;
 #define MW_PLUGIN_BROWSER \
   MW_RIGHT_DOCK_EDGE->plugin_browser
 
+typedef enum
+{
+  PLUGIN_BROWSER_TAB_COLLECTION,
+  PLUGIN_BROWSER_TAB_CATEGORY,
+  PLUGIN_BROWSER_TAB_PROTOCOL,
+} PluginBrowserTab;
+
+typedef enum
+{
+  PLUGIN_BROWSER_FILTER_NONE,
+  PLUGIN_BROWSER_FILTER_INSTRUMENT,
+  PLUGIN_BROWSER_FILTER_EFFECT,
+  PLUGIN_BROWSER_FILTER_MODULATOR,
+  PLUGIN_BROWSER_FILTER_MIDI_EFFECT,
+} PluginBrowserFilter;
+
 /**
  * The plugin browser allows to browse and filter
  * available Plugin's on the system.
