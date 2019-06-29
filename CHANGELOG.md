@@ -1,6 +1,35 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.5.120] - 2019-06-29
+- Change appearance of meters (added captions, made the text smaller)
+- Change appearance of DSP/CPU meter (used icons insted of text)
+- Allow undoable moving of arranger objects using the selection info bar
+- German translations thanks to Waui (Weblate)
+- Change appearance of plugin browser (using toggles instead of expanders)
+- Add MIDI in activity bar in the top toolbar
+- Allow filtering by plugin type (instrument/effect/modulator/midi effect) in the plugin browser
+- Norwegian Bokmal translations thanks to kingu (Weblate)
+- Remember plugin browser selections on each run
+
+## [0.5.097] - 2019-06-21
+- Drop windows support
+- Add markers
+- New design for chords/scales
+- Change appearance of track icon (changes color to contrast track color)
+- Write backtrace to log file when crashing
+- Fix undo/redo issues when creating objects
+- Highlight loop area
+- Fix crash when creating automation points
+- Automation curves now start as straight lines
+- Make automation curves change slower when clicking and draging (better precision)
+- Can now connect more than one modulator to a plugin parameter
+- Can now set depth of modulation
+- Fix some undo/redo bugs when duplicating objects
+- Fix modulator size issue
+- Add stack switcher in the inspector (track/editor/plugin properties)
+- Can now move the playhead to the next/previous marker with numpad 4 and 6
+
 ## [0.5.074] - 2019-06-14
 - Add Chord and Scale objects in the arranger
 - Add Chord and Scale selector popups
