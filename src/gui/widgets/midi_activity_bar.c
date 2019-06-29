@@ -67,7 +67,7 @@ midi_activity_bar_draw_cb (
     }
 
   /* get value */
-  int trigger;
+  int trigger = 0;
   switch (self->type)
     {
     case MAB_TYPE_TRACK:
