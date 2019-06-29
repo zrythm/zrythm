@@ -83,10 +83,6 @@ draw_cb (
 
   /* draw caption and get its extents */
   int caption_textw, caption_texth;
-  /*GdkRGBA color;*/
-  /*gdk_rgba_parse (&color, "#00ccff");*/
-  /*cairo_set_source_rgba (*/
-    /*cr, color.red, color.green, color.blue, 1.0);*/
   cairo_set_source_rgba (
     cr, 1.0, 1.0, 1.0, 1.0);
   z_cairo_get_text_extents_for_widget_full (
@@ -101,6 +97,26 @@ draw_cb (
     /*cr, self->caption, width / 2 - caption_textw / 2,*/
     /*PADDING_TOP, CAPTION_FONT);*/
 
+  /* draw line */
+  if (self->draw_line)
+    {
+      cairo_set_line_width (cr, 1.0);
+      cairo_move_to (
+        cr, 0,
+        caption_texth +
+        PADDING_TOP);
+      cairo_line_to (
+        cr, width,
+        caption_texth +
+        PADDING_TOP);
+      cairo_stroke (cr);
+    }
+
+  /*GdkRGBA color;*/
+  /*gdk_rgba_parse (&color, "#D68A0C");*/
+  /*gdk_cairo_set_source_rgba (cr, &color);*/
+  cairo_set_source_rgba (
+    cr, 0.0, 1.0, 0.1, 1.0);
   char * text = NULL;
   int num_part, dec_part, bars, beats, sixteenths, ticks;
   int textw, texth;
@@ -337,20 +353,6 @@ draw_cb (
       g_free (text);
 
       break;
-    }
-
-  if (self->draw_line)
-    {
-      cairo_set_line_width (cr, 1.0);
-      cairo_move_to (
-        cr, 0,
-        caption_texth +
-        PADDING_TOP);
-      cairo_line_to (
-        cr, width,
-        caption_texth +
-        PADDING_TOP);
-      cairo_stroke (cr);
     }
 
  return FALSE;

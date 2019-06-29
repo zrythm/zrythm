@@ -106,9 +106,23 @@ midi_activity_bar_draw_cb (
         self->last_trigger_time;
       if (time_diff < MAX_TIME)
         {
-          cairo_rectangle (
-            cr, 0, height * (time_diff / MAX_TIME),
-            width, height);
+          if (self->animation == MAB_ANIMATION_BAR)
+            {
+              cairo_rectangle (
+                cr, 0,
+                height * (time_diff / MAX_TIME),
+                width, height);
+            }
+          else if (self->animation ==
+                     MAB_ANIMATION_FLASH)
+            {
+              color.alpha =
+                1.0 - time_diff / MAX_TIME;
+              gdk_cairo_set_source_rgba (
+                cr, &color);
+              cairo_rectangle (
+                cr, 0, 0, width, height);
+            }
           cairo_fill (cr);
         }
     }
@@ -125,6 +139,17 @@ update_activity (
   gtk_widget_queue_draw (widget);
 
   return G_SOURCE_CONTINUE;
+}
+
+/**
+ * Sets the animation.
+ */
+void
+midi_activity_bar_widget_set_animation (
+  MidiActivityBarWidget * self,
+  MidiActivityBarAnimation animation)
+{
+  self->animation = animation;
 }
 
 /**
