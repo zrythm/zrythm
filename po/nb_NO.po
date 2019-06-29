@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-06-10 14:40+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2019-06-27 22:02+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/nb_NO/>\n"
 "Language: nb_NO\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7-dev\n"
+"X-Generator: Weblate 3.7.1-dev\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
-msgstr ""
+msgstr "Henter innstillingene"
 
 #: src/zrythm.c:253
 msgid "Initializing audio engine"
-msgstr ""
+msgstr "Henter lydmotoren"
 
 #: src/zrythm.c:258
 msgid "Initializing plugin manager"
-msgstr ""
+msgstr "Henter programtilleggsbehandleren"
 
 #: src/zrythm.c:265
 msgid "Setting up backend"
-msgstr ""
+msgstr "Setter opp bakende"
 
 #: src/zrythm.c:272
 msgid "Loading project"
-msgstr ""
+msgstr "Laster prosjekt"
 
 #: src/project.c:159 src/audio/track.c:792
 msgid "Master"
@@ -46,29 +46,29 @@ msgstr ""
 #. create untitled project
 #: src/project.c:166
 msgid "Untitled Project"
-msgstr ""
+msgstr "Prosjekt uten tittel"
 
 #: src/project.c:437
 msgid "Project saved."
-msgstr ""
+msgstr "Prosjekt lagret."
 
 #: src/plugins/lv2_gtk.c:149
 msgid "Save State"
-msgstr ""
+msgstr "Lagringstilstand"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
 #: src/utils/dialogs.c:74 src/actions/actions.c:521
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
-msgstr ""
+msgstr "_Avbryt"
 
 #: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
 msgid "_Save"
-msgstr ""
+msgstr "_Lagre"
 
 #: src/plugins/lv2_gtk.c:467
 msgid "URI (Optional):"
-msgstr ""
+msgstr "URI (valgfritt):"
 
 #: src/plugins/lv2_gtk.c:471
 msgid "_Prefix plugin name"
@@ -81,7 +81,7 @@ msgstr ""
 #: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
 #: resources/ui/port_selector_popover.ui:207
 msgid "_OK"
-msgstr ""
+msgstr "_OK"
 
 #: src/plugins/lv2_gtk.c:781
 msgid "Unknown widget type for value"
@@ -93,7 +93,7 @@ msgstr ""
 
 #: src/plugins/lv2_gtk.c:1436
 msgid "Close"
-msgstr ""
+msgstr "Lukk"
 
 #: src/plugins/plugin_manager.c:223
 msgid "Error loading LV2 bundle dir: "
@@ -150,7 +150,7 @@ msgstr ""
 
 #: src/gui/widgets/left_dock_edge.c:56
 msgid "Visibility"
-msgstr ""
+msgstr "Synlighet"
 
 #: src/gui/widgets/port_selector_popover.c:209
 msgid "Track Ports"
@@ -209,19 +209,19 @@ msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:58 resources/ui/home_toolbar.ui:14
 msgid "Undo"
-msgstr ""
+msgstr "Angre"
 
 #: src/gui/widgets/home_toolbar.c:59 resources/ui/home_toolbar.ui:27
 msgid "Redo"
-msgstr ""
+msgstr "Gjenta"
 
 #: src/gui/widgets/right_dock_edge.c:51
 msgid "File Browser"
-msgstr ""
+msgstr "Filutforsker"
 
 #: src/gui/widgets/right_dock_edge.c:67
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Programtilleggsutforsker"
 
 #: src/gui/widgets/route_target_selector.c:80
 msgid "Routed to Stereo Out"
@@ -294,19 +294,19 @@ msgstr ""
 
 #: src/gui/widgets/track.c:140
 msgid "Mute"
-msgstr ""
+msgstr "Forstum"
 
 #: src/gui/widgets/track.c:141 src/gui/widgets/track.c:145
 msgid "Freeze"
-msgstr ""
+msgstr "Frys"
 
 #: src/gui/widgets/track.c:142
 msgid "Lock"
-msgstr ""
+msgstr "Lås"
 
 #: src/gui/widgets/track.c:143
 msgid "Show UI"
-msgstr ""
+msgstr "Vis grensesnitt"
 
 #: src/gui/widgets/track.c:144
 msgid "Show Automation Lanes"
@@ -322,26 +322,26 @@ msgstr ""
 #: src/gui/widgets/track.c:448
 #, c-format
 msgid "_Delete Track"
-msgstr ""
+msgstr "_Slett spor"
 
 #: src/gui/widgets/track.c:451
 #, c-format
 msgid "_Delete %d Tracks"
-msgstr ""
+msgstr "_Slett %d spor"
 
 #: src/gui/widgets/track.c:467
 #, c-format
 msgid "_Duplicate Track"
-msgstr ""
+msgstr "_Dupliser spor"
 
 #: src/gui/widgets/track.c:471
 #, c-format
 msgid "_Duplicate %d Tracks"
-msgstr ""
+msgstr "_Dupliser %d spor"
 
 #: src/gui/widgets/track.c:490
 msgid "Add Region"
-msgstr ""
+msgstr "Legg til region"
 
 #: src/gui/widgets/fader.c:155
 msgid "Fader - Click and drag to change value"
@@ -370,11 +370,11 @@ msgstr ""
 
 #: src/utils/dialogs.c:41
 msgid "Open Project"
-msgstr ""
+msgstr "Åpne prosjekt"
 
 #: src/utils/dialogs.c:46
 msgid "_Open"
-msgstr ""
+msgstr "_Åpne"
 
 #: src/utils/dialogs.c:69
 msgid "Overwrite Plugin"
@@ -394,35 +394,36 @@ msgstr ""
 
 #: src/utils/ui.c:523
 msgid "German [de]"
-msgstr ""
+msgstr "Tysk [de]"
 
 #: src/utils/ui.c:524
 msgid "French [fr]"
-msgstr ""
+msgstr "Fransk [fr]"
 
 #: src/utils/ui.c:525
 msgid "Italian [it]"
-msgstr ""
+msgstr "Italiensk [it]"
 
 #: src/utils/ui.c:526
 msgid "Spanish [es]"
-msgstr ""
+msgstr "Spansk [es]"
 
 #: src/utils/ui.c:527
 msgid "Japanese [ja]"
-msgstr ""
+msgstr "Japansk [ja]"
 
 #: src/utils/ui.c:528
 msgid "Portuguese [pt]"
-msgstr ""
+msgstr "Portugisisk [pt]"
 
 #: src/utils/ui.c:529
 msgid "Russian [ru]"
-msgstr ""
+msgstr "Russisk [ru]"
 
 #: src/utils/ui.c:530
+#, fuzzy
 msgid "Chinese [zh]"
-msgstr ""
+msgstr "Kinesisk [zh]"
 
 #. TRANSLATORS: Dummy audio backend
 #: src/utils/ui.c:547 src/utils/ui.c:564
@@ -463,15 +464,15 @@ msgstr ""
 
 #: src/audio/track.c:783
 msgid "Instrument"
-msgstr ""
+msgstr "Instrument"
 
 #: src/audio/track.c:786
 msgid "Audio"
-msgstr ""
+msgstr "Lyd"
 
 #: src/audio/track.c:789
 msgid "Bus"
-msgstr ""
+msgstr "Buss"
 
 #: src/audio/track.c:795
 msgid "Chord"
@@ -479,12 +480,12 @@ msgstr ""
 
 #: src/audio/track.c:798
 msgid "Group"
-msgstr ""
+msgstr "Gruppe"
 
 #: src/audio/engine_jack.c:393
 #, c-format
 msgid "JACK Error: %s"
-msgstr ""
+msgstr "JACK-feil: %s"
 
 #. TRANSLATORS: JACK failure messages
 #: src/audio/engine_jack.c:567
@@ -529,7 +530,7 @@ msgstr ""
 
 #: src/audio/engine_jack.c:598
 msgid "Backend error"
-msgstr ""
+msgstr "Bakende-feil"
 
 #: src/audio/engine_jack.c:601
 msgid "Client zombie"
@@ -543,25 +544,25 @@ msgstr ""
 #: src/actions/create_plugins_action.c:139
 #, c-format
 msgid "Create %s"
-msgstr ""
+msgstr "Opprett %s"
 
 #: src/actions/create_plugins_action.c:143
-#, c-format
+#, c-format, fuzzy
 msgid "Create %d %ss"
-msgstr ""
+msgstr "Opprett %d %s-er"
 
 #: src/actions/delete_tracks_action.c:113
 msgid "Delete Track"
-msgstr ""
+msgstr "Slett spor"
 
 #: src/actions/delete_tracks_action.c:116
 #, c-format
 msgid "Delete %d Tracks"
-msgstr ""
+msgstr "Slett %d spor"
 
 #: src/actions/actions.c:518
 msgid "Save Project"
-msgstr ""
+msgstr "Lagre prosjekt"
 
 #: src/actions/actions.c:583
 msgid ""
@@ -576,17 +577,18 @@ msgstr ""
 #: src/actions/copy_plugins_action.c:189
 #, c-format
 msgid "Copy %d Plugins"
-msgstr ""
+msgstr "Kopier %d programtillegg"
 
 #: src/actions/move_midi_arranger_selections_action.c:115
 #: src/actions/move_timeline_selections_action.c:101
+#, fuzzy
 msgid "Move Object(s)"
-msgstr ""
+msgstr "Flytt objekt(er)"
 
 #: src/actions/duplicate_timeline_selections_action.c:119
 #: src/actions/duplicate_midi_arranger_selections_action.c:121
 msgid "Duplicate Object(s)"
-msgstr ""
+msgstr "Dupliser objekt(er)"
 
 #: src/actions/edit_midi_arranger_selections_action.c:144
 msgid "Resize Midi Note(s)"
