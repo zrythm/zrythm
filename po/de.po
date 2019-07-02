@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-06-29 11:02+0000\n"
+"PO-Revision-Date: 2019-07-04 12:02+0000\n"
 "Last-Translator: Waui <wau-wau@tutanota.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
 "\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7.1\n"
+"X-Generator: Weblate 3.8-dev\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
@@ -85,11 +85,11 @@ msgstr "_OK"
 
 #: src/plugins/lv2_gtk.c:781
 msgid "Unknown widget type for value"
-msgstr ""
+msgstr "Unbekannter Widget-Typ für den Wert"
 
 #: src/plugins/lv2_gtk.c:807
 msgid "Unknown widget type for value\n"
-msgstr ""
+msgstr "Unbekannter Widget-Typ für den Wert\n"
 
 #: src/plugins/lv2_gtk.c:1436
 msgid "Close"
@@ -97,7 +97,7 @@ msgstr "Schließen"
 
 #: src/plugins/plugin_manager.c:223
 msgid "Error loading LV2 bundle dir: "
-msgstr ""
+msgstr "Fehler beim Laden des LV2-Bundleverzeichnisses: "
 
 #: src/gui/widgets/port_connections_popover.c:59
 msgid "INPUTS"
@@ -113,7 +113,7 @@ msgstr ""
 
 #: src/gui/widgets/channel.c:918
 msgid "Inserts"
-msgstr ""
+msgstr "Inserts"
 
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
@@ -177,7 +177,7 @@ msgstr "Taktangabe – Klick und zieh sie rauf/runter, um sie zu ändern"
 
 #: src/gui/widgets/instrument_track.c:280
 msgid "Show Lanes - Shows the track's lanes"
-msgstr ""
+msgstr "Unterspuren zeigen – Zeigt die Unterspuren der Spur"
 
 #: src/gui/widgets/control_room.c:52
 msgid "Output"
@@ -195,6 +195,8 @@ msgstr ""
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
+"Kanalslot – Doppelklick, um die Erweiterung zu öffnen – Klick und zieh, um "
+"die Erweiterung zu verschieben"
 
 #: src/gui/widgets/timeline_selection_info.c:62
 msgid "Start Position"
@@ -234,15 +236,15 @@ msgstr "Erweiterungsbrowser"
 
 #: src/gui/widgets/route_target_selector.c:80
 msgid "Routed to Stereo Out"
-msgstr ""
+msgstr "Geroutet zu Stereo Out"
 
 #: src/gui/widgets/route_target_selector.c:86
 msgid "Select channel to route signal to"
-msgstr ""
+msgstr "Wähle den Kanal zu dem das Signal geroutet werden soll"
 
 #: src/gui/widgets/route_target_selector.c:118
 msgid "Stereo Out"
-msgstr ""
+msgstr "Stereo Out"
 
 #: src/gui/widgets/snap_grid.c:94
 msgid "Snap/Grid options"
@@ -250,7 +252,7 @@ msgstr ""
 
 #: src/gui/widgets/ruler_marker.c:315
 msgid "Playhead"
-msgstr ""
+msgstr "Abspielkopf"
 
 #: src/gui/widgets/ports_expander.c:140
 msgid "Control Ins"
@@ -291,7 +293,7 @@ msgstr "Kein Output ausgewählt"
 #: src/gui/widgets/route_target_selector_popover.c:194
 #, c-format
 msgid "Routing to %s"
-msgstr ""
+msgstr "Route zu %s"
 
 #: src/gui/widgets/track.c:138 resources/ui/transport_controls.ui:36
 msgid "Record"
@@ -299,7 +301,7 @@ msgstr "Aufnehmen"
 
 #: src/gui/widgets/track.c:139
 msgid "Solo"
-msgstr ""
+msgstr "Solo"
 
 #: src/gui/widgets/track.c:140
 msgid "Mute"
@@ -315,7 +317,7 @@ msgstr "Sperren"
 
 #: src/gui/widgets/track.c:143
 msgid "Show UI"
-msgstr ""
+msgstr "Zeige UI"
 
 #: src/gui/widgets/track.c:144
 msgid "Show Automation Lanes"
@@ -327,6 +329,9 @@ msgid ""
 "bottom right to bring up the automation lanes - Double click to show "
 "corresponding channel in Mixer (if applicable)"
 msgstr ""
+"Spur – Ändere Spurparamter wie Solo/Mute… – Klick das Icon unten rechts, um "
+"die Automationsunterspur zu öffnen – Doppelklick, um den entsprechenden "
+"Kanal im Mixer zu zeigen (wenn anwendbar)"
 
 #: src/gui/widgets/track.c:448
 #, c-format
@@ -397,7 +402,7 @@ msgstr ""
 
 #: src/utils/dialogs.c:107
 msgid "Error instantiating plugin. Please see log for details."
-msgstr ""
+msgstr "Fehler beim Instanziieren der Erweiterung. Bitte siehe Log für Details."
 
 #: src/utils/ui.c:522
 msgid "English [en]"
@@ -482,7 +487,7 @@ msgstr ""
 
 #: src/audio/track.c:789
 msgid "Bus"
-msgstr ""
+msgstr "Bus"
 
 #: src/audio/track.c:795
 msgid "Chord"
@@ -508,11 +513,11 @@ msgstr "Die Operation beinhaltete eine ungültige oder nicht unterstütze Option
 
 #: src/audio/engine_jack.c:574
 msgid "The desired client name was not unique"
-msgstr ""
+msgstr "Der gewünschte Clientname war nicht eindeutig"
 
 #: src/audio/engine_jack.c:577
 msgid "Unable to connect to the JACK server"
-msgstr ""
+msgstr "Es kann keine Verbindung zum JACK-Server aufgebaut werden"
 
 #: src/audio/engine_jack.c:580
 msgid "Communication error with the JACK server"
@@ -524,19 +529,19 @@ msgstr "Der angeforderte Client existiert nicht"
 
 #: src/audio/engine_jack.c:586
 msgid "Unable to load internal client"
-msgstr ""
+msgstr "Der interne Client kann nicht geladen werden"
 
 #: src/audio/engine_jack.c:589
 msgid "Unable to initialize client"
-msgstr ""
+msgstr "Der Client kann nicht initialisiert werden"
 
 #: src/audio/engine_jack.c:592
 msgid "Unable to access shared memory"
-msgstr ""
+msgstr "Es kann nicht auf den gemeinsam genutzten Speicher zugegriffen werden"
 
 #: src/audio/engine_jack.c:595
 msgid "Client's protocol version does not match"
-msgstr ""
+msgstr "Die Protokollversion des Clients stimmt nicht überein"
 
 #: src/audio/engine_jack.c:598
 msgid "Backend error"
@@ -666,8 +671,8 @@ msgstr "%s Spur"
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
-"Fehler beim Initialisieren der Erweiterung %s. Siehe für Details bitte in "
-"das Log."
+"Fehler beim Instanziieren der Erweiterung %s. Siehe für Details bitte in das "
+"Log."
 
 #: src/actions/create_tracks_action.c:226
 #, c-format
@@ -894,7 +899,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:11
 msgid "Global Shortcuts"
-msgstr ""
+msgstr "Globale Tastaturkürzel"
 
 #: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:235
 msgid "General"
@@ -986,7 +991,7 @@ msgstr "Auswahl aufheben"
 
 #: resources/ui/shortcuts.ui:180
 msgid "Editor Shortcuts"
-msgstr ""
+msgstr "Editor-Tastaturkürzel"
 
 #: resources/ui/shortcuts.ui:184
 msgid "Tool"
@@ -998,7 +1003,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:195
 msgid "Pencil tool"
-msgstr ""
+msgstr "Stiftwerkzeug"
 
 #: resources/ui/shortcuts.ui:202
 msgid "Eraser tool"
@@ -1034,7 +1039,7 @@ msgstr "Ursprüngliche Größe"
 
 #: resources/ui/shortcuts.ui:261
 msgid "Quantizing"
-msgstr ""
+msgstr "Quantisieren"
 
 #: resources/ui/shortcuts.ui:266
 msgid "Quick Quantize"
@@ -1042,7 +1047,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:273
 msgid "Quantize"
-msgstr ""
+msgstr "Quantisieren"
 
 #: resources/ui/shortcuts.ui:282
 msgid "Looping"
@@ -1217,7 +1222,7 @@ msgstr "Exportiere als…"
 
 #: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
 msgid "Cancel"
-msgstr ""
+msgstr "Abbrechen"
 
 #: resources/ui/export_dialog.ui:59
 msgid "Export"
@@ -1225,7 +1230,7 @@ msgstr "Exportieren"
 
 #: resources/ui/export_dialog.ui:86
 msgid "Export Audio"
-msgstr ""
+msgstr "Audio exportieren"
 
 #: resources/ui/export_dialog.ui:98
 msgid "Artist"
@@ -1268,7 +1273,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:218
 msgid "Filename Pattern"
-msgstr ""
+msgstr "Dateinamenmuster"
 
 #: resources/ui/export_dialog.ui:238
 msgid "Song"
@@ -1288,7 +1293,7 @@ msgstr "Spuren"
 
 #: resources/ui/export_dialog.ui:309
 msgid "Bit depth"
-msgstr ""
+msgstr "Bittiefe"
 
 #: resources/ui/plugin_browser.ui:108
 msgid "Category"
@@ -1336,11 +1341,11 @@ msgstr "Erweiterungen"
 
 #: resources/ui/preferences.ui:259
 msgid "Always open plugin UIs"
-msgstr ""
+msgstr "Erweiterungsoberfläche immer öffnen"
 
 #: resources/ui/preferences.ui:263
 msgid "When instantiating a plugin always show its UI"
-msgstr ""
+msgstr "Beim Instanziieren einer Erweiterung immer ihre Oberfläche anzeigen"
 
 #: resources/ui/preferences.ui:298
 msgid "Main Window"
