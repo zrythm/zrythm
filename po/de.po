@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-07-04 12:02+0000\n"
+"PO-Revision-Date: 2019-07-07 22:02+0000\n"
 "Last-Translator: Waui <wau-wau@tutanota.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
 "\n"
@@ -364,7 +364,7 @@ msgstr "Fader – Klick und ziehe, um den Wert zu ändern"
 #: src/gui/widgets/dzl/dzl-animation.c:752
 #, c-format
 msgid "Cannot locate property %s in class %s"
-msgstr ""
+msgstr "Eigenschaft %s in der Klasse %s kann nicht lokalisiert werden"
 
 #: src/gui/widgets/dzl/dzl-animation.c:1099
 #: src/gui/widgets/dzl/dzl-animation.c:1105
@@ -483,7 +483,7 @@ msgstr "Instrument"
 
 #: src/audio/track.c:786
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: src/audio/track.c:789
 msgid "Bus"
@@ -895,7 +895,7 @@ msgstr ""
 #: resources/ui/quantize_mb_popover.ui:127 resources/ui/file_browser.ui:84
 #: resources/ui/plugin_browser.ui:85 resources/ui/snap_grid_popover.ui:127
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 #: resources/ui/shortcuts.ui:11
 msgid "Global Shortcuts"
@@ -903,7 +903,7 @@ msgstr "Globale Tastaturkürzel"
 
 #: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:235
 msgid "General"
-msgstr ""
+msgstr "Allgemein"
 
 #: resources/ui/shortcuts.ui:20 resources/ui/preferences.ui:27
 msgid "Preferences"
@@ -923,19 +923,19 @@ msgstr "Beenden"
 
 #: resources/ui/shortcuts.ui:51
 msgid "Panels"
-msgstr ""
+msgstr "Panel"
 
 #: resources/ui/shortcuts.ui:55
 msgid "Toggle left panel"
-msgstr ""
+msgstr "Linkes Panel ein-/ausschalten"
 
 #: resources/ui/shortcuts.ui:62
 msgid "Toggle right panel"
-msgstr ""
+msgstr "Rechtes Panel ein-/ausschalten"
 
 #: resources/ui/shortcuts.ui:69
 msgid "Toggle bottom panel"
-msgstr ""
+msgstr "Unteres Panel ein-/ausschalten"
 
 #: resources/ui/shortcuts.ui:79 resources/ui/header_notebook.ui:35
 msgid "Project"
@@ -1357,7 +1357,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:331
 msgid "Editing"
-msgstr ""
+msgstr "Bearbeitung"
 
 #: resources/ui/preferences.ui:346
 msgid "Interface"
@@ -1365,4 +1365,4 @@ msgstr "Oberfläche"
 
 #: resources/ui/preferences.ui:387
 msgid "GUI"
-msgstr ""
+msgstr "Oberfläche"
