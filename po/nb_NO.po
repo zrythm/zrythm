@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-06-27 22:02+0000\n"
+"PO-Revision-Date: 2019-07-07 22:03+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/nb_NO/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7.1-dev\n"
+"X-Generator: Weblate 3.8-dev\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
@@ -85,11 +85,11 @@ msgstr "_OK"
 
 #: src/plugins/lv2_gtk.c:781
 msgid "Unknown widget type for value"
-msgstr ""
+msgstr "Ukjent miniprogramstype for verdi"
 
 #: src/plugins/lv2_gtk.c:807
 msgid "Unknown widget type for value\n"
-msgstr ""
+msgstr "Ukjent miniprogramstype for verdi\n"
 
 #: src/plugins/lv2_gtk.c:1436
 msgid "Close"
@@ -101,15 +101,15 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:59
 msgid "INPUTS"
-msgstr ""
+msgstr "INNGANGER"
 
 #: src/gui/widgets/port_connections_popover.c:78
 msgid "OUTPUTS"
-msgstr ""
+msgstr "UTGANGER"
 
 #: src/gui/widgets/port_connections_popover.c:164
 msgid "Add"
-msgstr ""
+msgstr "Legg til"
 
 #: src/gui/widgets/channel.c:918
 msgid "Inserts"
@@ -117,8 +117,9 @@ msgstr ""
 
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
+#, fuzzy
 msgid "Select..."
-msgstr ""
+msgstr "Velg…"
 
 #: src/gui/widgets/midi_controller_mb.c:119
 msgid "Click to enable MIDI controllers to be connected automatically"
@@ -433,29 +434,32 @@ msgstr ""
 #. TRANSLATORS: Pan algorithm
 #: src/utils/ui.c:582
 msgid "Linear"
-msgstr ""
+msgstr "Lineær"
 
 #: src/utils/ui.c:583
+#, fuzzy
 msgid "Square Root"
-msgstr ""
+msgstr "Kvadratrot"
 
 #: src/utils/ui.c:584
 msgid "Sine (Equal Power)"
-msgstr ""
+msgstr "Sinus (lik effekt)"
 
 #: src/audio/chord_track.c:42 resources/ui/inspector_chord.ui:31
+#, fuzzy
 msgid "Chords"
-msgstr ""
+msgstr "Akkorder"
 
 #: src/audio/marker_track.c:42
+#, fuzzy
 msgid "Markers"
-msgstr ""
+msgstr "Markører"
 
 #: src/audio/engine_pa.c:246 src/audio/engine_pa.c:266
 #: src/audio/engine_pa.c:277
 #, c-format
 msgid "PortAudio Error: %s"
-msgstr ""
+msgstr "PortAudio-feil: %s"
 
 #: src/audio/track_lane.c:43
 #, c-format
@@ -639,17 +643,17 @@ msgstr ""
 
 #: src/actions/move_tracks_action.c:128
 msgid "Move Track"
-msgstr ""
+msgstr "Flytt spor"
 
 #: src/actions/move_tracks_action.c:131
 #, c-format
 msgid "Move %d Tracks"
-msgstr ""
+msgstr "Flytt %d spor"
 
 #: src/actions/create_tracks_action.c:52
 #, c-format
 msgid "%s Track"
-msgstr ""
+msgstr "%d spor"
 
 #: src/actions/create_tracks_action.c:81
 #, c-format
@@ -669,44 +673,45 @@ msgstr ""
 #: src/actions/delete_plugins_action.c:111
 #, c-format
 msgid "Delete Plugin"
-msgstr ""
+msgstr "Slett programtillegg"
 
 #: src/actions/delete_plugins_action.c:114
 #, c-format
 msgid "Delete %d Plugins"
-msgstr ""
+msgstr "Slett %d programtillegg"
 
 #: resources/ui/rack_plugin.ui:31
 msgid "Plugin 1"
-msgstr ""
+msgstr "Protramtillegg 1"
 
 #: resources/ui/rack_plugin.ui:53
 msgid "in"
-msgstr ""
+msgstr "inn"
 
 #: resources/ui/rack_plugin.ui:63
 msgid "out"
-msgstr ""
+msgstr "ut"
 
 #: resources/ui/rack_row.ui:60
+#, fuzzy
 msgid "expander"
-msgstr ""
+msgstr "utvider"
 
 #: resources/ui/center_dock_bot_box.ui:43
 msgid "Left"
-msgstr ""
+msgstr "Venstre"
 
 #: resources/ui/center_dock_bot_box.ui:54
 msgid "Bot"
-msgstr ""
+msgstr "Bott"
 
 #: resources/ui/center_dock_bot_box.ui:82
 msgid "Right"
-msgstr ""
+msgstr "Høyre"
 
 #: resources/ui/first_run_assistant.ui:27
 msgid "Setup Zrythm"
-msgstr ""
+msgstr "Sett opp Zrythm"
 
 #: resources/ui/first_run_assistant.ui:50
 msgid ""
@@ -717,7 +722,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
 msgid "Language"
-msgstr ""
+msgstr "Språk"
 
 #: resources/ui/first_run_assistant.ui:106
 msgid ""
@@ -731,7 +736,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:129
 msgid "Reset"
-msgstr ""
+msgstr "Tilbakestill"
 
 #: resources/ui/first_run_assistant.ui:133
 msgid "Resets the path to the default"
@@ -747,23 +752,23 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:178 resources/ui/preferences.ui:167
 msgid "MIDI Backend"
-msgstr ""
+msgstr "MIDI-bakende"
 
 #: resources/ui/first_run_assistant.ui:191 resources/ui/preferences.ui:122
 msgid "Audio Backend"
-msgstr ""
+msgstr "Lyd-bakende"
 
 #: resources/ui/first_run_assistant.ui:228
 msgid "Test"
-msgstr ""
+msgstr "Test"
 
 #: resources/ui/first_run_assistant.ui:232
 msgid "Tests the backends"
-msgstr ""
+msgstr "Tester bakendene"
 
 #: resources/ui/first_run_assistant.ui:242
 msgid "Backends"
-msgstr ""
+msgstr "Bakender"
 
 #: resources/ui/first_run_assistant.ui:260
 msgid ""
@@ -773,11 +778,11 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:287
 msgid "MIDI Devices"
-msgstr ""
+msgstr "MIDI-enheter"
 
 #: resources/ui/right_dock_edge.ui:43
 msgid "Control Room"
-msgstr ""
+msgstr "Kontrollrom"
 
 #: resources/ui/bot_dock_edge.ui:41
 msgid "Piano roll panel"
@@ -793,7 +798,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:89
 msgid "Mixer"
-msgstr ""
+msgstr "Mikser"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Modulators"
@@ -805,25 +810,26 @@ msgstr ""
 
 #: resources/ui/track_top_grid.ui:34 resources/ui/automatable_selector.ui:84
 #: resources/ui/route_target_selector.ui:85
+#, fuzzy
 msgid "label"
-msgstr ""
+msgstr "etikett"
 
 #. property name="can_focus">False</property
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
-msgstr ""
+msgstr "Velg prosjekt"
 
 #: resources/ui/project_assistant.ui:62 resources/ui/shortcuts.ui:84
 msgid "Create new project"
-msgstr ""
+msgstr "Nytt prosjekt"
 
 #: resources/ui/project_assistant.ui:78
 msgid "Remove"
-msgstr ""
+msgstr "Fjern"
 
 #: resources/ui/project_assistant.ui:82
 msgid "Removes selected project from the list"
-msgstr ""
+msgstr "Fjerner valgt prosjekt fra listen"
 
 #: resources/ui/project_assistant.ui:114
 msgid ""
@@ -836,11 +842,11 @@ msgstr ""
 
 #: resources/ui/quantize_mb_popover.ui:37 resources/ui/snap_grid_popover.ui:37
 msgid "Grid"
-msgstr ""
+msgstr "Rutenett"
 
 #: resources/ui/quantize_mb_popover.ui:47
 msgid "Use grid"
-msgstr ""
+msgstr "Bruk rutenett"
 
 #: resources/ui/quantize_mb_popover.ui:66 resources/ui/snap_grid_popover.ui:66
 msgid "Snap"
@@ -854,17 +860,19 @@ msgstr ""
 #: resources/ui/inspector_ap.ui:101 resources/ui/inspector_midi.ui:101
 #: resources/ui/snap_grid_popover.ui:88
 msgid "Length"
-msgstr ""
+msgstr "Lengde"
 
 #: resources/ui/quantize_mb_popover.ui:126
 #: resources/ui/snap_grid_popover.ui:126
+#, fuzzy
 msgid "Note type"
-msgstr ""
+msgstr "Notetype"
 
 #: resources/ui/quantize_mb_popover.ui:127 resources/ui/file_browser.ui:84
 #: resources/ui/plugin_browser.ui:85 resources/ui/snap_grid_popover.ui:127
+#, fuzzy
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: resources/ui/shortcuts.ui:11
 msgid "Global Shortcuts"
@@ -872,91 +880,91 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:16 resources/ui/preferences.ui:235
 msgid "General"
-msgstr ""
+msgstr "Generelt"
 
 #: resources/ui/shortcuts.ui:20 resources/ui/preferences.ui:27
 msgid "Preferences"
-msgstr ""
+msgstr "Innstillinger"
 
 #: resources/ui/shortcuts.ui:27
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Tastatursnarveier"
 
 #: resources/ui/shortcuts.ui:34
 msgid "Toggle Fullscreen"
-msgstr ""
+msgstr "Veksle fullskjermsvisning"
 
 #: resources/ui/shortcuts.ui:41
 msgid "Quit"
-msgstr ""
+msgstr "Avslutt"
 
 #: resources/ui/shortcuts.ui:51
 msgid "Panels"
-msgstr ""
+msgstr "Paneler"
 
 #: resources/ui/shortcuts.ui:55
 msgid "Toggle left panel"
-msgstr ""
+msgstr "Veksle venstre panel"
 
 #: resources/ui/shortcuts.ui:62
 msgid "Toggle right panel"
-msgstr ""
+msgstr "Veksle høyre panel"
 
 #: resources/ui/shortcuts.ui:69
 msgid "Toggle bottom panel"
-msgstr ""
+msgstr "Veksle bunnpanel"
 
 #: resources/ui/shortcuts.ui:79 resources/ui/header_notebook.ui:35
 msgid "Project"
-msgstr ""
+msgstr "Prosjekt"
 
 #: resources/ui/shortcuts.ui:91
 msgid "Open a project"
-msgstr ""
+msgstr "Åpne et prosjekt"
 
 #: resources/ui/shortcuts.ui:98
 msgid "Save the project"
-msgstr ""
+msgstr "Lagre prosjektet"
 
 #: resources/ui/shortcuts.ui:107
 msgid "Copy and Paste"
-msgstr ""
+msgstr "Kopier og lim inn"
 
 #: resources/ui/shortcuts.ui:112
 msgid "Copy selection to clipboard"
-msgstr ""
+msgstr "Kopier utvalg til utklippstavle"
 
 #: resources/ui/shortcuts.ui:119
 msgid "Cut selection to clipboard"
-msgstr ""
+msgstr "Klipp ut utvalg til utklippstavle"
 
 #: resources/ui/shortcuts.ui:126
 msgid "Paste from clipboard"
-msgstr ""
+msgstr "Lim inn fra utklippstavle"
 
 #: resources/ui/shortcuts.ui:135
 msgid "Undo and Redo"
-msgstr ""
+msgstr "Angre og gjenta"
 
 #: resources/ui/shortcuts.ui:140
 msgid "Undo previous command"
-msgstr ""
+msgstr "Angre forrige kommando"
 
 #: resources/ui/shortcuts.ui:147
 msgid "Redo previous command"
-msgstr ""
+msgstr "Gjenta forrige kommando"
 
 #: resources/ui/shortcuts.ui:156
 msgid "Selections"
-msgstr ""
+msgstr "Utvalg"
 
 #: resources/ui/shortcuts.ui:161
 msgid "Select all"
-msgstr ""
+msgstr "Velg alt"
 
 #: resources/ui/shortcuts.ui:168
 msgid "Unselect all"
-msgstr ""
+msgstr "Fravelg alt"
 
 #: resources/ui/shortcuts.ui:180
 msgid "Editor Shortcuts"
@@ -964,7 +972,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:184
 msgid "Tool"
-msgstr ""
+msgstr "Verktøy"
 
 #: resources/ui/shortcuts.ui:188
 msgid "Select/Stretch tool"
@@ -988,23 +996,23 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:226
 msgid "Zooming"
-msgstr ""
+msgstr "Forstørrelse"
 
 #: resources/ui/shortcuts.ui:231
 msgid "Zoom in"
-msgstr ""
+msgstr "Forstørr"
 
 #: resources/ui/shortcuts.ui:238
 msgid "Zoom out"
-msgstr ""
+msgstr "Forminsk"
 
 #: resources/ui/shortcuts.ui:245
 msgid "Best fit"
-msgstr ""
+msgstr "Beste tilpasning"
 
 #: resources/ui/shortcuts.ui:252
 msgid "Original size"
-msgstr ""
+msgstr "Opprinnelig størrelse"
 
 #: resources/ui/shortcuts.ui:261
 msgid "Quantizing"
@@ -1064,22 +1072,22 @@ msgstr ""
 #: resources/ui/inspector_master.ui:67 resources/ui/inspector_ap.ui:67
 #: resources/ui/inspector_midi.ui:67
 msgid "Color"
-msgstr ""
+msgstr "Farge"
 
 #: resources/ui/inspector_master.ui:79 resources/ui/inspector_ap.ui:79
 #: resources/ui/inspector_midi.ui:79
 msgid "Position"
-msgstr ""
+msgstr "Posisjon"
 
 #: resources/ui/inspector_master.ui:113 resources/ui/inspector_ap.ui:113
 #: resources/ui/inspector_midi.ui:113
 msgid "Muted"
-msgstr ""
+msgstr "Forstummet"
 
 #: resources/ui/piano_roll.ui:53 resources/ui/modulator_view.ui:53
 #: resources/ui/audio_clip_editor.ui:34
 msgid "Track name"
-msgstr ""
+msgstr "Spornavn"
 
 #: resources/ui/automation_lane.ui:95
 msgid "RW"
@@ -1111,47 +1119,49 @@ msgstr ""
 
 #: resources/ui/port_selector_popover.ui:41
 msgid "Track"
-msgstr ""
+msgstr "Spor"
 
 #: resources/ui/port_selector_popover.ui:94
 msgid "Plugin"
-msgstr ""
+msgstr "Programtillegg"
 
 #: resources/ui/port_selector_popover.ui:147
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: resources/ui/donate_dialog.ui:7
 msgid "Donate"
-msgstr ""
+msgstr "Doner"
 
 #: resources/ui/donate_dialog.ui:49
+#, fuzzy
 msgid "Choose a method to donate"
-msgstr ""
+msgstr "Velg en metode for donasjon"
 
 #: resources/ui/transport_controls.ui:54
 msgid "Play"
-msgstr ""
+msgstr "Spill av"
 
 #: resources/ui/transport_controls.ui:69
 msgid "Stop"
-msgstr ""
+msgstr "Stopp"
 
 #: resources/ui/transport_controls.ui:87
 msgid "Backward"
-msgstr ""
+msgstr "Tilbake"
 
 #: resources/ui/transport_controls.ui:105
 msgid "Forward"
-msgstr ""
+msgstr "Forover"
 
 #: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:250
 msgid "Loop"
-msgstr ""
+msgstr "Gjenta"
 
 #: resources/ui/splash.ui:67
+#, fuzzy
 msgid "Initializing..."
-msgstr ""
+msgstr "Igangsetter…"
 
 #: resources/ui/automator.ui:32
 msgid "LFO 1"
@@ -1159,55 +1169,55 @@ msgstr ""
 
 #: resources/ui/file_browser.ui:63 resources/ui/plugin_browser.ui:64
 msgid "Collection"
-msgstr ""
+msgstr "Samling"
 
 #: resources/ui/file_browser.ui:107
 msgid "Location"
-msgstr ""
+msgstr "Plassering"
 
 #: resources/ui/control.ui:45
 msgid "Name"
-msgstr ""
+msgstr "Navn"
 
 #: resources/ui/header_notebook.ui:17
 msgid "Home"
-msgstr ""
+msgstr "Hjem"
 
 #: resources/ui/header_notebook.ui:54
 msgid "View"
-msgstr ""
+msgstr "Vis"
 
 #: resources/ui/header_notebook.ui:73
 msgid "Help"
-msgstr ""
+msgstr "Hjelp"
 
 #: resources/ui/header_notebook.ui:149
 msgid "Project name"
-msgstr ""
+msgstr "Prosjektnavn"
 
 #: resources/ui/export_dialog.ui:30
 msgid "Export As..."
-msgstr ""
+msgstr "Eksporter som…"
 
 #: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
 msgid "Cancel"
-msgstr ""
+msgstr "Avbryt"
 
 #: resources/ui/export_dialog.ui:59
 msgid "Export"
-msgstr ""
+msgstr "Eksporter"
 
 #: resources/ui/export_dialog.ui:86
 msgid "Export Audio"
-msgstr ""
+msgstr "Eksporter lyd"
 
 #: resources/ui/export_dialog.ui:98
 msgid "Artist"
-msgstr ""
+msgstr "Artist"
 
 #: resources/ui/export_dialog.ui:109
 msgid "Genre"
-msgstr ""
+msgstr "Sjanger"
 
 #: resources/ui/export_dialog.ui:120
 msgid "Zrythm"
@@ -1215,11 +1225,11 @@ msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:131
 msgid "Electronic"
-msgstr ""
+msgstr "Elektronisk"
 
 #: resources/ui/export_dialog.ui:142
 msgid "Format"
-msgstr ""
+msgstr "Format"
 
 #: resources/ui/export_dialog.ui:161
 msgid "Dither"
@@ -1246,11 +1256,11 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:238
 msgid "Song"
-msgstr ""
+msgstr "Sang"
 
 #: resources/ui/export_dialog.ui:262
 msgid "Custom"
-msgstr ""
+msgstr "Egendefinert"
 
 #: resources/ui/export_dialog.ui:276
 msgid "Time Range"
@@ -1258,15 +1268,15 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:288
 msgid "Tracks"
-msgstr ""
+msgstr "Spor"
 
 #: resources/ui/export_dialog.ui:309
 msgid "Bit depth"
-msgstr ""
+msgstr "Bitdybde"
 
 #: resources/ui/plugin_browser.ui:108
 msgid "Category"
-msgstr ""
+msgstr "Kategori"
 
 #: resources/ui/main_window.ui:119
 msgid "This is an app-notification. Click the button to dismiss"
@@ -1286,15 +1296,15 @@ msgstr ""
 
 #: resources/ui/preferences.ui:44
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: resources/ui/preferences.ui:108
 msgid "Engine"
-msgstr ""
+msgstr "Motor"
 
 #: resources/ui/preferences.ui:145
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "MIDI-kontrollere"
 
 #: resources/ui/preferences.ui:189
 msgid "Pan Algorithm"
@@ -1306,7 +1316,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:249 resources/ui/preferences.ui:283
 msgid "Plugins"
-msgstr ""
+msgstr "Programtillegg"
 
 #: resources/ui/preferences.ui:259
 msgid "Always open plugin UIs"
@@ -1318,7 +1328,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:298
 msgid "Main Window"
-msgstr ""
+msgstr "Hovedvindu"
 
 #: resources/ui/preferences.ui:308
 msgid "Show native decoration"
@@ -1330,8 +1340,8 @@ msgstr ""
 
 #: resources/ui/preferences.ui:346
 msgid "Interface"
-msgstr ""
+msgstr "Grensesnitt"
 
 #: resources/ui/preferences.ui:387
 msgid "GUI"
-msgstr ""
+msgstr "Grafisk grensesnitt"
