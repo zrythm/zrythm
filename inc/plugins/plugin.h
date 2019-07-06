@@ -181,8 +181,6 @@ typedef struct Plugin
 
   /**
    * The slot this plugin is at in its channel.
-   *
-   * For convenience.
    */
   int                  slot;
 
@@ -302,15 +300,15 @@ plugin_fields_schema[] =
   CYAML_FIELD_SEQUENCE_COUNT (
     "in_port_ids", CYAML_FLAG_DEFAULT,
     Plugin, in_port_ids, num_in_ports,
-    &port_identifier_schema, 0, CYAML_UNLIMITED),
+    &port_identifier_schema_default, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "out_port_ids", CYAML_FLAG_DEFAULT,
     Plugin, out_port_ids, num_out_ports,
-    &port_identifier_schema, 0, CYAML_UNLIMITED),
+    &port_identifier_schema_default, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "unknown_port_ids", CYAML_FLAG_DEFAULT,
     Plugin, unknown_port_ids, num_unknown_ports,
-    &port_identifier_schema, 0, CYAML_UNLIMITED),
+    &port_identifier_schema_default, 0, CYAML_UNLIMITED),
   CYAML_FIELD_INT (
     "enabled", CYAML_FLAG_DEFAULT,
     Plugin, enabled),

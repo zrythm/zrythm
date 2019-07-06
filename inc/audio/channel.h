@@ -82,23 +82,31 @@ typedef struct Channel
    * Note: the first plugin is special in MIDI
    * channels.
    */
-  Plugin *             plugins[STRIP_SIZE];
+  Plugin *         plugins[STRIP_SIZE];
+
+  /**
+   * Used for serializing/deserializing because
+   * libcyaml doesn't handle NULLS in an array.
+   *
+   * The NULLS are removed and the plugins are
+   * aggregated here. They are put back in the
+   * original array when deserializing by using
+   * the Plugin's pos variable.
+   */
+  Plugin *         aggregated_plugins[STRIP_SIZE];
+  int              num_aggregated_plugins;
 
   /**
    * Type of channel this is.
    */
-  ChannelType          type;
+  ChannelType      type;
 
-  Fader                fader;
+  Fader            fader;
 
-  /* These are for plugins to connect to.
-   *
-   * Processing starts at the first plugin with a clean
-   * buffer, and if any ports are connected as that
-   * plugin's input, their buffers are added to the first
-   * plugin
+  /**
+   * L & R audio input ports.
    */
-  StereoPorts *        stereo_in;  ///< l & r input ports, cache
+  StereoPorts *    stereo_in;
 
   /**
    * MIDI in port ID.
@@ -106,7 +114,7 @@ typedef struct Channel
    * This port is for receiving MIDI signals from
    * an external MIDI source.
    */
-  Port *               piano_roll;
+  Port *           piano_roll;
 
   /**
    * MIDI piano roll input port ID.
@@ -115,46 +123,47 @@ typedef struct Channel
    * the piano roll (i.e., MIDI notes inside
    * regions).
    */
-  Port *               midi_in;
+  Port *           midi_in;
 
   /** Flag used while processing. */
-  int                   filled_stereo_in_bufs;
+  int              filled_stereo_in_bufs;
 
 
   /*
    * The last plugin should connect to this.
    *
-   * Plugins are processed slot-by-slot, and if nothing
-   * is connected here it will simply remain an empty
-   * buffer, i.e., channel will produce no sound
-   * */
-  StereoPorts *        stereo_out;
+   * Plugins are processed slot-by-slot, and if
+   * nothing is connected here it will simply
+   * remain an empty buffer, i.e., channel will
+   * produce no sound.
+   */
+  StereoPorts *    stereo_out;
 
   /** Output channel to route signal to. */
-  Track *              output;
+  Track *          output;
   /** For serializing. */
-  int                  output_pos;
+  int              output_pos;
 
   /** Track associated with this channel. */
-  Track *              track;
+  Track *          track;
 
   /**
    * Automatables for this channel to be generated
    * at run time (amp, pan, mute, etc.).
    */
-  Automatable *        automatables[40]; ///< cache
-  int                  num_automatables;
+  Automatable *    automatables[40];
+  int              num_automatables;
 
-  //int                  visible; ///< whether visible or not
-  ChannelWidget *      widget; ///< the channel widget
+  /** The channel widget. */
+  ChannelWidget *  widget;
 
   /**
-   * Whether record was set automatically when the channel
-   * was selected.
+   * Whether record was set automatically when
+   * the channel was selected.
    *
-   * This is so that it can be unset when selecting another
-   * channel. If we don't do this all the channels end up
-   * staying on record mode.
+   * This is so that it can be unset when selecting
+   * another channel. If we don't do this all the
+   * channels end up staying on record mode.
    */
   int                  record_set_automatically;
 } Channel;
@@ -171,10 +180,11 @@ channel_type_strings[] =
 static const cyaml_schema_field_t
 channel_fields_schema[] =
 {
-  CYAML_FIELD_SEQUENCE_FIXED (
-    "plugins", CYAML_FLAG_DEFAULT,
-    Channel, plugins,
-    &plugin_schema, STRIP_SIZE),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "aggregated_plugins", CYAML_FLAG_DEFAULT,
+    Channel, aggregated_plugins,
+    num_aggregated_plugins,
+    &plugin_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
     "type", CYAML_FLAG_DEFAULT,
     Channel, type, channel_type_strings,
@@ -255,10 +265,19 @@ float
 channel_get_current_r_db (void * _channel);
 
 void
-channel_set_current_l_db (Channel * channel, float val);
+channel_set_current_l_db (
+  Channel * channel, float val);
 
 void
-channel_set_current_r_db (Channel * channel, float val);
+channel_set_current_r_db (
+  Channel * channel, float val);
+
+/**
+ * Prepares the Channel for serialization.
+ */
+void
+channel_prepare_for_serialization (
+  Channel * ch);
 
 /**
  * Sets fader to 0.0.

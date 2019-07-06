@@ -1055,7 +1055,13 @@ channel_init_loaded (Channel * ch)
     ch->output =
       TRACKLIST->tracks[ch->output_pos];
 
-  ch->widget = channel_widget_new (ch);
+  Plugin * pl;
+  for (int i = 0; i < ch->num_aggregated_plugins;
+       i++)
+    {
+      pl = ch->aggregated_plugins[i];
+      ch->plugins[pl->slot] = pl;
+    }
 }
 
 /**
@@ -1328,6 +1334,25 @@ channel_update_output (
 
   EVENTS_PUSH (ET_CHANNEL_OUTPUT_CHANGED,
                ch);
+}
+
+/**
+ * Prepares the Channel for serialization.
+ */
+void
+channel_prepare_for_serialization (
+  Channel * ch)
+{
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      if (ch->plugins[i])
+        {
+          array_append (
+            ch->aggregated_plugins,
+            ch->num_aggregated_plugins,
+            ch->plugins[i]);
+        }
+    }
 }
 
 /**

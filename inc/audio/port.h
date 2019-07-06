@@ -42,12 +42,18 @@
 typedef struct Plugin Plugin;
 typedef struct MidiEvents MidiEvents;
 
+/**
+ * Direction of the signal.
+ */
 typedef enum PortFlow {
 	FLOW_UNKNOWN,
 	FLOW_INPUT,
 	FLOW_OUTPUT
 } PortFlow;
 
+/**
+ * Type of signals the Port handles.
+ */
 typedef enum PortType {
 	TYPE_UNKNOWN,
 	TYPE_CONTROL,
@@ -276,6 +282,13 @@ port_identifier_schema = {
     PortIdentifier, port_identifier_fields_schema),
 };
 
+static const cyaml_schema_value_t
+port_identifier_schema_default = {
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_DEFAULT,
+    PortIdentifier, port_identifier_fields_schema),
+};
+
 static const cyaml_schema_field_t
 port_fields_schema[] =
 {
@@ -287,11 +300,13 @@ port_fields_schema[] =
   CYAML_FIELD_SEQUENCE_COUNT (
     "src_ids", CYAML_FLAG_DEFAULT,
     Port, src_ids, num_srcs,
-    &port_identifier_schema, 0, CYAML_UNLIMITED),
+    &port_identifier_schema_default,
+    0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "dest_ids", CYAML_FLAG_DEFAULT,
     Port, dest_ids, num_dests,
-    &port_identifier_schema, 0, CYAML_UNLIMITED),
+    &port_identifier_schema_default,
+    0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
     "internal_type", CYAML_FLAG_DEFAULT,
     Port, internal_type, port_internal_type_strings,

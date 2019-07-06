@@ -18,6 +18,10 @@ html_target = custom_target (
     doxyfile,
     doxyfile_mcss,
     zrythm_srcs,
+    'mainpage.h',
+    'cyaml_schemas.h',
+    'processing_cycle.h',
+    'release_checklist.h',
     ],
   output: 'html',
   command: [

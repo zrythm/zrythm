@@ -363,25 +363,32 @@ project_set_has_range (int has_range)
 int
 project_save (const char * dir)
 {
+  int i, j;
+
   io_mkdir (dir);
   update_paths (dir);
   PROJECT->title = io_path_get_basename (dir);
 
   /*smf_save_regions ();*/
 
-  /* write plugin states */
+  /* write plugin states, prepare channels for
+   * serialization, */
   Track * track;
   Channel * ch;
   Plugin * pl;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
       if (track->type == TRACK_TYPE_CHORD)
         continue;
 
       ch = track->channel;
+      if (!ch)
+        continue;
 
-      for (int j = 0; j < STRIP_SIZE; j++)
+      channel_prepare_for_serialization (ch);
+
+      for (j = 0; j < STRIP_SIZE; j++)
         {
           pl = ch->plugins[j];
 

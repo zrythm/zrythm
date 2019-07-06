@@ -93,10 +93,14 @@ typedef enum SelectionType
  */
 typedef struct Project
 {
-  char              * title; ///< project title
+  /** Project title. */
+  char              * title;
 
-  char              * dir; ///< path to save the project
-  char              * project_file_path; ///< for convenience
+  /** Path to save the project in. */
+  char              * dir;
+
+  /** Project file full path. */
+  char              * project_file_path;
   char              * regions_file_path;
   char              * regions_dir;
   char              * states_dir;
@@ -110,14 +114,32 @@ typedef struct Project
   /** Backend for the widget. */
   ClipEditor         clip_editor;
 
-  SnapGrid           snap_grid_timeline; ///< snap/grid info for timeline
+  /** Snap/Grid info for the timeline. */
+  SnapGrid           snap_grid_timeline;
+
+  /** Quantize info for the timeline. */
   Quantize           quantize_timeline;
-  SnapGrid          snap_grid_midi; ///< snap/grid info for midi/audio editor
+
+  /** Snap/Grid info for the piano roll. */
+  SnapGrid          snap_grid_midi;
+
+  /** Quantize info for the piano roll. */
   Quantize           quantize_midi;
 
-  TimelineSelections       timeline_selections;
-  MidiArrangerSelections   midi_arranger_selections;
-  TracklistSelections   tracklist_selections;
+  /**
+   * Selected objects in the timeline arranger.
+   */
+  TimelineSelections timeline_selections;
+
+  /**
+   * Selected MidiNote's.
+   */
+  MidiArrangerSelections midi_arranger_selections;
+
+  /**
+   * Selected Track's.
+   */
+  TracklistSelections tracklist_selections;
 
   /**
    * Plugin selections in the Mixer.
