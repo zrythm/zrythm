@@ -51,7 +51,8 @@ static const cyaml_schema_field_t
 clip_editor_fields_schema[] =
 {
   CYAML_FIELD_STRING_PTR (
-    "region_name", CYAML_FLAG_POINTER,
+    "region_name",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ClipEditor, region_name,
    	0, CYAML_UNLIMITED),
 

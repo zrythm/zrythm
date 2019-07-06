@@ -1,6 +1,4 @@
 /*
- * utils/yaml.c - YAML utils
- *
  * Copyright (C) 2019 Alexandros Theodotou
  *
  * This file is part of Zrythm

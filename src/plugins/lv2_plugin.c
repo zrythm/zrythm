@@ -206,6 +206,11 @@ _create_port(Lv2Plugin*   lv2_plugin,
   lv2_port->index     = lv2_port_index;
   lv2_port->control   = 0.0f;
 
+  /* remember the identifier for saving/loading */
+  port_identifier_copy (
+    &lv2_port->port->identifier,
+    &lv2_port->port_id);
+
   const bool optional =
     lilv_port_has_property (
       lv2_plugin->lilv_plugin,

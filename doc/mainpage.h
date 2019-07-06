@@ -17,16 +17,13 @@
  * and Zrythm (inc/project.h and inc/zrythm.h)
  *
  * \section contributing Contributing
- * 
+ *
  * If you would like to contribute please review
  * the \ref md_CONTRIBUTING
  *
  * \section pages Pages
- * \subpage mypage
- */
-
-/**
- * \page mypage Custom Page
- *
- * Custom page contentx.
+ * \subpage processing_cycle
+ * \subpage cyaml_schemas
+ * \subpage release_checklist
+ * \subpage weblate
  */

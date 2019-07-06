@@ -56,6 +56,7 @@ GNU General Public License version 3. You should have received a copy of the GNU
 
 # DEPENDENCIES
 ## Required
+TODO make this a table (name|arch pkg name|license|upstream URL|use)
 - GTK+3 (library GPLv2+): https://gitlab.gnome.org/GNOME/gtk
 - jack (LGPLv2.1+): http://jackaudio.org/
 - lv2 (ISC): http://lv2plug.in/
@@ -63,9 +64,9 @@ GNU General Public License version 3. You should have received a copy of the GNU
 - libsndfile (LGPLv3): http://www.mega-nerd.com/libsndfile
 - libyaml
 - libsamplerate (2-clause BSD): http://www.mega-nerd.com/libsamplerate
-- portaudio (MIT): www.portaudio.com/
 
 ## Optional
+- portaudio (MIT): www.portaudio.com/
 - ffmpeg (LGPL 2.1+, GPL 2+): https://ffmpeg.org/
 - Qt5
 

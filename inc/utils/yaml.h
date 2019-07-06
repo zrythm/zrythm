@@ -31,6 +31,12 @@
 #include <cyaml/cyaml.h>
 
 /**
+ * @addtogroup utils
+ *
+ * @{
+ */
+
+/**
  * Serializes to XML.
  *
  * MUST be free'd.
@@ -111,7 +117,7 @@
   }
 
 static const cyaml_config_t config = {
-	.log_level = CYAML_LOG_WARNING, /* Logging errors and warnings only. */
+	.log_level = CYAML_LOG_DEBUG, /* Logging errors and warnings only. */
 	.log_fn = cyaml_log,            /* Use the default logging function. */
 	.mem_fn = cyaml_mem,            /* Use the default memory allocator. */
 };
@@ -140,5 +146,9 @@ gdk_rgba_fields_schema[] =
 
 	CYAML_FIELD_END
 };
+
+/**
+ * @}
+ */
 
 #endif
