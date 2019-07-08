@@ -9,16 +9,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-06-06 06:25+0000\n"
+"PO-Revision-Date: 2019-07-07 22:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/zrythm/"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.6.1\n"
+"X-Generator: Weblate 3.8-dev\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
@@ -160,7 +160,6 @@ msgid "Visibility"
 msgstr "ビジビリティ"
 
 #: src/gui/widgets/port_selector_popover.c:209
-#, fuzzy
 msgid "Track Ports"
 msgstr "トラックポート"
 
@@ -181,9 +180,8 @@ msgid "Show Lanes - Shows the track's lanes"
 msgstr "レーンを表示 - トラックのレーンを表示します"
 
 #: src/gui/widgets/control_room.c:52
-#, fuzzy
 msgid "Output"
-msgstr "出力"
+msgstr "出力先"
 
 #: src/gui/widgets/control_room.c:64
 msgid "Listen dim level"
@@ -238,9 +236,8 @@ msgid "Plugin Browser"
 msgstr "プラグインブラウザ"
 
 #: src/gui/widgets/route_target_selector.c:80
-#, fuzzy
 msgid "Routed to Stereo Out"
-msgstr "ステレオ出力にルーティング"
+msgstr "ステレオ出力にルーティング中"
 
 #: src/gui/widgets/route_target_selector.c:86
 msgid "Select channel to route signal to"
