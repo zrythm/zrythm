@@ -164,6 +164,46 @@
  *   0, CYAML_UNLIMITED),
  * @endcode
  *
+ * \subsection cyaml_bitfields Bitfields
+ *
+ * @code
+ * typedef enum PortFlags
+ * {
+ *   PORT_FLAG_STEREO_L = 0x01,
+ *   PORT_FLAG_STEREO_R = 0x02,
+ *   PORT_FLAG_PIANO_ROLL = 0x04,
+ *   PORT_FLAG_SIDECHAIN = 0x08,
+ *   PORT_FLAG_MAIN_PORT = 0x10,
+ *   OPT_F = 0x20,
+ * } PortFlags;
+ * @endcode
+ *
+ * First, declare the bitfield definitions.
+ *
+ * @code
+ * static const cyaml_bitdef_t
+ * flags_bitvals[] =
+ * {
+ *   { .name = "stereo_l", .offset =  0, .bits =  1 },
+ *   { .name = "stereo_r", .offset =  1, .bits =  1 },
+ *   { .name = "piano_roll", .offset = 2, .bits = 1 },
+ *   { .name = "sidechain", .offset = 3, .bits =  1 },
+ *   { .name = "main_port", .offset = 4, .bits = 1 },
+ *   { .name = "opt_f", .offset = 5, .bits = 1 },
+ * };
+ * @endcode
+ *
+ * Use @code CYAML_FIELD_BITFIELD @endcode with the
+ * @code CYAML_FLAG_DEFAULT @endcode flag.
+ *
+ * Example, PortFlags:
+ * @code
+ * CYAML_FIELD_BITFIELD (
+ *   "flags", CYAML_FLAG_DEFAULT,
+ *   PortIdentifier, flags, flags_bitvals,
+ *   CYAML_ARRAY_LEN (flags_bitvals)),
+ * @endcode
+ *
  * \section cyaml_schema_values Schema Values
  *
  * Schemas will normally be @code CYAML_VALUE_MAPPING
