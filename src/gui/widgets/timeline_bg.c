@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -24,7 +24,6 @@
  */
 
 #include "zrythm.h"
-#include "audio/automation_lane.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
@@ -34,7 +33,7 @@
 #include "audio/tracklist.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/automation_lane.h"
+#include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
@@ -136,79 +135,77 @@ timeline_bg_draw_cb (
         track_get_automation_tracklist (track);
       if (atl)
         {
-          for (j = 0;
-               j < atl->num_als;
-               j++)
+          AutomationTrack * at;
+          for (j = 0; j < atl->num_ats; j++)
             {
-              AutomationLane * al = atl->als[j];
+              at = atl->ats[j];
 
-              if (al->widget &&
-                  track->bot_paned_visible &&
-                  al->visible)
-                {
-                  /* horizontal automation track lines */
-                  gint wx, wy;
-                  gtk_widget_translate_coordinates(
-                            GTK_WIDGET (al->widget),
-                            GTK_WIDGET (MW_TRACKLIST),
-                            0,
-                            0,
-                            &wx,
-                            &wy);
-                  if (wy > rect.y &&
-                      wy < (rect.y + rect.height))
-                    z_cairo_draw_horizontal_line (
-                      cr,
-                      wy,
-                      rect.x,
-                      rect.x + rect.width,
-                      0.2);
+              if (!at->created || !at->visible ||
+                  !track->bot_paned_visible ||
+                  !at->widget)
+                continue;
 
-                  float normalized_val =
-                    automation_track_get_normalized_val_at_pos (
-                      al->at,
-                      &PLAYHEAD);
-                  if (normalized_val < 0.f)
-                    normalized_val =
-                      automatable_real_val_to_normalized (
-                        al->at->automatable,
-                        automatable_get_val (
-                          al->at->automatable));
+              /* horizontal automation track lines */
+              gint wx, wy;
+              gtk_widget_translate_coordinates(
+                        GTK_WIDGET (at->widget),
+                        GTK_WIDGET (MW_TRACKLIST),
+                        0,
+                        0,
+                        &wx,
+                        &wy);
+              if (wy > rect.y &&
+                  wy < (rect.y + rect.height))
+                z_cairo_draw_horizontal_line (
+                  cr,
+                  wy,
+                  rect.x,
+                  rect.x + rect.width,
+                  0.2);
 
-                  int y_px =
-                    automation_lane_widget_get_y_px_from_normalized_val (
-                      al->widget,
-                      normalized_val);
+              float normalized_val =
+                automation_track_get_normalized_val_at_pos (
+                  at,
+                  &PLAYHEAD);
+              if (normalized_val < 0.f)
+                normalized_val =
+                  automatable_real_val_to_normalized (
+                    at->automatable,
+                    automatable_get_val (
+                      at->automatable));
 
-                  /* show line at current val */
-                  cairo_set_source_rgba (
-                    cr,
-                    track->color.red,
-                    track->color.green,
-                    track->color.blue,
-                    0.3);
-                  cairo_set_line_width (cr, 1);
-                  cairo_move_to (cr, rect.x, wy + y_px);
-                  cairo_line_to (cr, rect.x + rect.width, wy + y_px);
-                  cairo_stroke (cr);
+              int y_px =
+                automation_track_widget_get_y_px_from_normalized_val (
+                  at->widget,
+                  normalized_val);
 
-                  /* show shade under the line */
-                  /*cairo_set_source_rgba (*/
-                    /*cr,*/
-                    /*track->color.red,*/
-                    /*track->color.green,*/
-                    /*track->color.blue,*/
-                    /*0.06);*/
-                  /*int allocated_h =*/
-                    /*gtk_widget_get_allocated_height (*/
-                      /*GTK_WIDGET (al->widget));*/
-                  /*cairo_rectangle (*/
-                    /*cr,*/
-                    /*rect.x, wy + y_px,*/
-                    /*rect.width, allocated_h - y_px);*/
-                  /*cairo_fill (cr);*/
+              /* show line at current val */
+              cairo_set_source_rgba (
+                cr,
+                track->color.red,
+                track->color.green,
+                track->color.blue,
+                0.3);
+              cairo_set_line_width (cr, 1);
+              cairo_move_to (cr, rect.x, wy + y_px);
+              cairo_line_to (cr, rect.x + rect.width, wy + y_px);
+              cairo_stroke (cr);
 
-                }
+              /* show shade under the line */
+              /*cairo_set_source_rgba (*/
+                /*cr,*/
+                /*track->color.red,*/
+                /*track->color.green,*/
+                /*track->color.blue,*/
+                /*0.06);*/
+              /*int allocated_h =*/
+                /*gtk_widget_get_allocated_height (*/
+                  /*GTK_WIDGET (al->widget));*/
+              /*cairo_rectangle (*/
+                /*cr,*/
+                /*rect.x, wy + y_px,*/
+                /*rect.width, allocated_h - y_px);*/
+              /*cairo_fill (cr);*/
             }
         }
     }

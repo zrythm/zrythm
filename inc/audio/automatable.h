@@ -4,22 +4,23 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef __AUDIO_AUTOMATABLE_H__
 #define __AUDIO_AUTOMATABLE_H__
 
+#include "audio/port.h"
 #include "plugins/lv2/control.h"
 #include "utils/yaml.h"
 
@@ -36,7 +37,6 @@ typedef enum AutomatableType
   AUTOMATABLE_TYPE_CHANNEL_PAN
 } AutomatableType;
 
-typedef struct Port Port;
 typedef struct Track Track;
 typedef struct Channel Channel;
 typedef struct AutomatableTrack AutomatableTrack;
@@ -52,39 +52,50 @@ typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable
 {
   /** Index in its parent. */
-  int            index;
-  /**
-   * Port, if plugin port.
-   */
-  Port *               port; ///< cache
+  int              index;
 
   /**
-   * Control, if LV2 plugin.
+   * Pointer to the Port, if plugin port.
+   */
+  Port *           port;
+
+  /**
+   * Port identifier, used when saving/loading so
+   * we can fetch the port.
+   *
+   * It is a pointer so it can be NULL.
+   */
+  PortIdentifier * port_id;
+
+  /**
+   * Pointer to the control, if LV2 plugin.
    *
    * When loading, this can be fetched using the
    * port.
    */
-  Lv2Control *       control;
+  Lv2Control *     control;
 
   /** Associated track. */
-  Track *              track;
-  int                  track_pos;
+  Track *          track;
+
+  /** Used when saving/loading projects. */
+  int              track_id;
 
   /** Slot, if plugin automation. */
-  int                  slot;
+  int              slot;
   /** Plugin, for convenience, if plugin
    * automation. */
-  Plugin *             plugin;
+  Plugin *         plugin;
 
   /** Human friendly label. */
-  char *               label;
+  char *           label;
 
   /** Volume/pan/plugin control/etc. */
-  AutomatableType      type;
+  AutomatableType  type;
 
-  float                minf;
-  float                maxf;
-  float                sizef;
+  float            minf;
+  float            maxf;
+  float            sizef;
 } Automatable;
 
 static const cyaml_strval_t
@@ -108,9 +119,11 @@ automatable_fields_schema[] =
   CYAML_FIELD_INT (
     "index", CYAML_FLAG_DEFAULT,
     Automatable, index),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
-    Automatable, track_pos),
+  CYAML_FIELD_MAPPING_PTR (
+    "identifier",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Automatable, port_id,
+    port_identifier_fields_schema),
   CYAML_FIELD_INT (
     "slot", CYAML_FLAG_DEFAULT,
     Automatable, slot),
@@ -133,8 +146,11 @@ automatable_schema = {
     Automatable, automatable_fields_schema),
 };
 
-//void
-//automatable_init_loaded (Automatable * self);
+/**
+ * Inits a loaded automatable.
+ */
+void
+automatable_init_loaded (Automatable * self);
 
 /**
  * Finds the Automatable in the project from the

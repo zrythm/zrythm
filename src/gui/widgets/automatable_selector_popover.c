@@ -4,26 +4,25 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "audio/automatable.h"
-#include "audio/automation_lane.h"
 #include "audio/automation_track.h"
 #include "audio/channel_track.h"
 #include "gui/widgets/automatable_selector_button.h"
 #include "gui/widgets/automatable_selector_popover.h"
-#include "gui/widgets/automation_lane.h"
+#include "gui/widgets/automation_track.h"
 #include "plugins/plugin.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -60,28 +59,24 @@ create_model_for_automatables (
                         G_TYPE_POINTER);
 
   Track * track =
-    self->owner->owner->al->at->track;
-  ChannelTrack * ct = (ChannelTrack *) track;
-
+    self->owner->owner->at->track;
+  AutomationTrack * at;
   if (type == AS_TYPE_CHANNEL)
     {
       for (int i = 0;
-           i < ct->channel->num_automatables; i++)
+           i < track->channel->num_ats; i++)
         {
-          Automatable * a =
-            ct->channel->automatables[i];
-
           /* get selected automation track */
-          AutomationTrack * at =
-            automation_tracklist_get_at_from_automatable (
-              track_get_automation_tracklist (track),
-              a);
+          at =
+            track->channel->ats[i];
 
            /*if this automation track is not already*/
            /*in a visible lane*/
-          if (!at->al || !at->al->visible ||
-              at->al == self->owner->owner->al)
+          if (!at->created || !at->visible ||
+              at == self->owner->owner->at)
             {
+              Automatable * a = at->automatable;
+
               // Add a new row to the model
               gtk_list_store_append (list_store, &iter);
               gtk_list_store_set (
@@ -95,27 +90,26 @@ create_model_for_automatables (
     }
   else if (type > AS_TYPE_CHANNEL)
     {
-      Plugin * plugin = ct->channel->plugins[type - 1];
+      Plugin * plugin =
+        track->channel->plugins[type - 1];
 
       if (plugin)
         {
           for (int j = 0;
-               j < plugin->num_automatables; j++)
+               j < plugin->num_ats; j++)
             {
-              Automatable * a =
-                plugin->automatables[j];
-
               /* get selected automation track */
-              AutomationTrack * at =
-                automation_tracklist_get_at_from_automatable (
-                  track_get_automation_tracklist (track),
-                  a);
+              at =
+                plugin->ats[j];
 
                /*if this automation track is not already*/
                /*in a visible lane*/
-              if (!at->al || !at->al->visible ||
-                  at->al == self->owner->owner->al)
+              if (!at->created || !at->visible ||
+                  at == self->owner->owner->at)
                 {
+                  Automatable * a =
+                    at->automatable;
+
                   // Add a new row to the model
                   gtk_list_store_append (
                     list_store, &iter);
@@ -156,14 +150,11 @@ create_model_for_types (
     -1);
 
   Track * track =
-    self->owner->owner->al->at->track;
-  ChannelTrack * ct = (ChannelTrack *) track;
-  /*g_message (track_get_name (track));*/
+    self->owner->owner->at->track;
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      Plugin * plugin = ct->channel->plugins[i];
-      /*g_message ("%p %d", plugin, i);*/
+      Plugin * plugin = track->channel->plugins[i];
 
       if (plugin)
         {
@@ -262,18 +253,6 @@ on_selection_changed (
 
           update_info_label (self,
                              label);
-
-          Track * track = self->owner->owner->al->at->track;
-
-          /* get selected automation track */
-          AutomationTrack * at =
-            automation_tracklist_get_at_from_automatable (
-              track_get_automation_tracklist (track),
-              a);
-
-          automation_lane_update_automation_track (
-            self->owner->owner->al,
-            at);
         }
     }
 }
@@ -371,7 +350,7 @@ automatable_selector_popover_widget_new (
   AutomatableSelectorType type =
     AS_TYPE_CHANNEL;
   Automatable * a =
-    self->owner->owner->al->at->automatable;
+    self->owner->owner->at->automatable;
   if (a->type >= AUTOMATABLE_TYPE_CHANNEL_FADER)
     type = AS_TYPE_CHANNEL;
   else if (a->slot > -1)

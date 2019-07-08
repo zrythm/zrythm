@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -70,7 +70,7 @@ typedef enum EventType
   ET_MARKER_CREATED,
   /** works for all rulers */
   ET_RULER_STATE_CHANGED,
-  ET_AUTOMATION_LANE_ADDED,
+  ET_AUTOMATION_TRACK_ADDED,
   ET_TIME_SIGNATURE_CHANGED,
   ET_TRACK_ADDED,
   ET_TRACK_CHANGED,
@@ -80,7 +80,7 @@ typedef enum EventType
   ET_LAST_TIMELINE_OBJECT_CHANGED,
 
   ET_TRACK_BOT_PANED_VISIBILITY_CHANGED,
-  ET_AUTOMATION_LANE_AUTOMATION_TRACK_CHANGED,
+  ET_AUTOMATION_TRACK_CHANGED,
 
   /**
    * Region (clip) to show in the piano roll
@@ -166,6 +166,7 @@ typedef enum EventType
   ET_AUTOMATION_POINT_POSITIONS_CHANGED,
   ET_PIANO_ROLL_HIGHLIGHTING_CHANGED,
   ET_TIMELINE_OBJECTS_IN_TRANSIT,
+  ET_AUTOMATION_TRACKLIST_AT_REMOVED,
 } EventType;
 
 /**

@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -69,7 +69,12 @@ transport_init (Transport * self,
 {
   g_message ("Initializing transport");
 
-  if (!loading)
+  if (loading)
+    {
+      transport_set_beat_unit (
+        self, self->beat_unit);
+    }
+  else
     {
       // set inital total number of beats
       // this is applied to the ruler
@@ -132,14 +137,14 @@ transport_set_beat_unit (
   self->beat_unit = beat_unit;
   self->ebeat_unit = get_ebeat_unit (beat_unit);
 
-/**
- * Regarding calculation:
- * 3840 = TICKS_PER_QUARTER_NOTE * 4 to get the ticks
- * per full note.
- * Divide by beat unit (e.g. if beat unit is 2,
- * it means it is a 1/2th note, so multiply 1/2
- * with the ticks per note
- */
+  /**
+   * Regarding calculation:
+   * 3840 = TICKS_PER_QUARTER_NOTE * 4 to get the ticks
+   * per full note.
+   * Divide by beat unit (e.g. if beat unit is 2,
+   * it means it is a 1/2th note, so multiply 1/2
+   * with the ticks per note
+   */
   self->lticks_per_beat =
     3840.0 / (double) TRANSPORT->beat_unit;
   self->ticks_per_beat =

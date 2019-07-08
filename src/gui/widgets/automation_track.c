@@ -4,24 +4,20 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- */
-
 #include "audio/automatable.h"
-#include "audio/automation_lane.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/bus_track.h"
@@ -31,7 +27,7 @@
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automatable_selector_button.h"
-#include "gui/widgets/automation_lane.h"
+#include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/center_dock.h"
@@ -44,11 +40,9 @@
 #include "utils/arrays.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (AutomationLaneWidget,
-               automation_lane_widget,
+G_DEFINE_TYPE (AutomationTrackWidget,
+               automation_track_widget,
                GTK_TYPE_GRID)
-
-#define GET_TRACK(self) Track * track = self->al->at->track
 
 /**
  * Enums for identifying combobox entries.
@@ -80,66 +74,61 @@ size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 }
 
 /**
- * Adds automation lane for automation track.
+ * Adds automation track for automation track.
  */
 /*static void*/
-/*add_automation_lane (*/
+/*add_automation_track (*/
   /*AutomationTracklistWidget * atlw,*/
   /*AutomationTrack *           at)*/
 /*{*/
   /*automation_tracklist_widget_add_automation_track (*/
     /*atlw,*/
     /*at,*/
-    /*automation_tracklist_widget_get_automation_lane_widget_index (*/
+    /*automation_tracklist_widget_get_automation_track_widget_index (*/
       /*atlw,*/
       /*at->widget) + 1);*/
 /*}*/
 
 
 static void
-on_add_lane_clicked (
+on_add_track_clicked (
   GtkWidget * widget,
   void * data)
 {
-  AutomationLaneWidget * self =
-    Z_AUTOMATION_LANE_WIDGET (data);
+  AutomationTrackWidget * self =
+    Z_AUTOMATION_TRACK_WIDGET (data);
 
   /* get next non visible automation track and add its widget via
    * track_widget_add_automatoin_track_widget */
-  GET_TRACK (self);
   AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
+    track_get_automation_tracklist (
+      self->at->track);
   AutomationTrack * at =
     automation_tracklist_get_first_invisible_at (
       atl);
   if (!at)
     return;
 
-  if (!at->al)
+  if (!at->created)
     {
-      at->al = automation_lane_new (at);
-      automation_tracklist_add_al (
-        atl, at->al);
+      at->created = 1;
     }
   else
     {
-      at->al->visible = 1;
+      at->visible = 1;
     }
-  g_message ("the at is %s",
-             at->automatable->label);
 
-  EVENTS_PUSH (ET_AUTOMATION_LANE_ADDED,
-               at->al);
+  EVENTS_PUSH (ET_AUTOMATION_TRACK_ADDED, at);
 }
 
 /**
- * Sets selected automation lane on combo box.
+ * Sets selected automation track on combo box.
  */
 /*static void*/
 /*set_active_al (*/
-  /*AutomationLaneWidget * self,*/
+  /*AutomationTrackWidget * self,*/
   /*GtkTreeModel *         model,*/
-  /*AutomationLane *       al)*/
+  /*AutomationTrack *       al)*/
 /*{*/
   /*GtkTreeIter iter;*/
   /*GtkTreePath * path;*/
@@ -191,7 +180,7 @@ on_add_lane_clicked (
 /*static void*/
 /*on_at_selector_changed (*/
   /*GtkComboBox *          widget,*/
-  /*AutomationLaneWidget * self)*/
+  /*AutomationTrackWidget * self)*/
 /*{*/
   /*GtkTreeIter iter;*/
   /*gtk_combo_box_get_active_iter (widget, &iter);*/
@@ -211,9 +200,9 @@ on_add_lane_clicked (
       /*a);*/
 
   /* if this automation track is not already
-   * in a visible lane */
+   * in a visible track */
   /*if (!at->al || !at->al->visible)*/
-    /*automation_lane_update_automation_track (*/
+    /*automation_track_update_automation_track (*/
       /*self->al,*/
       /*at);*/
   /*else*/
@@ -223,7 +212,7 @@ on_add_lane_clicked (
                      /*self->al);*/
       /*ui_show_notification (*/
         /*"Selected automatable already has an "*/
-        /*"automation lane");*/
+        /*"automation track");*/
     /*}*/
 
 /*}*/
@@ -289,11 +278,11 @@ on_add_lane_clicked (
 
 /**
  * Returns the y pixels from the value based on the
- * allocation of the automation lane.
+ * allocation of the automation track.
  */
 int
-automation_lane_widget_get_y_px_from_normalized_val (
-  AutomationLaneWidget * self,
+automation_track_widget_get_y_px_from_normalized_val (
+  AutomationTrackWidget * self,
   float                  normalized_val)
 {
   int allocated_h =
@@ -306,21 +295,21 @@ automation_lane_widget_get_y_px_from_normalized_val (
 }
 
 void
-automation_lane_widget_update_current_val (
-  AutomationLaneWidget * self)
+automation_track_widget_update_current_val (
+  AutomationTrackWidget * self)
 {
   char * val =
     g_strdup_printf (
       "%.2f",
       automatable_get_val (
-        self->al->at->automatable));
+        self->at->automatable));
   gtk_label_set_text (self->current_val, val);
   g_free (val);
 }
 
 void
-automation_lane_widget_refresh (
-  AutomationLaneWidget * self)
+automation_track_widget_refresh (
+  AutomationTrackWidget * self)
 {
   /*g_signal_handler_block (*/
     /*self->selector,*/
@@ -346,35 +335,35 @@ automation_lane_widget_refresh (
   /* add automation points/curves for the currently
    * selected automatable */
 
-  automation_lane_widget_update_current_val (
+  automation_track_widget_update_current_val (
     self);
 }
 
 static void
 on_destroy (
-  AutomationLaneWidget * self)
+  AutomationTrackWidget * self)
 {
-  AutomationLane * al = self->al;
+  AutomationTrack * at = self->at;
 
   g_object_unref (self);
 
-  al->widget = NULL;
+  at->widget = NULL;
 }
 
 /**
  * Creates a new Fader widget and binds it to the given value.
  */
-AutomationLaneWidget *
-automation_lane_widget_new (
-  AutomationLane * al)
+AutomationTrackWidget *
+automation_track_widget_new (
+  AutomationTrack * at)
 {
-  AutomationLaneWidget * self =
+  AutomationTrackWidget * self =
     g_object_new (
-      AUTOMATION_LANE_WIDGET_TYPE,
+      AUTOMATION_TRACK_WIDGET_TYPE,
       NULL);
 
-  self->al = al;
-  al->widget = self;
+  self->at = at;
+  at->widget = self;
 
   automatable_selector_button_widget_setup (
     self->selector, self);
@@ -399,11 +388,11 @@ automation_lane_widget_new (
 }
 
 float
-automation_lane_widget_get_fvalue_at_y (
-  AutomationLaneWidget * self,
+automation_track_widget_get_fvalue_at_y (
+  AutomationTrackWidget * self,
   double                 _start_y)
 {
-  Automatable * a = self->al->at->automatable;
+  Automatable * a = self->at->automatable;
 
   GtkAllocation allocation;
   gtk_widget_get_allocation (
@@ -422,7 +411,9 @@ automation_lane_widget_get_fvalue_at_y (
   /* get ratio from widget */
   int widget_size = allocation.height;
   int widget_value = widget_size - valy;
-  float widget_ratio = CLAMP ((float) widget_value / widget_size, 0.0, 1.0);
+  float widget_ratio =
+    CLAMP ((float) widget_value / widget_size,
+           0.0, 1.0);
   float automatable_value =
     automatable_normalized_val_to_real (
       a, widget_ratio);
@@ -432,11 +423,11 @@ automation_lane_widget_get_fvalue_at_y (
 
 /**
  * Returns the y pixels of the automation point in
- * the automation lane.
+ * the automation track.
  */
 double
-automation_lane_widget_get_y (
-  AutomationLaneWidget * self,
+automation_track_widget_get_y (
+  AutomationTrackWidget * self,
   AutomationPointWidget * ap_widget)
 {
   gint wx, wy;
@@ -452,7 +443,8 @@ automation_lane_widget_get_y (
 }
 
 static void
-automation_lane_widget_init (AutomationLaneWidget * self)
+automation_track_widget_init (
+  AutomationTrackWidget * self)
 {
   gtk_widget_destroy (
     GTK_WIDGET (g_object_new (
@@ -467,35 +459,35 @@ automation_lane_widget_init (AutomationLaneWidget * self)
 }
 
 static void
-automation_lane_widget_class_init (
-  AutomationLaneWidgetClass * _klass)
+automation_track_widget_class_init (
+  AutomationTrackWidgetClass * _klass)
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass,
-    "automation_lane.ui");
+    "automation_track.ui");
   gtk_widget_class_set_css_name (
     klass,
-    "automation-lane");
+    "automation-track");
 
   gtk_widget_class_bind_template_child (
     klass,
-    AutomationLaneWidget,
+    AutomationTrackWidget,
     selector);
   gtk_widget_class_bind_template_child (
     klass,
-    AutomationLaneWidget,
+    AutomationTrackWidget,
     value_box);
   gtk_widget_class_bind_template_child (
     klass,
-    AutomationLaneWidget,
+    AutomationTrackWidget,
     mute_toggle);
   gtk_widget_class_bind_template_child (
     klass,
-    AutomationLaneWidget,
+    AutomationTrackWidget,
     current_val);
   gtk_widget_class_bind_template_callback (
     klass,
-    on_add_lane_clicked);
+    on_add_track_clicked);
 }

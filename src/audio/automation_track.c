@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -26,8 +26,8 @@
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/backend/events.h"
-#include "gui/widgets/automation_lane.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_track.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -40,31 +40,21 @@ void
 automation_track_init_loaded (
   AutomationTrack * self)
 {
-  self->automatable =
-    automatable_find (self->automatable);
-
-  /* TODO track */
-  /*self->track =*/
-    /*project_get_track (*/
-      /*self->track_id);*/
-
-  /* TODO al */
-  /*self->al =*/
-    /*project_get_automation_lane (self->al_id);*/
+  self->automatable->track = self->track;
+  automatable_init_loaded (self->automatable);
 }
 
 AutomationTrack *
 automation_track_new (Automatable *   a)
 {
-  g_warn_if_fail (a->track && a->track_pos > -1);
+  g_warn_if_fail (a->track);
 
   AutomationTrack * at =
     calloc (1, sizeof (AutomationTrack));
 
   at->track = a->track;
-  at->track_pos = a->track_pos;
   g_message ("new automation track for %s (pos %d)",
-             a->track->name, a->track_pos);
+             a->track->name, a->track->pos);
   at->automatable = a;
 
   return at;
@@ -117,8 +107,9 @@ add_and_show_curve_point (AutomationTrack * at,
   automation_track_add_ac (at, curve);
 
   /* FIXME these should be in gui code */
-  gtk_overlay_add_overlay (GTK_OVERLAY (MW_TIMELINE),
-                           GTK_WIDGET (curve->widget));
+  gtk_overlay_add_overlay (
+    GTK_OVERLAY (MW_TIMELINE),
+    GTK_WIDGET (curve->widget));
   gtk_widget_show (GTK_WIDGET (curve->widget));
 }
 
@@ -697,6 +688,9 @@ automation_track_get_normalized_val_at_pos (
 void
 automation_track_free (AutomationTrack * self)
 {
+  if (self->widget && GTK_IS_WIDGET (self->widget))
+    gtk_widget_destroy (GTK_WIDGET (self->widget));
+
   int i;
   for (i = 0; i < self->num_aps; i++)
     automation_track_remove_ap (

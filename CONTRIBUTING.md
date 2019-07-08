@@ -2,7 +2,8 @@ Contributing Guidelines
 =======================
 
 *This file is part of Zrythm and is licensed under the
-GNU General Public License version 3. You should have received a copy of the GNU General Public License
+GNU Affero General Public License version 3. You should have received
+a copy of the GNU Affero General Public License
   along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.*
 
 # CODE STRUCTURE
@@ -84,6 +85,24 @@ Once the program is built, it will need to be installed the first time before it
 
 Alternatively if you don't want to install anything on your system you can run `glib-compile-schemas data/` and then run zrythm using `GSETTINGS_SCHEMA_DIR=data ./_build/src/zrythm`. The built program will be at `_build/src/zrythm` by default
 
+## Non-standard locations
+
+When installing in non-standard locations, glib
+needs to find the gsettings schema. By default,
+it looks in /usr and /usr/share.
+It is possible to set
+the `GSETTINGS_SCHEMA_DIR` environment variable to
+`<your prefix>/share/glib-2.0/schemas` or prepend
+`XDG_DATA_DIRS` with `<your prefix>/share` before
+running `<your prefix>/bin/zrythm` to make glib
+use the schema installed in the custom location.
+
+There are also translations installed in the custom
+location so XDG_DATA_DIRS might be a better idea.
+
+Generally, we recommend installing under /usr or
+/usr/local (default) to avoid these problems.
+
 # DEBUGGING
   Use `gdb _build/src/zrythm`
 
@@ -124,7 +143,7 @@ amounts of code, you may add your copyright notice
 of the file, otherwise you agree to assign all
 copyrights to Alexandros Theodotou, the main author.
 You agree that all your changes will be licensed under
-the GPLv3+ like the rest of the project.
+the AGPLv3+ like the rest of the project.
 
 # TROUBLESHOOTING
 ## Getting random GUI related errors with no trace in valgrind or GTK warnings

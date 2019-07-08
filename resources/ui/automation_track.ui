@@ -7,22 +7,22 @@
   This file is part of Zrythm
 
   Zrythm is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
+  it under the terms of the GNU Affero General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
   Zrythm is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+  GNU Affero General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
+  You should have received a copy of the GNU Affero General Public License
   along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="AutomationLaneWidget" parent="GtkGrid">
+  <template class="AutomationTrackWidget" parent="GtkGrid">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
@@ -53,13 +53,13 @@
       </packing>
     </child>
     <child>
-      <object class="GtkButton" id="add_lane">
+      <object class="GtkButton" id="add_track">
         <property name="label">gtk-add</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
         <property name="use_stock">True</property>
-        <signal name="clicked" handler="on_add_lane_clicked" object="AutomationLaneWidget" swapped="no"/>
+        <signal name="clicked" handler="on_add_track_clicked" object="AutomationTrackWidget" swapped="no"/>
       </object>
       <packing>
         <property name="left_attach">2</property>

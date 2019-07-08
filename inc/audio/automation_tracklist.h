@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -27,7 +27,6 @@
 #ifndef __AUDIO_AUTOMATION_TRACKLIST_H__
 #define __AUDIO_AUTOMATION_TRACKLIST_H__
 
-#include "audio/automation_lane.h"
 #include "audio/automation_track.h"
 #include "utils/yaml.h"
 
@@ -53,41 +52,37 @@ typedef struct AutomationLane AutomationLane;
 typedef struct AutomationTracklist
 {
   /**
-   * Automation tracks to be generated/used at run
-   * time.
+   * Automation tracks in this automation
+   * tracklist.
    *
    * These should be updated with ALL of the
    * automatables available in the channel and its
    * plugins every time there is an update.
    *
-   * When loading projects, these should be first
-   * generated and then updated with automation
-   * points/curves.
-   */
-  AutomationTrack * ats[4000];
-  int               num_ats;
-
-  /**
-   * These are the active automation lanes that are
-   * shown in the UI, including hidden ones.
+   * Active automation lanes that are
+   * shown in the UI, including hidden ones, can
+   * be found using the struct member created
+   * and visible.
    *
    * Automation tracks become active automation
    * lanes when they have automation or are
    * selected.
-   *
-   * They must be associated with an automation
-   * track.
    */
-  AutomationLane *  als[400];
-  int               num_als;
+  AutomationTrack ** ats;
+  int               num_ats;
 
   /**
-   * Pointer back to owner track.
-   *
-   * For convenience only. Not to be serialized.
+   * Allocated size for the automation track
+   * pointer array.
    */
-  //int                          track_id;
-  Track *                      track; ///< cache
+  int               ats_size;
+
+  /**
+   * Pointer back to the track.
+   *
+   * This should be set during initialization.
+   */
+  Track *                      track;
 
   AutomationTracklistWidget *  widget;
 } AutomationTracklist;
@@ -99,10 +94,6 @@ static const cyaml_schema_field_t
     "ats", CYAML_FLAG_DEFAULT,
     AutomationTracklist, ats, num_ats,
     &automation_track_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "als", CYAML_FLAG_DEFAULT,
-    AutomationTracklist, als, num_als,
-    &automation_lane_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };
@@ -121,6 +112,9 @@ automation_tracklist_init (
   AutomationTracklist * self,
   Track *               track);
 
+/**
+ * Inits a loaded AutomationTracklist.
+ */
 void
 automation_tracklist_init_loaded (
   AutomationTracklist * self);
@@ -129,11 +123,6 @@ void
 automation_tracklist_add_at (
   AutomationTracklist * self,
   AutomationTrack *     at);
-
-void
-automation_tracklist_add_al (
-  AutomationTracklist * self,
-  AutomationLane *      al);
 
 void
 automation_tracklist_delete_at (
@@ -173,9 +162,19 @@ automation_tracklist_update_track_pos (
  * Builds an automation track for each automatable in the channel and its plugins,
  * unless it already exists.
  */
+//void
+//automation_tracklist_update (
+  //AutomationTracklist * self);
+
+/**
+ * Removes the AutomationTrack from the
+ * AutomationTracklist, optionally freeing it.
+ */
 void
-automation_tracklist_update (
-  AutomationTracklist * self);
+automation_tracklist_remove_at (
+  AutomationTracklist * self,
+  AutomationTrack *     at,
+  int                   free);
 
 /**
  * Clones the automation tracklist elements from

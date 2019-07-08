@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -140,6 +140,10 @@ track_new (
       g_return_val_if_reached (NULL);
     }
 
+  automation_tracklist_init (
+    &track->automation_tracklist,
+    track);
+
   /* if should have channel */
   if (type != TRACK_TYPE_CHORD)
     {
@@ -149,12 +153,8 @@ track_new (
 
       ch->track = track;
 
-      channel_generate_automatables (ch);
+      channel_generate_automation_tracks (ch);
     }
-
-  automation_tracklist_init (
-    &track->automation_tracklist,
-    track);
 
   return track;
 }
@@ -695,10 +695,10 @@ track_get_fader_automatable (Track * track)
 Channel *
 track_get_channel (Track * track)
 {
+  g_warn_if_fail (track);
+
   switch (track->type)
     {
-    case TRACK_TYPE_CHORD:
-      break;
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_AUDIO:
@@ -706,10 +706,8 @@ track_get_channel (Track * track)
     case TRACK_TYPE_GROUP:
       return track->channel;
     default:
-      break;
+      g_return_val_if_reached (NULL);
     }
-
-  return NULL;
 }
 
 /**

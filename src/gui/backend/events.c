@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -23,7 +23,6 @@
  * Events for calling refresh on widgets.
  */
 
-#include "audio/automation_lane.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
@@ -36,6 +35,7 @@
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_clip_editor.h"
 #include "gui/widgets/audio_ruler.h"
+#include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -207,10 +207,10 @@ on_range_selection_changed ()
 }
 
 static void
-on_automation_lane_added (AutomationLane * al)
+on_automation_track_added (AutomationTrack * at)
 {
   AutomationTracklist * atl =
-    track_get_automation_tracklist (al->at->track);
+    track_get_automation_tracklist (at->track);
   if (atl && atl->widget)
     automation_tracklist_widget_refresh (
       atl->widget);
@@ -355,9 +355,9 @@ on_automation_value_changed (
 {
   AutomationTrack * at =
     automatable_get_automation_track (a);
-  if (at && at->al && at->al->widget)
-    automation_lane_widget_update_current_val (
-      at->al->widget);
+  if (at && at->widget)
+    automation_track_widget_update_current_val (
+      at->widget);
 }
 
 static void
@@ -366,8 +366,6 @@ on_plugin_added (Plugin * plugin)
   Channel * channel = plugin->track->channel;
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (channel->track);
-  automation_tracklist_update (
-    automation_tracklist);
   if (automation_tracklist &&
       automation_tracklist->widget)
     automation_tracklist_widget_refresh (
@@ -817,7 +815,7 @@ events_process (void * data)
         case ET_CLIP_EDITOR_REGION_CHANGED:
           on_clip_editor_region_changed ();
           break;
-        case ET_AUTOMATION_LANE_AUTOMATION_TRACK_CHANGED:
+        case ET_AUTOMATION_TRACK_CHANGED:
           break;
         case ET_TRACK_BOT_PANED_VISIBILITY_CHANGED:
           tracklist_widget_soft_refresh (
@@ -918,9 +916,9 @@ events_process (void * data)
         case ET_RULER_STATE_CHANGED:
           timeline_ruler_widget_refresh ();
           break;
-        case ET_AUTOMATION_LANE_ADDED:
-          on_automation_lane_added (
-            (AutomationLane *) ev->arg);
+        case ET_AUTOMATION_TRACK_ADDED:
+          on_automation_track_added (
+            (AutomationTrack *) ev->arg);
           break;
         case ET_PLUGIN_ADDED:
           on_plugin_added (

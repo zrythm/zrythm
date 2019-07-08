@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -37,36 +37,49 @@ typedef struct AutomationLane AutomationLane;
 typedef struct AutomationTrack
 {
   /** Index in parent AutomationTracklist. */
-  int                       index;
+  int               index;
 
   /**
-   * The automatable this automation track is for.
+   * Details about the automatable this automation
+   * track is for.
    */
-  Automatable *       automatable; ///< cache
+  Automatable *     automatable;
 
   /**
    * Owner track.
    *
    * For convenience only.
    */
-  Track *             track;
-  int                 track_pos;
+  Track *           track;
 
   /**
    * The automation points.
    *
    * Must always stay sorted by position.
    */
-  AutomationPoint *   aps[MAX_AUTOMATION_POINTS];
-  int                 num_aps;
-  AutomationCurve *   acs[MAX_AUTOMATION_POINTS];
-  int                 num_acs;
+  AutomationPoint * aps[MAX_AUTOMATION_POINTS];
+  int               num_aps;
+  AutomationCurve * acs[MAX_AUTOMATION_POINTS];
+  int               num_acs;
+
+  /** Whether it has been created by the user
+   * yet or not. */
+  int               created;
 
   /**
-   * Associated lane.
+   * Whether visible or not.
+   *
+   * Being created is a precondition for this.
    */
-  AutomationLane *          al;
-  int                       al_index;
+  int               visible;
+
+  /**
+   * Position of multipane handle.
+   */
+  int               handle_pos;
+
+  /** The widget. */
+  AutomationTrackWidget * widget;
 } AutomationTrack;
 
 static const cyaml_schema_field_t
@@ -77,7 +90,7 @@ static const cyaml_schema_field_t
     AutomationTrack, index),
   CYAML_FIELD_MAPPING_PTR (
     "automatable",
-    CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,
+    CYAML_FLAG_DEFAULT,
     AutomationTrack, automatable,
     automatable_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
@@ -89,8 +102,14 @@ static const cyaml_schema_field_t
     AutomationTrack, acs, num_acs,
     &automation_curve_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
-    "al_index", CYAML_FLAG_DEFAULT,
-    AutomationTrack, al_index),
+    "created", CYAML_FLAG_DEFAULT,
+    AutomationTrack, created),
+	CYAML_FIELD_INT (
+    "visible", CYAML_FLAG_DEFAULT,
+    AutomationTrack, visible),
+	CYAML_FIELD_INT (
+    "handle_pos", CYAML_FLAG_DEFAULT,
+    AutomationTrack, handle_pos),
 
 	CYAML_FIELD_END
 };
@@ -122,6 +141,9 @@ automation_track_set_automatable (
   AutomationTrack * automation_track,
   Automatable *     a);
 
+/**
+ * Frees the automation track.
+ */
 void
 automation_track_free (AutomationTrack * at);
 

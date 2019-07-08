@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -38,8 +38,8 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _AutomatableSelectorPopoverWidget AutomatableSelectorPopoverWidget;
 typedef struct Automatable Automatable;
-typedef struct _AutomationLaneWidget
-  AutomationLaneWidget;
+typedef struct _AutomationTrackWidget
+  AutomationTrackWidget;
 
 typedef struct _AutomatableSelectorButtonWidget
 {
@@ -49,13 +49,13 @@ typedef struct _AutomatableSelectorButtonWidget
   GtkLabel                * label; ///< label to show
   AutomatableSelectorPopoverWidget   * popover; ///< the popover to show
   GtkBox                  * content; ///< popover content holder
-  AutomationLaneWidget *   owner;
+  AutomationTrackWidget *   owner;
 } AutomatableSelectorButtonWidget;
 
 void
 automatable_selector_button_widget_setup (
   AutomatableSelectorButtonWidget * self,
-  AutomationLaneWidget *            owner);
+  AutomationTrackWidget *            owner);
 
 void
 automatable_selector_button_widget_refresh (

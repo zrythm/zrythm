@@ -3,7 +3,6 @@ audio_srcs = [
   'audio_track.c',
   'automatable.c',
   'automation_curve.c',
-  'automation_lane.c',
   'automation_point.c',
   'automation_track.c',
   'automation_tracklist.c',

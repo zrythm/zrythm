@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -37,7 +37,6 @@ _create_blank ()
   Automatable * self =
     calloc (1, sizeof (Automatable));
 
-  self->track_pos = -1;
   self->slot = -1;
 
   return self;
@@ -80,9 +79,12 @@ get_maxf (Automatable * a)
   return -1;
 }
 
-Lv2Control *
+static Lv2Control *
 get_lv2_control (Automatable * self)
 {
+  g_return_val_if_fail (self->port, NULL);
+  g_return_val_if_fail (self->port->lv2_port, NULL);
+
   /* Note: plugin must be instantiated by now. */
   if (self->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL)
     return  lv2_control_get_from_port (
@@ -91,29 +93,35 @@ get_lv2_control (Automatable * self)
   return NULL;
 }
 
-/*void*/
-/*automatable_init_loaded (Automatable * self)*/
-/*{*/
-  /*self->port =*/
-    /*project_get_port (self->port_id);*/
 
-  /*if (self->type ==*/
-        /*AUTOMATABLE_TYPE_PLUGIN_CONTROL)*/
-    /*{*/
-      /*[>Lv2Plugin * lv2_plgn =<]*/
-        /*[>self->port->owner_pl->lv2;<]*/
+/**
+ * Inits a loaded automatable.
+ */
+void
+automatable_init_loaded (Automatable * self)
+{
 
-      /*self->control = get_lv2_control (self);*/
-    /*}*/
-  /*else if (self->type ==*/
-             /*AUTOMATABLE_TYPE_PLUGIN_ENABLED)*/
-    /*{*/
-      /*[> TODO use slot index to get lv2_plgn <]*/
-    /*}*/
-
-  /*self->track =*/
-    /*project_get_track (self->track_id);*/
-/*}*/
+  switch (self->type)
+    {
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      {
+        self->port =
+          port_find_from_identifier (self->port_id);
+        self->control = get_lv2_control (self);
+      }
+      break;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+      {
+        self->plugin =
+          self->track->channel->plugins[
+            self->slot];
+      }
+      break;
+    default:
+      /* TODO */
+      break;
+    }
+}
 
 /**
  * Finds the Automatable in the project from the
@@ -123,7 +131,18 @@ Automatable *
 automatable_find (
   Automatable * clone)
 {
-  /* TODO */
+  switch (clone->type)
+    {
+    case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      break;
+    case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
+      break;
+    case AUTOMATABLE_TYPE_CHANNEL_FADER:
+      break;
+    case AUTOMATABLE_TYPE_CHANNEL_MUTE:
+    case AUTOMATABLE_TYPE_CHANNEL_PAN:
+      break;
+    }
 
   return NULL;
 }
@@ -134,7 +153,6 @@ automatable_create_fader (Channel * channel)
   Automatable * a = _create_blank ();
 
   a->track = channel->track;
-  a->track_pos = channel->track->pos;
   a->label = g_strdup ("Volume");
   a->type = AUTOMATABLE_TYPE_CHANNEL_FADER;
   a->minf = get_minf (a);
@@ -150,7 +168,6 @@ automatable_create_pan (Channel * channel)
   Automatable * a = _create_blank ();
 
   a->track = channel->track;
-  a->track_pos = channel->track->pos;
   a->label = g_strdup ("Pan");
   a->type = AUTOMATABLE_TYPE_CHANNEL_PAN;
   a->minf = get_minf (a);
@@ -166,7 +183,6 @@ automatable_create_mute (Channel * channel)
   Automatable * a = _create_blank ();
 
   a->track = channel->track;
-  a->track_pos = channel->track->pos;
   a->label = g_strdup ("Mute");
   a->type = AUTOMATABLE_TYPE_CHANNEL_MUTE;
   a->minf = get_minf (a);
@@ -184,13 +200,16 @@ automatable_create_lv2_control (
   Automatable * a = _create_blank ();
 
   a->control = control;
-  Lv2Port * port = &control->plugin->ports[control->index];
+  Lv2Port * port =
+    &control->plugin->ports[control->index];
   a->port = port->port;
+  a->port_id = calloc (1, sizeof (PortIdentifier));
+  port_identifier_copy (
+    &a->port->identifier, a->port_id);
+
   /*a->index = control->index;*/
   a->type = AUTOMATABLE_TYPE_PLUGIN_CONTROL;
   a->track = plugin->track;
-  a->track_pos =
-    plugin->track->pos;
   a->slot = plugin->slot;
   a->label =
     g_strdup (lv2_control_get_label (control));
@@ -209,7 +228,6 @@ automatable_create_plugin_enabled (
 
   a->type = AUTOMATABLE_TYPE_PLUGIN_ENABLED;
   a->track = plugin->track;
-  a->track_pos = plugin->track->pos;
   a->slot = plugin->slot;
   a->label = g_strdup ("Enable/disable");
   a->minf = get_minf (a);

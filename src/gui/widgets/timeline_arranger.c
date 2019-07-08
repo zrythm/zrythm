@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -30,7 +30,6 @@
 #include "actions/undo_manager.h"
 #include "actions/duplicate_timeline_selections_action.h"
 #include "actions/move_timeline_selections_action.h"
-#include "audio/automation_lane.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/audio_track.h"
@@ -49,7 +48,7 @@
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_curve.h"
-#include "gui/widgets/automation_lane.h"
+#include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -165,11 +164,11 @@ timeline_arranger_widget_set_allocation (
       /*Automatable * a = ap->at->automatable;*/
 
       gint wx, wy;
-      if (!ap->at->al ||
+      if (!ap->at->created ||
           !ap->at->track->bot_paned_visible)
         return;
       gtk_widget_translate_coordinates (
-        GTK_WIDGET (ap->at->al->widget),
+        GTK_WIDGET (ap->at->widget),
         GTK_WIDGET (self),
         0, 0, &wx, &wy);
 
@@ -190,11 +189,11 @@ timeline_arranger_widget_set_allocation (
       /*Automatable * a = ap->at->automatable;*/
 
       gint wx, wy;
-      if (!ac->at->al ||
+      if (!ac->at->created ||
           !ac->at->track->bot_paned_visible)
         return;
       gtk_widget_translate_coordinates (
-        GTK_WIDGET (ac->at->al->widget),
+        GTK_WIDGET (ac->at->widget),
         GTK_WIDGET (self),
         0, 0, &wx, &wy);
       AutomationPoint * prev_ap =
@@ -537,18 +536,21 @@ timeline_arranger_widget_get_automation_track_at_y (
              self == MW_PINNED_TIMELINE)))
         continue;
 
-      AutomationLane * al;
-      for (j = 0; j < atl->num_als; j++)
+      AutomationTrack * at;
+      for (j = 0; j < atl->num_ats; j++)
         {
-          al = atl->als[j];
+          at = atl->ats[j];
+
+          if (!at->created)
+            continue;
 
           /* TODO check the rest */
-          if (al->visible && al->widget &&
+          if (at->visible && at->widget &&
               ui_is_child_hit (
                 GTK_CONTAINER (MW_TIMELINE),
-                GTK_WIDGET (al->widget),
+                GTK_WIDGET (at->widget),
                 0, 1, 0, y, 0, 0))
-            return al->at;
+            return at;
         }
     }
 
@@ -593,14 +595,16 @@ timeline_arranger_widget_select_all (
   TimelineArrangerWidget *  self,
   int                       select)
 {
+  int i,j,k;
+
   timeline_selections_clear (TL_SELECTIONS);
 
   /* select everything else */
   Region * r;
   Track * track;
   AutomationPoint * ap;
-  AutomationLane * al;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  AutomationTrack * at;
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
 
@@ -614,12 +618,11 @@ timeline_arranger_widget_select_all (
       if (track->lanes_visible)
         {
           TrackLane * lane;
-          for (int j = 0;
-               j < track->num_lanes; j++)
+          for (j = 0; j < track->num_lanes; j++)
             {
               lane = track->lanes[j];
 
-              for (int k = 0;
+              for (k = 0;
                    k < lane->num_regions; k++)
                 {
                   r = lane->regions[k];
@@ -633,19 +636,21 @@ timeline_arranger_widget_select_all (
       if (!track->bot_paned_visible)
         continue;
 
-      for (int j = 0;
-           j < atl->num_als;
-           j++)
+      for (j = 0; j < atl->num_ats; j++)
         {
-          al = atl->als[j];
-          if (al->visible)
+          at = atl->ats[j];
+
+          if (!at->created)
+            continue;
+
+          if (at->visible)
             {
-              for (int k = 0;
-                   k < al->at->num_aps;
+              for (k = 0;
+                   k < at->num_aps;
                    k++)
                 {
                   ap =
-                    al->at->aps[k];
+                    at->aps[k];
 
                   automation_point_widget_select (
                     ap->widget, select);
@@ -1050,8 +1055,8 @@ timeline_arranger_widget_create_ap (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   float value =
-    automation_lane_widget_get_fvalue_at_y (
-      at->al->widget, start_y);
+    automation_track_widget_get_fvalue_at_y (
+      at->widget, start_y);
 
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
@@ -2052,8 +2057,8 @@ timeline_arranger_widget_move_items_y (
           ap = automation_point_get_main_automation_point (ap);
 
           float fval =
-            automation_lane_widget_get_fvalue_at_y (
-              ap->at->al->widget,
+            automation_track_widget_get_fvalue_at_y (
+              ap->at->widget,
               ar_prv->start_y + offset_y);
           automation_point_update_fvalue (
             ap, fval, F_TRANS_ONLY);
@@ -2294,45 +2299,46 @@ add_children_from_channel_track (
 
   AutomationTracklist * atl =
     &ct->automation_tracklist;
-  AutomationLane * al;
-  for (i = 0; i < atl->num_als; i++)
+  AutomationTrack * at;
+  for (i = 0; i < atl->num_ats; i++)
     {
-      al = atl->als[i];
-      if (al->visible)
-        {
-          for (j = 0; j < al->at->num_aps; j++)
+      at = atl->ats[i];
+
+      if (!at->created || !at->visible)
+        continue;
+
+          for (j = 0; j < at->num_aps; j++)
             {
               AutomationPoint * ap =
-                al->at->aps[j];
+                at->aps[j];
 
-              for (k = 0; k < 2; k++)
-                {
-                  if (k == 0)
-                    ap = automation_point_get_main_automation_point (ap);
-                  else if (k == 1)
-                    ap = automation_point_get_main_trans_automation_point (ap);
-
-                  if (!GTK_IS_WIDGET (ap->widget))
-                    ap->widget =
-                      automation_point_widget_new (ap);
-
-                  gtk_overlay_add_overlay (
-                    GTK_OVERLAY (MW_TIMELINE),
-                    GTK_WIDGET (ap->widget));
-                }
-            }
-          for (j = 0; j < al->at->num_acs; j++)
+          for (k = 0; k < 2; k++)
             {
-              AutomationCurve * ac =
-                al->at->acs[j];
-              if (!GTK_IS_WIDGET (ac->widget))
-                ac->widget =
-                  automation_curve_widget_new (ac);
+              if (k == 0)
+                ap = automation_point_get_main_automation_point (ap);
+              else if (k == 1)
+                ap = automation_point_get_main_trans_automation_point (ap);
+
+              if (!GTK_IS_WIDGET (ap->widget))
+                ap->widget =
+                  automation_point_widget_new (ap);
 
               gtk_overlay_add_overlay (
                 GTK_OVERLAY (MW_TIMELINE),
-                GTK_WIDGET (ac->widget));
+                GTK_WIDGET (ap->widget));
             }
+        }
+      for (j = 0; j < at->num_acs; j++)
+        {
+          AutomationCurve * ac =
+            at->acs[j];
+          if (!GTK_IS_WIDGET (ac->widget))
+            ac->widget =
+              automation_curve_widget_new (ac);
+
+          gtk_overlay_add_overlay (
+            GTK_OVERLAY (MW_TIMELINE),
+            GTK_WIDGET (ac->widget));
         }
     }
 }

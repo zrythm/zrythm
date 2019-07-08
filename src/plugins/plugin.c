@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -66,7 +66,7 @@ plugin_init_loaded (Plugin * pl)
 
   plugin_instantiate (pl);
 
-  plugin_generate_automatables (pl);
+  plugin_generate_automation_tracks (pl);
 }
 
 /**
@@ -80,6 +80,10 @@ plugin_new_from_descr (
 {
   Plugin * plugin = calloc (1, sizeof (Plugin));
 
+  plugin->in_ports_size = 1;
+  plugin->out_ports_size = 1;
+  plugin->unknown_ports_size = 1;
+  plugin->ats_size = 1;
   plugin->descr = descr;
 
   if (plugin->descr->protocol == PROT_LV2)
@@ -87,6 +91,25 @@ plugin_new_from_descr (
       lv2_create_from_uri (plugin, descr->uri);
     }
   return plugin;
+}
+
+/**
+ * Removes the automation tracks associated with
+ * this plugin from the automation tracklist in the
+ * corresponding track.
+ *
+ * Used e.g. when moving plugins.
+ */
+void
+plugin_remove_ats_from_automation_tracklist (
+  Plugin * pl)
+{
+  for (int i = 0; i < pl->num_ats; i++)
+    {
+      automation_tracklist_remove_at (
+        &pl->track->automation_tracklist,
+        pl->ats[i], F_NO_FREE);
+    }
 }
 
 /**
@@ -124,15 +147,13 @@ plugin_add_automatable (
   Plugin * pl,
   Automatable * a)
 {
-  pl->automatables =
-    realloc (
-      pl->automatables,
-      sizeof (Automatable *) *
-        (pl->num_automatables + 1));
-  array_append (
-    pl->automatables,
-    pl->num_automatables,
-    a);
+  g_warn_if_fail (pl->track);
+
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (pl->track);
+  AutomationTrack * at =
+    automation_track_new (a);
+  automation_tracklist_add_at (atl, at);
 }
 
 /**
@@ -152,6 +173,66 @@ plugin_add_automatable (
 
 /*}*/
 
+#define ADD_PORT(type) \
+  if (pl->num_##type##_ports == \
+        pl->type##_ports_size) \
+    { \
+      pl->type##_ports_size *= 2; \
+      pl->type##_ports = \
+        realloc ( \
+          pl->type##_ports, \
+          sizeof (Port *) * \
+            pl->type##_ports_size); \
+      pl->type##_port_ids = \
+        realloc ( \
+          pl->type##_port_ids, \
+          sizeof (PortIdentifier) * \
+            pl->type##_ports_size); \
+    } \
+  port->identifier.port_index = \
+    pl->num_##type##_ports; \
+  port_identifier_copy ( \
+    &port->identifier, \
+    &pl->type##_port_ids[pl->num_##type##_ports]); \
+  array_append ( \
+    pl->type##_ports, \
+    pl->num_##type##_ports, \
+    port)
+
+/**
+ * Adds an in port to the plugin's list.
+ */
+void
+plugin_add_in_port (
+  Plugin * pl,
+  Port *   port)
+{
+  ADD_PORT (in);
+}
+
+/**
+ * Adds an out port to the plugin's list.
+ */
+void
+plugin_add_out_port (
+  Plugin * pl,
+  Port *   port)
+{
+  ADD_PORT (out);
+}
+
+/**
+ * Adds an unknown port to the plugin's list.
+ */
+void
+plugin_add_unknown_port (
+  Plugin * pl,
+  Port *   port)
+{
+  ADD_PORT (unknown);
+}
+#undef ADD_PORT
+
 /**
  * Moves the Plugin's automation from one Channel
  * to another.
@@ -169,7 +250,6 @@ plugin_move_automation (
 
   int i;
   AutomationTrack * at;
-  AutomationLane * al;
   for (i = 0; i < prev_atl->num_ats; i++)
     {
       at = prev_atl->ats[i];
@@ -186,23 +266,6 @@ plugin_move_automation (
       automation_tracklist_add_at (
         atl, at);
     }
-  for (i = 0; i < prev_atl->num_als;
-       i++)
-    {
-      al = prev_atl->als[i];
-
-      if (!al->at->automatable->port ||
-          al->at->automatable->port->plugin != pl)
-        continue;
-
-      /* delete from prev channel */
-      automation_tracklist_delete_al (
-        prev_atl, al, F_NO_FREE);
-
-      /* add to new channel */
-      automation_tracklist_add_al (
-        atl, al);
-    }
 }
 
 /**
@@ -212,7 +275,8 @@ plugin_move_automation (
  * Plugin must be instantiated already.
  */
 void
-plugin_generate_automatables (Plugin * plugin)
+plugin_generate_automation_tracks (
+  Plugin * plugin)
 {
   g_message ("generating automatables for %s...",
              plugin->descr->name);
@@ -647,14 +711,14 @@ plugin_free (Plugin *plugin)
     plugin->out_ports,
     &plugin->num_out_ports);
 
-  /* delete automatables */
-  for (int i = 0; i < plugin->num_automatables; i++)
+  /* delete automation tracks */
+  plugin_remove_ats_from_automation_tracklist (
+    plugin);
+  for (int i = 0; i < plugin->num_ats; i++)
     {
-      Automatable * automatable =
-        plugin->automatables[i];
-      automatable_free (automatable);
+      automation_track_free (plugin->ats[i]);
     }
-  free (plugin->automatables);
+  free (plugin->ats);
 
   free (plugin);
 }
