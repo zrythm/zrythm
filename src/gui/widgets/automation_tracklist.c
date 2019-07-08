@@ -4,20 +4,19 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/automation_lane.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
@@ -28,7 +27,7 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/automation_lane.h"
+#include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -88,33 +87,28 @@ automation_tracklist_widget_refresh (
     GTK_CONTAINER (self));
 
   /* add automation lanes */
-  AutomationLane * al;
+  AutomationTrack * at;
   for (int i = 0;
-       i < self->automation_tracklist->num_als;
+       i < self->automation_tracklist->num_ats;
        i++)
     {
-      al =
-        self->automation_tracklist->als[i];
+      at =
+        self->automation_tracklist->ats[i];
 
       /* show automation track */
-      if (al->visible)
+      if (at->created && at->visible)
         {
-          /*g_warn_if_fail (GTK_IS_WIDGET (al->widget));*/
-          if (!GTK_IS_WIDGET (al->widget))
-            al->widget =
-              automation_lane_widget_new (al);
-          /*g_message ("self %p, al %p, al widget %p",*/
-                     /*self,*/
-                     /*al,*/
-                     /*al->widget);*/
+          if (!GTK_IS_WIDGET (at->widget))
+            at->widget =
+              automation_track_widget_new (at);
 
-          automation_lane_widget_refresh (
-            al->widget);
+          automation_track_widget_refresh (
+            at->widget);
 
           /* add to automation tracklist widget */
           gtk_container_add (
             GTK_CONTAINER (self),
-            GTK_WIDGET (al->widget));
+            GTK_WIDGET (at->widget));
         }
 
       /* show/hide automation points/curves */
@@ -144,17 +138,17 @@ automation_tracklist_widget_refresh (
        iter != NULL;
        iter = g_list_next (iter))
     {
-      if (Z_IS_AUTOMATION_LANE_WIDGET (iter->data))
+      if (Z_IS_AUTOMATION_TRACK_WIDGET (iter->data))
         {
-          AutomationLaneWidget * alw =
-            Z_AUTOMATION_LANE_WIDGET (iter->data);
-          AutomationLane * al = alw->al;
+          AutomationTrackWidget * atw =
+            Z_AUTOMATION_TRACK_WIDGET (iter->data);
+          AutomationTrack * at = atw->at;
           GValue a = G_VALUE_INIT;
           g_value_init (&a, G_TYPE_INT);
-          g_value_set_int (&a, al->handle_pos);
+          g_value_set_int (&a, at->handle_pos);
           gtk_container_child_set_property (
             GTK_CONTAINER (self),
-            GTK_WIDGET (alw),
+            GTK_WIDGET (atw),
             "position",
             &a);
         }

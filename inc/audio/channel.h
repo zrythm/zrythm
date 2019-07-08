@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -29,6 +29,7 @@
 
 #include "config.h"
 
+#include "audio/automatable.h"
 #include "audio/fader.h"
 #include "plugins/plugin.h"
 #include "utils/audio.h"
@@ -97,6 +98,17 @@ typedef struct Channel
   int              num_aggregated_plugins;
 
   /**
+   * A subset of the automation tracks in the
+   * automation tracklist of the track of this
+   * channel.
+   *
+   * These are not meant to be serialized.
+   */
+  AutomationTrack ** ats;
+  int                num_ats;
+  int                ats_size;
+
+  /**
    * Type of channel this is.
    */
   ChannelType      type;
@@ -146,13 +158,6 @@ typedef struct Channel
 
   /** Track associated with this channel. */
   Track *          track;
-
-  /**
-   * Automatables for this channel to be generated
-   * at run time (amp, pan, mute, etc.).
-   */
-  Automatable *    automatables[40];
-  int              num_automatables;
 
   /** The channel widget. */
   ChannelWidget *  widget;
@@ -304,6 +309,15 @@ channel_new (
   Track * track);
 
 /**
+ * Removes the AutomationTrack's associated with
+ * this channel from the AutomationTracklist in the
+ * corresponding Track.
+ */
+void
+channel_remove_ats_from_automation_tracklist (
+  Channel * ch);
+
+/**
  * The process function prototype.
  * Channels must implement this.
  * It is used to perform processing of the audio signal at every cycle.
@@ -389,8 +403,9 @@ channel_get_first_plugin (Channel * channel);
  * Convenience function to get the fader automatable of the channel.
  */
 Automatable *
-channel_get_automatable (Channel *       channel,
-                         AutomatableType type);
+channel_get_automatable (
+  Channel *       channel,
+  AutomatableType type);
 
 /**
  * Generates automatables for the channel.
@@ -399,7 +414,8 @@ channel_get_automatable (Channel *       channel,
  * created.
  */
 void
-channel_generate_automatables (Channel * channel);
+channel_generate_automation_tracks (
+  Channel * channel);
 
 /**
  * Removes a plugin at pos from the channel.

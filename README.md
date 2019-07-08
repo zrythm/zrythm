@@ -26,7 +26,7 @@ For manual installation,
     meson _build
     meson install -C _build
 
-For more details see [CONTRIBUTING.md](CONTRIBUTING.md).
+For more details and for installing in non-standard locations see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Using
 At the moment, Zrythm works with Jack (recommended) and ALSA. For Jack setup instructions see https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack
@@ -50,17 +50,22 @@ zrythm-dev@nongnu.org for developers, zrythm-user@nongnu.org for users
 Copyright (C) 2018-2019  Alexandros Theodotou et al.
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU General Public License
+You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+For the copyright years, Zrythm uses a range (“2008-2010”) instead of
+listing individual years (“2008, 2009, 2010”) if and only if every year
+in the range, inclusive, is a “copyrightable” year that would be listed
+individually.
 
 ## Support
 We appreciate contributions of any size -- donations enable us to spend more time working on the project, and help cover our infrastructure expenses.

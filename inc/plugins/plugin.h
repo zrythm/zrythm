@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -31,11 +31,6 @@
 #include "audio/automatable.h"
 #include "audio/port.h"
 #include "plugins/lv2_plugin.h"
-
-/* FIXME allocate dynamically */
-#define MAX_IN_PORTS 400000
-#define MAX_OUT_PORTS 14000
-#define MAX_UNKNOWN_PORTS 4000
 
 #define DUMMY_PLUGIN "Dummy Plugin"
 
@@ -160,24 +155,43 @@ typedef struct Plugin
   /** Descriptor. */
   PluginDescriptor *   descr;
 
+  /** Ports coming in as input, for seralization. */
+  PortIdentifier *    in_port_ids;
+
   /** Ports coming in as input. */
-  PortIdentifier      in_port_ids[MAX_IN_PORTS];
-  Port *              in_ports[MAX_IN_PORTS]; ///< cache
-  int                  num_in_ports;    ///< counter
+  Port **             in_ports;
+  int                 num_in_ports;
+  int                 in_ports_size;
+
+  /** Outgoing port identifiers for serialization. */
+  PortIdentifier *    out_port_ids;
 
   /** Outgoing ports. */
-  PortIdentifier      out_port_ids[MAX_OUT_PORTS];
-  Port *              out_ports[MAX_OUT_PORTS];
-  int                 num_out_ports;    ///< counter
+  Port **             out_ports;
+  int                 num_out_ports;
+  int                 out_ports_size;
 
   /** Ports with unknown direction (not used). */
-  PortIdentifier      unknown_port_ids[MAX_UNKNOWN_PORTS];
-  Port *              unknown_ports[MAX_UNKNOWN_PORTS];
+  PortIdentifier *    unknown_port_ids;
+  Port **             unknown_ports;
   int                 num_unknown_ports;
+  int                 unknown_ports_size;
 
   /** The Channel this plugin belongs to. */
   Track              * track;
   int                  track_pos;
+
+  /**
+   * A subset of the automation tracks in the
+   * automation tracklist of the track this plugin
+   * is in.
+   *
+   * These are not meant to be serialized and are
+   * used when e.g. moving plugins.
+   */
+  AutomationTrack **  ats;
+  int                 num_ats;
+  int                 ats_size;
 
   /**
    * The slot this plugin is at in its channel.
@@ -186,10 +200,6 @@ typedef struct Plugin
 
   /** Enabled or not. */
   int                  enabled;
-
-  /** Plugin automatables. */
-  Automatable **       automatables;
-  int                  num_automatables;
 
   /** Whether plugin UI is opened or not. */
   int                  visible;
@@ -339,6 +349,30 @@ plugin_add_automatable (
   Automatable * a);
 
 /**
+ * Adds an in port to the plugin's list.
+ */
+void
+plugin_add_in_port (
+  Plugin * pl,
+  Port *   port);
+
+/**
+ * Adds an out port to the plugin's list.
+ */
+void
+plugin_add_out_port (
+  Plugin * pl,
+  Port *   port);
+
+/**
+ * Adds an unknown port to the plugin's list.
+ */
+void
+plugin_add_unknown_port (
+  Plugin * pl,
+  Port *   port);
+
+/**
  * Creates/initializes a plugin and its internal
  * plugin (LV2, etc.)
  * using the given descriptor.
@@ -346,6 +380,17 @@ plugin_add_automatable (
 Plugin *
 plugin_new_from_descr (
   PluginDescriptor * descr);
+
+/**
+ * Removes the automation tracks associated with
+ * this plugin from the automation tracklist in the
+ * corresponding track.
+ *
+ * Used e.g. when moving plugins.
+ */
+void
+plugin_remove_ats_from_automation_tracklist (
+  Plugin * pl);
 
 /**
  * Clones the plugin descriptor.
@@ -415,7 +460,8 @@ plugin_move_automation (
  * Plugin must be instantiated already.
  */
 void
-plugin_generate_automatables (Plugin * plugin);
+plugin_generate_automation_tracks (
+  Plugin * plugin);
 
 /**
  * Loads the plugin from its state file.

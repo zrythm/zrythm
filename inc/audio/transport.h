@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -186,10 +186,13 @@ transport_fields_schema[] =
   CYAML_FIELD_INT (
     "beats_per_bar", CYAML_FLAG_DEFAULT,
     Transport, beats_per_bar),
-  CYAML_FIELD_ENUM (
-    "ebeat_unit", CYAML_FLAG_DEFAULT,
-    Transport, ebeat_unit, beat_unit_strings,
-    CYAML_ARRAY_LEN (beat_unit_strings)),
+  CYAML_FIELD_INT (
+    "beat_unit", CYAML_FLAG_DEFAULT,
+    Transport, beat_unit),
+  //CYAML_FIELD_ENUM (
+    //"ebeat_unit", CYAML_FLAG_DEFAULT,
+    //Transport, ebeat_unit, beat_unit_strings,
+    //CYAML_ARRAY_LEN (beat_unit_strings)),
   CYAML_FIELD_INT (
     "position", CYAML_FLAG_DEFAULT,
     Transport, position),

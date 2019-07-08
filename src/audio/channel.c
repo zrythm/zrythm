@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -1031,7 +1031,10 @@ channel_prepare_process (Channel * channel)
 void
 channel_init_loaded (Channel * ch)
 {
+  int i;
+
   g_message ("initing channel");
+  g_warn_if_fail (ch->track);
 
   /* fader */
   ch->fader.channel = ch;
@@ -1056,7 +1059,7 @@ channel_init_loaded (Channel * ch)
       TRACKLIST->tracks[ch->output_pos];
 
   Plugin * pl;
-  for (int i = 0; i < ch->num_aggregated_plugins;
+  for (i = 0; i < ch->num_aggregated_plugins;
        i++)
     {
       pl = ch->aggregated_plugins[i];
@@ -1072,9 +1075,14 @@ static inline Channel *
 _create_channel (
   Track * track)
 {
-  Channel * channel = calloc (1, sizeof (Channel));
+  Channel * self = calloc (1, sizeof (Channel));
 
-  channel->track = track;
+  self->track = track;
+
+  self->ats_size = 12;
+  self->ats =
+    calloc (self->ats_size,
+            sizeof (AutomationTrack *));
 
   /* create ports */
   char * pll =
@@ -1083,7 +1091,7 @@ _create_channel (
   char * plr =
     g_strdup_printf ("%s stereo in R",
                      track->name);
-  channel->stereo_in =
+  self->stereo_in =
     stereo_ports_new (
       port_new_with_type (TYPE_AUDIO,
                           FLOW_INPUT,
@@ -1096,16 +1104,16 @@ _create_channel (
   pll =
     g_strdup_printf ("%s MIDI in",
                      track->name);
-  channel->midi_in =
+  self->midi_in =
     port_new_with_type (
       TYPE_EVENT,
       FLOW_INPUT,
       pll);
-  channel->midi_in->identifier.owner_type =
+  self->midi_in->identifier.owner_type =
     PORT_OWNER_TYPE_TRACK;
-  channel->midi_in->midi_events =
+  self->midi_in->midi_events =
     midi_events_new (
-      channel->midi_in);
+      self->midi_in);
   g_free (pll);
   pll =
     g_strdup_printf ("%s Stereo out L",
@@ -1113,7 +1121,7 @@ _create_channel (
   plr =
     g_strdup_printf ("%s Stereo out R",
                      track->name);
-  channel->stereo_out =
+  self->stereo_out =
     stereo_ports_new (
      port_new_with_type (TYPE_AUDIO,
                          FLOW_OUTPUT,
@@ -1121,62 +1129,62 @@ _create_channel (
      port_new_with_type (TYPE_AUDIO,
                          FLOW_OUTPUT,
                          plr));
-  channel->stereo_out->l->identifier.flags |=
+  self->stereo_out->l->identifier.flags |=
     PORT_FLAG_STEREO_L;
-  channel->stereo_out->r->identifier.flags |=
+  self->stereo_out->r->identifier.flags |=
     PORT_FLAG_STEREO_R;
   g_message ("Created stereo out ports");
   g_free (pll);
   g_free (plr);
   port_set_owner_track (
-    channel->stereo_in->l,
+    self->stereo_in->l,
     track);
   port_set_owner_track (
-    channel->stereo_in->r,
+    self->stereo_in->r,
     track);
   port_set_owner_track (
-    channel->stereo_out->l,
+    self->stereo_out->l,
     track);
   port_set_owner_track (
-    channel->stereo_out->r,
+    self->stereo_out->r,
     track);
   port_set_owner_track (
-    channel->midi_in,
+    self->midi_in,
     track);
 
   /* init plugins */
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      channel->plugins[i] = NULL;
+      self->plugins[i] = NULL;
     }
 
   fader_init (
-    &channel->fader,
+    &self->fader,
     FADER_TYPE_CHANNEL,
-    channel);
+    self);
 
   /* set up piano roll port */
   char * tmp =
     g_strdup_printf ("%s Piano Roll",
                      track->name);
-  channel->piano_roll =
+  self->piano_roll =
     port_new_with_type (
       TYPE_EVENT,
       FLOW_INPUT,
       tmp);
-  channel->piano_roll->identifier.flags =
+  self->piano_roll->identifier.flags =
     PORT_FLAG_PIANO_ROLL;
-  channel->piano_roll->identifier.owner_type =
+  self->piano_roll->identifier.owner_type =
     PORT_OWNER_TYPE_TRACK;
-  channel->piano_roll->identifier.track_pos =
-    channel->track->pos;
-  channel->piano_roll->track =
-    channel->track;
-  channel->piano_roll->midi_events =
+  self->piano_roll->identifier.track_pos =
+    self->track->pos;
+  self->piano_roll->track =
+    self->track;
+  self->piano_roll->midi_events =
     midi_events_new (
-      channel->piano_roll);
+      self->piano_roll);
 
-  return channel;
+  return self;
 }
 
 /**
@@ -1202,43 +1210,76 @@ channel_reset_fader (Channel * self)
 }
 
 /**
- * Generates automatables for the channel.
+ * Adds the automation track to both the Channel
+ * and the AutomationTracklist of the Track.
+ */
+static inline void
+channel_add_at (
+  Channel * self,
+  AutomationTrack * at)
+{
+  array_double_size_if_full (
+    self->ats,
+    self->num_ats,
+    self->ats_size,
+    AutomationTrack *);
+  array_append (
+    self->ats,
+    self->num_ats,
+    at);
+  automation_tracklist_add_at (
+    &self->track->automation_tracklist, at);
+}
+
+/**
+ * Generates automation tracks for the channel.
  *
  * Should be called as soon as the track is
  * created.
  */
 void
-channel_generate_automatables (Channel * channel)
+channel_generate_automation_tracks (
+  Channel * channel)
 {
   g_message (
-    "Generating automatables for channel %s",
+    "Generating automation tracks for channel %s",
     channel->track->name);
+
+  AutomationTracklist * atl =
+    &channel->track->automation_tracklist;
 
   /* generate channel automatables if necessary */
   if (!channel_get_automatable (
         channel,
         AUTOMATABLE_TYPE_CHANNEL_FADER))
     {
-      array_append (
-        channel->automatables,
-        channel->num_automatables,
-        automatable_create_fader (channel));
+      AutomationTrack * at =
+        automation_track_new (
+          automatable_create_fader (channel));
+      channel_add_at (
+        channel, at);
+      at->created = 1;
+      at->visible = 1;
     }
   if (!channel_get_automatable (
         channel,
         AUTOMATABLE_TYPE_CHANNEL_PAN))
     {
-      array_append (channel->automatables,
-                    channel->num_automatables,
-                    automatable_create_pan (channel));
+      AutomationTrack * at =
+        automation_track_new (
+          automatable_create_pan (channel));
+      channel_add_at (
+        channel, at);
     }
   if (!channel_get_automatable (
         channel,
         AUTOMATABLE_TYPE_CHANNEL_MUTE))
     {
-      array_append (channel->automatables,
-                    channel->num_automatables,
-                    automatable_create_mute (channel));
+      AutomationTrack * at =
+        automation_track_new (
+          automatable_create_mute (channel));
+      channel_add_at (
+        channel, at);
     }
 }
 
@@ -1514,7 +1555,7 @@ channel_disconnect_plugin_from_strip (
  * Removes a plugin at pos from the channel.
  *
  * If deleting_channel is 1, the automation tracks
- * associated with he plugin are not deleted at
+ * associated with the plugin are not deleted at
  * this time.
  *
  * This function will always recalculate the graph
@@ -1575,9 +1616,11 @@ channel_remove_plugin (
         /*}*/
     }
 
-  if (!deleting_channel)
-    automation_tracklist_update (
-      &channel->track->automation_tracklist);
+  if (!deleting_plugin)
+    {
+      plugin_remove_ats_from_automation_tracklist (
+        plugin);
+    }
 
   if (recalc_graph)
     mixer_recalc_graph (MIXER);
@@ -1691,7 +1734,7 @@ channel_add_plugin (
   channel->track->active = prev_active;
 
   if (gen_automatables)
-    plugin_generate_automatables (plugin);
+    plugin_generate_automation_tracks (plugin);
 
   EVENTS_PUSH (ET_PLUGIN_ADDED,
                plugin);
@@ -1825,19 +1868,26 @@ channel_get_plugin_index (Channel * channel,
 }
 
 /**
- * Convenience function to get the fader automatable of the channel.
+ * Convenience function to get an automatable
+ * of the given type for the channel.
  */
 Automatable *
-channel_get_automatable (Channel *       channel,
-                         AutomatableType type)
+channel_get_automatable (
+  Channel *       channel,
+  AutomatableType type)
 {
-  for (int i = 0; i < channel->num_automatables; i++)
+  AutomationTrack * at;
+  Automatable * a;
+  for (int i = 0;
+       i < channel->track->
+         automation_tracklist.num_ats; i++)
     {
-      Automatable * automatable =
-        channel->automatables[i];
+      at =
+        channel->track->automation_tracklist.ats[i];
+      a = at->automatable;
 
-      if (type == automatable->type)
-        return automatable;
+      if (type == a->type)
+        return a;
     }
   return NULL;
 }
@@ -1903,6 +1953,23 @@ channel_clone (
    * plugins */
 
   return clone;
+}
+
+/**
+ * Removes the AutomationTrack's associated with
+ * this channel from the AutomationTracklist in the
+ * corresponding Track.
+ */
+void
+channel_remove_ats_from_automation_tracklist (
+  Channel * ch)
+{
+  for (int i = 0; i < ch->num_ats; i++)
+    {
+      automation_tracklist_remove_at (
+        &ch->track->automation_tracklist,
+        ch->ats[i], F_NO_FREE);
+    }
 }
 
 /**
@@ -1981,14 +2048,14 @@ channel_free (Channel * channel)
       /*plugin_free (pl);*/
     /*}*/
 
-
-  Automatable * a;
-  FOREACH_AUTOMATABLE (channel)
+  /* delete automation tracks */
+  channel_remove_ats_from_automation_tracklist (
+    channel);
+  for (int i = 0; i < channel->num_ats; i++)
     {
-      a = channel->automatables[i];
-      /*remove_automatable (channel, a);*/
-      automatable_free (a);
+      automation_track_free (channel->ats[i]);
     }
+  free (channel->ats);
 
   if (channel->widget)
     gtk_widget_destroy (

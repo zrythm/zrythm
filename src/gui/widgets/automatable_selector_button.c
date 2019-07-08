@@ -4,25 +4,24 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "audio/automatable.h"
-#include "audio/automation_lane.h"
 #include "audio/automation_track.h"
 #include "gui/widgets/automatable_selector_button.h"
 #include "gui/widgets/automatable_selector_popover.h"
-#include "gui/widgets/automation_lane.h"
+#include "gui/widgets/automation_track.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -36,18 +35,18 @@ static void
 on_clicked (GtkButton * button,
             AutomatableSelectorButtonWidget * self)
 {
-  gtk_widget_set_visible (GTK_WIDGET (self->popover),
-                          1);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->popover), 1);
 }
 
 static void
 set_label (AutomatableSelectorButtonWidget * self)
 {
-  if (self->owner->al->at->automatable)
+  if (self->owner->at->automatable)
     {
       gtk_label_set_text (
         self->label,
-        self->owner->al->at->automatable->label);
+        self->owner->at->automatable->label);
     }
 }
 
@@ -61,7 +60,7 @@ automatable_selector_button_widget_refresh (
 void
 automatable_selector_button_widget_setup (
   AutomatableSelectorButtonWidget * self,
-  AutomationLaneWidget *            owner)
+  AutomationTrackWidget *            owner)
 {
   self->owner = owner;
   self->popover =
@@ -74,7 +73,8 @@ automatable_selector_button_widget_setup (
 }
 
 static void
-automatable_selector_button_widget_class_init (AutomatableSelectorButtonWidgetClass * klass)
+automatable_selector_button_widget_class_init (
+  AutomatableSelectorButtonWidgetClass * klass)
 {
 }
 

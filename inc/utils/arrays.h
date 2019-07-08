@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -65,6 +65,27 @@
   arr1[pos] = el1; \
   arr2[pos] = el2; \
   size++;
+
+/**
+ * Doubles the size of the array, for dynamically
+ * allocated arrays.
+ *
+ * @param array The array.
+ * @param count The current number of elements.
+ * @param size The max array size.
+ * @param type The type of elements the array holds.
+ */
+#define array_double_size_if_full( \
+  array,count,size,type) \
+  if (count == size) \
+    { \
+      (size) *= 2; \
+      array = \
+        realloc ( \
+          array, \
+          sizeof (type) * \
+            (size)); \
+    }
 
 /**
  * Deletes element from array and rearranges other elements

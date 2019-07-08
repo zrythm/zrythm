@@ -4,29 +4,29 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_AUTOMATION_LANE_H__
-#define __GUI_WIDGETS_AUTOMATION_LANE_H__
+#ifndef __GUI_WIDGETS_AUTOMATION_TRACK_H__
+#define __GUI_WIDGETS_AUTOMATION_TRACK_H__
 
 #include <gtk/gtk.h>
 
-#define AUTOMATION_LANE_WIDGET_TYPE                  (automation_lane_widget_get_type ())
-G_DECLARE_FINAL_TYPE (AutomationLaneWidget,
-                      automation_lane_widget,
+#define AUTOMATION_TRACK_WIDGET_TYPE                  (automation_track_widget_get_type ())
+G_DECLARE_FINAL_TYPE (AutomationTrackWidget,
+                      automation_track_widget,
                       Z,
-                      AUTOMATION_LANE_WIDGET,
+                      AUTOMATION_TRACK_WIDGET,
                       GtkGrid)
 
 typedef struct _TrackWidget TrackWidget;
@@ -34,11 +34,11 @@ typedef struct AutomationTrack AutomationTrack;
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct Track Track;
 typedef struct _AutomationPointWidget AutomationPointWidget;
-typedef struct AutomationLane AutomationLane;
+typedef struct AutomationTrack AutomationTrack;
 typedef struct _AutomatableSelectorButtonWidget
   AutomatableSelectorButtonWidget;
 
-typedef struct _AutomationLaneWidget
+typedef struct _AutomationTrackWidget
 {
   GtkGrid                 parent_instance;
   AutomatableSelectorButtonWidget * selector;
@@ -46,7 +46,11 @@ typedef struct _AutomationLaneWidget
   GtkBox *                value_box;
   DigitalMeterWidget *    value;
   GtkToggleButton *       mute_toggle;
-  AutomationLane *        al; ///< associated automation track
+
+  /**
+   * Associated automation track.
+   */
+  AutomationTrack *       at;
 
   /**
    * Selected automatable path.
@@ -59,45 +63,45 @@ typedef struct _AutomationLaneWidget
   gulong                  selector_changed_cb_id;
 
   GtkLabel *              current_val;
-} AutomationLaneWidget;
+} AutomationTrackWidget;
 
 /**
  * Creates a new automation_track widget from the given automation_track.
  */
-AutomationLaneWidget *
-automation_lane_widget_new ();
+AutomationTrackWidget *
+automation_track_widget_new ();
 
 /**
  * Updates GUI.
  */
 void
-automation_lane_widget_refresh (
-  AutomationLaneWidget * self);
+automation_track_widget_refresh (
+  AutomationTrackWidget * self);
 
 void
-automation_lane_widget_update_current_val (
-  AutomationLaneWidget * self);
+automation_track_widget_update_current_val (
+  AutomationTrackWidget * self);
 
 /**
  * Returns the y pixels from the value based on the
- * allocation of the automation lane.
+ * allocation of the automation track.
  */
 int
-automation_lane_widget_get_y_px_from_normalized_val (
-  AutomationLaneWidget * self,
+automation_track_widget_get_y_px_from_normalized_val (
+  AutomationTrackWidget * self,
   float                  fval);
 
 /**
  * Gets the float value at the y-point of the automation track.
  */
 float
-automation_lane_widget_get_fvalue_at_y (
-  AutomationLaneWidget * self,
+automation_track_widget_get_fvalue_at_y (
+  AutomationTrackWidget * self,
   double                 _start_y);
 
 double
-automation_lane_widget_get_y (
-  AutomationLaneWidget *  self,
+automation_track_widget_get_y (
+  AutomationTrackWidget *  self,
   AutomationPointWidget * ap);
 
 #endif

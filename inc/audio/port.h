@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -84,6 +84,17 @@ typedef enum PortFlags
   PORT_FLAG_MAIN_PORT = 0x10,
   OPT_F = 0x20,
 } PortFlags;
+
+static const cyaml_bitdef_t
+flags_bitvals[] =
+{
+  { .name = "stereo_l", .offset =  0, .bits =  1 },
+  { .name = "stereo_r", .offset =  1, .bits =  1 },
+  { .name = "piano_roll", .offset = 2, .bits = 1 },
+  { .name = "sidechain", .offset = 3, .bits =  1 },
+  { .name = "main_port", .offset = 4, .bits = 1 },
+  { .name = "opt_f", .offset = 5, .bits = 1 },
+};
 
 /**
  * What the internal data is.
@@ -271,6 +282,10 @@ port_identifier_fields_schema[] =
     "flow", CYAML_FLAG_DEFAULT,
     PortIdentifier, flow, port_flow_strings,
     CYAML_ARRAY_LEN (port_flow_strings)),
+  CYAML_FIELD_BITFIELD (
+    "flags", CYAML_FLAG_DEFAULT,
+    PortIdentifier, flags, flags_bitvals,
+    CYAML_ARRAY_LEN (flags_bitvals)),
 
 	CYAML_FIELD_END,
 };
@@ -293,9 +308,7 @@ static const cyaml_schema_field_t
 port_fields_schema[] =
 {
   CYAML_FIELD_MAPPING (
-    "identifier",
-    /* direct struct inside struct -> default */
-    CYAML_FLAG_DEFAULT,
+    "identifier", CYAML_FLAG_DEFAULT,
     Port, identifier, port_identifier_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
     "src_ids", CYAML_FLAG_DEFAULT,

@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -23,7 +23,6 @@
 #include <math.h>
 
 #include "audio/automatable.h"
-#include "audio/automation_lane.h"
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
@@ -31,9 +30,9 @@
 #include "audio/port.h"
 #include "audio/position.h"
 #include "audio/track.h"
-#include "gui/widgets/automation_lane.h"
-#include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_curve.h"
+#include "gui/widgets/automation_point.h"
+#include "gui/widgets/automation_track.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "project.h"
@@ -92,7 +91,7 @@ automation_point_set_automation_track_and_index (
       ap->at = at;
       ap->at_index = at->index;
       ap->index = index;
-      ap->track_pos = at->track_pos;
+      ap->track_pos = at->track->pos;
     }
 }
 
@@ -213,7 +212,7 @@ automation_point_get_y_in_px (
 
   int allocated_h =
     gtk_widget_get_allocated_height (
-      GTK_WIDGET (self->at->al->widget));
+      GTK_WIDGET (self->at->widget));
   int point = allocated_h - ap_ratio * allocated_h;
   return point;
 }

@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -30,10 +30,6 @@
 #define __PROJECT_H__
 
 #include "actions/undo_manager.h"
-#include "audio/automation_curve.h"
-#include "audio/automation_lane.h"
-#include "audio/automation_point.h"
-#include "audio/automation_track.h"
 #include "audio/control_room.h"
 #include "audio/engine.h"
 #include "audio/midi_note.h"
@@ -70,8 +66,6 @@ typedef struct Channel Channel;
 typedef struct Plugin Plugin;
 typedef struct Track Track;
 typedef struct Region Region;
-typedef struct AutomationPoint AutomationPoint;
-typedef struct AutomationCurve AutomationCurve;
 typedef struct MidiNote MidiNote;
 typedef struct Track ChordTrack;
 

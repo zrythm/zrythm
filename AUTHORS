@@ -2,9 +2,9 @@ Alexandros Theodotou <alex@zrythm.org>
 
 Contributors:
 
- * Sascha Bast <sash@mischkonsum.org>
+ Sascha Bast <sash@mischkonsum.org>
    * Piano roll auto-scroll
- * Robin Gareus <robin@gareus.org>
+ Robin Gareus <robin@gareus.org>
    * Routing algorithm
- * Georg Krause
+ Georg Krause
    * Forward and backward button callbacks

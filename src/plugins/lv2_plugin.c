@@ -4,16 +4,16 @@
  * This file is part of Zrythm
  *
  * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -190,10 +190,11 @@ _create_port(Lv2Plugin*   lv2_plugin,
       g_warn_if_fail (lv2_plugin->plugin->track);
       lv2_port->port->track =
         lv2_plugin->plugin->track;
-      lv2_port->port->identifier.owner_type =
-        PORT_OWNER_TYPE_PLUGIN;
 
-      PortIdentifier * pi = &lv2_port->port_id;
+      PortIdentifier * pi =
+        &lv2_port->port->identifier;
+      pi->owner_type =
+        PORT_OWNER_TYPE_PLUGIN;
       pi->plugin_slot = lv2_plugin->plugin->slot;
       pi->track_pos =
         lv2_plugin->plugin->track->pos;
@@ -206,16 +207,14 @@ _create_port(Lv2Plugin*   lv2_plugin,
   lv2_port->index     = lv2_port_index;
   lv2_port->control   = 0.0f;
 
-  /* remember the identifier for saving/loading */
-  port_identifier_copy (
-    &lv2_port->port->identifier,
-    &lv2_port->port_id);
-
   const bool optional =
     lilv_port_has_property (
       lv2_plugin->lilv_plugin,
       lv2_port->lilv_port,
       PM_LILV_NODES.core_connectionOptional);
+
+  PortIdentifier * pi =
+    &lv2_port->port->identifier;
 
   /* Set the lv2_port flow (input or output) */
   if (lilv_port_is_a (
@@ -223,15 +222,14 @@ _create_port(Lv2Plugin*   lv2_plugin,
         lv2_port->lilv_port,
         PM_LILV_NODES.core_InputPort))
     {
-      lv2_port->port->identifier.flow = FLOW_INPUT;
-      lv2_port->port_id.flow = FLOW_INPUT;
+      pi->flow = FLOW_INPUT;
     }
   else if (lilv_port_is_a (
              lv2_plugin->lilv_plugin,
              lv2_port->lilv_port,
              PM_LILV_NODES.core_OutputPort))
     {
-      lv2_port->port->identifier.flow = FLOW_OUTPUT;
+      pi->flow = FLOW_OUTPUT;
       lv2_port->port_id.flow = FLOW_OUTPUT;
     }
   else if (!optional)
@@ -249,9 +247,7 @@ _create_port(Lv2Plugin*   lv2_plugin,
         lv2_port->lilv_port,
         PM_LILV_NODES.core_ControlPort))
     {
-      lv2_port->port->identifier.type =
-        TYPE_CONTROL;
-      lv2_port->port_id.type = TYPE_CONTROL;
+      pi->type = TYPE_CONTROL;
       lv2_port->control =
         isnan(default_value) ?
         0.0f :
@@ -278,24 +274,21 @@ _create_port(Lv2Plugin*   lv2_plugin,
              lv2_port->lilv_port,
              PM_LILV_NODES.core_AudioPort))
     {
-      lv2_port->port->identifier.type = TYPE_AUDIO;
-      lv2_port->port_id.type = TYPE_AUDIO;
+      pi->type = TYPE_AUDIO;
     }
   else if (lilv_port_is_a (
              lv2_plugin->lilv_plugin,
              lv2_port->lilv_port,
              PM_LILV_NODES.core_CVPort))
     {
-      lv2_port->port->identifier.type = TYPE_CV;
-      lv2_port->port_id.type = TYPE_CV;
+      pi->type = TYPE_CV;
     }
   else if (lilv_port_is_a (
             lv2_plugin->lilv_plugin,
             lv2_port->lilv_port,
             PM_LILV_NODES.ev_EventPort))
     {
-      lv2_port->port->identifier.type = TYPE_EVENT;
-      lv2_port->port_id.type = TYPE_EVENT;
+      pi->type = TYPE_EVENT;
       lv2_port->port->midi_events =
         midi_events_new (lv2_port->port);
       lv2_port->old_api = true;
@@ -305,8 +298,7 @@ _create_port(Lv2Plugin*   lv2_plugin,
             lv2_port->lilv_port,
             PM_LILV_NODES.atom_AtomPort))
     {
-      lv2_port->port->identifier.type = TYPE_EVENT;
-      lv2_port->port_id.type = TYPE_EVENT;
+      pi->type = TYPE_EVENT;
       lv2_port->port->midi_events =
         midi_events_new (lv2_port->port);
       lv2_port->old_api = false;
@@ -330,6 +322,11 @@ _create_port(Lv2Plugin*   lv2_plugin,
               lv2_port->buf_size * N_BUFFER_CYCLES);
     }
   lilv_node_free(min_size);
+
+  /* remember the identifier for saving/loading */
+  port_identifier_copy (
+    &lv2_port->port->identifier,
+    &lv2_port->port_id);
 
   return 0;
 }
@@ -1659,28 +1656,12 @@ lv2_instantiate (
             plugin->slot;
           if (port->identifier.flow == FLOW_INPUT)
             {
-              port->identifier.port_index =
-                plugin->num_in_ports;
-              plugin->in_ports[
-                plugin->num_in_ports] = port;
-              port_identifier_copy (
-                &port->identifier,
-                &plugin->in_port_ids[
-                  plugin->num_in_ports]);
-              plugin->num_in_ports++;
+              plugin_add_in_port (plugin, port);
             }
           else if (port->identifier.flow ==
                    FLOW_OUTPUT)
             {
-              port->identifier.port_index =
-                plugin->num_out_ports;
-              plugin->out_ports[
-                plugin->num_out_ports] = port;
-              port_identifier_copy (
-                &port->identifier,
-                &plugin->out_port_ids[
-                  plugin->num_out_ports]);
-              plugin->num_out_ports++;
+              plugin_add_out_port (plugin, port);
             }
         }
 
