@@ -17,11 +17,23 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * The clip/region editor backend.
+ */
+
 #ifndef __AUDIO_CLIP_EDITOR_H__
 #define __AUDIO_CLIP_EDITOR_H__
 
 #include "gui/backend/piano_roll.h"
 #include "gui/backend/audio_clip_editor.h"
+
+/**
+ * @addtogroup gui_backend
+ *
+ * @{
+ */
 
 #define CLIP_EDITOR (&PROJECT->clip_editor)
 #define CLIP_EDITOR_SELECTED_REGION (CLIP_EDITOR->region)
@@ -35,7 +47,8 @@ typedef struct Region Region;
  */
 typedef struct ClipEditor
 {
-  /** Region currently attached to the clip editor. */
+  /** Region currently attached to the clip
+   * editor. */
   char *           region_name;
   Region *         region;
 
@@ -55,6 +68,10 @@ clip_editor_fields_schema[] =
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ClipEditor, region_name,
    	0, CYAML_UNLIMITED),
+  CYAML_FIELD_MAPPING (
+    "piano_roll", CYAML_FLAG_DEFAULT,
+    ClipEditor, piano_roll,
+    piano_roll_fields_schema),
 
 	CYAML_FIELD_END
 };
@@ -67,8 +84,16 @@ clip_editor_schema =
 		ClipEditor, clip_editor_fields_schema),
 };
 
+/**
+ * Inits the ClipEditor after a Project is loaded.
+ */
 void
-clip_editor_init (ClipEditor * self);
+clip_editor_init_loaded (
+  ClipEditor * self);
+
+void
+clip_editor_init (
+  ClipEditor * self);
 
 /**
  * Sets the track and refreshes the piano roll widgets.
@@ -78,5 +103,8 @@ clip_editor_init (ClipEditor * self);
 void
 clip_editor_set_region (Region * region);
 
-#endif
+/**
+ * @}
+ */
 
+#endif

@@ -49,6 +49,10 @@ void
 midi_note_init_loaded (
   MidiNote * self)
 {
+  ARRANGER_OBJECT_SET_AS_MAIN (
+    MIDI_NOTE, MidiNote, midi_note);
+
+  midi_note_set_region (self, self->region);
 }
 
 /**
@@ -529,8 +533,6 @@ midi_note_free (MidiNote * self)
 {
   if (self->widget)
     {
-      g_message ("destroying %p",
-                 self->widget);
       midi_note_widget_destroy (
         self->widget);
     }

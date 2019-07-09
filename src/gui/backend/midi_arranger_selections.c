@@ -35,9 +35,17 @@ midi_arranger_selections_init_loaded (
   MidiArrangerSelections * self)
 {
   int i;
+  MidiNote * mn;
   for (i = 0; i < self->num_midi_notes; i++)
-    self->midi_notes[i] =
-      midi_note_find (self->midi_notes[i]);
+    {
+      mn = self->midi_notes[i];
+      mn->region =
+        region_find_by_name (mn->region_name);
+      g_warn_if_fail (mn->region);
+      self->midi_notes[i] =
+        midi_note_find (mn);
+      midi_note_free (mn);
+    }
 }
 
 /**

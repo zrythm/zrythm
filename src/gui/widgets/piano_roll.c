@@ -127,7 +127,8 @@ piano_roll_widget_refresh (
   PianoRollWidget * self)
 {
   self->px_per_key =
-    DEFAULT_PX_PER_KEY * self->piano_roll->notes_zoom;
+    DEFAULT_PX_PER_KEY *
+    self->piano_roll->notes_zoom;
   self->total_key_px =
     self->px_per_key * 128;
 
@@ -202,6 +203,7 @@ piano_roll_widget_setup (
   PianoRollWidget * self,
   PianoRoll *       pr)
 {
+  g_warn_if_fail (pr);
   self->piano_roll = pr;
 
   self->px_per_key =

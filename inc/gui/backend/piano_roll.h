@@ -212,13 +212,16 @@ midi_modifier_strings[] =
 static const cyaml_schema_field_t
 piano_roll_fields_schema[] =
 {
-	CYAML_FIELD_INT (
-			"notes_zoom", CYAML_FLAG_DEFAULT,
-			PianoRoll, notes_zoom),
+  CYAML_FIELD_INT (
+    "notes_zoom", CYAML_FLAG_DEFAULT,
+    PianoRoll, notes_zoom),
   CYAML_FIELD_ENUM (
-			"midi_modifier", CYAML_FLAG_DEFAULT,
-			PianoRoll, midi_modifier, midi_modifier_strings,
-      CYAML_ARRAY_LEN (midi_modifier_strings)),
+    "midi_modifier", CYAML_FLAG_DEFAULT,
+    PianoRoll, midi_modifier, midi_modifier_strings,
+    CYAML_ARRAY_LEN (midi_modifier_strings)),
+  CYAML_FIELD_INT (
+    "drum_mode", CYAML_FLAG_DEFAULT,
+    PianoRoll, drum_mode),
 
 	CYAML_FIELD_END
 };
@@ -242,7 +245,15 @@ piano_roll_schema =
   //dest->visible = src->visible;
 
 //}
-//
+
+/**
+ * Inits the PianoRoll after a Project has been
+ * loaded.
+ */
+void
+piano_roll_init_loaded (
+  PianoRoll * self);
+
 /**
  * Returns the MidiNoteDescriptor matching the value
  * (0-127).

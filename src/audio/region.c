@@ -151,10 +151,19 @@ region_init_loaded (Region * self)
     }
   else if (self->type == REGION_TYPE_MIDI)
     {
+      MidiNote * mn;
+      for (int i = 0; i < self->num_midi_notes; i++)
+        {
+          mn = self->midi_notes[i];
+          mn->region = self;
+          midi_note_init_loaded (mn);
+        }
     }
 
   ARRANGER_OBJECT_SET_AS_MAIN (
     REGION, Region, region);
+
+  region_set_lane (self, self->lane);
 }
 
 /**

@@ -33,6 +33,18 @@
 #include "project.h"
 
 /**
+ * Inits the ClipEditor after a Project is loaded.
+ */
+void
+clip_editor_init_loaded (
+  ClipEditor * self)
+{
+  self->region =
+    region_find_by_name (self->region_name);
+  piano_roll_init_loaded (&self->piano_roll);
+}
+
+/**
  * Sets the region and refreshes the widgets.
  *
  * To be called only from GTK threads.

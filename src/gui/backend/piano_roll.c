@@ -36,62 +36,15 @@
 DRUM_LABELS;
 
 /**
- * Returns the MidiNoteDescriptor matching the value
- * (0-127).
+ * Inits the descriptors to the default values.
+ *
+ * FIXME move them to tracks since each track
+ * might have different arrangement of drums.
  */
-const MidiNoteDescriptor *
-piano_roll_find_midi_note_descriptor_by_val (
-  PianoRoll * self,
-  int         val)
+static void
+init_descriptors (
+  PianoRoll * self)
 {
-  MidiNoteDescriptor * descr;
-  for (int i = 0; i < 128; i++)
-    {
-      if (self->drum_mode)
-        descr = &self->drum_descriptors[i];
-      else
-        descr = &self->piano_descriptors[i];
-
-      if (descr->value == val)
-        return descr;
-    }
-  g_return_val_if_reached (NULL);
-}
-
-void
-midi_note_descriptor_set_custom_name (
-  MidiNoteDescriptor * descr,
-  char *               str)
-{
-  descr->custom_name = g_strdup (str);
-}
-
-void
-piano_roll_set_highlighting (
-  PianoRoll * self,
-  PianoRollHighlighting highlighting)
-{
-  self->highlighting = highlighting;
-
-  g_settings_set_enum (
-    S_UI, "piano-roll-highlight",
-    highlighting);
-
-  EVENTS_PUSH (ET_PIANO_ROLL_HIGHLIGHTING_CHANGED,
-               NULL);
-}
-
-void
-piano_roll_init (PianoRoll * self)
-{
-  self->notes_zoom = 3;
-
-  self->midi_modifier = MIDI_MODIFIER_VELOCITY;
-
-  self->highlighting =
-    g_settings_get_enum (
-      S_UI, "piano-roll-highlight");
-
   MidiNoteDescriptor * descr;
   int idx = 0;
   for (int i = 127; i >= 0; i--)
@@ -174,4 +127,80 @@ piano_roll_init (PianoRoll * self)
     }
 
   g_warn_if_fail (idx == 128);
+}
+
+/**
+ * Inits the PianoRoll after a Project has been
+ * loaded.
+ */
+void
+piano_roll_init_loaded (
+  PianoRoll * self)
+{
+  self->highlighting =
+    g_settings_get_enum (
+      S_UI, "piano-roll-highlight");
+
+  init_descriptors (self);
+}
+
+
+/**
+ * Returns the MidiNoteDescriptor matching the value
+ * (0-127).
+ */
+const MidiNoteDescriptor *
+piano_roll_find_midi_note_descriptor_by_val (
+  PianoRoll * self,
+  int         val)
+{
+  MidiNoteDescriptor * descr;
+  for (int i = 0; i < 128; i++)
+    {
+      if (self->drum_mode)
+        descr = &self->drum_descriptors[i];
+      else
+        descr = &self->piano_descriptors[i];
+
+      if (descr->value == val)
+        return descr;
+    }
+  g_return_val_if_reached (NULL);
+}
+
+void
+midi_note_descriptor_set_custom_name (
+  MidiNoteDescriptor * descr,
+  char *               str)
+{
+  descr->custom_name = g_strdup (str);
+}
+
+void
+piano_roll_set_highlighting (
+  PianoRoll * self,
+  PianoRollHighlighting highlighting)
+{
+  self->highlighting = highlighting;
+
+  g_settings_set_enum (
+    S_UI, "piano-roll-highlight",
+    highlighting);
+
+  EVENTS_PUSH (ET_PIANO_ROLL_HIGHLIGHTING_CHANGED,
+               NULL);
+}
+
+void
+piano_roll_init (PianoRoll * self)
+{
+  self->notes_zoom = 3;
+
+  self->midi_modifier = MIDI_MODIFIER_VELOCITY;
+
+  self->highlighting =
+    g_settings_get_enum (
+      S_UI, "piano-roll-highlight");
+
+  init_descriptors (self);
 }

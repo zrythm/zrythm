@@ -283,13 +283,6 @@ load (char * filename)
   /*init_loaded_automatables ();*/
   /*init_loaded_automation_tracks ();*/
   /*init_loaded_automation_lanes ();*/
-  timeline_selections_init_loaded (
-    &PROJECT->timeline_selections);
-  midi_arranger_selections_init_loaded (
-    &PROJECT->midi_arranger_selections);
-  tracklist_selections_init_loaded (
-    &PROJECT->tracklist_selections);
-  g_message ("loaded structures");
 
   char * filepath_noext = g_path_get_basename (dir);
   PROJECT->title = filepath_noext;
@@ -297,6 +290,14 @@ load (char * filename)
   g_free (dir);
 
   tracklist_init_loaded (&PROJECT->tracklist);
+  clip_editor_init_loaded (CLIP_EDITOR);
+
+  timeline_selections_init_loaded (
+    &PROJECT->timeline_selections);
+  midi_arranger_selections_init_loaded (
+    &PROJECT->midi_arranger_selections);
+  tracklist_selections_init_loaded (
+    &PROJECT->tracklist_selections);
 
   snap_grid_update_snap_points (
     &PROJECT->snap_grid_timeline);
