@@ -21,6 +21,7 @@
 
 #include "audio/channel.h"
 #include "audio/engine.h"
+#include "audio/master_track.h"
 #include "audio/mixer.h"
 #include "audio/port.h"
 #include "gui/widgets/control.h"
@@ -69,11 +70,8 @@ control_widget_new (Port * port)
     knob_widget_new_simple (
       channel_get_phase,
       channel_set_phase,
-      MIXER->master,
-      0,
-      100,
-      18,
-      0);
+      P_MASTER_TRACK,
+      0, 100, 18, 0);
   gtk_box_pack_start (self->knob_box,
                       GTK_WIDGET (self->knob),
                       Z_GTK_EXPAND,

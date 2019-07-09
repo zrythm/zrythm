@@ -79,6 +79,9 @@ init_midi (
           TYPE_EVENT,
           FLOW_INPUT,
           "MIDI Editor Manual Press");
+      self->midi_editor_manual_press->
+        identifier.flags |=
+          PORT_FLAG_MANUAL_PRESS;
     }
 
   /* init MIDI queues for manual press */

@@ -533,6 +533,18 @@ track_set_pos (
     }
   automation_tracklist_update_track_pos (
     &track->automation_tracklist, track);
+
+  /* update port identifier track positions */
+  if (track->channel)
+    {
+      Channel * ch = track->channel;
+      ch->stereo_out->l->identifier.track_pos = pos;
+      ch->stereo_out->r->identifier.track_pos = pos;
+      ch->stereo_in->l->identifier.track_pos = pos;
+      ch->stereo_in->r->identifier.track_pos = pos;
+      ch->midi_in->identifier.track_pos = pos;
+      ch->piano_roll->identifier.track_pos = pos;
+    }
 }
 
 /**

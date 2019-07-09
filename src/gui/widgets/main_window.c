@@ -20,6 +20,7 @@
 #include "config.h"
 #include "project.h"
 #include "actions/actions.h"
+#include "audio/master_track.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -135,8 +136,10 @@ main_window_widget_refresh (MainWindowWidget * self)
   bot_bar_widget_refresh (self->bot_bar);
 
   /* setup mixer */
-  mixer_widget_setup (MW_MIXER,
-                      MIXER->master->channel);
+  g_warn_if_fail (
+    P_MASTER_TRACK && P_MASTER_TRACK->channel);
+  mixer_widget_setup (
+    MW_MIXER, P_MASTER_TRACK->channel);
 
   gtk_window_maximize (
     GTK_WINDOW (self));

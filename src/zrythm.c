@@ -163,7 +163,6 @@ init_recent_projects ()
              ZRYTHM->num_recent_projects,
              prj, strcmp, 0, 1))
         {
-          zrythm_remove_recent_project (prj);
           count++;
           continue;
         }
@@ -171,6 +170,17 @@ init_recent_projects ()
       ZRYTHM->recent_projects[
         ZRYTHM->num_recent_projects++] = prj;
     }
+
+  /* set last element to NULL because the call
+   * takes a NULL terminated array */
+  ZRYTHM->recent_projects[
+    ZRYTHM->num_recent_projects] = NULL;
+
+  /* save the new list */
+  g_settings_set_strv (
+    S_GENERAL,
+    "recent-projects",
+    (const char * const *) ZRYTHM->recent_projects);
 }
 
 /**

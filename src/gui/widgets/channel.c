@@ -25,6 +25,7 @@
 #include "actions/move_tracks_action.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
+#include "audio/master_track.h"
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -202,7 +203,7 @@ on_drag_data_get (
     gdk_atom_intern_static_string (
       TARGET_ENTRY_TRACK),
     32,
-    (const guchar *) MIXER->master,
+    (const guchar *) P_MASTER_TRACK,
     sizeof (Track));
 }
 

@@ -18,6 +18,7 @@
  */
 
 #include "audio/engine.h"
+#include "audio/master_track.h"
 #include "audio/midi.h"
 #include "audio/track.h"
 #include "gui/widgets/live_waveform.h"
@@ -77,9 +78,9 @@ live_waveform_draw_cb (
     {
       val =
         MAX (
-          MIXER->master->channel->
+          P_MASTER_TRACK->channel->
             stereo_out->l->buf[i],
-          MIXER->master->channel->
+          P_MASTER_TRACK->channel->
             stereo_out->r->buf[i]);
 
       cairo_line_to (

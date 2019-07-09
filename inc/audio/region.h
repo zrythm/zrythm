@@ -293,7 +293,8 @@ static const cyaml_schema_field_t
     Region, filename,
    	0, CYAML_UNLIMITED),
 	CYAML_FIELD_STRING_PTR (
-    "linked_region_name", CYAML_FLAG_POINTER,
+    "linked_region_name",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Region, linked_region_name,
     0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (

@@ -82,7 +82,8 @@ typedef enum PortFlags
   /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainInput
    * and http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainOutput. */
   PORT_FLAG_MAIN_PORT = 0x10,
-  OPT_F = 0x20,
+  PORT_FLAG_MANUAL_PRESS = 0x20,
+  OPT_F = 0x40,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -93,7 +94,8 @@ flags_bitvals[] =
   { .name = "piano_roll", .offset = 2, .bits = 1 },
   { .name = "sidechain", .offset = 3, .bits =  1 },
   { .name = "main_port", .offset = 4, .bits = 1 },
-  { .name = "opt_f", .offset = 5, .bits = 1 },
+  { .name = "manual_press", .offset = 5, .bits = 1 },
+  { .name = "opt_f", .offset = 6, .bits = 1 },
 };
 
 /**
@@ -286,6 +288,15 @@ port_identifier_fields_schema[] =
     "flags", CYAML_FLAG_DEFAULT,
     PortIdentifier, flags, flags_bitvals,
     CYAML_ARRAY_LEN (flags_bitvals)),
+  CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    PortIdentifier, track_pos),
+  CYAML_FIELD_INT (
+    "plugin_slot", CYAML_FLAG_DEFAULT,
+    PortIdentifier, plugin_slot),
+  CYAML_FIELD_INT (
+    "port_index", CYAML_FLAG_DEFAULT,
+    PortIdentifier, port_index),
 
 	CYAML_FIELD_END,
 };

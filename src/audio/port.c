@@ -43,43 +43,6 @@
 
 #define SLEEPTIME_USEC 60
 
-#define FIND_PORT_FROM_ID(id,port) \
-  switch (id->owner_type) \
-    { \
-    case PORT_OWNER_TYPE_BACKEND: \
-      /* TODO match label with ENGINE ports */ \
-      break; \
-    case PORT_OWNER_TYPE_PLUGIN: \
-      tr = \
-        TRACKLIST->tracks[id->track_pos]; \
-      g_warn_if_fail (tr); \
-      pl = \
-        TRACKLIST->tracks[id->track_pos]-> \
-          channel->plugins[id->plugin_slot]; \
-      g_warn_if_fail (pl); \
-      switch (id->flow) \
-        { \
-        case FLOW_INPUT: \
-          port = \
-            pl->in_ports[id->port_index]; \
-          break; \
-        case FLOW_OUTPUT: \
-          port = \
-            pl->out_ports[id->port_index]; \
-          break; \
-        case FLOW_UNKNOWN: \
-          port = \
-            pl->unknown_ports[id->port_index]; \
-          break; \
-        } \
-      break; \
-    case PORT_OWNER_TYPE_TRACK: \
-      tr = TRACKLIST->tracks[id->track_pos]; \
-      g_warn_if_fail (tr); \
-      /* TODO match labels */ \
-      break; \
-    }
-
 /**
  * This function finds the Ports corresponding to
  * the PortIdentifiers for srcs and dests.
@@ -116,30 +79,141 @@ port_init_loaded (Port * this)
 
 
   PortIdentifier * id;
-  Plugin * pl;
-  Track * tr;
   for (int i = 0; i < this->num_srcs; i++)
     {
       id = &this->src_ids[i];
-      FIND_PORT_FROM_ID (id, this->srcs[i]);
+      this->srcs[i] = port_find_from_identifier (id);
+      g_warn_if_fail (this->srcs[i]);
     }
   for (int i = 0; i < this->num_dests; i++)
     {
       id = &this->dest_ids[i];
-      FIND_PORT_FROM_ID (id, this->dests[i]);
+      this->dests[i] =
+        port_find_from_identifier (id);
+      g_warn_if_fail (this->dests[i]);
     }
 }
 
+/**
+ * Finds the Port corresponding to the identifier.
+ *
+ * @param id The PortIdentifier to use for
+ *   searching.
+ */
 Port *
 port_find_from_identifier (
   PortIdentifier * id)
 {
-  Port * port = NULL;
   Track * tr;
+  Channel * ch;
   Plugin * pl;
-  FIND_PORT_FROM_ID (id, port);
-  g_warn_if_fail (port);
-  return port;
+  switch (id->owner_type)
+    {
+    case PORT_OWNER_TYPE_BACKEND:
+      switch (id->type)
+        {
+        case TYPE_EVENT:
+          if (id->flow == FLOW_OUTPUT)
+            { /* TODO */ }
+          else if (id->flow == FLOW_INPUT)
+            {
+              if (id->flags & PORT_FLAG_MANUAL_PRESS)
+                return
+                  AUDIO_ENGINE->
+                    midi_editor_manual_press;
+              else
+                return AUDIO_ENGINE->midi_in;
+            }
+          break;
+        case TYPE_AUDIO:
+          if (id->flow == FLOW_OUTPUT)
+            {
+              if (id->flags & PORT_FLAG_STEREO_L)
+                return AUDIO_ENGINE->stereo_out->l;
+              else if (id->flags &
+                         PORT_FLAG_STEREO_R)
+                return AUDIO_ENGINE->stereo_out->r;
+            }
+          else if (id->flow == FLOW_INPUT)
+            {
+              if (id->flags & PORT_FLAG_STEREO_L)
+                return AUDIO_ENGINE->stereo_in->l;
+              else if (id->flags &
+                         PORT_FLAG_STEREO_R)
+                return AUDIO_ENGINE->stereo_in->r;
+            }
+          break;
+        default:
+          break;
+        }
+      break;
+    case PORT_OWNER_TYPE_PLUGIN:
+      tr =
+        TRACKLIST->tracks[id->track_pos];
+      g_warn_if_fail (tr);
+      pl =
+        TRACKLIST->tracks[id->track_pos]->
+          channel->plugins[id->plugin_slot];
+      g_warn_if_fail (pl);
+      switch (id->flow)
+        {
+        case FLOW_INPUT:
+          return
+            pl->in_ports[id->port_index];
+          break;
+        case FLOW_OUTPUT:
+          return
+            pl->out_ports[id->port_index];
+          break;
+        case FLOW_UNKNOWN:
+          return
+            pl->unknown_ports[id->port_index];
+          break;
+        }
+      break;
+    case PORT_OWNER_TYPE_TRACK:
+      tr = TRACKLIST->tracks[id->track_pos];
+      g_warn_if_fail (tr);
+      ch = tr->channel;
+      g_warn_if_fail (ch);
+      switch (id->type)
+        {
+        case TYPE_EVENT:
+          if (id->flow == FLOW_OUTPUT)
+            { /* TODO */ }
+          else if (id->flow == FLOW_INPUT)
+            {
+              if (id->flags & PORT_FLAG_PIANO_ROLL)
+                return ch->piano_roll;
+              else
+                return ch->midi_in;
+            }
+          break;
+        case TYPE_AUDIO:
+          if (id->flow == FLOW_OUTPUT)
+            {
+              if (id->flags & PORT_FLAG_STEREO_L)
+                return ch->stereo_out->l;
+              else if (id->flags &
+                         PORT_FLAG_STEREO_R)
+                return ch->stereo_out->r;
+            }
+          else if (id->flow == FLOW_INPUT)
+            {
+              if (id->flags & PORT_FLAG_STEREO_L)
+                return ch->stereo_in->l;
+              else if (id->flags &
+                         PORT_FLAG_STEREO_R)
+                return ch->stereo_in->r;
+            }
+          break;
+        default:
+          break;
+        }
+      break;
+    }
+
+  g_return_val_if_reached (NULL);
 }
 
 void

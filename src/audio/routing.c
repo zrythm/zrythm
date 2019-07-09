@@ -29,6 +29,7 @@
 #ifdef HAVE_PORT_AUDIO
 #include "audio/engine_pa.h"
 #endif
+#include "audio/master_track.h"
 #include "audio/instrument_track.h"
 #include "audio/midi.h"
 #include "audio/modulator.h"
@@ -299,7 +300,7 @@ node_process (
           if (port->track->mute ||
                 (mixer_has_soloed_channels () &&
                    !port->track->solo &&
-                   port->track != MIXER->master))
+                   port->track != P_MASTER_TRACK))
             {
               /* (already cleared) */
               /*port_clear_buffer (port);*/
@@ -1036,12 +1037,16 @@ connect_port (
     {
       src = port->srcs[j];
       node2 = find_node_from_port (self, src);
+      g_warn_if_fail (node);
+      g_warn_if_fail (node2);
       node_connect (node2, node);
     }
   for (int j = 0; j < port->num_dests; j++)
     {
       dest = port->dests[j];
       node2 = find_node_from_port (self, dest);
+      g_warn_if_fail (node);
+      g_warn_if_fail (node2);
       node_connect (node, node2);
     }
 }
@@ -1075,6 +1080,7 @@ graph_new (
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       tr = TRACKLIST->tracks[i];
+      g_warn_if_fail (tr);
       if (!tr->channel)
         continue;
 
@@ -1116,23 +1122,25 @@ graph_new (
   /* add ports */
   Port * ports[10000];
   int num_ports;
+  Port * port;
   port_get_all (ports, &num_ports);
   for (i = 0; i < num_ports; i++)
     {
-      g_warn_if_fail (ports[i]);
-      if (ports[i]->deleting ||
-          (ports[i]->plugin &&
-           ports[i]->plugin->deleting))
+      port = ports[i];
+      g_warn_if_fail (port);
+      if (port->deleting ||
+          (port->plugin &&
+           port->plugin->deleting))
         continue;
 
       add_port (
-        self, ports[i]);
+        self, port);
     }
 
   /* ========================
    * now connect them
    * ======================== */
-  Port * port;
+
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       tr = TRACKLIST->tracks[i];
@@ -1182,14 +1190,15 @@ graph_new (
 
   for (i = 0; i < num_ports; i++)
     {
-      g_warn_if_fail (ports[i]);
-      if (ports[i]->deleting ||
-          (ports[i]->plugin &&
-           ports[i]->plugin->deleting))
+      port = ports[i];
+      g_warn_if_fail (port);
+      if (port->deleting ||
+          (port->plugin &&
+           port->plugin->deleting))
         continue;
 
       connect_port (
-        self, ports[i]);
+        self, port);
     }
 
   g_message ("num trigger nodes %d",

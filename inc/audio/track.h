@@ -291,6 +291,9 @@ track_fields_schema[] =
 	CYAML_FIELD_INT (
     "recording", CYAML_FLAG_DEFAULT,
     Track, recording),
+	CYAML_FIELD_INT (
+    "pinned", CYAML_FLAG_DEFAULT,
+    Track, pinned),
   CYAML_FIELD_MAPPING (
     "color", CYAML_FLAG_DEFAULT,
     Track, color, gdk_rgba_fields_schema),

@@ -156,10 +156,10 @@ create_default (Project * self)
   /* add master channel to mixer and tracklist */
   track =
     track_new (TRACK_TYPE_MASTER, _("Master"));
-  MIXER->master = track;
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
+  TRACKLIST->master_track = track;
 
   /* create untitled project */
   char * untitled_project = _("Untitled Project");
@@ -306,6 +306,19 @@ load (char * filename)
     &PROJECT->quantize_timeline);
   quantize_update_snap_points (
     &PROJECT->quantize_midi);
+
+  /* init ports */
+  Port * ports[10000];
+  int num_ports;
+  Port * port;
+  port_get_all (ports, &num_ports);
+  for (int i = 0; i < num_ports; i++)
+    {
+      port = ports[i];
+      port_init_loaded (port);
+      g_message ("init loaded %s",
+                 port->identifier.label);
+    }
 
   /* sanity check */
   project_sanity_check (PROJECT);

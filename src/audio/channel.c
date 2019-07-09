@@ -29,6 +29,7 @@
 #include "audio/channel.h"
 #include "audio/engine_jack.h"
 #include "audio/instrument_track.h"
+#include "audio/master_track.h"
 #include "audio/midi.h"
 #include "audio/mixer.h"
 #include "audio/pan.h"
@@ -1317,8 +1318,8 @@ channel_connect (
     }
   else
     {
-      ch->output = MIXER->master;
-      ch->output_pos = MIXER->master->pos;
+      ch->output = P_MASTER_TRACK;
+      ch->output_pos = P_MASTER_TRACK->pos;
     }
 
   if (ch->type == CT_BUS ||
@@ -1337,10 +1338,10 @@ channel_connect (
       /* connect channel out ports to master */
       port_connect (
         ch->stereo_out->l,
-        MIXER->master->channel->stereo_in->l);
+        P_MASTER_TRACK->channel->stereo_in->l);
       port_connect (
         ch->stereo_out->r,
-        MIXER->master->channel->stereo_in->r);
+        P_MASTER_TRACK->channel->stereo_in->r);
     }
 }
 

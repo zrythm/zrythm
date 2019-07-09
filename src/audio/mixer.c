@@ -75,8 +75,6 @@ mixer_recalc_graph (
 void
 mixer_init_loaded ()
 {
-  MIXER->master =
-    TRACKLIST->tracks[0];
 }
 
 /**

@@ -38,23 +38,6 @@ typedef struct FileDescriptor FileDescriptor;
  */
 typedef struct Mixer
 {
-  /**
-   * Array of channels besides master.
-   *
-   * Note: Use tracklist.
-   */
-  //Channel        * channels[MAX_CHANNELS];
-  //int            channel_ids[MAX_CHANNELS];
-  //int            num_channels; ///< # of channels
-
-  /**
-   * Master channel, added here for easy access.
-   *
-   * The correct way to obtain it is from the
-   * Tracklist.
-   */
-  Track         * master;
-
   /** Router. */
   Router         router;
 
@@ -64,10 +47,6 @@ typedef struct Mixer
 static const cyaml_schema_field_t
 mixer_fields_schema[] =
 {
-  //CYAML_FIELD_SEQUENCE_COUNT (
-    //"channel_ids", CYAML_FLAG_DEFAULT,
-    //Mixer, channel_ids, num_channels,
-    //&int_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_INT (
     "master_id", CYAML_FLAG_DEFAULT,
     Mixer, master_id),

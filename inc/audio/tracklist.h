@@ -67,11 +67,14 @@ typedef struct Tracklist
 
   int                 num_tracks;
 
-  /** For convenience. */
+  /** The chord track, for convenience. */
   Track *             chord_track;
 
-  /** For convenience. */
+  /** The marker track, for convenience. */
   Track *             marker_track;
+
+  /** The master track, for convenience. */
+  Track *             master_track;
 
   /** Non-pinned TracklistWidget. */
   TracklistWidget *   widget;

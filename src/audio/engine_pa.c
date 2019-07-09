@@ -24,6 +24,7 @@
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/engine_pa.h"
+#include "audio/master_track.h"
 #include "audio/mixer.h"
 #include "audio/port.h"
 #include "project.h"
@@ -134,12 +135,12 @@ engine_pa_fill_stereo_out_buffs (
   for (int i = 0; i < nframes; i++)
     {
       engine->pa_out_buf[i * 2] =
-        MIXER->master->channel->
+        P_MASTER_TRACK->channel->
           stereo_out->l->buf[i];
       g_message ("%f",
                  engine->pa_out_buf[i]);
       engine->pa_out_buf[i * 2 + 1] =
-        MIXER->master->channel->
+        P_MASTER_TRACK->channel->
           stereo_out->r->buf[i];
     }
 }

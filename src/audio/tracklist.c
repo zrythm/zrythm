@@ -49,6 +49,13 @@ tracklist_init_loaded (
     {
       track = self->tracks[i];
 
+      if (track->type == TRACK_TYPE_CHORD)
+        self->chord_track = track;
+      else if (track->type == TRACK_TYPE_MARKER)
+        self->marker_track = track;
+      else if (track->type == TRACK_TYPE_MASTER)
+        self->master_track = track;
+
       /* init loaded channel */
       if (track->channel)
         {
