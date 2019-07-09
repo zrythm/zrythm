@@ -1,5 +1,5 @@
 /**
- * \page weblate Weblate
+ * \page weblate Weblate Translations
  *
  * \section introduction_weblate Introduction
  *
@@ -10,14 +10,13 @@
  *
  * \section weblate_merging Merging the Translations
  *
- * From https://docs.weblate.org/en/latest/faq.html
- * ``add weblate https://hosted.weblate.org/git/project/component/``
- * Then ``git fetch weblate``, followed by
- * git rebase local translate branch with weblate/translate.
+ * From https://docs.weblate.org/en/latest/faq.html:
+ * - ``git remote add weblate https://hosted.weblate.org/git/project/component/``
+ * - ``git fetch weblate``
+ * - ``git checkout translate && git rebase weblate/translate`` to rebase the remote branch to the local one
  *
  * Then merge that in master, fix conflicts, rebase master
  * back to local translate to get new strings and
  * push.
  *
  */
-

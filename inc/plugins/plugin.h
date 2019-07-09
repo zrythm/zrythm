@@ -156,7 +156,7 @@ typedef struct Plugin
   PluginDescriptor *   descr;
 
   /** Ports coming in as input, for seralization. */
-  PortIdentifier *    in_port_ids;
+  //PortIdentifier *    in_port_ids;
 
   /** Ports coming in as input. */
   Port **             in_ports;
@@ -164,7 +164,7 @@ typedef struct Plugin
   int                 in_ports_size;
 
   /** Outgoing port identifiers for serialization. */
-  PortIdentifier *    out_port_ids;
+  //PortIdentifier *    out_port_ids;
 
   /** Outgoing ports. */
   Port **             out_ports;
@@ -172,7 +172,7 @@ typedef struct Plugin
   int                 out_ports_size;
 
   /** Ports with unknown direction (not used). */
-  PortIdentifier *    unknown_port_ids;
+  //PortIdentifier *    unknown_port_ids;
   Port **             unknown_ports;
   int                 num_unknown_ports;
   int                 unknown_ports_size;
@@ -308,23 +308,26 @@ plugin_fields_schema[] =
     Plugin, lv2,
     lv2_plugin_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "in_port_ids", CYAML_FLAG_DEFAULT,
-    Plugin, in_port_ids, num_in_ports,
-    &port_identifier_schema_default, 0, CYAML_UNLIMITED),
+    "in_ports", CYAML_FLAG_POINTER,
+    Plugin, in_ports, num_in_ports,
+    &port_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "out_port_ids", CYAML_FLAG_DEFAULT,
-    Plugin, out_port_ids, num_out_ports,
-    &port_identifier_schema_default, 0, CYAML_UNLIMITED),
+    "out_ports", CYAML_FLAG_POINTER,
+    Plugin, out_ports, num_out_ports,
+    &port_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "unknown_port_ids", CYAML_FLAG_DEFAULT,
-    Plugin, unknown_port_ids, num_unknown_ports,
-    &port_identifier_schema_default, 0, CYAML_UNLIMITED),
+    "unknown_ports", CYAML_FLAG_POINTER,
+    Plugin, unknown_ports, num_unknown_ports,
+    &port_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_INT (
     "enabled", CYAML_FLAG_DEFAULT,
     Plugin, enabled),
 	CYAML_FIELD_INT (
     "visible", CYAML_FLAG_DEFAULT,
     Plugin, visible),
+  CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    Plugin, track_pos),
 
 	CYAML_FIELD_END
 };
@@ -341,12 +344,12 @@ void
 plugin_init_loaded (Plugin * plgn);
 
 /**
- * Adds an Automatable to the Plugin.
+ * Adds an AutomationTrack to the Plugin.
  */
 void
-plugin_add_automatable (
-  Plugin * pl,
-  Automatable * a);
+plugin_add_automation_track (
+  Plugin * self,
+  AutomationTrack * at);
 
 /**
  * Adds an in port to the plugin's list.

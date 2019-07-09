@@ -152,8 +152,7 @@ port_find_from_identifier (
         TRACKLIST->tracks[id->track_pos];
       g_warn_if_fail (tr);
       pl =
-        TRACKLIST->tracks[id->track_pos]->
-          channel->plugins[id->plugin_slot];
+        tr->channel->plugins[id->plugin_slot];
       g_warn_if_fail (pl);
       switch (id->flow)
         {

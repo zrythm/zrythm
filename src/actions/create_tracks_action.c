@@ -67,12 +67,14 @@ create (
     {
       track =
         track_new (self->type, self->pl_descr.name);
+      track->pos = self->pos + idx;
 
       Plugin * pl=
         plugin_new_from_descr (
           &self->pl_descr);
+      pl->slot = 0;
       pl->track = track;
-      pl->track_pos = self->pos + idx;
+      pl->track_pos = track->pos;
 
       if (plugin_instantiate (pl) < 0)
         {
@@ -95,14 +97,14 @@ create (
         tracklist_insert_track (
           TRACKLIST,
           track,
-          self->pos + idx,
+          track->pos,
           F_NO_PUBLISH_EVENTS,
           F_NO_RECALC_GRAPH);
 
       if (track->channel)
         {
           channel_add_plugin (
-            track->channel, 0, pl,
+            track->channel, pl->slot, pl,
             1, 1, F_NO_RECALC_GRAPH);
           g_warn_if_fail (pl->track == track);
         }

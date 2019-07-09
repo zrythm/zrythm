@@ -22,6 +22,7 @@ html_target = custom_target (
     'cyaml_schemas.h',
     'processing_cycle.h',
     'release_checklist.h',
+    'weblate.h',
     ],
   output: 'html',
   command: [

@@ -289,6 +289,38 @@ load (char * filename)
 
   g_free (dir);
 
+  /* init channel plugins */
+  Track * track;
+  Plugin * pl;
+  Channel * ch;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track = TRACKLIST->tracks[i];
+      ch = track->channel;
+      if (!ch)
+        continue;
+
+      for (int j = 0;
+           j < ch->num_aggregated_plugins; j++)
+        {
+          pl = ch->aggregated_plugins[j];
+          ch->plugins[pl->slot] = pl;
+        }
+    }
+
+  /* init ports */
+  Port * ports[10000];
+  int num_ports;
+  Port * port;
+  port_get_all (ports, &num_ports);
+  for (int i = 0; i < num_ports; i++)
+    {
+      port = ports[i];
+      port_init_loaded (port);
+      g_message ("init loaded %s",
+                 port->identifier.label);
+    }
+
   tracklist_init_loaded (&PROJECT->tracklist);
   clip_editor_init_loaded (CLIP_EDITOR);
 
@@ -307,19 +339,6 @@ load (char * filename)
     &PROJECT->quantize_timeline);
   quantize_update_snap_points (
     &PROJECT->quantize_midi);
-
-  /* init ports */
-  Port * ports[10000];
-  int num_ports;
-  Port * port;
-  port_get_all (ports, &num_ports);
-  for (int i = 0; i < num_ports; i++)
-    {
-      port = ports[i];
-      port_init_loaded (port);
-      g_message ("init loaded %s",
-                 port->identifier.label);
-    }
 
   /* sanity check */
   project_sanity_check (PROJECT);

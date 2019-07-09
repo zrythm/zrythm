@@ -42,31 +42,73 @@
 
 #include <gtk/gtk.h>
 
+static void
+get_automation_tracks (
+  Plugin * self)
+{
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (self->track);
+  AutomationTrack * at;
+  for (int i = 0; i < atl->num_ats; i++)
+    {
+      at = atl->ats[i];
+
+      if (at->automatable->type !=
+            AUTOMATABLE_TYPE_PLUGIN_CONTROL &&
+          at->automatable->type !=
+            AUTOMATABLE_TYPE_PLUGIN_ENABLED)
+        continue;
+
+      array_double_size_if_full (
+        self->ats,
+        self->num_ats,
+        self->ats_size,
+        AutomationTrack *);
+      array_append (
+        self->ats,
+        self->num_ats,
+        at);
+    }
+}
+
 void
 plugin_init_loaded (Plugin * pl)
 {
   lv2_plugin_init_loaded (pl->lv2);
   pl->lv2->plugin = pl;
 
-  for (int i = 0; i < pl->num_in_ports; i++)
-    {
-      port_init_loaded (pl->in_ports[i]);
-    }
-
-  for (int i = 0; i < pl->num_out_ports; i++)
-    {
-      port_init_loaded (pl->out_ports[i]);
-    }
-
-  for (int i = 0;
-       i < pl->num_unknown_ports; i++)
-    {
-      port_init_loaded (pl->unknown_ports[i]);
-    }
+  pl->ats_size = 1;
+  pl->ats =
+    calloc (1, sizeof (AutomationTrack *));
 
   plugin_instantiate (pl);
 
-  plugin_generate_automation_tracks (pl);
+  get_automation_tracks (pl);
+}
+
+static void
+plugin_init (
+  Plugin * plugin)
+{
+  plugin->in_ports_size = 1;
+  plugin->out_ports_size = 1;
+  plugin->unknown_ports_size = 1;
+  plugin->ats_size = 1;
+
+  plugin->in_ports =
+    calloc (1, sizeof (Port *));
+  /*plugin->in_port_ids =*/
+    /*calloc (1, sizeof (PortIdentifier));*/
+  plugin->out_ports =
+    calloc (1, sizeof (Port *));
+  /*plugin->out_port_ids =*/
+    /*calloc (1, sizeof (PortIdentifier));*/
+  plugin->unknown_ports =
+    calloc (1, sizeof (Port *));
+  /*plugin->unknown_port_ids =*/
+    /*calloc (1, sizeof (PortIdentifier));*/
+  plugin->ats =
+    calloc (1, sizeof (AutomationTrack *));
 }
 
 /**
@@ -80,11 +122,8 @@ plugin_new_from_descr (
 {
   Plugin * plugin = calloc (1, sizeof (Plugin));
 
-  plugin->in_ports_size = 1;
-  plugin->out_ports_size = 1;
-  plugin->unknown_ports_size = 1;
-  plugin->ats_size = 1;
   plugin->descr = descr;
+  plugin_init (plugin);
 
   if (plugin->descr->protocol == PROT_LV2)
     {
@@ -140,19 +179,26 @@ plugin_clone_descr (
 }
 
 /**
- * Adds an Automatable to the Plugin.
+ * Adds an AutomationTrack to the Plugin.
  */
 void
-plugin_add_automatable (
-  Plugin * pl,
-  Automatable * a)
+plugin_add_automation_track (
+  Plugin * self,
+  AutomationTrack * at)
 {
-  g_warn_if_fail (pl->track);
+  g_warn_if_fail (self->track);
 
+  array_double_size_if_full (
+    self->ats,
+    self->num_ats,
+    self->ats_size,
+    AutomationTrack *);
+  array_append (
+    self->ats,
+    self->num_ats,
+    at);
   AutomationTracklist * atl =
-    track_get_automation_tracklist (pl->track);
-  AutomationTrack * at =
-    automation_track_new (a);
+    track_get_automation_tracklist (self->track);
   automation_tracklist_add_at (atl, at);
 }
 
@@ -173,6 +219,9 @@ plugin_add_automatable (
 
 /*}*/
 
+/**
+ * Adds a port of the given type to the Plugin.
+ */
 #define ADD_PORT(type) \
   if (pl->num_##type##_ports == \
         pl->type##_ports_size) \
@@ -183,17 +232,9 @@ plugin_add_automatable (
           pl->type##_ports, \
           sizeof (Port *) * \
             pl->type##_ports_size); \
-      pl->type##_port_ids = \
-        realloc ( \
-          pl->type##_port_ids, \
-          sizeof (PortIdentifier) * \
-            pl->type##_ports_size); \
     } \
   port->identifier.port_index = \
     pl->num_##type##_ports; \
-  port_identifier_copy ( \
-    &port->identifier, \
-    &pl->type##_port_ids[pl->num_##type##_ports]); \
   array_append ( \
     pl->type##_ports, \
     pl->num_##type##_ports, \
@@ -281,10 +322,15 @@ plugin_generate_automation_tracks (
   g_message ("generating automatables for %s...",
              plugin->descr->name);
 
+  AutomationTrack * at;
+  Automatable * a;
+
   /* add plugin enabled automatable */
-  plugin_add_automatable (
-    plugin,
-    automatable_create_plugin_enabled (plugin));
+  a =
+    automatable_create_plugin_enabled (plugin);
+  at = automation_track_new (a);
+  plugin_add_automation_track (
+    plugin, at);
 
   /* add plugin control automatables */
   if (plugin->descr->protocol == PROT_LV2)
@@ -294,10 +340,12 @@ plugin_generate_automation_tracks (
         {
           Lv2Control * control =
             lv2_plugin->controls.controls[j];
-          plugin_add_automatable (
-            plugin,
+          a =
             automatable_create_lv2_control (
-              plugin, control));
+              plugin, control);
+          at = automation_track_new (a);
+          plugin_add_automation_track (
+            plugin, at);
         }
     }
   else
@@ -487,6 +535,21 @@ plugin_set_track (
   g_return_if_fail (tr);
   pl->track = tr;
   pl->track_pos = tr->pos;
+
+  /* set port identifier track poses */
+  int i;
+  for (i = 0; i < pl->num_in_ports; i++)
+    {
+      /*pl->in_port_ids[i].track_pos = tr->pos;*/
+    }
+  for (i = 0; i < pl->num_out_ports; i++)
+    {
+      /*pl->out_port_ids[i].track_pos = tr->pos;*/
+    }
+  for (i = 0; i < pl->num_unknown_ports; i++)
+    {
+      /*pl->unknown_port_ids[i].track_pos = tr->pos;*/
+    }
 }
 
 /**

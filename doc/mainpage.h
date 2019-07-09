@@ -22,8 +22,8 @@
  * the \ref md_CONTRIBUTING
  *
  * \section pages Pages
- * \subpage processing_cycle
- * \subpage cyaml_schemas
- * \subpage release_checklist
- * \subpage weblate
+ * - \subpage processing_cycle
+ * - \subpage cyaml_schemas
+ * - \subpage release_checklist
+ * - \subpage weblate
  */

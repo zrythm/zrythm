@@ -1059,12 +1059,31 @@ channel_init_loaded (Channel * ch)
     ch->output =
       TRACKLIST->tracks[ch->output_pos];
 
-  Plugin * pl;
-  for (i = 0; i < ch->num_aggregated_plugins;
-       i++)
+  /* if aggregated plugins not already expanded */
+  if (ch->num_aggregated_plugins &&
+      !ch->plugins[0])
     {
-      pl = ch->aggregated_plugins[i];
-      ch->plugins[pl->slot] = pl;
+      /* expand them */
+      Plugin * pl;
+      for (i = 0; i < ch->num_aggregated_plugins;
+           i++)
+        {
+          pl = ch->aggregated_plugins[i];
+          ch->plugins[pl->slot] = pl;
+        }
+    }
+
+  /* init plugins */
+  Plugin * pl;
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      pl = ch->plugins[i];
+      if (!pl)
+        continue;
+
+      pl->track_pos = ch->track->pos;
+      pl->track = ch->track;
+      plugin_init_loaded (pl);
     }
 }
 

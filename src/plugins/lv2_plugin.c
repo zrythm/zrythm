@@ -323,21 +323,23 @@ _create_port(Lv2Plugin*   lv2_plugin,
     }
   lilv_node_free(min_size);
 
-  /* remember the identifier for saving/loading */
-  port_identifier_copy (
-    &lv2_port->port->identifier,
-    &lv2_port->port_id);
-
   return 0;
 }
 
 void
 lv2_plugin_init_loaded (Lv2Plugin * lv2_plgn)
 {
+  Lv2Port * lv2_port;
   for (int i = 0; i < lv2_plgn->num_ports; i++)
-    lv2_plgn->ports[i].port =
-      port_find_from_identifier (
-        &lv2_plgn->ports[i].port_id);
+    {
+      lv2_port = &lv2_plgn->ports[i];
+      lv2_port->port =
+        port_find_from_identifier (
+          &lv2_port->port_id);
+      lv2_port->port->lv2_port = lv2_port;
+      g_message ("set lv2 port %p to %s",
+                 lv2_port, lv2_port->port->identifier.label);
+    }
 }
 
 /**
@@ -1654,6 +1656,8 @@ lv2_instantiate (
           port->plugin = plugin;
           port->identifier.plugin_slot =
             plugin->slot;
+          port->identifier.track_pos =
+            plugin->track_pos;
           if (port->identifier.flow == FLOW_INPUT)
             {
               plugin_add_in_port (plugin, port);
@@ -1663,6 +1667,11 @@ lv2_instantiate (
             {
               plugin_add_out_port (plugin, port);
             }
+
+          /* remember the identifier for saving/loading */
+          port_identifier_copy (
+            &port->identifier,
+            &lv2_port->port_id);
         }
 
       self->control_in = (uint32_t)-1;
