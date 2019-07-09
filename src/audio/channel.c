@@ -1099,6 +1099,10 @@ _create_channel (
       port_new_with_type (TYPE_AUDIO,
                           FLOW_INPUT,
                           plr));
+  self->stereo_in->l->identifier.flags |=
+    PORT_FLAG_STEREO_L;
+  self->stereo_in->r->identifier.flags |=
+    PORT_FLAG_STEREO_R;
   g_free (pll);
   g_free (plr);
   pll =

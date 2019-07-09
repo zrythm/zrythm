@@ -17,13 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Start assistant to be shown on startup to select
- * a project.
- * FIXME rename to project selector.
- */
 #include "zrythm.h"
 #include "gui/widgets/project_assistant.h"
 #include "utils/arrays.h"
@@ -35,19 +28,20 @@ G_DEFINE_TYPE (ProjectAssistantWidget,
                GTK_TYPE_ASSISTANT)
 
 static void
-on_projects_selection_changed (GtkTreeSelection * ts,
-                      gpointer         user_data)
+on_projects_selection_changed (
+  GtkTreeSelection *     ts,
+  ProjectAssistantWidget * self)
 {
   GtkTreeIter iter;
-  ProjectAssistantWidget * self =
-    Z_PROJECT_ASSISTANT_WIDGET (user_data);
 
   GList * selected_rows =
-    gtk_tree_selection_get_selected_rows (self->projects_selection,
-                                          NULL);
+    gtk_tree_selection_get_selected_rows (
+      self->projects_selection,
+      NULL);
   if (selected_rows)
     {
-      GtkTreePath * tp = (GtkTreePath *)g_list_first (selected_rows)->data;
+      GtkTreePath * tp =
+        (GtkTreePath *)g_list_first (selected_rows)->data;
       gtk_tree_model_get_iter (self->model,
                                &iter,
                                tp);
@@ -72,23 +66,24 @@ on_projects_selection_changed (GtkTreeSelection * ts,
 }
 
 void
-on_create_new_project_toggled (GtkToggleButton *togglebutton,
-               gpointer         user_data)
+on_create_new_project_toggled (
+  GtkToggleButton *togglebutton,
+  ProjectAssistantWidget * self)
 {
-  ProjectAssistantWidget * self =
-    Z_PROJECT_ASSISTANT_WIDGET (user_data);
-
   if (gtk_toggle_button_get_active (togglebutton))
     {
       /*gtk_tree_selection_unselect_all (self->projects_selection);*/
-      gtk_widget_set_sensitive (GTK_WIDGET (self->projects), 0);
+      gtk_widget_set_sensitive (
+        GTK_WIDGET (self->projects), 0);
       gtk_assistant_set_page_complete (
         GTK_ASSISTANT (self),
-        gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 0),
+        gtk_assistant_get_nth_page (
+          GTK_ASSISTANT (self), 0),
         1);
       gtk_assistant_set_page_complete (
         GTK_ASSISTANT (self),
-        gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 1),
+        gtk_assistant_get_nth_page (
+          GTK_ASSISTANT (self), 1),
         1);
         self->selection = NULL;
     }
@@ -114,15 +109,18 @@ create_model (ProjectAssistantWidget * self)
                               G_TYPE_POINTER);
 
   /* add data to the list store */
+  ProjectInfo * nfo;
   for (i = 0; i < self->num_project_infos; i++)
     {
+      nfo = &self->project_infos[i];
       gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter,
-                          COLUMN_NAME, self->project_infos[i].name,
-                          COLUMN_FILENAME, self->project_infos[i].filename,
-                          COLUMN_MODIFIED, self->project_infos[i].modified,
-                          COLUMN_PROJECT_INFO, &self->project_infos[i],
-                          -1);
+      gtk_list_store_set (
+        store, &iter,
+        COLUMN_NAME, nfo->name,
+        COLUMN_FILENAME, nfo->filename,
+        COLUMN_MODIFIED, nfo->modified,
+        COLUMN_PROJECT_INFO, nfo,
+        -1);
     }
 
   return GTK_TREE_MODEL (store);

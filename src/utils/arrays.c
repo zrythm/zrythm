@@ -45,6 +45,42 @@ _array_contains (void ** array,
 }
 
 /**
+ * Returns if the array contains an element by
+ * comparing the values using the comparator
+ * function.
+ *
+ * @param equal_val The return value of the
+ *   comparator function that should be interpreted
+ *   as equal. Normally this will be 0.
+ * @param pointers Whether the elements are
+ *   pointers or not.
+ */
+int
+_array_contains_cmp (
+  void ** array,
+  int     size,
+  void *  element,
+  int (*cmp)(void *, void *),
+  int     equal_val,
+  int     pointers)
+{
+  for (int i = 0; i < size; i++)
+    {
+      if (pointers)
+        {
+          if (cmp (array[i], element) == equal_val)
+            return 1;
+        }
+      else
+        {
+          if (cmp (&array[i], element) == equal_val)
+            return 1;
+        }
+    }
+  return 0;
+}
+
+/**
  * Returns the index ofthe element exists in array,
  * -1 if not.
  */

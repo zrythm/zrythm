@@ -139,8 +139,8 @@ init_dirs_and_files ()
 }
 
 /**
- * Initializes the array of recent projects in Zrythm app
- * FIXME use GtkRecentManager
+ * Initializes the array of recent projects in
+ * Zrythm app.
  */
 static void
 init_recent_projects ()
@@ -151,19 +151,35 @@ init_recent_projects ()
 
   /* get recent projects */
   ZRYTHM->num_recent_projects = 0;
-  while (recent_projects[
-           ZRYTHM->num_recent_projects] != NULL)
+  int count = 0;
+  char * prj;
+  while (recent_projects[count])
     {
+      prj = recent_projects[count];
+
+      /* skip duplicates */
+      if (array_contains_cmp (
+             ZRYTHM->recent_projects,
+             ZRYTHM->num_recent_projects,
+             prj, strcmp, 0, 1))
+        {
+          zrythm_remove_recent_project (prj);
+          count++;
+          continue;
+        }
+
       ZRYTHM->recent_projects[
-        ZRYTHM->num_recent_projects++] =
-          recent_projects[
-            ZRYTHM->num_recent_projects];
+        ZRYTHM->num_recent_projects++] = prj;
     }
 }
 
+/**
+ * FIXME move somewhere else.
+ */
 void
-zrythm_add_to_recent_projects (Zrythm * self,
-                               const char * filepath)
+zrythm_add_to_recent_projects (
+  Zrythm * self,
+  const char * filepath)
 {
   /* if we are at max
    * projects */
@@ -217,7 +233,8 @@ zrythm_remove_recent_project (
           g_settings_set_strv (
             S_GENERAL,
             "recent-projects",
-            (const char * const *) ZRYTHM->recent_projects);
+            (const char * const *)
+              ZRYTHM->recent_projects);
         }
 
     }

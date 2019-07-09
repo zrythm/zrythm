@@ -147,6 +147,14 @@
     }
 
 
+#define array_contains_cmp(array,size,element,cmp, \
+  equal_val, pointers) \
+  _array_contains_cmp ( \
+    (void **) array, \
+    size, \
+    (void *) element, \
+    (int (*) (void *, void *)) cmp, \
+    equal_val, pointers)
 
 /**
  * Macro so that no casting to void ** and void * is
@@ -173,11 +181,33 @@ array_contains_int (
 
 /**
  * Returns 1 if element exists in array, 0 if not.
+ *
+ * The element exists if the pointers are equal.
  */
 int
 _array_contains (void ** array,
                 int size,
                 void * element);
+
+/**
+ * Returns if the array contains an element by
+ * comparing the values using the comparator
+ * function.
+ *
+ * @param equal_val The return value of the
+ *   comparator function that should be interpreted
+ *   as equal. Normally this will be 0.
+ * @param pointers Whether the elements are
+ *   pointers or not.
+ */
+int
+_array_contains_cmp (
+  void ** array,
+  int     size,
+  void *  element,
+  int (*cmp)(void *, void *),
+  int     equal_val,
+  int     pointers);
 
 /**
  * Returns the index ofthe element exists in array,

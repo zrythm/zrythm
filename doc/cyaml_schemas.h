@@ -97,24 +97,47 @@
 *
  * \subsection array_of_pointers_variable_field Arrays of Pointers (variable count)
  *
+ * There are two cases. Fixed-width arrays,
+ * like below. In this case,
+ * use the @code CYAML_FLAG_DEFAULT @endcode flag.
  * @code
  * MyStruct * my_structs[MAX_STRUCTS];
  * int        num_my_structs;
  * @endcode
  *
+ * The other case is dynamic arrays, like below.
+ * In this case use @code @CYAML_FLAG_POINTER
+ * @endcode.
+ * @code
+ * AutomationTrack ** ats;
+ * int               num_ats;
+ * int               ats_size;
+ * @endcode
+ *
  * Use @code CYAML_FIELD_SEQUENCE_COUNT @endcode with the
- * @code CYAML_FLAG_DEFAULT @endcode flag.
+ * @code CYAML_FLAG_DEFAULT @endcode or @code
+ * CYAML_FLAG_POINTER @endcode flag as described
+ * above.
  *
  * Use @code CYAML_FLAG_POINTER @endcode when
  * declaring the schema of the child struct.
  *
- * Example, array of MidiNote pointers inside a
+ * Example, fixed-size array of MidiNote pointers inside a
  * Region:
  * @code
  * CYAML_FIELD_SEQUENCE_COUNT (
  *   "midi_notes", CYAML_FLAG_DEFAULT,
  *   Region, midi_notes, num_midi_notes,
  *   &midi_note_schema, 0, CYAML_UNLIMITED),
+ * @endcode
+ *
+ * Example, dynamic array of AutomationTrack
+ * pointers in AutomationTracklist:
+ * @code
+ * CYAML_FIELD_SEQUENCE_COUNT (
+ *   "ats", CYAML_FLAG_POINTER,
+ *   AutomationTracklist, ats, num_ats,
+ *   &automation_track_schema, 0, CYAML_UNLIMITED),
  * @endcode
  *
  * \subsection arrays_of_pointers_fixed_field  Arrays of Pointers (fixed count)

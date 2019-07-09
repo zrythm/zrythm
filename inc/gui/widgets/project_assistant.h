@@ -17,6 +17,15 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Start assistant to be shown on startup to select
+ * a project.
+ *
+ * FIXME rename to project selector.
+ */
+
 #ifndef __GUI_WIDGETS_PROJECT_ASSISTANT_H__
 #define __GUI_WIDGETS_PROJECT_ASSISTANT_H__
 
@@ -33,6 +42,15 @@ G_DECLARE_FINAL_TYPE (ProjectAssistantWidget,
                       PROJECT_ASSISTANT_WIDGET,
                       GtkAssistant)
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+/**
+ * Project file information.
+ */
 typedef struct ProjectInfo
 {
   char *   name;
@@ -49,6 +67,10 @@ enum
   NUM_COLUMNS
 };
 
+/**
+ * A widget that allows selecting a project to
+ * load or create.
+ */
 typedef struct _ProjectAssistantWidget
 {
   GtkAssistant        parent_instance;
@@ -63,10 +85,15 @@ typedef struct _ProjectAssistantWidget
 } ProjectAssistantWidget;
 
 /**
- * Creates a channel widget using the given channel data.
+ * Creates a ProjectAssistantWidget.
  */
 ProjectAssistantWidget *
-project_assistant_widget_new (GtkWindow * parent,
-                            int show_create_new_project);
+project_assistant_widget_new (
+  GtkWindow * parent,
+  int show_create_new_project);
+
+/**
+ * @}
+ */
 
 #endif

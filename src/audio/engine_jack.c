@@ -437,6 +437,8 @@ jack_setup (AudioEngine * self,
           self->client, "Stereo_out_L",
           JACK_DEFAULT_AUDIO_TYPE,
           JackPortIsOutput, 0));
+      stereo_out_l->identifier.flags |=
+        PORT_FLAG_STEREO_L;
       stereo_out_r = port_new_with_data (
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
@@ -446,6 +448,8 @@ jack_setup (AudioEngine * self,
           self->client, "Stereo_out_R",
           JACK_DEFAULT_AUDIO_TYPE,
           JackPortIsOutput, 0));
+      stereo_out_r->identifier.flags |=
+        PORT_FLAG_STEREO_R;
       stereo_in_l = port_new_with_data (
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
@@ -455,6 +459,8 @@ jack_setup (AudioEngine * self,
           self->client, "Stereo_in_L",
           JACK_DEFAULT_AUDIO_TYPE,
           JackPortIsInput, 0));
+      stereo_in_l->identifier.flags |=
+        PORT_FLAG_STEREO_L;
       stereo_in_r = port_new_with_data (
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
@@ -464,6 +470,8 @@ jack_setup (AudioEngine * self,
           self->client, "Stereo_in_R",
           JACK_DEFAULT_AUDIO_TYPE,
           JackPortIsInput, 0));
+      stereo_in_r->identifier.flags |=
+        PORT_FLAG_STEREO_R;
 
       stereo_in_l->identifier.owner_type =
         PORT_OWNER_TYPE_BACKEND;
