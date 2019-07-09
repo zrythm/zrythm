@@ -56,18 +56,7 @@ tracklist_init_loaded (
       else if (track->type == TRACK_TYPE_MASTER)
         self->master_track = track;
 
-      /* init loaded channel */
-      if (track->channel)
-        {
-          chan = track->channel;
-          chan->track = track;
-          channel_init_loaded (chan);
-        }
-
-      /* set track to automation tracklist */
-      atl = &track->automation_tracklist;
-      atl->track = track;
-      automation_tracklist_init_loaded (atl);
+      track_init_loaded (track);
     }
 }
 

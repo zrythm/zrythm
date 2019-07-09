@@ -33,7 +33,8 @@ DEFINE_START_POS;
 void
 marker_init_loaded (Marker * self)
 {
-  self->widget = marker_widget_new (self);
+  ARRANGER_OBJECT_SET_AS_MAIN (
+   MARKER, Marker, marker);
 }
 
 void

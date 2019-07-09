@@ -173,12 +173,16 @@ typedef struct Region
    */
   RegionWidget * widget;
 
-  /** Owner track. */
+  /**
+   * Owner Track position.
+   *
+   * Used in actions after cloning.
+   */
   int            track_pos;
 
   /** Owner lane. */
-  int            lane_pos;
   TrackLane *    lane;
+  int            lane_pos;
 
   /**
    * Linked parent region.
@@ -307,6 +311,9 @@ static const cyaml_schema_field_t
 	CYAML_FIELD_INT (
     "track_pos", CYAML_FLAG_DEFAULT,
     Region, track_pos),
+	CYAML_FIELD_INT (
+    "lane_pos", CYAML_FLAG_DEFAULT,
+    Region, lane_pos),
 
 	CYAML_FIELD_END
 };

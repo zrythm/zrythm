@@ -39,6 +39,8 @@ void
 scale_object_init_loaded (
   ScaleObject * self)
 {
+  ARRANGER_OBJECT_SET_AS_MAIN (
+   SCALE_OBJECT, ScaleObject, scale_object);
 }
 
 /**

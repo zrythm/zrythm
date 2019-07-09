@@ -39,6 +39,8 @@ void
 chord_object_init_loaded (
   ChordObject * self)
 {
+  ARRANGER_OBJECT_SET_AS_MAIN (
+   CHORD_OBJECT, ChordObject, chord_object);
 }
 
 DEFINE_ARRANGER_OBJ_SET_POS (

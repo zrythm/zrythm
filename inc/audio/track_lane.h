@@ -114,6 +114,10 @@ track_lane_schema = {
     TrackLane, track_lane_fields_schema),
 };
 
+void
+track_lane_init_loaded (
+  TrackLane * lane);
+
 /**
  * Creates a new TrackLane at the given pos in the
  * given Track.

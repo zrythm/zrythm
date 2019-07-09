@@ -127,13 +127,13 @@ region_set_lane (
  * Inits freshly loaded region.
  */
 void
-region_init_loaded (Region * region)
+region_init_loaded (Region * self)
 {
-  region->linked_region =
+  self->linked_region =
     region_find_by_name (
-      region->linked_region_name);
+      self->linked_region_name);
 
-  if (region->type == REGION_TYPE_AUDIO)
+  if (self->type == REGION_TYPE_AUDIO)
     {
       /* reload audio */
       struct adinfo nfo;
@@ -142,22 +142,19 @@ region_init_loaded (Region * region)
 
       audio_decode (
         &nfo, &src_data,
-        &region->buff, &out_buff_size,
-        region->filename);
+        &self->buff, &out_buff_size,
+        self->filename);
 
-      region->buff_size =
+      self->buff_size =
         src_data.output_frames_gen;
-      region->channels = nfo.channels;
-
-      region->widget = Z_REGION_WIDGET (
-        audio_region_widget_new (region));
+      self->channels = nfo.channels;
     }
-  else if (region->type == REGION_TYPE_MIDI)
+  else if (self->type == REGION_TYPE_MIDI)
     {
-      region->widget = Z_REGION_WIDGET (
-        midi_region_widget_new (region));
     }
 
+  ARRANGER_OBJECT_SET_AS_MAIN (
+    REGION, Region, region);
 }
 
 /**

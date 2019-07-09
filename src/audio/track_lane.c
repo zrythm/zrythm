@@ -26,6 +26,23 @@
 #include <glib/gi18n.h>
 
 /**
+ * Inits the TrackLane after a project was loaded.
+ */
+void
+track_lane_init_loaded (
+  TrackLane * lane)
+{
+  int i;
+  Region * region;
+  for (i = 0; i < lane->num_regions; i++)
+    {
+      region = lane->regions[i];
+      region->lane = lane;
+      region_init_loaded (region);
+    }
+}
+
+/**
  * Creates a new TrackLane at the given pos in the
  * given Track.
  *

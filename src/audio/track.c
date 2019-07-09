@@ -51,23 +51,47 @@
 void
 track_init_loaded (Track * track)
 {
-  /* TODO */
+  int i,j;
+  TrackLane * lane;
+  for (j = 0; j < track->num_lanes; j++)
+    {
+      lane = track->lanes[j];
+      lane->track = track;
+      track_lane_init_loaded (lane);
+    }
+  ChordObject * chord;
+  for (i = 0; i < track->num_chords; i++)
+    {
+      chord = track->chords[i];
+      chord_object_init_loaded (chord);
+    }
+  ScaleObject * scale;
+  for (i = 0; i < track->num_scales; i++)
+    {
+      scale = track->scales[i];
+      scale_object_init_loaded (scale);
+    }
+  Marker * marker;
+  for (i = 0; i < track->num_markers; i++)
+    {
+      marker = track->markers[i];
+      marker_init_loaded (marker);
+    }
 
-  /*int i;*/
-  /*for (i = 0; i < track->num_regions; i++)*/
-    /*track->regions[i] =*/
-      /*project_get_region (*/
-        /*track->region_ids[i]);*/
-  /*for (i = 0; i < track->num_chords; i++)*/
-    /*track->chords[i] =*/
-      /*project_get_chord (*/
-        /*track->chord_ids[i]);*/
+  /* init loaded channel */
+  Channel * ch;
+  if (track->channel)
+    {
+      ch = track->channel;
+      ch->track = track;
+      channel_init_loaded (ch);
+    }
 
-  track->widget = track_widget_new (track);
-
-  /*if (track->type != TRACK_TYPE_CHORD)*/
-    /*automation_tracklist_init_loaded (*/
-      /*&track->automation_tracklist);*/
+  /* set track to automation tracklist */
+  AutomationTracklist * atl;
+  atl = &track->automation_tracklist;
+  atl->track = track;
+  automation_tracklist_init_loaded (atl);
 }
 
 /**
