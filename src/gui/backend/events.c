@@ -897,6 +897,9 @@ events_process (void * data)
             /*Z_ARRANGER_WIDGET (MIDI_ARRANGER));*/
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (
+              MIDI_MODIFIER_ARRANGER));
           break;
         case ET_MIDI_NOTE_REMOVED:
           /*g_object_ref (((MidiNote *) ev->arg)->widget);*/
@@ -907,6 +910,8 @@ events_process (void * data)
             /*Z_ARRANGER_WIDGET (MIDI_ARRANGER));*/
           midi_arranger_widget_refresh_children (
             MIDI_ARRANGER);
+          midi_modifier_arranger_widget_refresh_children (
+            MIDI_MODIFIER_ARRANGER);
           break;
         case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
           if (MW_PIANO_ROLL)

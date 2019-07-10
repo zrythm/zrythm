@@ -407,4 +407,37 @@
         pos_name, pos); \
     }
 
+/**
+ * Frees each object stored in obj_info
+ * (declaration).
+ *
+ * @param sc snake_case.
+ * @param cc CamelCase.
+ */
+#define ARRANGER_OBJ_DECLARE_FREE_ALL_LANELESS( \
+  cc, sc) \
+  void \
+  sc##_free_all (cc * self)
+
+/**
+ * Frees each object stored in obj_info.
+ *
+ * @param sc snake_case.
+ * @param cc CamelCase.
+ */
+#define ARRANGER_OBJ_DEFINE_FREE_ALL_LANELESS( \
+  cc, sc) \
+  void \
+  sc##_free_all (cc * self) \
+  { \
+    sc##_free ( \
+      sc##_get_main_trans_##sc (self)); \
+    sc##_free ( \
+      (cc *) self->obj_info.lane); \
+    sc##_free ( \
+      (cc *) self->obj_info.lane_trans); \
+    sc##_free (self); \
+  }
+
+
 #endif

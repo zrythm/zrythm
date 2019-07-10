@@ -27,6 +27,14 @@
 #ifndef __GUI_BACKEND_ARRANGER_OBJECT_INFO_H__
 #define __GUI_BACKEND_ARRANGER_OBJECT_INFO_H__
 
+#include <gtk/gtk.h>
+
+/**
+ * @addtogroup gui_backend
+ *
+ * @{
+ */
+
 /**
  * The type of the object.
  */
@@ -38,6 +46,7 @@ typedef enum ArrangerObjectInfoType
   AOI_TYPE_SCALE_OBJECT,
   AOI_TYPE_MARKER,
   AOI_TYPE_AUTOMATION_POINT,
+  AOI_TYPE_VELOCITY,
 } ArrangerObjectInfoType;
 
 
@@ -220,5 +229,9 @@ arranger_object_info_set_widget_visibility_and_state (
 void *
 arranger_object_info_get_visible_counterpart (
   ArrangerObjectInfo * self);
+
+/**
+ * @}
+ */
 
 #endif

@@ -390,6 +390,40 @@ midi_modifier_arranger_widget_get_cursor (
 
 }
 
+static inline void
+add_children_from_region (
+  MidiModifierArrangerWidget * self,
+  Region *             region)
+{
+  int i, j;
+  MidiNote * mn;
+  Velocity * vel;
+  for (i = 0; i < region->num_midi_notes; i++)
+    {
+      mn = region->midi_notes[i];
+
+      for (j = 0; j < 2; j++)
+        {
+          if (j == 0)
+            vel =
+              velocity_get_main_velocity (
+                mn->vel);
+          else if (j == 1)
+            vel =
+              velocity_get_main_trans_velocity (
+                mn->vel);
+
+          if (!vel->widget)
+            vel->widget =
+              velocity_widget_new (vel);
+
+          gtk_overlay_add_overlay (
+            GTK_OVERLAY (self),
+            GTK_WIDGET (vel->widget));
+        }
+    }
+}
+
 /**
  * Readd children.
  */
@@ -397,8 +431,53 @@ void
 midi_modifier_arranger_widget_refresh_children (
   MidiModifierArrangerWidget * self)
 {
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+  int i, k;
 
-  /* TODO */
+  /* remove all children except bg */
+  GList *children, *iter;
+
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (self));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      GtkWidget * widget = GTK_WIDGET (iter->data);
+      if (widget != (GtkWidget *) ar_prv->bg &&
+          widget != (GtkWidget *) ar_prv->playhead)
+        {
+          g_object_ref (widget);
+          gtk_container_remove (
+            GTK_CONTAINER (self),
+            widget);
+        }
+    }
+  g_list_free (children);
+
+  if (CLIP_EDITOR->region &&
+      CLIP_EDITOR->region->type == REGION_TYPE_MIDI)
+    {
+      /* add notes of all regions in the track */
+      TrackLane * lane;
+      Track * track =
+        CLIP_EDITOR->region->lane->track;
+      for (k = 0; k < track->num_lanes; k++)
+        {
+          lane = track->lanes[k];
+
+          for (i = 0; i < lane->num_regions; i++)
+            {
+              add_children_from_region (
+                self, lane->regions[i]);
+            }
+        }
+    }
+
+  gtk_overlay_reorder_overlay (
+    GTK_OVERLAY (self),
+    (GtkWidget *) ar_prv->playhead, -1);
 }
 
 static void

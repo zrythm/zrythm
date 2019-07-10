@@ -937,16 +937,14 @@ channel_handle_recording (Channel * self)
               MidiEvent * ev =
                 & midi_events->events[i];
 
-              Velocity * vel;
               switch (ev->type)
                 {
                   case MIDI_EVENT_TYPE_NOTE_ON:
-                    vel =
-                      velocity_new (ev->velocity);
                     mn =
                       midi_note_new (
                         mr, &PLAYHEAD, &tmp,
-                        ev->note_pitch, vel, 1);
+                        ev->note_pitch,
+                        ev->velocity, 1);
                     midi_region_add_midi_note (
                       mr, mn, F_GEN_WIDGET);
 
@@ -1269,8 +1267,8 @@ channel_generate_automation_tracks (
     "Generating automation tracks for channel %s",
     channel->track->name);
 
-  AutomationTracklist * atl =
-    &channel->track->automation_tracklist;
+  /*AutomationTracklist * atl =*/
+    /*&channel->track->automation_tracklist;*/
 
   /* generate channel automatables if necessary */
   if (!channel_get_automatable (

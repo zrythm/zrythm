@@ -43,8 +43,8 @@ tracklist_init_loaded (
 {
   int i;
   Track * track;
-  Channel * chan;
-  AutomationTracklist * atl;
+  /*Channel * chan;*/
+  /*AutomationTracklist * atl;*/
   for (i = 0; i < self->num_tracks; i++)
     {
       track = self->tracks[i];

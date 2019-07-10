@@ -6,6 +6,7 @@
  * These are the steps to take before each release to
  * ensure that the program is releasable.
  * 1. Run the test suite locally
+ * 2. Check that it compiles with both gcc and clang
  *
  * \section running_test_suite Running the Test Suite Locally
  *

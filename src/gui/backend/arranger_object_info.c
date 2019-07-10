@@ -24,6 +24,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/timeline_arranger.h"
 
 #include <gtk/gtk.h>
@@ -100,6 +101,10 @@ arranger_object_info_should_be_visible (
     case AOI_TYPE_MIDI_NOTE:
       arranger =
         Z_ARRANGER_WIDGET (MIDI_ARRANGER);
+      break;
+    case AOI_TYPE_VELOCITY:
+      arranger =
+        Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER);
       break;
     }
   g_warn_if_fail (arranger);
@@ -204,6 +209,7 @@ arranger_object_info_set_widget_visibility_and_state (
   Marker * marker = NULL;
   MidiNote * midi_note = NULL;
   AutomationPoint * automation_point = NULL;
+  Velocity * velocity = NULL;
 
   /* get the objects */
   switch (self->type)
@@ -236,6 +242,11 @@ arranger_object_info_set_widget_visibility_and_state (
     case AOI_TYPE_AUTOMATION_POINT:
       automation_point =
         (AutomationPoint *)
+        arranger_object_info_get_object (self);
+      break;
+    case AOI_TYPE_VELOCITY:
+      velocity =
+        (Velocity *)
         arranger_object_info_get_object (self);
       break;
     }
@@ -327,6 +338,11 @@ arranger_object_info_set_widget_visibility_and_state (
           SET_ALL_VISIBLE_WITHOUT_LANE (
             AutomationPoint, automation_point);
         }
+      if (velocity)
+        {
+          SET_ALL_VISIBLE_WITHOUT_LANE (
+            Velocity, velocity);
+        }
     }
   else
     {
@@ -354,6 +370,10 @@ arranger_object_info_set_widget_visibility_and_state (
         {
           SET_THIS_VISIBLE (automation_point);
         }
+      if (velocity)
+        {
+          SET_THIS_VISIBLE (velocity);
+        }
     }
 
 #undef SET_ALL_VISIBLE
@@ -374,6 +394,7 @@ arranger_object_info_get_visible_counterpart (
   Marker * marker = NULL;
   MidiNote * midi_note = NULL;
   AutomationPoint * automation_point = NULL;
+  Velocity * velocity = NULL;
 
   /* get the objects */
   switch (self->type)
@@ -406,6 +427,11 @@ arranger_object_info_get_visible_counterpart (
     case AOI_TYPE_AUTOMATION_POINT:
       automation_point =
         (AutomationPoint *)
+        arranger_object_info_get_object (self);
+      break;
+    case AOI_TYPE_VELOCITY:
+      velocity =
+        (Velocity *)
         arranger_object_info_get_object (self);
       break;
     }
@@ -463,6 +489,14 @@ arranger_object_info_get_visible_counterpart (
       RETURN_COUNTERPART_IF_VISIBLE (
         automation_point,
         main_trans_automation_point);
+    }
+  if (velocity)
+    {
+      RETURN_COUNTERPART_IF_VISIBLE (
+        velocity, main_velocity);
+      RETURN_COUNTERPART_IF_VISIBLE (
+        velocity,
+        main_trans_velocity);
     }
 
 #undef RETURN_COUNTERPART_IF_VISIBLE

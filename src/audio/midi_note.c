@@ -40,6 +40,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
+#include "utils/string.h"
 
 #define SET_POS(r,pos_name,pos,trans_only) \
   ARRANGER_OBJ_SET_POS ( \
@@ -66,7 +67,7 @@ midi_note_new (
   Position *   start_pos,
   Position *   end_pos,
   int          val,
-  Velocity *   vel,
+  int          vel,
   int          is_main)
 {
   MidiNote * self =
@@ -80,8 +81,8 @@ midi_note_new (
   self->region_name =
     g_strdup (region->name);
   self->val = val;
-  self->vel = vel;
-  vel->midi_note = self;
+  self->vel =
+    velocity_new (self, vel, is_main);
 
   if (is_main)
     {
@@ -143,8 +144,6 @@ midi_note_clone (
   MidiNote *  src,
   MidiNoteCloneFlag flag)
 {
-  Velocity * vel = velocity_clone (src->vel);
-
   int is_main = 0;
   if (flag == MIDI_NOTE_CLONE_COPY_MAIN)
     is_main = 1;
@@ -152,7 +151,7 @@ midi_note_clone (
   MidiNote * mn =
     midi_note_new (
       src->region, &src->start_pos, &src->end_pos,
-      src->val, vel, is_main);
+      src->val, src->vel->vel, is_main);
 
   return mn;
 }
@@ -237,7 +236,7 @@ midi_note_get_start_pos (
 }
 
 /**
- * Returns 1 if the MidiNotes match, 0 if not.
+ * Returns 1 if the MidiNote's match, 0 if not.
  */
 int
 midi_note_is_equal (
@@ -245,14 +244,14 @@ midi_note_is_equal (
   MidiNote * dest)
 {
   return
-    !position_compare (&src->start_pos,
-                       &dest->start_pos) &&
-    !position_compare (&src->end_pos,
-                       &dest->end_pos) &&
+    position_is_equal (
+      &src->start_pos, &dest->start_pos) &&
+    position_is_equal (
+      &src->end_pos, &dest->end_pos) &&
     src->val == dest->val &&
     src->muted == dest->muted &&
-    !g_strcmp0 (src->region->name,
-                dest->region->name);
+    string_is_equal (
+      src->region->name, dest->region->name, 0);
 }
 
 /**
@@ -513,20 +512,8 @@ midi_note_hit (MidiNote * midi_note,
   return 0;
 }
 
-/**
- * Frees each MidiNote stored in obj_info.
- */
-void
-midi_note_free_all (MidiNote * self)
-{
-  midi_note_free (
-    midi_note_get_main_trans_midi_note (self));
-  midi_note_free (
-    (MidiNote *) self->obj_info.lane);
-  midi_note_free (
-    (MidiNote *) self->obj_info.lane_trans);
-  midi_note_free (self);
-}
+ARRANGER_OBJ_DEFINE_FREE_ALL_LANELESS (
+  MidiNote, midi_note);
 
 void
 midi_note_free (MidiNote * self)
@@ -537,7 +524,7 @@ midi_note_free (MidiNote * self)
         self->widget);
     }
 
-  velocity_free (self->vel);
+  velocity_free_all (self->vel);
 
   free (self);
 }

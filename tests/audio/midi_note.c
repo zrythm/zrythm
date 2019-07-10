@@ -62,7 +62,7 @@ test_new_midi_note ()
     midi_note_new (
       fixture->region,
       &start_pos, &end_pos, val,
-      velocity_new (vel), 1);
+      VELOCITY_DEFAULT, 1);
 
   g_assert_nonnull (mn);
   g_assert_true (

@@ -178,7 +178,7 @@ midi_note_new (
   Position *   start_pos,
   Position *   end_pos,
   int          val,
-  Velocity *   vel,
+  int          vel,
   int          is_main);
 
 /**
@@ -367,11 +367,8 @@ midi_note_set_val (
   MidiNote * midi_note,
   int        val);
 
-/**
- * Frees each MidiNote stored in obj_info.
- */
-void
-midi_note_free_all (MidiNote * self);
+ARRANGER_OBJ_DECLARE_FREE_ALL_LANELESS (
+  MidiNote, midi_note);
 
 /**
  * Frees a single MidiNote and its components.

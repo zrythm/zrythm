@@ -532,8 +532,6 @@ midi_arranger_widget_create_note (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  Velocity * vel = velocity_default ();
-
   /* get local pos */
   Position local_pos;
   position_from_ticks (
@@ -552,8 +550,8 @@ midi_arranger_widget_create_note (
   /* create midi note */
   MidiNote * midi_note =
     midi_note_new (
-      region, &local_pos, &local_pos, note, vel,
-      1);
+      region, &local_pos, &local_pos, note,
+      VELOCITY_DEFAULT, 1);
 
   /* add it to region */
   midi_region_add_midi_note (
