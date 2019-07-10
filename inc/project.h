@@ -49,16 +49,6 @@
 
 #include <gtk/gtk.h>
 
-#define PROJECT                 ZRYTHM->project
-#define DEFAULT_PROJECT_NAME    "Untitled Project"
-#define PROJECT_FILE            "project.yml"
-#define PROJECT_REGIONS_FILE    "regions.yml"
-#define PROJECT_PORTS_FILE      "ports.yml"
-#define PROJECT_REGIONS_DIR     "Regions"
-#define PROJECT_STATES_DIR      "states"
-#define PROJECT_EXPORTS_DIR     "exports"
-#define PROJECT_AUDIO_DIR       "audio"
-
 typedef struct Timeline Timeline;
 typedef struct Transport Transport;
 typedef struct Port Port;
@@ -68,6 +58,22 @@ typedef struct Track Track;
 typedef struct Region Region;
 typedef struct MidiNote MidiNote;
 typedef struct Track ChordTrack;
+
+/**
+ * @addtogroup project Project
+ *
+ * @{
+ */
+
+#define PROJECT                 ZRYTHM->project
+#define DEFAULT_PROJECT_NAME    "Untitled Project"
+#define PROJECT_FILE            "project.yml"
+#define PROJECT_REGIONS_FILE    "regions.yml"
+#define PROJECT_PORTS_FILE      "ports.yml"
+#define PROJECT_REGIONS_DIR     "Regions"
+#define PROJECT_STATES_DIR      "states"
+#define PROJECT_EXPORTS_DIR     "exports"
+#define PROJECT_AUDIO_DIR       "audio"
 
 /**
  * Selection type, used for displaying info in the
@@ -186,6 +192,9 @@ typedef struct Project
 
   /** The ControlRoom. */
   ControlRoom       control_room;
+
+  /** Zrythm version, for zerialization */
+  char *            version;
 } Project;
 
 static const cyaml_schema_field_t
@@ -194,6 +203,10 @@ static const cyaml_schema_field_t
   CYAML_FIELD_STRING_PTR (
     "title", CYAML_FLAG_POINTER,
     Project, title,
+    0, CYAML_UNLIMITED),
+  CYAML_FIELD_STRING_PTR (
+    "version", CYAML_FLAG_POINTER,
+    Project, version,
     0, CYAML_UNLIMITED),
   CYAML_FIELD_MAPPING (
     "tracklist", CYAML_FLAG_DEFAULT,
@@ -280,5 +293,9 @@ project_set_has_range (int has_range);
 SERIALIZE_INC (Project, project)
 DESERIALIZE_INC (Project, project)
 PRINT_YAML_INC (Project, project)
+
+/**
+ * @}
+ */
 
 #endif

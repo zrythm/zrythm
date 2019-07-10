@@ -191,6 +191,24 @@ piano_roll_set_highlighting (
                NULL);
 }
 
+/**
+ * Sets the MIDI modifier.
+ */
+void
+piano_roll_set_midi_modifier (
+  PianoRoll * self,
+  MidiModifier modifier)
+{
+  self->midi_modifier = modifier;
+
+  g_settings_set_enum (
+    S_UI, "piano-roll-midi-modifier",
+    modifier);
+
+  EVENTS_PUSH (ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED,
+               NULL);
+}
+
 void
 piano_roll_init (PianoRoll * self)
 {
@@ -201,6 +219,9 @@ piano_roll_init (PianoRoll * self)
   self->highlighting =
     g_settings_get_enum (
       S_UI, "piano-roll-highlight");
+  self->midi_modifier =
+    g_settings_get_enum (
+      S_UI, "piano-roll-midi-modifier");
 
   init_descriptors (self);
 }

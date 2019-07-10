@@ -284,6 +284,14 @@ piano_roll_set_highlighting (
   PianoRollHighlighting highlighting);
 
 /**
+ * Sets the MIDI modifier.
+ */
+void
+piano_roll_set_midi_modifier (
+  PianoRoll * self,
+  MidiModifier modifier);
+
+/**
  * Gets the visible notes.
  */
 static inline void

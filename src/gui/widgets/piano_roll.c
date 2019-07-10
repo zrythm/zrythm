@@ -50,6 +50,16 @@ G_DEFINE_TYPE (PianoRollWidget,
 #define DRUM_MODE (self->piano_roll->drum_mode)
 #define DEFAULT_PX_PER_KEY 8
 
+static void
+on_midi_modifier_changed (
+  GtkComboBox *widget,
+  PianoRollWidget * self)
+{
+  piano_roll_set_midi_modifier (
+    PIANO_ROLL,
+    gtk_combo_box_get_active (widget));
+}
+
 /**
  * Links scroll windows after all widgets have been
  * initialized.
@@ -196,6 +206,13 @@ piano_roll_widget_refresh (
 
   /* relink scrolls */
   link_scrolls (self);
+
+  /* setup combo box */
+  gtk_combo_box_set_active (
+    GTK_COMBO_BOX (
+      self->midi_modifier_chooser),
+    PIANO_ROLL->midi_modifier);
+  g_message ("SET TO %d", PIANO_ROLL->midi_modifier);
 }
 
 void
@@ -259,6 +276,12 @@ piano_roll_widget_init (PianoRollWidget * self)
   gdk_rgba_parse (color, "gray");
   color_area_widget_set_color (
     self->color_bar, color);
+
+  /* setup signals */
+  g_signal_connect (
+    G_OBJECT(self->midi_modifier_chooser),
+    "changed",
+    G_CALLBACK (on_midi_modifier_changed),  self);
 }
 
 static void
@@ -282,6 +305,10 @@ piano_roll_widget_class_init (
     klass,
     PianoRollWidget,
     midi_name_label);
+  gtk_widget_class_bind_template_child (
+    klass,
+    PianoRollWidget,
+    midi_modifier_chooser);
   gtk_widget_class_bind_template_child (
     klass,
     PianoRollWidget,

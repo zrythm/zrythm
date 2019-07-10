@@ -86,6 +86,12 @@
     <value nick="scale" value="2"/>
     <value nick="both" value="3"/>
   </enum>
+  <enum id="org.zrythm.ui.piano-roll-midi-modifier-enum">
+    <value nick="velocity" value="0"/>
+    <value nick="pitch-wheel" value="1"/>
+    <value nick="mod-wheel" value="2"/>
+    <value nick="aftertouch" value="3"/>
+  </enum>
   <enum id="org.zrythm.preferences.pan-law-enum">
     <value nick="zero-db" value="0"/>
     <value nick="minus-three-db" value="1"/>
@@ -287,6 +293,16 @@
       <description>
         Whether to highlight chords, scales, both
           or none in the Piano Roll.
+      </description>
+    </key>
+
+    <!-- KEY: piano roll midi modifier -->
+    <key name="piano-roll-midi-modifier" enum="org.zrythm.ui.piano-roll-midi-modifier-enum">
+      <default>"velocity"</default>
+      <summary>Piano Roll MIDI Modifier</summary>
+      <description>
+         The MIDI modifier to display in the
+           MIDI modifier arranger.
       </description>
     </key>
 

@@ -24,6 +24,8 @@
  * serialized.
  */
 
+#include "config.h"
+
 #include "zrythm.h"
 #include "project.h"
 #include "audio/automation_curve.h"
@@ -378,6 +380,9 @@ project_load (char * filename)
     return load (filename);
   else
     create_default (PROJECT);
+
+  /* set the version */
+  PROJECT->version = PACKAGE_VERSION;
 
   return 0;
 }

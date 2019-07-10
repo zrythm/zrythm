@@ -97,6 +97,8 @@ typedef struct _PianoRollWidget
   MidiModifierArrangerWidget * modifier_arranger;
   GtkButton *          toggle_notation;
 
+  GtkComboBoxText *    midi_modifier_chooser;
+
   /** Backend. */
   PianoRoll *          piano_roll;
 

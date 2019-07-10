@@ -78,7 +78,7 @@ main (int    argc,
   "This is free software, and you are welcome to redistribute it\n"
   "under certain conditions. Look at the file `COPYING' within this\n"
   "distribution for details.\n\n"
-  "Write comments and bugs to https://git.zrythm.org/zrythm/zrythm/issues\n"
+  "Write comments and bugs to https://savannah.nongnu.org/support/?group=zrythm\n"
   "Support this project at https://liberapay.com/Zrythm\n\n",
     PACKAGE_VERSION);
 

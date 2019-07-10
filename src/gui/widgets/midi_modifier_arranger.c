@@ -402,11 +402,13 @@ midi_modifier_arranger_widget_refresh_children (
 }
 
 static void
-midi_modifier_arranger_widget_class_init (MidiModifierArrangerWidgetClass * klass)
+midi_modifier_arranger_widget_class_init (
+  MidiModifierArrangerWidgetClass * klass)
 {
 }
 
 static void
-midi_modifier_arranger_widget_init (MidiModifierArrangerWidget * self)
+midi_modifier_arranger_widget_init (
+  MidiModifierArrangerWidget * self)
 {
 }

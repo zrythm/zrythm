@@ -72,7 +72,6 @@ widget_srcs = [
   'midi_controller_popover.c',
   'midi_modifier_arranger_bg.c',
   'midi_modifier_arranger.c',
-  'midi_modifier_chooser.c',
   'midi_note.c',
   'midi_region.c',
   'midi_ruler.c',
