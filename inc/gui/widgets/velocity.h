@@ -41,12 +41,19 @@ G_DECLARE_FINAL_TYPE (VelocityWidget,
 
 typedef struct _VelocityWidget
 {
-  GtkBox                   parent_instance;
-  Velocity *               velocity;   ///< the velocity associated with this
-  GtkDrawingArea *         drawing_area; ///< the drwaing area
-  UiCursorState            cursor_state;
-  GtkWindow *            tooltip_win;
-  GtkLabel *             tooltip_label;
+  GtkBox           parent_instance;
+
+  /** The drawing area. */
+  GtkDrawingArea * drawing_area;
+
+  /** The Velocity associated with this. */
+  Velocity *       velocity;
+
+  GtkWindow *      tooltip_win;
+  GtkLabel *       tooltip_label;
+
+  /** If cursor is at resizing position. */
+  int              resize;
 } VelocityWidget;
 
 /**
@@ -59,6 +66,14 @@ void
 velocity_widget_select (
   VelocityWidget * self,
   int              select);
+
+/**
+ * Returns if the current position is for resizing.
+ */
+int
+velocity_widget_is_resize (
+  VelocityWidget * self,
+  int              y);
 
 /**
  * Updates the tooltips and shows the tooltip

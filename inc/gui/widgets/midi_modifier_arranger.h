@@ -110,6 +110,14 @@ midi_modifier_arranger_widget_select_all (
   int                           select);
 
 /**
+ * Sets transient Velocity and actual Velocity
+ * visibility based on the current action.
+ */
+void
+midi_modifier_arranger_widget_update_visibility (
+  MidiModifierArrangerWidget * self);
+
+/**
  * Shows context menu.
  *
  * To be called from parent on right click.

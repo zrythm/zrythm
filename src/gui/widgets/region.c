@@ -299,8 +299,8 @@ region_widget_select (
     region_widget_get_instance_private (self);
   Region * region = prv->region;
   ARRANGER_OBJECT_WIDGET_SELECT (
-    REGION, Region, region, timeline_selections,
-    TL_SELECTIONS);
+    Region, region,
+    timeline_selections, TL_SELECTIONS);
 }
 
 RegionWidgetPrivate *

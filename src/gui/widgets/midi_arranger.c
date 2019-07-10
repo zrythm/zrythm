@@ -1074,6 +1074,8 @@ midi_arranger_widget_on_drag_end (
   ar_prv->action = UI_OVERLAY_ACTION_NONE;
   midi_arranger_widget_update_visibility (
     self);
+  midi_modifier_arranger_widget_update_visibility (
+    MIDI_MODIFIER_ARRANGER);
 
   /* FIXME temporary, should be removed */
   /*for (int i = 0;*/

@@ -54,7 +54,6 @@ typedef struct _MidiNoteWidget
   GtkBox                   parent_instance;
   GtkDrawingArea *         drawing_area;
   MidiNote *               midi_note; ///< the midi_note associated with this
-  UiCursorState            cursor_state;
   GtkWindow *            tooltip_win;
   GtkLabel *             tooltip_label;
 

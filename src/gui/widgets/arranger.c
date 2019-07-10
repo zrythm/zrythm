@@ -366,6 +366,23 @@ arranger_widget_set_cursor (
         }
       g_list_free (children);
       break;
+    case ARRANGER_CURSOR_RESIZING_UP:
+      ui_set_cursor_from_name (
+        GTK_WIDGET (self), "n-resize");
+
+      children =
+        gtk_container_get_children (
+          GTK_CONTAINER (self));
+      for (iter = children;
+           iter != NULL;
+           iter = g_list_next (iter))
+        {
+          ui_set_cursor_from_name (
+            GTK_WIDGET (iter->data),
+            "n-resize");
+        }
+      g_list_free (children);
+      break;
     case ARRANGER_CURSOR_RANGE:
       ui_set_cursor_from_name (
         GTK_WIDGET (self), "text");
@@ -571,6 +588,8 @@ arranger_widget_select (
     }
   if (midi_modifier_arranger)
     {
+      FIND_ARRAY_AND_NUM (
+        MIDI_NOTE, midi_note, MA_SELECTIONS);
     }
 
   if (select && !append)
@@ -588,7 +607,8 @@ arranger_widget_select (
         }
       else if (midi_modifier_arranger)
         {
-          /* TODO */
+          midi_arranger_selections_clear (
+            MA_SELECTIONS);
         }
     }
 
@@ -685,18 +705,17 @@ arranger_widget_select_all (
   if (midi_arranger)
     {
       midi_arranger_widget_select_all (
-        midi_arranger,
-        select);
+        midi_arranger, select);
     }
   else if (timeline)
     {
       timeline_arranger_widget_select_all (
-        timeline,
-        select);
+        timeline, select);
     }
   else if (midi_modifier_arranger)
     {
-      /* TODO */
+      midi_modifier_arranger_widget_select_all (
+        midi_modifier_arranger, select);
     }
   else if (audio_arranger)
     {
@@ -825,7 +844,8 @@ on_key_release_action (
       timeline);
   if (midi_modifier_arranger)
     {
-
+      midi_modifier_arranger_widget_update_visibility (
+        midi_modifier_arranger);
     }
   if (audio_arranger)
     {
@@ -951,6 +971,9 @@ on_key_action (
   if (midi_arranger)
     midi_arranger_widget_update_visibility (
       midi_arranger);
+  if (midi_modifier_arranger)
+    midi_modifier_arranger_widget_update_visibility (
+      midi_modifier_arranger);
   else if (timeline)
     timeline_arranger_widget_update_visibility (
       timeline);
@@ -1523,6 +1546,8 @@ drag_update (
         {
           midi_arranger_widget_update_visibility (
             midi_arranger);
+          midi_modifier_arranger_widget_update_visibility (
+            midi_modifier_arranger);
           int ret =
             midi_arranger_widget_snap_midi_notes_l (
               midi_arranger,
@@ -1588,6 +1613,8 @@ drag_update (
     {
       if (midi_modifier_arranger)
         {
+          midi_modifier_arranger_widget_update_visibility (
+            midi_modifier_arranger);
           midi_modifier_arranger_widget_resize_velocities (
             midi_modifier_arranger,
             offset_y);
@@ -1615,6 +1642,8 @@ drag_update (
         {
           midi_arranger_widget_update_visibility (
             midi_arranger);
+          midi_modifier_arranger_widget_update_visibility (
+            midi_modifier_arranger);
           midi_arranger_widget_move_items_x (
             midi_arranger,
             ar_prv->adj_ticks_diff,
@@ -1645,6 +1674,8 @@ drag_update (
         {
           midi_arranger_widget_update_visibility (
             midi_arranger);
+          midi_modifier_arranger_widget_update_visibility (
+            midi_modifier_arranger);
           midi_arranger_widget_move_items_x (
             midi_arranger,
             ar_prv->adj_ticks_diff,

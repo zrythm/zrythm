@@ -63,7 +63,7 @@ arranger_object_info_is_lane (
 
 /**
  * Returns if the object represented by the
- * ArrrangerObjectInfo should be visible.
+ * ArrangerObjectInfo should be visible.
  *
  * This is counterpart-specific, ie. it checks
  * if the transient should be visible or lane
@@ -77,7 +77,6 @@ arranger_object_info_should_be_visible (
   ArrangerWidget * arranger = NULL;
   switch (self->type)
     {
-      /* FIXME fixed for now */
     case AOI_TYPE_REGION:
       arranger =
         Z_ARRANGER_WIDGET (MW_TIMELINE);
@@ -137,7 +136,9 @@ arranger_object_info_should_be_visible (
           ar_prv->action ==
             UI_OVERLAY_ACTION_RESIZING_R ||
           ar_prv->action ==
-            UI_OVERLAY_ACTION_CREATING_RESIZING_R)
+            UI_OVERLAY_ACTION_CREATING_RESIZING_R ||
+          ar_prv->action ==
+            UI_OVERLAY_ACTION_RESIZING_UP)
     {
       trans_visible = 1;
       non_trans_visible = 0;

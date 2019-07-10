@@ -33,7 +33,7 @@
  * @param sc snake_case.
  */
 #define ARRANGER_OBJECT_WIDGET_SELECT( \
-  caps,cc,sc,selections_name,selections) \
+  cc,sc,selections_name,selections) \
   cc * main_##sc = \
     sc##_get_main_##sc (sc); \
   if (select) \
@@ -57,7 +57,7 @@
     int  select)
 
 #define DEFINE_ARRANGER_OBJECT_WIDGET_SELECT( \
-  caps,cc,sc,selections_name,selections) \
+  cc,sc,selections_name,selections) \
   void \
   sc##_widget_select ( \
     cc##Widget * self, \
@@ -65,7 +65,7 @@
   { \
     cc * sc = self->sc; \
     ARRANGER_OBJECT_WIDGET_SELECT ( \
-      caps, cc, sc, selections_name, selections); \
+      cc, sc, selections_name, selections); \
   }
 
 #endif

@@ -21,22 +21,30 @@
 
 #include "audio/channel.h"
 #include "audio/channel_track.h"
+#include "audio/chord_track.h"
 #include "audio/midi_note.h"
 #include "audio/region.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/velocity.h"
 #include "project.h"
+#include "utils/cairo.h"
 #include "utils/flags.h"
 #include "utils/ui.h"
 
 G_DEFINE_TYPE (VelocityWidget,
                velocity_widget,
                GTK_TYPE_BOX)
+
+/**
+ * Space on the edge to show resize cursor
+ */
+#define RESIZE_CURSOR_SPACE 9
 
 static gboolean
 draw_cb (GtkDrawingArea * da,
@@ -46,6 +54,10 @@ draw_cb (GtkDrawingArea * da,
   VelocityWidget * self = Z_VELOCITY_WIDGET (data);
   guint width, height;
   GtkStyleContext *context;
+
+  /*g_message ("draw %d (transient? %d)",*/
+             /*self->velocity->vel,*/
+             /*velocity_is_transient (self->velocity));*/
 
   context =
     gtk_widget_get_style_context (GTK_WIDGET (self));
@@ -60,21 +72,116 @@ draw_cb (GtkDrawingArea * da,
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
-  Region * region =
-    self->velocity->midi_note->region;
-  GdkRGBA * color = &region->lane->track->color;
+  MidiNote * mn = self->velocity->midi_note;
+  Region * region = mn->region;
+  GdkRGBA * track_color =
+    &region->lane->track->color;
+  Position global_start_pos;
+  midi_note_get_global_start_pos (
+    mn, &global_start_pos);
+  ChordObject * co =
+    chord_track_get_chord_at_pos (
+      P_CHORD_TRACK, &global_start_pos);
+  ScaleObject * so =
+    chord_track_get_scale_at_pos (
+      P_CHORD_TRACK, &global_start_pos);
+  GdkRGBA color;
+  int in_scale =
+    so && musical_scale_is_key_in_scale (
+      so->scale, mn->val % 12);
+  int in_chord =
+    co && chord_descriptor_is_key_in_chord (
+      co->descr, mn->val % 12);
 
-  cairo_set_source_rgba (cr,
-                         color->red - 0.2,
-                         color->green - 0.2,
-                         color->blue - 0.2,
-                         0.7);
+  if (PIANO_ROLL->highlighting ==
+        PR_HIGHLIGHT_BOTH &&
+      in_scale && in_chord)
+    {
+      gdk_rgba_parse (&color, "#FF22FF");
+    }
+  else if ((PIANO_ROLL->highlighting ==
+        PR_HIGHLIGHT_SCALE ||
+      PIANO_ROLL->highlighting ==
+        PR_HIGHLIGHT_BOTH) && in_scale)
+    {
+      gdk_rgba_parse (&color, "#662266");
+    }
+  else if ((PIANO_ROLL->highlighting ==
+        PR_HIGHLIGHT_CHORD ||
+      PIANO_ROLL->highlighting ==
+        PR_HIGHLIGHT_BOTH) && in_chord)
+    {
+      gdk_rgba_parse (&color, "#BB22BB");
+    }
+  else
+    {
+      gdk_rgba_parse (
+        &color,
+        gdk_rgba_to_string (track_color));
+    }
 
-  /* TODO draw audio notes */
-  cairo_rectangle(cr, 0, 0, width, height);
-  cairo_fill(cr);
+  /* draw velocities of main region */
+  if (region == CLIP_EDITOR->region)
+    {
+      cairo_set_source_rgba (
+        cr,
+        color.red,
+        color.green,
+        color.blue,
+        velocity_is_transient (
+          self->velocity) ? 0.7 : 1);
+      if (velocity_is_selected (self->velocity))
+        {
+          cairo_set_source_rgba (
+            cr, color.red + 0.4,
+            color.green + 0.2,
+            color.blue + 0.2, 1);
+        }
+      cairo_rectangle(cr, 0, 0, width, height);
+      cairo_fill(cr);
+    }
+  /* draw other notes */
+  else
+    {
+      cairo_set_source_rgba (
+        cr, color.red, color.green,
+        color.blue, 0.5);
+      cairo_rectangle(cr, 0, 0, width, height);
+      cairo_fill(cr);
+    }
+
+  if (DEBUGGING &&
+      velocity_is_transient (self->velocity))
+    {
+      GdkRGBA color, c2;
+      gdk_rgba_parse (
+        &color,
+        gdk_rgba_to_string (
+          &region_get_track (
+            self->velocity->midi_note->region)->
+              color));
+      ui_get_contrast_text_color (
+        &color, &c2);
+      gdk_cairo_set_source_rgba (cr, &c2);
+      z_cairo_draw_text (cr, "[t]");
+    }
 
  return FALSE;
+}
+
+/**
+ * Returns if the current position is for resizing.
+ */
+int
+velocity_widget_is_resize (
+  VelocityWidget * self,
+  int              y)
+{
+  if (y < RESIZE_CURSOR_SPACE)
+    {
+      return 1;
+    }
+  return 0;
 }
 
 static int
@@ -82,11 +189,12 @@ on_motion (GtkWidget *      widget,
            GdkEventMotion * event,
            VelocityWidget * self)
 {
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (widget,
-                             &allocation);
-  ARRANGER_WIDGET_GET_PRIVATE (
-    MIDI_MODIFIER_ARRANGER);
+  if (event->type == GDK_MOTION_NOTIFY)
+    {
+      self->resize =
+        velocity_widget_is_resize (
+          self, event->y);
+    }
 
   if (event->type == GDK_ENTER_NOTIFY)
     {
@@ -95,35 +203,12 @@ on_motion (GtkWidget *      widget,
         GTK_STATE_FLAG_PRELIGHT,
         0);
     }
-  if (event->type == GDK_MOTION_NOTIFY)
-    {
-      if (event->y < RESIZE_CURSOR_SPACE)
-        {
-          self->cursor_state =
-            UI_CURSOR_STATE_RESIZE_UP;
-            ui_set_cursor_from_name (widget, "n-resize");
-        }
-      else
-        {
-          self->cursor_state =
-            UI_CURSOR_STATE_DEFAULT;
-          if (ar_prv->action !=
-                UI_OVERLAY_ACTION_RESIZING_UP)
-            {
-              ui_set_cursor_from_name (widget, "default");
-            }
-        }
-    }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      if (ar_prv->action !=
-            UI_OVERLAY_ACTION_RESIZING_UP)
-        {
-          ui_set_cursor_from_name (widget, "default");
-          gtk_widget_unset_state_flags (
-            GTK_WIDGET (self),
-            GTK_STATE_FLAG_PRELIGHT);
-        }
+      gtk_widget_unset_state_flags (
+        GTK_WIDGET (self),
+        GTK_STATE_FLAG_PRELIGHT);
+      bot_bar_change_status ("");
     }
 
   return FALSE;
@@ -158,31 +243,9 @@ velocity_widget_update_tooltip (
   g_free (tooltip);
 }
 
-void
-velocity_widget_select (
-  VelocityWidget * self,
-  int              select)
-{
-  midi_arranger_selections_add_midi_note (
-    MA_SELECTIONS,
-    self->velocity->midi_note);
-  if (select)
-    {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED,
-        0);
-    }
-  else
-    {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED);
-    }
-  gtk_widget_queue_draw (GTK_WIDGET (self));
-  gtk_widget_queue_draw (
-    GTK_WIDGET (self->velocity->midi_note->widget));
-}
+DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
+  Velocity, velocity,
+  midi_arranger_selections, MA_SELECTIONS);
 
 /**
  * Creates a velocity.

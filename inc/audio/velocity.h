@@ -171,7 +171,8 @@ velocity_is_equal (
  * Returns if Velocity is (should be) visible.
  */
 #define velocity_should_be_visible(vel) \
-  midi_note_should_be_visible (vel->midi_note)
+  arranger_object_info_should_be_visible ( \
+    vel->obj_info)
 
 ARRANGER_OBJ_DECLARE_GEN_WIDGET (
   Velocity, velocity);

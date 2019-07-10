@@ -193,10 +193,30 @@ midi_arranger_selections_add_midi_note (
   MidiArrangerSelections * mas,
   MidiNote *               note);
 
+/**
+ * Adds a Velocity (MidiNote) to the selections.
+ */
+#define midi_arranger_selections_add_velocity( \
+  mas, vel) \
+  midi_arranger_selections_add_midi_note ( \
+    mas, vel->midi_note)
+
+/**
+ * Removes a MidiNote from the selections.
+ */
 void
 midi_arranger_selections_remove_midi_note (
   MidiArrangerSelections * mas,
   MidiNote *               note);
+
+/**
+ * Removes a Velocity (MidiNote) from the
+ * selections.
+ */
+#define midi_arranger_selections_remove_velocity( \
+  mas, vel) \
+  midi_arranger_selections_remove_midi_note ( \
+    mas, vel->midi_note)
 
 /**
  * Sets the cache Position's for each object in

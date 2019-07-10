@@ -36,6 +36,12 @@ cdata.set (
 cdata.set (
   'MESON_BUILD_ROOT',
   meson.build_root ())
+cdata.set_quoted (
+  'ISSUE_TRACKER_URL',
+  'https://savannah.nongnu.org/support/?group=zrythm')
+cdata.set_quoted (
+  'NEW_ISSUE_URL',
+  'https://savannah.nongnu.org/support/?func=additem&group=zrythm')
 
 os_darwin = false
 os_win32 = false

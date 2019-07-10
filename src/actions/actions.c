@@ -202,12 +202,12 @@ activate_bugreport (GSimpleAction *action,
 #ifdef _WIN32
   ShellExecute (
     0, (LPCSTR)"open",
-    (LPCSTR) "https://git.zrythm.org/zrythm/zrythm/issues",
+    (LPCSTR) NEW_ISSUE_URL,
     0, 0, SW_SHOWNORMAL);
 #else
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
-    "https://git.zrythm.org/zrythm/zrythm/issues",
+    NEW_ISSUE_URL,
     0,
     NULL);
 #endif

@@ -189,8 +189,7 @@ midi_note_draw_cb (
   GdkRGBA c2;
   ui_get_contrast_text_color (
     &color, &c2);
-  cairo_set_source_rgba (
-    cr, c2.red, c2.green, c2.blue, 1.0);
+  gdk_cairo_set_source_rgba (cr, &c2);
   if (DEBUGGING || !PIANO_ROLL->drum_mode)
     z_cairo_draw_text (cr, str);
   g_free (str);
@@ -319,7 +318,7 @@ on_destroy (
 }
 
 DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
-  MIDI_NOTE, MidiNote, midi_note,
+  MidiNote, midi_note,
   midi_arranger_selections, MA_SELECTIONS);
 
 /**

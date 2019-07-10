@@ -104,9 +104,8 @@ on_motion (GtkWidget * widget,
 }
 
 DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
-  AUTOMATION_POINT, AutomationPoint,
-  automation_point, timeline_selections,
-  TL_SELECTIONS);
+  AutomationPoint, automation_point,
+  timeline_selections, TL_SELECTIONS);
 
 void
 automation_point_widget_update_tooltip (

@@ -415,11 +415,48 @@ on_midi_note_selection_changed ()
 static void
 on_midi_note_changed (MidiNote * midi_note)
 {
+  Velocity * vel;
   for (int i = 0; i < 2; i++)
     {
       if (i == 0)
-        midi_note =
-          midi_note_get_main_midi_note (midi_note);
+        {
+          midi_note =
+            midi_note_get_main_midi_note (
+              midi_note);
+          for (int j = 0; j < 2; j++)
+            {
+              if (j == 0)
+                vel =
+                  velocity_get_main_velocity (
+                    midi_note->vel);
+              else if (j == 1);
+                vel =
+                  velocity_get_main_trans_velocity (
+                    midi_note->vel);
+
+              if (GTK_IS_WIDGET (vel->widget))
+                {
+                  if (velocity_is_selected (vel))
+                    {
+                      g_message ("SELECTING VEL");
+                      gtk_widget_set_state_flags (
+                        GTK_WIDGET (vel->widget),
+                        GTK_STATE_FLAG_SELECTED,
+                        0);
+                    }
+                  else
+                    {
+                      g_message ("UNSELECTING VEL");
+                      gtk_widget_unset_state_flags (
+                        GTK_WIDGET (vel->widget),
+                        GTK_STATE_FLAG_SELECTED);
+                    }
+                  gtk_widget_queue_draw (
+                    GTK_WIDGET (vel->widget));
+                }
+
+            }
+        }
       else if (i == 1)
         midi_note =
           midi_note_get_main_trans_midi_note (midi_note);

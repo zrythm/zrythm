@@ -157,8 +157,7 @@ midi_modifier_arranger_on_drag_begin_vel_hit (
                 vel_w->velocity);
 
   /* update arranger action */
-  if (vel_w->cursor_state ==
-        UI_CURSOR_STATE_RESIZE_UP)
+  if (vel_w->resize)
     ar_prv->action = UI_OVERLAY_ACTION_RESIZING_UP;
   else
     ar_prv->action = UI_OVERLAY_ACTION_NONE;
@@ -230,26 +229,37 @@ midi_modifier_arranger_widget_resize_velocities (
   double ratio = px / height;
   ratio = 1.0 - ratio;
 
-  self->start_velocity->vel =
-    CLAMP (ratio * 127, 1, 127);
-  int diff = self->start_velocity->vel -
-    self->start_vel_val;
-  if (self->start_velocity->widget)
-    velocity_widget_update_tooltip (
-      self->start_velocity->widget, 1);
+  Velocity * vel = self->start_velocity;
+  vel =
+    velocity_get_main_trans_velocity (vel);
+  velocity_set_val (
+    vel, CLAMP (ratio * 127, 1, 127));
+  int diff = vel->vel - self->start_vel_val;
+  /*if (vel->widget)*/
+    /*velocity_widget_update_tooltip (*/
+      /*vel->widget, 1);*/
   /*g_message ("diff %d", diff);*/
-  for (int i = 0; i < self->num_velocities; i++)
+
+  for (int i = 0;
+       i < MA_SELECTIONS->num_midi_notes; i++)
     {
-      Velocity * vel = self->velocities[i];
+      vel =
+        MA_SELECTIONS->midi_notes[i]->vel;
       if (vel == self->start_velocity)
         continue;
-      vel->vel = CLAMP (vel->vel + diff, 1, 127);
-      g_message ("set vel to %d",
-                 vel->vel);
 
-      if (vel->widget)
-        velocity_widget_update_tooltip (
-          vel->widget, 1);
+      vel =
+        velocity_get_main_trans_velocity (vel);
+      velocity_set_val (
+        vel, CLAMP (vel->vel + diff, 1, 127));
+
+      /*g_message ("set val to %d (transient? %d)",*/
+                 /*vel->vel,*/
+                 /*velocity_is_transient (vel));*/
+
+      /*if (vel->widget)*/
+        /*velocity_widget_update_tooltip (*/
+          /*vel->widget, 1);*/
     }
 }
 
@@ -275,6 +285,10 @@ midi_modifier_arranger_widget_on_drag_end (
         velocity_widget_update_tooltip (
           vel->widget, 0);
     }
+
+  midi_modifier_arranger_widget_update_visibility (
+    self);
+
   self->start_velocity = NULL;
 
   ARRANGER_WIDGET_GET_PRIVATE (self);
@@ -284,6 +298,25 @@ midi_modifier_arranger_widget_on_drag_end (
         UI_OVERLAY_ACTION_STARTING_MOVING)
     {
       self->start_velocity = NULL;
+    }
+}
+
+/**
+ * Sets transient Velocity and actual Velocity
+ * visibility based on the current action.
+ */
+void
+midi_modifier_arranger_widget_update_visibility (
+  MidiModifierArrangerWidget * self)
+{
+  /* see ARRANGER_SET_OBJ_VISIBILITY_ARRAY */
+  Velocity * vel;
+  for (int i = 0;
+       i < MA_SELECTIONS->num_midi_notes; i++)
+    {
+      vel = MA_SELECTIONS->midi_notes[i]->vel;
+      arranger_object_info_set_widget_visibility_and_state (
+        &vel->obj_info, 1);
     }
 }
 
@@ -310,6 +343,7 @@ midi_modifier_arranger_widget_get_cursor (
   Tool            tool)
 {
   ArrangerCursor ac = ARRANGER_CURSOR_SELECT;
+  ARRANGER_WIDGET_GET_PRIVATE (self);
 
   switch (action)
     {
@@ -318,26 +352,20 @@ midi_modifier_arranger_widget_get_cursor (
            P_TOOL == TOOL_SELECT_STRETCH ||
            P_TOOL == TOOL_EDIT)
         {
-          MidiNoteWidget * mnw = NULL;
+          VelocityWidget * vw =
+            midi_modifier_arranger_widget_get_hit_velocity (
+              self,
+              ar_prv->hover_x,
+              ar_prv->hover_y);
 
           int is_hit =
-            mnw != NULL;
-          int is_resize_l =
-            mnw && mnw->resize_l;
-          int is_resize_r =
-            mnw && mnw->resize_r;
+            vw != NULL;
+          int is_resize =
+            vw && vw->resize;
 
-          if (is_hit && is_resize_l)
+          if (is_hit && is_resize)
             {
-              return ARRANGER_CURSOR_RESIZING_L;
-            }
-          else if (is_hit && is_resize_r)
-            {
-              return ARRANGER_CURSOR_RESIZING_R;
-            }
-          else if (is_hit)
-            {
-              return ARRANGER_CURSOR_GRAB;
+              return ARRANGER_CURSOR_RESIZING_UP;
             }
           else
             {
