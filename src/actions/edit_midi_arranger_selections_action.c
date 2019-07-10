@@ -30,7 +30,8 @@ UndoableAction *
 edit_midi_arranger_selections_action_new (
   MidiArrangerSelections * mas,
   EditMidiArrangerSelectionsType type,
-  long                     ticks)
+  long                     ticks,
+  int                      diff)
 {
 	EditMidiArrangerSelectionsAction * self =
     calloc (1, sizeof (
@@ -42,6 +43,7 @@ edit_midi_arranger_selections_action_new (
   self->mas = midi_arranger_selections_clone (mas);
   self->type = type;
   self->ticks = ticks;
+  self->diff = diff;
 
   return ua;
 }
@@ -78,6 +80,11 @@ edit_midi_arranger_selections_action_do (
           position_set_to_pos (
             &self->mas->midi_notes[i]->end_pos,
             &mn->end_pos);
+          break;
+        case EMAS_TYPE_VELOCITY_CHANGE:
+          /* change velocity */
+          velocity_set_val (
+            mn->vel, mn->vel->vel + self->diff);
           break;
         default:
           g_warn_if_reached ();
@@ -123,6 +130,11 @@ edit_midi_arranger_selections_action_undo (
             &self->mas->midi_notes[i]->end_pos,
             &mn->end_pos);
           break;
+        case EMAS_TYPE_VELOCITY_CHANGE:
+          /* change velocity */
+          velocity_set_val (
+            mn->vel, mn->vel->vel - self->diff);
+          break;
         default:
           g_warn_if_reached ();
           break;
@@ -142,6 +154,11 @@ edit_midi_arranger_selections_action_stringize (
       case EMAS_TYPE_RESIZE_L:
       case EMAS_TYPE_RESIZE_R:
         return g_strdup (_("Resize MIDI Note(s)"));
+      case EMAS_TYPE_VELOCITY_CHANGE:
+        if (self->mas->num_midi_notes == 1)
+          return g_strdup (_("Change Velocity"));
+        else if (self->mas->num_midi_notes > 1)
+          return g_strdup (_("Change Velocities"));
       default:
         g_return_val_if_reached (
           g_strdup (""));

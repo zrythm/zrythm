@@ -148,6 +148,7 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
   '-Werror=overflow',
   '-Werror=array-bounds',
   '-Werror=enum-compare',
+  '-Werror=misleading-indentation',
   ]
 else
   test_cflags = []

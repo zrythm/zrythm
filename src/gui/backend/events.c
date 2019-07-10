@@ -385,7 +385,6 @@ on_modulator_added (Modulator * modulator)
 static void
 on_plugins_removed (Channel * ch)
 {
-  g_message ("PLUGINS REMOVED");
   ChannelSlotWidget * csw;
   for (int i = 0; i < STRIP_SIZE; i++)
     {
@@ -408,6 +407,9 @@ on_midi_note_selection_changed ()
     gtk_widget_queue_draw (
       GTK_WIDGET (region->widget));
 
+  gtk_widget_queue_allocate (
+    GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
+
   piano_roll_selection_info_widget_refresh (
     MW_MAS_INFO, MA_SELECTIONS);
 }
@@ -423,13 +425,15 @@ on_midi_note_changed (MidiNote * midi_note)
           midi_note =
             midi_note_get_main_midi_note (
               midi_note);
+
+          /* select the velocities */
           for (int j = 0; j < 2; j++)
             {
               if (j == 0)
                 vel =
                   velocity_get_main_velocity (
                     midi_note->vel);
-              else if (j == 1);
+              else if (j == 1)
                 vel =
                   velocity_get_main_trans_velocity (
                     midi_note->vel);

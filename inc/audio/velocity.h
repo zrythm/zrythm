@@ -64,6 +64,10 @@ typedef struct Velocity
   /** Velocity value (0-127). */
   int              vel;
 
+  /** Cache velocity, used to save the values at
+   * the start of actions. */
+  int              cache_vel;
+
   /**
    * Owner.
    *
@@ -135,6 +139,14 @@ void
 velocity_set_midi_note (
   Velocity * velocity,
   MidiNote * midi_note);
+
+/**
+ * Sets the cached value for use in live actions.
+ */
+void
+velocity_set_cache_vel (
+  Velocity * velocity,
+  const int  vel);
 
 /**
  * Finds the actual Velocity in the project from the

@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/edit_midi_arranger_selections_action.h"
 #include "audio/midi_note.h"
 #include "audio/velocity.h"
 #include "gui/widgets/arranger.h"
@@ -31,6 +32,7 @@
 #include "gui/widgets/velocity.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 
 G_DEFINE_TYPE (MidiModifierArrangerWidget,
                midi_modifier_arranger_widget,
@@ -49,8 +51,13 @@ midi_modifier_arranger_widget_set_allocation (
 {
   if (Z_IS_VELOCITY_WIDGET (widget))
     {
-      VelocityWidget * vw = Z_VELOCITY_WIDGET (widget);
+      VelocityWidget * vw =
+        Z_VELOCITY_WIDGET (widget);
+
+      /* use transient or non transient note
+       * depending on which is visible */
       MidiNote * mn = vw->velocity->midi_note;
+      mn = midi_note_get_visible (mn);
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
@@ -151,10 +158,6 @@ midi_modifier_arranger_on_drag_begin_vel_hit (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   self->start_velocity = vel_w->velocity;
-  self->start_vel_val = self->start_velocity->vel;
-  array_append (self->velocities,
-                self->num_velocities,
-                vel_w->velocity);
 
   /* update arranger action */
   if (vel_w->resize)
@@ -162,25 +165,33 @@ midi_modifier_arranger_on_drag_begin_vel_hit (
   else
     ar_prv->action = UI_OVERLAY_ACTION_NONE;
 
-  /* select/ deselect midi_notes */
-  if (ar_prv->ctrl_held)
+  int selected =
+    velocity_is_selected (self->start_velocity);
+
+  MidiNote * mn = self->start_velocity->midi_note;
+
+  /* select midi note if unselected */
+  if (P_TOOL == TOOL_EDIT ||
+      P_TOOL == TOOL_SELECT_NORMAL ||
+      P_TOOL == TOOL_SELECT_STRETCH)
     {
-      /* if ctrl pressed toggle on/off */
-      ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-        MIDI_ARRANGER,
-        vel_w->velocity->midi_note, 1, 1);
-    }
-  else if (!array_contains (
-            (void **)self->velocities,
-           self->num_velocities,
-           vel_w->velocity))
-    {
-      /* else if not already selected select only it */
-      midi_arranger_widget_select_all (
-        MIDI_ARRANGER, 0);
-      ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-        MIDI_ARRANGER,
-        vel_w->velocity->midi_note, 1, 0);
+      /* if ctrl held & not selected, add to
+       * selections */
+      if (ar_prv->ctrl_held &&
+          !selected)
+        {
+          ARRANGER_WIDGET_SELECT_MIDI_NOTE (
+            self, mn, F_SELECT, F_APPEND);
+        }
+      /* if ctrl not held & not selected, make it
+       * the only
+       * selection */
+      else if (!ar_prv->ctrl_held &&
+               !selected)
+        {
+          ARRANGER_WIDGET_SELECT_MIDI_NOTE (
+            self, mn, F_SELECT, F_NO_APPEND);
+        }
     }
 }
 
@@ -225,41 +236,48 @@ midi_modifier_arranger_widget_resize_velocities (
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
-  double px = ar_prv->start_y + offset_y;
-  double ratio = px / height;
-  ratio = 1.0 - ratio;
+  double start_ratio =
+    1.0 - ar_prv->start_y / height;
+  double ratio =
+    1.0 - (ar_prv->start_y + offset_y) / height;
+  int start_val = start_ratio * 127;
+  int val = ratio * 127;
+  self->vel_diff = val - start_val;
 
-  Velocity * vel = self->start_velocity;
-  vel =
-    velocity_get_main_trans_velocity (vel);
-  velocity_set_val (
-    vel, CLAMP (ratio * 127, 1, 127));
-  int diff = vel->vel - self->start_vel_val;
+  /*Velocity * vel = self->start_velocity;*/
+  /*vel =*/
+    /*velocity_get_main_trans_velocity (vel);*/
+  /*velocity_set_val (*/
+    /*vel, CLAMP (ratio * 127, 1, 127));*/
+  /*int diff = vel->vel - self->start_vel_val;*/
+  /*self->vel_diff =*/
   /*if (vel->widget)*/
     /*velocity_widget_update_tooltip (*/
       /*vel->widget, 1);*/
   /*g_message ("diff %d", diff);*/
 
+  Velocity * vel;
   for (int i = 0;
        i < MA_SELECTIONS->num_midi_notes; i++)
     {
       vel =
         MA_SELECTIONS->midi_notes[i]->vel;
-      if (vel == self->start_velocity)
-        continue;
 
       vel =
         velocity_get_main_trans_velocity (vel);
       velocity_set_val (
-        vel, CLAMP (vel->vel + diff, 1, 127));
+        vel,
+        CLAMP (
+          vel->cache_vel + self->vel_diff,
+          1, 127));
 
       /*g_message ("set val to %d (transient? %d)",*/
                  /*vel->vel,*/
                  /*velocity_is_transient (vel));*/
 
-      /*if (vel->widget)*/
-        /*velocity_widget_update_tooltip (*/
-          /*vel->widget, 1);*/
+      if (vel->widget)
+        velocity_widget_update_tooltip (
+          vel->widget, 1);
     }
 }
 
@@ -273,25 +291,42 @@ void
 midi_modifier_arranger_widget_on_drag_end (
   MidiModifierArrangerWidget * self)
 {
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  MidiNote * midi_note;
+  Velocity * vel;
   for (int i = 0;
-       i < self->num_velocities;
+       i < MA_SELECTIONS->num_midi_notes;
        i++)
     {
-      Velocity * vel =
-        self->velocities[i];
-      ui_set_cursor_from_name (
-        GTK_WIDGET (vel->widget), "default");
+      midi_note =
+        MA_SELECTIONS->midi_notes[i];
+      vel = midi_note->vel;
+
       if (vel->widget)
         velocity_widget_update_tooltip (
           vel->widget, 0);
+
+      EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
+                   midi_note);
     }
 
   midi_modifier_arranger_widget_update_visibility (
     self);
 
-  self->start_velocity = NULL;
+  if (ar_prv->action ==
+        UI_OVERLAY_ACTION_RESIZING_UP)
+    {
+      UndoableAction * ua =
+        (UndoableAction *)
+        emas_action_new_vel_change (
+          MA_SELECTIONS,
+          self->vel_diff);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
 
-  ARRANGER_WIDGET_GET_PRIVATE (self);
+  self->start_velocity = NULL;
 
   /* if didn't click on something */
   if (ar_prv->action !=

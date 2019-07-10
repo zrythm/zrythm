@@ -450,6 +450,9 @@ region_get_num_loops (
 ARRANGER_OBJ_DECLARE_SHIFT_TICKS (
   Region, region);
 
+ARRANGER_OBJ_DECLARE_GET_VISIBLE (
+  Region, region);
+
 /**
  * Resizes the region on the left side or right side
  * by given amount of ticks.

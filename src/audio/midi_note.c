@@ -347,6 +347,9 @@ midi_note_set_cache_end_pos (
   SET_POS (midi_note, cache_end_pos, pos, 0);
 }
 
+ARRANGER_OBJ_DEFINE_GET_VISIBLE (
+  MidiNote, midi_note);
+
 /**
  * Shifts MidiNote's position and/or value.
  */

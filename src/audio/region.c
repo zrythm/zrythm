@@ -250,6 +250,9 @@ region_find_midi_note (
 DEFINE_ARRANGER_OBJ_SET_POSES_W_LENGTH (
   Region, region);
 
+ARRANGER_OBJ_DEFINE_GET_VISIBLE (
+  Region, region);
+
 /**
  * Generate a RegionWidget for the Region and all
  * its counterparts.

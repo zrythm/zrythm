@@ -41,20 +41,23 @@ typedef struct _VelocityWidget VelocityWidget;
 
 typedef struct _MidiModifierArrangerWidget
 {
-  ArrangerWidget           parent_instance;
+  ArrangerWidget parent_instance;
+
+  /** Clicked Velocity. */
+  Velocity *     start_velocity;
+
+  /** 1-127. */
+  int            start_vel_val;
 
   /**
-   * Velocities doing action upon.
+   * Maximum Velocity diff applied in this action.
+   *
+   * Used in drag_end to create an UndableAction.
+   * This can have any value, even greater than 127
+   * and it will be clamped when applying it to
+   * a Velocity.
    */
-  Velocity *               velocities[600];
-  int                      num_velocities;
-  Velocity *               start_velocity; ///< clicked velocity
-  /** 1-127 */
-  int                      start_vel_val;
-
-  /* temporary start positions, set on drag_begin, and used in drag_update
-   * to resize the objects accordingly */
-  int                      velocity_start_values[600];
+  int            vel_diff;
 } MidiModifierArrangerWidget;
 
 /**

@@ -1344,6 +1344,18 @@ drag_begin (GtkGestureDrag *   gesture,
         MA_SELECTIONS);
       ar_prv->earliest_obj_exists = 1;
     }
+  else if (midi_modifier_arranger &&
+           midi_arranger_selections_has_any (
+             MA_SELECTIONS))
+    {
+      midi_arranger_selections_get_start_pos (
+        MA_SELECTIONS,
+        &ar_prv->earliest_obj_start_pos,
+        0, 1);
+      midi_arranger_selections_set_cache_poses (
+        MA_SELECTIONS);
+      ar_prv->earliest_obj_exists = 1;
+    }
   else
     {
       ar_prv->earliest_obj_exists = 0;

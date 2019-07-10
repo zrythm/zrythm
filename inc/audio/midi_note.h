@@ -223,6 +223,9 @@ midi_note_is_equal (
 void
 midi_note_delete (MidiNote * midi_note);
 
+ARRANGER_OBJ_DECLARE_GET_VISIBLE (
+  MidiNote, midi_note);
+
 /**
  * Resizes the MidiNote on the left side or right side
  * by given amount of ticks.

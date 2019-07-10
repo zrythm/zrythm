@@ -85,8 +85,14 @@ midi_arranger_widget_set_allocation (
       MidiNoteWidget * midi_note_widget =
         Z_MIDI_NOTE_WIDGET (widget);
       MidiNote * mn = midi_note_widget->midi_note;
+
+      /* use transient or non transient region
+       * depending on which is visible */
+      Region * region = mn->region;
+      region = region_get_visible (region);
+
       long region_start_ticks =
-        mn->region->start_pos.total_ticks;
+        region->start_pos.total_ticks;
       Position tmp;
       int adj_px_per_key =
         MW_PIANO_ROLL->px_per_key + 1;
@@ -965,9 +971,8 @@ midi_arranger_widget_on_drag_end (
           MA_SELECTIONS->midi_notes[0]);
       UndoableAction * ua =
         (UndoableAction *)
-        edit_midi_arranger_selections_action_new (
+        emas_action_new_resize_l (
           MA_SELECTIONS,
-          EMAS_TYPE_RESIZE_L,
           trans_note->start_pos.total_ticks -
           main_note->start_pos.total_ticks);
       undo_manager_perform (
@@ -983,9 +988,8 @@ midi_arranger_widget_on_drag_end (
           MA_SELECTIONS->midi_notes[0]);
       UndoableAction * ua =
         (UndoableAction *)
-        edit_midi_arranger_selections_action_new (
+        emas_action_new_resize_r (
           MA_SELECTIONS,
-          EMAS_TYPE_RESIZE_R,
           trans_note->end_pos.total_ticks -
           main_note->end_pos.total_ticks);
       undo_manager_perform (
@@ -1059,7 +1063,6 @@ midi_arranger_widget_on_drag_end (
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_CREATING_RESIZING_R)
     {
-      g_message ("ATTEMPTING TO CREATE");
       UndoableAction * ua =
         (UndoableAction *)
         create_midi_arranger_selections_action_new (

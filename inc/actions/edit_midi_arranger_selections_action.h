@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * UndoableAction for MidiArrangerSelections edits.
+ */
+
 #ifndef __UNDO_EDIT_MA_SELECTIONS_ACTION_H__
 #define __UNDO_EDIT_MA_SELECTIONS_ACTION_H__
 
@@ -25,12 +31,25 @@
 typedef struct MidiArrangerSelections
   MidiArrangerSelections;
 
+/**
+ * @addtogroup actions
+ *
+ * @{
+ */
+
+/**
+ * Type of action.
+ */
 typedef enum EditMidiArrangerSelectionsType
 {
   EMAS_TYPE_RESIZE_L,
   EMAS_TYPE_RESIZE_R,
+  EMAS_TYPE_VELOCITY_CHANGE,
 } EditMidiArrangerSelectionsType;
 
+/**
+ * The UndoableAction.
+ */
 typedef struct EditMidiArrangerSelectionsAction
 {
   UndoableAction              parent_instance;
@@ -44,13 +63,45 @@ typedef struct EditMidiArrangerSelectionsAction
   /** Ticks when resizing. */
   long                   ticks;
 
+  /** Difference for velocity changes, etc. */
+  int                    diff;
+
 } EditMidiArrangerSelectionsAction;
 
+/**
+ * Simple way to create an action for Velocity
+ * change.
+ */
+#define emas_action_new_vel_change( \
+  mas, diff) \
+  edit_midi_arranger_selections_action_new ( \
+    mas, EMAS_TYPE_VELOCITY_CHANGE, -1, diff)
+
+/**
+ * Simple way to create an action for resizing L.
+ */
+#define emas_action_new_resize_l( \
+  mas, ticks) \
+  edit_midi_arranger_selections_action_new ( \
+    mas, EMAS_TYPE_RESIZE_L, ticks, -1)
+
+/**
+ * Simple way to create an action for resizing R.
+ */
+#define emas_action_new_resize_r( \
+  mas, ticks) \
+  edit_midi_arranger_selections_action_new ( \
+    mas, EMAS_TYPE_RESIZE_R, ticks, -1)
+
+/**
+ * Create the new action.
+ */
 UndoableAction *
 edit_midi_arranger_selections_action_new (
   MidiArrangerSelections * mas,
   EditMidiArrangerSelectionsType type,
-  long                     ticks);
+  long                     ticks,
+  int                      diff);
 
 int
 edit_midi_arranger_selections_action_do (

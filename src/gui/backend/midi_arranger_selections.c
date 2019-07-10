@@ -197,6 +197,10 @@ midi_arranger_selections_set_cache_poses (
       /* set end pos for midi note */
       midi_note_set_cache_end_pos (
         mn, &mn->end_pos);
+
+      /* set cache velocity */
+      velocity_set_cache_vel (
+        mn->vel, mn->vel->vel);
     }
 }
 

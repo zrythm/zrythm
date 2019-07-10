@@ -230,15 +230,15 @@ velocity_widget_update_tooltip (
     GTK_WIDGET (self), tooltip);
 
   /* set tooltip window */
-  if (show)
-    {
-      gtk_label_set_text (self->tooltip_label,
-                          tooltip);
-      gtk_window_present (self->tooltip_win);
-    }
-  else
-    gtk_widget_hide (
-      GTK_WIDGET (self->tooltip_win));
+  /*if (show)*/
+    /*{*/
+      /*gtk_label_set_text (self->tooltip_label,*/
+                          /*tooltip);*/
+      /*gtk_window_present (self->tooltip_win);*/
+    /*}*/
+  /*else*/
+    /*gtk_widget_hide (*/
+      /*GTK_WIDGET (self->tooltip_win));*/
 
   g_free (tooltip);
 }

@@ -439,5 +439,30 @@
     sc##_free (self); \
   }
 
+/**
+ * Returns the visible counterpart (ie, the
+ * transient or the non transient) of the object.
+ *
+ * Used for example when moving a Region to
+ * allocate the MidiNote's based on the transient
+ * Region's position instead of the main Region.
+ *
+ * Only checks the main/main-trans.
+ */
+#define ARRANGER_OBJ_DECLARE_GET_VISIBLE( \
+  cc, sc) \
+  cc * \
+  sc##_get_visible (cc * self)
+#define ARRANGER_OBJ_DEFINE_GET_VISIBLE( \
+  cc, sc) \
+  cc * \
+  sc##_get_visible (cc * self) \
+  { \
+    self = sc##_get_main_##sc (self); \
+    if (!arranger_object_info_should_be_visible ( \
+          &self->obj_info)) \
+      self = sc##_get_main_trans_##sc (self);\
+    return self; \
+  }
 
 #endif

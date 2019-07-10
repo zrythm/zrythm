@@ -131,6 +131,21 @@ velocity_is_equal (
 }
 
 /**
+ * Sets the cached value for use in live actions.
+ */
+void
+velocity_set_cache_vel (
+  Velocity * velocity,
+  const int  vel)
+{
+  /* see ARRANGER_OBJ_SET_POS */
+  velocity_get_main_velocity (velocity)->
+    cache_vel = vel;
+  velocity_get_main_trans_velocity (velocity)->
+    cache_vel = vel;
+}
+
+/**
  * Sets the velocity to the given value.
  */
 void
@@ -140,7 +155,7 @@ velocity_set_val (
 {
   /* re-set the midi note value to set a note off
    * event */
-  self->vel = val;
+  self->vel = CLAMP (val, 0, 127);
   midi_note_set_val (self->midi_note,
                      self->midi_note->val);
 }
