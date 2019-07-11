@@ -225,6 +225,83 @@ midi_modifier_arranger_widget_show_context_menu (
   /* TODO */
 }
 
+/**
+ * Draws a ramp from the start coordinates to the
+ * given coordinates.
+ */
+void
+midi_modifier_arranger_widget_ramp (
+  MidiModifierArrangerWidget * self,
+  double                       offset_x,
+  double                       offset_y)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  Position selection_start_pos, selection_end_pos;
+  ui_px_to_pos_piano_roll (
+    ar_prv->start_x,
+    offset_x >= 0 ?
+      &selection_start_pos :
+      &selection_end_pos,
+    F_PADDING);
+  ui_px_to_pos_piano_roll (
+    ar_prv->start_x + offset_x,
+    offset_x >= 0 ?
+      &selection_end_pos :
+      &selection_start_pos,
+    F_PADDING);
+
+  /* find enclosed velocities */
+  Velocity * velocities[800];
+  int        num_velocities = 0;
+  track_get_velocities_in_range (
+    region_get_track (CLIP_EDITOR->region),
+    &selection_start_pos,
+    &selection_end_pos,
+    velocities,
+    &num_velocities);
+
+  /* ramp */
+  Velocity * vel;
+  int px, val;
+  double y1, y2, x1, x2;
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+  Position start_pos;
+  for (int i = 0; i < num_velocities; i++)
+    {
+      vel = velocities[i];
+      midi_note_get_global_start_pos (
+        vel->midi_note, &start_pos);
+      px =
+        ui_pos_to_px_piano_roll (
+          &start_pos, F_PADDING);
+
+      x1 = ar_prv->start_x;
+      x2 = ar_prv->start_x + offset_x;
+      y1 = height - ar_prv->start_y;
+      y2 = height - (ar_prv->start_y + offset_y);
+      /*g_message ("x1 %f.0 x2 %f.0 y1 %f.0 y2 %f.0",*/
+                 /*x1, x2, y1, y2);*/
+
+      /* y = y1 + ((y2 - y1)/(x2 - x1))*(x - x1)
+       * http://stackoverflow.com/questions/2965144/ddg#2965188 */
+      /* get val in pixels */
+      val =
+        y1 + ((y2 - y1)/(x2 - x1))*(px - x1);
+
+      /* normalize and multiply by 127 to get
+       * velocity value */
+      val = ((double) val / height) * 127.0;
+      val = CLAMP (val, 1, 127);
+      /*g_message ("val %d", val);*/
+
+      velocity_set_val (
+        vel, val, AO_UPDATE_ALL);
+    }
+}
+
 void
 midi_modifier_arranger_widget_resize_velocities (
   MidiModifierArrangerWidget * self,
@@ -453,6 +530,10 @@ midi_modifier_arranger_widget_get_cursor (
     case UI_OVERLAY_ACTION_SELECTING:
       ac = ARRANGER_CURSOR_SELECT;
       /* TODO depends on tool */
+      break;
+    case UI_OVERLAY_ACTION_STARTING_RAMP:
+    case UI_OVERLAY_ACTION_RAMPING:
+      ac = ARRANGER_CURSOR_RAMP;
       break;
     default:
       g_warn_if_reached ();

@@ -245,16 +245,28 @@ arranger_bg_widget_draw_selections (
 
   /* if action is selecting and not selecting range
    * (in the case of timeline */
-  if (ar_prv->action ==
-        UI_OVERLAY_ACTION_SELECTING ||
-      ar_prv->action ==
-        UI_OVERLAY_ACTION_DELETE_SELECTING)
+  switch (ar_prv->action)
     {
-      z_cairo_draw_selection (cr,
-                              ar_prv->start_x,
-                              ar_prv->start_y,
-                              offset_x,
-                              offset_y);
+    case UI_OVERLAY_ACTION_SELECTING:
+    case UI_OVERLAY_ACTION_DELETE_SELECTING:
+      z_cairo_draw_selection (
+        cr, ar_prv->start_x, ar_prv->start_y,
+        offset_x, offset_y);
+      break;
+    case UI_OVERLAY_ACTION_RAMPING:
+      cairo_set_source_rgba (
+        cr, 0.9, 0.9, 0.9, 1.0);
+      cairo_set_line_width (cr, 2.0);
+      cairo_move_to (
+        cr, ar_prv->start_x, ar_prv->start_y);
+      cairo_line_to (
+        cr,
+        ar_prv->start_x + ar_prv->last_offset_x,
+        ar_prv->start_y + ar_prv->last_offset_y);
+      cairo_stroke (cr);
+      break;
+    default:
+      break;
     }
 }
 

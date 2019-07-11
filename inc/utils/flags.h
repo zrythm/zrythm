@@ -79,4 +79,7 @@
 #define F_MAIN 1
 #define F_NOT_MAIN 0
 
+#define F_PADDING 1
+#define F_NO_PADDING 0
+
 #endif

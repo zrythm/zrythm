@@ -322,6 +322,52 @@ track_set_muted (Track * track,
 }
 
 /**
+ * Fills in the array with all the velocities in
+ * the project that are within the positions given.
+ */
+void
+track_get_velocities_in_range (
+  Track *     track,
+  Position *  start_pos,
+  Position *  end_pos,
+  Velocity ** velocities,
+  int *       num_velocities)
+{
+  if (track->type != TRACK_TYPE_MIDI &&
+      track->type != TRACK_TYPE_INSTRUMENT)
+    return;
+
+  TrackLane * lane;
+  Region * region;
+  MidiNote * mn;
+  Position global_start_pos;
+  for (int i = 0; i < track->num_lanes; i++)
+    {
+      lane = track->lanes[i];
+      for (int j = 0; j < lane->num_regions; j++)
+        {
+          region = lane->regions[j];
+          for (int k = 0;
+               k < region->num_midi_notes; k++)
+            {
+              mn = region->midi_notes[k];
+              midi_note_get_global_start_pos (
+                mn, &global_start_pos);
+
+              if (position_is_after_or_equal (
+                    &global_start_pos, start_pos) &&
+                  position_is_before_or_equal (
+                    &global_start_pos, end_pos))
+                {
+                  velocities[(* num_velocities)++] =
+                    mn->vel;
+                }
+            }
+        }
+    }
+}
+
+/**
  * Sets track soloed, updates UI and optionally
  * adds the action to the undo stack.
  */

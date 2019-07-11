@@ -42,6 +42,7 @@
 #include "gui/widgets/chord_object.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/gtk/gtkeventcontrollermotion.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker.h"
@@ -60,7 +61,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
-#include "gui/widgets/gtk/gtkeventcontrollermotion.h"
+#include "gui/widgets/velocity.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
@@ -493,6 +494,11 @@ arranger_widget_get_hit_widgets_in_range (
         }
       else if (type == MARKER_WIDGET_TYPE &&
                Z_IS_MARKER_WIDGET (widget))
+        {
+          array[(*array_size)++] = widget;
+        }
+      else if (type == VELOCITY_WIDGET_TYPE &&
+               Z_IS_VELOCITY_WIDGET (widget))
         {
           array[(*array_size)++] = widget;
         }
@@ -1306,6 +1312,11 @@ drag_begin (GtkGestureDrag *   gesture,
               ar_prv->action =
                 UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
             }
+          else if (P_TOOL == TOOL_RAMP)
+            {
+              ar_prv->action =
+                UI_OVERLAY_ACTION_STARTING_RAMP;
+            }
         }
       /* double click */
       else if (ar_prv->n_press == 2)
@@ -1382,8 +1393,6 @@ drag_update (
   ArrangerWidget * self)
 {
   GET_PRIVATE;
-
-  g_message ("resizing y %f", offset_y);
 
   /* state mask needs to be updated */
   UI_GET_STATE_MASK (gesture);
@@ -1477,11 +1486,15 @@ drag_update (
            !ar_prv->ctrl_held)
     ar_prv->action =
       UI_OVERLAY_ACTION_MOVING;
+  else if (ar_prv->action ==
+        UI_OVERLAY_ACTION_STARTING_RAMP)
+    ar_prv->action =
+      UI_OVERLAY_ACTION_RAMPING;
 
   /* if drawing a selection */
-  if (ar_prv->action ==
-        UI_OVERLAY_ACTION_SELECTING)
+  switch (ar_prv->action)
     {
+    case UI_OVERLAY_ACTION_SELECTING:
       /* find and select objects inside selection */
       if (timeline)
         {
@@ -1511,11 +1524,8 @@ drag_update (
         {
           /* TODO */
         }
-    } /* endif UI_OVERLAY_ACTION_SELECTING */
-
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_DELETE_SELECTING)
-    {
+      break;
+    case UI_OVERLAY_ACTION_DELETE_SELECTING:
       /* find and delete objects inside
        * selection */
       if (timeline)
@@ -1546,11 +1556,8 @@ drag_update (
         {
           /* TODO */
         }
-    } /* endif UI_OVERLAY_ACTION_DELETE_SELECTING */
-
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_RESIZING_L)
-    {
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_L:
       /* snap selections based on new pos */
       if (timeline)
         {
@@ -1580,18 +1587,13 @@ drag_update (
               midi_arranger,
               &ar_prv->curr_pos, 0);
         }
-    } /* endif RESIZING_L */
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_STRETCHING_L)
-    {
+      break;
+    case UI_OVERLAY_ACTION_STRETCHING_L:
       /* TODO */
       g_message ("stretching L");
-    } /* endif STRETCHING_L */
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_RESIZING_R ||
-           ar_prv->action ==
-             UI_OVERLAY_ACTION_CREATING_RESIZING_R)
-    {
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R:
+    case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
       if (timeline)
         {
           if (timeline->resizing_range)
@@ -1625,15 +1627,11 @@ drag_update (
               midi_arranger,
               &ar_prv->curr_pos, 0);
         }
-    } /*endif RESIZING_R */
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_STRETCHING_R)
-    {
+      break;
+    case UI_OVERLAY_ACTION_STRETCHING_R:
       g_message ("stretching R");
-    } /*endif STRETCHING_R */
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_RESIZING_UP)
-    {
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_UP:
       if (midi_modifier_arranger)
         {
           midi_modifier_arranger_widget_update_visibility (
@@ -1642,13 +1640,8 @@ drag_update (
             midi_modifier_arranger,
             offset_y);
         }
-    }
-  /* if moving the selection */
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING ||
-           ar_prv->action ==
-             UI_OVERLAY_ACTION_CREATING_MOVING)
-    {
+    case UI_OVERLAY_ACTION_MOVING:
+    case UI_OVERLAY_ACTION_CREATING_MOVING:
       if (timeline)
         {
           timeline_arranger_widget_update_visibility (
@@ -1676,11 +1669,8 @@ drag_update (
             offset_y);
           auto_scroll (self);
         }
-    } /* endif MOVING */
-  /* if copy-moving the selection */
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING_COPY)
-    {
+      break;
+    case UI_OVERLAY_ACTION_MOVING_COPY:
       if (timeline)
         {
           timeline_arranger_widget_update_visibility (
@@ -1708,18 +1698,40 @@ drag_update (
             offset_y);
           /*auto_scroll(self);*/
         }
-    } /* endif MOVING_COPY */
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_AUTOFILLING)
-    {
+      break;
+    case UI_OVERLAY_ACTION_AUTOFILLING:
       /* TODO */
       g_message ("autofilling");
-    }
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_AUDITIONING)
-    {
+      break;
+    case UI_OVERLAY_ACTION_AUDITIONING:
       /* TODO */
       g_message ("auditioning");
+      break;
+    case UI_OVERLAY_ACTION_RAMPING:
+      /* find and select objects inside selection */
+      if (timeline)
+        {
+          /* TODO */
+        }
+      else if (midi_arranger)
+        {
+          /* TODO */
+        }
+      else if (midi_modifier_arranger)
+        {
+          midi_modifier_arranger_widget_ramp (
+            midi_modifier_arranger,
+            offset_x,
+            offset_y);
+        }
+      else if (audio_arranger)
+        {
+          /* TODO */
+        }
+      break;
+    default:
+      /* TODO */
+      break;
     }
 
   /* update last offsets */

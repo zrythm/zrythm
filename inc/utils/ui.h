@@ -183,6 +183,9 @@ typedef enum UiOverlayAction
    * touches the selection. */
   UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION,
   UI_OVERLAY_ACTION_DELETE_SELECTING,
+
+  UI_OVERLAY_ACTION_STARTING_RAMP,
+  UI_OVERLAY_ACTION_RAMPING,
 } UiOverlayAction;
 
 #define ui_set_pointer_cursor(widget) \

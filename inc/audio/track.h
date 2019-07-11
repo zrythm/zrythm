@@ -499,6 +499,18 @@ track_set_pos (
   int     pos);
 
 /**
+ * Fills in the array with all the velocities in
+ * the project that are within the positions given.
+ */
+void
+track_get_velocities_in_range (
+  Track *     track,
+  Position *  start_pos,
+  Position *  end_pos,
+  Velocity ** array,
+  int *       num_velocities);
+
+/**
  * Getter for the track name.
  */
 const char *

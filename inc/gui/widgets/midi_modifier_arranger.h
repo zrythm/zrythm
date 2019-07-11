@@ -149,6 +149,16 @@ midi_modifier_arranger_widget_setup (
   MidiModifierArrangerWidget * self);
 
 /**
+ * Draws a ramp from the start coordinates to the
+ * given coordinates.
+ */
+void
+midi_modifier_arranger_widget_ramp (
+  MidiModifierArrangerWidget * self,
+  double                       offset_x,
+  double                       offset_y);
+
+/**
  * Readd children.
  */
 void
