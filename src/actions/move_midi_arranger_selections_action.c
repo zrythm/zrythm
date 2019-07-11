@@ -45,6 +45,7 @@ move_midi_arranger_selections_action_new (
   self->mas = midi_arranger_selections_clone (mas);
   self->delta = delta;
   self->ticks = ticks;
+  self->first_call = 1;
 
   return ua;
 }
@@ -56,25 +57,31 @@ move_midi_arranger_selections_action_do (
   MidiNote * mn;
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
-      /* find actual midi note */
-      mn = midi_note_find (self->mas->midi_notes[i]);
-      g_return_val_if_fail (mn, -1);
+      if (!self->first_call)
+        {
+          /* find actual midi note */
+          mn = midi_note_find (
+            self->mas->midi_notes[i]);
+          g_return_val_if_fail (mn, -1);
 
-      /* shift it */
-      midi_note_shift_by_ticks (
-        mn, self->ticks, AO_UPDATE_ALL);
-      midi_note_shift_pitch (
-        mn, self->delta, AO_UPDATE_ALL);
+          /* shift it */
+          midi_note_shift_by_ticks (
+            mn, self->ticks, AO_UPDATE_ALL);
+          midi_note_shift_pitch (
+            mn, self->delta, AO_UPDATE_ALL);
 
-      /* shift the clone too so they can match */
-      mn = self->mas->midi_notes[i];
-      midi_note_shift_by_ticks (
-        mn, self->ticks, AO_UPDATE_THIS);
-      midi_note_shift_pitch (
-        mn, self->delta, AO_UPDATE_THIS);
+          /* shift the clone too so they can match */
+          mn = self->mas->midi_notes[i];
+          midi_note_shift_by_ticks (
+            mn, self->ticks, AO_UPDATE_THIS);
+          midi_note_shift_pitch (
+            mn, self->delta, AO_UPDATE_THIS);
+        }
     }
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);
+
+  self->first_call = 0;
 
   return 0;
 }

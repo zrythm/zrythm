@@ -67,7 +67,7 @@ typedef struct EditMidiArrangerSelectionsAction
   int                    diff;
 
   /** If this is the first time calling do. */
-  int                    first_time;
+  int                    first_call;
 
 } EditMidiArrangerSelectionsAction;
 

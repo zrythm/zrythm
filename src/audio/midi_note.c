@@ -228,6 +228,18 @@ midi_note_get_global_start_pos (
       &self->region->start_pos));
 }
 
+void
+midi_note_set_cache_val (
+  MidiNote * self,
+  int        val)
+{
+  /* see ARRANGER_OBJ_SET_POS */
+  midi_note_get_main_midi_note (self)->
+    cache_val = val;
+  midi_note_get_main_trans_midi_note (self)->
+    cache_val = val;
+}
+
 /**
  * Sets the pitch of the MidiNote.
  */

@@ -45,6 +45,7 @@ move_timeline_selections_action_new (
   self->ts = timeline_selections_clone (ts);
   self->delta = delta;
   self->ticks = ticks;
+  self->first_call = 1;
 
   return ua;
 }
@@ -73,19 +74,24 @@ move_timeline_selections_action_do (
 #define SHIFT_OBJ_POSITIVE(cc,sc) \
   SHIFT_OBJ (cc, sc, self->ticks)
 
-  SHIFT_OBJ_POSITIVE (
-    Region, region);
-  SHIFT_OBJ_POSITIVE (
-    ChordObject, chord_object);
-  SHIFT_OBJ_POSITIVE (
-    ScaleObject, scale_object);
-  SHIFT_OBJ_POSITIVE (
-    Marker, marker);
-  SHIFT_OBJ_POSITIVE (
-    AutomationPoint, automation_point);
+  if (!self->first_call)
+    {
+      SHIFT_OBJ_POSITIVE (
+        Region, region);
+      SHIFT_OBJ_POSITIVE (
+        ChordObject, chord_object);
+      SHIFT_OBJ_POSITIVE (
+        ScaleObject, scale_object);
+      SHIFT_OBJ_POSITIVE (
+        Marker, marker);
+      SHIFT_OBJ_POSITIVE (
+        AutomationPoint, automation_point);
+    }
 
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
+
+  self->first_call = 0;
 
   return 0;
 }

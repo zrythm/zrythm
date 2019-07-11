@@ -198,6 +198,9 @@ midi_arranger_selections_set_cache_poses (
       midi_note_set_cache_end_pos (
         mn, &mn->end_pos);
 
+      midi_note_set_cache_val (
+        mn, mn->val);
+
       /* set cache velocity */
       velocity_set_cache_vel (
         mn->vel, mn->vel->vel);
@@ -434,15 +437,14 @@ midi_arranger_selections_get_last_midi_note (
  * @param use_cached_pos Add the ticks to the cached
  *   Position's instead of the current Position's.
  * @param ticks Ticks to add.
- * @param transients_only Only update transient
- *   objects (eg. when copy-moving).
+ * @param update_flag ArrangerObjectUpdateFlag.
  */
 void
 midi_arranger_selections_add_ticks (
   MidiArrangerSelections * mas,
   long                 ticks,
   int                  use_cached_pos,
-  int                  transients_only)
+  ArrangerObjectUpdateFlag update_flag)
 {
   int i;
 
@@ -451,8 +453,8 @@ midi_arranger_selections_add_ticks (
   for (i = 0; i < mas->num_midi_notes; i++)
     {
       mn = mas->midi_notes[i];
-      midi_note_move (mn, ticks, use_cached_pos,
-                      transients_only);
+      midi_note_move (
+        mn, ticks, use_cached_pos, update_flag);
     }
 }
 

@@ -11,27 +11,72 @@ It is written in C and uses the GTK+3 toolkit, with bits and pieces taken from o
 
 More info at https://www.zrythm.org
 
-## Current state
+# Current state
+
+Zrythm is currently in alpha.
 ![screenshot 1](https://www.zrythm.org/static/images/may_28_2019.png)
 ![screenshot 2](https://www.zrythm.org/static/images/may_28_2019_2.png)
 
-## Currently supported protocols:
+## Currently supported plugin protocols:
 - LV2
 
-## Installation
-For easy package installation see [Installation](https://manual.zrythm.org/en/configuration/installation/intro.html) in the Manual.
+# Building
 
-For manual installation,
+The project uses meson, so the steps are
 
     meson _build
-    meson install -C _build
+    ninja -C _build
 
-For more details and for installing in non-standard locations see [CONTRIBUTING.md](CONTRIBUTING.md).
+## Dependencies
+### Required
+TODO make this a table (name|arch pkg name|license|upstream URL|use)
+- GTK+3 (library GPLv2+): https://gitlab.gnome.org/GNOME/gtk
+- jack (LGPLv2.1+): http://jackaudio.org/
+- lv2 (ISC): http://lv2plug.in/
+- lilv (ISC): https://drobilla.net/software/lilv
+- libsndfile (LGPLv3): http://www.mega-nerd.com/libsndfile
+- libyaml
+- libsamplerate (2-clause BSD): http://www.mega-nerd.com/libsamplerate
+
+### Optional
+- portaudio (MIT): www.portaudio.com/
+- ffmpeg (LGPL 2.1+, GPL 2+): https://ffmpeg.org/
+- Qt5
+
+## Installation
+Once the program is built, it will need to be installed the first time before it can run (to install the GSettings)
+
+    ninja -C _build install
+
+Alternatively if you don't want to install anything on your system you can run `glib-compile-schemas data/` and then run zrythm using `GSETTINGS_SCHEMA_DIR=data ./_build/src/zrythm`. The built program will be at `_build/src/zrythm` by default
+
+## Non-standard locations
+
+When installing in non-standard locations, glib
+needs to find the gsettings schema. By default,
+it looks in /usr and /usr/share.
+It is possible to set
+the `GSETTINGS_SCHEMA_DIR` environment variable to
+`<your prefix>/share/glib-2.0/schemas` or prepend
+`XDG_DATA_DIRS` with `<your prefix>/share` before
+running `<your prefix>/bin/zrythm` to make glib
+use the schema installed in the custom location.
+
+There are also translations installed in the custom
+location so XDG_DATA_DIRS might be a better idea.
+
+Generally, we recommend installing under /usr or
+/usr/local (default) to avoid these problems.
+
+## Packages
+For easy package installation use the download
+links on the website or see
+[Installation](https://manual.zrythm.org/en/configuration/installation/intro.html) in the manual.
 
 ## Using
 At the moment, Zrythm works with Jack (recommended) and ALSA. For Jack setup instructions see https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack
 
-Please refer to the [manual](https://manual.zrythm.org) for more information.
+For more information see the [manual](https://manual.zrythm.org).
 
 ## Contributing
 For contributing guidelines see [CONTRIBUTING.md](CONTRIBUTING.md). Be sure to take a look at the
@@ -41,7 +86,7 @@ For any bugs please raise an issue or join a chatroom below
 
 ## Chatrooms
 ### Matrix/IRC (Freenode)
-`#zrythm` channel (for Matrix users `#freenode_#zrythm:matrix.org`)
+`#zrythm` channel (for Matrix users `#zrythmdaw:matrix.org`)
 
 ## Mailing lists
 zrythm-dev@nongnu.org for developers, zrythm-user@nongnu.org for users

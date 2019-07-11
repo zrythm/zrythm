@@ -35,6 +35,8 @@ typedef struct MoveTimelineSelectionsAction
   /** Tracks moved. */
   int         delta;
 
+  int         first_call;
+
   /** Timeline selections clone. */
   TimelineSelections * ts;
 } MoveTimelineSelectionsAction;

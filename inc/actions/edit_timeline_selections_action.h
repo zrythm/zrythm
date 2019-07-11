@@ -73,6 +73,10 @@ typedef struct EditTimelineSelectionsAction
   /** Position, when changing a Position. */
   Position             pos;
 
+  /** If this is 1, the first "do" call does
+   * nothing. */
+  int                  first_call;
+
   /** Amount to resize in ticks (negative for
    * backwards), if resizing. */
   long                 ticks;

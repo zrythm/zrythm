@@ -1826,7 +1826,9 @@ timeline_arranger_widget_move_items_x (
 {
   timeline_selections_add_ticks (
     TL_SELECTIONS, ticks_diff, F_USE_CACHED,
-    AO_UPDATE_TRANS);
+    copy_moving ?
+      AO_UPDATE_TRANS :
+      AO_UPDATE_ALL);
 
   /* for MIDI arranger ruler */
   EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED,
@@ -2135,8 +2137,6 @@ timeline_arranger_widget_on_drag_end (
     {
       if (!self->resizing_range)
         {
-          Region * main_region =
-            TL_SELECTIONS->regions[0]->obj_info.main;
           Region * main_trans_region =
             TL_SELECTIONS->regions[0]->obj_info.
               main_trans;
@@ -2148,7 +2148,8 @@ timeline_arranger_widget_on_drag_end (
               position_to_ticks (
                 &main_trans_region->start_pos) -
               position_to_ticks (
-                &main_region->start_pos),
+                &main_trans_region->
+                  cache_start_pos),
               NULL, NULL);
           undo_manager_perform (
             UNDO_MANAGER, ua);
@@ -2159,8 +2160,6 @@ timeline_arranger_widget_on_drag_end (
     {
       if (!self->resizing_range)
         {
-          Region * main_region =
-            TL_SELECTIONS->regions[0]->obj_info.main;
           Region * main_trans_region =
             TL_SELECTIONS->regions[0]->obj_info.
               main_trans;
@@ -2172,7 +2171,7 @@ timeline_arranger_widget_on_drag_end (
               position_to_ticks (
                 &main_trans_region->end_pos) -
               position_to_ticks (
-                &main_region->end_pos),
+                &main_trans_region->cache_end_pos),
               NULL, NULL);
           undo_manager_perform (
             UNDO_MANAGER, ua);

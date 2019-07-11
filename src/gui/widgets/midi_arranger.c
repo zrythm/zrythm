@@ -854,7 +854,9 @@ midi_arranger_widget_move_items_x (
 {
   midi_arranger_selections_add_ticks (
     MA_SELECTIONS, ticks_diff, F_USE_CACHED,
-    copy_moving);
+    copy_moving ?
+      AO_UPDATE_TRANS :
+      AO_UPDATE_ALL);
 }
 
 
@@ -966,8 +968,6 @@ midi_arranger_widget_on_drag_end (
   if (ar_prv->action ==
         UI_OVERLAY_ACTION_RESIZING_L)
     {
-      MidiNote * main_note =
-        MA_SELECTIONS->midi_notes[0];
       MidiNote * trans_note =
         midi_note_get_main_trans_midi_note (
           MA_SELECTIONS->midi_notes[0]);
@@ -976,21 +976,19 @@ midi_arranger_widget_on_drag_end (
         emas_action_new_resize_l (
           MA_SELECTIONS,
           trans_note->start_pos.total_ticks -
-          main_note->start_pos.total_ticks);
+          trans_note->cache_start_pos.total_ticks);
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
   else if (ar_prv->action ==
         UI_OVERLAY_ACTION_RESIZING_R)
     {
-      /*MidiNote * main_note =*/
-        /*MA_SELECTIONS->midi_notes[0];*/
       MidiNote * trans_note =
         midi_note_get_main_trans_midi_note (
           MA_SELECTIONS->midi_notes[0]);
-      g_message ("posses");
-      position_print_simple (&trans_note->end_pos);
-      position_print_simple (&trans_note->cache_end_pos);
+      /*g_message ("posses");*/
+      /*position_print_simple (&trans_note->end_pos);*/
+      /*position_print_simple (&trans_note->cache_end_pos);*/
       UndoableAction * ua =
         (UndoableAction *)
         emas_action_new_resize_r (
@@ -1019,8 +1017,6 @@ midi_arranger_widget_on_drag_end (
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_MOVING)
     {
-      MidiNote * main_note =
-        MA_SELECTIONS->midi_notes[0];
       MidiNote * trans_note =
         midi_note_get_main_trans_midi_note (
           MA_SELECTIONS->midi_notes[0]);
@@ -1028,9 +1024,9 @@ midi_arranger_widget_on_drag_end (
         move_midi_arranger_selections_action_new (
           MA_SELECTIONS,
           trans_note->start_pos.total_ticks -
-            main_note->start_pos.total_ticks,
+            trans_note->cache_start_pos.total_ticks,
           trans_note->val -
-            main_note->val);
+            trans_note->cache_val);
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
@@ -1040,8 +1036,6 @@ midi_arranger_widget_on_drag_end (
            ar_prv->action ==
              UI_OVERLAY_ACTION_MOVING_LINK)
     {
-      MidiNote * main_note =
-        MA_SELECTIONS->midi_notes[0];
       MidiNote * trans_note =
         midi_note_get_main_trans_midi_note (
           MA_SELECTIONS->midi_notes[0]);
@@ -1050,9 +1044,9 @@ midi_arranger_widget_on_drag_end (
         duplicate_midi_arranger_selections_action_new (
           MA_SELECTIONS,
           trans_note->start_pos.total_ticks -
-            main_note->start_pos.total_ticks,
+            trans_note->cache_start_pos.total_ticks,
           trans_note->val -
-            main_note->val);
+            trans_note->cache_val);
       midi_arranger_selections_clear (
         MA_SELECTIONS);
       undo_manager_perform (

@@ -450,13 +450,19 @@ typedef enum ArrangerObjectUpdateFlag
   cc, sc) \
   ARRANGER_OBJ_DECLARE_FREE_ALL_LANELESS (cc, sc) \
   { \
-    sc##_free ( \
-      sc##_get_main_trans_##sc (self)); \
-    sc##_free ( \
-      (cc *) self->obj_info.lane); \
-    sc##_free ( \
-      (cc *) self->obj_info.lane_trans); \
-    sc##_free (self); \
+    cc * sc; \
+    sc = (cc *) self->obj_info.main; \
+    if (sc) \
+      sc##_free (sc); \
+    sc = (cc *) self->obj_info.main_trans; \
+    if (sc) \
+      sc##_free (sc); \
+    sc = (cc *) self->obj_info.lane; \
+    if (sc) \
+      sc##_free (sc); \
+    sc = (cc *) self->obj_info.lane_trans; \
+    if (sc) \
+      sc##_free (sc); \
   }
 
 /**

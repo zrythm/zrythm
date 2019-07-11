@@ -35,6 +35,8 @@ typedef struct MoveMidiArrangerSelectionsAction
   /** Delta of note value. */
   int         delta;
 
+  int         first_call;
+
   /** Clone of selections. */
   MidiArrangerSelections * mas;
 } MoveMidiArrangerSelectionsAction;

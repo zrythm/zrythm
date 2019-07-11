@@ -105,7 +105,12 @@ typedef struct MidiNote
   char *          region_name;
 
   Velocity *      vel;  ///< velocity
-  int             val; ///< note
+
+  /** The note/pitch, (0-127). */
+  int             val;
+
+  /** Cached note, for live operations. */
+  int             cache_val;
 
   /** Muted or not */
   int             muted;
@@ -214,6 +219,11 @@ MidiNote *
 midi_note_clone (
   MidiNote *  src,
   MidiNoteCloneFlag flag);
+
+void
+midi_note_set_cache_val (
+  MidiNote * self,
+  int        val);
 
 /**
  * Returns 1 if the MidiNotes match, 0 if not.

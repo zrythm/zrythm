@@ -45,7 +45,7 @@ edit_midi_arranger_selections_action_new (
   self->type = type;
   self->ticks = ticks;
   self->diff = diff;
-  self->first_time = 1;
+  self->first_call = 1;
 
   return ua;
 }
@@ -64,9 +64,12 @@ edit_midi_arranger_selections_action_do (
       switch (self->type)
         {
         case EMAS_TYPE_RESIZE_L:
-          /* resize */
-          midi_note_resize (
-            mn, 1, self->ticks, 1);
+          if (!self->first_call)
+            {
+              /* resize */
+              midi_note_resize (
+                mn, 1, self->ticks, AO_UPDATE_ALL);
+            }
 
           /* remember the new start pos for undoing */
           position_set_to_pos (
@@ -74,12 +77,15 @@ edit_midi_arranger_selections_action_do (
             &mn->start_pos);
           break;
         case EMAS_TYPE_RESIZE_R:
-          /* resize */
-          midi_note_resize (
-            mn, 0, self->ticks, 1);
+          if (!self->first_call)
+            {
+              /* resize */
+              midi_note_resize (
+                mn, 0, self->ticks, AO_UPDATE_ALL);
+            }
 
-          g_message ("after resize");
-          position_print_simple (&mn->end_pos);
+          /*g_message ("after resize");*/
+          /*position_print_simple (&mn->end_pos);*/
 
           /* remember the end pos for undoing */
           position_set_to_pos (
@@ -87,10 +93,13 @@ edit_midi_arranger_selections_action_do (
             &mn->end_pos);
           break;
         case EMAS_TYPE_VELOCITY_CHANGE:
-          /* change velocity */
-          velocity_set_val (
-            mn->vel, mn->vel->vel + self->diff,
-            AO_UPDATE_ALL);
+          if (!self->first_call)
+            {
+              /* change velocity */
+              velocity_set_val (
+                mn->vel, mn->vel->vel + self->diff,
+                AO_UPDATE_ALL);
+            }
           break;
         default:
           g_warn_if_reached ();
@@ -100,7 +109,7 @@ edit_midi_arranger_selections_action_do (
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);
 
-  self->first_time = 0;
+  self->first_call = 0;
 
   return 0;
 }

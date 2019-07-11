@@ -49,6 +49,7 @@ edit_timeline_selections_action_new (
   if (pos)
     position_set_to_pos (
       &self->pos, pos);
+  self->first_call = 1;
 
   return ua;
 }
@@ -82,14 +83,22 @@ edit_timeline_selections_action_do (
       switch (self->type)
         {
         case ETS_RESIZE_L:
-          /* resize */
-          region_resize (
-            region, 1, self->ticks, AO_UPDATE_ALL);
+          if (!self->first_call)
+            {
+              /* resize */
+              region_resize (
+                region, 1, self->ticks,
+                AO_UPDATE_ALL);
+            }
           break;
         case ETS_RESIZE_R:
-          /* resize */
-          region_resize (
-            region, 0, self->ticks, AO_UPDATE_ALL);
+          if (!self->first_call)
+            {
+              /* resize */
+              region_resize (
+                region, 0, self->ticks,
+                AO_UPDATE_ALL);
+            }
           break;
         case ETS_REGION_NAME:
           region->name =
@@ -111,6 +120,8 @@ edit_timeline_selections_action_do (
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
+
+  self->first_call = 0;
 
   return 0;
 }
