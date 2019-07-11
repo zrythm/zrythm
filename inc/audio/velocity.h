@@ -204,7 +204,8 @@ velocity_shift (
 void
 velocity_set_val (
   Velocity * self,
-  int        val);
+  int        val,
+  ArrangerObjectUpdateFlag update_flag);
 
 ARRANGER_OBJ_DECLARE_FREE_ALL_LANELESS (
   Velocity, velocity);

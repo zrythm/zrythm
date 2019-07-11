@@ -42,9 +42,13 @@
 #include "utils/flags.h"
 #include "utils/string.h"
 
-#define SET_POS(r,pos_name,pos,trans_only) \
+#define SET_POS(r,pos_name,pos,update_flag) \
   ARRANGER_OBJ_SET_POS ( \
-    midi_note, r, pos_name, pos, trans_only)
+    midi_note, r, pos_name, pos, update_flag)
+
+ARRANGER_OBJ_DEFINE_MOVABLE_W_LENGTH (
+  MidiNote, midi_note, midi_arranger_selections,
+  MA_SELECTIONS);
 
 void
 midi_note_init_loaded (
@@ -167,30 +171,6 @@ midi_note_get_track (
 }
 
 /**
- * Moves the MidiNote by the given amount of ticks.
- *
- * @param use_cached_pos Add the ticks to the cached
- *   Position instead of its current Position.
- * @param trans_only Only do transients.
- * @return Whether moved or not.
- */
-int
-midi_note_move (
-  MidiNote * midi_note,
-  long     ticks,
-  int      use_cached_pos,
-  int      trans_only)
-{
-  Position tmp;
-  int moved;
-  POSITION_MOVE_BY_TICKS_W_LENGTH (
-    tmp, use_cached_pos, midi_note, ticks, moved,
-    trans_only);
-
-  return moved;
-}
-
-/**
  * For debugging.
  */
 void
@@ -208,31 +188,6 @@ midi_note_print (
     mn->end_pos.beats,
     mn->end_pos.sixteenths,
     mn->end_pos.ticks);
-}
-
-/**
- * Returns if MidiNote is in MidiArrangerSelections.
- */
-int
-midi_note_is_selected (MidiNote * self)
-{
-  if (midi_arranger_selections_contains_note (
-        MA_SELECTIONS,
-        midi_note_get_main_midi_note (self)))
-    return 1;
-
-  return 0;
-}
-
-/**
- * Getter for start pos.
- */
-void
-midi_note_get_start_pos (
-  MidiNote * midi_note,
-  Position * pos)
-{
-  position_set_to_pos (pos, &midi_note->start_pos);
 }
 
 /**
@@ -274,32 +229,13 @@ midi_note_get_global_start_pos (
 }
 
 /**
- * Resizes the MidiNote on the left side or right side
- * by given amount of ticks.
- *
- * @param left 1 to resize left side, 0 to resize right
- *   side.
- * @param ticks Number of ticks to resize.
- */
-void
-midi_note_resize (
-  MidiNote * r,
-  int      left,
-  long     ticks)
-{
-  if (left)
-    position_add_ticks (&r->start_pos, ticks);
-  else
-    position_add_ticks (&r->end_pos, ticks);
-}
-
-/**
  * Sets the pitch of the MidiNote.
  */
 void
 midi_note_set_val (
   MidiNote * midi_note,
-  int        val)
+  int        val,
+  ArrangerObjectUpdateFlag update_flag)
 {
   /* if currently playing set a note off event. */
   if (midi_note_hit (
@@ -317,64 +253,27 @@ midi_note_set_val (
       zix_sem_post (&midi_events->access_sem);
     }
 
-  midi_note->val = val;
+  ARRANGER_OBJ_SET_PRIMITIVE_VAL (
+    MidiNote, midi_note, val, val, update_flag);
 }
 
 ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
   MidiNote, midi_note);
 
 /**
- * Sets the cached start Position for use in live
- * operations like moving.
- */
-void
-midi_note_set_cache_start_pos (
-  MidiNote * midi_note,
-  const Position * pos)
-{
-  SET_POS (midi_note, cache_start_pos, pos, 0);
-}
-
-/**
- * Sets the cached end Position for use in live
- * operations like moving.
- */
-void
-midi_note_set_cache_end_pos (
-  MidiNote * midi_note,
-  const Position * pos)
-{
-  SET_POS (midi_note, cache_end_pos, pos, 0);
-}
-
-ARRANGER_OBJ_DEFINE_GET_VISIBLE (
-  MidiNote, midi_note);
-
-/**
  * Shifts MidiNote's position and/or value.
+ *
+ * @param delta Y (0-127)
  */
 void
-midi_note_shift (
+midi_note_shift_pitch (
   MidiNote * self,
-  long       ticks, ///< x (Position)
-  int        delta) ///< y (0-127)
+  int        delta,
+  ArrangerObjectUpdateFlag update_flag)
 {
-  if (ticks)
-    {
-      Position tmp;
-      position_set_to_pos (
-        &tmp, &self->start_pos);
-      position_add_ticks (&tmp, ticks);
-      SET_POS (self, start_pos, (&tmp),
-               F_NO_TRANS_ONLY);
-      position_set_to_pos (
-        &tmp, &self->end_pos);
-      position_add_ticks (&tmp, ticks);
-      SET_POS (self, end_pos, (&tmp),
-               F_NO_TRANS_ONLY);
-    }
-  if (delta)
-    self->val += delta;
+  self->val += delta;
+  midi_note_set_val (
+    self, self->val, update_flag);
 }
 
 void
@@ -384,100 +283,6 @@ midi_note_delete (MidiNote * midi_note)
     g_object_unref (midi_note->widget);
   free (midi_note);
 }
-
-/**
- * Checks if position is valid then sets it.
- *
- * @param trans_only Only do transients.
- * @param validate Validate the Position.
- */
-void
-midi_note_set_start_pos (
-  MidiNote * midi_note,
-  Position * pos,
-  int        trans_only,
-  int        validate)
-{
-  if (validate)
-    {
-      /* TODO check if combined pos is after
-       * START_POS */
-      if (!position_is_before (
-            pos, &midi_note->end_pos))
-        return;
-    }
-
-  SET_POS (midi_note, start_pos, pos,
-           trans_only);
-}
-
-/**
- * Checks if position is valid then sets it.
- *
- * @param trans_only Only do transients.
- * @parram validate Validate the Position.
- */
-void
-midi_note_set_end_pos (
-  MidiNote * midi_note,
-  Position * pos,
-  int        trans_only,
-  int        validate)
-{
-  if (validate &&
-      !position_is_after (
-        pos, &midi_note->start_pos))
-    return;
-
-  SET_POS (midi_note, end_pos, pos,
-           trans_only);
-}
-
-/**
- * Converts an array of MIDI notes to MidiEvents.
- *
- * @param midi_notes Array of MidiNote's.
- * @param num_notes Number of notes in array.
- * @param pos Position to offset time from.
- * @param events Preallocated struct to fill.
- */
-/*void*/
-/*midi_note_notes_to_events (*/
-  /*MidiNote **  midi_notes,*/
-  /*int          num_notes,*/
-  /*Position *   pos,*/
-  /*MidiEvents * events)*/
-/*{*/
-  /*for (int i = 0; i < num_notes; i++)*/
-    /*{*/
-      /*MidiNote * note = midi_notes[i];*/
-
-      /*[> note on <]*/
-      /*jack_midi_event_t * ev = &events->jack_midi_events[events->num_events];*/
-      /*ev->time = position_to_frames (&note->start_pos) -*/
-        /*position_to_frames (pos);*/
-      /*ev->size = 3;*/
-      /*if (!ev->buffer)*/
-        /*ev->buffer = calloc (3, sizeof (jack_midi_data_t));*/
-      /*ev->buffer[0] = MIDI_CH1_NOTE_ON; [> status byte <]*/
-      /*ev->buffer[1] = note->val; [> note number 0-127 <]*/
-      /*ev->buffer[2] = note->vel->vel; [> velocity 0-127 <]*/
-      /*events->num_events++;*/
-
-      /*[> note off <]*/
-      /*ev = &events->jack_midi_events[events->num_events];*/
-      /*ev->time = position_to_frames (&note->end_pos) -*/
-        /*position_to_frames (pos);*/
-      /*ev->size = 3;*/
-      /*if (!ev->buffer)*/
-        /*ev->buffer = calloc (3, sizeof (jack_midi_data_t));*/
-      /*ev->buffer[0] = MIDI_CH1_NOTE_OFF; [> status byte <]*/
-      /*ev->buffer[1] = note->val; [> note number 0-127 <]*/
-      /*ev->buffer[2] = note->vel->vel; [> velocity 0-127 <]*/
-      /*events->num_events++;*/
-/*#endif*/
-    /*}*/
-/*}*/
 
 /**
  * Returns if the MIDI note is hit at given pos (in the

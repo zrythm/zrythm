@@ -181,7 +181,7 @@ on_drag_end ()
    * in the moving action */
   timeline_selections_add_ticks (
     TL_SELECTIONS, - ticks_diff,
-    0, F_NO_TRANS_ONLY);
+    0, AO_UPDATE_ALL);
   UndoableAction * ua =
     (UndoableAction *)
     move_timeline_selections_action_new (
@@ -215,7 +215,7 @@ set_pos (
         TL_SELECTIONS,
         position_to_ticks (pos) -
           position_to_ticks (obj),
-        0, F_NO_TRANS_ONLY);
+        0, AO_UPDATE_ALL);
       position_set_to_pos (obj, pos);
     }
 }

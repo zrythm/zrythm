@@ -43,6 +43,10 @@
     automation_point, _c, pos_name, _pos, \
     _trans_only)
 
+ARRANGER_OBJ_DEFINE_MOVABLE (
+  AutomationPoint, automation_point,
+  timeline_selections, TL_SELECTIONS);
+
 static AutomationPoint *
 _create_new (
   const Position *        pos)
@@ -232,11 +236,6 @@ automation_point_get_normalized_value (
     self->fvalue);
 }
 
-DEFINE_IS_ARRANGER_OBJ_SELECTED (
-  AutomationPoint, automation_point,
-  timeline_selections,
-  TL_SELECTIONS);
-
 /**
  * Returns the Track this AutomationPoint is in.
  */
@@ -255,19 +254,19 @@ automation_point_get_track (
  *   Position instead of its current Position.
  * @param trans_only Only move transients.
  * @return Whether moved or not.
+ * FIXME always call this after move !!!!!!!!!
  */
-int
-automation_point_move (
+void
+automation_point_on_move (
   AutomationPoint * automation_point,
   long     ticks,
   int      use_cached_pos,
   int      trans_only)
 {
   Position tmp;
-  int moved;
   POSITION_MOVE_BY_TICKS (
     tmp, use_cached_pos, automation_point, pos,
-    ticks, moved, trans_only);
+    ticks, trans_only);
 
   AutomationPoint * ap = automation_point;
 
@@ -335,12 +334,7 @@ automation_point_move (
       /* set pos for ap */
       position_set_to_pos (&ap->pos, &ap_pos);
     }
-
-  return moved;
 }
-
-ARRANGER_OBJ_DEFINE_SHIFT_TICKS (
-  AutomationPoint, automation_point);
 
 /**
  * Updates the value from given real value and
@@ -350,15 +344,11 @@ void
 automation_point_update_fvalue (
   AutomationPoint * self,
   float             real_val,
-  int               trans_only)
+  ArrangerObjectUpdateFlag update_flag)
 {
-  if (!trans_only)
-    {
-      automation_point_get_main_automation_point (
-        self)->fvalue = real_val;
-    }
-  automation_point_get_main_trans_automation_point (
-    self)->fvalue = real_val;
+  ARRANGER_OBJ_SET_PRIMITIVE_VAL (
+    AutomationPoint, self, fvalue, real_val,
+    update_flag);
 
   Automatable * a = self->at->automatable;
   automatable_set_val_from_normalized (
@@ -370,9 +360,6 @@ automation_point_update_fvalue (
   if (ac && ac->widget)
     ac->widget->cache = 0;
 }
-
-DEFINE_ARRANGER_OBJ_SET_POS (
-  AutomationPoint, automation_point);
 
 /**
  * Destroys the widget and frees memory.

@@ -57,7 +57,7 @@ edit_timeline_selections_action_new (
   caps,sc,pos_name_caps,pos_name) \
   case ETS_##caps##_##pos_name_caps: \
     sc##_set_##pos_name ( \
-      sc, &self->pos); \
+      sc, &self->pos, AO_UPDATE_ALL); \
     /* switch positions */ \
     position_set_to_pos ( \
       &self->pos, \
@@ -84,16 +84,12 @@ edit_timeline_selections_action_do (
         case ETS_RESIZE_L:
           /* resize */
           region_resize (
-            region,
-            1,
-            self->ticks);
+            region, 1, self->ticks, AO_UPDATE_ALL);
           break;
         case ETS_RESIZE_R:
           /* resize */
           region_resize (
-            region,
-            0,
-            self->ticks);
+            region, 0, self->ticks, AO_UPDATE_ALL);
           break;
         case ETS_REGION_NAME:
           region->name =
@@ -136,16 +132,12 @@ edit_timeline_selections_action_undo (
         case ETS_RESIZE_L:
           /* resize */
           region_resize (
-            region,
-            1,
-            - self->ticks);
+            region, 1, - self->ticks, AO_UPDATE_ALL);
           break;
         case ETS_RESIZE_R:
           /* resize */
           region_resize (
-            region,
-            0,
-            - self->ticks);
+            region, 0, - self->ticks, AO_UPDATE_ALL);
           break;
         case ETS_REGION_NAME:
           region->name =

@@ -109,13 +109,11 @@
  * @param _tmp_pos A Position variable to use for
  *   calculations so we don't create one in the
  *   macro.
- * @param _moved An int variable to hold if the
- *   move was made or not.
  * @param trans_only Move transients only.
  */
 #define POSITION_MOVE_BY_TICKS( \
   _tmp_pos,_use_cached,_obj,_pos_name,_ticks, \
-  _moved,_trans_only) \
+  _update_flag) \
   if (_use_cached) \
     position_set_to_pos ( \
       &_tmp_pos, &_obj->cache_##_pos_name); \
@@ -125,8 +123,7 @@
   position_add_ticks ( \
     &_tmp_pos, _ticks); \
   SET_POS (_obj, _pos_name, &_tmp_pos, \
-           _trans_only); \
-  moved = 1
+           _update_flag); \
 
 /**
  * Moves the Position of an object that has a start
@@ -148,22 +145,19 @@
  * @param _tmp_pos A Position variable to use for
  *   calculations so we don't create one in the
  *   macro.
- * @param _moved An int variable to hold if the
- *   move was made or not.
- * @param trans_only Move transients only.
+ * @param _update_flag ArrangerObjectUpdateFlag.
  */
 #define POSITION_MOVE_BY_TICKS_W_LENGTH( \
-  _tmp_pos,_use_cached,_obj,_ticks,_moved, \
-  _trans_only) \
+  _tmp_pos,_use_cached,_obj,_ticks, \
+  _update_flag) \
   /* start pos */ \
   POSITION_MOVE_BY_TICKS ( \
     _tmp_pos, _use_cached, _obj, start_pos, \
-    _ticks, _moved, _trans_only); \
+    _ticks, _update_flag); \
   /* end pos */ \
   POSITION_MOVE_BY_TICKS ( \
     _tmp_pos, _use_cached, _obj, end_pos, \
-    _ticks, _moved, _trans_only); \
-  moved = 1
+    _ticks, _update_flag)
 
 typedef struct SnapGrid SnapGrid;
 typedef struct Track Track;

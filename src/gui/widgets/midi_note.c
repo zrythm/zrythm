@@ -387,11 +387,12 @@ midi_note_widget_init (MidiNoteWidget * self)
     GTK_CONTAINER (self),
     GTK_WIDGET (self->drawing_area));
 
-  /* GDK_ALL_EVENTS_MASK is needed, otherwise the
-   * grab gets broken */
-  gtk_widget_add_events (
+  gtk_widget_set_events (
     GTK_WIDGET (self->drawing_area),
-    GDK_ALL_EVENTS_MASK);
+    GDK_ENTER_NOTIFY_MASK |
+    GDK_LEAVE_NOTIFY_MASK |
+    GDK_POINTER_MOTION_MASK
+    );
 
   /* connect signals */
   g_signal_connect (

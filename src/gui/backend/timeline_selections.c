@@ -152,10 +152,10 @@ timeline_selections_reset_transient_poses (
       sc = ts->sc##s[i]; \
       sc##_set_start_pos ( \
         sc, &sc->start_pos, \
-        F_NO_TRANS_ONLY, F_NO_VALIDATE); \
+        AO_UPDATE_ALL); \
       sc##_set_end_pos ( \
         sc, &sc->end_pos, \
-        F_NO_TRANS_ONLY, F_NO_VALIDATE); \
+        AO_UPDATE_ALL); \
     } \
   EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
                NULL)
@@ -167,7 +167,7 @@ timeline_selections_reset_transient_poses (
       sc = ts->sc##s[i]; \
       sc##_set_pos ( \
         sc, &sc->pos, \
-        F_NO_TRANS_ONLY); \
+        AO_UPDATE_ALL); \
     } \
   EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
                NULL)
@@ -529,10 +529,10 @@ timeline_selections_set_to_transient_poses (
         sc##_get_main_trans_##sc (sc); \
       sc##_set_start_pos ( \
         sc, &sc##_trans->start_pos, \
-        F_NO_TRANS_ONLY, F_NO_VALIDATE); \
+        AO_UPDATE_ALL); \
       sc##_set_end_pos ( \
         sc, &sc##_trans->end_pos, \
-        F_NO_TRANS_ONLY, F_NO_VALIDATE); \
+        AO_UPDATE_ALL); \
     } \
   EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
                NULL)
@@ -546,7 +546,7 @@ timeline_selections_set_to_transient_poses (
         sc##_get_main_trans_##sc (sc); \
       sc##_set_pos ( \
         sc, &sc##_trans->pos, \
-        F_NO_TRANS_ONLY); \
+        AO_UPDATE_ALL); \
     } \
   EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
                NULL)
@@ -676,18 +676,18 @@ timeline_selections_set_to_transient_values (
  * Moves the TimelineSelections by the given
  * amount of ticks.
  *
+ * @param ticks Ticks to add.
  * @param use_cached_pos Add the ticks to the cached
  *   Position's instead of the current Position's.
  * @param ticks Ticks to add.
- * @param transients_only Only update transient
- *   objects (eg. when copy-moving).
+ * @param update_flag ArrangerObjectUpdateFlag.
  */
 void
 timeline_selections_add_ticks (
   TimelineSelections * ts,
   long                 ticks,
   int                  use_cached_pos,
-  int                  transients_only)
+  ArrangerObjectUpdateFlag update_flag)
 {
   int i;
 
@@ -698,7 +698,7 @@ timeline_selections_add_ticks (
       sc = ts->sc##s[i]; \
       sc##_move ( \
         sc, ticks, use_cached_pos, \
-        transients_only); \
+        update_flag); \
     }
 
   UPDATE_TL_POSES (

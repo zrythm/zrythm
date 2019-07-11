@@ -74,11 +74,12 @@ duplicate_timeline_selections_action_new (
       add_to_track_code; \
       /* shift */ \
       sc##_shift_by_ticks ( \
-        sc, self->ticks); \
+        sc, self->ticks, AO_UPDATE_ALL); \
       /* shift the clone too so we can find it
        * when undoing */ \
       sc##_shift_by_ticks ( \
-        self->ts->sc##s[i], self->ticks); \
+        self->ts->sc##s[i], self->ticks, \
+        AO_UPDATE_THIS); \
       /* select it */ \
       sc##_widget_select ( \
         sc->widget, F_SELECT); \
@@ -100,7 +101,8 @@ duplicate_timeline_selections_action_new (
       remove_code; \
       /* unshift the clone */ \
       sc##_shift_by_ticks ( \
-        self->ts->sc##s[i], - self->ticks); \
+        self->ts->sc##s[i], - self->ticks, \
+        AO_UPDATE_ALL); \
     }
 
 int

@@ -324,6 +324,9 @@ region_schema = {
 			Region, region_fields_schema),
 };
 
+ARRANGER_OBJ_DECLARE_MOVABLE_W_LENGTH (
+  Region, region);
+
 /**
  * Only to be used by implementing structs.
  *
@@ -363,9 +366,6 @@ region_find (
 Region *
 region_find_by_name (
   const char * name);
-
-ARRANGER_OBJ_DECLARE_GEN_WIDGET (
-  Region, region);
 
 /**
  * Returns the MidiNote matching the properties of
@@ -447,29 +447,6 @@ region_get_num_loops (
 
 /* TODO shift by delta number of tracks */
 
-ARRANGER_OBJ_DECLARE_SHIFT_TICKS (
-  Region, region);
-
-ARRANGER_OBJ_DECLARE_GET_VISIBLE (
-  Region, region);
-
-/**
- * Resizes the region on the left side or right side
- * by given amount of ticks.
- *
- * @param left 1 to resize left side, 0 to resize right
- *   side.
- * @param ticks Number of ticks to resize.
- */
-void
-region_resize (
-  Region * r,
-  int      left,
-  long     ticks);
-
-DECLARE_ARRANGER_OBJ_SET_POSES_W_LENGTH (
-  Region, region);
-
 /**
  * Sets the track lane.
  */
@@ -497,21 +474,6 @@ ARRANGER_OBJ_DECLARE_POS_SETTER (
   Region, region, loop_end_pos);
 
 /**
- * Moves the Region by the given amount of ticks.
- *
- * @param use_cached_pos Add the ticks to the cached
- *   Position instead of its current Position.
- * @param trans_only Only do transients.
- * @return Whether moved or not.
- */
-int
-region_move (
-  Region * region,
-  long     ticks,
-  int      use_cached_pos,
-  int      trans_only);
-
-/**
  * Copies the data from src to dest.
  *
  * Used when doing/undoing changes in name,
@@ -526,8 +488,10 @@ region_copy (
  * Checks if position is valid then sets it.
  */
 void
-region_set_true_end_pos (Region * region,
-                         Position * end_pos);
+region_set_true_end_pos (
+  Region * region,
+  const Position * pos,
+  ArrangerObjectUpdateFlag update_flag);
 
 /**
  * Checks if position is valid then sets it.
@@ -535,7 +499,8 @@ region_set_true_end_pos (Region * region,
 void
 region_set_loop_end_pos (
   Region * region,
-  const Position * pos);
+  const Position * pos,
+  ArrangerObjectUpdateFlag update_flag);
 
 /**
  * Checks if position is valid then sets it.
@@ -543,7 +508,8 @@ region_set_loop_end_pos (
 void
 region_set_loop_start_pos (
   Region * region,
-  const Position * pos);
+  const Position * pos,
+  ArrangerObjectUpdateFlag update_flag);
 
 /**
  * Checks if position is valid then sets it.
@@ -551,7 +517,8 @@ region_set_loop_start_pos (
 void
 region_set_clip_start_pos (
   Region * region,
-  const Position * pos);
+  const Position * pos,
+  ArrangerObjectUpdateFlag update_flag);
 
 /**
  * Returns if Region is in MidiArrangerSelections.

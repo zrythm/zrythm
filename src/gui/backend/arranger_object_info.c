@@ -145,8 +145,8 @@ arranger_object_info_should_be_visible (
     }
   else
     {
-      trans_visible = 0;
-      non_trans_visible = 1;
+      trans_visible = 1;
+      non_trans_visible = 0;
     }
 
   /* check visibility at all */

@@ -256,9 +256,9 @@ midi_arranger_widget_get_cursor (
   switch (action)
     {
     case UI_OVERLAY_ACTION_NONE:
-      if (P_TOOL == TOOL_SELECT_NORMAL ||
-           P_TOOL == TOOL_SELECT_STRETCH ||
-           P_TOOL == TOOL_EDIT)
+      if (tool == TOOL_SELECT_NORMAL ||
+          tool == TOOL_SELECT_STRETCH ||
+          tool == TOOL_EDIT)
         {
           MidiNoteWidget * mnw =
             midi_arranger_widget_get_hit_midi_note (
@@ -444,6 +444,8 @@ midi_arranger_widget_on_drag_begin_note_hit (
     midi_note_get_main_midi_note (
       mnw->midi_note);
   self->start_midi_note = mn;
+  /*self->start_midi_note_clone =*/
+    /*midi_note_clone (mn, MIDI_NOTE_CLONE_COPY);*/
 
   /* update arranger action */
   switch (P_TOOL)
@@ -573,8 +575,7 @@ midi_arranger_widget_create_note (
     &tmp,
     ar_prv->snap_grid);
   midi_note_set_end_pos (
-    midi_note, &tmp, F_NO_TRANS_ONLY,
-    F_NO_VALIDATE);
+    midi_note, &tmp, AO_UPDATE_ALL);
 
   midi_note_set_cache_end_pos (
     midi_note, &midi_note->end_pos);
@@ -746,7 +747,7 @@ midi_arranger_widget_snap_midi_notes_l (
       else if (!dry_run)
         midi_note_set_start_pos (
           midi_note, &new_start_pos,
-          F_NO_TRANS_ONLY, F_NO_VALIDATE);
+          AO_UPDATE_ALL);
     }
   return 0;
 }
@@ -833,7 +834,7 @@ midi_arranger_widget_snap_midi_notes_r (
       else if (!dry_run)
         midi_note_set_end_pos (
           midi_note, &new_end_pos,
-          F_NO_TRANS_ONLY, F_NO_VALIDATE);
+          AO_UPDATE_ALL);
     }
   return 0;
 }
@@ -923,7 +924,8 @@ midi_arranger_widget_move_items_y (
             midi_note_get_main_trans_midi_note (
               MA_SELECTIONS->midi_notes[i]);
           midi_note_set_val (
-            midi_note, midi_note->val + y_delta);
+            midi_note, midi_note->val + y_delta,
+            AO_UPDATE_ALL);
           if (midi_note->widget)
             midi_note_widget_update_tooltip (
               midi_note->widget, 0);
@@ -981,17 +983,20 @@ midi_arranger_widget_on_drag_end (
   else if (ar_prv->action ==
         UI_OVERLAY_ACTION_RESIZING_R)
     {
-      MidiNote * main_note =
-        MA_SELECTIONS->midi_notes[0];
+      /*MidiNote * main_note =*/
+        /*MA_SELECTIONS->midi_notes[0];*/
       MidiNote * trans_note =
         midi_note_get_main_trans_midi_note (
           MA_SELECTIONS->midi_notes[0]);
+      g_message ("posses");
+      position_print_simple (&trans_note->end_pos);
+      position_print_simple (&trans_note->cache_end_pos);
       UndoableAction * ua =
         (UndoableAction *)
         emas_action_new_resize_r (
           MA_SELECTIONS,
           trans_note->end_pos.total_ticks -
-          main_note->end_pos.total_ticks);
+          trans_note->cache_end_pos.total_ticks);
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
@@ -1080,21 +1085,12 @@ midi_arranger_widget_on_drag_end (
   midi_modifier_arranger_widget_update_visibility (
     MIDI_MODIFIER_ARRANGER);
 
-  /* FIXME temporary, should be removed */
-  /*for (int i = 0;*/
-       /*i < CLIP_EDITOR->region->num_midi_notes;*/
-       /*i++)*/
-    /*{*/
-      /*midi_note =*/
-        /*CLIP_EDITOR->region->midi_notes[i];*/
-
-      /*if (!midi_note_is_selected (midi_note))*/
-        /*EVENTS_PUSH (*/
-          /*ET_MIDI_NOTE_CHANGED,*/
-          /*CLIP_EDITOR->region->midi_notes[i]);*/
-    /*}*/
-
   self->start_midi_note = NULL;
+  /*if (self->start_midi_note_clone)*/
+    /*{*/
+      /*midi_note_free (self->start_midi_note_clone);*/
+      /*self->start_midi_note_clone = NULL;*/
+    /*}*/
 
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);

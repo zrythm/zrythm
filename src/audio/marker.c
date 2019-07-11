@@ -30,6 +30,10 @@
 
 DEFINE_START_POS;
 
+ARRANGER_OBJ_DEFINE_MOVABLE (
+  Marker, marker, timeline_selections,
+  TL_SELECTIONS);
+
 void
 marker_init_loaded (Marker * self)
 {
@@ -37,16 +41,23 @@ marker_init_loaded (Marker * self)
    MARKER, Marker, marker);
 }
 
+ARRANGER_OBJ_DECLARE_VALIDATE_POS (
+  Marker, marker, pos)
+{
+  return
+    position_is_after_or_equal (
+      pos, START_POS);
+}
+
 void
 marker_pos_setter (
   Marker * marker,
   const Position * pos)
 {
-  if (position_is_after_or_equal (
-        pos, START_POS))
+  if (marker_validate_pos (marker, pos))
     {
       marker_set_pos (
-        marker, pos, F_NO_TRANS_ONLY);
+        marker, pos, AO_UPDATE_ALL);
     }
 }
 
@@ -84,13 +95,7 @@ marker_set_track (
   marker->track_pos = track->pos;
 }
 
-DEFINE_ARRANGER_OBJ_MOVE (
-  Marker, marker);
-
 ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
-  Marker, marker);
-
-DEFINE_ARRANGER_OBJ_SET_POS (
   Marker, marker);
 
 /**
@@ -127,10 +132,6 @@ marker_is_equal (
     string_is_equal (a->name, b->name, 1);
 }
 
-DEFINE_IS_ARRANGER_OBJ_SELECTED (
-  Marker, marker, timeline_selections,
-  TL_SELECTIONS);
-
 Marker *
 marker_clone (
   Marker * src,
@@ -148,8 +149,6 @@ marker_clone (
 
   return marker;
 }
-
-ARRANGER_OBJ_DEFINE_SHIFT_TICKS (Marker, marker);
 
 /**
  * Finds the chord in the project corresponding to the

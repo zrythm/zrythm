@@ -120,8 +120,10 @@ test_new_region ()
 
   position_set_to_pos (&tmp, &region->start_pos);
   position_add_ticks (&tmp, 12);
-  region_set_start_pos (
-    region, &tmp, F_TRANS_ONLY, F_VALIDATE);
+  if (region_validate_start_pos (
+        region, &tmp))
+    region_set_start_pos (
+      region, &tmp, AO_UPDATE_TRANS);
   g_assert_true (
     position_is_equal (
       &tmp, &main_trans_region->start_pos));

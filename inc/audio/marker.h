@@ -122,6 +122,9 @@ marker_schema = {
     Marker, marker_fields_schema),
 };
 
+ARRANGER_OBJ_DECLARE_MOVABLE (
+  Marker, marker);
+
 void
 marker_init_loaded (Marker * self);
 
@@ -141,14 +144,6 @@ marker_is_equal (
   Marker * a,
   Marker * b);
 
-DECLARE_IS_ARRANGER_OBJ_SELECTED (
-  Marker, marker);
-
-DECLARE_ARRANGER_OBJ_MOVE (
-  Marker, marker);
-
-ARRANGER_OBJ_DECLARE_SHIFT_TICKS (Marker, marker);
-
 /**
  * Sets the Track of the Marker.
  */
@@ -165,9 +160,6 @@ marker_set_name (
   Marker * marker,
   const char * name);
 
-ARRANGER_OBJ_DECLARE_GEN_WIDGET (
-  Marker, marker);
-
 /**
  * Finds the marker in the project corresponding to
  * the given one.
@@ -175,9 +167,6 @@ ARRANGER_OBJ_DECLARE_GEN_WIDGET (
 Marker *
 marker_find (
   Marker * clone);
-
-DECLARE_ARRANGER_OBJ_SET_POS (
-  Marker, marker);
 
 Marker *
 marker_clone (

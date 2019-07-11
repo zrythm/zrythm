@@ -66,6 +66,9 @@ typedef struct EditMidiArrangerSelectionsAction
   /** Difference for velocity changes, etc. */
   int                    diff;
 
+  /** If this is the first time calling do. */
+  int                    first_time;
+
 } EditMidiArrangerSelectionsAction;
 
 /**

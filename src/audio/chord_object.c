@@ -32,6 +32,10 @@
 
 DEFINE_START_POS;
 
+ARRANGER_OBJ_DEFINE_MOVABLE (
+  ChordObject, chord_object, timeline_selections,
+  TL_SELECTIONS);
+
 /**
  * Init the ChordObject after the Project is loaded.
  */
@@ -42,9 +46,6 @@ chord_object_init_loaded (
   ARRANGER_OBJECT_SET_AS_MAIN (
    CHORD_OBJECT, ChordObject, chord_object);
 }
-
-DEFINE_ARRANGER_OBJ_SET_POS (
-  ChordObject, chord_object);
 
 /**
  * Creates a ChordObject.
@@ -68,16 +69,23 @@ chord_object_new (
   return self;
 }
 
+ARRANGER_OBJ_DECLARE_VALIDATE_POS (
+  ChordObject, chord_object, pos)
+{
+  return
+    position_is_after_or_equal (
+      pos, START_POS);
+}
+
 void
 chord_object_pos_setter (
   ChordObject * chord_object,
   const Position * pos)
 {
-  if (position_is_after_or_equal (
-        pos, START_POS))
+  if (chord_object_validate_pos (chord_object, pos))
     {
       chord_object_set_pos (
-        chord_object, pos, F_NO_TRANS_ONLY);
+        chord_object, pos, AO_UPDATE_ALL);
     }
 }
 
@@ -142,10 +150,6 @@ chord_object_clone (
   return chord;
 }
 
-DEFINE_IS_ARRANGER_OBJ_SELECTED (
-  ChordObject, chord_object, timeline_selections,
-  TL_SELECTIONS);
-
 /**
  * Sets the Track of the chord.
  */
@@ -160,12 +164,6 @@ chord_object_set_track (
 
 
 ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
-  ChordObject, chord_object);
-
-DEFINE_ARRANGER_OBJ_MOVE (
-  ChordObject, chord_object);
-
-ARRANGER_OBJ_DEFINE_SHIFT_TICKS (
   ChordObject, chord_object);
 
 /**

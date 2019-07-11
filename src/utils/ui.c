@@ -135,6 +135,9 @@ ui_get_hit_child (
     {
       GtkWidget * widget = GTK_WIDGET (iter->data);
 
+      if (!gtk_widget_get_visible (widget))
+        continue;
+
       GtkAllocation allocation;
       gtk_widget_get_allocation (
         widget,

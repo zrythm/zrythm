@@ -59,8 +59,8 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+The full text of the license can be found in the
+[COPYING](COPYING) file.
 
 For the copyright years, Zrythm uses a range (“2008-2010”) instead of
 listing individual years (“2008, 2009, 2010”) if and only if every year

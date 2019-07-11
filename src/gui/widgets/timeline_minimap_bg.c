@@ -97,6 +97,8 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
             {
               r = lane->regions[i];
 
+              r = region_get_visible (r);
+
               int px_start =
                 ui_pos_to_px_timeline (
                   &r->start_pos, 1);

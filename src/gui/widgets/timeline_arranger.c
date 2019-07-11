@@ -1077,7 +1077,7 @@ timeline_arranger_widget_create_ap (
 
   /* set position to all counterparts */
   automation_point_set_pos (
-    ap, pos, F_NO_TRANS_ONLY);
+    ap, pos, AO_UPDATE_ALL);
 
   EVENTS_PUSH (
     ET_AUTOMATION_POINT_CREATED, ap);
@@ -1123,21 +1123,20 @@ timeline_arranger_widget_create_region (
     &tmp,
     ar_prv->snap_grid);
   region_set_end_pos (
-    region, &tmp, F_NO_TRANS_ONLY,
-    F_NO_VALIDATE);
+    region, &tmp, AO_UPDATE_ALL);
   long length =
     region_get_full_length_in_ticks (region);
   position_from_ticks (
     &region->true_end_pos, length);
   region_set_true_end_pos (
-    region, &region->true_end_pos);
+    region, &region->true_end_pos, AO_UPDATE_ALL);
   position_init (&tmp);
   region_set_clip_start_pos (
-    region, &tmp);
+    region, &tmp, AO_UPDATE_ALL);
   region_set_loop_start_pos (
-    region, &tmp);
+    region, &tmp, AO_UPDATE_ALL);
   region_set_loop_end_pos (
-    region, &region->true_end_pos);
+    region, &region->true_end_pos, AO_UPDATE_ALL);
 
   /** add it to a lane */
   if (track->type == TRACK_TYPE_INSTRUMENT)
@@ -1230,7 +1229,7 @@ timeline_arranger_widget_create_chord (
     &chord->obj_info, 1);
 
   chord_object_set_pos (
-    chord, pos, F_NO_TRANS_ONLY);
+    chord, pos, AO_UPDATE_ALL);
 
   EVENTS_PUSH (ET_CHORD_OBJECT_CREATED, chord);
   ARRANGER_WIDGET_SELECT_CHORD (
@@ -1273,7 +1272,7 @@ timeline_arranger_widget_create_scale (
     &scale->obj_info, 1);
 
   scale_object_set_pos (
-    scale, pos, F_NO_TRANS_ONLY);
+    scale, pos, AO_UPDATE_ALL);
 
   EVENTS_PUSH (ET_SCALE_OBJECT_CREATED, scale);
   ARRANGER_WIDGET_SELECT_SCALE (
@@ -1315,7 +1314,7 @@ timeline_arranger_widget_create_marker (
     &marker->obj_info, 1);
 
   marker_set_pos (
-    marker, pos, F_NO_TRANS_ONLY);
+    marker, pos, AO_UPDATE_ALL);
 
   EVENTS_PUSH (ET_MARKER_CREATED, marker);
   ARRANGER_WIDGET_SELECT_MARKER (
@@ -1555,9 +1554,13 @@ snap_region_l (
         new_start_pos, &region->end_pos))
     return -1;
   else if (!dry_run)
-    region_set_start_pos (
-      region, new_start_pos,
-      F_NO_TRANS_ONLY, F_VALIDATE);
+    {
+      if (region_validate_start_pos (
+            region, new_start_pos))
+        region_set_start_pos (
+          region, new_start_pos,
+          AO_UPDATE_ALL);
+    }
 
   return 0;
 }
@@ -1667,31 +1670,36 @@ snap_region_r (
     return -1;
   else if (!dry_run)
     {
-      region_set_end_pos (
-        region, new_end_pos, F_NO_TRANS_ONLY,
-        F_NO_VALIDATE);
-
-      /* if creating also set the loop points
-       * appropriately */
-      if (ar_prv->action ==
-            UI_OVERLAY_ACTION_CREATING_RESIZING_R)
+      if (region_validate_end_pos (
+            region, new_end_pos))
         {
-          long full_size =
-            region_get_full_length_in_ticks (
-              region);
-          Position tmp;
-          position_set_to_pos (
-            &tmp, &region->loop_start_pos);
-          position_add_ticks (
-            &tmp, full_size);
-          region_set_true_end_pos (
-            region, &tmp);
+          region_set_end_pos (
+            region, new_end_pos, AO_UPDATE_ALL);
 
-          /* use the setters */
-          region_set_true_end_pos (
-            region, &region->true_end_pos);
-          region_set_loop_end_pos (
-            region, &region->true_end_pos);
+          /* if creating also set the loop points
+           * appropriately */
+          if (ar_prv->action ==
+                UI_OVERLAY_ACTION_CREATING_RESIZING_R)
+            {
+              long full_size =
+                region_get_full_length_in_ticks (
+                  region);
+              Position tmp;
+              position_set_to_pos (
+                &tmp, &region->loop_start_pos);
+              position_add_ticks (
+                &tmp, full_size);
+              region_set_true_end_pos (
+                region, &tmp, AO_UPDATE_ALL);
+
+              /* use the setters */
+              region_set_true_end_pos (
+                region, &region->true_end_pos,
+                AO_UPDATE_ALL);
+              region_set_loop_end_pos (
+                region, &region->true_end_pos,
+                AO_UPDATE_ALL);
+            }
         }
     }
 
@@ -1818,7 +1826,7 @@ timeline_arranger_widget_move_items_x (
 {
   timeline_selections_add_ticks (
     TL_SELECTIONS, ticks_diff, F_USE_CACHED,
-    F_TRANS_ONLY);
+    AO_UPDATE_TRANS);
 
   /* for MIDI arranger ruler */
   EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED,
@@ -2061,7 +2069,7 @@ timeline_arranger_widget_move_items_y (
               ap->at->widget,
               ar_prv->start_y + offset_y);
           automation_point_update_fvalue (
-            ap, fval, F_TRANS_ONLY);
+            ap, fval, AO_UPDATE_TRANS);
         }
       automation_point_widget_update_tooltip (
         self->start_ap->widget, 1);

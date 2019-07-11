@@ -32,6 +32,10 @@
 
 DEFINE_START_POS;
 
+ARRANGER_OBJ_DEFINE_MOVABLE (
+  ScaleObject, scale_object, timeline_selections,
+  TL_SELECTIONS);
+
 /**
  * Init the ScaleObject after the Project is loaded.
  */
@@ -107,10 +111,6 @@ scale_object_clone (
   return scale;
 }
 
-DEFINE_IS_ARRANGER_OBJ_SELECTED (
-  ScaleObject, scale_object, timeline_selections,
-  TL_SELECTIONS);
-
 /**
  * Sets the Track of the scale.
  */
@@ -126,47 +126,22 @@ scale_object_set_track (
 ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
   ScaleObject, scale_object);
 
-DEFINE_ARRANGER_OBJ_SET_POS (
-  ScaleObject, scale_object);
-
-/**
- * Moves the ScaleObject by the given amount of
- * ticks.
- *
- * @param use_cached_pos Add the ticks to the cached
- *   Position instead of its current Position.
- * @param trans_only Only move transients.
- * @return Whether moved or not.
- */
-int
-scale_object_move (
-  ScaleObject * scale,
-  long     ticks,
-  int      use_cached_pos,
-  int      trans_only)
+ARRANGER_OBJ_DECLARE_VALIDATE_POS (
+  ScaleObject, scale_object, pos)
 {
-  Position tmp;
-  int moved;
-  POSITION_MOVE_BY_TICKS (
-    tmp, use_cached_pos, scale, pos, ticks, moved,
-    trans_only);
-
-  return moved;
+  return
+    position_is_after_or_equal (pos, START_POS);
 }
-
-ARRANGER_OBJ_DEFINE_SHIFT_TICKS (
-  ScaleObject, scale_object);
 
 void
 scale_object_pos_setter (
   ScaleObject * scale_object,
   const Position * pos)
 {
-  if (position_is_after_or_equal (
-        pos, START_POS))
+  if (scale_object_validate_pos (scale_object, pos))
     {
       scale_object_set_pos (
-        scale_object, pos, F_NO_TRANS_ONLY);
+        scale_object, pos, AO_UPDATE_ALL);
     }
 }
 

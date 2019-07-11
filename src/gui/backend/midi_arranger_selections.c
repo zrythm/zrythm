@@ -240,7 +240,7 @@ midi_arranger_selections_clear (
  * midi_note_get_main_midi_note()).
  */
 int
-midi_arranger_selections_contains_note (
+midi_arranger_selections_contains_midi_note (
   MidiArrangerSelections * mas,
   MidiNote *               note)
 {

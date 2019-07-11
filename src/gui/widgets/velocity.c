@@ -269,6 +269,26 @@ velocity_widget_new (Velocity * velocity)
   return self;
 }
 
+gboolean
+on_btn_press (GtkWidget *widget,
+               GdkEvent  *event,
+               gpointer   user_data)
+{
+  g_message ("press");
+
+  return FALSE;
+}
+
+gboolean
+on_btn_release (GtkWidget *widget,
+               GdkEvent  *event,
+               gpointer   user_data)
+{
+  g_message ("release");
+
+  return FALSE;
+}
+
 static void
 velocity_widget_class_init (
   VelocityWidgetClass * _klass)
@@ -294,9 +314,14 @@ velocity_widget_init (VelocityWidget * self)
   gtk_widget_set_hexpand (
     GTK_WIDGET (self->drawing_area), 1);
 
-  gtk_widget_add_events (
+  /* GDK_ALL_EVENTS_MASK is needed, otherwise the
+   * grab gets broken */
+  gtk_widget_set_events (
     GTK_WIDGET (self->drawing_area),
-    GDK_ALL_EVENTS_MASK);
+    GDK_ENTER_NOTIFY_MASK |
+    GDK_LEAVE_NOTIFY_MASK |
+    GDK_POINTER_MOTION_MASK
+    );
 
   /* connect signals */
   g_signal_connect (

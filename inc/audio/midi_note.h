@@ -147,10 +147,13 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 midi_note_schema = {
-    /* wherever it is used it will be a pointer */
-	CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-			MidiNote, midi_note_fields_schema),
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    MidiNote, midi_note_fields_schema),
 };
+
+ARRANGER_OBJ_DECLARE_MOVABLE_W_LENGTH (
+  MidiNote, midi_note);
 
 void
 midi_note_init_loaded (
@@ -223,35 +226,12 @@ midi_note_is_equal (
 void
 midi_note_delete (MidiNote * midi_note);
 
-ARRANGER_OBJ_DECLARE_GET_VISIBLE (
-  MidiNote, midi_note);
-
-/**
- * Resizes the MidiNote on the left side or right side
- * by given amount of ticks.
- *
- * @param left 1 to resize left side, 0 to resize right
- *   side.
- * @param ticks Number of ticks to resize.
- */
-void
-midi_note_resize (
-  MidiNote * r,
-  int      left,
-  long     ticks);
-
 /**
  * For debugging.
  */
 void
 midi_note_print (
   MidiNote * mn);
-
-/**
- * Returns if MidiNote is in MidiArrangerSelections.
- */
-int
-midi_note_is_selected (MidiNote * self);
 
 /**
  * Returns if MidiNote is (should be) visible.
@@ -261,83 +241,15 @@ midi_note_is_selected (MidiNote * self);
     mn->obj_info)
 
 /**
- * Getter for start pos.
- */
-void
-midi_note_get_start_pos (
-  MidiNote * midi_note,
-  Position * pos);
-
-/**
- * Checks if position is valid then sets it.
- *
- * @param trans_only Only do transients.
- * @param validate Validate the Position.
- */
-void
-midi_note_set_start_pos (
-  MidiNote * midi_note,
-  Position * pos,
-  int        trans_only,
-  int        validate);
-
-/**
- * Checks if position is valid then sets it.
- *
- * @param trans_only Only do transients.
- * @parram validate Validate the Position.
- */
-void
-midi_note_set_end_pos (
-  MidiNote * midi_note,
-  Position * pos,
-  int        trans_only,
-  int        validate);
-
-/**
- * Sets the cached start Position for use in live
- * operations like moving.
- */
-void
-midi_note_set_cache_start_pos (
-  MidiNote * mn,
-  const Position * pos);
-
-/**
- * Sets the cached end Position for use in live
- * operations like moving.
- */
-void
-midi_note_set_cache_end_pos (
-  MidiNote * mn,
-  const Position * pos);
-
-ARRANGER_OBJ_DECLARE_GEN_WIDGET (
-  MidiNote, midi_note);
-
-/**
- * Moves the MidiNote by the given amount of ticks.
- *
- * @param use_cached_pos Add the ticks to the cached
- *   Position instead of its current Position.
- * @param trans_only Only do transients.
- * @return Whether moved or not.
- */
-int
-midi_note_move (
-  MidiNote * midi_note,
-  long     ticks,
-  int      use_cached_pos,
-  int      trans_only);
-
-/**
  * Shifts MidiNote's position and/or value.
+ *
+ * @param delta Y (0-127)
  */
 void
-midi_note_shift (
+midi_note_shift_pitch (
   MidiNote * self,
-  long       ticks, ///< x (Position)
-  int        delta); ///< y (0-127)
+  int        delta,
+  ArrangerObjectUpdateFlag update_flag);
 
 /**
  * Returns if the MIDI note is hit at given pos (in the
@@ -368,7 +280,8 @@ midi_note_notes_to_events (
 void
 midi_note_set_val (
   MidiNote * midi_note,
-  int        val);
+  int        val,
+  ArrangerObjectUpdateFlag update_flag);
 
 ARRANGER_OBJ_DECLARE_FREE_ALL_LANELESS (
   MidiNote, midi_note);

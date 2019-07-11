@@ -107,6 +107,10 @@ chord_object_schema = {
 			ChordObject, chord_object_fields_schema),
 };
 
+
+ARRANGER_OBJ_DECLARE_MOVABLE (
+  ChordObject, chord_object);
+
 /**
  * Init the ChordObject after the Project is loaded.
  */
@@ -147,12 +151,6 @@ chord_object_set_track (
   ChordObject * self,
   Track *  track);
 
-ARRANGER_OBJ_DECLARE_GEN_WIDGET (
-  ChordObject, chord_object);
-
-DECLARE_ARRANGER_OBJ_SET_POS (
-  ChordObject, chord_object);
-
 /**
  * Finds the ChordObject in the project
  * corresponding to the given one.
@@ -176,18 +174,6 @@ ChordObject *
 chord_object_clone (
   ChordObject * src,
   ChordObjectCloneFlag flag);
-
-DECLARE_ARRANGER_OBJ_SET_POS (
-  ChordObject, chord_object);
-
-DECLARE_IS_ARRANGER_OBJ_SELECTED (
-  ChordObject, chord_object);
-
-ARRANGER_OBJ_DECLARE_SHIFT_TICKS (
-  ChordObject, chord_object);
-
-DECLARE_ARRANGER_OBJ_MOVE (
-  ChordObject, chord_object);
 
 /**
  * Frees the ChordObject.

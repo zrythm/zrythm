@@ -61,9 +61,6 @@
 #define F_GEN_NAME 1
 #define F_NO_GEN_NAME 0
 
-#define F_TRANS_ONLY 1
-#define F_NO_TRANS_ONLY 0
-
 #define F_USE_CACHED 1
 #define F_NO_USE_CACHED 0
 

@@ -49,7 +49,6 @@ typedef enum ArrangerObjectInfoType
   AOI_TYPE_VELOCITY,
 } ArrangerObjectInfoType;
 
-
 typedef enum ArrangerObjectInfoCounterpart
 {
   /** This is the main (non-lane) object. */

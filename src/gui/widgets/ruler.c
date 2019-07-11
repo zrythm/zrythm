@@ -522,7 +522,7 @@ drag_update (GtkGestureDrag * gesture,
             {
               /* set it */
               region_set_loop_start_pos (
-                r, &local_pos);
+                r, &local_pos, AO_UPDATE_ALL);
               transport_update_position_frames ();
               EVENTS_PUSH (
                 ET_CLIP_MARKER_POS_CHANGED, self);
@@ -540,7 +540,7 @@ drag_update (GtkGestureDrag * gesture,
             {
               /* set it */
               region_set_loop_end_pos (
-                r, &local_pos);
+                r, &local_pos, AO_UPDATE_ALL);
               transport_update_position_frames ();
               EVENTS_PUSH (
                 ET_CLIP_MARKER_POS_CHANGED, self);
@@ -556,7 +556,7 @@ drag_update (GtkGestureDrag * gesture,
             {
               /* set it */
               region_set_clip_start_pos (
-                r, &local_pos);
+                r, &local_pos, AO_UPDATE_ALL);
               transport_update_position_frames ();
               EVENTS_PUSH (
                 ET_CLIP_MARKER_POS_CHANGED, self);

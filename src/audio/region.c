@@ -49,6 +49,10 @@ DEFINE_START_POS
   ARRANGER_OBJ_SET_POS_WITH_LANE ( \
     region, r, pos_name, pos, trans_only)
 
+ARRANGER_OBJ_DEFINE_MOVABLE_W_LENGTH (
+  Region, region, timeline_selections,
+  TL_SELECTIONS);
+
 /**
  * Only to be used by implementing structs.
  *
@@ -247,12 +251,6 @@ region_find_midi_note (
   return NULL;
 }
 
-DEFINE_ARRANGER_OBJ_SET_POSES_W_LENGTH (
-  Region, region);
-
-ARRANGER_OBJ_DEFINE_GET_VISIBLE (
-  Region, region);
-
 /**
  * Generate a RegionWidget for the Region and all
  * its counterparts.
@@ -305,35 +303,7 @@ region_start_pos_setter (
   const Position * pos)
 {
   region_set_start_pos (
-    region, pos, F_NO_TRANS_ONLY, F_VALIDATE);
-}
-
-
-/**
- * Clamps position then sets it to its counterparts.
- *
- * To be used only when resizing. For moving,
- * use region_move().
- *
- * @param trans_only Only set the transient
- *   Position's.
- * @param validate Validate the Position.
- */
-void
-region_set_start_pos (
-  Region * region,
-  const Position * pos,
-  int        trans_only,
-  int        validate)
-{
-  if (validate &&
-      (!position_is_before (
-        pos, &region->end_pos) ||
-      position_is_before (
-        pos, START_POS)))
-    return;
-
-  SET_POS (region, start_pos, pos, trans_only);
+    region, pos, AO_UPDATE_ALL);
 }
 
 /**
@@ -384,29 +354,12 @@ region_get_true_length_in_ticks (
   return position_to_ticks (&region->true_end_pos);
 }
 
-/**
- * Clamps position then sets it.
- *
- * To be used only when resizing. For moving,
- * use region_move().
- *
- * @param trans_only Only set the Position to the
- *   counterparts.
- * @param validate Validate the Position.
- */
-void
-region_set_end_pos (
-  Region * region,
-  const Position * pos,
-  int        trans_only,
-  int        validate)
+ARRANGER_OBJ_DECLARE_VALIDATE_POS (
+  Region, region, end_pos)
 {
-  if (validate &&
-      !position_is_after (
-          pos, &region->start_pos))
-      return;
-
-  SET_POS (region, end_pos, pos, trans_only);
+  return
+    position_is_after (
+      pos, &region->start_pos);
 }
 
 /**
@@ -418,7 +371,7 @@ region_loop_start_pos_setter (
   const Position * pos)
 {
   region_set_loop_start_pos (
-    region, pos);
+    region, pos, AO_UPDATE_ALL);
 }
 
 /**
@@ -430,7 +383,7 @@ region_loop_end_pos_setter (
   const Position * pos)
 {
   region_set_loop_end_pos (
-    region, pos);
+    region, pos, AO_UPDATE_ALL);
 }
 
 /**
@@ -442,7 +395,7 @@ region_clip_start_pos_setter (
   const Position * pos)
 {
   region_set_clip_start_pos (
-    region, pos);
+    region, pos, AO_UPDATE_ALL);
 }
 
 /**
@@ -454,27 +407,30 @@ region_end_pos_setter (
   const Position * pos)
 {
   region_set_end_pos (
-    region, pos, F_NO_TRANS_ONLY, F_VALIDATE);
+    region, pos, AO_UPDATE_ALL);
 }
 
 void
 region_set_true_end_pos (
   Region * region,
-  Position * pos)
+  const Position * pos,
+  ArrangerObjectUpdateFlag update_flag)
 {
-  SET_POS (region, true_end_pos, pos, 0);
+  SET_POS (region, true_end_pos, pos, update_flag);
 }
 
 void
 region_set_loop_end_pos (
   Region * region,
-  const Position * pos)
+  const Position * pos,
+  ArrangerObjectUpdateFlag update_flag)
 {
   /* validate */
   if (position_is_after (
         pos, &region->loop_start_pos))
     {
-      SET_POS (region, loop_end_pos, pos, 0);
+      SET_POS (region, loop_end_pos, pos,
+               update_flag);
     }
 }
 
@@ -484,7 +440,8 @@ region_set_loop_end_pos (
 void
 region_set_loop_start_pos (
   Region * region,
-  const Position * pos)
+  const Position * pos,
+  ArrangerObjectUpdateFlag update_flag)
 {
   /* validate */
   if (position_is_before (
@@ -492,7 +449,8 @@ region_set_loop_start_pos (
       position_is_after_or_equal (
         pos, START_POS))
     {
-      SET_POS (region, loop_start_pos, pos, 0);
+      SET_POS (region, loop_start_pos, pos,
+               update_flag);
     }
 }
 
@@ -502,7 +460,8 @@ region_set_loop_start_pos (
 void
 region_set_clip_start_pos (
   Region * region,
-  const Position * pos)
+  const Position * pos,
+  ArrangerObjectUpdateFlag update_flag)
 {
   /* validate */
   if (position_is_before (
@@ -510,46 +469,9 @@ region_set_clip_start_pos (
       position_is_after_or_equal (
         pos, START_POS))
     {
-      SET_POS (region, clip_start_pos, pos, 0);
+      SET_POS (region, clip_start_pos, pos,
+               update_flag);
     }
-}
-
-/**
- * Returns if Region is in TimelineSelections.
- */
-int
-region_is_selected (Region * self)
-{
-  if (timeline_selections_contains_region (
-        TL_SELECTIONS,
-        region_get_main_region (self)))
-    return 1;
-
-  return 0;
-}
-
-/**
- * Moves the Region by the given amount of ticks.
- *
- * @param use_cached_pos Add the ticks to the cached
- *   Position instead of its current Position.
- * @param trans_only Only do transients.
- * @return Whether moved or not.
- */
-int
-region_move (
-  Region * region,
-  long     ticks,
-  int      use_cached_pos,
-  int      trans_only)
-{
-  Position tmp;
-  int moved;
-  POSITION_MOVE_BY_TICKS_W_LENGTH (
-    tmp, use_cached_pos, region, ticks, moved,
-    trans_only);
-
-  return moved;
 }
 
 /**
@@ -569,6 +491,16 @@ region_set_name (
     g_strdup (name);
   region_get_lane_trans_region (region)->name =
     g_strdup (name);
+}
+
+ARRANGER_OBJ_DECLARE_VALIDATE_POS (
+  Region, region, start_pos)
+{
+  return
+    position_is_before (
+      pos, &region->end_pos) &&
+    position_is_after_or_equal (
+      pos, START_POS);
 }
 
 /**
@@ -672,29 +604,6 @@ region_get_num_loops (
   return i;
 }
 
-ARRANGER_OBJ_DEFINE_SHIFT_TICKS_W_END_POS (
-  Region, region);
-
-/**
- * Resizes the region on the left side or right side
- * by given amount of ticks.
- *
- * @param left 1 to resize left side, 0 to resize right
- *   side.
- * @param ticks Number of ticks to resize.
- */
-void
-region_resize (
-  Region * r,
-  int      left,
-  long     ticks)
-{
-  if (left)
-    position_add_ticks (&r->start_pos, ticks);
-  else
-    position_add_ticks (&r->end_pos, ticks);
-}
-
 /**
  * Copies the data from src to dest.
  *
@@ -710,11 +619,11 @@ region_copy (
   dest->name = g_strdup (src->name);
 
   region_set_clip_start_pos (
-    dest, &src->clip_start_pos);
+    dest, &src->clip_start_pos, AO_UPDATE_THIS);
   region_set_loop_start_pos (
-    dest, &src->loop_start_pos);
+    dest, &src->loop_start_pos, AO_UPDATE_THIS);
   region_set_loop_end_pos (
-    dest, &src->loop_end_pos);
+    dest, &src->loop_end_pos, AO_UPDATE_THIS);
 }
 
 

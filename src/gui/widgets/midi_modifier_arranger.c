@@ -269,7 +269,8 @@ midi_modifier_arranger_widget_resize_velocities (
         vel,
         CLAMP (
           vel->cache_vel + self->vel_diff,
-          1, 127));
+          1, 127),
+        AO_UPDATE_ALL);
 
       /*g_message ("set val to %d (transient? %d)",*/
                  /*vel->vel,*/
@@ -383,9 +384,9 @@ midi_modifier_arranger_widget_get_cursor (
   switch (action)
     {
     case UI_OVERLAY_ACTION_NONE:
-      if (P_TOOL == TOOL_SELECT_NORMAL ||
-           P_TOOL == TOOL_SELECT_STRETCH ||
-           P_TOOL == TOOL_EDIT)
+      if (tool == TOOL_SELECT_NORMAL ||
+          tool == TOOL_SELECT_STRETCH ||
+          tool == TOOL_EDIT)
         {
           VelocityWidget * vw =
             midi_modifier_arranger_widget_get_hit_velocity (
@@ -398,6 +399,8 @@ midi_modifier_arranger_widget_get_cursor (
           int is_resize =
             vw && vw->resize;
 
+          g_message ("hit resize %d %d",
+                     is_hit, is_resize);
           if (is_hit && is_resize)
             {
               return ARRANGER_CURSOR_RESIZING_UP;
@@ -442,6 +445,14 @@ midi_modifier_arranger_widget_get_cursor (
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
       ac = ARRANGER_CURSOR_RESIZING_R;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_UP:
+      ac = ARRANGER_CURSOR_RESIZING_UP;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_SELECTION:
+    case UI_OVERLAY_ACTION_SELECTING:
+      ac = ARRANGER_CURSOR_SELECT;
+      /* TODO depends on tool */
       break;
     default:
       g_warn_if_reached ();

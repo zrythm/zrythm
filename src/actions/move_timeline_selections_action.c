@@ -58,10 +58,10 @@ move_timeline_selections_action_new (
       g_warn_if_fail (sc); \
       /* shift the actual object */ \
       sc##_shift_by_ticks ( \
-        sc, ticks); \
+        sc, ticks, AO_UPDATE_ALL); \
       /* also shift the copy */ \
       sc##_shift_by_ticks ( \
-        self->ts->sc##s[i], ticks); \
+        self->ts->sc##s[i], ticks, AO_UPDATE_THIS); \
     }
 
 int

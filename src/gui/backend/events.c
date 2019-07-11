@@ -442,7 +442,6 @@ on_midi_note_changed (MidiNote * midi_note)
                 {
                   if (velocity_is_selected (vel))
                     {
-                      g_message ("SELECTING VEL");
                       gtk_widget_set_state_flags (
                         GTK_WIDGET (vel->widget),
                         GTK_STATE_FLAG_SELECTED,
@@ -450,7 +449,6 @@ on_midi_note_changed (MidiNote * midi_note)
                     }
                   else
                     {
-                      g_message ("UNSELECTING VEL");
                       gtk_widget_unset_state_flags (
                         GTK_WIDGET (vel->widget),
                         GTK_STATE_FLAG_SELECTED);

@@ -1137,6 +1137,15 @@ create_item (ArrangerWidget * self,
 }
 
 static void
+drag_cancel (
+  GtkGesture *       gesture,
+  GdkEventSequence * sequence,
+  ArrangerWidget *   self)
+{
+  g_message ("drag cancelled");
+}
+
+static void
 drag_begin (GtkGestureDrag *   gesture,
             gdouble            start_x,
             gdouble            start_y,
@@ -1373,6 +1382,8 @@ drag_update (
   ArrangerWidget * self)
 {
   GET_PRIVATE;
+
+  g_message ("resizing y %f", offset_y);
 
   /* state mask needs to be updated */
   UI_GET_STATE_MASK (gesture);
@@ -1910,7 +1921,7 @@ on_scroll (GtkWidget *widget,
       MW_TIMELINE_MINIMAP);
 
   /* get updated adjustment and set its value
-   * at the same offset as before */
+   at the same offset as before */
   adj = gtk_scrolled_window_get_hadjustment (
     scroll);
   gtk_adjustment_set_value (adj,
@@ -1941,8 +1952,19 @@ on_focus_out (GtkWidget *widget,
                GdkEvent  *event,
                gpointer   user_data)
 {
-  /*g_message ("ARRANGER FOCUS OUT");*/
+    g_message ("arranger focus out");
 
+  return FALSE;
+}
+
+static gboolean
+on_grab_broken (GtkWidget *widget,
+               GdkEvent  *event,
+               gpointer   user_data)
+{
+  GdkEventGrabBroken * ev =
+    (GdkEventGrabBroken *) event;
+  g_message ("arranger grab broken");
   return FALSE;
 }
 
@@ -2031,6 +2053,9 @@ arranger_widget_setup (
     G_OBJECT(ar_prv->drag), "drag-end",
     G_CALLBACK (drag_end),  self);
   g_signal_connect (
+    G_OBJECT (ar_prv->drag), "cancel",
+    G_CALLBACK (drag_cancel), self);
+  g_signal_connect (
     G_OBJECT (ar_prv->multipress), "pressed",
     G_CALLBACK (multipress_pressed), self);
   g_signal_connect (
@@ -2051,6 +2076,9 @@ arranger_widget_setup (
   g_signal_connect (
     G_OBJECT (self), "focus-out-event",
     G_CALLBACK (on_focus_out), self);
+  g_signal_connect (
+    G_OBJECT (self), "grab-broken-event",
+    G_CALLBACK (on_grab_broken), self);
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), tick_cb,

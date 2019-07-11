@@ -23,6 +23,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/midi_arranger.h"
 #include "project.h"
+#include "utils/flags.h"
 
 #include <glib/gi18n.h>
 
@@ -44,6 +45,7 @@ edit_midi_arranger_selections_action_new (
   self->type = type;
   self->ticks = ticks;
   self->diff = diff;
+  self->first_time = 1;
 
   return ua;
 }
@@ -64,7 +66,7 @@ edit_midi_arranger_selections_action_do (
         case EMAS_TYPE_RESIZE_L:
           /* resize */
           midi_note_resize (
-            mn, 1, self->ticks);
+            mn, 1, self->ticks, 1);
 
           /* remember the new start pos for undoing */
           position_set_to_pos (
@@ -74,7 +76,10 @@ edit_midi_arranger_selections_action_do (
         case EMAS_TYPE_RESIZE_R:
           /* resize */
           midi_note_resize (
-            mn, 0, self->ticks);
+            mn, 0, self->ticks, 1);
+
+          g_message ("after resize");
+          position_print_simple (&mn->end_pos);
 
           /* remember the end pos for undoing */
           position_set_to_pos (
@@ -84,7 +89,8 @@ edit_midi_arranger_selections_action_do (
         case EMAS_TYPE_VELOCITY_CHANGE:
           /* change velocity */
           velocity_set_val (
-            mn->vel, mn->vel->vel + self->diff);
+            mn->vel, mn->vel->vel + self->diff,
+            AO_UPDATE_ALL);
           break;
         default:
           g_warn_if_reached ();
@@ -93,6 +99,8 @@ edit_midi_arranger_selections_action_do (
     }
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);
+
+  self->first_time = 0;
 
   return 0;
 }
@@ -113,7 +121,7 @@ edit_midi_arranger_selections_action_undo (
         case EMAS_TYPE_RESIZE_L:
           /* resize */
           midi_note_resize (
-            mn, 1, - self->ticks);
+            mn, 1, - self->ticks, 1);
 
           /* remember the new start pos for redoing */
           position_set_to_pos (
@@ -123,7 +131,7 @@ edit_midi_arranger_selections_action_undo (
         case EMAS_TYPE_RESIZE_R:
           /* resize */
           midi_note_resize (
-            mn, 0, - self->ticks);
+            mn, 0, - self->ticks, 1);
 
           /* remember the end start pos for redoing */
           position_set_to_pos (
@@ -133,7 +141,8 @@ edit_midi_arranger_selections_action_undo (
         case EMAS_TYPE_VELOCITY_CHANGE:
           /* change velocity */
           velocity_set_val (
-            mn->vel, mn->vel->vel - self->diff);
+            mn->vel, mn->vel->vel - self->diff,
+            AO_UPDATE_ALL);
           break;
         default:
           g_warn_if_reached ();

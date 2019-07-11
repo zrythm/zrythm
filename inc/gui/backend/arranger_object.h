@@ -27,19 +27,35 @@
 #define __GUI_BACKEND_ARRANGER_OBJECT_H__
 
 /**
+ * Flag used when updating parameters of objects.
+ */
+typedef enum ArrangerObjectUpdateFlag
+{
+  /** Update only this object. */
+  AO_UPDATE_THIS,
+
+  /** Update the transients of this object. */
+  AO_UPDATE_TRANS,
+
+  /** Update the non-transients of this object. */
+  AO_UPDATE_NON_TRANS,
+
+  /** Update all counterparts of this object. */
+  AO_UPDATE_ALL,
+} ArrangerObjectUpdateFlag;
+
+/**
  * Returns if the object is in the selections.
  */
-#define DECLARE_IS_ARRANGER_OBJ_SELECTED( \
+#define ARRANGER_OBJ_DECLARE_IS_SELECTED( \
   cc,sc) \
   int \
   sc##_is_selected ( \
     cc * self)
 
-#define DEFINE_IS_ARRANGER_OBJ_SELECTED( \
+#define ARRANGER_OBJ_DEFINE_IS_SELECTED( \
   cc,sc,selections_name,selections) \
-  int \
-  sc##_is_selected ( \
-    cc * self) \
+  ARRANGER_OBJ_DECLARE_IS_SELECTED (cc, sc) \
   { \
     return selections_name##_contains_##sc ( \
              selections, \
@@ -56,10 +72,8 @@
 
 #define ARRANGER_OBJ_DEFINE_POS_GETTER( \
   cc,sc,pos_name) \
-  void \
-  sc##_get_##pos_name ( \
-    const cc * sc, \
-    Position * pos) \
+  ARRANGER_OBJ_DECLARE_POS_GETTER ( \
+    cc, sc, pos_name) \
   { \
     position_set_to_pos ( \
       pos, &sc->pos_name); \
@@ -78,45 +92,67 @@
     const Position * pos)
 
 /**
+ * Sets the Position with the given pos_name.
+ *
+ * It assumes that the position has already been
+ * validated.
+ */
+#define ARRANGER_OBJ_DECLARE_SET_POS( \
+  cc,sc,pos_name) \
+  void \
+  sc##_set_##pos_name ( \
+    cc *             sc, \
+    const Position * _pos, \
+    ArrangerObjectUpdateFlag _update_flag)
+
+#define ARRANGER_OBJ_DEFINE_SET_POS( \
+  cc,sc,pos_name) \
+  ARRANGER_OBJ_DECLARE_SET_POS (cc, sc, pos_name) \
+  { \
+    SET_POS (sc, pos_name, _pos, _update_flag); \
+  } \
+
+/**
+ * Sets the cached Position for use
+ * in live operations like moving.
+ */
+#define \
+  ARRANGER_OBJ_DECLARE_SET_CACHE_POS( \
+  cc, sc, pos_name) \
+  void \
+  sc##_set_cache_##pos_name ( \
+    cc * sc, \
+    const Position * pos) \
+
+#define \
+  ARRANGER_OBJ_DEFINE_SET_CACHE_POS( \
+  cc, sc, pos_name) \
+  ARRANGER_OBJ_DECLARE_SET_CACHE_POS( \
+    cc,sc,pos_name) \
+  { \
+    SET_POS (sc, cache_##pos_name, pos, \
+             AO_UPDATE_ALL); \
+  }
+
+/**
  * For set_pos and set_cache_pos and the getter /
  * setter.
  */
-#define DECLARE_ARRANGER_OBJ_SET_POS(cc,sc) \
-  /**
-   * Sets the Position.
-   *
-   * @param trans_only Only do transients.
-   */ \
-  void \
-  sc##_set_pos ( \
-    cc *             sc, \
-    const Position * _pos, \
-    int              trans_only); \
-  void \
-  sc##_set_cache_pos ( \
-    cc *             sc, \
-    const Position * _pos); \
+#define ARRANGER_OBJ_DECLARE_SET_POSES(cc,sc) \
+  ARRANGER_OBJ_DECLARE_SET_POS ( \
+    cc, sc, pos); \
+  ARRANGER_OBJ_DECLARE_SET_CACHE_POS ( \
+    cc, sc, pos); \
   ARRANGER_OBJ_DECLARE_POS_GETTER ( \
     cc, sc, pos); \
   ARRANGER_OBJ_DECLARE_POS_SETTER ( \
     cc, sc, pos)
 
-#define DEFINE_ARRANGER_OBJ_SET_POS(cc,sc) \
-  void \
-  sc##_set_pos ( \
-    cc *             sc, \
-    const Position * _pos, \
-    int              trans_only) \
-  { \
-    SET_POS (sc, pos, _pos, trans_only); \
-  } \
-  void \
-  sc##_set_cache_pos ( \
-    cc *             sc, \
-    const Position * _pos) \
-  { \
-    SET_POS (sc, cache_pos, _pos, F_NO_TRANS_ONLY); \
-  } \
+#define ARRANGER_OBJ_DEFINE_SET_POSES(cc,sc) \
+  ARRANGER_OBJ_DEFINE_SET_POS ( \
+    cc, sc, pos); \
+  ARRANGER_OBJ_DEFINE_SET_CACHE_POS ( \
+    cc, sc, pos); \
   ARRANGER_OBJ_DEFINE_POS_GETTER ( \
     cc, sc, pos)
 
@@ -124,45 +160,22 @@
  * For set_start_pos/set_end_pos and
  * set_cache_start_pos/set_cache_end_pos.
  */
-#define DECLARE_ARRANGER_OBJ_SET_POSES_W_LENGTH( \
+#define ARRANGER_OBJ_DECLARE_SET_POSES_W_LENGTH( \
   cc,sc) \
-  /**
-   * Clamps position then sets it to its counterparts.
-   *
-   * To be used only when resizing. For moving,
-   * use *_move().
-   *
-   * @param trans_only Only set the transient
-   *   Position's.
-   * @param validate Validate the Position before
-   *   setting.
-   */ \
-  void \
-  sc##_set_start_pos ( \
-    cc *             sc, \
-    const Position * pos, \
-    int              trans_only, \
-    int              validate); \
-  void \
-  sc##_set_end_pos ( \
-    cc *             sc, \
-    const Position * pos, \
-    int              trans_only, \
-    int              validate); \
-  void \
-  sc##_set_cache_start_pos ( \
-    cc *             sc, \
-    const Position * pos); \
-  void \
-  sc##_set_cache_end_pos ( \
-    cc *             sc, \
-    const Position * pos); \
-  ARRANGER_OBJ_DECLARE_POS_GETTER ( \
+  ARRANGER_OBJ_DECLARE_SET_POS ( \
+    cc, sc, start_pos); \
+  ARRANGER_OBJ_DECLARE_SET_CACHE_POS ( \
     cc, sc, start_pos); \
   ARRANGER_OBJ_DECLARE_POS_GETTER ( \
-    cc, sc, end_pos); \
+    cc, sc, start_pos); \
   ARRANGER_OBJ_DECLARE_POS_SETTER ( \
     cc, sc, start_pos); \
+  ARRANGER_OBJ_DECLARE_SET_POS ( \
+    cc, sc, end_pos); \
+  ARRANGER_OBJ_DECLARE_SET_CACHE_POS ( \
+    cc, sc, end_pos); \
+  ARRANGER_OBJ_DECLARE_POS_GETTER ( \
+    cc, sc, end_pos); \
   ARRANGER_OBJ_DECLARE_POS_SETTER ( \
     cc, sc, end_pos)
 
@@ -173,26 +186,18 @@
  * to the implementation because the validation might
  * differ.
  */
-#define DEFINE_ARRANGER_OBJ_SET_POSES_W_LENGTH( \
+#define ARRANGER_OBJ_DEFINE_SET_POSES_W_LENGTH( \
   cc,sc) \
-  void \
-  sc##_set_cache_start_pos ( \
-    cc *             sc, \
-    const Position * pos) \
-  { \
-    SET_POS (sc, cache_start_pos, pos, \
-             F_NO_TRANS_ONLY); \
-  } \
-  void \
-  sc##_set_cache_end_pos ( \
-    cc *             sc, \
-    const Position * pos) \
-  { \
-    SET_POS (sc, cache_end_pos, pos, \
-             F_NO_TRANS_ONLY); \
-  } \
+  ARRANGER_OBJ_DEFINE_SET_POS ( \
+    cc, sc, start_pos); \
+  ARRANGER_OBJ_DEFINE_SET_CACHE_POS ( \
+    cc, sc, start_pos); \
   ARRANGER_OBJ_DEFINE_POS_GETTER ( \
     cc, sc, start_pos); \
+  ARRANGER_OBJ_DEFINE_SET_POS ( \
+    cc, sc, end_pos); \
+  ARRANGER_OBJ_DEFINE_SET_CACHE_POS ( \
+    cc, sc, end_pos); \
   ARRANGER_OBJ_DEFINE_POS_GETTER ( \
     cc, sc, end_pos)
 
@@ -226,90 +231,85 @@
     }
 
 
-#define DECLARE_ARRANGER_OBJ_MOVE(cc,sc) \
-  /**
-   * Moves the object by the given amount of
-   * ticks.
-   *
-   * @param use_cached_pos Add the ticks to the cached
-   *   Position instead of its current Position.
-   * @param trans_only Only move transients.
-   * @return Whether moved or not.
-   */ \
-  int \
+/**
+ * Moves the object by the given amount of
+ * ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position instead of its current Position.
+ * @param trans_only Only move transients.
+ */
+#define ARRANGER_OBJ_DECLARE_MOVE(cc,sc) \
+  void \
   sc##_move ( \
     cc * sc, \
     long ticks, \
     int  use_cached_pos, \
-    int  trans_only)
+    ArrangerObjectUpdateFlag update_flag)
 
-#define DEFINE_ARRANGER_OBJ_MOVE(cc,sc) \
-  int \
-  sc##_move ( \
-    cc * sc, \
-    long ticks, \
-    int  use_cached_pos, \
-    int  trans_only) \
+#define ARRANGER_OBJ_DEFINE_MOVE(cc,sc) \
+  ARRANGER_OBJ_DECLARE_MOVE (cc, sc) \
   { \
     Position tmp; \
-    int moved; \
     POSITION_MOVE_BY_TICKS ( \
-      tmp, use_cached_pos, sc, pos, ticks, moved, \
-      trans_only); \
-    return moved; \
+      tmp, use_cached_pos, sc, pos, ticks, \
+      update_flag); \
+  }
+
+/**
+ * Moves the object by the given amount of ticks.
+ *
+ * @param use_cached_pos Add the ticks to the cached
+ *   Position instead of its current Position.
+ * @param trans_only Only do transients.
+ */
+#define ARRANGER_OBJ_DECLARE_MOVE_W_LENGTH(cc,sc) \
+  ARRANGER_OBJ_DECLARE_MOVE (cc, sc)
+
+#define ARRANGER_OBJ_DEFINE_MOVE_W_LENGTH(cc,sc) \
+  ARRANGER_OBJ_DECLARE_MOVE_W_LENGTH (cc, sc) \
+  { \
+    Position tmp; \
+    POSITION_MOVE_BY_TICKS_W_LENGTH ( \
+      tmp, use_cached_pos, sc, ticks, \
+      update_flag); \
   }
 
 #define ARRANGER_OBJ_DECLARE_SHIFT_TICKS(cc,sc) \
   void \
   sc##_shift_by_ticks ( \
     cc * self, \
-    long ticks)
+    long ticks, \
+    ArrangerObjectUpdateFlag update_flag)
 
 /**
  * Shifts an object with a single Position by ticks
  * only.
  */
 #define ARRANGER_OBJ_DEFINE_SHIFT_TICKS(cc,sc) \
-  void \
-  sc##_shift_by_ticks ( \
-    cc * self, \
-    long ticks) \
+  ARRANGER_OBJ_DECLARE_SHIFT_TICKS (cc, sc) \
   { \
-    if (ticks) \
-      { \
-        Position tmp; \
-        position_set_to_pos ( \
-          &tmp, &self->pos); \
-        position_add_ticks (&tmp, ticks); \
-        SET_POS (self, pos, (&tmp), F_NO_TRANS_ONLY); \
-      } \
+    Position tmp; \
+    POSITION_MOVE_BY_TICKS ( \
+      tmp, F_NO_USE_CACHED, self, pos, ticks, \
+      update_flag); \
   }
 
 /**
  * Shifts an object with a start and end Position
  * by ticks.
  */
-#define ARRANGER_OBJ_DEFINE_SHIFT_TICKS_W_END_POS( \
+#define ARRANGER_OBJ_DEFINE_SHIFT_TICKS_W_LENGTH( \
   cc,sc) \
-  void \
-  sc##_shift_by_ticks ( \
-    cc * self, \
-    long ticks) \
+  ARRANGER_OBJ_DECLARE_SHIFT_TICKS (cc, sc) \
   { \
-    if (ticks) \
-      { \
-        Position tmp; \
-        position_set_to_pos ( \
-          &tmp, &self->start_pos); \
-        position_add_ticks (&tmp, ticks); \
-        SET_POS (self, start_pos, (&tmp), \
-                 F_NO_TRANS_ONLY); \
-        position_set_to_pos ( \
-          &tmp, &self->end_pos); \
-        position_add_ticks (&tmp, ticks); \
-        SET_POS (self, end_pos, (&tmp), \
-                 F_NO_TRANS_ONLY); \
-      } \
+    Position tmp; \
+    POSITION_MOVE_BY_TICKS ( \
+      tmp, F_NO_USE_CACHED, self, start_pos, ticks, \
+      update_flag); \
+    POSITION_MOVE_BY_TICKS ( \
+      tmp, F_NO_USE_CACHED, self, end_pos, ticks, \
+      update_flag); \
   }
 
 /**
@@ -329,22 +329,19 @@
     self, main_trans, lane, lane_trans, \
     AOI_TYPE_##caps)
 
-/** Generates a widget for the object. */
-#define ARRANGER_OBJ_DECLARE_GEN_WIDGET(cc,sc) \
-  void \
-  sc##_gen_widget ( \
-    cc * self)
-
 /**
  * Generates a widget for the object.
  *
  * To be used on objects without lane counterparts.
  */
-#define ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS( \
-  cc,sc) \
+#define ARRANGER_OBJ_DECLARE_GEN_WIDGET(cc,sc) \
   void \
   sc##_gen_widget ( \
-    cc * self) \
+    cc * self)
+
+#define ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS( \
+  cc,sc) \
+  ARRANGER_OBJ_DECLARE_GEN_WIDGET (cc, sc) \
   { \
     cc * c = self; \
     for (int i = 0; i < 2; i++) \
@@ -367,19 +364,35 @@
  *
  * @param sc snake_case of object's name (e.g.
  *   region).
- * @param _trans_only Only do transients.
+ * @param _update_flag Update flag
  */
 #define ARRANGER_OBJ_SET_POS( \
-  sc, obj, pos_name, pos, _trans_only) \
-  if (!_trans_only) \
-    { \
-      position_set_to_pos ( \
-        &sc##_get_main_##sc (obj)-> \
-        pos_name, pos); \
-    } \
-  position_set_to_pos ( \
-    &sc##_get_main_trans_##sc (obj)-> \
-    pos_name, pos)
+  sc, obj, pos_name, pos, _update_flag) \
+  switch (_update_flag) \
+  { \
+  case AO_UPDATE_THIS: \
+    position_set_to_pos ( \
+      &obj->pos_name, pos); \
+    break; \
+  case AO_UPDATE_TRANS: \
+    position_set_to_pos ( \
+      &sc##_get_main_trans_##sc (obj)-> \
+      pos_name, pos); \
+    break; \
+  case AO_UPDATE_NON_TRANS: \
+    position_set_to_pos ( \
+      &sc##_get_main_##sc (obj)-> \
+      pos_name, pos); \
+    break; \
+  case AO_UPDATE_ALL: \
+    position_set_to_pos ( \
+      &sc##_get_main_trans_##sc (obj)-> \
+      pos_name, pos); \
+    position_set_to_pos ( \
+      &sc##_get_main_##sc (obj)-> \
+      pos_name, pos); \
+    break; \
+  }
 
 /**
  * Sets the Position by the name of pos_name in
@@ -391,21 +404,35 @@
  *
  * @param sc snake_case of object's name (e.g.
  *   region).
- * @param trans_only Only set transient positions.
+ * @param _update_flag ArrangerObjectUpdateFlag.
  */
 #define ARRANGER_OBJ_SET_POS_WITH_LANE( \
-  sc, obj, pos_name, pos, _trans_only) \
+  sc, obj, pos_name, pos, _update_flag) \
   ARRANGER_OBJ_SET_POS ( \
-    sc, obj, pos_name, pos, _trans_only); \
-  position_set_to_pos ( \
-    &sc##_get_lane_trans_##sc (obj)-> \
-    pos_name, pos); \
-  if (!_trans_only) \
-    { \
-      position_set_to_pos ( \
-        &sc##_get_lane_##sc (obj)-> \
-        pos_name, pos); \
-    }
+    sc, obj, pos_name, pos, _update_flag); \
+  switch (_update_flag) \
+  { \
+  case AO_UPDATE_TRANS: \
+    position_set_to_pos ( \
+      &sc##_get_lane_trans_##sc (obj)-> \
+      pos_name, pos); \
+    break; \
+  case AO_UPDATE_NON_TRANS: \
+    position_set_to_pos ( \
+      &sc##_get_lane_##sc (obj)-> \
+      pos_name, pos); \
+    break; \
+  case AO_UPDATE_ALL: \
+    position_set_to_pos ( \
+      &sc##_get_lane_trans_##sc (obj)-> \
+      pos_name, pos); \
+    position_set_to_pos ( \
+      &sc##_get_lane_##sc (obj)-> \
+      pos_name, pos); \
+    break; \
+  default: \
+    break; \
+  }
 
 /**
  * Frees each object stored in obj_info
@@ -419,16 +446,9 @@
   void \
   sc##_free_all (cc * self)
 
-/**
- * Frees each object stored in obj_info.
- *
- * @param sc snake_case.
- * @param cc CamelCase.
- */
 #define ARRANGER_OBJ_DEFINE_FREE_ALL_LANELESS( \
   cc, sc) \
-  void \
-  sc##_free_all (cc * self) \
+  ARRANGER_OBJ_DECLARE_FREE_ALL_LANELESS (cc, sc) \
   { \
     sc##_free ( \
       sc##_get_main_trans_##sc (self)); \
@@ -455,8 +475,7 @@
   sc##_get_visible (cc * self)
 #define ARRANGER_OBJ_DEFINE_GET_VISIBLE( \
   cc, sc) \
-  cc * \
-  sc##_get_visible (cc * self) \
+  ARRANGER_OBJ_DECLARE_GET_VISIBLE (cc, sc) \
   { \
     self = sc##_get_main_##sc (self); \
     if (!arranger_object_info_should_be_visible ( \
@@ -464,5 +483,148 @@
       self = sc##_get_main_trans_##sc (self);\
     return self; \
   }
+
+/**
+ * Resizes the object on the left side or right
+ * side by given amount of ticks.
+ *
+ * @param left 1 to resize left side, 0 to resize
+ *   right side.
+ * @param ticks Number of ticks to resize.
+ * @param update_flag ArrangerObjectUpdateFlag.
+ */
+#define ARRANGER_OBJ_DECLARE_RESIZE( \
+  cc, sc) \
+  void \
+  sc##_resize ( \
+    cc * sc, \
+    int  left, \
+    long ticks, \
+    ArrangerObjectUpdateFlag update_flag)
+
+#define ARRANGER_OBJ_DEFINE_RESIZE( \
+  cc, sc) \
+  ARRANGER_OBJ_DECLARE_RESIZE (cc, sc) \
+  { \
+    Position tmp; \
+    if (left) \
+      { \
+        POSITION_MOVE_BY_TICKS ( \
+          tmp, F_NO_USE_CACHED, sc, start_pos, \
+          ticks, update_flag); \
+      } \
+    else \
+      { \
+        POSITION_MOVE_BY_TICKS ( \
+          tmp, F_NO_USE_CACHED, sc, end_pos, \
+          ticks, update_flag); \
+      } \
+  }
+
+/**
+ * Declaration for validation of a Position.
+ *
+ * Returns 1 if valid, 0 if invalid.
+ */
+#define ARRANGER_OBJ_DECLARE_VALIDATE_POS( \
+  cc,sc,pos_name) \
+  int \
+  sc##_validate_##pos_name ( \
+    const cc * sc, \
+    const Position * pos)
+
+/**
+ * Updates an arranger object's value in all
+ * counterparts specified by the update_flag.
+ *
+ * @param cc CamelCase.
+ * @param obj The object.
+ * @param val_name The struct member name.
+ * @param val_value The value to store.
+ * @param update_flag The ArrangerObjectUpdateFlag.
+ */
+#define ARRANGER_OBJ_SET_PRIMITIVE_VAL( \
+  cc,obj,val_name,val_value, update_flag) \
+  switch (update_flag) \
+    { \
+    case AO_UPDATE_THIS: \
+      obj->val_name = val_value; \
+      break; \
+    case AO_UPDATE_TRANS: \
+      obj = (cc *) obj->obj_info.main_trans; \
+      obj->val_name = val_value; \
+      obj = (cc *) obj->obj_info.lane_trans; \
+      obj->val_name = val_value; \
+      break; \
+    case AO_UPDATE_NON_TRANS: \
+      obj = (cc *) obj->obj_info.main; \
+      obj->val_name = val_value; \
+      obj = (cc *) obj->obj_info.lane; \
+      obj->val_name = val_value; \
+      break; \
+    case AO_UPDATE_ALL: \
+      obj = (cc *) obj->obj_info.main; \
+      obj->val_name = val_value; \
+      obj = (cc *) obj->obj_info.lane; \
+      obj->val_name = val_value; \
+      obj = (cc *) obj->obj_info.main_trans; \
+      obj->val_name = val_value; \
+      obj = (cc *) obj->obj_info.lane_trans; \
+      obj->val_name = val_value; \
+      break; \
+    }
+
+/**
+ * Declares the minimal funcs for a movable arranger
+ * object without length, such as ChordObject's and
+ * AutomationPoint's.
+ */
+#define ARRANGER_OBJ_DECLARE_MOVABLE(cc,sc) \
+  ARRANGER_OBJ_DECLARE_IS_SELECTED (cc, sc); \
+  ARRANGER_OBJ_DECLARE_SET_POSES (cc, sc); \
+  ARRANGER_OBJ_DECLARE_MOVE (cc, sc); \
+  ARRANGER_OBJ_DECLARE_SHIFT_TICKS (cc, sc); \
+  ARRANGER_OBJ_DECLARE_GEN_WIDGET (cc, sc); \
+  ARRANGER_OBJ_DECLARE_GET_VISIBLE (cc, sc); \
+  ARRANGER_OBJ_DECLARE_VALIDATE_POS (cc, sc, pos)
+
+#define ARRANGER_OBJ_DEFINE_MOVABLE( \
+  cc,sc,selections_name,selections) \
+  ARRANGER_OBJ_DEFINE_IS_SELECTED ( \
+    cc,sc,selections_name,selections); \
+  ARRANGER_OBJ_DEFINE_SET_POSES (cc, sc); \
+  ARRANGER_OBJ_DEFINE_MOVE (cc, sc); \
+  ARRANGER_OBJ_DEFINE_SHIFT_TICKS (cc, sc); \
+  ARRANGER_OBJ_DEFINE_GET_VISIBLE (cc, sc)
+
+/**
+ * Declares the minimal funcs for a movable arranger
+ * object with length, such as MidiNote's and
+ * Region's.
+ */
+#define ARRANGER_OBJ_DECLARE_MOVABLE_W_LENGTH( \
+  cc,sc) \
+  ARRANGER_OBJ_DECLARE_IS_SELECTED (cc, sc); \
+  ARRANGER_OBJ_DECLARE_SET_POSES_W_LENGTH (cc, sc); \
+  ARRANGER_OBJ_DECLARE_MOVE_W_LENGTH (cc, sc); \
+  ARRANGER_OBJ_DECLARE_SHIFT_TICKS (cc, sc); \
+  ARRANGER_OBJ_DECLARE_GEN_WIDGET (cc, sc); \
+  ARRANGER_OBJ_DECLARE_GET_VISIBLE (cc, sc); \
+  ARRANGER_OBJ_DECLARE_RESIZE (cc, sc); \
+  ARRANGER_OBJ_DECLARE_VALIDATE_POS ( \
+    cc, sc, start_pos); \
+  ARRANGER_OBJ_DECLARE_VALIDATE_POS ( \
+    cc, sc, end_pos)
+
+#define ARRANGER_OBJ_DEFINE_MOVABLE_W_LENGTH( \
+  cc,sc,selections_name,selections) \
+  ARRANGER_OBJ_DEFINE_IS_SELECTED ( \
+    cc,sc,selections_name,selections); \
+  ARRANGER_OBJ_DEFINE_SET_POSES_W_LENGTH (cc, sc); \
+  ARRANGER_OBJ_DEFINE_MOVE_W_LENGTH (cc, sc); \
+  ARRANGER_OBJ_DEFINE_SHIFT_TICKS_W_LENGTH ( \
+    cc, sc); \
+  ARRANGER_OBJ_DEFINE_GET_VISIBLE (cc, sc); \
+  ARRANGER_OBJ_DEFINE_RESIZE (cc, sc)
 
 #endif

@@ -911,8 +911,7 @@ channel_handle_recording (Channel * self)
         {
           /* set region end pos */
           region_set_end_pos (
-            region, &tmp, F_NO_TRANS_ONLY,
-            F_NO_VALIDATE);
+            region, &tmp, AO_UPDATE_ALL);
         }
       else /* if not already in a region */
         {
@@ -959,8 +958,7 @@ channel_handle_recording (Channel * self)
                       midi_region_find_unended_note (
                         mr, ev->note_pitch);
                     midi_note_set_end_pos (
-                      mn, &tmp, F_NO_TRANS_ONLY,
-                      F_NO_VALIDATE);
+                      mn, &tmp, AO_UPDATE_ALL);
                     break;
                   default:
                     /* TODO */

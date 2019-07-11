@@ -131,6 +131,9 @@ automation_point_schema = {
     AutomationPoint, automation_point_fields_schema),
 };
 
+ARRANGER_OBJ_DECLARE_MOVABLE (
+  AutomationPoint, automation_point);
+
 void
 automation_point_init_loaded (
   AutomationPoint * ap);
@@ -169,7 +172,7 @@ void
 automation_point_update_fvalue (
   AutomationPoint * ap,
   float             fval,
-  int               trans_only);
+  ArrangerObjectUpdateFlag update_flag);
 
 /**
  * Sets the AutomationTrack and the index in the
@@ -203,21 +206,6 @@ automation_point_clone (
 Track *
 automation_point_get_track (
   AutomationPoint * ap);
-
-ARRANGER_OBJ_DECLARE_GEN_WIDGET (
-  AutomationPoint, automation_point);
-
-ARRANGER_OBJ_DECLARE_SHIFT_TICKS (
-  AutomationPoint, automation_point);
-
-DECLARE_ARRANGER_OBJ_MOVE (
-  AutomationPoint, automation_point);
-
-DECLARE_ARRANGER_OBJ_SET_POS (
-  AutomationPoint, automation_point);
-
-DECLARE_IS_ARRANGER_OBJ_SELECTED (
-  AutomationPoint, automation_point);
 
 /**
  * Frees the automation point.

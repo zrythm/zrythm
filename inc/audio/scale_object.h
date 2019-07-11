@@ -108,6 +108,9 @@ scale_object_schema = {
     ScaleObject, scale_object_fields_schema),
 };
 
+ARRANGER_OBJ_DECLARE_MOVABLE (
+  ScaleObject, scale_object);
+
 /**
  * Init the ScaleObject after the Project is loaded.
  */
@@ -141,23 +144,12 @@ scale_object_get_track (
   ScaleObject * self);
 
 /**
- * Sets the cache Position.
- */
-void
-scale_object_set_cache_pos (
-  ScaleObject * scale,
-  const Position * pos);
-
-/**
  * Sets the Track of the scale.
  */
 void
 scale_object_set_track (
   ScaleObject * self,
   Track *  track);
-
-ARRANGER_OBJ_DECLARE_GEN_WIDGET (
-  ScaleObject, scale_object);
 
 /**
  * Finds the ScaleObject in the project
@@ -174,42 +166,6 @@ ScaleObject *
 scale_object_clone (
   ScaleObject * src,
   ScaleObjectCloneFlag flag);
-
-/**
- * Sets the ScaleObject position.
- *
- * @param trans_only Only do transients.
- */
-void
-scale_object_set_pos (
-  ScaleObject *   self,
-  const Position * pos,
-  int        trans_only);
-
-DECLARE_IS_ARRANGER_OBJ_SELECTED (
-  ScaleObject, scale_object);
-
-ARRANGER_OBJ_DECLARE_SHIFT_TICKS (
- ScaleObject, scale_object);
-
-DECLARE_ARRANGER_OBJ_SET_POS (
- ScaleObject, scale_object);
-
-/**
- * Moves the ScaleObject by the given amount of
- * ticks.
- *
- * @param use_cached_pos Add the ticks to the cached
- *   Position instead of its current Position.
- * @param trans_only Only move transients.
- * @return Whether moved or not.
- */
-int
-scale_object_move (
-  ScaleObject * scale,
-  long     ticks,
-  int      use_cached_pos,
-  int      trans_only);
 
 /**
  * Frees the ScaleObject.

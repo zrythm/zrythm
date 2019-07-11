@@ -151,13 +151,18 @@ velocity_set_cache_vel (
 void
 velocity_set_val (
   Velocity * self,
-  int        val)
+  int        val,
+  ArrangerObjectUpdateFlag update_flag)
 {
+  ARRANGER_OBJ_SET_PRIMITIVE_VAL (
+    Velocity, self, vel, CLAMP (val, 0, 127),
+    update_flag);
+
   /* re-set the midi note value to set a note off
    * event */
-  self->vel = CLAMP (val, 0, 127);
   midi_note_set_val (self->midi_note,
-                     self->midi_note->val);
+                     self->midi_note->val,
+                     update_flag);
 }
 
 ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (

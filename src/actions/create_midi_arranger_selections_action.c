@@ -51,15 +51,22 @@ int
 create_midi_arranger_selections_action_do (
   CreateMidiArrangerSelectionsAction * self)
 {
-  g_message ("CALLING");
   MidiNote * mn;
 	for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
-  g_message ("CALLING %d", i);
+      mn = midi_note_find (self->mas->midi_notes[i]);
+
       /* if already created (this should be the case
-       * the first time) then move on */
-      if (midi_note_find (self->mas->midi_notes[i]))
-        continue;
+       * the first time) then move on, after setting
+       * the transient end pos to the main */
+      if (mn)
+        {
+          mn =
+            midi_note_get_main_trans_midi_note (
+              mn);
+
+          continue;
+        }
 
       /* clone the clone */
       mn =
