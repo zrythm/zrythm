@@ -278,18 +278,10 @@ main_window_widget_init (MainWindowWidget * self)
     G_N_ELEMENTS (actions),
     self);
 
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      HEADER_NOTEBOOK_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      TOP_BAR_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      CENTER_DOCK_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      BOT_BAR_WIDGET_TYPE, NULL)));
+  g_type_ensure (HEADER_NOTEBOOK_WIDGET_TYPE);
+  g_type_ensure (TOP_BAR_WIDGET_TYPE);
+  g_type_ensure (CENTER_DOCK_WIDGET_TYPE);
+  g_type_ensure (BOT_BAR_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

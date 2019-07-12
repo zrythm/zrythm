@@ -252,14 +252,18 @@ midi_modifier_arranger_widget_ramp (
     F_PADDING);
 
   /* find enclosed velocities */
-  Velocity * velocities[800];
-  int        num_velocities = 0;
-  track_get_velocities_in_range (
+  int         velocities_size = 1;
+  Velocity ** velocities =
+    (Velocity **)
+    malloc (velocities_size * sizeof (Velocity *));
+  int         num_velocities = 0;
+  track_get_velocities_using_range (
     region_get_track (CLIP_EDITOR->region),
     &selection_start_pos,
     &selection_end_pos,
-    velocities,
-    &num_velocities);
+    &velocities,
+    &num_velocities,
+    &velocities_size, 1);
 
   /* ramp */
   Velocity * vel;
@@ -300,6 +304,26 @@ midi_modifier_arranger_widget_ramp (
       velocity_set_val (
         vel, val, AO_UPDATE_ALL);
     }
+
+  /* find velocities not hit */
+  num_velocities = 0;
+  track_get_velocities_using_range (
+    region_get_track (CLIP_EDITOR->region),
+    &selection_start_pos,
+    &selection_end_pos,
+    &velocities,
+    &num_velocities,
+    &velocities_size, 0);
+
+  /* reset their value */
+  for (int i = 0; i < num_velocities; i++)
+    {
+      vel = velocities[i];
+      velocity_set_val (
+        vel, vel->cache_vel, AO_UPDATE_ALL);
+    }
+
+  free (velocities);
 }
 
 void
@@ -476,8 +500,8 @@ midi_modifier_arranger_widget_get_cursor (
           int is_resize =
             vw && vw->resize;
 
-          g_message ("hit resize %d %d",
-                     is_hit, is_resize);
+          /*g_message ("hit resize %d %d",*/
+                     /*is_hit, is_resize);*/
           if (is_hit && is_resize)
             {
               return ARRANGER_CURSOR_RESIZING_UP;

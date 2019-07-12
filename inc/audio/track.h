@@ -500,15 +500,21 @@ track_set_pos (
 
 /**
  * Fills in the array with all the velocities in
- * the project that are within the positions given.
+ * the project that are within or outside the
+ * range given.
+ *
+ * @param inside Whether to find velocities inside
+ *   the range (1) or outside (0).
  */
 void
-track_get_velocities_in_range (
-  Track *     track,
-  Position *  start_pos,
-  Position *  end_pos,
-  Velocity ** array,
-  int *       num_velocities);
+track_get_velocities_using_range (
+  const Track *    track,
+  const Position * start_pos,
+  const Position * end_pos,
+  Velocity ***     velocities,
+  int *            num_velocities,
+  int *            velocities_size,
+  int              inside);
 
 /**
  * Getter for the track name.

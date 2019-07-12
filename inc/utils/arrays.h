@@ -77,14 +77,11 @@
  */
 #define array_double_size_if_full( \
   array,count,size,type) \
-  if (count == size) \
+  if ((count) == (size)) \
     { \
       (size) *= 2; \
-      array = \
-        realloc ( \
-          array, \
-          sizeof (type) * \
-            (size)); \
+      (array) = \
+        realloc ((array), sizeof (type) * (size)); \
     }
 
 /**

@@ -323,15 +323,21 @@ track_set_muted (Track * track,
 
 /**
  * Fills in the array with all the velocities in
- * the project that are within the positions given.
+ * the project that are within or outside the
+ * range given.
+ *
+ * @param inside Whether to find velocities inside
+ *   the range (1) or outside (0).
  */
 void
-track_get_velocities_in_range (
-  Track *     track,
-  Position *  start_pos,
-  Position *  end_pos,
-  Velocity ** velocities,
-  int *       num_velocities)
+track_get_velocities_using_range (
+  const Track *    track,
+  const Position * start_pos,
+  const Position * end_pos,
+  Velocity ***     velocities,
+  int *            num_velocities,
+  int *            velocities_size,
+  int              inside)
 {
   if (track->type != TRACK_TYPE_MIDI &&
       track->type != TRACK_TYPE_INSTRUMENT)
@@ -354,14 +360,30 @@ track_get_velocities_in_range (
               midi_note_get_global_start_pos (
                 mn, &global_start_pos);
 
-              if (position_is_after_or_equal (
+#define ADD_VELOCITY \
+  array_double_size_if_full ( \
+    *velocities, *num_velocities, \
+    *velocities_size, Velocity *); \
+  (*velocities)[(* num_velocities)++] = \
+    mn->vel
+
+              if (inside &&
+                  position_is_after_or_equal (
                     &global_start_pos, start_pos) &&
                   position_is_before_or_equal (
                     &global_start_pos, end_pos))
                 {
-                  velocities[(* num_velocities)++] =
-                    mn->vel;
+                  ADD_VELOCITY;
                 }
+              else if (!inside &&
+                  (position_is_before (
+                    &global_start_pos, start_pos) ||
+                  position_is_after (
+                    &global_start_pos, end_pos)))
+                {
+                  ADD_VELOCITY;
+                }
+#undef ADD_VELOCITY
             }
         }
     }

@@ -1750,12 +1750,6 @@ drag_end (GtkGestureDrag *gesture,
     (ArrangerWidget *) user_data;
   GET_PRIVATE;
 
-  /* reset start coordinates and offsets */
-  ar_prv->start_x = 0;
-  ar_prv->start_y = 0;
-  ar_prv->last_offset_x = 0;
-  ar_prv->last_offset_y = 0;
-
   GET_ARRANGER_ALIASES (self);
 
   if (midi_arranger)
@@ -1785,6 +1779,12 @@ drag_end (GtkGestureDrag *gesture,
       /* deselect all */
       arranger_widget_select_all (self, 0);
     }
+
+  /* reset start coordinates and offsets */
+  ar_prv->start_x = 0;
+  ar_prv->start_y = 0;
+  ar_prv->last_offset_x = 0;
+  ar_prv->last_offset_y = 0;
 
   ar_prv->shift_held = 0;
   ar_prv->ctrl_held = 0;

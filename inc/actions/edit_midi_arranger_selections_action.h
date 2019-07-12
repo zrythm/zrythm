@@ -27,6 +27,7 @@
 #define __UNDO_EDIT_MA_SELECTIONS_ACTION_H__
 
 #include "actions/undoable_action.h"
+#include "audio/position.h"
 
 typedef struct MidiArrangerSelections
   MidiArrangerSelections;
@@ -44,7 +45,13 @@ typedef enum EditMidiArrangerSelectionsType
 {
   EMAS_TYPE_RESIZE_L,
   EMAS_TYPE_RESIZE_R,
+
+  /** Change in velocities by dragging their
+   * edges. */
   EMAS_TYPE_VELOCITY_CHANGE,
+
+  /** Change in velocities by ramping. */
+  EMAS_TYPE_VELOCITY_RAMP,
 } EditMidiArrangerSelectionsType;
 
 /**
@@ -52,7 +59,7 @@ typedef enum EditMidiArrangerSelectionsType
  */
 typedef struct EditMidiArrangerSelectionsAction
 {
-  UndoableAction              parent_instance;
+  UndoableAction           parent_instance;
 
   /** Clone of selections. */
   MidiArrangerSelections * mas;
@@ -68,6 +75,20 @@ typedef struct EditMidiArrangerSelectionsAction
 
   /** If this is the first time calling do. */
   int                    first_call;
+
+  /** The positions when ramping velocities. */
+  Position               start_pos;
+  Position               end_pos;
+
+  /** The original velocities when ramping. */
+  int *                  vel_before;
+  int                    num_vel_before;
+  int                    vel_before_size;
+
+  /** The velocities changed to when ramping. */
+  int *                  vel_after;
+  int                    num_vel_after;
+  int                    vel_after_size;
 
 } EditMidiArrangerSelectionsAction;
 
