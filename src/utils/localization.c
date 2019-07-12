@@ -64,6 +64,10 @@ localization_get_string_code (
       str[0] = 'i';
       str[1] = 't';
       break;
+    case UI_NORWEGIAN:
+      str[0] = 'n';
+      str[1] = 'b';
+      break;
     case UI_SPANISH:
       str[0] = 'e';
       str[1] = 's';
@@ -152,6 +156,7 @@ localization_init ()
     IS_MATCH(GERMAN,"de_");
     IS_MATCH(FRENCH,"fr_");
     IS_MATCH(ITALIAN,"it_");
+    IS_MATCH(NORWEGIAN,"nb_");
     IS_MATCH(SPANISH,"es_");
     IS_MATCH(JAPANESE,"ja_");
     IS_MATCH(PORTUGUESE,"pt_");

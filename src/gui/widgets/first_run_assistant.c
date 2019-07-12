@@ -23,6 +23,7 @@
  */
 
 #include "audio/engine.h"
+#include "audio/engine_alsa.h"
 #include "audio/engine_jack.h"
 #include "audio/engine_pa.h"
 #include "gui/widgets/first_run_assistant.h"
@@ -61,9 +62,10 @@ on_reset_clicked (
 }
 
 /**
- * Validates the current audio/MIDI backend selection.
+ * Validates the current audio/MIDI backend
+ * selection.
  */
-static int
+static void
 audio_midi_backend_selection_validate (
   FirstRunAssistantWidget * self)
 {
@@ -73,52 +75,73 @@ audio_midi_backend_selection_validate (
     gtk_combo_box_get_active (self->midi_backend);
 
   /* test audio backends */
-  if (ab == AUDIO_BACKEND_JACK)
+  switch (ab)
     {
+    case AUDIO_BACKEND_JACK:
 #ifdef HAVE_JACK
       if (engine_jack_test (GTK_WINDOW (self)))
-        return 1;
+        return;
 #else
       ui_show_error_message (
         self,
         _("JACK functionality is disabled"));
-      return 1;
+      return;
 #endif
-    }
-  else if (ab == AUDIO_BACKEND_ALSA)
-    {
-      ui_show_error_message (
-        self, "ALSA backend not implemented");
-      return 1;
-    }
-  else if (ab == AUDIO_BACKEND_PORT_AUDIO)
-    {
+      break;
+    case AUDIO_BACKEND_ALSA:
+      if (engine_alsa_test (GTK_WINDOW (self)))
+        return;
+      break;
+    case AUDIO_BACKEND_PORT_AUDIO:
 #ifdef HAVE_PORT_AUDIO
       if (engine_pa_test (GTK_WINDOW (self)))
-        return 1;
+        return;
 #else
       ui_show_error_message (
         self,
         _("PortAudio functionality is disabled"));
-      return 1;
+      return;
 #endif
+      break;
+    default:
+      break;
     }
 
   /* test MIDI backends */
-  if (mb == MIDI_BACKEND_JACK)
+  switch (mb)
     {
+    case MIDI_BACKEND_JACK:
 #ifdef HAVE_JACK
       if (engine_jack_test (GTK_WINDOW (self)))
-        return 1;
+        return;
 #else
       ui_show_error_message (
         self,
         _("JACK functionality is disabled"));
-      return 1;
+      return;
 #endif
+      break;
+    case MIDI_BACKEND_ALSA:
+      if (engine_alsa_test (GTK_WINDOW (self)))
+        return;
+      break;
+    default:
+      break;
     }
 
-  return 0;
+  if (ab == AUDIO_BACKEND_ALSA &&
+      mb == MIDI_BACKEND_JACK)
+    {
+      ui_show_error_message (
+        self,
+        _("Backend combination not supported"));
+      return;
+    }
+
+  ui_show_error_message (
+    self,
+    _("The selected backends are operational"));
+  return;
 }
 
 static void

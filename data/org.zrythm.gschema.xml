@@ -42,11 +42,12 @@
     <value nick="german" value="1"/>
     <value nick="french" value="2"/>
     <value nick="italian" value="3"/>
-    <value nick="spanish" value="4"/>
-    <value nick="japanese" value="5"/>
-    <value nick="portuguese" value="6"/>
-    <value nick="russian" value="7"/>
-    <value nick="chinese" value="8"/>
+    <value nick="norwegian" value="4"/>
+    <value nick="spanish" value="5"/>
+    <value nick="japanese" value="6"/>
+    <value nick="portuguese" value="7"/>
+    <value nick="russian" value="8"/>
+    <value nick="chinese" value="9"/>
   </enum>
   <enum id="org.zrythm.preferences.export-time-range-enum">
     <value nick="song" value="0"/>

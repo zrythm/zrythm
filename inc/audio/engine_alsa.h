@@ -35,6 +35,17 @@ engine_alsa_receive_midi_events (
   AudioEngine * self,
   int           print);
 
+/**
+ * Tests if ALSA works.
+ *
+ * @param win If window is non-null, it will display
+ *   a message to it.
+ * @return 0 for OK, non-zero for not ok.
+ */
+int
+engine_alsa_test (
+  GtkWindow * win);
+
 int
 alsa_midi_setup (
   AudioEngine * self,

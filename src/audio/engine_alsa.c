@@ -28,9 +28,12 @@
 #include "audio/midi.h"
 #include "audio/port.h"
 #include "project.h"
+#include "utils/ui.h"
 
 #include <alsa/asoundlib.h>
 #include <pthread.h>
+
+#include <glib/gi18n.h>
 
 #define POLY 10
 
@@ -294,6 +297,37 @@ midi_callback (
     &self->midi_in->midi_events->access_sem);
 
   return 0;
+}
+
+/**
+ * Tests if ALSA works.
+ *
+ * @param win If window is non-null, it will display
+ *   a message to it.
+ * @return 0 for OK, non-zero for not ok.
+ */
+int
+engine_alsa_test (
+  GtkWindow * win)
+{
+  snd_pcm_t * playback_handle;
+  int err =
+    snd_pcm_open(
+      &playback_handle, "default",
+      SND_PCM_STREAM_PLAYBACK, 0);
+  if (err < 0)
+    {
+      char * msg =
+        g_strdup_printf (
+          _("ALSA Error: %s"),
+          snd_strerror (err));
+      ui_show_error_message (
+        win, msg);
+      g_free (msg);
+      return 1;
+    }
+
+  return err;
 }
 
 static void *
