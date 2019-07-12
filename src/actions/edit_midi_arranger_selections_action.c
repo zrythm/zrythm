@@ -23,16 +23,22 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/midi_arranger.h"
 #include "project.h"
+#include "utils/arrays.h"
 #include "utils/flags.h"
 
 #include <glib/gi18n.h>
 
+/**
+ * Create the new action.
+ */
 UndoableAction *
 edit_midi_arranger_selections_action_new (
   MidiArrangerSelections * mas,
   EditMidiArrangerSelectionsType type,
   long                     ticks,
-  int                      diff)
+  int                      diff,
+  Position *               start_pos,
+  Position *               end_pos)
 {
 	EditMidiArrangerSelectionsAction * self =
     calloc (1, sizeof (
@@ -41,11 +47,78 @@ edit_midi_arranger_selections_action_new (
   ua->type =
 	  UNDOABLE_ACTION_TYPE_EDIT_MA_SELECTIONS;
 
-  self->mas = midi_arranger_selections_clone (mas);
   self->type = type;
   self->ticks = ticks;
   self->diff = diff;
   self->first_call = 1;
+  /*if (start_pos)*/
+    /*position_set_to_pos (*/
+      /*&self->start_pos, start_pos);*/
+  /*if (end_pos)*/
+    /*position_set_to_pos (*/
+      /*&self->end_pos, end_pos);*/
+
+  if (type == EMAS_TYPE_VELOCITY_RAMP)
+    {
+      /* create new midi arranger selections to
+       * hold the midi notes that were ramped */
+      self->mas =
+        calloc (1, sizeof (MidiArrangerSelections));
+
+      /* find enclosed velocities */
+      int vel_size = 1;
+      Velocity ** velocities =
+        (Velocity **)
+        malloc (
+          vel_size * sizeof (Velocity *));
+      int num_vel = 0;
+      track_get_velocities_in_range (
+        region_get_track (CLIP_EDITOR->region),
+        start_pos,
+        end_pos,
+        &velocities,
+        &num_vel,
+        &vel_size, 1);
+
+      self->vel_before =
+        malloc (num_vel * sizeof (int));
+      self->vel_after =
+        malloc (num_vel * sizeof (int));
+
+      Velocity * vel;
+      MidiNote * mn;
+      for (int i = 0; i < num_vel; i++)
+        {
+          vel = velocities[i];
+
+          /* store the before and after velocities */
+          self->vel_before[i] = vel->cache_vel;
+          self->vel_after[i] = vel->vel;
+
+          /* add a midi note clone to the mas */
+          mn =
+            midi_note_clone (
+              vel->midi_note, MIDI_NOTE_CLONE_COPY);
+          array_append (self->mas->midi_notes,
+                        self->mas->num_midi_notes,
+                        mn);
+        }
+
+      free (velocities);
+
+      /* return NULL if nothing to be done */
+      if (self->mas->num_midi_notes == 0)
+        {
+          edit_midi_arranger_selections_action_free (
+            self);
+          return NULL;
+        }
+    }
+  else
+    {
+      self->mas =
+        midi_arranger_selections_clone (mas);
+    }
 
   return ua;
 }
@@ -54,6 +127,7 @@ int
 edit_midi_arranger_selections_action_do (
 	EditMidiArrangerSelectionsAction * self)
 {
+  g_message ("performing");
   MidiNote * mn;
   for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
@@ -100,6 +174,16 @@ edit_midi_arranger_selections_action_do (
                 mn->vel, mn->vel->vel + self->diff,
                 AO_UPDATE_ALL);
             }
+          break;
+        case EMAS_TYPE_VELOCITY_RAMP:
+              /* change velocity */
+              velocity_set_val (
+                mn->vel, self->vel_after[i],
+                AO_UPDATE_ALL);
+              /* set the cache too */
+              ARRANGER_OBJ_SET_PRIMITIVE_VAL (
+                Velocity, mn->vel, cache_vel,
+                self->vel_after[i], AO_UPDATE_ALL);
           break;
         default:
           g_warn_if_reached ();
@@ -153,6 +237,15 @@ edit_midi_arranger_selections_action_undo (
             mn->vel, mn->vel->vel - self->diff,
             AO_UPDATE_ALL);
           break;
+        case EMAS_TYPE_VELOCITY_RAMP:
+          if (!self->first_call)
+            {
+              /* change velocity */
+              velocity_set_val (
+                mn->vel, self->vel_before[i],
+                AO_UPDATE_ALL);
+            }
+          break;
         default:
           g_warn_if_reached ();
           break;
@@ -173,6 +266,7 @@ edit_midi_arranger_selections_action_stringize (
       case EMAS_TYPE_RESIZE_R:
         return g_strdup (_("Resize MIDI Note(s)"));
       case EMAS_TYPE_VELOCITY_CHANGE:
+      case EMAS_TYPE_VELOCITY_RAMP:
         if (self->mas->num_midi_notes == 1)
           return g_strdup (_("Change Velocity"));
         else if (self->mas->num_midi_notes > 1)
@@ -188,6 +282,8 @@ edit_midi_arranger_selections_action_free (
 	EditMidiArrangerSelectionsAction * self)
 {
   midi_arranger_selections_free (self->mas);
+  free (self->vel_before);
+  free (self->vel_after);
 
   free (self);
 }

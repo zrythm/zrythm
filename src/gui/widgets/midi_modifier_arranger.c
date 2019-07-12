@@ -257,7 +257,7 @@ midi_modifier_arranger_widget_ramp (
     (Velocity **)
     malloc (velocities_size * sizeof (Velocity *));
   int         num_velocities = 0;
-  track_get_velocities_using_range (
+  track_get_velocities_in_range (
     region_get_track (CLIP_EDITOR->region),
     &selection_start_pos,
     &selection_end_pos,
@@ -307,7 +307,7 @@ midi_modifier_arranger_widget_ramp (
 
   /* find velocities not hit */
   num_velocities = 0;
-  track_get_velocities_using_range (
+  track_get_velocities_in_range (
     region_get_track (CLIP_EDITOR->region),
     &selection_start_pos,
     &selection_end_pos,
@@ -416,17 +416,50 @@ midi_modifier_arranger_widget_on_drag_end (
   midi_modifier_arranger_widget_update_visibility (
     self);
 
-  if (ar_prv->action ==
-        UI_OVERLAY_ACTION_RESIZING_UP)
+  switch (ar_prv->action)
     {
-      UndoableAction * ua =
-        (UndoableAction *)
-        emas_action_new_vel_change (
-          MA_SELECTIONS,
-          self->vel_diff);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+    case UI_OVERLAY_ACTION_RESIZING_UP:
+      {
+        UndoableAction * ua =
+          (UndoableAction *)
+          emas_action_new_vel_change (
+            MA_SELECTIONS,
+            self->vel_diff);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
+    case UI_OVERLAY_ACTION_RAMPING:
+      {
+        Position selection_start_pos,
+                 selection_end_pos;
+        ui_px_to_pos_piano_roll (
+          ar_prv->start_x,
+          ar_prv->last_offset_x >= 0 ?
+            &selection_start_pos :
+            &selection_end_pos,
+          F_PADDING);
+        ui_px_to_pos_piano_roll (
+          ar_prv->start_x + ar_prv->last_offset_x,
+          ar_prv->last_offset_x >= 0 ?
+            &selection_end_pos :
+            &selection_start_pos,
+          F_PADDING);
+        UndoableAction * ua =
+          (UndoableAction *)
+          emas_action_new_vel_ramp (
+            MA_SELECTIONS,
+            &selection_start_pos,
+            &selection_end_pos);
+        if (ua)
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+      }
+      break;
+    default:
+      break;
     }
+
 
   self->start_velocity = NULL;
 

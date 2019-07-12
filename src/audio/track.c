@@ -330,7 +330,7 @@ track_set_muted (Track * track,
  *   the range (1) or outside (0).
  */
 void
-track_get_velocities_using_range (
+track_get_velocities_in_range (
   const Track *    track,
   const Position * start_pos,
   const Position * end_pos,

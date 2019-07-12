@@ -77,18 +77,20 @@ typedef struct EditMidiArrangerSelectionsAction
   int                    first_call;
 
   /** The positions when ramping velocities. */
-  Position               start_pos;
-  Position               end_pos;
+  //Position               start_pos;
+  //Position               end_pos;
+
+  /** Number of velocities. */
+  //int                    num_vel;
+
+  /** Velocity dynamic array sizes. */
+  //int                    vel_size;
 
   /** The original velocities when ramping. */
   int *                  vel_before;
-  int                    num_vel_before;
-  int                    vel_before_size;
 
   /** The velocities changed to when ramping. */
   int *                  vel_after;
-  int                    num_vel_after;
-  int                    vel_after_size;
 
 } EditMidiArrangerSelectionsAction;
 
@@ -99,7 +101,8 @@ typedef struct EditMidiArrangerSelectionsAction
 #define emas_action_new_vel_change( \
   mas, diff) \
   edit_midi_arranger_selections_action_new ( \
-    mas, EMAS_TYPE_VELOCITY_CHANGE, -1, diff)
+    mas, EMAS_TYPE_VELOCITY_CHANGE, -1, diff, \
+    NULL, NULL)
 
 /**
  * Simple way to create an action for resizing L.
@@ -107,7 +110,8 @@ typedef struct EditMidiArrangerSelectionsAction
 #define emas_action_new_resize_l( \
   mas, ticks) \
   edit_midi_arranger_selections_action_new ( \
-    mas, EMAS_TYPE_RESIZE_L, ticks, -1)
+    mas, EMAS_TYPE_RESIZE_L, ticks, -1, \
+    NULL, NULL)
 
 /**
  * Simple way to create an action for resizing R.
@@ -115,7 +119,17 @@ typedef struct EditMidiArrangerSelectionsAction
 #define emas_action_new_resize_r( \
   mas, ticks) \
   edit_midi_arranger_selections_action_new ( \
-    mas, EMAS_TYPE_RESIZE_R, ticks, -1)
+    mas, EMAS_TYPE_RESIZE_R, ticks, -1, \
+    NULL, NULL)
+
+/**
+ * Simple way to create an action for ramping.
+ */
+#define emas_action_new_vel_ramp( \
+  mas, start_pos, end_pos) \
+  edit_midi_arranger_selections_action_new ( \
+    mas, EMAS_TYPE_VELOCITY_RAMP, -1, -1, \
+    start_pos, end_pos)
 
 /**
  * Create the new action.
@@ -125,7 +139,9 @@ edit_midi_arranger_selections_action_new (
   MidiArrangerSelections * mas,
   EditMidiArrangerSelectionsType type,
   long                     ticks,
-  int                      diff);
+  int                      diff,
+  Position *               start_pos,
+  Position *               end_pos);
 
 int
 edit_midi_arranger_selections_action_do (
