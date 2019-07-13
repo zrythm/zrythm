@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-07-11 14:03+0000\n"
+"PO-Revision-Date: 2019-07-12 22:15+0000\n"
 "Last-Translator: Waui <wau-wau@tutanota.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
 "\n"
@@ -1059,11 +1059,11 @@ msgstr ""
 
 #: resources/ui/midi_controller_popover.ui:37
 msgid "Controllers found"
-msgstr ""
+msgstr "Gefundene Controller"
 
 #: resources/ui/midi_controller_popover.ui:79
 msgid "Rescan"
-msgstr "Erneut scannen"
+msgstr "Erneut suchen"
 
 #: resources/ui/midi_controller_popover.ui:83
 msgid "Scan again for MIDI controllers"
@@ -1202,7 +1202,7 @@ msgstr "Name"
 
 #: resources/ui/header_notebook.ui:17
 msgid "Home"
-msgstr ""
+msgstr "Heim"
 
 #: resources/ui/header_notebook.ui:54
 msgid "View"
@@ -1285,7 +1285,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:276
 msgid "Time Range"
-msgstr ""
+msgstr "Zeitbereich"
 
 #: resources/ui/export_dialog.ui:288
 msgid "Tracks"
@@ -1302,10 +1302,12 @@ msgstr "Kategorie"
 #: resources/ui/main_window.ui:119
 msgid "This is an app-notification. Click the button to dismiss"
 msgstr ""
+"Das ist eine Anwendungsbenachrichtigung. Klick den Knopf, um sie zu "
+"ignorieren."
 
 #: resources/ui/snap_grid_popover.ui:47
 msgid "Adaptive Grid"
-msgstr ""
+msgstr "Adaptives Raster"
 
 #: resources/ui/snap_grid_popover.ui:87
 msgid "Note length to snap to"
@@ -1325,7 +1327,7 @@ msgstr "Engine"
 
 #: resources/ui/preferences.ui:145
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "MIDI-Controller"
 
 #: resources/ui/preferences.ui:189
 msgid "Pan Algorithm"
