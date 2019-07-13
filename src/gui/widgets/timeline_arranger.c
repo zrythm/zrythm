@@ -344,6 +344,24 @@ timeline_arranger_widget_get_cursor (
 
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
+  RegionWidget * rw =
+    timeline_arranger_widget_get_hit_region (
+      self,
+      ar_prv->hover_x,
+      ar_prv->hover_y);
+  ChordObjectWidget * cw =
+    timeline_arranger_widget_get_hit_chord (
+      self,
+      ar_prv->hover_x,
+      ar_prv->hover_y);
+  ScaleObjectWidget * sw =
+    timeline_arranger_widget_get_hit_scale (
+      self,
+      ar_prv->hover_x,
+      ar_prv->hover_y);
+
+  int is_hit = rw || cw || sw;
+
   switch (action)
     {
     case UI_OVERLAY_ACTION_NONE:
@@ -351,41 +369,23 @@ timeline_arranger_widget_get_cursor (
         {
         case TOOL_SELECT_NORMAL:
         {
-          RegionWidget * rw =
-            timeline_arranger_widget_get_hit_region (
-              self,
-              ar_prv->hover_x,
-              ar_prv->hover_y);
-          ChordObjectWidget * cw =
-            timeline_arranger_widget_get_hit_chord (
-              self,
-              ar_prv->hover_x,
-              ar_prv->hover_y);
-          ScaleObjectWidget * sw =
-            timeline_arranger_widget_get_hit_scale (
-              self,
-              ar_prv->hover_x,
-              ar_prv->hover_y);
-
-          REGION_WIDGET_GET_PRIVATE (rw);
-          /* TODO aps */
-
-          int is_hit = rw || cw || sw;
-          int is_resize_l =
-            rw && rw_prv->resize_l;
-          int is_resize_r =
-            rw && rw_prv->resize_r;
-
-          if (is_hit && is_resize_l)
+          if (is_hit)
             {
-              return ARRANGER_CURSOR_RESIZING_L;
-            }
-          else if (is_hit && is_resize_r)
-            {
-              return ARRANGER_CURSOR_RESIZING_R;
-            }
-          else if (is_hit)
-            {
+              if (rw)
+                {
+                  REGION_WIDGET_GET_PRIVATE (rw);
+
+                  int is_resize_l =
+                    rw && rw_prv->resize_l;
+                  int is_resize_r =
+                    rw && rw_prv->resize_r;
+                  if (is_resize_l)
+                    return
+                      ARRANGER_CURSOR_RESIZING_L;
+                  else if (is_resize_r)
+                    return
+                      ARRANGER_CURSOR_RESIZING_R;
+                }
               return ARRANGER_CURSOR_GRAB;
             }
           else

@@ -33,6 +33,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/flags.h"
 #include "utils/ui.h"
 
 #include <glib/gi18n-lib.h>
@@ -157,6 +158,43 @@ region_draw_cb (RegionWidget * self,
         }
     }
 
+  if (rw_prv->show_cut)
+    {
+      int start_pos_px;
+
+      /* get absolute position */
+      start_pos_px =
+        ui_pos_to_px_timeline (
+          &r->start_pos, F_PADDING);
+      Position pos;
+      ui_px_to_pos_timeline (
+        start_pos_px + rw_prv->hover_x,
+        &pos, F_PADDING);
+
+      /* snap */
+      ArrangerWidgetPrivate * ar_prv =
+        arranger_widget_get_private (
+          region_get_track (r)->pinned ?
+            Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE) :
+            Z_ARRANGER_WIDGET (MW_TIMELINE));
+      if (!ar_prv->shift_held)
+        position_snap_simple (
+          &pos, SNAP_GRID_TIMELINE);
+
+      /* convert back to px */
+      px =
+        ui_pos_to_px_timeline (
+          &pos, F_PADDING);
+
+      /* convert to local px */
+      px -= start_pos_px;
+
+      cairo_set_source_rgba (
+        cr, 1, 1, 1, 1.0);
+      cairo_move_to (cr, px, 0);
+      cairo_line_to (cr, px, height);
+      cairo_stroke (cr);
+    }
 
  return FALSE;
 }
@@ -171,12 +209,23 @@ on_motion (GtkWidget *      widget,
 
   if (event->type == GDK_MOTION_NOTIFY)
     {
+      switch (P_TOOL)
+        {
+        case TOOL_CUT:
+          rw_prv->show_cut = 1;
+          break;
+        default:
+          rw_prv->show_cut = 0;
+          break;
+        }
+
       rw_prv->resize_l =
         region_widget_is_resize_l (
           self, event->x);
       rw_prv->resize_r =
         region_widget_is_resize_r (
           self, event->x);
+      rw_prv->hover_x = event->x;
     }
 
   if (event->type == GDK_ENTER_NOTIFY)
@@ -203,6 +252,7 @@ on_motion (GtkWidget *      widget,
           GTK_WIDGET (self),
           GTK_STATE_FLAG_PRELIGHT);
       bot_bar_change_status ("");
+      rw_prv->show_cut = 0;
     }
   return FALSE;
 }

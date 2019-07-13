@@ -64,6 +64,12 @@ typedef struct _RegionWidgetPrivate
   /** If cursor is at resizing R. */
   int                resize_r;
   GtkDrawingArea *   drawing_area;
+
+  /** Show a cut line or not. */
+  int                show_cut;
+
+  /** Last hover position. */
+  int                hover_x;
 } RegionWidgetPrivate;
 
 typedef struct _RegionWidgetClass

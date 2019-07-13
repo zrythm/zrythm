@@ -204,7 +204,7 @@ typedef enum UiOverlayAction
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
     "cut-clip", \
-    3, 6);
+    9, 6);
 
 #define ui_set_eraser_cursor(widget) \
   ui_set_cursor_from_icon_name ( \

@@ -686,6 +686,12 @@ on_key_release_action (
       ar_prv->ctrl_held = 0;
     }
 
+  if (event->keyval == GDK_KEY_Shift_L ||
+      event->keyval == GDK_KEY_Shift_R)
+    {
+      ar_prv->shift_held = 0;
+    }
+
   if (ar_prv->action ==
         UI_OVERLAY_ACTION_STARTING_MOVING)
     {
@@ -739,12 +745,22 @@ on_key_action (
   GET_ARRANGER_ALIASES(self);
 
   int num = 0;
+  g_message ("key action");
 
   if (event->type == GDK_KEY_PRESS &&
-      (event->keyval = GDK_KEY_Control_L ||
+      (event->keyval == GDK_KEY_Control_L ||
        event->keyval == GDK_KEY_Control_R))
     {
+      g_message ("ctrl held");
       ar_prv->ctrl_held = 1;
+    }
+
+  if (event->type == GDK_KEY_PRESS &&
+      (event->keyval == GDK_KEY_Shift_L ||
+      event->keyval == GDK_KEY_Shift_R))
+    {
+      ar_prv->shift_held = 1;
+      g_message ("shift held");
     }
 
   if (midi_arranger)
@@ -1820,6 +1836,25 @@ on_motion (GtkEventControllerMotion * event,
   ar_prv->hover_y = y;
 
   arranger_widget_refresh_cursor (self);
+
+  /* if not cut hide the cut line from the region
+   * immediately */
+  if (P_TOOL != TOOL_CUT)
+    {
+      RegionWidget * rw =
+        timeline_arranger_widget_get_hit_region (
+          Z_TIMELINE_ARRANGER_WIDGET (self),
+          ar_prv->hover_x,
+          ar_prv->hover_y);
+
+      if (rw)
+        {
+          REGION_WIDGET_GET_PRIVATE (rw);
+
+          rw_prv->show_cut = 0;
+          gtk_widget_queue_draw (GTK_WIDGET (rw));
+        }
+    }
 
   return FALSE;
 }
