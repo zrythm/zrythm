@@ -83,10 +83,11 @@ snap_grid_widget_init (SnapGridWidget * self)
   self->box =
     GTK_BOX (gtk_box_new (
                GTK_ORIENTATION_HORIZONTAL, 0));
-  self->img = GTK_IMAGE (
-    resources_get_icon (
-      ICON_TYPE_GNOME_BUILDER,
-      "completion-snippet-symbolic-light.svg"));
+  self->img =
+    GTK_IMAGE (
+      gtk_image_new_from_icon_name (
+        "z-kdenlive-snap",
+        GTK_ICON_SIZE_SMALL_TOOLBAR));
   self->label =
     GTK_LABEL (gtk_label_new (""));
   gtk_widget_set_tooltip_text (

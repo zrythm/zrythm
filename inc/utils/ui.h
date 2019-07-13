@@ -200,6 +200,12 @@ typedef enum UiOverlayAction
     "z-editor", \
     3, 6);
 
+#define ui_set_cut_clip_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "cut-clip", \
+    3, 6);
+
 #define ui_set_eraser_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \

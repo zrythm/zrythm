@@ -247,6 +247,7 @@ static GActionEntry actions[] = {
   /* modes */
   { "select-mode", activate_select_mode },
   { "edit-mode", activate_edit_mode },
+  { "cut-mode", activate_cut_mode },
   { "eraser-mode", activate_eraser_mode },
   { "ramp-mode", activate_ramp_mode },
   { "audition-mode", activate_audition_mode },

@@ -347,7 +347,9 @@ timeline_arranger_widget_get_cursor (
   switch (action)
     {
     case UI_OVERLAY_ACTION_NONE:
-      if (P_TOOL == TOOL_SELECT_NORMAL)
+      switch (P_TOOL)
+        {
+        case TOOL_SELECT_NORMAL:
         {
           RegionWidget * rw =
             timeline_arranger_widget_get_hit_region (
@@ -414,17 +416,25 @@ timeline_arranger_widget_get_cursor (
                 }
             }
         }
-      else if (P_TOOL == TOOL_SELECT_STRETCH)
-        {
+          break;
+        case TOOL_SELECT_STRETCH:
+          break;
+        case TOOL_EDIT:
+          ac = ARRANGER_CURSOR_EDIT;
+          break;
+        case TOOL_CUT:
+          ac = ARRANGER_CURSOR_CUT;
+          break;
+        case TOOL_ERASER:
+          ac = ARRANGER_CURSOR_ERASER;
+          break;
+        case TOOL_RAMP:
+          ac = ARRANGER_CURSOR_RAMP;
+          break;
+        case TOOL_AUDITION:
+          ac = ARRANGER_CURSOR_AUDITION;
+          break;
         }
-      else if (P_TOOL == TOOL_EDIT)
-        ac = ARRANGER_CURSOR_EDIT;
-      else if (P_TOOL == TOOL_ERASER)
-        ac = ARRANGER_CURSOR_ERASER;
-      else if (P_TOOL == TOOL_RAMP)
-        ac = ARRANGER_CURSOR_RAMP;
-      else if (P_TOOL == TOOL_AUDITION)
-        ac = ARRANGER_CURSOR_AUDITION;
       break;
     case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
@@ -830,6 +840,9 @@ timeline_arranger_widget_on_drag_begin_region_hit (
       else
         ar_prv->action =
           UI_OVERLAY_ACTION_STARTING_MOVING;
+      break;
+    case TOOL_CUT:
+      /* TODO */
       break;
     case TOOL_RAMP:
       /* TODO */

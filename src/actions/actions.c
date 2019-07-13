@@ -323,6 +323,19 @@ activate_edit_mode (GSimpleAction *action,
 }
 
 /**
+ * Activate cut mode.
+ */
+void
+activate_cut_mode (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  P_TOOL = TOOL_CUT;
+  EVENTS_PUSH (ET_TOOL_CHANGED, NULL);
+}
+
+/**
  * Activate eraser mode.
  */
 void

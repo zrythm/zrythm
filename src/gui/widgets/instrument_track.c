@@ -258,7 +258,7 @@ instrument_track_widget_init (
     "UI");
   self->show_automation =
     z_gtk_toggle_button_new_with_icon (
-      "z-format-justify-fill");
+      "z-node-type-cusp");
   ui_add_widget_tooltip (
     self->show_automation,
     "Show automation lanes");
@@ -277,8 +277,8 @@ instrument_track_widget_init (
     self->show_automation,
     _("Show Lanes - Shows the track's lanes"));
   self->lock =
-    GTK_TOGGLE_BUTTON (
-      gtk_toggle_button_new_with_label ("Lock"));
+    z_gtk_toggle_button_new_with_icon (
+      "object-unlocked");
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->lock),
     "Lock track");
@@ -286,8 +286,8 @@ instrument_track_widget_init (
     self->lock,
     "Lock - Makes the track uneditable");
   self->freeze =
-    GTK_TOGGLE_BUTTON (
-      gtk_toggle_button_new_with_label ("Freeze"));
+    z_gtk_toggle_button_new_with_icon (
+      "snowflake-o");
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->freeze),
     "Freeze track");

@@ -72,6 +72,15 @@ activate_edit_mode (GSimpleAction *action,
                       gpointer       user_data);
 
 /**
+ * Activate cut mode.
+ */
+void
+activate_cut_mode (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+/**
  * Activate eraser mode.
  */
 void

@@ -47,6 +47,7 @@ typedef struct _ToolboxWidget
   GtkButtonBox          parent_instance;
   GtkToggleButton *     select_mode;
   GtkToggleButton *     edit_mode;
+  GtkToggleButton *     cut_mode;
   GtkToggleButton *     erase_mode;
   GtkToggleButton *     ramp_mode;
   GtkToggleButton *     audition_mode;
@@ -54,6 +55,7 @@ typedef struct _ToolboxWidget
 
   guint                 select_handler_id;
   guint                 edit_handler_id;
+  guint                 cut_handler_id;
   guint                 erase_handler_id;
   guint                 ramp_handler_id;
   guint                 audition_handler_id;

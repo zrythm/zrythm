@@ -191,215 +191,80 @@ arranger_widget_set_cursor (
 {
   GList *children, *iter;
 
+#define SET_X_CURSOR(x) \
+  ui_set_##x##_cursor (self); \
+  children = \
+    gtk_container_get_children ( \
+      GTK_CONTAINER (self)); \
+  for (iter = children; \
+       iter != NULL; \
+       iter = g_list_next (iter)) \
+    { \
+      ui_set_##x##_cursor ( \
+        GTK_WIDGET (iter->data)); \
+    } \
+  g_list_free (children)
+
+
+#define SET_CURSOR_FROM_NAME(name) \
+  ui_set_cursor_from_name ( \
+    GTK_WIDGET (self), name); \
+  children = \
+    gtk_container_get_children ( \
+      GTK_CONTAINER (self)); \
+  for (iter = children; \
+       iter != NULL; \
+       iter = g_list_next (iter)) \
+    { \
+      ui_set_cursor_from_name ( \
+        GTK_WIDGET (iter->data), \
+        name); \
+    } \
+  g_list_free (children)
+
   switch (cursor)
     {
     case ARRANGER_CURSOR_SELECT:
-      ui_set_pointer_cursor (self);
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_pointer_cursor (
-            GTK_WIDGET (iter->data));
-        }
-      g_list_free (children);
+      SET_X_CURSOR (pointer);
       break;
     case ARRANGER_CURSOR_EDIT:
-      ui_set_pencil_cursor (self);
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_pencil_cursor (
-            GTK_WIDGET (iter->data));
-        }
-      g_list_free (children);
+      SET_X_CURSOR (pencil);
+      break;
+    case ARRANGER_CURSOR_CUT:
+      SET_X_CURSOR (cut_clip);
       break;
     case ARRANGER_CURSOR_RAMP:
-      ui_set_line_cursor (self);
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_line_cursor (
-            GTK_WIDGET (iter->data));
-        }
-      g_list_free (children);
+      SET_X_CURSOR (line);
       break;
     case ARRANGER_CURSOR_ERASER:
-      ui_set_eraser_cursor (self);
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_eraser_cursor (
-            GTK_WIDGET (iter->data));
-        }
-      g_list_free (children);
+      SET_X_CURSOR (eraser);
       break;
     case ARRANGER_CURSOR_AUDITION:
-      ui_set_speaker_cursor (self);
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_speaker_cursor (
-            GTK_WIDGET (iter->data));
-        }
-      g_list_free (children);
+      SET_X_CURSOR (speaker);
       break;
     case ARRANGER_CURSOR_GRAB:
-      ui_set_hand_cursor (self);
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_hand_cursor (iter->data);
-        }
-      g_list_free (children);
+      SET_X_CURSOR (hand);
       break;
     case ARRANGER_CURSOR_GRABBING:
-      ui_set_cursor_from_name (
-        GTK_WIDGET (self), "grabbing");
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_cursor_from_name (
-            GTK_WIDGET (iter->data),
-            "grabbing");
-        }
-      g_list_free (children);
+      SET_CURSOR_FROM_NAME ("grabbing");
       break;
     case ARRANGER_CURSOR_GRABBING_COPY:
-      ui_set_cursor_from_name (
-        GTK_WIDGET (self), "copy");
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_cursor_from_name (
-            GTK_WIDGET (iter->data),
-            "copy");
-        }
-      g_list_free (children);
+      SET_CURSOR_FROM_NAME ("copy");
       break;
     case ARRANGER_CURSOR_GRABBING_LINK:
-      ui_set_cursor_from_name (
-        GTK_WIDGET (self), "link");
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_cursor_from_name (
-            GTK_WIDGET (iter->data),
-            "link");
-        }
-      g_list_free (children);
+      SET_CURSOR_FROM_NAME ("link");
       break;
     case ARRANGER_CURSOR_RESIZING_L:
-      ui_set_cursor_from_name (
-        GTK_WIDGET (self), "w-resize");
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_cursor_from_name (
-            GTK_WIDGET (iter->data),
-            "w-resize");
-        }
-      g_list_free (children);
+      SET_CURSOR_FROM_NAME ("w-resize");
       break;
     case ARRANGER_CURSOR_RESIZING_R:
-      ui_set_cursor_from_name (
-        GTK_WIDGET (self), "e-resize");
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_cursor_from_name (
-            GTK_WIDGET (iter->data),
-            "e-resize");
-        }
-      g_list_free (children);
+      SET_CURSOR_FROM_NAME ("e-resize");
       break;
     case ARRANGER_CURSOR_RESIZING_UP:
-      ui_set_cursor_from_name (
-        GTK_WIDGET (self), "n-resize");
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_cursor_from_name (
-            GTK_WIDGET (iter->data),
-            "n-resize");
-        }
-      g_list_free (children);
+      SET_CURSOR_FROM_NAME ("n-resize");
       break;
     case ARRANGER_CURSOR_RANGE:
-      ui_set_cursor_from_name (
-        GTK_WIDGET (self), "text");
-
-      children =
-        gtk_container_get_children (
-          GTK_CONTAINER (self));
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          ui_set_cursor_from_name (
-            GTK_WIDGET (iter->data),
-            "text");
-        }
-      g_list_free (children);
+      SET_CURSOR_FROM_NAME ("text");
       break;
     default:
       g_warn_if_reached ();

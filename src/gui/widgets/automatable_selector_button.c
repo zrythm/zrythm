@@ -87,7 +87,7 @@ automatable_selector_button_widget_init (
               GTK_ORIENTATION_HORIZONTAL, 0));
   self->img = GTK_IMAGE (
     gtk_image_new_from_icon_name (
-      "node-type-cusp", GTK_ICON_SIZE_BUTTON));
+      "z-node-type-cusp", GTK_ICON_SIZE_BUTTON));
   self->label =
     GTK_LABEL (gtk_label_new ("Automation"));
   gtk_widget_set_tooltip_text (

@@ -675,12 +675,15 @@ zrythm_app_startup (GApplication* _app)
     "win.edit-mode");
   accel_install_primary_action_accelerator (
     "3",
-    "win.eraser-mode");
+    "win.cut-mode");
   accel_install_primary_action_accelerator (
     "4",
-    "win.ramp-mode");
+    "win.eraser-mode");
   accel_install_primary_action_accelerator (
     "5",
+    "win.ramp-mode");
+  accel_install_primary_action_accelerator (
+    "6",
     "win.audition-mode");
   accel_install_primary_action_accelerator (
     "KP_4",

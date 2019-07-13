@@ -494,6 +494,9 @@ midi_arranger_widget_on_drag_begin_note_hit (
         ar_prv->action =
           UI_OVERLAY_ACTION_STARTING_MOVING;
       break;
+    case TOOL_CUT:
+      /* TODO */
+      break;
     case TOOL_RAMP:
       break;
     }

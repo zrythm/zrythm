@@ -86,6 +86,8 @@ on_toggled (GtkToggleButton * tb,
     }
   else if (tb == self->edit_mode)
     P_TOOL = TOOL_EDIT;
+  else if (tb == self->cut_mode)
+    P_TOOL = TOOL_CUT;
   else if (tb == self->erase_mode)
     P_TOOL = TOOL_ERASER;
   else if (tb == self->ramp_mode)
@@ -113,6 +115,7 @@ toolbox_widget_refresh (
   /* block signal handlers */
   BLOCK_SIGNAL_HANDLER (select);
   BLOCK_SIGNAL_HANDLER (edit);
+  BLOCK_SIGNAL_HANDLER (cut);
   BLOCK_SIGNAL_HANDLER (erase);
   BLOCK_SIGNAL_HANDLER (ramp);
   BLOCK_SIGNAL_HANDLER (audition);
@@ -124,6 +127,8 @@ toolbox_widget_refresh (
     self->select_mode, 0);
   gtk_toggle_button_set_active (
     self->edit_mode, 0);
+  gtk_toggle_button_set_active (
+    self->cut_mode, 0);
   gtk_toggle_button_set_active (
     self->erase_mode, 0);
   gtk_toggle_button_set_active (
@@ -151,6 +156,9 @@ toolbox_widget_refresh (
   else if (P_TOOL == TOOL_EDIT)
     gtk_toggle_button_set_active (
       self->edit_mode, 1);
+  else if (P_TOOL == TOOL_CUT)
+    gtk_toggle_button_set_active (
+      self->cut_mode, 1);
   else if (P_TOOL == TOOL_ERASER)
     gtk_toggle_button_set_active (
       self->erase_mode, 1);
@@ -169,6 +177,7 @@ toolbox_widget_refresh (
   /* unblock signal handlers */
   UNBLOCK_SIGNAL_HANDLER (select);
   UNBLOCK_SIGNAL_HANDLER (edit);
+  UNBLOCK_SIGNAL_HANDLER (cut);
   UNBLOCK_SIGNAL_HANDLER (erase);
   UNBLOCK_SIGNAL_HANDLER (ramp);
   UNBLOCK_SIGNAL_HANDLER (audition);
@@ -195,6 +204,10 @@ toolbox_widget_class_init (
     klass,
     ToolboxWidget,
     edit_mode);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ToolboxWidget,
+    cut_mode);
   gtk_widget_class_bind_template_child (
     klass,
     ToolboxWidget,
@@ -229,6 +242,7 @@ toolbox_widget_init (ToolboxWidget * self)
   /* connect click handlers */
   CONNECT_CLICK_HANDLER (select);
   CONNECT_CLICK_HANDLER (edit);
+  CONNECT_CLICK_HANDLER (cut);
   CONNECT_CLICK_HANDLER (erase);
   CONNECT_CLICK_HANDLER (ramp);
   CONNECT_CLICK_HANDLER (audition);
@@ -247,6 +261,7 @@ toolbox_widget_init (ToolboxWidget * self)
   /* connect notify signals */
   CONNECT_NOTIFY_SIGNALS (select);
   CONNECT_NOTIFY_SIGNALS (edit);
+  CONNECT_NOTIFY_SIGNALS (cut);
   CONNECT_NOTIFY_SIGNALS (erase);
   CONNECT_NOTIFY_SIGNALS (ramp);
   CONNECT_NOTIFY_SIGNALS (audition);

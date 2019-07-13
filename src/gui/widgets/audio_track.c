@@ -179,7 +179,7 @@ audio_track_widget_init (AudioTrackWidget * self)
       "mute.svg");
   self->show_automation =
     z_gtk_toggle_button_new_with_icon (
-      "z-format-justify-fill");
+      "z-node-type-cusp");
 
   /* set buttons to upper controls */
   gtk_box_pack_start (
