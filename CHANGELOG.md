@@ -1,6 +1,21 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.5.160] - 2019-07-14
+- IMPORTANT: License change from GPLv3+ to AGPLv3+
+- Add cut-clip tool (WIP)
+- Add Norwegian in language selection
+- Update German translations
+- Update Norwegian translations
+- Update Japanese translations
+- Allow undoable individual MIDI velocity changes
+- Add undoable MIDI velocity ramp feature
+- Fix some undo/redo bugs
+- Refactor of arranger objects
+- Fix basic saving/loading of projects
+- Fix duplicate projects getting displayed in the project list in some situations
+- Refactor automation tracks
+
 ## [0.5.120] - 2019-06-29
 - Change appearance of meters (added captions, made the text smaller)
 - Change appearance of DSP/CPU meter (used icons insted of text)
