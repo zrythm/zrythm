@@ -46,16 +46,18 @@ then TraceStage "running staging-specific post-commit hooks"
           rm $TAGS_FILE
      fi
 
-     # re-configure autotools, rebuild, install, and verify
+     # rebuild, install, and verify
      tmp_builddir="tmp_builddir"
      TraceStep "re-configuring meson"
      rm -rf $tmp_builddir > /dev/null
-     meson $tmp_builddir -Denable_tests=true 2> /dev/null
-     TraceStep "verifying re-build/test"
-     ninja -C $tmp_builddir test > /dev/null
-     #ninja -C $tmp_builddir install > /dev/null
-     #ninja -C $tmp_builddir uninstall > /dev/null
-     rm -rf $tmp_builddir > /dev/null
+     for compiler in clang gcc; do
+       meson $tmp_builddir -Denable_tests=true 2> /dev/null
+       TraceStep "verifying re-build/test"
+       ninja -C $tmp_builddir test > /dev/null
+       #ninja -C $tmp_builddir install > /dev/null
+       #ninja -C $tmp_builddir uninstall > /dev/null
+       rm -rf $tmp_builddir > /dev/null
+     done
 
      # commit automated changes, and ensure signed
      git add --all
