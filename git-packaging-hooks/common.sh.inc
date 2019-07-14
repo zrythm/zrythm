@@ -143,7 +143,7 @@ function init()
   # versioned filenames
   readonly TARBALL_FILENAME=$VERSION_STRING.tar.gz
   readonly TARBALL_FILE=$TARBALL_FILENAME
-  readonly OBS_TARBALL_PATH="\/$UPSTREAM_NAME\/$UPSTREAM_NAME\/-\/archive\/$VERSION_STRING\/$UPSTREAM_NAME-$VERSION_STRING\.tar\.gz"
+  readonly OBS_TARBALL_PATH="\/cgit\/$UPSTREAM_NAME\/snapshot\/$UPSTREAM_NAME-$VERSION_STRING\.tar\.gz"
   readonly DEB_PREFIX=${DEBIAN_NAME}_${VERSION}
   readonly DEB_TARBALL_FILENAME=${DEB_PREFIX}.orig.tar.gz
   readonly DEB_DIFFBALL_FILENAME=${DEB_PREFIX}-1.diff.gz

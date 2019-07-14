@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.5.161] - 2019-07-14
+## [0.5.162] - 2019-07-14
 - IMPORTANT: License change from GPLv3+ to AGPLv3+
 - Add cut-clip tool (WIP)
 - Add Norwegian in language selection
