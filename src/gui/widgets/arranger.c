@@ -745,13 +745,11 @@ on_key_action (
   GET_ARRANGER_ALIASES(self);
 
   int num = 0;
-  g_message ("key action");
 
   if (event->type == GDK_KEY_PRESS &&
       (event->keyval == GDK_KEY_Control_L ||
        event->keyval == GDK_KEY_Control_R))
     {
-      g_message ("ctrl held");
       ar_prv->ctrl_held = 1;
     }
 
@@ -760,7 +758,6 @@ on_key_action (
       event->keyval == GDK_KEY_Shift_R))
     {
       ar_prv->shift_held = 1;
-      g_message ("shift held");
     }
 
   if (midi_arranger)
