@@ -1,0 +1,7 @@
+<services>
+  <service name="download_url">
+    <param name="host">git.zrythm.org</param>
+    <param name="protocol">https</param>
+    <param name="path">/zrythm/zrythm/-/archive/v0.5.160/zrythm-v0.5.160.tar.gz</param>
+  </service>
+</services>
