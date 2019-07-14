@@ -2,6 +2,6 @@
   <service name="download_url">
     <param name="host">git.zrythm.org</param>
     <param name="protocol">https</param>
-    <param name="path">/namespace/repo/-/archive/v0.00.000/repo-v0.00.000.tar.gz</param>
+    <param name="path">/cgit/repo/snapshot/repo-v0.00.000.tar.gz</param>
   </service>
 </services>
