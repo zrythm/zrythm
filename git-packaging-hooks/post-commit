@@ -51,7 +51,7 @@ then TraceStage "running staging-specific post-commit hooks"
      TraceStep "re-configuring meson"
      rm -rf $tmp_builddir > /dev/null
      for compiler in clang gcc; do
-       meson $tmp_builddir -Denable_tests=true 2> /dev/null
+       CC=$compiler CXX=$compiler meson $tmp_builddir -Denable_tests=true 2> /dev/null
        TraceStep "verifying re-build/test"
        ninja -C $tmp_builddir test > /dev/null
        #ninja -C $tmp_builddir install > /dev/null

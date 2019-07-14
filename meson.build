@@ -1,6 +1,6 @@
 project (
   'zrythm', ['c', 'cpp'],
-  version: '0.5.120',
+  version: '0.5.158',
   license: 'AGPLv3+',
   #meson_version: '>= 0.24.0',
   default_options: [
