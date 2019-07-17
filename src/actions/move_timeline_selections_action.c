@@ -79,13 +79,9 @@ move_timeline_selections_action_do (
       SHIFT_OBJ_POSITIVE (
         Region, region);
       SHIFT_OBJ_POSITIVE (
-        ChordObject, chord_object);
-      SHIFT_OBJ_POSITIVE (
         ScaleObject, scale_object);
       SHIFT_OBJ_POSITIVE (
         Marker, marker);
-      SHIFT_OBJ_POSITIVE (
-        AutomationPoint, automation_point);
     }
 
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
@@ -108,13 +104,9 @@ move_timeline_selections_action_undo (
   SHIFT_OBJ_NEGATIVE (
     Region, region);
   SHIFT_OBJ_NEGATIVE (
-    ChordObject, chord_object);
-  SHIFT_OBJ_NEGATIVE (
     ScaleObject, scale_object);
   SHIFT_OBJ_NEGATIVE (
     Marker, marker);
-  SHIFT_OBJ_NEGATIVE (
-    AutomationPoint, automation_point);
 
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

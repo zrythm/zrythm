@@ -24,15 +24,18 @@
 
 #include "audio/automatable.h"
 #include "audio/automation_point.h"
+#include "audio/automation_region.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/port.h"
 #include "audio/position.h"
 #include "audio/track.h"
+#include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_track.h"
+#include "gui/widgets/center_dock.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "project.h"
@@ -45,7 +48,7 @@
 
 ARRANGER_OBJ_DEFINE_MOVABLE (
   AutomationPoint, automation_point,
-  timeline_selections, TL_SELECTIONS);
+  automation_selections, AUTOMATION_SELECTIONS);
 
 static AutomationPoint *
 _create_new (
@@ -56,46 +59,38 @@ _create_new (
 
   position_set_to_pos (
     &ap->pos, pos);
-  ap->track_pos = -1;
   ap->index = -1;
-  ap->at_index = -1;
 
   return ap;
 }
 
 /**
- * Sets the AutomationTrack and the index in the
- * AutomationTrack that the AutomationPoint
+ * Sets the Region and the index in the
+ * region that the AutomationPoint
  * belongs to, in all its counterparts.
  */
 void
-automation_point_set_automation_track_and_index (
-  AutomationPoint * _ap,
-  AutomationTrack * at,
+automation_point_set_region_and_index (
+  AutomationPoint * ap,
+  Region *          region,
   int               index)
 {
-  g_return_if_fail (at);
+  g_return_if_fail (region);
 
-  AutomationPoint * ap;
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 2; i++)
     {
-      if (i == 0)
-        ap = automation_point_get_main_automation_point (_ap);
-      else if (i == 1)
-        ap = automation_point_get_main_trans_automation_point (_ap);
-      else if (i == 2)
+      if (i == AOI_COUNTERPART_MAIN)
         ap =
-          (AutomationPoint *)
-          _ap->obj_info.lane;
-      else if (i == 3)
+  automation_point_get_main_automation_point (
+    ap);
+      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
         ap =
-          (AutomationPoint *)
-          _ap->obj_info.lane_trans;
+  automation_point_get_main_trans_automation_point (
+    ap);
 
-      ap->at = at;
-      ap->at_index = at->index;
+      ap->region = region;
+      ap->region_name = g_strdup (region->name);
       ap->index = index;
-      ap->track_pos = at->track->pos;
     }
 }
 
@@ -119,6 +114,16 @@ automation_point_is_equal (
 }
 
 /**
+ * Returns the Track this AutomationPoint is in.
+ */
+Track *
+automation_point_get_track (
+  AutomationPoint * ap)
+{
+  return ap->region->at->track;
+}
+
+/**
  * Finds the automation point in the project matching
  * the params of the given one.
  */
@@ -126,21 +131,18 @@ AutomationPoint *
 automation_point_find (
   AutomationPoint * src)
 {
-  g_warn_if_fail (
-    src->track_pos > -1 &&
-    src->at_index > -1 &&
-    src->index > -1);
-  Track * track =
-    TRACKLIST->tracks[src->track_pos];
-  AutomationTrack * at =
-    track->automation_tracklist.ats[src->at_index];
-  g_warn_if_fail (track && at);
+  g_warn_if_fail (src->region);
+
+  /* the src region might be an unused clone, find
+   * the actual region. */
+  Region * region =
+    region_find (src->region);
 
   int i;
   AutomationPoint * ap;
-  for (i = 0; i < at->num_aps; i++)
+  for (i = 0; i < region->num_aps; i++)
     {
-      ap = at->aps[i];
+      ap = region->aps[i];
       if (automation_point_is_equal (src, ap))
         return ap;
     }
@@ -192,9 +194,9 @@ automation_point_clone (
     automation_point_new_float (
       src->fvalue, &src->pos, is_main);
 
-  if (src->at)
-    automation_point_set_automation_track_and_index (
-      ap, src->at, src->index);
+  if (src->region)
+    automation_point_set_region_and_index (
+      ap, src->region, src->index);
 
   position_set_to_pos (
     &ap->pos, &src->pos);
@@ -205,6 +207,8 @@ automation_point_clone (
 /**
  * Returns Y in pixels from the value based on the
  * allocation of the automation track.
+ *
+ * FIXME move to widget.
  */
 int
 automation_point_get_y_in_px (
@@ -216,7 +220,7 @@ automation_point_get_y_in_px (
 
   int allocated_h =
     gtk_widget_get_allocated_height (
-      GTK_WIDGET (self->at->widget));
+      GTK_WIDGET (MW_AUTOMATION_ARRANGER));
   int point = allocated_h - ap_ratio * allocated_h;
   return point;
 }
@@ -228,22 +232,12 @@ float
 automation_point_get_normalized_value (
   AutomationPoint * self)
 {
-  g_warn_if_fail (self->at);
+  g_warn_if_fail (self->region->at);
 
   /* TODO convert to macro */
   return automatable_real_val_to_normalized (
-    self->at->automatable,
+    self->region->at->automatable,
     self->fvalue);
-}
-
-/**
- * Returns the Track this AutomationPoint is in.
- */
-Track *
-automation_point_get_track (
-  AutomationPoint * ap)
-{
-  return TRACKLIST->tracks[ap->track_pos];
 }
 
 /**
@@ -270,12 +264,13 @@ automation_point_on_move (
 
   AutomationPoint * ap = automation_point;
 
-  /* FIXME */
   /* get prev and next value APs */
   AutomationPoint * prev_ap =
-    automation_track_get_prev_ap (ap->at, ap);
+    automation_region_get_prev_ap (
+      ap->region, ap);
   AutomationPoint * next_ap =
-    automation_track_get_next_ap (ap->at, ap);
+    automation_region_get_next_ap (
+      ap->region, ap);
 
   /* get adjusted pos for this automation point */
   Position ap_pos;
@@ -296,8 +291,8 @@ automation_point_on_move (
       position_get_midway_pos (
         &prev_ap->pos, &ap_pos, &mid_pos);
       ac =
-        automation_track_get_next_curve_ac (
-          ap->at, prev_ap);
+        automation_region_get_next_curve_ac (
+          ap->region, prev_ap);
       position_set_to_pos (&ac->pos, &mid_pos);
 
       /* set pos for ap */
@@ -314,8 +309,8 @@ automation_point_on_move (
       position_get_midway_pos (
         &ap_pos, &next_ap->pos, &mid_pos);
       ac =
-        automation_track_get_next_curve_ac (
-          ap->at, ap);
+        automation_region_get_next_curve_ac (
+          ap->region, ap);
       position_set_to_pos (&ac->pos, &mid_pos);
 
       /* set pos for ap - if no prev ap exists
@@ -350,13 +345,13 @@ automation_point_update_fvalue (
     AutomationPoint, self, fvalue, real_val,
     update_flag);
 
-  Automatable * a = self->at->automatable;
+  Automatable * a = self->region->at->automatable;
   automatable_set_val_from_normalized (
     a,
     automatable_real_val_to_normalized (
       a, real_val));
   AutomationCurve * ac =
-    self->at->acs[self->index];
+    self->region->acs[self->index];
   if (ac && ac->widget)
     ac->widget->cache = 0;
 }
@@ -365,9 +360,14 @@ automation_point_update_fvalue (
  * Destroys the widget and frees memory.
  */
 void
-automation_point_free (AutomationPoint * ap)
+automation_point_free (
+  AutomationPoint * self)
 {
-  if (ap->widget)
-    gtk_widget_destroy (GTK_WIDGET (ap->widget));
-  free (ap);
+  if (GTK_IS_WIDGET (self->widget))
+    gtk_widget_destroy (GTK_WIDGET (self->widget));
+
+  if (self->region_name)
+    g_free (self->region_name);
+
+  free (self);
 }

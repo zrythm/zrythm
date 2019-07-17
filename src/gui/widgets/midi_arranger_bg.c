@@ -112,8 +112,9 @@ midi_arranger_draw_cb (
 }
 
 MidiArrangerBgWidget *
-midi_arranger_bg_widget_new (RulerWidget *    ruler,
-                             ArrangerWidget * arranger)
+midi_arranger_bg_widget_new (
+  RulerWidget *    ruler,
+  ArrangerWidget * arranger)
 {
   MidiArrangerBgWidget * self =
     g_object_new (MIDI_ARRANGER_BG_WIDGET_TYPE,

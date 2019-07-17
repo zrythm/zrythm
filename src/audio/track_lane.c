@@ -62,6 +62,11 @@ track_lane_new (
   self->track = track;
   self->track_pos = track->pos;
 
+  self->regions_size = 1;
+  self->regions =
+    malloc (self->regions_size *
+            sizeof (Region *));
+
   return self;
 }
 
@@ -73,8 +78,15 @@ track_lane_add_region (
   TrackLane * self,
   Region *    region)
 {
+  g_return_if_fail (
+    region->type == REGION_TYPE_AUDIO ||
+    region->type == REGION_TYPE_MIDI);
+
   region_set_lane (region, self);
 
+  array_double_size_if_full (
+    self->regions, self->num_regions,
+    self->regions_size, Region *);
   array_append (self->regions,
                 self->num_regions,
                 region);

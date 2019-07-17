@@ -24,7 +24,7 @@
 
 #include "audio/automatable.h"
 #include "audio/automation_curve.h"
-#include "audio/automation_track.h"
+#include "audio/automation_region.h"
 #include "audio/channel.h"
 #include "audio/port.h"
 #include "audio/position.h"
@@ -45,29 +45,36 @@ automation_curve_init_loaded (
 }
 
 static AutomationCurve *
-_create_new (AutomationTrack * at,
-             Position *        pos)
+_create_new (
+  Region *         region,
+  const Position * pos)
 {
-  AutomationCurve * ac = calloc (1, sizeof (AutomationCurve));
+  AutomationCurve * self =
+    calloc (1, sizeof (AutomationCurve));
 
-  ac->at = at;
-  position_set_to_pos (&ac->pos,
+  self->region = region;
+  position_set_to_pos (&self->pos,
                        pos);
 
-  return ac;
+  return self;
 }
 
 /**
- * Creates curviness point in given track at given Position
+ * Creates an AutomationCurve.
+ *
+ * @param region The Region, used to figure out the
+ * AutomationCurve type.
  */
 AutomationCurve *
-automation_curve_new (AutomationTrack *   at,
-                      Position *          pos)
+automation_curve_new (
+  Region *         region,
+  const Position * pos)
 {
-  AutomationCurve * ac = _create_new (at, pos);
+  AutomationCurve * ac =
+    _create_new (region, pos);
 
   ac->curviness = 1.f;
-  switch (ac->at->automatable->type)
+  switch (ac->region->at->automatable->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
@@ -86,51 +93,66 @@ automation_curve_new (AutomationTrack *   at,
 }
 
 /**
- * Returns Y in pixels from the value based on the allocation of the
- * automation track.
+ * Returns Y in pixels from the value based on the
+ * allocation of the automation arranger.
  */
 int
-automation_curve_get_y_in_px (AutomationCurve * ac)
+automation_curve_get_y_in_px (
+  AutomationCurve * ac)
 {
   AutomationPoint * prev_ap =
-    automation_track_get_ap_before_curve (
-      ac->at, ac);
-  AutomationPoint * next_ap = automation_track_get_ap_after_curve (ac->at,
-                                                                   ac);
+    automation_region_get_ap_before_curve (
+      ac->region, ac);
+  AutomationPoint * next_ap =
+    automation_region_get_ap_after_curve (
+      ac->region, ac);
+
   /* ratio of current value in the range */
   float ap_ratio;
   if (ac->curviness >= AP_MID_CURVINESS)
     {
-      float ap_curviness_range = AP_MAX_CURVINESS - AP_MID_CURVINESS;
-      ap_ratio = (ac->curviness - AP_MID_CURVINESS) / ap_curviness_range;
+      float ap_curviness_range =
+        AP_MAX_CURVINESS - AP_MID_CURVINESS;
+      ap_ratio =
+        (ac->curviness - AP_MID_CURVINESS) /
+        ap_curviness_range;
       ap_ratio *= 0.5f; /* ratio is only for half */
       ap_ratio += 0.5f; /* add the missing half */
     }
   else
     {
-      float ap_curviness_range = AP_MID_CURVINESS - AP_MIN_CURVINESS;
-      ap_ratio = (ac->curviness - AP_MIN_CURVINESS) / ap_curviness_range;
+      float ap_curviness_range =
+        AP_MID_CURVINESS - AP_MIN_CURVINESS;
+      ap_ratio =
+        (ac->curviness - AP_MIN_CURVINESS) /
+        ap_curviness_range;
       ap_ratio *= 0.5f; /* ratio is only for half */
     }
-  int prev_ap_y_pos = automation_point_get_y_in_px (prev_ap);
-  int next_ap_y_pos = automation_point_get_y_in_px (next_ap);
+  int prev_ap_y_pos =
+    automation_point_get_y_in_px (prev_ap);
+  int next_ap_y_pos =
+    automation_point_get_y_in_px (next_ap);
   int ap_max = MAX (prev_ap_y_pos, next_ap_y_pos);
   int ap_min = MIN (prev_ap_y_pos, next_ap_y_pos);
   int allocated_h = ap_max - ap_min;
   int point = ap_max - ap_ratio * allocated_h;
+
   return point;
 }
 
 /**
- * The function.
+ * TODO add description.
  *
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+ * @param x X-coordinate.
+ * @param curviness Curviness variable.
+ * @param start_at_1 Start at lower point.
  */
 double
 automation_curve_get_y_normalized (
-  double x, ///< x coordinate
+  double x,
   double curviness,
-  int start_at_1) ///< start at lower point
+  int    start_at_1)
 {
   if (start_at_1)
     {
@@ -149,45 +171,61 @@ automation_curve_get_y_normalized (
  *
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
  *
- * FIXME should be on widget.
+ * @param ac The start point (0, 0).
+ * @param x X-coordinate in px.
+ * @param width Total width in px.
+ * @param height Total height in px.
  */
 double
-automation_curve_get_y_px (AutomationCurve * ac, ///< start point (0, 0)
-                           double               x, ///< x coordinate in px
-                           double               width, ///< total width in px
-                           double               height) ///< total height in px
+automation_curve_get_y_px (
+  AutomationCurve * ac,
+  double            x,
+  double            width,
+  double            height)
 {
   /* find next curve ap & next value ap */
   AutomationPoint * prev_ap =
-    automation_track_get_ap_before_curve (
-      ac->at,
-      ac);
+    automation_region_get_ap_before_curve (
+      ac->region, ac);
   AutomationPoint * next_ap =
-    automation_track_get_ap_after_curve (
-      ac->at,
-      ac);
+    automation_region_get_ap_after_curve (
+      ac->region, ac);
 
   double dx = x / width; /* normalized x */
   double dy;
   double ret;
-  if (automation_point_get_y_in_px (next_ap) > /* if next point is lower */
+
+  /* if next point is lower */
+  if (automation_point_get_y_in_px (next_ap) >
       automation_point_get_y_in_px (prev_ap))
     {
-      dy = automation_curve_get_y_normalized (dx, ac->curviness, 1); /* start higher */
+      /* start higher */
+      dy =
+        automation_curve_get_y_normalized (
+          dx, ac->curviness, 1);
       ret = dy * height;
-      return height - ret; /* reverse the value because in pixels higher y values
-                              are actually lower */
+
+      /* reverse the value because in pixels
+       * higher y values are actually lower */
+      return height - ret;
     }
   else
     {
-      dy = automation_curve_get_y_normalized (dx, ac->curviness, 0);
+      dy =
+        automation_curve_get_y_normalized (
+          dx, ac->curviness, 0);
       ret = dy * height;
       return - ret;
     }
 }
 
+/**
+ * Sets the curviness of the AutomationCurve.
+ */
 void
-automation_curve_set_curviness (AutomationCurve * ac, float curviness)
+automation_curve_set_curviness (
+  AutomationCurve * ac,
+  float             curviness)
 {
   if (ac->curviness == curviness)
     return;
@@ -205,6 +243,7 @@ automation_curve_free (AutomationCurve * ac)
 {
   if (GTK_IS_WIDGET (ac->widget))
     gtk_widget_destroy (GTK_WIDGET (ac->widget));
+
   free (ac);
 }
 

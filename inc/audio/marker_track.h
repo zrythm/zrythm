@@ -58,8 +58,7 @@ marker_track_default ();
 void
 marker_track_add_marker (
   MarkerTrack * self,
-  Marker *      marker,
-  int           gen_widget);
+  Marker *      marker);
 
 /**
  * Removes a marker, optionally freeing it.

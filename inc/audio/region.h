@@ -25,6 +25,9 @@
 #ifndef __AUDIO_REGION_H__
 #define __AUDIO_REGION_H__
 
+#include "audio/automation_point.h"
+#include "audio/automation_curve.h"
+#include "audio/chord_object.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/position.h"
@@ -59,7 +62,11 @@ typedef struct _AudioClipWidget AudioClipWidget;
   arranger_object_info_is_main ( \
     &r->obj_info)
 
-/** Gets the TrackLane counterpart of the Region. */
+/**
+ * Gets the TrackLane counterpart of the Region.
+ *
+ * Only applies to Regions that have lanes.
+ */
 #define region_get_lane_region(r) \
   ((Region *) r->obj_info.lane)
 
@@ -67,8 +74,12 @@ typedef struct _AudioClipWidget AudioClipWidget;
 #define region_get_main_region(r) \
   ((Region *) r->obj_info.main)
 
-/** Gets the TrackLane counterpart of the Region
- * (transient). */
+/**
+ * Gets the TrackLane counterpart of the Region
+ * (transient).
+ *
+ * Only applies to Regions that have lanes.
+ */
 #define region_get_lane_trans_region(r) \
   ((Region *) r->obj_info.lane_trans)
 
@@ -79,12 +90,27 @@ typedef struct _AudioClipWidget AudioClipWidget;
 
 /**
  * Type of Region.
+ *
+ * Bitfield instead of plain enum so multiple
+ * values can be passed to some functions (eg to
+ * collect all Regions of the given types in a
+ * Track).
  */
 typedef enum RegionType
 {
-  REGION_TYPE_MIDI,
-  REGION_TYPE_AUDIO
+  REGION_TYPE_MIDI = 0x01,
+  REGION_TYPE_AUDIO = 0x02,
+  REGION_TYPE_AUTOMATION = 0x04,
+  REGION_TYPE_CHORD = 0x08,
 } RegionType;
+
+static const cyaml_bitdef_t
+region_type_bitvals[] =
+{
+  { .name = "midi", .offset =  0, .bits =  1 },
+  { .name = "audio", .offset =  1, .bits =  1 },
+  { .name = "automation", .offset = 2, .bits = 1 },
+};
 
 /**
  * Flag do indicate how to clone the Region.
@@ -206,8 +232,9 @@ typedef struct Region
   /* ==== MIDI REGION ==== */
 
   /** MIDI notes. */
-  MidiNote *      midi_notes[800];
+  MidiNote **     midi_notes;
   int             num_midi_notes;
+  int             midi_notes_size;
 
   /**
    * Unended notes started in recording with MIDI NOTE ON
@@ -242,19 +269,52 @@ typedef struct Region
 
   /* ==== AUDIO REGION END ==== */
 
+  /* ==== AUTOMATION REGION ==== */
+
+  /**
+   * The automation points.
+   *
+   * Must always stay sorted by position.
+   */
+  AutomationPoint ** aps;
+  int                num_aps;
+  int                aps_size;
+
+  /**
+   * The AutomationCurve's.
+   *
+   * Their size will always be aps_size - 1 (or 0 if
+   * there are no AutomationPoint's).
+   */
+  AutomationCurve ** acs;
+  int                num_acs;
+
+  /**
+   * Pointer back to the AutomationTrack.
+   *
+   * This doesn't have to be serialized - during
+   * loading, you can traverse the AutomationTrack's
+   * automation Region's and set it.
+   */
+  AutomationTrack *  at;
+
+  /* ==== AUTOMATION REGION END ==== */
+
+  /* ==== CHORD REGION ==== */
+
+  /** ChordObject's in this Region. */
+  ChordObject **     chord_objects;
+  int                num_chord_objects;
+  int                chord_objects_size;
+
+  /* ==== CHORD REGION END ==== */
+
   /**
    * Info on whether this Region is transient/lane
    * and pointers to transient/lane equivalents.
    */
   ArrangerObjectInfo  obj_info;
 } Region;
-
-static const cyaml_strval_t
-region_type_strings[] =
-{
-	{ "Midi",          REGION_TYPE_MIDI    },
-	{ "Audio",         REGION_TYPE_AUDIO   },
-};
 
 static const cyaml_schema_field_t
   region_fields_schema[] =
@@ -263,10 +323,10 @@ static const cyaml_schema_field_t
     "name", CYAML_FLAG_POINTER,
     Region, name,
    	0, CYAML_UNLIMITED),
-  CYAML_FIELD_ENUM (
+  CYAML_FIELD_BITFIELD (
     "type", CYAML_FLAG_DEFAULT,
-    Region, type, region_type_strings,
-    CYAML_ARRAY_LEN (region_type_strings)),
+    Region, type, region_type_bitvals,
+    CYAML_ARRAY_LEN (region_type_bitvals)),
   CYAML_FIELD_MAPPING (
     "start_pos", CYAML_FLAG_DEFAULT,
     Region, start_pos, position_fields_schema),
@@ -314,6 +374,14 @@ static const cyaml_schema_field_t
 	CYAML_FIELD_INT (
     "lane_pos", CYAML_FLAG_DEFAULT,
     Region, lane_pos),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "aps", CYAML_FLAG_DEFAULT,
+    Region, aps, num_aps,
+    &automation_point_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "acs", CYAML_FLAG_DEFAULT,
+    Region, acs, num_acs,
+    &automation_curve_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };
@@ -337,7 +405,6 @@ ARRANGER_OBJ_DECLARE_MOVABLE_W_LENGTH (
 void
 region_init (
   Region *   region,
-  const RegionType type,
   const Position * start_pos,
   const Position * end_pos,
   const int        is_main);
@@ -424,10 +491,10 @@ region_get_loop_length_in_ticks (
  */
 void
 region_timeline_pos_to_local (
-  Region *   region,
-  Position * timeline_pos,
-  Position * local_pos,
-  int        normalize);
+  Region *         region,
+  const Position * timeline_pos,
+  Position *       local_pos,
+  int              normalize);
 
 /**
  * Returns the Track this Region is in.

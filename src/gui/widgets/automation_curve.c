@@ -21,6 +21,7 @@
 
 #include <math.h>
 
+#include "audio/automation_region.h"
 #include "audio/automation_track.h"
 #include "audio/bus_track.h"
 #include "audio/channel.h"
@@ -74,7 +75,7 @@ drag_update (GtkGestureDrag * gesture,
   int use_y = 1;
   /*double multiplier = 0.005;*/
   double diff = use_y ? offset_y - self->last_y : offset_x - self->last_x;
-  double height = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  /*double height = gtk_widget_get_allocated_height (GTK_WIDGET (self));*/
   double adjusted_diff = diff / 120.0;
   double new_curve_val = clamp (curve_val_from_real (self) + adjusted_diff,
                                 1.0,
@@ -133,8 +134,7 @@ automation_curve_draw_cb (
       /*cairo_fill (self->cached_cr);*/
 
       GdkRGBA * color;
-      Track * track = self->ac->at->track;
-      /*ChannelTrack * ct = (ChannelTrack *) track;*/
+      Track * track = self->ac->region->at->track;
       color = &track->color;
       /*if (self->hover)*/
         /*{*/
@@ -157,10 +157,12 @@ automation_curve_draw_cb (
           cairo_set_source_rgba (self->cached_cr, color->red, color->green, color->blue, 0.7);
         /*}*/
 
-      AutomationPoint * next_ap = automation_track_get_ap_after_curve (self->ac->at,
-                                                                  self->ac);
-      AutomationPoint * prev_ap = automation_track_get_ap_before_curve (self->ac->at,
-                                                                  self->ac);
+      AutomationPoint * next_ap =
+        automation_region_get_ap_after_curve (
+          self->ac->region, self->ac);
+      AutomationPoint * prev_ap =
+        automation_region_get_ap_before_curve (
+          self->ac->region, self->ac);
 
       /*gtk_widget_translate_coordinates(*/
                 /*GTK_WIDGET (ap->widget),*/

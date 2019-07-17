@@ -23,6 +23,7 @@
 #include "audio/snap_grid.h"
 #include "audio/transport.h"
 #include "project.h"
+#include "utils/algorithms.h"
 
 #include <gtk/gtk.h>
 
@@ -267,82 +268,91 @@ snap_grid_stringize (NoteLength note_length,
 }
 
 /**
- * Returns the next or previous SnapGrid Point
+ * Returns the next or previous SnapGrid Point.
  *
- * @param SnapGrid* snap grid to search in
- * @param Position* position to search for
- * @Param int       return next or prev position
+ * @param self Snap grid to search in.
+ * @param pos Position to search for.
+ * @param return_prev 1 to return the previous
+ * element or 0 to return the next.
  */
 Position *
-snap_grid_get_nearby_snap_point(SnapGrid *self, Position *pos, int before)
+snap_grid_get_nearby_snap_point (
+  SnapGrid * self,
+  Position * pos,
+  int        return_prev)
 {
+  Position * ret_pos = NULL;
+  algorithms_binary_search_nearby (
+    self->snap_points, pos, return_prev,
+    self->num_snap_points, Position *,
+    position_compare, &, ret_pos, NULL);
+
+  return ret_pos;
+
   // init values
-  int first = 0;
-  int last = self->num_snap_points;
-  int middle = (first + last) / 2;
-  int pivot_is_before_pos, pivot_succ_is_before_pos;
-  Position *pivot, *pivot_succ;
+  /*int first = 0;*/
+  /*int last = self->num_snap_points;*/
+  /*int middle = (first + last) / 2;*/
+  /*int pivot_is_before_pos, pivot_succ_is_before_pos;*/
+  /*Position *pivot, *pivot_succ;*/
 
-  // return if SnapGrid has no entries
-  if (first == last)
-  {
-    return NULL;
-  }
+  /*// return if SnapGrid has no entries*/
+  /*if (first == last)*/
+  /*{*/
+    /*return NULL;*/
+  /*}*/
 
-  // search loops, exit if pos is not in array
-  while (first <= last)
-  {
-    pivot = &self->snap_points[middle];
-    pivot_succ = NULL;
-    pivot_succ_is_before_pos = 0;
+  /*// search loops, exit if pos is not in array*/
+  /*while (first <= last)*/
+  /*{*/
+    /*pivot = &self->snap_points[middle];*/
+    /*pivot_succ = NULL;*/
+    /*pivot_succ_is_before_pos = 0;*/
 
-    if (middle == 0 && before) {
-      return &self->snap_points[0];
-    }
+    /*if (middle == 0 && return_prev) {*/
+      /*return &self->snap_points[0];*/
+    /*}*/
 
-    // Return next/previous item if pivot is the searched position
-    if (position_compare(pivot, pos) == 0) {
-      if (before ) {
-        return &self->snap_points[middle - 1];
-      }
-      else
-      {
-        return &self->snap_points[middle + 1];
-      }
-    }
+    /*// Return next/previous item if pivot is the searched position*/
+    /*if (position_compare(pivot, pos) == 0) {*/
+      /*if (return_prev)*/
+        /*return &self->snap_points[middle - 1];*/
+      /*else*/
+        /*return &self->snap_points[middle + 1];*/
+    /*}*/
 
-    // Select pivot successor if possible
-    if (middle < last)
-    {
-      pivot_succ = &self->snap_points[middle + 1];
-      pivot_succ_is_before_pos =
-          position_compare(
-              pivot_succ, pos) <= 0;
-    }
-    pivot_is_before_pos =
-        position_compare(
-            pivot, pos) <= 0;
+    /*// Select pivot successor if possible*/
+    /*if (middle < last)*/
+    /*{*/
+      /*pivot_succ = &self->snap_points[middle + 1];*/
+      /*pivot_succ_is_before_pos =*/
+          /*position_compare(*/
+              /*pivot_succ, pos) <= 0;*/
+    /*}*/
+    /*pivot_is_before_pos =*/
+        /*position_compare(*/
+            /*pivot, pos) <= 0;*/
 
-    // if pivot and pivot_succ are before pos, search in the second half on next iteration
-    if (pivot_is_before_pos && pivot_succ_is_before_pos)
-    {
-      first = middle + 1;
-    }
-    else if (pivot_is_before_pos) // pos is between pivot and pivot_succ
-    {
-      if (before) {
-        return pivot;
-      } else {
-        return pivot_succ;
-      }
-    }
-    else { // if pivot_succ and pivot are behind pos, search in the first half on next iteration
-      last = middle;
-    }
+    /*// if pivot and pivot_succ are before pos, search in the second half on next iteration*/
+    /*if (pivot_is_before_pos && pivot_succ_is_before_pos)*/
+    /*{*/
+      /*first = middle + 1;*/
+    /*}*/
+    /*else if (pivot_is_before_pos) // pos is between pivot and pivot_succ*/
+    /*{*/
+      /*if (return_prev) {*/
+        /*return pivot;*/
+      /*} else {*/
+        /*return pivot_succ;*/
+      /*}*/
+    /*}*/
+    /*else { // if pivot_succ and pivot are behind pos, search in the first half on next iteration*/
+      /*last = middle;*/
+    /*}*/
 
-    // recalculate middle position
-    middle = (first + last) / 2;
-  }
+    /*// recalculate middle position*/
+    /*middle = (first + last) / 2;*/
+  /*}*/
 
-  return NULL;
+  /*return NULL;*/
 }

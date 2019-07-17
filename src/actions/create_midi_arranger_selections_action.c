@@ -77,14 +77,11 @@ create_midi_arranger_selections_action_do (
       /* find the region */
       mn->region =
         region_find_by_name (mn->region_name);
-      g_message ("region %p", mn->region);
       g_return_val_if_fail (mn->region, -1);
 
       /* add it to the region */
       midi_region_add_midi_note (
-        mn->region,
-        mn, F_GEN_WIDGET);
-      g_message ("CREATED");
+        mn->region, mn);
     }
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);

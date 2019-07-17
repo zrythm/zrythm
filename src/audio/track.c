@@ -59,12 +59,6 @@ track_init_loaded (Track * track)
       lane->track = track;
       track_lane_init_loaded (lane);
     }
-  ChordObject * chord;
-  for (i = 0; i < track->num_chords; i++)
-    {
-      chord = track->chords[i];
-      chord_object_init_loaded (chord);
-    }
   ScaleObject * scale;
   for (i = 0; i < track->num_scales; i++)
     {
@@ -99,21 +93,24 @@ track_init_loaded (Track * track)
  */
 static void
 track_add_lane (
-  Track * track)
+  Track * self)
 {
-  track->lanes[track->num_lanes++] =
-    track_lane_new (track, track->num_lanes);
+  array_double_size_if_full (
+    self->lanes, self->num_lanes,
+    self->lanes_size, TrackLane *);
+  self->lanes[self->num_lanes++] =
+    track_lane_new (self, self->num_lanes);
 
   EVENTS_PUSH (ET_TRACK_LANE_ADDED,
-               track->lanes[track->num_lanes - 1]);
+               self->lanes[self->num_lanes - 1]);
 }
 
 void
-track_init (Track * track)
+track_init (Track * self)
 {
-  track->visible = 1;
-  track->handle_pos = 1;
-  track_add_lane (track);
+  self->visible = 1;
+  self->handle_pos = 1;
+  track_add_lane (self);
 }
 
 /**
@@ -452,9 +449,9 @@ track_get_last_region (
           for (j = 0; j < lane->num_regions; j++)
             {
               r = lane->regions[j];
-              if (position_compare (
+              if (position_is_after (
                     &r->end_pos,
-                    &tmp) > 0)
+                    &tmp))
                 {
                   last_region = r;
                   position_set_to_pos (
@@ -464,48 +461,23 @@ track_get_last_region (
         }
     }
 
-  return last_region;
-}
-
-/**
- * Returns the last region in the track, or NULL.
- */
-AutomationPoint *
-track_get_last_automation_point (
-  Track * track)
-{
   AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
-  if (!atl)
-    return NULL;
-
-  int i, j;
-  AutomationPoint * last_ap = NULL, * ap;
+    &track->automation_tracklist;
   AutomationTrack * at;
-  Position tmp;
-  position_init (&tmp);
-
   for (i = 0; i < atl->num_ats; i++)
     {
       at = atl->ats[i];
-
-      for (j = 0; j < at->num_aps;
-           j++)
+      r = automation_track_get_last_region (at);
+      if (position_is_after (
+            &r->end_pos, &tmp))
         {
-          ap = at->aps[j];
-
-          if (position_compare (
-                &ap->pos,
-                &tmp) > 0)
-            {
-              last_ap = ap;
-              position_set_to_pos (
-                &tmp, &ap->pos);
-            }
+          last_region = r;
+          position_set_to_pos (
+            &tmp, &r->end_pos);
         }
     }
 
-  return last_ap;
+  return last_region;
 }
 
 /**
@@ -541,21 +513,21 @@ track_setup (Track * track)
  * The Region must be the main region (see
  * ArrangerObjectInfo).
  *
+ * @param at The AutomationTrack of this Region, if
+ *   automation region.
  * @param lane_pos The position of the lane to add
- *   to.
+ *   to, if applicable.
  * @param gen_name Generate a unique region name or
  *   not. This will be 0 if the caller already
  *   generated a unique name.
- * @param gen_widget Generate a RegionWidget for
- *   the Region.
  */
 void
 track_add_region (
   Track * track,
   Region * region,
+  AutomationTrack * at,
   int      lane_pos,
-  int      gen_name,
-  int      gen_widget)
+  int      gen_name)
 {
   g_warn_if_fail (
     (track->type == TRACK_TYPE_INSTRUMENT ||
@@ -589,19 +561,52 @@ track_add_region (
       g_free (name);
     }
 
-  track_lane_add_region (
-    track->lanes[lane_pos],
-    region);
-
-  if (gen_widget)
+  int add_lane = 0, add_at = 0, add_chord = 0;
+  switch (region->type)
     {
-      region_gen_widget (region);
+    case REGION_TYPE_MIDI:
+      add_lane = 1;
+      break;
+    case REGION_TYPE_AUDIO:
+      add_lane = 1;
+      break;
+    case REGION_TYPE_AUTOMATION:
+      add_at = 1;
+      break;
+    case REGION_TYPE_CHORD:
+      add_chord = 1;
+      break;
     }
 
-  /* enable extra lane if necessary */
-  if (lane_pos == track->num_lanes - 1)
+  if (add_lane)
     {
-      track_add_lane (track);
+      track_lane_add_region (
+        track->lanes[lane_pos],
+        region);
+
+      /* enable extra lane if necessary */
+      if (lane_pos == track->num_lanes - 1)
+        {
+          track_add_lane (track);
+        }
+    }
+
+  if (add_at)
+    {
+      automation_track_add_region (
+        at, region);
+    }
+
+  if (add_chord)
+    {
+      g_warn_if_fail (track == P_CHORD_TRACK);
+      array_double_size_if_full (
+        track->chord_regions,
+        track->num_chord_regions,
+        track->chord_regions_size, Region *);
+      array_append (track->chord_regions,
+                    track->num_chord_regions,
+                    region);
     }
 
   EVENTS_PUSH (ET_REGION_CREATED,
@@ -673,6 +678,9 @@ track_add_modulator (
   Track * track,
   Modulator * modulator)
 {
+  array_double_size_if_full (
+    track->modulators, track->num_modulators,
+    track->modulators_size, Modulator *);
   array_append (track->modulators,
                 track->num_modulators,
                 modulator);
@@ -694,11 +702,6 @@ track_free (Track * track)
   int i;
   for (i = 0; i < track->num_lanes; i++)
     track_lane_free (track->lanes[i]);
-
-  /* remove chords */
-  /* FIXME move inside *_track_free */
-  for (i = 0; i < track->num_chords; i++)
-    chord_object_free (track->chords[i]);
 
   /* remove automation points, curves, tracks,
    * lanes*/
@@ -819,8 +822,8 @@ track_get_channel (Track * track)
  */
 Region *
 track_get_region_at_pos (
-  Track *    track,
-  Position * pos)
+  const Track *    track,
+  const Position * pos)
 {
   int i, j;
 
@@ -835,15 +838,27 @@ track_get_region_at_pos (
 
           for (j = 0; j < lane->num_regions; j++)
             {
-              r = lane->regions[i];
-              if (position_compare (
-                    pos,
-                    &r->start_pos) >= 0 &&
-                  position_compare (
-                    pos,
-                    &r->end_pos) <= 0)
+              r = lane->regions[j];
+              if (position_is_after_or_equal (
+                    pos, &r->start_pos) &&
+                  position_is_before_or_equal (
+                    pos, &r->end_pos))
                 return r;
             }
+        }
+    }
+  else if (track->type == TRACK_TYPE_CHORD)
+    {
+      Region * r;
+
+      for (j = 0; j < track->num_chord_regions; j++)
+        {
+          r = track->chord_regions[j];
+          if (position_is_after_or_equal (
+                pos, &r->start_pos) &&
+              position_is_before_or_equal (
+                pos, &r->end_pos))
+            return r;
         }
     }
 

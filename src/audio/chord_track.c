@@ -49,37 +49,6 @@ chord_track_new ()
 }
 
 /**
- * Adds a chord to the chord track.
- */
-void
-chord_track_add_chord (
-  ChordTrack * track,
-  ChordObject *     chord,
-  int          gen_widget)
-{
-  g_warn_if_fail (
-    track->type == TRACK_TYPE_CHORD && chord);
-  g_warn_if_fail (
-    chord->obj_info.counterpart ==
-      AOI_COUNTERPART_MAIN);
-  g_warn_if_fail (
-    chord->obj_info.main &&
-    chord->obj_info.main_trans &&
-    chord->obj_info.lane &&
-    chord->obj_info.lane_trans);
-
-  chord_object_set_track (chord, track);
-  array_append (track->chords,
-                track->num_chords,
-                chord);
-
-  if (gen_widget)
-    chord_object_gen_widget (chord);
-
-  EVENTS_PUSH (ET_CHORD_OBJECT_CREATED, chord);
-}
-
-/**
  * Adds a ChordObject to the Track.
  *
  * @param gen_widget Create a widget for the chord.
@@ -87,8 +56,7 @@ chord_track_add_chord (
 void
 chord_track_add_scale (
   ChordTrack *  track,
-  ScaleObject * scale,
-  int           gen_widget)
+  ScaleObject * scale)
 {
   g_warn_if_fail (
     track->type == TRACK_TYPE_CHORD && scale);
@@ -102,12 +70,12 @@ chord_track_add_scale (
     scale->obj_info.lane_trans);
 
   scale_object_set_track (scale, track);
+  array_double_size_if_full (
+    track->scales, track->num_scales,
+    track->scales_size, ScaleObject *);
   array_append (track->scales,
                 track->num_scales,
                 scale);
-
-  if (gen_widget)
-    scale_object_gen_widget (scale);
 
   EVENTS_PUSH (ET_SCALE_OBJECT_CREATED, scale);
 }
@@ -141,38 +109,20 @@ chord_track_get_chord_at_pos (
   const Track * ct,
   const Position * pos)
 {
+  Region * region =
+    track_get_region_at_pos (ct, pos);
+
   ChordObject * chord = NULL;
-  for (int i = ct->num_chords - 1; i >= 0; i--)
+  int i;
+  for (i = region->num_chord_objects - 1;
+       i >= 0; i--)
     {
-      chord = ct->chords[i];
+      chord = region->chord_objects[i];
       if (position_is_before_or_equal (
             &chord->pos, pos))
         return chord;
     }
   return NULL;
-}
-
-/**
- * Removes a chord from the chord Track.
- */
-void
-chord_track_remove_chord (
-  ChordTrack *  self,
-  ChordObject * chord,
-  int           free)
-{
-  /* deselect */
-  timeline_selections_remove_chord_object (
-    TL_SELECTIONS, chord);
-
-  array_delete (self->chords,
-                self->num_chords,
-                chord);
-
-  if (free)
-    free_later (chord, chord_object_free);
-
-  EVENTS_PUSH (ET_CHORD_OBJECT_REMOVED, self);
 }
 
 /**
@@ -200,5 +150,7 @@ chord_track_remove_scale (
 void
 chord_track_free (ChordTrack * self)
 {
-
+  /* remove chords */
+  for (int i = 0; i < self->num_chord_regions; i++)
+    region_free (self->chord_regions[i]);
 }

@@ -130,7 +130,7 @@ on_press (
 
 DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
   ChordObject, chord_object,
-  timeline_selections, TL_SELECTIONS);
+  chord_selections, CHORD_SELECTIONS);
 
 static gboolean
 on_motion (

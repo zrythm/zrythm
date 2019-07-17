@@ -23,11 +23,13 @@
  * The clip/region editor backend.
  */
 
-#ifndef __AUDIO_CLIP_EDITOR_H__
-#define __AUDIO_CLIP_EDITOR_H__
+#ifndef __GUI_BACKEND_CLIP_EDITOR_H__
+#define __GUI_BACKEND_CLIP_EDITOR_H__
 
-#include "gui/backend/piano_roll.h"
 #include "gui/backend/audio_clip_editor.h"
+#include "gui/backend/automation_editor.h"
+#include "gui/backend/chord_editor.h"
+#include "gui/backend/piano_roll.h"
 
 /**
  * @addtogroup gui_backend
@@ -41,9 +43,10 @@
 typedef struct Region Region;
 
 /**
- * Piano roll serializable backend.
+ * Clip editor serializable backend.
  *
- * The actual widgets should reflect the information here.
+ * The actual widgets should reflect the
+ * information here.
  */
 typedef struct ClipEditor
 {
@@ -54,6 +57,8 @@ typedef struct ClipEditor
 
   PianoRoll        piano_roll;
   AudioClipEditor  audio_clip_editor;
+  AutomationEditor automation_editor;
+  ChordEditor      chord_editor;
 
   /** Flag used by rulers when region first
    * changes. */
@@ -72,6 +77,14 @@ clip_editor_fields_schema[] =
     "piano_roll", CYAML_FLAG_DEFAULT,
     ClipEditor, piano_roll,
     piano_roll_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "automation_editor", CYAML_FLAG_DEFAULT,
+    ClipEditor, automation_editor,
+    automation_editor_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "chord_editor", CYAML_FLAG_DEFAULT,
+    ClipEditor, chord_editor,
+    chord_editor_fields_schema),
 
 	CYAML_FIELD_END
 };
@@ -101,7 +114,8 @@ clip_editor_init (
  * To be called only from GTK threads.
  */
 void
-clip_editor_set_region (Region * region);
+clip_editor_set_region (
+  Region * region);
 
 /**
  * @}

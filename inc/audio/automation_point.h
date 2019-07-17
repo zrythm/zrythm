@@ -80,14 +80,16 @@ typedef struct AutomationPoint
   /**
    * Pointer back to parent.
    */
-  int                track_pos;
-  int                at_index;
-  AutomationTrack *  at;
+  Region *           region;
 
   /** GUI Widget. */
   AutomationPointWidget *  widget;
 
-  /** Index in the automation track, for faster
+  /** Used in clones to identify a region instead of
+   * cloning the whole Region. */
+  char *              region_name;
+
+  /** Index in the region, for faster
    * performance when getting ap before/after
    * curve. */
   int                index;
@@ -114,12 +116,6 @@ automation_point_fields_schema[] =
   CYAML_FIELD_INT (
     "index", CYAML_FLAG_DEFAULT,
     AutomationPoint, index),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
-    AutomationPoint, track_pos),
-  CYAML_FIELD_INT (
-    "at_index", CYAML_FLAG_DEFAULT,
-    AutomationPoint, at_index),
 
 	CYAML_FIELD_END
 };
@@ -175,14 +171,14 @@ automation_point_update_fvalue (
   ArrangerObjectUpdateFlag update_flag);
 
 /**
- * Sets the AutomationTrack and the index in the
- * AutomationTrack that the AutomationPoint
+ * Sets the Region and the index in the
+ * region that the AutomationPoint
  * belongs to, in all its counterparts.
  */
 void
-automation_point_set_automation_track_and_index (
+automation_point_set_region_and_index (
   AutomationPoint * _ap,
-  AutomationTrack * at,
+  Region *          region,
   int               index);
 
 /**

@@ -863,7 +863,7 @@ events_process (void * data)
         case ET_TRACK_LANES_VISIBILITY_CHANGED:
           tracklist_widget_soft_refresh (
             MW_TRACKLIST);
-          timeline_arranger_widget_refresh_visibility (
+          timeline_arranger_widget_update_visibility (
             MW_TIMELINE);
           break;
         case ET_TRACK_ADDED:
@@ -1011,7 +1011,7 @@ events_process (void * data)
         case ET_TRACK_LANE_ADDED:
           tracklist_widget_soft_refresh (
             MW_TRACKLIST);
-          timeline_arranger_widget_refresh_visibility (
+          timeline_arranger_widget_update_visibility (
             MW_TIMELINE);
           break;
         case ET_LOOP_TOGGLED:

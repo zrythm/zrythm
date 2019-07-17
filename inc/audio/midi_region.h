@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -52,21 +52,12 @@ midi_region_new (
   int        is_main);
 
 /**
- * Creates region (used when loading projects).
- */
-MidiRegion *
-midi_region_get_or_create_blank (int id);
-
-/**
  * Adds midi note to region
- *
- * @param gen_widget Generate a MidiNoteWidget.
  */
 void
 midi_region_add_midi_note (
   MidiRegion * region,
-  MidiNote * midi_note,
-  int        gen_widget);
+  MidiNote * midi_note);
 
 /**
  * Returns the midi note with the given pitch from the
@@ -75,8 +66,9 @@ midi_region_add_midi_note (
  * Used when recording.
  */
 MidiNote *
-midi_region_find_unended_note (MidiRegion * self,
-                               int          pitch);
+midi_region_find_unended_note (
+  MidiRegion * self,
+  int          pitch);
 
 /**
  * Prints the MidiNotes in the Region.
@@ -155,7 +147,8 @@ midi_region_remove_all_midi_notes (
  * Regions should be free'd using region_free.
  */
 void
-midi_region_free_members (MidiRegion * self);
+midi_region_free_members (
+  MidiRegion * self);
 
 /**
  * @}

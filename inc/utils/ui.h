@@ -371,8 +371,9 @@ ui_pos_to_px_timeline (
  * padding.
  */
 int
-ui_pos_to_px_piano_roll (Position *       pos,
-           int              use_padding);
+ui_pos_to_px_piano_roll (
+  Position * pos,
+  int        use_padding);
 
 /**
  * Converts position to px, optionally adding the ruler
@@ -382,6 +383,16 @@ int
 ui_pos_to_px_audio_clip_editor (
   Position *       pos,
   int              use_padding);
+
+int
+ui_pos_to_px_chord_editor (
+  Position * pos,
+  int        use_padding);
+
+int
+ui_pos_to_px_automation_editor (
+  Position * pos,
+  int        use_padding);
 
 /**
  * Converts from pixels to position.

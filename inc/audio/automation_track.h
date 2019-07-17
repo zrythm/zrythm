@@ -52,19 +52,14 @@ typedef struct AutomationTrack
    */
   Track *           track;
 
-  /**
-   * The automation points.
-   *
-   * Must always stay sorted by position.
-   */
-  AutomationPoint * aps[MAX_AUTOMATION_POINTS];
-  int               num_aps;
-  AutomationCurve * acs[MAX_AUTOMATION_POINTS];
-  int               num_acs;
-
   /** Whether it has been created by the user
    * yet or not. */
   int               created;
+
+  /** The automation Region's. */
+  Region **         regions;
+  int               num_regions;
+  int               regions_size;
 
   /**
    * Whether visible or not.
@@ -93,14 +88,6 @@ static const cyaml_schema_field_t
     CYAML_FLAG_DEFAULT,
     AutomationTrack, automatable,
     automatable_fields_schema),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "aps", CYAML_FLAG_DEFAULT,
-    AutomationTrack, aps, num_aps,
-    &automation_point_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "acs", CYAML_FLAG_DEFAULT,
-    AutomationTrack, acs, num_acs,
-    &automation_curve_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
     "created", CYAML_FLAG_DEFAULT,
     AutomationTrack, created),
@@ -128,10 +115,19 @@ automation_track_init_loaded (
   AutomationTrack * self);
 
 /**
- * Creates an automation track for the given automatable
+ * Creates an automation track for the given
+ * automatable.
  */
 AutomationTrack *
 automation_track_new (Automatable *  automatable);
+
+/**
+ * Adds an automation Region to the AutomationTrack.
+ */
+void
+automation_track_add_region (
+  AutomationTrack * self,
+  Region *          region);
 
 /**
  * Sets the automatable to the automation track and updates the GUI
@@ -142,98 +138,17 @@ automation_track_set_automatable (
   Automatable *     a);
 
 /**
+ * Clones the AutomationTrack.
+ */
+AutomationTrack *
+automation_track_clone (
+  AutomationTrack * src);
+
+/**
  * Frees the automation track.
  */
 void
 automation_track_free (AutomationTrack * at);
-
-void
-automation_track_print_automation_points (
-  AutomationTrack * at);
-
-/**
- * Forces sort of the automation points.
- */
-void
-automation_track_force_sort (AutomationTrack * at);
-
-/**
- * Adds automation point and optionally generates curve points accordingly.
- */
-void
-automation_track_add_ap (
-  AutomationTrack * at,
-  AutomationPoint * ap,
-  int               gen_widget,
-  int               generate_curve_points);
-
-/**
- * Adds automation curve.
- */
-void
-automation_track_add_ac (
-  AutomationTrack * at,
-  AutomationCurve * ac);
-
-/**
- * Returns the automation point before the position.
- */
-AutomationPoint *
-automation_track_get_prev_ap (AutomationTrack * at,
-                              AutomationPoint * _ap);
-
-/**
- * Returns the automation point after the position.
- */
-AutomationPoint *
-automation_track_get_next_ap (AutomationTrack * at,
-                              AutomationPoint * _ap);
-
-AutomationPoint *
-automation_track_get_ap_before_curve (
-  AutomationTrack * at,
-  AutomationCurve * ac);
-
-/**
- * Returns the ap after the curve point.
- */
-AutomationPoint *
-automation_track_get_ap_after_curve (
-  AutomationTrack * at,
-  AutomationCurve * ac);
-
-/**
- * Returns the curve point right after the given ap
- */
-AutomationCurve *
-automation_track_get_next_curve_ac (
-  AutomationTrack * at,
-  AutomationPoint * ap);
-
-/**
- * Removes automation point from automation track.
- */
-void
-automation_track_remove_ap (
-  AutomationTrack * at,
-  AutomationPoint * ap,
-  int               free);
-
-/**
- * Removes automation curve from automation track.
- */
-void
-automation_track_remove_ac (
-  AutomationTrack * at,
-  AutomationCurve * ac);
-
-//int
-//automation_track_get_ap_index (AutomationTrack * at,
-                            //AutomationPoint * ap);
-
-//int
-//automation_track_get_curve_index (AutomationTrack * at,
-                                  //AutomationCurve * ac);
 
 /**
  * Returns the automation curve at the given pos.
@@ -248,8 +163,17 @@ automation_track_get_ac_at_pos (
  */
 AutomationPoint *
 automation_track_get_ap_before_pos (
-  AutomationTrack * self,
-  Position *        pos);
+  const AutomationTrack * self,
+  const Position *        pos);
+
+/**
+ * Returns the last Region before the given
+ * Position.
+ */
+Region *
+automation_track_get_region_before_pos (
+  const AutomationTrack * self,
+  const Position *        pos);
 
 /**
  * Returns the actual parameter value at the given
@@ -269,5 +193,12 @@ automation_track_get_normalized_val_at_pos (
  */
 //void
 //automation_track_update (AutomationTrack * at);
+
+/**
+ * Gets the last Region in the AutomationTrack.
+ */
+Region *
+automation_track_get_last_region (
+  AutomationTrack * self);
 
 #endif // __AUDIO_AUTOMATION_TRACK_H__

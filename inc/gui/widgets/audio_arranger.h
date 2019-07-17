@@ -45,44 +45,7 @@ typedef struct _AudioArrangerWidget
 
 } AudioArrangerWidget;
 
-/**
- * To be called from get_child_position in parent widget.
- *
- * Used to allocate the overlay children.
- */
-void
-audio_arranger_widget_set_allocation (
-  AudioArrangerWidget * self,
-  GtkWidget *          widget,
-  GdkRectangle *       allocation);
-
-/**
- * Shows context menu.
- *
- * To be called from parent on right click.
- */
-void
-audio_arranger_widget_show_context_menu (AudioArrangerWidget * self);
-
-void
-audio_arranger_widget_refresh_children (
-  AudioArrangerWidget * self);
-
-/**
- * Returns the appropriate cursor based on the
- * current hover_x and y.
- */
-ArrangerCursor
-audio_arranger_widget_get_cursor (
-  AudioArrangerWidget * self,
-  UiOverlayAction action,
-  Tool            tool);
-
-/**
- * Sets up the widget.
- */
-void
-audio_arranger_widget_setup (
-  AudioArrangerWidget * self);
+ARRANGER_W_DECLARE_FUNCS (
+  Audio, audio);
 
 #endif

@@ -1,11 +1,6 @@
 Contributing Guidelines
 =======================
 
-*This file is part of Zrythm and is licensed under the
-GNU Affero General Public License version 3. You should have received
-a copy of the GNU Affero General Public License
-  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.*
-
 # CODE STRUCTURE
 
     .
@@ -108,3 +103,12 @@ Using g_idle_add without returning false in the GSourceFunc? Not using g_idle_ad
   2. GUI widgets that exist no matter what (like the tracklist, mixer, browser, etc.) should be initialized by the UI files with no _new function. Widgets that are created dynamically like channels and tracks should have a _new function. In both cases they should have a _setup function to initialize them with data and a _refresh function to update the widget to reflect the backend data. _setup must only be called once and _refresh can be called any time, but excessive calling should be avoided on widgets with many children such as the mixer and tracklist to avoid performance issues.
 
   Anything else just ask in the chatrooms!
+
+----
+
+Copyright (C) 2018-2019 Alexandros Theodotou
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.

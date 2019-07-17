@@ -41,6 +41,8 @@ audio_region_new (
   AudioRegion * self =
     calloc (1, sizeof (AudioRegion));
 
+  self->type = REGION_TYPE_AUDIO;
+
   /* open with ad */
   struct adinfo nfo;
   SRC_DATA src_data;
@@ -61,7 +63,6 @@ audio_region_new (
 
   /* init */
   region_init ((Region *) self,
-               REGION_TYPE_AUDIO,
                start_pos,
                &self->end_pos,
                is_main);

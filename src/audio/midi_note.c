@@ -301,8 +301,9 @@ midi_note_delete (MidiNote * midi_note)
  * timeline).
  */
 int
-midi_note_hit (MidiNote * midi_note,
-               Position *  pos)
+midi_note_hit (
+  MidiNote * midi_note,
+  Position *  pos)
 {
   Position local_pos;
   Region * region = midi_note->region;
@@ -345,6 +346,9 @@ midi_note_free (MidiNote * self)
     }
 
   velocity_free_all (self->vel);
+
+  if (self->region_name)
+    g_free (self->region_name);
 
   free (self);
 }

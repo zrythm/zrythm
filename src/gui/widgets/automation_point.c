@@ -53,7 +53,7 @@ draw_cb (
     context, cr, 0, 0, width, height);
 
   Track * track =
-    self->automation_point->at->track;
+    self->automation_point->region->at->track;
   GdkRGBA * color = &track->color;
   cairo_set_source_rgba (
     cr, color->red, color->green, color->blue, 0.7);
@@ -105,7 +105,7 @@ on_motion (GtkWidget * widget,
 
 DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
   AutomationPoint, automation_point,
-  timeline_selections, TL_SELECTIONS);
+  automation_selections, AUTOMATION_SELECTIONS);
 
 void
 automation_point_widget_update_tooltip (
@@ -119,7 +119,7 @@ automation_point_widget_update_tooltip (
   char * tooltip =
     g_strdup_printf (
       "%s %f",
-      ap->at->automatable->label,
+      ap->region->at->automatable->label,
       ap->fvalue);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), tooltip);

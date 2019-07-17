@@ -149,7 +149,7 @@ midi_arranger_widget_get_note_at_y (double y)
 }
 
 MidiNoteWidget *
-midi_arranger_widget_get_hit_midi_note (
+midi_arranger_widget_get_hit_note (
   MidiArrangerWidget *  self,
   double                x,
   double                y)
@@ -215,7 +215,7 @@ on_motion (GtkWidget *      widget,
 }
 
 void
-midi_arranger_widget_refresh_size (
+midi_arranger_widget_set_size (
   MidiArrangerWidget * self)
 {
   // set the size
@@ -230,7 +230,7 @@ void
 midi_arranger_widget_setup (
   MidiArrangerWidget * self)
 {
-  midi_arranger_widget_refresh_size (self);
+  midi_arranger_widget_set_size (self);
 
   ARRANGER_WIDGET_GET_PRIVATE (self);
   g_signal_connect (
@@ -261,7 +261,7 @@ midi_arranger_widget_get_cursor (
           tool == TOOL_EDIT)
         {
           MidiNoteWidget * mnw =
-            midi_arranger_widget_get_hit_midi_note (
+            midi_arranger_widget_get_hit_note (
               self,
               ar_prv->hover_x,
               ar_prv->hover_y);
@@ -358,7 +358,7 @@ midi_arranger_widget_show_context_menu (
   GtkMenuItem * menu_item;
 
   MidiNoteWidget * clicked_note =
-    midi_arranger_widget_get_hit_midi_note (
+    midi_arranger_widget_get_hit_note (
       self, x, y);
 
   if (clicked_note)
@@ -566,7 +566,7 @@ midi_arranger_widget_create_note (
 
   /* add it to region */
   midi_region_add_midi_note (
-    region, midi_note, F_GEN_WIDGET);
+    region, midi_note);
 
   /* set visibility */
   arranger_object_info_set_widget_visibility_and_state (

@@ -87,8 +87,7 @@ delete_midi_arranger_selections_action_undo (
 
       /* add it to the region */
       midi_region_add_midi_note (
-        region_find_by_name (mn->region_name),
-        mn, F_GEN_WIDGET);
+        region_find_by_name (mn->region_name), mn);
     }
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);

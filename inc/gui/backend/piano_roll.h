@@ -23,8 +23,8 @@
  * Piano roll backend.
  */
 
-#ifndef __AUDIO_PIANO_ROLL_H__
-#define __AUDIO_PIANO_ROLL_H__
+#ifndef __GUI_BACKEND_PIANO_ROLL_H__
+#define __GUI_BACKEND_PIANO_ROLL_H__
 
 #include <cyaml/cyaml.h>
 

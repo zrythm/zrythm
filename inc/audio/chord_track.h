@@ -58,30 +58,9 @@ chord_track_new ();
  * @param gen_widget Create a widget for the chord.
  */
 void
-chord_track_add_chord (
-  ChordTrack * track,
-  ChordObject *     chord,
-  int          gen_widget);
-
-/**
- * Adds a ChordObject to the Track.
- *
- * @param gen_widget Create a widget for the chord.
- */
-void
 chord_track_add_scale (
   ChordTrack *  track,
-  ScaleObject * chord,
-  int           gen_widget);
-
-/**
- * Removes a chord from the chord Track.
- */
-void
-chord_track_remove_chord (
-  ChordTrack *  self,
-  ChordObject * chord,
-  int           free);
+  ScaleObject * chord);
 
 /**
  * Removes a scale from the chord Track.

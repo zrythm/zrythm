@@ -163,7 +163,10 @@ audio_arranger_widget_get_cursor (
  * To be called from parent on right click.
  */
 void
-audio_arranger_widget_show_context_menu (AudioArrangerWidget * self)
+audio_arranger_widget_show_context_menu (
+  AudioArrangerWidget * self,
+  gdouble              x,
+  gdouble              y)
 {
   GtkWidget *menu, *menuitem;
 
@@ -192,6 +195,53 @@ audio_arranger_widget_setup (
     GTK_WIDGET (self),
     rw_prv->total_px,
     -1);
+}
+
+void
+audio_arranger_widget_select_all (
+  AudioArrangerWidget *  self,
+  int               select)
+{
+}
+
+/**
+ * Called when in selection mode.
+ *
+ * Called by arranger widget during drag_update to find and
+ * select the midi notes enclosed in the selection area.
+ *
+ * @param[in] delete If this is a select-delete
+ *   operation
+ */
+void
+audio_arranger_widget_select (
+  AudioArrangerWidget * self,
+  double               offset_x,
+  double               offset_y,
+  int                  delete)
+{
+}
+
+/**
+ * Called on drag end.
+ *
+ * Sets default cursors back and sets the start midi note
+ * to NULL if necessary.
+ */
+void
+audio_arranger_widget_on_drag_end (
+  AudioArrangerWidget * self)
+{
+}
+
+/**
+ * Sets transient notes and actual notes
+ * visibility based on the current action.
+ */
+void
+audio_arranger_widget_update_visibility (
+  AudioArrangerWidget * self)
+{
 }
 
 /**

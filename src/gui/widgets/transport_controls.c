@@ -89,12 +89,16 @@ static void
 backward_clicked_cb (GtkButton * backward,
                      gpointer    user_data)
 {
-  Position *pos = snap_grid_get_nearby_snap_point(&PROJECT->snap_grid_timeline, &TRANSPORT->playhead_pos, 1);
-  transport_move_playhead(pos, 1);
+  Position * pos =
+    snap_grid_get_nearby_snap_point (
+      &PROJECT->snap_grid_timeline,
+      &TRANSPORT->playhead_pos, 1);
+  transport_move_playhead (pos, 1);
 }
 
 /**
- * Initializes the transport controls in the main window.
+ * Initializes the transport controls in the main
+ * window.
  */
 void
 transport_controls_widget_refresh (MainWindowWidget * mw)

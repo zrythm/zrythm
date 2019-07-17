@@ -71,9 +71,7 @@ timeline_selections_init_loaded (
 
   _SET_OBJ (region);
   _SET_OBJ (marker);
-  _SET_OBJ (chord_object);
   _SET_OBJ (scale_object);
-  _SET_OBJ (automation_point);
 
 #undef _SET_OBJ
 }
@@ -87,10 +85,8 @@ timeline_selections_has_any (
 {
   return (
     ts->num_regions > 0 ||
-    ts->num_automation_points > 0 ||
     ts->num_scale_objects > 0 ||
-    ts->num_markers > 0 ||
-    ts->num_chord_objects > 0);
+    ts->num_markers > 0);
 }
 
 /**
@@ -126,10 +122,8 @@ timeline_selections_set_cache_poses (
     }
 
   SET_CACHE_POS_W_LENGTH (Region, region);
-  SET_CACHE_POS (ChordObject, chord_object);
   SET_CACHE_POS (ScaleObject, scale_object);
   SET_CACHE_POS (Marker, marker);
-  SET_CACHE_POS (AutomationPoint, automation_point);
 
 #undef SET_CACHE_POS_W_LENGTH
 #undef SET_CACHE_POS
@@ -175,14 +169,9 @@ timeline_selections_reset_transient_poses (
   RESET_TRANS_POS_W_LENGTH (
     REGION, Region, region);
   RESET_TRANS_POS (
-    CHORD_OBJECT, ChordObject, chord_object);
-  RESET_TRANS_POS (
     SCALE_OBJECT, ScaleObject, scale_object);
   RESET_TRANS_POS (
     MARKER, Marker, marker);
-  RESET_TRANS_POS (
-    AUTOMATION_POINT, AutomationPoint,
-    automation_point);
 
 #undef RESET_TRANS_POS_W_LENGTH
 #undef RESET_TRANS_POS
@@ -211,12 +200,6 @@ timeline_selections_get_start_pos (
 
   ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, Region, region, start_pos,
-    transient, before, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, AutomationPoint, automation_point, pos,
-    transient, before, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, ChordObject, chord_object, pos,
     transient, before, widget);
   ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ScaleObject, scale_object, pos,
@@ -250,12 +233,6 @@ timeline_selections_get_end_pos (
     ts, Region, region, start_pos,
     transient, after, widget);
   ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, AutomationPoint, automation_point, pos,
-    transient, after, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, ChordObject, chord_object, pos,
-    transient, after, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ScaleObject, scale_object, pos,
     transient, after, widget);
   ARRANGER_OBJ_SET_GIVEN_POS_TO (
@@ -283,12 +260,6 @@ timeline_selections_get_first_object (
 
   ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, Region, region, start_pos,
-    transient, before, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, AutomationPoint, automation_point, pos,
-    transient, before, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, ChordObject, chord_object, pos,
     transient, before, widget);
   ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ScaleObject, scale_object, pos,
@@ -319,12 +290,6 @@ timeline_selections_get_last_object (
 
   ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, Region, region, start_pos,
-    transient, after, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, AutomationPoint, automation_point, pos,
-    transient, after, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, ChordObject, chord_object, pos,
     transient, after, widget);
   ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ScaleObject, scale_object, pos,
@@ -372,18 +337,6 @@ timeline_selections_get_highest_track (
         region = ts->regions[i]->obj_info.main;
       CHECK_POS (region->lane->track);
     }
-  AutomationPoint * ap;
-  for (int i = 0; i < ts->num_automation_points; i++)
-    {
-      if (transient)
-        ap =
-          automation_point_get_main_trans_automation_point (
-                                                           ts->automation_points[i]);
-      else
-        ap = automation_point_get_main_automation_point (
-                                                           ts->automation_points[i]);
-      CHECK_POS (ap->at->track);
-    }
   CHECK_POS (P_CHORD_TRACK);
 
   return track;
@@ -426,16 +379,6 @@ timeline_selections_get_lowest_track (
         region = ts->regions[i]->obj_info.main;
       CHECK_POS (region->lane->track);
     }
-  AutomationPoint * ap;
-  for (int i = 0; i < ts->num_automation_points; i++)
-    {
-      if (transient)
-        ap =
-          automation_point_get_main_trans_automation_point (ts->automation_points[i]);
-      else
-        ap = automation_point_get_main_automation_point (ts->automation_points[i]);
-      CHECK_POS (ap->at->track);
-    }
   CHECK_POS (P_CHORD_TRACK);
 
   return track;
@@ -456,13 +399,8 @@ timeline_selections_get_lowest_track (
 
 DEFINE_ADD_OBJECT (REGION, Region, region);
 DEFINE_ADD_OBJECT (
-  CHORD_OBJECT, ChordObject, chord_object);
-DEFINE_ADD_OBJECT (
   SCALE_OBJECT, ScaleObject, scale_object);
 DEFINE_ADD_OBJECT (MARKER, Marker, marker);
-DEFINE_ADD_OBJECT (
-  AUTOMATION_POINT, AutomationPoint,
-  automation_point);
 
 #undef DEFINE_ADD_OBJECT
 
@@ -477,13 +415,8 @@ DEFINE_ADD_OBJECT (
 
 DEFINE_REMOVE_OBJ (REGION, Region, region);
 DEFINE_REMOVE_OBJ (
-  CHORD_OBJECT, ChordObject, chord_object);
-DEFINE_REMOVE_OBJ (
   SCALE_OBJECT, ScaleObject, scale_object);
 DEFINE_REMOVE_OBJ (MARKER, Marker, marker);
-DEFINE_REMOVE_OBJ (
-  AUTOMATION_POINT, AutomationPoint,
-  automation_point);
 
 #undef DEFINE_REMOVE_OBJ
 
@@ -500,13 +433,8 @@ DEFINE_REMOVE_OBJ (
 
 DEFINE_CONTAINS_OBJ (REGION, Region, region);
 DEFINE_CONTAINS_OBJ (
-  CHORD_OBJECT, ChordObject, chord_object);
-DEFINE_CONTAINS_OBJ (
   SCALE_OBJECT, ScaleObject, scale_object);
 DEFINE_CONTAINS_OBJ (MARKER, Marker, marker);
-DEFINE_CONTAINS_OBJ (
-  AUTOMATION_POINT, AutomationPoint,
-  automation_point);
 
 #undef DEFINE_CONTAINS_OBJ
 
@@ -554,14 +482,9 @@ timeline_selections_set_to_transient_poses (
   SET_TO_TRANS_POS_W_LENGTH (
     REGION, Region, region);
   SET_TO_TRANS_POS (
-    CHORD_OBJECT, ChordObject, chord_object);
-  SET_TO_TRANS_POS (
     SCALE_OBJECT, ScaleObject, scale_object);
   SET_TO_TRANS_POS (
     MARKER, Marker, marker);
-  SET_TO_TRANS_POS (
-    AUTOMATION_POINT, AutomationPoint,
-    automation_point);
 
 #undef SET_TO_TRANS_POS_W_LENGTH
 #undef SET_TO_TRANS_POS
@@ -598,11 +521,6 @@ timeline_selections_clear (
   TL_REMOVE_OBJS (
     REGION, Region, region);
   TL_REMOVE_OBJS (
-    AUTOMATION_POINT, AutomationPoint,
-    automation_point);
-  TL_REMOVE_OBJS (
-    CHORD_OBJECT, ChordObject, chord_object);
-  TL_REMOVE_OBJS (
     SCALE_OBJECT, ScaleObject, scale_object);
   TL_REMOVE_OBJS (
     MARKER, Marker, marker);
@@ -614,13 +532,13 @@ timeline_selections_clear (
  * Clone the struct for copying, undoing, etc.
  */
 TimelineSelections *
-timeline_selections_clone ()
+timeline_selections_clone (
+  TimelineSelections * src)
 {
   TimelineSelections * new_ts =
     calloc (1, sizeof (TimelineSelections));
 
   int i;
-  TimelineSelections * src = TL_SELECTIONS;
 
 #define TL_CLONE_OBJS(caps,cc,sc) \
   cc * sc, * new_##sc; \
@@ -636,11 +554,6 @@ timeline_selections_clone ()
 
   TL_CLONE_OBJS (
     REGION, Region, region);
-  TL_CLONE_OBJS (
-    AUTOMATION_POINT, AutomationPoint,
-    automation_point);
-  TL_CLONE_OBJS (
-    CHORD_OBJECT, ChordObject, chord_object);
   TL_CLONE_OBJS (
     SCALE_OBJECT, ScaleObject, scale_object);
   TL_CLONE_OBJS (
@@ -660,15 +573,6 @@ void
 timeline_selections_set_to_transient_values (
   TimelineSelections * ts)
 {
-  AutomationPoint * ap;
-  for (int i = 0; i < ts->num_automation_points;
-       i++)
-    {
-      ap = ts->automation_points[i];
-      ap->fvalue =
-        automation_point_get_main_trans_automation_point (
-          ap)->fvalue;
-    }
 }
 
 
@@ -703,10 +607,6 @@ timeline_selections_add_ticks (
 
   UPDATE_TL_POSES (
     Region, region);
-  UPDATE_TL_POSES (
-    AutomationPoint, automation_point);
-  UPDATE_TL_POSES (
-    ChordObject, chord_object);
   UPDATE_TL_POSES (
     ScaleObject, scale_object);
   UPDATE_TL_POSES (
@@ -796,23 +696,6 @@ timeline_selections_paste_to_pos (
         cp->lane->track, cp, 0, F_GEN_NAME,
         F_GEN_WIDGET);
     }
-  for (i = 0; i < ts->num_automation_points; i++)
-    {
-      AutomationPoint * ap =
-        ts->automation_points[i];
-
-      curr_ticks = position_to_ticks (&ap->pos);
-      position_from_ticks (&ap->pos,
-                           pos_ticks + DIFF);
-    }
-  for (i = 0; i < ts->num_chord_objects; i++)
-    {
-      ChordObject * chord = ts->chord_objects[i];
-
-      curr_ticks = position_to_ticks (&chord->pos);
-      position_from_ticks (&chord->pos,
-                           pos_ticks + DIFF);
-    }
   for (i = 0; i < ts->num_scale_objects; i++)
     {
       ScaleObject * scale = ts->scale_objects[i];
@@ -822,6 +705,25 @@ timeline_selections_paste_to_pos (
                            pos_ticks + DIFF);
     }
 #undef DIFF
+}
+
+void
+timeline_selections_free_full (
+  TimelineSelections * self)
+{
+  int i;
+  for (i = 0; i < self->num_regions; i++)
+    {
+      region_free (self->regions[i]);
+    }
+  for (i = 0; i < self->num_markers; i++)
+    {
+      marker_free (self->markers[i]);
+    }
+  for (i = 0; i < self->num_scale_objects; i++)
+    {
+      scale_object_free (self->scale_objects[i]);
+    }
 }
 
 void

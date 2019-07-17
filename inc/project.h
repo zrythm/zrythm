@@ -39,6 +39,8 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/backend/clip_editor.h"
+#include "gui/backend/automation_selections.h"
+#include "gui/backend/chord_selections.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/mixer_selections.h"
 #include "gui/backend/timeline_selections.h"
@@ -127,12 +129,24 @@ typedef struct Project
   Quantize           quantize_midi;
 
   /**
-   * Selected objects in the timeline arranger.
+   * Selected objects in the
+   * AutomationArrangerWidget.
+   */
+  AutomationSelections automation_selections;
+
+  /**
+   * Selected objects in the
+   * ChordObjectArrangerWidget.
+   */
+  ChordSelections      chord_selections;
+
+  /**
+   * Selected objects in the TimelineArrangerWidget.
    */
   TimelineSelections timeline_selections;
 
   /**
-   * Selected MidiNote's.
+   * Selected MidiNote's in the MidiArrangerWidget.
    */
   MidiArrangerSelections midi_arranger_selections;
 

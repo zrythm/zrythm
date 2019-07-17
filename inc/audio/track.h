@@ -196,8 +196,9 @@ typedef struct Track
   /* ==== INSTRUMENT & AUDIO TRACK ==== */
 
   /** Lanes in this track containing Regions. */
-  TrackLane *         lanes[14];
+  TrackLane **        lanes;
   int                 num_lanes;
+  int                 lanes_size;
 
   /* ==== INSTRUMENT & AUDIO TRACK END ==== */
 
@@ -208,34 +209,42 @@ typedef struct Track
    *
    * Note: these must always be sorted by Position.
    */
-  ChordObject *       chords[600];
-  int                 num_chords;
+  Region **           chord_regions;
+  int                 num_chord_regions;
+  int                 chord_regions_size;
 
   /**
    * ScaleObject's.
    *
    * Note: these must always be sorted by Position.
    */
-  ScaleObject *       scales[600];
+  ScaleObject **      scales;
   int                 num_scales;
+  int                 scales_size;
 
   /* ==== CHORD TRACK END ==== */
 
-  /* ---- MARKER TRACK ---- */
-  Marker *            markers[100];
+  /* ==== MARKER TRACK ==== */
+
+  Marker **           markers;
   int                 num_markers;
-  /* ---- MARKER TRACK END ---- */
+  int                 markers_size;
+
+  /* ==== MARKER TRACK END ==== */
 
   /* ==== CHANNEL TRACK ==== */
+
   /** 1 Track has 0 or 1 Channel. */
   Channel *           channel;
+
   /* ==== CHANNEL TRACK END ==== */
 
   AutomationTracklist automation_tracklist;
 
   /** Modulators for this Track. */
-  Modulator *         modulators[MAX_MODULATORS];
+  Modulator **        modulators;
   int                 num_modulators;
+  int                 modulators_size;
 
   /**
    * Flag to tell the UI that this channel had
@@ -302,9 +311,9 @@ track_fields_schema[] =
     Track, lanes, num_lanes,
     &track_lane_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "chords", CYAML_FLAG_DEFAULT,
-    Track, chords, num_chords,
-    &chord_object_schema, 0, CYAML_UNLIMITED),
+    "chord_regions", CYAML_FLAG_DEFAULT,
+    Track, chord_regions, num_chord_regions,
+    &region_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "scales", CYAML_FLAG_DEFAULT,
     Track, scales, num_scales,
@@ -406,26 +415,27 @@ int
 track_is_selected (Track * self);
 
 /**
- * Adds a Region to the given lane of the track.
+ * Adds a Region to the given lane or
+ * AutomationTrack of the track.
  *
  * The Region must be the main region (see
  * ArrangerObjectInfo).
  *
+ * @param at The AutomationTrack of this Region, if
+ *   automation region.
  * @param lane_pos The position of the lane to add
- *   to.
+ *   to, if applicable.
  * @param gen_name Generate a unique region name or
  *   not. This will be 0 if the caller already
  *   generated a unique name.
- * @param gen_widget Generate a RegionWidget for
- *   the Region.
  */
 void
 track_add_region (
-  Track * track,
-  Region * region,
-  int      lane_pos,
-  int      gen_name,
-  int      gen_widget);
+  Track *           track,
+  Region *          region,
+  AutomationTrack * at,
+  int               lane_pos,
+  int               gen_name);
 
 /**
  * Removes the region from the track.
@@ -443,22 +453,16 @@ track_remove_region (
  */
 Region *
 track_get_region_at_pos (
-  Track *    track,
-  Position * pos);
+  const Track *    track,
+  const Position * pos);
 
 /**
- * Returns the last region in the track, or NULL.
+ * Returns the last Region in the
+ * track, or NULL.
  */
 Region *
 track_get_last_region (
-  Track * track);
-
-/**
- * Returns the last region in the track, or NULL.
- */
-AutomationPoint *
-track_get_last_automation_point (
-  Track * track);
+  Track *    track);
 
 /**
  * Wrapper.
@@ -467,7 +471,8 @@ void
 track_setup (Track * track);
 
 /**
- * Returns the automation tracklist if the track type has one,
+ * Returns the automation tracklist if the track
+ * type has one,
  * or NULL if it doesn't (like chord tracks).
  */
 AutomationTracklist *

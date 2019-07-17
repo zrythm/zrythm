@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,10 +17,26 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * AutomationCurve API.
+ */
+
 #ifndef __AUDIO_AUTOMATION_CURVE_H__
 #define __AUDIO_AUTOMATION_CURVE_H__
 
 #include "audio/position.h"
+
+typedef struct AutomationTrack AutomationTrack;
+typedef struct _AutomationCurveWidget
+  AutomationCurveWidget;
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
 
 #define AP_MAX_CURVINESS 6.f
 /*#define AP_MIN_CURVINESS \
@@ -30,9 +46,9 @@
   (AP_MAX_CURVINESS - AP_MIN_CURVINESS)
 #define AP_MID_CURVINESS 1.f
 
-typedef struct AutomationTrack AutomationTrack;
-typedef struct _AutomationCurveWidget AutomationCurveWidget;
-
+/**
+ * Type of AutomationCurve.
+ */
 typedef enum AutomationCurveType
 {
   AUTOMATION_CURVE_TYPE_BOOL,
@@ -40,25 +56,30 @@ typedef enum AutomationCurveType
   AUTOMATION_CURVE_TYPE_FLOAT
 } AutomationCurveType;
 
+
+/**
+ * The curve between two AutomationPoint's.
+ */
 typedef struct AutomationCurve
 {
   /**
    * Midway position between previous ap and next ap.
    */
-  Position                 pos;
+  Position                pos;
 
   /** Curviness. */
-  float                    curviness;
-  AutomationCurveType      type;
+  float                   curviness;
+  AutomationCurveType     type;
 
   /** Pointer back to parent. */
-  AutomationTrack *        at;
-  AutomationCurveWidget *  widget;
+  Region *                region;
+
+  AutomationCurveWidget * widget;
 
   /** Index in the automation track, for faster
    * performance when getting ap before/after
    * curve. */
-  int                       index;
+  int                     index;
 } AutomationCurve;
 
 static const cyaml_strval_t
@@ -102,43 +123,64 @@ automation_curve_init_loaded (
   AutomationCurve * ac);
 
 /**
- * Creates curviness point in given track at given Position
+ * Creates an AutomationCurve.
+ *
+ * @param region The Region, used to figure out the
+ * AutomationCurve type.
  */
 AutomationCurve *
-automation_curve_new (AutomationTrack *   at,
-                      Position *          pos);
-
-/**
- * Frees the automation point.
- */
-void
-automation_curve_free (AutomationCurve * ap);
+automation_curve_new (
+  Region *         region,
+  const Position * pos);
 
 /**
  * The function to return a point on the curve.
  *
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+ *
+ * @param ac The start point (0, 0).
+ * @param x X-coordinate in px.
+ * @param width Total width in px.
+ * @param height Total height in px.
  */
 double
-automation_curve_get_y_px (AutomationCurve * start_ap, ///< start point (0, 0)
-                           double               x, ///< x coordinate in px
-                           double               width, ///< total width in px
-                           double               height); ///< total height in px
+automation_curve_get_y_px (
+  AutomationCurve * ac,
+  double            x,
+  double            width,
+  double            height);
 
 /**
- * The function.
+ * TODO add description.
  *
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+ * @param x X-coordinate.
+ * @param curviness Curviness variable.
+ * @param start_at_1 Start at lower point.
  */
 double
 automation_curve_get_y_normalized (
-  double x, ///< x coordinate
+  double x,
   double curviness,
-  int start_at_1); ///< start at lower point
+  int    start_at_1);
 
+/**
+ * Sets the curviness of the AutomationCurve.
+ */
 void
-automation_curve_set_curviness (AutomationCurve * ac, float curviness);
+automation_curve_set_curviness (
+  AutomationCurve * ac,
+  float             curviness);
+
+/**
+ * Frees the automation point.
+ */
+void
+automation_curve_free (
+  AutomationCurve * ap);
+
+/**
+ * @}
+ */
 
 #endif // __AUDIO_AUTOMATION_CURVE_H__
-
-

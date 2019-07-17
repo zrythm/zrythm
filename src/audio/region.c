@@ -18,6 +18,8 @@
  */
 
 #include "audio/audio_region.h"
+#include "audio/automation_region.h"
+#include "audio/chord_region.h"
 #include "audio/channel.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
@@ -26,8 +28,10 @@
 #include "audio/track.h"
 #include "ext/audio_decoder/ad.h"
 #include "gui/widgets/audio_region.h"
+#include "gui/widgets/automation_region.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_region.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
@@ -63,12 +67,10 @@ ARRANGER_OBJ_DEFINE_MOVABLE_W_LENGTH (
 void
 region_init (
   Region *         self,
-  const RegionType type,
   const Position * start_pos,
   const Position * end_pos,
   const int        is_main)
 {
-  g_message ("creating region");
   position_set_to_pos (&self->start_pos,
                        start_pos);
   position_set_to_pos (&self->end_pos,
@@ -82,20 +84,11 @@ region_init (
   position_set_to_pos (&self->loop_end_pos,
                        &self->true_end_pos);
   self->linked_region_name = NULL;
-  self->type = type;
 
   if (is_main)
     {
-      if (type == REGION_TYPE_MIDI)
-        {
-          ARRANGER_OBJECT_SET_AS_MAIN (
-            REGION, Region, region);
-        }
-      else if (type == REGION_TYPE_AUDIO)
-        {
-          /* TODO */
-
-        }
+      ARRANGER_OBJECT_SET_AS_MAIN (
+        REGION, Region, region);
     }
 }
 
@@ -137,31 +130,53 @@ region_init_loaded (Region * self)
     region_find_by_name (
       self->linked_region_name);
 
-  if (self->type == REGION_TYPE_AUDIO)
+  int i;
+  switch (self->type)
     {
-      /* reload audio */
-      struct adinfo nfo;
-      SRC_DATA src_data;
-      long out_buff_size;
+    case REGION_TYPE_AUDIO:
+      {
+        /* reload audio */
+        struct adinfo nfo;
+        SRC_DATA src_data;
+        long out_buff_size;
 
-      audio_decode (
-        &nfo, &src_data,
-        &self->buff, &out_buff_size,
-        self->filename);
+        audio_decode (
+          &nfo, &src_data,
+          &self->buff, &out_buff_size,
+          self->filename);
 
-      self->buff_size =
-        src_data.output_frames_gen;
-      self->channels = nfo.channels;
-    }
-  else if (self->type == REGION_TYPE_MIDI)
-    {
-      MidiNote * mn;
-      for (int i = 0; i < self->num_midi_notes; i++)
-        {
-          mn = self->midi_notes[i];
-          mn->region = self;
-          midi_note_init_loaded (mn);
+        self->buff_size =
+          src_data.output_frames_gen;
+        self->channels = nfo.channels;
+      }
+      break;
+    case REGION_TYPE_MIDI:
+      {
+        MidiNote * mn;
+        for (i = 0; i < self->num_midi_notes; i++)
+          {
+            mn = self->midi_notes[i];
+            mn->region = self;
+            midi_note_init_loaded (mn);
+          }
+      }
+      break;
+    case REGION_TYPE_CHORD:
+      {
+        ChordObject * chord;
+        for (i = 0; i < self->num_chord_objects;
+             i++)
+          {
+            chord = self->chord_objects[i];
+            chord_object_init_loaded (chord);
+          }
         }
+      break;
+    case REGION_TYPE_AUTOMATION:
+      {
+        /* TODO */
+      }
+      break;
     }
 
   ARRANGER_OBJECT_SET_AS_MAIN (
@@ -271,19 +286,22 @@ region_gen_widget (
       else if (i == 3)
         r = region_get_lane_trans_region (r);
 
+#define GEN_W(type,sc) \
+  case REGION_TYPE_##type: \
+    r->widget = \
+      Z_REGION_WIDGET ( \
+        sc##_region_widget_new (r)); \
+    break
+
       switch (r->type)
         {
-        case REGION_TYPE_MIDI:
-          r->widget =
-            Z_REGION_WIDGET (
-              midi_region_widget_new (r));
-          break;
-        case REGION_TYPE_AUDIO:
-          r->widget =
-            Z_REGION_WIDGET (
-              audio_region_widget_new (r));
-          break;
+        GEN_W (MIDI, midi);
+        GEN_W (AUDIO, audio);
+        GEN_W (AUTOMATION, automation);
+        GEN_W (CHORD, chord);
         }
+
+#undef GEN_W
     }
 }
 
@@ -638,46 +656,118 @@ region_clone (
   Region *        region,
   RegionCloneFlag flag)
 {
-  int is_main = 0;
+  int is_main = 0, i, j;
   if (flag == REGION_CLONE_COPY_MAIN)
     is_main = 1;
 
   Region * new_region = NULL;
-  if (region->type == REGION_TYPE_MIDI)
+  switch (region->type)
     {
-      MidiRegion * mr =
-        midi_region_new (
-          &region->start_pos,
-          &region->end_pos,
-          is_main);
-      MidiRegion * mr_orig = region;
-      if (flag == REGION_CLONE_COPY ||
-          flag == REGION_CLONE_COPY_MAIN)
-        {
-          for (int i = 0;
-               i < mr_orig->num_midi_notes; i++)
-            {
-              MidiNote * mn =
-                midi_note_clone (
-                  mr_orig->midi_notes[i],
-                  MIDI_NOTE_CLONE_COPY_MAIN);
+    case REGION_TYPE_MIDI:
+      {
+        MidiRegion * mr =
+          midi_region_new (
+            &region->start_pos,
+            &region->end_pos,
+            is_main);
+        MidiRegion * mr_orig = region;
+        if (flag == REGION_CLONE_COPY ||
+            flag == REGION_CLONE_COPY_MAIN)
+          {
+            for (i = 0;
+                 i < mr_orig->num_midi_notes; i++)
+              {
+                MidiNote * mn =
+                  midi_note_clone (
+                    mr_orig->midi_notes[i],
+                    MIDI_NOTE_CLONE_COPY_MAIN);
 
-              midi_region_add_midi_note (
-                mr, mn, F_NO_GEN_WIDGET);
-            }
-        }
+                midi_region_add_midi_note (
+                  mr, mn);
+              }
+          }
 
-      new_region = (Region *) mr;
-    }
-  else if (region->type == REGION_TYPE_AUDIO)
-    {
-      Region * ar =
-        audio_region_new (
-          region->filename,
-          &region->start_pos,
-          is_main);
+        new_region = (Region *) mr;
+      }
+    break;
+    case REGION_TYPE_AUDIO:
+      {
+        Region * ar =
+          audio_region_new (
+            region->filename,
+            &region->start_pos,
+            is_main);
 
-      new_region = ar;
+        new_region = ar;
+      }
+    break;
+    case REGION_TYPE_AUTOMATION:
+      {
+        Region * ar  =
+          automation_region_new (
+            &region->start_pos,
+            &region->end_pos,
+            is_main);
+        Region * ar_orig = region;
+
+        AutomationPoint * src_ap, * dest_ap;
+        AutomationCurve * src_ac, * dest_ac;
+
+        /* add automation points */
+        for (j = 0; j < ar_orig->num_aps; j++)
+          {
+            src_ap = ar_orig->aps[j];
+            dest_ap =
+              automation_point_new_float (
+                src_ap->fvalue,
+                &src_ap->pos, F_MAIN);
+            automation_region_add_ap (
+              ar, dest_ap, 0);
+          }
+
+        /* add automation curves */
+        for (j = 0; j < ar_orig->num_acs; j++)
+          {
+            src_ac = ar_orig->acs[j];
+            dest_ac =
+              automation_curve_new (
+                ar, &src_ac->pos);
+            automation_region_add_ac (
+              ar, dest_ac);
+          }
+
+        new_region = ar;
+      }
+      break;
+    case REGION_TYPE_CHORD:
+      {
+        Region * cr =
+          chord_region_new (
+            &region->start_pos,
+            &region->end_pos,
+            is_main);
+        Region * cr_orig = region;
+        if (flag == REGION_CLONE_COPY ||
+            flag == REGION_CLONE_COPY_MAIN)
+          {
+            ChordObject * co;
+            for (i = 0;
+                 i < cr_orig->num_chord_objects;
+                 i++)
+              {
+                co =
+                  chord_object_clone (
+                    cr_orig->chord_objects[i],
+                    CHORD_OBJECT_CLONE_COPY_MAIN);
+
+                chord_region_add_chord_object (
+                  cr, co);
+              }
+          }
+
+        new_region = cr;
+      }
+      break;
     }
 
   /* set caches */
@@ -733,10 +823,10 @@ region_clone (
  */
 void
 region_timeline_pos_to_local (
-  Region *   region,
-  Position * timeline_pos,
-  Position * local_pos,
-  int        normalize)
+  Region *         region,
+  const Position * timeline_pos,
+  Position *       local_pos,
+  int              normalize)
 {
   long diff_ticks;
 
@@ -879,10 +969,21 @@ region_free (Region * self)
       self->widget = NULL;
       region_widget_delete (widget);
     }
-  if (self->type == REGION_TYPE_MIDI)
-    midi_region_free_members (self);
-  if (self->type == REGION_TYPE_AUDIO)
-    audio_region_free_members (self);
+
+#define FREE_R(type,sc) \
+  case REGION_TYPE_##type: \
+    sc##_region_free_members (self); \
+  break
+
+  switch (self->type)
+    {
+      FREE_R (MIDI, midi);
+      FREE_R (AUDIO, audio);
+      FREE_R (CHORD, chord);
+      FREE_R (AUTOMATION, automation);
+    }
+
+#undef FREE_R
 
   free (self);
 }

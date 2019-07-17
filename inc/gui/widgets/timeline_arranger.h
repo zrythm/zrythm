@@ -37,11 +37,11 @@
 
 #define TIMELINE_ARRANGER_WIDGET_TYPE \
   (timeline_arranger_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TimelineArrangerWidget,
-                      timeline_arranger_widget,
-                      Z,
-                      TIMELINE_ARRANGER_WIDGET,
-                      ArrangerWidget)
+G_DECLARE_FINAL_TYPE (
+  TimelineArrangerWidget,
+  timeline_arranger_widget,
+  Z, TIMELINE_ARRANGER_WIDGET,
+  ArrangerWidget)
 
 /**
  * @addtogroup widgets
@@ -71,7 +71,9 @@ typedef struct _TimelineArrangerWidget
   ArrangerWidget       parent_instance;
 
   /**
-   * Object first clicked is stored in start_*.
+   * Start Region acting on. This is the
+   * Region that was clicked, even though
+   * there could be more selected.
    */
   Region *             start_region;
 
@@ -79,9 +81,6 @@ typedef struct _TimelineArrangerWidget
    * drag_begin. */
   int                  start_region_was_selected;
 
-  AutomationPoint *    start_ap;
-  AutomationCurve *    start_ac;
-  ChordObject *        start_chord;
   ScaleObject *        start_scale;
   Marker *             start_marker;
 
@@ -103,16 +102,14 @@ typedef struct _TimelineArrangerWidget
   int                  resizing_range_start;
 } TimelineArrangerWidget;
 
-/**
- * To be called from get_child_position in parent widget.
- *
- * Used to allocate the overlay children.
- */
-void
-timeline_arranger_widget_set_allocation (
-  TimelineArrangerWidget * self,
-  GtkWidget *          widget,
-  GdkRectangle *       allocation);
+ARRANGER_W_DECLARE_FUNCS (
+  Timeline, timeline);
+ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
+  Timeline, timeline, Region, region);
+ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
+  Timeline, timeline, ScaleObject, scale);
+ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
+  Timeline, timeline, Marker, marker);
 
 void
 timeline_arranger_widget_snap_range_r (
@@ -143,24 +140,6 @@ timeline_arranger_widget_get_automation_track_at_y (
   double                   y);
 
 /**
- * Sets transient object and actual object
- * visibility based on the current action.
- */
-void
-timeline_arranger_widget_update_visibility (
-  TimelineArrangerWidget * self);
-
-/**
- * Returns the appropriate cursor based on the
- * current hover_x and y.
- */
-ArrangerCursor
-timeline_arranger_widget_get_cursor (
-  TimelineArrangerWidget * self,
-  UiOverlayAction action,
-  Tool            tool);
-
-/**
  * Determines the selection time (objects/range)
  * and sets it.
  */
@@ -170,86 +149,20 @@ timeline_arranger_widget_set_select_type (
   double                   y);
 
 /**
- * Declares the get hit function.
- */
-#define GET_HIT_WIDGET(cc,sc) \
-  cc##Widget * \
-  timeline_arranger_widget_get_hit_##sc ( \
-    TimelineArrangerWidget *  self, \
-    double            x, \
-    double            y)
-
-/**
- * Declares the drag begin hit function.
- */
-#define ON_DRAG_BEGIN_X_HIT(cc,sc) \
-  void \
-  timeline_arranger_widget_on_drag_begin_##sc##_hit ( \
-    TimelineArrangerWidget * self, \
-    double                   start_x, \
-    cc##Widget *             rw)
-
-/**
- * Sets up a timeline object by declaring the following
- * functions:
- *   - get hit
- *   - on drag begin hit
- */
-#define SETUP_CHILD_OBJECT_FULL(cc,sc) \
-GET_HIT_WIDGET (cc, sc); \
-ON_DRAG_BEGIN_X_HIT (cc, sc)
-
-SETUP_CHILD_OBJECT_FULL (Region, region);
-SETUP_CHILD_OBJECT_FULL (ChordObject, chord);
-SETUP_CHILD_OBJECT_FULL (ScaleObject, scale);
-SETUP_CHILD_OBJECT_FULL (Marker, marker);
-SETUP_CHILD_OBJECT_FULL (AutomationPoint, ap);
-SETUP_CHILD_OBJECT_FULL (AutomationCurve, curve);
-
-#undef GET_HIT_WIDGET
-#undef ON_DRAG_BEGIN_X_HIT
-#undef SETUP_CHILD_OBJECT_FULL
-
-void
-timeline_arranger_widget_select_all (
-  TimelineArrangerWidget *  self,
-  int                       select);
-
-/**
- * Shows context menu.
- *
- * To be called from parent on right click.
- */
-void
-timeline_arranger_widget_show_context_menu (
-  TimelineArrangerWidget * self,
-  gdouble              x,
-  gdouble              y);
-
-/**
- * Create an AutomationPointat the given Position
- * in the given Track's AutomationTrack.
- *
- * @param pos The pre-snapped position.
- */
-void
-timeline_arranger_widget_create_ap (
-  TimelineArrangerWidget * self,
-  AutomationTrack *  at,
-  const Position *         pos,
-  const double             start_y);
-
-/**
  * Create a Region at the given Position in the
  * given Track's given TrackLane.
  *
  * @param pos The pre-snapped position.
+ * @param track Track, if non-automation.
+ * @param lane TrackLane, if midi/audio region.
+ * @param at AutomationTrack, if automation Region.
  */
 void
 timeline_arranger_widget_create_region (
   TimelineArrangerWidget * self,
-  Track *            track,
-  TrackLane *        lane,
+  Track *                  track,
+  TrackLane *              lane,
+  AutomationTrack *        at,
   const Position *         pos);
 
 /**
@@ -268,15 +181,15 @@ timeline_arranger_widget_create_chord_or_scale (
   const Position *         pos);
 
 /**
- * Create a ChordObject at the given Position in the
- * given Track.
+ * Create a chord Region at the given Position in
+ * the given Track.
  *
  * @param pos The pre-snapped position.
  */
 void
 timeline_arranger_widget_create_chord (
   TimelineArrangerWidget * self,
-  Track *            track,
+  Track *                  track,
   const Position *         pos);
 
 /**
@@ -302,22 +215,6 @@ timeline_arranger_widget_create_marker (
   TimelineArrangerWidget * self,
   Track *            track,
   const Position *         pos);
-
-/**
- * First determines the selection type (objects/
- * range), then either finds and selects items or
- * selects a range.
- *
- * @param[in] delete If this is a select-delete
- *   operation
- */
-void
-timeline_arranger_widget_select (
-  TimelineArrangerWidget * self,
-  const double             offset_x,
-  const double             offset_y,
-  const int                delete);
-
 
 /**
  * Snaps both the transients (to show in the GUI)
@@ -356,59 +253,8 @@ timeline_arranger_widget_snap_regions_r (
   int                      dry_run);
 
 /**
- * Moves the TimelineSelections by the given
- * amount of ticks.
- *
- * @param ticks_diff Ticks to move by.
- * @param copy_moving 1 if copy-moving.
- */
-void
-timeline_arranger_widget_move_items_x (
-  TimelineArrangerWidget * self,
-  long                     ticks_diff,
-  int                      copy_moving);
-
-void
-timeline_arranger_widget_move_items_y (
-  TimelineArrangerWidget * self,
-  double                   offset_y);
-
-void
-timeline_arranger_widget_on_drag_end (
-  TimelineArrangerWidget * self);
-
-
-/**
- * Sets width to ruler width and height to
- * tracklist height.
- */
-void
-timeline_arranger_widget_set_size (
-  TimelineArrangerWidget * self);
-
-/**
- * To be called once at init time.
- */
-void
-timeline_arranger_widget_setup (
-  TimelineArrangerWidget * self);
-
-/**
- * Readd children.
- */
-void
-timeline_arranger_widget_refresh_children (
-  TimelineArrangerWidget * self);
-
-/**
- * Refreshes visibility of children.
- */
-void
-timeline_arranger_widget_refresh_visibility (
-  TimelineArrangerWidget * self);
-
-/**
  * Scroll to the given position.
+ * FIXME move to parent?
  */
 void
 timeline_arranger_widget_scroll_to (

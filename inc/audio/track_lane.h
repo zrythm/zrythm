@@ -66,8 +66,9 @@ typedef struct TrackLane
   int                 solo;
 
   /** Regions in this track. */
-  Region *            regions[MAX_REGIONS];
+  Region **           regions;
   int                 num_regions;
+  int                 regions_size;
 
   /** Pointer back to the owner Track. */
   Track *             track;

@@ -123,37 +123,20 @@ duplicate_timeline_selections_action_do (
       g_strdup (region->name));
 
   DO_OBJECT (
-    CHORD_OBJECT, ChordObject, chord_object,
-    /* add */
-    chord_track_add_chord (
-      P_CHORD_TRACK,
-      chord_object, F_GEN_WIDGET),);
-
-  DO_OBJECT (
     SCALE_OBJECT, ScaleObject, scale_object,
     /* add */
     chord_track_add_scale (
-      P_CHORD_TRACK,
-      scale_object, F_GEN_WIDGET),);
+      P_CHORD_TRACK, scale_object),);
 
   DO_OBJECT (
     MARKER, Marker, marker,
     /* add */
     marker_track_add_marker (
-      P_MARKER_TRACK,
-      marker, F_GEN_WIDGET),
+      P_MARKER_TRACK, marker),
     /* remember the new name */
     g_free (self->ts->markers[i]->name);
     self->ts->markers[i]->name =
       g_strdup (marker->name));
-
-  /*DO_OBJECT (*/
-    /*AUTOMATION_POINT, AutomationPoint,*/
-    /*automation_point,*/
-    /*[> add <]*/
-    /*automation_track_add_automation_point (*/
-      /*TRACKLIST,*/
-      /*scale_object, F_GEN_WIDGET),);*/
 
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);
@@ -174,12 +157,6 @@ duplicate_timeline_selections_action_undo (
       region->lane->track,
       region, F_FREE));
   UNDO_OBJECT (
-    ChordObject, chord_object,
-    /* remove */
-    chord_track_remove_chord (
-      P_CHORD_TRACK,
-      chord_object, F_FREE));
-  UNDO_OBJECT (
     ScaleObject, scale_object,
     /* remove */
     chord_track_remove_scale (
@@ -188,8 +165,6 @@ duplicate_timeline_selections_action_undo (
   UNDO_OBJECT (
     Marker, marker,
     /* remove */
-      g_message ("removing");
-      position_print_simple (&marker->pos);
     marker_track_remove_marker (
       P_MARKER_TRACK,
       marker, F_FREE));

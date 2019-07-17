@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex@zrythm.org>
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -57,11 +57,9 @@
   arr1,arr2,size,pos,el1,el2) \
   for (int ii = size; ii > pos; ii--) \
     { \
-      g_message ("setting %d = %d", ii, ii - 1); \
       arr1[ii] = arr1[ii - 1]; \
       arr2[ii] = arr2[ii - 1]; \
     } \
-    g_message ("setting %d = the element", pos); \
   arr1[pos] = el1; \
   arr2[pos] = el2; \
   size++;
@@ -79,7 +77,7 @@
   array,count,size,type) \
   if ((count) == (size)) \
     { \
-      (size) *= 2; \
+      (size) = (size) == 0 ? 1 : (size) * 2; \
       (array) = \
         realloc ((array), sizeof (type) * (size)); \
     }

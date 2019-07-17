@@ -200,7 +200,7 @@ piano_roll_widget_refresh (
         0, 0, 0);
     }
 
-  midi_arranger_widget_refresh_size (
+  midi_arranger_widget_set_size (
     MIDI_ARRANGER);
 
   /* relink scrolls */

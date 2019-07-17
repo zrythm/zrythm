@@ -53,8 +53,10 @@ Alternatively if you don't want to install anything on your system you can run `
 ## Non-standard locations
 
 When installing in non-standard locations, glib
-needs to find the gsettings schema. By default,
-it looks in /usr and /usr/share.
+needs to find the corresponding gsettings schema.
+At runtime, GSettings looks for schemas in the
+`glib-2.0/schemas` subdirectories of all directories
+specified in the `XDG_DATA_DIRS`.
 It is possible to set
 the `GSETTINGS_SCHEMA_DIR` environment variable to
 `<your prefix>/share/glib-2.0/schemas` or prepend
@@ -63,14 +65,14 @@ running `<your prefix>/bin/zrythm` to make glib
 use the schema installed in the custom location.
 
 There are also translations installed in the custom
-location so XDG_DATA_DIRS might be a better idea.
+location so `XDG_DATA_DIRS` might be a better idea.
 
-Generally, we recommend installing under /usr or
-/usr/local (default) to avoid these problems.
+Generally, we recommend installing under `/usr/local`
+(default) or `/usr` to avoid these problems.
 
 ## Packages
-For easy package installation use the download
-links on the website or see
+For easy package installation
+see
 [Installation](https://manual.zrythm.org/en/configuration/installation/intro.html) in the manual.
 
 ## Using
@@ -92,8 +94,6 @@ For any bugs please raise an issue or join a chatroom below
 zrythm-dev@nongnu.org for developers, zrythm-user@nongnu.org for users
 
 ## License
-Copyright (C) 2018-2019  Alexandros Theodotou et al.
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
 published by the Free Software Foundation, either version 3 of the
@@ -121,3 +121,12 @@ https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LZWVK6228PQ
 https://liberapay.com/Zrythm/
 ### Bitcoin
 bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j
+
+----
+
+Copyright (C) 2018-2019 Alexandros Theodotou
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.

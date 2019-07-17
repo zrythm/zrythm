@@ -33,8 +33,8 @@
 DEFINE_START_POS;
 
 ARRANGER_OBJ_DEFINE_MOVABLE (
-  ChordObject, chord_object, timeline_selections,
-  TL_SELECTIONS);
+  ChordObject, chord_object, chord_selections,
+  CHORD_SELECTIONS);
 
 /**
  * Init the ChordObject after the Project is loaded.
@@ -97,13 +97,17 @@ ChordObject *
 chord_object_find (
   ChordObject * clone)
 {
-  for (int i = 0;
-       i < P_CHORD_TRACK->num_chords; i++)
+  /* get actual region - clone's region might be
+   * an unused clone */
+  Region *r = region_find (clone->region);
+
+  ChordObject * chord;
+  for (int i = 0; i < r->num_chord_objects; i++)
     {
+      chord = r->chord_objects[i];
       if (chord_object_is_equal (
-            P_CHORD_TRACK->chords[i],
-            clone))
-        return P_CHORD_TRACK->chords[i];
+            chord, clone))
+        return chord;
     }
   return NULL;
 }
@@ -111,18 +115,24 @@ chord_object_find (
 /**
  * Finds the ChordObject in the project
  * corresponding to the given one's position.
+ *
+ * Used in actions.
  */
 ChordObject *
 chord_object_find_by_pos (
   ChordObject * clone)
 {
-  for (int i = 0;
-       i < P_CHORD_TRACK->num_chords; i++)
+  /* get actual region - clone's region might be
+   * an unused clone */
+  Region *r = region_find (clone->region);
+
+  ChordObject * chord;
+  for (int i = 0; i < r->num_chord_objects; i++)
     {
+      chord = r->chord_objects[i];
       if (position_is_equal (
-            &P_CHORD_TRACK->chords[i]->pos,
-            &clone->pos))
-        return P_CHORD_TRACK->chords[i];
+            &chord->pos, &clone->pos))
+        return chord;
     }
   return NULL;
 }
@@ -154,27 +164,29 @@ chord_object_clone (
  * Sets the Track of the chord.
  */
 void
-chord_object_set_track (
+chord_object_set_region (
   ChordObject * self,
-  Track *  track)
+  Region *      region)
 {
-  self->track = track;
-  self->track_pos = track->pos;
-}
+  ChordObject * co;
+  for (int i = 0; i < 2; i++)
+    {
+      if (i == AOI_COUNTERPART_MAIN)
+        co =
+          chord_object_get_main_chord_object (
+            self);
+      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
+        co =
+          chord_object_get_main_trans_chord_object (
+            self);
 
+      co->region = region;
+      co->region_name = g_strdup (region->name);
+    }
+}
 
 ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
   ChordObject, chord_object);
-
-/**
- * Returns the Track this ChordObject is in.
- */
-Track *
-chord_object_get_track (
-  ChordObject * self)
-{
-  return TRACKLIST->tracks[self->track_pos];
-}
 
 /**
  * Frees the ChordObject.
@@ -183,6 +195,16 @@ void
 chord_object_free (
   ChordObject * self)
 {
+  if (self->widget)
+    {
+      gtk_widget_destroy (
+        GTK_WIDGET (self->widget));
+    }
+
   chord_descriptor_free (self->descr);
+
+  if (self->region_name)
+    g_free (self->region_name);
+
   free (self);
 }

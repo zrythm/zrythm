@@ -49,6 +49,7 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/stoat.h"
 
 #include <gtk/gtk.h>
 
@@ -889,7 +890,7 @@ disconnect_prev_next (
  * The MidiEvents are already dequeued at this
  * point.
  */
-__attribute__((annotate("realtime")))
+REALTIME
 void
 channel_handle_recording (Channel * self)
 {
@@ -945,7 +946,7 @@ channel_handle_recording (Channel * self)
                         ev->note_pitch,
                         ev->velocity, 1);
                     midi_region_add_midi_note (
-                      mr, mn, F_GEN_WIDGET);
+                      mr, mn);
 
                     /* add to unended notes */
                     array_append (

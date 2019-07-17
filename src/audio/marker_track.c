@@ -55,8 +55,7 @@ marker_track_default ()
 void
 marker_track_add_marker (
   MarkerTrack * track,
-  Marker *      marker,
-  int           gen_widget)
+  Marker *      marker)
 {
   g_warn_if_fail (
     track->type == TRACK_TYPE_MARKER && marker);
@@ -70,12 +69,12 @@ marker_track_add_marker (
     marker->obj_info.lane_trans);
 
   marker_set_track (marker, track);
+  array_double_size_if_full (
+    track->markers, track->num_markers,
+    track->markers_size, Marker *);
   array_append (track->markers,
                 track->num_markers,
                 marker);
-
-  if (gen_widget)
-    marker_gen_widget (marker);
 
   EVENTS_PUSH (ET_MARKER_CREATED, marker);
 }

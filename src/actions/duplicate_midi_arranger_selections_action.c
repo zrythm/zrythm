@@ -66,7 +66,7 @@ duplicate_midi_arranger_selections_action_do (
 
       /* add and shift it */
       midi_region_add_midi_note (
-        mn->region, mn, F_GEN_WIDGET);
+        mn->region, mn);
       midi_note_shift_by_ticks (
         mn, self->ticks, AO_UPDATE_ALL);
       midi_note_shift_pitch (

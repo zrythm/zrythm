@@ -40,16 +40,15 @@ midi_region_new (
   const Position * end_pos,
   int        is_main)
 {
-  MidiRegion * midi_region =
+  MidiRegion * self =
     calloc (1, sizeof (MidiRegion));
 
-  region_init ((Region *) midi_region,
-               REGION_TYPE_MIDI,
-               start_pos,
-               end_pos,
-               is_main);
+  self->type = REGION_TYPE_MIDI;
 
-  return midi_region;
+  region_init (
+    self, start_pos, end_pos, is_main);
+
+   return self;
 }
 
 /**
@@ -75,14 +74,11 @@ midi_region_print_midi_notes (
 
 /**
  * Adds the MidiNote to the given Region.
- *
- * @param gen_widget Generate a MidiNoteWidget.
  */
 void
 midi_region_add_midi_note (
   MidiRegion * region,
-  MidiNote * midi_note,
-  int        gen_widget)
+  MidiNote * midi_note)
 {
   g_warn_if_fail (
     midi_note->obj_info.counterpart ==
@@ -98,9 +94,6 @@ midi_region_add_midi_note (
   array_append (region->midi_notes,
                 region->num_midi_notes,
                 midi_note);
-
-  if (gen_widget)
-    midi_note_gen_widget (midi_note);
 
   EVENTS_PUSH (ET_MIDI_NOTE_CREATED,
                midi_note);

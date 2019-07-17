@@ -1,0 +1,835 @@
+/*
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * The chord containing regions and other
+ * objects.
+ */
+
+#include "actions/undoable_action.h"
+#include "actions/create_chord_selections_action.h"
+#include "actions/undo_manager.h"
+#include "actions/duplicate_chord_selections_action.h"
+#include "actions/move_chord_selections_action.h"
+#include "audio/automation_track.h"
+#include "audio/automation_tracklist.h"
+#include "audio/audio_track.h"
+#include "audio/bus_track.h"
+#include "audio/channel.h"
+#include "audio/chord_object.h"
+#include "audio/chord_region.h"
+#include "audio/chord_track.h"
+#include "audio/instrument_track.h"
+#include "audio/marker_track.h"
+#include "audio/master_track.h"
+#include "audio/midi_region.h"
+#include "audio/mixer.h"
+#include "audio/scale_object.h"
+#include "audio/track.h"
+#include "audio/tracklist.h"
+#include "audio/transport.h"
+#include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_curve.h"
+#include "gui/widgets/automation_track.h"
+#include "gui/widgets/automation_point.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_object.h"
+#include "gui/widgets/color_area.h"
+#include "gui/widgets/inspector.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/marker.h"
+#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_arranger_bg.h"
+#include "gui/widgets/midi_region.h"
+#include "gui/widgets/piano_roll.h"
+#include "gui/widgets/pinned_tracklist.h"
+#include "gui/widgets/midi_note.h"
+#include "gui/widgets/region.h"
+#include "gui/widgets/scale_object.h"
+#include "gui/widgets/ruler.h"
+#include "gui/widgets/chord_arranger.h"
+#include "gui/widgets/chord_arranger_bg.h"
+#include "gui/widgets/track.h"
+#include "gui/widgets/tracklist.h"
+#include "project.h"
+#include "settings/settings.h"
+#include "utils/arrays.h"
+#include "utils/cairo.h"
+#include "utils/flags.h"
+#include "utils/objects.h"
+#include "utils/ui.h"
+#include "zrythm.h"
+
+#include <gtk/gtk.h>
+
+G_DEFINE_TYPE (ChordArrangerWidget,
+               chord_arranger_widget,
+               ARRANGER_WIDGET_TYPE)
+
+/**
+ * To be called from get_child_position in parent widget.
+ *
+ * Used to allocate the overlay children.
+ */
+void
+chord_arranger_widget_set_allocation (
+  ChordArrangerWidget * self,
+  GtkWidget *          widget,
+  GdkRectangle *       allocation)
+{
+  if (Z_IS_CHORD_OBJECT_WIDGET (widget))
+    {
+      ChordObjectWidget * cw =
+        Z_CHORD_OBJECT_WIDGET (widget);
+      ChordObject * co =
+        cw->chord_object;
+      Track * track = P_CHORD_TRACK;
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates (
+        GTK_WIDGET (track->widget),
+        GTK_WIDGET (self),
+        0, 0, &wx, &wy);
+
+      allocation->x =
+        ui_pos_to_px_chord_editor (
+          &co->pos, 1);
+      char * chord_str =
+        chord_descriptor_to_string (co->descr);
+      int textw, texth;
+      z_cairo_get_text_extents_for_widget (
+        widget, chord_str, &textw, &texth);
+      g_free (chord_str);
+      allocation->width =
+        textw + CHORD_OBJECT_WIDGET_TRIANGLE_W +
+        Z_CAIRO_TEXT_PADDING * 2;
+
+      int track_height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (track->widget));
+      int obj_height =
+        texth + Z_CAIRO_TEXT_PADDING * 2;
+      allocation->y =
+        ((wy + track_height) - obj_height) -
+        track_height / 2;
+      allocation->height = obj_height;
+    }
+}
+
+/**
+ * Returns the appropriate cursor based on the
+ * current hover_x and y.
+ */
+ArrangerCursor
+chord_arranger_widget_get_cursor (
+  ChordArrangerWidget * self,
+  UiOverlayAction action,
+  Tool            tool)
+{
+  ArrangerCursor ac = ARRANGER_CURSOR_SELECT;
+
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  ChordObjectWidget * cw =
+    chord_arranger_widget_get_hit_chord (
+      self,
+      ar_prv->hover_x,
+      ar_prv->hover_y);
+
+  int is_hit = cw != NULL;
+
+  switch (action)
+    {
+    case UI_OVERLAY_ACTION_NONE:
+      switch (P_TOOL)
+        {
+        case TOOL_SELECT_NORMAL:
+        {
+          if (is_hit)
+            {
+              return ARRANGER_CURSOR_GRAB;
+            }
+          else
+            {
+              /* set cursor to normal */
+              return ARRANGER_CURSOR_SELECT;
+            }
+        }
+          break;
+        case TOOL_SELECT_STRETCH:
+          break;
+        case TOOL_EDIT:
+          ac = ARRANGER_CURSOR_EDIT;
+          break;
+        case TOOL_CUT:
+          ac = ARRANGER_CURSOR_CUT;
+          break;
+        case TOOL_ERASER:
+          ac = ARRANGER_CURSOR_ERASER;
+          break;
+        case TOOL_RAMP:
+          ac = ARRANGER_CURSOR_RAMP;
+          break;
+        case TOOL_AUDITION:
+          ac = ARRANGER_CURSOR_AUDITION;
+          break;
+        }
+      break;
+    case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
+    case UI_OVERLAY_ACTION_DELETE_SELECTING:
+    case UI_OVERLAY_ACTION_ERASING:
+      ac = ARRANGER_CURSOR_ERASER;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING_COPY:
+    case UI_OVERLAY_ACTION_MOVING_COPY:
+      ac = ARRANGER_CURSOR_GRABBING_COPY;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING:
+    case UI_OVERLAY_ACTION_MOVING:
+      ac = ARRANGER_CURSOR_GRABBING;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:
+    case UI_OVERLAY_ACTION_MOVING_LINK:
+      ac = ARRANGER_CURSOR_GRABBING_LINK;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_L:
+      ac = ARRANGER_CURSOR_RESIZING_L;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R:
+      ac = ARRANGER_CURSOR_RESIZING_R;
+      break;
+    default:
+      ac = ARRANGER_CURSOR_SELECT;
+      break;
+    }
+
+  return ac;
+}
+
+#define GET_HIT_WIDGET(caps,cc,sc) \
+cc##Widget * \
+chord_arranger_widget_get_hit_##sc ( \
+  ChordArrangerWidget *  self, \
+  double                    x, \
+  double                    y) \
+{ \
+  GtkWidget * widget = \
+    ui_get_hit_child ( \
+      GTK_CONTAINER (self), x, y, \
+      caps##_WIDGET_TYPE); \
+  if (widget) \
+    { \
+      return Z_##caps##_WIDGET (widget); \
+    } \
+  return NULL; \
+}
+
+GET_HIT_WIDGET (
+  CHORD_OBJECT, ChordObject, chord);
+
+#undef GET_HIT_WIDGET
+
+void
+chord_arranger_widget_select_all (
+  ChordArrangerWidget *  self,
+  int                       select)
+{
+  chord_selections_clear (CHORD_SELECTIONS);
+
+  /* select everything else */
+  Region * r = CLIP_EDITOR->region;
+  ChordObject * chord;
+  for (int i = 0; i < r->num_chord_objects; i++)
+    {
+      chord = r->chord_objects[i];
+      chord_object_widget_select (
+        chord->widget, select);
+    }
+}
+
+/**
+ * Shows context menu.
+ *
+ * To be called from parent on right click.
+ */
+void
+chord_arranger_widget_show_context_menu (
+  ChordArrangerWidget * self,
+  gdouble              x,
+  gdouble              y)
+{
+  GtkWidget *menu, *menuitem;
+
+  /*RegionWidget * clicked_region =*/
+    /*chord_arranger_widget_get_hit_region (*/
+      /*self, x, y);*/
+  /*ChordWidget * clicked_chord =*/
+    /*chord_arranger_widget_get_hit_chord (*/
+      /*self, x, y);*/
+  /*AutomationPointWidget * clicked_ap =*/
+    /*chord_arranger_widget_get_hit_ap (*/
+      /*self, x, y);*/
+  /*AutomationCurveWidget * ac =*/
+    /*chord_arranger_widget_get_hit_curve (*/
+      /*self, x, y);*/
+
+  menu = gtk_menu_new();
+
+  menuitem = gtk_menu_item_new_with_label("Do something");
+
+  /*g_signal_connect(menuitem, "activate",*/
+                   /*(GCallback) view_popup_menu_onDoSomething, treeview);*/
+
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+
+  gtk_widget_show_all(menu);
+
+  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
+}
+
+/**
+ * Sets the visibility of the transient and non-
+ * transient objects, lane and non-lane.
+ *
+ * E.g. when moving regions, it hides the original
+ * ones.
+ */
+void
+chord_arranger_widget_update_visibility (
+  ChordArrangerWidget * self)
+{
+  ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
+    CHORD_SELECTIONS->chord_objects,
+    CHORD_SELECTIONS->num_chord_objects,
+    ChordObject, chord_object);
+}
+
+void
+chord_arranger_widget_on_drag_begin_chord_hit (
+  ChordArrangerWidget * self,
+  double                   start_x,
+  ChordObjectWidget *      cw)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  ChordObject * chord = cw->chord_object;
+  self->start_chord_object = chord;
+
+  /* update arranger action */
+  ar_prv->action =
+    UI_OVERLAY_ACTION_STARTING_MOVING;
+  /* FIXME cursor should be set automatically */
+  ui_set_cursor_from_name (
+    GTK_WIDGET (cw), "grabbing");
+
+  int selected = chord_object_is_selected (chord);
+
+  /* select chord if unselected */
+  if (P_TOOL == TOOL_SELECT_NORMAL ||
+      P_TOOL == TOOL_SELECT_STRETCH ||
+      P_TOOL == TOOL_EDIT)
+    {
+      /* if ctrl held & not selected, add to
+       * selections */
+      if (ar_prv->ctrl_held && !selected)
+        {
+          ARRANGER_WIDGET_SELECT_CHORD (
+            self, chord, F_SELECT, F_APPEND);
+        }
+      /* if ctrl not held & not selected, make it
+       * the only selection */
+      else if (!ar_prv->ctrl_held &&
+               !selected)
+        {
+          ARRANGER_WIDGET_SELECT_CHORD (
+            self, chord, F_SELECT, F_NO_APPEND);
+        }
+    }
+}
+
+/**
+ * Create a ChordObject at the given Position in the
+ * given Track.
+ *
+ * @param pos The pre-snapped position.
+ */
+void
+chord_arranger_widget_create_chord (
+  ChordArrangerWidget * self,
+  const Position *      pos)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  ar_prv->action =
+    UI_OVERLAY_ACTION_CREATING_MOVING;
+
+  /* create a new chord */
+  ChordDescriptor * descr =
+    chord_descriptor_new (
+      NOTE_B, 1, NOTE_B, CHORD_TYPE_MIN,
+      CHORD_ACC_7, 0);
+  ChordObject * chord =
+    chord_object_new (
+      descr, 1);
+
+  /* add it to chord region */
+  chord_region_add_chord_object (
+    CLIP_EDITOR->region, chord);
+
+  /* set visibility */
+  arranger_object_info_set_widget_visibility_and_state (
+    &chord->obj_info, 1);
+
+  chord_object_set_pos (
+    chord, pos, AO_UPDATE_ALL);
+
+  EVENTS_PUSH (ET_CHORD_OBJECT_CREATED, chord);
+  ARRANGER_WIDGET_SELECT_CHORD (
+    self, chord, F_SELECT,
+    F_NO_APPEND);
+}
+
+/**
+ * Finds and selects items.
+ *
+ * @param[in] delete If this is a select-delete
+ *   operation
+ */
+void
+chord_arranger_widget_select (
+  ChordArrangerWidget * self,
+  double                   offset_x,
+  double                   offset_y,
+  int                      delete)
+{
+  int i;
+
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  if (!delete)
+    /* deselect all */
+    arranger_widget_select_all (
+      Z_ARRANGER_WIDGET (self), 0);
+
+#define FIND_ENCLOSED_WIDGETS_OF_TYPE( \
+  caps,cc,sc) \
+  cc * sc; \
+  cc##Widget * sc##_widget; \
+  GtkWidget *  sc##_widgets[800]; \
+  int          num_##sc##_widgets = 0; \
+  arranger_widget_get_hit_widgets_in_range ( \
+    Z_ARRANGER_WIDGET (self), \
+    caps##_WIDGET_TYPE, \
+    ar_prv->start_x, \
+    ar_prv->start_y, \
+    offset_x, \
+    offset_y, \
+    sc##_widgets, \
+    &num_##sc##_widgets)
+
+  FIND_ENCLOSED_WIDGETS_OF_TYPE (
+    CHORD_OBJECT, ChordObject, chord_object);
+  for (i = 0; i < num_chord_object_widgets; i++)
+    {
+      chord_object_widget =
+        Z_CHORD_OBJECT_WIDGET (
+          chord_object_widgets[i]);
+
+      chord_object =
+        chord_object_get_main_chord_object (
+          chord_object_widget->chord_object);
+
+      if (delete)
+        chord_region_remove_chord_object (
+          chord_object->region,
+          chord_object, F_FREE);
+      else
+        ARRANGER_WIDGET_SELECT_CHORD (
+          self, chord_object, F_SELECT, F_APPEND);
+    }
+
+#undef FIND_ENCLOSED_WIDGETS_OF_TYPE
+}
+
+/**
+ * Moves the ChordSelections by the given
+ * amount of ticks.
+ *
+ * @param ticks_diff Ticks to move by.
+ * @param copy_moving 1 if copy-moving.
+ */
+void
+chord_arranger_widget_move_items_x (
+  ChordArrangerWidget * self,
+  long                     ticks_diff,
+  int                      copy_moving)
+{
+  chord_selections_add_ticks (
+    CHORD_SELECTIONS, ticks_diff, F_USE_CACHED,
+    copy_moving ?
+      AO_UPDATE_TRANS :
+      AO_UPDATE_ALL);
+
+  /* for arranger refresh */
+  EVENTS_PUSH (ET_CHORD_OBJECTS_IN_TRANSIT,
+               NULL);
+}
+
+/**
+ * Sets width to ruler width and height to
+ * tracklist height.
+ */
+void
+chord_arranger_widget_set_size (
+  ChordArrangerWidget * self)
+{
+  // set the size
+  /*int ww, hh;*/
+  /*if (self->is_pinned)*/
+    /*gtk_widget_get_size_request (*/
+      /*GTK_WIDGET (MW_PINNED_TRACKLIST),*/
+      /*&ww,*/
+      /*&hh);*/
+  /*else*/
+    /*gtk_widget_get_size_request (*/
+      /*GTK_WIDGET (MW_TRACKLIST),*/
+      /*&ww,*/
+      /*&hh);*/
+  /*RULER_WIDGET_GET_PRIVATE (MW_RULER);*/
+  /*gtk_widget_set_size_request (*/
+    /*GTK_WIDGET (self),*/
+    /*rw_prv->total_px,*/
+    /*hh);*/
+}
+
+/**
+ * To be called once at init time.
+ */
+void
+chord_arranger_widget_setup (
+  ChordArrangerWidget * self)
+{
+  chord_arranger_widget_set_size (
+    self);
+}
+
+void
+chord_arranger_widget_move_items_y (
+  ChordArrangerWidget * self,
+  double                   offset_y)
+{
+}
+
+/**
+ * Returns the ticks objects were moved by since
+ * the start of the drag.
+ *
+ * FIXME not really needed, can use
+ * chord_selections_get_start_pos and the
+ * arranger's earliest_obj_start_pos.
+ */
+static long
+get_moved_diff (
+  ChordArrangerWidget * self)
+{
+#define GET_DIFF(sc,pos_name) \
+  if (CHORD_SELECTIONS->num_##sc##s) \
+    { \
+      return \
+        position_to_ticks ( \
+          &sc##_get_main_trans_##sc ( \
+            CHORD_SELECTIONS->sc##s[0])->pos_name) - \
+        position_to_ticks ( \
+          &sc##_get_main_##sc ( \
+            CHORD_SELECTIONS->sc##s[0])->pos_name); \
+    }
+
+  GET_DIFF (chord_object, pos);
+
+  g_return_val_if_reached (0);
+}
+
+/**
+ * Sets the default cursor in all selected regions and
+ * intializes start positions.
+ */
+void
+chord_arranger_widget_on_drag_end (
+  ChordArrangerWidget * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  switch (ar_prv->action)
+    {
+    case UI_OVERLAY_ACTION_STARTING_MOVING:
+      {
+        /* if something was clicked with ctrl without
+         * moving*/
+        if (ar_prv->ctrl_held)
+          {
+            /*if (self->start_region &&*/
+                /*self->start_region_was_selected)*/
+              /*{*/
+                /*[> deselect it <]*/
+                /*ARRANGER_WIDGET_SELECT_REGION (*/
+                  /*self, self->start_region,*/
+                  /*F_NO_SELECT, F_APPEND);*/
+              /*}*/
+          }
+        else if (ar_prv->n_press == 2)
+          {
+            /* double click on object */
+            /*g_message ("DOUBLE CLICK");*/
+          }
+      }
+      break;
+    case UI_OVERLAY_ACTION_MOVING:
+      {
+        Position earliest_trans_pos;
+        chord_selections_get_start_pos (
+          CHORD_SELECTIONS,
+          &earliest_trans_pos, F_TRANSIENTS, 0);
+        /*UndoableAction * ua =*/
+          /*(UndoableAction *)*/
+          /*move_chord_selections_action_new (*/
+            /*TL_SELECTIONS,*/
+            /*position_to_ticks (*/
+              /*&earliest_trans_pos) -*/
+            /*position_to_ticks (*/
+              /*&ar_prv->earliest_obj_start_pos),*/
+            /*chord_selections_get_highest_track (*/
+              /*TL_SELECTIONS, F_TRANSIENTS) -*/
+            /*chord_selections_get_highest_track (*/
+              /*TL_SELECTIONS, F_NO_TRANSIENTS));*/
+        /*undo_manager_perform (*/
+          /*UNDO_MANAGER, ua);*/
+      }
+      break;
+    case UI_OVERLAY_ACTION_MOVING_COPY:
+    case UI_OVERLAY_ACTION_MOVING_LINK:
+      {
+        Position earliest_trans_pos;
+        chord_selections_get_start_pos (
+          CHORD_SELECTIONS,
+          &earliest_trans_pos, F_TRANSIENTS, 0);
+        /*UndoableAction * ua =*/
+          /*(UndoableAction *)*/
+          /*duplicate_chord_selections_action_new (*/
+            /*TL_SELECTIONS,*/
+            /*position_to_ticks (*/
+              /*&earliest_trans_pos) -*/
+            /*position_to_ticks (*/
+              /*&ar_prv->earliest_obj_start_pos),*/
+            /*chord_selections_get_highest_track (*/
+              /*TL_SELECTIONS, F_TRANSIENTS) -*/
+            /*chord_selections_get_highest_track (*/
+              /*TL_SELECTIONS, F_NO_TRANSIENTS));*/
+        /*chord_selections_reset_transient_poses (*/
+          /*TL_SELECTIONS);*/
+        /*chord_selections_clear (*/
+          /*TL_SELECTIONS);*/
+        /*undo_manager_perform (*/
+          /*UNDO_MANAGER, ua);*/
+      }
+      break;
+    case UI_OVERLAY_ACTION_NONE:
+    case UI_OVERLAY_ACTION_STARTING_SELECTION:
+      {
+        chord_selections_clear (
+          CHORD_SELECTIONS);
+      }
+      break;
+    case UI_OVERLAY_ACTION_CREATING_MOVING:
+      {
+        /*chord_selections_set_to_transient_poses (*/
+          /*CHORD_SELECTIONS);*/
+        /*chord_selections_set_to_transient_values (*/
+          /*CHORD_SELECTIONS);*/
+
+        /*UndoableAction * ua =*/
+          /*(UndoableAction *)*/
+          /*create_chord_selections_action_new (*/
+            /*TL_SELECTIONS);*/
+        /*undo_manager_perform (*/
+          /*UNDO_MANAGER, ua);*/
+      }
+      break;
+    /* if didn't click on something */
+    default:
+      {
+      }
+      break;
+    }
+  ar_prv->action = UI_OVERLAY_ACTION_NONE;
+  chord_arranger_widget_update_visibility (self);
+
+  EVENTS_PUSH (ET_CHORD_SELECTIONS_CHANGED, NULL);
+}
+
+static void
+add_children_from_chord_track (
+  ChordArrangerWidget * self,
+  ChordTrack *          ct)
+{
+  int i, j, k;
+  Region * r;
+  ChordObject * c;
+  for (i = 0; i < ct->num_chord_regions; i++)
+    {
+      r = ct->chord_regions[j];
+
+      for (j = 0; j < r->num_chord_objects; j++)
+        {
+          c = r->chord_objects[j];
+
+          for (k = 0 ; k < 2; k++)
+            {
+              if (k == 0)
+                c =
+                  chord_object_get_main_chord_object (c);
+              else if (k == 1)
+                c =
+                  chord_object_get_main_trans_chord_object (c);
+
+              if (!c->widget)
+                c->widget =
+                  chord_object_widget_new (c);
+
+              gtk_overlay_add_overlay (
+                GTK_OVERLAY (self),
+                GTK_WIDGET (c->widget));
+            }
+        }
+    }
+}
+
+/**
+ * Refreshes visibility of children.
+ */
+void
+chord_arranger_widget_refresh_visibility (
+  ChordArrangerWidget * self)
+{
+  GList *children, *iter;
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (self));
+  /*GtkWidget * w;*/
+  /*RegionWidget * rw;*/
+  /*Region * region;*/
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      /*w = GTK_WIDGET (iter->data);*/
+
+      /*if (Z_IS_REGION_WIDGET (w))*/
+        /*{*/
+          /*rw = Z_REGION_WIDGET (w);*/
+          /*REGION_WIDGET_GET_PRIVATE (rw);*/
+          /*region = rw_prv->region;*/
+
+          /*arranger_object_info_set_widget_visibility_and_state (*/
+            /*&region->obj_info, 1);*/
+        /*}*/
+    }
+  g_list_free (children);
+}
+
+/**
+ * Readd children.
+ */
+void
+chord_arranger_widget_refresh_children (
+  ChordArrangerWidget * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  /* remove all children except bg && playhead */
+  GList *children, *iter;
+
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (self));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      GtkWidget * widget = GTK_WIDGET (iter->data);
+      if (widget != (GtkWidget *) ar_prv->bg &&
+          widget != (GtkWidget *) ar_prv->playhead)
+        {
+          /*g_object_ref (widget);*/
+          gtk_container_remove (
+            GTK_CONTAINER (self),
+            widget);
+        }
+    }
+  g_list_free (children);
+
+  add_children_from_chord_track (
+    self, P_CHORD_TRACK);
+
+  chord_arranger_widget_update_visibility (self);
+
+  gtk_overlay_reorder_overlay (
+    GTK_OVERLAY (self),
+    (GtkWidget *) ar_prv->playhead, -1);
+}
+
+/**
+ * Scroll to the given position.
+ */
+void
+chord_arranger_widget_scroll_to (
+  ChordArrangerWidget * self,
+  Position *               pos)
+{
+  /* TODO */
+
+}
+
+static gboolean
+on_focus (
+  GtkWidget * widget,
+  gpointer    user_data)
+{
+  /*g_message ("chord focused");*/
+  MAIN_WINDOW->last_focused = widget;
+
+  return FALSE;
+}
+
+static void
+chord_arranger_widget_class_init (
+  ChordArrangerWidgetClass * klass)
+{
+}
+
+static void
+chord_arranger_widget_init (
+  ChordArrangerWidget *self )
+{
+  g_signal_connect (
+    self, "grab-focus",
+    G_CALLBACK (on_focus), self);
+}

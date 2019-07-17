@@ -1,21 +1,5 @@
 Third party libraries
 
-atk
-Upstream URL: https://developer.gnome.org/atk/
-License: LGPL2
-
-bzip2
-Upstream URL: http://sources.redhat.com/bzip2
-License: Custom BSD
-
-cairo
-Upstream URL: https://cairographics.org/
-License: LGPL
-
-croco
-Upstream URL: http://www.gnome.org/browse/libcroco
-License: LGPL
-
 datrie
 Upstream URL: https://linux.thai.net/projects/datrie
 License: LGPL
@@ -24,101 +8,25 @@ dlfcn
 Upstream URL: https://github.com/dlfcn-win32/dlfcn-win32
 License: LGPL
 
-epoxy
-Upstream URL: https://github.com/anholt/libepoxy
-License: MIT
-
-expat
-Upstream URL: http://expat.sourceforge.net/
-License: custom
-
-libffi
-Upstream URL: http://expat.sourceforge.net/
-License: MIT
-
 flac
 Upstream URL: http://flac.sourceforge.net/
 License: GPL
 
-fontconfig
-Upstream URL: https://www.freedesktop.org/wiki/Software/fontconfig/
-License: custom
-
-freetype2
-Upstream URL: https://www.freetype.org/
-License: GPL
-
-fribidi
-Upstream URL: http://fribidi.org/
-License: LGPL
-
-gcc
-Upstream URL: http://gcc.gnu.org/
-License: GPL, custom, LGPL, FDL
-
-gdk-pixbuf2
-Upstream URL: http://www.gtk.org/
-License: LGPL
-
-glib2
-Upstream URL: https://wiki.gnome.org/Projects/GLib
-License: LGPL2.1
-
-graphite
-Upstream URL: https://github.com/silnrsi/graphite
-License: GPL, custom, LGPL
-
 gtk3
 Upstream URL: http://www.gtk.org/
-License: LGPL
-
-harfbuzz
-Upstream URL: https://www.freedesktop.org/wiki/Software/HarfBuzz
-License: MIT
-
-libiconv
-Upstream URL: http://www.gnu.org/software/libiconv/
 License: LGPL
 
 gettext
 Upstream URL: http://www.gnu.org/software/gettext/
 License: GPL
 
-jasper
-Upstream URL: http://www.ece.uvic.ca/~mdadams/jasper
-License: custom:JasPer2.0
-
-libjpeg
-Upstream URL: http://ijg.org/
-License: custom
-
-xz
-Upstream URL: https://tukaani.org/xz
-License: GPL, custom, LGPL
-
 libogg
 Upstream URL: http://xiph.org/
 License: BSD
 
-pango
-Upstream URL: http://www.pango.org/
-License: LGPL
-
-pcre
-Upstream URL: http://www.pcre.org/
-License: BSD
-
-libpng
-Upstream URL: http://www.libpng.org/pub/png/libpng.html
-License: custom
-
 portaudio
 Upstream URL: http://www.portaudio.com/
 License: custom
-
-librsvg
-Upstream URL: https://wiki.gnome.org/action/show/Projects/LibRsvg
-License: LGPL
 
 libsamplerate
 Upstream URL: http://www.mega-nerd.com/SRC/index.html
@@ -128,42 +36,19 @@ libsndfile
 Upstream URL: http://www.mega-nerd.com/libsndfile
 License: LGPL
 
-libthai
-Upstream URL: https://linux.thai.net/projects/libthai
-License: LGPL
-
-libtiff
-Upstream URL: http://www.simplesystems.org/libtiff/
-License: custom
-
 libvorbis
 Upstream URL: http://xiph.org/
 License: custom
 
-libxml2
-Upstream URL: http://www.xmlsoft.org/
-License: LGPL
-
 lilv
 Upstream URL: https://drobilla.net/software/lilv/
-License: custom:ISC
+License: ISC
 
-serd
-Upstream URL: https://drobilla.net/software/serd/
-License: custom:ISC
+----
 
-sord
-Upstream URL: https://drobilla.net/software/sord/
-License: custom:ISC
+Copyright (C) 2019 Alexandros Theodotou
 
-sratom
-Upstream URL: https://drobilla.net/software/sratom/
-License: custom:ISC
-
-zlib
-Upstream URL: http://www.zlib.net/
-License: custom:zlib
-
-pixman
-Upstream URL: http://xorg.freedesktop.org/
-License: custom
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.

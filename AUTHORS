@@ -1,10 +1,19 @@
-Alexandros Theodotou <alex@zrythm.org>
-
 Contributors:
 
+ Alexandros Theodotou <alex@zrythm.org>
+   * Main developer
  Sascha Bast <sash@mischkonsum.org>
    * Piano roll auto-scroll
  Robin Gareus <robin@gareus.org>
    * Routing algorithm
  Georg Krause
    * Forward and backward button callbacks
+
+----
+
+Copyright (C) 2019 Alexandros Theodotou
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.

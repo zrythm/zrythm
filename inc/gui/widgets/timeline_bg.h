@@ -21,7 +21,7 @@
  * \file
  *
  * The background (main overlay child) of the
- * timeline.
+ * TimelineArrangerWidget.
  */
 
 #ifndef __GUI_WIDGETS_TIMELINE_BG_H__
@@ -54,7 +54,8 @@ typedef struct _TimelineBgWidget
 } TimelineBgWidget;
 
 /**
- * Creates a timeline widget using the given timeline data.
+ * Creates a TimelineBgWidget for the given
+ * arranger and ruler.
  */
 TimelineBgWidget *
 timeline_bg_widget_new (RulerWidget *    ruler,

@@ -249,6 +249,189 @@ typedef struct _ArrangerWidgetClass
 } ArrangerWidgetClass;
 
 /**
+ * Declares the get hit function.
+ */
+#define ARRANGER_W_DECLARE_GET_HIT_WIDGET( \
+  arr_name_cc,arr_name_sc,cc,sc) \
+  cc##Widget * \
+  arr_name_sc##_arranger_widget_get_hit_##sc ( \
+    arr_name_cc##ArrangerWidget * self, \
+    double                        x, \
+    double                        y)
+
+/**
+ * Declares the drag begin hit function.
+ */
+#define ARRANGER_W_DECLARE_ON_DRAG_BEGIN_X_HIT( \
+  arr_name_cc,arr_name_sc,cc,sc) \
+  void \
+  arr_name_sc##_arranger_widget_on_drag_begin_##sc##_hit ( \
+    arr_name_cc##ArrangerWidget * self, \
+    double                        start_x, \
+    cc##Widget *                  hit_w)
+
+/**
+ * Sets up an arranger object by declaring the
+ * following functions:
+ *   - get hit
+ *   - on drag begin hit
+ */
+#define ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS( \
+  arr_name_cc,arr_name_sc,cc,sc) \
+ARRANGER_W_DECLARE_GET_HIT_WIDGET ( \
+  arr_name_cc, arr_name_sc, cc, sc); \
+ARRANGER_W_DECLARE_ON_DRAG_BEGIN_X_HIT ( \
+  arr_name_cc, arr_name_sc, cc, sc)
+
+/**
+ * Selects all objects.
+ */
+#define ARRANGER_W_DECLARE_SELECT_ALL(cc,sc) \
+  void \
+  sc##_arranger_widget_select_all ( \
+    cc##ArrangerWidget * self, \
+    int                 select)
+
+/** Called from get_child_position to allocate
+ * the overlay children */
+#define ARRANGER_W_DECLARE_SET_ALLOCATION(cc,sc) \
+  void \
+  sc##_arranger_widget_set_allocation ( \
+    cc##ArrangerWidget * self, \
+    GtkWidget *          widget, \
+    GdkRectangle *       allocation)
+
+/**
+ * Sets transient object and actual object
+ * visibility based on the current action.
+ */
+#define ARRANGER_W_DECLARE_UPDATE_VISIBILITY( \
+  cc,sc) \
+  void \
+  sc##_arranger_widget_update_visibility ( \
+    cc##ArrangerWidget * self)
+
+/**
+ * Returns the appropriate cursor based on the
+ * current hover_x and y.
+ */
+#define ARRANGER_W_DECLARE_GET_CURSOR(cc,sc) \
+  ArrangerCursor \
+  sc##_arranger_widget_get_cursor ( \
+    cc##ArrangerWidget * self, \
+    UiOverlayAction action, \
+    Tool            tool)
+
+/**
+ * Moves the corresponding selections by the given
+ * amount of ticks.
+ *
+ * @param ticks_diff Ticks to move by.
+ * @param copy_moving 1 if copy-moving.
+ */
+#define ARRANGER_W_DECLARE_MOVE_ITEMS_X(cc,sc) \
+  void \
+  sc##_arranger_widget_move_items_x ( \
+    cc##ArrangerWidget * self, \
+    long                 ticks_diff, \
+    int                  copy_moving)
+
+/**
+ * Called when moving selected items in
+ * drag update for moving up/down (changing Track
+ * of a Region, changing MidiNote pitch, etc.).
+ */
+#define ARRANGER_W_DECLARE_MOVE_ITEMS_Y(cc,sc) \
+  void \
+  sc##_arranger_widget_move_items_y ( \
+    cc##ArrangerWidget *self, \
+    double              offset_y)
+
+/**
+ * Readd children.
+ */
+#define ARRANGER_W_DECLARE_REFRESH_CHILDREN(cc,sc) \
+  void \
+  sc##_arranger_widget_refresh_children ( \
+    cc##ArrangerWidget * self)
+
+/**
+ * To be called once at init time to set up the
+ * arranger.
+ */
+#define ARRANGER_W_DECLARE_SETUP(cc,sc) \
+  void \
+  sc##_arranger_widget_setup ( \
+    cc##ArrangerWidget * self)
+
+/**
+ * Called by an arranger widget during drag_update
+ * to find and select (or delete) child objects
+ * enclosed in the selection area.
+ *
+ * @param delete If this is a select-delete
+ *   operation
+ */
+#define ARRANGER_W_DECLARE_SELECT(cc,sc) \
+  void \
+  sc##_arranger_widget_select ( \
+    cc##ArrangerWidget * self, \
+    const double             offset_x, \
+    const double             offset_y, \
+    const int                delete)
+
+/**
+ * Shows context menu.
+ *
+ * To be called from parent on right click.
+ */
+#define ARRANGER_W_DECLARE_SHOW_CONTEXT_MENU( \
+  cc,sc) \
+  void \
+  sc##_arranger_widget_show_context_menu ( \
+    cc##ArrangerWidget * self, \
+    gdouble              x, \
+    gdouble              y)
+
+/**
+ * Called on drag end to set default cursors back,
+ * clear any start* variables, call actions, etc.
+ */
+#define ARRANGER_W_DECLARE_ON_DRAG_END(cc,sc) \
+  void \
+  sc##_arranger_widget_on_drag_end ( \
+    cc##ArrangerWidget * self)
+
+/**
+ * Sets width to ruler width and height to the
+ * corresponding height, if any (eg Tracklist
+ * height for TimelineArrangerWidget).
+ */
+#define ARRANGER_W_DECLARE_SET_SIZE(cc,sc) \
+  void \
+  sc##_arranger_widget_set_size ( \
+    cc##ArrangerWidget * self)
+
+/**
+ * Declares all functions that an arranger must
+ * have.
+ */
+#define ARRANGER_W_DECLARE_FUNCS( \
+  cc,sc) \
+  ARRANGER_W_DECLARE_SELECT_ALL (cc, sc); \
+  ARRANGER_W_DECLARE_SET_ALLOCATION (cc, sc); \
+  ARRANGER_W_DECLARE_UPDATE_VISIBILITY (cc, sc); \
+  ARRANGER_W_DECLARE_GET_CURSOR (cc, sc); \
+  ARRANGER_W_DECLARE_MOVE_ITEMS_X (cc, sc); \
+  ARRANGER_W_DECLARE_MOVE_ITEMS_Y (cc, sc); \
+  ARRANGER_W_DECLARE_REFRESH_CHILDREN (cc, sc); \
+  ARRANGER_W_DECLARE_SETUP (cc, sc); \
+  ARRANGER_W_DECLARE_SELECT (cc, sc); \
+  ARRANGER_W_DECLARE_SHOW_CONTEXT_MENU (cc, sc); \
+  ARRANGER_W_DECLARE_ON_DRAG_END (cc, sc); \
+  ARRANGER_W_DECLARE_SET_SIZE (cc, sc)
+
+/**
  * Creates a timeline widget using the given timeline data.
  */
 void

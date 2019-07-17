@@ -327,6 +327,30 @@ ui_pos_to_px_audio_clip_editor (
     pos, use_padding, Z_RULER_WIDGET (AUDIO_RULER));
 }
 
+int
+ui_pos_to_px_chord_editor (
+  Position * pos,
+  int        use_padding)
+{
+  if (!MAIN_WINDOW || !MIDI_RULER)
+    return 0;
+
+  return pos_to_px (
+    pos, use_padding, Z_RULER_WIDGET (MIDI_RULER));
+}
+
+int
+ui_pos_to_px_automation_editor (
+  Position * pos,
+  int        use_padding)
+{
+  if (!MAIN_WINDOW || !MIDI_RULER)
+    return 0;
+
+  return pos_to_px (
+    pos, use_padding, Z_RULER_WIDGET (MIDI_RULER));
+}
+
 static long
 px_to_frames (
   double        px,

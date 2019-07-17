@@ -108,7 +108,8 @@ void
 midi_arranger_selections_get_end_pos (
   MidiArrangerSelections * mas,
   Position *           pos,
-  int                  transient)
+  int                  transient,
+  int                  global)
 {
   position_set_to_bar (pos,
                        TRANSPORT->total_bars);
@@ -121,6 +122,11 @@ midi_arranger_selections_get_end_pos (
   ARRANGER_OBJ_SET_GIVEN_POS_TO (
     mas, MidiNote, midi_note, start_pos,
     transient, after, widget);
+
+  if (global)
+    {
+      /* TODO convert to global */
+    }
 }
 
 /**
@@ -501,7 +507,7 @@ midi_arranger_selections_paste_to_pos (
           midi_note,
           MIDI_NOTE_CLONE_COPY_MAIN);
       midi_region_add_midi_note (
-        cp->region, cp, F_GEN_WIDGET);
+        cp->region, cp);
     }
 #undef DIFF
 }

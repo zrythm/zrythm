@@ -150,10 +150,10 @@ midi_modifier_arranger_widget_get_hit_velocity (
 }
 
 void
-midi_modifier_arranger_on_drag_begin_vel_hit (
+midi_modifier_arranger_widget_on_drag_begin_velocity_hit (
   MidiModifierArrangerWidget * self,
-  VelocityWidget *             vel_w,
-  double                       start_y)
+  double                       start_y,
+  VelocityWidget *             vel_w)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
@@ -219,9 +219,10 @@ midi_modifier_arranger_widget_select_all (
  */
 void
 midi_modifier_arranger_widget_show_context_menu (
-  MidiModifierArrangerWidget * self)
+  MidiModifierArrangerWidget * self,
+  double                       x,
+  double                       y)
 {
-
   /* TODO */
 }
 

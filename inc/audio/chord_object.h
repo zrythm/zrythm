@@ -73,22 +73,23 @@ typedef struct ChordObject
 {
   /** ChordObject object position (if used in chord
    * Track). */
-  Position       pos;
+  Position            pos;
 
   /** Cache, used in runtime operations. */
-  Position       cache_pos;
+  Position            cache_pos;
 
-  ChordDescriptor * descr;
+  ChordDescriptor *   descr;
 
-  /** Position of Track this ChordObject is in. */
-  int            track_pos;
+  /** Pointer back to parent. */
+  Region *            region;
 
-  /** Cache. */
-  Track *        track;
+  /** Used in clones to identify a region instead of
+   * cloning the whole Region. */
+  char *              region_name;
 
-  ChordObjectWidget *  widget;
+  ChordObjectWidget * widget;
 
-  ArrangerObjectInfo   obj_info;
+  ArrangerObjectInfo  obj_info;
 } ChordObject;
 
 static const cyaml_schema_field_t
@@ -137,19 +138,12 @@ chord_object_is_equal (
 }
 
 /**
- * Returns the Track this ChordObject is in.
- */
-Track *
-chord_object_get_track (
-  ChordObject * self);
-
-/**
  * Sets the Track of the chord.
  */
 void
-chord_object_set_track (
+chord_object_set_region (
   ChordObject * self,
-  Track *  track);
+  Region *      region);
 
 /**
  * Finds the ChordObject in the project

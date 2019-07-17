@@ -39,6 +39,7 @@
 #include "audio/track.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/stoat.h"
 
 #ifdef HAVE_JACK
 #include <jack/thread.h>
@@ -535,7 +536,7 @@ graph_worker_thread (void * g)
 	return 0;
 }
 
-__attribute__((annotate("realtime")))
+REALTIME
 static void *
 graph_main_thread (void * arg)
 {

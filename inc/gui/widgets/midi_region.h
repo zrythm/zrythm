@@ -35,11 +35,11 @@
 
 #define MIDI_REGION_WIDGET_TYPE \
   (midi_region_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MidiRegionWidget,
-                      midi_region_widget,
-                      Z,
-                      MIDI_REGION_WIDGET,
-                      RegionWidget);
+G_DECLARE_FINAL_TYPE (
+  MidiRegionWidget,
+  midi_region_widget,
+  Z, MIDI_REGION_WIDGET,
+  RegionWidget);
 
 typedef struct Region MidiRegion;
 
@@ -59,6 +59,7 @@ typedef struct _MidiRegionWidget
  * Creates a region.
  */
 MidiRegionWidget *
-midi_region_widget_new (MidiRegion * midi_region);
+midi_region_widget_new (
+  Region * midi_region);
 
 #endif

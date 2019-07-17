@@ -37,6 +37,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/automation_track.h"
 #include "utils/arrays.h"
+#include "utils/stoat.h"
 
 #include <gtk/gtk.h>
 
@@ -70,7 +71,7 @@ instrument_track_setup (InstrumentTrack * self)
  * @param midi_events MidiEvents to fill (from
  *   Piano Roll Port for example).
  */
-__attribute__((annotate("realtime")))
+REALTIME
 void
 instrument_track_fill_midi_events (
   InstrumentTrack * track,

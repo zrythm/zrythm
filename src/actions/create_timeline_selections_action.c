@@ -91,30 +91,6 @@ create_timeline_selections_action_do (
       self->ts->regions[i]->name =
         g_strdup (region->name);
     }
-  ChordObject * chord;
-	for (i = 0;
-       i < self->ts->num_chord_objects; i++)
-    {
-      /* check if the region already exists. due to
-       * how the arranger creates regions, the region
-       * should already exist the first time so no
-       * need to do anything. when redoing we will
-       * need to create a clone instead */
-      if (chord_object_find (
-            self->ts->chord_objects[i]))
-        continue;
-
-      /* clone the clone */
-      chord =
-        chord_object_clone (
-          self->ts->chord_objects[i],
-          CHORD_OBJECT_CLONE_COPY_MAIN);
-
-      /* add it to track */
-      chord_track_add_chord (
-        P_CHORD_TRACK,
-        chord, F_GEN_WIDGET);
-    }
   ScaleObject * scale;
 	for (i = 0;
        i < self->ts->num_scale_objects; i++)
@@ -136,8 +112,7 @@ create_timeline_selections_action_do (
 
       /* add it to track */
       chord_track_add_scale (
-        P_CHORD_TRACK,
-        scale, F_GEN_WIDGET);
+        P_CHORD_TRACK, scale);
     }
   Marker * marker;
 	for (i = 0;
@@ -160,39 +135,7 @@ create_timeline_selections_action_do (
 
       /* add it to track */
       marker_track_add_marker (
-        P_MARKER_TRACK,
-        marker, F_GEN_WIDGET);
-    }
-  AutomationPoint * ap;
-	for (i = 0;
-       i < self->ts->num_automation_points; i++)
-    {
-      /* check if the ap already exists. due to
-       * how the arranger creates regions, the region
-       * should already exist the first time so no
-       * need to do anything. when redoing we will
-       * need to create a clone instead */
-      if (automation_point_find (
-            self->ts->automation_points[i]))
-        continue;
-
-      g_message ("NOT FOUND");
-
-      /* clone the clone */
-      ap =
-        automation_point_clone (
-          self->ts->automation_points[i],
-          AUTOMATION_POINT_CLONE_COPY_MAIN);
-
-      /* add it to track */
-      automation_track_add_ap (
-        ap->at, ap, F_GEN_WIDGET,
-        F_GEN_CURVE_POINTS);
-
-      /* remember new index */
-      automation_point_set_automation_track_and_index (
-        self->ts->automation_points[i],
-        ap->at, ap->index);
+        P_MARKER_TRACK, marker);
     }
 
   EVENTS_PUSH (ET_TL_SELECTIONS_CREATED,
@@ -216,18 +159,6 @@ create_timeline_selections_action_undo (
       track_remove_region (
         region->lane->track, region, F_FREE);
     }
-  ChordObject * chord_object;
-  for (i = 0; i < self->ts->num_chord_objects; i++)
-    {
-      /* get the actual region */
-      chord_object =
-        chord_object_find (
-          self->ts->chord_objects[i]);
-
-      /* remove it */
-      chord_track_remove_chord (
-        P_CHORD_TRACK, chord_object, F_FREE);
-    }
   ScaleObject * scale_object;
   for (i = 0; i < self->ts->num_scale_objects; i++)
     {
@@ -249,20 +180,6 @@ create_timeline_selections_action_undo (
       /* remove it */
       marker_track_remove_marker (
         P_MARKER_TRACK, marker, F_FREE);
-    }
-  AutomationPoint * ap;
-  for (i = 0;
-       i < self->ts->num_automation_points; i++)
-    {
-      /* get the actual region */
-      ap =
-        automation_point_find (
-          self->ts->automation_points[i]);
-      g_warn_if_fail (ap);
-
-      /* remove it */
-      automation_track_remove_ap (
-        ap->at, ap, F_FREE);
     }
   EVENTS_PUSH (ET_TL_SELECTIONS_REMOVED,
                NULL);
