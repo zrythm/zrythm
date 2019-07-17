@@ -152,6 +152,7 @@ timeline_arranger_widget_set_select_type (
  * Create a Region at the given Position in the
  * given Track's given TrackLane.
  *
+ * @param type The type of region to create.
  * @param pos The pre-snapped position.
  * @param track Track, if non-automation.
  * @param lane TrackLane, if midi/audio region.
@@ -160,6 +161,7 @@ timeline_arranger_widget_set_select_type (
 void
 timeline_arranger_widget_create_region (
   TimelineArrangerWidget * self,
+  const RegionType         type,
   Track *                  track,
   TrackLane *              lane,
   AutomationTrack *        at,
@@ -178,18 +180,6 @@ timeline_arranger_widget_create_chord_or_scale (
   TimelineArrangerWidget * self,
   Track *                  track,
   double                   y,
-  const Position *         pos);
-
-/**
- * Create a chord Region at the given Position in
- * the given Track.
- *
- * @param pos The pre-snapped position.
- */
-void
-timeline_arranger_widget_create_chord (
-  TimelineArrangerWidget * self,
-  Track *                  track,
   const Position *         pos);
 
 /**

@@ -104,6 +104,11 @@ track_lane_clone (
   TrackLane * new_lane =
     calloc (1, sizeof (TrackLane));
 
+  new_lane->regions_size = lane->num_regions;
+  new_lane->regions =
+    malloc (new_lane->regions_size *
+            sizeof (Region *));
+
   Region * region, * new_region;
   for (int i = 0; i < lane->num_regions; i++)
     {

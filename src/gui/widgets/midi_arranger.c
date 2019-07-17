@@ -568,6 +568,8 @@ midi_arranger_widget_create_note (
   midi_region_add_midi_note (
     region, midi_note);
 
+  midi_note_gen_widget (midi_note);
+
   /* set visibility */
   arranger_object_info_set_widget_visibility_and_state (
     &midi_note->obj_info, 1);

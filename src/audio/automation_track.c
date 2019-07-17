@@ -72,6 +72,7 @@ automation_track_add_region (
   AutomationTrack * self,
   Region *          region)
 {
+  g_return_if_fail (self);
   g_return_if_fail (
     region->type == REGION_TYPE_AUTOMATION);
 
@@ -81,6 +82,8 @@ automation_track_add_region (
   array_append (self->regions,
                 self->num_regions,
                 region);
+
+  region_set_automation_track (region, self);
 }
 
 

@@ -946,7 +946,8 @@ create_item (ArrangerWidget * self,
       if (at)
         {
           timeline_arranger_widget_create_region (
-            timeline_arranger, track, NULL, at,
+            timeline_arranger,
+            REGION_TYPE_AUTOMATION, track, NULL, at,
             &pos);
         }
       /* double click inside a track */
@@ -958,9 +959,15 @@ create_item (ArrangerWidget * self,
           switch (track->type)
             {
             case TRACK_TYPE_INSTRUMENT:
+              timeline_arranger_widget_create_region (
+                timeline_arranger,
+                REGION_TYPE_MIDI, track,
+                lane, NULL, &pos);
+              break;
             case TRACK_TYPE_AUDIO:
               timeline_arranger_widget_create_region (
-                timeline_arranger, track,
+                timeline_arranger,
+                REGION_TYPE_AUDIO, track,
                 lane, NULL, &pos);
               break;
             case TRACK_TYPE_MASTER:
@@ -1815,7 +1822,7 @@ on_motion (GtkEventControllerMotion * event,
            ArrangerWidget * self)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
-  /*g_message ("on motion");*/
+  GET_ARRANGER_ALIASES (self);
 
   ar_prv->hover_x = x;
   ar_prv->hover_y = y;
@@ -1826,18 +1833,21 @@ on_motion (GtkEventControllerMotion * event,
    * immediately */
   if (P_TOOL != TOOL_CUT)
     {
-      RegionWidget * rw =
-        timeline_arranger_widget_get_hit_region (
-          Z_TIMELINE_ARRANGER_WIDGET (self),
-          ar_prv->hover_x,
-          ar_prv->hover_y);
-
-      if (rw)
+      if (timeline_arranger)
         {
-          REGION_WIDGET_GET_PRIVATE (rw);
+          RegionWidget * rw =
+            timeline_arranger_widget_get_hit_region (
+              Z_TIMELINE_ARRANGER_WIDGET (self),
+              ar_prv->hover_x,
+              ar_prv->hover_y);
 
-          rw_prv->show_cut = 0;
-          gtk_widget_queue_draw (GTK_WIDGET (rw));
+          if (rw)
+            {
+              REGION_WIDGET_GET_PRIVATE (rw);
+
+              rw_prv->show_cut = 0;
+              gtk_widget_queue_draw (GTK_WIDGET (rw));
+            }
         }
     }
 

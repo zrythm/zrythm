@@ -298,6 +298,11 @@ typedef struct Region
    */
   AutomationTrack *  at;
 
+  /**
+   * Used when undo/redoing.
+   */
+  int                at_index;
+
   /* ==== AUTOMATION REGION END ==== */
 
   /* ==== CHORD REGION ==== */
@@ -521,6 +526,14 @@ void
 region_set_lane (
   Region * region,
   TrackLane * lane);
+
+/**
+ * Sets the automation track.
+ */
+void
+region_set_automation_track (
+  Region * region,
+  AutomationTrack * at);
 
 ARRANGER_OBJ_DECLARE_POS_GETTER (
   Region, region, clip_start_pos);

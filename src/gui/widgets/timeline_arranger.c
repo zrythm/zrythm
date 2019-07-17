@@ -37,6 +37,7 @@
 #include "audio/bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_object.h"
+#include "audio/chord_region.h"
 #include "audio/chord_track.h"
 #include "audio/instrument_track.h"
 #include "audio/marker_track.h"
@@ -103,10 +104,9 @@ timeline_arranger_widget_set_allocation (
     {
       RegionWidget * rw = Z_REGION_WIDGET (widget);
       REGION_WIDGET_GET_PRIVATE (rw);
-      TrackLane * lane = rw_prv->region->lane;
-      Track * track =
-        TRACKLIST->tracks[
-          rw_prv->region->track_pos];
+      Region * region = rw_prv->region;
+      TrackLane * lane = region->lane;
+      Track * track = region_get_track (region);
 
       if (!track->widget)
         track->widget = track_widget_new (track);
@@ -150,11 +150,47 @@ timeline_arranger_widget_set_allocation (
             0, 0,
             &wx, &wy);
 
-          allocation->y = wy;
+          if (region->type == REGION_TYPE_CHORD)
+            {
+              int textw, texth;
+              z_cairo_get_text_extents_for_widget (
+                widget, "Aa", &textw, &texth);
 
-          allocation->height =
-            gtk_widget_get_allocated_height (
-              GTK_WIDGET (tw_prv->top_grid));
+              allocation->y = wy;
+              /* full height minus the space the
+               * scales would require, plus some
+               * padding */
+              allocation->height =
+                gtk_widget_get_allocated_height (
+                  GTK_WIDGET (tw_prv->top_grid)) -
+                (texth + Z_CAIRO_TEXT_PADDING * 4);
+
+            }
+          else if (region->type ==
+                     REGION_TYPE_AUTOMATION)
+            {
+              AutomationTrack * at =
+                region->at;
+              if (!at->created ||
+                  !track->bot_paned_visible)
+                return;
+
+              gtk_widget_translate_coordinates (
+                GTK_WIDGET (at->widget),
+                GTK_WIDGET (self),
+                0, 0, &wx, &wy);
+              allocation->y = wy;
+              allocation->height =
+                gtk_widget_get_allocated_height (
+                  GTK_WIDGET (at->widget));
+            }
+          else
+            {
+              allocation->y = wy;
+              allocation->height =
+                gtk_widget_get_allocated_height (
+                  GTK_WIDGET (tw_prv->top_grid));
+            }
         }
     }
   else if (Z_IS_SCALE_OBJECT_WIDGET (widget))
@@ -826,6 +862,7 @@ timeline_arranger_widget_on_drag_begin_marker_hit (
  * Create a Region at the given Position in the
  * given Track's given TrackLane.
  *
+ * @param type The type of region to create.
  * @param pos The pre-snapped position.
  * @param track Track, if non-automation.
  * @param lane TrackLane, if midi/audio region.
@@ -834,14 +871,12 @@ timeline_arranger_widget_on_drag_begin_marker_hit (
 void
 timeline_arranger_widget_create_region (
   TimelineArrangerWidget * self,
+  const RegionType         type,
   Track *                  track,
   TrackLane *              lane,
   AutomationTrack *        at,
   const Position *         pos)
 {
-  if (track->type == TRACK_TYPE_AUDIO)
-    return;
-
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   ar_prv->action =
@@ -849,11 +884,25 @@ timeline_arranger_widget_create_region (
 
   /* create a new region */
   Region * region = NULL;
-  if (track->type == TRACK_TYPE_INSTRUMENT)
+  switch (type)
     {
+    case REGION_TYPE_MIDI:
       region =
         midi_region_new (
           pos, pos, 1);
+      break;
+    case REGION_TYPE_AUDIO:
+      break;
+    case REGION_TYPE_CHORD:
+      region =
+        chord_region_new (
+          pos, pos, 1);
+      break;
+    case REGION_TYPE_AUTOMATION:
+      region =
+        automation_region_new (
+          pos, pos, 1);
+      break;
     }
 
   Position tmp;
@@ -878,21 +927,34 @@ timeline_arranger_widget_create_region (
   region_set_loop_end_pos (
     region, &region->true_end_pos, AO_UPDATE_ALL);
 
-  /** add it to a lane */
-  if (track->type == TRACK_TYPE_INSTRUMENT)
+  switch (type)
     {
+    case REGION_TYPE_MIDI:
       track_add_region (
         track, region, NULL,
         lane ? lane->pos :
         (track->num_lanes == 1 ?
          0 : track->num_lanes - 2), F_GEN_NAME);
-
-      /* set visibility */
-      arranger_object_info_set_widget_visibility_and_state (
-        &region->obj_info, 1);
+      break;
+    case REGION_TYPE_AUDIO:
+      break;
+    case REGION_TYPE_CHORD:
+      track_add_region (
+        track, region, NULL,
+        -1, F_GEN_NAME);
+      break;
+    case REGION_TYPE_AUTOMATION:
+      track_add_region (
+        track, region, at,
+        -1, F_GEN_NAME);
+      break;
     }
-  EVENTS_PUSH (ET_REGION_CREATED,
-               region);
+
+  /* set visibility */
+  region_gen_widget (region);
+  arranger_object_info_set_widget_visibility_and_state (
+        &region->obj_info, 1);
+
   region_set_cache_end_pos (
     region, &region->end_pos);
   ARRANGER_WIDGET_SELECT_REGION (
@@ -928,31 +990,9 @@ timeline_arranger_widget_create_chord_or_scale (
     timeline_arranger_widget_create_scale (
       self, track, pos);
   else
-    timeline_arranger_widget_create_chord (
-      self, track, pos);
-}
-
-/**
- * Create a chord Region at the given Position in
- * the given Track.
- *
- * @param pos The pre-snapped position.
- */
-void
-timeline_arranger_widget_create_chord (
-  TimelineArrangerWidget * self,
-  Track *            track,
-  const Position *         pos)
-{
-  g_warn_if_fail (track->type == TRACK_TYPE_CHORD);
-
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  ar_prv->action =
-    UI_OVERLAY_ACTION_CREATING_MOVING;
-
-  /* create a new chord region */
-  /* TODO */
+    timeline_arranger_widget_create_region (
+      self, REGION_TYPE_CHORD, track, NULL,
+      NULL, pos);
 }
 
 /**
@@ -984,6 +1024,8 @@ timeline_arranger_widget_create_scale (
 
   /* add it to scale track */
   chord_track_add_scale (track, scale);
+
+  scale_object_gen_widget (scale);
 
   /* set visibility */
   arranger_object_info_set_widget_visibility_and_state (
@@ -1026,6 +1068,8 @@ timeline_arranger_widget_create_marker (
   /* add it to marker track */
   marker_track_add_marker (
     track, marker);
+
+  marker_gen_widget (marker);
 
   /* set visibility */
   arranger_object_info_set_widget_visibility_and_state (
@@ -1335,9 +1379,27 @@ snap_region_r (
 
   if (SNAP_GRID_ANY_SNAP (ar_prv->snap_grid) &&
         !ar_prv->shift_held)
-    position_snap (
-      NULL, new_end_pos, region->lane->track,
-      NULL, ar_prv->snap_grid);
+    {
+      switch (region->type)
+        {
+        case REGION_TYPE_CHORD:
+          position_snap (
+            NULL, new_end_pos, P_CHORD_TRACK,
+            NULL, ar_prv->snap_grid);
+          break;
+        case REGION_TYPE_MIDI:
+        case REGION_TYPE_AUDIO:
+          position_snap (
+            NULL, new_end_pos, region->lane->track,
+            NULL, ar_prv->snap_grid);
+          break;
+        case REGION_TYPE_AUTOMATION:
+          position_snap (
+            NULL, new_end_pos, NULL,
+            NULL, ar_prv->snap_grid);
+          break;
+        }
+    }
 
   if (position_is_before_or_equal (
         new_end_pos, &region->start_pos))
@@ -1613,7 +1675,7 @@ timeline_arranger_widget_move_items_y (
         timeline_arranger_widget_get_track_at_y (
         self, ar_prv->start_y + offset_y);
       Track * old_track =
-        self->start_region->lane->track;
+        region_get_track (self->start_region);
       if (track)
         {
           Track * pt =
@@ -1641,8 +1703,8 @@ timeline_arranger_widget_move_items_y (
               arranger_widget_is_in_moving_operation (
                 Z_ARRANGER_WIDGET (self)));
 
-          if (self->start_region->lane->track !=
-              track)
+          if (region_get_track (self->start_region)
+                != track)
             {
               /* if new track is lower and bot region is not at the lowest track */
               if (track == nt &&
@@ -1929,10 +1991,7 @@ add_children_from_channel_track (
                     region);
 
               if (!GTK_IS_WIDGET (region->widget))
-                region->widget =
-                  Z_REGION_WIDGET (
-                    automation_region_widget_new (
-                      region));
+                region_gen_widget (region);
 
               gtk_overlay_add_overlay (
                 GTK_OVERLAY (MW_TIMELINE),
@@ -1959,12 +2018,34 @@ add_children_from_chord_track (
             c = scale_object_get_main_trans_scale_object (c);
 
           if (!c->widget)
-            c->widget =
-              scale_object_widget_new (c);
+            scale_object_gen_widget (c);
 
           gtk_overlay_add_overlay (
             GTK_OVERLAY (self),
             GTK_WIDGET (c->widget));
+        }
+    }
+
+  Region * region;
+  for (i = 0; i < ct->num_chord_regions; i++)
+    {
+      region = ct->chord_regions[i];
+
+      for (k = 0 ; k < 2; k++)
+        {
+          if (k == 0)
+            region =
+              region_get_main_region (region);
+          else if (k == 1)
+            region =
+              region_get_main_trans_region (region);
+
+          if (!region->widget)
+            region_gen_widget (region);
+
+          gtk_overlay_add_overlay (
+            GTK_OVERLAY (self),
+            GTK_WIDGET (region->widget));
         }
     }
 }

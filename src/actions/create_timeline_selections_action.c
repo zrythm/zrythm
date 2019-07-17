@@ -62,6 +62,8 @@ create_timeline_selections_action_do (
 {
   int i;
 
+  Track * track;
+  AutomationTrack * at;
   Region * region;
 	for (i = 0; i < self->ts->num_regions; i++)
     {
@@ -82,9 +84,22 @@ create_timeline_selections_action_do (
         region->track_pos >= 0, -1);
 
       /* add it to track */
-      track_add_region (
-        TRACKLIST->tracks[region->track_pos],
-        region, 0, F_GEN_NAME, F_GEN_WIDGET);
+      track =
+        TRACKLIST->tracks[region->track_pos];
+      if (region->type == REGION_TYPE_AUTOMATION)
+        {
+          at =
+            track->automation_tracklist.
+              ats[region->at_index];
+          track_add_region (
+            track, region, at, -1, F_GEN_NAME);
+        }
+      else
+        {
+          track_add_region (
+            track, region, NULL, region->lane_pos,
+            F_GEN_NAME);
+        }
 
       /* remember its name */
       g_free (self->ts->regions[i]->name);

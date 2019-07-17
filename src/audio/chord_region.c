@@ -47,9 +47,8 @@ chord_region_new (
   self->chord_objects =
     malloc (self->chord_objects_size *
             sizeof (ChordObject *));
-  self->chord_objects =
-    malloc ((self->chord_objects_size - 1) *
-            sizeof (ChordObject *));
+
+  self->type = REGION_TYPE_CHORD;
 
   region_init (
     self, start_pos, end_pos, is_main);

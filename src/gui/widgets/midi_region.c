@@ -46,6 +46,7 @@ midi_region_draw_cb (
   cairo_t *cr,
   MidiRegionWidget * self)
 {
+  int i, j;
   REGION_WIDGET_GET_PRIVATE (self);
   guint width, height;
   GtkStyleContext *context;
@@ -69,20 +70,20 @@ midi_region_draw_cb (
   cairo_set_source_rgba (
     cr, 1, 1, 1, 1);
 
-  MidiRegion * mr =
+  MidiRegion * r =
     (MidiRegion *) rw_prv->region;
-  Region * r = (Region *) mr;
+  Region * main_region =
+    region_get_main_region (r);
   int num_loops =
     region_get_num_loops (r, 1);
   long ticks_in_region =
-    region_get_full_length_in_ticks (
-      (Region *) mr);
+    region_get_full_length_in_ticks (r);
   float x_start, y_start, x_end;
 
   int min_val = 127, max_val = 0;
-  for (int i = 0; i < mr->num_midi_notes; i++)
+  for (i = 0; i < main_region->num_midi_notes; i++)
     {
-      MidiNote * mn = mr->midi_notes[i];
+      MidiNote * mn = main_region->midi_notes[i];
 
       if (mn->val < min_val)
         min_val = mn->val;
@@ -102,9 +103,9 @@ midi_region_draw_cb (
     position_to_ticks (&r->clip_start_pos);
   /*int px =*/
     /*ui_pos_to_px_timeline (&r->loop_start_pos, 0);*/
-  for (int i = 0; i < mr->num_midi_notes; i++)
+  for (i = 0; i < main_region->num_midi_notes; i++)
     {
-      MidiNote * mn = mr->midi_notes[i];
+      MidiNote * mn = main_region->midi_notes[i];
 
       mn =
         (MidiNote *)
@@ -137,9 +138,7 @@ midi_region_draw_cb (
       if (position_compare (
             &mn->start_pos, &r->loop_end_pos) < 0)
         {
-          for (int j = 0;
-               j < num_loops;
-               j++)
+          for (j = 0; j < num_loops; j++)
             {
               /* if note started before loop start
                * only draw it once */

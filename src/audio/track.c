@@ -534,11 +534,6 @@ track_add_region (
   int      gen_name)
 {
   g_warn_if_fail (
-    (track->type == TRACK_TYPE_INSTRUMENT ||
-    track->type == TRACK_TYPE_AUDIO) &&
-    region);
-  g_warn_if_fail (lane_pos >= 0);
-  g_warn_if_fail (
     region->obj_info.counterpart ==
     AOI_COUNTERPART_MAIN);
   g_warn_if_fail (
@@ -546,6 +541,12 @@ track_add_region (
     region->obj_info.main_trans &&
     region->obj_info.lane &&
     region->obj_info.lane_trans);
+
+  if (region->type == REGION_TYPE_AUTOMATION)
+    {
+      track = at->track;
+    }
+  g_warn_if_fail (track);
 
   if (gen_name)
     {

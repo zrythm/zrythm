@@ -121,6 +121,30 @@ region_set_lane (
 }
 
 /**
+ * Sets the automation track.
+ */
+void
+region_set_automation_track (
+  Region * region,
+  AutomationTrack * at)
+{
+  g_return_if_fail (at);
+
+  Region * r;
+  for (int i = 0; i < 2; i++)
+    {
+      if (i == AOI_COUNTERPART_MAIN)
+        r = region_get_main_region (region);
+      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
+        r = region_get_main_trans_region (region);
+
+      r->at = at;
+      r->at_index = at->index;
+      r->track_pos = at->track->pos;
+    }
+}
+
+/**
  * Inits freshly loaded region.
  */
 void
@@ -805,6 +829,7 @@ region_clone (
     {
       new_region->track_pos = region->track_pos;
     }
+  new_region->at_index = region->at_index;
 
   return new_region;
 }

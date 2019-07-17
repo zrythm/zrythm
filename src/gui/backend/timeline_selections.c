@@ -335,7 +335,7 @@ timeline_selections_get_highest_track (
         region = ts->regions[i]->obj_info.main_trans;
       else
         region = ts->regions[i]->obj_info.main;
-      CHECK_POS (region->lane->track);
+      CHECK_POS (region_get_track (region));
     }
   CHECK_POS (P_CHORD_TRACK);
 
@@ -377,7 +377,7 @@ timeline_selections_get_lowest_track (
         region = ts->regions[i]->obj_info.main_trans;
       else
         region = ts->regions[i]->obj_info.main;
-      CHECK_POS (region->lane->track);
+      CHECK_POS (region_get_track (region));
     }
   CHECK_POS (P_CHORD_TRACK);
 

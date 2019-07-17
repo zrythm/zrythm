@@ -91,6 +91,9 @@ midi_region_add_midi_note (
 
   midi_note_set_region (midi_note, region);
 
+  array_double_size_if_full (
+    region->midi_notes, region->num_midi_notes,
+    region->midi_notes_size, MidiNote *)
   array_append (region->midi_notes,
                 region->num_midi_notes,
                 midi_note);
