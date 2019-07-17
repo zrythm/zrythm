@@ -468,6 +468,10 @@ track_get_last_region (
     {
       at = atl->ats[i];
       r = automation_track_get_last_region (at);
+
+      if (!r)
+        continue;
+
       if (position_is_after (
             &r->end_pos, &tmp))
         {

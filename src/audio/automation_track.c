@@ -147,6 +147,9 @@ automation_track_get_ap_before_pos (
     automation_track_get_region_before_pos (
       self, pos);
 
+  if (!r)
+    return NULL;
+
   Position local_pos;
   region_timeline_pos_to_local (
     r, pos, &local_pos, 1);

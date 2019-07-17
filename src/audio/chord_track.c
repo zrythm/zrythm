@@ -112,6 +112,9 @@ chord_track_get_chord_at_pos (
   Region * region =
     track_get_region_at_pos (ct, pos);
 
+  if (!region)
+    return NULL;
+
   ChordObject * chord = NULL;
   int i;
   for (i = region->num_chord_objects - 1;
