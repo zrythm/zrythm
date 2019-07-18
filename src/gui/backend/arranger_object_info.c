@@ -120,8 +120,8 @@ arranger_object_info_should_be_visible (
       ar_prv->action ==
         UI_OVERLAY_ACTION_CREATING_MOVING)
     {
-      trans_visible = 1;
-      non_trans_visible = 0;
+      trans_visible = 0;
+      non_trans_visible = 1;
     }
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_MOVING_COPY ||
@@ -140,13 +140,13 @@ arranger_object_info_should_be_visible (
           ar_prv->action ==
             UI_OVERLAY_ACTION_RESIZING_UP)
     {
-      trans_visible = 1;
-      non_trans_visible = 0;
+      trans_visible = 0;
+      non_trans_visible = 1;
     }
   else
     {
-      trans_visible = 1;
-      non_trans_visible = 0;
+      trans_visible = 0;
+      non_trans_visible = 1;
     }
 
   /* check visibility at all */

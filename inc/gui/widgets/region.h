@@ -107,6 +107,16 @@ region_widget_is_resize_r (
   int             x);
 
 /**
+ * Draws the name of the Region.
+ *
+ * To be called during a cairo draw callback.
+ */
+void
+region_widget_draw_name (
+  RegionWidget * self,
+  cairo_t *      cr);
+
+/**
  * Destroys the widget completely.
  */
 void

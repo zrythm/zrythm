@@ -47,7 +47,10 @@ automation_region_draw_cb (
   AutomationRegionWidget * self)
 {
 
- return FALSE;
+  region_widget_draw_name (
+    Z_REGION_WIDGET (self), cr);
+
+  return FALSE;
 }
 
 AutomationRegionWidget *
