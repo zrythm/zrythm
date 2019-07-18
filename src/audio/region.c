@@ -243,11 +243,14 @@ region_find_by_name (
 {
   int i, j, k;
   Track * track;
+  AutomationTracklist * atl;
+  AutomationTrack * at;
   TrackLane * lane;
   Region * r;
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
+      atl = &track->automation_tracklist;
       g_warn_if_fail (track);
 
       for (k = 0; k < track->num_lanes; k++)
@@ -261,7 +264,31 @@ region_find_by_name (
                 return r;
             }
         }
+
+      if (track->type == TRACK_TYPE_CHORD)
+        {
+          for (j = 0; j < track->num_chord_regions;
+               j++)
+            {
+              r = track->chord_regions[j];
+              if (!g_strcmp0 (r->name, name))
+                return r;
+            }
+        }
+
+      for (j = 0; j < atl->num_ats; j++)
+        {
+          at = atl->ats[j];
+
+          for (k = 0; k < at->num_regions; k++)
+            {
+              r = at->regions[j];
+              if (!g_strcmp0 (r->name, name))
+                return r;
+            }
+        }
     }
+
   return NULL;
 }
 
