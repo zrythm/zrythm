@@ -32,8 +32,7 @@
 #include "gui/widgets/arranger_playhead.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_arranger_bg.h"
-#include "gui/widgets/audio_clip_editor.h"
-#include "gui/widgets/audio_ruler.h"
+#include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_arranger_bg.h"
 #include "gui/widgets/automation_curve.h"
@@ -45,6 +44,7 @@
 #include "gui/widgets/chord_arranger_bg.h"
 #include "gui/widgets/chord_object.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/gtk/gtkeventcontrollermotion.h"
 #include "gui/widgets/inspector.h"
@@ -52,11 +52,11 @@
 #include "gui/widgets/marker.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_modifier_arranger_bg.h"
 #include "gui/widgets/midi_note.h"
-#include "gui/widgets/midi_ruler.h"
-#include "gui/widgets/piano_roll.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/scale_object.h"
@@ -175,7 +175,7 @@ get_child_position (GtkOverlay   *self,
                CLIP_EDITOR->region)
         {
           allocation->x =
-            ui_pos_to_px_piano_roll (
+            ui_pos_to_px_editor (
               &TRANSPORT->playhead_pos,
               1);
         }
@@ -1668,20 +1668,13 @@ arranger_widget_pos_to_px (
   if (timeline_arranger)
     return ui_pos_to_px_timeline (
              pos, use_padding);
-  else if (midi_arranger || midi_modifier_arranger)
-    return ui_pos_to_px_piano_roll (
+  else if (midi_arranger ||
+           midi_modifier_arranger ||
+           audio_arranger ||
+           automation_arranger ||
+           chord_arranger)
+    return ui_pos_to_px_editor (
              pos, use_padding);
-  else if (audio_arranger)
-    return ui_pos_to_px_audio_clip_editor (
-             pos, use_padding);
-  else if (chord_arranger)
-    {
-      return -1;
-    }
-  else if (automation_arranger)
-    {
-      return -1;
-    }
 
   return -1;
 }
@@ -1698,11 +1691,12 @@ arranger_widget_get_scrolled_window (
   if (timeline_arranger)
     return MW_CENTER_DOCK->timeline_scroll;
   else if (midi_arranger)
-    return MW_PIANO_ROLL->arranger_scroll;
+    return MW_MIDI_EDITOR_SPACE->arranger_scroll;
   else if (midi_modifier_arranger)
-    return MW_PIANO_ROLL->modifier_arranger_scroll;
+    return MW_MIDI_EDITOR_SPACE->
+      modifier_arranger_scroll;
   else if (audio_arranger)
-    return MW_AUDIO_CLIP_EDITOR->arranger_scroll;
+    return MW_AUDIO_EDITOR_SPACE->arranger_scroll;
   else if (chord_arranger)
     return NULL;
   else if (automation_arranger)
@@ -1758,14 +1752,11 @@ on_scroll (GtkWidget *widget,
   if (timeline_arranger)
     ruler = Z_RULER_WIDGET (MW_RULER);
   else if (midi_modifier_arranger ||
-           midi_arranger)
-    ruler = Z_RULER_WIDGET (MIDI_RULER);
-  else if (audio_arranger)
-    ruler = Z_RULER_WIDGET (AUDIO_RULER);
-  else if (chord_arranger)
-    ruler = NULL;
-  else if (automation_arranger)
-    ruler = NULL;
+           midi_arranger ||
+           audio_arranger ||
+           chord_arranger ||
+           automation_arranger)
+    ruler = Z_RULER_WIDGET (EDITOR_RULER);
 
   rw_prv = ruler_widget_get_private (ruler);
 
@@ -1891,7 +1882,7 @@ arranger_widget_setup (
     {
       ar_prv->bg = Z_ARRANGER_BG_WIDGET (
         midi_arranger_bg_widget_new (
-          Z_RULER_WIDGET (MIDI_RULER),
+          Z_RULER_WIDGET (EDITOR_RULER),
           self));
       midi_arranger_widget_setup (
         midi_arranger);
@@ -1909,7 +1900,7 @@ arranger_widget_setup (
     {
       ar_prv->bg = Z_ARRANGER_BG_WIDGET (
         midi_modifier_arranger_bg_widget_new (
-          Z_RULER_WIDGET (MIDI_RULER),
+          Z_RULER_WIDGET (EDITOR_RULER),
           self));
       midi_modifier_arranger_widget_setup (
         midi_modifier_arranger);
@@ -1918,7 +1909,7 @@ arranger_widget_setup (
     {
       ar_prv->bg = Z_ARRANGER_BG_WIDGET (
         audio_arranger_bg_widget_new (
-          Z_RULER_WIDGET (AUDIO_RULER),
+          Z_RULER_WIDGET (EDITOR_RULER),
           self));
       audio_arranger_widget_setup (
         audio_arranger);
@@ -1927,7 +1918,7 @@ arranger_widget_setup (
     {
       ar_prv->bg = Z_ARRANGER_BG_WIDGET (
         chord_arranger_bg_widget_new (
-          Z_RULER_WIDGET (MIDI_RULER),
+          Z_RULER_WIDGET (EDITOR_RULER),
           self));
       chord_arranger_widget_setup (
         chord_arranger);
@@ -1936,7 +1927,7 @@ arranger_widget_setup (
     {
       ar_prv->bg = Z_ARRANGER_BG_WIDGET (
         chord_arranger_bg_widget_new (
-          Z_RULER_WIDGET (MIDI_RULER),
+          Z_RULER_WIDGET (EDITOR_RULER),
           self));
       automation_arranger_widget_setup (
         automation_arranger);
@@ -2026,19 +2017,13 @@ arranger_widget_px_to_pos (
   if (timeline_arranger)
     ui_px_to_pos_timeline (
       px, pos, has_padding);
-  else if (midi_arranger)
-    ui_px_to_pos_piano_roll (
+  else if (midi_arranger ||
+           midi_modifier_arranger ||
+           chord_arranger ||
+           audio_arranger ||
+           automation_arranger)
+    ui_px_to_pos_editor (
       px, pos, has_padding);
-  else if (midi_modifier_arranger)
-    ui_px_to_pos_piano_roll (
-      px, pos, has_padding);
-  else if (audio_arranger)
-    ui_px_to_pos_audio_clip_editor (
-      px, pos, has_padding);
-  else if (chord_arranger)
-    {}
-  else if (automation_arranger)
-    {}
 }
 
 void
@@ -2082,7 +2067,7 @@ arranger_widget_refresh (
 
   if (midi_arranger)
     {
-      /*RULER_WIDGET_GET_PRIVATE (MIDI_RULER);*/
+      /*RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);*/
       /*gtk_widget_set_size_request (*/
         /*GTK_WIDGET (self),*/
         /*rw_prv->total_px,*/
@@ -2100,7 +2085,7 @@ arranger_widget_refresh (
     }
   else if (midi_modifier_arranger)
     {
-      RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
+      RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
         rw_prv->total_px,
@@ -2110,7 +2095,7 @@ arranger_widget_refresh (
     }
   else if (audio_arranger)
     {
-      RULER_WIDGET_GET_PRIVATE (AUDIO_RULER);
+      RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
         rw_prv->total_px,

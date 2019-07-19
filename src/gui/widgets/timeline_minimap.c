@@ -23,11 +23,11 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/midi_ruler.h"
-#include "gui/widgets/piano_roll.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap.h"
@@ -110,7 +110,7 @@ resize_selection_l (
       self->start_zoom_level / ratio);
   zoom_level_set =
     ruler_widget_set_zoom_level (
-      Z_RULER_WIDGET (MIDI_RULER),
+      Z_RULER_WIDGET (EDITOR_RULER),
       self->start_zoom_level / ratio);
 
   if (zoom_level_set)
@@ -158,7 +158,7 @@ resize_selection_r (
       self->start_zoom_level / ratio);
   zoom_level_set =
     ruler_widget_set_zoom_level (
-      Z_RULER_WIDGET (MIDI_RULER),
+      Z_RULER_WIDGET (EDITOR_RULER),
       self->start_zoom_level / ratio);
 
   if (zoom_level_set)

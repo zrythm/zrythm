@@ -37,14 +37,16 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
-#include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_bg.h"
@@ -95,7 +97,7 @@ midi_arranger_widget_set_allocation (
         region->start_pos.total_ticks;
       Position tmp;
       int adj_px_per_key =
-        MW_PIANO_ROLL->px_per_key + 1;
+        MW_MIDI_EDITOR_SPACE->px_per_key + 1;
 
       /* use absolute position */
       position_from_ticks (
@@ -103,7 +105,7 @@ midi_arranger_widget_set_allocation (
         region_start_ticks +
         mn->start_pos.total_ticks);
       allocation->x =
-        ui_pos_to_px_piano_roll (
+        ui_pos_to_px_editor (
           &tmp, 1);
       allocation->y =
         adj_px_per_key *
@@ -124,7 +126,7 @@ midi_arranger_widget_set_allocation (
             region_start_ticks +
             mn->end_pos.total_ticks);
           allocation->width =
-            ui_pos_to_px_piano_roll (
+            ui_pos_to_px_editor (
               &tmp, 1) - allocation->x;
         }
     }
@@ -135,7 +137,7 @@ midi_arranger_widget_get_note_at_y (double y)
 {
   double adj_y = y - 1;
   double adj_px_per_key =
-    MW_PIANO_ROLL->px_per_key + 1;
+    MW_MIDI_EDITOR_SPACE->px_per_key + 1;
   if (PIANO_ROLL->drum_mode)
     {
       return
@@ -219,11 +221,11 @@ midi_arranger_widget_set_size (
   MidiArrangerWidget * self)
 {
   // set the size
-  RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
+  RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
     rw_prv->total_px,
-    MW_PIANO_ROLL->total_key_px);
+    MW_MIDI_EDITOR_SPACE->total_key_px);
 }
 
 void

@@ -24,10 +24,10 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/midi_ruler.h"
-#include "gui/widgets/piano_roll.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler_marker.h"
 #include "project.h"
@@ -35,14 +35,14 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (MidiRulerWidget,
-               midi_ruler_widget,
+G_DEFINE_TYPE (EditorRulerWidget,
+               editor_ruler_widget,
                RULER_WIDGET_TYPE)
 
 static gboolean
-midi_ruler_draw_cb (GtkWidget * widget,
+editor_ruler_draw_cb (GtkWidget * widget,
          cairo_t *cr,
-         MidiRulerWidget * self)
+         EditorRulerWidget * self)
 {
   /* engine is run only set after everything is set up
    * so this is a good way to decide if we should draw
@@ -80,10 +80,10 @@ midi_ruler_draw_cb (GtkWidget * widget,
   if (region_should_be_visible (&region))
     {
       px_start =
-        ui_pos_to_px_piano_roll (
+        ui_pos_to_px_editor (
           &region->start_pos, 1);
       px_end =
-        ui_pos_to_px_piano_roll (
+        ui_pos_to_px_editor (
           &region->end_pos, 1);
       cairo_rectangle (
         cr, px_start, 0,
@@ -97,10 +97,10 @@ midi_ruler_draw_cb (GtkWidget * widget,
   if (region_should_be_visible (&region))
     {
       px_start =
-        ui_pos_to_px_piano_roll (
+        ui_pos_to_px_editor (
           &region->start_pos, 1);
       px_end =
-        ui_pos_to_px_piano_roll (
+        ui_pos_to_px_editor (
           &region->end_pos, 1);
       cairo_rectangle (
         cr, px_start, 0,
@@ -128,10 +128,10 @@ midi_ruler_draw_cb (GtkWidget * widget,
             continue;
 
           px_start =
-            ui_pos_to_px_piano_roll (
+            ui_pos_to_px_editor (
               &other_region->start_pos, 1);
           px_end =
-            ui_pos_to_px_piano_roll (
+            ui_pos_to_px_editor (
               &other_region->end_pos, 1);
           cairo_rectangle (
             cr, px_start, 0,
@@ -148,8 +148,8 @@ midi_ruler_draw_cb (GtkWidget * widget,
  * RulerWidget to allocate the RulerMarkerWidget.
  */
 void
-midi_ruler_widget_set_ruler_marker_position (
-  MidiRulerWidget * self,
+editor_ruler_widget_set_ruler_marker_position (
+  EditorRulerWidget * self,
   RulerMarkerWidget *    rm,
   GtkAllocation *       allocation)
 {
@@ -168,7 +168,7 @@ midi_ruler_widget_set_ruler_marker_position (
             start_ticks;
           position_from_ticks (&tmp, loop_start_ticks);
           allocation->x =
-            ui_pos_to_px_piano_roll (
+            ui_pos_to_px_editor (
               &tmp,
               1);
         }
@@ -187,7 +187,7 @@ midi_ruler_widget_set_ruler_marker_position (
             start_ticks;
           position_from_ticks (&tmp, loop_end_ticks);
           allocation->x =
-            ui_pos_to_px_piano_roll (
+            ui_pos_to_px_editor (
               &tmp,
               1) - RULER_MARKER_SIZE;
         }
@@ -206,17 +206,17 @@ midi_ruler_widget_set_ruler_marker_position (
             start_ticks;
           position_from_ticks (&tmp, clip_start_ticks);
           allocation->x =
-            ui_pos_to_px_piano_roll (
+            ui_pos_to_px_editor (
               &tmp,
               1);
         }
       else
         allocation->x = 0;
-      if (MAIN_WINDOW && MIDI_RULER)
+      if (MAIN_WINDOW && EDITOR_RULER)
         {
       allocation->y =
         ((gtk_widget_get_allocated_height (
-          GTK_WIDGET (MIDI_RULER)) -
+          GTK_WIDGET (EDITOR_RULER)) -
             RULER_MARKER_SIZE) - CUE_MARKER_HEIGHT) -
             1;
         }
@@ -227,7 +227,7 @@ midi_ruler_widget_set_ruler_marker_position (
       break;
     case RULER_MARKER_TYPE_PLAYHEAD:
       allocation->x =
-        ui_pos_to_px_piano_roll (
+        ui_pos_to_px_editor (
           &TRANSPORT->playhead_pos,
           1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);
       allocation->y =
@@ -245,9 +245,9 @@ midi_ruler_widget_set_ruler_marker_position (
 }
 
 void
-midi_ruler_widget_refresh ()
+editor_ruler_widget_refresh ()
 {
-  RULER_WIDGET_GET_PRIVATE (MIDI_RULER);
+  RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
 
   /*adjust for zoom level*/
   rw_prv->px_per_tick =
@@ -267,31 +267,31 @@ midi_ruler_widget_refresh ()
 
   // set the size
   gtk_widget_set_size_request (
-    GTK_WIDGET (MIDI_RULER),
+    GTK_WIDGET (EDITOR_RULER),
     rw_prv->total_px,
     -1);
 
   gtk_widget_queue_allocate (
-    GTK_WIDGET (MIDI_RULER));
+    GTK_WIDGET (EDITOR_RULER));
   EVENTS_PUSH (ET_RULER_SIZE_CHANGED,
-               MIDI_RULER);
+               EDITOR_RULER);
 }
 
 static void
-midi_ruler_widget_class_init (
-  MidiRulerWidgetClass * klass)
+editor_ruler_widget_class_init (
+  EditorRulerWidgetClass * klass)
 {
 }
 
 static void
-midi_ruler_widget_init (
-  MidiRulerWidget * self)
+editor_ruler_widget_init (
+  EditorRulerWidget * self)
 {
   RULER_WIDGET_GET_PRIVATE (self);
 
   g_signal_connect (
     G_OBJECT (rw_prv->bg), "draw",
-    G_CALLBACK (midi_ruler_draw_cb), self);
+    G_CALLBACK (editor_ruler_draw_cb), self);
 
   /* add all the markers */
   RulerWidget * ruler =

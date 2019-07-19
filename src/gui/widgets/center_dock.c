@@ -24,9 +24,9 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/left_dock_edge.h"
-#include "gui/widgets/midi_ruler.h"
-#include "gui/widgets/piano_roll.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/pinned_tracklist.h"
@@ -85,7 +85,8 @@ on_pinned_timeline_scroll_allocate (
 }
 
 void
-center_dock_widget_setup (CenterDockWidget * self)
+center_dock_widget_setup (
+  CenterDockWidget * self)
 {
 
   tracklist_widget_setup (
@@ -124,7 +125,7 @@ center_dock_widget_setup (CenterDockWidget * self)
   ruler_widget_refresh (
     Z_RULER_WIDGET (MW_RULER));
   ruler_widget_refresh (
-    Z_RULER_WIDGET (MIDI_RULER));
+    Z_RULER_WIDGET (EDITOR_RULER));
 
   /* setup timeline */
   arranger_widget_setup (

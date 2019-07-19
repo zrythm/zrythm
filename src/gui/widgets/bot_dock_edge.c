@@ -24,7 +24,6 @@
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/modulator_view.h"
-#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/rack.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"

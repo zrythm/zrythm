@@ -334,28 +334,27 @@ ui_px_to_pos_timeline (
  * Converts from pixels to frames.
  *
  * Returns the frames.
+ *
+ * @param has_padding Whether then given px contains
+ *   padding.
  */
 long
-ui_px_to_frames_timeline (double   px,
-                 int   has_padding); ///< whether the given px contain padding
+ui_px_to_frames_timeline (
+  double px,
+  int    has_padding);
 
 /**
  * Converts from pixels to frames.
  *
  * Returns the frames.
- */
-long
-ui_px_to_frames_piano_roll (double   px,
-                 int   has_padding); ///< whether the given px contain padding
-
-/**
- * Converts from pixels to frames.
  *
- * Returns the frames.
+ * @param has_padding Whether then given px contains
+ *   padding.
  */
 long
-ui_px_to_frames_audio_clip_editor (double   px,
-                 int   has_padding); ///< whether the given px contain padding
+ui_px_to_frames_editor (
+  double px,
+  int    has_padding);
 
 /**
  * Converts position to px, optionally adding the ruler
@@ -371,26 +370,7 @@ ui_pos_to_px_timeline (
  * padding.
  */
 int
-ui_pos_to_px_piano_roll (
-  Position * pos,
-  int        use_padding);
-
-/**
- * Converts position to px, optionally adding the ruler
- * padding.
- */
-int
-ui_pos_to_px_audio_clip_editor (
-  Position *       pos,
-  int              use_padding);
-
-int
-ui_pos_to_px_chord_editor (
-  Position * pos,
-  int        use_padding);
-
-int
-ui_pos_to_px_automation_editor (
+ui_pos_to_px_editor (
   Position * pos,
   int        use_padding);
 
@@ -398,18 +378,9 @@ ui_pos_to_px_automation_editor (
  * Converts from pixels to position.
  */
 void
-ui_px_to_pos_piano_roll (double               px,
+ui_px_to_pos_editor (double               px,
            Position *        pos,
            int               has_padding); ///< whether the given px contain padding
-
-/**
- * Converts from pixels to position.
- */
-void
-ui_px_to_pos_audio_clip_editor (
-  double               px,
-  Position *        pos,
-  int               has_padding); ///< whether the given px contain padding
 
 
 /**

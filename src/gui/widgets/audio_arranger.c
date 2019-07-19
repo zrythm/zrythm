@@ -29,18 +29,18 @@
 #include "audio/tracklist.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/audio_arranger.h"
-#include "gui/widgets/audio_clip_editor.h"
-#include "gui/widgets/audio_ruler.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_bg.h"
@@ -190,7 +190,7 @@ audio_arranger_widget_setup (
 {
   // set the size
   /*int ww, hh;*/
-  RULER_WIDGET_GET_PRIVATE (AUDIO_RULER);
+  RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
     rw_prv->total_px,

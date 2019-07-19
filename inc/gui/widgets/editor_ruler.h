@@ -23,20 +23,20 @@
  * MIDI ruler.
  */
 
-#ifndef __GUI_WIDGETS_MIDI_RULER_H__
-#define __GUI_WIDGETS_MIDI_RULER_H__
+#ifndef __GUI_WIDGETS_EDITOR_RULER_H__
+#define __GUI_WIDGETS_EDITOR_RULER_H__
 
 #include "gui/widgets/ruler.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
-#define MIDI_RULER_WIDGET_TYPE \
-  (midi_ruler_widget_get_type ())
+#define EDITOR_RULER_WIDGET_TYPE \
+  (editor_ruler_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  MidiRulerWidget,
-  midi_ruler_widget,
-  Z, MIDI_RULER_WIDGET,
+  EditorRulerWidget,
+  editor_ruler_widget,
+  Z, EDITOR_RULER_WIDGET,
   RulerWidget)
 
 /**
@@ -45,11 +45,11 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MIDI_RULER MW_PIANO_ROLL->ruler
+#define EDITOR_RULER MW_CLIP_EDITOR_INNER->ruler
 
 typedef struct _RulerMarkerWidget RulerMarkerWidget;
 
-typedef struct _MidiRulerWidget
+typedef struct _EditorRulerWidget
 {
   RulerWidget         parent_instance;
 
@@ -61,18 +61,18 @@ typedef struct _MidiRulerWidget
   RulerMarkerWidget *      clip_start;
 
   int                      range1_first; ///< range1 was before range2 at drag start
-} MidiRulerWidget;
+} EditorRulerWidget;
 
 void
-midi_ruler_widget_refresh ();
+editor_ruler_widget_refresh ();
 
 /**
  * Called when allocating the children of the
  * RulerWidget to allocate the RulerMarkerWidget.
  */
 void
-midi_ruler_widget_set_ruler_marker_position (
-  MidiRulerWidget *   self,
+editor_ruler_widget_set_ruler_marker_position (
+  EditorRulerWidget *   self,
   RulerMarkerWidget * rm,
   GtkAllocation *     allocation);
 

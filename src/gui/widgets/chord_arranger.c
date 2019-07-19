@@ -60,7 +60,6 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_region.h"
-#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/region.h"
@@ -111,7 +110,7 @@ chord_arranger_widget_set_allocation (
         0, 0, &wx, &wy);
 
       allocation->x =
-        ui_pos_to_px_chord_editor (
+        ui_pos_to_px_editor (
           &co->pos, 1);
       char * chord_str =
         chord_descriptor_to_string (co->descr);

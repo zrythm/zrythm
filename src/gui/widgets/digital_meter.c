@@ -30,7 +30,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"

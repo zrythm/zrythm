@@ -30,7 +30,6 @@
 #include "audio/channel.h"
 #include "gui/backend/piano_roll.h"
 #include "audio/track.h"
-#include "gui/widgets/piano_roll.h"
 #include "project.h"
 
 DRUM_LABELS;

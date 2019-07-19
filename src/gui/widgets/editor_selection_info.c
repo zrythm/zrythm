@@ -21,19 +21,19 @@
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/midi_note.h"
-#include "gui/widgets/piano_roll_selection_info.h"
+#include "gui/widgets/editor_selection_info.h"
 #include "gui/widgets/selection_info.h"
 
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  PianoRollSelectionInfoWidget,
-  piano_roll_selection_info_widget,
+  EditorSelectionInfoWidget,
+  editor_selection_info_widget,
   GTK_TYPE_STACK)
 
 void
-piano_roll_selection_info_widget_refresh (
-  PianoRollSelectionInfoWidget * self,
+editor_selection_info_widget_refresh (
+  EditorSelectionInfoWidget * self,
   MidiArrangerSelections * mas)
 {
   GtkWidget * fo =
@@ -71,8 +71,8 @@ piano_roll_selection_info_widget_refresh (
 }
 
 static void
-piano_roll_selection_info_widget_class_init (
-  PianoRollSelectionInfoWidgetClass * _klass)
+editor_selection_info_widget_class_init (
+  EditorSelectionInfoWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
@@ -80,8 +80,8 @@ piano_roll_selection_info_widget_class_init (
 }
 
 static void
-piano_roll_selection_info_widget_init (
-  PianoRollSelectionInfoWidget * self)
+editor_selection_info_widget_init (
+  EditorSelectionInfoWidget * self)
 {
   self->no_selection_label =
     GTK_LABEL (

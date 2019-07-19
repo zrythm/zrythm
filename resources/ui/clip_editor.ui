@@ -25,36 +25,31 @@
   <template class="ClipEditorWidget" parent="GtkStack">
     <property name="visible">True</property>
     <child>
-      <object class="AudioClipEditorWidget" id="audio_clip_editor">
-        <property name="visible">1</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkLabel" id="no_selection_label">
         <property name="visible">1</property>
         <property name="label">No clip selected</property>
       </object>
     </child>
     <child>
-      <object class="GtkBox" id="piano_roll_box">
+      <object class="GtkBox" id="main_box">
         <property name="visible">1</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="PianoRollSelectionInfoWidget"
-            id="piano_roll_selections">
+          <object class="EditorSelectionInfoWidget"
+            id="editor_selections">
             <property name="visible">1</property>
             <property name="vexpand">0</property>
           </object>
         </child>
         <child>
-          <object class="PianoRollToolbarWidget"
-            id="piano_roll_toolbar">
+          <object class="EditorToolbarWidget"
+            id="editor_toolbar">
             <property name="visible">1</property>
             <property name="vexpand">0</property>
           </object>
         </child>
         <child>
-          <object class="PianoRollWidget" id="piano_roll">
+          <object class="ClipEditorInnerWidget" id="clip_editor_inner">
             <property name="visible">1</property>
           </object>
         </child>

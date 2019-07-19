@@ -14,27 +14,33 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Audio clip editor, to be used in place of the
- * piano roll when an audio clip/region is selected.
- */
-
+#include "audio/channel.h"
+#include "audio/region.h"
+#include "audio/track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/audio_editor_space.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/color_area.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/audio_arranger.h"
-#include "gui/widgets/audio_clip_editor.h"
-#include "gui/widgets/audio_ruler.h"
-#include "gui/widgets/piano_roll.h"
+#include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/ruler.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (AudioClipEditorWidget,
-               audio_clip_editor_widget,
-               GTK_TYPE_GRID)
+#include <glib/gi18n.h>
+
+G_DEFINE_TYPE (
+  AudioEditorSpaceWidget,
+  audio_editor_space_widget,
+  GTK_TYPE_BOX)
 
 /**
  * Links scroll windows after all widgets have been
@@ -42,13 +48,13 @@ G_DEFINE_TYPE (AudioClipEditorWidget,
  */
 static void
 link_scrolls (
-  AudioClipEditorWidget * self)
+  AudioEditorSpaceWidget * self)
 {
   /* link ruler h scroll to arranger h scroll */
-  if (self->ruler_scroll)
+  if (MW_CLIP_EDITOR_INNER->ruler_scroll)
     {
       gtk_scrolled_window_set_hadjustment (
-        self->ruler_scroll,
+        MW_CLIP_EDITOR_INNER->ruler_scroll,
         gtk_scrolled_window_get_hadjustment (
           GTK_SCROLLED_WINDOW (
             self->arranger_scroll)));
@@ -56,12 +62,15 @@ link_scrolls (
 }
 
 void
-audio_clip_editor_widget_setup (
-  AudioClipEditorWidget * self,
-  AudioClipEditor *       ace)
+audio_editor_space_widget_refresh (
+  AudioEditorSpaceWidget * self)
 {
-  self->audio_clip_editor = ace;
+}
 
+void
+audio_editor_space_widget_setup (
+  AudioEditorSpaceWidget * self)
+{
   if (self->arranger)
     {
       arranger_widget_setup (
@@ -75,60 +84,32 @@ audio_clip_editor_widget_setup (
 }
 
 static void
-audio_clip_editor_widget_init (
-  AudioClipEditorWidget * self)
+audio_editor_space_widget_init (AudioEditorSpaceWidget * self)
 {
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      AUDIO_RULER_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      AUDIO_ARRANGER_WIDGET_TYPE, NULL)));
+  g_type_ensure (AUDIO_ARRANGER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }
 
 static void
-audio_clip_editor_widget_class_init (
-  AudioClipEditorWidgetClass * _klass)
+audio_editor_space_widget_class_init (
+  AudioEditorSpaceWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass, "audio_clip_editor.ui");
-
-  gtk_widget_class_set_css_name (
-    klass, "audio-clip-editor");
+    klass,
+    "audio_editor_space.ui");
 
   gtk_widget_class_bind_template_child (
     klass,
-    AudioClipEditorWidget,
-    track_name);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AudioClipEditorWidget,
-    color_bar);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AudioClipEditorWidget,
-    ruler_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AudioClipEditorWidget,
-    ruler_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AudioClipEditorWidget,
-    ruler);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AudioClipEditorWidget,
+    AudioEditorSpaceWidget,
     arranger_scroll);
   gtk_widget_class_bind_template_child (
     klass,
-    AudioClipEditorWidget,
+    AudioEditorSpaceWidget,
     arranger_viewport);
   gtk_widget_class_bind_template_child (
     klass,
-    AudioClipEditorWidget,
+    AudioEditorSpaceWidget,
     arranger);
 }

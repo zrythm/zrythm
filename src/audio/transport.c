@@ -33,7 +33,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/top_bar.h"
@@ -90,7 +90,7 @@ transport_init (Transport * self,
       position_set_to_bar (&self->start_marker_pos, 1);
       position_set_to_bar (&self->end_marker_pos, 128);
       position_set_to_bar (&self->loop_start_pos, 1);
-      position_set_to_bar (&self->loop_end_pos, 8);
+      position_set_to_bar (&self->loop_end_pos, 5);
 
       self->loop = 1;
 

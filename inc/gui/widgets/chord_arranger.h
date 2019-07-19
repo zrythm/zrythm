@@ -23,7 +23,6 @@
 #include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/piano_roll.h"
 #include "audio/position.h"
 
 #include <gtk/gtk.h>

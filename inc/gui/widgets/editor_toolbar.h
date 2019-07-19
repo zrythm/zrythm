@@ -22,20 +22,20 @@
 
 #include <gtk/gtk.h>
 
-#define PIANO_ROLL_TOOLBAR_WIDGET_TYPE \
-  (piano_roll_toolbar_widget_get_type ())
+#define EDITOR_TOOLBAR_WIDGET_TYPE \
+  (editor_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  PianoRollToolbarWidget,
-  piano_roll_toolbar_widget,
-  Z, PIANO_ROLL_TOOLBAR_WIDGET,
+  EditorToolbarWidget,
+  editor_toolbar_widget,
+  Z, EDITOR_TOOLBAR_WIDGET,
   GtkToolbar)
 
 /**
  * \file
  */
 
-#define MW_PIANO_ROLL_TOOLBAR \
-  MW_CLIP_EDITOR->piano_roll_toolbar
+#define MW_EDITOR_TOOLBAR \
+  MW_CLIP_EDITOR->editor_toolbar
 
 typedef struct _ToolboxWidget ToolboxWidget;
 typedef struct _QuantizeMbWidget QuantizeMbWidget;
@@ -44,15 +44,15 @@ typedef struct _SnapGridWidget SnapGridWidget;
 /**
  * The PianoRoll toolbar in the top.
  */
-typedef struct _PianoRollToolbarWidget
+typedef struct _EditorToolbarWidget
 {
   GtkToolbar         parent_instance;
   GtkComboBoxText * chord_highlighting;
   SnapGridWidget           * snap_grid_midi;
-} PianoRollToolbarWidget;
+} EditorToolbarWidget;
 
 void
-piano_roll_toolbar_widget_setup (
-  PianoRollToolbarWidget * self);
+editor_toolbar_widget_setup (
+  EditorToolbarWidget * self);
 
 #endif

@@ -29,16 +29,15 @@
 #include "audio/position.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/audio_clip_editor.h"
-#include "gui/widgets/audio_ruler.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/ruler_range.h"
@@ -74,22 +73,16 @@ G_DEFINE_TYPE_WITH_PRIVATE (RulerWidget,
  */
 #define GET_RULER_ALIASES(self) \
   TimelineRulerWidget * timeline_ruler = NULL; \
-  MidiRulerWidget *     midi_ruler = NULL; \
-  AudioRulerWidget *    audio_ruler = NULL; \
+  EditorRulerWidget *     editor_ruler = NULL; \
   if (Z_IS_TIMELINE_RULER_WIDGET (self)) \
     { \
       timeline_ruler = \
         Z_TIMELINE_RULER_WIDGET (self); \
     } \
-  else if (Z_IS_MIDI_RULER_WIDGET (self)) \
+  else if (Z_IS_EDITOR_RULER_WIDGET (self)) \
     { \
-      midi_ruler = Z_MIDI_RULER_WIDGET (self); \
+      editor_ruler = Z_EDITOR_RULER_WIDGET (self); \
     } \
-  else if (Z_IS_AUDIO_RULER_WIDGET (self)) \
-    { \
-      audio_ruler = \
-        Z_AUDIO_RULER_WIDGET (self); \
-    }
 
 /**
  * Gets called to set the position/size of each overlayed widget.
@@ -121,14 +114,9 @@ get_child_position (GtkOverlay   *overlay,
           Z_TIMELINE_RULER_WIDGET (self),
           Z_RULER_MARKER_WIDGET (widget),
           allocation);
-      else if (midi_ruler)
-        midi_ruler_widget_set_ruler_marker_position (
-          Z_MIDI_RULER_WIDGET (self),
-          Z_RULER_MARKER_WIDGET (widget),
-          allocation);
-      else if (audio_ruler)
-        audio_ruler_widget_set_ruler_marker_position (
-          Z_AUDIO_RULER_WIDGET (self),
+      else if (editor_ruler)
+        editor_ruler_widget_set_ruler_marker_position (
+          Z_EDITOR_RULER_WIDGET (self),
           Z_RULER_MARKER_WIDGET (widget),
           allocation);
     }
@@ -323,10 +311,7 @@ multipress_pressed (
           position_set_to_pos (&TRANSPORT->cue_pos,
                                &pos);
         }
-      if (midi_ruler)
-        {
-        }
-      if (audio_ruler)
+      if (editor_ruler)
         {
         }
     }
@@ -387,9 +372,9 @@ drag_begin (GtkGestureDrag *      gesture,
             }
 
         }
-      else if (midi_ruler)
+      else if (editor_ruler)
         {
-          if (hit_marker == midi_ruler->loop_start)
+          if (hit_marker == editor_ruler->loop_start)
             {
               rw_prv->action =
                 UI_OVERLAY_ACTION_STARTING_MOVING;
@@ -397,7 +382,7 @@ drag_begin (GtkGestureDrag *      gesture,
                 RW_TARGET_LOOP_START;
             }
           else if (hit_marker ==
-                   midi_ruler->loop_end)
+                   editor_ruler->loop_end)
             {
               rw_prv->action =
                 UI_OVERLAY_ACTION_STARTING_MOVING;
@@ -405,33 +390,7 @@ drag_begin (GtkGestureDrag *      gesture,
                 RW_TARGET_LOOP_END;
             }
           else if (hit_marker ==
-                   midi_ruler->clip_start)
-            {
-              rw_prv->action =
-                UI_OVERLAY_ACTION_STARTING_MOVING;
-              rw_prv->target =
-                RW_TARGET_CLIP_START;
-            }
-        }
-      else if (audio_ruler)
-        {
-          if (hit_marker == audio_ruler->loop_start)
-            {
-              rw_prv->action =
-                UI_OVERLAY_ACTION_STARTING_MOVING;
-              rw_prv->target =
-                RW_TARGET_LOOP_START;
-            }
-          else if (hit_marker ==
-                   audio_ruler->loop_end)
-            {
-              rw_prv->action =
-                UI_OVERLAY_ACTION_STARTING_MOVING;
-              rw_prv->target =
-                RW_TARGET_LOOP_END;
-            }
-          else if (hit_marker ==
-                   audio_ruler->clip_start)
+                   editor_ruler->clip_start)
             {
               rw_prv->action =
                 UI_OVERLAY_ACTION_STARTING_MOVING;
@@ -480,7 +439,7 @@ drag_update (GtkGestureDrag * gesture,
       gesture, offset_x, offset_y, timeline_ruler);
   /* handle x */
   /* if moving the selection */
-  else if ((midi_ruler || audio_ruler) &&
+  else if ((editor_ruler) &&
            rw_prv->action ==
              UI_OVERLAY_ACTION_MOVING)
     {
@@ -489,12 +448,8 @@ drag_update (GtkGestureDrag * gesture,
       Region * r = CLIP_EDITOR->region;
 
       /* convert px to position */
-      if (midi_ruler)
-        ui_px_to_pos_piano_roll (
-          rw_prv->start_x + offset_x,
-          &tmp, 1);
-      else if (audio_ruler)
-        ui_px_to_pos_audio_clip_editor (
+      if (editor_ruler)
+        ui_px_to_pos_editor (
           rw_prv->start_x + offset_x,
           &tmp, 1);
 
@@ -603,12 +558,7 @@ on_motion (GtkDrawingArea * da,
           "the top half to create a range "
           "selection (Use Shift to bypass "
           "snapping)");
-      else if (self == (RulerWidget *) MIDI_RULER)
-        bot_bar_change_status (
-          "Clip Editor Ruler - Click and drag on "
-          "a marker to change its position (Use "
-          "Shift to bypass snapping)");
-      else if (self == (RulerWidget *) AUDIO_RULER)
+      else if (self == (RulerWidget *) EDITOR_RULER)
         bot_bar_change_status (
           "Clip Editor Ruler - Click and drag on "
           "a marker to change its position (Use "
@@ -648,10 +598,8 @@ ruler_widget_refresh (RulerWidget * self)
 
   if (timeline_ruler)
     timeline_ruler_widget_refresh ();
-  else if (midi_ruler)
-    midi_ruler_widget_refresh ();
-  else if (audio_ruler)
-    audio_ruler_widget_refresh ();
+  else if (editor_ruler)
+    editor_ruler_widget_refresh ();
 }
 
 /**

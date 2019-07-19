@@ -25,12 +25,13 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
-#include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/ruler.h"
-#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/tracklist.h"
 
@@ -70,7 +71,7 @@ midi_arranger_draw_cb (
 
   /* px per key adjusted for border width */
   double adj_px_per_key =
-    MW_PIANO_ROLL->px_per_key + 1;
+    MW_MIDI_EDITOR_SPACE->px_per_key + 1;
   /*double adj_total_key_px =*/
     /*MW_PIANO_ROLL->total_key_px + 126;*/
 

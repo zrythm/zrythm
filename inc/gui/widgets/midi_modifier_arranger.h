@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (MidiModifierArrangerWidget,
                       ArrangerWidget)
 
 #define MIDI_MODIFIER_ARRANGER \
-  MW_PIANO_ROLL->modifier_arranger
+  MW_MIDI_EDITOR_SPACE->modifier_arranger
 
 typedef struct Velocity Velocity;
 typedef struct _VelocityWidget VelocityWidget;

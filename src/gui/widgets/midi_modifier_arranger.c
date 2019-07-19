@@ -24,7 +24,9 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/ruler.h"
@@ -239,13 +241,13 @@ midi_modifier_arranger_widget_ramp (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   Position selection_start_pos, selection_end_pos;
-  ui_px_to_pos_piano_roll (
+  ui_px_to_pos_editor (
     ar_prv->start_x,
     offset_x >= 0 ?
       &selection_start_pos :
       &selection_end_pos,
     F_PADDING);
-  ui_px_to_pos_piano_roll (
+  ui_px_to_pos_editor (
     ar_prv->start_x + offset_x,
     offset_x >= 0 ?
       &selection_end_pos :
@@ -280,7 +282,7 @@ midi_modifier_arranger_widget_ramp (
       midi_note_get_global_start_pos (
         vel->midi_note, &start_pos);
       px =
-        ui_pos_to_px_piano_roll (
+        ui_pos_to_px_editor (
           &start_pos, F_PADDING);
 
       x1 = ar_prv->start_x;
@@ -434,13 +436,13 @@ midi_modifier_arranger_widget_on_drag_end (
       {
         Position selection_start_pos,
                  selection_end_pos;
-        ui_px_to_pos_piano_roll (
+        ui_px_to_pos_editor (
           ar_prv->start_x,
           ar_prv->last_offset_x >= 0 ?
             &selection_start_pos :
             &selection_end_pos,
           F_PADDING);
-        ui_px_to_pos_piano_roll (
+        ui_px_to_pos_editor (
           ar_prv->start_x + ar_prv->last_offset_x,
           ar_prv->last_offset_x >= 0 ?
             &selection_end_pos :

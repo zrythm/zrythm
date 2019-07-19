@@ -30,7 +30,6 @@
 #include "audio/channel.h"
 #include "gui/backend/audio_clip_editor.h"
 #include "audio/track.h"
-#include "gui/widgets/audio_clip_editor.h"
 #include "project.h"
 
 void

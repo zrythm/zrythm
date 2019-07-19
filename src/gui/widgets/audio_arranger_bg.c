@@ -29,9 +29,6 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_arranger_bg.h"
-#include "gui/widgets/audio_ruler.h"
-#include "gui/widgets/ruler.h"
-#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/cairo.h"
@@ -68,7 +65,7 @@ draw_audio_clip (GtkWidget * self,
       GTK_WIDGET (self));
 
   long frame_interval =
-    ui_px_to_frames_audio_clip_editor (ar->channels, 0);
+    ui_px_to_frames_editor (ar->channels, 0);
 
   long prev_frames = 0;
   for (double i = SPACE_BEFORE_START_D;

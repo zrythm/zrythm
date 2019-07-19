@@ -28,21 +28,19 @@
 
 #define CLIP_EDITOR_WIDGET_TYPE \
   (clip_editor_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ClipEditorWidget,
-                      clip_editor_widget,
-                      Z,
-                      CLIP_EDITOR_WIDGET,
-                      GtkStack)
+G_DECLARE_FINAL_TYPE (
+  ClipEditorWidget,
+  clip_editor_widget,
+  Z, CLIP_EDITOR_WIDGET,
+  GtkStack)
 
 #define MW_CLIP_EDITOR MW_BOT_DOCK_EDGE->clip_editor
-#define MW_PIANO_ROLL_BOX \
-  MW_CLIP_EDITOR->piano_roll_box
 
-typedef struct _PianoRollWidget PianoRollWidget;
-typedef struct _PianoRollSelectionInfoWidget
-  PianoRollSelectionInfoWidget;
-typedef struct _PianoRollToolbarWidget
-  PianoRollToolbarWidget;
+typedef struct _ClipEditorInnerWidget ClipEditorInnerWidget;
+typedef struct _EditorSelectionInfoWidget
+  EditorSelectionInfoWidget;
+typedef struct _EditorToolbarWidget
+  EditorToolbarWidget;
 typedef struct _AudioClipEditorWidget
   AudioClipEditorWidget;
 typedef struct ClipEditor ClipEditor;
@@ -50,26 +48,22 @@ typedef struct ClipEditor ClipEditor;
 /**
  * The ClipEditorWidget shows in the Clip Editor /
  * Piano Roll tab of the bottom panel, and is a stack
- * of PianoRollWidget for the piano roll and
+ * of ClipEditorInnerWidget for the piano roll and
  * AudioClipEditorWidget for audio regions.
  */
 typedef struct _ClipEditorWidget
 {
-  GtkStack                 parent_instance;
-  GtkBox *                 piano_roll_box;
-  PianoRollSelectionInfoWidget * piano_roll_selections;
-  PianoRollToolbarWidget * piano_roll_toolbar;
-  PianoRollWidget *        piano_roll;
-  AudioClipEditorWidget *  audio_clip_editor;
-  GtkLabel *               no_selection_label;
+  GtkBox                  parent_instance;
 
-  /** Backend. */
-  ClipEditor *             clip_editor;
+  GtkBox *                main_box;
+  EditorSelectionInfoWidget * editor_selections;
+  EditorToolbarWidget *   editor_toolbar;
+  ClipEditorInnerWidget * clip_editor_inner;
+  GtkLabel *              no_selection_label;
 } ClipEditorWidget;
 
 void
 clip_editor_widget_setup (
-  ClipEditorWidget * self,
-  ClipEditor *       clip_editor);
+  ClipEditorWidget * self);
 
 #endif

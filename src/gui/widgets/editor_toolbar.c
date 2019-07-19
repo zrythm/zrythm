@@ -21,7 +21,7 @@
 #include "actions/undoable_action.h"
 #include "gui/accel.h"
 #include "gui/backend/events.h"
-#include "gui/widgets/piano_roll_toolbar.h"
+#include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/snap_grid.h"
 #include "project.h"
@@ -31,14 +31,14 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (PianoRollToolbarWidget,
-               piano_roll_toolbar_widget,
+G_DEFINE_TYPE (EditorToolbarWidget,
+               editor_toolbar_widget,
                GTK_TYPE_TOOLBAR)
 
 static void
 on_highlighting_changed (
   GtkComboBox *widget,
-  PianoRollToolbarWidget * self)
+  EditorToolbarWidget * self)
 {
   piano_roll_set_highlighting (
     PIANO_ROLL,
@@ -46,8 +46,8 @@ on_highlighting_changed (
 }
 
 void
-piano_roll_toolbar_widget_setup (
-  PianoRollToolbarWidget * self)
+editor_toolbar_widget_setup (
+  EditorToolbarWidget * self)
 {
   /* setup bot toolbar */
   snap_grid_widget_setup (
@@ -68,8 +68,8 @@ piano_roll_toolbar_widget_setup (
 }
 
 static void
-piano_roll_toolbar_widget_init (
-  PianoRollToolbarWidget * self)
+editor_toolbar_widget_init (
+  EditorToolbarWidget * self)
 {
   g_type_ensure (SNAP_GRID_WIDGET_TYPE);
 
@@ -84,21 +84,21 @@ piano_roll_toolbar_widget_init (
 }
 
 static void
-piano_roll_toolbar_widget_class_init (PianoRollToolbarWidgetClass * _klass)
+editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass, "piano_roll_toolbar.ui");
+    klass, "editor_toolbar.ui");
 
   gtk_widget_class_set_css_name (
-    klass, "piano-roll-toolbar");
+    klass, "editor-toolbar");
 
   gtk_widget_class_bind_template_child (
     klass,
-    PianoRollToolbarWidget,
+    EditorToolbarWidget,
     chord_highlighting);
   gtk_widget_class_bind_template_child (
     klass,
-    PianoRollToolbarWidget,
+    EditorToolbarWidget,
     snap_grid_midi);
 }

@@ -23,7 +23,6 @@
 #include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/piano_roll.h"
 #include "audio/position.h"
 
 #include <gtk/gtk.h>
@@ -36,7 +35,7 @@ G_DECLARE_FINAL_TYPE (MidiArrangerWidget,
                       MIDI_ARRANGER_WIDGET,
                       ArrangerWidget)
 
-#define MIDI_ARRANGER MW_PIANO_ROLL->arranger
+#define MIDI_ARRANGER MW_MIDI_EDITOR_SPACE->arranger
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;

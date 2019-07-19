@@ -29,7 +29,6 @@
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_arranger_bg.h"
 #include "gui/widgets/ruler.h"
-#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/tracklist.h"
 

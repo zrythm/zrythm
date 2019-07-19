@@ -26,9 +26,10 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/piano_roll_key.h"
-#include "gui/widgets/piano_roll.h"
 #include "project.h"
 
 #include <gtk/gtk.h>
@@ -141,8 +142,8 @@ on_leave (GtkWidget *widget,
           GdkEvent  *event,
           PianoRollKeyWidget * self)
 {
-  if (MW_PIANO_ROLL->note_pressed &&
-      !MW_PIANO_ROLL->note_released)
+  if (MW_MIDI_EDITOR_SPACE->note_pressed &&
+      !MW_MIDI_EDITOR_SPACE->note_released)
     {
       send_note_event (self, 0);
     }
@@ -154,8 +155,8 @@ on_enter (GtkWidget *widget,
           GdkEvent  *event,
           PianoRollKeyWidget * self)
 {
-  if (MW_PIANO_ROLL->note_pressed &&
-      !MW_PIANO_ROLL->note_released)
+  if (MW_MIDI_EDITOR_SPACE->note_pressed &&
+      !MW_MIDI_EDITOR_SPACE->note_released)
     {
       send_note_event (self, 1);
     }
@@ -170,8 +171,8 @@ on_released (
   gdouble               y,
   PianoRollKeyWidget *  self)
 {
-  MW_PIANO_ROLL->note_pressed = 0;
-  MW_PIANO_ROLL->note_released = 1;
+  MW_MIDI_EDITOR_SPACE->note_pressed = 0;
+  MW_MIDI_EDITOR_SPACE->note_released = 1;
   send_note_event (self, 0);
 }
 
@@ -183,8 +184,8 @@ on_pressed (
   gdouble               y,
   PianoRollKeyWidget *  self)
 {
-  MW_PIANO_ROLL->note_pressed = 1;
-  MW_PIANO_ROLL->note_released = 0;
+  MW_MIDI_EDITOR_SPACE->note_pressed = 1;
+  MW_MIDI_EDITOR_SPACE->note_released = 0;
   send_note_event (self, 1);
 }
 
@@ -206,7 +207,8 @@ piano_roll_key_widget_new (
     GTK_WIDGET (self), 1);
 
   gtk_widget_set_size_request (
-    GTK_WIDGET (self), 48, MW_PIANO_ROLL->px_per_key);
+    GTK_WIDGET (self), 48,
+    MW_MIDI_EDITOR_SPACE->px_per_key);
 
   return self;
 }

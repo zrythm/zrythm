@@ -23,7 +23,9 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/timeline_arranger.h"
 

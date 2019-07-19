@@ -21,7 +21,6 @@
 #define __GUI_WIDGETS_ARRANGER_H__
 
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/piano_roll.h"
 #include "audio/position.h"
 #include "utils/ui.h"
 

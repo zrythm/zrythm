@@ -18,12 +18,10 @@
  */
 
 #include "gui/backend/clip_editor.h"
-#include "gui/widgets/audio_clip_editor.h"
-#include "gui/widgets/audio_ruler.h"
 #include "gui/widgets/clip_editor.h"
-#include "gui/widgets/piano_roll.h"
-#include "gui/widgets/piano_roll_selection_info.h"
-#include "gui/widgets/piano_roll_toolbar.h"
+#include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/editor_selection_info.h"
+#include "gui/widgets/editor_toolbar.h"
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (ClipEditorWidget,
@@ -32,17 +30,10 @@ G_DEFINE_TYPE (ClipEditorWidget,
 
 void
 clip_editor_widget_setup (
-  ClipEditorWidget * self,
-  ClipEditor *       clip_editor)
+  ClipEditorWidget * self)
 {
-  self->clip_editor = clip_editor;
-
-  piano_roll_widget_setup (
-    self->piano_roll,
-    &clip_editor->piano_roll);
-  audio_clip_editor_widget_setup (
-    self->audio_clip_editor,
-    &clip_editor->audio_clip_editor);
+  clip_editor_inner_widget_setup (
+    self->clip_editor_inner);
 
   gtk_stack_set_visible_child (
     GTK_STACK (self),
@@ -52,10 +43,9 @@ clip_editor_widget_setup (
 static void
 clip_editor_widget_init (ClipEditorWidget * self)
 {
-  g_type_ensure (PIANO_ROLL_WIDGET_TYPE);
-  g_type_ensure (AUDIO_CLIP_EDITOR_WIDGET_TYPE);
-  g_type_ensure (PIANO_ROLL_SELECTION_INFO_WIDGET_TYPE);
-  g_type_ensure (PIANO_ROLL_TOOLBAR_WIDGET_TYPE);
+  g_type_ensure (CLIP_EDITOR_INNER_WIDGET_TYPE);
+  g_type_ensure (EDITOR_SELECTION_INFO_WIDGET_TYPE);
+  g_type_ensure (EDITOR_TOOLBAR_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }
@@ -74,23 +64,19 @@ clip_editor_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     ClipEditorWidget,
-    piano_roll_box);
+    main_box);
   gtk_widget_class_bind_template_child (
     klass,
     ClipEditorWidget,
-    piano_roll_selections);
+    editor_selections);
   gtk_widget_class_bind_template_child (
     klass,
     ClipEditorWidget,
-    piano_roll_toolbar);
+    editor_toolbar);
   gtk_widget_class_bind_template_child (
     klass,
     ClipEditorWidget,
-    piano_roll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorWidget,
-    audio_clip_editor);
+    clip_editor_inner);
   gtk_widget_class_bind_template_child (
     klass,
     ClipEditorWidget,

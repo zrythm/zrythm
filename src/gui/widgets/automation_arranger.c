@@ -61,7 +61,6 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_region.h"
-#include "gui/widgets/piano_roll.h"
 #include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/region.h"
@@ -115,8 +114,9 @@ automation_arranger_widget_set_allocation (
         0, 0, &wx, &wy);
 
       allocation->x =
-        ui_pos_to_px_automation_editor (&ap->pos, 1) -
-        AP_WIDGET_POINT_SIZE / 2;
+        ui_pos_to_px_editor (
+          &ap->pos, 1) -
+          AP_WIDGET_POINT_SIZE / 2;
       allocation->y =
         (wy + automation_point_get_y_in_px (ap)) -
         AP_WIDGET_POINT_SIZE / 2;
@@ -148,7 +148,7 @@ automation_arranger_widget_set_allocation (
         g_return_if_reached ();
 
       allocation->x =
-        ui_pos_to_px_automation_editor (
+        ui_pos_to_px_editor (
           &prev_ap->pos,
           1) - AC_Y_HALF_PADDING;
       int prev_y =
@@ -159,7 +159,7 @@ automation_arranger_widget_set_allocation (
         (wy + (prev_y > next_y ? next_y : prev_y) -
          AC_Y_HALF_PADDING);
       allocation->width =
-        (ui_pos_to_px_automation_editor (
+        (ui_pos_to_px_editor (
           &next_ap->pos,
           1) - allocation->x) + AC_Y_HALF_PADDING;
       allocation->height =

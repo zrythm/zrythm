@@ -33,14 +33,14 @@
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/arranger_playhead.h"
 #include "gui/widgets/audio_arranger.h"
-#include "gui/widgets/audio_clip_editor.h"
-#include "gui/widgets/audio_ruler.h"
+#include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/header_notebook.h"
@@ -51,10 +51,11 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
-#include "gui/widgets/midi_ruler.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/modulator_view.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/piano_roll_selection_info.h"
+#include "gui/widgets/editor_selection_info.h"
 #include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
@@ -101,13 +102,13 @@ on_playhead_changed ()
           gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
         }
-      if (MW_PIANO_ROLL)
+      if (EDITOR_RULER)
         {
-          if (MIDI_RULER)
-            {
-              gtk_widget_queue_allocate (
-                GTK_WIDGET (MIDI_RULER));
-            }
+          gtk_widget_queue_allocate (
+            GTK_WIDGET (EDITOR_RULER));
+        }
+      if (MW_MIDI_EDITOR_SPACE)
+        {
           if (MIDI_ARRANGER)
             {
               /*gtk_widget_queue_allocate (*/
@@ -118,40 +119,40 @@ on_playhead_changed ()
               /*gtk_widget_queue_allocate (*/
                 /*GTK_WIDGET (MIDI_MODIFIER_ARRANGER));*/
             }
-          piano_roll_widget_refresh_labels (
-            MW_PIANO_ROLL, 0);
+          midi_editor_space_widget_refresh_labels (
+            MW_MIDI_EDITOR_SPACE, 0);
         }
-      if (MW_AUDIO_CLIP_EDITOR)
-        {
-          if (AUDIO_RULER)
-            gtk_widget_queue_allocate (
-              GTK_WIDGET (AUDIO_RULER));
-          if (AUDIO_ARRANGER)
-            {
-              /*ARRANGER_WIDGET_GET_PRIVATE (*/
-                /*AUDIO_ARRANGER);*/
-              /*g_object_ref (ar_prv->playhead);*/
-              /*gtk_container_remove (*/
-                /*AUDIO_ARRANGER,*/
-                /*ar_prv->playhead);*/
-              /*gtk_overlay_add_overlay (*/
-                /*AUDIO_ARRANGER,*/
-                /*ar_prv->playhead);*/
-              /*g_object_unref (ar_prv->playhead);*/
-              /*gtk_widget_queue_draw (*/
-                /*GTK_WIDGET (ar_prv->playhead));*/
-              /*gtk_widget_queue_allocate (*/
-                /*GTK_WIDGET (ar_prv->playhead));*/
+      /*if (MW_AUDIO_CLIP_EDITOR)*/
+        /*{*/
+          /*if (AUDIO_RULER)*/
             /*gtk_widget_queue_allocate (*/
-              /*GTK_WIDGET (AUDIO_ARRANGER));*/
-            /*arranger_widget_refresh (*/
-              /*Z_ARRANGER_WIDGET (AUDIO_ARRANGER));*/
-            /*gtk_widget_queue_resize (AUDIO_ARRANGER);*/
-            /*gtk_widget_queue_draw (AUDIO_ARRANGER);*/
-              gtk_widget_queue_allocate (
-                GTK_WIDGET (AUDIO_ARRANGER));
-            }
-        }
+              /*GTK_WIDGET (AUDIO_RULER));*/
+          /*if (AUDIO_ARRANGER)*/
+            /*{*/
+              /*[>ARRANGER_WIDGET_GET_PRIVATE (<]*/
+                /*[>AUDIO_ARRANGER);<]*/
+              /*[>g_object_ref (ar_prv->playhead);<]*/
+              /*[>gtk_container_remove (<]*/
+                /*[>AUDIO_ARRANGER,<]*/
+                /*[>ar_prv->playhead);<]*/
+              /*[>gtk_overlay_add_overlay (<]*/
+                /*[>AUDIO_ARRANGER,<]*/
+                /*[>ar_prv->playhead);<]*/
+              /*[>g_object_unref (ar_prv->playhead);<]*/
+              /*[>gtk_widget_queue_draw (<]*/
+                /*[>GTK_WIDGET (ar_prv->playhead));<]*/
+              /*[>gtk_widget_queue_allocate (<]*/
+                /*[>GTK_WIDGET (ar_prv->playhead));<]*/
+            /*[>gtk_widget_queue_allocate (<]*/
+              /*[>GTK_WIDGET (AUDIO_ARRANGER));<]*/
+            /*[>arranger_widget_refresh (<]*/
+              /*[>Z_ARRANGER_WIDGET (AUDIO_ARRANGER));<]*/
+            /*[>gtk_widget_queue_resize (AUDIO_ARRANGER);<]*/
+            /*[>gtk_widget_queue_draw (AUDIO_ARRANGER);<]*/
+              /*gtk_widget_queue_allocate (*/
+                /*GTK_WIDGET (AUDIO_ARRANGER));*/
+            /*}*/
+        /*}*/
     }
   /*aa = 1;*/
   return FALSE;
@@ -241,9 +242,9 @@ on_track_added (Track * track)
  * widths.
  */
 static int
-refresh_midi_ruler_and_arranger ()
+refresh_editor_ruler_and_arranger ()
 {
-  if (!ui_is_widget_revealed (MIDI_RULER))
+  if (!ui_is_widget_revealed (EDITOR_RULER))
     {
       g_usleep (1000);
       return TRUE;
@@ -251,8 +252,8 @@ refresh_midi_ruler_and_arranger ()
 
   /* ruler must be refreshed first to get the
    * correct px when calling ui_* functions */
-  midi_ruler_widget_refresh (
-    MIDI_RULER);
+  editor_ruler_widget_refresh (
+    EDITOR_RULER);
 
   /* remove all previous children and add new */
   arranger_widget_refresh (
@@ -274,7 +275,7 @@ refresh_midi_ruler_and_arranger ()
 static int
 refresh_audio_ruler_and_arranger ()
 {
-  if (!ui_is_widget_revealed (AUDIO_RULER))
+  if (!ui_is_widget_revealed (EDITOR_RULER))
     {
       g_usleep (1000);
       return TRUE;
@@ -282,7 +283,7 @@ refresh_audio_ruler_and_arranger ()
 
   /* ruler must be refreshed first to get the
    * correct px when calling ui_* functions */
-  audio_ruler_widget_refresh ();
+  editor_ruler_widget_refresh ();
 
   /* remove all previous children and add new */
 
@@ -300,39 +301,40 @@ on_clip_editor_region_changed ()
 
   if (r)
     {
+      gtk_stack_set_visible_child (
+        GTK_STACK (MW_CLIP_EDITOR),
+        GTK_WIDGET (MW_CLIP_EDITOR->main_box));
       if (r->type == REGION_TYPE_MIDI)
         {
           gtk_stack_set_visible_child (
-            GTK_STACK (MW_CLIP_EDITOR),
-            GTK_WIDGET (MW_PIANO_ROLL_BOX));
+            MW_CLIP_EDITOR_INNER->editor_stack,
+            GTK_WIDGET (MW_MIDI_EDITOR_SPACE));
 
           gtk_label_set_text (
-            MW_PIANO_ROLL->midi_name_label,
-            track_get_name (
-              r->lane->track));
+            MW_CLIP_EDITOR_INNER->track_name_label,
+            track_get_name (region_get_track(r)));
 
           color_area_widget_set_color (
-            MW_PIANO_ROLL->color_bar,
+            MW_CLIP_EDITOR_INNER->color_bar,
             &r->lane->track->color);
 
           g_idle_add (
-            refresh_midi_ruler_and_arranger,
+            refresh_editor_ruler_and_arranger,
             NULL);
         }
       else if (r->type == REGION_TYPE_AUDIO)
         {
           gtk_stack_set_visible_child (
-            GTK_STACK (MW_CLIP_EDITOR),
-            GTK_WIDGET (MW_AUDIO_CLIP_EDITOR));
+            MW_CLIP_EDITOR_INNER->editor_stack,
+            GTK_WIDGET (MW_AUDIO_EDITOR_SPACE));
 
           gtk_label_set_text (
-            MW_AUDIO_CLIP_EDITOR->track_name,
-            track_get_name (
-              r->lane->track));
+            MW_CLIP_EDITOR_INNER->track_name_label,
+            track_get_name (region_get_track(r)));
 
           color_area_widget_set_color (
-            MW_AUDIO_CLIP_EDITOR->color_bar,
-            &r->lane->track->color);
+            MW_CLIP_EDITOR_INNER->color_bar,
+            &(region_get_track (r)->color));
 
           g_idle_add (
             refresh_audio_ruler_and_arranger,
@@ -410,7 +412,7 @@ on_midi_note_selection_changed ()
   gtk_widget_queue_allocate (
     GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
 
-  piano_roll_selection_info_widget_refresh (
+  editor_selection_info_widget_refresh (
     MW_MAS_INFO, MA_SELECTIONS);
 }
 
@@ -770,20 +772,25 @@ events_process (void * data)
             arranger_widget_refresh (
               Z_ARRANGER_WIDGET (
                 MW_TIMELINE));
-          else if (ev->arg == MIDI_RULER)
+          else if (ev->arg == EDITOR_RULER)
             {
-              arranger_widget_refresh (
-                Z_ARRANGER_WIDGET (
-                  MIDI_ARRANGER));
-              arranger_widget_refresh (
-                Z_ARRANGER_WIDGET (
-                  MIDI_MODIFIER_ARRANGER));
-            }
-          else if (ev->arg == AUDIO_RULER)
-            {
-              arranger_widget_refresh (
-                Z_ARRANGER_WIDGET (
-                  AUDIO_ARRANGER));
+              if (gtk_widget_get_visible (
+                    GTK_WIDGET (MIDI_ARRANGER)))
+                {
+                  arranger_widget_refresh (
+                    Z_ARRANGER_WIDGET (
+                      MIDI_ARRANGER));
+                  arranger_widget_refresh (
+                    Z_ARRANGER_WIDGET (
+                      MIDI_MODIFIER_ARRANGER));
+                }
+              if (gtk_widget_get_visible (
+                    GTK_WIDGET (AUDIO_ARRANGER)))
+                {
+                  arranger_widget_refresh (
+                    Z_ARRANGER_WIDGET (
+                      AUDIO_ARRANGER));
+                }
             }
           break;
         case ET_CLIP_MARKER_POS_CHANGED:
@@ -845,7 +852,7 @@ events_process (void * data)
           ruler_widget_refresh (
             Z_RULER_WIDGET (MW_RULER));
           ruler_widget_refresh (
-            Z_RULER_WIDGET (MIDI_RULER));
+            Z_RULER_WIDGET (EDITOR_RULER));
           break;
         case ET_PLAYHEAD_POS_CHANGED:
           g_idle_add (on_playhead_changed,
@@ -912,7 +919,7 @@ events_process (void * data)
           ruler_widget_refresh (
             Z_RULER_WIDGET (MW_RULER));
           ruler_widget_refresh (
-            Z_RULER_WIDGET (MIDI_RULER));
+            Z_RULER_WIDGET (EDITOR_RULER));
           break;
         case ET_TRACK_STATE_CHANGED:
           on_track_state_changed (
@@ -953,9 +960,9 @@ events_process (void * data)
             MIDI_MODIFIER_ARRANGER);
           break;
         case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
-          if (MW_PIANO_ROLL)
-            piano_roll_widget_refresh_labels (
-              MW_PIANO_ROLL, 0);
+          if (MW_MIDI_EDITOR_SPACE)
+            midi_editor_space_widget_refresh_labels (
+              MW_MIDI_EDITOR_SPACE, 0);
           break;
         case ET_RULER_STATE_CHANGED:
           timeline_ruler_widget_refresh ();
@@ -994,7 +1001,8 @@ events_process (void * data)
             ((Channel *)ev->arg)->widget);
           break;
         case ET_DRUM_MODE_CHANGED:
-          piano_roll_widget_refresh (MW_PIANO_ROLL);
+          midi_editor_space_widget_refresh (
+            MW_MIDI_EDITOR_SPACE);
           break;
         case ET_MODULATOR_ADDED:
           on_modulator_added ((Modulator *)ev->arg);
@@ -1019,7 +1027,7 @@ events_process (void * data)
           gtk_widget_queue_draw (
             GTK_WIDGET (MW_RULER));
           gtk_widget_queue_draw (
-            GTK_WIDGET (MIDI_RULER));
+            GTK_WIDGET (EDITOR_RULER));
           break;
         case ET_MARKER_POSITIONS_CHANGED:
         case ET_CHORD_OBJECT_POSITIONS_CHANGED:
@@ -1030,9 +1038,9 @@ events_process (void * data)
           /* redraw midi ruler if region
            * positions were changed */
           gtk_widget_queue_allocate (
-            GTK_WIDGET (MIDI_RULER));
+            GTK_WIDGET (EDITOR_RULER));
           gtk_widget_queue_draw (
-            GTK_WIDGET (MIDI_RULER));
+            GTK_WIDGET (EDITOR_RULER));
           break;
         case ET_TIMELINE_OBJECTS_IN_TRANSIT:
           timeline_arranger_widget_refresh_children (
@@ -1040,8 +1048,8 @@ events_process (void * data)
           timeline_arranger_widget_refresh_children (
             MW_PINNED_TIMELINE);
           if (TL_SELECTIONS->num_regions > 0)
-            midi_ruler_widget_refresh (
-              MIDI_RULER);
+            editor_ruler_widget_refresh (
+              EDITOR_RULER);
           break;
         default:
           g_message ("event not implemented yet");

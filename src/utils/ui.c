@@ -21,15 +21,13 @@
 
 #include "audio/engine.h"
 #include "audio/pan.h"
-#include "gui/widgets/audio_clip_editor.h"
-#include "gui/widgets/audio_ruler.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_ruler.h"
-#include "gui/widgets/piano_roll.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
@@ -228,35 +226,15 @@ ui_px_to_pos_timeline (
  * this function and then change the sign.
  */
 void
-ui_px_to_pos_piano_roll (double               px,
+ui_px_to_pos_editor (double               px,
            Position *        pos,
            int               has_padding) ///< whether the given px include padding
 {
-  if (!MAIN_WINDOW || !MIDI_RULER)
+  if (!MAIN_WINDOW || !EDITOR_RULER)
     return;
 
   px_to_pos (px, pos, has_padding,
-             Z_RULER_WIDGET (MIDI_RULER));
-}
-
-/**
- * Converts from pixels to position.
- *
- * Only works with positive numbers. Negatives will be
- * clamped at 0. If a negative is needed, pass the abs to
- * this function and then change the sign.
- */
-void
-ui_px_to_pos_audio_clip_editor (
-  double               px,
-  Position *           pos,
-  int                  has_padding) ///< whether the given px include padding
-{
-  if (!MAIN_WINDOW || !AUDIO_RULER)
-    return;
-
-  px_to_pos (px, pos, has_padding,
-             Z_RULER_WIDGET (AUDIO_RULER));
+             Z_RULER_WIDGET (EDITOR_RULER));
 }
 
 static int
@@ -300,55 +278,17 @@ ui_pos_to_px_timeline (
  * piano_roll ruler.
  */
 int
-ui_pos_to_px_piano_roll (
+ui_pos_to_px_editor (
   Position *       pos,
   int              use_padding)
 {
-  if (!MAIN_WINDOW || !MIDI_RULER)
+  if (!MAIN_WINDOW || !EDITOR_RULER)
     return 0;
 
-  return pos_to_px (
-    pos, use_padding, Z_RULER_WIDGET (MIDI_RULER));
-}
-
-/**
- * Gets pixels from the position, based on the
- * piano_roll ruler.
- */
-int
-ui_pos_to_px_audio_clip_editor (
-  Position *       pos,
-  int              use_padding)
-{
-  if (!MAIN_WINDOW || !AUDIO_RULER)
-    return 0;
-
-  return pos_to_px (
-    pos, use_padding, Z_RULER_WIDGET (AUDIO_RULER));
-}
-
-int
-ui_pos_to_px_chord_editor (
-  Position * pos,
-  int        use_padding)
-{
-  if (!MAIN_WINDOW || !MIDI_RULER)
-    return 0;
-
-  return pos_to_px (
-    pos, use_padding, Z_RULER_WIDGET (MIDI_RULER));
-}
-
-int
-ui_pos_to_px_automation_editor (
-  Position * pos,
-  int        use_padding)
-{
-  if (!MAIN_WINDOW || !MIDI_RULER)
-    return 0;
-
-  return pos_to_px (
-    pos, use_padding, Z_RULER_WIDGET (MIDI_RULER));
+  return
+    pos_to_px (
+      pos, use_padding,
+      Z_RULER_WIDGET (EDITOR_RULER));
 }
 
 static long
@@ -373,51 +313,47 @@ px_to_frames (
 }
 
 /**
- * Converts from pixels to frames, based on the
- * timeline.
+ * Converts from pixels to frames.
+ *
+ * Returns the frames.
+ *
+ * @param has_padding Whether then given px contains
+ *   padding.
  */
 long
 ui_px_to_frames_timeline (
-  double   px,
-  int   has_padding) ///< whether the given px contain padding
+  double px,
+  int    has_padding)
 {
   if (!MAIN_WINDOW || !MW_RULER)
     return 0;
 
-  return px_to_frames (px, has_padding,
-                       Z_RULER_WIDGET (MW_RULER));
+  return
+    px_to_frames (
+      px, has_padding,
+      Z_RULER_WIDGET (MW_RULER));
 }
 
 /**
- * Converts from pixels to frames, based on the
- * piano_roll.
+ * Converts from pixels to frames.
+ *
+ * Returns the frames.
+ *
+ * @param has_padding Whether then given px contains
+ *   padding.
  */
 long
-ui_px_to_frames_piano_roll (
-  double   px,
-  int   has_padding) ///< whether the given px contain padding
+ui_px_to_frames_editor (
+  double px,
+  int    has_padding)
 {
-  if (!MAIN_WINDOW || !MIDI_RULER)
+  if (!MAIN_WINDOW || !EDITOR_RULER)
     return 0;
 
-  return px_to_frames (px, has_padding,
-                       Z_RULER_WIDGET (MIDI_RULER));
-}
-
-/**
- * Converts from pixels to frames, based on the
- * piano_roll.
- */
-long
-ui_px_to_frames_audio_clip_editor (
-  double   px,
-  int   has_padding) ///< whether the given px contain padding
-{
-  if (!MAIN_WINDOW || !AUDIO_RULER)
-    return 0;
-
-  return px_to_frames (px, has_padding,
-                       Z_RULER_WIDGET (AUDIO_RULER));
+  return
+    px_to_frames (
+      px, has_padding,
+      Z_RULER_WIDGET (EDITOR_RULER));
 }
 
 /**

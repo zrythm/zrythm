@@ -33,13 +33,12 @@
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/file_browser.h"
 #include "gui/widgets/header_notebook.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/piano_roll.h"
-#include "gui/widgets/piano_roll_toolbar.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/rack.h"
 #include "gui/widgets/ruler.h"
@@ -110,8 +109,8 @@ main_window_widget_refresh (MainWindowWidget * self)
   /* setup center dock */
   center_dock_widget_setup (MW_CENTER_DOCK);
 
-  piano_roll_toolbar_widget_setup (
-    MW_PIANO_ROLL_TOOLBAR);
+  editor_toolbar_widget_setup (
+    MW_EDITOR_TOOLBAR);
   timeline_toolbar_widget_setup (
     MW_TIMELINE_TOOLBAR);
 
@@ -119,8 +118,7 @@ main_window_widget_refresh (MainWindowWidget * self)
   if (MW_BOT_DOCK_EDGE && MW_CLIP_EDITOR)
     {
       clip_editor_widget_setup (
-        MW_CLIP_EDITOR,
-        &PROJECT->clip_editor);
+        MW_CLIP_EDITOR);
     }
 
   // set icons
