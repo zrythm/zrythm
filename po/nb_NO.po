@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-07-07 22:03+0000\n"
+"PO-Revision-Date: 2019-07-14 19:16+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/nb_NO/>\n"
@@ -651,9 +651,9 @@ msgid "Move %d Tracks"
 msgstr "Flytt %d spor"
 
 #: src/actions/create_tracks_action.c:52
-#, c-format
+#, c-format, fuzzy
 msgid "%s Track"
-msgstr "%d spor"
+msgstr "%s spor"
 
 #: src/actions/create_tracks_action.c:81
 #, c-format
