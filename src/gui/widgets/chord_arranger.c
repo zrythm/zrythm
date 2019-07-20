@@ -102,6 +102,8 @@ chord_arranger_widget_set_allocation (
       ChordObject * co =
         cw->chord_object;
       Track * track = P_CHORD_TRACK;
+      ChordDescriptor * descr =
+        CHORD_EDITOR->chords[co->index];
 
       gint wx, wy;
       gtk_widget_translate_coordinates (
@@ -113,7 +115,7 @@ chord_arranger_widget_set_allocation (
         ui_pos_to_px_editor (
           &co->pos, 1);
       char * chord_str =
-        chord_descriptor_to_string (co->descr);
+        chord_descriptor_to_string (descr);
       int textw, texth;
       z_cairo_get_text_extents_for_widget (
         widget, chord_str, &textw, &texth);
@@ -382,13 +384,9 @@ chord_arranger_widget_create_chord (
     UI_OVERLAY_ACTION_CREATING_MOVING;
 
   /* create a new chord */
-  ChordDescriptor * descr =
-    chord_descriptor_new (
-      NOTE_B, 1, NOTE_B, CHORD_TYPE_MIN,
-      CHORD_ACC_7, 0);
   ChordObject * chord =
     chord_object_new (
-      descr, 1);
+      0, 1);
 
   /* add it to chord region */
   chord_region_add_chord_object (

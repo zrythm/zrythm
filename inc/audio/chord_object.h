@@ -78,7 +78,9 @@ typedef struct ChordObject
   /** Cache, used in runtime operations. */
   Position            cache_pos;
 
-  ChordDescriptor *   descr;
+  /** The index of the chord it belongs to
+   * (0 topmost). */
+  int                 index;
 
   /** Pointer back to parent. */
   Region *            region;
@@ -124,8 +126,8 @@ chord_object_init_loaded (
  */
 ChordObject *
 chord_object_new (
-  ChordDescriptor * descr,
-  int               is_main);
+  int index,
+  int is_main);
 
 static inline int
 chord_object_is_equal (
@@ -134,7 +136,7 @@ chord_object_is_equal (
 {
   return
     !position_compare(&a->pos, &b->pos) &&
-    chord_descriptor_is_equal (a->descr, b->descr);
+    a->index == b->index;
 }
 
 /**
@@ -144,6 +146,14 @@ void
 chord_object_set_region (
   ChordObject * self,
   Region *      region);
+
+/**
+ * Returns the ChordDescriptor associated with this
+ * ChordObject.
+ */
+ChordDescriptor *
+chord_object_get_chord_descriptor (
+  ChordObject * self);
 
 /**
  * Finds the ChordObject in the project

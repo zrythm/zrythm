@@ -223,16 +223,45 @@ activate_about (GSimpleAction *action,
     GTK_IMAGE (
       resources_get_icon (ICON_TYPE_ZRYTHM,
                           "z-splash.svg"));
+
+  char * artists[] =
+    {
+      "Alexandros Theodotou <alex@zrythm.org>",
+      NULL
+    };
+  char * authors[] =
+    {
+      "Alexandros Theodotou <alex@zrythm.org>",
+      "Sascha Bast <sash@mischkonsum.org>",
+      "Georg Krause",
+      NULL
+    };
+  char * documenters[] =
+    {
+      "Alexandros Theodotou <alex@zrythm.org>",
+      NULL
+    };
+  char * translators =
+      "Alexandros Theodotou <alex@zrythm.org>\n"
+      "Nicolas Faure <sub26nico@laposte.net>\n"
+      "Waui <wau-wau@tutanota.de>\n"
+      "Allan Nordhøy <epost@anotheragency.no>\n"
+      "WaldiS <admin@sto.ugu.pl>";
+
   gtk_show_about_dialog (
     GTK_WINDOW (MAIN_WINDOW),
+    "artists", artists,
+    "authors", authors,
     "copyright", "Copyright (C) 2018-2019 Alexandros Theodotou",
+    "documenters", documenters,
     /*"logo-icon-name", "z",*/
     "logo", gtk_image_get_pixbuf (img),
     "program-name", "Zrythm",
     "comments", "An highly automated, intuitive, Digital Audio Workstation (DAW)",
-    "license-type", GTK_LICENSE_GPL_3_0,
+    "license-type", GTK_LICENSE_AGPL_3_0,
+    "translator-credits", translators,
     "website", "https://www.zrythm.org",
-    "website-label", "Official Website",
+    "website-label", "Home Page",
     "version", "v" PACKAGE_VERSION,
     NULL);
   gtk_widget_destroy (GTK_WIDGET (img));

@@ -52,13 +52,13 @@ chord_object_init_loaded (
  */
 ChordObject *
 chord_object_new (
-  ChordDescriptor * descr,
-  int               is_main)
+  int index,
+  int is_main)
 {
   ChordObject * self =
     calloc (1, sizeof (ChordObject));
 
-  self->descr = descr;
+  self->index = index;
 
   if (is_main)
     {
@@ -113,6 +113,17 @@ chord_object_find (
 }
 
 /**
+ * Returns the ChordDescriptor associated with this
+ * ChordObject.
+ */
+ChordDescriptor *
+chord_object_get_chord_descriptor (
+  ChordObject * self)
+{
+  return CHORD_EDITOR->chords[self->index];
+}
+
+/**
  * Finds the ChordObject in the project
  * corresponding to the given one's position.
  *
@@ -149,10 +160,8 @@ chord_object_clone (
   if (flag == CHORD_OBJECT_CLONE_COPY_MAIN)
     is_main = 1;
 
-  ChordDescriptor * descr =
-    chord_descriptor_clone (src->descr);
   ChordObject * chord =
-    chord_object_new (descr, is_main);
+    chord_object_new (src->index, is_main);
 
   position_set_to_pos (
     &chord->pos, &src->pos);
@@ -200,8 +209,6 @@ chord_object_free (
       gtk_widget_destroy (
         GTK_WIDGET (self->widget));
     }
-
-  chord_descriptor_free (self->descr);
 
   if (self->region_name)
     g_free (self->region_name);

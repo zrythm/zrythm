@@ -16,7 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 install_data (
-  'org.zrythm.gschema.xml',
+  'org.zrythm.Zrythm.gschema.xml',
   install_dir: schemasdir)
 install_data (
   'zrythm.desktop',

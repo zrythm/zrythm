@@ -132,9 +132,6 @@ typedef struct _ChordSelectorWindowWidget
   GtkRadioButton *  creator_visibility_all;
   GtkRadioButton *  creator_visibility_in_scale;
 
-  /** The owner ChordObjectWidget. */
-  ChordObjectWidget * chord;
-
   /** ScaleObject at the chord's position. */
   ScaleObject *      scale;
 
@@ -149,7 +146,7 @@ typedef struct _ChordSelectorWindowWidget
  */
 ChordSelectorWindowWidget *
 chord_selector_window_widget_new (
-  ChordObjectWidget * owner);
+  ChordDescriptor * descr);
 
 /**
  * @}

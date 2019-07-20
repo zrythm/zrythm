@@ -21,14 +21,14 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/audio_editor_space.h"
+#include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/audio_arranger.h"
+#include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
@@ -38,8 +38,8 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  AudioEditorSpaceWidget,
-  audio_editor_space_widget,
+  AutomationEditorSpaceWidget,
+  automation_editor_space_widget,
   GTK_TYPE_BOX)
 
 /**
@@ -48,7 +48,7 @@ G_DEFINE_TYPE (
  */
 static void
 link_scrolls (
-  AudioEditorSpaceWidget * self)
+  AutomationEditorSpaceWidget * self)
 {
   /* link ruler h scroll to arranger h scroll */
   if (MW_CLIP_EDITOR_INNER->ruler_scroll)
@@ -65,22 +65,22 @@ link_scrolls (
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
  */
 void
-audio_editor_space_widget_update_size_group (
-  AudioEditorSpaceWidget * self,
+automation_editor_space_widget_update_size_group (
+  AutomationEditorSpaceWidget * self,
   int                     visible)
 {
   /* TODO */
 }
 
 void
-audio_editor_space_widget_refresh (
-  AudioEditorSpaceWidget * self)
+automation_editor_space_widget_refresh (
+  AutomationEditorSpaceWidget * self)
 {
 }
 
 void
-audio_editor_space_widget_setup (
-  AudioEditorSpaceWidget * self)
+automation_editor_space_widget_setup (
+  AutomationEditorSpaceWidget * self)
 {
   if (self->arranger)
     {
@@ -95,33 +95,32 @@ audio_editor_space_widget_setup (
 }
 
 static void
-audio_editor_space_widget_init (
-  AudioEditorSpaceWidget * self)
+automation_editor_space_widget_init (AutomationEditorSpaceWidget * self)
 {
-  g_type_ensure (AUDIO_ARRANGER_WIDGET_TYPE);
+  g_type_ensure (AUTOMATION_ARRANGER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }
 
 static void
-audio_editor_space_widget_class_init (
-  AudioEditorSpaceWidgetClass * _klass)
+automation_editor_space_widget_class_init (
+  AutomationEditorSpaceWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass,
-    "audio_editor_space.ui");
+    "automation_editor_space.ui");
 
   gtk_widget_class_bind_template_child (
     klass,
-    AudioEditorSpaceWidget,
+    AutomationEditorSpaceWidget,
     arranger_scroll);
   gtk_widget_class_bind_template_child (
     klass,
-    AudioEditorSpaceWidget,
+    AutomationEditorSpaceWidget,
     arranger_viewport);
   gtk_widget_class_bind_template_child (
     klass,
-    AudioEditorSpaceWidget,
+    AutomationEditorSpaceWidget,
     arranger);
 }

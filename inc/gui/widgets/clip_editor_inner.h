@@ -42,6 +42,10 @@ typedef struct _MidiEditorSpaceWidget
   MidiEditorSpaceWidget;
 typedef struct _AudioEditorSpaceWidget
   AudioEditorSpaceWidget;
+typedef struct _ChordEditorSpaceWidget
+  ChordEditorSpaceWidget;
+typedef struct _AutomationEditorSpaceWidget
+  AutomationEditorSpaceWidget;
 
 /**
  * @addtogroup widgets
@@ -49,7 +53,33 @@ typedef struct _AudioEditorSpaceWidget
  * @{
  */
 
-#define MW_CLIP_EDITOR_INNER MW_CLIP_EDITOR->clip_editor_inner
+#define MW_CLIP_EDITOR_INNER \
+  MW_CLIP_EDITOR->clip_editor_inner
+
+/**
+ * Adds or removes widgets from the
+ * left_of_ruler_size_group depending on if the
+ * current editor space is visible or not.
+ *
+ * To be used by each editor space.
+ *
+ * @note Assumes that a boolean called visible
+ *   exists.
+ *
+ * @param wname The name of the widget.
+ */
+#define CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP( \
+  wname) \
+  if (visible) \
+    gtk_size_group_add_widget ( \
+      MW_CLIP_EDITOR_INNER-> \
+        left_of_ruler_size_group, \
+      GTK_WIDGET (self->wname)); \
+  else \
+    gtk_size_group_remove_widget ( \
+      MW_CLIP_EDITOR_INNER-> \
+        left_of_ruler_size_group, \
+      GTK_WIDGET (self->wname))
 
 /**
  * The piano roll widget is the whole space inside
@@ -80,9 +110,15 @@ typedef struct _ClipEditorInnerWidget
 
   /* ==== Automation Editor ==== */
 
+  AutomationEditorSpaceWidget *
+    automation_editor_space;
+
   /* ==== End Automation Editor ==== */
 
   /* ==== Chord Editor ==== */
+
+  ChordEditorSpaceWidget *
+    chord_editor_space;
 
   /* ==== End Chord Editor ==== */
 

@@ -141,21 +141,21 @@
                         <property name="visible">1</property>
                       </object>
                     </child>
-                    <!--<child>-->
-                      <!--<object class="ChordEditorSpaceWidget" id="chord_editor_space">-->
-                        <!--<property name="visible">1</property>-->
-                      <!--</object>-->
-                    <!--</child>-->
+                    <child>
+                      <object class="ChordEditorSpaceWidget" id="chord_editor_space">
+                        <property name="visible">1</property>
+                      </object>
+                    </child>
                     <child>
                       <object class="AudioEditorSpaceWidget" id="audio_editor_space">
                         <property name="visible">1</property>
                       </object>
                     </child>
-                    <!--<child>-->
-                      <!--<object class="AutomationEditorSpaceWidget" id="automation_editor_space">-->
-                        <!--<property name="visible">1</property>-->
-                      <!--</object>-->
-                    <!--</child>-->
+                    <child>
+                      <object class="AutomationEditorSpaceWidget" id="automation_editor_space">
+                        <property name="visible">1</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

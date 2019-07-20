@@ -35,7 +35,8 @@ G_DECLARE_FINAL_TYPE (
   Z, CHORD_ARRANGER_WIDGET,
   ArrangerWidget)
 
-#define CHORD_ARRANGER MW_PIANO_ROLL->arranger
+#define CHORD_ARRANGER \
+  MW_CHORD_EDITOR_SPACE->arranger
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct ChordObject ChordObject;
@@ -55,6 +56,9 @@ typedef struct _ChordArrangerWidget
    * there could be more selected.
    */
   ChordObject *   start_chord_object;
+
+  /** Index of the chord being hovered on. */
+  int             hovered_index;
 } ChordArrangerWidget;
 
 ARRANGER_W_DECLARE_FUNCS (

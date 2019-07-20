@@ -163,7 +163,7 @@ on_enter (GtkWidget *widget,
   return FALSE;
 }
 
-void
+static void
 on_released (
   GtkGestureMultiPress *gesture,
   gint                  n_press,
@@ -176,7 +176,7 @@ on_released (
   send_note_event (self, 0);
 }
 
-void
+static void
 on_pressed (
   GtkGestureMultiPress *gesture,
   gint                  n_press,

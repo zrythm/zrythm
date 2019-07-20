@@ -21,14 +21,15 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/audio_editor_space.h"
+#include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/chord_key.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/audio_arranger.h"
+#include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
@@ -38,8 +39,8 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
-  AudioEditorSpaceWidget,
-  audio_editor_space_widget,
+  ChordEditorSpaceWidget,
+  chord_editor_space_widget,
   GTK_TYPE_BOX)
 
 /**
@@ -48,7 +49,7 @@ G_DEFINE_TYPE (
  */
 static void
 link_scrolls (
-  AudioEditorSpaceWidget * self)
+  ChordEditorSpaceWidget * self)
 {
   /* link ruler h scroll to arranger h scroll */
   if (MW_CLIP_EDITOR_INNER->ruler_scroll)
@@ -65,22 +66,23 @@ link_scrolls (
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
  */
 void
-audio_editor_space_widget_update_size_group (
-  AudioEditorSpaceWidget * self,
+chord_editor_space_widget_update_size_group (
+  ChordEditorSpaceWidget * self,
   int                     visible)
 {
-  /* TODO */
+  CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP (
+    chord_keys_box);
 }
 
 void
-audio_editor_space_widget_refresh (
-  AudioEditorSpaceWidget * self)
+chord_editor_space_widget_refresh (
+  ChordEditorSpaceWidget * self)
 {
 }
 
 void
-audio_editor_space_widget_setup (
-  AudioEditorSpaceWidget * self)
+chord_editor_space_widget_setup (
+  ChordEditorSpaceWidget * self)
 {
   if (self->arranger)
     {
@@ -92,36 +94,51 @@ audio_editor_space_widget_setup (
     }
 
   link_scrolls (self);
+
+  for (int i = 0; i < CHORD_EDITOR->num_chords; i++)
+    {
+      self->chord_keys[i] =
+        chord_key_widget_new (CHORD_EDITOR->chords[i]);
+      gtk_container_add (
+        GTK_CONTAINER (self->chord_keys_box),
+        GTK_WIDGET (self->chord_keys[i]));
+    }
+
+  chord_editor_space_widget_refresh (self);
 }
 
 static void
-audio_editor_space_widget_init (
-  AudioEditorSpaceWidget * self)
+chord_editor_space_widget_init (
+  ChordEditorSpaceWidget * self)
 {
-  g_type_ensure (AUDIO_ARRANGER_WIDGET_TYPE);
+  g_type_ensure (CHORD_ARRANGER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }
 
 static void
-audio_editor_space_widget_class_init (
-  AudioEditorSpaceWidgetClass * _klass)
+chord_editor_space_widget_class_init (
+  ChordEditorSpaceWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass,
-    "audio_editor_space.ui");
+    "chord_editor_space.ui");
 
   gtk_widget_class_bind_template_child (
     klass,
-    AudioEditorSpaceWidget,
+    ChordEditorSpaceWidget,
     arranger_scroll);
   gtk_widget_class_bind_template_child (
     klass,
-    AudioEditorSpaceWidget,
+    ChordEditorSpaceWidget,
     arranger_viewport);
   gtk_widget_class_bind_template_child (
     klass,
-    AudioEditorSpaceWidget,
+    ChordEditorSpaceWidget,
     arranger);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ChordEditorSpaceWidget,
+    chord_keys_box);
 }

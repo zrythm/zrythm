@@ -39,7 +39,7 @@ edit_chord_action_new (
   self->chord =
     chord_object_clone (
       chord, CHORD_OBJECT_CLONE_COPY_MAIN);
-  self->descr = chord_descriptor_clone (descr);
+  /*self->descr = chord_descriptor_clone (descr);*/
 
   return ua;
 }
@@ -49,16 +49,16 @@ edit_chord_action_do (
 	EditChordAction * self)
 {
   /* get the actual chord */
-  ChordObject * chord =
-    chord_object_find (self->chord);
+  /*ChordObject * chord =*/
+    /*chord_object_find (self->chord);*/
 
   /* set the new descriptor */
-  ChordDescriptor * old = chord->descr;
-  chord->descr =
-    chord_descriptor_clone (self->descr);
-  chord_descriptor_free (old);
+  /*ChordDescriptor * old = chord->descr;*/
+  /*chord->descr =*/
+    /*chord_descriptor_clone (self->descr);*/
+  /*chord_descriptor_free (old);*/
 
-  EVENTS_PUSH (ET_CHORD_OBJECT_CHANGED, chord);
+  /*EVENTS_PUSH (ET_CHORD_OBJECT_CHANGED, chord);*/
 
   return 0;
 }
@@ -68,19 +68,19 @@ edit_chord_action_undo (
 	EditChordAction * self)
 {
   /* get the actual chord */
-  ChordDescriptor * prev = self->chord->descr;
-  self->chord->descr = self->descr;
-  ChordObject * chord =
-    chord_object_find (self->chord);
-  self->chord->descr = prev;
+  /*ChordDescriptor * prev = self->chord->descr;*/
+  /*self->chord->descr = self->descr;*/
+  /*ChordObject * chord =*/
+    /*chord_object_find (self->chord);*/
+  /*self->chord->descr = prev;*/
 
   /* set the old descriptor */
-  prev = chord->descr;
-  chord->descr =
-    chord_descriptor_clone (self->chord->descr);
-  chord_descriptor_free (prev);
+  /*prev = chord->descr;*/
+  /*chord->descr =*/
+    /*chord_descriptor_clone (self->chord->descr);*/
+  /*chord_descriptor_free (prev);*/
 
-  EVENTS_PUSH (ET_CHORD_OBJECT_CHANGED, chord);
+  /*EVENTS_PUSH (ET_CHORD_OBJECT_CHANGED, chord);*/
 
   return 0;
 }

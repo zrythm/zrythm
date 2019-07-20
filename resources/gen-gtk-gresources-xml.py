@@ -66,7 +66,7 @@ for f in get_files('theme/Matcha-dark-sea/assets', '.svg'):
 
 xml += '''
   </gresource>
-  <gresource prefix='/org/zrythm/app'>
+  <gresource prefix='/org/zrythm/Zrythm/app'>
 '''
 
 xml += '\n'

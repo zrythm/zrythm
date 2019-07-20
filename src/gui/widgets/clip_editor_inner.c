@@ -23,8 +23,10 @@
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/audio_editor_space.h"
+#include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
@@ -52,6 +54,73 @@ void
 clip_editor_inner_widget_refresh (
   ClipEditorInnerWidget * self)
 {
+  Region * r = CLIP_EDITOR->region;
+  Track * track = NULL;
+
+  if (r)
+    {
+      track = region_get_track (r);
+
+      color_area_widget_set_color (
+        self->color_bar,
+        &track->color);
+      gtk_label_set_text (
+        self->track_name_label,
+        track_get_name (track));
+
+      GtkWidget * visible_w =
+        gtk_stack_get_visible_child (
+          GTK_STACK (MW_CLIP_EDITOR));
+      if (visible_w ==
+          GTK_WIDGET (self->midi_editor_space))
+        midi_editor_space_widget_update_size_group (
+          self->midi_editor_space, 0);
+      if (visible_w ==
+          GTK_WIDGET (self->audio_editor_space))
+        audio_editor_space_widget_update_size_group (
+          self->audio_editor_space, 0);
+      if (visible_w ==
+          GTK_WIDGET (self->chord_editor_space))
+        chord_editor_space_widget_update_size_group (
+          self->chord_editor_space, 0);
+      if (visible_w ==
+          GTK_WIDGET (self->automation_editor_space))
+        automation_editor_space_widget_update_size_group (
+          self->automation_editor_space, 0);
+
+      switch (r->type)
+        {
+        case REGION_TYPE_MIDI:
+          gtk_stack_set_visible_child (
+            self->editor_stack,
+            GTK_WIDGET (self->midi_editor_space));
+          midi_editor_space_widget_update_size_group (
+            self->midi_editor_space, 1);
+          break;
+        case REGION_TYPE_AUDIO:
+          gtk_stack_set_visible_child (
+            self->editor_stack,
+            GTK_WIDGET (MW_AUDIO_EDITOR_SPACE));
+          audio_editor_space_widget_update_size_group (
+            self->audio_editor_space, 1);
+          break;
+        case REGION_TYPE_CHORD:
+          gtk_stack_set_visible_child (
+            self->editor_stack,
+            GTK_WIDGET (MW_CHORD_EDITOR_SPACE));
+          chord_editor_space_widget_update_size_group (
+            self->chord_editor_space, 1);
+          break;
+        case REGION_TYPE_AUTOMATION:
+          gtk_stack_set_visible_child (
+            self->editor_stack,
+            GTK_WIDGET (
+              MW_AUTOMATION_EDITOR_SPACE));
+          automation_editor_space_widget_update_size_group (
+            self->automation_editor_space, 1);
+          break;
+        }
+    }
 }
 
 void
@@ -62,6 +131,10 @@ clip_editor_inner_widget_setup (
     self->audio_editor_space);
   midi_editor_space_widget_setup (
     self->midi_editor_space);
+  chord_editor_space_widget_setup (
+    self->chord_editor_space);
+  automation_editor_space_widget_setup (
+    self->automation_editor_space);
 
   clip_editor_inner_widget_refresh (self);
 }
@@ -73,6 +146,9 @@ clip_editor_inner_widget_init (ClipEditorInnerWidget * self)
   g_type_ensure (EDITOR_RULER_WIDGET_TYPE);
   g_type_ensure (AUDIO_EDITOR_SPACE_WIDGET_TYPE);
   g_type_ensure (MIDI_EDITOR_SPACE_WIDGET_TYPE);
+  g_type_ensure (CHORD_EDITOR_SPACE_WIDGET_TYPE);
+  g_type_ensure (
+    AUTOMATION_EDITOR_SPACE_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -146,4 +222,12 @@ clip_editor_inner_widget_class_init (
     klass,
     ClipEditorInnerWidget,
     audio_editor_space);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ClipEditorInnerWidget,
+    chord_editor_space);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ClipEditorInnerWidget,
+    automation_editor_space);
 }

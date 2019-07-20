@@ -57,6 +57,8 @@ chord_draw_cb (
   GdkRGBA * color = &P_CHORD_TRACK->color;
   ChordObject * chord_object =
     self->chord_object;
+  ChordDescriptor * descr =
+    CHORD_EDITOR->chords[chord_object->index];
   cairo_set_source_rgba (
     cr, color->red, color->green, color->blue,
     chord_object_is_transient (chord_object) ?
@@ -85,8 +87,7 @@ chord_draw_cb (
   cairo_fill(cr);
 
   char * str =
-    chord_descriptor_to_string (
-      chord_object->descr);
+    chord_descriptor_to_string (descr);
   if (DEBUGGING &&
       chord_object_is_transient (
         chord_object))
@@ -121,7 +122,8 @@ on_press (
     {
       ChordSelectorWindowWidget * chord_selector =
         chord_selector_window_widget_new (
-          self);
+          chord_object_get_chord_descriptor (
+            self->chord_object));
 
       gtk_window_present (
         GTK_WINDOW (chord_selector));

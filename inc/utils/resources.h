@@ -35,7 +35,7 @@
  * icons.
  */
 
-#define RESOURCE_PATH "/org/zrythm/app/"
+#define RESOURCE_PATH "/org/zrythm/Zrythm/app/"
 #define TEMPLATE_PATH "ui/"
 #define ICON_PATH "icons/"
 

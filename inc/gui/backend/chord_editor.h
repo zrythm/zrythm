@@ -28,6 +28,8 @@
 
 #include <cyaml/cyaml.h>
 
+typedef struct ChordDescriptor ChordDescriptor;
+
 /**
  * @addtogroup gui_backend
  *
@@ -37,13 +39,14 @@
 #define CHORD_EDITOR \
   (&CLIP_EDITOR->chord_editor)
 
-typedef struct Region Region;
-
 /**
  * Backend for the chord editor.
  */
 typedef struct ChordEditor
 {
+  /** The chords to show on the left. */
+  ChordDescriptor * chords[128];
+  int               num_chords;
 } ChordEditor;
 
 static const cyaml_schema_field_t

@@ -122,6 +122,14 @@ midi_editor_space_widget_setup (
   MidiEditorSpaceWidget * self);
 
 /**
+ * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
+ */
+void
+midi_editor_space_widget_update_size_group (
+  MidiEditorSpaceWidget * self,
+  int                     visible);
+
+/**
  * Refresh the labels only (for highlighting).
  *
  * @param hard_refresh Removes and radds the labels,

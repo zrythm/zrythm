@@ -69,7 +69,7 @@ editor_ruler_draw_cb (GtkWidget * widget,
   region =
     region_get_main_region (region);
 
-  Track * track = region->lane->track;
+  Track * track = region_get_track (region);
 
   int px_start, px_end;
 

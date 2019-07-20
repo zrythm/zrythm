@@ -4,8 +4,6 @@ Contributors:
    * Main developer
  Sascha Bast <sash@mischkonsum.org>
    * Piano roll auto-scroll
- Robin Gareus <robin@gareus.org>
-   * Routing algorithm
  Georg Krause
    * Forward and backward button callbacks
 

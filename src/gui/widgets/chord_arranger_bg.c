@@ -24,10 +24,13 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_arranger_bg.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/tracklist.h"
@@ -38,12 +41,66 @@ G_DEFINE_TYPE (ChordArrangerBgWidget,
                chord_arranger_bg_widget,
                ARRANGER_BG_WIDGET_TYPE)
 
+static void
+draw_borders (
+  ChordArrangerBgWidget * self,
+  cairo_t *              cr,
+  int                    x_from,
+  int                    x_to,
+  double                 y_offset)
+{
+  cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
+  cairo_set_line_width (cr, 0.5);
+  cairo_move_to (cr, x_from, y_offset);
+  cairo_line_to (cr, x_to, y_offset);
+  cairo_stroke (cr);
+}
+
 static gboolean
 chord_arranger_draw_cb (
   GtkWidget *widget,
   cairo_t *cr,
   gpointer data)
 {
+  ChordArrangerBgWidget * self =
+    Z_CHORD_ARRANGER_BG_WIDGET (widget);
+
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (cr,
+                                &rect);
+
+  /* px per key adjusted for border width */
+  double adj_px_per_key =
+    MW_MIDI_EDITOR_SPACE->px_per_key + 1;
+
+  /*handle horizontal drawing*/
+  double y_offset;
+  for (int i = 0; i < CHORD_EDITOR->num_chords; i++)
+    {
+      y_offset =
+        adj_px_per_key * i;
+      if (y_offset > rect.y &&
+          y_offset < (rect.y + rect.height))
+        draw_borders (
+          self,
+          cr,
+          rect.x,
+          rect.x + rect.width,
+          y_offset);
+      if (i == CHORD_ARRANGER->hovered_index)
+        {
+          cairo_set_source_rgba (
+            cr, 1, 1, 1, 0.06);
+              cairo_rectangle (
+                cr,
+                rect.x,
+                /* + 1 since the border is bottom */
+                y_offset + 1,
+                rect.width,
+                adj_px_per_key);
+          cairo_fill (cr);
+        }
+    }
 
   return FALSE;
 }

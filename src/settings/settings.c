@@ -32,11 +32,14 @@ void
 settings_init (Settings * self)
 {
   self->root =
-    g_settings_new ("org.zrythm");
+    g_settings_new (GSETTINGS_ZRYTHM_PREFIX);
   self->general =
-    g_settings_new ("org.zrythm.general");
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX ".general");
   self->preferences =
-    g_settings_new ("org.zrythm.preferences");
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX ".preferences");
   self->ui =
-    g_settings_new ("org.zrythm.ui");
+    g_settings_new (
+      GSETTINGS_ZRYTHM_PREFIX ".ui");
 }

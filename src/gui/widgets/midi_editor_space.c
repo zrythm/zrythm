@@ -199,6 +199,20 @@ midi_editor_space_widget_refresh (
     PIANO_ROLL->midi_modifier);
 }
 
+/**
+ * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
+ */
+void
+midi_editor_space_widget_update_size_group (
+  MidiEditorSpaceWidget * self,
+  int                     visible)
+{
+  CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP (
+    midi_vel_chooser_box);
+  CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP (
+    midi_notes_box);
+}
+
 void
 midi_editor_space_widget_setup (
   MidiEditorSpaceWidget * self)
@@ -224,13 +238,6 @@ midi_editor_space_widget_setup (
       gtk_widget_show_all (
         GTK_WIDGET (self->modifier_arranger));
     }
-
-  gtk_size_group_add_widget (
-    MW_CLIP_EDITOR_INNER->left_of_ruler_size_group,
-    GTK_WIDGET (self->midi_vel_chooser_box));
-  gtk_size_group_add_widget (
-    MW_CLIP_EDITOR_INNER->left_of_ruler_size_group,
-    GTK_WIDGET (self->midi_notes_box));
 
   midi_editor_space_widget_refresh (self);
 }

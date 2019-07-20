@@ -133,7 +133,7 @@ localization_init ()
 
   /* get selected locale */
   GSettings * prefs =
-    g_settings_new ("org.zrythm.preferences");
+    g_settings_new ("org.zrythm.Zrythm.preferences");
   UiLanguage lang =
     g_settings_get_enum (
       prefs,

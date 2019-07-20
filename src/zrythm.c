@@ -698,8 +698,8 @@ zrythm_app_new ()
 {
   ZrythmApp * self =  g_object_new (
     ZRYTHM_APP_TYPE,
-    "application-id", "org.zrythm",
-    "resource-base-path", "/org/zrythm",
+    "application-id", "org.zrythm.Zrythm",
+    "resource-base-path", "/org/zrythm/Zrythm",
     "flags", G_APPLICATION_HANDLES_OPEN,
     NULL);
 

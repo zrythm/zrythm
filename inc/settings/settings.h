@@ -22,6 +22,7 @@
 
 #include <gtk/gtk.h>
 
+#define GSETTINGS_ZRYTHM_PREFIX "org.zrythm.Zrythm"
 #define SETTINGS (&ZRYTHM->settings)
 #define S_PREFERENCES SETTINGS->preferences
 #define S_UI SETTINGS->ui

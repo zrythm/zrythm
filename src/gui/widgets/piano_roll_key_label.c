@@ -67,7 +67,8 @@ piano_roll_key_label_widget_refresh (
           so->scale, self->descr->value % 12);
       int in_chord =
         co && chord_descriptor_is_key_in_chord (
-          co->descr, self->descr->value % 12);
+          chord_object_get_chord_descriptor (co),
+          self->descr->value % 12);
       if (PIANO_ROLL->highlighting ==
             PR_HIGHLIGHT_BOTH && in_chord &&
             in_scale)

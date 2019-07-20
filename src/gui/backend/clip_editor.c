@@ -84,5 +84,7 @@ clip_editor_init (ClipEditor * self)
   self->region_name = NULL;
   piano_roll_init (&self->piano_roll);
   audio_clip_editor_init (&self->audio_clip_editor);
+  chord_editor_init (&self->chord_editor);
+  automation_editor_init (&self->automation_editor);
 }
 

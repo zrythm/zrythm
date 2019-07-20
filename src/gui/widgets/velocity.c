@@ -91,7 +91,8 @@ draw_cb (GtkDrawingArea * da,
       so->scale, mn->val % 12);
   int in_chord =
     co && chord_descriptor_is_key_in_chord (
-      co->descr, mn->val % 12);
+      chord_object_get_chord_descriptor (co),
+      mn->val % 12);
 
   if (PIANO_ROLL->highlighting ==
         PR_HIGHLIGHT_BOTH &&

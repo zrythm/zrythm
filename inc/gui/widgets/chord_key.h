@@ -21,39 +21,39 @@
  * \file
  */
 
-#ifndef __GUI_WIDGETS_PIANO_ROLL_KEY_H__
-#define __GUI_WIDGETS_PIANO_ROLL_KEY_H__
+#ifndef __GUI_WIDGETS_CHORD_KEY_H__
+#define __GUI_WIDGETS_CHORD_KEY_H__
 
 #include <gtk/gtk.h>
 
-#define PIANO_ROLL_KEY_WIDGET_TYPE \
-  (piano_roll_key_widget_get_type ())
+#define CHORD_KEY_WIDGET_TYPE \
+  (chord_key_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  PianoRollKeyWidget,
-  piano_roll_key_widget,
-  Z, PIANO_ROLL_KEY_WIDGET,
+  ChordKeyWidget,
+  chord_key_widget,
+  Z, CHORD_KEY_WIDGET,
   GtkDrawingArea)
 
 /**
 * Piano roll note widget to be shown on the left
 * side of the piano roll (128 of these).
 */
-typedef struct _PianoRollKeyWidget
+typedef struct _ChordKeyWidget
 {
   GtkDrawingArea         parent_instance;
 
-  /** The note this widget is for. */
-  MidiNoteDescriptor *   descr;
+  /** The chord this widget is for. */
+  ChordDescriptor *      descr;
 
   GtkGestureMultiPress * multipress;
-} PianoRollKeyWidget;
+} ChordKeyWidget;
 
 /**
- * Creates a PianoRollKeyWidget for the given
+ * Creates a ChordKeyWidget for the given
  * MIDI note descriptor.
  */
-PianoRollKeyWidget *
-piano_roll_key_widget_new (
-  MidiNoteDescriptor * descr);
+ChordKeyWidget *
+chord_key_widget_new (
+  ChordDescriptor * descr);
 
 #endif

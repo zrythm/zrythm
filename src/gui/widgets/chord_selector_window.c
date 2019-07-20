@@ -42,22 +42,6 @@ G_DEFINE_TYPE (
      GTK_TOGGLE_BUTTON ( \
        self->creator_visibility_in_scale)))
 
-static gboolean
-on_delete_event (
-  GtkWidget *widget,
-  GdkEvent  *event,
-  ChordSelectorWindowWidget * self)
-{
-  UndoableAction * ua =
-    edit_chord_action_new (
-      self->chord->chord_object,
-      self->descr);
-  undo_manager_perform (
-    UNDO_MANAGER, ua);
-
-  return FALSE;
-}
-
 /**
  * Returns the MusicalNote corresponding to the
  * given GtkFlowBoxChild.
@@ -272,7 +256,7 @@ setup_creator_tab (
   ChordSelectorWindowWidget * self)
 {
   ChordDescriptor * descr =
-    self->chord->chord_object->descr;
+    self->descr;
 
 #define SELECT_CHILD(flowbox, child) \
   gtk_flow_box_select_child ( \
@@ -530,20 +514,17 @@ on_group_changed (
  */
 ChordSelectorWindowWidget *
 chord_selector_window_widget_new (
-  ChordObjectWidget * owner)
+  ChordDescriptor * descr)
 {
   ChordSelectorWindowWidget * self =
     g_object_new (
       CHORD_SELECTOR_WINDOW_WIDGET_TYPE,
       NULL);
 
-  self->chord =
-    chord_object_get_main_chord_object (
-      owner->chord_object)->widget;
   self->scale =
     chord_track_get_scale_at_pos (
       P_CHORD_TRACK,
-      &owner->chord_object->pos);
+      &CLIP_EDITOR->region->start_pos);
 
   gtk_window_set_transient_for (
     GTK_WINDOW (self),
@@ -552,9 +533,7 @@ chord_selector_window_widget_new (
   setup_creator_tab (self);
   setup_diatonic_tab (self);
 
-  self->descr =
-    chord_descriptor_clone (
-      owner->chord_object->descr);
+  self->descr = descr;
 
   return self;
 }
@@ -745,9 +724,6 @@ chord_selector_window_widget_init (
     self, NULL);
 
   /* set signals */
-  g_signal_connect (
-    G_OBJECT (self), "delete-event",
-    G_CALLBACK (on_delete_event), self);
   g_signal_connect (
     G_OBJECT (self->creator_visibility_all),
     "toggled",

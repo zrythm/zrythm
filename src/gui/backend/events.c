@@ -34,6 +34,7 @@
 #include "gui/widgets/arranger_playhead.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
+#include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -42,6 +43,7 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/channel.h"
+#include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/header_notebook.h"
 #include "gui/widgets/home_toolbar.h"
@@ -267,79 +269,26 @@ refresh_editor_ruler_and_arranger ()
   return FALSE;
 }
 
-/**
- * Called when setting clip editor region using
- * g_idle_add to give the widgets time to have
- * widths.
- */
-static int
-refresh_audio_ruler_and_arranger ()
-{
-  if (!ui_is_widget_revealed (EDITOR_RULER))
-    {
-      g_usleep (1000);
-      return TRUE;
-    }
-
-  /* ruler must be refreshed first to get the
-   * correct px when calling ui_* functions */
-  editor_ruler_widget_refresh ();
-
-  /* remove all previous children and add new */
-
-  CLIP_EDITOR->region_changed = 0;
-
-  return FALSE;
-}
-
 static void
 on_clip_editor_region_changed ()
 {
   /* TODO */
   /*gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);*/
   Region * r = CLIP_EDITOR->region;
+  g_warn_if_fail (r);
 
   if (r)
     {
       gtk_stack_set_visible_child (
         GTK_STACK (MW_CLIP_EDITOR),
         GTK_WIDGET (MW_CLIP_EDITOR->main_box));
-      if (r->type == REGION_TYPE_MIDI)
-        {
-          gtk_stack_set_visible_child (
-            MW_CLIP_EDITOR_INNER->editor_stack,
-            GTK_WIDGET (MW_MIDI_EDITOR_SPACE));
 
-          gtk_label_set_text (
-            MW_CLIP_EDITOR_INNER->track_name_label,
-            track_get_name (region_get_track(r)));
+      clip_editor_inner_widget_refresh (
+        MW_CLIP_EDITOR_INNER);
 
-          color_area_widget_set_color (
-            MW_CLIP_EDITOR_INNER->color_bar,
-            &r->lane->track->color);
-
-          g_idle_add (
-            refresh_editor_ruler_and_arranger,
-            NULL);
-        }
-      else if (r->type == REGION_TYPE_AUDIO)
-        {
-          gtk_stack_set_visible_child (
-            MW_CLIP_EDITOR_INNER->editor_stack,
-            GTK_WIDGET (MW_AUDIO_EDITOR_SPACE));
-
-          gtk_label_set_text (
-            MW_CLIP_EDITOR_INNER->track_name_label,
-            track_get_name (region_get_track(r)));
-
-          color_area_widget_set_color (
-            MW_CLIP_EDITOR_INNER->color_bar,
-            &(region_get_track (r)->color));
-
-          g_idle_add (
-            refresh_audio_ruler_and_arranger,
-            NULL);
-        }
+      g_idle_add (
+        refresh_editor_ruler_and_arranger,
+        NULL);
     }
   else
     {
@@ -348,7 +297,6 @@ on_clip_editor_region_changed ()
         GTK_WIDGET (
           MW_CLIP_EDITOR->no_selection_label));
     }
-  g_message ("clip editor region changed");
 }
 
 static void

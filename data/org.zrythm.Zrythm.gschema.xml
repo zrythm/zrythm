@@ -22,22 +22,22 @@
 
 
 <schemalist>
-  <schema id="org.zrythm"
-          path="/org/zrythm/">
+  <schema id="org.zrythm.Zrythm"
+    path="/org/zrythm/Zrythm/">
   </schema>
 
-  <enum id="org.zrythm.preferences.audio-backend-enum">
+  <enum id="org.zrythm.Zrythm.preferences.audio-backend-enum">
     <value nick="none" value="0"/>
     <value nick="alsa" value="1"/>
     <value nick="jack" value="2"/>
     <value nick="port-audio" value="3"/>
   </enum>
-  <enum id="org.zrythm.preferences.midi-backend-enum">
+  <enum id="org.zrythm.Zrythm.preferences.midi-backend-enum">
     <value nick="none" value="0"/>
     <value nick="alsa" value="1"/>
     <value nick="jack" value="2"/>
   </enum>
-  <enum id="org.zrythm.preferences.language-enum">
+  <enum id="org.zrythm.Zrythm.preferences.language-enum">
     <value nick="english" value="0"/>
     <value nick="german" value="1"/>
     <value nick="french" value="2"/>
@@ -49,64 +49,64 @@
     <value nick="russian" value="8"/>
     <value nick="chinese" value="9"/>
   </enum>
-  <enum id="org.zrythm.preferences.export-time-range-enum">
+  <enum id="org.zrythm.Zrythm.preferences.export-time-range-enum">
     <value nick="song" value="0"/>
     <value nick="loop" value="1"/>
     <value nick="custom" value="2"/>
   </enum>
-  <enum id="org.zrythm.preferences.export-format-enum">
+  <enum id="org.zrythm.Zrythm.preferences.export-format-enum">
     <value nick="FLAC" value="0"/>
     <value nick="OGG" value="1"/>
     <value nick="WAV" value="2"/>
     <value nick="MP3" value="3"/>
   </enum>
-  <enum id="org.zrythm.preferences.export-bit-depth-enum">
+  <enum id="org.zrythm.Zrythm.preferences.export-bit-depth-enum">
     <value nick="16" value="0"/>
     <value nick="24" value="1"/>
     <value nick="23" value="2"/>
   </enum>
-  <enum id="org.zrythm.ui.notenotation">
+  <enum id="org.zrythm.Zrythm.ui.notenotation">
     <value nick="notes" value="0"/>
     <value nick="numbers" value="1"/>
   </enum>
-  <enum id="org.zrythm.ui.plugin-browser-tab">
+  <enum id="org.zrythm.Zrythm.ui.plugin-browser-tab">
     <value nick="collection" value="0"/>
     <value nick="category" value="1"/>
     <value nick="protocol" value="2"/>
   </enum>
-  <enum id="org.zrythm.ui.plugin-browser-filter">
+  <enum id="org.zrythm.Zrythm.ui.plugin-browser-filter">
     <value nick="none" value="0"/>
     <value nick="instrument" value="1"/>
     <value nick="effect" value="2"/>
     <value nick="modulator" value="3"/>
     <value nick="midi-effect" value="4"/>
   </enum>
-  <enum id="org.zrythm.ui.piano-roll-highlight-enum">
+  <enum id="org.zrythm.Zrythm.ui.piano-roll-highlight-enum">
     <value nick="none" value="0"/>
     <value nick="chord" value="1"/>
     <value nick="scale" value="2"/>
     <value nick="both" value="3"/>
   </enum>
-  <enum id="org.zrythm.ui.piano-roll-midi-modifier-enum">
+  <enum id="org.zrythm.Zrythm.ui.piano-roll-midi-modifier-enum">
     <value nick="velocity" value="0"/>
     <value nick="pitch-wheel" value="1"/>
     <value nick="mod-wheel" value="2"/>
     <value nick="aftertouch" value="3"/>
   </enum>
-  <enum id="org.zrythm.preferences.pan-law-enum">
+  <enum id="org.zrythm.Zrythm.preferences.pan-law-enum">
     <value nick="zero-db" value="0"/>
     <value nick="minus-three-db" value="1"/>
     <value nick="minus-six-db" value="2"/>
   </enum>
-  <enum id="org.zrythm.preferences.pan-algo-enum">
+  <enum id="org.zrythm.Zrythm.preferences.pan-algo-enum">
     <value nick="linear" value="0"/>
     <value nick="sqrt" value="1"/>
     <value nick="sine" value="2"/>
   </enum>
 
   <!-- GENERAL schema -->
-  <schema id="org.zrythm.general"
-          path="/org/zrythm/general/">
+  <schema id="org.zrythm.Zrythm.general"
+    path="/org/zrythm/Zrythm/general/">
 
     <key name="recent-projects" type="as">
       <default>[]</default>
@@ -138,11 +138,12 @@
   </schema>
 
   <!-- PREFERENCES schema -->
-  <schema id="org.zrythm.preferences"
-          path="/org/zrythm/preferences/">
+  <schema id="org.zrythm.Zrythm.preferences"
+    path="/org/zrythm/Zrythm/preferences/">
 
     <!-- KEY: audio-backend -->
-    <key name="audio-backend" enum="org.zrythm.preferences.audio-backend-enum">
+  <key name="audio-backend"
+    enum="org.zrythm.Zrythm.preferences.audio-backend-enum">
       <default>"jack"</default>
       <summary>Audio Backend</summary>
       <description>
@@ -152,7 +153,7 @@
 
     <!-- KEY: pan-algorithm -->
     <key name="pan-algo"
-      enum="org.zrythm.preferences.pan-algo-enum">
+      enum="org.zrythm.Zrythm.preferences.pan-algo-enum">
       <default>"sine"</default>
       <summary>The panning algorithm</summary>
       <description>
@@ -163,7 +164,7 @@
 
     <!-- KEY: pan-law -->
     <key name="pan-law"
-      enum="org.zrythm.preferences.pan-law-enum">
+      enum="org.zrythm.Zrythm.preferences.pan-law-enum">
       <default>"minus-three-db"</default>
       <summary>The Pan Law</summary>
       <description>
@@ -173,7 +174,8 @@
     </key>
 
     <!-- KEY: midi-backend -->
-    <key name="midi-backend" enum="org.zrythm.preferences.midi-backend-enum">
+    <key name="midi-backend"
+      enum="org.zrythm.Zrythm.preferences.midi-backend-enum">
       <default>"jack"</default>
       <summary>MIDI Backend</summary>
       <description>
@@ -193,7 +195,7 @@
 
     <!-- Selected language -->
     <key name="language"
-      enum="org.zrythm.preferences.language-enum">
+      enum="org.zrythm.Zrythm.preferences.language-enum">
       <default>"english"</default>
       <summary>UI interface language</summary>
       <description>
@@ -239,7 +241,8 @@
     </key>
 
     <!-- KEY: export time range -->
-    <key name="export-time-range" enum="org.zrythm.preferences.export-time-range-enum">
+    <key name="export-time-range"
+      enum="org.zrythm.Zrythm.preferences.export-time-range-enum">
       <default>"song"</default>
       <summary>Time range to use when exporting</summary>
       <description>
@@ -248,7 +251,8 @@
     </key>
 
     <!-- KEY: export format -->
-    <key name="export-format" enum="org.zrythm.preferences.export-format-enum">
+    <key name="export-format"
+      enum="org.zrythm.Zrythm.preferences.export-format-enum">
       <default>"FLAC"</default>
       <summary>Format to use when exporting</summary>
       <description>
@@ -266,7 +270,8 @@
     </key>
 
     <!-- KEY: export bit depth -->
-    <key name="export-bit-depth" enum="org.zrythm.preferences.export-bit-depth-enum">
+    <key name="export-bit-depth"
+      enum="org.zrythm.Zrythm.preferences.export-bit-depth-enum">
       <default>"24"</default>
       <summary>Bit depth to use when exporting</summary>
       <description>
@@ -276,10 +281,11 @@
   </schema>
 
   <!-- UI schema -->
-  <schema id="org.zrythm.ui"
-          path="/org/zrythm/ui/">
+  <schema id="org.zrythm.Zrythm.ui"
+    path="/org/zrythm/Zrythm/ui/">
     <!-- KEY: note notation -->
-    <key name="note-notation" enum="org.zrythm.ui.notenotation">
+    <key name="note-notation"
+      enum="org.zrythm.Zrythm.ui.notenotation">
       <default>"notes"</default>
       <summary>Note Notation</summary>
       <description>
@@ -288,7 +294,8 @@
     </key>
 
     <!-- KEY: piano roll highlighting -->
-    <key name="piano-roll-highlight" enum="org.zrythm.ui.piano-roll-highlight-enum">
+    <key name="piano-roll-highlight"
+      enum="org.zrythm.Zrythm.ui.piano-roll-highlight-enum">
       <default>"none"</default>
       <summary>Piano Roll Highlight</summary>
       <description>
@@ -298,7 +305,8 @@
     </key>
 
     <!-- KEY: piano roll midi modifier -->
-    <key name="piano-roll-midi-modifier" enum="org.zrythm.ui.piano-roll-midi-modifier-enum">
+    <key name="piano-roll-midi-modifier"
+      enum="org.zrythm.Zrythm.ui.piano-roll-midi-modifier-enum">
       <default>"velocity"</default>
       <summary>Piano Roll MIDI Modifier</summary>
       <description>
@@ -318,7 +326,8 @@
     </key>
 
     <!-- KEY: plugin browser tab -->
-    <key name="plugin-browser-tab" enum="org.zrythm.ui.plugin-browser-tab">
+    <key name="plugin-browser-tab"
+      enum="org.zrythm.Zrythm.ui.plugin-browser-tab">
       <default>"category"</default>
       <summary>Plugin Browser tab</summary>
       <description>
@@ -327,7 +336,8 @@
     </key>
 
     <!-- KEY: plugin browser filter -->
-    <key name="plugin-browser-filter" enum="org.zrythm.ui.plugin-browser-filter">
+    <key name="plugin-browser-filter"
+      enum="org.zrythm.Zrythm.ui.plugin-browser-filter">
       <default>"none"</default>
       <summary>Plugin Browser filter</summary>
       <description>
