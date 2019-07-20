@@ -569,17 +569,17 @@ arranger_widget_refresh_all_backgrounds ()
     GTK_WIDGET (ar_prv->bg));
   ar_prv =
     arranger_widget_get_private (
-      Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+      Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
   gtk_widget_queue_draw (
     GTK_WIDGET (ar_prv->bg));
   ar_prv =
     arranger_widget_get_private (
-      Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER));
+      Z_ARRANGER_WIDGET (MW_MIDI_MODIFIER_ARRANGER));
   gtk_widget_queue_draw (
     GTK_WIDGET (ar_prv->bg));
   ar_prv =
     arranger_widget_get_private (
-      Z_ARRANGER_WIDGET (AUDIO_ARRANGER));
+      Z_ARRANGER_WIDGET (MW_AUDIO_ARRANGER));
   gtk_widget_queue_draw (
     GTK_WIDGET (ar_prv->bg));
 }
@@ -916,7 +916,7 @@ create_item (ArrangerWidget * self,
   Position pos;
   Track * track = NULL;
   AutomationTrack * at = NULL;
-  int note;
+  int note, chord_index;
   Region * region = NULL;
 
   /* get the position */
@@ -1017,7 +1017,24 @@ create_item (ArrangerWidget * self,
 
     }
   if (chord_arranger)
-    { }
+    {
+      /* find the chord and region at x,y */
+      chord_index =
+        chord_arranger_widget_get_chord_at_y (
+          start_y);
+      region =
+        CLIP_EDITOR->region;
+
+      /* create a chord object */
+      if (region)
+        {
+          chord_arranger_widget_create_chord (
+            chord_arranger,
+            &pos,
+            chord_index,
+            region);
+        }
+    }
   if (automation_arranger)
     { }
 
@@ -2102,13 +2119,26 @@ arranger_widget_refresh (
         -1);
       audio_arranger_widget_refresh_children (
         audio_arranger);
-
     }
   else if (chord_arranger)
     {
+      RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self),
+        rw_prv->total_px,
+        -1);
+      chord_arranger_widget_refresh_children (
+        chord_arranger);
     }
   else if (automation_arranger)
     {
+      RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self),
+        rw_prv->total_px,
+        -1);
+      automation_arranger_widget_refresh_children (
+        automation_arranger);
     }
 
 	if (ar_prv->bg)

@@ -35,7 +35,7 @@ G_DECLARE_FINAL_TYPE (
   Z, CHORD_ARRANGER_WIDGET,
   ArrangerWidget)
 
-#define CHORD_ARRANGER \
+#define MW_CHORD_ARRANGER \
   MW_CHORD_EDITOR_SPACE->arranger
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
@@ -67,12 +67,20 @@ ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
   Chord, chord, ChordObject, chord);
 
 /**
+ * Returns the chord index at y.
+ */
+int
+chord_arranger_widget_get_chord_at_y (double y);
+
+/**
  * Called on drag begin in parent when background is double
  * clicked (i.e., a note is created).
  */
 void
 chord_arranger_widget_create_chord (
   ChordArrangerWidget * self,
-  const Position *      pos);
+  const Position *      pos,
+  int                   chord_index,
+  Region *              region);
 
 #endif

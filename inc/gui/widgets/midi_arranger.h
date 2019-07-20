@@ -29,13 +29,14 @@
 
 #define MIDI_ARRANGER_WIDGET_TYPE \
   (midi_arranger_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MidiArrangerWidget,
-                      midi_arranger_widget,
-                      Z,
-                      MIDI_ARRANGER_WIDGET,
-                      ArrangerWidget)
+G_DECLARE_FINAL_TYPE (
+  MidiArrangerWidget,
+  midi_arranger_widget,
+  Z, MIDI_ARRANGER_WIDGET,
+  ArrangerWidget)
 
-#define MIDI_ARRANGER MW_MIDI_EDITOR_SPACE->arranger
+#define MW_MIDI_ARRANGER \
+  MW_MIDI_EDITOR_SPACE->arranger
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
@@ -71,6 +72,9 @@ ARRANGER_W_DECLARE_FUNCS (
 ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
   Midi, midi, MidiNote, note);
 
+/**
+ * Returns the note value (0-127) at y.
+ */
 int
 midi_arranger_widget_get_note_at_y (double y);
 

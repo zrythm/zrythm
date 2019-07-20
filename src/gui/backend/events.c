@@ -43,6 +43,7 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/channel.h"
+#include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/header_notebook.h"
@@ -111,12 +112,12 @@ on_playhead_changed ()
         }
       if (MW_MIDI_EDITOR_SPACE)
         {
-          if (MIDI_ARRANGER)
+          if (MW_MIDI_ARRANGER)
             {
               /*gtk_widget_queue_allocate (*/
                 /*GTK_WIDGET (MIDI_ARRANGER));*/
             }
-          if (MIDI_MODIFIER_ARRANGER)
+          if (MW_MIDI_MODIFIER_ARRANGER)
             {
               /*gtk_widget_queue_allocate (*/
                 /*GTK_WIDGET (MIDI_MODIFIER_ARRANGER));*/
@@ -259,10 +260,10 @@ refresh_editor_ruler_and_arranger ()
 
   /* remove all previous children and add new */
   arranger_widget_refresh (
-    Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+    Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
   arranger_widget_refresh (
     Z_ARRANGER_WIDGET (
-      MIDI_MODIFIER_ARRANGER));
+      MW_MIDI_MODIFIER_ARRANGER));
 
   CLIP_EDITOR->region_changed = 0;
 
@@ -358,7 +359,7 @@ on_midi_note_selection_changed ()
       GTK_WIDGET (region->widget));
 
   gtk_widget_queue_allocate (
-    GTK_WIDGET (MIDI_MODIFIER_ARRANGER));
+    GTK_WIDGET (MW_MIDI_MODIFIER_ARRANGER));
 
   editor_selection_info_widget_refresh (
     MW_MAS_INFO, MA_SELECTIONS);
@@ -671,12 +672,9 @@ events_process (void * data)
         case ET_MARKER_CREATED:
         case ET_AUTOMATION_POINT_CREATED:
         case ET_AUTOMATION_CURVE_CREATED:
-        case ET_CHORD_OBJECT_CREATED:
         case ET_SCALE_OBJECT_CREATED:
-        case ET_CHORD_OBJECT_CHANGED:
         case ET_SCALE_OBJECT_CHANGED:
         case ET_REGION_REMOVED:
-        case ET_CHORD_OBJECT_REMOVED:
         case ET_SCALE_OBJECT_REMOVED:
         case ET_MARKER_REMOVED:
           /* FIXME track is passed so only
@@ -685,6 +683,12 @@ events_process (void * data)
             Z_ARRANGER_WIDGET (MW_TIMELINE));
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
+          break;
+        case ET_CHORD_OBJECT_CREATED:
+        case ET_CHORD_OBJECT_CHANGED:
+        case ET_CHORD_OBJECT_REMOVED:
+          arranger_widget_refresh (
+            Z_ARRANGER_WIDGET (MW_CHORD_ARRANGER));
           break;
         case ET_AUTOMATION_POINT_REMOVED:
         case ET_AUTOMATION_CURVE_REMOVED:
@@ -723,21 +727,21 @@ events_process (void * data)
           else if (ev->arg == EDITOR_RULER)
             {
               if (gtk_widget_get_visible (
-                    GTK_WIDGET (MIDI_ARRANGER)))
+                    GTK_WIDGET (MW_MIDI_ARRANGER)))
                 {
                   arranger_widget_refresh (
                     Z_ARRANGER_WIDGET (
-                      MIDI_ARRANGER));
+                      MW_MIDI_ARRANGER));
                   arranger_widget_refresh (
                     Z_ARRANGER_WIDGET (
-                      MIDI_MODIFIER_ARRANGER));
+                      MW_MIDI_MODIFIER_ARRANGER));
                 }
               if (gtk_widget_get_visible (
-                    GTK_WIDGET (AUDIO_ARRANGER)))
+                    GTK_WIDGET (MW_AUDIO_ARRANGER)))
                 {
                   arranger_widget_refresh (
                     Z_ARRANGER_WIDGET (
-                      AUDIO_ARRANGER));
+                      MW_AUDIO_ARRANGER));
                 }
             }
           break;
@@ -784,17 +788,17 @@ events_process (void * data)
           toolbox_widget_refresh (MW_TOOLBOX);
           arranger_widget_refresh_cursor (
             Z_ARRANGER_WIDGET (MW_TIMELINE));
-          if (MIDI_ARRANGER &&
+          if (MW_MIDI_ARRANGER &&
               gtk_widget_get_realized (
-                GTK_WIDGET (MIDI_ARRANGER)))
+                GTK_WIDGET (MW_MIDI_ARRANGER)))
             arranger_widget_refresh_cursor (
-              Z_ARRANGER_WIDGET (MIDI_ARRANGER));
-          if (MIDI_MODIFIER_ARRANGER &&
+              Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
+          if (MW_MIDI_MODIFIER_ARRANGER &&
               gtk_widget_get_realized (
-                GTK_WIDGET (MIDI_MODIFIER_ARRANGER)))
+                GTK_WIDGET (MW_MIDI_MODIFIER_ARRANGER)))
             arranger_widget_refresh_cursor (
               Z_ARRANGER_WIDGET (
-                MIDI_MODIFIER_ARRANGER));
+                MW_MIDI_MODIFIER_ARRANGER));
           break;
         case ET_TIME_SIGNATURE_CHANGED:
           ruler_widget_refresh (
@@ -890,10 +894,10 @@ events_process (void * data)
           /*arranger_widget_refresh (*/
             /*Z_ARRANGER_WIDGET (MIDI_ARRANGER));*/
           arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MIDI_ARRANGER));
+            Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (
-              MIDI_MODIFIER_ARRANGER));
+              MW_MIDI_MODIFIER_ARRANGER));
           break;
         case ET_MIDI_NOTE_REMOVED:
           /*g_object_ref (((MidiNote *) ev->arg)->widget);*/
@@ -903,9 +907,9 @@ events_process (void * data)
           /*arranger_widget_refresh (*/
             /*Z_ARRANGER_WIDGET (MIDI_ARRANGER));*/
           midi_arranger_widget_refresh_children (
-            MIDI_ARRANGER);
+            MW_MIDI_ARRANGER);
           midi_modifier_arranger_widget_refresh_children (
-            MIDI_MODIFIER_ARRANGER);
+            MW_MIDI_MODIFIER_ARRANGER);
           break;
         case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
           if (MW_MIDI_EDITOR_SPACE)
@@ -998,6 +1002,21 @@ events_process (void * data)
           if (TL_SELECTIONS->num_regions > 0)
             editor_ruler_widget_refresh (
               EDITOR_RULER);
+          break;
+        case ET_CHORD_KEY_CHANGED:
+          for (int i = 0;
+               i < CHORD_EDITOR->num_chords; i++)
+            {
+              if (CHORD_EDITOR->chords[i] ==
+                (ChordDescriptor *) ev->arg)
+                {
+                  gtk_widget_queue_draw (
+                    GTK_WIDGET (
+                      MW_CHORD_EDITOR_SPACE->
+                        chord_keys[i]));
+                  break;
+                }
+            }
           break;
         default:
           g_message ("event not implemented yet");

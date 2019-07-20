@@ -91,10 +91,10 @@ midi_arranger_draw_cb (
           y_offset);
       if ((PIANO_ROLL->drum_mode &&
           PIANO_ROLL->drum_descriptors[i].value ==
-            MIDI_ARRANGER->hovered_note) ||
+            MW_MIDI_ARRANGER->hovered_note) ||
           (!PIANO_ROLL->drum_mode &&
            PIANO_ROLL->piano_descriptors[i].value ==
-             MIDI_ARRANGER->hovered_note))
+             MW_MIDI_ARRANGER->hovered_note))
         {
           cairo_set_source_rgba (
             cr, 1, 1, 1, 0.06);

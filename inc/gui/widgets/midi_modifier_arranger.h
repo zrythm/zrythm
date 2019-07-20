@@ -27,13 +27,13 @@
 
 #define MIDI_MODIFIER_ARRANGER_WIDGET_TYPE \
   (midi_modifier_arranger_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MidiModifierArrangerWidget,
-                      midi_modifier_arranger_widget,
-                      Z,
-                      MIDI_MODIFIER_ARRANGER_WIDGET,
-                      ArrangerWidget)
+G_DECLARE_FINAL_TYPE (
+  MidiModifierArrangerWidget,
+  midi_modifier_arranger_widget,
+  Z, MIDI_MODIFIER_ARRANGER_WIDGET,
+  ArrangerWidget)
 
-#define MIDI_MODIFIER_ARRANGER \
+#define MW_MIDI_MODIFIER_ARRANGER \
   MW_MIDI_EDITOR_SPACE->modifier_arranger
 
 typedef struct Velocity Velocity;

@@ -43,6 +43,8 @@ G_DEFINE_TYPE (
   chord_editor_space_widget,
   GTK_TYPE_BOX)
 
+#define DEFAULT_PX_PER_KEY 12
+
 /**
  * Links scroll windows after all widgets have been
  * initialized.
@@ -57,8 +59,7 @@ link_scrolls (
       gtk_scrolled_window_set_hadjustment (
         MW_CLIP_EDITOR_INNER->ruler_scroll,
         gtk_scrolled_window_get_hadjustment (
-          GTK_SCROLLED_WINDOW (
-            self->arranger_scroll)));
+          self->arranger_scroll));
     }
 }
 
@@ -78,12 +79,18 @@ void
 chord_editor_space_widget_refresh (
   ChordEditorSpaceWidget * self)
 {
+  link_scrolls (self);
 }
 
 void
 chord_editor_space_widget_setup (
   ChordEditorSpaceWidget * self)
 {
+  self->px_per_key =
+    DEFAULT_PX_PER_KEY * PIANO_ROLL->notes_zoom;
+  self->total_key_px =
+    self->px_per_key * CHORD_EDITOR->num_chords;
+
   if (self->arranger)
     {
       arranger_widget_setup (
@@ -93,15 +100,25 @@ chord_editor_space_widget_setup (
         GTK_WIDGET (self->arranger));
     }
 
-  link_scrolls (self);
-
   for (int i = 0; i < CHORD_EDITOR->num_chords; i++)
     {
       self->chord_keys[i] =
         chord_key_widget_new (CHORD_EDITOR->chords[i]);
+      GtkBox * box =
+        GTK_BOX (
+          gtk_box_new (GTK_ORIENTATION_HORIZONTAL,
+                       0));
+      gtk_widget_set_visible (
+        GTK_WIDGET (box), 1);
+      gtk_box_pack_start (
+        box, GTK_WIDGET (self->chord_keys[i]),
+        1, 1, 0);
+      z_gtk_widget_add_style_class (
+        GTK_WIDGET (box), "chord_key");
       gtk_container_add (
         GTK_CONTAINER (self->chord_keys_box),
-        GTK_WIDGET (self->chord_keys[i]));
+        GTK_WIDGET (box));
+      self->chord_key_boxes[i] = box;
     }
 
   chord_editor_space_widget_refresh (self);

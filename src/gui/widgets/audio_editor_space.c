@@ -76,6 +76,7 @@ void
 audio_editor_space_widget_refresh (
   AudioEditorSpaceWidget * self)
 {
+  link_scrolls (self);
 }
 
 void
@@ -91,7 +92,7 @@ audio_editor_space_widget_setup (
         GTK_WIDGET (self->arranger));
     }
 
-  link_scrolls (self);
+  audio_editor_space_widget_refresh (self);
 }
 
 static void

@@ -740,7 +740,7 @@ activate_delete (GSimpleAction *action,
                             action);
     }
   else if (MAIN_WINDOW->last_focused ==
-             GTK_WIDGET (MIDI_ARRANGER))
+             GTK_WIDGET (MW_MIDI_ARRANGER))
     {
       UndoableAction * action =
         delete_midi_arranger_selections_action_new (
@@ -760,7 +760,7 @@ activate_duplicate (GSimpleAction *action,
     {
     }
   else if (MAIN_WINDOW->last_focused ==
-             GTK_WIDGET (MIDI_ARRANGER))
+             GTK_WIDGET (MW_MIDI_ARRANGER))
     {
     }
 }
@@ -780,7 +780,7 @@ activate_select_all (
 	gpointer user_data)
 {
 	if (MAIN_WINDOW->last_focused
-		== GTK_WIDGET (MIDI_ARRANGER))
+		== GTK_WIDGET (MW_MIDI_ARRANGER))
 	{
 		midi_arranger_widget_select_all (
 			Z_MIDI_ARRANGER_WIDGET (

@@ -71,11 +71,11 @@ chord_arranger_draw_cb (
 
   /* px per key adjusted for border width */
   double adj_px_per_key =
-    MW_MIDI_EDITOR_SPACE->px_per_key + 1;
+    MW_CHORD_EDITOR_SPACE->px_per_key + 1;
 
   /*handle horizontal drawing*/
   double y_offset;
-  for (int i = 0; i < CHORD_EDITOR->num_chords; i++)
+  for (int i = 0; i <= CHORD_EDITOR->num_chords; i++)
     {
       y_offset =
         adj_px_per_key * i;
@@ -87,8 +87,15 @@ chord_arranger_draw_cb (
           rect.x,
           rect.x + rect.width,
           y_offset);
-      if (i == CHORD_ARRANGER->hovered_index)
+      if (i == MW_CHORD_ARRANGER->hovered_index)
         {
+          double height;
+          if (MW_CHORD_ARRANGER->hovered_index ==
+                CHORD_EDITOR->num_chords)
+            height =
+              rect.height - (y_offset + 1);
+          else
+            height = adj_px_per_key;
           cairo_set_source_rgba (
             cr, 1, 1, 1, 0.06);
               cairo_rectangle (
@@ -97,7 +104,7 @@ chord_arranger_draw_cb (
                 /* + 1 since the border is bottom */
                 y_offset + 1,
                 rect.width,
-                adj_px_per_key);
+                height);
           cairo_fill (cr);
         }
     }

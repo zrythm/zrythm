@@ -24,14 +24,15 @@
 #include "gui/backend/clip_editor.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/chord_selector_window.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/chord_key.h"
 #include "project.h"
 #include "utils/cairo.h"
+#include "utils/gtk.h"
 
 #include <gtk/gtk.h>
 
@@ -107,7 +108,7 @@ chord_key_widget_new (
 
   gtk_widget_set_size_request (
     GTK_WIDGET (self), 98,
-    MW_MIDI_EDITOR_SPACE->px_per_key);
+    MW_CHORD_EDITOR_SPACE->px_per_key);
 
   return self;
 }

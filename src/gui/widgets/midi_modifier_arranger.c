@@ -126,7 +126,7 @@ midi_modifier_arranger_widget_select (
       Velocity * vel =
         vel_w->velocity;
       ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-        MIDI_ARRANGER,
+        MW_MIDI_ARRANGER,
         vel->midi_note,
         1,
         1);

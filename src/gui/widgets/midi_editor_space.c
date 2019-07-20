@@ -187,7 +187,7 @@ midi_editor_space_widget_refresh (
     }
 
   midi_arranger_widget_set_size (
-    MIDI_ARRANGER);
+    MW_MIDI_ARRANGER);
 
   /* relink scrolls */
   link_scrolls (self);

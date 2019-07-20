@@ -225,9 +225,9 @@ midi_region_remove_midi_note (
         MA_SELECTIONS,
         midi_note);
     }
-  if (MIDI_ARRANGER->start_midi_note ==
+  if (MW_MIDI_ARRANGER->start_midi_note ==
         midi_note)
-    MIDI_ARRANGER->start_midi_note = NULL;
+    MW_MIDI_ARRANGER->start_midi_note = NULL;
 
   array_delete (region->midi_notes,
                 region->num_midi_notes,

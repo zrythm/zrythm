@@ -196,20 +196,21 @@ midi_arranger_widget_select_all (
 }
 
 static int
-on_motion (GtkWidget *      widget,
-           GdkEventMotion * event,
-           RegionWidget *   self)
+on_motion (
+  GtkWidget *      widget,
+  GdkEventMotion * event,
+  MidiArrangerWidget * self)
 {
   if (event->type == GDK_LEAVE_NOTIFY)
-    MIDI_ARRANGER->hovered_note = -1;
+    self->hovered_note = -1;
   else
-    MIDI_ARRANGER->hovered_note =
+    self->hovered_note =
       midi_arranger_widget_get_note_at_y (
         event->y);
   /*g_message ("hovered note: %d",*/
              /*MIDI_ARRANGER->hovered_note);*/
 
-  ARRANGER_WIDGET_GET_PRIVATE (MIDI_ARRANGER);
+  ARRANGER_WIDGET_GET_PRIVATE (self);
   gtk_widget_queue_draw (
               GTK_WIDGET (ar_prv->bg));
 
@@ -1084,7 +1085,7 @@ midi_arranger_widget_on_drag_end (
   midi_arranger_widget_update_visibility (
     self);
   midi_modifier_arranger_widget_update_visibility (
-    MIDI_MODIFIER_ARRANGER);
+    MW_MIDI_MODIFIER_ARRANGER);
 
   self->start_midi_note = NULL;
   /*if (self->start_midi_note_clone)*/

@@ -96,6 +96,8 @@ clip_editor_inner_widget_refresh (
             GTK_WIDGET (self->midi_editor_space));
           midi_editor_space_widget_update_size_group (
             self->midi_editor_space, 1);
+          midi_editor_space_widget_refresh (
+            self->midi_editor_space);
           break;
         case REGION_TYPE_AUDIO:
           gtk_stack_set_visible_child (
@@ -103,6 +105,8 @@ clip_editor_inner_widget_refresh (
             GTK_WIDGET (MW_AUDIO_EDITOR_SPACE));
           audio_editor_space_widget_update_size_group (
             self->audio_editor_space, 1);
+          audio_editor_space_widget_refresh (
+            self->audio_editor_space);
           break;
         case REGION_TYPE_CHORD:
           gtk_stack_set_visible_child (
@@ -110,6 +114,8 @@ clip_editor_inner_widget_refresh (
             GTK_WIDGET (MW_CHORD_EDITOR_SPACE));
           chord_editor_space_widget_update_size_group (
             self->chord_editor_space, 1);
+          chord_editor_space_widget_refresh (
+            self->chord_editor_space);
           break;
         case REGION_TYPE_AUTOMATION:
           gtk_stack_set_visible_child (
@@ -118,6 +124,8 @@ clip_editor_inner_widget_refresh (
               MW_AUTOMATION_EDITOR_SPACE));
           automation_editor_space_widget_update_size_group (
             self->automation_editor_space, 1);
+          automation_editor_space_widget_refresh (
+            self->automation_editor_space);
           break;
         }
     }

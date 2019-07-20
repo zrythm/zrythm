@@ -53,7 +53,11 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_object.h"
+#include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker.h"
@@ -105,15 +109,29 @@ chord_arranger_widget_set_allocation (
       ChordDescriptor * descr =
         CHORD_EDITOR->chords[co->index];
 
-      gint wx, wy;
-      gtk_widget_translate_coordinates (
-        GTK_WIDGET (track->widget),
-        GTK_WIDGET (self),
-        0, 0, &wx, &wy);
+      /* use transient or non transient region
+       * depending on which is visible */
+      Region * region = co->region;
+      region = region_get_visible (region);
 
+      long region_start_ticks =
+        region->start_pos.total_ticks;
+      Position tmp;
+      int adj_px_per_key =
+        MW_CHORD_EDITOR_SPACE->px_per_key + 1;
+
+      /* use absolute position */
+      position_from_ticks (
+        &tmp,
+        region_start_ticks +
+        co->pos.total_ticks);
       allocation->x =
         ui_pos_to_px_editor (
-          &co->pos, 1);
+          &tmp, 1);
+      allocation->y =
+        adj_px_per_key *
+        co->index;
+
       char * chord_str =
         chord_descriptor_to_string (descr);
       int textw, texth;
@@ -124,15 +142,7 @@ chord_arranger_widget_set_allocation (
         textw + CHORD_OBJECT_WIDGET_TRIANGLE_W +
         Z_CAIRO_TEXT_PADDING * 2;
 
-      int track_height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (track->widget));
-      int obj_height =
-        texth + Z_CAIRO_TEXT_PADDING * 2;
-      allocation->y =
-        ((wy + track_height) - obj_height) -
-        track_height / 2;
-      allocation->height = obj_height;
+      allocation->height = adj_px_per_key;
     }
 }
 
@@ -376,33 +386,56 @@ chord_arranger_widget_on_drag_begin_chord_hit (
 void
 chord_arranger_widget_create_chord (
   ChordArrangerWidget * self,
-  const Position *      pos)
+  const Position *      pos,
+  int                   chord_index,
+  Region *              region)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
 
+  /* get local pos */
+  Position local_pos;
+  position_from_ticks (
+    &local_pos,
+    pos->total_ticks -
+    region->start_pos.total_ticks);
+
   /* create a new chord */
   ChordObject * chord =
     chord_object_new (
-      0, 1);
+      chord_index, 1);
 
   /* add it to chord region */
   chord_region_add_chord_object (
-    CLIP_EDITOR->region, chord);
+    region, chord);
+
+  chord_object_gen_widget (chord);
 
   /* set visibility */
   arranger_object_info_set_widget_visibility_and_state (
     &chord->obj_info, 1);
 
   chord_object_set_pos (
-    chord, pos, AO_UPDATE_ALL);
+    chord, &local_pos, AO_UPDATE_ALL);
 
   EVENTS_PUSH (ET_CHORD_OBJECT_CREATED, chord);
   ARRANGER_WIDGET_SELECT_CHORD (
     self, chord, F_SELECT,
     F_NO_APPEND);
+}
+
+/**
+ * Returns the chord index at y.
+ */
+int
+chord_arranger_widget_get_chord_at_y (double y)
+{
+  double adj_y = y - 1;
+  double adj_px_per_key =
+    MW_CHORD_EDITOR_SPACE->px_per_key + 1;
+  return adj_y / adj_px_per_key;
 }
 
 /**
@@ -491,6 +524,28 @@ chord_arranger_widget_move_items_x (
                NULL);
 }
 
+static int
+on_motion (
+  GtkWidget *      widget,
+  GdkEventMotion * event,
+  ChordArrangerWidget * self)
+{
+  if (event->type == GDK_LEAVE_NOTIFY)
+    self->hovered_index = -1;
+  else
+    self->hovered_index =
+      chord_arranger_widget_get_chord_at_y (
+        event->y);
+  /*g_message ("hovered index: %d",*/
+             /*self->hovered_index);*/
+
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+  gtk_widget_queue_draw (
+    GTK_WIDGET (ar_prv->bg));
+
+  return FALSE;
+}
+
 /**
  * Sets width to ruler width and height to
  * tracklist height.
@@ -500,22 +555,11 @@ chord_arranger_widget_set_size (
   ChordArrangerWidget * self)
 {
   // set the size
-  /*int ww, hh;*/
-  /*if (self->is_pinned)*/
-    /*gtk_widget_get_size_request (*/
-      /*GTK_WIDGET (MW_PINNED_TRACKLIST),*/
-      /*&ww,*/
-      /*&hh);*/
-  /*else*/
-    /*gtk_widget_get_size_request (*/
-      /*GTK_WIDGET (MW_TRACKLIST),*/
-      /*&ww,*/
-      /*&hh);*/
-  /*RULER_WIDGET_GET_PRIVATE (MW_RULER);*/
-  /*gtk_widget_set_size_request (*/
-    /*GTK_WIDGET (self),*/
-    /*rw_prv->total_px,*/
-    /*hh);*/
+  RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self),
+    rw_prv->total_px,
+    MW_CHORD_EDITOR_SPACE->total_key_px);
 }
 
 /**
@@ -527,6 +571,12 @@ chord_arranger_widget_setup (
 {
   chord_arranger_widget_set_size (
     self);
+
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+  g_signal_connect (
+    G_OBJECT(ar_prv->bg),
+    "motion-notify-event",
+    G_CALLBACK (on_motion),  self);
 }
 
 void
@@ -687,12 +737,13 @@ add_children_from_chord_track (
   ChordArrangerWidget * self,
   ChordTrack *          ct)
 {
+  g_message ("ADDING CHILDREN");
   int i, j, k;
   Region * r;
   ChordObject * c;
   for (i = 0; i < ct->num_chord_regions; i++)
     {
-      r = ct->chord_regions[j];
+      r = ct->chord_regions[i];
 
       for (j = 0; j < r->num_chord_objects; j++)
         {
@@ -710,6 +761,7 @@ add_children_from_chord_track (
               if (!c->widget)
                 c->widget =
                   chord_object_widget_new (c);
+              g_message ("ADDING CHORD");
 
               gtk_overlay_add_overlay (
                 GTK_OVERLAY (self),

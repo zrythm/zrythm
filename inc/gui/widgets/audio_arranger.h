@@ -35,7 +35,7 @@ G_DECLARE_FINAL_TYPE (AudioArrangerWidget,
                       AUDIO_ARRANGER_WIDGET,
                       ArrangerWidget)
 
-#define AUDIO_ARRANGER \
+#define MW_AUDIO_ARRANGER \
   MW_AUDIO_EDITOR_SPACE->arranger
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;

@@ -427,7 +427,8 @@ channel expander-box
   border-color: #BBBBBB;
 }
 
-.piano_roll_key_box
+.piano_roll_key_box,
+.chord_key
 {
   border-style: solid;
   border-bottom-width: 1px;

@@ -48,7 +48,8 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_AUTOMATION_ARRANGER MW_CENTER_DOCK->timeline
+#define MW_AUTOMATION_ARRANGER \
+  MW_CENTER_DOCK->timeline
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct AutomationPoint AutomationPoint;

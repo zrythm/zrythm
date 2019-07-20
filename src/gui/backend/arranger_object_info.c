@@ -101,11 +101,11 @@ arranger_object_info_should_be_visible (
       break;
     case AOI_TYPE_MIDI_NOTE:
       arranger =
-        Z_ARRANGER_WIDGET (MIDI_ARRANGER);
+        Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER);
       break;
     case AOI_TYPE_VELOCITY:
       arranger =
-        Z_ARRANGER_WIDGET (MIDI_MODIFIER_ARRANGER);
+        Z_ARRANGER_WIDGET (MW_MIDI_MODIFIER_ARRANGER);
       break;
     }
   g_warn_if_fail (arranger);

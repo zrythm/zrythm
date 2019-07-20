@@ -56,8 +56,7 @@ link_scrolls (
       gtk_scrolled_window_set_hadjustment (
         MW_CLIP_EDITOR_INNER->ruler_scroll,
         gtk_scrolled_window_get_hadjustment (
-          GTK_SCROLLED_WINDOW (
-            self->arranger_scroll)));
+          self->arranger_scroll));
     }
 }
 
@@ -76,6 +75,7 @@ void
 automation_editor_space_widget_refresh (
   AutomationEditorSpaceWidget * self)
 {
+  link_scrolls (self);
 }
 
 void
@@ -91,7 +91,7 @@ automation_editor_space_widget_setup (
         GTK_WIDGET (self->arranger));
     }
 
-  link_scrolls (self);
+  automation_editor_space_widget_refresh (self);
 }
 
 static void
