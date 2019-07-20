@@ -205,27 +205,6 @@ automation_point_clone (
 }
 
 /**
- * Returns Y in pixels from the value based on the
- * allocation of the automation track.
- *
- * FIXME move to widget.
- */
-int
-automation_point_get_y_in_px (
-  AutomationPoint * self)
-{
-  /* ratio of current value in the range */
-  float ap_ratio =
-    automation_point_get_normalized_value (self);
-
-  int allocated_h =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (MW_AUTOMATION_ARRANGER));
-  int point = allocated_h - ap_ratio * allocated_h;
-  return point;
-}
-
-/**
  * Returns the normalized value (0.0 to 1.0).
  */
 float

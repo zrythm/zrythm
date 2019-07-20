@@ -48,6 +48,146 @@ chord_region_draw_cb (
   cairo_t *cr,
   ChordRegionWidget * self)
 {
+  int i, j;
+  REGION_WIDGET_GET_PRIVATE (self);
+  guint width, height;
+  GtkStyleContext *context;
+
+  context =
+    gtk_widget_get_style_context (widget);
+
+  width =
+    gtk_widget_get_allocated_width (widget);
+  height =
+    gtk_widget_get_allocated_height (widget);
+
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
+
+  Region * r = rw_prv->region;
+  Region * main_region =
+    region_get_main_region (r);
+  int num_loops =
+    region_get_num_loops (r, 1);
+  long ticks_in_region =
+    region_get_full_length_in_ticks (r);
+  float x_start, x_end;
+
+  /* draw midi notes */
+  long loop_end_ticks =
+    position_to_ticks (&r->loop_end_pos);
+  long loop_ticks =
+    region_get_loop_length_in_ticks (r);
+  long clip_start_ticks =
+    position_to_ticks (&r->clip_start_pos);
+  ChordObject * co;
+  ChordObject * next_co;
+  ChordDescriptor * descr;
+  for (i = 0; i < main_region->num_chord_objects;
+       i++)
+    {
+      co = main_region->chord_objects[i];
+
+      co =
+        (ChordObject *)
+        arranger_object_info_get_visible_counterpart (
+          &co->obj_info);
+      descr = chord_object_get_chord_descriptor (co);
+
+      /* get ratio (0.0 - 1.0) on x where chord
+       * starts & ends */
+      int co_start_ticks =
+        position_to_ticks (&co->pos);
+      int co_end_ticks;
+      if (i < main_region->num_chord_objects - 1)
+        {
+          next_co =
+            main_region->chord_objects[i + 1];
+          co_end_ticks =
+            position_to_ticks (&next_co->pos);
+        }
+      else
+        co_end_ticks =
+          position_to_ticks (&main_region->end_pos);
+      int tmp_start_ticks, tmp_end_ticks;
+
+      /* adjust for clip start */
+      /*int adjusted_mn_start_ticks =*/
+        /*mn_start_ticks - clip_start_ticks;*/
+      /*int adjusted_mn_end_ticks =*/
+        /*mn_end_ticks - clip_end_ticks;*/
+
+      /* if before loop start & after clip start */
+      /*if (position_compare (*/
+            /*&mn->start_pos, &r->loop_start_pos) < 0 &&*/
+          /*position_compare (*/
+            /*&mn->start_pos, &r->clip_start_pos) >= 0)*/
+        /*{*/
+
+        /*}*/
+      /* if before loop end */
+      if (position_compare (
+            &co->pos, &r->loop_end_pos) < 0)
+        {
+          for (j = 0; j < num_loops; j++)
+            {
+              /* if note started before loop start
+               * only draw it once */
+              if (position_compare (
+                    &co->pos,
+                    &r->loop_start_pos) < 0 &&
+                  j != 0)
+                break;
+
+              /* calculate draw endpoints */
+              tmp_start_ticks =
+                co_start_ticks + loop_ticks * j;
+              /* if should be clipped */
+              if (position_is_after_or_equal (
+                    &next_co->pos,
+                    &r->loop_end_pos))
+                tmp_end_ticks =
+                  loop_end_ticks + loop_ticks * j;
+              else
+                tmp_end_ticks =
+                  co_end_ticks + loop_ticks * j;
+
+              /* adjust for clip start */
+              tmp_start_ticks -= clip_start_ticks;
+              tmp_end_ticks -= clip_start_ticks;
+
+              x_start =
+                (float) tmp_start_ticks /
+                ticks_in_region;
+              x_end =
+                (float) tmp_end_ticks /
+                ticks_in_region;
+
+              cairo_set_source_rgba (
+                cr, 1, 1, 1, 0.3);
+
+              /* draw */
+              cairo_rectangle (
+                cr,
+                x_start * width,
+                0,
+                (x_end - x_start) * width,
+                height);
+              cairo_fill (cr);
+
+              cairo_set_source_rgba (
+                cr, 0, 0, 0, 1);
+
+              /* draw name */
+              z_cairo_draw_text_full (
+                cr,
+                chord_descriptor_to_string (descr),
+                x_start * width + 2,
+                2,
+                Z_CAIRO_FONT);
+            }
+        }
+    }
 
   region_widget_draw_name (
     Z_REGION_WIDGET (self), cr);

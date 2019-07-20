@@ -243,7 +243,8 @@ chord_descriptor_to_string (
       g_free (str);
       str = str2;
     }
-  if (chord->has_bass)
+  if (chord->has_bass &&
+      (chord->bass_note != chord->root_note))
     {
       char * str2 =
         g_strdup_printf (

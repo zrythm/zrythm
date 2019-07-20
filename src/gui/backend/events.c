@@ -34,6 +34,7 @@
 #include "gui/widgets/arranger_playhead.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
+#include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
@@ -670,8 +671,6 @@ events_process (void * data)
           break;
         case ET_REGION_CREATED:
         case ET_MARKER_CREATED:
-        case ET_AUTOMATION_POINT_CREATED:
-        case ET_AUTOMATION_CURVE_CREATED:
         case ET_SCALE_OBJECT_CREATED:
         case ET_SCALE_OBJECT_CHANGED:
         case ET_REGION_REMOVED:
@@ -692,12 +691,13 @@ events_process (void * data)
           break;
         case ET_AUTOMATION_POINT_REMOVED:
         case ET_AUTOMATION_CURVE_REMOVED:
+        case ET_AUTOMATION_POINT_CREATED:
+        case ET_AUTOMATION_CURVE_CREATED:
           /* FIXME automation track is passed so
            * only refresh the automation lane */
           arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MW_TIMELINE));
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
+            Z_ARRANGER_WIDGET (
+              MW_AUTOMATION_ARRANGER));
           break;
         case ET_TL_SELECTIONS_CHANGED:
           inspector_widget_refresh (MW_INSPECTOR);

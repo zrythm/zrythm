@@ -28,6 +28,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_arranger_bg.h"
+#include "gui/widgets/automation_track.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/tracklist.h"
@@ -44,6 +45,55 @@ automation_arranger_draw_cb (
   cairo_t *cr,
   gpointer data)
 {
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (cr, &rect);
+
+  /* draw automation related stuff */
+  Region * r = CLIP_EDITOR->region;
+  Track * track = region_get_track (r);
+
+  float normalized_val =
+    automation_track_get_normalized_val_at_pos (
+      r->at, &PLAYHEAD);
+  if (normalized_val < 0.f)
+    normalized_val =
+      automatable_real_val_to_normalized (
+        r->at->automatable,
+        automatable_get_val (
+          r->at->automatable));
+
+  int y_px =
+    automation_track_widget_get_y_px_from_normalized_val (
+      r->at->widget,
+      normalized_val);
+
+  /* show line at current val */
+  cairo_set_source_rgba (
+    cr,
+    track->color.red,
+    track->color.green,
+    track->color.blue,
+    0.3);
+  cairo_set_line_width (cr, 1);
+  cairo_move_to (cr, rect.x, y_px);
+  cairo_line_to (cr, rect.x + rect.width, y_px);
+  cairo_stroke (cr);
+
+  /* show shade under the line */
+  /*cairo_set_source_rgba (*/
+    /*cr,*/
+    /*track->color.red,*/
+    /*track->color.green,*/
+    /*track->color.blue,*/
+    /*0.06);*/
+  /*int allocated_h =*/
+    /*gtk_widget_get_allocated_height (*/
+      /*GTK_WIDGET (al->widget));*/
+  /*cairo_rectangle (*/
+    /*cr,*/
+    /*rect.x, wy + y_px,*/
+    /*rect.width, allocated_h - y_px);*/
+  /*cairo_fill (cr);*/
 
   return FALSE;
 }

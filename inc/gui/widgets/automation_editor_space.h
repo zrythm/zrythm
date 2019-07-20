@@ -56,9 +56,18 @@ typedef struct _AutomationEditorSpaceWidget
 {
   GtkBox               parent_instance;
 
-  GtkScrolledWindow *     arranger_scroll;
-  GtkViewport *           arranger_viewport;
-  AutomationArrangerWidget *   arranger;
+  /** The box dividing the chord keys and the
+   * arranger. */
+  GtkBox *              left_slash_arranger_box;
+
+  /** The box on the left of the arranger containing
+   * the chord keys. */
+  GtkBox *              left_box;
+
+  /** The arranger. */
+  AutomationArrangerWidget * arranger;
+  GtkScrolledWindow *        arranger_scroll;
+  GtkViewport *              arranger_viewport;
 } AutomationEditorSpaceWidget;
 
 void

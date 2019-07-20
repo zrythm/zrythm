@@ -139,30 +139,12 @@ automation_curve_new (
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
  *
  * @param ac The start point (0, 0).
- * @param x X-coordinate in px.
- * @param width Total width in px.
- * @param height Total height in px.
+ * @param x Normalized x.
  */
 double
-automation_curve_get_y_px (
+automation_curve_get_normalized_value (
   AutomationCurve * ac,
-  double            x,
-  double            width,
-  double            height);
-
-/**
- * TODO add description.
- *
- * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
- * @param x X-coordinate.
- * @param curviness Curviness variable.
- * @param start_at_1 Start at lower point.
- */
-double
-automation_curve_get_y_normalized (
-  double x,
-  double curviness,
-  int    start_at_1);
+  double            x);
 
 /**
  * Sets the curviness of the AutomationCurve.

@@ -68,7 +68,8 @@ automation_editor_space_widget_update_size_group (
   AutomationEditorSpaceWidget * self,
   int                     visible)
 {
-  /* TODO */
+  CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP (
+    left_box);
 }
 
 void
@@ -95,7 +96,8 @@ automation_editor_space_widget_setup (
 }
 
 static void
-automation_editor_space_widget_init (AutomationEditorSpaceWidget * self)
+automation_editor_space_widget_init (
+  AutomationEditorSpaceWidget * self)
 {
   g_type_ensure (AUTOMATION_ARRANGER_WIDGET_TYPE);
 
@@ -123,4 +125,8 @@ automation_editor_space_widget_class_init (
     klass,
     AutomationEditorSpaceWidget,
     arranger);
+  gtk_widget_class_bind_template_child (
+    klass,
+    AutomationEditorSpaceWidget,
+    left_box);
 }

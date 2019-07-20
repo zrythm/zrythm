@@ -146,7 +146,9 @@ automation_region_add_ac (
   /** double array size if full */
   if (self->num_acs == self->aps_size - 1)
     {
-      self->aps_size *= 2;
+      self->aps_size =
+        self->aps_size == 0 ? 1 :
+        self->aps_size * 2;
       self->acs =
         realloc (
           self->acs,
@@ -155,9 +157,8 @@ automation_region_add_ac (
     }
 
   /* add point */
-  array_append (self->acs,
-                self->num_acs,
-                ac);
+  array_append (
+    self->acs, self->num_acs, ac);
 
   /* sort by position */
   qsort (self->acs,
@@ -234,6 +235,11 @@ automation_region_add_ap (
   array_double_size_if_full (
     self->aps, self->num_aps, self->aps_size,
     AutomationPoint *);
+  self->acs =
+    realloc (
+      self->acs,
+      sizeof (AutomationCurve *) *
+      (self->aps_size - 1));
   array_append (
     self->aps, self->num_aps, ap);
 

@@ -156,9 +156,6 @@ automation_point_new_float (
   const Position *    pos,
   int                 is_main);
 
-int
-automation_point_get_y_in_px (AutomationPoint * ap);
-
 /**
  * Updates the value and notifies interested parties.
  *

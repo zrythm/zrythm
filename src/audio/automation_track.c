@@ -230,8 +230,8 @@ automation_track_get_normalized_val_at_pos (
              /*ratio);*/
 
   double result =
-    automation_curve_get_y_normalized (
-      ratio, ac->curviness, !prev_ap_lower);
+    automation_curve_get_normalized_value (
+      ac, ratio);
   result = result * prev_next_diff;
   /*g_message ("halfbaked result %f start at lower %d",*/
              /*result, prev_ap_lower);*/

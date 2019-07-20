@@ -1036,7 +1036,10 @@ create_item (ArrangerWidget * self,
         }
     }
   if (automation_arranger)
-    { }
+    {
+      automation_arranger_widget_create_ap (
+        automation_arranger, &pos, start_y);
+    }
 
   /* something is (likely) added so reallocate */
   gtk_widget_queue_allocate (GTK_WIDGET (self));
@@ -1943,7 +1946,7 @@ arranger_widget_setup (
   else if (automation_arranger)
     {
       ar_prv->bg = Z_ARRANGER_BG_WIDGET (
-        chord_arranger_bg_widget_new (
+        automation_arranger_bg_widget_new (
           Z_RULER_WIDGET (EDITOR_RULER),
           self));
       automation_arranger_widget_setup (

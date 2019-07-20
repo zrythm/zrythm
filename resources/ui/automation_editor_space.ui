@@ -25,56 +25,23 @@
   <template class="AutomationEditorSpaceWidget" parent="GtkBox">
     <property name="visible">True</property>
     <child>
-      <object class="GtkPaned" id="midi_arranger_velocity_paned">
+      <object class="GtkPaned"
+        id="main_top_bot_paned">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkBox" id="midi_notes_arranger_box">
+          <object class="GtkBox"
+            id="left_slash_arranger_box">
             <property name="height_request">120</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="vexpand">True</property>
             <child>
-              <object class="GtkBox" id="midi_notes_box">
+              <object class="GtkBox"
+                id="left_box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkScrolledWindow" id="piano_roll_keys_scroll">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="hscrollbar_policy">never</property>
-                    <property name="vscrollbar_policy">external</property>
-                    <property name="shadow_type">in</property>
-                    <child>
-                      <object class="GtkViewport" id="piano_roll_keys_viewport">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkBox" id="piano_roll_keys_box">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
                 <child>
                   <placeholder/>
                 </child>
@@ -86,22 +53,25 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="midi_arranger_box">
+              <object class="GtkBox"
+                id="arranger_box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkScrolledWindow" id="arranger_scroll">
+                  <object class="GtkScrolledWindow"
+                    id="arranger_scroll">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">always</property>
                     <property name="shadow_type">in</property>
                     <child>
-                      <object class="GtkViewport" id="arranger_viewport">
+                      <object class="GtkViewport"
+                        id="arranger_viewport">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="MidiArrangerWidget" id="arranger">
+                          <object class="AutomationArrangerWidget" id="arranger">
                             <property name="visible">1</property>
                           </object>
                         </child>
