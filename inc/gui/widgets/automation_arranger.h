@@ -92,7 +92,8 @@ void
 automation_arranger_widget_create_ap (
   AutomationArrangerWidget * self,
   const Position *           pos,
-  const double               start_y);
+  const double               start_y,
+  Region *                   region);
 
 /**
  * @}

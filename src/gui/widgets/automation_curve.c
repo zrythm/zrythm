@@ -164,48 +164,14 @@ automation_curve_draw_cb (
         automation_region_get_ap_before_curve (
           self->ac->region, self->ac);
 
-      /*gtk_widget_translate_coordinates(*/
-                /*GTK_WIDGET (ap->widget),*/
-                /*GTK_WIDGET (MW_TRACKLIST),*/
-                /*0,*/
-                /*0,*/
-                /*&wx,*/
-                /*&wy);*/
-      /*wx = arranger_get_x_pos_in_px (&ap->pos);*/
-
-      /*gint prev_wx, prev_wy;*/
-      /*AutomationPoint * prev_ap =*/
-        /*automation_track_get_ap_before_curve (at, self->ac);*/
-      /*gtk_widget_translate_coordinates(*/
-                /*GTK_WIDGET (prev_ap->widget),*/
-                /*GTK_WIDGET (MW_TRACKLIST),*/
-                /*0,*/
-                /*0,*/
-                /*&prev_wx,*/
-                /*&prev_wy);*/
-      /*prev_wx = arranger_get_x_pos_in_px (&prev_ap->pos);*/
-      /*int ww = wx - prev_wx;*/
       double automation_point_y;
-      int prev_y =
-        automation_point_get_normalized_value (
-          prev_ap);
-      int next_y =
-        automation_point_get_normalized_value (
-          next_ap);
-      int prev_higher = prev_y > next_y;
       double new_x = 0;
+
+      /* TODO use cairo translate to add padding */
 
       /* set starting point */
       double new_y;
-      /*g_message ("new y %f", new_y);*/
-      /*cairo_move_to (self->cached_cr,*/
-                     /*new_x,*/
-                     /*new_y);*/
-      /*int height = prev_y_px > curr_y_px ?*/
-        /*prev_y_px - curr_y_px :*/
-        /*curr_y_px - prev_y_px;*/
-      /*cairo_set_line_width (self->cached_cr, 1);*/
-      /*for (int l = 0; l < ww; l++)*/
+
       for (double l = 0.0;
            l <= ((double) width);
            l = l + 0.1)
@@ -218,22 +184,8 @@ automation_curve_draw_cb (
               l / width);
           automation_point_y *= height;
 
-          /*g_message ("ap y %f", automation_point_y);*/
           new_x = l;
-          /*new_y =*/
-            /*prev_higher ?*/
-            /*automation_point_y :*/
-            /*height + automation_point_y;*/
           new_y = automation_point_y;
-
-          /* this is because height is 1 smaller than the actual height, so start drawing from 0.5 to actual height - 0.5 */
-          /*if (prev_higher)*/
-            /*new_y += AC_Y_HALF_PADDING;*/
-          /*else*/
-            /*new_y -= AC_Y_HALF_PADDING;*/
-          /*g_message ("new x %f , new y %f",*/
-                     /*new_x,*/
-                     /*new_y);*/
 
           if (l == 0.0)
             {

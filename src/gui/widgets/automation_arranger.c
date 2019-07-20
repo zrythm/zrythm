@@ -177,10 +177,24 @@ automation_arranger_widget_set_allocation (
         ap_widget->automation_point;
       /*Automatable * a = ap->at->automatable;*/
 
+      /* use transient or non transient region
+       * depending on which is visible */
+      Region * region = ap->region;
+      region = region_get_visible (region);
+
+      /* use absolute position */
+      long region_start_ticks =
+        region->start_pos.total_ticks;
+      Position tmp;
+      position_from_ticks (
+        &tmp,
+        region_start_ticks +
+        ap->pos.total_ticks);
       allocation->x =
         ui_pos_to_px_editor (
-          &ap->pos, 1) -
+          &tmp, 1) -
           AP_WIDGET_POINT_SIZE / 2;
+
       allocation->y =
         (get_automation_point_y (self, ap)) -
         AP_WIDGET_POINT_SIZE / 2;
@@ -202,25 +216,44 @@ automation_arranger_widget_set_allocation (
       if (!prev_ap || !next_ap)
         g_return_if_reached ();
 
+      /* use transient or non transient region
+       * depending on which is visible */
+      Region * region = ac->region;
+      region = region_get_visible (region);
+
+      /* use absolute position */
+      long region_start_ticks =
+        region->start_pos.total_ticks;
+      Position tmp;
+      position_from_ticks (
+        &tmp,
+        region_start_ticks +
+        prev_ap->pos.total_ticks);
+
       allocation->x =
         ui_pos_to_px_editor (
-          &prev_ap->pos,
-          1) - AC_Y_HALF_PADDING;
+          &tmp, 1);
       int prev_y =
         get_automation_point_y (self, prev_ap);
       int next_y =
         get_automation_point_y (self, next_ap);
       allocation->y =
-        (prev_y > next_y ? next_y : prev_y) -
-         AC_Y_HALF_PADDING;
+        (prev_y > next_y ? next_y : prev_y);
+
+      /* use absolute position */
+      position_from_ticks (
+        &tmp,
+        region_start_ticks +
+        next_ap->pos.total_ticks);
       allocation->width =
         (ui_pos_to_px_editor (
-          &next_ap->pos,
-          1) - allocation->x) + AC_Y_HALF_PADDING;
+          &tmp, 1) -
+         allocation->x);
+
       allocation->height =
         (prev_y > next_y ?
          prev_y - next_y :
-         next_y - prev_y) + AC_Y_PADDING;
+         next_y - prev_y);
     }
 }
 
@@ -480,11 +513,19 @@ void
 automation_arranger_widget_create_ap (
   AutomationArrangerWidget * self,
   const Position *   pos,
-  const double       start_y)
+  const double       start_y,
+  Region *           region)
 {
   AutomationTrack * at = CLIP_EDITOR->region->at;
   g_warn_if_fail (at);
   ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  /* get local pos */
+  Position local_pos;
+  position_from_ticks (
+    &local_pos,
+    pos->total_ticks -
+    region->start_pos.total_ticks);
 
   int height =
     gtk_widget_get_allocated_height (
@@ -501,7 +542,7 @@ automation_arranger_widget_create_ap (
   /* create a new ap */
   AutomationPoint * ap =
     automation_point_new_float (
-      value, pos, F_MAIN);
+      value, &local_pos, F_MAIN);
   self->start_ap = ap;
 
   /* add it to automation track */
@@ -516,7 +557,7 @@ automation_arranger_widget_create_ap (
 
   /* set position to all counterparts */
   automation_point_set_pos (
-    ap, pos, AO_UPDATE_ALL);
+    ap, &local_pos, AO_UPDATE_ALL);
 
   EVENTS_PUSH (
     ET_AUTOMATION_POINT_CREATED, ap);

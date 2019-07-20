@@ -1029,16 +1029,21 @@ create_item (ArrangerWidget * self,
       if (region)
         {
           chord_arranger_widget_create_chord (
-            chord_arranger,
-            &pos,
-            chord_index,
+            chord_arranger, &pos, chord_index,
             region);
         }
     }
   if (automation_arranger)
     {
-      automation_arranger_widget_create_ap (
-        automation_arranger, &pos, start_y);
+      region =
+        CLIP_EDITOR->region;
+
+      if (region)
+        {
+          automation_arranger_widget_create_ap (
+            automation_arranger, &pos, start_y,
+            region);
+        }
     }
 
   /* something is (likely) added so reallocate */
