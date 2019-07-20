@@ -36,6 +36,7 @@ includedir = join_paths (prefix, get_option('includedir'))
 datadir = join_paths (prefix, get_option('datadir'))
 sysconfdir = join_paths (prefix, get_option('sysconfdir'))
 schemasdir = join_paths (datadir, 'glib-2.0/schemas')
+fontsdir = join_paths (datadir, 'fonts', 'zrythm')
 
 cdata = configuration_data ()
 cdata.set_quoted (

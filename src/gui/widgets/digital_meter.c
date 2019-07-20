@@ -48,7 +48,8 @@ G_DEFINE_TYPE (DigitalMeterWidget,
                GTK_TYPE_DRAWING_AREA)
 
 #define FONT_SIZE 16
-#define SEG7_FONT "Segment7 Bold 16"
+/*#define SEG7_FONT "Segment7 Bold 16"*/
+#define SEG7_FONT "DSEG14 Classic Mini Italic 12"
 #define NORMAL_FONT "sans-serif Bold 11"
 #define CAPTION_FONT "sans-serif 7"
 #define SPACE_BETWEEN 6
@@ -219,15 +220,15 @@ draw_cb (
       if (bars < -100)
         text = g_strdup_printf ("%d", bars);
       else if (bars < -10)
-        text = g_strdup_printf (" %d", bars);
+        text = g_strdup_printf ("!%d", bars);
       else if (bars < 0)
-        text = g_strdup_printf ("  %d", bars);
+        text = g_strdup_printf ("!!%d", bars);
       else if (bars < 10)
-        text = g_strdup_printf ("   %d", bars);
+        text = g_strdup_printf ("!!!%d", bars);
       else if (bars < 100)
-        text = g_strdup_printf ("  %d", bars);
+        text = g_strdup_printf ("!!%d", bars);
       else
-        text = g_strdup_printf (" %d", bars);
+        text = g_strdup_printf ("!%d", bars);
       z_cairo_draw_text_full (
         cr, text, self->bars_start_pos,
         self->height_start_pos, SEG7_FONT);
