@@ -20,11 +20,19 @@
 import os
 import subprocess
 
-schemadir = os.path.join(os.environ['MESON_INSTALL_PREFIX'], 'share', 'glib-2.0', 'schemas')
-fontsdir = os.path.join(os.environ['MESON_INSTALL_PREFIX'], 'share', 'fonts', 'zrythm')
+prefix = os.environ.get('MESON_INSTALL_PREFIX', '/usr/local')
+datadir = os.path.join(prefix, 'share')
+
+schemadir = os.path.join(datadir, 'glib-2.0', 'schemas')
+fontsdir = os.path.join(datadir, 'fonts', 'zrythm')
+desktop_database_dir = os.path.join(datadir, 'applications')
 
 if not os.environ.get('DESTDIR'):
     print('Compiling gsettings schemas...')
     subprocess.call(['glib-compile-schemas', schemadir])
     print('Updating font cache...')
     subprocess.call(['fc-cache', fontsdir])
+    print('Updating desktop database...')
+    if not os.path.exists(desktop_database_dir):
+        os.makedirs(desktop_database_dir)
+    subprocess.call(['update-desktop-database', '-q', desktop_database_dir])
