@@ -737,7 +737,8 @@ timeline_arranger_widget_on_drag_begin_region_hit (
           UI_OVERLAY_ACTION_STARTING_MOVING;
       break;
     case TOOL_CUT:
-      /* TODO */
+      ar_prv->action =
+        UI_OVERLAY_ACTION_CUTTING;
       break;
     case TOOL_RAMP:
       /* TODO */
@@ -748,10 +749,11 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   self->start_region_was_selected = selected;
 
   /* select region if unselected */
-  if (P_TOOL == TOOL_SELECT_NORMAL ||
-      P_TOOL == TOOL_SELECT_STRETCH ||
-      P_TOOL == TOOL_EDIT)
+  switch (P_TOOL)
     {
+    case TOOL_SELECT_NORMAL:
+    case TOOL_SELECT_STRETCH:
+    case TOOL_EDIT:
       /* if ctrl held & not selected, add to
        * selections */
       if (ar_prv->ctrl_held &&
@@ -768,6 +770,14 @@ timeline_arranger_widget_on_drag_begin_region_hit (
           ARRANGER_WIDGET_SELECT_REGION (
             self, region, F_SELECT, F_NO_APPEND);
         }
+      break;
+    case TOOL_CUT:
+      /* only select this region */
+      ARRANGER_WIDGET_SELECT_REGION (
+        self, region, F_SELECT, F_NO_APPEND);
+      break;
+    default:
+      break;
     }
 }
 void
@@ -791,10 +801,11 @@ timeline_arranger_widget_on_drag_begin_scale_hit (
   int selected = scale_object_is_selected (scale);
 
   /* select scale if unselected */
-  if (P_TOOL == TOOL_SELECT_NORMAL ||
-      P_TOOL == TOOL_SELECT_STRETCH ||
-      P_TOOL == TOOL_EDIT)
+  switch (P_TOOL)
     {
+    case TOOL_SELECT_NORMAL:
+    case TOOL_SELECT_STRETCH:
+    case TOOL_EDIT:
       /* if ctrl held & not selected, add to
        * selections */
       if (ar_prv->ctrl_held && !selected)
@@ -810,6 +821,14 @@ timeline_arranger_widget_on_drag_begin_scale_hit (
           ARRANGER_WIDGET_SELECT_SCALE (
             self, scale, F_SELECT, F_NO_APPEND);
         }
+      break;
+    case TOOL_CUT:
+      /* nothing to do, wait for drag end */
+      ar_prv->action =
+        UI_OVERLAY_ACTION_CUTTING;
+      break;
+    default:
+      break;
     }
 }
 
@@ -1794,9 +1813,9 @@ timeline_arranger_widget_on_drag_end (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (ar_prv->action ==
-        UI_OVERLAY_ACTION_RESIZING_L)
+  switch (ar_prv->action)
     {
+    case UI_OVERLAY_ACTION_RESIZING_L:
       if (!self->resizing_range)
         {
           Region * main_trans_region =
@@ -1816,10 +1835,8 @@ timeline_arranger_widget_on_drag_end (
           undo_manager_perform (
             UNDO_MANAGER, ua);
         }
-    }
-  else if (ar_prv->action ==
-        UI_OVERLAY_ACTION_RESIZING_R)
-    {
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R:
       if (!self->resizing_range)
         {
           Region * main_trans_region =
@@ -1838,10 +1855,8 @@ timeline_arranger_widget_on_drag_end (
           undo_manager_perform (
             UNDO_MANAGER, ua);
         }
-    }
-  else if (ar_prv->action ==
-        UI_OVERLAY_ACTION_STARTING_MOVING)
-    {
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING:
       /* if something was clicked with ctrl without
        * moving*/
       if (ar_prv->ctrl_held)
@@ -1860,88 +1875,104 @@ timeline_arranger_widget_on_drag_end (
           /* double click on object */
           /*g_message ("DOUBLE CLICK");*/
         }
-    }
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING)
-    {
-      Position earliest_trans_pos;
-      timeline_selections_get_start_pos (
-        TL_SELECTIONS,
-        &earliest_trans_pos, 1);
-      UndoableAction * ua =
-        (UndoableAction *)
-        move_timeline_selections_action_new (
+      break;
+    case UI_OVERLAY_ACTION_MOVING:
+      {
+        Position earliest_trans_pos;
+        timeline_selections_get_start_pos (
           TL_SELECTIONS,
-          position_to_ticks (
-            &earliest_trans_pos) -
-          position_to_ticks (
-            &ar_prv->earliest_obj_start_pos),
-          timeline_selections_get_highest_track (
-            TL_SELECTIONS, F_TRANSIENTS) -
-          timeline_selections_get_highest_track (
-            TL_SELECTIONS, F_NO_TRANSIENTS));
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  /* if copy/link-moved */
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING_COPY ||
-           ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING_LINK)
-    {
-      Position earliest_trans_pos;
-      timeline_selections_get_start_pos (
-        TL_SELECTIONS,
-        &earliest_trans_pos, 1);
-      UndoableAction * ua =
-        (UndoableAction *)
-        duplicate_timeline_selections_action_new (
+          &earliest_trans_pos, 1);
+        UndoableAction * ua =
+          (UndoableAction *)
+          move_timeline_selections_action_new (
+            TL_SELECTIONS,
+            position_to_ticks (
+              &earliest_trans_pos) -
+            position_to_ticks (
+              &ar_prv->earliest_obj_start_pos),
+            timeline_selections_get_highest_track (
+              TL_SELECTIONS, F_TRANSIENTS) -
+            timeline_selections_get_highest_track (
+              TL_SELECTIONS, F_NO_TRANSIENTS));
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
+    case UI_OVERLAY_ACTION_MOVING_COPY:
+    case UI_OVERLAY_ACTION_MOVING_LINK:
+      {
+        Position earliest_trans_pos;
+        timeline_selections_get_start_pos (
           TL_SELECTIONS,
-          position_to_ticks (
-            &earliest_trans_pos) -
-          position_to_ticks (
-            &ar_prv->earliest_obj_start_pos),
-          timeline_selections_get_highest_track (
-            TL_SELECTIONS, F_TRANSIENTS) -
-          timeline_selections_get_highest_track (
-            TL_SELECTIONS, F_NO_TRANSIENTS));
-      timeline_selections_reset_transient_poses (
-        TL_SELECTIONS);
-      timeline_selections_clear (
-        TL_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
-    }
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_NONE ||
-           ar_prv->action ==
-             UI_OVERLAY_ACTION_STARTING_SELECTION)
-    {
-      timeline_selections_clear (
-        TL_SELECTIONS);
-    }
-  /* if something was created */
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_CREATING_MOVING ||
-           ar_prv->action ==
-             UI_OVERLAY_ACTION_CREATING_RESIZING_R)
-    {
-      timeline_selections_set_to_transient_poses (
-        TL_SELECTIONS);
-      timeline_selections_set_to_transient_values (
-        TL_SELECTIONS);
-
-      UndoableAction * ua =
-        (UndoableAction *)
-        create_timeline_selections_action_new (
+          &earliest_trans_pos, 1);
+        UndoableAction * ua =
+          (UndoableAction *)
+          duplicate_timeline_selections_action_new (
+            TL_SELECTIONS,
+            position_to_ticks (
+              &earliest_trans_pos) -
+            position_to_ticks (
+              &ar_prv->earliest_obj_start_pos),
+            timeline_selections_get_highest_track (
+              TL_SELECTIONS, F_TRANSIENTS) -
+            timeline_selections_get_highest_track (
+              TL_SELECTIONS, F_NO_TRANSIENTS));
+        timeline_selections_reset_transient_poses (
           TL_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+        timeline_selections_clear (
+          TL_SELECTIONS);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
+    case UI_OVERLAY_ACTION_NONE:
+    case UI_OVERLAY_ACTION_STARTING_SELECTION:
+      timeline_selections_clear (
+        TL_SELECTIONS);
+      break;
+    /* if something was created */
+    case UI_OVERLAY_ACTION_CREATING_MOVING:
+    case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
+      {
+        timeline_selections_set_to_transient_poses (
+          TL_SELECTIONS);
+        timeline_selections_set_to_transient_values (
+          TL_SELECTIONS);
+
+        UndoableAction * ua =
+          (UndoableAction *)
+          create_timeline_selections_action_new (
+            TL_SELECTIONS);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
+    case UI_OVERLAY_ACTION_CUTTING:
+      {
+        /* get cut position */
+        Position cut_pos;
+        position_set_to_pos (
+          &cut_pos, &ar_prv->curr_pos);
+
+        if (SNAP_GRID_ANY_SNAP (
+              ar_prv->snap_grid) &&
+            !ar_prv->shift_held)
+          position_snap_simple (
+            &cut_pos, ar_prv->snap_grid);
+        position_print_simple (&cut_pos);
+        UndoableAction * ua =
+          (UndoableAction *)
+          edit_timeline_selections_action_new (
+            TL_SELECTIONS, ETS_CUT, -1, NULL,
+            &cut_pos);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+      }
+      break;
+    default:
+      break;
     }
-  /* if didn't click on something */
-  else
-    {
-    }
+
   ar_prv->action = UI_OVERLAY_ACTION_NONE;
   timeline_arranger_widget_update_visibility (
     self);

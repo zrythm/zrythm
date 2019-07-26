@@ -440,6 +440,33 @@ region_find_by_name (
   const char * name);
 
 /**
+ * Splits the given Region at the given Position,
+ * deletes the original Region and adds 2 new
+ * Regions in the same parent (Track or
+ * AutomationTrack).
+ *
+ * The given region must be the main region, as this
+ * will create 2 new main regions.
+ *
+ * @param region The Region to split. This Region
+ *   will be deleted.
+ * @param pos The Position to split at.
+ * @param pos_is_local If the position is local (1)
+ *   or global (0).
+ * @param r1 Address to hold the pointer to the
+ *   newly created region 1.
+ * @param r2 Address to hold the pointer to the
+ *   newly created region 2.
+ */
+void
+region_split (
+  Region *         region,
+  const Position * pos,
+  const int        pos_is_local,
+  Region **        r1,
+  Region **        r2);
+
+/**
  * Returns the MidiNote matching the properties of
  * the given MidiNote.
  *

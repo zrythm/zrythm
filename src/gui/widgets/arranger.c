@@ -1077,6 +1077,18 @@ drag_begin (GtkGestureDrag *   gesture,
 
   GET_ARRANGER_ALIASES (self);
 
+  /* get current pos */
+  arranger_widget_px_to_pos (
+    self, ar_prv->start_x,
+    &ar_prv->curr_pos, 1);
+
+  /* get difference with drag start pos */
+  ar_prv->curr_ticks_diff_from_start =
+    position_get_ticks_diff (
+      &ar_prv->curr_pos,
+      &ar_prv->start_pos,
+      NULL);
+
   /* get hit arranger objects */
   /* FIXME move this part to multipress, makes
    * more sense and makes this function smaller/
@@ -1188,9 +1200,10 @@ drag_begin (GtkGestureDrag *   gesture,
       /* single click */
       if (ar_prv->n_press == 1)
         {
-          if (P_TOOL == TOOL_SELECT_NORMAL ||
-              P_TOOL == TOOL_SELECT_STRETCH)
+          switch (P_TOOL)
             {
+            case TOOL_SELECT_NORMAL:
+            case TOOL_SELECT_STRETCH:
               /* selection */
               ar_prv->action =
                 UI_OVERLAY_ACTION_STARTING_SELECTION;
@@ -1205,9 +1218,8 @@ drag_begin (GtkGestureDrag *   gesture,
                   timeline_arranger_widget_set_select_type (
                     timeline_arranger, start_y);
                 }
-            }
-          else if (P_TOOL == TOOL_EDIT)
-            {
+              break;
+            case TOOL_EDIT:
               if (!ar_prv->ctrl_held)
                 {
                   /* something is created */
@@ -1218,34 +1230,38 @@ drag_begin (GtkGestureDrag *   gesture,
                 {
                   /* autofill */
                 }
-            }
-          else if (P_TOOL == TOOL_ERASER)
-            {
+              break;
+            case TOOL_ERASER:
               /* delete selection */
               ar_prv->action =
                 UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
-            }
-          else if (P_TOOL == TOOL_RAMP)
-            {
+              break;
+            case TOOL_RAMP:
               ar_prv->action =
                 UI_OVERLAY_ACTION_STARTING_RAMP;
+              break;
+            default:
+              break;
             }
         }
       /* double click */
       else if (ar_prv->n_press == 2)
         {
-          if (P_TOOL == TOOL_SELECT_NORMAL ||
-              P_TOOL == TOOL_SELECT_STRETCH ||
-              P_TOOL == TOOL_EDIT)
+          switch (P_TOOL)
             {
+            case TOOL_SELECT_NORMAL:
+            case TOOL_SELECT_STRETCH:
+            case TOOL_EDIT:
               create_item (
                 self, start_x, start_y);
-            }
-          else if (P_TOOL == TOOL_ERASER)
-            {
+              break;
+            case TOOL_ERASER:
               /* delete selection */
               ar_prv->action =
                 UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
+              break;
+            default:
+              break;
             }
         }
     }
@@ -1371,38 +1387,41 @@ drag_update (
    * it's just
    * a click, so we can check at drag_end and see if
    * anything was selected */
-  if (ar_prv->action ==
-        UI_OVERLAY_ACTION_STARTING_SELECTION)
-    ar_prv->action =
-      UI_OVERLAY_ACTION_SELECTING;
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION)
-    ar_prv->action =
-      UI_OVERLAY_ACTION_DELETE_SELECTING;
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_STARTING_MOVING)
+  switch (ar_prv->action)
     {
+    case UI_OVERLAY_ACTION_STARTING_SELECTION:
+      ar_prv->action =
+        UI_OVERLAY_ACTION_SELECTING;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
+      ar_prv->action =
+        UI_OVERLAY_ACTION_DELETE_SELECTING;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING:
       if (ar_prv->ctrl_held)
         ar_prv->action =
           UI_OVERLAY_ACTION_MOVING_COPY;
       else
         ar_prv->action =
           UI_OVERLAY_ACTION_MOVING;
+      break;
+    case UI_OVERLAY_ACTION_MOVING:
+      if (ar_prv->ctrl_held)
+        ar_prv->action =
+          UI_OVERLAY_ACTION_MOVING_COPY;
+      break;
+    case UI_OVERLAY_ACTION_MOVING_COPY:
+      if (!ar_prv->ctrl_held)
+        ar_prv->action =
+          UI_OVERLAY_ACTION_MOVING;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_RAMP:
+      ar_prv->action =
+        UI_OVERLAY_ACTION_RAMPING;
+      break;
+    default:
+      break;
     }
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING &&
-           ar_prv->ctrl_held)
-    ar_prv->action =
-      UI_OVERLAY_ACTION_MOVING_COPY;
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING_COPY &&
-           !ar_prv->ctrl_held)
-    ar_prv->action =
-      UI_OVERLAY_ACTION_MOVING;
-  else if (ar_prv->action ==
-        UI_OVERLAY_ACTION_STARTING_RAMP)
-    ar_prv->action =
-      UI_OVERLAY_ACTION_RAMPING;
 
   /* if drawing a selection */
   switch (ar_prv->action)
@@ -1623,6 +1642,9 @@ drag_update (
         {
           /* TODO */
         }
+      break;
+    case UI_OVERLAY_ACTION_CUTTING:
+      /* nothing to do, wait for drag end */
       break;
     default:
       /* TODO */

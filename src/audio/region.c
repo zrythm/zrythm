@@ -544,6 +544,102 @@ region_set_clip_start_pos (
 }
 
 /**
+ * Splits the given Region at the given Position,
+ * deletes the original Region and adds 2 new
+ * Regions in the same parent (Track or
+ * AutomationTrack).
+ *
+ * The given region must be the main region, as this
+ * will create 2 new main regions.
+ *
+ * @param region The Region to split. This Region
+ *   will be deleted.
+ * @param pos The Position to split at.
+ * @param pos_is_local If the position is local (1)
+ *   or global (0).
+ * @param r1 Address to hold the pointer to the
+ *   newly created region 1.
+ * @param r2 Address to hold the pointer to the
+ *   newly created region 2.
+ */
+void
+region_split (
+  Region *         region,
+  const Position * pos,
+  const int        pos_is_local,
+  Region **        r1,
+  Region **        r2)
+{
+  /* create the new regions */
+  *r1 =
+    region_clone (region, REGION_CLONE_COPY_MAIN);
+  *r2 =
+    region_clone (region, REGION_CLONE_COPY_MAIN);
+
+  /* get global/local positions (the local pos
+   * is after traversing the loops) */
+  Position globalp, localp;
+  if (pos_is_local)
+    {
+      position_set_to_pos (&globalp, pos);
+      position_add_ticks (
+        &globalp, region->start_pos.total_ticks);
+      position_set_to_pos (&localp, pos);
+    }
+  else
+    {
+      position_set_to_pos (&globalp, pos);
+      region_timeline_pos_to_local (
+        region, &globalp, &localp, 1);
+    }
+
+  /* for first region just set the end pos */
+  region_set_end_pos (
+    *r1, &globalp, AO_UPDATE_ALL);
+
+  region_set_clip_start_pos (
+    *r2, &localp, AO_UPDATE_ALL);
+  region_set_start_pos (
+    *r2, &globalp, AO_UPDATE_ALL);
+
+  /* add them to the track */
+  track_add_region (
+    region_get_track (region),
+    *r1, region->at, region->lane_pos, 1);
+  track_add_region (
+    region_get_track (region),
+    *r2, region->at, region->lane_pos, 1);
+
+  /* generate widgets so update visibility in the
+   * arranger can work */
+  region_gen_widget (*r1);
+  region_gen_widget (*r2);
+
+  /* select them */
+  timeline_selections_clear (TL_SELECTIONS);
+  timeline_selections_add_region (
+    TL_SELECTIONS, *r1);
+  timeline_selections_add_region (
+    TL_SELECTIONS, *r2);
+
+  /* change to r1 if the original region was the
+   * clip editor region */
+  if (CLIP_EDITOR->region == region)
+    {
+      clip_editor_set_region (
+        *r1);
+    }
+
+  /* remove and free the original region */
+  track_remove_region (
+    region_get_track (region),
+    region, F_FREE);
+
+  EVENTS_PUSH (ET_REGION_CREATED, *r1);
+  EVENTS_PUSH (ET_REGION_CREATED, *r2);
+}
+
+/**
  * Sets Region name (without appending anything to
  * it) to all associated regions.
  */
@@ -989,10 +1085,8 @@ region_disconnect (
     }
   if (TL_SELECTIONS)
     {
-      array_delete (
-        TL_SELECTIONS->regions,
-        TL_SELECTIONS->num_regions,
-        self);
+      timeline_selections_remove_region (
+        TL_SELECTIONS, self);
     }
   if (MW_TIMELINE->start_region == self)
     MW_TIMELINE->start_region = NULL;

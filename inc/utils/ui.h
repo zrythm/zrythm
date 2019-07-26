@@ -186,6 +186,7 @@ typedef enum UiOverlayAction
 
   UI_OVERLAY_ACTION_STARTING_RAMP,
   UI_OVERLAY_ACTION_RAMPING,
+  UI_OVERLAY_ACTION_CUTTING,
 } UiOverlayAction;
 
 #define ui_set_pointer_cursor(widget) \

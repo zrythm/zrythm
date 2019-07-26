@@ -55,6 +55,8 @@ typedef enum EditTimelineSelectionsType
   ETS_SCALE_OBJECT,
   /** Edit parameters for a single Marker. */
   ETS_MARKER,
+  /** Cut an object (usually Region). */
+  ETS_CUT,
 } EditTimelineSelectionsType;
 
 typedef struct EditTimelineSelectionsAction
@@ -73,8 +75,12 @@ typedef struct EditTimelineSelectionsAction
   /** Position, when changing a Position. */
   Position             pos;
 
-  /** If this is 1, the first "do" call does
-   * nothing. */
+  /**
+   * If this is 1, the first "do" call does
+   * nothing in some cases.
+   *
+   * Set internally and either used or ignored.
+   */
   int                  first_call;
 
   /** Amount to resize in ticks (negative for

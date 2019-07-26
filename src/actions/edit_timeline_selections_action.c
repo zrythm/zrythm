@@ -113,6 +113,13 @@ edit_timeline_selections_action_do (
         PROCESS_POS_CHANGE (
           REGION, region, LOOP_END_POS,
           loop_end_pos);
+        case ETS_CUT:
+          {
+            Region * r1, * r2;
+            region_split (
+              region, &self->pos, 0, &r1, &r2);
+          }
+          break;
         default:
           g_warn_if_reached ();
           break;
@@ -191,6 +198,8 @@ edit_timeline_selections_action_stringize (
         return g_strdup (_("Change Loop Start Position"));
       case ETS_REGION_LOOP_END_POS:
         return g_strdup (_("Change Loop End Position"));
+      case ETS_CUT:
+        return g_strdup (_("Cut Region(s)"));
       default:
         g_return_val_if_reached (
           g_strdup (""));
