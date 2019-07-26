@@ -640,6 +640,60 @@ region_split (
 }
 
 /**
+ * Undoes what region_split() did.
+ *
+ * @param r1 The first region.
+ * @param r2 The second Region.
+ * @param region An address to store the newly
+ *   created Region.
+ */
+void
+region_unsplit (
+  Region *         r1,
+  Region *         r2,
+  Region **        region)
+{
+  /* create the new region */
+  *region =
+    region_clone (r1, REGION_CLONE_COPY_MAIN);
+
+  /* set the end pos to the end pos of r2 */
+  region_set_end_pos (
+    *region, &r2->end_pos, AO_UPDATE_ALL);
+
+  /* add it to the track */
+  track_add_region (
+    region_get_track (r1),
+    *region, r1->at, r1->lane_pos, 1);
+
+  /* generate widgets so update visibility in the
+   * arranger can work */
+  region_gen_widget (*region);
+
+  /* select it */
+  timeline_selections_clear (TL_SELECTIONS);
+  timeline_selections_add_region (
+    TL_SELECTIONS, *region);
+
+  /* change to r1 if the original region was the
+   * clip editor region */
+  if (CLIP_EDITOR->region == r1)
+    {
+      clip_editor_set_region (*region);
+    }
+
+  /* remove and free the original regions */
+  track_remove_region (
+    region_get_track (r1),
+    r1, F_FREE);
+  track_remove_region (
+    region_get_track (r2),
+    r2, F_FREE);
+
+  EVENTS_PUSH (ET_REGION_CREATED, *region);
+}
+
+/**
  * Sets Region name (without appending anything to
  * it) to all associated regions.
  */

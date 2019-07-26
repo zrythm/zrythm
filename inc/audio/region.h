@@ -467,6 +467,15 @@ region_split (
   Region **        r2);
 
 /**
+ * Undoes what region_split() did.
+ */
+void
+region_unsplit (
+  Region *         r1,
+  Region *         r2,
+  Region **        region);
+
+/**
  * Returns the MidiNote matching the properties of
  * the given MidiNote.
  *

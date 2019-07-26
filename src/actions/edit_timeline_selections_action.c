@@ -113,11 +113,17 @@ edit_timeline_selections_action_do (
         PROCESS_POS_CHANGE (
           REGION, region, LOOP_END_POS,
           loop_end_pos);
-        case ETS_CUT:
+        case ETS_SPLIT:
           {
-            Region * r1, * r2;
             region_split (
-              region, &self->pos, 0, &r1, &r2);
+              region, &self->pos, 0,
+              &self->r1, &self->r2);
+            self->r1 =
+              region_clone (
+                self->r1, REGION_CLONE_COPY);
+            self->r2 =
+              region_clone (
+                self->r2, REGION_CLONE_COPY);
           }
           break;
         default:
@@ -138,12 +144,21 @@ edit_timeline_selections_action_undo (
 	EditTimelineSelectionsAction * self)
 {
   int i;
-  Region * region;
+  Region * region, * r1, * r2;
   for (i = 0; i < self->ts->num_regions; i++)
     {
       /* get the actual region */
-      region = region_find (self->ts->regions[i]);
-      g_warn_if_fail (region);
+      if (self->type == ETS_SPLIT)
+        {
+          r1 = region_find (self->r1);
+          r2 = region_find (self->r2);
+        }
+      else
+        {
+          region =
+            region_find (self->ts->regions[i]);
+          g_warn_if_fail (region);
+        }
 
       switch (self->type)
         {
@@ -170,6 +185,14 @@ edit_timeline_selections_action_undo (
         PROCESS_POS_CHANGE (
           REGION, region, LOOP_END_POS,
           loop_end_pos);
+        case ETS_SPLIT:
+          region_unsplit (
+            r1, r2, &region);
+          region_set_name (
+            region, self->ts->regions[i]->name);
+          region_free (self->r1);
+          region_free (self->r2);
+          break;
         default:
           g_warn_if_reached ();
           break;
@@ -198,7 +221,7 @@ edit_timeline_selections_action_stringize (
         return g_strdup (_("Change Loop Start Position"));
       case ETS_REGION_LOOP_END_POS:
         return g_strdup (_("Change Loop End Position"));
-      case ETS_CUT:
+      case ETS_SPLIT:
         return g_strdup (_("Cut Region(s)"));
       default:
         g_return_val_if_reached (

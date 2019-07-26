@@ -1963,7 +1963,7 @@ timeline_arranger_widget_on_drag_end (
         UndoableAction * ua =
           (UndoableAction *)
           edit_timeline_selections_action_new (
-            TL_SELECTIONS, ETS_CUT, -1, NULL,
+            TL_SELECTIONS, ETS_SPLIT, -1, NULL,
             &cut_pos);
         undo_manager_perform (
           UNDO_MANAGER, ua);

@@ -56,7 +56,7 @@ typedef enum EditTimelineSelectionsType
   /** Edit parameters for a single Marker. */
   ETS_MARKER,
   /** Cut an object (usually Region). */
-  ETS_CUT,
+  ETS_SPLIT,
 } EditTimelineSelectionsType;
 
 typedef struct EditTimelineSelectionsAction
@@ -74,6 +74,11 @@ typedef struct EditTimelineSelectionsAction
 
   /** Position, when changing a Position. */
   Position             pos;
+
+  /** Used when splitting - these are the split
+   * Region's. */
+  Region *             r1;
+  Region *             r2;
 
   /**
    * If this is 1, the first "do" call does
