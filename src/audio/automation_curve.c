@@ -46,13 +46,13 @@ automation_curve_init_loaded (
 
 static AutomationCurve *
 _create_new (
-  Region *         region,
+  /*Region *         region,*/
   const Position * pos)
 {
   AutomationCurve * self =
     calloc (1, sizeof (AutomationCurve));
 
-  self->region = region;
+  /*self->region = region;*/
   position_set_to_pos (&self->pos,
                        pos);
 
@@ -62,19 +62,19 @@ _create_new (
 /**
  * Creates an AutomationCurve.
  *
- * @param region The Region, used to figure out the
- * AutomationCurve type.
+ * @param a_type The AutomationType, used to
+ *   figure out the AutomationCurve type.
  */
 AutomationCurve *
 automation_curve_new (
-  Region *         region,
+  const AutomatableType a_type,
   const Position * pos)
 {
   AutomationCurve * ac =
-    _create_new (region, pos);
+    _create_new (pos);
 
   ac->curviness = 1.f;
-  switch (ac->region->at->automatable->type)
+  switch (a_type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
     case AUTOMATABLE_TYPE_CHANNEL_FADER:

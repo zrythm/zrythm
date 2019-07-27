@@ -31,6 +31,7 @@
 typedef struct AutomationTrack AutomationTrack;
 typedef struct _AutomationCurveWidget
   AutomationCurveWidget;
+typedef enum AutomatableType AutomatableType;
 
 /**
  * @addtogroup audio
@@ -125,12 +126,12 @@ automation_curve_init_loaded (
 /**
  * Creates an AutomationCurve.
  *
- * @param region The Region, used to figure out the
- * AutomationCurve type.
+ * @param a_type The AutomationType, used to
+ *   figure out the AutomationCurve type.
  */
 AutomationCurve *
 automation_curve_new (
-  Region *         region,
+  const AutomatableType a_type,
   const Position * pos);
 
 /**

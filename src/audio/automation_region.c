@@ -159,6 +159,7 @@ automation_region_add_ac (
   /* add point */
   array_append (
     self->acs, self->num_acs, ac);
+  ac->region = self;
 
   /* sort by position */
   qsort (self->acs,
@@ -196,7 +197,8 @@ create_curve_point_before (
 
   /* create curve point at mid pos */
   AutomationCurve * curve =
-    automation_curve_new (self, &mid_pos);
+    automation_curve_new (
+      self->at->automatable->type, &mid_pos);
   automation_region_add_ac (self, curve);
 }
 
@@ -215,7 +217,8 @@ create_curve_point_after (
 
   /* create curve point at mid pos */
   AutomationCurve * curve =
-    automation_curve_new (self, &mid_pos);
+    automation_curve_new (
+      self->at->automatable->type, &mid_pos);
   automation_region_add_ac (self, curve);
 }
 

@@ -932,7 +932,8 @@ region_clone (
             src_ac = ar_orig->acs[j];
             dest_ac =
               automation_curve_new (
-                ar, &src_ac->pos);
+                ar_orig->at->automatable->type,
+                &src_ac->pos);
             automation_region_add_ac (
               ar, dest_ac);
           }
