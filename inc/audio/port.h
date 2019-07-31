@@ -228,6 +228,24 @@ typedef struct Port
    */
   //int                 has_modulators;
 
+  /**
+   * Capture latency.
+   *
+   * See page 116 of "The Ardour DAW - Latency
+   * Compensation and Anywhere-to-Anywhere Signal
+   * Routing Systems".
+   */
+  long                capture_latency;
+
+  /**
+   * Playback latency.
+   *
+   * See page 116 of "The Ardour DAW - Latency
+   * Compensation and Anywhere-to-Anywhere Signal
+   * Routing Systems".
+   */
+  long                playback_latency;
+
   /** Port undergoing deletion. */
   int                 deleting;
 } Port;

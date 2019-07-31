@@ -51,6 +51,10 @@ typedef struct GraphNode
   volatile gint refcount;
   gint          init_refcount;
 
+  /** Used when creating the graph so we can
+   * traverse it backwards to set the latencies. */
+  GraphNode **  parentnodes;
+
   /** Port, if not a plugin or fader. */
   Port *        port;
 
@@ -60,6 +64,10 @@ typedef struct GraphNode
   /** For debugging. */
   int  terminal;
   int  initial;
+
+  /** The playback latency of the node, in
+   * samples. */
+  long          playback_latency;
 
   /** Set to a specific number and checked to see
    * if this is a valid node. */
@@ -96,6 +104,11 @@ typedef struct Graph
   /** Number of graph nodes without an outgoing
    * edge. */
   gint          terminal_node_count;
+
+  /** Used only when constructing the graph so we
+   * can traverse the graph backwards to calculate
+   * the playback latencies. */
+  GraphNode *   terminal_nodes[20];
 
   /** Remaining unprocessed terminal nodes in this
    * cycle. */

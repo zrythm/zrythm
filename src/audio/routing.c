@@ -137,14 +137,15 @@ print_node (GraphNode * node)
 
   char * str1 =
     g_strdup_printf (
-      "node [(%d) %s] refcount: %d | terminal: %s | initial: %s",
+      "node [(%d) %s] refcount: %d | terminal: %s | initial: %s | playback latency: %ld",
       node->id,
       node->type == ROUTE_NODE_TYPE_PLUGIN ?
         node->pl->descr->name :
         node->port->identifier.label,
       node->refcount,
       node->terminal ? "yes" : "no",
-      node->initial ? "yes" : "no");
+      node->initial ? "yes" : "no",
+      node->playback_latency);
   char * str2;
   for (int j = 0; j < node->n_childnodes; j++)
     {
@@ -447,10 +448,20 @@ add_feeds (
 
 static inline void
 add_depends (
-  GraphNode * self)
+  GraphNode * self,
+  GraphNode * src)
 {
   ++self->init_refcount;
   self->refcount = self->init_refcount;
+
+  /* add parent nodes */
+  self->parentnodes =
+    (GraphNode **) realloc (
+      self->parentnodes,
+      (self->init_refcount) *
+        sizeof (GraphNode *));
+  self->parentnodes[self->init_refcount - 1] =
+    src;
 }
 
 /*static int cnt = 0;*/
@@ -683,7 +694,7 @@ node_connect (
     return;
 
   add_feeds (from, to);
-  add_depends (to);
+  add_depends (to, from);
 }
 
 static GraphNode *
@@ -770,6 +781,8 @@ graph_add_terminal_node (
   GraphNode * node =
     graph_add_node (self, type, data);
   node->terminal = 1;
+  self->terminal_nodes[
+    self->terminal_node_count - 1] = node;
   /*g_message ("adding terminal node %d",*/
              /*node->id);*/
   return node;
@@ -1054,6 +1067,56 @@ connect_port (
     }
 }
 
+/**
+ * Returns the latency of only the given port,
+ * without adding the previous/next latencies.
+ *
+ * It returns the plugin's latency if plugin,
+ * otherwise 0.
+ */
+long
+get_node_single_playback_latency (
+  GraphNode * node)
+{
+  if (node->type == ROUTE_NODE_TYPE_PLUGIN)
+    {
+      /* latency is already set at this point */
+      return node->pl->latency;
+    }
+
+  return 0;
+}
+
+/**
+ * Sets the playback latency of the given node
+ * recursively.
+ *
+ * Used only when (re)creating the graph.
+ *
+ * @param dest_latency The total destination
+ * latency so far.
+ */
+void
+set_node_playback_latency (
+  GraphNode * node,
+  long        dest_latency)
+{
+  long max_latency = 0, parent_latency;
+
+  /* set this node's latency */
+  node->playback_latency =
+    dest_latency +
+    get_node_single_playback_latency (node);
+
+  GraphNode * parent;
+  for (int i = 0; i < node->init_refcount; i++)
+    {
+      parent = node->parentnodes[i];
+      set_node_playback_latency (
+        parent, node->playback_latency);
+    }
+}
+
 Graph *
 graph_new (
   Router * router)
@@ -1120,6 +1183,8 @@ graph_new (
           pl = tr->modulators[j]->plugin;
 
           ADD_PLUGIN;
+
+          plugin_update_latency (pl);
         }
     }
 #undef ADD_PLUGIN
@@ -1204,6 +1269,17 @@ graph_new (
 
       connect_port (
         self, port);
+    }
+
+  /* ========================
+   * calculate latencies of each port and each
+   * processor
+   * ======================== */
+
+  for (i = 0; i < self->terminal_node_count; i++)
+    {
+      set_node_playback_latency (
+        self->terminal_nodes[i], 0);
     }
 
   g_message ("num trigger nodes %d",
