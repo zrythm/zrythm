@@ -34,7 +34,7 @@
 #include "audio/engine.h"
 #include "audio/midi_note.h"
 #include "audio/port.h"
-#include "audio/quantize.h"
+#include "audio/quantize_options.h"
 #include "audio/region.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
@@ -120,13 +120,13 @@ typedef struct Project
   SnapGrid           snap_grid_timeline;
 
   /** Quantize info for the timeline. */
-  Quantize           quantize_timeline;
+  QuantizeOptions    quantize_opts_timeline;
 
   /** Snap/Grid info for the piano roll. */
   SnapGrid          snap_grid_midi;
 
   /** Quantize info for the piano roll. */
-  Quantize           quantize_midi;
+  QuantizeOptions    quantize_opts_editor;
 
   /**
    * Selected objects in the
@@ -232,8 +232,9 @@ static const cyaml_schema_field_t
     "snap_grid_timeline", CYAML_FLAG_DEFAULT,
     Project, snap_grid_timeline, snap_grid_fields_schema),
   CYAML_FIELD_MAPPING (
-    "quantize_timeline", CYAML_FLAG_DEFAULT,
-    Project, quantize_timeline, quantize_fields_schema),
+    "quantize_opts_timeline", CYAML_FLAG_DEFAULT,
+    Project, quantize_opts_timeline,
+    quantize_options_fields_schema),
   CYAML_FIELD_MAPPING (
     "audio_engine", CYAML_FLAG_DEFAULT,
     Project, audio_engine, engine_fields_schema),
@@ -241,8 +242,9 @@ static const cyaml_schema_field_t
     "snap_grid_midi", CYAML_FLAG_DEFAULT,
     Project, snap_grid_midi, snap_grid_fields_schema),
   CYAML_FIELD_MAPPING (
-    "quantize_midi", CYAML_FLAG_DEFAULT,
-    Project, quantize_midi, quantize_fields_schema),
+    "quantize_opts_editor", CYAML_FLAG_DEFAULT,
+    Project, quantize_opts_editor,
+    quantize_options_fields_schema),
   CYAML_FIELD_MAPPING (
     "mixer_selections", CYAML_FLAG_DEFAULT,
     Project, mixer_selections,

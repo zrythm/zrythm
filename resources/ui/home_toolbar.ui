@@ -178,24 +178,5 @@
         <property name="homogeneous">False</property>
       </packing>
     </child>
-    <child>
-      <object class="GtkToolButton" id="quantize">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
-        <property name="action_name">win.quantize-regions</property>
-        <property name="label">Q</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkToolItem">
-        <property name="visible">1</property>
-        <child>
-          <object class="QuantizeMbWidget" id="quantize_mb">
-            <property name="visible">1</property>
-          </object>
-        </child>
-      </object>
-    </child>
   </template>
 </interface>

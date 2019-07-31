@@ -59,7 +59,7 @@ typedef struct _HomeToolbarWidget
   GtkToolButton *    loop_selection;
   ToolboxWidget *    toolbox;
   SnapBoxWidget *    snap_box;
-  QuantizeMbWidget * quantize_mb;
+  //QuantizeMbWidget * quantize_mb;
 } HomeToolbarWidget;
 
 HomeToolbarWidget *
@@ -70,6 +70,7 @@ home_toolbar_widget_refresh_undo_redo_buttons (
   HomeToolbarWidget * self);
 
 void
-home_toolbar_widget_setup (HomeToolbarWidget * self);
+home_toolbar_widget_setup (
+  HomeToolbarWidget * self);
 
 #endif

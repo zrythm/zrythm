@@ -34,11 +34,11 @@
 
 #define SNAP_BOX_WIDGET_TYPE \
   (snap_box_widget_get_type ())
-G_DECLARE_FINAL_TYPE (SnapBoxWidget,
-                      snap_box_widget,
-                      Z,
-                      SNAP_BOX_WIDGET,
-                      GtkButtonBox)
+G_DECLARE_FINAL_TYPE (
+  SnapBoxWidget,
+  snap_box_widget,
+  Z, SNAP_BOX_WIDGET,
+  GtkButtonBox)
 
 #define MW_SNAP_BOX MW_HOME_TOOLBAR->snap_box
 

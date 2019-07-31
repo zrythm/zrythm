@@ -349,3 +349,15 @@ change_state_loop (
   GSimpleAction * action,
   GVariant *      value,
   gpointer        user_data);
+
+void
+activate_quick_quantize (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+void
+activate_quantize_options (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);

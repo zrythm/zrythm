@@ -22,22 +22,26 @@
 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="SnapBoxWidget" parent="GtkButtonBox">
+  <template class="QuantizeBoxWidget"
+    parent="GtkButtonBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="spacing">1</property>
     <property name="layout_style">expand</property>
     <child>
-      <object class="GtkToggleButton" id="snap_to_grid">
+      <object class="GtkButton"
+        id="quick_quantize_btn">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.snap-to-grid</property>
+        <property name="action_name">win.quick-quantize</property>
+        <property name="action_target">"global"</property>
+        <property name="tooltip-text" translatable="yes">Quick Quantize</property>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="icon-name">ui-packing-symbolic-light</property>
+            <property name="icon-name">quick-quantize</property>
           </object>
         </child>
       </object>
@@ -48,16 +52,18 @@
       </packing>
     </child>
     <child>
-      <object class="GtkToggleButton" id="snap_to_grid_keep_offset">
+      <object class="GtkButton" id="quantize_opts_btn">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="action_name">win.snap-to-grid</property>
+        <property name="action_name">win.quantize-options</property>
+        <property name="action_target">"global"</property>
+        <property name="tooltip-text" translatable="yes">Full Quantize...</property>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="icon-name">widget-layout-symbolic-light</property>
+            <property name="icon-name">quantize-options</property>
           </object>
         </child>
       </object>
@@ -65,38 +71,6 @@
         <property name="expand">True</property>
         <property name="fill">True</property>
         <property name="position">1</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkToggleButton" id="snap_to_events">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
-        <property name="action_name">win.snap-to-events</property>
-        <child>
-          <object class="GtkImage">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="icon-name">builder-split-tab-right-symbolic-light</property>
-          </object>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">2</property>
-      </packing>
-    </child>
-    <child>
-      <object class="SnapGridWidget" id="snap_grid">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
-      </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">3</property>
       </packing>
     </child>
   </template>

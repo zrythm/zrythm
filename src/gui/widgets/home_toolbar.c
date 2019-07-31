@@ -23,7 +23,6 @@
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/quantize_mb.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/toolbox.h"
 #include "project.h"
@@ -98,17 +97,10 @@ void
 home_toolbar_widget_setup (HomeToolbarWidget * self)
 {
   /* FIXME activate/deactivate actions instead */
-  home_toolbar_widget_refresh_undo_redo_buttons (self);
+  home_toolbar_widget_refresh_undo_redo_buttons (
+    self);
 
   toolbox_widget_refresh (self->toolbox);
-  quantize_mb_widget_refresh (
-    self->quantize_mb);
-
-  /* setup top toolbar */
-  quantize_mb_widget_setup (
-    self->quantize_mb,
-    QUANTIZE_TIMELINE);
-
 }
 
 static void
@@ -143,56 +135,24 @@ home_toolbar_widget_class_init (HomeToolbarWidgetClass * _klass)
   gtk_widget_class_set_css_name (
     klass, "home-toolbar");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    undo);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    redo);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    cut);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    copy);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    paste);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    duplicate);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    delete);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    clear_selection);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    select_all);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    loop_selection);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    toolbox);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    snap_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HomeToolbarWidget,
-    quantize_mb);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, \
+    HomeToolbarWidget, \
+    x)
+
+  BIND_CHILD (undo);
+  BIND_CHILD (redo);
+  BIND_CHILD (cut);
+  BIND_CHILD (copy);
+  BIND_CHILD (paste);
+  BIND_CHILD (duplicate);
+  BIND_CHILD (delete);
+  BIND_CHILD (clear_selection);
+  BIND_CHILD (select_all);
+  BIND_CHILD (loop_selection);
+  BIND_CHILD (toolbox);
+  BIND_CHILD (snap_box);
+
+#undef BIND_CHILD
 }

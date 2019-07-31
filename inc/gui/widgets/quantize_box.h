@@ -17,43 +17,54 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_TIMELINE_TOOLBAR_H__
-#define __GUI_WIDGETS_TIMELINE_TOOLBAR_H__
-
-#include <gtk/gtk.h>
-
-#define TIMELINE_TOOLBAR_WIDGET_TYPE \
-  (timeline_toolbar_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  TimelineToolbarWidget,
-  timeline_toolbar_widget,
-  Z, TIMELINE_TOOLBAR_WIDGET,
-  GtkToolbar)
-
 /**
  * \file
  */
 
-#define MW_TIMELINE_TOOLBAR \
-  MW_CENTER_DOCK->timeline_toolbar
+#ifndef __GUI_WIDGETS_QUANTIZE_BOX_H__
+#define __GUI_WIDGETS_QUANTIZE_BOX_H__
 
-typedef struct _ToolboxWidget ToolboxWidget;
-typedef struct _QuantizeMbWidget QuantizeMbWidget;
-typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
-typedef struct _SnapGridWidget SnapGridWidget;
+#include <gtk/gtk.h>
 
 /**
- * The Timeline toolbar in the top.
+ * @addtogroup widgets
+ *
+ * @{
  */
-typedef struct _TimelineToolbarWidget
-{
-  GtkToolbar       parent_instance;
-  SnapGridWidget * snap_grid_timeline;
-  QuantizeBoxWidget * quantize_box;
-} TimelineToolbarWidget;
 
+#define QUANTIZE_BOX_WIDGET_TYPE \
+  (quantize_box_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  QuantizeBoxWidget,
+  quantize_box_widget,
+  Z, QUANTIZE_BOX_WIDGET,
+  GtkButtonBox)
+
+#define MW_QUANTIZE_BOX \
+  MW_TIMELINE_TOOLBAR->quantize_box
+
+typedef struct _SnapGridWidget SnapGridWidget;
+typedef struct SnapGrid SnapGrid;
+typedef struct QuantizeOptions QuantizeOptions;
+
+typedef struct _QuantizeBoxWidget
+{
+  GtkButtonBox      parent_instance;
+  GtkButton *       quick_quantize_btn;
+  GtkButton *       quantize_opts_btn;
+  QuantizeOptions * q_opts;
+} QuantizeBoxWidget;
+
+/**
+ * Sets up the QuantizeBoxWidget.
+ */
 void
-timeline_toolbar_widget_setup (
-  TimelineToolbarWidget * self);
+quantize_box_widget_setup (
+  QuantizeBoxWidget * self,
+  QuantizeOptions *   q_opts);
+
+/**
+ * @}
+ */
 
 #endif

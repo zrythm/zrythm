@@ -22,6 +22,7 @@
 #include "gui/accel.h"
 #include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/quantize_box.h"
 #include "gui/widgets/snap_grid.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -41,6 +42,9 @@ timeline_toolbar_widget_setup (
   snap_grid_widget_setup (
     self->snap_grid_timeline,
     &PROJECT->snap_grid_timeline);
+  quantize_box_widget_setup (
+    self->quantize_box,
+    QUANTIZE_OPTIONS_TIMELINE);
 }
 
 static void
@@ -48,6 +52,7 @@ timeline_toolbar_widget_init (
   TimelineToolbarWidget * self)
 {
   g_type_ensure (SNAP_GRID_WIDGET_TYPE);
+  g_type_ensure (QUANTIZE_BOX_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }
@@ -56,7 +61,8 @@ static void
 timeline_toolbar_widget_class_init (
   TimelineToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "timeline_toolbar.ui");
 
@@ -67,4 +73,8 @@ timeline_toolbar_widget_class_init (
     klass,
     TimelineToolbarWidget,
     snap_grid_timeline);
+  gtk_widget_class_bind_template_child (
+    klass,
+    TimelineToolbarWidget,
+    quantize_box);
 }

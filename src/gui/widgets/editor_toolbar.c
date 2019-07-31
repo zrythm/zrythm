@@ -19,10 +19,12 @@
 
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
+#include "audio/quantize_options.h"
 #include "gui/accel.h"
 #include "gui/backend/events.h"
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/quantize_box.h"
 #include "gui/widgets/snap_grid.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -53,6 +55,9 @@ editor_toolbar_widget_setup (
   snap_grid_widget_setup (
     self->snap_grid_midi,
     &PROJECT->snap_grid_midi);
+  quantize_box_widget_setup (
+    self->quantize_box,
+    QUANTIZE_OPTIONS_EDITOR);
 
   /* setup highlighting */
   gtk_combo_box_set_active (
@@ -101,4 +106,8 @@ editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
     klass,
     EditorToolbarWidget,
     snap_grid_midi);
+  gtk_widget_class_bind_template_child (
+    klass,
+    EditorToolbarWidget,
+    quantize_box);
 }

@@ -21,7 +21,7 @@
 #include <math.h>
 
 #include "audio/position.h"
-#include "audio/quantize.h"
+#include "audio/quantize_options.h"
 #include "audio/snap_grid.h"
 #include "audio/transport.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -578,10 +578,10 @@ drag_end (GtkGestureDrag *gesture,
         &PROJECT->snap_grid_timeline);
       snap_grid_update_snap_points (
         &PROJECT->snap_grid_midi);
-      quantize_update_snap_points (
-        &PROJECT->quantize_timeline);
-      quantize_update_snap_points (
-        &PROJECT->quantize_midi);
+      quantize_options_update_quantize_points (
+        QUANTIZE_OPTIONS_TIMELINE);
+      quantize_options_update_quantize_points (
+        QUANTIZE_OPTIONS_EDITOR);
     }
   self->update_note_length = 0;
   self->update_note_type = 0;

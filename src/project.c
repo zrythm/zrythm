@@ -191,19 +191,25 @@ create_default (Project * self)
 
   self->loaded = 1;
 
-  snap_grid_init (&PROJECT->snap_grid_timeline,
-                  NOTE_LENGTH_1_1);
-  quantize_init (&PROJECT->quantize_timeline,
-                 NOTE_LENGTH_1_1);
-  snap_grid_init (&PROJECT->snap_grid_midi,
-                  NOTE_LENGTH_1_8);
-  quantize_init (&PROJECT->quantize_midi,
-                NOTE_LENGTH_1_8);
+  snap_grid_init (
+    &PROJECT->snap_grid_timeline,
+    NOTE_LENGTH_1_1);
+  quantize_options_init (
+    &PROJECT->quantize_opts_timeline,
+    NOTE_LENGTH_1_1);
+  snap_grid_init (
+    &PROJECT->snap_grid_midi,
+    NOTE_LENGTH_1_8);
+  quantize_options_init (
+    &PROJECT->quantize_opts_editor,
+    NOTE_LENGTH_1_8);
   clip_editor_init (&PROJECT->clip_editor);
   snap_grid_update_snap_points (&PROJECT->snap_grid_timeline);
   snap_grid_update_snap_points (&PROJECT->snap_grid_midi);
-  quantize_update_snap_points (&PROJECT->quantize_timeline);
-  quantize_update_snap_points (&PROJECT->quantize_midi);
+  quantize_options_update_quantize_points (
+    &PROJECT->quantize_opts_timeline);
+  quantize_options_update_quantize_points (
+    &PROJECT->quantize_opts_editor);
 
   header_notebook_widget_set_subtitle (
     MW_HEADER_NOTEBOOK,
@@ -337,10 +343,10 @@ load (char * filename)
     &PROJECT->snap_grid_timeline);
   snap_grid_update_snap_points (
     &PROJECT->snap_grid_midi);
-  quantize_update_snap_points (
-    &PROJECT->quantize_timeline);
-  quantize_update_snap_points (
-    &PROJECT->quantize_midi);
+  quantize_options_update_quantize_points (
+    &PROJECT->quantize_opts_timeline);
+  quantize_options_update_quantize_points (
+    &PROJECT->quantize_opts_editor);
 
   /* sanity check */
   project_sanity_check (PROJECT);

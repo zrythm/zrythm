@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -190,13 +190,19 @@ snap_grid_stringize (NoteLength note_length,
                      NoteType   note_type);
 
 /**
- * Returns the next or previous SnapGrid Point
+ * Returns the next or previous SnapGrid point.
  *
- * @param SnapGrid* snap grid to search in
- * @param Position* position to search for
- * @Param int       return next or prev position
+ * Must not be free'd.
+ *
+ * @param self Snap grid to search in.
+ * @param pos Position to search for.
+ * @param return_prev 1 to return the previous
+ * element or 0 to return the next.
  */
 Position *
-snap_grid_get_nearby_snap_point (SnapGrid *self,Position *pos, int before);
+snap_grid_get_nearby_snap_point (
+  const SnapGrid * self,
+  const Position * pos,
+  const int        return_prev);
 
 #endif

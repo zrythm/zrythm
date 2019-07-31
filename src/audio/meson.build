@@ -51,7 +51,7 @@ audio_srcs = [
   'modulator.c',
   'port.c',
   'position.c',
-  'quantize.c',
+  'quantize_options.c',
   'region.c',
   'routing.c',
   'scale.c',

@@ -71,9 +71,8 @@ accel_install_primary_action_accelerator (
   const char *     primary,
   const char *     action_name)
 {
-  accel_install_action_accelerator (primary,
-                                    NULL,
-                                    action_name);
+  accel_install_action_accelerator (
+    primary, NULL, action_name);
 }
 
 char *

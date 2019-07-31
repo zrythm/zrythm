@@ -1,7 +1,5 @@
 /*
- * project/snap_grid.c - Snap Grid info
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -277,9 +275,9 @@ snap_grid_stringize (NoteLength note_length,
  */
 Position *
 snap_grid_get_nearby_snap_point (
-  SnapGrid * self,
-  Position * pos,
-  int        return_prev)
+  const SnapGrid * self,
+  const Position * pos,
+  const int        return_prev)
 {
   Position * ret_pos = NULL;
   algorithms_binary_search_nearby (

@@ -172,7 +172,7 @@ automation_track_get_ap_before_pos (
 
 /**
  * Returns the normalized value (0.0-1.0) at the
- * given position.
+ * given position (global).
  *
  * If there is no automation point/curve during
  * the position, it returns negative.
@@ -193,6 +193,10 @@ automation_track_get_normalized_val_at_pos (
    * (no change) */
   if (!ac && !prev_ap)
     return -1.f;
+
+  Position localp;
+  region_timeline_pos_to_local (
+    prev_ap->region, pos, &localp, 1);
 
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
@@ -218,7 +222,7 @@ automation_track_get_normalized_val_at_pos (
           next_ap_normalized_val);
 
   /* ratio of how far in we are in the curve */
-  int pos_ticks = position_to_ticks (pos);
+  int pos_ticks = position_to_ticks (&localp);
   int prev_ap_ticks =
     position_to_ticks (&prev_ap->pos);
   int next_ap_ticks =
@@ -226,8 +230,8 @@ automation_track_get_normalized_val_at_pos (
   double ratio =
     (double) (pos_ticks - prev_ap_ticks) /
     (next_ap_ticks - prev_ap_ticks);
-  /*g_message ("ratio %f",*/
-             /*ratio);*/
+  g_message ("ratio %f",
+             ratio);
 
   double result =
     automation_curve_get_normalized_value (

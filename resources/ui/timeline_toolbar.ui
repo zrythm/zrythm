@@ -35,5 +35,16 @@
         </child>
       </object>
     </child>
+    <child>
+      <object class="GtkToolItem">
+        <property name="visible">True</property>
+        <child>
+          <object class="QuantizeBoxWidget"
+            id="quantize_box">
+            <property name="visible">1</property>
+          </object>
+        </child>
+      </object>
+    </child>
   </template>
 </interface>

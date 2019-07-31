@@ -231,11 +231,15 @@ static GActionEntry actions[] = {
   { "original-size", activate_original_size },
   { "best-fit", activate_best_fit },
 
-  /* snapping */
+  /* snapping, quantize */
   { "snap-to-grid", activate_snap_to_grid },
   { "snap-keep-offset", activate_snap_keep_offset },
   { "snap-events", activate_snap_events },
+  { "quick-quantize", activate_quick_quantize,
+  "s"},
+  { "quantize-options", activate_quantize_options },
 
+  /* track actions */
   { "create-audio-track", activate_create_audio_track },
   { "create-ins-track", activate_create_ins_track },
   { "create-bus-track", activate_create_bus_track },

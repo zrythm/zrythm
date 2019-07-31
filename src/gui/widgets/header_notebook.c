@@ -22,7 +22,6 @@
 #include "gui/widgets/help_toolbar.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/project_toolbar.h"
-#include "gui/widgets/quantize_mb.h"
 #include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/toolbox.h"
@@ -62,7 +61,6 @@ header_notebook_widget_init (
   g_type_ensure (TOOLBOX_WIDGET_TYPE);
   g_type_ensure (SNAP_BOX_WIDGET_TYPE);
   g_type_ensure (SNAP_GRID_WIDGET_TYPE);
-  g_type_ensure (QUANTIZE_MB_WIDGET_TYPE);
   g_type_ensure (HELP_TOOLBAR_WIDGET_TYPE);
   g_type_ensure (VIEW_TOOLBAR_WIDGET_TYPE);
   g_type_ensure (PROJECT_TOOLBAR_WIDGET_TYPE);

@@ -1072,3 +1072,27 @@ change_state_loop (
 
   transport_set_loop (TRANSPORT, loop);
 }
+
+void
+activate_quick_quantize (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  g_message ("gvariant %p", variant);
+  gsize size;
+  if (variant)
+    g_message ("variant: %s", g_variant_get_string (variant, &size));
+  g_message ("quantize");
+
+}
+
+void
+activate_quantize_options (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  g_message ("quantize opts");
+
+}

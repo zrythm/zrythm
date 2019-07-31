@@ -39,6 +39,7 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _ToolboxWidget ToolboxWidget;
 typedef struct _QuantizeMbWidget QuantizeMbWidget;
+typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
 typedef struct _SnapGridWidget SnapGridWidget;
 
 /**
@@ -49,6 +50,7 @@ typedef struct _EditorToolbarWidget
   GtkToolbar         parent_instance;
   GtkComboBoxText * chord_highlighting;
   SnapGridWidget           * snap_grid_midi;
+  QuantizeBoxWidget * quantize_box;
 } EditorToolbarWidget;
 
 void

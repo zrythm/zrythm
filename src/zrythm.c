@@ -22,7 +22,7 @@
 #include "actions/undo_manager.h"
 #include "audio/engine.h"
 #include "audio/mixer.h"
-#include "audio/quantize.h"
+#include "audio/quantize_options.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
@@ -691,6 +691,12 @@ zrythm_app_startup (GApplication* _app)
   accel_install_primary_action_accelerator (
     "KP_6",
     "win.goto-next-marker");
+  accel_install_primary_action_accelerator (
+    "Q",
+    "win.quick-quantize::global");
+  accel_install_primary_action_accelerator (
+    "<Alt>Q",
+    "win.quantize-options::global");
 }
 
 ZrythmApp *
