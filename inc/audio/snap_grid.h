@@ -201,7 +201,7 @@ snap_grid_stringize (NoteLength note_length,
  */
 Position *
 snap_grid_get_nearby_snap_point (
-  const SnapGrid * self,
+  SnapGrid * self,
   const Position * pos,
   const int        return_prev);
 

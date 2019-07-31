@@ -190,7 +190,9 @@ node_process (
     {
       /*g_message ("processing plugin %s",*/
                  /*node->pl->descr->name);*/
-      plugin_process (node->pl);
+      plugin_process (
+        node->pl, &PLAYHEAD,
+        AUDIO_ENGINE->nframes);
     }
   else if (node->type == ROUTE_NODE_TYPE_PORT)
     {
@@ -1110,6 +1112,8 @@ graph_new (
           pl = tr->channel->plugins[j];
 
           ADD_PLUGIN;
+
+          plugin_update_latency (pl);
         }
       for (j = 0; j < tr->num_modulators; j++)
         {

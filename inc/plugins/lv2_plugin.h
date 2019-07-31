@@ -203,9 +203,11 @@ typedef struct Lv2Plugin
   Position           pos;
   int                bpm;
 
-  Plugin             * plugin;           ///< base plugin instance (parent)
+  /** Base Plugin instance (parent). */
+  Plugin             * plugin;
 
-  char               * state_file; ///< for saving/loading state
+  /** For saving/loading the state. */
+  char               * state_file;
 
   /** plugin feature data */
   LV2_State_Make_Path make_path;
@@ -366,15 +368,23 @@ lv2_send_to_ui(Lv2Plugin*       plugin,
                 uint32_t    size,
                 const void* body);
 
+/**
+ * Runs the plugin for this cycle.
+ */
 bool
-lv2_plugin_run(Lv2Plugin* plugin, uint32_t nframes);
+lv2_plugin_run(
+  Lv2Plugin* plugin,
+  const int  nframes);
 
 int
-lv2_plugin_update (gpointer data);
+lv2_plugin_update (
+  gpointer data);
 
 int
-lv2_ui_resize(Lv2Plugin* plugin, int width, int height);
-
+lv2_ui_resize (
+  Lv2Plugin* plugin,
+  int width,
+  int height);
 
 /**
    Allocate port buffers (only necessary for MIDI).
@@ -444,9 +454,26 @@ lv2_cleanup (Lv2Plugin *plugin);
 
 /**
  * Processes the plugin for this cycle.
+ *
+ * @param start_pos The position to start playing
+ *   from.
+ * @param nframes The number of frames to process.
  */
 void
-lv2_plugin_process (Lv2Plugin * lv2_plugin);
+lv2_plugin_process (
+  Lv2Plugin *      lv2_plugin,
+  const Position * start_pos,
+  const int        nframes);
+
+/**
+ * Returns the plugin's latency in samples.
+ *
+ * This will be 0 if the plugin does not report
+ * latency.
+ */
+long
+lv2_plugin_get_latency (
+  Lv2Plugin * pl);
 
 /**
  * Saves the current state in given dir.

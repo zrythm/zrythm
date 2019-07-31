@@ -203,6 +203,25 @@ plugin_add_automation_track (
 }
 
 /**
+ * Updates the plugin's latency.
+ *
+ * Calls the plugin format's get_latency()
+ * function and stores the result in the plugin.
+ */
+void
+plugin_update_latency (
+  Plugin * pl)
+{
+  if (pl->descr->protocol == PROT_LV2)
+    {
+      pl->latency =
+        lv2_plugin_get_latency (pl->lv2);
+      g_message ("latency for %s is %ld",
+                 pl->descr->name, pl->latency);
+    }
+}
+
+/**
  * Loads the plugin from its state file.
  */
 /*void*/
@@ -588,10 +607,17 @@ plugin_instantiate (
 }
 
 /**
- * Process plugin
+ * Process plugin.
+ *
+ * @param start_pos The position to start playing
+ *   from.
+ * @param nframes The number of frames to process.
  */
 void
-plugin_process (Plugin * plugin)
+plugin_process (
+  Plugin *         plugin,
+  const Position * start_pos,
+  const int        nframes)
 {
 
   /* if has MIDI input port */
@@ -606,7 +632,7 @@ plugin_process (Plugin * plugin)
   if (plugin->descr->protocol == PROT_LV2)
     {
       lv2_plugin_process (
-        (Lv2Plugin *) plugin->lv2);
+        plugin->lv2, start_pos, nframes);
     }
 
   /*g_atomic_int_set (&plugin->processed, 1);*/

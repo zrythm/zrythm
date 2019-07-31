@@ -204,6 +204,9 @@ typedef struct Plugin
   /** Whether plugin UI is opened or not. */
   int                  visible;
 
+  /** The latency in samples. */
+  long                 latency;
+
   /**
    * UI has been instantiated or not.
    *
@@ -457,6 +460,13 @@ plugin_move_automation (
   Channel * ch);
 
 /**
+ * Updates the plugin's latency.
+ */
+void
+plugin_update_latency (
+  Plugin * pl);
+
+/**
  * Generates automatables for the plugin.
  *
  *
@@ -488,10 +498,17 @@ plugin_set_track (
   Track * tr);
 
 /**
- * Process plugin
+ * Process plugin.
+ *
+ * @param start_pos The position to start playing
+ *   from.
+ * @param nframes The number of frames to process.
  */
 void
-plugin_process (Plugin * plugin);
+plugin_process (
+  Plugin *         plugin,
+  const Position * start_pos,
+  const int        nframes);
 
 /**
  * Process show ui

@@ -991,9 +991,13 @@ lv2_send_to_ui (
     }
 }
 
+/**
+ * Runs the plugin for this cycle.
+ */
 bool
-lv2_plugin_run (
-  Lv2Plugin* plugin, uint32_t nframes)
+lv2_plugin_run(
+  Lv2Plugin* plugin,
+  const int  nframes)
 {
     /* Read and apply control change events from UI */
   if (plugin->window)
@@ -1003,19 +1007,29 @@ lv2_plugin_run (
   lilv_instance_run(plugin->instance, nframes);
 
   /* Process any worker replies. */
-  lv2_worker_emit_responses(&plugin->state_worker, plugin->instance);
-  lv2_worker_emit_responses(&plugin->worker, plugin->instance);
+  lv2_worker_emit_responses (
+    &plugin->state_worker, plugin->instance);
+  lv2_worker_emit_responses (
+    &plugin->worker, plugin->instance);
 
-  /* Notify the plugin the run() cycle is finished */
-  if (plugin->worker.iface && plugin->worker.iface->end_run) {
-          plugin->worker.iface->end_run(plugin->instance->lv2_handle);
-  }
+  /* Notify the plugin the run() cycle is
+   * finished */
+  if (plugin->worker.iface &&
+      plugin->worker.iface->end_run)
+    {
+      plugin->worker.iface->end_run (
+        plugin->instance->lv2_handle);
+    }
 
   /* Check if it's time to send updates to the UI */
   plugin->event_delta_t += nframes;
-  bool     send_ui_updates = false;
-  uint32_t update_frames   = AUDIO_ENGINE->sample_rate / plugin->ui_update_hz;
-  if (plugin->has_ui && plugin->window && (plugin->event_delta_t > update_frames))
+  bool send_ui_updates = false;
+  uint32_t update_frames =
+    AUDIO_ENGINE->sample_rate /
+    plugin->ui_update_hz;
+  if (plugin->has_ui &&
+      plugin->window &&
+      (plugin->event_delta_t > update_frames))
     {
       send_ui_updates = true;
       plugin->event_delta_t = 0;
@@ -1217,6 +1231,22 @@ lv2_set_feature_data (Lv2Plugin * plugin)
   plugin->state_features[5] = &plugin->log_feature;
   plugin->state_features[6] = &plugin->options_feature;
   plugin->state_features[7] = NULL;
+}
+
+/**
+ * Returns the plugin's latency in samples.
+ *
+ * Searches for a port marked as reportsLatency
+ * and gets it value when a 0-size buffer is
+ * passed.
+ */
+long
+lv2_plugin_get_latency (
+  Lv2Plugin * pl)
+{
+  lv2_plugin_process (pl, &PLAYHEAD, 0);
+
+  return pl->plugin_latency;
 }
 
 /**
@@ -1989,10 +2019,19 @@ lv2_instantiate (
   return 0;
 }
 
+/**
+ * Processes the plugin for this cycle.
+ *
+ * @param start_pos The position to start playing
+ *   from.
+ * @param nframes The number of frames to process.
+ */
 void
-lv2_plugin_process (Lv2Plugin * lv2_plugin)
+lv2_plugin_process (
+  Lv2Plugin *      lv2_plugin,
+  const Position * start_pos,
+  const int        nframes)
 {
-  int nframes = AUDIO_ENGINE->nframes;
 #ifdef HAVE_JACK
   jack_client_t * client = AUDIO_ENGINE->client;
 #endif
@@ -2001,7 +2040,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
   /* If transport state is not as expected, then something has changed */
   const bool xport_changed = (
     lv2_plugin->rolling != (TRANSPORT->play_state == PLAYSTATE_ROLLING) ||
-    lv2_plugin->pos.frames != PLAYHEAD.frames ||
+    lv2_plugin->pos.frames != start_pos->frames ||
     lv2_plugin->bpm != TRANSPORT->bpm);
 
   uint8_t   pos_buf[256];
@@ -2026,7 +2065,7 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
         PM_URIDS.time_frame);
       lv2_atom_forge_long (
         forge,
-        PLAYHEAD.frames);
+        start_pos->frames);
       lv2_atom_forge_key (
         forge,
         PM_URIDS.time_speed);
@@ -2039,15 +2078,15 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
         PM_URIDS.time_barBeat);
       lv2_atom_forge_float (
         forge,
-        (float) PLAYHEAD.beats - 1 +
-        ((float) PLAYHEAD.ticks /
+        (float) start_pos->beats - 1 +
+        ((float) start_pos->ticks /
           (float) TRANSPORT->ticks_per_beat));
       lv2_atom_forge_key (
         forge,
         PM_URIDS.time_bar);
       lv2_atom_forge_long (
         forge,
-        PLAYHEAD.bars - 1);
+        start_pos->bars - 1);
       lv2_atom_forge_key (
         forge,
         PM_URIDS.time_beatUnit);
@@ -2063,40 +2102,18 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
       lv2_atom_forge_key (
         forge,
         PM_URIDS.time_beatsPerMinute);
-      lv2_atom_forge_float (forge, TRANSPORT->bpm);
+      lv2_atom_forge_float (
+        forge, TRANSPORT->bpm);
     }
 
   /* Update transport state to expected values for next cycle */
   lv2_plugin->pos.frames =
     TRANSPORT->play_state == PLAYSTATE_ROLLING ?
-    PLAYHEAD.frames + nframes :
+    start_pos->frames + nframes :
     lv2_plugin->pos.frames;
-  lv2_plugin->bpm      = TRANSPORT->bpm;
-  lv2_plugin->rolling  = TRANSPORT->play_state == PLAYSTATE_ROLLING;
-
-    /*switch (TRANSPORT->play_state) {*/
-    /*case PLAYSTATE_PAUSE_REQUESTED:*/
-            /*[>jalv->play_state = JALV_PAUSED;<]*/
-            /*[>zix_sem_post(&jalv->paused);<]*/
-            /*break;*/
-    /*case JALV_PAUSED:*/
-      /*for (uint32_t p = 0; p < lv2_plugin->num_ports; ++p)*/
-        /*{*/
-          /*jack_port_t* jport = jalv->ports[p].sys_port;*/
-          /*if (jport && jalv->ports[p].flow == FLOW_OUTPUT)*/
-            /*{*/
-              /*void* buf = jack_port_get_buffer(jport, nframes);*/
-              /*if (jalv->ports[p].type == TYPE_EVENT) {*/
-                  /*jack_midi_clear_buffer(buf);*/
-              /*} else {*/
-                  /*memset(buf, '\0', nframes * sizeof(float));*/
-              /*}*/
-            /*}*/
-        /*}*/
-      /*return 0;*/
-    /*default:*/
-            /*break;*/
-    /*}*/
+  lv2_plugin->bpm = TRANSPORT->bpm;
+  lv2_plugin->rolling =
+    TRANSPORT->play_state == PLAYSTATE_ROLLING;
 
   /* Prepare port buffers */
   for (p = 0; p < lv2_plugin->num_ports; ++p)
@@ -2125,7 +2142,8 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
         {
           lv2_evbuf_reset(lv2_port->evbuf, true);
 
-          /* Write transport change event if applicable */
+          /* Write transport change event if
+           * applicable */
           LV2_Evbuf_Iterator iter =
             lv2_evbuf_begin(lv2_port->evbuf);
           if (xport_changed)
@@ -2133,13 +2151,14 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
               lv2_evbuf_write (
                 &iter, 0, 0,
                 lv2_pos->type, lv2_pos->size,
-                (const uint8_t*) LV2_ATOM_BODY(lv2_pos));
+                (const uint8_t*)
+                  LV2_ATOM_BODY (lv2_pos));
             }
 
           if (lv2_plugin->request_update)
             {
-              /* Plugin state has changed, request an
-               * update */
+              /* Plugin state has changed, request
+               * an update */
               const LV2_Atom_Object get = {
                       { sizeof(LV2_Atom_Object_Body),
                         PM_URIDS.atom_Object },
@@ -2147,7 +2166,8 @@ lv2_plugin_process (Lv2Plugin * lv2_plugin)
               lv2_evbuf_write (
                 &iter, 0, 0,
                 get.atom.type, get.atom.size,
-                (const uint8_t*) LV2_ATOM_BODY(&get));
+                (const uint8_t*)
+                  LV2_ATOM_BODY (&get));
             }
 
           if (port->midi_events->num_events > 0)

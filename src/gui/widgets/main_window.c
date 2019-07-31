@@ -235,9 +235,9 @@ static GActionEntry actions[] = {
   { "snap-to-grid", activate_snap_to_grid },
   { "snap-keep-offset", activate_snap_keep_offset },
   { "snap-events", activate_snap_events },
-  { "quick-quantize", activate_quick_quantize,
-  "s"},
-  { "quantize-options", activate_quantize_options },
+  { "quick-quantize", activate_quick_quantize, "s"},
+  { "quantize-options", activate_quantize_options,
+    "s" },
 
   /* track actions */
   { "create-audio-track", activate_create_audio_track },

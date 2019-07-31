@@ -149,7 +149,7 @@ quantize_options_stringize (NoteLength note_length,
  */
 Position *
 quantize_options_get_nearby_quantize_point (
-  const QuantizeOptions * self,
+  QuantizeOptions * self,
   const Position *        pos,
   const int               return_prev);
 
