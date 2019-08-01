@@ -233,6 +233,11 @@ typedef struct AudioEngine
 
   gint64            max_time_taken;
 
+  /** When first set, it is equal to the max
+   * playback latency of all initial trigger
+   * nodes. */
+  long              remaining_latency_preroll;
+
 } AudioEngine;
 
 static const cyaml_schema_field_t

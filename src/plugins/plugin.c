@@ -617,7 +617,6 @@ plugin_process (
   const Position * start_pos,
   const int        nframes)
 {
-
   /* if has MIDI input port */
   if (plugin->descr->num_midi_ins > 0)
     {

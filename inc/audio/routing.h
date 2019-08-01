@@ -69,6 +69,9 @@ typedef struct GraphNode
    * samples. */
   long          playback_latency;
 
+  /** The route's playback latency. */
+  long          route_playback_latency;
+
   /** Set to a specific number and checked to see
    * if this is a valid node. */
   //int  validate;
@@ -165,6 +168,20 @@ typedef struct Router
   Graph * graph1;
   Graph * graph2;
 
+  /** Number of samples to process in this cycle. */
+  int     nsamples;
+
+  /** Stored for the currently processing cycle */
+  long    max_playback_latency;
+
+  /** Current global latency offset (max latency
+   * of all routes - remaining latency from
+   * engine). */
+  int     global_offset;
+
+  /** Offset in the current cycle. */
+  int     local_offset;
+
 } Router;
 
 /**
@@ -182,9 +199,24 @@ router_init (
 
 /**
  * Starts a new cycle.
+ *
+ * @param local_offset The local offset to start
+ *   playing from in this cycle:
+ *   (0 - <engine buffer size>)
  */
 void
 router_start_cycle (
+  Router *         self,
+  const int        nsamples,
+  const int        local_offset,
+  const Position * pos);
+
+/**
+ * Returns the max playback latency of the trigger
+ * nodes.
+ */
+long
+router_get_max_playback_latency (
   Router * router);
 
 void

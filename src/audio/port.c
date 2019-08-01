@@ -575,13 +575,22 @@ port_apply_fader (Port * port, float amp)
 /**
  * First sets port buf to 0, then sums the given
  * port signal from its inputs.
+ *
+ * @param start_frame The start frame offset from
+ *   0 in this cycle.
+ * @param nframes The number of frames to process.
  */
 void
-port_sum_signal_from_inputs (Port * port)
+port_sum_signal_from_inputs (
+  Port *     port,
+  const long start_frame,
+  const int  nframes)
 {
   Port * src_port;
-  int block_length = AUDIO_ENGINE->block_length;
   int k, l;
+
+  g_warn_if_fail (
+    start_frame + nframes <= AUDIO_ENGINE->nframes);
 
   switch (port->identifier.type)
     {
@@ -592,6 +601,8 @@ port_sum_signal_from_inputs (Port * port)
           g_warn_if_fail (
             src_port->identifier.type ==
               TYPE_EVENT);
+          /* FIXME take start_frame - nframes into
+           * account */
           midi_events_append (
             src_port->midi_events,
             port->midi_events, 0);
@@ -608,7 +619,7 @@ port_sum_signal_from_inputs (Port * port)
               /*AUDIO_ENGINE->trigger_midi_activity = 1;*/
             /*}*/
           if (port->identifier.owner_type ==
-                     PORT_OWNER_TYPE_TRACK)
+                PORT_OWNER_TYPE_TRACK)
             {
               port->track->trigger_midi_activity = 1;
             }
@@ -620,7 +631,10 @@ port_sum_signal_from_inputs (Port * port)
           src_port = port->srcs[k];
 
           /* sum the signals */
-          for (l = 0; l < block_length; l++)
+          /*g_message ("port %s start frame %ld nframes %d",*/
+                     /*port->identifier.label,*/
+                     /*start_frame, nframes);*/
+          for (l = start_frame; l < nframes; l++)
             {
               port->buf[l] += src_port->buf[l];
             }

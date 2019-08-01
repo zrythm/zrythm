@@ -264,14 +264,15 @@ position_set_to_pos (
   pos->frames = position_to_frames (pos);
 }
 
-inline void
+void
 position_add_frames (Position * position,
                      long       frames)
 {
   position->frames += frames;
-  position_set_tick (position,
-                     position->ticks +
-                       frames / AUDIO_ENGINE->frames_per_tick);
+  position_set_tick (
+    position,
+    position->ticks +
+      frames / AUDIO_ENGINE->frames_per_tick);
 }
 
 /**

@@ -112,6 +112,15 @@ node_finish (
 	for (int i = 0; i < self->n_childnodes; ++i)
     {
       /*g_message ("notifying dest %d", i);*/
+
+      /* set the largest playback latency of this
+       * route to the child as well */
+      self->childnodes[i]->route_playback_latency =
+        self->playback_latency;
+        /*MAX (*/
+          /*self->playback_latency,*/
+          /*self->childnodes[i]->*/
+            /*route_playback_latency);*/
       node_trigger (self->childnodes[i]);
       feeds = 1;
     }
@@ -171,10 +180,70 @@ print_node (GraphNode * node)
  */
 static void
 node_process (
-  GraphNode * node)
+  GraphNode * node,
+  const int   nframes)
 {
   int i;
   Channel * chan;
+
+  int local_offset =
+    node->graph->router->local_offset;
+
+  /* figure out if we are doing a no-roll */
+  if (node->route_playback_latency <
+      AUDIO_ENGINE->remaining_latency_preroll)
+    {
+      /* no roll */
+      if (node->type == ROUTE_NODE_TYPE_PLUGIN)
+        {
+          g_message (
+            "not --------- processing: "
+            "route latency %ld rem preroll %ld",
+            node->route_playback_latency,
+            AUDIO_ENGINE->
+              remaining_latency_preroll);
+          print_node (node);
+        }
+      return;
+    }
+  /*g_message ("processing");*/
+  /*print_node (node);*/
+
+  Position sample_start_pos, sample_end_pos;
+  position_set_to_pos (
+    &sample_start_pos, &PLAYHEAD);
+  position_set_to_pos (
+    &sample_end_pos, &sample_start_pos);
+
+  /* only compensate latency when rolling */
+  if (TRANSPORT->play_state ==
+        PLAYSTATE_ROLLING)
+    {
+      position_add_frames (
+        &sample_start_pos,
+        node->route_playback_latency -
+          AUDIO_ENGINE->remaining_latency_preroll);
+
+      /* compensate for loop-start. if the sample
+       * start pos is before loop end but end
+       * pos is after loop end, that should be
+       * handled by the ports/processors instead */
+      if (TRANSPORT->loop &&
+          position_is_after_or_equal (
+            &sample_start_pos,
+            &TRANSPORT->loop_end_pos))
+        {
+          g_message ("LOOP");
+          int diff =
+            sample_start_pos.frames -
+            TRANSPORT->loop_end_pos.frames;
+          position_set_to_pos (
+            &sample_start_pos,
+            &TRANSPORT->loop_start_pos);
+          position_add_frames (
+            &sample_start_pos, diff);
+        }
+    }
 
   /*g_message ("num trigger nodes %d, max_trigger nodes %d", node->graph->n_trigger_queue, node->graph->trigger_queue_size);*/
   /*for (i = 0; i < node->graph->n_trigger_queue; i++)*/
@@ -192,8 +261,13 @@ node_process (
       /*g_message ("processing plugin %s",*/
                  /*node->pl->descr->name);*/
       plugin_process (
-        node->pl, &PLAYHEAD,
-        AUDIO_ENGINE->nframes);
+        node->pl, &sample_start_pos, nframes);
+      g_message (
+        "processing: "
+        "route latency %ld rem preroll %ld",
+        node->route_playback_latency,
+        AUDIO_ENGINE->remaining_latency_preroll);
+      print_node (node);
     }
   else if (node->type == ROUTE_NODE_TYPE_PORT)
     {
@@ -230,10 +304,11 @@ node_process (
 
                   /* fill midi events to pass to
                    * ins plugin */
+                  /*g_message ("filling PR events");*/
                   instrument_track_fill_midi_events (
                     (InstrumentTrack *)chan->track,
-                    &PLAYHEAD,
-                    AUDIO_ENGINE->block_length,
+                    &sample_start_pos,
+                    nframes,
                     port->midi_events);
                 }
               midi_events_dequeue (
@@ -290,7 +365,10 @@ node_process (
             case TRACK_TYPE_MARKER:
             case TRACK_TYPE_MIDI:
             default:
-              port_sum_signal_from_inputs (port);
+              port_sum_signal_from_inputs (
+                port,
+                local_offset,
+                nframes);
               break;
             }
         }
@@ -313,7 +391,9 @@ node_process (
           else
             {
               port_sum_signal_from_inputs (
-                port);
+                port,
+                local_offset,
+                nframes);
 
               /* apply pan */
               port_apply_pan (
@@ -354,12 +434,12 @@ node_process (
                   /* by this time, the Master channel should have its
                    * Stereo Out ports filled. pass their buffers to JACK's
                    * buffers */
-                  int nframes = AUDIO_ENGINE->nframes;
-                  for (i = 0;
-                       i < nframes;
+                  for (i = local_offset;
+                       i < local_offset + nframes;
                        i++)
                     {
-                      out[i] = port->srcs[0]->buf[i];
+                      out[i] =
+                        port->srcs[0]->buf[i];
                     }
 
                   /* avoid unused warnings */
@@ -372,18 +452,18 @@ node_process (
                   /* write interleaved */
                   if (port ==
                         AUDIO_ENGINE->stereo_out->l)
-                    for (i = 0;
-                         i < AUDIO_ENGINE->nframes;
-                         i++)
+                  for (i = local_offset;
+                       i < local_offset + nframes;
+                       i++)
                       {
                         AUDIO_ENGINE->alsa_out_buf[i * 2] =
                           port->srcs[0]->buf[i];
                       }
                   else if (port ==
                         AUDIO_ENGINE->stereo_out->r)
-                    for (i = 0;
-                         i < AUDIO_ENGINE->nframes;
-                         i++)
+                  for (i = local_offset;
+                       i < local_offset + nframes;
+                       i++)
                       {
                         AUDIO_ENGINE->alsa_out_buf[i * 2 + 1] =
                           port->srcs[0]->buf[i];
@@ -416,7 +496,10 @@ node_process (
 
       else
         {
-          port_sum_signal_from_inputs (port);
+          port_sum_signal_from_inputs (
+            port,
+            local_offset,
+            nframes);
         }
     }
 }
@@ -425,7 +508,8 @@ static inline void
 node_run (GraphNode * self)
 {
   /*graph_print (self->graph);*/
-  node_process (self);
+  node_process (
+    self, self->graph->router->nsamples);
   node_finish (self);
 }
 
@@ -681,6 +765,41 @@ graph_init_threads (
 
   /* breathe */
   sched_yield ();
+}
+
+/**
+ * Returns the max playback latency of the trigger
+ * nodes.
+ */
+static long
+graph_get_max_playback_latency (
+  Graph * graph)
+{
+  long max = 0;
+  GraphNode * node;
+  for (int i = 0; i < graph->n_init_triggers; i++)
+    {
+      node =  graph->init_trigger_list[i];
+      if (node->playback_latency > max)
+        max = node->playback_latency;
+    }
+
+  return max;
+}
+
+/**
+ * Returns the max playback latency of the trigger
+ * nodes.
+ */
+long
+router_get_max_playback_latency (
+  Router * router)
+{
+  router->max_playback_latency =
+    graph_get_max_playback_latency (
+      router->graph2);
+
+  return router->max_playback_latency;
 }
 
 static void
@@ -958,10 +1077,17 @@ graph_reached_terminal_node (
 
 /**
  * Starts a new cycle.
+ *
+ * @param local_offset The local offset to start
+ *   playing from in this cycle:
+ *   (0 - <engine buffer size>)
  */
 void
 router_start_cycle (
-  Router * self)
+  Router *         self,
+  const int        nsamples,
+  const int        local_offset,
+  const Position * pos)
 {
   /*self->n_trigger_queue = 0;*/
   /*g_message ("num trigger nodes at start: %d, num init trigger nodes at start: %d, num_max trigger nodes at start: %d",*/
@@ -973,6 +1099,11 @@ router_start_cycle (
     return;
 
   self->graph1 = self->graph2;
+  self->nsamples = nsamples;
+  self->global_offset =
+    self->max_playback_latency -
+    AUDIO_ENGINE->remaining_latency_preroll;
+  self->local_offset = local_offset;
   zix_sem_post (&self->graph1->callback_start);
   /*g_message ("waiting callback done");*/
   /*for (int i = 0; i < self->num_threads; i++)*/
@@ -1107,6 +1238,11 @@ set_node_playback_latency (
   node->playback_latency =
     dest_latency +
     get_node_single_playback_latency (node);
+
+  /* set route playback latency if trigger node */
+  if (node->initial)
+    node->route_playback_latency =
+      node->playback_latency;
 
   GraphNode * parent;
   for (int i = 0; i < node->init_refcount; i++)

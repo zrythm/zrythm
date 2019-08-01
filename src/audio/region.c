@@ -781,10 +781,39 @@ region_is_hit (
   Position * pos) ///< global position
 {
   return
-    position_compare (
-      &region->start_pos, pos) <= 0 &&
-    position_compare (
-      &region->end_pos, pos) > 0;
+    position_is_before_or_equal (
+      &region->start_pos, pos) &&
+    position_is_after (
+      &region->end_pos, pos);
+}
+
+/**
+ * Returns if any part of the Region is inside the
+ * given range.
+ */
+int
+region_is_hit_by_range (
+  Region *         region,
+  const Position * start,
+  const Position * end)
+{
+  /* 4 cases:
+   * - region start is inside range
+   * - region end is inside range
+   * - start is inside region
+   * - end is inside region
+   */
+  return
+    (position_is_before_or_equal (
+      start, &region->start_pos) &&
+     position_is_after (
+      end, &region->start_pos)) ||
+    (position_is_before_or_equal (
+      start, &region->end_pos) &&
+     position_is_after (
+      end, &region->end_pos)) ||
+    region_is_hit (region, start) ||
+    region_is_hit (region, end);
 }
 
 /**

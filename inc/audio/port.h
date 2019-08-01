@@ -555,10 +555,18 @@ void
 port_apply_fader (Port * port, float amp);
 
 /**
- * First sets port buf to 0, then sums the given port signal from its inputs.
+ * First sets port buf to 0, then sums the given
+ * port signal from its inputs.
+ *
+ * @param start_frame The start frame offset from
+ *   0 in this cycle.
+ * @param nframes The number of frames to process.
  */
 void
-port_sum_signal_from_inputs (Port * port);
+port_sum_signal_from_inputs (
+  Port *     port,
+  const long start_frame,
+  const int  nframes);
 
 /**
  * Sets the owner channel & its ID.

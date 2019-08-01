@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 1999-2002 Paul Davis
  *
  * This file is part of Zrythm
  *
@@ -382,6 +383,9 @@ engine_process_prepare (
            PLAYSTATE_ROLL_REQUESTED)
     {
       TRANSPORT->play_state = PLAYSTATE_ROLLING;
+      self->remaining_latency_preroll =
+        router_get_max_playback_latency (
+          &MIXER->router);
     }
 
   int ret =
@@ -422,6 +426,8 @@ engine_process_prepare (
       for (j = 0; j < atl->num_ats; j++)
         {
           at = atl->ats[j];
+          /* FIXME passing playhead doesn't take
+           * into account the latency compensation */
           val =
             automation_track_get_normalized_val_at_pos (
               at, &PLAYHEAD);
@@ -478,7 +484,7 @@ static long count = 0;
 int
 engine_process (
   AudioEngine * self,
-  uint32_t      nframes)
+  uint32_t      _nframes)
 {
   /* Clear output buffers just in case we have to
    * return early */
@@ -493,6 +499,8 @@ engine_process (
   count++;
   self->cycle = count;
 
+  uint32_t nframes = _nframes;
+
   /* run pre-process code */
   engine_process_prepare (self, nframes);
 
@@ -505,12 +513,91 @@ engine_process (
   /* puts MIDI in events in the MIDI in port */
   receive_midi_events (self, nframes, 1);
 
-  /* this will keep looping until everything was
-   * processed in this cycle */
-  /*mixer_process (nframes);*/
-  /*g_message ("==========================================================================");*/
-  router_start_cycle (&MIXER->router);
-  /*g_message ("end==========================================================================");*/
+  long route_latency = 0;
+  GraphNode * start_node;
+  int i, num_samples;
+  while (self->remaining_latency_preroll > 0)
+    {
+      num_samples =
+        MIN (
+          nframes, self->remaining_latency_preroll);
+      for (i = 0;
+           i < MIXER->router.graph2->
+             n_init_triggers;
+           i++)
+        {
+          start_node =
+            MIXER->router.graph2->
+              init_trigger_list[i];
+          route_latency =
+            start_node->playback_latency;
+
+          if (self->remaining_latency_preroll >
+              route_latency + num_samples)
+            {
+              /* this route will no-roll for the
+               * complete pre-roll cycle */
+              continue;
+            }
+
+          if (self->remaining_latency_preroll >
+              route_latency)
+            {
+              /* route may need partial no-roll
+               * and partial roll from
+               * (transport_sample -
+               *  remaining_latency_preroll) .. +
+               * num_samples.
+               * shorten and split the process
+               * cycle */
+              num_samples =
+                MIN (
+                  num_samples,
+                  self->remaining_latency_preroll -
+                    route_latency);
+            }
+          else
+            {
+              /* route will do a normal roll for the
+               * complete pre-roll cycle */
+            }
+        } // end foreach trigger node
+
+
+      /* this will keep looping until everything was
+       * processed in this cycle */
+      /*mixer_process (nframes);*/
+      /*g_message ("=====================");*/
+      g_message (
+        "======== processing with %ld preroll and "
+        "%d samples",
+        self->remaining_latency_preroll,
+        num_samples);
+      router_start_cycle (
+        &MIXER->router, num_samples,
+        _nframes - nframes,
+        &PLAYHEAD);
+
+      self->remaining_latency_preroll -=
+        num_samples;
+      nframes -= num_samples;
+
+      if (nframes == 0)
+        break;
+    }
+
+  if (nframes > 0)
+    {
+      g_message (
+        "======== processing without preroll and "
+        "%d samples",
+        nframes);
+      router_start_cycle (
+        &MIXER->router, nframes,
+        _nframes - nframes,
+        &PLAYHEAD);
+    }
+  g_message ("end====================");
 
   /* run post-process code */
   engine_post_process (self);
@@ -541,25 +628,31 @@ engine_post_process (AudioEngine * self)
       /*TRANSPORT->starting_recording = 0;*/
     /*}*/
 
-  /* loop position back if about to exit loop */
-  long int new_frames =
-    TRANSPORT->playhead_pos.frames + self->nframes;
-  if (TRANSPORT->loop &&
-      IS_TRANSPORT_ROLLING &&
-      position_is_before_or_equal (
-         &TRANSPORT->playhead_pos,
-         &TRANSPORT->loop_end_pos) &&
-      new_frames >
-          TRANSPORT->loop_end_pos.frames)
+  /* move the playhead if not pre-rolling */
+  if (self->remaining_latency_preroll == 0)
     {
-      transport_move_playhead (
-        &TRANSPORT->loop_start_pos,
-        1);
-    }
-  else if (IS_TRANSPORT_ROLLING)
-    {
-      /* move playhead as many samples as processed */
-      transport_add_to_playhead (self->nframes);
+      /* loop position back if about to exit loop */
+      long int new_frames =
+        TRANSPORT->playhead_pos.frames +
+        self->nframes;
+      if (TRANSPORT->loop &&
+          IS_TRANSPORT_ROLLING &&
+          position_is_before_or_equal (
+             &TRANSPORT->playhead_pos,
+             &TRANSPORT->loop_end_pos) &&
+          new_frames >
+              TRANSPORT->loop_end_pos.frames)
+        {
+          transport_move_playhead (
+            &TRANSPORT->loop_start_pos,
+            1);
+        }
+      else if (IS_TRANSPORT_ROLLING)
+        {
+          /* move playhead as many samples as
+           * processed */
+          transport_add_to_playhead (self->nframes);
+        }
     }
 
   AUDIO_ENGINE->last_time_taken =

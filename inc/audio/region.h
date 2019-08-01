@@ -658,6 +658,16 @@ region_is_hit (
   Region *   region,
   Position * pos); ///< global position
 
+/**
+ * Returns if any part of the Region is inside the
+ * given range.
+ */
+int
+region_is_hit_by_range (
+  Region *         region,
+  const Position * start,
+  const Position * end);
+
 void
 region_unpack (Region * region);
 

@@ -90,101 +90,285 @@ instrument_track_fill_midi_events (
   position_set_to_pos (&end_pos, pos);
   position_add_frames (&end_pos, nframes);
 
+  /* if loop point is met, get the 2 extra
+   * positions and adjust the end pos */
+  int loop_point_met = 0;
+  int diff_to_loop_end = 0,
+      diff_from_loop_start = 0;
+  if (TRANSPORT->loop &&
+      position_is_before (
+        pos, &TRANSPORT->loop_end_pos) &&
+      position_is_after_or_equal (
+        &end_pos, &TRANSPORT->loop_end_pos))
+    {
+      loop_point_met = 1;
+      diff_to_loop_end =
+        TRANSPORT->loop_end_pos.frames -
+        pos->frames;
+      diff_from_loop_start =
+        end_pos.frames -
+        TRANSPORT->loop_end_pos.frames;
+
+      position_set_to_pos (
+        &end_pos, &TRANSPORT->loop_start_pos);
+      position_add_frames (
+        &end_pos, diff_from_loop_start);
+    }
+
   zix_sem_wait (&midi_events->access_sem);
 
   TrackLane * lane;
-  for (j = 0; j < track->num_lanes; j++)
+
+  /* loop once if no loop met, twice if loop met
+   *
+   * (split the  ranges in 2) */
+  for (int k = 0; k < loop_point_met + 1; k++)
     {
-      lane = track->lanes[j];
-
-      for (i = 0; i < lane->num_regions; i++)
+      for (j = 0; j < track->num_lanes; j++)
         {
-          region = lane->regions[i];
-          r = (Region *) region;
+          lane = track->lanes[j];
 
-          if (!region_is_hit (r,
-                              pos))
-            continue;
-
-          /* get local positions */
-          region_timeline_pos_to_local (
-            r, pos, &local_pos, 1);
-          region_timeline_pos_to_local (
-            r, &end_pos, &local_end_pos, 1);
-
-          /* add clip_start position to start from
-           * there */
-          long clip_start_ticks =
-            position_to_ticks (
-              &r->clip_start_pos);
-          long region_length_ticks =
-            region_get_full_length_in_ticks (
-              r);
-          long loop_length_ticks =
-            region_get_loop_length_in_ticks (r);
-          position_set_to_pos (
-            &loop_start_adjusted,
-            &r->loop_start_pos);
-          position_set_to_pos (
-            &loop_end_adjusted,
-            &r->loop_end_pos);
-          position_init (&region_end_adjusted);
-          position_add_ticks (
-            &local_pos, clip_start_ticks);
-          position_add_ticks (
-            &local_end_pos, clip_start_ticks);
-          position_add_ticks (
-            &loop_start_adjusted, - clip_start_ticks);
-          position_add_ticks (
-            &loop_end_adjusted, - clip_start_ticks);
-          position_add_ticks (
-            &region_end_adjusted, region_length_ticks);
-
-          /* send all MIDI notes off if end if the
-           * region (at loop point or actual end) is
-           * within this cycle */
-          if (position_compare (
-                &region_end_adjusted,
-                &local_pos) >= 0 &&
-              position_compare (
-                &region_end_adjusted,
-                &local_end_pos) <= 0)
+          for (i = 0; i < lane->num_regions; i++)
             {
-              for (i = 0;
-                   i < region->num_midi_notes;
-                   i++)
-                {
-                  midi_note =
-                    region->midi_notes[i];
+              region = lane->regions[i];
+              r = (Region *) region;
 
-                  /* check for note on event on the
-                   * boundary */
-                  if (position_is_before (
-                        &midi_note->start_pos,
-                        &region_end_adjusted) &&
-                      position_is_after_or_equal (
-                        &midi_note->end_pos,
-                        &region_end_adjusted))
+              g_message ("checking region at");
+              position_print_simple (pos);
+
+              if (loop_point_met)
+                {
+                  /* check first half */
+                  if (k == 0)
                     {
-                      midi_events_add_note_off (
-                        midi_events,
-                        1, midi_note->val,
-                        position_to_frames (
-                          &region_end_adjusted) -
-                          position_to_frames (
-                            &local_pos), 1);
+                      if (!region_is_hit_by_range (
+                            r, pos,
+                            &TRANSPORT->
+                              loop_end_pos))
+                        continue;
+                    }
+                  /* check second half */
+                  else if (k == 1)
+                    {
+                      if (!region_is_hit_by_range (
+                            r,
+                            &TRANSPORT->
+                              loop_start_pos,
+                            &end_pos))
+                        continue;
                     }
                 }
-            }
-          /* if region actually ends on the timeline
-           * within this cycle */
-          else if (position_is_after_or_equal (
-                     &r->end_pos,
-                     pos) &&
-                   position_is_before_or_equal (
-                     &r->end_pos,
-                     &end_pos))
-            {
+              else
+                {
+                  if (!region_is_hit_by_range (
+                        r, pos, &end_pos))
+                    continue;
+                }
+
+              /* get local positions */
+              if (loop_point_met && k == 0)
+                {
+                  region_timeline_pos_to_local (
+                    r, pos, &local_pos, 1);
+                  region_timeline_pos_to_local (
+                    r,
+                    &TRANSPORT->loop_end_pos,
+                    &local_end_pos, 1);
+                }
+              else if (loop_point_met && k == 1)
+                {
+                  region_timeline_pos_to_local (
+                    r,
+                    &TRANSPORT->loop_start_pos,
+                    &local_pos, 1);
+                  region_timeline_pos_to_local (
+                    r,
+                    &end_pos,
+                    &local_end_pos, 1);
+                }
+              else
+                {
+                  region_timeline_pos_to_local (
+                    r, pos, &local_pos, 1);
+                  region_timeline_pos_to_local (
+                    r, &end_pos, &local_end_pos, 1);
+                }
+
+              g_message ("region is hit");
+              position_print_simple (&local_pos);
+
+              /* add clip_start position to start
+               * from there */
+              long clip_start_ticks =
+                position_to_ticks (
+                  &r->clip_start_pos);
+              long region_length_ticks =
+                region_get_full_length_in_ticks (
+                  r);
+              long loop_length_ticks =
+                region_get_loop_length_in_ticks (r);
+              position_set_to_pos (
+                &loop_start_adjusted,
+                &r->loop_start_pos);
+              position_set_to_pos (
+                &loop_end_adjusted,
+                &r->loop_end_pos);
+              position_init (&region_end_adjusted);
+              position_add_ticks (
+                &local_pos, clip_start_ticks);
+              position_add_ticks (
+                &local_end_pos, clip_start_ticks);
+              position_add_ticks (
+                &loop_start_adjusted,
+                - clip_start_ticks);
+              position_add_ticks (
+                &loop_end_adjusted,
+                - clip_start_ticks);
+              position_add_ticks (
+                &region_end_adjusted,
+                region_length_ticks);
+
+              /* send all MIDI notes off if end of
+               * the region (at loop point or
+               * actual end) is within this cycle */
+              if (position_compare (
+                    &region_end_adjusted,
+                    &local_pos) >= 0 &&
+                  position_compare (
+                    &region_end_adjusted,
+                    &local_end_pos) <= 0)
+                {
+                  for (i = 0;
+                       i < region->num_midi_notes;
+                       i++)
+                    {
+                      midi_note =
+                        region->midi_notes[i];
+
+                      /* check for note on event on the
+                       * boundary */
+                      if (position_is_before (
+                            &midi_note->start_pos,
+                            &region_end_adjusted) &&
+                          position_is_after_or_equal (
+                            &midi_note->end_pos,
+                            &region_end_adjusted))
+                        {
+                          midi_events_add_note_off (
+                            midi_events,
+                            1, midi_note->val,
+                            position_to_frames (
+                              &region_end_adjusted) -
+                              position_to_frames (
+                                &local_pos), 1);
+                        }
+                    }
+                }
+              /* if region actually ends on the
+               * timeline within this cycle */
+              else if (position_is_after_or_equal (
+                         &r->end_pos,
+                         pos) &&
+                       position_is_before (
+                         &r->end_pos,
+                         &end_pos))
+                {
+                  for (i = 0;
+                       i < region->num_midi_notes;
+                       i++)
+                    {
+                      midi_note =
+                        region->midi_notes[i];
+
+                      /* add num_loops * loop_ticks to the
+                       * midi note start & end poses to get
+                       * last pos in region */
+                      Position tmp_start, tmp_end;
+                      position_set_to_pos (
+                        &tmp_start,
+                        &midi_note->start_pos);
+                      position_set_to_pos (
+                        &tmp_end,
+                        &midi_note->end_pos);
+                      int num_loops =
+                        region_get_num_loops (r, 0);
+                      for (int jj = 0;
+                           jj < num_loops;
+                           jj++)
+                        {
+                          position_add_ticks (
+                            &tmp_start,
+                            loop_length_ticks);
+                          position_add_ticks (
+                            &tmp_end,
+                            loop_length_ticks);
+                        }
+
+                      /* check for note on event on the
+                       * boundary */
+                      if (position_compare (
+                            &tmp_start,
+                            &region_end_adjusted) < 0 &&
+                          position_compare (
+                            &tmp_end,
+                            &region_end_adjusted) >= 0)
+                        {
+                          midi_events_add_note_off (
+                            midi_events, 1,
+                            midi_note->val,
+                            position_to_frames (
+                              &r->end_pos) -
+                              position_to_frames (pos),
+                            1);
+                        }
+                    }
+                }
+
+              /* if crossing loop (local end pos
+               * will be back to the loop start) */
+              if (position_is_before_or_equal (
+                    &local_end_pos, &local_pos))
+                {
+                  for (i = 0;
+                       i < region->num_midi_notes;
+                       i++)
+                    {
+                      midi_note =
+                        region->midi_notes[i];
+
+                      /* check for note on event
+                       * on the boundary */
+                      if (position_is_before (
+                            &midi_note->start_pos,
+                            &loop_end_adjusted) &&
+                          position_is_after_or_equal (
+                            &midi_note->end_pos,
+                            &loop_end_adjusted))
+                        {
+                          /* diff_from_loop_start
+                           * will be 0 unless this
+                           * is the 2nd part of
+                           * a split loop (k is 1)
+                           */
+                          midi_events_add_note_off (
+                            midi_events, 1,
+                            midi_note->val,
+                            (position_to_frames (
+                              &loop_end_adjusted) -
+                              position_to_frames (
+                                &local_pos)) +
+                              diff_from_loop_start,
+                            1);
+                        }
+                    }
+                }
+
+              /* readjust position */
+              position_add_ticks (
+                &local_pos, - clip_start_ticks);
+              position_add_ticks (
+                &local_end_pos, - clip_start_ticks);
+
               for (i = 0;
                    i < region->num_midi_notes;
                    i++)
@@ -192,130 +376,54 @@ instrument_track_fill_midi_events (
                   midi_note =
                     region->midi_notes[i];
 
-                  /* add num_loops * loop_ticks to the
-                   * midi note start & end poses to get
-                   * last pos in region */
-                  Position tmp_start, tmp_end;
-                  position_set_to_pos (
-                    &tmp_start,
-                    &midi_note->start_pos);
-                  position_set_to_pos (
-                    &tmp_end,
-                    &midi_note->end_pos);
-                  int num_loops =
-                    region_get_num_loops (r, 0);
-                  for (int jj = 0;
-                       jj < num_loops;
-                       jj++)
-                    {
-                      position_add_ticks (
-                        &tmp_start,
-                        loop_length_ticks);
-                      position_add_ticks (
-                        &tmp_end,
-                        loop_length_ticks);
-                    }
+                  g_message ("checking note");
+                  position_print_simple (&local_pos);
 
-                  /* check for note on event on the
-                   * boundary */
+                  /* check for note on event */
                   if (position_compare (
-                        &tmp_start,
-                        &region_end_adjusted) < 0 &&
+                        &midi_note->start_pos,
+                        &local_pos) >= 0 &&
                       position_compare (
-                        &tmp_end,
-                        &region_end_adjusted) >= 0)
+                        &midi_note->start_pos,
+                        &local_end_pos) <= 0)
                     {
-                      midi_events_add_note_off (
+                      g_message ("on at %ld",
+                        position_to_frames (
+                          &midi_note->start_pos) -
+                          position_to_frames (
+                            &local_pos) +
+                          diff_from_loop_start);
+                      midi_events_add_note_on (
                         midi_events, 1,
                         midi_note->val,
-                        position_to_frames (
-                          &r->end_pos) -
-                          position_to_frames (pos),
+                        midi_note->vel->vel,
+                        (position_to_frames (
+                          &midi_note->start_pos) -
+                          position_to_frames (
+                            &local_pos)) +
+                          diff_from_loop_start,
                         1);
                     }
-                }
-            }
 
-          /* if crossing loop
-           * (local end pos will be back to the loop
-           * start) */
-          if (position_compare (
-                &local_end_pos,
-                &local_pos) <= 0)
-            {
-              for (i = 0;
-                   i < region->num_midi_notes;
-                   i++)
-                {
-                  midi_note =
-                    region->midi_notes[i];
-
-                  /* check for note on event on the
-                   * boundary */
+                  /* note off event */
                   if (position_compare (
-                        &midi_note->start_pos,
-                        &loop_end_adjusted) < 0 &&
+                        &midi_note->end_pos,
+                        &local_pos) >= 0 &&
                       position_compare (
                         &midi_note->end_pos,
-                        &loop_end_adjusted) >= 0)
+                        &local_end_pos) <= 0)
                     {
+                      g_message ("off");
                       midi_events_add_note_off (
                         midi_events, 1,
                         midi_note->val,
-                        position_to_frames (
-                          &loop_end_adjusted) -
+                        (position_to_frames (
+                          &midi_note->end_pos) -
                           position_to_frames (
-                            &local_pos), 1);
+                            &local_pos)) +
+                          diff_from_loop_start,
+                        1);
                     }
-                }
-            }
-
-          /* readjust position */
-          position_add_ticks (
-            &local_pos, - clip_start_ticks);
-          position_add_ticks (
-            &local_end_pos, - clip_start_ticks);
-
-          for (i = 0;
-               i < region->num_midi_notes;
-               i++)
-            {
-              midi_note =
-                region->midi_notes[i];
-
-              /* check for note on event */
-              if (position_compare (
-                    &midi_note->start_pos,
-                    &local_pos) >= 0 &&
-                  position_compare (
-                    &midi_note->start_pos,
-                    &local_end_pos) <= 0)
-                {
-                  midi_events_add_note_on (
-                    midi_events, 1,
-                    midi_note->val,
-                    midi_note->vel->vel,
-                    position_to_frames (
-                      &midi_note->start_pos) -
-                      position_to_frames (
-                        &local_pos), 1);
-                }
-
-              /* note off event */
-              if (position_compare (
-                    &midi_note->end_pos,
-                    &local_pos) >= 0 &&
-                  position_compare (
-                    &midi_note->end_pos,
-                    &local_end_pos) <= 0)
-                {
-                  midi_events_add_note_off (
-                    midi_events, 1,
-                    midi_note->val,
-                    position_to_frames (
-                      &midi_note->end_pos) -
-                      position_to_frames (
-                        &local_pos), 1);
                 }
             }
         }

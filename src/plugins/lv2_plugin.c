@@ -2040,7 +2040,8 @@ lv2_plugin_process (
   /* If transport state is not as expected, then something has changed */
   const bool xport_changed = (
     lv2_plugin->rolling != (TRANSPORT->play_state == PLAYSTATE_ROLLING) ||
-    lv2_plugin->pos.frames != start_pos->frames ||
+    lv2_plugin->pos.frames !=
+      start_pos->frames ||
     lv2_plugin->bpm != TRANSPORT->bpm);
 
   uint8_t   pos_buf[256];
@@ -2179,12 +2180,12 @@ lv2_plugin_process (
                 {
                   MidiEvent * ev =
                     &port->midi_events->events[i];
-                  /*g_message ("plugin event %d", i);*/
-                  /*g_message ("buf time %u %hhx %hhx %hhx",*/
-                             /*ev->time,*/
-                             /*ev->raw_buffer[0],*/
-                             /*ev->raw_buffer[1],*/
-                             /*ev->raw_buffer[2]);*/
+                  g_message ("plugin event %d", i);
+                  g_message ("buf time %u %hhx %hhx %hhx",
+                             ev->time,
+                             ev->raw_buffer[0],
+                             ev->raw_buffer[1],
+                             ev->raw_buffer[2]);
                   lv2_evbuf_write (
                     &iter,
                     ev->time, 0,
