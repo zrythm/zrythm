@@ -113,8 +113,8 @@ create (
         {
           /* create an audio region & add to track */
           Position start_pos;
-          position_set_to_pos (&start_pos,
-                               &PLAYHEAD);
+          position_set_to_pos (
+            &start_pos, PLAYHEAD);
           AudioRegion * ar =
             audio_region_new (
               self->file_descr.absolute_path,

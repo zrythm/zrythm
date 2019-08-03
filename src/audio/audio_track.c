@@ -58,7 +58,7 @@ audio_track_fill_stereo_in_buffers (
        clip_start_frames;
   int buff_index, i, j, k;
   long cycle_start_frames =
-    position_to_frames (&PLAYHEAD);
+    position_to_frames (PLAYHEAD);
   long cycle_end_frames =
     cycle_start_frames + AUDIO_ENGINE->block_length;
 

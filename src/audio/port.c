@@ -579,12 +579,15 @@ port_apply_fader (Port * port, float amp)
  * @param start_frame The start frame offset from
  *   0 in this cycle.
  * @param nframes The number of frames to process.
+ * @param noroll Clear the port buffer in this
+ *   range.
  */
 void
 port_sum_signal_from_inputs (
-  Port *     port,
-  const long start_frame,
-  const int  nframes)
+  Port *    port,
+  const int start_frame,
+  const int nframes,
+  const int noroll)
 {
   Port * src_port;
   int k, l;
@@ -595,17 +598,19 @@ port_sum_signal_from_inputs (
   switch (port->identifier.type)
     {
     case TYPE_EVENT:
+      if (noroll)
+        break;
+
       for (k = 0; k < port->num_srcs; k++)
         {
           src_port = port->srcs[k];
           g_warn_if_fail (
             src_port->identifier.type ==
               TYPE_EVENT);
-          /* FIXME take start_frame - nframes into
-           * account */
           midi_events_append (
             src_port->midi_events,
-            port->midi_events, 0);
+            port->midi_events, start_frame,
+            nframes, 0);
         }
 
       /* send UI notification */
@@ -626,6 +631,15 @@ port_sum_signal_from_inputs (
         }
       break;
     case TYPE_AUDIO:
+      if (noroll)
+        {
+          for (l = start_frame; l < nframes; l++)
+            {
+              port->buf[l] = 0;
+            }
+          break;
+        }
+
       for (k = 0; k < port->num_srcs; k++)
         {
           src_port = port->srcs[k];

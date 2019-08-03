@@ -262,12 +262,13 @@ midi_note_shift_pitch (
   ArrangerObjectUpdateFlag update_flag);
 
 /**
- * Returns if the MIDI note is hit at given pos (in the
- * timeline).
+ * Returns if the MIDI note is hit at given pos (in
+ * the timeline).
  */
 int
-midi_note_hit (MidiNote * midi_note,
-               Position *  pos);
+midi_note_hit (
+  const MidiNote * midi_note,
+  const long       gframes);
 
 /**
  * Converts an array of MIDI notes to MidiEvents.

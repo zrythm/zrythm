@@ -204,8 +204,10 @@ create_default (Project * self)
     &PROJECT->quantize_opts_editor,
     NOTE_LENGTH_1_8);
   clip_editor_init (&PROJECT->clip_editor);
-  snap_grid_update_snap_points (&PROJECT->snap_grid_timeline);
-  snap_grid_update_snap_points (&PROJECT->snap_grid_midi);
+  snap_grid_update_snap_points (
+    &PROJECT->snap_grid_timeline);
+  snap_grid_update_snap_points (
+    &PROJECT->snap_grid_midi);
   quantize_options_update_quantize_points (
     &PROJECT->quantize_opts_timeline);
   quantize_options_update_quantize_points (

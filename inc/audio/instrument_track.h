@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Instrument track backend.
+ */
+
 #ifndef __AUDIO_INSTRUMENT_TRACK_H__
 #define __AUDIO_INSTRUMENT_TRACK_H__
 
@@ -34,6 +40,12 @@ typedef struct Region MidiRegion;
 typedef struct Track InstrumentTrack;
 
 /**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+/**
  * Initializes an instrument track.
  */
 void
@@ -43,13 +55,27 @@ void
 instrument_track_setup (InstrumentTrack * self);
 
 /**
- * NOTE: real time func
+ * Fills MIDI event queue from track.
+ *
+ * The events are dequeued right after the call to
+ * this function.
+ *
+ * @param g_start_frame Global start frame.
+ * @param local_start_frame The start frame offset
+ *   from 0 in this cycle.
+ * @param nframes Number of frames at start
+ *   Position.
+ * @param midi_events MidiEvents to fill (from
+ *   Piano Roll Port for example).
  */
+REALTIME
 void
-instrument_track_fill_midi_events (InstrumentTrack      * track,
-                        Position   * pos, ///< start position to check
-                        uint32_t  nframes, ///< n of frames from start pos
-                        MidiEvents * midi_events); ///< midi events to fill
+instrument_track_fill_midi_events (
+  InstrumentTrack * track,
+  const long        g_start_frame,
+  const int         local_start_frame,
+  uint32_t          nframes,
+  MidiEvents *      midi_events);
 
 /**
  * Frees the track.
@@ -58,5 +84,9 @@ instrument_track_fill_midi_events (InstrumentTrack      * track,
  */
 void
 instrument_track_free (InstrumentTrack * track);
+
+/**
+ * @}
+ */
 
 #endif // __AUDIO_INSTRUMENT_TRACK_H__

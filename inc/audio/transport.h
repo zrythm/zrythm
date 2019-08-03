@@ -20,8 +20,7 @@
 /**
  * \file
  *
- * The transport struct containing all objects in
- *  the transport and their metadata
+ * Transport API.
  */
 
 #ifndef __AUDIO_TRANSPORT_H__
@@ -46,9 +45,11 @@
 #define DEFAULT_BEATS_PER_BAR 4
 #define DEFAULT_BEAT_UNIT BEAT_UNIT_4
 
-#define PLAYHEAD TRANSPORT->playhead_pos
+#define PLAYHEAD (&TRANSPORT->playhead_pos)
 #define IS_TRANSPORT_ROLLING \
-  TRANSPORT->play_state == PLAYSTATE_ROLLING
+  (TRANSPORT->play_state == PLAYSTATE_ROLLING)
+#define IS_TRANSPORT_LOOPING \
+  (TRANSPORT->loop)
 
 typedef enum BeatUnit
 {
@@ -240,10 +241,14 @@ transport_set_beat_unit (
   int beat_unit);
 
 /**
- * Moves the playhead by the time corresponding to given samples.
+ * Moves the playhead by the time corresponding to
+ * given samples, taking into account the loop
+ * end point.
  */
 void
-transport_add_to_playhead (int nframes);
+transport_add_to_playhead (
+  Transport * self,
+  const int   nframes);
 
 void
 transport_request_pause ();
@@ -309,9 +314,38 @@ transport_goto_next_marker (
 void
 transport_update_position_frames ();
 
+/**
+ * Adds frames to the given global frames, while
+ * adjusting the new frames to loop back if the
+ * loop point was crossed.
+ *
+ * @return The new frames adjusted.
+ */
+long
+transport_frames_add_frames (
+  const Transport * self,
+  const long        gframes,
+  const int         frames);
+
+/**
+ * Adds frames to the given position similar to
+ * position_add_frames, except that it adjusts
+ * the new Position if the loop end point was
+ * crossed.
+ */
+void
+transport_position_add_frames (
+  const Transport * self,
+  Position *        pos,
+  const int         frames);
+
 void
 transport_set_ebeat_unit (
   Transport * self,
   BeatUnit bu);
+
+/**
+ * @}
+ */
 
 #endif

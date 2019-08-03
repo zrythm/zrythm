@@ -388,6 +388,19 @@ region_get_full_length_in_ticks (
 }
 
 /**
+ * Returns the full length as it appears on the
+ * timeline in frames.
+ */
+long
+region_get_full_length_in_frames (
+  const Region * region)
+{
+  return
+    region->end_pos.frames -
+    region->start_pos.frames;
+}
+
+/**
  * Returns the length of the loop in ticks.
  */
 long
@@ -589,8 +602,11 @@ region_split (
   else
     {
       position_set_to_pos (&globalp, pos);
-      region_timeline_pos_to_local (
-        region, &globalp, &localp, 1);
+      long localp_frames =
+        region_timeline_frames_to_local (
+          region, globalp.frames, 1);
+      position_from_frames (
+        &localp, localp_frames);
     }
 
   /* for first region just set the end pos */
@@ -774,28 +790,28 @@ region_at_position (
 /**
  * Returns if the position is inside the region
  * or not.
+ *
+ * @param gframes Global position in frames.
  */
 int
 region_is_hit (
-  Region *   region,
-  Position * pos) ///< global position
+  const Region * region,
+  const long     gframes)
 {
   return
-    position_is_before_or_equal (
-      &region->start_pos, pos) &&
-    position_is_after (
-      &region->end_pos, pos);
+    region->start_pos.frames <= gframes &&
+    region->end_pos.frames > gframes;
 }
 
 /**
  * Returns if any part of the Region is inside the
- * given range.
+ * given range, inclusive.
  */
 int
 region_is_hit_by_range (
-  Region *         region,
-  const Position * start,
-  const Position * end)
+  const Region * region,
+  const long     gframes_start,
+  const long     gframes_end)
 {
   /* 4 cases:
    * - region start is inside range
@@ -804,16 +820,12 @@ region_is_hit_by_range (
    * - end is inside region
    */
   return
-    (position_is_before_or_equal (
-      start, &region->start_pos) &&
-     position_is_after (
-      end, &region->start_pos)) ||
-    (position_is_before_or_equal (
-      start, &region->end_pos) &&
-     position_is_after (
-      end, &region->end_pos)) ||
-    region_is_hit (region, start) ||
-    region_is_hit (region, end);
+    (gframes_start <= region->start_pos.frames &&
+     gframes_end > region->start_pos.frames) ||
+    (gframes_start <= region->end_pos.frames &&
+     gframes_end > region->end_pos.frames) ||
+    region_is_hit (region, gframes_start) ||
+    region_is_hit (region, gframes_end);
 }
 
 /**
@@ -1042,73 +1054,70 @@ region_clone (
 }
 
 /**
- * Converts a position on the timeline (global)
- * to a local position (in the clip).
+ * Converts frames on the timeline (global)
+ * to local frames (in the clip).
  *
  * If normalize is 1 it will only return a position
- * from 0.0.0.0 to loop_end (it will traverse the
+ * from 0 to loop_end (it will traverse the
  * loops to find the appropriate position),
  * otherwise it may exceed loop_end.
  *
- * @param timeline_pos Timeline position.
- * @param local_pos Position to fill.
+ * @param timeline_frames Timeline position in
+ *   frames.
+ *
+ * @return The local frames.
  */
-void
-region_timeline_pos_to_local (
-  Region *         region,
-  const Position * timeline_pos,
-  Position *       local_pos,
-  int              normalize)
+long
+region_timeline_frames_to_local (
+  const Region * region,
+  const long     timeline_frames,
+  const int      normalize)
 {
-  long diff_ticks;
+  long diff_frames;
 
   if (normalize)
     {
       if (region)
         {
-          diff_ticks =
-            position_to_ticks (timeline_pos) -
-            position_to_ticks (
-              &region->start_pos);
-          long loop_end_ticks =
-            position_to_ticks (
-              &region->loop_end_pos);
-          long clip_start_ticks =
-            position_to_ticks (
-              &region->clip_start_pos);
+          diff_frames =
+            timeline_frames -
+            region->start_pos.frames;
+          long loop_end_frames =
+            region->loop_end_pos.frames;
+          long clip_start_frames =
+            region->clip_start_pos.frames;
           long loop_size =
-            region_get_loop_length_in_ticks (
+            region_get_loop_length_in_frames (
               region);
 
-          diff_ticks += clip_start_ticks;
+          diff_frames += clip_start_frames;
 
-          while (diff_ticks >= loop_end_ticks)
+          while (diff_frames >= loop_end_frames)
             {
-              diff_ticks -= loop_size;
+              diff_frames -= loop_size;
             }
         }
       else
         {
-          diff_ticks = 0;
+          diff_frames = 0;
         }
-      position_from_ticks (local_pos, diff_ticks);
-      return;
+
+      return diff_frames;
     }
   else
     {
       if (region)
         {
-          diff_ticks =
-            position_to_ticks (timeline_pos) -
-            position_to_ticks (
-              &region->start_pos);
+          diff_frames =
+            timeline_frames -
+            region->start_pos.frames;
         }
       else
         {
-          diff_ticks = 0;
+          diff_frames = 0;
         }
-      position_from_ticks (local_pos, diff_ticks);
-      return;
+
+      return diff_frames;
     }
 }
 

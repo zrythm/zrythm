@@ -166,7 +166,7 @@ timeline_bg_draw_cb (
               float normalized_val =
                 automation_track_get_normalized_val_at_pos (
                   at,
-                  &PLAYHEAD);
+                  PLAYHEAD);
               if (normalized_val < 0.f)
                 normalized_val =
                   automatable_real_val_to_normalized (

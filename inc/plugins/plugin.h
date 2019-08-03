@@ -205,7 +205,7 @@ typedef struct Plugin
   int                  visible;
 
   /** The latency in samples. */
-  long                 latency;
+  int                  latency;
 
   /**
    * UI has been instantiated or not.
@@ -500,15 +500,14 @@ plugin_set_track (
 /**
  * Process plugin.
  *
- * @param start_pos The position to start playing
- *   from.
+ * @param g_start_frames The global start frames.
  * @param nframes The number of frames to process.
  */
 void
 plugin_process (
-  Plugin *         plugin,
-  const Position * start_pos,
-  const int        nframes);
+  Plugin *    plugin,
+  const long  g_start_frames,
+  const int   nframes);
 
 /**
  * Process show ui

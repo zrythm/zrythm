@@ -705,8 +705,8 @@ on_timeline_clipboard_received (
   if (MAIN_WINDOW->last_focused ==
       GTK_WIDGET (MW_TIMELINE))
     {
-      timeline_selections_paste_to_pos (ts,
-                                        &PLAYHEAD);
+      timeline_selections_paste_to_pos (
+        ts, PLAYHEAD);
     }
 
   /* free ts */

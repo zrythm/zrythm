@@ -36,11 +36,16 @@
  *
  * @param queued Append queued events instead of
  *   main events.
+ * @param start_frame The start frame offset from 0
+ *   in this cycle.
+ * @param nframes Number of frames to process.
  */
 void
 midi_events_append (
   MidiEvents * src,
   MidiEvents * dest,
+  const int    start_frame,
+  const int    nframes,
   int          queued)
 {
   /* queued not implemented yet */
@@ -51,10 +56,14 @@ midi_events_append (
   for (int i = 0; i < src->num_events; i++)
     {
       src_ev = &src->events[i];
-      dest_ev = &dest->events[i + dest_index];
-      midi_event_copy  (src_ev, dest_ev);
+      if (src_ev->time >= 0 &&
+          src_ev->time < nframes)
+        {
+          dest_ev = &dest->events[i + dest_index];
+          midi_event_copy  (src_ev, dest_ev);
+          dest->num_events++;
+        }
     }
-  dest->num_events += src->num_events;
 }
 
 /**

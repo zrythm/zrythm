@@ -183,7 +183,7 @@ node_process (
   GraphNode * node,
   const int   nframes)
 {
-  int i;
+  int i, noroll = 0;
   Channel * chan;
 
   int local_offset =
@@ -196,78 +196,66 @@ node_process (
       /* no roll */
       if (node->type == ROUTE_NODE_TYPE_PLUGIN)
         {
-          g_message (
-            "not --------- processing: "
-            "route latency %ld rem preroll %ld",
-            node->route_playback_latency,
-            AUDIO_ENGINE->
-              remaining_latency_preroll);
-          print_node (node);
+      g_message (
+        "-- not processing: %s "
+        "route latency %ld",
+        node->type == ROUTE_NODE_TYPE_PLUGIN ?
+          node->pl->descr->name :
+          node->port->identifier.label,
+        node->route_playback_latency);
         }
-      return;
+      noroll = 1;
+
+      /* if no-roll, only process terminal nodes
+       * to set their buffers to 0 */
+      if (!node->terminal)
+        return;
     }
   /*g_message ("processing");*/
   /*print_node (node);*/
 
-  Position sample_start_pos, sample_end_pos;
-  position_set_to_pos (
-    &sample_start_pos, &PLAYHEAD);
-  position_set_to_pos (
-    &sample_end_pos, &sample_start_pos);
+  /* global positions in frames (samples) */
+  long g_start_frames;
 
   /* only compensate latency when rolling */
   if (TRANSPORT->play_state ==
         PLAYSTATE_ROLLING)
     {
-      position_add_frames (
-        &sample_start_pos,
-        node->route_playback_latency -
-          AUDIO_ENGINE->remaining_latency_preroll);
-
-      /* compensate for loop-start. if the sample
-       * start pos is before loop end but end
-       * pos is after loop end, that should be
+      /* if the playhead is before the loop-end
+       * point and the latency-compensated position
+       * is after the loop-end point it means that
+       * the loop was crossed, so compensate for
+       * that.
+       *
+       * if the position is before loop-end and
+       * position + frames is after loop end (there
+       * is a loop inside the range), that should be
        * handled by the ports/processors instead */
-      if (TRANSPORT->loop &&
-          position_is_after_or_equal (
-            &sample_start_pos,
-            &TRANSPORT->loop_end_pos))
-        {
-          g_message ("LOOP");
-          int diff =
-            sample_start_pos.frames -
-            TRANSPORT->loop_end_pos.frames;
-          position_set_to_pos (
-            &sample_start_pos,
-            &TRANSPORT->loop_start_pos);
-          position_add_frames (
-            &sample_start_pos, diff);
-        }
+      g_start_frames =
+        transport_frames_add_frames (
+          TRANSPORT, PLAYHEAD->frames,
+          node->route_playback_latency -
+          AUDIO_ENGINE->remaining_latency_preroll);
     }
-
-  /*g_message ("num trigger nodes %d, max_trigger nodes %d", node->graph->n_trigger_queue, node->graph->trigger_queue_size);*/
-  /*for (i = 0; i < node->graph->n_trigger_queue; i++)*/
-    /*{*/
-      /*GraphNode * n = node->graph->trigger_queue[i];*/
-      /*g_message ("trigger node %d: %s",*/
-                 /*i,*/
-                 /*n->type == ROUTE_NODE_TYPE_PORT ?*/
-                 /*n->port->label :*/
-                 /*n->pl->descr->name);*/
-    /*}*/
+  else
+    {
+      g_start_frames = PLAYHEAD->frames;
+    }
 
   if (node->type == ROUTE_NODE_TYPE_PLUGIN)
     {
       /*g_message ("processing plugin %s",*/
                  /*node->pl->descr->name);*/
       plugin_process (
-        node->pl, &sample_start_pos, nframes);
+        node->pl, g_start_frames, nframes);
       g_message (
-        "processing: "
-        "route latency %ld rem preroll %ld",
-        node->route_playback_latency,
-        AUDIO_ENGINE->remaining_latency_preroll);
-      print_node (node);
+        "processing: %s at %ld "
+        "(route latency %ld)",
+        node->type == ROUTE_NODE_TYPE_PLUGIN ?
+          node->pl->descr->name :
+          node->port->identifier.label,
+        g_start_frames,
+        node->route_playback_latency);
     }
   else if (node->type == ROUTE_NODE_TYPE_PORT)
     {
@@ -307,7 +295,8 @@ node_process (
                   /*g_message ("filling PR events");*/
                   instrument_track_fill_midi_events (
                     (InstrumentTrack *)chan->track,
-                    &sample_start_pos,
+                    g_start_frames,
+                    local_offset,
                     nframes,
                     port->midi_events);
                 }
@@ -366,9 +355,8 @@ node_process (
             case TRACK_TYPE_MIDI:
             default:
               port_sum_signal_from_inputs (
-                port,
-                local_offset,
-                nframes);
+                port, local_offset,
+                nframes, noroll);
               break;
             }
         }
@@ -391,9 +379,8 @@ node_process (
           else
             {
               port_sum_signal_from_inputs (
-                port,
-                local_offset,
-                nframes);
+                port, local_offset,
+                nframes, noroll);
 
               /* apply pan */
               port_apply_pan (
@@ -497,9 +484,8 @@ node_process (
       else
         {
           port_sum_signal_from_inputs (
-            port,
-            local_offset,
-            nframes);
+            port, local_offset,
+            nframes, noroll);
         }
     }
 }

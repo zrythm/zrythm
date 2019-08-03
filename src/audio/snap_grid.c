@@ -173,8 +173,9 @@ snap_grid_update_snap_points (SnapGrid * self)
 {
   Position tmp, end_pos;
   position_init (&tmp);
-  position_set_to_bar (&end_pos,
-                       TRANSPORT->total_bars + 1);
+  position_set_to_bar (
+    &end_pos,
+    TRANSPORT->total_bars + 1);
   self->num_snap_points = 0;
   position_set_to_pos (
     &self->snap_points[self->num_snap_points++],

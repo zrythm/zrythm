@@ -427,10 +427,12 @@ engine_process_prepare (
         {
           at = atl->ats[j];
           /* FIXME passing playhead doesn't take
-           * into account the latency compensation */
+           * into account the latency compensation.
+           * maybe automation should be a port/
+           * processor in the signal chain. */
           val =
             automation_track_get_normalized_val_at_pos (
-              at, &PLAYHEAD);
+              at, PLAYHEAD);
           /*g_message ("val received %f",*/
                      /*val);*/
           /* if there was an automation event
@@ -569,14 +571,15 @@ engine_process (
       /*mixer_process (nframes);*/
       /*g_message ("=====================");*/
       g_message (
-        "======== processing with %ld preroll and "
-        "%d samples",
-        self->remaining_latency_preroll,
-        num_samples);
+        "======== processing at %d for %d samples "
+        "(preroll: %ld)",
+        _nframes - nframes,
+        num_samples,
+        self->remaining_latency_preroll);
       router_start_cycle (
         &MIXER->router, num_samples,
         _nframes - nframes,
-        &PLAYHEAD);
+        PLAYHEAD);
 
       self->remaining_latency_preroll -=
         num_samples;
@@ -589,13 +592,15 @@ engine_process (
   if (nframes > 0)
     {
       g_message (
-        "======== processing without preroll and "
-        "%d samples",
-        nframes);
+        "======== processing at %d for %d samples "
+        "(preroll: %ld)",
+        _nframes - nframes,
+        nframes,
+        self->remaining_latency_preroll);
       router_start_cycle (
         &MIXER->router, nframes,
         _nframes - nframes,
-        &PLAYHEAD);
+        PLAYHEAD);
     }
   g_message ("end====================");
 
@@ -628,35 +633,18 @@ engine_post_process (AudioEngine * self)
       /*TRANSPORT->starting_recording = 0;*/
     /*}*/
 
-  /* move the playhead if not pre-rolling */
-  if (self->remaining_latency_preroll == 0)
+  /* move the playhead if rolling and not
+   * pre-rolling */
+  if (IS_TRANSPORT_ROLLING &&
+      self->remaining_latency_preroll == 0)
     {
-      /* loop position back if about to exit loop */
-      long int new_frames =
-        TRANSPORT->playhead_pos.frames +
-        self->nframes;
-      if (TRANSPORT->loop &&
-          IS_TRANSPORT_ROLLING &&
-          position_is_before_or_equal (
-             &TRANSPORT->playhead_pos,
-             &TRANSPORT->loop_end_pos) &&
-          new_frames >
-              TRANSPORT->loop_end_pos.frames)
-        {
-          transport_move_playhead (
-            &TRANSPORT->loop_start_pos,
-            1);
-        }
-      else if (IS_TRANSPORT_ROLLING)
-        {
-          /* move playhead as many samples as
-           * processed */
-          transport_add_to_playhead (self->nframes);
-        }
+      transport_add_to_playhead (
+        TRANSPORT, self->nframes);
     }
 
   AUDIO_ENGINE->last_time_taken =
-    g_get_monotonic_time () - AUDIO_ENGINE->last_time_taken;
+    g_get_monotonic_time () -
+    AUDIO_ENGINE->last_time_taken;
   /*g_message ("last time taken: %ld");*/
   if (AUDIO_ENGINE->max_time_taken <
       AUDIO_ENGINE->last_time_taken)

@@ -76,6 +76,12 @@
 #define position_is_after_or_equal(_pos,_cmp) \
   (position_compare (_pos, _cmp) >= 0)
 
+/** Returns if _pos is after or equal to _start and
+ * before _end. */
+#define position_is_between(_pos,_start,_end) \
+  (position_is_after_or_equal (_pos, _start) && \
+   position_is_before (_pos, _end))
+
 /** Start Position to be used in calculations. */
 #define DEFINE_START_POS \
   static const Position __start_pos = { \

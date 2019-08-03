@@ -153,17 +153,16 @@ automation_track_get_ap_before_pos (
   if (!r)
     return NULL;
 
-  Position local_pos;
-  region_timeline_pos_to_local (
-    r, pos, &local_pos, 1);
+  long local_pos =
+    region_timeline_frames_to_local (
+    r, pos->frames, 1);
 
   AutomationPoint * ap;
   for (int i = r->num_aps - 1; i >= 0; i--)
     {
       ap = r->aps[i];
 
-      if (position_is_before_or_equal (
-            &ap->pos, &local_pos))
+      if (ap->pos.frames <= local_pos)
         return ap;
     }
 
@@ -194,9 +193,9 @@ automation_track_get_normalized_val_at_pos (
   if (!ac && !prev_ap)
     return -1.f;
 
-  Position localp;
-  region_timeline_pos_to_local (
-    prev_ap->region, pos, &localp, 1);
+  long localp =
+    region_timeline_frames_to_local (
+      prev_ap->region, pos->frames, 1);
 
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
@@ -222,14 +221,13 @@ automation_track_get_normalized_val_at_pos (
           next_ap_normalized_val);
 
   /* ratio of how far in we are in the curve */
-  int pos_ticks = position_to_ticks (&localp);
-  int prev_ap_ticks =
-    position_to_ticks (&prev_ap->pos);
-  int next_ap_ticks =
-    position_to_ticks (&next_ap->pos);
+  long prev_ap_frames =
+    position_to_frames (&prev_ap->pos);
+  long next_ap_frames =
+    position_to_frames (&next_ap->pos);
   double ratio =
-    (double) (pos_ticks - prev_ap_ticks) /
-    (next_ap_ticks - prev_ap_ticks);
+    (double) (localp - prev_ap_frames) /
+    (next_ap_frames - prev_ap_frames);
   g_message ("ratio %f",
              ratio);
 

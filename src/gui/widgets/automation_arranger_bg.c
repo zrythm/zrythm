@@ -54,7 +54,7 @@ automation_arranger_draw_cb (
 
   float normalized_val =
     automation_track_get_normalized_val_at_pos (
-      r->at, &PLAYHEAD);
+      r->at, PLAYHEAD);
   if (normalized_val < 0.f)
     normalized_val =
       automatable_real_val_to_normalized (

@@ -234,7 +234,7 @@ ruler_marker_widget_update_tooltip (
       char * tooltip = NULL;
       if (self->type == RULER_MARKER_TYPE_PLAYHEAD)
         tooltip=
-          position_stringize (&PLAYHEAD);
+          position_stringize (PLAYHEAD);
 
       if (tooltip)
         {

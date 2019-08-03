@@ -895,11 +895,11 @@ void
 channel_handle_recording (Channel * self)
 {
   Region * region =
-    track_get_region_at_pos (self->track,
-                             &PLAYHEAD);
+    track_get_region_at_pos (
+      self->track, PLAYHEAD);
   /* get end position TODO snap */
   Position tmp;
-  position_set_to_pos (&tmp, &PLAYHEAD);
+  position_set_to_pos (&tmp, PLAYHEAD);
   position_add_frames (
     &tmp,
     AUDIO_ENGINE->nframes + 1);
@@ -919,7 +919,7 @@ channel_handle_recording (Channel * self)
           /* create region */
           mr =
             midi_region_new (
-              &PLAYHEAD, &tmp, 1);
+              PLAYHEAD, &tmp, 1);
           track_add_region (
             self->track, mr, 0, F_GEN_NAME,
             F_GEN_WIDGET);
@@ -942,7 +942,7 @@ channel_handle_recording (Channel * self)
                   case MIDI_EVENT_TYPE_NOTE_ON:
                     mn =
                       midi_note_new (
-                        mr, &PLAYHEAD, &tmp,
+                        mr, PLAYHEAD, &tmp,
                         ev->note_pitch,
                         ev->velocity, 1);
                     midi_region_add_midi_note (

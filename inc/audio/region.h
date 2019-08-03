@@ -496,6 +496,14 @@ region_get_full_length_in_ticks (
   Region * region);
 
 /**
+ * Returns the full length as it appears on the
+ * timeline in frames.
+ */
+long
+region_get_full_length_in_frames (
+  const Region * region);
+
+/**
  * Returns the true length as it appears on the
  * piano roll (not taking into account any looping)
  * in ticks.
@@ -519,23 +527,24 @@ region_get_loop_length_in_ticks (
   Region * region);
 
 /**
- * Converts a position on the timeline (global)
- * to a local position (in the clip).
+ * Converts frames on the timeline (global)
+ * to local frames (in the clip).
  *
  * If normalize is 1 it will only return a position
- * from 0.0.0.0 to loop_end (it will traverse the
+ * from 0 to loop_end (it will traverse the
  * loops to find the appropriate position),
  * otherwise it may exceed loop_end.
  *
- * @param timeline_pos Timeline position.
- * @param local_pos Position to fill.
+ * @param timeline_frames Timeline position in
+ *   frames.
+ *
+ * @return The local frames.
  */
-void
-region_timeline_pos_to_local (
-  Region *         region,
-  const Position * timeline_pos,
-  Position *       local_pos,
-  int              normalize);
+long
+region_timeline_frames_to_local (
+  const Region * region,
+  const long     timeline_frames,
+  const int      normalize);
 
 /**
  * Returns the Track this Region is in.
@@ -652,21 +661,23 @@ region_is_selected (Region * self);
 /**
  * Returns if the position is inside the region
  * or not.
+ *
+ * @param gframes Global position in frames.
  */
 int
 region_is_hit (
-  Region *   region,
-  Position * pos); ///< global position
+  const Region * region,
+  const long     gframes);
 
 /**
  * Returns if any part of the Region is inside the
- * given range.
+ * given range, inclusive.
  */
 int
 region_is_hit_by_range (
-  Region *         region,
-  const Position * start,
-  const Position * end);
+  const Region * region,
+  const long     gframes_start,
+  const long     gframes_end);
 
 void
 region_unpack (Region * region);

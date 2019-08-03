@@ -181,11 +181,16 @@ midi_event_copy (
  *
  * @param queued Append queued events instead of
  *   main events.
+ * @param start_frame The start frame offset from 0
+ *   in this cycle.
+ * @param nframes Number of frames to process.
  */
 void
 midi_events_append (
   MidiEvents * src,
   MidiEvents * dest,
+  const int    start_frame,
+  const int    nframes,
   int          queued);
 
 /**

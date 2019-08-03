@@ -1244,7 +1244,7 @@ long
 lv2_plugin_get_latency (
   Lv2Plugin * pl)
 {
-  lv2_plugin_process (pl, &PLAYHEAD, 0);
+  lv2_plugin_process (pl, PLAYHEAD->frames, 0);
 
   return pl->plugin_latency;
 }
@@ -2022,34 +2022,40 @@ lv2_instantiate (
 /**
  * Processes the plugin for this cycle.
  *
- * @param start_pos The position to start playing
- *   from.
+ * @param g_start_frames The global start frames.
  * @param nframes The number of frames to process.
  */
 void
 lv2_plugin_process (
-  Lv2Plugin *      lv2_plugin,
-  const Position * start_pos,
-  const int        nframes)
+  Lv2Plugin * lv2_plugin,
+  const long  g_start_frames,
+  const int   nframes)
 {
 #ifdef HAVE_JACK
   jack_client_t * client = AUDIO_ENGINE->client;
 #endif
   int i, p;
 
-  /* If transport state is not as expected, then something has changed */
+  /* If transport state is not as expected, then
+   * something has changed */
   const bool xport_changed = (
-    lv2_plugin->rolling != (TRANSPORT->play_state == PLAYSTATE_ROLLING) ||
-    lv2_plugin->pos.frames !=
-      start_pos->frames ||
+    lv2_plugin->rolling !=
+      (IS_TRANSPORT_ROLLING) ||
+    /* FIXME don't save Position in Lv2Plugin.
+     * only safe long frames. */
+    lv2_plugin->gframes !=
+      g_start_frames ||
     lv2_plugin->bpm != TRANSPORT->bpm);
 
   uint8_t   pos_buf[256];
   LV2_Atom * lv2_pos = (LV2_Atom*) pos_buf;
   if (xport_changed)
     {
-      /* Build an LV2 position object to report change to
-       * plugin */
+      /* Build an LV2 position object to report
+       * change to plugin */
+      Position start_pos;
+      position_from_frames (
+        &start_pos, g_start_frames);
       lv2_atom_forge_set_buffer (
         &lv2_plugin->forge,
         pos_buf,
@@ -2066,7 +2072,7 @@ lv2_plugin_process (
         PM_URIDS.time_frame);
       lv2_atom_forge_long (
         forge,
-        start_pos->frames);
+        g_start_frames);
       lv2_atom_forge_key (
         forge,
         PM_URIDS.time_speed);
@@ -2079,15 +2085,15 @@ lv2_plugin_process (
         PM_URIDS.time_barBeat);
       lv2_atom_forge_float (
         forge,
-        (float) start_pos->beats - 1 +
-        ((float) start_pos->ticks /
+        (float) start_pos.beats - 1 +
+        ((float) start_pos.ticks /
           (float) TRANSPORT->ticks_per_beat));
       lv2_atom_forge_key (
         forge,
         PM_URIDS.time_bar);
       lv2_atom_forge_long (
         forge,
-        start_pos->bars - 1);
+        start_pos.bars - 1);
       lv2_atom_forge_key (
         forge,
         PM_URIDS.time_beatUnit);
@@ -2107,14 +2113,21 @@ lv2_plugin_process (
         forge, TRANSPORT->bpm);
     }
 
-  /* Update transport state to expected values for next cycle */
-  lv2_plugin->pos.frames =
-    TRANSPORT->play_state == PLAYSTATE_ROLLING ?
-    start_pos->frames + nframes :
-    lv2_plugin->pos.frames;
+  /* Update transport state to expected values for
+   * next cycle */
+  if (IS_TRANSPORT_ROLLING)
+    {
+      lv2_plugin->gframes =
+        transport_frames_add_frames (
+          TRANSPORT, lv2_plugin->gframes,
+          nframes);
+      lv2_plugin->rolling = 1;
+    }
+  else
+    {
+      lv2_plugin->rolling = 0;
+    }
   lv2_plugin->bpm = TRANSPORT->bpm;
-  lv2_plugin->rolling =
-    TRANSPORT->play_state == PLAYSTATE_ROLLING;
 
   /* Prepare port buffers */
   for (p = 0; p < lv2_plugin->num_ports; ++p)
@@ -2123,23 +2136,24 @@ lv2_plugin_process (
       Port * port = lv2_port->port;
       if (port->identifier.type == TYPE_AUDIO)
         {
-          /* Connect lv2 ports  to plugin port buffers */
-          /*port->nframes = nframes;*/
+          /* connect lv2 ports to plugin port
+           * buffers */
           lilv_instance_connect_port (
             lv2_plugin->instance, p, port->buf);
         }
       else if (port->identifier.type == TYPE_CV)
         {
-          /* Connect plugin port directly to a
-           * CV buffer in the port.  according to
+          /* connect plugin port directly to a
+           * CV buffer in the port. according to
            * the docs it has the same size as an
            * audio port. */
           lilv_instance_connect_port (
             lv2_plugin->instance,
             p, port->buf);
         }
-      else if (port->identifier.type == TYPE_EVENT &&
-               port->identifier.flow == FLOW_INPUT)
+      else if (
+        port->identifier.type == TYPE_EVENT &&
+        port->identifier.flow == FLOW_INPUT)
         {
           lv2_evbuf_reset(lv2_port->evbuf, true);
 
@@ -2217,12 +2231,13 @@ lv2_plugin_process (
     lv2_plugin->plugin->ui_instantiated;
 
   /* Deliver MIDI output and UI events */
+  Port * port;
   for (p = 0; p < lv2_plugin->num_ports;
        ++p)
     {
       Lv2Port* const lv2_port =
         &lv2_plugin->ports[p];
-      Port * port = lv2_port->port;
+      port = lv2_port->port;
       if (port->identifier.flow == FLOW_OUTPUT &&
           port->identifier.type == TYPE_CONTROL &&
           lilv_port_has_property(

@@ -155,6 +155,10 @@ transport_set_beat_unit (
     self->lticks_per_bar;
   self->sixteenths_per_beat =
     16.0 / (double) self->beat_unit;
+  g_warn_if_fail (self->ticks_per_bar > 0);
+  g_warn_if_fail (self->ticks_per_beat > 0);
+  g_warn_if_fail (self->lticks_per_bar > 0);
+  g_warn_if_fail (self->lticks_per_beat > 0);
 }
 
 void
@@ -197,18 +201,18 @@ transport_request_roll ()
 
 
 /**
- * Moves the playhead by the time corresponding to given samples.
+ * Moves the playhead by the time corresponding to
+ * given samples, taking into account the loop
+ * end point.
  */
-inline void
+void
 transport_add_to_playhead (
-  int frames)
+  Transport * self,
+  const int   frames)
 {
-  if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
-    {
-      position_add_frames (&TRANSPORT->playhead_pos,
-                           frames);
-      EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED, NULL);
-    }
+  transport_position_add_frames (
+    self, &TRANSPORT->playhead_pos, frames);
+  EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED, NULL);
 }
 
 /**
@@ -272,7 +276,8 @@ transport_move_playhead (
             {
               region = lane->regions[l];
 
-              if (!region_is_hit (region, &PLAYHEAD))
+              if (!region_is_hit (
+                    region, PLAYHEAD->frames))
                 continue;
 
               for (j = 0;
@@ -282,7 +287,7 @@ transport_move_playhead (
                   midi_note = region->midi_notes[j];
 
                   if (midi_note_hit (
-                        midi_note, &PLAYHEAD))
+                        midi_note, PLAYHEAD->frames))
                     {
                       midi_events =
                         channel->piano_roll->
@@ -409,4 +414,52 @@ transport_set_loop (
   self->loop = enabled;
 
   EVENTS_PUSH (ET_LOOP_TOGGLED, NULL);
+}
+
+/**
+ * Adds frames to the given global frames, while
+ * adjusting the new frames to loop back if the
+ * loop point was crossed.
+ *
+ * @return The new frames adjusted.
+ */
+long
+transport_frames_add_frames (
+  const Transport * self,
+  const long        gframes,
+  const int         frames)
+{
+  long new_frames = gframes + frames;
+
+  /* if start frames were before the loop-end point
+   * and the new frames are after (loop crossed) */
+  if (IS_TRANSPORT_LOOPING &&
+      gframes < self->loop_end_pos.frames &&
+      new_frames >= self->loop_end_pos.frames)
+    {
+      /* adjust the new frames */
+      new_frames +=
+        self->loop_start_pos.frames -
+        self->loop_end_pos.frames;
+    }
+
+  return new_frames;
+}
+
+/**
+ * Adds frames to the given position similar to
+ * position_add_frames(), except that it adjusts
+ * the new Position to loop back if the loop end
+ * point was crossed.
+ */
+void
+transport_position_add_frames (
+  const Transport * self,
+  Position *        pos,
+  const int         frames)
+{
+  position_from_frames (
+    pos,
+    transport_frames_add_frames (
+      self, pos->frames, frames));
 }

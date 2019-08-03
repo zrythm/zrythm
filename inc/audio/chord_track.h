@@ -75,7 +75,7 @@ chord_track_remove_scale (
  * Returns the current chord.
  */
 #define chord_track_get_chord_at_playhead(ct) \
-  chord_track_get_chord_at_pos (ct, &PLAYHEAD)
+  chord_track_get_chord_at_pos (ct, PLAYHEAD)
 
 /**
  * Returns the ChordObject at the given Position
@@ -90,7 +90,7 @@ chord_track_get_chord_at_pos (
  * Returns the current scale.
  */
 #define chord_track_get_scale_at_playhead(ct) \
-  chord_track_get_scale_at_pos (ct, &PLAYHEAD)
+  chord_track_get_scale_at_pos (ct, PLAYHEAD)
 
 /**
  * Returns the ScaleObject at the given Position

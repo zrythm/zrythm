@@ -561,12 +561,15 @@ port_apply_fader (Port * port, float amp);
  * @param start_frame The start frame offset from
  *   0 in this cycle.
  * @param nframes The number of frames to process.
+ * @param noroll Clear the port buffer in this
+ *   range.
  */
 void
 port_sum_signal_from_inputs (
-  Port *     port,
-  const long start_frame,
-  const int  nframes);
+  Port *    port,
+  const int start_frame,
+  const int nframes,
+  const int noroll);
 
 /**
  * Sets the owner channel & its ID.

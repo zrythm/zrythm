@@ -251,7 +251,7 @@ midi_note_set_val (
 {
   /* if currently playing set a note off event. */
   if (midi_note_hit (
-        midi_note, &PLAYHEAD))
+        midi_note, PLAYHEAD->frames))
     {
       MidiEvents * midi_events =
         region_get_track (midi_note->region)->
@@ -297,37 +297,32 @@ midi_note_delete (MidiNote * midi_note)
 }
 
 /**
- * Returns if the MIDI note is hit at given pos (in the
- * timeline).
+ * Returns if the MIDI note is hit at given pos (in
+ * the timeline).
  */
 int
 midi_note_hit (
-  MidiNote * midi_note,
-  Position *  pos)
+  const MidiNote * midi_note,
+  const long       gframes)
 {
-  Position local_pos;
   Region * region = midi_note->region;
 
   /* get local positions */
-  region_timeline_pos_to_local (
-    region, pos, &local_pos, 1);
+  long local_pos =
+    region_timeline_frames_to_local (
+      region, gframes, 1);
 
   /* add clip_start position to start from
    * there */
-  long clip_start_ticks =
-    position_to_ticks (
-      &region->clip_start_pos);
-  position_add_ticks (
-    &local_pos, clip_start_ticks);
+  long clip_start_frames =
+    region->clip_start_pos.frames;
+  local_pos += clip_start_frames;
 
   /* check for note on event on the
    * boundary */
-  if (position_compare (
-        &midi_note->start_pos,
-        &local_pos) < 0 &&
-      position_compare (
-        &midi_note->end_pos,
-        &local_pos) >= 0)
+  /* FIXME ok? it was < and >= before */
+  if (midi_note->start_pos.frames <= local_pos &&
+      midi_note->end_pos.frames > local_pos)
     return 1;
 
   return 0;
