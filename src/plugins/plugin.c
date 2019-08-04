@@ -216,6 +216,9 @@ plugin_update_latency (
     {
       pl->latency =
         lv2_plugin_get_latency (pl->lv2);
+      g_message ("%s latency: %d samples",
+                 pl->descr->name,
+                 pl->latency);
     }
 }
 

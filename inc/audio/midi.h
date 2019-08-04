@@ -256,7 +256,7 @@ midi_events_add_event_from_buf (
 /**
  * Adds a note off event to the given MidiEvents.
  *
- * @parram queued Add to queued events instead.
+ * @param queued Add to queued events instead.
  */
 static inline void
 midi_events_add_note_off (
