@@ -54,6 +54,7 @@
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/preferences.h"
+#include "gui/widgets/quantize_dialog.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
@@ -67,6 +68,7 @@
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 
 #include <gtk/gtk.h>
 
@@ -1076,23 +1078,81 @@ change_state_loop (
 void
 activate_quick_quantize (
   GSimpleAction *action,
-  GVariant      *variant,
+  GVariant      * _variant,
   gpointer       user_data)
 {
-  g_message ("gvariant %p", variant);
-  gsize size;
-  if (variant)
-    g_message ("variant: %s", g_variant_get_string (variant, &size));
-  g_message ("quantize");
+  g_return_if_fail (_variant);
 
+  gsize size;
+  char * variant =
+    g_variant_get_string (_variant, &size);
+  if (string_is_equal (variant, "timeline", 1))
+    {
+    }
+  else if (string_is_equal (variant, "editor", 1))
+    {
+    }
+  else if (string_is_equal (variant, "global", 1))
+    {
+    }
+  else
+    {
+      g_return_if_reached ();
+    }
+  g_message ("quantize");
 }
 
 void
 activate_quantize_options (
   GSimpleAction *action,
-  GVariant      *variant,
+  GVariant      *_variant,
   gpointer       user_data)
 {
-  g_message ("quantize opts");
+  g_return_if_fail (_variant);
 
+  gsize size;
+  char * variant =
+    g_variant_get_string (_variant, &size);
+  if (string_is_equal (variant, "timeline", 1))
+    {
+      QuantizeDialogWidget * quant =
+        quantize_dialog_widget_new (
+          QUANTIZE_OPTIONS_TIMELINE);
+      gtk_window_set_transient_for (
+        GTK_WINDOW (quant),
+        GTK_WINDOW (MAIN_WINDOW));
+      gtk_dialog_run (GTK_DIALOG (quant));
+      gtk_widget_destroy (GTK_WIDGET (quant));
+    }
+  else if (string_is_equal (variant, "editor", 1))
+    {
+      QuantizeDialogWidget * quant =
+        quantize_dialog_widget_new (
+          QUANTIZE_OPTIONS_EDITOR);
+      gtk_window_set_transient_for (
+        GTK_WINDOW (quant),
+        GTK_WINDOW (MAIN_WINDOW));
+      gtk_dialog_run (GTK_DIALOG (quant));
+      gtk_widget_destroy (GTK_WIDGET (quant));
+    }
+  else if (string_is_equal (variant, "global", 1))
+    {
+      if (MAIN_WINDOW->last_focused ==
+          GTK_WIDGET (MW_TIMELINE))
+        {
+          QuantizeDialogWidget * quant =
+            quantize_dialog_widget_new (
+              QUANTIZE_OPTIONS_TIMELINE);
+          gtk_window_set_transient_for (
+            GTK_WINDOW (quant),
+            GTK_WINDOW (MAIN_WINDOW));
+          gtk_dialog_run (GTK_DIALOG (quant));
+          gtk_widget_destroy (GTK_WIDGET (quant));
+        }
+    }
+  else
+    {
+      g_return_if_reached ();
+    }
+  g_message ("quantize opts");
 }

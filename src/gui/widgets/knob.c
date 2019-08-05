@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  * Copyright (C) 2010 Paul Davis
  *
  * This file is part of Zrythm
@@ -45,7 +45,8 @@ G_DEFINE_TYPE (KnobWidget,
 /**
  * MAcro to get real value from knob value.
  */
-#define REAL_VAL_FROM_KNOB(knob) (self->min + knob * (self->max - self-> min))
+#define REAL_VAL_FROM_KNOB(knob) \
+  (self->min + knob * (self->max - self->min))
 
 /**
  * Converts from real value to knob value
@@ -276,21 +277,22 @@ draw_cb (
 }
 
 static void
-on_crossing (GtkWidget * widget, GdkEvent *event, void * data)
+on_crossing (
+  GtkWidget *  widget,
+  GdkEvent *   event,
+  KnobWidget * self)
 {
-  KnobWidget * self = (KnobWidget *) data;
   if (event->type == GDK_ENTER_NOTIFY)
     {
       self->hover = 1;
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      if (!gtk_gesture_drag_get_offset (self->drag,
-                                       NULL,
-                                       NULL))
+      if (!gtk_gesture_drag_get_offset (
+             self->drag, NULL, NULL))
         self->hover = 0;
     }
-  gtk_widget_queue_draw(widget);
+  gtk_widget_queue_draw (widget);
 }
 
 static double clamp
@@ -300,30 +302,36 @@ static double clamp
 }
 
 static void
-drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_update (
+  GtkGestureDrag *gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  KnobWidget *    self)
 {
-  KnobWidget * self = (KnobWidget *) user_data;
   offset_y = - offset_y;
   int use_y =
     fabs (offset_y - self->last_y) >
     fabs (offset_x - self->last_x);
-  SET_REAL_VAL (REAL_VAL_FROM_KNOB (clamp (KNOB_VAL_FROM_REAL (GET_REAL_VAL) + 0.004 * (use_y ? offset_y - self->last_y : offset_x - self->last_x),
-               1.0f, 0.0f)));
+  SET_REAL_VAL (
+    REAL_VAL_FROM_KNOB (
+      clamp (
+        KNOB_VAL_FROM_REAL (GET_REAL_VAL) +
+          0.004 * (
+            use_y ? offset_y - self->last_y :
+            offset_x - self->last_x),
+         1.0f, 0.0f)));
   self->last_x = offset_x;
   self->last_y = offset_y;
-  gtk_widget_queue_draw ((GtkWidget *)user_data);
+  gtk_widget_queue_draw ((GtkWidget *)self);
 }
 
 static void
-drag_end (GtkGestureDrag *gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_end (
+  GtkGestureDrag *gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  KnobWidget *    self)
 {
-  KnobWidget * self = (KnobWidget *) user_data;
   self->last_x = 0;
   self->last_y = 0;
 }
@@ -402,7 +410,8 @@ _knob_widget_new (
 }
 
 static void
-knob_widget_init (KnobWidget * self)
+knob_widget_init (
+  KnobWidget * self)
 {
   /* make it able to notify */
   gtk_widget_set_has_window (
@@ -420,6 +429,7 @@ knob_widget_init (KnobWidget * self)
 }
 
 static void
-knob_widget_class_init (KnobWidgetClass * klass)
+knob_widget_class_init (
+  KnobWidgetClass * klass)
 {
 }

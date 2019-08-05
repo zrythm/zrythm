@@ -33,11 +33,11 @@
 
 #define DIGITAL_METER_WIDGET_TYPE \
   (digital_meter_widget_get_type ())
-G_DECLARE_FINAL_TYPE (DigitalMeterWidget,
-                      digital_meter_widget,
-                      Z,
-                      DIGITAL_METER_WIDGET,
-                      GtkDrawingArea)
+G_DECLARE_FINAL_TYPE (
+  DigitalMeterWidget,
+  digital_meter_widget,
+  Z, DIGITAL_METER_WIDGET,
+  GtkDrawingArea)
 
 typedef enum NoteLength NoteLength;
 typedef enum NoteType NoteType;

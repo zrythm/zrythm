@@ -72,6 +72,51 @@ quantize_options_init (QuantizeOptions *   self,
   self->rand_ticks = 0;
 }
 
+float
+quantize_options_get_swing (
+  QuantizeOptions * self)
+{
+  return self->swing;
+}
+
+float
+quantize_options_get_amount (
+  QuantizeOptions * self)
+{
+  return self->amount;
+}
+
+float
+quantize_options_get_randomization (
+  QuantizeOptions * self)
+{
+  return self->rand_ticks;
+}
+
+void
+quantize_options_set_swing (
+  QuantizeOptions * self,
+  float             swing)
+{
+  self->swing = swing;
+}
+
+void
+quantize_options_set_amount (
+  QuantizeOptions * self,
+  float             amount)
+{
+  self->amount = amount;
+}
+
+void
+quantize_options_set_randomization (
+  QuantizeOptions * self,
+  float             randomization)
+{
+  self->rand_ticks = randomization;
+}
+
 /**
  * Returns the current options as a human-readable
  * string.

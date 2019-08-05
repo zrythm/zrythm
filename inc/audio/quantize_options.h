@@ -49,7 +49,7 @@ typedef struct QuantizeOptions
   NoteType         note_type;
 
   /** Percentage to apply quantize (0-100). */
-  int              amount;
+  float            amount;
 
   /** Adjust start position or not (only applies to
    * objects with length. */
@@ -60,10 +60,10 @@ typedef struct QuantizeOptions
   int              adj_end;
 
   /** Swing amount (0-100). */
-  int              swing;
+  float            swing;
 
   /** Number of ticks for randomization. */
-  int              rand_ticks;
+  float            rand_ticks;
 
   /**
    * Quantize points.
@@ -89,7 +89,7 @@ static const cyaml_schema_field_t
     "note_type", CYAML_FLAG_DEFAULT,
     QuantizeOptions, note_type, note_type_strings,
     CYAML_ARRAY_LEN (note_type_strings)),
-  CYAML_FIELD_INT (
+  CYAML_FIELD_FLOAT (
     "amount", CYAML_FLAG_DEFAULT,
     QuantizeOptions, amount),
   CYAML_FIELD_INT (
@@ -98,10 +98,10 @@ static const cyaml_schema_field_t
   CYAML_FIELD_INT (
     "adj_end", CYAML_FLAG_DEFAULT,
     QuantizeOptions, adj_end),
-  CYAML_FIELD_INT (
+  CYAML_FIELD_FLOAT (
     "swing", CYAML_FLAG_DEFAULT,
     QuantizeOptions, swing),
-  CYAML_FIELD_INT (
+  CYAML_FIELD_FLOAT (
     "rand_ticks", CYAML_FLAG_DEFAULT,
     QuantizeOptions, rand_ticks),
 
@@ -127,14 +127,42 @@ void
 quantize_options_update_quantize_points (
   QuantizeOptions * self);
 
+float
+quantize_options_get_swing (
+  QuantizeOptions * self);
+
+float
+quantize_options_get_amount (
+  QuantizeOptions * self);
+
+float
+quantize_options_get_randomization (
+  QuantizeOptions * self);
+
+void
+quantize_options_set_swing (
+  QuantizeOptions * self,
+  float             swing);
+
+void
+quantize_options_set_amount (
+  QuantizeOptions * self,
+  float             amount);
+
+void
+quantize_options_set_randomization (
+  QuantizeOptions * self,
+  float             randomization);
+
 /**
  * Returns the grid intensity as a human-readable string.
  *
  * Must be free'd.
  */
 char *
-quantize_options_stringize (NoteLength note_length,
-                     NoteType   note_type);
+quantize_options_stringize (
+  NoteLength note_length,
+  NoteType   note_type);
 
 /**
  * Returns the next or previous QuantizeOptions

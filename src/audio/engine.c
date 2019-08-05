@@ -569,13 +569,12 @@ engine_process (
       /* this will keep looping until everything was
        * processed in this cycle */
       /*mixer_process (nframes);*/
-      /*g_message ("=====================");*/
-      g_message (
-        "======== processing at %d for %d samples "
-        "(preroll: %ld)",
-        _nframes - nframes,
-        num_samples,
-        self->remaining_latency_preroll);
+      /*g_message (*/
+        /*"======== processing at %d for %d samples "*/
+        /*"(preroll: %ld)",*/
+        /*_nframes - nframes,*/
+        /*num_samples,*/
+        /*self->remaining_latency_preroll);*/
       router_start_cycle (
         &MIXER->router, num_samples,
         _nframes - nframes,
@@ -591,18 +590,18 @@ engine_process (
 
   if (nframes > 0)
     {
-      g_message (
-        "======== processing at %d for %d samples "
-        "(preroll: %ld)",
-        _nframes - nframes,
-        nframes,
-        self->remaining_latency_preroll);
+      /*g_message (*/
+        /*"======== processing at %d for %d samples "*/
+        /*"(preroll: %ld)",*/
+        /*_nframes - nframes,*/
+        /*nframes,*/
+        /*self->remaining_latency_preroll);*/
       router_start_cycle (
         &MIXER->router, nframes,
         _nframes - nframes,
         PLAYHEAD);
     }
-  g_message ("end====================");
+  /*g_message ("end====================");*/
 
   /* run post-process code */
   engine_post_process (self);

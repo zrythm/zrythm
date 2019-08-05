@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Export dialog.
+ */
+
 #ifndef __GUI_WIDGETS_EXPORT_DIALOG_H__
 #define __GUI_WIDGETS_EXPORT_DIALOG_H__
 
@@ -24,12 +30,21 @@
 
 #define EXPORT_DIALOG_WIDGET_TYPE \
   (export_dialog_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ExportDialogWidget,
-                      export_dialog_widget,
-                      Z,
-                      EXPORT_DIALOG_WIDGET,
-                      GtkDialog)
+G_DECLARE_FINAL_TYPE (
+  ExportDialogWidget,
+  export_dialog_widget,
+  Z, EXPORT_DIALOG_WIDGET,
+  GtkDialog)
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+/**
+ * The export dialog.
+ */
 typedef struct _ExportDialogWidget
 {
   GtkDialog            parent_instance;
@@ -53,5 +68,9 @@ typedef struct _ExportDialogWidget
  */
 ExportDialogWidget *
 export_dialog_widget_new ();
+
+/**
+ * @}
+ */
 
 #endif

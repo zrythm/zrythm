@@ -50,9 +50,15 @@ typedef struct _KnobWidget
 
   KnobType              type;
 
-  float (*getter)(void*);       ///< getter
-  void (*setter)(void*, float);       ///< getter
+  /** Getter. */
+  float (*getter)(void*);
+
+  /** Setter. */
+  void (*setter)(void*, float);
+
+  /** Object to call get/set with. */
   void *                object;
+
   int                   size;  ///< size in px
   int                   hover;   ///< used to detect if hovering or not
   float                 zero;   ///<   zero point 0.0-1.0 */
