@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+
 #include "audio/engine.h"
 #include "audio/quantize_options.h"
 #include "audio/transport.h"
@@ -45,13 +47,21 @@ quantize_options_update_quantize_points (
     snap_grid_get_note_ticks (
       self->note_length,
       self->note_type);
-  while (position_compare (&tmp, &end_pos)
-           < 0)
+  long swing_offset =
+    (self->swing / 100.f) *
+    ticks / 2.f;
+  while (position_is_before (&tmp, &end_pos))
     {
       position_add_ticks (
-        &tmp,
-        ticks);
-      /*position_print (&tmp);*/
+        &tmp, ticks);
+
+      /* delay every second point by swing */
+      if ((self->num_q_points + 1) % 2 == 0)
+        {
+          position_add_ticks (
+            &tmp, swing_offset);
+        }
+
       position_set_to_pos (
         &self->q_points[self->num_q_points++],
         &tmp);
@@ -178,24 +188,121 @@ quantize_options_stringize (NoteLength note_length,
 }
 
 /**
- * Returns the next or previous QuantizeOptions Point.
- *
- * @param self Snap grid to search in.
- * @param pos Position to search for.
- * @param return_prev 1 to return the previous
- * element or 0 to return the next.
+ * Clones the QuantizeOptions.
  */
-Position *
-quantize_options_get_nearby_quantize_point (
-  QuantizeOptions * self,
-  const Position * pos,
-  const int        return_prev)
+QuantizeOptions *
+quantize_options_clone (
+  const QuantizeOptions * src)
 {
-  Position * ret_pos = NULL;
-  algorithms_binary_search_nearby (
-    self->q_points, pos, return_prev,
-    self->num_q_points, Position *,
-    position_compare, &, ret_pos, NULL);
+  QuantizeOptions * opts =
+    calloc (1, sizeof (QuantizeOptions));
 
-  return ret_pos;
+  opts->note_length = src->note_length;
+  opts->note_type = src->note_type;
+  opts->amount = src->amount;
+  opts->adj_start = src->adj_start;
+  opts->adj_end = src->adj_end;
+  opts->swing = src->swing;
+  opts->rand_ticks = src->rand_ticks;
+
+  quantize_options_update_quantize_points (opts);
+
+  return opts;
+}
+
+static Position *
+get_prev_point (
+  QuantizeOptions * self,
+  Position *        pos)
+{
+  Position * prev_point = NULL;
+  algorithms_binary_search_nearby (
+    self->q_points, pos, 1, 1,
+    self->num_q_points, Position *,
+    position_compare, &, prev_point, NULL);
+
+  return prev_point;
+}
+
+static Position *
+get_next_point (
+  QuantizeOptions * self,
+  Position *        pos)
+{
+  Position * next_point = NULL;
+  algorithms_binary_search_nearby (
+    self->q_points, pos, 0, 1,
+    self->num_q_points, Position *,
+    position_compare, &, next_point, NULL);
+
+  return next_point;
+}
+
+/**
+ * Quantizes the given Position using the given
+ * QuantizeOptions.
+ *
+ * This assumes that the start/end check has been
+ * done already and it ignores the adjust_start and
+ * adjust_end options.
+ *
+ * @return The amount of ticks moved (negative for
+ *   backwards).
+ */
+int
+quantize_options_quantize_position (
+  QuantizeOptions * self,
+  Position *        pos)
+{
+  Position * prev_point =
+    get_prev_point (self, pos);
+  Position * next_point =
+    get_next_point (self, pos);
+
+  const int upper = self->rand_ticks;
+  const int lower = - self->rand_ticks;
+  int rand_ticks =
+    (random() %
+    (upper - lower + 1)) + lower;
+
+  /* if previous point is closer */
+  int diff;
+  if (pos->total_ticks -
+        prev_point->total_ticks <=
+      next_point->total_ticks -
+        pos->total_ticks)
+    {
+      diff =
+        prev_point->total_ticks -
+        pos->total_ticks;
+    }
+  /* if next point is closer */
+  else
+    {
+      diff =
+        next_point->total_ticks -
+        pos->total_ticks;
+    }
+
+  /* multiply by amount */
+  diff *= (self->amount / 100.f);
+
+  /* add random ticks */
+  diff += rand_ticks;
+
+  /* quantize position */
+  position_add_ticks (
+    pos, diff);
+
+  return diff;
+}
+
+/**
+ * Free's the QuantizeOptions.
+ */
+void
+quantize_options_free (
+  QuantizeOptions * self)
+{
+  free (self);
 }

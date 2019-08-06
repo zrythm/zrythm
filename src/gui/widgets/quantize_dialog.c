@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/quantize_timeline_selections.h"
 #include "audio/quantize_options.h"
 #include "gui/widgets/bar_slider.h"
 #include "gui/widgets/digital_meter.h"
@@ -64,7 +65,19 @@ on_quantize_clicked (
   GtkButton * btn,
   QuantizeDialogWidget * self)
 {
-  /* TODO */
+  if (QUANTIZE_OPTIONS_IS_EDITOR (self->opts))
+    {
+      /* TODO */
+    }
+  else if (QUANTIZE_OPTIONS_IS_TIMELINE (self->opts))
+    {
+      UndoableAction * ua =
+        (UndoableAction *)
+        quantize_timeline_selections_action_new (
+          TL_SELECTIONS, self->opts);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
 }
 
 /**
@@ -84,9 +97,6 @@ quantize_dialog_widget_new (
   gtk_toggle_button_set_active (
     self->adjust_end, opts->adj_end);
 
-  g_signal_connect (
-    G_OBJECT (self->quantize_btn), "clicked",
-    G_CALLBACK (on_quantize_clicked), self);
   g_signal_connect (
     G_OBJECT (self->adjust_start), "toggled",
     G_CALLBACK (on_adjust_start_toggled), self);
@@ -172,6 +182,9 @@ quantize_dialog_widget_class_init (
   gtk_widget_class_bind_template_callback (
     klass,
     on_cancel_clicked);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_quantize_clicked);
 }
 
 static void

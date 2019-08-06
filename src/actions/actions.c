@@ -25,9 +25,6 @@
 
 #include "config.h"
 
-#include "audio/instrument_track.h"
-#include "audio/track.h"
-#include "audio/transport.h"
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
 #include "actions/create_tracks_action.h"
@@ -35,6 +32,10 @@
 #include "actions/delete_midi_arranger_selections_action.h"
 #include "actions/delete_timeline_selections_action.h"
 #include "actions/duplicate_midi_arranger_selections_action.h"
+#include "actions/quantize_timeline_selections.h"
+#include "audio/instrument_track.h"
+#include "audio/track.h"
+#include "audio/transport.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
@@ -1088,12 +1089,30 @@ activate_quick_quantize (
     g_variant_get_string (_variant, &size);
   if (string_is_equal (variant, "timeline", 1))
     {
+      UndoableAction * ua =
+        (UndoableAction *)
+        quantize_timeline_selections_action_new (
+          TL_SELECTIONS,
+          QUANTIZE_OPTIONS_TIMELINE);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
     }
   else if (string_is_equal (variant, "editor", 1))
     {
     }
   else if (string_is_equal (variant, "global", 1))
     {
+      if (MAIN_WINDOW->last_focused ==
+          GTK_WIDGET (MW_TIMELINE))
+        {
+          UndoableAction * ua =
+            (UndoableAction *)
+            quantize_timeline_selections_action_new (
+              TL_SELECTIONS,
+              QUANTIZE_OPTIONS_TIMELINE);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
     }
   else
     {

@@ -395,7 +395,7 @@ chord_selections_clear (
  */
 ChordSelections *
 chord_selections_clone (
-  ChordSelections * src)
+  const ChordSelections * src)
 {
   ChordSelections * new_ts =
     calloc (1, sizeof (ChordSelections));

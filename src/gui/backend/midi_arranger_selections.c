@@ -303,7 +303,7 @@ midi_arranger_selections_remove_midi_note (
  */
 MidiArrangerSelections *
 midi_arranger_selections_clone (
-  MidiArrangerSelections * src)
+  const MidiArrangerSelections * src)
 {
   MidiArrangerSelections * new_ts =
     calloc (1, sizeof (MidiArrangerSelections));

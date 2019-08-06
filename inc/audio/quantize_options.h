@@ -29,6 +29,12 @@
 #include "audio/position.h"
 #include "audio/snap_grid.h"
 
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
 #define QUANTIZE_OPTIONS_IS_EDITOR(qo) \
   (&PROJECT->quantize_opts_editor == qo)
 #define QUANTIZE_OPTIONS_IS_TIMELINE(qo) \
@@ -165,20 +171,37 @@ quantize_options_stringize (
   NoteType   note_type);
 
 /**
- * Returns the next or previous QuantizeOptions
- * point.
- *
- * Must not be free'd.
- *
- * @param self QuantizeOptions to search in.
- * @param pos Position to search for.
- * @param return_prev 1 to return the previous
- * element or 0 to return the next.
+ * Clones the QuantizeOptions.
  */
-Position *
-quantize_options_get_nearby_quantize_point (
+QuantizeOptions *
+quantize_options_clone (
+  const QuantizeOptions * src);
+
+/**
+ * Quantizes the given Position using the given
+ * QuantizeOptions.
+ *
+ * This assumes that the start/end check has been
+ * done already and it ignores the adjust_start and
+ * adjust_end options.
+ *
+ * @return The amount of ticks moved (negative for
+ *   backwards).
+ */
+int
+quantize_options_quantize_position (
   QuantizeOptions * self,
-  const Position *        pos,
-  const int               return_prev);
+  Position *              pos);
+
+/**
+ * Free's the QuantizeOptions.
+ */
+void
+quantize_options_free (
+  QuantizeOptions * self);
+
+/**
+ * @}
+ */
 
 #endif

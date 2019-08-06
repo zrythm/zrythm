@@ -48,7 +48,7 @@
 #define ARRANGER_SELECTIONS_DECLARE_CLONE(cc,sc) \
   cc##Selections * \
   sc##_selections_clone ( \
-    cc##Selections * mas)
+    const cc##Selections * mas)
 
 /**
  * Returns if there are any selections.

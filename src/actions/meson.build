@@ -40,6 +40,7 @@ action_srcs = [
   'move_midi_arranger_selections_action.c',
   'move_plugins_action.c',
   'move_tracks_action.c',
+  'quantize_timeline_selections.c',
   'undoable_action.c',
   'undo_manager.c',
 ]

@@ -391,7 +391,7 @@ automation_selections_clear (
  */
 AutomationSelections *
 automation_selections_clone (
-  AutomationSelections * src)
+  const AutomationSelections * src)
 {
   AutomationSelections * new_ts =
     calloc (1, sizeof (AutomationSelections));

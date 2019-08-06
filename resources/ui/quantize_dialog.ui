@@ -4,7 +4,8 @@
   <requires lib="gtk+" version="3.20"/>
   <template class="QuantizeDialogWidget" parent="GtkDialog">
     <property name="can_focus">False</property>
-    <property name="type_hint">dialog</property>
+    <property name="title" translatable="yes">Quantize Options</property>
+    <property name="type_hint">normal</property>
     <child>
       <placeholder/>
     </child>
@@ -24,6 +25,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_underline">True</property>
+                <signal name="clicked" handler="on_quantize_clicked" object="QuantizeDialogWidget" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -72,8 +74,8 @@
                   <object class="GtkLabel" id="quantize_to_lbl">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="xalign">0.0</property>
                     <property name="label" translatable="yes">Quantize to</property>
+                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -127,8 +129,8 @@
                   <object class="GtkLabel" id="adjust_lbl">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="xalign">0.0</property>
                     <property name="label" translatable="yes">Adjust</property>
+                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -178,8 +180,8 @@
                   <object class="GtkLabel" id="amount_lbl">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="xalign">0.0</property>
                     <property name="label" translatable="yes">Amount</property>
+                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -218,8 +220,8 @@
                   <object class="GtkLabel" id="swing_lbl">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="xalign">0.0</property>
                     <property name="label" translatable="yes">Swing</property>
+                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>

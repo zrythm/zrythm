@@ -533,7 +533,7 @@ timeline_selections_clear (
  */
 TimelineSelections *
 timeline_selections_clone (
-  TimelineSelections * src)
+  const TimelineSelections * src)
 {
   TimelineSelections * new_ts =
     calloc (1, sizeof (TimelineSelections));

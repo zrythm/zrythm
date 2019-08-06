@@ -132,7 +132,7 @@ scale_object_is_equal (
   ScaleObject * b)
 {
   return
-    !position_compare(&a->pos, &b->pos) &&
+    position_is_equal (&a->pos, &b->pos) &&
     musical_scale_is_equal (a->scale, b->scale);
 }
 

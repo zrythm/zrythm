@@ -38,6 +38,8 @@
  * @param sval Value to search with.
  * @param rprev 1 to return previous element, 0 for
  *   next.
+ * @param inc_eq Include equal points (if an exact
+ *   match is found, return it).
  * @param count Element count.
  * @param type Data type of each element. If the
  *   data type is MyStruct then "MyStruct *" should
@@ -50,7 +52,8 @@
  * @param null Value to set to ret if nothing found.
  */
 #define algorithms_binary_search_nearby( \
-  arr,sval,rprev,count,type,cmp,amp,ret,null) \
+  arr,sval,rprev,inc_eq,count,type,cmp,amp,ret, \
+  null) \
 { \
   /* init values */ \
   int first = 0; \
@@ -82,7 +85,9 @@
     /* Return next/previous item if pivot is the
      * searched position */ \
     if (cmp (pivot, sval) == 0) { \
-      if (rprev) \
+      if (inc_eq) \
+        return pivot; \
+      else if (rprev) \
         ret = amp arr[middle - 1]; \
       else \
         ret = amp arr[middle + 1]; \
@@ -107,7 +112,7 @@
     /* sval is between pivot and pivot_succ */ \
     else if (pivot_is_before) \
     { \
-      if (return_prev) { \
+      if (rprev) { \
         ret = pivot; \
         goto end_binary_search; \
       } else { \

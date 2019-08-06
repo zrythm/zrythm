@@ -40,6 +40,7 @@
 #include "actions/move_plugins_action.h"
 #include "actions/move_tracks_action.h"
 #include "actions/move_timeline_selections_action.h"
+#include "actions/quantize_timeline_selections.h"
 #include "actions/undoable_action.h"
 
 #include <glib.h>
@@ -106,6 +107,9 @@ undoable_action_do (UndoableAction * self)
     DO_ACTION (DELETE_TL_SELECTIONS,
                delete_timeline_selections,
                DeleteTimelineSelections);
+    DO_ACTION (QUANTIZE_TL_SELECTIONS,
+               quantize_timeline_selections,
+               QuantizeTimelineSelections);
     DO_ACTION (EDIT_CHORD,
                edit_chord,
                EditChord);
@@ -199,6 +203,9 @@ undoable_action_undo (UndoableAction * self)
     UNDO_ACTION (DELETE_TL_SELECTIONS,
                delete_timeline_selections,
                DeleteTimelineSelections);
+    UNDO_ACTION (QUANTIZE_TL_SELECTIONS,
+               quantize_timeline_selections,
+               QuantizeTimelineSelections);
     UNDO_ACTION (EDIT_CHORD,
                edit_chord,
                EditChord);
@@ -287,6 +294,9 @@ undoable_action_free (UndoableAction * self)
     FREE_ACTION (DELETE_TL_SELECTIONS,
                delete_timeline_selections,
                DeleteTimelineSelections);
+    FREE_ACTION (QUANTIZE_TL_SELECTIONS,
+               quantize_timeline_selections,
+               QuantizeTimelineSelections);
     FREE_ACTION (EDIT_CHORD,
                edit_chord,
                EditChord);
@@ -381,6 +391,9 @@ undoable_action_stringize (
     STRINGIZE_UA (DELETE_TL_SELECTIONS,
                   DeleteTimelineSelections,
                   delete_timeline_selections);
+    STRINGIZE_UA (QUANTIZE_TL_SELECTIONS,
+                  QuantizeTimelineSelections,
+                  quantize_timeline_selections);
     STRINGIZE_UA (EDIT_CHORD,
                   EditChord,
                   edit_chord);
