@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-07-12 22:15+0000\n"
+"PO-Revision-Date: 2019-08-10 15:06+0000\n"
 "Last-Translator: Waui <wau-wau@tutanota.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
 "\n"
@@ -448,15 +448,15 @@ msgstr ""
 #. TRANSLATORS: Pan algorithm
 #: src/utils/ui.c:582
 msgid "Linear"
-msgstr ""
+msgstr "Linear"
 
 #: src/utils/ui.c:583
 msgid "Square Root"
-msgstr ""
+msgstr "Quadratwurzel"
 
 #: src/utils/ui.c:584
 msgid "Sine (Equal Power)"
-msgstr ""
+msgstr "Sinus (Gleiche Leistung)"
 
 #: src/audio/chord_track.c:42 resources/ui/inspector_chord.ui:31
 msgid "Chords"
@@ -1051,7 +1051,7 @@ msgstr "Quantisieren"
 
 #: resources/ui/shortcuts.ui:282
 msgid "Looping"
-msgstr ""
+msgstr "Schleifenwiedergabe"
 
 #: resources/ui/shortcuts.ui:287
 msgid "Loop selection"
@@ -1158,7 +1158,7 @@ msgstr "Spenden"
 
 #: resources/ui/donate_dialog.ui:49
 msgid "Choose a method to donate"
-msgstr ""
+msgstr "Wähle eine Methode zu spenden"
 
 #: resources/ui/transport_controls.ui:54
 msgid "Play"
