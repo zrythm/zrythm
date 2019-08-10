@@ -128,38 +128,38 @@ disconnect_midi_ins (
 }
 
 /**
- * Disconnect stereo in ports from stereo out.
+ * Disconnect stereo in ports from the fader.
  *
  * Used when there is no plugin in the channel.
  */
 static inline void
-disconnect_stereo_in_from_stereo_out (
+disconnect_stereo_in_from_fader (
   Channel * ch)
 {
   port_disconnect (
     ch->stereo_in->l,
-    ch->stereo_out->l);
+    ch->fader.stereo_in->l);
   port_disconnect (
     ch->stereo_in->r,
-    ch->stereo_out->r);
+    ch->fader.stereo_in->r);
 }
 
 /**
  * Connects the Channel's stereo in ports to its
- * stereo out ports.
+ * fader in ports.
  *
  * Used when deleting the only plugin left.
  */
 static inline void
-connect_stereo_in_to_stereo_out (
+connect_stereo_in_to_fader (
   Channel * ch)
 {
   port_connect (
     ch->stereo_in->l,
-    ch->stereo_out->l);
+    ch->fader.stereo_in->l);
   port_connect (
     ch->stereo_in->r,
-    ch->stereo_out->r);
+    ch->fader.stereo_in->r);
 }
 
 /**
@@ -394,10 +394,10 @@ done2:
 
 /**
  * Connect Plugin's outputs to the Channel's
- * stereo out ports.
+ * fader in ports.
  */
 static inline void
-connect_pl_to_stereo_out (
+connect_pl_to_fader (
   Plugin * pl,
   Channel * ch)
 {
@@ -415,10 +415,10 @@ connect_pl_to_stereo_out (
             {
               port_connect (
                 out_port,
-                ch->stereo_out->l);
+                ch->fader.stereo_in->l);
               port_connect (
                 out_port,
-                ch->stereo_out->r);
+                ch->fader.stereo_in->r);
               break;
             }
         }
@@ -438,14 +438,14 @@ connect_pl_to_stereo_out (
             {
               port_connect (
                 out_port,
-                ch->stereo_out->l);
+                ch->fader.stereo_in->l);
               last_index++;
             }
           else if (last_index == 1)
             {
               port_connect (
                 out_port,
-                ch->stereo_out->r);
+                ch->fader.stereo_in->r);
               break;
             }
         }
@@ -598,10 +598,10 @@ done2:
 
 /**
  * Disconnects the Plugin's output ports from
- * the Channel's stereo out.
+ * the Channel's fader out.
  */
 static inline void
-disconnect_pl_from_stereo_out (
+disconnect_pl_from_fader (
   Plugin * pl,
   Channel * ch)
 {
@@ -614,13 +614,13 @@ disconnect_pl_from_stereo_out (
       if (out_port->identifier.type == TYPE_AUDIO)
         {
           if (ports_connected (
-                out_port, ch->stereo_out->l))
+                out_port, ch->fader.stereo_in->l))
             port_disconnect (
-              out_port, ch->stereo_out->l);
+              out_port, ch->fader.stereo_in->l);
           if (ports_connected (
-                out_port, ch->stereo_out->r))
+                out_port, ch->fader.stereo_in->r))
             port_disconnect (
-              out_port, ch->stereo_out->r);
+              out_port, ch->fader.stereo_in->r);
         }
     }
 }
@@ -638,7 +638,7 @@ connect_no_prev_no_next (
    * ----------------------------------------- */
   /* channel stereo in is connected to channel
    * stereo out. disconnect it */
-  disconnect_stereo_in_from_stereo_out (ch);
+  disconnect_stereo_in_from_fader (ch);
 
   /* -------------------------------------------
    * connect input ports
@@ -652,7 +652,7 @@ connect_no_prev_no_next (
    * ------------------------------------*/
 
   /* connect plugin to stereo out */
-  connect_pl_to_stereo_out (pl, ch);
+  connect_pl_to_fader (pl, ch);
 }
 
 /**
@@ -701,7 +701,7 @@ connect_prev_no_next (
    * ----------------------------------------- */
   /* prev plugin is connected to channel stereo out.
    * disconnect it */
-  disconnect_pl_from_stereo_out (prev_pl, ch);
+  disconnect_pl_from_fader (prev_pl, ch);
 
   /* -------------------------------------------
    * connect input ports
@@ -716,7 +716,7 @@ connect_prev_no_next (
    * ------------------------------------*/
 
   /* connect plugin output ports to stereo_out */
-  connect_pl_to_stereo_out (pl, ch);
+  connect_pl_to_fader (pl, ch);
 }
 
 /**
@@ -773,14 +773,14 @@ disconnect_no_prev_no_next (
    * ------------------------------------*/
 
   /* disconnect plugin from stereo out */
-  disconnect_pl_from_stereo_out (pl, ch);
+  disconnect_pl_from_fader (pl, ch);
 
   /* -----------------------------------------
    * connect ports
    * ----------------------------------------- */
   /* channel stereo in should be connected to
    * channel stereo out. connect it */
-  connect_stereo_in_to_stereo_out (ch);
+  connect_stereo_in_to_fader (ch);
 }
 
 /**
@@ -839,14 +839,14 @@ disconnect_prev_no_next (
 
   /* disconnect plugin output ports from stereo
    * out */
-  disconnect_pl_from_stereo_out (pl, ch);
+  disconnect_pl_from_fader (pl, ch);
 
   /* -----------------------------------------
    * connect ports
    * ----------------------------------------- */
   /* prev plugin should be connected to channel
    * stereo out. connect it */
-  connect_pl_to_stereo_out (prev_pl, ch);
+  connect_pl_to_fader (prev_pl, ch);
 }
 
 /**
@@ -995,6 +995,10 @@ channel_prepare_process (Channel * channel)
       port_clear_buffer (channel->midi_in);
       port_clear_buffer (channel->piano_roll);
     }
+  port_clear_buffer (channel->fader.stereo_in->l);
+  port_clear_buffer (channel->fader.stereo_in->r);
+  port_clear_buffer (channel->fader.stereo_out->l);
+  port_clear_buffer (channel->fader.stereo_out->r);
   port_clear_buffer (channel->stereo_out->l);
   port_clear_buffer (channel->stereo_out->r);
   port_clear_buffer (channel->midi_in);
@@ -1130,8 +1134,8 @@ _create_channel (
       TYPE_EVENT,
       FLOW_INPUT,
       pll);
-  self->midi_in->identifier.owner_type =
-    PORT_OWNER_TYPE_TRACK;
+  /*self->midi_in->identifier.owner_type =*/
+    /*PORT_OWNER_TYPE_TRACK;*/
   self->midi_in->midi_events =
     midi_events_new (
       self->midi_in);
@@ -1340,13 +1344,23 @@ channel_connect (
 
   if (ch->type == CT_BUS ||
       ch->type == CT_AUDIO ||
-      ch->type == CT_MASTER)
+      ch->type == CT_MASTER ||
+      ch->type == CT_MIDI)
     {
-      /* connect stereo in to stereo out */
-      port_connect (ch->stereo_in->l,
-                    ch->stereo_out->l);
-      port_connect (ch->stereo_in->r,
-                    ch->stereo_out->r);
+      /* connect stereo in to stereo out through
+       * fader */
+      port_connect (
+        ch->stereo_in->l,
+        ch->fader.stereo_in->l);
+      port_connect (
+        ch->stereo_in->r,
+        ch->fader.stereo_in->r);
+      port_connect (
+        ch->fader.stereo_out->l,
+        ch->stereo_out->l);
+      port_connect (
+        ch->fader.stereo_out->r,
+        ch->stereo_out->r);
     }
 
   if (ch->type != CT_MASTER)

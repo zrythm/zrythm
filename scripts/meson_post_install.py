@@ -19,6 +19,7 @@
 
 import os
 import subprocess
+from shutil import which
 
 prefix = os.environ.get('MESON_INSTALL_PREFIX', '/usr/local')
 datadir = os.path.join(prefix, 'share')
@@ -36,3 +37,6 @@ if not os.environ.get('DESTDIR'):
     if not os.path.exists(desktop_database_dir):
         os.makedirs(desktop_database_dir)
     subprocess.call(['update-desktop-database', '-q', desktop_database_dir])
+
+    if which('update-gdk-pixbuf-loaders') is not None:
+        subprocess.call(['update-gdk-pixbuf-loaders'])

@@ -28,6 +28,8 @@
 
 #include "utils/yaml.h"
 
+typedef struct StereoPorts StereoPorts;
+
 /**
  * @addtogroup audio
  *
@@ -46,8 +48,8 @@ typedef enum FaderType
 typedef struct Channel Channel;
 
 /**
- * A Fader is a backend that is used for volume
- * controls.
+ * A Fader is a processor that is used for volume
+ * controls and pan.
  *
  * It does not necessarily have to correspond to
  * a FaderWidget. It can be used as a backend to
@@ -73,6 +75,16 @@ typedef struct Fader
 
   /** 0.0 ~ 1.0 for widgets. */
   float            fader_val;
+
+  /**
+   * L & R audio input ports.
+   */
+  StereoPorts *    stereo_in;
+
+  /**
+   * L & R audio output ports.
+   */
+  StereoPorts *    stereo_out;
 
   /**
    * Current dBFS after procesing each output port.
@@ -169,6 +181,18 @@ void
 fader_copy (
   Fader * src,
   Fader * dest);
+
+/**
+ * Process the Fader.
+ *
+ * @param g_frames The global start frames.
+ * @param nframes The number of frames to process.
+ */
+void
+fader_process (
+  Fader * self,
+  long    g_frames,
+  int     nframes);
 
 /**
  * @}

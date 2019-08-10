@@ -134,8 +134,38 @@ node_finish (
     }
 }
 
+/**
+ * Returns a human friendly name of the node.
+ *
+ * Must be free'd.
+ */
+static char *
+get_node_name (
+  GraphNode * node)
+{
+  switch (node->type)
+    {
+    case ROUTE_NODE_TYPE_PLUGIN:
+      return
+        g_strdup (node->pl->descr->name);
+      break;
+    case ROUTE_NODE_TYPE_PORT:
+      return
+        g_strdup (node->port->identifier.label);
+      break;
+    case ROUTE_NODE_TYPE_FADER:
+      return
+        g_strdup_printf (
+          "%s Fader",
+          node->fader->channel->track->name);
+      break;
+    }
+  g_return_val_if_reached (NULL);
+}
+
 static void
-print_node (GraphNode * node)
+print_node (
+  GraphNode * node)
 {
   GraphNode * dest;
   if (!node)
@@ -144,30 +174,27 @@ print_node (GraphNode * node)
       return;
     }
 
+  char * name = get_node_name (node);
   char * str1 =
     g_strdup_printf (
       "node [(%d) %s] refcount: %d | terminal: %s | initial: %s | playback latency: %ld",
       node->id,
-      node->type == ROUTE_NODE_TYPE_PLUGIN ?
-        node->pl->descr->name :
-        node->port->identifier.label,
+      name,
       node->refcount,
       node->terminal ? "yes" : "no",
       node->initial ? "yes" : "no",
       node->playback_latency);
+  g_free (name);
   char * str2;
   for (int j = 0; j < node->n_childnodes; j++)
     {
       dest = node->childnodes[j];
+      name = get_node_name (dest);
       str2 =
         g_strdup_printf ("%s (dest [(%d) %s])",
-          str1,
-          dest->id,
-          dest->type ==
-            ROUTE_NODE_TYPE_PLUGIN ?
-              dest->pl->descr->name :
-              dest->port->identifier.label);
+          str1, dest->id, name);
       g_free (str1);
+      g_free (name);
       str1 = str2;
     }
   g_message ("%s", str1);
@@ -196,13 +223,13 @@ node_process (
       /* no roll */
       if (node->type == ROUTE_NODE_TYPE_PLUGIN)
         {
-      g_message (
-        "-- not processing: %s "
-        "route latency %ld",
-        node->type == ROUTE_NODE_TYPE_PLUGIN ?
-          node->pl->descr->name :
-          node->port->identifier.label,
-        node->route_playback_latency);
+      /*g_message (*/
+        /*"-- not processing: %s "*/
+        /*"route latency %ld",*/
+        /*node->type == ROUTE_NODE_TYPE_PLUGIN ?*/
+          /*node->pl->descr->name :*/
+          /*node->port->identifier.label,*/
+        /*node->route_playback_latency);*/
         }
       noroll = 1;
 
@@ -248,14 +275,19 @@ node_process (
                  /*node->pl->descr->name);*/
       plugin_process (
         node->pl, g_start_frames, nframes);
-      g_message (
-        "processing: %s at %ld "
-        "(route latency %ld)",
-        node->type == ROUTE_NODE_TYPE_PLUGIN ?
-          node->pl->descr->name :
-          node->port->identifier.label,
-        g_start_frames,
-        node->route_playback_latency);
+      /*g_message (*/
+        /*"processing: %s at %ld "*/
+        /*"(route latency %ld)",*/
+        /*node->type == ROUTE_NODE_TYPE_PLUGIN ?*/
+          /*node->pl->descr->name :*/
+          /*node->port->identifier.label,*/
+        /*g_start_frames,*/
+        /*node->route_playback_latency);*/
+    }
+  else if (node->type == ROUTE_NODE_TYPE_FADER)
+    {
+      fader_process (
+        node->fader, local_offset, nframes);
     }
   else if (node->type == ROUTE_NODE_TYPE_PORT)
     {
@@ -363,6 +395,8 @@ node_process (
 
       /* if channel stereo out port */
       else if (port->track &&
+          port->identifier.owner_type ==
+            PORT_OWNER_TYPE_TRACK &&
           port->identifier.type == TYPE_AUDIO &&
           port->identifier.flow == FLOW_OUTPUT)
         {
@@ -372,7 +406,7 @@ node_process (
                    !port->track->solo &&
                    port->track != P_MASTER_TRACK))
             {
-              /* (already cleared) */
+              /* TODO */
               /*port_clear_buffer (port);*/
             }
           /* if not muted/soloed process it */
@@ -381,21 +415,7 @@ node_process (
               port_sum_signal_from_inputs (
                 port, local_offset,
                 nframes, noroll);
-
-              /* apply pan */
-              port_apply_pan (
-                port,
-                port->track->channel->fader.pan,
-                AUDIO_ENGINE->pan_law,
-                AUDIO_ENGINE->pan_algo);
-
-              /* apply fader */
-              port_apply_fader (
-                port,
-                port->track->channel->fader.amp);
             }
-          /*g_atomic_int_set (*/
-            /*&port->owner_ch->processed, 1);*/
         }
 
       /* if JACK stereo out */
@@ -834,6 +854,22 @@ find_node_from_plugin (
   return NULL;
 }
 
+static GraphNode *
+find_node_from_fader (
+  Graph * graph,
+  Fader * fader)
+{
+  GraphNode * node;
+  for (int i = 0; i < graph->n_graph_nodes; i++)
+    {
+      node = graph->graph_nodes[i];
+      if (node->type == ROUTE_NODE_TYPE_FADER &&
+          node->fader == fader)
+        return node;
+    }
+  return NULL;
+}
+
 static inline GraphNode *
 graph_node_new (
   Graph * graph,
@@ -849,6 +885,8 @@ graph_node_new (
     node->pl = (Plugin *) data;
   else if (type == ROUTE_NODE_TYPE_PORT)
     node->port = (Port *) data;
+  else if (type == ROUTE_NODE_TYPE_FADER)
+    node->fader = (Fader *) data;
 
   return node;
 }
@@ -1121,6 +1159,8 @@ add_port (
   Graph * self,
   Port *   port)
 {
+  PortOwnerType owner = port->identifier.owner_type;
+
   /*add_port_node (self, port);*/
   if (port->num_dests == 0 &&
       port->num_srcs == 0 &&
@@ -1135,17 +1175,22 @@ add_port (
     }
   else if (port->num_dests == 0 &&
            port->num_srcs == 0 &&
-           !port->plugin)
+           owner != PORT_OWNER_TYPE_PLUGIN &&
+           owner != PORT_OWNER_TYPE_FADER)
     {
     }
   else if (port->num_srcs == 0 &&
-      !(port->plugin &&
+      !(owner == PORT_OWNER_TYPE_PLUGIN &&
+        port->identifier.flow == FLOW_OUTPUT) &&
+      !(owner == PORT_OWNER_TYPE_FADER &&
         port->identifier.flow == FLOW_OUTPUT))
     graph_add_initial_node (
       self, ROUTE_NODE_TYPE_PORT, port);
   else if (port->num_dests == 0 &&
            port->num_srcs > 0 &&
-           !(port->plugin &&
+           !(owner == PORT_OWNER_TYPE_PLUGIN &&
+             port->identifier.flow == FLOW_INPUT) &&
+           !(owner == PORT_OWNER_TYPE_FADER &&
              port->identifier.flow == FLOW_INPUT))
     graph_add_terminal_node (
       self, ROUTE_NODE_TYPE_PORT, port);
@@ -1249,15 +1294,6 @@ graph_new (
   g_warn_if_fail (router);
   self->router = router;
 
-  self->port_nodes =
-    g_hash_table_new (
-      g_int_hash,
-      g_int_equal);
-  self->plugin_nodes =
-    g_hash_table_new (
-      g_int_hash,
-      g_int_equal);
-
   /* ========================
    * first add all the nodes
    * ======================== */
@@ -1271,6 +1307,11 @@ graph_new (
       g_warn_if_fail (tr);
       if (!tr->channel)
         continue;
+
+      /* add the fader */
+      graph_add_node ( \
+        self, ROUTE_NODE_TYPE_FADER,
+        &tr->channel->fader);
 
 #define ADD_PLUGIN \
           if (!pl || pl->deleting) \
@@ -1333,11 +1374,35 @@ graph_new (
    * now connect them
    * ======================== */
 
+  Fader * fader;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       tr = TRACKLIST->tracks[i];
       if (!tr->channel)
         continue;
+
+      fader = &tr->channel->fader;
+
+      /* connect the fader */
+      node =
+        find_node_from_fader (
+          self, fader);
+      port = fader->stereo_in->l;
+      node2 =
+        find_node_from_port (self, port);
+      node_connect (node2, node);
+      port = fader->stereo_in->r;
+      node2 =
+        find_node_from_port (self, port);
+      node_connect (node2, node);
+      port = fader->stereo_out->l;
+      node2 =
+        find_node_from_port (self, port);
+      node_connect (node, node2);
+      port = fader->stereo_out->r;
+      node2 =
+        find_node_from_port (self, port);
+      node_connect (node, node2);
 
 #define CONNECT_PLUGIN \
           if (!pl || pl->deleting) \

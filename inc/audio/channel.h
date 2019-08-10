@@ -113,6 +113,7 @@ typedef struct Channel
    */
   ChannelType      type;
 
+  /** The channel fader. */
   Fader            fader;
 
   /**

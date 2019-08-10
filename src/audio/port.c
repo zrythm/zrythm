@@ -210,6 +210,28 @@ port_find_from_identifier (
           break;
         }
       break;
+    case PORT_OWNER_TYPE_FADER:
+      tr = TRACKLIST->tracks[id->track_pos];
+      g_warn_if_fail (tr);
+      ch = tr->channel;
+      g_warn_if_fail (ch);
+      if (id->flow == FLOW_OUTPUT)
+        {
+          if (id->flags & PORT_FLAG_STEREO_L)
+            return ch->fader.stereo_out->l;
+          else if (id->flags &
+                     PORT_FLAG_STEREO_R)
+            return ch->fader.stereo_out->r;
+        }
+      else if (id->flow == FLOW_INPUT)
+        {
+          if (id->flags & PORT_FLAG_STEREO_L)
+            return ch->fader.stereo_in->r;
+          else if (id->flags &
+                     PORT_FLAG_STEREO_R)
+            return ch->fader.stereo_in->r;
+        }
+      break;
     }
 
   g_return_val_if_reached (NULL);
@@ -321,6 +343,12 @@ port_get_all (
       _ADD (ch->piano_roll);
       _ADD (ch->midi_in);
 
+      /* add fader ports */
+      _ADD (ch->fader.stereo_in->l);
+      _ADD (ch->fader.stereo_in->r);
+      _ADD (ch->fader.stereo_out->l);
+      _ADD (ch->fader.stereo_out->r);
+
 #define ADD_PLUGIN_PORTS \
           if (!pl) \
             continue; \
@@ -384,6 +412,39 @@ port_set_owner_plugin (
   port->identifier.plugin_slot = pl->slot;
   port->identifier.owner_type =
     PORT_OWNER_TYPE_PLUGIN;
+}
+
+/**
+ * Sets the owner track & its ID.
+ */
+void
+port_set_owner_track (
+  Port *    port,
+  Track *   track)
+{
+  g_warn_if_fail (port && track);
+
+  port->track = track;
+  port->identifier.track_pos = track->pos;
+  port->identifier.owner_type =
+    PORT_OWNER_TYPE_TRACK;
+}
+
+/**
+ * Sets the owner fader & its ID.
+ */
+void
+port_set_owner_fader (
+  Port *    port,
+  Fader *   fader)
+{
+  g_warn_if_fail (port && fader);
+
+  port->track = fader->channel->track;
+  port->identifier.track_pos =
+    fader->channel->track->pos;
+  port->identifier.owner_type =
+    PORT_OWNER_TYPE_FADER;
 }
 
 /**
@@ -558,13 +619,20 @@ ports_remove (
 
 /**
  * Apply given fader value to port.
+ *
+ * @param start_frame The start frame offset from
+ *   0 in this cycle.
+ * @param nframes The number of frames to process.
  */
 void
-port_apply_fader (Port * port, float amp)
+port_apply_fader (
+  Port *    port,
+  float     amp,
+  const int start_frame,
+  const int nframes)
 {
-  for (uint32_t i = 0;
-       i < AUDIO_ENGINE->block_length;
-       i++)
+  for (int i = start_frame;
+       i < start_frame + nframes; i++)
     {
       if (port->buf[i] != 0.f)
         port->buf[i] *= amp;
@@ -799,16 +867,21 @@ port_apply_pan_stereo (Port *       l,
 }
 
 /**
- * Applies the pan to the given L/R ports.
+ * Applies the pan to the given port.
+ *
+ * @param start_frame The start frame offset from
+ *   0 in this cycle.
+ * @param nframes The number of frames to process.
  */
 void
 port_apply_pan (
   Port *       port,
   float        pan,
   PanLaw       pan_law,
-  PanAlgorithm pan_algo)
+  PanAlgorithm pan_algo,
+  const int    start_frame,
+  const int    nframes)
 {
-  int block_length = AUDIO_ENGINE->block_length;
   int i;
   float calc_r = 0.f, calc_l = 0.f;
   int is_stereo_r =
@@ -830,7 +903,8 @@ port_apply_pan (
       break;
     }
 
-  for (i = 0; i < block_length; i++)
+  for (i = start_frame;
+       i < start_frame + nframes; i++)
     {
       if (port->buf[i] == 0.f)
         continue;

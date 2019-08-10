@@ -20,12 +20,24 @@
 #ifndef __AUDIO_PORTS_H__
 #define __AUDIO_PORTS_H__
 
-/** \file
+/**
+ * \file
+ *
  * Ports that transfer audio/midi/other signals to
  * one another.
  */
 
 #include "utils/yaml.h"
+
+typedef struct Plugin Plugin;
+typedef struct MidiEvents MidiEvents;
+typedef struct Fader Fader;
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
 
 #define MAX_DESTINATIONS 600
 #define FOREACH_SRCS(port) \
@@ -38,9 +50,6 @@
  * the port is not owned.
  */
 #define PORT_NOT_OWNED -1
-
-typedef struct Plugin Plugin;
-typedef struct MidiEvents MidiEvents;
 
 /**
  * Direction of the signal.
@@ -70,8 +79,12 @@ typedef enum PortOwnerType
   PORT_OWNER_TYPE_BACKEND,
   PORT_OWNER_TYPE_PLUGIN,
   PORT_OWNER_TYPE_TRACK,
+  PORT_OWNER_TYPE_FADER,
 } PortOwnerType;
 
+/**
+ * Port flags.
+ */
 typedef enum PortFlags
 {
   PORT_FLAG_STEREO_L = 0x01,
@@ -550,9 +563,17 @@ port_disconnect_dests (Port * src)
 
 /**
  * Apply given fader value to port.
+ *
+ * @param start_frame The start frame offset from
+ *   0 in this cycle.
+ * @param nframes The number of frames to process.
  */
 void
-port_apply_fader (Port * port, float amp);
+port_apply_fader (
+  Port *    port,
+  float     amp,
+  const int start_frame,
+  const int nframes);
 
 /**
  * First sets port buf to 0, then sums the given
@@ -572,19 +593,20 @@ port_sum_signal_from_inputs (
   const int noroll);
 
 /**
- * Sets the owner channel & its ID.
+ * Sets the owner track & its ID.
  */
-static inline void
+void
 port_set_owner_track (
   Port *    port,
-  Track *   track)
-{
-  g_warn_if_fail (port && track);
+  Track *   track);
 
-  port->track = track;
-  port->identifier.owner_type =
-    PORT_OWNER_TYPE_TRACK;
-}
+/**
+ * Sets the owner fader & its ID.
+ */
+void
+port_set_owner_fader (
+  Port *    port,
+  Fader *   fader);
 
 /**
  * Sets the owner plugin & its ID.
@@ -675,13 +697,23 @@ port_apply_pan_stereo (Port *       l,
                        PanAlgorithm pan_algo);
 
 /**
- * Applies the pan to the given L/R ports.
+ * Applies the pan to the given port.
+ *
+ * @param start_frame The start frame offset from
+ *   0 in this cycle.
+ * @param nframes The number of frames to process.
  */
 void
 port_apply_pan (
-  Port *       self,
+  Port *       port,
   float        pan,
   PanLaw       pan_law,
-  PanAlgorithm pan_algo);
+  PanAlgorithm pan_algo,
+  const int    start_frame,
+  const int    nframes);
+
+/**
+ * @}
+ */
 
 #endif

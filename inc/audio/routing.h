@@ -26,10 +26,19 @@
 #include <pthread.h>
 #include "zix/sem.h"
 
+/**
+ * Graph nodes can be either ports or processors.
+ *
+ * Processors can be plugins, faders, etc.
+ */
 typedef enum GraphNodeType
 {
+  /** Port. */
   ROUTE_NODE_TYPE_PORT,
+  /** Plugin processor. */
   ROUTE_NODE_TYPE_PLUGIN,
+  /** Fader/pan processor. */
+  ROUTE_NODE_TYPE_FADER,
 } GraphNodeType;
 
 typedef struct GraphNode GraphNode;
@@ -60,6 +69,9 @@ typedef struct GraphNode
 
   /** Plugin, if plugin. */
   Plugin *      pl;
+
+  /** Fader, if fader. */
+  Fader *       fader;
 
   /** For debugging. */
   int  terminal;
@@ -123,11 +135,6 @@ typedef struct Graph
   int  n_trigger_queue;
   /** Max size - preallocated array. */
   int  trigger_queue_size;
-
-  /** Hash tables for quick finding of nodes based on
-   * the ID of the plugin/port. */
-  GHashTable * port_nodes;
-  GHashTable * plugin_nodes;
 
   /** Synchronization with main process callback. */
   ZixSem          callback_start;

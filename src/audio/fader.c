@@ -17,11 +17,17 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/channel.h"
+#include "audio/engine.h"
 #include "audio/fader.h"
+#include "audio/track.h"
+#include "project.h"
 #include "utils/math.h"
 
 /**
  * Inits fader to default values.
+ *
+ * This assumes that the channel has no plugins.
  *
  * @param self The Fader to init.
  * @param type The FaderType.
@@ -45,6 +51,61 @@ fader_init (
   self->pan = 0.5f;
   self->l_port_db = 0.f;
   self->r_port_db = 0.f;
+
+  /* stereo in */
+  char * pll =
+    g_strdup_printf (
+      "%s Fader in L",
+      ch->track->name);
+  char * plr =
+    g_strdup_printf (
+      "%s Fader in R",
+      ch->track->name);
+  self->stereo_in =
+    stereo_ports_new (
+      port_new_with_type (TYPE_AUDIO,
+                          FLOW_INPUT,
+                          pll),
+      port_new_with_type (TYPE_AUDIO,
+                          FLOW_INPUT,
+                          plr));
+  self->stereo_in->l->identifier.flags |=
+    PORT_FLAG_STEREO_L;
+  self->stereo_in->r->identifier.flags |=
+    PORT_FLAG_STEREO_R;
+  self->stereo_in->l->identifier.owner_type =
+    PORT_OWNER_TYPE_FADER;
+  self->stereo_in->r->identifier.owner_type =
+    PORT_OWNER_TYPE_FADER;
+
+  /* stereo out */
+  pll =
+    g_strdup_printf ("%s Fader out L",
+                     ch->track->name);
+  plr =
+    g_strdup_printf ("%s Fader out R",
+                     ch->track->name);
+  self->stereo_out =
+    stereo_ports_new (
+     port_new_with_type (TYPE_AUDIO,
+                         FLOW_OUTPUT,
+                         pll),
+     port_new_with_type (TYPE_AUDIO,
+                         FLOW_OUTPUT,
+                         plr));
+  self->stereo_out->l->identifier.flags |=
+    PORT_FLAG_STEREO_L;
+  self->stereo_out->r->identifier.flags |=
+    PORT_FLAG_STEREO_R;
+
+  port_set_owner_fader (
+    self->stereo_in->l, self);
+  port_set_owner_fader (
+    self->stereo_in->r, self);
+  port_set_owner_fader (
+    self->stereo_out->l, self);
+  port_set_owner_fader (
+    self->stereo_out->r, self);
 }
 
 /**
@@ -118,4 +179,50 @@ fader_copy (
   dest->amp = src->amp;
   dest->phase = src->phase;
   dest->pan = src->pan;
+}
+
+/**
+ * Process the Fader.
+ *
+ * @param start_frame The local offset in this
+ *   cycle.
+ * @param nframes The number of frames to process.
+ */
+void
+fader_process (
+  Fader * self,
+  long    start_frame,
+  int     nframes)
+{
+  Track * track = self->channel->track;
+
+  /* first copy the input to output */
+  for (int i = start_frame;
+       i < start_frame + nframes; i++)
+    {
+      self->stereo_out->l->buf[i] =
+        self->stereo_in->l->buf[i];
+      self->stereo_out->r->buf[i] =
+        self->stereo_in->r->buf[i];
+    }
+
+  /* apply pan */
+  port_apply_pan (
+    self->stereo_out->l, self->pan,
+    AUDIO_ENGINE->pan_law,
+    AUDIO_ENGINE->pan_algo,
+    start_frame, nframes);
+  port_apply_pan (
+    self->stereo_out->r, self->pan,
+    AUDIO_ENGINE->pan_law,
+    AUDIO_ENGINE->pan_algo,
+    start_frame, nframes);
+
+  /* apply fader */
+  port_apply_fader (
+    self->stereo_out->l, self->amp,
+    start_frame, nframes);
+  port_apply_fader (
+    self->stereo_out->r, self->amp,
+    start_frame, nframes);
 }
