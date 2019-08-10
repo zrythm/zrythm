@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-05-04 23:37+0000\n"
-"Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
-"Language-Team: Chinese (Simplified) <https://translate.zrythm.org/projects/"
+"PO-Revision-Date: 2019-08-07 21:24+0000\n"
+"Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.6.1\n"
+"X-Generator: Weblate 3.8-dev\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
@@ -60,11 +60,11 @@ msgstr ""
 #: src/utils/dialogs.c:74 src/actions/actions.c:521
 #: resources/ui/port_selector_popover.ui:193
 msgid "_Cancel"
-msgstr ""
+msgstr "取消（_C）"
 
 #: src/plugins/lv2_gtk.c:153 src/actions/actions.c:523
 msgid "_Save"
-msgstr ""
+msgstr "保存（_S）"
 
 #: src/plugins/lv2_gtk.c:467
 msgid "URI (Optional):"
@@ -93,7 +93,7 @@ msgstr ""
 
 #: src/plugins/lv2_gtk.c:1436
 msgid "Close"
-msgstr ""
+msgstr "关闭"
 
 #: src/plugins/plugin_manager.c:223
 msgid "Error loading LV2 bundle dir: "
@@ -101,11 +101,11 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:59
 msgid "INPUTS"
-msgstr ""
+msgstr "输入"
 
 #: src/gui/widgets/port_connections_popover.c:78
 msgid "OUTPUTS"
-msgstr ""
+msgstr "输出"
 
 #: src/gui/widgets/port_connections_popover.c:164
 msgid "Add"
@@ -174,7 +174,7 @@ msgstr ""
 
 #: src/gui/widgets/control_room.c:52
 msgid "Output"
-msgstr ""
+msgstr "输出"
 
 #: src/gui/widgets/control_room.c:64
 msgid "Listen dim level"
@@ -286,7 +286,7 @@ msgstr ""
 
 #: src/gui/widgets/track.c:138 resources/ui/transport_controls.ui:36
 msgid "Record"
-msgstr ""
+msgstr "录制"
 
 #: src/gui/widgets/track.c:139
 msgid "Solo"
@@ -390,27 +390,27 @@ msgstr ""
 
 #: src/utils/ui.c:522
 msgid "English [en]"
-msgstr ""
+msgstr "英文 [en]"
 
 #: src/utils/ui.c:523
 msgid "German [de]"
-msgstr ""
+msgstr "德文 [de]"
 
 #: src/utils/ui.c:524
 msgid "French [fr]"
-msgstr ""
+msgstr "法文 [fr]"
 
 #: src/utils/ui.c:525
 msgid "Italian [it]"
-msgstr ""
+msgstr "意大利文 [it]"
 
 #: src/utils/ui.c:526
 msgid "Spanish [es]"
-msgstr ""
+msgstr "西班牙文 [es]"
 
 #: src/utils/ui.c:527
 msgid "Japanese [ja]"
-msgstr ""
+msgstr "日文 [ja]"
 
 #: src/utils/ui.c:528
 msgid "Portuguese [pt]"
@@ -463,11 +463,11 @@ msgstr ""
 
 #: src/audio/track.c:783
 msgid "Instrument"
-msgstr ""
+msgstr "乐器"
 
 #: src/audio/track.c:786
 msgid "Audio"
-msgstr ""
+msgstr "音讯"
 
 #: src/audio/track.c:789
 msgid "Bus"
@@ -715,7 +715,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
 msgid "Language"
-msgstr ""
+msgstr "语言"
 
 #: resources/ui/first_run_assistant.ui:106
 msgid ""
@@ -791,7 +791,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:89
 msgid "Mixer"
-msgstr ""
+msgstr "混音器"
 
 #: resources/ui/bot_dock_edge.ui:121
 msgid "Modulators"
@@ -1062,7 +1062,7 @@ msgstr ""
 #: resources/ui/inspector_master.ui:67 resources/ui/inspector_ap.ui:67
 #: resources/ui/inspector_midi.ui:67
 msgid "Color"
-msgstr ""
+msgstr "颜色"
 
 #: resources/ui/inspector_master.ui:79 resources/ui/inspector_ap.ui:79
 #: resources/ui/inspector_midi.ui:79
@@ -1129,7 +1129,7 @@ msgstr ""
 
 #: resources/ui/transport_controls.ui:54
 msgid "Play"
-msgstr ""
+msgstr "重放"
 
 #: resources/ui/transport_controls.ui:69
 msgid "Stop"
@@ -1177,7 +1177,7 @@ msgstr ""
 
 #: resources/ui/header_notebook.ui:73
 msgid "Help"
-msgstr ""
+msgstr "帮助"
 
 #: resources/ui/header_notebook.ui:149
 msgid "Project name"
@@ -1189,7 +1189,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 #: resources/ui/export_dialog.ui:59
 msgid "Export"
