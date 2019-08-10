@@ -293,8 +293,10 @@ task_func (
       data->progress = 0.7;
       break;
     case TASK_END:
-      plugin_manager_scan_plugins (&ZRYTHM->plugin_manager);
-      file_manager_load_files (&ZRYTHM->file_manager);
+      plugin_manager_scan_plugins (
+        &ZRYTHM->plugin_manager);
+      file_manager_load_files (
+        &ZRYTHM->file_manager);
       data->message =
         _("Loading project");
       data->progress = 0.8;

@@ -1077,6 +1077,20 @@ change_state_loop (
 }
 
 void
+change_state_metronome (
+  GSimpleAction * action,
+  GVariant *      value,
+  gpointer        user_data)
+{
+  int enabled = g_variant_get_boolean (value);
+
+  g_simple_action_set_state (action, value);
+
+  transport_set_metronome_enabled (
+    TRANSPORT, enabled);
+}
+
+void
 activate_quick_quantize (
   GSimpleAction *action,
   GVariant      * _variant,

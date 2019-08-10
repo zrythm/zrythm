@@ -1,0 +1,116 @@
+/*
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * Sample processor.
+ */
+
+#ifndef __AUDIO_SAMPLE_PROCESSOR_H__
+#define __AUDIO_SAMPLE_PROCESSOR_H__
+
+#include "audio/sample_playback.h"
+
+typedef struct StereoPorts StereoPorts;
+typedef enum MetronomeType MetronomeType;
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+#define SAMPLE_PROCESSOR \
+  (&AUDIO_ENGINE->sample_processor)
+
+/**
+ * A processor to be used in the routing graph for
+ * playing samples independent of the timeline.
+ */
+typedef struct SampleProcessor
+{
+  /** An array of samples currently being played. */
+  SamplePlayback    current_samples[16];
+  int               num_current_samples;
+
+  /** The stereo out ports to be connected to the
+   * main output. */
+  StereoPorts *     stereo_out;
+} SampleProcessor;
+
+/**
+ * Initializes a SamplePlayback with a sample to
+ * play back.
+ */
+void
+sample_processor_init (
+  SampleProcessor * self);
+
+/**
+ * Clears the buffers.
+ */
+void
+sample_processor_prepare_process (
+  SampleProcessor * self,
+  const int         nframes);
+
+/**
+ * Process the samples for the given number of frames.
+ *
+ * @param offset The local offset in the processing
+ *   cycle.
+ */
+void
+sample_processor_process (
+  SampleProcessor * self,
+  const int         offset,
+  const int         nframes);
+
+/**
+ * Removes a SamplePlayback from the array.
+ */
+void
+sample_processor_remove_sample_playback (
+  SampleProcessor * self,
+  SamplePlayback *  sp);
+
+/**
+ * Queues a metronomem tick at the given local offset.
+ */
+void
+sample_processor_queue_metronome (
+  SampleProcessor * self,
+  MetronomeType     type,
+  int               offset);
+
+/**
+ * Adds a sample to play to the queue from a file
+ * path.
+ */
+void
+sample_processor_queue_sample_from_file (
+  SampleProcessor * self,
+  const char *      path);
+
+/**
+ * @}
+ */
+
+#endif

@@ -29,6 +29,7 @@
 #include "config.h"
 #include "audio/mixer.h"
 #include "audio/pan.h"
+#include "audio/sample_processor.h"
 #include "audio/transport.h"
 #include "zix/sem.h"
 
@@ -44,6 +45,12 @@
 #ifdef __linux__
 #include <alsa/asoundlib.h>
 #endif
+
+typedef struct StereoPorts StereoPorts;
+typedef struct Port Port;
+typedef struct Channel Channel;
+typedef struct Plugin Plugin;
+typedef struct Tracklist Tracklist;
 
 /**
  * @defgroup audio Audio
@@ -75,11 +82,6 @@ typedef jack_nframes_t                nframes_t;
   //jack_midi_event_t    in_event[30];
   //int                  num_events;
 //} MIDI_Controller;
-typedef struct StereoPorts StereoPorts;
-typedef struct Port Port;
-typedef struct Channel Channel;
-typedef struct Plugin Plugin;
-typedef struct Tracklist Tracklist;
 
 typedef enum AudioBackend
 {
@@ -237,6 +239,8 @@ typedef struct AudioEngine
    * playback latency of all initial trigger
    * nodes. */
   long              remaining_latency_preroll;
+
+  SampleProcessor   sample_processor;
 
 } AudioEngine;
 

@@ -15,12 +15,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-#install_subdir (
-  #join_paths ('fonts', 'Segment7Standard'),
-  #install_dir: join_paths (fontsdir))
+# install fonts
 install_subdir (
   join_paths ('fonts', 'DSEG14-Classic-MINI'),
   install_dir: join_paths (fontsdir))
+
+#install samples
+install_data (
+  join_paths (
+    'samples/klick/square_emphasis.wav'),
+  install_dir: samplesdir)
+install_data (
+  join_paths (
+    'samples/klick/square_normal.wav'),
+  install_dir: samplesdir)
+
+# install app icon
 install_data (
   join_paths ('icons', 'zrythm', 'zrythm.svg'),
   install_dir: join_paths (datadir, 'icons', 'hicolor', 'scalable', 'apps'))

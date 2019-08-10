@@ -26,6 +26,7 @@
 #ifndef __ZRYTHM_H__
 #define __ZRYTHM_H__
 
+#include "audio/metronome.h"
 #include "audio/snap_grid.h"
 #include "gui/backend/events.h"
 #include "gui/backend/file_manager.h"
@@ -34,8 +35,6 @@
 
 #include <gtk/gtk.h>
 
-#define ZRYTHM zrythm
-
 #define ZRYTHM_APP_TYPE (zrythm_app_get_type ())
 G_DECLARE_FINAL_TYPE (ZrythmApp,
                       zrythm_app,
@@ -43,12 +42,20 @@ G_DECLARE_FINAL_TYPE (ZrythmApp,
                       APP,
                       GtkApplication)
 
-#define MAX_RECENT_PROJECTS 20
-#define DEBUGGING (ZRYTHM->debug)
-
 typedef struct _MainWindowWidget MainWindowWidget;
 typedef struct Project Project;
 typedef struct Symap Symap;
+
+/**
+ * @addtogroup general
+ *
+ * @{
+ */
+
+#define ZRYTHM zrythm
+
+#define MAX_RECENT_PROJECTS 20
+#define DEBUGGING (ZRYTHM->debug)
 
 /**
  * To be used throughout the program.
@@ -96,6 +103,9 @@ typedef struct Zrythm
    * full. */
   char *                  recent_projects[MAX_RECENT_PROJECTS + 1];
   int                     num_recent_projects;
+
+  /** The metronome. */
+  Metronome               metronome;
 
   /**
    * Filename to open passed through the command line.
@@ -163,5 +173,9 @@ zrythm_remove_recent_project (
 char *
 zrythm_get_dir (
   Zrythm * self);
+
+/**
+ * @}
+ */
 
 #endif /* __ZRYTHM_H__ */

@@ -159,6 +159,10 @@ get_node_name (
           "%s Fader",
           node->fader->channel->track->name);
       break;
+    case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
+      return
+        g_strdup ("Sample Processor");
+      break;
     }
   g_return_val_if_reached (NULL);
 }
@@ -210,7 +214,7 @@ node_process (
   GraphNode * node,
   const int   nframes)
 {
-  int i, noroll = 0;
+  int i, j, noroll = 0;
   Channel * chan;
 
   int local_offset =
@@ -288,6 +292,13 @@ node_process (
     {
       fader_process (
         node->fader, local_offset, nframes);
+    }
+  else if (node->type ==
+           ROUTE_NODE_TYPE_SAMPLE_PROCESSOR)
+    {
+      sample_processor_process (
+        node->sample_processor, local_offset,
+        nframes);
     }
   else if (node->type == ROUTE_NODE_TYPE_PORT)
     {
@@ -438,15 +449,22 @@ node_process (
                       JACK_PORT_T (port->data),
                       AUDIO_ENGINE->nframes);
 
-                  /* by this time, the Master channel should have its
-                   * Stereo Out ports filled. pass their buffers to JACK's
+                  /* by this time, the Master
+                   * channel should have its
+                   * Stereo Out ports filled.
+                   * pass their buffers to JACK's
                    * buffers */
-                  for (i = local_offset;
-                       i < local_offset + nframes;
+                  for (i = 0; i < port->num_srcs;
                        i++)
                     {
-                      out[i] =
-                        port->srcs[0]->buf[i];
+                      for (j = local_offset;
+                           j < local_offset +
+                             nframes;
+                           j++)
+                        {
+                          out[j] +=
+                            port->srcs[i]->buf[j];
+                        }
                     }
 
                   /* avoid unused warnings */
@@ -870,6 +888,24 @@ find_node_from_fader (
   return NULL;
 }
 
+static GraphNode *
+find_node_from_sample_processor (
+  Graph * graph,
+  SampleProcessor * sample_processor)
+{
+  GraphNode * node;
+  for (int i = 0; i < graph->n_graph_nodes; i++)
+    {
+      node = graph->graph_nodes[i];
+      if (node->type ==
+            ROUTE_NODE_TYPE_SAMPLE_PROCESSOR &&
+          node->sample_processor ==
+            sample_processor)
+        return node;
+    }
+  return NULL;
+}
+
 static inline GraphNode *
 graph_node_new (
   Graph * graph,
@@ -887,6 +923,10 @@ graph_node_new (
     node->port = (Port *) data;
   else if (type == ROUTE_NODE_TYPE_FADER)
     node->fader = (Fader *) data;
+  else if (type ==
+             ROUTE_NODE_TYPE_SAMPLE_PROCESSOR)
+    node->sample_processor =
+      (SampleProcessor *) data;
 
   return node;
 }
@@ -1164,7 +1204,7 @@ add_port (
   /*add_port_node (self, port);*/
   if (port->num_dests == 0 &&
       port->num_srcs == 0 &&
-      port->plugin)
+      owner == PORT_OWNER_TYPE_PLUGIN)
     {
       if (port->identifier.flow == FLOW_INPUT)
         graph_add_initial_node (
@@ -1183,14 +1223,22 @@ add_port (
       !(owner == PORT_OWNER_TYPE_PLUGIN &&
         port->identifier.flow == FLOW_OUTPUT) &&
       !(owner == PORT_OWNER_TYPE_FADER &&
+        port->identifier.flow == FLOW_OUTPUT) &&
+      !(owner ==
+          PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
         port->identifier.flow == FLOW_OUTPUT))
     graph_add_initial_node (
       self, ROUTE_NODE_TYPE_PORT, port);
   else if (port->num_dests == 0 &&
            port->num_srcs > 0 &&
            !(owner == PORT_OWNER_TYPE_PLUGIN &&
-             port->identifier.flow == FLOW_INPUT) &&
+             port->identifier.flow ==
+               FLOW_INPUT) &&
            !(owner == PORT_OWNER_TYPE_FADER &&
+             port->identifier.flow ==
+               FLOW_INPUT) &&
+           !(owner ==
+               PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
              port->identifier.flow == FLOW_INPUT))
     graph_add_terminal_node (
       self, ROUTE_NODE_TYPE_PORT, port);
@@ -1298,6 +1346,11 @@ graph_new (
    * first add all the nodes
    * ======================== */
 
+  /* add the sample processor */
+  graph_add_initial_node ( \
+    self, ROUTE_NODE_TYPE_SAMPLE_PROCESSOR,
+    SAMPLE_PROCESSOR);
+
   /* add plugins */
   Track * tr;
   Plugin * pl;
@@ -1373,6 +1426,19 @@ graph_new (
   /* ========================
    * now connect them
    * ======================== */
+
+  /* connect the sample processor */
+  node =
+    find_node_from_sample_processor (
+      self, SAMPLE_PROCESSOR);
+  port = SAMPLE_PROCESSOR->stereo_out->l;
+  node2 =
+    find_node_from_port (self, port);
+  node_connect (node, node2);
+  port = SAMPLE_PROCESSOR->stereo_out->r;
+  node2 =
+    find_node_from_port (self, port);
+  node_connect (node, node2);
 
   Fader * fader;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)

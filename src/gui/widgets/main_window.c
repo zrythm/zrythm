@@ -255,6 +255,8 @@ static GActionEntry actions[] = {
   { "audition-mode", activate_audition_mode },
 
   /* transport */
+  { "toggle-metronome", NULL, NULL,
+    "true", change_state_metronome },
   { "toggle-loop", NULL, NULL,
     "true", change_state_loop },
   { "goto-prev-marker", activate_goto_prev_marker },

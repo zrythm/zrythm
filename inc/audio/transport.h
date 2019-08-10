@@ -132,6 +132,9 @@ typedef struct Transport
   /** Recording or not. */
   int               recording;
 
+  /** Metronome enabled or not. */
+  int               metronome_enabled;
+
   /**
    * This is set when record is toggled and is used to check
    * if a new region should be created.
@@ -239,6 +242,14 @@ void
 transport_set_beat_unit (
   Transport * self,
   int beat_unit);
+
+/**
+ * Sets whether metronome is enabled or not.
+ */
+void
+transport_set_metronome_enabled (
+  Transport * self,
+  const int   enabled);
 
 /**
  * Moves the playhead by the time corresponding to

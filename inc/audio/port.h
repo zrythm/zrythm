@@ -17,9 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __AUDIO_PORTS_H__
-#define __AUDIO_PORTS_H__
-
 /**
  * \file
  *
@@ -27,11 +24,15 @@
  * one another.
  */
 
+#ifndef __AUDIO_PORTS_H__
+#define __AUDIO_PORTS_H__
+
 #include "utils/yaml.h"
 
 typedef struct Plugin Plugin;
 typedef struct MidiEvents MidiEvents;
 typedef struct Fader Fader;
+typedef struct SampleProcessor SampleProcessor;
 
 /**
  * @addtogroup audio
@@ -80,6 +81,7 @@ typedef enum PortOwnerType
   PORT_OWNER_TYPE_PLUGIN,
   PORT_OWNER_TYPE_TRACK,
   PORT_OWNER_TYPE_FADER,
+  PORT_OWNER_TYPE_SAMPLE_PROCESSOR,
 } PortOwnerType;
 
 /**
@@ -125,6 +127,7 @@ typedef enum PortInternalType
 typedef struct Lv2Port Lv2Port;
 typedef struct Channel Channel;
 typedef struct Track Track;
+typedef struct SampleProcessor SampleProcessor;
 typedef enum PanAlgorithm PanAlgorithm;
 typedef enum PanLaw PanLaw;
 
@@ -220,6 +223,7 @@ typedef struct Port
 
   Plugin              * plugin;
   Track             * track;
+  SampleProcessor * sample_processor;
 
   /** used when loading projects FIXME needed? */
   int                 initialized;
@@ -599,6 +603,14 @@ void
 port_set_owner_track (
   Port *    port,
   Track *   track);
+
+/**
+ * Sets the owner sample processor.
+ */
+void
+port_set_owner_sample_processor (
+  Port *   port,
+  SampleProcessor * sample_processor);
 
 /**
  * Sets the owner fader & its ID.

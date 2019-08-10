@@ -94,6 +94,8 @@ transport_init (Transport * self,
 
       self->loop = 1;
 
+      self->metronome_enabled = 1;
+
       transport_set_bpm (DEFAULT_BPM);
     }
 
@@ -314,6 +316,17 @@ transport_move_playhead (
     /*}*/
 
   EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED, NULL);
+}
+
+/**
+ * Sets whether metronome is enabled or not.
+ */
+void
+transport_set_metronome_enabled (
+  Transport * self,
+  const int   enabled)
+{
+  self->metronome_enabled = enabled;
 }
 
 /**

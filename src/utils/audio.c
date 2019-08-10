@@ -17,12 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Audio utils.
- */
-
 #include <math.h>
 #include <unistd.h>
 
@@ -42,6 +36,15 @@ static int num_cores = 0;
 
 /**
  * Decodes the given filename (absolute path).
+ *
+ * @param nfo Pointer to an adinfo struct.
+ * @param src_data Pointer to a SRC_DATA struct.
+ * @param out_buff Pointer to a buffer array to put
+ *   the raw audio data in.
+ * @param out_buf_size Pointer to an int to hold the
+ *   size of out_buf.
+ * @param filename The file to read the audio data
+ *   from.
  */
 void
 audio_decode (

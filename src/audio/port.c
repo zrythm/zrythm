@@ -232,6 +232,12 @@ port_find_from_identifier (
             return ch->fader.stereo_in->r;
         }
       break;
+    case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:
+      if (id->flags & PORT_FLAG_STEREO_L)
+        return SAMPLE_PROCESSOR->stereo_out->l;
+      else if (id->flags &
+                 PORT_FLAG_STEREO_R)
+        return SAMPLE_PROCESSOR->stereo_out->r;
     }
 
   g_return_val_if_reached (NULL);
@@ -323,6 +329,8 @@ port_get_all (
   _ADD (AUDIO_ENGINE->stereo_out->r);
   _ADD (AUDIO_ENGINE->midi_in);
   _ADD (AUDIO_ENGINE->midi_editor_manual_press);
+  _ADD (SAMPLE_PROCESSOR->stereo_out->l);
+  _ADD (SAMPLE_PROCESSOR->stereo_out->r);
 
   Plugin * pl;
   Channel * ch;
@@ -412,6 +420,19 @@ port_set_owner_plugin (
   port->identifier.plugin_slot = pl->slot;
   port->identifier.owner_type =
     PORT_OWNER_TYPE_PLUGIN;
+}
+
+/**
+ * Sets the owner sample processor.
+ */
+void
+port_set_owner_sample_processor (
+  Port *   port,
+  SampleProcessor * sample_processor)
+{
+  port->sample_processor = sample_processor;
+  port->identifier.owner_type =
+    PORT_OWNER_TYPE_SAMPLE_PROCESSOR;
 }
 
 /**

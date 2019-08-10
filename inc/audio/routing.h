@@ -39,6 +39,8 @@ typedef enum GraphNodeType
   ROUTE_NODE_TYPE_PLUGIN,
   /** Fader/pan processor. */
   ROUTE_NODE_TYPE_FADER,
+  /** Sample processor. */
+  ROUTE_NODE_TYPE_SAMPLE_PROCESSOR,
 } GraphNodeType;
 
 typedef struct GraphNode GraphNode;
@@ -72,6 +74,9 @@ typedef struct GraphNode
 
   /** Fader, if fader. */
   Fader *       fader;
+
+  /** Sample processor, if sample processor. */
+  SampleProcessor * sample_processor;
 
   /** For debugging. */
   int  terminal;

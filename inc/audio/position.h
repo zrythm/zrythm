@@ -429,6 +429,22 @@ void
 position_print_simple (
   const Position * pos);
 
+/**
+ * Returns the total number of bars not including
+ * the current one.
+ */
+int
+position_get_total_bars (
+  const Position * pos);
+
+/**
+ * Returns the total number of beats not including
+ * the current one.
+ */
+int
+position_get_total_beats (
+  const Position * pos);
+
 SERIALIZE_INC (Position, position)
 DESERIALIZE_INC (Position, position)
 PRINT_YAML_INC (Position, position)

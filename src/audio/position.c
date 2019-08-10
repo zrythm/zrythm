@@ -635,6 +635,30 @@ position_print_simple (
     pos->ticks);
 }
 
+/**
+ * Returns the total number of bars not including
+ * the current one.
+ */
+int
+position_get_total_bars (
+  const Position * pos)
+{
+  return pos->bars - 1;
+}
+
+/**
+ * Returns the total number of beats not including
+ * the current one.
+ */
+int
+position_get_total_beats (
+  const Position * pos)
+{
+  return
+    pos->beats +
+    pos->bars * TRANSPORT->beats_per_bar - 1;
+}
+
 SERIALIZE_SRC (Position, position)
 DESERIALIZE_SRC (Position, position)
 PRINT_YAML_SRC (Position, position)
