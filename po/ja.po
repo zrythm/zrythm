@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-10 21:37+0100\n"
-"PO-Revision-Date: 2019-07-07 22:02+0000\n"
+"PO-Revision-Date: 2019-08-10 21:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -114,14 +114,12 @@ msgid "Add"
 msgstr "追加"
 
 #: src/gui/widgets/quantize_dialog.c:112
-#, fuzzy
 msgid "note length"
-msgstr "スナップするノートの長さ"
+msgstr "ノート長"
 
 #: src/gui/widgets/quantize_dialog.c:121
-#, fuzzy
 msgid "note type"
-msgstr "ノートの種類"
+msgstr "ノート種"
 
 #: src/gui/widgets/channel.c:917
 msgid "Inserts"
@@ -147,11 +145,11 @@ msgstr "PortAudio機能が無効になっています"
 
 #: src/gui/widgets/first_run_assistant.c:137
 msgid "Backend combination not supported"
-msgstr ""
+msgstr "このバックエンドの組み合わせはサポートされていません"
 
 #: src/gui/widgets/first_run_assistant.c:143
 msgid "The selected backends are operational"
-msgstr ""
+msgstr "選択したバックエンドが正しく動作されています"
 
 #: src/gui/widgets/first_run_assistant.c:224
 #, c-format
@@ -181,7 +179,7 @@ msgstr "パス"
 
 #: src/gui/widgets/project_assistant.c:162
 msgid "Last Modified"
-msgstr ""
+msgstr "更新日付"
 
 #: src/gui/widgets/left_dock_edge.c:65
 msgid "Inspector"
@@ -193,20 +191,18 @@ msgid "Visibility"
 msgstr "ビジビリティ"
 
 #: src/gui/widgets/top_bar.c:52
-#, fuzzy
 msgid "playhead"
 msgstr "再生ヘッド"
 
 #: src/gui/widgets/top_bar.c:108
 msgid "time sig."
-msgstr ""
+msgstr "拍子記号"
 
 #: src/gui/widgets/port_selector_popover.c:209
 msgid "Track Ports"
 msgstr "トラックポート"
 
 #: src/gui/widgets/editor_selection_info.c:61
-#, fuzzy
 msgid "start position"
 msgstr "開始位置"
 
@@ -216,36 +212,33 @@ msgid "No object selected"
 msgstr "オブジェクトが選択されていません"
 
 #: src/gui/widgets/inspector.c:156
-#, fuzzy
 msgid "Track properties"
-msgstr "トラックポート"
+msgstr "トラックの属性"
 
 #: src/gui/widgets/inspector.c:166
-#, fuzzy
 msgid "Editor properties"
-msgstr "エディタのショートカット"
+msgstr "エディタの属性"
 
 #: src/gui/widgets/inspector.c:176
 #, fuzzy
 msgid "Plugin properties"
-msgstr "プラグインブラウザ"
+msgstr "プラグインの属性"
 
 #: src/gui/widgets/instrument_track_info_expander.c:82
 msgid "Track Info"
 msgstr "トラック情報"
 
 #: src/gui/widgets/digital_meter.c:286
-#, fuzzy
 msgid "normal"
-msgstr "フォーマット"
+msgstr "普通音符"
 
 #: src/gui/widgets/digital_meter.c:289
 msgid "dotted"
-msgstr ""
+msgstr "付点音符"
 
 #: src/gui/widgets/digital_meter.c:292
 msgid "triplet"
-msgstr ""
+msgstr "３連音符"
 
 #: src/gui/widgets/digital_meter.c:694 src/gui/widgets/digital_meter.c:709
 msgid "BPM - Click and drag up/down to set"
@@ -289,36 +282,34 @@ msgstr "項目"
 
 #: src/gui/widgets/plugin_browser.c:944
 msgid "Protocol"
-msgstr ""
+msgstr "プロトコル"
 
 #: src/gui/widgets/timeline_selection_info.c:265
 #: resources/ui/quantize_dialog.ui:143
 msgid "start"
-msgstr ""
+msgstr "開始"
 
 #: src/gui/widgets/timeline_selection_info.c:275
 #: resources/ui/quantize_dialog.ui:156
-#, fuzzy
 msgid "end"
-msgstr "バックエンド"
+msgstr "終わり"
 
 #: src/gui/widgets/timeline_selection_info.c:285
 msgid "clip start (rel.)"
-msgstr ""
+msgstr "クリップ開始（相対的）"
 
 #: src/gui/widgets/timeline_selection_info.c:295
 msgid "loop start (rel.)"
-msgstr ""
+msgstr "ループ開始（相対的）"
 
 #: src/gui/widgets/timeline_selection_info.c:305
 msgid "loop end (rel.)"
-msgstr ""
+msgstr "ループの終わり（相対的）"
 
 #: src/gui/widgets/timeline_selection_info.c:333
 #: src/gui/widgets/timeline_selection_info.c:357
 #: src/gui/widgets/timeline_selection_info.c:380
 #: src/gui/widgets/timeline_selection_info.c:405
-#, fuzzy
 msgid "position"
 msgstr "位置"
 
@@ -350,37 +341,30 @@ msgid "Redo"
 msgstr "やり直し"
 
 #: src/gui/widgets/home_toolbar.c:120
-#, fuzzy
 msgid "Cut"
-msgstr "アウト"
+msgstr "切り取り"
 
 #: src/gui/widgets/home_toolbar.c:122
-#, fuzzy
 msgid "Copy"
-msgstr "%sをコピー"
+msgstr "コピー"
 
 #: src/gui/widgets/home_toolbar.c:124
-#, fuzzy
 msgid "Paste"
-msgstr "マスター"
+msgstr "貼り付け"
 
 #: src/gui/widgets/home_toolbar.c:126
-#, fuzzy
 msgid "Duplicate"
-msgstr "トラックを複製(_D)"
+msgstr "複製"
 
 #: src/gui/widgets/home_toolbar.c:128
-#, fuzzy
 msgid "Delete"
-msgstr "トラックを削除"
+msgstr "削除"
 
 #: src/gui/widgets/home_toolbar.c:130
-#, fuzzy
 msgid "Clear Selection"
-msgstr "選択範囲"
+msgstr "選択範囲を解除"
 
 #: src/gui/widgets/home_toolbar.c:132
-#, fuzzy
 msgid "Select All"
 msgstr "すべてを選択"
 
@@ -418,21 +402,19 @@ msgstr "再生ヘッド"
 
 #: src/gui/widgets/piano_roll_key_label.c:84
 msgid "both"
-msgstr ""
+msgstr "両方"
 
 #: src/gui/widgets/piano_roll_key_label.c:103
-#, fuzzy
 msgid "scale"
-msgstr "スケール"
+msgstr "音階"
 
 #: src/gui/widgets/piano_roll_key_label.c:122
-#, fuzzy
 msgid "chord"
-msgstr "コード"
+msgstr "和音"
 
 #: src/gui/widgets/live_waveform.c:131
 msgid "Live waveform indicator"
-msgstr ""
+msgstr "生波形表示"
 
 #: src/gui/widgets/clip_editor_inner.c:165
 msgid "Select a region..."
@@ -609,7 +591,7 @@ msgstr "イタリア語[it]"
 
 #: src/utils/ui.c:493
 msgid "Norwegian [nb]"
-msgstr ""
+msgstr "ノルウェー語 [nb]"
 
 #: src/utils/ui.c:494
 msgid "Spanish [es]"
@@ -638,7 +620,7 @@ msgstr "ダミー"
 
 #: src/utils/ui.c:534
 msgid "ALSA Sequencer"
-msgstr ""
+msgstr "ALSAシーケンサー"
 
 #. TRANSLATORS: Pan algorithm
 #: src/utils/ui.c:552
@@ -673,9 +655,9 @@ msgid "Lane %d"
 msgstr "レーン%d"
 
 #: src/audio/engine_alsa.c:322
-#, fuzzy, c-format
+#, c-format
 msgid "ALSA Error: %s"
-msgstr "JACKエラー：%s"
+msgstr "ALSAエラー：%s"
 
 #: src/audio/track.c:881
 msgid "Instrument"
@@ -759,7 +741,7 @@ msgstr "クライアントゾンビ"
 #: src/actions/duplicate_chord_selections_action.c:151
 #, fuzzy
 msgid "Duplicate Chord(s)"
-msgstr "オブジェクトを複製"
+msgstr "和音を複製"
 
 #: src/actions/delete_timeline_selections_action.c:103
 #: src/actions/delete_midi_arranger_selections_action.c:103
@@ -767,9 +749,8 @@ msgid "Delete Object(s)"
 msgstr "オブジェクトを削除"
 
 #: src/actions/create_chord_selections_action.c:125
-#, fuzzy
 msgid "Create Chord(s)"
-msgstr "%sを作成"
+msgstr "和音を作成"
 
 #: src/actions/create_plugins_action.c:139
 #, c-format
@@ -791,9 +772,8 @@ msgid "Delete %d Tracks"
 msgstr "%d個のトラックを削除"
 
 #: src/actions/edit_marker_action.c:87
-#, fuzzy
 msgid "Change Marker"
-msgstr "フェーダーを変更"
+msgstr "目印を変更"
 
 #: src/actions/actions.c:564
 msgid "Save Project"
@@ -827,22 +807,20 @@ msgid "Duplicate Object(s)"
 msgstr "オブジェクトを複製"
 
 #: src/actions/edit_midi_arranger_selections_action.c:267
-#, fuzzy
 msgid "Resize MIDI Note(s)"
-msgstr "MIDIノートのサイズを変更"
+msgstr "MIDI音符の長さを変更"
 
 #: src/actions/edit_midi_arranger_selections_action.c:271
 msgid "Change Velocity"
-msgstr ""
+msgstr "ベロシティを変更"
 
 #: src/actions/edit_midi_arranger_selections_action.c:273
 msgid "Change Velocities"
-msgstr ""
+msgstr "ベロシティを変更"
 
 #: src/actions/move_automation_selections_action.c:114
-#, fuzzy
 msgid "Move Automation"
-msgstr "オートメーションを読み取る"
+msgstr "自動操作イベントを移動"
 
 #: src/actions/create_timeline_selections_action.c:210
 #: src/actions/create_midi_arranger_selections_action.c:119
@@ -850,9 +828,8 @@ msgid "Create Object(s)"
 msgstr "オブジェクトを作成"
 
 #: src/actions/quantize_timeline_selections.c:167
-#, fuzzy
 msgid "Quantize Object(s)"
-msgstr "オブジェクトのサイズ変更"
+msgstr "オブジェクトをクオンタイズ"
 
 #: src/actions/move_plugins_action.c:147
 #, c-format
@@ -865,37 +842,32 @@ msgid "Move %d Plugins"
 msgstr "%dプラグインを移動"
 
 #: src/actions/move_chord_selections_action.c:114
-#, fuzzy
 msgid "Move Chord(s)"
-msgstr "コード"
+msgstr "和音イベントを移動"
 
 #: src/actions/edit_timeline_selections_action.c:215
 msgid "Resize Object(s)"
 msgstr "オブジェクトのサイズ変更"
 
 #: src/actions/edit_timeline_selections_action.c:217
-#, fuzzy
 msgid "Change Name"
-msgstr "フェーダーを変更"
+msgstr "名称を変更"
 
 #: src/actions/edit_timeline_selections_action.c:219
-#, fuzzy
 msgid "Change Clip Start Position"
-msgstr "開始位置"
+msgstr "クリップの開始位置を変更"
 
 #: src/actions/edit_timeline_selections_action.c:221
-#, fuzzy
 msgid "Change Loop Start Position"
-msgstr "開始位置"
+msgstr "ループの開始位置を変更"
 
 #: src/actions/edit_timeline_selections_action.c:223
 msgid "Change Loop End Position"
-msgstr ""
+msgstr "ループ終わりの位置を変更"
 
 #: src/actions/edit_timeline_selections_action.c:225
-#, fuzzy
 msgid "Cut Region(s)"
-msgstr "リージョン"
+msgstr "リージョンを切り取り"
 
 #: src/actions/edit_tracks_action.c:160
 msgid "Solo Track"
@@ -931,9 +903,8 @@ msgid "Move %d Tracks"
 msgstr "%d個のプラグインを移動"
 
 #: src/actions/duplicate_automation_selections_action.c:150
-#, fuzzy
 msgid "Duplicate Automation"
-msgstr "オートメーションを書く"
+msgstr "自動操作イベントを複製"
 
 #: src/actions/create_tracks_action.c:52
 #, c-format
@@ -956,19 +927,16 @@ msgid "Create %d %s Tracks"
 msgstr "%d個の%sトラックを作成"
 
 #: src/actions/create_automation_selections_action.c:131
-#, fuzzy
 msgid "Create Automation Point(s)"
-msgstr "オートメーションを書く"
+msgstr "自動操作点を作成"
 
 #: src/actions/edit_chord_action.c:92
-#, fuzzy
 msgid "Change Chord"
-msgstr "フェーダーを変更"
+msgstr "和音イベントを変更"
 
 #: src/actions/edit_scale_action.c:92
-#, fuzzy
 msgid "Change Scale"
-msgstr "フェーダーを変更"
+msgstr "音階を変更"
 
 #: src/actions/delete_plugins_action.c:111
 msgid "Delete Plugin"
@@ -1086,79 +1054,81 @@ msgstr "管理室"
 
 #: resources/ui/scale_selector_window.ui:51
 msgid "Root Key"
-msgstr ""
+msgstr "ルート音符"
 
 #: resources/ui/scale_selector_window.ui:80
 #: resources/ui/chord_selector_window.ui:78
 #: resources/ui/chord_selector_window.ui:522
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: resources/ui/scale_selector_window.ui:93
 #: resources/ui/chord_selector_window.ui:91
 #: resources/ui/chord_selector_window.ui:535
+#, fuzzy
 msgid "D♭"
-msgstr ""
+msgstr "D♭"
 
 #: resources/ui/scale_selector_window.ui:106
 #: resources/ui/chord_selector_window.ui:104
 #: resources/ui/chord_selector_window.ui:548
 msgid "D"
-msgstr ""
+msgstr "D"
 
 #: resources/ui/scale_selector_window.ui:119
 #: resources/ui/chord_selector_window.ui:117
 #: resources/ui/chord_selector_window.ui:561
+#, fuzzy
 msgid "E♭"
-msgstr ""
+msgstr "E♭"
 
 #: resources/ui/scale_selector_window.ui:132
 #: resources/ui/chord_selector_window.ui:130
 #: resources/ui/chord_selector_window.ui:574
 msgid "E"
-msgstr ""
+msgstr "E"
 
 #: resources/ui/scale_selector_window.ui:145
 #: resources/ui/chord_selector_window.ui:143
 #: resources/ui/chord_selector_window.ui:587
 msgid "F"
-msgstr ""
+msgstr "F"
 
 #: resources/ui/scale_selector_window.ui:158
 #: resources/ui/chord_selector_window.ui:156
 #: resources/ui/chord_selector_window.ui:600
 msgid "F♯"
-msgstr ""
+msgstr "F♯"
 
 #: resources/ui/scale_selector_window.ui:171
 #: resources/ui/chord_selector_window.ui:169
 #: resources/ui/chord_selector_window.ui:613
 msgid "G"
-msgstr ""
+msgstr "G"
 
 #: resources/ui/scale_selector_window.ui:184
 #: resources/ui/chord_selector_window.ui:182
 #: resources/ui/chord_selector_window.ui:626
 msgid "A♭"
-msgstr ""
+msgstr "A♭"
 
 #: resources/ui/scale_selector_window.ui:197
 #: resources/ui/chord_selector_window.ui:195
 #: resources/ui/chord_selector_window.ui:639
 msgid "A"
-msgstr ""
+msgstr "A"
 
 #: resources/ui/scale_selector_window.ui:210
 #: resources/ui/chord_selector_window.ui:208
 #: resources/ui/chord_selector_window.ui:652
 msgid "B♭"
-msgstr ""
+msgstr "B♭"
 
 #: resources/ui/scale_selector_window.ui:223
 #: resources/ui/chord_selector_window.ui:221
 #: resources/ui/chord_selector_window.ui:665
 msgid "B"
-msgstr ""
+msgstr "B"
 
 #: resources/ui/scale_selector_window.ui:240 resources/ui/inspector_chord.ui:43
 #: resources/ui/editor_toolbar.ui:59
@@ -1167,25 +1137,24 @@ msgstr "スケール"
 
 #: resources/ui/scale_selector_window.ui:267
 msgid "Chromatic"
-msgstr ""
+msgstr "半音階"
 
 #: resources/ui/scale_selector_window.ui:280
 msgid "Ionian (Major)"
-msgstr ""
+msgstr "アイオニアン（長音階）"
 
 #: resources/ui/scale_selector_window.ui:293
 msgid "Aeolian (Natural Minor)"
-msgstr ""
+msgstr "アエオリアン（自然的短音階）"
 
 #: resources/ui/scale_selector_window.ui:306
 msgid "Harmonic Minor"
-msgstr ""
+msgstr "和声的短音階"
 
 #: resources/ui/scale_selector_window.ui:342
 #: resources/ui/chord_selector_window.ui:746
-#, fuzzy
 msgid "Creator"
-msgstr "%sを作成"
+msgstr "クリエーター"
 
 #: resources/ui/scale_selector_window.ui:358
 #: resources/ui/chord_selector_window.ui:876
@@ -1254,7 +1223,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:51
 msgid "Root Note"
-msgstr ""
+msgstr "ルート音符"
 
 #: resources/ui/chord_selector_window.ui:238 resources/ui/file_browser.ui:84
 #: resources/ui/snap_grid_popover.ui:127
@@ -1263,113 +1232,111 @@ msgstr "種類"
 
 #: resources/ui/chord_selector_window.ui:264
 msgid "maj"
-msgstr ""
+msgstr "maj"
 
 #: resources/ui/chord_selector_window.ui:277
-#, fuzzy
 msgid "min"
-msgstr "イン"
+msgstr "min"
 
 #: resources/ui/chord_selector_window.ui:290
 msgid "dim"
-msgstr ""
+msgstr "dim"
 
 #: resources/ui/chord_selector_window.ui:303
 msgid "sus4"
-msgstr ""
+msgstr "sus4"
 
 #: resources/ui/chord_selector_window.ui:316
 msgid "sus2"
-msgstr ""
+msgstr "sus2"
 
 #: resources/ui/chord_selector_window.ui:329
 msgid "aug"
-msgstr ""
+msgstr "aug"
 
 #: resources/ui/chord_selector_window.ui:346
 msgid "Accent"
-msgstr ""
+msgstr "強音"
 
 #: resources/ui/chord_selector_window.ui:374
 msgid "7"
-msgstr ""
+msgstr "7"
 
 #: resources/ui/chord_selector_window.ui:387
 msgid "j7"
-msgstr ""
+msgstr "j7"
 
 #: resources/ui/chord_selector_window.ui:400
 msgid "♭9"
-msgstr ""
+msgstr "♭9"
 
 #: resources/ui/chord_selector_window.ui:413
 msgid "9"
-msgstr ""
+msgstr "9"
 
 #: resources/ui/chord_selector_window.ui:426
 msgid "♯9"
-msgstr ""
+msgstr "♯9"
 
 #: resources/ui/chord_selector_window.ui:439
 msgid "11"
-msgstr ""
+msgstr "11"
 
 #: resources/ui/chord_selector_window.ui:452
 msgid "♭5/♯11"
-msgstr ""
+msgstr "♭5/♯11"
 
 #: resources/ui/chord_selector_window.ui:465
 msgid "♯5/♭13"
-msgstr ""
+msgstr "♯5/♭13"
 
 #: resources/ui/chord_selector_window.ui:478
 msgid "6/13"
-msgstr ""
+msgstr "6/13"
 
 #: resources/ui/chord_selector_window.ui:495
 msgid "Bass Note"
-msgstr ""
+msgstr "低音符"
 
 #: resources/ui/chord_selector_window.ui:700
 msgid "All"
-msgstr ""
+msgstr "全部"
 
 #: resources/ui/chord_selector_window.ui:716
-#, fuzzy
 msgid "In scale"
-msgstr "スケールを強制する"
+msgstr "音階内"
 
 #: resources/ui/chord_selector_window.ui:767
 msgid "I"
-msgstr ""
+msgstr "I"
 
 #: resources/ui/chord_selector_window.ui:781
 msgid "II"
-msgstr ""
+msgstr "II"
 
 #: resources/ui/chord_selector_window.ui:795
 msgid "III"
-msgstr ""
+msgstr "III"
 
 #: resources/ui/chord_selector_window.ui:809
 msgid "IV"
-msgstr ""
+msgstr "IV"
 
 #: resources/ui/chord_selector_window.ui:823
 msgid "V"
-msgstr ""
+msgstr "V"
 
 #: resources/ui/chord_selector_window.ui:837
 msgid "VI"
-msgstr ""
+msgstr "VI"
 
 #: resources/ui/chord_selector_window.ui:851
 msgid "VII"
-msgstr ""
+msgstr "VII"
 
 #: resources/ui/chord_selector_window.ui:865
 msgid "Diatonic"
-msgstr ""
+msgstr "全音階"
 
 #: resources/ui/chord_selector_window.ui:897
 msgid "TODO"
@@ -1377,7 +1344,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:907
 msgid "Circle of Fifths"
-msgstr ""
+msgstr "五度圏"
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
@@ -1554,22 +1521,22 @@ msgstr "MIDIコントローラをもう一度スキャンする"
 #: resources/ui/midi_editor_space.ui:144 resources/ui/chord_editor_space.ui:152
 #: resources/ui/automation_editor_space.ui:114
 msgid "Velocity"
-msgstr ""
+msgstr "ベロシティ"
 
 #: resources/ui/midi_editor_space.ui:145 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
 msgid "Pitch Wheel"
-msgstr ""
+msgstr "ピッチベンド"
 
 #: resources/ui/midi_editor_space.ui:146 resources/ui/chord_editor_space.ui:154
 #: resources/ui/automation_editor_space.ui:116
 msgid "Mod Wheel"
-msgstr ""
+msgstr "モッドホイール"
 
 #: resources/ui/midi_editor_space.ui:147 resources/ui/chord_editor_space.ui:155
 #: resources/ui/automation_editor_space.ui:117
 msgid "Aftertouch"
-msgstr ""
+msgstr "アフタータッチ"
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
@@ -1612,7 +1579,7 @@ msgstr "ミュート"
 
 #: resources/ui/track_lane.ui:35
 msgid "Lane 1"
-msgstr ""
+msgstr "レーン１"
 
 #: resources/ui/modulator_view.ui:53 resources/ui/clip_editor_inner.ui:53
 msgid "Track name"
@@ -1668,7 +1635,7 @@ msgstr "初期化中…"
 
 #: resources/ui/automator.ui:32
 msgid "LFO 1"
-msgstr ""
+msgstr "LFO１"
 
 #: resources/ui/automation_track.ui:95
 msgid "RW"
@@ -1688,16 +1655,15 @@ msgstr "オートメーションを読み取る"
 
 #: resources/ui/automation_track.ui:137
 msgid "0.0"
-msgstr ""
+msgstr "0.0"
 
 #: resources/ui/file_browser.ui:107
 msgid "Location"
 msgstr "パス"
 
 #: resources/ui/marker_dialog.ui:94
-#, fuzzy
 msgid "Marker name"
-msgstr "マーカー"
+msgstr "目印の名称"
 
 #: resources/ui/header_notebook.ui:37
 msgid "Home"
@@ -1716,44 +1682,40 @@ msgid "Project name"
 msgstr "プロジェクト名"
 
 #: resources/ui/quantize_dialog.ui:7
-#, fuzzy
 msgid "Quantize Options"
-msgstr "量子化"
+msgstr "クオンタイズの設定"
 
 #: resources/ui/quantize_dialog.ui:23
-#, fuzzy
 msgid "_Quantize"
-msgstr "量子化"
+msgstr "クオンタイズ（Q）"
 
 #: resources/ui/quantize_dialog.ui:77
-#, fuzzy
 msgid "Quantize to"
-msgstr "量子化"
+msgstr "…にクオンタイズ"
 
 #: resources/ui/quantize_dialog.ui:132
 msgid "Adjust"
-msgstr ""
+msgstr "調整"
 
 #: resources/ui/quantize_dialog.ui:183
 msgid "Amount"
-msgstr ""
+msgstr "量"
 
 #: resources/ui/quantize_dialog.ui:223
 msgid "Swing"
-msgstr ""
+msgstr "スイング"
 
 #: resources/ui/quantize_dialog.ui:251
-#, fuzzy
 msgid "Randomization"
-msgstr "オートメーションを読み取る"
+msgstr "ランダム化"
 
 #: resources/ui/top_bar.ui:31
 msgid "Metronome"
-msgstr ""
+msgstr "メトロノーム"
 
 #: resources/ui/top_bar.ui:87
 msgid "MIDI in activity"
-msgstr ""
+msgstr "MIDI IN発動"
 
 #: resources/ui/export_dialog.ui:30
 msgid "Export As..."
@@ -1837,9 +1799,8 @@ msgid "This is an app-notification. Click the button to dismiss"
 msgstr "これはアプリ通知です. Click the button to dismiss"
 
 #: resources/ui/quantize_box.ui:61
-#, fuzzy
 msgid "Full Quantize..."
-msgstr "クイック量子化"
+msgstr "詳細量子化…"
 
 #: resources/ui/snap_grid_popover.ui:37
 msgid "Grid"
@@ -1863,15 +1824,15 @@ msgstr "ノートの種類"
 
 #: resources/ui/editor_toolbar.ui:47
 msgid "Highlight"
-msgstr ""
+msgstr "ハイライト"
 
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
-msgstr ""
+msgstr "無し"
 
 #: resources/ui/editor_toolbar.ui:60
 msgid "Both"
-msgstr ""
+msgstr "両方"
 
 #: resources/ui/preferences.ui:44
 msgid "OK"
