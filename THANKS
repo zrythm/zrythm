@@ -15,6 +15,7 @@ Thanks:
  Robin Gareus <robin@gareus.org>
    * Help and advice
    * Routing algorithm
+   * Latency compensation algorithm
 
 ----
 

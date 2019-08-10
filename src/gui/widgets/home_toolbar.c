@@ -111,17 +111,27 @@ home_toolbar_widget_init (HomeToolbarWidget * self)
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
     GTK_ACTIONABLE (self->x), \
-    _(tooltip))
-  SET_TOOLTIP (undo, "Undo");
-  SET_TOOLTIP (redo, "Redo");
-  SET_TOOLTIP (cut, "Cut");
-  SET_TOOLTIP (copy, "Copy");
-  SET_TOOLTIP (paste, "Paste");
-  SET_TOOLTIP (duplicate, "Duplicate");
-  SET_TOOLTIP (delete, "Delete");
-  SET_TOOLTIP (clear_selection, "Clear Selection");
-  SET_TOOLTIP (select_all, "Select All");
-  SET_TOOLTIP (loop_selection, "Loop Selection");
+    tooltip)
+  SET_TOOLTIP (
+    undo, _("Undo"));
+  SET_TOOLTIP (
+    redo, _("Redo"));
+  SET_TOOLTIP (
+    cut, _("Cut"));
+  SET_TOOLTIP (
+    copy, _("Copy"));
+  SET_TOOLTIP (
+    paste, _("Paste"));
+  SET_TOOLTIP (
+    duplicate, _("Duplicate"));
+  SET_TOOLTIP (
+    delete, _("Delete"));
+  SET_TOOLTIP (
+    clear_selection, _("Clear Selection"));
+  SET_TOOLTIP (
+    select_all, _("Select All"));
+  SET_TOOLTIP (
+    loop_selection, _("Loop Selection"));
 #undef SET_TOOLTIP
 }
 

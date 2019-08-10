@@ -23,6 +23,8 @@
 #include "utils/io.h"
 #include "utils/resources.h"
 
+#include <glib/gi18n.h>
+
 G_DEFINE_TYPE (ProjectAssistantWidget,
                project_assistant_widget,
                GTK_TYPE_ASSISTANT)
@@ -137,7 +139,8 @@ add_columns (GtkTreeView *treeview)
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      "Name", renderer, "text", COLUMN_NAME, NULL);
+      _("Name"), renderer, "text", COLUMN_NAME,
+      NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, COLUMN_NAME);
   gtk_tree_view_append_column (treeview, column);
@@ -146,7 +149,7 @@ add_columns (GtkTreeView *treeview)
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      "Path", renderer, "text",
+      _("Path"), renderer, "text",
       COLUMN_FILENAME, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, COLUMN_FILENAME);
@@ -156,7 +159,7 @@ add_columns (GtkTreeView *treeview)
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      "Last Modified", renderer, "text",
+      _("Last Modified"), renderer, "text",
       COLUMN_MODIFIED, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, COLUMN_MODIFIED);

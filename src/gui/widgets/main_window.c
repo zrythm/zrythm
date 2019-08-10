@@ -197,86 +197,103 @@ main_window_widget_class_init (MainWindowWidgetClass * _klass)
                                  "main-window");
 }
 
-static GActionEntry actions[] = {
-
-  /* file menu */
-  { "new", activate_new },
-  { "open", activate_open },
-  { "save", activate_save },
-  { "save-as", activate_save_as },
-  { "export-as", activate_export_as },
-  { "properties", activate_properties },
-
-  /* edit menu */
-  { "undo", activate_undo },
-  { "redo", activate_redo },
-  { "cut", activate_cut },
-  { "copy", activate_copy },
-  { "paste", activate_paste },
-  { "delete", activate_delete },
-  { "duplicate", activate_duplicate },
-  { "clear-selection", activate_clear_selection },
-  { "select-all", activate_select_all },
-  /* selection submenu */
-  { "loop-selection", activate_loop_selection },
-
-  /* view menu */
-  { "toggle-left-panel", activate_toggle_left_panel },
-  { "toggle-right-panel", activate_toggle_right_panel },
-  { "toggle-bot-panel", activate_toggle_bot_panel },
-  { "toggle-top-panel", activate_toggle_top_panel },
-  { "toggle-status-bar", activate_toggle_status_bar },
-  { "zoom-in", activate_zoom_in },
-  { "zoom-out", activate_zoom_out },
-  { "original-size", activate_original_size },
-  { "best-fit", activate_best_fit },
-
-  /* snapping, quantize */
-  { "snap-to-grid", activate_snap_to_grid },
-  { "snap-keep-offset", activate_snap_keep_offset },
-  { "snap-events", activate_snap_events },
-  { "quick-quantize", activate_quick_quantize, "s"},
-  { "quantize-options", activate_quantize_options,
-    "s" },
-
-  /* track actions */
-  { "create-audio-track", activate_create_audio_track },
-  { "create-ins-track", activate_create_ins_track },
-  { "create-bus-track", activate_create_bus_track },
-  { "create-group-track", activate_create_group_track },
-  { "delete-selected-tracks", activate_delete_selected_tracks },
-
-  /* modes */
-  { "select-mode", activate_select_mode },
-  { "edit-mode", activate_edit_mode },
-  { "cut-mode", activate_cut_mode },
-  { "eraser-mode", activate_eraser_mode },
-  { "ramp-mode", activate_ramp_mode },
-  { "audition-mode", activate_audition_mode },
-
-  /* transport */
-  { "toggle-metronome", NULL, NULL,
-    "true", change_state_metronome },
-  { "toggle-loop", NULL, NULL,
-    "true", change_state_loop },
-  { "goto-prev-marker", activate_goto_prev_marker },
-  { "goto-next-marker", activate_goto_next_marker },
-
-  /* tracks */
-  { "delete-selected-tracks", activate_delete_selected_tracks },
-  { "duplicate-selected-tracks", activate_duplicate_selected_tracks },
-
-  /* piano roll */
-  { "toggle-drum-mode", activate_toggle_drum_mode },
-
-  /* control room */
-  { "toggle-dim-output", NULL, NULL,
-    "true", change_state_dim_output },
-};
-
 static void
 main_window_widget_init (MainWindowWidget * self)
 {
+  GActionEntry actions[] = {
+
+    /* file menu */
+    { "new", activate_new },
+    { "open", activate_open },
+    { "save", activate_save },
+    { "save-as", activate_save_as },
+    { "export-as", activate_export_as },
+    { "properties", activate_properties },
+
+    /* edit menu */
+    { "undo", activate_undo },
+    { "redo", activate_redo },
+    { "cut", activate_cut },
+    { "copy", activate_copy },
+    { "paste", activate_paste },
+    { "delete", activate_delete },
+    { "duplicate", activate_duplicate },
+    { "clear-selection", activate_clear_selection },
+    { "select-all", activate_select_all },
+    /* selection submenu */
+    { "loop-selection", activate_loop_selection },
+
+    /* view menu */
+    { "toggle-left-panel",
+      activate_toggle_left_panel },
+    { "toggle-right-panel",
+      activate_toggle_right_panel },
+    { "toggle-bot-panel",
+      activate_toggle_bot_panel },
+    { "toggle-top-panel",
+      activate_toggle_top_panel },
+    { "toggle-status-bar",
+      activate_toggle_status_bar },
+    { "zoom-in", activate_zoom_in },
+    { "zoom-out", activate_zoom_out },
+    { "original-size", activate_original_size },
+    { "best-fit", activate_best_fit },
+
+    /* snapping, quantize */
+    { "snap-to-grid", activate_snap_to_grid },
+    { "snap-keep-offset",
+      activate_snap_keep_offset },
+    { "snap-events", activate_snap_events },
+    { "quick-quantize",
+      activate_quick_quantize, "s"},
+    { "quantize-options", activate_quantize_options,
+      "s" },
+
+    /* track actions */
+    { "create-audio-track",
+      activate_create_audio_track },
+    { "create-ins-track",
+      activate_create_ins_track },
+    { "create-bus-track",
+      activate_create_bus_track },
+    { "create-group-track",
+      activate_create_group_track },
+    { "delete-selected-tracks",
+      activate_delete_selected_tracks },
+
+    /* modes */
+    { "select-mode", activate_select_mode },
+    { "edit-mode", activate_edit_mode },
+    { "cut-mode", activate_cut_mode },
+    { "eraser-mode", activate_eraser_mode },
+    { "ramp-mode", activate_ramp_mode },
+    { "audition-mode", activate_audition_mode },
+
+    /* transport */
+    { "toggle-metronome", NULL, NULL,
+      "false", change_state_metronome },
+    { "toggle-loop", NULL, NULL,
+      "true", change_state_loop },
+    { "goto-prev-marker",
+      activate_goto_prev_marker },
+    { "goto-next-marker",
+      activate_goto_next_marker },
+
+    /* tracks */
+    { "delete-selected-tracks",
+      activate_delete_selected_tracks },
+    { "duplicate-selected-tracks",
+      activate_duplicate_selected_tracks },
+
+    /* piano roll */
+    { "toggle-drum-mode",
+      activate_toggle_drum_mode },
+
+    /* control room */
+    { "toggle-dim-output", NULL, NULL,
+      "true", change_state_dim_output },
+  };
+
   g_action_map_add_action_entries (
     G_ACTION_MAP (self),
     actions,

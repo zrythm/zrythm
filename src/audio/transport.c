@@ -87,14 +87,16 @@ transport_init (Transport * self,
       // set positions of playhead, start/end markers
       position_set_to_bar (&self->playhead_pos, 1);
       position_set_to_bar (&self->cue_pos, 1);
-      position_set_to_bar (&self->start_marker_pos, 1);
-      position_set_to_bar (&self->end_marker_pos, 128);
+      position_set_to_bar (
+        &self->start_marker_pos, 1);
+      position_set_to_bar (
+        &self->end_marker_pos, 128);
       position_set_to_bar (&self->loop_start_pos, 1);
       position_set_to_bar (&self->loop_end_pos, 5);
 
       self->loop = 1;
 
-      self->metronome_enabled = 1;
+      self->metronome_enabled = 0;
 
       transport_set_bpm (DEFAULT_BPM);
     }
