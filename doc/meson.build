@@ -35,6 +35,8 @@ html_target = custom_target (
     doxyfile,
     doxyfile_mcss,
     zrythm_srcs,
+    join_paths (meson.source_root(),
+                'CONTRIBUTING.md'),
     'mainpage.h',
     'cyaml_schemas.h',
     'processing_cycle.h',

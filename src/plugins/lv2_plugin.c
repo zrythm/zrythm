@@ -1854,16 +1854,16 @@ lv2_instantiate (
   if (PM_LILV_NODES.opts.update_rate == 0.0)
     {
       /* Calculate a reasonable UI update frequency. */
-      /*self->ui_update_hz = (float)AUDIO_ENGINE->sample_rate /*/
-        /*AUDIO_ENGINE->midi_buf_size * 2.0f;*/
-      /*self->ui_update_hz = MAX(25.0f, self->ui_update_hz);*/
+      self->ui_update_hz = (float)AUDIO_ENGINE->sample_rate /
+        AUDIO_ENGINE->midi_buf_size * 2.0f;
+      self->ui_update_hz = MAX(25.0f, self->ui_update_hz);
 
-      self->ui_update_hz =
-        gdk_monitor_get_refresh_rate (
-          gdk_display_get_monitor_at_window (
-            gdk_display_get_default (),
-            gtk_widget_get_window (
-              GTK_WIDGET (MAIN_WINDOW))));
+      /*self->ui_update_hz =*/
+        /*gdk_monitor_get_refresh_rate (*/
+          /*gdk_display_get_monitor_at_window (*/
+            /*gdk_display_get_default (),*/
+            /*gtk_widget_get_window (*/
+              /*GTK_WIDGET (MAIN_WINDOW))));*/
     }
   else
     {
