@@ -200,25 +200,6 @@ show_context_menu (
   gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
 }
 
-static int
-do_after_init (
-  PluginBrowserWidget * self)
-{
-  if (!GTK_IS_PANED (self))
-    return G_SOURCE_REMOVE;
-
-  /* set divider position */
-  int divider_pos =
-    g_settings_get_int (
-      S_UI,
-      "browser-divider-position");
-  gtk_paned_set_position (
-    GTK_PANED (self),
-    divider_pos);
-
-  return G_SOURCE_REMOVE;
-}
-
 static void
 on_plugin_right_click (
   GtkGestureMultiPress *gesture,
@@ -736,6 +717,80 @@ toggles_changed (
     self->plugin_tree_model);
 }
 
+static int
+on_map_event (
+  GtkStack * stack,
+  GdkEvent * event,
+  PluginBrowserWidget * self)
+{
+  /*g_message ("PLUGIN MAP EVENT");*/
+  if (gtk_widget_get_mapped (
+        GTK_WIDGET (self)))
+    {
+      self->start_saving_pos = 1;
+      self->first_time_position_set_time =
+        g_get_monotonic_time ();
+
+      /* set divider position */
+      int divider_pos =
+        g_settings_get_int (
+          S_UI,
+          "browser-divider-position");
+      gtk_paned_set_position (
+        GTK_PANED (self), divider_pos);
+      self->first_time_position_set = 1;
+      g_message (
+        "setting plugin browser divider pos to %d",
+        divider_pos);
+    }
+
+  return FALSE;
+}
+
+static void
+on_position_change (
+  GtkStack * stack,
+  GParamSpec * pspec,
+  PluginBrowserWidget * self)
+{
+  int divider_pos;
+  if (!self->start_saving_pos)
+    return;
+
+  gint64 curr_time = g_get_monotonic_time ();
+
+  if (self->first_time_position_set ||
+      curr_time -
+        self->first_time_position_set_time < 400000)
+    {
+      /* get divider position */
+      divider_pos =
+        g_settings_get_int (
+          S_UI,
+          "browser-divider-position");
+      gtk_paned_set_position (
+        GTK_PANED (self),
+        divider_pos);
+
+      self->first_time_position_set = 0;
+      /*g_message ("***************************got plugin position %d",*/
+                 /*divider_pos);*/
+    }
+  else
+    {
+      /* save the divide position */
+      divider_pos =
+        gtk_paned_get_position (
+          GTK_PANED (self));
+      g_settings_set_int (
+        S_UI,
+        "browser-divider-position",
+        divider_pos);
+      /*g_message ("***************************set plugin position to %d",*/
+                 /*divider_pos);*/
+    }
+}
+
 PluginBrowserWidget *
 plugin_browser_widget_new ()
 {
@@ -772,12 +827,6 @@ plugin_browser_widget_new ()
     "row-activated",
     G_CALLBACK (on_row_activated),
     self->plugin_tree_model);
-
-  /* for some reason setting the position here
-   * gets ignored, so set it after 1 sec */
-  g_timeout_add (
-    300,(GSourceFunc) do_after_init,
-    GTK_PANED (self));
 
   /* set the selected values */
   PluginBrowserTab tab =
@@ -829,10 +878,32 @@ plugin_browser_widget_new ()
       break;
     }
 
+  /* set divider position */
+  int divider_pos =
+    g_settings_get_int (
+      S_UI,
+      "browser-divider-position");
+  gtk_paned_set_position (
+    GTK_PANED (self),
+    divider_pos);
+  self->first_time_position_set = 1;
+  g_message (
+    "setting plugin browser divider pos to %d",
+    divider_pos);
+
+  gtk_widget_add_events (
+    GTK_WIDGET (self), GDK_STRUCTURE_MASK);
+
   /* notify when tab changes */
   g_signal_connect (
     G_OBJECT (self->stack), "notify::visible-child",
     G_CALLBACK (on_visible_child_changed), self);
+  g_signal_connect (
+    G_OBJECT (self), "notify::position",
+    G_CALLBACK (on_position_change), self);
+  g_signal_connect (
+    G_OBJECT (self), "map-event",
+    G_CALLBACK (on_map_event), self);
 
   return self;
 }

@@ -17,12 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * File browser.
- */
-
 #include "actions/create_tracks_action.h"
 #include "gui/backend/file_manager.h"
 #include "gui/widgets/arranger.h"
@@ -579,6 +573,80 @@ create_tree_view_add_to_expander (FileBrowserWidget * self,
   return GTK_SCROLLED_WINDOW (scrolled_window);
 }
 
+static int
+on_map_event (
+  GtkStack * stack,
+  GdkEvent * event,
+  FileBrowserWidget * self)
+{
+  g_message ("FILE MAP EVENT");
+  if (gtk_widget_get_mapped (
+        GTK_WIDGET (self)))
+    {
+      self->start_saving_pos = 1;
+      self->first_time_position_set_time =
+        g_get_monotonic_time ();
+
+      /* set divider position */
+      int divider_pos =
+        g_settings_get_int (
+          S_UI,
+          "browser-divider-position");
+      gtk_paned_set_position (
+        GTK_PANED (self), divider_pos);
+      self->first_time_position_set = 1;
+      g_message (
+        "setting file browser divider pos to %d",
+        divider_pos);
+    }
+
+  return FALSE;
+}
+
+static void
+on_position_change (
+  GtkStack * stack,
+  GParamSpec * pspec,
+  FileBrowserWidget * self)
+{
+  int divider_pos;
+  if (!self->start_saving_pos)
+    return;
+
+  gint64 curr_time = g_get_monotonic_time ();
+
+  if (self->first_time_position_set ||
+      curr_time -
+        self->first_time_position_set_time < 400000)
+    {
+      /* get divider position */
+      divider_pos =
+        g_settings_get_int (
+          S_UI,
+          "browser-divider-position");
+      gtk_paned_set_position (
+        GTK_PANED (self),
+        divider_pos);
+
+      self->first_time_position_set = 0;
+      /*g_message ("***************************got file position %d",*/
+                 /*divider_pos);*/
+    }
+  else
+    {
+      /* save the divide position */
+      divider_pos =
+        gtk_paned_get_position (
+          GTK_PANED (self));
+      g_settings_set_int (
+        S_UI,
+        "browser-divider-position",
+        divider_pos);
+      /*g_message ("***************************set file position to %d",*/
+                 /*divider_pos);*/
+    }
+}
+
 FileBrowserWidget *
 file_browser_widget_new ()
 {
@@ -587,14 +655,6 @@ file_browser_widget_new ()
   g_message ("Instantiating file_browser widget...");
 
   gtk_label_set_xalign (self->file_info, 0);
-
-  /* set divider position */
-  int divider_pos =
-    g_settings_get_int (
-      S_UI,
-      "browser-divider-position");
-  gtk_paned_set_position (GTK_PANED (self),
-                          divider_pos);
 
   /* create each tree */
   create_tree_view_add_to_expander (
@@ -615,10 +675,9 @@ file_browser_widget_new ()
 
   /* expand locations by default */
   gtk_expander_set_expanded (
-    GTK_EXPANDER (self->locations_exp),
-    TRUE);
-  gtk_widget_set_vexpand (GTK_WIDGET (scrolled_window),
-                          TRUE);
+    GTK_EXPANDER (self->locations_exp), 1);
+  gtk_widget_set_vexpand (
+    GTK_WIDGET (scrolled_window), 1);
 
   /* populate files */
   self->files_tree_model =
@@ -639,6 +698,16 @@ file_browser_widget_new ()
   gtk_box_pack_start (GTK_BOX (self->browser_bot),
                       file_scroll_window,
                       1, 1, 0);
+
+  gtk_widget_add_events (
+    GTK_WIDGET (self), GDK_STRUCTURE_MASK);
+
+  g_signal_connect (
+    G_OBJECT (self), "notify::position",
+    G_CALLBACK (on_position_change), self);
+  g_signal_connect (
+    G_OBJECT (self), "map-event",
+    G_CALLBACK (on_map_event), self);
 
   return self;
 }

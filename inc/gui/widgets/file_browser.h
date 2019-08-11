@@ -19,6 +19,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * File browser widget.
+ */
+
 #ifndef __GUI_WIDGETS_FILE_BROWSER_H__
 #define __GUI_WIDGETS_FILE_BROWSER_H__
 
@@ -26,17 +32,27 @@
 
 #define FILE_BROWSER_WIDGET_TYPE \
   (file_browser_widget_get_type ())
-G_DECLARE_FINAL_TYPE (FileBrowserWidget,
-                      file_browser_widget,
-                      Z,
-                      FILE_BROWSER_WIDGET,
-                      GtkPaned)
-
-#define MW_FILE_BROWSER MW_RIGHT_DOCK_EDGE->file_browser
+G_DECLARE_FINAL_TYPE (
+  FileBrowserWidget,
+  file_browser_widget,
+  Z, FILE_BROWSER_WIDGET,
+  GtkPaned)
 
 typedef struct FileType FileType;
 typedef struct FileDescriptor FileDescriptor;
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define MW_FILE_BROWSER \
+  MW_RIGHT_DOCK_EDGE->file_browser
+
+/**
+ * The file browser for samples, MIDI files, etc.
+ */
 typedef struct _FileBrowserWidget
 {
   GtkPaned               parent_instance;
@@ -54,9 +70,28 @@ typedef struct _FileBrowserWidget
   GtkTreeView *          files_tree_view;
   GtkScrolledWindow *    file_scroll_window;
   FileDescriptor *       selected_file_descr;
+
+  /**
+   * A little hack to get the paned position to
+   * get set from the gsettings when first created.
+   *
+   * Had problems where the position was quickly
+   * overwritten by something random within 300 ms
+   * of widget creation.
+   */
+  int                  start_saving_pos;
+  int                  first_time_position_set;
+  gint64               first_time_position_set_time;
 } FileBrowserWidget;
 
+/**
+ * Creates a new FileBrowserWidget.
+ */
 FileBrowserWidget *
 file_browser_widget_new ();
+
+/**
+ * @}
+ */
 
 #endif

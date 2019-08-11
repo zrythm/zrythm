@@ -214,7 +214,7 @@ instrument_track_widget_init (
       "z-media-record");
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->record),
-    "Record");
+    _("Record"));
   ui_set_hover_status_bar_signals (
     self->record,
     "Record - Arm track for recording");
@@ -261,7 +261,7 @@ instrument_track_widget_init (
       "z-node-type-cusp");
   ui_add_widget_tooltip (
     self->show_automation,
-    "Show automation lanes");
+    _("Show automation lanes"));
   ui_set_hover_status_bar_signals (
     self->show_automation,
     "Show Automation Lanes - Shows the track's "
@@ -272,7 +272,7 @@ instrument_track_widget_init (
       "z-format-justify-fill");
   ui_add_widget_tooltip (
     self->show_automation,
-    "Show lanes");
+    _("Show lanes"));
   ui_set_hover_status_bar_signals (
     self->show_automation,
     _("Show Lanes - Shows the track's lanes"));
@@ -281,7 +281,7 @@ instrument_track_widget_init (
       "object-unlocked");
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->lock),
-    "Lock track");
+    _("Lock track"));
   ui_set_hover_status_bar_signals (
     self->lock,
     "Lock - Makes the track uneditable");
@@ -290,7 +290,7 @@ instrument_track_widget_init (
       "snowflake-o");
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->freeze),
-    "Freeze track");
+    _("Freeze track"));
   ui_set_hover_status_bar_signals (
     self->freeze,
     "Freeze - Freezes (bounces to audio) the track "

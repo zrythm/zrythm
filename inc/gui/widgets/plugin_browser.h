@@ -121,6 +121,18 @@ typedef struct _PluginBrowserWidget
   GtkTreeModel *       protocol_tree_model;
   GtkTreeModel *       category_tree_model;
   GtkTreeModelFilter * plugin_tree_model;
+
+  /**
+   * A little hack to get the paned position to
+   * get set from the gsettings when first created.
+   *
+   * Had problems where the position was quickly
+   * overwritten by something random within 300 ms
+   * of widget creation.
+   */
+  int                  start_saving_pos;
+  int                  first_time_position_set;
+  gint64               first_time_position_set_time;
 } PluginBrowserWidget;
 
 /**
