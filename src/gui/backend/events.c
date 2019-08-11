@@ -755,6 +755,8 @@ events_process (void * data)
         case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
+          gtk_widget_queue_draw (
+            GTK_WIDGET (EDITOR_RULER));
           break;
         case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (

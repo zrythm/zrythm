@@ -32,7 +32,8 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerBgWidget,
 
 #define ARRANGER_BG_WIDGET_GET_PRIVATE(self) \
   ArrangerBgWidgetPrivate * ab_prv = \
-    arranger_bg_widget_get_private (Z_ARRANGER_BG_WIDGET (self));
+    arranger_bg_widget_get_private ( \
+      Z_ARRANGER_BG_WIDGET (self));
 
 typedef struct _RulerWidget RulerWidget;
 

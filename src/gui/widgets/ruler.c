@@ -168,12 +168,26 @@ ruler_draw_cb (
 
   /* if timeline, draw loop background */
   /* FIXME use rect */
-  double start_px =
-    ui_pos_to_px_timeline (
-      &TRANSPORT->loop_start_pos, 1);
-  double end_px =
-    ui_pos_to_px_timeline (
-      &TRANSPORT->loop_end_pos, 1);
+  GET_RULER_ALIASES (self);
+  double start_px, end_px;
+  if (timeline_ruler)
+    {
+      start_px =
+        ui_pos_to_px_timeline (
+          &TRANSPORT->loop_start_pos, 1);
+      end_px =
+        ui_pos_to_px_timeline (
+          &TRANSPORT->loop_end_pos, 1);
+    }
+  else if (editor_ruler)
+    {
+      start_px =
+        ui_pos_to_px_editor (
+          &TRANSPORT->loop_start_pos, 1);
+      end_px =
+        ui_pos_to_px_editor (
+          &TRANSPORT->loop_end_pos, 1);
+    }
 
   if (TRANSPORT->loop)
     cairo_set_source_rgba (

@@ -68,12 +68,28 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   /* draw loop background */
   if (TRANSPORT->loop)
     {
-      double start_px =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->loop_start_pos, 1);
-      double end_px =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->loop_end_pos, 1);
+      double start_px, end_px;
+      if (ab_prv->arranger ==
+            (ArrangerWidget *) MW_TIMELINE ||
+          ab_prv->arranger ==
+            (ArrangerWidget *) MW_PINNED_TIMELINE)
+        {
+          start_px =
+            ui_pos_to_px_timeline (
+              &TRANSPORT->loop_start_pos, 1);
+          end_px =
+            ui_pos_to_px_timeline (
+              &TRANSPORT->loop_end_pos, 1);
+        }
+      else
+        {
+          start_px =
+            ui_pos_to_px_editor (
+              &TRANSPORT->loop_start_pos, 1);
+          end_px =
+            ui_pos_to_px_editor (
+              &TRANSPORT->loop_end_pos, 1);
+        }
       cairo_set_source_rgba (cr, 0, 0.9, 0.7, 0.08);
       cairo_set_line_width (cr, 2);
       if (start_px > rect.x)
