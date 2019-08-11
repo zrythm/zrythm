@@ -1086,6 +1086,10 @@ change_state_metronome (
 
   g_simple_action_set_state (action, value);
 
+  g_settings_set_int (
+    S_UI,
+    "metronome-enabled",
+    enabled);
   transport_set_metronome_enabled (
     TRANSPORT, enabled);
 }
@@ -1099,7 +1103,7 @@ activate_quick_quantize (
   g_return_if_fail (_variant);
 
   gsize size;
-  char * variant =
+  const char * variant =
     g_variant_get_string (_variant, &size);
   if (string_is_equal (variant, "timeline", 1))
     {
@@ -1144,7 +1148,7 @@ activate_quantize_options (
   g_return_if_fail (_variant);
 
   gsize size;
-  char * variant =
+  const char * variant =
     g_variant_get_string (_variant, &size);
   if (string_is_equal (variant, "timeline", 1))
     {

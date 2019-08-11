@@ -135,15 +135,15 @@
       <description>This is the directory used to
         save projects and other files in.</description>
     </key>
-  </schema>
+  </schema> <!-- end GENERAL schema -->
 
   <!-- PREFERENCES schema -->
   <schema id="org.zrythm.Zrythm.preferences"
     path="/org/zrythm/Zrythm/preferences/">
 
     <!-- KEY: audio-backend -->
-  <key name="audio-backend"
-    enum="org.zrythm.Zrythm.preferences.audio-backend-enum">
+    <key name="audio-backend"
+      enum="org.zrythm.Zrythm.preferences.audio-backend-enum">
       <default>"jack"</default>
       <summary>Audio Backend</summary>
       <description>
@@ -278,11 +278,12 @@
         Bit depth to use when exporting.
       </description>
     </key>
-  </schema>
+  </schema> <!-- end PREFERENCES schema -->
 
   <!-- UI schema -->
   <schema id="org.zrythm.Zrythm.ui"
     path="/org/zrythm/Zrythm/ui/">
+
     <!-- KEY: note notation -->
     <key name="note-notation"
       enum="org.zrythm.Zrythm.ui.notenotation">
@@ -290,6 +291,15 @@
       <summary>Note Notation</summary>
       <description>
         The note notation used in the piano roll. (note numbers or notes like C, C#)
+      </description>
+    </key>
+
+    <!-- KEY: metronome-enabled -->
+    <key name="metronome-enabled" type="i">
+      <default>0</default>
+      <summary>Metronome enabled</summary>
+      <description>
+        Metronome is enabled or not.
       </description>
     </key>
 

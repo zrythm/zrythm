@@ -96,7 +96,10 @@ transport_init (Transport * self,
 
       self->loop = 1;
 
-      self->metronome_enabled = 0;
+      self->metronome_enabled =
+        g_settings_get_int (
+          S_UI,
+          "metronome-enabled");
 
       transport_set_bpm (DEFAULT_BPM);
     }

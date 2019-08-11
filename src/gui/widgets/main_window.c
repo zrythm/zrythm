@@ -271,7 +271,10 @@ main_window_widget_init (MainWindowWidget * self)
 
     /* transport */
     { "toggle-metronome", NULL, NULL,
-      "false", change_state_metronome },
+      g_settings_get_int (
+        S_UI, "metronome-enabled") ?
+        "true" : "false",
+      change_state_metronome },
     { "toggle-loop", NULL, NULL,
       "true", change_state_loop },
     { "goto-prev-marker",
