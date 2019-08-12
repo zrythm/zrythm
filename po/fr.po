@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-10 21:37+0100\n"
-"PO-Revision-Date: 2019-08-11 23:57+0000\n"
+"PO-Revision-Date: 2019-08-12 00:18+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
@@ -1951,7 +1951,7 @@ msgstr "Interface"
 
 #: resources/ui/preferences.ui:387
 msgid "GUI"
-msgstr "Interface Graphique utilisateur"
+msgstr "IGU"
 
 #~ msgid "Use grid"
 #~ msgstr "Utiliser la grille"
