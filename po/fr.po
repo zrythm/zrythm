@@ -1979,7 +1979,7 @@ msgstr ""
 
 #: data/zrythm.desktop.in:23
 msgid "An highly automated, intuitive, Digital Audio Workstation (DAW)"
-msgstr ""
+msgstr "Une station de travail audio numérique (STAN) hautement automatisée et intuitive"
 
 #. Translators: Please do not translate this. This is an icon file
 #: data/zrythm.desktop.in:26

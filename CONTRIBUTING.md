@@ -99,11 +99,12 @@ or for html output
     gcovr -r . --html -o coverage.html
 
 # OBS Packaging
-  See the [README](git-packaging-hooks/README.md) in git-packaging-hooks and the `packaging` branch.
+Binary packages are created on [OBS (Open Build System)](https://build.opensuse.org/package/show/home:alextee/zrythm#) using git hooks.
+See the [README](git-packaging-hooks/README.md) in git-packaging-hooks and the `packaging` branch.
 
 # Coding
 These are some guidelines for contributing code.
-They are not hard rules.
+They are not strict rules.
 
 ## Commenting
 - Document how to use the function in the header file
