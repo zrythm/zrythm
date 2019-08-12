@@ -81,7 +81,7 @@ chord_region_draw_cb (
   long clip_start_ticks =
     position_to_ticks (&r->clip_start_pos);
   ChordObject * co;
-  ChordObject * next_co;
+  ChordObject * next_co = NULL;
   ChordDescriptor * descr;
   for (i = 0; i < main_region->num_chord_objects;
        i++)

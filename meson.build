@@ -154,7 +154,6 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
 	'-Wno-sequence-point',
 	'-Wignored-qualifiers',
   '-Wno-cast-function-type',
-  '-Werror=maybe-uninitialized',
 	'-Werror=implicit-function-declaration',
 	'-Werror=uninitialized',
   '-Werror=maybe-uninitialized',
