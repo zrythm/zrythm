@@ -18,7 +18,23 @@
 install_data (
   'org.zrythm.Zrythm.gschema.xml',
   install_dir: schemasdir)
-install_data (
-  'zrythm.desktop',
-  install_dir: join_paths (datadir, 'applications'))
 
+# Desktop launcher and description file.
+desktop_file = i18n.merge_file (
+  input: 'zrythm.desktop.in',
+  output: 'zrythm.desktop',
+  type: 'desktop',
+  po_dir: '../po',
+  install: true,
+  install_dir: join_paths (
+    datadir,
+    'applications'),
+)
+
+desktop_utils = find_program (
+  'desktop-file-validate', required: false)
+if desktop_utils.found()
+  test('Validate desktop file', desktop_utils,
+    args: [desktop_file]
+  )
+endif

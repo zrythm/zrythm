@@ -51,11 +51,12 @@ typedef struct Lv2Control Lv2Control;
  */
 
 void
-lv2_gtk_ui_port_event(Lv2Plugin*       plugin,
-                   uint32_t    port_index,
-                   uint32_t    buffer_size,
-                   uint32_t    protocol,
-                   const void* buffer);
+lv2_gtk_ui_port_event(
+  Lv2Plugin*  plugin,
+  uint32_t    port_index,
+  uint32_t    buffer_size,
+  uint32_t    protocol,
+  const void* buffer);
 
 void
 lv2_gtk_set_float_control (

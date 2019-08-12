@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-08-10 21:37+0100\n"
+"POT-Creation-Date: 2019-08-12 17:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,47 +50,47 @@ msgstr ""
 msgid "Project saved."
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:149
+#: src/plugins/lv2_gtk.c:150
 msgid "Save State"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
+#: src/plugins/lv2_gtk.c:153 src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:44
 #: src/utils/dialogs.c:74 src/actions/actions.c:567
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:569
+#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:569
 msgid "_Save"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:467
+#: src/plugins/lv2_gtk.c:468
 msgid "URI (Optional):"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:471
+#: src/plugins/lv2_gtk.c:472
 msgid "_Prefix plugin name"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:562
+#: src/plugins/lv2_gtk.c:563
 msgid "Delete Preset?"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
+#: src/plugins/lv2_gtk.c:569 src/utils/dialogs.c:72
 #: resources/ui/port_selector_popover.ui:227 resources/ui/marker_dialog.ui:61
 msgid "_OK"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:781
+#: src/plugins/lv2_gtk.c:782
 msgid "Unknown widget type for value"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:807
+#: src/plugins/lv2_gtk.c:808
 msgid "Unknown widget type for value\n"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:1436
+#: src/plugins/lv2_gtk.c:1437
 msgid "Close"
 msgstr ""
 
@@ -238,8 +238,29 @@ msgstr ""
 msgid "Time Signature - Click and drag up/down to change"
 msgstr ""
 
+#: src/gui/widgets/instrument_track.c:217 src/gui/widgets/track.c:141
+#: resources/ui/transport_controls.ui:36
+msgid "Record"
+msgstr ""
+
+#: src/gui/widgets/instrument_track.c:264
+msgid "Show automation lanes"
+msgstr ""
+
+#: src/gui/widgets/instrument_track.c:275
+msgid "Show lanes"
+msgstr ""
+
 #: src/gui/widgets/instrument_track.c:278
 msgid "Show Lanes - Shows the track's lanes"
+msgstr ""
+
+#: src/gui/widgets/instrument_track.c:284
+msgid "Lock track"
+msgstr ""
+
+#: src/gui/widgets/instrument_track.c:293
+msgid "Freeze track"
 msgstr ""
 
 #: src/gui/widgets/control_room.c:52
@@ -259,15 +280,15 @@ msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
 
-#: src/gui/widgets/plugin_browser.c:924 resources/ui/file_browser.ui:63
+#: src/gui/widgets/plugin_browser.c:995 resources/ui/file_browser.ui:63
 msgid "Collection"
 msgstr ""
 
-#: src/gui/widgets/plugin_browser.c:934
+#: src/gui/widgets/plugin_browser.c:1005
 msgid "Category"
 msgstr ""
 
-#: src/gui/widgets/plugin_browser.c:944
+#: src/gui/widgets/plugin_browser.c:1015
 msgid "Protocol"
 msgstr ""
 
@@ -445,10 +466,6 @@ msgstr ""
 #: src/gui/widgets/route_target_selector_popover.c:194
 #, c-format
 msgid "Routing to %s"
-msgstr ""
-
-#: src/gui/widgets/track.c:141 resources/ui/transport_controls.ui:36
-msgid "Record"
 msgstr ""
 
 #: src/gui/widgets/track.c:142
@@ -1706,7 +1723,7 @@ msgstr ""
 msgid "Genre"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:120
+#: resources/ui/export_dialog.ui:120 data/zrythm.desktop.in:20
 msgid "Zrythm"
 msgstr ""
 
@@ -1847,4 +1864,17 @@ msgstr ""
 
 #: resources/ui/preferences.ui:387
 msgid "GUI"
+msgstr ""
+
+#: data/zrythm.desktop.in:21
+msgid "Digital Audio Workstation"
+msgstr ""
+
+#: data/zrythm.desktop.in:23
+msgid "An highly automated, intuitive, Digital Audio Workstation (DAW)"
+msgstr ""
+
+#. Translators: Please do not translate this. This is an icon file
+#: data/zrythm.desktop.in:26
+msgid "zrythm"
 msgstr ""

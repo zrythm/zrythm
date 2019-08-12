@@ -685,3 +685,4 @@ resources/ui/project_toolbar.ui
 resources/ui/clip_editor_inner.ui
 resources/ui/preferences.ui
 resources/ui/tracklist_header.ui
+data/zrythm.desktop.in

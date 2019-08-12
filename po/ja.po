@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-08-10 21:37+0100\n"
+"POT-Creation-Date: 2019-08-12 17:19+0100\n"
 "PO-Revision-Date: 2019-08-11 23:57+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -53,47 +53,47 @@ msgstr "プロジェクト名未設定"
 msgid "Project saved."
 msgstr "プロジェクトが保存されました。"
 
-#: src/plugins/lv2_gtk.c:149
+#: src/plugins/lv2_gtk.c:150
 msgid "Save State"
 msgstr "状態を保存"
 
-#: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
+#: src/plugins/lv2_gtk.c:153 src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:44
 #: src/utils/dialogs.c:74 src/actions/actions.c:567
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "取り消し(_C)"
 
-#: src/plugins/lv2_gtk.c:153 src/actions/actions.c:569
+#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:569
 msgid "_Save"
 msgstr "保存(_S)"
 
-#: src/plugins/lv2_gtk.c:467
+#: src/plugins/lv2_gtk.c:468
 msgid "URI (Optional):"
 msgstr "URI（任意）："
 
-#: src/plugins/lv2_gtk.c:471
+#: src/plugins/lv2_gtk.c:472
 msgid "_Prefix plugin name"
 msgstr "_プレフィックスプラグイン名"
 
-#: src/plugins/lv2_gtk.c:562
+#: src/plugins/lv2_gtk.c:563
 msgid "Delete Preset?"
 msgstr "プリセットを削除しますか？"
 
-#: src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:72
+#: src/plugins/lv2_gtk.c:569 src/utils/dialogs.c:72
 #: resources/ui/port_selector_popover.ui:227 resources/ui/marker_dialog.ui:61
 msgid "_OK"
 msgstr "_OK"
 
-#: src/plugins/lv2_gtk.c:781
+#: src/plugins/lv2_gtk.c:782
 msgid "Unknown widget type for value"
 msgstr "値が不明なウィジェットタイプ"
 
-#: src/plugins/lv2_gtk.c:807
+#: src/plugins/lv2_gtk.c:808
 msgid "Unknown widget type for value\n"
 msgstr "値が不明なウィジェットタイプ\n"
 
-#: src/plugins/lv2_gtk.c:1436
+#: src/plugins/lv2_gtk.c:1437
 msgid "Close"
 msgstr "閉じる"
 
@@ -247,9 +247,33 @@ msgstr "BPM  - クリックして上下にドラッグして設定"
 msgid "Time Signature - Click and drag up/down to change"
 msgstr "拍子記号 - クリックして上下にドラッグして変更します"
 
+#: src/gui/widgets/instrument_track.c:217 src/gui/widgets/track.c:141
+#: resources/ui/transport_controls.ui:36
+msgid "Record"
+msgstr "録音"
+
+#: src/gui/widgets/instrument_track.c:264
+#, fuzzy
+msgid "Show automation lanes"
+msgstr "オートメーションレーンを表示"
+
+#: src/gui/widgets/instrument_track.c:275
+msgid "Show lanes"
+msgstr ""
+
 #: src/gui/widgets/instrument_track.c:278
 msgid "Show Lanes - Shows the track's lanes"
 msgstr "レーンを表示 - トラックのレーンを表示します"
+
+#: src/gui/widgets/instrument_track.c:284
+#, fuzzy
+msgid "Lock track"
+msgstr "トラックをソロ"
+
+#: src/gui/widgets/instrument_track.c:293
+#, fuzzy
+msgid "Freeze track"
+msgstr "フリーズ"
 
 #: src/gui/widgets/control_room.c:52
 msgid "Output"
@@ -271,15 +295,15 @@ msgstr ""
 "チャンネルスロット - ダブルクリックしてプラグインを開きます - クリックしてド"
 "ラッグしてプラグインを移動します"
 
-#: src/gui/widgets/plugin_browser.c:924 resources/ui/file_browser.ui:63
+#: src/gui/widgets/plugin_browser.c:995 resources/ui/file_browser.ui:63
 msgid "Collection"
 msgstr "コレクション"
 
-#: src/gui/widgets/plugin_browser.c:934
+#: src/gui/widgets/plugin_browser.c:1005
 msgid "Category"
 msgstr "項目"
 
-#: src/gui/widgets/plugin_browser.c:944
+#: src/gui/widgets/plugin_browser.c:1015
 msgid "Protocol"
 msgstr "プロトコル"
 
@@ -466,10 +490,6 @@ msgstr "出力が選択されていません"
 #, c-format
 msgid "Routing to %s"
 msgstr "%sへルーティング中"
-
-#: src/gui/widgets/track.c:141 resources/ui/transport_controls.ui:36
-msgid "Record"
-msgstr "録音"
 
 #: src/gui/widgets/track.c:142
 msgid "Solo"
@@ -1739,7 +1759,7 @@ msgstr "アーティスト"
 msgid "Genre"
 msgstr "ジャンル"
 
-#: resources/ui/export_dialog.ui:120
+#: resources/ui/export_dialog.ui:120 data/zrythm.desktop.in:20
 msgid "Zrythm"
 msgstr "Zrythm"
 
@@ -1883,6 +1903,19 @@ msgstr "インターフェイス"
 #: resources/ui/preferences.ui:387
 msgid "GUI"
 msgstr "GUI"
+
+#: data/zrythm.desktop.in:21
+msgid "Digital Audio Workstation"
+msgstr "デジタル・オーディオ・ワークステーション"
+
+#: data/zrythm.desktop.in:23
+msgid "An highly automated, intuitive, Digital Audio Workstation (DAW)"
+msgstr "高度に自動化された直感的なデジタルオーディオワークステーション（DAW）"
+
+#. Translators: Please do not translate this. This is an icon file
+#: data/zrythm.desktop.in:26
+msgid "zrythm"
+msgstr "zrythm"
 
 #~ msgid "Use grid"
 #~ msgstr "グリッドを使用"

@@ -845,8 +845,14 @@ lv2_ui_write(SuilController controller,
   zix_ring_write(plugin->ui_events, buf, sizeof(buf));
 }
 
-void
-lv2_apply_ui_events(Lv2Plugin* plugin, uint32_t nframes)
+/**
+ * Read and apply control change events from UI,
+ * for plugins that have their own UIs.
+ */
+static void
+receive_ui_events (
+  Lv2Plugin* plugin,
+  uint32_t nframes)
 {
   if (!plugin->has_ui)
     {
@@ -879,8 +885,8 @@ lv2_apply_ui_events(Lv2Plugin* plugin, uint32_t nframes)
         {
           assert(ev.size == sizeof(float));
           port->control = *(float*)body;
-          /*g_message ("apply_ui_events %f",*/
-                     /*port->control);*/
+          g_message ("receiving UI event %f",
+                     port->control);
         }
       else if (ev.protocol ==
                PM_URIDS.atom_eventTransfer)
@@ -988,13 +994,13 @@ lv2_send_to_ui (
  * Runs the plugin for this cycle.
  */
 bool
-lv2_plugin_run(
+lv2_plugin_run (
   Lv2Plugin* plugin,
   const int  nframes)
 {
-    /* Read and apply control change events from UI */
+  /* Read and apply control change events from UI */
   if (plugin->window)
-    lv2_apply_ui_events(plugin, nframes);
+    receive_ui_events (plugin, nframes);
 
   /* Run plugin for this cycle */
   lilv_instance_run(plugin->instance, nframes);
@@ -1520,8 +1526,8 @@ lv2_free (Lv2Plugin * plugin)
  */
 int
 lv2_instantiate (
-  Lv2Plugin * self,
-  char *      preset_uri)
+  Lv2Plugin *  self,
+  char * preset_uri)
 {
   Plugin * plugin = self->plugin;
   int i;
@@ -1847,30 +1853,37 @@ lv2_instantiate (
   if (PM_LILV_NODES.opts.update_rate == 0.0)
     {
       /* Calculate a reasonable UI update frequency. */
-      self->ui_update_hz = (float)AUDIO_ENGINE->sample_rate /
-        AUDIO_ENGINE->midi_buf_size * 2.0f;
-      self->ui_update_hz = MAX(25.0f, self->ui_update_hz);
-
       /*self->ui_update_hz =*/
-        /*gdk_monitor_get_refresh_rate (*/
-          /*gdk_display_get_monitor_at_window (*/
-            /*gdk_display_get_default (),*/
-            /*gtk_widget_get_window (*/
-              /*GTK_WIDGET (MAIN_WINDOW))));*/
+        /*(float)AUDIO_ENGINE->sample_rate /*/
+        /*AUDIO_ENGINE->midi_buf_size * 2.0f;*/
+      /*self->ui_update_hz =*/
+        /*MAX(25.0f, self->ui_update_hz);*/
+
+      self->ui_update_hz =
+        gdk_monitor_get_refresh_rate (
+          gdk_display_get_monitor_at_window (
+            gdk_display_get_default (),
+            gtk_widget_get_window (
+              GTK_WIDGET (MAIN_WINDOW))));
     }
   else
     {
       /* Use user-specified UI update rate. */
       self->ui_update_hz =
         PM_LILV_NODES.opts.update_rate;
-      self->ui_update_hz = MAX(1.0f, self->ui_update_hz);
+      self->ui_update_hz =
+        MAX (1.0f, self->ui_update_hz);
     }
 
   /* The UI can only go so fast, clamp to reasonable limits */
-  self->ui_update_hz     = MIN(60, self->ui_update_hz);
-  PM_LILV_NODES.opts.buffer_size = MAX(4096, PM_LILV_NODES.opts.buffer_size);
-  g_message ("Comm buffers: %d bytes", PM_LILV_NODES.opts.buffer_size);
-  g_message ("Update rate:  %.01f Hz", self->ui_update_hz);
+  self->ui_update_hz =
+    MIN (60, self->ui_update_hz);
+  PM_LILV_NODES.opts.buffer_size =
+    MAX (4096, PM_LILV_NODES.opts.buffer_size);
+  g_message ("Comm buffers: %d bytes",
+             PM_LILV_NODES.opts.buffer_size);
+  g_message ("Update rate:  %.01f Hz",
+             self->ui_update_hz);
 
   static float f_samplerate = 0.f;
 

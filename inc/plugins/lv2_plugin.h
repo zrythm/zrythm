@@ -32,11 +32,14 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+/**
+ * \file
+ *
+ * LV2 Plugin API.
+ */
+
 #ifndef __PLUGINS_LV2_PLUGIN_H__
 #define __PLUGINS_LV2_PLUGIN_H__
-
-/** \file
- * LV2 Plugin API. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -86,6 +89,12 @@ typedef struct _GtkCheckMenuItem GtkCheckMenuItem;
 typedef struct Port Port;
 typedef struct Plugin Plugin;
 typedef struct PluginDescriptor PluginDescriptor;
+
+/**
+ * @addtogroup lv2
+ *
+ * @{
+ */
 
 /* FIXME these should go to manager */
 
@@ -358,13 +367,13 @@ lv2_ui_instantiate(Lv2Plugin*       plugin,
                     void*       parent);
 
 bool
-lv2_ui_is_resizable(Lv2Plugin* plugin);
-
-void
-lv2_apply_ui_events(Lv2Plugin* plugin, uint32_t nframes);
+lv2_ui_is_resizable (
+  Lv2Plugin* plugin);
 
 uint32_t
-lv2_ui_port_index(SuilController controller, const char* symbol);
+lv2_ui_port_index (
+  SuilController controller,
+  const char* symbol);
 
 bool
 lv2_send_to_ui(Lv2Plugin*       plugin,
@@ -412,37 +421,53 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp);
  * Creates an LV2 plugin from given uri.
  *
  * Used when populating the plugin browser.
+ *
+ * @param plugin A newly created Plugin with its
+ *   descriptor filled in.
+ * @param uri The URI.
  */
 Lv2Plugin *
-lv2_create_from_uri (Plugin    * plugin,  ///< a newly created plugin, with its descriptor filled in
-                     const char * uri ///< the uri
-                     );
+lv2_create_from_uri (
+  Plugin    *  plugin,
+  const char * uri);
 
 /**
  * Creates an LV2 plugin from a state file.
+ *
+ * @param plugin A newly created plugin.
+ * @param _path Path for state to load.
  */
 Lv2Plugin *
-lv2_create_from_state (Plugin    * plugin,  ///< a newly created plugin
-                       const char * _path    ///< path for state to load
-                       );
+lv2_create_from_state (
+  Plugin    *  plugin,
+  const char * _path);
 
 /**
  * Loads an LV2 plugin from its state file.
  *
  * Used when loading project files.
+ *
+ * @param plugin A newly created plugin.
  */
 Lv2Plugin *
-lv2_load_from_state (Plugin    * plugin);  ///< a newly created plugin
+lv2_load_from_state (
+  Plugin * plugin);
 
 /**
- * Instantiate the LV2 plugin.
+ * Instantiate the plugin.
  *
- * This is where the work is done.
+ * All of the actual initialization is done here.
+ * If this is a new plugin, preset_uri should be
+ * empty. If the project is being loaded, preset
+ * uri should be the state file path.
+ *
+ * @param self Plugin to instantiate.
+ * @param preset_uri URI of preset to load.
  */
 int
-lv2_instantiate (Lv2Plugin      * plugin,   ///< plugin to instantiate
-                 char            * preset_uri   ///< uri of preset to load
-                );
+lv2_instantiate (
+  Lv2Plugin *  plugin,
+  char * preset_uri);
 
 /**
  * Creates a new LV2 plugin using the given Plugin instance.
@@ -503,5 +528,9 @@ lv2_plugin_save_state_to_str (
  */
 void
 lv2_free (Lv2Plugin * plugin);
+
+/**
+ * @}
+ */
 
 #endif

@@ -17,10 +17,13 @@
 
 [Desktop Entry]
 Name=Zrythm
+GenericName=Digital Audio Workstation
 Version=1.0
 Comment=An highly automated, intuitive, Digital Audio Workstation (DAW)
 Exec=zrythm
+# Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 Icon=zrythm
 Type=Application
 StartupNotify=true
 Categories=AudioVideo;Audio;Sequencer;
+MimeType=application/x-zrythm-project
