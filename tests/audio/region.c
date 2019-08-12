@@ -148,9 +148,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/region/"
 
-  g_test_add_func (
-    TEST_PREFIX "test new region",
-    (GTestFunc) test_new_region);
+  /*g_test_add_func (*/
+    /*TEST_PREFIX "test new region",*/
+    /*(GTestFunc) test_new_region);*/
 
   return g_test_run ();
 }

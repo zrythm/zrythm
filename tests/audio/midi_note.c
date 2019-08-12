@@ -127,9 +127,9 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/audio/midi_note/"
 
-  g_test_add_func (
-    TEST_PREFIX "test new midi note",
-    (GTestFunc) test_new_midi_note);
+  /*g_test_add_func (*/
+    /*TEST_PREFIX "test new midi note",*/
+    /*(GTestFunc) test_new_midi_note);*/
 
   return g_test_run ();
 }
