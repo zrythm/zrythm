@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-10 21:37+0100\n"
-"PO-Revision-Date: 2019-08-12 11:56+0000\n"
+"PO-Revision-Date: 2019-08-14 14:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
@@ -739,7 +739,7 @@ msgstr "La version du protocole du client ne correspond pas"
 
 #: src/audio/engine_jack.c:545
 msgid "Backend error"
-msgstr "Erreur du Système Audio"
+msgstr "Erreur du système audio"
 
 #: src/audio/engine_jack.c:548
 msgid "Client zombie"
@@ -826,7 +826,7 @@ msgstr "Modifier les vélocités"
 
 #: src/actions/move_automation_selections_action.c:114
 msgid "Move Automation"
-msgstr "Déplacer l'automation"
+msgstr "Déplacer l'automatisation"
 
 #: src/actions/create_timeline_selections_action.c:210
 #: src/actions/create_midi_arranger_selections_action.c:119
@@ -1031,7 +1031,7 @@ msgstr "Système MIDI"
 
 #: resources/ui/first_run_assistant.ui:191 resources/ui/preferences.ui:122
 msgid "Audio Backend"
-msgstr "Système Audio"
+msgstr "Système audio"
 
 #: resources/ui/first_run_assistant.ui:228
 msgid "Test"
@@ -1228,11 +1228,11 @@ msgid ""
 "Frame rate: 44100\n"
 "(note: this text is hard coded at the moment)"
 msgstr ""
-"Nom du projet: name\n"
-"Emplacement: /home/user/Zrythm/name\n"
-"Système Audio: JACK\n"
-"Fréquence d'échantillonnage: 44100\n"
-"(note: ce texte est codé en dur pour le moment)"
+"Nom du projet : name\n"
+"Emplacement : /home/user/Zrythm/name\n"
+"Système audio : JACK\n"
+"Fréquence d'échantillonnage : 44100\n"
+"(note : ce texte est codé en dur pour le moment)"
 
 #: resources/ui/chord_selector_window.ui:51
 msgid "Root Note"
@@ -1453,7 +1453,7 @@ msgstr "Désélectionner tout"
 
 #: resources/ui/shortcuts.ui:200
 msgid "Editor Shortcuts"
-msgstr "Raccourcis de l'éditeur"
+msgstr "Éditeur de raccourcis"
 
 #: resources/ui/shortcuts.ui:204
 msgid "Tool"
@@ -1656,7 +1656,7 @@ msgstr "RW"
 
 #: resources/ui/automation_track.ui:99
 msgid "Write automation"
-msgstr "Écrire une automation"
+msgstr "Écrire une automatisation"
 
 #: resources/ui/automation_track.ui:112
 msgid "R"
@@ -1664,7 +1664,7 @@ msgstr "R"
 
 #: resources/ui/automation_track.ui:116
 msgid "Read automation"
-msgstr "Lire l'automation"
+msgstr "Lire l'automatisation"
 
 #: resources/ui/automation_track.ui:137
 msgid "0.0"
@@ -1889,7 +1889,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:298
 msgid "Main Window"
-msgstr "Fenêtre principal"
+msgstr "Fenêtre principale"
 
 #: resources/ui/preferences.ui:308
 msgid "Show native decoration"
