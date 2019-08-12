@@ -33,13 +33,6 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-/**
- * \file
- *
- * Implementation of LV2 Plugin.
- */
-
-
 #define _POSIX_C_SOURCE 200809L /* for mkdtemp */
 #define _DARWIN_C_SOURCE        /* for mkdtemp on OSX */
 

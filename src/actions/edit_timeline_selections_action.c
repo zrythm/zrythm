@@ -144,7 +144,7 @@ edit_timeline_selections_action_undo (
 	EditTimelineSelectionsAction * self)
 {
   int i;
-  Region * region, * r1, * r2;
+  Region * region, * r1 = NULL, * r2 = NULL;
   for (i = 0; i < self->ts->num_regions; i++)
     {
       /* get the actual region */

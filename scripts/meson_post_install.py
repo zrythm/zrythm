@@ -33,6 +33,9 @@ if not os.environ.get('DESTDIR'):
     subprocess.call(['glib-compile-schemas', schemadir])
     print('Updating font cache...')
     subprocess.call(['fc-cache', fontsdir])
+    print('Updating icon cache...')
+    subprocess.call(['touch', datadir + '/icons/hicolor'])
+    subprocess.call(['gtk-update-icon-cache'])
     print('Updating desktop database...')
     if not os.path.exists(desktop_database_dir):
         os.makedirs(desktop_database_dir)
