@@ -169,7 +169,7 @@ ruler_draw_cb (
   /* if timeline, draw loop background */
   /* FIXME use rect */
   GET_RULER_ALIASES (self);
-  double start_px, end_px;
+  double start_px = 0, end_px = 0;
   if (timeline_ruler)
     {
       start_px =

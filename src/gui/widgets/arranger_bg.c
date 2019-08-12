@@ -68,7 +68,7 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   /* draw loop background */
   if (TRANSPORT->loop)
     {
-      double start_px, end_px;
+      double start_px = 0, end_px = 0;
       if (ab_prv->arranger ==
             (ArrangerWidget *) MW_TIMELINE ||
           ab_prv->arranger ==
