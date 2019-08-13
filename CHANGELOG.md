@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.6.002] - 2019-08-13
+## [0.6.003] - 2019-08-13
 - Plugin latency compensation during playback
 - Chords and automation are now inside regions (can be looped)
 - Refactor editor panel to share 4 different editors

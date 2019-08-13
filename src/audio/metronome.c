@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+
 #include "config.h"
 #include "audio/metronome.h"
 #include "utils/audio.h"
