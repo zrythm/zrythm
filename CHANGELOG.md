@@ -1,6 +1,30 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.001] - 2019-08-13
+- Plugin latency compensation during playback
+- Chords and automation are now inside regions (can be looped)
+- Refactor editor panel to share 4 different editors
+- New chord editor
+- New automation editor
+- Change meter font and install it properly (should fix missing font in previous versions)
+- Added some post-install commands to make sure Zrythm is installed properly
+- Add region split functionality (WIP)
+- Add quick quantize/full quantize functionality (regions only for now)
+- Add metronome
+- Update Chinese, German, French, Japanese translations
+- Fader is now a separate processor in the signal chain
+- Fix browser resize handle position not getting stored properly
+- Fix incorrect loop range being shown in the editors
+- Desktop file is now localized
+- Add PACKAGING.md for packagers
+- Fix plugin UI controls moving back and forth while changing them
+- Fix crash when copying a region
+- Fix pressing stop twice not moving the playhead to the cuepoint
+- Fix many other bugs
+- Add missing copyright/license notices in source files
+- Refactoring, remove some unnecessary files
+
 ## [0.5.162] - 2019-07-14
 - IMPORTANT: License change from GPLv3+ to AGPLv3+
 - Add cut-clip tool (WIP)
