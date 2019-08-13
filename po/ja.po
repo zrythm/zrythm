@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-10 21:37+0100\n"
-"PO-Revision-Date: 2019-08-11 23:57+0000\n"
+"PO-Revision-Date: 2019-08-14 14:24+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -1338,7 +1338,7 @@ msgstr "全音階"
 
 #: resources/ui/chord_selector_window.ui:897
 msgid "TODO"
-msgstr ""
+msgstr "TODO"
 
 #: resources/ui/chord_selector_window.ui:907
 msgid "Circle of Fifths"
@@ -1346,7 +1346,7 @@ msgstr "五度圏"
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
-msgstr "グローバル・ショートカット"
+msgstr "一般のショートカットキー"
 
 #: resources/ui/shortcuts.ui:36 resources/ui/preferences.ui:235
 msgid "General"
