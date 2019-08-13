@@ -391,8 +391,8 @@ engine_process_prepare (
   if (TRANSPORT->play_state ==
       PLAYSTATE_PAUSE_REQUESTED)
     {
-      /*g_message ("pause requested handled");*/
-      /*TRANSPORT->play_state = PLAYSTATE_PAUSED;*/
+      g_message ("pause requested handled");
+      TRANSPORT->play_state = PLAYSTATE_PAUSED;
       /*zix_sem_post (&TRANSPORT->paused);*/
     }
   else if (TRANSPORT->play_state ==

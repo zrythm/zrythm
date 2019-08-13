@@ -232,6 +232,7 @@ transport_set_playhead_pos (
 {
   position_set_to_pos (
     &self->playhead_pos, pos);
+  EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED, NULL);
 }
 
 /**

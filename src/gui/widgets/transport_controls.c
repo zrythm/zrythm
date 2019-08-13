@@ -49,10 +49,11 @@ static void
 stop_clicked_cb (GtkButton *button,
                gpointer       user_data)
 {
+  /*g_message ("playstate %d", TRANSPORT->play_state);*/
   if (TRANSPORT->play_state == PLAYSTATE_PAUSED)
     {
-      position_set_to_pos (&TRANSPORT->playhead_pos,
-                           &TRANSPORT->cue_pos);
+      transport_set_playhead_pos (
+        TRANSPORT, &TRANSPORT->cue_pos);
     }
   else
     transport_request_pause (TRANSPORT);
