@@ -517,14 +517,14 @@ region_get_true_length_in_ticks (
  */
 long
 region_get_loop_length_in_frames (
-  Region * region);
+  const Region * region);
 
 /**
  * Returns the length of the loop in ticks.
  */
 long
 region_get_loop_length_in_ticks (
-  Region * region);
+  const Region * region);
 
 /**
  * Converts frames on the timeline (global)

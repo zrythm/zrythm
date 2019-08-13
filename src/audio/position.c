@@ -57,7 +57,8 @@ position_init (Position * position)
  * Note: transport must be setup by this point.
  */
 long
-position_to_frames (Position * position)
+position_to_frames (
+  const Position * position)
 {
   long frames =
     AUDIO_ENGINE->frames_per_tick *

@@ -405,7 +405,7 @@ region_get_full_length_in_frames (
  */
 long
 region_get_loop_length_in_ticks (
-  Region * region)
+  const Region * region)
 {
   return
     position_to_ticks (&region->loop_end_pos) -
@@ -417,7 +417,7 @@ region_get_loop_length_in_ticks (
  */
 long
 region_get_loop_length_in_frames (
-  Region * region)
+  const Region * region)
 {
   return
     position_to_frames (&region->loop_end_pos) -

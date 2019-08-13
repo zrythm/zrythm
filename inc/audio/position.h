@@ -298,7 +298,8 @@ position_add_frames (Position * position,
  * Converts position bars/beats/quarter beats/ticks to frames
  */
 long
-position_to_frames (Position * position);
+position_to_frames (
+  const Position * position);
 
 /**
  * Converts seconds to position and puts the result in the given Position.

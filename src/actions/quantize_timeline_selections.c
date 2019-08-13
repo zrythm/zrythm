@@ -57,8 +57,8 @@ quantize_timeline_selections_action_do (
 {
   int i, ticks;
   Region * region;
-  ScaleObject * scale_object;
-  Marker * marker;
+  /*ScaleObject * scale_object;*/
+  /*Marker * marker;*/
   TimelineSelections * ts = self->unquantized_ts;
   for (i = 0; i < ts->num_regions; i++)
     {
