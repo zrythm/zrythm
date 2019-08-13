@@ -130,7 +130,10 @@ automation_track_add_region (
   Region *          region);
 
 /**
- * Sets the automatable to the automation track and updates the GUI
+ * Sets the automatable to the automation track and
+ * updates the GUI
+ *
+ * FIXME no definition implemented.
  */
 void
 automation_track_set_automatable (

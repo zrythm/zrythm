@@ -282,7 +282,7 @@ region_find_by_name (
 
           for (k = 0; k < at->num_regions; k++)
             {
-              r = at->regions[j];
+              r = at->regions[k];
               if (!g_strcmp0 (r->name, name))
                 return r;
             }

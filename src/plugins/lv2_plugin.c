@@ -2322,10 +2322,11 @@ lv2_plugin_process (
         else if (
           send_ui_updates &&
           port->identifier.type == TYPE_CONTROL &&
-          lv2_port->control !=
-            lv2_port->prev_control &&
-          0) /* don't write UI events, this causes
-          trembling of knobs while changing them */
+          lv2_port->automating)
+          /* don't write constrol UI events unless
+           * automating, otherwise this causes
+           * trembling of knobs while changing
+           * them */
           {
             char buf[sizeof(Lv2ControlChange) +
               sizeof(float)];
@@ -2337,8 +2338,7 @@ lv2_plugin_process (
             *(float*)ev->body = lv2_port->control;
             /*g_message ("writing ui event %f",*/
                        /*lv2_port->control);*/
-            lv2_port->prev_control =
-              lv2_port->control;
+            lv2_port->automating = 0;
             if (zix_ring_write (
                   lv2_plugin->plugin_events,
                   buf,

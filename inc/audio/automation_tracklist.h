@@ -185,10 +185,26 @@ automation_tracklist_clone (
   AutomationTracklist * src,
   AutomationTracklist * dest);
 
+/**
+ * Returns the AutomationTrack corresponding to the
+ * given Automatable.
+ */
 AutomationTrack *
 automation_tracklist_get_at_from_automatable (
   AutomationTracklist * self,
   Automatable *         a);
+
+/**
+ * Sets the index of the AutomationTrack and swaps
+ * it with the AutomationTrack at that index.
+ *
+ * TODO implement
+ */
+void
+automation_tracklist_set_at_index (
+  AutomationTracklist * self,
+  AutomationTrack *     at,
+  int                   index);
 
 AutomationTrack *
 automation_tracklist_get_first_invisible_at (

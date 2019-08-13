@@ -222,10 +222,15 @@ on_selection_changed (
               self,
               self->automatable_model);
           z_gtk_container_destroy_all_children (
-            GTK_CONTAINER (self->automatable_treeview_box));
+            GTK_CONTAINER (
+              self->automatable_treeview_box));
           gtk_container_add (
-            GTK_CONTAINER (self->automatable_treeview_box),
-            GTK_WIDGET (self->automatable_treeview));
+            GTK_CONTAINER (
+              self->automatable_treeview_box),
+            GTK_WIDGET (
+              self->automatable_treeview));
+
+          self->selected_automatable = NULL;
           update_info_label (self,
                              "No control selected");
         }
@@ -251,6 +256,7 @@ on_selection_changed (
             a->minf,
             a->maxf);
 
+          self->selected_automatable = a;
           update_info_label (self,
                              label);
         }
@@ -321,6 +327,8 @@ static void
 on_closed (AutomatableSelectorPopoverWidget *self,
                gpointer    user_data)
 {
+  automatable_selector_button_set_automatable (
+    self->owner, self->selected_automatable);
   automatable_selector_button_widget_refresh (
     self->owner);
 }

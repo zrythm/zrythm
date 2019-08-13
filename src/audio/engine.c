@@ -458,9 +458,11 @@ engine_process_prepare (
            * at the playhead position, val is
            * positive */
           if (val >= 0.f)
-            automatable_set_val_from_normalized (
-              at->automatable,
-              val);
+            {
+              automatable_set_val_from_normalized (
+                at->automatable,
+                val, 1);
+            }
         }
     }
 

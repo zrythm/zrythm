@@ -65,6 +65,15 @@ typedef struct _AutomatableSelectorPopoverWidget
   GtkLabel *              info;
 
   AutomatableSelectorType selected_type;
+
+  /**
+   * The selected Automatable will be stored here
+   * and passed to the button when closing so that
+   * it can hide the current AutomationTrack and
+   * create/show the one corresponding to this
+   * Automatable.
+   */
+  Automatable *           selected_automatable;
 } AutomatableSelectorPopoverWidget;
 
 /**

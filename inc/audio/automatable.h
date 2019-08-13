@@ -221,13 +221,24 @@ automatable_normalized_val_to_real (
 float
 automatable_get_val (Automatable * self);
 
+
 /**
- * Updates the value.
+ * Updates the actual value.
+ *
+ * The given value is always a normalized 0.0-1.0
+ * value and must be translated to the actual value
+ * before setting it.
+ *
+ * @param automating 1 if this is from an automation
+ *   event. This will set Lv2Port's automating field
+ *   to 1 which will cause the plugin to receive
+ *   a UI event for this change.
  */
 void
 automatable_set_val_from_normalized (
   Automatable * self,
-  float         val);
+  float         val,
+  int           automating);
 
 /**
  * Gets automation track for given automatable, if any.

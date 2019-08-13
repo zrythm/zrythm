@@ -19,9 +19,14 @@
 
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
+#include "audio/automation_tracklist.h"
+#include "audio/engine.h"
+#include "audio/track.h"
+#include "gui/backend/events.h"
 #include "gui/widgets/automatable_selector_button.h"
 #include "gui/widgets/automatable_selector_popover.h"
 #include "gui/widgets/automation_track.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -47,6 +52,35 @@ set_label (AutomatableSelectorButtonWidget * self)
       gtk_label_set_text (
         self->label,
         self->owner->at->automatable->label);
+    }
+}
+
+/**
+ * Sets the Automatable for this automation track
+ * lane.
+ *
+ * If different from the current one, it will hide
+ * the current AutomationTrack and show the
+ * one corresponding to this Automatable.
+ */
+void
+automatable_selector_button_set_automatable (
+  AutomatableSelectorButtonWidget * self,
+  Automatable *                     a)
+{
+  AutomationTrack * at = self->owner->at;
+  if (at->automatable != a)
+    {
+      at->visible = 0;
+      /* TODO swap indices */
+      at =
+        automation_tracklist_get_at_from_automatable (
+          track_get_automation_tracklist (at->track),
+          a);
+      at->created = 1;
+      at->visible = 1;
+      EVENTS_PUSH (ET_AUTOMATION_TRACK_ADDED,
+                   at);
     }
 }
 

@@ -79,7 +79,10 @@ typedef struct Lv2Port
 	float           control;
 
   /** The value in the previous cycle. */
-  float           prev_control;
+  //float           prev_control;
+
+  /** 1 if this value was set via automation. */
+  int             automating;
 
   /** True for event, false for atom. */
 	int             old_api;

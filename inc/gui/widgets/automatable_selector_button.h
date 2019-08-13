@@ -62,6 +62,19 @@ automatable_selector_button_widget_refresh (
   AutomatableSelectorButtonWidget * self);
 
 /**
+ * Sets the Automatable for this automation track
+ * lane.
+ *
+ * If different from the current one, it will hide
+ * the current AutomationTrack and show the
+ * one corresponding to this Automatable.
+ */
+void
+automatable_selector_button_set_automatable (
+  AutomatableSelectorButtonWidget * self,
+  Automatable *                     a);
+
+/**
  * @}
  */
 

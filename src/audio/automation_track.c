@@ -228,8 +228,8 @@ automation_track_get_normalized_val_at_pos (
   double ratio =
     (double) (localp - prev_ap_frames) /
     (next_ap_frames - prev_ap_frames);
-  g_message ("ratio %f",
-             ratio);
+  /*g_message ("ratio %f",*/
+             /*ratio);*/
 
   double result =
     automation_curve_get_normalized_value (

@@ -317,6 +317,10 @@ automation_tracklist_get_visible_tracks (
     }
 }
 
+/**
+ * Returns the AutomationTrack corresponding to the
+ * given Automatable.
+ */
 AutomationTrack *
 automation_tracklist_get_at_from_automatable (
   AutomationTracklist * self,

@@ -328,7 +328,7 @@ automation_point_update_fvalue (
   automatable_set_val_from_normalized (
     a,
     automatable_real_val_to_normalized (
-      a, real_val));
+      a, real_val), 1);
   AutomationCurve * ac =
     self->region->acs[self->index];
   if (ac && ac->widget)
