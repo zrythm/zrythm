@@ -69,7 +69,7 @@ automatable_selector_button_set_automatable (
   Automatable *                     a)
 {
   AutomationTrack * at = self->owner->at;
-  if (at->automatable != a)
+  if (a && at->automatable != a)
     {
       at->visible = 0;
       /* TODO swap indices */
