@@ -32,5 +32,6 @@ check() {
 
 package() {
   cd ${rootdir}/
+  install -D -m644 COPYING "${pkgdir}/usr/share/licenses/${_pkgname}/COPYING"
   cd build && DESTDIR="${pkgdir}/" ninja install
 }
