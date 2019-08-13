@@ -41,7 +41,7 @@ then (($IS_EMPTY_COMMIT_MSG)) && TraceError "empty commit message - aborting com
      TraceStep "upgrading version to '$VERSION_STRING'"
      #ac_init_params="[$UPSTREAM_NAME], [$VERSION], [${BUG_URL//\//\\\/}]"
      #sed --in-place "s/^AC_INIT(.*$/AC_INIT($ac_init_params)/" $VERSION_FILE
-     sed --in-place "3s/  version: '.*$/  version: '$VERSION',/" $VERSION_FILE
+     sed --in-place "20s/  version: '.*$/  version: '$VERSION',/" $VERSION_FILE
      sed --in-place "4s/\[\([^]]*\)\]/\[$VERSION\]/" CHANGELOG.md
 
      TraceStage "completed staging-specific pre-commit hooks"
