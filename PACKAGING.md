@@ -10,7 +10,8 @@ use these as a base.
 Zrythm needs a fairly recent version of Meson to build.
 We don't know the exact version number but something around 45
 and above should be fine. The one in Debian Stretch
-will not work.
+will not work, but the one in stretch-backports will
+work.
 
 # Manual
 

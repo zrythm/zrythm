@@ -58,7 +58,9 @@ get_port_value(const char* port_symbol,
                uint32_t*   type)
 {
 	Lv2Plugin*        plugin = (Lv2Plugin*)user_data;
-	Lv2Port* port = lv2_port_by_symbol(plugin, port_symbol);
+	Lv2Port* port =
+    lv2_plugin_get_lv2_port_by_symbol (
+      plugin, port_symbol);
 	if (port &&
       port->port->identifier.flow == FLOW_INPUT &&
       port->port->identifier.type == TYPE_CONTROL)
@@ -147,7 +149,9 @@ set_port_value(const char* port_symbol,
                uint32_t    type)
 {
   Lv2Plugin*        plugin = (Lv2Plugin*)user_data;
-  Lv2Port* port = lv2_port_by_symbol(plugin, port_symbol);
+  Lv2Port* port =
+    lv2_plugin_get_lv2_port_by_symbol (
+      plugin, port_symbol);
   if (!port) {
           fprintf(stderr, "error: Preset port `%s' is missing\n", port_symbol);
           return;

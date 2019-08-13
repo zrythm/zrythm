@@ -732,7 +732,6 @@ control_changed (
   LV2_URID    type,
   const void* body)
 {
-  /*g_message ("control_changed");*/
 	GtkWidget * widget = controller->control;
 	const double fvalue =
     get_atom_double (plugin, size, type, body);

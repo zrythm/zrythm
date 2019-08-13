@@ -159,7 +159,6 @@ _create_port(Lv2Plugin*   lv2_plugin,
   lv2_port->lilv_port =
     lilv_plugin_get_port_by_index (
       lv2_plugin->lilv_plugin, lv2_port_index);
-  lv2_port->sys_port  = NULL;
   const LilvNode* sym =
     lilv_port_get_symbol (
       lv2_plugin->lilv_plugin,
@@ -472,15 +471,17 @@ lv2_allocate_port_buffers(Lv2Plugin* plugin)
  * This function MUST set size and type appropriately.
  */
 static const void *
-lv2_get_port_value (const char * port_sym,
-                    void       * user_data,
-                    uint32_t   * size,
-                    uint32_t   * type)
+lv2_get_port_value (
+  const char * port_sym,
+  void       * user_data,
+  uint32_t   * size,
+  uint32_t   * type)
 {
   Lv2Plugin * lv2_plugin = (Lv2Plugin *) user_data;
 
-  Lv2Port * port = lv2_port_by_symbol (lv2_plugin,
-                                        port_sym);
+  Lv2Port * port =
+    lv2_plugin_get_lv2_port_by_symbol (
+      lv2_plugin, port_sym);
   *size = 0;
   *type = 0;
 
@@ -511,13 +512,16 @@ lv2_get_port_value (const char * port_sym,
 /*}*/
 
 /**
-   Get a port structure by symbol.
-
-   TODO: Build an index to make this faster, currently O(n) which may be
-   a problem when restoring the state of plugins with many ports.
-*/
+ * Returns the Lv2Port corresponding to the given
+ * symbol.
+ *
+ * TODO: Build an index to make this faster,
+ * currently O(n) which may be
+ * a problem when restoring the state of plugins
+ * with many ports.
+ */
 Lv2Port*
-lv2_port_by_symbol (
+lv2_plugin_get_lv2_port_by_symbol (
   Lv2Plugin* plugin,
   const char* sym)
 {
@@ -909,13 +913,26 @@ receive_ui_events (
     }
 }
 
+/**
+ * Returns the index of the Lv2Port corresponding to
+ * the given symbol.
+ *
+ * For LV2 UIs.
+ */
 uint32_t
-lv2_ui_port_index(SuilController controller, const char* symbol)
+lv2_ui_port_index (
+  SuilController controller,
+  const char* symbol)
 {
 	Lv2Plugin* const  plugin = (Lv2Plugin*)controller;
-	Lv2Port* port = lv2_port_by_symbol(plugin, symbol);
+	Lv2Port* port =
+    lv2_plugin_get_lv2_port_by_symbol (
+      plugin, symbol);
 
-	return port ? port->index : LV2UI_INVALID_PORT_INDEX;
+	return
+    port ?
+    port->index :
+    LV2UI_INVALID_PORT_INDEX;
 }
 
 void
@@ -1253,7 +1270,8 @@ lv2_plugin_get_latency (
  * if it can be hosted, otherwise NULL.
  */
 PluginDescriptor *
-lv2_create_descriptor_from_lilv (const LilvPlugin * lp)
+lv2_create_descriptor_from_lilv (
+  const LilvPlugin * lp)
 {
   const LilvNode*  lv2_uri =
     lilv_plugin_get_uri (lp);
@@ -2301,8 +2319,13 @@ lv2_plugin_process (
                   }
               }
           }
-        else if (send_ui_updates &&
-                 port->identifier.type == TYPE_CONTROL)
+        else if (
+          send_ui_updates &&
+          port->identifier.type == TYPE_CONTROL &&
+          lv2_port->control !=
+            lv2_port->prev_control &&
+          0) /* don't write UI events, this causes
+          trembling of knobs while changing them */
           {
             char buf[sizeof(Lv2ControlChange) +
               sizeof(float)];
@@ -2314,6 +2337,8 @@ lv2_plugin_process (
             *(float*)ev->body = lv2_port->control;
             /*g_message ("writing ui event %f",*/
                        /*lv2_port->control);*/
+            lv2_port->prev_control =
+              lv2_port->control;
             if (zix_ring_write (
                   lv2_plugin->plugin_events,
                   buf,

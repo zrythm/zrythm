@@ -54,8 +54,9 @@
 #include "plugins/lv2/control.h"
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/worker.h"
-#include "zix/ring.h"
+#include "plugins/lv2_port.h"
 #include "plugins/lv2/suil.h"
+#include "zix/ring.h"
 #include "zix/sem.h"
 #include "zix/thread.h"
 #include "plugins/lv2/lv2_external_ui.h"
@@ -63,17 +64,10 @@
 #include <lilv/lilv.h>
 #include <serd/serd.h>
 
-//#include <lv2/lv2plug.in/ns/ext/atom/atom.h>
-//#include <lv2/lv2plug.in/ns/ext/atom/forge.h>
 #include <lv2/lv2plug.in/ns/ext/data-access/data-access.h>
 #include <lv2/lv2plug.in/ns/ext/log/log.h>
 #include <lv2/lv2plug.in/ns/ext/options/options.h>
 #include <lv2/lv2plug.in/ns/ext/state/state.h>
-//#include <lv2/lv2plug.in/ns/ext/urid/urid.h>
-//#include <lv2/lv2plug.in/ns/ext/uri-map/uri-map.h>
-//#include <lv2/lv2plug.in/ns/ext/worker/worker.h>
-
-//#include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
 
 #include <sratom/sratom.h>
 
@@ -95,26 +89,6 @@ typedef struct PluginDescriptor PluginDescriptor;
  *
  * @{
  */
-
-/* FIXME these should go to manager */
-
-typedef struct Lv2Port
-{
-  /** Pointer back to parent port. */
-  PortIdentifier  port_id;
-  Port *          port;     ///< cache
-	const LilvPort* lilv_port;  ///< LV2 port
-  void*           sys_port;   ///< For audio/MIDI ports, otherwise NULL
-	LV2_Evbuf*      evbuf;      ///< For MIDI ports, otherwise NULL
-	void*           widget;     ///< Control widget, if applicable
-	size_t          buf_size;   ///< Custom buffer size, or 0
-	uint32_t        index;      ///< Port index
-
-  /** Pointer to control, if control. */
-  Lv2Control *    lv2_control;
-	float           control;    ///< For control ports, otherwise 0.0f
-	bool            old_api;    ///< True for event, false for atom
-} Lv2Port;
 
 typedef struct Lv2Plugin
 {
@@ -232,23 +206,6 @@ typedef struct Lv2Plugin
 } Lv2Plugin;
 
 static const cyaml_schema_field_t
-  lv2_port_fields_schema[] =
-{
-  CYAML_FIELD_MAPPING (
-    "port_id", CYAML_FLAG_DEFAULT,
-    Lv2Port, port_id, port_identifier_fields_schema),
-
-	CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t
-  lv2_port_schema =
-{
-	CYAML_VALUE_MAPPING (CYAML_FLAG_DEFAULT,
-  Lv2Port, lv2_port_fields_schema),
-};
-
-static const cyaml_schema_field_t
   lv2_plugin_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
@@ -336,18 +293,33 @@ lv2_strjoin(const char* a, const char* b)
 	return out;
 }
 
+/**
+ * Returns the Lv2Port corresponding to the given
+ * symbol.
+ */
 Lv2Port*
-lv2_port_by_symbol(Lv2Plugin* plugin, const char* sym);
+lv2_plugin_get_lv2_port_by_symbol (
+  Lv2Plugin* plugin,
+  const char* sym);
 
 void
-lv2_ui_write(SuilController  controller,
-              uint32_t      port_index,
-              uint32_t      buffer_size,
-              uint32_t       protocol,
-              const void*    buffer);
+lv2_ui_write (
+  SuilController  controller,
+  uint32_t      port_index,
+  uint32_t      buffer_size,
+  uint32_t       protocol,
+  const void*    buffer);
 
+/**
+ * Returns the index of the Lv2Port corresponding to
+ * the given symbol.
+ *
+ * For LV2 UIs.
+ */
 uint32_t
-lv2_ui_port_index(SuilController controller, const char* symbol);
+lv2_ui_port_index (
+  SuilController controller,
+  const char* symbol);
 
 bool
 lv2_discover_ui(Lv2Plugin* plugin);
@@ -524,10 +496,11 @@ lv2_plugin_save_state_to_str (
   Lv2Plugin * lv2_plugin);
 
 /**
- * Frees memory
+ * Frees the Lv2Plugin.
  */
 void
-lv2_free (Lv2Plugin * plugin);
+lv2_free (
+  Lv2Plugin * plugin);
 
 /**
  * @}

@@ -108,16 +108,16 @@ instrument_track_fill_midi_events (
       diff_to_loop_end =
         TRANSPORT->loop_end_pos.frames -
         g_start_frames;
-      g_message (
-        "loop point met for %s at %ld"
-        "(diff from loop start %d | "
-        "diff to loop end %d | "
-        "loop end point: %ld)",
-        track->name,
-        g_start_frames,
-        diff_from_loop_start,
-        diff_to_loop_end,
-        TRANSPORT->loop_end_pos.frames);
+      /*g_message (*/
+        /*"loop point met for %s at %ld"*/
+        /*"(diff from loop start %d | "*/
+        /*"diff to loop end %d | "*/
+        /*"loop end point: %ld)",*/
+        /*track->name,*/
+        /*g_start_frames,*/
+        /*diff_from_loop_start,*/
+        /*diff_to_loop_end,*/
+        /*TRANSPORT->loop_end_pos.frames);*/
     }
   else
     {
@@ -142,10 +142,10 @@ instrument_track_fill_midi_events (
               region = lane->regions[i];
               r = (Region *) region;
 
-              g_message ("checking region at %ld "
-                         "for %s",
-                         g_start_frames,
-                         track->name);
+              /*g_message ("checking region at %ld "*/
+                         /*"for %s",*/
+                         /*g_start_frames,*/
+                         /*track->name);*/
 
               num_loops =
                 region_get_num_loops (r, 0);
@@ -216,7 +216,7 @@ instrument_track_fill_midi_events (
                       r, g_end_frames, 1);
                 }
 
-              g_message ("region is hit");
+              /*g_message ("region is hit");*/
 
               /* add clip_start position to start
                * from there */
@@ -254,9 +254,9 @@ instrument_track_fill_midi_events (
 
                       /* FIXME check if note is on
                        * first */
-                      g_message ("loop met, off at "
-                        "%d",
-                        diff_to_loop_end - 1);
+                      /*g_message ("loop met, off at "*/
+                        /*"%d",*/
+                        /*diff_to_loop_end - 1);*/
                       midi_events_add_note_off (
                         midi_events,
                         1, midi_note->val,
@@ -288,11 +288,11 @@ instrument_track_fill_midi_events (
                             frames >=
                           region_end_adjusted)
                         {
-                          g_message (
-                            "end of region within "
-                            "cycle - note off %ld",
-                            region_end_adjusted -
-                              local_pos);
+                          /*g_message (*/
+                            /*"end of region within "*/
+                            /*"cycle - note off %ld",*/
+                            /*region_end_adjusted -*/
+                              /*local_pos);*/
                           midi_events_add_note_off (
                             midi_events,
                             1, midi_note->val,
@@ -341,12 +341,12 @@ instrument_track_fill_midi_events (
                           tmp_end >=
                             region_end_adjusted)
                         {
-                          g_message (
-                            "region ends on timeline"
-                            " within cycle - note "
-                            "off %ld",
-                            (r->end_pos.frames - 1) -
-                              g_start_frames);
+                          /*g_message (*/
+                            /*"region ends on timeline"*/
+                            /*" within cycle - note "*/
+                            /*"off %ld",*/
+                            /*(r->end_pos.frames - 1) -*/
+                              /*g_start_frames);*/
                           midi_events_add_note_off (
                             midi_events, 1,
                             midi_note->val,
@@ -377,12 +377,12 @@ instrument_track_fill_midi_events (
                             frames >=
                             loop_end_adjusted)
                         {
-                          g_message (
-                            "crossing loop, off "
-                            "at %ld",
-                            (loop_end_adjusted -
-                              local_pos) +
-                              diff_to_loop_end);
+                          /*g_message (*/
+                            /*"crossing loop, off "*/
+                            /*"at %ld",*/
+                            /*(loop_end_adjusted -*/
+                              /*local_pos) +*/
+                              /*diff_to_loop_end);*/
                           /* diff_from_loop_start
                            * will be 0 unless this
                            * is the 2nd part of
@@ -410,11 +410,11 @@ instrument_track_fill_midi_events (
                   midi_note =
                     region->midi_notes[i];
 
-                  g_message ("checking note "
-                             "(local pos %ld | "
-                             "local end pos %ld)",
-                             local_pos,
-                             local_end_pos);
+                  /*g_message ("checking note "*/
+                             /*"(local pos %ld | "*/
+                             /*"local end pos %ld)",*/
+                             /*local_pos,*/
+                             /*local_end_pos);*/
 
                   /* check for note on event in
                    * between a region loop point */
@@ -423,10 +423,10 @@ instrument_track_fill_midi_events (
                         frames <
                       local_end_pos)
                     {
-                      g_message ("on at %ld",
-                        (loop_end_adjusted -
-                          local_pos) +
-                        midi_note->start_pos.frames);
+                      /*g_message ("on at %ld",*/
+                        /*(loop_end_adjusted -*/
+                          /*local_pos) +*/
+                        /*midi_note->start_pos.frames);*/
                       midi_events_add_note_on (
                         midi_events, 1,
                         midi_note->val,
@@ -445,11 +445,11 @@ instrument_track_fill_midi_events (
                       midi_note->start_pos.frames <
                         local_end_pos)
                     {
-                      g_message ("on at %ld",
-                        (midi_note->start_pos.
-                           frames -
-                         local_pos) +
-                        diff_to_loop_end);
+                      /*g_message ("on at %ld",*/
+                        /*(midi_note->start_pos.*/
+                           /*frames -*/
+                         /*local_pos) +*/
+                        /*diff_to_loop_end);*/
                       midi_events_add_note_on (
                         midi_events, 1,
                         midi_note->val,
@@ -467,17 +467,17 @@ instrument_track_fill_midi_events (
                       midi_note->end_pos.frames <
                         local_end_pos)
                     {
-                      g_message ("off at %ld "
-                        "(local pos %ld | "
-                        "local end pos %ld | "
-                        "midi note end pos %ld)",
-                        (midi_note->end_pos.
-                           frames -
-                         local_pos) +
-                        diff_to_loop_end,
-                        local_pos,
-                        local_end_pos,
-                        midi_note->end_pos.frames);
+                      /*g_message ("off at %ld "*/
+                        /*"(local pos %ld | "*/
+                        /*"local end pos %ld | "*/
+                        /*"midi note end pos %ld)",*/
+                        /*(midi_note->end_pos.*/
+                           /*frames -*/
+                         /*local_pos) +*/
+                        /*diff_to_loop_end,*/
+                        /*local_pos,*/
+                        /*local_end_pos,*/
+                        /*midi_note->end_pos.frames);*/
                       midi_events_add_note_off (
                         midi_events, 1,
                         midi_note->val,
