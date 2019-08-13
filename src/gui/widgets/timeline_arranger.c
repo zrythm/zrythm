@@ -676,7 +676,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
     region_get_main_region (rw_prv->region);
 
   /* open piano roll */
-  clip_editor_set_region (region);
+  clip_editor_set_region (CLIP_EDITOR, region);
 
   /* if double click bring up piano roll */
   if (ar_prv->n_press == 2 &&

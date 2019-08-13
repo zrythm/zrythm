@@ -49,7 +49,11 @@ automation_arranger_draw_cb (
   gdk_cairo_get_clip_rectangle (cr, &rect);
 
   /* draw automation related stuff */
-  Region * r = CLIP_EDITOR->region;
+  Region * r =
+    clip_editor_get_region_for_widgets (
+      CLIP_EDITOR);
+  g_return_val_if_fail (r && r->at, FALSE);
+
   Track * track = region_get_track (r);
 
   float normalized_val =

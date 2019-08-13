@@ -50,10 +50,10 @@ clip_editor_init_loaded (
  * To be called only from GTK threads.
  */
 void
-clip_editor_set_region (Region * region)
+clip_editor_set_region (
+  ClipEditor * self,
+  Region *     region)
 {
-  ClipEditor * self = CLIP_EDITOR;
-
   if (self->region && self->region->type ==
         REGION_TYPE_MIDI)
     channel_reattach_midi_editor_manual_press_port (
@@ -76,6 +76,17 @@ clip_editor_set_region (Region * region)
 
   EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED,
                NULL);
+}
+
+/**
+ * Returns the Region that widgets are expected
+ * to use.
+ */
+Region *
+clip_editor_get_region_for_widgets (
+  ClipEditor * self)
+{
+  return self->region_cache;
 }
 
 void

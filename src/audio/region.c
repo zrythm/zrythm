@@ -643,7 +643,7 @@ region_split (
   if (CLIP_EDITOR->region == region)
     {
       clip_editor_set_region (
-        *r1);
+        CLIP_EDITOR, *r1);
     }
 
   /* remove and free the original region */
@@ -695,7 +695,8 @@ region_unsplit (
    * clip editor region */
   if (CLIP_EDITOR->region == r1)
     {
-      clip_editor_set_region (*region);
+      clip_editor_set_region (
+        CLIP_EDITOR, *region);
     }
 
   /* remove and free the original regions */

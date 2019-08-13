@@ -702,6 +702,7 @@ on_timeline_clipboard_received (
     return;
   TimelineSelections * ts =
     timeline_selections_deserialize (text);
+  timeline_selections_post_deserialize (ts);
   g_message ("printing deserialized");
   timeline_selections_print (ts);
 

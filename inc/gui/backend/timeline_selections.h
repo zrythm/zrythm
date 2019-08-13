@@ -144,6 +144,13 @@ void
 timeline_selections_set_to_transient_values (
   TimelineSelections * ts);
 
+/**
+ * Code to run after deserializing.
+ */
+void
+timeline_selections_post_deserialize (
+  TimelineSelections * ts);
+
 SERIALIZE_INC (
   TimelineSelections, timeline_selections)
 DESERIALIZE_INC (

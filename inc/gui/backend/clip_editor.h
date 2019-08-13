@@ -55,6 +55,14 @@ typedef struct ClipEditor
   char *           region_name;
   Region *         region;
 
+  /**
+   * This will be set to the same as above after
+   * the arrangers are switched.
+   *
+   * Related widgets should use this.
+   */
+  Region *         region_cache;
+
   PianoRoll        piano_roll;
   AudioClipEditor  audio_clip_editor;
   AutomationEditor automation_editor;
@@ -115,7 +123,16 @@ clip_editor_init (
  */
 void
 clip_editor_set_region (
-  Region * region);
+  ClipEditor * self,
+  Region *     region);
+
+/**
+ * Returns the Region that widgets are expected
+ * to use.
+ */
+Region *
+clip_editor_get_region_for_widgets (
+  ClipEditor * self);
 
 /**
  * @}

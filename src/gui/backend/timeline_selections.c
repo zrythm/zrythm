@@ -90,6 +90,29 @@ timeline_selections_has_any (
 }
 
 /**
+ * Code to run after deserializing.
+ *
+ * Used for copy-paste.
+ */
+void
+timeline_selections_post_deserialize (
+  TimelineSelections * ts)
+{
+  int i;
+
+#define _SET_OBJ(sc) \
+  for (i = 0; i < ts->num_##sc##s; i++) \
+    ts->sc##s[i]->obj_info.main =  \
+      ts->sc##s[i];
+
+  _SET_OBJ (region);
+  _SET_OBJ (marker);
+  _SET_OBJ (scale_object);
+
+#undef _SET_OBJ
+}
+
+/**
  * Sets the cache Position's for each object in
  * the selection.
  *
@@ -620,6 +643,17 @@ timeline_selections_paste_to_pos (
   TimelineSelections * ts,
   Position *           pos)
 {
+  /* get selected track and check if valid for
+   * pasting */
+  Track * track =
+    TRACKLIST_SELECTIONS->tracks[0];
+  Track * orig_track =
+    TRACKLIST->tracks[ts->regions[0]->track_pos];
+  /* only allow lane regions for now */
+  if (ts->num_regions == 0 ||
+      orig_track->type != track->type)
+    return;
+
   int pos_ticks = position_to_ticks (pos);
 
   /* get pos of earliest object */
@@ -693,7 +727,7 @@ timeline_selections_paste_to_pos (
           region, REGION_CLONE_COPY_MAIN);
       region_print (cp);
       track_add_region (
-        cp->lane->track, cp, 0, F_GEN_NAME,
+        track, cp, 0, F_GEN_NAME,
         F_GEN_WIDGET);
     }
   for (i = 0; i < ts->num_scale_objects; i++)

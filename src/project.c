@@ -162,6 +162,8 @@ create_default (Project * self)
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
   TRACKLIST->master_track = track;
+  tracklist_selections_add_track (
+    TRACKLIST_SELECTIONS, track);
 
   /* create untitled project */
   char * untitled_project = _("Untitled Project");

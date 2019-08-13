@@ -299,6 +299,8 @@ on_clip_editor_region_changed ()
         GTK_WIDGET (
           MW_CLIP_EDITOR->no_selection_label));
     }
+
+  CLIP_EDITOR->region_cache = r;
 }
 
 static void

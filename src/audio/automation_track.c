@@ -181,6 +181,7 @@ automation_track_get_normalized_val_at_pos (
   AutomationTrack * self,
   Position *        pos)
 {
+  g_return_val_if_fail (self, 0.f);
   AutomationCurve * ac =
     automation_track_get_ac_at_pos (
       self, pos);
