@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-12 17:19+0100\n"
-"PO-Revision-Date: 2019-08-11 23:57+0000\n"
+"PO-Revision-Date: 2019-08-14 14:24+0000\n"
 "Last-Translator: Waui <wau-wau@tutanota.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
 ">\n"
@@ -73,7 +73,7 @@ msgstr "URI (Optional):"
 
 #: src/plugins/lv2_gtk.c:472
 msgid "_Prefix plugin name"
-msgstr ""
+msgstr "_Präfix des Erweiterungsnamen"
 
 #: src/plugins/lv2_gtk.c:563
 msgid "Delete Preset?"
@@ -110,7 +110,7 @@ msgstr "AUSGÄNGE"
 
 #: src/gui/widgets/port_connections_popover.c:163
 msgid "Add"
-msgstr ""
+msgstr "Hinzufügen"
 
 #: src/gui/widgets/quantize_dialog.c:112
 msgid "note length"
@@ -148,7 +148,7 @@ msgstr "Backendkombination wird nicht unterstützt"
 
 #: src/gui/widgets/first_run_assistant.c:143
 msgid "The selected backends are operational"
-msgstr ""
+msgstr "Die gewählten Backends sind betriebsfähig"
 
 #: src/gui/widgets/first_run_assistant.c:224
 #, c-format
@@ -196,7 +196,7 @@ msgstr "Abspielkopf"
 
 #: src/gui/widgets/top_bar.c:108
 msgid "time sig."
-msgstr ""
+msgstr "Taktangabe"
 
 #: src/gui/widgets/port_selector_popover.c:209
 msgid "Track Ports"
@@ -213,7 +213,7 @@ msgstr "Kein Objekt ausgewählt"
 
 #: src/gui/widgets/inspector.c:156
 msgid "Track properties"
-msgstr ""
+msgstr "Spureigenschaften"
 
 #: src/gui/widgets/inspector.c:166
 msgid "Editor properties"
@@ -453,27 +453,27 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:146
 msgid "Audio Ins"
-msgstr ""
+msgstr "Audioeingänge"
 
 #: src/gui/widgets/ports_expander.c:149
 msgid "Audio Outs"
-msgstr ""
+msgstr "Audioausgänge"
 
 #: src/gui/widgets/ports_expander.c:152
 msgid "MIDI Ins"
-msgstr ""
+msgstr "MIDI-Eingänge"
 
 #: src/gui/widgets/ports_expander.c:155
 msgid "MIDI Outs"
-msgstr ""
+msgstr "MIDI-Ausgänge"
 
 #: src/gui/widgets/ports_expander.c:158
 msgid "CV Ins"
-msgstr ""
+msgstr "CV-Eingänge"
 
 #: src/gui/widgets/ports_expander.c:161
 msgid "CV Outs"
-msgstr ""
+msgstr "CV-Ausgänge"
 
 #: src/gui/widgets/chord_object.c:150
 msgid "Chord - Click and drag to move around (hold Shift to disable snapping)"
@@ -828,7 +828,7 @@ msgstr "Objekt(e) duplizieren"
 
 #: src/actions/edit_midi_arranger_selections_action.c:267
 msgid "Resize MIDI Note(s)"
-msgstr ""
+msgstr "Größe der MIDI-Note(n) ändern"
 
 #: src/actions/edit_midi_arranger_selections_action.c:271
 msgid "Change Velocity"
@@ -975,11 +975,11 @@ msgstr "Erweiterung 1"
 
 #: resources/ui/rack_plugin.ui:53
 msgid "in"
-msgstr ""
+msgstr "Eingang"
 
 #: resources/ui/rack_plugin.ui:63
 msgid "out"
-msgstr ""
+msgstr "Ausgang"
 
 #: resources/ui/rack_row.ui:60
 msgid "expander"
@@ -1375,7 +1375,7 @@ msgstr "Quintenzirkel"
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
-msgstr "Globale Tastaturkürzel"
+msgstr "Globale Tastenkürzel"
 
 #: resources/ui/shortcuts.ui:36 resources/ui/preferences.ui:235
 msgid "General"
@@ -1435,7 +1435,7 @@ msgstr "Kopiere die Auswahl in die Zwischenablage"
 
 #: resources/ui/shortcuts.ui:139
 msgid "Cut selection to clipboard"
-msgstr ""
+msgstr "Auswahl ausschneiden und in die Zwischenablage verschieben"
 
 #: resources/ui/shortcuts.ui:146
 msgid "Paste from clipboard"
@@ -1467,7 +1467,7 @@ msgstr "Auswahl aufheben"
 
 #: resources/ui/shortcuts.ui:200
 msgid "Editor Shortcuts"
-msgstr "Editor-Tastaturkürzel"
+msgstr "Editor-Tastenkürzel"
 
 #: resources/ui/shortcuts.ui:204
 msgid "Tool"
@@ -1553,12 +1553,12 @@ msgstr ""
 #: resources/ui/midi_editor_space.ui:145 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
 msgid "Pitch Wheel"
-msgstr ""
+msgstr "Tonhöhenrad"
 
 #: resources/ui/midi_editor_space.ui:146 resources/ui/chord_editor_space.ui:154
 #: resources/ui/automation_editor_space.ui:116
 msgid "Mod Wheel"
-msgstr ""
+msgstr "Modulationsrad"
 
 #: resources/ui/midi_editor_space.ui:147 resources/ui/chord_editor_space.ui:155
 #: resources/ui/automation_editor_space.ui:117
@@ -1662,7 +1662,7 @@ msgstr "Initialisiere…"
 
 #: resources/ui/automator.ui:32
 msgid "LFO 1"
-msgstr ""
+msgstr "LFO 1"
 
 #: resources/ui/automation_track.ui:95
 msgid "RW"
@@ -1804,7 +1804,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:206
 msgid "Output Files"
-msgstr ""
+msgstr "Ausgangsdateien"
 
 #: resources/ui/export_dialog.ui:218
 msgid "Filename Pattern"
@@ -1854,7 +1854,7 @@ msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:126
 msgid "Note type"
-msgstr ""
+msgstr "Notentyp"
 
 #: resources/ui/editor_toolbar.ui:47
 msgid "Highlight"
@@ -1906,7 +1906,7 @@ msgstr "Hauptfenster"
 
 #: resources/ui/preferences.ui:308
 msgid "Show native decoration"
-msgstr ""
+msgstr "Native Dekoration anzeigen"
 
 #: resources/ui/preferences.ui:331
 msgid "Editing"
