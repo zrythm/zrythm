@@ -1,0 +1,447 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/ja/>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.8-dev\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../configuration/additional-settings.rst:19
+msgid "Additional Settings"
+msgstr "その他の設定"
+
+#: ../../configuration/additional-settings.rst:21
+msgid ""
+"Zrythm stores all of its configuration using the GSettings mechanism, "
+"which comes with the ``gsettings`` command for changing settings from the"
+" command line."
+msgstr ""
+"Zrythm は、コマンド ラインから設定を変更するための ``gsettings``コマンドが付属する GSettings "
+"メカニズムを使用して、すべての設定を格納します。"
+
+#: ../../configuration/additional-settings.rst:26
+msgid ""
+"Normally, you shouldn't need to access any of these settings as most of "
+"them are found inside Zrythm's UI, and it is not recommended to edit them"
+" as Zrythm validates some settings before it saves them, but in some "
+"cases you may want to change them manually for some reason."
+msgstr "通常、これらの設定のほとんどは Zrythm の UI 内に存在するので、これらの設定にアクセスする必要はありません。"
+
+#: ../../configuration/additional-settings.rst:34
+msgid ""
+"To see what settings are available and for info on how to use "
+"``gsettings`` see ``man gsettings``."
+msgstr "変更可能な設定を確認するには、または`'gsettings``の使用方法の詳細については``man gsettings``を参照してください。"
+
+#: ../../configuration/additional-settings.rst:37
+msgid ""
+"As an example, to change the audio backend you would do ``gsettings set "
+"org.zrythm.preferences audio-backend \"jack\"``"
+msgstr ""
+"例として、オーディオバックエンドを変更するには、``gsettings set set org.zrythm.preferences audio-"
+"backend \"jack\"``を利用します"
+
+#: ../../configuration/additional-settings.rst:40
+msgid "You can use the range option to get a list of the available values:"
+msgstr "``range``オプションを使用して、使用可能な値のリストを取得できます。"
+
+#: ../../configuration/device-setup/intro.rst:19
+msgid "Device Setup"
+msgstr "デバイス設定"
+
+#: ../../configuration/device-setup/intro.rst:22
+msgid "Connecting MIDI and Audio Devices"
+msgstr "MIDI とオーディオ デバイスの接続"
+
+#: ../../configuration/device-setup/intro.rst:24
+msgid ""
+"On Linux machines, Zrythm works with both ALSA and JACK as available "
+"backends. Depending on the backend selected, the configuration differs."
+msgstr ""
+"Linuxでは、Zrythm は ALSA と JACK "
+"の両方を使用可能なバックエンドとして扱います。選択したバックエンドによって設定方法が異なります。"
+
+#: ../../configuration/device-setup/intro.rst:29
+msgid "Auto-Connecting Devices"
+msgstr "デバイスの自動接続"
+
+#: ../../configuration/device-setup/intro.rst:31
+msgid ""
+"Zrythm has an option to select devices to auto-connect on launch. TODO "
+"explain it."
+msgstr "Zrythmは、起動時に自動接続するデバイスを選択するオプションがあります。TODO説明"
+
+#: ../../configuration/device-setup/intro.rst:35
+msgid "JACK"
+msgstr "JACK"
+
+#: ../../configuration/device-setup/intro.rst:37
+msgid ""
+"When using the JACK audio and MIDI backend, Zrythm exposes ports to JACK,"
+" so devices can be attached there using a tool like Catia. Note that for "
+"MIDI, devices might need to be bridged to JACK using ``a2jmidid``."
+msgstr ""
+"JACKオーディオとMIDIバックエンドを使用する場合、ZrythmはポートをJACKに公開するので、デバイスはCatiaのようなツールを使用してそこに取り付けることができます。MIDI"
+" の場合、デバイスは 'a2jmidid' を使用して JACK にブリッジする必要がある場合があります。"
+
+#: ../../configuration/device-setup/intro.rst:43
+msgid "An example configuration looks like this (in Catia inside Cadence)"
+msgstr "設定の例は次のようになります (Cadence内部のCatiaで)"
+
+#: ../../configuration/device-setup/intro.rst:48
+msgid "ALSA"
+msgstr "ALSA"
+
+#: ../../configuration/device-setup/intro.rst:50
+msgid "A tool like Catia can be used to connect MIDI devices to Zrythm."
+msgstr "ZrythmにMIDIデバイスを接続するためには、Catiaのようなツールを使用することができます。"
+
+#: ../../configuration/first-run-wizard.rst:19
+msgid "First Run Wizard"
+msgstr "最初実行ウィザード"
+
+#: ../../configuration/first-run-wizard.rst:21
+msgid ""
+"When you first run Zrythm, it will display a wizard that lets you "
+"configure the basic settings that Zrythm will use. These include MIDI "
+"devices, the default Zrythm path, interface language and audio/MIDI "
+"backends."
+msgstr ""
+"Zrythm を初めて実行すると、Zrythm が使用する基本的な設定をできるウィザードが表示されます。MIDI デバイス、デフォルトの "
+"Zrythm パス、インターフェイス言語、オーディオ/MIDI バックエンドの設定が含まれます。"
+
+#: ../../configuration/first-run-wizard.rst:27
+msgid "Language Selection"
+msgstr "言語選択"
+
+#: ../../configuration/first-run-wizard.rst:31
+msgid ""
+"Zrythm lets you choose the language of the interface. The interface is "
+"already translated in multiple languages, so choose the language you are "
+"most comfortable in."
+msgstr "Zrythmのインターフェイスの言語を選択できます。インターフェイスは既に複数の言語で翻訳されているので、最も使い心地の良い言語を選択してください。"
+
+#: ../../configuration/first-run-wizard.rst:35
+msgid "You must have a locale for the language you want to use enabled."
+msgstr "使用する言語のロケールを有効にする必要があります。"
+
+#: ../../configuration/first-run-wizard.rst:37
+msgid ""
+"This is usually not a problem since you are probably already using the "
+"correct locale for your language. In case a locale cannot be found, you "
+"will see this message telling you the steps to enable it."
+msgstr "言語に対して正しいロケールを既に使用しているため、通常は問題になりません。ロケールが見つからない場合は、有効にする手順を伝えるメッセージが表示されます。"
+
+#: ../../configuration/first-run-wizard.rst:43
+msgid "Path"
+msgstr "パス"
+
+#: ../../configuration/first-run-wizard.rst:47
+msgid ""
+"This is the path where Zrythm will use to save projects, temporary files,"
+" exported audio, etc. The default is \"zrythm\" in the user's directory."
+msgstr "これは、Zrythmがプロジェクト、一時ファイル、エクスポートされたオーディオなどを保存するために使用するパスです。デフォルトは、ユーザーのディレクトリに「zrythm」です。"
+
+#: ../../configuration/first-run-wizard.rst:52
+msgid "Audio/MIDI Backends"
+msgstr "オーディオ/MIDI バックエンド"
+
+#: ../../configuration/first-run-wizard.rst:56
+msgid ""
+"Zrythm supports multiple audio and MIDI backend engines. JACK is the "
+"recommended one for both, but it takes some time to set up if this is "
+"your first time using it. If you don't want to use JACK for some reason "
+"you can select other backends such as ALSA."
+msgstr ""
+"Zrythmは、複数のオーディオおよびMIDIバックエンドエンジンをサポートしています。JACKは両方に推奨されますが、初めて使用する場合は設定に時間がかかります。何らかの理由で"
+" JACK を使用したくない場合は、ALSA などの他のバックエンドを選択できます。"
+
+#: ../../configuration/first-run-wizard.rst:62
+msgid ""
+"Click :zbutton:`Test` to try connecting to the backend to see if it is "
+"functional."
+msgstr ":zbutton:`テスト`をクリックしますと、バックエンドが機能しているかどうかを確認できます。"
+
+#: ../../configuration/first-run-wizard.rst:65
+msgid ""
+"JACK MIDI requires a JACK server to be running, which means you probably "
+"want to use it with the JACK audio backend."
+msgstr "JACK MIDIを使用するにはJACKサーバが必要なので、JACKのオーディオバックエンドで使用することをおすすめします。"
+
+#: ../../configuration/first-run-wizard.rst:70
+msgid "MIDI Devices"
+msgstr "MIDIデバイス"
+
+#: ../../configuration/first-run-wizard.rst:74
+msgid ""
+"These are the discovered devices that will be auto-connected and ready to"
+" use every time you run Zrythm. Click \"Rescan\" to scan for devices "
+"again."
+msgstr ""
+"これらは、Zrythmを実行するたびに自動接続され、使用する準備ができている検出されたデバイスです。「再スキャン」 "
+"をクリックしますと、デバイスを再度スキャンします。"
+
+#: ../../configuration/first-run-wizard.rst:78
+msgid ""
+"All of the settings mentioned here are also available in the preferences "
+"(Ctr+Shift+P or File->Preferences), so don't worry if you selected the "
+"wrong settings."
+msgstr "ここで説明するすべての設定は、プリファレンス(Ctr+Shift+Pまたはファイル->プリファレンス)でもアクセスできますので、間違った設定を選択しても大丈夫です。"
+
+#: ../../configuration/intro.rst:19
+msgid "Configuration"
+msgstr "設定"
+
+#: ../../configuration/preferences/audio.rst:19
+msgid "Audio Tab"
+msgstr "オーディオタブ"
+
+#: ../../configuration/preferences/intro.rst:19
+msgid "Preferences"
+msgstr "設定"
+
+#: ../../configuration/preferences/overview.rst:19
+msgid "Overview"
+msgstr "概要"
+
+#: ../../configuration/preferences/overview.rst:21
+msgid ""
+"Zrythm has a Preferences dialog containing all of the global settings "
+"that can be accessed by clicking the gear icon or by ``Ctrl+Shift+P``."
+msgstr ""
+"Zrythm "
+"には、歯車アイコンをクリックするか、``Ctrl+Shift+P``をクリックしてアクセスできるすべてのグローバル設定を含む環境設定ダイアログがあります。"
+
+#: ../../configuration/preferences/overview.rst:25
+msgid ""
+"The Preferences dialog is split into the following sections, which are "
+"explained in the next chapters:"
+msgstr ""
+
+#: ../../configuration/preferences/overview.rst:29
+msgid "Audio"
+msgstr "オーディオ"
+
+#: ../../configuration/preferences/overview.rst:30
+msgid "GUI"
+msgstr "GUI"
+
+#: ../../configuration/preferences/overview.rst:31
+msgid "Backend"
+msgstr "バックエンド"
+
+#~ msgid ""
+#~ "Zrythm exposes ports to JACK. Devices"
+#~ " can be attached there. Note that "
+#~ "for MIDI, devices need to be "
+#~ "bridged using ``a2jmidid``."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm supports multiple audio and MIDI"
+#~ " backend engines. JACK is the "
+#~ "recommended one for both, but it "
+#~ "takes some time to set up if "
+#~ "this is your first time using it."
+#~ " If you don't want to use JACK"
+#~ " for some reason you can select "
+#~ "other backends such as PortAudio."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "It appears that a kind person has"
+#~ " packaged Zrythm at `FreshPorts "
+#~ "<https://www.freshports.org/audio/zrythm/>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Thanks to falktx, Zrythm is also "
+#~ "available in the `KX Studio repos "
+#~ "<http://kxstudio.linuxaudio.org/>`_ for Debian users"
+#~ msgstr ""
+
+#~ msgid "The usual GNU toolchain procedure applies::"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Type ``./configure --help`` for available "
+#~ "options. We recommend using ``--enable-"
+#~ "qt5 --enable-ffmpeg`` to get the "
+#~ "most functionality."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Use the installer from the `main "
+#~ "website <https://www.zrythm.org>`_. Note that "
+#~ "while it may run, it is not "
+#~ "fully functional yet on Windows."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Report any bugs at the `Issue "
+#~ "Tracker <https://git.zrythm.org/zrythm/zrythm>`_."
+#~ msgstr ""
+
+#~ msgid "FreeBSD"
+#~ msgstr "FreeBSD"
+
+#~ msgid ""
+#~ "Thanks to Yuri, Zrythm is packaged "
+#~ "for FreeBSD and the package can be"
+#~ " found at `FreshPorts "
+#~ "<https://www.freshports.org/audio/zrythm/>`_."
+#~ msgstr ""
+#~ "Yuriさんのおかげで、ZrythmはFreeBSDに移植され、パッケージは `FreshPorts "
+#~ "<https://www.freshports.org/audio/zrythm/>`_ にあります。"
+
+#~ msgid "GNU/Linux"
+#~ msgstr "GNU/Linux"
+
+#~ msgid "Official Builds"
+#~ msgstr "公式ビルド"
+
+#~ msgid ""
+#~ "You can install the latest version "
+#~ "of Zrythm for your distro `here "
+#~ "<https://software.opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_"
+#~ msgstr ""
+#~ "使用しているディストロの最新バージョンの Zrythm を`ここ "
+#~ "<https://software.opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_からインストールできます"
+
+#~ msgid "You will be presented with the following"
+#~ msgstr "次の選択が表示されます"
+
+#~ msgid "This is the recommended way to install the latest version."
+#~ msgstr "これは、最新バージョンをインストールする推奨される方法です。"
+
+#~ msgid "Flatpak"
+#~ msgstr "Flatpak"
+
+#~ msgid "Flatpak builds are coming soon."
+#~ msgstr "フラットパックも対応する予定です。"
+
+#~ msgid "AppImage"
+#~ msgstr "AppImage"
+
+#~ msgid "AppImage builds are coming soon."
+#~ msgstr "AppImage は対応する予定です。"
+
+#~ msgid "KX Studios"
+#~ msgstr "KXスタジオ"
+
+#~ msgid ""
+#~ "Thanks to falktx, Zrythm will also "
+#~ "be available in the `KX Studio "
+#~ "repos <http://kxstudio.linuxaudio.org/>`_ for Debian"
+#~ " users"
+#~ msgstr ""
+#~ "falktxのおかげで、ZrythmはDebianユーザーのための`KX Studioリポジトリ "
+#~ "<http://kxstudio.linuxaudio.org/>`_でも利用可能になります"
+
+#~ msgid "AUR"
+#~ msgstr "AUR"
+
+#~ msgid ""
+#~ "For Arch GNU/Linux users, Zrythm is "
+#~ "also available in the AUR under "
+#~ "`zrythm <https://aur.archlinux.org/packages/zrythm/>`_ and"
+#~ " `zrythm-git <https://aur.archlinux.org/packages"
+#~ "/zrythm-git/>`_"
+#~ msgstr ""
+#~ "Arch GNU/Linux ユーザーは、AURの`zrythm "
+#~ "<https://aur.archlinux.org/packages/zrythm/>`_ および "
+#~ "`zrythm-git <https://aur.archlinux.org/packages/zrythm-"
+#~ "git/>`_パッケージを利用できます。"
+
+#~ msgid "Manual Installation"
+#~ msgstr "手動インストール"
+
+#~ msgid ""
+#~ "Zrythm uses the Meson build system, "
+#~ "so the procedure to build and "
+#~ "install is as follows:"
+#~ msgstr "Zrythm は Meson ビルド システムを使用するので、ビルドとインストールの手順は次のとおりです::"
+
+#~ msgid "TODO add options"
+#~ msgstr "TODO オプションを追加"
+
+#~ msgid "Installation"
+#~ msgstr "インストール"
+
+#~ msgid "MacOS"
+#~ msgstr "MacOS"
+
+#~ msgid ""
+#~ "Use the installer from the `main "
+#~ "website <https://www.zrythm.org>`_. Note that "
+#~ "while it may run, it is not "
+#~ "yet fully functional on MacOS."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you find any bugs please "
+#~ "`report them <https://git.zrythm.org/zrythm/zrythm>`_."
+#~ msgstr ""
+
+#~ msgid "Windows"
+#~ msgstr ""
+
+#~ msgid "http://www.upgradefromwindows.com"
+#~ msgstr ""
+
+#~ msgid "System Requirements"
+#~ msgstr "システム要件"
+
+#~ msgid "Minimum Requirements"
+#~ msgstr "最小要件"
+
+#~ msgid ""
+#~ "We don't know yet. The oldest "
+#~ "machine tested on was T400 and it"
+#~ " was a bit laggy. If you have"
+#~ " any experiences with older machines "
+#~ "please let us know."
+#~ msgstr ""
+
+#~ msgid "Recommended Requirements"
+#~ msgstr ""
+
+#~ msgid "We recommend running a fairly modern machine."
+#~ msgstr "かなり近代的なパソコンを使用することをお勧めします。"
+
+#~ msgid "Audio Interface"
+#~ msgstr "オーディオインターフェイス"
+
+#~ msgid ""
+#~ "An Audio Interface is recommended as "
+#~ "it offers low latency and better "
+#~ "quality (especially if recording audio)."
+#~ msgstr "オーディオインターフェイスは、低レイテンシとより良い品質を提供します(特にオーディオを録音する場合)ので、お勧めします。"
+
+#~ msgid ""
+#~ "JACK needs to be set up and "
+#~ "configured before running Zrythm. We "
+#~ "recommend using `Cadence "
+#~ "<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, as"
+#~ " it makes the process very easy."
+#~ msgstr ""
+
+#~ msgid "Open Cadence"
+#~ msgstr "Cadenceを実効する"
+
+#~ msgid "Click Configure and select your Audio Interface"
+#~ msgstr "[設定] をクリックし、オーディオ インターフェイスを選択します"

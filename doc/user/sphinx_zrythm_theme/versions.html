@@ -1,0 +1,48 @@
+{#
+ Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+
+ This file is part of Zrythm
+
+ Zrythm is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+
+ Zrythm is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU General Affero Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+
+{# Add rst-badge after rst-versions for small badge style. #}
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Resources</span>
+      v: {{ current_version }}
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <!-- See html_context in conf.py -->
+    <div class="rst-other-versions">
+      <dl>
+        <dt>{{ _('Downloads') }}</dt>
+        <dd><a href="{{ url_root }}Zrythm.pdf">pdf</a></dd>
+          <dd><a href="{{ url_root }}Zrythm-html.zip">htmlzip</a></dd>
+          <dd><a href="{{ url_root }}Zrythm.epub">epub</a></dd>
+      </dl>
+      <dl>
+        <dt>{{ _('Links') }}</dt>
+          <dd>
+            <a href="https://www.zrythm.org">{{ _('Project Home') }}</a>
+          </dd>
+          <dd>
+            <a href="{{ cgit_host }}/{{ cgit_repo }}">{{ 'Git' }}</a>
+          </dd>
+      </dl>
+      <hr/>
+      {% trans %}<a href="https://liberapay.com/Zrythm/donate">Donate</a>{% endtrans %}
+
+    </div>
+  </div>

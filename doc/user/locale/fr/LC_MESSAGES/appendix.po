@@ -1,0 +1,106 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualappendix/fr/>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.8-dev\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../appendix/files-and-directories.rst:19
+msgid "Files and Directories"
+msgstr "Fichiers et Répertoires"
+
+#: ../../appendix/files-and-directories.rst:22
+msgid "Installed Files"
+msgstr "Fichiers installés"
+
+#: ../../appendix/files-and-directories.rst:23
+msgid "When Zrythm is installed, it installs the following files by default:"
+msgstr "Quand Zrythm est installé, il installe les fichiers par défaut suivants:"
+
+#: ../../appendix/files-and-directories.rst:116
+msgid "Project Files"
+msgstr "Fichiers du projet"
+
+#: ../../appendix/files-and-directories.rst:117
+msgid ""
+"When Zrythm is launched for the first time, it will also ask you to "
+"select a folder for saving your projects and other project-related files."
+msgstr ""
+"Lorsque Zrythm est lancé pour la première fois, il vous demandera également "
+"de sélectionner un dossier pour enregistrer vos projets et autres fichiers "
+"liés au projet."
+
+#: ../../appendix/files-and-directories.rst:121
+msgid "By default, this will be ``~/zrythm``"
+msgstr "Par défaut, ça sera ``~/zrythm``"
+
+#: ../../appendix/intro.rst:19
+msgid "Appendix"
+msgstr "Annexe"
+
+#: ../../appendix/menu-actions.rst:19
+msgid "Menu Actions"
+msgstr "Actions du menu"
+
+#: ../../appendix/shortcut-keys.rst:19
+msgid "Shortcut Keys"
+msgstr "Raccourcis clavier"
+
+#: ../../appendix/shortcut-keys.rst:22
+msgid "Global Shortcuts"
+msgstr "Raccourcis globaux"
+
+#: ../../appendix/shortcut-keys.rst:27
+msgid "Editor Shortcuts"
+msgstr "Éditeur de raccourcis"
+
+#: ../../appendix/troubleshooting.rst:19
+msgid "Troubleshooting"
+msgstr "Résolution de problèmes"
+
+#: ../../appendix/troubleshooting.rst:21
+msgid "TODO"
+msgstr "ÀFAIRE"
+
+#~ msgid "/bin/zrythm"
+#~ msgstr "/bin/zrythm"
+
+#~ msgid "Zrythm executable"
+#~ msgstr "L'exécutable de Zrythm"
+
+#~ msgid "/usr/share/fonts/Segment7Standard"
+#~ msgstr "/usr/share/fonts/Segment7Standard"
+
+#~ msgid "Segment 7 font used in meters"
+#~ msgstr "La police d'écriture Segmant 7 est utilisé dans les compteurs"
+
+#~ msgid "/usr/share/glib-2.0/schemas/org.zrythm.gschema.xml"
+#~ msgstr "/usr/share/glib-2.0/schemas/org.zrythm.gschema.xml"
+
+#~ msgid "Settings schema"
+#~ msgstr "Schéma de paramétrage"
+
+#~ msgid "The app icon is missing"
+#~ msgstr "L'icône de l'application est manquante"
+
+#~ msgid ""
+#~ "Run `sudo touch /usr/share/icons/hicolor` and"
+#~ " `sudo gtk-update-icon-cache`"
+#~ msgstr ""
+#~ "Exécutez `sudo touch /usr/share/icons/hicolor` "
+#~ "et` sudo gtk-update-icon-cache`"

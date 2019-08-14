@@ -44,3 +44,15 @@ option (
   type: 'boolean',
   value: false,
   description: 'Generate HTML developer docs')
+
+option (
+  'manpage',
+  type: 'boolean',
+  value: false,
+  description: 'Build and install manpage')
+
+option (
+  'user_manual',
+  type: 'boolean',
+  value: false,
+  description: 'Build and install user manual')

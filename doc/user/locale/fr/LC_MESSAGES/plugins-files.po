@@ -1,0 +1,449 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/fr/>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.8-dev\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:19
+msgid "File Browser"
+msgstr "Navigateur de fichier"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:21
+msgid ""
+"The File Browser makes it easy to navigate through files on your computer"
+" or through your custom collections."
+msgstr ""
+"Le navigateur de fichiers facilite la navigation dans les fichiers de "
+"votre ordinateur ou dans vos collections personnalisées."
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:26
+msgid "Filtering"
+msgstr "Filtrage"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:28
+#: ../../plugins-files/audio-midi-files/file-browser.rst:33
+msgid "TODO"
+msgstr "ÀFAIRE"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:31
+msgid "Collections"
+msgstr "Collections"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:36
+msgid "Importing Files"
+msgstr "Importer des fichiers"
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:38
+msgid ""
+"Files are imported by either double clicking them in the browser or "
+"dragging and dropping them into a track."
+msgstr ""
+"Les fichiers sont importés soit en double-cliquant dessus dans le "
+"navigateur, soit en les faisant glisser-déposer dans une piste."
+
+#: ../../plugins-files/audio-midi-files/intro.rst:19
+msgid "Audio & MIDI Files"
+msgstr "Fichiers audio et MIDI"
+
+#: ../../plugins-files/audio-midi-files/overview.rst:19
+#: ../../plugins-files/overview.rst:19
+msgid "Overview"
+msgstr "Vue d'ensemble"
+
+#: ../../plugins-files/audio-midi-files/overview.rst:21
+msgid ""
+"Zrythm can import MIDI and audio files into the project. The files can be"
+" imported by dragging and dropping from your computer or from the File "
+"Browser into a track."
+msgstr ""
+"Zrythm peut importer des fichiers MIDI et audio dans le projet. Les "
+"fichiers peuvent être importés par glisser-déposer depuis votre "
+"ordinateur ou depuis le navigateur de fichiers dans une piste."
+
+#: ../../plugins-files/audio-midi-files/overview.rst:27
+msgid "Supported Audio Formats"
+msgstr "Formats audio pris en charge"
+
+#: ../../plugins-files/audio-midi-files/overview.rst:28
+msgid "Zrythm supports OGG, FLAC, WAV and MP3."
+msgstr "Zrythm prend en charge le OGG, le FLAC, le WAV et le MP3."
+
+#: ../../plugins-files/intro.rst:19
+msgid "Plugins & Files"
+msgstr "Greffons et fichiers"
+
+#: ../../plugins-files/overview.rst:21
+msgid ""
+"Zrythm allows you to drag-n-drop LV2 plugins and various files from the "
+"browsers on the right panel. This section will explain the various "
+"supported plugin and file types and their browsers."
+msgstr ""
+"Zrythm vous permet de glisser-déposer des greffons LV2 et divers fichiers "
+"depuis les navigateurs du panneau de droite. Cette section expliquera les "
+"différents types de greffons et de fichiers pris en charge et leurs "
+"navigateurs."
+
+#: ../../plugins-files/plugins/inspector-page.rst:19
+msgid "Inspector Page"
+msgstr "Page de l'inspecteur"
+
+#: ../../plugins-files/plugins/inspector-page.rst:21
+msgid ""
+"When a Plugin is selected in the Mixer, its page will appear in the "
+"Inspector as follows."
+msgstr ""
+"Lorsqu'un greffon est sélectionné dans le mixeur, sa page apparaîtra dans "
+"l'inspecteur, comme suit."
+
+#: ../../plugins-files/plugins/inspector-page.rst:27
+msgid ""
+"This page will display information about the Plugin and allow you to "
+"route inputs and outputs to each port of the Plugin, for example to route"
+" an LFO output to a Filter Plugin's filter cutoff parameter."
+msgstr ""
+"Cette page affichera des informations sur le greffon et vous permettra de"
+" router les entrées et sorties vers chaque port du greffon, par exemple "
+"pour router une sortie LFO vers le paramètre de coupure du filtre d'un "
+"greffon de filtre."
+
+#: ../../plugins-files/plugins/intro.rst:19
+msgid "Plugins"
+msgstr "Greffons"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:19
+msgid "Plugin Browser"
+msgstr "Navigateur de greffon"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:21
+msgid ""
+"The Plugin Browser makes it easy to browse and filter Plugins installed "
+"on your computer."
+msgstr ""
+"Le navigateur de greffon facilite la navigation et le filtrage des "
+"greffons installés sur votre ordinateur."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:27
+msgid "Filters Tab"
+msgstr "Onglet de filtres"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:28
+msgid ""
+"The filters tab at the top allows you to select how to filter the "
+"Plugins. There are 3 tabs:"
+msgstr ""
+"L'onglet des filtres en haut vous permet de choisir comment filtrer les "
+"greffons. Il y a 3 onglets :"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:33
+msgid "Collection"
+msgstr "Collection"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:32
+msgid ""
+"This tab contains your collections. You can create collections such as "
+"\"MySynths\" and filter by the selected collections."
+msgstr ""
+"Cet onglet contient vos collections. Vous pouvez créer des collections "
+"telles que \"MesSynthés\" et filtrer par collections sélectionnées."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:36
+msgid "Category"
+msgstr "Catégorie"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:36
+msgid ""
+"Filter Plugins by category based on the plugin metadata, such as "
+"\"Delay\", \"Distortion\", etc."
+msgstr ""
+"Filtrer les greffons par catégorie en fonction des métadonnées du greffon, "
+"telles que \"Delay\", \"Distortion\", etc."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:40
+msgid "Protocol"
+msgstr "Protocole"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:39
+msgid ""
+"Allows you to filter plugins based their protocol (LV2 or VST). Not "
+"operational at the moment."
+msgstr ""
+"Permet de filtrer les greffons en fonction de leur protocole (LV2 ou VST). "
+"Non fonctionnel pour le moment."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:43
+msgid "Filter Buttons"
+msgstr "Boutons de filtre"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:44
+msgid ""
+"Additionally to the above, you can filter plugins based on their type. "
+"The following types exist:"
+msgstr ""
+"En plus de ce qui précède, vous pouvez filtrer les greffons en fonction de "
+"leur type. Les types suivants existent :"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:48
+msgid "Instrument"
+msgstr "Instrument"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:48
+msgid "These plugins will create an instrument track when added to the project."
+msgstr ""
+"Ces greffons créeront une piste d'instrument lorsqu'ils seront ajoutés au "
+"projet."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:52
+#: ../../plugins-files/plugins/plugin-types.rst:28
+msgid "Effects"
+msgstr "Effets"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:51
+msgid ""
+"These plugins can be dragged into the insert slots of existing channels "
+"in the mixer or can be instantiated to create new bus tracks."
+msgstr ""
+"Ces greffons peuvent être glissés dans les emplacements d'insertion des "
+"canaux existants dans le mixeur ou peuvent être instanciés pour créer de "
+"nouvelles pistes de bus."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:55
+#: ../../plugins-files/plugins/plugin-types.rst:33
+msgid "Modulators"
+msgstr "Modulateurs"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:55
+msgid ""
+"These plugins output CV signals and can be used to modulate other plugin "
+"or track parameters."
+msgstr ""
+"Ces greffons émettent des signaux CV et peuvent être utilisés pour moduler "
+"d'autres plugins ou paramètres de piste."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:60
+msgid "MIDI Effects"
+msgstr "Effets MIDI"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:58
+msgid ""
+"These plugins modify incoming MIDI signals and can be used in the MIDI "
+"signal chain of an Instrument or MIDI track (coming soon)."
+msgstr ""
+"Ces greffons modifient les signaux MIDI entrants et peuvent être utilisés "
+"dans la chaîne de signal MIDI d'un instrument ou d'une piste MIDI (à venir)."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:63
+msgid "Instantiating Plugins"
+msgstr "Instancier des greffons"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:64
+msgid "There are a couple of ways to instantiate plugins:"
+msgstr "Il y a plusieurs façons d'instancier les greffons :"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:69
+msgid "Drag-n-Drop"
+msgstr "Glisser-déposer"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:67
+msgid ""
+"Drag and drop the selected plugin into empty space in the Tracklist or "
+"into empty space in the Mixer to create a new track using that plugin. If"
+" the plugin is a modulator, you can drop it into the Modulators Tab."
+msgstr ""
+"Glissez-déposez le greffon sélectionné dans un espace vide de la liste des "
+"pistes ou dans un espace vide du mixeur pour créer une nouvelle piste "
+"utilisant ce greffon. Si le greffon est un modulateur, vous pouvez le "
+"déposer dans l'onglet des modulateurs."
+
+#: ../../plugins-files/plugins/plugin-browser.rst:73
+msgid "Double Click/Enter"
+msgstr "Double-clic/entrée"
+
+#: ../../plugins-files/plugins/plugin-browser.rst:72
+msgid ""
+"Double click on the plugin or select it and press the return key on your "
+"keyboard to create a new track using that plugin."
+msgstr ""
+"Double-cliquez sur le greffon ou sélectionnez-le et appuyez sur la touche "
+"Entrée de votre clavier pour créer une nouvelle piste utilisant ce greffon."
+
+#: ../../plugins-files/plugins/plugin-types.rst:19
+msgid "Plugin Types"
+msgstr "Types de greffon"
+
+#: ../../plugins-files/plugins/plugin-types.rst:21
+msgid "There are three types of Plugins in Zrythm."
+msgstr "Il y a trois types de greffons dans Zrythm."
+
+#: ../../plugins-files/plugins/plugin-types.rst:24
+msgid "Instruments"
+msgstr "Instruments"
+
+#: ../../plugins-files/plugins/plugin-types.rst:24
+msgid ""
+"Instruments are Plugins that are used to generate sound, such as synths "
+"or pianos."
+msgstr ""
+"Les instruments sont des greffons qui sont utilisés pour générer du son, "
+"comme les synthés ou les pianos."
+
+#: ../../plugins-files/plugins/plugin-types.rst:27
+msgid ""
+"Effects are Plugins that change the audio signal passed to them. Examples"
+" are Reverb, Chorus and Flanger."
+msgstr ""
+"Les effets sont des greffons qui modifient le signal audio leur étant "
+"passé. Par exemple, des réverbérations, des chorus, et des flangers."
+
+#: ../../plugins-files/plugins/plugin-types.rst:31
+msgid ""
+"Modulators are used to modulate the parameters of other Plugins. These "
+"include LFOs and envelopes."
+msgstr ""
+"Les modulateurs sont utilisés pour moduler les paramètres des autres "
+"greffons. Ils comprennent les LFO et les enveloppes."
+
+#: ../../plugins-files/plugins/plugin-types.rst:36
+msgid "Supported Formats"
+msgstr "Formats pris en charge"
+
+#: ../../plugins-files/plugins/plugin-types.rst:38
+msgid "Zrythm supports LV2 Plugins at the moment."
+msgstr "Zrythm prend en charge les greffons LV2 pour le moment."
+
+#: ../../plugins-files/plugins/plugin-window.rst:19
+msgid "Plugin Window"
+msgstr "Fenêtre de greffon"
+
+#: ../../plugins-files/plugins/plugin-window.rst:21
+msgid ""
+"When Plugin UIs are opened, a window such as the following will be "
+"displayed, if the plugin ships with its own UI."
+msgstr ""
+"Lorsque des interfaces utilisateur de greffon sont ouvertes, une fenêtre "
+"telle que celle-ci s'affiche si le greffon est livré avec sa propre "
+"interface utilisateur."
+
+#: ../../plugins-files/plugins/plugin-window.rst:28
+msgid ""
+"If the plugin does not ship with its own UI, the following generic UI "
+"will be generated for it."
+msgstr ""
+"Si le greffon n'est pas livré avec sa propre interface utilisateur, "
+"l'interface utilisateur générique suivante sera générée pour lui."
+
+#: ../../plugins-files/plugins/ports.rst:19
+msgid "Ports"
+msgstr "Ports"
+
+#: ../../plugins-files/plugins/ports.rst:21
+msgid ""
+"Plugins expose Ports that are used internally to route MIDI and audio "
+"signals to/from and externally for automation."
+msgstr ""
+"Les greffons exposent les ports qui sont utilisés en interne pour router "
+"les signaux MIDI et audio de/vers et à l’extérieur pour l'automatisation."
+
+#: ../../plugins-files/plugins/ports.rst:25
+msgid ""
+"A Port can only be an Input Port or an Output Port and can have one of "
+"the following types."
+msgstr ""
+"Un port ne peut être qu'un port d'entrée ou un port de sortie et peut "
+"avoir l'un des types suivants."
+
+#: ../../plugins-files/plugins/ports.rst:31
+msgid "Audio"
+msgstr "Audio"
+
+#: ../../plugins-files/plugins/ports.rst:29
+msgid ""
+"Ports of this type receive or send raw audio signals. Usually, Effect "
+"Plugins will have at least two of these as inputs for Left and Right, and"
+" at least two as outputs."
+msgstr ""
+"Les ports de ce type reçoivent ou envoient des signaux audio bruts. "
+"Habituellement, les greffons d'effets ont au moins deux de ces derniers "
+"comme entrées pour droite et gauche, et au moins deux comme sorties."
+
+#: ../../plugins-files/plugins/ports.rst:35
+msgid "Event"
+msgstr "Événement"
+
+#: ../../plugins-files/plugins/ports.rst:34
+msgid ""
+"Event Ports are mainly used for routing MIDI signals. Instrument Plugins "
+"will have at least one Event Port."
+msgstr ""
+"Les ports d'événements sont principalement utilisés pour router les "
+"signaux MIDI. Les greffons d'instrument auront au moins un port "
+"d'événement."
+
+#: ../../plugins-files/plugins/ports.rst:39
+msgid "Control"
+msgstr "Contrôle"
+
+#: ../../plugins-files/plugins/ports.rst:38
+msgid ""
+"Control Ports are Plugin parameters that are usually shown inside the "
+"Plugin's UI. These can be automated in automation lanes."
+msgstr ""
+"Les ports de contrôle sont des paramètres de greffon qui sont "
+"généralement affichés à l'intérieur de l'interface utilisateur du "
+"greffon. Ceux-ci peuvent être automatisés dans les voies "
+"d'automatisation."
+
+#: ../../plugins-files/plugins/ports.rst:47
+msgid "CV"
+msgstr "CV"
+
+#: ../../plugins-files/plugins/ports.rst:42
+msgid ""
+"CV Ports are continuous signals that can be fed into or emitted from "
+"Plugins, and are mainly used by the Modulators. Each Modulator will have "
+"at least one CV output Port which can be routed to Plugin Control Ports "
+"for automation."
+msgstr ""
+"Les ports CV sont des signaux continus qui peuvent être nourris ou émis "
+"depuis les greffons, et sont principalement utilisés par les modulateurs."
+" Chaque modulateur aura au moins un port de sortie CV qui peut être routé"
+" vers des ports de contrôle de greffon pour l'automatisation."
+
+#: ../../plugins-files/plugins/ports.rst:49
+msgid ""
+"Usually, only Ports of the same type can be connected, with the exception"
+" of CV ports. CV output Ports may be routed to both CV input Ports and "
+"Control input Ports."
+msgstr ""
+"Habituellement, seuls les ports du même type peuvent être connectés, à "
+"l'exception des ports CV. Les ports de sortie CV peuvent être routés à la"
+" fois vers les ports d'entrée CV et vers les ports d'entrée de contrôle."
+
+#: ../../plugins-files/plugins/ports.rst:54
+msgid "Output Ports may only be routed to Input Ports and vice versa."
+msgstr ""
+"Les ports de sortie ne peuvent être acheminés que vers les ports d'entrée"
+" et vice versa."
+
+#: ../../plugins-files/plugins/ports.rst:58
+msgid ""
+"Channels also have their own Ports, for example for the Fader, Pan, and "
+"Enabled (On/Off)."
+msgstr ""
+"Les canaux ont également leurs propres ports, par exemple pour le Fader, "
+"Pan, et Activé (On/Off)."

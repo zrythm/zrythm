@@ -35,10 +35,16 @@ libexecdir = join_paths (prefix, get_option ('libexecdir'))
 includedir = join_paths (prefix, get_option('includedir'))
 datadir = join_paths (prefix, get_option('datadir'))
 sysconfdir = join_paths (prefix, get_option('sysconfdir'))
+mandir = join_paths (datadir, 'man', 'man1')
 schemasdir = join_paths (datadir, 'glib-2.0/schemas')
 fontsdir = join_paths (datadir, 'fonts', 'zrythm')
 zrythmdatadir = join_paths (datadir, 'zrythm')
 samplesdir = join_paths (zrythmdatadir, 'samples')
+docdir = join_paths (datadir, 'doc', 'zrythm')
+
+# Used for building manpages, manual, etc., using
+# foreach
+locales = ['en', 'de', 'fr', 'ja']
 
 cdata = configuration_data ()
 cdata.set_quoted (
@@ -62,16 +68,16 @@ cdata.set_quoted (
 cdata.set_quoted (
   'NEW_ISSUE_URL',
   'https://savannah.nongnu.org/support/?func=additem&group=zrythm')
+cdata.set (
+  'HAVE_MANUAL',
+  get_option ('user_manual') ? 1 : 0)
 
 os_darwin = false
-os_win32 = false
 os_linux = false
 os_freebsd = false
 
 if host_machine.system() == 'darwin'
   os_darwin = true
-elif host_machine.system() == 'windows'
-  os_win32 = true
 elif host_machine.system() == 'linux'
   os_linux = true
 elif host_machine.system() == 'freebsd'
@@ -109,16 +115,16 @@ cc = meson.get_compiler ('c')
 
 # Check for programs
 find_program ('sed', required: true)
+sphinx_build = find_program (
+  ['sphinx-build', 'sphinx-build-3'],
+  required: get_option ('user_manual'))
+help2man = find_program (
+  ['help2man'],
+  required: get_option ('manpage'))
 
 check_headers = [
   'unistd.h',
   ]
-if (os_win32)
-  check_headers += [
-    'windows.h',
-    'dlfcn.h',
-    ]
-endif
 
 foreach h : check_headers
   if cc.has_header(h)
@@ -178,16 +184,9 @@ if get_option ('enable_profiling')
   test_cflags += [ '-g', '-pg', 'no-pie' ]
 endif
 
-if (os_win32)
-  test_cflags += [
-    '-mms-bitfields',
-    '-mwindows',
-    ]
-else
-  test_cflags += [
-    '-fPIC',
-    ]
-endif
+test_cflags += [
+  '-fPIC',
+  ]
 
 common_cflags = []
 foreach f : test_cflags
@@ -202,25 +201,13 @@ if get_option ('enable_profiling')
   test_ldflags += [ '-g', '-pg', 'no-pie' ]
 endif
 
-if os_win32
-  test_ldflags += [
-    '-fno-stack-protector',
-    '-lws2_32',
-    '-static',
-    '-static-libgcc',
-    '-static-libstdc++',
-    '-Wl,-Bdynamic',
-    '-Wl,-as-needed',
-    ]
-endif
-
 if os_linux
   test_ldflags += [
     '-lasound',
     ]
 endif
 
-if not os_win32 and not os_darwin
+if not os_darwin
   test_ldflags += [
     '-lm',
     ]
@@ -352,8 +339,10 @@ summary = [
   '  Profiling: @0@'.format(
     get_option('enable_profiling')),
   '  Build Tests: @0@'.format(get_option('enable_tests')),
-  '  Generate Developer Docs: @0@'.format(get_option('gen_dev_docs')),
-  '  Coverage Reports: @0@'.format(get_option('b_coverage')),
+  '  Generate developer docs: @0@'.format(get_option('gen_dev_docs')),
+  '  Build/install manpage: @0@'.format(get_option('manpage')),
+  '  Build/install user manual: @0@'.format(get_option('user_manual')),
+  '  Coverage reports: @0@'.format(get_option('b_coverage')),
   '  Optional libraries:',
   '    ffmpeg: @0@'.format(get_option('enable_ffmpeg')),
   '    Qt5: @0@'.format(get_option('enable_qt5') and qt5_dep.found()),

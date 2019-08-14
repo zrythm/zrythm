@@ -1,0 +1,25 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-05-04 08:01+0100\n"
+"PO-Revision-Date: 2019-05-18 15:50+0000\n"
+"Last-Translator: Nicolas Faure <sub26nico@laposte.net>\n"
+"Language-Team: French <https://translate.zrythm.org/projects/zrythm/"
+"manual-control-surfaces/fr/>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.6.1\n"
+"Generated-By: Babel 2.6.0\n"
+
+#: ../../control-surfaces/intro.rst:2
+msgid "Control Surfaces"
+msgstr "Surfaces de contrôle"

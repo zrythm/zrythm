@@ -1,0 +1,53 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-06-12 12:26+0100\n"
+"PO-Revision-Date: 2019-07-07 03:09+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualmodulators/ja/>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.8-dev\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../modulators/adding-modulators.rst:2
+msgid "Adding Modulators"
+msgstr ""
+
+#: ../../modulators/adding-modulators.rst:4
+msgid "Modulators are Plugins that have at least one CV output port."
+msgstr ""
+
+#: ../../modulators/adding-modulators.rst:7
+#: ../../modulators/routing-modulators.rst:4
+msgid "TODO"
+msgstr "TODO"
+
+#: ../../modulators/intro.rst:2
+msgid "Modulators"
+msgstr ""
+
+#: ../../modulators/modulators-tab.rst:2
+msgid "Modulators Tab"
+msgstr ""
+
+#: ../../modulators/modulators-tab.rst:4
+msgid ""
+"Zrythm has a Modulators tab in the bottom panel that can hold any number "
+"of Modulators. Modulators are associated with Tracks, so each Track will "
+"have its own list of Modulators."
+msgstr ""
+
+#: ../../modulators/routing-modulators.rst:2
+msgid "Routing Modulators"
+msgstr ""

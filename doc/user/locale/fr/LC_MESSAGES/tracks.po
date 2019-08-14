@@ -1,0 +1,284 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-06-12 12:26+0100\n"
+"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/fr/>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.8-dev\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../tracks/chord-track/intro.rst:2 ../../tracks/track-types.rst:25
+msgid "Chord Track"
+msgstr "Piste d'accord"
+
+#: ../../tracks/chord-track/intro.rst:4
+msgid ""
+"The Chord Track contains chord and scale objects that are used to specify"
+" when the song is using a particular chord or scale."
+msgstr ""
+"La piste d'accords contient des objets d'accords et de gammes qui sont "
+"utilisés pour spécifier quand le morceau utilise un accord ou une gamme "
+"particulière."
+
+#: ../../tracks/creating-tracks.rst:2
+msgid "Creating Tracks"
+msgstr "Créer des pistes"
+
+#: ../../tracks/creating-tracks.rst:5
+msgid "Blank Tracks"
+msgstr "Pistes vierges"
+
+#: ../../tracks/creating-tracks.rst:7
+msgid ""
+"To add an empty track, right click on empty space in the Tracklist and "
+"select the type of track you want to add."
+msgstr ""
+"Pour ajouter une piste vide, cliquez avec le bouton droit de la souris sur "
+"l'espace vide dans la Liste des pistes et sélectionnez le type de piste que "
+"vous voulez ajouter."
+
+#: ../../tracks/creating-tracks.rst:11
+msgid "Creating Tracks From Plugins"
+msgstr "Créer des pistes à partir des greffons"
+
+#: ../../tracks/creating-tracks.rst:13
+msgid ""
+"Plugins can be clicked and dragged from the Plugin Browser and dropped "
+"into empty space in the Tracklist or Mixer to instantiate them. If the "
+"plugin is an Instrument plugin, an Instrument Track will be created. If "
+"the plugin is an effect, a Bus Track will be created."
+msgstr ""
+"Les greffons peuvent être cliqués et glissés depuis le navigateur de "
+"greffons et déposés dans l'espace vide de la Tracklist ou du Mixeur pour les "
+"instancier. Si le greffon est un greffon Instrument, une piste Instrument "
+"sera créée. Si le greffon est un effet, une piste de bus sera créée."
+
+#: ../../tracks/creating-tracks.rst:20
+msgid "Creating Audio Tracks From Audio Files"
+msgstr "Créer des pistes audio à partir de fichiers Audio"
+
+#: ../../tracks/creating-tracks.rst:22
+msgid ""
+"Likewise, to create an Audio Track from an audio file (WAV, FLAC, etc.), "
+"you can drag an audio file from the File Browser into empty space in the "
+"Tracklist or Mixer. This will create an Audio Track containing a single "
+"Audio Clip at the current Playhead position."
+msgstr ""
+"De même, pour créer une piste Audio à partir d'un fichier Audio (WAV, FLAC, "
+"etc.), vous pouvez faire glisser un fichier Audio depuis le navigateur de "
+"fichiers dans un espace vide de la liste de pistes ou du Mixeur. Ceci créera "
+"une piste audio contenant un seul clip audio à la position actuelle de la "
+"tête de lecture."
+
+#: ../../tracks/creating-tracks.rst:29
+msgid "Duplicating Tracks"
+msgstr "Dupliquer des pistes"
+
+#: ../../tracks/creating-tracks.rst:31
+msgid ""
+"Most Tracks can be duplicated by right clicking inside the Track and "
+"selecting :zbutton:`Duplicate`."
+msgstr ""
+"La plupart des pistes peuvent être dupliquées en faisant un clic droit dans "
+"la piste et en sélectionnant :zbutton:`Dupliquer`."
+
+#: ../../tracks/instrument-track.rst:2 ../../tracks/track-types.rst:9
+msgid "Instrument Track"
+msgstr "Piste d'instrument"
+
+#: ../../tracks/instrument-track.rst:4
+msgid ""
+"The Instrument Track is used for synths and other instruments. The first "
+"plugin in the strip of the Instrument Track's channel must be an "
+"instrument plugin. This is done automatically when Instrument Tracks are "
+"created from instrument plugins."
+msgstr ""
+"La piste d'instruments est utilisée pour les synthés et autres instruments. "
+"Le premier greffon dans la bande du canal de la piste Instrument doit être "
+"un greffon instrument. Ceci se fait automatiquement lorsque les pistes "
+"instrument sont créées à partir des greffons instrument."
+
+#: ../../tracks/instrument-track.rst:12
+msgid "Track View"
+msgstr "Vue de la piste"
+
+#: ../../tracks/instrument-track.rst:14 ../../tracks/track-context-menu.rst:4
+msgid "TODO"
+msgstr "ÀFAIRE"
+
+#: ../../tracks/intro.rst:2
+msgid "Tracks"
+msgstr "Pistes"
+
+#: ../../tracks/overview.rst:2
+msgid "Overview"
+msgstr "Vue d'ensemble"
+
+#: ../../tracks/overview.rst:4
+msgid ""
+"Tracks are the main building blocks of projects. Tracks appear in the "
+"Tracklists (one pinned at the top and one non-pinned) and contain various"
+" information such as regions and automation points."
+msgstr ""
+"Les pistes sont les principaux éléments constitutifs des projets. Les pistes "
+"apparaissent dans les listes de pistes (une épinglée en haut et une non "
+"épinglée) et contiennent diverses informations telles que les régions et les "
+"points d'automatisation."
+
+#: ../../tracks/overview.rst:10
+msgid ""
+"Most types of Tracks have a Channel that appears in the mixer. Each Track"
+" has its own page in the Inspector section, which is shown when selecting"
+" a Track."
+msgstr ""
+"La plupart des types de pistes ont un canal qui apparaît dans le mélangeur. "
+"Chaque piste a sa propre page dans la section Inspecteur, qui s'affiche "
+"lorsque vous sélectionnez une piste."
+
+#: ../../tracks/overview.rst:15
+msgid ""
+"There are various kinds of Tracks suited for different purposes, "
+"explained in the following sections."
+msgstr ""
+"Il existe différents types de pistes adaptées à différents usages, expliqués "
+"dans les sections suivantes."
+
+#: ../../tracks/track-context-menu.rst:2
+msgid "Track Context Menu"
+msgstr "Menu contextuel de la piste"
+
+#: ../../tracks/track-operations.rst:2
+msgid "Track Operations"
+msgstr "Opérations de piste"
+
+#: ../../tracks/track-operations.rst:5
+msgid "Moving Tracks"
+msgstr "Déplacer les pistes"
+
+#: ../../tracks/track-operations.rst:6
+msgid ""
+"Tracks can be moved by clicking and dragging inside empty space in the "
+"Track, and dropping it at another location. The drop locations will be "
+"highlighted as you move the Track."
+msgstr ""
+"Les pistes peuvent être déplacées en cliquant et glissant à l'intérieur d'un "
+"espace vide dans la piste, et en le déposant à un autre endroit. Les "
+"emplacements de dépôt seront mis en évidence au fur et à mesure que vous "
+"déplacez la piste."
+
+#: ../../tracks/track-operations.rst:12
+msgid "Deleting Tracks"
+msgstr "Supprimer les pistes"
+
+#: ../../tracks/track-operations.rst:14
+msgid ""
+"Tracks can be deleted by right-clicking them and selecting "
+":zbutton:`Delete`."
+msgstr ""
+"Les pistes peuvent être effacées en cliquant avec le bouton droit de la "
+"souris et en sélectionnant :zbutton:`Effacer`."
+
+#: ../../tracks/track-operations.rst:18
+msgid "All Track operations are undoable."
+msgstr "Toutes les opérations de pistes sont annulables."
+
+#: ../../tracks/track-types.rst:2
+msgid "Track Types"
+msgstr "Types de piste"
+
+#: ../../tracks/track-types.rst:4
+msgid ""
+"Zrythm has the following types of Tracks, and they are explained further "
+"in their own sections."
+msgstr ""
+"Zrythm a les types de pistes suivants, et ils sont expliqués plus en détail "
+"dans leurs propres sections."
+
+#: ../../tracks/track-types.rst:8
+msgid ""
+"A Track that contains regions holding MIDI notes. It also has automation "
+"lanes for automating its components."
+msgstr ""
+"Une piste qui contient des régions contenant des notes MIDI. Il dispose "
+"également de voies d'automatisation pour l'automatisation de ses composants."
+
+#: ../../tracks/track-types.rst:11
+msgid "Audio Track"
+msgstr "Piste audio"
+
+#: ../../tracks/track-types.rst:12
+msgid "A Track containing audio regions, cross-fades, fades and automation."
+msgstr ""
+"Une piste contenant des régions audio, des fondus enchaînés, des fondus et "
+"de l'automatisation."
+
+#: ../../tracks/track-types.rst:13
+msgid "Bus Track"
+msgstr "Piste de bus"
+
+#: ../../tracks/track-types.rst:14
+msgid "A Track corresponding to a mixer bus. Bus tracks only contain automation"
+msgstr ""
+"Une piste correspondant à un bus mélangeur. Les pistes de bus ne contiennent "
+"que de l'automatisation"
+
+#: ../../tracks/track-types.rst:15
+msgid "Master Track"
+msgstr "Piste Master"
+
+#: ../../tracks/track-types.rst:16
+msgid ""
+"The Master track is a special type of Bus Track that controls the master "
+"fader and contains additional automation options."
+msgstr ""
+"La piste Master est un type spécial de piste de bus qui contrôle le fader "
+"maître et contient des options d'automatisation supplémentaires."
+
+#: ../../tracks/track-types.rst:21
+msgid "Group Track"
+msgstr "Piste de groupe"
+
+#: ../../tracks/track-types.rst:18
+msgid ""
+"A Group Track is used to route signals from multiple Tracks into one "
+"Track. It behaves like a Bus Track with the exception that other Tracks "
+"can route their output signal directly into Group Track."
+msgstr ""
+"Une piste de groupe est utilisée pour acheminer les signaux de plusieurs "
+"pistes vers une seule piste. Il se comporte comme une piste de bus, à "
+"l'exception que d'autres pistes peuvent acheminer leur signal de sortie "
+"directement dans la piste de groupe."
+
+#: ../../tracks/track-types.rst:24
+msgid ""
+"A Chord Track is a special kind of Track that contains chords and scales "
+"and is a great tool for assisting with chord progressions."
+msgstr ""
+"Une piste d'accord est un type spécial de piste qui contient des accords et "
+"des gammes et est un excellent outil pour aider à la progression des accords."
+
+#: ../../tracks/track-types.rst:30
+msgid "Marker Track"
+msgstr "Piste de marqueur"
+
+#: ../../tracks/track-types.rst:28
+msgid ""
+"A Marker Track is a special kind of Track that contains song markers - "
+"either custom or pre-defined ones like the song start and end markers."
+msgstr ""
+"Une piste de marqueur est un type spécial de piste qui contient des "
+"marqueurs de morceau - personnalisés ou prédéfinis comme les marqueurs de "
+"début et de fin de morceau."

@@ -1,0 +1,104 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualappendix/ja/>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.8-dev\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../appendix/files-and-directories.rst:19
+msgid "Files and Directories"
+msgstr "ファイルとディレクトリ"
+
+#: ../../appendix/files-and-directories.rst:22
+msgid "Installed Files"
+msgstr "インストールされるファイル"
+
+#: ../../appendix/files-and-directories.rst:23
+msgid "When Zrythm is installed, it installs the following files by default:"
+msgstr "Zrythmがインストールされると、デフォルトで次のファイルをインストールします。"
+
+#: ../../appendix/files-and-directories.rst:116
+msgid "Project Files"
+msgstr "プロジェクトファイル"
+
+#: ../../appendix/files-and-directories.rst:117
+msgid ""
+"When Zrythm is launched for the first time, it will also ask you to "
+"select a folder for saving your projects and other project-related files."
+msgstr "Zrythm を初めて起動すると、プロジェクトやその他のプロジェクト関連ファイルを保存するフォルダを選択するよう求めてきます。"
+
+#: ../../appendix/files-and-directories.rst:121
+msgid "By default, this will be ``~/zrythm``"
+msgstr "デフォルトでは、これは ``~/zrythm``になります"
+
+#: ../../appendix/intro.rst:19
+msgid "Appendix"
+msgstr "付録"
+
+#: ../../appendix/menu-actions.rst:19
+msgid "Menu Actions"
+msgstr "メニューアクション"
+
+#: ../../appendix/shortcut-keys.rst:19
+msgid "Shortcut Keys"
+msgstr "ショートカット キー"
+
+#: ../../appendix/shortcut-keys.rst:22
+msgid "Global Shortcuts"
+msgstr "一般のショートカットキー"
+
+#: ../../appendix/shortcut-keys.rst:27
+msgid "Editor Shortcuts"
+msgstr "編集画面のショートカット"
+
+#: ../../appendix/troubleshooting.rst:19
+msgid "Troubleshooting"
+msgstr "トラブルシューティング"
+
+#: ../../appendix/troubleshooting.rst:21
+msgid "TODO"
+msgstr "TODO"
+
+#~ msgid "/bin/zrythm"
+#~ msgstr "/bin/zrythm"
+
+#~ msgid "Zrythm executable"
+#~ msgstr "Zrythm実行ファイル"
+
+#~ msgid "/usr/share/fonts/Segment7Standard"
+#~ msgstr "/usr/share/fonts/Segment7Standard"
+
+#~ msgid "Segment 7 font used in meters"
+#~ msgstr "メータに使用しているセグメント７のフォント"
+
+#~ msgid "/usr/share/glib-2.0/schemas/org.zrythm.gschema.xml"
+#~ msgstr "/usr/share/glib-2.0/schemas/org.zrythm.gschema.xml"
+
+#~ msgid "Settings schema"
+#~ msgstr "設定のスキーマ"
+
+#~ msgid "The app icon is missing"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Run `sudo touch /usr/share/icons/hicolor` and"
+#~ " `sudo gtk-update-icon-cache`"
+#~ msgstr ""
+#~ "アプリのアイコンが見つからない　'sudo touch "
+#~ "/usr/share/icons/hicolor' と `sudo gtk-"
+#~ "update-icon-cache'を実行してください"

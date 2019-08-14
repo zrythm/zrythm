@@ -1,0 +1,257 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"PO-Revision-Date: 2019-06-24 06:42+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language: ja\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/zrythm/manualcontributing/ja/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../contributing/designing.rst:19
+msgid "Designing"
+msgstr ""
+
+#: ../../contributing/designing.rst:21
+msgid ""
+"If you want to help improve the appearance Zrythm itself and its website,"
+" forum, manual, etc., please come join the `chat "
+"<https://riot.im/app/#/room/#freenode_#zrythm:matrix.org?action=chat>`_."
+msgstr ""
+
+#: ../../contributing/designing.rst:25
+msgid ""
+"Zrythm itself is fully CSS-themable, and the overall UI structure can "
+"easily be edited in Glade without touching any code."
+msgstr ""
+
+#: ../../contributing/donating.rst:19
+msgid "Donating"
+msgstr ""
+
+#: ../../contributing/donating.rst:21
+msgid ""
+"Donations are vital to keep the project running smoothly. If you can "
+"afford to do so please consider becoming a patron or supporting us below."
+msgstr ""
+
+#: ../../contributing/donating.rst:25
+msgid ""
+"`PayPal <https://www.paypal.com/cgi-bin/webscr?cmd=_s-"
+"xclick&hosted_button_id=LZWVK6228PQGE&source=url>`_"
+msgstr ""
+
+#: ../../contributing/donating.rst:26
+msgid "PayPal recurring or non-recurring donation."
+msgstr ""
+
+#: ../../contributing/donating.rst:27
+msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
+msgstr ""
+
+#: ../../contributing/donating.rst:28
+msgid ""
+"LiberaPay is a recurring donations platform for funding developers and "
+"creators, ran by a French non-profit."
+msgstr ""
+
+#: ../../contributing/donating.rst:29
+msgid "Bitcoin"
+msgstr ""
+
+#: ../../contributing/donating.rst:30
+msgid ""
+"Anonymous cryptocurrency donation. Please use: "
+"bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j"
+msgstr ""
+
+#: ../../contributing/editing-documentation.rst:19
+msgid "Editing Documentation"
+msgstr ""
+
+#: ../../contributing/editing-documentation.rst:21
+msgid ""
+"This documentation can be edited via https://git.zrythm.org/zrythm"
+"/zrythm-docs"
+msgstr ""
+
+#: ../../contributing/intro.rst:19
+msgid "Contributing"
+msgstr ""
+
+#: ../../contributing/testing.rst:19
+msgid "Testing"
+msgstr ""
+
+#: ../../contributing/testing.rst:21
+msgid ""
+"You can fetch the latest master branch from "
+"https://git.zrythm.org/cgit/zrythm/snapshot/zrythm-master.tar.gz and "
+"start testing the latest features. You can report any bugs, ideas and "
+"impressions by creating an issue on `Savannah "
+"<https://savannah.nongnu.org/support/?group=zrythm>`_."
+msgstr ""
+
+#: ../../contributing/testing.rst:25
+msgid ""
+"If you are on Arch Linux or derivatives such as Parabola, the latest "
+"master branch can be installed via the ``zrythm-git`` package in AUR."
+msgstr ""
+
+#: ../../contributing/testing.rst:29
+msgid ""
+"See the ``README.md`` file in the distribution for installation "
+"instructions."
+msgstr ""
+
+#: ../../contributing/translating.rst:19
+msgid "Translating"
+msgstr ""
+
+#: ../../contributing/translating.rst:21
+msgid ""
+"Zrythm is available for translation at Hosted Weblate. Visit the `Zrythm "
+"project page "
+"<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ to start "
+"translating."
+msgstr ""
+
+#: ../../contributing/translating.rst:23
+msgid "The Zrythm translation project contains the following components:"
+msgstr ""
+
+#: ../../contributing/translating.rst:26
+msgid "Zrythm"
+msgstr "Zrythm"
+
+#: ../../contributing/translating.rst:26
+msgid "The actual Zrythm program"
+msgstr ""
+
+#: ../../contributing/translating.rst:29
+msgid "website"
+msgstr ""
+
+#: ../../contributing/translating.rst:29
+msgid "The Zrythm website (https://www.zrythm.org)"
+msgstr ""
+
+#: ../../contributing/translating.rst:32
+msgid "Manual - *"
+msgstr ""
+
+#: ../../contributing/translating.rst:32
+msgid "Sections of this manual"
+msgstr ""
+
+#: ../../contributing/translating.rst:34
+msgid ""
+"Click on the project you wish to work on, and then select a language in "
+"the screen that follows. For more information on using Weblate, please "
+"see the `official documentation "
+"<https://docs.weblate.org/en/latest/user/translating.html>`_ of Weblate."
+msgstr ""
+
+#: ../../contributing/writing-code.rst:19
+msgid "Writing Code"
+msgstr ""
+
+#: ../../contributing/writing-code.rst:21
+msgid ""
+"Please see the `Contribution Guide "
+"<https://docs.zrythm.org/md_CONTRIBUTING.html>`_ and check out the "
+"`Developer Docs <https://docs.zrythm.org/>`_."
+msgstr ""
+
+#~ msgid ""
+#~ "If you would like to help design"
+#~ " Zrythm itself, the Zrythm website, "
+#~ "or this documentation, feel free to "
+#~ "reach us out in the `chatrooms "
+#~ "<https://git.zrythm.org/zrythm/zrythm#Chatrooms>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Donations are very welcome and vital "
+#~ "to keep the project running smoothly."
+#~ " They can be made through:"
+#~ msgstr ""
+
+#~ msgid "`PayPal <https://paypal.me/alextee90>`_"
+#~ msgstr ""
+
+#~ msgid "direct donation to the lead developer"
+#~ msgstr ""
+
+#~ msgid "`Liberapay <https://liberapay.com/alextee>`_"
+#~ msgstr ""
+
+#~ msgid "libre recurring donations platform run by a French non-profit"
+#~ msgstr ""
+
+#~ msgid "anonoymous cryptocurrency donation (coming soon)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm has a Weblate instance for "
+#~ "easy web-based translation. To start "
+#~ "translating, first visit the `Zrythm "
+#~ "project page "
+#~ "<https://translate.zrythm.org/projects/zrythm/>`_. You "
+#~ "should see the following screen."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Please see the `Contribution Guide "
+#~ "<https://git.zrythm.org/zrythm/zrythm/blob/master/CONTRIBUTING.md>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Anonoymous cryptocurrency donation. Please "
+#~ "use: bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Please see the `Contribution Guide "
+#~ "<https://git.zrythm.org/zrythm/zrythm/blob/master/CONTRIBUTING.md>`_"
+#~ " and check out the `Developer Docs"
+#~ " <https://docs.zrythm.org/>`_.."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "You can fetch the latest master "
+#~ "branch from https://git.zrythm.org/zrythm/zrythm and"
+#~ " start testing the latest features. "
+#~ "You can report any bugs, ideas and"
+#~ " impressions by creating an issue "
+#~ "there."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you are on Arch Linux or "
+#~ "Debian, the latest master branch can "
+#~ "easily be installed via the zrythm-"
+#~ "git package on AUR or by "
+#~ "installing an auto-generated .deb file."
+#~ " More information at `Installation "
+#~ "Instructions "
+#~ "<https://git.zrythm.org/zrythm/zrythm#installation>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Manual installation instructions can be "
+#~ "found `here "
+#~ "<https://git.zrythm.org/zrythm/zrythm/blob/master/INSTALL.md>`_."
+#~ msgstr ""
+

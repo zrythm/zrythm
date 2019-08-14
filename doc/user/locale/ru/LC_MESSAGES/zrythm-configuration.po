@@ -1,0 +1,159 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-04-24 18:35+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.6.0\n"
+
+#: ../../zrythm-configuration/device-setup/intro.rst:2
+msgid "Device Setup"
+msgstr ""
+
+#: ../../zrythm-configuration/device-setup/intro.rst:5
+msgid "Connecting MIDI and Audio Devices"
+msgstr ""
+
+#: ../../zrythm-configuration/device-setup/intro.rst:6
+msgid ""
+"Zrythm exposes ports to JACK. Devices can be attached there. Note that "
+"for MIDI, devices need to be bridged using ``a2jmidid``."
+msgstr ""
+
+#: ../../zrythm-configuration/device-setup/intro.rst:8
+msgid "An example configuration looks like this (in Catia inside Cadence)"
+msgstr ""
+
+#: ../../zrythm-configuration/installation/intro.rst:2
+msgid "Installation"
+msgstr ""
+
+#: ../../zrythm-configuration/installation/intro.rst:5
+msgid "Official Builds"
+msgstr ""
+
+#: ../../zrythm-configuration/installation/intro.rst:6
+msgid ""
+"You can install the latest version of Zrythm for your distro `here "
+"<https://software.opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_"
+msgstr ""
+
+#: ../../zrythm-configuration/installation/intro.rst:8
+msgid "You will be presented with the following"
+msgstr ""
+
+#: ../../zrythm-configuration/installation/intro.rst:12
+msgid "This is the recommended way to install the latest version."
+msgstr ""
+
+#: ../../zrythm-configuration/installation/intro.rst:15
+msgid "KX Studios"
+msgstr ""
+
+#: ../../zrythm-configuration/installation/intro.rst:16
+msgid ""
+"Thanks to falktx, Zrythm is also available in the `KX Studio repos "
+"<http://kxstudio.linuxaudio.org/>`_ for Debian users"
+msgstr ""
+
+#: ../../zrythm-configuration/installation/intro.rst:19
+msgid "AUR"
+msgstr ""
+
+#: ../../zrythm-configuration/installation/intro.rst:20
+msgid ""
+"For Arch GNU/Linux users, Zrythm is also available in the AUR under "
+"`zrythm <https://aur.archlinux.org/packages/zrythm/>`_ and `zrythm-git "
+"<https://aur.archlinux.org/packages/zrythm-git/>`_"
+msgstr ""
+
+#: ../../zrythm-configuration/installation/intro.rst:23
+msgid "Manual Installation"
+msgstr ""
+
+#: ../../zrythm-configuration/installation/intro.rst:24
+msgid "The usual GNU toolchain procedure applies::"
+msgstr ""
+
+#: ../../zrythm-configuration/installation/intro.rst:31
+msgid ""
+"Type ``./configure --help`` for available options. We recommend using "
+"``--enable-qt5 --enable-ffmpeg`` to get the most functionality."
+msgstr ""
+
+#: ../../zrythm-configuration/intro.rst:2
+msgid "Configuration"
+msgstr ""
+
+#: ../../zrythm-configuration/preferences/audio.rst:2
+msgid "Audio"
+msgstr ""
+
+#: ../../zrythm-configuration/preferences/intro.rst:2
+msgid "Preferences"
+msgstr ""
+
+#: ../../zrythm-configuration/system-requirements/intro.rst:2
+msgid "System Requirements"
+msgstr ""
+
+#: ../../zrythm-configuration/system-requirements/intro.rst:5
+msgid "Minimum Requirements"
+msgstr ""
+
+#: ../../zrythm-configuration/system-requirements/intro.rst:6
+msgid ""
+"We don't know yet. The oldest machine tested on was T400 and it was a bit"
+" laggy. If you have any experiences with older machines please let us "
+"know."
+msgstr ""
+
+#: ../../zrythm-configuration/system-requirements/intro.rst:9
+msgid "Recommended Requirements"
+msgstr ""
+
+#: ../../zrythm-configuration/system-requirements/intro.rst:10
+msgid "We recommend running a fairly modern machine."
+msgstr ""
+
+#: ../../zrythm-configuration/system-requirements/intro.rst:13
+msgid "Audio Interface"
+msgstr ""
+
+#: ../../zrythm-configuration/system-requirements/intro.rst:14
+msgid ""
+"An Audio Interface is recommended as it offers low latency and better "
+"quality (especially if recording audio)."
+msgstr ""
+
+#: ../../zrythm-configuration/system-requirements/intro.rst:17
+msgid "JACK"
+msgstr ""
+
+#: ../../zrythm-configuration/system-requirements/intro.rst:18
+msgid ""
+"JACK needs to be set up and configured before running Zrythm. We "
+"recommend using `Cadence "
+"<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, as it makes "
+"the process very easy."
+msgstr ""
+
+#: ../../zrythm-configuration/system-requirements/intro.rst:20
+msgid "Open Cadence"
+msgstr ""
+
+#: ../../zrythm-configuration/system-requirements/intro.rst:24
+msgid "Click Configure and select your Audio Interface"
+msgstr ""
+

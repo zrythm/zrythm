@@ -1,0 +1,191 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../projects/creating-projects.rst:19
+msgid "Creating Projects"
+msgstr ""
+
+#: ../../projects/creating-projects.rst:21
+msgid ""
+"When Zrythm first starts, it will ask you to either load a Project or "
+"create a new one. By default, Zrythm will use ~/username/Zrythm to create"
+" new Projects."
+msgstr ""
+
+#: ../../projects/intro.rst:19
+msgid "Projects"
+msgstr ""
+
+#: ../../projects/project-info.rst:19
+msgid "Project Info"
+msgstr ""
+
+#: ../../projects/project-info.rst:21
+msgid ""
+"In Zrythm, your work is saved inside a Project. Projects consist of a "
+"folder with a YAML file describing the Project and additional files used "
+"such as MIDI and audio files."
+msgstr ""
+
+#: ../../projects/project-info.rst:26
+msgid "Here is an example of a simple project file:"
+msgstr ""
+
+#: ../../projects/project-management-and-compatibility.rst:19
+msgid "Project Management and Compatibility"
+msgstr ""
+
+#: ../../projects/project-management-and-compatibility.rst:21
+msgid ""
+"For at least the time being, Zrythm follows a rolling release model and "
+"project file structure is subject to change at each new release. No "
+"compatibility will be maintained between version changes in order to give"
+" more time to feature development and fixes."
+msgstr ""
+
+#: ../../projects/project-management-and-compatibility.rst:26
+msgid ""
+"It may be possible to open projects from previous versions if there was "
+"no change in the project file structure, but this is not guaranteed, so "
+"if you would like to open a project made using a previous version please "
+"install that version of Zrythm."
+msgstr ""
+
+#: ../../projects/project-management-and-compatibility.rst:32
+msgid "Each project file will contain the version of Zrythm it was made with"
+msgstr ""
+
+#: ../../projects/saving-loading.rst:19
+msgid "Saving & Loading"
+msgstr ""
+
+#: ../../projects/saving-loading.rst:21
+msgid ""
+"Saving works as you would expect: :zbutton:`Save As...` will save the "
+"Project in a new location and :zbutton:`Save` will save the Project in "
+"the previous location."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:25
+msgid ""
+"When loading a Project, Zrythm expects you to give it the Project "
+"directory."
+msgstr ""
+
+#~ msgid "Importing/Exporting Audio"
+#~ msgstr ""
+
+#~ msgid "Importing/Exporting MIDI"
+#~ msgstr ""
+
+#~ msgid "Importing and Exporting"
+#~ msgstr ""
+
+#~ msgid "Adding Tracks"
+#~ msgstr ""
+
+#~ msgid "Blank Tracks"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "To add an empty track, right click"
+#~ " on empty space in the Tracklist "
+#~ "and select the type of track you"
+#~ " want to add."
+#~ msgstr ""
+
+#~ msgid "Creating Tracks From Plugins"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Plugins can be clicked and dragged "
+#~ "from the Plugin Browser and dropped "
+#~ "into empty space in the Tracklist "
+#~ "or Mixer to instantiate them. If "
+#~ "the plugin is an Instrument plugin, "
+#~ "an Instrument Track will be created. "
+#~ "If the plugin is an effect, a "
+#~ "Bus Track will be created."
+#~ msgstr ""
+
+#~ msgid "Creating Audio Tracks From Audio Files"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Likewise, to create an Audio Track "
+#~ "from an audio file (WAV, FLAC, "
+#~ "etc.), you can drag an audio file"
+#~ " from the File Browser into empty "
+#~ "space in the Tracklist or Mixer. "
+#~ "This will create an Audio Track "
+#~ "containing a single Audio Clip at "
+#~ "the current Playhead position."
+#~ msgstr ""
+
+#~ msgid "Tracks"
+#~ msgstr ""
+
+#~ msgid "Reordering Tracks"
+#~ msgstr ""
+
+#~ msgid "Track Context Menu"
+#~ msgstr ""
+
+#~ msgid "Track Overview"
+#~ msgstr ""
+
+#~ msgid "Tracks contain regions and automation that is used to make up the song."
+#~ msgstr ""
+
+#~ msgid "Track Types"
+#~ msgstr ""
+
+#~ msgid "The following track types exist:"
+#~ msgstr ""
+
+#~ msgid "Instrument Track"
+#~ msgstr ""
+
+#~ msgid "track containing MIDI regions and automation"
+#~ msgstr ""
+
+#~ msgid "Audio Track"
+#~ msgstr ""
+
+#~ msgid "track containing audio regions, cross-fades, fades and automation"
+#~ msgstr ""
+
+#~ msgid "Bus Track"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "a track corresponding to a mixer "
+#~ "bus. bus tracks only contain automation"
+#~ msgstr ""
+
+#~ msgid "Master Track"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "the Master track is a special type"
+#~ " of bus track that controls the "
+#~ "master fader and contains additional "
+#~ "automation options."
+#~ msgstr ""
+

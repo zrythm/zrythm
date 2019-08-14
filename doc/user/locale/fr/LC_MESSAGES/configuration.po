@@ -1,0 +1,561 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/fr/>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.8-dev\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../configuration/additional-settings.rst:19
+msgid "Additional Settings"
+msgstr "Paramètres additionnels"
+
+#: ../../configuration/additional-settings.rst:21
+msgid ""
+"Zrythm stores all of its configuration using the GSettings mechanism, "
+"which comes with the ``gsettings`` command for changing settings from the"
+" command line."
+msgstr ""
+"Zrythm stocke toute sa configuration à l'aide du mécanisme GSettings, qui"
+" est fourni avec la commande ``gsettings`` pour modifier les paramètres "
+"depuis la ligne de commande."
+
+#: ../../configuration/additional-settings.rst:26
+msgid ""
+"Normally, you shouldn't need to access any of these settings as most of "
+"them are found inside Zrythm's UI, and it is not recommended to edit them"
+" as Zrythm validates some settings before it saves them, but in some "
+"cases you may want to change them manually for some reason."
+msgstr ""
+"Normalement, vous ne devriez pas avoir besoin d'accéder à ces paramètres "
+"car la plupart d'entre eux se trouvent dans l'interface utilisateur de "
+"Zrythm, et il n'est pas recommandé de les modifier car Zrythm valide "
+"certains paramètres avant de les enregistrer, mais dans certains cas vous"
+" pourriez vouloir les modifier manuellement pour une raison quelconque."
+
+#: ../../configuration/additional-settings.rst:34
+msgid ""
+"To see what settings are available and for info on how to use "
+"``gsettings`` see ``man gsettings``."
+msgstr ""
+"Pour voir quels réglages sont disponibles et pour plus d'informations sur"
+" l'utilisation de ``gsettings``voir ``man gsettings``."
+
+#: ../../configuration/additional-settings.rst:37
+msgid ""
+"As an example, to change the audio backend you would do ``gsettings set "
+"org.zrythm.preferences audio-backend \"jack\"``"
+msgstr ""
+"Par exemple, pour changer l'arrière-plan audio, vous pourriez faire "
+"``gsettings set org.zrythm.preferences audio-backend \"jack\"``"
+
+#: ../../configuration/additional-settings.rst:40
+msgid "You can use the range option to get a list of the available values:"
+msgstr ""
+"Vous pouvez utiliser l'option de gamme pour obtenir une liste des valeurs"
+" disponibles :"
+
+#: ../../configuration/device-setup/intro.rst:19
+msgid "Device Setup"
+msgstr "Configuration du périphérique"
+
+#: ../../configuration/device-setup/intro.rst:22
+msgid "Connecting MIDI and Audio Devices"
+msgstr "Connecter les périphériques MIDI et audio"
+
+#: ../../configuration/device-setup/intro.rst:24
+msgid ""
+"On Linux machines, Zrythm works with both ALSA and JACK as available "
+"backends. Depending on the backend selected, the configuration differs."
+msgstr ""
+"Sur les machines Linux, Zrythm fonctionne avec ALSA et JACK en tant qu"
+"'arrière-plans disponibles. Selon l'arrière-plan sélectionné, la "
+"configuration diffère."
+
+#: ../../configuration/device-setup/intro.rst:29
+msgid "Auto-Connecting Devices"
+msgstr "Auto-connecter les périphériques"
+
+#: ../../configuration/device-setup/intro.rst:31
+msgid ""
+"Zrythm has an option to select devices to auto-connect on launch. TODO "
+"explain it."
+msgstr ""
+"Zrythm a une option pour que les périphériques s'auto-connectent au "
+"lancement. ÀFAIRE de l'expliquer."
+
+#: ../../configuration/device-setup/intro.rst:35
+msgid "JACK"
+msgstr "JACK"
+
+#: ../../configuration/device-setup/intro.rst:37
+msgid ""
+"When using the JACK audio and MIDI backend, Zrythm exposes ports to JACK,"
+" so devices can be attached there using a tool like Catia. Note that for "
+"MIDI, devices might need to be bridged to JACK using ``a2jmidid``."
+msgstr ""
+"Lors de l'utilisation de l'arrière-plan audio et MIDI JACK, Zrythm expose"
+" les ports à JACK, de sorte que les périphériques peuvent y être "
+"connectés en utilisant un outil comme Catia. Notez que pour le MIDI, les "
+"périphériques peuvent avoir besoin d'être pontés à JACK en utilisant "
+"``a2jmidid``."
+
+#: ../../configuration/device-setup/intro.rst:43
+msgid "An example configuration looks like this (in Catia inside Cadence)"
+msgstr ""
+"Un exemple de configuration ressemble à ceci (dans Catia à l'intérieur de "
+"Cadence)"
+
+#: ../../configuration/device-setup/intro.rst:48
+msgid "ALSA"
+msgstr "ALSA"
+
+#: ../../configuration/device-setup/intro.rst:50
+msgid "A tool like Catia can be used to connect MIDI devices to Zrythm."
+msgstr ""
+"Un outil comme Catia peut être utilisé pour connecter des périphériques "
+"MIDI à Zrythm."
+
+#: ../../configuration/first-run-wizard.rst:19
+msgid "First Run Wizard"
+msgstr "Assistant de premier lancement"
+
+#: ../../configuration/first-run-wizard.rst:21
+msgid ""
+"When you first run Zrythm, it will display a wizard that lets you "
+"configure the basic settings that Zrythm will use. These include MIDI "
+"devices, the default Zrythm path, interface language and audio/MIDI "
+"backends."
+msgstr ""
+"Lorsque vous lancez Zrythm pour la première fois, il affiche un assistant"
+" qui vous permet de configurer les paramètres de base que Zrythm va "
+"utiliser. Il s'agit notamment des périphériques MIDI, du répertoire  par "
+"défaut de Zrythm, de la langue de l'interface et des systèmes audio/MIDI."
+
+#: ../../configuration/first-run-wizard.rst:27
+msgid "Language Selection"
+msgstr "Sélection de la langue"
+
+#: ../../configuration/first-run-wizard.rst:31
+msgid ""
+"Zrythm lets you choose the language of the interface. The interface is "
+"already translated in multiple languages, so choose the language you are "
+"most comfortable in."
+msgstr ""
+"Zrythm vous permet de choisir la langue de l'interface. L'interface est "
+"déjà traduite en plusieurs langues, alors choisissez la langue dans "
+"laquelle vous êtes le plus à l'aise."
+
+#: ../../configuration/first-run-wizard.rst:35
+msgid "You must have a locale for the language you want to use enabled."
+msgstr "Vous devez avoir une locale pour la langue que vous voulez utiliser."
+
+#: ../../configuration/first-run-wizard.rst:37
+msgid ""
+"This is usually not a problem since you are probably already using the "
+"correct locale for your language. In case a locale cannot be found, you "
+"will see this message telling you the steps to enable it."
+msgstr ""
+"Ce n'est généralement pas un problème puisque vous utilisez probablement "
+"déjà la bonne locale pour votre langue. Dans le cas où une locale ne peut"
+" pas être trouvée, vous verrez ce message vous indiquant les étapes à "
+"suivre pour l'activer."
+
+#: ../../configuration/first-run-wizard.rst:43
+msgid "Path"
+msgstr "Chemin"
+
+#: ../../configuration/first-run-wizard.rst:47
+msgid ""
+"This is the path where Zrythm will use to save projects, temporary files,"
+" exported audio, etc. The default is \"zrythm\" in the user's directory."
+msgstr ""
+"C'est le répertoire que Zrythm utilisera pour enregistrer les projets, "
+"les fichiers temporaires, les fichiers audio exportés, etc. La valeur par"
+" défaut est \"zrythm\" dans le répertoire de l'utilisateur."
+
+#: ../../configuration/first-run-wizard.rst:52
+msgid "Audio/MIDI Backends"
+msgstr "Systèmes audio/MIDI"
+
+#: ../../configuration/first-run-wizard.rst:56
+msgid ""
+"Zrythm supports multiple audio and MIDI backend engines. JACK is the "
+"recommended one for both, but it takes some time to set up if this is "
+"your first time using it. If you don't want to use JACK for some reason "
+"you can select other backends such as ALSA."
+msgstr ""
+"Zrythm prend en charge plusieurs moteurs audio et MIDI d'arrière-plan. "
+"JACK est recommandé pour les deux, mais il faut un certain temps pour le "
+"paramétrer si c'est la première fois que vous l'utilisez. Si vous ne "
+"voulez pas utiliser JACK pour une raison quelconque, vous pouvez "
+"sélectionner d'autres arrière-plans comme ALSA."
+
+#: ../../configuration/first-run-wizard.rst:62
+msgid ""
+"Click :zbutton:`Test` to try connecting to the backend to see if it is "
+"functional."
+msgstr ""
+"Cliquez sur :zbutton:`Test` pour essayer de se connecter au système pour "
+"voir s'il est fonctionnel."
+
+#: ../../configuration/first-run-wizard.rst:65
+msgid ""
+"JACK MIDI requires a JACK server to be running, which means you probably "
+"want to use it with the JACK audio backend."
+msgstr ""
+"JACK MIDI nécessite un serveur JACK pour fonctionner, ce qui signifie que"
+" vous voulez probablement l'utiliser avec le système Audio JACK."
+
+#: ../../configuration/first-run-wizard.rst:70
+msgid "MIDI Devices"
+msgstr "Périphériques MIDI"
+
+#: ../../configuration/first-run-wizard.rst:74
+msgid ""
+"These are the discovered devices that will be auto-connected and ready to"
+" use every time you run Zrythm. Click \"Rescan\" to scan for devices "
+"again."
+msgstr ""
+"Ce sont les périphériques découverts qui seront automatiquement connectés"
+" et prêts à être utilisés à chaque fois que vous lancez Zrythm. Cliquez "
+"sur \"Rescan\" pour rechercher à nouveau les périphériques."
+
+#: ../../configuration/first-run-wizard.rst:78
+msgid ""
+"All of the settings mentioned here are also available in the preferences "
+"(Ctr+Shift+P or File->Preferences), so don't worry if you selected the "
+"wrong settings."
+msgstr ""
+"Tous les paramètres mentionnés ici sont également disponibles dans les "
+"préférences (Ctr+Maj+Maj+P ou Fichier->Préférences), donc ne vous "
+"inquiétez pas si vous avez sélectionné les mauvais paramètres."
+
+#: ../../configuration/intro.rst:19
+msgid "Configuration"
+msgstr "Configuration"
+
+#: ../../configuration/preferences/audio.rst:19
+msgid "Audio Tab"
+msgstr "Onglet audio"
+
+#: ../../configuration/preferences/intro.rst:19
+msgid "Preferences"
+msgstr "Préférences"
+
+#: ../../configuration/preferences/overview.rst:19
+msgid "Overview"
+msgstr "Vue d'ensemble"
+
+#: ../../configuration/preferences/overview.rst:21
+msgid ""
+"Zrythm has a Preferences dialog containing all of the global settings "
+"that can be accessed by clicking the gear icon or by ``Ctrl+Shift+P``."
+msgstr ""
+"Zrythm possède une dialogue de préférences contenant tous les réglages "
+"globaux auxquels on peut accéder en cliquant sur l'icône d'engrenage ou "
+"avec ``Ctrl+Maj+P``."
+
+#: ../../configuration/preferences/overview.rst:25
+msgid ""
+"The Preferences dialog is split into the following sections, which are "
+"explained in the next chapters:"
+msgstr ""
+"Le dialogue de préférences est divisée en plusieurs sections, qui sont "
+"expliquées dans les chapitres suivants :"
+
+#: ../../configuration/preferences/overview.rst:29
+msgid "Audio"
+msgstr "Audio"
+
+#: ../../configuration/preferences/overview.rst:30
+msgid "GUI"
+msgstr "IGU"
+
+#: ../../configuration/preferences/overview.rst:31
+msgid "Backend"
+msgstr "Arrière-plan"
+
+#~ msgid ""
+#~ "Zrythm exposes ports to JACK. Devices"
+#~ " can be attached there. Note that "
+#~ "for MIDI, devices need to be "
+#~ "bridged using ``a2jmidid``."
+#~ msgstr ""
+#~ "Zrythm expose ses ports à JACK. "
+#~ "Les périphériques peuvent y être "
+#~ "connectés. Notez que pour le MIDI, "
+#~ "les périphériques doivent être pontés à"
+#~ " l'aide de ``a2jmidid``."
+
+#~ msgid ""
+#~ "Zrythm supports multiple audio and MIDI"
+#~ " backend engines. JACK is the "
+#~ "recommended one for both, but it "
+#~ "takes some time to set up if "
+#~ "this is your first time using it."
+#~ " If you don't want to use JACK"
+#~ " for some reason you can select "
+#~ "other backends such as PortAudio."
+#~ msgstr ""
+#~ "Zrythm prend en charge plusieurs "
+#~ "systèmes audio et MIDI. JACK est "
+#~ "recommandé pour les deux, mais il "
+#~ "faut un certain temps pour l'installer"
+#~ " si c'est la première fois que "
+#~ "vous l'utilisez. Si vous ne voulez "
+#~ "pas utiliser JACK pour une raison "
+#~ "quelconque, vous pouvez sélectionner d'autres"
+#~ " systèmes tels que PortAudio."
+
+#~ msgid "The usual GNU toolchain procedure applies::"
+#~ msgstr "La procédure habituelle de la chaîne d'outils GNU s'applique : :"
+
+#~ msgid ""
+#~ "Type ``./configure --help`` for available "
+#~ "options. We recommend using ``--enable-"
+#~ "qt5 --enable-ffmpeg`` to get the "
+#~ "most functionality."
+#~ msgstr ""
+#~ "Tapez ``./configure --help`` pour les "
+#~ "options disponibles. Nous vous recommandons"
+#~ " d'utiliser ``--enable-qt5 --enable-"
+#~ "ffmpeg`` pour obtenir le maximum de "
+#~ "fonctionnalités."
+
+#~ msgid "You can use the range option to get a list of the available values::"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm uses the Meson build system, "
+#~ "so the procedure to build and "
+#~ "install is as follows::"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Use the installer from the `main "
+#~ "website <https://www.zrythm.org>`_. Note that "
+#~ "while it may run, it is not "
+#~ "fully functional yet on Windows."
+#~ msgstr ""
+#~ "Utilisez le programme d'installation à "
+#~ "partir du site Web principal "
+#~ "<https://www.zrythm.org>`_. Notez que bien "
+#~ "qu'il puisse fonctionner, il n'est pas"
+#~ " encore entièrement fonctionnel sous "
+#~ "Windows."
+
+#~ msgid ""
+#~ "Report any bugs at the `Issue "
+#~ "Tracker <https://git.zrythm.org/zrythm/zrythm>`_."
+#~ msgstr ""
+#~ "Signaler tout bogue sur le `Suivi "
+#~ "des bogues <https://git.zrythm.org/zrythm/zrythm>`_."
+
+#~ msgid ""
+#~ "Zrythm uses the Meson build system, "
+#~ "so the procedure to build and "
+#~ "install is as follows: ::"
+#~ msgstr ""
+
+#~ msgid "You can use the range option to get a list of the available values: ::"
+#~ msgstr ""
+
+#~ msgid "FreeBSD"
+#~ msgstr "FreeBSD"
+
+#~ msgid ""
+#~ "Thanks to Yuri, Zrythm is packaged "
+#~ "for FreeBSD and the package can be"
+#~ " found at `FreshPorts "
+#~ "<https://www.freshports.org/audio/zrythm/>`_."
+#~ msgstr ""
+#~ "Grâce à Yuri, Zrythm est porté "
+#~ "sous FreeBSD et le paquet peut "
+#~ "être trouvé sur `FreshPorts "
+#~ "<https://www.freshports.org/audio/zrythm/>`_."
+
+#~ msgid "GNU/Linux"
+#~ msgstr "GNU/Linux"
+
+#~ msgid "Official Builds"
+#~ msgstr "Constructions officielles"
+
+#~ msgid ""
+#~ "You can install the latest version "
+#~ "of Zrythm for your distro `here "
+#~ "<https://software.opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_"
+#~ msgstr ""
+#~ "Vous pouvez installer la dernière "
+#~ "version de Zrythm pour votre "
+#~ "distribution `ici "
+#~ "<https://software.opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_"
+
+#~ msgid "You will be presented with the following"
+#~ msgstr "Les éléments suivants vous seront présentés"
+
+#~ msgid "This is the recommended way to install the latest version."
+#~ msgstr "C'est la façon recommandée pour installer la dernière version."
+
+#~ msgid "Flatpak"
+#~ msgstr "Flatpak"
+
+#~ msgid "Flatpak builds are coming soon."
+#~ msgstr "Les constructions Flatpak arrivent bientôt."
+
+#~ msgid "AppImage"
+#~ msgstr "AppImage"
+
+#~ msgid "AppImage builds are coming soon."
+#~ msgstr "Les constructions AppImage arrivent bientôt."
+
+#~ msgid "KX Studios"
+#~ msgstr "KX Studios"
+
+#~ msgid ""
+#~ "Thanks to falktx, Zrythm will also "
+#~ "be available in the `KX Studio "
+#~ "repos <http://kxstudio.linuxaudio.org/>`_ for Debian"
+#~ " users"
+#~ msgstr ""
+#~ "Grâce à falktx, Zrythm est également "
+#~ "disponible dans les `dépôts KX Studio"
+#~ " <http://kxstudio.linuxaudio.org/>`_ pour les "
+#~ "utilisateurs de Debian"
+
+#~ msgid "AUR"
+#~ msgstr "AUR"
+
+#~ msgid ""
+#~ "For Arch GNU/Linux users, Zrythm is "
+#~ "also available in the AUR under "
+#~ "`zrythm <https://aur.archlinux.org/packages/zrythm/>`_ and"
+#~ " `zrythm-git <https://aur.archlinux.org/packages"
+#~ "/zrythm-git/>`_"
+#~ msgstr ""
+#~ "Pour les utilisateurs d'Arch GNU/Linux, "
+#~ "Zrythm est également disponible dans "
+#~ "l'AUR sous `zrythm "
+#~ "<https://aur.archlinux.org/packages/zrythm/>`_ et "
+#~ "`zrythm-git <https://aur.archlinux.org/packages/zrythm-"
+#~ "git/>`_"
+
+#~ msgid "Manual Installation"
+#~ msgstr "Installation manuelle"
+
+#~ msgid ""
+#~ "Zrythm uses the Meson build system, "
+#~ "so the procedure to build and "
+#~ "install is as follows:"
+#~ msgstr ""
+#~ "Zrythm utilise le système de "
+#~ "construction Meson, donc la procédure de"
+#~ " compilation et d'installation est la "
+#~ "suivante :"
+
+#~ msgid "TODO add options"
+#~ msgstr "ÀFAIRE ajouter les options"
+
+#~ msgid "Installation"
+#~ msgstr "Installation"
+
+#~ msgid "MacOS"
+#~ msgstr "MacOS"
+
+#~ msgid ""
+#~ "Use the installer from the `main "
+#~ "website <https://www.zrythm.org>`_. Note that "
+#~ "while it may run, it is not "
+#~ "yet fully functional on MacOS."
+#~ msgstr ""
+#~ "Utilisez le programme d'installation à "
+#~ "partir du site Web principal "
+#~ "<https://www.zrythm.org>`_. Notez que bien "
+#~ "qu'il puisse fonctionner, il n'est pas"
+#~ " encore entièrement fonctionnel sous MacOS."
+
+#~ msgid ""
+#~ "If you find any bugs please "
+#~ "`report them <https://git.zrythm.org/zrythm/zrythm>`_."
+#~ msgstr ""
+#~ "Si vous trouvez des bogues, veuillez "
+#~ "les signaler <https://git.zrythm.org/zrythm/zrythm> "
+#~ "`_."
+
+#~ msgid "Windows"
+#~ msgstr "Windows"
+
+#~ msgid "http://www.upgradefromwindows.com"
+#~ msgstr "http://www.upgradefromwindows.com"
+
+#~ msgid "System Requirements"
+#~ msgstr "Configuration système requise"
+
+#~ msgid "Minimum Requirements"
+#~ msgstr "Minimum requis"
+
+#~ msgid ""
+#~ "We don't know yet. The oldest "
+#~ "machine tested on was T400 and it"
+#~ " was a bit laggy. If you have"
+#~ " any experiences with older machines "
+#~ "please let us know."
+#~ msgstr ""
+#~ "Nous ne savons pas encore. La plus"
+#~ " ancienne machine testée était la "
+#~ "T400 et elle était un peu lente."
+#~ " Si vous avez des expériences avec"
+#~ " des machines plus anciennes, n'hésitez "
+#~ "pas à nous en faire part."
+
+#~ msgid "Recommended Requirements"
+#~ msgstr "Exigences recommandées"
+
+#~ msgid "We recommend running a fairly modern machine."
+#~ msgstr "Nous vous recommandons d'utiliser une machine assez récente."
+
+#~ msgid "Audio Interface"
+#~ msgstr "Interface Audio"
+
+#~ msgid ""
+#~ "An Audio Interface is recommended as "
+#~ "it offers low latency and better "
+#~ "quality (especially if recording audio)."
+#~ msgstr ""
+#~ "Une interface audio est recommandée car"
+#~ " elle offre une faible latence et "
+#~ "une meilleure qualité (en particulier "
+#~ "lors de l'enregistrement audio)."
+
+#~ msgid ""
+#~ "JACK needs to be set up and "
+#~ "configured before running Zrythm. We "
+#~ "recommend using `Cadence "
+#~ "<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, as"
+#~ " it makes the process very easy."
+#~ msgstr ""
+#~ "JACK doit être configuré avant de "
+#~ "lancer Zrythm. Nous recommandons d'utiliser"
+#~ " `Cadence "
+#~ "<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, car"
+#~ " cela rend le processus très facile."
+
+#~ msgid "Open Cadence"
+#~ msgstr "Ouvrir Cadence"
+
+#~ msgid "Click Configure and select your Audio Interface"
+#~ msgstr "Cliquez sur Configurer et sélectionnez votre interface Audio"

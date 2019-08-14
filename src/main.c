@@ -19,14 +19,14 @@
 
 #include "config.h"
 
-#ifdef _WIN32
-#else
+#include <ctype.h>
 #include <execinfo.h>
-#endif
+#include <getopt.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "ext/audio_decoder/ad.h"
 #include "plugins/lv2/suil.h"
@@ -34,6 +34,7 @@
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #ifdef HAVE_LIBGTOP
 #include <glibtop.h>
@@ -64,6 +65,31 @@ handler (int sig) {
   exit(1);
 }
 
+static void
+print_version ()
+{
+  fprintf (
+    stdout,
+    "zrythm%s\n",
+    PACKAGE_VERSION);
+}
+
+static void
+print_help ()
+{
+  fprintf (
+    stdout,
+    _("Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n\n"
+    "Options:\n"
+    "  -h, --help      display this help and exit\n"
+    "  -v, --version   output version information and exit\n\n"
+    "Examples:\n"
+    "  zrythm          run normally\n\n"
+    "Write comments and bugs to https://savannah.nongnu.org/support/?group=zrythm\n"
+    "Support this project at https://liberapay.com/Zrythm\n"
+    "Website https://www.zrythm.org\n"));
+}
+
 /**
  * main
  */
@@ -71,15 +97,53 @@ int
 main (int    argc,
       char **argv)
 {
+  int c, option_index;
+  static struct option long_options[] =
+    {
+      {"version", no_argument, 0, 'v'},
+      {"help", no_argument, 0, 'h'},
+      {0, 0, 0, 0}
+    };
+  opterr = 0;
+
+  while (1)
+    {
+      c =
+        getopt_long (
+          argc, argv, "vh",
+          long_options, &option_index);
+
+      /* Detect the end of the options. */
+      if (c == -1)
+        break;
+
+      switch (c)
+        {
+        case 'v':
+          print_version ();
+          return 0;
+        case 'h':
+          print_help ();
+          return 0;
+          break;
+        case '?':
+          /* getopt_long already printed an error
+           * message */
+          return 1;
+        default:
+          abort ();
+        }
+    }
+
   fprintf (
-    stderr,
-    "Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou et al.\n\n"
-  "Zrythm comes with ABSOLUTELY NO WARRANTY!\n\n"
-  "This is free software, and you are welcome to redistribute it\n"
-  "under certain conditions. Look at the file `COPYING' within this\n"
-  "distribution for details.\n\n"
-  "Write comments and bugs to https://savannah.nongnu.org/support/?group=zrythm\n"
-  "Support this project at https://liberapay.com/Zrythm\n\n",
+    stdout,
+    _("Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou et al.\n\n"
+    "Zrythm comes with ABSOLUTELY NO WARRANTY!\n\n"
+    "This is free software, and you are welcome to redistribute it\n"
+    "under certain conditions. Look at the file `COPYING' within this\n"
+    "distribution for details.\n\n"
+    "Write comments and bugs to https://savannah.nongnu.org/support/?group=zrythm\n"
+    "Support this project at https://liberapay.com/Zrythm\n\n"),
     PACKAGE_VERSION);
 
   /* unset GTK_THEME */

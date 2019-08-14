@@ -1,0 +1,243 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"PO-Revision-Date: 2019-08-07 14:27+0000\n"
+"Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
+"Language: zh\n"
+"Language-Team: Chinese (Simplified) "
+"<https://hosted.weblate.org/projects/zrythm/manualplayback-and-"
+"recording/zh_Hans/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../playback-and-recording/arming-for-recording.rst:19
+msgid "Arming for Recording"
+msgstr ""
+
+#: ../../playback-and-recording/arming-for-recording.rst:21
+#: ../../playback-and-recording/loop-points-and-markers.rst:24
+#: ../../playback-and-recording/recording-audio.rst:21
+#: ../../playback-and-recording/recording-automation.rst:21
+#: ../../playback-and-recording/recording-midi.rst:21
+#: ../../playback-and-recording/transport-controls.rst:47
+msgid "TODO"
+msgstr ""
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:19
+msgid "BPM and Time Signatures"
+msgstr ""
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:22
+msgid "BPM"
+msgstr ""
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:24
+msgid ""
+"The BPM can be set to between 40 and 360 by clicking and dragging the BPM"
+" widget. Clicking and dragging on the integer counterpart will change the"
+" integer (e.g., from 140.24 to 141.24) and clicking and dragging on the "
+"decimal counterpart will change the decimal value (e.g., frrom 140.24 to "
+"140.25)."
+msgstr ""
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:33
+msgid "Time Signature"
+msgstr ""
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:35
+msgid "The Time Signature is split into the following"
+msgstr ""
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:39
+msgid "Beats per Bar"
+msgstr ""
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:38
+msgid ""
+"This is the top number that indicates the number of Beats that should be "
+"in a Bar. It can be set from 1 to 16."
+msgstr ""
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:43
+msgid "Beat Unit"
+msgstr ""
+
+#: ../../playback-and-recording/bpm-and-time-signatures.rst:42
+msgid ""
+"This is the bottom number that indicates the beat unit to be used. It can"
+" be set to 2, 4, 8 or 16."
+msgstr ""
+
+#: ../../playback-and-recording/intro.rst:19
+msgid "Playback and Recording"
+msgstr "重放和录制"
+
+#: ../../playback-and-recording/loop-points-and-markers.rst:19
+msgid "Loop Points and Markers"
+msgstr ""
+
+#: ../../playback-and-recording/loop-points-and-markers.rst:22
+msgid "Loop Points"
+msgstr ""
+
+#: ../../playback-and-recording/loop-points-and-markers.rst:27
+msgid "Cue Point"
+msgstr ""
+
+#: ../../playback-and-recording/loop-points-and-markers.rst:29
+msgid ""
+"The Cue Point is where the Playhead will move to when Play is clicked "
+"while playing or when Stop is clicked while paused."
+msgstr ""
+
+#: ../../playback-and-recording/loop-points-and-markers.rst:35
+msgid "Song Start Marker"
+msgstr ""
+
+#: ../../playback-and-recording/loop-points-and-markers.rst:37
+msgid ""
+"The Song Start marker signifies the position in the Timeline where the "
+"Song will start. This is mainly used for exporting the mixdown into "
+"audio."
+msgstr ""
+
+#: ../../playback-and-recording/loop-points-and-markers.rst:43
+msgid "Song End Marker"
+msgstr ""
+
+#: ../../playback-and-recording/loop-points-and-markers.rst:45
+msgid ""
+"The Song End marker signifies the position in the Timeline where the Song"
+" will end. Likewise, it is mainly used for exporting the mixdown into "
+"audio."
+msgstr ""
+
+#: ../../playback-and-recording/loop-points-and-markers.rst:51
+msgid "Custom Markers"
+msgstr ""
+
+#: ../../playback-and-recording/loop-points-and-markers.rst:53
+msgid "Custom Markers can be specified in the Marker Track. TODO"
+msgstr ""
+
+#: ../../playback-and-recording/overview.rst:19
+msgid "Overview"
+msgstr ""
+
+#: ../../playback-and-recording/overview.rst:21
+msgid ""
+"Here is a list of terms and definitions that will be useful in the "
+"following sections."
+msgstr ""
+
+#: ../../playback-and-recording/overview.rst:25
+msgid "Playhead"
+msgstr ""
+
+#: ../../playback-and-recording/overview.rst:26
+msgid "The Playhead is the current position in the song."
+msgstr ""
+
+#: ../../playback-and-recording/overview.rst:30
+msgid "Position"
+msgstr ""
+
+#: ../../playback-and-recording/overview.rst:32
+msgid "Zrythm uses the following format for positions:"
+msgstr ""
+
+#: ../../playback-and-recording/overview.rst:38
+msgid "Each sixteenth note is fixed to have 240 ticks."
+msgstr ""
+
+#: ../../playback-and-recording/recording-audio.rst:19
+msgid "Recording Audio"
+msgstr ""
+
+#: ../../playback-and-recording/recording-automation.rst:19
+msgid "Recording Automation"
+msgstr ""
+
+#: ../../playback-and-recording/recording-midi.rst:19
+msgid "Recording MIDI"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:19
+msgid "Transport Controls"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:21
+msgid ""
+"Playback is mainly controlled by the following Transport Controls, found "
+"in the main toolbar."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:24
+msgid "Record"
+msgstr "录制"
+
+#: ../../playback-and-recording/transport-controls.rst:25
+msgid "Arms the project for recording."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:28
+msgid "Play"
+msgstr "重放"
+
+#: ../../playback-and-recording/transport-controls.rst:27
+msgid ""
+"If stopped, the song will start playing. If already playing, the Playhead"
+" will move to the Cue point."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:31
+msgid "Stop"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:31
+msgid "Pauses playback. If clicked twice, goes back to the Cue point."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:34
+msgid "Backward"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:34
+msgid "Moves the Playhead backward by the size of 1 snap point."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:37
+msgid "Forward"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:37
+msgid "Moves the Playhead forward by the size of 1 snap point."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:42
+msgid "Loop"
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:40
+msgid ""
+"If enabled, the Playhead will move back to the Loop Start point when it "
+"reaches the Loop End point."
+msgstr ""
+
+#: ../../playback-and-recording/transport-controls.rst:45
+msgid "Metronome"
+msgstr ""
+
+#~ msgid "Zrythm uses the following format for positions::"
+#~ msgstr ""
+

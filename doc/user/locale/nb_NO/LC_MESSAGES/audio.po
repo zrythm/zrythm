@@ -1,0 +1,53 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-05-04 08:01+0100\n"
+"PO-Revision-Date: 2019-06-27 16:02+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
+"manualaudio/nb_NO/>\n"
+"Language: nb_NO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.7.1-dev\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../audio/audio-processing/applying-effects.rst:2
+msgid "Applying Effects"
+msgstr ""
+
+#: ../../audio/audio-processing/intro.rst:2
+msgid "Audio Processing"
+msgstr ""
+
+#: ../../audio/audio-regions.rst:2
+msgid "Audio Regions"
+msgstr ""
+
+#: ../../audio/audio-regions.rst:4
+msgid ""
+"Audio regions each contain 1 piece of audio, corresponding to a file or a"
+" recording. Any changes to the audio regions are not permanent (they do "
+"not affect the source file/recording) and are only saved to disk as "
+"separate copies when the project is saved."
+msgstr ""
+
+#: ../../audio/audio-tracks.rst:2
+msgid "Audio Tracks"
+msgstr ""
+
+#: ../../audio/audio-tracks.rst:4
+msgid "Audio tracks contain audio regions."
+msgstr ""
+
+#: ../../audio/intro.rst:2
+msgid "Audio"
+msgstr "Lyd"

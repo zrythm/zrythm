@@ -1,0 +1,69 @@
+{#
+ Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+
+ This file is part of Zrythm
+
+ Zrythm is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+
+ Zrythm is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU General Affero Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+
+{#
+    basic/search.html
+    ~~~~~~~~~~~~~~~~~
+
+    Template for the search page.
+
+    :copyright: Copyright 2007-2013 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+#}
+{%- extends "layout.html" %}
+{% set title = _('Search') %}
+{% set script_files = script_files + ['_static/searchtools.js'] %}
+{% block footer %}
+  <script type="text/javascript">
+    jQuery(function() { Search.loadIndex("{{ pathto('searchindex.js', 1) }}"); });
+  </script>
+  {# this is used when loading the search index using $.ajax fails,
+     such as on Chrome for documents on localhost #}
+  <script type="text/javascript" id="searchindexloader"></script>
+  {{ super() }}
+{% endblock %}
+{% block body %}
+  <noscript>
+  <div id="fallback" class="admonition warning">
+    <p class="last">
+      {% trans %}Please activate JavaScript to enable the search
+      functionality.{% endtrans %}
+    </p>
+  </div>
+  </noscript>
+
+  {% if search_performed %}
+    <h2>{{ _('Search Results') }}</h2>
+    {% if not search_results %}
+      <p>{{ _('Your search did not match any documents. Please make sure that all words are spelled correctly and that you\'ve selected enough categories.') }}</p>
+    {% endif %}
+  {% endif %}
+  <div id="search-results">
+  {% if search_results %}
+    <ul>
+    {% for href, caption, context in search_results %}
+      <li>
+        <a href="{{ pathto(item.href) }}">{{ caption }}</a>
+        <p class="context">{{ context|e }}</p>
+      </li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  </div>
+{% endblock %}

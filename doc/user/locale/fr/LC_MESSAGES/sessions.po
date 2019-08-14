@@ -1,0 +1,146 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-04-24 18:35+0100\n"
+"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualsessions/fr/>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.8-dev\n"
+"Generated-By: Babel 2.6.0\n"
+
+#: ../../sessions/importing-exporting/importing-exporting-audio.rst:2
+msgid "Importing/Exporting Audio"
+msgstr "Importer / Exporter l'Audio"
+
+#: ../../sessions/importing-exporting/importing-exporting-midi.rst:2
+msgid "Importing/Exporting MIDI"
+msgstr "Importer / Exporter le MIDI"
+
+#: ../../sessions/importing-exporting/intro.rst:2
+msgid "Importing and Exporting"
+msgstr "Importer et Exporter"
+
+#: ../../sessions/intro.rst:2
+msgid "Sessions"
+msgstr "Sessions"
+
+#: ../../sessions/session-info.rst:2
+msgid "Session Info"
+msgstr "Infos sur la session"
+
+#: ../../sessions/session-management-and-compatibility.rst:2
+msgid "Session Management and Compatibility"
+msgstr "Gestion de session et compatibilité"
+
+#: ../../sessions/tracks/adding-tracks.rst:2
+msgid "Adding Tracks"
+msgstr "Ajouter de pistes"
+
+#: ../../sessions/tracks/adding-tracks.rst:4
+msgid ""
+"The easiest and recommended way to add tracks is to drag a plugin or an "
+"audio clip from the browser on the right into the tracklist. This will "
+"automatically create a track of the appropriate type (Instrument, Bus or "
+"Audio). If it is an audio track, this will also place the audio clip at "
+"the playhead position. If it is an instrument track, it will be ready to "
+"accept MIDI signals. If it is a bus track, it will automatically place "
+"the selected plugin at the first position in the channel strip."
+msgstr ""
+"Le moyen le plus simple et recommandé d’ajouter des pistes consiste à faire "
+"glisser un plugin ou un clip audio du navigateur à droite dans la liste des "
+"pistes. Ceci créera automatiquement une piste du type approprié (Instrument, "
+"Bus ou Audio). S'il s'agit d'une piste Audio, cela placera également le clip "
+"Audio à la tête de lecture. S'il s'agit d'une piste instrument, elle sera "
+"prête à accepter les signaux MIDI. S'il s'agit d'une piste de bus, cela "
+"placera automatiquement le greffon sélectionné à la première position dans "
+"la tranche du mixeur."
+
+#: ../../sessions/tracks/adding-tracks.rst:6
+msgid ""
+"Tracks can also be added by right-clicking at a blank space inside the "
+"tracklist and selecting the track type. This will create a blank track."
+msgstr ""
+"Vous pouvez également ajouter des pistes en cliquant droit sur un espace "
+"vide de la liste des pistes et en sélectionnant le type de piste. Cela "
+"créera une piste vide."
+
+#: ../../sessions/tracks/intro.rst:2
+msgid "Tracks"
+msgstr "Pistes"
+
+#: ../../sessions/tracks/reordering-tracks.rst:2
+msgid "Reordering Tracks"
+msgstr "Réorganisation des pistes"
+
+#: ../../sessions/tracks/track-context-menu.rst:2
+msgid "Track Context Menu"
+msgstr "Menu contextuel de la piste"
+
+#: ../../sessions/tracks/track-overview.rst:2
+msgid "Track Overview"
+msgstr "Aperçu de la piste"
+
+#: ../../sessions/tracks/track-overview.rst:4
+msgid "Tracks contain regions and automation that is used to make up the song."
+msgstr ""
+"Les pistes contiennent des régions et l’automatisation utilisées pour "
+"composer le morceau."
+
+#: ../../sessions/tracks/track-types.rst:2
+msgid "Track Types"
+msgstr "Types de piste"
+
+#: ../../sessions/tracks/track-types.rst:4
+msgid "The following track types exist:"
+msgstr "Les types de piste suivants existent :"
+
+#: ../../sessions/tracks/track-types.rst:6
+msgid "Instrument Track"
+msgstr "Piste d'instrument"
+
+#: ../../sessions/tracks/track-types.rst:7
+msgid "track containing MIDI regions and automation"
+msgstr "piste contenant les régions MIDI et l'automatisation"
+
+#: ../../sessions/tracks/track-types.rst:8
+msgid "Audio Track"
+msgstr "Piste audio"
+
+#: ../../sessions/tracks/track-types.rst:9
+msgid "track containing audio regions, cross-fades, fades and automation"
+msgstr ""
+"piste contenant des régions audio, fondus enchaînés, fondus et automatisation"
+
+#: ../../sessions/tracks/track-types.rst:10
+msgid "Bus Track"
+msgstr "Piste de bus"
+
+#: ../../sessions/tracks/track-types.rst:11
+msgid "a track corresponding to a mixer bus. bus tracks only contain automation"
+msgstr ""
+"une piste correspondant à un bus de mixage, les pistes bus contiennent "
+"uniquement les automatisations"
+
+#: ../../sessions/tracks/track-types.rst:12
+msgid "Master Track"
+msgstr "Piste Master"
+
+#: ../../sessions/tracks/track-types.rst:13
+msgid ""
+"the Master track is a special type of bus track that controls the master "
+"fader and contains additional automation options."
+msgstr ""
+"la piste Master est un type spécial de piste de bus qui contrôle le fader "
+"principal et contient des options d'automatisation supplémentaires."

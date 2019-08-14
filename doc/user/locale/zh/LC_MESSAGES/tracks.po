@@ -1,0 +1,227 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-06-12 12:26+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../tracks/chord-track/intro.rst:2 ../../tracks/track-types.rst:25
+msgid "Chord Track"
+msgstr ""
+
+#: ../../tracks/chord-track/intro.rst:4
+msgid ""
+"The Chord Track contains chord and scale objects that are used to specify"
+" when the song is using a particular chord or scale."
+msgstr ""
+
+#: ../../tracks/creating-tracks.rst:2
+msgid "Creating Tracks"
+msgstr ""
+
+#: ../../tracks/creating-tracks.rst:5
+msgid "Blank Tracks"
+msgstr ""
+
+#: ../../tracks/creating-tracks.rst:7
+msgid ""
+"To add an empty track, right click on empty space in the Tracklist and "
+"select the type of track you want to add."
+msgstr ""
+
+#: ../../tracks/creating-tracks.rst:11
+msgid "Creating Tracks From Plugins"
+msgstr ""
+
+#: ../../tracks/creating-tracks.rst:13
+msgid ""
+"Plugins can be clicked and dragged from the Plugin Browser and dropped "
+"into empty space in the Tracklist or Mixer to instantiate them. If the "
+"plugin is an Instrument plugin, an Instrument Track will be created. If "
+"the plugin is an effect, a Bus Track will be created."
+msgstr ""
+
+#: ../../tracks/creating-tracks.rst:20
+msgid "Creating Audio Tracks From Audio Files"
+msgstr ""
+
+#: ../../tracks/creating-tracks.rst:22
+msgid ""
+"Likewise, to create an Audio Track from an audio file (WAV, FLAC, etc.), "
+"you can drag an audio file from the File Browser into empty space in the "
+"Tracklist or Mixer. This will create an Audio Track containing a single "
+"Audio Clip at the current Playhead position."
+msgstr ""
+
+#: ../../tracks/creating-tracks.rst:29
+msgid "Duplicating Tracks"
+msgstr ""
+
+#: ../../tracks/creating-tracks.rst:31
+msgid ""
+"Most Tracks can be duplicated by right clicking inside the Track and "
+"selecting :zbutton:`Duplicate`."
+msgstr ""
+
+#: ../../tracks/instrument-track.rst:2 ../../tracks/track-types.rst:9
+msgid "Instrument Track"
+msgstr ""
+
+#: ../../tracks/instrument-track.rst:4
+msgid ""
+"The Instrument Track is used for synths and other instruments. The first "
+"plugin in the strip of the Instrument Track's channel must be an "
+"instrument plugin. This is done automatically when Instrument Tracks are "
+"created from instrument plugins."
+msgstr ""
+
+#: ../../tracks/instrument-track.rst:12
+msgid "Track View"
+msgstr ""
+
+#: ../../tracks/instrument-track.rst:14 ../../tracks/track-context-menu.rst:4
+msgid "TODO"
+msgstr ""
+
+#: ../../tracks/intro.rst:2
+msgid "Tracks"
+msgstr ""
+
+#: ../../tracks/overview.rst:2
+msgid "Overview"
+msgstr ""
+
+#: ../../tracks/overview.rst:4
+msgid ""
+"Tracks are the main building blocks of projects. Tracks appear in the "
+"Tracklists (one pinned at the top and one non-pinned) and contain various"
+" information such as regions and automation points."
+msgstr ""
+
+#: ../../tracks/overview.rst:10
+msgid ""
+"Most types of Tracks have a Channel that appears in the mixer. Each Track"
+" has its own page in the Inspector section, which is shown when selecting"
+" a Track."
+msgstr ""
+
+#: ../../tracks/overview.rst:15
+msgid ""
+"There are various kinds of Tracks suited for different purposes, "
+"explained in the following sections."
+msgstr ""
+
+#: ../../tracks/track-context-menu.rst:2
+msgid "Track Context Menu"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:2
+msgid "Track Operations"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:5
+msgid "Moving Tracks"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:6
+msgid ""
+"Tracks can be moved by clicking and dragging inside empty space in the "
+"Track, and dropping it at another location. The drop locations will be "
+"highlighted as you move the Track."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:12
+msgid "Deleting Tracks"
+msgstr ""
+
+#: ../../tracks/track-operations.rst:14
+msgid ""
+"Tracks can be deleted by right-clicking them and selecting "
+":zbutton:`Delete`."
+msgstr ""
+
+#: ../../tracks/track-operations.rst:18
+msgid "All Track operations are undoable."
+msgstr ""
+
+#: ../../tracks/track-types.rst:2
+msgid "Track Types"
+msgstr ""
+
+#: ../../tracks/track-types.rst:4
+msgid ""
+"Zrythm has the following types of Tracks, and they are explained further "
+"in their own sections."
+msgstr ""
+
+#: ../../tracks/track-types.rst:8
+msgid ""
+"A Track that contains regions holding MIDI notes. It also has automation "
+"lanes for automating its components."
+msgstr ""
+
+#: ../../tracks/track-types.rst:11
+msgid "Audio Track"
+msgstr ""
+
+#: ../../tracks/track-types.rst:12
+msgid "A Track containing audio regions, cross-fades, fades and automation."
+msgstr ""
+
+#: ../../tracks/track-types.rst:13
+msgid "Bus Track"
+msgstr ""
+
+#: ../../tracks/track-types.rst:14
+msgid "A Track corresponding to a mixer bus. Bus tracks only contain automation"
+msgstr ""
+
+#: ../../tracks/track-types.rst:15
+msgid "Master Track"
+msgstr ""
+
+#: ../../tracks/track-types.rst:16
+msgid ""
+"The Master track is a special type of Bus Track that controls the master "
+"fader and contains additional automation options."
+msgstr ""
+
+#: ../../tracks/track-types.rst:21
+msgid "Group Track"
+msgstr ""
+
+#: ../../tracks/track-types.rst:18
+msgid ""
+"A Group Track is used to route signals from multiple Tracks into one "
+"Track. It behaves like a Bus Track with the exception that other Tracks "
+"can route their output signal directly into Group Track."
+msgstr ""
+
+#: ../../tracks/track-types.rst:24
+msgid ""
+"A Chord Track is a special kind of Track that contains chords and scales "
+"and is a great tool for assisting with chord progressions."
+msgstr ""
+
+#: ../../tracks/track-types.rst:30
+msgid "Marker Track"
+msgstr ""
+
+#: ../../tracks/track-types.rst:28
+msgid ""
+"A Marker Track is a special kind of Track that contains song markers - "
+"either custom or pre-defined ones like the song start and end markers."
+msgstr ""
+

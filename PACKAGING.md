@@ -1,9 +1,18 @@
 Information for Packagers
 =========================
 
-We are already providing homemade packages for various
-distros on [OBS (Open Build System)](https://build.opensuse.org/package/show/home:alextee/zrythm#), so feel free to
-use these as a base.
+We are already providing homemade packages for
+various distros on
+[OBS (Open Build System)](https://build.opensuse.org/package/show/home:alextee/zrythm#),
+so feel free to use these as a base.
+
+# Upstream URLs
+
+Please use
+https://download.savannah.nongnu.org/releases/zrythm/
+to fetch tarballs. The project's home page is
+https://www.zrythm.org. The git repositories are
+on our [CGit instance](https://git.zrythm.org/cgit/).
 
 # Meson
 
@@ -13,16 +22,14 @@ and above should be fine. The one in Debian Stretch
 will not work, but the one in stretch-backports will
 work.
 
-# Manual
+# Docs
 
-The documentation in this distribution is source code
-documentation for developers only. The user manual is
-maintained as a [separate project](https://git.zrythm.org/cgit/zrythm-docs/), so we would recommend having
-a separate package for it and adding it as a
-dependency. Example:
+See the `manpage` and `user_manual` meson options.
 
-    zrythm
-    └── zrythm-man
+# Bug Reports
+
+Bug reports and feature requests should be created
+on [Savannah](https://savannah.nongnu.org/support/?group=zrythm).
 
 # Patches
 

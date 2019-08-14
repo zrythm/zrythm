@@ -1,0 +1,250 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualprojects/fr/>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.8-dev\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../projects/creating-projects.rst:19
+msgid "Creating Projects"
+msgstr "Création de projets"
+
+#: ../../projects/creating-projects.rst:21
+msgid ""
+"When Zrythm first starts, it will ask you to either load a Project or "
+"create a new one. By default, Zrythm will use ~/username/Zrythm to create"
+" new Projects."
+msgstr ""
+"Lorsque Zrythm démarre pour la première fois, il vous demandera soit de "
+"charger un projet, soit d'en créer un nouveau. Par défaut, Zrythm "
+"utilisera ~/username/Zrythm pour créer de nouveaux projets."
+
+#: ../../projects/intro.rst:19
+msgid "Projects"
+msgstr "Projets"
+
+#: ../../projects/project-info.rst:19
+msgid "Project Info"
+msgstr "Information sur le projet"
+
+#: ../../projects/project-info.rst:21
+msgid ""
+"In Zrythm, your work is saved inside a Project. Projects consist of a "
+"folder with a YAML file describing the Project and additional files used "
+"such as MIDI and audio files."
+msgstr ""
+"Dans Zrythm, votre travail est sauvegardé dans un projet. Les projets "
+"consistent en un dossier avec un fichier YAML décrivant le projet et les "
+"fichiers supplémentaires utilisés tels que les fichiers MIDI et audio."
+
+#: ../../projects/project-info.rst:26
+msgid "Here is an example of a simple project file:"
+msgstr "Voici un exemple d'un fichier de projet simple :"
+
+#: ../../projects/project-management-and-compatibility.rst:19
+msgid "Project Management and Compatibility"
+msgstr "Gestion de projet et compatibilité"
+
+#: ../../projects/project-management-and-compatibility.rst:21
+msgid ""
+"For at least the time being, Zrythm follows a rolling release model and "
+"project file structure is subject to change at each new release. No "
+"compatibility will be maintained between version changes in order to give"
+" more time to feature development and fixes."
+msgstr ""
+"Pour le moment au moins, Zrythm suit un modèle de version continue et la "
+"structure des fichiers de projet est sujette à changement à chaque "
+"nouvelle version. Aucune compatibilité ne sera maintenue entre les "
+"changements de version afin de donner plus de temps pour le développement"
+" des fonctionnalités et les corrections."
+
+#: ../../projects/project-management-and-compatibility.rst:26
+msgid ""
+"It may be possible to open projects from previous versions if there was "
+"no change in the project file structure, but this is not guaranteed, so "
+"if you would like to open a project made using a previous version please "
+"install that version of Zrythm."
+msgstr ""
+"Il est possible d’ouvrir des projets à partir de versions précédentes si "
+"la structure du fichier de projet n’a pas changé, mais cela n’est pas "
+"garanti. Si vous souhaitez ouvrir un projet créé avec une version "
+"précédente, veuillez installer cette version de Zrythm."
+
+#: ../../projects/project-management-and-compatibility.rst:32
+msgid "Each project file will contain the version of Zrythm it was made with"
+msgstr ""
+"Chaque fichier de projet contiendra la version de Zrythm avec laquelle il"
+" a été créé"
+
+#: ../../projects/saving-loading.rst:19
+msgid "Saving & Loading"
+msgstr "Sauvegarde et chargement"
+
+#: ../../projects/saving-loading.rst:21
+msgid ""
+"Saving works as you would expect: :zbutton:`Save As...` will save the "
+"Project in a new location and :zbutton:`Save` will save the Project in "
+"the previous location."
+msgstr ""
+"Sauvegarder votre travail comme vous vous y attendriez : "
+":zbutton:`Sauvegarder sous...` sauvegardera le projet dans un nouvel "
+"emplacement et :zbutton:`Sauvegarder` sauvegardera le projet à "
+"l'emplacement précédent."
+
+#: ../../projects/saving-loading.rst:25
+msgid ""
+"When loading a Project, Zrythm expects you to give it the Project "
+"directory."
+msgstr ""
+"Lors du chargement d'un projet, Zrythm s'attend à ce que vous lui donniez"
+" le répertoire du projet."
+
+#~ msgid "Importing/Exporting Audio"
+#~ msgstr "Importer / Exporter l'Audio"
+
+#~ msgid "Importing/Exporting MIDI"
+#~ msgstr "Importer / Exporter le MIDI"
+
+#~ msgid "Importing and Exporting"
+#~ msgstr "Importer et Exporter"
+
+#~ msgid "Adding Tracks"
+#~ msgstr "Ajouter de pistes"
+
+#~ msgid "Blank Tracks"
+#~ msgstr "Pistes vierges"
+
+#~ msgid ""
+#~ "To add an empty track, right click"
+#~ " on empty space in the Tracklist "
+#~ "and select the type of track you"
+#~ " want to add."
+#~ msgstr ""
+#~ "Pour ajouter une piste vide, cliquez "
+#~ "avec le bouton droit de la souris"
+#~ " sur un espace vide dans la "
+#~ "liste des pistes et sélectionnez le "
+#~ "type de piste que vous souhaitez "
+#~ "ajouter."
+
+#~ msgid "Creating Tracks From Plugins"
+#~ msgstr "Créer des pistes à partir des greffons"
+
+#~ msgid ""
+#~ "Plugins can be clicked and dragged "
+#~ "from the Plugin Browser and dropped "
+#~ "into empty space in the Tracklist "
+#~ "or Mixer to instantiate them. If "
+#~ "the plugin is an Instrument plugin, "
+#~ "an Instrument Track will be created. "
+#~ "If the plugin is an effect, a "
+#~ "Bus Track will be created."
+#~ msgstr ""
+#~ "Vous pouvez cliquer sur les plug-"
+#~ "ins, les faire glisser depuis le "
+#~ "navigateur de plug-in et les "
+#~ "déposer dans un espace vide de la"
+#~ " liste de pistes ou du mixeur "
+#~ "pour les instancier."
+
+#~ msgid "Creating Audio Tracks From Audio Files"
+#~ msgstr "Créer des pistes Audio à partir de fichiers Audio"
+
+#~ msgid ""
+#~ "Likewise, to create an Audio Track "
+#~ "from an audio file (WAV, FLAC, "
+#~ "etc.), you can drag an audio file"
+#~ " from the File Browser into empty "
+#~ "space in the Tracklist or Mixer. "
+#~ "This will create an Audio Track "
+#~ "containing a single Audio Clip at "
+#~ "the current Playhead position."
+#~ msgstr ""
+#~ "De même, pour créer une piste "
+#~ "audio à partir d'un fichier audio "
+#~ "(WAV, FLAC, etc.), vous pouvez faire "
+#~ "glisser un fichier audio du navigateur"
+#~ " de fichiers dans un espace vide "
+#~ "de la liste de pistes ou du "
+#~ "mixeur. Cela créera une piste Audio "
+#~ "contenant un unique clip Audio à "
+#~ "la position actuelle de la tête de"
+#~ " lecture."
+
+#~ msgid "Tracks"
+#~ msgstr "Pistes"
+
+#~ msgid "Reordering Tracks"
+#~ msgstr "Réorganisation des pistes"
+
+#~ msgid "Track Context Menu"
+#~ msgstr "Menu contextuel de la piste"
+
+#~ msgid "Track Overview"
+#~ msgstr "Aperçu de la piste"
+
+#~ msgid "Tracks contain regions and automation that is used to make up the song."
+#~ msgstr ""
+#~ "Les pistes contiennent des régions et"
+#~ " l’automation utilisées pour composer le"
+#~ " morceau."
+
+#~ msgid "Track Types"
+#~ msgstr "Types de piste"
+
+#~ msgid "The following track types exist:"
+#~ msgstr "Les types de piste suivants existent :"
+
+#~ msgid "Instrument Track"
+#~ msgstr "Pistes instrument"
+
+#~ msgid "track containing MIDI regions and automation"
+#~ msgstr "piste contenant les régions MIDI et l'automation"
+
+#~ msgid "Audio Track"
+#~ msgstr "Piste Audio"
+
+#~ msgid "track containing audio regions, cross-fades, fades and automation"
+#~ msgstr ""
+#~ "piste contenant des régions audio, "
+#~ "fondus enchaînés, fondus et automation"
+
+#~ msgid "Bus Track"
+#~ msgstr "Piste Bus"
+
+#~ msgid ""
+#~ "a track corresponding to a mixer "
+#~ "bus. bus tracks only contain automation"
+#~ msgstr ""
+#~ "une piste correspondant à un bus "
+#~ "de mixage, les pistes bus contiennent"
+#~ " uniquement  les automations"
+
+#~ msgid "Master Track"
+#~ msgstr "Piste Master"
+
+#~ msgid ""
+#~ "the Master track is a special type"
+#~ " of bus track that controls the "
+#~ "master fader and contains additional "
+#~ "automation options."
+#~ msgstr ""
+#~ "la piste Master est un type "
+#~ "spécial de piste de bus qui "
+#~ "contrôle le fader principal et contient"
+#~ " des options d'automation supplémentaires."

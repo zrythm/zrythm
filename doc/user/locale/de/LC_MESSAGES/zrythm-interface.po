@@ -1,0 +1,220 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-05-04 08:01+0100\n"
+"PO-Revision-Date: 2019-08-12 00:18+0000\n"
+"Last-Translator: Waui <wau-wau@tutanota.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/de/>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.8-dev\n"
+"Generated-By: Babel 2.6.0\n"
+
+#: ../../zrythm-interface/channels/channel-overview.rst:2
+msgid "Channel Overview"
+msgstr "Kanalübersicht"
+
+#: ../../zrythm-interface/channels/controls.rst:2
+#: ../../zrythm-interface/controls/intro.rst:2
+msgid "Controls"
+msgstr "Steuerungen"
+
+#: ../../zrythm-interface/channels/fader.rst:2
+msgid "Fader"
+msgstr ""
+
+#: ../../zrythm-interface/channels/intro.rst:2
+msgid "Channels"
+msgstr "Kanäle"
+
+#: ../../zrythm-interface/channels/meters.rst:2
+msgid "Meters"
+msgstr "Meter"
+
+#: ../../zrythm-interface/channels/plugin-strip.rst:2
+msgid "Plugin Strip"
+msgstr ""
+
+#: ../../zrythm-interface/controls/grid-controls.rst:2
+msgid "Grid Controls"
+msgstr "Rastersteuerung"
+
+#: ../../zrythm-interface/controls/zoom-controls.rst:2
+msgid "Zoom Controls"
+msgstr "Zoomsteuerung"
+
+#: ../../zrythm-interface/editors/intro.rst:2
+msgid "Editors"
+msgstr "Editoren"
+
+#: ../../zrythm-interface/editors/piano-roll/intro.rst:2
+msgid "Piano Roll"
+msgstr ""
+
+#: ../../zrythm-interface/editors/piano-roll/midi-arranger.rst:2
+msgid "MIDI Arranger"
+msgstr "MIDI-Arranger"
+
+#: ../../zrythm-interface/editors/piano-roll/midi-modifier-arranger.rst:2
+msgid "MIDI Modifier Editor"
+msgstr ""
+
+#: ../../zrythm-interface/editors/timeline.rst:2
+msgid "Timeline"
+msgstr "Zeitleiste"
+
+#: ../../zrythm-interface/editors/tracklist.rst:2
+msgid "Tracklist"
+msgstr "Spurenliste"
+
+#: ../../zrythm-interface/intro.rst:2
+msgid "Zrythm's Interface"
+msgstr "Zrythms Oberfläche"
+
+#: ../../zrythm-interface/main-menu/edit.rst:2
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: ../../zrythm-interface/main-menu/file.rst:2
+msgid "File"
+msgstr "Datei"
+
+#: ../../zrythm-interface/main-menu/help.rst:2
+msgid "Help"
+msgstr "Hilfe"
+
+#: ../../zrythm-interface/main-menu/intro.rst:2
+msgid "Main Menu"
+msgstr "Hauptmenü"
+
+#: ../../zrythm-interface/main-menu/view.rst:2
+msgid "View"
+msgstr "Ansicht"
+
+#: ../../zrythm-interface/mini-timeline.rst:2
+msgid "Timeline Minimap"
+msgstr "Zeitleistenminikarte"
+
+#: ../../zrythm-interface/mixer.rst:2
+msgid "Mixer"
+msgstr "Mixer"
+
+#: ../../zrythm-interface/monitor.rst:2
+msgid "Monitor"
+msgstr "Monitor"
+
+#: ../../zrythm-interface/ruler.rst:2
+msgid "Ruler"
+msgstr "Lineal"
+
+#: ../../zrythm-interface/status-bar.rst:2
+msgid "Status Bar"
+msgstr "Statusleiste"
+
+#: ../../zrythm-interface/toolbox.rst:2
+msgid "Toolbox"
+msgstr "Werkzeugkasten"
+
+#: ../../zrythm-interface/transport-bar.rst:2
+msgid "Transport Bar"
+msgstr "Transportleiste"
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:2
+msgid "Zrythm Interface Overview"
+msgstr "Zrythms Oberflächenübersicht"
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:4
+msgid "Zrythm's interface is split into various sub-modules:"
+msgstr "Zrythms Oberfläche ist aufgeteilt in verschiedene Untermodule:"
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:9
+msgid "Inspector Panel (1)"
+msgstr "Inspektorfeld (1)"
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:9
+msgid ""
+"The inspector panel contains the inspector, which is used to view and "
+"change parameters of the currently selected objects."
+msgstr ""
+"Das Inspektorfeld beinhaltet den Inspektor, der genutzt wird um Parameter "
+"vom gerade ausgewählten Objekt anzusehen und zu verändern."
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:12
+msgid "Editor Panel (2)"
+msgstr "Editorfeld (2)"
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:12
+msgid ""
+"The editor panel contains various views that are useful in composing and "
+"mixing, such as the Clip Editor and the Mixer."
+msgstr ""
+"Das Editorfeld beinhaltet verschiedene Ansichten, die nützlich beim "
+"Komponieren und Mischen sind, wie etwa den Clip-Editor und den Mixer."
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:15
+msgid "Browser Panel (3)"
+msgstr "Browserfeld (3)"
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:15
+msgid ""
+"The browser panel contains the browser, and is used to find plugins "
+"and/or audio and MIDI files to drag and drop into the project."
+msgstr ""
+"Das Browserfeld enthält den Browser und wird benutzt, um Erweiterungen zu "
+"finden und/oder Audio- und MIDI-Dateien in das Projekt zu ziehen und "
+"abzulegen."
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:18
+msgid "Arranger Panel (4)"
+msgstr "Arrangerfeld (4)"
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:18
+msgid ""
+"This is where the action happens. The main panel mainly consists of the "
+"Timeline Arranger and the Project's Tracks on the left side."
+msgstr ""
+"Das ist, wo die Action stattfindet. Das Hauptpanel besteht hauptsächlich aus "
+"dem Zeitleistenarranger und den Spuren des Projektes auf der linken Seite."
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:21
+msgid "Toolbar (5)"
+msgstr "Werkzeugleiste (5)"
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:21
+msgid ""
+"There are two main toolbars containing global controls such as BPM and "
+"Transport."
+msgstr ""
+"Es gibt zwei Hauptwerkzeugleisten, die globale Steuerungen wie die BPM und "
+"den Transport beinhalten."
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:24
+msgid "Title Bar (6)"
+msgstr "Titelleiste (6)"
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:24
+msgid "The Title Bar contains menus with options for various operations."
+msgstr ""
+"Die Titelleiste enthält Menüs mit Optionen für verschiedene Operationen."
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:26
+msgid "Status Bar (7)"
+msgstr "Statusleiste (7)"
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:27
+msgid ""
+"The Status Bar is a helpful bar in the bottom of the program that shows "
+"tips based on the currently hovered-over item."
+msgstr ""
+"Die Statusbar ist eine hilfreiche Leiste am unteren Rand des Programmes, die "
+"Tipps basierend auf dem Element über dem die Maus schwebt anzeigt."

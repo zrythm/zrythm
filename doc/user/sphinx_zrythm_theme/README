@@ -1,0 +1,19 @@
+This theme was forked from the sphinx_rtd_theme project found here:
+https://github.com/readthedocs/sphinx_rtd_theme
+
+It was MIT licensed at the time of the fork and the original license
+is preserved in the LICENSE.sphinx_rtd_theme file. Copyright notices
+in individual files, if any, have been preserved.
+
+This fork has been relicensed to be under the GNU Affero General Public
+License, either version 3 of the License, or (at your option) any later
+version. See the COPYING file for the license.
+
+----
+
+Copyright (C) 2019 Alexandros Theodotou
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.

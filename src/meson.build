@@ -67,9 +67,6 @@ zrythm_lib = static_library (
   )
 
 objects = []
-if os_win32
-  objects += join_paths (libdir, 'libdl.dll.a')
-endif
 
 zrythm_exe = executable (
   'zrythm',

@@ -1,0 +1,104 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"PO-Revision-Date: 2019-06-15 13:46+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"Language: nb_NO\n"
+"Language-Team: Norwegian Bokmål "
+"<https://hosted.weblate.org/projects/zrythm/manualappendix/nb_NO/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../appendix/files-and-directories.rst:19
+msgid "Files and Directories"
+msgstr "Filer og mapper"
+
+#: ../../appendix/files-and-directories.rst:22
+msgid "Installed Files"
+msgstr ""
+
+#: ../../appendix/files-and-directories.rst:23
+msgid "When Zrythm is installed, it installs the following files by default:"
+msgstr "Når Zrythm er installert, installerer det følgende filer som forvalg:"
+
+#: ../../appendix/files-and-directories.rst:116
+msgid "Project Files"
+msgstr ""
+
+#: ../../appendix/files-and-directories.rst:117
+msgid ""
+"When Zrythm is launched for the first time, it will also ask you to "
+"select a folder for saving your projects and other project-related files."
+msgstr ""
+
+#: ../../appendix/files-and-directories.rst:121
+msgid "By default, this will be ``~/zrythm``"
+msgstr ""
+
+#: ../../appendix/intro.rst:19
+msgid "Appendix"
+msgstr "Addendum"
+
+#: ../../appendix/menu-actions.rst:19
+msgid "Menu Actions"
+msgstr "Menyhandlinger"
+
+#: ../../appendix/shortcut-keys.rst:19
+msgid "Shortcut Keys"
+msgstr "Snarveistaster"
+
+#: ../../appendix/shortcut-keys.rst:22
+msgid "Global Shortcuts"
+msgstr ""
+
+#: ../../appendix/shortcut-keys.rst:27
+msgid "Editor Shortcuts"
+msgstr ""
+
+#: ../../appendix/troubleshooting.rst:19
+msgid "Troubleshooting"
+msgstr "Problemløsing"
+
+#: ../../appendix/troubleshooting.rst:21
+msgid "TODO"
+msgstr ""
+
+#~ msgid "/bin/zrythm"
+#~ msgstr ""
+
+#~ msgid "Zrythm executable"
+#~ msgstr "Kjørbar Zrythm-fil"
+
+#~ msgid "/usr/share/fonts/Segment7Standard"
+#~ msgstr "/usr/share/fonts/Segment7Standard"
+
+#~ msgid "Segment 7 font used in meters"
+#~ msgstr "Segment 7-skrift brukt i indikatorer"
+
+#~ msgid "/usr/share/glib-2.0/schemas/org.zrythm.gschema.xml"
+#~ msgstr "/usr/share/glib-2.0/schemas/org.zrythm.gschema.xml"
+
+#~ msgid "Settings schema"
+#~ msgstr "Innstillings-skjema"
+
+#~ msgid "The app icon is missing"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Run `sudo touch /usr/share/icons/hicolor` and"
+#~ " `sudo gtk-update-icon-cache`"
+#~ msgstr ""
+#~ "Programikoner mangler. Kjør `sudo touch "
+#~ "/usr/share/icons/hicolor` og `sudo gtk-"
+#~ "update-icon-cache`"
+

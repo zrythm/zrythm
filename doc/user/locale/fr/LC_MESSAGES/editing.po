@@ -1,0 +1,375 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-06-12 12:26+0100\n"
+"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualediting/fr/>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.8-dev\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../editing/common-operations.rst:2
+#: ../../editing/common-operations/intro.rst:2
+msgid "Common Operations"
+msgstr "Opérations habituelles"
+
+#: ../../editing/common-operations/operations-on-current-selection.rst:2
+msgid "Operations on the Current Selection"
+msgstr "Opérations sur la sélection courante"
+
+#: ../../editing/common-operations/operations-on-current-selection.rst:5
+msgid "Looping"
+msgstr "Bouclage"
+
+#: ../../editing/common-operations/operations-on-current-selection.rst:7
+msgid ""
+"Clicking the :zbutton:`Loop Selection` button or pressing :zbutton:`Ctrl "
+"+ L` will place the loop points around the currently selected objects."
+msgstr ""
+"Cliquer sur le bouton :zbutton:`Loop Selection` ou appuyer sur le bouton "
+":zbutton:`Ctrl + L`placeront les points de boucle autour des objets "
+"actuellement sélectionnés."
+
+#: ../../editing/common-operations/other-operations.rst:2
+msgid "Other Operations"
+msgstr "Autres opérations"
+
+#: ../../editing/common-operations/other-operations.rst:4
+msgid ""
+"Zrythm also has the usual undo/redo/copy/paste functionalities which are "
+"found in the Home view of the main toolbar at the top of Zrythm. They can"
+" be triggered using shortcuts as well as through context menus and behave"
+" as you would expect."
+msgstr ""
+"Zrythm possède également les fonctionnalités habituelles d'annulation/ré"
+"tablissement/copier/coller qui se trouvent dans l'affichage Accueil de la "
+"barre d'outils principale en haut de Zrythm. Ils peuvent être déclenchés à "
+"l'aide de raccourcis ou de menus contextuels et se comportent comme vous "
+"pouvez vous y attendre."
+
+#: ../../editing/common-operations/quantization.rst:2
+msgid "Quantization"
+msgstr "Quantification"
+
+#: ../../editing/common-operations/quantization.rst:4
+#: ../../editing/common-operations/snapping-and-grid-options.rst:4
+#: ../../editing/common-operations/tools.rst:55
+#: ../../editing/piano-roll-editing/arranger.rst:5
+#: ../../editing/piano-roll-editing/drum-view.rst:7
+#: ../../editing/piano-roll-editing/highlighting.rst:7
+#: ../../editing/piano-roll-editing/overview.rst:4
+#: ../../editing/piano-roll-editing/ruler.rst:4
+#: ../../editing/piano-roll-editing/toolbar.rst:4
+#: ../../editing/timeline-editing/arranger.rst:4
+#: ../../editing/timeline-editing/overview.rst:4
+#: ../../editing/timeline-editing/ruler.rst:4
+#: ../../editing/timeline-editing/toolbar.rst:4
+msgid "TODO"
+msgstr "ÀFAIRE"
+
+#: ../../editing/common-operations/snapping-and-grid-options.rst:2
+msgid "Snapping and Grid Options"
+msgstr "Options d'accrochage et de grille"
+
+#: ../../editing/common-operations/tools.rst:2
+msgid "Tools"
+msgstr "Outils"
+
+#: ../../editing/common-operations/tools.rst:5
+msgid "Toolbox"
+msgstr "Boîte à outils"
+
+#: ../../editing/common-operations/tools.rst:6
+msgid ""
+"The Toolbox contains the following Tools that are used to trigger modes "
+"for specific operations."
+msgstr ""
+"La boîte à outils contient les outils suivants qui sont utilisés pour "
+"déclencher des modes pour des opérations spécifiques."
+
+#: ../../editing/common-operations/tools.rst:13
+msgid "Selection Tool"
+msgstr "Outil de sélection"
+
+#: ../../editing/common-operations/tools.rst:11
+msgid ""
+"The Selection Tool is the smartest Tool and while its main functionality "
+"is to select and move objects, it can also create or edit objects in "
+"various ways."
+msgstr ""
+"L'outil de sélection est l'outil le plus intelligent et bien que sa "
+"fonctionnalité principale soit de sélectionner et de déplacer des objets, il "
+"peut également créer ou modifier des objets de diverses manières."
+
+#: ../../editing/common-operations/tools.rst:19
+msgid "Edit Tool"
+msgstr "Outil d'édition"
+
+#: ../../editing/common-operations/tools.rst:16
+msgid ""
+"Also known as the Pencil Tool, this Tool is used to create objects by "
+"single-clicking and dragging. In the drum view of the Piano Roll, it can "
+"be used to quickly generate multiple hits."
+msgstr ""
+"Aussi connu sous le nom d'outil de crayon, cet outil est utilisé pour créer "
+"des objets par simple clic et glisser-déposer. Dans la vue de la batterie du "
+"piano-roll, il peut être utilisé pour générer rapidement plusieurs coups."
+
+#: ../../editing/common-operations/tools.rst:23
+msgid "Erase Tool"
+msgstr "Outil d'effacement"
+
+#: ../../editing/common-operations/tools.rst:22
+msgid "The Erase Tool is used to delete all objects that are selected by it."
+msgstr ""
+"L'outil d'effacement permet de supprimer tous les objets qu'il sélectionne."
+
+#: ../../editing/common-operations/tools.rst:25
+msgid ""
+"Each tool can be selected by simply pressing its corresponding button "
+"from 1 to 5 on the keyboard. Each Mode triggered by each tool is further "
+"described below."
+msgstr ""
+"Chaque outil peut être sélectionné en appuyant simplement sur le bouton "
+"correspondant de 1 à 5 sur le clavier. Chaque mode déclenché par chaque "
+"outil est décrit plus en détail ci-dessous."
+
+#: ../../editing/common-operations/tools.rst:32
+msgid "Select Mode"
+msgstr "Mode de sélection"
+
+#: ../../editing/common-operations/tools.rst:34
+msgid ""
+"To select objects in Select Mode, click and drag to create a selection "
+"rectangle."
+msgstr ""
+"Pour sélectionner des objets en mode de sélection, cliquez et glissez pour "
+"créer un rectangle de sélection."
+
+#: ../../editing/common-operations/tools.rst:37
+msgid ""
+"To create objects in Select Mode, double click and drag within a track or"
+" lane."
+msgstr ""
+"Pour créer des objets en mode de sélection, double-cliquez et glissez dans "
+"une piste ou une ligne."
+
+#: ../../editing/common-operations/tools.rst:40
+msgid ""
+"To move selected objects, click on one of them and hold while moving your"
+" cursor. If the object is not selected, it will become selected."
+msgstr ""
+"Pour déplacer les objets sélectionnés, cliquez sur l'un d'eux et maintenez-"
+"le enfoncé tout en déplaçant votre curseur. Si l'objet n'est pas "
+"sélectionné, il sera sélectionné."
+
+#: ../../editing/common-operations/tools.rst:44
+msgid ""
+"To copy-move (duplicate and move) objects, click and drag like when "
+"moving, while holding the :zbutton:`Ctrl` button on the keyboard."
+msgstr ""
+"Pour copier-déplacer (dupliquer et déplacer) des objets, cliquez et glissez "
+"comme lors d'un déplacement, tout en maintenant enfoncé le bouton :zbutton:`"
+"Ctrl' sur le clavier."
+
+#: ../../editing/common-operations/tools.rst:48
+msgid ""
+"To split/cut objects in parts, hold :zbutton:`Ctrl` while clicking "
+"somewhere inside the object to cut at that position."
+msgstr ""
+"Pour diviser/couper des objets en parties, maintenez le bouton "
+":zbutton:`Ctrl` tout en cliquant quelque part dans l'objet à couper à cette "
+"position."
+
+#: ../../editing/common-operations/tools.rst:53
+msgid "Edit Mode"
+msgstr "Mode d'édition"
+
+#: ../../editing/editing-basics/creating-midi-notes.rst:2
+msgid "Creating MIDI Notes"
+msgstr "Création de notes MIDI"
+
+#: ../../editing/editing-basics/creating-midi-notes.rst:4
+msgid "MIDI notes are created by double-clicking and dragging."
+msgstr "Les notes MIDI sont créées par un double-clic et un glissement."
+
+#: ../../editing/editing-basics/creating-regions.rst:2
+msgid "Creating Regions"
+msgstr "Créer des régions"
+
+#: ../../editing/editing-basics/creating-regions.rst:4
+msgid "Regions are created by double clicking and dragging."
+msgstr "Les régions sont créées par un double clic et un glissement."
+
+#: ../../editing/editing-basics/intro.rst:2
+msgid "Editing Basics"
+msgstr "Les bases de l'Édition"
+
+#: ../../editing/editing-basics/midi-modifiers.rst:2
+msgid "MIDI Modifiers"
+msgstr "Modificateurs MIDI"
+
+#: ../../editing/editing-basics/midi-note-context-menu.rst:2
+msgid "MIDI Note Context Menu"
+msgstr "Menu contextuel des notes MIDI"
+
+#: ../../editing/editing-basics/midi-note-editing-operations.rst:2
+msgid "MIDI Note Editing Operations"
+msgstr "Opérations d'édition de notes MIDI"
+
+#: ../../editing/editing-basics/moving-midi-notes.rst:2
+msgid "Moving MIDI Notes"
+msgstr "Déplacement de notes MIDI"
+
+#: ../../editing/editing-basics/moving-regions.rst:2
+msgid "Moving Regions"
+msgstr "Déplacement des Régions"
+
+#: ../../editing/editing-basics/moving-regions.rst:4
+msgid "Selected regions can be moved by clicking and dragging."
+msgstr ""
+"Les régions sélectionnées peuvent être déplacées en cliquant et en les "
+"faisant glisser."
+
+#: ../../editing/editing-basics/region-context-menu.rst:2
+msgid "Region Context Menu"
+msgstr "Menu contextuel de la Région"
+
+#: ../../editing/editing-basics/region-editing-operations.rst:2
+msgid "Region Editing Operations"
+msgstr "Opérations d'Édition de Région"
+
+#: ../../editing/editing-selections/editing-automation.rst:2
+msgid "Editing Automation"
+msgstr "Édition de l'automatisation"
+
+#: ../../editing/editing-selections/editing-midi-notes.rst:2
+msgid "Editing MIDI Notes"
+msgstr "Éditer les notes MIDI"
+
+#: ../../editing/editing-selections/editing-regions.rst:2
+msgid "Editing Regions"
+msgstr "Éditer des Régions"
+
+#: ../../editing/editing-selections/editing-tracks.rst:2
+msgid "Editing Tracks"
+msgstr "Éditer des pistes"
+
+#: ../../editing/editing-selections/intro.rst:2
+msgid "Editing Selections"
+msgstr "Modifier les Sélections"
+
+#: ../../editing/fades-and-crossfades.rst:2
+msgid "Fades and Cross-Fades"
+msgstr "Fondu et fondu enchaîné"
+
+#: ../../editing/intro.rst:2
+msgid "Editing"
+msgstr "Modifier"
+
+#: ../../editing/making-selections/intro.rst:2
+msgid "Making Selections"
+msgstr "Faire des sélections"
+
+#: ../../editing/making-selections/selecting-automation.rst:2
+msgid "Selecting Automation"
+msgstr "Sélection de l'automatisation"
+
+#: ../../editing/making-selections/selecting-midi-notes.rst:2
+msgid "Selecting MIDI Notes"
+msgstr "Sélectionner des notes MIDI"
+
+#: ../../editing/making-selections/selecting-regions.rst:2
+msgid "Selecting Regions"
+msgstr "Sélectionner des Régions"
+
+#: ../../editing/making-selections/selecting-tracks.rst:2
+msgid "Selecting Tracks"
+msgstr "Sélectionner des Pistes"
+
+#: ../../editing/overview.rst:2 ../../editing/piano-roll-editing/overview.rst:2
+#: ../../editing/timeline-editing/overview.rst:2
+msgid "Overview"
+msgstr "Vue d'ensemble"
+
+#: ../../editing/overview.rst:4
+msgid ""
+"Editing refers to any work done in the arrangers: the Timeline and the "
+"Piano Roll."
+msgstr ""
+"L'édition se réfère à tout travail effectué dans les arrangeurs : la ligne "
+"temporelle et le piano-roll."
+
+#: ../../editing/overview.rst:7
+msgid ""
+"The Timeline is the arranger shown in the top part of the screen by "
+"default, and the Piano Roll is brought up by clicking on the Editor tab "
+"on the bottom of the screen or by double-clicking a region."
+msgstr ""
+"La ligne temporelle est l'arrangeur affiché dans la partie supérieure de "
+"l'écran par défaut, et le piano-roll est affiché en cliquant sur l'onglet "
+"d'édition au bas de l'écran ou en double-cliquant sur une région."
+
+#: ../../editing/piano-roll-editing/arranger.rst:2
+#: ../../editing/timeline-editing/arranger.rst:2
+msgid "Arranger"
+msgstr "Arrangeur"
+
+#: ../../editing/piano-roll-editing/drum-view.rst:2
+msgid "Drum View"
+msgstr "Affichage percussion"
+
+#: ../../editing/piano-roll-editing/drum-view.rst:4
+msgid ""
+"The Piano Roll can be switched to Drum View which is suitable for editing"
+" drums."
+msgstr ""
+"Le piano-roll peut être basculé sur l'affichage percussions qui convient à "
+"l'édition des percussions."
+
+#: ../../editing/piano-roll-editing/highlighting.rst:2
+msgid "Highlighting"
+msgstr "Surbrillance"
+
+#: ../../editing/piano-roll-editing/highlighting.rst:4
+msgid ""
+"Zrythm can highlight notes in the Piano Roll based on the current Chord "
+"or Scale."
+msgstr ""
+"Zrythm peut mettre en surbrillance les notes du piano-roll en fonction de "
+"l'accord ou de la gamme en cours."
+
+#: ../../editing/piano-roll-editing/intro.rst:2
+msgid "Piano Roll Editing"
+msgstr "Édition piano-roll"
+
+#: ../../editing/piano-roll-editing/ruler.rst:2
+#: ../../editing/timeline-editing/ruler.rst:2
+msgid "Ruler"
+msgstr "Règle"
+
+#: ../../editing/piano-roll-editing/selection-info-bar.rst:2
+#: ../../editing/timeline-editing/selection-info-bar.rst:2
+msgid "Selection Info Bar"
+msgstr "Barre d'informations de sélection"
+
+#: ../../editing/piano-roll-editing/toolbar.rst:2
+#: ../../editing/timeline-editing/toolbar.rst:2
+msgid "Toolbar"
+msgstr "Barre d'outils"
+
+#: ../../editing/timeline-editing/intro.rst:2
+msgid "Timeline Editing"
+msgstr "Édition de la ligne temporelle"

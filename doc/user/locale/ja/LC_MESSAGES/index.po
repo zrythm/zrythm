@@ -1,0 +1,31 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-05-04 08:01+0100\n"
+"PO-Revision-Date: 2019-06-24 06:42+0000\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manual-index/ja/>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.7.1-dev\n"
+"Generated-By: Babel 2.6.0\n"
+
+#: ../../index.rst:2
+msgid "Zrythm Manual"
+msgstr "Zrythmマニュアル"
+
+#: ../../index.rst:4
+msgid ""
+"Welcome to the Zrythm manual. Please follow the sections below to get "
+"started."
+msgstr "Zrythmマニュアルへようこそ。開始するには、以下のセクションに進んでください。"
