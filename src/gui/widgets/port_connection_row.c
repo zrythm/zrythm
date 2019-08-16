@@ -18,8 +18,10 @@
  */
 
 #include "audio/port.h"
-#include "gui/widgets/port_connection_row.h"
+#include "gui/widgets/bar_slider.h"
 #include "gui/widgets/knob.h"
+#include "gui/widgets/port_connection_row.h"
+#include "utils/gtk.h"
 
 #include <gtk/gtk.h>
 
@@ -48,24 +50,31 @@ port_connection_row_widget_new (
   GtkWidget * box =
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_visible (box, 1);
-  GtkWidget * label =
-    gtk_label_new (is_input ?
-                   src->identifier.label :
-                   dest->identifier.label);
-  gtk_widget_set_visible (label, 1);
+
+  /* power button */
+  GtkToggleButton * btn =
+    z_gtk_toggle_button_new_with_icon (
+      "online");
+  gtk_widget_set_visible (GTK_WIDGET (btn), 1);
   gtk_box_pack_start (
-    GTK_BOX (box),
-    label,
-    0, 0, 0);
-  self->knob =
-    knob_widget_new_port (
-      src,
-      dest,
-      18);
+    GTK_BOX (box), GTK_WIDGET (btn),
+    0,0,0);
+
+  /* bar slider */
+  char * label =
+    g_strdup_printf (
+      "%s ",
+      is_input ?
+        src->identifier.label :
+        dest->identifier.label);
+  self->slider =
+    bar_slider_widget_new_port (
+      src, dest, label);
+  g_free (label);
   gtk_box_pack_end (
     GTK_BOX (box),
-    GTK_WIDGET (self->knob),
-    0,0,0);
+    GTK_WIDGET (self->slider),
+    1,1,0);
 
   gtk_container_add (
     GTK_CONTAINER (self),

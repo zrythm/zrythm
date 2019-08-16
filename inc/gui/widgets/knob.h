@@ -36,6 +36,15 @@ G_DECLARE_FINAL_TYPE (
   Z, KNOB_WIDGET,
   GtkDrawingArea)
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+/**
+ * Type of knob.
+ */
 typedef enum KnobType
 {
   KNOB_TYPE_NORMAL,

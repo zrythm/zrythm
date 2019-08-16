@@ -36,11 +36,22 @@ G_DECLARE_FINAL_TYPE (
   Z, BAR_SLIDER_WIDGET,
   GtkDrawingArea)
 
+typedef struct Port Port;
+
 /**
  * @addtogroup widgets
  *
  * @{
  */
+
+/**
+ * Type of slider.
+ */
+typedef enum BarSliderType
+{
+  BAR_SLIDER_TYPE_NORMAL,
+  BAR_SLIDER_TYPE_PORT_MULTIPLIER,
+} BarSliderType;
 
 /**
  * Defines how drag_update will work.
@@ -71,6 +82,9 @@ typedef struct _BarSliderWidget
   /** The suffix to show after the value (eg "%" for
    * percentages). */
   char *             suffix;
+
+  /** The prefix to show before the value. */
+  char *             prefix;
 
   /** Maximum value. */
   float              max;
@@ -111,23 +125,43 @@ typedef struct _BarSliderWidget
   /** Whether hovering or not. */
   int             hover;
 
+  /** The type of slider. */
+  BarSliderType   type;
+
+  /** Multiply the value by 100 when showing it. */
+  int             convert_to_percentage;
+
+  /* ----- FOR PORTS ONLY ------- */
+  /** Destination index for the destination
+   * multipliers of the port. */
+  int                   dest_index;
+
 } BarSliderWidget;
 
 /**
  * Creates a bar slider widget for floats.
+ *
+ * @param dest Port destination, if this is a port
+ *   to port connection slider.
+ * @param convert_to_percentage Multiply the value
+ *   by 100 when showing it.
  */
 BarSliderWidget *
 _bar_slider_widget_new (
+  BarSliderType type,
   float (*get_val)(void *),
   void (*set_val)(void *, float),
   void * object,
+  Port * dest,
   float  min,
   float  max,
   int    w,
   int    h,
   float  zero,
+  int    convert_to_percentage,
   int    decimals,
   BarSliderUpdateMode mode,
+  const char * prefix,
   const char * suffix);
 
 /**
@@ -136,10 +170,20 @@ _bar_slider_widget_new (
 #define bar_slider_widget_new( \
   getter,setter,obj,min,max,w,h,zero,dec,mode,suffix) \
   _bar_slider_widget_new ( \
+    BAR_SLIDER_TYPE_NORMAL, \
     (float (*) (void *)) getter, \
     (void (*) (void *, float)) setter, \
-    (void *) obj, \
-    min, max, w, h, zero, dec, mode, suffix)
+    (void *) obj, NULL, \
+    min, max, w, h, zero, 0, dec, mode, "", suffix)
+
+#define bar_slider_widget_new_port( \
+  _port, _dest, _prefix) \
+  _bar_slider_widget_new ( \
+    BAR_SLIDER_TYPE_PORT_MULTIPLIER, \
+    NULL, NULL, (void *) _port, _dest, 0.f, 1.f, \
+    160, 20, \
+    0.f, 1, 0, \
+    BAR_SLIDER_UPDATE_MODE_CURSOR, _prefix, " %")
 
 /**
  * @}

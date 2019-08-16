@@ -36,7 +36,10 @@ G_DEFINE_TYPE (
  * Macro to get real value.
  */
 #define GET_REAL_VAL \
-  ((*self->getter) (self->object))
+  (self->type == BAR_SLIDER_TYPE_PORT_MULTIPLIER ? \
+   port_get_multiplier_by_index ( \
+     (Port *) self->object, self->dest_index) :  \
+   ((*self->getter) (self->object)))
 
 /**
  * Macro to get real value from bar_slider value.
@@ -56,7 +59,11 @@ G_DEFINE_TYPE (
  * Sets real val
  */
 #define SET_REAL_VAL(real) \
-  ((*self->setter)(self->object, real))
+  (self->type == BAR_SLIDER_TYPE_PORT_MULTIPLIER ? \
+   port_set_multiplier_by_index ( \
+     (Port *) self->object, \
+     self->dest_index, real) : \
+   ((*self->setter)(self->object, real)))
 
 /**
  * Draws the bar_slider.
@@ -115,19 +122,34 @@ draw_cb (
     {
       str =
         g_strdup_printf (
-          "%d%s", (int) real_val, self->suffix);
+          "%s%d%s",
+          self->prefix,
+          (int) (self->convert_to_percentage ?
+            real_val * 100 : real_val),
+          self->suffix);
     }
     else
     {
       str =
         g_strdup_printf (
-          "%f%s", real_val, self->suffix);
+          "%s%f%s",
+          self->prefix,
+          self->convert_to_percentage ?
+          real_val * 100.f : real_val,
+          self->suffix);
     }
   int we;
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
   z_cairo_get_text_extents_for_widget_full (
     GTK_WIDGET (self), str, &we, NULL,
     Z_CAIRO_FONT);
+  if (width < we)
+    {
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self),
+        we + Z_CAIRO_TEXT_PADDING * 2,
+        height);
+    }
   z_cairo_draw_text_full (
     cr, str, width / 2 - we / 2,
     Z_CAIRO_TEXT_PADDING, Z_CAIRO_FONT);
@@ -237,22 +259,27 @@ drag_end (
  */
 BarSliderWidget *
 _bar_slider_widget_new (
+  BarSliderType type,
   float (*get_val)(void *),
   void (*set_val)(void *, float),
   void * object,
+  Port * dest,
   float    min,
   float    max,
   int    w,
   int    h,
   float    zero,
+  int    convert_to_percentage,
   int       decimals,
   BarSliderUpdateMode mode,
+  const char * prefix,
   const char * suffix)
 {
   g_warn_if_fail (object);
 
   BarSliderWidget * self =
     g_object_new (BAR_SLIDER_WIDGET_TYPE, NULL);
+  self->type = type;
   self->getter = get_val;
   self->setter = set_val;
   self->object = object;
@@ -263,8 +290,18 @@ _bar_slider_widget_new (
   self->last_x = 0;
   self->start_x = 0;
   self->suffix = g_strdup (suffix);
+  self->prefix = g_strdup (prefix);
   self->decimals = decimals;
   self->mode = mode;
+  self->convert_to_percentage =
+    convert_to_percentage;
+  if (type == BAR_SLIDER_TYPE_PORT_MULTIPLIER)
+    {
+      self->dest_index =
+        port_get_dest_index ((Port *) object, dest);
+    }
+  else
+    self->dest_index = -1;
 
   /* set size */
   gtk_widget_set_size_request (

@@ -140,7 +140,7 @@ port_connections_popover_widget_init (
     GTK_WIDGET (self->title), 1);
   self->ports_box =
     GTK_BOX (
-      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 1));
   gtk_widget_set_visible (
     GTK_WIDGET (self->ports_box), 1);
 

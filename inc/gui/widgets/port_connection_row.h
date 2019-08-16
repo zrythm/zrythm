@@ -31,6 +31,7 @@ G_DECLARE_FINAL_TYPE (
   GtkEventBox)
 
 typedef struct _KnobWidget KnobWidget;
+typedef struct _BarSliderWidget BarSliderWidget;
 
 typedef struct _PortConnectionRowWidget
 {
@@ -46,8 +47,8 @@ typedef struct _PortConnectionRowWidget
    */
   int              is_input;
 
-  /** The knob. */
-  KnobWidget *     knob;
+  /** The slider. */
+  BarSliderWidget * slider;
 } PortConnectionRowWidget;
 
 /**
