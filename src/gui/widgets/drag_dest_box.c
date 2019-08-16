@@ -48,6 +48,8 @@
 #include "utils/ui.h"
 #include "zrythm.h"
 
+#include <glib/gi18n.h>
+
 G_DEFINE_TYPE (DragDestBoxWidget,
                drag_dest_box_widget,
                GTK_TYPE_EVENT_BOX)
@@ -306,7 +308,7 @@ show_context_menu (DragDestBoxWidget * self)
 
   menu_item =
     z_gtk_create_menu_item (
-      "Add _Instrument Track",
+      _("Add _Instrument Track"),
       NULL,
       ICON_TYPE_GNOME_BUILDER,
       NULL,
@@ -316,7 +318,7 @@ show_context_menu (DragDestBoxWidget * self)
                          GTK_WIDGET (menu_item));
   menu_item =
     z_gtk_create_menu_item (
-      "Add _Audio Track",
+      _("Add _Audio Track"),
       NULL,
       ICON_TYPE_GNOME_BUILDER,
       NULL,
@@ -324,9 +326,21 @@ show_context_menu (DragDestBoxWidget * self)
       "win.create-audio-track");
   gtk_menu_shell_append (GTK_MENU_SHELL(menu),
                          GTK_WIDGET (menu_item));
+
   menu_item =
     z_gtk_create_menu_item (
-      "Add _Bus Track",
+      _("Add _MIDI Track"),
+      NULL,
+      ICON_TYPE_GNOME_BUILDER,
+      NULL,
+      0,
+      "win.create-midi-track");
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL(menu),
+    GTK_WIDGET (menu_item));
+  menu_item =
+    z_gtk_create_menu_item (
+      _("Add _Bus Track"),
       NULL,
       ICON_TYPE_GNOME_BUILDER,
       NULL,
@@ -337,7 +351,7 @@ show_context_menu (DragDestBoxWidget * self)
 
   menu_item =
     z_gtk_create_menu_item (
-      "Add _Group Track",
+      _("Add _Group Track"),
       NULL,
       ICON_TYPE_GNOME_BUILDER,
       NULL,

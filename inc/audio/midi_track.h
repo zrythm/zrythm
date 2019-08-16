@@ -41,13 +41,27 @@ void
 midi_track_setup (Track * self);
 
 /**
- * NOTE: real time func
+ * Fills MIDI event queue from track.
+ *
+ * The events are dequeued right after the call to
+ * this function.
+ *
+ * @param g_start_frame Global start frame.
+ * @param local_start_frame The start frame offset
+ *   from 0 in this cycle.
+ * @param nframes Number of frames at start
+ *   Position.
+ * @param midi_events MidiEvents to fill (from
+ *   Piano Roll Port for example).
  */
+REALTIME
 void
-midi_track_fill_midi_events (Track      * track,
-                        Position   * pos, ///< start position to check
-                        uint32_t  nframes, ///< n of frames from start pos
-                        MidiEvents * midi_events); ///< midi events to fill
+midi_track_fill_midi_events (
+  Track *      track,
+  const long   g_start_frames,
+  const int    local_start_frame,
+  uint32_t     nframes,
+  MidiEvents * midi_events);
 
 /**
  * Frees the track.
@@ -58,4 +72,3 @@ void
 midi_track_free (Track * track);
 
 #endif // __AUDIO_MIDI_TRACK_H__
-

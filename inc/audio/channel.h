@@ -134,13 +134,17 @@ typedef struct Channel
   Port *           piano_roll;
 
   /**
-   * MIDI piano roll input port ID.
-   *
-   * This port is for receiving MIDI signals from
+   * MIDI input for receiving MIDI signals from
    * the piano roll (i.e., MIDI notes inside
-   * regions).
+   * regions) or other sources.
    */
   Port *           midi_in;
+
+  /**
+   * MIDI output for sending MIDI signals to other
+   * destinations.
+   */
+  Port *           midi_out;
 
   /** Flag used while processing. */
   int              filled_stereo_in_bufs;

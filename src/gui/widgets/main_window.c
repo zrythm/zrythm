@@ -256,6 +256,8 @@ main_window_widget_init (MainWindowWidget * self)
       activate_create_ins_track },
     { "create-bus-track",
       activate_create_bus_track },
+    { "create-midi-track",
+      activate_create_midi_track },
     { "create-group-track",
       activate_create_group_track },
     { "delete-selected-tracks",

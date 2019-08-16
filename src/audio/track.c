@@ -30,6 +30,7 @@
 #include "audio/group_track.h"
 #include "audio/instrument_track.h"
 #include "audio/master_track.h"
+#include "audio/midi_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/backend/events.h"
@@ -154,6 +155,10 @@ track_new (
     case TRACK_TYPE_GROUP:
       group_track_init (track);
       ct = CT_BUS;
+      break;
+    case TRACK_TYPE_MIDI:
+      midi_track_init (track);
+      ct = CT_MIDI;
       break;
     case TRACK_TYPE_CHORD:
       break;
@@ -753,18 +758,19 @@ track_get_automation_tracklist (Track * track)
   switch (track->type)
     {
     case TRACK_TYPE_CHORD:
+    case TRACK_TYPE_MARKER:
       break;
     case TRACK_TYPE_BUS:
     case TRACK_TYPE_GROUP:
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_MIDI:
         {
-          ChannelTrack * bt = (ChannelTrack *) track;
-          return &bt->automation_tracklist;
+          return &track->automation_tracklist;
         }
     default:
-      /* TODO */
+      g_warn_if_reached ();
       break;
     }
 
@@ -816,6 +822,7 @@ track_get_channel (Track * track)
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_BUS:
     case TRACK_TYPE_GROUP:
+    case TRACK_TYPE_MIDI:
       return track->channel;
     default:
       g_return_val_if_reached (NULL);
@@ -882,6 +889,9 @@ track_stringize_type (
     case TRACK_TYPE_AUDIO:
       return g_strdup (
         _("Audio"));
+    case TRACK_TYPE_MIDI:
+      return g_strdup (
+        _("MIDI"));
     case TRACK_TYPE_BUS:
       return g_strdup (
         _("Bus"));
@@ -892,6 +902,9 @@ track_stringize_type (
       return g_strdup (
         _("Chord"));
     case TRACK_TYPE_GROUP:
+      return g_strdup (
+        _("Group"));
+    case TRACK_TYPE_MARKER:
       return g_strdup (
         _("Group"));
     default:

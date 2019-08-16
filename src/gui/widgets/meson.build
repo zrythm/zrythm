@@ -103,6 +103,7 @@ widget_srcs = [
   'midi_modifier_arranger.c',
   'midi_note.c',
   'midi_region.c',
+  'midi_track.c',
   'editor_ruler.c',
   'mixer.c',
   'modulator.c',

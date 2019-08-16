@@ -295,6 +295,12 @@ activate_create_audio_track (GSimpleAction *action,
                   gpointer       user_data);
 
 void
+activate_create_midi_track (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+void
 activate_create_ins_track (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);

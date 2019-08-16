@@ -52,7 +52,7 @@ void
 instrument_track_init (Track * track);
 
 void
-instrument_track_setup (InstrumentTrack * self);
+instrument_track_setup (Track * self);
 
 /**
  * Fills MIDI event queue from track.
@@ -71,7 +71,7 @@ instrument_track_setup (InstrumentTrack * self);
 REALTIME
 void
 instrument_track_fill_midi_events (
-  InstrumentTrack * track,
+  Track * track,
   const long        g_start_frame,
   const int         local_start_frame,
   uint32_t          nframes,

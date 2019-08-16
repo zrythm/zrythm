@@ -373,6 +373,7 @@ port_get_all (
       _ADD (ch->stereo_out->r);
       _ADD (ch->piano_roll);
       _ADD (ch->midi_in);
+      _ADD (ch->midi_out);
 
       /* add fader ports */
       _ADD (ch->fader.stereo_in->l);

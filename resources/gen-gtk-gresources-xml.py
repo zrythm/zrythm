@@ -172,7 +172,6 @@ _breeze_icons = [
   'edit-select',
   'plugins',
   'hand',
-  'object-unlocked',
   'offline',
   'online',
   'window-maximize',

@@ -964,6 +964,12 @@ create_item (ArrangerWidget * self,
                 REGION_TYPE_MIDI, track,
                 lane, NULL, &pos);
               break;
+            case TRACK_TYPE_MIDI:
+              timeline_arranger_widget_create_region (
+                timeline_arranger,
+                REGION_TYPE_MIDI, track,
+                lane, NULL, &pos);
+              break;
             case TRACK_TYPE_AUDIO:
               timeline_arranger_widget_create_region (
                 timeline_arranger,

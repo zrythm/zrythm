@@ -53,21 +53,55 @@
 
 #include <gtk/gtk.h>
 
+static inline void
+connect_midi_in_to_midi_out (
+  Channel * ch)
+{
+  port_connect (ch->midi_in, ch->midi_out);
+}
+
+static inline void
+disconnect_midi_in_from_midi_out (
+  Channel * ch)
+{
+  port_disconnect (ch->midi_in, ch->midi_out);
+}
+
+static inline void
+connect_piano_roll_to_pl (
+  Channel * ch,
+  Plugin * pl)
+{
+  int i;
+  Port * in_port;
+
+  /* Connect piano roll to the plugin */
+  for (i = 0; i < pl->num_in_ports; i++)
+    {
+      in_port = pl->in_ports[i];
+      if (in_port->identifier.type == TYPE_EVENT &&
+          in_port->identifier.flow == FLOW_INPUT)
+        {
+          port_connect (
+            ch->piano_roll,
+            in_port);
+        }
+    }
+}
+
 /**
  * Connects a plugin that has at least one MIDI
  * input port.
  */
 static inline void
-connect_midi_ins (
+connect_midi_in_to_pl (
   Channel * ch,
-  int       pos,
   Plugin *  pl)
 {
   int i;
   Port * in_port;
 
-  /* Connect MIDI port and piano roll to the
-   * plugin */
+  /* Connect MIDI port to the plugin */
   for (i = 0; i < pl->num_in_ports; i++)
     {
       in_port = pl->in_ports[i];
@@ -77,25 +111,16 @@ connect_midi_ins (
           port_connect (
             ch->midi_in,
             in_port);
-          if (ch->type == CT_MIDI &&
-              pos == 0)
-            {
-              port_connect (
-                ch->piano_roll,
-                in_port);
-            }
         }
     }
 }
 
 /**
- * Disconnects a plugin that has at least one MIDI
- * input port.
+ * Disconnects MIDI in from a plugin.
  */
 static inline void
-disconnect_midi_ins (
+disconnect_midi_in_from_pl (
   Channel * ch,
-  int       pos,
   Plugin *  pl)
 {
   int i;
@@ -114,14 +139,79 @@ disconnect_midi_ins (
             port_disconnect (
               ch->midi_in,
               in_port);
-          if (ch->type == CT_MIDI &&
-              pos == 0)
+        }
+    }
+}
+
+/**
+ * Disconnects piano roll from a plugin.
+ */
+static inline void
+disconnect_piano_roll_from_pl (
+  Channel * ch,
+  Plugin *  pl)
+{
+  int i;
+  Port * in_port;
+
+  /* Disconnect MIDI port and piano roll to the
+   * plugin */
+  for (i = 0; i < pl->num_in_ports; i++)
+    {
+      in_port = pl->in_ports[i];
+      if (in_port->identifier.type == TYPE_EVENT &&
+          in_port->identifier.flow == FLOW_INPUT)
+        {
+          if (ports_connected (
+                ch->midi_in, in_port))
+            port_disconnect (
+              ch->piano_roll,
+              in_port);
+        }
+    }
+}
+
+static inline void
+connect_pl_to_midi_out (
+  Plugin * pl,
+  Channel * ch)
+{
+  int i;
+  Port * out_port;
+
+  for (i = 0; i < pl->num_out_ports; i++)
+    {
+      out_port = pl->out_ports[i];
+      if (out_port->identifier.type == TYPE_EVENT &&
+          out_port->identifier.flow == FLOW_OUTPUT)
+        {
+          port_connect (
+            out_port,
+            ch->midi_out);
+        }
+    }
+}
+
+static inline void
+disconnect_pl_from_midi_out (
+  Plugin * pl,
+  Channel * ch)
+{
+  int i;
+  Port * out_port;
+
+  for (i = 0; i < pl->num_out_ports; i++)
+    {
+      out_port = pl->out_ports[i];
+      if (out_port->identifier.type == TYPE_EVENT &&
+          out_port->identifier.flow == FLOW_OUTPUT)
+        {
+          if (ports_connected (
+                out_port, ch->midi_out))
             {
-              if (ports_connected (
-                    ch->midi_in, in_port))
-                port_disconnect (
-                  ch->piano_roll,
-                  in_port);
+              port_disconnect (
+                out_port,
+                ch->midi_out);
             }
         }
     }
@@ -255,7 +345,7 @@ connect_ch_stereo_in_to_plugin (
  * Connect outputs of src to inputs of dests.
  */
 static inline void
-connect_from_pl_to_pl (
+connect_pl_to_pl (
   Plugin * src,
   Plugin * dest)
 {
@@ -388,6 +478,31 @@ done2:
                   num_ports_to_connect)
                 break;
             }
+        }
+    }
+
+  /* connect prev midi outs to next midi ins */
+  /* this connects only one midi out to all of the
+   * midi ins of the next plugin */
+  for (i = 0; i < src->num_out_ports; i++)
+    {
+      out_port = src->out_ports[i];
+
+      if (out_port->identifier.type == TYPE_EVENT)
+        {
+          for (j = 0;
+               j < dest->num_in_ports; j++)
+            {
+              in_port = dest->in_ports[j];
+
+              if (in_port->identifier.type == TYPE_EVENT)
+                {
+                  port_connect (
+                    out_port,
+                    in_port);
+                }
+            }
+          break;
         }
     }
 }
@@ -594,6 +709,29 @@ done2:
             }
         }
     }
+
+  /* disconnect MIDI connections */
+  for (i = 0; i < src->num_out_ports; i++)
+    {
+      out_port = src->out_ports[i];
+
+      if (out_port->identifier.type == TYPE_EVENT)
+        {
+          for (j = 0;
+               j < dest->num_in_ports; j++)
+            {
+              in_port = dest->in_ports[j];
+
+              if (in_port->identifier.type ==
+                    TYPE_EVENT)
+                {
+                  port_disconnect (
+                    out_port,
+                    in_port);
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -640,6 +778,10 @@ connect_no_prev_no_next (
    * stereo out. disconnect it */
   disconnect_stereo_in_from_fader (ch);
 
+  /* MIDI in is connected to MIDI out. disconnect
+   * it */
+  disconnect_midi_in_from_midi_out (ch);
+
   /* -------------------------------------------
    * connect input ports
    * ------------------------------------------- */
@@ -647,12 +789,18 @@ connect_no_prev_no_next (
   /* connect channel stereo in to plugin */
   connect_ch_stereo_in_to_plugin (ch, pl);
 
+  /* connect channel midi in to plugin */
+  connect_midi_in_to_pl (ch, pl);
+
   /* --------------------------------------
    * connect output ports
    * ------------------------------------*/
 
   /* connect plugin to stereo out */
   connect_pl_to_fader (pl, ch);
+
+  /* connect plugin to midi out */
+  connect_pl_to_midi_out (pl, ch);
 }
 
 /**
@@ -671,6 +819,10 @@ connect_no_prev_next (
    * disconnect it */
   disconnect_ch_stereo_in_from_pl (ch, next_pl);
 
+  /* MIDI in is connected to next plugin. disconnect
+   * it */
+  disconnect_midi_in_from_pl (ch, next_pl);
+
   /* -------------------------------------------
    * connect input ports
    * ------------------------------------------- */
@@ -678,13 +830,16 @@ connect_no_prev_next (
   /* connect channel stereo in to plugin */
   connect_ch_stereo_in_to_plugin (ch, pl);
 
+  /* connect midi in to plugin */
+  connect_midi_in_to_pl (ch, pl);
+
   /* --------------------------------------
    * connect output ports
    * ------------------------------------*/
 
   /* connect plugin's audio outs to next
    * plugin */
-  connect_from_pl_to_pl (pl, next_pl);
+  connect_pl_to_pl (pl, next_pl);
 }
 
 /**
@@ -703,13 +858,17 @@ connect_prev_no_next (
    * disconnect it */
   disconnect_pl_from_fader (prev_pl, ch);
 
+  /* prev plugin is connected to channel midi out.
+   * disconnect it */
+  disconnect_pl_from_midi_out (prev_pl, ch);
+
   /* -------------------------------------------
    * connect input ports
    * ------------------------------------------- */
 
-  /* connect previous plugin's audio outs to
+  /* connect previous plugin's outs to
    * plugin */
-  connect_from_pl_to_pl (prev_pl, pl);
+  connect_pl_to_pl (prev_pl, pl);
 
   /* --------------------------------------
    * connect output ports
@@ -717,6 +876,9 @@ connect_prev_no_next (
 
   /* connect plugin output ports to stereo_out */
   connect_pl_to_fader (pl, ch);
+
+  /* connect plugin midi outs to midi out */
+  connect_pl_to_midi_out (pl, ch);
 }
 
 /**
@@ -742,7 +904,7 @@ connect_prev_next (
 
   /* connect previous plugin's audio outs to
    * plugin */
-  connect_from_pl_to_pl (prev_pl, pl);
+  connect_pl_to_pl (prev_pl, pl);
 
   /* ------------------------------------------
    * Connect output ports
@@ -750,7 +912,7 @@ connect_prev_next (
 
   /* connect plugin's audio outs to next
    * plugin */
-  connect_from_pl_to_pl (pl, next_pl);
+  connect_pl_to_pl (pl, next_pl);
 }
 
 /**
@@ -768,6 +930,9 @@ disconnect_no_prev_no_next (
   /* disconnect channel stereo in from plugin */
   disconnect_ch_stereo_in_from_pl (ch, pl);
 
+  /* disconnect channel midi in from plugin */
+  disconnect_midi_in_from_pl (ch, pl);
+
   /* --------------------------------------
    * disconnect output ports
    * ------------------------------------*/
@@ -775,12 +940,18 @@ disconnect_no_prev_no_next (
   /* disconnect plugin from stereo out */
   disconnect_pl_from_fader (pl, ch);
 
+  /* disconnect plugin from midi out */
+  disconnect_pl_from_midi_out (pl, ch);
+
   /* -----------------------------------------
    * connect ports
    * ----------------------------------------- */
   /* channel stereo in should be connected to
    * channel stereo out. connect it */
   connect_stereo_in_to_fader (ch);
+
+  /* connect channel midi in to midi out */
+  connect_midi_in_to_midi_out (ch);
 }
 
 /**
@@ -799,11 +970,14 @@ disconnect_no_prev_next (
   /* disconnect channel stereo in from plugin */
   disconnect_ch_stereo_in_from_pl (ch, pl);
 
+  /* disconnect midi in from plugin */
+  disconnect_midi_in_from_pl (ch, pl);
+
   /* --------------------------------------
    * Disconnect output ports
    * ------------------------------------*/
 
-  /* disconnect plugin's audio outs from next
+  /* disconnect plugin's midi & audio outs from next
    * plugin */
   disconnect_pl_from_pl (pl, next_pl);
 
@@ -814,6 +988,9 @@ disconnect_no_prev_next (
    * plugin. connect it */
   connect_ch_stereo_in_to_plugin (
     ch, next_pl);
+
+  /* connect midi in to plugin */
+  connect_midi_in_to_pl (ch, next_pl);
 }
 
 /**
@@ -841,12 +1018,18 @@ disconnect_prev_no_next (
    * out */
   disconnect_pl_from_fader (pl, ch);
 
+  /* disconnect plguin output from midi out */
+  disconnect_pl_from_midi_out (pl, ch);
+
   /* -----------------------------------------
    * connect ports
    * ----------------------------------------- */
   /* prev plugin should be connected to channel
    * stereo out. connect it */
   connect_pl_to_fader (prev_pl, ch);
+
+  /* connect prev plugin to midi out */
+  connect_pl_to_midi_out (prev_pl, ch);
 }
 
 /**
@@ -880,7 +1063,7 @@ disconnect_prev_next (
    * ----------------------------------------- */
   /* prev plugin should be connected to the next pl.
    * connect them */
-  connect_from_pl_to_pl (prev_pl, next_pl);
+  connect_pl_to_pl (prev_pl, next_pl);
 }
 
 /**
@@ -1006,6 +1189,7 @@ channel_prepare_process (Channel * channel)
   port_clear_buffer (channel->stereo_out->l);
   port_clear_buffer (channel->stereo_out->r);
   port_clear_buffer (channel->midi_in);
+  port_clear_buffer (channel->midi_out);
   if (channel->piano_roll)
     port_clear_buffer (channel->piano_roll);
   for (j = 0; j < STRIP_SIZE; j++)
@@ -1054,10 +1238,15 @@ channel_init_loaded (Channel * ch)
   ch->midi_in->midi_events =
     midi_events_new (
       ch->midi_in);
+  ch->midi_out->midi_events =
+    midi_events_new (
+      ch->midi_out);
   ch->piano_roll->midi_events =
     midi_events_new (
       ch->piano_roll);
   ch->midi_in->identifier.owner_type =
+    PORT_OWNER_TYPE_TRACK;
+  ch->midi_out->identifier.owner_type =
     PORT_OWNER_TYPE_TRACK;
 
   /* routing */
@@ -1139,11 +1328,21 @@ _create_channel (
       TYPE_EVENT,
       FLOW_INPUT,
       pll);
-  /*self->midi_in->identifier.owner_type =*/
-    /*PORT_OWNER_TYPE_TRACK;*/
   self->midi_in->midi_events =
     midi_events_new (
       self->midi_in);
+  g_free (pll);
+  pll =
+    g_strdup_printf ("%s MIDI out",
+                     track->name);
+  self->midi_out =
+    port_new_with_type (
+      TYPE_EVENT,
+      FLOW_OUTPUT,
+      pll);
+  self->midi_out->midi_events =
+    midi_events_new (
+      self->midi_out);
   g_free (pll);
   pll =
     g_strdup_printf ("%s Stereo out L",
@@ -1180,6 +1379,9 @@ _create_channel (
     track);
   port_set_owner_track (
     self->midi_in,
+    track);
+  port_set_owner_track (
+    self->midi_out,
     track);
 
   /* init plugins */
@@ -1377,6 +1579,11 @@ channel_connect (
         ch->stereo_out->r);
     }
 
+  /** Connect MIDI in to MIDI out. */
+  port_connect (
+    ch->midi_in,
+    ch->midi_out);
+
   if (ch->type != CT_MASTER)
     {
       /* connect channel out ports to master */
@@ -1531,7 +1738,9 @@ channel_disconnect_plugin_from_strip (
 {
   int i;
 
-  disconnect_midi_ins (ch, pos, pl);
+  disconnect_midi_in_from_pl (ch, pl);
+  if (ch->type == CT_MIDI && pos == 0)
+    disconnect_piano_roll_from_pl (ch, pl);
 
   Plugin * next_plugin = NULL;
   for (i = pos + 1; i < STRIP_SIZE; i++)
@@ -1714,10 +1923,8 @@ channel_add_plugin (
    * connect ports
    * ------------------------------------------ */
 
-  connect_midi_ins (
-    channel,
-    pos,
-    plugin);
+  if (pos == 0)
+    connect_piano_roll_to_pl (channel, plugin);
 
   if (!prev_plugin && !next_plugin)
     connect_no_prev_no_next (
@@ -2017,6 +2224,7 @@ channel_disconnect (
   port_disconnect_all (channel->stereo_in->l);
   port_disconnect_all (channel->stereo_in->r);
   port_disconnect_all (channel->midi_in);
+  port_disconnect_all (channel->midi_out);
   port_disconnect_all (channel->piano_roll);
   port_disconnect_all (channel->stereo_out->l);
   port_disconnect_all (channel->stereo_out->r);
@@ -2040,6 +2248,7 @@ channel_free (Channel * channel)
   port_free (channel->stereo_in->l);
   port_free (channel->stereo_in->r);
   port_free (channel->midi_in);
+  port_free (channel->midi_out);
   port_free (channel->piano_roll);
   port_free (channel->stereo_out->l);
   port_free (channel->stereo_out->r);

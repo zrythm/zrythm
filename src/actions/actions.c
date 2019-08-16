@@ -973,6 +973,23 @@ activate_create_ins_track (GSimpleAction *action,
 }
 
 void
+activate_create_midi_track (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_MIDI,
+      NULL,
+      NULL,
+      TRACKLIST->num_tracks,
+      1);
+
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+void
 activate_create_bus_track (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)

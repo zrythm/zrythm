@@ -41,6 +41,7 @@
 #include "gui/widgets/marker_track.h"
 #include "gui/widgets/master_track.h"
 #include "gui/widgets/midi_activity_bar.h"
+#include "gui/widgets/midi_track.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
 #include "gui/widgets/track.h"
@@ -586,6 +587,7 @@ track_widget_new (Track * track)
     NEW_TW (INSTRUMENT, instrument);
     NEW_TW (MASTER, master);
     NEW_TW (AUDIO, audio);
+    NEW_TW (MIDI, midi);
     NEW_TW (MARKER, marker);
     default:
       break;

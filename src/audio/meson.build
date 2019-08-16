@@ -48,6 +48,7 @@ audio_srcs = [
   'midi.c',
   'midi_note.c',
   'midi_region.c',
+  'midi_track.c',
   'mixer.c',
   'modulator.c',
   'port.c',
