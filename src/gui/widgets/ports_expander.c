@@ -115,22 +115,19 @@ ports_expander_widget_refresh (
 }
 
 /**
- * Sets up the PortsExpanderWidget.
+ * Sets up the PortsExpanderWidget for a Plugin.
  */
 void
-ports_expander_widget_setup (
+ports_expander_widget_setup_plugin (
   PortsExpanderWidget * self,
   PortFlow      flow,
   PortType      type,
-  PortOwnerType owner_type,
-  Plugin *      pl,
-  Track *       tr)
+  Plugin *      pl)
 {
-  self->track = tr;
   self->plugin = pl;
   self->flow = flow;
   self->type = type;
-  self->owner_type = owner_type;
+  self->owner_type = PORT_OWNER_TYPE_PLUGIN;
 
   /* set name and icon */
   char * full_str = NULL;
@@ -190,164 +187,227 @@ ports_expander_widget_setup (
 
   PortConnectionsButtonWidget * pcb;
   Port * port;
-  if (owner_type == PORT_OWNER_TYPE_PLUGIN)
+  if (type == TYPE_CONTROL &&
+      flow == FLOW_INPUT)
     {
-      if (type == TYPE_CONTROL &&
-          flow == FLOW_INPUT)
+      for (int i = 0; i < pl->num_in_ports; i++)
         {
-          for (int i = 0; i < pl->num_in_ports; i++)
-            {
-              port = pl->in_ports[i];
-              if (port->identifier.type
-                    != TYPE_CONTROL)
-                continue;
+          port = pl->in_ports[i];
+          if (port->identifier.type
+                != TYPE_CONTROL)
+            continue;
 
-              pcb =
-                port_connections_button_widget_new (
-                  port);
+          pcb =
+            port_connections_button_widget_new (
+              port);
 
-              two_col_expander_box_widget_add_single (
-                Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-                GTK_WIDGET (pcb));
-            }
+          two_col_expander_box_widget_add_single (
+            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+            GTK_WIDGET (pcb));
         }
-      else if (type == TYPE_CONTROL &&
-          flow == FLOW_OUTPUT)
+    }
+  else if (type == TYPE_CONTROL &&
+      flow == FLOW_OUTPUT)
+    {
+      for (int i = 0; i < pl->num_out_ports; i++)
         {
-          for (int i = 0; i < pl->num_out_ports; i++)
-            {
-              port = pl->out_ports[i];
-              if (port->identifier.type
-                    != TYPE_CONTROL)
-                continue;
+          port = pl->out_ports[i];
+          if (port->identifier.type
+                != TYPE_CONTROL)
+            continue;
 
-              pcb =
-                port_connections_button_widget_new (
-                  port);
+          pcb =
+            port_connections_button_widget_new (
+              port);
 
-              two_col_expander_box_widget_add_single (
-                Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-                GTK_WIDGET (pcb));
-            }
+          two_col_expander_box_widget_add_single (
+            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+            GTK_WIDGET (pcb));
         }
-      else if (type == TYPE_CV &&
-          flow == FLOW_INPUT)
+    }
+  else if (type == TYPE_CV &&
+      flow == FLOW_INPUT)
+    {
+      for (int i = 0; i < pl->num_in_ports; i++)
         {
-          for (int i = 0; i < pl->num_in_ports; i++)
-            {
-              port = pl->in_ports[i];
-              if (port->identifier.type
-                    != TYPE_CV)
-                continue;
+          port = pl->in_ports[i];
+          if (port->identifier.type
+                != TYPE_CV)
+            continue;
 
-              pcb =
-                port_connections_button_widget_new (
-                  port);
+          pcb =
+            port_connections_button_widget_new (
+              port);
 
-              two_col_expander_box_widget_add_single (
-                Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-                GTK_WIDGET (pcb));
-            }
+          two_col_expander_box_widget_add_single (
+            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+            GTK_WIDGET (pcb));
         }
-      else if (type == TYPE_CV &&
-          flow == FLOW_OUTPUT)
+    }
+  else if (type == TYPE_CV &&
+      flow == FLOW_OUTPUT)
+    {
+      for (int i = 0; i < pl->num_out_ports; i++)
         {
-          for (int i = 0; i < pl->num_out_ports; i++)
-            {
-              port = pl->out_ports[i];
-              if (port->identifier.type
-                    != TYPE_CV)
-                continue;
+          port = pl->out_ports[i];
+          if (port->identifier.type
+                != TYPE_CV)
+            continue;
 
-              pcb =
-                port_connections_button_widget_new (
-                  port);
+          pcb =
+            port_connections_button_widget_new (
+              port);
 
-              two_col_expander_box_widget_add_single (
-                Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-                GTK_WIDGET (pcb));
-            }
+          two_col_expander_box_widget_add_single (
+            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+            GTK_WIDGET (pcb));
         }
-      else if (type == TYPE_AUDIO &&
-          flow == FLOW_INPUT)
+    }
+  else if (type == TYPE_AUDIO &&
+      flow == FLOW_INPUT)
+    {
+      for (int i = 0; i < pl->num_in_ports; i++)
         {
-          for (int i = 0; i < pl->num_in_ports; i++)
-            {
-              port = pl->in_ports[i];
-              if (port->identifier.type
-                    != TYPE_AUDIO)
-                continue;
+          port = pl->in_ports[i];
+          if (port->identifier.type
+                != TYPE_AUDIO)
+            continue;
 
-              pcb =
-                port_connections_button_widget_new (
-                  port);
+          pcb =
+            port_connections_button_widget_new (
+              port);
 
-              two_col_expander_box_widget_add_single (
-                Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-                GTK_WIDGET (pcb));
-            }
+          two_col_expander_box_widget_add_single (
+            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+            GTK_WIDGET (pcb));
         }
-      else if (type == TYPE_AUDIO &&
-          flow == FLOW_OUTPUT)
+    }
+  else if (type == TYPE_AUDIO &&
+      flow == FLOW_OUTPUT)
+    {
+      for (int i = 0; i < pl->num_out_ports; i++)
         {
-          for (int i = 0; i < pl->num_out_ports; i++)
-            {
-              port = pl->out_ports[i];
-              if (port->identifier.type
-                    != TYPE_AUDIO)
-                continue;
+          port = pl->out_ports[i];
+          if (port->identifier.type
+                != TYPE_AUDIO)
+            continue;
 
-              pcb =
-                port_connections_button_widget_new (
-                  port);
+          pcb =
+            port_connections_button_widget_new (
+              port);
 
-              two_col_expander_box_widget_add_single (
-                Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-                GTK_WIDGET (pcb));
-            }
+          two_col_expander_box_widget_add_single (
+            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+            GTK_WIDGET (pcb));
         }
-      else if (type == TYPE_EVENT &&
-          flow == FLOW_INPUT)
+    }
+  else if (type == TYPE_EVENT &&
+      flow == FLOW_INPUT)
+    {
+      for (int i = 0; i < pl->num_in_ports; i++)
         {
-          for (int i = 0; i < pl->num_in_ports; i++)
-            {
-              port = pl->in_ports[i];
-              if (port->identifier.type
-                    != TYPE_EVENT)
-                continue;
+          port = pl->in_ports[i];
+          if (port->identifier.type
+                != TYPE_EVENT)
+            continue;
 
-              pcb =
-                port_connections_button_widget_new (
-                  port);
+          pcb =
+            port_connections_button_widget_new (
+              port);
 
-              two_col_expander_box_widget_add_single (
-                Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-                GTK_WIDGET (pcb));
-            }
+          two_col_expander_box_widget_add_single (
+            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+            GTK_WIDGET (pcb));
         }
-      else if (type == TYPE_EVENT &&
-          flow == FLOW_OUTPUT)
+    }
+  else if (type == TYPE_EVENT &&
+      flow == FLOW_OUTPUT)
+    {
+      for (int i = 0; i < pl->num_out_ports; i++)
         {
-          for (int i = 0; i < pl->num_out_ports; i++)
-            {
-              port = pl->out_ports[i];
-              if (port->identifier.type
-                    != TYPE_EVENT)
-                continue;
+          port = pl->out_ports[i];
+          if (port->identifier.type
+                != TYPE_EVENT)
+            continue;
 
-              pcb =
-                port_connections_button_widget_new (
-                  port);
+          pcb =
+            port_connections_button_widget_new (
+              port);
 
-              two_col_expander_box_widget_add_single (
-                Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-                GTK_WIDGET (pcb));
-            }
+          two_col_expander_box_widget_add_single (
+            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+            GTK_WIDGET (pcb));
         }
     }
 
   ports_expander_widget_refresh (
     self);
+}
+
+/**
+ * Sets up the PortsExpanderWidget for Track sends.
+ *
+ * @param prefader 1 for pre-fader, 0 for
+ *   post-fader.
+ */
+void
+ports_expander_widget_setup_sends (
+  PortsExpanderWidget * self,
+  Track *       tr,
+  int           prefader)
+{
+  self->track = tr;
+  self->owner_type = PORT_OWNER_TYPE_FADER;
+
+  expander_box_widget_set_label (
+    Z_EXPANDER_BOX_WIDGET (self),
+    prefader ?
+    _("Pre-Fader Sends") :
+    _("Post-Fader Sends"));
+
+  expander_box_widget_set_icon_resource (
+    Z_EXPANDER_BOX_WIDGET (self),
+    ICON_TYPE_ZRYTHM,
+    "audio.svg");
+
+  /* readd ports */
+  two_col_expander_box_widget_remove_children (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
+
+  PortConnectionsButtonWidget * pcb;
+  Port * port;
+  if (prefader)
+    {
+      pcb =
+        port_connections_button_widget_new (
+          tr->channel->prefader.stereo_out->l);
+      two_col_expander_box_widget_add_single (
+        Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+        GTK_WIDGET (pcb));
+
+      pcb =
+        port_connections_button_widget_new (
+          tr->channel->prefader.stereo_out->r);
+      two_col_expander_box_widget_add_single (
+        Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+        GTK_WIDGET (pcb));
+    }
+  else
+    {
+      pcb =
+        port_connections_button_widget_new (
+          tr->channel->fader.stereo_out->l);
+      two_col_expander_box_widget_add_single (
+        Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+        GTK_WIDGET (pcb));
+
+      pcb =
+        port_connections_button_widget_new (
+          tr->channel->fader.stereo_out->r);
+      two_col_expander_box_widget_add_single (
+        Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+        GTK_WIDGET (pcb));
+    }
 }
 
 static void

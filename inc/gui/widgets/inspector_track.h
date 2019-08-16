@@ -34,12 +34,17 @@ typedef struct TracklistSelections
   TracklistSelections;
 typedef struct _InstrumentTrackInfoExpanderWidget
   InstrumentTrackInfoExpanderWidget;
+typedef struct _PortsExpanderWidget
+  PortsExpanderWidget;
 
 typedef struct _InspectorTrackWidget
 {
   GtkBox             parent_instance;
   InstrumentTrackInfoExpanderWidget *
     instrument_track_info;
+
+  PortsExpanderWidget * prefader_sends;
+  PortsExpanderWidget * postfader_sends;
 } InspectorTrackWidget;
 
 void

@@ -21,6 +21,7 @@
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/instrument_track_info_expander.h"
+#include "gui/widgets/ports_expander.h"
 #include "project.h"
 #include "utils/resources.h"
 
@@ -38,13 +39,21 @@ inspector_track_widget_show_tracks (
   TracklistSelections *  tls)
 {
   /* show info for first track */
+  Track * track;
   if (tls->num_tracks > 0)
     {
-      Track * track = tls->tracks[0];
+      track = tls->tracks[0];
 
       instrument_track_info_expander_widget_setup (
         self->instrument_track_info,
         track);
+
+      ports_expander_widget_setup_sends (
+        self->prefader_sends,
+        track, 1);
+      ports_expander_widget_setup_sends (
+        self->postfader_sends,
+        track, 0);
     }
 }
 
@@ -64,6 +73,8 @@ inspector_track_widget_class_init (
     child);
 
   BIND_CHILD (instrument_track_info);
+  BIND_CHILD (prefader_sends);
+  BIND_CHILD (postfader_sends);
 
 #undef BIND_CHILD
 }

@@ -20,13 +20,15 @@ Zrythm is currently in alpha.
 ## Currently supported plugin protocols:
 - LV2
 
-## Installation
+## Building and Installation
 See [INSTALL.md](INSTALL.md).
 
 ## Using
-At the moment, Zrythm works with Jack (recommended) and ALSA. For Jack setup instructions see https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack
+At the moment, Zrythm works with Jack (recommended) and ALSA.
+For Jack setup instructions see
+https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack
 
-For more information see the [manual](https://manual.zrythm.org).
+For more information see the [user manual](doc/user/README.md).
 
 ## Packaging
 See [PACKAGING.md](PACKAGING.md).
@@ -38,19 +40,24 @@ For contributing guidelines see [CONTRIBUTING.md](CONTRIBUTING.md). Be sure to t
 For any bugs please raise an issue or join a chatroom below
 
 ## Chatrooms
-### Matrix/IRC (Freenode)
-`#zrythm` channel (for Matrix users `#zrythmdaw:matrix.org`)
+`#zrythm` channel on freenode (for Matrix users `#zrythmdaw:matrix.org`).
 
 ## Mailing lists
 zrythm-dev@nongnu.org for developers, zrythm-user@nongnu.org for users
 
+## Bug Tracker
+https://savannah.nongnu.org/support/?group=zrythm
+
+## Releases
+https://savannah.nongnu.org/files/?group=zrythm
+
 ## License
-This program is free software: you can redistribute it and/or modify
+Zrythm is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
 published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
+Zrythm is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
@@ -63,8 +70,13 @@ listing individual years (“2008, 2009, 2010”) if and only if every year
 in the range, inclusive, is a “copyrightable” year that would be listed
 individually.
 
+Some files, where specified, are licensed under
+different licenses.
+
 ## Support
-We appreciate contributions of any size -- donations enable us to spend more time working on the project, and help cover our infrastructure expenses.
+We appreciate contributions of any size -- donations
+enable us to spend more time working on the project,
+and help cover our infrastructure expenses.
 
 ### Paypal
 https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LZWVK6228PQGE&source=url

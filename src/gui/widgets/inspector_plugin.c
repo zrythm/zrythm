@@ -40,62 +40,46 @@ inspector_plugin_widget_show (
     {
       Plugin * pl = ms->plugins[0];
 
-      ports_expander_widget_setup (
+      ports_expander_widget_setup_plugin (
         self->ctrl_ins,
         FLOW_INPUT,
         TYPE_CONTROL,
-        PORT_OWNER_TYPE_PLUGIN,
-        pl,
-        NULL);
-      ports_expander_widget_setup (
+        pl);
+      ports_expander_widget_setup_plugin (
         self->ctrl_outs,
         FLOW_OUTPUT,
         TYPE_CONTROL,
-        PORT_OWNER_TYPE_PLUGIN,
-        pl,
-        NULL);
-      ports_expander_widget_setup (
+        pl);
+      ports_expander_widget_setup_plugin (
         self->midi_ins,
         FLOW_INPUT,
         TYPE_EVENT,
-        PORT_OWNER_TYPE_PLUGIN,
-        pl,
-        NULL);
-      ports_expander_widget_setup (
+        pl);
+      ports_expander_widget_setup_plugin (
         self->midi_outs,
         FLOW_OUTPUT,
         TYPE_EVENT,
-        PORT_OWNER_TYPE_PLUGIN,
-        pl,
-        NULL);
-      ports_expander_widget_setup (
+        pl);
+      ports_expander_widget_setup_plugin (
         self->audio_ins,
         FLOW_INPUT,
         TYPE_AUDIO,
-        PORT_OWNER_TYPE_PLUGIN,
-        pl,
-        NULL);
-      ports_expander_widget_setup (
+        pl);
+      ports_expander_widget_setup_plugin (
         self->audio_outs,
         FLOW_OUTPUT,
         TYPE_AUDIO,
-        PORT_OWNER_TYPE_PLUGIN,
-        pl,
-        NULL);
-      ports_expander_widget_setup (
+        pl);
+      ports_expander_widget_setup_plugin (
         self->cv_ins,
         FLOW_INPUT,
         TYPE_CV,
-        PORT_OWNER_TYPE_PLUGIN,
-        pl,
-        NULL);
-      ports_expander_widget_setup (
+        pl);
+      ports_expander_widget_setup_plugin (
         self->cv_outs,
         FLOW_OUTPUT,
         TYPE_CV,
-        PORT_OWNER_TYPE_PLUGIN,
-        pl,
-        NULL);
+        pl);
     }
 }
 
@@ -108,10 +92,13 @@ inspector_plugin_widget_class_init (
   resources_set_class_template (
     klass, "inspector_plugin.ui");
 
-  gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass),
-    InspectorPluginWidget,
-    ctrl_ins);
+#define BIND_CHILD(child) \
+  gtk_widget_class_bind_template_child ( \
+    GTK_WIDGET_CLASS (klass), \
+    InspectorPluginWidget, \
+    child);
+
+  BIND_CHILD (ctrl_ins);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass),
     InspectorPluginWidget,
@@ -140,6 +127,8 @@ inspector_plugin_widget_class_init (
     GTK_WIDGET_CLASS (klass),
     InspectorPluginWidget,
     cv_outs);
+
+#undef BIND_CHILD
 }
 
 static void

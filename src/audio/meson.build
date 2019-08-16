@@ -53,6 +53,7 @@ audio_srcs = [
   'port.c',
   'position.c',
   'quantize_options.c',
+  'passthrough_processor.c',
   'region.c',
   'routing.c',
   'sample_playback.c',

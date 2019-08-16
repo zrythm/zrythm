@@ -19,6 +19,21 @@ install_data (
   'org.zrythm.Zrythm.gschema.xml',
   install_dir: schemasdir)
 
+# install fonts
+install_subdir (
+  join_paths ('fonts', 'DSEG14-Classic-MINI'),
+  install_dir: join_paths (fontsdir))
+
+#install samples
+install_data (
+  join_paths (
+    'samples', 'klick', 'square_emphasis.wav'),
+  install_dir: samplesdir)
+install_data (
+  join_paths (
+    'samples', 'klick', 'square_normal.wav'),
+  install_dir: samplesdir)
+
 # Desktop launcher and description file.
 desktop_file = i18n.merge_file (
   input: 'zrythm.desktop.in',

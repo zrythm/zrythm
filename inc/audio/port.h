@@ -33,6 +33,8 @@ typedef struct Plugin Plugin;
 typedef struct MidiEvents MidiEvents;
 typedef struct Fader Fader;
 typedef struct SampleProcessor SampleProcessor;
+typedef struct PassthroughProcessor
+  PassthroughProcessor;
 
 /**
  * @addtogroup audio
@@ -80,6 +82,7 @@ typedef enum PortOwnerType
   PORT_OWNER_TYPE_BACKEND,
   PORT_OWNER_TYPE_PLUGIN,
   PORT_OWNER_TYPE_TRACK,
+  PORT_OWNER_TYPE_PREFADER,
   PORT_OWNER_TYPE_FADER,
   PORT_OWNER_TYPE_SAMPLE_PROCESSOR,
 } PortOwnerType;
@@ -619,6 +622,14 @@ void
 port_set_owner_fader (
   Port *    port,
   Fader *   fader);
+
+/**
+ * Sets the owner fader & its ID.
+ */
+void
+port_set_owner_prefader (
+  Port *                 port,
+  PassthroughProcessor * fader);
 
 /**
  * Sets the owner plugin & its ID.

@@ -138,10 +138,10 @@ disconnect_stereo_in_from_fader (
 {
   port_disconnect (
     ch->stereo_in->l,
-    ch->fader.stereo_in->l);
+    ch->prefader.stereo_in->l);
   port_disconnect (
     ch->stereo_in->r,
-    ch->fader.stereo_in->r);
+    ch->prefader.stereo_in->r);
 }
 
 /**
@@ -156,10 +156,10 @@ connect_stereo_in_to_fader (
 {
   port_connect (
     ch->stereo_in->l,
-    ch->fader.stereo_in->l);
+    ch->prefader.stereo_in->l);
   port_connect (
     ch->stereo_in->r,
-    ch->fader.stereo_in->r);
+    ch->prefader.stereo_in->r);
 }
 
 /**
@@ -415,10 +415,10 @@ connect_pl_to_fader (
             {
               port_connect (
                 out_port,
-                ch->fader.stereo_in->l);
+                ch->prefader.stereo_in->l);
               port_connect (
                 out_port,
-                ch->fader.stereo_in->r);
+                ch->prefader.stereo_in->r);
               break;
             }
         }
@@ -438,14 +438,14 @@ connect_pl_to_fader (
             {
               port_connect (
                 out_port,
-                ch->fader.stereo_in->l);
+                ch->prefader.stereo_in->l);
               last_index++;
             }
           else if (last_index == 1)
             {
               port_connect (
                 out_port,
-                ch->fader.stereo_in->r);
+                ch->prefader.stereo_in->r);
               break;
             }
         }
@@ -614,13 +614,13 @@ disconnect_pl_from_fader (
       if (out_port->identifier.type == TYPE_AUDIO)
         {
           if (ports_connected (
-                out_port, ch->fader.stereo_in->l))
+                out_port, ch->prefader.stereo_in->l))
             port_disconnect (
-              out_port, ch->fader.stereo_in->l);
+              out_port, ch->prefader.stereo_in->l);
           if (ports_connected (
-                out_port, ch->fader.stereo_in->r))
+                out_port, ch->prefader.stereo_in->r))
             port_disconnect (
-              out_port, ch->fader.stereo_in->r);
+              out_port, ch->prefader.stereo_in->r);
         }
     }
 }
@@ -995,6 +995,10 @@ channel_prepare_process (Channel * channel)
       port_clear_buffer (channel->midi_in);
       port_clear_buffer (channel->piano_roll);
     }
+  port_clear_buffer (channel->prefader.stereo_in->l);
+  port_clear_buffer (channel->prefader.stereo_in->r);
+  port_clear_buffer (channel->prefader.stereo_out->l);
+  port_clear_buffer (channel->prefader.stereo_out->r);
   port_clear_buffer (channel->fader.stereo_in->l);
   port_clear_buffer (channel->fader.stereo_in->r);
   port_clear_buffer (channel->fader.stereo_out->l);
@@ -1039,6 +1043,7 @@ channel_init_loaded (Channel * ch)
   g_warn_if_fail (ch->track);
 
   /* fader */
+  ch->prefader.channel = ch;
   ch->fader.channel = ch;
 
   /* midi in / piano roll ports */
@@ -1186,6 +1191,9 @@ _create_channel (
   fader_init (
     &self->fader,
     FADER_TYPE_CHANNEL,
+    self);
+  passthrough_processor_init (
+    &self->prefader,
     self);
 
   /* set up piano roll port */
@@ -1351,9 +1359,15 @@ channel_connect (
        * fader */
       port_connect (
         ch->stereo_in->l,
-        ch->fader.stereo_in->l);
+        ch->prefader.stereo_in->l);
       port_connect (
         ch->stereo_in->r,
+        ch->prefader.stereo_in->r);
+      port_connect (
+        ch->prefader.stereo_out->l,
+        ch->fader.stereo_in->l);
+      port_connect (
+        ch->prefader.stereo_out->r,
         ch->fader.stereo_in->r);
       port_connect (
         ch->fader.stereo_out->l,
@@ -1469,51 +1483,11 @@ channel_get_phase (void * _channel)
   return channel->fader.phase;
 }
 
-/*void*/
-/*channel_set_volume (void * _channel, float volume)*/
-/*{*/
-  /*Channel * channel = (Channel *) _channel;*/
-  /*channel->volume = volume;*/
-  /*[> TODO update tooltip <]*/
-  /*gtk_label_set_text (channel->widget->phase_reading,*/
-                      /*g_strdup_printf ("%.1f", volume));*/
-  /*g_idle_add ((GSourceFunc) gtk_widget_queue_draw,*/
-              /*GTK_WIDGET (channel->widget->fader));*/
-/*}*/
-
-/*float*/
-/*channel_get_volume (void * _channel)*/
-/*{*/
-  /*Channel * channel = (Channel *) _channel;*/
-  /*return channel->volume;*/
-/*}*/
-
-/*static int*/
-/*redraw_fader_asnyc (Channel * channel)*/
-/*{*/
-  /*gtk_widget_queue_draw (*/
-    /*GTK_WIDGET (channel->widget->fader));*/
-
-  /*return FALSE;*/
-/*}*/
-
-
-/*static int*/
-/*redraw_pan_async (Channel * channel)*/
-/*{*/
-  /*gtk_widget_queue_draw (*/
-    /*GTK_WIDGET (channel->widget->pan));*/
-
-  /*return FALSE;*/
-/*}*/
-
 void
 channel_set_pan (void * _channel, float pan)
 {
   Channel * channel = (Channel *) _channel;
   channel->fader.pan = pan;
-  /*g_idle_add ((GSourceFunc) redraw_pan_async,*/
-              /*channel);*/
 }
 
 float
@@ -1980,6 +1954,7 @@ channel_clone (
 
   COPY_MEMBER (type);
   clone->fader.channel = clone;
+  clone->prefader.channel = clone;
   fader_copy (&ch->fader, &clone->fader);
 
 #undef COPY_MEMBER

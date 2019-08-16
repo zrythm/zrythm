@@ -51,10 +51,6 @@ location so `XDG_DATA_DIRS` might be a better idea.
 Generally, we recommend installing under `/usr/local`
 (default) or `/usr` to avoid these problems.
 
-## Binary Packages
-For easy package installation see
-[Installation](https://manual.zrythm.org/en/configuration/installation/intro.html) in the manual.
-
 ----
 
 Copyright (C) 2019 Alexandros Theodotou

@@ -34,6 +34,7 @@
 #include "audio/mixer.h"
 #include "audio/modulator.h"
 #include "audio/pan.h"
+#include "audio/passthrough_processor.h"
 #include "audio/port.h"
 #include "plugins/plugin.h"
 #include "utils/arrays.h"
@@ -232,6 +233,28 @@ port_find_from_identifier (
             return ch->fader.stereo_in->r;
         }
       break;
+    case PORT_OWNER_TYPE_PREFADER:
+      tr = TRACKLIST->tracks[id->track_pos];
+      g_warn_if_fail (tr);
+      ch = tr->channel;
+      g_warn_if_fail (ch);
+      if (id->flow == FLOW_OUTPUT)
+        {
+          if (id->flags & PORT_FLAG_STEREO_L)
+            return ch->prefader.stereo_out->l;
+          else if (id->flags &
+                     PORT_FLAG_STEREO_R)
+            return ch->prefader.stereo_out->r;
+        }
+      else if (id->flow == FLOW_INPUT)
+        {
+          if (id->flags & PORT_FLAG_STEREO_L)
+            return ch->prefader.stereo_in->r;
+          else if (id->flags &
+                     PORT_FLAG_STEREO_R)
+            return ch->prefader.stereo_in->r;
+        }
+      break;
     case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:
       if (id->flags & PORT_FLAG_STEREO_L)
         return SAMPLE_PROCESSOR->stereo_out->l;
@@ -357,6 +380,12 @@ port_get_all (
       _ADD (ch->fader.stereo_out->l);
       _ADD (ch->fader.stereo_out->r);
 
+      /* add prefader ports */
+      _ADD (ch->prefader.stereo_in->l);
+      _ADD (ch->prefader.stereo_in->r);
+      _ADD (ch->prefader.stereo_out->l);
+      _ADD (ch->prefader.stereo_out->r);
+
 #define ADD_PLUGIN_PORTS \
           if (!pl) \
             continue; \
@@ -466,6 +495,23 @@ port_set_owner_fader (
     fader->channel->track->pos;
   port->identifier.owner_type =
     PORT_OWNER_TYPE_FADER;
+}
+
+/**
+ * Sets the owner fader & its ID.
+ */
+void
+port_set_owner_prefader (
+  Port *                 port,
+  PassthroughProcessor * fader)
+{
+  g_warn_if_fail (port && fader);
+
+  port->track = fader->channel->track;
+  port->identifier.track_pos =
+    fader->channel->track->pos;
+  port->identifier.owner_type =
+    PORT_OWNER_TYPE_PREFADER;
 }
 
 /**

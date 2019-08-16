@@ -1,27 +1,28 @@
-# zrythm-docs
+Zrythm User Manual
+==================
 
-Documentation generator for the Zrythm manual.
+Zrythm user manual generator using
+[sphinx-build](http://sphinx-doc.org/).
 
-# Website
+## Usage Example
 
-For bundling for the website, use `make bundle` and it will create a
-deployable `_rendered` folder. Just rsync that and done.
+Use `make html` to build the manual in HTML.
+Type `make` to see the available output formats.
+
+## Website
+
+For bundling for the website, use `make bundle`
+and it will create a deployable `_rendered`
+folder.
 
 Example: https://docs.zrythm.org
 
-# man
+## Note About PDFs
 
-Use `make man` and it will generate a man page for each language.
+PDF compilation requires texlive. See
+https://tug.org/texlive/quickinstall.html
 
-# Other Formats
-
-Type `make` and it will show all the options.
-
-# Note About PDFs
-
-PDF compilation requires texlive. See https://tug.org/texlive/quickinstall.html
-
-# LICENSE
+## LICENSE
 The sources required to build the manual and the
 contents of the manual are licensed under the GNU
 Affero General Public License, version 3 or later.

@@ -69,15 +69,25 @@ ports_expander_widget_refresh (
   PortsExpanderWidget * self);
 
 /**
- * Sets up the PortsExpanderWidget.
+ * Sets up the PortsExpanderWidget for a Plugin.
  */
 void
-ports_expander_widget_setup (
+ports_expander_widget_setup_plugin (
   PortsExpanderWidget * self,
   PortFlow      flow,
   PortType      type,
-  PortOwnerType owner_type,
-  Plugin *      pl,
-  Track *       tr);
+  Plugin *      pl);
+
+/**
+ * Sets up the PortsExpanderWidget for Track sends.
+ *
+ * @param prefader 1 for pre-fader, 0 for
+ *   post-fader.
+ */
+void
+ports_expander_widget_setup_sends (
+  PortsExpanderWidget * self,
+  Track *       tr,
+  int           prefader);
 
 #endif

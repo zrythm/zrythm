@@ -21,6 +21,8 @@
 #include "gui/widgets/port_connections_button.h"
 #include "gui/widgets/port_connections_popover.h"
 
+#include <glib/gi18n.h>
+
 G_DEFINE_TYPE (PortConnectionsButtonWidget,
                port_connections_button_widget,
                GTK_TYPE_MENU_BUTTON)
@@ -49,7 +51,11 @@ port_connections_button_widget_new (
 
   char * str = NULL;
   if (port->identifier.owner_type ==
-        PORT_OWNER_TYPE_PLUGIN)
+        PORT_OWNER_TYPE_PLUGIN ||
+      port->identifier.owner_type ==
+        PORT_OWNER_TYPE_FADER ||
+      port->identifier.owner_type ==
+        PORT_OWNER_TYPE_PREFADER)
     {
       if (port->identifier.flow == FLOW_INPUT)
         {

@@ -34,6 +34,7 @@
 #include "audio/midi.h"
 #include "audio/modulator.h"
 #include "audio/pan.h"
+#include "audio/passthrough_processor.h"
 #include "audio/port.h"
 #include "audio/routing.h"
 #include "audio/track.h"
@@ -158,6 +159,12 @@ get_node_name (
         g_strdup_printf (
           "%s Fader",
           node->fader->channel->track->name);
+      break;
+    case ROUTE_NODE_TYPE_PREFADER:
+      return
+        g_strdup_printf (
+          "%s Pre-Fader",
+          node->prefader->channel->track->name);
       break;
     case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
       return
@@ -292,6 +299,11 @@ node_process (
     {
       fader_process (
         node->fader, local_offset, nframes);
+    }
+  else if (node->type == ROUTE_NODE_TYPE_PREFADER)
+    {
+      passthrough_processor_process (
+        node->prefader, local_offset, nframes);
     }
   else if (node->type ==
            ROUTE_NODE_TYPE_SAMPLE_PROCESSOR)
@@ -889,6 +901,22 @@ find_node_from_fader (
 }
 
 static GraphNode *
+find_node_from_prefader (
+  Graph * graph,
+  PassthroughProcessor * prefader)
+{
+  GraphNode * node;
+  for (int i = 0; i < graph->n_graph_nodes; i++)
+    {
+      node = graph->graph_nodes[i];
+      if (node->type == ROUTE_NODE_TYPE_PREFADER &&
+          node->prefader == prefader)
+        return node;
+    }
+  return NULL;
+}
+
+static GraphNode *
 find_node_from_sample_processor (
   Graph * graph,
   SampleProcessor * sample_processor)
@@ -923,6 +951,8 @@ graph_node_new (
     node->port = (Port *) data;
   else if (type == ROUTE_NODE_TYPE_FADER)
     node->fader = (Fader *) data;
+  else if (type == ROUTE_NODE_TYPE_PREFADER)
+    node->prefader = (PassthroughProcessor *) data;
   else if (type ==
              ROUTE_NODE_TYPE_SAMPLE_PROCESSOR)
     node->sample_processor =
@@ -1199,7 +1229,8 @@ add_port (
   Graph * self,
   Port *   port)
 {
-  PortOwnerType owner = port->identifier.owner_type;
+  PortOwnerType owner =
+    port->identifier.owner_type;
 
   /*add_port_node (self, port);*/
   if (port->num_dests == 0 &&
@@ -1216,13 +1247,16 @@ add_port (
   else if (port->num_dests == 0 &&
            port->num_srcs == 0 &&
            owner != PORT_OWNER_TYPE_PLUGIN &&
-           owner != PORT_OWNER_TYPE_FADER)
+           owner != PORT_OWNER_TYPE_FADER &&
+           owner != PORT_OWNER_TYPE_PREFADER)
     {
     }
   else if (port->num_srcs == 0 &&
       !(owner == PORT_OWNER_TYPE_PLUGIN &&
         port->identifier.flow == FLOW_OUTPUT) &&
       !(owner == PORT_OWNER_TYPE_FADER &&
+        port->identifier.flow == FLOW_OUTPUT) &&
+      !(owner == PORT_OWNER_TYPE_PREFADER &&
         port->identifier.flow == FLOW_OUTPUT) &&
       !(owner ==
           PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
@@ -1235,6 +1269,9 @@ add_port (
              port->identifier.flow ==
                FLOW_INPUT) &&
            !(owner == PORT_OWNER_TYPE_FADER &&
+             port->identifier.flow ==
+               FLOW_INPUT) &&
+           !(owner == PORT_OWNER_TYPE_PREFADER &&
              port->identifier.flow ==
                FLOW_INPUT) &&
            !(owner ==
@@ -1366,6 +1403,11 @@ graph_new (
         self, ROUTE_NODE_TYPE_FADER,
         &tr->channel->fader);
 
+      /* add the prefader */
+      graph_add_node ( \
+        self, ROUTE_NODE_TYPE_PREFADER,
+        &tr->channel->prefader);
+
 #define ADD_PLUGIN \
           if (!pl || pl->deleting) \
             continue; \
@@ -1441,6 +1483,7 @@ graph_new (
   node_connect (node, node2);
 
   Fader * fader;
+  PassthroughProcessor * prefader;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       tr = TRACKLIST->tracks[i];
@@ -1448,6 +1491,7 @@ graph_new (
         continue;
 
       fader = &tr->channel->fader;
+      prefader = &tr->channel->prefader;
 
       /* connect the fader */
       node =
@@ -1466,6 +1510,27 @@ graph_new (
         find_node_from_port (self, port);
       node_connect (node, node2);
       port = fader->stereo_out->r;
+      node2 =
+        find_node_from_port (self, port);
+      node_connect (node, node2);
+
+      /* connect the prefader */
+      node =
+        find_node_from_prefader (
+          self, prefader);
+      port = prefader->stereo_in->l;
+      node2 =
+        find_node_from_port (self, port);
+      node_connect (node2, node);
+      port = prefader->stereo_in->r;
+      node2 =
+        find_node_from_port (self, port);
+      node_connect (node2, node);
+      port = prefader->stereo_out->l;
+      node2 =
+        find_node_from_port (self, port);
+      node_connect (node, node2);
+      port = prefader->stereo_out->r;
       node2 =
         find_node_from_port (self, port);
       node_connect (node, node2);

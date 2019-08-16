@@ -17,7 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
+/**
+ * \file
+ *
+ * Routing graph.
  */
 
 #ifndef __AUDIO_ROUTING_H__
@@ -25,6 +28,17 @@
 
 #include <pthread.h>
 #include "zix/sem.h"
+
+typedef struct GraphNode GraphNode;
+typedef struct Graph Graph;
+typedef struct PassthroughProcessor
+  PassthroughProcessor;
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
 
 /**
  * Graph nodes can be either ports or processors.
@@ -39,12 +53,12 @@ typedef enum GraphNodeType
   ROUTE_NODE_TYPE_PLUGIN,
   /** Fader/pan processor. */
   ROUTE_NODE_TYPE_FADER,
+  /** Pre-Fader passthrough processor. */
+  ROUTE_NODE_TYPE_PREFADER,
   /** Sample processor. */
   ROUTE_NODE_TYPE_SAMPLE_PROCESSOR,
 } GraphNodeType;
 
-typedef struct GraphNode GraphNode;
-typedef struct Graph Graph;
 typedef struct GraphNode
 {
   int           id;
@@ -74,6 +88,9 @@ typedef struct GraphNode
 
   /** Fader, if fader. */
   Fader *       fader;
+
+  /** Pre-Fader, if prefader node. */
+  PassthroughProcessor * prefader;
 
   /** Sample processor, if sample processor. */
   SampleProcessor * sample_processor;
@@ -238,5 +255,9 @@ graph_print (
 void
 graph_destroy (
   Graph * graph);
+
+/**
+ * @}
+ */
 
 #endif

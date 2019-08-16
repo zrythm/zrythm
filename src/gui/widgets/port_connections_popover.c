@@ -49,9 +49,9 @@ port_connections_popover_widget_refresh (
   /* set title and add ports */
   Port * port;
   PortConnectionRowWidget * pcr;
-  if (owner->port->identifier.owner_type ==
-        PORT_OWNER_TYPE_PLUGIN)
-    {
+  /*if (owner->port->identifier.owner_type ==*/
+        /*PORT_OWNER_TYPE_PLUGIN)*/
+    /*{*/
       if (owner->port->identifier.flow == FLOW_INPUT)
         {
           gtk_label_set_text (
@@ -89,7 +89,7 @@ port_connections_popover_widget_refresh (
                 GTK_WIDGET (pcr));
             }
         }
-    }
+    /*}*/
 
   PortSelectorPopoverWidget * psp =
     port_selector_popover_widget_new (
