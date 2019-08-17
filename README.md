@@ -37,7 +37,8 @@ See [PACKAGING.md](PACKAGING.md).
 For contributing guidelines see [CONTRIBUTING.md](CONTRIBUTING.md). Be sure to take a look at the
 [Developer Docs](https://docs.zrythm.org)
 
-For any bugs please raise an issue or join a chatroom below
+For any bugs please raise an issue or join a
+chatroom below
 
 ## Chatrooms
 `#zrythm` channel on freenode (for Matrix users `#zrythmdaw:matrix.org`).

@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
+if (sphinx_build.found())
+
 foreach lang : locales
   html_manual = custom_target (
     'html-manual-' + lang,
@@ -55,13 +57,13 @@ if (get_option ('user_manual'))
     install_dir: docdir)
 endif
 
-if (sphinx_build.found())
-  run_target (
-    'bundle_manual',
-    command: [
-      'echo',
-      'Bundled manual generated',
-      ],
-    depends: html_dev_target,
-    )
+run_target (
+  'bundle_manual',
+  command: [
+    'echo',
+    'Bundled manual generated',
+    ],
+  depends: html_dev_target,
+  )
+
 endif

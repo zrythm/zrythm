@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
+if (help2man.found())
 manpage = custom_target (
   'manpage',
   output: 'zrythm.1',
@@ -36,13 +37,12 @@ manpage = custom_target (
   build_by_default: get_option ('manpage'),
   )
 
-if (help2man.found())
-  run_target (
-    'build_manpage',
-    command: [
-      'echo',
-      'Manpage built',
-      ],
-    depends: manpage,
-    )
+run_target (
+'build_manpage',
+command: [
+  'echo',
+  'Manpage built',
+  ],
+depends: manpage,
+)
 endif
