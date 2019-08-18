@@ -219,6 +219,11 @@ if os_freebsd
     ]
 endif
 
+test_ldflags += [
+  '-lfftw3_threads',
+  '-lfftw3f_threads'
+  ]
+
 if (meson.version() >= '0.46.0')
   common_ldflags = cc.get_supported_link_arguments (
     test_ldflags)
@@ -261,6 +266,7 @@ zrythm_deps = [
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),
   dependency('lv2', version: '>=1.14.0'),
+  dependency('fftw3', version: '>=3.3.5'),
   libm,
 ]
 

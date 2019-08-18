@@ -40,6 +40,8 @@
 #include <glibtop.h>
 #endif
 
+#include <fftw3.h>
+
 /** SIGSEGV handler. */
 static void
 handler (int sig) {
@@ -157,6 +159,11 @@ main (int    argc,
   /* init suil */
   g_message ("Initing suil...");
   suil_init(&argc, &argv, SUIL_ARG_NONE);
+
+  /* init fftw */
+  g_message ("Making fftw planner thread safe...");
+  fftw_make_planner_thread_safe ();
+  fftwf_make_planner_thread_safe ();
 
   /* init audio decoder */
   g_message ("Initing audio decoder...");
