@@ -17,7 +17,6 @@
 
 lv2_srcs = [
   'control.c',
-  'jack.c',
   'log.c',
   'lv2_evbuf.c',
   'qt5_in_gtk3.cpp',

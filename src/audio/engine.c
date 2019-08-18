@@ -394,6 +394,8 @@ engine_process_prepare (
       g_message ("pause requested handled");
       TRANSPORT->play_state = PLAYSTATE_PAUSED;
       /*zix_sem_post (&TRANSPORT->paused);*/
+      jack_transport_stop (
+        self->client);
     }
   else if (TRANSPORT->play_state ==
            PLAYSTATE_ROLL_REQUESTED)
@@ -402,6 +404,8 @@ engine_process_prepare (
       self->remaining_latency_preroll =
         router_get_max_playback_latency (
           &MIXER->router);
+      jack_transport_start (
+        self->client);
     }
 
   int ret =
@@ -798,6 +802,8 @@ engine_post_process (AudioEngine * self)
     {
       transport_add_to_playhead (
         TRANSPORT, self->nframes);
+      jack_transport_locate (
+        self->client, PLAYHEAD->frames);
     }
 
   AUDIO_ENGINE->last_time_taken =

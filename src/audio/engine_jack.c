@@ -101,8 +101,8 @@ engine_jack_autoconnect_midi_controllers (
 }
 
 /** Jack sample rate callback. */
-int
-jack_sample_rate_cb(uint32_t nframes, void * data)
+static int
+sample_rate_cb(uint32_t nframes, void * data)
 {
   AUDIO_ENGINE->sample_rate = nframes;
 
@@ -116,8 +116,8 @@ jack_sample_rate_cb(uint32_t nframes, void * data)
 }
 
 /** Jack buffer size callback. */
-int
-jack_buffer_size_cb (uint32_t nframes,
+static int
+buffer_size_cb (uint32_t nframes,
                      void *   data)
 {
   engine_realloc_port_buffers (
@@ -203,8 +203,8 @@ engine_jack_receive_midi_events (
  * called in a special realtime thread once for each audio
  * cycle.
  */
-int
-jack_process_cb (
+static int
+process_cb (
   nframes_t nframes, ///< the number of frames to fill
   void *    data) ///< user data
 {
@@ -213,20 +213,55 @@ jack_process_cb (
       (AudioEngine *) data, nframes);
 }
 
-int
-jack_xrun_cb (void *arg)
+static int
+xrun_cb (void *arg)
 {
   ui_show_notification_idle ("XRUN occurred");
 
   return 0;
 }
 
+static void
+timebase_cb (
+  jack_transport_state_t state,
+  jack_nframes_t nframes,
+  jack_position_t *pos,
+  int new_pos,
+  void *arg)
+{
+  AudioEngine * self = (AudioEngine *) arg;
+
+  /* Mandatory fields */
+  pos->valid = JackPositionBBT;
+  pos->frame = PLAYHEAD->frames;
+
+  /* BBT */
+  pos->bar = PLAYHEAD->bars;
+  pos->beat = PLAYHEAD->beats;
+  pos->tick =
+    PLAYHEAD->sixteenths * TICKS_PER_SIXTEENTH_NOTE +
+    PLAYHEAD->ticks;
+  Position bar_start;
+  position_set_to_bar (
+    &bar_start, PLAYHEAD->bars);
+  pos->bar_start_tick =
+    PLAYHEAD->total_ticks -
+    bar_start.total_ticks;
+  pos->beats_per_bar =
+    TRANSPORT->beats_per_bar;
+  pos->beat_type =
+    TRANSPORT->beat_unit;
+  pos->ticks_per_beat =
+    TRANSPORT->ticks_per_beat;
+  pos->beats_per_minute = TRANSPORT->bpm;
+}
+
 /**
  * JACK calls this shutdown_callback if the server ever
  * shuts down or decides to disconnect the client.
  */
-void
-jack_shutdown_cb (void *arg)
+static void
+shutdown_cb (void *arg)
 {
   // TODO
   g_warning ("Jack shutting down...");
@@ -376,24 +411,24 @@ jack_setup (AudioEngine * self,
     }
 
   /* Set audio engine properties */
-  self->sample_rate   = jack_get_sample_rate (self->client);
-  self->block_length  = jack_get_buffer_size (self->client);
-
+  self->sample_rate =
+    jack_get_sample_rate (self->client);
+  self->block_length =
+    jack_get_buffer_size (self->client);
 
   /* set jack callbacks */
-  jack_set_process_callback (self->client,
-                             &jack_process_cb,
-                             self);
-  jack_set_buffer_size_callback (self->client,
-                                 &jack_buffer_size_cb,
-                                 self);
-  jack_set_sample_rate_callback (self->client,
-                                 &jack_sample_rate_cb,
-                                 self);
-  jack_set_xrun_callback (self->client,
-                          &jack_xrun_cb,
-                          self->client);
-  jack_on_shutdown (self->client, &jack_shutdown_cb, self);
+  jack_set_process_callback (
+    self->client, &process_cb, self);
+  jack_set_buffer_size_callback (
+    self->client, &buffer_size_cb, self);
+  jack_set_sample_rate_callback (
+    self->client, &sample_rate_cb, self);
+  jack_set_xrun_callback (
+    self->client, &xrun_cb, self->client);
+  jack_on_shutdown (
+    self->client, &shutdown_cb, self);
+  jack_set_timebase_callback (
+    self->client, 0, timebase_cb, self);
   /*jack_set_latency_callback(client, &jack_latency_cb, arg);*/
 #ifdef JALV_JACK_SESSION
   /*jack_set_session_callback(client, &jack_session_cb, arg);*/
