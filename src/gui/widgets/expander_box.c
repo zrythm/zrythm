@@ -215,9 +215,12 @@ expander_box_widget_init (ExpanderBoxWidget * self)
     GTK_CONTAINER (box),
     GTK_WIDGET (
       gtk_separator_new (GTK_ORIENTATION_VERTICAL)));
-  gtk_container_add (
-    GTK_CONTAINER (box),
-    GTK_WIDGET (prv->btn_img));
+  gtk_box_pack_end (
+    GTK_BOX (box),
+    GTK_WIDGET (prv->btn_img), 0, 1, 0);
+  /*gtk_container_add (*/
+    /*GTK_CONTAINER (box),*/
+    /*GTK_WIDGET (prv->btn_img));*/
   gtk_container_add (
     GTK_CONTAINER (prv->button),
     GTK_WIDGET (box));

@@ -48,6 +48,50 @@ two_col_expander_box_widget_set_horizontal_spacing (
 }
 
 /**
+ * Sets whether to show scrollbars or not.
+ */
+void
+two_col_expander_box_widget_set_scroll_policy (
+  TwoColExpanderBoxWidget * self,
+  GtkPolicyType             hscrollbar_policy,
+  GtkPolicyType             vscrollbar_policy)
+{
+  TwoColExpanderBoxWidgetPrivate * prv =
+    two_col_expander_box_widget_get_private (self);
+
+  gtk_scrolled_window_set_policy (
+    prv->scroll,
+    hscrollbar_policy,
+    vscrollbar_policy);
+}
+
+/**
+ * Sets the max size.
+ */
+void
+two_col_expander_box_widget_set_min_max_size (
+  TwoColExpanderBoxWidget * self,
+  const int                 min_w,
+  const int                 min_h,
+  const int                 max_w,
+  const int                 max_h)
+{
+  TwoColExpanderBoxWidgetPrivate * prv =
+    two_col_expander_box_widget_get_private (self);
+
+  gtk_scrolled_window_set_min_content_width (
+    prv->scroll, min_w);
+  gtk_scrolled_window_set_min_content_height (
+    prv->scroll, min_h);
+  gtk_scrolled_window_set_max_content_width (
+    prv->scroll, max_w);
+  gtk_scrolled_window_set_max_content_height (
+    prv->scroll, max_h);
+  gtk_scrolled_window_set_propagate_natural_height (
+    prv->scroll, 1);
+}
+
+/**
  * Adds the two widgets in a horizontal box with the
  * given spacing.
  */
@@ -149,17 +193,29 @@ two_col_expander_box_widget_init (
 
   /* create content box and add it to the original
    * box */
+  prv->scroll =
+    GTK_SCROLLED_WINDOW (
+      gtk_scrolled_window_new (NULL, NULL));
+  gtk_widget_set_visible (
+    GTK_WIDGET (prv->scroll), 1);
+  gtk_scrolled_window_set_policy (
+    prv->scroll,
+    GTK_POLICY_NEVER,
+    GTK_POLICY_NEVER);
   prv->content =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL,
                    prv->vertical_spacing));
   gtk_widget_set_visible (
     GTK_WIDGET (prv->content), 1);
+  gtk_container_add (
+    GTK_CONTAINER (prv->scroll),
+    GTK_WIDGET (prv->content));
 
   ExpanderBoxWidgetPrivate * prv_exp_box =
     expander_box_widget_get_private (
       Z_EXPANDER_BOX_WIDGET (self));
   gtk_container_add (
     GTK_CONTAINER (prv_exp_box->content),
-    GTK_WIDGET (prv->content));
+    GTK_WIDGET (prv->scroll));
 }

@@ -185,6 +185,15 @@ ports_expander_widget_setup_plugin (
   two_col_expander_box_widget_remove_children (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
 
+  /* set scrollbar options */
+  two_col_expander_box_widget_set_scroll_policy (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    GTK_POLICY_NEVER,
+    GTK_POLICY_AUTOMATIC);
+  two_col_expander_box_widget_set_min_max_size (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    -1, -1, -1, 120);
+
   PortConnectionsButtonWidget * pcb;
   Port * port;
   if (type == TYPE_CONTROL &&
@@ -375,7 +384,6 @@ ports_expander_widget_setup_sends (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
 
   PortConnectionsButtonWidget * pcb;
-  Port * port;
   if (prefader)
     {
       pcb =

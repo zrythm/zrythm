@@ -44,6 +44,11 @@ G_DECLARE_DERIVABLE_TYPE (
 typedef struct
 {
   /**
+   * The scrolled window holding the content.
+   */
+  GtkScrolledWindow * scroll;
+
+  /**
    * This is an additional box to what
    * ExpanderBoxWidget does that will hold a bunch
    * of pairs (e.g. key-value) stacked vertically.
@@ -59,6 +64,15 @@ typedef struct
    * The spacing to use between stacked boxes.
    */
   int        vertical_spacing;
+
+  /** Max width of content. */
+  int        max_width;
+
+  /** Max height of content. */
+  int        max_height;
+
+  /** Show scrollbars when max size is reached. */
+  int        show_scroll;
 
 } TwoColExpanderBoxWidgetPrivate;
 
@@ -81,6 +95,26 @@ void
 two_col_expander_box_widget_set_horizontal_spacing (
   TwoColExpanderBoxWidget * self,
   int horizontal_spacing);
+
+/**
+ * Sets the max size.
+ */
+void
+two_col_expander_box_widget_set_min_max_size (
+  TwoColExpanderBoxWidget * self,
+  const int                 min_w,
+  const int                 min_h,
+  const int                 max_w,
+  const int                 max_h);
+
+/**
+ * Sets whether to show scrollbars or not.
+ */
+void
+two_col_expander_box_widget_set_scroll_policy (
+  TwoColExpanderBoxWidget * self,
+  GtkPolicyType             hscrollbar_policy,
+  GtkPolicyType             vscrollbar_policy);
 
 /**
  * Adds the two widgets in a horizontal box with the
