@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-04 08:01+0100\n"
-"PO-Revision-Date: 2019-06-24 04:16+0000\n"
+"PO-Revision-Date: 2019-08-16 05:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualarranging/fr/>\n"
@@ -17,12 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.7.1-dev\n"
+"X-Generator: Weblate 3.8\n"
 "Generated-By: Babel 2.6.0\n"
 
 #: ../../arranging/intro.rst:2
 msgid "Arranging"
-msgstr "Arranger"
+msgstr "Arrangement"
 
 #: ../../arranging/tempo.rst:2
 msgid "Tempo"
@@ -34,8 +34,8 @@ msgid ""
 "tempo meter. The meter on the left is for changing the decimals, for "
 "example to set it to 127.56"
 msgstr ""
-"Le tempo peut être réglé entre 40 et 360 BPM en cliquant sur le compteur du "
-"tempo et en le faisant glisser.  Le compteur à gauche sert à changer les "
+"Le tempo peut être réglé entre 40 et 360 BPM en cliquant sur le mesureur du "
+"tempo et en le faisant glisser.  Le mesureur à gauche sert à changer les "
 "décimales, par exemple pour le régler sur 127,56"
 
 #: ../../arranging/time-signature.rst:2
@@ -44,7 +44,7 @@ msgstr "Signature rythmique"
 
 #: ../../arranging/time-signature.rst:4
 msgid "The time signature is split into the following"
-msgstr "La signature temporelle est divisée en"
+msgstr "La signature rythmique est divisée en"
 
 #: ../../arranging/time-signature.rst:6
 msgid "beats per bar"
@@ -80,6 +80,6 @@ msgid ""
 "uses a notation of Bars.Beats.Sixteenth-notes.Ticks. There are 240 ticks "
 "per sixteenth note."
 msgstr ""
-"Le transport est utilisé pour afficher et éditer la position actuelle de la "
-"tête de lecture. Il utilise une notation de Mesures.Battements.Double-"
+"Le transport est utilisé pour afficher et modifier la position actuelle de "
+"la tête de lecture. Il utilise une notation de Mesures.Battements.Double-"
 "croches.Tics. Il y a 240 tics par double-croche."

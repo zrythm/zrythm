@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-10 15:06+0000\n"
+"PO-Revision-Date: 2019-08-16 05:24+0000\n"
 "Last-Translator: Waui <wau-wau@tutanota.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/de/>\n"
 "Language: de\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm"
-"/manualplugins-files/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.8\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
@@ -93,6 +94,9 @@ msgid ""
 "browsers on the right panel. This section will explain the various "
 "supported plugin and file types and their browsers."
 msgstr ""
+"Zrythm erlaubt dir, LV2-Erweiterungen und verschiedene Dateien aus dem "
+"Browser im rechten Feld zu ziehen und abzulegen. Dieser Abschnitt erklärt "
+"dir die verschiedenen Erweiterungen und Dateitypen und ihre Browser."
 
 #: ../../plugins-files/plugins/inspector-page.rst:19
 msgid "Inspector Page"
@@ -103,6 +107,8 @@ msgid ""
 "When a Plugin is selected in the Mixer, its page will appear in the "
 "Inspector as follows."
 msgstr ""
+"Wenn eine Erweiterung im Mixer ausgewählt wurde erscheint ihre Seite wie "
+"folgt im Inspektor."
 
 #: ../../plugins-files/plugins/inspector-page.rst:27
 msgid ""
@@ -129,38 +135,43 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:27
 msgid "Filters Tab"
-msgstr ""
+msgstr "Filtertab"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:28
 msgid ""
 "The filters tab at the top allows you to select how to filter the "
 "Plugins. There are 3 tabs:"
 msgstr ""
+"Der Filtertab oben erlaubt es dir, auszuwählen, wie die Erweiterungen "
+"gefiltert werden. Es gibt 3 Tabs:"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:33
-#, fuzzy
 msgid "Collection"
-msgstr "Sammlungen"
+msgstr "Sammlung"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:32
 msgid ""
 "This tab contains your collections. You can create collections such as "
 "\"MySynths\" and filter by the selected collections."
 msgstr ""
+"Dieser Tab beinhaltet deine Sammlungen. Du kannst Sammlungen wie “MySynths” "
+"erstellen und nach der ausgewählten Sammlung filtern."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid "Category"
-msgstr ""
+msgstr "Kategorie"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid ""
 "Filter Plugins by category based on the plugin metadata, such as "
 "\"Delay\", \"Distortion\", etc."
 msgstr ""
+"Filter Erweiterungen nach der Kategorie basierend auf ihren Metadaten wie "
+"“Delay”, “Distortion”, etc."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:40
 msgid "Protocol"
-msgstr ""
+msgstr "Protokoll"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:39
 msgid ""
@@ -177,15 +188,18 @@ msgid ""
 "Additionally to the above, you can filter plugins based on their type. "
 "The following types exist:"
 msgstr ""
+"Zusätzlich zu den oberen kannst du Erweiterungen auch basierend auf ihrem "
+"Typ filtern. Die folgenden Typen gibt es:"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:48
-#, fuzzy
 msgid "Instrument"
-msgstr "Instrumente"
+msgstr "Instrument"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:48
 msgid "These plugins will create an instrument track when added to the project."
 msgstr ""
+"Diese Erweiterungen erstellen eine Instrumentenspur wenn sie dem Projekt "
+"hinzugefügt werden."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:52
 #: ../../plugins-files/plugins/plugin-types.rst:28
@@ -219,18 +233,21 @@ msgid ""
 "These plugins modify incoming MIDI signals and can be used in the MIDI "
 "signal chain of an Instrument or MIDI track (coming soon)."
 msgstr ""
+"Diese Erweiterungen modifizieren eingehende MIDI-Signale und können in der "
+"MIDI-Signalkette eines Instrumentes oder einer MIDI-Spur verwendet werden ("
+"kommt bald)."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:63
 msgid "Instantiating Plugins"
-msgstr ""
+msgstr "Instanziierende Erweiterungen"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:64
 msgid "There are a couple of ways to instantiate plugins:"
-msgstr ""
+msgstr "Es gibt eine Reihe von Möglichkeiten, Erweiterungen zu instanziieren:"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:69
 msgid "Drag-n-Drop"
-msgstr ""
+msgstr "Ziehen und Ablegen"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:67
 msgid ""
@@ -241,7 +258,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:73
 msgid "Double Click/Enter"
-msgstr ""
+msgstr "Doppelklick/Eingabe"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:72
 msgid ""
@@ -398,4 +415,3 @@ msgstr ""
 #~ " Mixer, its page will appear in "
 #~ "the Inspector, like the following."
 #~ msgstr ""
-

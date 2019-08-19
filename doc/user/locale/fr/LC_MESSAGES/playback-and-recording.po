@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"PO-Revision-Date: 2019-08-16 05:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/fr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.8\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../playback-and-recording/arming-for-recording.rst:19
@@ -208,7 +208,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:24
 msgid "Record"
-msgstr "Enregistrement"
+msgstr "Enregistrer"
 
 #: ../../playback-and-recording/transport-controls.rst:25
 msgid "Arms the project for recording."
