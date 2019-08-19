@@ -485,6 +485,76 @@ StereoPorts *
 stereo_ports_new (Port * l, Port * r);
 
 /**
+ * Receives MIDI data from the port's exposed
+ * JACK port (if any) into the port.
+ */
+void
+port_receive_midi_events_from_jack (
+  Port * port,
+  int    start_frames,
+  int    nframes);
+
+/**
+ * Receives audio data from the port's exposed
+ * JACK port (if any) into the port.
+ */
+void
+port_receive_audio_data_from_jack (
+  Port * port,
+  int    start_frames,
+  int    nframes);
+
+/**
+ * Sends MIDI data from the port to its exposed
+ * JACK port (if any).
+ */
+void
+port_send_midi_events_to_jack (
+  Port * port,
+  int    start_frames,
+  int    nframes);
+
+/**
+ * Sends audio data from the port to its exposed
+ * JACK port (if any).
+ */
+void
+port_send_audio_data_to_jack (
+  Port *      port,
+  int         start_frames,
+  int         nframes);
+
+/**
+ * Sums the inputs coming in from JACK, before the
+ * port is processed.
+ */
+void
+port_sum_data_from_jack (
+  Port * port,
+  const int start_frames,
+  const int nframes);
+
+/**
+ * Sends the port data to JACK, after the port
+ * is processed.
+ */
+void
+port_send_data_to_jack (
+  Port * self,
+  const int start_frame,
+  const int nframes);
+
+/**
+ * Returns a full designation of the port in the
+ * format "Track/Port" or "Track/Plugin/Port".
+ *
+ * Must be free'd.
+ */
+char *
+port_get_full_designation (
+  Port * self);
+
+/**
  * Gathers all ports in the project and puts them
  * in the given array and size.
  */

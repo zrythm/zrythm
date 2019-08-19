@@ -711,6 +711,171 @@ port_apply_fader (
     }
 }
 
+void
+port_receive_midi_events_from_jack (
+  Port *      self,
+  int         start_frame,
+  int   nframes)
+{
+  if (self->internal_type !=
+        INTERNAL_JACK_PORT ||
+      self->identifier.type !=
+        TYPE_EVENT)
+    return;
+
+  void * port_buf =
+    jack_port_get_buffer (
+      JACK_PORT_T (self->data), nframes);
+  int num_events =
+    jack_midi_get_event_count (port_buf);
+
+  jack_midi_event_t jack_ev;
+  for(int i = 0; i < num_events; i++)
+    {
+      jack_midi_event_get (
+        &jack_ev, port_buf, i);
+
+      if (jack_ev.time >= start_frame &&
+          jack_ev.time < start_frame + nframes)
+        {
+          midi_events_add_event_from_buf (
+            self->midi_events,
+            jack_ev.time, jack_ev.buffer,
+            jack_ev.size);
+        }
+    }
+
+  if(self->midi_events->num_events > 0)
+    g_message ("JACK MIDI (%s): have %d events",
+               self->identifier.label,
+               num_events);
+}
+
+void
+port_receive_audio_data_from_jack (
+  Port *      port,
+  int         start_frames,
+  int   nframes)
+{
+  if (port->internal_type !=
+        INTERNAL_JACK_PORT ||
+      port->identifier.type !=
+        TYPE_AUDIO)
+    return;
+
+  float * in;
+  in =
+    (float *)
+    jack_port_get_buffer (
+      JACK_PORT_T (port->data),
+      AUDIO_ENGINE->nframes);
+
+  for (int i = start_frames;
+       i < start_frames + nframes; i++)
+    {
+      port->buf[i] +=
+        in[i];
+    }
+}
+
+void
+port_send_midi_events_to_jack (
+  Port *      port,
+  int         start_frames,
+  int   nframes)
+{
+  if (port->internal_type !=
+        INTERNAL_JACK_PORT ||
+      port->identifier.type !=
+        TYPE_EVENT)
+    return;
+
+  midi_events_copy_to_jack (
+    port->midi_events,
+    jack_port_get_buffer (
+      JACK_PORT_T (port->data),
+      AUDIO_ENGINE->nframes));
+}
+
+void
+port_send_audio_data_to_jack (
+  Port *      port,
+  int         start_frames,
+  int         nframes)
+{
+  if (port->internal_type !=
+        INTERNAL_JACK_PORT ||
+      port->identifier.type !=
+        TYPE_AUDIO)
+    return;
+
+  float * out;
+  out =
+    (float *)
+    jack_port_get_buffer (
+      JACK_PORT_T (port->data),
+      AUDIO_ENGINE->nframes);
+
+  for (int i = start_frames;
+       i < start_frames + nframes; i++)
+    {
+      out[i] = port->buf[i];
+    }
+}
+
+/**
+ * Sums the inputs coming in from JACK, before the
+ * port is processed.
+ */
+void
+port_sum_data_from_jack (
+  Port * self,
+  const int start_frame,
+  const int nframes)
+{
+  if (self->identifier.owner_type ==
+        PORT_OWNER_TYPE_BACKEND ||
+      self->internal_type !=
+        INTERNAL_JACK_PORT ||
+      self->identifier.flow !=
+        FLOW_INPUT)
+    return;
+
+  /* append events from JACK if any */
+  port_receive_midi_events_from_jack (
+    self, start_frame, nframes);
+
+  /* audio */
+  port_receive_audio_data_from_jack (
+    self, start_frame, nframes);
+}
+
+/**
+ * Sends the port data to JACK, after the port
+ * is processed.
+ */
+void
+port_send_data_to_jack (
+  Port * self,
+  const int start_frame,
+  const int nframes)
+{
+  if (self->identifier.owner_type ==
+        PORT_OWNER_TYPE_BACKEND ||
+      self->internal_type !=
+        INTERNAL_JACK_PORT ||
+      self->identifier.flow !=
+        FLOW_OUTPUT)
+    return;
+
+  /* send midi events */
+  port_send_midi_events_to_jack (
+    self, start_frame, nframes);
+
+  /* send audio data */
+  port_send_audio_data_to_jack (
+    self, start_frame, nframes);
+}
 
 /**
  * First sets port buf to 0, then sums the given
@@ -733,13 +898,17 @@ port_sum_signal_from_inputs (
   int k, l;
 
   g_warn_if_fail (
-    start_frame + nframes <= AUDIO_ENGINE->nframes);
+    start_frame + nframes <=
+    AUDIO_ENGINE->nframes);
 
   switch (port->identifier.type)
     {
     case TYPE_EVENT:
       if (noroll)
         break;
+
+      port_sum_data_from_jack (
+        port, start_frame, nframes);
 
       for (k = 0; k < port->num_srcs; k++)
         {
@@ -752,6 +921,9 @@ port_sum_signal_from_inputs (
             port->midi_events, start_frame,
             nframes, 0);
         }
+
+      port_send_data_to_jack (
+        port, start_frame, nframes);
 
       /* send UI notification */
       if (port->midi_events->num_events > 0)
@@ -780,6 +952,9 @@ port_sum_signal_from_inputs (
           break;
         }
 
+      port_sum_data_from_jack (
+        port, start_frame, nframes);
+
       for (k = 0; k < port->num_srcs; k++)
         {
           src_port = port->srcs[k];
@@ -793,6 +968,9 @@ port_sum_signal_from_inputs (
               port->buf[l] += src_port->buf[l];
             }
         }
+
+      port_send_data_to_jack (
+        port, start_frame, nframes);
       break;
     case TYPE_CONTROL:
       {
@@ -877,11 +1055,14 @@ port_set_expose_to_jack (
 
   if (expose)
     {
+      char * label =
+        port_get_full_designation (self);
       self->data =
         (void *) jack_port_register (
           AUDIO_ENGINE->client,
-          self->identifier.label,
+          label,
           type, flags, 0);
+      g_free (label);
       self->internal_type = INTERNAL_JACK_PORT;
     }
   else
@@ -892,6 +1073,46 @@ port_set_expose_to_jack (
     }
 }
 #endif
+
+/**
+ * Returns a full designation of the port in the
+ * format "Track/Port" or "Track/Plugin/Port".
+ *
+ * Must be free'd.
+ */
+char *
+port_get_full_designation (
+  Port * self)
+{
+  PortIdentifier * id = &self->identifier;
+
+  switch (id->owner_type)
+    {
+    case PORT_OWNER_TYPE_BACKEND:
+    case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:
+      return g_strdup (id->label);
+      break;
+    case PORT_OWNER_TYPE_PLUGIN:
+      return
+        g_strdup_printf (
+          "%s/%s/%s",
+          self->plugin->track->name,
+          self->plugin->descr->name,
+          id->label);
+      break;
+    case PORT_OWNER_TYPE_TRACK:
+    case PORT_OWNER_TYPE_PREFADER:
+    case PORT_OWNER_TYPE_FADER:
+      return
+        g_strdup_printf (
+          "%s/%s",
+          self->track->name,
+          id->label);
+      break;
+    default:
+      g_return_val_if_reached (NULL);
+    }
+}
 
 /**
  * Prints all connections.

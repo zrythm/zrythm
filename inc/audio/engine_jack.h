@@ -33,16 +33,6 @@ typedef enum AudioEngineJackTransportType
   AudioEngineJackTransportType;
 
 /**
- * Receives MIDI events from JACK MIDI and puts them
- * in the JACK MIDI in port.
- */
-void
-engine_jack_receive_midi_events (
-  AudioEngine * self,
-  uint32_t      nframes,
-  int           print);
-
-/**
  * Tests if JACK is working properly.
  *
  * Returns 0 if ok, non-null if has errors.

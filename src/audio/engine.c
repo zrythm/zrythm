@@ -421,6 +421,7 @@ engine_process_prepare (
   /* reset all buffers */
   port_clear_buffer (self->midi_in);
   port_clear_buffer (self->midi_out);
+  port_clear_buffer (self->midi_editor_manual_press);
 
   sample_processor_prepare_process (
     &self->sample_processor, nframes);
@@ -484,8 +485,8 @@ receive_midi_events (
     {
 #ifdef HAVE_JACK
     case MIDI_BACKEND_JACK:
-      engine_jack_receive_midi_events (
-        self, nframes, print);
+      port_receive_midi_events_from_jack (
+        self->midi_in, 0, nframes);
       break;
 #endif
 #ifdef __linux__

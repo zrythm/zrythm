@@ -167,38 +167,6 @@ engine_jack_clear_output_buffers (
 }
 
 /**
- * Receives MIDI events from JACK MIDI and puts them
- * in the MIDI in port.
- */
-void
-engine_jack_receive_midi_events (
-  AudioEngine * self,
-  nframes_t     nframes,
-  int           print)
-{
-  void * port_buf =
-    jack_port_get_buffer (
-      JACK_PORT_T (self->midi_in->data), nframes);
-  int num_events =
-    jack_midi_get_event_count (port_buf);
-
-  if(num_events > 0 && print)
-    g_message ("JACK MIDI: have %d events",
-               num_events);
-
-  jack_midi_event_t jack_ev;
-  for(int i = 0; i < num_events; i++)
-    {
-      jack_midi_event_get (
-        &jack_ev, port_buf, i);
-
-      midi_events_add_event_from_buf (
-        self->midi_in->midi_events,
-        jack_ev.time, jack_ev.buffer, jack_ev.size);
-    }
-}
-
-/**
  * The process callback for this JACK application is
  * called in a special realtime thread once for each audio
  * cycle.

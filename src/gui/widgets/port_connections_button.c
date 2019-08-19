@@ -132,6 +132,12 @@ port_connections_button_widget_new (
       gtk_overlay_add_overlay (
         GTK_OVERLAY (self),
         GTK_WIDGET (self->jack));
+      if (port->data &&
+          port->internal_type == INTERNAL_JACK_PORT)
+        {
+          gtk_toggle_button_set_active (
+            self->jack, 1);
+        }
       g_signal_connect (
         G_OBJECT (self->jack), "toggled",
         G_CALLBACK (on_jack_toggled), self);

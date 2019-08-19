@@ -358,18 +358,17 @@ node_process (
               midi_events_dequeue (
                 port->midi_events);
               if (port->midi_events->num_events > 0)
-                g_message ("piano roll port %s has %d events",
-                           port->identifier.label,
-                           port->midi_events->num_events);
+                g_message (
+                  "piano roll port %s has %d events",
+                  port->identifier.label,
+                  port->midi_events->num_events);
             }
-
         }
 
       /* if midi editor manual press */
       else if (port == AUDIO_ENGINE->
             midi_editor_manual_press)
         {
-          port_clear_buffer (port);
           midi_events_dequeue (
             AUDIO_ENGINE->
               midi_editor_manual_press->
@@ -377,9 +376,11 @@ node_process (
         }
 
       /* if channel stereo in */
-      else if (port->identifier.type == TYPE_AUDIO &&
+      else if (
+          port->identifier.type == TYPE_AUDIO &&
           port->identifier.flow == FLOW_INPUT &&
-          port->track)
+          port->identifier.owner_type ==
+            PORT_OWNER_TYPE_TRACK)
         {
           chan = port->track->channel;
 
