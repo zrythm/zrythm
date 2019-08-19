@@ -531,6 +531,42 @@ node_process (
             }
         }
 
+      /* if JACK MIDI out */
+      else if (port->identifier.owner_type ==
+               PORT_OWNER_TYPE_BACKEND &&
+          port->identifier.type == TYPE_EVENT &&
+          port->identifier.flow == FLOW_OUTPUT)
+        {
+          if (!AUDIO_ENGINE->exporting)
+            {
+              float * out;
+              int ret;
+              switch (AUDIO_ENGINE->audio_backend)
+                {
+                case AUDIO_BACKEND_JACK:
+#ifdef HAVE_JACK
+                  /* by this time, the Master
+                   * channel should have its
+                   * MIDI out port filled.
+                   * pass its buffer to JACK */
+                  port_sum_signal_from_inputs (
+                    port, local_offset,
+                    nframes, noroll);
+
+                  midi_events_copy_to_jack (
+                    port->midi_events,
+                    jack_port_get_buffer (
+                      JACK_PORT_T (port->data),
+                      AUDIO_ENGINE->nframes));
+#endif
+                  break;
+                default:
+                  /* TODO */
+                  break;
+                }
+            }
+        }
+
       else
         {
           port_sum_signal_from_inputs (

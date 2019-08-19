@@ -61,10 +61,24 @@ connect_midi_in_to_midi_out (
 }
 
 static inline void
+connect_piano_roll_to_midi_out (
+  Channel * ch)
+{
+  port_connect (ch->piano_roll, ch->midi_out);
+}
+
+static inline void
 disconnect_midi_in_from_midi_out (
   Channel * ch)
 {
   port_disconnect (ch->midi_in, ch->midi_out);
+}
+
+static inline void
+disconnect_piano_roll_from_midi_out (
+  Channel * ch)
+{
+  port_disconnect (ch->piano_roll, ch->midi_out);
 }
 
 static inline void
@@ -782,6 +796,8 @@ connect_no_prev_no_next (
    * it */
   disconnect_midi_in_from_midi_out (ch);
 
+  disconnect_piano_roll_from_midi_out (ch);
+
   /* -------------------------------------------
    * connect input ports
    * ------------------------------------------- */
@@ -791,6 +807,8 @@ connect_no_prev_no_next (
 
   /* connect channel midi in to plugin */
   connect_midi_in_to_pl (ch, pl);
+
+  connect_piano_roll_to_pl (ch, pl);
 
   /* --------------------------------------
    * connect output ports
@@ -823,6 +841,8 @@ connect_no_prev_next (
    * it */
   disconnect_midi_in_from_pl (ch, next_pl);
 
+  disconnect_piano_roll_from_pl (ch, next_pl);
+
   /* -------------------------------------------
    * connect input ports
    * ------------------------------------------- */
@@ -832,6 +852,8 @@ connect_no_prev_next (
 
   /* connect midi in to plugin */
   connect_midi_in_to_pl (ch, pl);
+
+  connect_piano_roll_to_pl (ch, pl);
 
   /* --------------------------------------
    * connect output ports
@@ -933,6 +955,8 @@ disconnect_no_prev_no_next (
   /* disconnect channel midi in from plugin */
   disconnect_midi_in_from_pl (ch, pl);
 
+  disconnect_piano_roll_from_pl (ch, pl);
+
   /* --------------------------------------
    * disconnect output ports
    * ------------------------------------*/
@@ -952,6 +976,8 @@ disconnect_no_prev_no_next (
 
   /* connect channel midi in to midi out */
   connect_midi_in_to_midi_out (ch);
+
+  connect_piano_roll_to_midi_out (ch);
 }
 
 /**
@@ -973,6 +999,8 @@ disconnect_no_prev_next (
   /* disconnect midi in from plugin */
   disconnect_midi_in_from_pl (ch, pl);
 
+  disconnect_piano_roll_from_pl (ch, pl);
+
   /* --------------------------------------
    * Disconnect output ports
    * ------------------------------------*/
@@ -991,6 +1019,8 @@ disconnect_no_prev_next (
 
   /* connect midi in to plugin */
   connect_midi_in_to_pl (ch, next_pl);
+
+  connect_piano_roll_to_pl (ch, next_pl);
 }
 
 /**
@@ -1545,6 +1575,9 @@ channel_connect (
       port_connect (
         ch->stereo_out->r,
         AUDIO_ENGINE->stereo_out->r);
+      port_connect (
+        ch->midi_out,
+        AUDIO_ENGINE->midi_out);
     }
   else
     {
@@ -1559,12 +1592,7 @@ channel_connect (
     {
       /* connect stereo in to stereo out through
        * fader */
-      port_connect (
-        ch->stereo_in->l,
-        ch->prefader.stereo_in->l);
-      port_connect (
-        ch->stereo_in->r,
-        ch->prefader.stereo_in->r);
+      connect_stereo_in_to_fader (ch);
       port_connect (
         ch->prefader.stereo_out->l,
         ch->fader.stereo_in->l);
@@ -1579,10 +1607,9 @@ channel_connect (
         ch->stereo_out->r);
     }
 
-  /** Connect MIDI in to MIDI out. */
-  port_connect (
-    ch->midi_in,
-    ch->midi_out);
+  /** Connect MIDI in and piano roll to MIDI out. */
+  connect_midi_in_to_midi_out (ch);
+  connect_piano_roll_to_midi_out (ch);
 
   if (ch->type != CT_MASTER)
     {
@@ -1593,6 +1620,9 @@ channel_connect (
       port_connect (
         ch->stereo_out->r,
         P_MASTER_TRACK->channel->stereo_in->r);
+      port_connect (
+        ch->midi_out,
+        P_MASTER_TRACK->channel->midi_in);
     }
 }
 
@@ -1737,10 +1767,6 @@ channel_disconnect_plugin_from_strip (
   Plugin * pl)
 {
   int i;
-
-  disconnect_midi_in_from_pl (ch, pl);
-  if (ch->type == CT_MIDI && pos == 0)
-    disconnect_piano_roll_from_pl (ch, pl);
 
   Plugin * next_plugin = NULL;
   for (i = pos + 1; i < STRIP_SIZE; i++)
@@ -1922,9 +1948,6 @@ channel_add_plugin (
   /* ------------------------------------------
    * connect ports
    * ------------------------------------------ */
-
-  if (pos == 0)
-    connect_piano_roll_to_pl (channel, plugin);
 
   if (!prev_plugin && !next_plugin)
     connect_no_prev_no_next (

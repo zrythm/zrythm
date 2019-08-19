@@ -96,7 +96,8 @@ typedef struct MidiEvent
   /** Velocity (0 ~ 127). */
   uint8_t        velocity;
 
-  /** Time of the MIDI event, in frames. */
+  /** Time of the MIDI event, in frames from the
+   * start of the current cycle. */
   uint32_t       time;
 
   /** Raw MIDI data. */
@@ -403,6 +404,16 @@ midi_events_delete_note_on (
   MidiEvents * midi_events,
   int          note,
   int          queued);
+
+#ifdef HAVE_JACK
+/**
+ * Writes the events to the given JACK buffer.
+ */
+void
+midi_events_copy_to_jack (
+  MidiEvents * self,
+  void *       buff);
+#endif
 
 /**
  * Queues MIDI note off to event queues.

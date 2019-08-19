@@ -143,6 +143,9 @@ typedef struct AudioEngine
   /** MIDI in port from the audio engine. */
   Port              * midi_in;
 
+  /** MIDI out port from the audio engine. */
+  Port              * midi_out;
+
   /**
    * Flag to tell the UI that this channel had
    * MIDI activity.

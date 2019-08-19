@@ -310,6 +310,35 @@ midi_events_panic (
   g_message ("posted panic");
 }
 
+#ifdef HAVE_JACK
+/**
+ * Writes the events to the given JACK buffer.
+ */
+void
+midi_events_copy_to_jack (
+  MidiEvents * self,
+  void *       buff)
+{
+  jack_midi_clear_buffer (buff);
+
+  MidiEvent * ev;
+  jack_midi_data_t midi_data[3];
+  for (int i = 0; i < self->num_events; i++)
+    {
+      ev = &self->events[i];
+
+      midi_data[0] = ev->raw_buffer[0];
+      midi_data[1] = ev->raw_buffer[1];
+      midi_data[2] = ev->raw_buffer[2];
+      jack_midi_event_write (
+        buff, ev->time, midi_data, 3);
+      g_message (
+        "wrote MIDI event to JACK MIDI out at %d",
+        ev->time);
+    }
+}
+#endif
+
 /**
  * Parses a MidiEvent from a raw MIDI buffer.
  */

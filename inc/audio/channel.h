@@ -126,17 +126,17 @@ typedef struct Channel
   StereoPorts *    stereo_in;
 
   /**
-   * MIDI in port ID.
-   *
-   * This port is for receiving MIDI signals from
-   * an external MIDI source.
+   * MIDI input for receiving MIDI signals from
+   * the piano roll (i.e., MIDI notes inside
+   * regions) or other sources.
    */
   Port *           piano_roll;
 
   /**
-   * MIDI input for receiving MIDI signals from
-   * the piano roll (i.e., MIDI notes inside
-   * regions) or other sources.
+   * MIDI in port ID.
+   *
+   * This port is for receiving MIDI signals from
+   * an external MIDI source.
    */
   Port *           midi_in;
 

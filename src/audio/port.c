@@ -351,6 +351,7 @@ port_get_all (
   _ADD (AUDIO_ENGINE->stereo_out->l);
   _ADD (AUDIO_ENGINE->stereo_out->r);
   _ADD (AUDIO_ENGINE->midi_in);
+  _ADD (AUDIO_ENGINE->midi_out);
   _ADD (AUDIO_ENGINE->midi_editor_manual_press);
   _ADD (SAMPLE_PROCESSOR->stereo_out->l);
   _ADD (SAMPLE_PROCESSOR->stereo_out->r);

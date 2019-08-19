@@ -296,6 +296,11 @@ jack_midi_setup (
           self->client, "MIDI_in",
           JACK_DEFAULT_MIDI_TYPE,
           JackPortIsInput, 0);
+      self->midi_out->data =
+        (void *) jack_port_register (
+          self->client, "MIDI_out",
+          JACK_DEFAULT_MIDI_TYPE,
+          JackPortIsOutput, 0);
     }
   else
     {
@@ -311,14 +316,30 @@ jack_midi_setup (
             JackPortIsInput, 0));
       self->midi_in->identifier.owner_type =
         PORT_OWNER_TYPE_BACKEND;
+      self->midi_out =
+        port_new_with_data (
+          INTERNAL_JACK_PORT,
+          TYPE_EVENT,
+          FLOW_OUTPUT,
+          "JACK MIDI Out",
+          (void *) jack_port_register (
+            self->client, "MIDI_out",
+            JACK_DEFAULT_MIDI_TYPE,
+            JackPortIsOutput, 0));
+      self->midi_in->identifier.owner_type =
+        PORT_OWNER_TYPE_BACKEND;
     }
 
   /* init queue */
   self->midi_in->midi_events =
     midi_events_new (
       self->midi_in);
+  self->midi_out->midi_events =
+    midi_events_new (
+      self->midi_out);
 
-  if (!self->midi_in->data)
+  if (!self->midi_in->data ||
+      !self->midi_out->data)
     {
       g_warning ("no more JACK ports available");
     }

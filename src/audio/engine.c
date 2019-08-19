@@ -420,6 +420,7 @@ engine_process_prepare (
 
   /* reset all buffers */
   port_clear_buffer (self->midi_in);
+  port_clear_buffer (self->midi_out);
 
   sample_processor_prepare_process (
     &self->sample_processor, nframes);
