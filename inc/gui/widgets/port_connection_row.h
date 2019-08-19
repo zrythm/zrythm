@@ -47,6 +47,10 @@ typedef struct _PortConnectionRowWidget
    */
   int              is_input;
 
+  /** Overlay to hold the slider and other
+   * widgets. */
+  GtkOverlay *     overlay;
+
   /** The slider. */
   BarSliderWidget * slider;
 } PortConnectionRowWidget;

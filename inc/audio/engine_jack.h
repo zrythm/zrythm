@@ -29,6 +29,8 @@
 #define JACK_PORT_T(exp) ((jack_port_t *) exp)
 
 typedef struct AudioEngine AudioEngine;
+typedef enum AudioEngineJackTransportType
+  AudioEngineJackTransportType;
 
 /**
  * Receives MIDI events from JACK MIDI and puts them
@@ -58,6 +60,14 @@ engine_jack_test (
 void
 engine_jack_clear_output_buffers (
   AudioEngine * self);
+
+/**
+ * Updates the JACK Transport type.
+ */
+void
+engine_jack_set_transport_type (
+  AudioEngine * self,
+  AudioEngineJackTransportType type);
 
 /**
  * Sets up the MIDI engine to use jack.

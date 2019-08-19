@@ -1022,6 +1022,11 @@ events_process (void * data)
                 }
             }
           break;
+        case ET_JACK_TRANSPORT_TYPE_CHANGED:
+          g_message ("doing");
+          top_bar_widget_refresh (
+            TOP_BAR);
+          break;
         default:
           g_message ("event not implemented yet");
           /* unimplemented */

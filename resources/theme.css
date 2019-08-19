@@ -463,3 +463,9 @@ stackswitcher button image
   padding-left: 3px;
   padding-right: 3px;
 }
+
+/* button without padding */
+.mini-button
+{
+  padding: 0px;
+}

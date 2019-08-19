@@ -60,6 +60,16 @@ port_connection_row_widget_new (
     GTK_BOX (box), GTK_WIDGET (btn),
     0,0,0);
 
+  /* create overlay */
+  self->overlay =
+    GTK_OVERLAY (gtk_overlay_new ());
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->overlay), 1);
+  gtk_box_pack_end (
+    GTK_BOX (box),
+    GTK_WIDGET (self->overlay),
+    1,1,0);
+
   /* bar slider */
   char * label =
     g_strdup_printf (
@@ -71,10 +81,9 @@ port_connection_row_widget_new (
     bar_slider_widget_new_port (
       src, dest, label);
   g_free (label);
-  gtk_box_pack_end (
-    GTK_BOX (box),
-    GTK_WIDGET (self->slider),
-    1,1,0);
+  gtk_container_add (
+    GTK_CONTAINER (self->overlay),
+    GTK_WIDGET (self->slider));
 
   gtk_container_add (
     GTK_CONTAINER (self),

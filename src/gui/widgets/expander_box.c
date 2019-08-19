@@ -218,9 +218,6 @@ expander_box_widget_init (ExpanderBoxWidget * self)
   gtk_box_pack_end (
     GTK_BOX (box),
     GTK_WIDGET (prv->btn_img), 0, 1, 0);
-  /*gtk_container_add (*/
-    /*GTK_CONTAINER (box),*/
-    /*GTK_WIDGET (prv->btn_img));*/
   gtk_container_add (
     GTK_CONTAINER (prv->button),
     GTK_WIDGET (box));

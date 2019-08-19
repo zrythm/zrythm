@@ -1211,3 +1211,30 @@ activate_quantize_options (
     }
   g_message ("quantize opts");
 }
+
+void
+activate_set_timebase_master (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  g_message ("set time base master");
+}
+
+void
+activate_set_transport_client (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  g_message ("set transport client");
+}
+
+void
+activate_unlink_jack_transport (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  g_message ("unlink jack transport");
+}

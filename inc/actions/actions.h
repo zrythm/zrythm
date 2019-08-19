@@ -373,3 +373,21 @@ activate_quantize_options (
   GSimpleAction *action,
   GVariant      *variant,
   gpointer       user_data);
+
+void
+activate_set_timebase_master (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+void
+activate_set_transport_client (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+void
+activate_unlink_jack_transport (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);

@@ -284,6 +284,14 @@ main_window_widget_init (MainWindowWidget * self)
     { "goto-next-marker",
       activate_goto_next_marker },
 
+    /* transport - jack */
+    { "set-timebase-master",
+      activate_set_timebase_master },
+    { "set-transport-client",
+      activate_set_transport_client },
+    { "unlink-jack-transport",
+      activate_unlink_jack_transport },
+
     /* tracks */
     { "delete-selected-tracks",
       activate_delete_selected_tracks },

@@ -100,6 +100,13 @@ typedef enum MidiBackend
   NUM_MIDI_BACKENDS,
 } MidiBackend;
 
+typedef enum AudioEngineJackTransportType
+{
+  AUDIO_ENGINE_JACK_TIMEBASE_MASTER,
+  AUDIO_ENGINE_JACK_TRANSPORT_CLIENT,
+  AUDIO_ENGINE_NO_JACK_TRANSPORT,
+} AudioEngineJackTransportType;
+
 typedef struct AudioEngine
 {
   /**
@@ -113,9 +120,10 @@ typedef struct AudioEngine
   jack_client_t     * client;     ///< jack client
 
   /**
-   * Port buffer for raw MIDI data.
+   * Whether transport master/client or no
+   * connection with jack transport.
    */
-  void *            port_buf;
+  AudioEngineJackTransportType transport_type;
 #endif
 
   /** Current audio backend. */

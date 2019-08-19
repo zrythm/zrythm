@@ -176,11 +176,11 @@ engine_jack_receive_midi_events (
   nframes_t     nframes,
   int           print)
 {
-  self->port_buf =
+  void * port_buf =
     jack_port_get_buffer (
       JACK_PORT_T (self->midi_in->data), nframes);
   int num_events =
-    jack_midi_get_event_count (self->port_buf);
+    jack_midi_get_event_count (port_buf);
 
   if(num_events > 0 && print)
     g_message ("JACK MIDI: have %d events",
@@ -190,7 +190,7 @@ engine_jack_receive_midi_events (
   for(int i = 0; i < num_events; i++)
     {
       jack_midi_event_get (
-        &jack_ev, self->port_buf, i);
+        &jack_ev, port_buf, i);
 
       midi_events_add_event_from_buf (
         self->midi_in->midi_events,
@@ -229,7 +229,7 @@ timebase_cb (
   int new_pos,
   void *arg)
 {
-  AudioEngine * self = (AudioEngine *) arg;
+  /*AudioEngine * self = (AudioEngine *) arg;*/
 
   /* Mandatory fields */
   pos->valid = JackPositionBBT;
@@ -352,6 +352,36 @@ jack_midi_setup (
 }
 
 /**
+ * Updates the JACK Transport type.
+ */
+void
+engine_jack_set_transport_type (
+  AudioEngine * self,
+  AudioEngineJackTransportType type)
+{
+  /* release timebase master if held */
+  if (self->transport_type ==
+        AUDIO_ENGINE_JACK_TIMEBASE_MASTER &&
+      type !=
+        AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+    {
+      jack_release_timebase (self->client);
+    }
+  /* acquire timebase master */
+  else if (self->transport_type !=
+             AUDIO_ENGINE_JACK_TIMEBASE_MASTER &&
+           type ==
+             AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+    {
+      jack_set_timebase_callback (
+        self->client, 0, timebase_cb, self);
+    }
+
+  g_message ("set to %d", type);
+  self->transport_type = type;
+}
+
+/**
  * Tests if JACK is working properly.
  *
  * Returns 0 if ok, non-null if has errors.
@@ -436,6 +466,8 @@ jack_setup (AudioEngine * self,
     jack_get_sample_rate (self->client);
   self->block_length =
     jack_get_buffer_size (self->client);
+  self->transport_type =
+    AUDIO_ENGINE_JACK_TIMEBASE_MASTER;
 
   /* set jack callbacks */
   jack_set_process_callback (

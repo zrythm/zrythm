@@ -78,6 +78,10 @@ typedef struct _ProjectAssistantWidget
   GtkTreeSelection    * projects_selection;
   GtkTreeModel        * model;
   GtkCheckButton      * create_new_project;
+
+  /** The project info label. */
+  GtkLabel *          label;
+
   GtkButton *         remove_btn;
   ProjectInfo         project_infos[300];
   ProjectInfo         * selection;

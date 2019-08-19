@@ -108,10 +108,10 @@
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkLabel">
+          <object class="GtkLabel" id="label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Project name: name
+            <property name="label" translatable="no">Project name: name
 Path: /home/user/Zrythm/name
 Backend: JACK
 Frame rate: 44100

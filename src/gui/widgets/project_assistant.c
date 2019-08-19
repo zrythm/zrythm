@@ -30,6 +30,14 @@ G_DEFINE_TYPE (ProjectAssistantWidget,
                GTK_TYPE_ASSISTANT)
 
 static void
+set_label (
+  ProjectAssistantWidget * self)
+{
+  gtk_label_set_text (
+    self->label, "TODO fill this in");
+}
+
+static void
 on_projects_selection_changed (
   GtkTreeSelection *     ts,
   ProjectAssistantWidget * self)
@@ -63,6 +71,7 @@ on_projects_selection_changed (
             GTK_ASSISTANT (self),
             gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 1),
             1);
+          set_label (self);
         }
     }
 }
@@ -297,6 +306,10 @@ project_assistant_widget_class_init (
     klass,
     ProjectAssistantWidget,
     create_new_project);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ProjectAssistantWidget,
+    label);
   gtk_widget_class_bind_template_callback (
     klass,
     on_create_new_project_toggled);

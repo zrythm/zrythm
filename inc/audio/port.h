@@ -541,6 +541,17 @@ port_get_multiplier_by_index (
 void
 port_free (Port * port);
 
+#ifdef HAVE_JACK
+/**
+ * Sets whether to expose the port to JACk and
+ * exposes it or removes it from JACK.
+ */
+void
+port_set_expose_to_jack (
+  Port * self,
+  int    expose);
+#endif
+
 /**
  * Connets src to dest.
  */

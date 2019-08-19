@@ -17,15 +17,29 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include "audio/port.h"
 #include "gui/widgets/port_connections_button.h"
 #include "gui/widgets/port_connections_popover.h"
+#include "utils/gtk.h"
 
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (PortConnectionsButtonWidget,
                port_connections_button_widget,
-               GTK_TYPE_MENU_BUTTON)
+               GTK_TYPE_OVERLAY)
+
+static void
+on_jack_toggled (
+  GtkWidget * widget,
+  PortConnectionsButtonWidget * self)
+{
+  port_set_expose_to_jack (
+    self->port,
+    gtk_toggle_button_get_active (
+      GTK_TOGGLE_BUTTON (widget)));
+}
 
 PortConnectionsButtonWidget *
 port_connections_button_widget_new (
@@ -38,12 +52,21 @@ port_connections_button_widget_new (
 
   self->port = port;
 
+  /* add menu button */
+  self->menu_button =
+    GTK_MENU_BUTTON (gtk_menu_button_new ());
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->menu_button), 1);
+  gtk_container_add (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (self->menu_button));
   gtk_menu_button_set_popover (
-    GTK_MENU_BUTTON (self),
-    GTK_WIDGET (port_connections_popover_widget_new (
-                  self)));
+    self->menu_button,
+    GTK_WIDGET (
+      port_connections_popover_widget_new (
+      self)));
   gtk_menu_button_set_direction (
-    GTK_MENU_BUTTON (self),
+    self->menu_button,
     GTK_ARROW_RIGHT);
 
   if (!port->identifier.label)
@@ -78,9 +101,50 @@ port_connections_button_widget_new (
   if (str)
     {
       gtk_button_set_label (
-        GTK_BUTTON (self), str);
+        GTK_BUTTON (self->menu_button), str);
       g_free (str);
     }
+
+  /* jack button */
+#ifdef HAVE_JACK
+  if (port->identifier.type ==
+        TYPE_AUDIO ||
+      port->identifier.type ==
+        TYPE_EVENT)
+    {
+      self->jack =
+        z_gtk_toggle_button_new_with_icon (
+          "jack");
+      gtk_widget_set_halign (
+        GTK_WIDGET (self->jack), GTK_ALIGN_START);
+      gtk_widget_set_valign (
+        GTK_WIDGET (self->jack), GTK_ALIGN_CENTER);
+      gtk_widget_set_margin_start (
+        GTK_WIDGET (self->jack), 2);
+      GtkStyleContext * context =
+        gtk_widget_get_style_context (
+          GTK_WIDGET (self->jack));
+      gtk_style_context_add_class (
+        context, "mini-button");
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (self->jack),
+        _("Expose port to JACK"));
+      gtk_overlay_add_overlay (
+        GTK_OVERLAY (self),
+        GTK_WIDGET (self->jack));
+      g_signal_connect (
+        G_OBJECT (self->jack), "toggled",
+        G_CALLBACK (on_jack_toggled), self);
+
+      /* add some margin to clearly show the jack
+       * button */
+      GtkWidget * label =
+        gtk_bin_get_child (
+          GTK_BIN (self->menu_button));
+      gtk_widget_set_margin_start (
+        label, 12);
+    }
+#endif
 
 port_connections_button_new_end:
 

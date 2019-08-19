@@ -31,7 +31,7 @@ G_DECLARE_FINAL_TYPE (
   port_connections_button_widget,
   Z,
   PORT_CONNECTIONS_BUTTON_WIDGET,
-  GtkMenuButton)
+  GtkOverlay)
 
 /**
  * An expander box is a base widget with a button that
@@ -39,10 +39,22 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _PortConnectionsButtonWidget
 {
-  GtkMenuButton  parent_instance;
+  GtkOverlay      parent_instance;
+
+  /** The menu button. */
+  GtkMenuButton *  menu_button;
 
   /** Port this is for. */
   Port *         port;
+
+  /** Overlay to hold the main button and jack
+   * button. */
+  GtkOverlay *     overlay;
+
+  /**
+   * Jack button to expose port to jack.
+   */
+  GtkToggleButton * jack;
 
 } PortConnectionsButtonWidget;
 

@@ -30,6 +30,9 @@
 
 #include "project.h"
 #include "audio/channel.h"
+#ifdef HAVE_JACK
+#include "audio/engine_jack.h"
+#endif
 #include "audio/midi.h"
 #include "audio/mixer.h"
 #include "audio/modulator.h"
@@ -845,6 +848,50 @@ port_sum_signal_from_inputs (
       break;
     }
 }
+
+#ifdef HAVE_JACK
+/**
+ * Sets whether to expose the port to JACk and
+ * exposes it or removes it from JACK.
+ */
+void
+port_set_expose_to_jack (
+  Port * self,
+  int    expose)
+{
+  enum JackPortFlags flags;
+  if (self->identifier.flow == FLOW_INPUT)
+    flags = JackPortIsInput;
+  else if (self->identifier.flow == FLOW_OUTPUT)
+    flags = JackPortIsOutput;
+  else
+    g_return_if_reached ();
+
+  char * type = NULL;
+  if (self->identifier.type == TYPE_AUDIO)
+    type = JACK_DEFAULT_AUDIO_TYPE;
+  else if (self->identifier.type == TYPE_EVENT)
+    type = JACK_DEFAULT_MIDI_TYPE;
+  else
+    g_return_if_reached ();
+
+  if (expose)
+    {
+      self->data =
+        (void *) jack_port_register (
+          AUDIO_ENGINE->client,
+          self->identifier.label,
+          type, flags, 0);
+      self->internal_type = INTERNAL_JACK_PORT;
+    }
+  else
+    {
+      jack_port_unregister (
+        AUDIO_ENGINE->client,
+        JACK_PORT_T (self->data));
+    }
+}
+#endif
 
 /**
  * Prints all connections.
