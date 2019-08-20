@@ -70,13 +70,18 @@ port_connections_button_widget_new (
     GTK_ARROW_RIGHT);
 
   if (!port->identifier.label)
-    goto port_connections_button_new_end;
+    {
+      g_warning ("No port label");
+      goto port_connections_button_new_end;
+    }
 
   char * str = NULL;
   if (port->identifier.owner_type ==
         PORT_OWNER_TYPE_PLUGIN ||
       port->identifier.owner_type ==
         PORT_OWNER_TYPE_FADER ||
+      port->identifier.owner_type ==
+        PORT_OWNER_TYPE_TRACK ||
       port->identifier.owner_type ==
         PORT_OWNER_TYPE_PREFADER)
     {

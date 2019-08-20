@@ -1543,11 +1543,14 @@ lv2_open_ui(Lv2Plugin* plugin)
       G_CALLBACK (on_delete_event), plugin);
   extui.ui_closed = on_external_ui_closed;
   LilvNode* name = lilv_plugin_get_name(plugin->lilv_plugin);
-  extui.plugin_human_id = lv2_strdup(lilv_node_as_string(name));
+  extui.plugin_human_id =
+    g_strdup (lilv_node_as_string(name));
   lilv_node_free (name);
 
-  g_signal_connect(window, "destroy",
-                   G_CALLBACK(on_window_destroy), plugin);
+  /* connect destroy signal */
+  g_signal_connect (
+    window, "destroy",
+    G_CALLBACK(on_window_destroy), plugin);
 
   set_window_title(plugin);
 

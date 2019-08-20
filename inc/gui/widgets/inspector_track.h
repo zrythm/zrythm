@@ -45,6 +45,9 @@ typedef struct _InspectorTrackWidget
 
   PortsExpanderWidget * prefader_sends;
   PortsExpanderWidget * postfader_sends;
+  PortsExpanderWidget * stereo_in;
+  PortsExpanderWidget * midi_in;
+  PortsExpanderWidget * midi_out;
 } InspectorTrackWidget;
 
 void

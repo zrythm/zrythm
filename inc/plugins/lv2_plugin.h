@@ -264,35 +264,6 @@ lv2_save_preset(Lv2Plugin*       plugin,
 int
 lv2_delete_current_preset(Lv2Plugin* plugin);
 
-static inline char*
-lv2_strdup(const char* str)
-{
-	const size_t len  = strlen(str);
-	char*        copy = (char*)malloc(len + 1);
-	memcpy(copy, str, len + 1);
-	return copy;
-}
-
-/**
- * Joins two strings.
- *
- * Used in the state when creating paths. Can
- * probably get rid of this and use glib.
- */
-static inline char*
-lv2_strjoin(const char* a, const char* b)
-{
-	const size_t a_len = strlen(a);
-	const size_t b_len = strlen(b);
-	char* const  out   = (char*)malloc(a_len + b_len + 1);
-
-	memcpy(out,         a, a_len);
-	memcpy(out + a_len, b, b_len);
-	out[a_len + b_len] = '\0';
-
-	return out;
-}
-
 /**
  * Returns the Lv2Port corresponding to the given
  * symbol.

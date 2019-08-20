@@ -105,7 +105,7 @@ on_transport_playhead_right_click (
   menuitem =
     gtk_radio_menu_item_new_with_mnemonic (
       NULL,
-      _("JACK Timebase master"));
+      _("Become JACK Transport master"));
   gtk_check_menu_item_set_active (
     GTK_CHECK_MENU_ITEM (menuitem),
     AUDIO_ENGINE->transport_type ==
@@ -124,7 +124,7 @@ on_transport_playhead_right_click (
   menuitem2 =
     gtk_radio_menu_item_new_with_mnemonic (
       NULL,
-      _("JACK Transport client"));
+      _("Sync to JACK Transport"));
   gtk_radio_menu_item_join_group (
     GTK_RADIO_MENU_ITEM (menuitem2),
     GTK_RADIO_MENU_ITEM (menuitem));

@@ -17,7 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * \file
+ *
+ * Ports expander widget.
+ */
 
 #ifndef __GUI_WIDGETS_PORTS_EXPANDER_H__
 #define __GUI_WIDGETS_PORTS_EXPANDER_H__
@@ -26,6 +30,11 @@
 #include "gui/widgets/two_col_expander_box.h"
 
 #include <gtk/gtk.h>
+
+typedef struct _EditableLabelWidget
+  EditableLabelWidget;
+typedef struct Track Track;
+typedef struct Plugin Plugin;
 
 #define PORTS_EXPANDER_WIDGET_TYPE \
   (ports_expander_widget_get_type ())
@@ -36,11 +45,23 @@ G_DECLARE_FINAL_TYPE (
   PORTS_EXPANDER_WIDGET,
   TwoColExpanderBoxWidget);
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
-typedef struct _EditableLabelWidget
-  EditableLabelWidget;
-typedef struct Track Track;
-typedef struct Plugin Plugin;
+/**
+ * Used for Track's.
+ */
+typedef enum PortsExpanderTrackPortType
+{
+  PE_TRACK_PORT_TYPE_PREFADER,
+  PE_TRACK_PORT_TYPE_POSTFADER,
+  PE_TRACK_PORT_TYPE_STEREO_IN,
+  PE_TRACK_PORT_TYPE_MIDI_IN,
+  PE_TRACK_PORT_TYPE_MIDI_OUT,
+} PortsExpanderTrackPortType;
 
 /**
  * A TwoColExpanderBoxWidget for showing the ports
@@ -79,15 +100,14 @@ ports_expander_widget_setup_plugin (
   Plugin *      pl);
 
 /**
- * Sets up the PortsExpanderWidget for Track sends.
+ * Sets up the PortsExpanderWidget for Track ports.
  *
- * @param prefader 1 for pre-fader, 0 for
- *   post-fader.
+ * @param type The type of ports to include.
  */
 void
-ports_expander_widget_setup_sends (
-  PortsExpanderWidget * self,
-  Track *       tr,
-  int           prefader);
+ports_expander_widget_setup_track (
+  PortsExpanderWidget *      self,
+  Track *                    tr,
+  PortsExpanderTrackPortType type);
 
 #endif

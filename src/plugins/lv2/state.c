@@ -48,7 +48,13 @@ lv2_make_path(LV2_State_Make_Path_Handle handle,
 	Lv2Plugin* plugin = (Lv2Plugin*)handle;
 
 	// Create in save directory if saving, otherwise use temp directory
-	return lv2_strjoin(plugin->save_dir ? plugin->save_dir : plugin->temp_dir, path);
+	return
+    g_strjoin (
+      NULL,
+      plugin->save_dir ?
+        plugin->save_dir :
+        plugin->temp_dir,
+      path);
 }
 
 static const void*
@@ -76,7 +82,8 @@ get_port_value(const char* port_symbol,
 void
 lv2_save(Lv2Plugin* plugin, const char* dir)
 {
-	plugin->save_dir = lv2_strjoin(dir, "/");
+	plugin->save_dir =
+    g_strjoin (NULL, dir, "/");
 
 	LilvState* const state = lilv_state_new_from_instance(
 		plugin->lilv_plugin, plugin->instance, &plugin->map,
@@ -89,7 +96,7 @@ lv2_save(Lv2Plugin* plugin, const char* dir)
 
 	lilv_state_free(state);
 
-	free(plugin->save_dir);
+	g_free (plugin->save_dir);
 	plugin->save_dir = NULL;
 }
 

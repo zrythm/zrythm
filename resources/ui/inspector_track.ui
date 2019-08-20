@@ -46,5 +46,26 @@
         <property name="can_focus">False</property>
       </object>
     </child>
+    <child>
+      <object class="PortsExpanderWidget"
+        id="stereo_in">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="PortsExpanderWidget"
+        id="midi_in">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="PortsExpanderWidget"
+        id="midi_out">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
   </template>
 </interface>

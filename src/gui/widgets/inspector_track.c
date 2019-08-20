@@ -48,12 +48,21 @@ inspector_track_widget_show_tracks (
         self->instrument_track_info,
         track);
 
-      ports_expander_widget_setup_sends (
+      ports_expander_widget_setup_track (
         self->prefader_sends,
-        track, 1);
-      ports_expander_widget_setup_sends (
+        track, PE_TRACK_PORT_TYPE_PREFADER);
+      ports_expander_widget_setup_track (
         self->postfader_sends,
-        track, 0);
+        track, PE_TRACK_PORT_TYPE_POSTFADER);
+      ports_expander_widget_setup_track (
+        self->stereo_in,
+        track, PE_TRACK_PORT_TYPE_STEREO_IN);
+      ports_expander_widget_setup_track (
+        self->midi_in,
+        track, PE_TRACK_PORT_TYPE_MIDI_IN);
+      ports_expander_widget_setup_track (
+        self->midi_out,
+        track, PE_TRACK_PORT_TYPE_MIDI_OUT);
     }
 }
 
@@ -75,6 +84,9 @@ inspector_track_widget_class_init (
   BIND_CHILD (instrument_track_info);
   BIND_CHILD (prefader_sends);
   BIND_CHILD (postfader_sends);
+  BIND_CHILD (stereo_in);
+  BIND_CHILD (midi_in);
+  BIND_CHILD (midi_out);
 
 #undef BIND_CHILD
 }

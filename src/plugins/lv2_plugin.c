@@ -39,22 +39,15 @@
 #include <assert.h>
 #include <math.h>
 #include <signal.h>
+#ifndef __cplusplus
+#    include <stdbool.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-
-#ifndef __cplusplus
-#    include <stdbool.h>
-#endif
-
-#ifdef _WIN32
-#    include <io.h>  /* for _mktemp */
-#    define snprintf _snprintf
-#else
-#    include <unistd.h>
-#endif
+#include <unistd.h>
 
 #include "audio/engine.h"
 #include "audio/midi.h"
@@ -1582,14 +1575,19 @@ lv2_instantiate (
   sratom_set_env(self->sratom, self->env);
   sratom_set_env(self->ui_sratom, self->env);
 
-#ifdef _WIN32
-  self->temp_dir = lv2_strdup("self->XXXXX");
-  _mktemp(self->temp_dir);
-#else
-  char* templ = lv2_strdup("/tmp/self->XXXXXX");
-  self->temp_dir = lv2_strjoin(mkdtemp(templ), "/");
-  free(templ);
-#endif
+  GError * err = NULL;
+  char * templ =
+    g_dir_make_tmp ("self->XXXXXX", &err);
+  if (!templ)
+    {
+      g_warning (
+        "LV2 plugin instantiation failed: %s",
+        err->message);
+      return -1;
+    }
+  self->temp_dir =
+    g_strjoin (NULL, templ, "/", NULL);
+  g_free (templ);
 
   self->make_path.handle = &self;
   self->make_path.path = lv2_make_path;

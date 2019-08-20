@@ -112,6 +112,34 @@ ports_expander_widget_refresh (
             }
         }
     }
+  else if (self->owner_type == PORT_OWNER_TYPE_TRACK)
+    {
+    }
+}
+
+static void
+set_icon_from_port_type (
+  PortsExpanderWidget * self,
+  PortType              type)
+{
+  if (type == TYPE_AUDIO)
+    expander_box_widget_set_icon_resource (
+      Z_EXPANDER_BOX_WIDGET (self),
+      ICON_TYPE_ZRYTHM,
+      "audio.svg");
+  else if (type == TYPE_CV)
+    expander_box_widget_set_icon_resource (
+      Z_EXPANDER_BOX_WIDGET (self),
+      ICON_TYPE_ZRYTHM,
+      "cv.svg");
+  else if (type == TYPE_EVENT)
+    expander_box_widget_set_icon_name (
+      Z_EXPANDER_BOX_WIDGET (self),
+      "z-audio-midi");
+  else if (type == TYPE_CONTROL)
+    expander_box_widget_set_icon_name (
+      Z_EXPANDER_BOX_WIDGET (self),
+      "z-step_object_Controller");
 }
 
 /**
@@ -162,24 +190,7 @@ ports_expander_widget_setup_plugin (
     full_str);
   g_free (full_str);
 
-  if (type == TYPE_AUDIO)
-    expander_box_widget_set_icon_resource (
-      Z_EXPANDER_BOX_WIDGET (self),
-      ICON_TYPE_ZRYTHM,
-      "audio.svg");
-  else if (type == TYPE_CV)
-    expander_box_widget_set_icon_resource (
-      Z_EXPANDER_BOX_WIDGET (self),
-      ICON_TYPE_ZRYTHM,
-      "cv.svg");
-  else if (type == TYPE_EVENT)
-    expander_box_widget_set_icon_name (
-      Z_EXPANDER_BOX_WIDGET (self),
-      "z-audio-midi");
-  else if (type == TYPE_CONTROL)
-    expander_box_widget_set_icon_name (
-      Z_EXPANDER_BOX_WIDGET (self),
-      "z-step_object_Controller");
+  set_icon_from_port_type (self, type);
 
   /* readd ports */
   two_col_expander_box_widget_remove_children (
@@ -354,68 +365,107 @@ ports_expander_widget_setup_plugin (
 }
 
 /**
- * Sets up the PortsExpanderWidget for Track sends.
+ * Sets up the PortsExpanderWidget for Track ports.
  *
- * @param prefader 1 for pre-fader, 0 for
- *   post-fader.
+ * @param type The type of ports to include.
  */
 void
-ports_expander_widget_setup_sends (
-  PortsExpanderWidget * self,
-  Track *       tr,
-  int           prefader)
+ports_expander_widget_setup_track (
+  PortsExpanderWidget *      self,
+  Track *                    tr,
+  PortsExpanderTrackPortType type)
 {
   self->track = tr;
-  self->owner_type = PORT_OWNER_TYPE_FADER;
+  self->owner_type = PORT_OWNER_TYPE_TRACK;
 
-  expander_box_widget_set_label (
-    Z_EXPANDER_BOX_WIDGET (self),
-    prefader ?
-    _("Pre-Fader Sends") :
-    _("Post-Fader Sends"));
+  switch (type)
+    {
+    case PE_TRACK_PORT_TYPE_PREFADER:
+      expander_box_widget_set_label (
+        Z_EXPANDER_BOX_WIDGET (self),
+        _("Pre-Fader Sends"));
+      self->owner_type = PORT_OWNER_TYPE_FADER;
+      self->flow = FLOW_OUTPUT;
+      self->type = TYPE_AUDIO;
+      break;
+    case PE_TRACK_PORT_TYPE_POSTFADER:
+      expander_box_widget_set_label (
+        Z_EXPANDER_BOX_WIDGET (self),
+        _("Post-Fader Sends"));
+      self->owner_type = PORT_OWNER_TYPE_FADER;
+      self->flow = FLOW_OUTPUT;
+      self->type = TYPE_AUDIO;
+      break;
+    case PE_TRACK_PORT_TYPE_STEREO_IN:
+      expander_box_widget_set_label (
+        Z_EXPANDER_BOX_WIDGET (self),
+        _("Stereo In"));
+      self->flow = FLOW_INPUT;
+      self->owner_type = PORT_OWNER_TYPE_TRACK;
+      break;
+    case PE_TRACK_PORT_TYPE_MIDI_IN:
+      expander_box_widget_set_label (
+        Z_EXPANDER_BOX_WIDGET (self),
+        _("MIDI In"));
+      self->owner_type = PORT_OWNER_TYPE_TRACK;
+      self->flow = FLOW_INPUT;
+      self->type = TYPE_EVENT;
+      break;
+    case PE_TRACK_PORT_TYPE_MIDI_OUT:
+      expander_box_widget_set_label (
+        Z_EXPANDER_BOX_WIDGET (self),
+        _("MIDI Out"));
+      self->owner_type = PORT_OWNER_TYPE_TRACK;
+      self->flow = FLOW_OUTPUT;
+      self->type = TYPE_EVENT;
+      break;
+    }
 
-  expander_box_widget_set_icon_resource (
-    Z_EXPANDER_BOX_WIDGET (self),
-    ICON_TYPE_ZRYTHM,
-    "audio.svg");
+  set_icon_from_port_type (self, self->type);
 
   /* readd ports */
   two_col_expander_box_widget_remove_children (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
 
+#define ADD_SINGLE(x) \
+  pcb = \
+    port_connections_button_widget_new (x); \
+  two_col_expander_box_widget_add_single ( \
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), \
+    GTK_WIDGET (pcb))
+
   PortConnectionsButtonWidget * pcb;
-  if (prefader)
+  switch (type)
     {
-      pcb =
-        port_connections_button_widget_new (
-          tr->channel->prefader.stereo_out->l);
-      two_col_expander_box_widget_add_single (
-        Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-        GTK_WIDGET (pcb));
-
-      pcb =
-        port_connections_button_widget_new (
-          tr->channel->prefader.stereo_out->r);
-      two_col_expander_box_widget_add_single (
-        Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-        GTK_WIDGET (pcb));
+    case PE_TRACK_PORT_TYPE_PREFADER:
+      ADD_SINGLE (
+        tr->channel->prefader.stereo_out->l);
+      ADD_SINGLE (
+        tr->channel->prefader.stereo_out->r);
+      break;
+    case PE_TRACK_PORT_TYPE_POSTFADER:
+      ADD_SINGLE (
+        tr->channel->fader.stereo_out->l);
+      ADD_SINGLE (
+        tr->channel->fader.stereo_out->r);
+      break;
+    case PE_TRACK_PORT_TYPE_STEREO_IN:
+      ADD_SINGLE (
+        tr->channel->stereo_in->l);
+      ADD_SINGLE (
+        tr->channel->stereo_in->r);
+      break;
+    case PE_TRACK_PORT_TYPE_MIDI_IN:
+      ADD_SINGLE (
+        tr->channel->midi_in);
+      break;
+    case PE_TRACK_PORT_TYPE_MIDI_OUT:
+      ADD_SINGLE (
+        tr->channel->midi_out);
+      break;
     }
-  else
-    {
-      pcb =
-        port_connections_button_widget_new (
-          tr->channel->fader.stereo_out->l);
-      two_col_expander_box_widget_add_single (
-        Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-        GTK_WIDGET (pcb));
 
-      pcb =
-        port_connections_button_widget_new (
-          tr->channel->fader.stereo_out->r);
-      two_col_expander_box_widget_add_single (
-        Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-        GTK_WIDGET (pcb));
-    }
+#undef ADD_SINGLE
 }
 
 static void
