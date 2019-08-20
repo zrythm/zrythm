@@ -50,6 +50,10 @@ typedef struct Lv2Control Lv2Control;
  * @{
  */
 
+/**
+ * Called when there is a UI port event from the
+ * plugin.
+ */
 void
 lv2_gtk_ui_port_event(
   Lv2Plugin*  plugin,

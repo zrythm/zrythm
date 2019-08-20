@@ -2283,13 +2283,10 @@ channel_free (Channel * channel)
       /*plugin_free (pl);*/
     /*}*/
 
-  /* delete automation tracks */
+  /* remove automation tracks - they are already
+   * free'd in track_free */
   channel_remove_ats_from_automation_tracklist (
     channel);
-  for (int i = 0; i < channel->num_ats; i++)
-    {
-      automation_track_free (channel->ats[i]);
-    }
   free (channel->ats);
 
   if (channel->widget)

@@ -135,8 +135,11 @@ void
 track_lane_free (
   TrackLane * self)
 {
-  g_object_unref (
-    G_OBJECT (self->widget));
+  if (self->widget)
+    {
+      g_object_unref (
+        G_OBJECT (self->widget));
+    }
 
   if (self->name)
     g_free (self->name);

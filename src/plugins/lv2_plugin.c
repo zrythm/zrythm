@@ -2321,7 +2321,7 @@ lv2_plugin_process (
           send_ui_updates &&
           port->identifier.type == TYPE_CONTROL &&
           lv2_port->automating)
-          /* don't write constrol UI events unless
+          /* don't write control UI events unless
            * automating, otherwise this causes
            * trembling of knobs while changing
            * them */
@@ -2337,6 +2337,13 @@ lv2_plugin_process (
             /*g_message ("writing ui event %f",*/
                        /*lv2_port->control);*/
             lv2_port->automating = 0;
+
+            /* if generic UI send update */
+            /*if (lv2_port->widget)*/
+              /*{*/
+                /*g_message ("wrote plugin event");*/
+              /*}*/
+
             if (zix_ring_write (
                   lv2_plugin->plugin_events,
                   buf,

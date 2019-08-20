@@ -604,7 +604,8 @@ on_delete_preset_activate (
  * changes a widget value (e.g., the slider changed
  * callback).
  *
- * Calls lv2_control_set_control to change the value.
+ * Calls lv2_control_set_control to change the
+ * value.
  */
 static void
 set_control (
