@@ -282,7 +282,7 @@ snap_grid_get_nearby_snap_point (
 {
   Position * ret_pos = NULL;
   algorithms_binary_search_nearby (
-    self->snap_points, pos, return_prev, 1,
+    self->snap_points, pos, return_prev, 0,
     self->num_snap_points, Position *,
     position_compare, &, ret_pos, NULL);
 
