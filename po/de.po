@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-12 17:19+0100\n"
-"PO-Revision-Date: 2019-08-14 14:24+0000\n"
+"PO-Revision-Date: 2019-08-21 15:41+0000\n"
 "Last-Translator: Waui <wau-wau@tutanota.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: src/zrythm.c:269
 msgid "Initializing settings"
@@ -200,7 +200,7 @@ msgstr "Taktangabe"
 
 #: src/gui/widgets/port_selector_popover.c:209
 msgid "Track Ports"
-msgstr ""
+msgstr "Spurports"
 
 #: src/gui/widgets/editor_selection_info.c:61
 msgid "start position"
@@ -266,14 +266,12 @@ msgid "Show Lanes - Shows the track's lanes"
 msgstr "Unterspuren zeigen – Zeigt die Unterspuren der Spur"
 
 #: src/gui/widgets/instrument_track.c:284
-#, fuzzy
 msgid "Lock track"
-msgstr "Spur verschieben"
+msgstr "Spur sperren"
 
 #: src/gui/widgets/instrument_track.c:293
-#, fuzzy
 msgid "Freeze track"
-msgstr "Einfrieren"
+msgstr "Spur einfrieren"
 
 #: src/gui/widgets/control_room.c:52
 msgid "Output"
@@ -445,11 +443,11 @@ msgstr "Wähle eine Region aus…"
 
 #: src/gui/widgets/ports_expander.c:140
 msgid "Control Ins"
-msgstr ""
+msgstr "Steuerungseingänge"
 
 #: src/gui/widgets/ports_expander.c:143
 msgid "Control Outs"
-msgstr ""
+msgstr "Steuerungsausgänge"
 
 #: src/gui/widgets/ports_expander.c:146
 msgid "Audio Ins"
@@ -559,7 +557,7 @@ msgstr "Eigenschaft %s in der Klasse %s kann nicht lokalisiert werden"
 #: src/gui/widgets/dzl/dzl-animation.c:1105
 #, c-format
 msgid "Failed to find property %s in %s"
-msgstr ""
+msgstr "Fehler beim Suchen der Eigenschaft %s in %s"
 
 #: src/gui/widgets/dzl/dzl-animation.c:1113
 #, c-format
@@ -703,7 +701,7 @@ msgstr "Gruppe"
 #. TODO
 #: src/audio/scale.c:563
 msgid "Unimplemented"
-msgstr ""
+msgstr "Nicht implementiert"
 
 #: src/audio/engine_jack.c:332
 #, c-format
