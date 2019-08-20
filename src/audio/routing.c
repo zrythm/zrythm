@@ -540,8 +540,8 @@ node_process (
         {
           if (!AUDIO_ENGINE->exporting)
             {
-              float * out;
-              int ret;
+              /*float * out;*/
+              /*int ret;*/
               switch (AUDIO_ENGINE->audio_backend)
                 {
                 case AUDIO_BACKEND_JACK:
@@ -1068,7 +1068,10 @@ node_free (
   free (node);
 }
 
-static inline void
+/**
+ * Frees the graph and its members.
+ */
+void
 graph_free (
   Graph * self)
 {
@@ -1385,7 +1388,7 @@ set_node_playback_latency (
   GraphNode * node,
   long        dest_latency)
 {
-  long max_latency = 0, parent_latency;
+  /*long max_latency = 0, parent_latency;*/
 
   /* set this node's latency */
   node->playback_latency =
@@ -1406,9 +1409,86 @@ set_node_playback_latency (
     }
 }
 
+/**
+ * Checks for cycles in the graph.
+ *
+ * @return 1 if valid, 0 if invalid.
+ */
+static int
+graph_is_valid (
+  Graph * self)
+{
+  int i;
+
+  /* empty list to put sorted elements */
+  /*GraphNode * sorted_nodes[self->n_graph_nodes];*/
+  /*int num_sorted_nodes = 0;*/
+
+  /* set of all nodes without incoming edges */
+  /*GraphNode * trigger_nodes[self->n_init_triggers];*/
+  /*int num_trigger_nodes = 0;*/
+  /*for (i = 0; i < self->n_init_triggers; i++)*/
+    /*{*/
+      /*trigger_nodes[num_trigger_nodes++] =*/
+        /*self->init_trigger_list[i];*/
+    /*}*/
+
+  GraphNode * n, * m;
+  while (self->n_init_triggers > 0)
+    {
+      n =
+        self->init_trigger_list[
+          --self->n_init_triggers];
+      /*g_message ("init trigger %d %s",*/
+                 /*self->n_init_triggers,*/
+                 /*get_node_name (n));*/
+      /*sorted_nodes[num_sorted_nodes++] = n;*/
+      for (i = n->n_childnodes - 1;
+           i >= 0; i--)
+        {
+          m = n->childnodes[i];
+          /*g_message ("child node %d %s",*/
+                     /*i,*/
+                     /*get_node_name (m));*/
+          n->n_childnodes--;
+          m->init_refcount--;
+          if (m->init_refcount == 0)
+            {
+              self->init_trigger_list[
+                self->n_init_triggers++] = m;
+            }
+        }
+    }
+
+  for (i = 0; i < self->n_graph_nodes; i++)
+    {
+      n = self->graph_nodes[i];
+      if (n->n_childnodes > 0 ||
+          n->init_refcount > 0)
+        {
+          graph_print (self);
+          /*g_warning ("graph invalid");*/
+          return 0;
+        }
+    }
+
+  return 1;
+}
+
+/**
+ * Returns a new graph, or NULL if the graph is
+ * invalid.
+ *
+ * Optionally adds a new connection for the given
+ * src and dest ports.
+ *
+ * Should be used every time the graph is changed.
+ */
 Graph *
 graph_new (
-  Router * router)
+  Router * router,
+  Port *   src,
+  Port *   dest)
 {
   int i, j, k;
   GraphNode * node, * node2;
@@ -1626,6 +1706,26 @@ graph_new (
         self, port);
     }
 
+  /* connect the src/dest if not NULL */
+  /* this code is only for creating graphs to test
+   * if the connection between src->dest is valid */
+  if (src && dest)
+    {
+      node =
+        find_node_from_port (self, src);
+      node2 =
+        find_node_from_port (self, dest);
+      node_connect (node, node2);
+
+      if (graph_is_valid (self))
+        return self;
+      else
+        {
+          graph_free (self);
+          return NULL;
+        }
+    }
+
   /* ========================
    * calculate latencies of each port and each
    * processor
@@ -1662,7 +1762,7 @@ router_init (
   Router * self)
 {
   /* create the initial graph */
-  self->graph1 = graph_new (self);
+  self->graph1 = graph_new (self, NULL, NULL);
 
   self->graph2 = NULL;
 }

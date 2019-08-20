@@ -57,14 +57,14 @@ static inline void
 connect_midi_in_to_midi_out (
   Channel * ch)
 {
-  port_connect (ch->midi_in, ch->midi_out);
+  port_connect (ch->midi_in, ch->midi_out, 1);
 }
 
 static inline void
 connect_piano_roll_to_midi_out (
   Channel * ch)
 {
-  port_connect (ch->piano_roll, ch->midi_out);
+  port_connect (ch->piano_roll, ch->midi_out, 1);
 }
 
 static inline void
@@ -97,8 +97,7 @@ connect_piano_roll_to_pl (
           in_port->identifier.flow == FLOW_INPUT)
         {
           port_connect (
-            ch->piano_roll,
-            in_port);
+            ch->piano_roll, in_port, 1);
         }
     }
 }
@@ -122,9 +121,7 @@ connect_midi_in_to_pl (
       if (in_port->identifier.type == TYPE_EVENT &&
           in_port->identifier.flow == FLOW_INPUT)
         {
-          port_connect (
-            ch->midi_in,
-            in_port);
+          port_connect (ch->midi_in, in_port, 1);
         }
     }
 }
@@ -151,8 +148,7 @@ disconnect_midi_in_from_pl (
           if (ports_connected (
                 ch->midi_in, in_port))
             port_disconnect (
-              ch->midi_in,
-              in_port);
+              ch->midi_in, in_port);
         }
     }
 }
@@ -179,8 +175,7 @@ disconnect_piano_roll_from_pl (
           if (ports_connected (
                 ch->midi_in, in_port))
             port_disconnect (
-              ch->piano_roll,
-              in_port);
+              ch->piano_roll, in_port);
         }
     }
 }
@@ -200,8 +195,7 @@ connect_pl_to_midi_out (
           out_port->identifier.flow == FLOW_OUTPUT)
         {
           port_connect (
-            out_port,
-            ch->midi_out);
+            out_port, ch->midi_out, 1);
         }
     }
 }
@@ -224,8 +218,7 @@ disconnect_pl_from_midi_out (
                 out_port, ch->midi_out))
             {
               port_disconnect (
-                out_port,
-                ch->midi_out);
+                out_port, ch->midi_out);
             }
         }
     }
@@ -260,10 +253,10 @@ connect_stereo_in_to_fader (
 {
   port_connect (
     ch->stereo_in->l,
-    ch->prefader.stereo_in->l);
+    ch->prefader.stereo_in->l, 1);
   port_connect (
     ch->stereo_in->r,
-    ch->prefader.stereo_in->r);
+    ch->prefader.stereo_in->r, 1);
 }
 
 /**
@@ -338,7 +331,7 @@ connect_ch_stereo_in_to_plugin (
                 {
                   port_connect (
                     ch->stereo_in->l,
-                    in_port);
+                    in_port, 1);
                   last_index++;
                   break;
                 }
@@ -346,7 +339,7 @@ connect_ch_stereo_in_to_plugin (
                 {
                   port_connect (
                     ch->stereo_in->r,
-                    in_port);
+                    in_port, 1);
                   last_index++;
                   break;
                 }
@@ -385,7 +378,7 @@ connect_pl_to_pl (
                     {
                       port_connect (
                         out_port,
-                        in_port);
+                        in_port, 1);
                       goto done1;
                     }
                 }
@@ -416,7 +409,7 @@ done1:
                     {
                       port_connect (
                         out_port,
-                        in_port);
+                        in_port, 1);
                     }
                 }
               break;
@@ -444,7 +437,7 @@ done1:
                     {
                       port_connect (
                         out_port,
-                        in_port);
+                        in_port, 1);
                       goto done2;
                     }
                 }
@@ -482,7 +475,7 @@ done2:
                     {
                       port_connect (
                         out_port,
-                        in_port);
+                        in_port, 1);
                       last_index++;
                       ports_connected++;
                       break;
@@ -513,7 +506,7 @@ done2:
                 {
                   port_connect (
                     out_port,
-                    in_port);
+                    in_port, 1);
                 }
             }
           break;
@@ -544,10 +537,10 @@ connect_pl_to_fader (
             {
               port_connect (
                 out_port,
-                ch->prefader.stereo_in->l);
+                ch->prefader.stereo_in->l, 1);
               port_connect (
                 out_port,
-                ch->prefader.stereo_in->r);
+                ch->prefader.stereo_in->r, 1);
               break;
             }
         }
@@ -567,14 +560,14 @@ connect_pl_to_fader (
             {
               port_connect (
                 out_port,
-                ch->prefader.stereo_in->l);
+                ch->prefader.stereo_in->l, 1);
               last_index++;
             }
           else if (last_index == 1)
             {
               port_connect (
                 out_port,
-                ch->prefader.stereo_in->r);
+                ch->prefader.stereo_in->r, 1);
               break;
             }
         }
@@ -1571,13 +1564,13 @@ channel_connect (
       ch->output_pos = -1;
       port_connect (
         ch->stereo_out->l,
-        AUDIO_ENGINE->stereo_out->l);
+        AUDIO_ENGINE->stereo_out->l, 1);
       port_connect (
         ch->stereo_out->r,
-        AUDIO_ENGINE->stereo_out->r);
+        AUDIO_ENGINE->stereo_out->r, 1);
       port_connect (
         ch->midi_out,
-        AUDIO_ENGINE->midi_out);
+        AUDIO_ENGINE->midi_out, 1);
     }
   else
     {
@@ -1595,16 +1588,16 @@ channel_connect (
       connect_stereo_in_to_fader (ch);
       port_connect (
         ch->prefader.stereo_out->l,
-        ch->fader.stereo_in->l);
+        ch->fader.stereo_in->l, 1);
       port_connect (
         ch->prefader.stereo_out->r,
-        ch->fader.stereo_in->r);
+        ch->fader.stereo_in->r, 1);
       port_connect (
         ch->fader.stereo_out->l,
-        ch->stereo_out->l);
+        ch->stereo_out->l, 1);
       port_connect (
         ch->fader.stereo_out->r,
-        ch->stereo_out->r);
+        ch->stereo_out->r, 1);
     }
 
   /** Connect MIDI in and piano roll to MIDI out. */
@@ -1616,13 +1609,13 @@ channel_connect (
       /* connect channel out ports to master */
       port_connect (
         ch->stereo_out->l,
-        P_MASTER_TRACK->channel->stereo_in->l);
+        P_MASTER_TRACK->channel->stereo_in->l, 1);
       port_connect (
         ch->stereo_out->r,
-        P_MASTER_TRACK->channel->stereo_in->r);
+        P_MASTER_TRACK->channel->stereo_in->r, 1);
       port_connect (
         ch->midi_out,
-        P_MASTER_TRACK->channel->midi_in);
+        P_MASTER_TRACK->channel->midi_in, 1);
     }
 }
 
@@ -1648,10 +1641,10 @@ channel_update_output (
    */
   port_connect (
     ch->stereo_out->l,
-    output->channel->stereo_in->l);
+    output->channel->stereo_in->l, 1);
   port_connect (
     ch->stereo_out->r,
-    output->channel->stereo_in->r);
+    output->channel->stereo_in->r, 1);
 
   ch->output = output;
   g_message ("setting output %s",
@@ -2074,7 +2067,7 @@ channel_reattach_midi_editor_manual_press_port (
                 {
                   if (connect)
                     {
-                      port_connect (AUDIO_ENGINE->midi_editor_manual_press, port);
+                      port_connect (AUDIO_ENGINE->midi_editor_manual_press, port, 1);
                     }
                   else
                     {

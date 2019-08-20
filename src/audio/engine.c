@@ -267,10 +267,10 @@ engine_init (
    * output */
   port_connect (
     SAMPLE_PROCESSOR->stereo_out->l,
-    self->stereo_out->l);
+    self->stereo_out->l, 1);
   port_connect (
     SAMPLE_PROCESSOR->stereo_out->r,
-    self->stereo_out->r);
+    self->stereo_out->r, 1);
 }
 
 void

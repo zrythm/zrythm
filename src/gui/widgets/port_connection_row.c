@@ -46,6 +46,11 @@ port_connection_row_widget_new (
   self->dest = dest;
   self->is_input = is_input;
 
+  /* get connection locked/enabled */
+  int dest_idx = port_get_dest_index (src, dest);
+  int enabled = src->dest_enabled[dest_idx];
+  int locked = src->dest_locked[dest_idx];
+
   /* create the widgets and pack */
   GtkWidget * box =
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
@@ -55,6 +60,8 @@ port_connection_row_widget_new (
   GtkToggleButton * btn =
     z_gtk_toggle_button_new_with_icon (
       "online");
+  gtk_toggle_button_set_active (
+    btn, enabled);
   gtk_widget_set_visible (GTK_WIDGET (btn), 1);
   gtk_box_pack_start (
     GTK_BOX (box), GTK_WIDGET (btn),
@@ -75,8 +82,8 @@ port_connection_row_widget_new (
     g_strdup_printf (
       "%s ",
       is_input ?
-        src->identifier.label :
-        dest->identifier.label);
+        port_get_full_designation (src) :
+        port_get_full_designation (dest));
   self->slider =
     bar_slider_widget_new_port (
       src, dest, label);
@@ -88,6 +95,9 @@ port_connection_row_widget_new (
   gtk_container_add (
     GTK_CONTAINER (self),
     box);
+
+  gtk_widget_set_sensitive (
+    box, !locked);
 
   return self;
 }

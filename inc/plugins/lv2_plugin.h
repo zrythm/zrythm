@@ -228,41 +228,56 @@ static const cyaml_schema_value_t
 };
 
 void
-lv2_plugin_init_loaded (Lv2Plugin * lv2_plgn);
+lv2_plugin_init_loaded (
+  Lv2Plugin * lv2_plgn);
 
 char*
-lv2_make_path(LV2_State_Make_Path_Handle handle,
-               const char*                path);
+lv2_make_path (
+  LV2_State_Make_Path_Handle handle,
+  const char*                path);
 
 void
-lv2_save(Lv2Plugin* plugin, const char* dir);
+lv2_save (
+  Lv2Plugin* plugin,
+  const char* dir);
 
-typedef int (*PresetSink)(Lv2Plugin*           plugin,
-                          const LilvNode* node,
-                          const LilvNode* title,
-                          void*           data);
+typedef int (*PresetSink)
+  (Lv2Plugin*           plugin,
+  const LilvNode* node,
+  const LilvNode* title,
+  void*           data);
 
 int
-lv2_load_presets(Lv2Plugin* plugin, PresetSink sink, void* data);
+lv2_load_presets (
+  Lv2Plugin* plugin,
+  PresetSink sink,
+  void* data);
 
 int
-lv2_unload_presets(Lv2Plugin* plugin);
+lv2_unload_presets (
+  Lv2Plugin* plugin);
 
 void
-lv2_apply_state(Lv2Plugin* plugin, LilvState* state);
+lv2_apply_state (
+  Lv2Plugin* plugin,
+  LilvState* state);
 
 int
-lv2_apply_preset(Lv2Plugin* plugin, const LilvNode* preset);
+lv2_apply_preset (
+  Lv2Plugin* plugin,
+  const LilvNode* preset);
 
 int
-lv2_save_preset(Lv2Plugin*       plugin,
-                 const char* dir,
-                 const char* uri,
-                 const char* label,
-                 const char* filename);
+lv2_save_preset (
+  Lv2Plugin *  plugin,
+  const char * dir,
+  const char * uri,
+  const char * label,
+  const char * filename);
 
 int
-lv2_delete_current_preset(Lv2Plugin* plugin);
+lv2_delete_current_preset (
+  Lv2Plugin* plugin);
 
 /**
  * Returns the Lv2Port corresponding to the given

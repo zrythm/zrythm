@@ -205,6 +205,33 @@ typedef struct Port
    * 1.f. They correspond to each destination.
    */
   float               multipliers[MAX_DESTINATIONS];
+
+  /**
+   * These indicate whether the destination Port
+   * can be removed or the multiplier edited by the
+   * user.
+   *
+   * These are ignored when connecting things
+   * internally and are only used to deter the user
+   * from breaking necessary connections.
+   *
+   * 0 == unlocked, 1 == locked.
+   */
+  int                 dest_locked[MAX_DESTINATIONS];
+
+  /**
+   * These indicate whether the connection is
+   * enabled.
+   *
+   * The user can disable port connections only if
+   * they are not locked.
+   *
+   * 0 == disabled (disconnected),
+   * 1 == enabled (connected).
+   */
+  int                 dest_enabled[MAX_DESTINATIONS];
+
+  /** Counters. */
   int                 num_srcs;
   int                 num_dests;
 
@@ -624,9 +651,14 @@ port_set_expose_to_jack (
 
 /**
  * Connets src to dest.
+ *
+ * @param locked Lock the connection or not.
  */
 int
-port_connect (Port * src, Port * dest);
+port_connect (
+  Port * src,
+  Port * dest,
+  const int locked);
 
 /**
  * Disconnects src from dest.
@@ -720,8 +752,22 @@ port_set_owner_plugin (
   Port *   port,
   Plugin * pl);
 
+/**
+ * Returns if the two ports are connected or not.
+ */
 int
-ports_connected (Port * src, Port * dest);
+ports_connected (
+  Port * src, Port * dest);
+
+/**
+ * Returns whether the Port's can be connected (if
+ * the connection will be valid and won't break the
+ * acyclicity of the graph).
+ */
+int
+ports_can_be_connected (
+  const Port * src,
+  const Port *dest);
 
 /**
  * Disconnects all the given ports.

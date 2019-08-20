@@ -265,13 +265,13 @@ track_set_recording (Track *   track,
     {
       port_connect (
         AUDIO_ENGINE->stereo_in->l,
-        channel->stereo_in->l);
+        channel->stereo_in->l, 1);
       port_connect (
         AUDIO_ENGINE->stereo_in->r,
-        channel->stereo_in->r);
+        channel->stereo_in->r, 1);
       port_connect (
         AUDIO_ENGINE->midi_in,
-        channel->midi_in);
+        channel->midi_in, 1);
     }
   else
     {

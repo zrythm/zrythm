@@ -69,7 +69,7 @@ mixer_recalc_graph (
   /* create the spare graph. this will be copied to
    * graph1 and used in processing */
   mixer->router.graph2 =
-    graph_new (&mixer->router);
+    graph_new (&mixer->router, NULL, NULL);
 }
 
 void

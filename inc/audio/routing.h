@@ -73,7 +73,10 @@ typedef struct GraphNode
   GraphNode **  childnodes;
   int           n_childnodes;
 
+  /** Incoming node count. */
   volatile gint refcount;
+
+  /** Initial incoming node count. */
   gint          init_refcount;
 
   /** Used when creating the graph so we can
@@ -214,13 +217,19 @@ typedef struct Router
 } Router;
 
 /**
- * Creates a graph.
+ * Returns a new graph, or NULL if the graph is
+ * invalid.
+ *
+ * Optionally adds a new connection for the given
+ * src and dest ports.
  *
  * Should be used every time the graph is changed.
  */
 Graph *
 graph_new (
-  Router * router);
+  Router * router,
+  Port *   src,
+  Port *   dest);
 
 void
 router_init (
@@ -255,6 +264,13 @@ graph_print (
 void
 graph_destroy (
   Graph * graph);
+
+/**
+ * Frees the graph and its members.
+ */
+void
+graph_free (
+  Graph * self);
 
 /**
  * @}

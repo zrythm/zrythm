@@ -520,19 +520,36 @@ port_set_owner_prefader (
 }
 
 /**
+ * Returns whether the Port's can be connected (if
+ * the connection will be valid and won't break the
+ * acyclicity of the graph).
  */
-/*void*/
-/*port_init (Port * port)*/
-/*{*/
-  /*port->id = MIXER->num_ports++;*/
-  /*port->num_destinations = 0;*/
-/*}*/
+int
+ports_can_be_connected (
+  const Port * src,
+  const Port *dest)
+{
+  Graph * graph =
+    graph_new (&MIXER->router, src, dest);
+  if (graph)
+    {
+      graph_free (graph);
+      return 1;
+    }
+  else
+    return 0;
+}
 
 /**
  * Connets src to dest.
+ *
+ * @param locked Lock the connection or not.
  */
 int
-port_connect (Port * src, Port * dest)
+port_connect (
+  Port * src,
+  Port * dest,
+  const int locked)
 {
   g_warn_if_fail (src != NULL);
   g_warn_if_fail (dest != NULL);
@@ -550,6 +567,8 @@ port_connect (Port * src, Port * dest)
     &dest->identifier,
     &src->dest_ids[src->num_dests]);
   src->multipliers[src->num_dests] = 1.f;
+  src->dest_locked[src->num_dests] = locked;
+  src->dest_enabled[src->num_dests] = 1;
   src->num_dests++;
   dest->srcs[dest->num_srcs] = src;
   port_identifier_copy (
@@ -628,6 +647,9 @@ port_disconnect (Port * src, Port * dest)
   return 0;
 }
 
+/**
+ * Returns if the two ports are connected or not.
+ */
 int
 ports_connected (Port * src, Port * dest)
 {

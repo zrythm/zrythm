@@ -54,7 +54,7 @@ lv2_make_path(LV2_State_Make_Path_Handle handle,
       plugin->save_dir ?
         plugin->save_dir :
         plugin->temp_dir,
-      path);
+      path, NULL);
 }
 
 static const void*
@@ -83,18 +83,22 @@ void
 lv2_save(Lv2Plugin* plugin, const char* dir)
 {
 	plugin->save_dir =
-    g_strjoin (NULL, dir, "/");
+    g_strjoin (NULL, dir, "/", NULL);
 
-	LilvState* const state = lilv_state_new_from_instance(
-		plugin->lilv_plugin, plugin->instance, &plugin->map,
-		plugin->temp_dir, dir, dir, dir,
-		get_port_value, plugin,
-		LV2_STATE_IS_POD|LV2_STATE_IS_PORTABLE, NULL);
+	LilvState* const state =
+    lilv_state_new_from_instance (
+      plugin->lilv_plugin, plugin->instance,
+      &plugin->map,
+      plugin->temp_dir, dir, dir, dir,
+      get_port_value, plugin,
+      LV2_STATE_IS_POD|LV2_STATE_IS_PORTABLE,
+      NULL);
 
-	lilv_state_save(LILV_WORLD, &plugin->map, &plugin->unmap, state, NULL,
-	                dir, "state.ttl");
+	lilv_state_save (
+    LILV_WORLD, &plugin->map, &plugin->unmap,
+    state, NULL, dir, "state.ttl");
 
-	lilv_state_free(state);
+	lilv_state_free (state);
 
 	g_free (plugin->save_dir);
 	plugin->save_dir = NULL;
