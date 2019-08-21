@@ -189,6 +189,17 @@ z_gtk_overlay_add_if_not_exists (
   GtkWidget *  widget);
 
 /**
+ * Returns the primary or secondary label of the
+ * given GtkMessageDialog.
+ *
+ * @param 0 for primary, 1 for secondary.
+ */
+GtkLabel *
+z_gtk_message_dialog_get_label (
+  GtkMessageDialog * self,
+  const int          secondary);
+
+/**
  * Configures a simple value-text combo box using
  * the given model.
  */

@@ -29,8 +29,11 @@
 #include <unistd.h>
 
 #include "ext/audio_decoder/ad.h"
+#include "gui/widgets/main_window.h"
 #include "plugins/lv2/suil.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
+#include "utils/ui.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -52,17 +55,67 @@ handler (int sig) {
   size_t size;
   char ** strings;
 
-  // get void*'s for all entries on the stack
+  /* get void*'s for all entries on the stack */
   size = backtrace(array, 20);
 
-  // print out all the frames to stderr
-  g_message ("Error: signal %d - Backtrace:", sig);
+  /* print out all the frames to stderr */
+  char * str, * tmp, * tmp2;
+  str =
+    g_strdup_printf (
+      _("Error: signal %d - Backtrace:"), sig);
   strings = backtrace_symbols (array, size);
 
   for (int i = 0; i < size; i++)
-    g_message ("%s", strings[i]);
+    {
+      tmp2 = str;
+      tmp = g_strdup_printf ("%s", strings[i]);
+      str =
+        g_strconcat (
+          str, "\n", tmp, NULL);
+      g_free (tmp);
+      g_free (tmp2);
+    }
+
+  g_message ("%s", str);
+  tmp =
+    g_strdup_printf (
+      _("An error has occurred causing Zrythm to "
+        "crash. Please help us fix this error by "
+        "<a href=\"https://savannah.nongnu.org/support/?func=additem&group=zrythm\">submitting a bug report</a>, using the text below."));
+
+  GtkDialogFlags flags =
+    GTK_DIALOG_DESTROY_WITH_PARENT;
+  GtkWidget * dialog =
+    gtk_message_dialog_new_with_markup (
+      GTK_WINDOW (MAIN_WINDOW),
+      flags,
+      GTK_MESSAGE_ERROR,
+      GTK_BUTTONS_CLOSE,
+      NULL);
+
+  gtk_message_dialog_set_markup (
+    GTK_MESSAGE_DIALOG (dialog),
+      _("Zrythm has crashed. Please help us fix "
+        "this by "
+        "<a href=\"https://savannah.nongnu.org/support/?func=additem&amp;group=zrythm\">submitting a bug report</a>, including the following text."));
+  gtk_message_dialog_format_secondary_markup (
+    GTK_MESSAGE_DIALOG (dialog),
+    "%s\n%s\n\n%s\n%s",
+    "# Version",
+    PACKAGE_VERSION,
+    "# Backtrace",
+    str);
+  GtkLabel * label =
+    z_gtk_message_dialog_get_label (
+      GTK_MESSAGE_DIALOG (dialog), 1);
+  gtk_label_set_selectable (
+    label, 1);
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (dialog);
 
   free (strings);
+  g_free (str);
+  g_free (tmp);
 #endif
   exit(1);
 }

@@ -20,6 +20,7 @@
 #include "gui/accel.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 
 int
@@ -53,6 +54,50 @@ z_gtk_container_remove_all_children (
         GTK_WIDGET (iter->data));
     }
   g_list_free (children);
+}
+
+/**
+ * Returns the primary or secondary label of the
+ * given GtkMessageDialog.
+ *
+ * @param 0 for primary, 1 for secondary.
+ */
+GtkLabel *
+z_gtk_message_dialog_get_label (
+  GtkMessageDialog * self,
+  const int          secondary)
+{
+  GList *children, *iter;
+
+  GtkWidget * box =
+    gtk_message_dialog_get_message_area (self);
+
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (box));
+  GtkLabel * label = NULL;
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      label =
+        GTK_LABEL (iter->data);
+      const char * name =
+      gtk_widget_class_get_css_name (
+        GTK_WIDGET_GET_CLASS (label));
+      if (string_is_equal (
+            name, "label", 1) &&
+          !secondary)
+        break;
+      else if (
+        string_is_equal (
+          name, "secondary_label", 1) &&
+        secondary)
+        break;
+    }
+  g_list_free (children);
+
+  return label;
 }
 
 void
