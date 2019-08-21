@@ -693,7 +693,7 @@ init_dm (
       {
         gtk_widget_set_tooltip_text (
           GTK_WIDGET (self),
-          _("BPM - Click and drag up/down to set"));
+          _("Tempo/BPM"));
         z_cairo_get_text_extents_for_widget_full (
           GTK_WIDGET (self), "888888", &textw,
           &texth, SEG7_FONT);
@@ -708,7 +708,7 @@ init_dm (
     case DIGITAL_METER_TYPE_POSITION:
       gtk_widget_set_tooltip_text (
         GTK_WIDGET (self),
-        _("BPM - Click and drag up/down to set"));
+        _("Position"));
       z_cairo_get_text_extents_for_widget_full (
         GTK_WIDGET (self), "-888888888", &textw,
         &texth, SEG7_FONT);
@@ -737,8 +737,8 @@ init_dm (
       {
         gtk_widget_set_tooltip_text (
           GTK_WIDGET (self),
-          _("Time Signature - Click and drag "
-            "up/down to change"));
+          _("Time Signature - Beats per bar / "
+            "Beat unit"));
         z_cairo_get_text_extents_for_widget_full (
           GTK_WIDGET (self), "16/16", &textw,
           &texth, SEG7_FONT);

@@ -228,8 +228,8 @@ typedef struct Router
 Graph *
 graph_new (
   Router * router,
-  Port *   src,
-  Port *   dest);
+  const Port *   src,
+  const Port *   dest);
 
 void
 router_init (

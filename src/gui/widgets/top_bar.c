@@ -39,6 +39,13 @@ G_DEFINE_TYPE (TopBarWidget,
                top_bar_widget,
                GTK_TYPE_BOX)
 
+#define PLAYHEAD_CAPTION \
+  _("Playhead")
+#define PLAYHEAD_JACK_MASTER_CAPTION \
+  _("Playhead [Jack Timebase Master]")
+#define PLAYHEAD_JACK_CLIENT_CAPTION \
+  _("Playhead [Jack Client]")
+
 #ifdef HAVE_JACK
 static void
 on_jack_transport_type_changed (
@@ -55,6 +62,9 @@ on_jack_transport_type_changed (
         self->master_img, 1);
       gtk_widget_set_visible (
         self->client_img, 0);
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (self->digital_transport),
+        PLAYHEAD_JACK_MASTER_CAPTION);
     }
   else if (menuitem ==
              self->transport_client_check &&
@@ -68,6 +78,9 @@ on_jack_transport_type_changed (
         self->master_img, 0);
       gtk_widget_set_visible (
         self->client_img, 1);
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (self->digital_transport),
+        PLAYHEAD_JACK_CLIENT_CAPTION);
     }
   else if (menuitem ==
              self->no_jack_transport_check &&
@@ -81,6 +94,9 @@ on_jack_transport_type_changed (
         self->master_img, 0);
       gtk_widget_set_visible (
         self->client_img, 0);
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (self->digital_transport),
+        PLAYHEAD_CAPTION);
     }
 }
 #endif
@@ -210,6 +226,9 @@ top_bar_widget_refresh (TopBarWidget * self)
       transport_set_playhead_pos,
       NULL,
       _("playhead"));
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->digital_transport),
+    PLAYHEAD_CAPTION);
   self->playhead_overlay =
     GTK_OVERLAY (gtk_overlay_new ());
   gtk_widget_set_visible (
@@ -271,6 +290,9 @@ top_bar_widget_refresh (TopBarWidget * self)
             self->master_img, 0);
           gtk_widget_set_visible (
             self->client_img, 1);
+          gtk_widget_set_tooltip_text (
+            GTK_WIDGET (self->digital_transport),
+            PLAYHEAD_JACK_CLIENT_CAPTION);
         }
       else if (AUDIO_ENGINE->transport_type ==
                  AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
@@ -279,6 +301,9 @@ top_bar_widget_refresh (TopBarWidget * self)
             self->master_img, 1);
           gtk_widget_set_visible (
             self->client_img, 0);
+          gtk_widget_set_tooltip_text (
+            GTK_WIDGET (self->digital_transport),
+            PLAYHEAD_JACK_MASTER_CAPTION);
         }
     }
 #endif

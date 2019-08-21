@@ -879,9 +879,6 @@ region_is_hit_by_range (
   const long     gframes_start,
   const long     gframes_end)
 {
-  position_update_frames (&region->start_pos);
-  position_update_frames (&region->end_pos);
-
   /* 4 cases:
    * - region start is inside range
    * - region end is inside range
@@ -1148,13 +1145,6 @@ region_timeline_frames_to_local (
     {
       if (region)
         {
-          position_update_frames (
-            &region->start_pos);
-          position_update_frames (
-            &region->loop_end_pos);
-          position_update_frames (
-            &region->clip_start_pos);
-
           diff_frames =
             timeline_frames -
             region->start_pos.frames;
@@ -1184,8 +1174,6 @@ region_timeline_frames_to_local (
     {
       if (region)
         {
-          position_update_frames (
-            &region->start_pos);
           diff_frames =
             timeline_frames -
             region->start_pos.frames;

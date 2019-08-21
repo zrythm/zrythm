@@ -20,6 +20,10 @@
 /**
  * \page release_checklist Release Checklist
  *
+ * \section testing_before_release Testing Before Release
+ *
+ * 1. Check that both ALSA and JACK audio backends work
+ *
  * \section release_checklist_checklist Checklist
  *
  * These are the steps to take before each release to

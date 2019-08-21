@@ -810,13 +810,13 @@ WARN_LOGFILE           =
 INPUT                  = \
   @MESON_SOURCE_ROOT@/src \
   @MESON_SOURCE_ROOT@/inc \
-  @MESON_SOURCE_ROOT@/doc/mainpage.h \
-  @MESON_SOURCE_ROOT@/doc/processing_cycle.h \
-  @MESON_SOURCE_ROOT@/doc/cyaml_schemas.h \
-  @MESON_SOURCE_ROOT@/doc/release_checklist.h \
-  @MESON_SOURCE_ROOT@/doc/weblate.h \
+  @MESON_SOURCE_ROOT@/doc/dev/mainpage.h \
+  @MESON_SOURCE_ROOT@/doc/dev/processing_cycle.h \
+  @MESON_SOURCE_ROOT@/doc/dev/cyaml_schemas.h \
+  @MESON_SOURCE_ROOT@/doc/dev/release_checklist.h \
+  @MESON_SOURCE_ROOT@/doc/dev/weblate.h \
   @MESON_SOURCE_ROOT@/CONTRIBUTING.md \
-  @MESON_SOURCE_ROOT@/doc/group_defs.dox \
+  @MESON_SOURCE_ROOT@/doc/dev/group_defs.dox \
   @MESON_SOURCE_ROOT@/README.md \
   @MESON_SOURCE_ROOT@/INSTALL.md @MESON_SOURCE_ROOT@/git-packaging-hooks/README.md
 

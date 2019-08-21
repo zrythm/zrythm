@@ -51,6 +51,14 @@ cdata.set_quoted (
   'PACKAGE_VERSION',
   meson.project_version ())
 cdata.set_quoted (
+  'COMPILER',
+  meson.get_compiler('c').get_id())
+cdata.set_quoted (
+  'PREFIX', prefix)
+cdata.set_quoted (
+  'COMPILER_VERSION',
+  meson.get_compiler('c').version())
+cdata.set_quoted (
   'CONFIGURE_DATADIR',
   datadir)
 cdata.set_quoted (

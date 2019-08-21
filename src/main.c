@@ -127,8 +127,14 @@ print_version ()
 {
   fprintf (
     stdout,
-    "zrythm%s\n",
-    PACKAGE_VERSION);
+    "Zrythm %s\nbuilt with %s %s\n"
+    "%s\n%s\n%s\n%s\n",
+    PACKAGE_VERSION,
+    COMPILER, COMPILER_VERSION,
+    "Copyright (C) 2018-2019 Alexandros Theodotou",
+    "License AGPLv3+: GNU AGPL version 3 or later <https://www.gnu.org/licenses/agpl.html>",
+    "This is free software: you are free to change and redistribute it.",
+    "There is NO WARRANTY, to the extent permitted by law.");
 }
 
 static void

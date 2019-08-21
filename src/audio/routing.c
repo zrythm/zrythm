@@ -905,7 +905,7 @@ node_connect (
 static GraphNode *
 find_node_from_port (
   Graph * graph,
-  Port * port)
+  const Port * port)
 {
   GraphNode * node;
   for (int i = 0; i < graph->n_graph_nodes; i++)
@@ -1500,8 +1500,8 @@ graph_is_valid (
 Graph *
 graph_new (
   Router * router,
-  Port *   src,
-  Port *   dest)
+  const Port *   src,
+  const Port *   dest)
 {
   int i, j, k;
   GraphNode * node, * node2;
