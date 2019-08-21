@@ -52,7 +52,7 @@ on_ok_clicked (
         _("No port selected"));
     }
 
-  Port * src, * dest;
+  Port * src = NULL, * dest = NULL;
   if (self->port->identifier.flow == FLOW_INPUT)
     {
       src = self->selected_port;
@@ -64,6 +64,8 @@ on_ok_clicked (
       src = self->port;
       dest = self->selected_port;
     }
+
+  g_return_if_fail (src && dest);
 
   if (ports_can_be_connected (src, dest))
     {

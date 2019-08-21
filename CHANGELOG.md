@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.6.038] - 2019-08-21
+## [0.6.039] - 2019-08-21
 - Add MIDI out ports to channels and to JACK/ALSA
 - Add JACK transport functionality (timebase master and client)
 - Add scrollbar for ports list
