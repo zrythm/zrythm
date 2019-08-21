@@ -11,7 +11,8 @@ depends=('gtk3' 'lv2' 'lilv' 'libx11' 'jack'
   'libsamplerate' 'alsa-lib' 'portaudio'
   'ladspa' 'fftw')
 makedepends=('python' 'gettext' 'sed'
-             'meson' 'ninja')
+             'meson' 'ninja' 'help2man'
+             'python-sphinx')
 conflicts=( 'zrythm-git' )
 source=( "https://git.zrythm.org/zrythm/${pkgname}/-/archive/v$pkgver/${pkgname}-v$pkgver.tar.gz" )
 md5sums=( '01234567ABCDEF01234567ABCDEF0123' )
@@ -21,7 +22,7 @@ rootdir="${pkgname}-v${pkgver}"
 build() {
   cd ${rootdir}/
   mkdir -p build
-  cd build && meson --prefix=/usr .. -Denable_tests=true
+  cd build && meson --prefix=/usr .. -Denable_tests=true -Duser_manual=true -Dmanpage=true
   ninja
 }
 

@@ -26,6 +26,7 @@ BuildRequires: ladspa-devel
 BuildRequires: fftw-devel
 BuildRequires: portaudio-devel
 BuildRequires: meson
+BuildRequires: help2man
 Requires: gtk3
 Requires: ladspa
 Requires: lilv libsamplerate
