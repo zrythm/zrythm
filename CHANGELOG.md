@@ -1,6 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.038] - 2019-08-21
+- Add MIDI out ports to channels and to JACK/ALSA
+- Add JACK transport functionality (timebase master and client)
+- Add scrollbar for ports list
+- Add option to expose ports to JACK
+- Add pre-fader/post-fader sends
+- Add manpage
+- Add compiler info to version string
+- Add locked and enabled port connection attributes
+- Show track ports in the inspector
+- Move user manual from separate repository to this distribution
+- Convert port connection knobs to sliders
+- Check if port connections break acyclicity before connecting them
+- Fix guitarix plugins crashing (add dependency to fftw3)
+- Fix regression causing backward/forward button to not work properly
+- Fix crash when deleting bus track with plugin
+- Show dialog with backtrace when crashing
+- Fix old frame positions getting used after BPM changes
+- Fix ALSA output being silent
+- Update German, Japanese, French translations
+
 ## [0.6.003] - 2019-08-13
 - Plugin latency compensation during playback
 - Chords and automation are now inside regions (can be looped)
