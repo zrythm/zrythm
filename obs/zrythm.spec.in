@@ -12,7 +12,7 @@ Release:       1%{?dist}
 Summary: An highly automated, intuitive, Digital Audio Workstation (DAW)
 License:       AGPLv3+
 URL:           https://www.zrythm.org
-Source0:       https://git.zrythm.org/cgit/zrythm/snapshot/zrythm-%{version}.tar.gz
+Source0:       https://git.zrythm.org/cgit/zrythm/snapshot/zrythm-v%{version}.tar.gz
 BuildRequires: gcc-c++ gcc pkgconfig
 BuildRequires: gtk3-devel python3
 BuildRequires: lilv-devel
