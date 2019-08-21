@@ -141,6 +141,14 @@ track_lane_add_region (
   Region *    region);
 
 /**
+ * Updates the frames of each position in each child
+ * of the track recursively.
+ */
+void
+track_lane_update_frames (
+  TrackLane * self);
+
+/**
  * Clones the TrackLane.
  *
  * Mainly used when cloning Track's.

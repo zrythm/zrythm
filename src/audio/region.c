@@ -401,6 +401,69 @@ region_get_full_length_in_frames (
 }
 
 /**
+ * Updates the frames of each position in each child
+ * of the region recursively.
+ */
+void
+region_update_frames (
+  Region * self)
+{
+  int i;
+
+  position_update_frames (
+    &self->start_pos);
+  position_update_frames (
+    &self->end_pos);
+  position_update_frames (
+    &self->true_end_pos);
+  position_update_frames (
+    &self->clip_start_pos);
+  position_update_frames (
+    &self->loop_start_pos);
+  position_update_frames (
+    &self->loop_end_pos);
+  position_update_frames (
+    &self->fade_in_pos);
+  position_update_frames (
+    &self->fade_out_pos);
+
+  MidiNote * mn;
+  for (i = 0; i < self->num_midi_notes; i++)
+    {
+      mn = self->midi_notes[i];
+      midi_note_update_frames (mn);
+    }
+  for (i = 0; i < self->num_unended_notes; i++)
+    {
+      mn = self->unended_notes[i];
+      midi_note_update_frames (mn);
+    }
+
+  AutomationPoint * ap;
+  for (i = 0; i < self->num_aps; i++)
+    {
+      ap = self->aps[i];
+      automation_point_update_frames (ap);
+    }
+
+  AutomationCurve * ac;
+  for (i = 0; i < self->num_acs; i++)
+    {
+      ac = self->acs[i];
+      automation_curve_update_frames (ac);
+    }
+
+  ChordObject * co;
+  for (i = 0; i < self->num_chord_objects; i++)
+    {
+      co = self->chord_objects[i];
+      chord_object_update_frames (co);
+    }
+
+}
+
+
+/**
  * Returns the length of the loop in ticks.
  */
 long
@@ -420,8 +483,8 @@ region_get_loop_length_in_frames (
   const Region * region)
 {
   return
-    position_to_frames (&region->loop_end_pos) -
-      position_to_frames (&region->loop_start_pos);
+    region->loop_end_pos.frames -
+      region->loop_start_pos.frames;
 }
 
 /**
@@ -800,8 +863,10 @@ region_is_hit (
   const long     gframes)
 {
   return
-    region->start_pos.frames <= gframes &&
-    region->end_pos.frames > gframes;
+    region->start_pos.frames <=
+      gframes &&
+    region->end_pos.frames >
+      gframes;
 }
 
 /**
@@ -814,6 +879,9 @@ region_is_hit_by_range (
   const long     gframes_start,
   const long     gframes_end)
 {
+  position_update_frames (&region->start_pos);
+  position_update_frames (&region->end_pos);
+
   /* 4 cases:
    * - region start is inside range
    * - region end is inside range
@@ -1080,6 +1148,13 @@ region_timeline_frames_to_local (
     {
       if (region)
         {
+          position_update_frames (
+            &region->start_pos);
+          position_update_frames (
+            &region->loop_end_pos);
+          position_update_frames (
+            &region->clip_start_pos);
+
           diff_frames =
             timeline_frames -
             region->start_pos.frames;
@@ -1109,6 +1184,8 @@ region_timeline_frames_to_local (
     {
       if (region)
         {
+          position_update_frames (
+            &region->start_pos);
           diff_frames =
             timeline_frames -
             region->start_pos.frames;

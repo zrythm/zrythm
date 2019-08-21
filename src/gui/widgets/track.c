@@ -427,7 +427,9 @@ show_context_menu (TrackWidget * self)
     {
       char * str;
 
-      if (track->type != TRACK_TYPE_MASTER)
+      if (track->type != TRACK_TYPE_MASTER &&
+          track->type != TRACK_TYPE_CHORD &&
+          track->type != TRACK_TYPE_MARKER)
         {
           /* delete track */
           if (num_selected == 1)

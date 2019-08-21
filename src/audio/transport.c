@@ -47,15 +47,17 @@ DEFINE_START_POS;
  * notifying interested parties).
  */
 void
-transport_set_bpm (float bpm)
+transport_set_bpm (
+  Transport * self,
+  float bpm)
 {
   if (bpm < MIN_BPM)
     bpm = MIN_BPM;
   else if (bpm > MAX_BPM)
     bpm = MAX_BPM;
-  TRANSPORT->bpm = bpm;
+  self->bpm = bpm;
   engine_update_frames_per_tick (
-    TRANSPORT->beats_per_bar,
+    self->beats_per_bar,
     bpm,
     AUDIO_ENGINE->sample_rate);
 }
@@ -101,7 +103,7 @@ transport_init (Transport * self,
           S_UI,
           "metronome-enabled");
 
-      transport_set_bpm (DEFAULT_BPM);
+      transport_set_bpm (self, DEFAULT_BPM);
     }
 
   /* set playstate */

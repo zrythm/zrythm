@@ -119,6 +119,17 @@ get_y_normalized (
 }
 
 /**
+ * Updates the frames of each position in each child
+ * of the AutomationCurve recursively.
+ */
+void
+automation_curve_update_frames (
+  AutomationCurve * self)
+{
+  position_update_frames (&self->pos);
+}
+
+/**
  * The function to return a point on the curve.
  *
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve

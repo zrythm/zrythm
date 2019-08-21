@@ -220,6 +220,14 @@ midi_note_clone (
   MidiNote *  src,
   MidiNoteCloneFlag flag);
 
+/**
+ * Updates the frames of each position in each child
+ * of the MidiNote recursively.
+ */
+void
+midi_note_update_frames (
+  MidiNote * self);
+
 void
 midi_note_set_cache_val (
   MidiNote * self,

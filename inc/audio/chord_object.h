@@ -156,6 +156,14 @@ chord_object_get_chord_descriptor (
   ChordObject * self);
 
 /**
+ * Updates the frames of each position in each child
+ * of the ChordObject recursively.
+ */
+void
+chord_object_update_frames (
+  ChordObject * self);
+
+/**
  * Finds the ChordObject in the project
  * corresponding to the given one.
  */

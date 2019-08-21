@@ -251,6 +251,21 @@ automation_track_get_normalized_val_at_pos (
 }
 
 /**
+ * Updates the frames of each position in each child
+ * of the automation track recursively.
+ */
+void
+automation_track_update_frames (
+  AutomationTrack * self)
+{
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      region_update_frames (
+        self->regions[i]);
+    }
+}
+
+/**
  * Gets the last Region in the AutomationTrack.
  */
 Region *

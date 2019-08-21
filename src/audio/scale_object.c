@@ -89,6 +89,17 @@ scale_object_find (
 }
 
 /**
+ * Updates the frames of each position in each child
+ * of the ScaleObject recursively.
+ */
+void
+scale_object_update_frames (
+  ScaleObject * self)
+{
+  position_update_frames (&self->pos);
+}
+
+/**
  * Clones the given scale.
  */
 ScaleObject *

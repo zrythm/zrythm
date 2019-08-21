@@ -551,6 +551,14 @@ track_add_modulator (
   Modulator * modulator);
 
 /**
+ * Updates the frames of each position in each child
+ * of the track recursively.
+ */
+void
+track_update_frames (
+  Track * track);
+
+/**
  * Wrapper for each track type.
  */
 void

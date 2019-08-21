@@ -137,6 +137,14 @@ automation_tracklist_delete_al (
   int                   free);
 
 /**
+ * Updates the frames of each position in each child
+ * of the automation tracklist recursively.
+ */
+void
+automation_tracklist_update_frames (
+  AutomationTracklist * self);
+
+/**
  * Finds visible tracks and puts them in given array.
  */
 void

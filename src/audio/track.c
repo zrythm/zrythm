@@ -914,6 +914,39 @@ track_stringize_type (
 }
 
 /**
+ * Updates the frames of each position in each child
+ * of the track recursively.
+ */
+void
+track_update_frames (
+  Track * self)
+{
+  int i;
+  for (i = 0; i < self->num_lanes; i++)
+    {
+      track_lane_update_frames (self->lanes[i]);
+    }
+  for (i = 0; i < self->num_chord_regions; i++)
+    {
+      region_update_frames (
+        self->chord_regions[i]);
+    }
+  for (i = 0; i < self->num_scales; i++)
+    {
+      scale_object_update_frames (
+        self->scales[i]);
+    }
+  for (i = 0; i < self->num_markers; i++)
+    {
+      marker_update_frames (
+        self->markers[i]);
+    }
+
+  automation_tracklist_update_frames (
+    &self->automation_tracklist);
+}
+
+/**
  * Wrapper to get the track name.
  */
 const char *

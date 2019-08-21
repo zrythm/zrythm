@@ -422,7 +422,8 @@ drag_update (GtkGestureDrag * gesture,
           /*g_message ("updating num with %d", num);*/
           if (abs (num) > 0)
             {
-              transport_set_bpm (TRANSPORT->bpm + num);
+              transport_set_bpm (
+                TRANSPORT, TRANSPORT->bpm + num);
               self->last_y = offset_y;
             }
         }
@@ -432,7 +433,8 @@ drag_update (GtkGestureDrag * gesture,
           g_message ("%f", dec);
           if (fabs (dec) > 0)
             {
-              transport_set_bpm (TRANSPORT->bpm + dec);
+              transport_set_bpm (
+                TRANSPORT, TRANSPORT->bpm + dec);
               self->last_y = offset_y;
             }
 

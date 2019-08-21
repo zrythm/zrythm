@@ -167,6 +167,55 @@ engine_jack_clear_output_buffers (
 }
 
 /**
+ * Prepares for processing.
+ *
+ * Called at the start of each process cycle.
+ */
+void
+engine_jack_prepare_process (
+  AudioEngine * self)
+{
+  /* if client, get transport position info */
+  if (self->transport_type ==
+        AUDIO_ENGINE_JACK_TRANSPORT_CLIENT)
+    {
+      jack_position_t pos;
+      jack_transport_state_t state =
+        jack_transport_query (
+          self->client, &pos);
+
+      if (state == JackTransportRolling)
+        {
+          TRANSPORT->play_state =
+            PLAYSTATE_ROLLING;
+        }
+      else if (state == JackTransportStopped)
+        {
+          TRANSPORT->play_state =
+            PLAYSTATE_PAUSED;
+        }
+
+      /* get position from timebase master */
+      Position tmp;
+      position_from_frames (
+        &tmp, pos.frame);
+      transport_set_playhead_pos (
+        TRANSPORT, &tmp);
+
+      /* BBT */
+      if (pos.valid & JackPositionBBT)
+        {
+          TRANSPORT->beats_per_bar =
+            pos.beats_per_bar;
+          transport_set_bpm (
+            TRANSPORT, pos.beats_per_minute);
+          transport_set_beat_unit (
+            TRANSPORT, pos.beat_type);
+        }
+    }
+}
+
+/**
  * The process callback for this JACK application is
  * called in a special realtime thread once for each audio
  * cycle.

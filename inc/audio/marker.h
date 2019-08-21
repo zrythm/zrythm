@@ -161,6 +161,14 @@ marker_set_name (
   const char * name);
 
 /**
+ * Updates the frames of each position in each child
+ * of the Marker recursively.
+ */
+void
+marker_update_frames (
+  Marker * self);
+
+/**
  * Finds the marker in the project corresponding to
  * the given one.
  */

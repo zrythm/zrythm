@@ -148,6 +148,14 @@ automation_curve_get_normalized_value (
   double            x);
 
 /**
+ * Updates the frames of each position in each child
+ * of the AutomationCurve recursively.
+ */
+void
+automation_curve_update_frames (
+  AutomationCurve * self);
+
+/**
  * Sets the curviness of the AutomationCurve.
  */
 void

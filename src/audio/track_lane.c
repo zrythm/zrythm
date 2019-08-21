@@ -71,6 +71,22 @@ track_lane_new (
 }
 
 /**
+ * Updates the frames of each position in each child
+ * of the track lane recursively.
+ */
+void
+track_lane_update_frames (
+  TrackLane * self)
+{
+  Region * r;
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      r = self->regions[i];
+      region_update_frames (r);
+    }
+}
+
+/**
  * Adds a Region to the given TrackLane.
  */
 void

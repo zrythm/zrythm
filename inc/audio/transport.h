@@ -225,15 +225,18 @@ transport_schema =
  * Initialize transport
  */
 void
-transport_init (Transport * self,
-                int         loading);
+transport_init (
+  Transport * self,
+  int         loading);
 
 /**
  * Sets BPM and does any necessary processing (like notifying interested
  * parties).
  */
 void
-transport_set_bpm (float bpm);
+transport_set_bpm (
+  Transport * self,
+  float bpm);
 
 /**
  * Updates beat unit and anything depending on it.

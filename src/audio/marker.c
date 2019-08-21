@@ -170,6 +170,17 @@ marker_find (
 }
 
 /**
+ * Updates the frames of each position in each child
+ * of the Marker recursively.
+ */
+void
+marker_update_frames (
+  Marker * self)
+{
+  position_update_frames (&self->pos);
+}
+
+/**
  * Frees the Marker.
  */
 void

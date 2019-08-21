@@ -130,6 +130,14 @@ automation_track_add_region (
   Region *          region);
 
 /**
+ * Updates the frames of each position in each child
+ * of the automation track recursively.
+ */
+void
+automation_track_update_frames (
+  AutomationTrack * self);
+
+/**
  * Sets the automatable to the automation track and
  * updates the GUI
  *

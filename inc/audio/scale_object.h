@@ -152,6 +152,14 @@ scale_object_set_track (
   Track *  track);
 
 /**
+ * Updates the frames of each position in each child
+ * of the ScaleObject recursively.
+ */
+void
+scale_object_update_frames (
+  ScaleObject * self);
+
+/**
  * Finds the ScaleObject in the project
  * corresponding to the given one.
  */

@@ -297,6 +297,24 @@ midi_note_delete (MidiNote * midi_note)
 }
 
 /**
+ * Updates the frames of each position in each child
+ * of the MidiNote recursively.
+ */
+void
+midi_note_update_frames (
+  MidiNote * self)
+{
+  position_update_frames (
+    &self->start_pos);
+  position_update_frames (
+    &self->end_pos);
+  position_update_frames (
+    &self->cache_start_pos);
+  position_update_frames (
+    &self->cache_end_pos);
+}
+
+/**
  * Returns if the MIDI note is hit at given pos (in
  * the timeline).
  */

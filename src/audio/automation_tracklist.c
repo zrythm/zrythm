@@ -296,6 +296,21 @@ automation_tracklist_clone (
   /* TODO create same automation lanes */
 }
 
+/**
+ * Updates the frames of each position in each child
+ * of the automation tracklist recursively.
+ */
+void
+automation_tracklist_update_frames (
+  AutomationTracklist * self)
+{
+  for (int i = 0; i < self->num_ats; i++)
+    {
+      automation_track_update_frames (
+        self->ats[i]);
+    }
+}
+
 void
 automation_tracklist_get_visible_tracks (
   AutomationTracklist * self,

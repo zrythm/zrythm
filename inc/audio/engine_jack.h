@@ -52,6 +52,15 @@ engine_jack_clear_output_buffers (
   AudioEngine * self);
 
 /**
+ * Prepares for processing.
+ *
+ * Called at the start of each process cycle.
+ */
+void
+engine_jack_prepare_process (
+  AudioEngine * self);
+
+/**
  * Updates the JACK Transport type.
  */
 void

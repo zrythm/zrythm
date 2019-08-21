@@ -186,6 +186,14 @@ automation_point_get_normalized_value (
   AutomationPoint * ap);
 
 /**
+ * Updates the frames of each position in each child
+ * of the AutomationPoint recursively.
+ */
+void
+automation_point_update_frames (
+  AutomationPoint * self);
+
+/**
  * Clones the atuomation point.
  */
 AutomationPoint *

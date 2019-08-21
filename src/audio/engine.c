@@ -67,6 +67,11 @@ engine_update_frames_per_tick (int beats_per_bar,
   /* update positions */
   transport_update_position_frames (
     &AUDIO_ENGINE->transport);
+
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track_update_frames (TRACKLIST->tracks[i]);
+    }
 }
 
 static void
@@ -394,8 +399,9 @@ engine_process_prepare (
       g_message ("pause requested handled");
       TRANSPORT->play_state = PLAYSTATE_PAUSED;
       /*zix_sem_post (&TRANSPORT->paused);*/
-      jack_transport_stop (
-        self->client);
+      if (self->audio_backend == AUDIO_BACKEND_JACK)
+        jack_transport_stop (
+          self->client);
     }
   else if (TRANSPORT->play_state ==
            PLAYSTATE_ROLL_REQUESTED)
@@ -404,8 +410,20 @@ engine_process_prepare (
       self->remaining_latency_preroll =
         router_get_max_playback_latency (
           &MIXER->router);
-      jack_transport_start (
-        self->client);
+      if (self->audio_backend == AUDIO_BACKEND_JACK)
+        jack_transport_start (
+          self->client);
+    }
+
+  switch (self->audio_backend)
+    {
+    case AUDIO_BACKEND_JACK:
+#ifdef HAVE_JACK
+      engine_jack_prepare_process (self);
+#endif
+      break;
+    default:
+      break;
     }
 
   int ret =
@@ -804,8 +822,14 @@ engine_post_process (AudioEngine * self)
     {
       transport_add_to_playhead (
         TRANSPORT, self->nframes);
-      jack_transport_locate (
-        self->client, PLAYHEAD->frames);
+      if (self->audio_backend ==
+            AUDIO_BACKEND_JACK &&
+          self->transport_type ==
+            AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+        {
+          jack_transport_locate (
+            self->client, PLAYHEAD->frames);
+        }
     }
 
   AUDIO_ENGINE->last_time_taken =

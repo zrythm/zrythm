@@ -652,6 +652,14 @@ int
 region_is_selected (Region * self);
 
 /**
+ * Updates the frames of each position in each child
+ * of the region recursively.
+ */
+void
+region_update_frames (
+  Region * self);
+
+/**
  * Returns if Region is (should be) visible.
  */
 #define region_should_be_visible(mn) \

@@ -774,7 +774,8 @@ static void
 channel_widget_class_init (
   ChannelWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass,
                                 "channel.ui");
   gtk_widget_class_set_css_name (klass,

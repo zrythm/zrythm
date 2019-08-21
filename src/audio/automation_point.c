@@ -175,6 +175,17 @@ automation_point_new_float (
   return self;
 }
 
+/**
+ * Updates the frames of each position in each child
+ * of the AutomationPoint recursively.
+ */
+void
+automation_point_update_frames (
+  AutomationPoint * self)
+{
+  position_update_frames (&self->pos);
+}
+
 ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
   AutomationPoint, automation_point);
 

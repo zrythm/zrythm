@@ -97,7 +97,9 @@ handler (int sig) {
     GTK_MESSAGE_DIALOG (dialog),
       _("Zrythm has crashed. Please help us fix "
         "this by "
-        "<a href=\"https://savannah.nongnu.org/support/?func=additem&amp;group=zrythm\">submitting a bug report</a>, including the following text."));
+        "<a href=\"https://savannah.nongnu.org/support/?func=additem&amp;group=zrythm\">submitting a bug report</a>. "
+        "Please include the following text, along "
+        "with steps to reproduce"));
   gtk_message_dialog_format_secondary_markup (
     GTK_MESSAGE_DIALOG (dialog),
     "%s\n%s\n\n%s\n%s",
