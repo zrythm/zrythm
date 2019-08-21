@@ -52,6 +52,15 @@ alsa_midi_setup (
   int           loading);
 
 /**
+ * Prepares for processing.
+ *
+ * Called at the start of each process cycle.
+ */
+void
+engine_alsa_prepare_process (
+  AudioEngine * self);
+
+/**
  * Sets up the audio engine to use alsa.
  */
 int

@@ -456,6 +456,21 @@ midi_thread (void * _self)
 }
 
 /**
+ * Prepares for processing.
+ *
+ * Called at the start of each process cycle.
+ */
+void
+engine_alsa_prepare_process (
+  AudioEngine * self)
+{
+  memset (
+    self->alsa_out_buf, 0,
+    2 * AUDIO_ENGINE->block_length *
+      sizeof (float));
+}
+
+/**
  * Copy the cached MIDI events to the MIDI events
  * in the MIDI in port, used at the start of each
  * cycle. */
@@ -540,12 +555,22 @@ alsa_midi_setup (
           "ALSA MIDI In");
       self->midi_in->identifier.owner_type =
         PORT_OWNER_TYPE_BACKEND;
+      self->midi_out =
+        port_new_with_type (
+          TYPE_EVENT,
+          FLOW_OUTPUT,
+          "ALSA MIDI Out");
+      self->midi_out->identifier.owner_type =
+        PORT_OWNER_TYPE_BACKEND;
     }
 
   /* init queue */
   self->midi_in->midi_events =
     midi_events_new (
       self->midi_in);
+  self->midi_out->midi_events =
+    midi_events_new (
+      self->midi_out);
 
   pthread_t thread_id;
   pthread_create(

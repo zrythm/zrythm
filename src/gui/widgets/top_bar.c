@@ -102,71 +102,75 @@ on_transport_playhead_right_click (
 
   /* jack transport related */
 #ifdef HAVE_JACK
-  menuitem =
-    gtk_radio_menu_item_new_with_mnemonic (
-      NULL,
-      _("Become JACK Transport master"));
-  gtk_check_menu_item_set_active (
-    GTK_CHECK_MENU_ITEM (menuitem),
-    AUDIO_ENGINE->transport_type ==
-      AUDIO_ENGINE_JACK_TIMEBASE_MASTER);
-  g_signal_connect (
-    G_OBJECT (menuitem), "toggled",
-    G_CALLBACK (on_jack_transport_type_changed),
-    self);
-  /*gtk_actionable_set_action_name (*/
-    /*GTK_ACTIONABLE (menuitem),*/
-    /*"set-timebase-master");*/
-  self->timebase_master_check =
-    GTK_CHECK_MENU_ITEM (menuitem);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
-  menuitem2 =
-    gtk_radio_menu_item_new_with_mnemonic (
-      NULL,
-      _("Sync to JACK Transport"));
-  gtk_radio_menu_item_join_group (
-    GTK_RADIO_MENU_ITEM (menuitem2),
-    GTK_RADIO_MENU_ITEM (menuitem));
-  menuitem = menuitem2;
-  gtk_check_menu_item_set_active (
-    GTK_CHECK_MENU_ITEM (menuitem),
-    AUDIO_ENGINE->transport_type ==
-      AUDIO_ENGINE_JACK_TRANSPORT_CLIENT);
-  self->transport_client_check =
-    GTK_CHECK_MENU_ITEM (menuitem);
-  g_signal_connect (
-    G_OBJECT (menuitem), "toggled",
-    G_CALLBACK (on_jack_transport_type_changed),
-    self);
-  /*gtk_actionable_set_action_name (*/
-    /*GTK_ACTIONABLE (menuitem),*/
-    /*"set-transport-client");*/
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
-  menuitem2 =
-    gtk_radio_menu_item_new_with_mnemonic (
-      NULL,
-      _("Unlink JACK Transport"));
-  gtk_radio_menu_item_join_group (
-    GTK_RADIO_MENU_ITEM (menuitem2),
-    GTK_RADIO_MENU_ITEM (menuitem));
-  menuitem = menuitem2;
-  gtk_check_menu_item_set_active (
-    GTK_CHECK_MENU_ITEM (menuitem),
-    AUDIO_ENGINE->transport_type ==
-      AUDIO_ENGINE_NO_JACK_TRANSPORT);
-  self->no_jack_transport_check =
-    GTK_CHECK_MENU_ITEM (menuitem);
-  g_signal_connect (
-    G_OBJECT (menuitem), "toggled",
-    G_CALLBACK (on_jack_transport_type_changed),
-    self);
-  /*gtk_actionable_set_action_name (*/
-    /*GTK_ACTIONABLE (menuitem),*/
-    /*"unlink-jack-transport");*/
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu), menuitem);
+  if (AUDIO_ENGINE->audio_backend ==
+        AUDIO_BACKEND_JACK)
+    {
+      menuitem =
+        gtk_radio_menu_item_new_with_mnemonic (
+          NULL,
+          _("Become JACK Transport master"));
+      gtk_check_menu_item_set_active (
+        GTK_CHECK_MENU_ITEM (menuitem),
+        AUDIO_ENGINE->transport_type ==
+          AUDIO_ENGINE_JACK_TIMEBASE_MASTER);
+      g_signal_connect (
+        G_OBJECT (menuitem), "toggled",
+        G_CALLBACK (on_jack_transport_type_changed),
+        self);
+      /*gtk_actionable_set_action_name (*/
+        /*GTK_ACTIONABLE (menuitem),*/
+        /*"set-timebase-master");*/
+      self->timebase_master_check =
+        GTK_CHECK_MENU_ITEM (menuitem);
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (menu), menuitem);
+      menuitem2 =
+        gtk_radio_menu_item_new_with_mnemonic (
+          NULL,
+          _("Sync to JACK Transport"));
+      gtk_radio_menu_item_join_group (
+        GTK_RADIO_MENU_ITEM (menuitem2),
+        GTK_RADIO_MENU_ITEM (menuitem));
+      menuitem = menuitem2;
+      gtk_check_menu_item_set_active (
+        GTK_CHECK_MENU_ITEM (menuitem),
+        AUDIO_ENGINE->transport_type ==
+          AUDIO_ENGINE_JACK_TRANSPORT_CLIENT);
+      self->transport_client_check =
+        GTK_CHECK_MENU_ITEM (menuitem);
+      g_signal_connect (
+        G_OBJECT (menuitem), "toggled",
+        G_CALLBACK (on_jack_transport_type_changed),
+        self);
+      /*gtk_actionable_set_action_name (*/
+        /*GTK_ACTIONABLE (menuitem),*/
+        /*"set-transport-client");*/
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (menu), menuitem);
+      menuitem2 =
+        gtk_radio_menu_item_new_with_mnemonic (
+          NULL,
+          _("Unlink JACK Transport"));
+      gtk_radio_menu_item_join_group (
+        GTK_RADIO_MENU_ITEM (menuitem2),
+        GTK_RADIO_MENU_ITEM (menuitem));
+      menuitem = menuitem2;
+      gtk_check_menu_item_set_active (
+        GTK_CHECK_MENU_ITEM (menuitem),
+        AUDIO_ENGINE->transport_type ==
+          AUDIO_ENGINE_NO_JACK_TRANSPORT);
+      self->no_jack_transport_check =
+        GTK_CHECK_MENU_ITEM (menuitem);
+      g_signal_connect (
+        G_OBJECT (menuitem), "toggled",
+        G_CALLBACK (on_jack_transport_type_changed),
+        self);
+      /*gtk_actionable_set_action_name (*/
+        /*GTK_ACTIONABLE (menuitem),*/
+        /*"unlink-jack-transport");*/
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (menu), menuitem);
+    }
 #endif
 
   menuitem =
@@ -215,63 +219,67 @@ top_bar_widget_refresh (TopBarWidget * self)
     GTK_WIDGET (self->digital_transport));
 
 #ifdef HAVE_JACK
-  int size = 8;
-  GdkPixbuf * pixbuf;
-  GtkWidget * img;
+  if (AUDIO_ENGINE->audio_backend ==
+        AUDIO_BACKEND_JACK)
+    {
+      int size = 8;
+      GdkPixbuf * pixbuf;
+      GtkWidget * img;
 
-  pixbuf =
-    gtk_icon_theme_load_icon (
-      gtk_icon_theme_get_default (),
-      "jack_transport_client",
-      size, 0, NULL);
-  img =
-    gtk_image_new_from_pixbuf (pixbuf);
-  gtk_widget_set_halign (
-    img, GTK_ALIGN_END);
-  gtk_widget_set_valign (
-    img, GTK_ALIGN_START);
-  gtk_widget_set_visible (img, 1);
-  gtk_widget_set_tooltip_text (
-    img,
-    _("JACK Transport client"));
-  gtk_overlay_add_overlay (
-    self->playhead_overlay, img);
-  self->client_img = img;
-  pixbuf =
-    gtk_icon_theme_load_icon (
-      gtk_icon_theme_get_default (),
-      "jack_timebase_master",
-      size, 0, NULL);
-  img =
-    gtk_image_new_from_pixbuf (pixbuf);
-  gtk_widget_set_halign (
-    img, GTK_ALIGN_END);
-  gtk_widget_set_valign (
-    img, GTK_ALIGN_START);
-  gtk_widget_set_margin_end (
-    img, size + 2);
-  gtk_widget_set_visible (img, 1);
-  gtk_widget_set_tooltip_text (
-    img,
-    _("JACK Timebase master"));
-  gtk_overlay_add_overlay (
-    self->playhead_overlay, img);
-  self->master_img = img;
-  if (AUDIO_ENGINE->transport_type ==
-        AUDIO_ENGINE_JACK_TRANSPORT_CLIENT)
-    {
-      gtk_widget_set_visible (
-        self->master_img, 0);
-      gtk_widget_set_visible (
-        self->client_img, 1);
-    }
-  else if (AUDIO_ENGINE->transport_type ==
-             AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
-    {
-      gtk_widget_set_visible (
-        self->master_img, 1);
-      gtk_widget_set_visible (
-        self->client_img, 0);
+      pixbuf =
+        gtk_icon_theme_load_icon (
+          gtk_icon_theme_get_default (),
+          "jack_transport_client",
+          size, 0, NULL);
+      img =
+        gtk_image_new_from_pixbuf (pixbuf);
+      gtk_widget_set_halign (
+        img, GTK_ALIGN_END);
+      gtk_widget_set_valign (
+        img, GTK_ALIGN_START);
+      gtk_widget_set_visible (img, 1);
+      gtk_widget_set_tooltip_text (
+        img,
+        _("JACK Transport client"));
+      gtk_overlay_add_overlay (
+        self->playhead_overlay, img);
+      self->client_img = img;
+      pixbuf =
+        gtk_icon_theme_load_icon (
+          gtk_icon_theme_get_default (),
+          "jack_timebase_master",
+          size, 0, NULL);
+      img =
+        gtk_image_new_from_pixbuf (pixbuf);
+      gtk_widget_set_halign (
+        img, GTK_ALIGN_END);
+      gtk_widget_set_valign (
+        img, GTK_ALIGN_START);
+      gtk_widget_set_margin_end (
+        img, size + 2);
+      gtk_widget_set_visible (img, 1);
+      gtk_widget_set_tooltip_text (
+        img,
+        _("JACK Timebase master"));
+      gtk_overlay_add_overlay (
+        self->playhead_overlay, img);
+      self->master_img = img;
+      if (AUDIO_ENGINE->transport_type ==
+            AUDIO_ENGINE_JACK_TRANSPORT_CLIENT)
+        {
+          gtk_widget_set_visible (
+            self->master_img, 0);
+          gtk_widget_set_visible (
+            self->client_img, 1);
+        }
+      else if (AUDIO_ENGINE->transport_type ==
+                 AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+        {
+          gtk_widget_set_visible (
+            self->master_img, 1);
+          gtk_widget_set_visible (
+            self->client_img, 0);
+        }
     }
 #endif
 

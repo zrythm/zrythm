@@ -343,7 +343,7 @@ jack_midi_setup (
             self->client, "MIDI_out",
             JACK_DEFAULT_MIDI_TYPE,
             JackPortIsOutput, 0));
-      self->midi_in->identifier.owner_type =
+      self->midi_out->identifier.owner_type =
         PORT_OWNER_TYPE_BACKEND;
     }
 

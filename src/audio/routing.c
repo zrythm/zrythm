@@ -443,8 +443,9 @@ node_process (
         }
 
       /* if JACK stereo out */
-      else if (port->identifier.owner_type ==
-               PORT_OWNER_TYPE_BACKEND &&
+      else if (
+          port->identifier.owner_type ==
+            PORT_OWNER_TYPE_BACKEND &&
           port->identifier.type == TYPE_AUDIO &&
           port->identifier.flow == FLOW_OUTPUT)
         {
@@ -488,24 +489,36 @@ node_process (
                 case AUDIO_BACKEND_ALSA:
 #ifdef __linux__
                   /* write interleaved */
-                  if (port ==
-                        AUDIO_ENGINE->stereo_out->l)
-                  for (i = local_offset;
-                       i < local_offset + nframes;
-                       i++)
-                      {
-                        AUDIO_ENGINE->alsa_out_buf[i * 2] =
-                          port->srcs[0]->buf[i];
-                      }
-                  else if (port ==
-                        AUDIO_ENGINE->stereo_out->r)
-                  for (i = local_offset;
-                       i < local_offset + nframes;
-                       i++)
-                      {
-                        AUDIO_ENGINE->alsa_out_buf[i * 2 + 1] =
-                          port->srcs[0]->buf[i];
-                      }
+                  for (j = 0; j < port->num_srcs;
+                       j++)
+                    {
+                      if (port ==
+                            AUDIO_ENGINE->
+                              stereo_out->l)
+                      for (i = local_offset;
+                           i < local_offset +
+                             nframes;
+                           i++)
+                          {
+                            AUDIO_ENGINE->
+                              alsa_out_buf[i * 2] +=
+                                port->
+                                  srcs[j]->buf[i];
+                          }
+                      else if (port ==
+                            AUDIO_ENGINE->
+                              stereo_out->r)
+                      for (i = local_offset;
+                           i < local_offset +
+                             nframes;
+                           i++)
+                          {
+                            AUDIO_ENGINE->
+                              alsa_out_buf[
+                                i * 2 + 1] +=
+                              port->srcs[j]->buf[i];
+                          }
+                    }
 #endif
                   break;
                 case AUDIO_BACKEND_PORT_AUDIO:

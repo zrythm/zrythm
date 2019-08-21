@@ -422,6 +422,9 @@ engine_process_prepare (
       engine_jack_prepare_process (self);
 #endif
       break;
+    case AUDIO_BACKEND_ALSA:
+      engine_alsa_prepare_process (self);
+      break;
     default:
       break;
     }
