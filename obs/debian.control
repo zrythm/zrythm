@@ -1,7 +1,6 @@
 Source: zrythm
 Maintainer: Alexandros Theodotou <alex@zrythm.org>
 Section: sound
-Priority: optional
 Build-Depends: debhelper (>=9), 
                libgtk-3-dev (>= 3.20),
                libjack-jackd2-dev | libjack-dev,

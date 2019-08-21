@@ -1,15 +1,15 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: zrythm
 Upstream-Contact: Alexandros Theodotou <alex@zrythm.org>
-Source: https://git.zrythm.org/zrythm/zrythm/releases/
+Source: https://git.zrythm.org/cgit/zrythm
 
 Files: *
 Copyright: Copyright 2018-2019 Alexandros Theodotou <alex@zrythm.org>
-License: GPL-3+
+License: AGPL-3+
 
-License: GPLv3+
+License: AGPLv3+
  Zrythm is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
+ it under the terms of the GNU Affero General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
@@ -21,4 +21,4 @@ License: GPLv3+
  You should have received a copy of the GNU General Public License
  along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 X-Comment: On Debian systems, the complete text of the GNU General
-Public License can be found in `/usr/share/common-licenses/GPL-3'.
+Public License can be found in `/usr/share/common-licenses/AGPL-3'.
