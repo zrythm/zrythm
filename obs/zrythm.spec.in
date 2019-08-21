@@ -55,7 +55,7 @@ and is designed to be intuitive to use.
 
 
 %prep
-%autosetup -n zrythm-%{version}
+%autosetup -n zrythm-v%{version}
 
 %build
 rm -rf build
