@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-06-24 06:42+0000\n"
+"PO-Revision-Date: 2019-08-22 13:09+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
-"/manualgetting-started/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../getting-started/additional-resources.rst:19
@@ -374,7 +375,7 @@ msgstr ""
 
 #: ../../getting-started/installation/intro.rst:19
 msgid "Installation"
-msgstr ""
+msgstr "インストール"
 
 #: ../../getting-started/installation/macos.rst:19
 msgid "MacOS"
@@ -542,4 +543,3 @@ msgstr "通常の作曲→ミキシング→マスタリングのワークフロ
 #~ msgstr ""
 #~ "Zrythmは高度に自動化されたデジタルオーディオワークステーション（DAW）で、機能的で直感的に使用できるように設計されています。Zrythmは他のDAWと一線を画すもので、内蔵LFOやエンベロープによる直感的なオートメーション、クリップによる直感的なMIDI"
 #~ " /オーディオ編集、アレンジを可能にします。"
-
