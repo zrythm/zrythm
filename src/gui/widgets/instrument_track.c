@@ -271,10 +271,10 @@ instrument_track_widget_init (
     z_gtk_toggle_button_new_with_icon (
       "z-format-justify-fill");
   ui_add_widget_tooltip (
-    self->show_automation,
+    self->show_lanes,
     _("Show lanes"));
   ui_set_hover_status_bar_signals (
-    self->show_automation,
+    self->show_lanes,
     _("Show Lanes - Shows the track's lanes"));
   self->lock =
     z_gtk_toggle_button_new_with_icon (
