@@ -310,7 +310,7 @@ drag_begin (GtkGestureDrag * gesture,
   gdk_event_get_state (event, &state_mask);
 
   int is_hit =
-    ui_is_child_hit (GTK_CONTAINER (self),
+    ui_is_child_hit (GTK_WIDGET (self),
                      GTK_WIDGET (self->selection),
                      1, 1,
                      start_x,

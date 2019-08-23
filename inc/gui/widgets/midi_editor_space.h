@@ -83,6 +83,12 @@ typedef struct _MidiEditorSpaceWidget
   PianoRollKeyWidget * piano_roll_keys[128];
   PianoRollKeyLabelWidget * piano_roll_key_labels[128];
 
+  /** Start key pressed. */
+  PianoRollKeyWidget * start_key;
+
+  /** Last key hovered. */
+  PianoRollKeyWidget * last_key;
+
   /** Piano roll. */
   GtkBox *             midi_arranger_box;
   GtkScrolledWindow *  arranger_scroll;
@@ -115,6 +121,8 @@ typedef struct _MidiEditorSpaceWidget
 
   /** Pixel height of all keys combined. */
   int                  total_key_px;
+
+  GtkGestureMultiPress * multipress;
 } MidiEditorSpaceWidget;
 
 void

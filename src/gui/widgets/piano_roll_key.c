@@ -87,9 +87,8 @@ piano_roll_key_draw_cb (
   cairo_fill (cr);
 
   /* add shade if currently pressed note */
-  if (PIANO_ROLL->current_note &&
-      PIANO_ROLL->current_note->value ==
-        self->descr->value)
+  if (piano_roll_contains_current_note (
+        PIANO_ROLL, self->descr))
     {
       if (black_note)
         cairo_set_source_rgba (cr, 1, 1, 1, 0.1);
@@ -107,12 +106,10 @@ piano_roll_key_draw_cb (
 /**
  * Send a note off.
  *
- * TODO Can be moved to a global function?
- *
  * @param on 1 if on, 0 if off.
  */
-static void
-send_note_event (
+void
+piano_roll_key_send_note_event (
   PianoRollKeyWidget * self,
   int                  on)
 {
@@ -123,8 +120,8 @@ send_note_event (
         MANUAL_PRESS_EVENTS, 1,
         self->descr->value, 90, 600, 1);
 
-      PIANO_ROLL->current_note =
-        self->descr;
+      piano_roll_add_current_note (
+        PIANO_ROLL, self->descr);
     }
   else
     {
@@ -132,48 +129,12 @@ send_note_event (
       midi_events_add_note_off (
         MANUAL_PRESS_EVENTS, 1,
         self->descr->value, 600, 1);
+
+      piano_roll_remove_current_note (
+        PIANO_ROLL, self->descr);
     }
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
-}
-
-static gboolean
-on_leave (GtkWidget *widget,
-          GdkEvent  *event,
-          PianoRollKeyWidget * self)
-{
-  if (MW_MIDI_EDITOR_SPACE->note_pressed &&
-      !MW_MIDI_EDITOR_SPACE->note_released)
-    {
-      send_note_event (self, 0);
-    }
-  return FALSE;
-}
-
-static gboolean
-on_enter (GtkWidget *widget,
-          GdkEvent  *event,
-          PianoRollKeyWidget * self)
-{
-  if (MW_MIDI_EDITOR_SPACE->note_pressed &&
-      !MW_MIDI_EDITOR_SPACE->note_released)
-    {
-      send_note_event (self, 1);
-    }
-  return FALSE;
-}
-
-static void
-on_released (
-  GtkGestureMultiPress *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  PianoRollKeyWidget *  self)
-{
-  MW_MIDI_EDITOR_SPACE->note_pressed = 0;
-  MW_MIDI_EDITOR_SPACE->note_released = 1;
-  send_note_event (self, 0);
 }
 
 static void
@@ -186,7 +147,10 @@ on_pressed (
 {
   MW_MIDI_EDITOR_SPACE->note_pressed = 1;
   MW_MIDI_EDITOR_SPACE->note_released = 0;
-  send_note_event (self, 1);
+  MW_MIDI_EDITOR_SPACE->last_key = self;
+  MW_MIDI_EDITOR_SPACE->start_key = self;
+  piano_roll_key_send_note_event (
+    self, 1);
 }
 
 /**
@@ -240,15 +204,6 @@ piano_roll_key_widget_init (
     G_OBJECT (self), "draw",
     G_CALLBACK (piano_roll_key_draw_cb), self);
   g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_enter), self);
-  g_signal_connect (
-    G_OBJECT (self), "leave-notify-event",
-    G_CALLBACK (on_leave), self);
-  g_signal_connect (
     G_OBJECT(self->multipress), "pressed",
     G_CALLBACK (on_pressed),  self);
-  g_signal_connect (
-    G_OBJECT(self->multipress), "released",
-    G_CALLBACK (on_released),  self);
 }

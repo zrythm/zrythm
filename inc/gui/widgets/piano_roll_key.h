@@ -49,6 +49,16 @@ typedef struct _PianoRollKeyWidget
 } PianoRollKeyWidget;
 
 /**
+ * Send a note off and trigger redraw.
+ *
+ * @param on 1 if on, 0 if off.
+ */
+void
+piano_roll_key_send_note_event (
+  PianoRollKeyWidget * self,
+  int                  on);
+
+/**
  * Creates a PianoRollKeyWidget for the given
  * MIDI note descriptor.
  */

@@ -277,7 +277,7 @@ ui_show_error_message_full (
  */
 static inline int
 ui_is_child_hit (
-  GtkContainer * parent,
+  GtkWidget * parent,
   GtkWidget *    child,
   const int            check_x,
   const int            check_y,
@@ -297,6 +297,8 @@ ui_is_child_hit (
     child,
     x, y, &wx, &wy);
 
+  //g_message ("wx wy %d %d", wx, wy);
+
   /* if hit */
   if ((!check_x ||
         (wx >= - x_padding &&
@@ -314,10 +316,11 @@ ui_is_child_hit (
  * Returns the matching hit child, or NULL.
  */
 GtkWidget *
-ui_get_hit_child (GtkContainer * parent,
-                  double         x, ///< x in parent space
-                  double         y, ///< y in parent space
-                  GType          type); ///< type to look for
+ui_get_hit_child (
+  GtkContainer * parent,
+  double         x, ///< x in parent space
+  double         y, ///< y in parent space
+  GType          type); ///< type to look for
 
 /**
  * Converts from pixels to position.

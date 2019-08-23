@@ -461,6 +461,10 @@ midi_arranger_selections_add_ticks (
       mn = mas->midi_notes[i];
       midi_note_move (
         mn, ticks, use_cached_pos, update_flag);
+      /*g_message (*/
+        /*"moving %ld",*/
+        /*ticks);*/
+      /*position_print_simple (&mn->start_pos);*/
     }
 }
 

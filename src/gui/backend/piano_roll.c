@@ -31,6 +31,7 @@
 #include "gui/backend/piano_roll.h"
 #include "audio/track.h"
 #include "project.h"
+#include "utils/arrays.h"
 
 DRUM_LABELS;
 
@@ -126,6 +127,56 @@ init_descriptors (
     }
 
   g_warn_if_fail (idx == 128);
+}
+
+/**
+ * Adds the note if it doesn't exist in the array.
+ */
+void
+piano_roll_add_current_note (
+  PianoRoll * self,
+  MidiNoteDescriptor * descr)
+{
+  if (!array_contains (self->current_notes,
+                       self->num_current_notes,
+                       descr->value))
+    {
+      array_append (self->current_notes,
+                    self->num_current_notes,
+                    descr->value);
+    }
+}
+
+/**
+ * Removes the note if it exists in the array.
+ */
+void
+piano_roll_remove_current_note (
+  PianoRoll * self,
+  MidiNoteDescriptor * descr)
+{
+  if (array_contains (self->current_notes,
+                      self->num_current_notes,
+                      descr->value))
+    {
+      array_delete (self->current_notes,
+                    self->num_current_notes,
+                    descr->value);
+    }
+}
+
+/**
+ * Returns 1 if it contains the given note, 0
+ * otherwise.
+ */
+int
+piano_roll_contains_current_note (
+  PianoRoll * self,
+  MidiNoteDescriptor * descr)
+{
+  return array_contains (self->current_notes,
+                         self->num_current_notes,
+                         descr->value);
 }
 
 /**

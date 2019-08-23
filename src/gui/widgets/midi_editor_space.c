@@ -99,6 +99,91 @@ link_scrolls (
 
 }
 
+static PianoRollKeyWidget *
+get_piano_roll_key_at_coord (
+  MidiEditorSpaceWidget * self,
+  int                     y)
+{
+  PianoRollKeyWidget * key = NULL;
+  for (int i = 0; i < 128; i++)
+    {
+      key =
+        self->piano_roll_keys[i];
+
+      if (y > 0)
+        {
+          if (ui_is_child_hit (
+                GTK_WIDGET (
+                  self->start_key),
+                GTK_WIDGET (key),
+                0, 1, 0, y, 0, 0))
+            {
+              return key;
+            }
+        }
+      else
+        {
+          if (ui_is_child_hit (
+                GTK_WIDGET (key),
+                GTK_WIDGET (
+                  self->start_key),
+                0, 1, 0, abs (y), 0, 0))
+            {
+              /* somehow if negative we get 1 key
+               * off, adjust */
+              key =
+                self->piano_roll_keys[
+                  MAX (i - 1, 0)];
+              return key;
+            }
+        }
+    }
+
+  /* outside bounds, return last key */
+  return self->last_key;
+}
+
+static gboolean
+on_motion (
+  GtkWidget *widget,
+  GdkEventMotion  *event,
+  MidiEditorSpaceWidget * self)
+{
+  if (self->note_pressed &&
+      !self->note_released)
+    {
+      PianoRollKeyWidget * key =
+        get_piano_roll_key_at_coord (
+          self, event->y);
+
+      if (self->last_key != key)
+        {
+          piano_roll_key_send_note_event (
+            self->last_key, 0);
+          piano_roll_key_send_note_event (
+            key, 1);
+        }
+      self->last_key = key;
+    }
+
+  return FALSE;
+}
+
+static void
+on_released (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  MidiEditorSpaceWidget *  self)
+{
+  self->note_pressed = 0;
+  self->note_released = 1;
+  piano_roll_key_send_note_event (
+    self->last_key, 0);
+  self->last_key = NULL;
+}
+
 /**
  * Refresh the labels only (for highlighting).
  *
@@ -251,11 +336,31 @@ midi_editor_space_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  /*gtk_widget_set_has_window (*/
+    /*GTK_WIDGET (self->piano_roll_keys_box), TRUE);*/
+
+  /* make it able to notify */
+  gtk_widget_add_events (
+    GTK_WIDGET (self->piano_roll_keys_box),
+    GDK_ALL_EVENTS_MASK);
+
+  self->multipress =
+    GTK_GESTURE_MULTI_PRESS (
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self->piano_roll_keys_box)));
+
   /* setup signals */
   g_signal_connect (
     G_OBJECT(self->midi_modifier_chooser),
     "changed",
     G_CALLBACK (on_midi_modifier_changed),  self);
+  g_signal_connect (
+    G_OBJECT (self->piano_roll_keys_box),
+    "motion-notify-event",
+    G_CALLBACK (on_motion), self);
+  g_signal_connect (
+    G_OBJECT(self->multipress), "released",
+    G_CALLBACK (on_released),  self);
 }
 
 static void

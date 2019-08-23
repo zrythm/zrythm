@@ -248,7 +248,7 @@ timeline_ruler_on_drag_begin_no_marker_hit (
     {
       /* check if range is hit */
       int range_hit =
-        ui_is_child_hit (GTK_CONTAINER (self),
+        ui_is_child_hit (GTK_WIDGET (self),
                          GTK_WIDGET (self->range),
                          1, 1,
                          start_x,

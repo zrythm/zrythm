@@ -133,7 +133,7 @@ on_multipress_pressed (
       GTK_NOTEBOOK (self));
   int hit =
     ui_is_child_hit (
-      GTK_CONTAINER (self),
+      GTK_WIDGET (self),
       current_tab,
       1, 1, x, y,  3, 3);
   if (hit)

@@ -171,9 +171,10 @@ typedef struct PianoRoll
   /** Whether we are in drum mode or not. */
   int             drum_mode;
 
-  /** Currently pressed note (used only at
+  /** Currently pressed notes (used only at
    * runtime). */
-  MidiNoteDescriptor * current_note;
+  int                  current_notes[128];
+  int                  num_current_notes;
 
   /**
    * Piano roll mode descriptors.
@@ -245,6 +246,31 @@ piano_roll_schema =
   //dest->visible = src->visible;
 
 //}
+
+/**
+ * Adds the note if it doesn't exist in the array.
+ */
+void
+piano_roll_add_current_note (
+  PianoRoll * self,
+  MidiNoteDescriptor * descr);
+
+/**
+ * Removes the note if it exists in the array.
+ */
+void
+piano_roll_remove_current_note (
+  PianoRoll * self,
+  MidiNoteDescriptor * descr);
+
+/**
+ * Returns 1 if it contains the given note, 0
+ * otherwise.
+ */
+int
+piano_roll_contains_current_note (
+  PianoRoll * self,
+  MidiNoteDescriptor * descr);
 
 /**
  * Inits the PianoRoll after a Project has been
