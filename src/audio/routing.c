@@ -30,8 +30,8 @@
 #include "audio/engine_pa.h"
 #endif
 #include "audio/master_track.h"
-#include "audio/instrument_track.h"
 #include "audio/midi.h"
+#include "audio/midi_track.h"
 #include "audio/modulator.h"
 #include "audio/pan.h"
 #include "audio/passthrough_processor.h"
@@ -326,7 +326,9 @@ node_process (
           chan = port->track->channel;
 
           if (chan->track->type ==
-                TRACK_TYPE_INSTRUMENT)
+                TRACK_TYPE_INSTRUMENT ||
+              chan->track->type ==
+                TRACK_TYPE_MIDI)
             {
               /* panic MIDI if necessary */
               if (g_atomic_int_get (
@@ -348,8 +350,8 @@ node_process (
                   /* fill midi events to pass to
                    * ins plugin */
                   /*g_message ("filling PR events");*/
-                  instrument_track_fill_midi_events (
-                    (InstrumentTrack *)chan->track,
+                  midi_track_fill_midi_events (
+                    chan->track,
                     g_start_frames,
                     local_offset,
                     nframes,

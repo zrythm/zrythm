@@ -31,7 +31,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="hexpand">True</property>
-        <property name="label" translatable="yes">label</property>
+        <property name="label">label</property>
         <property name="ellipsize">end</property>
         <property name="width_chars">14</property>
         <property name="max_width_chars">14</property>

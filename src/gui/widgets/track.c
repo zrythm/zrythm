@@ -188,6 +188,7 @@ track_widget_refresh (TrackWidget * self)
       REFRESH_TW (MASTER, master);
       REFRESH_TW (AUDIO, audio);
       REFRESH_TW (CHORD, chord);
+      REFRESH_TW (MIDI, midi);
       REFRESH_TW (BUS, bus);
       REFRESH_TW (GROUP, group);
       REFRESH_TW (MARKER, marker);

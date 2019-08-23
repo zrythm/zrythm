@@ -2118,7 +2118,7 @@ add_children_from_marker_track (
 }
 
 static inline void
-add_children_from_instrument_track (
+add_children_from_midi_track (
   TimelineArrangerWidget * self,
   Track *                  it)
 {
@@ -2278,9 +2278,12 @@ timeline_arranger_widget_refresh_children (
                 self, track);
               break;
             case TRACK_TYPE_INSTRUMENT:
-              add_children_from_instrument_track (
-                self,
-                (InstrumentTrack *) track);
+              add_children_from_midi_track (
+                self, track);
+              break;
+            case TRACK_TYPE_MIDI:
+              add_children_from_midi_track (
+                self, track);
               break;
             case TRACK_TYPE_MASTER:
               add_children_from_master_track (
