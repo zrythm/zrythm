@@ -71,11 +71,11 @@ group_track_widget_new (Track * track)
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (track);
   automation_tracklist->widget =
-    automation_tracklist_widget_new (automation_tracklist);
-  gtk_paned_pack2 (GTK_PANED (tw_prv->paned),
-                   GTK_WIDGET (automation_tracklist->widget),
-                   Z_GTK_RESIZE,
-                   Z_GTK_NO_SHRINK);
+    automation_tracklist_widget_new (
+      automation_tracklist);
+  gtk_container_add (
+    GTK_CONTAINER (tw_prv->paned),
+    GTK_WIDGET (automation_tracklist->widget));
 
   tw_prv->record_toggle_handler_id =
     g_signal_connect (
