@@ -43,7 +43,6 @@
 #include <glibtop.h>
 #endif
 
-#include <curl/curl.h>
 #include <fftw3.h>
 
 /** SIGSEGV handler. */
@@ -106,10 +105,9 @@ handler (int sig) {
       PACKAGE_VERSION,
       str
       );
-  CURL *curl = curl_easy_init();
   char * report_template_escaped =
-    curl_easy_escape (
-      curl, report_template, 0);
+    g_uri_escape_string (
+      report_template, NULL, FALSE);
   char * atag =
     g_strdup_printf (
       "<a href=\"https://savannah.nongnu.org/support/?func=additem&amp;group=zrythm&amp;prefill[summary]=Bug Report (enter details)&amp;prefill[details]=%s\">",
@@ -141,9 +139,7 @@ handler (int sig) {
   g_free (report_template);
   g_free (atag);
   g_free (markup);
-  curl_free (report_template_escaped);
-
-  curl_easy_cleanup (curl);
+  g_free (report_template_escaped);
 #endif
   exit(1);
 }

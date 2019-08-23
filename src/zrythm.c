@@ -572,6 +572,56 @@ zrythm_app_startup (GApplication* _app)
 
   app = _app;
 
+  /* set theme */
+  g_object_set (gtk_settings_get_default (),
+                "gtk-theme-name",
+                "Matcha-dark-sea",
+                NULL);
+  g_message ("set theme");
+
+  /*g_object_set (gtk_settings_get_default (),*/
+                /*"gtk-icon-theme-name",*/
+                /*"breeze-dark",*/
+                /*NULL);*/
+
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
+    "/org/zrythm/Zrythm/app/icons/breeze-icons");
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
+    "/org/zrythm/Zrythm/app/icons/fork-awesome");
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
+    "/org/zrythm/Zrythm/app/icons/font-awesome");
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
+    "/org/zrythm/Zrythm/app/icons/zrythm");
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
+    "/org/zrythm/Zrythm/app/icons/ext");
+  gtk_icon_theme_add_resource_path (
+    gtk_icon_theme_get_default (),
+    "/org/zrythm/Zrythm/app/icons/gnome-builder");
+
+  /*gtk_icon_theme_set_search_path (*/
+    /*gtk_icon_theme_get_default (),*/
+    /*path,*/
+    /*1);*/
+  g_message ("set resource paths");
+
+  // set default css provider
+  GtkCssProvider * css_provider =
+    gtk_css_provider_new();
+  gtk_css_provider_load_from_resource (
+    css_provider,
+    "/org/zrythm/Zrythm/app/theme.css");
+  gtk_style_context_add_provider_for_screen (
+          gdk_screen_get_default (),
+          GTK_STYLE_PROVIDER (css_provider),
+          800);
+  g_object_unref (css_provider);
+  g_message ("set default css provider");
+
   /* show splash screen */
   splash =
     splash_window_widget_new (ZRYTHM_APP (app));

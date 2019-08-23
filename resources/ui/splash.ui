@@ -32,7 +32,8 @@
     <property name="window_position">center-always</property>
     <property name="default_width">580</property>
     <property name="default_height">300</property>
-    <property name="type_hint">GDK_WINDOW_TYPE_HINT_SPLASHSCREEN</property>
+    <property name="type_hint">GDK_WINDOW_TYPE_HINT_UTILITY</property>
+    <!--<property name="type_hint">GDK_WINDOW_TYPE_HINT_SPLASHSCREEN</property>-->
     <!--property name="accept_focus">False</property-->
     <!--property name="focus_on_map">False</property-->
     <property name="decorated">False</property>
@@ -50,10 +51,11 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkImage">
+              <object class="GtkImage" id="img">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="resource">/org/zrythm/icons/zrythm/z-splash.svg</property>
+                <property name="icon-name">z-splash</property>
+                <property name="icon-size">0</property>
               </object>
               <packing>
                 <property name="index">-1</property>

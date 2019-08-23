@@ -277,7 +277,6 @@ zrythm_deps = [
   dependency('samplerate', version: '>=0.1.8'),
   dependency('lv2', version: '>=1.14.0'),
   dependency('fftw3', version: '>=3.3.5'),
-  dependency('libcurl'),
   libm,
 ]
 
