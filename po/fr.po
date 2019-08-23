@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-08-23 01:17+0100\n"
-"PO-Revision-Date: 2019-08-16 05:24+0000\n"
+"POT-Creation-Date: 2019-08-12 17:19+0100\n"
+"PO-Revision-Date: 2019-08-23 00:21+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
 ">\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.8\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -559,7 +559,7 @@ msgstr "Sortie Stéréo"
 
 #: src/gui/widgets/snap_grid.c:95
 msgid "Snap/Grid options"
-msgstr "Accrocher/Options de la grille"
+msgstr "Accrocher/options de la grille"
 
 #: src/gui/widgets/header_notebook.c:82
 #, fuzzy
@@ -800,7 +800,7 @@ msgstr "Ajouter une région"
 
 #: src/gui/widgets/fader.c:155
 msgid "Fader - Click and drag to change value"
-msgstr "Charriot - Cliquer et faire glisser pour changer la valeur"
+msgstr "Charriot - cliquer et faire glisser pour changer la valeur"
 
 #: src/gui/widgets/dzl/dzl-animation.c:752
 #, c-format
