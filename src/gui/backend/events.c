@@ -47,6 +47,7 @@
 #include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/header_notebook.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/left_dock_edge.h"

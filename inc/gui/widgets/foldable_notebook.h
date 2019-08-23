@@ -39,6 +39,15 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _DzlDockRevealer DzlDockRevealer;
 
 /**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define MW_BOT_FOLDABLE_NOTEBOOK \
+  MW_BOT_DOCK_EDGE->bot_notebook
+
+/**
  * A GtkNotebook that shows or hides itself when the
  * same page tab is clicked.
  *
@@ -73,6 +82,14 @@ FoldableNotebookWidget *
 foldable_notebook_widget_new ();
 
 /**
+ * Sets the folded space visible or not.
+ */
+void
+foldable_notebook_widget_set_visibility (
+  FoldableNotebookWidget * self,
+  int                      new_visibility);
+
+/**
  * Sets up an existing FoldableNotebookWidget.
  */
 void
@@ -81,5 +98,9 @@ foldable_notebook_widget_setup (
   GtkPaned *               paned,
   DzlDockRevealer *        dock_revealer,
   GtkPositionType          pos_in_paned);
+
+/**
+ * @}
+ */
 
 #endif

@@ -53,6 +53,67 @@ on_switch_page (
 }
 
 /**
+ * Sets the folded space visible or not.
+ */
+void
+foldable_notebook_widget_set_visibility (
+  FoldableNotebookWidget * self,
+  int                      new_visibility)
+{
+  GtkBox * current_box;
+  GtkWidget * widget;
+
+  /* toggle visibility of all box children.
+   * do this on the children because toggling
+   * the visibility of the box causes gtk to
+   * automatically hide the tab too */
+  int num_pages =
+    gtk_notebook_get_n_pages (
+      GTK_NOTEBOOK (self));
+  /*int max_width = 0, max_height = 0;*/
+  for (int i = 0; i < num_pages; i++)
+    {
+      current_box =
+        GTK_BOX (
+          gtk_notebook_get_nth_page (
+            GTK_NOTEBOOK (self), i));
+      widget =
+        z_gtk_container_get_single_child (
+          GTK_CONTAINER (current_box));
+      gtk_widget_set_visible (
+        widget, new_visibility);
+    }
+
+  if (!new_visibility)
+    {
+      if  (self->dock_revealer)
+        {
+          dzl_dock_revealer_set_position (
+            self->dock_revealer, 0);
+        }
+      else if (self->paned)
+        {
+          int position;
+          if (self->pos_in_paned ==
+                GTK_POS_RIGHT ||
+              self->pos_in_paned ==
+                GTK_POS_BOTTOM)
+            {
+              position =
+                gtk_widget_get_allocated_height (
+                  GTK_WIDGET (self->paned));
+            }
+          else
+            {
+              position = 0;
+            }
+          gtk_paned_set_position (
+            self->paned, position);
+        }
+    }
+}
+
+/**
  * Callback for the foldable notebook.
  */
 static void
@@ -83,54 +144,8 @@ on_multipress_pressed (
       int new_visibility =
         !gtk_widget_get_visible (widget);
 
-      /* toggle visibility of all box children.
-       * do this on the children because toggling
-       * the visibility of the box causes gtk to
-       * automatically hide the tab too */
-      int num_pages =
-        gtk_notebook_get_n_pages (
-          GTK_NOTEBOOK (self));
-      /*int max_width = 0, max_height = 0;*/
-      for (int i = 0; i < num_pages; i++)
-        {
-          current_box =
-            GTK_BOX (
-              gtk_notebook_get_nth_page (
-                GTK_NOTEBOOK (self), i));
-          widget =
-            z_gtk_container_get_single_child (
-              GTK_CONTAINER (current_box));
-          gtk_widget_set_visible (
-            widget, new_visibility);
-        }
-
-      if (!new_visibility)
-        {
-          if  (self->dock_revealer)
-            {
-              dzl_dock_revealer_set_position (
-                self->dock_revealer, 0);
-            }
-          else if (self->paned)
-            {
-              int position;
-              if (self->pos_in_paned ==
-                    GTK_POS_RIGHT ||
-                  self->pos_in_paned ==
-                    GTK_POS_BOTTOM)
-                {
-                  position =
-                    gtk_widget_get_allocated_height (
-                      GTK_WIDGET (self->paned));
-                }
-              else
-                {
-                  position = 0;
-                }
-              gtk_paned_set_position (
-                self->paned, position);
-            }
-        }
+      foldable_notebook_widget_set_visibility (
+        self, new_visibility);
     }
 }
 

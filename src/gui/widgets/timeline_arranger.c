@@ -57,6 +57,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_object.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker.h"
@@ -681,7 +682,16 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   /* if double click bring up piano roll */
   if (ar_prv->n_press == 2 &&
       !ar_prv->ctrl_held)
-    SHOW_CLIP_EDITOR;
+    {
+      /* set the bot panel visible */
+      gtk_widget_set_visible (
+        GTK_WIDGET (
+          MW_BOT_DOCK_EDGE), 1);
+      foldable_notebook_widget_set_visibility (
+        MW_BOT_FOLDABLE_NOTEBOOK, 1);
+
+      SHOW_CLIP_EDITOR;
+    }
 
   /* get x as local to the region */
   gint wx, wy;
