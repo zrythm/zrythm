@@ -43,6 +43,7 @@
 #include <glibtop.h>
 #endif
 
+#include <curl/curl.h>
 #include <fftw3.h>
 
 /** SIGSEGV handler. */
@@ -77,11 +78,6 @@ handler (int sig) {
     }
 
   g_message ("%s", str);
-  tmp =
-    g_strdup_printf (
-      _("An error has occurred causing Zrythm to "
-        "crash. Please help us fix this error by "
-        "<a href=\"https://savannah.nongnu.org/support/?func=additem&group=zrythm\">submitting a bug report</a>, using the text below."));
 
   GtkDialogFlags flags =
     GTK_DIALOG_DESTROY_WITH_PARENT;
@@ -93,19 +89,44 @@ handler (int sig) {
       GTK_BUTTONS_CLOSE,
       NULL);
 
-  gtk_message_dialog_set_markup (
-    GTK_MESSAGE_DIALOG (dialog),
+  /* %23 is hash, %0A is new line */
+  char * report_template =
+    g_strdup_printf (
+      "# Steps to reproduce\n"
+      "> Write a list of steps to reproduce the "
+      "bug\n\n"
+      "# What happens?\n"
+      "> Please tell us what happened\n\n"
+      "# What is expected?\n"
+      "> What is expected to happen?\n\n"
+      "# Version\n%s\n\n"
+      "# Other info\n"
+      "> Context, etc.\n\n"
+      "# Backtrace\n%s\n",
+      PACKAGE_VERSION,
+      str
+      );
+  CURL *curl = curl_easy_init();
+  char * report_template_escaped =
+    curl_easy_escape (
+      curl, report_template, 0);
+  char * atag =
+    g_strdup_printf (
+      "<a href=\"https://savannah.nongnu.org/support/?func=additem&amp;group=zrythm&amp;prefill[summary]=Bug Report (enter details)&amp;prefill[details]=%s\">",
+      report_template_escaped);
+  char * markup =
+    g_strdup_printf (
       _("Zrythm has crashed. Please help us fix "
         "this by "
-        "<a href=\"https://savannah.nongnu.org/support/?func=additem&amp;group=zrythm\">submitting a bug report</a>. "
-        "Please include the following text, along "
-        "with steps to reproduce"));
+        "%ssubmitting a bug report%s."),
+      atag,
+      "</a>");
+
+  gtk_message_dialog_set_markup (
+    GTK_MESSAGE_DIALOG (dialog),
+    markup);
   gtk_message_dialog_format_secondary_markup (
     GTK_MESSAGE_DIALOG (dialog),
-    "%s\n%s\n\n%s\n%s",
-    "# Version",
-    PACKAGE_VERSION,
-    "# Backtrace",
     str);
   GtkLabel * label =
     z_gtk_message_dialog_get_label (
@@ -117,7 +138,12 @@ handler (int sig) {
 
   free (strings);
   g_free (str);
-  g_free (tmp);
+  g_free (report_template);
+  g_free (atag);
+  g_free (markup);
+  curl_free (report_template_escaped);
+
+  curl_easy_cleanup (curl);
 #endif
   exit(1);
 }
@@ -200,7 +226,7 @@ main (int    argc,
 
   fprintf (
     stdout,
-    _("Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou et al.\n\n"
+    _("Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n\n"
     "Zrythm comes with ABSOLUTELY NO WARRANTY!\n\n"
     "This is free software, and you are welcome to redistribute it\n"
     "under certain conditions. Look at the file `COPYING' within this\n"

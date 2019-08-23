@@ -199,7 +199,7 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
       cairo_fill(cr);
 
       /* fill text */
-      const char * txt = "empty slot";
+      const char * txt = _("empty slot");
       cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 1.0);
       cairo_select_font_face (cr, "Arial",
                               CAIRO_FONT_SLANT_ITALIC,

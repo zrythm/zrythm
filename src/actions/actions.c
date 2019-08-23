@@ -241,11 +241,11 @@ activate_about (GSimpleAction *action,
     /*"logo-icon-name", "z",*/
     "logo", gtk_image_get_pixbuf (img),
     "program-name", "Zrythm",
-    "comments", "An highly automated, intuitive, Digital Audio Workstation (DAW)",
+    "comments", _("a highly automated and intuitive digital audio workstation"),
     "license-type", GTK_LICENSE_AGPL_3_0,
     "translator-credits", translators,
     "website", "https://www.zrythm.org",
-    "website-label", "Home Page",
+    "website-label", _("Website"),
     "version", "v" PACKAGE_VERSION,
     NULL);
   gtk_widget_destroy (GTK_WIDGET (img));
