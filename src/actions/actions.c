@@ -166,25 +166,6 @@ activate_chat (GSimpleAction *action,
 }
 
 void
-activate_forums (GSimpleAction *action,
-                GVariant      *variant,
-                gpointer       user_data)
-{
-#ifdef _WIN32
-  ShellExecute (
-    0, (LPCSTR)"open",
-    (LPCSTR) "https://forum.zrythm.org",
-    0, 0, SW_SHOWNORMAL);
-#else
-  gtk_show_uri_on_window (
-    GTK_WINDOW (MAIN_WINDOW),
-    "https://forum.zrythm.org",
-    0,
-    NULL);
-#endif
-}
-
-void
 activate_donate (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)

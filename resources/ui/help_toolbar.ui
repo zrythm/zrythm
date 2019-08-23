@@ -50,13 +50,6 @@
       </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="forums">
-        <property name="visible">1</property>
-        <property name="icon-name">z-applications-internet</property>
-        <property name="action-name">app.forums</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkToolButton" id="shortcuts">
         <property name="visible">1</property>
         <property name="icon-name">z-configure-shortcuts</property>

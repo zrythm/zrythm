@@ -42,7 +42,6 @@ typedef struct _HelpToolbarWidget
   GtkToolbar         parent_instance;
   GtkToolButton *    chat;
   GtkToolButton *    manual;
-  GtkToolButton *    forums;
   GtkToolButton *    shortcuts;
 } HelpToolbarWidget;
 

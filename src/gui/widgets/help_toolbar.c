@@ -35,11 +35,10 @@ help_toolbar_widget_init (HelpToolbarWidget * self)
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
     GTK_ACTIONABLE (self->x), \
-    _(tooltip))
-  SET_TOOLTIP (chat, "Chat (Matrix)");
-  SET_TOOLTIP (manual, "Manual");
-  SET_TOOLTIP (forums, "Forums");
-  SET_TOOLTIP (shortcuts, "Keyboard Shortcuts");
+    tooltip)
+  SET_TOOLTIP (chat, _("Chat (Matrix)"));
+  SET_TOOLTIP (manual, _("Manual"));
+  SET_TOOLTIP (shortcuts, _("Keyboard Shortcuts"));
 #undef SET_TOOLTIP
 }
 
@@ -61,10 +60,6 @@ help_toolbar_widget_class_init (HelpToolbarWidgetClass * _klass)
     klass,
     HelpToolbarWidget,
     manual);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HelpToolbarWidget,
-    forums);
   gtk_widget_class_bind_template_child (
     klass,
     HelpToolbarWidget,

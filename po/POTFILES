@@ -6,6 +6,7 @@ inc/plugins/lv2_gtk.h
 inc/plugins/dir.h
 inc/plugins/lv2_plugin.h
 inc/plugins/plugin.h
+inc/plugins/lv2_port.h
 inc/plugins/plugin_manager.h
 inc/plugins/vst/vestige.h
 inc/plugins/lv2/worker.h
@@ -156,6 +157,7 @@ inc/gui/widgets/center_dock_bot_box.h
 inc/gui/widgets/top_bar.h
 inc/gui/widgets/midi_modifier_arranger.h
 inc/gui/widgets/color_area.h
+inc/gui/widgets/midi_track.h
 inc/gui/widgets/control.h
 inc/gui/widgets/automatable_selector_popover.h
 inc/gui/widgets/instrument_track_info_expander.h
@@ -259,6 +261,7 @@ inc/audio/audio_region.h
 inc/audio/fader.h
 inc/audio/transport.h
 inc/audio/track.h
+inc/audio/passthrough_processor.h
 inc/audio/rack_controller.h
 inc/audio/automation_point.h
 inc/audio/automation_region.h
@@ -338,7 +341,6 @@ src/plugins/lv2/urid.c
 src/plugins/lv2/control.c
 src/plugins/lv2/symap.c
 src/plugins/lv2/suil_host.c
-src/plugins/lv2/jack.c
 src/gui/accel.c
 src/gui/widgets/editor_ruler.c
 src/gui/widgets/tracklist_header.c
@@ -478,6 +480,7 @@ src/gui/widgets/center_dock_bot_box.c
 src/gui/widgets/timeline_minimap.c
 src/gui/widgets/midi_activity_bar.c
 src/gui/widgets/track.c
+src/gui/widgets/midi_track.c
 src/gui/widgets/color_area.c
 src/gui/widgets/inspector_midi.c
 src/gui/widgets/chord_editor_space.c
@@ -575,6 +578,7 @@ src/audio/engine_alsa.c
 src/audio/automation_curve.c
 src/audio/automatable.c
 src/audio/audio_track.c
+src/audio/passthrough_processor.c
 src/audio/automation_tracklist.c
 src/audio/audio_region.c
 src/audio/chord_object.c
@@ -582,6 +586,7 @@ src/audio/metronome.c
 src/audio/channel_track.c
 src/audio/sample_processor.c
 src/audio/track.c
+src/audio/midi_track.c
 src/audio/scale.c
 src/audio/fader.c
 src/audio/engine_jack.c

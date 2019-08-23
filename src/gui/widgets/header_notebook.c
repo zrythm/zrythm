@@ -78,13 +78,13 @@ header_notebook_widget_init (
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
     GTK_ACTIONABLE (self->x), \
-    _(tooltip))
-  SET_TOOLTIP (z_icon, "About Zrythm");
-  SET_TOOLTIP (save_btn, "Save");
-  SET_TOOLTIP (save_as_btn, "Save As");
-  SET_TOOLTIP (preferences, "Preferences");
-  SET_TOOLTIP (donate_btn, "Donate");
-  SET_TOOLTIP (report_a_bug_btn, "Report a Bug");
+    tooltip)
+  SET_TOOLTIP (z_icon, _("About Zrythm"));
+  SET_TOOLTIP (save_btn, _("Save"));
+  SET_TOOLTIP (save_as_btn, _("Save As"));
+  SET_TOOLTIP (preferences, _("Preferences"));
+  SET_TOOLTIP (donate_btn, _("Donate"));
+  SET_TOOLTIP (report_a_bug_btn, _("Report a Bug"));
 #undef SET_TOOLTIP
 }
 

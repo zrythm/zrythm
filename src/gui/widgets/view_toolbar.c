@@ -35,17 +35,30 @@ view_toolbar_widget_init (ViewToolbarWidget * self)
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
     GTK_ACTIONABLE (self->x), \
-    _(tooltip))
-  SET_TOOLTIP (left_panel, "Toggle Left Panel");
-  SET_TOOLTIP (bot_panel, "Toggle Bottom Panel");
-  SET_TOOLTIP (right_panel, "Toggle Right Panel");
-  SET_TOOLTIP (status_bar, "Toggle Status Bar");
-  SET_TOOLTIP (zoom_in, "Zoom In");
-  SET_TOOLTIP (zoom_out, "Zoom Out");
-  SET_TOOLTIP (original_size, "Original Size");
-  SET_TOOLTIP (best_fit, "Best Fit");
-  SET_TOOLTIP (fullscreen, "Fullscreen");
+    tooltip)
+  SET_TOOLTIP (left_panel, _("Toggle Left Panel"));
+  SET_TOOLTIP (bot_panel, _("Toggle Bottom Panel"));
+  SET_TOOLTIP (top_panel, _("Toggle Top Panel"));
+  SET_TOOLTIP (
+    right_panel, _("Toggle Right Panel"));
+  SET_TOOLTIP (status_bar, _("Toggle Status Bar"));
+  SET_TOOLTIP (zoom_in, _("Zoom In"));
+  SET_TOOLTIP (zoom_out, _("Zoom Out"));
+  SET_TOOLTIP (original_size, _("Original Size"));
+  SET_TOOLTIP (best_fit, _("Best Fit"));
+  SET_TOOLTIP (fullscreen, _("Fullscreen"));
 #undef SET_TOOLTIP
+
+  gtk_toggle_tool_button_set_active (
+    self->left_panel, 1);
+  gtk_toggle_tool_button_set_active (
+    self->right_panel, 1);
+  gtk_toggle_tool_button_set_active (
+    self->bot_panel, 1);
+  gtk_toggle_tool_button_set_active (
+    self->top_panel, 1);
+  gtk_toggle_tool_button_set_active (
+    self->status_bar, 1);
 }
 
 static void
@@ -66,6 +79,10 @@ view_toolbar_widget_class_init (ViewToolbarWidgetClass * _klass)
     klass,
     ViewToolbarWidget,
     bot_panel);
+  gtk_widget_class_bind_template_child (
+    klass,
+    ViewToolbarWidget,
+    top_panel);
   gtk_widget_class_bind_template_child (
     klass,
     ViewToolbarWidget,

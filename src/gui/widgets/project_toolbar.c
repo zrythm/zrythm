@@ -35,10 +35,10 @@ project_toolbar_widget_init (ProjectToolbarWidget * self)
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
     GTK_ACTIONABLE (self->x), \
-    _(tooltip))
-  SET_TOOLTIP (new, "New Project");
-  SET_TOOLTIP (open, "Open Project");
-  SET_TOOLTIP (export_as, "Export As");
+    tooltip)
+  SET_TOOLTIP (new, _("New Project"));
+  SET_TOOLTIP (open, _("Open Project"));
+  SET_TOOLTIP (export_as, _("Export As"));
 #undef SET_TOOLTIP
 }
 

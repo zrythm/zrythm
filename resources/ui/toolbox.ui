@@ -32,7 +32,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="tooltip-text">Select mode</property>
+        <property name="tooltip-text" translatable="true">Select mode</property>
         <child>
           <object class="GtkImage" id="select_img">
             <property name="visible">True</property>
@@ -52,7 +52,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="tooltip-text">Edit mode</property>
+        <property name="tooltip-text" translatable="true">Edit mode</property>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>
@@ -72,7 +72,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="tooltip-text">Cut mode</property>
+        <property name="tooltip-text" translatable="true">Cut mode</property>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>
@@ -92,7 +92,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="tooltip-text">Erase mode</property>
+        <property name="tooltip-text" translatable="true">Erase mode</property>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>
@@ -112,7 +112,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="tooltip-text">Ramp mode</property>
+        <property name="tooltip-text" translatable="true">Ramp mode</property>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>
@@ -132,7 +132,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="tooltip-text">Audition mode</property>
+        <property name="tooltip-text" translatable="true">Audition mode</property>
         <child>
           <object class="GtkImage">
             <property name="visible">True</property>
