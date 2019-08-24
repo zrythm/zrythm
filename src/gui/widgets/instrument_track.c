@@ -271,7 +271,7 @@ instrument_track_widget_init (
       "z-format-justify-fill");
   ui_add_widget_tooltip (
     self->show_lanes,
-    _("Show lanes"));
+    _("Show track lanes"));
   ui_set_hover_status_bar_signals (
     self->show_lanes,
     _("Show Lanes - Shows the track's lanes"));

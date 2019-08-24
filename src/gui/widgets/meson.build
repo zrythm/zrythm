@@ -59,7 +59,6 @@ widget_srcs = [
   'control_room.c',
   'cpu.c',
   'digital_meter.c',
-  'donate_dialog.c',
   'drag_dest_box.c',
   'editable_label.c',
   'editor_toolbar.c',

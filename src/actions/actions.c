@@ -46,7 +46,6 @@
 #include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
-#include "gui/widgets/donate_dialog.h"
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
@@ -151,18 +150,11 @@ activate_chat (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)
 {
-#ifdef _WIN32
-  ShellExecute (
-    0, (LPCSTR)"open",
-    (LPCSTR) "https://riot.im/app/#/room/#freenode_#zrythm:matrix.org",
-    0, 0, SW_SHOWNORMAL);
-#else
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
-    "https://riot.im/app/#/room/#freenode_#zrythm:matrix.org",
+    "https://matrix.to/#/#matrixdaw:matrix.org",
     0,
     NULL);
-#endif
 }
 
 void
@@ -170,13 +162,11 @@ activate_donate (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)
 {
-  DonateDialogWidget * donate =
-    donate_dialog_widget_new ();
-  gtk_window_set_transient_for (
-    GTK_WINDOW (donate),
-    GTK_WINDOW (MAIN_WINDOW));
-  gtk_dialog_run (GTK_DIALOG (donate));
-  gtk_widget_destroy (GTK_WIDGET (donate));
+  gtk_show_uri_on_window (
+    GTK_WINDOW (MAIN_WINDOW),
+    "https://liberapay.com/Zrythm",
+    0,
+    NULL);
 }
 
 void
