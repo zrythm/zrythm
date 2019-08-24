@@ -369,9 +369,12 @@ tracklist_remove_track (
        i < self->num_tracks; i++)
     self->tracks[i]->pos = i;
 
-  channel_disconnect (
-    track->channel,
-    rm_pl, F_NO_RECALC_GRAPH);
+  if (track->channel)
+    {
+      channel_disconnect (
+        track->channel,
+        rm_pl, F_NO_RECALC_GRAPH);
+    }
 
   if (free)
     {

@@ -29,6 +29,7 @@
 #include "audio/chord_track.h"
 #include "audio/group_track.h"
 #include "audio/instrument_track.h"
+#include "audio/marker_track.h"
 #include "audio/master_track.h"
 #include "audio/midi_track.h"
 #include "audio/instrument_track.h"
@@ -161,6 +162,10 @@ track_new (
       ct = CT_MIDI;
       break;
     case TRACK_TYPE_CHORD:
+      chord_track_init (track);
+      break;
+    case TRACK_TYPE_MARKER:
+      marker_track_init (track);
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -171,15 +176,26 @@ track_new (
     track);
 
   /* if should have channel */
-  if (type != TRACK_TYPE_CHORD)
+  Channel * ch;
+  switch (type)
     {
-      Channel * ch =
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_INSTRUMENT:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_MIDI:
+    case TRACK_TYPE_BUS:
+    case TRACK_TYPE_GROUP:
+      ch =
         channel_new (ct, track);
       track->channel = ch;
 
       ch->track = track;
 
       channel_generate_automation_tracks (ch);
+      break;
+    case TRACK_TYPE_CHORD:
+    case TRACK_TYPE_MARKER:
+      break;
     }
 
   return track;
@@ -214,10 +230,13 @@ track_clone (Track * track)
   COPY_MEMBER (color.alpha);
   COPY_MEMBER (pos);
 
-  Channel * ch =
-    channel_clone (track->channel, new_track);
-  new_track->channel = ch;
-  ch->track = track;
+  if (track->channel)
+    {
+      Channel * ch =
+        channel_clone (track->channel, new_track);
+      new_track->channel = ch;
+      ch->track = track;
+    }
 
   TrackLane * lane, * new_lane;
   for (j = 0; j < track->num_lanes; j++)

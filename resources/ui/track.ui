@@ -28,6 +28,18 @@
     <property name="hexpand">True</property>
     <property name="margin-top">2</property>
     <child>
+      <object class="GtkBox" id="highlight_top_box">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">horizontal</property>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">0</property>
+        <property name="width">3</property>
+      </packing>
+    </child>
+    <child>
       <object class="ColorAreaWidget" id="color">
         <property name="visible">True</property>
         <property name="width-request">18</property>
@@ -35,7 +47,7 @@
       </object>
       <packing>
         <property name="left_attach">0</property>
-        <property name="top_attach">0</property>
+        <property name="top_attach">1</property>
       </packing>
     </child>
     <child>
@@ -58,8 +70,20 @@
       </object>
       <packing>
         <property name="left_attach">1</property>
-        <property name="top_attach">0</property>
+        <property name="top_attach">1</property>
         <property name="width">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="highlight_bot_box">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">horizontal</property>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">2</property>
+        <property name="width">3</property>
       </packing>
     </child>
   </template>

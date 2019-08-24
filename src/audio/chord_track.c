@@ -30,6 +30,19 @@
 #include <glib/gi18n.h>
 
 /**
+ * Inits a chord track (e.g. when cloning).
+ */
+void
+chord_track_init (
+  Track * self)
+{
+  self->type = TRACK_TYPE_CHORD;
+  self->name = g_strdup (_("Chords"));
+
+  gdk_rgba_parse (&self->color, "#0328fa");
+}
+
+/**
  * Creates a new chord track.
  */
 ChordTrack *

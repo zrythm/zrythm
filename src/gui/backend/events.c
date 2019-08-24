@@ -895,6 +895,8 @@ events_process (void * data)
             MW_TRACKLIST);
           timeline_arranger_widget_refresh_children (
             MW_TIMELINE);
+          timeline_arranger_widget_refresh_children (
+            MW_PINNED_TIMELINE);
           break;
         case ET_UNDO_REDO_ACTION_DONE:
           home_toolbar_widget_refresh_undo_redo_buttons (
@@ -962,6 +964,9 @@ events_process (void * data)
           if (MW_TRACKLIST)
             tracklist_widget_hard_refresh (
               MW_TRACKLIST);
+          if (MW_PINNED_TRACKLIST)
+            pinned_tracklist_widget_hard_refresh (
+              MW_PINNED_TRACKLIST);
 
           visibility_widget_refresh (
             MW_VISIBILITY);

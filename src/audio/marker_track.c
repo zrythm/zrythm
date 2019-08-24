@@ -28,6 +28,19 @@
 #include <glib/gi18n.h>
 
 /**
+ * Inits the marker track.
+ */
+void
+marker_track_init (
+  Track * self)
+{
+  self->type = TRACK_TYPE_MARKER;
+  self->name = g_strdup (_("Markers"));
+
+  gdk_rgba_parse (&self->color, "#A3289a");
+}
+
+/**
  * Creates the default marker track.
  */
 MarkerTrack *

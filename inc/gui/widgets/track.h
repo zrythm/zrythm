@@ -108,7 +108,27 @@ typedef struct
 
   GtkEventBox *             event_box;
 
-  Track *                   track; ///< associated track
+  /** If drag update was called at least once. */
+  int                 dragged;
+
+  /** Number of clicks, used when selecting/moving/
+   * dragging channels. */
+  int                 n_press;
+
+  /** Associated Track. */
+  Track *                   track;
+
+  /** Control held down on drag begin. */
+  int                 ctrl_held_at_start;
+
+  /** Used for highlighting. */
+  GtkBox *            highlight_top_box;
+  GtkBox *            highlight_bot_box;
+
+  /** The track selection processing was done in
+   * the dnd callbacks, so no need to do it in
+   * drag_end. */
+  int                 selected_in_dnd;
 
   /**
    * Signal handler IDs for tracks that have them.

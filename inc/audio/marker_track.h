@@ -51,6 +51,13 @@ MarkerTrack *
 marker_track_default ();
 
 /**
+ * Inits the marker track.
+ */
+void
+marker_track_init (
+  Track * track);
+
+/**
  * Adds a Marker to the Track.\
  *
  * @gen_widget Generates a widget for the Marker.

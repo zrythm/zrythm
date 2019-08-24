@@ -53,6 +53,13 @@ ChordTrack *
 chord_track_new ();
 
 /**
+ * Inits a chord track (e.g. when cloning).
+ */
+void
+chord_track_init (
+  Track * track);
+
+/**
  * Adds a ChordObject to the Track.
  *
  * @param gen_widget Create a widget for the chord.

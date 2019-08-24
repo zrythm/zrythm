@@ -326,7 +326,7 @@ on_drag_motion (
   do_highlight (self, x, y);
 }
 
-void
+static void
 on_drag_leave (GtkWidget      *widget,
                GdkDragContext *context,
                guint           time,
