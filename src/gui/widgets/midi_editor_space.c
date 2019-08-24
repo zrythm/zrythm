@@ -325,6 +325,18 @@ midi_editor_space_widget_setup (
     }
 
   midi_editor_space_widget_refresh (self);
+
+  /* scroll to middle */
+  GtkAdjustment * adj =
+    gtk_scrolled_window_get_vadjustment (
+      self->arranger_scroll);
+  double lower =
+    gtk_adjustment_get_lower (adj);
+  double upper =
+    gtk_adjustment_get_upper (adj);
+  gtk_adjustment_set_value (
+    adj,
+    lower + (upper - lower) / 2.0);
 }
 
 static void
