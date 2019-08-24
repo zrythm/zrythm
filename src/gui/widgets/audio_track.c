@@ -138,9 +138,8 @@ audio_track_widget_refresh (AudioTrackWidget * self)
   /*ChannelTrack * ct = (ChannelTrack *) track;*/
   /*Channel * chan = ct->channel;*/
 
-  gtk_label_set_text (
-    tw_prv->top_grid->name,
-    track->name);
+  track_widget_set_name (
+    Z_TRACK_WIDGET (self), track->name);
 
   audio_track_widget_refresh_buttons (self);
 

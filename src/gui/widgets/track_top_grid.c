@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/widgets/editable_label.h"
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_top_grid.h"
@@ -38,6 +39,7 @@ track_top_grid_widget_init (
   TrackTopGridWidget * self)
 {
   g_type_ensure (MIDI_ACTIVITY_BAR_WIDGET_TYPE);
+  g_type_ensure (EDITABLE_LABEL_WIDGET_TYPE);
   gtk_widget_init_template (GTK_WIDGET (self));
 }
 

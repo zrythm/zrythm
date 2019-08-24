@@ -163,9 +163,8 @@ midi_track_widget_refresh (
 
   midi_track_widget_refresh_buttons (self);
 
-  gtk_label_set_text (
-    tw_prv->top_grid->name,
-    track->name);
+  track_widget_set_name (
+    Z_TRACK_WIDGET (self), track->name);
 
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (tw_prv->track);

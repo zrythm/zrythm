@@ -131,16 +131,16 @@ master_track_widget_refresh_buttons (
 }
 
 void
-master_track_widget_refresh (MasterTrackWidget * self)
+master_track_widget_refresh (
+  MasterTrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
   ChannelTrack * ct = (ChannelTrack *) track;
   Channel * chan = ct->channel;
 
-  gtk_label_set_text (
-    tw_prv->top_grid->name,
-    chan->track->name);
+  track_widget_set_name (
+    Z_TRACK_WIDGET (self), track->name);
 
   master_track_widget_refresh_buttons (self);
 

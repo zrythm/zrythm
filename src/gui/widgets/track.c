@@ -39,6 +39,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/chord_track.h"
+#include "gui/widgets/editable_label.h"
 #include "gui/widgets/group_track.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
@@ -880,6 +881,9 @@ track_widget_new (Track * track)
   midi_activity_bar_widget_setup_track (
     tw_prv->top_grid->midi_activity,
     track);
+  editable_label_widget_setup (
+    tw_prv->top_grid->name, track,
+    track_get_name, track_set_name);
 
   tw_prv->track = track;
 
@@ -983,6 +987,20 @@ track_widget_get_bottom_paned (TrackWidget * self)
     DZL_MULTI_PANED (tw_prv->paned), 1);
 }
 
+/**
+ * Sets the Track name on the TrackWidget.
+ */
+void
+track_widget_set_name (
+  TrackWidget * self,
+  const char * name)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+
+  gtk_label_set_text (
+    tw_prv->top_grid->name->label, name);
+}
+
 static void
 on_destroy (
   TrackWidget * self)
@@ -1005,6 +1023,16 @@ track_widget_init (TrackWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
   TRACK_WIDGET_GET_PRIVATE (self);
+
+  /* set font sizes */
+  gtk_label_set_max_width_chars (
+    tw_prv->top_grid->name->label, 14);
+  gtk_label_set_width_chars (
+    tw_prv->top_grid->name->label, 14);
+  gtk_label_set_ellipsize (
+    tw_prv->top_grid->name->label, PANGO_ELLIPSIZE_END);
+  gtk_label_set_xalign (
+    tw_prv->top_grid->name->label, 0);
 
   tw_prv->drag =
     GTK_GESTURE_DRAG (

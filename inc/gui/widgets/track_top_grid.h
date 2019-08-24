@@ -50,6 +50,8 @@ typedef struct _AutomationTracklistWidget
 typedef struct Track TrackTopGrid;
 typedef struct _MidiActivityBarWidget
   MidiActivityBarWidget;
+typedef struct _EditableLabelWidget
+  EditableLabelWidget;
 
 /**
  * Top is the track part and bot is the automation
@@ -60,7 +62,7 @@ typedef struct _TrackTopGridWidget
   GtkGrid             parent_instance;
 
   /** Track name. */
-  GtkLabel *          name;
+  EditableLabelWidget *  name;
 
   /**
    * These are boxes to be filled by inheriting

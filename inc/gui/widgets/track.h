@@ -154,9 +154,21 @@ typedef struct _TrackWidgetClass
 TrackWidget *
 track_widget_new (Track * track);
 
+/**
+ * @param select 1 to select, 0 to unselect.
+ */
 void
-track_widget_select (TrackWidget * self,
-                     int           select); ///< 1 = select, 0 = unselect
+track_widget_select (
+  TrackWidget * self,
+  int           select);
+
+/**
+ * Sets the Track name on the TrackWidget.
+ */
+void
+track_widget_set_name (
+  TrackWidget * self,
+  const char * name);
 
 void
 track_widget_on_solo_toggled (

@@ -56,10 +56,8 @@ chord_track_widget_new (Track * track)
                             NULL);
   TRACK_WIDGET_GET_PRIVATE (self);
 
-  /* set track name */
-  gtk_label_set_text (
-    tw_prv->top_grid->name,
-    track->name);
+  track_widget_set_name (
+    Z_TRACK_WIDGET (self), track->name);
 
   /* setup color */
   color_area_widget_set_color (tw_prv->color,
