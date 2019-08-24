@@ -281,8 +281,12 @@ tracklist_widget_soft_refresh (TracklistWidget *self)
       if (!GTK_IS_WIDGET (track->widget))
         track->widget = track_widget_new (track);
 
-      track_widget_refresh (
-        track->widget);
+      gtk_widget_set_visible (
+        GTK_WIDGET (track->widget), track->visible);
+
+      if (track->visible)
+        track_widget_refresh (
+          track->widget);
     }
   if (self->ddbox)
     gtk_widget_show (GTK_WIDGET (self->ddbox));

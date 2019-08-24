@@ -205,6 +205,13 @@ foreach f : test_cflags
   endif
 endforeach
 
+# add -Wformat -Werror=format-security
+if cc.get_id() == 'gcc'
+  common_cflags += [
+    '-Wformat',
+    '-Werror=format-security']
+endif
+
 test_ldflags = []
 
 if get_option ('enable_profiling')

@@ -23,6 +23,7 @@
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/visibility.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
@@ -45,6 +46,9 @@ left_dock_edge_widget_setup (
         gtk_widget_get_parent (
           GTK_WIDGET (self)))),
     GTK_POS_LEFT);
+
+  visibility_widget_refresh (
+    self->visibility);
 }
 
 static void
@@ -83,7 +87,7 @@ left_dock_edge_widget_init (
       GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Visibility"));
-  self->visibility = inspector_widget_new ();
+  self->visibility = visibility_widget_new ();
   GtkBox * visibility_box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));

@@ -80,7 +80,7 @@
               <a href="https://{{ gitlab_host|default("gitlab.com") }}/{{ gitlab_user }}/{{ gitlab_repo }}/{{ theme_vcs_pageview_mode|default("blob") }}/{{ gitlab_version }}/{{ conf_py_path }}{{ pagename }}{{ suffix }}" class="fa fa-gitlab"> {{ _('Edit on GitLab') }}</a>
             {% endif %}
           {% elif display_cgit %}
-            <a href="{{ cgit_host }}/{{ cgit_repo }}/tree/{{ conf_py_path }}{{ pagename }}{{ suffix }}" class="fa fa-git"> {{ _('View Source') }}</a>
+            <a href="{{ cgit_host }}/{{ cgit_repo }}/tree/doc/user/{{ conf_py_path }}{{ pagename }}{{ suffix }}" class="fa fa-git"> {{ _('View Source') }}</a>
           {% elif show_source and source_url_prefix %}
           <!--<a href="{{ source_url_prefix }}{{ pagename }}{{ suffix }}">{{ _('View page source') }}</a>-->
           {% elif show_source and has_source and sourcename %}

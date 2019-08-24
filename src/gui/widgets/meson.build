@@ -155,6 +155,7 @@ widget_srcs = [
   'track.c',
   'track_lane.c',
   'track_lanelist.c',
+  'track_visibility_tree.c',
   'tracklist.c',
   'tracklist_header.c',
   'track_top_grid.c',
@@ -162,6 +163,7 @@ widget_srcs = [
   'two_col_expander_box.c',
   'velocity.c',
   'view_toolbar.c',
+  'visibility.c',
   ]
 
 zrythm_srcs += files (widget_srcs)

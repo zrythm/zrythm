@@ -15,28 +15,21 @@
    You should have received a copy of the GNU General Affero Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-Zrythm Manual
-=============
+Credits
+=======
 
-Welcome to the Zrythm manual. Please follow the sections below to get started.
+Translators
+-----------
 
-.. toctree::
-   :maxdepth: 1
+French
+  * Nicolas Faure
+  * Olivier Humbert
 
-   getting-started/intro
-   configuration/intro
-   zrythm-interface/intro
-   projects/intro
-   plugins-files/intro
-   tracks/intro
-   chords-and-scales/intro
-   editing/intro
-   mixing/intro
-   playback-and-recording/intro
-   automation/intro
-   modulators/intro
-   exporting/intro
-   publishing/intro
-   contributing/intro
-   credits/intro
-   appendix/intro
+German
+  * Waui
+
+Norwegian Bokmal
+  * Allan Nordhøy
+
+Polish
+  * WaldiS

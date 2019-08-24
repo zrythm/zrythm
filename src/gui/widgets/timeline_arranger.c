@@ -440,6 +440,9 @@ timeline_arranger_widget_get_track_at_y (
     {
       track = TRACKLIST->tracks[i];
 
+      if (!track->visible)
+        continue;
+
       if (ui_is_child_hit (
             GTK_WIDGET (self),
             GTK_WIDGET (track->widget),

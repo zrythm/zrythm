@@ -1,7 +1,5 @@
 /*
- * gui/widgets/plugin_browser.h - The plugin, etc., plugin_browser on the right
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *

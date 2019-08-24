@@ -125,7 +125,7 @@ handler (int sig) {
     markup);
   gtk_message_dialog_format_secondary_markup (
     GTK_MESSAGE_DIALOG (dialog),
-    str);
+    "%s", str);
   GtkLabel * label =
     z_gtk_message_dialog_get_label (
       GTK_MESSAGE_DIALOG (dialog), 1);

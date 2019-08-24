@@ -90,8 +90,8 @@ draw_cb (
   const float real_val = GET_REAL_VAL;
 
   /* get absolute values in pixels */
-  const float min_px = 0.f;
-  const float max_px = width;
+  /*const float min_px = 0.f;*/
+  /*const float max_px = width;*/
   const float zero_px =
     ((real_zero - real_min) /
      (real_max - real_min)) *

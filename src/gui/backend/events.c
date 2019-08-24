@@ -72,6 +72,7 @@
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "gui/widgets/visibility.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/gtk.h"
@@ -223,6 +224,8 @@ on_automation_track_added (AutomationTrack * at)
 
   timeline_arranger_widget_refresh_children (
     MW_TIMELINE);
+
+  visibility_widget_refresh (MW_VISIBILITY);
 }
 
 static void
@@ -532,6 +535,7 @@ on_track_name_changed (Track * track)
   mixer_widget_soft_refresh (MW_MIXER);
   track_widget_refresh (track->widget);
   inspector_widget_refresh (MW_INSPECTOR);
+  visibility_widget_refresh (MW_VISIBILITY);
 }
 
 static void
@@ -667,6 +671,8 @@ events_process (void * data)
           if (MW_TRACKLIST)
             tracklist_widget_hard_refresh (
               MW_TRACKLIST);
+          visibility_widget_refresh (
+            MW_VISIBILITY);
           break;
         case ET_CHANNEL_REMOVED:
           mixer_widget_hard_refresh (
@@ -858,6 +864,8 @@ events_process (void * data)
           if (MW_TRACKLIST)
             tracklist_widget_hard_refresh (
               MW_TRACKLIST);
+          visibility_widget_refresh (
+            MW_VISIBILITY);
           break;
         case ET_TRACK_COLOR_CHANGED:
           on_track_color_changed ((Track *) ev->arg);
@@ -881,6 +889,12 @@ events_process (void * data)
         case ET_TRACK_STATE_CHANGED:
           on_track_state_changed (
             (Track *) ev->arg);
+          break;
+        case ET_TRACK_VISIBILITY_CHANGED:
+          tracklist_widget_soft_refresh (
+            MW_TRACKLIST);
+          timeline_arranger_widget_refresh_children (
+            MW_TIMELINE);
           break;
         case ET_UNDO_REDO_ACTION_DONE:
           home_toolbar_widget_refresh_undo_redo_buttons (
@@ -948,6 +962,9 @@ events_process (void * data)
           if (MW_TRACKLIST)
             tracklist_widget_hard_refresh (
               MW_TRACKLIST);
+
+          visibility_widget_refresh (
+            MW_VISIBILITY);
 
           /* needs to be called later because tracks
            * need time to get allocated */

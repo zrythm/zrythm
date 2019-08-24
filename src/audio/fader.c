@@ -194,7 +194,7 @@ fader_process (
   long    start_frame,
   int     nframes)
 {
-  Track * track = self->channel->track;
+  /*Track * track = self->channel->track;*/
 
   /* first copy the input to output */
   for (int i = start_frame;

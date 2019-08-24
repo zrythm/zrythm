@@ -60,10 +60,9 @@ endif
 run_target (
   'bundle_manual',
   command: [
-    'echo',
-    'Bundled manual generated',
+    'make',
+    'bundle',
     ],
-  depends: html_dev_target,
   )
 
 endif

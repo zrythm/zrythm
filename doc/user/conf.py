@@ -168,7 +168,7 @@ html_context = {
                  ('zh', '中文')],
         'vcs_pageview_mode': 'blob',
         'cgit_host': 'https://git.zrythm.org/cgit',
-        'cgit_repo': 'zrythm-docs',
+        'cgit_repo': 'zrythm',
         'downloads':
             [('pdf',
               'https://manual.zrythm.org/en/Zrythm.pdf'),
