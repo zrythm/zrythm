@@ -109,6 +109,13 @@ passthrough_processor_set_widget_val (
   float   val);
 
 /**
+ * Disconnects all ports connected to the processor.
+ */
+void
+passthrough_processor_disconnect_all (
+  PassthroughProcessor * self);
+
+/**
  * Copy the struct members from source to dest.
  */
 void

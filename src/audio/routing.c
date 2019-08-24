@@ -152,7 +152,7 @@ get_node_name (
       break;
     case ROUTE_NODE_TYPE_PORT:
       return
-        g_strdup (node->port->identifier.label);
+        port_get_full_designation (node->port);
       break;
     case ROUTE_NODE_TYPE_FADER:
       return

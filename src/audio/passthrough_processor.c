@@ -24,6 +24,8 @@
 #include "project.h"
 #include "utils/math.h"
 
+#include <glib/gi18n.h>
+
 /**
  * Inits passthrough_processor to default values.
  *
@@ -44,13 +46,9 @@ passthrough_processor_init (
 
   /* stereo in */
   char * pll =
-    g_strdup_printf (
-      "%s Pre-Fader in L",
-      ch->track->name);
+    g_strdup (_("Pre-Fader in L"));
   char * plr =
-    g_strdup_printf (
-      "%s Pre-Fader in R",
-      ch->track->name);
+    g_strdup (_("Pre-Fader in R"));
   self->stereo_in =
     stereo_ports_new (
       port_new_with_type (TYPE_AUDIO,
@@ -70,11 +68,9 @@ passthrough_processor_init (
 
   /* stereo out */
   pll =
-    g_strdup_printf ("%s Pre-Fader out L",
-                     ch->track->name);
+    g_strdup (_("Pre-Fader out L"));
   plr =
-    g_strdup_printf ("%s Pre-Fader out R",
-                     ch->track->name);
+    g_strdup (_("Pre-Fader out R"));
   self->stereo_out =
     stereo_ports_new (
      port_new_with_type (TYPE_AUDIO,
@@ -96,6 +92,19 @@ passthrough_processor_init (
     self->stereo_out->l, self);
   port_set_owner_prefader (
     self->stereo_out->r, self);
+}
+
+/**
+ * Disconnects all ports connected to the processor.
+ */
+void
+passthrough_processor_disconnect_all (
+  PassthroughProcessor * self)
+{
+  port_disconnect_all (self->stereo_in->l);
+  port_disconnect_all (self->stereo_in->r);
+  port_disconnect_all (self->stereo_out->l);
+  port_disconnect_all (self->stereo_out->r);
 }
 
 /**

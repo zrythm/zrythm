@@ -32,6 +32,7 @@
 #include "audio/master_track.h"
 #include "audio/midi.h"
 #include "audio/mixer.h"
+#include "audio/modulator.h"
 #include "audio/pan.h"
 #include "audio/track.h"
 #include "audio/transport.h"
@@ -52,6 +53,7 @@
 #include "utils/stoat.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 static inline void
 connect_midi_in_to_midi_out (
@@ -1324,11 +1326,9 @@ _create_channel (
 
   /* create ports */
   char * pll =
-    g_strdup_printf ("%s stereo in L",
-                     track->name);
+    g_strdup (_("Stereo in L"));
   char * plr =
-    g_strdup_printf ("%s stereo in R",
-                     track->name);
+    g_strdup (_("Stereo in R"));
   self->stereo_in =
     stereo_ports_new (
       port_new_with_type (TYPE_AUDIO,
@@ -1344,8 +1344,7 @@ _create_channel (
   g_free (pll);
   g_free (plr);
   pll =
-    g_strdup_printf ("%s MIDI in",
-                     track->name);
+    g_strdup (_("MIDI in"));
   self->midi_in =
     port_new_with_type (
       TYPE_EVENT,
@@ -1356,8 +1355,7 @@ _create_channel (
       self->midi_in);
   g_free (pll);
   pll =
-    g_strdup_printf ("%s MIDI out",
-                     track->name);
+    g_strdup (_("MIDI out"));
   self->midi_out =
     port_new_with_type (
       TYPE_EVENT,
@@ -1367,12 +1365,8 @@ _create_channel (
     midi_events_new (
       self->midi_out);
   g_free (pll);
-  pll =
-    g_strdup_printf ("%s Stereo out L",
-                     track->name);
-  plr =
-    g_strdup_printf ("%s Stereo out R",
-                     track->name);
+  pll = g_strdup (_("Stereo out L"));
+  plr = g_strdup (_("Stereo out R"));
   self->stereo_out =
     stereo_ports_new (
      port_new_with_type (TYPE_AUDIO,
@@ -1423,8 +1417,7 @@ _create_channel (
 
   /* set up piano roll port */
   char * tmp =
-    g_strdup_printf ("%s Piano Roll",
-                     track->name);
+    g_strdup (_("Piano Roll"));
   self->piano_roll =
     port_new_with_type (
       TYPE_EVENT,
@@ -1657,6 +1650,79 @@ channel_update_output (
 }
 
 /**
+ * Appends all channel ports and optionally
+ * plugin ports to the array.
+ *
+ * The array must be large enough.
+ */
+void
+channel_append_all_ports (
+  Channel * ch,
+  Port ** ports,
+  int *   size,
+  int     include_plugins)
+{
+  int i, j, k;
+  Track * tr = ch->track;
+
+#define _ADD(port) \
+  array_append ( \
+    ports, (*size), \
+    port)
+
+#define ADD_PLUGIN_PORTS \
+  if (!pl) \
+    continue; \
+\
+  for (k = 0; k < pl->num_in_ports; k++) \
+    _ADD (pl->in_ports[k]); \
+  for (k = 0; k < pl->num_out_ports; k++) \
+    _ADD (pl->out_ports[k])
+
+  /* add channel ports */
+  _ADD (ch->stereo_in->l);
+  _ADD (ch->stereo_in->r);
+  _ADD (ch->stereo_out->l);
+  _ADD (ch->stereo_out->r);
+  _ADD (ch->piano_roll);
+  _ADD (ch->midi_in);
+  _ADD (ch->midi_out);
+
+  /* add fader ports */
+  _ADD (ch->fader.stereo_in->l);
+  _ADD (ch->fader.stereo_in->r);
+  _ADD (ch->fader.stereo_out->l);
+  _ADD (ch->fader.stereo_out->r);
+
+  /* add prefader ports */
+  _ADD (ch->prefader.stereo_in->l);
+  _ADD (ch->prefader.stereo_in->r);
+  _ADD (ch->prefader.stereo_out->l);
+  _ADD (ch->prefader.stereo_out->r);
+
+  Plugin * pl;
+  if (include_plugins)
+    {
+      /* add plugin ports */
+      for (j = 0; j < STRIP_SIZE; j++)
+        {
+          pl = tr->channel->plugins[j];
+
+          ADD_PLUGIN_PORTS;
+        }
+    }
+
+  for (j = 0; j < tr->num_modulators; j++)
+    {
+      pl = tr->modulators[j]->plugin;
+
+      ADD_PLUGIN_PORTS;
+    }
+#undef ADD_PLUGIN_PORTS
+#undef _ADD
+}
+
+/**
  * Prepares the Channel for serialization.
  */
 void
@@ -1786,6 +1852,25 @@ channel_disconnect_plugin_from_strip (
   else if (prev_plugin && next_plugin)
     disconnect_prev_next (
       ch, prev_plugin, pl, next_plugin);
+
+  /* unexpose all JACK ports */
+  Port * port;
+  for (i = 0; i < pl->num_in_ports; i++)
+    {
+      port = pl->in_ports[i];
+
+      if (port->internal_type ==
+            INTERNAL_JACK_PORT)
+        port_set_expose_to_jack (port, 0);
+    }
+  for (i = 0; i < pl->num_out_ports; i++)
+    {
+      port = pl->out_ports[i];
+
+      if (port->internal_type ==
+            INTERNAL_JACK_PORT)
+        port_set_expose_to_jack (port, 0);
+    }
 }
 
 /**
@@ -2252,6 +2337,10 @@ channel_disconnect (
   port_disconnect_all (channel->piano_roll);
   port_disconnect_all (channel->stereo_out->l);
   port_disconnect_all (channel->stereo_out->r);
+
+  passthrough_processor_disconnect_all (
+    &channel->prefader);
+  fader_disconnect_all (&channel->fader);
 
   if (recalc_graph)
     mixer_recalc_graph (MIXER);

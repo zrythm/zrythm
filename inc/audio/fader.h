@@ -175,6 +175,13 @@ fader_set_fader_val (
   float   fader_val);
 
 /**
+ * Disconnects all ports connected to the fader.
+ */
+void
+fader_disconnect_all (
+  Fader * self);
+
+/**
  * Copy the struct members from source to dest.
  */
 void

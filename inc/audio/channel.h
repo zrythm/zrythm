@@ -247,6 +247,19 @@ void
 channel_handle_recording (Channel * self);
 
 /**
+ * Appends all channel ports and optionally
+ * plugin ports to the array.
+ *
+ * The array must be large enough.
+ */
+void
+channel_append_all_ports (
+  Channel * ch,
+  Port ** ports,
+  int *   size,
+  int     include_plugins);
+
+/**
  * Connects the channel's ports.
  */
 void

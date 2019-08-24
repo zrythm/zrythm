@@ -370,50 +370,8 @@ port_get_all (
         continue;
       ch = tr->channel;
 
-      /* add channel ports */
-      _ADD (ch->stereo_in->l);
-      _ADD (ch->stereo_in->r);
-      _ADD (ch->stereo_out->l);
-      _ADD (ch->stereo_out->r);
-      _ADD (ch->piano_roll);
-      _ADD (ch->midi_in);
-      _ADD (ch->midi_out);
-
-      /* add fader ports */
-      _ADD (ch->fader.stereo_in->l);
-      _ADD (ch->fader.stereo_in->r);
-      _ADD (ch->fader.stereo_out->l);
-      _ADD (ch->fader.stereo_out->r);
-
-      /* add prefader ports */
-      _ADD (ch->prefader.stereo_in->l);
-      _ADD (ch->prefader.stereo_in->r);
-      _ADD (ch->prefader.stereo_out->l);
-      _ADD (ch->prefader.stereo_out->r);
-
-#define ADD_PLUGIN_PORTS \
-          if (!pl) \
-            continue; \
- \
-          for (k = 0; k < pl->num_in_ports; k++) \
-            _ADD (pl->in_ports[k]); \
-          for (k = 0; k < pl->num_out_ports; k++) \
-            _ADD (pl->out_ports[k])
-
-      /* add plugin ports */
-      for (j = 0; j < STRIP_SIZE; j++)
-        {
-          pl = tr->channel->plugins[j];
-
-          ADD_PLUGIN_PORTS;
-        }
-      for (j = 0; j < tr->num_modulators; j++)
-        {
-          pl = tr->modulators[j]->plugin;
-
-          ADD_PLUGIN_PORTS;
-        }
-#undef ADD_PLUGIN_PORTS
+      channel_append_all_ports (
+        ch, ports, size, 1);
     }
 }
 
@@ -678,6 +636,12 @@ port_disconnect_all (Port * port)
     {
       Port * dest = port->dests[i];
       port_disconnect (port, dest);
+    }
+
+  if (port->internal_type == INTERNAL_JACK_PORT)
+    {
+      port_set_expose_to_jack (
+        port, 0);
     }
 
   return 0;
@@ -1092,6 +1056,8 @@ port_set_expose_to_jack (
       jack_port_unregister (
         AUDIO_ENGINE->client,
         JACK_PORT_T (self->data));
+      self->internal_type = INTERNAL_NONE;
+      self->data = NULL;
     }
 }
 #endif
