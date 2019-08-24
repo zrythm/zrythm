@@ -64,7 +64,7 @@ chord_key_draw_cb (
     chord_descriptor_to_string (self->descr);
   cairo_set_source_rgba (
     cr, 1,1,1,1);
-  z_cairo_draw_text (cr, str);
+  z_cairo_draw_text (cr, widget, str);
   g_free (str);
 
  return FALSE;

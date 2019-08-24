@@ -142,7 +142,7 @@ draw_cb (
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
   z_cairo_get_text_extents_for_widget_full (
     GTK_WIDGET (self), str, &we, NULL,
-    Z_CAIRO_FONT);
+    Z_CAIRO_FONT, PANGO_ELLIPSIZE_NONE, -1);
   if (width < we)
     {
       gtk_widget_set_size_request (
@@ -151,8 +151,9 @@ draw_cb (
         height);
     }
   z_cairo_draw_text_full (
-    cr, str, width / 2 - we / 2,
-    Z_CAIRO_TEXT_PADDING, Z_CAIRO_FONT);
+    cr, widget, str, width / 2 - we / 2,
+    Z_CAIRO_TEXT_PADDING, Z_CAIRO_FONT,
+    PANGO_ELLIPSIZE_NONE, -1);
 
   if (self->hover)
     {

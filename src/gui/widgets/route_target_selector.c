@@ -32,6 +32,8 @@ G_DEFINE_TYPE (RouteTargetSelectorWidget,
                route_target_selector_widget,
                GTK_TYPE_MENU_BUTTON)
 
+#define MAX_CHARS 8
+
 static void
 on_clicked (GtkButton * button,
             RouteTargetSelectorWidget * self)
@@ -58,6 +60,8 @@ set_label (RouteTargetSelectorWidget * self)
   gtk_label_set_text (
     self->label,
     track->name);
+  gtk_label_set_max_width_chars (
+    self->label, MAX_CHARS);
 }
 
 void
@@ -98,7 +102,7 @@ route_target_selector_widget_setup (
 
 static void
 route_target_selector_widget_class_init (
-  RouteTargetSelectorWidgetClass * klass)
+  RouteTargetSelectorWidgetClass * _klass)
 {
 }
 
@@ -106,6 +110,13 @@ static void
 route_target_selector_widget_init (
   RouteTargetSelectorWidget * self)
 {
+  /* add class */
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self));
+  gtk_style_context_add_class (
+    context, "route_target_selector");
+
   self->box =
     GTK_BOX (gtk_box_new (
               GTK_ORIENTATION_HORIZONTAL, 0));
@@ -113,9 +124,20 @@ route_target_selector_widget_init (
     resources_get_icon (
       ICON_TYPE_GNOME_BUILDER,
       "debug-step-out-symbolic-light.svg"));
+
   self->label =
     GTK_LABEL (
       gtk_label_new (_("Stereo Out")));
+  context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self->label));
+  gtk_style_context_add_class (
+    context, "channel_label_smaller");
+  gtk_label_set_max_width_chars (
+    self->label, MAX_CHARS);
+  gtk_label_set_ellipsize (
+    self->label, PANGO_ELLIPSIZE_END);
+
   gtk_box_pack_start (self->box,
                       GTK_WIDGET (self->img),
                       Z_GTK_NO_EXPAND,

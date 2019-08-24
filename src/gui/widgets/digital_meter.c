@@ -89,10 +89,12 @@ draw_cb (
   z_cairo_get_text_extents_for_widget_full (
     GTK_WIDGET (self), self->caption,
     &caption_textw, &caption_texth,
-    CAPTION_FONT);
+    CAPTION_FONT, PANGO_ELLIPSIZE_NONE, -1);
   z_cairo_draw_text_full (
-    cr, self->caption, width / 2 - caption_textw / 2,
-    PADDING_TOP, CAPTION_FONT);
+    cr, widget, self->caption,
+    width / 2 - caption_textw / 2,
+    PADDING_TOP, CAPTION_FONT,
+    PANGO_ELLIPSIZE_NONE, -1);
   /* uncomment to make text slightly thickerr */
   /*z_cairo_draw_text_full (*/
     /*cr, self->caption, width / 2 - caption_textw / 2,*/
@@ -131,20 +133,20 @@ draw_cb (
 
       z_cairo_get_text_extents_for_widget_full (
         widget, "88888", &textw, &texth,
-        SEG7_FONT);
+        SEG7_FONT, PANGO_ELLIPSIZE_NONE, -1);
       self->num_part_start_pos =
         ((width / 2) - textw / 2) -
         HALF_SPACE_BETWEEN;
       z_cairo_get_text_extents_for_widget_full (
         widget, "888", &textw, &texth,
-        SEG7_FONT);
+        SEG7_FONT, PANGO_ELLIPSIZE_NONE, -1);
       self->num_part_end_pos =
         self->num_part_start_pos + textw;
       self->dec_part_start_pos =
         self->num_part_end_pos + SPACE_BETWEEN;
       z_cairo_get_text_extents_for_widget_full (
         widget, "88", &textw, &texth,
-        SEG7_FONT);
+        SEG7_FONT, PANGO_ELLIPSIZE_NONE, -1);
       self->dec_part_end_pos =
         self->dec_part_start_pos + textw;
       self->height_start_pos =
@@ -159,8 +161,9 @@ draw_cb (
       else
         text = g_strdup_printf ("%d", num_part);
       z_cairo_draw_text_full (
-        cr, text, self->num_part_start_pos,
-        self->height_start_pos, SEG7_FONT);
+        cr, widget, text, self->num_part_start_pos,
+        self->height_start_pos, SEG7_FONT,
+        PANGO_ELLIPSIZE_NONE, -1);
       g_free (text);
 
       /* draw decimal part */
@@ -169,8 +172,9 @@ draw_cb (
       else
         text = g_strdup_printf ("%d", dec_part);
       z_cairo_draw_text_full (
-        cr, text, self->dec_part_start_pos,
-        self->height_start_pos, SEG7_FONT);
+        cr, widget, text, self->dec_part_start_pos,
+        self->height_start_pos, SEG7_FONT,
+        PANGO_ELLIPSIZE_NONE, -1);
       g_free (text);
 
       break;
@@ -184,20 +188,20 @@ draw_cb (
 
       z_cairo_get_text_extents_for_widget_full (
         widget, "-8888888888", &textw, &texth,
-        SEG7_FONT);
+        SEG7_FONT, PANGO_ELLIPSIZE_NONE, -1);
       self->bars_start_pos =
         ((width / 2) - textw / 2) -
         HALF_SPACE_BETWEEN * 3;
       z_cairo_get_text_extents_for_widget_full (
         widget, "-888", &textw, &texth,
-        SEG7_FONT);
+        SEG7_FONT, PANGO_ELLIPSIZE_NONE, -1);
       self->bars_end_pos =
         self->bars_start_pos + textw;
       self->beats_start_pos =
         self->bars_end_pos + SPACE_BETWEEN;
       z_cairo_get_text_extents_for_widget_full (
         widget, "8", &textw, &texth,
-        SEG7_FONT);
+        SEG7_FONT, PANGO_ELLIPSIZE_NONE, -1);
       self->beats_end_pos =
         self->beats_start_pos + textw;
       self->sixteenths_start_pos =
@@ -208,7 +212,7 @@ draw_cb (
         self->sixteenths_end_pos + SPACE_BETWEEN;
       z_cairo_get_text_extents_for_widget_full (
         widget, "888", &textw, &texth,
-        SEG7_FONT);
+        SEG7_FONT, PANGO_ELLIPSIZE_NONE, -1);
       self->ticks_end_pos =
         self->ticks_start_pos + textw;
       self->height_start_pos =
@@ -230,22 +234,25 @@ draw_cb (
       else
         text = g_strdup_printf ("!%d", bars);
       z_cairo_draw_text_full (
-        cr, text, self->bars_start_pos,
-        self->height_start_pos, SEG7_FONT);
+        cr, widget, text, self->bars_start_pos,
+        self->height_start_pos, SEG7_FONT,
+        PANGO_ELLIPSIZE_NONE, -1);
       g_free (text);
 
       text =
         g_strdup_printf ("%d", abs (beats));
       z_cairo_draw_text_full (
-        cr, text, self->beats_start_pos,
-        self->height_start_pos, SEG7_FONT);
+        cr, widget, text, self->beats_start_pos,
+        self->height_start_pos, SEG7_FONT,
+        PANGO_ELLIPSIZE_NONE, -1);
       g_free (text);
 
       text =
         g_strdup_printf ("%d", abs (sixteenths));
       z_cairo_draw_text_full (
-        cr, text, self->sixteenths_start_pos,
-        self->height_start_pos, SEG7_FONT);
+        cr, widget, text, self->sixteenths_start_pos,
+        self->height_start_pos, SEG7_FONT,
+        PANGO_ELLIPSIZE_NONE, -1);
       g_free (text);
 
       if (abs (ticks) < 10)
@@ -255,8 +262,9 @@ draw_cb (
       else
         text = g_strdup_printf ("%d", abs (ticks));
       z_cairo_draw_text_full (
-        cr, text, self->ticks_start_pos,
-        self->height_start_pos, SEG7_FONT);
+        cr, widget, text, self->ticks_start_pos,
+        self->height_start_pos, SEG7_FONT,
+        PANGO_ELLIPSIZE_NONE, -1);
       g_free (text);
 
       break;
@@ -267,15 +275,16 @@ draw_cb (
           *self->note_type);
       z_cairo_get_text_extents_for_widget_full (
         widget, text, &textw, &texth,
-        NORMAL_FONT);
+        NORMAL_FONT, PANGO_ELLIPSIZE_NONE, -1);
       self->height_start_pos =
         PADDING_TOP +
         caption_texth + HALF_SPACE_BETWEEN;
       self->height_end_pos =
         self->height_start_pos + texth;
       z_cairo_draw_text_full (
-        cr, text, width / 2 - textw / 2,
-        self->height_start_pos, NORMAL_FONT);
+        cr, widget, text, width / 2 - textw / 2,
+        self->height_start_pos, NORMAL_FONT,
+        PANGO_ELLIPSIZE_NONE, -1);
       g_free (text);
 
       break;
@@ -294,22 +303,23 @@ draw_cb (
         }
       z_cairo_get_text_extents_for_widget_full (
         widget, text, &textw, &texth,
-        NORMAL_FONT);
+        NORMAL_FONT, PANGO_ELLIPSIZE_NONE, -1);
       self->height_start_pos =
         PADDING_TOP +
         caption_texth + HALF_SPACE_BETWEEN;
       self->height_end_pos =
         self->height_start_pos + texth;
       z_cairo_draw_text_full (
-        cr, text, width / 2 - textw / 2,
-        self->height_start_pos, NORMAL_FONT);
+        cr, widget, text, width / 2 - textw / 2,
+        self->height_start_pos, NORMAL_FONT,
+        PANGO_ELLIPSIZE_NONE, -1);
 
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
 
       z_cairo_get_text_extents_for_widget_full (
         widget, "16/16", &textw, &texth,
-        SEG7_FONT);
+        SEG7_FONT, PANGO_ELLIPSIZE_NONE, -1);
       self->height_start_pos =
         PADDING_TOP +
         caption_texth + HALF_SPACE_BETWEEN;
@@ -349,8 +359,9 @@ draw_cb (
                               beat_unit);
       g_free (beats_per_bar);
       z_cairo_draw_text_full (
-        cr, text, width / 2 - textw / 2,
-        self->height_start_pos, SEG7_FONT);
+        cr, widget, text, width / 2 - textw / 2,
+        self->height_start_pos, SEG7_FONT,
+        PANGO_ELLIPSIZE_NONE, -1);
       g_free (text);
 
       break;
@@ -685,7 +696,7 @@ init_dm (
   int caption_textw, caption_texth;
   z_cairo_get_text_extents_for_widget_full (
     GTK_WIDGET (self), self->caption, &caption_textw,
-    &caption_texth, CAPTION_FONT);
+    &caption_texth, CAPTION_FONT, PANGO_ELLIPSIZE_NONE, -1);
   int textw, texth;
   switch (self->type)
     {
@@ -696,7 +707,7 @@ init_dm (
           _("Tempo/BPM"));
         z_cairo_get_text_extents_for_widget_full (
           GTK_WIDGET (self), "888888", &textw,
-          &texth, SEG7_FONT);
+          &texth, SEG7_FONT, PANGO_ELLIPSIZE_NONE, -1);
         /* caption + padding between caption and
          * BPM + padding top/bottom */
         gtk_widget_set_size_request (
@@ -711,7 +722,7 @@ init_dm (
         _("Position"));
       z_cairo_get_text_extents_for_widget_full (
         GTK_WIDGET (self), "-888888888", &textw,
-        &texth, SEG7_FONT);
+        &texth, SEG7_FONT, PANGO_ELLIPSIZE_NONE, -1);
       /* caption + padding between caption and
        * BPM + padding top/bottom */
       gtk_widget_set_size_request (
@@ -741,7 +752,7 @@ init_dm (
             "Beat unit"));
         z_cairo_get_text_extents_for_widget_full (
           GTK_WIDGET (self), "16/16", &textw,
-          &texth, SEG7_FONT);
+          &texth, SEG7_FONT, PANGO_ELLIPSIZE_NONE, -1);
         /* caption + padding between caption and
          * BPM + padding top/bottom */
         gtk_widget_set_size_request (

@@ -1662,7 +1662,7 @@ channel_append_all_ports (
   int *   size,
   int     include_plugins)
 {
-  int i, j, k;
+  int j, k;
   Track * tr = ch->track;
 
 #define _ADD(port) \

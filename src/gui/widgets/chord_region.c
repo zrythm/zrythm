@@ -181,10 +181,12 @@ chord_region_draw_cb (
               /* draw name */
               z_cairo_draw_text_full (
                 cr,
+                widget,
                 chord_descriptor_to_string (descr),
                 x_start * width + 2,
                 2,
-                Z_CAIRO_FONT);
+                Z_CAIRO_FONT,
+                PANGO_ELLIPSIZE_NONE, -1);
             }
         }
     }

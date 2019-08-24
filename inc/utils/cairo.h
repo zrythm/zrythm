@@ -128,7 +128,9 @@ z_cairo_get_text_extents_for_widget_full (
   const char * text,
   int *        width,
   int *        height,
-  const char * font);
+  const char * font,
+  PangoEllipsizeMode ellipsize_mode,
+  int          ellipsize_padding);
 
 /**
  * Draws the given text using the given font
@@ -137,19 +139,24 @@ z_cairo_get_text_extents_for_widget_full (
 void
 z_cairo_draw_text_full (
   cairo_t *    cr,
+  GtkWidget *  widget,
   const char * text,
   int          start_x,
   int          start_y,
-  const char * font);
+  const char * font,
+  PangoEllipsizeMode ellipsize_mode,
+  int          ellipsize_padding);
 
 static inline void
 z_cairo_draw_text (
   cairo_t *    cr,
+  GtkWidget *  widget,
   const char * text)
 {
   z_cairo_draw_text_full (
-    cr, text, Z_CAIRO_TEXT_PADDING,
-    Z_CAIRO_TEXT_PADDING, Z_CAIRO_FONT);
+    cr, widget, text, Z_CAIRO_TEXT_PADDING,
+    Z_CAIRO_TEXT_PADDING, Z_CAIRO_FONT,
+    PANGO_ELLIPSIZE_NONE, -1);
 }
 
 /**

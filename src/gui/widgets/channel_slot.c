@@ -33,6 +33,7 @@
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
+#include "utils/cairo.h"
 #include "utils/gtk.h"
 #include "utils/flags.h"
 #include "utils/ui.h"
@@ -43,6 +44,8 @@
 G_DEFINE_TYPE (ChannelSlotWidget,
                channel_slot_widget,
                GTK_TYPE_DRAWING_AREA)
+
+#define ELLIPSIZE_PADDING 2
 
 static void
 on_drag_data_received (
@@ -133,11 +136,13 @@ on_drag_data_received (
 }
 
 static int
-draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
+draw_cb (
+  GtkWidget * widget,
+  cairo_t * cr,
+  ChannelSlotWidget * self)
 {
   guint width, height;
   GtkStyleContext *context;
-  ChannelSlotWidget * self = (ChannelSlotWidget *) widget;
   context = gtk_widget_get_style_context (widget);
 
   width = gtk_widget_get_allocated_width (widget);
@@ -148,27 +153,31 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
 
 
   int padding = 2;
-  cairo_text_extents_t te;
-  Plugin * plugin = self->channel->plugins[self->slot_index];
+  Plugin * plugin =
+    self->channel->plugins[self->slot_index];
   if (plugin)
     {
-      GdkRGBA c;
+      GdkRGBA bg, fg;
+      gdk_rgba_parse (&fg, "#000000");
       if (!plugin->enabled)
-        /* matcha */
-        gdk_rgba_parse (&c,
-                        "#2eb398");
+        {
+          /* matcha */
+          gdk_rgba_parse (&bg, "#2eb398");
+        }
       if (plugin->visible)
-        /* bright green */
-        gdk_rgba_parse (&c,
-                        "#1DDD6A");
+        {
+          /* bright green */
+          gdk_rgba_parse (&bg, "#1DDD6A");
+        }
       else
-        /* darkish green */
-        gdk_rgba_parse (&c,
-                        "#1A884c");
+        {
+          /* darkish green */
+          gdk_rgba_parse (&bg, "#1A884c");
+        }
 
       /* fill background */
       cairo_set_source_rgba (
-        cr, c.red, c.green, c.blue, 1.0);
+        cr, bg.red, bg.green, bg.blue, 1.0);
       cairo_move_to (cr, padding, padding);
       cairo_line_to (cr, padding, height - padding);
       cairo_line_to (cr, width - padding, height - padding);
@@ -176,17 +185,20 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
       cairo_fill(cr);
 
       /* fill text */
-      cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
-      cairo_select_font_face (cr, "Arial",
-                              CAIRO_FONT_SLANT_NORMAL,
-                              CAIRO_FONT_WEIGHT_BOLD);
-      cairo_set_font_size (cr, 12.0);
-      cairo_text_extents (cr, plugin->descr->name, &te);
-      cairo_move_to (cr, 20,
-                     te.height / 2 - te.y_bearing);
-      char * text;
-      text = plugin->descr->name;
-      cairo_show_text (cr, text);
+      cairo_set_source_rgba (
+        cr, fg.red, fg.green, fg.blue, 1.0);
+      int w, h;
+      char * font = "Arial Medium 9";
+      char * text = plugin->descr->name;
+      z_cairo_get_text_extents_for_widget_full (
+        widget, text, &w, &h, font,
+        PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+      z_cairo_draw_text_full (
+        cr, widget, text, width / 2 - w / 2,
+        height / 2 - h / 2, font,
+        PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+      if (text != plugin->descr->name)
+        g_free (text);
     }
   else
     {
@@ -199,16 +211,17 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
       cairo_fill(cr);
 
       /* fill text */
-      const char * txt = _("empty slot");
       cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 1.0);
-      cairo_select_font_face (cr, "Arial",
-                              CAIRO_FONT_SLANT_ITALIC,
-                              CAIRO_FONT_WEIGHT_NORMAL);
-      cairo_set_font_size (cr, 12.0);
-      cairo_text_extents (cr, txt, &te);
-      cairo_move_to (cr, 20,
-                     te.height / 2 - te.y_bearing);
-      cairo_show_text (cr, txt);
+      int w, h;
+      char * font = "Arial Italic 9";
+      char * text = _("empty slot");
+      z_cairo_get_text_extents_for_widget_full (
+        widget, text, &w, &h, font,
+        PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+      z_cairo_draw_text_full (
+        cr, widget, text, width / 2 - w / 2,
+        height / 2 - h / 2, font,
+        PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
 
     }
 

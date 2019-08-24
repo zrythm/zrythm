@@ -86,7 +86,8 @@ z_cairo_get_text_extents_for_widget (
   int *        height)
 {
   z_cairo_get_text_extents_for_widget_full (
-    widget, text, width, height, Z_CAIRO_FONT);
+    widget, text, width, height, Z_CAIRO_FONT,
+    PANGO_ELLIPSIZE_NONE, -1);
 }
 
 /**
@@ -106,7 +107,9 @@ z_cairo_get_text_extents_for_widget_full (
   const char * text,
   int *        width,
   int *        height,
-  const char * font)
+  const char * font,
+  PangoEllipsizeMode ellipsize_mode,
+  int          ellipsize_padding)
 {
   PangoLayout *layout;
   PangoFontDescription *desc;
@@ -115,6 +118,16 @@ z_cairo_get_text_extents_for_widget_full (
     gtk_widget_create_pango_layout (
       widget, text);
 
+  if (ellipsize_mode > PANGO_ELLIPSIZE_NONE)
+    {
+      pango_layout_set_width (
+        layout,
+        pango_units_from_double (
+          gtk_widget_get_allocated_width (
+            widget) - ellipsize_padding * 2));
+      pango_layout_set_ellipsize (
+        layout, ellipsize_mode);
+    }
   pango_layout_set_markup (layout, text, -1);
   desc =
     pango_font_description_from_string (
@@ -131,10 +144,13 @@ z_cairo_get_text_extents_for_widget_full (
 void
 z_cairo_draw_text_full (
   cairo_t *    cr,
+  GtkWidget *  widget,
   const char * text,
   int          start_x,
   int          start_y,
-  const char * font)
+  const char * font,
+  PangoEllipsizeMode ellipsize_mode,
+  int          ellipsize_padding)
 {
 
   PangoLayout *layout;
@@ -145,6 +161,16 @@ z_cairo_draw_text_full (
   /* Create a PangoLayout, set the font and text */
   layout = pango_cairo_create_layout (cr);
 
+  if (ellipsize_mode > PANGO_ELLIPSIZE_NONE)
+    {
+      pango_layout_set_width (
+        layout,
+        pango_units_from_double (
+          gtk_widget_get_allocated_width (
+            widget) - ellipsize_padding * 2));
+      pango_layout_set_ellipsize (
+        layout, ellipsize_mode);
+    }
   pango_layout_set_markup (layout, text, -1);
   desc =
     pango_font_description_from_string (font);

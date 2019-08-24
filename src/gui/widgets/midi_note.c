@@ -191,7 +191,7 @@ midi_note_draw_cb (
     &color, &c2);
   gdk_cairo_set_source_rgba (cr, &c2);
   if (DEBUGGING || !PIANO_ROLL->drum_mode)
-    z_cairo_draw_text (cr, str);
+    z_cairo_draw_text (cr, widget, str);
   g_free (str);
 
  return FALSE;

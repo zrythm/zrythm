@@ -885,6 +885,15 @@ channel_widget_init (ChannelWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  /* set font sizes */
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self->name->label));
+  gtk_style_context_add_class (
+    context, "channel_label");
+  gtk_label_set_max_width_chars (
+    self->name->label, 10);
+
   /* setup inserts */
   GtkWidget * inserts_scroll =
     gtk_scrolled_window_new (
@@ -955,7 +964,6 @@ channel_widget_init (ChannelWidget * self)
   gtk_widget_set_hexpand (
     GTK_WIDGET (self), 0);
 
-  GtkStyleContext * context;
   z_gtk_container_destroy_all_children (
     GTK_CONTAINER (self->record));
   z_gtk_button_set_icon_name (

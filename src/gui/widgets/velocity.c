@@ -47,11 +47,11 @@ G_DEFINE_TYPE (VelocityWidget,
 #define RESIZE_CURSOR_SPACE 9
 
 static gboolean
-draw_cb (GtkDrawingArea * da,
-         cairo_t *cr,
-         gpointer data)
+draw_cb (
+  GtkWidget * widget,
+  cairo_t *cr,
+  VelocityWidget * self)
 {
-  VelocityWidget * self = Z_VELOCITY_WIDGET (data);
   guint width, height;
   GtkStyleContext *context;
 
@@ -164,7 +164,7 @@ draw_cb (GtkDrawingArea * da,
       ui_get_contrast_text_color (
         &color, &c2);
       gdk_cairo_set_source_rgba (cr, &c2);
-      z_cairo_draw_text (cr, "[t]");
+      z_cairo_draw_text (cr, widget, "[t]");
     }
 
  return FALSE;

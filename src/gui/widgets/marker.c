@@ -98,7 +98,7 @@ marker_draw_cb (
     color, &c2);
   cairo_set_source_rgba (
     cr, c2.red, c2.green, c2.blue, 1.0);
-  z_cairo_draw_text (cr, str);
+  z_cairo_draw_text (cr, widget, str);
   g_free (str);
 
  return FALSE;
