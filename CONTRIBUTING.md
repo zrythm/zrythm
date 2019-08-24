@@ -98,6 +98,13 @@ or for html output
 
     gcovr -r . --html -o coverage.html
 
+# Translations
+To collect all translatable filenames into
+`po/POTFILES`, generate the POT file and update
+the PO files, use
+
+    ninja -C build collect-translatables zrythm-pot zrythm-update-po
+
 # OBS Packaging
 Binary packages are created on [OBS (Open Build System)](https://build.opensuse.org/package/show/home:alextee/zrythm#) using git hooks.
 See the [README](git-packaging-hooks/README.md) in git-packaging-hooks and the `packaging` branch.

@@ -346,6 +346,7 @@ subdir ('tests')
 subdir ('data')
 subdir ('resources')
 subdir ('doc')
+subdir ('scripts')
 
 summary = [
   '',

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-08-23 01:17+0100\n"
+"POT-Creation-Date: 2019-08-24 01:20+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Korean <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -57,21 +57,13 @@ msgstr ""
 msgid "Error: signal %d - Backtrace:"
 msgstr ""
 
-#: src/main.c:82
+#: src/main.c:117
+#, c-format
 msgid ""
-"An error has occurred causing Zrythm to crash. Please help us fix this error "
-"by <a href=\"https://savannah.nongnu.org/support/?func=additem&group=zrythm"
-"\">submitting a bug report</a>, using the text below."
+"Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
 msgstr ""
 
-#: src/main.c:98
-msgid ""
-"Zrythm has crashed. Please help us fix this by <a href=\"https://savannah."
-"nongnu.org/support/?func=additem&amp;group=zrythm\">submitting a bug report</"
-"a>. Please include the following text, along with steps to reproduce"
-msgstr ""
-
-#: src/main.c:145
+#: src/main.c:167
 #, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
@@ -89,10 +81,10 @@ msgid ""
 "Website https://www.zrythm.org\n"
 msgstr ""
 
-#: src/main.c:203
+#: src/main.c:225
 #, c-format
 msgid ""
-"Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou et al.\n"
+"Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
 "\n"
 "Zrythm comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
@@ -394,6 +386,11 @@ msgstr ""
 
 #: src/gui/widgets/control_room.c:67
 msgid "The level to set other channels to when Listen is enabled on a channel"
+msgstr ""
+
+#. fill text
+#: src/gui/widgets/channel_slot.c:202
+msgid "empty slot"
 msgstr ""
 
 #: src/gui/widgets/channel_slot.c:587
@@ -731,25 +728,25 @@ msgid ""
 "corresponding channel in Mixer (if applicable)"
 msgstr ""
 
-#: src/gui/widgets/track.c:437
+#: src/gui/widgets/track.c:438
 msgid "_Delete Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:440
+#: src/gui/widgets/track.c:441
 #, c-format
 msgid "_Delete %d Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:456
+#: src/gui/widgets/track.c:457
 msgid "_Duplicate Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:460
+#: src/gui/widgets/track.c:461
 #, c-format
 msgid "_Duplicate %d Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:479
+#: src/gui/widgets/track.c:480
 msgid "Add Region"
 msgstr ""
 
@@ -997,6 +994,14 @@ msgstr ""
 
 #: src/actions/edit_marker_action.c:87
 msgid "Change Marker"
+msgstr ""
+
+#: src/actions/actions.c:244
+msgid "a highly automated and intuitive digital audio workstation"
+msgstr ""
+
+#: src/actions/actions.c:248
+msgid "Website"
 msgstr ""
 
 #: src/actions/actions.c:545
@@ -1404,11 +1409,6 @@ msgstr ""
 msgid "Chord Pad"
 msgstr ""
 
-#: resources/ui/track_top_grid.ui:34 resources/ui/automatable_selector.ui:104
-#: resources/ui/route_target_selector.ui:105
-msgid "label"
-msgstr ""
-
 #. property name="can_focus">False</property
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
@@ -1735,6 +1735,11 @@ msgstr ""
 msgid "Aftertouch"
 msgstr ""
 
+#: resources/ui/automatable_selector.ui:104
+#: resources/ui/route_target_selector.ui:105
+msgid "label"
+msgstr ""
+
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
 msgstr ""
@@ -1817,7 +1822,7 @@ msgstr ""
 msgid "Loop"
 msgstr ""
 
-#: resources/ui/splash.ui:67
+#: resources/ui/splash.ui:69
 msgid "Initializing..."
 msgstr ""
 

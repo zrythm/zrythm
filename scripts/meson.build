@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-#
 # Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
@@ -17,28 +15,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
-import os.path
-import sys
-
-os.chdir(os.getenv('MESON_SOURCE_ROOT', '.'))
-
-potfiles = open (
-  'po/POTFILES', 'w')
-
-count = 0
-for path in ['inc', 'src', 'resources', 'data']:
-  for dirpath, dirnames, filenames in os.walk(path):
-    for filename in [
-      f for f in filenames if f.endswith(".c") or
-      f.endswith(".h") or f.endswith(".ui") or
-      f.endswith(".desktop.in")]:
-        str = os.path.join(dirpath, filename)
-        potfiles.write (str + '\n')
-        count = count + 1
-
-print (
-  "wrote {} entries to {}".format (
-    count, potfiles.name))
-
-potfiles.close ()
+collect_translatables = run_target (
+  'collect-translatables',
+  command: [
+    'collect_translatables.sh',
+    ],
+  )

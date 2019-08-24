@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-08-23 01:17+0100\n"
+"POT-Creation-Date: 2019-08-24 01:20+0100\n"
 "PO-Revision-Date: 2019-08-14 14:24+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -58,21 +58,13 @@ msgstr "プロジェクトが保存されました。"
 msgid "Error: signal %d - Backtrace:"
 msgstr ""
 
-#: src/main.c:82
+#: src/main.c:117
+#, c-format
 msgid ""
-"An error has occurred causing Zrythm to crash. Please help us fix this error "
-"by <a href=\"https://savannah.nongnu.org/support/?func=additem&group=zrythm"
-"\">submitting a bug report</a>, using the text below."
+"Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
 msgstr ""
 
-#: src/main.c:98
-msgid ""
-"Zrythm has crashed. Please help us fix this by <a href=\"https://savannah."
-"nongnu.org/support/?func=additem&amp;group=zrythm\">submitting a bug report</"
-"a>. Please include the following text, along with steps to reproduce"
-msgstr ""
-
-#: src/main.c:145
+#: src/main.c:167
 #, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
@@ -90,10 +82,10 @@ msgid ""
 "Website https://www.zrythm.org\n"
 msgstr ""
 
-#: src/main.c:203
+#: src/main.c:225
 #, c-format
 msgid ""
-"Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou et al.\n"
+"Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
 "\n"
 "Zrythm comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
@@ -412,6 +404,11 @@ msgstr "Listenの薄暗いレベル"
 msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
 "あるチャンネルでListenが有効になっているときに他のチャンネルに設定するレベル"
+
+#. fill text
+#: src/gui/widgets/channel_slot.c:202
+msgid "empty slot"
+msgstr ""
 
 #: src/gui/widgets/channel_slot.c:587
 msgid ""
@@ -775,25 +772,25 @@ msgstr ""
 "icon on the bottom right to bring up the automation lanes - Double click to "
 "show corresponding channel in Mixer (if applicable)"
 
-#: src/gui/widgets/track.c:437
+#: src/gui/widgets/track.c:438
 msgid "_Delete Track"
 msgstr "トラックを削除(_D)"
 
-#: src/gui/widgets/track.c:440
+#: src/gui/widgets/track.c:441
 #, c-format
 msgid "_Delete %d Tracks"
 msgstr "%dトラックを削除する(_D)"
 
-#: src/gui/widgets/track.c:456
+#: src/gui/widgets/track.c:457
 msgid "_Duplicate Track"
 msgstr "トラックを複製(_D)"
 
-#: src/gui/widgets/track.c:460
+#: src/gui/widgets/track.c:461
 #, c-format
 msgid "_Duplicate %d Tracks"
 msgstr "%dトラックを複製(_D)"
 
-#: src/gui/widgets/track.c:479
+#: src/gui/widgets/track.c:480
 msgid "Add Region"
 msgstr "リージョンを追加"
 
@@ -1044,6 +1041,15 @@ msgstr "%d個のトラックを削除"
 #: src/actions/edit_marker_action.c:87
 msgid "Change Marker"
 msgstr "目印を変更"
+
+#: src/actions/actions.c:244
+#, fuzzy
+msgid "a highly automated and intuitive digital audio workstation"
+msgstr "高度に自動化された直感的なデジタルオーディオワークステーション（DAW）"
+
+#: src/actions/actions.c:248
+msgid "Website"
+msgstr ""
 
 #: src/actions/actions.c:545
 msgid "Save Project"
@@ -1459,11 +1465,6 @@ msgstr "モジュレーター"
 msgid "Chord Pad"
 msgstr "和音パッド"
 
-#: resources/ui/track_top_grid.ui:34 resources/ui/automatable_selector.ui:104
-#: resources/ui/route_target_selector.ui:105
-msgid "label"
-msgstr "ラベル"
-
 #. property name="can_focus">False</property
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
@@ -1790,6 +1791,11 @@ msgstr "モッドホイール"
 msgid "Aftertouch"
 msgstr "アフタータッチ"
 
+#: resources/ui/automatable_selector.ui:104
+#: resources/ui/route_target_selector.ui:105
+msgid "label"
+msgstr "ラベル"
+
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
 msgstr "スケールを強制する"
@@ -1872,7 +1878,7 @@ msgstr "前へ"
 msgid "Loop"
 msgstr "ループ"
 
-#: resources/ui/splash.ui:67
+#: resources/ui/splash.ui:69
 msgid "Initializing..."
 msgstr "初期化中…"
 
