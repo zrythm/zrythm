@@ -229,8 +229,8 @@ language code <b>%s</b> in <b>/etc/locale.gen</b> (needs \
 root privileges)\n\
 2. Run <b>locale-gen</b> as root\n\
 3. Restart Zrythm");
-      char code[3];
-      localization_get_string_code (lang, code);
+      char * code =
+      localization_get_string_code (lang);
       char * str =
         g_strdup_printf (
           template,

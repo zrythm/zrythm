@@ -36,63 +36,38 @@
 #include <glib/gi18n.h>
 
 /**
- * Returns the 2-character string code for the
+ * Returns the character string code for the
  * language (e.g. "fr").
- *
- * @param str is a preallocated buffer.
  */
-void
+char *
 localization_get_string_code (
-  UiLanguage lang,
-  char *     str)
+  UiLanguage lang)
 {
   switch (lang)
     {
     case UI_ENGLISH:
-      str[0] = 'e';
-      str[1] = 'n';
-      break;
+      return g_strdup ("en");
     case UI_GERMAN:
-      str[0] = 'd';
-      str[1] = 'e';
-      break;
+      return g_strdup ("de");
     case UI_FRENCH:
-      str[0] = 'f';
-      str[1] = 'r';
-      break;
+      return g_strdup ("fr");
     case UI_ITALIAN:
-      str[0] = 'i';
-      str[1] = 't';
-      break;
+      return g_strdup ("it");
     case UI_NORWEGIAN:
-      str[0] = 'n';
-      str[1] = 'b';
-      break;
+      return g_strdup ("nb_NO");
     case UI_SPANISH:
-      str[0] = 'e';
-      str[1] = 's';
-      break;
+      return g_strdup ("es");
     case UI_JAPANESE:
-      str[0] = 'j';
-      str[1] = 'a';
-      break;
+      return g_strdup ("ja");
     case UI_PORTUGUESE:
-      str[0] = 'p';
-      str[1] = 't';
-      break;
+      return g_strdup ("pt");
     case UI_RUSSIAN:
-      str[0] = 'r';
-      str[1] = 'u';
-      break;
+      return g_strdup ("ru");
     case UI_CHINESE:
-      str[0] = 'z';
-      str[1] = 'h';
-      break;
+      return g_strdup ("zh");
     default:
-      g_warn_if_reached ();
-      break;
+      g_return_val_if_reached ("");
     }
-  str[2] = '\0';
 }
 
 /**

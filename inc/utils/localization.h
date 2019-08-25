@@ -49,15 +49,12 @@ typedef enum UiLanguage
 } UiLanguage;
 
 /**
- * Returns the 2-character string code for the
+ * Returns the character string code for the
  * language (e.g. "fr").
- *
- * @param str is a preallocated buffer.
  */
-void
+char *
 localization_get_string_code (
-  UiLanguage lang,
-  char *     str);
+  UiLanguage lang);
 
 /**
  * Sets the locale to the currently selected one and
