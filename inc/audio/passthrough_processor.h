@@ -30,6 +30,8 @@
 #include "utils/yaml.h"
 
 typedef struct StereoPorts StereoPorts;
+typedef struct Port Port;
+typedef struct Channel Channel;
 
 /**
  * @addtogroup audio
@@ -37,7 +39,16 @@ typedef struct StereoPorts StereoPorts;
  * @{
  */
 
-typedef struct Channel Channel;
+typedef enum PassthroughProcessorType
+{
+  PP_TYPE_NONE,
+
+  /** Audio fader for Channel's. */
+  PP_TYPE_AUDIO_CHANNEL,
+
+  /* MIDI fader for Channel's. */
+  PP_TYPE_MIDI_CHANNEL,
+} PassthroughProcessorType;
 
 /**
  * A simple processor that copies the buffers of its
@@ -50,6 +61,8 @@ typedef struct PassthroughProcessor
   /** 0.0 ~ 1.0 for widgets. */
   float            passthrough_processor_val;
 
+  PassthroughProcessorType type;
+
   /**
    * L & R audio input ports.
    */
@@ -59,6 +72,16 @@ typedef struct PassthroughProcessor
    * L & R audio output ports.
    */
   StereoPorts *    stereo_out;
+
+  /**
+   * MIDI in port.
+   */
+  Port *           midi_in;
+
+  /**
+   * MIDI out port.
+   */
+  Port *           midi_out;
 
   /**
    * Current dBFS after procesing each output port.
@@ -97,7 +120,15 @@ passthrough_processor_schema =
 void
 passthrough_processor_init (
   PassthroughProcessor * self,
+  PassthroughProcessorType type,
   Channel * ch);
+
+/**
+ * Clears all buffers.
+ */
+void
+passthrough_processor_clear_buffers (
+  PassthroughProcessor * self);
 
 /**
  * Sets the passthrough_processor levels from a normalized value

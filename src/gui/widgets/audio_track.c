@@ -23,7 +23,7 @@
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
-#include "audio/bus_track.h"
+#include "audio/audio_bus_track.h"
 #include "audio/audio_track.h"
 #include "audio/track.h"
 #include "audio/region.h"

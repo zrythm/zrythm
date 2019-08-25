@@ -982,9 +982,9 @@ create_item (ArrangerWidget * self,
               timeline_arranger_widget_create_chord_or_scale (
                 timeline_arranger, track,
                 start_y, &pos);
-            case TRACK_TYPE_BUS:
+            case TRACK_TYPE_AUDIO_BUS:
               break;
-            case TRACK_TYPE_GROUP:
+            case TRACK_TYPE_AUDIO_GROUP:
               break;
             case TRACK_TYPE_MARKER:
               timeline_arranger_widget_create_marker (

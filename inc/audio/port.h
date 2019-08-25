@@ -79,6 +79,7 @@ typedef enum PortType {
  */
 typedef enum PortOwnerType
 {
+  //PORT_OWNER_TYPE_NONE,
   PORT_OWNER_TYPE_BACKEND,
   PORT_OWNER_TYPE_PLUGIN,
   PORT_OWNER_TYPE_TRACK,
@@ -506,10 +507,24 @@ port_new_with_data (
   void         * data);
 
 /**
- * Creates stereo ports.
+ * Creates blank stereo ports.
  */
 StereoPorts *
-stereo_ports_new (Port * l, Port * r);
+stereo_ports_new_from_existing (Port * l, Port * r);
+
+/**
+ * Creates stereo ports for generic use.
+ *
+ * @param in 1 for in, 0 for out.
+ * @param owner Pointer to the owner. The type is
+ *   determined by owner_type.
+ */
+StereoPorts *
+stereo_ports_new_generic (
+  int           in,
+  const char *  name,
+  PortOwnerType owner_type,
+  void *        owner);
 
 /**
  * Receives MIDI data from the port's exposed

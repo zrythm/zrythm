@@ -34,7 +34,7 @@
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/audio_track.h"
-#include "audio/bus_track.h"
+#include "audio/audio_bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_object.h"
 #include "audio/chord_region.h"
@@ -2195,9 +2195,9 @@ add_children_from_master_track (
 }
 
 static void
-add_children_from_bus_track (
+add_children_from_audio_bus_track (
   TimelineArrangerWidget * self,
-  BusTrack *               mt)
+  AudioBusTrack *               mt)
 {
   ChannelTrack * ct = (ChannelTrack *) mt;
   add_children_from_channel_track (ct);
@@ -2298,16 +2298,16 @@ timeline_arranger_widget_refresh_children (
                 self,
                 (AudioTrack *) track);
               break;
-            case TRACK_TYPE_BUS:
-              add_children_from_bus_track (
+            case TRACK_TYPE_AUDIO_BUS:
+              add_children_from_audio_bus_track (
                 self,
-                (BusTrack *) track);
+                (AudioBusTrack *) track);
               break;
             case TRACK_TYPE_MARKER:
               add_children_from_marker_track (
                 self, track);
               break;
-            case TRACK_TYPE_GROUP:
+            case TRACK_TYPE_AUDIO_GROUP:
               /* TODO */
               break;
             default:

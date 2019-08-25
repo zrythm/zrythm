@@ -38,7 +38,8 @@ static void
 on_clicked (GtkButton * button,
             RouteTargetSelectorWidget * self)
 {
-  if (self->owner->channel->type == CT_MASTER)
+  if (self->owner->channel->track->type ==
+        TRACK_TYPE_MASTER)
     gtk_widget_set_visible (
       GTK_WIDGET (self->popover), 0);
 }
@@ -77,7 +78,8 @@ route_target_selector_widget_setup (
   ChannelWidget *            owner)
 {
   self->owner = owner;
-  if (self->owner->channel->type == CT_MASTER)
+  if (self->owner->channel->track->type ==
+        TRACK_TYPE_MASTER)
     {
       gtk_widget_set_tooltip_text (
         GTK_WIDGET (self->box),

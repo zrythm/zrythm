@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,30 +17,23 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Track logic specific to bus tracks.
- */
+#ifndef __AUDIO_AUDIO_GROUP_TRACK_H__
+#define __AUDIO_AUDIO_GROUP_TRACK_H__
 
-#include <stdlib.h>
+#include "audio/channel_track.h"
+#include "audio/track.h"
 
-#include "audio/automation_tracklist.h"
-#include "audio/bus_track.h"
-#include "project.h"
-
-void
-bus_track_init (Track * track)
-{
-  track->type = TRACK_TYPE_BUS;
-  gdk_rgba_parse (&track->color, "#F9CA1B");
-}
+typedef struct Position Position;
+typedef struct _TrackWidget TrackWidget;
+typedef struct Channel Channel;
+typedef struct AutomationTrack AutomationTrack;
+typedef struct Automatable Automatable;
 
 void
-bus_track_setup (BusTrack * self)
-{
-  channel_track_setup ((ChannelTrack *) self);
-}
+audio_group_track_init (Track * track);
+
+void
+audio_group_track_setup (Track * self);
 
 /**
  * Frees the track.
@@ -48,7 +41,6 @@ bus_track_setup (BusTrack * self)
  * TODO
  */
 void
-bus_track_free (BusTrack * track)
-{
+audio_group_track_free (Track * track);
 
-}
+#endif // __AUDIO_AUDIO_BUS_TRACK_H__

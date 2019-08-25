@@ -246,7 +246,7 @@ void
 on_reset_fader (GtkMenuItem *menuitem,
                FaderWidget * self)
 {
-  if (self->fader->type == FADER_TYPE_CHANNEL)
+  if (self->fader->type == FADER_TYPE_AUDIO_CHANNEL)
     channel_reset_fader (
       self->fader->channel);
   else

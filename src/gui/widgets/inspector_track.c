@@ -48,18 +48,29 @@ inspector_track_widget_show_tracks (
         self->instrument_track_info,
         track);
 
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->prefader_sends), 0);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->postfader_sends), 0);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->stereo_in), 0);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->midi_in), 0);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->midi_out), 0);
+
       if (track->channel)
         {
           gtk_widget_set_visible (
             GTK_WIDGET (self->prefader_sends), 1);
           gtk_widget_set_visible (
             GTK_WIDGET (self->postfader_sends), 1);
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->stereo_in), 1);
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->midi_in), 1);
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->midi_out), 1);
+          /*gtk_widget_set_visible (*/
+            /*GTK_WIDGET (self->stereo_in), 1);*/
+          /*gtk_widget_set_visible (*/
+            /*GTK_WIDGET (self->midi_in), 1);*/
+          /*gtk_widget_set_visible (*/
+            /*GTK_WIDGET (self->midi_out), 1);*/
 
           ports_expander_widget_setup_track (
             self->prefader_sends,
@@ -67,28 +78,28 @@ inspector_track_widget_show_tracks (
           ports_expander_widget_setup_track (
             self->postfader_sends,
             track, PE_TRACK_PORT_TYPE_POSTFADER);
-          ports_expander_widget_setup_track (
-            self->stereo_in,
-            track, PE_TRACK_PORT_TYPE_STEREO_IN);
-          ports_expander_widget_setup_track (
-            self->midi_in,
-            track, PE_TRACK_PORT_TYPE_MIDI_IN);
-          ports_expander_widget_setup_track (
-            self->midi_out,
-            track, PE_TRACK_PORT_TYPE_MIDI_OUT);
+          /*ports_expander_widget_setup_track (*/
+            /*self->stereo_in,*/
+            /*track, PE_TRACK_PORT_TYPE_STEREO_IN);*/
+          /*ports_expander_widget_setup_track (*/
+            /*self->midi_in,*/
+            /*track, PE_TRACK_PORT_TYPE_MIDI_IN);*/
+          /*ports_expander_widget_setup_track (*/
+            /*self->midi_out,*/
+            /*track, PE_TRACK_PORT_TYPE_MIDI_OUT);*/
         }
       else
         {
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->prefader_sends), 0);
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->postfader_sends), 0);
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->stereo_in), 0);
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->midi_in), 0);
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->midi_out), 0);
+          /*gtk_widget_set_visible (*/
+            /*GTK_WIDGET (self->prefader_sends), 0);*/
+          /*gtk_widget_set_visible (*/
+            /*GTK_WIDGET (self->postfader_sends), 0);*/
+          /*gtk_widget_set_visible (*/
+            /*GTK_WIDGET (self->stereo_in), 0);*/
+          /*gtk_widget_set_visible (*/
+            /*GTK_WIDGET (self->midi_in), 0);*/
+          /*gtk_widget_set_visible (*/
+            /*GTK_WIDGET (self->midi_out), 0);*/
         }
     }
 }

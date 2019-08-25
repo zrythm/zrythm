@@ -33,7 +33,7 @@
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/audio_track.h"
-#include "audio/bus_track.h"
+#include "audio/audio_bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_object.h"
 #include "audio/chord_track.h"

@@ -23,7 +23,7 @@
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
-#include "audio/bus_track.h"
+#include "audio/audio_bus_track.h"
 #include "audio/master_track.h"
 #include "audio/track.h"
 #include "audio/region.h"
@@ -136,8 +136,6 @@ master_track_widget_refresh (
 {
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
-  ChannelTrack * ct = (ChannelTrack *) track;
-  Channel * chan = ct->channel;
 
   track_widget_set_name (
     Z_TRACK_WIDGET (self), track->name);

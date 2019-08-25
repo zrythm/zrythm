@@ -20,7 +20,7 @@
 /** \file
  */
 
-#include "audio/bus_track.h"
+#include "audio/audio_bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
 #include "audio/instrument_track.h"

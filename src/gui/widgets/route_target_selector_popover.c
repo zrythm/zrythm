@@ -76,7 +76,7 @@ create_model_for_routes (
             -1);
         }
       else if (type == ROUTE_TARGET_TYPE_GROUP &&
-               track->type == TRACK_TYPE_GROUP)
+               track->type == TRACK_TYPE_AUDIO_GROUP)
         {
           if (track !=
               self->owner->owner->channel->track)

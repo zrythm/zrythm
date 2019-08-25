@@ -20,6 +20,7 @@
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/fader.h"
+#include "audio/midi.h"
 #include "audio/track.h"
 #include "project.h"
 #include "utils/math.h"
@@ -54,54 +55,54 @@ fader_init (
   self->l_port_db = 0.f;
   self->r_port_db = 0.f;
 
-  /* stereo in */
-  char * pll =
-    g_strdup (_("Fader in L"));
-  char * plr =
-    g_strdup (_("Fader in R"));
-  self->stereo_in =
-    stereo_ports_new (
-      port_new_with_type (TYPE_AUDIO,
-                          FLOW_INPUT,
-                          pll),
-      port_new_with_type (TYPE_AUDIO,
-                          FLOW_INPUT,
-                          plr));
-  self->stereo_in->l->identifier.flags |=
-    PORT_FLAG_STEREO_L;
-  self->stereo_in->r->identifier.flags |=
-    PORT_FLAG_STEREO_R;
-  self->stereo_in->l->identifier.owner_type =
-    PORT_OWNER_TYPE_FADER;
-  self->stereo_in->r->identifier.owner_type =
-    PORT_OWNER_TYPE_FADER;
+  if (type == FADER_TYPE_AUDIO_CHANNEL)
+    {
+      /* stereo in */
+      self->stereo_in =
+        stereo_ports_new_generic (
+        1, _("Fader in"), PORT_OWNER_TYPE_FADER,
+        self);
 
-  /* stereo out */
-  pll =
-    g_strdup (_("Fader out L"));
-  plr =
-    g_strdup (_("Fader out R"));
-  self->stereo_out =
-    stereo_ports_new (
-     port_new_with_type (TYPE_AUDIO,
-                         FLOW_OUTPUT,
-                         pll),
-     port_new_with_type (TYPE_AUDIO,
-                         FLOW_OUTPUT,
-                         plr));
-  self->stereo_out->l->identifier.flags |=
-    PORT_FLAG_STEREO_L;
-  self->stereo_out->r->identifier.flags |=
-    PORT_FLAG_STEREO_R;
+      /* stereo out */
+      self->stereo_out =
+        stereo_ports_new_generic (
+        0, _("Fader out"), PORT_OWNER_TYPE_FADER,
+        self);
+    }
 
-  port_set_owner_fader (
-    self->stereo_in->l, self);
-  port_set_owner_fader (
-    self->stereo_in->r, self);
-  port_set_owner_fader (
-    self->stereo_out->l, self);
-  port_set_owner_fader (
-    self->stereo_out->r, self);
+  if (type == FADER_TYPE_MIDI_CHANNEL)
+    {
+      /* MIDI in */
+      char * pll =
+        g_strdup (_("MIDI fader in"));
+      self->midi_in =
+        port_new_with_type (
+          TYPE_EVENT,
+          FLOW_INPUT,
+          pll);
+      self->midi_in->midi_events =
+        midi_events_new (
+          self->midi_in);
+      g_free (pll);
+
+      /* MIDI out */
+      pll =
+        g_strdup (_("MIDI fader out"));
+      self->midi_out =
+        port_new_with_type (
+          TYPE_EVENT,
+          FLOW_OUTPUT,
+          pll);
+      self->midi_out->midi_events =
+        midi_events_new (
+          self->midi_out);
+      g_free (pll);
+
+      port_set_owner_fader (
+        self->midi_in, self);
+      port_set_owner_fader (
+        self->midi_out, self);
+    }
 }
 
 /**
@@ -164,6 +165,30 @@ fader_set_fader_val (
 }
 
 /**
+ * Clears all buffers.
+ */
+void
+fader_clear_buffers (
+  Fader * self)
+{
+  switch (self->type)
+    {
+    case FADER_TYPE_AUDIO_CHANNEL:
+      port_clear_buffer (self->stereo_in->l);
+      port_clear_buffer (self->stereo_in->r);
+      port_clear_buffer (self->stereo_out->l);
+      port_clear_buffer (self->stereo_out->r);
+      break;
+    case FADER_TYPE_MIDI_CHANNEL:
+      port_clear_buffer (self->midi_in);
+      port_clear_buffer (self->midi_out);
+      break;
+    default:
+      break;
+    }
+}
+
+/**
  * Disconnects all ports connected to the fader.
  */
 void
@@ -205,33 +230,44 @@ fader_process (
 {
   /*Track * track = self->channel->track;*/
 
-  /* first copy the input to output */
-  for (int i = start_frame;
-       i < start_frame + nframes; i++)
+  if (self->type == FADER_TYPE_AUDIO_CHANNEL)
     {
-      self->stereo_out->l->buf[i] =
-        self->stereo_in->l->buf[i];
-      self->stereo_out->r->buf[i] =
-        self->stereo_in->r->buf[i];
+      /* first copy the input to output */
+      for (int i = start_frame;
+           i < start_frame + nframes; i++)
+        {
+          self->stereo_out->l->buf[i] =
+            self->stereo_in->l->buf[i];
+          self->stereo_out->r->buf[i] =
+            self->stereo_in->r->buf[i];
+        }
+
+      /* apply pan */
+      port_apply_pan (
+        self->stereo_out->l, self->pan,
+        AUDIO_ENGINE->pan_law,
+        AUDIO_ENGINE->pan_algo,
+        start_frame, nframes);
+      port_apply_pan (
+        self->stereo_out->r, self->pan,
+        AUDIO_ENGINE->pan_law,
+        AUDIO_ENGINE->pan_algo,
+        start_frame, nframes);
+
+      /* apply fader */
+      port_apply_fader (
+        self->stereo_out->l, self->amp,
+        start_frame, nframes);
+      port_apply_fader (
+        self->stereo_out->r, self->amp,
+        start_frame, nframes);
     }
 
-  /* apply pan */
-  port_apply_pan (
-    self->stereo_out->l, self->pan,
-    AUDIO_ENGINE->pan_law,
-    AUDIO_ENGINE->pan_algo,
-    start_frame, nframes);
-  port_apply_pan (
-    self->stereo_out->r, self->pan,
-    AUDIO_ENGINE->pan_law,
-    AUDIO_ENGINE->pan_algo,
-    start_frame, nframes);
-
-  /* apply fader */
-  port_apply_fader (
-    self->stereo_out->l, self->amp,
-    start_frame, nframes);
-  port_apply_fader (
-    self->stereo_out->r, self->amp,
-    start_frame, nframes);
+  if (self->type == FADER_TYPE_MIDI_CHANNEL)
+    {
+      midi_events_append (
+        self->midi_in->midi_events,
+        self->midi_out->midi_events,
+        start_frame, nframes, 0);
+    }
 }

@@ -55,192 +55,34 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-static inline void
-connect_midi_in_to_midi_out (
-  Channel * ch)
-{
-  port_connect (ch->midi_in, ch->midi_out, 1);
-}
-
-static inline void
-connect_piano_roll_to_midi_out (
-  Channel * ch)
-{
-  port_connect (ch->piano_roll, ch->midi_out, 1);
-}
-
-static inline void
-disconnect_midi_in_from_midi_out (
-  Channel * ch)
-{
-  port_disconnect (ch->midi_in, ch->midi_out);
-}
-
-static inline void
-disconnect_piano_roll_from_midi_out (
-  Channel * ch)
-{
-  port_disconnect (ch->piano_roll, ch->midi_out);
-}
-
-static inline void
-connect_piano_roll_to_pl (
-  Channel * ch,
-  Plugin * pl)
-{
-  int i;
-  Port * in_port;
-
-  /* Connect piano roll to the plugin */
-  for (i = 0; i < pl->num_in_ports; i++)
-    {
-      in_port = pl->in_ports[i];
-      if (in_port->identifier.type == TYPE_EVENT &&
-          in_port->identifier.flow == FLOW_INPUT)
-        {
-          port_connect (
-            ch->piano_roll, in_port, 1);
-        }
-    }
-}
-
-/**
- * Connects a plugin that has at least one MIDI
- * input port.
- */
-static inline void
-connect_midi_in_to_pl (
-  Channel * ch,
-  Plugin *  pl)
-{
-  int i;
-  Port * in_port;
-
-  /* Connect MIDI port to the plugin */
-  for (i = 0; i < pl->num_in_ports; i++)
-    {
-      in_port = pl->in_ports[i];
-      if (in_port->identifier.type == TYPE_EVENT &&
-          in_port->identifier.flow == FLOW_INPUT)
-        {
-          port_connect (ch->midi_in, in_port, 1);
-        }
-    }
-}
-
-/**
- * Disconnects MIDI in from a plugin.
- */
-static inline void
-disconnect_midi_in_from_pl (
-  Channel * ch,
-  Plugin *  pl)
-{
-  int i;
-  Port * in_port;
-
-  /* Disconnect MIDI port and piano roll to the
-   * plugin */
-  for (i = 0; i < pl->num_in_ports; i++)
-    {
-      in_port = pl->in_ports[i];
-      if (in_port->identifier.type == TYPE_EVENT &&
-          in_port->identifier.flow == FLOW_INPUT)
-        {
-          if (ports_connected (
-                ch->midi_in, in_port))
-            port_disconnect (
-              ch->midi_in, in_port);
-        }
-    }
-}
-
-/**
- * Disconnects piano roll from a plugin.
- */
-static inline void
-disconnect_piano_roll_from_pl (
-  Channel * ch,
-  Plugin *  pl)
-{
-  int i;
-  Port * in_port;
-
-  /* Disconnect MIDI port and piano roll to the
-   * plugin */
-  for (i = 0; i < pl->num_in_ports; i++)
-    {
-      in_port = pl->in_ports[i];
-      if (in_port->identifier.type == TYPE_EVENT &&
-          in_port->identifier.flow == FLOW_INPUT)
-        {
-          if (ports_connected (
-                ch->midi_in, in_port))
-            port_disconnect (
-              ch->piano_roll, in_port);
-        }
-    }
-}
-
-static inline void
-connect_pl_to_midi_out (
-  Plugin * pl,
-  Channel * ch)
-{
-  int i;
-  Port * out_port;
-
-  for (i = 0; i < pl->num_out_ports; i++)
-    {
-      out_port = pl->out_ports[i];
-      if (out_port->identifier.type == TYPE_EVENT &&
-          out_port->identifier.flow == FLOW_OUTPUT)
-        {
-          port_connect (
-            out_port, ch->midi_out, 1);
-        }
-    }
-}
-
-static inline void
-disconnect_pl_from_midi_out (
-  Plugin * pl,
-  Channel * ch)
-{
-  int i;
-  Port * out_port;
-
-  for (i = 0; i < pl->num_out_ports; i++)
-    {
-      out_port = pl->out_ports[i];
-      if (out_port->identifier.type == TYPE_EVENT &&
-          out_port->identifier.flow == FLOW_OUTPUT)
-        {
-          if (ports_connected (
-                out_port, ch->midi_out))
-            {
-              port_disconnect (
-                out_port, ch->midi_out);
-            }
-        }
-    }
-}
-
 /**
  * Disconnect stereo in ports from the fader.
  *
  * Used when there is no plugin in the channel.
  */
 static inline void
-disconnect_stereo_in_from_fader (
+disconnect_ch_input_from_fader (
   Channel * ch)
 {
-  port_disconnect (
-    ch->stereo_in->l,
-    ch->prefader.stereo_in->l);
-  port_disconnect (
-    ch->stereo_in->r,
-    ch->prefader.stereo_in->r);
+  switch (ch->track->in_signal_type)
+    {
+    case TYPE_AUDIO:
+      port_disconnect (
+        ch->stereo_in->l,
+        ch->prefader.stereo_in->l);
+      port_disconnect (
+        ch->stereo_in->r,
+        ch->prefader.stereo_in->r);
+      break;
+    case TYPE_EVENT:
+      port_disconnect (ch->midi_in, ch->midi_out);
+      if (track_has_piano_roll (ch->track))
+        port_disconnect (
+          ch->piano_roll, ch->midi_out);
+      break;
+    default:
+      break;
+    }
 }
 
 /**
@@ -250,15 +92,30 @@ disconnect_stereo_in_from_fader (
  * Used when deleting the only plugin left.
  */
 static inline void
-connect_stereo_in_to_fader (
+connect_ch_input_to_fader (
   Channel * ch)
 {
-  port_connect (
-    ch->stereo_in->l,
-    ch->prefader.stereo_in->l, 1);
-  port_connect (
-    ch->stereo_in->r,
-    ch->prefader.stereo_in->r, 1);
+  /* connect only if signals match */
+  if (ch->track->in_signal_type == TYPE_AUDIO &&
+      ch->track->out_signal_type == TYPE_AUDIO)
+    {
+      port_connect (
+        ch->stereo_in->l,
+        ch->prefader.stereo_in->l, 1);
+      port_connect (
+        ch->stereo_in->r,
+        ch->prefader.stereo_in->r, 1);
+    }
+  if (ch->track->in_signal_type == TYPE_EVENT &&
+      ch->track->out_signal_type == TYPE_EVENT)
+    {
+      port_connect (
+        ch->midi_in,
+        ch->prefader.midi_in, 1);
+      if (track_has_piano_roll (ch->track))
+        port_connect (
+          ch->piano_roll, ch->prefader.midi_in, 1);
+    }
 }
 
 /**
@@ -266,32 +123,52 @@ connect_stereo_in_to_fader (
  * Plugin's input ports.
  */
 static inline void
-disconnect_ch_stereo_in_from_pl (
+disconnect_ch_input_from_pl (
   Channel * ch,
   Plugin * pl)
 {
   int i;
   Port * in_port;
+  PortType type = ch->track->in_signal_type;
 
   for (i = 0; i < pl->num_in_ports; i++)
     {
       in_port = pl->in_ports[i];
 
-      if (in_port->identifier.type != TYPE_AUDIO)
-        continue;
+      if (type == TYPE_AUDIO)
+        {
+          if (in_port->identifier.type !=
+                TYPE_AUDIO)
+            continue;
 
-      if (ports_connected (
-            ch->stereo_in->l,
-            in_port))
-        port_disconnect (
-          ch->stereo_in->l,
-          in_port);
-      if (ports_connected (
-            ch->stereo_in->r,
-            in_port))
-        port_disconnect (
-          ch->stereo_in->r,
-          in_port);
+          if (ports_connected (
+                ch->stereo_in->l,
+                in_port))
+            port_disconnect (
+              ch->stereo_in->l,
+              in_port);
+          if (ports_connected (
+                ch->stereo_in->r,
+                in_port))
+            port_disconnect (
+              ch->stereo_in->r,
+              in_port);
+        }
+      else if (type == TYPE_EVENT)
+        {
+          if (in_port->identifier.type !=
+                TYPE_EVENT)
+            continue;
+
+          if (ports_connected (
+                ch->midi_in, in_port))
+            port_disconnect (
+              ch->midi_in, in_port);
+          if (ports_connected (
+                ch->piano_roll, in_port))
+            port_disconnect (
+              ch->piano_roll, in_port);
+        }
     }
 }
 
@@ -300,50 +177,77 @@ disconnect_ch_stereo_in_from_pl (
  * inputs of the Plugin.
  */
 static inline void
-connect_ch_stereo_in_to_plugin (
+connect_ch_input_to_pl (
   Channel * ch,
   Plugin * pl)
 {
   int last_index, num_ports_to_connect, i;
   Port * in_port;
 
-  num_ports_to_connect = 0;
-  if (pl->descr->num_audio_ins == 1)
+  if (ch->track->in_signal_type ==
+        TYPE_EVENT)
     {
-      num_ports_to_connect = 1;
-    }
-  else if (pl->descr->num_audio_ins > 1)
-    {
-      num_ports_to_connect = 2;
-    }
-
-  last_index = 0;
-  for (i = 0; i < num_ports_to_connect; i++)
-    {
-      for (;
-           last_index < pl->num_in_ports;
-           last_index++)
+      /* Connect MIDI port to the plugin */
+      for (i = 0; i < pl->num_in_ports; i++)
         {
-          in_port =
-            pl->in_ports[
-              last_index];
-          if (in_port->identifier.type == TYPE_AUDIO)
+          in_port = pl->in_ports[i];
+          if (in_port->identifier.type ==
+                TYPE_EVENT &&
+              in_port->identifier.flow ==
+                FLOW_INPUT)
             {
-              if (i == 0)
+              port_connect (
+                ch->midi_in, in_port, 1);
+
+              if (track_has_piano_roll (
+                    ch->track))
+                port_connect (
+                  ch->piano_roll, in_port, 1);
+            }
+        }
+    }
+  else if (ch->track->in_signal_type ==
+             TYPE_AUDIO)
+    {
+      num_ports_to_connect = 0;
+      if (pl->descr->num_audio_ins == 1)
+        {
+          num_ports_to_connect = 1;
+        }
+      else if (pl->descr->num_audio_ins > 1)
+        {
+          num_ports_to_connect = 2;
+        }
+
+      last_index = 0;
+      for (i = 0; i < num_ports_to_connect; i++)
+        {
+          for (;
+               last_index < pl->num_in_ports;
+               last_index++)
+            {
+              in_port =
+                pl->in_ports[
+                  last_index];
+              if (in_port->identifier.type ==
+                    TYPE_AUDIO)
                 {
-                  port_connect (
-                    ch->stereo_in->l,
-                    in_port, 1);
-                  last_index++;
-                  break;
-                }
-              else if (i == 1)
-                {
-                  port_connect (
-                    ch->stereo_in->r,
-                    in_port, 1);
-                  last_index++;
-                  break;
+                  if (i == 0)
+                    {
+                      port_connect (
+                        ch->stereo_in->l,
+                        in_port, 1);
+                      last_index++;
+                      break;
+                    }
+                  else if (i == 1)
+                    {
+                      port_connect (
+                        ch->stereo_in->r,
+                        in_port, 1);
+                      last_index++;
+                      break;
+                    }
                 }
             }
         }
@@ -527,54 +431,75 @@ connect_pl_to_fader (
 {
   int i, last_index;
   Port * out_port;
-  if (pl->descr->num_audio_outs == 1)
+  PortType type = ch->track->out_signal_type;
+
+  if (type == TYPE_EVENT)
     {
-      /* if mono find the audio out and connect to
-       * both stereo out L and R */
       for (i = 0; i < pl->num_out_ports; i++)
         {
           out_port = pl->out_ports[i];
-
-          if (out_port->identifier.type == TYPE_AUDIO)
+          if (out_port->identifier.type ==
+                TYPE_EVENT &&
+              out_port->identifier.flow ==
+                FLOW_OUTPUT)
             {
               port_connect (
-                out_port,
-                ch->prefader.stereo_in->l, 1);
-              port_connect (
-                out_port,
-                ch->prefader.stereo_in->r, 1);
-              break;
+                out_port, ch->midi_out, 1);
             }
         }
     }
-  else if (pl->descr->num_audio_outs > 1)
+  else if (type == TYPE_AUDIO)
     {
-      last_index = 0;
-
-      for (i = 0; i < pl->num_out_ports; i++)
+      if (pl->descr->num_audio_outs == 1)
         {
-          out_port = pl->out_ports[i];
-
-          if (out_port->identifier.type != TYPE_AUDIO)
-            continue;
-
-          if (last_index == 0)
+          /* if mono find the audio out and connect to
+           * both stereo out L and R */
+          for (i = 0; i < pl->num_out_ports; i++)
             {
-              port_connect (
-                out_port,
-                ch->prefader.stereo_in->l, 1);
-              last_index++;
+              out_port = pl->out_ports[i];
+
+              if (out_port->identifier.type ==
+                    TYPE_AUDIO)
+                {
+                  port_connect (
+                    out_port,
+                    ch->prefader.stereo_in->l, 1);
+                  port_connect (
+                    out_port,
+                    ch->prefader.stereo_in->r, 1);
+                  break;
+                }
             }
-          else if (last_index == 1)
+        }
+      else if (pl->descr->num_audio_outs > 1)
+        {
+          last_index = 0;
+
+          for (i = 0; i < pl->num_out_ports; i++)
             {
-              port_connect (
-                out_port,
-                ch->prefader.stereo_in->r, 1);
-              break;
+              out_port = pl->out_ports[i];
+
+              if (out_port->identifier.type !=
+                    TYPE_AUDIO)
+                continue;
+
+              if (last_index == 0)
+                {
+                  port_connect (
+                    out_port,
+                    ch->prefader.stereo_in->l, 1);
+                  last_index++;
+                }
+              else if (last_index == 1)
+                {
+                  port_connect (
+                    out_port,
+                    ch->prefader.stereo_in->r, 1);
+                  break;
+                }
             }
         }
     }
-
 }
 
 /**
@@ -754,20 +679,37 @@ disconnect_pl_from_fader (
 {
   int i;
   Port * out_port;
+  PortType type = ch->track->out_signal_type;
 
   for (i = 0; i < pl->num_out_ports; i++)
     {
       out_port = pl->out_ports[i];
-      if (out_port->identifier.type == TYPE_AUDIO)
+      if (type == TYPE_AUDIO &&
+          out_port->identifier.type == TYPE_AUDIO)
         {
           if (ports_connected (
-                out_port, ch->prefader.stereo_in->l))
+                out_port,
+                ch->prefader.stereo_in->l))
             port_disconnect (
-              out_port, ch->prefader.stereo_in->l);
+              out_port,
+              ch->prefader.stereo_in->l);
           if (ports_connected (
-                out_port, ch->prefader.stereo_in->r))
+                out_port,
+                ch->prefader.stereo_in->r))
             port_disconnect (
-              out_port, ch->prefader.stereo_in->r);
+              out_port,
+              ch->prefader.stereo_in->r);
+        }
+      else if (type == TYPE_EVENT &&
+               out_port->identifier.type ==
+                 TYPE_EVENT)
+        {
+          if (ports_connected (
+                out_port,
+                ch->prefader.midi_in))
+            port_disconnect (
+              out_port,
+              ch->prefader.midi_in);
         }
     }
 }
@@ -785,25 +727,14 @@ connect_no_prev_no_next (
    * ----------------------------------------- */
   /* channel stereo in is connected to channel
    * stereo out. disconnect it */
-  disconnect_stereo_in_from_fader (ch);
-
-  /* MIDI in is connected to MIDI out. disconnect
-   * it */
-  disconnect_midi_in_from_midi_out (ch);
-
-  disconnect_piano_roll_from_midi_out (ch);
+  disconnect_ch_input_from_fader (ch);
 
   /* -------------------------------------------
    * connect input ports
    * ------------------------------------------- */
 
   /* connect channel stereo in to plugin */
-  connect_ch_stereo_in_to_plugin (ch, pl);
-
-  /* connect channel midi in to plugin */
-  connect_midi_in_to_pl (ch, pl);
-
-  connect_piano_roll_to_pl (ch, pl);
+  connect_ch_input_to_pl (ch, pl);
 
   /* --------------------------------------
    * connect output ports
@@ -811,9 +742,6 @@ connect_no_prev_no_next (
 
   /* connect plugin to stereo out */
   connect_pl_to_fader (pl, ch);
-
-  /* connect plugin to midi out */
-  connect_pl_to_midi_out (pl, ch);
 }
 
 /**
@@ -830,25 +758,14 @@ connect_no_prev_next (
    * ----------------------------------------- */
   /* channel stereo in is connected to next plugin.
    * disconnect it */
-  disconnect_ch_stereo_in_from_pl (ch, next_pl);
-
-  /* MIDI in is connected to next plugin. disconnect
-   * it */
-  disconnect_midi_in_from_pl (ch, next_pl);
-
-  disconnect_piano_roll_from_pl (ch, next_pl);
+  disconnect_ch_input_from_pl (ch, next_pl);
 
   /* -------------------------------------------
    * connect input ports
    * ------------------------------------------- */
 
   /* connect channel stereo in to plugin */
-  connect_ch_stereo_in_to_plugin (ch, pl);
-
-  /* connect midi in to plugin */
-  connect_midi_in_to_pl (ch, pl);
-
-  connect_piano_roll_to_pl (ch, pl);
+  connect_ch_input_to_pl (ch, pl);
 
   /* --------------------------------------
    * connect output ports
@@ -875,10 +792,6 @@ connect_prev_no_next (
    * disconnect it */
   disconnect_pl_from_fader (prev_pl, ch);
 
-  /* prev plugin is connected to channel midi out.
-   * disconnect it */
-  disconnect_pl_from_midi_out (prev_pl, ch);
-
   /* -------------------------------------------
    * connect input ports
    * ------------------------------------------- */
@@ -893,9 +806,6 @@ connect_prev_no_next (
 
   /* connect plugin output ports to stereo_out */
   connect_pl_to_fader (pl, ch);
-
-  /* connect plugin midi outs to midi out */
-  connect_pl_to_midi_out (pl, ch);
 }
 
 /**
@@ -945,12 +855,7 @@ disconnect_no_prev_no_next (
    * ------------------------------------------- */
 
   /* disconnect channel stereo in from plugin */
-  disconnect_ch_stereo_in_from_pl (ch, pl);
-
-  /* disconnect channel midi in from plugin */
-  disconnect_midi_in_from_pl (ch, pl);
-
-  disconnect_piano_roll_from_pl (ch, pl);
+  disconnect_ch_input_from_pl (ch, pl);
 
   /* --------------------------------------
    * disconnect output ports
@@ -959,20 +864,12 @@ disconnect_no_prev_no_next (
   /* disconnect plugin from stereo out */
   disconnect_pl_from_fader (pl, ch);
 
-  /* disconnect plugin from midi out */
-  disconnect_pl_from_midi_out (pl, ch);
-
   /* -----------------------------------------
    * connect ports
    * ----------------------------------------- */
   /* channel stereo in should be connected to
    * channel stereo out. connect it */
-  connect_stereo_in_to_fader (ch);
-
-  /* connect channel midi in to midi out */
-  connect_midi_in_to_midi_out (ch);
-
-  connect_piano_roll_to_midi_out (ch);
+  connect_ch_input_to_fader (ch);
 }
 
 /**
@@ -989,12 +886,7 @@ disconnect_no_prev_next (
    * ------------------------------------------- */
 
   /* disconnect channel stereo in from plugin */
-  disconnect_ch_stereo_in_from_pl (ch, pl);
-
-  /* disconnect midi in from plugin */
-  disconnect_midi_in_from_pl (ch, pl);
-
-  disconnect_piano_roll_from_pl (ch, pl);
+  disconnect_ch_input_from_pl (ch, pl);
 
   /* --------------------------------------
    * Disconnect output ports
@@ -1009,13 +901,7 @@ disconnect_no_prev_next (
    * ----------------------------------------- */
   /* channel stereo in should be connected to next
    * plugin. connect it */
-  connect_ch_stereo_in_to_plugin (
-    ch, next_pl);
-
-  /* connect midi in to plugin */
-  connect_midi_in_to_pl (ch, next_pl);
-
-  connect_piano_roll_to_pl (ch, next_pl);
+  connect_ch_input_to_pl (ch, next_pl);
 }
 
 /**
@@ -1043,18 +929,12 @@ disconnect_prev_no_next (
    * out */
   disconnect_pl_from_fader (pl, ch);
 
-  /* disconnect plguin output from midi out */
-  disconnect_pl_from_midi_out (pl, ch);
-
   /* -----------------------------------------
    * connect ports
    * ----------------------------------------- */
   /* prev plugin should be connected to channel
    * stereo out. connect it */
   connect_pl_to_fader (prev_pl, ch);
-
-  /* connect prev plugin to midi out */
-  connect_pl_to_midi_out (prev_pl, ch);
 }
 
 /**
@@ -1112,7 +992,7 @@ channel_handle_recording (Channel * self)
     &tmp,
     AUDIO_ENGINE->nframes + 1);
 
-  if (self->type == CT_MIDI)
+  if (track_has_piano_roll (self->track))
     {
       MidiRegion * mr = (MidiRegion *) region;
 
@@ -1185,41 +1065,46 @@ channel_handle_recording (Channel * self)
  * all channels.
  */
 void
-channel_prepare_process (Channel * channel)
+channel_prepare_process (Channel * self)
 {
   Plugin * plugin;
   int i,j;
+  PortType in_type =
+    self->track->in_signal_type;
+  PortType out_type =
+    self->track->out_signal_type;
 
   /* clear buffers */
-  if (channel->type == CT_MASTER ||
-      channel->type == CT_AUDIO ||
-      channel->type == CT_BUS)
+  if (in_type == TYPE_AUDIO)
     {
-      port_clear_buffer (channel->stereo_in->l);
-      port_clear_buffer (channel->stereo_in->r);
+      port_clear_buffer (self->stereo_in->l);
+      port_clear_buffer (self->stereo_in->r);
     }
-  if (channel->type == CT_MIDI)
+  else if (in_type == TYPE_EVENT)
     {
-      port_clear_buffer (channel->midi_in);
-      port_clear_buffer (channel->piano_roll);
+      port_clear_buffer (self->midi_in);
+      if (track_has_piano_roll (self->track))
+        port_clear_buffer (self->piano_roll);
     }
-  port_clear_buffer (channel->prefader.stereo_in->l);
-  port_clear_buffer (channel->prefader.stereo_in->r);
-  port_clear_buffer (channel->prefader.stereo_out->l);
-  port_clear_buffer (channel->prefader.stereo_out->r);
-  port_clear_buffer (channel->fader.stereo_in->l);
-  port_clear_buffer (channel->fader.stereo_in->r);
-  port_clear_buffer (channel->fader.stereo_out->l);
-  port_clear_buffer (channel->fader.stereo_out->r);
-  port_clear_buffer (channel->stereo_out->l);
-  port_clear_buffer (channel->stereo_out->r);
-  port_clear_buffer (channel->midi_in);
-  port_clear_buffer (channel->midi_out);
-  if (channel->piano_roll)
-    port_clear_buffer (channel->piano_roll);
+
+  passthrough_processor_clear_buffers (
+    &self->prefader);
+  fader_clear_buffers (
+    &self->fader);
+
+  if (out_type == TYPE_AUDIO)
+    {
+      port_clear_buffer (self->stereo_out->l);
+      port_clear_buffer (self->stereo_out->r);
+    }
+  else if (out_type == TYPE_EVENT)
+    {
+      port_clear_buffer (self->midi_out);
+    }
+
   for (j = 0; j < STRIP_SIZE; j++)
     {
-      plugin = channel->plugins[j];
+      plugin = self->plugins[j];
       if (!plugin)
         continue;
 
@@ -1240,7 +1125,7 @@ channel_prepare_process (Channel * channel)
             plugin->unknown_ports[i]);
         }
     }
-  channel->filled_stereo_in_bufs = 0;
+  self->filled_stereo_in_bufs = 0;
 }
 
 void
@@ -1305,137 +1190,6 @@ channel_init_loaded (Channel * ch)
       pl->track = ch->track;
       plugin_init_loaded (pl);
     }
-}
-
-/**
- * Creates, inits, and returns a new channel with
- * given info.
- */
-static inline Channel *
-_create_channel (
-  Track * track)
-{
-  Channel * self = calloc (1, sizeof (Channel));
-
-  self->track = track;
-
-  self->ats_size = 12;
-  self->ats =
-    calloc (self->ats_size,
-            sizeof (AutomationTrack *));
-
-  /* create ports */
-  char * pll =
-    g_strdup (_("Stereo in L"));
-  char * plr =
-    g_strdup (_("Stereo in R"));
-  self->stereo_in =
-    stereo_ports_new (
-      port_new_with_type (TYPE_AUDIO,
-                          FLOW_INPUT,
-                          pll),
-      port_new_with_type (TYPE_AUDIO,
-                          FLOW_INPUT,
-                          plr));
-  self->stereo_in->l->identifier.flags |=
-    PORT_FLAG_STEREO_L;
-  self->stereo_in->r->identifier.flags |=
-    PORT_FLAG_STEREO_R;
-  g_free (pll);
-  g_free (plr);
-  pll =
-    g_strdup (_("MIDI in"));
-  self->midi_in =
-    port_new_with_type (
-      TYPE_EVENT,
-      FLOW_INPUT,
-      pll);
-  self->midi_in->midi_events =
-    midi_events_new (
-      self->midi_in);
-  g_free (pll);
-  pll =
-    g_strdup (_("MIDI out"));
-  self->midi_out =
-    port_new_with_type (
-      TYPE_EVENT,
-      FLOW_OUTPUT,
-      pll);
-  self->midi_out->midi_events =
-    midi_events_new (
-      self->midi_out);
-  g_free (pll);
-  pll = g_strdup (_("Stereo out L"));
-  plr = g_strdup (_("Stereo out R"));
-  self->stereo_out =
-    stereo_ports_new (
-     port_new_with_type (TYPE_AUDIO,
-                         FLOW_OUTPUT,
-                         pll),
-     port_new_with_type (TYPE_AUDIO,
-                         FLOW_OUTPUT,
-                         plr));
-  self->stereo_out->l->identifier.flags |=
-    PORT_FLAG_STEREO_L;
-  self->stereo_out->r->identifier.flags |=
-    PORT_FLAG_STEREO_R;
-  g_message ("Created stereo out ports");
-  g_free (pll);
-  g_free (plr);
-  port_set_owner_track (
-    self->stereo_in->l,
-    track);
-  port_set_owner_track (
-    self->stereo_in->r,
-    track);
-  port_set_owner_track (
-    self->stereo_out->l,
-    track);
-  port_set_owner_track (
-    self->stereo_out->r,
-    track);
-  port_set_owner_track (
-    self->midi_in,
-    track);
-  port_set_owner_track (
-    self->midi_out,
-    track);
-
-  /* init plugins */
-  for (int i = 0; i < STRIP_SIZE; i++)
-    {
-      self->plugins[i] = NULL;
-    }
-
-  fader_init (
-    &self->fader,
-    FADER_TYPE_CHANNEL,
-    self);
-  passthrough_processor_init (
-    &self->prefader,
-    self);
-
-  /* set up piano roll port */
-  char * tmp =
-    g_strdup (_("Piano Roll"));
-  self->piano_roll =
-    port_new_with_type (
-      TYPE_EVENT,
-      FLOW_INPUT,
-      tmp);
-  self->piano_roll->identifier.flags =
-    PORT_FLAG_PIANO_ROLL;
-  self->piano_roll->identifier.owner_type =
-    PORT_OWNER_TYPE_TRACK;
-  self->piano_roll->identifier.track_pos =
-    self->track->pos;
-  self->piano_roll->track =
-    self->track;
-  self->piano_roll->midi_events =
-    midi_events_new (
-      self->piano_roll);
-
-  return self;
 }
 
 /**
@@ -1551,7 +1305,7 @@ channel_connect (
     /*}*/
 
   /* set default output */
-  if (ch->type == CT_MASTER)
+  if (ch->track->type == TRACK_TYPE_MASTER)
     {
       ch->output = NULL;
       ch->output_pos = -1;
@@ -1561,9 +1315,6 @@ channel_connect (
       port_connect (
         ch->stereo_out->r,
         AUDIO_ENGINE->stereo_out->r, 1);
-      port_connect (
-        ch->midi_out,
-        AUDIO_ENGINE->midi_out, 1);
     }
   else
     {
@@ -1571,14 +1322,11 @@ channel_connect (
       ch->output_pos = P_MASTER_TRACK->pos;
     }
 
-  if (ch->type == CT_BUS ||
-      ch->type == CT_AUDIO ||
-      ch->type == CT_MASTER ||
-      ch->type == CT_MIDI)
+  if (ch->track->out_signal_type ==
+        TYPE_AUDIO)
     {
       /* connect stereo in to stereo out through
        * fader */
-      connect_stereo_in_to_fader (ch);
       port_connect (
         ch->prefader.stereo_out->l,
         ch->fader.stereo_in->l, 1);
@@ -1592,23 +1340,35 @@ channel_connect (
         ch->fader.stereo_out->r,
         ch->stereo_out->r, 1);
     }
+  else if (ch->track->out_signal_type ==
+             TYPE_EVENT)
+    {
+      port_connect (
+        ch->prefader.midi_out,
+        ch->fader.midi_in, 1);
+      port_connect (
+        ch->fader.midi_out,
+        ch->midi_out, 1);
+    }
 
   /** Connect MIDI in and piano roll to MIDI out. */
-  connect_midi_in_to_midi_out (ch);
-  connect_piano_roll_to_midi_out (ch);
+  connect_ch_input_to_fader (ch);
 
-  if (ch->type != CT_MASTER)
+  if (ch->track->type != TRACK_TYPE_MASTER)
     {
-      /* connect channel out ports to master */
-      port_connect (
-        ch->stereo_out->l,
-        P_MASTER_TRACK->channel->stereo_in->l, 1);
-      port_connect (
-        ch->stereo_out->r,
-        P_MASTER_TRACK->channel->stereo_in->r, 1);
-      port_connect (
-        ch->midi_out,
-        P_MASTER_TRACK->channel->midi_in, 1);
+      if (ch->track->out_signal_type ==
+            TYPE_AUDIO)
+        {
+          /* connect channel out ports to master */
+          port_connect (
+            ch->stereo_out->l,
+            P_MASTER_TRACK->channel->stereo_in->l,
+            1);
+          port_connect (
+            ch->stereo_out->r,
+            P_MASTER_TRACK->channel->stereo_in->r,
+            1);
+        }
     }
 }
 
@@ -1664,6 +1424,10 @@ channel_append_all_ports (
 {
   int j, k;
   Track * tr = ch->track;
+  PortType in_type =
+    ch->track->in_signal_type;
+  PortType out_type =
+    ch->track->out_signal_type;
 
 #define _ADD(port) \
   array_append ( \
@@ -1680,25 +1444,49 @@ channel_append_all_ports (
     _ADD (pl->out_ports[k])
 
   /* add channel ports */
-  _ADD (ch->stereo_in->l);
-  _ADD (ch->stereo_in->r);
-  _ADD (ch->stereo_out->l);
-  _ADD (ch->stereo_out->r);
-  _ADD (ch->piano_roll);
-  _ADD (ch->midi_in);
-  _ADD (ch->midi_out);
+  if (in_type == TYPE_AUDIO)
+    {
+      _ADD (ch->stereo_in->l);
+      _ADD (ch->stereo_in->r);
+    }
+  else if (in_type == TYPE_EVENT)
+    {
+      _ADD (ch->midi_in);
+      if (track_has_piano_roll (ch->track))
+        {
+          _ADD (ch->piano_roll);
+        }
+    }
 
-  /* add fader ports */
-  _ADD (ch->fader.stereo_in->l);
-  _ADD (ch->fader.stereo_in->r);
-  _ADD (ch->fader.stereo_out->l);
-  _ADD (ch->fader.stereo_out->r);
+  if (out_type == TYPE_AUDIO)
+    {
+      _ADD (ch->stereo_out->l);
+      _ADD (ch->stereo_out->r);
 
-  /* add prefader ports */
-  _ADD (ch->prefader.stereo_in->l);
-  _ADD (ch->prefader.stereo_in->r);
-  _ADD (ch->prefader.stereo_out->l);
-  _ADD (ch->prefader.stereo_out->r);
+      /* add fader ports */
+      _ADD (ch->fader.stereo_in->l);
+      _ADD (ch->fader.stereo_in->r);
+      _ADD (ch->fader.stereo_out->l);
+      _ADD (ch->fader.stereo_out->r);
+
+      /* add prefader ports */
+      _ADD (ch->prefader.stereo_in->l);
+      _ADD (ch->prefader.stereo_in->r);
+      _ADD (ch->prefader.stereo_out->l);
+      _ADD (ch->prefader.stereo_out->r);
+    }
+  else if (out_type == TYPE_EVENT)
+    {
+      _ADD (ch->midi_out);
+
+      /* add fader ports */
+      _ADD (ch->fader.midi_in);
+      _ADD (ch->fader.midi_out);
+
+      /* add prefader ports */
+      _ADD (ch->prefader.midi_in);
+      _ADD (ch->prefader.midi_out);
+    }
 
   Plugin * pl;
   if (include_plugins)
@@ -1747,17 +1535,98 @@ channel_prepare_for_serialization (
  */
 Channel *
 channel_new (
-  ChannelType type,
   Track *     track)
 {
   g_return_val_if_fail (track, NULL);
 
-  Channel * channel =
-    _create_channel (track);
+  Channel * self = calloc (1, sizeof (Channel));
 
-  channel->type = type;
+  self->track = track;
 
-  return channel;
+  self->ats_size = 12;
+  self->ats =
+    calloc (self->ats_size,
+            sizeof (AutomationTrack *));
+
+  /* create ports */
+  self->stereo_in =
+    stereo_ports_new_generic (
+      1, _("Stereo in"),
+      PORT_OWNER_TYPE_TRACK, track);
+  self->stereo_out =
+    stereo_ports_new_generic (
+      0, _("Stereo out"),
+      PORT_OWNER_TYPE_TRACK, track);
+
+  char * pll =
+    g_strdup (_("MIDI in"));
+  self->midi_in =
+    port_new_with_type (
+      TYPE_EVENT,
+      FLOW_INPUT,
+      pll);
+  self->midi_in->midi_events =
+    midi_events_new (
+      self->midi_in);
+  g_free (pll);
+  pll =
+    g_strdup (_("MIDI out"));
+  self->midi_out =
+    port_new_with_type (
+      TYPE_EVENT,
+      FLOW_OUTPUT,
+      pll);
+  self->midi_out->midi_events =
+    midi_events_new (
+      self->midi_out);
+  g_free (pll);
+  port_set_owner_track (
+    self->midi_in,
+    track);
+  port_set_owner_track (
+    self->midi_out,
+    track);
+
+  /* init plugins */
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      self->plugins[i] = NULL;
+    }
+
+  FaderType fader_type =
+    track_get_fader_type (track);
+  PassthroughProcessorType prefader_type =
+    track_get_passthrough_processor_type (track);
+  fader_init (
+    &self->fader,
+    fader_type,
+    self);
+  passthrough_processor_init (
+    &self->prefader,
+    prefader_type,
+    self);
+
+  /* set up piano roll port */
+  char * tmp =
+    g_strdup (_("Piano Roll"));
+  self->piano_roll =
+    port_new_with_type (
+      TYPE_EVENT,
+      FLOW_INPUT,
+      tmp);
+  self->piano_roll->identifier.flags =
+    PORT_FLAG_PIANO_ROLL;
+  self->piano_roll->identifier.owner_type =
+    PORT_OWNER_TYPE_TRACK;
+  self->piano_roll->identifier.track_pos =
+    self->track->pos;
+  self->piano_roll->track =
+    self->track;
+  self->piano_roll->midi_events =
+    midi_events_new (
+      self->piano_roll);
+
+  return self;
 }
 
 void
@@ -2253,7 +2122,7 @@ channel_clone (
   g_return_val_if_fail (ch->track, NULL);
 
   Channel * clone =
-    channel_new (ch->type, track);
+    channel_new (track);
 
   /* copy plugins */
   for (int i = 0; i < STRIP_SIZE; i++)
@@ -2268,7 +2137,6 @@ channel_clone (
 #define COPY_MEMBER(mem) \
   clone->mem = ch->mem
 
-  COPY_MEMBER (type);
   clone->fader.channel = clone;
   clone->prefader.channel = clone;
   fader_copy (&ch->fader, &clone->fader);

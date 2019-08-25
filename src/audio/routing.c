@@ -405,8 +405,8 @@ node_process (
                   chan->stereo_in);
               break;
             case TRACK_TYPE_MASTER:
-            case TRACK_TYPE_BUS:
-            case TRACK_TYPE_GROUP:
+            case TRACK_TYPE_AUDIO_BUS:
+            case TRACK_TYPE_AUDIO_GROUP:
             case TRACK_TYPE_INSTRUMENT:
             case TRACK_TYPE_CHORD:
             case TRACK_TYPE_MARKER:
@@ -458,6 +458,12 @@ node_process (
               switch (AUDIO_ENGINE->audio_backend)
                 {
                 case AUDIO_BACKEND_JACK:
+                  if (port->internal_type !=
+                        INTERNAL_JACK_PORT)
+                    {
+                      g_warn_if_reached ();
+                      break;
+                    }
 #ifdef HAVE_JACK
                   out =
                     (float *)
@@ -1629,43 +1635,74 @@ graph_new (
       node =
         find_node_from_fader (
           self, fader);
-      port = fader->stereo_in->l;
-      node2 =
-        find_node_from_port (self, port);
-      node_connect (node2, node);
-      port = fader->stereo_in->r;
-      node2 =
-        find_node_from_port (self, port);
-      node_connect (node2, node);
-      port = fader->stereo_out->l;
-      node2 =
-        find_node_from_port (self, port);
-      node_connect (node, node2);
-      port = fader->stereo_out->r;
-      node2 =
-        find_node_from_port (self, port);
-      node_connect (node, node2);
+      if (fader->type == FADER_TYPE_AUDIO_CHANNEL)
+        {
+          port = fader->stereo_in->l;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node2, node);
+          port = fader->stereo_in->r;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node2, node);
+          port = fader->stereo_out->l;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node, node2);
+          port = fader->stereo_out->r;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node, node2);
+        }
+      else if (fader->type ==
+                 FADER_TYPE_MIDI_CHANNEL)
+        {
+          port = fader->midi_in;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node2, node);
+          port = fader->midi_out;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node, node2);
+        }
 
       /* connect the prefader */
       node =
         find_node_from_prefader (
           self, prefader);
-      port = prefader->stereo_in->l;
-      node2 =
-        find_node_from_port (self, port);
-      node_connect (node2, node);
-      port = prefader->stereo_in->r;
-      node2 =
-        find_node_from_port (self, port);
-      node_connect (node2, node);
-      port = prefader->stereo_out->l;
-      node2 =
-        find_node_from_port (self, port);
-      node_connect (node, node2);
-      port = prefader->stereo_out->r;
-      node2 =
-        find_node_from_port (self, port);
-      node_connect (node, node2);
+      if (prefader->type ==
+            PP_TYPE_AUDIO_CHANNEL)
+        {
+          port = prefader->stereo_in->l;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node2, node);
+          port = prefader->stereo_in->r;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node2, node);
+          port = prefader->stereo_out->l;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node, node2);
+          port = prefader->stereo_out->r;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node, node2);
+        }
+      else if (prefader->type ==
+                 PP_TYPE_MIDI_CHANNEL)
+        {
+          port = prefader->midi_in;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node2, node);
+          port = prefader->midi_out;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node, node2);
+        }
 
 #define CONNECT_PLUGIN \
           if (!pl || pl->deleting) \

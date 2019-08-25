@@ -54,6 +54,15 @@ typedef struct ChordObject ChordObject;
 typedef struct MusicalScale MusicalScale;
 typedef struct Modulator Modulator;
 typedef struct Marker Marker;
+typedef enum PassthroughProcessorType
+  PassthroughProcessorType;
+typedef enum FaderType FaderType;
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
 
 typedef enum TrackType
 {
@@ -97,7 +106,7 @@ typedef enum TrackType
    * cannot be routed to directly. Buses are used
    * for send effects.
    */
-  TRACK_TYPE_BUS,
+  TRACK_TYPE_AUDIO_BUS,
 
   /**
    * Group Tracks are used for grouping audio
@@ -106,7 +115,7 @@ typedef enum TrackType
    * they only contain effects but unlike buses
    * they can be routed to.
    */
-  TRACK_TYPE_GROUP,
+  TRACK_TYPE_AUDIO_GROUP,
 
   /**
    * Midi tracks can only have MIDI effects in the
@@ -114,6 +123,13 @@ typedef enum TrackType
    * routed to instrument channels or hardware.
    */
   TRACK_TYPE_MIDI,
+
+
+  /** Same with audio bus but for MIDI signals. */
+  TRACK_TYPE_MIDI_BUS,
+
+  /** Same with audio group but for MIDI signals. */
+  TRACK_TYPE_MIDI_GROUP,
 } TrackType;
 
 /**
@@ -256,6 +272,18 @@ typedef struct Track
    */
   int                  trigger_midi_activity;
 
+  /**
+   * The input signal type (eg audio bus tracks have
+   * audio input signals).
+   */
+  PortType             in_signal_type;
+
+  /**
+   * The output signal type (eg midi tracks have
+   * MIDI output singals).
+   */
+  PortType             out_signal_type;
+
 } Track;
 
 static const cyaml_strval_t
@@ -263,9 +291,11 @@ track_type_strings[] =
 {
 	{ "Instrument",     TRACK_TYPE_INSTRUMENT    },
 	{ "Audio",          TRACK_TYPE_AUDIO   },
+	{ "MIDI",           TRACK_TYPE_MIDI   },
 	{ "Master",         TRACK_TYPE_MASTER   },
 	{ "Chord",          TRACK_TYPE_CHORD   },
-	{ "Bus",            TRACK_TYPE_BUS   },
+	{ "Audio Bus",      TRACK_TYPE_AUDIO_BUS   },
+	{ "MIDI Bus",       TRACK_TYPE_MIDI_BUS   },
 };
 
 static const cyaml_schema_field_t
@@ -504,6 +534,13 @@ track_set_pos (
   int     pos);
 
 /**
+ * Returns if the Track should have a piano roll.
+ */
+int
+track_has_piano_roll (
+  const Track * track);
+
+/**
  * Fills in the array with all the velocities in
  * the project that are within or outside the
  * range given.
@@ -559,9 +596,29 @@ track_update_frames (
   Track * track);
 
 /**
+ * Returns the FaderType corresponding to the given
+ * Track.
+ */
+FaderType
+track_get_fader_type (
+  const Track * track);
+
+/**
+ * Returns the PassthroughProcessorType
+ * corresponding to the given Track.
+ */
+PassthroughProcessorType
+track_get_passthrough_processor_type (
+  const Track * track);
+
+/**
  * Wrapper for each track type.
  */
 void
 track_free (Track * track);
+
+/**
+ * @}
+ */
 
 #endif // __AUDIO_TRACK_H__

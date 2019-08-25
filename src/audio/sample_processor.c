@@ -23,6 +23,8 @@
 #include "audio/sample_processor.h"
 #include "project.h"
 
+#include <glib/gi18n.h>
+
 /**
  * Initializes a SamplePlayback with a sample to
  * play back.
@@ -32,21 +34,9 @@ sample_processor_init (
   SampleProcessor * self)
 {
   self->stereo_out =
-    stereo_ports_new (
-     port_new_with_type (TYPE_AUDIO,
-                         FLOW_OUTPUT,
-                         "Sample Processor L"),
-     port_new_with_type (TYPE_AUDIO,
-                         FLOW_OUTPUT,
-                         "Sample Processor R"));
-  self->stereo_out->l->identifier.flags |=
-    PORT_FLAG_STEREO_L;
-  self->stereo_out->r->identifier.flags |=
-    PORT_FLAG_STEREO_R;
-  port_set_owner_sample_processor (
-    self->stereo_out->l, self);
-  port_set_owner_sample_processor (
-    self->stereo_out->r, self);
+    stereo_ports_new_generic (
+      0, _("Sample Processor"),
+      PORT_OWNER_TYPE_SAMPLE_PROCESSOR, self);
 }
 
 /**

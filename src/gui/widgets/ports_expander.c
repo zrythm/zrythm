@@ -377,6 +377,10 @@ ports_expander_widget_setup_track (
 {
   self->track = tr;
   self->owner_type = PORT_OWNER_TYPE_TRACK;
+  /*PortType in_type =*/
+    /*self->track->in_signal_type;*/
+  PortType out_type =
+    self->track->out_signal_type;
 
   switch (type)
     {
@@ -386,7 +390,7 @@ ports_expander_widget_setup_track (
         _("Pre-Fader Sends"));
       self->owner_type = PORT_OWNER_TYPE_FADER;
       self->flow = FLOW_OUTPUT;
-      self->type = TYPE_AUDIO;
+      self->type = out_type;
       break;
     case PE_TRACK_PORT_TYPE_POSTFADER:
       expander_box_widget_set_label (
@@ -394,7 +398,7 @@ ports_expander_widget_setup_track (
         _("Post-Fader Sends"));
       self->owner_type = PORT_OWNER_TYPE_FADER;
       self->flow = FLOW_OUTPUT;
-      self->type = TYPE_AUDIO;
+      self->type = out_type;
       break;
     case PE_TRACK_PORT_TYPE_STEREO_IN:
       expander_box_widget_set_label (
@@ -438,16 +442,32 @@ ports_expander_widget_setup_track (
   switch (type)
     {
     case PE_TRACK_PORT_TYPE_PREFADER:
-      ADD_SINGLE (
-        tr->channel->prefader.stereo_out->l);
-      ADD_SINGLE (
-        tr->channel->prefader.stereo_out->r);
+      if (out_type == TYPE_AUDIO)
+        {
+          ADD_SINGLE (
+            tr->channel->prefader.stereo_out->l);
+          ADD_SINGLE (
+            tr->channel->prefader.stereo_out->r);
+        }
+      else if (out_type == TYPE_EVENT)
+        {
+          ADD_SINGLE (
+            tr->channel->prefader.midi_out);
+        }
       break;
     case PE_TRACK_PORT_TYPE_POSTFADER:
-      ADD_SINGLE (
-        tr->channel->fader.stereo_out->l);
-      ADD_SINGLE (
-        tr->channel->fader.stereo_out->r);
+      if (out_type == TYPE_AUDIO)
+        {
+          ADD_SINGLE (
+            tr->channel->fader.stereo_out->l);
+          ADD_SINGLE (
+            tr->channel->fader.stereo_out->r);
+        }
+      else if (out_type == TYPE_EVENT)
+        {
+          ADD_SINGLE (
+            tr->channel->fader.midi_out);
+        }
       break;
     case PE_TRACK_PORT_TYPE_STEREO_IN:
       ADD_SINGLE (

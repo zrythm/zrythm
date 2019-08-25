@@ -323,7 +323,8 @@ port_new_with_type (PortType     type,
  * Creates stereo ports.
  */
 StereoPorts *
-stereo_ports_new (Port * l, Port * r)
+stereo_ports_new_from_existing (
+  Port * l, Port * r)
 {
   StereoPorts * sp =
     calloc (1, sizeof (StereoPorts));
@@ -359,10 +360,9 @@ port_get_all (
   _ADD (SAMPLE_PROCESSOR->stereo_out->l);
   _ADD (SAMPLE_PROCESSOR->stereo_out->r);
 
-  Plugin * pl;
   Channel * ch;
   Track * tr;
-  int i, j, k;
+  int i;
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       tr = TRACKLIST->tracks[i];
@@ -695,6 +695,78 @@ port_apply_fader (
       if (port->buf[i] != 0.f)
         port->buf[i] *= amp;
     }
+}
+
+/**
+ * Creates stereo ports for generic use.
+ *
+ * @param in 1 for in, 0 for out.
+ * @param owner Pointer to the owner. The type is
+ *   determined by owner_type.
+ */
+StereoPorts *
+stereo_ports_new_generic (
+  int           in,
+  const char *  name,
+  PortOwnerType owner_type,
+  void *        owner)
+{
+  char * pll =
+    g_strdup_printf (
+      "%s L", name);
+  char * plr =
+    g_strdup_printf (
+      "%s R", name);
+
+  StereoPorts * ports =
+    stereo_ports_new_from_existing (
+      port_new_with_type (
+        TYPE_AUDIO,
+        in ? FLOW_INPUT : FLOW_OUTPUT,
+        pll),
+      port_new_with_type (
+        TYPE_AUDIO,
+        in ? FLOW_INPUT : FLOW_OUTPUT,
+        plr));
+  ports->l->identifier.flags |=
+    PORT_FLAG_STEREO_L;
+  ports->r->identifier.flags |=
+    PORT_FLAG_STEREO_R;
+
+  switch (owner_type)
+    {
+    case PORT_OWNER_TYPE_FADER:
+      port_set_owner_fader (
+        ports->l, (Fader *) owner);
+      port_set_owner_fader (
+        ports->r, (Fader *) owner);
+      break;
+    case PORT_OWNER_TYPE_PREFADER:
+      port_set_owner_prefader (
+        ports->l, (PassthroughProcessor *) owner);
+      port_set_owner_prefader (
+        ports->r, (PassthroughProcessor *) owner);
+      break;
+    case PORT_OWNER_TYPE_TRACK:
+      port_set_owner_track (
+        ports->l, (Track *) owner);
+      port_set_owner_track (
+        ports->r, (Track *) owner);
+      break;
+    case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:
+      port_set_owner_sample_processor (
+        ports->l, (SampleProcessor *) owner);
+      port_set_owner_sample_processor (
+        ports->r, (SampleProcessor *) owner);
+      break;
+    default:
+      break;
+    }
+
+  g_free (pll);
+  g_free (plr);
+
+  return ports;
 }
 
 void

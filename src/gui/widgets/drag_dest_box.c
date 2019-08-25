@@ -179,7 +179,7 @@ on_drag_data_received (
           if (plugin_descriptor_is_instrument (pd))
             tt = TRACK_TYPE_INSTRUMENT;
           else
-            tt = TRACK_TYPE_BUS;
+            tt = TRACK_TYPE_AUDIO_BUS;
 
           UndoableAction * ua =
             create_tracks_action_new (

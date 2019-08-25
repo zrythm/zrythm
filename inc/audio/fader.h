@@ -29,6 +29,7 @@
 #include "utils/yaml.h"
 
 typedef struct StereoPorts StereoPorts;
+typedef struct Port Port;
 
 /**
  * @addtogroup audio
@@ -38,8 +39,13 @@ typedef struct StereoPorts StereoPorts;
 
 typedef enum FaderType
 {
-  /** For Channel's. */
-  FADER_TYPE_CHANNEL,
+  FADER_TYPE_NONE,
+
+  /** Audio fader for Channel's. */
+  FADER_TYPE_AUDIO_CHANNEL,
+
+  /* MIDI fader for Channel's. */
+  FADER_TYPE_MIDI_CHANNEL,
 
   /** For generic uses. */
   FADER_TYPE_GENERIC,
@@ -77,14 +83,24 @@ typedef struct Fader
   float            fader_val;
 
   /**
-   * L & R audio input ports.
+   * L & R audio input ports, if audio.
    */
   StereoPorts *    stereo_in;
 
   /**
-   * L & R audio output ports.
+   * L & R audio output ports, if audio.
    */
   StereoPorts *    stereo_out;
+
+  /**
+   * MIDI in port, if MIDI.
+   */
+  Port *           midi_in;
+
+  /**
+   * MIDI out port, if MIDI.
+   */
+  Port *           midi_out;
 
   /**
    * Current dBFS after procesing each output port.
@@ -164,6 +180,13 @@ fader_add_amp (
 float
 fader_get_amp (
   void * self);
+
+/**
+ * Clears all buffers.
+ */
+void
+fader_clear_buffers (
+  Fader * self);
 
 /**
  * Sets the fader levels from a normalized value

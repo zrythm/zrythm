@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,7 +23,8 @@
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
-#include "audio/group_track.h"
+#include "audio/audio_bus_track.h"
+#include "audio/audio_bus_track.h"
 #include "audio/track.h"
 #include "audio/region.h"
 #include "gui/widgets/arranger.h"
@@ -31,18 +32,18 @@
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
-#include "gui/widgets/group_track.h"
+#include "gui/widgets/audio_bus_track.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/track_top_grid.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/track_top_grid.h"
 #include "gui/widgets/tracklist.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (GroupTrackWidget,
-               group_track_widget,
+G_DEFINE_TYPE (AudioBusTrackWidget,
+               audio_bus_track_widget,
                TRACK_WIDGET_TYPE)
 
 /**
@@ -52,13 +53,12 @@ G_DEFINE_TYPE (GroupTrackWidget,
  * The track widget must always have at least 1 automation track in the automation
  * paned.
  */
-GroupTrackWidget *
-group_track_widget_new (Track * track)
+AudioBusTrackWidget *
+audio_bus_track_widget_new (Track * track)
 {
-  GroupTrackWidget * self =
-    g_object_new (
-      GROUP_TRACK_WIDGET_TYPE,
-      NULL);
+  AudioBusTrackWidget * self = g_object_new (
+                            AUDIO_BUS_TRACK_WIDGET_TYPE,
+                            NULL);
 
   TRACK_WIDGET_GET_PRIVATE (self);
 
@@ -71,8 +71,7 @@ group_track_widget_new (Track * track)
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (track);
   automation_tracklist->widget =
-    automation_tracklist_widget_new (
-      automation_tracklist);
+    automation_tracklist_widget_new (automation_tracklist);
   gtk_container_add (
     GTK_CONTAINER (tw_prv->paned),
     GTK_WIDGET (automation_tracklist->widget));
@@ -105,8 +104,8 @@ group_track_widget_new (Track * track)
 }
 
 void
-group_track_widget_refresh_buttons (
-  GroupTrackWidget * self)
+audio_bus_track_widget_refresh_buttons (
+  AudioBusTrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
   g_signal_handler_block (
@@ -135,7 +134,7 @@ group_track_widget_refresh_buttons (
 }
 
 void
-group_track_widget_refresh (GroupTrackWidget * self)
+audio_bus_track_widget_refresh (AudioBusTrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
@@ -145,7 +144,7 @@ group_track_widget_refresh (GroupTrackWidget * self)
   track_widget_set_name (
     Z_TRACK_WIDGET (self), track->name);
 
-  group_track_widget_refresh_buttons (self);
+  audio_bus_track_widget_refresh_buttons (self);
 
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (tw_prv->track);
@@ -154,7 +153,7 @@ group_track_widget_refresh (GroupTrackWidget * self)
 }
 
 static void
-group_track_widget_init (GroupTrackWidget * self)
+audio_bus_track_widget_init (AudioBusTrackWidget * self)
 {
   GtkStyleContext * context;
   TRACK_WIDGET_GET_PRIVATE (self);
@@ -215,7 +214,6 @@ group_track_widget_init (GroupTrackWidget * self)
 }
 
 static void
-group_track_widget_class_init (GroupTrackWidgetClass * klass)
+audio_bus_track_widget_class_init (AudioBusTrackWidgetClass * klass)
 {
 }
-

@@ -577,23 +577,27 @@ setup_inserts (ChannelWidget * self)
 static void
 setup_channel_icon (ChannelWidget * self)
 {
-  switch (self->channel->type)
+  switch (self->channel->track->type)
     {
-    case CT_MIDI:
+    case TRACK_TYPE_INSTRUMENT:
+    case TRACK_TYPE_MIDI:
       resources_set_image_icon (self->icon,
                                 ICON_TYPE_ZRYTHM,
                                 "instrument.svg");
       break;
-    case CT_AUDIO:
+    case TRACK_TYPE_AUDIO:
       resources_set_image_icon (self->icon,
                                 ICON_TYPE_ZRYTHM,
                                 "audio.svg");
       break;
-    case CT_BUS:
-    case CT_MASTER:
+    case TRACK_TYPE_AUDIO_BUS:
+    case TRACK_TYPE_AUDIO_GROUP:
+    case TRACK_TYPE_MASTER:
       resources_set_image_icon (self->icon,
                                 ICON_TYPE_ZRYTHM,
                                 "bus.svg");
+      break;
+    default:
       break;
     }
 }

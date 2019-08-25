@@ -19,6 +19,7 @@
 
 #include "audio/channel.h"
 #include "audio/engine.h"
+#include "audio/midi.h"
 #include "audio/passthrough_processor.h"
 #include "audio/track.h"
 #include "project.h"
@@ -37,61 +38,87 @@
 void
 passthrough_processor_init (
   PassthroughProcessor * self,
+  PassthroughProcessorType type,
   Channel * ch)
 {
   self->channel = ch;
+  self->type = type;
 
   self->l_port_db = 0.f;
   self->r_port_db = 0.f;
 
-  /* stereo in */
-  char * pll =
-    g_strdup (_("Pre-Fader in L"));
-  char * plr =
-    g_strdup (_("Pre-Fader in R"));
-  self->stereo_in =
-    stereo_ports_new (
-      port_new_with_type (TYPE_AUDIO,
-                          FLOW_INPUT,
-                          pll),
-      port_new_with_type (TYPE_AUDIO,
-                          FLOW_INPUT,
-                          plr));
-  self->stereo_in->l->identifier.flags |=
-    PORT_FLAG_STEREO_L;
-  self->stereo_in->r->identifier.flags |=
-    PORT_FLAG_STEREO_R;
-  self->stereo_in->l->identifier.owner_type =
-    PORT_OWNER_TYPE_PREFADER;
-  self->stereo_in->r->identifier.owner_type =
-    PORT_OWNER_TYPE_PREFADER;
+  if (type == PP_TYPE_AUDIO_CHANNEL)
+    {
+      /* stereo in */
+      self->stereo_in =
+        stereo_ports_new_generic (
+          1, _("Pre-Fader in"),
+          PORT_OWNER_TYPE_PREFADER, self);
 
-  /* stereo out */
-  pll =
-    g_strdup (_("Pre-Fader out L"));
-  plr =
-    g_strdup (_("Pre-Fader out R"));
-  self->stereo_out =
-    stereo_ports_new (
-     port_new_with_type (TYPE_AUDIO,
-                         FLOW_OUTPUT,
-                         pll),
-     port_new_with_type (TYPE_AUDIO,
-                         FLOW_OUTPUT,
-                         plr));
-  self->stereo_out->l->identifier.flags |=
-    PORT_FLAG_STEREO_L;
-  self->stereo_out->r->identifier.flags |=
-    PORT_FLAG_STEREO_R;
+      /* stereo out */
+      self->stereo_out =
+        stereo_ports_new_generic (
+          0, _("Pre-Fader out"),
+          PORT_OWNER_TYPE_PREFADER, self);
+    }
 
-  port_set_owner_prefader (
-    self->stereo_in->l, self);
-  port_set_owner_prefader (
-    self->stereo_in->r, self);
-  port_set_owner_prefader (
-    self->stereo_out->l, self);
-  port_set_owner_prefader (
-    self->stereo_out->r, self);
+  if (type == PP_TYPE_MIDI_CHANNEL)
+    {
+      /* MIDI in */
+      char * pll =
+        g_strdup (_("MIDI pre-fader in"));
+      self->midi_in =
+        port_new_with_type (
+          TYPE_EVENT,
+          FLOW_INPUT,
+          pll);
+      self->midi_in->midi_events =
+        midi_events_new (
+          self->midi_in);
+      g_free (pll);
+
+      /* MIDI out */
+      pll =
+        g_strdup (_("MIDI pre-fader out"));
+      self->midi_out =
+        port_new_with_type (
+          TYPE_EVENT,
+          FLOW_OUTPUT,
+          pll);
+      self->midi_out->midi_events =
+        midi_events_new (
+          self->midi_out);
+      g_free (pll);
+
+      port_set_owner_prefader (
+        self->midi_in, self);
+      port_set_owner_prefader (
+        self->midi_out, self);
+    }
+}
+
+/**
+ * Clears all buffers.
+ */
+void
+passthrough_processor_clear_buffers (
+  PassthroughProcessor * self)
+{
+  switch (self->type)
+    {
+    case PP_TYPE_AUDIO_CHANNEL:
+      port_clear_buffer (self->stereo_in->l);
+      port_clear_buffer (self->stereo_in->r);
+      port_clear_buffer (self->stereo_out->l);
+      port_clear_buffer (self->stereo_out->r);
+      break;
+    case PP_TYPE_MIDI_CHANNEL:
+      port_clear_buffer (self->midi_in);
+      port_clear_buffer (self->midi_out);
+      break;
+    default:
+      break;
+    }
 }
 
 /**
@@ -120,13 +147,24 @@ passthrough_processor_process (
   long    start_frame,
   int     nframes)
 {
-  /* copy the input to output */
-  for (int i = start_frame;
-       i < start_frame + nframes; i++)
+  if (self->type == PP_TYPE_AUDIO_CHANNEL)
     {
-      self->stereo_out->l->buf[i] =
-        self->stereo_in->l->buf[i];
-      self->stereo_out->r->buf[i] =
-        self->stereo_in->r->buf[i];
+      /* copy the input to output */
+      for (int i = start_frame;
+           i < start_frame + nframes; i++)
+        {
+          self->stereo_out->l->buf[i] =
+            self->stereo_in->l->buf[i];
+          self->stereo_out->r->buf[i] =
+            self->stereo_in->r->buf[i];
+        }
+    }
+
+  if (self->type == PP_TYPE_MIDI_CHANNEL)
+    {
+      midi_events_append (
+        self->midi_in->midi_events,
+        self->midi_out->midi_events,
+        start_frame, nframes, 0);
     }
 }

@@ -524,9 +524,11 @@ alsa_setup (
     PORT_OWNER_TYPE_BACKEND;
 
   self->stereo_out =
-    stereo_ports_new (stereo_out_l, stereo_out_r);
+    stereo_ports_new_from_existing (
+      stereo_out_l, stereo_out_r);
   self->stereo_in =
-    stereo_ports_new (stereo_in_l, stereo_in_r);
+    stereo_ports_new_from_existing (
+      stereo_in_l, stereo_in_r);
 
   pthread_t thread_id;
   pthread_create(

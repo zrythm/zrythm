@@ -961,13 +961,13 @@ activate_create_midi_track (
 }
 
 void
-activate_create_bus_track (GSimpleAction *action,
+activate_create_audio_bus_track (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
   UndoableAction * ua =
     create_tracks_action_new (
-      TRACK_TYPE_BUS,
+      TRACK_TYPE_AUDIO_BUS,
       NULL,
       NULL,
       TRACKLIST->num_tracks,
@@ -977,14 +977,14 @@ activate_create_bus_track (GSimpleAction *action,
 }
 
 void
-activate_create_group_track (
+activate_create_audio_group_track (
   GSimpleAction *action,
   GVariant      *variant,
   gpointer       user_data)
 {
   UndoableAction * ua =
     create_tracks_action_new (
-      TRACK_TYPE_GROUP,
+      TRACK_TYPE_AUDIO_GROUP,
       NULL,
       NULL,
       TRACKLIST->num_tracks,

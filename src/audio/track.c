@@ -24,10 +24,10 @@
 #include "audio/audio_track.h"
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
-#include "audio/bus_track.h"
+#include "audio/audio_bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
-#include "audio/group_track.h"
+#include "audio/audio_group_track.h"
 #include "audio/instrument_track.h"
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
@@ -134,38 +134,63 @@ track_new (
 
   track->name = g_strdup (label);
 
-  ChannelType ct;
   switch (type)
     {
     case TRACK_TYPE_INSTRUMENT:
+      track->in_signal_type =
+        TYPE_EVENT;
+      track->out_signal_type =
+        TYPE_AUDIO;
       instrument_track_init (track);
-      ct = CT_MIDI;
       break;
     case TRACK_TYPE_AUDIO:
+      track->in_signal_type =
+        TYPE_AUDIO;
+      track->out_signal_type =
+        TYPE_AUDIO;
       audio_track_init (track);
-      ct = CT_AUDIO;
       break;
     case TRACK_TYPE_MASTER:
+      track->in_signal_type =
+        TYPE_AUDIO;
+      track->out_signal_type =
+        TYPE_AUDIO;
       master_track_init (track);
-      ct = CT_MASTER;
       break;
-    case TRACK_TYPE_BUS:
-      bus_track_init (track);
-      ct = CT_BUS;
+    case TRACK_TYPE_AUDIO_BUS:
+      track->in_signal_type =
+        TYPE_AUDIO;
+      track->out_signal_type =
+        TYPE_AUDIO;
+      audio_bus_track_init (track);
       break;
-    case TRACK_TYPE_GROUP:
-      group_track_init (track);
-      ct = CT_BUS;
+    case TRACK_TYPE_AUDIO_GROUP:
+      track->in_signal_type =
+        TYPE_AUDIO;
+      track->out_signal_type =
+        TYPE_AUDIO;
+      audio_group_track_init (track);
       break;
     case TRACK_TYPE_MIDI:
+      track->in_signal_type =
+        TYPE_EVENT;
+      track->out_signal_type =
+        TYPE_EVENT;
       midi_track_init (track);
-      ct = CT_MIDI;
       break;
     case TRACK_TYPE_CHORD:
+      track->in_signal_type =
+        TYPE_EVENT;
+      track->out_signal_type =
+        TYPE_EVENT;
       chord_track_init (track);
       break;
     case TRACK_TYPE_MARKER:
       marker_track_init (track);
+      track->in_signal_type =
+        TYPE_UNKNOWN;
+      track->out_signal_type =
+        TYPE_UNKNOWN;
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -183,10 +208,10 @@ track_new (
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MIDI:
-    case TRACK_TYPE_BUS:
-    case TRACK_TYPE_GROUP:
+    case TRACK_TYPE_AUDIO_BUS:
+    case TRACK_TYPE_AUDIO_GROUP:
       ch =
-        channel_new (ct, track);
+        channel_new (track);
       track->channel = ch;
 
       ch->track = track;
@@ -195,6 +220,8 @@ track_new (
       break;
     case TRACK_TYPE_CHORD:
     case TRACK_TYPE_MARKER:
+    case TRACK_TYPE_MIDI_BUS:
+    case TRACK_TYPE_MIDI_GROUP:
       break;
     }
 
@@ -282,27 +309,29 @@ track_set_recording (Track *   track,
 
   if (recording)
     {
-      port_connect (
-        AUDIO_ENGINE->stereo_in->l,
-        channel->stereo_in->l, 1);
-      port_connect (
-        AUDIO_ENGINE->stereo_in->r,
-        channel->stereo_in->r, 1);
-      port_connect (
-        AUDIO_ENGINE->midi_in,
-        channel->midi_in, 1);
+      /* FIXME just enable the connections */
+      /*port_connect (*/
+        /*AUDIO_ENGINE->stereo_in->l,*/
+        /*channel->stereo_in->l, 1);*/
+      /*port_connect (*/
+        /*AUDIO_ENGINE->stereo_in->r,*/
+        /*channel->stereo_in->r, 1);*/
+      /*port_connect (*/
+        /*AUDIO_ENGINE->midi_in,*/
+        /*channel->midi_in, 1);*/
     }
   else
     {
-      port_disconnect (
-        AUDIO_ENGINE->stereo_in->l,
-        channel->stereo_in->l);
-      port_disconnect (
-        AUDIO_ENGINE->stereo_in->r,
-        channel->stereo_in->r);
-      port_disconnect (
-        AUDIO_ENGINE->midi_in,
-        channel->midi_in);
+      /* FIXME just disable the connections */
+      /*port_disconnect (*/
+        /*AUDIO_ENGINE->stereo_in->l,*/
+        /*channel->stereo_in->l);*/
+      /*port_disconnect (*/
+        /*AUDIO_ENGINE->stereo_in->r,*/
+        /*channel->stereo_in->r);*/
+      /*port_disconnect (*/
+        /*AUDIO_ENGINE->midi_in,*/
+        /*channel->midi_in);*/
     }
 
   track->recording = recording;
@@ -524,8 +553,8 @@ track_setup (Track * track)
     SETUP_TRACK (INSTRUMENT, instrument);
     SETUP_TRACK (MASTER, master);
     SETUP_TRACK (AUDIO, audio);
-    SETUP_TRACK (BUS, bus);
-    SETUP_TRACK (GROUP, group);
+    SETUP_TRACK (AUDIO_BUS, audio_bus);
+    SETUP_TRACK (AUDIO_GROUP, audio_group);
     case TRACK_TYPE_CHORD:
     /* TODO */
     default:
@@ -643,6 +672,17 @@ track_add_region (
 }
 
 /**
+ * Returns if the Track should have a piano roll.
+ */
+int
+track_has_piano_roll (
+  const Track * track)
+{
+  return track->type == TRACK_TYPE_MIDI ||
+    track->type == TRACK_TYPE_INSTRUMENT;
+}
+
+/**
  * Updates position in the tracklist and also
  * updates the information in the lanes.
  */
@@ -749,8 +789,9 @@ track_free (Track * track)
       _FREE_TRACK (MASTER, master);
       _FREE_TRACK (AUDIO, audio);
       _FREE_TRACK (CHORD, chord);
-      _FREE_TRACK (BUS, bus);
-      _FREE_TRACK (GROUP, group);
+      _FREE_TRACK (AUDIO_BUS, audio_bus);
+      _FREE_TRACK (AUDIO_GROUP, audio_group);
+      /*_FREE_TRACK (MIDI_GROUP, midi_group);*/
     default:
       /* TODO */
       break;
@@ -779,8 +820,8 @@ track_get_automation_tracklist (Track * track)
     case TRACK_TYPE_CHORD:
     case TRACK_TYPE_MARKER:
       break;
-    case TRACK_TYPE_BUS:
-    case TRACK_TYPE_GROUP:
+    case TRACK_TYPE_AUDIO_BUS:
+    case TRACK_TYPE_AUDIO_GROUP:
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MASTER:
@@ -808,8 +849,8 @@ track_get_fader_automatable (Track * track)
     {
     case TRACK_TYPE_CHORD:
       break;
-    case TRACK_TYPE_BUS:
-    case TRACK_TYPE_GROUP:
+    case TRACK_TYPE_AUDIO_BUS:
+    case TRACK_TYPE_AUDIO_GROUP:
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_INSTRUMENT:
@@ -839,8 +880,8 @@ track_get_channel (Track * track)
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_BUS:
-    case TRACK_TYPE_GROUP:
+    case TRACK_TYPE_AUDIO_BUS:
+    case TRACK_TYPE_AUDIO_GROUP:
     case TRACK_TYPE_MIDI:
       return track->channel;
     default:
@@ -911,7 +952,7 @@ track_stringize_type (
     case TRACK_TYPE_MIDI:
       return g_strdup (
         _("MIDI"));
-    case TRACK_TYPE_BUS:
+    case TRACK_TYPE_AUDIO_BUS:
       return g_strdup (
         _("Bus"));
     case TRACK_TYPE_MASTER:
@@ -920,7 +961,7 @@ track_stringize_type (
     case TRACK_TYPE_CHORD:
       return g_strdup (
         _("Chord"));
-    case TRACK_TYPE_GROUP:
+    case TRACK_TYPE_AUDIO_GROUP:
       return g_strdup (
         _("Group"));
     case TRACK_TYPE_MARKER:
@@ -929,6 +970,62 @@ track_stringize_type (
     default:
       g_warn_if_reached ();
       return NULL;
+    }
+}
+
+/**
+ * Returns the FaderType corresponding to the given
+ * Track.
+ */
+FaderType
+track_get_fader_type (
+  const Track * track)
+{
+  switch (track->type)
+    {
+    case TRACK_TYPE_MIDI:
+    case TRACK_TYPE_MIDI_BUS:
+    case TRACK_TYPE_CHORD:
+    case TRACK_TYPE_MIDI_GROUP:
+      return FADER_TYPE_MIDI_CHANNEL;
+    case TRACK_TYPE_INSTRUMENT:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_AUDIO_BUS:
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_AUDIO_GROUP:
+      return FADER_TYPE_AUDIO_CHANNEL;
+    case TRACK_TYPE_MARKER:
+      return FADER_TYPE_NONE;
+    default:
+      g_return_val_if_reached (FADER_TYPE_NONE);
+    }
+}
+
+/**
+ * Returns the PassthroughProcessorType
+ * corresponding to the given Track.
+ */
+PassthroughProcessorType
+track_get_passthrough_processor_type (
+  const Track * track)
+{
+  switch (track->type)
+    {
+    case TRACK_TYPE_MIDI:
+    case TRACK_TYPE_MIDI_BUS:
+    case TRACK_TYPE_CHORD:
+    case TRACK_TYPE_MIDI_GROUP:
+      return PP_TYPE_MIDI_CHANNEL;
+    case TRACK_TYPE_INSTRUMENT:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_AUDIO_BUS:
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_AUDIO_GROUP:
+      return PP_TYPE_AUDIO_CHANNEL;
+    case TRACK_TYPE_MARKER:
+      return PP_TYPE_NONE;
+    default:
+      g_return_val_if_reached (PP_TYPE_NONE);
     }
 }
 

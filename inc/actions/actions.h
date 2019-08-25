@@ -301,12 +301,12 @@ activate_create_ins_track (GSimpleAction *action,
                   gpointer       user_data);
 
 void
-activate_create_bus_track (GSimpleAction *action,
+activate_create_audio_bus_track (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);
 
 void
-activate_create_group_track (
+activate_create_audio_group_track (
   GSimpleAction *action,
   GVariant      *variant,
   gpointer       user_data);

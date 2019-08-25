@@ -35,9 +35,9 @@ master_track_init (Track * track)
 void
 master_track_setup (MasterTrack * self)
 {
-  BusTrack * track = (BusTrack *) self;
+  AudioBusTrack * track = (AudioBusTrack *) self;
 
-  bus_track_setup (track);
+  audio_bus_track_setup (track);
 }
 
 /**

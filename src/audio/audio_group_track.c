@@ -26,18 +26,18 @@
 #include <stdlib.h>
 
 #include "audio/automation_tracklist.h"
-#include "audio/group_track.h"
+#include "audio/audio_group_track.h"
 #include "project.h"
 
 void
-group_track_init (Track * track)
+audio_group_track_init (Track * track)
 {
-  track->type = TRACK_TYPE_GROUP;
+  track->type = TRACK_TYPE_AUDIO_GROUP;
   gdk_rgba_parse (&track->color, "#D9DADD");
 }
 
 void
-group_track_setup (Track * self)
+audio_group_track_setup (Track * self)
 {
   channel_track_setup ((ChannelTrack *) self);
 }
@@ -48,7 +48,7 @@ group_track_setup (Track * self)
  * TODO
  */
 void
-group_track_free (Track * track)
+audio_group_track_free (Track * track)
 {
 
 }

@@ -78,12 +78,8 @@ We appreciate contributions of any size -- donations
 enable us to spend more time working on the project,
 and help cover our infrastructure expenses.
 
-### Paypal
-https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LZWVK6228PQGE&source=url
 ### LiberaPay
 https://liberapay.com/Zrythm/
-### Bitcoin
-bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j
 
 ----
 

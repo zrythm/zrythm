@@ -137,7 +137,7 @@ piano_roll_add_current_note (
   PianoRoll * self,
   MidiNoteDescriptor * descr)
 {
-  if (!array_contains (self->current_notes,
+  if (!array_contains_int (self->current_notes,
                        self->num_current_notes,
                        descr->value))
     {
@@ -155,7 +155,7 @@ piano_roll_remove_current_note (
   PianoRoll * self,
   MidiNoteDescriptor * descr)
 {
-  if (array_contains (self->current_notes,
+  if (array_contains_int (self->current_notes,
                       self->num_current_notes,
                       descr->value))
     {
@@ -174,7 +174,7 @@ piano_roll_contains_current_note (
   PianoRoll * self,
   MidiNoteDescriptor * descr)
 {
-  return array_contains (self->current_notes,
+  return array_contains_int (self->current_notes,
                          self->num_current_notes,
                          descr->value);
 }

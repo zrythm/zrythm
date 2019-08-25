@@ -255,11 +255,11 @@ main_window_widget_init (MainWindowWidget * self)
     { "create-ins-track",
       activate_create_ins_track },
     { "create-bus-track",
-      activate_create_bus_track },
+      activate_create_audio_bus_track },
     { "create-midi-track",
       activate_create_midi_track },
     { "create-group-track",
-      activate_create_group_track },
+      activate_create_audio_group_track },
     { "delete-selected-tracks",
       activate_delete_selected_tracks },
 

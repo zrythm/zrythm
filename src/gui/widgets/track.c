@@ -21,8 +21,8 @@
 #include "actions/move_tracks_action.h"
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
-#include "audio/bus_track.h"
-#include "audio/group_track.h"
+#include "audio/audio_bus_track.h"
+#include "audio/audio_group_track.h"
 #include "audio/master_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -35,12 +35,12 @@
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
-#include "gui/widgets/bus_track.h"
+#include "gui/widgets/audio_bus_track.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/chord_track.h"
 #include "gui/widgets/editable_label.h"
-#include "gui/widgets/group_track.h"
+#include "gui/widgets/audio_group_track.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker_track.h"
@@ -101,8 +101,8 @@ track_widget_select (
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_BUS:
-    case TRACK_TYPE_GROUP:
+    case TRACK_TYPE_AUDIO_BUS:
+    case TRACK_TYPE_AUDIO_GROUP:
       chan = track->channel;
       g_message (
         "%sselecting track %s, recording %d sa %d",
@@ -195,8 +195,8 @@ track_widget_refresh (TrackWidget * self)
       REFRESH_TW (AUDIO, audio);
       REFRESH_TW (CHORD, chord);
       REFRESH_TW (MIDI, midi);
-      REFRESH_TW (BUS, bus);
-      REFRESH_TW (GROUP, group);
+      REFRESH_TW (AUDIO_BUS, audio_bus);
+      REFRESH_TW (AUDIO_GROUP, audio_group);
       REFRESH_TW (MARKER, marker);
     default:
       break;
@@ -225,8 +225,8 @@ track_widget_refresh_buttons (
       REFRESH_TW_BUTTONS (MASTER, master);
       REFRESH_TW_BUTTONS (AUDIO, audio);
       REFRESH_TW_BUTTONS (CHORD, chord);
-      REFRESH_TW_BUTTONS (BUS, bus);
-      REFRESH_TW_BUTTONS (GROUP, group);
+      REFRESH_TW_BUTTONS (AUDIO_BUS, audio_bus);
+      REFRESH_TW_BUTTONS (AUDIO_GROUP, audio_group);
       REFRESH_TW_BUTTONS (MARKER, marker);
     default:
       break;
@@ -329,10 +329,10 @@ track_widget_block_all_signal_handlers (
         mtw->mute,
         tw_prv->mute_toggled_handler_id);
     }
-  else if (Z_IS_BUS_TRACK_WIDGET (self))
+  else if (Z_IS_AUDIO_BUS_TRACK_WIDGET (self))
     {
-      BusTrackWidget * mtw =
-        Z_BUS_TRACK_WIDGET (self);
+      AudioBusTrackWidget * mtw =
+        Z_AUDIO_BUS_TRACK_WIDGET (self);
       g_signal_handler_block (
         mtw->solo,
         tw_prv->solo_toggled_handler_id);
@@ -394,10 +394,10 @@ track_widget_unblock_all_signal_handlers (
         mtw->mute,
         tw_prv->mute_toggled_handler_id);
     }
-  else if (Z_IS_BUS_TRACK_WIDGET (self))
+  else if (Z_IS_AUDIO_BUS_TRACK_WIDGET (self))
     {
-      BusTrackWidget * mtw =
-        Z_BUS_TRACK_WIDGET (self);
+      AudioBusTrackWidget * mtw =
+        Z_AUDIO_BUS_TRACK_WIDGET (self);
       g_signal_handler_unblock (
         mtw->solo,
         tw_prv->solo_toggled_handler_id);
@@ -860,8 +860,8 @@ track_widget_new (Track * track)
   switch (track->type)
     {
     NEW_TW (CHORD, chord);
-    NEW_TW (BUS, bus);
-    NEW_TW (GROUP, group);
+    NEW_TW (AUDIO_BUS, audio_bus);
+    NEW_TW (AUDIO_GROUP, audio_group);
     NEW_TW (INSTRUMENT, instrument);
     NEW_TW (MASTER, master);
     NEW_TW (AUDIO, audio);

@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __AUDIO_BUS_TRACK_H__
-#define __AUDIO_BUS_TRACK_H__
+#ifndef __AUDIO_AUDIO_BUS_TRACK_H__
+#define __AUDIO_AUDIO_BUS_TRACK_H__
 
 #include "audio/channel_track.h"
 #include "audio/track.h"
@@ -29,13 +29,13 @@ typedef struct Channel Channel;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
 
-typedef struct Track BusTrack;
+typedef struct Track AudioBusTrack;
 
 void
-bus_track_init (Track * track);
+audio_bus_track_init (Track * track);
 
 void
-bus_track_setup (BusTrack * self);
+audio_bus_track_setup (AudioBusTrack * self);
 
 /**
  * Frees the track.
@@ -43,6 +43,6 @@ bus_track_setup (BusTrack * self);
  * TODO
  */
 void
-bus_track_free (BusTrack * track);
+audio_bus_track_free (AudioBusTrack * track);
 
-#endif // __AUDIO_BUS_TRACK_H__
+#endif // __AUDIO_AUDIO_BUS_TRACK_H__

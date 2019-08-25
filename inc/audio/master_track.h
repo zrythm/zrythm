@@ -26,7 +26,7 @@
 #ifndef __AUDIO_MASTER_TRACK_H__
 #define __AUDIO_MASTER_TRACK_H__
 
-#include "audio/bus_track.h"
+#include "audio/audio_bus_track.h"
 #include "audio/track.h"
 
 typedef struct Position Position;

@@ -24,7 +24,7 @@
 #include "plugins/lv2_plugin.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
-#include "audio/bus_track.h"
+#include "audio/audio_bus_track.h"
 #include "audio/engine.h"
 #include "audio/midi_track.h"
 #include "audio/track.h"
