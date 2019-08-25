@@ -152,7 +152,7 @@ activate_chat (GSimpleAction *action,
 {
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),
-    "https://matrix.to/#/#matrixdaw:matrix.org",
+    "https://matrix.to/#/#zrythmdaw:matrix.org",
     0,
     NULL);
 }
