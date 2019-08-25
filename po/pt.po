@@ -8,58 +8,62 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-25 22:18+0100\n"
-"PO-Revision-Date: 2019-05-04 11:00+0100\n"
-"Last-Translator: alex <alex@zrythm.org>\n"
-"Language-Team: Portuguese\n"
+"PO-Revision-Date: 2019-08-25 23:17+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
+"pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: src/zrythm.c:269
 msgid "Initializing settings"
-msgstr ""
+msgstr "Inicializando configurações"
 
 #: src/zrythm.c:280
 msgid "Initializing audio engine"
-msgstr ""
+msgstr "Inicializando o mecanismo de áudio"
 
 #: src/zrythm.c:285
 msgid "Initializing plugin manager"
-msgstr ""
+msgstr "Inicializando o gerenciador de plugins"
 
 #: src/zrythm.c:292
 msgid "Setting up backend"
-msgstr ""
+msgstr "Configurando o backend"
 
 #: src/zrythm.c:301
 msgid "Loading project"
-msgstr ""
+msgstr "Carregando o projeto"
 
 #: src/project.c:160 src/audio/track.c:960
 msgid "Master"
-msgstr ""
+msgstr "Mestre"
 
 #. create untitled project
 #: src/project.c:169
 msgid "Untitled Project"
-msgstr ""
+msgstr "Projeto sem título"
 
 #: src/project.c:492
 msgid "Project saved."
-msgstr ""
+msgstr "Projeto gravado."
 
 #: src/main.c:65
 #, c-format
 msgid "Error: signal %d - Backtrace:"
-msgstr ""
+msgstr "Erro: sinal %d - Backtrace:"
 
 #: src/main.c:117
 #, c-format
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
 msgstr ""
+"Zrythm travou. Por favor, ajude-nos a corrigir isso %ssubmetendo um "
+"relatório de bug%s."
 
 #: src/main.c:167
 #, c-format
@@ -532,40 +536,40 @@ msgstr ""
 
 #: src/gui/widgets/header_notebook.c:82
 msgid "About Zrythm"
-msgstr ""
+msgstr "Sobre o Zrythm"
 
 #: src/gui/widgets/header_notebook.c:83
 msgid "Save"
-msgstr ""
+msgstr "Gravar"
 
 #: src/gui/widgets/header_notebook.c:84
 msgid "Save As"
-msgstr ""
+msgstr "Gravar Como"
 
 #: src/gui/widgets/header_notebook.c:85 resources/ui/shortcuts.ui:40
 #: resources/ui/preferences.ui:27
 msgid "Preferences"
-msgstr ""
+msgstr "Preferências"
 
 #: src/gui/widgets/header_notebook.c:86
 msgid "Donate"
-msgstr ""
+msgstr "Doar"
 
 #: src/gui/widgets/header_notebook.c:87
 msgid "Report a Bug"
-msgstr ""
+msgstr "Reportar um erro"
 
 #: src/gui/widgets/piano_roll_key_label.c:84
 msgid "both"
-msgstr ""
+msgstr "ambos"
 
 #: src/gui/widgets/piano_roll_key_label.c:103
 msgid "scale"
-msgstr ""
+msgstr "escala"
 
 #: src/gui/widgets/piano_roll_key_label.c:122
 msgid "chord"
-msgstr ""
+msgstr "acorde"
 
 #: src/gui/widgets/live_waveform.c:131
 msgid "Live waveform indicator"
@@ -1051,6 +1055,7 @@ msgstr ""
 #: src/actions/actions.c:234
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
+"uma estação de trabalho de áudio digital altamente automatizada e intuitiva"
 
 #: src/actions/actions.c:238
 msgid "Website"
@@ -1267,7 +1272,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
 msgid "Language"
-msgstr ""
+msgstr "Idioma"
 
 #: resources/ui/first_run_assistant.ui:106
 msgid ""
@@ -1907,7 +1912,7 @@ msgstr ""
 
 #: resources/ui/header_notebook.ui:37
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: resources/ui/header_notebook.ui:74
 msgid "View"
@@ -2139,4 +2144,4 @@ msgstr ""
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:26
 msgid "zrythm"
-msgstr ""
+msgstr "zrythm"
