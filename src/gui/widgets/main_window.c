@@ -103,8 +103,9 @@ on_close_notification_clicked (
 void
 main_window_widget_refresh (MainWindowWidget * self)
 {
-  header_notebook_widget_setup (MW_HEADER_NOTEBOOK,
-                           PROJECT->title);
+  header_notebook_widget_setup (
+    MW_HEADER_NOTEBOOK,
+    PROJECT->title);
 
   /* setup center dock */
   center_dock_widget_setup (MW_CENTER_DOCK);
@@ -141,6 +142,12 @@ main_window_widget_refresh (MainWindowWidget * self)
 
   gtk_window_maximize (
     GTK_WINDOW (self));
+
+  /* show track selection info */
+  EVENTS_PUSH (ET_TRACK_CHANGED,
+               TRACKLIST_SELECTIONS->tracks[0]);
+  EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
+               NULL);
 }
 
 static void

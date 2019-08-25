@@ -164,6 +164,7 @@ create_default (Project * self)
   TRACKLIST->master_track = track;
   tracklist_selections_add_track (
     TRACKLIST_SELECTIONS, track);
+  self->last_selection = SELECTION_TYPE_TRACK;
 
   /* create untitled project */
   char * untitled_project = _("Untitled Project");
