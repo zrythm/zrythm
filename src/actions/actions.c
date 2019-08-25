@@ -67,6 +67,7 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
+#include "utils/localization.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 
@@ -131,11 +132,25 @@ activate_manual (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)
 {
-#ifdef _WIN32
-  ShellExecute (
-    0, (LPCSTR)"open",
-    (LPCSTR) "https://manual.zrythm.org",
-    0, 0, SW_SHOWNORMAL);
+#ifdef MANUAL_PATH
+  UiLanguage lang =
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "language");
+  char * lang_code =
+    localization_get_string_code (lang);
+  char * path =
+    g_strdup_printf (
+      "file://%s/%s/index.html",
+      MANUAL_PATH,
+      lang_code);
+  gtk_show_uri_on_window (
+    GTK_WINDOW (MAIN_WINDOW),
+    path,
+    0,
+    NULL);
+  g_free (lang_code);
+  g_free (path);
 #else
   gtk_show_uri_on_window (
     GTK_WINDOW (MAIN_WINDOW),

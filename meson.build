@@ -78,9 +78,10 @@ cdata.set_quoted (
 cdata.set_quoted (
   'NEW_ISSUE_URL',
   'https://savannah.nongnu.org/support/?func=additem&group=zrythm')
-cdata.set (
-  'HAVE_MANUAL',
-  get_option ('user_manual') ? 1 : 0)
+if (get_option ('user_manual'))
+  cdata.set_quoted (
+    'MANUAL_PATH', docdir)
+endif
 
 os_darwin = false
 os_linux = false
