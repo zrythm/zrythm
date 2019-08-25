@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-08-24 01:20+0100\n"
+"POT-Creation-Date: 2019-08-25 22:18+0100\n"
 "PO-Revision-Date: 2019-08-25 12:24+0000\n"
 "Last-Translator: Waui <wau-wau@tutanota.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
-"\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
+">\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,7 +39,7 @@ msgstr "Richte Back-End ein"
 msgid "Loading project"
 msgstr "Lade Projekt"
 
-#: src/project.c:160 src/audio/track.c:900
+#: src/project.c:160 src/audio/track.c:960
 msgid "Master"
 msgstr "Master"
 
@@ -103,13 +103,13 @@ msgid "Save State"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:153 src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:548
+#: src/utils/dialogs.c:74 src/actions/actions.c:538
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "_Abbrechen"
 
-#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:550
+#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:540
 msgid "_Save"
 msgstr "_Speichern"
 
@@ -166,7 +166,7 @@ msgstr "Notenlänge"
 msgid "note type"
 msgstr ""
 
-#: src/gui/widgets/channel.c:919
+#: src/gui/widgets/channel.c:932
 msgid "Inserts"
 msgstr "Inserts"
 
@@ -227,11 +227,11 @@ msgstr "Pfad"
 msgid "Last Modified"
 msgstr "Letzte Änderung"
 
-#: src/gui/widgets/left_dock_edge.c:65
+#: src/gui/widgets/left_dock_edge.c:69
 msgid "Inspector"
 msgstr "Inspector"
 
-#: src/gui/widgets/left_dock_edge.c:85
+#: src/gui/widgets/left_dock_edge.c:89
 #: resources/ui/chord_selector_window.ui:682
 msgid "Visibility"
 msgstr "Sichtbarkeit"
@@ -313,28 +313,28 @@ msgstr "Erweiterungseigenschaften"
 msgid "Track Info"
 msgstr "Spurinfo"
 
-#: src/gui/widgets/digital_meter.c:286
+#: src/gui/widgets/digital_meter.c:295
 msgid "normal"
 msgstr "normal"
 
-#: src/gui/widgets/digital_meter.c:289
+#: src/gui/widgets/digital_meter.c:298
 msgid "dotted"
 msgstr "Punktiert"
 
-#: src/gui/widgets/digital_meter.c:292
+#: src/gui/widgets/digital_meter.c:301
 msgid "triplet"
 msgstr "Triole"
 
-#: src/gui/widgets/digital_meter.c:696
+#: src/gui/widgets/digital_meter.c:707
 msgid "Tempo/BPM"
 msgstr "Tempo/BPM"
 
-#: src/gui/widgets/digital_meter.c:711 resources/ui/inspector_master.ui:79
+#: src/gui/widgets/digital_meter.c:722 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr "Position"
 
-#: src/gui/widgets/digital_meter.c:740
+#: src/gui/widgets/digital_meter.c:751
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr ""
 
@@ -358,29 +358,30 @@ msgstr "_Busspur hinzufügen"
 msgid "Add _Group Track"
 msgstr "_Gruppenspur hinzufügen"
 
-#: src/gui/widgets/instrument_track.c:217 src/gui/widgets/track.c:142
-#: src/gui/widgets/midi_track.c:191 resources/ui/transport_controls.ui:36
+#: src/gui/widgets/instrument_track.c:216 src/gui/widgets/track.c:148
+#: src/gui/widgets/midi_track.c:190 resources/ui/transport_controls.ui:36
 msgid "Record"
 msgstr "Aufnehmen"
 
-#: src/gui/widgets/instrument_track.c:264 src/gui/widgets/midi_track.c:228
+#: src/gui/widgets/instrument_track.c:263 src/gui/widgets/midi_track.c:227
 #, fuzzy
 msgid "Show automation lanes"
 msgstr "Zeige Automationsunterspuren"
 
-#: src/gui/widgets/instrument_track.c:275 src/gui/widgets/midi_track.c:239
-msgid "Show lanes"
-msgstr ""
+#: src/gui/widgets/instrument_track.c:274 src/gui/widgets/midi_track.c:238
+#, fuzzy
+msgid "Show track lanes"
+msgstr "Zeige Automationsunterspuren"
 
-#: src/gui/widgets/instrument_track.c:278 src/gui/widgets/midi_track.c:242
+#: src/gui/widgets/instrument_track.c:277 src/gui/widgets/midi_track.c:241
 msgid "Show Lanes - Shows the track's lanes"
 msgstr "Unterspuren zeigen – Zeigt die Unterspuren der Spur"
 
-#: src/gui/widgets/instrument_track.c:284 src/gui/widgets/midi_track.c:248
+#: src/gui/widgets/instrument_track.c:283 src/gui/widgets/midi_track.c:247
 msgid "Lock track"
 msgstr "Spur sperren"
 
-#: src/gui/widgets/instrument_track.c:293 src/gui/widgets/midi_track.c:257
+#: src/gui/widgets/instrument_track.c:292 src/gui/widgets/midi_track.c:256
 msgid "Freeze track"
 msgstr "Spur einfrieren"
 
@@ -398,12 +399,11 @@ msgstr ""
 "Die Lautstärke, auf die andere Kanäle gestellt werden sollen wenn auf einem "
 "Kanal Listen aktiviert ist."
 
-#. fill text
-#: src/gui/widgets/channel_slot.c:202
+#: src/gui/widgets/channel_slot.c:217
 msgid "empty slot"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:587
+#: src/gui/widgets/channel_slot.c:600
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -533,15 +533,15 @@ msgstr "Dateibrowser"
 msgid "Plugin Browser"
 msgstr "Erweiterungsbrowser"
 
-#: src/gui/widgets/route_target_selector.c:80
+#: src/gui/widgets/route_target_selector.c:86
 msgid "Routed to Stereo Out"
 msgstr "Geroutet zu Stereo Out"
 
-#: src/gui/widgets/route_target_selector.c:86
+#: src/gui/widgets/route_target_selector.c:92
 msgid "Select channel to route signal to"
 msgstr "Wähle den Kanal zu dem das Signal geroutet werden soll"
 
-#: src/gui/widgets/route_target_selector.c:118
+#: src/gui/widgets/route_target_selector.c:132
 msgid "Stereo Out"
 msgstr "Stereo Out"
 
@@ -566,7 +566,7 @@ msgstr "Speichern Unter"
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: src/gui/widgets/header_notebook.c:86 resources/ui/donate_dialog.ui:27
+#: src/gui/widgets/header_notebook.c:86
 msgid "Donate"
 msgstr "Spenden"
 
@@ -626,24 +626,24 @@ msgstr "CV-Eingänge"
 msgid "CV Outs"
 msgstr "CV-Ausgänge"
 
-#: src/gui/widgets/ports_expander.c:386
+#: src/gui/widgets/ports_expander.c:390
 msgid "Pre-Fader Sends"
 msgstr ""
 
-#: src/gui/widgets/ports_expander.c:394
+#: src/gui/widgets/ports_expander.c:398
 msgid "Post-Fader Sends"
 msgstr ""
 
-#: src/gui/widgets/ports_expander.c:402
+#: src/gui/widgets/ports_expander.c:406
 #, fuzzy
 msgid "Stereo In"
 msgstr "Stereo Out"
 
-#: src/gui/widgets/ports_expander.c:409
+#: src/gui/widgets/ports_expander.c:413
 msgid "MIDI In"
 msgstr "MIDI-Eingang"
 
-#: src/gui/widgets/ports_expander.c:417
+#: src/gui/widgets/ports_expander.c:421
 msgid "MIDI Out"
 msgstr "MIDI-Ausgang"
 
@@ -723,31 +723,31 @@ msgstr ""
 msgid "Fullscreen"
 msgstr "Vollbild"
 
-#: src/gui/widgets/track.c:143
+#: src/gui/widgets/track.c:149
 msgid "Solo"
 msgstr "Solo"
 
-#: src/gui/widgets/track.c:144
+#: src/gui/widgets/track.c:150
 msgid "Mute"
 msgstr "Stummschalten"
 
-#: src/gui/widgets/track.c:145 src/gui/widgets/track.c:149
+#: src/gui/widgets/track.c:151 src/gui/widgets/track.c:155
 msgid "Freeze"
 msgstr "Einfrieren"
 
-#: src/gui/widgets/track.c:146
+#: src/gui/widgets/track.c:152
 msgid "Lock"
 msgstr "Sperren"
 
-#: src/gui/widgets/track.c:147
+#: src/gui/widgets/track.c:153
 msgid "Show UI"
 msgstr "Zeige UI"
 
-#: src/gui/widgets/track.c:148
+#: src/gui/widgets/track.c:154
 msgid "Show Automation Lanes"
 msgstr "Zeige Automationsunterspuren"
 
-#: src/gui/widgets/track.c:155
+#: src/gui/widgets/track.c:161
 msgid ""
 "Track - Change track parameters like Solo/Mute... - Click the icon on the "
 "bottom right to bring up the automation lanes - Double click to show "
@@ -757,25 +757,25 @@ msgstr ""
 "die Automationsunterspur zu öffnen – Doppelklick, um den entsprechenden "
 "Kanal im Mixer zu zeigen (wenn anwendbar)"
 
-#: src/gui/widgets/track.c:438
+#: src/gui/widgets/track.c:444
 msgid "_Delete Track"
 msgstr "_Spur löschen"
 
-#: src/gui/widgets/track.c:441
+#: src/gui/widgets/track.c:447
 #, c-format
 msgid "_Delete %d Tracks"
 msgstr "_%d Spuren entfernen"
 
-#: src/gui/widgets/track.c:457
+#: src/gui/widgets/track.c:463
 msgid "_Duplicate Track"
 msgstr "_Spur duplizieren"
 
-#: src/gui/widgets/track.c:461
+#: src/gui/widgets/track.c:467
 #, c-format
 msgid "_Duplicate %d Tracks"
 msgstr "_%d Spuren duplizieren"
 
-#: src/gui/widgets/track.c:480
+#: src/gui/widgets/track.c:486
 msgid "Add Region"
 msgstr "Region hinzufügen"
 
@@ -885,11 +885,36 @@ msgstr "Quadratwurzel"
 msgid "Sine (Equal Power)"
 msgstr "Sinus (Gleiche Leistung)"
 
-#: src/audio/chord_track.c:44 resources/ui/inspector_chord.ui:31
+#: src/audio/chord_track.c:40 src/audio/chord_track.c:57
+#: resources/ui/inspector_chord.ui:31
 msgid "Chords"
 msgstr "Akkorde"
 
-#: src/audio/marker_track.c:43
+#: src/audio/channel.c:1554
+#, fuzzy
+msgid "Stereo in"
+msgstr "Stereo Out"
+
+#: src/audio/channel.c:1558
+#, fuzzy
+msgid "Stereo out"
+msgstr "Stereo Out"
+
+#: src/audio/channel.c:1562
+#, fuzzy
+msgid "MIDI in"
+msgstr "MIDI-Eingang"
+
+#: src/audio/channel.c:1573
+#, fuzzy
+msgid "MIDI out"
+msgstr "MIDI-Ausgang"
+
+#: src/audio/channel.c:1611
+msgid "Piano Roll"
+msgstr ""
+
+#: src/audio/marker_track.c:38 src/audio/marker_track.c:56
 msgid "Markers"
 msgstr "Marker"
 
@@ -909,27 +934,47 @@ msgstr "Unterspur %d"
 msgid "ALSA Error: %s"
 msgstr "ALSA-Fehler: %s"
 
-#: src/audio/track.c:888
+#: src/audio/passthrough_processor.c:55
+msgid "Pre-Fader in"
+msgstr ""
+
+#: src/audio/passthrough_processor.c:61
+msgid "Pre-Fader out"
+msgstr ""
+
+#: src/audio/passthrough_processor.c:69
+msgid "MIDI pre-fader in"
+msgstr ""
+
+#: src/audio/passthrough_processor.c:82
+msgid "MIDI pre-fader out"
+msgstr ""
+
+#: src/audio/sample_processor.c:38
+msgid "Sample Processor"
+msgstr ""
+
+#: src/audio/track.c:948
 msgid "Instrument"
 msgstr "Instrument"
 
-#: src/audio/track.c:891
+#: src/audio/track.c:951
 msgid "Audio"
 msgstr "Audio"
 
-#: src/audio/track.c:894
+#: src/audio/track.c:954
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/track.c:897
+#: src/audio/track.c:957
 msgid "Bus"
 msgstr "Bus"
 
-#: src/audio/track.c:903 resources/ui/editor_toolbar.ui:58
+#: src/audio/track.c:963 resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "Akkord"
 
-#: src/audio/track.c:906 src/audio/track.c:909
+#: src/audio/track.c:966 src/audio/track.c:969
 msgid "Group"
 msgstr "Gruppe"
 
@@ -937,6 +982,24 @@ msgstr "Gruppe"
 #: src/audio/scale.c:563
 msgid "Unimplemented"
 msgstr "Nicht implementiert"
+
+#: src/audio/fader.c:63
+msgid "Fader in"
+msgstr ""
+
+#: src/audio/fader.c:69
+msgid "Fader out"
+msgstr ""
+
+#: src/audio/fader.c:77
+#, fuzzy
+msgid "MIDI fader in"
+msgstr "MIDI-Backend"
+
+#: src/audio/fader.c:90
+#, fuzzy
+msgid "MIDI fader out"
+msgstr "MIDI-Ausgang"
 
 #: src/audio/engine_jack.c:435
 #, c-format
@@ -1028,19 +1091,19 @@ msgstr "Lösche %d Tracks"
 msgid "Change Marker"
 msgstr "Marker ändern"
 
-#: src/actions/actions.c:244
+#: src/actions/actions.c:234
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
 
-#: src/actions/actions.c:248
+#: src/actions/actions.c:238
 msgid "Website"
 msgstr ""
 
-#: src/actions/actions.c:545
+#: src/actions/actions.c:535
 msgid "Save Project"
 msgstr "Projekt speichern"
 
-#: src/actions/actions.c:610
+#: src/actions/actions.c:600
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -1780,7 +1843,6 @@ msgid "Aftertouch"
 msgstr ""
 
 #: resources/ui/automatable_selector.ui:104
-#: resources/ui/route_target_selector.ui:105
 msgid "label"
 msgstr ""
 
@@ -1841,10 +1903,6 @@ msgstr "Erweiterung"
 #: resources/ui/port_selector_popover.ui:167
 msgid "Port"
 msgstr "Port"
-
-#: resources/ui/donate_dialog.ui:69
-msgid "Choose a method to donate"
-msgstr "Wähle eine Methode zu spenden"
 
 #: resources/ui/transport_controls.ui:54
 msgid "Play"
@@ -2148,6 +2206,9 @@ msgstr ""
 #, fuzzy
 msgid "zrythm"
 msgstr "Zrythm"
+
+#~ msgid "Choose a method to donate"
+#~ msgstr "Wähle eine Methode zu spenden"
 
 #~ msgid "BPM - Click and drag up/down to set"
 #~ msgstr "BPM – Klick und ziehe sie rauf/runter, um sie zu ändern"
