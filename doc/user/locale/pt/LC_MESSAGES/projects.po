@@ -3,23 +3,26 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2019-08-25 23:17+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualprojects/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../projects/creating-projects.rst:19
 msgid "Creating Projects"
-msgstr ""
+msgstr "Criação de projetos"
 
 #: ../../projects/creating-projects.rst:21
 msgid ""
@@ -27,14 +30,17 @@ msgid ""
 "create a new one. By default, Zrythm will use ~/username/Zrythm to create"
 " new Projects."
 msgstr ""
+"Quando o Zrythm é iniciado pela primeira vez, ele pedirá que você carregue "
+"um projeto ou crie um novo. Por padrão, o Zrythm usará ~/username/Zrythm "
+"para criar novos Projetos."
 
 #: ../../projects/intro.rst:19
 msgid "Projects"
-msgstr ""
+msgstr "Projetos"
 
 #: ../../projects/project-info.rst:19
 msgid "Project Info"
-msgstr ""
+msgstr "Informações sobre o projeto"
 
 #: ../../projects/project-info.rst:21
 msgid ""
@@ -42,14 +48,17 @@ msgid ""
 "folder with a YAML file describing the Project and additional files used "
 "such as MIDI and audio files."
 msgstr ""
+"Em Zrythm, seu trabalho é gravado dentro de um Projeto. Projetos consistem "
+"em uma pasta com um ficheiro YAML descrevendo o Projeto e ficheiros "
+"adicionais usados como MIDI e ficheiros de áudio."
 
 #: ../../projects/project-info.rst:26
 msgid "Here is an example of a simple project file:"
-msgstr ""
+msgstr "Aqui está um exemplo de um ficheiro de projeto simples:"
 
 #: ../../projects/project-management-and-compatibility.rst:19
 msgid "Project Management and Compatibility"
-msgstr ""
+msgstr "Gerenciamento de Projetos e Compatibilidade"
 
 #: ../../projects/project-management-and-compatibility.rst:21
 msgid ""
@@ -58,6 +67,10 @@ msgid ""
 "compatibility will be maintained between version changes in order to give"
 " more time to feature development and fixes."
 msgstr ""
+"Pelo menos por enquanto, o Zrythm segue um modelo de versão móvel e a "
+"estrutura de ficheiros de projeto está sujeita a alterações a cada nova "
+"versão. Nenhuma compatibilidade será mantida entre as alterações de versão, "
+"a fim de dar mais tempo para o desenvolvimento de recursos e correções."
 
 #: ../../projects/project-management-and-compatibility.rst:26
 msgid ""
@@ -66,14 +79,18 @@ msgid ""
 "if you would like to open a project made using a previous version please "
 "install that version of Zrythm."
 msgstr ""
+"Pode ser possível abrir projetos de versões anteriores se não houve "
+"alteração na estrutura de ficheiros do projeto, mas isso não é garantido, "
+"então se você gostaria de abrir um projeto feito usando uma versão anterior, "
+"por favor instale essa versão do Zrythm."
 
 #: ../../projects/project-management-and-compatibility.rst:32
 msgid "Each project file will contain the version of Zrythm it was made with"
-msgstr ""
+msgstr "Cada ficheiro de projeto conterá a versão do Zrythm com que foi feita"
 
 #: ../../projects/saving-loading.rst:19
 msgid "Saving & Loading"
-msgstr ""
+msgstr "Gravar e Carregar"
 
 #: ../../projects/saving-loading.rst:21
 msgid ""
@@ -81,12 +98,16 @@ msgid ""
 "Project in a new location and :zbutton:`Save` will save the Project in "
 "the previous location."
 msgstr ""
+"Gravar funciona como você esperaria: :zbutton:`Save As...` salvará o Projeto "
+"num novo local e :zbutton:`Save` salvará o Projeto no local anterior."
 
 #: ../../projects/saving-loading.rst:25
 msgid ""
 "When loading a Project, Zrythm expects you to give it the Project "
 "directory."
 msgstr ""
+"Ao carregar um Projeto, o Zrythm espera que você lhe dê o diretório do "
+"Projeto."
 
 #~ msgid "Importing/Exporting Audio"
 #~ msgstr ""
@@ -188,4 +209,3 @@ msgstr ""
 #~ "master fader and contains additional "
 #~ "automation options."
 #~ msgstr ""
-
