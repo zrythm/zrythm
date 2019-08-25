@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Zrythm \n"
+"Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2019-08-25 23:17+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-configuration/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.6.0\n"
 
 #: ../../zrythm-configuration/device-setup/intro.rst:2
@@ -37,7 +40,7 @@ msgstr ""
 
 #: ../../zrythm-configuration/installation/intro.rst:2
 msgid "Installation"
-msgstr ""
+msgstr "Instalação"
 
 #: ../../zrythm-configuration/installation/intro.rst:5
 msgid "Official Builds"
@@ -102,7 +105,7 @@ msgstr ""
 
 #: ../../zrythm-configuration/preferences/intro.rst:2
 msgid "Preferences"
-msgstr ""
+msgstr "Preferências"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:2
 msgid "System Requirements"
@@ -156,4 +159,3 @@ msgstr ""
 #: ../../zrythm-configuration/system-requirements/intro.rst:24
 msgid "Click Configure and select your Audio Interface"
 msgstr ""
-
