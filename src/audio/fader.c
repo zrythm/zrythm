@@ -195,10 +195,21 @@ void
 fader_disconnect_all (
   Fader * self)
 {
-  port_disconnect_all (self->stereo_in->l);
-  port_disconnect_all (self->stereo_in->r);
-  port_disconnect_all (self->stereo_out->l);
-  port_disconnect_all (self->stereo_out->r);
+  switch (self->type)
+    {
+    case FADER_TYPE_AUDIO_CHANNEL:
+      port_disconnect_all (self->stereo_in->l);
+      port_disconnect_all (self->stereo_in->r);
+      port_disconnect_all (self->stereo_out->l);
+      port_disconnect_all (self->stereo_out->r);
+      break;
+    case FADER_TYPE_MIDI_CHANNEL:
+      port_disconnect_all (self->midi_in);
+      port_disconnect_all (self->midi_out);
+      break;
+    default:
+      break;
+    }
 }
 
 /**
@@ -242,6 +253,14 @@ fader_process (
             self->stereo_in->r->buf[i];
         }
 
+      /* apply fader */
+      port_apply_fader (
+        self->stereo_out->l, self->amp,
+        start_frame, nframes);
+      port_apply_fader (
+        self->stereo_out->r, self->amp,
+        start_frame, nframes);
+
       /* apply pan */
       port_apply_pan (
         self->stereo_out->l, self->pan,
@@ -252,14 +271,6 @@ fader_process (
         self->stereo_out->r, self->pan,
         AUDIO_ENGINE->pan_law,
         AUDIO_ENGINE->pan_algo,
-        start_frame, nframes);
-
-      /* apply fader */
-      port_apply_fader (
-        self->stereo_out->l, self->amp,
-        start_frame, nframes);
-      port_apply_fader (
-        self->stereo_out->r, self->amp,
         start_frame, nframes);
     }
 
