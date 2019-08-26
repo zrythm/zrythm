@@ -3,49 +3,54 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2019-08-26 23:01+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualmixing/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../mixing/channels.rst:2
 msgid "Channels"
-msgstr ""
+msgstr "Canais"
 
 #: ../../mixing/channels.rst:4
 msgid "TODO"
-msgstr ""
+msgstr "A FAZER"
 
 #: ../../mixing/groups.rst:2
 msgid "Groups"
-msgstr ""
+msgstr "Grupos"
 
 #: ../../mixing/intro.rst:2
 msgid "Mixing"
-msgstr ""
+msgstr "Misturar"
 
 #: ../../mixing/meters.rst:2
 msgid "Meters"
-msgstr ""
+msgstr "Medidores"
 
 #: ../../mixing/meters.rst:4
 msgid ""
 "Meters display the current RMS peaks at the end of the channel's "
 "processing."
 msgstr ""
+"Os medidores exibem os picos atuais do RMS no final do processamento do "
+"canal."
 
 #: ../../mixing/mixdown.rst:2
 msgid "Mixdown"
-msgstr ""
+msgstr "Mixagem"
 
 #: ../../mixing/mixdown.rst:4
 msgid ""
@@ -53,6 +58,9 @@ msgid ""
 " The mixdown can be the loop range or the range between the song start "
 "and end markers."
 msgstr ""
+"A caixa de diálogo 'Ficheiro->Exportar como' pode ser usada para exportar a "
+"mixagem ou a música. A mixagem pode ser o intervalo de loop ou o intervalo "
+"entre os marcadores de início e fim da música."
 
 #: ../../mixing/panning.rst:2
 msgid "Panning"
@@ -99,4 +107,3 @@ msgstr ""
 #: ../../mixing/sidechaining.rst:2
 msgid "Sidechaining"
 msgstr ""
-
