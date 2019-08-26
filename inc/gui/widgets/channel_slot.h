@@ -44,6 +44,14 @@ typedef struct _ChannelSlotWidget
   GtkGestureMultiPress *   multipress;
   GtkGestureDrag *         drag;
 
+  /**
+   * Previous plugin name at
+   * this slot in the last draw callback, or NULL.
+   *
+   * If this changes, the tooltip is changed.
+   */
+  char *                  pl_name;
+
   /** For multipress. */
   int                      n_press;
 

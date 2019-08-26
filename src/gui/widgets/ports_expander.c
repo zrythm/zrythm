@@ -384,19 +384,10 @@ ports_expander_widget_setup_track (
 
   switch (type)
     {
-    case PE_TRACK_PORT_TYPE_PREFADER:
+    case PE_TRACK_PORT_TYPE_SENDS:
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self),
-        _("Pre-Fader Sends"));
-      self->owner_type = PORT_OWNER_TYPE_FADER;
-      self->flow = FLOW_OUTPUT;
-      self->type = out_type;
-      break;
-    case PE_TRACK_PORT_TYPE_POSTFADER:
-      expander_box_widget_set_label (
-        Z_EXPANDER_BOX_WIDGET (self),
-        _("Post-Fader Sends"));
-      self->owner_type = PORT_OWNER_TYPE_FADER;
+        _("Sends"));
       self->flow = FLOW_OUTPUT;
       self->type = out_type;
       break;
@@ -441,23 +432,13 @@ ports_expander_widget_setup_track (
   PortConnectionsButtonWidget * pcb;
   switch (type)
     {
-    case PE_TRACK_PORT_TYPE_PREFADER:
+    case PE_TRACK_PORT_TYPE_SENDS:
       if (out_type == TYPE_AUDIO)
         {
           ADD_SINGLE (
             tr->channel->prefader.stereo_out->l);
           ADD_SINGLE (
             tr->channel->prefader.stereo_out->r);
-        }
-      else if (out_type == TYPE_EVENT)
-        {
-          ADD_SINGLE (
-            tr->channel->prefader.midi_out);
-        }
-      break;
-    case PE_TRACK_PORT_TYPE_POSTFADER:
-      if (out_type == TYPE_AUDIO)
-        {
           ADD_SINGLE (
             tr->channel->fader.stereo_out->l);
           ADD_SINGLE (
@@ -466,8 +447,11 @@ ports_expander_widget_setup_track (
       else if (out_type == TYPE_EVENT)
         {
           ADD_SINGLE (
+            tr->channel->prefader.midi_out);
+          ADD_SINGLE (
             tr->channel->fader.midi_out);
         }
+      break;
       break;
     case PE_TRACK_PORT_TYPE_STEREO_IN:
       ADD_SINGLE (

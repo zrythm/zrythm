@@ -188,7 +188,7 @@ draw_cb (
       cairo_set_source_rgba (
         cr, fg.red, fg.green, fg.blue, 1.0);
       int w, h;
-      char * font = "Arial Medium 9";
+      char * font = "Arial Bold 9";
       char * text = plugin->descr->name;
       z_cairo_get_text_extents_for_widget_full (
         widget, text, &w, &h, font,
@@ -199,6 +199,19 @@ draw_cb (
         PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
       if (text != plugin->descr->name)
         g_free (text);
+
+      /* update tooltip */
+      if (!self->pl_name ||
+          !g_strcmp0 (
+            plugin->descr->name, self->pl_name))
+        {
+          if (self->pl_name)
+            g_free (self->pl_name);
+          self->pl_name =
+            g_strdup (plugin->descr->name);
+          gtk_widget_set_tooltip_text (
+            widget, self->pl_name);
+        }
     }
   else
     {
@@ -223,6 +236,14 @@ draw_cb (
         height / 2 - h / 2, font,
         PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
 
+      /* update tooltip */
+      if (self->pl_name)
+        {
+          g_free (self->pl_name);
+          self->pl_name = NULL;
+          gtk_widget_set_tooltip_text (
+            widget, _("empty slot"));
+        }
     }
 
   //highlight if grabbed or if mouse is hovering over me
@@ -653,7 +674,8 @@ channel_slot_widget_new (int slot_index,
 }
 
 static void
-channel_slot_widget_init (ChannelSlotWidget * self)
+channel_slot_widget_init (
+  ChannelSlotWidget * self)
 {
   /* make it able to notify */
   gtk_widget_add_events (
@@ -664,6 +686,10 @@ channel_slot_widget_init (ChannelSlotWidget * self)
 
   gtk_widget_set_size_request (
     GTK_WIDGET (self), -1, 24);
+
+  self->pl_name = NULL;
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self), _("empty slot"));
 
   self->multipress =
     GTK_GESTURE_MULTI_PRESS (

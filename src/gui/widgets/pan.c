@@ -17,14 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- */
-
 #include <math.h>
 #include <stdlib.h>
 
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/pan.h"
+
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (PanWidget,
                pan_widget,
@@ -34,7 +33,8 @@ G_DEFINE_TYPE (PanWidget,
 #define SET_VAL(real) ((*self->setter)(self->object, real))
 
 static int
-draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
+draw_cb (
+  GtkWidget * widget, cairo_t * cr, void* data)
 {
   guint width, height;
   GtkStyleContext *context;
@@ -68,6 +68,26 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
   return FALSE;
 }
 
+/**
+ * Returns the pan string.
+ *
+ * Must be free'd.
+ */
+static char *
+get_pan_string (
+  PanWidget * self)
+{
+  /* make it from -0.5 to 0.5 */
+  float pan_val = GET_VAL - 0.5f;
+
+  /* get as percentage */
+  pan_val = (fabs (pan_val) / 0.5f) * 100.f;
+
+  return
+    g_strdup_printf ("%s%.0f%%",
+                     GET_VAL < 0.5f ? "-" : "",
+                     pan_val);
+}
 
 static gboolean
 on_motion (GtkWidget * widget, GdkEvent *event,
@@ -117,19 +137,13 @@ drag_update (GtkGestureDrag * gesture,
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
-  /* make it from -0.5 to 0.5 */
-  float pan_val = GET_VAL - 0.5f;
-
-  /* get as percentage */
-  pan_val = (fabs (pan_val) / 0.5f) * 100.f;
-
-  char * string =
-    g_strdup_printf ("%s%.0f%%",
-                     GET_VAL < 0.5f ? "-" : "",
-                     pan_val);
+  char * str =
+    get_pan_string (self);
   gtk_label_set_text (self->tooltip_label,
-                      string);
-  g_free (string);
+                      str);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self), str);
+  g_free (str);
   gtk_window_present (self->tooltip_win);
 }
 
@@ -185,13 +199,18 @@ pan_widget_new (float (*get_val)(void *),    ///< getter function
 static void
 pan_widget_init (PanWidget * self)
 {
-  gdk_rgba_parse (&self->start_color, "rgba(0%,100%,0%,1.0)");
-  gdk_rgba_parse (&self->end_color, "rgba(0%,50%,50%,1.0)");
+  gdk_rgba_parse (
+    &self->start_color, "rgba(0%,100%,0%,1.0)");
+  gdk_rgba_parse (
+    &self->end_color, "rgba(0%,50%,50%,1.0)");
 
   /* make it able to notify */
-  gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);
-  int crossing_mask = GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
-  gtk_widget_add_events (GTK_WIDGET (self), crossing_mask);
+  gtk_widget_set_has_window (
+    GTK_WIDGET (self), TRUE);
+  int crossing_mask =
+    GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK;
+  gtk_widget_add_events (
+    GTK_WIDGET (self), crossing_mask);
 
   self->tooltip_win =
     GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));

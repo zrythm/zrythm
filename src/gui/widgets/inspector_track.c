@@ -49,9 +49,7 @@ inspector_track_widget_show_tracks (
         track);
 
       gtk_widget_set_visible (
-        GTK_WIDGET (self->prefader_sends), 0);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->postfader_sends), 0);
+        GTK_WIDGET (self->sends), 0);
       gtk_widget_set_visible (
         GTK_WIDGET (self->stereo_in), 0);
       gtk_widget_set_visible (
@@ -62,9 +60,7 @@ inspector_track_widget_show_tracks (
       if (track->channel)
         {
           gtk_widget_set_visible (
-            GTK_WIDGET (self->prefader_sends), 1);
-          gtk_widget_set_visible (
-            GTK_WIDGET (self->postfader_sends), 1);
+            GTK_WIDGET (self->sends), 1);
           /*gtk_widget_set_visible (*/
             /*GTK_WIDGET (self->stereo_in), 1);*/
           /*gtk_widget_set_visible (*/
@@ -73,11 +69,8 @@ inspector_track_widget_show_tracks (
             /*GTK_WIDGET (self->midi_out), 1);*/
 
           ports_expander_widget_setup_track (
-            self->prefader_sends,
-            track, PE_TRACK_PORT_TYPE_PREFADER);
-          ports_expander_widget_setup_track (
-            self->postfader_sends,
-            track, PE_TRACK_PORT_TYPE_POSTFADER);
+            self->sends,
+            track, PE_TRACK_PORT_TYPE_SENDS);
           /*ports_expander_widget_setup_track (*/
             /*self->stereo_in,*/
             /*track, PE_TRACK_PORT_TYPE_STEREO_IN);*/
@@ -120,8 +113,7 @@ inspector_track_widget_class_init (
     child);
 
   BIND_CHILD (instrument_track_info);
-  BIND_CHILD (prefader_sends);
-  BIND_CHILD (postfader_sends);
+  BIND_CHILD (sends);
   BIND_CHILD (stereo_in);
   BIND_CHILD (midi_in);
   BIND_CHILD (midi_out);

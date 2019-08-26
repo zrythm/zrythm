@@ -43,8 +43,7 @@ typedef struct _InspectorTrackWidget
   InstrumentTrackInfoExpanderWidget *
     instrument_track_info;
 
-  PortsExpanderWidget * prefader_sends;
-  PortsExpanderWidget * postfader_sends;
+  PortsExpanderWidget * sends;
   PortsExpanderWidget * stereo_in;
   PortsExpanderWidget * midi_in;
   PortsExpanderWidget * midi_out;
