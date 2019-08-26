@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-25 23:17+0000\n"
+"PO-Revision-Date: 2019-08-26 23:02+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/pt/>\n"
@@ -31,7 +31,7 @@ msgstr ""
 #: ../../playback-and-recording/recording-midi.rst:21
 #: ../../playback-and-recording/transport-controls.rst:47
 msgid "TODO"
-msgstr ""
+msgstr "A FAZER"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:19
 msgid "BPM and Time Signatures"
