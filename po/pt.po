@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-25 22:18+0100\n"
-"PO-Revision-Date: 2019-08-25 23:17+0000\n"
+"PO-Revision-Date: 2019-08-26 23:01+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -923,7 +923,7 @@ msgstr ""
 
 #: src/audio/track.c:951
 msgid "Audio"
-msgstr ""
+msgstr "Áudio"
 
 #: src/audio/track.c:954
 msgid "MIDI"
@@ -1602,7 +1602,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:897
 msgid "TODO"
-msgstr ""
+msgstr "A FAZER"
 
 #: resources/ui/chord_selector_window.ui:907
 msgid "Circle of Fifths"
@@ -1610,7 +1610,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
-msgstr ""
+msgstr "Atalhos Globais"
 
 #: resources/ui/shortcuts.ui:36 resources/ui/preferences.ui:235
 msgid "General"
@@ -1694,7 +1694,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:200
 msgid "Editor Shortcuts"
-msgstr ""
+msgstr "Atalhos do Editor"
 
 #: resources/ui/shortcuts.ui:204
 msgid "Tool"
