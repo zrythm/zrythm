@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-25 23:17+0000\n"
+"PO-Revision-Date: 2019-08-26 23:01+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualappendix/pt/>\n"
@@ -41,38 +41,41 @@ msgid ""
 "When Zrythm is launched for the first time, it will also ask you to "
 "select a folder for saving your projects and other project-related files."
 msgstr ""
+"Quando o Zrythm é lançado pela primeira vez, ele também pedirá que você "
+"selecione uma pasta para gravar seus projetos e outros ficheiros "
+"relacionados ao projeto."
 
 #: ../../appendix/files-and-directories.rst:121
 msgid "By default, this will be ``~/zrythm``"
-msgstr ""
+msgstr "Por padrão, será ``~/zrythm``"
 
 #: ../../appendix/intro.rst:19
 msgid "Appendix"
-msgstr ""
+msgstr "Apêndice"
 
 #: ../../appendix/menu-actions.rst:19
 msgid "Menu Actions"
-msgstr ""
+msgstr "Menu Ações"
 
 #: ../../appendix/shortcut-keys.rst:19
 msgid "Shortcut Keys"
-msgstr ""
+msgstr "Teclas de Atalho"
 
 #: ../../appendix/shortcut-keys.rst:22
 msgid "Global Shortcuts"
-msgstr ""
+msgstr "Atalhos Globais"
 
 #: ../../appendix/shortcut-keys.rst:27
 msgid "Editor Shortcuts"
-msgstr ""
+msgstr "Atalhos do Editor"
 
 #: ../../appendix/troubleshooting.rst:19
 msgid "Troubleshooting"
-msgstr ""
+msgstr "Resolução de problemas"
 
 #: ../../appendix/troubleshooting.rst:21
 msgid "TODO"
-msgstr ""
+msgstr "A FAZER"
 
 #~ msgid ""
 #~ "The app icon is missing Run `sudo"
