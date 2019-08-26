@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-08-25 23:17+0000\n"
+"PO-Revision-Date: 2019-08-26 23:02+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/pt/>\n"
@@ -96,7 +96,7 @@ msgstr ""
 
 #: ../../tracks/instrument-track.rst:14 ../../tracks/track-context-menu.rst:4
 msgid "TODO"
-msgstr ""
+msgstr "A FAZER"
 
 #: ../../tracks/intro.rst:2
 msgid "Tracks"
