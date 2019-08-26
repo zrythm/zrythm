@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-25 23:17+0000\n"
+"PO-Revision-Date: 2019-08-26 23:02+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/pt/>\n"
@@ -37,7 +37,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:28
 #: ../../plugins-files/audio-midi-files/file-browser.rst:33
 msgid "TODO"
-msgstr ""
+msgstr "A FAZER"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:31
 msgid "Collections"
@@ -310,7 +310,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/ports.rst:31
 msgid "Audio"
-msgstr ""
+msgstr "Áudio"
 
 #: ../../plugins-files/plugins/ports.rst:29
 msgid ""
