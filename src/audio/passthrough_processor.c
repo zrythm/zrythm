@@ -128,10 +128,21 @@ void
 passthrough_processor_disconnect_all (
   PassthroughProcessor * self)
 {
-  port_disconnect_all (self->stereo_in->l);
-  port_disconnect_all (self->stereo_in->r);
-  port_disconnect_all (self->stereo_out->l);
-  port_disconnect_all (self->stereo_out->r);
+  switch (self->type)
+    {
+    case PP_TYPE_AUDIO_CHANNEL:
+      port_disconnect_all (self->stereo_in->l);
+      port_disconnect_all (self->stereo_in->r);
+      port_disconnect_all (self->stereo_out->l);
+      port_disconnect_all (self->stereo_out->r);
+      break;
+    case PP_TYPE_MIDI_CHANNEL:
+      port_disconnect_all (self->midi_in);
+      port_disconnect_all (self->midi_out);
+      break;
+    default:
+      break;
+    }
 }
 
 /**
