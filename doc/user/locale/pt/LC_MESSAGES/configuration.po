@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-25 23:17+0000\n"
+"PO-Revision-Date: 2019-08-26 23:01+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/pt/>\n"
@@ -218,7 +218,7 @@ msgstr ""
 
 #: ../../configuration/preferences/overview.rst:29
 msgid "Audio"
-msgstr ""
+msgstr "Áudio"
 
 #: ../../configuration/preferences/overview.rst:30
 msgid "GUI"
