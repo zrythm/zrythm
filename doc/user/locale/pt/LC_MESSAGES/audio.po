@@ -3,31 +3,34 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-04 08:01+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2019-08-26 23:01+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualaudio/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.6.0\n"
 
 #: ../../audio/audio-processing/applying-effects.rst:2
 msgid "Applying Effects"
-msgstr ""
+msgstr "Aplicar Efeitos"
 
 #: ../../audio/audio-processing/intro.rst:2
 msgid "Audio Processing"
-msgstr ""
+msgstr "Processamento de Áudio"
 
 #: ../../audio/audio-regions.rst:2
 msgid "Audio Regions"
-msgstr ""
+msgstr "Regiões de Áudio"
 
 #: ../../audio/audio-regions.rst:4
 msgid ""
@@ -36,16 +39,19 @@ msgid ""
 "not affect the source file/recording) and are only saved to disk as "
 "separate copies when the project is saved."
 msgstr ""
+"Cada região de áudio contém 1 peça de áudio, correspondendo a um ficheiro ou "
+"a uma gravação. Quaisquer alterações nas regiões de áudio não são "
+"permanentes (não afectam o ficheiro/gravação de origem) e só são gravadas no "
+"disco como cópias separadas quando o projecto é gravado."
 
 #: ../../audio/audio-tracks.rst:2
 msgid "Audio Tracks"
-msgstr ""
+msgstr "Faixas de Áudio"
 
 #: ../../audio/audio-tracks.rst:4
 msgid "Audio tracks contain audio regions."
-msgstr ""
+msgstr "As faixas de áudio contêm regiões de áudio."
 
 #: ../../audio/intro.rst:2
 msgid "Audio"
-msgstr ""
-
+msgstr "Áudio"
