@@ -3,34 +3,36 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2019-08-26 23:02+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualexporting/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../exporting/exporting-midi-files.rst:2
 msgid "Exporting MIDI Files"
-msgstr ""
+msgstr "Exportando ficheiros MIDI"
 
 #: ../../exporting/exporting-midi-files.rst:4
 #: ../../exporting/exporting-the-mixdown.rst:4
 msgid "TODO"
-msgstr ""
+msgstr "A FAZER"
 
 #: ../../exporting/exporting-the-mixdown.rst:2
 msgid "Exporting the Mixdown"
-msgstr ""
+msgstr "Exportar a Mixagem"
 
 #: ../../exporting/intro.rst:2
 msgid "Exporting"
-msgstr ""
-
+msgstr "Exportação"
