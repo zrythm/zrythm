@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-25 22:18+0100\n"
-"PO-Revision-Date: 2019-08-24 10:24+0000\n"
+"PO-Revision-Date: 2019-08-26 13:09+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -64,10 +64,8 @@ msgstr "Erreur : signal %d - Backtrace :"
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
 msgstr ""
-"Zrythm a planté. Veuillez nous aider à corriger cela en <a href=\"https://"
-"savannah.nongnu.org/support/?func=additem&amp;group=zrythm\">soumettant un "
-"rapport de bogue</a>. Veuillez inclure le texte suivant, avec les étapes "
-"pour reproduire"
+"Zrythm a planté. Veuillez nous aider à corriger cela en %ssoumettant un "
+"rapport de bogue%s."
 
 #: src/main.c:167
 #, c-format
@@ -400,9 +398,8 @@ msgid "Show automation lanes"
 msgstr "Afficher les lignes d'automatisation"
 
 #: src/gui/widgets/instrument_track.c:274 src/gui/widgets/midi_track.c:238
-#, fuzzy
 msgid "Show track lanes"
-msgstr "Afficher les lignes"
+msgstr "Afficher les voix de piste"
 
 #: src/gui/widgets/instrument_track.c:277 src/gui/widgets/midi_track.c:241
 msgid "Show Lanes - Shows the track's lanes"
@@ -432,7 +429,7 @@ msgstr ""
 
 #: src/gui/widgets/channel_slot.c:217
 msgid "empty slot"
-msgstr ""
+msgstr "emplacement libre"
 
 #: src/gui/widgets/channel_slot.c:600
 msgid ""
@@ -913,22 +910,18 @@ msgid "Chords"
 msgstr "Accords"
 
 #: src/audio/channel.c:1554
-#, fuzzy
 msgid "Stereo in"
 msgstr "Entrée stéréo"
 
 #: src/audio/channel.c:1558
-#, fuzzy
 msgid "Stereo out"
-msgstr "Sortie Stéréo"
+msgstr "Sortie stéréo"
 
 #: src/audio/channel.c:1562
-#, fuzzy
 msgid "MIDI in"
 msgstr "Entrée MIDI"
 
 #: src/audio/channel.c:1573
-#, fuzzy
 msgid "MIDI out"
 msgstr "Sortie MIDI"
 
@@ -957,26 +950,24 @@ msgid "ALSA Error: %s"
 msgstr "Erreur ALSA : %s"
 
 #: src/audio/passthrough_processor.c:55
-#, fuzzy
 msgid "Pre-Fader in"
-msgstr "Envois pré-fader"
+msgstr "Entrée pré-fader"
 
 #: src/audio/passthrough_processor.c:61
-#, fuzzy
 msgid "Pre-Fader out"
-msgstr "Envois pré-fader"
+msgstr "Sortie pré-fader"
 
 #: src/audio/passthrough_processor.c:69
 msgid "MIDI pre-fader in"
-msgstr ""
+msgstr "Entrée pré-fader MIDI"
 
 #: src/audio/passthrough_processor.c:82
 msgid "MIDI pre-fader out"
-msgstr ""
+msgstr "Sortie pré-fader MIDI"
 
 #: src/audio/sample_processor.c:38
 msgid "Sample Processor"
-msgstr ""
+msgstr "Processeur d'échantillon"
 
 #: src/audio/track.c:948
 msgid "Instrument"
@@ -1008,23 +999,20 @@ msgid "Unimplemented"
 msgstr "Non-implémenté"
 
 #: src/audio/fader.c:63
-#, fuzzy
 msgid "Fader in"
-msgstr "Envois pré-fader"
+msgstr "Entrée fader"
 
 #: src/audio/fader.c:69
 msgid "Fader out"
-msgstr ""
+msgstr "Sortie fader"
 
 #: src/audio/fader.c:77
-#, fuzzy
 msgid "MIDI fader in"
-msgstr "Système MIDI"
+msgstr "Entrée fader MIDI"
 
 #: src/audio/fader.c:90
-#, fuzzy
 msgid "MIDI fader out"
-msgstr "Sortie MIDI"
+msgstr "Sortie fader MIDI"
 
 #: src/audio/engine_jack.c:435
 #, c-format
@@ -1117,15 +1105,14 @@ msgid "Change Marker"
 msgstr "Changer le marqueur"
 
 #: src/actions/actions.c:234
-#, fuzzy
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
-"Une station de travail audio numérique (STAN) hautement automatisée et "
+"une station de travail audio numérique (STAN) hautement automatisée et "
 "intuitive"
 
 #: src/actions/actions.c:238
 msgid "Website"
-msgstr ""
+msgstr "Site ouèbe"
 
 #: src/actions/actions.c:535
 msgid "Save Project"
