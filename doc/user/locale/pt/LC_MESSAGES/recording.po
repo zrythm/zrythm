@@ -3,33 +3,35 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-04 08:01+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2019-08-28 18:26+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualrecording/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.6.0\n"
 
 #: ../../recording/intro.rst:2
 msgid "Recording"
-msgstr ""
+msgstr "Gravação"
 
 #: ../../recording/punch-recording-modes.rst:2
 msgid "Punch Recording Modes"
-msgstr ""
+msgstr "Modos de Gravação de Punção"
 
 #: ../../recording/recording-audio.rst:2
 msgid "Recording Audio"
-msgstr ""
+msgstr "Gravação de Áudio"
 
 #: ../../recording/recording-midi.rst:2
 msgid "Recording MIDI"
-msgstr ""
-
+msgstr "Gravação MIDI"
