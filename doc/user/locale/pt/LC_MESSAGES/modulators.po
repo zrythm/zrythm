@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-08-26 23:02+0000\n"
+"PO-Revision-Date: 2019-08-28 18:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualmodulators/pt/>\n"
@@ -22,11 +22,11 @@ msgstr ""
 
 #: ../../modulators/adding-modulators.rst:2
 msgid "Adding Modulators"
-msgstr ""
+msgstr "Adicionando Moduladores"
 
 #: ../../modulators/adding-modulators.rst:4
 msgid "Modulators are Plugins that have at least one CV output port."
-msgstr ""
+msgstr "Moduladores são Plugins que possuem pelo menos uma porta de saída CV."
 
 #: ../../modulators/adding-modulators.rst:7
 #: ../../modulators/routing-modulators.rst:4
@@ -35,11 +35,11 @@ msgstr "A FAZER"
 
 #: ../../modulators/intro.rst:2
 msgid "Modulators"
-msgstr ""
+msgstr "Moduladores"
 
 #: ../../modulators/modulators-tab.rst:2
 msgid "Modulators Tab"
-msgstr ""
+msgstr "Guia Moduladores"
 
 #: ../../modulators/modulators-tab.rst:4
 msgid ""
@@ -47,7 +47,10 @@ msgid ""
 "of Modulators. Modulators are associated with Tracks, so each Track will "
 "have its own list of Modulators."
 msgstr ""
+"O Zrythm tem uma guia Moduladores no painel inferior que pode conter "
+"qualquer quantidade de Moduladores. Os Moduladores estão associados a "
+"Faixas, pelo que cada Faixa terá a sua própria lista de Moduladores."
 
 #: ../../modulators/routing-modulators.rst:2
 msgid "Routing Modulators"
-msgstr ""
+msgstr "Moduladores de Roteamento"
