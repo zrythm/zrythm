@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-26 23:01+0000\n"
+"PO-Revision-Date: 2019-08-28 18:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/pt/>\n"
@@ -57,11 +57,11 @@ msgstr ""
 
 #: ../../configuration/device-setup/intro.rst:19
 msgid "Device Setup"
-msgstr ""
+msgstr "Configuração do Aparelho"
 
 #: ../../configuration/device-setup/intro.rst:22
 msgid "Connecting MIDI and Audio Devices"
-msgstr ""
+msgstr "Conectando Aparelhos de MIDI e Áudio"
 
 #: ../../configuration/device-setup/intro.rst:24
 msgid ""
@@ -81,7 +81,7 @@ msgstr ""
 
 #: ../../configuration/device-setup/intro.rst:35
 msgid "JACK"
-msgstr ""
+msgstr "JACK"
 
 #: ../../configuration/device-setup/intro.rst:37
 msgid ""
@@ -92,7 +92,7 @@ msgstr ""
 
 #: ../../configuration/device-setup/intro.rst:43
 msgid "An example configuration looks like this (in Catia inside Cadence)"
-msgstr ""
+msgstr "Um exemplo de configuração parece-se assim (em Catia dentro de Cadence)"
 
 #: ../../configuration/device-setup/intro.rst:48
 msgid "ALSA"
@@ -190,7 +190,7 @@ msgstr ""
 
 #: ../../configuration/intro.rst:19
 msgid "Configuration"
-msgstr ""
+msgstr "Configuração"
 
 #: ../../configuration/preferences/audio.rst:19
 msgid "Audio Tab"
