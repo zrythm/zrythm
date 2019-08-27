@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-26 23:02+0000\n"
+"PO-Revision-Date: 2019-08-28 18:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/pt/>\n"
@@ -88,7 +88,7 @@ msgstr ""
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:22
 msgid "Loop Points"
-msgstr ""
+msgstr "Pontos de Loop"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:27
 msgid "Cue Point"
@@ -162,7 +162,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording-audio.rst:19
 msgid "Recording Audio"
-msgstr ""
+msgstr "Gravação de Áudio"
 
 #: ../../playback-and-recording/recording-automation.rst:19
 msgid "Recording Automation"
@@ -170,7 +170,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording-midi.rst:19
 msgid "Recording MIDI"
-msgstr ""
+msgstr "Gravação MIDI"
 
 #: ../../playback-and-recording/transport-controls.rst:19
 msgid "Transport Controls"
