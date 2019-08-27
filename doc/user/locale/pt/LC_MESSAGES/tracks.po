@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-08-26 23:02+0000\n"
+"PO-Revision-Date: 2019-08-28 18:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/pt/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../tracks/chord-track/intro.rst:2 ../../tracks/track-types.rst:25
 msgid "Chord Track"
-msgstr ""
+msgstr "Faixa de Acordes"
 
 #: ../../tracks/chord-track/intro.rst:4
 msgid ""
@@ -80,7 +80,7 @@ msgstr ""
 
 #: ../../tracks/instrument-track.rst:2 ../../tracks/track-types.rst:9
 msgid "Instrument Track"
-msgstr ""
+msgstr "Faixa De Instrumentos"
 
 #: ../../tracks/instrument-track.rst:4
 msgid ""
@@ -100,7 +100,7 @@ msgstr "A FAZER"
 
 #: ../../tracks/intro.rst:2
 msgid "Tracks"
-msgstr ""
+msgstr "Faixas"
 
 #: ../../tracks/overview.rst:2
 msgid "Overview"
@@ -128,7 +128,7 @@ msgstr ""
 
 #: ../../tracks/track-context-menu.rst:2
 msgid "Track Context Menu"
-msgstr ""
+msgstr "Menu de Contexto da Faixa"
 
 #: ../../tracks/track-operations.rst:2
 msgid "Track Operations"
@@ -161,7 +161,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:2
 msgid "Track Types"
-msgstr ""
+msgstr "Tipos de Faixas"
 
 #: ../../tracks/track-types.rst:4
 msgid ""
@@ -177,7 +177,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:11
 msgid "Audio Track"
-msgstr ""
+msgstr "Faixa de Áudio"
 
 #: ../../tracks/track-types.rst:12
 msgid "A Track containing audio regions, cross-fades, fades and automation."
@@ -185,7 +185,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:13
 msgid "Bus Track"
-msgstr ""
+msgstr "Faixa de Bus"
 
 #: ../../tracks/track-types.rst:14
 msgid "A Track corresponding to a mixer bus. Bus tracks only contain automation"
@@ -193,7 +193,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:15
 msgid "Master Track"
-msgstr ""
+msgstr "Faixa Principal"
 
 #: ../../tracks/track-types.rst:16
 msgid ""
