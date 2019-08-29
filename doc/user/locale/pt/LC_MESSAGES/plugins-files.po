@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-28 18:26+0000\n"
+"PO-Revision-Date: 2019-08-30 21:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/pt/>\n"
@@ -294,7 +294,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/ports.rst:19
 msgid "Ports"
-msgstr ""
+msgstr "Portas"
 
 #: ../../plugins-files/plugins/ports.rst:21
 msgid ""
