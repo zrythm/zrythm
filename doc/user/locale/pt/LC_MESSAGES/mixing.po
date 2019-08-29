@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-08-28 18:25+0000\n"
+"PO-Revision-Date: 2019-08-30 21:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualmixing/pt/>\n"
@@ -81,28 +81,29 @@ msgid ""
 msgstr ""
 
 #: ../../mixing/routing/buses.rst:2
+#, fuzzy
 msgid "Buses"
-msgstr ""
+msgstr "Buses"
 
 #: ../../mixing/routing/insert-effects.rst:2
 msgid "Insert Effects"
-msgstr ""
+msgstr "Inserir Efeitos"
 
 #: ../../mixing/routing/intro.rst:2
 msgid "Routing"
-msgstr ""
+msgstr "Roteamento"
 
 #: ../../mixing/routing/ports.rst:2
 msgid "Ports"
-msgstr ""
+msgstr "Portas"
 
 #: ../../mixing/routing/routing-overview.rst:2
 msgid "Routing Overview"
-msgstr ""
+msgstr "Visão Geral De Roteamento"
 
 #: ../../mixing/routing/send-effects.rst:2
 msgid "Send Effects"
-msgstr ""
+msgstr "Enviar Efeitos"
 
 #: ../../mixing/sidechaining.rst:2
 msgid "Sidechaining"
