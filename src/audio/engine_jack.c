@@ -39,6 +39,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
+#include <jack/metadata.h>
 #include <jack/statistics.h>
 
 /**
@@ -115,8 +116,7 @@ engine_jack_rescan_ports (
     jack_get_ports (
       self->client,
       NULL, NULL,
-      JackPortIsPhysical |
-      JackPortIsInput);
+      JackPortIsPhysical);
 
   int i = 0;
   char * pname;
@@ -233,21 +233,6 @@ buffer_size_cb (uint32_t nframes,
     AUDIO_ENGINE->midi_buf_size);
 
   return 0;
-}
-
-/**
- * Zero's out the output buffers.
- */
-void
-engine_jack_clear_output_buffers (
-  AudioEngine * self,
-  int           nframes)
-{
-  /*for (int i = 0; i < self->num_hw_stereo_outs; i++)*/
-    /*{*/
-      /*ext_port_clear_buffer (*/
-        /*self->hw_stereo_outs[i], nframes);*/
-    /*}*/
 }
 
 /**
@@ -600,37 +585,17 @@ jack_setup (AudioEngine * self,
 
   if (loading)
     {
-      self->monitor_out->l->data =
-        (void *) jack_port_register (
-          self->client, monitor_out_l_str,
-          JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsOutput, 0);
-      self->monitor_out->r->data =
-        (void *) jack_port_register (
-          self->client, monitor_out_r_str,
-          JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsOutput, 0);
     }
   else
     {
-      monitor_out_l = port_new_with_data (
-        INTERNAL_JACK_PORT,
+      monitor_out_l = port_new_with_type (
         TYPE_AUDIO,
         FLOW_OUTPUT,
-        monitor_out_l_str,
-        (void *) jack_port_register (
-          self->client, monitor_out_l_str,
-          JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsOutput, 0));
-      monitor_out_r = port_new_with_data (
-        INTERNAL_JACK_PORT,
+        monitor_out_l_str);
+      monitor_out_r = port_new_with_type (
         TYPE_AUDIO,
         FLOW_OUTPUT,
-        monitor_out_r_str,
-        (void *) jack_port_register (
-          self->client, monitor_out_r_str,
-          JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsOutput, 0));
+        monitor_out_r_str);
 
       monitor_out_l->identifier.owner_type =
         PORT_OWNER_TYPE_BACKEND;
@@ -641,6 +606,12 @@ jack_setup (AudioEngine * self,
         stereo_ports_new_from_existing (
           monitor_out_l, monitor_out_r);
     }
+
+  /* expose to jack */
+  port_set_expose_to_backend (
+    self->monitor_out->l, 1);
+  port_set_expose_to_backend (
+    self->monitor_out->r, 1);
 
   if (!self->monitor_out->l->data ||
       !self->monitor_out->r->data)

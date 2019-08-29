@@ -70,6 +70,14 @@ typedef struct ExtPort
   /** Short port name. */
   char *           short_name;
 
+  /** Alias #1 if any. */
+  char *           alias1;
+
+  /** Alias #2 if any. */
+  char *           alias2;
+
+  int              num_aliases;
+
   ExtPortType      type;
 } ExtPort;
 

@@ -373,10 +373,8 @@ clear_output_buffers (
   switch (self->audio_backend)
     {
     case AUDIO_BACKEND_JACK:
-#ifdef HAVE_JACK
-      engine_jack_clear_output_buffers (
-        self, nframes);
-#endif
+      /* nothing special needed, already handled
+       * by clearing the monitor outs */
       break;
     default:
       break;

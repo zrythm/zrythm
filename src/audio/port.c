@@ -859,8 +859,19 @@ port_sum_signal_from_inputs (
       if (noroll)
         break;
 
-      port_sum_data_from_jack (
-        port, start_frame, nframes);
+      /* only consider incoming external data if
+       * armed for recording (if the port is owner
+       * by a track), otherwise always consider
+       * incoming external data */
+      if (port->identifier.owner_type !=
+            PORT_OWNER_TYPE_TRACK ||
+          (port->identifier.owner_type ==
+             PORT_OWNER_TYPE_TRACK &&
+           port->track->recording))
+        {
+          port_sum_data_from_jack (
+            port, start_frame, nframes);
+        }
 
       for (k = 0; k < port->num_srcs; k++)
         {
@@ -1219,6 +1230,7 @@ port_set_expose_to_jack (
           AUDIO_ENGINE->client,
           label,
           type, flags, 0);
+      g_warn_if_fail (self->data);
       g_free (label);
       self->internal_type = INTERNAL_JACK_PORT;
     }

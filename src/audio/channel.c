@@ -1414,6 +1414,42 @@ channel_connect (
       port_set_expose_to_backend (
         ch->midi_out , 1);
     }
+
+  /* connect the designated midi inputs */
+  if (ch->track->type == TRACK_TYPE_INSTRUMENT ||
+      ch->track->type == TRACK_TYPE_MIDI)
+    {
+      /* connect to all external midi ins */
+      if (ch->all_midi_ins)
+        {
+          const char ** ports =
+            jack_get_ports (
+              AUDIO_ENGINE->client,
+              NULL, JACK_DEFAULT_MIDI_TYPE,
+              JackPortIsOutput |
+              JackPortIsPhysical);
+
+          int i = 0;
+          char * pname;
+          jack_port_t * jport;
+          while ((pname = (char *) ports[i]) !=
+                    NULL)
+            {
+              int connected = jack_connect (
+                AUDIO_ENGINE->client,
+                pname,
+                jack_port_name (
+                  (jack_port_t *)
+                  ch->midi_in->data));
+              i++;
+            }
+        }
+      /* connect to selected midi ins */
+      else
+        {
+          /* TODO */
+        }
+    }
 }
 
 /**
@@ -1678,6 +1714,10 @@ channel_new (
   self->ats =
     calloc (self->ats_size,
             sizeof (AutomationTrack *));
+
+  /* autoconnect to all midi ins and midi chans */
+  self->all_midi_ins = 1;
+  self->all_midi_channels = 1;
 
   /* create ports */
   char * str;

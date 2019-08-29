@@ -52,14 +52,6 @@ engine_jack_rescan_ports (
   AudioEngine * self);
 
 /**
- * Zero's out the output buffers.
- */
-void
-engine_jack_clear_output_buffers (
-  AudioEngine * self,
-  int           nframes);
-
-/**
  * Prepares for processing.
  *
  * Called at the start of each process cycle.

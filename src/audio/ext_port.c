@@ -195,6 +195,23 @@ ext_port_from_jack_port (
     g_strdup (jack_port_short_name (jport));
   self->type = EXT_PORT_TYPE_JACK;
 
+  char * aliases[2];
+  aliases[0] =
+    (char*) malloc (jack_port_name_size ());
+  aliases[1] =
+    (char*) malloc (jack_port_name_size ());
+  self->num_aliases =
+    jack_port_get_aliases (
+      jport, aliases);
+
+  if (self->num_aliases == 2)
+    {
+      self->alias2 = g_strdup (aliases[1]);
+      self->alias1 = g_strdup (aliases[0]);
+    }
+  else if (self->num_aliases == 1)
+    self->alias1 = g_strdup (aliases[0]);
+
   return self;
 }
 
