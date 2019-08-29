@@ -79,6 +79,7 @@ inc/gui/widgets/bot_bar.h
 inc/gui/widgets/transport_controls.h
 inc/gui/widgets/route_target_selector_popover.h
 inc/gui/widgets/midi_controller_mb.h
+inc/gui/widgets/track_properties_expander.h
 inc/gui/widgets/rack_row.h
 inc/gui/widgets/audio_region.h
 inc/gui/widgets/modulator_view.h
@@ -127,6 +128,7 @@ inc/gui/widgets/project_toolbar.h
 inc/gui/widgets/export_dialog.h
 inc/gui/widgets/midi_region.h
 inc/gui/widgets/clip_editor.h
+inc/gui/widgets/track_input_expander.h
 inc/gui/widgets/chord_editor_space.h
 inc/gui/widgets/inspector.h
 inc/gui/widgets/scale_object.h
@@ -161,7 +163,6 @@ inc/gui/widgets/color_area.h
 inc/gui/widgets/midi_track.h
 inc/gui/widgets/control.h
 inc/gui/widgets/automatable_selector_popover.h
-inc/gui/widgets/instrument_track_info_expander.h
 inc/gui/widgets/chord_key.h
 inc/gui/widgets/velocity.h
 inc/gui/widgets/pinned_tracklist.h
@@ -273,6 +274,7 @@ inc/audio/automatable.h
 inc/audio/track_lane.h
 inc/audio/chord_descriptor.h
 inc/audio/chord_region.h
+inc/audio/ext_port.h
 inc/audio/engine.h
 inc/audio/engine_alsa.h
 inc/audio/scale.h
@@ -363,7 +365,9 @@ src/gui/widgets/midi_modifier_arranger.c
 src/gui/widgets/midi_editor_space.c
 src/gui/widgets/chord_pad.c
 src/gui/widgets/slider_bar.c
+src/gui/widgets/track_properties_expander.c
 src/gui/widgets/channel.c
+src/gui/widgets/track_input_expander.c
 src/gui/widgets/midi_controller_mb.c
 src/gui/widgets/editable_label.c
 src/gui/widgets/expander_box.c
@@ -391,7 +395,6 @@ src/gui/widgets/pinned_tracklist.c
 src/gui/widgets/midi_arranger_bg.c
 src/gui/widgets/editor_selection_info.c
 src/gui/widgets/inspector.c
-src/gui/widgets/instrument_track_info_expander.c
 src/gui/widgets/bot_dock_edge.c
 src/gui/widgets/digital_meter.c
 src/gui/widgets/drag_dest_box.c
@@ -577,6 +580,7 @@ src/audio/snap_grid.c
 src/audio/automation_point.c
 src/audio/quantize_options.c
 src/audio/engine_alsa.c
+src/audio/ext_port.c
 src/audio/automation_curve.c
 src/audio/automatable.c
 src/audio/audio_track.c

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-08-25 22:18+0100\n"
+"POT-Creation-Date: 2019-08-29 22:45+0100\n"
 "PO-Revision-Date: 2019-07-14 19:16+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
@@ -39,16 +39,16 @@ msgstr "Setter opp bakende"
 msgid "Loading project"
 msgstr "Laster prosjekt"
 
-#: src/project.c:160 src/audio/track.c:960
+#: src/project.c:160 src/audio/track.c:986
 msgid "Master"
 msgstr ""
 
 #. create untitled project
-#: src/project.c:169
+#: src/project.c:170
 msgid "Untitled Project"
 msgstr "Prosjekt uten tittel"
 
-#: src/project.c:492
+#: src/project.c:493
 msgid "Project saved."
 msgstr "Prosjekt lagret."
 
@@ -103,13 +103,13 @@ msgid "Save State"
 msgstr "Lagringstilstand"
 
 #: src/plugins/lv2_gtk.c:153 src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:538
+#: src/utils/dialogs.c:74 src/actions/actions.c:553
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "_Avbryt"
 
-#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:540
+#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:555
 msgid "_Save"
 msgstr "_Lagre"
 
@@ -167,8 +167,25 @@ msgstr ""
 msgid "note type"
 msgstr "Notetype"
 
-#: src/gui/widgets/channel.c:932
+#: src/gui/widgets/track_properties_expander.c:82
+msgid "Track Info"
+msgstr ""
+
+#: src/gui/widgets/channel.c:941
 msgid "Inserts"
+msgstr ""
+
+#: src/gui/widgets/track_input_expander.c:126
+#, fuzzy
+msgid "All MIDI Inputs"
+msgstr "MIDI-bakende"
+
+#: src/gui/widgets/track_input_expander.c:161
+msgid "No inputs"
+msgstr ""
+
+#: src/gui/widgets/track_input_expander.c:266
+msgid "Inputs"
 msgstr ""
 
 #: src/gui/widgets/midi_controller_mb.c:46
@@ -306,10 +323,6 @@ msgstr ""
 msgid "Plugin properties"
 msgstr "Programtilleggsutforsker"
 
-#: src/gui/widgets/instrument_track_info_expander.c:82
-msgid "Track Info"
-msgstr ""
-
 #: src/gui/widgets/digital_meter.c:295
 #, fuzzy
 msgid "normal"
@@ -359,7 +372,7 @@ msgstr "%s spor"
 msgid "Add _Group Track"
 msgstr ""
 
-#: src/gui/widgets/instrument_track.c:216 src/gui/widgets/track.c:148
+#: src/gui/widgets/instrument_track.c:216 src/gui/widgets/track.c:151
 #: src/gui/widgets/midi_track.c:190 resources/ui/transport_controls.ui:36
 msgid "Record"
 msgstr ""
@@ -398,11 +411,12 @@ msgstr ""
 msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:217
+#: src/gui/widgets/channel_slot.c:230 src/gui/widgets/channel_slot.c:245
+#: src/gui/widgets/channel_slot.c:692
 msgid "empty slot"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:600
+#: src/gui/widgets/channel_slot.c:621
 msgid ""
 "Channel Slot - Double click to open plugin - Click and drag to move plugin"
 msgstr ""
@@ -590,7 +604,7 @@ msgstr ""
 msgid "chord"
 msgstr "Akkorder"
 
-#: src/gui/widgets/live_waveform.c:131
+#: src/gui/widgets/live_waveform.c:129
 msgid "Live waveform indicator"
 msgstr ""
 
@@ -631,23 +645,20 @@ msgid "CV Outs"
 msgstr ""
 
 #: src/gui/widgets/ports_expander.c:390
-msgid "Pre-Fader Sends"
-msgstr ""
+#, fuzzy
+msgid "Sends"
+msgstr "Bakender"
 
-#: src/gui/widgets/ports_expander.c:398
-msgid "Post-Fader Sends"
-msgstr ""
-
-#: src/gui/widgets/ports_expander.c:406
+#: src/gui/widgets/ports_expander.c:397
 msgid "Stereo In"
 msgstr ""
 
-#: src/gui/widgets/ports_expander.c:413
+#: src/gui/widgets/ports_expander.c:404
 #, fuzzy
 msgid "MIDI In"
 msgstr "MIDI-bakende"
 
-#: src/gui/widgets/ports_expander.c:421
+#: src/gui/widgets/ports_expander.c:412
 msgid "MIDI Out"
 msgstr ""
 
@@ -728,61 +739,65 @@ msgstr "Beste tilpasning"
 msgid "Fullscreen"
 msgstr "Veksle fullskjermsvisning"
 
-#: src/gui/widgets/track.c:149
+#: src/gui/widgets/track.c:152
 msgid "Solo"
 msgstr ""
 
-#: src/gui/widgets/track.c:150
+#: src/gui/widgets/track.c:153
 msgid "Mute"
 msgstr "Forstum"
 
-#: src/gui/widgets/track.c:151 src/gui/widgets/track.c:155
+#: src/gui/widgets/track.c:154 src/gui/widgets/track.c:158
 msgid "Freeze"
 msgstr "Frys"
 
-#: src/gui/widgets/track.c:152
+#: src/gui/widgets/track.c:155
 msgid "Lock"
 msgstr "Lås"
 
-#: src/gui/widgets/track.c:153
+#: src/gui/widgets/track.c:156
 msgid "Show UI"
 msgstr "Vis grensesnitt"
 
-#: src/gui/widgets/track.c:154
+#: src/gui/widgets/track.c:157
 msgid "Show Automation Lanes"
 msgstr ""
 
-#: src/gui/widgets/track.c:161
+#: src/gui/widgets/track.c:164
 msgid ""
 "Track - Change track parameters like Solo/Mute... - Click the icon on the "
 "bottom right to bring up the automation lanes - Double click to show "
 "corresponding channel in Mixer (if applicable)"
 msgstr ""
 
-#: src/gui/widgets/track.c:444
+#: src/gui/widgets/track.c:447
 msgid "_Delete Track"
 msgstr "_Slett spor"
 
-#: src/gui/widgets/track.c:447
+#: src/gui/widgets/track.c:450
 #, c-format
 msgid "_Delete %d Tracks"
 msgstr "_Slett %d spor"
 
-#: src/gui/widgets/track.c:463
+#: src/gui/widgets/track.c:466
 msgid "_Duplicate Track"
 msgstr "_Dupliser spor"
 
-#: src/gui/widgets/track.c:467
+#: src/gui/widgets/track.c:470
 #, c-format
 msgid "_Duplicate %d Tracks"
 msgstr "_Dupliser %d spor"
 
-#: src/gui/widgets/track.c:486
+#: src/gui/widgets/track.c:489
 msgid "Add Region"
 msgstr "Legg til region"
 
 #: src/gui/widgets/fader.c:155
 msgid "Fader - Click and drag to change value"
+msgstr ""
+
+#: src/gui/widgets/fader.c:318
+msgid "Fader"
 msgstr ""
 
 #: src/gui/widgets/dzl/dzl-animation.c:752
@@ -892,25 +907,7 @@ msgstr "Sinus (lik effekt)"
 msgid "Chords"
 msgstr "Akkorder"
 
-#: src/audio/channel.c:1554
-msgid "Stereo in"
-msgstr ""
-
-#: src/audio/channel.c:1558
-msgid "Stereo out"
-msgstr ""
-
-#: src/audio/channel.c:1562
-#, fuzzy
-msgid "MIDI in"
-msgstr "MIDI-bakende"
-
-#: src/audio/channel.c:1573
-#, fuzzy
-msgid "MIDI out"
-msgstr "MIDI-bakende"
-
-#: src/audio/channel.c:1611
+#: src/audio/channel.c:1776
 msgid "Piano Roll"
 msgstr ""
 
@@ -919,8 +916,8 @@ msgstr ""
 msgid "Markers"
 msgstr "Markører"
 
-#: src/audio/engine_pa.c:260 src/audio/engine_pa.c:280
-#: src/audio/engine_pa.c:291
+#: src/audio/engine_pa.c:243 src/audio/engine_pa.c:263
+#: src/audio/engine_pa.c:274
 #, c-format
 msgid "PortAudio Error: %s"
 msgstr "PortAudio-feil: %s"
@@ -930,7 +927,7 @@ msgstr "PortAudio-feil: %s"
 msgid "Lane %d"
 msgstr ""
 
-#: src/audio/engine_alsa.c:322
+#: src/audio/engine_alsa.c:336
 #, fuzzy, c-format
 msgid "ALSA Error: %s"
 msgstr "JACK-feil: %s"
@@ -955,27 +952,27 @@ msgstr ""
 msgid "Sample Processor"
 msgstr ""
 
-#: src/audio/track.c:948
+#: src/audio/track.c:974
 msgid "Instrument"
 msgstr "Instrument"
 
-#: src/audio/track.c:951
+#: src/audio/track.c:977
 msgid "Audio"
 msgstr "Lyd"
 
-#: src/audio/track.c:954
+#: src/audio/track.c:980
 msgid "MIDI"
 msgstr ""
 
-#: src/audio/track.c:957
+#: src/audio/track.c:983
 msgid "Bus"
 msgstr "Buss"
 
-#: src/audio/track.c:963 resources/ui/editor_toolbar.ui:58
+#: src/audio/track.c:989 resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr ""
 
-#: src/audio/track.c:966 src/audio/track.c:969
+#: src/audio/track.c:992 src/audio/track.c:995
 msgid "Group"
 msgstr "Gruppe"
 
@@ -988,70 +985,70 @@ msgstr ""
 msgid "Fader in"
 msgstr ""
 
-#: src/audio/fader.c:69
+#: src/audio/fader.c:72
 msgid "Fader out"
 msgstr ""
 
-#: src/audio/fader.c:77
+#: src/audio/fader.c:84
 #, fuzzy
 msgid "MIDI fader in"
 msgstr "MIDI-bakende"
 
-#: src/audio/fader.c:90
+#: src/audio/fader.c:97
 msgid "MIDI fader out"
 msgstr ""
 
-#: src/audio/engine_jack.c:435
+#: src/audio/engine_jack.c:506
 #, c-format
 msgid "JACK Error: %s"
 msgstr "JACK-feil: %s"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:619
+#: src/audio/engine_jack.c:643
 msgid "Overall operation failed"
 msgstr ""
 
-#: src/audio/engine_jack.c:622
+#: src/audio/engine_jack.c:646
 msgid "The operation contained an invalid or unsupported option"
 msgstr ""
 
-#: src/audio/engine_jack.c:626
+#: src/audio/engine_jack.c:650
 msgid "The desired client name was not unique"
 msgstr ""
 
-#: src/audio/engine_jack.c:629
+#: src/audio/engine_jack.c:653
 msgid "Unable to connect to the JACK server"
 msgstr ""
 
-#: src/audio/engine_jack.c:632
+#: src/audio/engine_jack.c:656
 msgid "Communication error with the JACK server"
 msgstr ""
 
-#: src/audio/engine_jack.c:635
+#: src/audio/engine_jack.c:659
 msgid "Requested client does not exist"
 msgstr ""
 
-#: src/audio/engine_jack.c:638
+#: src/audio/engine_jack.c:662
 msgid "Unable to load internal client"
 msgstr ""
 
-#: src/audio/engine_jack.c:641
+#: src/audio/engine_jack.c:665
 msgid "Unable to initialize client"
 msgstr ""
 
-#: src/audio/engine_jack.c:644
+#: src/audio/engine_jack.c:668
 msgid "Unable to access shared memory"
 msgstr ""
 
-#: src/audio/engine_jack.c:647
+#: src/audio/engine_jack.c:671
 msgid "Client's protocol version does not match"
 msgstr ""
 
-#: src/audio/engine_jack.c:650
+#: src/audio/engine_jack.c:674
 msgid "Backend error"
 msgstr "Bakende-feil"
 
-#: src/audio/engine_jack.c:653
+#: src/audio/engine_jack.c:677
 msgid "Client zombie"
 msgstr ""
 
@@ -1094,19 +1091,19 @@ msgstr "Slett %d spor"
 msgid "Change Marker"
 msgstr "Markører"
 
-#: src/actions/actions.c:234
+#: src/actions/actions.c:249
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
 
-#: src/actions/actions.c:238
+#: src/actions/actions.c:253
 msgid "Website"
 msgstr ""
 
-#: src/actions/actions.c:535
+#: src/actions/actions.c:550
 msgid "Save Project"
 msgstr "Lagre prosjekt"
 
-#: src/actions/actions.c:600
+#: src/actions/actions.c:615
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -2200,6 +2197,14 @@ msgstr ""
 #, fuzzy
 msgid "zrythm"
 msgstr "Zrythm"
+
+#, fuzzy
+#~ msgid "MIDI in"
+#~ msgstr "MIDI-bakende"
+
+#, fuzzy
+#~ msgid "MIDI out"
+#~ msgstr "MIDI-bakende"
 
 #, fuzzy
 #~ msgid "Choose a method to donate"
