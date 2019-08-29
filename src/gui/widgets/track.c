@@ -100,9 +100,7 @@ track_widget_select (
     {
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_AUDIO_BUS:
-    case TRACK_TYPE_AUDIO_GROUP:
+    case TRACK_TYPE_MIDI:
       chan = track->channel;
       g_message (
         "%sselecting track %s, recording %d sa %d",
@@ -127,6 +125,11 @@ track_widget_select (
       track_widget_refresh (self);
       break;
     case TRACK_TYPE_CHORD:
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_AUDIO_BUS:
+    case TRACK_TYPE_AUDIO_GROUP:
+    case TRACK_TYPE_MIDI_BUS:
+    case TRACK_TYPE_MIDI_GROUP:
       break;
     default:
       break;

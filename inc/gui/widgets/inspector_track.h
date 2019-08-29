@@ -36,6 +36,8 @@ typedef struct _TrackPropertiesExpanderWidget
   TrackPropertiesExpanderWidget;
 typedef struct _PortsExpanderWidget
   PortsExpanderWidget;
+typedef struct _TrackInputExpanderWidget
+  TrackInputExpanderWidget;
 
 typedef struct _InspectorTrackWidget
 {
@@ -43,10 +45,9 @@ typedef struct _InspectorTrackWidget
   TrackPropertiesExpanderWidget *
     instrument_track_info;
 
+  TrackInputExpanderWidget * inputs;
+
   PortsExpanderWidget * sends;
-  //PortsExpanderWidget * stereo_in;
-  //PortsExpanderWidget * midi_in;
-  //PortsExpanderWidget * midi_out;
 } InspectorTrackWidget;
 
 void

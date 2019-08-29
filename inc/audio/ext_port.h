@@ -171,6 +171,13 @@ ext_ports_get (
   int *      size);
 
 /**
+ * Creates a shallow clone of the port.
+ */
+ExtPort *
+ext_port_clone (
+  ExtPort * ext_port);
+
+/**
  * Frees an array of ExtPort pointers.
  */
 void

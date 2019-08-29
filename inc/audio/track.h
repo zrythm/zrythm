@@ -541,6 +541,20 @@ track_has_piano_roll (
   const Track * track);
 
 /**
+ * Returns if the Track should have an inputs
+ * selector.
+ */
+static inline int
+track_has_inputs (
+  const Track * track)
+{
+  return
+    track->type == TRACK_TYPE_MIDI ||
+    track->type == TRACK_TYPE_INSTRUMENT ||
+    track->type == TRACK_TYPE_AUDIO;
+}
+
+/**
  * Fills in the array with all the velocities in
  * the project that are within or outside the
  * range given.

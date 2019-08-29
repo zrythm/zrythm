@@ -396,6 +396,14 @@ channel_update_output (
   Track * output);
 
 /**
+ * Called when the input has changed for Midi,
+ * Instrument or Audio tracks.
+ */
+void
+channel_reconnect_ext_input_ports (
+  Channel * ch);
+
+/**
  * Returns the index of the last active slot.
  */
 int

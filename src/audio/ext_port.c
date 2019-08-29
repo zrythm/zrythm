@@ -218,14 +218,46 @@ ext_port_from_jack_port (
 #endif
 
 /**
+ * Creates a shallow clone of the port.
+ */
+ExtPort *
+ext_port_clone (
+  ExtPort * ext_port)
+{
+  ExtPort * newport =
+    calloc (1, sizeof (ExtPort));
+
+  newport->jport = ext_port->jport;
+  if (ext_port->full_name)
+    newport->full_name =
+      g_strdup (ext_port->full_name);
+  if (ext_port->short_name)
+    newport->short_name =
+      g_strdup (ext_port->short_name);
+  if (ext_port->alias1)
+    newport->alias1 =
+    g_strdup (ext_port->alias1);
+  if (ext_port->alias2)
+    newport->alias2 =
+    g_strdup (ext_port->alias2);
+  newport->num_aliases = ext_port->num_aliases;
+  newport->type = ext_port->type;
+
+  return newport;
+}
+
+/**
  * Frees an array of ExtPort pointers.
  */
 void
 ext_ports_free (
-  ExtPort ** ext_port,
+  ExtPort ** ext_ports,
   int        size)
 {
-  /* TODO */
+  for (int i = 0; i < size; i++)
+    {
+      ext_port_free (ext_ports[i]);
+    }
 }
 
 /**
@@ -233,7 +265,16 @@ ext_ports_free (
  */
 void
 ext_port_free (
-  ExtPort * ext_port)
+  ExtPort * self)
 {
-  /* TODO */
+  if (self->full_name)
+    g_free (self->full_name);
+  if (self->short_name)
+    g_free (self->short_name);
+  if (self->alias1)
+    g_free (self->alias1);
+  if (self->alias2)
+    g_free (self->alias2);
+
+  free (self);
 }

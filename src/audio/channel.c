@@ -28,6 +28,7 @@
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/engine_jack.h"
+#include "audio/ext_port.h"
 #include "audio/instrument_track.h"
 #include "audio/master_track.h"
 #include "audio/midi.h"
@@ -1205,6 +1206,82 @@ channel_init_loaded (Channel * ch)
 }
 
 /**
+ * Called when the input has changed for Midi,
+ * Instrument or Audio tracks.
+ */
+void
+channel_reconnect_ext_input_ports (
+  Channel * ch)
+{
+  char * pname;
+  int i = 0;
+  if (ch->track->type == TRACK_TYPE_INSTRUMENT ||
+      ch->track->type == TRACK_TYPE_MIDI)
+    {
+      /* disconnect */
+      const char ** prev_ports =
+        jack_port_get_all_connections (
+          AUDIO_ENGINE->client,
+          (jack_port_t *)
+            ch->midi_in->data);
+      if (prev_ports)
+        {
+          i = 0;
+          while ((pname = (char *) prev_ports[i]) !=
+                    NULL)
+            {
+              jack_disconnect (
+                AUDIO_ENGINE->client,
+                pname,
+                jack_port_name (
+                  (jack_port_t *)
+                  ch->midi_in->data));
+              i++;
+            }
+        }
+
+      /* connect to all external midi ins */
+      if (ch->all_midi_ins)
+        {
+          const char ** ports =
+            jack_get_ports (
+              AUDIO_ENGINE->client,
+              NULL, JACK_DEFAULT_MIDI_TYPE,
+              JackPortIsOutput |
+              JackPortIsPhysical);
+
+          i = 0;
+          jack_port_t * jport;
+          while ((pname = (char *) ports[i]) !=
+                    NULL)
+            {
+              jack_connect (
+                AUDIO_ENGINE->client,
+                pname,
+                jack_port_name (
+                  (jack_port_t *)
+                  ch->midi_in->data));
+              i++;
+            }
+        }
+      /* connect to selected midi ins */
+      else
+        {
+          for (i = 0; i < ch->num_ext_midi_ins;
+               i++)
+            {
+              jack_connect (
+                AUDIO_ENGINE->client,
+                ch->ext_midi_ins[i]->full_name,
+                jack_port_name (
+                  (jack_port_t *)
+                  ch->midi_in->data));
+            }
+        }
+    }
+}
+
+/**
  * Adds to (or subtracts from) the pan.
  */
 void
@@ -1416,40 +1493,7 @@ channel_connect (
     }
 
   /* connect the designated midi inputs */
-  if (ch->track->type == TRACK_TYPE_INSTRUMENT ||
-      ch->track->type == TRACK_TYPE_MIDI)
-    {
-      /* connect to all external midi ins */
-      if (ch->all_midi_ins)
-        {
-          const char ** ports =
-            jack_get_ports (
-              AUDIO_ENGINE->client,
-              NULL, JACK_DEFAULT_MIDI_TYPE,
-              JackPortIsOutput |
-              JackPortIsPhysical);
-
-          int i = 0;
-          char * pname;
-          jack_port_t * jport;
-          while ((pname = (char *) ports[i]) !=
-                    NULL)
-            {
-              int connected = jack_connect (
-                AUDIO_ENGINE->client,
-                pname,
-                jack_port_name (
-                  (jack_port_t *)
-                  ch->midi_in->data));
-              i++;
-            }
-        }
-      /* connect to selected midi ins */
-      else
-        {
-          /* TODO */
-        }
-    }
+  channel_reconnect_ext_input_ports (ch);
 }
 
 /**

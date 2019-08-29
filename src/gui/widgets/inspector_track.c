@@ -20,6 +20,7 @@
 #include "gui/backend/events.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/inspector_track.h"
+#include "gui/widgets/track_input_expander.h"
 #include "gui/widgets/track_properties_expander.h"
 #include "gui/widgets/ports_expander.h"
 #include "project.h"
@@ -50,6 +51,8 @@ inspector_track_widget_show_tracks (
 
       gtk_widget_set_visible (
         GTK_WIDGET (self->sends), 0);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->inputs), 0);
       /*gtk_widget_set_visible (*/
         /*GTK_WIDGET (self->stereo_in), 0);*/
       /*gtk_widget_set_visible (*/
@@ -61,6 +64,14 @@ inspector_track_widget_show_tracks (
         {
           gtk_widget_set_visible (
             GTK_WIDGET (self->sends), 1);
+
+          if (track_has_inputs (track))
+            {
+              gtk_widget_set_visible (
+                GTK_WIDGET (self->inputs), 1);
+              track_input_expander_widget_refresh (
+                self->inputs, track);
+            }
           /*gtk_widget_set_visible (*/
             /*GTK_WIDGET (self->stereo_in), 1);*/
           /*gtk_widget_set_visible (*/
@@ -71,6 +82,7 @@ inspector_track_widget_show_tracks (
           ports_expander_widget_setup_track (
             self->sends,
             track, PE_TRACK_PORT_TYPE_SENDS);
+
           /*ports_expander_widget_setup_track (*/
             /*self->stereo_in,*/
             /*track, PE_TRACK_PORT_TYPE_STEREO_IN);*/
@@ -114,6 +126,7 @@ inspector_track_widget_class_init (
 
   BIND_CHILD (instrument_track_info);
   BIND_CHILD (sends);
+  BIND_CHILD (inputs);
 
 #undef BIND_CHILD
 }
@@ -124,6 +137,8 @@ inspector_track_widget_init (
 {
   g_type_ensure (
     TRACK_PROPERTIES_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (
+    TRACK_INPUT_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }
