@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-08-26 23:01+0000\n"
+"PO-Revision-Date: 2019-08-28 18:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualmixing/pt/>\n"
@@ -64,7 +64,7 @@ msgstr ""
 
 #: ../../mixing/panning.rst:2
 msgid "Panning"
-msgstr ""
+msgstr "Deslocação"
 
 #: ../../mixing/panning.rst:4
 msgid ""

@@ -3,47 +3,50 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Zrythm \n"
+"Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2019-08-28 18:25+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualsessions/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.6.0\n"
 
 #: ../../sessions/importing-exporting/importing-exporting-audio.rst:2
 msgid "Importing/Exporting Audio"
-msgstr ""
+msgstr "Importar/Exportar Áudio"
 
 #: ../../sessions/importing-exporting/importing-exporting-midi.rst:2
 msgid "Importing/Exporting MIDI"
-msgstr ""
+msgstr "Importar/Exportar Áudio"
 
 #: ../../sessions/importing-exporting/intro.rst:2
 msgid "Importing and Exporting"
-msgstr ""
+msgstr "Importar e Exportar"
 
 #: ../../sessions/intro.rst:2
 msgid "Sessions"
-msgstr ""
+msgstr "Sessões"
 
 #: ../../sessions/session-info.rst:2
 msgid "Session Info"
-msgstr ""
+msgstr "Informações da Sessão"
 
 #: ../../sessions/session-management-and-compatibility.rst:2
 msgid "Session Management and Compatibility"
-msgstr ""
+msgstr "Gerenciamento de Sessão e Compatibilidade"
 
 #: ../../sessions/tracks/adding-tracks.rst:2
 msgid "Adding Tracks"
-msgstr ""
+msgstr "Adicionar Faixas"
 
 #: ../../sessions/tracks/adding-tracks.rst:4
 msgid ""
@@ -55,72 +58,86 @@ msgid ""
 "accept MIDI signals. If it is a bus track, it will automatically place "
 "the selected plugin at the first position in the channel strip."
 msgstr ""
+"A maneira de adicionar faixas mais fácil e recomendada é arrastar um plugin "
+"ou um clipe de áudio do navegador à direita para a lista de faixas. Isso "
+"criará automaticamente uma faixa do tipo apropriado (Instrumento, Bus ou "
+"Áudio). Se for uma faixa de áudio, também porá o clipe de áudio na posição "
+"da cabeça de reprodução. Se for uma faixa de instrumento, estará pronta para "
+"aceitar sinais MIDI. Se for uma faixa de bus, porá automaticamente o plugin "
+"seleccionado na primeira posição da faixa de canais."
 
 #: ../../sessions/tracks/adding-tracks.rst:6
 msgid ""
 "Tracks can also be added by right-clicking at a blank space inside the "
 "tracklist and selecting the track type. This will create a blank track."
 msgstr ""
+"As faixas também podem ser adicionadas clicando com o botão direito do rato "
+"num espaço em branco dentro da lista de faixas e selecionando o tipo de "
+"faixa. Isto criará uma faixa em branco."
 
 #: ../../sessions/tracks/intro.rst:2
 msgid "Tracks"
-msgstr ""
+msgstr "Faixas"
 
 #: ../../sessions/tracks/reordering-tracks.rst:2
 msgid "Reordering Tracks"
-msgstr ""
+msgstr "Reordenar Faixas"
 
 #: ../../sessions/tracks/track-context-menu.rst:2
 msgid "Track Context Menu"
-msgstr ""
+msgstr "Menu de Contexto da Faixa"
 
 #: ../../sessions/tracks/track-overview.rst:2
 msgid "Track Overview"
-msgstr ""
+msgstr "Visão Geral da Faixa"
 
 #: ../../sessions/tracks/track-overview.rst:4
 msgid "Tracks contain regions and automation that is used to make up the song."
 msgstr ""
+"As faixas contêm regiões e automação que são usadas para compor a música."
 
 #: ../../sessions/tracks/track-types.rst:2
 msgid "Track Types"
-msgstr ""
+msgstr "Tipos de Faixas"
 
 #: ../../sessions/tracks/track-types.rst:4
 msgid "The following track types exist:"
-msgstr ""
+msgstr "Existem os tipos de faixas seguintes:"
 
 #: ../../sessions/tracks/track-types.rst:6
 msgid "Instrument Track"
-msgstr ""
+msgstr "Faixa De Instrumentos"
 
 #: ../../sessions/tracks/track-types.rst:7
 msgid "track containing MIDI regions and automation"
-msgstr ""
+msgstr "faixa contendo regiões MIDI e automação"
 
 #: ../../sessions/tracks/track-types.rst:8
 msgid "Audio Track"
-msgstr ""
+msgstr "Faixa de Áudio"
 
 #: ../../sessions/tracks/track-types.rst:9
 msgid "track containing audio regions, cross-fades, fades and automation"
-msgstr ""
+msgstr "faixa contendo regiões de áudio, cross-fades, fades e automação"
 
 #: ../../sessions/tracks/track-types.rst:10
 msgid "Bus Track"
-msgstr ""
+msgstr "Faixa de Bus"
 
 #: ../../sessions/tracks/track-types.rst:11
 msgid "a track corresponding to a mixer bus. bus tracks only contain automation"
 msgstr ""
+"uma faixa correspondente a um bus misturador. faixas de bus só contêm "
+"automação"
 
 #: ../../sessions/tracks/track-types.rst:12
 msgid "Master Track"
-msgstr ""
+msgstr "Faixa Principal"
 
 #: ../../sessions/tracks/track-types.rst:13
 msgid ""
 "the Master track is a special type of bus track that controls the master "
 "fader and contains additional automation options."
 msgstr ""
-
+"a faixa principal é um tipo especial de faixa de bus que controla o cursor "
+"deslizante mestre e contém opções de automação adicionais."

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-25 23:17+0000\n"
+"PO-Revision-Date: 2019-08-28 18:26+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualgetting-started/pt/>\n"
@@ -267,17 +267,20 @@ msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:22
 msgid "Official Builds"
-msgstr ""
+msgstr "Compilações Oficiais"
 
 #: ../../getting-started/installation/gnu-linux.rst:23
 msgid ""
 "You can install the latest version of Zrythm for your distro `here "
 "<https://software.opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_"
 msgstr ""
+"Você pode instalar a versão mais recente do Zrythm para sua distro `aqui "
+"<https://software.opensuse.org//download.html? project = home% 3Aalextee & "
+"package = zrythm>`_"
 
 #: ../../getting-started/installation/gnu-linux.rst:25
 msgid "You will be presented with the following"
-msgstr ""
+msgstr "Ser-lhe-á apresentado o seguinte"
 
 #: ../../getting-started/installation/gnu-linux.rst:29
 msgid "This is the recommended way to install the latest version for most users."
@@ -301,7 +304,7 @@ msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:41
 msgid "KX Studios"
-msgstr ""
+msgstr "Estúdios KX"
 
 #: ../../getting-started/installation/gnu-linux.rst:42
 msgid ""
@@ -321,7 +324,7 @@ msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:50
 msgid "AUR"
-msgstr ""
+msgstr "AUR"
 
 #: ../../getting-started/installation/gnu-linux.rst:51
 msgid ""
@@ -332,7 +335,7 @@ msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:56
 msgid "Manual Installation"
-msgstr ""
+msgstr "Instalação Manual"
 
 #: ../../getting-started/installation/gnu-linux.rst:57
 msgid ""
@@ -372,11 +375,11 @@ msgstr ""
 
 #: ../../getting-started/system-requirements/intro.rst:19
 msgid "System Requirements"
-msgstr ""
+msgstr "Requisitos do Sistema"
 
 #: ../../getting-started/system-requirements/intro.rst:22
 msgid "Minimum Requirements"
-msgstr ""
+msgstr "Requisitos Mínimos"
 
 #: ../../getting-started/system-requirements/intro.rst:23
 msgid ""
@@ -384,28 +387,33 @@ msgid ""
 " laggy. If you have any experiences with older machines please let us "
 "know."
 msgstr ""
+"Ainda não sabemos. O sistema mais antigo que foi testado foi a T400 e estava "
+"um pouco atrasada. Se você tem alguma experiência com sistemas mais antigos, "
+"por favor avise-nos."
 
 #: ../../getting-started/system-requirements/intro.rst:26
 msgid "Recommended Requirements"
-msgstr ""
+msgstr "Requisitos Recomendados"
 
 #: ../../getting-started/system-requirements/intro.rst:27
 msgid "We recommend running a fairly modern machine."
-msgstr ""
+msgstr "Recomendamos usar uma máquina bastante moderna."
 
 #: ../../getting-started/system-requirements/intro.rst:30
 msgid "Audio Interface"
-msgstr ""
+msgstr "Interface de Áudio"
 
 #: ../../getting-started/system-requirements/intro.rst:31
 msgid ""
 "An Audio Interface is recommended as it offers low latency and better "
 "quality (especially if recording audio)."
 msgstr ""
+"Uma interface de áudio é recomendada, pois oferece baixa latência e melhor "
+"qualidade (especialmente se estiver gravando áudio)."
 
 #: ../../getting-started/system-requirements/intro.rst:34
 msgid "JACK"
-msgstr ""
+msgstr "JACK"
 
 #: ../../getting-started/system-requirements/intro.rst:35
 msgid ""
@@ -414,14 +422,17 @@ msgid ""
 "<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, as it makes "
 "the process very easy."
 msgstr ""
+"JACK deve ser instalado e configurado antes de executar o Zrythm. "
+"Recomendamos o uso de `Cadence <http://kxstudio.linuxaudio.org/Applications>`"
+"_, pois torna o processo muito fácil."
 
 #: ../../getting-started/system-requirements/intro.rst:37
 msgid "Open Cadence"
-msgstr ""
+msgstr "Abrir Cadence"
 
 #: ../../getting-started/system-requirements/intro.rst:41
 msgid "Click Configure and select your Audio Interface"
-msgstr ""
+msgstr "Clique em Configurar e selecione sua Interface de Áudio"
 
 #: ../../getting-started/zrythm-overview.rst:19
 msgid "Overview"

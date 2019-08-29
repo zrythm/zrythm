@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-25 22:18+0100\n"
-"PO-Revision-Date: 2019-08-26 23:01+0000\n"
+"PO-Revision-Date: 2019-08-28 18:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -879,7 +879,7 @@ msgstr ""
 
 #: src/audio/marker_track.c:38 src/audio/marker_track.c:56
 msgid "Markers"
-msgstr ""
+msgstr "Marcadores"
 
 #: src/audio/engine_pa.c:260 src/audio/engine_pa.c:280
 #: src/audio/engine_pa.c:291
@@ -927,7 +927,7 @@ msgstr "Áudio"
 
 #: src/audio/track.c:954
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: src/audio/track.c:957
 msgid "Bus"
@@ -1460,7 +1460,7 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:136
 msgid "Modulators"
-msgstr ""
+msgstr "Moduladores"
 
 #: resources/ui/bot_dock_edge.ui:173
 msgid "Chord Pad"
@@ -2031,7 +2031,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:288
 msgid "Tracks"
-msgstr ""
+msgstr "Faixas"
 
 #: resources/ui/export_dialog.ui:309
 msgid "Bit depth"

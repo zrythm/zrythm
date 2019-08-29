@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: 2019-08-26 23:01+0000\n"
+"PO-Revision-Date: 2019-08-28 18:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-configuration/pt/>\n"
@@ -22,21 +22,23 @@ msgstr ""
 
 #: ../../zrythm-configuration/device-setup/intro.rst:2
 msgid "Device Setup"
-msgstr ""
+msgstr "Configuração do Aparelho"
 
 #: ../../zrythm-configuration/device-setup/intro.rst:5
 msgid "Connecting MIDI and Audio Devices"
-msgstr ""
+msgstr "Conectando Aparelhos de MIDI e Áudio"
 
 #: ../../zrythm-configuration/device-setup/intro.rst:6
 msgid ""
 "Zrythm exposes ports to JACK. Devices can be attached there. Note that "
 "for MIDI, devices need to be bridged using ``a2jmidid``."
 msgstr ""
+"Zrythm expõe os portos ao JACK. Os aparelhos podem ser ligados lá. Note que "
+"para MIDI, os aparelhos devem ser bridged usando ``a2jmidid``."
 
 #: ../../zrythm-configuration/device-setup/intro.rst:8
 msgid "An example configuration looks like this (in Catia inside Cadence)"
-msgstr ""
+msgstr "Um exemplo de configuração parece-se assim (em Catia dentro de Cadence)"
 
 #: ../../zrythm-configuration/installation/intro.rst:2
 msgid "Installation"
@@ -44,35 +46,40 @@ msgstr "Instalação"
 
 #: ../../zrythm-configuration/installation/intro.rst:5
 msgid "Official Builds"
-msgstr ""
+msgstr "Compilações Oficiais"
 
 #: ../../zrythm-configuration/installation/intro.rst:6
 msgid ""
 "You can install the latest version of Zrythm for your distro `here "
 "<https://software.opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_"
 msgstr ""
+"Você pode instalar a versão mais recente do Zrythm para sua distro `aqui "
+"<https://software.opensuse.org//download.html? project = home% 3Aalextee & "
+"package = zrythm>`_"
 
 #: ../../zrythm-configuration/installation/intro.rst:8
 msgid "You will be presented with the following"
-msgstr ""
+msgstr "Ser-lhe-á apresentado o seguinte"
 
 #: ../../zrythm-configuration/installation/intro.rst:12
 msgid "This is the recommended way to install the latest version."
-msgstr ""
+msgstr "Esta é a forma recomendada para instalar a versão mais recente."
 
 #: ../../zrythm-configuration/installation/intro.rst:15
 msgid "KX Studios"
-msgstr ""
+msgstr "Estúdios KX"
 
 #: ../../zrythm-configuration/installation/intro.rst:16
 msgid ""
 "Thanks to falktx, Zrythm is also available in the `KX Studio repos "
 "<http://kxstudio.linuxaudio.org/>`_ for Debian users"
 msgstr ""
+"Graças ao falktx, Zrythm também está disponível no `Repos Estudio KX "
+"<http://kxstudio.linuxaudio.org/>`_ para usuários de Debian"
 
 #: ../../zrythm-configuration/installation/intro.rst:19
 msgid "AUR"
-msgstr ""
+msgstr "AUR"
 
 #: ../../zrythm-configuration/installation/intro.rst:20
 msgid ""
@@ -80,24 +87,30 @@ msgid ""
 "`zrythm <https://aur.archlinux.org/packages/zrythm/>`_ and `zrythm-git "
 "<https://aur.archlinux.org/packages/zrythm-git/>`_"
 msgstr ""
+"Para usuários do Arch GNU/Linux, o Zrythm também está disponível no AUR sob `"
+"zrythm <https://aur.archlinux.org/packages/zrythm/>`_ e `zrythm-git "
+"<https://aur.archlinux.org/packages/zrythm-git/>`_"
 
 #: ../../zrythm-configuration/installation/intro.rst:23
 msgid "Manual Installation"
-msgstr ""
+msgstr "Instalação Manual"
 
 #: ../../zrythm-configuration/installation/intro.rst:24
 msgid "The usual GNU toolchain procedure applies::"
-msgstr ""
+msgstr "O procedimento de toolchain GNU habitualment aplica::"
 
 #: ../../zrythm-configuration/installation/intro.rst:31
 msgid ""
 "Type ``./configure --help`` for available options. We recommend using "
 "``--enable-qt5 --enable-ffmpeg`` to get the most functionality."
 msgstr ""
+"Digite ``./configure --help`` para as opções disponíveis. Nós recomendamos "
+"usar ``--enable-qt5 --enable-ffmpeg`` para obter a maioria das "
+"funcionalidades."
 
 #: ../../zrythm-configuration/intro.rst:2
 msgid "Configuration"
-msgstr ""
+msgstr "Configuração"
 
 #: ../../zrythm-configuration/preferences/audio.rst:2
 msgid "Audio"
@@ -109,11 +122,11 @@ msgstr "Preferências"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:2
 msgid "System Requirements"
-msgstr ""
+msgstr "Requisitos do Sistema"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:5
 msgid "Minimum Requirements"
-msgstr ""
+msgstr "Requisitos Mínimos"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:6
 msgid ""
@@ -121,28 +134,33 @@ msgid ""
 " laggy. If you have any experiences with older machines please let us "
 "know."
 msgstr ""
+"Ainda não sabemos. O sistema mais antigo que foi testado foi a T400 e estava "
+"um pouco atrasada. Se você tem alguma experiência com sistemas mais antigos, "
+"por favor avise-nos."
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:9
 msgid "Recommended Requirements"
-msgstr ""
+msgstr "Requisitos Recomendados"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:10
 msgid "We recommend running a fairly modern machine."
-msgstr ""
+msgstr "Recomendamos usar uma máquina bastante moderna."
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:13
 msgid "Audio Interface"
-msgstr ""
+msgstr "Interface de Áudio"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:14
 msgid ""
 "An Audio Interface is recommended as it offers low latency and better "
 "quality (especially if recording audio)."
 msgstr ""
+"Uma interface de áudio é recomendada, pois oferece baixa latência e melhor "
+"qualidade (especialmente se estiver gravando áudio)."
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:17
 msgid "JACK"
-msgstr ""
+msgstr "JACK"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:18
 msgid ""
@@ -151,11 +169,14 @@ msgid ""
 "<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, as it makes "
 "the process very easy."
 msgstr ""
+"JACK deve ser instalado e configurado antes de executar o Zrythm. "
+"Recomendamos o uso de `Cadence <http://kxstudio.linuxaudio.org/Applications>`"
+"_, pois torna o processo muito fácil."
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:20
 msgid "Open Cadence"
-msgstr ""
+msgstr "Abrir Cadence"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:24
 msgid "Click Configure and select your Audio Interface"
-msgstr ""
+msgstr "Clique em Configurar e selecione sua Interface de Áudio"
