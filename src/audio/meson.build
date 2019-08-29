@@ -38,6 +38,7 @@ audio_srcs = [
   'engine_jack.c',
   'engine_pa.c',
   'exporter.c',
+  'ext_port.c',
   'fader.c',
   'audio_group_track.c',
   'instrument_track.c',

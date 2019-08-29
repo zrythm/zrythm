@@ -75,10 +75,15 @@ disconnect_ch_input_from_fader (
         ch->prefader.stereo_in->r);
       break;
     case TYPE_EVENT:
-      port_disconnect (ch->midi_in, ch->midi_out);
-      if (track_has_piano_roll (ch->track))
-        port_disconnect (
-          ch->piano_roll, ch->midi_out);
+      if (ch->track->out_signal_type ==
+            TYPE_EVENT)
+        {
+          port_disconnect (
+            ch->midi_in, ch->midi_out);
+          if (track_has_piano_roll (ch->track))
+            port_disconnect (
+              ch->piano_roll, ch->midi_out);
+        }
       break;
     default:
       break;
@@ -1015,7 +1020,7 @@ channel_handle_recording (Channel * self)
 
       /* convert MIDI data to midi notes */
       MidiEvents * midi_events =
-        AUDIO_ENGINE->midi_in->midi_events;
+        self->midi_in->midi_events;
       if (midi_events->num_events > 0)
         {
           MidiNote * mn;
@@ -1126,6 +1131,13 @@ channel_prepare_process (Channel * self)
         }
     }
   self->filled_stereo_in_bufs = 0;
+
+  /* copy the cached MIDI events to the MIDI events
+   * in the MIDI in port */
+  if (self->track->in_signal_type ==
+        TYPE_EVENT)
+    midi_events_dequeue (
+      self->midi_in->midi_events);
 }
 
 void
@@ -1311,10 +1323,12 @@ channel_connect (
       ch->output_pos = -1;
       port_connect (
         ch->stereo_out->l,
-        AUDIO_ENGINE->stereo_out->l, 1);
+        AUDIO_ENGINE->monitor_fader.stereo_in->l,
+        1);
       port_connect (
         ch->stereo_out->r,
-        AUDIO_ENGINE->stereo_out->r, 1);
+        AUDIO_ENGINE->monitor_fader.stereo_in->r,
+        1);
     }
   else
     {
@@ -1369,6 +1383,36 @@ channel_connect (
             P_MASTER_TRACK->channel->stereo_in->r,
             1);
         }
+    }
+
+  /* expose ports to backend */
+  if (ch->track->in_signal_type ==
+        TYPE_AUDIO)
+    {
+      port_set_expose_to_backend (
+        ch->stereo_in->l , 1);
+      port_set_expose_to_backend (
+        ch->stereo_in->r , 1);
+    }
+  if (ch->track->in_signal_type ==
+        TYPE_EVENT)
+    {
+      port_set_expose_to_backend (
+        ch->midi_in , 1);
+    }
+  if (ch->track->out_signal_type ==
+        TYPE_AUDIO)
+    {
+      port_set_expose_to_backend (
+        ch->stereo_out->l , 1);
+      port_set_expose_to_backend (
+        ch->stereo_out->r , 1);
+    }
+  if (ch->track->out_signal_type ==
+        TYPE_EVENT)
+    {
+      port_set_expose_to_backend (
+        ch->midi_out , 1);
     }
 }
 
@@ -1530,6 +1574,93 @@ channel_prepare_for_serialization (
 }
 
 /**
+ * Inits the stereo ports of the Channel while
+ * exposing them to the backend.
+ *
+ * This assumes the caller already checked that
+ * this channel should have the given ports
+ * enabled.
+ *
+ * @param in 1 for input, 0 for output.
+ * @param loading 1 if loading a channel, 0 if
+ *   new.
+ */
+static void
+init_stereo_out_ports (
+  Channel * self,
+  int       in,
+  int       loading)
+{
+  char str[80];
+  strcpy (str, in ? "Stereo in" : "Stereo out");
+  Port * l, * r;
+  StereoPorts ** sp =
+    in ? &self->stereo_in : &self->stereo_out;
+  PortFlow flow = in ? FLOW_INPUT : FLOW_OUTPUT;
+
+  if (loading)
+    {
+    }
+  else
+    {
+      strcat (str, " L");
+      l = port_new_with_type (
+        TYPE_AUDIO,
+        flow,
+        str);
+
+      str[10] = '\0';
+      strcat (str, " R");
+      r = port_new_with_type (
+        TYPE_AUDIO,
+        flow,
+        str);
+    }
+
+  port_set_owner_track (
+    l, self->track);
+  port_set_owner_track (
+    r, self->track);
+
+  *sp =
+    stereo_ports_new_from_existing (
+      l, r);
+}
+
+/**
+ * Inits the MIDI In port of the Channel while
+ * exposing it to JACK.
+ *
+ * This assumes the caller already checked that
+ * this channel should have the given MIDI port
+ * enabled.
+ *
+ * @param in 1 for input, 0 for output.
+ * @param loading 1 if loading a channel, 0 if
+ *   new.
+ */
+static void
+init_midi_port (
+  Channel * self,
+  int       in,
+  int       loading)
+{
+  char * str = in ? "MIDI in" : "MIDI out";
+  Port ** port =
+    in ? &self->midi_in : &self->midi_out;
+  PortFlow flow = in ? FLOW_INPUT : FLOW_OUTPUT;
+
+  *port =
+    port_new_with_type (
+      TYPE_EVENT,
+      flow,
+      str);
+
+  port_set_owner_track (
+    *port, self->track);
+}
+
+/**
  * Creates a channel of the given type with the
  * given label.
  */
@@ -1549,43 +1680,49 @@ channel_new (
             sizeof (AutomationTrack *));
 
   /* create ports */
-  self->stereo_in =
-    stereo_ports_new_generic (
-      1, _("Stereo in"),
-      PORT_OWNER_TYPE_TRACK, track);
-  self->stereo_out =
-    stereo_ports_new_generic (
-      0, _("Stereo out"),
-      PORT_OWNER_TYPE_TRACK, track);
+  char * str;
+  switch  (track->in_signal_type)
+    {
+    case TYPE_EVENT:
+      init_midi_port (self, 1, 0);
 
-  char * pll =
-    g_strdup (_("MIDI in"));
-  self->midi_in =
-    port_new_with_type (
-      TYPE_EVENT,
-      FLOW_INPUT,
-      pll);
-  self->midi_in->midi_events =
-    midi_events_new (
-      self->midi_in);
-  g_free (pll);
-  pll =
-    g_strdup (_("MIDI out"));
-  self->midi_out =
-    port_new_with_type (
-      TYPE_EVENT,
-      FLOW_OUTPUT,
-      pll);
-  self->midi_out->midi_events =
-    midi_events_new (
-      self->midi_out);
-  g_free (pll);
-  port_set_owner_track (
-    self->midi_in,
-    track);
-  port_set_owner_track (
-    self->midi_out,
-    track);
+      /* set up piano roll port */
+      if (track_has_piano_roll (track))
+        {
+          str = _("Piano Roll");
+          self->piano_roll =
+            port_new_with_type (
+              TYPE_EVENT,
+              FLOW_INPUT,
+              str);
+          self->piano_roll->identifier.flags =
+            PORT_FLAG_PIANO_ROLL;
+          port_set_owner_track (
+            self->piano_roll,
+            track);
+        }
+      break;
+    case TYPE_AUDIO:
+      init_stereo_out_ports (
+        self, 1, 0);
+      break;
+    default:
+      break;
+    }
+
+  switch (track->out_signal_type)
+    {
+    case TYPE_AUDIO:
+      init_stereo_out_ports (
+        self, 0, 0);
+      break;
+    case TYPE_EVENT:
+      init_midi_port (
+        self, 0, 0);
+      break;
+    default:
+      break;
+    }
 
   /* init plugins */
   for (int i = 0; i < STRIP_SIZE; i++)
@@ -1605,26 +1742,6 @@ channel_new (
     &self->prefader,
     prefader_type,
     self);
-
-  /* set up piano roll port */
-  char * tmp =
-    g_strdup (_("Piano Roll"));
-  self->piano_roll =
-    port_new_with_type (
-      TYPE_EVENT,
-      FLOW_INPUT,
-      tmp);
-  self->piano_roll->identifier.flags =
-    PORT_FLAG_PIANO_ROLL;
-  self->piano_roll->identifier.owner_type =
-    PORT_OWNER_TYPE_TRACK;
-  self->piano_roll->identifier.track_pos =
-    self->track->pos;
-  self->piano_roll->track =
-    self->track;
-  self->piano_roll->midi_events =
-    midi_events_new (
-      self->piano_roll);
 
   return self;
 }
@@ -1728,17 +1845,17 @@ channel_disconnect_plugin_from_strip (
     {
       port = pl->in_ports[i];
 
-      if (port->internal_type ==
-            INTERNAL_JACK_PORT)
-        port_set_expose_to_jack (port, 0);
+      if (port->internal_type !=
+            INTERNAL_NONE)
+        port_set_expose_to_backend (port, 0);
     }
   for (i = 0; i < pl->num_out_ports; i++)
     {
       port = pl->out_ports[i];
 
-      if (port->internal_type ==
-            INTERNAL_JACK_PORT)
-        port_set_expose_to_jack (port, 0);
+      if (port->internal_type !=
+            INTERNAL_NONE)
+        port_set_expose_to_backend (port, 0);
     }
 }
 

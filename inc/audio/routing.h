@@ -53,6 +53,8 @@ typedef enum GraphNodeType
   ROUTE_NODE_TYPE_PLUGIN,
   /** Fader/pan processor. */
   ROUTE_NODE_TYPE_FADER,
+  /** Fader/pan processor for monitor. */
+  ROUTE_NODE_TYPE_MONITOR_FADER,
   /** Pre-Fader passthrough processor. */
   ROUTE_NODE_TYPE_PREFADER,
   /** Sample processor. */

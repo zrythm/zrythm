@@ -28,7 +28,7 @@
     <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
     <property name="spacing">2</property>
     <child>
-      <object class="InstrumentTrackInfoExpanderWidget" id="instrument_track_info">
+      <object class="TrackPropertiesExpanderWidget" id="instrument_track_info">
         <property name="visible">True</property>
       </object>
     </child>

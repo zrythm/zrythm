@@ -166,6 +166,10 @@ get_node_name (
           "%s Pre-Fader",
           node->prefader->channel->track->name);
       break;
+    case ROUTE_NODE_TYPE_MONITOR_FADER:
+      return
+        g_strdup ("Monitor Fader");
+      break;
     case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
       return
         g_strdup ("Sample Processor");
@@ -296,6 +300,12 @@ node_process (
         /*node->route_playback_latency);*/
     }
   else if (node->type == ROUTE_NODE_TYPE_FADER)
+    {
+      fader_process (
+        node->fader, local_offset, nframes);
+    }
+  else if (node->type ==
+             ROUTE_NODE_TYPE_MONITOR_FADER)
     {
       fader_process (
         node->fader, local_offset, nframes);
@@ -441,151 +451,6 @@ node_process (
               port_sum_signal_from_inputs (
                 port, local_offset,
                 nframes, noroll);
-            }
-        }
-
-      /* if JACK stereo out */
-      else if (
-          port->identifier.owner_type ==
-            PORT_OWNER_TYPE_BACKEND &&
-          port->identifier.type == TYPE_AUDIO &&
-          port->identifier.flow == FLOW_OUTPUT)
-        {
-          if (!AUDIO_ENGINE->exporting)
-            {
-              float * out;
-              int ret;
-              switch (AUDIO_ENGINE->audio_backend)
-                {
-                case AUDIO_BACKEND_JACK:
-                  if (port->internal_type !=
-                        INTERNAL_JACK_PORT)
-                    {
-                      g_warn_if_reached ();
-                      break;
-                    }
-#ifdef HAVE_JACK
-                  out =
-                    (float *)
-                    jack_port_get_buffer (
-                      JACK_PORT_T (port->data),
-                      AUDIO_ENGINE->nframes);
-
-                  /* by this time, the Master
-                   * channel should have its
-                   * Stereo Out ports filled.
-                   * pass their buffers to JACK's
-                   * buffers */
-                  for (i = 0; i < port->num_srcs;
-                       i++)
-                    {
-                      for (j = local_offset;
-                           j < local_offset +
-                             nframes;
-                           j++)
-                        {
-                          out[j] +=
-                            port->srcs[i]->buf[j];
-                        }
-                    }
-
-                  /* avoid unused warnings */
-                  (void) out;
-#endif
-
-                  break;
-                case AUDIO_BACKEND_ALSA:
-#ifdef __linux__
-                  /* write interleaved */
-                  for (j = 0; j < port->num_srcs;
-                       j++)
-                    {
-                      if (port ==
-                            AUDIO_ENGINE->
-                              stereo_out->l)
-                      for (i = local_offset;
-                           i < local_offset +
-                             nframes;
-                           i++)
-                          {
-                            AUDIO_ENGINE->
-                              alsa_out_buf[i * 2] +=
-                                port->
-                                  srcs[j]->buf[i];
-                          }
-                      else if (port ==
-                            AUDIO_ENGINE->
-                              stereo_out->r)
-                      for (i = local_offset;
-                           i < local_offset +
-                             nframes;
-                           i++)
-                          {
-                            AUDIO_ENGINE->
-                              alsa_out_buf[
-                                i * 2 + 1] +=
-                              port->srcs[j]->buf[i];
-                          }
-                    }
-#endif
-                  break;
-                case AUDIO_BACKEND_PORT_AUDIO:
-#ifdef HAVE_PORT_AUDIO
-                  if (g_atomic_int_get (
-                    &AUDIO_ENGINE->
-                      filled_stereo_out_bufs))
-                    break;
-                  ret =
-                    g_atomic_int_compare_and_exchange (
-                      &AUDIO_ENGINE->
-                        filled_stereo_out_bufs,
-                      0, 1);
-                  if (ret)
-                    engine_pa_fill_stereo_out_buffs (
-                      AUDIO_ENGINE);
-#endif
-                  break;
-                case AUDIO_BACKEND_DUMMY:
-                  break;
-                default:
-                  break;
-                }
-            }
-        }
-
-      /* if JACK MIDI out */
-      else if (port->identifier.owner_type ==
-               PORT_OWNER_TYPE_BACKEND &&
-          port->identifier.type == TYPE_EVENT &&
-          port->identifier.flow == FLOW_OUTPUT)
-        {
-          if (!AUDIO_ENGINE->exporting)
-            {
-              /*float * out;*/
-              /*int ret;*/
-              switch (AUDIO_ENGINE->audio_backend)
-                {
-                case AUDIO_BACKEND_JACK:
-#ifdef HAVE_JACK
-                  /* by this time, the Master
-                   * channel should have its
-                   * MIDI out port filled.
-                   * pass its buffer to JACK */
-                  port_sum_signal_from_inputs (
-                    port, local_offset,
-                    nframes, noroll);
-
-                  midi_events_copy_to_jack (
-                    port->midi_events,
-                    jack_port_get_buffer (
-                      JACK_PORT_T (port->data),
-                      AUDIO_ENGINE->nframes));
-#endif
-                  break;
-                default:
-                  /* TODO */
-                  break;
-                }
             }
         }
 
@@ -992,6 +857,23 @@ find_node_from_sample_processor (
   return NULL;
 }
 
+static GraphNode *
+find_node_from_monitor_fader (
+  Graph * graph,
+  Fader * fader)
+{
+  GraphNode * node;
+  for (int i = 0; i < graph->n_graph_nodes; i++)
+    {
+      node = graph->graph_nodes[i];
+      if (node->type ==
+            ROUTE_NODE_TYPE_MONITOR_FADER &&
+          node->fader == fader)
+        return node;
+    }
+  return NULL;
+}
+
 static inline GraphNode *
 graph_node_new (
   Graph * graph,
@@ -1008,6 +890,8 @@ graph_node_new (
   else if (type == ROUTE_NODE_TYPE_PORT)
     node->port = (Port *) data;
   else if (type == ROUTE_NODE_TYPE_FADER)
+    node->fader = (Fader *) data;
+  else if (type == ROUTE_NODE_TYPE_MONITOR_FADER)
     node->fader = (Fader *) data;
   else if (type == ROUTE_NODE_TYPE_PREFADER)
     node->prefader = (PassthroughProcessor *) data;
@@ -1309,6 +1193,7 @@ add_port (
            port->num_srcs == 0 &&
            owner != PORT_OWNER_TYPE_PLUGIN &&
            owner != PORT_OWNER_TYPE_FADER &&
+           owner != PORT_OWNER_TYPE_MONITOR_FADER &&
            owner != PORT_OWNER_TYPE_PREFADER)
     {
     }
@@ -1316,6 +1201,8 @@ add_port (
       !(owner == PORT_OWNER_TYPE_PLUGIN &&
         port->identifier.flow == FLOW_OUTPUT) &&
       !(owner == PORT_OWNER_TYPE_FADER &&
+        port->identifier.flow == FLOW_OUTPUT) &&
+      !(owner == PORT_OWNER_TYPE_MONITOR_FADER &&
         port->identifier.flow == FLOW_OUTPUT) &&
       !(owner == PORT_OWNER_TYPE_PREFADER &&
         port->identifier.flow == FLOW_OUTPUT) &&
@@ -1330,6 +1217,9 @@ add_port (
              port->identifier.flow ==
                FLOW_INPUT) &&
            !(owner == PORT_OWNER_TYPE_FADER &&
+             port->identifier.flow ==
+               FLOW_INPUT) &&
+           !(owner == PORT_OWNER_TYPE_MONITOR_FADER &&
              port->identifier.flow ==
                FLOW_INPUT) &&
            !(owner == PORT_OWNER_TYPE_PREFADER &&
@@ -1526,6 +1416,11 @@ graph_new (
     self, ROUTE_NODE_TYPE_SAMPLE_PROCESSOR,
     SAMPLE_PROCESSOR);
 
+  /* add the monitor fader */
+  graph_add_node ( \
+    self, ROUTE_NODE_TYPE_MONITOR_FADER,
+    &AUDIO_ENGINE->monitor_fader);
+
   /* add plugins */
   Track * tr;
   Plugin * pl;
@@ -1616,6 +1511,27 @@ graph_new (
     find_node_from_port (self, port);
   node_connect (node, node2);
   port = SAMPLE_PROCESSOR->stereo_out->r;
+  node2 =
+    find_node_from_port (self, port);
+  node_connect (node, node2);
+
+  /* connect the monitor fader */
+  node =
+    find_node_from_monitor_fader (
+      self, &AUDIO_ENGINE->monitor_fader);
+  port = AUDIO_ENGINE->monitor_fader.stereo_in->l;
+  node2 =
+    find_node_from_port (self, port);
+  node_connect (node2, node);
+  port = AUDIO_ENGINE->monitor_fader.stereo_in->r;
+  node2 =
+    find_node_from_port (self, port);
+  node_connect (node2, node);
+  port = AUDIO_ENGINE->monitor_fader.stereo_out->l;
+  node2 =
+    find_node_from_port (self, port);
+  node_connect (node, node2);
+  port = AUDIO_ENGINE->monitor_fader.stereo_out->r;
   node2 =
     find_node_from_port (self, port);
   node_connect (node, node2);

@@ -226,21 +226,34 @@ process_cb (
       nframes);
 }
 
+/**
+ * Called when an alsa MIDI event is received on
+ * any registered port.
+ */
 static inline int
-midi_callback (
+on_midi_event (
   AudioEngine* self)
 {
   snd_seq_event_t *ev;
-
-  zix_sem_wait (
-    &self->midi_in->midi_events->access_sem);
+  Port * port;
 
   int time = 0;
 
   do
     {
+      /* get alsa seq event */
       snd_seq_event_input (
         self->seq_handle, &ev);
+
+      /* find the zrythm port by the alsa seq
+       * port ID */
+      port =
+        port_find_by_alsa_seq_id (
+          ev->dest.port);
+
+      zix_sem_wait (
+        &port->midi_events->access_sem);
+
       switch (ev->type)
         {
         /* see https://www.alsa-project.org/alsa-doc/alsa-lib/group___seq_events.html for more */
@@ -248,7 +261,7 @@ midi_callback (
           g_message ("pitch %d",
                      ev->data.control.value);
           midi_events_add_pitchbend (
-            self->midi_in->midi_events, 1,
+            port->midi_events, 1,
             ev->data.control.value,
             time++, 1);
           break;
@@ -256,7 +269,7 @@ midi_callback (
           g_message ("modulation %d",
                      ev->data.control.value);
           midi_events_add_control_change (
-            self->midi_in->midi_events,
+            port->midi_events,
             1, ev->data.control.param,
             ev->data.control.value,
             time++, 1);
@@ -269,7 +282,7 @@ midi_callback (
                      /*ev->time.time.tv_sec,*/
                      /*ev->time.time.tv_nsec);*/
           midi_events_add_note_on (
-            self->midi_in->midi_events,
+            port->midi_events,
             1, ev->data.note.note,
             ev->data.note.velocity,
             time++, 1);
@@ -278,7 +291,7 @@ midi_callback (
           g_message ("note off: note %d",
                      ev->data.note.note);
           midi_events_add_note_off (
-            self->midi_in->midi_events,
+            port->midi_events,
             1, ev->data.note.note,
             time++, 1);
           /* FIXME passing ticks, should pass
@@ -288,13 +301,14 @@ midi_callback (
           g_message ("Unknown MIDI event received");
           break;
       }
+
+      zix_sem_post (
+        &port->midi_events->access_sem);
+
       snd_seq_free_event(ev);
     } while (
         snd_seq_event_input_pending (
           self->seq_handle, 0) > 0);
-
-  zix_sem_post (
-    &self->midi_in->midi_events->access_sem);
 
   return 0;
 }
@@ -328,6 +342,24 @@ engine_alsa_test (
     }
 
   return err;
+}
+
+/**
+ * Fill the output buffers at the end of the
+ * cycle.
+ */
+void
+engine_alsa_fill_out_bufs (
+  AudioEngine * self,
+  int           nframes)
+{
+  for (int i = 0; i < nframes; i++)
+    {
+      self->alsa_out_buf[i * 2] =
+        self->monitor_out->l->buf[i];
+      self->alsa_out_buf[i * 2 + 1] =
+        self->monitor_out->l->buf[i];
+    }
 }
 
 static void *
@@ -422,12 +454,6 @@ midi_thread (void * _self)
 
   snd_seq_set_client_name (
     self->seq_handle, "Zrythm");
-  if (snd_seq_create_simple_port (
-        self->seq_handle, "Zrythm MIDI",
-      SND_SEQ_PORT_CAP_WRITE |
-        SND_SEQ_PORT_CAP_SUBS_WRITE,
-      SND_SEQ_PORT_TYPE_APPLICATION) < 0)
-    g_warning ("Error creating sequencer port");
 
   int seq_nfds, l1;
   struct pollfd *pfds;
@@ -447,7 +473,9 @@ midi_thread (void * _self)
           for (l1 = 0; l1 < seq_nfds; l1++)
             {
                if (pfds[l1].revents > 0)
-                 midi_callback (self);
+                 {
+                   on_midi_event (self);
+                 }
             }
         }
     }
@@ -470,19 +498,6 @@ engine_alsa_prepare_process (
       sizeof (float));
 }
 
-/**
- * Copy the cached MIDI events to the MIDI events
- * in the MIDI in port, used at the start of each
- * cycle. */
-void
-engine_alsa_receive_midi_events (
-  AudioEngine * self,
-  int           print)
-{
-  midi_events_dequeue (
-    self->midi_in->midi_events);
-}
-
 int
 alsa_setup (
   AudioEngine *self, int loading)
@@ -494,41 +509,30 @@ alsa_setup (
     (float *) malloc (
       2 * sizeof (float) * self->block_length);
 
-  Port *stereo_out_l, *stereo_out_r,
-      *stereo_in_l, *stereo_in_r;
+  Port *monitor_out_l, *monitor_out_r;
 
-  stereo_out_l =
+  /*const char * monitor_out_l_str =*/
+    /*"Monitor out L";*/
+  /*const char * monitor_out_r_str =*/
+    /*"Monitor out R";*/
+
+  monitor_out_l =
     port_new_with_type (
       TYPE_AUDIO, FLOW_OUTPUT,
-      "ALSA Stereo Out / L");
-  stereo_out_r =
+      "ALSA Monitor Out / L");
+  monitor_out_r =
     port_new_with_type (
       TYPE_AUDIO, FLOW_OUTPUT,
-      "ALSA Stereo Out / R");
-  stereo_in_l =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_INPUT,
-      "ALSA Stereo In / L");
-  stereo_in_r =
-    port_new_with_type (
-      TYPE_AUDIO, FLOW_INPUT,
-      "ALSA Stereo In / R");
+      "ALSA Monitor Out / R");
 
-  stereo_in_l->identifier.owner_type =
+  monitor_out_l->identifier.owner_type =
     PORT_OWNER_TYPE_BACKEND;
-  stereo_in_r->identifier.owner_type =
-    PORT_OWNER_TYPE_BACKEND;
-  stereo_out_l->identifier.owner_type =
-    PORT_OWNER_TYPE_BACKEND;
-  stereo_out_r->identifier.owner_type =
+  monitor_out_r->identifier.owner_type =
     PORT_OWNER_TYPE_BACKEND;
 
-  self->stereo_out =
+  self->monitor_out =
     stereo_ports_new_from_existing (
-      stereo_out_l, stereo_out_r);
-  self->stereo_in =
-    stereo_ports_new_from_existing (
-      stereo_in_l, stereo_in_r);
+      monitor_out_l, monitor_out_r);
 
   pthread_t thread_id;
   pthread_create(
@@ -550,32 +554,10 @@ alsa_midi_setup (
     }
   else
     {
-      self->midi_in =
-        port_new_with_type (
-          TYPE_EVENT,
-          FLOW_INPUT,
-          "ALSA MIDI In");
-      self->midi_in->identifier.owner_type =
-        PORT_OWNER_TYPE_BACKEND;
-      self->midi_out =
-        port_new_with_type (
-          TYPE_EVENT,
-          FLOW_OUTPUT,
-          "ALSA MIDI Out");
-      self->midi_out->identifier.owner_type =
-        PORT_OWNER_TYPE_BACKEND;
     }
 
-  /* init queue */
-  self->midi_in->midi_events =
-    midi_events_new (
-      self->midi_in);
-  self->midi_out->midi_events =
-    midi_events_new (
-      self->midi_out);
-
   pthread_t thread_id;
-  pthread_create(
+  pthread_create (
     &thread_id, NULL,
     &midi_thread, self);
 

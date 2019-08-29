@@ -59,6 +59,7 @@
 typedef struct _ChannelWidget ChannelWidget;
 typedef struct Track Track;
 typedef struct _TrackWidget TrackWidget;
+typedef struct ExtPort ExtPort;
 
 /**
  * A Channel is part of a Track (excluding Tracks that
@@ -98,10 +99,46 @@ typedef struct Channel
   int                num_ats;
   int                ats_size;
 
+  /**
+   * External MIDI inputs that are currently
+   * connected to this channel as official inputs,
+   * unless all_midi_ins is enabled.
+   *
+   * These should be serialized every time and
+   * if all_midi_ins is not enabled, connected to
+   * when the project gets loaded.
+   *
+   * If all_midi_ins is enabled, these are ignored.
+   */
+  ExtPort *         ext_midi_ins[32];
+  int               num_ext_midi_ins;
+
+  /** If 1, the channel will connect to all MIDI ins
+   * found. */
+  int               all_midi_ins;
+
+  /**
+   * 1 or 0 flags for each channel to enable it or
+   * disable it.
+   *
+   * If all_midi_channels is enabled, this is
+   * ignored.
+   */
+  int               midi_channels[16];
+
+  /** If 1, the channel will accept MIDI messages
+   * from all MIDI channels.
+   */
+  int               all_midi_channels;
+
   /** The channel fader. */
   Fader            fader;
 
-  /** Prefader. */
+  /**
+   * Prefader.
+   *
+   * The last plugin should connect to this.
+   */
   PassthroughProcessor prefader;
 
   /**
@@ -121,26 +158,27 @@ typedef struct Channel
    *
    * This port is for receiving MIDI signals from
    * an external MIDI source.
+   *
+   * This is also where piano roll, midi in and midi
+   * manual press will be routed to and this will
+   * be the port used to pass midi to the plugins.
    */
   Port *           midi_in;
 
   /**
    * MIDI output for sending MIDI signals to other
-   * destinations.
+   * destinations, such as other channels when
+   * directly routed (eg MIDI track to ins track).
    */
   Port *           midi_out;
 
   /** Flag used while processing. */
   int              filled_stereo_in_bufs;
 
-
   /*
-   * The last plugin should connect to this.
-   *
-   * Plugins are processed slot-by-slot, and if
-   * nothing is connected here it will simply
-   * remain an empty buffer, i.e., channel will
-   * produce no sound.
+   * Ports for direct (track-to-track) routing with
+   * the exception of master, which will route the
+   * output to monitor in.
    */
   StereoPorts *    stereo_out;
 

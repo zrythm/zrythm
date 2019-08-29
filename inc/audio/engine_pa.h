@@ -29,6 +29,12 @@
 typedef struct AudioEngine AudioEngine;
 
 /**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+/**
  * Set up Port Audio.
  */
 void
@@ -37,8 +43,9 @@ pa_setup (
   int           loading);
 
 void
-engine_pa_fill_stereo_out_buffs (
-  AudioEngine * engine);
+engine_pa_fill_out_bufs (
+  AudioEngine * engine,
+  int           nframes);
 
 /**
  * This routine will be called by the PortAudio
@@ -80,6 +87,10 @@ engine_pa_test (
  */
 void
 pa_terminate (AudioEngine * engine);
+
+/**
+ * @}
+ */
 
 #endif
 

@@ -81,7 +81,7 @@ widget_srcs = [
   'inspector_plugin.c',
   'inspector_track.c',
   'instrument_track.c',
-  'instrument_track_info_expander.c',
+  'track_properties_expander.c',
   'knob.c',
   'knob_with_name.c',
   'left_dock_edge.c',

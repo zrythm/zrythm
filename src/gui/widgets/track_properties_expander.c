@@ -21,32 +21,32 @@
 #include "audio/mixer.h"
 #include "audio/track.h"
 #include "gui/widgets/editable_label.h"
-#include "gui/widgets/instrument_track_info_expander.h"
+#include "gui/widgets/track_properties_expander.h"
 #include "project.h"
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (InstrumentTrackInfoExpanderWidget,
-               instrument_track_info_expander_widget,
+G_DEFINE_TYPE (TrackPropertiesExpanderWidget,
+               track_properties_expander_widget,
                TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
 /**
  * Refreshes each field.
  */
 void
-instrument_track_info_expander_widget_refresh (
-  InstrumentTrackInfoExpanderWidget * self)
+track_properties_expander_widget_refresh (
+  TrackPropertiesExpanderWidget * self)
 {
   /* TODO */
 
 }
 
 /**
- * Sets up the InstrumentTrackInfoExpanderWidget.
+ * Sets up the TrackPropertiesExpanderWidget.
  */
 void
-instrument_track_info_expander_widget_setup (
-  InstrumentTrackInfoExpanderWidget * self,
+track_properties_expander_widget_setup (
+  TrackPropertiesExpanderWidget * self,
   Track *                             track)
 {
   g_warn_if_fail (track);
@@ -55,19 +55,19 @@ instrument_track_info_expander_widget_setup (
   editable_label_widget_setup (
     self->name,
     track, track_get_name, track_set_name);
-  instrument_track_info_expander_widget_refresh (
+  track_properties_expander_widget_refresh (
     self);
 }
 
 static void
-instrument_track_info_expander_widget_class_init (
-  InstrumentTrackInfoExpanderWidgetClass * klass)
+track_properties_expander_widget_class_init (
+  TrackPropertiesExpanderWidgetClass * klass)
 {
 }
 
 static void
-instrument_track_info_expander_widget_init (
-  InstrumentTrackInfoExpanderWidget * self)
+track_properties_expander_widget_init (
+  TrackPropertiesExpanderWidget * self)
 {
   self->name =
     editable_label_widget_new (

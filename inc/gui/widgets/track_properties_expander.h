@@ -19,27 +19,27 @@
 
 /** \file */
 
-#ifndef __GUI_WIDGETS_INSTRUMENT_TRACK_INFO_EXPANDER_H__
-#define __GUI_WIDGETS_INSTRUMENT_TRACK_INFO_EXPANDER_H__
+#ifndef __GUI_WIDGETS_TRACK_PROPERTIES_EXPANDER_H__
+#define __GUI_WIDGETS_TRACK_PROPERTIES_EXPANDER_H__
 
 #include "gui/widgets/two_col_expander_box.h"
 
 #include <gtk/gtk.h>
 
-#define INSTRUMENT_TRACK_INFO_EXPANDER_WIDGET_TYPE \
-  (instrument_track_info_expander_widget_get_type ())
+#define TRACK_PROPERTIES_EXPANDER_WIDGET_TYPE \
+  (track_properties_expander_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  InstrumentTrackInfoExpanderWidget,
-  instrument_track_info_expander_widget,
+  TrackPropertiesExpanderWidget,
+  track_properties_expander_widget,
   Z,
-  INSTRUMENT_TRACK_INFO_EXPANDER_WIDGET,
+  TRACK_PROPERTIES_EXPANDER_WIDGET,
   TwoColExpanderBoxWidget);
 
 typedef struct _EditableLabelWidget
   EditableLabelWidget;
 typedef struct Track Track;
 
-typedef struct _InstrumentTrackInfoExpanderWidget
+typedef struct _TrackPropertiesExpanderWidget
 {
   TwoColExpanderBoxWidget parent_instance;
 
@@ -53,24 +53,24 @@ typedef struct _InstrumentTrackInfoExpanderWidget
   /* TODO midi inputs, etc. See Instrument Track
    * Inspector from cubase manual. */
 
-  /** Track the InstrumentTrackInfoExpanderWidget is
+  /** Track the TrackPropertiesExpanderWidget is
    * associated with. */
   Track *                 track;
-} InstrumentTrackInfoExpanderWidget;
+} TrackPropertiesExpanderWidget;
 
 /**
  * Refreshes each field.
  */
 void
-instrument_track_info_expander_widget_refresh (
-  InstrumentTrackInfoExpanderWidget * self);
+track_properties_expander_widget_refresh (
+  TrackPropertiesExpanderWidget * self);
 
 /**
- * Sets up the InstrumentTrackInfoExpanderWidget.
+ * Sets up the TrackPropertiesExpanderWidget.
  */
 void
-instrument_track_info_expander_widget_setup (
-  InstrumentTrackInfoExpanderWidget * self,
+track_properties_expander_widget_setup (
+  TrackPropertiesExpanderWidget * self,
   Track *                             track);
 
 #endif

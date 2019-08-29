@@ -6,16 +6,23 @@ Thanks:
    * Help with GSource-related fixes
    * Help with optimization
  Adam Kosmin
-   * UI ideas
+   * UI/feature ideas
    * Financial contribution
+   * Bug reports
+ Milk
+   * UI/feature ideas
+   * Bug reports
  bill-auger
    * Coming up with the Zrythm tagline
- Yuri
-   * FreeBSD packager
+   * Packaging advice
  Robin Gareus <https://gareus.org/>
    * Help and advice
    * Routing algorithm
    * Latency compensation algorithm
+ The GTK team
+   * Assistance with GTK-related code
+ LAD
+   * Assistance with LV2 and audio-related code
 
 ----
 

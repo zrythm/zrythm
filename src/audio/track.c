@@ -704,12 +704,38 @@ track_set_pos (
   if (track->channel)
     {
       Channel * ch = track->channel;
-      ch->stereo_out->l->identifier.track_pos = pos;
-      ch->stereo_out->r->identifier.track_pos = pos;
-      ch->stereo_in->l->identifier.track_pos = pos;
-      ch->stereo_in->r->identifier.track_pos = pos;
-      ch->midi_in->identifier.track_pos = pos;
-      ch->piano_roll->identifier.track_pos = pos;
+
+      if (track->in_signal_type ==
+            TYPE_AUDIO)
+        {
+          ch->stereo_in->l->identifier.track_pos =
+            pos;
+          ch->stereo_in->r->identifier.track_pos =
+            pos;
+        }
+      if (track->in_signal_type ==
+            TYPE_EVENT)
+        {
+          ch->midi_in->identifier.track_pos =
+            pos;
+          if (track_has_piano_roll (track))
+            ch->piano_roll->identifier.track_pos =
+              pos;
+        }
+      if (track->out_signal_type ==
+            TYPE_AUDIO)
+        {
+          ch->stereo_out->l->identifier.track_pos =
+            pos;
+          ch->stereo_out->r->identifier.track_pos =
+            pos;
+        }
+      if (track->out_signal_type ==
+            TYPE_EVENT)
+        {
+          ch->midi_out->identifier.track_pos =
+            pos;
+        }
     }
 }
 

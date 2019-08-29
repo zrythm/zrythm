@@ -29,6 +29,10 @@
 
 #include "utils/yaml.h"
 
+#ifdef HAVE_JACK
+#include <jack/jack.h>
+#endif
+
 typedef struct Plugin Plugin;
 typedef struct MidiEvents MidiEvents;
 typedef struct Fader Fader;
@@ -84,7 +88,13 @@ typedef enum PortOwnerType
   PORT_OWNER_TYPE_PLUGIN,
   PORT_OWNER_TYPE_TRACK,
   PORT_OWNER_TYPE_PREFADER,
+
+  /* track fader */
   PORT_OWNER_TYPE_FADER,
+
+  /* monitor fader */
+  PORT_OWNER_TYPE_MONITOR_FADER,
+
   PORT_OWNER_TYPE_SAMPLE_PROCESSOR,
 } PortOwnerType;
 
@@ -123,9 +133,18 @@ flags_bitvals[] =
 typedef enum PortInternalType
 {
   INTERNAL_NONE,
-  INTERNAL_LV2_PORT, ///< Lv2Port
-  INTERNAL_JACK_PORT, ///< jack_port_t
-  INTERNAL_PA_PORT, ///< port audio
+
+  /** Pointer to Lv2Port. */
+  INTERNAL_LV2_PORT,
+
+  /** Pointer to jack_port_t. */
+  INTERNAL_JACK_PORT,
+
+  /** TODO */
+  INTERNAL_PA_PORT,
+
+  /** Pointer to snd_seq_port_info_t. */
+  INTERNAL_ALSA_SEQ_PORT,
 } PortInternalType;
 
 typedef struct Lv2Port Lv2Port;
@@ -481,7 +500,8 @@ stereo_ports_init_loaded (StereoPorts * sp);
  * Creates port.
  */
 Port *
-port_new (char * label);
+port_new (
+  const char * label);
 
 /**
  * Creates port.
@@ -490,7 +510,7 @@ Port *
 port_new_with_type (
   PortType     type,
   PortFlow     flow,
-  char         * label);
+  const char * label);
 
 /**
  * Creates port and adds given data to it.
@@ -503,8 +523,8 @@ port_new_with_data (
   PortInternalType internal_type,
   PortType     type,
   PortFlow     flow,
-  char         * label,
-  void         * data);
+  const char * label,
+  void *       data);
 
 /**
  * Creates blank stereo ports.
@@ -525,6 +545,18 @@ stereo_ports_new_generic (
   const char *  name,
   PortOwnerType owner_type,
   void *        owner);
+
+/**
+ * Connects the internal ports using
+ * port_connect().
+ *
+ * @param locked Lock the connection.
+ */
+void
+stereo_ports_connect (
+  StereoPorts * src,
+  StereoPorts * dest,
+  int           locked);
 
 /**
  * Receives MIDI data from the port's exposed
@@ -653,6 +685,18 @@ port_get_multiplier_by_index (
 void
 port_free (Port * port);
 
+/**
+ * Sets whether to expose the port to the backend
+ * and exposes it or removes it.
+ *
+ * It checks what the backend is using the engine's
+ * audio backend or midi backend settings.
+ */
+void
+port_set_expose_to_backend (
+  Port * self,
+  int    expose);
+
 #ifdef HAVE_JACK
 /**
  * Sets whether to expose the port to JACk and
@@ -662,6 +706,32 @@ void
 port_set_expose_to_jack (
   Port * self,
   int    expose);
+
+/**
+ * Returns the JACK port attached to this port,
+ * if any.
+ */
+jack_port_t *
+port_get_internal_jack_port (
+  Port * port);
+
+#endif
+
+#ifdef __linux__
+
+/**
+ * Returns the Port matching the given ALSA
+ * sequencer port ID.
+ */
+Port *
+port_find_by_alsa_seq_id (
+  const int id);
+
+void
+port_set_expose_to_alsa (
+  Port * self,
+  int    expose);
+
 #endif
 
 /**

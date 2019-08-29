@@ -60,13 +60,20 @@ fader_init (
       /* stereo in */
       self->stereo_in =
         stereo_ports_new_generic (
-        1, _("Fader in"), PORT_OWNER_TYPE_FADER,
+        1, _("Fader in"),
+        ch ?
+          PORT_OWNER_TYPE_FADER :
+          PORT_OWNER_TYPE_MONITOR_FADER,
         self);
 
       /* stereo out */
       self->stereo_out =
         stereo_ports_new_generic (
-        0, _("Fader out"), PORT_OWNER_TYPE_FADER,
+        0, _("Fader out"),
+        /* FIXME just create another type */
+        ch ?
+          PORT_OWNER_TYPE_FADER :
+          PORT_OWNER_TYPE_MONITOR_FADER,
         self);
     }
 

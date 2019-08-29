@@ -61,6 +61,15 @@ engine_alsa_prepare_process (
   AudioEngine * self);
 
 /**
+ * Fill the output buffers at the end of the
+ * cycle.
+ */
+void
+engine_alsa_fill_out_bufs (
+  AudioEngine * self,
+  int           nframes);
+
+/**
  * Sets up the audio engine to use alsa.
  */
 int

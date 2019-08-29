@@ -45,11 +45,19 @@ engine_jack_test (
   GtkWindow * win);
 
 /**
+ * Refreshes the list of external ports.
+ */
+void
+engine_jack_rescan_ports (
+  AudioEngine * self);
+
+/**
  * Zero's out the output buffers.
  */
 void
 engine_jack_clear_output_buffers (
-  AudioEngine * self);
+  AudioEngine * self,
+  int           nframes);
 
 /**
  * Prepares for processing.
@@ -67,6 +75,14 @@ void
 engine_jack_set_transport_type (
   AudioEngine * self,
   AudioEngineJackTransportType type);
+
+/**
+ * Fills the external out bufs.
+ */
+void
+engine_jack_fill_out_bufs (
+  AudioEngine * self,
+  int           nframes);
 
 /**
  * Sets up the MIDI engine to use jack.

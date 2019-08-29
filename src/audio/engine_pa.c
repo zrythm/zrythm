@@ -63,49 +63,32 @@ pa_setup (
     self->sample_rate);
 
   /* create ports */
-  Port * stereo_out_l, * stereo_out_r,
-       * stereo_in_l, * stereo_in_r;
+  Port * monitor_out_l, * monitor_out_r;
 
   if (loading)
     {
     }
   else
     {
-      stereo_out_l =
+      monitor_out_l =
         port_new_with_data (
           INTERNAL_PA_PORT,
           TYPE_AUDIO,
           FLOW_OUTPUT,
           "PortAudio Stereo Out / L",
           NULL);
-      stereo_out_r =
+      monitor_out_r =
         port_new_with_data (
           INTERNAL_PA_PORT,
           TYPE_AUDIO,
           FLOW_OUTPUT,
           "PortAudio Stereo Out / R",
           NULL);
-      stereo_in_l =
-        port_new_with_data (
-          INTERNAL_PA_PORT,
-          TYPE_AUDIO,
-          FLOW_INPUT,
-          "PortAudio Stereo In / L",
-          NULL);
-      stereo_in_r =
-        port_new_with_data (
-          INTERNAL_PA_PORT,
-          TYPE_AUDIO,
-          FLOW_INPUT,
-          "PortAudio Stereo In / R",
-          NULL);
 
-      self->stereo_in  =
-        stereo_ports_new_from_existing (stereo_in_l,
-                          stereo_in_r);
-      self->stereo_out =
-        stereo_ports_new_from_existing (stereo_out_l,
-                          stereo_out_r);
+      self->monitor_out =
+        stereo_ports_new_from_existing (
+          monitor_out_l,
+          monitor_out_r);
 
       self->pa_out_buf =
         calloc (self->block_length * 2,
@@ -128,20 +111,20 @@ pa_setup (
 }
 
 void
-engine_pa_fill_stereo_out_buffs (
-  AudioEngine * engine)
+engine_pa_fill_out_bufs (
+  AudioEngine * engine,
+  int           nframes)
 {
-  int nframes = engine->nframes;
   for (int i = 0; i < nframes; i++)
     {
       engine->pa_out_buf[i * 2] =
-        P_MASTER_TRACK->channel->
-          stereo_out->l->buf[i];
+        AUDIO_ENGINE->
+          monitor_out->l->buf[i];
       g_message ("%f",
                  engine->pa_out_buf[i]);
       engine->pa_out_buf[i * 2 + 1] =
-        P_MASTER_TRACK->channel->
-          stereo_out->r->buf[i];
+        AUDIO_ENGINE->
+          monitor_out->r->buf[i];
     }
 }
 

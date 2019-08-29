@@ -75,6 +75,15 @@ channel_widget_update_meter_reading (
   double prev = widget->meter_reading_val;
   Channel * channel = widget->channel;
 
+  /* TODO */
+  if (channel->track->out_signal_type ==
+        TYPE_EVENT)
+    {
+      gtk_label_set_text (
+        widget->meter_reading, "-∞");
+      return FALSE;
+    }
+
   /* calc decibels */
   channel_set_current_l_db (
     channel,

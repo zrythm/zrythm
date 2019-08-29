@@ -59,49 +59,36 @@ engine_dummy_setup (
     self->sample_rate);
 
   /* create ports */
-  Port * stereo_out_l, * stereo_out_r,
-       * stereo_in_l, * stereo_in_r;
+  Port * monitor_out_l, * monitor_out_r;
 
   if (loading)
     {
     }
   else
     {
-      stereo_out_l =
+      monitor_out_l =
         port_new_with_data (
           INTERNAL_PA_PORT,
           TYPE_AUDIO,
           FLOW_OUTPUT,
-          "Dummy Stereo Out / L",
+          "Dummy Monitor L",
           NULL);
-      stereo_out_r =
+      monitor_out_r =
         port_new_with_data (
           INTERNAL_PA_PORT,
           TYPE_AUDIO,
           FLOW_OUTPUT,
-          "Dummy Stereo Out / R",
-          NULL);
-      stereo_in_l =
-        port_new_with_data (
-          INTERNAL_PA_PORT,
-          TYPE_AUDIO,
-          FLOW_INPUT,
-          "Dummy Stereo In / L",
-          NULL);
-      stereo_in_r =
-        port_new_with_data (
-          INTERNAL_PA_PORT,
-          TYPE_AUDIO,
-          FLOW_INPUT,
-          "Dummy Stereo In / R",
+          "Dummy Monitor R",
           NULL);
 
-      self->stereo_in  =
-        stereo_ports_new_from_existing (stereo_in_l,
-                          stereo_in_r);
-      self->stereo_out =
-        stereo_ports_new_from_existing (stereo_out_l,
-                          stereo_out_r);
+      monitor_out_l->identifier.owner_type =
+        PORT_OWNER_TYPE_BACKEND;
+      monitor_out_r->identifier.owner_type =
+        PORT_OWNER_TYPE_BACKEND;
+
+      self->monitor_out =
+        stereo_ports_new_from_existing (
+          monitor_out_l, monitor_out_r);
     }
 
   g_thread_new ("process_cb",
@@ -124,12 +111,12 @@ engine_dummy_midi_setup (
     }
   else
     {
-      self->midi_in =
-        port_new_with_type (
-          TYPE_EVENT,
-          FLOW_INPUT,
-          "Dummy MIDI In");
-      self->midi_in->identifier.owner_type =
-        PORT_OWNER_TYPE_BACKEND;
+      /*self->midi_in =*/
+        /*port_new_with_type (*/
+          /*TYPE_EVENT,*/
+          /*FLOW_INPUT,*/
+          /*"Dummy MIDI In");*/
+      /*self->midi_in->identifier.owner_type =*/
+        /*PORT_OWNER_TYPE_BACKEND;*/
     }
 }

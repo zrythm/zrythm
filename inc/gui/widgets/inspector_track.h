@@ -32,21 +32,21 @@ G_DECLARE_FINAL_TYPE (InspectorTrackWidget,
 
 typedef struct TracklistSelections
   TracklistSelections;
-typedef struct _InstrumentTrackInfoExpanderWidget
-  InstrumentTrackInfoExpanderWidget;
+typedef struct _TrackPropertiesExpanderWidget
+  TrackPropertiesExpanderWidget;
 typedef struct _PortsExpanderWidget
   PortsExpanderWidget;
 
 typedef struct _InspectorTrackWidget
 {
   GtkBox             parent_instance;
-  InstrumentTrackInfoExpanderWidget *
+  TrackPropertiesExpanderWidget *
     instrument_track_info;
 
   PortsExpanderWidget * sends;
-  PortsExpanderWidget * stereo_in;
-  PortsExpanderWidget * midi_in;
-  PortsExpanderWidget * midi_out;
+  //PortsExpanderWidget * stereo_in;
+  //PortsExpanderWidget * midi_in;
+  //PortsExpanderWidget * midi_out;
 } InspectorTrackWidget;
 
 void

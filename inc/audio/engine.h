@@ -51,6 +51,7 @@ typedef struct Port Port;
 typedef struct Channel Channel;
 typedef struct Plugin Plugin;
 typedef struct Tracklist Tracklist;
+typedef struct ExtPort ExtPort;
 
 /**
  * @defgroup audio Audio
@@ -117,7 +118,8 @@ typedef struct AudioEngine
   long    cycle;
 
 #ifdef HAVE_JACK
-  jack_client_t     * client;     ///< jack client
+  /** JACK client. */
+  jack_client_t *     client;
 
   /**
    * Whether transport master/client or no
@@ -139,20 +141,49 @@ typedef struct AudioEngine
   Mixer              mixer;        ///< the mixer
 
   /**
-   * To be serialized instead of StereoPorts.
+   * Audio intefrace outputs (only 2 are used).
+   *
+   * These should be initialized at the start and
+   * only used at runtime for getting the buffers.
+   *
+   * They should eventually be stored in GSettings
+   * since they are user settings and not project
+   * related.
    */
+  ExtPort *           hw_stereo_outs[16];
+  int                 num_hw_stereo_outs;
 
-  /** stereo in ports from the backend. */
-  StereoPorts       * stereo_in;
+  /**
+   * Audio intefrace inputs (only 2 are used).
+   *
+   * These should be initialized at the start and
+   * only used at runtime for getting the buffers.
+   *
+   * They should eventually be stored in GSettings
+   * since they are user settings and not project
+   * related.
+   *
+   * They should only be used in audio tracks as
+   * default recording input.
+   */
+  ExtPort *           hw_stereo_ins[16];
+  int                 num_hw_stereo_ins;
 
-  /** stereo out ports to the backend. */
-  StereoPorts       * stereo_out;
+  /** MIDI Clock in TODO. */
+  Port *              midi_clock_in;
 
-  /** MIDI in port from the audio engine. */
-  Port              * midi_in;
+  /**
+   * Monitor fader.
+   *
+   * The Master stereo out should connect to this.
+   */
+  Fader               monitor_fader;
 
-  /** MIDI out port from the audio engine. */
-  Port              * midi_out;
+  /**
+   * Monitor - these should be the last ports in
+   * the signal chain.
+   */
+  StereoPorts *       monitor_out;
 
   /**
    * Flag to tell the UI that this channel had
@@ -164,7 +195,12 @@ typedef struct AudioEngine
    */
   int                  trigger_midi_activity;
 
-  /** Manual note prress in the piano roll. */
+  /**
+   * Manual note press in the piano roll.
+   *
+   * This should route to the post MIDI in of the
+   * applicable channel.
+   */
   Port              * midi_editor_manual_press;
 
   /** Number of frames/samples in the current
@@ -268,18 +304,18 @@ engine_fields_schema[] =
     "mixer", CYAML_FLAG_DEFAULT,
     AudioEngine, mixer,
     mixer_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
-    "stereo_in", CYAML_FLAG_POINTER,
-    AudioEngine, stereo_in,
-    stereo_ports_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
-    "stereo_out", CYAML_FLAG_POINTER,
-    AudioEngine, stereo_out,
-    stereo_ports_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
-    "midi_in", CYAML_FLAG_POINTER,
-    AudioEngine, midi_in,
-    port_fields_schema),
+	//CYAML_FIELD_MAPPING_PTR (
+    //"stereo_in", CYAML_FLAG_POINTER,
+    //AudioEngine, stereo_in,
+    //stereo_ports_fields_schema),
+	//CYAML_FIELD_MAPPING_PTR (
+    //"stereo_out", CYAML_FLAG_POINTER,
+    //AudioEngine, stereo_out,
+    //stereo_ports_fields_schema),
+	//CYAML_FIELD_MAPPING_PTR (
+    //"midi_in", CYAML_FLAG_POINTER,
+    //AudioEngine, midi_in,
+    //port_fields_schema),
 	CYAML_FIELD_MAPPING_PTR (
     "midi_editor_manual_press", CYAML_FLAG_POINTER,
     AudioEngine, midi_editor_manual_press,
@@ -350,6 +386,13 @@ engine_process (
  */
 void
 engine_post_process ();
+
+/**
+ * Called to fill in the external buffers at the end
+ * of the processing cycle.
+ */
+void
+engine_fill_out_bufs ();
 
 /**
  * Closes any connections and free's data.

@@ -20,7 +20,7 @@
 #include "gui/backend/events.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/inspector_track.h"
-#include "gui/widgets/instrument_track_info_expander.h"
+#include "gui/widgets/track_properties_expander.h"
 #include "gui/widgets/ports_expander.h"
 #include "project.h"
 #include "utils/resources.h"
@@ -44,18 +44,18 @@ inspector_track_widget_show_tracks (
     {
       track = tls->tracks[0];
 
-      instrument_track_info_expander_widget_setup (
+      track_properties_expander_widget_setup (
         self->instrument_track_info,
         track);
 
       gtk_widget_set_visible (
         GTK_WIDGET (self->sends), 0);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->stereo_in), 0);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->midi_in), 0);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->midi_out), 0);
+      /*gtk_widget_set_visible (*/
+        /*GTK_WIDGET (self->stereo_in), 0);*/
+      /*gtk_widget_set_visible (*/
+        /*GTK_WIDGET (self->midi_in), 0);*/
+      /*gtk_widget_set_visible (*/
+        /*GTK_WIDGET (self->midi_out), 0);*/
 
       if (track->channel)
         {
@@ -114,9 +114,6 @@ inspector_track_widget_class_init (
 
   BIND_CHILD (instrument_track_info);
   BIND_CHILD (sends);
-  BIND_CHILD (stereo_in);
-  BIND_CHILD (midi_in);
-  BIND_CHILD (midi_out);
 
 #undef BIND_CHILD
 }
@@ -126,7 +123,7 @@ inspector_track_widget_init (
   InspectorTrackWidget * self)
 {
   g_type_ensure (
-    INSTRUMENT_TRACK_INFO_EXPANDER_WIDGET_TYPE);
+    TRACK_PROPERTIES_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }

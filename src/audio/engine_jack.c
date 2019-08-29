@@ -24,6 +24,7 @@
 #include "audio/channel.h"
 #include "audio/engine.h"
 #include "audio/engine_jack.h"
+#include "audio/ext_port.h"
 #include "audio/midi.h"
 #include "audio/mixer.h"
 #include "audio/port.h"
@@ -40,15 +41,113 @@
 
 #include <jack/statistics.h>
 
+/**
+ * Adds a port to the array if it doesn't already
+ * exist.
+ */
+static void
+add_port_if_not_exists (
+  Port **       ports,
+  int *         num_ports,
+  jack_port_t * jport)
+{
+  int found = 0;
+  Port * port = NULL;
+  const char * jport_name =
+    jack_port_short_name (jport);
+  for (int i = 0; i < * num_ports; i++)
+    {
+      port = ports[i];
+
+      if (g_strstr_len (
+            port->identifier.label,
+            strlen (port->identifier.label),
+            jport_name))
+        {
+          found = 1;
+        }
+    }
+
+  if (found)
+    return;
+
+  PortType type;
+  PortFlow flow;
+
+  const char * jtype =
+    jack_port_type (jport);
+  if (g_strcmp0 (
+        jtype, JACK_DEFAULT_AUDIO_TYPE))
+    type = TYPE_EVENT;
+  else if (g_strcmp0 (
+        jtype, JACK_DEFAULT_MIDI_TYPE))
+    type = TYPE_AUDIO;
+  else
+    return;
+
+  int jflags = jack_port_flags (jport);
+  if (jflags & JackPortIsInput)
+    flow = FLOW_INPUT;
+  else if (jflags & JackPortIsOutput)
+    flow = FLOW_OUTPUT;
+  else
+    return;
+
+  port = port_new_with_data (
+    INTERNAL_JACK_PORT,
+    type,
+    flow,
+    jport_name,
+    (void *) jport);
+
+  ports[(*num_ports)++] = port;
+}
+
+/**
+ * Refreshes the list of external ports.
+ */
 void
-engine_jack_autoconnect_midi_controllers (
+engine_jack_rescan_ports (
   AudioEngine * self)
 {
-  /* get all output ports */
+  /* get all input ports */
   const char ** ports =
     jack_get_ports (
       self->client,
       NULL, NULL,
+      JackPortIsPhysical |
+      JackPortIsInput);
+
+  int i = 0;
+  char * pname;
+  jack_port_t * jport;
+  while ((pname = (char *) ports[i]) != NULL)
+    {
+      jport =
+        jack_port_by_name (
+          self->client,
+          pname);
+
+      /*add_port_if_not_exists (*/
+        /*self->physical_ins,*/
+        /*&self->num_physical_ins,*/
+        /*jport);*/
+
+      i++;
+    }
+
+  /* TODO clear unconnected remembered ports */
+}
+
+void
+engine_jack_autoconnect_midi_controllers (
+  AudioEngine * self)
+{
+  /* get all output MIDI ports */
+  const char ** ports =
+    jack_get_ports (
+      self->client,
+      NULL, JACK_DEFAULT_MIDI_TYPE,
       JackPortIsPhysical |
       JackPortIsOutput);
 
@@ -78,16 +177,16 @@ engine_jack_autoconnect_midi_controllers (
           if (g_str_match_string (
                 device, pname, 1))
             {
-              if (jack_connect (
-                    self->client,
-                    pname,
-                    jack_port_name (
-                      JACK_PORT_T (
-                        self->midi_in->data))))
-                g_warning (
-                  "Failed connecting %s to %s",
-                  pname,
-                  self->midi_in->identifier.label);
+              /*if (jack_connect (*/
+                    /*self->client,*/
+                    /*pname,*/
+                    /*jack_port_name (*/
+                      /*JACK_PORT_T (*/
+                        /*self->midi_in->data))))*/
+                /*g_warning (*/
+                  /*"Failed connecting %s to %s",*/
+                  /*pname,*/
+                  /*self->midi_in->identifier.label);*/
 
 
               break;
@@ -141,29 +240,14 @@ buffer_size_cb (uint32_t nframes,
  */
 void
 engine_jack_clear_output_buffers (
-  AudioEngine * self)
+  AudioEngine * self,
+  int           nframes)
 {
-  int nframes = AUDIO_ENGINE->nframes;
-  float * out_l =
-    (float *)
-    jack_port_get_buffer (
-      JACK_PORT_T (AUDIO_ENGINE->stereo_out->l->data),
-      nframes);
-  float * out_r =
-    (float *)
-    jack_port_get_buffer (
-      JACK_PORT_T (AUDIO_ENGINE->stereo_out->r->data),
-      nframes);
-
-  for (int i = 0; i < nframes; i++)
-    {
-      out_l[i] = 0;
-      out_r[i] = 0;
-    }
-
-  /* avoid unused warnings */
-  (void) out_l;
-  (void) out_r;
+  /*for (int i = 0; i < self->num_hw_stereo_outs; i++)*/
+    /*{*/
+      /*ext_port_clear_buffer (*/
+        /*self->hw_stereo_outs[i], nframes);*/
+    /*}*/
 }
 
 /**
@@ -213,6 +297,8 @@ engine_jack_prepare_process (
             TRANSPORT, pos.beat_type);
         }
     }
+
+  /* clear output */
 }
 
 /**
@@ -308,58 +394,58 @@ jack_midi_setup (
 
   if (loading)
     {
-      self->midi_in->data =
-        (void *) jack_port_register (
-          self->client, "MIDI_in",
-          JACK_DEFAULT_MIDI_TYPE,
-          JackPortIsInput, 0);
-      self->midi_out->data =
-        (void *) jack_port_register (
-          self->client, "MIDI_out",
-          JACK_DEFAULT_MIDI_TYPE,
-          JackPortIsOutput, 0);
+      /*self->midi_in->data =*/
+        /*(void *) jack_port_register (*/
+          /*self->client, "MIDI_in",*/
+          /*JACK_DEFAULT_MIDI_TYPE,*/
+          /*JackPortIsInput, 0);*/
+      /*self->midi_out->data =*/
+        /*(void *) jack_port_register (*/
+          /*self->client, "MIDI_out",*/
+          /*JACK_DEFAULT_MIDI_TYPE,*/
+          /*JackPortIsOutput, 0);*/
     }
   else
     {
-      self->midi_in =
-        port_new_with_data (
-          INTERNAL_JACK_PORT,
-          TYPE_EVENT,
-          FLOW_INPUT,
-          "JACK MIDI In",
-          (void *) jack_port_register (
-            self->client, "MIDI_in",
-            JACK_DEFAULT_MIDI_TYPE,
-            JackPortIsInput, 0));
-      self->midi_in->identifier.owner_type =
-        PORT_OWNER_TYPE_BACKEND;
-      self->midi_out =
-        port_new_with_data (
-          INTERNAL_JACK_PORT,
-          TYPE_EVENT,
-          FLOW_OUTPUT,
-          "JACK MIDI Out",
-          (void *) jack_port_register (
-            self->client, "MIDI_out",
-            JACK_DEFAULT_MIDI_TYPE,
-            JackPortIsOutput, 0));
-      self->midi_out->identifier.owner_type =
-        PORT_OWNER_TYPE_BACKEND;
+      /*self->midi_in =*/
+        /*port_new_with_data (*/
+          /*INTERNAL_JACK_PORT,*/
+          /*TYPE_EVENT,*/
+          /*FLOW_INPUT,*/
+          /*"JACK MIDI In",*/
+          /*(void *) jack_port_register (*/
+            /*self->client, "MIDI_in",*/
+            /*JACK_DEFAULT_MIDI_TYPE,*/
+            /*JackPortIsInput, 0));*/
+      /*self->midi_in->identifier.owner_type =*/
+        /*PORT_OWNER_TYPE_BACKEND;*/
+      /*self->midi_out =*/
+        /*port_new_with_data (*/
+          /*INTERNAL_JACK_PORT,*/
+          /*TYPE_EVENT,*/
+          /*FLOW_OUTPUT,*/
+          /*"JACK MIDI Out",*/
+          /*(void *) jack_port_register (*/
+            /*self->client, "MIDI_out",*/
+            /*JACK_DEFAULT_MIDI_TYPE,*/
+            /*JackPortIsOutput, 0));*/
+      /*self->midi_out->identifier.owner_type =*/
+        /*PORT_OWNER_TYPE_BACKEND;*/
     }
 
   /* init queue */
-  self->midi_in->midi_events =
-    midi_events_new (
-      self->midi_in);
-  self->midi_out->midi_events =
-    midi_events_new (
-      self->midi_out);
+  /*self->midi_in->midi_events =*/
+    /*midi_events_new (*/
+      /*self->midi_in);*/
+  /*self->midi_out->midi_events =*/
+    /*midi_events_new (*/
+      /*self->midi_out);*/
 
-  if (!self->midi_in->data ||
-      !self->midi_out->data)
-    {
-      g_warning ("no more JACK ports available");
-    }
+  /*if (!self->midi_in->data ||*/
+      /*!self->midi_out->data)*/
+    /*{*/
+      /*g_warning ("no more JACK ports available");*/
+    /*}*/
 
   /* autoconnect MIDI controllers */
   engine_jack_autoconnect_midi_controllers (
@@ -505,104 +591,71 @@ jack_setup (AudioEngine * self,
 #endif
 
   /* create ports */
-  Port * stereo_out_l, * stereo_out_r,
-       * stereo_in_l, * stereo_in_r;
+  Port * monitor_out_l, * monitor_out_r;
+
+  const char * monitor_out_l_str =
+    "Monitor out L";
+  const char * monitor_out_r_str =
+    "Monitor out R";
 
   if (loading)
     {
-      self->stereo_out->l->data =
+      self->monitor_out->l->data =
         (void *) jack_port_register (
-          self->client, "Stereo_out_L",
+          self->client, monitor_out_l_str,
           JACK_DEFAULT_AUDIO_TYPE,
           JackPortIsOutput, 0);
-      self->stereo_out->r->data =
+      self->monitor_out->r->data =
         (void *) jack_port_register (
-          self->client, "Stereo_out_R",
+          self->client, monitor_out_r_str,
           JACK_DEFAULT_AUDIO_TYPE,
           JackPortIsOutput, 0);
-      self->stereo_in->l->data =
-        (void *) jack_port_register (
-          self->client, "Stereo_in_L",
-          JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsInput, 0);
-      self->stereo_in->r->data =
-        (void *) jack_port_register (
-          self->client, "Stereo_in_R",
-          JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsInput, 0);
     }
   else
     {
-      stereo_out_l = port_new_with_data (
+      monitor_out_l = port_new_with_data (
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
         FLOW_OUTPUT,
-        "JACK Stereo Out / L",
+        monitor_out_l_str,
         (void *) jack_port_register (
-          self->client, "Stereo_out_L",
+          self->client, monitor_out_l_str,
           JACK_DEFAULT_AUDIO_TYPE,
           JackPortIsOutput, 0));
-      stereo_out_l->identifier.flags |=
-        PORT_FLAG_STEREO_L;
-      stereo_out_r = port_new_with_data (
+      monitor_out_r = port_new_with_data (
         INTERNAL_JACK_PORT,
         TYPE_AUDIO,
         FLOW_OUTPUT,
-        "JACK Stereo Out / R",
+        monitor_out_r_str,
         (void *) jack_port_register (
-          self->client, "Stereo_out_R",
+          self->client, monitor_out_r_str,
           JACK_DEFAULT_AUDIO_TYPE,
           JackPortIsOutput, 0));
-      stereo_out_r->identifier.flags |=
-        PORT_FLAG_STEREO_R;
-      stereo_in_l = port_new_with_data (
-        INTERNAL_JACK_PORT,
-        TYPE_AUDIO,
-        FLOW_INPUT,
-        "JACK Stereo In / L",
-        (void *) jack_port_register (
-          self->client, "Stereo_in_L",
-          JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsInput, 0));
-      stereo_in_l->identifier.flags |=
-        PORT_FLAG_STEREO_L;
-      stereo_in_r = port_new_with_data (
-        INTERNAL_JACK_PORT,
-        TYPE_AUDIO,
-        FLOW_INPUT,
-        "JACK Stereo In / R",
-        (void *) jack_port_register (
-          self->client, "Stereo_in_R",
-          JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsInput, 0));
-      stereo_in_r->identifier.flags |=
-        PORT_FLAG_STEREO_R;
 
-      stereo_in_l->identifier.owner_type =
+      monitor_out_l->identifier.owner_type =
         PORT_OWNER_TYPE_BACKEND;
-      stereo_in_r->identifier.owner_type =
-        PORT_OWNER_TYPE_BACKEND;
-      stereo_out_l->identifier.owner_type =
-        PORT_OWNER_TYPE_BACKEND;
-      stereo_out_r->identifier.owner_type =
+      monitor_out_r->identifier.owner_type =
         PORT_OWNER_TYPE_BACKEND;
 
-      self->stereo_in =
+      self->monitor_out =
         stereo_ports_new_from_existing (
-          stereo_in_l, stereo_in_r);
-      self->stereo_out =
-        stereo_ports_new_from_existing (
-          stereo_out_l, stereo_out_r);
+          monitor_out_l, monitor_out_r);
     }
 
-  if (!self->stereo_in->l->data ||
-      !self->stereo_in->r->data ||
-      !self->stereo_out->l->data ||
-      !self->stereo_out->r->data)
+  if (!self->monitor_out->l->data ||
+      !self->monitor_out->r->data)
     {
       g_error ("no more JACK ports available");
     }
 
+  /*engine_jack_rescan_ports (self);*/
+
+  /* get all input physical ports */
+  ext_ports_get (
+    TYPE_AUDIO,
+    FLOW_INPUT,
+    1, self->hw_stereo_outs,
+    &self->num_hw_stereo_outs);
 
   g_message ("JACK set up");
   return 0;
@@ -689,6 +742,34 @@ jack_tear_down ()
                 1);
 }
 
+/**
+ * Fills the external out bufs.
+ */
+void
+engine_jack_fill_out_bufs (
+  AudioEngine * self,
+  int           nframes)
+{
+  /*g_message ("filling out bufs");*/
+  /*g_message ("%p", self->hw_stereo_outs[0]);*/
+  /*float * l_buf =*/
+    /*ext_port_get_buffer (*/
+      /*self->hw_stereo_outs[0], nframes);*/
+  /*float * r_buf =*/
+    /*ext_port_get_buffer (*/
+      /*self->hw_stereo_outs[1], nframes);*/
+
+  /*for (int i = 0; i < nframes; i++)*/
+    /*{*/
+      /*if (i == 50)*/
+        /*g_message ("before lbuf %f", l_buf[i]);*/
+      /*l_buf[i] = self->monitor_out->l->buf[i];*/
+      /*if (i == 50)*/
+        /*g_message ("after lbuf %f", l_buf[i]);*/
+      /*r_buf[i] = self->monitor_out->r->buf[i];*/
+    /*}*/
+}
+
 int
 engine_jack_activate (
   AudioEngine * self)
@@ -710,9 +791,12 @@ engine_jack_activate (
    * it.
    */
 
+  /* FIXME this just connects to the first ports
+   * it finds. add a menu in the welcome screen to
+   * set up default output */
   const char **ports =
     jack_get_ports (
-      self->client, NULL, NULL,
+      self->client, NULL, JACK_DEFAULT_AUDIO_TYPE,
       JackPortIsPhysical|JackPortIsInput);
   if (ports == NULL) {
           g_error ("no physical playback ports\n");
@@ -723,14 +807,14 @@ engine_jack_activate (
         self->client,
         jack_port_name (
           JACK_PORT_T (
-            self->stereo_out->l->data)),
+            self->monitor_out->l->data)),
         ports[0]))
     g_error ("cannot connect output ports\n");
 
   if (jack_connect (
         self->client,
         jack_port_name (
-          JACK_PORT_T (self->stereo_out->r->data)),
+          JACK_PORT_T (self->monitor_out->r->data)),
         ports[1]))
     g_error ("cannot connect output ports\n");
 

@@ -108,12 +108,15 @@ init_audio (
 
   if (loading)
     {
-      stereo_ports_init_loaded (self->stereo_in);
-      stereo_ports_init_loaded (self->stereo_out);
+      /*stereo_ports_init_loaded (self->stereo_in);*/
+      stereo_ports_init_loaded (self->monitor_out);
     }
   else
     {
-
+      fader_init (
+        &self->monitor_fader,
+        FADER_TYPE_AUDIO_CHANNEL,
+        NULL);
     }
 }
 
@@ -235,6 +238,11 @@ engine_init (
       break;
     }
 
+  /* connect fader to monitor out */
+  stereo_ports_connect (
+    self->monitor_fader.stereo_out,
+    self->monitor_out, 1);
+
   /* init midi */
   init_midi (self, loading);
 
@@ -270,12 +278,9 @@ engine_init (
 
   /* connect the sample processor to the engine
    * output */
-  port_connect (
-    SAMPLE_PROCESSOR->stereo_out->l,
-    self->stereo_out->l, 1);
-  port_connect (
-    SAMPLE_PROCESSOR->stereo_out->r,
-    self->stereo_out->r, 1);
+  stereo_ports_connect (
+    SAMPLE_PROCESSOR->stereo_out,
+    self->monitor_out, 1);
 }
 
 void
@@ -362,13 +367,15 @@ audio_engine_close (AudioEngine * self)
  */
 static void
 clear_output_buffers (
-  AudioEngine * self)
+  AudioEngine * self,
+  int           nframes)
 {
   switch (self->audio_backend)
     {
     case AUDIO_BACKEND_JACK:
 #ifdef HAVE_JACK
-      engine_jack_clear_output_buffers (self);
+      engine_jack_clear_output_buffers (
+        self, nframes);
 #endif
       break;
     default:
@@ -440,9 +447,10 @@ engine_process_prepare (
     }
 
   /* reset all buffers */
-  port_clear_buffer (self->midi_in);
-  port_clear_buffer (self->midi_out);
+  fader_clear_buffers (&self->monitor_fader);
   port_clear_buffer (self->midi_editor_manual_press);
+  port_clear_buffer (self->monitor_out->l);
+  port_clear_buffer (self->monitor_out->r);
 
   sample_processor_prepare_process (
     &self->sample_processor, nframes);
@@ -506,22 +514,22 @@ receive_midi_events (
     {
 #ifdef HAVE_JACK
     case MIDI_BACKEND_JACK:
-      port_receive_midi_events_from_jack (
-        self->midi_in, 0, nframes);
+      /*port_receive_midi_events_from_jack (*/
+        /*self->midi_in, 0, nframes);*/
       break;
 #endif
 #ifdef __linux__
     case MIDI_BACKEND_ALSA:
-      engine_alsa_receive_midi_events (
-        self, print);
+      /*engine_alsa_receive_midi_events (*/
+        /*self, print);*/
       break;
 #endif
     default:
       break;
     }
 
-  if (self->midi_in->midi_events->num_events > 0)
-    self->trigger_midi_activity = 1;
+  /*if (self->midi_in->midi_events->num_events > 0)*/
+    /*self->trigger_midi_activity = 1;*/
 }
 
 /**
@@ -668,7 +676,7 @@ engine_process (
 {
   /* Clear output buffers just in case we have to
    * return early */
-  clear_output_buffers (self);
+  clear_output_buffers (self, _nframes);
 
   if (!g_atomic_int_get (&self->run))
     {
@@ -802,9 +810,17 @@ engine_process (
  * To be called after processing for common logic.
  */
 void
-engine_post_process (AudioEngine * self)
+engine_post_process (
+  AudioEngine * self)
 {
   zix_sem_post (&self->port_operation_lock);
+
+  if (!self->exporting)
+    {
+      /* fill in the external buffers */
+      engine_fill_out_bufs (
+        self, self->nframes);
+    }
 
   /* stop panicking */
   if (self->panic)
@@ -846,6 +862,39 @@ engine_post_process (AudioEngine * self)
   /*g_message ("last time %ld, max time %ld",*/
              /*AUDIO_ENGINE->last_time_taken,*/
              /*AUDIO_ENGINE->max_time_taken);*/
+}
+
+/**
+ * Called to fill in the external output buffers at
+ * the end of the processing cycle.
+ */
+void
+engine_fill_out_bufs (
+  AudioEngine * self,
+  int           nframes)
+{
+  switch (self->audio_backend)
+    {
+    case AUDIO_BACKEND_DUMMY:
+      break;
+    case AUDIO_BACKEND_ALSA:
+#ifdef __linux__
+      engine_alsa_fill_out_bufs (self, nframes);
+#endif
+      break;
+    case AUDIO_BACKEND_JACK:
+#ifdef HAVE_JACK
+      engine_jack_fill_out_bufs (self, nframes);
+#endif
+      break;
+    case AUDIO_BACKEND_PORT_AUDIO:
+#ifdef HAVE_PORT_AUDIO
+      engine_pa_fill_out_bufs (self, nframes);
+#endif
+      break;
+    default:
+      break;
+    }
 }
 
 /**
