@@ -355,6 +355,17 @@
       </description>
     </key>
 
+    <!-- KEY: monitor out volume -->
+    <key name="monitor-out-vol"
+         type="d">
+      <default>1.0</default>
+      <summary>Monitor out volume</summary>
+      <description>
+          The monitor out volume in amplitude (0.0
+          to 2.0).
+      </description>
+    </key>
+
   </schema>
 
 </schemalist>

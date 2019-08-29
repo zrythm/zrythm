@@ -18,12 +18,15 @@
  */
 
 #include "audio/channel.h"
+#include "audio/control_room.h"
 #include "audio/engine.h"
 #include "audio/fader.h"
 #include "audio/midi.h"
 #include "audio/track.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/math.h"
+#include "zrythm.h"
 
 #include <glib/gi18n.h>
 
@@ -156,6 +159,13 @@ fader_get_amp (void * _self)
   return self->amp;
 }
 
+float
+fader_get_fader_val (
+  void * self)
+{
+  return ((Fader *) self)->fader_val;
+}
+
 /**
  * Sets the fader levels from a normalized value
  * 0.0-1.0 (such as in widgets).
@@ -169,6 +179,12 @@ fader_set_fader_val (
   self->amp =
     math_get_amp_val_from_fader (fader_val);
   self->volume = math_amp_to_dbfs (self->amp);
+
+  if (self == MONITOR_FADER)
+    {
+      g_settings_set_double (
+        S_UI, "monitor-out-vol", self->amp);
+    }
 }
 
 /**

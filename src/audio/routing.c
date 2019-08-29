@@ -1419,7 +1419,7 @@ graph_new (
   /* add the monitor fader */
   graph_add_node ( \
     self, ROUTE_NODE_TYPE_MONITOR_FADER,
-    &AUDIO_ENGINE->monitor_fader);
+    MONITOR_FADER);
 
   /* add plugins */
   Track * tr;
@@ -1518,20 +1518,20 @@ graph_new (
   /* connect the monitor fader */
   node =
     find_node_from_monitor_fader (
-      self, &AUDIO_ENGINE->monitor_fader);
-  port = AUDIO_ENGINE->monitor_fader.stereo_in->l;
+      self, MONITOR_FADER);
+  port = MONITOR_FADER->stereo_in->l;
   node2 =
     find_node_from_port (self, port);
   node_connect (node2, node);
-  port = AUDIO_ENGINE->monitor_fader.stereo_in->r;
+  port = MONITOR_FADER->stereo_in->r;
   node2 =
     find_node_from_port (self, port);
   node_connect (node2, node);
-  port = AUDIO_ENGINE->monitor_fader.stereo_out->l;
+  port = MONITOR_FADER->stereo_out->l;
   node2 =
     find_node_from_port (self, port);
   node_connect (node, node2);
-  port = AUDIO_ENGINE->monitor_fader.stereo_out->r;
+  port = MONITOR_FADER->stereo_out->r;
   node2 =
     find_node_from_port (self, port);
   node_connect (node, node2);

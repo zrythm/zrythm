@@ -18,11 +18,13 @@
  */
 
 #include "audio/control_room.h"
+#include "audio/engine.h"
 #include "audio/fader.h"
 #include "gui/widgets/control_room.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/knob_with_name.h"
 #include "gui/widgets/slider_bar.h"
+#include "project.h"
 #include "utils/resources.h"
 
 #include <glib/gi18n.h>
@@ -43,13 +45,13 @@ control_room_widget_setup (
 
   KnobWidget * knob =
     knob_widget_new_simple (
-      fader_get_amp,
-      fader_set_amp,
-      &control_room->vol_fader,
-      0.f, 2.f, 48, 0.f);
+      fader_get_fader_val,
+      fader_set_fader_val,
+      MONITOR_FADER,
+      0.f, 1.f, 78, 0.f);
   self->volume =
     knob_with_name_widget_new (
-      _("Output"),
+      _("Monitor out"),
       knob);
   gtk_container_add (
     GTK_CONTAINER (self->main_knob_placeholder),

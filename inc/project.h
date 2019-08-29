@@ -30,7 +30,6 @@
 #define __PROJECT_H__
 
 #include "actions/undo_manager.h"
-#include "audio/control_room.h"
 #include "audio/engine.h"
 #include "audio/midi_note.h"
 #include "audio/port.h"
@@ -203,9 +202,6 @@ typedef struct Project
    * Used in inspector_widget_refresh.
    */
   SelectionType   last_selection;
-
-  /** The ControlRoom. */
-  ControlRoom       control_room;
 
   /** Zrythm version, for zerialization */
   char *            version;

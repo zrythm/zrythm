@@ -265,24 +265,24 @@ port_find_from_identifier (
         {
           if (id->flags & PORT_FLAG_STEREO_L)
             return
-              AUDIO_ENGINE->monitor_fader.
+              MONITOR_FADER->
                 stereo_out->l;
           else if (id->flags &
                      PORT_FLAG_STEREO_R)
             return
-              AUDIO_ENGINE->monitor_fader.
+              MONITOR_FADER->
                 stereo_out->r;
         }
       else if (id->flow == FLOW_INPUT)
         {
           if (id->flags & PORT_FLAG_STEREO_L)
             return
-              AUDIO_ENGINE->monitor_fader.
+              MONITOR_FADER->
                 stereo_in->l;
           else if (id->flags &
                      PORT_FLAG_STEREO_R)
             return
-              AUDIO_ENGINE->monitor_fader.
+              MONITOR_FADER->
                 stereo_in->r;
         }
     }
@@ -402,10 +402,10 @@ port_get_all (
     port)
 
   /* add fader ports */
-  _ADD (AUDIO_ENGINE->monitor_fader.stereo_in->l);
-  _ADD (AUDIO_ENGINE->monitor_fader.stereo_in->r);
-  _ADD (AUDIO_ENGINE->monitor_fader.stereo_out->l);
-  _ADD (AUDIO_ENGINE->monitor_fader.stereo_out->r);
+  _ADD (MONITOR_FADER->stereo_in->l);
+  _ADD (MONITOR_FADER->stereo_in->r);
+  _ADD (MONITOR_FADER->stereo_out->l);
+  _ADD (MONITOR_FADER->stereo_out->r);
 
   _ADD (AUDIO_ENGINE->monitor_out->l);
   _ADD (AUDIO_ENGINE->monitor_out->r);

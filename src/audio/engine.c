@@ -113,10 +113,7 @@ init_audio (
     }
   else
     {
-      fader_init (
-        &self->monitor_fader,
-        FADER_TYPE_AUDIO_CHANNEL,
-        NULL);
+      control_room_init (CONTROL_ROOM);
     }
 }
 
@@ -240,7 +237,7 @@ engine_init (
 
   /* connect fader to monitor out */
   stereo_ports_connect (
-    self->monitor_fader.stereo_out,
+    MONITOR_FADER->stereo_out,
     self->monitor_out, 1);
 
   /* init midi */
@@ -445,7 +442,7 @@ engine_process_prepare (
     }
 
   /* reset all buffers */
-  fader_clear_buffers (&self->monitor_fader);
+  fader_clear_buffers (MONITOR_FADER);
   port_clear_buffer (self->midi_editor_manual_press);
   port_clear_buffer (self->monitor_out->l);
   port_clear_buffer (self->monitor_out->r);

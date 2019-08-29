@@ -33,7 +33,8 @@
  * @{
  */
 
-#define CONTROL_ROOM (&PROJECT->control_room)
+#define CONTROL_ROOM (&AUDIO_ENGINE->control_room)
+#define MONITOR_FADER (&CONTROL_ROOM->monitor_fader)
 
 /**
  * The control room allows to specify how Listen will
@@ -47,9 +48,11 @@ typedef struct ControlRoom
   int        dim_output;
 
   /**
-   * Output volume.
+   * Monitor fader.
+   *
+   * The Master stereo out should connect to this.
    */
-  Fader      vol_fader;
+  Fader      monitor_fader;
 
   /**
    * The volume to set other channels to when Listen

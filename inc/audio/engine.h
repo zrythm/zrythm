@@ -27,6 +27,7 @@
 #define __AUDIO_ENGINE_H__
 
 #include "config.h"
+#include "audio/control_room.h"
 #include "audio/mixer.h"
 #include "audio/pan.h"
 #include "audio/sample_processor.h"
@@ -172,12 +173,8 @@ typedef struct AudioEngine
   /** MIDI Clock in TODO. */
   Port *              midi_clock_in;
 
-  /**
-   * Monitor fader.
-   *
-   * The Master stereo out should connect to this.
-   */
-  Fader               monitor_fader;
+  /** The ControlRoom. */
+  ControlRoom       control_room;
 
   /**
    * Monitor - these should be the last ports in

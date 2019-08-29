@@ -18,6 +18,8 @@
  */
 
 #include "audio/control_room.h"
+#include "settings/settings.h"
+#include "zrythm.h"
 
 /**
  * Inits the ControlRoom.
@@ -27,9 +29,17 @@ control_room_init (
   ControlRoom * self)
 {
   /* Init main fader */
-  fader_init (&self->vol_fader,
-              FADER_TYPE_GENERIC,
-              NULL);
+  fader_init (
+    &self->monitor_fader,
+    FADER_TYPE_AUDIO_CHANNEL,
+    NULL);
+
+  /* set the monitor volume */
+  float amp =
+    g_settings_get_double (
+      S_UI, "monitor-out-vol");
+  fader_set_amp (
+    &self->monitor_fader, amp);
 
   /* init listen vol fader */
   fader_init (&self->listen_vol_fader,

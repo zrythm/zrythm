@@ -78,8 +78,10 @@ live_waveform_draw_cb (
     {
       val =
         MAX (
-          AUDIO_ENGINE->monitor_out->l->buf[i],
-          AUDIO_ENGINE->monitor_out->r->buf[i]);
+          P_MASTER_TRACK->channel->stereo_out->
+            l->buf[i],
+          P_MASTER_TRACK->channel->stereo_out->
+            r->buf[i]);
 
       cairo_line_to (
         cr, width * ((double) i / nframes),

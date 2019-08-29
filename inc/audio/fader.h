@@ -181,6 +181,10 @@ float
 fader_get_amp (
   void * self);
 
+float
+fader_get_fader_val (
+  void * self);
+
 /**
  * Clears all buffers.
  */

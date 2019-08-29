@@ -33,3 +33,6 @@ Norwegian Bokmal
 
 Polish
   * WaldiS
+
+Portuguese:
+  * Silvério Santos

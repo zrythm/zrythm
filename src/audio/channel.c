@@ -1400,11 +1400,11 @@ channel_connect (
       ch->output_pos = -1;
       port_connect (
         ch->stereo_out->l,
-        AUDIO_ENGINE->monitor_fader.stereo_in->l,
+        MONITOR_FADER->stereo_in->l,
         1);
       port_connect (
         ch->stereo_out->r,
-        AUDIO_ENGINE->monitor_fader.stereo_in->r,
+        MONITOR_FADER->stereo_in->r,
         1);
     }
   else
