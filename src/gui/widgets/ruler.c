@@ -64,6 +64,11 @@ G_DEFINE_TYPE_WITH_PRIVATE (RulerWidget,
 #define Q_HEIGHT 12
 #define Q_WIDTH 7
 
+/**
+ * Minimum number of pixels between beat lines.
+ */
+#define PX_TO_HIDE_BEATS 40.0
+
 #define GET_PRIVATE RULER_WIDGET_GET_PRIVATE (self)
 
 /**
@@ -251,8 +256,44 @@ ruler_draw_cb (
   double curr_px;
   char * text;
   int textw, texth;
+
+  /* gather divisors of the number of beats per
+   * bar */
+#define beats_per_bar TRANSPORT->beats_per_bar
+  int divisors[16];
+  int num_divisors = 0;
+  for (i = 1; i <= beats_per_bar; i++)
+    {
+      if (beats_per_bar % i == 0)
+        divisors[num_divisors++] = i;
+    }
+
+  /* decide the raw interval to keep between beats */
+  int _beat_interval =
+    MAX (PX_TO_HIDE_BEATS /
+         rw_prv->px_per_beat, 1);
+
+  /* round the interval to the divisors */
+  int beat_interval = -1;
+  for (i = 0; i < num_divisors; i++)
+    {
+      if (_beat_interval <= divisors[i])
+        {
+          if (divisors[i] != beats_per_bar)
+            beat_interval = divisors[i];
+          break;
+        }
+    }
+
+  /* get the interval for bars */
+  int bar_interval =
+    MAX ((PX_TO_HIDE_BEATS) /
+         rw_prv->px_per_bar, 1);
+
+  i = 0;
+  /* draw bars */
   while ((curr_px =
-          rw_prv->px_per_bar * i++ +
+          rw_prv->px_per_bar * (i += bar_interval) +
           SPACE_BEFORE_START) <
          rect.x + rect.width)
     {
@@ -265,7 +306,7 @@ ruler_draw_cb (
       cairo_line_to (cr, curr_px, height / 3);
       cairo_stroke (cr);
       cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
-      text = g_strdup_printf ("%d", i);
+      text = g_strdup_printf ("%d", i + 1);
       pango_layout_set_markup (layout, text, -1);
       g_free (text);
       pango_layout_get_pixel_size (
@@ -276,20 +317,54 @@ ruler_draw_cb (
       pango_cairo_show_layout (cr, layout);
     }
   i = 0;
-  while ((curr_px =
-          rw_prv->px_per_beat * i++ +
-          SPACE_BEFORE_START) <
-         rect.x + rect.width)
+  /* draw beats */
+  desc =
+    pango_font_description_from_string (
+      "Monospace 6");
+  pango_layout_set_font_description (layout, desc);
+  pango_font_description_free (desc);
+  if (beat_interval > 0)
     {
-      if (curr_px < rect.x)
-        continue;
+      while ((curr_px =
+              rw_prv->px_per_beat *
+                (i += beat_interval) +
+              SPACE_BEFORE_START) <
+             rect.x + rect.width)
+        {
+          if (curr_px < rect.x)
+            continue;
 
-      cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
-      cairo_set_line_width (cr, 0.5);
-      cairo_move_to (cr, curr_px, 0);
-      cairo_line_to (cr, curr_px, height / 4);
-      cairo_stroke (cr);
-  }
+          cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
+          cairo_set_line_width (cr, 0.5);
+          cairo_move_to (cr, curr_px, 0);
+          cairo_line_to (cr, curr_px, height / 4);
+          cairo_stroke (cr);
+          if ((beat_interval > 1 ||
+               rw_prv->px_per_beat >
+                 PX_TO_HIDE_BEATS * 2) &&
+              i % beats_per_bar != 0)
+            {
+              cairo_set_source_rgb (
+                cr, 0.5, 0.5, 0.5);
+              text =
+                g_strdup_printf (
+                  "%d.%d",
+                  i / beats_per_bar + 1,
+                  i % beats_per_bar + 1);
+              pango_layout_set_markup (
+                layout, text, -1);
+              g_free (text);
+              pango_layout_get_pixel_size (
+                layout, &textw, &texth);
+              cairo_move_to (
+                cr, curr_px - textw / 2,
+                height / 4 + 2);
+              pango_cairo_update_layout (cr, layout);
+              pango_cairo_show_layout (cr, layout);
+            }
+        }
+    }
+  g_object_unref (layout);
 
  return FALSE;
 }

@@ -171,6 +171,9 @@ clip_editor_inner_widget_init (ClipEditorInnerWidget * self)
     self->left_of_ruler_size_group,
     GTK_WIDGET (self->left_of_ruler_box));
 
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->ruler_scroll), -1, 32);
+
   GdkRGBA * color = calloc (1, sizeof (GdkRGBA));
   gdk_rgba_parse (color, "gray");
   color_area_widget_set_color (

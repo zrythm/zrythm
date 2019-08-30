@@ -43,11 +43,20 @@ G_DEFINE_TYPE_WITH_PRIVATE (ArrangerBgWidget,
                             arranger_bg_widget,
                             GTK_TYPE_DRAWING_AREA)
 
+/**
+ * Minimum number of pixels between beat lines.
+ */
+#define PX_TO_HIDE_BEATS 30.0
+
 static gboolean
-arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+arranger_bg_draw_cb (
+  GtkWidget *widget,
+  cairo_t *cr,
+  ArrangerBgWidget * self)
 {
-  ArrangerBgWidget * self = (ArrangerBgWidget *) widget;
   ARRANGER_BG_WIDGET_GET_PRIVATE (self);
+
+  int i = 0;
 
   GdkRectangle rect;
   gdk_cairo_get_clip_rectangle (cr,
@@ -132,10 +141,44 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
     }
 
   /* handle vertical drawing */
-  int i = 0;
+
+  /* gather divisors of the number of beats per
+   * bar */
+#define beats_per_bar TRANSPORT->beats_per_bar
+  int divisors[16];
+  int num_divisors = 0;
+  for (i = 1; i <= beats_per_bar; i++)
+    {
+      if (beats_per_bar % i == 0)
+        divisors[num_divisors++] = i;
+    }
+
+  /* decide the raw interval to keep between beats */
+  int _beat_interval =
+    MAX (PX_TO_HIDE_BEATS /
+         rw_prv->px_per_beat, 1);
+
+  /* round the interval to the divisors */
+  int beat_interval = -1;
+  for (i = 0; i < num_divisors; i++)
+    {
+      if (_beat_interval <= divisors[i])
+        {
+          if (divisors[i] != beats_per_bar)
+            beat_interval = divisors[i];
+          break;
+        }
+    }
+
+  /* get the interval for bars */
+  int bar_interval =
+    MAX ((PX_TO_HIDE_BEATS) /
+         rw_prv->px_per_bar, 1);
+
+  i = 0;
   double curr_px;
   while ((curr_px =
-          rw_prv->px_per_bar * i++ +
+          rw_prv->px_per_bar * (i += bar_interval) +
           SPACE_BEFORE_START) <
          rect.x + rect.width)
     {
@@ -150,20 +193,26 @@ arranger_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
       cairo_stroke (cr);
     }
   i = 0;
-  while ((curr_px =
-          rw_prv->px_per_beat * i++ +
-          SPACE_BEFORE_START) <
-         rect.x + rect.width)
+  if (beat_interval > 0)
     {
-      if (curr_px < rect.x)
-        continue;
+      while ((curr_px =
+              rw_prv->px_per_beat *
+                (i += beat_interval) +
+              SPACE_BEFORE_START) <
+             rect.x + rect.width)
+        {
+          if (curr_px < rect.x)
+            continue;
 
-      cairo_set_source_rgb (cr, 0.25, 0.25, 0.25);
-      cairo_set_line_width (cr, 0.5);
-      cairo_move_to (cr, curr_px, rect.y);
-      cairo_line_to (cr,
-                     curr_px, rect.y + rect.height);
-      cairo_stroke (cr);
+          cairo_set_source_rgb (
+            cr, 0.25, 0.25, 0.25);
+          cairo_set_line_width (cr, 0.5);
+          cairo_move_to (cr, curr_px, rect.y);
+          cairo_line_to (
+            cr,
+            curr_px, rect.y + rect.height);
+          cairo_stroke (cr);
+        }
     }
 
   /* draw selections */
@@ -367,7 +416,7 @@ arranger_bg_widget_init (ArrangerBgWidget *self )
 
   g_signal_connect (
     G_OBJECT (self), "draw",
-    G_CALLBACK (arranger_bg_draw_cb), NULL);
+    G_CALLBACK (arranger_bg_draw_cb), self);
   g_signal_connect (
     G_OBJECT(ab_prv->drag), "drag-begin",
     G_CALLBACK (drag_begin),  self);
