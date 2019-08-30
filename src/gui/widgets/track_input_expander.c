@@ -32,6 +32,64 @@ G_DEFINE_TYPE (TrackInputExpanderWidget,
                track_input_expander_widget,
                TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
+static void
+on_midi_channels_changed (
+  GtkComboBox * widget,
+  TrackInputExpanderWidget * self)
+{
+  const char * id =
+    gtk_combo_box_get_active_id (widget);
+
+  if (!id)
+    return;
+
+  Channel * ch = self->track->channel;
+  if (string_is_equal (id, "all", 1))
+    {
+      g_message ("all selected");
+      if (ch->all_midi_channels)
+        return;
+      ch->all_midi_channels = 1;
+    }
+  else if (string_is_equal (id, "none", 1))
+    {
+      g_message ("none selected");
+      ch->all_midi_channels = 0;
+      for (int i = 0; i < 16; i++)
+        {
+          ch->midi_channels[i] = 0;
+        }
+    }
+  else
+    {
+      g_message ("%s selected", id);
+      ch->all_midi_channels = 0;
+
+      /* clear */
+      for (int i = 0; i < 16; i++)
+        {
+          ch->midi_channels[i] = 0;
+        }
+
+      char * str;
+      for (int i = 0; i < 16; i++)
+        {
+          str =
+            g_strdup_printf (
+              "%d", i + 1);
+          if (string_is_equal (
+                str, id, 1))
+            {
+              ch->midi_channels[i] = 1;
+              g_free (str);
+              break;
+            }
+          g_free (str);
+        }
+    }
+
+  channel_reconnect_ext_input_ports (ch);
+}
 
 static void
 on_midi_input_changed (
@@ -187,6 +245,78 @@ setup_midi_ins_cb (
     "z-audio-midi");
 }
 
+static void
+setup_midi_channels_cb (
+  TrackInputExpanderWidget * self)
+{
+  GtkComboBox * cb = self->midi_channels;
+
+  gtk_combo_box_text_remove_all (
+    GTK_COMBO_BOX_TEXT (cb));
+
+  gtk_combo_box_text_append (
+    GTK_COMBO_BOX_TEXT (cb),
+    "all", _("All Channels"));
+  gtk_combo_box_text_append (
+    GTK_COMBO_BOX_TEXT (cb),
+    "separator", "separator");
+
+  char * id, * lbl;
+  for (int i = 0; i < 16; i++)
+    {
+      id = g_strdup_printf ("%d", i + 1);
+      lbl = g_strdup_printf (_("Channel %s"), id);
+
+      gtk_combo_box_text_append (
+        GTK_COMBO_BOX_TEXT (cb),
+        id, lbl);
+
+      g_free (id);
+      g_free (lbl);
+    }
+
+  gtk_combo_box_text_append (
+    GTK_COMBO_BOX_TEXT (cb),
+    "separator", "separator");
+  gtk_combo_box_text_append (
+    GTK_COMBO_BOX_TEXT (cb),
+    "none", _("No channel"));
+
+  gtk_widget_set_visible (
+    GTK_WIDGET (cb), 1);
+
+  GValue a = G_VALUE_INIT;
+  g_value_init (&a, G_TYPE_STRING);
+
+  /* select the correct value */
+  Channel * ch = self->track->channel;
+  if (ch->all_midi_channels)
+    g_value_set_string (&a, "all");
+  else
+    {
+      int found = 0;
+      for (int i = 0; i < 16; i++)
+        {
+          if (ch->midi_channels[i])
+            {
+              id = g_strdup_printf ("%d", i + 1);
+              g_value_set_string (
+                &a, id);
+              g_free (id);
+              found = 1;
+              break;
+            }
+        }
+      if (!found)
+        g_value_set_string (
+          &a, "none");
+    }
+  g_object_set_property (
+    G_OBJECT (cb),
+    "active-id",
+    &a);
+}
+
 
 /**
  * Refreshes each field.
@@ -205,14 +335,14 @@ track_input_expander_widget_refresh (
     track->type == TRACK_TYPE_INSTRUMENT ||
     track->type == TRACK_TYPE_AUDIO);
 
-  if (track->type == TRACK_TYPE_MIDI)
+  if (track->type == TRACK_TYPE_MIDI ||
+      track->type == TRACK_TYPE_INSTRUMENT)
     {
       /* refresh model and select appropriate
        * input */
       setup_midi_ins_cb (self);
-    }
-  else if (track->type == TRACK_TYPE_INSTRUMENT)
-    {
+      setup_midi_channels_cb (self);
+
       expander_box_widget_set_icon_name (
         Z_EXPANDER_BOX_WIDGET (self),
         "z-audio-midi");
@@ -259,6 +389,20 @@ track_input_expander_widget_init (
   g_signal_connect (
     self->midi_input, "changed",
     G_CALLBACK (on_midi_input_changed), self);
+
+  self->midi_channels =
+    GTK_COMBO_BOX (gtk_combo_box_text_new ());
+  two_col_expander_box_widget_add_single (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    GTK_WIDGET (self->midi_channels));
+  gtk_combo_box_set_row_separator_func (
+    self->midi_channels,
+    (GtkTreeViewRowSeparatorFunc)
+      row_separator_func,
+    self, NULL);
+  g_signal_connect (
+    self->midi_channels, "changed",
+    G_CALLBACK (on_midi_channels_changed), self);
 
   /* set name and icon */
   expander_box_widget_set_label (

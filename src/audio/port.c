@@ -1059,10 +1059,29 @@ port_receive_midi_events_from_jack (
       if (jack_ev.time >= start_frame &&
           jack_ev.time < start_frame + nframes)
         {
-          midi_events_add_event_from_buf (
-            self->midi_events,
-            jack_ev.time, jack_ev.buffer,
-            jack_ev.size);
+          uint8_t channel = jack_ev.buffer[0] & 0xf;
+          g_message ("channel %d", channel);
+          if (self->identifier.owner_type ==
+                PORT_OWNER_TYPE_TRACK &&
+              (self->track->type ==
+                 TRACK_TYPE_MIDI ||
+               self->track->type ==
+                 TRACK_TYPE_INSTRUMENT) &&
+              !self->track->channel->
+                all_midi_channels &&
+              channel >= 0 &&
+              !self->track->channel->
+                midi_channels[channel])
+            {
+              /* different channel */
+            }
+          else
+            {
+              midi_events_add_event_from_buf (
+                self->midi_events,
+                jack_ev.time, jack_ev.buffer,
+                jack_ev.size);
+            }
         }
     }
 
