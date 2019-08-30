@@ -626,7 +626,7 @@ port_send_data_to_jack (
  */
 char *
 port_get_full_designation (
-  Port * self);
+  const Port * self);
 
 /**
  * Gathers all ports in the project and puts them
@@ -696,6 +696,20 @@ void
 port_set_expose_to_backend (
   Port * self,
   int    expose);
+
+/**
+ * Returns if the port is exposed to the backend.
+ */
+int
+port_is_exposed_to_backend (
+  const Port * self);
+
+/**
+ * Renames the port on the backend side.
+ */
+void
+port_rename_backend (
+  const Port * self);
 
 #ifdef HAVE_JACK
 /**

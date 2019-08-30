@@ -1030,6 +1030,48 @@ port_set_expose_to_backend (
     g_return_if_reached ();
 }
 
+/**
+ * Returns if the port is exposed to the backend.
+ */
+int
+port_is_exposed_to_backend (
+  const Port * self)
+{
+  return
+    self->internal_type == INTERNAL_JACK_PORT ||
+    self->internal_type == INTERNAL_ALSA_SEQ_PORT;
+}
+
+/**
+ * Renames the port on the backend side.
+ */
+void
+port_rename_backend (
+  const Port * self)
+{
+  if ((!port_is_exposed_to_backend (self)))
+    return;
+
+  char * str;
+  switch (self->internal_type)
+    {
+    case INTERNAL_JACK_PORT:
+#ifdef HAVE_JACK
+      str = port_get_full_designation (self);
+      jack_port_rename (
+        AUDIO_ENGINE->client,
+        (jack_port_t *) self->data,
+        str);
+      g_free (str);
+#endif
+      break;
+    case INTERNAL_ALSA_SEQ_PORT:
+      break;
+    default:
+      break;
+    }
+}
+
 #ifdef HAVE_JACK
 
 void
@@ -1372,7 +1414,7 @@ port_set_expose_to_alsa (
  */
 char *
 port_get_full_designation (
-  Port * self)
+  const Port * self)
 {
   PortIdentifier * id = &self->identifier;
 

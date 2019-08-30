@@ -1118,6 +1118,26 @@ track_set_name (
       track->name =
         g_strdup (name);
 
+      if (track->channel)
+        {
+          /* update external ports */
+          Port * ports[10000];
+          int    num_ports = 0;
+          channel_append_all_ports (
+            track->channel, ports, &num_ports, 1);
+          Port * port;
+          for (int i = 0; i < num_ports; i++)
+            {
+              port = ports[i];
+
+              if (port_is_exposed_to_backend (
+                    port))
+                {
+                  port_rename_backend (port);
+                }
+            }
+        }
+
       EVENTS_PUSH (ET_TRACK_NAME_CHANGED,
                    track);
     }
