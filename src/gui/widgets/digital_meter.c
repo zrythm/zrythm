@@ -370,22 +370,93 @@ draw_cb (
  return FALSE;
 }
 
-void
-digital_meter_set_draw_line (
+/**
+ * Updates the flags to know what to update when
+ * scrolling/dragging.
+ */
+static void
+update_flags (
   DigitalMeterWidget * self,
-  int                  draw_line)
+  double               x,
+  double               y)
 {
-  self->draw_line = draw_line;
-  gtk_widget_queue_draw (GTK_WIDGET (self));
+  int width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self));
+  switch (self->type)
+    {
+    case DIGITAL_METER_TYPE_BPM:
+      if (y >= self->height_start_pos &&
+          y <= self->height_end_pos)
+        {
+          if (x >= self->num_part_start_pos &&
+              x <= self->num_part_end_pos)
+            {
+              self->update_num = 1;
+            }
+          else if (x >= self->dec_part_start_pos &&
+                   x <= self->dec_part_end_pos)
+            {
+              self->update_dec = 1;
+            }
+        }
+      break;
+
+    case DIGITAL_METER_TYPE_POSITION:
+      if (y >= self->height_start_pos &&
+          y <= self->height_end_pos)
+        {
+
+          if (x >= self->bars_start_pos &&
+              x <= self->bars_end_pos)
+            {
+              self->update_bars = 1;
+            }
+          else if (x >= self->beats_start_pos &&
+                   x <= self->beats_end_pos)
+            {
+              self->update_beats = 1;
+            }
+          else if (x >= self->sixteenths_start_pos &&
+                   x <= self->sixteenths_end_pos)
+            {
+              self->update_sixteenths = 1;
+            }
+          else if (x >= self->ticks_start_pos &&
+                   x <= self->ticks_end_pos)
+            {
+              self->update_ticks = 1;
+            }
+        }
+
+      break;
+    case DIGITAL_METER_TYPE_NOTE_LENGTH:
+      self->update_note_length = 1;
+      break;
+    case DIGITAL_METER_TYPE_NOTE_TYPE:
+      self->update_note_type = 1;
+      break;
+    case DIGITAL_METER_TYPE_TIMESIG:
+      if (x <= width / 2)
+        {
+          self->update_timesig_top = 1;
+        }
+      else
+        {
+          self->update_timesig_bot = 1;
+        }
+      break;
+    }
 }
 
+/**
+ * To be called when a change has started (eg
+ * drag or scroll).
+ */
 static void
-drag_start (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+on_change_started (
+  DigitalMeterWidget * self)
 {
-  DigitalMeterWidget * self = (DigitalMeterWidget *) user_data;
   switch (self->type)
     {
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
@@ -409,6 +480,197 @@ drag_start (GtkGestureDrag * gesture,
     default:
       break;
     }
+}
+
+/**
+ * To be called when a change has completed (eg
+ * drag or scroll).
+ */
+static void
+on_change_finished (
+  DigitalMeterWidget * self)
+{
+  self->last_y = 0;
+  self->update_num = 0;
+  self->update_dec = 0;
+  self->update_bars = 0;
+  self->update_beats = 0;
+  self->update_sixteenths = 0;
+  self->update_ticks = 0;
+  /* FIXME super reduntant */
+  if (self->update_note_length ||
+      self->update_note_type)
+    {
+      snap_grid_update_snap_points (
+        &PROJECT->snap_grid_timeline);
+      snap_grid_update_snap_points (
+        &PROJECT->snap_grid_midi);
+      quantize_options_update_quantize_points (
+        QUANTIZE_OPTIONS_TIMELINE);
+      quantize_options_update_quantize_points (
+        QUANTIZE_OPTIONS_EDITOR);
+    }
+  self->update_note_length = 0;
+  self->update_note_type = 0;
+  self->update_timesig_top = 0;
+  self->update_timesig_bot = 0;
+
+  switch (self->type)
+    {
+    case DIGITAL_METER_TYPE_POSITION:
+      if (self->on_drag_end)
+        ((*self->on_drag_end) (self->obj));
+      break;
+    default:
+      break;
+    }
+}
+
+void
+digital_meter_set_draw_line (
+  DigitalMeterWidget * self,
+  int                  draw_line)
+{
+  self->draw_line = draw_line;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
+static int
+on_scroll (
+  GtkWidget *          widget,
+  GdkEventScroll *     event,
+  DigitalMeterWidget * self)
+{
+  int num =
+    event->direction == GDK_SCROLL_UP ? 1 : -1;
+  Position pos;
+
+  update_flags (self, event->x, event->y);
+  on_change_started (self);
+
+  switch (self->type)
+    {
+    case DIGITAL_METER_TYPE_BPM:
+      /*g_message ("update num ? %d", self->update_num);*/
+      if (self->update_num)
+        {
+          transport_set_bpm (
+            TRANSPORT, TRANSPORT->bpm + num);
+        }
+      else if (self->update_dec)
+        {
+          transport_set_bpm (
+            TRANSPORT,
+            TRANSPORT->bpm + num / 100.f);
+        }
+
+      break;
+
+    case DIGITAL_METER_TYPE_POSITION:
+      GET_POS;
+      if (self->update_bars)
+        {
+          position_set_bar (
+            &pos, pos.bars + num);
+        }
+      else if (self->update_beats)
+        {
+          position_set_beat (
+            &pos,
+            pos.beats + num);
+        }
+      else if (self->update_sixteenths)
+        {
+          position_set_sixteenth (
+            &pos,
+            pos.sixteenths + num);
+        }
+      else if (self->update_ticks)
+        {
+          position_set_tick (
+            &pos,
+            pos.ticks + num);
+        }
+      SET_POS;
+
+      break;
+    case DIGITAL_METER_TYPE_NOTE_LENGTH:
+      if (self->update_note_length)
+        {
+          num += self->start_note_length;
+          if (num < 0)
+            *self->note_length = 0;
+          else
+            *self->note_length =
+              num > NOTE_LENGTH_1_128 ?
+              NOTE_LENGTH_1_128 : num;
+        }
+      break;
+    case DIGITAL_METER_TYPE_NOTE_TYPE:
+      if (self->update_note_type)
+        {
+          num += self->start_note_type;
+          if (num < 0)
+            *self->note_type = 0;
+          else
+            *self->note_type =
+              num > NOTE_TYPE_TRIPLET ?
+              NOTE_TYPE_TRIPLET : num;
+        }
+      break;
+    case DIGITAL_METER_TYPE_TIMESIG:
+      if (self->update_timesig_top)
+        {
+          num += self->start_timesig_top;
+          if (num < 1)
+            {
+              TRANSPORT->beats_per_bar = 1;
+            }
+          else
+            {
+              TRANSPORT->beats_per_bar =
+                num > 16 ?
+                16 : num;
+            }
+        }
+      else if (self->update_timesig_bot)
+        {
+          num += self->start_timesig_bot;
+          if (num < 0)
+            {
+              transport_set_ebeat_unit (
+                TRANSPORT, BEAT_UNIT_2);
+            }
+          else
+            {
+              transport_set_ebeat_unit (
+                TRANSPORT,
+                num > BEAT_UNIT_16 ?
+                BEAT_UNIT_16 : num);
+            }
+        }
+      if (self->update_timesig_top ||
+          self->update_timesig_bot)
+        {
+          EVENTS_PUSH (
+            ET_TIME_SIGNATURE_CHANGED,
+            NULL);
+        }
+    }
+  on_change_finished (self);
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+
+  return FALSE;
+}
+
+static void
+drag_begin (
+  GtkGestureDrag * gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  DigitalMeterWidget * self)
+{
+  on_change_started (self);
 }
 
 static void
@@ -570,122 +832,23 @@ drag_update (GtkGestureDrag * gesture,
 }
 
 static void
-drag_end (GtkGestureDrag *gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_end (
+  GtkGestureDrag *gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  DigitalMeterWidget * self)
 {
-  DigitalMeterWidget * self = (DigitalMeterWidget *) user_data;
-  self->last_y = 0;
-  self->update_num = 0;
-  self->update_dec = 0;
-  self->update_bars = 0;
-  self->update_beats = 0;
-  self->update_sixteenths = 0;
-  self->update_ticks = 0;
-  /* FIXME super reduntant */
-  if (self->update_note_length ||
-      self->update_note_type)
-    {
-      snap_grid_update_snap_points (
-        &PROJECT->snap_grid_timeline);
-      snap_grid_update_snap_points (
-        &PROJECT->snap_grid_midi);
-      quantize_options_update_quantize_points (
-        QUANTIZE_OPTIONS_TIMELINE);
-      quantize_options_update_quantize_points (
-        QUANTIZE_OPTIONS_EDITOR);
-    }
-  self->update_note_length = 0;
-  self->update_note_type = 0;
-  self->update_timesig_top = 0;
-  self->update_timesig_bot = 0;
-
-  switch (self->type)
-    {
-    case DIGITAL_METER_TYPE_POSITION:
-      if (self->on_drag_end)
-        ((*self->on_drag_end) (self->obj));
-      break;
-    default:
-      break;
-    }
+  on_change_finished (self);
 }
 
 static gboolean
-button_press_cb (GtkWidget      * event_box,
-                 GdkEventButton * event,
-                 gpointer       data)
+button_press_cb (
+  GtkWidget      * event_box,
+  GdkEventButton * event,
+  DigitalMeterWidget * self)
 {
-  DigitalMeterWidget * self = (DigitalMeterWidget *) data;
   /*g_message ("%d, %d", self->height_start_pos, self->height_end_pos);*/
-  int width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  switch (self->type)
-    {
-    case DIGITAL_METER_TYPE_BPM:
-      if (event->y >= self->height_start_pos &&
-          event->y <= self->height_end_pos)
-        {
-
-          if (event->x >= self->num_part_start_pos &&
-              event->x <= self->num_part_end_pos)
-            {
-              self->update_num = 1;
-            }
-          else if (event->x >= self->dec_part_start_pos &&
-                   event->x <= self->dec_part_end_pos)
-            {
-              self->update_dec = 1;
-            }
-        }
-      break;
-
-    case DIGITAL_METER_TYPE_POSITION:
-      if (event->y >= self->height_start_pos &&
-          event->y <= self->height_end_pos)
-        {
-
-          if (event->x >= self->bars_start_pos &&
-              event->x <= self->bars_end_pos)
-            {
-              self->update_bars = 1;
-            }
-          else if (event->x >= self->beats_start_pos &&
-                   event->x <= self->beats_end_pos)
-            {
-              self->update_beats = 1;
-            }
-          else if (event->x >= self->sixteenths_start_pos &&
-                   event->x <= self->sixteenths_end_pos)
-            {
-              self->update_sixteenths = 1;
-            }
-          else if (event->x >= self->ticks_start_pos &&
-                   event->x <= self->ticks_end_pos)
-            {
-              self->update_ticks = 1;
-            }
-        }
-
-      break;
-    case DIGITAL_METER_TYPE_NOTE_LENGTH:
-      self->update_note_length = 1;
-      break;
-    case DIGITAL_METER_TYPE_NOTE_TYPE:
-      self->update_note_type = 1;
-      break;
-    case DIGITAL_METER_TYPE_TIMESIG:
-      if (event->x <= width / 2)
-        {
-          self->update_timesig_top = 1;
-        }
-      else
-        {
-          self->update_timesig_bot = 1;
-        }
-      break;
-    }
+  update_flags (self, event->x, event->y);
   return 0;
 }
 
@@ -834,14 +997,22 @@ static void
 digital_meter_widget_init (DigitalMeterWidget * self)
 {
   /* make it able to notify */
-  gtk_widget_set_has_window (GTK_WIDGET (self), TRUE);
+  gtk_widget_set_has_window (
+    GTK_WIDGET (self), TRUE);
+  gtk_widget_add_events (
+    GTK_WIDGET (self),
+    GDK_SCROLL_MASK);
+
   self->drag =
     GTK_GESTURE_DRAG (
       gtk_gesture_drag_new (GTK_WIDGET (self)));
 
   g_signal_connect (
+    G_OBJECT(self), "scroll-event",
+    G_CALLBACK (on_scroll),  self);
+  g_signal_connect (
     G_OBJECT(self->drag), "drag-begin",
-    G_CALLBACK (drag_start),  self);
+    G_CALLBACK (drag_begin),  self);
   g_signal_connect (
     G_OBJECT(self->drag), "drag-update",
     G_CALLBACK (drag_update),  self);
