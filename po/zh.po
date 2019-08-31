@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-08-29 22:45+0100\n"
+"POT-Creation-Date: 2019-08-31 02:54+0100\n"
 "PO-Revision-Date: 2019-08-07 21:24+0000\n"
 "Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -104,6 +104,7 @@ msgstr ""
 
 #: src/plugins/lv2_gtk.c:153 src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:44
 #: src/utils/dialogs.c:74 src/actions/actions.c:553
+#: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
@@ -174,15 +175,28 @@ msgstr ""
 msgid "Inserts"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:126
+#: src/gui/widgets/track_input_expander.c:184
 msgid "All MIDI Inputs"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:161
+#: src/gui/widgets/track_input_expander.c:219
 msgid "No inputs"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:266
+#: src/gui/widgets/track_input_expander.c:259
+msgid "All Channels"
+msgstr ""
+
+#: src/gui/widgets/track_input_expander.c:268
+#, c-format
+msgid "Channel %s"
+msgstr ""
+
+#: src/gui/widgets/track_input_expander.c:283
+msgid "No channel"
+msgstr ""
+
+#: src/gui/widgets/track_input_expander.c:410
 msgid "Inputs"
 msgstr ""
 
@@ -285,6 +299,11 @@ msgstr ""
 msgid "time sig."
 msgstr ""
 
+#: src/gui/widgets/export_midi_file_dialog.c:83
+#, c-format
+msgid "Exporting MIDI region \"%s\""
+msgstr ""
+
 #: src/gui/widgets/port_selector_popover.c:52
 msgid "No port selected"
 msgstr ""
@@ -330,16 +349,16 @@ msgstr ""
 msgid "triplet"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:707
+#: src/gui/widgets/digital_meter.c:870
 msgid "Tempo/BPM"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:722 resources/ui/inspector_master.ui:79
+#: src/gui/widgets/digital_meter.c:885 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:751
+#: src/gui/widgets/digital_meter.c:914
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr ""
 
@@ -389,15 +408,15 @@ msgstr ""
 msgid "Freeze track"
 msgstr ""
 
-#: src/gui/widgets/control_room.c:52
-msgid "Output"
-msgstr "输出"
+#: src/gui/widgets/control_room.c:54
+msgid "Monitor out"
+msgstr ""
 
-#: src/gui/widgets/control_room.c:64
+#: src/gui/widgets/control_room.c:66
 msgid "Listen dim level"
 msgstr ""
 
-#: src/gui/widgets/control_room.c:67
+#: src/gui/widgets/control_room.c:69
 msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
 
@@ -586,7 +605,7 @@ msgstr ""
 msgid "chord"
 msgstr ""
 
-#: src/gui/widgets/live_waveform.c:129
+#: src/gui/widgets/live_waveform.c:131
 msgid "Live waveform indicator"
 msgstr ""
 
@@ -945,19 +964,19 @@ msgstr ""
 msgid "Unimplemented"
 msgstr ""
 
-#: src/audio/fader.c:63
+#: src/audio/fader.c:66
 msgid "Fader in"
 msgstr ""
 
-#: src/audio/fader.c:72
+#: src/audio/fader.c:75
 msgid "Fader out"
 msgstr ""
 
-#: src/audio/fader.c:84
+#: src/audio/fader.c:87
 msgid "MIDI fader in"
 msgstr ""
 
-#: src/audio/fader.c:97
+#: src/audio/fader.c:100
 msgid "MIDI fader out"
 msgstr ""
 
@@ -1832,6 +1851,46 @@ msgstr ""
 msgid "Lane 1"
 msgstr ""
 
+#: resources/ui/export_midi_file_dialog.ui:36
+msgid "Select MIDI file"
+msgstr ""
+
+#: resources/ui/export_midi_file_dialog.ui:69
+msgid "_Export"
+msgstr ""
+
+#: resources/ui/export_midi_file_dialog.ui:104
+msgid "Region content"
+msgstr ""
+
+#: resources/ui/export_midi_file_dialog.ui:116
+msgid ""
+"Select \"Base region\" to save the original region (without loops/clip-start "
+"points), or \"Full region\" to save the whole region as Zrythm would play it "
+"(traversing loops)."
+msgstr ""
+
+#: resources/ui/export_midi_file_dialog.ui:120
+msgid "Base region"
+msgstr ""
+
+#: resources/ui/export_midi_file_dialog.ui:121
+msgid "Full region"
+msgstr ""
+
+#: resources/ui/export_midi_file_dialog.ui:145
+#: resources/ui/export_midi_file_dialog.ui:157
+msgid "MIDI format"
+msgstr ""
+
+#: resources/ui/export_midi_file_dialog.ui:161
+msgid "Format 0"
+msgstr ""
+
+#: resources/ui/export_midi_file_dialog.ui:162
+msgid "Format 1"
+msgstr ""
+
 #: resources/ui/modulator_view.ui:53 resources/ui/clip_editor_inner.ui:53
 msgid "Track name"
 msgstr ""
@@ -2144,3 +2203,6 @@ msgstr ""
 #, fuzzy
 msgid "zrythm"
 msgstr "Zrythm"
+
+#~ msgid "Output"
+#~ msgstr "输出"

@@ -78,6 +78,7 @@ inc/gui/widgets/tracklist_header.h
 inc/gui/widgets/bot_bar.h
 inc/gui/widgets/transport_controls.h
 inc/gui/widgets/route_target_selector_popover.h
+inc/gui/widgets/export_midi_file_dialog.h
 inc/gui/widgets/midi_controller_mb.h
 inc/gui/widgets/track_properties_expander.h
 inc/gui/widgets/rack_row.h
@@ -385,6 +386,7 @@ src/gui/widgets/clip_editor.c
 src/gui/widgets/snap_grid_popover.c
 src/gui/widgets/visibility.c
 src/gui/widgets/piano_roll_key.c
+src/gui/widgets/export_midi_file_dialog.c
 src/gui/widgets/scale_object.c
 src/gui/widgets/center_dock.c
 src/gui/widgets/port_selector_popover.c
@@ -660,6 +662,7 @@ resources/ui/automation_editor_space.ui
 resources/ui/route_target_selector.ui
 resources/ui/inspector_master.ui
 resources/ui/track_lane.ui
+resources/ui/export_midi_file_dialog.ui
 resources/ui/modulator_view.ui
 resources/ui/port_selector_popover.ui
 resources/ui/audio_editor_space.ui

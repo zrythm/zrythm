@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-08-29 22:45+0100\n"
+"POT-Creation-Date: 2019-08-31 02:54+0100\n"
 "PO-Revision-Date: 2019-08-26 13:09+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -107,6 +107,7 @@ msgstr "状態を保存"
 
 #: src/plugins/lv2_gtk.c:153 src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:44
 #: src/utils/dialogs.c:74 src/actions/actions.c:553
+#: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
@@ -177,16 +178,29 @@ msgstr "トラック情報"
 msgid "Inserts"
 msgstr "インサート"
 
-#: src/gui/widgets/track_input_expander.c:126
+#: src/gui/widgets/track_input_expander.c:184
 #, fuzzy
 msgid "All MIDI Inputs"
 msgstr "MIDI入力"
 
-#: src/gui/widgets/track_input_expander.c:161
+#: src/gui/widgets/track_input_expander.c:219
 msgid "No inputs"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:266
+#: src/gui/widgets/track_input_expander.c:259
+msgid "All Channels"
+msgstr ""
+
+#: src/gui/widgets/track_input_expander.c:268
+#, fuzzy, c-format
+msgid "Channel %s"
+msgstr "パンを変更"
+
+#: src/gui/widgets/track_input_expander.c:283
+msgid "No channel"
+msgstr ""
+
+#: src/gui/widgets/track_input_expander.c:410
 msgid "Inputs"
 msgstr ""
 
@@ -295,6 +309,11 @@ msgstr "JACKタイムベースマスター"
 msgid "time sig."
 msgstr "拍子記号"
 
+#: src/gui/widgets/export_midi_file_dialog.c:83
+#, c-format
+msgid "Exporting MIDI region \"%s\""
+msgstr ""
+
 #: src/gui/widgets/port_selector_popover.c:52
 msgid "No port selected"
 msgstr "ポートが選択されていません"
@@ -340,16 +359,16 @@ msgstr "付点音符"
 msgid "triplet"
 msgstr "３連音符"
 
-#: src/gui/widgets/digital_meter.c:707
+#: src/gui/widgets/digital_meter.c:870
 msgid "Tempo/BPM"
 msgstr "テンポ/BPM"
 
-#: src/gui/widgets/digital_meter.c:722 resources/ui/inspector_master.ui:79
+#: src/gui/widgets/digital_meter.c:885 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr "位置"
 
-#: src/gui/widgets/digital_meter.c:751
+#: src/gui/widgets/digital_meter.c:914
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "拍子 - 小節あたりの拍数/拍単位"
 
@@ -398,15 +417,16 @@ msgstr "トラックを編集不可にする"
 msgid "Freeze track"
 msgstr "トラックをフリーズ"
 
-#: src/gui/widgets/control_room.c:52
-msgid "Output"
-msgstr "出力先"
+#: src/gui/widgets/control_room.c:54
+#, fuzzy
+msgid "Monitor out"
+msgstr "ズームアウト"
 
-#: src/gui/widgets/control_room.c:64
+#: src/gui/widgets/control_room.c:66
 msgid "Listen dim level"
 msgstr "Listenの薄暗いレベル"
 
-#: src/gui/widgets/control_room.c:67
+#: src/gui/widgets/control_room.c:69
 msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
 "あるチャンネルでListenが有効になっているときに他のチャンネルに設定するレベル"
@@ -600,7 +620,7 @@ msgstr "音階"
 msgid "chord"
 msgstr "和音"
 
-#: src/gui/widgets/live_waveform.c:129
+#: src/gui/widgets/live_waveform.c:131
 msgid "Live waveform indicator"
 msgstr "生波形表示"
 
@@ -967,19 +987,19 @@ msgstr "グループ"
 msgid "Unimplemented"
 msgstr ""
 
-#: src/audio/fader.c:63
+#: src/audio/fader.c:66
 msgid "Fader in"
 msgstr "フェーダー入力"
 
-#: src/audio/fader.c:72
+#: src/audio/fader.c:75
 msgid "Fader out"
 msgstr "フェーダー出力"
 
-#: src/audio/fader.c:84
+#: src/audio/fader.c:87
 msgid "MIDI fader in"
 msgstr "MIDIフェーダー入力"
 
-#: src/audio/fader.c:97
+#: src/audio/fader.c:100
 msgid "MIDI fader out"
 msgstr "MIDIフェーダー出力"
 
@@ -1863,6 +1883,53 @@ msgstr "ミュート"
 msgid "Lane 1"
 msgstr "レーン１"
 
+#: resources/ui/export_midi_file_dialog.ui:36
+#, fuzzy
+msgid "Select MIDI file"
+msgstr "フォルダ選択"
+
+#: resources/ui/export_midi_file_dialog.ui:69
+#, fuzzy
+msgid "_Export"
+msgstr "エクスポート"
+
+#: resources/ui/export_midi_file_dialog.ui:104
+#, fuzzy
+msgid "Region content"
+msgstr "リージョン"
+
+#: resources/ui/export_midi_file_dialog.ui:116
+msgid ""
+"Select \"Base region\" to save the original region (without loops/clip-start "
+"points), or \"Full region\" to save the whole region as Zrythm would play it "
+"(traversing loops)."
+msgstr ""
+
+#: resources/ui/export_midi_file_dialog.ui:120
+msgid "Base region"
+msgstr ""
+
+#: resources/ui/export_midi_file_dialog.ui:121
+#, fuzzy
+msgid "Full region"
+msgstr "全画面表示"
+
+#: resources/ui/export_midi_file_dialog.ui:145
+#: resources/ui/export_midi_file_dialog.ui:157
+#, fuzzy
+msgid "MIDI format"
+msgstr "MIDI出力"
+
+#: resources/ui/export_midi_file_dialog.ui:161
+#, fuzzy
+msgid "Format 0"
+msgstr "フォーマット"
+
+#: resources/ui/export_midi_file_dialog.ui:162
+#, fuzzy
+msgid "Format 1"
+msgstr "フォーマット"
+
 #: resources/ui/modulator_view.ui:53 resources/ui/clip_editor_inner.ui:53
 msgid "Track name"
 msgstr "トラック名"
@@ -2177,6 +2244,9 @@ msgstr "高度に自動化された直感的なデジタルオーディオワー
 msgid "zrythm"
 msgstr "zrythm"
 
+#~ msgid "Output"
+#~ msgstr "出力先"
+
 #~ msgid "Pre-Fader Sends"
 #~ msgstr "プレフェーダー送信"
 
@@ -2191,9 +2261,6 @@ msgstr "zrythm"
 
 #~ msgid "MIDI in"
 #~ msgstr "MIDI入力"
-
-#~ msgid "MIDI out"
-#~ msgstr "MIDI出力"
 
 #~ msgid "Choose a method to donate"
 #~ msgstr "使用する支払い方法を選択する"
