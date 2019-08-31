@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-28 18:26+0000\n"
+"PO-Revision-Date: 2019-09-01 12:44+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/pt/>\n"
@@ -52,7 +52,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:33
 msgid "Time Signature"
-msgstr ""
+msgstr "Assinatura de tempo"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:35
 msgid "The Time Signature is split into the following"
@@ -150,7 +150,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:30
 msgid "Position"
-msgstr ""
+msgstr "Posição"
 
 #: ../../playback-and-recording/overview.rst:32
 msgid "Zrythm uses the following format for positions:"
@@ -184,7 +184,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:24
 msgid "Record"
-msgstr ""
+msgstr "Registro"
 
 #: ../../playback-and-recording/transport-controls.rst:25
 msgid "Arms the project for recording."
