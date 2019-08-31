@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-31 02:54+0100\n"
-"PO-Revision-Date: 2019-08-31 01:52+0000\n"
+"PO-Revision-Date: 2019-09-01 12:44+0000\n"
 "Last-Translator: Waui <wau-wau@tutanota.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -62,6 +62,8 @@ msgstr ""
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
 msgstr ""
+"Zrythm ist abgestürzt. Hilf uns bitte, das zu beheben und %sreiche eine "
+"Fehlermeldung ein%s."
 
 #: src/main.c:167
 #, c-format
@@ -80,6 +82,19 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "Website https://www.zrythm.org\n"
 msgstr ""
+"Benutzung: zrythm [ OPTIONEN] [ PROJEKTNAME ]\n"
+"\n"
+"Optionen:\n"
+"  -h, --help      zeige die Hilfe an und schließe\n"
+"  -v, --version   gib Versionsinformationen aus und schließe\n"
+"\n"
+"Beispiele:\n"
+"  zrythm          führe normal aus\n"
+"\n"
+"Schreibe Kommentare und Fehler an https://savannah.nongnu.org/support/?group="
+"zrythm\n"
+"Unterstütze dieses Projekt auf https://liberapay.com/Zrythm\n"
+"Webseite https://www.zrythm.org\n"
 
 #: src/main.c:225
 #, c-format
@@ -97,6 +112,19 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
+"Zrythm-%s Copyright (C) 2018-2019 Alexandros Teodotou\n"
+"\n"
+"Zrythm kommt mit ABSOLUT KEINER GARANTIE!\n"
+"\n"
+"Das ist freie Software, und du bist willkommen, sie unter bestimmten "
+"Bedingungen\n"
+"weiterzuverteilen. Siehe für Details in die Datei `COPYING' in dieser "
+"Distribution.\n"
+"\n"
+"Schreibe Kommentare und Fehler an https://savannah.nongnu.org/support/?group="
+"zrythm\n"
+"Unterstütze dieses Projekt auf https://liberapay.com/Zrythm\n"
+"\n"
 
 #: src/plugins/lv2_gtk.c:150
 msgid "Save State"
@@ -165,7 +193,7 @@ msgstr "Notenlänge"
 
 #: src/gui/widgets/quantize_dialog.c:121
 msgid "note type"
-msgstr ""
+msgstr "Notentyp"
 
 #: src/gui/widgets/track_properties_expander.c:82
 msgid "Track Info"
@@ -176,30 +204,29 @@ msgid "Inserts"
 msgstr "Inserts"
 
 #: src/gui/widgets/track_input_expander.c:184
-#, fuzzy
 msgid "All MIDI Inputs"
-msgstr "MIDI-Eingänge"
+msgstr "Alle MIDI-Eingänge"
 
 #: src/gui/widgets/track_input_expander.c:219
 msgid "No inputs"
-msgstr ""
+msgstr "Keine Eingänge"
 
 #: src/gui/widgets/track_input_expander.c:259
 msgid "All Channels"
-msgstr ""
+msgstr "Alle Kanäle"
 
 #: src/gui/widgets/track_input_expander.c:268
 #, c-format
 msgid "Channel %s"
-msgstr ""
+msgstr "Kanal %s"
 
 #: src/gui/widgets/track_input_expander.c:283
 msgid "No channel"
-msgstr ""
+msgstr "Kein Kanal"
 
 #: src/gui/widgets/track_input_expander.c:410
 msgid "Inputs"
-msgstr ""
+msgstr "Eingänge"
 
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
@@ -273,11 +300,11 @@ msgstr "Abspielkopf"
 
 #: src/gui/widgets/top_bar.c:45
 msgid "Playhead [Jack Timebase Master]"
-msgstr ""
+msgstr "Abspielkopf [Jack Timebase Master]"
 
 #: src/gui/widgets/top_bar.c:47
 msgid "Playhead [Jack Client]"
-msgstr ""
+msgstr "Abspielkopf [Jack Client]"
 
 #: src/gui/widgets/top_bar.c:127
 msgid "Become JACK Transport master"
@@ -310,7 +337,7 @@ msgstr "Taktangabe"
 #: src/gui/widgets/export_midi_file_dialog.c:83
 #, c-format
 msgid "Exporting MIDI region \"%s\""
-msgstr ""
+msgstr "MIDI-Region \"%s\" wird exportiert"
 
 #: src/gui/widgets/port_selector_popover.c:52
 msgid "No port selected"
@@ -435,7 +462,7 @@ msgstr ""
 #: src/gui/widgets/channel_slot.c:230 src/gui/widgets/channel_slot.c:245
 #: src/gui/widgets/channel_slot.c:692
 msgid "empty slot"
-msgstr ""
+msgstr "Leerer Slot"
 
 #: src/gui/widgets/channel_slot.c:621
 msgid ""
@@ -666,9 +693,8 @@ msgid "Sends"
 msgstr "Backends"
 
 #: src/gui/widgets/ports_expander.c:397
-#, fuzzy
 msgid "Stereo In"
-msgstr "Stereo Out"
+msgstr "Stereo-Eingang"
 
 #: src/gui/widgets/ports_expander.c:404
 msgid "MIDI In"
@@ -727,9 +753,8 @@ msgid "Toggle Right Panel"
 msgstr "Rechtes Panel ein-/ausschalten"
 
 #: src/gui/widgets/view_toolbar.c:44
-#, fuzzy
 msgid "Toggle Status Bar"
-msgstr "Unteres Panel ein-/ausschalten"
+msgstr "Statusleiste ein-/ausschalten"
 
 #: src/gui/widgets/view_toolbar.c:45
 #, fuzzy
@@ -1393,11 +1418,11 @@ msgstr "MIDI-Geräte"
 
 #: resources/ui/right_dock_edge.ui:49
 msgid "Control Room"
-msgstr ""
+msgstr "Kontrollraum"
 
 #: resources/ui/scale_selector_window.ui:51
 msgid "Root Key"
-msgstr ""
+msgstr "Grundton"
 
 #: resources/ui/scale_selector_window.ui:80
 #: resources/ui/chord_selector_window.ui:78
@@ -1840,7 +1865,7 @@ msgstr "Scanne erneut nach MIDI-Controllern"
 #: resources/ui/midi_editor_space.ui:144 resources/ui/chord_editor_space.ui:152
 #: resources/ui/automation_editor_space.ui:114
 msgid "Velocity"
-msgstr ""
+msgstr "Anschlagstärke"
 
 #: resources/ui/midi_editor_space.ui:145 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
@@ -1893,26 +1918,23 @@ msgstr "Länge"
 #: resources/ui/inspector_master.ui:113 resources/ui/inspector_ap.ui:113
 #: resources/ui/inspector_midi.ui:113
 msgid "Muted"
-msgstr ""
+msgstr "Stumm"
 
 #: resources/ui/track_lane.ui:35
 msgid "Lane 1"
 msgstr "Unterspur 1"
 
 #: resources/ui/export_midi_file_dialog.ui:36
-#, fuzzy
 msgid "Select MIDI file"
-msgstr "Wähle einen Ordner"
+msgstr "Wähle eine MIDI-Datei"
 
 #: resources/ui/export_midi_file_dialog.ui:69
-#, fuzzy
 msgid "_Export"
-msgstr "Exportieren"
+msgstr "_Exportieren"
 
 #: resources/ui/export_midi_file_dialog.ui:104
-#, fuzzy
 msgid "Region content"
-msgstr "Region"
+msgstr "Regionsinhalt"
 
 #: resources/ui/export_midi_file_dialog.ui:116
 msgid ""
@@ -1926,25 +1948,21 @@ msgid "Base region"
 msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:121
-#, fuzzy
 msgid "Full region"
-msgstr "Vollbild"
+msgstr "Ganze Region"
 
 #: resources/ui/export_midi_file_dialog.ui:145
 #: resources/ui/export_midi_file_dialog.ui:157
-#, fuzzy
 msgid "MIDI format"
-msgstr "MIDI-Ausgang"
+msgstr "MIDI-Format"
 
 #: resources/ui/export_midi_file_dialog.ui:161
-#, fuzzy
 msgid "Format 0"
-msgstr "Format"
+msgstr "Format 0"
 
 #: resources/ui/export_midi_file_dialog.ui:162
-#, fuzzy
 msgid "Format 1"
-msgstr "Format"
+msgstr "Format 1"
 
 #: resources/ui/modulator_view.ui:53 resources/ui/clip_editor_inner.ui:53
 msgid "Track name"
@@ -2056,7 +2074,7 @@ msgstr ""
 
 #: resources/ui/quantize_dialog.ui:183
 msgid "Amount"
-msgstr ""
+msgstr "Menge"
 
 #: resources/ui/quantize_dialog.ui:223
 msgid "Swing"
@@ -2163,9 +2181,8 @@ msgstr ""
 "ignorieren."
 
 #: resources/ui/clip_editor.ui:30
-#, fuzzy
 msgid "No clip selected"
-msgstr "Kein Objekt ausgewählt"
+msgstr "Kein Clip ausgewählt"
 
 #: resources/ui/quantize_box.ui:61
 msgid "Full Quantize..."
@@ -2217,7 +2234,7 @@ msgstr "MIDI-Controller"
 
 #: resources/ui/preferences.ui:189
 msgid "Pan Algorithm"
-msgstr ""
+msgstr "Pan-Algorithmus"
 
 #: resources/ui/preferences.ui:200
 msgid "Pan Law"
@@ -2257,11 +2274,11 @@ msgstr "Oberfläche"
 
 #: data/zrythm.desktop.in:21
 msgid "Digital Audio Workstation"
-msgstr ""
+msgstr "Digital Audio Workstation"
 
 #: data/zrythm.desktop.in:23
 msgid "An highly automated, intuitive, Digital Audio Workstation (DAW)"
-msgstr ""
+msgstr "Eine hochautomatisierte, intuitive Digital Audio Workstation (DAW)"
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:26
