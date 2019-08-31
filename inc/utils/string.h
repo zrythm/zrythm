@@ -59,6 +59,16 @@ string_is_equal (
   int          ignore_case);
 
 /**
+ * Returns a newly allocated string that is a
+ * filename version of the given string.
+ *
+ * Example: "MIDI Region #1" -> "MIDI_Region_1".
+ */
+char *
+string_convert_to_filename (
+  const char * str);
+
+/**
  * @}
  */
 

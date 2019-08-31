@@ -310,6 +310,27 @@ midi_events_panic (
   g_message ("posted panic");
 }
 
+static int
+sort_events_func (const void *a, const void *b)
+{
+  MidiEvent * aa = (MidiEvent *) a;
+  MidiEvent * bb = (MidiEvent *) b;
+  return aa->time > bb->time;
+}
+
+/**
+ * Sorts the MIDI events by time ascendingly.
+ */
+void
+midi_events_sort_by_time (
+  MidiEvents * self)
+{
+  qsort (self->events,
+         self->num_events,
+         sizeof (MidiEvent),
+         sort_events_func);
+}
+
 #ifdef HAVE_JACK
 /**
  * Writes the events to the given JACK buffer.
@@ -404,4 +425,14 @@ midi_panic_all (
         midi_events_panic (
           ch->piano_roll->midi_events, queued);
     }
+}
+
+/**
+ * Frees the MIDI events.
+ */
+void
+midi_events_free (
+  MidiEvents * self)
+{
+  free (self);
 }

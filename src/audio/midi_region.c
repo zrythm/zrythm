@@ -18,6 +18,7 @@
  */
 
 #include "audio/channel.h"
+#include "audio/midi.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/region.h"
@@ -35,6 +36,8 @@
 #include "utils/arrays.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
+
+#include "ext/midilib/src/midifile.h"
 
 MidiRegion *
 midi_region_new (
@@ -237,6 +240,109 @@ midi_region_remove_midi_note (
 
   if (pub_event)
     EVENTS_PUSH (ET_MIDI_NOTE_REMOVED, NULL);
+}
+
+/**
+ * Exports the Region to a specified MIDI file.
+ *
+ * @param full_path Absolute path to the MIDI file.
+ * @param export_full Traverse loops and export the
+ *   MIDI file as it would be played inside Zrythm.
+ *   If this is 0, only the original region (from
+ *   true start to true end) is exported.
+ */
+void
+midi_region_export_to_midi_file (
+  const Region * self,
+  const char *   full_path,
+  const int      export_full)
+{
+  MIDI_FILE *mf;
+
+  int i;
+	if ((mf = midiFileCreate(full_path, TRUE)))
+		{
+      /* Write tempo information out to track 1 */
+      midiSongAddTempo(mf, 1, TRANSPORT->bpm);
+
+      /* All data is written out to _tracks_ not
+       * channels. We therefore
+      ** set the current channel before writing
+      data out. Channel assignments
+      ** can change any number of times during the
+      file, and affect all
+      ** tracks messages until it is changed. */
+      midiFileSetTracksDefaultChannel (
+        mf, 1, MIDI_CHANNEL_1);
+
+      midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
+
+      midiFileSetVersion (mf, 0);
+
+      /* common time: 4 crochet beats, per bar */
+      midiSongAddSimpleTimeSig (
+        mf, 1, TRANSPORT->beats_per_bar,
+        TRANSPORT->ticks_per_beat);
+
+      MidiEvents * events =
+        midi_region_get_as_events (
+          self, export_full);
+      MidiEvent * ev;
+      for (i = 0; i < events->num_events; i++)
+        {
+          ev = &events->events[i];
+
+          BYTE tmp[] =
+            { ev->raw_buffer[0],
+              ev->raw_buffer[1],
+            ev->raw_buffer[2] };
+          midiTrackAddRaw (
+            mf, 1, 3, tmp, 1,
+            i == 0 ?
+              ev->time :
+              ev->time - events->events[i - 1].time);
+        }
+      midi_events_free (events);
+
+      midiFileClose(mf);
+    }
+}
+
+/**
+ * Returns a newly initialized MidiEvents with
+ * the contents of the region converted into
+ * events.
+ *
+ * Must be free'd with midi_events_free ()
+ * @param export_full Traverse loops and export the
+ *   MIDI file as it would be played inside Zrythm.
+ *   If this is 0, only the original region (from
+ *   true start to true end) is exported.
+ */
+MidiEvents *
+midi_region_get_as_events (
+  const Region * self,
+  const int      full)
+{
+  MidiEvents * events =
+    midi_events_new (NULL);
+
+  MidiNote * mn;
+  for (int i = 0; i < self->num_midi_notes; i++)
+    {
+      mn = self->midi_notes[i];
+      midi_events_add_note_on (
+        events, 1, mn->val, mn->vel->vel,
+        position_to_ticks (&mn->start_pos), 0);
+      midi_events_add_note_off (
+        events, 1, mn->val,
+        position_to_ticks (&mn->end_pos), 0);
+    }
+
+  midi_events_sort_by_time (
+    events);
+
+  return events;
 }
 
 /**

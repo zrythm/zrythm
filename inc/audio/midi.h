@@ -178,6 +178,13 @@ midi_event_copy (
 }
 
 /**
+ * Sorts the MIDI events by time ascendingly.
+ */
+void
+midi_events_sort_by_time (
+  MidiEvents * self);
+
+/**
  * Appends the events from src to dest
  *
  * @param queued Append queued events instead of
@@ -414,6 +421,13 @@ midi_events_copy_to_jack (
   MidiEvents * self,
   void *       buff);
 #endif
+
+/**
+ * Frees the MIDI events.
+ */
+void
+midi_events_free (
+  MidiEvents * self);
 
 /**
  * Queues MIDI note off to event queues.

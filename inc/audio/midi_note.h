@@ -294,6 +294,13 @@ midi_note_notes_to_events (
   MidiEvents * events);
 
 /**
+ * Returns the MidiNote length in ticks.
+ */
+int
+midi_note_get_length_in_ticks (
+  const MidiNote * self);
+
+/**
  * Sets the pitch of the MidiNote.
  */
 void

@@ -315,6 +315,18 @@ midi_note_update_frames (
 }
 
 /**
+ * Returns the MidiNote length in ticks.
+ */
+int
+midi_note_get_length_in_ticks (
+  const MidiNote * self)
+{
+  return
+    position_to_ticks (&self->end_pos) -
+    position_to_ticks (&self->start_pos);
+}
+
+/**
  * Returns if the MIDI note is hit at given pos (in
  * the timeline).
  */

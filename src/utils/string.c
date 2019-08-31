@@ -94,3 +94,40 @@ string_is_equal (
       return !g_strcmp0 (str1, str2);
     }
 }
+
+/**
+ * Returns a newly allocated string that is a
+ * filename version of the given string.
+ *
+ * Example: "MIDI Region #1" -> "MIDI_Region_1".
+ */
+char *
+string_convert_to_filename (
+  const char * str)
+{
+  /* convert illegal characters to '_' */
+  char * new_str = g_strdup (str);
+  for (int i = 0; i < strlen (str); i++)
+    {
+      if (str[i] == '#' ||
+          str[i] == '%' ||
+          str[i] == '&' ||
+          str[i] == '{' ||
+          str[i] == '}' ||
+          str[i] == '\\' ||
+          str[i] == '<' ||
+          str[i] == '>' ||
+          str[i] == '*' ||
+          str[i] == '?' ||
+          str[i] == '/' ||
+          str[i] == ' ' ||
+          str[i] == '$' ||
+          str[i] == '!' ||
+          str[i] == '\'' ||
+          str[i] == '"' ||
+          str[i] == ':' ||
+          str[i] == '@')
+        new_str[i] = '_';
+    }
+  return new_str;
+}

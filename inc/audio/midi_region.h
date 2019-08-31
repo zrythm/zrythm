@@ -30,6 +30,7 @@ typedef struct Track Track;
 typedef struct Position Position;
 typedef struct MidiNote MidiNote;
 typedef struct Region Region;
+typedef struct MidiEvents MidiEvents;
 typedef Region MidiRegion;
 
 /**
@@ -140,6 +141,37 @@ midi_region_remove_all_midi_notes (
   //MidiRegion * self,
   //Position *   pos,
   //int          pitch);
+
+/**
+ * Exports the Region to a specified MIDI file.
+ *
+ * @param full_path Absolute path to the MIDI file.
+ * @param export_full Traverse loops and export the
+ *   MIDI file as it would be played inside Zrythm.
+ *   If this is 0, only the original region (from
+ *   true start to true end) is exported.
+ */
+void
+midi_region_export_to_midi_file (
+  const Region * self,
+  const char *   full_path,
+  const int      export_full);
+
+/**
+ * Returns a newly initialized MidiEvents with
+ * the contents of the region converted into
+ * events.
+ *
+ * Must be free'd with midi_events_free ()
+ * @param export_full Traverse loops and export the
+ *   MIDI file as it would be played inside Zrythm.
+ *   If this is 0, only the original region (from
+ *   true start to true end) is exported.
+ */
+MidiEvents *
+midi_region_get_as_events (
+  const Region * self,
+  const int      full);
 
 /**
  * Frees members only but not the midi region itself.

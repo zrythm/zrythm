@@ -175,7 +175,7 @@ midi_note_draw_cb (
       "%s<sup>%d</sup>",
       chord_descriptor_note_to_string (
         self->midi_note->val % 12),
-      self->midi_note->val / 12 - 2);
+      self->midi_note->val / 12 - 1);
   if (DEBUGGING &&
       midi_note_is_transient (self->midi_note))
     {

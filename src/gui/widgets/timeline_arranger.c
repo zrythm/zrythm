@@ -57,6 +57,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_object.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/export_midi_file_dialog.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -605,6 +606,37 @@ timeline_arranger_widget_select_all (
     }
 }
 
+static void
+on_export_as_midi_file_clicked (
+  GtkMenuItem * menuitem,
+  Region *      r)
+{
+  GtkDialog * dialog =
+    GTK_DIALOG (
+      export_midi_file_dialog_widget_new_for_region (
+        GTK_WINDOW (MAIN_WINDOW),
+        r));
+  int res = gtk_dialog_run (dialog);
+  char * filename;
+  switch (res)
+    {
+    case GTK_RESPONSE_ACCEPT:
+      // do_application_specific_something ();
+      filename =
+        gtk_file_chooser_get_filename (
+          GTK_FILE_CHOOSER (dialog));
+      g_message ("exporting to %s", filename);
+      midi_region_export_to_midi_file (
+        r, filename, 0);
+      g_free (filename);
+      break;
+    default:
+      // do_nothing_since_dialog_was_cancelled ();
+      break;
+    }
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
 /**
  * Shows context menu.
  *
@@ -618,24 +650,34 @@ timeline_arranger_widget_show_context_menu (
 {
   GtkWidget *menu, *menuitem;
 
-  /*RegionWidget * clicked_region =*/
-    /*timeline_arranger_widget_get_hit_region (*/
-      /*self, x, y);*/
-  /*AutomationPointWidget * clicked_ap =*/
-    /*timeline_arranger_widget_get_hit_ap (*/
-      /*self, x, y);*/
-  /*AutomationCurveWidget * ac =*/
-    /*timeline_arranger_widget_get_hit_curve (*/
-      /*self, x, y);*/
+  RegionWidget * clicked_region =
+    timeline_arranger_widget_get_hit_region (
+      self, x, y);
+  Region * r = NULL;
+  if (clicked_region)
+    {
+      REGION_WIDGET_GET_PRIVATE (clicked_region);
+      r = rw_prv->region;
+    }
 
   menu = gtk_menu_new();
 
-  menuitem = gtk_menu_item_new_with_label("Do something");
-
-  /*g_signal_connect(menuitem, "activate",*/
-                   /*(GCallback) view_popup_menu_onDoSomething, treeview);*/
-
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+  if (r)
+    {
+      if (r->type == REGION_TYPE_MIDI)
+        {
+          menuitem =
+            gtk_menu_item_new_with_label (
+              "Export as MIDI file");
+          gtk_menu_shell_append (
+            GTK_MENU_SHELL(menu), menuitem);
+          g_signal_connect (
+            menuitem, "activate",
+            G_CALLBACK (
+              on_export_as_midi_file_clicked),
+            r);
+        }
+    }
 
   gtk_widget_show_all(menu);
 

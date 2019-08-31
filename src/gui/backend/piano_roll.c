@@ -62,12 +62,12 @@ init_descriptors (
         g_strdup_printf (
           "%s%d",
           chord_descriptor_note_to_string (i % 12),
-          i / 12 - 2);
+          i / 12 - 1);
       descr->note_name_pango =
         g_strdup_printf (
           "%s<sup>%d</sup>",
           chord_descriptor_note_to_string (i % 12),
-          i / 12 - 2);
+          i / 12 - 1);
       idx++;
     }
 
@@ -88,12 +88,12 @@ init_descriptors (
         g_strdup_printf (
           "%s%d",
           chord_descriptor_note_to_string (i % 12),
-          i / 12 - 2);
+          i / 12 - 1);
       descr->note_name_pango =
         g_strdup_printf (
           "%s<sup>%d</sup>",
           chord_descriptor_note_to_string (i % 12),
-          i / 12 - 2);
+          i / 12 - 1);
       idx++;
     }
   for (int i = 0; i < 128; i++)
@@ -111,18 +111,18 @@ init_descriptors (
         g_strdup_printf (
           "%s%d",
           chord_descriptor_note_to_string (i % 12),
-          i / 12 - 2);
+          i / 12 - 1);
 
       descr->note_name =
         g_strdup_printf (
           "%s%d",
           chord_descriptor_note_to_string (i % 12),
-          i / 12 - 2);
+          i / 12 - 1);
       descr->note_name_pango =
         g_strdup_printf (
           "%s<sup>%d</sup>",
           chord_descriptor_note_to_string (i % 12),
-          i / 12 - 2);
+          i / 12 - 1);
       idx++;
     }
 

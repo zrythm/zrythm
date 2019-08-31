@@ -63,6 +63,7 @@ zrythm_lib = static_library (
     cyaml,
     dzl_lib,
     audio_decoder,
+    midilib,
     ]
   )
 
