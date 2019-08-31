@@ -416,12 +416,14 @@ midi_panic_all (
     AUDIO_ENGINE->midi_editor_manual_press->
       midi_events, queued);
 
+  Track * track;
   Channel * ch;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      ch = TRACKLIST->tracks[i]->channel;
+      track = TRACKLIST->tracks[i];
+      ch = track->channel;
 
-      if (ch)
+      if (ch && track_has_piano_roll (track))
         midi_events_panic (
           ch->piano_roll->midi_events, queued);
     }
