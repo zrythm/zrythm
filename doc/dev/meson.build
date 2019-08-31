@@ -19,14 +19,12 @@ doxyfile = configure_file (
   output: 'Doxyfile.cfg',
   input: 'Doxyfile.cfg.in',
   configuration: cdata,
-  install: false,
   )
 
 doxyfile_mcss = configure_file (
   output: 'Doxyfile-mcss',
   input: 'Doxyfile-mcss.in',
   configuration: cdata,
-  install: false,
   )
 
 html_dev_target = custom_target (

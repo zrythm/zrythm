@@ -1101,8 +1101,8 @@ port_receive_midi_events_from_jack (
       if (jack_ev.time >= start_frame &&
           jack_ev.time < start_frame + nframes)
         {
-          uint8_t channel = jack_ev.buffer[0] & 0xf;
-          g_message ("channel %d", channel);
+          uint8_t channel =
+            jack_ev.buffer[0] & 0xf;
           if (self->identifier.owner_type ==
                 PORT_OWNER_TYPE_TRACK &&
               (self->track->type ==

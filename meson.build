@@ -19,7 +19,7 @@ project (
   'zrythm', ['c', 'cpp'],
   version: '0.6.039',
   license: 'AGPLv3+',
-  #meson_version: '>= 0.24.0',
+  meson_version: '>= 0.46.0',
   default_options: [
     'warning_level=1',
     'buildtype=debug',
