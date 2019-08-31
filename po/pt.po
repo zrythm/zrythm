@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-29 22:45+0100\n"
-"PO-Revision-Date: 2019-08-28 18:25+0000\n"
+"PO-Revision-Date: 2019-08-30 21:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -102,47 +102,47 @@ msgstr ""
 
 #: src/plugins/lv2_gtk.c:150
 msgid "Save State"
-msgstr ""
+msgstr "Gravar Estado"
 
 #: src/plugins/lv2_gtk.c:153 src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:44
 #: src/utils/dialogs.c:74 src/actions/actions.c:553
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
-msgstr ""
+msgstr "_Cancelar"
 
 #: src/plugins/lv2_gtk.c:154 src/actions/actions.c:555
 msgid "_Save"
-msgstr ""
+msgstr "_Gravar"
 
 #: src/plugins/lv2_gtk.c:468
 msgid "URI (Optional):"
-msgstr ""
+msgstr "URI (Opcional):"
 
 #: src/plugins/lv2_gtk.c:472
 msgid "_Prefix plugin name"
-msgstr ""
+msgstr "_Prefixo do nome do plugin"
 
 #: src/plugins/lv2_gtk.c:563
 msgid "Delete Preset?"
-msgstr ""
+msgstr "Apagar Predefinição?"
 
 #: src/plugins/lv2_gtk.c:569 src/utils/dialogs.c:72
 #: resources/ui/port_selector_popover.ui:227 resources/ui/marker_dialog.ui:61
 msgid "_OK"
-msgstr ""
+msgstr "_OK"
 
 #: src/plugins/lv2_gtk.c:782
 msgid "Unknown widget type for value"
-msgstr ""
+msgstr "Tipo de widget desconhecido para valor"
 
 #: src/plugins/lv2_gtk.c:808
 msgid "Unknown widget type for value\n"
-msgstr ""
+msgstr "Tipo de widget desconhecido para valor\n"
 
 #: src/plugins/lv2_gtk.c:1437
 msgid "Close"
-msgstr ""
+msgstr "Fechar"
 
 #: src/plugins/plugin_manager.c:223
 msgid "Error loading LV2 bundle dir: "

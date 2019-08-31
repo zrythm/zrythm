@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-08-28 18:26+0000\n"
+"PO-Revision-Date: 2019-08-30 21:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/pt/>\n"
@@ -29,24 +29,28 @@ msgid ""
 "The Chord Track contains chord and scale objects that are used to specify"
 " when the song is using a particular chord or scale."
 msgstr ""
+"A faixa de acordes contém objetos de acordes e escalas que são usados para "
+"especificar quando a música está usando um acorde ou escala particular."
 
 #: ../../tracks/creating-tracks.rst:2
 msgid "Creating Tracks"
-msgstr ""
+msgstr "Criar faixas"
 
 #: ../../tracks/creating-tracks.rst:5
 msgid "Blank Tracks"
-msgstr ""
+msgstr "Faixas em branco"
 
 #: ../../tracks/creating-tracks.rst:7
 msgid ""
 "To add an empty track, right click on empty space in the Tracklist and "
 "select the type of track you want to add."
 msgstr ""
+"Para adicionar uma faixa vazia, clique com o botão direito do rato no espaço "
+"vazio na tracklist e selecione o tipo de faixa que deseja adicionar."
 
 #: ../../tracks/creating-tracks.rst:11
 msgid "Creating Tracks From Plugins"
-msgstr ""
+msgstr "Criar faixas de plugins"
 
 #: ../../tracks/creating-tracks.rst:13
 msgid ""
@@ -55,10 +59,14 @@ msgid ""
 "plugin is an Instrument plugin, an Instrument Track will be created. If "
 "the plugin is an effect, a Bus Track will be created."
 msgstr ""
+"Os plugins podem ser clicados e arrastados do Plugin Browser e soltos em "
+"espaços vazios na Tracklist ou Mixer para instanciá-los. Se o plugin for um "
+"plugin de Instrumento, uma faixa de instrumento será criada. Se o plugin for "
+"um efeito, uma Faixa de Bus será criada."
 
 #: ../../tracks/creating-tracks.rst:20
 msgid "Creating Audio Tracks From Audio Files"
-msgstr ""
+msgstr "Criar Faixas de Áudio a de Ficheiros de Áudio"
 
 #: ../../tracks/creating-tracks.rst:22
 msgid ""
@@ -67,16 +75,23 @@ msgid ""
 "Tracklist or Mixer. This will create an Audio Track containing a single "
 "Audio Clip at the current Playhead position."
 msgstr ""
+"Da mesma forma, para criar uma faixa de áudio de um ficheiro de áudio (WAV, "
+"FLAC, etc.), você pode arrastar um ficheiro de áudio do Navegador de "
+"Ficheiros para um espaço vazio na Tracklist ou Mixer. Isso criará uma Faixa "
+"de Áudio contendo um único Clip de Áudio na posição atual do Cabeçote de "
+"Reprodução."
 
 #: ../../tracks/creating-tracks.rst:29
 msgid "Duplicating Tracks"
-msgstr ""
+msgstr "Duplicar Faixas"
 
 #: ../../tracks/creating-tracks.rst:31
 msgid ""
 "Most Tracks can be duplicated by right clicking inside the Track and "
 "selecting :zbutton:`Duplicate`."
 msgstr ""
+"A maioria das faixas podem ser duplicadas clicando com o botão direito do "
+"rato dentro da faixa e selecionando :zbutton: ' Duplicar '."
 
 #: ../../tracks/instrument-track.rst:2 ../../tracks/track-types.rst:9
 msgid "Instrument Track"
@@ -89,10 +104,14 @@ msgid ""
 "instrument plugin. This is done automatically when Instrument Tracks are "
 "created from instrument plugins."
 msgstr ""
+"A Faixa do Instrumento é usada para sintetizadores e outros instrumentos. O "
+"primeiro plugin na faixa do canal da Faixa do Instrumento deve ser um plugin "
+"de instrumento. Isso é feito automaticamente quando as faixas do instrumento "
+"são criadas de plugins de instrumento."
 
 #: ../../tracks/instrument-track.rst:12
 msgid "Track View"
-msgstr ""
+msgstr "Vista da Pista"
 
 #: ../../tracks/instrument-track.rst:14 ../../tracks/track-context-menu.rst:4
 msgid "TODO"
@@ -112,6 +131,9 @@ msgid ""
 "Tracklists (one pinned at the top and one non-pinned) and contain various"
 " information such as regions and automation points."
 msgstr ""
+"As faixas são os blocos de construção principais de projetos. As faixas são "
+"exibidas nas tracklists (uma fixada na parte superior e uma não fixada) e "
+"contêm várias informações, como regiões e pontos de automação."
 
 #: ../../tracks/overview.rst:10
 msgid ""
@@ -119,12 +141,17 @@ msgid ""
 " has its own page in the Inspector section, which is shown when selecting"
 " a Track."
 msgstr ""
+"A maioria dos tipos de Faixas tem um Canal que aparece no misturador. Cada "
+"Faixa tem sua própria página na seção Inspetor, que é exibida ao selecionar "
+"uma Faixa."
 
 #: ../../tracks/overview.rst:15
 msgid ""
 "There are various kinds of Tracks suited for different purposes, "
 "explained in the following sections."
 msgstr ""
+"Existem vários tipos de Faixas adequadas para finalidades diferentes, "
+"explicado nas seções a seguir."
 
 #: ../../tracks/track-context-menu.rst:2
 msgid "Track Context Menu"
@@ -132,11 +159,11 @@ msgstr "Menu de Contexto da Faixa"
 
 #: ../../tracks/track-operations.rst:2
 msgid "Track Operations"
-msgstr ""
+msgstr "Operações de Faixa"
 
 #: ../../tracks/track-operations.rst:5
 msgid "Moving Tracks"
-msgstr ""
+msgstr "Mover Faixas"
 
 #: ../../tracks/track-operations.rst:6
 msgid ""
@@ -144,20 +171,25 @@ msgid ""
 "Track, and dropping it at another location. The drop locations will be "
 "highlighted as you move the Track."
 msgstr ""
+"As faixas podem ser movidas clicando e arrastando para dentro do espaço "
+"vazio na Faixa e soltando-as em outro local. As localizações de descida "
+"serão realçadas à medida que você move a Faixa."
 
 #: ../../tracks/track-operations.rst:12
 msgid "Deleting Tracks"
-msgstr ""
+msgstr "Apagar Faixas"
 
 #: ../../tracks/track-operations.rst:14
 msgid ""
 "Tracks can be deleted by right-clicking them and selecting "
 ":zbutton:`Delete`."
 msgstr ""
+"As faixas podem ser apagadas clicando com o botão direito do rato neles e "
+"selecionando: zbutton: \"Apagar\"."
 
 #: ../../tracks/track-operations.rst:18
 msgid "All Track operations are undoable."
-msgstr ""
+msgstr "Todas as operações de Faixa poder ser desfeitas."
 
 #: ../../tracks/track-types.rst:2
 msgid "Track Types"
@@ -168,12 +200,16 @@ msgid ""
 "Zrythm has the following types of Tracks, and they are explained further "
 "in their own sections."
 msgstr ""
+"Zrythm tem os seguintes tipos de faixas e eles são explicados mais em suas "
+"próprias seções."
 
 #: ../../tracks/track-types.rst:8
 msgid ""
 "A Track that contains regions holding MIDI notes. It also has automation "
 "lanes for automating its components."
 msgstr ""
+"Uma faixa que contém regiões contendo notas MIDI. Também possui pistas de "
+"automação para automatizar seus componentes."
 
 #: ../../tracks/track-types.rst:11
 msgid "Audio Track"
@@ -181,7 +217,7 @@ msgstr "Faixa de Áudio"
 
 #: ../../tracks/track-types.rst:12
 msgid "A Track containing audio regions, cross-fades, fades and automation."
-msgstr ""
+msgstr "Uma Faixa contendo regiões de áudio, cross-fades, fades e automação."
 
 #: ../../tracks/track-types.rst:13
 msgid "Bus Track"
@@ -190,6 +226,8 @@ msgstr "Faixa de Bus"
 #: ../../tracks/track-types.rst:14
 msgid "A Track corresponding to a mixer bus. Bus tracks only contain automation"
 msgstr ""
+"Uma faixa correspondente a um bus misturador. As faixas de bus contêm apenas "
+"automação"
 
 #: ../../tracks/track-types.rst:15
 msgid "Master Track"
@@ -200,10 +238,12 @@ msgid ""
 "The Master track is a special type of Bus Track that controls the master "
 "fader and contains additional automation options."
 msgstr ""
+"A faixa principal é um tipo especial de faixa de bus que controla o cursor "
+"deslizante principal e contém opções de automação adicionais."
 
 #: ../../tracks/track-types.rst:21
 msgid "Group Track"
-msgstr ""
+msgstr "Grupo De Faixas"
 
 #: ../../tracks/track-types.rst:18
 msgid ""
@@ -211,19 +251,27 @@ msgid ""
 "Track. It behaves like a Bus Track with the exception that other Tracks "
 "can route their output signal directly into Group Track."
 msgstr ""
+"Um Grupo de Faixas é usada para rotear sinais de várias Faixas para uma "
+"Faixa. Ele se comporta como uma Faixa de Bus com a exceção de que outras "
+"Faixas podem rotear seu sinal de saída diretamente no Grupo de Faixas."
 
 #: ../../tracks/track-types.rst:24
 msgid ""
 "A Chord Track is a special kind of Track that contains chords and scales "
 "and is a great tool for assisting with chord progressions."
 msgstr ""
+"Uma Faixa de Acordes é um tipo especial de Faixa que contém acordes e "
+"escalas e é uma ótima ferramenta para auxiliar na progressão de acordes."
 
 #: ../../tracks/track-types.rst:30
 msgid "Marker Track"
-msgstr ""
+msgstr "Faixa de Marcador"
 
 #: ../../tracks/track-types.rst:28
 msgid ""
 "A Marker Track is a special kind of Track that contains song markers - "
 "either custom or pre-defined ones like the song start and end markers."
 msgstr ""
+"Uma Faixa de Marcação é um tipo especial de Faixa que contém marcadores de "
+"músicas - personalizados ou pré-definidos, como os marcadores de início e "
+"fim de músicas."
