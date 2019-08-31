@@ -277,7 +277,7 @@ engine_init (
    * output */
   stereo_ports_connect (
     SAMPLE_PROCESSOR->stereo_out,
-    self->monitor_out, 1);
+    self->control_room.monitor_fader.stereo_in, 1);
 }
 
 void
