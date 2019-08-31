@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-31 02:54+0100\n"
-"PO-Revision-Date: 2019-08-26 13:09+0000\n"
+"PO-Revision-Date: 2019-09-01 12:44+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -205,30 +205,29 @@ msgid "Inserts"
 msgstr "Inserts"
 
 #: src/gui/widgets/track_input_expander.c:184
-#, fuzzy
 msgid "All MIDI Inputs"
-msgstr "Entrées MIDI"
+msgstr "Toutes les entrées MIDI"
 
 #: src/gui/widgets/track_input_expander.c:219
 msgid "No inputs"
-msgstr ""
+msgstr "Pas d'entrée"
 
 #: src/gui/widgets/track_input_expander.c:259
 msgid "All Channels"
-msgstr ""
+msgstr "Tous les canaux"
 
 #: src/gui/widgets/track_input_expander.c:268
-#, fuzzy, c-format
+#, c-format
 msgid "Channel %s"
-msgstr "Changer la panoramique"
+msgstr "Canal %s"
 
 #: src/gui/widgets/track_input_expander.c:283
 msgid "No channel"
-msgstr ""
+msgstr "Pas de canal"
 
 #: src/gui/widgets/track_input_expander.c:410
 msgid "Inputs"
-msgstr ""
+msgstr "Entrées"
 
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
@@ -340,7 +339,7 @@ msgstr "sig. temporelle"
 #: src/gui/widgets/export_midi_file_dialog.c:83
 #, c-format
 msgid "Exporting MIDI region \"%s\""
-msgstr ""
+msgstr "Exportation de la région MIDI \"%s\""
 
 #: src/gui/widgets/port_selector_popover.c:52
 msgid "No port selected"
@@ -446,9 +445,8 @@ msgid "Freeze track"
 msgstr "Geler la piste"
 
 #: src/gui/widgets/control_room.c:54
-#, fuzzy
 msgid "Monitor out"
-msgstr "Zoom arrière"
+msgstr "Moniteur arrière"
 
 #: src/gui/widgets/control_room.c:66
 msgid "Listen dim level"
@@ -690,9 +688,8 @@ msgid "CV Outs"
 msgstr "Sorties CV"
 
 #: src/gui/widgets/ports_expander.c:390
-#, fuzzy
 msgid "Sends"
-msgstr "Systèmes Audio"
+msgstr "Envois"
 
 #: src/gui/widgets/ports_expander.c:397
 msgid "Stereo In"
@@ -835,9 +832,8 @@ msgid "Fader - Click and drag to change value"
 msgstr "Charriot - cliquer et faire glisser pour changer la valeur"
 
 #: src/gui/widgets/fader.c:318
-#, fuzzy
 msgid "Fader"
-msgstr "Entrée fader"
+msgstr "Fader"
 
 #: src/gui/widgets/dzl/dzl-animation.c:752
 #, c-format
@@ -1920,19 +1916,16 @@ msgid "Lane 1"
 msgstr "Voie 1"
 
 #: resources/ui/export_midi_file_dialog.ui:36
-#, fuzzy
 msgid "Select MIDI file"
-msgstr "Sélectionner un dossier"
+msgstr "Sélectionner un fichier MIDI"
 
 #: resources/ui/export_midi_file_dialog.ui:69
-#, fuzzy
 msgid "_Export"
-msgstr "Exporter"
+msgstr "_Exporter"
 
 #: resources/ui/export_midi_file_dialog.ui:104
-#, fuzzy
 msgid "Region content"
-msgstr "Région"
+msgstr "Contenu de la région"
 
 #: resources/ui/export_midi_file_dialog.ui:116
 msgid ""
@@ -1940,31 +1933,30 @@ msgid ""
 "points), or \"Full region\" to save the whole region as Zrythm would play it "
 "(traversing loops)."
 msgstr ""
+"Sélectionnez \"région de base\" pour sauvegarder la région d'origine (sans "
+"boucles/points de départ des clips), ou \"région complète\" pour sauvegarder "
+"toute la région comme Zrythm la jouerait (boucles traversantes)."
 
 #: resources/ui/export_midi_file_dialog.ui:120
 msgid "Base region"
-msgstr ""
+msgstr "Région de base"
 
 #: resources/ui/export_midi_file_dialog.ui:121
-#, fuzzy
 msgid "Full region"
-msgstr "Plein écran"
+msgstr "Région complète"
 
 #: resources/ui/export_midi_file_dialog.ui:145
 #: resources/ui/export_midi_file_dialog.ui:157
-#, fuzzy
 msgid "MIDI format"
-msgstr "Sortie MIDI"
+msgstr "Format MIDI"
 
 #: resources/ui/export_midi_file_dialog.ui:161
-#, fuzzy
 msgid "Format 0"
-msgstr "Format"
+msgstr "Format 0"
 
 #: resources/ui/export_midi_file_dialog.ui:162
-#, fuzzy
 msgid "Format 1"
-msgstr "Format"
+msgstr "Format 1"
 
 #: resources/ui/modulator_view.ui:53 resources/ui/clip_editor_inner.ui:53
 msgid "Track name"
