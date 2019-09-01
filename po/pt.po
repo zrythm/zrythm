@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-09-01 13:42+0100\n"
-"PO-Revision-Date: 2019-09-01 12:44+0000\n"
+"POT-Creation-Date: 2019-08-31 02:54+0100\n"
+"PO-Revision-Date: 2019-09-01 12:47+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -704,59 +704,59 @@ msgstr "Encaminhamento a %s"
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
-msgstr ""
+msgstr "Novo Projeto"
 
 #: src/gui/widgets/project_toolbar.c:40 src/utils/dialogs.c:41
 msgid "Open Project"
-msgstr ""
+msgstr "Abrir Projeto"
 
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Export As"
-msgstr ""
+msgstr "Exportar Como"
 
 #: src/gui/widgets/view_toolbar.c:39
 msgid "Toggle Left Panel"
-msgstr ""
+msgstr "Alternar Painel Esquerdo"
 
 #: src/gui/widgets/view_toolbar.c:40
 msgid "Toggle Bottom Panel"
-msgstr ""
+msgstr "Alternar Painel Inferior"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Toggle Top Panel"
-msgstr ""
+msgstr "Alternar Painel Superior"
 
 #: src/gui/widgets/view_toolbar.c:43
 msgid "Toggle Right Panel"
-msgstr ""
+msgstr "Alternar Painel Direito"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Toggle Status Bar"
-msgstr ""
+msgstr "Alternar Barra de Estado"
 
 #: src/gui/widgets/view_toolbar.c:45
 msgid "Zoom In"
-msgstr ""
+msgstr "Aumentar"
 
 #: src/gui/widgets/view_toolbar.c:46
 msgid "Zoom Out"
-msgstr ""
+msgstr "Reduzir"
 
 #: src/gui/widgets/view_toolbar.c:47
 msgid "Original Size"
-msgstr ""
+msgstr "Tamanho Original"
 
 #: src/gui/widgets/view_toolbar.c:48
 msgid "Best Fit"
-msgstr ""
+msgstr "Melhor Ajuste"
 
 #: src/gui/widgets/view_toolbar.c:49
 msgid "Fullscreen"
-msgstr ""
+msgstr "Ecrã inteiro"
 
 #: src/gui/widgets/track.c:152
 msgid "Solo"
-msgstr ""
+msgstr "Solo"
 
 #: src/gui/widgets/track.c:153
 msgid "Mute"
