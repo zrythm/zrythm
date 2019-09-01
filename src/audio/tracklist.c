@@ -349,6 +349,7 @@ tracklist_remove_track (
 {
   g_message ("removing %s",
              track->name);
+
   int idx =
     array_index_of (
       self->tracks,
@@ -364,10 +365,12 @@ tracklist_remove_track (
   tracklist_selections_remove_track (
     TRACKLIST_SELECTIONS, track);
 
+  track_set_pos (track, -1);
+
   /* move all other tracks */
   for (int i = track->pos;
        i < self->num_tracks; i++)
-    self->tracks[i]->pos = i;
+    track_set_pos (track, i);
 
   if (track->channel)
     {

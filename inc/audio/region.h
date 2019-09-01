@@ -110,6 +110,7 @@ region_type_bitvals[] =
   { .name = "midi", .offset =  0, .bits =  1 },
   { .name = "audio", .offset =  1, .bits =  1 },
   { .name = "automation", .offset = 2, .bits = 1 },
+  { .name = "chord", .offset = 3, .bits = 1 },
 };
 
 /**
@@ -476,6 +477,13 @@ region_unsplit (
   Region **        region);
 
 /**
+ * Print region info for debugging.
+ */
+void
+region_print (
+  const Region * region);
+
+/**
  * Returns the MidiNote matching the properties of
  * the given MidiNote.
  *
@@ -552,6 +560,15 @@ region_timeline_frames_to_local (
 Track *
 region_get_track (
   Region * region);
+
+/**
+ * Sets the Track position to the Region and all its
+ * members recursively.
+ */
+void
+region_set_track_pos (
+  Region *  region,
+  const int pos);
 
 /**
  * Returns the number of loops in the region,

@@ -709,15 +709,15 @@ timeline_selections_paste_to_pos (
             {
               MidiNote * mn = mr->midi_notes[j];
               g_message ("old midi start");
-              /*position_print (&mn->start_pos);*/
+              /*position_print_yaml (&mn->start_pos);*/
               g_message ("bars %d",
                          mn->start_pos.bars);
               g_message ("new midi start");
               ADJUST_POSITION (&mn->start_pos);
-              position_print (&mn->start_pos);
+              position_print_yaml (&mn->start_pos);
               g_message ("old midi start");
               ADJUST_POSITION (&mn->end_pos);
-              position_print (&mn->end_pos);
+              position_print_yaml (&mn->end_pos);
             }
         }
 

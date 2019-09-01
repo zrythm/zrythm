@@ -109,6 +109,24 @@ track_lane_add_region (
 }
 
 /**
+ * Sets the track position to the lane and all its
+ * members recursively.
+ */
+void
+track_lane_set_track_pos (
+  TrackLane * self,
+  const int   pos)
+{
+  self->track_pos = pos;
+
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      region_set_track_pos (
+        self->regions[i], pos);
+    }
+}
+
+/**
  * Clones the TrackLane.
  *
  * Mainly used when cloning Track's.

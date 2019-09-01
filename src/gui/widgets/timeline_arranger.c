@@ -2194,6 +2194,8 @@ add_children_from_midi_track (
                   Z_REGION_WIDGET (
                     midi_region_widget_new (
                       r));
+              g_message ("adding :");
+              region_print (r);
 
               gtk_overlay_add_overlay (
                 GTK_OVERLAY (self),

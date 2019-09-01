@@ -149,6 +149,15 @@ track_lane_update_frames (
   TrackLane * self);
 
 /**
+ * Sets the track position to the lane and all its
+ * members recursively.
+ */
+void
+track_lane_set_track_pos (
+  TrackLane * self,
+  const int   pos);
+
+/**
  * Clones the TrackLane.
  *
  * Mainly used when cloning Track's.

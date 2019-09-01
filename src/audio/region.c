@@ -508,6 +508,37 @@ ARRANGER_OBJ_DECLARE_VALIDATE_POS (
 }
 
 /**
+ * Sets the Track position to the Region and all its
+ * members recursively.
+ */
+void
+region_set_track_pos (
+  Region *  region,
+  const int pos)
+{
+  ARRANGER_OBJ_SET_PRIMITIVE_VAL (
+    Region, region, track_pos, pos, AO_UPDATE_ALL);
+}
+
+/**
+ * Print region info for debugging.
+ */
+void
+region_print (
+  const Region * self)
+{
+  char * str =
+    g_strdup_printf (
+      "%s [%s] - track pos %d - lane pos %d",
+      self->name,
+      region_type_bitvals[self->type].name,
+      self->track_pos,
+      self->lane_pos);
+  g_message ("%s", str);
+  g_free (str);
+}
+
+/**
  * Setter.
  */
 void

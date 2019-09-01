@@ -102,7 +102,7 @@ automation_region_print_automation (
     {
       ap = self->aps[i];
       g_message ("%d", i);
-      position_print (&ap->pos);
+      position_print_yaml (&ap->pos);
     }
 }
 
