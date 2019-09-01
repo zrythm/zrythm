@@ -38,7 +38,7 @@ if get_option ('enable_tests')
 
 
   foreach test_name : tests
-    source = test_name + '.c'
+    source = [ test_name + '.c', config_h ]
     test_name = 'zrythm:' + ' '.join(test_name.split('/'))
 
     exe = executable (
