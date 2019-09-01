@@ -241,6 +241,27 @@ midi_note_set_cache_val (
 }
 
 /**
+ * Sets the transient's values to the main midi
+ * note's values.
+ */
+void
+midi_note_reset_transient (
+  MidiNote * midi_note)
+{
+  MidiNote * main =
+    midi_note_get_main_midi_note (midi_note);
+  MidiNote * trans =
+    midi_note_get_main_trans_midi_note (midi_note);
+
+  position_set_to_pos (
+    &trans->start_pos, &main->start_pos);
+  position_set_to_pos (
+    &trans->end_pos, &main->end_pos);
+  trans->vel->vel = main->vel->vel;
+  trans->val = main->val;
+}
+
+/**
  * Sets the pitch of the MidiNote.
  */
 void

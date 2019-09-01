@@ -1162,7 +1162,8 @@ drag_begin (GtkGestureDrag *   gesture,
       if (midi_note_widget)
         {
           midi_arranger_widget_on_drag_begin_note_hit (
-            midi_arranger, start_x, midi_note_widget);
+            midi_arranger, start_x,
+            midi_note_widget);
         }
       else if (rw)
         {

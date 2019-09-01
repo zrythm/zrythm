@@ -128,6 +128,14 @@ midi_arranger_widget_snap_midi_notes_r (
   int                 dry_run);
 
 /**
+ * Resets the transient of each note in the
+ * arranger.
+ */
+void
+midi_arranger_widget_reset_transients (
+  MidiArrangerWidget * self);
+
+/**
  * if midi_notes are within the min border distance grid
  * will auto scroll
  */

@@ -139,7 +139,8 @@ midi_note_draw_cb (
           cairo_set_source_rgba (
             cr, color.red + 0.4,
             color.green + 0.2,
-            color.blue + 0.2, 1);
+            color.blue + 0.2,
+            DEBUGGING ? 0.3 : 1);
         }
       if (PIANO_ROLL->drum_mode)
         {
@@ -174,8 +175,8 @@ midi_note_draw_cb (
     g_strdup_printf (
       "%s<sup>%d</sup>",
       chord_descriptor_note_to_string (
-        self->midi_note->val % 12),
-      self->midi_note->val / 12 - 1);
+        mn->val % 12),
+      mn->val / 12 - 1);
   if (DEBUGGING &&
       midi_note_is_transient (self->midi_note))
     {
@@ -284,7 +285,7 @@ midi_note_widget_update_tooltip (
     g_strdup_printf (
       "[%s%d] %d",
       note,
-      self->midi_note->val / 12 - 2,
+      self->midi_note->val / 12 - 1,
       self->midi_note->vel->vel);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), tooltip);
@@ -351,7 +352,7 @@ midi_note_widget_new (MidiNote * midi_note)
       "[%s%d] %d",
       chord_descriptor_note_to_string (
         self->midi_note->val % 12),
-      self->midi_note->val / 12 - 2,
+      self->midi_note->val / 12 - 1,
       self->midi_note->vel->vel);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), tooltip);

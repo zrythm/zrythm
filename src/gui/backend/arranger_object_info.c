@@ -283,6 +283,8 @@ arranger_object_info_set_widget_visibility_and_state (
   /*g_message ("setting " #counterpart " visible %d", \
     arranger_object_info_should_be_visible ( \
       &lc->obj_info));*/ \
+  if (!lc->widget) \
+    lc##_gen_widget (lc); \
   gtk_widget_set_visible ( \
     GTK_WIDGET (lc->widget), \
     arranger_object_info_should_be_visible ( \

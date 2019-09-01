@@ -55,6 +55,10 @@ int
 duplicate_midi_arranger_selections_action_do (
   DuplicateMidiArrangerSelectionsAction * self)
 {
+  /* clear selections */
+  midi_arranger_selections_clear (
+    MA_SELECTIONS);
+
   MidiNote * mn;
 	for (int i = 0; i < self->mas->num_midi_notes; i++)
     {

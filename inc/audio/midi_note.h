@@ -301,6 +301,14 @@ midi_note_get_length_in_ticks (
   const MidiNote * self);
 
 /**
+ * Sets the transient's values to the main midi
+ * note's values.
+ */
+void
+midi_note_reset_transient (
+  MidiNote * midi_note);
+
+/**
  * Sets the pitch of the MidiNote.
  */
 void
