@@ -54,6 +54,7 @@ subdir('utils')
 zrythm_lib = static_library (
   'zrythm-lib',
   sources: [
+    config_h,
     zrythm_srcs,
     ext_srcs,
     ],

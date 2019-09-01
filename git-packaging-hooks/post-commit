@@ -34,7 +34,7 @@ then TraceStage "running staging-specific post-commit hooks"
      done
      if   [ ! -f $TAGS_FILE ]
      then TraceStep "adding revision tag '$VERSION_STRING'"
-          git tag $VERSION_STRING
+          git tag $VERSION_STRING -m "$VERSION_STRING"
      else declare -a orphaned_tags=( $(cat $TAGS_FILE | sort | uniq) )
           orphaned_minor_tag=${orphaned_tags[0]}
           orphaned_rev_tag=${orphaned_tags[1]}

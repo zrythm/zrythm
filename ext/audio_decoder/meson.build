@@ -16,6 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 audio_decoder_srcs = [
+  config_h,
   'ad_soundfile.c',
   'ad_ffmpeg.c',
   'ad_plugin.c',

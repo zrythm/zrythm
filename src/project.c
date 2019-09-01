@@ -393,7 +393,8 @@ project_load (char * filename)
     create_default (PROJECT);
 
   /* set the version */
-  PROJECT->version = PACKAGE_VERSION;
+  PROJECT->version =
+    zrythm_get_version (0);
 
   return 0;
 }

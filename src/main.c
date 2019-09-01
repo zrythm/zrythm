@@ -89,6 +89,7 @@ handler (int sig) {
       NULL);
 
   /* %23 is hash, %0A is new line */
+  char * ver = zrythm_get_version (0);
   char * report_template =
     g_strdup_printf (
       "# Steps to reproduce\n"
@@ -102,9 +103,10 @@ handler (int sig) {
       "# Other info\n"
       "> Context, etc.\n\n"
       "# Backtrace\n%s\n",
-      PACKAGE_VERSION,
+      ver,
       str
       );
+  g_free (ver);
   char * report_template_escaped =
     g_uri_escape_string (
       report_template, NULL, FALSE);
@@ -147,16 +149,18 @@ handler (int sig) {
 static void
 print_version ()
 {
+  char * ver = zrythm_get_version (0);
   fprintf (
     stdout,
     "Zrythm %s\nbuilt with %s %s\n"
     "%s\n%s\n%s\n%s\n",
-    PACKAGE_VERSION,
+    ver,
     COMPILER, COMPILER_VERSION,
     "Copyright (C) 2018-2019 Alexandros Theodotou",
     "License AGPLv3+: GNU AGPL version 3 or later <https://www.gnu.org/licenses/agpl.html>",
     "This is free software: you are free to change and redistribute it.",
     "There is NO WARRANTY, to the extent permitted by law.");
+  g_free (ver);
 }
 
 static void
@@ -220,6 +224,7 @@ main (int    argc,
         }
     }
 
+  char * ver = zrythm_get_version (0);
   fprintf (
     stdout,
     _("Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n\n"
@@ -229,7 +234,8 @@ main (int    argc,
     "distribution for details.\n\n"
     "Write comments and bugs to https://savannah.nongnu.org/support/?group=zrythm\n"
     "Support this project at https://liberapay.com/Zrythm\n\n"),
-    PACKAGE_VERSION);
+    ver);
+  g_free (ver);
 
   /* unset GTK_THEME */
   g_message ("GTK_THEME=%s", getenv ("GTK_THEME"));

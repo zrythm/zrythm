@@ -236,6 +236,8 @@ activate_about (GSimpleAction *action,
       "Waui <wau-wau@tutanota.de>\n"
       "Allan Nordhøy <epost@anotheragency.no>\n"
       "WaldiS <admin@sto.ugu.pl>";
+  char * version =
+    zrythm_get_version (1);
 
   gtk_show_about_dialog (
     GTK_WINDOW (MAIN_WINDOW),
@@ -251,9 +253,11 @@ activate_about (GSimpleAction *action,
     "translator-credits", translators,
     "website", "https://www.zrythm.org",
     "website-label", _("Website"),
-    "version", "v" PACKAGE_VERSION,
+    "version", version,
     NULL);
   gtk_widget_destroy (GTK_WIDGET (img));
+
+  g_free (version);
 }
 
 void

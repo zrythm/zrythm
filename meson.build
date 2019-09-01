@@ -51,7 +51,7 @@ locales = [
 cdata = configuration_data ()
 cdata.set_quoted (
   'PACKAGE_VERSION',
-  meson.project_version ())
+  '@VCS_TAG@')
 cdata.set_quoted (
   'COMPILER',
   meson.get_compiler('c').get_id())
@@ -311,9 +311,14 @@ if (os_darwin)
       ])
 endif
 
-configure_file (
-  output: 'config.h',
+# create config.h
+tmp_h = configure_file (
+  output: 'tmp.h',
   configuration: cdata,
+  )
+config_h = vcs_tag (
+  input: tmp_h,
+  output: 'config.h',
   )
 
 test_cflags_c_only = [

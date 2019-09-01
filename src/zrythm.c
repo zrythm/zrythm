@@ -17,7 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm.h"
+#include "config.h"
+
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
 #include "audio/engine.h"
@@ -41,6 +42,7 @@
 #include "utils/localization.h"
 #include "utils/log.h"
 #include "utils/io.h"
+#include "zrythm.h"
 
 #include "Wrapper.h"
 
@@ -524,6 +526,36 @@ static void on_prompt_for_project (GSimpleAction  *action,
    * window on top */
   show_on_top();
 #endif
+    }
+}
+
+/**
+ * Returns the version string.
+ *
+ * Must be g_free()'d.
+ *
+ * @param with_v Include a starting "v".
+ */
+char *
+zrythm_get_version (
+  int with_v)
+{
+  char * ver = PACKAGE_VERSION;
+
+  if (with_v)
+    {
+      if (ver[0] == 'v')
+        return g_strdup (ver);
+      else
+        return
+          g_strdup_printf ("v%s", ver);
+    }
+  else
+    {
+      if (ver[0] == 'v')
+        return g_strdup (ver + 1);
+      else
+        return g_strdup (ver);
     }
 }
 

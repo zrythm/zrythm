@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -163,6 +163,17 @@ zrythm_add_to_recent_projects (
 void
 zrythm_remove_recent_project (
   char * filepath);
+
+/**
+ * Returns the version string.
+ *
+ * Must be g_free()'d.
+ *
+ * @param with_v Include a starting "v".
+ */
+char *
+zrythm_get_version (
+  int with_v);
 
 /**
  * Gets the zrythm directory (by default
