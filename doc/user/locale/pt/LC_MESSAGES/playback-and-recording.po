@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-09-01 12:44+0000\n"
+"PO-Revision-Date: 2019-09-02 00:21+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/pt/>\n"
@@ -142,7 +142,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:25
 msgid "Playhead"
-msgstr ""
+msgstr "Cabeça de Reprodução"
 
 #: ../../playback-and-recording/overview.rst:26
 msgid "The Playhead is the current position in the song."
@@ -192,7 +192,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:28
 msgid "Play"
-msgstr ""
+msgstr "Reproduzir"
 
 #: ../../playback-and-recording/transport-controls.rst:27
 msgid ""
@@ -202,7 +202,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:31
 msgid "Stop"
-msgstr ""
+msgstr "Parar"
 
 #: ../../playback-and-recording/transport-controls.rst:31
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
@@ -210,7 +210,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Backward"
-msgstr ""
+msgstr "Para trás"
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Moves the Playhead backward by the size of 1 snap point."
@@ -218,7 +218,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid "Forward"
-msgstr ""
+msgstr "Para a frente"
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid "Moves the Playhead forward by the size of 1 snap point."
@@ -226,7 +226,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:42
 msgid "Loop"
-msgstr ""
+msgstr "Loop"
 
 #: ../../playback-and-recording/transport-controls.rst:40
 msgid ""
@@ -236,7 +236,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:45
 msgid "Metronome"
-msgstr ""
+msgstr "Metrónomo"
 
 #~ msgid "Zrythm uses the following format for positions::"
 #~ msgstr ""
