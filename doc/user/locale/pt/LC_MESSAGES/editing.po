@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-09-01 12:44+0000\n"
+"PO-Revision-Date: 2019-09-02 00:20+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/pt/>\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: ../../editing/common-operations/operations-on-current-selection.rst:5
 msgid "Looping"
-msgstr ""
+msgstr "Looping"
 
 #: ../../editing/common-operations/operations-on-current-selection.rst:7
 msgid ""
@@ -242,7 +242,7 @@ msgstr ""
 
 #: ../../editing/intro.rst:2
 msgid "Editing"
-msgstr ""
+msgstr "Edição"
 
 #: ../../editing/making-selections/intro.rst:2
 msgid "Making Selections"
