@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-09-01 12:44+0000\n"
+"PO-Revision-Date: 2019-09-02 00:21+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/pt/>\n"
@@ -107,7 +107,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/intro.rst:19
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:19
 msgid "Plugin Browser"
@@ -171,7 +171,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:48
 msgid "Instrument"
-msgstr ""
+msgstr "Instrumento"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:48
 msgid "These plugins will create an instrument track when added to the project."
