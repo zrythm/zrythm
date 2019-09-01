@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-04 08:01+0100\n"
-"PO-Revision-Date: 2019-08-26 23:01+0000\n"
+"PO-Revision-Date: 2019-09-01 12:44+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/pt/>\n"
@@ -22,16 +22,16 @@ msgstr ""
 
 #: ../../zrythm-interface/channels/channel-overview.rst:2
 msgid "Channel Overview"
-msgstr ""
+msgstr "Visão Geral Do Canal"
 
 #: ../../zrythm-interface/channels/controls.rst:2
 #: ../../zrythm-interface/controls/intro.rst:2
 msgid "Controls"
-msgstr ""
+msgstr "Controles"
 
 #: ../../zrythm-interface/channels/fader.rst:2
 msgid "Fader"
-msgstr ""
+msgstr "Fader"
 
 #: ../../zrythm-interface/channels/intro.rst:2
 msgid "Channels"
@@ -43,164 +43,176 @@ msgstr "Medidores"
 
 #: ../../zrythm-interface/channels/plugin-strip.rst:2
 msgid "Plugin Strip"
-msgstr ""
+msgstr "Banda de Plugin"
 
 #: ../../zrythm-interface/controls/grid-controls.rst:2
 msgid "Grid Controls"
-msgstr ""
+msgstr "Controles de Grade"
 
 #: ../../zrythm-interface/controls/zoom-controls.rst:2
 msgid "Zoom Controls"
-msgstr ""
+msgstr "Controles de Zoom"
 
 #: ../../zrythm-interface/editors/intro.rst:2
 msgid "Editors"
-msgstr ""
+msgstr "Editores"
 
 #: ../../zrythm-interface/editors/piano-roll/intro.rst:2
 msgid "Piano Roll"
-msgstr ""
+msgstr "Cílindros de Piano"
 
 #: ../../zrythm-interface/editors/piano-roll/midi-arranger.rst:2
 msgid "MIDI Arranger"
-msgstr ""
+msgstr "Arranjador de MIDI"
 
 #: ../../zrythm-interface/editors/piano-roll/midi-modifier-arranger.rst:2
 msgid "MIDI Modifier Editor"
-msgstr ""
+msgstr "Editor de Modificadores de MIDI"
 
 #: ../../zrythm-interface/editors/timeline.rst:2
 msgid "Timeline"
-msgstr ""
+msgstr "Cronologia"
 
 #: ../../zrythm-interface/editors/tracklist.rst:2
 msgid "Tracklist"
-msgstr ""
+msgstr "Lista de faixas"
 
 #: ../../zrythm-interface/intro.rst:2
 msgid "Zrythm's Interface"
-msgstr ""
+msgstr "Interface de Zrythm"
 
 #: ../../zrythm-interface/main-menu/edit.rst:2
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: ../../zrythm-interface/main-menu/file.rst:2
 msgid "File"
-msgstr ""
+msgstr "Ficheiro"
 
 #: ../../zrythm-interface/main-menu/help.rst:2
 msgid "Help"
-msgstr ""
+msgstr "Ajuda"
 
 #: ../../zrythm-interface/main-menu/intro.rst:2
 msgid "Main Menu"
-msgstr ""
+msgstr "Menu Principal"
 
 #: ../../zrythm-interface/main-menu/view.rst:2
 msgid "View"
-msgstr ""
+msgstr "Visualização"
 
 #: ../../zrythm-interface/mini-timeline.rst:2
 msgid "Timeline Minimap"
-msgstr ""
+msgstr "Minimapa da Cronologia"
 
 #: ../../zrythm-interface/mixer.rst:2
 msgid "Mixer"
-msgstr ""
+msgstr "Misturador"
 
 #: ../../zrythm-interface/monitor.rst:2
 msgid "Monitor"
-msgstr ""
+msgstr "Monitor"
 
 #: ../../zrythm-interface/ruler.rst:2
 msgid "Ruler"
-msgstr ""
+msgstr "Régua"
 
 #: ../../zrythm-interface/status-bar.rst:2
 msgid "Status Bar"
-msgstr ""
+msgstr "Barra de Estado"
 
 #: ../../zrythm-interface/toolbox.rst:2
 msgid "Toolbox"
-msgstr ""
+msgstr "Caixa de Ferramentas"
 
 #: ../../zrythm-interface/transport-bar.rst:2
 msgid "Transport Bar"
-msgstr ""
+msgstr "Barra De Transporte"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:2
 msgid "Zrythm Interface Overview"
-msgstr ""
+msgstr "Visão Geral Da Interface Zrythm"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:4
 msgid "Zrythm's interface is split into various sub-modules:"
-msgstr ""
+msgstr "A interface do Zrythm está dividida em vários submódulos:"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:9
 msgid "Inspector Panel (1)"
-msgstr ""
+msgstr "Painel do Inspetor (1)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:9
 msgid ""
 "The inspector panel contains the inspector, which is used to view and "
 "change parameters of the currently selected objects."
 msgstr ""
+"O painel do inspetor contém o inspetor, que é usado para visualizar e "
+"alterar os parâmetros dos objetos atualmente selecionados."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:12
 msgid "Editor Panel (2)"
-msgstr ""
+msgstr "Painel do Editor (2)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:12
 msgid ""
 "The editor panel contains various views that are useful in composing and "
 "mixing, such as the Clip Editor and the Mixer."
 msgstr ""
+"O painel do editor contém várias visualizações que são úteis na composição e "
+"mistura, tais como o Editor de Clip e o Misturador."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:15
 msgid "Browser Panel (3)"
-msgstr ""
+msgstr "Painel do Navegador (3)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:15
 msgid ""
 "The browser panel contains the browser, and is used to find plugins "
 "and/or audio and MIDI files to drag and drop into the project."
 msgstr ""
+"O painel do navegador contém o navegador e é usado para encontrar plugins e/"
+"ou ficheiros de áudio e MIDI para arrastar e soltar no projeto."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:18
 msgid "Arranger Panel (4)"
-msgstr ""
+msgstr "Painel do Arranjador (4)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:18
 msgid ""
 "This is where the action happens. The main panel mainly consists of the "
 "Timeline Arranger and the Project's Tracks on the left side."
 msgstr ""
+"É aqui que a ação acontece. O painel principal consiste principalmente no "
+"Arranjador da Cronologia e nas Faixas do Projeto no lado esquerdo."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:21
 msgid "Toolbar (5)"
-msgstr ""
+msgstr "Barra de Ferramentas (5)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:21
 msgid ""
 "There are two main toolbars containing global controls such as BPM and "
 "Transport."
 msgstr ""
+"Existem duas barras de ferramentas principais contendo controles globais "
+"como BPM e Transporte."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:24
 msgid "Title Bar (6)"
-msgstr ""
+msgstr "Barra de Título (6)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:24
 msgid "The Title Bar contains menus with options for various operations."
-msgstr ""
+msgstr "A barra de título contém menus com opções para várias operações."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:26
 msgid "Status Bar (7)"
-msgstr ""
+msgstr "Barra de Estado (7)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:27
 msgid ""
 "The Status Bar is a helpful bar in the bottom of the program that shows "
 "tips based on the currently hovered-over item."
 msgstr ""
+"A barra de estado é uma barra útil na parte inferior do programa que mostra "
+"dicas baseadas no item que está pairando no momento."
