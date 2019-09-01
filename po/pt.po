@@ -708,7 +708,7 @@ msgstr "Nenhuma saída selecionada"
 #: src/gui/widgets/route_target_selector_popover.c:194
 #, c-format
 msgid "Routing to %s"
-msgstr ""
+msgstr "Encaminhamento a %s"
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
