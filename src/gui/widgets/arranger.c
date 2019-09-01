@@ -634,44 +634,98 @@ on_right_click (GtkGestureMultiPress *gesture,
 }
 
 static void
-auto_scroll (ArrangerWidget * self)
+auto_scroll (
+  ArrangerWidget * self,
+  int              x,
+  int              y)
 {
-  return;
   ARRANGER_WIDGET_GET_PRIVATE (self);
-	GET_ARRANGER_ALIASES(self);
-	GtkScrolledWindow *scrolled =
+
+  /* figure out if we should scroll */
+  int scroll_h = 0, scroll_v = 0;
+  switch (ar_prv->action)
+    {
+    case UI_OVERLAY_ACTION_MOVING:
+    case UI_OVERLAY_ACTION_MOVING_COPY:
+    case UI_OVERLAY_ACTION_CREATING_MOVING:
+    case UI_OVERLAY_ACTION_SELECTING:
+    case UI_OVERLAY_ACTION_RAMPING:
+      scroll_h = 1;
+      scroll_v = 1;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R:
+    case UI_OVERLAY_ACTION_RESIZING_L:
+    case UI_OVERLAY_ACTION_STRETCHING_L:
+    case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
+    case UI_OVERLAY_ACTION_STRETCHING_R:
+    case UI_OVERLAY_ACTION_AUTOFILLING:
+    case UI_OVERLAY_ACTION_AUDITIONING:
+      scroll_h = 1;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_UP:
+      scroll_v = 1;
+      break;
+    default:
+      break;
+    }
+
+  if (!scroll_h && !scroll_v)
+    return;
+
+	GtkScrolledWindow *scroll =
 		arranger_widget_get_scrolled_window (self);
-	if (midi_arranger)
-	{
-		midi_arranger_widget_auto_scroll(
-      midi_arranger, scrolled,
-      ar_prv->action ==
-        UI_OVERLAY_ACTION_MOVING ||
-      ar_prv->action ==
-        UI_OVERLAY_ACTION_MOVING_COPY ||
-      ar_prv->action ==
-        UI_OVERLAY_ACTION_MOVING_LINK);
-	};
-  if (timeline_arranger)
+  int h_scroll_speed = 20;
+  int v_scroll_speed = 10;
+  int border_distance = 5;
+  int scroll_width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (scroll));
+  int scroll_height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (scroll));
+  GtkAdjustment *hadj =
+    gtk_scrolled_window_get_hadjustment (
+      GTK_SCROLLED_WINDOW (scroll));
+  GtkAdjustment *vadj =
+    gtk_scrolled_window_get_vadjustment (
+      GTK_SCROLLED_WINDOW (scroll));
+  int v_delta = 0;
+  int h_delta = 0;
+  int adj_x =
+    gtk_adjustment_get_value (hadj);
+  int adj_y =
+    gtk_adjustment_get_value (vadj);
+  if (y + border_distance
+        >= adj_y + scroll_height)
     {
-
+      v_delta = v_scroll_speed;
     }
-  if (midi_modifier_arranger)
+  else if (y - border_distance <= adj_y)
     {
-
+      v_delta = - v_scroll_speed;
     }
-  if (audio_arranger)
+  if (x + border_distance >= adj_x + scroll_width)
     {
-
+      h_delta = h_scroll_speed;
     }
-  if (automation_arranger)
+  else if (x - border_distance <= adj_x)
     {
-
+      h_delta = - h_scroll_speed;
     }
-  if (chord_arranger)
-    {
+  if (h_delta != 0 && scroll_h)
+  {
+    gtk_adjustment_set_value (
+      hadj,
+      gtk_adjustment_get_value (hadj) + h_delta);
+  }
+  if (v_delta != 0 && scroll_v)
+  {
+    gtk_adjustment_set_value (
+      vadj,
+      gtk_adjustment_get_value (vadj) + v_delta);
+  }
 
-    }
+  return;
 }
 
 static gboolean
@@ -866,8 +920,8 @@ on_key_action (
   arranger_widget_refresh_cursor (
     self);
 
-  if (num > 0)
-    auto_scroll (self);
+  /*if (num > 0)*/
+    /*auto_scroll (self);*/
 
   return FALSE;
 }
@@ -1588,7 +1642,9 @@ drag_update (
           midi_arranger_widget_move_items_y (
             midi_arranger,
             offset_y);
-          auto_scroll (self);
+          /*auto_scroll (*/
+            /*self, ar_prv->start_x + offset_x,*/
+            /*ar_prv->start_y + offset_y);*/
         }
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
@@ -1657,6 +1713,11 @@ drag_update (
       /* TODO */
       break;
     }
+
+  if (ar_prv->action != UI_OVERLAY_ACTION_NONE)
+    auto_scroll (
+      self, ar_prv->start_x + offset_x,
+      ar_prv->start_y + offset_y);
 
   /* update last offsets */
   ar_prv->last_offset_x = offset_x;

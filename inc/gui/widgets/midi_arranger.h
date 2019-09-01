@@ -135,15 +135,4 @@ void
 midi_arranger_widget_reset_transients (
   MidiArrangerWidget * self);
 
-/**
- * if midi_notes are within the min border distance grid
- * will auto scroll
- */
-
-void
-midi_arranger_widget_auto_scroll(
-	MidiArrangerWidget * self,
-  GtkScrolledWindow *  scrolled_window,
-  int                  transient);
-
 #endif
