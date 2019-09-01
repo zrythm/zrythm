@@ -189,7 +189,7 @@ snap_grid_update_snap_points (SnapGrid * self)
       position_add_ticks (
         &tmp,
         ticks);
-      /*position_print (&tmp);*/
+      /*position_print_yaml (&tmp);*/
       position_set_to_pos (
         &self->snap_points[self->num_snap_points++],
         &tmp);

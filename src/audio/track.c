@@ -695,7 +695,8 @@ track_set_pos (
 
   for (int i = 0; i < track->num_lanes; i++)
     {
-      track->lanes[i]->track_pos = pos;
+      track_lane_set_track_pos (
+        track->lanes[i], pos);
     }
   automation_tracklist_update_track_pos (
     &track->automation_tracklist, track);
@@ -703,38 +704,15 @@ track_set_pos (
   /* update port identifier track positions */
   if (track->channel)
     {
-      Channel * ch = track->channel;
+      Port * ports[80000];
+      int    num_ports = 0;
+      channel_append_all_ports (
+        track->channel,
+        ports, &num_ports, 1);
 
-      if (track->in_signal_type ==
-            TYPE_AUDIO)
+      for (int i = 0; i < num_ports; i++)
         {
-          ch->stereo_in->l->identifier.track_pos =
-            pos;
-          ch->stereo_in->r->identifier.track_pos =
-            pos;
-        }
-      if (track->in_signal_type ==
-            TYPE_EVENT)
-        {
-          ch->midi_in->identifier.track_pos =
-            pos;
-          if (track_has_piano_roll (track))
-            ch->piano_roll->identifier.track_pos =
-              pos;
-        }
-      if (track->out_signal_type ==
-            TYPE_AUDIO)
-        {
-          ch->stereo_out->l->identifier.track_pos =
-            pos;
-          ch->stereo_out->r->identifier.track_pos =
-            pos;
-        }
-      if (track->out_signal_type ==
-            TYPE_EVENT)
-        {
-          ch->midi_out->identifier.track_pos =
-            pos;
+          ports[i]->identifier.track_pos = pos;
         }
     }
 }

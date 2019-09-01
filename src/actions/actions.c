@@ -694,7 +694,7 @@ on_timeline_clipboard_received (
     timeline_selections_deserialize (text);
   timeline_selections_post_deserialize (ts);
   g_message ("printing deserialized");
-  timeline_selections_print (ts);
+  timeline_selections_print_yaml (ts);
 
   if (MAIN_WINDOW->last_focused ==
       GTK_WIDGET (MW_TIMELINE))

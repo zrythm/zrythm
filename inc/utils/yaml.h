@@ -104,11 +104,11 @@
 
 #define PRINT_YAML_INC(camelcase, lowercase) \
   void \
-  lowercase##_print (camelcase * x);
+  lowercase##_print_yaml (camelcase * x);
 
 #define PRINT_YAML_SRC(camelcase, lowercase) \
   void \
-  lowercase##_print (camelcase * x) \
+  lowercase##_print_yaml (camelcase * x) \
   { \
     char * serialized = \
       lowercase##_serialize (x); \

@@ -83,7 +83,7 @@ draw_audio_clip (GtkWidget * self,
       /*Position pos;*/
       /*position_init (&pos);*/
       /*position_add_frames (&pos, curr_frames);*/
-      /*position_print (&pos);*/
+      /*position_print_yaml (&pos);*/
       float min = 0, max = 0;
       for (int j = prev_frames; j < curr_frames; j++)
         {
