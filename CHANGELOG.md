@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.6.174] - 2019-09-01
+## [0.6.175] - 2019-09-01
 - Piano roll now opens centered on middle C
 - Add context menu option for exporting MIDI regions into MIDI files
 - Add track visibility panel and option to hide track in the track context menu

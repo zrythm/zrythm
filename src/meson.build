@@ -73,6 +73,7 @@ objects = []
 zrythm_exe = executable (
   'zrythm',
   sources: [
+    config_h,
     zrythm_main,
     zrythm_resources,
     ],
