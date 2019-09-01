@@ -66,11 +66,6 @@ ScaleObjectWidget *
 scale_object_widget_new (
   ScaleObject * scale);
 
-void
-scale_object_widget_select (
-  ScaleObjectWidget * self,
-  int            select);
-
 /**
  * @}
  */

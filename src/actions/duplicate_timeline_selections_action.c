@@ -81,8 +81,8 @@ duplicate_timeline_selections_action_new (
         self->ts->sc##s[i], self->ticks, \
         AO_UPDATE_THIS); \
       /* select it */ \
-      sc##_widget_select ( \
-        sc->widget, F_SELECT); \
+      sc##_select ( \
+        sc, F_SELECT); \
       remember_code; \
     }
 
@@ -95,8 +95,8 @@ duplicate_timeline_selections_action_new (
         sc##_find ( \
           self->ts->sc##s[i]); \
       /* unselect it */ \
-      sc##_widget_select ( \
-        sc->widget, F_NO_SELECT); \
+      sc##_select ( \
+        sc, F_NO_SELECT); \
       /* remove it */ \
       remove_code; \
       /* unshift the clone */ \

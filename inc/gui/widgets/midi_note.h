@@ -76,9 +76,6 @@ midi_note_widget_new (MidiNote * midi_note);
 void
 midi_note_widget_destroy (MidiNoteWidget *self);
 
-DECLARE_ARRANGER_OBJECT_WIDGET_SELECT (
-  MidiNote, midi_note);
-
 void
 midi_note_widget_update_tooltip (
   MidiNoteWidget * self,

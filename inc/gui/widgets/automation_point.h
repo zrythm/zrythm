@@ -79,9 +79,6 @@ automation_point_widget_update_tooltip (
   AutomationPointWidget * self,
   int              show);
 
-DECLARE_ARRANGER_OBJECT_WIDGET_SELECT (
-  AutomationPoint, automation_point);
-
 /**
  * @}
  */

@@ -317,10 +317,6 @@ on_destroy (
   g_message ("on destroy %p", widget);
 }
 
-DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
-  MidiNote, midi_note,
-  midi_arranger_selections, MA_SELECTIONS);
-
 /**
  * Destroys the widget completely.
  */

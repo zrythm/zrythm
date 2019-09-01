@@ -103,10 +103,6 @@ on_motion (GtkWidget * widget,
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
-DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
-  AutomationPoint, automation_point,
-  automation_selections, AUTOMATION_SELECTIONS);
-
 void
 automation_point_widget_update_tooltip (
   AutomationPointWidget * self,

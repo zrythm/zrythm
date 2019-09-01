@@ -26,46 +26,5 @@
 #ifndef __GUI_WIDGETS_ARRANGER_OBJECT_H__
 #define __GUI_WIDGETS_ARRANGER_OBJECT_H__
 
-/**
- * Selects the widget by adding it to the selections.
- *
- * @param cc CamelCase.
- * @param sc snake_case.
- */
-#define ARRANGER_OBJECT_WIDGET_SELECT( \
-  cc,sc,selections_name,selections) \
-  cc * main_##sc = \
-    sc##_get_main_##sc (sc); \
-  if (select) \
-    { \
-      selections_name##_add_##sc ( \
-        selections, \
-        main_##sc); \
-    } \
-  else \
-    { \
-      selections_name##_remove_##sc ( \
-        selections, \
-        main_##sc); \
-    }
-
-#define DECLARE_ARRANGER_OBJECT_WIDGET_SELECT( \
-  cc, sc) \
-  void \
-  sc##_widget_select ( \
-    cc##Widget * self, \
-    int  select)
-
-#define DEFINE_ARRANGER_OBJECT_WIDGET_SELECT( \
-  cc,sc,selections_name,selections) \
-  void \
-  sc##_widget_select ( \
-    cc##Widget * self, \
-    int  select) \
-  { \
-    cc * sc = self->sc; \
-    ARRANGER_OBJECT_WIDGET_SELECT ( \
-      cc, sc, selections_name, selections); \
-  }
 
 #endif

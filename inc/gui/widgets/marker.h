@@ -66,11 +66,6 @@ MarkerWidget *
 marker_widget_new (
   Marker * marker);
 
-void
-marker_widget_select (
-  MarkerWidget * self,
-  int            select);
-
 /**
  * @}
  */

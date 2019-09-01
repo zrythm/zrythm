@@ -85,9 +85,6 @@ region_widget_setup (
   RegionWidget * self,
   Region *       region);
 
-DECLARE_ARRANGER_OBJECT_WIDGET_SELECT (
-  Region, region);
-
 /**
  * Returns if the current position is for resizing
  * L.

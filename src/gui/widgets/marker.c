@@ -120,10 +120,6 @@ on_press (
     }
 }
 
-DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
-  Marker, marker,
-  timeline_selections, TL_SELECTIONS);
-
 /**
  * Sets hover in CSS.
  */

@@ -73,8 +73,8 @@ duplicate_midi_arranger_selections_action_do (
         mn, self->delta, AO_UPDATE_ALL);
 
       /* select it */
-      midi_note_widget_select (
-        mn->widget, F_SELECT);
+      midi_note_select (
+        mn, F_SELECT);
     }
 
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,

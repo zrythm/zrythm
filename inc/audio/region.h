@@ -646,12 +646,6 @@ region_set_clip_start_pos (
   ArrangerObjectUpdateFlag update_flag);
 
 /**
- * Returns if Region is in MidiArrangerSelections.
- */
-int
-region_is_selected (Region * self);
-
-/**
  * Updates the frames of each position in each child
  * of the region recursively.
  */

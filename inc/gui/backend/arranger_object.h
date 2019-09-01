@@ -45,6 +45,47 @@ typedef enum ArrangerObjectUpdateFlag
 } ArrangerObjectUpdateFlag;
 
 /**
+ * Selects the widget by adding it to the selections.
+ *
+ * @param cc CamelCase.
+ * @param sc snake_case.
+ */
+#define ARRANGER_OBJ_SELECT( \
+  cc,sc,selections_name,selections) \
+  cc * main_##sc = \
+    sc##_get_main_##sc (sc); \
+  if (select) \
+    { \
+      selections_name##_add_##sc ( \
+        selections, \
+        main_##sc); \
+    } \
+  else \
+    { \
+      selections_name##_remove_##sc ( \
+        selections, \
+        main_##sc); \
+    }
+
+#define ARRANGER_OBJ_DECLARE_SELECT( \
+  cc, sc) \
+  void \
+  sc##_select ( \
+    cc * self, \
+    int  select)
+
+#define ARRANGER_OBJ_DEFINE_SELECT( \
+  cc,sc,selections_name,selections) \
+  void \
+  sc##_select ( \
+    cc * sc, \
+    int  select) \
+  { \
+    ARRANGER_OBJ_SELECT ( \
+      cc, sc, selections_name, selections); \
+  }
+
+/**
  * Returns if the object is in the selections.
  */
 #define ARRANGER_OBJ_DECLARE_IS_SELECTED( \
@@ -586,6 +627,7 @@ typedef enum ArrangerObjectUpdateFlag
  * AutomationPoint's.
  */
 #define ARRANGER_OBJ_DECLARE_MOVABLE(cc,sc) \
+  ARRANGER_OBJ_DECLARE_SELECT (cc, sc); \
   ARRANGER_OBJ_DECLARE_IS_SELECTED (cc, sc); \
   ARRANGER_OBJ_DECLARE_SET_POSES (cc, sc); \
   ARRANGER_OBJ_DECLARE_MOVE (cc, sc); \
@@ -596,6 +638,8 @@ typedef enum ArrangerObjectUpdateFlag
 
 #define ARRANGER_OBJ_DEFINE_MOVABLE( \
   cc,sc,selections_name,selections) \
+  ARRANGER_OBJ_DEFINE_SELECT ( \
+    cc,sc,selections_name,selections); \
   ARRANGER_OBJ_DEFINE_IS_SELECTED ( \
     cc,sc,selections_name,selections); \
   ARRANGER_OBJ_DEFINE_SET_POSES (cc, sc); \
@@ -610,6 +654,7 @@ typedef enum ArrangerObjectUpdateFlag
  */
 #define ARRANGER_OBJ_DECLARE_MOVABLE_W_LENGTH( \
   cc,sc) \
+  ARRANGER_OBJ_DECLARE_SELECT (cc, sc); \
   ARRANGER_OBJ_DECLARE_IS_SELECTED (cc, sc); \
   ARRANGER_OBJ_DECLARE_SET_POSES_W_LENGTH (cc, sc); \
   ARRANGER_OBJ_DECLARE_MOVE_W_LENGTH (cc, sc); \
@@ -624,6 +669,8 @@ typedef enum ArrangerObjectUpdateFlag
 
 #define ARRANGER_OBJ_DEFINE_MOVABLE_W_LENGTH( \
   cc,sc,selections_name,selections) \
+  ARRANGER_OBJ_DEFINE_SELECT ( \
+    cc,sc,selections_name,selections); \
   ARRANGER_OBJ_DEFINE_IS_SELECTED ( \
     cc,sc,selections_name,selections); \
   ARRANGER_OBJ_DEFINE_SET_POSES_W_LENGTH (cc, sc); \

@@ -441,8 +441,8 @@ arranger_widget_select (
 #define SELECT_WIDGET( \
   caps,cc,sc,select) \
   if (type == caps##_WIDGET_TYPE) \
-    sc##_widget_select ( \
-      ((cc *)child)->widget, select);
+    sc##_select ( \
+      (cc *)child, select);
 
   if (timeline_arranger)
     {

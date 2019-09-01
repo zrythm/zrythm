@@ -68,9 +68,6 @@ ChordObjectWidget *
 chord_object_widget_new (
   ChordObject * chord);
 
-DECLARE_ARRANGER_OBJECT_WIDGET_SELECT (
-  ChordObject, chord_object);
-
 /**
  * @}
  */

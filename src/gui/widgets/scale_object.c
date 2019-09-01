@@ -122,34 +122,6 @@ on_press (
     }
 }
 
-/**
- * Sets the "selected" GTK state flag and adds the
- * note to TimelineSelections.
- */
-void
-scale_object_widget_select (
-  ScaleObjectWidget * self,
-  int              select)
-{
-  ScaleObject * main_scale =
-    scale_object_get_main_scale_object (
-      self->scale_object);
-  if (select)
-    {
-      timeline_selections_add_scale_object (
-        TL_SELECTIONS,
-        main_scale);
-    }
-  else
-    {
-      timeline_selections_remove_scale_object (
-        TL_SELECTIONS,
-        main_scale);
-    }
-  EVENTS_PUSH (ET_SCALE_OBJECT_CHANGED,
-               main_scale);
-}
-
 static gboolean
 on_motion (
   GtkWidget *      widget,

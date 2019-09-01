@@ -560,8 +560,8 @@ timeline_arranger_widget_select_all (
                 {
                   r = lane->regions[k];
 
-                  region_widget_select (
-                    r->widget, select);
+                  region_select (
+                    r, select);
                 }
             }
         }
@@ -581,8 +581,8 @@ timeline_arranger_widget_select_all (
             {
               r = at->regions[k];
 
-              region_widget_select (
-                r->widget, select);
+              region_select (
+                r, select);
             }
         }
     }
@@ -593,8 +593,8 @@ timeline_arranger_widget_select_all (
        i < P_CHORD_TRACK->num_scales; i++)
     {
       scale = P_CHORD_TRACK->scales[i];
-      scale_object_widget_select (
-        scale->widget, select);
+      scale_object_select (
+        scale, select);
     }
 
   /**

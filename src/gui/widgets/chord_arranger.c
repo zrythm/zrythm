@@ -272,8 +272,8 @@ chord_arranger_widget_select_all (
   for (int i = 0; i < r->num_chord_objects; i++)
     {
       chord = r->chord_objects[i];
-      chord_object_widget_select (
-        chord->widget, select);
+      chord_object_select (
+        chord, select);
     }
 }
 

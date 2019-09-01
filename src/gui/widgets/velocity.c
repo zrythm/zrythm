@@ -244,10 +244,6 @@ velocity_widget_update_tooltip (
   g_free (tooltip);
 }
 
-DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
-  Velocity, velocity,
-  midi_arranger_selections, MA_SELECTIONS);
-
 /**
  * Creates a velocity.
  */

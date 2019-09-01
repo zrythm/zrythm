@@ -130,10 +130,6 @@ on_press (
     }
 }
 
-DEFINE_ARRANGER_OBJECT_WIDGET_SELECT (
-  ChordObject, chord_object,
-  chord_selections, CHORD_SELECTIONS);
-
 static gboolean
 on_motion (
   GtkWidget *      widget,

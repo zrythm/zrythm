@@ -434,19 +434,6 @@ region_widget_is_resize_r (
   return 0;
 }
 
-void
-region_widget_select (
-  RegionWidget * self,
-  int            select)
-{
-  RegionWidgetPrivate * prv =
-    region_widget_get_instance_private (self);
-  Region * region = prv->region;
-  ARRANGER_OBJECT_WIDGET_SELECT (
-    Region, region,
-    timeline_selections, TL_SELECTIONS);
-}
-
 RegionWidgetPrivate *
 region_widget_get_private (RegionWidget * self)
 {

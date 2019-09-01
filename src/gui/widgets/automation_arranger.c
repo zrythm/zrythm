@@ -393,8 +393,8 @@ automation_arranger_widget_select_all (
   for (i = 0; i < region->num_aps; i++)
     {
       ap = region->aps[i];
-      automation_point_widget_select (
-        ap->widget, select);
+      automation_point_select (
+        ap, select);
     }
 
   /**

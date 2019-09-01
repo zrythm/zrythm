@@ -60,12 +60,8 @@ typedef struct _VelocityWidget
  * Creates a velocity.
  */
 VelocityWidget *
-velocity_widget_new (Velocity * velocity);
-
-void
-velocity_widget_select (
-  VelocityWidget * self,
-  int              select);
+velocity_widget_new (
+  Velocity * velocity);
 
 /**
  * Returns if the current position is for resizing.

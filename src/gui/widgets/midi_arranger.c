@@ -189,8 +189,8 @@ midi_arranger_widget_select_all (
   for (int i = 0; i < mr->num_midi_notes; i++)
     {
       MidiNote * midi_note = mr->midi_notes[i];
-      midi_note_widget_select (
-        midi_note->widget, select);
+      midi_note_select (
+        midi_note, select);
     }
   /*arranger_widget_refresh(&self->parent_instance);*/
 }
