@@ -1,6 +1,40 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.173] - 2019-09-01
+- Piano roll now opens centered on middle C
+- Add context menu option for exporting MIDI regions into MIDI files
+- Add track visibility panel and option to hide track in the track context menu
+- Make track name editable by double clicking on it in the track
+- Add ability to move tracks inside the tracklist
+- Double clicking on regions now brings up the bottom panel if hidden
+- Make MIDI track functional
+- The monitor fader in the control room section is now operational and the level is persisted
+- Add inputs section in each recordable track to choose input device for recording
+- Add input MIDI channel filter on MIDI and instrument tracks
+- Add meson target for collecting translatables
+- Use track/plugin/port or track/port designation for ports
+- Ellipsize text in various places to prevent overflow of widgets
+- Change donate dialog to direct link to LiberaPay
+- Add some missing tooltips
+- Show selected track info (master by default) on startup
+- User manual button now opens manual locally if installed
+- Add ability to scroll with mousewheel to change values in meters
+- Change chatroom link to point to the new chatroom
+- Add meson version dependency
+- Grid now adapts to zoom level
+- Bug report link now prefills the report
+- Use git version and commit hash as the version string if available
+- Fix piano roll key shade not going away and not being able to click and hold to play multiple keys
+- Fix JACK ports not getting renamed after a track gets renamed
+- Fix splash screen and lock track icons not showing
+- Fix auto-scroll in piano roll
+- Fix piano roll events being sent to channel 2 instead of channel 1
+- Fix some regressions
+- Arranger object refactoring and minor fixes
+- Signal flow refactoring and bugfixes
+- Updated Japanese, French, Portuguese, German translations
+
 ## [0.6.039] - 2019-08-21
 - Add MIDI out ports to channels and to JACK/ALSA
 - Add JACK transport functionality (timebase master and client)
