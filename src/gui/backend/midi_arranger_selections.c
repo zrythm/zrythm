@@ -298,17 +298,8 @@ midi_arranger_selections_remove_midi_note (
     note);
 }
 
-/**
- * Resets the given counterparts from the other
- * counterparts.
- *
- * @param reset_trans 1 to reset the transient from
- *   main, 0 to reset main from transient.
- */
-void
-midi_arranger_selections_reset_counterparts (
-  MidiArrangerSelections * self,
-  int                  reset_trans)
+ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS (
+  MidiArranger, midi_arranger)
 {
   for (int i = 0; i < self->num_midi_notes; i++)
     {

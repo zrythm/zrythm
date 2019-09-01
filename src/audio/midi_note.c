@@ -240,17 +240,8 @@ midi_note_set_cache_val (
     cache_val = val;
 }
 
-/**
- * Sets the transient's values to the main midi
- * note's values.
- *
- * @param reset_trans 1 to reset the transient from
- *   main, 0 to reset main from transient.
- */
-void
-midi_note_reset_counterpart (
-  MidiNote * midi_note,
-  int        reset_trans)
+ARRANGER_OBJ_DECLARE_RESET_COUNTERPART (
+  MidiNote, midi_note)
 {
   MidiNote * src =
     reset_trans ?

@@ -1635,9 +1635,7 @@ timeline_arranger_widget_move_items_x (
 {
   timeline_selections_add_ticks (
     TL_SELECTIONS, ticks_diff, F_USE_CACHED,
-    copy_moving ?
-      AO_UPDATE_TRANS :
-      AO_UPDATE_ALL);
+    AO_UPDATE_NON_TRANS);
 
   /* for MIDI arranger ruler */
   EVENTS_PUSH (ET_REGION_POSITIONS_CHANGED,
@@ -1889,6 +1887,8 @@ timeline_arranger_widget_on_drag_end (
               NULL, NULL);
           undo_manager_perform (
             UNDO_MANAGER, ua);
+          timeline_selections_reset_counterparts (
+            TL_SELECTIONS, 1);
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
@@ -1909,6 +1909,8 @@ timeline_arranger_widget_on_drag_end (
               NULL, NULL);
           undo_manager_perform (
             UNDO_MANAGER, ua);
+          timeline_selections_reset_counterparts (
+            TL_SELECTIONS, 1);
         }
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
@@ -1933,45 +1935,59 @@ timeline_arranger_widget_on_drag_end (
       break;
     case UI_OVERLAY_ACTION_MOVING:
       {
-        Position earliest_trans_pos;
+        Position earliest_main_pos,
+                 earliest_trans_pos;
+        timeline_selections_get_start_pos (
+          TL_SELECTIONS,
+          &earliest_main_pos, 0);
         timeline_selections_get_start_pos (
           TL_SELECTIONS,
           &earliest_trans_pos, 1);
+        long ticks_diff =
+          earliest_main_pos.total_ticks -
+            earliest_trans_pos.total_ticks;
+        int tracks_diff =
+          timeline_selections_get_highest_track (
+            TL_SELECTIONS, F_NO_TRANSIENTS) -
+          timeline_selections_get_highest_track (
+            TL_SELECTIONS, F_TRANSIENTS);
         UndoableAction * ua =
           (UndoableAction *)
           move_timeline_selections_action_new (
             TL_SELECTIONS,
-            position_to_ticks (
-              &earliest_trans_pos) -
-            position_to_ticks (
-              &ar_prv->earliest_obj_start_pos),
-            timeline_selections_get_highest_track (
-              TL_SELECTIONS, F_TRANSIENTS) -
-            timeline_selections_get_highest_track (
-              TL_SELECTIONS, F_NO_TRANSIENTS));
+            ticks_diff, tracks_diff);
         undo_manager_perform (
           UNDO_MANAGER, ua);
+        timeline_selections_reset_counterparts (
+          TL_SELECTIONS, 1);
       }
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
       {
-        Position earliest_trans_pos;
+        Position earliest_main_pos,
+                 earliest_trans_pos;
+        timeline_selections_get_start_pos (
+          TL_SELECTIONS,
+          &earliest_main_pos, 0);
         timeline_selections_get_start_pos (
           TL_SELECTIONS,
           &earliest_trans_pos, 1);
+        long ticks_diff =
+          earliest_main_pos.total_ticks -
+            earliest_trans_pos.total_ticks;
+        int tracks_diff =
+          timeline_selections_get_highest_track (
+            TL_SELECTIONS, F_NO_TRANSIENTS) -
+          timeline_selections_get_highest_track (
+            TL_SELECTIONS, F_TRANSIENTS);
+        timeline_selections_reset_counterparts (
+          TL_SELECTIONS, 0);
         UndoableAction * ua =
           (UndoableAction *)
           duplicate_timeline_selections_action_new (
             TL_SELECTIONS,
-            position_to_ticks (
-              &earliest_trans_pos) -
-            position_to_ticks (
-              &ar_prv->earliest_obj_start_pos),
-            timeline_selections_get_highest_track (
-              TL_SELECTIONS, F_TRANSIENTS) -
-            timeline_selections_get_highest_track (
-              TL_SELECTIONS, F_NO_TRANSIENTS));
+            ticks_diff, tracks_diff);
         timeline_selections_reset_transient_poses (
           TL_SELECTIONS);
         timeline_selections_clear (
@@ -2031,6 +2047,8 @@ timeline_arranger_widget_on_drag_end (
   ar_prv->action = UI_OVERLAY_ACTION_NONE;
   timeline_arranger_widget_update_visibility (
     self);
+
+  timeline_arranger_widget_refresh_children (self);
 
   self->resizing_range = 0;
   self->resizing_range_start = 0;
@@ -2194,8 +2212,6 @@ add_children_from_midi_track (
                   Z_REGION_WIDGET (
                     midi_region_widget_new (
                       r));
-              g_message ("adding :");
-              region_print (r);
 
               gtk_overlay_add_overlay (
                 GTK_OVERLAY (self),

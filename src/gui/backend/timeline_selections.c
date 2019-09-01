@@ -324,6 +324,16 @@ timeline_selections_get_last_object (
   return widget;
 }
 
+ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS (
+  Timeline, timeline)
+{
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      region_reset_counterpart (
+        self->regions[i], reset_trans);
+    }
+}
+
 /**
  * Gets highest track in the selections.
  *

@@ -1019,8 +1019,9 @@ midi_arranger_widget_on_drag_end (
                    midi_note);
     }
 
-  if (ar_prv->action ==
-        UI_OVERLAY_ACTION_RESIZING_L)
+  switch (ar_prv->action)
+    {
+    case UI_OVERLAY_ACTION_RESIZING_L:
     {
       MidiNote * trans_note =
         midi_note_get_main_trans_midi_note (
@@ -1036,8 +1037,8 @@ midi_arranger_widget_on_drag_end (
       midi_arranger_selections_reset_counterparts (
         MA_SELECTIONS, 1);
     }
-  else if (ar_prv->action ==
-        UI_OVERLAY_ACTION_RESIZING_R)
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R:
     {
       MidiNote * trans_note =
         midi_note_get_main_trans_midi_note (
@@ -1053,8 +1054,8 @@ midi_arranger_widget_on_drag_end (
       midi_arranger_selections_reset_counterparts (
         MA_SELECTIONS, 1);
     }
-  else if (ar_prv->action ==
-        UI_OVERLAY_ACTION_STARTING_MOVING)
+      break;
+    case UI_OVERLAY_ACTION_STARTING_MOVING:
     {
       /* if something was clicked with ctrl without
        * moving*/
@@ -1069,8 +1070,8 @@ midi_arranger_widget_on_drag_end (
               F_NO_SELECT, F_APPEND);
           }
     }
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING)
+      break;
+    case UI_OVERLAY_ACTION_MOVING:
     {
       MidiNote * note =
         midi_note_get_main_midi_note (
@@ -1090,11 +1091,10 @@ midi_arranger_widget_on_drag_end (
       midi_arranger_selections_reset_counterparts (
         MA_SELECTIONS, 1);
     }
-  /* if copy/link-moved */
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING_COPY ||
-           ar_prv->action ==
-             UI_OVERLAY_ACTION_MOVING_LINK)
+      break;
+    /* if copy/link-moved */
+    case UI_OVERLAY_ACTION_MOVING_COPY:
+    case UI_OVERLAY_ACTION_MOVING_LINK:
     {
       MidiNote * note =
         midi_note_get_main_midi_note (
@@ -1114,17 +1114,16 @@ midi_arranger_widget_on_drag_end (
           pitch_diff);
       undo_manager_perform (
         UNDO_MANAGER, ua);
-      /* TODO modifier too */
     }
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_NONE)
+      break;
+    case UI_OVERLAY_ACTION_NONE:
     {
       midi_arranger_selections_clear (
         MA_SELECTIONS);
     }
-  /* if something was created */
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_CREATING_RESIZING_R)
+      break;
+    /* something was created */
+    case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
     {
       UndoableAction * ua =
         (UndoableAction *)
@@ -1133,9 +1132,12 @@ midi_arranger_widget_on_drag_end (
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
-  /* if didn't click on something */
-  else
+      break;
+    /* if didn't click on something */
+    default:
     {
+    }
+      break;
     }
   ar_prv->action = UI_OVERLAY_ACTION_NONE;
   midi_arranger_widget_update_visibility (
