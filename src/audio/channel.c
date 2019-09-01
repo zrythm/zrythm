@@ -1680,6 +1680,8 @@ init_stereo_out_ports (
 
   if (loading)
     {
+      l = NULL;
+      r = NULL;
     }
   else
     {

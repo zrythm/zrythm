@@ -1416,7 +1416,7 @@ char *
 port_get_full_designation (
   const Port * self)
 {
-  PortIdentifier * id = &self->identifier;
+  const PortIdentifier * id = &self->identifier;
 
   switch (id->owner_type)
     {

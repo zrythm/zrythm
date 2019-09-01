@@ -16,6 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 dzl_srcs = [
+  config_h,
   'dzl-animation.c',
   'dzl-bin.c',
   'dzl-child-property-action.c',
