@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-30 21:25+0000\n"
+"PO-Revision-Date: 2019-09-01 12:44+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/pt/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
 msgid "File Browser"
-msgstr ""
+msgstr "Navegador de Ficheiros"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:21
 msgid ""
@@ -111,7 +111,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:19
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Navegador de Plugins"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:21
 msgid ""
@@ -131,7 +131,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Collection"
-msgstr ""
+msgstr "Coleção"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:32
 msgid ""
@@ -141,7 +141,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid "Category"
-msgstr ""
+msgstr "Categoria"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid ""
@@ -151,7 +151,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:40
 msgid "Protocol"
-msgstr ""
+msgstr "Protocolo"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:39
 msgid ""
