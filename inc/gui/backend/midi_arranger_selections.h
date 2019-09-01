@@ -108,18 +108,6 @@ midi_arranger_selections_get_lowest_note (
   int                      transient);
 
 /**
- * Resets the given counterparts from the other
- * counterparts.
- *
- * @param reset_trans 1 to reset the transient from
- *   main, 0 to reset main from transient.
- */
-void
-midi_arranger_selections_reset_counterparts (
-  MidiArrangerSelections * self,
-  int                  reset_trans);
-
-/**
  * Adds a Velocity (MidiNote) to the selections.
  */
 #define midi_arranger_selections_add_velocity( \

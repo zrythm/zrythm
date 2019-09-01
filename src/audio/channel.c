@@ -2401,37 +2401,15 @@ channel_disconnect (
         }
     }
 
-  Track * track = channel->track;
-  switch (track->in_signal_type)
+  Port * ports[80000];
+  int    num_ports = 0;
+  channel_append_all_ports (
+    channel,
+    ports, &num_ports, 0);
+  for (int i = 0; i < num_ports; i++)
     {
-    case TYPE_AUDIO:
-      port_disconnect_all (channel->stereo_in->l);
-      port_disconnect_all (channel->stereo_in->r);
-      break;
-    case TYPE_EVENT:
-      port_disconnect_all (channel->midi_in);
-      if (track_has_piano_roll (track))
-        port_disconnect_all (channel->piano_roll);
-      break;
-    default:
-      break;
+      port_disconnect_all (ports[i]);
     }
-  switch (track->out_signal_type)
-    {
-    case TYPE_AUDIO:
-      port_disconnect_all (channel->stereo_out->l);
-      port_disconnect_all (channel->stereo_out->r);
-      break;
-    case TYPE_EVENT:
-      port_disconnect_all (channel->midi_out);
-      break;
-    default:
-      break;
-    }
-
-  passthrough_processor_disconnect_all (
-    &channel->prefader);
-  fader_disconnect_all (&channel->fader);
 
   if (recalc_graph)
     mixer_recalc_graph (MIXER);

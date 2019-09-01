@@ -462,6 +462,23 @@ region_update_frames (
 
 }
 
+ARRANGER_OBJ_DECLARE_RESET_COUNTERPART (
+  Region, region)
+{
+  Region * src =
+    reset_trans ?
+      region_get_main_region (region) :
+      region_get_main_trans_region (region);
+  Region * dest =
+    reset_trans ?
+      region_get_main_trans_region (region) :
+      region_get_main_region (region);
+
+  position_set_to_pos (
+    &dest->start_pos, &src->start_pos);
+  position_set_to_pos (
+    &dest->end_pos, &src->end_pos);
+}
 
 /**
  * Returns the length of the loop in ticks.

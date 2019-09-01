@@ -42,6 +42,20 @@
   sc##_selections_init_loaded ( \
     cc##Selections * self)
 
+#define ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS( \
+  cc,sc) \
+  /**
+   * Resets the given counterparts from the other
+   * counterparts.
+   *
+   * @param reset_trans 1 to reset the transient
+   *   from main, 0 to reset main from transient.
+   */ \
+  void \
+  sc##_selections_reset_counterparts ( \
+    cc##Selections * self, \
+    const int        reset_trans)
+
 /**
  * Clone the struct for copying, undoing, etc.
  */
@@ -222,6 +236,8 @@
  * Declares all of the above functions.
  */
 #define ARRANGER_SELECTIONS_DECLARE_FUNCS(cc,sc) \
+  ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS ( \
+    cc, sc); \
   ARRANGER_SELECTIONS_DECLARE_INIT_LOADED (cc,sc); \
   ARRANGER_SELECTIONS_DECLARE_CLONE (cc,sc); \
   ARRANGER_SELECTIONS_DECLARE_HAS_ANY (cc,sc); \
@@ -240,6 +256,8 @@
 
 #define ARRANGER_SELECTIONS_DECLARE_TIMELINE_FUNCS( \
   cc,sc) \
+  ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS ( \
+    cc, sc); \
   ARRANGER_SELECTIONS_DECLARE_INIT_LOADED (cc,sc); \
   ARRANGER_SELECTIONS_DECLARE_CLONE (cc,sc); \
   ARRANGER_SELECTIONS_DECLARE_HAS_ANY (cc,sc); \

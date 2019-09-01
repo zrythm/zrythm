@@ -86,6 +86,20 @@ typedef enum ArrangerObjectUpdateFlag
   }
 
 /**
+ * Sets the transient's values to the main
+ * object's values.
+ *
+ * @param reset_trans 1 to reset the transient from
+ *   main, 0 to reset main from transient.
+ */
+#define ARRANGER_OBJ_DECLARE_RESET_COUNTERPART( \
+  cc, sc) \
+  void \
+  sc##_reset_counterpart ( \
+    cc *       sc, \
+    const int  reset_trans)
+
+/**
  * Returns if the object is in the selections.
  */
 #define ARRANGER_OBJ_DECLARE_IS_SELECTED( \
@@ -627,6 +641,7 @@ typedef enum ArrangerObjectUpdateFlag
  * AutomationPoint's.
  */
 #define ARRANGER_OBJ_DECLARE_MOVABLE(cc,sc) \
+  ARRANGER_OBJ_DECLARE_RESET_COUNTERPART (cc, sc); \
   ARRANGER_OBJ_DECLARE_SELECT (cc, sc); \
   ARRANGER_OBJ_DECLARE_IS_SELECTED (cc, sc); \
   ARRANGER_OBJ_DECLARE_SET_POSES (cc, sc); \
@@ -654,6 +669,7 @@ typedef enum ArrangerObjectUpdateFlag
  */
 #define ARRANGER_OBJ_DECLARE_MOVABLE_W_LENGTH( \
   cc,sc) \
+  ARRANGER_OBJ_DECLARE_RESET_COUNTERPART (cc, sc); \
   ARRANGER_OBJ_DECLARE_SELECT (cc, sc); \
   ARRANGER_OBJ_DECLARE_IS_SELECTED (cc, sc); \
   ARRANGER_OBJ_DECLARE_SET_POSES_W_LENGTH (cc, sc); \
