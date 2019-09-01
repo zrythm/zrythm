@@ -300,13 +300,19 @@ int
 midi_note_get_length_in_ticks (
   const MidiNote * self);
 
+#define midi_note_reset_transient(mn) \
+  midi_note_reset_counterpart (mn, 1)
 /**
  * Sets the transient's values to the main midi
  * note's values.
+ *
+ * @param reset_trans 1 to reset the transient from
+ *   main, 0 to reset main from transient.
  */
 void
-midi_note_reset_transient (
-  MidiNote * midi_note);
+midi_note_reset_counterpart (
+  MidiNote * midi_note,
+  int        reset_trans);
 
 /**
  * Sets the pitch of the MidiNote.

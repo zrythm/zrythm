@@ -243,22 +243,30 @@ midi_note_set_cache_val (
 /**
  * Sets the transient's values to the main midi
  * note's values.
+ *
+ * @param reset_trans 1 to reset the transient from
+ *   main, 0 to reset main from transient.
  */
 void
-midi_note_reset_transient (
-  MidiNote * midi_note)
+midi_note_reset_counterpart (
+  MidiNote * midi_note,
+  int        reset_trans)
 {
-  MidiNote * main =
-    midi_note_get_main_midi_note (midi_note);
-  MidiNote * trans =
-    midi_note_get_main_trans_midi_note (midi_note);
+  MidiNote * src =
+    reset_trans ?
+      midi_note_get_main_midi_note (midi_note) :
+      midi_note_get_main_trans_midi_note (midi_note);
+  MidiNote * dest =
+    reset_trans ?
+      midi_note_get_main_trans_midi_note (midi_note) :
+      midi_note_get_main_midi_note (midi_note);
 
   position_set_to_pos (
-    &trans->start_pos, &main->start_pos);
+    &dest->start_pos, &src->start_pos);
   position_set_to_pos (
-    &trans->end_pos, &main->end_pos);
-  trans->vel->vel = main->vel->vel;
-  trans->val = main->val;
+    &dest->end_pos, &src->end_pos);
+  dest->vel->vel = src->vel->vel;
+  dest->val = src->val;
 }
 
 /**

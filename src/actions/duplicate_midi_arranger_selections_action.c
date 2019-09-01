@@ -68,7 +68,6 @@ duplicate_midi_arranger_selections_action_do (
           self->mas->midi_notes[i],
           MIDI_NOTE_CLONE_COPY_MAIN);
 
-      /* add and shift it */
       midi_region_add_midi_note (
         mn->region, mn);
       midi_note_shift_by_ticks (
@@ -102,9 +101,9 @@ duplicate_midi_arranger_selections_action_undo (
 
       /* shift it */
       midi_note_shift_by_ticks (
-        orig_mn, self->ticks, AO_UPDATE_ALL);
+        orig_mn, self->ticks, AO_UPDATE_THIS);
       midi_note_shift_pitch (
-        orig_mn, self->delta, AO_UPDATE_ALL);
+        orig_mn, self->delta, AO_UPDATE_THIS);
 
       /* find the actual MidiNote at the new pos */
       mn = midi_note_find (orig_mn);
