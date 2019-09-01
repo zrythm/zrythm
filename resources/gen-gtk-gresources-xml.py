@@ -147,6 +147,7 @@ _breeze_icons = [
   'edit-paste',
   'edit-delete',
   'edit-select-all',
+  'gnumeric-column-hide',
   'kt-show-statusbar',
   'edit-clear',
   'select-rectangular',

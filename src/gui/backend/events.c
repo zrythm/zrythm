@@ -71,6 +71,7 @@
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/track_visibility_tree.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/visibility.h"
 #include "project.h"
@@ -897,6 +898,8 @@ events_process (void * data)
             MW_TIMELINE);
           timeline_arranger_widget_refresh_children (
             MW_PINNED_TIMELINE);
+          track_visibility_tree_widget_refresh (
+            MW_TRACK_VISIBILITY_TREE);
           break;
         case ET_UNDO_REDO_ACTION_DONE:
           home_toolbar_widget_refresh_undo_redo_buttons (

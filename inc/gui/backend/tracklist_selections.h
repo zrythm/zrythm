@@ -134,6 +134,13 @@ tracklist_selections_select_last_visible (
   TracklistSelections * ts);
 
 /**
+ * Toggle visibility of the selected tracks.
+ */
+void
+tracklist_selections_toggle_visibility (
+  TracklistSelections * ts);
+
+/**
  * For debugging.
  */
 void

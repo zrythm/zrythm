@@ -236,6 +236,23 @@ tracklist_selections_sort (
 }
 
 /**
+ * Toggle visibility of the selected tracks.
+ */
+void
+tracklist_selections_toggle_visibility (
+  TracklistSelections * ts)
+{
+  Track * track;
+  for (int i = 0; i < ts->num_tracks; i++)
+    {
+      track = ts->tracks[i];
+      track->visible = !track->visible;
+    }
+
+  EVENTS_PUSH (ET_TRACK_VISIBILITY_CHANGED, NULL);
+}
+
+/**
  * Clone the struct for copying, undoing, etc.
  */
 TracklistSelections *

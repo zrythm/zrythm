@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-08-31 02:54+0100\n"
+"POT-Creation-Date: 2019-09-01 07:22+0100\n"
 "PO-Revision-Date: 2019-08-26 13:09+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
@@ -21,23 +21,23 @@ msgstr ""
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
-#: src/zrythm.c:269
+#: src/zrythm.c:271
 msgid "Initializing settings"
 msgstr "Initialisation des paramètres"
 
-#: src/zrythm.c:280
+#: src/zrythm.c:282
 msgid "Initializing audio engine"
 msgstr "Initialisation du moteur audio"
 
-#: src/zrythm.c:285
+#: src/zrythm.c:287
 msgid "Initializing plugin manager"
 msgstr "Initialisation du gestionnaire  de greffon"
 
-#: src/zrythm.c:292
+#: src/zrythm.c:294
 msgid "Setting up backend"
 msgstr "Configuration du moteur"
 
-#: src/zrythm.c:301
+#: src/zrythm.c:303
 msgid "Loading project"
 msgstr "Chargement du projet"
 
@@ -50,7 +50,7 @@ msgstr "Master"
 msgid "Untitled Project"
 msgstr "Projet sans titre"
 
-#: src/project.c:493
+#: src/project.c:494
 msgid "Project saved."
 msgstr "Projet sauvegardé."
 
@@ -59,7 +59,7 @@ msgstr "Projet sauvegardé."
 msgid "Error: signal %d - Backtrace:"
 msgstr "Erreur : signal %d - Backtrace :"
 
-#: src/main.c:117
+#: src/main.c:119
 #, c-format
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
@@ -67,7 +67,7 @@ msgstr ""
 "Zrythm a planté. Veuillez nous aider à corriger cela en %ssoumettant un "
 "rapport de bogue%s."
 
-#: src/main.c:167
+#: src/main.c:171
 #, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
@@ -98,7 +98,7 @@ msgstr ""
 "Supporter ce projet à https://liberapay.com/Zrythm\n"
 "Site ouèbe https://www.zrythm.org\n"
 
-#: src/main.c:225
+#: src/main.c:230
 #, c-format
 msgid ""
 "Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
@@ -132,14 +132,14 @@ msgid "Save State"
 msgstr "Sauvegarder l'état"
 
 #: src/plugins/lv2_gtk.c:153 src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:553
+#: src/utils/dialogs.c:74 src/actions/actions.c:557
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "_Annuler"
 
-#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:555
+#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:559
 msgid "_Save"
 msgstr "_Sauvegarder"
 
@@ -1124,21 +1124,21 @@ msgstr "Supprimer %d Pistes"
 msgid "Change Marker"
 msgstr "Changer le marqueur"
 
-#: src/actions/actions.c:249
+#: src/actions/actions.c:251
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
 "une station de travail audio numérique (STAN) hautement automatisée et "
 "intuitive"
 
-#: src/actions/actions.c:253
+#: src/actions/actions.c:255
 msgid "Website"
 msgstr "Site ouèbe"
 
-#: src/actions/actions.c:550
+#: src/actions/actions.c:554
 msgid "Save Project"
 msgstr "Sauvegarder le projet"
 
-#: src/actions/actions.c:615
+#: src/actions/actions.c:619
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""

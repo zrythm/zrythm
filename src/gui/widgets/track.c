@@ -444,11 +444,10 @@ show_context_menu (TrackWidget * self)
           /* delete track */
           if (num_selected == 1)
             str =
-              g_strdup_printf (_("_Delete Track"));
+              g_strdup (_("_Delete Track"));
           else
             str =
-              g_strdup_printf (_("_Delete %d Tracks"),
-                               num_selected);
+              g_strdup (_("_Delete Tracks"));
           menuitem =
             z_gtk_create_menu_item (
               str,
@@ -463,12 +462,10 @@ show_context_menu (TrackWidget * self)
           /* duplicate track */
           if (num_selected == 1)
             str =
-              g_strdup_printf (_("_Duplicate Track"));
+              g_strdup (_("_Duplicate Track"));
           else
             str =
-              g_strdup_printf (
-                _("_Duplicate %d Tracks"),
-                num_selected);
+              g_strdup (_("_Duplicate Tracks"));
           menuitem =
             z_gtk_create_menu_item (
               str,
@@ -494,6 +491,18 @@ show_context_menu (TrackWidget * self)
               "win.duplicate-selected-tracks");
           APPEND (menuitem);
         }
+
+      menuitem =
+        z_gtk_create_menu_item (
+          num_selected == 1 ?
+            _("Hide Track") :
+            _("Hide Tracks"),
+          "z-gnumeric-column-hide",
+          0,
+          NULL,
+          0,
+          "win.hide-selected-tracks");
+      APPEND (menuitem);
     }
 
 #undef APPEND

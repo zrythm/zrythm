@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-08-31 02:54+0100\n"
+"POT-Creation-Date: 2019-09-01 07:22+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Korean <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -19,23 +19,23 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 3.6.1\n"
 
-#: src/zrythm.c:269
+#: src/zrythm.c:271
 msgid "Initializing settings"
 msgstr ""
 
-#: src/zrythm.c:280
+#: src/zrythm.c:282
 msgid "Initializing audio engine"
 msgstr ""
 
-#: src/zrythm.c:285
+#: src/zrythm.c:287
 msgid "Initializing plugin manager"
 msgstr ""
 
-#: src/zrythm.c:292
+#: src/zrythm.c:294
 msgid "Setting up backend"
 msgstr ""
 
-#: src/zrythm.c:301
+#: src/zrythm.c:303
 msgid "Loading project"
 msgstr ""
 
@@ -48,7 +48,7 @@ msgstr ""
 msgid "Untitled Project"
 msgstr ""
 
-#: src/project.c:493
+#: src/project.c:494
 msgid "Project saved."
 msgstr ""
 
@@ -57,13 +57,13 @@ msgstr ""
 msgid "Error: signal %d - Backtrace:"
 msgstr ""
 
-#: src/main.c:117
+#: src/main.c:119
 #, c-format
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
 msgstr ""
 
-#: src/main.c:167
+#: src/main.c:171
 #, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
@@ -81,7 +81,7 @@ msgid ""
 "Website https://www.zrythm.org\n"
 msgstr ""
 
-#: src/main.c:225
+#: src/main.c:230
 #, c-format
 msgid ""
 "Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
@@ -103,14 +103,14 @@ msgid "Save State"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:153 src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:553
+#: src/utils/dialogs.c:74 src/actions/actions.c:557
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:555
+#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:559
 msgid "_Save"
 msgstr ""
 
@@ -1068,19 +1068,19 @@ msgstr ""
 msgid "Change Marker"
 msgstr ""
 
-#: src/actions/actions.c:249
+#: src/actions/actions.c:251
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
 
-#: src/actions/actions.c:253
+#: src/actions/actions.c:255
 msgid "Website"
 msgstr ""
 
-#: src/actions/actions.c:550
+#: src/actions/actions.c:554
 msgid "Save Project"
 msgstr ""
 
-#: src/actions/actions.c:615
+#: src/actions/actions.c:619
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""

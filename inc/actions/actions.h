@@ -318,9 +318,16 @@ activate_duplicate_selected_tracks (
   gpointer       user_data);
 
 void
-activate_delete_selected_tracks (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data);
+activate_delete_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+void
+activate_hide_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
 
 void
 activate_snap_events (GSimpleAction *action,

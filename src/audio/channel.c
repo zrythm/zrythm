@@ -2399,13 +2399,33 @@ channel_disconnect (
         }
     }
 
-  port_disconnect_all (channel->stereo_in->l);
-  port_disconnect_all (channel->stereo_in->r);
-  port_disconnect_all (channel->midi_in);
-  port_disconnect_all (channel->midi_out);
-  port_disconnect_all (channel->piano_roll);
-  port_disconnect_all (channel->stereo_out->l);
-  port_disconnect_all (channel->stereo_out->r);
+  Track * track = channel->track;
+  switch (track->in_signal_type)
+    {
+    case TYPE_AUDIO:
+      port_disconnect_all (channel->stereo_in->l);
+      port_disconnect_all (channel->stereo_in->r);
+      break;
+    case TYPE_EVENT:
+      port_disconnect_all (channel->midi_in);
+      if (track_has_piano_roll (track))
+        port_disconnect_all (channel->piano_roll);
+      break;
+    default:
+      break;
+    }
+  switch (track->out_signal_type)
+    {
+    case TYPE_AUDIO:
+      port_disconnect_all (channel->stereo_out->l);
+      port_disconnect_all (channel->stereo_out->r);
+      break;
+    case TYPE_EVENT:
+      port_disconnect_all (channel->midi_out);
+      break;
+    default:
+      break;
+    }
 
   passthrough_processor_disconnect_all (
     &channel->prefader);
@@ -2427,13 +2447,33 @@ channel_free (Channel * channel)
 {
   g_return_if_fail (channel);
 
-  port_free (channel->stereo_in->l);
-  port_free (channel->stereo_in->r);
-  port_free (channel->midi_in);
-  port_free (channel->midi_out);
-  port_free (channel->piano_roll);
-  port_free (channel->stereo_out->l);
-  port_free (channel->stereo_out->r);
+  Track * track = channel->track;
+  switch (track->in_signal_type)
+    {
+    case TYPE_AUDIO:
+      port_free (channel->stereo_in->l);
+      port_free (channel->stereo_in->r);
+      break;
+    case TYPE_EVENT:
+      port_free (channel->midi_in);
+      if (track_has_piano_roll (track))
+        port_free (channel->piano_roll);
+      break;
+    default:
+      break;
+    }
+  switch (track->out_signal_type)
+    {
+    case TYPE_AUDIO:
+      port_free (channel->stereo_out->l);
+      port_free (channel->stereo_out->r);
+      break;
+    case TYPE_EVENT:
+      port_free (channel->midi_out);
+      break;
+    default:
+      break;
+    }
 
   /* remove plugins */
   /*Plugin * pl;*/

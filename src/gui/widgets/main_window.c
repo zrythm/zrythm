@@ -304,6 +304,8 @@ main_window_widget_init (MainWindowWidget * self)
       activate_delete_selected_tracks },
     { "duplicate-selected-tracks",
       activate_duplicate_selected_tracks },
+    { "hide-selected-tracks",
+      activate_hide_selected_tracks },
 
     /* piano roll */
     { "toggle-drum-mode",

@@ -1059,6 +1059,18 @@ activate_delete_selected_tracks (
 }
 
 void
+activate_hide_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  g_message ("hiding selected tracks");
+
+  tracklist_selections_toggle_visibility (
+    TRACKLIST_SELECTIONS);
+}
+
+void
 change_state_dim_output (
   GSimpleAction * action,
   GVariant *      value,
