@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-09-01 07:22+0100\n"
+"POT-Creation-Date: 2019-09-01 13:42+0100\n"
 "PO-Revision-Date: 2019-08-26 13:09+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
@@ -204,29 +204,29 @@ msgstr "Information sur la piste"
 msgid "Inserts"
 msgstr "Inserts"
 
-#: src/gui/widgets/track_input_expander.c:184
+#: src/gui/widgets/track_input_expander.c:185
 #, fuzzy
 msgid "All MIDI Inputs"
 msgstr "Entrées MIDI"
 
-#: src/gui/widgets/track_input_expander.c:219
+#: src/gui/widgets/track_input_expander.c:220
 msgid "No inputs"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:259
+#: src/gui/widgets/track_input_expander.c:260
 msgid "All Channels"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:268
+#: src/gui/widgets/track_input_expander.c:269
 #, fuzzy, c-format
 msgid "Channel %s"
 msgstr "Changer la panoramique"
 
-#: src/gui/widgets/track_input_expander.c:283
+#: src/gui/widgets/track_input_expander.c:284
 msgid "No channel"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:410
+#: src/gui/widgets/track_input_expander.c:411
 msgid "Inputs"
 msgstr ""
 
@@ -400,14 +400,6 @@ msgstr "Position"
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "Signature temporelle - Battements par barre / unité de battement"
 
-#: src/gui/widgets/drag_dest_box.c:311
-msgid "Add _Instrument Track"
-msgstr "Ajouter une piste d'_instrument"
-
-#: src/gui/widgets/drag_dest_box.c:321
-msgid "Add _Audio Track"
-msgstr "Ajouter une piste _audio"
-
 #: src/gui/widgets/drag_dest_box.c:332
 msgid "Add _MIDI Track"
 msgstr "Ajouter une piste _MIDI"
@@ -484,7 +476,7 @@ msgstr "Catégorie"
 msgid "Protocol"
 msgstr "Protocole"
 
-#: src/gui/widgets/port_connections_button.c:141
+#: src/gui/widgets/port_connections_button.c:147
 msgid "Expose port to JACK"
 msgstr "Exposer le port à JACK"
 
@@ -538,7 +530,7 @@ msgstr ""
 "Maj enfoncée pour désactiver l'accrochage) - Double-cliquez pour afficher "
 "l'éditeur de clips"
 
-#: src/gui/widgets/marker.c:143
+#: src/gui/widgets/marker.c:139
 msgid ""
 "Marker - Click and drag to move - HoldShift to bypass snapping - Double "
 "click to edit name"
@@ -706,7 +698,7 @@ msgstr "Entrée MIDI"
 msgid "MIDI Out"
 msgstr "Sortie MIDI"
 
-#: src/gui/widgets/chord_object.c:150
+#: src/gui/widgets/chord_object.c:146
 msgid "Chord - Click and drag to move around (hold Shift to disable snapping)"
 msgstr ""
 "Accord - Cliquez et faites glisser pour déplacer (maintenez la touche Maj "
@@ -813,22 +805,32 @@ msgid "_Delete Track"
 msgstr "_Supprimer la piste"
 
 #: src/gui/widgets/track.c:450
-#, c-format
-msgid "_Delete %d Tracks"
-msgstr "_Supprimer %d Pistes"
+#, fuzzy
+msgid "_Delete Tracks"
+msgstr "_Supprimer la piste"
 
-#: src/gui/widgets/track.c:466
+#: src/gui/widgets/track.c:465
 msgid "_Duplicate Track"
 msgstr "_Copier la Piste"
 
-#: src/gui/widgets/track.c:470
-#, c-format
-msgid "_Duplicate %d Tracks"
-msgstr "_Copier %d pistes"
+#: src/gui/widgets/track.c:468
+#, fuzzy
+msgid "_Duplicate Tracks"
+msgstr "_Copier la Piste"
 
-#: src/gui/widgets/track.c:489
+#: src/gui/widgets/track.c:486
 msgid "Add Region"
 msgstr "Ajouter une région"
+
+#: src/gui/widgets/track.c:498
+#, fuzzy
+msgid "Hide Track"
+msgstr "Rendre la piste muette"
+
+#: src/gui/widgets/track.c:499
+#, fuzzy
+msgid "Hide Tracks"
+msgstr "Pistes"
 
 #: src/gui/widgets/fader.c:155
 msgid "Fader - Click and drag to change value"
@@ -1161,7 +1163,7 @@ msgid "Move Object(s)"
 msgstr "Déplacer le ou les objets"
 
 #: src/actions/duplicate_timeline_selections_action.c:183
-#: src/actions/duplicate_midi_arranger_selections_action.c:127
+#: src/actions/duplicate_midi_arranger_selections_action.c:130
 msgid "Duplicate Object(s)"
 msgstr "Copier l'objet"
 
@@ -2289,6 +2291,20 @@ msgstr ""
 #: data/zrythm.desktop.in:26
 msgid "zrythm"
 msgstr "zrythm"
+
+#~ msgid "Add _Instrument Track"
+#~ msgstr "Ajouter une piste d'_instrument"
+
+#~ msgid "Add _Audio Track"
+#~ msgstr "Ajouter une piste _audio"
+
+#, c-format
+#~ msgid "_Delete %d Tracks"
+#~ msgstr "_Supprimer %d Pistes"
+
+#, c-format
+#~ msgid "_Duplicate %d Tracks"
+#~ msgstr "_Copier %d pistes"
 
 #~ msgid "Output"
 #~ msgstr "Sortie"

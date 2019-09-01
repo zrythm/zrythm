@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-09-01 07:22+0100\n"
+"POT-Creation-Date: 2019-09-01 13:42+0100\n"
 "PO-Revision-Date: 2019-08-30 21:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -177,28 +177,28 @@ msgstr ""
 msgid "Inserts"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:184
+#: src/gui/widgets/track_input_expander.c:185
 msgid "All MIDI Inputs"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:219
+#: src/gui/widgets/track_input_expander.c:220
 msgid "No inputs"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:259
+#: src/gui/widgets/track_input_expander.c:260
 msgid "All Channels"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:268
+#: src/gui/widgets/track_input_expander.c:269
 #, c-format
 msgid "Channel %s"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:283
+#: src/gui/widgets/track_input_expander.c:284
 msgid "No channel"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:410
+#: src/gui/widgets/track_input_expander.c:411
 msgid "Inputs"
 msgstr ""
 
@@ -364,14 +364,6 @@ msgstr ""
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:311
-msgid "Add _Instrument Track"
-msgstr ""
-
-#: src/gui/widgets/drag_dest_box.c:321
-msgid "Add _Audio Track"
-msgstr ""
-
 #: src/gui/widgets/drag_dest_box.c:332
 msgid "Add _MIDI Track"
 msgstr ""
@@ -443,7 +435,7 @@ msgstr ""
 msgid "Protocol"
 msgstr ""
 
-#: src/gui/widgets/port_connections_button.c:141
+#: src/gui/widgets/port_connections_button.c:147
 msgid "Expose port to JACK"
 msgstr ""
 
@@ -494,7 +486,7 @@ msgid ""
 "Double click to bring up the clip editor"
 msgstr ""
 
-#: src/gui/widgets/marker.c:143
+#: src/gui/widgets/marker.c:139
 msgid ""
 "Marker - Click and drag to move - HoldShift to bypass snapping - Double "
 "click to edit name"
@@ -659,7 +651,7 @@ msgstr ""
 msgid "MIDI Out"
 msgstr ""
 
-#: src/gui/widgets/chord_object.c:150
+#: src/gui/widgets/chord_object.c:146
 msgid "Chord - Click and drag to move around (hold Shift to disable snapping)"
 msgstr ""
 
@@ -760,22 +752,31 @@ msgid "_Delete Track"
 msgstr ""
 
 #: src/gui/widgets/track.c:450
-#, c-format
-msgid "_Delete %d Tracks"
-msgstr ""
+#, fuzzy
+msgid "_Delete Tracks"
+msgstr "Apagar Predefinição?"
 
-#: src/gui/widgets/track.c:466
+#: src/gui/widgets/track.c:465
 msgid "_Duplicate Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:470
-#, c-format
-msgid "_Duplicate %d Tracks"
+#: src/gui/widgets/track.c:468
+msgid "_Duplicate Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:489
+#: src/gui/widgets/track.c:486
 msgid "Add Region"
 msgstr ""
+
+#: src/gui/widgets/track.c:498
+#, fuzzy
+msgid "Hide Track"
+msgstr "Faixas"
+
+#: src/gui/widgets/track.c:499
+#, fuzzy
+msgid "Hide Tracks"
+msgstr "Faixas"
 
 #: src/gui/widgets/fader.c:155
 msgid "Fader - Click and drag to change value"
@@ -1102,7 +1103,7 @@ msgid "Move Object(s)"
 msgstr ""
 
 #: src/actions/duplicate_timeline_selections_action.c:183
-#: src/actions/duplicate_midi_arranger_selections_action.c:127
+#: src/actions/duplicate_midi_arranger_selections_action.c:130
 msgid "Duplicate Object(s)"
 msgstr ""
 

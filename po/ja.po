@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-09-01 07:22+0100\n"
+"POT-Creation-Date: 2019-09-01 13:42+0100\n"
 "PO-Revision-Date: 2019-08-26 13:09+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -178,29 +178,29 @@ msgstr "トラック情報"
 msgid "Inserts"
 msgstr "インサート"
 
-#: src/gui/widgets/track_input_expander.c:184
+#: src/gui/widgets/track_input_expander.c:185
 #, fuzzy
 msgid "All MIDI Inputs"
 msgstr "MIDI入力"
 
-#: src/gui/widgets/track_input_expander.c:219
+#: src/gui/widgets/track_input_expander.c:220
 msgid "No inputs"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:259
+#: src/gui/widgets/track_input_expander.c:260
 msgid "All Channels"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:268
+#: src/gui/widgets/track_input_expander.c:269
 #, fuzzy, c-format
 msgid "Channel %s"
 msgstr "パンを変更"
 
-#: src/gui/widgets/track_input_expander.c:283
+#: src/gui/widgets/track_input_expander.c:284
 msgid "No channel"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:410
+#: src/gui/widgets/track_input_expander.c:411
 msgid "Inputs"
 msgstr ""
 
@@ -372,14 +372,6 @@ msgstr "位置"
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "拍子 - 小節あたりの拍数/拍単位"
 
-#: src/gui/widgets/drag_dest_box.c:311
-msgid "Add _Instrument Track"
-msgstr "楽器トラックを追加 (_I)"
-
-#: src/gui/widgets/drag_dest_box.c:321
-msgid "Add _Audio Track"
-msgstr "オーディオトラックを追加 (_A)"
-
 #: src/gui/widgets/drag_dest_box.c:332
 msgid "Add _MIDI Track"
 msgstr "MIDIトラックを追加 (_M)"
@@ -455,7 +447,7 @@ msgstr "項目"
 msgid "Protocol"
 msgstr "プロトコル"
 
-#: src/gui/widgets/port_connections_button.c:141
+#: src/gui/widgets/port_connections_button.c:147
 msgid "Expose port to JACK"
 msgstr "JACKへのポートの公開"
 
@@ -508,7 +500,7 @@ msgstr ""
 "Region  - クリックしてドラッグして移動する（Shiftを押したままスナップを無効に"
 "する） - ダブルクリックしてクリップエディタを開く"
 
-#: src/gui/widgets/marker.c:143
+#: src/gui/widgets/marker.c:139
 #, fuzzy
 msgid ""
 "Marker - Click and drag to move - HoldShift to bypass snapping - Double "
@@ -677,7 +669,7 @@ msgstr "MIDI入力"
 msgid "MIDI Out"
 msgstr "MIDI出力"
 
-#: src/gui/widgets/chord_object.c:150
+#: src/gui/widgets/chord_object.c:146
 #, fuzzy
 msgid "Chord - Click and drag to move around (hold Shift to disable snapping)"
 msgstr ""
@@ -784,22 +776,32 @@ msgid "_Delete Track"
 msgstr "トラックを削除(_D)"
 
 #: src/gui/widgets/track.c:450
-#, c-format
-msgid "_Delete %d Tracks"
-msgstr "%dトラックを削除する(_D)"
+#, fuzzy
+msgid "_Delete Tracks"
+msgstr "トラックを削除(_D)"
 
-#: src/gui/widgets/track.c:466
+#: src/gui/widgets/track.c:465
 msgid "_Duplicate Track"
 msgstr "トラックを複製(_D)"
 
-#: src/gui/widgets/track.c:470
-#, c-format
-msgid "_Duplicate %d Tracks"
-msgstr "%dトラックを複製(_D)"
+#: src/gui/widgets/track.c:468
+#, fuzzy
+msgid "_Duplicate Tracks"
+msgstr "トラックを複製(_D)"
 
-#: src/gui/widgets/track.c:489
+#: src/gui/widgets/track.c:486
 msgid "Add Region"
 msgstr "リージョンを追加"
+
+#: src/gui/widgets/track.c:498
+#, fuzzy
+msgid "Hide Track"
+msgstr "トラックを無音にする"
+
+#: src/gui/widgets/track.c:499
+#, fuzzy
+msgid "Hide Tracks"
+msgstr "トラック"
 
 #: src/gui/widgets/fader.c:155
 msgid "Fader - Click and drag to change value"
@@ -1128,7 +1130,7 @@ msgid "Move Object(s)"
 msgstr "オブジェクトを移動"
 
 #: src/actions/duplicate_timeline_selections_action.c:183
-#: src/actions/duplicate_midi_arranger_selections_action.c:127
+#: src/actions/duplicate_midi_arranger_selections_action.c:130
 msgid "Duplicate Object(s)"
 msgstr "オブジェクトを複製"
 
@@ -2243,6 +2245,20 @@ msgstr "高度に自動化された直感的なデジタルオーディオワー
 #: data/zrythm.desktop.in:26
 msgid "zrythm"
 msgstr "zrythm"
+
+#~ msgid "Add _Instrument Track"
+#~ msgstr "楽器トラックを追加 (_I)"
+
+#~ msgid "Add _Audio Track"
+#~ msgstr "オーディオトラックを追加 (_A)"
+
+#, c-format
+#~ msgid "_Delete %d Tracks"
+#~ msgstr "%dトラックを削除する(_D)"
+
+#, c-format
+#~ msgid "_Duplicate %d Tracks"
+#~ msgstr "%dトラックを複製(_D)"
 
 #~ msgid "Output"
 #~ msgstr "出力先"
