@@ -1072,16 +1072,19 @@ midi_arranger_widget_on_drag_end (
   else if (ar_prv->action ==
              UI_OVERLAY_ACTION_MOVING)
     {
-      MidiNote * trans_note =
-        midi_note_get_main_trans_midi_note (
+      MidiNote * note =
+        midi_note_get_main_midi_note (
           MA_SELECTIONS->midi_notes[0]);
+      long ticks_diff =
+        note->start_pos.total_ticks -
+          note->cache_start_pos.total_ticks;
+      int pitch_diff =
+        note->val - note->cache_val;
       UndoableAction * ua =
         move_midi_arranger_selections_action_new (
           MA_SELECTIONS,
-          trans_note->start_pos.total_ticks -
-            trans_note->cache_start_pos.total_ticks,
-          trans_note->val -
-            trans_note->cache_val);
+          ticks_diff,
+          pitch_diff);
       undo_manager_perform (
         UNDO_MANAGER, ua);
       midi_arranger_selections_reset_counterparts (
@@ -1096,7 +1099,6 @@ midi_arranger_widget_on_drag_end (
       MidiNote * note =
         midi_note_get_main_midi_note (
           MA_SELECTIONS->midi_notes[0]);
-      midi_note_print (note);
       long ticks_diff =
         note->start_pos.total_ticks -
           note->cache_start_pos.total_ticks;
