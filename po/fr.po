@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-01 13:42+0100\n"
-"PO-Revision-Date: 2019-09-01 12:44+0000\n"
+"PO-Revision-Date: 2019-09-01 13:17+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
@@ -205,7 +205,6 @@ msgid "Inserts"
 msgstr "Inserts"
 
 #: src/gui/widgets/track_input_expander.c:185
-#, fuzzy
 msgid "All MIDI Inputs"
 msgstr "Toutes les entrées MIDI"
 
@@ -218,7 +217,7 @@ msgid "All Channels"
 msgstr "Tous les canaux"
 
 #: src/gui/widgets/track_input_expander.c:269
-#, fuzzy, c-format
+#, c-format
 msgid "Channel %s"
 msgstr "Canal %s"
 
@@ -803,32 +802,28 @@ msgid "_Delete Track"
 msgstr "_Supprimer la piste"
 
 #: src/gui/widgets/track.c:450
-#, fuzzy
 msgid "_Delete Tracks"
-msgstr "_Supprimer la piste"
+msgstr "_Supprimer les pistes"
 
 #: src/gui/widgets/track.c:465
 msgid "_Duplicate Track"
 msgstr "_Copier la Piste"
 
 #: src/gui/widgets/track.c:468
-#, fuzzy
 msgid "_Duplicate Tracks"
-msgstr "_Copier la Piste"
+msgstr "_Copier les pistes"
 
 #: src/gui/widgets/track.c:486
 msgid "Add Region"
 msgstr "Ajouter une région"
 
 #: src/gui/widgets/track.c:498
-#, fuzzy
 msgid "Hide Track"
-msgstr "Rendre la piste muette"
+msgstr "Cacher la piste"
 
 #: src/gui/widgets/track.c:499
-#, fuzzy
 msgid "Hide Tracks"
-msgstr "Pistes"
+msgstr "Cacher les pistes"
 
 #: src/gui/widgets/fader.c:155
 msgid "Fader - Click and drag to change value"
