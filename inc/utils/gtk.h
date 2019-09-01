@@ -336,6 +336,15 @@ z_gtk_container_get_single_child (
 }
 
 /**
+ * Sets the ellipsize mode of each text cell
+ * renderer in the combo box.
+ */
+void
+z_gtk_combo_box_set_ellipsize_mode (
+  GtkComboBox * self,
+  PangoEllipsizeMode ellipsize);
+
+/**
  * Makes the given notebook foldable.
  *
  * The pages of the notebook must all be wrapped

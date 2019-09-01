@@ -24,6 +24,7 @@
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/track_input_expander.h"
 #include "project.h"
+#include "utils/gtk.h"
 #include "utils/string.h"
 
 #include <glib/gi18n.h>
@@ -411,4 +412,9 @@ track_input_expander_widget_init (
   expander_box_widget_set_orientation (
     Z_EXPANDER_BOX_WIDGET (self),
     GTK_ORIENTATION_VERTICAL);
+
+  z_gtk_combo_box_set_ellipsize_mode (
+    self->midi_input, PANGO_ELLIPSIZE_END);
+  z_gtk_combo_box_set_ellipsize_mode (
+    self->midi_channels, PANGO_ELLIPSIZE_END);
 }

@@ -110,6 +110,12 @@ port_connections_button_widget_new (
       gtk_button_set_label (
         GTK_BUTTON (self->menu_button), str);
       g_free (str);
+      GtkLabel * label =
+        GTK_LABEL (
+          gtk_bin_get_child (
+            GTK_BIN (self->menu_button)));
+      gtk_label_set_ellipsize (
+        label, PANGO_ELLIPSIZE_END);
     }
 
   /* jack button */

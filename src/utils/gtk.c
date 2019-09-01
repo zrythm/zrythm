@@ -435,6 +435,33 @@ z_gtk_set_tooltip_for_actionable (
   g_free (tt);
 }
 
+/**
+ * Sets the ellipsize mode of each text cell
+ * renderer in the combo box.
+ */
+void
+z_gtk_combo_box_set_ellipsize_mode (
+  GtkComboBox * self,
+  PangoEllipsizeMode ellipsize)
+{
+  GList *children, *iter;
+  children =
+    gtk_cell_layout_get_cells  (
+      GTK_CELL_LAYOUT (self));
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      if (!GTK_IS_CELL_RENDERER_TEXT (iter->data))
+        continue;
+
+      g_object_set (
+        iter->data, "ellipsize", ellipsize,
+        NULL);
+    }
+  g_list_free (children);
+}
+
 void
 z_gtk_widget_add_style_class (
   GtkWidget   *widget,
