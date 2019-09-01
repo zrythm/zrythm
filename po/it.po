@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-01 13:42+0100\n"
-"PO-Revision-Date: 2019-06-10 14:40+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2019-09-02 00:20+0000\n"
+"Last-Translator: Swann Martinet <swann.ranskassa@laposte.net>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
 "Language: it\n"
@@ -17,19 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: src/zrythm.c:271
 msgid "Initializing settings"
-msgstr ""
+msgstr "Inizializzazione delle impostazioni"
 
 #: src/zrythm.c:282
 msgid "Initializing audio engine"
-msgstr ""
+msgstr "Inizializzazione del motore audio"
 
 #: src/zrythm.c:287
 msgid "Initializing plugin manager"
-msgstr ""
+msgstr "Inizializzazione del gestore di plugin"
 
 #: src/zrythm.c:294
 msgid "Setting up backend"
@@ -149,23 +149,23 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:58
 msgid "INPUTS"
-msgstr ""
+msgstr "INGRESSI"
 
 #: src/gui/widgets/port_connections_popover.c:77
 msgid "OUTPUTS"
-msgstr ""
+msgstr "USCITE"
 
 #: src/gui/widgets/port_connections_popover.c:163
 msgid "Add"
-msgstr ""
+msgstr "Aggiungi"
 
 #: src/gui/widgets/quantize_dialog.c:112
 msgid "note length"
-msgstr ""
+msgstr "lunghezza della nota"
 
 #: src/gui/widgets/quantize_dialog.c:121
 msgid "note type"
-msgstr ""
+msgstr "tipo di nota"
 
 #: src/gui/widgets/track_properties_expander.c:82
 msgid "Track Info"
@@ -239,7 +239,7 @@ msgstr ""
 
 #: src/gui/widgets/project_assistant.c:151 resources/ui/control.ui:45
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: src/gui/widgets/project_assistant.c:161
 #: resources/ui/first_run_assistant.ui:143
@@ -257,7 +257,7 @@ msgstr ""
 #: src/gui/widgets/left_dock_edge.c:89
 #: resources/ui/chord_selector_window.ui:682
 msgid "Visibility"
-msgstr ""
+msgstr "Visibilità"
 
 #: src/gui/widgets/top_bar.c:43 src/gui/widgets/ruler_marker.c:269
 msgid "Playhead"
@@ -557,9 +557,8 @@ msgid "Snap/Grid options"
 msgstr ""
 
 #: src/gui/widgets/header_notebook.c:82
-#, fuzzy
 msgid "About Zrythm"
-msgstr "Zrythm"
+msgstr "A proposito di Zrythm"
 
 #: src/gui/widgets/header_notebook.c:83
 msgid "Save"
@@ -1068,6 +1067,7 @@ msgstr ""
 #: src/actions/actions.c:251
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
+"una postazione di lavoro audio digitale altamente automatizzata e intuitiva"
 
 #: src/actions/actions.c:255
 msgid "Website"
@@ -1284,7 +1284,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
 msgid "Language"
-msgstr ""
+msgstr "Lingua"
 
 #: resources/ui/first_run_assistant.ui:106
 msgid ""
@@ -1964,7 +1964,7 @@ msgstr ""
 
 #: resources/ui/header_notebook.ui:37
 msgid "Home"
-msgstr ""
+msgstr "Pagina principale"
 
 #: resources/ui/header_notebook.ui:74
 msgid "View"
@@ -2196,6 +2196,5 @@ msgstr ""
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:26
-#, fuzzy
 msgid "zrythm"
 msgstr "Zrythm"
