@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-31 02:54+0100\n"
-"PO-Revision-Date: 2019-09-01 12:47+0000\n"
+"PO-Revision-Date: 2019-09-01 13:17+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -760,23 +760,23 @@ msgstr "Solo"
 
 #: src/gui/widgets/track.c:153
 msgid "Mute"
-msgstr ""
+msgstr "Silenciar"
 
 #: src/gui/widgets/track.c:154 src/gui/widgets/track.c:158
 msgid "Freeze"
-msgstr ""
+msgstr "Congelar"
 
 #: src/gui/widgets/track.c:155
 msgid "Lock"
-msgstr ""
+msgstr "Bloquear"
 
 #: src/gui/widgets/track.c:156
 msgid "Show UI"
-msgstr ""
+msgstr "Mostrar UI"
 
 #: src/gui/widgets/track.c:157
 msgid "Show Automation Lanes"
-msgstr ""
+msgstr "Mostrar Pistas de Automação"
 
 #: src/gui/widgets/track.c:164
 msgid ""
