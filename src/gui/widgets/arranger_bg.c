@@ -46,7 +46,8 @@ G_DEFINE_TYPE_WITH_PRIVATE (ArrangerBgWidget,
 /**
  * Minimum number of pixels between beat lines.
  */
-#define PX_TO_HIDE_BEATS 30.0
+#define PX_TO_HIDE_BEATS 40.0
+/*#define PX_TO_HIDE_BEATS 30.0*/
 
 static gboolean
 arranger_bg_draw_cb (
@@ -142,33 +143,15 @@ arranger_bg_draw_cb (
 
   /* handle vertical drawing */
 
-  /* gather divisors of the number of beats per
-   * bar */
-#define beats_per_bar TRANSPORT->beats_per_bar
-  int divisors[16];
-  int num_divisors = 0;
-  for (i = 1; i <= beats_per_bar; i++)
-    {
-      if (beats_per_bar % i == 0)
-        divisors[num_divisors++] = i;
-    }
+  /* get sixteenth interval */
+  int sixteenth_interval =
+    ruler_widget_get_sixteenth_interval (
+      Z_RULER_WIDGET (ab_prv->ruler));
 
-  /* decide the raw interval to keep between beats */
-  int _beat_interval =
-    MAX (PX_TO_HIDE_BEATS /
-         rw_prv->px_per_beat, 1);
-
-  /* round the interval to the divisors */
-  int beat_interval = -1;
-  for (i = 0; i < num_divisors; i++)
-    {
-      if (_beat_interval <= divisors[i])
-        {
-          if (divisors[i] != beats_per_bar)
-            beat_interval = divisors[i];
-          break;
-        }
-    }
+  /* get the beat interval */
+  int beat_interval =
+    ruler_widget_get_beat_interval (
+      Z_RULER_WIDGET (ab_prv->ruler));
 
   /* get the interval for bars */
   int bar_interval =
@@ -206,6 +189,28 @@ arranger_bg_draw_cb (
 
           cairo_set_source_rgb (
             cr, 0.25, 0.25, 0.25);
+          cairo_set_line_width (cr, 0.6);
+          cairo_move_to (cr, curr_px, rect.y);
+          cairo_line_to (
+            cr,
+            curr_px, rect.y + rect.height);
+          cairo_stroke (cr);
+        }
+    }
+  i = 0;
+  if (sixteenth_interval > 0)
+    {
+      while ((curr_px =
+              rw_prv->px_per_sixteenth *
+                (i += sixteenth_interval) +
+              SPACE_BEFORE_START) <
+             rect.x + rect.width)
+        {
+          if (curr_px < rect.x)
+            continue;
+
+          cairo_set_source_rgb (
+            cr, 0.2, 0.2, 0.2);
           cairo_set_line_width (cr, 0.5);
           cairo_move_to (cr, curr_px, rect.y);
           cairo_line_to (

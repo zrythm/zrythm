@@ -119,6 +119,7 @@ typedef struct Transport
   int                ticks_per_beat;
   int                ticks_per_bar;
   int                sixteenths_per_beat;
+  int                sixteenths_per_bar;
 
   /* ------------------------------- */
 

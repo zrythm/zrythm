@@ -164,6 +164,8 @@ transport_set_beat_unit (
     self->lticks_per_bar;
   self->sixteenths_per_beat =
     16.0 / (double) self->beat_unit;
+  self->sixteenths_per_bar =
+    self->sixteenths_per_beat * self->beats_per_bar;
   g_warn_if_fail (self->ticks_per_bar > 0);
   g_warn_if_fail (self->ticks_per_beat > 0);
   g_warn_if_fail (self->lticks_per_bar > 0);

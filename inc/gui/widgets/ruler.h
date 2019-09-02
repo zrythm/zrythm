@@ -128,6 +128,22 @@ ruler_widget_set_zoom_level (
   RulerWidget * self,
   float         zoom_level);
 
+/**
+ * Returns the beat interval for drawing vertical
+ * lines.
+ */
+int
+ruler_widget_get_beat_interval (
+  RulerWidget * self);
+
+/**
+ * Returns the sixteenth interval for drawing
+ * vertical lines.
+ */
+int
+ruler_widget_get_sixteenth_interval (
+  RulerWidget * self);
+
 void
 ruler_widget_refresh (RulerWidget * self);
 

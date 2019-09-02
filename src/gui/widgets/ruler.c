@@ -135,6 +135,85 @@ ruler_widget_get_private (RulerWidget * self)
   return ruler_widget_get_instance_private (self);
 }
 
+int
+ruler_widget_get_beat_interval (
+  RulerWidget * self)
+{
+  GET_PRIVATE;
+
+  int i;
+
+  /* gather divisors of the number of beats per
+   * bar */
+#define beats_per_bar TRANSPORT->beats_per_bar
+  int beat_divisors[16];
+  int num_beat_divisors = 0;
+  for (i = 1; i <= beats_per_bar; i++)
+    {
+      if (beats_per_bar % i == 0)
+        beat_divisors[num_beat_divisors++] = i;
+    }
+
+  /* decide the raw interval to keep between beats */
+  int _beat_interval =
+    MAX (PX_TO_HIDE_BEATS /
+         rw_prv->px_per_beat, 1);
+
+  /* round the interval to the divisors */
+  int beat_interval = -1;
+  for (i = 0; i < num_beat_divisors; i++)
+    {
+      if (_beat_interval <= beat_divisors[i])
+        {
+          if (beat_divisors[i] != beats_per_bar)
+            beat_interval = beat_divisors[i];
+          break;
+        }
+    }
+
+  return beat_interval;
+}
+
+int
+ruler_widget_get_sixteenth_interval (
+  RulerWidget * self)
+{
+  GET_PRIVATE;
+
+  int i;
+
+  /* gather divisors of the number of sixteenths per
+   * beat */
+#define sixteenths_per_beat \
+  TRANSPORT->sixteenths_per_beat
+  int divisors[16];
+  int num_divisors = 0;
+  for (i = 1; i <= sixteenths_per_beat; i++)
+    {
+      if (sixteenths_per_beat % i == 0)
+        divisors[num_divisors++] = i;
+    }
+
+  /* decide the raw interval to keep between sixteenths */
+  int _sixteenth_interval =
+    MAX (PX_TO_HIDE_BEATS /
+         rw_prv->px_per_sixteenth, 1);
+
+  /* round the interval to the divisors */
+  int sixteenth_interval = -1;
+  for (i = 0; i < num_divisors; i++)
+    {
+      if (_sixteenth_interval <= divisors[i])
+        {
+          if (divisors[i] != sixteenths_per_beat)
+            sixteenth_interval = divisors[i];
+          break;
+        }
+    }
+
+  return sixteenth_interval;
+}
+
 static gboolean
 ruler_draw_cb (
   GtkWidget *   widget,
@@ -257,41 +336,21 @@ ruler_draw_cb (
   char * text;
   int textw, texth;
 
-  /* gather divisors of the number of beats per
-   * bar */
-#define beats_per_bar TRANSPORT->beats_per_bar
-  int divisors[16];
-  int num_divisors = 0;
-  for (i = 1; i <= beats_per_bar; i++)
-    {
-      if (beats_per_bar % i == 0)
-        divisors[num_divisors++] = i;
-    }
+  /* get sixteenth interval */
+  int sixteenth_interval =
+    ruler_widget_get_sixteenth_interval (self);
 
-  /* decide the raw interval to keep between beats */
-  int _beat_interval =
-    MAX (PX_TO_HIDE_BEATS /
-         rw_prv->px_per_beat, 1);
-
-  /* round the interval to the divisors */
-  int beat_interval = -1;
-  for (i = 0; i < num_divisors; i++)
-    {
-      if (_beat_interval <= divisors[i])
-        {
-          if (divisors[i] != beats_per_bar)
-            beat_interval = divisors[i];
-          break;
-        }
-    }
+  /* get beat interval */
+  int beat_interval =
+    ruler_widget_get_beat_interval (self);
 
   /* get the interval for bars */
   int bar_interval =
     MAX ((PX_TO_HIDE_BEATS) /
          rw_prv->px_per_bar, 1);
 
-  i = 0;
   /* draw bars */
+  i = 0;
   while ((curr_px =
           rw_prv->px_per_bar * (i += bar_interval) +
           SPACE_BEFORE_START) <
@@ -316,13 +375,13 @@ ruler_draw_cb (
       pango_cairo_update_layout (cr, layout);
       pango_cairo_show_layout (cr, layout);
     }
-  i = 0;
   /* draw beats */
   desc =
     pango_font_description_from_string (
       "Monospace 6");
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
+  i = 0;
   if (beat_interval > 0)
     {
       while ((curr_px =
@@ -339,8 +398,7 @@ ruler_draw_cb (
           cairo_move_to (cr, curr_px, 0);
           cairo_line_to (cr, curr_px, height / 4);
           cairo_stroke (cr);
-          if ((beat_interval > 1 ||
-               rw_prv->px_per_beat >
+          if ((rw_prv->px_per_beat >
                  PX_TO_HIDE_BEATS * 2) &&
               i % beats_per_bar != 0)
             {
@@ -351,6 +409,51 @@ ruler_draw_cb (
                   "%d.%d",
                   i / beats_per_bar + 1,
                   i % beats_per_bar + 1);
+              pango_layout_set_markup (
+                layout, text, -1);
+              g_free (text);
+              pango_layout_get_pixel_size (
+                layout, &textw, &texth);
+              cairo_move_to (
+                cr, curr_px - textw / 2,
+                height / 4 + 2);
+              pango_cairo_update_layout (cr, layout);
+              pango_cairo_show_layout (cr, layout);
+            }
+        }
+    }
+  /* draw sixteenths */
+  i = 0;
+  if (sixteenth_interval > 0)
+    {
+      while ((curr_px =
+              rw_prv->px_per_sixteenth *
+                (i += sixteenth_interval) +
+              SPACE_BEFORE_START) <
+             rect.x + rect.width)
+        {
+          if (curr_px < rect.x)
+            continue;
+
+          cairo_set_source_rgb (cr, 0.6, 0.6, 0.6);
+          cairo_set_line_width (cr, 0.3);
+          cairo_move_to (cr, curr_px, 0);
+          cairo_line_to (cr, curr_px, height / 6);
+          cairo_stroke (cr);
+          if ((rw_prv->px_per_sixteenth >
+                 PX_TO_HIDE_BEATS * 2) &&
+              i % sixteenths_per_beat != 0)
+            {
+              cairo_set_source_rgb (
+                cr, 0.5, 0.5, 0.5);
+              text =
+                g_strdup_printf (
+                  "%d.%d.%d",
+                  i / TRANSPORT->
+                    sixteenths_per_bar + 1,
+                  ((i / sixteenths_per_beat) %
+                    beats_per_bar) + 1,
+                  i % sixteenths_per_beat + 1);
               pango_layout_set_markup (
                 layout, text, -1);
               g_free (text);
