@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-01 13:42+0100\n"
-"PO-Revision-Date: 2019-09-01 13:17+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2019-09-02 00:20+0000\n"
+"Last-Translator: Swann Martinet <swann.ranskassa@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -145,7 +145,7 @@ msgstr "_Sauvegarder"
 
 #: src/plugins/lv2_gtk.c:468
 msgid "URI (Optional):"
-msgstr "Identifiant Uniforme de Ressource (Optionnel):"
+msgstr "Identifiant uniforme de ressource (Optionnel) :"
 
 #: src/plugins/lv2_gtk.c:472
 msgid "_Prefix plugin name"
