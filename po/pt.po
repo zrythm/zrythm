@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-31 02:54+0100\n"
-"PO-Revision-Date: 2019-09-02 00:20+0000\n"
+"PO-Revision-Date: 2019-09-03 13:44+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -305,7 +305,7 @@ msgstr "Cabeça de Reprodução [Cliente Jack]"
 
 #: src/gui/widgets/top_bar.c:127
 msgid "Become JACK Transport master"
-msgstr ""
+msgstr "Tornar-se Mestre de Transporte JACK"
 
 #: src/gui/widgets/top_bar.c:146
 msgid "Sync to JACK Transport"
@@ -442,6 +442,8 @@ msgstr "Ouvir o nível de dim"
 #: src/gui/widgets/control_room.c:69
 msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
+"O nível no qual os outros canais são definidos quando escutar for ativado "
+"num canal"
 
 #: src/gui/widgets/channel_slot.c:230 src/gui/widgets/channel_slot.c:245
 #: src/gui/widgets/channel_slot.c:692
@@ -1512,7 +1514,7 @@ msgstr "Personalizado"
 
 #: resources/ui/bot_dock_edge.ui:46
 msgid "Piano roll panel"
-msgstr ""
+msgstr "Painel cílindros de piano"
 
 #: resources/ui/bot_dock_edge.ui:61
 msgid "Editor"
@@ -1532,7 +1534,7 @@ msgstr "Moduladores"
 
 #: resources/ui/bot_dock_edge.ui:173
 msgid "Chord Pad"
-msgstr ""
+msgstr "Pad Acordes"
 
 #. property name="can_focus">False</property
 #: resources/ui/project_assistant.ui:27
