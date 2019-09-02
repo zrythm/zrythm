@@ -2188,6 +2188,8 @@ arranger_widget_refresh (
         /*rw_prv->total_px,*/
         /*gtk_widget_get_allocated_height (*/
           /*GTK_WIDGET (self)));*/
+      midi_arranger_widget_set_size (
+        midi_arranger);
       midi_arranger_widget_refresh_children (
         midi_arranger);
     }

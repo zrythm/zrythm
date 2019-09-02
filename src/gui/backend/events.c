@@ -225,6 +225,8 @@ on_automation_track_added (AutomationTrack * at)
 
   timeline_arranger_widget_refresh_children (
     MW_TIMELINE);
+  timeline_arranger_widget_refresh_children (
+    MW_PINNED_TIMELINE);
 
   visibility_widget_refresh (MW_VISIBILITY);
 }
@@ -731,9 +733,14 @@ events_process (void * data)
           gtk_widget_queue_allocate (
             GTK_WIDGET (ev->arg)); // ruler widget
           if (ev->arg == MW_RULER)
-            arranger_widget_refresh (
-              Z_ARRANGER_WIDGET (
-                MW_TIMELINE));
+            {
+              arranger_widget_refresh (
+                Z_ARRANGER_WIDGET (
+                  MW_TIMELINE));
+              arranger_widget_refresh (
+                Z_ARRANGER_WIDGET (
+                  MW_PINNED_TIMELINE));
+            }
           else if (ev->arg == EDITOR_RULER)
             {
               if (gtk_widget_get_visible (
@@ -876,6 +883,9 @@ events_process (void * data)
           break;
         case ET_REFRESH_ARRANGER:
           if (MW_TIMELINE)
+            arranger_widget_refresh (
+              Z_ARRANGER_WIDGET (MW_TIMELINE));
+          if (MW_PINNED_TIMELINE)
             arranger_widget_refresh (
               Z_ARRANGER_WIDGET (MW_TIMELINE));
           break;

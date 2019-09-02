@@ -57,8 +57,8 @@ G_DECLARE_DERIVABLE_TYPE (RulerWidget,
 #define SPACE_BEFORE_START_F 10.f
 #define SPACE_BEFORE_START_D 10.0
 
-#define MIN_ZOOM_LEVEL 0.2f
-#define MAX_ZOOM_LEVEL 60.f
+#define MIN_ZOOM_LEVEL 0.05f
+#define MAX_ZOOM_LEVEL 80.f
 
 typedef struct Position Position;
 typedef struct _RulerMarkerWidget RulerMarkerWidget;
