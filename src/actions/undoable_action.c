@@ -57,6 +57,7 @@ undoable_action_do (UndoableAction * self)
   /* uppercase, camel case, snake case */
 #define DO_ACTION(uc,sc,cc) \
   case UNDOABLE_ACTION_TYPE_##uc: \
+    g_message ("doing action: " #uc); \
     return sc##_action_do ((cc##Action *) self); \
     break;
 
@@ -153,6 +154,7 @@ undoable_action_undo (UndoableAction * self)
 /* uppercase, camel case, snake case */
 #define UNDO_ACTION(uc,sc,cc) \
   case UNDOABLE_ACTION_TYPE_##uc: \
+    g_message ("undoing action: " #uc); \
     return sc##_action_undo ((cc##Action *) self); \
     break;
 

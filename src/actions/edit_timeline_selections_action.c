@@ -115,6 +115,13 @@ edit_timeline_selections_action_do (
           loop_end_pos);
         case ETS_SPLIT:
           {
+            /*position_print (&region->end_pos);*/
+            if (position_is_equal (
+                  &self->pos, &region->start_pos) ||
+                position_is_equal (
+                  &self->pos, &region->end_pos))
+              return -1;
+
             region_split (
               region, &self->pos, 0,
               &self->r1, &self->r2);

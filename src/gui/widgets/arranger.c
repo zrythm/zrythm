@@ -69,6 +69,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/gtk.h"
 #include "utils/flags.h"
 #include "utils/ui.h"
 
@@ -738,16 +739,20 @@ on_key_release_action (
   GET_ARRANGER_ALIASES (self);
   ar_prv->key_is_pressed = 0;
 
-  if (event->keyval == GDK_KEY_Control_L ||
-      event->keyval == GDK_KEY_Control_R)
+  const guint keyval = event->keyval;
+
+  if (z_gtk_keyval_is_ctrl (keyval))
     {
       ar_prv->ctrl_held = 0;
     }
 
-  if (event->keyval == GDK_KEY_Shift_L ||
-      event->keyval == GDK_KEY_Shift_R)
+  if (z_gtk_keyval_is_shift (keyval))
     {
       ar_prv->shift_held = 0;
+    }
+  if (z_gtk_keyval_is_alt (keyval))
+    {
+      ar_prv->alt_held = 0;
     }
 
   if (ar_prv->action ==
@@ -770,6 +775,13 @@ on_key_release_action (
            !ar_prv->ctrl_held)
     ar_prv->action =
       UI_OVERLAY_ACTION_MOVING;
+
+  if (timeline_arranger)
+    {
+      timeline_arranger_widget_set_cut_lines_visible (
+        timeline_arranger);
+    }
+
 
 #define UPDATE_VISIBILITY(sc) \
   if (sc##_arranger) \
@@ -797,18 +809,20 @@ on_key_action (
 
   int num = 0;
 
-  if (event->type == GDK_KEY_PRESS &&
-      (event->keyval == GDK_KEY_Control_L ||
-       event->keyval == GDK_KEY_Control_R))
+  const guint keyval = event->keyval;
+
+  if (z_gtk_keyval_is_ctrl (keyval))
     {
       ar_prv->ctrl_held = 1;
     }
 
-  if (event->type == GDK_KEY_PRESS &&
-      (event->keyval == GDK_KEY_Shift_L ||
-      event->keyval == GDK_KEY_Shift_R))
+  if (z_gtk_keyval_is_shift (keyval))
     {
       ar_prv->shift_held = 1;
+    }
+  if (z_gtk_keyval_is_alt (keyval))
+    {
+      ar_prv->alt_held = 1;
     }
 
   if (midi_arranger)
@@ -870,8 +884,6 @@ on_key_action (
     }
   if (timeline_arranger)
     {
-      /* TODO */
-
     }
   if (midi_modifier_arranger)
     {
@@ -907,15 +919,20 @@ on_key_action (
     ar_prv->action =
       UI_OVERLAY_ACTION_MOVING;
 
-  if (midi_arranger)
-    midi_arranger_widget_update_visibility (
-      midi_arranger);
-  if (midi_modifier_arranger)
-    midi_modifier_arranger_widget_update_visibility (
-      midi_modifier_arranger);
-  else if (timeline_arranger)
-    timeline_arranger_widget_update_visibility (
-      timeline_arranger);
+  if (timeline_arranger)
+    {
+      timeline_arranger_widget_set_cut_lines_visible (
+        timeline_arranger);
+    }
+
+#define UPDATE_VISIBILITY(sc) \
+  if (sc##_arranger) \
+    sc##_arranger_widget_update_visibility ( \
+      sc##_arranger)
+
+  FORALL_ARRANGERS (UPDATE_VISIBILITY);
+
+#undef UPDATE_VISIBILITY
 
   arranger_widget_refresh_cursor (
     self);
@@ -1921,11 +1938,15 @@ on_scroll (GtkWidget *widget,
   return TRUE;
 }
 
+/**
+ * Motion callback.
+ */
 static gboolean
-on_motion (GtkEventControllerMotion * event,
-           gdouble                    x,
-           gdouble                    y,
-           ArrangerWidget * self)
+on_motion (
+  GtkEventControllerMotion * event,
+  gdouble                    x,
+  gdouble                    y,
+  ArrangerWidget * self)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
   GET_ARRANGER_ALIASES (self);
@@ -1935,26 +1956,10 @@ on_motion (GtkEventControllerMotion * event,
 
   arranger_widget_refresh_cursor (self);
 
-  /* if not cut hide the cut line from the region
-   * immediately */
-  if (P_TOOL != TOOL_CUT)
+  if (timeline_arranger)
     {
-      if (timeline_arranger)
-        {
-          RegionWidget * rw =
-            timeline_arranger_widget_get_hit_region (
-              Z_TIMELINE_ARRANGER_WIDGET (self),
-              ar_prv->hover_x,
-              ar_prv->hover_y);
-
-          if (rw)
-            {
-              REGION_WIDGET_GET_PRIVATE (rw);
-
-              rw_prv->show_cut = 0;
-              gtk_widget_queue_draw (GTK_WIDGET (rw));
-            }
-        }
+      timeline_arranger_widget_set_cut_lines_visible (
+        timeline_arranger);
     }
 
   return FALSE;
@@ -1965,7 +1970,7 @@ on_focus_out (GtkWidget *widget,
                GdkEvent  *event,
                gpointer   user_data)
 {
-    g_message ("arranger focus out");
+  g_message ("arranger focus out");
 
   return FALSE;
 }
@@ -2284,6 +2289,7 @@ arranger_widget_init (
       ar_prv->right_mouse_mp),
       GDK_BUTTON_SECONDARY);
   ar_prv->motion_controller =
-    gtk_event_controller_motion_new (
-      GTK_WIDGET (self));
+    GTK_EVENT_CONTROLLER_MOTION (
+      gtk_event_controller_motion_new (
+        GTK_WIDGET (self)));
 }

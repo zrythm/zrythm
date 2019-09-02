@@ -313,6 +313,44 @@ z_gtk_widget_get_mask (
 }
 
 /**
+ * Returns if the keyval is an Alt key.
+ */
+static inline int
+z_gtk_keyval_is_alt (
+  const guint keyval)
+{
+  return
+    keyval == GDK_KEY_Alt_L ||
+    keyval == GDK_KEY_Alt_R ||
+    keyval == GDK_KEY_Meta_L ||
+    keyval == GDK_KEY_Meta_R;
+}
+
+/**
+ * Returns if the keyval is a Control key.
+ */
+static inline int
+z_gtk_keyval_is_ctrl (
+  const guint keyval)
+{
+  return
+    keyval == GDK_KEY_Control_L ||
+    keyval == GDK_KEY_Control_R;
+}
+
+/**
+ * Returns if the keyval is a Shift key.
+ */
+static inline int
+z_gtk_keyval_is_shift (
+  const guint keyval)
+{
+  return
+    keyval == GDK_KEY_Shift_L ||
+    keyval == GDK_KEY_Shift_R;
+}
+
+/**
  * Returns the single child of a container.
  */
 static inline GtkWidget *

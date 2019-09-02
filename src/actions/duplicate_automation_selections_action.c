@@ -131,7 +131,7 @@ duplicate_automation_selections_action_undo (
     /*AutomationPoint, automation_point,*/
     /*[> remove <]*/
       /*g_message ("removing");*/
-      /*position_print_simple (&marker->pos);*/
+      /*position_print (&marker->pos);*/
     /*marker_track_remove_marker (*/
       /*P_MARKER_TRACK,*/
       /*marker, F_FREE));*/

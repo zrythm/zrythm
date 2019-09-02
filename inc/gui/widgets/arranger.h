@@ -172,7 +172,12 @@ typedef struct
   GtkGestureDrag *         drag;
   GtkGestureMultiPress *   multipress;
   GtkGestureMultiPress *   right_mouse_mp;
-  GtkEventController *     motion_controller;
+  GtkEventControllerMotion * motion_controller;
+
+  /** FIXME broken in GTK3, but should be used in
+   * the future. */
+  GtkEventControllerKey *  key_controller;
+
   double               last_offset_x;  ///< for dragging regions, selections
   double               last_offset_y;  ///< for selections
   UiOverlayAction      action;
@@ -238,6 +243,9 @@ typedef struct
 
   /** Whether Ctrl button is held down. */
   int                  ctrl_held;
+
+  /** Whether Alt is currently held down. */
+  int                  alt_held;
 
   gint64               last_frame_time;
 } ArrangerWidgetPrivate;

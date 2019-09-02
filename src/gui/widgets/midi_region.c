@@ -192,6 +192,10 @@ midi_region_draw_cb (
     Z_REGION_WIDGET (self),
     cr);
 
+  region_widget_draw_cut_line (
+    Z_REGION_WIDGET (self),
+    cr);
+
  return FALSE;
 }
 

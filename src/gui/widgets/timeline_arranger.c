@@ -80,6 +80,7 @@
 #include "utils/arrays.h"
 #include "utils/cairo.h"
 #include "utils/flags.h"
+#include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -302,6 +303,9 @@ timeline_arranger_widget_get_cursor (
                 {
                   REGION_WIDGET_GET_PRIVATE (rw);
 
+                  if (ar_prv->alt_held)
+                    return ARRANGER_CURSOR_CUT;
+
                   int is_resize_l =
                     rw && rw_prv->resize_l;
                   int is_resize_r =
@@ -398,6 +402,51 @@ timeline_arranger_widget_get_cursor (
     }
 
   return ac;
+}
+
+/**
+ * Hides the cut dashed line from hovered regions
+ * and redraws them.
+ *
+ * Used when alt was unpressed.
+ */
+void
+timeline_arranger_widget_set_cut_lines_visible (
+  TimelineArrangerWidget * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  RegionWidget * rw =
+    timeline_arranger_widget_get_hit_region (
+      Z_TIMELINE_ARRANGER_WIDGET (self),
+      ar_prv->hover_x,
+      ar_prv->hover_y);
+
+  if (rw)
+    {
+      GdkModifierType mask;
+      z_gtk_widget_get_mask (
+        GTK_WIDGET (rw),
+        &mask);
+      int alt_pressed =
+        mask & GDK_MOD1_MASK;
+
+      /* if not cutting hide the cut line
+       * from the region immediately */
+      int show_cut =
+        region_widget_should_show_cut_lines (
+          alt_pressed);
+
+      REGION_WIDGET_GET_PRIVATE (rw);
+
+      if (show_cut != rw_prv->show_cut)
+        {
+          rw_prv->show_cut = show_cut;
+
+          gtk_widget_queue_draw (
+            GTK_WIDGET (rw));
+        }
+    }
 }
 
 TrackLane *
@@ -747,58 +796,53 @@ timeline_arranger_widget_on_drag_begin_region_hit (
 
   self->start_region = region;
 
+#define SET_ACTION(x) \
+  ar_prv->action = UI_OVERLAY_ACTION_##x
+
   /* update arranger action */
   switch (P_TOOL)
     {
     case TOOL_ERASER:
-      ar_prv->action =
-        UI_OVERLAY_ACTION_ERASING;
+      SET_ACTION (ERASING);
       break;
     case TOOL_AUDITION:
-      ar_prv->action =
-        UI_OVERLAY_ACTION_AUDITIONING;
+      SET_ACTION (AUDITIONING);
       break;
     case TOOL_SELECT_NORMAL:
       if (region_widget_is_resize_l (rw, wx))
-        ar_prv->action =
-          UI_OVERLAY_ACTION_RESIZING_L;
+        SET_ACTION (RESIZING_L);
       else if (region_widget_is_resize_r (rw, wx))
-        ar_prv->action =
-          UI_OVERLAY_ACTION_RESIZING_R;
+        SET_ACTION (RESIZING_R);
+      else if (region_widget_should_show_cut_lines (
+                 ar_prv->alt_held))
+        SET_ACTION (CUTTING);
       else
-        ar_prv->action =
-          UI_OVERLAY_ACTION_STARTING_MOVING;
+        SET_ACTION (STARTING_MOVING);
       break;
     case TOOL_SELECT_STRETCH:
       if (region_widget_is_resize_l (rw, wx))
-        ar_prv->action =
-          UI_OVERLAY_ACTION_STRETCHING_L;
+        SET_ACTION (STRETCHING_L);
       else if (region_widget_is_resize_r (rw, wx))
-        ar_prv->action =
-          UI_OVERLAY_ACTION_STRETCHING_R;
+        SET_ACTION (STRETCHING_R);
       else
-        ar_prv->action =
-          UI_OVERLAY_ACTION_STARTING_MOVING;
+        SET_ACTION (STARTING_MOVING);
       break;
     case TOOL_EDIT:
       if (region_widget_is_resize_l (rw, wx))
-        ar_prv->action =
-          UI_OVERLAY_ACTION_RESIZING_L;
+        SET_ACTION (RESIZING_L);
       else if (region_widget_is_resize_r (rw, wx))
-        ar_prv->action =
-          UI_OVERLAY_ACTION_RESIZING_R;
+        SET_ACTION (RESIZING_R);
       else
-        ar_prv->action =
-          UI_OVERLAY_ACTION_STARTING_MOVING;
+        SET_ACTION (STARTING_MOVING);
       break;
     case TOOL_CUT:
-      ar_prv->action =
-        UI_OVERLAY_ACTION_CUTTING;
+      SET_ACTION (CUTTING);
       break;
     case TOOL_RAMP:
       /* TODO */
       break;
     }
+#undef SET_ACTION
 
   int selected = region_is_selected (region);
   self->start_region_was_selected = selected;
@@ -2030,7 +2074,7 @@ timeline_arranger_widget_on_drag_end (
             !ar_prv->shift_held)
           position_snap_simple (
             &cut_pos, ar_prv->snap_grid);
-        position_print_simple (&cut_pos);
+        position_print (&cut_pos);
         UndoableAction * ua =
           (UndoableAction *)
           edit_timeline_selections_action_new (

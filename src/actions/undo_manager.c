@@ -118,7 +118,8 @@ undo_manager_redo (UndoManager * self)
 }
 
 /**
- * Does performs the action and pushes it to the undo stack->
+ * Does performs the action and pushes it to the
+ * undo stack.
  */
 void
 undo_manager_perform (UndoManager *    self,
@@ -126,7 +127,10 @@ undo_manager_perform (UndoManager *    self,
 {
   /* if error return */
   if (undoable_action_do (action))
-    return;
+    {
+      g_message ("action not performed");
+      return;
+    }
 
   STACK_PUSH (self->undo_stack,
               action);

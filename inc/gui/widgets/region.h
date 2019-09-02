@@ -120,6 +120,26 @@ void
 region_widget_delete (RegionWidget *self);
 
 /**
+ * Draws the cut line if in cut mode.
+ */
+void
+region_widget_draw_cut_line (
+  RegionWidget * self,
+  cairo_t *      cr);
+
+/**
+ * Returns if region widgets should show cut lines.
+ *
+ * To be used to set the region's "show_cut".
+ *
+ * @param alt_pressed Whether alt is currently
+ *   pressed.
+ */
+int
+region_widget_should_show_cut_lines (
+  int alt_pressed);
+
+/**
  * Returns the private struct.
  */
 RegionWidgetPrivate *

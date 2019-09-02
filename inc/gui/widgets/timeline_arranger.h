@@ -251,6 +251,16 @@ timeline_arranger_widget_scroll_to (
   Position *               pos);
 
 /**
+ * Hides the cut dashed line from hovered regions
+ * and redraws them.
+ *
+ * Used when alt was unpressed.
+ */
+void
+timeline_arranger_widget_set_cut_lines_visible (
+  TimelineArrangerWidget * self);
+
+/**
  * @}
  */
 

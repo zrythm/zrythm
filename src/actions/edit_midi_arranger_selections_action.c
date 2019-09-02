@@ -159,7 +159,7 @@ edit_midi_arranger_selections_action_do (
             }
 
           /*g_message ("after resize");*/
-          /*position_print_simple (&mn->end_pos);*/
+          /*position_print (&mn->end_pos);*/
 
           /* remember the end pos for undoing */
           position_set_to_pos (

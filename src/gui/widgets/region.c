@@ -158,9 +158,27 @@ region_draw_cb (RegionWidget * self,
         }
     }
 
+ return FALSE;
+}
+
+/**
+ * Draws the cut line if in cut mode.
+ */
+void
+region_widget_draw_cut_line (
+  RegionWidget * self,
+  cairo_t *      cr)
+{
+  REGION_WIDGET_GET_PRIVATE (self);
+  Region * r = rw_prv->region;
+
   if (rw_prv->show_cut)
     {
       int start_pos_px;
+      double px;
+      int height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (self));
 
       /* get absolute position */
       start_pos_px =
@@ -189,14 +207,14 @@ region_draw_cb (RegionWidget * self,
       /* convert to local px */
       px -= start_pos_px;
 
+      double dashes[] = { 5 };
+      cairo_set_dash (cr, dashes, 1, 0);
       cairo_set_source_rgba (
         cr, 1, 1, 1, 1.0);
       cairo_move_to (cr, px, 0);
       cairo_line_to (cr, px, height);
       cairo_stroke (cr);
     }
-
- return FALSE;
 }
 
 /**
@@ -301,18 +319,14 @@ on_motion (GtkWidget *      widget,
   ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
   REGION_WIDGET_GET_PRIVATE (self);
 
+  int alt_pressed =
+    event->state & GDK_MOD1_MASK;
+
   if (event->type == GDK_MOTION_NOTIFY)
     {
-      switch (P_TOOL)
-        {
-        case TOOL_CUT:
-          rw_prv->show_cut = 1;
-          break;
-        default:
-          rw_prv->show_cut = 0;
-          break;
-        }
-
+      rw_prv->show_cut =
+        region_widget_should_show_cut_lines (
+          alt_pressed);
       rw_prv->resize_l =
         region_widget_is_resize_l (
           self, event->x);
@@ -348,7 +362,37 @@ on_motion (GtkWidget *      widget,
       bot_bar_change_status ("");
       rw_prv->show_cut = 0;
     }
+
   return FALSE;
+}
+
+/**
+ * Returns if region widgets should show cut lines.
+ *
+ * @param alt_pressed Whether alt is currently
+ *   pressed.
+ */
+int
+region_widget_should_show_cut_lines (
+  int alt_pressed)
+{
+  switch (P_TOOL)
+    {
+    case TOOL_SELECT_NORMAL:
+    case TOOL_SELECT_STRETCH:
+      if (alt_pressed)
+        return 1;
+      else
+        return 0;
+      break;
+    case TOOL_CUT:
+      return 1;
+      break;
+    default:
+      return 0;
+      break;
+    }
+  g_return_val_if_reached (-1);
 }
 
 /**

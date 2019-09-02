@@ -474,7 +474,7 @@ midi_arranger_selections_add_ticks (
       /*g_message (*/
         /*"moving %ld",*/
         /*ticks);*/
-      /*position_print_simple (&mn->start_pos);*/
+      /*position_print (&mn->start_pos);*/
     }
 }
 

@@ -427,7 +427,7 @@ position_stringize (
  * Prints the Position in the "0.0.0.0" form.
  */
 void
-position_print_simple (
+position_print (
   const Position * pos);
 
 /**

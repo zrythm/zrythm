@@ -61,7 +61,7 @@ PROJECT_NUMBER         = @PACKAGE_VERSION@
 # for a project that appears at the top of each page and should give viewer a
 # quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = "An highly automated, intuitive, Digital Audio Workstation (DAW)"
+PROJECT_BRIEF          = "a highly automated and intuitive digital audio workstation"
 
 # With the PROJECT_LOGO tag one can specify a logo or an icon that is included
 # in the documentation. The maximum height of the logo should not exceed 55
