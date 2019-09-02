@@ -47,10 +47,8 @@
 
 /** SIGSEGV handler. */
 static void
-handler (int sig) {
-#ifdef _WIN32
-    /* TODO */
-#else
+handler (int sig)
+{
   void *array[20];
   size_t size;
   char ** strings;
@@ -142,7 +140,7 @@ handler (int sig) {
   g_free (atag);
   g_free (markup);
   g_free (report_template_escaped);
-#endif
+
   exit(1);
 }
 

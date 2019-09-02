@@ -226,7 +226,10 @@ midi_arranger_widget_set_size (
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
     rw_prv->total_px,
-    MW_MIDI_EDITOR_SPACE->total_key_px);
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (
+        MW_MIDI_EDITOR_SPACE->
+          piano_roll_keys_box)));
 }
 
 void
@@ -927,7 +930,7 @@ calc_deltamax_for_note_movement (int y_delta)
        i++)
     {
       midi_note =
-        midi_note_get_main_trans_midi_note (
+        midi_note_get_main_midi_note (
           MA_SELECTIONS->
             midi_notes[i]);
       /*g_message ("midi note val %d, y delta %d",*/

@@ -81,7 +81,8 @@ typedef struct _MidiEditorSpaceWidget
   GtkBox *             piano_roll_keys_box;
 
   PianoRollKeyWidget * piano_roll_keys[128];
-  PianoRollKeyLabelWidget * piano_roll_key_labels[128];
+  PianoRollKeyLabelWidget *
+    piano_roll_key_labels[128];
 
   /** Start key pressed. */
   PianoRollKeyWidget * start_key;
@@ -98,29 +99,38 @@ typedef struct _MidiEditorSpaceWidget
   GtkViewport *        modifier_arranger_viewport;
   MidiModifierArrangerWidget * modifier_arranger;
 
+  /**
+   * Note in the middle of the arranger (0-127).
+   *
+   * This will be used to scroll to each refresh.
+   */
+  int                  last_mid_note;
+
   GtkBox *             midi_vel_chooser_box;
   GtkComboBoxText *    midi_modifier_chooser;
 
   /**
    * Note pressed.
    *
-   * Used for note presses (see MidiEditorSpaceKeyWidget).
+   * Used for note presses (see
+   * MidiEditorSpaceKeyWidget).
    */
   int                  note_pressed;
 
   /**
    * Note released.
    *
-   * Used for note presses (see MidiEditorSpaceKeyWidget).
+   * Used for note presses (see
+   * MidiEditorSpaceKeyWidget).
    */
   int                  note_released;
 
   /** Pixel height of each key, determined by the
    * zoom level. */
-  int                  px_per_key;
+  double               px_per_key;
 
   /** Pixel height of all keys combined. */
-  int                  total_key_px;
+  double               total_key_px;
 
   GtkGestureMultiPress * multipress;
 } MidiEditorSpaceWidget;

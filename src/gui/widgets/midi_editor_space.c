@@ -204,15 +204,31 @@ midi_editor_space_widget_refresh_labels (
     }
 }
 
+static void
+scroll_to_mid_note (
+  MidiEditorSpaceWidget * self)
+{
+}
+
+static void
+on_keys_box_size_allocate (
+  GtkWidget * widget,
+  GdkRectangle * allocation,
+  MidiEditorSpaceWidget * self)
+{
+  midi_arranger_widget_set_size (
+    MW_MIDI_ARRANGER);
+}
+
 void
 midi_editor_space_widget_refresh (
   MidiEditorSpaceWidget * self)
 {
   self->px_per_key =
-    DEFAULT_PX_PER_KEY *
+    (double) DEFAULT_PX_PER_KEY *
     PIANO_ROLL->notes_zoom;
   self->total_key_px =
-    self->px_per_key * 128;
+    self->px_per_key * (128.0 + 1.0);
 
   /* readd the notes */
   z_gtk_container_destroy_all_children (
@@ -271,9 +287,6 @@ midi_editor_space_widget_refresh (
         0, 0, 0);
     }
 
-  midi_arranger_widget_set_size (
-    MW_MIDI_ARRANGER);
-
   /* relink scrolls */
   link_scrolls (self);
 
@@ -302,11 +315,6 @@ void
 midi_editor_space_widget_setup (
   MidiEditorSpaceWidget * self)
 {
-  self->px_per_key =
-    DEFAULT_PX_PER_KEY * PIANO_ROLL->notes_zoom;
-  self->total_key_px =
-    self->px_per_key * 128;
-
   if (self->arranger)
     {
       arranger_widget_setup (
@@ -326,7 +334,7 @@ midi_editor_space_widget_setup (
 
   midi_editor_space_widget_refresh (self);
 
-  /* scroll to middle */
+  /* scroll to note in middle */
   GtkAdjustment * adj =
     gtk_scrolled_window_get_vadjustment (
       self->arranger_scroll);
@@ -347,6 +355,8 @@ midi_editor_space_widget_init (
   g_type_ensure (MIDI_MODIFIER_ARRANGER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->last_mid_note = 63;
 
   /*gtk_widget_set_has_window (*/
     /*GTK_WIDGET (self->piano_roll_keys_box), TRUE);*/
@@ -370,6 +380,10 @@ midi_editor_space_widget_init (
     G_OBJECT (self->piano_roll_keys_box),
     "motion-notify-event",
     G_CALLBACK (on_motion), self);
+  g_signal_connect (
+    G_OBJECT (self->piano_roll_keys_box),
+    "size-allocate",
+    G_CALLBACK (on_keys_box_size_allocate), self);
   g_signal_connect (
     G_OBJECT(self->multipress), "released",
     G_CALLBACK (on_released),  self);
