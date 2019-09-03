@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-08-30 21:25+0000\n"
+"PO-Revision-Date: 2019-09-03 13:44+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualmixing/pt/>\n"
@@ -64,7 +64,7 @@ msgstr ""
 
 #: ../../mixing/panning.rst:2
 msgid "Panning"
-msgstr "Deslocação"
+msgstr "Panning"
 
 #: ../../mixing/panning.rst:4
 msgid ""
@@ -72,6 +72,9 @@ msgid ""
 "supports Linear Pan, Square Root Pan and Sine Law Pan, with a Pan Law of "
 "-6dB, -3dB, or 0dB."
 msgstr ""
+"Os canais podem ser deslocados da esquerda para a direita arrastando o "
+"controle deslizante Pan. O Zrythm suporta o Pan Linear, o Pan Raiz Quadrado "
+"e o Pan Law Seno, com uma Pan Law de -6dB, -3dB, ou 0dB."
 
 #: ../../mixing/panning.rst:8
 msgid ""
@@ -79,9 +82,11 @@ msgid ""
 "default is Sine Law with -3dB. If you don't understand what these mean, "
 "it's best to leave them to their default values."
 msgstr ""
+"Estas definições são configuráveis através da janela Preferências. O padrão "
+"é Seno Law com -3dB. Se você não entender o que isso significa, é melhor "
+"deixá-las com seus valores padrão."
 
 #: ../../mixing/routing/buses.rst:2
-#, fuzzy
 msgid "Buses"
 msgstr "Buses"
 
@@ -107,4 +112,4 @@ msgstr "Enviar Efeitos"
 
 #: ../../mixing/sidechaining.rst:2
 msgid "Sidechaining"
-msgstr ""
+msgstr "Sidechaining"

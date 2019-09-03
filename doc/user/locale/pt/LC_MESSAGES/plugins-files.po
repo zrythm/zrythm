@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-09-02 00:21+0000\n"
+"PO-Revision-Date: 2019-09-03 13:44+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/pt/>\n"
@@ -29,10 +29,12 @@ msgid ""
 "The File Browser makes it easy to navigate through files on your computer"
 " or through your custom collections."
 msgstr ""
+"O Navegador de Ficheiros facilita a navegação pelos ficheiros no seu "
+"computador ou em suas coleções personalizadas."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:26
 msgid "Filtering"
-msgstr ""
+msgstr "Filtrar"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:28
 #: ../../plugins-files/audio-midi-files/file-browser.rst:33
@@ -41,21 +43,23 @@ msgstr "A FAZER"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:31
 msgid "Collections"
-msgstr ""
+msgstr "Coleções"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:36
 msgid "Importing Files"
-msgstr ""
+msgstr "Importar Ficheiros"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:38
 msgid ""
 "Files are imported by either double clicking them in the browser or "
 "dragging and dropping them into a track."
 msgstr ""
+"Os ficheiros são importados clicando duas vezes neles no navegador ou "
+"arrastando-os e soltando-os numa faixa."
 
 #: ../../plugins-files/audio-midi-files/intro.rst:19
 msgid "Audio & MIDI Files"
-msgstr ""
+msgstr "Ficheiros de Áudio e MIDI"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:19
 #: ../../plugins-files/overview.rst:19
