@@ -331,7 +331,39 @@
       <summary>Divider position</summary>
       <description>
         Height of the instrument browser on the top side of
-        the GtkPaned
+        the GtkPaned.
+      </description>
+    </key>
+
+    <!-- KEY: left panel divider position -->
+    <key name="left-panel-divider-position" type="i">
+      <default>220</default>
+      <summary>Left panel divider position</summary>
+      <description>
+        Position of the resize handle of the left
+        panel.
+      </description>
+    </key>
+
+    <!-- KEY: right panel divider position -->
+    <key name="right-panel-divider-position"
+         type="i">
+      <default>180</default>
+      <summary>Right panel divider position</summary>
+      <description>
+        Position of the resize handle of the right
+        panel.
+      </description>
+    </key>
+
+    <!-- KEY: bot panel divider position -->
+    <key name="bot-panel-divider-position"
+         type="i">
+      <default>180</default>
+      <summary>Bottom panel divider position</summary>
+      <description>
+        Position of the resize handle of the bot
+        panel.
       </description>
     </key>
 

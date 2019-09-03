@@ -24,15 +24,39 @@
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/visibility.h"
+#include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
+#include "zrythm.h""
 
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (LeftDockEdgeWidget,
                left_dock_edge_widget,
                GTK_TYPE_BOX)
+
+static DzlDockRevealer *
+get_revealer (
+  LeftDockEdgeWidget * self)
+{
+  return
+    DZL_DOCK_REVEALER (
+      gtk_widget_get_parent (
+        gtk_widget_get_parent (
+          GTK_WIDGET (self))));
+}
+
+static void
+on_divider_pos_changed (
+  GObject    *gobject,
+  GParamSpec *pspec,
+  DzlDockRevealer * revealer)
+{
+  g_settings_set_int (
+    S_UI, "left-panel-divider-position",
+    dzl_dock_revealer_get_position (revealer));
+}
 
 void
 left_dock_edge_widget_setup (
@@ -46,6 +70,17 @@ left_dock_edge_widget_setup (
         gtk_widget_get_parent (
           GTK_WIDGET (self)))),
     GTK_POS_LEFT);
+
+  /* remember divider pos */
+  DzlDockRevealer * revealer =
+    get_revealer (self);
+  dzl_dock_revealer_set_position (
+    revealer,
+    g_settings_get_int (
+      S_UI, "left-panel-divider-position"));
+  g_signal_connect (
+    G_OBJECT (revealer), "notify::position",
+    G_CALLBACK (on_divider_pos_changed), revealer);
 
   visibility_widget_refresh (
     self->visibility);

@@ -1125,8 +1125,9 @@ make_combo(Lv2Control* record, float value)
 	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), cell, "text", 1, NULL);
 
 	if (record->is_writable) {
-		g_signal_connect(G_OBJECT(combo), "changed",
-		                 G_CALLBACK(combo_changed), record);
+		g_signal_connect (
+      G_OBJECT (combo), "changed",
+		  G_CALLBACK (combo_changed), record);
 	}
 
 	return new_controller(NULL, combo);

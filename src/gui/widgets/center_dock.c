@@ -84,6 +84,17 @@ on_pinned_timeline_scroll_allocate (
       allocation->height);
 }
 
+static void
+on_divider_pos_changed (
+  GObject    *gobject,
+  GParamSpec *pspec,
+  GtkPaned * paned)
+{
+  g_settings_set_int (
+    S_UI, "bot-panel-divider-position",
+    gtk_paned_get_position (paned));
+}
+
 void
 center_dock_widget_setup (
   CenterDockWidget * self)
@@ -167,6 +178,16 @@ center_dock_widget_setup (
     self->left_dock_edge);
   right_dock_edge_widget_setup (
     self->right_dock_edge);
+
+  /* remember divider position */
+  gtk_paned_set_position (
+    self->main_paned,
+    g_settings_get_int (
+      S_UI, "bot-panel-divider-position"));
+  g_signal_connect (
+    G_OBJECT (self->main_paned), "notify::position",
+    G_CALLBACK (on_divider_pos_changed),
+    self->main_paned);
 }
 
 static void
