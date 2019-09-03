@@ -130,6 +130,7 @@
                           <object class="GtkComboBox" id="audio_backend">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">The audio backend to connect to</property>
                             <property name="margin_right">2</property>
                             <property name="hexpand">True</property>
                           </object>
@@ -175,6 +176,7 @@
                           <object class="GtkComboBox" id="midi_backend">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">The MIDI backend to connect to</property>
                             <property name="hexpand">True</property>
                           </object>
                           <packing>
@@ -208,6 +210,7 @@
                           <object class="GtkComboBox" id="pan_algo">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">The pan algorithm to use</property>
                             <property name="hexpand">True</property>
                           </object>
                           <packing>
@@ -219,11 +222,36 @@
                           <object class="GtkComboBox" id="pan_law">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">The pan law to use</property>
                             <property name="hexpand">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
                             <property name="top_attach">5</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Zrythm path</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkFileChooserButton" id="zpath_fc">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">The global Zrythm working path for non-project related files</property>
+                            <property name="action">select-folder</property>
+                            <property name="title" translatable="yes"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">6</property>
                           </packing>
                         </child>
                       </object>
@@ -260,7 +288,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
-                            <property name="tooltip_text" translatable="yes">When instantiating a plugin always show its UI</property>
+                            <property name="tooltip_text" translatable="yes">Always show the plugin UI when instantiating a plugin</property>
                             <property name="draw_indicator">True</property>
                           </object>
                           <packing>
@@ -368,6 +396,7 @@
                           <object class="GtkComboBox" id="language">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">The language of the Zrythm interface</property>
                             <property name="hexpand">True</property>
                           </object>
                           <packing>

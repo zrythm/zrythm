@@ -108,6 +108,16 @@ on_ok_clicked (GtkWidget * widget,
   midi_controller_mb_widget_save_settings (
     self->midi_controllers);
 
+  /* set path */
+  GFile * file =
+    gtk_file_chooser_get_file (
+      GTK_FILE_CHOOSER (self->zpath_fc));
+  char * str =
+    g_file_get_path (file);
+  g_settings_set_string (
+    S_GENERAL, "dir", str);
+  g_free (str);
+
   gtk_window_close (GTK_WINDOW (self));
 }
 
@@ -133,6 +143,12 @@ preferences_widget_new ()
   midi_controller_mb_widget_setup (
     self->midi_controllers);
 
+  char * dir = zrythm_get_dir (ZRYTHM);
+  gtk_file_chooser_set_current_folder (
+    GTK_FILE_CHOOSER (self->zpath_fc),
+    dir);
+  g_free (dir);
+
   return self;
 }
 
@@ -144,48 +160,31 @@ preferences_widget_class_init (
   resources_set_class_template (
     klass, "preferences.ui");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    PreferencesWidget,
-    categories);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PreferencesWidget,
-    ok);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PreferencesWidget,
-    audio_backend);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PreferencesWidget,
-    midi_backend);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PreferencesWidget,
-    midi_controllers);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PreferencesWidget,
-    language);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PreferencesWidget,
-    pan_algo);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PreferencesWidget,
-    pan_law);
-  gtk_widget_class_bind_template_child (
-    klass,
-    PreferencesWidget,
-    open_plugin_uis);
+#define BIND_CHILD(x) \
+gtk_widget_class_bind_template_child ( \
+  klass, \
+  PreferencesWidget, \
+  x)
+
+  BIND_CHILD (categories);
+  BIND_CHILD (ok);
+  BIND_CHILD (audio_backend);
+  BIND_CHILD (midi_backend);
+  BIND_CHILD (midi_controllers);
+  BIND_CHILD (language);
+  BIND_CHILD (pan_algo);
+  BIND_CHILD (pan_law);
+  BIND_CHILD (open_plugin_uis);
+  BIND_CHILD (zpath_fc);
+
   gtk_widget_class_bind_template_callback (
     klass,
     on_ok_clicked);
   gtk_widget_class_bind_template_callback (
     klass,
     on_cancel_clicked);
+
+#undef BIND_CHILD
 }
 
 static void

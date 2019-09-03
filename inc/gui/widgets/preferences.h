@@ -50,6 +50,9 @@ typedef struct _PreferencesWidget
   Preferences *            preferences;
   GtkCheckButton *         open_plugin_uis;
   GtkComboBox *            language;
+
+  /** Zrythm path chooser. */
+  GtkFileChooserButton *   zpath_fc;
 } PreferencesWidget;
 
 PreferencesWidget *

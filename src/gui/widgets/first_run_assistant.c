@@ -299,8 +299,10 @@ first_run_assistant_widget_new (
     S_GENERAL, "dir", dir);
   g_free (dir);
 
-  g_message ("n pages %d",
-             gtk_assistant_get_n_pages (GTK_ASSISTANT (self)));
+  /*g_message (*/
+    /*"n pages %d",*/
+    /*gtk_assistant_get_n_pages (*/
+      /*GTK_ASSISTANT (self)));*/
 
   gtk_window_set_position (
     GTK_WINDOW (self), GTK_WIN_POS_CENTER_ALWAYS);
