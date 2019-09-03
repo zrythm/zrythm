@@ -95,8 +95,9 @@
                        NULL); \
     if (err != CYAML_OK) \
       { \
-        g_error ("error %s", \
-                 cyaml_strerror (err)); \
+        g_warning ( \
+          "cyaml error: %s", \
+          cyaml_strerror (err)); \
       } \
  \
     return self; \

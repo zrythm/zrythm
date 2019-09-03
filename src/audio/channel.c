@@ -1153,24 +1153,52 @@ channel_init_loaded (Channel * ch)
   ch->prefader.channel = ch;
   ch->fader.channel = ch;
 
+  PortType in_type =
+    ch->track->in_signal_type;
+  PortType out_type =
+    ch->track->out_signal_type;
+
   /* midi in / piano roll ports */
-  ch->piano_roll->identifier.flags =
-    PORT_FLAG_PIANO_ROLL;
-  ch->piano_roll->identifier.owner_type =
-    PORT_OWNER_TYPE_TRACK;
-  ch->midi_in->midi_events =
-    midi_events_new (
-      ch->midi_in);
-  ch->midi_out->midi_events =
-    midi_events_new (
-      ch->midi_out);
-  ch->piano_roll->midi_events =
-    midi_events_new (
-      ch->piano_roll);
-  ch->midi_in->identifier.owner_type =
-    PORT_OWNER_TYPE_TRACK;
-  ch->midi_out->identifier.owner_type =
-    PORT_OWNER_TYPE_TRACK;
+  if (track_has_piano_roll (ch->track))
+    {
+      ch->piano_roll->identifier.flags =
+        PORT_FLAG_PIANO_ROLL;
+      ch->piano_roll->identifier.owner_type =
+        PORT_OWNER_TYPE_TRACK;
+      ch->piano_roll->midi_events =
+        midi_events_new (
+          ch->piano_roll);
+    }
+
+  switch (in_type)
+    {
+    case TYPE_EVENT:
+      ch->midi_in->midi_events =
+        midi_events_new (
+          ch->midi_in);
+      ch->midi_in->identifier.owner_type =
+        PORT_OWNER_TYPE_TRACK;
+      break;
+    case TYPE_AUDIO:
+      break;
+    default:
+      break;
+    }
+
+  switch (out_type)
+    {
+    case TYPE_EVENT:
+      ch->midi_out->midi_events =
+        midi_events_new (
+          ch->midi_out);
+      ch->midi_out->identifier.owner_type =
+        PORT_OWNER_TYPE_TRACK;
+      break;
+    case TYPE_AUDIO:
+      break;
+    default:
+      break;
+    }
 
   /* routing */
   if (ch->output_pos > -1)
@@ -1548,10 +1576,11 @@ channel_append_all_ports (
 {
   int j, k;
   Track * tr = ch->track;
+  g_warn_if_fail (tr);
   PortType in_type =
-    ch->track->in_signal_type;
+    tr->in_signal_type;
   PortType out_type =
-    ch->track->out_signal_type;
+    tr->out_signal_type;
 
 #define _ADD(port) \
   array_append ( \
@@ -1576,7 +1605,7 @@ channel_append_all_ports (
   else if (in_type == TYPE_EVENT)
     {
       _ADD (ch->midi_in);
-      if (track_has_piano_roll (ch->track))
+      if (track_has_piano_roll (tr))
         {
           _ADD (ch->piano_roll);
         }

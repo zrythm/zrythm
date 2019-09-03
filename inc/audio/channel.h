@@ -216,19 +216,23 @@ channel_fields_schema[] =
     "fader", CYAML_FLAG_DEFAULT,
     Channel, fader, fader_fields_schema),
 	CYAML_FIELD_MAPPING_PTR (
-    "stereo_in", CYAML_FLAG_POINTER,
+    "stereo_in",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Channel, stereo_in,
     stereo_ports_fields_schema),
 	CYAML_FIELD_MAPPING_PTR (
-    "midi_in", CYAML_FLAG_POINTER,
+    "midi_in",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Channel, midi_in,
     port_fields_schema),
 	CYAML_FIELD_MAPPING_PTR (
-    "piano_roll", CYAML_FLAG_POINTER,
+    "piano_roll",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Channel, piano_roll,
     port_fields_schema),
 	CYAML_FIELD_MAPPING_PTR (
-    "stereo_out", CYAML_FLAG_POINTER,
+    "stereo_out",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Channel, stereo_out,
     stereo_ports_fields_schema),
 	CYAML_FIELD_INT (

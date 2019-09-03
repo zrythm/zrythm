@@ -330,18 +330,10 @@ engine_fields_schema[] =
     "mixer", CYAML_FLAG_DEFAULT,
     AudioEngine, mixer,
     mixer_fields_schema),
-	//CYAML_FIELD_MAPPING_PTR (
-    //"stereo_in", CYAML_FLAG_POINTER,
-    //AudioEngine, stereo_in,
-    //stereo_ports_fields_schema),
-	//CYAML_FIELD_MAPPING_PTR (
-    //"stereo_out", CYAML_FLAG_POINTER,
-    //AudioEngine, stereo_out,
-    //stereo_ports_fields_schema),
-	//CYAML_FIELD_MAPPING_PTR (
-    //"midi_in", CYAML_FLAG_POINTER,
-    //AudioEngine, midi_in,
-    //port_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "monitor_out", CYAML_FLAG_POINTER,
+    AudioEngine, monitor_out,
+    stereo_ports_fields_schema),
 	CYAML_FIELD_MAPPING_PTR (
     "midi_editor_manual_press", CYAML_FLAG_POINTER,
     AudioEngine, midi_editor_manual_press,
@@ -375,6 +367,14 @@ engine_realloc_port_buffers (
 void
 engine_init (AudioEngine * self,
              int           loading);
+
+/**
+ * Activates the audio engine to start receiving
+ * events.
+ */
+void
+engine_activate (
+  AudioEngine * self);
 
 /**
  * Updates frames per tick based on the time sig, the BPM,

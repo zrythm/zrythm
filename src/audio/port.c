@@ -81,7 +81,6 @@ port_init_loaded (Port * this)
   /* find plugin and track */
   SET_FIELDS_FROM_ID ((&this->identifier),this);
 
-
   PortIdentifier * id;
   for (int i = 0; i < this->num_srcs; i++)
     {

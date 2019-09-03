@@ -44,11 +44,15 @@ typedef struct Region Region;
  */
 typedef struct AutomationEditor
 {
+  int    fixme;
 } AutomationEditor;
 
 static const cyaml_schema_field_t
 automation_editor_fields_schema[] =
 {
+  CYAML_FIELD_INT (
+    "fixme", CYAML_FLAG_DEFAULT,
+    AutomationEditor, fixme),
 
 	CYAML_FIELD_END
 };
@@ -58,7 +62,8 @@ automation_editor_schema =
 {
 	CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-		AutomationEditor, automation_editor_fields_schema),
+		AutomationEditor,
+    automation_editor_fields_schema),
 };
 
 /**

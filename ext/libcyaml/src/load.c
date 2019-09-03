@@ -231,6 +231,8 @@ static cyaml_err_t cyaml__stack_ensure(
 	temp = cyaml__realloc(ctx->config, ctx->stack, 0,
 			sizeof(*ctx->stack) * max, false);
 	if (temp == NULL) {
+      cyaml__log(ctx->config, CYAML_LOG_ERROR,
+          "OOM in stack ensure");
 		return CYAML_ERR_OOM;
 	}
 
@@ -283,6 +285,8 @@ static cyaml_err_t cyaml__mapping_bitfieid_create(
 
 	bitfield = cyaml__alloc(ctx->config, size, true);
 	if (bitfield == NULL) {
+      cyaml__log(ctx->config, CYAML_LOG_ERROR,
+          "OOM in bitfield create\n");
 		return CYAML_ERR_OOM;
 	}
 
@@ -533,6 +537,8 @@ static cyaml_err_t cyaml__data_handle_pointer(
 		value_data = cyaml__realloc(ctx->config, value_data,
 				offset, offset + delta, true);
 		if (value_data == NULL) {
+      cyaml__log(ctx->config, CYAML_LOG_ERROR,
+          "OOM in pointer");
 			return CYAML_ERR_OOM;
 		}
 

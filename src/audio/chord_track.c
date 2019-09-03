@@ -48,13 +48,8 @@ chord_track_init (
 ChordTrack *
 chord_track_new ()
 {
-  ChordTrack * self = calloc (1, sizeof (ChordTrack));
-
-  Track * track = (Track *) self;
-  track->type = TRACK_TYPE_CHORD;
-  track_init (track);
-
-  self->name = g_strdup (_("Chords"));
+  ChordTrack * self =
+    track_new (TRACK_TYPE_CHORD, _("Chords"));
 
   gdk_rgba_parse (&self->color, "#0328fa");
 

@@ -26,6 +26,8 @@
 #ifndef __GUI_BACKEND_CHORD_EDITOR_H__
 #define __GUI_BACKEND_CHORD_EDITOR_H__
 
+#include "audio/chord_descriptor.h"
+
 #include <cyaml/cyaml.h>
 
 typedef struct ChordDescriptor ChordDescriptor;
@@ -52,6 +54,10 @@ typedef struct ChordEditor
 static const cyaml_schema_field_t
 chord_editor_fields_schema[] =
 {
+  CYAML_FIELD_SEQUENCE_COUNT (
+  "chords", CYAML_FLAG_DEFAULT,
+  ChordEditor, chords, num_chords,
+  &chord_descriptor_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };

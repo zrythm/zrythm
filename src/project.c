@@ -321,6 +321,9 @@ load (char * filename)
         }
     }
 
+  tracklist_init_loaded (&PROJECT->tracklist);
+  clip_editor_init_loaded (CLIP_EDITOR);
+
   /* init ports */
   Port * ports[10000];
   int num_ports;
@@ -333,9 +336,6 @@ load (char * filename)
       g_message ("init loaded %s",
                  port->identifier.label);
     }
-
-  tracklist_init_loaded (&PROJECT->tracklist);
-  clip_editor_init_loaded (CLIP_EDITOR);
 
   timeline_selections_init_loaded (
     &PROJECT->timeline_selections);
@@ -391,6 +391,8 @@ project_load (char * filename)
     return load (filename);
   else
     create_default (PROJECT);
+
+  engine_activate (AUDIO_ENGINE);
 
   /* set the version */
   PROJECT->version =

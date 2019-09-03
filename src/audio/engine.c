@@ -106,6 +106,8 @@ init_audio (
 {
   g_message ("initializing audio...");
 
+  control_room_init (CONTROL_ROOM);
+
   if (loading)
     {
       /*stereo_ports_init_loaded (self->stereo_in);*/
@@ -113,7 +115,6 @@ init_audio (
     }
   else
     {
-      control_room_init (CONTROL_ROOM);
     }
 }
 
@@ -264,11 +265,6 @@ engine_init (
       break;
     }
 
-#ifdef HAVE_JACK
-  if (self->audio_backend == AUDIO_BACKEND_JACK)
-    engine_jack_activate (self);
-#endif
-
   self->buf_size_set = false;
 
   metronome_init (METRONOME);
@@ -278,6 +274,20 @@ engine_init (
   stereo_ports_connect (
     SAMPLE_PROCESSOR->stereo_out,
     self->control_room.monitor_fader.stereo_in, 1);
+}
+
+/**
+ * Activates the audio engine to start receiving
+ * events.
+ */
+void
+engine_activate (
+  AudioEngine * self)
+{
+#ifdef HAVE_JACK
+  if (self->audio_backend == AUDIO_BACKEND_JACK)
+    engine_jack_activate (self);
+#endif
 }
 
 void

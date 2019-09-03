@@ -70,7 +70,7 @@ Use `gdb build/src/zrythm`
 
 There is also
 
-    G_DEBUG=fatal_warnings,signals,actions G_ENABLE_DIAGNOSTIC=1 gdb _build/src/zrythm
+    G_DEBUG=fatal_warnings,signals,actions G_ENABLE_DIAGNOSTIC=1 gdb build/src/zrythm
 
 `G_DEBUG` will trigger break points at GTK warning
 messages and `G_ENABLE_DIAGNOSTIC` is used to break

@@ -320,34 +320,40 @@ typedef struct Port
 static const cyaml_strval_t
 port_flow_strings[] =
 {
-	{ "Unknown",       FLOW_UNKNOWN    },
-	{ "Input",         FLOW_INPUT   },
-	{ "Output",        FLOW_OUTPUT   },
+	{ "unknown",       FLOW_UNKNOWN    },
+	{ "input",         FLOW_INPUT   },
+	{ "output",        FLOW_OUTPUT   },
 };
 
 static const cyaml_strval_t
 port_owner_type_strings[] =
 {
-	{ "Backend",   PORT_OWNER_TYPE_BACKEND    },
-	{ "Plugin",    PORT_OWNER_TYPE_PLUGIN   },
-	{ "Track",     PORT_OWNER_TYPE_TRACK   },
+	{ "backend",   PORT_OWNER_TYPE_BACKEND    },
+	{ "plugin",    PORT_OWNER_TYPE_PLUGIN   },
+	{ "track",     PORT_OWNER_TYPE_TRACK   },
+	{ "pre-fader", PORT_OWNER_TYPE_PREFADER   },
+	{ "fader",     PORT_OWNER_TYPE_FADER   },
+	{ "monitor fader",
+    PORT_OWNER_TYPE_MONITOR_FADER },
+	{ "sample processor",
+    PORT_OWNER_TYPE_SAMPLE_PROCESSOR },
 };
 
 static const cyaml_strval_t
 port_type_strings[] =
 {
-	{ "Unknown",       TYPE_UNKNOWN    },
-	{ "Control",       TYPE_CONTROL   },
-	{ "Audio",         TYPE_AUDIO   },
-	{ "Event",         TYPE_EVENT   },
-	{ "CV",            TYPE_CV   },
+	{ "unknown",       TYPE_UNKNOWN    },
+	{ "control",       TYPE_CONTROL   },
+	{ "audio",         TYPE_AUDIO   },
+	{ "event",         TYPE_EVENT   },
+	{ "cv",            TYPE_CV   },
 };
 
 static const cyaml_strval_t
 port_internal_type_strings[] =
 {
-	{ "LV2 Port",       INTERNAL_LV2_PORT    },
-	{ "JACK Port",      INTERNAL_JACK_PORT   },
+	{ "LV2 port",       INTERNAL_LV2_PORT    },
+	{ "JACK port",      INTERNAL_JACK_PORT   },
 };
 
 static const cyaml_schema_field_t

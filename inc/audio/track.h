@@ -337,7 +337,7 @@ track_fields_schema[] =
     "color", CYAML_FLAG_DEFAULT,
     Track, color, gdk_rgba_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "lanes", CYAML_FLAG_DEFAULT,
+    "lanes", CYAML_FLAG_POINTER,
     Track, lanes, num_lanes,
     &track_lane_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
