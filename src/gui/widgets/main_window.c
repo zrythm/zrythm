@@ -132,7 +132,7 @@ main_window_widget_refresh (MainWindowWidget * self)
 
   /* setup top and bot bars */
   top_bar_widget_refresh (self->top_bar);
-  bot_bar_widget_refresh (self->bot_bar);
+  bot_bar_widget_setup (self->bot_bar);
 
   /* setup mixer */
   g_warn_if_fail (

@@ -209,7 +209,6 @@ on_motion (GtkWidget *      widget,
       gtk_widget_unset_state_flags (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);
-      bot_bar_change_status ("");
     }
 
   return FALSE;

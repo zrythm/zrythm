@@ -135,17 +135,6 @@ on_motion (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT,
         0);
-      bot_bar_change_status (
-        _("Marker - Click and drag to move - Hold"
-        "Shift to bypass snapping - Double click "
-        "to edit name"));
-    }
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT);
-      bot_bar_change_status ("");
     }
 
   return FALSE;

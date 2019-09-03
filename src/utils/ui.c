@@ -372,26 +372,6 @@ hide_notification_async ()
   return FALSE;
 }
 
-gboolean
-ui_on_motion_set_status_bar_text_cb (
-  GtkWidget * widget,
-  GdkEvent *  event,
-  char *      text)
-{
-  if (gdk_event_get_event_type (event) ==
-        GDK_ENTER_NOTIFY)
-    {
-      bot_bar_change_status (text);
-    }
-  else if (gdk_event_get_event_type (event) ==
-             GDK_LEAVE_NOTIFY)
-    {
-      bot_bar_change_status ("");
-    }
-
-  return FALSE;
-}
-
 /**
  * Shows a notification in the revealer.
  */

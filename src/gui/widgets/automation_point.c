@@ -87,9 +87,6 @@ on_motion (GtkWidget * widget,
         GTK_STATE_FLAG_PRELIGHT,
         0);
 
-      bot_bar_change_status (
-        "Automation Point - Click and drag to move "
-        "it around (Use Shift to bypass snapping)");
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
@@ -97,8 +94,6 @@ on_motion (GtkWidget * widget,
       gtk_widget_unset_state_flags (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);
-
-      bot_bar_change_status ("");
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }

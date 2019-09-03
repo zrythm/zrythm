@@ -177,29 +177,14 @@ on_motion (GtkWidget * widget,
       switch (self->type)
         {
         case RULER_MARKER_TYPE_PLAYHEAD:
-          bot_bar_change_status (
-            "Playhead - Click and drag to move ("
-            "hold Shift to bypass snapping)");
           break;
         case RULER_MARKER_TYPE_CLIP_START:
-          bot_bar_change_status (
-            "Clip Start - Click and drag to move ("
-            "hold Shift to bypass snapping)");
           break;
         case RULER_MARKER_TYPE_LOOP_START:
-          bot_bar_change_status (
-            "Loop Start - Click and drag to move ("
-            "hold Shift to bypass snapping)");
           break;
         case RULER_MARKER_TYPE_LOOP_END:
-          bot_bar_change_status (
-            "Loop End - Click and drag to move ("
-            "hold Shift to bypass snapping)");
           break;
         case RULER_MARKER_TYPE_CUE_POINT:
-          bot_bar_change_status (
-            "Cue Point - Double click to set ("
-            "hold Shift to bypass snapping)");
           break;
         }
     }
@@ -212,7 +197,6 @@ on_motion (GtkWidget * widget,
         {
           ui_set_cursor_from_name (widget, "default");
         }
-      bot_bar_change_status ("");
     }
 }
 

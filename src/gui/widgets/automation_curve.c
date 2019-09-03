@@ -228,9 +228,6 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
         GTK_STATE_FLAG_PRELIGHT,
         0);
 
-      bot_bar_change_status (
-        "Automation Curve - Click and drag to  "
-        "change curviness");
       self->cache = 0;
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
@@ -240,7 +237,6 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);
 
-      bot_bar_change_status ("");
       self->cache = 0;
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));

@@ -146,32 +146,17 @@ on_motion (GtkWidget * widget,
 {
   TrackWidget * self = Z_TRACK_WIDGET (user_data);
 
-  if (event->type == GDK_ENTER_NOTIFY ||
-      (event->type == GDK_MOTION_NOTIFY &&
-       !bot_bar_status_contains (_("Record")) &&
-       !bot_bar_status_contains (_("Solo")) &&
-       !bot_bar_status_contains (_("Mute")) &&
-       !bot_bar_status_contains (_("Freeze")) &&
-       !bot_bar_status_contains (_("Lock")) &&
-       !bot_bar_status_contains (_("Show UI")) &&
-       !bot_bar_status_contains (_("Show Automation Lanes")) &&
-       !bot_bar_status_contains (_("Freeze"))))
+  if (event->type == GDK_ENTER_NOTIFY)
     {
       gtk_widget_set_state_flags (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT, 0);
-      bot_bar_change_status (
-        _("Track - Change track parameters like \
-Solo/Mute... - Click the icon on the bottom right \
-to bring up the automation lanes - Double click to \
-show corresponding channel in Mixer (if applicable)"));
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
       gtk_widget_unset_state_flags (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);
-      bot_bar_change_status ("");
     }
 
   return FALSE;

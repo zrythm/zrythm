@@ -96,6 +96,26 @@ string_is_equal (
 }
 
 /**
+ * Returns if the given string contains the given
+ * substring.
+ *
+ * @param accept_alternatives Accept ASCII
+ *   alternatives.
+ */
+int
+string_contains_substr (
+  const char * str,
+  const char * substr,
+  const int    accept_alternatives)
+{
+  return
+    g_str_match_string (
+      substr,
+      str,
+      accept_alternatives);
+}
+
+/**
  * Returns a newly allocated string that is a
  * filename version of the given string.
  *

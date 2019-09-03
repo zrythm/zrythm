@@ -23,12 +23,15 @@
  * Bottomest widget holding a status bar.
  */
 
+#include "audio/engine.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/main_window.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (BotBarWidget,
                bot_bar_widget,
@@ -40,57 +43,85 @@ bot_bar_widget_refresh (BotBarWidget * self)
 
 }
 
+static void
+on_text_pushed (
+  GtkStatusbar *statusbar,
+  guint         context_id,
+  gchar        *text,
+  BotBarWidget * self)
+{
+  gtk_label_set_markup (
+    self->label, text);
+}
+
 /**
- * Changes the message shown in the status bar.
+ * Updates the content of the status bar.
  */
 void
-bot_bar_change_status (const char * message)
+bot_bar_widget_update_status (
+  BotBarWidget * self)
 {
-  gtk_statusbar_remove_all (MW_STATUS_BAR,
-                            MW_BOT_BAR->context_id);
+  gtk_statusbar_remove_all (
+    MW_STATUS_BAR,
+    MW_BOT_BAR->context_id);
+
+#define ORANGE "#F79616"
+#define ORANGIZE(x) \
+  "<span " \
+  "foreground=\"" ORANGE "\">" x "</span>"
+
+  char * str =
+    g_strdup_printf (
+      "%s: " ORANGIZE ("%s") " | "
+      "%s: " ORANGIZE ("%s") " | "
+      "%s: " ORANGIZE ("%d frames") " | "
+      "%s: " ORANGIZE ("%d Hz"),
+      "Audio backend",
+      engine_audio_backend_to_string (
+        AUDIO_ENGINE->audio_backend),
+      "MIDI backend",
+      engine_midi_backend_to_string (
+        AUDIO_ENGINE->midi_backend),
+      "Audio buffer size",
+      AUDIO_ENGINE->block_length,
+      "Sample rate",
+      AUDIO_ENGINE->sample_rate);
+
+#undef ORANGE
+#undef ORANGIZE
 
   gtk_statusbar_push (MW_STATUS_BAR,
                       MW_BOT_BAR->context_id,
-                      message);
+                      str);
+  g_free (str);
+}
+
+static gboolean
+tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  BotBarWidget *  self)
+{
+  bot_bar_widget_update_status (self);
+
+  return G_SOURCE_CONTINUE;
 }
 
 /**
- * Returns if the bot bar contains the given
- * substring.
+ * Sets up the bot bar.
  */
-int
-bot_bar_status_contains (const char * substr)
+void
+bot_bar_widget_setup (
+  BotBarWidget * self)
 {
-  GtkWidget * box =
-    gtk_statusbar_get_message_area (
-      MW_STATUS_BAR);
-
-  GList *children, *iter;
-
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (box));
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      g_object_ref (GTK_WIDGET (iter->data));
-      if (GTK_IS_LABEL (iter->data))
-        {
-          GtkLabel * lbl = GTK_LABEL (iter->data);
-          g_list_free (children);
-          return g_str_match_string (
-            substr,
-            gtk_label_get_text (lbl),
-            0);
-        }
-    }
-  g_warn_if_reached ();
-  return 0;
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), (GtkTickCallback) tick_cb,
+    self, NULL);
 }
 
 static void
-bot_bar_widget_class_init (BotBarWidgetClass * _klass)
+bot_bar_widget_class_init (
+  BotBarWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass,
@@ -111,7 +142,27 @@ bot_bar_widget_init (BotBarWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
   self->context_id =
-    gtk_statusbar_get_context_id (self->status_bar,
-                                  "Main context");
+    gtk_statusbar_get_context_id (
+      self->status_bar,
+      "Main context");
+
+  self->label =
+    GTK_LABEL (gtk_label_new (""));
+  gtk_label_set_markup (self->label, "");
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->label), 1);
+  GtkWidget * box =
+    gtk_statusbar_get_message_area (
+      self->status_bar);
+  z_gtk_container_remove_all_children (
+    GTK_CONTAINER (box));
+  gtk_container_add (
+    GTK_CONTAINER (box),
+    GTK_WIDGET (self->label));
+
+  g_signal_connect (
+    self->status_bar, "text-pushed",
+    G_CALLBACK (on_text_pushed),
+    self);
 }
 

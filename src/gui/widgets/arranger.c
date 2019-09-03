@@ -1838,9 +1838,10 @@ arranger_widget_get_scrolled_window (
 }
 
 static gboolean
-tick_cb (GtkWidget *widget,
-         GdkFrameClock *frame_clock,
-         gpointer user_data)
+tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
 {
   ARRANGER_WIDGET_GET_PRIVATE (widget);
 

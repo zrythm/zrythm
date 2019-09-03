@@ -274,17 +274,10 @@ on_motion (GtkWidget *widget,
 {
   if (event->type == GDK_ENTER_NOTIFY)
     {
-      bot_bar_change_status (
-        "Arranger - Double click inside a track "
-        "lane to create objects "
-        "(hold Shift to disable snapping) - Click "
-        "on the top half of a track lane and drag "
-        "to select objects - Click on the bottom "
-        "half of a track lane and drag to select a "
-        "range");
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
-    bot_bar_change_status ("");
+    {
+    }
 
   return FALSE;
 }

@@ -281,19 +281,16 @@ on_motion (GtkWidget * widget,
     {
       if (self->type ==
             DRAG_DEST_BOX_TYPE_MIXER)
-        bot_bar_change_status (
-          "Drag and drop a plugin here from the "
-          "browser");
+        {
+        }
       else if (self->type ==
                  DRAG_DEST_BOX_TYPE_TRACKLIST)
-        bot_bar_change_status (
-          "Drag and drop a plugin or audio file "
-          "here from the browser");
+        {
+        }
     }
   else if (gdk_event_get_event_type (event) ==
            GDK_LEAVE_NOTIFY)
     {
-      bot_bar_change_status ("");
     }
 
   return FALSE;

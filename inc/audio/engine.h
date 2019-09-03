@@ -94,6 +94,15 @@ typedef enum AudioBackend
   NUM_AUDIO_BACKENDS,
 } AudioBackend;
 
+static const char * audio_backend_str[] =
+{
+  "Dummy",
+  "ALSA",
+  "JACK",
+  "PortAudio",
+  "invalid"
+};
+
 typedef enum MidiBackend
 {
   MIDI_BACKEND_DUMMY,
@@ -101,6 +110,14 @@ typedef enum MidiBackend
   MIDI_BACKEND_JACK,
   NUM_MIDI_BACKENDS,
 } MidiBackend;
+
+static const char * midi_backend_str[] =
+{
+  "Dummy",
+  "ALSA",
+  "JACK",
+  "invalid"
+};
 
 typedef enum AudioEngineJackTransportType
 {
@@ -134,12 +151,24 @@ typedef struct AudioEngine
 
   /** Current MIDI backend. */
   MidiBackend        midi_backend;
-	uint32_t           block_length;   ///< Audio buffer size (block length)
-	size_t             midi_buf_size;  ///< Size of MIDI port buffers
-	uint32_t           sample_rate;    ///< Sample rate
-  int               frames_per_tick;  ///< number of frames per tick
-	int               buf_size_set;   ///< True iff buffer size callback fired
-  Mixer              mixer;        ///< the mixer
+
+  /** Audio buffer size (block length). */
+	uint32_t           block_length;
+
+  /** Size of MIDI port buffers. */
+	size_t             midi_buf_size;
+
+  /** Sample rate. */
+	uint32_t           sample_rate;
+
+  /** Number of frames/samples per tick. */
+  int               frames_per_tick;
+
+  /** True iff buffer size callback fired. */
+	int               buf_size_set;
+
+  /** The mixer. */
+  Mixer              mixer;
 
   /**
    * Audio intefrace outputs (only 2 are used).
@@ -390,6 +419,26 @@ engine_post_process ();
  */
 void
 engine_fill_out_bufs ();
+
+/**
+ * Returns the audio backend as a string.
+ */
+static inline const char *
+engine_audio_backend_to_string (
+  AudioBackend backend)
+{
+  return audio_backend_str[backend];
+}
+
+/**
+ * Returns the MIDI backend as a string.
+ */
+static inline const char *
+engine_midi_backend_to_string (
+  MidiBackend backend)
+{
+  return midi_backend_str[backend];
+}
 
 /**
  * Closes any connections and free's data.

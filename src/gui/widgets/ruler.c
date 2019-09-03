@@ -738,28 +738,6 @@ on_motion (GtkDrawingArea * da,
            GdkEventMotion *event,
            RulerWidget *    self)
 {
-  /* change statusbar */
-  if (event->type == GDK_MOTION_NOTIFY)
-    {
-      if (self == (RulerWidget *) MW_RULER)
-        bot_bar_change_status (
-          "Timeline Ruler - Click and drag on a "
-          "marker to change its position - Click "
-          "and drag on the bot half to change the "
-          "playhead position - Click and drag on "
-          "the top half to create a range "
-          "selection (Use Shift to bypass "
-          "snapping)");
-      else if (self == (RulerWidget *) EDITOR_RULER)
-        bot_bar_change_status (
-          "Clip Editor Ruler - Click and drag on "
-          "a marker to change its position (Use "
-          "Shift to bypass snapping)");
-    }
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    bot_bar_change_status ("");
-
-
   if (self != (RulerWidget *) MW_RULER)
     return;
 

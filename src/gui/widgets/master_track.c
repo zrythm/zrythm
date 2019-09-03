@@ -161,9 +161,6 @@ master_track_widget_init (MasterTrackWidget * self)
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->record),
     "Record");
-  ui_set_hover_status_bar_signals (
-    self->record,
-    "Record - Arm track for recording");
   context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self->record));

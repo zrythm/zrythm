@@ -50,6 +50,19 @@ string_array_contains_substr (
   char *  substr);
 
 /**
+ * Returns if the given string contains the given
+ * substring.
+ *
+ * @param accept_alternatives Accept ASCII
+ *   alternatives.
+ */
+int
+string_contains_substr (
+  const char * str,
+  const char * substr,
+  const int    accept_alternatives);
+
+/**
  * Returns if the two strings are equal.
  */
 int

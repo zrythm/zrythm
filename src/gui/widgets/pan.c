@@ -99,8 +99,6 @@ on_motion (GtkWidget * widget, GdkEvent *event,
       gtk_widget_set_state_flags (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT, 0);
-      bot_bar_change_status (
-        "Pan - Click and drag to change value");
     }
   else if (gdk_event_get_event_type (event) ==
            GDK_LEAVE_NOTIFY)
@@ -108,7 +106,6 @@ on_motion (GtkWidget * widget, GdkEvent *event,
       gtk_widget_unset_state_flags (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);
-      bot_bar_change_status ("");
     }
 
   return FALSE;

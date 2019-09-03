@@ -43,30 +43,9 @@ on_motion (GtkWidget *      widget,
 {
   if (event->type == GDK_ENTER_NOTIFY)
     {
-      if (self == MW_TOOLBOX->select_mode)
-        bot_bar_change_status (
-          "Select Mode - Toggles between normal and "
-          "stretch modes");
-      else if (self == MW_TOOLBOX->edit_mode)
-        bot_bar_change_status (
-          "Edit Mode - Single click to create an "
-          "object - Hold Ctrl while clicking and "
-          "dragging to fill");
-      else if (self == MW_TOOLBOX->erase_mode)
-        bot_bar_change_status (
-          "Eraser Mode");
-      else if (self == MW_TOOLBOX->ramp_mode)
-        bot_bar_change_status (
-          "Ramp Mode - Useful when editing "
-          "automation and velocities");
-      else if (self == MW_TOOLBOX->audition_mode)
-        bot_bar_change_status (
-          "Audition Mode - Click and hold to listen "
-          "to events");
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      bot_bar_change_status ("");
     }
 
   return FALSE;

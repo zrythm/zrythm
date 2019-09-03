@@ -50,6 +50,10 @@ typedef struct _BotBarWidget
   GtkBox                parent_instance;
   GtkStatusbar *        status_bar;
 
+  /** New label replacing the original status
+   * bar label. */
+  GtkLabel *            label;
+
   /** Status bar context id. */
   guint                 context_id;
 } BotBarWidget;
@@ -58,17 +62,18 @@ void
 bot_bar_widget_refresh (BotBarWidget * self);
 
 /**
- * Changes the message shown in the status bar.
+ * Updates the content of the status bar.
  */
 void
-bot_bar_change_status (const char * message);
+bot_bar_widget_update_status (
+  BotBarWidget * self);
 
 /**
- * Returns if the bot bar contains the given
- * substring.
+ * Sets up the bot bar.
  */
-int
-bot_bar_status_contains (const char * substr);
+void
+bot_bar_widget_setup (
+  BotBarWidget * self);
 
 /**
  * @}
