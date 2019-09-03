@@ -299,10 +299,6 @@ first_run_assistant_widget_new (
     S_GENERAL, "dir", dir);
   g_free (dir);
 
-  /* set midi devices */
-  midi_controller_mb_widget_setup (
-    self->midi_devices);
-
   g_message ("n pages %d",
              gtk_assistant_get_n_pages (GTK_ASSISTANT (self)));
 
@@ -327,38 +323,21 @@ first_run_assistant_widget_class_init (
   resources_set_class_template (
     klass, "first_run_assistant.ui");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    FirstRunAssistantWidget,
-    language_cb);
-  gtk_widget_class_bind_template_child (
-    klass,
-    FirstRunAssistantWidget,
-    audio_backend);
-  gtk_widget_class_bind_template_child (
-    klass,
-    FirstRunAssistantWidget,
-    midi_backend);
-  gtk_widget_class_bind_template_child (
-    klass,
-    FirstRunAssistantWidget,
-    locale_not_available);
-  gtk_widget_class_bind_template_child (
-    klass,
-    FirstRunAssistantWidget,
-    fc_btn);
-  gtk_widget_class_bind_template_child (
-    klass,
-    FirstRunAssistantWidget,
-    reset);
-  gtk_widget_class_bind_template_child (
-    klass,
-    FirstRunAssistantWidget,
-    test_backends);
-  gtk_widget_class_bind_template_child (
-    klass,
-    FirstRunAssistantWidget,
-    midi_devices);
+#define BIND(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, \
+    FirstRunAssistantWidget, \
+    x)
+
+  BIND (language_cb);
+  BIND (audio_backend);
+  BIND (midi_backend);
+  BIND (locale_not_available);
+  BIND (fc_btn);
+  BIND (reset);
+  BIND (test_backends);
+
+#undef BIND
 }
 
 static void

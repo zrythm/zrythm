@@ -80,7 +80,7 @@ typedef struct _ProjectAssistantWidget
   GtkCheckButton      * create_new_project;
 
   /** The project info label. */
-  GtkLabel *          label;
+  //GtkLabel *          label;
 
   GtkButton *         remove_btn;
   ProjectInfo         project_infos[300];

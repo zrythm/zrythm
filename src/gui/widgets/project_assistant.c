@@ -29,13 +29,13 @@ G_DEFINE_TYPE (ProjectAssistantWidget,
                project_assistant_widget,
                GTK_TYPE_ASSISTANT)
 
-static void
-set_label (
-  ProjectAssistantWidget * self)
-{
-  gtk_label_set_text (
-    self->label, "TODO fill this in");
-}
+/*static void*/
+/*set_label (*/
+  /*ProjectAssistantWidget * self)*/
+/*{*/
+  /*gtk_label_set_text (*/
+    /*self->label, "TODO fill this in");*/
+/*}*/
 
 static void
 on_projects_selection_changed (
@@ -67,12 +67,16 @@ on_projects_selection_changed (
             GTK_ASSISTANT (self),
             gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 0),
             1);
-          gtk_assistant_set_page_complete (
-            GTK_ASSISTANT (self),
-            gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 1),
-            1);
-          set_label (self);
+          /*gtk_assistant_set_page_complete (*/
+            /*GTK_ASSISTANT (self),*/
+            /*gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 1),*/
+            /*1);*/
+          /*set_label (self);*/
         }
+
+      g_list_free_full (
+        selected_rows,
+        (GDestroyNotify) gtk_tree_path_free);
     }
 }
 
@@ -91,16 +95,27 @@ on_create_new_project_toggled (
         gtk_assistant_get_nth_page (
           GTK_ASSISTANT (self), 0),
         1);
-      gtk_assistant_set_page_complete (
-        GTK_ASSISTANT (self),
-        gtk_assistant_get_nth_page (
-          GTK_ASSISTANT (self), 1),
-        1);
+      /*gtk_assistant_set_page_complete (*/
+        /*GTK_ASSISTANT (self),*/
+        /*gtk_assistant_get_nth_page (*/
+          /*GTK_ASSISTANT (self), 1),*/
+        /*1);*/
         self->selection = NULL;
     }
   else
     {
-      gtk_widget_set_sensitive (GTK_WIDGET (self->projects), 1);
+      gtk_widget_set_sensitive (
+        GTK_WIDGET (self->projects), 1);
+
+      if (gtk_tree_selection_count_selected_rows (
+            self->projects_selection) <= 0)
+        {
+          gtk_assistant_set_page_complete (
+            GTK_ASSISTANT (self),
+            gtk_assistant_get_nth_page (
+              GTK_ASSISTANT (self), 0),
+            0);
+        }
     }
 }
 
@@ -306,10 +321,10 @@ project_assistant_widget_class_init (
     klass,
     ProjectAssistantWidget,
     create_new_project);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ProjectAssistantWidget,
-    label);
+  /*gtk_widget_class_bind_template_child (*/
+    /*klass,*/
+    /*ProjectAssistantWidget,*/
+    /*label);*/
   gtk_widget_class_bind_template_callback (
     klass,
     on_create_new_project_toggled);

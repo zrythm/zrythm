@@ -43,7 +43,6 @@ typedef struct _FirstRunAssistantWidget
   GtkLabel *          locale_not_available;
   GtkFileChooserButton * fc_btn;
   GtkButton *         reset;
-  MidiControllerMbWidget * midi_devices;
   GtkButton *          test_backends;
   GtkComboBox *        audio_backend;
   GtkComboBox *        midi_backend;

@@ -31,6 +31,7 @@
     <property name="default_width">400</property>
     <property name="default_height">400</property>
     <property name="icon_name">zrythm</property>
+    <property name="type_hint">dialog</property>
     <property name="urgency_hint">True</property>
     <property name="use_header_bar">0</property>
     <child>
@@ -239,52 +240,8 @@
         </child>
       </object>
       <packing>
-        <property name="title" translatable="yes">Backends</property>
-        <property name="complete">True</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkBox" id="midi_devices_box">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">7</property>
-        <property name="margin_right">7</property>
-        <property name="margin_top">7</property>
-        <property name="margin_bottom">7</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">7</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Finally, select the MIDI devices you wish to auto-connect when Zrythm starts (You can skip this step and set them up later)</property>
-            <property name="wrap">True</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="MidiControllerMbWidget" id="midi_devices">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
         <property name="page_type">confirm</property>
-        <property name="title" translatable="yes">MIDI Devices</property>
+        <property name="title" translatable="yes">Backends</property>
         <property name="complete">True</property>
         <property name="has_padding">False</property>
       </packing>

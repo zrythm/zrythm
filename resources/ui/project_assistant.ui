@@ -23,22 +23,23 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <template class="ProjectAssistantWidget" parent="GtkAssistant">
-    <!--property name="can_focus">False</property-->
+    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Select Project</property>
-    <!--property name="modal">True</property-->
-    <property name="icon-name">zrythm</property>
+    <property name="icon_name">zrythm</property>
+    <property name="urgency_hint">True</property>
     <property name="use_header_bar">0</property>
-    <property name="urgency-hint">1</property>
     <child>
       <object class="GtkBox" id="select_project_box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
+        <property name="spacing">4</property>
         <child>
           <placeholder/>
         </child>
         <child>
           <object class="GtkTreeView" id="projects">
+            <property name="height_request">85</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <child internal-child="selection">
@@ -57,6 +58,9 @@
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_left">4</property>
+            <property name="margin_right">4</property>
+            <property name="margin_bottom">4</property>
             <child>
               <object class="GtkCheckButton" id="create_new_project">
                 <property name="label" translatable="yes">Create new project</property>
@@ -99,37 +103,14 @@
         </child>
       </object>
       <packing>
-        <property name="has_padding">False</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkLabel" id="label">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="no">Project name: name
-Path: /home/user/Zrythm/name
-Backend: JACK
-Frame rate: 44100
-(note: this text is hard coded at the moment)</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
         <property name="page_type">confirm</property>
         <property name="has_padding">False</property>
       </packing>
     </child>
     <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
       <placeholder/>
     </child>
     <child>
