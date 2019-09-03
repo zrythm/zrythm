@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-08-31 02:54+0100\n"
-"PO-Revision-Date: 2019-09-03 13:44+0000\n"
+"PO-Revision-Date: 2019-09-04 15:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -586,7 +586,7 @@ msgstr "Encaminhado para Saída Estéreo"
 
 #: src/gui/widgets/route_target_selector.c:92
 msgid "Select channel to route signal to"
-msgstr "Selecionar o canal para onde encaminhar o sinal"
+msgstr "Selecionar o canal para onde rotear o sinal"
 
 #: src/gui/widgets/route_target_selector.c:132
 msgid "Stereo Out"
@@ -702,7 +702,7 @@ msgstr "Nenhuma saída selecionada"
 #: src/gui/widgets/route_target_selector_popover.c:194
 #, c-format
 msgid "Routing to %s"
-msgstr "Encaminhamento a %s"
+msgstr "Roteamento para %s"
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
@@ -791,14 +791,12 @@ msgstr ""
 "duas vezes para mostrar o canal correspondente no Misturador (se aplicável)"
 
 #: src/gui/widgets/track.c:447
-#, fuzzy
 msgid "_Delete Track"
-msgstr "Apagar Faixa"
+msgstr "_Apagar Faixa"
 
 #: src/gui/widgets/track.c:450
-#, fuzzy
 msgid "_Delete Tracks"
-msgstr "Apagar Faixas"
+msgstr "_Apagar Faixas"
 
 #: src/gui/widgets/track.c:465
 msgid "_Duplicate Track"
