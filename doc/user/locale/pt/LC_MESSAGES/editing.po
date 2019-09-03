@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-09-02 00:20+0000\n"
+"PO-Revision-Date: 2019-09-04 15:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/pt/>\n"
@@ -23,11 +23,11 @@ msgstr ""
 #: ../../editing/common-operations.rst:2
 #: ../../editing/common-operations/intro.rst:2
 msgid "Common Operations"
-msgstr ""
+msgstr "Operações Comuns"
 
 #: ../../editing/common-operations/operations-on-current-selection.rst:2
 msgid "Operations on the Current Selection"
-msgstr ""
+msgstr "Operações na Seleção Atual"
 
 #: ../../editing/common-operations/operations-on-current-selection.rst:5
 msgid "Looping"
@@ -38,10 +38,12 @@ msgid ""
 "Clicking the :zbutton:`Loop Selection` button or pressing :zbutton:`Ctrl "
 "+ L` will place the loop points around the currently selected objects."
 msgstr ""
+"Clicando no botão :zbutton:`Seleção de loop` ou pressionando :zbutton:`Ctrl +"
+" L` irá por os pontos de loop á volta dos objetos atualmente selecionados."
 
 #: ../../editing/common-operations/other-operations.rst:2
 msgid "Other Operations"
-msgstr ""
+msgstr "Outras Operações"
 
 #: ../../editing/common-operations/other-operations.rst:4
 msgid ""
