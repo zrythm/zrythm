@@ -95,9 +95,43 @@ typedef struct PassthroughProcessor
   Channel *        channel;
 } PassthroughProcessor;
 
+static const cyaml_strval_t
+passthrough_processor_type_strings[] =
+{
+	{ "none",           PP_TYPE_NONE    },
+	{ "audio channel",  PP_TYPE_AUDIO_CHANNEL   },
+	{ "midi channel",   PP_TYPE_MIDI_CHANNEL   },
+};
+
 static const cyaml_schema_field_t
 passthrough_processor_fields_schema[] =
 {
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    PassthroughProcessor, type,
+    passthrough_processor_type_strings,
+    CYAML_ARRAY_LEN (
+      passthrough_processor_type_strings)),
+	CYAML_FIELD_MAPPING_PTR (
+    "midi_in",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    PassthroughProcessor, midi_in,
+    port_fields_schema),
+	CYAML_FIELD_MAPPING_PTR (
+    "midi_out",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    PassthroughProcessor, midi_out,
+    port_fields_schema),
+	CYAML_FIELD_MAPPING_PTR (
+    "stereo_in",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    PassthroughProcessor, stereo_in,
+    stereo_ports_fields_schema),
+	CYAML_FIELD_MAPPING_PTR (
+    "stereo_out",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    PassthroughProcessor, stereo_out,
+    stereo_ports_fields_schema),
 
 	CYAML_FIELD_END
 };
@@ -110,6 +144,14 @@ passthrough_processor_schema =
     PassthroughProcessor,
     passthrough_processor_fields_schema),
 };
+
+/**
+ * Inits a PassthroughProcessor after loading a
+ * project.
+ */
+void
+passthrough_processor_init_loaded (
+  PassthroughProcessor * self);
 
 /**
  * Inits passthrough_processor to default values.

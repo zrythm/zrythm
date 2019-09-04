@@ -31,6 +31,36 @@
 #include <glib/gi18n.h>
 
 /**
+ * Inits fader after a project is loaded.
+ */
+void
+fader_init_loaded (
+  Fader * self)
+{
+  switch (self->type)
+    {
+    case FADER_TYPE_AUDIO_CHANNEL:
+      port_set_owner_fader (
+        self->stereo_in->l, self);
+      port_set_owner_fader (
+        self->stereo_in->r, self);
+      port_set_owner_fader (
+        self->stereo_out->l, self);
+      port_set_owner_fader (
+        self->stereo_out->r, self);
+      break;
+    case FADER_TYPE_MIDI_CHANNEL:
+      port_set_owner_fader (
+        self->midi_in, self);
+      port_set_owner_fader (
+        self->midi_out, self);
+      break;
+    default:
+      break;
+    }
+}
+
+/**
  * Inits fader to default values.
  *
  * This assumes that the channel has no plugins.

@@ -111,7 +111,7 @@ init_audio (
   if (loading)
     {
       /*stereo_ports_init_loaded (self->stereo_in);*/
-      stereo_ports_init_loaded (self->monitor_out);
+      /*stereo_ports_init_loaded (self->monitor_out);*/
     }
   else
     {

@@ -28,6 +28,37 @@
 #include <glib/gi18n.h>
 
 /**
+ * Inits a PassthroughProcessor after loading a
+ * project.
+ */
+void
+passthrough_processor_init_loaded (
+  PassthroughProcessor * self)
+{
+  switch (self->type)
+    {
+    case PP_TYPE_AUDIO_CHANNEL:
+      port_set_owner_prefader (
+        self->stereo_in->l, self);
+      port_set_owner_prefader (
+        self->stereo_in->r, self);
+      port_set_owner_prefader (
+        self->stereo_out->l, self);
+      port_set_owner_prefader (
+        self->stereo_out->r, self);
+      break;
+    case PP_TYPE_MIDI_CHANNEL:
+      port_set_owner_prefader (
+        self->midi_in, self);
+      port_set_owner_prefader (
+        self->midi_out, self);
+      break;
+    default:
+      break;
+    }
+}
+
+/**
  * Inits passthrough_processor to default values.
  *
  * This assumes that the channel has no plugins.

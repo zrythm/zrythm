@@ -388,7 +388,7 @@ int
 project_load (char * filename)
 {
   if (filename)
-    return load (filename);
+    load (filename);
   else
     create_default (PROJECT);
 

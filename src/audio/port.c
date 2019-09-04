@@ -95,6 +95,12 @@ port_init_loaded (Port * this)
         port_find_from_identifier (id);
       g_warn_if_fail (this->dests[i]);
     }
+
+  /* connect to backend if flag set */
+  if (port_is_exposed_to_backend (this))
+    {
+      port_set_expose_to_backend (this, 1);
+    }
 }
 
 /**
@@ -225,7 +231,7 @@ port_find_from_identifier (
       else if (id->flow == FLOW_INPUT)
         {
           if (id->flags & PORT_FLAG_STEREO_L)
-            return ch->fader.stereo_in->r;
+            return ch->fader.stereo_in->l;
           else if (id->flags &
                      PORT_FLAG_STEREO_R)
             return ch->fader.stereo_in->r;

@@ -213,6 +213,10 @@ channel_fields_schema[] =
     num_aggregated_plugins,
     &plugin_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_MAPPING (
+    "prefader", CYAML_FLAG_DEFAULT,
+    Channel, prefader,
+    passthrough_processor_fields_schema),
+  CYAML_FIELD_MAPPING (
     "fader", CYAML_FLAG_DEFAULT,
     Channel, fader, fader_fields_schema),
 	CYAML_FIELD_MAPPING_PTR (

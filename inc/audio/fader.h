@@ -26,6 +26,7 @@
 #ifndef __AUDIO_FADER_H__
 #define __AUDIO_FADER_H__
 
+#include "audio/port.h"
 #include "utils/yaml.h"
 
 typedef struct StereoPorts StereoPorts;
@@ -116,9 +117,22 @@ typedef struct Fader
   Channel *        channel;
 } Fader;
 
+static const cyaml_strval_t
+fader_type_strings[] =
+{
+	{ "none",           FADER_TYPE_NONE    },
+	{ "audio channel",  FADER_TYPE_AUDIO_CHANNEL   },
+	{ "midi channel",   FADER_TYPE_MIDI_CHANNEL   },
+	{ "generic",        FADER_TYPE_MIDI_CHANNEL   },
+};
+
 static const cyaml_schema_field_t
 fader_fields_schema[] =
 {
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    Fader, type, fader_type_strings,
+    CYAML_ARRAY_LEN (fader_type_strings)),
 	CYAML_FIELD_FLOAT (
     "volume", CYAML_FLAG_DEFAULT,
     Fader, volume),
@@ -131,6 +145,26 @@ fader_fields_schema[] =
 	CYAML_FIELD_FLOAT (
     "pan", CYAML_FLAG_DEFAULT,
     Fader, pan),
+	CYAML_FIELD_MAPPING_PTR (
+    "midi_in",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Fader, midi_in,
+    port_fields_schema),
+	CYAML_FIELD_MAPPING_PTR (
+    "midi_out",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Fader, midi_out,
+    port_fields_schema),
+	CYAML_FIELD_MAPPING_PTR (
+    "stereo_in",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Fader, stereo_in,
+    stereo_ports_fields_schema),
+	CYAML_FIELD_MAPPING_PTR (
+    "stereo_out",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Fader, stereo_out,
+    stereo_ports_fields_schema),
 
 	CYAML_FIELD_END
 };
@@ -142,6 +176,13 @@ fader_schema =
     CYAML_FLAG_POINTER,
 	  Fader, fader_fields_schema),
 };
+
+/**
+ * Inits fader after a project is loaded.
+ */
+void
+fader_init_loaded (
+  Fader * self);
 
 /**
  * Inits fader to default values.

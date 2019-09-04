@@ -46,6 +46,13 @@ desktop_file = i18n.merge_file (
     'applications'),
 )
 
+# Zrythm project MIME type
+install_data (
+  'org.zrythm.Zrythm-mime.xml',
+  install_dir:
+    join_paths (
+      [datadir, 'mime/packages']))
+
 desktop_utils = find_program (
   'desktop-file-validate', required: false)
 if desktop_utils.found()

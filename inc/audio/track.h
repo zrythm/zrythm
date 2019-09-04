@@ -357,6 +357,14 @@ track_fields_schema[] =
     "automation_tracklist", CYAML_FLAG_DEFAULT,
     Track, automation_tracklist,
     automation_tracklist_fields_schema),
+  CYAML_FIELD_ENUM (
+    "in_signal_type", CYAML_FLAG_DEFAULT,
+    Track, in_signal_type, port_type_strings,
+    CYAML_ARRAY_LEN (port_type_strings)),
+  CYAML_FIELD_ENUM (
+    "out_signal_type", CYAML_FLAG_DEFAULT,
+    Track, out_signal_type, port_type_strings,
+    CYAML_ARRAY_LEN (port_type_strings)),
 
 	CYAML_FIELD_END
 };

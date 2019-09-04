@@ -27,6 +27,7 @@ datadir = os.path.join(prefix, 'share')
 schemadir = os.path.join(datadir, 'glib-2.0', 'schemas')
 fontsdir = os.path.join(datadir, 'fonts', 'zrythm')
 desktop_database_dir = os.path.join(datadir, 'applications')
+mime_dir = os.path.join(datadir, 'mime')
 
 if not os.environ.get('DESTDIR'):
     print('Compiling gsettings schemas...')
@@ -36,6 +37,9 @@ if not os.environ.get('DESTDIR'):
     print('Updating icon cache...')
     subprocess.call(['touch', datadir + '/icons/hicolor'])
     subprocess.call(['gtk-update-icon-cache'])
+    print('Updating MIME database...')
+    subprocess.call([
+        'update-mime-database', mime_dir])
     print('Updating desktop database...')
     if not os.path.exists(desktop_database_dir):
         os.makedirs(desktop_database_dir)

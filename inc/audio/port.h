@@ -365,8 +365,9 @@ port_identifier_fields_schema[] =
    	0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
     "owner_type", CYAML_FLAG_DEFAULT,
-    PortIdentifier, owner_type, port_owner_type_strings,
-    CYAML_ARRAY_LEN (port_type_strings)),
+    PortIdentifier, owner_type,
+    port_owner_type_strings,
+    CYAML_ARRAY_LEN (port_owner_type_strings)),
   CYAML_FIELD_ENUM (
     "type", CYAML_FLAG_DEFAULT,
     PortIdentifier, type, port_type_strings,

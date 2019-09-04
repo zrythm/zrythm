@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-zrythm-project">
+    <comment>Zrythm project</comment>
+    <comment xml:lang="fr">Projet Zrythm</comment>
+    <glob pattern="*.zrythm"/>
+  </mime-type>
+</mime-info>

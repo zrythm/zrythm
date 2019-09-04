@@ -605,18 +605,18 @@ jack_setup (AudioEngine * self,
       self->monitor_out =
         stereo_ports_new_from_existing (
           monitor_out_l, monitor_out_r);
-    }
 
-  /* expose to jack */
-  port_set_expose_to_backend (
-    self->monitor_out->l, 1);
-  port_set_expose_to_backend (
-    self->monitor_out->r, 1);
+      /* expose to jack */
+      port_set_expose_to_backend (
+        self->monitor_out->l, 1);
+      port_set_expose_to_backend (
+        self->monitor_out->r, 1);
 
-  if (!self->monitor_out->l->data ||
-      !self->monitor_out->r->data)
-    {
-      g_error ("no more JACK ports available");
+      if (!self->monitor_out->l->data ||
+          !self->monitor_out->r->data)
+        {
+          g_error ("no more JACK ports available");
+        }
     }
 
   /*engine_jack_rescan_ports (self);*/
@@ -749,7 +749,7 @@ engine_jack_activate (
    * process() callback will start running now. */
   if (jack_activate (self->client))
     {
-      g_error ("cannot activate client");
+      g_warning ("cannot activate client");
       return -1;
     }
   g_message ("Jack activated");
@@ -780,14 +780,14 @@ engine_jack_activate (
           JACK_PORT_T (
             self->monitor_out->l->data)),
         ports[0]))
-    g_error ("cannot connect output ports\n");
+    g_critical ("cannot connect output ports\n");
 
   if (jack_connect (
         self->client,
         jack_port_name (
           JACK_PORT_T (self->monitor_out->r->data)),
         ports[1]))
-    g_error ("cannot connect output ports\n");
+    g_critical ("cannot connect output ports\n");
 
   jack_free (ports);
 

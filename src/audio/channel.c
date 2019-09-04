@@ -1153,6 +1153,10 @@ channel_init_loaded (Channel * ch)
   ch->prefader.channel = ch;
   ch->fader.channel = ch;
 
+  passthrough_processor_init_loaded (
+    &ch->prefader);
+  fader_init_loaded (&ch->fader);
+
   PortType in_type =
     ch->track->in_signal_type;
   PortType out_type =
