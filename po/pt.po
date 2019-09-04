@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-04 16:22+0100\n"
-"PO-Revision-Date: 2019-09-04 15:24+0000\n"
+"PO-Revision-Date: 2019-09-05 07:58+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -2127,7 +2127,7 @@ msgstr "Motor"
 
 #: resources/ui/preferences.ui:133
 msgid "The audio backend to connect to"
-msgstr ""
+msgstr "O backend de áudio para se conectar"
 
 #: resources/ui/preferences.ui:146
 msgid "MIDI Controllers"
@@ -2135,7 +2135,7 @@ msgstr "Controladores MIDI"
 
 #: resources/ui/preferences.ui:179
 msgid "The MIDI backend to connect to"
-msgstr ""
+msgstr "O backend MIDI para se conectar"
 
 #: resources/ui/preferences.ui:191
 msgid "Pan Algorithm"
@@ -2147,11 +2147,11 @@ msgstr "Lei Pan"
 
 #: resources/ui/preferences.ui:213
 msgid "The pan algorithm to use"
-msgstr ""
+msgstr "O algoritmo de pan para usar"
 
 #: resources/ui/preferences.ui:225
 msgid "The pan law to use"
-msgstr ""
+msgstr "A Pan law para usar"
 
 #: resources/ui/preferences.ui:237
 #, fuzzy
@@ -2161,6 +2161,8 @@ msgstr "Zrythm"
 #: resources/ui/preferences.ui:248
 msgid "The global Zrythm working path for non-project related files"
 msgstr ""
+"O caminho de trabalho global do Zrythm para ficheiros não relacionados a "
+"projetos"
 
 #: resources/ui/preferences.ui:277 resources/ui/preferences.ui:311
 msgid "Plugins"
@@ -2172,7 +2174,7 @@ msgstr "Sempre abrir UIs de plugins"
 
 #: resources/ui/preferences.ui:291
 msgid "Always show the plugin UI when instantiating a plugin"
-msgstr ""
+msgstr "Mostrar sempre o plugin UI ao instanciar um plugin"
 
 #: resources/ui/preferences.ui:326
 msgid "Main Window"
@@ -2192,7 +2194,7 @@ msgstr "Interface"
 
 #: resources/ui/preferences.ui:399
 msgid "The language of the Zrythm interface"
-msgstr ""
+msgstr "O idioma da interface Zrythm"
 
 #: resources/ui/preferences.ui:416
 msgid "GUI"
