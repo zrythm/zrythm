@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-09-02 00:21+0000\n"
+"PO-Revision-Date: 2019-09-04 15:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/pt/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../playback-and-recording/arming-for-recording.rst:19
 msgid "Arming for Recording"
-msgstr ""
+msgstr "Preparar para a Gravação"
 
 #: ../../playback-and-recording/arming-for-recording.rst:21
 #: ../../playback-and-recording/loop-points-and-markers.rst:24
@@ -35,11 +35,11 @@ msgstr "A FAZER"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:19
 msgid "BPM and Time Signatures"
-msgstr ""
+msgstr "BPM e Assinaturas de Tempo"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:22
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:24
 msgid ""
@@ -49,6 +49,10 @@ msgid ""
 "decimal counterpart will change the decimal value (e.g., frrom 140.24 to "
 "140.25)."
 msgstr ""
+"As BPM podem ser definidas entre 40 e 360 clicando e arrastando o widget "
+"BPM. Clicar e arrastar no inteiro da contraparte irá alterar o número "
+"inteiro (por exemplo, de 140.24 a 141.24) e clicar e arrastar na decimal da "
+"contraparte irá alterar o valor decimal (por exemplo, de 140.24 a 140.25)."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:33
 msgid "Time Signature"
@@ -56,35 +60,39 @@ msgstr "Assinatura de tempo"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:35
 msgid "The Time Signature is split into the following"
-msgstr ""
+msgstr "A Assinatura de Tempo é dividida no seguinte"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:39
 msgid "Beats per Bar"
-msgstr ""
+msgstr "Batidas por Barra"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:38
 msgid ""
 "This is the top number that indicates the number of Beats that should be "
 "in a Bar. It can be set from 1 to 16."
 msgstr ""
+"Este é o número superior que indica o número de Batidas que devem estar numa "
+"Barra. Pode ser configurado de 1 a 16."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:43
 msgid "Beat Unit"
-msgstr ""
+msgstr "Unidade de Batida"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:42
 msgid ""
 "This is the bottom number that indicates the beat unit to be used. It can"
 " be set to 2, 4, 8 or 16."
 msgstr ""
+"Este é o número inferior que indica a unidade de batida em uso. Pode ser "
+"configurado a 2, 4, 8 ou 16."
 
 #: ../../playback-and-recording/intro.rst:19
 msgid "Playback and Recording"
-msgstr ""
+msgstr "Reprodução e Gravação"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:19
 msgid "Loop Points and Markers"
-msgstr ""
+msgstr "Pontos de Loop e Marcadores"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:22
 msgid "Loop Points"
@@ -92,17 +100,19 @@ msgstr "Pontos de Loop"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:27
 msgid "Cue Point"
-msgstr ""
+msgstr "Ponto de Sinalização"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:29
 msgid ""
 "The Cue Point is where the Playhead will move to when Play is clicked "
 "while playing or when Stop is clicked while paused."
 msgstr ""
+"O Playhead se moverá ao Ponto de Sinalização quando clicar Reproduzir "
+"durante a reprodução ou Stop durante a pausa."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:35
 msgid "Song Start Marker"
-msgstr ""
+msgstr "Marcador de Início de Canção"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:37
 msgid ""
@@ -110,10 +120,13 @@ msgid ""
 "Song will start. This is mainly used for exporting the mixdown into "
 "audio."
 msgstr ""
+"O Marcador de Início da Canção indica a posição na Linha de Tempo onde a "
+"canção irá começar. Isto é usado principalmente para exportar a mistura para "
+"o áudio."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:43
 msgid "Song End Marker"
-msgstr ""
+msgstr "Marcador de Final de Canção"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:45
 msgid ""
@@ -121,14 +134,19 @@ msgid ""
 " will end. Likewise, it is mainly used for exporting the mixdown into "
 "audio."
 msgstr ""
+"O marcador Final da Música significa a posição na Linha de Tempo onde a "
+"música irá terminar. Da mesma forma, é usado principalmente para exportar a "
+"mistura para o áudio."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:51
 msgid "Custom Markers"
-msgstr ""
+msgstr "Marcadores Personalizados"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:53
 msgid "Custom Markers can be specified in the Marker Track. TODO"
 msgstr ""
+"Marcadores Personalizados podem ser especificados na Faixa de Marcadores. "
+"TODO"
 
 #: ../../playback-and-recording/overview.rst:19
 msgid "Overview"
@@ -139,6 +157,8 @@ msgid ""
 "Here is a list of terms and definitions that will be useful in the "
 "following sections."
 msgstr ""
+"Aqui está uma lista de termos e definições que serão úteis nas seguintes "
+"seções."
 
 #: ../../playback-and-recording/overview.rst:25
 msgid "Playhead"
@@ -146,7 +166,7 @@ msgstr "Cabeça de Reprodução"
 
 #: ../../playback-and-recording/overview.rst:26
 msgid "The Playhead is the current position in the song."
-msgstr ""
+msgstr "O Playhead é a posição atual na música."
 
 #: ../../playback-and-recording/overview.rst:30
 msgid "Position"
@@ -154,11 +174,11 @@ msgstr "Posição"
 
 #: ../../playback-and-recording/overview.rst:32
 msgid "Zrythm uses the following format for positions:"
-msgstr ""
+msgstr "Zrythm usa o seguinte formato para posições:"
 
 #: ../../playback-and-recording/overview.rst:38
 msgid "Each sixteenth note is fixed to have 240 ticks."
-msgstr ""
+msgstr "Cada décima sexta nota é fixada para ter 240 Tiques."
 
 #: ../../playback-and-recording/recording-audio.rst:19
 msgid "Recording Audio"
@@ -166,7 +186,7 @@ msgstr "Gravação de Áudio"
 
 #: ../../playback-and-recording/recording-automation.rst:19
 msgid "Recording Automation"
-msgstr ""
+msgstr "Automação de Gravação"
 
 #: ../../playback-and-recording/recording-midi.rst:19
 msgid "Recording MIDI"
@@ -174,13 +194,15 @@ msgstr "Gravação MIDI"
 
 #: ../../playback-and-recording/transport-controls.rst:19
 msgid "Transport Controls"
-msgstr ""
+msgstr "Controles de Transporte"
 
 #: ../../playback-and-recording/transport-controls.rst:21
 msgid ""
 "Playback is mainly controlled by the following Transport Controls, found "
 "in the main toolbar."
 msgstr ""
+"A reprodução é controlada principalmente pelos seguintes Controlos de "
+"Transporte, encontrados na barra de ferramentas principal."
 
 #: ../../playback-and-recording/transport-controls.rst:24
 msgid "Record"
@@ -188,7 +210,7 @@ msgstr "Registro"
 
 #: ../../playback-and-recording/transport-controls.rst:25
 msgid "Arms the project for recording."
-msgstr ""
+msgstr "Prepara o projeto para a gravação."
 
 #: ../../playback-and-recording/transport-controls.rst:28
 msgid "Play"
@@ -199,6 +221,8 @@ msgid ""
 "If stopped, the song will start playing. If already playing, the Playhead"
 " will move to the Cue point."
 msgstr ""
+"Quando parar, a música começará a reproduzir. Se já estiver a reproduzir, o "
+"Playhead se moverá para o Ponto de Sinalização."
 
 #: ../../playback-and-recording/transport-controls.rst:31
 msgid "Stop"
@@ -206,7 +230,7 @@ msgstr "Parar"
 
 #: ../../playback-and-recording/transport-controls.rst:31
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
-msgstr ""
+msgstr "Pausa a reprodução. Clicado duas vezes, volta ao Ponto de Sinalização."
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Backward"
@@ -214,7 +238,7 @@ msgstr "Para trás"
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Moves the Playhead backward by the size of 1 snap point."
-msgstr ""
+msgstr "Move o Playhead para trás por 1 ponto de snap."
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid "Forward"
@@ -222,7 +246,7 @@ msgstr "Para a frente"
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid "Moves the Playhead forward by the size of 1 snap point."
-msgstr ""
+msgstr "Move o Playhead para a frente por 1 ponto de snap."
 
 #: ../../playback-and-recording/transport-controls.rst:42
 msgid "Loop"
@@ -233,6 +257,8 @@ msgid ""
 "If enabled, the Playhead will move back to the Loop Start point when it "
 "reaches the Loop End point."
 msgstr ""
+"Se ativado, o Plazhead voltará para o Inicio do Loop quando atingir o ponto "
+"Final do Loop."
 
 #: ../../playback-and-recording/transport-controls.rst:45
 msgid "Metronome"

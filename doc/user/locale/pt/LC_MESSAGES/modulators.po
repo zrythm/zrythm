@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-08-28 18:26+0000\n"
+"PO-Revision-Date: 2019-09-04 15:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualmodulators/pt/>\n"
@@ -39,7 +39,7 @@ msgstr "Moduladores"
 
 #: ../../modulators/modulators-tab.rst:2
 msgid "Modulators Tab"
-msgstr "Guia Moduladores"
+msgstr "Separador Moduladores"
 
 #: ../../modulators/modulators-tab.rst:4
 msgid ""
@@ -47,7 +47,7 @@ msgid ""
 "of Modulators. Modulators are associated with Tracks, so each Track will "
 "have its own list of Modulators."
 msgstr ""
-"O Zrythm tem uma guia Moduladores no painel inferior que pode conter "
+"O Zrythm tem um separador Moduladores no painel inferior que pode conter "
 "qualquer quantidade de Moduladores. Os Moduladores estão associados a "
 "Faixas, pelo que cada Faixa terá a sua própria lista de Moduladores."
 
