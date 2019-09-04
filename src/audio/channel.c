@@ -1238,6 +1238,44 @@ channel_init_loaded (Channel * ch)
 }
 
 /**
+ * Exposes the channel's ports to the backend.
+ */
+void
+channel_expose_ports_to_backend (
+  Channel * ch)
+{
+  /* expose ports to backend */
+  if (ch->track->in_signal_type ==
+        TYPE_AUDIO)
+    {
+      port_set_expose_to_backend (
+        ch->stereo_in->l , 1);
+      port_set_expose_to_backend (
+        ch->stereo_in->r , 1);
+    }
+  if (ch->track->in_signal_type ==
+        TYPE_EVENT)
+    {
+      port_set_expose_to_backend (
+        ch->midi_in , 1);
+    }
+  if (ch->track->out_signal_type ==
+        TYPE_AUDIO)
+    {
+      port_set_expose_to_backend (
+        ch->stereo_out->l , 1);
+      port_set_expose_to_backend (
+        ch->stereo_out->r , 1);
+    }
+  if (ch->track->out_signal_type ==
+        TYPE_EVENT)
+    {
+      port_set_expose_to_backend (
+        ch->midi_out , 1);
+    }
+}
+
+/**
  * Called when the input has changed for Midi,
  * Instrument or Audio tracks.
  */
@@ -1247,6 +1285,7 @@ channel_reconnect_ext_input_ports (
 {
   char * pname;
   int i = 0;
+  int ret;
   if (ch->track->type == TRACK_TYPE_INSTRUMENT ||
       ch->track->type == TRACK_TYPE_MIDI)
     {
@@ -1262,12 +1301,14 @@ channel_reconnect_ext_input_ports (
           while ((pname = (char *) prev_ports[i]) !=
                     NULL)
             {
-              jack_disconnect (
-                AUDIO_ENGINE->client,
-                pname,
-                jack_port_name (
-                  (jack_port_t *)
-                  ch->midi_in->data));
+              ret =
+                jack_disconnect (
+                  AUDIO_ENGINE->client,
+                  pname,
+                  jack_port_name (
+                    (jack_port_t *)
+                    ch->midi_in->data));
+              g_warn_if_fail (!ret);
               i++;
             }
         }
@@ -1287,12 +1328,14 @@ channel_reconnect_ext_input_ports (
           while ((pname = (char *) ports[i]) !=
                     NULL)
             {
-              jack_connect (
-                AUDIO_ENGINE->client,
-                pname,
-                jack_port_name (
-                  (jack_port_t *)
-                  ch->midi_in->data));
+              ret =
+                jack_connect (
+                  AUDIO_ENGINE->client,
+                  pname,
+                  jack_port_name (
+                    (jack_port_t *)
+                    ch->midi_in->data));
+              g_warn_if_fail (!ret);
               i++;
             }
         }
@@ -1302,12 +1345,14 @@ channel_reconnect_ext_input_ports (
           for (i = 0; i < ch->num_ext_midi_ins;
                i++)
             {
-              jack_connect (
-                AUDIO_ENGINE->client,
-                ch->ext_midi_ins[i]->full_name,
-                jack_port_name (
-                  (jack_port_t *)
-                  ch->midi_in->data));
+              ret =
+                jack_connect (
+                  AUDIO_ENGINE->client,
+                  ch->ext_midi_ins[i]->full_name,
+                  jack_port_name (
+                    (jack_port_t *)
+                    ch->midi_in->data));
+              g_warn_if_fail (!ret);
             }
         }
     }
@@ -1495,34 +1540,7 @@ channel_connect (
     }
 
   /* expose ports to backend */
-  if (ch->track->in_signal_type ==
-        TYPE_AUDIO)
-    {
-      port_set_expose_to_backend (
-        ch->stereo_in->l , 1);
-      port_set_expose_to_backend (
-        ch->stereo_in->r , 1);
-    }
-  if (ch->track->in_signal_type ==
-        TYPE_EVENT)
-    {
-      port_set_expose_to_backend (
-        ch->midi_in , 1);
-    }
-  if (ch->track->out_signal_type ==
-        TYPE_AUDIO)
-    {
-      port_set_expose_to_backend (
-        ch->stereo_out->l , 1);
-      port_set_expose_to_backend (
-        ch->stereo_out->r , 1);
-    }
-  if (ch->track->out_signal_type ==
-        TYPE_EVENT)
-    {
-      port_set_expose_to_backend (
-        ch->midi_out , 1);
-    }
+  channel_expose_ports_to_backend (ch);
 
   /* connect the designated midi inputs */
   channel_reconnect_ext_input_ports (ch);

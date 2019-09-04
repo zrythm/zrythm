@@ -326,8 +326,6 @@ node_process (
     {
       /* decide what to do based on what port it is */
       Port * port = node->port;
-      /*g_message ("processing port %s",*/
-                 /*node->port->label);*/
 
       /* if piano roll */
       if (port->identifier.flags &

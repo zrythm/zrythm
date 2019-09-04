@@ -315,8 +315,19 @@ Lv2Control *
 lv2_control_get_from_port (
   Lv2Port * port)
 {
+  /* get the plugin. if loading a project, plugin
+   * will be null so use the indices */
+  Plugin * pl =
+    port->port->plugin;
+  if (!pl)
+    pl =
+      TRACKLIST->tracks[
+        port->port->identifier.track_pos]->
+          channel->plugins[
+            port->port->identifier.plugin_slot];
+
   Lv2Plugin * plgn =
-    port->port->plugin->lv2;
+    pl->lv2;
   Lv2Controls * ctrls =
     &plgn->controls;
   for (int i = 0; i < ctrls->n_controls; i++)

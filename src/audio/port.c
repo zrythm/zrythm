@@ -85,7 +85,8 @@ port_init_loaded (Port * this)
   for (int i = 0; i < this->num_srcs; i++)
     {
       id = &this->src_ids[i];
-      this->srcs[i] = port_find_from_identifier (id);
+      this->srcs[i] =
+        port_find_from_identifier (id);
       g_warn_if_fail (this->srcs[i]);
     }
   for (int i = 0; i < this->num_dests; i++)
@@ -618,8 +619,7 @@ port_connect (
 int
 port_disconnect (Port * src, Port * dest)
 {
-  if (!src || !dest)
-    g_warn_if_reached ();
+  g_warn_if_fail (src && dest);
 
   int pos = -1;
   /* disconnect dest from src */

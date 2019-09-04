@@ -394,6 +394,19 @@ project_load (char * filename)
 
   engine_activate (AUDIO_ENGINE);
 
+  /* connect channel inputs to hardware. has to
+   * be done after engine activation */
+  Channel *ch;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      ch = TRACKLIST->tracks[i]->channel;
+      if (!ch)
+        continue;
+
+      channel_reconnect_ext_input_ports (
+        ch);
+    }
+
   /* set the version */
   PROJECT->version =
     zrythm_get_version (0);

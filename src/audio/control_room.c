@@ -23,16 +23,37 @@
 
 /**
  * Inits the ControlRoom.
+ *
+ * @param loading 1 if loading.
  */
 void
 control_room_init (
-  ControlRoom * self)
+  ControlRoom * self,
+  int           loading)
 {
   /* Init main fader */
-  fader_init (
-    &self->monitor_fader,
-    FADER_TYPE_AUDIO_CHANNEL,
-    NULL);
+  if (loading)
+    {
+      self->monitor_fader.stereo_in->
+        l->identifier.owner_type =
+        PORT_OWNER_TYPE_MONITOR_FADER;
+      self->monitor_fader.stereo_in->
+        r->identifier.owner_type =
+        PORT_OWNER_TYPE_MONITOR_FADER;
+      self->monitor_fader.stereo_out->
+        l->identifier.owner_type =
+        PORT_OWNER_TYPE_MONITOR_FADER;
+      self->monitor_fader.stereo_out->
+        r->identifier.owner_type =
+        PORT_OWNER_TYPE_MONITOR_FADER;
+    }
+  else
+    {
+      fader_init (
+        &self->monitor_fader,
+        FADER_TYPE_AUDIO_CHANNEL,
+        NULL);
+    }
 
   /* set the monitor volume */
   float amp =

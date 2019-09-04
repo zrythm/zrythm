@@ -342,6 +342,10 @@ engine_fields_schema[] =
     "transport", CYAML_FLAG_DEFAULT,
     AudioEngine, transport,
     transport_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "control_room", CYAML_FLAG_DEFAULT,
+    AudioEngine, control_room,
+    control_room_fields_schema),
 
 	CYAML_FIELD_END
 };

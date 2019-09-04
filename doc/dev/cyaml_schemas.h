@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
@@ -15,6 +15,9 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
  *
  * \page cyaml_schemas Cyaml Schemas
  *
@@ -111,7 +114,17 @@
  *   Plugin, lv2,
  *   lv2_plugin_fields_schema),
  * @endcode
-*
+ *
+ * \subsection array_of_primitives Array of primitives
+ *
+ * For fixed-size arrays without a counter,
+ * @code
+ * CYAML_FIELD_SEQUENCE_FIXED (
+ *   "midi_channels", CYAML_FLAG_DEFAULT,
+ *   Channel, midi_channels,
+ *   &int_schema, 16),
+ * @endcode
+ *
  * \subsection array_of_pointers_variable_field Arrays of Pointers (variable count)
  *
  * There are two cases. Fixed-width arrays,

@@ -62,12 +62,32 @@ typedef struct ControlRoom
 
 } ControlRoom;
 
+static const cyaml_schema_field_t
+control_room_fields_schema[] =
+{
+  CYAML_FIELD_MAPPING (
+    "monitor_fader", CYAML_FLAG_DEFAULT,
+    ControlRoom, monitor_fader, fader_fields_schema),
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+control_room_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    ControlRoom, control_room_fields_schema),
+};
+
 /**
  * Inits the ControlRoom.
+ *
+ * @param loading 1 if loading.
  */
 void
 control_room_init (
-  ControlRoom * self);
+  ControlRoom * self,
+  int           loading);
 
 /**
  * Sets dim_output to on/off and notifies interested

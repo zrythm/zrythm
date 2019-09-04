@@ -30,6 +30,7 @@
 #include "config.h"
 
 #include "audio/automatable.h"
+#include "audio/ext_port.h"
 #include "audio/fader.h"
 #include "audio/passthrough_processor.h"
 #include "plugins/plugin.h"
@@ -242,6 +243,20 @@ channel_fields_schema[] =
 	CYAML_FIELD_INT (
     "output_pos", CYAML_FLAG_DEFAULT,
     Channel, output_pos),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "ext_midi_ins", CYAML_FLAG_DEFAULT,
+    Channel, ext_midi_ins, num_ext_midi_ins,
+    &ext_port_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_INT (
+    "all_midi_ins", CYAML_FLAG_DEFAULT,
+    Channel, all_midi_ins),
+  CYAML_FIELD_SEQUENCE_FIXED (
+    "midi_channels", CYAML_FLAG_DEFAULT,
+    Channel, midi_channels,
+    &int_schema, 16),
+  CYAML_FIELD_INT (
+    "all_midi_channels", CYAML_FLAG_DEFAULT,
+    Channel, all_midi_channels),
 
 	CYAML_FIELD_END
 };
@@ -275,6 +290,13 @@ channel_append_all_ports (
   Port ** ports,
   int *   size,
   int     include_plugins);
+
+/**
+ * Exposes the channel's ports to the backend.
+ */
+void
+channel_expose_ports_to_backend (
+  Channel * ch);
 
 /**
  * Connects the channel's ports.

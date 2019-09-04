@@ -106,7 +106,7 @@ init_audio (
 {
   g_message ("initializing audio...");
 
-  control_room_init (CONTROL_ROOM);
+  control_room_init (CONTROL_ROOM, loading);
 
   if (loading)
     {
