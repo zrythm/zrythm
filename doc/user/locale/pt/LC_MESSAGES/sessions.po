@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: 2019-08-28 18:25+0000\n"
+"PO-Revision-Date: 2019-09-05 07:58+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualsessions/pt/>\n"
@@ -42,7 +42,7 @@ msgstr "Informações da Sessão"
 
 #: ../../sessions/session-management-and-compatibility.rst:2
 msgid "Session Management and Compatibility"
-msgstr "Gerenciamento de Sessão e Compatibilidade"
+msgstr "Gestão de Sessão e Compatibilidade"
 
 #: ../../sessions/tracks/adding-tracks.rst:2
 msgid "Adding Tracks"
