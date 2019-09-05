@@ -87,6 +87,7 @@ DESTDIR="%{buildroot}/" ninja -C build install
 %{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
 %{_datadir}/%{name}
 %{_datadir}/man/man1/zrythm.*
+%{_datadir}/mime/packages/org.zrythm.Zrythm-mime.xml
 
 %post
 %if ! 0%{?suse_version}

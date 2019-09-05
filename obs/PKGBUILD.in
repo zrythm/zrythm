@@ -18,19 +18,21 @@ conflicts=( 'zrythm-git' )
 source=( "https://git.zrythm.org/zrythm/${pkgname}/-/archive/v$pkgver/${pkgname}-v$pkgver.tar.gz" )
 md5sums=( '01234567ABCDEF01234567ABCDEF0123' )
 
+_rootdir="${pkgname}-v${pkgver}"
+
 build() {
-  cd "$pkgname-$pkgver"
+  cd $_rootdir
   meson build --prefix=/usr -Denable_tests=true -Duser_manual=true -Dmanpage=true
   ninja -C build
 }
 
 check() {
-  cd "$pkgname-$pkgver"
+  cd $_rootdir
   ninja -C build test
 }
 
 package() {
-  cd "$pkgname-$pkgver"
+  cd $_rootdir
   install -vDm 644 AUTHORS CONTRIBUTING.md CHANGELOG.md README.md THANKS TRANSLATORS \
     -t "${pkgdir}/usr/share/doc/${pkgname}/"
   DESTDIR="${pkgdir}/" ninja -C build install
