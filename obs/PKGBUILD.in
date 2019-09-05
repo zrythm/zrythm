@@ -1,38 +1,37 @@
-# Maintainer: Alexandros Theodotou <alex@zrythm.org>
+# Maintainer: Alexandros Theodotou <alex at zrythm dot org>
 pkgname=zrythm
 pkgver=0.00.000
 pkgrel=1
-pkgdesc="An highly automated, intuitive, Digital Audio Workstation (DAW)"
-arch=( 'x86_64' )
-url='https://git.zrythm.org/zrythm/zrythm'
-license=( 'GPL3' )
-depends=('gtk3' 'lv2' 'lilv' 'libx11' 'jack'
-  'libsndfile' 'libyaml' 'gettext' 'qt5-base'
-  'libsamplerate' 'alsa-lib' 'portaudio'
-  'ladspa' 'fftw')
-makedepends=('python' 'gettext' 'sed'
-             'meson' 'ninja' 'help2man'
-             'python-sphinx')
+pkgdesc='a highly automated and intuitive digital audio workstation'
+arch=('x86_64' 'i686')
+url="https://www.zrythm.org"
+license=('AGPL3')
+depends=('gtk3' 'lilv' 'libx11' 'jack' 'libsndfile'
+  'libyaml'  'libsamplerate' 'alsa-lib' 'fftw')
+makedepends=(
+  'python' 'gettext' 'sed'
+  'meson' 'ninja' 'help2man' 'python-sphinx'
+  'ladspa' 'lv2')
+optdepends=('portaudio: portaudio backend'
+            'qt5-base: for embedding qt5 plugin UIs')
 conflicts=( 'zrythm-git' )
 source=( "https://git.zrythm.org/zrythm/${pkgname}/-/archive/v$pkgver/${pkgname}-v$pkgver.tar.gz" )
 md5sums=( '01234567ABCDEF01234567ABCDEF0123' )
 
-rootdir="${pkgname}-v${pkgver}"
-
 build() {
-  cd ${rootdir}/
-  mkdir -p build
-  cd build && meson --prefix=/usr .. -Denable_tests=true -Duser_manual=true -Dmanpage=true
-  ninja
+  cd "$pkgname-$pkgver"
+  meson build --prefix=/usr -Denable_tests=true -Duser_manual=true -Dmanpage=true
+  ninja -C build
 }
 
 check() {
-  cd ${rootdir}/
-  cd build && ninja test
+  cd "$pkgname-$pkgver"
+  ninja -C build test
 }
 
 package() {
-  cd ${rootdir}/
-  install -D -m644 COPYING "${pkgdir}/usr/share/licenses/${_pkgname}/COPYING"
-  cd build && DESTDIR="${pkgdir}/" ninja install
+  cd "$pkgname-$pkgver"
+  install -vDm 644 AUTHORS CONTRIBUTING.md CHANGELOG.md README.md THANKS TRANSLATORS \
+    -t "${pkgdir}/usr/share/doc/${pkgname}/"
+  DESTDIR="${pkgdir}/" ninja -C build install
 }

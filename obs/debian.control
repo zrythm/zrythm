@@ -10,6 +10,7 @@ Build-Depends: debhelper (>=9),
                ninja-build,
                sed,
                help2man,
+               python3-sphinx,
                qtbase5-dev,
                libasound2-dev,
                libavcodec-dev,
@@ -29,7 +30,7 @@ Package: zrythm
 Architecture: any
 Priority: optional
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: An highly automated, intuitive, Digital Audio Workstation (DAW)
+Description: a highly automated and intuitive digital audio workstation
  Zrythm is a native GNU/Linux application built with
  the GTK+3 toolkit and using the JACK Connection Kit for audio I/O.
  Zrythm can automate plugin parameters using built in LFOs and envelopes
