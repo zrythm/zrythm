@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-04 08:01+0100\n"
-"PO-Revision-Date: 2019-09-05 17:42+0000\n"
+"PO-Revision-Date: 2019-09-05 18:05+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/nb_NO/>\n"
@@ -80,15 +80,15 @@ msgstr ""
 
 #: ../../zrythm-interface/intro.rst:2
 msgid "Zrythm's Interface"
-msgstr ""
+msgstr "Zrythms grensesnitt"
 
 #: ../../zrythm-interface/main-menu/edit.rst:2
 msgid "Edit"
-msgstr ""
+msgstr "Rediger"
 
 #: ../../zrythm-interface/main-menu/file.rst:2
 msgid "File"
-msgstr ""
+msgstr "Fil"
 
 #: ../../zrythm-interface/main-menu/help.rst:2
 msgid "Help"
@@ -96,7 +96,7 @@ msgstr "Hjelp"
 
 #: ../../zrythm-interface/main-menu/intro.rst:2
 msgid "Main Menu"
-msgstr ""
+msgstr "Hovedmeny"
 
 #: ../../zrythm-interface/main-menu/view.rst:2
 msgid "View"
@@ -112,19 +112,21 @@ msgstr "Mikser"
 
 #: ../../zrythm-interface/monitor.rst:2
 msgid "Monitor"
-msgstr ""
+msgstr "Monitor"
 
 #: ../../zrythm-interface/ruler.rst:2
 msgid "Ruler"
-msgstr ""
+msgstr "Linjal"
 
 #: ../../zrythm-interface/status-bar.rst:2
+#, fuzzy
 msgid "Status Bar"
-msgstr ""
+msgstr "Statusfelt"
 
 #: ../../zrythm-interface/toolbox.rst:2
+#, fuzzy
 msgid "Toolbox"
-msgstr ""
+msgstr "Verktøyskiste"
 
 #: ../../zrythm-interface/transport-bar.rst:2
 msgid "Transport Bar"
@@ -132,15 +134,16 @@ msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:2
 msgid "Zrythm Interface Overview"
-msgstr ""
+msgstr "Grensesnittsoversikt i Zrythm"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:4
 msgid "Zrythm's interface is split into various sub-modules:"
 msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:9
+#, fuzzy
 msgid "Inspector Panel (1)"
-msgstr ""
+msgstr "Inspeksjonspanel (1)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:9
 msgid ""
@@ -180,7 +183,7 @@ msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:21
 msgid "Toolbar (5)"
-msgstr ""
+msgstr "Verktøyslinje (5)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:21
 msgid ""
