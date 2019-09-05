@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-05 18:41+0100\n"
-"PO-Revision-Date: 2019-09-05 17:38+0000\n"
+"PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/nb_NO/>\n"
@@ -1379,55 +1379,55 @@ msgstr ""
 #: resources/ui/chord_selector_window.ui:78
 #: resources/ui/chord_selector_window.ui:522
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: resources/ui/scale_selector_window.ui:93
 #: resources/ui/chord_selector_window.ui:91
 #: resources/ui/chord_selector_window.ui:535
 msgid "D♭"
-msgstr ""
+msgstr "D♭"
 
 #: resources/ui/scale_selector_window.ui:106
 #: resources/ui/chord_selector_window.ui:104
 #: resources/ui/chord_selector_window.ui:548
 msgid "D"
-msgstr ""
+msgstr "D"
 
 #: resources/ui/scale_selector_window.ui:119
 #: resources/ui/chord_selector_window.ui:117
 #: resources/ui/chord_selector_window.ui:561
 msgid "E♭"
-msgstr ""
+msgstr "E♭"
 
 #: resources/ui/scale_selector_window.ui:132
 #: resources/ui/chord_selector_window.ui:130
 #: resources/ui/chord_selector_window.ui:574
 msgid "E"
-msgstr ""
+msgstr "E"
 
 #: resources/ui/scale_selector_window.ui:145
 #: resources/ui/chord_selector_window.ui:143
 #: resources/ui/chord_selector_window.ui:587
 msgid "F"
-msgstr ""
+msgstr "F"
 
 #: resources/ui/scale_selector_window.ui:158
 #: resources/ui/chord_selector_window.ui:156
 #: resources/ui/chord_selector_window.ui:600
 msgid "F♯"
-msgstr ""
+msgstr "F♯"
 
 #: resources/ui/scale_selector_window.ui:171
 #: resources/ui/chord_selector_window.ui:169
 #: resources/ui/chord_selector_window.ui:613
 msgid "G"
-msgstr ""
+msgstr "G"
 
 #: resources/ui/scale_selector_window.ui:184
 #: resources/ui/chord_selector_window.ui:182
 #: resources/ui/chord_selector_window.ui:626
 msgid "A♭"
-msgstr ""
+msgstr "A♭"
 
 #: resources/ui/scale_selector_window.ui:197
 #: resources/ui/chord_selector_window.ui:195
@@ -1502,7 +1502,7 @@ msgstr "Mikser"
 
 #: resources/ui/bot_dock_edge.ui:136
 msgid "Modulators"
-msgstr ""
+msgstr "Modulatorer"
 
 #: resources/ui/bot_dock_edge.ui:173
 msgid "Chord Pad"
@@ -1625,7 +1625,7 @@ msgstr "III"
 
 #: resources/ui/chord_selector_window.ui:809
 msgid "IV"
-msgstr ""
+msgstr "IV"
 
 #: resources/ui/chord_selector_window.ui:823
 msgid "V"
@@ -1645,7 +1645,7 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:897
 msgid "TODO"
-msgstr ""
+msgstr "GJENSTÅR"
 
 #: resources/ui/chord_selector_window.ui:907
 msgid "Circle of Fifths"
