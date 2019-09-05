@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-04 08:01+0100\n"
-"PO-Revision-Date: 2019-09-05 17:38+0000\n"
+"PO-Revision-Date: 2019-09-05 17:42+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/nb_NO/>\n"
@@ -22,12 +22,12 @@ msgstr ""
 
 #: ../../zrythm-interface/channels/channel-overview.rst:2
 msgid "Channel Overview"
-msgstr ""
+msgstr "Kanaloversikt"
 
 #: ../../zrythm-interface/channels/controls.rst:2
 #: ../../zrythm-interface/controls/intro.rst:2
 msgid "Controls"
-msgstr ""
+msgstr "Kontroller"
 
 #: ../../zrythm-interface/channels/fader.rst:2
 #, fuzzy
@@ -36,7 +36,7 @@ msgstr "Overgangstoning"
 
 #: ../../zrythm-interface/channels/intro.rst:2
 msgid "Channels"
-msgstr ""
+msgstr "Kanaler"
 
 #: ../../zrythm-interface/channels/meters.rst:2
 msgid "Meters"
@@ -72,7 +72,7 @@ msgstr ""
 
 #: ../../zrythm-interface/editors/timeline.rst:2
 msgid "Timeline"
-msgstr ""
+msgstr "Tidslinje"
 
 #: ../../zrythm-interface/editors/tracklist.rst:2
 msgid "Tracklist"
