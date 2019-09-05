@@ -17,8 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
+/**
+ * \file
  */
+
 #ifndef __UTILS_IO_H__
 #define __UTILS_IO_H__
 

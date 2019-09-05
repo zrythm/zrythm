@@ -129,6 +129,13 @@ int_schema = {
                    typeof (int)),
 };
 
+static const cyaml_schema_value_t
+float_schema = {
+	CYAML_VALUE_FLOAT (
+    CYAML_FLAG_DEFAULT,
+    typeof (float)),
+};
+
 static const cyaml_schema_field_t
 gdk_rgba_fields_schema[] =
 {

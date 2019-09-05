@@ -97,6 +97,9 @@ typedef struct Project
   /** Project title. */
   char              * title;
 
+  /** Datetime string to add to the project file. */
+  char *              datetime_str;
+
   /** Path to save the project in. */
   char              * dir;
 
@@ -215,6 +218,10 @@ static const cyaml_schema_field_t
     Project, title,
     0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
+    "datetime_str", CYAML_FLAG_POINTER,
+    Project, datetime_str,
+    0, CYAML_UNLIMITED),
+  CYAML_FIELD_STRING_PTR (
     "version", CYAML_FLAG_POINTER,
     Project, version,
     0, CYAML_UNLIMITED),
@@ -294,7 +301,9 @@ project_load (char * filename);
  * Saves project to a file.
  */
 int
-project_save (const char * dir);
+project_save (
+  Project *    self,
+  const char * dir);
 
 /**
  * Sets if the project has range and updates UI.

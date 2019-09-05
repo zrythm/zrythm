@@ -48,6 +48,7 @@
 #include "gui/widgets/track.h"
 #include "plugins/lv2_plugin.h"
 #include "utils/arrays.h"
+#include "utils/datetime.h"
 #include "utils/general.h"
 #include "utils/flags.h"
 #include "utils/io.h"
@@ -426,13 +427,21 @@ project_set_has_range (int has_range)
 }
 
 int
-project_save (const char * dir)
+project_save (
+  Project * self,
+  const char * dir)
 {
   int i, j;
 
   io_mkdir (dir);
   update_paths (dir);
   PROJECT->title = io_path_get_basename (dir);
+
+  /* save current datetime */
+  if (self->datetime_str)
+    g_free (self->datetime_str);
+  PROJECT->datetime_str =
+    datetime_get_current_as_string ();
 
   /*smf_save_regions ();*/
 

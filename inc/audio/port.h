@@ -423,6 +423,18 @@ port_fields_schema[] =
     Port, dest_ids, num_dests,
     &port_identifier_schema_default,
     0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "multipliers", CYAML_FLAG_DEFAULT,
+    Port, multipliers, num_dests,
+    &float_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "dest_locked", CYAML_FLAG_DEFAULT,
+    Port, dest_locked, num_dests,
+    &int_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "dest_enabled", CYAML_FLAG_DEFAULT,
+    Port, dest_enabled, num_dests,
+    &int_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
     "internal_type", CYAML_FLAG_DEFAULT,
     Port, internal_type, port_internal_type_strings,

@@ -310,6 +310,9 @@ track_fields_schema[] =
     Track, type, track_type_strings,
     CYAML_ARRAY_LEN (track_type_strings)),
 	CYAML_FIELD_INT (
+    "pos", CYAML_FLAG_DEFAULT,
+    Track, pos),
+	CYAML_FIELD_INT (
     "lanes_visible", CYAML_FLAG_DEFAULT,
     Track, lanes_visible),
 	CYAML_FIELD_INT (

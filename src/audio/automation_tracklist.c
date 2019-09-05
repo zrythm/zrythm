@@ -39,6 +39,7 @@ void
 automation_tracklist_init_loaded (
   AutomationTracklist * self)
 {
+  self->ats_size = self->num_ats;
   int j;
   AutomationTrack * at;
   for (j = 0; j < self->num_ats; j++)

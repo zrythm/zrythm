@@ -19,6 +19,7 @@ util_srcs = [
   'arrays.c',
   'audio.c',
   'cairo.c',
+  'datetime.c',
   'dialogs.c',
   'gtk.c',
   'io.c',
