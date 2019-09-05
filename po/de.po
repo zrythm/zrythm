@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-04 16:22+0100\n"
-"PO-Revision-Date: 2019-09-05 07:58+0000\n"
-"Last-Translator: Hannu Martinet <swann.ranskassa@laposte.net>\n"
+"PO-Revision-Date: 2019-09-05 17:38+0000\n"
+"Last-Translator: Waui <wau-wau@tutanota.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
 "\n"
 "Language: de\n"
@@ -55,7 +55,7 @@ msgstr "Projekt gespeichert."
 #: src/main.c:63
 #, c-format
 msgid "Error: signal %d - Backtrace:"
-msgstr ""
+msgstr "Fehler: Signal %d - Backtrace:"
 
 #: src/main.c:117
 #, c-format
@@ -309,7 +309,7 @@ msgstr "Abspielkopf [Jack Client]"
 
 #: src/gui/widgets/top_bar.c:127
 msgid "Become JACK Transport master"
-msgstr ""
+msgstr "Werde JACK-Transportmaster"
 
 #: src/gui/widgets/top_bar.c:146
 msgid "Sync to JACK Transport"
@@ -325,7 +325,7 @@ msgstr "Abspielkopf"
 
 #: src/gui/widgets/top_bar.c:262
 msgid "JACK Transport client"
-msgstr ""
+msgstr "JACK-Transport-Client"
 
 #: src/gui/widgets/top_bar.c:282
 msgid "JACK Timebase master"
@@ -434,9 +434,8 @@ msgid "Freeze track"
 msgstr "Spur einfrieren"
 
 #: src/gui/widgets/control_room.c:54
-#, fuzzy
 msgid "Monitor out"
-msgstr "Verkleinern"
+msgstr ""
 
 #: src/gui/widgets/control_room.c:66
 msgid "Listen dim level"
@@ -654,9 +653,8 @@ msgid "CV Outs"
 msgstr "CV-Ausgänge"
 
 #: src/gui/widgets/ports_expander.c:390
-#, fuzzy
 msgid "Sends"
-msgstr "Backends"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:397
 msgid "Stereo In"
@@ -744,32 +742,28 @@ msgid "_Delete Track"
 msgstr "_Spur löschen"
 
 #: src/gui/widgets/track.c:435
-#, fuzzy
 msgid "_Delete Tracks"
-msgstr "_Spur löschen"
+msgstr "_Spuren löschen"
 
 #: src/gui/widgets/track.c:450
 msgid "_Duplicate Track"
 msgstr "_Spur duplizieren"
 
 #: src/gui/widgets/track.c:453
-#, fuzzy
 msgid "_Duplicate Tracks"
-msgstr "_Spur duplizieren"
+msgstr "_Spuren duplizieren"
 
 #: src/gui/widgets/track.c:471
 msgid "Add Region"
 msgstr "Region hinzufügen"
 
 #: src/gui/widgets/track.c:483
-#, fuzzy
 msgid "Hide Track"
-msgstr "Spur stummschalten"
+msgstr "Spur verstecken"
 
 #: src/gui/widgets/track.c:484
-#, fuzzy
 msgid "Hide Tracks"
-msgstr "Spuren"
+msgstr "Spuren verstecken"
 
 #: src/gui/widgets/fader.c:315
 msgid "Fader"
@@ -964,14 +958,12 @@ msgid "Fader out"
 msgstr ""
 
 #: src/audio/fader.c:117
-#, fuzzy
 msgid "MIDI fader in"
-msgstr "MIDI-Backend"
+msgstr ""
 
 #: src/audio/fader.c:130
-#, fuzzy
 msgid "MIDI fader out"
-msgstr "MIDI-Ausgang"
+msgstr ""
 
 #: src/audio/engine_jack.c:506
 #, c-format
@@ -1108,11 +1100,11 @@ msgstr "Größe der MIDI-Note(n) ändern"
 
 #: src/actions/edit_midi_arranger_selections_action.c:271
 msgid "Change Velocity"
-msgstr ""
+msgstr "Anschlagstärke ändern"
 
 #: src/actions/edit_midi_arranger_selections_action.c:273
 msgid "Change Velocities"
-msgstr ""
+msgstr "Anschlagstärken ändern"
 
 #: src/actions/move_automation_selections_action.c:114
 msgid "Move Automation"
@@ -1143,7 +1135,7 @@ msgstr "Akkord(e) verschieben"
 
 #: src/actions/edit_timeline_selections_action.c:222
 msgid "Resize Object(s)"
-msgstr ""
+msgstr "Größe der/des Objekte(s) ändern"
 
 #: src/actions/edit_timeline_selections_action.c:224
 msgid "Change Name"
@@ -1187,7 +1179,7 @@ msgstr ""
 
 #: src/actions/edit_tracks_action.c:176
 msgid "Change Pan"
-msgstr ""
+msgstr "Pan ändern"
 
 #: src/actions/move_tracks_action.c:128
 msgid "Move Track"
@@ -1418,7 +1410,7 @@ msgstr "H"
 #: resources/ui/scale_selector_window.ui:240 resources/ui/inspector_chord.ui:43
 #: resources/ui/editor_toolbar.ui:59
 msgid "Scale"
-msgstr ""
+msgstr "Tonleiter"
 
 #: resources/ui/scale_selector_window.ui:267
 msgid "Chromatic"
@@ -1722,7 +1714,7 @@ msgstr "Radierwerkzeug"
 
 #: resources/ui/shortcuts.ui:229
 msgid "Ramp tool"
-msgstr ""
+msgstr "Rampenwerkzeug"
 
 #: resources/ui/shortcuts.ui:236
 msgid "Audition tool"
@@ -1860,10 +1852,13 @@ msgid ""
 "points), or \"Full region\" to save the whole region as Zrythm would play it "
 "(traversing loops)."
 msgstr ""
+"Wähle „Basisregion“, um die originale Region (ohne Schleifen/Clip-"
+"Anfangspositionen) zu speichern, oder „Vollstände Region“, um die ganze "
+"Region zu speichern wie Zrythm sie spielen würde (traversing loops)."
 
 #: resources/ui/export_midi_file_dialog.ui:120
 msgid "Base region"
-msgstr ""
+msgstr "Basisregion"
 
 #: resources/ui/export_midi_file_dialog.ui:121
 msgid "Full region"
@@ -1988,7 +1983,7 @@ msgstr ""
 
 #: resources/ui/quantize_dialog.ui:132
 msgid "Adjust"
-msgstr ""
+msgstr "Anpassen"
 
 #: resources/ui/quantize_dialog.ui:183
 msgid "Amount"
@@ -2164,24 +2159,23 @@ msgstr "Pan-Algorithmus"
 
 #: resources/ui/preferences.ui:202
 msgid "Pan Law"
-msgstr ""
+msgstr "Pan-Regel"
 
 #: resources/ui/preferences.ui:213
 msgid "The pan algorithm to use"
-msgstr ""
+msgstr "Der zu benutzende Pan-Algorithmus"
 
 #: resources/ui/preferences.ui:225
 msgid "The pan law to use"
-msgstr ""
+msgstr "Die zu benutzende Pan-Regel"
 
 #: resources/ui/preferences.ui:237
-#, fuzzy
 msgid "Zrythm path"
-msgstr "Zrythm"
+msgstr "Zrythm-Pfad"
 
 #: resources/ui/preferences.ui:248
 msgid "The global Zrythm working path for non-project related files"
-msgstr ""
+msgstr "Der globale Zrythm-Arbeitspfad für nicht projektbezogene Dateien"
 
 #: resources/ui/preferences.ui:277 resources/ui/preferences.ui:311
 msgid "Plugins"
@@ -2194,6 +2188,8 @@ msgstr "Erweiterungsoberfläche immer öffnen"
 #: resources/ui/preferences.ui:291
 msgid "Always show the plugin UI when instantiating a plugin"
 msgstr ""
+"Zeige beim Instanziieren einer Erweiterung immer die "
+"Erweiterungsbenutzeroberfläche an"
 
 #: resources/ui/preferences.ui:326
 msgid "Main Window"
