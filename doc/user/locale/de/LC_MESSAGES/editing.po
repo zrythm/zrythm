@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-08-10 15:06+0000\n"
-"Last-Translator: Waui <wau-wau@tutanota.de>\n"
+"PO-Revision-Date: 2019-09-06 16:21+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../editing/common-operations.rst:2
@@ -81,7 +81,7 @@ msgstr "ZU ERLEDIGEN"
 
 #: ../../editing/common-operations/snapping-and-grid-options.rst:2
 msgid "Snapping and Grid Options"
-msgstr ""
+msgstr "Einrast- und Rasteroptionen"
 
 #: ../../editing/common-operations/tools.rst:2
 msgid "Tools"
@@ -144,6 +144,9 @@ msgid ""
 "from 1 to 5 on the keyboard. Each Mode triggered by each tool is further "
 "described below."
 msgstr ""
+"Jedes Werkzeug kann durch einfaches Drücken seiner entsprechenden Taste von "
+"1 bis 5 auf der Tastatur ausgewählt werden. Der Modus, der von einem "
+"Werkzeug ausgelöst wird, wird im Folgenden näher beschrieben."
 
 #: ../../editing/common-operations/tools.rst:32
 msgid "Select Mode"
@@ -218,7 +221,7 @@ msgstr "Bearbeitungsgrundlagen"
 
 #: ../../editing/editing-basics/midi-modifiers.rst:2
 msgid "MIDI Modifiers"
-msgstr ""
+msgstr "MIDI-Modifikatoren"
 
 #: ../../editing/editing-basics/midi-note-context-menu.rst:2
 msgid "MIDI Note Context Menu"
@@ -270,7 +273,7 @@ msgstr "Auswahlen bearbeiten"
 
 #: ../../editing/fades-and-crossfades.rst:2
 msgid "Fades and Cross-Fades"
-msgstr ""
+msgstr "Fades und Cross-Fades"
 
 #: ../../editing/intro.rst:2
 msgid "Editing"
@@ -323,7 +326,7 @@ msgstr ""
 #: ../../editing/piano-roll-editing/arranger.rst:2
 #: ../../editing/timeline-editing/arranger.rst:2
 msgid "Arranger"
-msgstr ""
+msgstr "Arrangeur"
 
 #: ../../editing/piano-roll-editing/drum-view.rst:2
 msgid "Drum View"
