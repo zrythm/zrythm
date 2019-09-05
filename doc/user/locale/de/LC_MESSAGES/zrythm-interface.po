@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-04 08:01+0100\n"
-"PO-Revision-Date: 2019-09-05 19:37+0000\n"
+"PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/de/>\n"
@@ -67,7 +67,7 @@ msgstr "MIDI-Arranger"
 
 #: ../../zrythm-interface/editors/piano-roll/midi-modifier-arranger.rst:2
 msgid "MIDI Modifier Editor"
-msgstr ""
+msgstr "MIDI-Modifikator-Editor"
 
 #: ../../zrythm-interface/editors/timeline.rst:2
 msgid "Timeline"
