@@ -425,6 +425,15 @@ void
 engine_fill_out_bufs ();
 
 /**
+ * Returns 1 if the port is an engine port or
+ * control room port, otherwise 0.
+ */
+int
+engine_is_port_own (
+  AudioEngine * self,
+  const Port *  port);
+
+/**
  * Returns the audio backend as a string.
  */
 static inline const char *

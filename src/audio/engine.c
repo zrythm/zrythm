@@ -290,6 +290,26 @@ engine_activate (
 #endif
 }
 
+/**
+ * Returns 1 if the port is an engine port or
+ * control room port, otherwise 0.
+ */
+int
+engine_is_port_own (
+  AudioEngine * self,
+  const Port *  port)
+{
+  return
+    port ==
+      CONTROL_ROOM->monitor_fader.stereo_in->l ||
+    port ==
+      CONTROL_ROOM->monitor_fader.stereo_in->r ||
+    port ==
+      CONTROL_ROOM->monitor_fader.stereo_out->l ||
+    port ==
+      CONTROL_ROOM->monitor_fader.stereo_out->r;
+}
+
 void
 engine_realloc_port_buffers (
   AudioEngine * self,
@@ -833,12 +853,6 @@ engine_post_process (
       self->panic = 0;
     }
 
-  /* already processed recording start */
-  /*if (IS_TRANSPORT_ROLLING && TRANSPORT->starting_recording)*/
-    /*{*/
-      /*TRANSPORT->starting_recording = 0;*/
-    /*}*/
-
   /* move the playhead if rolling and not
    * pre-rolling */
   if (IS_TRANSPORT_ROLLING &&
@@ -856,17 +870,15 @@ engine_post_process (
         }
     }
 
+  /* update max time taken (for calculating DSP
+   * %) */
   AUDIO_ENGINE->last_time_taken =
     g_get_monotonic_time () -
     AUDIO_ENGINE->last_time_taken;
-  /*g_message ("last time taken: %ld");*/
   if (AUDIO_ENGINE->max_time_taken <
       AUDIO_ENGINE->last_time_taken)
     AUDIO_ENGINE->max_time_taken =
       AUDIO_ENGINE->last_time_taken;
-  /*g_message ("last time %ld, max time %ld",*/
-             /*AUDIO_ENGINE->last_time_taken,*/
-             /*AUDIO_ENGINE->max_time_taken);*/
 }
 
 /**

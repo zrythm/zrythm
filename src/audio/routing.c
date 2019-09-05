@@ -286,18 +286,8 @@ node_process (
 
   if (node->type == ROUTE_NODE_TYPE_PLUGIN)
     {
-      /*g_message ("processing plugin %s",*/
-                 /*node->pl->descr->name);*/
       plugin_process (
         node->pl, g_start_frames, nframes);
-      /*g_message (*/
-        /*"processing: %s at %ld "*/
-        /*"(route latency %ld)",*/
-        /*node->type == ROUTE_NODE_TYPE_PLUGIN ?*/
-          /*node->pl->descr->name :*/
-          /*node->port->identifier.label,*/
-        /*g_start_frames,*/
-        /*node->route_playback_latency);*/
     }
   else if (node->type == ROUTE_NODE_TYPE_FADER)
     {
@@ -450,6 +440,14 @@ node_process (
                 port, local_offset,
                 nframes, noroll);
             }
+        }
+
+      /* if exporting and the port is not a
+       * project port, ignore it */
+      else if (
+        engine_is_port_own (AUDIO_ENGINE, port) &&
+        AUDIO_ENGINE->exporting)
+        {
         }
 
       else

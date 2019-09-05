@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +19,12 @@
 
 #ifndef __AUDIO_EXPORT_H__
 #define __AUDIO_EXPORT_H__
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
 
 /**
  * Audio format.
@@ -71,6 +77,9 @@ typedef struct ExportSettings
   Position          custom_start;
   Position          custom_end;
 
+  /** The previous loop status (on/off). */
+  int               prev_loop;
+
   /**
    * Dither or not.
    */
@@ -80,10 +89,19 @@ typedef struct ExportSettings
    * Absolute path for export file.
    */
   char *            file_uri;
+
+  /** Progress done (0.0 to 1.0). */
+  double            progress;
 } ExportSettings;
 
+/**
+ * Returns the audio format as string.
+ *
+ * Must be g_free()'d by caller.
+ */
 char *
-exporter_stringize_audio_format (AudioFormat format);
+exporter_stringize_audio_format (
+  AudioFormat format);
 
 /**
  * Exports an audio file based on the given
@@ -93,5 +111,9 @@ exporter_stringize_audio_format (AudioFormat format);
  */
 void
 exporter_export (ExportSettings * info);
+
+/**
+ * @}
+ */
 
 #endif

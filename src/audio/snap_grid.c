@@ -183,8 +183,7 @@ snap_grid_update_snap_points (SnapGrid * self)
   long ticks =
     snap_grid_get_note_ticks (self->note_length,
                               self->note_type);
-  while (position_compare (&tmp, &end_pos)
-           < 0)
+  while (position_is_before (&tmp, &end_pos))
     {
       position_add_ticks (
         &tmp,

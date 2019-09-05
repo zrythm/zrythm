@@ -66,6 +66,7 @@ widget_srcs = [
   'expander_box.c',
   'export_dialog.c',
   'export_midi_file_dialog.c',
+  'export_progress_dialog.c',
   'fader.c',
   'file_browser.c',
   'first_run_assistant.c',

@@ -51,30 +51,34 @@
 
 #define	AMPLITUDE	(1.0 * 0x7F000000)
 
+/**
+ * Returns the audio format as string.
+ *
+ * Must be g_free()'d by caller.
+ */
 char *
-exporter_stringize_audio_format (AudioFormat format)
+exporter_stringize_audio_format (
+  AudioFormat format)
 {
-  char * str = NULL;
-
   switch (format)
     {
     case AUDIO_FORMAT_FLAC:
-      str = g_strdup ("FLAC");
+      return g_strdup ("FLAC");
       break;
     case AUDIO_FORMAT_OGG:
-      str = g_strdup ("ogg");
+      return g_strdup ("ogg");
       break;
     case AUDIO_FORMAT_WAV:
-      str = g_strdup ("wav");
+      return g_strdup ("wav");
       break;
     case AUDIO_FORMAT_MP3:
-      str = g_strdup ("mp3");
+      return g_strdup ("mp3");
       break;
     case NUM_AUDIO_FORMATS:
       break;
     }
 
-  return str;
+  g_return_val_if_reached (NULL);
 }
 
 /**
@@ -103,9 +107,19 @@ exporter_export (ExportSettings * info)
     }
   else
     {
+      char * format =
+        exporter_stringize_audio_format (
+          info->format);
+      char * str =
+        g_strdup_printf (
+          "Format %s not supported yet",
+          format);
       ui_show_error_message (
         MAIN_WINDOW,
-        "Format not supported yet");
+        str);
+      g_free (format);
+      g_free (str);
+
       return;
     }
 
@@ -192,6 +206,9 @@ exporter_export (ExportSettings * info)
         info->genre);
 
       Position prev_playhead_pos;
+      /* position to start at */
+      Position start_pos;
+      /* position to stop at */
       Position stop_pos; // position to stop at
       position_set_to_pos (
         &prev_playhead_pos,
@@ -209,6 +226,9 @@ exporter_export (ExportSettings * info)
             &TRANSPORT->playhead_pos,
             &start->pos);
           position_set_to_pos (
+            &start_pos,
+            &start->pos);
+          position_set_to_pos (
             &stop_pos,
             &end->pos);
         }
@@ -217,6 +237,9 @@ exporter_export (ExportSettings * info)
         {
           position_set_to_pos (
             &TRANSPORT->playhead_pos,
+            &TRANSPORT->loop_start_pos);
+          position_set_to_pos (
+            &start_pos,
             &TRANSPORT->loop_start_pos);
           position_set_to_pos (
             &stop_pos,
@@ -244,7 +267,8 @@ exporter_export (ExportSettings * info)
             0, PLAYHEAD);
           engine_post_process (AUDIO_ENGINE);
 
-          /* by this time, the Master channel should have its Stereo Out ports filled.
+          /* by this time, the Master channel should
+           * have its Stereo Out ports filled.
            * pass its buffers to the output */
           count= 0;
           for (int i = 0; i < nframes; i++)
@@ -255,26 +279,25 @@ exporter_export (ExportSettings * info)
               out_ptr[count++] = AMPLITUDE *
                 P_MASTER_TRACK->channel->
                   stereo_out->r->buf[i];
-              /*if (out_ptr [count - 1] > 0)*/
-                /*g_message ("val l%d r%d", out_ptr [count - 2],*/
-                           /*out_ptr [count - 1]);*/
             }
 
           sf_write_int (sndfile, out_ptr, count);
 
-          /* move playhead as many samples as processed */
-          /*transport_add_to_playhead (*/
-            /*AUDIO_ENGINE->nframes);*/
-          position_add_frames (
-            &TRANSPORT->playhead_pos,
-            AUDIO_ENGINE->nframes);
-          /*g_message ("bars %d", TRANSPORT->playhead_pos.bars);*/
-        } while (
-            position_compare (
-              &TRANSPORT->playhead_pos,
-              &stop_pos) <= 0);
+          info->progress =
+            (float)
+            (TRANSPORT->playhead_pos.frames -
+              start_pos.frames) /
+            (float) (
+            stop_pos.frames - start_pos.frames);
 
-      zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
+        } while (
+          TRANSPORT->playhead_pos.frames <
+          stop_pos.frames);
+
+      info->progress = 1.f;
+
+      zix_sem_post (
+        &AUDIO_ENGINE->port_operation_lock);
 
       TRANSPORT->play_state = prev_play_state;
       position_set_to_pos (

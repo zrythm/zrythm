@@ -26,6 +26,7 @@
 #include "audio/engine.h"
 #include "audio/exporter.h"
 #include "gui/widgets/export_dialog.h"
+#include "gui/widgets/export_progress_dialog.h"
 #include "project.h"
 #include "utils/io.h"
 #include "utils/resources.h"
@@ -336,6 +337,24 @@ on_cancel_clicked (GtkButton * btn,
   /*gtk_widget_destroy (GTK_WIDGET (self));*/
 }
 
+void *
+export_thread (
+  ExportSettings * info)
+{
+  /* stop engine and give it some time to stop
+   * running */
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  g_usleep (1000);
+  AUDIO_ENGINE->exporting = 1;
+  info->prev_loop = TRANSPORT->loop;
+  TRANSPORT->loop = 0;
+
+  /* export */
+  exporter_export (info);
+
+  return NULL;
+}
+
 static void
 on_export_clicked (GtkButton * btn,
                    ExportDialogWidget * self)
@@ -416,22 +435,25 @@ on_export_clicked (GtkButton * btn,
   g_message ("exporting %s",
              info.file_uri);
 
-  /* stop engine and give it some time to stop
-   * running */
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  g_usleep (1000);
-  AUDIO_ENGINE->exporting = 1;
-  int prev_loop = TRANSPORT->loop;
-  TRANSPORT->loop = 0;
+  /* start exporting in a new thread */
+  g_thread_new ("export_thread",
+                (GThreadFunc) export_thread,
+                &info);
 
-  /* export */
-  exporter_export (&info);
+  /* create a progress dialog and block */
+  ExportProgressDialogWidget * progress_dialog =
+    export_progress_dialog_widget_new (
+      &info);
+  gtk_window_set_transient_for (
+    GTK_WINDOW (progress_dialog),
+    GTK_WINDOW (self));
+  gtk_dialog_run (GTK_DIALOG (progress_dialog));
+  gtk_widget_destroy (GTK_WIDGET (progress_dialog));
 
   /* restart engine */
   AUDIO_ENGINE->exporting = 0;
-  TRANSPORT->loop = prev_loop;
+  TRANSPORT->loop = info.prev_loop;
   g_atomic_int_set (&AUDIO_ENGINE->run, 1);
-  g_message ("exported");
   g_free (info.file_uri);
 }
 
