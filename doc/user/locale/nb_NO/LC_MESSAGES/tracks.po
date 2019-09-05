@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-07-07 03:09+0000\n"
+"PO-Revision-Date: 2019-09-05 17:39+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/nb_NO/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../tracks/chord-track/intro.rst:2 ../../tracks/track-types.rst:25
@@ -104,7 +104,7 @@ msgstr "Spor"
 
 #: ../../tracks/overview.rst:2
 msgid "Overview"
-msgstr ""
+msgstr "Oversikt"
 
 #: ../../tracks/overview.rst:4
 msgid ""
