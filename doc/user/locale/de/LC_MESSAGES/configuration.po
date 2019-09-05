@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-09-01 12:44+0000\n"
+"PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/de/>\n"
@@ -60,16 +60,14 @@ msgid ""
 "As an example, to change the audio backend you would do ``gsettings set "
 "org.zrythm.preferences audio-backend \"jack\"``"
 msgstr ""
-"Als Beispiel dafür, wie du das Audio-Backend wechselst, könntest du "
-"``gsettings set org.zrythm.preferences audio-backend \"jack\"`` "
-"ausführen."
+"Als Beispiel dafür, wie du das Audio-Backend wechselst, könntest du ``"
+"gsettings set org.zrythm.preferences audio-backend \"jack\"`` ausführen"
 
 #: ../../configuration/additional-settings.rst:40
-#, fuzzy
 msgid "You can use the range option to get a list of the available values:"
 msgstr ""
-"Du kannst die Option range nutzen, um eine Liste der verfügbaren Werte zu"
-" erhalten:"
+"Du kannst die Option Range nutzen, um eine Liste der verfügbaren Werte zu "
+"erhalten:"
 
 #: ../../configuration/device-setup/intro.rst:19
 msgid "Device Setup"
@@ -110,6 +108,10 @@ msgid ""
 " so devices can be attached there using a tool like Catia. Note that for "
 "MIDI, devices might need to be bridged to JACK using ``a2jmidid``."
 msgstr ""
+"Bei der Verwendung des JACK-Audio- und MIDI-Backends stellt Zrythm Ports für "
+"JACK bereit, sodass Geräte dort mit einem Werkzeug wie Catia angeschlossen "
+"werden können. Beachten Sie, dass für MIDI Geräte möglicherweise mit "
+"``a2jmididid`` nach JACK überbrückt werden müssen."
 
 #: ../../configuration/device-setup/intro.rst:43
 msgid "An example configuration looks like this (in Catia inside Cadence)"
@@ -247,7 +249,7 @@ msgstr "Konfiguration"
 
 #: ../../configuration/preferences/audio.rst:19
 msgid "Audio Tab"
-msgstr ""
+msgstr "Registerkarte Audio"
 
 #: ../../configuration/preferences/intro.rst:19
 msgid "Preferences"
