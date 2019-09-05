@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-09-05 17:38+0000\n"
+"PO-Revision-Date: 2019-09-05 18:05+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/nb_NO/>\n"
@@ -80,8 +80,9 @@ msgid "Tools"
 msgstr ""
 
 #: ../../editing/common-operations/tools.rst:5
+#, fuzzy
 msgid "Toolbox"
-msgstr ""
+msgstr "Verktøyskiste"
 
 #: ../../editing/common-operations/tools.rst:6
 msgid ""
@@ -314,7 +315,7 @@ msgstr ""
 #: ../../editing/piano-roll-editing/ruler.rst:2
 #: ../../editing/timeline-editing/ruler.rst:2
 msgid "Ruler"
-msgstr ""
+msgstr "Linjal"
 
 #: ../../editing/piano-roll-editing/selection-info-bar.rst:2
 #: ../../editing/timeline-editing/selection-info-bar.rst:2
