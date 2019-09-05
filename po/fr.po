@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-05 18:41+0100\n"
-"PO-Revision-Date: 2019-09-05 07:58+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"PO-Revision-Date: 2019-09-05 18:05+0000\n"
+"Last-Translator: Nicolas FAURE <sub26nico@laposte.net>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -464,14 +464,12 @@ msgid "Protocol"
 msgstr "Protocole"
 
 #: src/gui/widgets/export_progress_dialog.c:75
-#, fuzzy
 msgid "Exported"
 msgstr "Exporter"
 
 #: src/gui/widgets/export_progress_dialog.c:146
-#, fuzzy
 msgid "Export Progress"
-msgstr "Exporter sous"
+msgstr "Progression de l'exportation"
 
 #: src/gui/widgets/port_connections_button.c:147
 msgid "Expose port to JACK"
@@ -1928,22 +1926,20 @@ msgid "LFO 1"
 msgstr "LFO 1"
 
 #: resources/ui/export_progress_dialog.ui:25
-#, fuzzy
 msgid "Open Directory"
-msgstr "Ouvrir un projet"
+msgstr "Ouvrir le répertoire"
 
 #: resources/ui/export_progress_dialog.ui:28
 msgid "Opens the containing directory"
-msgstr ""
+msgstr "Ouvre le répertoire contenant"
 
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
 msgid "OK"
 msgstr "OK"
 
 #: resources/ui/export_progress_dialog.ui:69
-#, fuzzy
 msgid "Exporting..."
-msgstr "Exporter comme..."
+msgstr "Export..."
 
 #: resources/ui/automation_track.ui:95
 msgid "RW"
