@@ -50,8 +50,14 @@ fader_init_loaded (
         self->stereo_out->r, self);
       break;
     case FADER_TYPE_MIDI_CHANNEL:
+      self->midi_in->midi_events =
+        midi_events_new (
+          self->midi_in);
       port_set_owner_fader (
         self->midi_in, self);
+      self->midi_out->midi_events =
+        midi_events_new (
+          self->midi_out);
       port_set_owner_fader (
         self->midi_out, self);
       break;

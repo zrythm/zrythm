@@ -48,8 +48,14 @@ passthrough_processor_init_loaded (
         self->stereo_out->r, self);
       break;
     case PP_TYPE_MIDI_CHANNEL:
+      self->midi_in->midi_events =
+        midi_events_new (
+          self->midi_in);
       port_set_owner_prefader (
         self->midi_in, self);
+      self->midi_out->midi_events =
+        midi_events_new (
+          self->midi_out);
       port_set_owner_prefader (
         self->midi_out, self);
       break;
