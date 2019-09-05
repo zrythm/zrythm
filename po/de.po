@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-04 16:22+0100\n"
 "PO-Revision-Date: 2019-09-05 07:58+0000\n"
-"Last-Translator: Waui <wau-wau@tutanota.de>\n"
+"Last-Translator: Hannu Martinet <swann.ranskassa@laposte.net>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
 "\n"
 "Language: de\n"
@@ -446,7 +446,7 @@ msgstr ""
 msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
 "Die Lautstärke, auf die andere Kanäle gestellt werden sollen wenn auf einem "
-"Kanal Listen aktiviert ist."
+"Kanal Listen aktiviert ist"
 
 #: src/gui/widgets/channel_slot.c:230 src/gui/widgets/channel_slot.c:245
 #: src/gui/widgets/channel_slot.c:688
@@ -2096,7 +2096,7 @@ msgstr "Bittiefe"
 msgid "This is an app-notification. Click the button to dismiss"
 msgstr ""
 "Das ist eine Anwendungsbenachrichtigung. Klick den Knopf, um sie zu "
-"ignorieren."
+"ignorieren"
 
 #: resources/ui/clip_editor.ui:30
 msgid "No clip selected"
@@ -2213,7 +2213,7 @@ msgstr "Oberfläche"
 
 #: resources/ui/preferences.ui:399
 msgid "The language of the Zrythm interface"
-msgstr ""
+msgstr "Die Sprache der Zrythm-Schnittstelle"
 
 #: resources/ui/preferences.ui:416
 msgid "GUI"
@@ -2221,17 +2221,16 @@ msgstr "Oberfläche"
 
 #: data/zrythm.desktop.in:21
 msgid "Digital Audio Workstation"
-msgstr "Digital Audio Workstation"
+msgstr "Digitale Audioworkstation"
 
 #: data/zrythm.desktop.in:23
-#, fuzzy
 msgid "highly automated and intuitive digital audio workstation"
-msgstr "eine hochautomatisierte und intuitive Digital Audio Workstation"
+msgstr "eine hochautomatisierte und intuitive digitale Audioworkstation"
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:26
 msgid "zrythm"
-msgstr "Zrythm"
+msgstr "zrythm"
 
 #~ msgid "Show Lanes - Shows the track's lanes"
 #~ msgstr "Unterspuren zeigen – Zeigt die Unterspuren der Spur"
