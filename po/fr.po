@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-04 16:22+0100\n"
-"PO-Revision-Date: 2019-09-05 00:45+0000\n"
-"Last-Translator: Swann Martinet <swann.ranskassa@laposte.net>\n"
+"PO-Revision-Date: 2019-09-05 07:58+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -2162,7 +2162,7 @@ msgstr "La loi de la panoramique à utiliser"
 
 #: resources/ui/preferences.ui:237
 msgid "Zrythm path"
-msgstr "chemin de Zrythm"
+msgstr "Chemin de Zrythm"
 
 #: resources/ui/preferences.ui:248
 msgid "The global Zrythm working path for non-project related files"
@@ -2179,7 +2179,8 @@ msgstr "Toujours ouvrir la fenêtre des greffons"
 
 #: resources/ui/preferences.ui:291
 msgid "Always show the plugin UI when instantiating a plugin"
-msgstr "Toujours ouvrir la fenêtre après avoir créé un greffon"
+msgstr ""
+"Toujours afficher l'interface du greffon lors de l'instanciation d'un greffon"
 
 #: resources/ui/preferences.ui:326
 msgid "Main Window"
