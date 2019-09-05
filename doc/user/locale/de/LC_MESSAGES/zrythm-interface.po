@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-04 08:01+0100\n"
 "PO-Revision-Date: 2019-09-05 19:37+0000\n"
-"Last-Translator: Waui <wau-wau@tutanota.de>\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/de/>\n"
 "Language: de\n"
@@ -43,7 +43,7 @@ msgstr "Meter"
 
 #: ../../zrythm-interface/channels/plugin-strip.rst:2
 msgid "Plugin Strip"
-msgstr ""
+msgstr "Plugin-Streifen"
 
 #: ../../zrythm-interface/controls/grid-controls.rst:2
 msgid "Grid Controls"
@@ -59,7 +59,7 @@ msgstr "Editoren"
 
 #: ../../zrythm-interface/editors/piano-roll/intro.rst:2
 msgid "Piano Roll"
-msgstr ""
+msgstr "Klavierrolle"
 
 #: ../../zrythm-interface/editors/piano-roll/midi-arranger.rst:2
 msgid "MIDI Arranger"
