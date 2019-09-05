@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-04 16:22+0100\n"
 "PO-Revision-Date: 2019-09-05 00:45+0000\n"
-"Last-Translator: Swann Martinet <swann.ranskassa@laposte.net>\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -2134,7 +2134,7 @@ msgstr "Moteur"
 
 #: resources/ui/preferences.ui:133
 msgid "The audio backend to connect to"
-msgstr ""
+msgstr "Le dorsal audio auquel se connecter"
 
 #: resources/ui/preferences.ui:146
 msgid "MIDI Controllers"
@@ -2142,7 +2142,7 @@ msgstr "Contrôleurs MIDI"
 
 #: resources/ui/preferences.ui:179
 msgid "The MIDI backend to connect to"
-msgstr ""
+msgstr "Le dorsal MIDI auquel se connecter"
 
 #: resources/ui/preferences.ui:191
 msgid "Pan Algorithm"
