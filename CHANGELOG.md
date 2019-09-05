@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.261] - 2019-09-05
+- Add alt and click to cut region in half
+- Allow further zooming in and out
+- Show sixteenths in the ruler when zoomed
+- Changed status bar to show audio engine info instead of tips
+- Add song start and end markers
+- Remember left and right panel divider positions
+- Add Zrythm path to preferences dialog
+- Add export progress dialog
+- Install mime type for Zrythm projects
+- Fix saving and loading of simple projects
+- Fix piano roll not getting full height
+- Fix some arrangers not getting their full width when zoomed
+- Fix tracks getting deselected when clicking on empty space
+- Remove project info screen from the startup dialog
+- Refactoring of arranger objects
+- Fix various minor bugs
+- Fix some incorrect and unclear license notices
+- Updated Portuguese, Italian, German, French, Norwegian translations
+
 ## [0.6.175] - 2019-09-01
 - Piano roll now opens centered on middle C
 - Add context menu option for exporting MIDI regions into MIDI files
