@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/marker_track.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/widgets/center_dock.h"
@@ -32,7 +33,10 @@ G_DEFINE_TYPE (TimelineMinimapBgWidget,
                GTK_TYPE_DRAWING_AREA)
 
 static gboolean
-draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+draw_cb (
+  GtkWidget *widget,
+  cairo_t *cr,
+  gpointer data)
 {
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
@@ -44,11 +48,17 @@ draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
+  Marker * start =
+    marker_track_get_start_marker (
+      P_MARKER_TRACK);
+  Marker * end =
+    marker_track_get_end_marker (
+      P_MARKER_TRACK);
   int song_px =
     ui_pos_to_px_timeline (
-      &TRANSPORT->end_marker_pos, 1) -
+      &start->pos, 1) -
     ui_pos_to_px_timeline (
-      &TRANSPORT->start_marker_pos, 1);
+      &end->pos, 1);
   /*int region_px;*/
 
   int total_track_height = 0;

@@ -92,7 +92,7 @@ typedef struct Transport
    * This is where the song starts. Used when
    * exporting, etc.
    */
-  Position      start_marker_pos;
+  //Position      start_marker_pos;
 
   /**
    * End marker position.
@@ -100,7 +100,7 @@ typedef struct Transport
    * This is where the song ends. Used when
    * exporting, etc.
    */
-  Position      end_marker_pos;
+  //Position      end_marker_pos;
 
   /**
    * The top part (beats_per_par) is the number of beat units
@@ -180,14 +180,14 @@ transport_fields_schema[] =
     "loop_end_pos", CYAML_FLAG_DEFAULT,
     Transport, loop_end_pos,
     position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "start_marker_pos", CYAML_FLAG_DEFAULT,
-    Transport, start_marker_pos,
-    position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "end_marker_pos", CYAML_FLAG_DEFAULT,
-    Transport, end_marker_pos,
-    position_fields_schema),
+  //CYAML_FIELD_MAPPING (
+    //"start_marker_pos", CYAML_FLAG_DEFAULT,
+    //Transport, start_marker_pos,
+    //position_fields_schema),
+  //CYAML_FIELD_MAPPING (
+    //"end_marker_pos", CYAML_FLAG_DEFAULT,
+    //Transport, end_marker_pos,
+    //position_fields_schema),
   CYAML_FIELD_INT (
     "beats_per_bar", CYAML_FLAG_DEFAULT,
     Transport, beats_per_bar),

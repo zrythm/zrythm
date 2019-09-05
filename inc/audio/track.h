@@ -29,6 +29,7 @@
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/chord_object.h"
+#include "audio/marker.h"
 #include "audio/region.h"
 #include "audio/scale.h"
 #include "audio/scale_object.h"
@@ -344,13 +345,17 @@ track_fields_schema[] =
     Track, lanes, num_lanes,
     &track_lane_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "chord_regions", CYAML_FLAG_DEFAULT,
+    "chord_regions", CYAML_FLAG_POINTER,
     Track, chord_regions, num_chord_regions,
     &region_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "scales", CYAML_FLAG_DEFAULT,
+    "scales", CYAML_FLAG_POINTER,
     Track, scales, num_scales,
     &scale_object_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "markers", CYAML_FLAG_POINTER,
+    Track, markers, num_markers,
+    &marker_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_MAPPING_PTR (
     "channel",
     CYAML_FLAG_DEFAULT | CYAML_FLAG_OPTIONAL,

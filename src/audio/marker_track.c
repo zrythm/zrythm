@@ -25,6 +25,7 @@
 #include "utils/arrays.h"
 #include "utils/objects.h"
 
+#include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
 /**
@@ -57,7 +58,67 @@ marker_track_default ()
 
   gdk_rgba_parse (&self->color, "#A3289a");
 
+  /* add start and end markers */
+  Marker * marker;
+  Position pos;
+  marker =
+    marker_new (_("start"), 1);
+  position_set_to_bar (&pos, 1);
+  marker_set_pos (
+    marker, &pos, AO_UPDATE_ALL);
+  marker->type = MARKER_TYPE_START;
+  marker_track_add_marker (
+    self, marker);
+  marker =
+    marker_new (_("end"), 1);
+  position_set_to_bar (&pos, 129);
+  marker_set_pos (
+    marker, &pos, AO_UPDATE_ALL);
+  marker->type = MARKER_TYPE_END;
+  marker_track_add_marker (
+    self, marker);
+
   return self;
+}
+
+/**
+ * Returns the start marker.
+ */
+Marker *
+marker_track_get_start_marker (
+  const Track * track)
+{
+  g_return_val_if_fail (
+    track->type == TRACK_TYPE_MARKER, NULL);
+
+  Marker * marker;
+  for (int i = 0; i < track->num_markers; i++)
+    {
+      marker = track->markers[i];
+      if (marker->type == MARKER_TYPE_START)
+        return marker;
+    }
+  g_return_val_if_reached (NULL);
+}
+
+/**
+ * Returns the end marker.
+ */
+Marker *
+marker_track_get_end_marker (
+  const Track * track)
+{
+  g_return_val_if_fail (
+    track->type == TRACK_TYPE_MARKER, NULL);
+
+  Marker * marker;
+  for (int i = 0; i < track->num_markers; i++)
+    {
+      marker = track->markers[i];
+      if (marker->type == MARKER_TYPE_END)
+        return marker;
+    }
+  g_return_val_if_reached (NULL);
 }
 
 /**

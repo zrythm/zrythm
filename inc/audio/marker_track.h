@@ -77,6 +77,20 @@ marker_track_remove_marker (
   int           free);
 
 /**
+ * Returns the start marker.
+ */
+Marker *
+marker_track_get_start_marker (
+  const Track * track);
+
+/**
+ * Returns the end marker.
+ */
+Marker *
+marker_track_get_end_marker (
+  const Track * track);
+
+/**
  * Frees the MarkerTrack.
  */
 void

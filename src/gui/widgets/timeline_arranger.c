@@ -1735,7 +1735,10 @@ update_last_timeline_object ()
   int prev = self->last_timeline_obj_bars;
   self->last_timeline_obj_bars = 0;
 
-  COMPARE_AND_SET (&TRANSPORT->end_marker_pos);
+  Marker * end =
+    marker_track_get_end_marker (
+      P_MARKER_TRACK);
+  COMPARE_AND_SET (&end->pos);
 
   Track * track;
   Region * region;

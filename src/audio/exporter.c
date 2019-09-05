@@ -36,6 +36,7 @@
 #include "audio/engine_jack.h"
 #endif
 #include "audio/exporter.h"
+#include "audio/marker_track.h"
 #include "audio/master_track.h"
 #include "audio/mixer.h"
 #include "audio/position.h"
@@ -132,11 +133,17 @@ exporter_export (ExportSettings * info)
   if (info->time_range ==
         TIME_RANGE_SONG)
     {
+      Marker * start =
+        marker_track_get_start_marker (
+          P_MARKER_TRACK);
+      Marker * end =
+        marker_track_get_end_marker (
+          P_MARKER_TRACK);
       sfinfo.frames =
         position_to_frames (
-          &TRANSPORT->end_marker_pos) -
-          position_to_frames (
-            &TRANSPORT->start_marker_pos);
+          &end->pos) -
+        position_to_frames (
+          &start->pos);
     }
   else if (info->time_range ==
              TIME_RANGE_LOOP)
@@ -192,12 +199,18 @@ exporter_export (ExportSettings * info)
       if (info->time_range ==
             TIME_RANGE_SONG)
         {
+          Marker * start =
+            marker_track_get_start_marker (
+              P_MARKER_TRACK);
+          Marker * end =
+            marker_track_get_end_marker (
+              P_MARKER_TRACK);
           position_set_to_pos (
             &TRANSPORT->playhead_pos,
-            &TRANSPORT->start_marker_pos);
+            &start->pos);
           position_set_to_pos (
             &stop_pos,
-            &TRANSPORT->end_marker_pos);
+            &end->pos);
         }
       else if (info->time_range ==
                  TIME_RANGE_LOOP)

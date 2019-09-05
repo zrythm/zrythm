@@ -65,12 +65,14 @@ track_init_loaded (Track * track)
   for (i = 0; i < track->num_scales; i++)
     {
       scale = track->scales[i];
+      scale->track = track;
       scale_object_init_loaded (scale);
     }
   Marker * marker;
   for (i = 0; i < track->num_markers; i++)
     {
       marker = track->markers[i];
+      marker->track = track;
       marker_init_loaded (marker);
     }
 

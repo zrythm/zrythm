@@ -74,6 +74,14 @@ typedef enum MarkerType
   MARKER_TYPE_CUSTOM,
 } MarkerType;
 
+static const cyaml_strval_t
+marker_type_strings[] =
+{
+	{ "start",     MARKER_TYPE_START    },
+	{ "end",       MARKER_TYPE_END   },
+	{ "custom",    MARKER_TYPE_CUSTOM   },
+};
+
 typedef struct _MarkerWidget MarkerWidget;
 
 /**
@@ -109,6 +117,14 @@ typedef struct Marker
 static const cyaml_schema_field_t
   marker_fields_schema[] =
 {
+  CYAML_FIELD_STRING_PTR (
+    "name", CYAML_FLAG_POINTER,
+    Marker, name,
+   	0, CYAML_UNLIMITED),
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    Marker, type, marker_type_strings,
+    CYAML_ARRAY_LEN (marker_type_strings)),
   CYAML_FIELD_MAPPING (
     "pos", CYAML_FLAG_DEFAULT,
     Marker, pos, position_fields_schema),
