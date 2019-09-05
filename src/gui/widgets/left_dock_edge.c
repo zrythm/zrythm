@@ -28,7 +28,7 @@
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
-#include "zrythm.h""
+#include "zrythm.h"
 
 #include <glib/gi18n.h>
 

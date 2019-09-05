@@ -231,12 +231,13 @@ activate_about (GSimpleAction *action,
       NULL
     };
   char * translators =
-      "Alexandros Theodotou <alex@zrythm.org>\n"
+      "Alexandros Theodotou\n"
       "Nicolas Faure <sub26nico@laposte.net>\n"
-      "Waui <wau-wau@tutanota.de>\n"
+      "Olivier Humbert <trebmuh@tuxfamily.org>\n"
+      "Waui\n"
       "Allan Nordhøy <epost@anotheragency.no>\n"
-      "WaldiS <admin@sto.ugu.pl>\n"
-      "Silvério Santos <ssantos@web.de>\n"
+      "WaldiS\n"
+      "Silvério Santos\n"
       "Swann Martinet";
 
   char * version =

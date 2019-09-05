@@ -26,6 +26,7 @@ inc/gui/widgets/piano_roll_key.h
 inc/gui/widgets/bot_dock_edge.h
 inc/gui/widgets/timeline_minimap.h
 inc/gui/widgets/foldable_notebook.h
+inc/gui/widgets/export_progress_dialog.h
 inc/gui/widgets/view_toolbar.h
 inc/gui/widgets/arranger_object.h
 inc/gui/widgets/tracklist.h
@@ -221,6 +222,7 @@ inc/utils/dir.h
 inc/utils/audio.h
 inc/utils/smf.h
 inc/utils/hashtable.h
+inc/utils/datetime.h
 inc/utils/ui.h
 inc/utils/algorithms.h
 inc/utils/yaml.h
@@ -410,6 +412,7 @@ src/gui/widgets/arranger.c
 src/gui/widgets/plugin_browser.c
 src/gui/widgets/toolbox.c
 src/gui/widgets/knob_with_name.c
+src/gui/widgets/export_progress_dialog.c
 src/gui/widgets/bot_bar.c
 src/gui/widgets/midi_controller_popover.c
 src/gui/widgets/port_connections_button.c
@@ -531,6 +534,7 @@ src/gui/backend/mixer_selections.c
 src/gui/backend/automation_editor.c
 src/utils/io.c
 src/utils/cairo.c
+src/utils/datetime.c
 src/utils/smf.c
 src/utils/objects.c
 src/utils/localization.c
@@ -676,6 +680,7 @@ resources/ui/inspector_ap.ui
 resources/ui/automator.ui
 resources/ui/bot_bar.ui
 resources/ui/control_room.ui
+resources/ui/export_progress_dialog.ui
 resources/ui/automation_track.ui
 resources/ui/file_browser.ui
 resources/ui/marker_dialog.ui

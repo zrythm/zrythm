@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-09-04 16:22+0100\n"
+"POT-Creation-Date: 2019-09-05 18:41+0100\n"
 "PO-Revision-Date: 2019-05-04 23:38+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Russian <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -40,16 +40,16 @@ msgstr ""
 msgid "Loading project"
 msgstr ""
 
-#: src/project.c:160 src/audio/track.c:964
+#: src/project.c:161 src/audio/track.c:1050
 msgid "Master"
 msgstr ""
 
 #. create untitled project
-#: src/project.c:170
+#: src/project.c:171
 msgid "Untitled Project"
 msgstr ""
 
-#: src/project.c:496
+#: src/project.c:518
 msgid "Project saved."
 msgstr ""
 
@@ -104,14 +104,14 @@ msgid "Save State"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:153 src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:557
+#: src/utils/dialogs.c:74 src/actions/actions.c:561
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:559
+#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:563
 msgid "_Save"
 msgstr ""
 
@@ -425,16 +425,24 @@ msgstr ""
 msgid "Protocol"
 msgstr ""
 
+#: src/gui/widgets/export_progress_dialog.c:75
+msgid "Exported"
+msgstr ""
+
+#: src/gui/widgets/export_progress_dialog.c:146
+msgid "Export Progress"
+msgstr ""
+
 #: src/gui/widgets/port_connections_button.c:147
 msgid "Expose port to JACK"
 msgstr ""
 
-#: src/gui/widgets/timeline_selection_info.c:265
+#: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:65
 #: resources/ui/quantize_dialog.ui:143
 msgid "start"
 msgstr ""
 
-#: src/gui/widgets/timeline_selection_info.c:275
+#: src/gui/widgets/timeline_selection_info.c:275 src/audio/marker_track.c:73
 #: resources/ui/quantize_dialog.ui:156
 msgid "end"
 msgstr ""
@@ -691,35 +699,35 @@ msgstr ""
 msgid "Fullscreen"
 msgstr ""
 
-#: src/gui/widgets/track.c:432
+#: src/gui/widgets/track.c:359
 msgid "_Delete Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:435
+#: src/gui/widgets/track.c:362
 msgid "_Delete Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:450
+#: src/gui/widgets/track.c:377
 msgid "_Duplicate Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:453
+#: src/gui/widgets/track.c:380
 msgid "_Duplicate Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:471
+#: src/gui/widgets/track.c:398
 msgid "Add Region"
 msgstr ""
 
-#: src/gui/widgets/track.c:483
+#: src/gui/widgets/track.c:410
 msgid "Hide Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:484
+#: src/gui/widgets/track.c:411
 msgid "Hide Tracks"
 msgstr ""
 
-#: src/gui/widgets/fader.c:315
+#: src/gui/widgets/fader.c:317
 msgid "Fader"
 msgstr ""
 
@@ -827,11 +835,11 @@ msgstr ""
 msgid "Chords"
 msgstr ""
 
-#: src/audio/channel.c:1811
+#: src/audio/channel.c:1829
 msgid "Piano Roll"
 msgstr ""
 
-#: src/audio/marker_track.c:38 src/audio/marker_track.c:56
+#: src/audio/marker_track.c:39 src/audio/marker_track.c:57
 msgid "Markers"
 msgstr ""
 
@@ -841,7 +849,7 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr ""
 
-#: src/audio/track_lane.c:60
+#: src/audio/track_lane.c:62
 #, c-format
 msgid "Lane %d"
 msgstr ""
@@ -851,19 +859,19 @@ msgstr ""
 msgid "ALSA Error: %s"
 msgstr ""
 
-#: src/audio/passthrough_processor.c:86
+#: src/audio/passthrough_processor.c:92
 msgid "Pre-Fader in"
 msgstr ""
 
-#: src/audio/passthrough_processor.c:92
+#: src/audio/passthrough_processor.c:98
 msgid "Pre-Fader out"
 msgstr ""
 
-#: src/audio/passthrough_processor.c:100
+#: src/audio/passthrough_processor.c:106
 msgid "MIDI pre-fader in"
 msgstr ""
 
-#: src/audio/passthrough_processor.c:113
+#: src/audio/passthrough_processor.c:119
 msgid "MIDI pre-fader out"
 msgstr ""
 
@@ -871,27 +879,27 @@ msgstr ""
 msgid "Sample Processor"
 msgstr ""
 
-#: src/audio/track.c:952
+#: src/audio/track.c:1038
 msgid "Instrument"
 msgstr ""
 
-#: src/audio/track.c:955
+#: src/audio/track.c:1041
 msgid "Audio"
 msgstr ""
 
-#: src/audio/track.c:958
+#: src/audio/track.c:1044
 msgid "MIDI"
 msgstr ""
 
-#: src/audio/track.c:961
+#: src/audio/track.c:1047
 msgid "Bus"
 msgstr ""
 
-#: src/audio/track.c:967 resources/ui/editor_toolbar.ui:58
+#: src/audio/track.c:1053 resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr ""
 
-#: src/audio/track.c:970 src/audio/track.c:973
+#: src/audio/track.c:1056 src/audio/track.c:1059
 msgid "Group"
 msgstr ""
 
@@ -900,19 +908,19 @@ msgstr ""
 msgid "Unimplemented"
 msgstr ""
 
-#: src/audio/fader.c:96
+#: src/audio/fader.c:104
 msgid "Fader in"
 msgstr ""
 
-#: src/audio/fader.c:105
+#: src/audio/fader.c:113
 msgid "Fader out"
 msgstr ""
 
-#: src/audio/fader.c:117
+#: src/audio/fader.c:125
 msgid "MIDI fader in"
 msgstr ""
 
-#: src/audio/fader.c:130
+#: src/audio/fader.c:138
 msgid "MIDI fader out"
 msgstr ""
 
@@ -1006,19 +1014,19 @@ msgstr ""
 msgid "Change Marker"
 msgstr ""
 
-#: src/actions/actions.c:251
+#: src/actions/actions.c:255
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
 
-#: src/actions/actions.c:255
+#: src/actions/actions.c:259
 msgid "Website"
 msgstr ""
 
-#: src/actions/actions.c:554
+#: src/actions/actions.c:558
 msgid "Save Project"
 msgstr ""
 
-#: src/actions/actions.c:619
+#: src/actions/actions.c:623
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -1864,6 +1872,22 @@ msgstr ""
 msgid "LFO 1"
 msgstr ""
 
+#: resources/ui/export_progress_dialog.ui:25
+msgid "Open Directory"
+msgstr ""
+
+#: resources/ui/export_progress_dialog.ui:28
+msgid "Opens the containing directory"
+msgstr ""
+
+#: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
+msgid "OK"
+msgstr ""
+
+#: resources/ui/export_progress_dialog.ui:69
+msgid "Exporting..."
+msgstr ""
+
 #: resources/ui/automation_track.ui:95
 msgid "RW"
 msgstr ""
@@ -2061,10 +2085,6 @@ msgstr ""
 
 #: resources/ui/editor_toolbar.ui:60
 msgid "Both"
-msgstr ""
-
-#: resources/ui/preferences.ui:44
-msgid "OK"
 msgstr ""
 
 #: resources/ui/preferences.ui:108
