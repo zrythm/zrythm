@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-04 16:22+0100\n"
-"PO-Revision-Date: 2019-09-02 00:20+0000\n"
-"Last-Translator: Swann Martinet <swann.ranskassa@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"PO-Revision-Date: 2019-09-05 07:58+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2134,7 +2134,7 @@ msgstr "Moteur"
 
 #: resources/ui/preferences.ui:133
 msgid "The audio backend to connect to"
-msgstr ""
+msgstr "Le dorsal audio auquel se connecter"
 
 #: resources/ui/preferences.ui:146
 msgid "MIDI Controllers"
@@ -2142,7 +2142,7 @@ msgstr "Contrôleurs MIDI"
 
 #: resources/ui/preferences.ui:179
 msgid "The MIDI backend to connect to"
-msgstr ""
+msgstr "Le dorsal MIDI auquel se connecter"
 
 #: resources/ui/preferences.ui:191
 msgid "Pan Algorithm"
@@ -2154,20 +2154,20 @@ msgstr "Loi de la panoramique"
 
 #: resources/ui/preferences.ui:213
 msgid "The pan algorithm to use"
-msgstr ""
+msgstr "L'algorithme de panoramique à utiliser"
 
 #: resources/ui/preferences.ui:225
 msgid "The pan law to use"
-msgstr ""
+msgstr "La loi de la panoramique à utiliser"
 
 #: resources/ui/preferences.ui:237
-#, fuzzy
 msgid "Zrythm path"
-msgstr "Zrythm"
+msgstr "Chemin de Zrythm"
 
 #: resources/ui/preferences.ui:248
 msgid "The global Zrythm working path for non-project related files"
 msgstr ""
+"Le chemin de travail global de Zrythm pour les fichiers sans lien à un projet"
 
 #: resources/ui/preferences.ui:277 resources/ui/preferences.ui:311
 msgid "Plugins"
@@ -2178,9 +2178,9 @@ msgid "Always open plugin UIs"
 msgstr "Toujours ouvrir la fenêtre des greffons"
 
 #: resources/ui/preferences.ui:291
-#, fuzzy
 msgid "Always show the plugin UI when instantiating a plugin"
-msgstr "Toujours ouvrir la fenêtre après avoir créé un greffon"
+msgstr ""
+"Toujours afficher l'interface du greffon lors de l'instanciation d'un greffon"
 
 #: resources/ui/preferences.ui:326
 msgid "Main Window"
@@ -2200,7 +2200,7 @@ msgstr "Interface"
 
 #: resources/ui/preferences.ui:399
 msgid "The language of the Zrythm interface"
-msgstr ""
+msgstr "La langue de l'interface de Zrythm"
 
 #: resources/ui/preferences.ui:416
 msgid "GUI"
@@ -2208,10 +2208,9 @@ msgstr "IGU"
 
 #: data/zrythm.desktop.in:21
 msgid "Digital Audio Workstation"
-msgstr "Station de Travail Audio Numérique"
+msgstr "Station de travail audio numérique"
 
 #: data/zrythm.desktop.in:23
-#, fuzzy
 msgid "highly automated and intuitive digital audio workstation"
 msgstr ""
 "une station de travail audio numérique (STAN) hautement automatisée et "

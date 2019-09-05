@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-04 16:22+0100\n"
-"PO-Revision-Date: 2019-07-14 19:16+0000\n"
+"PO-Revision-Date: 2019-09-05 17:38+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/nb_NO/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: src/zrythm.c:271
 msgid "Initializing settings"
@@ -161,7 +161,7 @@ msgstr "Legg til"
 
 #: src/gui/widgets/quantize_dialog.c:112
 msgid "note length"
-msgstr ""
+msgstr "notelengde"
 
 #: src/gui/widgets/quantize_dialog.c:121
 #, fuzzy
@@ -170,7 +170,7 @@ msgstr "Notetype"
 
 #: src/gui/widgets/track_properties_expander.c:82
 msgid "Track Info"
-msgstr ""
+msgstr "Sporinfo"
 
 #: src/gui/widgets/channel.c:941
 msgid "Inserts"
@@ -182,25 +182,27 @@ msgid "All MIDI Inputs"
 msgstr "MIDI-bakende"
 
 #: src/gui/widgets/track_input_expander.c:220
+#, fuzzy
 msgid "No inputs"
-msgstr ""
+msgstr "Ingen innganger"
 
 #: src/gui/widgets/track_input_expander.c:260
 msgid "All Channels"
-msgstr ""
+msgstr "Alle kanaler"
 
 #: src/gui/widgets/track_input_expander.c:269
 #, c-format
 msgid "Channel %s"
-msgstr ""
+msgstr "Kanal %s"
 
 #: src/gui/widgets/track_input_expander.c:284
 msgid "No channel"
-msgstr ""
+msgstr "Ingen kanal"
 
 #: src/gui/widgets/track_input_expander.c:411
+#, fuzzy
 msgid "Inputs"
-msgstr ""
+msgstr "Innganger"
 
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
@@ -209,28 +211,32 @@ msgid "Select..."
 msgstr "Velg…"
 
 #: src/gui/widgets/midi_controller_mb.c:119
+#, fuzzy
 msgid "Click to enable MIDI controllers to be connected automatically"
-msgstr ""
+msgstr "Klikk for automatisk tilkobling av MIDI-kontrollere"
 
 #: src/gui/widgets/first_run_assistant.c:87
 #: src/gui/widgets/first_run_assistant.c:120
+#, fuzzy
 msgid "JACK functionality is disabled"
-msgstr ""
+msgstr "JACK-funksjonalitet avskrudd"
 
 #: src/gui/widgets/first_run_assistant.c:102
+#, fuzzy
 msgid "PortAudio functionality is disabled"
-msgstr ""
+msgstr "PortAudio-funksjonalitet avskrudd"
 
 #: src/gui/widgets/first_run_assistant.c:137
 msgid "Backend combination not supported"
-msgstr ""
+msgstr "Bakende-kombinasjon støttes ikke"
 
 #: src/gui/widgets/first_run_assistant.c:143
+#, fuzzy
 msgid "The selected backends are operational"
-msgstr ""
+msgstr "Valgte bakender er i virke"
 
 #: src/gui/widgets/first_run_assistant.c:224
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
 "one first using the steps below and try again.\n"
@@ -239,6 +245,12 @@ msgid ""
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart Zrythm"
 msgstr ""
+"Lokalitet for språket du har valgt mangler. Skru på en først ved å utføre "
+"disse stegene, og prøv så igjen.\n"
+"1. Kommenter ut enhver lokalitet som starter med språkkoden <b>%s</b> i <b>/"
+"etc/locale.gen</b> (superbrukertilgang kreves)\n"
+"2. kjør <b>locale-gen</b> som superbruker\n"
+"3. Start Zrythm på ny"
 
 #: src/gui/widgets/project_assistant.c:166 resources/ui/control.ui:45
 msgid "Name"
@@ -247,15 +259,15 @@ msgstr "Navn"
 #: src/gui/widgets/project_assistant.c:176
 #: resources/ui/first_run_assistant.ui:144
 msgid "Path"
-msgstr ""
+msgstr "Sti"
 
 #: src/gui/widgets/project_assistant.c:186
 msgid "Last Modified"
-msgstr ""
+msgstr "Sist endret"
 
 #: src/gui/widgets/left_dock_edge.c:104
 msgid "Inspector"
-msgstr ""
+msgstr "Inspektør"
 
 #: src/gui/widgets/left_dock_edge.c:124
 #: resources/ui/chord_selector_window.ui:682
@@ -309,7 +321,7 @@ msgstr ""
 
 #: src/gui/widgets/port_selector_popover.c:52
 msgid "No port selected"
-msgstr ""
+msgstr "Ingen port valgt"
 
 #: src/gui/widgets/port_selector_popover.c:83
 msgid "These ports cannot be connected"
@@ -317,7 +329,7 @@ msgstr ""
 
 #: src/gui/widgets/port_selector_popover.c:276
 msgid "Track Ports"
-msgstr ""
+msgstr "Sporporter"
 
 #: src/gui/widgets/editor_selection_info.c:61
 #, fuzzy
@@ -327,11 +339,11 @@ msgstr "Posisjon"
 #: src/gui/widgets/editor_selection_info.c:88
 #: src/gui/widgets/timeline_selection_info.c:430
 msgid "No object selected"
-msgstr ""
+msgstr "Inget objekt valgt"
 
 #: src/gui/widgets/inspector.c:156
 msgid "Track properties"
-msgstr ""
+msgstr "Sporegenskaper"
 
 #: src/gui/widgets/inspector.c:166
 msgid "Editor properties"
@@ -357,7 +369,7 @@ msgstr ""
 
 #: src/gui/widgets/digital_meter.c:870
 msgid "Tempo/BPM"
-msgstr ""
+msgstr "Tempo/takt"
 
 #: src/gui/widgets/digital_meter.c:885 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
@@ -366,11 +378,11 @@ msgstr "Posisjon"
 
 #: src/gui/widgets/digital_meter.c:914
 msgid "Time Signature - Beats per bar / Beat unit"
-msgstr ""
+msgstr "Tidssignatur - Slag per takt / slagenhet"
 
 #: src/gui/widgets/drag_dest_box.c:329
 msgid "Add _MIDI Track"
-msgstr ""
+msgstr "Legg til _MIDI-spor"
 
 #: src/gui/widgets/drag_dest_box.c:340
 #, fuzzy
@@ -379,12 +391,12 @@ msgstr "%s spor"
 
 #: src/gui/widgets/drag_dest_box.c:351
 msgid "Add _Group Track"
-msgstr ""
+msgstr "Legg til _gruppespor"
 
 #: src/gui/widgets/instrument_track.c:216 src/gui/widgets/midi_track.c:190
 #: resources/ui/transport_controls.ui:36
 msgid "Record"
-msgstr ""
+msgstr "Ta opp"
 
 #: src/gui/widgets/instrument_track.c:250 src/gui/widgets/midi_track.c:218
 msgid "Show automation lanes"
@@ -432,7 +444,7 @@ msgstr "Kategori"
 
 #: src/gui/widgets/plugin_browser.c:1015
 msgid "Protocol"
-msgstr ""
+msgstr "Protokoll"
 
 #: src/gui/widgets/port_connections_button.c:147
 msgid "Expose port to JACK"
@@ -441,12 +453,13 @@ msgstr ""
 #: src/gui/widgets/timeline_selection_info.c:265
 #: resources/ui/quantize_dialog.ui:143
 msgid "start"
-msgstr ""
+msgstr "start"
 
 #: src/gui/widgets/timeline_selection_info.c:275
 #: resources/ui/quantize_dialog.ui:156
+#, fuzzy
 msgid "end"
-msgstr ""
+msgstr "sluttfør"
 
 #: src/gui/widgets/timeline_selection_info.c:285
 msgid "clip start (rel.)"
@@ -454,11 +467,11 @@ msgstr ""
 
 #: src/gui/widgets/timeline_selection_info.c:295
 msgid "loop start (rel.)"
-msgstr ""
+msgstr "gjentagelsesstart (rel.)"
 
 #: src/gui/widgets/timeline_selection_info.c:305
 msgid "loop end (rel.)"
-msgstr ""
+msgstr "gjentagelsesslutt (rel.)"
 
 #: src/gui/widgets/timeline_selection_info.c:333
 #: src/gui/widgets/timeline_selection_info.c:357
@@ -469,12 +482,13 @@ msgid "position"
 msgstr "Posisjon"
 
 #: src/gui/widgets/help_toolbar.c:39
+#, fuzzy
 msgid "Chat (Matrix)"
-msgstr ""
+msgstr "Sludre (Matrix)"
 
 #: src/gui/widgets/help_toolbar.c:40
 msgid "Manual"
-msgstr ""
+msgstr "Manual"
 
 #: src/gui/widgets/help_toolbar.c:41 resources/ui/shortcuts.ui:47
 msgid "Keyboard Shortcuts"
@@ -497,11 +511,11 @@ msgstr "ut"
 
 #: src/gui/widgets/home_toolbar.c:122
 msgid "Copy"
-msgstr ""
+msgstr "Kopier"
 
 #: src/gui/widgets/home_toolbar.c:124
 msgid "Paste"
-msgstr ""
+msgstr "Lim inn"
 
 #: src/gui/widgets/home_toolbar.c:126
 #, fuzzy
@@ -538,15 +552,15 @@ msgstr "Programtilleggsutforsker"
 
 #: src/gui/widgets/route_target_selector.c:86
 msgid "Routed to Stereo Out"
-msgstr ""
+msgstr "Videresendt til stereo ut"
 
 #: src/gui/widgets/route_target_selector.c:92
 msgid "Select channel to route signal to"
-msgstr ""
+msgstr "Velg kanal å videresende signal til"
 
 #: src/gui/widgets/route_target_selector.c:132
 msgid "Stereo Out"
-msgstr ""
+msgstr "Stereo ut"
 
 #: src/gui/widgets/snap_grid.c:95
 msgid "Snap/Grid options"
@@ -578,15 +592,15 @@ msgstr "Doner"
 
 #: src/gui/widgets/header_notebook.c:87
 msgid "Report a Bug"
-msgstr ""
+msgstr "Innrapporter en feil"
 
 #: src/gui/widgets/piano_roll_key_label.c:84
 msgid "both"
-msgstr ""
+msgstr "begge"
 
 #: src/gui/widgets/piano_roll_key_label.c:103
 msgid "scale"
-msgstr ""
+msgstr "skala"
 
 #: src/gui/widgets/piano_roll_key_label.c:122
 #, fuzzy
@@ -603,35 +617,42 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:165
 msgid "Control Ins"
-msgstr ""
+msgstr "Kontrollinnganger"
 
 #: src/gui/widgets/ports_expander.c:168
+#, fuzzy
 msgid "Control Outs"
-msgstr ""
+msgstr "Kontrollutganger"
 
 #: src/gui/widgets/ports_expander.c:171
+#, fuzzy
 msgid "Audio Ins"
-msgstr ""
+msgstr "Lydinnganger"
 
 #: src/gui/widgets/ports_expander.c:174
+#, fuzzy
 msgid "Audio Outs"
-msgstr ""
+msgstr "Lydutganger"
 
 #: src/gui/widgets/ports_expander.c:177
+#, fuzzy
 msgid "MIDI Ins"
-msgstr ""
+msgstr "MIDI-innganger"
 
 #: src/gui/widgets/ports_expander.c:180
+#, fuzzy
 msgid "MIDI Outs"
-msgstr ""
+msgstr "MIDI-utganger"
 
 #: src/gui/widgets/ports_expander.c:183
+#, fuzzy
 msgid "CV Ins"
-msgstr ""
+msgstr "CV-innganger"
 
 #: src/gui/widgets/ports_expander.c:186
+#, fuzzy
 msgid "CV Outs"
-msgstr ""
+msgstr "CV-utganger"
 
 #: src/gui/widgets/ports_expander.c:390
 #, fuzzy
@@ -640,7 +661,7 @@ msgstr "Bakender"
 
 #: src/gui/widgets/ports_expander.c:397
 msgid "Stereo In"
-msgstr ""
+msgstr "Stereoinngang"
 
 #: src/gui/widgets/ports_expander.c:404
 #, fuzzy
@@ -648,17 +669,19 @@ msgid "MIDI In"
 msgstr "MIDI-bakende"
 
 #: src/gui/widgets/ports_expander.c:412
+#, fuzzy
 msgid "MIDI Out"
-msgstr ""
+msgstr "MIDI-utgang"
 
 #: src/gui/widgets/route_target_selector_popover.c:180
+#, fuzzy
 msgid "No output selected"
-msgstr ""
+msgstr "Ingen utgang valgt"
 
 #: src/gui/widgets/route_target_selector_popover.c:194
 #, c-format
 msgid "Routing to %s"
-msgstr ""
+msgstr "Videresender til %s"
 
 #: src/gui/widgets/project_toolbar.c:39
 #, fuzzy
@@ -757,29 +780,30 @@ msgid "Hide Tracks"
 msgstr "Spor"
 
 #: src/gui/widgets/fader.c:315
+#, fuzzy
 msgid "Fader"
-msgstr ""
+msgstr "Overgangstoning"
 
 #: src/gui/widgets/dzl/dzl-animation.c:752
 #, c-format
 msgid "Cannot locate property %s in class %s"
-msgstr ""
+msgstr "Finner ikke egenskapen %s i klassen %s"
 
 #: src/gui/widgets/dzl/dzl-animation.c:1099
 #: src/gui/widgets/dzl/dzl-animation.c:1105
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to find property %s in %s"
-msgstr ""
+msgstr "Klarte ikke å finne egenskapen %s i %s"
 
 #: src/gui/widgets/dzl/dzl-animation.c:1113
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to find property %s in %s or parent %s"
-msgstr ""
+msgstr "Klarte ikke å finne egenskapen %s i %s eller ovennevte %s"
 
 #: src/gui/widgets/dzl/dzl-animation.c:1123
 #, c-format
 msgid "Failed to retrieve va_list value: %s"
-msgstr ""
+msgstr "Klarte ikke å innhente va_list-verdi: %s"
 
 #: src/utils/dialogs.c:46
 msgid "_Open"
@@ -787,7 +811,7 @@ msgstr "_Åpne"
 
 #: src/utils/dialogs.c:69
 msgid "Overwrite Plugin"
-msgstr ""
+msgstr "Overskriv programtillegg"
 
 #: src/utils/dialogs.c:83
 msgid "A plugin already exists at the selected slot. Overwrite it?"
@@ -799,7 +823,7 @@ msgstr ""
 
 #: src/utils/ui.c:469
 msgid "English [en]"
-msgstr ""
+msgstr "Engelsk [en]"
 
 #: src/utils/ui.c:470
 msgid "German [de]"
@@ -814,8 +838,9 @@ msgid "Italian [it]"
 msgstr "Italiensk [it]"
 
 #: src/utils/ui.c:473
+#, fuzzy
 msgid "Norwegian [nb]"
-msgstr ""
+msgstr "Norsk bokmål [nb]"
 
 #: src/utils/ui.c:474
 msgid "Spanish [es]"
@@ -922,7 +947,7 @@ msgstr "Lyd"
 
 #: src/audio/track.c:958
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: src/audio/track.c:961
 msgid "Bus"
@@ -930,7 +955,7 @@ msgstr "Buss"
 
 #: src/audio/track.c:967 resources/ui/editor_toolbar.ui:58
 msgid "Chord"
-msgstr ""
+msgstr "Akkord"
 
 #: src/audio/track.c:970 src/audio/track.c:973
 msgid "Group"
@@ -939,7 +964,7 @@ msgstr "Gruppe"
 #. TODO
 #: src/audio/scale.c:563
 msgid "Unimplemented"
-msgstr ""
+msgstr "Ikke implementert"
 
 #: src/audio/fader.c:96
 msgid "Fader in"
@@ -970,39 +995,42 @@ msgstr ""
 
 #: src/audio/engine_jack.c:646
 msgid "The operation contained an invalid or unsupported option"
-msgstr ""
+msgstr "Operasjonen inneholdet et ugyldig eller ustøttet valg"
 
 #: src/audio/engine_jack.c:650
+#, fuzzy
 msgid "The desired client name was not unique"
-msgstr ""
+msgstr "Ønsket klientnavn er ikke unikt"
 
 #: src/audio/engine_jack.c:653
 msgid "Unable to connect to the JACK server"
-msgstr ""
+msgstr "Kunne ikke koble til JACK-tjeneren"
 
 #: src/audio/engine_jack.c:656
 msgid "Communication error with the JACK server"
-msgstr ""
+msgstr "Kommunikasjonsfeil med JACK-tjeneren"
 
 #: src/audio/engine_jack.c:659
 msgid "Requested client does not exist"
-msgstr ""
+msgstr "Forespurt klient finnes ikke"
 
 #: src/audio/engine_jack.c:662
 msgid "Unable to load internal client"
-msgstr ""
+msgstr "Kunne ikke laste inn intern klient"
 
 #: src/audio/engine_jack.c:665
 msgid "Unable to initialize client"
-msgstr ""
+msgstr "Kunne ikke igangsette klient"
 
 #: src/audio/engine_jack.c:668
+#, fuzzy
 msgid "Unable to access shared memory"
-msgstr ""
+msgstr "Fikk ikke tilgang til delt minne"
 
 #: src/audio/engine_jack.c:671
+#, fuzzy
 msgid "Client's protocol version does not match"
-msgstr ""
+msgstr "Klientens protokollversjon samsvarer ikke"
 
 #: src/audio/engine_jack.c:674
 msgid "Backend error"
@@ -1020,7 +1048,7 @@ msgstr "Dupliser objekt(er)"
 #: src/actions/delete_timeline_selections_action.c:103
 #: src/actions/delete_midi_arranger_selections_action.c:103
 msgid "Delete Object(s)"
-msgstr ""
+msgstr "Slett objekt(er)"
 
 #: src/actions/create_chord_selections_action.c:125
 #, fuzzy
@@ -1053,11 +1081,11 @@ msgstr "Markører"
 
 #: src/actions/actions.c:251
 msgid "a highly automated and intuitive digital audio workstation"
-msgstr ""
+msgstr "inngående automasjon i intuitiv digital lyd-arbeidsstasjon"
 
 #: src/actions/actions.c:255
 msgid "Website"
-msgstr ""
+msgstr "Nettside"
 
 #: src/actions/actions.c:554
 msgid "Save Project"
@@ -1066,12 +1094,12 @@ msgstr "Lagre prosjekt"
 #: src/actions/actions.c:619
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
-msgstr ""
+msgstr "Prosjektet har ingen sti enda. Lagre prosjektet før du eksporterer det."
 
 #: src/actions/copy_plugins_action.c:186
 #, c-format
 msgid "Copy %s"
-msgstr ""
+msgstr "Kopier %s"
 
 #: src/actions/copy_plugins_action.c:190
 #, c-format
@@ -1103,12 +1131,12 @@ msgstr ""
 
 #: src/actions/move_automation_selections_action.c:114
 msgid "Move Automation"
-msgstr ""
+msgstr "Flytt automasjon"
 
 #: src/actions/create_timeline_selections_action.c:210
 #: src/actions/create_midi_arranger_selections_action.c:119
 msgid "Create Object(s)"
-msgstr ""
+msgstr "Opprett objekt(er)"
 
 #: src/actions/quantize_timeline_selections.c:167
 #, fuzzy
@@ -1118,12 +1146,12 @@ msgstr "Dupliser objekt(er)"
 #: src/actions/move_plugins_action.c:147
 #, c-format
 msgid "Move %s"
-msgstr ""
+msgstr "Flytt %s"
 
 #: src/actions/move_plugins_action.c:151
 #, c-format
 msgid "Move %d Plugins"
-msgstr ""
+msgstr "Flytt %d programtillegg"
 
 #: src/actions/move_chord_selections_action.c:114
 #, fuzzy
@@ -1131,24 +1159,28 @@ msgid "Move Chord(s)"
 msgstr "Akkorder"
 
 #: src/actions/edit_timeline_selections_action.c:222
+#, fuzzy
 msgid "Resize Object(s)"
-msgstr ""
+msgstr "Endre størrelse på objekt(er)"
 
 #: src/actions/edit_timeline_selections_action.c:224
 msgid "Change Name"
-msgstr ""
+msgstr "Endre navn"
 
 #: src/actions/edit_timeline_selections_action.c:226
+#, fuzzy
 msgid "Change Clip Start Position"
-msgstr ""
+msgstr "Endre klippets startposisjon"
 
 #: src/actions/edit_timeline_selections_action.c:228
+#, fuzzy
 msgid "Change Loop Start Position"
-msgstr ""
+msgstr "Endre gjentagelsesstartposisjon"
 
 #: src/actions/edit_timeline_selections_action.c:230
+#, fuzzy
 msgid "Change Loop End Position"
-msgstr ""
+msgstr "Endre gjentagelsessluttposisjon"
 
 #: src/actions/edit_timeline_selections_action.c:232
 #, fuzzy
@@ -1165,11 +1197,11 @@ msgstr ""
 
 #: src/actions/edit_tracks_action.c:167
 msgid "Mute Track"
-msgstr ""
+msgstr "Forstum spor"
 
 #: src/actions/edit_tracks_action.c:170
 msgid "Unmute Track"
-msgstr ""
+msgstr "Opphev forstumming av spor"
 
 #: src/actions/edit_tracks_action.c:173
 msgid "Change Fader"
@@ -1206,24 +1238,24 @@ msgstr ""
 #: src/actions/create_tracks_action.c:229
 #, c-format
 msgid "Create %s Track"
-msgstr ""
+msgstr "Opprett %s spor"
 
 #: src/actions/create_tracks_action.c:234
 #, c-format
 msgid "Create %d %s Tracks"
-msgstr ""
+msgstr "Opprett %d %s spor"
 
 #: src/actions/create_automation_selections_action.c:131
 msgid "Create Automation Point(s)"
-msgstr ""
+msgstr "Opprett automatsjonspunkt(er)"
 
 #: src/actions/edit_chord_action.c:92
 msgid "Change Chord"
-msgstr ""
+msgstr "Endre akkord"
 
 #: src/actions/edit_scale_action.c:92
 msgid "Change Scale"
-msgstr ""
+msgstr "Endre skala"
 
 #: src/actions/delete_plugins_action.c:111
 msgid "Delete Plugin"
@@ -1268,11 +1300,15 @@ msgid "Setup Zrythm"
 msgstr "Sett opp Zrythm"
 
 #: resources/ui/first_run_assistant.ui:51
+#, fuzzy
 msgid ""
 "Welcome to Zrythm.\n"
 " This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
 msgstr ""
+"Velkommen.\n"
+"Denne guiden vil veilede deg gjennom grunnleggende oppsett av Zrythm. Velg "
+"språk først."
 
 #: resources/ui/first_run_assistant.ui:89 resources/ui/preferences.ui:388
 msgid "Language"
@@ -1286,7 +1322,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:120
 msgid "Select a folder"
-msgstr ""
+msgstr "Velg en mappe"
 
 #: resources/ui/first_run_assistant.ui:130
 msgid "Reset"
@@ -1294,7 +1330,7 @@ msgstr "Tilbakestill"
 
 #: resources/ui/first_run_assistant.ui:134
 msgid "Resets the path to the default"
-msgstr ""
+msgstr "Tilbakestiller sti til forvalg"
 
 #: resources/ui/first_run_assistant.ui:161
 msgid "Select the audio and MIDI engine backends to use"
@@ -1550,31 +1586,31 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:478
 msgid "6/13"
-msgstr ""
+msgstr "6/13"
 
 #: resources/ui/chord_selector_window.ui:495
 msgid "Bass Note"
-msgstr ""
+msgstr "Basstone"
 
 #: resources/ui/chord_selector_window.ui:700
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 #: resources/ui/chord_selector_window.ui:716
 msgid "In scale"
-msgstr ""
+msgstr "I skala"
 
 #: resources/ui/chord_selector_window.ui:767
 msgid "I"
-msgstr ""
+msgstr "I"
 
 #: resources/ui/chord_selector_window.ui:781
 msgid "II"
-msgstr ""
+msgstr "II"
 
 #: resources/ui/chord_selector_window.ui:795
 msgid "III"
-msgstr ""
+msgstr "III"
 
 #: resources/ui/chord_selector_window.ui:809
 msgid "IV"
@@ -1582,15 +1618,15 @@ msgstr ""
 
 #: resources/ui/chord_selector_window.ui:823
 msgid "V"
-msgstr ""
+msgstr "V"
 
 #: resources/ui/chord_selector_window.ui:837
 msgid "VI"
-msgstr ""
+msgstr "VI"
 
 #: resources/ui/chord_selector_window.ui:851
 msgid "VII"
-msgstr ""
+msgstr "VII"
 
 #: resources/ui/chord_selector_window.ui:865
 msgid "Diatonic"
@@ -1605,8 +1641,9 @@ msgid "Circle of Fifths"
 msgstr ""
 
 #: resources/ui/shortcuts.ui:31
+#, fuzzy
 msgid "Global Shortcuts"
-msgstr ""
+msgstr "Programvide snarveier"
 
 #: resources/ui/shortcuts.ui:36 resources/ui/preferences.ui:263
 msgid "General"
@@ -1698,19 +1735,19 @@ msgstr "Verktøy"
 
 #: resources/ui/shortcuts.ui:208
 msgid "Select/Stretch tool"
-msgstr ""
+msgstr "Velg/strekkeverktøy"
 
 #: resources/ui/shortcuts.ui:215
 msgid "Pencil tool"
-msgstr ""
+msgstr "Blyantverktøy"
 
 #: resources/ui/shortcuts.ui:222
 msgid "Eraser tool"
-msgstr ""
+msgstr "Viskelær"
 
 #: resources/ui/shortcuts.ui:229
 msgid "Ramp tool"
-msgstr ""
+msgstr "Opprampingsverktøy"
 
 #: resources/ui/shortcuts.ui:236
 msgid "Audition tool"
@@ -1750,23 +1787,24 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:302
 msgid "Looping"
-msgstr ""
+msgstr "Gjentagelse"
 
 #: resources/ui/shortcuts.ui:307
 msgid "Loop selection"
-msgstr ""
+msgstr "Gjentagelsesutvalg"
 
 #: resources/ui/midi_controller_popover.ui:37
+#, fuzzy
 msgid "Controllers found"
-msgstr ""
+msgstr "Oppdagede kontrollere"
 
 #: resources/ui/midi_controller_popover.ui:79
 msgid "Rescan"
-msgstr ""
+msgstr "Skann på ny"
 
 #: resources/ui/midi_controller_popover.ui:83
 msgid "Scan again for MIDI controllers"
-msgstr ""
+msgstr "Se etter MIDI-kontrollere igjen"
 
 #: resources/ui/midi_editor_space.ui:144 resources/ui/chord_editor_space.ui:152
 #: resources/ui/automation_editor_space.ui:114
@@ -1882,8 +1920,9 @@ msgid "Track name"
 msgstr "Spornavn"
 
 #: resources/ui/port_selector_popover.ui:36
+#, fuzzy
 msgid "Select a port..."
-msgstr ""
+msgstr "Velg en port…"
 
 #: resources/ui/port_selector_popover.ui:61
 msgid "Track"
@@ -1924,7 +1963,7 @@ msgstr "Igangsetter…"
 
 #: resources/ui/automator.ui:32
 msgid "LFO 1"
-msgstr ""
+msgstr "LFO 1"
 
 #: resources/ui/automation_track.ui:95
 msgid "RW"
@@ -1944,7 +1983,7 @@ msgstr ""
 
 #: resources/ui/automation_track.ui:137
 msgid "0.0"
-msgstr ""
+msgstr "0.0"
 
 #: resources/ui/file_browser.ui:107
 msgid "Location"
@@ -1985,11 +2024,11 @@ msgstr ""
 
 #: resources/ui/quantize_dialog.ui:132
 msgid "Adjust"
-msgstr ""
+msgstr "Juster"
 
 #: resources/ui/quantize_dialog.ui:183
 msgid "Amount"
-msgstr ""
+msgstr "Mengde"
 
 #: resources/ui/quantize_dialog.ui:223
 msgid "Swing"
@@ -2005,7 +2044,7 @@ msgstr ""
 
 #: resources/ui/top_bar.ui:87
 msgid "MIDI in activity"
-msgstr ""
+msgstr "MIDI i aktivitet"
 
 #: resources/ui/export_dialog.ui:30
 msgid "Export As..."
@@ -2057,14 +2096,22 @@ msgid ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
+"Følgende filer vil bli opprettet:\n"
+"\n"
+"Master.wav\n"
+"\n"
+"i mappen:\n"
+"\n"
+"/home/alex/Zrythm/Projects/project1/exports/20181023"
 
 #: resources/ui/export_dialog.ui:206
+#, fuzzy
 msgid "Output Files"
-msgstr ""
+msgstr "Utdatafiler"
 
 #: resources/ui/export_dialog.ui:218
 msgid "Filename Pattern"
-msgstr ""
+msgstr "Filnavnsmønster"
 
 #: resources/ui/export_dialog.ui:238
 msgid "Song"
@@ -2072,7 +2119,7 @@ msgstr "Sang"
 
 #: resources/ui/export_dialog.ui:276
 msgid "Time Range"
-msgstr ""
+msgstr "Tidsområde"
 
 #: resources/ui/export_dialog.ui:288
 msgid "Tracks"
@@ -2088,7 +2135,7 @@ msgstr ""
 
 #: resources/ui/clip_editor.ui:30
 msgid "No clip selected"
-msgstr ""
+msgstr "Inget klipp valgt"
 
 #: resources/ui/quantize_box.ui:61
 msgid "Full Quantize..."
@@ -2100,7 +2147,7 @@ msgstr "Rutenett"
 
 #: resources/ui/snap_grid_popover.ui:47
 msgid "Adaptive Grid"
-msgstr ""
+msgstr "Tilpasningsdyktig rutenett"
 
 #: resources/ui/snap_grid_popover.ui:66
 msgid "Snap"
@@ -2116,16 +2163,17 @@ msgid "Note type"
 msgstr "Notetype"
 
 #: resources/ui/editor_toolbar.ui:47
+#, fuzzy
 msgid "Highlight"
-msgstr ""
+msgstr "Framheving"
 
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
-msgstr ""
+msgstr "Ingen"
 
 #: resources/ui/editor_toolbar.ui:60
 msgid "Both"
-msgstr ""
+msgstr "Begge"
 
 #: resources/ui/preferences.ui:44
 msgid "OK"
@@ -2178,7 +2226,7 @@ msgstr "Programtillegg"
 
 #: resources/ui/preferences.ui:287
 msgid "Always open plugin UIs"
-msgstr ""
+msgstr "Alltid åpne programtilleggsgrensenitt"
 
 #: resources/ui/preferences.ui:291
 msgid "Always show the plugin UI when instantiating a plugin"
@@ -2202,7 +2250,7 @@ msgstr "Grensesnitt"
 
 #: resources/ui/preferences.ui:399
 msgid "The language of the Zrythm interface"
-msgstr ""
+msgstr "Språk for Zrythm-grensesnittet"
 
 #: resources/ui/preferences.ui:416
 msgid "GUI"
@@ -2210,11 +2258,11 @@ msgstr "Grafisk grensesnitt"
 
 #: data/zrythm.desktop.in:21
 msgid "Digital Audio Workstation"
-msgstr ""
+msgstr "Digital lyd-arbeidsstasjon"
 
 #: data/zrythm.desktop.in:23
 msgid "highly automated and intuitive digital audio workstation"
-msgstr ""
+msgstr "inngående automasjon og intuitiv digital lyd-arbeidsstasjon"
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:26
