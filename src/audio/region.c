@@ -183,6 +183,8 @@ region_init_loaded (Region * self)
             mn->region = self;
             midi_note_init_loaded (mn);
           }
+        self->midi_notes_size =
+          self->num_midi_notes;
       }
       break;
     case REGION_TYPE_CHORD:
@@ -194,11 +196,26 @@ region_init_loaded (Region * self)
             chord = self->chord_objects[i];
             chord_object_init_loaded (chord);
           }
+        self->chord_objects_size =
+          self->num_chord_objects;
         }
       break;
     case REGION_TYPE_AUTOMATION:
       {
-        /* TODO */
+        AutomationPoint * ap;
+        AutomationCurve * ac;
+        for (i = 0; i < self->num_aps; i++)
+          {
+            ap = self->aps[i];
+            automation_point_init_loaded (ap);
+          }
+        for (i = 0; i < self->num_acs; i++)
+          {
+            ac = self->acs[i];
+            automation_curve_init_loaded (ac);
+          }
+        self->aps_size =
+          self->num_aps;
       }
       break;
     }

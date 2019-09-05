@@ -27,7 +27,7 @@ The sources required to build the manual and the
 contents of the manual are licensed under the GNU
 Affero General Public License, version 3 or later.
 The full text of the license can be found in the
-[LICENSE](LICENSE) file.
+[COPYING](COPYING) file.
 
 ----
 

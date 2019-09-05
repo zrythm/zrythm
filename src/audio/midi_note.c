@@ -58,6 +58,9 @@ midi_note_init_loaded (
     MIDI_NOTE, MidiNote, midi_note);
 
   midi_note_set_region (self, self->region);
+
+  self->vel->midi_note = self;
+  velocity_init_loaded (self->vel);
 }
 
 /**
