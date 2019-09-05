@@ -53,7 +53,7 @@ if (get_option ('user_manual'))
     'README.md',
     install_dir: docdir)
   install_data (
-    'LICENSE',
+    'COPYING',
     install_dir: docdir)
 endif
 
