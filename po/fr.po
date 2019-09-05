@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-04 16:22+0100\n"
 "PO-Revision-Date: 2019-09-05 00:45+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Last-Translator: Swann Martinet <swann.ranskassa@laposte.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -2161,7 +2161,6 @@ msgid "The pan law to use"
 msgstr "La loi de la panoramique à utiliser"
 
 #: resources/ui/preferences.ui:237
-#, fuzzy
 msgid "Zrythm path"
 msgstr "chemin de Zrythm"
 
