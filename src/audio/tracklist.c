@@ -188,6 +188,10 @@ tracklist_insert_track (
 
   track_set_pos (track, pos);
 
+  /* make the track the only selected track */
+  tracklist_selections_select_single (
+    TRACKLIST_SELECTIONS, track);
+
   /* move other tracks */
   for (int i = track->pos + 1;
        i < self->num_tracks; i++)

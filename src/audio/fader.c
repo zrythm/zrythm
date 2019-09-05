@@ -58,6 +58,8 @@ fader_init_loaded (
     default:
       break;
     }
+
+  fader_set_amp ((void *) self, self->amp);
 }
 
 /**

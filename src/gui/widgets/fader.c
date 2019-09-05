@@ -134,9 +134,11 @@ draw_cb (
                          1);
   cairo_set_line_width (cr, 3.0);
   cairo_move_to (cr, x, y + (height - value_px));
-  cairo_line_to (cr, x+ width, y + (height - value_px));
+  cairo_line_to (
+    cr, x+ width, y + (height - value_px));
   cairo_stroke (cr);
-	return 0;
+
+	return FALSE;
 }
 
 

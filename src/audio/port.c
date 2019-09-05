@@ -185,7 +185,9 @@ port_find_from_identifier (
         {
         case TYPE_EVENT:
           if (id->flow == FLOW_OUTPUT)
-            { /* TODO */ }
+            {
+              return ch->midi_out;
+            }
           else if (id->flow == FLOW_INPUT)
             {
               if (id->flags & PORT_FLAG_PIANO_ROLL)
@@ -221,21 +223,41 @@ port_find_from_identifier (
       g_warn_if_fail (tr);
       ch = tr->channel;
       g_warn_if_fail (ch);
-      if (id->flow == FLOW_OUTPUT)
+      switch (id->type)
         {
-          if (id->flags & PORT_FLAG_STEREO_L)
-            return ch->fader.stereo_out->l;
-          else if (id->flags &
-                     PORT_FLAG_STEREO_R)
-            return ch->fader.stereo_out->r;
-        }
-      else if (id->flow == FLOW_INPUT)
-        {
-          if (id->flags & PORT_FLAG_STEREO_L)
-            return ch->fader.stereo_in->l;
-          else if (id->flags &
-                     PORT_FLAG_STEREO_R)
-            return ch->fader.stereo_in->r;
+        case TYPE_EVENT:
+          switch (id->flow)
+            {
+            case FLOW_INPUT:
+              return ch->fader.midi_in;
+              break;
+            case FLOW_OUTPUT:
+              return ch->fader.midi_out;
+              break;
+            default:
+              break;
+            }
+          break;
+        case TYPE_AUDIO:
+          if (id->flow == FLOW_OUTPUT)
+            {
+              if (id->flags & PORT_FLAG_STEREO_L)
+                return ch->fader.stereo_out->l;
+              else if (id->flags &
+                         PORT_FLAG_STEREO_R)
+                return ch->fader.stereo_out->r;
+            }
+          else if (id->flow == FLOW_INPUT)
+            {
+              if (id->flags & PORT_FLAG_STEREO_L)
+                return ch->fader.stereo_in->l;
+              else if (id->flags &
+                         PORT_FLAG_STEREO_R)
+                return ch->fader.stereo_in->r;
+            }
+          break;
+        default:
+          break;
         }
       break;
     case PORT_OWNER_TYPE_PREFADER:
@@ -243,21 +265,41 @@ port_find_from_identifier (
       g_warn_if_fail (tr);
       ch = tr->channel;
       g_warn_if_fail (ch);
-      if (id->flow == FLOW_OUTPUT)
+      switch (id->type)
         {
-          if (id->flags & PORT_FLAG_STEREO_L)
-            return ch->prefader.stereo_out->l;
-          else if (id->flags &
-                     PORT_FLAG_STEREO_R)
-            return ch->prefader.stereo_out->r;
-        }
-      else if (id->flow == FLOW_INPUT)
-        {
-          if (id->flags & PORT_FLAG_STEREO_L)
-            return ch->prefader.stereo_in->l;
-          else if (id->flags &
-                     PORT_FLAG_STEREO_R)
-            return ch->prefader.stereo_in->r;
+        case TYPE_EVENT:
+          switch (id->flow)
+            {
+            case FLOW_INPUT:
+              return ch->prefader.midi_in;
+              break;
+            case FLOW_OUTPUT:
+              return ch->prefader.midi_out;
+              break;
+            default:
+              break;
+            }
+          break;
+        case TYPE_AUDIO:
+          if (id->flow == FLOW_OUTPUT)
+            {
+              if (id->flags & PORT_FLAG_STEREO_L)
+                return ch->prefader.stereo_out->l;
+              else if (id->flags &
+                         PORT_FLAG_STEREO_R)
+                return ch->prefader.stereo_out->r;
+            }
+          else if (id->flow == FLOW_INPUT)
+            {
+              if (id->flags & PORT_FLAG_STEREO_L)
+                return ch->prefader.stereo_in->l;
+              else if (id->flags &
+                         PORT_FLAG_STEREO_R)
+                return ch->prefader.stereo_in->r;
+            }
+          break;
+        default:
+          break;
         }
       break;
     case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:

@@ -126,6 +126,16 @@ tracklist_selections_select_single (
   Track *               track);
 
 /**
+ * Selects all Track's.
+ *
+ * @param visible_only Only select visible tracks.
+ */
+void
+tracklist_selections_select_all (
+  TracklistSelections * ts,
+  int                   visible_only);
+
+/**
  * Selects the last visible track after clearing the
  * selections.
  */
@@ -144,7 +154,7 @@ tracklist_selections_toggle_visibility (
  * For debugging.
  */
 void
-tracklist_selections_gprint (
+tracklist_selections_print (
   TracklistSelections * self);
 
 /**

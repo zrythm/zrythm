@@ -155,14 +155,6 @@ TrackWidget *
 track_widget_new (Track * track);
 
 /**
- * @param select 1 to select, 0 to unselect.
- */
-void
-track_widget_select (
-  TrackWidget * self,
-  int           select);
-
-/**
  * Sets the Track name on the TrackWidget.
  */
 void

@@ -374,9 +374,6 @@ on_right_click (GtkGestureMultiPress *gesture,
   DragDestBoxWidget * self =
     Z_DRAG_DEST_BOX_WIDGET (user_data);
 
-  tracklist_widget_select_all_tracks (
-    MW_TRACKLIST, F_NO_SELECT);
-
   if (n_press == 1)
     {
       show_context_menu (self);
@@ -384,27 +381,17 @@ on_right_click (GtkGestureMultiPress *gesture,
 }
 
 static void
-multipress_pressed (GtkGestureMultiPress *gesture,
-               gint                  n_press,
-               gdouble               x,
-               gdouble               y,
-               gpointer              user_data)
+multipress_pressed (
+  GtkGestureMultiPress * gesture,
+  gint                   n_press,
+  gdouble                x,
+  gdouble                y,
+  DragDestBoxWidget *    self)
 {
-  DragDestBoxWidget * self =
-    Z_DRAG_DEST_BOX_WIDGET (user_data);
-
   GdkModifierType state_mask;
   ui_get_modifier_type_from_gesture (
     GTK_GESTURE_SINGLE (gesture),
     &state_mask);
-
-  if (self == TRACKLIST_DRAG_DEST_BOX)
-    {
-      if (!(state_mask & GDK_SHIFT_MASK ||
-          state_mask & GDK_CONTROL_MASK))
-        tracklist_widget_select_all_tracks (
-          MW_TRACKLIST, F_NO_SELECT);
-    }
 
   mixer_selections_clear (
     MIXER_SELECTIONS);

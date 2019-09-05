@@ -144,6 +144,7 @@ main_window_widget_refresh (MainWindowWidget * self)
     GTK_WINDOW (self));
 
   /* show track selection info */
+  g_warn_if_fail (TRACKLIST_SELECTIONS->tracks[0]);
   EVENTS_PUSH (ET_TRACK_CHANGED,
                TRACKLIST_SELECTIONS->tracks[0]);
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,

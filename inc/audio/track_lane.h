@@ -98,7 +98,7 @@ track_lane_fields_schema[] =
     "solo", CYAML_FLAG_DEFAULT,
     TrackLane, solo),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "regions", CYAML_FLAG_DEFAULT,
+    "regions", CYAML_FLAG_POINTER,
     TrackLane, regions, num_regions,
     &region_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (

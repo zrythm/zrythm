@@ -32,6 +32,8 @@ void
 track_lane_init_loaded (
   TrackLane * lane)
 {
+  lane->regions_size =
+    lane->num_regions;
   int i;
   Region * region;
   for (i = 0; i < lane->num_regions; i++)

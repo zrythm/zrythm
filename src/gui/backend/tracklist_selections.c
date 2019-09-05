@@ -114,17 +114,43 @@ tracklist_selections_add_track (
     }
 }
 
+/**
+ * Selects all Track's.
+ *
+ * @param visible_only Only select visible tracks.
+ */
+void
+tracklist_selections_select_all (
+  TracklistSelections * ts,
+  int                   visible_only)
+{
+  Track * track;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track = TRACKLIST->tracks[i];
+
+      if (track->visible || !visible_only)
+        {
+          tracklist_selections_add_track (
+            ts, track);
+        }
+    }
+
+  EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
+               NULL);
+}
+
 void
 tracklist_selections_remove_track (
   TracklistSelections * ts,
-  Track *             r)
+  Track *             track)
 {
   if (!array_contains (ts->tracks,
                        ts->num_tracks,
-                       r))
+                       track))
     {
       EVENTS_PUSH (ET_TRACK_CHANGED,
-                   r);
+                   track);
       EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                    NULL);
       return;
@@ -133,7 +159,7 @@ tracklist_selections_remove_track (
   array_delete (
     ts->tracks,
     ts->num_tracks,
-    r);
+    track);
 
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                NULL);
@@ -144,16 +170,16 @@ tracklist_selections_contains_track (
   TracklistSelections * self,
   Track *               track)
 {
-  return array_contains (self->tracks,
-                      self->num_tracks,
-                      track);
+  return
+    array_contains (
+      self->tracks, self->num_tracks, track);
 }
 
 /**
  * For debugging.
  */
 void
-tracklist_selections_gprint (
+tracklist_selections_print (
   TracklistSelections * self)
 {
   g_message ("------ tracklist selections ------");

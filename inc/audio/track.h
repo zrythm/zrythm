@@ -476,6 +476,20 @@ track_add_region (
   int               gen_name);
 
 /**
+ * Appends the Track to the selections.
+ *
+ * @param exclusive Select only this track.
+ * @param fire_events Fire events to update the
+ *   UI.
+ */
+void
+track_select (
+  Track * self,
+  int     select,
+  int     exclusive,
+  int     fire_events);
+
+/**
  * Removes the region from the track.
  *
  * @pararm free Also free the Region.

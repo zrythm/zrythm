@@ -235,7 +235,10 @@ activate_about (GSimpleAction *action,
       "Nicolas Faure <sub26nico@laposte.net>\n"
       "Waui <wau-wau@tutanota.de>\n"
       "Allan Nordhøy <epost@anotheragency.no>\n"
-      "WaldiS <admin@sto.ugu.pl>";
+      "WaldiS <admin@sto.ugu.pl>\n"
+      "Silvério Santos <ssantos@web.de>\n"
+      "Swann Martinet";
+
   char * version =
     zrythm_get_version (1);
 

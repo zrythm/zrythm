@@ -231,6 +231,11 @@ channel_fields_schema[] =
     Channel, midi_in,
     port_fields_schema),
 	CYAML_FIELD_MAPPING_PTR (
+    "midi_out",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Channel, midi_out,
+    port_fields_schema),
+	CYAML_FIELD_MAPPING_PTR (
     "piano_roll",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Channel, piano_roll,

@@ -95,94 +95,20 @@ tracklist_widget_get_hit_track (
 }
 
 static gboolean
-on_key_action (GtkWidget *widget,
-               GdkEventKey  *event,
-               gpointer   user_data)
+on_key_action (
+  GtkWidget *       widget,
+  GdkEventKey  *    event,
+  TracklistWidget * self)
 {
-  TracklistWidget * self = (TracklistWidget *) user_data;
-
   if (event->state & GDK_CONTROL_MASK &&
       event->type == GDK_KEY_PRESS &&
       event->keyval == GDK_KEY_a)
     {
-      tracklist_widget_select_all_tracks (
-        self, F_SELECT);
+      tracklist_selections_select_all (
+        TRACKLIST_SELECTIONS, 1);
     }
 
   return FALSE;
-}
-
-/**
- * Selects or deselects all tracks.
- */
-void
-tracklist_widget_select_all_tracks (
-  TracklistWidget *self,
-  int              select)
-{
-  for (int i = 0;
-       i < self->tracklist->num_tracks; i++)
-    {
-      Track * track = self->tracklist->tracks[i];
-      if (!track->visible)
-        continue;
-
-      TrackWidget *tw = track->widget;
-
-      track_widget_select (tw, select);
-    }
-  EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
-               NULL);
-}
-
-/**
- * Selects the track, with the option to either
- * add the track to the current selection or to
- * select it exclusively.
- */
-void
-tracklist_widget_select_track (
-  TracklistWidget * self,
-  Track *           track,
-  int               select,
-  int               append)
-{
-  Track ** array =
-    TRACKLIST_SELECTIONS->tracks;
-  int * num =
-    &TRACKLIST_SELECTIONS->num_tracks;
-
-  if (select && !append)
-    {
-      /* deselect existing selections */
-      for (int i = 0; i < (*num); i++)
-        {
-          Track * t = array[i];
-          track_widget_select (
-            t->widget, F_NO_SELECT);
-        }
-    }
-
-  /* if we are deselecting and the item is
-   * selected */
-  if (!select &&
-      array_contains ((void **) array,
-                       *num,
-                       track))
-    {
-      /* deselect track */
-      track_widget_select (
-        track->widget, F_NO_SELECT);
-    }
-  /* if selecting */
-  else if (select &&
-           !array_contains ((void **) array,
-                            *num,
-                            track))
-    {
-      track_widget_select (
-        track->widget, F_SELECT);
-    }
 }
 
 void

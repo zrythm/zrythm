@@ -137,8 +137,8 @@ on_drag_data_received (
     gdk_drag_context_get_selected_action (
       context);
 
-  tracklist_selections_gprint (
-    TRACKLIST_SELECTIONS);
+  /*tracklist_selections_print (*/
+    /*TRACKLIST_SELECTIONS);*/
 
   int w =
     gtk_widget_get_allocated_width (widget);

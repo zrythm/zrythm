@@ -66,79 +66,6 @@ G_DEFINE_TYPE_WITH_PRIVATE (TrackWidget,
                             track_widget,
                             GTK_TYPE_GRID)
 
-void
-track_widget_select (
-  TrackWidget * self,
-  int           select) ///< select or not
-{
-  TRACK_WIDGET_GET_PRIVATE (self);
-  Track * track = tw_prv->track;
-
-  if (select)
-    {
-      /*gtk_widget_set_state_flags (*/
-        /*GTK_WIDGET (self),*/
-        /*GTK_STATE_FLAG_SELECTED,*/
-        /*0);*/
-      tracklist_selections_add_track (
-        TRACKLIST_SELECTIONS,
-        track);
-    }
-  else
-    {
-      /*gtk_widget_unset_state_flags (*/
-        /*GTK_WIDGET (self),*/
-        /*GTK_STATE_FLAG_SELECTED);*/
-      tracklist_selections_remove_track (
-        TRACKLIST_SELECTIONS,
-        track);
-    }
-
-  /* auto-set recording mode */
-  Channel * chan;
-  switch (track->type)
-    {
-    case TRACK_TYPE_INSTRUMENT:
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_MIDI:
-      chan = track->channel;
-      g_message (
-        "%sselecting track %s, recording %d sa %d",
-        select ? "" : "de",
-        track->name,
-        track->recording,
-        chan->record_set_automatically);
-      /* if selecting the track and recording is not already
-       * on, turn these on */
-      if (select && !track->recording)
-        {
-          track_set_recording (track, 1);
-          chan->record_set_automatically = 1;
-        }
-      /* if deselecting and record mode was automatically
-       * set when the track was selected, turn these off */
-      else if (!select && chan->record_set_automatically)
-        {
-          track_set_recording (track, 0);
-          chan->record_set_automatically = 0;
-        }
-      track_widget_refresh (self);
-      break;
-    case TRACK_TYPE_CHORD:
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_AUDIO_BUS:
-    case TRACK_TYPE_AUDIO_GROUP:
-    case TRACK_TYPE_MIDI_BUS:
-    case TRACK_TYPE_MIDI_GROUP:
-      break;
-    default:
-      break;
-    }
-
-  EVENTS_PUSH (ET_TRACK_CHANGED,
-               track);
-}
-
 static gboolean
 on_motion (GtkWidget * widget,
            GdkEventMotion *event,
@@ -516,17 +443,13 @@ on_right_click (GtkGestureMultiPress *gesture,
       if (state_mask & GDK_SHIFT_MASK ||
           state_mask & GDK_CONTROL_MASK)
         {
-          tracklist_widget_select_track (
-            MW_TRACKLIST,
-            track,
-            F_SELECT, F_APPEND);
+          track_select (
+            track, F_SELECT, 0, 1);
         }
       else
         {
-          tracklist_widget_select_track (
-            MW_TRACKLIST,
-            track,
-            F_SELECT, F_NO_APPEND);
+          track_select (
+            track, F_SELECT, 1, 1);
         }
     }
   if (n_press == 1)
@@ -557,14 +480,15 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   PROJECT->last_selection =
     SELECTION_TYPE_TRACK;
 
-  tracklist_widget_select_track (
-    MW_TRACKLIST, track,
+  track_select (
+    track,
     track_is_selected (track) &&
     state_mask & GDK_CONTROL_MASK ?
       F_NO_SELECT: F_SELECT,
     (state_mask & GDK_SHIFT_MASK ||
       state_mask & GDK_CONTROL_MASK) ?
-      F_APPEND : F_NO_APPEND);
+      0 : 1,
+    1);
 }
 
 static void
@@ -573,7 +497,6 @@ on_drag_begin (GtkGestureDrag *gesture,
                gdouble         start_y,
                TrackWidget * self)
 {
-  g_message ("drag begin ch");
   TRACK_WIDGET_GET_PRIVATE (self);
 
   tw_prv->selected_in_dnd = 0;
@@ -612,8 +535,8 @@ on_drag_data_received (
     gdk_drag_context_get_selected_action (
       context);
 
-  tracklist_selections_gprint (
-    TRACKLIST_SELECTIONS);
+  /*tracklist_selections_gprint (*/
+    /*TRACKLIST_SELECTIONS);*/
 
   int h =
     gtk_widget_get_allocated_height (widget);

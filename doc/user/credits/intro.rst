@@ -36,3 +36,6 @@ Polish
 
 Portuguese:
   * Silvério Santos
+
+Italian:
+ 	* Swann Martinet
