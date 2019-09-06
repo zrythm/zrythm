@@ -82,6 +82,14 @@ string_convert_to_filename (
   const char * str);
 
 /**
+ * Removes any bak, bak1 etc suffixes from the
+ * string and returns a newly allocated string.
+ */
+char *
+string_get_substr_before_backup_ext (
+  const char * str);
+
+/**
  * @}
  */
 

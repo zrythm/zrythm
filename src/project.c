@@ -53,6 +53,7 @@
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/smf.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -79,9 +80,16 @@ tear_down (Project * self)
   free (self);
 }
 
+/**
+ * Update the project paths.
+ */
 static void
-update_paths (const char * dir)
+update_paths (
+  const char * _dir,
+  int          is_backup)
 {
+  char * dir = g_strdup (_dir);
+
   if (PROJECT->dir)
     g_free (PROJECT->dir);
   if (PROJECT->project_file_path)
@@ -93,7 +101,40 @@ update_paths (const char * dir)
   if (PROJECT->audio_dir)
     g_free (PROJECT->audio_dir);
 
-  PROJECT->dir = g_strdup (dir);
+  char * dir_without_bak =
+    string_get_substr_before_backup_ext (dir);
+  if (is_backup)
+    {
+      int i = 0;
+
+      do
+        {
+          if (i > 0)
+            {
+              g_free (PROJECT->dir);
+              PROJECT->dir =
+                g_strdup_printf (
+                  "%s.bak%d",
+                  dir_without_bak, i);
+            }
+          else
+            {
+              PROJECT->dir =
+                g_strdup_printf (
+                  "%s.bak", dir_without_bak);
+            }
+          i++;
+        } while (
+          io_file_exists (
+            PROJECT->dir));
+    }
+  else
+    {
+      PROJECT->dir =
+        g_strdup (dir_without_bak);
+    }
+  g_free (dir_without_bak);
+
   PROJECT->project_file_path =
     g_build_filename (PROJECT->dir,
                       PROJECT_FILE,
@@ -120,6 +161,8 @@ update_paths (const char * dir)
     g_build_filename (PROJECT->dir,
                       PROJECT_AUDIO_DIR,
                       NULL);
+  g_free (dir);
+
   g_message ("updated paths %s", PROJECT->dir);
 }
 
@@ -174,7 +217,7 @@ create_default (Project * self)
                      ZRYTHM->projects_dir,
                      G_DIR_SEPARATOR_S,
                      untitled_project);
-  update_paths (dir);
+  update_paths (dir, 0);
   int i = 1;
   while (io_file_exists (dir) &&
          PROJECT->project_file_path &&
@@ -187,7 +230,7 @@ create_default (Project * self)
                          G_DIR_SEPARATOR_S,
                          untitled_project,
                          i++);
-      update_paths (dir);
+      update_paths (dir, 0);
     }
   io_mkdir (dir);
   char * filepath_noext = g_path_get_basename (dir);
@@ -223,11 +266,13 @@ create_default (Project * self)
 }
 
 static int
-load (char * filename)
+load (const char * filename)
 {
   g_warn_if_fail (filename);
   char * dir = io_get_dir (filename);
-  update_paths (dir);
+
+  /* FIXME check for backups */
+  update_paths (dir, 0);
 
   gchar * yaml;
   GError *err = NULL;
@@ -283,7 +328,7 @@ load (char * filename)
 
   g_message ("initing loaded structures");
   PROJECT = prj;
-  update_paths (dir);
+  update_paths (dir, 0);
   undo_manager_init (&PROJECT->undo_manager);
   /*init_loaded_ports ();*/
   engine_init (AUDIO_ENGINE, 1);
@@ -416,6 +461,24 @@ project_load (char * filename)
 }
 
 /**
+ * Autosave callback.
+ */
+int
+project_autosave_cb (
+  void * data)
+{
+  if (PROJECT && PROJECT->loaded &&
+      PROJECT->dir &&
+      PROJECT->datetime_str)
+    {
+      project_save (
+        PROJECT, PROJECT->dir, 1);
+    }
+
+  return G_SOURCE_CONTINUE;
+}
+
+/**
  * Sets if the project has range and updates UI.
  */
 void
@@ -426,16 +489,31 @@ project_set_has_range (int has_range)
   EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED, NULL);
 }
 
+/**
+ * Saves the project to a project file in the
+ * given dir.
+ *
+ * @param is_backup 1 if this is a backup. Backups
+ *   will be saved as <original filename>.bak<num>.
+ */
 int
 project_save (
-  Project * self,
-  const char * dir)
+  Project *    self,
+  const char * _dir,
+  int          is_backup)
 {
   int i, j;
 
-  io_mkdir (dir);
-  update_paths (dir);
-  PROJECT->title = io_path_get_basename (dir);
+  char * dir = g_strdup (_dir);
+
+  update_paths (dir, is_backup);
+  io_mkdir (PROJECT->dir);
+
+  char * basename =
+    io_path_get_basename (PROJECT->dir);
+  char * title_without_bak =
+    string_get_substr_before_backup_ext (basename);
+  PROJECT->title = g_strdup (title_without_bak);
 
   /* save current datetime */
   if (self->datetime_str)
@@ -513,13 +591,23 @@ project_save (
   zrythm_add_to_recent_projects (
     ZRYTHM,
     PROJECT->project_file_path);
-  PROJECT->title = g_path_get_basename (dir);
+  /*PROJECT->title =*/
+    /*g_path_get_basename (PROJECT->dir);*/
 
-  ui_show_notification (_("Project saved."));
+  if (is_backup)
+    {
+      ui_show_notification (_("Backup saved."));
+    }
+  else
+    {
+      ui_show_notification (_("Project saved."));
+    }
 
   header_notebook_widget_set_subtitle (
     MW_HEADER_NOTEBOOK,
     PROJECT->title);
+
+  g_free (dir);
 
   RETURN_OK;
 }

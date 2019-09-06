@@ -133,6 +133,12 @@ init_dirs_and_files ()
                       NULL);
   io_mkdir (ZRYTHM->templates_dir);
 
+  ZRYTHM->backups_dir =
+    g_build_filename (ZRYTHM->zrythm_dir,
+                      "Backups",
+                      NULL);
+  io_mkdir (ZRYTHM->backups_dir);
+
   ZRYTHM->log_dir =
     g_build_filename (ZRYTHM->zrythm_dir,
                       "log",
@@ -191,7 +197,7 @@ init_recent_projects ()
 void
 zrythm_add_to_recent_projects (
   Zrythm * self,
-  const char * filepath)
+  const char * _filepath)
 {
   /* if we are at max
    * projects */
@@ -208,11 +214,14 @@ zrythm_add_to_recent_projects (
           ZRYTHM->num_recent_projects - 1]);
     }
 
+  char * filepath =
+    g_strdup (_filepath);
+
   array_insert (
     ZRYTHM->recent_projects,
     ZRYTHM->num_recent_projects,
     0,
-    (char *) filepath);
+    filepath);
 
   /* set last element to NULL because the call
    * takes a NULL terminated array */
@@ -351,6 +360,18 @@ static void on_setup_main_window (GSimpleAction  *action,
 
   mixer_recalc_graph (MIXER);
   g_atomic_int_set (&AUDIO_ENGINE->run, 1);
+
+  /* add timeout for auto-saving projects */
+  int autosave_interval =
+    g_settings_get_int (
+      S_PREFERENCES, "autosave-interval") * 60;
+  if (autosave_interval > 0)
+    {
+      g_timeout_add_seconds (
+        autosave_interval,
+        project_autosave_cb,
+        NULL);
+    }
 
   free (data);
 }

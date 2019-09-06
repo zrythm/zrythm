@@ -537,9 +537,7 @@ activate_save (GSimpleAction *action,
      }
    g_message ("%s project dir", PROJECT->dir);
 
-   char * dir = g_strdup (PROJECT->dir);
-   project_save (PROJECT, dir);
-   g_free (dir);
+   project_save (PROJECT, PROJECT->dir, 0);
 }
 
 void
@@ -585,7 +583,7 @@ activate_save_as (GSimpleAction *action,
 
       filename =
         gtk_file_chooser_get_filename (chooser);
-      project_save (PROJECT, filename);
+      project_save (PROJECT, filename, 0);
       g_free (filename);
     }
 

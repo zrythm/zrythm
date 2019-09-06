@@ -94,8 +94,10 @@ typedef struct Zrythm
   char *                  zrythm_dir;
   /** <zrythm_dir>/Projects */
   char *                  projects_dir;
-  /** <zrythm_dir>/Templates */
+  /** <zrythm_dir>/Templates TODO */
   char *                  templates_dir;
+  /** <zrythm_dir>/Backups TODO */
+  char *                  backups_dir;
   /** <zrythm_dir>/log */
   char *                  log_dir;
 

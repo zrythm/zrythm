@@ -151,3 +151,20 @@ string_convert_to_filename (
     }
   return new_str;
 }
+
+/**
+ * Removes any bak, bak1 etc suffixes from the
+ * string and returns a newly allocated string.
+ */
+char *
+string_get_substr_before_backup_ext (
+  const char * str)
+{
+  /* get the part without .bak */
+  char ** parts =
+    g_strsplit (
+      str, ".bak", 0);
+  char * part = g_strdup (parts[0]);
+  g_strfreev (parts);
+  return part;
+}

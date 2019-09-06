@@ -278,6 +278,18 @@
         Bit depth to use when exporting.
       </description>
     </key>
+
+    <!-- KEY: autosave interval -->
+    <key name="autosave-interval" type="i">
+      <default>1</default>
+      <summary>Autosave interval in minutes</summary>
+      <description>
+        Interval to auto-save the current project,
+        in minutes. If this is 0, autosave will be
+        disabled.
+      </description>
+    </key>
+
   </schema> <!-- end PREFERENCES schema -->
 
   <!-- UI schema -->
@@ -398,6 +410,6 @@
       </description>
     </key>
 
-  </schema>
+  </schema> <!-- end UI schema -->
 
 </schemalist>

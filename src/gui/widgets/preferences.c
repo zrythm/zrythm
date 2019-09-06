@@ -50,6 +50,19 @@ enum
   TEXT_COL
 };
 
+static void
+setup_autosave_spinbutton (
+  PreferencesWidget * self)
+{
+  GtkAdjustment * adj =
+    gtk_adjustment_new (
+      g_settings_get_int (
+        S_PREFERENCES, "autosave-interval"),
+      0, 20, 1.0, 5.0, 0.0);
+  gtk_spin_button_set_adjustment (
+    self->autosave_spin,
+    adj);
+}
 
 static void
 setup_plugins (PreferencesWidget * self)
@@ -103,8 +116,14 @@ on_ok_clicked (GtkWidget * widget,
   g_settings_set_int (
     S_PREFERENCES,
     "open-plugin-uis-on-instantiate",
-  gtk_toggle_button_get_active (
-    GTK_TOGGLE_BUTTON (self->open_plugin_uis)));
+    gtk_toggle_button_get_active (
+      GTK_TOGGLE_BUTTON (self->open_plugin_uis)));
+  g_settings_set_int (
+    S_PREFERENCES,
+    "autosave-interval",
+    (int)
+      gtk_spin_button_get_value (
+        self->autosave_spin));
   midi_controller_mb_widget_save_settings (
     self->midi_controllers);
 
@@ -142,6 +161,7 @@ preferences_widget_new ()
   setup_plugins (self);
   midi_controller_mb_widget_setup (
     self->midi_controllers);
+  setup_autosave_spinbutton (self);
 
   char * dir = zrythm_get_dir (ZRYTHM);
   gtk_file_chooser_set_current_folder (
@@ -176,6 +196,7 @@ gtk_widget_class_bind_template_child ( \
   BIND_CHILD (pan_law);
   BIND_CHILD (open_plugin_uis);
   BIND_CHILD (zpath_fc);
+  BIND_CHILD (autosave_spin);
 
   gtk_widget_class_bind_template_callback (
     klass,

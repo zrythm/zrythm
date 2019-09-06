@@ -144,6 +144,8 @@ typedef struct AutomationPoint AutomationPoint;
 typedef struct _ArrangerPlayheadWidget ArrangerPlayheadWidget;
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
+typedef struct _GtkEventControllerMotion
+  GtkEventControllerMotion;
 
 typedef enum ArrangerCursor
 {
@@ -176,7 +178,7 @@ typedef struct
 
   /** FIXME broken in GTK3, but should be used in
    * the future. */
-  GtkEventControllerKey *  key_controller;
+  //GtkEventControllerKey *  key_controller;
 
   double               last_offset_x;  ///< for dragging regions, selections
   double               last_offset_y;  ///< for selections

@@ -69,7 +69,9 @@
                    cyaml_strerror (err)); \
       } \
  \
-    char * new_str = g_strdup (output); \
+    char * new_str = \
+      calloc (output_len + 1, sizeof (char));\
+    memcpy (new_str, output, output_len);\
     new_str[output_len] = '\0'; \
     config.mem_fn(config.mem_ctx, output, 0); \
  \

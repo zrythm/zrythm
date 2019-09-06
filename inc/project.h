@@ -298,12 +298,24 @@ int
 project_load (char * filename);
 
 /**
- * Saves project to a file.
+ * Saves the project to a project file in the
+ * given dir.
+ *
+ * @param is_backup 1 if this is a backup. Backups
+ *   will be saved as <original filename>.bak<num>.
  */
 int
 project_save (
   Project *    self,
-  const char * dir);
+  const char * dir,
+  int          is_backup);
+
+/**
+ * Autosave callback.
+ */
+int
+project_autosave_cb (
+  void * data);
 
 /**
  * Sets if the project has range and updates UI.

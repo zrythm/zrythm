@@ -152,7 +152,8 @@ main_window_widget_refresh (MainWindowWidget * self)
 }
 
 static void
-main_window_widget_class_init (MainWindowWidgetClass * _klass)
+main_window_widget_class_init (
+  MainWindowWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass,

@@ -101,6 +101,8 @@
                       <object class="GtkGrid" id="audio_grid">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="margin_left">2</property>
+                        <property name="column_spacing">2</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
@@ -270,6 +272,7 @@
                       <object class="GtkGrid" id="plugins_grid">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="margin_left">2</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
@@ -319,6 +322,7 @@
                       <object class="GtkGrid" id="editing_grid">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="margin_left">2</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
@@ -367,6 +371,7 @@
                       <object class="GtkGrid" id="gui_grid">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="margin_left">2</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
@@ -417,6 +422,69 @@
                       </object>
                       <packing>
                         <property name="position">3</property>
+                        <property name="tab_fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkGrid" id="grid3">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_left">2</property>
+                        <property name="column_spacing">2</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Projects</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                            <property name="width">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Autosave interval</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="autosave_spin">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Set the interval to auto-save project backups, in minutes</property>
+                            <property name="hexpand">True</property>
+                            <property name="caps_lock_warning">False</property>
+                            <property name="progress_pulse_step">0</property>
+                            <property name="input_purpose">number</property>
+                            <property name="climb_rate">1</property>
+                            <property name="numeric">True</property>
+                            <property name="value">60</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                    <child type="tab">
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Projects</property>
+                      </object>
+                      <packing>
+                        <property name="position">4</property>
                         <property name="tab_fill">False</property>
                       </packing>
                     </child>

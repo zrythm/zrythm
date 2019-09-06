@@ -270,7 +270,7 @@ endif
 qt5_dep = dependency('Qt5Widgets', required: false)
 
 yaml_dep = dependency('yaml-0.1')
-gtk_dep = dependency('gtk+-3.0', version: '>=3.20')
+gtk_dep = dependency('gtk+-3.0', version: '>=3.22')
 sndfile_dep = dependency('sndfile', version: '>=1.0.25')
 
 zrythm_deps = [
