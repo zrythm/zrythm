@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-09-05 18:41+0100\n"
+"POT-Creation-Date: 2019-09-06 17:24+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Arabic <https://translate.zrythm.org/projects/zrythm/zrythm/"
@@ -20,36 +20,40 @@ msgstr ""
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
 "X-Generator: Weblate 3.6.1\n"
 
-#: src/zrythm.c:271
+#: src/zrythm.c:292
 msgid "Initializing settings"
 msgstr ""
 
-#: src/zrythm.c:282
+#: src/zrythm.c:303
 msgid "Initializing audio engine"
 msgstr ""
 
-#: src/zrythm.c:287
+#: src/zrythm.c:308
 msgid "Initializing plugin manager"
 msgstr ""
 
-#: src/zrythm.c:294
+#: src/zrythm.c:315
 msgid "Setting up backend"
 msgstr ""
 
-#: src/zrythm.c:303
+#: src/zrythm.c:324
 msgid "Loading project"
 msgstr ""
 
-#: src/project.c:161 src/audio/track.c:1050
+#: src/project.c:204 src/audio/track.c:1050
 msgid "Master"
 msgstr ""
 
 #. create untitled project
-#: src/project.c:171
+#: src/project.c:214
 msgid "Untitled Project"
 msgstr ""
 
-#: src/project.c:518
+#: src/project.c:613
+msgid "Backup saved."
+msgstr ""
+
+#: src/project.c:620
 msgid "Project saved."
 msgstr ""
 
@@ -104,14 +108,14 @@ msgid "Save State"
 msgstr ""
 
 #: src/plugins/lv2_gtk.c:153 src/plugins/lv2_gtk.c:568 src/utils/dialogs.c:44
-#: src/utils/dialogs.c:74 src/actions/actions.c:561
+#: src/utils/dialogs.c:74 src/actions/actions.c:559
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr ""
 
-#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:563
+#: src/plugins/lv2_gtk.c:154 src/actions/actions.c:561
 msgid "_Save"
 msgstr ""
 
@@ -238,17 +242,21 @@ msgid ""
 "3. Restart Zrythm"
 msgstr ""
 
-#: src/gui/widgets/project_assistant.c:166 resources/ui/control.ui:45
+#: src/gui/widgets/project_assistant.c:238 resources/ui/control.ui:45
 msgid "Name"
 msgstr ""
 
-#: src/gui/widgets/project_assistant.c:176
+#: src/gui/widgets/project_assistant.c:248
 #: resources/ui/first_run_assistant.ui:144
 msgid "Path"
 msgstr ""
 
-#: src/gui/widgets/project_assistant.c:186
+#: src/gui/widgets/project_assistant.c:258
 msgid "Last Modified"
+msgstr ""
+
+#: src/gui/widgets/project_assistant.c:376
+msgid "Blank project"
 msgstr ""
 
 #: src/gui/widgets/left_dock_edge.c:104
@@ -1022,11 +1030,11 @@ msgstr ""
 msgid "Website"
 msgstr ""
 
-#: src/actions/actions.c:558
+#: src/actions/actions.c:556
 msgid "Save Project"
 msgstr ""
 
-#: src/actions/actions.c:623
+#: src/actions/actions.c:621
 msgid ""
 "Project doesn't have a path yet. Please save the project before exporting."
 msgstr ""
@@ -1231,7 +1239,7 @@ msgid ""
 "language."
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:89 resources/ui/preferences.ui:388
+#: resources/ui/first_run_assistant.ui:89 resources/ui/preferences.ui:392
 msgid "Language"
 msgstr ""
 
@@ -1257,11 +1265,11 @@ msgstr ""
 msgid "Select the audio and MIDI engine backends to use"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:179 resources/ui/preferences.ui:168
+#: resources/ui/first_run_assistant.ui:179 resources/ui/preferences.ui:170
 msgid "MIDI Backend"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:192 resources/ui/preferences.ui:122
+#: resources/ui/first_run_assistant.ui:192 resources/ui/preferences.ui:124
 msgid "Audio Backend"
 msgstr ""
 
@@ -1421,16 +1429,24 @@ msgstr ""
 msgid "Select Project"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:66 resources/ui/shortcuts.ui:104
+#: resources/ui/project_assistant.ui:43
+msgid "Select a project"
+msgstr ""
+
+#: resources/ui/project_assistant.ui:86 resources/ui/shortcuts.ui:104
 msgid "Create new project"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:82
+#: resources/ui/project_assistant.ui:102
 msgid "Remove"
 msgstr ""
 
-#: resources/ui/project_assistant.ui:86
+#: resources/ui/project_assistant.ui:106
 msgid "Removes selected project from the list"
+msgstr ""
+
+#: resources/ui/project_assistant.ui:130
+msgid "Select a template"
 msgstr ""
 
 #: resources/ui/chord_selector_window.ui:51
@@ -1562,7 +1578,7 @@ msgstr ""
 msgid "Global Shortcuts"
 msgstr ""
 
-#: resources/ui/shortcuts.ui:36 resources/ui/preferences.ui:263
+#: resources/ui/shortcuts.ui:36 resources/ui/preferences.ui:265
 msgid "General"
 msgstr ""
 
@@ -2088,81 +2104,95 @@ msgstr ""
 msgid "Both"
 msgstr ""
 
-#: resources/ui/preferences.ui:108
+#: resources/ui/preferences.ui:110
 msgid "Engine"
 msgstr ""
 
-#: resources/ui/preferences.ui:133
+#: resources/ui/preferences.ui:135
 msgid "The audio backend to connect to"
 msgstr ""
 
-#: resources/ui/preferences.ui:146
+#: resources/ui/preferences.ui:148
 msgid "MIDI Controllers"
 msgstr ""
 
-#: resources/ui/preferences.ui:179
+#: resources/ui/preferences.ui:181
 msgid "The MIDI backend to connect to"
 msgstr ""
 
-#: resources/ui/preferences.ui:191
+#: resources/ui/preferences.ui:193
 msgid "Pan Algorithm"
 msgstr ""
 
-#: resources/ui/preferences.ui:202
+#: resources/ui/preferences.ui:204
 msgid "Pan Law"
 msgstr ""
 
-#: resources/ui/preferences.ui:213
+#: resources/ui/preferences.ui:215
 msgid "The pan algorithm to use"
 msgstr ""
 
-#: resources/ui/preferences.ui:225
+#: resources/ui/preferences.ui:227
 msgid "The pan law to use"
 msgstr ""
 
-#: resources/ui/preferences.ui:237
+#: resources/ui/preferences.ui:239
 #, fuzzy
 msgid "Zrythm path"
 msgstr "Zrythm"
 
-#: resources/ui/preferences.ui:248
+#: resources/ui/preferences.ui:250
 msgid "The global Zrythm working path for non-project related files"
 msgstr ""
 
-#: resources/ui/preferences.ui:277 resources/ui/preferences.ui:311
+#: resources/ui/preferences.ui:280 resources/ui/preferences.ui:313
 msgid "Plugins"
 msgstr ""
 
-#: resources/ui/preferences.ui:287
+#: resources/ui/preferences.ui:290
 msgid "Always open plugin UIs"
 msgstr ""
 
-#: resources/ui/preferences.ui:291
+#: resources/ui/preferences.ui:294
 msgid "Always show the plugin UI when instantiating a plugin"
 msgstr ""
 
-#: resources/ui/preferences.ui:326
+#: resources/ui/preferences.ui:329
 msgid "Main Window"
 msgstr ""
 
-#: resources/ui/preferences.ui:336
+#: resources/ui/preferences.ui:339
 msgid "Show native decoration"
 msgstr ""
 
-#: resources/ui/preferences.ui:359
+#: resources/ui/preferences.ui:362
 msgid "Editing"
 msgstr ""
 
-#: resources/ui/preferences.ui:374
+#: resources/ui/preferences.ui:378
 msgid "Interface"
 msgstr ""
 
-#: resources/ui/preferences.ui:399
+#: resources/ui/preferences.ui:403
 msgid "The language of the Zrythm interface"
 msgstr ""
 
-#: resources/ui/preferences.ui:416
+#: resources/ui/preferences.ui:420
 msgid "GUI"
+msgstr ""
+
+#: resources/ui/preferences.ui:437 resources/ui/preferences.ui:483
+msgid "Projects"
+msgstr ""
+
+#: resources/ui/preferences.ui:449
+msgid "Autosave interval"
+msgstr ""
+
+#: resources/ui/preferences.ui:460
+msgid ""
+"Set the interval to auto-save project backups, in minutes. Setting this to 0 "
+"will disable auto-save"
 msgstr ""
 
 #: data/zrythm.desktop.in:21
