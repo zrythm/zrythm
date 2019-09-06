@@ -457,7 +457,7 @@
                           <object class="GtkSpinButton" id="autosave_spin">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">Set the interval to auto-save project backups, in minutes</property>
+                            <property name="tooltip_text" translatable="yes">Set the interval to auto-save project backups, in minutes. Setting this to 0 will disable auto-save</property>
                             <property name="hexpand">True</property>
                             <property name="caps_lock_warning">False</property>
                             <property name="progress_pulse_step">0</property>
