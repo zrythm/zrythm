@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: 2019-09-01 12:44+0000\n"
+"PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-configuration/de/>\n"
@@ -33,6 +33,9 @@ msgid ""
 "Zrythm exposes ports to JACK. Devices can be attached there. Note that "
 "for MIDI, devices need to be bridged using ``a2jmidid``."
 msgstr ""
+"Zrythm stellt Ports für JACK zur Verfügung. Dort können Geräte angeschlossen "
+"werden. Beachten Sie, dass für MIDI Geräte mit ``a2jmididid`` überbrückt "
+"werden müssen."
 
 #: ../../zrythm-configuration/device-setup/intro.rst:8
 msgid "An example configuration looks like this (in Catia inside Cadence)"
@@ -95,7 +98,7 @@ msgstr "Manuelle Installation"
 
 #: ../../zrythm-configuration/installation/intro.rst:24
 msgid "The usual GNU toolchain procedure applies::"
-msgstr ""
+msgstr "Es gilt das übliche GNU-Toolchain-Verfahren::"
 
 #: ../../zrythm-configuration/installation/intro.rst:31
 msgid ""

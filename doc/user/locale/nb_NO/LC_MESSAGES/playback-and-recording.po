@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-09-05 17:39+0000\n"
+"PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/nb_NO/>\n"
@@ -31,7 +31,7 @@ msgstr ""
 #: ../../playback-and-recording/recording-midi.rst:21
 #: ../../playback-and-recording/transport-controls.rst:47
 msgid "TODO"
-msgstr ""
+msgstr "GJENSTÅR"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:19
 msgid "BPM and Time Signatures"
@@ -52,7 +52,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:33
 msgid "Time Signature"
-msgstr ""
+msgstr "Tidssignatur"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:35
 msgid "The Time Signature is split into the following"

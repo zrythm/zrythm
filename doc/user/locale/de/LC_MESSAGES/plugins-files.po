@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-16 05:24+0000\n"
-"Last-Translator: Waui <wau-wau@tutanota.de>\n"
+"PO-Revision-Date: 2019-09-06 16:21+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
@@ -100,7 +100,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:19
 msgid "Inspector Page"
-msgstr ""
+msgstr "Inspektor-Seite"
 
 #: ../../plugins-files/plugins/inspector-page.rst:21
 msgid ""
@@ -116,6 +116,9 @@ msgid ""
 "route inputs and outputs to each port of the Plugin, for example to route"
 " an LFO output to a Filter Plugin's filter cutoff parameter."
 msgstr ""
+"Diese Seite zeigt Informationen über das Plugin an und ermöglicht es Ihnen, "
+"Ein- und Ausgänge an jeden Port des Plugins zu routen, z.B. um einen LFO-"
+"Ausgang an den Filter-Cutoff-Parameter eines Filter-Plugins zu routen."
 
 #: ../../plugins-files/plugins/intro.rst:19
 msgid "Plugins"
@@ -178,10 +181,12 @@ msgid ""
 "Allows you to filter plugins based their protocol (LV2 or VST). Not "
 "operational at the moment."
 msgstr ""
+"Ermöglicht es Ihnen, Plugins nach ihrem Protokoll (LV2 oder VST) zu filtern. "
+"Zurzeit nicht verwendbar."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid "Filter Buttons"
-msgstr ""
+msgstr "Filtertasten"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:44
 msgid ""
@@ -211,6 +216,8 @@ msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
 "in the mixer or can be instantiated to create new bus tracks."
 msgstr ""
+"Diese Plugins können in die Insert-Slots bestehender Kanäle im Mixer gezogen "
+"oder instanziiert werden, um neue Busspuren zu erstellen."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:55
 #: ../../plugins-files/plugins/plugin-types.rst:33
@@ -222,11 +229,12 @@ msgid ""
 "These plugins output CV signals and can be used to modulate other plugin "
 "or track parameters."
 msgstr ""
+"Diese Plugins geben CV-Signale aus und können verwendet werden, um andere "
+"Plugin- oder Trackparameter zu modulieren."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:60
-#, fuzzy
 msgid "MIDI Effects"
-msgstr "Effekte"
+msgstr "MIDI-Effekte"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:58
 msgid ""
@@ -255,6 +263,10 @@ msgid ""
 "into empty space in the Mixer to create a new track using that plugin. If"
 " the plugin is a modulator, you can drop it into the Modulators Tab."
 msgstr ""
+"Ziehen Sie das ausgewählte Plugin per Drag & Drop in den leeren Bereich der "
+"Tracklist oder in den leeren Bereich des Mixers, um mit diesem Plugin einen "
+"neuen Track zu erstellen. Wenn das Plugin ein Modulator ist, können Sie es "
+"in die Registerkarte Modulatoren legen."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:73
 msgid "Double Click/Enter"
@@ -265,6 +277,9 @@ msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
 msgstr ""
+"Doppelklicken Sie auf das Plugin oder wählen Sie es aus und drücken Sie die "
+"Eingabetaste auf Ihrer Tastatur, um einen neuen Track mit diesem Plugin zu "
+"erstellen."
 
 #: ../../plugins-files/plugins/plugin-types.rst:19
 msgid "Plugin Types"
@@ -340,12 +355,16 @@ msgid ""
 "Plugins expose Ports that are used internally to route MIDI and audio "
 "signals to/from and externally for automation."
 msgstr ""
+"Plugins stellen Ports zur Verfügung, die intern verwendet werden, um MIDI- "
+"und Audiosignale zu/von und extern für die Automatisierung zu routen."
 
 #: ../../plugins-files/plugins/ports.rst:25
 msgid ""
 "A Port can only be an Input Port or an Output Port and can have one of "
 "the following types."
 msgstr ""
+"Ein Port kann nur ein Eingangsport oder ein Ausgangsport sein und kann einen "
+"der folgenden Typen haben."
 
 #: ../../plugins-files/plugins/ports.rst:31
 msgid "Audio"
@@ -357,6 +376,9 @@ msgid ""
 "Plugins will have at least two of these as inputs for Left and Right, and"
 " at least two as outputs."
 msgstr ""
+"Ports dieser Art empfangen oder senden Rohaudiosignale. Normalerweise haben "
+"Effekt-Plugins mindestens zwei davon als Eingänge für Links und Rechts und "
+"mindestens zwei als Ausgänge."
 
 #: ../../plugins-files/plugins/ports.rst:35
 msgid "Event"
@@ -367,6 +389,8 @@ msgid ""
 "Event Ports are mainly used for routing MIDI signals. Instrument Plugins "
 "will have at least one Event Port."
 msgstr ""
+"Event Ports werden hauptsächlich für das Routing von MIDI-Signalen "
+"verwendet. Instrument Plugins verfügen über mindestens einen Event Port."
 
 #: ../../plugins-files/plugins/ports.rst:39
 msgid "Control"
@@ -383,7 +407,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/ports.rst:47
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../plugins-files/plugins/ports.rst:42
 msgid ""
@@ -392,6 +416,11 @@ msgid ""
 "at least one CV output Port which can be routed to Plugin Control Ports "
 "for automation."
 msgstr ""
+"CV-Ports sind kontinuierliche Signale, die in Plugins eingespeist oder von "
+"Plugins ausgegeben werden können und hauptsächlich von den Modulatoren "
+"verwendet werden. Jeder Modulator verfügt über mindestens einen CV-Ausgang, "
+"der zur Automatisierung an die Plugin-Steueranschlüsse weitergeleitet werden "
+"kann."
 
 #: ../../plugins-files/plugins/ports.rst:49
 msgid ""
@@ -399,6 +428,9 @@ msgid ""
 " of CV ports. CV output Ports may be routed to both CV input Ports and "
 "Control input Ports."
 msgstr ""
+"Normalerweise können nur Ports desselben Typs verbunden werden, mit Ausnahme "
+"von CV-Ports. CV-Ausgangsanschlüsse können sowohl an CV-Eingangsanschlüsse "
+"als auch an Steuereingangsanschlüsse weitergeleitet werden."
 
 #: ../../plugins-files/plugins/ports.rst:54
 msgid "Output Ports may only be routed to Input Ports and vice versa."
@@ -409,6 +441,8 @@ msgid ""
 "Channels also have their own Ports, for example for the Fader, Pan, and "
 "Enabled (On/Off)."
 msgstr ""
+"Kanäle haben auch ihre eigenen Ports, z.B. für Fader, Pan und Enabled (An/"
+"Aus)."
 
 #~ msgid ""
 #~ "When a Plugin is selected in the"

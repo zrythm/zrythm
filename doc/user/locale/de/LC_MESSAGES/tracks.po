@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-08-12 00:18+0000\n"
-"Last-Translator: Waui <wau-wau@tutanota.de>\n"
+"PO-Revision-Date: 2019-09-06 16:21+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../tracks/chord-track/intro.rst:2 ../../tracks/track-types.rst:25
@@ -111,7 +111,6 @@ msgstr ""
 "Instrumentenspuren von Instrumentenerweiterungen erstellt werden."
 
 #: ../../tracks/instrument-track.rst:12
-#, fuzzy
 msgid "Track View"
 msgstr "Spuransicht"
 
@@ -229,8 +228,7 @@ msgstr "Busspur"
 #: ../../tracks/track-types.rst:14
 msgid "A Track corresponding to a mixer bus. Bus tracks only contain automation"
 msgstr ""
-"Eine Spur, die einem Mixerbus entspricht. Busspuren beinhaltet nur "
-"Automation."
+"Eine Spur, die einem Mixerbus entspricht. Busspuren beinhalten nur Automation"
 
 #: ../../tracks/track-types.rst:15
 msgid "Master Track"

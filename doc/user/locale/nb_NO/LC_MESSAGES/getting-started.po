@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-09-05 17:42+0000\n"
+"PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualgetting-started/nb_NO/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../getting-started/additional-resources.rst:19
 msgid "Additional Resources"
-msgstr ""
+msgstr "Ytterligere ressurser"
 
 #: ../../getting-started/additional-resources.rst:22
 msgid "IRC/Matrix"
@@ -36,7 +36,7 @@ msgstr ""
 
 #: ../../getting-started/additional-resources.rst:27
 msgid "Issue Tracker"
-msgstr ""
+msgstr "Feilsporer"
 
 #: ../../getting-started/additional-resources.rst:28
 msgid ""
@@ -46,7 +46,7 @@ msgstr ""
 
 #: ../../getting-started/additional-resources.rst:31
 msgid "Source Code"
-msgstr ""
+msgstr "Kildekode"
 
 #: ../../getting-started/additional-resources.rst:32
 msgid ""
@@ -57,15 +57,15 @@ msgstr ""
 
 #: ../../getting-started/additional-resources.rst:35
 msgid "Older Versions"
-msgstr ""
+msgstr "Eldre versjoner"
 
 #: ../../getting-started/additional-resources.rst:36
 msgid "https://download.savannah.nongnu.org/releases/zrythm/"
-msgstr ""
+msgstr "https://download.savannah.nongnu.org/releases/zrythm/"
 
 #: ../../getting-started/basic-concepts-and-terminology.rst:19
 msgid "Basic Concepts and Terminology"
-msgstr ""
+msgstr "Grunnleggende konsepter og terminologi"
 
 #: ../../getting-started/basic-concepts-and-terminology.rst:21
 msgid ""
@@ -75,7 +75,7 @@ msgstr ""
 
 #: ../../getting-started/basic-concepts-and-terminology.rst:24
 msgid "Regions"
-msgstr ""
+msgstr "Regioner"
 
 #: ../../getting-started/basic-concepts-and-terminology.rst:25
 msgid ""
@@ -109,7 +109,7 @@ msgstr ""
 
 #: ../../getting-started/basic-concepts-and-terminology.rst:47
 msgid "Tracklist"
-msgstr ""
+msgstr "Sporliste"
 
 #: ../../getting-started/basic-concepts-and-terminology.rst:48
 msgid ""
@@ -119,7 +119,7 @@ msgstr ""
 
 #: ../../getting-started/basic-concepts-and-terminology.rst:53
 msgid "Channel"
-msgstr ""
+msgstr "Kanal"
 
 #: ../../getting-started/basic-concepts-and-terminology.rst:54
 msgid ""
@@ -147,11 +147,12 @@ msgstr ""
 
 #: ../../getting-started/basic-concepts-and-terminology.rst:71
 msgid "MIDI Note"
-msgstr ""
+msgstr "MIDI-note"
 
 #: ../../getting-started/basic-concepts-and-terminology.rst:72
 msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
+"MIDI-noter brukes til å utløse virtuelle (eller maskinvare-) instrumenter."
 
 #: ../../getting-started/getting-plugins.rst:19
 msgid "Getting Plugins"

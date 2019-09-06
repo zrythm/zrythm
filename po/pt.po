@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-05 18:41+0100\n"
-"PO-Revision-Date: 2019-09-05 07:58+0000\n"
+"PO-Revision-Date: 2019-09-06 16:20+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -459,14 +459,12 @@ msgid "Protocol"
 msgstr "Protocolo"
 
 #: src/gui/widgets/export_progress_dialog.c:75
-#, fuzzy
 msgid "Exported"
-msgstr "Exportar"
+msgstr "Exportado"
 
 #: src/gui/widgets/export_progress_dialog.c:146
-#, fuzzy
 msgid "Export Progress"
-msgstr "Exportar Como"
+msgstr "Progresso da Exportação"
 
 #: src/gui/widgets/port_connections_button.c:147
 msgid "Expose port to JACK"
@@ -734,12 +732,10 @@ msgid "Fullscreen"
 msgstr "Ecrã inteiro"
 
 #: src/gui/widgets/track.c:359
-#, fuzzy
 msgid "_Delete Track"
 msgstr "_Apagar Faixa"
 
 #: src/gui/widgets/track.c:362
-#, fuzzy
 msgid "_Delete Tracks"
 msgstr "_Apagar Faixas"
 
@@ -1922,22 +1918,20 @@ msgid "LFO 1"
 msgstr "LFO 1"
 
 #: resources/ui/export_progress_dialog.ui:25
-#, fuzzy
 msgid "Open Directory"
-msgstr "Abrir Projeto"
+msgstr "Abrir Diretório"
 
 #: resources/ui/export_progress_dialog.ui:28
 msgid "Opens the containing directory"
-msgstr ""
+msgstr "Abre o diretório acima"
 
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
 msgid "OK"
 msgstr "OK"
 
 #: resources/ui/export_progress_dialog.ui:69
-#, fuzzy
 msgid "Exporting..."
-msgstr "Exportar como..."
+msgstr "Exportando..."
 
 #: resources/ui/automation_track.ui:95
 msgid "RW"
@@ -2178,9 +2172,8 @@ msgid "The pan law to use"
 msgstr "A Pan law para usar"
 
 #: resources/ui/preferences.ui:237
-#, fuzzy
 msgid "Zrythm path"
-msgstr "Zrythm"
+msgstr "Caminho de Zrythm"
 
 #: resources/ui/preferences.ui:248
 msgid "The global Zrythm working path for non-project related files"
@@ -2229,7 +2222,6 @@ msgid "Digital Audio Workstation"
 msgstr "Estação de Trabalho de Áudio Digital"
 
 #: data/zrythm.desktop.in:23
-#, fuzzy
 msgid "highly automated and intuitive digital audio workstation"
 msgstr ""
 "uma estação de trabalho de áudio digital altamente automatizada e intuitiva"

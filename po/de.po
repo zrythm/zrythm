@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-05 18:41+0100\n"
-"PO-Revision-Date: 2019-09-05 17:38+0000\n"
-"Last-Translator: Waui <wau-wau@tutanota.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2019-09-06 16:20+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -204,7 +204,6 @@ msgid "Inserts"
 msgstr "Inserts"
 
 #: src/gui/widgets/track_input_expander.c:185
-#, fuzzy
 msgid "All MIDI Inputs"
 msgstr "Alle MIDI-Eingänge"
 
@@ -317,7 +316,7 @@ msgstr "Mit dem Jack-Transport synchronisieren"
 
 #: src/gui/widgets/top_bar.c:169
 msgid "Unlink JACK Transport"
-msgstr ""
+msgstr "Aufheben der Verbindung zum JACK-Transport"
 
 #: src/gui/widgets/top_bar.c:228
 msgid "playhead"
@@ -329,7 +328,7 @@ msgstr "JACK-Transport-Client"
 
 #: src/gui/widgets/top_bar.c:282
 msgid "JACK Timebase master"
-msgstr ""
+msgstr "JACK Zeitbasis Master"
 
 #: src/gui/widgets/top_bar.c:379
 msgid "time sig."
@@ -416,14 +415,12 @@ msgid "Record"
 msgstr "Aufnehmen"
 
 #: src/gui/widgets/instrument_track.c:250 src/gui/widgets/midi_track.c:218
-#, fuzzy
 msgid "Show automation lanes"
-msgstr "Zeige Automationsunterspuren"
+msgstr "Automationsunterspuren anzeigen"
 
 #: src/gui/widgets/instrument_track.c:256 src/gui/widgets/midi_track.c:224
-#, fuzzy
 msgid "Show track lanes"
-msgstr "Zeige Automationsunterspuren"
+msgstr "Spur-Unterspuren anzeigen"
 
 #: src/gui/widgets/instrument_track.c:262 src/gui/widgets/midi_track.c:230
 msgid "Lock track"
@@ -435,11 +432,11 @@ msgstr "Spur einfrieren"
 
 #: src/gui/widgets/control_room.c:54
 msgid "Monitor out"
-msgstr ""
+msgstr "Monitor Ausgang"
 
 #: src/gui/widgets/control_room.c:66
 msgid "Listen dim level"
-msgstr ""
+msgstr "Hör-Dimmpegel"
 
 #: src/gui/widgets/control_room.c:69
 msgid "The level to set other channels to when Listen is enabled on a channel"
@@ -465,40 +462,38 @@ msgid "Protocol"
 msgstr "Protokoll"
 
 #: src/gui/widgets/export_progress_dialog.c:75
-#, fuzzy
 msgid "Exported"
-msgstr "Exportieren"
+msgstr "Exportiert"
 
 #: src/gui/widgets/export_progress_dialog.c:146
-#, fuzzy
 msgid "Export Progress"
-msgstr "Exportiere als…"
+msgstr "Exportfortschritt"
 
 #: src/gui/widgets/port_connections_button.c:147
 msgid "Expose port to JACK"
-msgstr ""
+msgstr "Port für JACK freigeben"
 
 #: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:65
 #: resources/ui/quantize_dialog.ui:143
 msgid "start"
-msgstr ""
+msgstr "Anfang"
 
 #: src/gui/widgets/timeline_selection_info.c:275 src/audio/marker_track.c:73
 #: resources/ui/quantize_dialog.ui:156
 msgid "end"
-msgstr ""
+msgstr "Ende"
 
 #: src/gui/widgets/timeline_selection_info.c:285
 msgid "clip start (rel.)"
-msgstr ""
+msgstr "Anfang des Clips (rel.)"
 
 #: src/gui/widgets/timeline_selection_info.c:295
 msgid "loop start (rel.)"
-msgstr ""
+msgstr "Anfang der Schleife (rel.)"
 
 #: src/gui/widgets/timeline_selection_info.c:305
 msgid "loop end (rel.)"
-msgstr ""
+msgstr "Ende der Schleife (rel.)"
 
 #: src/gui/widgets/timeline_selection_info.c:333
 #: src/gui/widgets/timeline_selection_info.c:357
@@ -583,7 +578,7 @@ msgstr "Stereo Out"
 
 #: src/gui/widgets/snap_grid.c:95
 msgid "Snap/Grid options"
-msgstr ""
+msgstr "Fang-/Rasteroptionen"
 
 #: src/gui/widgets/header_notebook.c:82
 msgid "About Zrythm"
@@ -616,7 +611,7 @@ msgstr "beide"
 
 #: src/gui/widgets/piano_roll_key_label.c:103
 msgid "scale"
-msgstr ""
+msgstr "Skala"
 
 #: src/gui/widgets/piano_roll_key_label.c:122
 msgid "chord"
@@ -624,7 +619,7 @@ msgstr "Akkord"
 
 #: src/gui/widgets/live_waveform.c:131
 msgid "Live waveform indicator"
-msgstr ""
+msgstr "Live-Wellenformanzeige"
 
 #: src/gui/widgets/clip_editor_inner.c:165
 msgid "Select a region..."
@@ -664,7 +659,7 @@ msgstr "CV-Ausgänge"
 
 #: src/gui/widgets/ports_expander.c:390
 msgid "Sends"
-msgstr ""
+msgstr "Sendet"
 
 #: src/gui/widgets/ports_expander.c:397
 msgid "Stereo In"
@@ -696,52 +691,44 @@ msgid "Open Project"
 msgstr "Projekt öffnen"
 
 #: src/gui/widgets/project_toolbar.c:41
-#, fuzzy
 msgid "Export As"
-msgstr "Exportiere als…"
+msgstr "Exportieren Als"
 
 #: src/gui/widgets/view_toolbar.c:39
-#, fuzzy
 msgid "Toggle Left Panel"
-msgstr "Linkes Panel ein-/ausschalten"
+msgstr "Linkes Panel ein-/ausblenden"
 
 #: src/gui/widgets/view_toolbar.c:40
-#, fuzzy
 msgid "Toggle Bottom Panel"
-msgstr "Unteres Panel ein-/ausschalten"
+msgstr "Unteres Panel ein-/ausblenden"
 
 #: src/gui/widgets/view_toolbar.c:41
-#, fuzzy
 msgid "Toggle Top Panel"
-msgstr "Unteres Panel ein-/ausschalten"
+msgstr "Unteres Panel ein-/ausblenden"
 
 #: src/gui/widgets/view_toolbar.c:43
-#, fuzzy
 msgid "Toggle Right Panel"
-msgstr "Rechtes Panel ein-/ausschalten"
+msgstr "Rechtes Panel ein-/ausblenden"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Toggle Status Bar"
 msgstr "Statusleiste ein-/ausschalten"
 
 #: src/gui/widgets/view_toolbar.c:45
-#, fuzzy
 msgid "Zoom In"
 msgstr "Vergrößern"
 
 #: src/gui/widgets/view_toolbar.c:46
-#, fuzzy
 msgid "Zoom Out"
 msgstr "Verkleinern"
 
 #: src/gui/widgets/view_toolbar.c:47
-#, fuzzy
 msgid "Original Size"
 msgstr "Ursprüngliche Größe"
 
 #: src/gui/widgets/view_toolbar.c:48
 msgid "Best Fit"
-msgstr ""
+msgstr "Beste Anpassung"
 
 #: src/gui/widgets/view_toolbar.c:49
 msgid "Fullscreen"
@@ -777,7 +764,7 @@ msgstr "Spuren verstecken"
 
 #: src/gui/widgets/fader.c:317
 msgid "Fader"
-msgstr ""
+msgstr "Fader"
 
 #: src/gui/widgets/dzl/dzl-animation.c:752
 #, c-format
@@ -794,11 +781,13 @@ msgstr "Fehler beim Suchen der Eigenschaft %s in %s"
 #, c-format
 msgid "Failed to find property %s in %s or parent %s"
 msgstr ""
+"Die Eigenschaft %s konnte in %s oder dem übergeordneten %s nicht gefunden "
+"werden"
 
 #: src/gui/widgets/dzl/dzl-animation.c:1123
 #, c-format
 msgid "Failed to retrieve va_list value: %s"
-msgstr ""
+msgstr "va_list Wert konnte nicht abgerufen werden: %s"
 
 #: src/utils/dialogs.c:46
 msgid "_Open"
@@ -862,7 +851,7 @@ msgstr "Chinesisch [zh]"
 #. TRANSLATORS: Dummy audio backend
 #: src/utils/ui.c:495 src/utils/ui.c:513
 msgid "Dummy"
-msgstr ""
+msgstr "Dummy"
 
 #: src/utils/ui.c:514
 msgid "ALSA Sequencer"
@@ -888,7 +877,7 @@ msgstr "Akkorde"
 
 #: src/audio/channel.c:1829
 msgid "Piano Roll"
-msgstr ""
+msgstr "Klavierrolle"
 
 #: src/audio/marker_track.c:39 src/audio/marker_track.c:57
 msgid "Markers"
@@ -912,23 +901,23 @@ msgstr "ALSA-Fehler: %s"
 
 #: src/audio/passthrough_processor.c:92
 msgid "Pre-Fader in"
-msgstr ""
+msgstr "Pre-Fader Eingang"
 
 #: src/audio/passthrough_processor.c:98
 msgid "Pre-Fader out"
-msgstr ""
+msgstr "Pre-Fader Ausgang"
 
 #: src/audio/passthrough_processor.c:106
 msgid "MIDI pre-fader in"
-msgstr ""
+msgstr "MIDI-Pre-FaderEingang"
 
 #: src/audio/passthrough_processor.c:119
 msgid "MIDI pre-fader out"
-msgstr ""
+msgstr "MIDI-Pre-Fader Ausgang"
 
 #: src/audio/sample_processor.c:38
 msgid "Sample Processor"
-msgstr ""
+msgstr "Sample-Prozessor"
 
 #: src/audio/track.c:1038
 msgid "Instrument"
@@ -961,19 +950,19 @@ msgstr "Nicht implementiert"
 
 #: src/audio/fader.c:104
 msgid "Fader in"
-msgstr ""
+msgstr "Fader Eingang"
 
 #: src/audio/fader.c:113
 msgid "Fader out"
-msgstr ""
+msgstr "Fader Ausgang"
 
 #: src/audio/fader.c:125
 msgid "MIDI fader in"
-msgstr ""
+msgstr "MIDI-Fader Eingang"
 
 #: src/audio/fader.c:138
 msgid "MIDI fader out"
-msgstr ""
+msgstr "MIDI-Fader Ausgang"
 
 #: src/audio/engine_jack.c:506
 #, c-format
@@ -983,7 +972,7 @@ msgstr "JACK-Fehler: %s"
 #. TRANSLATORS: JACK failure messages
 #: src/audio/engine_jack.c:643
 msgid "Overall operation failed"
-msgstr ""
+msgstr "Gesamtvorgang ist fehlgeschlagen"
 
 #: src/audio/engine_jack.c:646
 msgid "The operation contained an invalid or unsupported option"
@@ -1027,7 +1016,7 @@ msgstr "Backend-Fehler"
 
 #: src/audio/engine_jack.c:677
 msgid "Client zombie"
-msgstr ""
+msgstr "Client-Zombie"
 
 #: src/actions/duplicate_chord_selections_action.c:151
 msgid "Duplicate Chord(s)"
@@ -1071,7 +1060,7 @@ msgstr "eine hochautomatisierte und intuitive Digital Audio Workstation"
 
 #: src/actions/actions.c:259
 msgid "Website"
-msgstr ""
+msgstr "Webseite"
 
 #: src/actions/actions.c:558
 msgid "Save Project"
@@ -1169,11 +1158,11 @@ msgstr "Region(en) ausschneiden"
 
 #: src/actions/edit_tracks_action.c:160
 msgid "Solo Track"
-msgstr ""
+msgstr "Track Vereinzeln"
 
 #: src/actions/edit_tracks_action.c:163
 msgid "Unsolo Track"
-msgstr ""
+msgstr "Track Vereinen"
 
 #: src/actions/edit_tracks_action.c:167
 msgid "Mute Track"
@@ -1181,11 +1170,11 @@ msgstr "Spur stummschalten"
 
 #: src/actions/edit_tracks_action.c:170
 msgid "Unmute Track"
-msgstr ""
+msgstr "Track laut schalten"
 
 #: src/actions/edit_tracks_action.c:173
 msgid "Change Fader"
-msgstr ""
+msgstr "Fader Ändern"
 
 #: src/actions/edit_tracks_action.c:176
 msgid "Change Pan"
@@ -1236,7 +1225,7 @@ msgstr "Akkord ändern"
 
 #: src/actions/edit_scale_action.c:92
 msgid "Change Scale"
-msgstr ""
+msgstr "Skala Ändern"
 
 #: src/actions/delete_plugins_action.c:111
 msgid "Delete Plugin"
@@ -1261,7 +1250,7 @@ msgstr "Ausgang"
 
 #: resources/ui/rack_row.ui:60
 msgid "expander"
-msgstr ""
+msgstr "Expander"
 
 #: resources/ui/center_dock_bot_box.ui:43
 msgid "Left"
@@ -1269,7 +1258,7 @@ msgstr "Links"
 
 #: resources/ui/center_dock_bot_box.ui:54
 msgid "Bot"
-msgstr ""
+msgstr "Bot"
 
 #: resources/ui/center_dock_bot_box.ui:74
 msgid "Right"
@@ -1441,7 +1430,7 @@ msgstr "Harmonisches Moll"
 #: resources/ui/scale_selector_window.ui:342
 #: resources/ui/chord_selector_window.ui:746
 msgid "Creator"
-msgstr ""
+msgstr "Ersteller"
 
 #: resources/ui/scale_selector_window.ui:358
 #: resources/ui/chord_selector_window.ui:876
@@ -1451,11 +1440,11 @@ msgstr "ZU ERLEDIGEN Klaviatur"
 #: resources/ui/scale_selector_window.ui:368
 #: resources/ui/chord_selector_window.ui:886 resources/ui/export_dialog.ui:262
 msgid "Custom"
-msgstr ""
+msgstr "Persönlich"
 
 #: resources/ui/bot_dock_edge.ui:46
 msgid "Piano roll panel"
-msgstr ""
+msgstr "Klavierrollen Panel"
 
 #: resources/ui/bot_dock_edge.ui:61
 msgid "Editor"
@@ -1504,67 +1493,67 @@ msgstr "Typ"
 
 #: resources/ui/chord_selector_window.ui:264
 msgid "maj"
-msgstr ""
+msgstr "maj"
 
 #: resources/ui/chord_selector_window.ui:277
 msgid "min"
-msgstr ""
+msgstr "min"
 
 #: resources/ui/chord_selector_window.ui:290
 msgid "dim"
-msgstr ""
+msgstr "dim"
 
 #: resources/ui/chord_selector_window.ui:303
 msgid "sus4"
-msgstr ""
+msgstr "sus4"
 
 #: resources/ui/chord_selector_window.ui:316
 msgid "sus2"
-msgstr ""
+msgstr "sus2"
 
 #: resources/ui/chord_selector_window.ui:329
 msgid "aug"
-msgstr ""
+msgstr "aug"
 
 #: resources/ui/chord_selector_window.ui:346
 msgid "Accent"
-msgstr ""
+msgstr "Akzent"
 
 #: resources/ui/chord_selector_window.ui:374
 msgid "7"
-msgstr ""
+msgstr "7"
 
 #: resources/ui/chord_selector_window.ui:387
 msgid "j7"
-msgstr ""
+msgstr "j7"
 
 #: resources/ui/chord_selector_window.ui:400
 msgid "♭9"
-msgstr ""
+msgstr "♭9"
 
 #: resources/ui/chord_selector_window.ui:413
 msgid "9"
-msgstr ""
+msgstr "9"
 
 #: resources/ui/chord_selector_window.ui:426
 msgid "♯9"
-msgstr ""
+msgstr "♯9"
 
 #: resources/ui/chord_selector_window.ui:439
 msgid "11"
-msgstr ""
+msgstr "11"
 
 #: resources/ui/chord_selector_window.ui:452
 msgid "♭5/♯11"
-msgstr ""
+msgstr "♭5/♯11"
 
 #: resources/ui/chord_selector_window.ui:465
 msgid "♯5/♭13"
-msgstr ""
+msgstr "♯5/♭13"
 
 #: resources/ui/chord_selector_window.ui:478
 msgid "6/13"
-msgstr ""
+msgstr "6/13"
 
 #: resources/ui/chord_selector_window.ui:495
 msgid "Bass Note"
@@ -1576,39 +1565,39 @@ msgstr "Alle"
 
 #: resources/ui/chord_selector_window.ui:716
 msgid "In scale"
-msgstr ""
+msgstr "Im Maßstab"
 
 #: resources/ui/chord_selector_window.ui:767
 msgid "I"
-msgstr ""
+msgstr "I"
 
 #: resources/ui/chord_selector_window.ui:781
 msgid "II"
-msgstr ""
+msgstr "II"
 
 #: resources/ui/chord_selector_window.ui:795
 msgid "III"
-msgstr ""
+msgstr "III"
 
 #: resources/ui/chord_selector_window.ui:809
 msgid "IV"
-msgstr ""
+msgstr "IV"
 
 #: resources/ui/chord_selector_window.ui:823
 msgid "V"
-msgstr ""
+msgstr "V"
 
 #: resources/ui/chord_selector_window.ui:837
 msgid "VI"
-msgstr ""
+msgstr "VI"
 
 #: resources/ui/chord_selector_window.ui:851
 msgid "VII"
-msgstr ""
+msgstr "VII"
 
 #: resources/ui/chord_selector_window.ui:865
 msgid "Diatonic"
-msgstr ""
+msgstr "Diatonisch"
 
 #: resources/ui/chord_selector_window.ui:897
 msgid "TODO"
@@ -1712,7 +1701,7 @@ msgstr "Werkzeug"
 
 #: resources/ui/shortcuts.ui:208
 msgid "Select/Stretch tool"
-msgstr ""
+msgstr "Werkzeug Auswählen/Dehnen"
 
 #: resources/ui/shortcuts.ui:215
 msgid "Pencil tool"
@@ -1728,11 +1717,11 @@ msgstr "Rampenwerkzeug"
 
 #: resources/ui/shortcuts.ui:236
 msgid "Audition tool"
-msgstr ""
+msgstr "Audition-Tool"
 
 #: resources/ui/shortcuts.ui:246
 msgid "Zooming"
-msgstr ""
+msgstr "Zoomen"
 
 #: resources/ui/shortcuts.ui:251
 msgid "Zoom in"
@@ -1744,7 +1733,7 @@ msgstr "Verkleinern"
 
 #: resources/ui/shortcuts.ui:265
 msgid "Best fit"
-msgstr ""
+msgstr "Beste Anpassung"
 
 #: resources/ui/shortcuts.ui:272
 msgid "Original size"
@@ -1756,7 +1745,7 @@ msgstr "Quantisieren"
 
 #: resources/ui/shortcuts.ui:286 resources/ui/quantize_box.ui:39
 msgid "Quick Quantize"
-msgstr ""
+msgstr "Schnelle Quantisierung"
 
 #: resources/ui/shortcuts.ui:293
 msgid "Quantize"
@@ -1800,15 +1789,15 @@ msgstr "Modulationsrad"
 #: resources/ui/midi_editor_space.ui:147 resources/ui/chord_editor_space.ui:155
 #: resources/ui/automation_editor_space.ui:117
 msgid "Aftertouch"
-msgstr ""
+msgstr "Aftertouch"
 
 #: resources/ui/automatable_selector.ui:104
 msgid "label"
-msgstr ""
+msgstr "Label"
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
-msgstr ""
+msgstr "Skala durchsetzen"
 
 #: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
 #: resources/ui/inspector_midi.ui:31
@@ -1936,26 +1925,24 @@ msgid "LFO 1"
 msgstr "LFO 1"
 
 #: resources/ui/export_progress_dialog.ui:25
-#, fuzzy
 msgid "Open Directory"
-msgstr "Projekt öffnen"
+msgstr "Verzeichnis Öffnen"
 
 #: resources/ui/export_progress_dialog.ui:28
 msgid "Opens the containing directory"
-msgstr ""
+msgstr "Öffnet das enthaltende Verzeichnis"
 
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
 msgid "OK"
 msgstr "OK"
 
 #: resources/ui/export_progress_dialog.ui:69
-#, fuzzy
 msgid "Exporting..."
-msgstr "Exportiere als…"
+msgstr "Exportieren....."
 
 #: resources/ui/automation_track.ui:95
 msgid "RW"
-msgstr ""
+msgstr "RW"
 
 #: resources/ui/automation_track.ui:99
 msgid "Write automation"
@@ -1963,7 +1950,7 @@ msgstr "Automation schreiben"
 
 #: resources/ui/automation_track.ui:112
 msgid "R"
-msgstr ""
+msgstr "R"
 
 #: resources/ui/automation_track.ui:116
 msgid "Read automation"
@@ -1971,11 +1958,11 @@ msgstr "Automation lesen"
 
 #: resources/ui/automation_track.ui:137
 msgid "0.0"
-msgstr ""
+msgstr "0.0"
 
 #: resources/ui/file_browser.ui:107
 msgid "Location"
-msgstr ""
+msgstr "Ort"
 
 #: resources/ui/marker_dialog.ui:94
 msgid "Marker name"
@@ -2007,7 +1994,7 @@ msgstr "_Quantisieren"
 
 #: resources/ui/quantize_dialog.ui:77
 msgid "Quantize to"
-msgstr ""
+msgstr "Quantisieren auf"
 
 #: resources/ui/quantize_dialog.ui:132
 msgid "Adjust"
@@ -2019,11 +2006,11 @@ msgstr "Menge"
 
 #: resources/ui/quantize_dialog.ui:223
 msgid "Swing"
-msgstr ""
+msgstr "Swing"
 
 #: resources/ui/quantize_dialog.ui:251
 msgid "Randomization"
-msgstr ""
+msgstr "Randomisierung"
 
 #: resources/ui/top_bar.ui:31
 msgid "Metronome"
@@ -2031,7 +2018,7 @@ msgstr "Metronom"
 
 #: resources/ui/top_bar.ui:87
 msgid "MIDI in activity"
-msgstr ""
+msgstr "MIDI aktiv"
 
 #: resources/ui/export_dialog.ui:30
 msgid "Export As..."
@@ -2063,7 +2050,7 @@ msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:131
 msgid "Electronic"
-msgstr ""
+msgstr "Elektronisch"
 
 #: resources/ui/export_dialog.ui:142
 msgid "Format"
@@ -2071,7 +2058,7 @@ msgstr "Format"
 
 #: resources/ui/export_dialog.ui:161
 msgid "Dither"
-msgstr ""
+msgstr "Dithern"
 
 #: resources/ui/export_dialog.ui:188
 msgid ""
@@ -2127,7 +2114,7 @@ msgstr "Kein Clip ausgewählt"
 
 #: resources/ui/quantize_box.ui:61
 msgid "Full Quantize..."
-msgstr ""
+msgstr "Vollständige Quantisierung......"
 
 #: resources/ui/snap_grid_popover.ui:37
 msgid "Grid"
@@ -2143,7 +2130,7 @@ msgstr "Einrasten"
 
 #: resources/ui/snap_grid_popover.ui:87
 msgid "Note length to snap to"
-msgstr ""
+msgstr "Notenlänge zum Einrasten auf"
 
 #: resources/ui/snap_grid_popover.ui:126
 msgid "Note type"
@@ -2167,7 +2154,7 @@ msgstr "Engine"
 
 #: resources/ui/preferences.ui:133
 msgid "The audio backend to connect to"
-msgstr ""
+msgstr "Das Audio-Backend, mit dem Sie sich verbinden können"
 
 #: resources/ui/preferences.ui:146
 msgid "MIDI Controllers"
@@ -2175,7 +2162,7 @@ msgstr "MIDI-Controller"
 
 #: resources/ui/preferences.ui:179
 msgid "The MIDI backend to connect to"
-msgstr ""
+msgstr "Das MIDI-Backend zum Verbinden"
 
 #: resources/ui/preferences.ui:191
 msgid "Pan Algorithm"

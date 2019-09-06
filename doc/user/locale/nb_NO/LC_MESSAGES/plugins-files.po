@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-09-05 17:39+0000\n"
+"PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/nb_NO/>\n"
@@ -37,7 +37,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:28
 #: ../../plugins-files/audio-midi-files/file-browser.rst:33
 msgid "TODO"
-msgstr ""
+msgstr "GJENSTÅR"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:31
 msgid "Collections"
@@ -191,7 +191,7 @@ msgstr ""
 #: ../../plugins-files/plugins/plugin-browser.rst:55
 #: ../../plugins-files/plugins/plugin-types.rst:33
 msgid "Modulators"
-msgstr ""
+msgstr "Modulatorer"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:55
 msgid ""
