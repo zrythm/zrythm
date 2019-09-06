@@ -32,6 +32,7 @@ typedef struct MidiNote MidiNote;
 typedef struct Region Region;
 typedef struct MidiEvents MidiEvents;
 typedef Region MidiRegion;
+typedef void MIDI_FILE;
 
 /**
  * @addtogroup audio
@@ -143,6 +144,24 @@ midi_region_remove_all_midi_notes (
   //int          pitch);
 
 /**
+ * Exports the Region to an existing MIDI file
+ * instance.
+ *
+ * @param add_region_start Add the region start
+ *   offset to the positions.
+ * @param export_full Traverse loops and export the
+ *   MIDI file as it would be played inside Zrythm.
+ *   If this is 0, only the original region (from
+ *   true start to true end) is exported.
+ */
+void
+midi_region_write_to_midi_file (
+  const Region * self,
+  MIDI_FILE *    mf,
+  const int      add_region_start,
+  const int      export_full);
+
+/**
  * Exports the Region to a specified MIDI file.
  *
  * @param full_path Absolute path to the MIDI file.
@@ -155,6 +174,7 @@ void
 midi_region_export_to_midi_file (
   const Region * self,
   const char *   full_path,
+  int            midi_version,
   const int      export_full);
 
 /**
@@ -162,7 +182,10 @@ midi_region_export_to_midi_file (
  * the contents of the region converted into
  * events.
  *
- * Must be free'd with midi_events_free ()
+ * Must be free'd with midi_events_free ().
+ *
+ * @param add_region_start Add the region start
+ *   offset to the positions.
  * @param export_full Traverse loops and export the
  *   MIDI file as it would be played inside Zrythm.
  *   If this is 0, only the original region (from
@@ -171,6 +194,7 @@ midi_region_export_to_midi_file (
 MidiEvents *
 midi_region_get_as_events (
   const Region * self,
+  const int      add_region_start,
   const int      full);
 
 /**

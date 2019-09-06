@@ -553,6 +553,27 @@ track_set_soloed (Track * track,
 }
 
 /**
+ * Writes the track to the given MIDI file.
+ */
+void
+track_write_to_midi_file (
+  const Track * self,
+  MIDI_FILE *   mf)
+{
+  g_return_if_fail (
+    track_has_piano_roll (self));
+
+  TrackLane * lane;
+  for (int i = 0; i < self->num_lanes; i++)
+    {
+      lane = self->lanes[i];
+
+      track_lane_write_to_midi_file (
+        lane, mf);
+    }
+}
+
+/**
  * Returns if Track is in TracklistSelections.
  */
 int

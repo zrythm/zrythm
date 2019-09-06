@@ -676,7 +676,7 @@ on_export_as_midi_file_clicked (
           GTK_FILE_CHOOSER (dialog));
       g_message ("exporting to %s", filename);
       midi_region_export_to_midi_file (
-        r, filename, 0);
+        r, filename, 0, 0);
       g_free (filename);
       break;
     default:

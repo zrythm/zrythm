@@ -35,6 +35,7 @@ typedef enum AudioFormat
   AUDIO_FORMAT_OGG,
   AUDIO_FORMAT_WAV,
   AUDIO_FORMAT_MP3,
+  AUDIO_FORMAT_MIDI,
   NUM_AUDIO_FORMATS,
 } AudioFormat;
 

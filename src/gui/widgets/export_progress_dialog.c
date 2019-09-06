@@ -43,7 +43,15 @@ on_open_directory_clicked (
   GtkButton * btn,
   ExportProgressDialogWidget * self)
 {
-  /* TODO */
+  char * dir = io_get_dir (self->info->file_uri);
+  char * command =
+    g_strdup_printf (
+      "xdg-open \"%s\"",
+      dir);
+  FILE* file = popen (command, "r");
+  pclose(file);
+  g_free (dir);
+  g_free (command);
 }
 
 static void

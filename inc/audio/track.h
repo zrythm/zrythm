@@ -58,6 +58,7 @@ typedef struct Marker Marker;
 typedef enum PassthroughProcessorType
   PassthroughProcessorType;
 typedef enum FaderType FaderType;
+typedef void MIDI_FILE;
 
 /**
  * @addtogroup audio
@@ -482,6 +483,14 @@ track_add_region (
   AutomationTrack * at,
   int               lane_pos,
   int               gen_name);
+
+/**
+ * Writes the track to the given MIDI file.
+ */
+void
+track_write_to_midi_file (
+  const Track * self,
+  MIDI_FILE *   mf);
 
 /**
  * Appends the Track to the selections.

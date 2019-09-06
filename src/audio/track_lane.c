@@ -22,6 +22,8 @@
 #include "audio/track.h"
 #include "audio/track_lane.h"
 #include "utils/arrays.h"
+#include "midilib/src/midifile.h"
+#include "midilib/src/midiinfo.h"
 
 #include <glib/gi18n.h>
 
@@ -162,6 +164,38 @@ track_lane_clone (
     }
 
   return new_lane;
+}
+
+/**
+ * Writes the lane to the given MIDI file.
+ */
+void
+track_lane_write_to_midi_file (
+  const TrackLane * self,
+  MIDI_FILE *       mf)
+{
+  /* All data is written out to _tracks_ not
+   * channels. We therefore
+  ** set the current channel before writing
+  data out. Channel assignments
+  ** can change any number of times during the
+  file, and affect all
+  ** tracks messages until it is changed. */
+  midiFileSetTracksDefaultChannel (
+    mf, self->track_pos, MIDI_CHANNEL_1);
+
+  /* add track name */
+  midiTrackAddText (
+    mf, self->track_pos, textTrackName,
+    self->track->name);
+
+  Region * region;
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      region = self->regions[i];
+      midi_region_write_to_midi_file (
+        region, mf, 1, 1);
+    }
 }
 
 /**

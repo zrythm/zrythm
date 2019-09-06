@@ -29,14 +29,15 @@
 #include "audio/region.h"
 #include "utils/yaml.h"
 
+typedef struct _TrackLaneWidget TrackLaneWidget;
+typedef void MIDI_FILE;
+
 /**
  * @addtogroup audio
  *
  * @{
  */
 #define MAX_REGIONS 300
-
-typedef struct _TrackLaneWidget TrackLaneWidget;
 
 /**
  * A TrackLane belongs to a Track (can have many
@@ -165,6 +166,14 @@ track_lane_set_track_pos (
 TrackLane *
 track_lane_clone (
   TrackLane * lane);
+
+/**
+ * Writes the lane to the given MIDI file.
+ */
+void
+track_lane_write_to_midi_file (
+  const TrackLane * self,
+  MIDI_FILE *       mf);
 
 /**
  * Frees the TrackLane.

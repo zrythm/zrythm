@@ -69,19 +69,28 @@ update_text (ExportDialogWidget * self)
 {
   char * filename =
     get_export_filename (self);
+
+#define ORANGE "#2eb398"
+#define ORANGIZE(x) \
+  "<span " \
+  "foreground=\"" ORANGE "\">" x "</span>"
+
   char * str =
     g_strdup_printf (
-      "The following files will be created:\n\n"
-      "%s\n\n"
-      "in the directory:\n\n"
-      "%s",
+      "The following files will be created:\n"
+      ORANGIZE ("%s") "\n\n"
+      "in the directory:\n"
+      ORANGIZE ("%s"),
       filename,
       PROJECT->exports_dir);
-  gtk_label_set_text (
+  gtk_label_set_markup (
     self->output_label,
     str);
   g_free (filename);
   g_free (str);
+
+#undef ORANGE
+#undef ORANGIZE
 }
 
 static void
@@ -253,30 +262,18 @@ create_formats_store ()
                         G_TYPE_STRING,
                         G_TYPE_INT);
 
-  gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter,
-    COLUMN_AUDIO_FORMAT_LABEL, "FLAC",
-    COLUMN_AUDIO_FORMAT, AUDIO_FORMAT_FLAC,
-    -1);
-  gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter,
-    COLUMN_AUDIO_FORMAT_LABEL, "OGG",
-    COLUMN_AUDIO_FORMAT, AUDIO_FORMAT_OGG,
-    -1);
-  gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter,
-    COLUMN_AUDIO_FORMAT_LABEL, "WAV",
-    COLUMN_AUDIO_FORMAT, AUDIO_FORMAT_WAV,
-    -1);
-  gtk_tree_store_append (store, &iter, NULL);
-  gtk_tree_store_set (
-    store, &iter,
-    COLUMN_AUDIO_FORMAT_LABEL, "MP3",
-    COLUMN_AUDIO_FORMAT, AUDIO_FORMAT_MP3,
-    -1);
+  for (int i = 0; i < NUM_AUDIO_FORMATS; i++)
+    {
+      gtk_tree_store_append (store, &iter, NULL);
+      char * str =
+        exporter_stringize_audio_format (i);
+      gtk_tree_store_set (
+        store, &iter,
+        COLUMN_AUDIO_FORMAT_LABEL, str,
+        COLUMN_AUDIO_FORMAT, i,
+        -1);
+      g_free (str);
+    }
 
   return GTK_TREE_MODEL (store);
 }
@@ -286,17 +283,41 @@ on_format_changed (GtkComboBox *widget,
                ExportDialogWidget * self)
 {
   update_text (self);
-  if (gtk_combo_box_get_active (widget) ==
-        AUDIO_FORMAT_OGG)
+  AudioFormat format =
+    gtk_combo_box_get_active (widget);
+
+#define SET_SENSITIVE(x) \
+  gtk_widget_set_sensitive ( \
+    GTK_WIDGET (self->x), 1)
+
+#define SET_UNSENSITIVE(x) \
+  gtk_widget_set_sensitive ( \
+    GTK_WIDGET (self->x), 0)
+
+  SET_UNSENSITIVE (export_genre);
+  SET_UNSENSITIVE (export_artist);
+  SET_UNSENSITIVE (bit_depth);
+  SET_UNSENSITIVE (dither);
+
+  switch (format)
     {
-      gtk_widget_set_sensitive (
-        GTK_WIDGET (self->bit_depth), 0);
+    case AUDIO_FORMAT_MIDI:
+      break;
+    case AUDIO_FORMAT_OGG:
+      SET_SENSITIVE (export_genre);
+      SET_SENSITIVE (export_artist);
+      SET_SENSITIVE (dither);
+      break;
+    default:
+      SET_SENSITIVE (export_genre);
+      SET_SENSITIVE (export_artist);
+      SET_SENSITIVE (bit_depth);
+      SET_SENSITIVE (dither);
+      break;
     }
-  else
-    {
-      gtk_widget_set_sensitive (
-        GTK_WIDGET (self->bit_depth), 1);
-    }
+
+#undef SET_SENSITIVE
+#undef SET_UNSENSITIVE
 }
 
 static void

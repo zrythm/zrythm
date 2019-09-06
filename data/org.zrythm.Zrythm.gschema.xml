@@ -59,6 +59,7 @@
     <value nick="OGG" value="1"/>
     <value nick="WAV" value="2"/>
     <value nick="MP3" value="3"/>
+    <value nick="MID" value="4"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.export-bit-depth-enum">
     <value nick="16" value="0"/>

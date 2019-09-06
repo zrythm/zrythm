@@ -46,6 +46,7 @@
 #include "project.h"
 #include "utils/io.h"
 #include "utils/ui.h"
+#include "midilib/src/midifile.h"
 
 #include <sndfile.h>
 
@@ -74,6 +75,9 @@ exporter_stringize_audio_format (
     case AUDIO_FORMAT_MP3:
       return g_strdup ("mp3");
       break;
+    case AUDIO_FORMAT_MIDI:
+      return g_strdup ("mid");
+      break;
     case NUM_AUDIO_FORMATS:
       break;
     }
@@ -81,14 +85,9 @@ exporter_stringize_audio_format (
   g_return_val_if_reached (NULL);
 }
 
-/**
- * Exports an audio file based on the given
- * settings.
- *
- * TODO move some things into functions.
- */
-void
-exporter_export (ExportSettings * info)
+static void
+export_audio (
+  ExportSettings * info)
 {
   SF_INFO sfinfo;
   memset (&sfinfo, 0, sizeof (sfinfo));
@@ -340,6 +339,68 @@ exporter_export (ExportSettings * info)
       g_free (error_str);
 
       return;
+    }
+}
+
+static void
+export_midi (
+  ExportSettings * info)
+{
+  MIDI_FILE *mf;
+
+  int i;
+	if ((mf = midiFileCreate (info->file_uri, TRUE)))
+		{
+      /* Write tempo information out to track 1 */
+      midiSongAddTempo(mf, 1, TRANSPORT->bpm);
+
+      midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
+
+      midiFileSetVersion (mf, 0);
+
+      /* common time: 4 crochet beats, per bar */
+      midiSongAddSimpleTimeSig (
+        mf, 1, TRANSPORT->beats_per_bar,
+        TRANSPORT->ticks_per_beat);
+
+      int count = 0;
+      Track * track;
+      for (i = 0; i < TRACKLIST->num_tracks; i++)
+        {
+          track = TRACKLIST->tracks[i];
+
+          if (track_has_piano_roll (track))
+            {
+              /* write track to midi file */
+              track_write_to_midi_file (
+                track, mf);
+            }
+          info->progress =
+            (float) i /
+            (float) TRACKLIST->num_tracks;
+        }
+
+      midiFileClose(mf);
+    }
+  info->progress = 1.f;
+}
+
+/**
+ * Exports an audio file based on the given
+ * settings.
+ *
+ * TODO move some things into functions.
+ */
+void
+exporter_export (ExportSettings * info)
+{
+  if (info->format == AUDIO_FORMAT_MIDI)
+    {
+      export_midi (info);
+    }
+  else
+    {
+      export_audio (info);
     }
 }
 
