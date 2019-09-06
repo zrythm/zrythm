@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: 2019-07-07 03:09+0000\n"
+"PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualsessions/nb_NO/>\n"
@@ -17,36 +17,36 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../sessions/importing-exporting/importing-exporting-audio.rst:2
 msgid "Importing/Exporting Audio"
-msgstr ""
+msgstr "Importering/eksportering av lyd"
 
 #: ../../sessions/importing-exporting/importing-exporting-midi.rst:2
 msgid "Importing/Exporting MIDI"
-msgstr ""
+msgstr "Importering/eksportering av MIDI"
 
 #: ../../sessions/importing-exporting/intro.rst:2
 msgid "Importing and Exporting"
-msgstr ""
+msgstr "Import og eksport"
 
 #: ../../sessions/intro.rst:2
 msgid "Sessions"
-msgstr ""
+msgstr "Økter"
 
 #: ../../sessions/session-info.rst:2
 msgid "Session Info"
-msgstr ""
+msgstr "Øktinfo"
 
 #: ../../sessions/session-management-and-compatibility.rst:2
 msgid "Session Management and Compatibility"
-msgstr ""
+msgstr "Øktbehandling og kompabilitet"
 
 #: ../../sessions/tracks/adding-tracks.rst:2
 msgid "Adding Tracks"
-msgstr ""
+msgstr "Tillegg av spor"
 
 #: ../../sessions/tracks/adding-tracks.rst:4
 msgid ""
@@ -71,7 +71,7 @@ msgstr "Spor"
 
 #: ../../sessions/tracks/reordering-tracks.rst:2
 msgid "Reordering Tracks"
-msgstr ""
+msgstr "Omorganisering av spor"
 
 #: ../../sessions/tracks/track-context-menu.rst:2
 msgid "Track Context Menu"
@@ -79,7 +79,7 @@ msgstr ""
 
 #: ../../sessions/tracks/track-overview.rst:2
 msgid "Track Overview"
-msgstr ""
+msgstr "Sporoversikt"
 
 #: ../../sessions/tracks/track-overview.rst:4
 msgid "Tracks contain regions and automation that is used to make up the song."
@@ -87,15 +87,15 @@ msgstr ""
 
 #: ../../sessions/tracks/track-types.rst:2
 msgid "Track Types"
-msgstr ""
+msgstr "Sportyper"
 
 #: ../../sessions/tracks/track-types.rst:4
 msgid "The following track types exist:"
-msgstr ""
+msgstr "Følgende sportyper finnes:"
 
 #: ../../sessions/tracks/track-types.rst:6
 msgid "Instrument Track"
-msgstr ""
+msgstr "Instrumentspor"
 
 #: ../../sessions/tracks/track-types.rst:7
 msgid "track containing MIDI regions and automation"
@@ -103,7 +103,7 @@ msgstr ""
 
 #: ../../sessions/tracks/track-types.rst:8
 msgid "Audio Track"
-msgstr ""
+msgstr "Lydspor"
 
 #: ../../sessions/tracks/track-types.rst:9
 msgid "track containing audio regions, cross-fades, fades and automation"
@@ -111,7 +111,7 @@ msgstr ""
 
 #: ../../sessions/tracks/track-types.rst:10
 msgid "Bus Track"
-msgstr ""
+msgstr "Busspor"
 
 #: ../../sessions/tracks/track-types.rst:11
 msgid "a track corresponding to a mixer bus. bus tracks only contain automation"
