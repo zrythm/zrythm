@@ -363,7 +363,6 @@ export_midi (
         mf, 1, TRANSPORT->beats_per_bar,
         TRANSPORT->ticks_per_beat);
 
-      int count = 0;
       Track * track;
       for (i = 0; i < TRACKLIST->num_tracks; i++)
         {

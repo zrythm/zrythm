@@ -236,7 +236,7 @@ activate_about (GSimpleAction *action,
       "Olivier Humbert <trebmuh@tuxfamily.org>\n"
       "Waui\n"
       "Allan Nordhøy <epost@anotheragency.no>\n"
-      "WaldiS\n"
+      "WaldiS <admin@sto.ugu.pl>\n"
       "Silvério Santos\n"
       "Swann Martinet";
 

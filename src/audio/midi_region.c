@@ -301,7 +301,6 @@ midi_region_export_to_midi_file (
 {
   MIDI_FILE *mf;
 
-  int i;
 	if ((mf = midiFileCreate(full_path, TRUE)))
 		{
       /* Write tempo information out to track 1 */

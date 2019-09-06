@@ -26,6 +26,7 @@ French
   * Olivier Humbert
 
 German
+  * Silvério Santos
   * Waui
 
 Norwegian Bokmal

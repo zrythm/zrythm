@@ -23,6 +23,8 @@
  * Export dialog.
  */
 
+#include <stdio.h>
+
 #include "audio/engine.h"
 #include "audio/exporter.h"
 #include "gui/widgets/export_progress_dialog.h"
