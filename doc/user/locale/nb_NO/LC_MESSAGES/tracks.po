@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-09-05 17:39+0000\n"
+"PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/nb_NO/>\n"
@@ -80,7 +80,7 @@ msgstr ""
 
 #: ../../tracks/instrument-track.rst:2 ../../tracks/track-types.rst:9
 msgid "Instrument Track"
-msgstr ""
+msgstr "Instrumentspor"
 
 #: ../../tracks/instrument-track.rst:4
 msgid ""
@@ -96,7 +96,7 @@ msgstr ""
 
 #: ../../tracks/instrument-track.rst:14 ../../tracks/track-context-menu.rst:4
 msgid "TODO"
-msgstr ""
+msgstr "GJENSTÅR"
 
 #: ../../tracks/intro.rst:2
 msgid "Tracks"
@@ -161,7 +161,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:2
 msgid "Track Types"
-msgstr ""
+msgstr "Sportyper"
 
 #: ../../tracks/track-types.rst:4
 msgid ""
@@ -177,7 +177,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:11
 msgid "Audio Track"
-msgstr ""
+msgstr "Lydspor"
 
 #: ../../tracks/track-types.rst:12
 msgid "A Track containing audio regions, cross-fades, fades and automation."
@@ -185,7 +185,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:13
 msgid "Bus Track"
-msgstr ""
+msgstr "Busspor"
 
 #: ../../tracks/track-types.rst:14
 msgid "A Track corresponding to a mixer bus. Bus tracks only contain automation"
