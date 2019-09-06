@@ -25,6 +25,7 @@
   <template class="ProjectAssistantWidget" parent="GtkAssistant">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Select Project</property>
+    <property name="resizable">False</property>
     <property name="icon_name">zrythm</property>
     <property name="urgency_hint">True</property>
     <property name="use_header_bar">0</property>
@@ -35,21 +36,40 @@
         <property name="orientation">vertical</property>
         <property name="spacing">4</property>
         <child>
-          <placeholder/>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_top">2</property>
+            <property name="label" translatable="yes">Select a project</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
-          <object class="GtkTreeView" id="projects">
-            <property name="height_request">85</property>
+          <object class="GtkScrolledWindow" id="projects_scroll">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <child internal-child="selection">
-              <object class="GtkTreeSelection" id="projects_selection">
-                <signal name="changed" handler="on_projects_selection_changed" object="ProjectAssistantWidget" swapped="no"/>
+            <property name="hscrollbar_policy">never</property>
+            <property name="shadow_type">in</property>
+            <property name="min_content_height">128</property>
+            <child>
+              <object class="GtkTreeView" id="projects">
+                <property name="height_request">85</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection" id="projects_selection">
+                    <signal name="changed" handler="on_projects_selection_changed" object="ProjectAssistantWidget" swapped="no"/>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
+            <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
@@ -99,7 +119,48 @@
           </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkBox" id="templates_box">
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">2</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Select a template</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkTreeView" id="templates">
+                <property name="height_request">85</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection" id="templates_selection">
+                    <signal name="changed" handler="on_templates_selection_changed" object="ProjectAssistantWidget" swapped="no"/>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
         </child>
       </object>
       <packing>
@@ -108,6 +169,9 @@
       </packing>
     </child>
     <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
       <placeholder/>
     </child>
     <child>

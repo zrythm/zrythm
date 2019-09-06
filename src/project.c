@@ -266,7 +266,9 @@ create_default (Project * self)
 }
 
 static int
-load (const char * filename)
+load (
+  const char * filename,
+  const int is_template)
 {
   g_warn_if_fail (filename);
   char * dir = io_get_dir (filename);
@@ -309,6 +311,16 @@ load (const char * filename)
     }
   g_message ("Project successfully deserialized.");
 
+  if (is_template)
+    {
+      g_free (dir);
+      dir =
+        g_build_filename (
+          zrythm->projects_dir,
+          DEFAULT_PROJECT_NAME,
+          NULL);
+    }
+
   int loading_while_running = PROJECT->loaded;
   if (loading_while_running)
     {
@@ -328,7 +340,10 @@ load (const char * filename)
 
   g_message ("initing loaded structures");
   PROJECT = prj;
+
+  /* re-update paths for the newly loaded project */
   update_paths (dir, 0);
+
   undo_manager_init (&PROJECT->undo_manager);
   /*init_loaded_ports ();*/
   engine_init (AUDIO_ENGINE, 1);
@@ -428,13 +443,18 @@ load (const char * filename)
  * If project has a filename set, it loads that.
  * Otherwise it loads the default project.
  *
- * Returns 0 if successful, non-zero otherwise.
+ * @param is_template Load the project as a
+ *   template and create a new project from it.
+ *
+ * @return 0 if successful, non-zero otherwise.
  */
 int
-project_load (char * filename)
+project_load (
+  char *    filename,
+  const int is_template)
 {
   if (filename)
-    load (filename);
+    load (filename, is_template);
   else
     create_default (PROJECT);
 
@@ -588,18 +608,15 @@ project_save (
       RETURN_ERROR;
     }
 
-  zrythm_add_to_recent_projects (
-    ZRYTHM,
-    PROJECT->project_file_path);
-  /*PROJECT->title =*/
-    /*g_path_get_basename (PROJECT->dir);*/
-
   if (is_backup)
     {
       ui_show_notification (_("Backup saved."));
     }
   else
     {
+      zrythm_add_to_recent_projects (
+        ZRYTHM,
+        PROJECT->project_file_path);
       ui_show_notification (_("Project saved."));
     }
 

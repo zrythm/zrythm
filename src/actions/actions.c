@@ -494,7 +494,7 @@ run_open_dialog (GtkDialog * dialog)
       char * filename =
         gtk_file_chooser_get_filename (chooser);
       g_message ("filename %s", filename);
-      res = project_load (filename);
+      res = project_load (filename, 0);
       g_free (filename);
     }
 
@@ -516,7 +516,7 @@ activate_open (GSimpleAction *action,
       char *filename =
         gtk_file_chooser_get_filename (
           GTK_FILE_CHOOSER (dialog));
-      project_load (filename);
+      project_load (filename, 0);
     }
 
   gtk_widget_destroy (GTK_WIDGET (dialog));

@@ -291,11 +291,18 @@ void
 project_sanity_check (Project * self);
 
 /**
- * If project has a filename set, it loads that. Otherwise
- * it loads the default project.
+ * If project has a filename set, it loads that.
+ * Otherwise it loads the default project.
+ *
+ * @param is_template Load the project as a
+ *   template and create a new project from it.
+ *
+ * @return 0 if successful, non-zero otherwise.
  */
 int
-project_load (char * filename);
+project_load (
+  char *    filename,
+  const int is_template);
 
 /**
  * Saves the project to a project file in the

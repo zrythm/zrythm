@@ -40,9 +40,11 @@
 
 /**
  * Gets directory part of filename. MUST be freed.
+ *
+ * @param filename Filename containing directory.
  */
 char *
-io_get_dir (const char * filename); ///< filename containing directory
+io_get_dir (const char * filename);
 
 /**
  * Makes directory if doesn't exist.
@@ -107,6 +109,17 @@ int
 io_rmdir (
   const char * path,
   int          force);
+
+/**
+ * Returns a list of the files in the given
+ * directory.
+ *
+ * @return a NULL terminated array of strings that
+ *   must be free'd with g_strfreev().
+ */
+char **
+io_get_files_in_dir (
+  const char * dir);
 
 /**
  * @}

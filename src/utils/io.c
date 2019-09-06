@@ -224,3 +224,40 @@ io_rmdir (
 
   return 0;
 }
+
+/**
+ * Returns a list of the files in the given
+ * directory.
+ *
+ * @return a NULL terminated array of strings that
+ *   must be free'd with g_strfreev().
+ */
+char **
+io_get_files_in_dir (
+  const char * _dir)
+{
+  GDir *dir;
+  GError *error;
+  const gchar *filename;
+
+  char ** arr =
+    calloc (1, sizeof (char *));
+  int count = 0;
+
+  dir = g_dir_open (_dir, 0, &error);
+  while ((filename = g_dir_read_name (dir)))
+    {
+      arr =
+        realloc (
+          arr, sizeof (char *) * (count + 2));
+      arr[count] =
+        g_build_filename (
+          _dir, filename, NULL);
+      count++;
+    }
+
+  /* NULL terminate */
+  arr[count] = NULL;
+
+  return arr;
+}

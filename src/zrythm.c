@@ -192,6 +192,18 @@ init_recent_projects ()
 }
 
 /**
+ * Initializes the array of recent projects in
+ * Zrythm app.
+ */
+static void
+init_templates ()
+{
+
+  ZRYTHM->templates =
+    io_get_files_in_dir (ZRYTHM->templates_dir);
+}
+
+/**
  * FIXME move somewhere else.
  */
 void
@@ -388,7 +400,9 @@ static void on_load_project (GSimpleAction  *action,
 {
   g_message ("load_project");
 
-  project_load (ZRYTHM->open_filename);
+  project_load (
+    ZRYTHM->open_filename,
+    ZRYTHM->opening_template);
 
   g_action_group_activate_action (
     G_ACTION_GROUP (zrythm_app),
@@ -429,14 +443,45 @@ on_finish (GtkAssistant * _assistant,
       gtk_widget_destroy (GTK_WIDGET (assistant));
       zrythm->open_filename = NULL;
     }
-  else if (!assistant->selection) /* if apply to create new project */
+  /* if we are loading a template and template
+   * exists */
+  else if (assistant->load_template &&
+           assistant->template_selection &&
+           assistant->template_selection->
+             filename[0] != '-')
+    {
+      zrythm->open_filename =
+        assistant->template_selection->filename;
+      g_message (
+        "Creating project from template: %s",
+        zrythm->open_filename);
+      zrythm->opening_template = 1;
+    }
+  /* if we are loading a project */
+  else if (!assistant->load_template &&
+           assistant->project_selection)
+    {
+      zrythm->open_filename =
+        assistant->project_selection->filename;
+      g_message (
+        "Loading project: %s",
+        zrythm->open_filename);
+    }
+  /* no selection, load blank project */
+  else
     {
       zrythm->open_filename = NULL;
+      g_message (
+        "Creating blank project");
     }
-  else /* if apply to load project */
-    {
-      zrythm->open_filename = assistant->selection->filename;
-    }
+  /*g_warning ("%d %s %s",*/
+             /*assistant->load_template,*/
+             /*assistant->project_selection ?*/
+               /*assistant->project_selection->filename:*/
+               /*"no project",*/
+             /*assistant->template_selection ?*/
+               /*assistant->template_selection->filename: "no template");*/
+
   gtk_widget_set_visible (GTK_WIDGET (assistant), 0);
   data->message =
     "Finishing";
@@ -522,6 +567,7 @@ static void on_prompt_for_project (GSimpleAction  *action,
       /* init zrythm folders ~/Zrythm */
       init_dirs_and_files ();
       init_recent_projects ();
+      init_templates ();
 
       /* init log */
       g_message ("Initing log...");

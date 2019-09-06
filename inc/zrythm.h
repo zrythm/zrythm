@@ -103,14 +103,24 @@ typedef struct Zrythm
 
   /** +1 to ensure last element is NULL in case
    * full. */
-  char *                  recent_projects[MAX_RECENT_PROJECTS + 1];
+  char *
+    recent_projects[MAX_RECENT_PROJECTS + 1];
   int                     num_recent_projects;
+
+  /** NULL terminated array of project template
+   * absolute paths. */
+  char **                 templates;
 
   /** The metronome. */
   Metronome               metronome;
 
+  /** 1 if the open file is a template to be used
+   * to create a new project from. */
+  int                     opening_template;
+
   /**
-   * Filename to open passed through the command line.
+   * Filename to open passed through the command
+   * line.
    *
    * Used only when a filename is passed.
    * E.g., zrytm myproject.xml

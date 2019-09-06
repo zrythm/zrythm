@@ -76,16 +76,28 @@ typedef struct _ProjectAssistantWidget
   GtkAssistant        parent_instance;
   GtkTreeView         * projects;
   GtkTreeSelection    * projects_selection;
-  GtkTreeModel        * model;
+  GtkTreeView         * templates;
+  GtkTreeSelection    * templates_selection;
+  GtkTreeModel        * project_model;
+  GtkTreeModel        * template_model;
   GtkCheckButton      * create_new_project;
+  GtkBox *            templates_box;
 
   /** The project info label. */
   //GtkLabel *          label;
 
   GtkButton *         remove_btn;
   ProjectInfo         project_infos[300];
-  ProjectInfo         * selection;
   int                 num_project_infos;
+  ProjectInfo         template_infos[300];
+  int                 num_template_infos;
+
+  /** 1 if a template should be loaded. */
+  int                 load_template;
+
+  /** The selected project/template. */
+  ProjectInfo         * project_selection;
+  ProjectInfo         * template_selection;
 } ProjectAssistantWidget;
 
 /**
