@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-06-01 22:03+0100\n"
-"PO-Revision-Date: 2019-06-17 21:07+0000\n"
+"PO-Revision-Date: 2019-09-06 19:10+0000\n"
 "Last-Translator: WaldiS <admin@sto.ugu.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/zrythm/pl/>"
 "\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.7-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 
 #: src/zrythm.c:242
 msgid "Initializing settings"
@@ -47,7 +47,7 @@ msgstr ""
 #. create untitled project
 #: src/project.c:166
 msgid "Untitled Project"
-msgstr ""
+msgstr "Projekt bez tytułu"
 
 #: src/project.c:437
 msgid "Project saved."
@@ -55,7 +55,7 @@ msgstr "Projekt został zapisany."
 
 #: src/plugins/lv2_gtk.c:149
 msgid "Save State"
-msgstr ""
+msgstr "Zapisz stan"
 
 #: src/plugins/lv2_gtk.c:152 src/plugins/lv2_gtk.c:567 src/utils/dialogs.c:44
 #: src/utils/dialogs.c:74 src/actions/actions.c:521
@@ -144,6 +144,12 @@ msgid ""
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart Zrythm"
 msgstr ""
+"Ustawienia regionalne dla wybranego języka nie są dostępne. Włącz najpierw "
+"poniższe czynności i spróbuj ponownie.\n"
+"1. Usuń komentarz z dowolnego ustawienia narodowego zaczynającego się od "
+"kodu języka <b>%s </b> w <b> /etc/locale.gen </b> (wymaga uprawnień roota)\n"
+"2. Uruchom <b> locale-gen </b> jako root\n"
+"3. Uruchom ponownie Zrythm"
 
 #: src/gui/widgets/left_dock_edge.c:46
 msgid "Inspector"
@@ -151,7 +157,7 @@ msgstr ""
 
 #: src/gui/widgets/left_dock_edge.c:56
 msgid "Visibility"
-msgstr ""
+msgstr "Widoczność"
 
 #: src/gui/widgets/port_selector_popover.c:209
 msgid "Track Ports"
@@ -716,7 +722,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:88 resources/ui/preferences.ui:360
 msgid "Language"
-msgstr ""
+msgstr "Język"
 
 #: resources/ui/first_run_assistant.ui:106
 msgid ""
@@ -1170,7 +1176,7 @@ msgstr ""
 
 #: resources/ui/header_notebook.ui:17
 msgid "Home"
-msgstr ""
+msgstr "Strona główna"
 
 #: resources/ui/header_notebook.ui:54
 msgid "View"
