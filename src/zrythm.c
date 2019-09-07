@@ -372,7 +372,6 @@ static void on_setup_main_window (GSimpleAction  *action,
   int autosave_interval =
     g_settings_get_int (
       S_PREFERENCES, "autosave-interval") * 60;
-  autosave_interval = 10;
   if (autosave_interval > 0)
     {
       g_timeout_add_seconds (
