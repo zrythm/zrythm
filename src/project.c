@@ -131,6 +131,13 @@ get_newer_backup (
       orig_tm = localtime (&stat_res.st_mtime);
       t1 = mktime (orig_tm);
     }
+  else
+    {
+      g_warning (
+        "Failed to get last modified for %s",
+        filepath);
+      return NULL;
+    }
   g_free (filepath);
 
   char * result = NULL;

@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.6.321] - 2019-09-07
+## [0.6.322] - 2019-09-07
 - Add autosave (backup) mechanism
 - Add support for project templates
 - Allow exporting whole project as MIDI
