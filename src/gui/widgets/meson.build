@@ -58,6 +58,7 @@ widget_srcs = [
   'control.c',
   'control_room.c',
   'cpu.c',
+  'create_project_dialog.c',
   'digital_meter.c',
   'drag_dest_box.c',
   'editable_label.c',

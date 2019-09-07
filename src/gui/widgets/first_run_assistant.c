@@ -257,7 +257,13 @@ on_file_set (
     g_file_get_path (file);
   g_settings_set_string (
     S_GENERAL, "dir", str);
+  char * str2 =
+    g_build_filename (
+      str, ZRYTHM_PROJECTS_DIR, NULL);
+  g_settings_set_string (
+    S_GENERAL, "last-project-dir", str);
   g_free (str);
+  g_free (str2);
 }
 
 FirstRunAssistantWidget *

@@ -149,6 +149,8 @@ ext_ports_get (
             AUDIO_ENGINE->client,
             NULL, jtype, flags);
 
+        g_return_if_fail (ports);
+
         int i = 0;
         char * pname;
         jack_port_t * jport;
@@ -164,6 +166,8 @@ ext_ports_get (
 
             i++;
           }
+
+        jack_free (ports);
 
         *size = i;
 #endif

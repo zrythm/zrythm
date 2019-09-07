@@ -242,45 +242,20 @@ set_and_create_next_available_backup_dir (
 /**
  * Sets the next available "Untitled Project" title
  * and directory.
+ *
+ * @param _dir The directory of the project to
+ *   create, including its title.
  */
 static void
-create_and_set_next_available_dir_and_title (
-  Project * self)
+create_and_set_dir_and_title (
+  Project *    self,
+  const char * _dir)
 {
-  char * untitled_project = _("Untitled Project");
-  char * dir =
-    g_build_filename (
-      ZRYTHM->projects_dir,
-      untitled_project,
-      NULL);
-  set_dir (self, dir);
-  int i = 1;
-  char * project_file_path =
-    project_get_project_file_path (
-      self, 0);
-  while (io_file_exists (dir) &&
-         project_file_path &&
-         io_file_exists (project_file_path))
-    {
-      g_free (dir);
-      g_free (project_file_path);
-      dir =
-        g_strdup_printf ("%s%s%s (%d)",
-                         ZRYTHM->projects_dir,
-                         G_DIR_SEPARATOR_S,
-                         untitled_project,
-                         i++);
-      set_dir (self, dir);
-      project_file_path =
-        project_get_project_file_path (
-          self, 0);
-    }
-  io_mkdir (dir);
-  PROJECT->title =
-    g_path_get_basename (dir);
-
-  g_free (project_file_path);
-  g_free (dir);
+  set_dir (self, _dir);
+  char * str =
+    g_path_get_basename (_dir);
+  set_title (self, str);
+  g_free (str);
 }
 
 /**
@@ -298,7 +273,9 @@ create_default (Project * self)
   engine_init (&self->audio_engine, 0);
   undo_manager_init (&self->undo_manager);
 
-  self->title = g_strdup (DEFAULT_PROJECT_NAME);
+  self->title =
+    g_path_get_basename (
+      ZRYTHM->create_project_path);
 
   /* init pinned tracks */
   Track * track =
@@ -328,7 +305,8 @@ create_default (Project * self)
   self->last_selection = SELECTION_TYPE_TRACK;
 
   /* create untitled project */
-  create_and_set_next_available_dir_and_title (self);
+  create_and_set_dir_and_title (
+    self, ZRYTHM->create_project_path);
 
   self->loaded = 1;
 
@@ -359,6 +337,13 @@ create_default (Project * self)
     PROJECT->title);
 }
 
+/**
+ * @param filename The filename to open. This will
+ *   be the template in the case of template, or
+ *   the actual project otherwise.
+ * @param is_template Load the project as a
+ *   template and create a new project from it.
+ */
 static int
 load (
   const char * filename,
@@ -369,41 +354,49 @@ load (
 
   set_dir (PROJECT, dir);
 
-  /* check for backups */
-  if (PROJECT->backup_dir)
-    g_free (PROJECT->backup_dir);
-  PROJECT->backup_dir =
-    get_newer_backup (PROJECT);
-  if (PROJECT->backup_dir)
+  /* if loading an actual project, check for
+   * backups */
+  if (!is_template)
     {
-      g_message (
-        "newer backup found %s",
-        PROJECT->backup_dir);
-
-      GtkWidget * dialog =
-        gtk_message_dialog_new (
-          GTK_WINDOW (MAIN_WINDOW),
-          GTK_DIALOG_MODAL |
-            GTK_DIALOG_DESTROY_WITH_PARENT,
-          GTK_MESSAGE_INFO,
-          GTK_BUTTONS_YES_NO,
-          _("Newer backup found:\n  %s.\n"
-            "Use the newer backup?"),
-          PROJECT->backup_dir);
-      int res =
-        gtk_dialog_run (GTK_DIALOG (dialog));
-      switch (res)
+      if (PROJECT->backup_dir)
+        g_free (PROJECT->backup_dir);
+      PROJECT->backup_dir =
+        get_newer_backup (PROJECT);
+      if (PROJECT->backup_dir)
         {
-        case GTK_RESPONSE_YES:
-          break;
-        case GTK_RESPONSE_NO:
-          g_free (PROJECT->backup_dir);
-          PROJECT->backup_dir = NULL;
-          break;
-        default:
-          break;
+          g_message (
+            "newer backup found %s",
+            PROJECT->backup_dir);
+
+          GtkWidget * dialog =
+            gtk_message_dialog_new (
+              GTK_WINDOW (MAIN_WINDOW),
+              GTK_DIALOG_MODAL |
+                GTK_DIALOG_DESTROY_WITH_PARENT,
+              GTK_MESSAGE_INFO,
+              GTK_BUTTONS_YES_NO,
+              _("Newer backup found:\n  %s.\n"
+                "Use the newer backup?"),
+              PROJECT->backup_dir);
+          gtk_widget_set_visible (
+            GTK_WIDGET (MAIN_WINDOW), 0);
+          int res =
+            gtk_dialog_run (GTK_DIALOG (dialog));
+          switch (res)
+            {
+            case GTK_RESPONSE_YES:
+              break;
+            case GTK_RESPONSE_NO:
+              g_free (PROJECT->backup_dir);
+              PROJECT->backup_dir = NULL;
+              break;
+            default:
+              break;
+            }
+          gtk_widget_destroy (dialog);
+          gtk_widget_set_visible (
+            GTK_WIDGET (MAIN_WINDOW), 1);
         }
-      gtk_widget_destroy (dialog);
     }
 
   gchar * yaml;
@@ -452,10 +445,7 @@ load (
     {
       g_free (dir);
       dir =
-        g_build_filename (
-          zrythm->projects_dir,
-          DEFAULT_PROJECT_NAME,
-          NULL);
+        g_strdup (ZRYTHM->create_project_path);
     }
 
   int loading_while_running = PROJECT->loaded;
@@ -569,6 +559,9 @@ load (
  * If project has a filename set, it loads that.
  * Otherwise it loads the default project.
  *
+ * @param filename The filename to open. This will
+ *   be the template in the case of template, or
+ *   the actual project otherwise.
  * @param is_template Load the project as a
  *   template and create a new project from it.
  *

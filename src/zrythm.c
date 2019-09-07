@@ -29,6 +29,7 @@
 #include "gui/accel.h"
 #include "gui/backend/file_manager.h"
 #include "gui/backend/piano_roll.h"
+#include "gui/widgets/create_project_dialog.h"
 #include "gui/widgets/first_run_assistant.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/project_assistant.h"
@@ -386,7 +387,8 @@ static void on_setup_main_window (GSimpleAction  *action,
 /**
  * Called after the main window has been initialized.
  *
- * Loads the project backend or creates the default one.
+ * Loads the project backend or creates the default
+ * one.
  * FIXME rename
  */
 static void on_load_project (GSimpleAction  *action,
@@ -433,6 +435,7 @@ static void
 on_finish (GtkAssistant * _assistant,
           gpointer       user_data)
 {
+  zrythm->creating_project = 1;
   if (user_data) /* if cancel */
     {
       gtk_widget_destroy (GTK_WIDGET (assistant));
@@ -461,6 +464,7 @@ on_finish (GtkAssistant * _assistant,
       g_message (
         "Loading project: %s",
         zrythm->open_filename);
+      zrythm->creating_project = 0;
     }
   /* no selection, load blank project */
   else
@@ -469,23 +473,43 @@ on_finish (GtkAssistant * _assistant,
       g_message (
         "Creating blank project");
     }
-  /*g_warning ("%d %s %s",*/
-             /*assistant->load_template,*/
-             /*assistant->project_selection ?*/
-               /*assistant->project_selection->filename:*/
-               /*"no project",*/
-             /*assistant->template_selection ?*/
-               /*assistant->template_selection->filename: "no template");*/
 
-  gtk_widget_set_visible (GTK_WIDGET (assistant), 0);
-  data->message =
-    "Finishing";
-  data->progress = 1.0;
-  update_splash (data);
-  g_action_group_activate_action (
-    G_ACTION_GROUP (zrythm_app),
-    "init_main_window",
-    NULL);
+  /* if not loading a project, show dialog to
+   * select directory and name */
+  int quit = 0;
+  if (zrythm->creating_project)
+    {
+      CreateProjectDialogWidget * dialog =
+        create_project_dialog_widget_new ();
+
+      int ret =
+        gtk_dialog_run (GTK_DIALOG (dialog));
+      if (ret != GTK_RESPONSE_OK)
+        quit = 1;
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+
+      g_message ("creating project %s",
+                 zrythm->create_project_path);
+    }
+
+  if (quit)
+    {
+      g_application_quit (
+        G_APPLICATION (zrythm_app));
+    }
+  else
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (assistant), 0);
+      data->message =
+        "Finishing";
+      data->progress = 1.0;
+      update_splash (data);
+      g_action_group_activate_action (
+        G_ACTION_GROUP (zrythm_app),
+        "init_main_window",
+        NULL);
+    }
 }
 
 static void

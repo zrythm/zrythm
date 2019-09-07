@@ -54,6 +54,8 @@ typedef struct Symap Symap;
 
 #define ZRYTHM zrythm
 
+#define ZRYTHM_PROJECTS_DIR "Projects"
+
 #define MAX_RECENT_PROJECTS 20
 #define DEBUGGING (ZRYTHM->debug)
 
@@ -115,6 +117,14 @@ typedef struct Zrythm
   /** 1 if the open file is a template to be used
    * to create a new project from. */
   int                     opening_template;
+
+  /** 1 if creating a new project, either from
+   * a template or blank. */
+  int                     creating_project;
+
+  /** Path to create a project in, including its
+   * title. */
+  char *                  create_project_path;
 
   /**
    * Filename to open passed through the command

@@ -136,6 +136,16 @@
       <description>This is the directory used to
         save projects and other files in.</description>
     </key>
+
+    <key name="last-project-dir" type="s">
+      <default>""</default>
+      <summary>Last project directory</summary>
+      <description>
+        Last directory a project was
+        created in.
+      </description>
+    </key>
+
   </schema> <!-- end GENERAL schema -->
 
   <!-- PREFERENCES schema -->
