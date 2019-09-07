@@ -26,6 +26,9 @@
 
 #include "config.h"
 
+#include <time.h>
+#include <sys/stat.h>
+
 #include "zrythm.h"
 #include "project.h"
 #include "audio/automation_curve.h"
@@ -100,6 +103,80 @@ DEFINE_SET_STR (dir);
 DEFINE_SET_STR (title);
 
 #undef DEFINE_SET_STR
+
+/**
+ * Returns the filepath of a backup (directory),
+ * if any,
+ * if it has a newer timestamp than the actual
+ * file being loaded.
+ *
+ * @param dir The non-backup dir.
+ */
+static char *
+get_newer_backup (
+  Project * self)
+{
+  GDir *dir;
+  GError *error;
+  const gchar *filename;
+  struct stat stat_res;
+  struct tm *orig_tm, *nowtm;
+  time_t t1;
+  time_t t2;
+
+  char * filepath =
+    project_get_project_file_path (self, 0);
+  if (stat (filepath, &stat_res)==0)
+    {
+      orig_tm = localtime (&stat_res.st_mtime);
+      t1 = mktime (orig_tm);
+    }
+  g_free (filepath);
+
+  char * result = NULL;
+  char * backups_dir =
+    project_get_backups_dir (self);
+  dir = g_dir_open (backups_dir, 0, &error);
+  while ((filename = g_dir_read_name(dir)))
+    {
+      char * full_path =
+        g_build_filename (
+          backups_dir,
+          filename,
+          PROJECT_FILE,
+          NULL);
+      g_message ("%s", full_path);
+
+      if (stat (full_path, &stat_res)==0)
+        {
+          nowtm = localtime (&stat_res.st_mtime);
+          t2 = mktime (nowtm);
+          /* if backup is after original project */
+          if (difftime (t2, t1) > 0)
+            {
+              if (!result)
+                g_free (result);
+              result =
+                g_build_filename (
+                  backups_dir,
+                  filename,
+                  NULL);
+              t1 = t2;
+            }
+        }
+      else
+        {
+          g_warning (
+            "Failed to get last modified for %s",
+            full_path);
+          return NULL;
+        }
+      g_free (full_path);
+    }
+  g_free (backups_dir);
+
+  return result;
+}
 
 static void
 set_datetime_str (
@@ -290,15 +367,54 @@ load (
   g_warn_if_fail (filename);
   char * dir = io_get_dir (filename);
 
-  /* FIXME check for backups */
   set_dir (PROJECT, dir);
+
+  /* check for backups */
+  if (PROJECT->backup_dir)
+    g_free (PROJECT->backup_dir);
+  PROJECT->backup_dir =
+    get_newer_backup (PROJECT);
+  if (PROJECT->backup_dir)
+    {
+      g_message (
+        "newer backup found %s",
+        PROJECT->backup_dir);
+
+      GtkWidget * dialog =
+        gtk_message_dialog_new (
+          GTK_WINDOW (MAIN_WINDOW),
+          GTK_DIALOG_MODAL |
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+          GTK_MESSAGE_INFO,
+          GTK_BUTTONS_YES_NO,
+          _("Newer backup found:\n  %s.\n"
+            "Use the newer backup?"),
+          PROJECT->backup_dir);
+      int res =
+        gtk_dialog_run (GTK_DIALOG (dialog));
+      switch (res)
+        {
+        case GTK_RESPONSE_YES:
+          break;
+        case GTK_RESPONSE_NO:
+          g_free (PROJECT->backup_dir);
+          PROJECT->backup_dir = NULL;
+          break;
+        default:
+          break;
+        }
+      gtk_widget_destroy (dialog);
+    }
 
   gchar * yaml;
   GError *err = NULL;
 
   char * project_file_path =
     project_get_project_file_path (
-      PROJECT, 0);
+      PROJECT, PROJECT->backup_dir != NULL);
+  g_message (
+    "loading project file %s",
+    project_file_path);
   g_file_get_contents (
     project_file_path,
     &yaml,

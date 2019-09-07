@@ -68,6 +68,9 @@ draw_cb (
   cairo_t *cr,
   DigitalMeterWidget * self)
 {
+  if (!PROJECT->loaded)
+    return FALSE;
+
   guint width, height;
   /*GdkRGBA color;*/
   GtkStyleContext *context;

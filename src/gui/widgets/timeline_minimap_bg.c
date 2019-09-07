@@ -38,6 +38,9 @@ draw_cb (
   cairo_t *cr,
   gpointer data)
 {
+  if (!PROJECT->loaded)
+    return FALSE;
+
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
