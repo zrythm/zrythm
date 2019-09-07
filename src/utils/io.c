@@ -23,10 +23,11 @@
  * IO utils.
  */
 
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "utils/io.h"
 
