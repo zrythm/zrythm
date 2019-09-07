@@ -244,7 +244,7 @@ region_find (
  */
 Track *
 region_get_track (
-  Region * region)
+  const Region * region)
 {
   return TRACKLIST->tracks[region->track_pos];
 }

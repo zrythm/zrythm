@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.321] - 2019-09-07
+- Add autosave (backup) mechanism
+- Add support for project templates
+- Allow exporting whole project as MIDI
+- Add functionality to open the directory after exporting
+- Add popup to choose to load the backup if it is newer than the loaded project
+- Add dialog for choosing parent directory and name when creating new projects
+- Move panel toggles to the top of zrythm
+- Fix requiring GTK 3.24 for no good reason
+- Update German, Portuguese, Norwegian, Polish, French, Japanese translations
+
 ## [0.6.261] - 2019-09-05
 - Add alt and click to cut region in half
 - Allow further zooming in and out

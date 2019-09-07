@@ -563,7 +563,7 @@ region_timeline_frames_to_local (
  */
 Track *
 region_get_track (
-  Region * region);
+  const Region * region);
 
 /**
  * Sets the Track position to the Region and all its
