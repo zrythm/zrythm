@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-09-06 17:24+0100\n"
+"POT-Creation-Date: 2019-09-07 23:49+0100\n"
 "PO-Revision-Date: 2019-08-26 13:09+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -20,40 +20,43 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 3.9-dev\n"
 
-#: src/zrythm.c:292
+#: src/zrythm.c:287
 msgid "Initializing settings"
 msgstr "設定を初期化中"
 
-#: src/zrythm.c:303
+#: src/zrythm.c:298
 msgid "Initializing audio engine"
 msgstr "オーディオ処理装置を初期化中"
 
-#: src/zrythm.c:308
+#: src/zrythm.c:303
 msgid "Initializing plugin manager"
 msgstr "プラグインマネージャの初期化"
 
-#: src/zrythm.c:315
+#: src/zrythm.c:310
 msgid "Setting up backend"
 msgstr "バックエンドを設定中"
 
-#: src/zrythm.c:324
+#: src/zrythm.c:319
 msgid "Loading project"
 msgstr "プロジェクトを読み込み中"
 
-#: src/project.c:204 src/audio/track.c:1050
+#: src/project.c:298 src/audio/track.c:1071
 msgid "Master"
 msgstr "マスタ"
 
-#. create untitled project
-#: src/project.c:214
-msgid "Untitled Project"
-msgstr "プロジェクト名未設定"
+#: src/project.c:378
+#, c-format
+msgid ""
+"Newer backup found:\n"
+"  %s.\n"
+"Use the newer backup?"
+msgstr ""
 
-#: src/project.c:613
+#: src/project.c:837
 msgid "Backup saved."
 msgstr ""
 
-#: src/project.c:620
+#: src/project.c:843
 msgid "Project saved."
 msgstr "プロジェクトが保存されました。"
 
@@ -154,6 +157,16 @@ msgstr "閉じる"
 msgid "Error loading LV2 bundle dir: "
 msgstr "LV2バンドルディレクトリの読み込みエラー： "
 
+#: src/gui/widgets/create_project_dialog.c:104
+#: src/gui/widgets/create_project_dialog.c:117
+msgid "Untitled Project"
+msgstr "プロジェクト名未設定"
+
+#: src/gui/widgets/create_project_dialog.c:133
+#: resources/ui/project_assistant.ui:86 resources/ui/shortcuts.ui:104
+msgid "Create new project"
+msgstr "プロジェクトの新規作成"
+
 #: src/gui/widgets/port_connections_popover.c:58
 msgid "INPUTS"
 msgstr "入力"
@@ -251,7 +264,8 @@ msgstr ""
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart Zrythm"
 
-#: src/gui/widgets/project_assistant.c:238 resources/ui/control.ui:45
+#: src/gui/widgets/project_assistant.c:238
+#: resources/ui/create_project_dialog.ui:95 resources/ui/control.ui:45
 msgid "Name"
 msgstr "名称"
 
@@ -356,28 +370,28 @@ msgstr "エディタの属性"
 msgid "Plugin properties"
 msgstr "プラグインの属性"
 
-#: src/gui/widgets/digital_meter.c:295
+#: src/gui/widgets/digital_meter.c:298
 msgid "normal"
 msgstr "普通音符"
 
-#: src/gui/widgets/digital_meter.c:298
+#: src/gui/widgets/digital_meter.c:301
 msgid "dotted"
 msgstr "付点音符"
 
-#: src/gui/widgets/digital_meter.c:301
+#: src/gui/widgets/digital_meter.c:304
 msgid "triplet"
 msgstr "３連音符"
 
-#: src/gui/widgets/digital_meter.c:870
+#: src/gui/widgets/digital_meter.c:873
 msgid "Tempo/BPM"
 msgstr "テンポ/BPM"
 
-#: src/gui/widgets/digital_meter.c:885 resources/ui/inspector_master.ui:79
+#: src/gui/widgets/digital_meter.c:888 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr "位置"
 
-#: src/gui/widgets/digital_meter.c:914
+#: src/gui/widgets/digital_meter.c:917
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "拍子 - 小節あたりの拍数/拍単位"
 
@@ -410,7 +424,7 @@ msgstr "トラック レーンの表示"
 msgid "Lock track"
 msgstr "トラックを編集不可にする"
 
-#: src/gui/widgets/instrument_track.c:268 src/gui/widgets/midi_track.c:236
+#: src/gui/widgets/instrument_track.c:268
 msgid "Freeze track"
 msgstr "トラックをフリーズ"
 
@@ -445,12 +459,12 @@ msgstr "項目"
 msgid "Protocol"
 msgstr "プロトコル"
 
-#: src/gui/widgets/export_progress_dialog.c:75
+#: src/gui/widgets/export_progress_dialog.c:85
 #, fuzzy
 msgid "Exported"
 msgstr "エクスポート"
 
-#: src/gui/widgets/export_progress_dialog.c:146
+#: src/gui/widgets/export_progress_dialog.c:156
 #, fuzzy
 msgid "Export Progress"
 msgstr "名前を付けて出力"
@@ -499,6 +513,14 @@ msgstr "マニュアル"
 #: src/gui/widgets/help_toolbar.c:41 resources/ui/shortcuts.ui:47
 msgid "Keyboard Shortcuts"
 msgstr "ショートカットキー"
+
+#: src/gui/widgets/help_toolbar.c:42
+msgid "Donate"
+msgstr "支援する"
+
+#: src/gui/widgets/help_toolbar.c:43
+msgid "Report a Bug"
+msgstr "バグを報告"
 
 #: src/gui/widgets/home_toolbar.c:57 src/gui/widgets/home_toolbar.c:116
 #: resources/ui/home_toolbar.ui:34
@@ -567,29 +589,29 @@ msgid "Snap/Grid options"
 msgstr "スナップ/グリッド設定"
 
 #: src/gui/widgets/header_notebook.c:82
+msgid "Toggle Left Panel"
+msgstr "左側パネルの表示を切り替える"
+
+#: src/gui/widgets/header_notebook.c:83
+msgid "Toggle Bottom Panel"
+msgstr "下部パネルの表示を切り替える"
+
+#: src/gui/widgets/header_notebook.c:84
+msgid "Toggle Top Panel"
+msgstr "上部パネルの表示を切り替える"
+
+#: src/gui/widgets/header_notebook.c:86
+msgid "Toggle Right Panel"
+msgstr "右側パネルの表示を切り替える"
+
+#: src/gui/widgets/header_notebook.c:87
 msgid "About Zrythm"
 msgstr "Zrythmについて"
 
-#: src/gui/widgets/header_notebook.c:83
-msgid "Save"
-msgstr "保存"
-
-#: src/gui/widgets/header_notebook.c:84
-msgid "Save As"
-msgstr "名前を付けて保存"
-
-#: src/gui/widgets/header_notebook.c:85 resources/ui/shortcuts.ui:40
+#: src/gui/widgets/header_notebook.c:88 resources/ui/shortcuts.ui:40
 #: resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "設定"
-
-#: src/gui/widgets/header_notebook.c:86
-msgid "Donate"
-msgstr "支援する"
-
-#: src/gui/widgets/header_notebook.c:87
-msgid "Report a Bug"
-msgstr "バグを報告"
 
 #: src/gui/widgets/piano_roll_key_label.c:84
 msgid "both"
@@ -673,51 +695,43 @@ msgstr "%sへルーティング中"
 msgid "New Project"
 msgstr "新しいプロジェクト"
 
-#: src/gui/widgets/project_toolbar.c:40 src/utils/dialogs.c:41
+#: src/gui/widgets/project_toolbar.c:40
+msgid "Save"
+msgstr "保存"
+
+#: src/gui/widgets/project_toolbar.c:41
+msgid "Save As"
+msgstr "名前を付けて保存"
+
+#: src/gui/widgets/project_toolbar.c:42 src/utils/dialogs.c:41
 msgid "Open Project"
 msgstr "プロジェクトを開く"
 
-#: src/gui/widgets/project_toolbar.c:41
+#: src/gui/widgets/project_toolbar.c:43
 msgid "Export As"
 msgstr "名前を付けて出力"
 
 #: src/gui/widgets/view_toolbar.c:39
-msgid "Toggle Left Panel"
-msgstr "左側パネルの表示を切り替える"
-
-#: src/gui/widgets/view_toolbar.c:40
-msgid "Toggle Bottom Panel"
-msgstr "下部パネルの表示を切り替える"
-
-#: src/gui/widgets/view_toolbar.c:41
-msgid "Toggle Top Panel"
-msgstr "上部パネルの表示を切り替える"
-
-#: src/gui/widgets/view_toolbar.c:43
-msgid "Toggle Right Panel"
-msgstr "右側パネルの表示を切り替える"
-
-#: src/gui/widgets/view_toolbar.c:44
 msgid "Toggle Status Bar"
 msgstr "ステータスバーの表示を切り替える"
 
-#: src/gui/widgets/view_toolbar.c:45
+#: src/gui/widgets/view_toolbar.c:40
 msgid "Zoom In"
 msgstr "ズーム イン"
 
-#: src/gui/widgets/view_toolbar.c:46
+#: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"
 msgstr "ズーム アウト"
 
-#: src/gui/widgets/view_toolbar.c:47
+#: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
 msgstr "通常サイズ"
 
-#: src/gui/widgets/view_toolbar.c:48
+#: src/gui/widgets/view_toolbar.c:43
 msgid "Best Fit"
 msgstr "最適表示"
 
-#: src/gui/widgets/view_toolbar.c:49
+#: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
 msgstr "全画面表示"
 
@@ -876,7 +890,7 @@ msgstr "目印"
 msgid "PortAudio Error: %s"
 msgstr "PortAudioエラー：%s"
 
-#: src/audio/track_lane.c:62
+#: src/audio/track_lane.c:64
 #, c-format
 msgid "Lane %d"
 msgstr "レーン%d"
@@ -906,27 +920,27 @@ msgstr "MIDIプレフェーダー出力"
 msgid "Sample Processor"
 msgstr "サンプルプロセッサ"
 
-#: src/audio/track.c:1038
+#: src/audio/track.c:1059
 msgid "Instrument"
 msgstr "音源"
 
-#: src/audio/track.c:1041
+#: src/audio/track.c:1062
 msgid "Audio"
 msgstr "オーディオ"
 
-#: src/audio/track.c:1044
+#: src/audio/track.c:1065
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/track.c:1047
+#: src/audio/track.c:1068
 msgid "Bus"
 msgstr "バス"
 
-#: src/audio/track.c:1053 resources/ui/editor_toolbar.ui:58
+#: src/audio/track.c:1074 resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "和音"
 
-#: src/audio/track.c:1056 src/audio/track.c:1059
+#: src/audio/track.c:1077 src/audio/track.c:1080
 msgid "Group"
 msgstr "グループ"
 
@@ -1052,13 +1066,6 @@ msgstr "ウェブサイト"
 #: src/actions/actions.c:556
 msgid "Save Project"
 msgstr "プロジェクトを保存"
-
-#: src/actions/actions.c:621
-msgid ""
-"Project doesn't have a path yet. Please save the project before exporting."
-msgstr ""
-"プロジェクトにはまだパスがありません。Please save the project before "
-"exporting."
 
 #: src/actions/copy_plugins_action.c:186
 #, c-format
@@ -1236,18 +1243,6 @@ msgstr "出力"
 #: resources/ui/rack_row.ui:60
 msgid "expander"
 msgstr "エキスパンダー"
-
-#: resources/ui/center_dock_bot_box.ui:43
-msgid "Left"
-msgstr "左"
-
-#: resources/ui/center_dock_bot_box.ui:54
-msgid "Bot"
-msgstr "下"
-
-#: resources/ui/center_dock_bot_box.ui:74
-msgid "Right"
-msgstr "右"
 
 #: resources/ui/first_run_assistant.ui:27
 msgid "Setup Zrythm"
@@ -1460,10 +1455,6 @@ msgstr "プロジェクトを選択"
 msgid "Select a project"
 msgstr "プロジェクトを選択"
 
-#: resources/ui/project_assistant.ui:86 resources/ui/shortcuts.ui:104
-msgid "Create new project"
-msgstr "プロジェクトの新規作成"
-
 #: resources/ui/project_assistant.ui:102
 msgid "Remove"
 msgstr "削除"
@@ -1601,6 +1592,25 @@ msgstr "TODO"
 #: resources/ui/chord_selector_window.ui:907
 msgid "Circle of Fifths"
 msgstr "五度圏"
+
+#: resources/ui/create_project_dialog.ui:23
+#: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
+msgid "OK"
+msgstr "OK"
+
+#: resources/ui/create_project_dialog.ui:37 resources/ui/export_dialog.ui:45
+#: resources/ui/preferences.ui:58
+msgid "Cancel"
+msgstr "取り消し"
+
+#: resources/ui/create_project_dialog.ui:69
+#, fuzzy
+msgid "Parent directory"
+msgstr "プロジェクトを開く"
+
+#: resources/ui/create_project_dialog.ui:82
+msgid "Select parent directory to save the project in"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
@@ -1932,10 +1942,6 @@ msgstr "プロジェクトを開く"
 msgid "Opens the containing directory"
 msgstr ""
 
-#: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
-msgid "OK"
-msgstr "OK"
-
 #: resources/ui/export_progress_dialog.ui:69
 #, fuzzy
 msgid "Exporting..."
@@ -1981,7 +1987,7 @@ msgstr "表示"
 msgid "Help"
 msgstr "ヘルプ"
 
-#: resources/ui/header_notebook.ui:169
+#: resources/ui/header_notebook.ui:146
 msgid "Project name"
 msgstr "プロジェクト名"
 
@@ -2024,10 +2030,6 @@ msgstr "MIDI IN発動"
 #: resources/ui/export_dialog.ui:30
 msgid "Export As..."
 msgstr "...としてエクスポート"
-
-#: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
-msgid "Cancel"
-msgstr "取り消し"
 
 #: resources/ui/export_dialog.ui:59
 msgid "Export"
@@ -2247,6 +2249,21 @@ msgstr "高度に自動化された直感的なデジタルオーディオワー
 #: data/zrythm.desktop.in:26
 msgid "zrythm"
 msgstr "zrythm"
+
+#~ msgid ""
+#~ "Project doesn't have a path yet. Please save the project before exporting."
+#~ msgstr ""
+#~ "プロジェクトにはまだパスがありません。Please save the project before "
+#~ "exporting."
+
+#~ msgid "Left"
+#~ msgstr "左"
+
+#~ msgid "Bot"
+#~ msgstr "下"
+
+#~ msgid "Right"
+#~ msgstr "右"
 
 #~ msgid "Show Lanes - Shows the track's lanes"
 #~ msgstr "レーンを表示 - トラックのレーンを表示します"

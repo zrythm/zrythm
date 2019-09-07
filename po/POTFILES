@@ -123,6 +123,7 @@ inc/gui/widgets/port_connections_popover.h
 inc/gui/widgets/arranger_bg.h
 inc/gui/widgets/inspector_track.h
 inc/gui/widgets/inspector_editor.h
+inc/gui/widgets/create_project_dialog.h
 inc/gui/widgets/ruler_range.h
 inc/gui/widgets/instrument_track.h
 inc/gui/widgets/chord_object.h
@@ -355,6 +356,7 @@ src/gui/widgets/snap_box.c
 src/gui/widgets/audio_group_track.c
 src/gui/widgets/tracklist.c
 src/gui/widgets/rack_row.c
+src/gui/widgets/create_project_dialog.c
 src/gui/widgets/midi_note.c
 src/gui/widgets/selection_info.c
 src/gui/widgets/port_connections_popover.c
@@ -652,6 +654,7 @@ resources/ui/track_top_grid.ui
 resources/ui/project_assistant.ui
 resources/ui/left_dock_edge.ui
 resources/ui/chord_selector_window.ui
+resources/ui/create_project_dialog.ui
 resources/ui/shortcuts.ui
 resources/ui/chord_pad.ui
 resources/ui/midi_controller_popover.ui

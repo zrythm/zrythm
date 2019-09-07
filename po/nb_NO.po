@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-09-06 17:24+0100\n"
+"POT-Creation-Date: 2019-09-07 23:49+0100\n"
 "PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
@@ -19,40 +19,43 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 3.9-dev\n"
 
-#: src/zrythm.c:292
+#: src/zrythm.c:287
 msgid "Initializing settings"
 msgstr "Henter innstillingene"
 
-#: src/zrythm.c:303
+#: src/zrythm.c:298
 msgid "Initializing audio engine"
 msgstr "Henter lydmotoren"
 
-#: src/zrythm.c:308
+#: src/zrythm.c:303
 msgid "Initializing plugin manager"
 msgstr "Henter programtilleggsbehandleren"
 
-#: src/zrythm.c:315
+#: src/zrythm.c:310
 msgid "Setting up backend"
 msgstr "Setter opp bakende"
 
-#: src/zrythm.c:324
+#: src/zrythm.c:319
 msgid "Loading project"
 msgstr "Laster prosjekt"
 
-#: src/project.c:204 src/audio/track.c:1050
+#: src/project.c:298 src/audio/track.c:1071
 msgid "Master"
 msgstr ""
 
-#. create untitled project
-#: src/project.c:214
-msgid "Untitled Project"
-msgstr "Prosjekt uten tittel"
+#: src/project.c:378
+#, c-format
+msgid ""
+"Newer backup found:\n"
+"  %s.\n"
+"Use the newer backup?"
+msgstr ""
 
-#: src/project.c:613
+#: src/project.c:837
 msgid "Backup saved."
 msgstr ""
 
-#: src/project.c:620
+#: src/project.c:843
 msgid "Project saved."
 msgstr "Prosjekt lagret."
 
@@ -150,6 +153,16 @@ msgstr "Lukk"
 #: src/plugins/plugin_manager.c:223
 msgid "Error loading LV2 bundle dir: "
 msgstr ""
+
+#: src/gui/widgets/create_project_dialog.c:104
+#: src/gui/widgets/create_project_dialog.c:117
+msgid "Untitled Project"
+msgstr "Prosjekt uten tittel"
+
+#: src/gui/widgets/create_project_dialog.c:133
+#: resources/ui/project_assistant.ui:86 resources/ui/shortcuts.ui:104
+msgid "Create new project"
+msgstr "Nytt prosjekt"
 
 #: src/gui/widgets/port_connections_popover.c:58
 msgid "INPUTS"
@@ -256,7 +269,8 @@ msgstr ""
 "2. kjør <b>locale-gen</b> som superbruker\n"
 "3. Start Zrythm på ny"
 
-#: src/gui/widgets/project_assistant.c:238 resources/ui/control.ui:45
+#: src/gui/widgets/project_assistant.c:238
+#: resources/ui/create_project_dialog.ui:95 resources/ui/control.ui:45
 msgid "Name"
 msgstr "Navn"
 
@@ -363,29 +377,29 @@ msgstr ""
 msgid "Plugin properties"
 msgstr "Programtilleggsutforsker"
 
-#: src/gui/widgets/digital_meter.c:295
+#: src/gui/widgets/digital_meter.c:298
 #, fuzzy
 msgid "normal"
 msgstr "Format"
 
-#: src/gui/widgets/digital_meter.c:298
+#: src/gui/widgets/digital_meter.c:301
 msgid "dotted"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:301
+#: src/gui/widgets/digital_meter.c:304
 msgid "triplet"
 msgstr ""
 
-#: src/gui/widgets/digital_meter.c:870
+#: src/gui/widgets/digital_meter.c:873
 msgid "Tempo/BPM"
 msgstr "Tempo/takt"
 
-#: src/gui/widgets/digital_meter.c:885 resources/ui/inspector_master.ui:79
+#: src/gui/widgets/digital_meter.c:888 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr "Posisjon"
 
-#: src/gui/widgets/digital_meter.c:914
+#: src/gui/widgets/digital_meter.c:917
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "Tidssignatur - Slag per takt / slagenhet"
 
@@ -420,7 +434,7 @@ msgstr ""
 msgid "Lock track"
 msgstr "Flytt spor"
 
-#: src/gui/widgets/instrument_track.c:268 src/gui/widgets/midi_track.c:236
+#: src/gui/widgets/instrument_track.c:268
 #, fuzzy
 msgid "Freeze track"
 msgstr "Frys"
@@ -455,12 +469,12 @@ msgstr "Kategori"
 msgid "Protocol"
 msgstr "Protokoll"
 
-#: src/gui/widgets/export_progress_dialog.c:75
+#: src/gui/widgets/export_progress_dialog.c:85
 #, fuzzy
 msgid "Exported"
 msgstr "Eksporter"
 
-#: src/gui/widgets/export_progress_dialog.c:146
+#: src/gui/widgets/export_progress_dialog.c:156
 #, fuzzy
 msgid "Export Progress"
 msgstr "Eksporter som…"
@@ -512,6 +526,14 @@ msgstr "Manual"
 #: src/gui/widgets/help_toolbar.c:41 resources/ui/shortcuts.ui:47
 msgid "Keyboard Shortcuts"
 msgstr "Tastatursnarveier"
+
+#: src/gui/widgets/help_toolbar.c:42
+msgid "Donate"
+msgstr "Doner"
+
+#: src/gui/widgets/help_toolbar.c:43
+msgid "Report a Bug"
+msgstr "Innrapporter en feil"
 
 #: src/gui/widgets/home_toolbar.c:57 src/gui/widgets/home_toolbar.c:116
 #: resources/ui/home_toolbar.ui:34
@@ -587,31 +609,33 @@ msgstr ""
 
 #: src/gui/widgets/header_notebook.c:82
 #, fuzzy
-msgid "About Zrythm"
-msgstr "Sett opp Zrythm"
+msgid "Toggle Left Panel"
+msgstr "Veksle venstre panel"
 
 #: src/gui/widgets/header_notebook.c:83
 #, fuzzy
-msgid "Save"
-msgstr "_Lagre"
+msgid "Toggle Bottom Panel"
+msgstr "Veksle bunnpanel"
 
 #: src/gui/widgets/header_notebook.c:84
 #, fuzzy
-msgid "Save As"
-msgstr "_Lagre"
+msgid "Toggle Top Panel"
+msgstr "Veksle bunnpanel"
 
-#: src/gui/widgets/header_notebook.c:85 resources/ui/shortcuts.ui:40
+#: src/gui/widgets/header_notebook.c:86
+#, fuzzy
+msgid "Toggle Right Panel"
+msgstr "Veksle høyre panel"
+
+#: src/gui/widgets/header_notebook.c:87
+#, fuzzy
+msgid "About Zrythm"
+msgstr "Sett opp Zrythm"
+
+#: src/gui/widgets/header_notebook.c:88 resources/ui/shortcuts.ui:40
 #: resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "Innstillinger"
-
-#: src/gui/widgets/header_notebook.c:86
-msgid "Donate"
-msgstr "Doner"
-
-#: src/gui/widgets/header_notebook.c:87
-msgid "Report a Bug"
-msgstr "Innrapporter en feil"
 
 #: src/gui/widgets/piano_roll_key_label.c:84
 msgid "both"
@@ -707,61 +731,51 @@ msgstr "Videresender til %s"
 msgid "New Project"
 msgstr "Åpne prosjekt"
 
-#: src/gui/widgets/project_toolbar.c:40 src/utils/dialogs.c:41
+#: src/gui/widgets/project_toolbar.c:40
+#, fuzzy
+msgid "Save"
+msgstr "_Lagre"
+
+#: src/gui/widgets/project_toolbar.c:41
+#, fuzzy
+msgid "Save As"
+msgstr "_Lagre"
+
+#: src/gui/widgets/project_toolbar.c:42 src/utils/dialogs.c:41
 msgid "Open Project"
 msgstr "Åpne prosjekt"
 
-#: src/gui/widgets/project_toolbar.c:41
+#: src/gui/widgets/project_toolbar.c:43
 #, fuzzy
 msgid "Export As"
 msgstr "Eksporter som…"
 
 #: src/gui/widgets/view_toolbar.c:39
 #, fuzzy
-msgid "Toggle Left Panel"
-msgstr "Veksle venstre panel"
-
-#: src/gui/widgets/view_toolbar.c:40
-#, fuzzy
-msgid "Toggle Bottom Panel"
-msgstr "Veksle bunnpanel"
-
-#: src/gui/widgets/view_toolbar.c:41
-#, fuzzy
-msgid "Toggle Top Panel"
-msgstr "Veksle bunnpanel"
-
-#: src/gui/widgets/view_toolbar.c:43
-#, fuzzy
-msgid "Toggle Right Panel"
-msgstr "Veksle høyre panel"
-
-#: src/gui/widgets/view_toolbar.c:44
-#, fuzzy
 msgid "Toggle Status Bar"
 msgstr "Veksle bunnpanel"
 
-#: src/gui/widgets/view_toolbar.c:45
+#: src/gui/widgets/view_toolbar.c:40
 #, fuzzy
 msgid "Zoom In"
 msgstr "Forstørr"
 
-#: src/gui/widgets/view_toolbar.c:46
+#: src/gui/widgets/view_toolbar.c:41
 #, fuzzy
 msgid "Zoom Out"
 msgstr "Forminsk"
 
-#: src/gui/widgets/view_toolbar.c:47
+#: src/gui/widgets/view_toolbar.c:42
 #, fuzzy
 msgid "Original Size"
 msgstr "Opprinnelig størrelse"
 
-#: src/gui/widgets/view_toolbar.c:48
+#: src/gui/widgets/view_toolbar.c:43
 #, fuzzy
 msgid "Best Fit"
 msgstr "Beste tilpasning"
 
-#: src/gui/widgets/view_toolbar.c:49
+#: src/gui/widgets/view_toolbar.c:44
 #, fuzzy
 msgid "Fullscreen"
 msgstr "Veksle fullskjermsvisning"
@@ -926,7 +940,7 @@ msgstr "Markører"
 msgid "PortAudio Error: %s"
 msgstr "PortAudio-feil: %s"
 
-#: src/audio/track_lane.c:62
+#: src/audio/track_lane.c:64
 #, c-format
 msgid "Lane %d"
 msgstr ""
@@ -956,27 +970,27 @@ msgstr ""
 msgid "Sample Processor"
 msgstr ""
 
-#: src/audio/track.c:1038
+#: src/audio/track.c:1059
 msgid "Instrument"
 msgstr "Instrument"
 
-#: src/audio/track.c:1041
+#: src/audio/track.c:1062
 msgid "Audio"
 msgstr "Lyd"
 
-#: src/audio/track.c:1044
+#: src/audio/track.c:1065
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/track.c:1047
+#: src/audio/track.c:1068
 msgid "Bus"
 msgstr "Buss"
 
-#: src/audio/track.c:1053 resources/ui/editor_toolbar.ui:58
+#: src/audio/track.c:1074 resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "Akkord"
 
-#: src/audio/track.c:1056 src/audio/track.c:1059
+#: src/audio/track.c:1077 src/audio/track.c:1080
 msgid "Group"
 msgstr "Gruppe"
 
@@ -1109,12 +1123,6 @@ msgstr "Nettside"
 #: src/actions/actions.c:556
 msgid "Save Project"
 msgstr "Lagre prosjekt"
-
-#: src/actions/actions.c:621
-msgid ""
-"Project doesn't have a path yet. Please save the project before exporting."
-msgstr ""
-"Prosjektet har ingen sti enda. Lagre prosjektet før du eksporterer det."
 
 #: src/actions/copy_plugins_action.c:186
 #, c-format
@@ -1302,18 +1310,6 @@ msgstr "ut"
 #, fuzzy
 msgid "expander"
 msgstr "utvider"
-
-#: resources/ui/center_dock_bot_box.ui:43
-msgid "Left"
-msgstr "Venstre"
-
-#: resources/ui/center_dock_bot_box.ui:54
-msgid "Bot"
-msgstr "Bott"
-
-#: resources/ui/center_dock_bot_box.ui:74
-msgid "Right"
-msgstr "Høyre"
 
 #: resources/ui/first_run_assistant.ui:27
 msgid "Setup Zrythm"
@@ -1526,10 +1522,6 @@ msgstr "Velg prosjekt"
 msgid "Select a project"
 msgstr "Velg prosjekt"
 
-#: resources/ui/project_assistant.ui:86 resources/ui/shortcuts.ui:104
-msgid "Create new project"
-msgstr "Nytt prosjekt"
-
 #: resources/ui/project_assistant.ui:102
 msgid "Remove"
 msgstr "Fjern"
@@ -1668,6 +1660,25 @@ msgstr "GJENSTÅR"
 
 #: resources/ui/chord_selector_window.ui:907
 msgid "Circle of Fifths"
+msgstr ""
+
+#: resources/ui/create_project_dialog.ui:23
+#: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
+msgid "OK"
+msgstr "OK"
+
+#: resources/ui/create_project_dialog.ui:37 resources/ui/export_dialog.ui:45
+#: resources/ui/preferences.ui:58
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: resources/ui/create_project_dialog.ui:69
+#, fuzzy
+msgid "Parent directory"
+msgstr "Åpne prosjekt"
+
+#: resources/ui/create_project_dialog.ui:82
+msgid "Select parent directory to save the project in"
 msgstr ""
 
 #: resources/ui/shortcuts.ui:31
@@ -2004,10 +2015,6 @@ msgstr "Åpne prosjekt"
 msgid "Opens the containing directory"
 msgstr ""
 
-#: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
-msgid "OK"
-msgstr "OK"
-
 #: resources/ui/export_progress_dialog.ui:69
 #, fuzzy
 msgid "Exporting..."
@@ -2054,7 +2061,7 @@ msgstr "Vis"
 msgid "Help"
 msgstr "Hjelp"
 
-#: resources/ui/header_notebook.ui:169
+#: resources/ui/header_notebook.ui:146
 msgid "Project name"
 msgstr "Prosjektnavn"
 
@@ -2097,10 +2104,6 @@ msgstr "MIDI i aktivitet"
 #: resources/ui/export_dialog.ui:30
 msgid "Export As..."
 msgstr "Eksporter som…"
-
-#: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
-msgid "Cancel"
-msgstr "Avbryt"
 
 #: resources/ui/export_dialog.ui:59
 msgid "Export"
@@ -2328,6 +2331,20 @@ msgstr "inngående automasjon og intuitiv digital lyd-arbeidsstasjon"
 #, fuzzy
 msgid "zrythm"
 msgstr "Zrythm"
+
+#~ msgid ""
+#~ "Project doesn't have a path yet. Please save the project before exporting."
+#~ msgstr ""
+#~ "Prosjektet har ingen sti enda. Lagre prosjektet før du eksporterer det."
+
+#~ msgid "Left"
+#~ msgstr "Venstre"
+
+#~ msgid "Bot"
+#~ msgstr "Bott"
+
+#~ msgid "Right"
+#~ msgstr "Høyre"
 
 #~ msgid "Mute"
 #~ msgstr "Forstum"
