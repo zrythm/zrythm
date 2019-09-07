@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-07 23:49+0100\n"
-"PO-Revision-Date: 2019-08-26 13:09+0000\n"
+"PO-Revision-Date: 2019-09-07 19:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -54,7 +54,7 @@ msgstr ""
 
 #: src/project.c:837
 msgid "Backup saved."
-msgstr ""
+msgstr "バックアップが保存されました。"
 
 #: src/project.c:843
 msgid "Project saved."
@@ -74,7 +74,7 @@ msgstr ""
 "ださい。"
 
 #: src/main.c:169
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
@@ -90,6 +90,18 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "Website https://www.zrythm.org\n"
 msgstr ""
+"使用法: zrythm [ オプション ] [ プロジェクト名 ]\n"
+"\n"
+"オプション：\n"
+"  -h, --help このヘルプを表示して終了する\n"
+"  -v,  --version バージョン情報を出力と終了\n"
+"\n"
+"例：\n"
+"  zrythm は正常に実行されます。\n"
+"\n"
+"https://savannah.nongnu.org/support/?group=zrythmにコメントやバグを書き込む\n"
+"このプロジェクトをサポートhttps://liberapay.com/Zrythm\n"
+"ウェブサイトhttps://www.zrythm.org\n"
 
 #: src/main.c:228
 #, c-format
@@ -196,30 +208,29 @@ msgid "Inserts"
 msgstr "インサート"
 
 #: src/gui/widgets/track_input_expander.c:185
-#, fuzzy
 msgid "All MIDI Inputs"
-msgstr "MIDI入力"
+msgstr "すべてのMIDI入力"
 
 #: src/gui/widgets/track_input_expander.c:220
 msgid "No inputs"
-msgstr ""
+msgstr "入力なし"
 
 #: src/gui/widgets/track_input_expander.c:260
 msgid "All Channels"
-msgstr ""
+msgstr "すべてのチャンネル"
 
 #: src/gui/widgets/track_input_expander.c:269
-#, fuzzy, c-format
+#, c-format
 msgid "Channel %s"
-msgstr "パンを変更"
+msgstr "チャンネル%s"
 
 #: src/gui/widgets/track_input_expander.c:284
 msgid "No channel"
-msgstr ""
+msgstr "チャンネルなし"
 
 #: src/gui/widgets/track_input_expander.c:411
 msgid "Inputs"
-msgstr ""
+msgstr "入力"
 
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
@@ -281,7 +292,7 @@ msgstr "最新更新日"
 #: src/gui/widgets/project_assistant.c:376
 #, fuzzy
 msgid "Blank project"
-msgstr "プロジェクトを読み込み中"
+msgstr "空のプロジェクト"
 
 #: src/gui/widgets/left_dock_edge.c:104
 msgid "Inspector"
@@ -335,7 +346,7 @@ msgstr "拍子記号"
 #: src/gui/widgets/export_midi_file_dialog.c:83
 #, c-format
 msgid "Exporting MIDI region \"%s\""
-msgstr ""
+msgstr "MIDIリージョン 「%s」をエクスポート中"
 
 #: src/gui/widgets/port_selector_popover.c:52
 msgid "No port selected"
@@ -429,9 +440,8 @@ msgid "Freeze track"
 msgstr "トラックをフリーズ"
 
 #: src/gui/widgets/control_room.c:54
-#, fuzzy
 msgid "Monitor out"
-msgstr "ズームアウト"
+msgstr "モニター出力"
 
 #: src/gui/widgets/control_room.c:66
 msgid "Listen dim level"
@@ -462,12 +472,12 @@ msgstr "プロトコル"
 #: src/gui/widgets/export_progress_dialog.c:85
 #, fuzzy
 msgid "Exported"
-msgstr "エクスポート"
+msgstr "エクスポートしました"
 
 #: src/gui/widgets/export_progress_dialog.c:156
 #, fuzzy
 msgid "Export Progress"
-msgstr "名前を付けて出力"
+msgstr "エクスポートの進行状況"
 
 #: src/gui/widgets/port_connections_button.c:147
 msgid "Expose port to JACK"
@@ -668,7 +678,7 @@ msgstr "CV出力"
 #: src/gui/widgets/ports_expander.c:390
 #, fuzzy
 msgid "Sends"
-msgstr "バックエンド"
+msgstr "センド"
 
 #: src/gui/widgets/ports_expander.c:397
 msgid "Stereo In"
@@ -740,7 +750,6 @@ msgid "_Delete Track"
 msgstr "トラックを削除(_D)"
 
 #: src/gui/widgets/track.c:362
-#, fuzzy
 msgid "_Delete Tracks"
 msgstr "トラックを削除(_D)"
 
@@ -749,7 +758,6 @@ msgid "_Duplicate Track"
 msgstr "トラックを複製(_D)"
 
 #: src/gui/widgets/track.c:380
-#, fuzzy
 msgid "_Duplicate Tracks"
 msgstr "トラックを複製(_D)"
 
@@ -758,19 +766,16 @@ msgid "Add Region"
 msgstr "リージョンを追加"
 
 #: src/gui/widgets/track.c:410
-#, fuzzy
 msgid "Hide Track"
-msgstr "トラックを無音にする"
+msgstr "トラックを非表示にする"
 
 #: src/gui/widgets/track.c:411
-#, fuzzy
 msgid "Hide Tracks"
-msgstr "トラック"
+msgstr "トラックを非表示にする"
 
 #: src/gui/widgets/fader.c:317
-#, fuzzy
 msgid "Fader"
-msgstr "フェーダー入力"
+msgstr "フェーダー"
 
 #: src/gui/widgets/dzl/dzl-animation.c:752
 #, c-format

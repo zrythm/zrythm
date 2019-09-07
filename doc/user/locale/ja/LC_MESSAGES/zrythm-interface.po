@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-04 08:01+0100\n"
-"PO-Revision-Date: 2019-06-06 06:25+0000\n"
+"PO-Revision-Date: 2019-09-07 19:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
-"Language-Team: Japanese <https://translate.zrythm.org/projects/zrythm/"
-"manual-zrythm-interface/ja/>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.6.1\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.6.0\n"
 
 #: ../../zrythm-interface/channels/channel-overview.rst:2
@@ -31,7 +31,7 @@ msgstr ""
 
 #: ../../zrythm-interface/channels/fader.rst:2
 msgid "Fader"
-msgstr ""
+msgstr "フェーダー"
 
 #: ../../zrythm-interface/channels/intro.rst:2
 msgid "Channels"
