@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-06 17:24+0100\n"
-"PO-Revision-Date: 2019-09-05 18:05+0000\n"
-"Last-Translator: Nicolas FAURE <sub26nico@laposte.net>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"PO-Revision-Date: 2019-09-07 19:25+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -52,7 +52,7 @@ msgstr "Projet sans titre"
 
 #: src/project.c:613
 msgid "Backup saved."
-msgstr ""
+msgstr "Sauvegarde sauvegardée."
 
 #: src/project.c:620
 msgid "Project saved."
@@ -292,9 +292,8 @@ msgid "Last Modified"
 msgstr "Modifié dernièrement"
 
 #: src/gui/widgets/project_assistant.c:376
-#, fuzzy
 msgid "Blank project"
-msgstr "Chargement du projet"
+msgstr "Projet vierge"
 
 #: src/gui/widgets/left_dock_edge.c:104
 msgid "Inspector"
@@ -1481,7 +1480,6 @@ msgid "Select Project"
 msgstr "Sélectionner un projet"
 
 #: resources/ui/project_assistant.ui:43
-#, fuzzy
 msgid "Select a project"
 msgstr "Sélectionner un projet"
 
@@ -1498,9 +1496,8 @@ msgid "Removes selected project from the list"
 msgstr "Supprimer les projets sélectionnés de la liste"
 
 #: resources/ui/project_assistant.ui:130
-#, fuzzy
 msgid "Select a template"
-msgstr "Sélectionner un dossier"
+msgstr "Sélectionner un modèle"
 
 #: resources/ui/chord_selector_window.ui:51
 msgid "Root Note"
@@ -2246,19 +2243,20 @@ msgid "GUI"
 msgstr "IGU"
 
 #: resources/ui/preferences.ui:437 resources/ui/preferences.ui:483
-#, fuzzy
 msgid "Projects"
-msgstr "Projet"
+msgstr "Projets"
 
 #: resources/ui/preferences.ui:449
 msgid "Autosave interval"
-msgstr ""
+msgstr "Intervalle de sauvegarde automatique"
 
 #: resources/ui/preferences.ui:460
 msgid ""
 "Set the interval to auto-save project backups, in minutes. Setting this to 0 "
 "will disable auto-save"
 msgstr ""
+"Définir l'intervalle de sauvegarde automatique du projet, en minutes. Le "
+"mettre à 0 désactivera la sauvegarde automatique"
 
 #: data/zrythm.desktop.in:21
 msgid "Digital Audio Workstation"
