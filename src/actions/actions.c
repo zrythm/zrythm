@@ -566,9 +566,13 @@ activate_save_as (GSimpleAction *action,
   gtk_file_chooser_set_do_overwrite_confirmation (
     chooser, TRUE);
 
+  char * project_file_path =
+    project_get_project_file_path (
+      PROJECT, 0);
   char * str =
     io_path_get_parent_dir (
-      PROJECT->project_file_path);
+      project_file_path);
+  g_free (project_file_path);
   gtk_file_chooser_select_filename (
     chooser,
     str);
@@ -603,24 +607,13 @@ activate_export_as (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  /* if project is loaded */
-  if (PROJECT->project_file_path)
-    {
-      ExportDialogWidget * export =
-        export_dialog_widget_new ();
-      gtk_window_set_transient_for (
-        GTK_WINDOW (export),
-        GTK_WINDOW (MAIN_WINDOW));
-      gtk_dialog_run (GTK_DIALOG (export));
-      gtk_widget_destroy (GTK_WIDGET (export));
-    }
-  else
-    {
-      ui_show_error_message (
-        MAIN_WINDOW,
-        _("Project doesn't have a path yet. Please "
-          "save the project before exporting."));
-    }
+  ExportDialogWidget * export =
+    export_dialog_widget_new ();
+  gtk_window_set_transient_for (
+    GTK_WINDOW (export),
+    GTK_WINDOW (MAIN_WINDOW));
+  gtk_dialog_run (GTK_DIALOG (export));
+  gtk_widget_destroy (GTK_WIDGET (export));
 }
 
 void

@@ -75,6 +75,8 @@ update_text (ExportDialogWidget * self)
   "<span " \
   "foreground=\"" ORANGE "\">" x "</span>"
 
+  char * exports_dir =
+    project_get_exports_dir (PROJECT);
   char * str =
     g_strdup_printf (
       "The following files will be created:\n"
@@ -82,12 +84,13 @@ update_text (ExportDialogWidget * self)
       "in the directory:\n"
       ORANGIZE ("%s"),
       filename,
-      PROJECT->exports_dir);
+      exports_dir);
   gtk_label_set_markup (
     self->output_label,
     str);
   g_free (filename);
   g_free (str);
+  g_free (exports_dir);
 
 #undef ORANGE
 #undef ORANGIZE
@@ -440,19 +443,20 @@ on_export_clicked (GtkButton * btn,
       info.time_range = TIME_RANGE_CUSTOM;
     }
 
-  g_message ("projects dir %s, project file %s",
-             PROJECT->dir,
-             PROJECT->project_file_path);
+  char * exports_dir =
+    project_get_exports_dir (
+      PROJECT);
   char * filename =
     get_export_filename (self);
   info.file_uri =
-    g_build_filename (PROJECT->exports_dir,
+    g_build_filename (exports_dir,
                       filename,
                       NULL);
   g_free (filename);
 
   /* make exports dir if not there yet */
-  io_mkdir (PROJECT->exports_dir);
+  io_mkdir (exports_dir);
+  g_free (exports_dir);
   g_message ("exporting %s",
              info.file_uri);
 

@@ -69,15 +69,18 @@ audio_region_new (
 
   /* generate a copy of the given filename in the
    * project dir */
+  char * prj_audio_dir =
+    project_get_audio_dir (
+      PROJECT);
   g_warn_if_fail (
-    io_file_exists (PROJECT->audio_dir));
+    io_file_exists (prj_audio_dir));
   GFile * file =
     g_file_new_for_path (filename);
   char * basename =
     g_file_get_basename (file);
   char * new_path =
     g_build_filename (
-      PROJECT->audio_dir,
+      prj_audio_dir,
       basename,
       NULL);
   char * tmp;
@@ -91,7 +94,7 @@ audio_region_new (
           basename, i++);
       new_path =
         g_build_filename (
-          PROJECT->audio_dir,
+          prj_audio_dir,
           tmp,
           NULL);
       g_free (tmp);
@@ -102,6 +105,7 @@ audio_region_new (
     nfo.channels, new_path);
   g_free (basename);
   g_free (file);
+  g_free (prj_audio_dir);
 
   /*self->buff = buff;*/
   /*self->buff_size = buff_size;*/

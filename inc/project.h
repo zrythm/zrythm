@@ -69,9 +69,7 @@ typedef struct Track ChordTrack;
 #define PROJECT                 ZRYTHM->project
 #define DEFAULT_PROJECT_NAME    "Untitled Project"
 #define PROJECT_FILE            "project.yml"
-#define PROJECT_REGIONS_FILE    "regions.yml"
-#define PROJECT_PORTS_FILE      "ports.yml"
-#define PROJECT_REGIONS_DIR     "Regions"
+#define PROJECT_BACKUPS_DIR     "backups"
 #define PROJECT_STATES_DIR      "states"
 #define PROJECT_EXPORTS_DIR     "exports"
 #define PROJECT_AUDIO_DIR       "audio"
@@ -95,23 +93,23 @@ typedef enum SelectionType
 typedef struct Project
 {
   /** Project title. */
-  char              * title;
+  char *             title;
 
   /** Datetime string to add to the project file. */
-  char *              datetime_str;
+  char *             datetime_str;
 
   /** Path to save the project in. */
-  char              * dir;
+  char *             dir;
 
-  /** Project file full path. */
-  char              * project_file_path;
-  char              * regions_file_path;
-  char              * regions_dir;
-  char              * states_dir;
-  char              * exports_dir;
-  char *              audio_dir;
+  /**
+   * Backup dir to save the project during
+   * the current save call.
+   *
+   * For example, <dir>/backups/myproject.bak3.
+   */
+  char *             backup_dir;
 
-  UndoManager         undo_manager;
+  UndoManager        undo_manager;
 
   Tracklist          tracklist;
 
@@ -323,6 +321,50 @@ project_save (
 int
 project_autosave_cb (
   void * data);
+
+/**
+ * Returns the backups dir for the given Project.
+ */
+char *
+project_get_backups_dir (
+  Project * self);
+
+/**
+ * Returns the exports dir for the given Project.
+ */
+char *
+project_get_exports_dir (
+  Project * self);
+
+/**
+ * Returns the states dir for the given Project.
+ *
+ * @param is_backup 1 to get the states dir of the
+ *   current backup instead of the main project.
+ */
+char *
+project_get_states_dir (
+  Project * self,
+  const int is_backup);
+
+/**
+ * Returns the audio dir for the given Project.
+ */
+char *
+project_get_audio_dir (
+  Project * self);
+
+/**
+ * Returns the full project file (project.yml)
+ * path.
+ *
+ * @param is_backup 1 to get the project file of the
+ *   current backup instead of the main project.
+ */
+char *
+project_get_project_file_path (
+  Project * self,
+  const int is_backup);
 
 /**
  * Sets if the project has range and updates UI.

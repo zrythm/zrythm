@@ -690,10 +690,14 @@ plugin_clone (
         g_strdup_printf (
           "tmp_%s_XXXXXX",
           pl->descr->name);
+      char * states_dir =
+        project_get_states_dir (
+          PROJECT, 0);
       char * state_dir_plugin =
-        g_build_filename (PROJECT->states_dir,
+        g_build_filename (states_dir,
                           tmp,
                           NULL);
+      g_free (states_dir);
       io_mkdir (state_dir_plugin);
       g_free (tmp);
       lv2_plugin_save_state_to_file (

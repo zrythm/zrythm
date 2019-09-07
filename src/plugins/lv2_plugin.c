@@ -1635,11 +1635,14 @@ lv2_instantiate (
   }
   else if (self->state_file)
     {
+      char * states_dir =
+        project_get_states_dir (PROJECT, 0);
       char * state_file_path =
         g_build_filename (
-          PROJECT->states_dir,
+          states_dir,
           self->state_file,
           NULL);
+      g_free (states_dir);
       self->state =
         lilv_state_new_from_file (
           LILV_WORLD,

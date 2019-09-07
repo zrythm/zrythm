@@ -81,89 +81,129 @@ tear_down (Project * self)
 }
 
 /**
- * Update the project paths.
+ * Frees the current x if any and sets a copy of
+ * the given string.
+ */
+#define DEFINE_SET_STR(x) \
+static void \
+set_##x ( \
+  Project *    self, \
+  const char * x) \
+{ \
+  if (self->x) \
+    g_free (self->x); \
+  self->x = \
+    g_strdup (x); \
+}
+
+DEFINE_SET_STR (dir);
+DEFINE_SET_STR (title);
+
+#undef DEFINE_SET_STR
+
+static void
+set_datetime_str (
+  Project * self)
+{
+  if (self->datetime_str)
+    g_free (self->datetime_str);
+  self->datetime_str =
+    datetime_get_current_as_string ();
+}
+
+/**
+ * Sets the next available backup dir to use for
+ * saving a backup during this call.
  */
 static void
-update_paths (
-  const char * _dir,
-  int          is_backup)
+set_and_create_next_available_backup_dir (
+  Project * self)
 {
-  char * dir = g_strdup (_dir);
+  if (self->backup_dir)
+    g_free (self->backup_dir);
 
-  if (PROJECT->dir)
-    g_free (PROJECT->dir);
-  if (PROJECT->project_file_path)
-    g_free (PROJECT->project_file_path);
-  if (PROJECT->states_dir)
-    g_free (PROJECT->states_dir);
-  if (PROJECT->exports_dir)
-    g_free (PROJECT->exports_dir);
-  if (PROJECT->audio_dir)
-    g_free (PROJECT->audio_dir);
+  char * backups_dir =
+    project_get_backups_dir (self);
 
-  char * dir_without_bak =
-    string_get_substr_before_backup_ext (dir);
-  if (is_backup)
+  int i = 0;
+  do
     {
-      int i = 0;
-
-      do
+      if (i > 0)
         {
-          if (i > 0)
-            {
-              g_free (PROJECT->dir);
-              PROJECT->dir =
-                g_strdup_printf (
-                  "%s.bak%d",
-                  dir_without_bak, i);
-            }
-          else
-            {
-              PROJECT->dir =
-                g_strdup_printf (
-                  "%s.bak", dir_without_bak);
-            }
-          i++;
-        } while (
-          io_file_exists (
-            PROJECT->dir));
-    }
-  else
+          g_free (self->backup_dir);
+          char * bak_title =
+            g_strdup_printf (
+              "%s.bak%d",
+              self->title, i);
+          self->backup_dir =
+            g_build_filename (
+              backups_dir,
+              bak_title, NULL);
+          g_free (bak_title);
+        }
+      else
+        {
+          char * bak_title =
+            g_strdup_printf (
+              "%s.bak",
+              self->title);
+          self->backup_dir =
+            g_build_filename (
+              backups_dir,
+              bak_title, NULL);
+          g_free (bak_title);
+        }
+      i++;
+    } while (
+      io_file_exists (
+        self->backup_dir));
+  g_free (backups_dir);
+
+  io_mkdir (self->backup_dir);
+}
+
+/**
+ * Sets the next available "Untitled Project" title
+ * and directory.
+ */
+static void
+create_and_set_next_available_dir_and_title (
+  Project * self)
+{
+  char * untitled_project = _("Untitled Project");
+  char * dir =
+    g_build_filename (
+      ZRYTHM->projects_dir,
+      untitled_project,
+      NULL);
+  set_dir (self, dir);
+  int i = 1;
+  char * project_file_path =
+    project_get_project_file_path (
+      self, 0);
+  while (io_file_exists (dir) &&
+         project_file_path &&
+         io_file_exists (project_file_path))
     {
-      PROJECT->dir =
-        g_strdup (dir_without_bak);
+      g_free (dir);
+      g_free (project_file_path);
+      dir =
+        g_strdup_printf ("%s%s%s (%d)",
+                         ZRYTHM->projects_dir,
+                         G_DIR_SEPARATOR_S,
+                         untitled_project,
+                         i++);
+      set_dir (self, dir);
+      project_file_path =
+        project_get_project_file_path (
+          self, 0);
     }
-  g_free (dir_without_bak);
+  io_mkdir (dir);
+  PROJECT->title =
+    g_path_get_basename (dir);
 
-  PROJECT->project_file_path =
-    g_build_filename (PROJECT->dir,
-                      PROJECT_FILE,
-                      NULL);
-  g_message ("project file path %s",
-             PROJECT->project_file_path);
-  PROJECT->regions_file_path =
-    g_build_filename (PROJECT->dir,
-                      PROJECT_REGIONS_FILE,
-                      NULL);
-  PROJECT->regions_dir =
-    g_build_filename (PROJECT->dir,
-                      PROJECT_REGIONS_DIR,
-                      NULL);
-  PROJECT->states_dir =
-    g_build_filename (PROJECT->dir,
-                      PROJECT_STATES_DIR,
-                      NULL);
-  PROJECT->exports_dir =
-    g_build_filename (PROJECT->dir,
-                      PROJECT_EXPORTS_DIR,
-                      NULL);
-  PROJECT->audio_dir =
-    g_build_filename (PROJECT->dir,
-                      PROJECT_AUDIO_DIR,
-                      NULL);
+  g_free (project_file_path);
   g_free (dir);
-
-  g_message ("updated paths %s", PROJECT->dir);
 }
 
 /**
@@ -211,30 +251,7 @@ create_default (Project * self)
   self->last_selection = SELECTION_TYPE_TRACK;
 
   /* create untitled project */
-  char * untitled_project = _("Untitled Project");
-  char * dir =
-    g_strdup_printf ("%s%s%s",
-                     ZRYTHM->projects_dir,
-                     G_DIR_SEPARATOR_S,
-                     untitled_project);
-  update_paths (dir, 0);
-  int i = 1;
-  while (io_file_exists (dir) &&
-         PROJECT->project_file_path &&
-         io_file_exists (PROJECT->project_file_path))
-    {
-      g_free (dir);
-      dir =
-        g_strdup_printf ("%s%s%s (%d)",
-                         ZRYTHM->projects_dir,
-                         G_DIR_SEPARATOR_S,
-                         untitled_project,
-                         i++);
-      update_paths (dir, 0);
-    }
-  io_mkdir (dir);
-  char * filepath_noext = g_path_get_basename (dir);
-  PROJECT->title = filepath_noext;
+  create_and_set_next_available_dir_and_title (self);
 
   self->loaded = 1;
 
@@ -274,13 +291,16 @@ load (
   char * dir = io_get_dir (filename);
 
   /* FIXME check for backups */
-  update_paths (dir, 0);
+  set_dir (PROJECT, dir);
 
   gchar * yaml;
   GError *err = NULL;
 
+  char * project_file_path =
+    project_get_project_file_path (
+      PROJECT, 0);
   g_file_get_contents (
-    PROJECT->project_file_path,
+    project_file_path,
     &yaml,
     NULL,
     &err);
@@ -298,6 +318,7 @@ load (
       g_error_free (err);
       RETURN_ERROR
     }
+  g_free (project_file_path);
 
   Project * prj = project_deserialize (yaml);
 
@@ -342,21 +363,10 @@ load (
   PROJECT = prj;
 
   /* re-update paths for the newly loaded project */
-  update_paths (dir, 0);
+  set_dir (prj, dir);
 
   undo_manager_init (&PROJECT->undo_manager);
-  /*init_loaded_ports ();*/
   engine_init (AUDIO_ENGINE, 1);
-  /*init_loaded_regions ();*/
-  /*init_loaded_plugins ();*/
-  /*init_loaded_tracks ();*/
-  /*init_loaded_midi_notes ();*/
-  /*init_loaded_automation_points ();*/
-  /*init_loaded_automation_curves ();*/
-  /*init_loaded_chords ();*/
-  /*init_loaded_automatables ();*/
-  /*init_loaded_automation_tracks ();*/
-  /*init_loaded_automation_lanes ();*/
 
   char * filepath_noext = g_path_get_basename (dir);
   PROJECT->title = filepath_noext;
@@ -510,6 +520,104 @@ project_set_has_range (int has_range)
 }
 
 /**
+ * Returns the backups dir for the given Project.
+ */
+char *
+project_get_backups_dir (
+  Project * self)
+{
+  g_warn_if_fail (self->dir);
+  return
+    g_build_filename (
+      self->dir,
+      PROJECT_BACKUPS_DIR,
+      NULL);
+}
+
+/**
+ * Returns the exports dir for the given Project.
+ */
+char *
+project_get_exports_dir (
+  Project * self)
+{
+  g_warn_if_fail (self->dir);
+  return
+    g_build_filename (
+      self->dir,
+      PROJECT_EXPORTS_DIR,
+      NULL);
+}
+
+/**
+ * Returns the states dir for the given Project.
+ *
+ * @param is_backup 1 to get the states dir of the
+ *   current backup instead of the main project.
+ */
+char *
+project_get_states_dir (
+  Project * self,
+  const int is_backup)
+{
+  g_warn_if_fail (self->dir);
+  if (is_backup)
+    return
+      g_build_filename (
+        self->backup_dir,
+        PROJECT_STATES_DIR,
+        NULL);
+  else
+    return
+      g_build_filename (
+        self->dir,
+        PROJECT_STATES_DIR,
+        NULL);
+}
+
+/**
+ * Returns the audio dir for the given Project.
+ */
+char *
+project_get_audio_dir (
+  Project * self)
+{
+  g_warn_if_fail (self->dir);
+  return
+    g_build_filename (
+      self->dir,
+      PROJECT_AUDIO_DIR,
+      NULL);
+}
+
+/**
+ * Returns the full project file (project.yml)
+ * path.
+ *
+ * @param is_backup 1 to get the states dir of the
+ *   current backup instead of the main project.
+ */
+char *
+project_get_project_file_path (
+  Project * self,
+  const int is_backup)
+{
+  g_warn_if_fail (self->dir);
+  if (is_backup)
+    return
+      g_build_filename (
+        self->backup_dir,
+        PROJECT_FILE,
+        NULL);
+  else
+    return
+      g_build_filename (
+        self->dir,
+        PROJECT_FILE,
+        NULL);
+}
+
+/**
  * Saves the project to a project file in the
  * given dir.
  *
@@ -526,28 +634,31 @@ project_save (
 
   char * dir = g_strdup (_dir);
 
-  update_paths (dir, is_backup);
+  /* set the dir and create it if it doesn't
+   * exist */
+  set_dir (self, dir);
   io_mkdir (PROJECT->dir);
 
+  /* set the title */
   char * basename =
-    io_path_get_basename (PROJECT->dir);
-  char * title_without_bak =
-    string_get_substr_before_backup_ext (basename);
-  PROJECT->title = g_strdup (title_without_bak);
+    io_path_get_basename (dir);
+  set_title (self, basename);
+  g_free (basename);
 
   /* save current datetime */
-  if (self->datetime_str)
-    g_free (self->datetime_str);
-  PROJECT->datetime_str =
-    datetime_get_current_as_string ();
+  set_datetime_str (self);
 
-  /*smf_save_regions ();*/
+  /* if backup, get next available backup dir */
+  if (is_backup)
+    set_and_create_next_available_backup_dir (self);
 
   /* write plugin states, prepare channels for
    * serialization, */
   Track * track;
   Channel * ch;
   Plugin * pl;
+  char * states_dir =
+    project_get_states_dir (self, is_backup);
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
@@ -576,7 +687,7 @@ project_save (
                   j);
               char * state_dir_plugin =
                 g_build_filename (
-                  PROJECT->states_dir,
+                  states_dir,
                   tmp,
                   NULL);
               g_free (tmp);
@@ -591,11 +702,15 @@ project_save (
             }
         }
     }
+  g_free (states_dir);
 
+  char * project_file_path =
+    project_get_project_file_path (
+      self, is_backup);
   char * yaml = project_serialize (PROJECT);
   GError *err = NULL;
   g_file_set_contents (
-    PROJECT->project_file_path,
+    project_file_path,
     yaml,
     -1,
     &err);
@@ -615,10 +730,10 @@ project_save (
   else
     {
       zrythm_add_to_recent_projects (
-        ZRYTHM,
-        PROJECT->project_file_path);
+        ZRYTHM, project_file_path);
       ui_show_notification (_("Project saved."));
     }
+  g_free (project_file_path);
 
   header_notebook_widget_set_subtitle (
     MW_HEADER_NOTEBOOK,
