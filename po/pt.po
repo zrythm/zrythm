@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-06 17:24+0100\n"
-"PO-Revision-Date: 2019-09-06 16:20+0000\n"
+"PO-Revision-Date: 2019-09-07 22:49+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -50,7 +50,7 @@ msgstr "Projeto sem título"
 
 #: src/project.c:613
 msgid "Backup saved."
-msgstr ""
+msgstr "Backup guardado."
 
 #: src/project.c:620
 msgid "Project saved."
@@ -287,9 +287,8 @@ msgid "Last Modified"
 msgstr "Última Modificação"
 
 #: src/gui/widgets/project_assistant.c:376
-#, fuzzy
 msgid "Blank project"
-msgstr "Carregando o projeto"
+msgstr "Projeto em branco"
 
 #: src/gui/widgets/left_dock_edge.c:104
 msgid "Inspector"
@@ -1473,9 +1472,8 @@ msgid "Select Project"
 msgstr "Selecionar Projeto"
 
 #: resources/ui/project_assistant.ui:43
-#, fuzzy
 msgid "Select a project"
-msgstr "Selecionar Projeto"
+msgstr "Selecione um projeto"
 
 #: resources/ui/project_assistant.ui:86 resources/ui/shortcuts.ui:104
 msgid "Create new project"
@@ -1490,9 +1488,8 @@ msgid "Removes selected project from the list"
 msgstr "Remove o projeto selecionado da lista"
 
 #: resources/ui/project_assistant.ui:130
-#, fuzzy
 msgid "Select a template"
-msgstr "Selecione uma pasta"
+msgstr "Selecione um modelo"
 
 #: resources/ui/chord_selector_window.ui:51
 msgid "Root Note"
@@ -2237,19 +2234,20 @@ msgid "GUI"
 msgstr "GUI"
 
 #: resources/ui/preferences.ui:437 resources/ui/preferences.ui:483
-#, fuzzy
 msgid "Projects"
-msgstr "Projeto"
+msgstr "Projetos"
 
 #: resources/ui/preferences.ui:449
 msgid "Autosave interval"
-msgstr ""
+msgstr "Intervalo de gravamento automático"
 
 #: resources/ui/preferences.ui:460
 msgid ""
 "Set the interval to auto-save project backups, in minutes. Setting this to 0 "
 "will disable auto-save"
 msgstr ""
+"Definir o intervalo para gravar automaticamente os backups do projeto, em "
+"minutos. Configura-lo para 0 irá desativar a gravação automática"
 
 #: data/zrythm.desktop.in:21
 msgid "Digital Audio Workstation"
