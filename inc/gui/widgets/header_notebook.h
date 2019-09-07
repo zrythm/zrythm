@@ -57,13 +57,13 @@ typedef struct _HeaderNotebookWidget
   ProjectToolbarWidget * project_toolbar;
   ViewToolbarWidget * view_toolbar;
   HelpToolbarWidget * help_toolbar;
+  GtkToolButton * left_panel;
+  GtkToolButton * bot_panel;
+  GtkToolButton * top_panel;
+  GtkToolButton * right_panel;
 
   GtkToolButton *     preferences;
   GtkToolButton *     z_icon;
-  GtkToolButton *     save_btn;
-  GtkToolButton *     save_as_btn;
-  GtkToolButton *     donate_btn;
-  GtkToolButton *     report_a_bug_btn;
   GtkLabel *          prj_name_label;
 } HeaderNotebookWidget;
 

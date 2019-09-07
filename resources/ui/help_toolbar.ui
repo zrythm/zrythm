@@ -56,5 +56,29 @@
         <property name="action-name">app.shortcuts</property>
       </object>
     </child>
+    <child>
+      <object class="GtkToolButton" id="donate_btn">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">app.donate</property>
+        <property name="icon_name">z-help-donate</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="report_a_bug_btn">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">app.bugreport</property>
+        <property name="icon_name">z-tools-report-bug</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
   </template>
 </interface>

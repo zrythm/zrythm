@@ -40,11 +40,7 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _ViewToolbarWidget
 {
   GtkToolbar         parent_instance;
-  GtkToggleToolButton * left_panel;
-  GtkToggleToolButton * bot_panel;
-  GtkToggleToolButton * top_panel;
-  GtkToggleToolButton * right_panel;
-  GtkToggleToolButton * status_bar;
+  GtkToolButton * status_bar;
   GtkToolButton *    zoom_in;
   GtkToolButton *    zoom_out;
   GtkToolButton *    original_size;

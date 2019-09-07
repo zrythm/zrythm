@@ -228,12 +228,6 @@ midi_track_widget_init (
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->lock),
     _("Lock track"));
-  self->freeze =
-    z_gtk_toggle_button_new_with_icon (
-      "snowflake-o");
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self->freeze),
-    _("Freeze track"));
 
   /* set buttons to upper controls */
   gtk_box_pack_start (
@@ -259,12 +253,6 @@ midi_track_widget_init (
   gtk_box_pack_start (
     GTK_BOX (tw_prv->top_grid->bot_controls),
     GTK_WIDGET (self->lock),
-    Z_GTK_NO_EXPAND,
-    Z_GTK_NO_FILL,
-    0);
-  gtk_box_pack_start (
-    GTK_BOX (tw_prv->top_grid->bot_controls),
-    GTK_WIDGET (self->freeze),
     Z_GTK_NO_EXPAND,
     Z_GTK_NO_FILL,
     0);

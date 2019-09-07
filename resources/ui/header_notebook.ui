@@ -117,30 +117,6 @@
                 <property name="homogeneous">True</property>
               </packing>
             </child>
-            <child>
-              <object class="GtkToolButton" id="save_btn">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="action_name">win.save</property>
-                <property name="icon_name">z-document-save</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="save_as_btn">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="action_name">win.save-as</property>
-                <property name="icon_name">z-document-save-as</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -158,6 +134,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="show_arrow">False</property>
+        <property name="hexpand">1</property>
         <child>
           <object class="GtkToolItem">
             <property name="visible">True</property>
@@ -167,8 +144,57 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Project name</property>
+                <property name="xalign">0</property>
               </object>
             </child>
+          </object>
+          <packing>
+            <property name="expand">1</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="left_panel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="icon-name">builder-view-left-pane-symbolic-light</property>
+            <property name="action_name">win.toggle-left-panel</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="bot_panel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="icon-name">builder-view-bottom-pane-symbolic-light</property>
+            <property name="action_name">win.toggle-bot-panel</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="top_panel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="icon-name">builder-view-top-pane-symbolic-light</property>
+            <property name="action_name">win.toggle-top-panel</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="right_panel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="icon-name">builder-view-right-pane-symbolic-light</property>
+            <property name="action_name">win.toggle-right-panel</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -181,30 +207,6 @@
             <property name="can_focus">False</property>
             <property name="action_name">app.preferences</property>
             <property name="icon_name">fa-cog</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="homogeneous">True</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkToolButton" id="donate_btn">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="action_name">app.donate</property>
-            <property name="icon_name">z-help-donate</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="homogeneous">True</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkToolButton" id="report_a_bug_btn">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="action_name">app.bugreport</property>
-            <property name="icon_name">z-tools-report-bug</property>
           </object>
           <packing>
             <property name="expand">False</property>

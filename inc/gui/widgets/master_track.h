@@ -42,7 +42,6 @@ typedef struct Track MasterTrack;
 typedef struct _MasterTrackWidget
 {
   TrackWidget                   parent_instance;
-  GtkToggleButton *             record;
   GtkToggleButton *             solo;
   GtkToggleButton *             mute;
   GtkToggleButton *             show_automation;

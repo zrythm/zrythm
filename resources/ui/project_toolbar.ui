@@ -38,6 +38,30 @@
       </packing>
     </child>
     <child>
+      <object class="GtkToolButton" id="save_btn">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">win.save</property>
+        <property name="icon_name">z-document-save</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="save_as_btn">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">win.save-as</property>
+        <property name="icon_name">z-document-save-as</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
       <object class="GtkToolButton" id="open">
         <property name="visible">True</property>
         <property name="can_focus">False</property>

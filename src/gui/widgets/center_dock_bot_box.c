@@ -41,18 +41,6 @@ center_dock_bot_box_widget_init (
     self->instrument_add,
     resources_get_icon (ICON_TYPE_ZRYTHM,
                         "plus.svg"));
-  gtk_tool_button_set_icon_widget (
-    self->toggle_left_dock,
-    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
-                        "builder-view-left-pane-symbolic-light.svg"));
-  gtk_tool_button_set_icon_widget (
-    self->toggle_bot_dock,
-    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
-                        "builder-view-bottom-pane-symbolic-light.svg"));
-  gtk_tool_button_set_icon_widget (
-    self->toggle_right_dock,
-    resources_get_icon (ICON_TYPE_GNOME_BUILDER,
-                        "builder-view-right-pane-symbolic-light.svg"));
 }
 
 
@@ -68,33 +56,16 @@ center_dock_bot_box_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "center-dock-bot-box");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    CenterDockBotBoxWidget,
-    left_tb);
-  gtk_widget_class_bind_template_child (
-    klass,
-    CenterDockBotBoxWidget,
-    right_tb);
-  gtk_widget_class_bind_template_child (
-    klass,
-    CenterDockBotBoxWidget,
-    instrument_add);
-  gtk_widget_class_bind_template_child (
-    klass,
-    CenterDockBotBoxWidget,
-    toggle_left_dock);
-  gtk_widget_class_bind_template_child (
-    klass,
-    CenterDockBotBoxWidget,
-    toggle_bot_dock);
-  gtk_widget_class_bind_template_child (
-    klass,
-    CenterDockBotBoxWidget,
-    toggle_right_dock);
-  gtk_widget_class_bind_template_child (
-    klass,
-    CenterDockBotBoxWidget,
-    timeline_minimap);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, \
+    CenterDockBotBoxWidget, \
+    x)
+
+  BIND_CHILD (left_tb);
+  BIND_CHILD (instrument_add);
+  BIND_CHILD (timeline_minimap);
+
+#undef BIND_CHILD
 }
 

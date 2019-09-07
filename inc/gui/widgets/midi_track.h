@@ -65,7 +65,6 @@ typedef struct _MidiTrackWidget
   GtkToggleButton *             show_lanes;
   GtkToggleButton *             show_automation;
   GtkToggleButton *             lock;
-  GtkToggleButton *             freeze;
 } MidiTrackWidget;
 
 /**

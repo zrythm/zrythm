@@ -77,11 +77,6 @@ audio_group_track_widget_new (Track * track)
     GTK_CONTAINER (tw_prv->paned),
     GTK_WIDGET (automation_tracklist->widget));
 
-  tw_prv->record_toggle_handler_id =
-    g_signal_connect (
-      self->record, "toggled",
-      G_CALLBACK (track_widget_on_record_toggled),
-      self);
   tw_prv->mute_toggled_handler_id =
     g_signal_connect (
       self->mute, "toggled",
@@ -109,13 +104,6 @@ audio_group_track_widget_refresh_buttons (
   AudioGroupTrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
-  g_signal_handler_block (
-    self->record, tw_prv->record_toggle_handler_id);
-      gtk_toggle_button_set_active (
-        self->record,
-        tw_prv->track->recording);
-  g_signal_handler_unblock (
-    self->record, tw_prv->record_toggle_handler_id);
 
   g_signal_handler_block (
     self->solo, tw_prv->solo_toggled_handler_id);
@@ -160,12 +148,6 @@ audio_group_track_widget_init (AudioGroupTrackWidget * self)
   TRACK_WIDGET_GET_PRIVATE (self);
 
   /* create buttons */
-  self->record =
-    z_gtk_toggle_button_new_with_icon ("z-media-record");
-  context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self->record));
-  gtk_style_context_add_class (context, "record-button");
   self->solo =
     z_gtk_toggle_button_new_with_resource (
       ICON_TYPE_ZRYTHM,
@@ -183,12 +165,6 @@ audio_group_track_widget_init (AudioGroupTrackWidget * self)
       "z-node-type-cusp");
 
   /* set buttons to upper controls */
-  gtk_box_pack_start (
-    GTK_BOX (tw_prv->top_grid->upper_controls),
-    GTK_WIDGET (self->record),
-    Z_GTK_NO_EXPAND,
-    Z_GTK_NO_FILL,
-    0);
   gtk_box_pack_start (
     GTK_BOX (tw_prv->top_grid->upper_controls),
     GTK_WIDGET (self->solo),

@@ -39,6 +39,8 @@ help_toolbar_widget_init (HelpToolbarWidget * self)
   SET_TOOLTIP (chat, _("Chat (Matrix)"));
   SET_TOOLTIP (manual, _("Manual"));
   SET_TOOLTIP (shortcuts, _("Keyboard Shortcuts"));
+  SET_TOOLTIP (donate_btn, _("Donate"));
+  SET_TOOLTIP (report_a_bug_btn, _("Report a Bug"));
 #undef SET_TOOLTIP
 }
 
@@ -52,16 +54,17 @@ help_toolbar_widget_class_init (HelpToolbarWidgetClass * _klass)
   gtk_widget_class_set_css_name (
     klass, "help-toolbar");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    HelpToolbarWidget,
-    chat);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HelpToolbarWidget,
-    manual);
-  gtk_widget_class_bind_template_child (
-    klass,
-    HelpToolbarWidget,
-    shortcuts);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, \
+    HelpToolbarWidget, \
+    x)
+
+  BIND_CHILD (chat);
+  BIND_CHILD (manual);
+  BIND_CHILD (shortcuts);
+  BIND_CHILD (donate_btn);
+  BIND_CHILD (report_a_bug_btn);
+
+#undef BIND_CHILD
 }

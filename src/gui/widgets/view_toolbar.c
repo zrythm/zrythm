@@ -36,11 +36,6 @@ view_toolbar_widget_init (ViewToolbarWidget * self)
   z_gtk_set_tooltip_for_actionable ( \
     GTK_ACTIONABLE (self->x), \
     tooltip)
-  SET_TOOLTIP (left_panel, _("Toggle Left Panel"));
-  SET_TOOLTIP (bot_panel, _("Toggle Bottom Panel"));
-  SET_TOOLTIP (top_panel, _("Toggle Top Panel"));
-  SET_TOOLTIP (
-    right_panel, _("Toggle Right Panel"));
   SET_TOOLTIP (status_bar, _("Toggle Status Bar"));
   SET_TOOLTIP (zoom_in, _("Zoom In"));
   SET_TOOLTIP (zoom_out, _("Zoom Out"));
@@ -49,16 +44,6 @@ view_toolbar_widget_init (ViewToolbarWidget * self)
   SET_TOOLTIP (fullscreen, _("Fullscreen"));
 #undef SET_TOOLTIP
 
-  gtk_toggle_tool_button_set_active (
-    self->left_panel, 1);
-  gtk_toggle_tool_button_set_active (
-    self->right_panel, 1);
-  gtk_toggle_tool_button_set_active (
-    self->bot_panel, 1);
-  gtk_toggle_tool_button_set_active (
-    self->top_panel, 1);
-  gtk_toggle_tool_button_set_active (
-    self->status_bar, 1);
 }
 
 static void
@@ -71,44 +56,18 @@ view_toolbar_widget_class_init (ViewToolbarWidgetClass * _klass)
   gtk_widget_class_set_css_name (
     klass, "view-toolbar");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    ViewToolbarWidget,
-    left_panel);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ViewToolbarWidget,
-    bot_panel);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ViewToolbarWidget,
-    top_panel);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ViewToolbarWidget,
-    right_panel);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ViewToolbarWidget,
-    status_bar);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ViewToolbarWidget,
-    zoom_in);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ViewToolbarWidget,
-    zoom_out);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ViewToolbarWidget,
-    original_size);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ViewToolbarWidget,
-    best_fit);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ViewToolbarWidget,
-    fullscreen);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, \
+    ViewToolbarWidget, \
+    x)
+
+  BIND_CHILD (status_bar);
+  BIND_CHILD (zoom_in);
+  BIND_CHILD (zoom_out);
+  BIND_CHILD (original_size);
+  BIND_CHILD (best_fit);
+  BIND_CHILD (fullscreen);
+
+#undef BIND_CHILD
 }

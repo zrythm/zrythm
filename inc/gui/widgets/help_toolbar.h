@@ -43,6 +43,8 @@ typedef struct _HelpToolbarWidget
   GtkToolButton *    chat;
   GtkToolButton *    manual;
   GtkToolButton *    shortcuts;
+  GtkToolButton *     donate_btn;
+  GtkToolButton *     report_a_bug_btn;
 } HelpToolbarWidget;
 
 #endif

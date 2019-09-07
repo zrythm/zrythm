@@ -40,10 +40,6 @@ typedef struct _CenterDockBotBoxWidget
   GtkBox                   parent_instance;
   GtkToolbar               * left_tb;
   GtkToolButton            * instrument_add;
-  GtkToolButton *          toggle_left_dock;
-  GtkToolButton *          toggle_bot_dock;
-  GtkToolbar *             right_tb;
-  GtkToolButton *          toggle_right_dock;
   TimelineMinimapWidget *  timeline_minimap;
 } CenterDockBotBoxWidget;
 

@@ -37,6 +37,8 @@ project_toolbar_widget_init (ProjectToolbarWidget * self)
     GTK_ACTIONABLE (self->x), \
     tooltip)
   SET_TOOLTIP (new, _("New Project"));
+  SET_TOOLTIP (save_btn, _("Save"));
+  SET_TOOLTIP (save_as_btn, _("Save As"));
   SET_TOOLTIP (open, _("Open Project"));
   SET_TOOLTIP (export_as, _("Export As"));
 #undef SET_TOOLTIP
@@ -52,17 +54,18 @@ project_toolbar_widget_class_init (ProjectToolbarWidgetClass * _klass)
   gtk_widget_class_set_css_name (
     klass, "project-toolbar");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    ProjectToolbarWidget,
-    new);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ProjectToolbarWidget,
-    open);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ProjectToolbarWidget,
-    export_as);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, \
+    ProjectToolbarWidget, \
+    x)
+
+  BIND_CHILD (new);
+  BIND_CHILD (save_btn);
+  BIND_CHILD (save_as_btn);
+  BIND_CHILD (open);
+  BIND_CHILD (export_as);
+
+#undef BIND_CHILD
 }
 

@@ -49,7 +49,6 @@ typedef struct Track AudioBusTrack;
 typedef struct _AudioBusTrackWidget
 {
   TrackWidget                parent_instance;
-  GtkToggleButton *          record;
   GtkToggleButton *          solo;
   GtkToggleButton *          mute;
   GtkToggleButton *          show_automation;
