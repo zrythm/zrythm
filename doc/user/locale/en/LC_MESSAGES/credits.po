@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-08 11:34+0100\n"
+"POT-Creation-Date: 2019-09-08 12:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,14 +66,20 @@ msgid "WaldiS"
 msgstr ""
 
 #: ../../credits/intro.rst:26
-msgid "Portuguese:"
+msgid "Portuguese"
 msgstr ""
 
 #: ../../credits/intro.rst:28
-msgid "Italian:"
+msgid "Italian"
 msgstr ""
 
 #: ../../credits/intro.rst:29
 msgid "Swann Martinet"
 msgstr ""
+
+#~ msgid "Portuguese:"
+#~ msgstr ""
+
+#~ msgid "Italian:"
+#~ msgstr ""
 

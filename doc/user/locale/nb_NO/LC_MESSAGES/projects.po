@@ -7,54 +7,49 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"POT-Creation-Date: 2019-09-08 12:22+0100\n"
 "PO-Revision-Date: 2019-09-05 17:38+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
-"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
-"manualprojects/nb_NO/>\n"
 "Language: nb_NO\n"
+"Language-Team: Norwegian Bokmål "
+"<https://hosted.weblate.org/projects/zrythm/manualprojects/nb_NO/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../../projects/creating-projects.rst:19
+#: ../../projects/creating-projects.rst:6
 msgid "Creating Projects"
 msgstr "Opprettelse av prosjekter"
 
-#: ../../projects/creating-projects.rst:21
+#: ../../projects/creating-projects.rst:8
 msgid ""
 "When Zrythm first starts, it will ask you to either load a Project or "
 "create a new one. By default, Zrythm will use ~/username/Zrythm to create"
 " new Projects."
 msgstr ""
 
-#: ../../projects/intro.rst:19
+#: ../../projects/intro.rst:6
 msgid "Projects"
 msgstr "Prosjekter"
 
-#: ../../projects/project-info.rst:19
+#: ../../projects/project-info.rst:6
 msgid "Project Info"
 msgstr "Prosjektinfo"
 
-#: ../../projects/project-info.rst:21
+#: ../../projects/project-info.rst:8
 msgid ""
 "In Zrythm, your work is saved inside a Project. Projects consist of a "
 "folder with a YAML file describing the Project and additional files used "
 "such as MIDI and audio files."
 msgstr ""
 
-#: ../../projects/project-info.rst:26
-msgid "Here is an example of a simple project file:"
-msgstr ""
-
-#: ../../projects/project-management-and-compatibility.rst:19
+#: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
 msgstr "Prosjekthåndtering og kompabilitet"
 
-#: ../../projects/project-management-and-compatibility.rst:21
+#: ../../projects/project-management-and-compatibility.rst:8
 msgid ""
 "For at least the time being, Zrythm follows a rolling release model and "
 "project file structure is subject to change at each new release. No "
@@ -62,7 +57,7 @@ msgid ""
 " more time to feature development and fixes."
 msgstr ""
 
-#: ../../projects/project-management-and-compatibility.rst:26
+#: ../../projects/project-management-and-compatibility.rst:13
 msgid ""
 "It may be possible to open projects from previous versions if there was "
 "no change in the project file structure, but this is not guaranteed, so "
@@ -70,22 +65,22 @@ msgid ""
 "install that version of Zrythm."
 msgstr ""
 
-#: ../../projects/project-management-and-compatibility.rst:32
+#: ../../projects/project-management-and-compatibility.rst:19
 msgid "Each project file will contain the version of Zrythm it was made with"
 msgstr ""
 
-#: ../../projects/saving-loading.rst:19
+#: ../../projects/saving-loading.rst:6
 msgid "Saving & Loading"
 msgstr ""
 
-#: ../../projects/saving-loading.rst:21
+#: ../../projects/saving-loading.rst:8
 msgid ""
 "Saving works as you would expect: :zbutton:`Save As...` will save the "
 "Project in a new location and :zbutton:`Save` will save the Project in "
 "the previous location."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:25
+#: ../../projects/saving-loading.rst:12
 msgid ""
 "When loading a Project, Zrythm expects you to give it the Project "
 "directory."
@@ -191,3 +186,7 @@ msgstr ""
 #~ "master fader and contains additional "
 #~ "automation options."
 #~ msgstr ""
+
+#~ msgid "Here is an example of a simple project file:"
+#~ msgstr ""
+
