@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-09-06 16:21+0000\n"
+"PO-Revision-Date: 2019-09-09 17:25+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualexporting/nb_NO/>\n"
@@ -21,8 +21,9 @@ msgstr ""
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../exporting/exporting-midi-files.rst:2
+#, fuzzy
 msgid "Exporting MIDI Files"
-msgstr ""
+msgstr "Eksportering av MIDI-filer"
 
 #: ../../exporting/exporting-midi-files.rst:4
 #: ../../exporting/exporting-the-mixdown.rst:4
@@ -35,4 +36,4 @@ msgstr ""
 
 #: ../../exporting/intro.rst:2
 msgid "Exporting"
-msgstr ""
+msgstr "Eksportering"
