@@ -33,11 +33,11 @@
 
 #define AUDIO_BUS_TRACK_WIDGET_TYPE \
   (audio_bus_track_widget_get_type ())
-G_DECLARE_FINAL_TYPE (AudioBusTrackWidget,
-                      audio_bus_track_widget,
-                      Z,
-                      AUDIO_BUS_TRACK_WIDGET,
-                      TrackWidget)
+G_DECLARE_FINAL_TYPE (
+  AudioBusTrackWidget,
+  audio_bus_track_widget,
+  Z, AUDIO_BUS_TRACK_WIDGET,
+  TrackWidget)
 
 typedef struct _AutomationTracklistWidget
   AutomationTracklistWidget;

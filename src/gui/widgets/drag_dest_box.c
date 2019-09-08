@@ -300,29 +300,9 @@ static void
 show_context_menu (DragDestBoxWidget * self)
 {
   GtkWidget *menu;
+  GtkWidget * submenu;
   GtkMenuItem * menu_item;
-  menu = gtk_menu_new();
-
-  /*menu_item =*/
-    /*z_gtk_create_menu_item (*/
-      /*_("Add _Instrument Track"),*/
-      /*NULL,*/
-      /*ICON_TYPE_GNOME_BUILDER,*/
-      /*NULL,*/
-      /*0,*/
-      /*"win.create-ins-track");*/
-  /*gtk_menu_shell_append (GTK_MENU_SHELL(menu),*/
-                         /*GTK_WIDGET (menu_item));*/
-  /*menu_item =*/
-    /*z_gtk_create_menu_item (*/
-      /*_("Add _Audio Track"),*/
-      /*NULL,*/
-      /*ICON_TYPE_GNOME_BUILDER,*/
-      /*NULL,*/
-      /*0,*/
-      /*"win.create-audio-track");*/
-  /*gtk_menu_shell_append (GTK_MENU_SHELL(menu),*/
-                         /*GTK_WIDGET (menu_item));*/
+  menu = gtk_menu_new ();
 
   menu_item =
     z_gtk_create_menu_item (
@@ -335,27 +315,74 @@ show_context_menu (DragDestBoxWidget * self)
   gtk_menu_shell_append (
     GTK_MENU_SHELL(menu),
     GTK_WIDGET (menu_item));
-  menu_item =
-    z_gtk_create_menu_item (
-      _("Add _Bus Track"),
-      NULL,
-      ICON_TYPE_GNOME_BUILDER,
-      NULL,
-      0,
-      "win.create-bus-track");
-  gtk_menu_shell_append (GTK_MENU_SHELL(menu),
-                         GTK_WIDGET (menu_item));
 
+  submenu = gtk_menu_new ();
   menu_item =
     z_gtk_create_menu_item (
-      _("Add _Group Track"),
+      _("Audio Bus"),
       NULL,
       ICON_TYPE_GNOME_BUILDER,
       NULL,
       0,
-      "win.create-group-track");
-  gtk_menu_shell_append (GTK_MENU_SHELL(menu),
-                         GTK_WIDGET (menu_item));
+      "win.create-audio-bus-track");
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (submenu),
+    GTK_WIDGET (menu_item));
+  menu_item =
+    z_gtk_create_menu_item (
+      _("MIDI Bus"),
+      NULL,
+      ICON_TYPE_GNOME_BUILDER,
+      NULL,
+      0,
+      "win.create-midi-bus-track");
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (submenu),
+    GTK_WIDGET (menu_item));
+  menu_item =
+    GTK_MENU_ITEM (
+      gtk_menu_item_new_with_label (
+        _("Add Bus Track")));
+  gtk_menu_item_set_submenu (
+    GTK_MENU_ITEM (menu_item),
+    submenu);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu),
+    GTK_WIDGET (menu_item));
+
+  submenu = gtk_menu_new ();
+  menu_item =
+    z_gtk_create_menu_item (
+      _("Audio Group"),
+      NULL,
+      ICON_TYPE_GNOME_BUILDER,
+      NULL,
+      0,
+      "win.create-audio-group-track");
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (submenu),
+    GTK_WIDGET (menu_item));
+  menu_item =
+    z_gtk_create_menu_item (
+      _("MIDI Group"),
+      NULL,
+      ICON_TYPE_GNOME_BUILDER,
+      NULL,
+      0,
+      "win.create-midi-group-track");
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (submenu),
+    GTK_WIDGET (menu_item));
+  menu_item =
+    GTK_MENU_ITEM (
+      gtk_menu_item_new_with_label (
+        _("Add Group Track")));
+  gtk_menu_item_set_submenu (
+    GTK_MENU_ITEM (menu_item),
+    submenu);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu),
+    GTK_WIDGET (menu_item));
 
   gtk_widget_show_all(menu);
   gtk_menu_attach_to_widget (GTK_MENU (menu),

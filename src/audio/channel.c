@@ -1484,7 +1484,7 @@ channel_connect (
         MONITOR_FADER->stereo_in->r,
         1);
     }
-  else
+  else if (ch->track->out_signal_type == TYPE_AUDIO)
     {
       ch->output = P_MASTER_TRACK;
       ch->output_pos = P_MASTER_TRACK->pos;
@@ -1555,23 +1555,51 @@ channel_update_output (
   Channel * ch,
   Track * output)
 {
-  /* disconnect Channel's output from the current
-   * output channel */
-  port_disconnect (
-    ch->stereo_out->l,
-    ch->output->channel->stereo_in->l);
-  port_disconnect (
-    ch->stereo_out->r,
-    ch->output->channel->stereo_in->r);
+  if (ch->output)
+    {
+      /* disconnect Channel's output from the
+       * current
+       * output channel */
+      switch (ch->output->in_signal_type)
+        {
+        case TYPE_AUDIO:
+          port_disconnect (
+            ch->stereo_out->l,
+            ch->output->channel->stereo_in->l);
+          port_disconnect (
+            ch->stereo_out->r,
+            ch->output->channel->stereo_in->r);
+          break;
+        case TYPE_EVENT:
+          port_disconnect (
+            ch->midi_out,
+            ch->output->channel->midi_in);
+          break;
+        default:
+          break;
+        }
+    }
 
   /* connect Channel's output to the given output
    */
-  port_connect (
-    ch->stereo_out->l,
-    output->channel->stereo_in->l, 1);
-  port_connect (
-    ch->stereo_out->r,
-    output->channel->stereo_in->r, 1);
+  switch (output->in_signal_type)
+    {
+    case TYPE_AUDIO:
+      port_connect (
+        ch->stereo_out->l,
+        output->channel->stereo_in->l, 1);
+      port_connect (
+        ch->stereo_out->r,
+        output->channel->stereo_in->r, 1);
+      break;
+    case TYPE_EVENT:
+      port_connect (
+        ch->midi_out,
+        output->channel->midi_in, 1);
+      break;
+    default:
+      break;
+    }
 
   ch->output = output;
   g_message ("setting output %s",

@@ -23,51 +23,52 @@
  * Bus track for effects.
  */
 
-#ifndef __GUI_WIDGETS_AUDIO_GROUP_TRACK_H__
-#define __GUI_WIDGETS_AUDIO_GROUP_TRACK_H__
+#ifndef __GUI_WIDGETS_MIDI_BUS_TRACK_H__
+#define __GUI_WIDGETS_MIDI_BUS_TRACK_H__
 
 #include "audio/channel.h"
 #include "gui/widgets/track.h"
 
 #include <gtk/gtk.h>
 
-#define AUDIO_GROUP_TRACK_WIDGET_TYPE \
-  (audio_group_track_widget_get_type ())
+#define MIDI_BUS_TRACK_WIDGET_TYPE \
+  (midi_bus_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  AudioGroupTrackWidget,
-  audio_group_track_widget,
-  Z, AUDIO_GROUP_TRACK_WIDGET,
+  MidiBusTrackWidget,
+  midi_bus_track_widget,
+  Z, MIDI_BUS_TRACK_WIDGET,
   TrackWidget)
 
 typedef struct _AutomationTracklistWidget
   AutomationTracklistWidget;
-typedef struct Track AudioGroupTrack;
+typedef struct Track MidiBusTrack;
 
 /**
  * Top is the track part and bot is the automation part
  */
-typedef struct _AudioGroupTrackWidget
+typedef struct _MidiBusTrackWidget
 {
   TrackWidget                parent_instance;
   GtkToggleButton *          solo;
   GtkToggleButton *          mute;
   GtkToggleButton *          show_automation;
-} AudioGroupTrackWidget;
+} MidiBusTrackWidget;
 
 /**
  * Creates a new track widget from the given track.
  */
-AudioGroupTrackWidget *
-audio_group_track_widget_new (Track * track);
+MidiBusTrackWidget *
+midi_bus_track_widget_new (Track * track);
 
 /**
  * Updates changes in the backend to the ui
  */
 void
-audio_group_track_widget_refresh (AudioGroupTrackWidget * self);
+midi_bus_track_widget_refresh (
+  MidiBusTrackWidget * self);
 
 void
-audio_group_track_widget_refresh_buttons (
-  AudioGroupTrackWidget * self);
+midi_bus_track_widget_refresh_buttons (
+  MidiBusTrackWidget * self);
 
 #endif

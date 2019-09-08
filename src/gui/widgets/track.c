@@ -46,6 +46,8 @@
 #include "gui/widgets/marker_track.h"
 #include "gui/widgets/master_track.h"
 #include "gui/widgets/midi_activity_bar.h"
+#include "gui/widgets/midi_bus_track.h"
+#include "gui/widgets/midi_group_track.h"
 #include "gui/widgets/midi_track.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -111,7 +113,9 @@ track_widget_refresh (TrackWidget * self)
       REFRESH_TW (CHORD, chord);
       REFRESH_TW (MIDI, midi);
       REFRESH_TW (AUDIO_BUS, audio_bus);
+      REFRESH_TW (MIDI_BUS, midi_bus);
       REFRESH_TW (AUDIO_GROUP, audio_group);
+      REFRESH_TW (MIDI_GROUP, midi_group);
       REFRESH_TW (MARKER, marker);
     default:
       break;
@@ -142,6 +146,8 @@ track_widget_refresh_buttons (
       REFRESH_TW_BUTTONS (CHORD, chord);
       REFRESH_TW_BUTTONS (AUDIO_BUS, audio_bus);
       REFRESH_TW_BUTTONS (AUDIO_GROUP, audio_group);
+      REFRESH_TW_BUTTONS (MIDI_BUS, midi_bus);
+      REFRESH_TW_BUTTONS (MIDI_GROUP, midi_group);
       REFRESH_TW_BUTTONS (MARKER, marker);
     default:
       break;
@@ -782,6 +788,8 @@ track_widget_new (Track * track)
     NEW_TW (CHORD, chord);
     NEW_TW (AUDIO_BUS, audio_bus);
     NEW_TW (AUDIO_GROUP, audio_group);
+    NEW_TW (MIDI_BUS, midi_bus);
+    NEW_TW (MIDI_GROUP, midi_group);
     NEW_TW (INSTRUMENT, instrument);
     NEW_TW (MASTER, master);
     NEW_TW (AUDIO, audio);

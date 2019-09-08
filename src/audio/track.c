@@ -31,6 +31,8 @@
 #include "audio/instrument_track.h"
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
+#include "audio/midi_bus_track.h"
+#include "audio/midi_group_track.h"
 #include "audio/midi_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -166,12 +168,26 @@ track_new (
         TYPE_AUDIO;
       audio_bus_track_init (track);
       break;
+    case TRACK_TYPE_MIDI_BUS:
+      track->in_signal_type =
+        TYPE_EVENT;
+      track->out_signal_type =
+        TYPE_EVENT;
+      midi_bus_track_init (track);
+      break;
     case TRACK_TYPE_AUDIO_GROUP:
       track->in_signal_type =
         TYPE_AUDIO;
       track->out_signal_type =
         TYPE_AUDIO;
       audio_group_track_init (track);
+      break;
+    case TRACK_TYPE_MIDI_GROUP:
+      track->in_signal_type =
+        TYPE_EVENT;
+      track->out_signal_type =
+        TYPE_EVENT;
+      midi_group_track_init (track);
       break;
     case TRACK_TYPE_MIDI:
       track->in_signal_type =
@@ -212,6 +228,8 @@ track_new (
     case TRACK_TYPE_MIDI:
     case TRACK_TYPE_AUDIO_BUS:
     case TRACK_TYPE_AUDIO_GROUP:
+    case TRACK_TYPE_MIDI_BUS:
+    case TRACK_TYPE_MIDI_GROUP:
       ch =
         channel_new (track);
       track->channel = ch;
@@ -222,8 +240,6 @@ track_new (
       break;
     case TRACK_TYPE_CHORD:
     case TRACK_TYPE_MARKER:
-    case TRACK_TYPE_MIDI_BUS:
-    case TRACK_TYPE_MIDI_GROUP:
       break;
     }
 
@@ -819,6 +835,7 @@ track_set_pos (
 
       for (int i = 0; i < num_ports; i++)
         {
+          g_warn_if_fail (ports[i]);
           ports[i]->identifier.track_pos = pos;
         }
     }
@@ -901,8 +918,9 @@ track_free (Track * track)
       _FREE_TRACK (AUDIO, audio);
       _FREE_TRACK (CHORD, chord);
       _FREE_TRACK (AUDIO_BUS, audio_bus);
+      _FREE_TRACK (MIDI_BUS, audio_bus);
       _FREE_TRACK (AUDIO_GROUP, audio_group);
-      /*_FREE_TRACK (MIDI_GROUP, midi_group);*/
+      _FREE_TRACK (MIDI_GROUP, midi_group);
     default:
       /* TODO */
       break;
@@ -933,6 +951,8 @@ track_get_automation_tracklist (Track * track)
       break;
     case TRACK_TYPE_AUDIO_BUS:
     case TRACK_TYPE_AUDIO_GROUP:
+    case TRACK_TYPE_MIDI_BUS:
+    case TRACK_TYPE_MIDI_GROUP:
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MASTER:
@@ -962,6 +982,8 @@ track_get_fader_automatable (Track * track)
       break;
     case TRACK_TYPE_AUDIO_BUS:
     case TRACK_TYPE_AUDIO_GROUP:
+    case TRACK_TYPE_MIDI_BUS:
+    case TRACK_TYPE_MIDI_GROUP:
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_MASTER:
     case TRACK_TYPE_INSTRUMENT:
@@ -993,6 +1015,8 @@ track_get_channel (Track * track)
     case TRACK_TYPE_AUDIO:
     case TRACK_TYPE_AUDIO_BUS:
     case TRACK_TYPE_AUDIO_GROUP:
+    case TRACK_TYPE_MIDI_BUS:
+    case TRACK_TYPE_MIDI_GROUP:
     case TRACK_TYPE_MIDI:
       return track->channel;
     default:
@@ -1065,7 +1089,10 @@ track_stringize_type (
         _("MIDI"));
     case TRACK_TYPE_AUDIO_BUS:
       return g_strdup (
-        _("Bus"));
+        _("Audio Bus"));
+    case TRACK_TYPE_MIDI_BUS:
+      return g_strdup (
+        _("MIDI Bus"));
     case TRACK_TYPE_MASTER:
       return g_strdup (
         _("Master"));
@@ -1074,10 +1101,13 @@ track_stringize_type (
         _("Chord"));
     case TRACK_TYPE_AUDIO_GROUP:
       return g_strdup (
-        _("Group"));
+        _("Audio Group"));
+    case TRACK_TYPE_MIDI_GROUP:
+      return g_strdup (
+        _("MIDI Group"));
     case TRACK_TYPE_MARKER:
       return g_strdup (
-        _("Group"));
+        _("Marker"));
     default:
       g_warn_if_reached ();
       return NULL;

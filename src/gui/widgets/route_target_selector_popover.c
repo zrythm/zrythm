@@ -76,10 +76,17 @@ create_model_for_routes (
             -1);
         }
       else if (type == ROUTE_TARGET_TYPE_GROUP &&
-               track->type == TRACK_TYPE_AUDIO_GROUP)
+               (track->type ==
+                  TRACK_TYPE_AUDIO_GROUP ||
+                track->type ==
+                  TRACK_TYPE_MIDI_GROUP))
         {
           if (track !=
-              self->owner->owner->channel->track)
+                self->owner->owner->
+                  channel->track &&
+              track->in_signal_type ==
+                self->owner->owner->
+                  channel->track->out_signal_type)
             {
               // Add a new row to the model
               gtk_list_store_append (

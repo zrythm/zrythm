@@ -991,6 +991,23 @@ activate_create_audio_bus_track (GSimpleAction *action,
 }
 
 void
+activate_create_midi_bus_track (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_MIDI_BUS,
+      NULL,
+      NULL,
+      TRACKLIST->num_tracks,
+      1);
+
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
+
+void
 activate_create_audio_group_track (
   GSimpleAction *action,
   GVariant      *variant,
@@ -1007,6 +1024,22 @@ activate_create_audio_group_track (
   undo_manager_perform (UNDO_MANAGER, ua);
 }
 
+void
+activate_create_midi_group_track (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_MIDI_GROUP,
+      NULL,
+      NULL,
+      TRACKLIST->num_tracks,
+      1);
+
+  undo_manager_perform (UNDO_MANAGER, ua);
+}
 
 void
 activate_duplicate_selected_tracks (

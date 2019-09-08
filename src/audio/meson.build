@@ -47,6 +47,8 @@ audio_srcs = [
   'master_track.c',
   'metronome.c',
   'midi.c',
+  'midi_bus_track.c',
+  'midi_group_track.c',
   'midi_note.c',
   'midi_region.c',
   'midi_track.c',
