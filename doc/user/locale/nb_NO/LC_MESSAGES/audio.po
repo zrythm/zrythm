@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-04 08:01+0100\n"
-"PO-Revision-Date: 2019-06-27 16:02+0000\n"
+"PO-Revision-Date: 2019-09-09 17:25+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualaudio/nb_NO/>\n"
@@ -17,20 +17,20 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7.1-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../audio/audio-processing/applying-effects.rst:2
 msgid "Applying Effects"
-msgstr ""
+msgstr "Anvendelse av effekter"
 
 #: ../../audio/audio-processing/intro.rst:2
 msgid "Audio Processing"
-msgstr ""
+msgstr "Lydbehandling"
 
 #: ../../audio/audio-regions.rst:2
 msgid "Audio Regions"
-msgstr ""
+msgstr "Lydregioner"
 
 #: ../../audio/audio-regions.rst:4
 msgid ""
@@ -39,14 +39,18 @@ msgid ""
 "not affect the source file/recording) and are only saved to disk as "
 "separate copies when the project is saved."
 msgstr ""
+"Lydregioner kan inneholde én lyddel, som samsvarer med en fil eller et "
+"opptak. Endringer i lydregioner er ikke permanente (de har ikke innvirkning "
+"på kildefil/opptak) og lagres kun til disk som egne kopier når prosjektet "
+"lagres."
 
 #: ../../audio/audio-tracks.rst:2
 msgid "Audio Tracks"
-msgstr ""
+msgstr "Lydspor"
 
 #: ../../audio/audio-tracks.rst:4
 msgid "Audio tracks contain audio regions."
-msgstr ""
+msgstr "Lydspor inneholder lydregioner."
 
 #: ../../audio/intro.rst:2
 msgid "Audio"
