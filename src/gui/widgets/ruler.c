@@ -350,7 +350,7 @@ ruler_draw_cb (
          rw_prv->px_per_bar, 1);
 
   /* draw bars */
-  i = 0;
+  i = - bar_interval;
   while ((curr_px =
           rw_prv->px_per_bar * (i += bar_interval) +
           SPACE_BEFORE_START) <

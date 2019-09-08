@@ -105,6 +105,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="xalign">0.5</property>
+                <signal name="activate" handler="on_name_activate" object="CreateProjectDialogWidget" swapped="no"/>
                 <signal name="changed" handler="on_name_changed" object="CreateProjectDialogWidget" swapped="no"/>
               </object>
               <packing>

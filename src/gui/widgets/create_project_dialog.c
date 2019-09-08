@@ -29,8 +29,7 @@ G_DEFINE_TYPE (CreateProjectDialogWidget,
                GTK_TYPE_DIALOG)
 
 static void
-on_ok_clicked (
-  GtkButton * btn,
+respond (
   CreateProjectDialogWidget * self)
 {
   /* get the zrythm project name */
@@ -48,6 +47,22 @@ on_ok_clicked (
 
   gtk_dialog_response (
     GTK_DIALOG (self), GTK_RESPONSE_OK);
+}
+
+static void
+on_name_activate (
+  GtkEntry *entry,
+  CreateProjectDialogWidget * self)
+{
+  respond (self);
+}
+
+static void
+on_ok_clicked (
+  GtkButton * btn,
+  CreateProjectDialogWidget * self)
+{
+  respond (self);
 }
 
 static void
@@ -170,6 +185,8 @@ create_project_dialog_widget_class_init (
     klass, on_fc_file_set);
   gtk_widget_class_bind_template_callback (
     klass, on_name_changed);
+  gtk_widget_class_bind_template_callback (
+    klass, on_name_activate);
 
 #undef BIND_CHILD
 }

@@ -10,9 +10,11 @@ Contributing Guidelines
     ├── COPYING                      # Main license
     ├── COPYING.*                    # Other licenses
     ├── data                         # Data files to be installed
-    │   ├── COPYING                  # License information
+    │   ├── fonts                    # Fonts
     │   ├── org.zrythm.Zrythm.gschema.xml # GSettings schema
-    │   └── zrythm.desktop           # Desktop file
+    │   ├── org.zrythm.Zrythm-mime.xml # MIME type specification for project files
+    │   ├── samples                  # Audio samples
+    │   └── zrythm.desktop.in        # Desktop file
     ├── doc                          # Documentation
     │   ├── *.h                      # Doxygen pages
     │   ├── Doxyfile.cfg.in          # Doxygen conf
@@ -76,6 +78,13 @@ There is also
 messages and `G_ENABLE_DIAGNOSTIC` is used to break
 at deprecation warnings for GTK+3 (must all be fixed
 before porting to GTK+4).
+
+## UI Debugging
+GTK comes with a very handy tool called GTK
+inspector that can be used to inspect GTK widgets.
+More info on how to enable it and use it can be
+found here:
+https://wiki.gnome.org/action/show/Projects/GTK/Inspector
 
 # Tests and Coverage
 To run the test suite, use
