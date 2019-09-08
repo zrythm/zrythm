@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: 2019-09-05 17:38+0000\n"
+"PO-Revision-Date: 2019-09-09 17:25+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-configuration/nb_NO/>\n"
@@ -22,11 +22,11 @@ msgstr ""
 
 #: ../../zrythm-configuration/device-setup/intro.rst:2
 msgid "Device Setup"
-msgstr ""
+msgstr "Enhetsoppsett"
 
 #: ../../zrythm-configuration/device-setup/intro.rst:5
 msgid "Connecting MIDI and Audio Devices"
-msgstr ""
+msgstr "Tilkobling av MIDI- og lydenheter"
 
 #: ../../zrythm-configuration/device-setup/intro.rst:6
 msgid ""
@@ -35,8 +35,9 @@ msgid ""
 msgstr ""
 
 #: ../../zrythm-configuration/device-setup/intro.rst:8
+#, fuzzy
 msgid "An example configuration looks like this (in Catia inside Cadence)"
-msgstr ""
+msgstr "Eksempelvist kan et oppsett se slikt ut (i Catia inne i Cadence)"
 
 #: ../../zrythm-configuration/installation/intro.rst:2
 msgid "Installation"
@@ -44,7 +45,7 @@ msgstr "Installasjon"
 
 #: ../../zrythm-configuration/installation/intro.rst:5
 msgid "Official Builds"
-msgstr ""
+msgstr "Offisielle bygg"
 
 #: ../../zrythm-configuration/installation/intro.rst:6
 msgid ""
@@ -54,7 +55,7 @@ msgstr ""
 
 #: ../../zrythm-configuration/installation/intro.rst:8
 msgid "You will be presented with the following"
-msgstr ""
+msgstr "Du vil bli presentert følgende"
 
 #: ../../zrythm-configuration/installation/intro.rst:12
 msgid "This is the recommended way to install the latest version."
@@ -72,7 +73,7 @@ msgstr ""
 
 #: ../../zrythm-configuration/installation/intro.rst:19
 msgid "AUR"
-msgstr ""
+msgstr "AUR"
 
 #: ../../zrythm-configuration/installation/intro.rst:20
 msgid ""
@@ -83,7 +84,7 @@ msgstr ""
 
 #: ../../zrythm-configuration/installation/intro.rst:23
 msgid "Manual Installation"
-msgstr ""
+msgstr "Manuell installasjon"
 
 #: ../../zrythm-configuration/installation/intro.rst:24
 msgid "The usual GNU toolchain procedure applies::"
@@ -97,7 +98,7 @@ msgstr ""
 
 #: ../../zrythm-configuration/intro.rst:2
 msgid "Configuration"
-msgstr ""
+msgstr "Oppsett"
 
 #: ../../zrythm-configuration/preferences/audio.rst:2
 msgid "Audio"
@@ -109,11 +110,11 @@ msgstr "Innstillinger"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:2
 msgid "System Requirements"
-msgstr ""
+msgstr "Systemkrav"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:5
 msgid "Minimum Requirements"
-msgstr ""
+msgstr "Minimumskrav"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:6
 msgid ""
@@ -121,28 +122,32 @@ msgid ""
 " laggy. If you have any experiences with older machines please let us "
 "know."
 msgstr ""
+"Litt usikkert. Eldste testede maskin er en T400, og det gikk litt tregt. "
+"Hvis du har erfaring med eldre maskiner, la det komme oss til kjenne."
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:9
 msgid "Recommended Requirements"
-msgstr ""
+msgstr "Anbefalte maskinkrav"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:10
 msgid "We recommend running a fairly modern machine."
-msgstr ""
+msgstr "Det anbefales å ha en rimelig moderne maskin."
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:13
 msgid "Audio Interface"
-msgstr ""
+msgstr "Lydgrensesnitt"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:14
 msgid ""
 "An Audio Interface is recommended as it offers low latency and better "
 "quality (especially if recording audio)."
 msgstr ""
+"Et lydgrensesnitt anbefales, siden det muliggjør lyd med lite forsinkelse og "
+"bedre kvalitet (spesielt ved opptak av lyd)."
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:17
 msgid "JACK"
-msgstr ""
+msgstr "JACK"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:18
 msgid ""
@@ -151,11 +156,14 @@ msgid ""
 "<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, as it makes "
 "the process very easy."
 msgstr ""
+"JACK må settes opp og innstilles før kjøring av Zrythm. Det anbefales å "
+"bruke `Cadence <http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, "
+"siden det i stor grad forenkler prosessen."
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:20
 msgid "Open Cadence"
-msgstr ""
+msgstr "Åpne Cadence"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:24
 msgid "Click Configure and select your Audio Interface"
-msgstr ""
+msgstr "Klikk \"Sett opp\" og velg ditt lydgrensesnitt"
