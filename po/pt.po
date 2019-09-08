@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-07 23:49+0100\n"
-"PO-Revision-Date: 2019-09-07 22:49+0000\n"
+"PO-Revision-Date: 2019-09-08 11:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -50,6 +50,9 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"Encontrámos um backup mais recente:\n"
+"  %s.\n"
+"Usar o backup mais recente?"
 
 #: src/project.c:837
 msgid "Backup saved."
@@ -1618,13 +1621,12 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: resources/ui/create_project_dialog.ui:69
-#, fuzzy
 msgid "Parent directory"
-msgstr "Abrir Diretório"
+msgstr "Abrir diretório"
 
 #: resources/ui/create_project_dialog.ui:82
 msgid "Select parent directory to save the project in"
-msgstr ""
+msgstr "Selecione o diretório pai para lá gravar o projeto"
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
