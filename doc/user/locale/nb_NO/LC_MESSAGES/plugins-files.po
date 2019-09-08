@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-09-06 16:21+0000\n"
+"PO-Revision-Date: 2019-09-09 17:25+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/nb_NO/>\n"
@@ -294,7 +294,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/ports.rst:19
 msgid "Ports"
-msgstr ""
+msgstr "Porter"
 
 #: ../../plugins-files/plugins/ports.rst:21
 msgid ""
