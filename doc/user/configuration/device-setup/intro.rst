@@ -12,11 +12,24 @@ On Linux machines, Zrythm works with both ALSA and JACK as
 available backends. Depending on the backend selected, the
 configuration differs.
 
+Zrythm will auto-scan and allow you
+to connect to input devices for recording through the
+Track Inspector, as below, and in most cases you don't
+need to use any external tools or auto-connect mechanism.
+
+.. image:: /_static/img/track_inputs.png
+   :align: center
+
 Auto-Connecting Devices
 -----------------------
 
-Zrythm has an option to select devices to
-auto-connect on launch. TODO explain it.
+For other types of devices that are not linked to specific
+tracks, such as devices that send global
+MIDI messages and devices that control the transport,
+Zrythm has an option to select these devices to
+auto-connect to on launch.
+
+This is a TODO feature
 
 JACK
 ----

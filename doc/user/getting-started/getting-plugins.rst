@@ -49,6 +49,9 @@ Synths
 `Helm <https://tytel.org/helm/>`_ is an excellent subtractive synth that should be on
 everyone's toolbox.
 
+`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synth
+that is closely modeled on the Yamaha DX7.
+
 `ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_, the alternative
 front-end to ZynAddSubFX is one of the most
 powerful synths in existance.

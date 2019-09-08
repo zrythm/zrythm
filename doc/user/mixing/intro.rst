@@ -8,7 +8,7 @@ Mixing
 .. toctree::
    :maxdepth: 4
 
-   channels
+   channels/intro
    meters
    routing/intro
    groups

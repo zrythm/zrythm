@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-08 12:22+0100\n"
+"POT-Creation-Date: 2019-09-09 00:34+0100\n"
 "PO-Revision-Date: 2019-08-13 15:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../../projects/creating-projects.rst:6
+#: ../../projects/creating-projects.rst:6 ../../projects/saving-loading.rst:22
 msgid "Creating Projects"
 msgstr "Création de projets"
 
@@ -81,7 +81,10 @@ msgstr ""
 "précédente, veuillez installer cette version de Zrythm."
 
 #: ../../projects/project-management-and-compatibility.rst:19
-msgid "Each project file will contain the version of Zrythm it was made with"
+#, fuzzy
+msgid ""
+"Each project file will contain the version of Zrythm it was made with and"
+" a date"
 msgstr ""
 "Chaque fichier de projet contiendra la version de Zrythm avec laquelle il"
 " a été créé"
@@ -90,7 +93,55 @@ msgstr ""
 msgid "Saving & Loading"
 msgstr "Sauvegarde et chargement"
 
-#: ../../projects/saving-loading.rst:8
+#: ../../projects/saving-loading.rst:9
+#, fuzzy
+msgid "Loading Projects"
+msgstr "Création de projets"
+
+#: ../../projects/saving-loading.rst:11
+msgid ""
+"When Zrythm launches, it will ask you to select a project to load from a "
+"list of recent projects, or to create a new one."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:18
+msgid ""
+"When you select a project and click :zbutton:`Apply`, Zrythm will load "
+"that project."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:24
+msgid ""
+"In the menu above, if you select :zbutton:`Create new project`, Zrythm "
+"will ask you for a template to use for creating the new Project."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:31
+msgid ""
+"A blank template is available, but you can create your own templates by "
+"copying a project folder to the ``Templates`` directory in the Zrythm "
+"installation path."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:35
+msgid ""
+"Once a template (or blank) is selected and you click :zbutton:`Apply`, "
+"Zrythm will ask you for a parent directory to save the Project in and a "
+"title for the Project."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:42
+msgid ""
+"Once you accept, the new Project will be set up and you will be ready to "
+"go."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:46
+#, fuzzy
+msgid "Saving Projects"
+msgstr "Création de projets"
+
+#: ../../projects/saving-loading.rst:48
 msgid ""
 "Saving works as you would expect: :zbutton:`Save As...` will save the "
 "Project in a new location and :zbutton:`Save` will save the Project in "
@@ -101,13 +152,34 @@ msgstr ""
 "emplacement et :zbutton:`Sauvegarder` sauvegardera le projet à "
 "l'emplacement précédent."
 
-#: ../../projects/saving-loading.rst:12
-msgid ""
-"When loading a Project, Zrythm expects you to give it the Project "
-"directory."
+#: ../../projects/saving-loading.rst:52
+#, fuzzy
+msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr ""
 "Lors du chargement d'un projet, Zrythm s'attend à ce que vous lui donniez"
 " le répertoire du projet."
+
+#: ../../projects/saving-loading.rst:56
+msgid "Automatic Backups"
+msgstr ""
+
+#: ../../projects/saving-loading.rst:58
+msgid ""
+"Zrythm has an option to auto-save the current project as a back-up. When "
+"launching Zrythm and selecting to load your project, Zrythm will let you "
+"know if there are newer back-ups of that project and ask you if you want "
+"to load them instead."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:66
+msgid ""
+"The auto-save interval can be changed (or disabled) in the preferences "
+"window."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:69
+msgid "The backups are saved in the project's directory, under ``backups``"
+msgstr ""
 
 #~ msgid "Importing/Exporting Audio"
 #~ msgstr "Importer / Exporter l'Audio"

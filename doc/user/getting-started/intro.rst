@@ -11,6 +11,5 @@ Getting Started
    zrythm-overview
    system-requirements/intro
    installation/intro
-   basic-concepts-and-terminology
    getting-plugins
    additional-resources

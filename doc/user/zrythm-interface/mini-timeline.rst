@@ -4,3 +4,10 @@
 
 Timeline Minimap
 ================
+
+The timeline minimap is a little box that represents the
+current visible area of the timeline. It can be moved around and
+resized to change the visible area.
+
+.. image:: /_static/img/timeline_minimap.png
+   :align: center

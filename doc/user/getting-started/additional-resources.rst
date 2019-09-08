@@ -20,4 +20,5 @@ Zrythm's source code can be found on our `CGit instance <https://git.zrythm.org/
 
 Older Versions
 --------------
-https://download.savannah.nongnu.org/releases/zrythm/
+Older releases of Zrythm can be found on
+`Savannah downloads <https://download.savannah.nongnu.org/releases/zrythm/>`_

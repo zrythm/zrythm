@@ -9,14 +9,13 @@ Zrythm's Interface
    :maxdepth: 4
 
    zrythm-interface-overview
-   main-menu/intro
-   status-bar
+   basic-concepts-and-terminology
+   global-menus
    transport-bar
-   mini-timeline
-   toolbox
-   controls/intro
    ruler
-   editors/intro
+   mini-timeline
+   tracklist
+   timeline
+   editors
    mixer
-   channels/intro
-   monitor
+   status-bar

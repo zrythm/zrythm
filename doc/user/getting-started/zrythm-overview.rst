@@ -5,14 +5,18 @@
 Overview
 ========
 
-Zrythm is a highly automated Digital Audio Workstation (DAW)
-designed to be featureful and intuitive to use.
-Zrythm sets itself apart from other DAWs by allowing
-extensive automation via built-in LFOs and envelopes (
-Modulators) and intuitive MIDI or audio editing and arranging
-via loopable clips.
+Zrythm is a digital audio workstation designed to be
+featureful and easy to use. It has the following
+features.
 
-In the usual Composing -> Mixing -> Mastering workflow,
-Zrythm puts the most focus on the Composing part. It allows
-musicians to quickly lay down and process their musical
-ideas without taking too much time for unnecessary work.
+Limitless automation
+  Allows you to automate almost anything with automation
+  events using straight lines, ramps and curves,
+  or with CV signals from LFO and envelope plugins.
+LV2 plugins
+  Supports the free LV2 plugin format.
+JACK support
+  JACK aware, with support for JACK transport.
+Chord assistance
+  Has a chord pad for trying out chords in a scale and
+  a chord track to help with chord progressions.

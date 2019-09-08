@@ -7,200 +7,490 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-04 08:01+0100\n"
+"POT-Creation-Date: 2019-09-09 00:34+0100\n"
 "PO-Revision-Date: 2019-08-07 14:26+0000\n"
 "Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"zrythm/manualzrythm-interface/zh_Hans/>\n"
 "Language: zh\n"
+"Language-Team: Chinese (Simplified) "
+"<https://hosted.weblate.org/projects/zrythm/manualzrythm-"
+"interface/zh_Hans/>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.8-dev\n"
-"Generated-By: Babel 2.6.0\n"
+"Generated-By: Babel 2.7.0\n"
 
-#: ../../zrythm-interface/channels/channel-overview.rst:2
-msgid "Channel Overview"
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
+msgid "Basic Concepts and Terminology"
 msgstr ""
 
-#: ../../zrythm-interface/channels/controls.rst:2
-#: ../../zrythm-interface/controls/intro.rst:2
-msgid "Controls"
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:8
+msgid ""
+"Here are a few terms you should be aware of when using Zrythm. They are "
+"explained further in their corresponding chapters."
 msgstr ""
 
-#: ../../zrythm-interface/channels/fader.rst:2
-msgid "Fader"
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
+msgid "Regions"
 msgstr ""
 
-#: ../../zrythm-interface/channels/intro.rst:2
-msgid "Channels"
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
+msgid ""
+"A Region (Clip) is a container for MIDI Notes or audio. This is what a "
+"Region looks like in the arranger."
 msgstr ""
 
-#: ../../zrythm-interface/channels/meters.rst:2
-msgid "Meters"
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:16
+msgid "Regions are edited in the Editor Panel. In this case, the clip is looped."
 msgstr ""
 
-#: ../../zrythm-interface/channels/plugin-strip.rst:2
-msgid "Plugin Strip"
-msgstr ""
-
-#: ../../zrythm-interface/controls/grid-controls.rst:2
-msgid "Grid Controls"
-msgstr ""
-
-#: ../../zrythm-interface/controls/zoom-controls.rst:2
-msgid "Zoom Controls"
-msgstr ""
-
-#: ../../zrythm-interface/editors/intro.rst:2
-msgid "Editors"
-msgstr ""
-
-#: ../../zrythm-interface/editors/piano-roll/intro.rst:2
-msgid "Piano Roll"
-msgstr ""
-
-#: ../../zrythm-interface/editors/piano-roll/midi-arranger.rst:2
-msgid "MIDI Arranger"
-msgstr ""
-
-#: ../../zrythm-interface/editors/piano-roll/midi-modifier-arranger.rst:2
-msgid "MIDI Modifier Editor"
-msgstr ""
-
-#: ../../zrythm-interface/editors/timeline.rst:2
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:21
+#: ../../zrythm-interface/timeline.rst:6
 msgid "Timeline"
 msgstr ""
 
-#: ../../zrythm-interface/editors/tracklist.rst:2
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:22
+msgid "The Timeline is where the song is arranged, also known as Arranger."
+msgstr ""
+
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
+msgid "Track"
+msgstr ""
+
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:28
+msgid ""
+"A Track is a single slot in the Timeline containing various Regions and "
+"Automation. It may contain various lanes, such as Automation Lanes. There"
+" are some special tracks like the Chord Track and the Marker Track that "
+"contain chords and markers respectively."
+msgstr ""
+
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:34
+#: ../../zrythm-interface/tracklist.rst:6
 msgid "Tracklist"
 msgstr ""
 
-#: ../../zrythm-interface/intro.rst:2
-msgid "Zrythm's Interface"
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:35
+msgid ""
+"The Tracklist contains all of the Tracks in the project. It is split into"
+" the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
 
-#: ../../zrythm-interface/main-menu/edit.rst:2
-msgid "Edit"
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
+msgid "Channel"
 msgstr ""
 
-#: ../../zrythm-interface/main-menu/file.rst:2
-msgid "File"
-msgstr "文件"
-
-#: ../../zrythm-interface/main-menu/help.rst:2
-msgid "Help"
-msgstr "帮助"
-
-#: ../../zrythm-interface/main-menu/intro.rst:2
-msgid "Main Menu"
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:41
+msgid ""
+"A Channel is a single slot in the Mixer. Most types of Tracks have a "
+"corresponding Channel."
 msgstr ""
 
-#: ../../zrythm-interface/main-menu/view.rst:2
-msgid "View"
-msgstr ""
-
-#: ../../zrythm-interface/mini-timeline.rst:2
-msgid "Timeline Minimap"
-msgstr ""
-
-#: ../../zrythm-interface/mixer.rst:2
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:46
+#: ../../zrythm-interface/mixer.rst:6
 msgid "Mixer"
 msgstr "混音器"
 
-#: ../../zrythm-interface/monitor.rst:2
-msgid "Monitor"
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:47
+msgid ""
+"The Mixer contains all of the Channels in the Project and is used to mix "
+"the audio signals from each Channel."
 msgstr ""
 
-#: ../../zrythm-interface/ruler.rst:2
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:52
+msgid "Range"
+msgstr ""
+
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:53
+msgid "A Range is a selection of time between two positions."
+msgstr ""
+
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:58
+msgid "MIDI Note"
+msgstr ""
+
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:59
+msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
+msgstr ""
+
+#: ../../zrythm-interface/editors.rst:6
+msgid "Editors"
+msgstr ""
+
+#: ../../zrythm-interface/editors.rst:8
+msgid ""
+"Zrythm has various editors for editing the various events in the Timeline"
+" in detail. These editors appear in the Editor tab in the bottom panel."
+msgstr ""
+
+#: ../../zrythm-interface/editors.rst:13
+msgid "Piano Roll"
+msgstr ""
+
+#: ../../zrythm-interface/editors.rst:15
+msgid ""
+"The Piano Roll, or MIDI Arranger, is the most commonly used editor. It "
+"can be used to edit MIDI regions, which contain MIDI notes. When a MIDI "
+"Region is selected, the Editor tab will display the Piano Roll, allowing "
+"you to edit that region."
+msgstr ""
+
+#: ../../zrythm-interface/editors.rst:24
+msgid "Automation Editor"
+msgstr ""
+
+#: ../../zrythm-interface/editors.rst:26
+msgid ""
+"In Zrythm, automation is also enclosed in regions (called Automation "
+"Regions). This allows automation to be repeated, much like MIDI Regions. "
+"The Automation Editor will appear in the Editor tab when an Automation "
+"Region is selected."
+msgstr ""
+
+#: ../../zrythm-interface/editors.rst:34
+msgid "This is a work in progress"
+msgstr ""
+
+#: ../../zrythm-interface/editors.rst:37
+msgid "Chord Editor"
+msgstr ""
+
+#: ../../zrythm-interface/editors.rst:39
+msgid "The Chord Editor is used for editing Chord Regions."
+msgstr ""
+
+#: ../../zrythm-interface/editors.rst:41
+msgid "WIP"
+msgstr ""
+
+#: ../../zrythm-interface/global-menus.rst:6
+msgid "Global Menus"
+msgstr ""
+
+#: ../../zrythm-interface/global-menus.rst:8
+msgid "Zrythm has the following global menus at the top of its interface."
+msgstr ""
+
+#: ../../zrythm-interface/global-menus.rst:14
+msgid "Zrythm icon"
+msgstr ""
+
+#: ../../zrythm-interface/global-menus.rst:14
+msgid "Clicking this will show the About dialog"
+msgstr ""
+
+#: ../../zrythm-interface/global-menus.rst:17
+msgid "Home"
+msgstr ""
+
+#: ../../zrythm-interface/global-menus.rst:17
+msgid ""
+"Contains various buttons and controls that are used often during editing "
+"and arranging"
+msgstr ""
+
+#: ../../zrythm-interface/global-menus.rst:20
+msgid "Project"
+msgstr ""
+
+#: ../../zrythm-interface/global-menus.rst:20
+msgid ""
+"Various project-related actions such as saving, loading and exporting "
+"MIDI or audio"
+msgstr ""
+
+#: ../../zrythm-interface/global-menus.rst:23
+msgid "View"
+msgstr ""
+
+#: ../../zrythm-interface/global-menus.rst:23
+msgid ""
+"Controls to change the appearance of Zrythm and its various areas, such "
+"as zooming"
+msgstr ""
+
+#: ../../zrythm-interface/global-menus.rst:25
+msgid "Help"
+msgstr "帮助"
+
+#: ../../zrythm-interface/global-menus.rst:26
+msgid "Links for reporting bugs, donating, chatting, etc."
+msgstr ""
+
+#: ../../zrythm-interface/intro.rst:6
+msgid "Zrythm's Interface"
+msgstr ""
+
+#: ../../zrythm-interface/mini-timeline.rst:6
+msgid "Timeline Minimap"
+msgstr ""
+
+#: ../../zrythm-interface/mini-timeline.rst:8
+msgid ""
+"The timeline minimap is a little box that represents the current visible "
+"area of the timeline. It can be moved around and resized to change the "
+"visible area."
+msgstr ""
+
+#: ../../zrythm-interface/mixer.rst:8
+msgid ""
+"The Mixer tab contains the Mixer, where all the visible Channels in the "
+"project are shown."
+msgstr ""
+
+#: ../../zrythm-interface/ruler.rst:6
 msgid "Ruler"
 msgstr ""
 
-#: ../../zrythm-interface/status-bar.rst:2
+#: ../../zrythm-interface/ruler.rst:8
+msgid ""
+"A ruler is used to show the position of events in a given arranger, "
+"whether it is the timeline arranger or the piano roll or the sample "
+"editor."
+msgstr ""
+
+#: ../../zrythm-interface/ruler.rst:15
+msgid ""
+"The ruler will display more or less information depending on the current "
+"zoom level. It will also display the following markers/ indicators."
+msgstr ""
+
+#: ../../zrythm-interface/ruler.rst:19
+msgid "Cue point"
+msgstr ""
+
+#: ../../zrythm-interface/ruler.rst:20
+msgid "Displayed as a blue, right-pointing arrow."
+msgstr ""
+
+#: ../../zrythm-interface/ruler.rst:21
+msgid "Playhead position"
+msgstr ""
+
+#: ../../zrythm-interface/ruler.rst:22
+msgid "Shown as a grey, down-facing arrow."
+msgstr ""
+
+#: ../../zrythm-interface/ruler.rst:30
+msgid "Loop points"
+msgstr ""
+
+#: ../../zrythm-interface/ruler.rst:24
+msgid ""
+"Shown as 2 green arrows, and the area between them is shown in bright "
+"green if loop is enabled, or grey if disabled. Can be dragged to "
+"reposition."
+msgstr ""
+
+#: ../../zrythm-interface/ruler.rst:28
+msgid ""
+"In the timeline arranger, these are the global loop points. In arrangers "
+"found in the editor, these are the region loop points."
+msgstr ""
+
+#: ../../zrythm-interface/ruler.rst:32
+msgid ""
+"Clicking and dragging on empty space in the ruler will allow you to "
+"reposition the playhead."
+msgstr ""
+
+#: ../../zrythm-interface/ruler.rst:35
+msgid ""
+"Hold :zbutton:`Shift` to disable snapping momentarily while moving things"
+" around"
+msgstr ""
+
+#: ../../zrythm-interface/status-bar.rst:6
 msgid "Status Bar"
 msgstr ""
 
-#: ../../zrythm-interface/toolbox.rst:2
-msgid "Toolbox"
+#: ../../zrythm-interface/status-bar.rst:8
+msgid ""
+"The status bar contains information about the currently active audio "
+"backend."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:2
+#: ../../zrythm-interface/timeline.rst:8
+msgid ""
+"The timeline is the main area where the song is composed. It generally "
+"consists of a collection of events - mostly regions - that are positioned"
+" against time. Some events will open separate windows for further editing"
+" when clicked."
+msgstr ""
+
+#: ../../zrythm-interface/timeline.rst:16
+msgid ""
+"The Timeline is split into a top timeline that remains fixed on top, and "
+"a scrollable timeline below it. This way you can pin tracks you want to "
+"always be visible at the top."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:6
 msgid "Transport Bar"
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:2
+#: ../../zrythm-interface/transport-bar.rst:8
+msgid ""
+"The transport bar contains controls for changing the behavior of "
+"playback. It includes the following items."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:14
+msgid "Metronome toggle"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:15
+msgid "Toggles the metronome on/off"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:16
+msgid "BPM"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:17
+msgid "Song tempo (beats per minute)"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:18
+msgid "Playhed"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:19
+msgid "Current playhead position, in bars.beats.sixteenths.ticks"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:21
+msgid "Transport buttons"
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:21
+msgid "Controls for stopping, playback, recording, etc."
+msgstr ""
+
+#: ../../zrythm-interface/transport-bar.rst:23
+msgid ""
+"Widgets like the BPM meter can be changed by clicking and dragging, or by"
+" hovering over them with the cursor and scrolling"
+msgstr ""
+
+#: ../../zrythm-interface/zrythm-interface-overview.rst:6
 msgid "Zrythm Interface Overview"
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:4
+#: ../../zrythm-interface/zrythm-interface-overview.rst:8
 msgid "Zrythm's interface is split into various sub-modules:"
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:9
+#: ../../zrythm-interface/zrythm-interface-overview.rst:13
 msgid "Inspector Panel (1)"
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:9
+#: ../../zrythm-interface/zrythm-interface-overview.rst:13
 msgid ""
 "The inspector panel contains the inspector, which is used to view and "
 "change parameters of the currently selected objects."
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:12
+#: ../../zrythm-interface/zrythm-interface-overview.rst:16
 msgid "Editor Panel (2)"
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:12
+#: ../../zrythm-interface/zrythm-interface-overview.rst:16
 msgid ""
 "The editor panel contains various views that are useful in composing and "
 "mixing, such as the Clip Editor and the Mixer."
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:15
+#: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid "Browser Panel (3)"
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:15
+#: ../../zrythm-interface/zrythm-interface-overview.rst:19
 msgid ""
 "The browser panel contains the browser, and is used to find plugins "
 "and/or audio and MIDI files to drag and drop into the project."
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:18
+#: ../../zrythm-interface/zrythm-interface-overview.rst:22
 msgid "Arranger Panel (4)"
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:18
+#: ../../zrythm-interface/zrythm-interface-overview.rst:22
 msgid ""
 "This is where the action happens. The main panel mainly consists of the "
 "Timeline Arranger and the Project's Tracks on the left side."
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:21
+#: ../../zrythm-interface/zrythm-interface-overview.rst:25
 msgid "Toolbar (5)"
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:21
+#: ../../zrythm-interface/zrythm-interface-overview.rst:25
 msgid ""
 "There are two main toolbars containing global controls such as BPM and "
 "Transport."
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:24
+#: ../../zrythm-interface/zrythm-interface-overview.rst:28
 msgid "Title Bar (6)"
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:24
+#: ../../zrythm-interface/zrythm-interface-overview.rst:28
 msgid "The Title Bar contains menus with options for various operations."
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:26
+#: ../../zrythm-interface/zrythm-interface-overview.rst:30
 msgid "Status Bar (7)"
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:27
+#: ../../zrythm-interface/zrythm-interface-overview.rst:31
 msgid ""
 "The Status Bar is a helpful bar in the bottom of the program that shows "
 "tips based on the currently hovered-over item."
 msgstr ""
+
+#~ msgid "Channel Overview"
+#~ msgstr ""
+
+#~ msgid "Controls"
+#~ msgstr ""
+
+#~ msgid "Fader"
+#~ msgstr ""
+
+#~ msgid "Channels"
+#~ msgstr ""
+
+#~ msgid "Meters"
+#~ msgstr ""
+
+#~ msgid "Plugin Strip"
+#~ msgstr ""
+
+#~ msgid "Grid Controls"
+#~ msgstr ""
+
+#~ msgid "Zoom Controls"
+#~ msgstr ""
+
+#~ msgid "MIDI Arranger"
+#~ msgstr ""
+
+#~ msgid "MIDI Modifier Editor"
+#~ msgstr ""
+
+#~ msgid "Edit"
+#~ msgstr ""
+
+#~ msgid "File"
+#~ msgstr "文件"
+
+#~ msgid "Main Menu"
+#~ msgstr ""
+
+#~ msgid "Monitor"
+#~ msgstr ""
+
+#~ msgid "Toolbox"
+#~ msgstr ""
+

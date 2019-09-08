@@ -4,3 +4,9 @@
 
 Mixer
 =====
+
+The Mixer tab contains the Mixer, where all the visible Channels
+in the project are shown.
+
+.. image:: /_static/img/mixer.png
+   :align: center

@@ -4,3 +4,9 @@
 
 Status Bar
 ==========
+
+The status bar contains information about the currently active
+audio backend.
+
+.. image:: /_static/img/status_bar.png
+   :align: center

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-08 11:34+0100\n"
+"POT-Creation-Date: 2019-09-09 00:34+0100\n"
 "PO-Revision-Date: 2019-09-02 00:20+0000\n"
 "Last-Translator: Swann Martinet <swann.ranskassa@laposte.net>\n"
 "Language: it\n"
@@ -59,97 +59,9 @@ msgid "Older Versions"
 msgstr ""
 
 #: ../../getting-started/additional-resources.rst:23
-msgid "https://download.savannah.nongnu.org/releases/zrythm/"
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:6
-msgid "Basic Concepts and Terminology"
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:8
 msgid ""
-"Here are a few terms you should be aware of when using Zrythm. They are "
-"explained further in their corresponding chapters."
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:11
-msgid "Regions"
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:12
-msgid ""
-"A Region (Clip) is a container for MIDI Notes or audio. This is what a "
-"Region looks like in the arranger."
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:16
-msgid "Regions are edited in the Editor Panel. In this case, the clip is looped."
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:21
-msgid "Timeline"
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:22
-msgid "The Timeline is where the song is arranged, also known as Arranger."
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:27
-msgid "Track"
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:28
-msgid ""
-"A Track is a single slot in the Timeline containing various Regions and "
-"Automation. It may contain various lanes, such as Automation Lanes. There"
-" are some special tracks like the Chord Track and the Marker Track that "
-"contain chords and markers respectively."
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:34
-msgid "Tracklist"
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:35
-msgid ""
-"The Tracklist contains all of the Tracks in the project. It is split into"
-" the top (pinned) Tracklist and the bottom (main) Tracklist."
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:40
-msgid "Channel"
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:41
-msgid ""
-"A Channel is a single slot in the Mixer. Most types of Tracks have a "
-"corresponding Channel."
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:46
-msgid "Mixer"
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:47
-msgid ""
-"The Mixer contains all of the Channels in the Project and is used to mix "
-"the audio signals from each Channel."
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:52
-msgid "Range"
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:53
-msgid "A Range is a selection of time between two positions."
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:58
-msgid "MIDI Note"
-msgstr ""
-
-#: ../../getting-started/basic-concepts-and-terminology.rst:59
-msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
+"Older releases of Zrythm can be found on `Savannah downloads "
+"<https://download.savannah.nongnu.org/releases/zrythm/>`_"
 msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:6
@@ -235,16 +147,22 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:52
 msgid ""
+"`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synth that is "
+"closely modeled on the Yamaha DX7."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:55
+msgid ""
 "`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_, the "
 "alternative front-end to ZynAddSubFX is one of the most powerful synths "
 "in existance."
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:57
+#: ../../getting-started/getting-plugins.rst:60
 msgid "Percussion Generators"
 msgstr ""
 
-#: ../../getting-started/getting-plugins.rst:59
+#: ../../getting-started/getting-plugins.rst:62
 msgid ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a great kick drum "
 "synthesizer that can also synthesize other types of percussion."
@@ -275,27 +193,43 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:12
-msgid "You will be presented with the following"
-msgstr ""
-
-#: ../../getting-started/installation/gnu-linux.rst:16
 msgid "This is the recommended way to install the latest version for most users."
 msgstr ""
 
-#: ../../getting-started/installation/gnu-linux.rst:20
+#: ../../getting-started/installation/gnu-linux.rst:16
 msgid "Flatpak"
 msgstr ""
 
-#: ../../getting-started/installation/gnu-linux.rst:21
+#: ../../getting-started/installation/gnu-linux.rst:17
 msgid "Flatpak builds are coming soon."
 msgstr ""
 
-#: ../../getting-started/installation/gnu-linux.rst:24
+#: ../../getting-started/installation/gnu-linux.rst:20
 msgid "AppImage"
 msgstr ""
 
-#: ../../getting-started/installation/gnu-linux.rst:25
+#: ../../getting-started/installation/gnu-linux.rst:21
 msgid "AppImage builds are coming soon."
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:24
+msgid "Fedora"
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:25
+msgid ""
+"For Fedora users, ycollect maintains a Zrythm package in `copr "
+"<https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/>`_"
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:34
+msgid "LibraZik"
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:35
+msgid ""
+"Zrythm is available in `LibraZik 2 <https://librazik.tuxfamily.org/>`_ "
+"for testing."
 msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:39
@@ -304,8 +238,8 @@ msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:40
 msgid ""
-"For Arch GNU/Linux users, Zrythm is also available in the AUR under "
-"`zrythm <https://aur.archlinux.org/packages/zrythm/>`_ and `zrythm-git "
+"For Arch GNU/Linux users, Zrythm is available in the AUR under `zrythm "
+"<https://aur.archlinux.org/packages/zrythm/>`_ and `zrythm-git "
 "<https://aur.archlinux.org/packages/zrythm-git/>`_."
 msgstr ""
 
@@ -357,36 +291,77 @@ msgstr ""
 msgid "Minimum Requirements"
 msgstr ""
 
-#: ../../getting-started/system-requirements/intro.rst:10
-msgid ""
-"We don't know yet. The oldest machine tested on was T400 and it was a bit"
-" laggy. If you have any experiences with older machines please let us "
-"know."
+#: ../../getting-started/system-requirements/intro.rst:12
+#: ../../getting-started/system-requirements/intro.rst:27
+msgid "Hardware"
 msgstr ""
 
 #: ../../getting-started/system-requirements/intro.rst:13
-msgid "Recommended Requirements"
+msgid "x86_64, i686 or ARM processor"
 msgstr ""
 
-#: ../../getting-started/system-requirements/intro.rst:14
-msgid "We recommend running a fairly modern machine."
+#: ../../getting-started/system-requirements/intro.rst:16
+#: ../../getting-started/system-requirements/intro.rst:34
+msgid "Software"
 msgstr ""
 
 #: ../../getting-started/system-requirements/intro.rst:17
-msgid "Audio Interface"
+msgid "Unix-compatible OS"
 msgstr ""
 
 #: ../../getting-started/system-requirements/intro.rst:18
+msgid "GTK 3.22 or later"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:19
+msgid "A working JACK setup"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:22
+msgid "Recommended"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:23
+msgid ""
+"We recommend running a fairly modern machine with the following specs so "
+"you can take full advantage of Zrythm."
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:28
+msgid "A fast processor"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:29
+msgid "Large enough monitor"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:30
+msgid "Audio interface"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:31
+msgid "MIDI keyboard"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:35
+msgid "A JACK patchbay such as Carla or Catia"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:38
+msgid "Audio Interface"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:39
 msgid ""
 "An Audio Interface is recommended as it offers low latency and better "
 "quality (especially if recording audio)."
 msgstr ""
 
-#: ../../getting-started/system-requirements/intro.rst:21
+#: ../../getting-started/system-requirements/intro.rst:43
 msgid "JACK"
 msgstr ""
 
-#: ../../getting-started/system-requirements/intro.rst:22
+#: ../../getting-started/system-requirements/intro.rst:44
 msgid ""
 "JACK needs to be set up and configured before running Zrythm. We "
 "recommend using `Cadence "
@@ -394,11 +369,11 @@ msgid ""
 "the process very easy."
 msgstr ""
 
-#: ../../getting-started/system-requirements/intro.rst:24
+#: ../../getting-started/system-requirements/intro.rst:46
 msgid "Open Cadence"
 msgstr ""
 
-#: ../../getting-started/system-requirements/intro.rst:28
+#: ../../getting-started/system-requirements/intro.rst:50
 msgid "Click Configure and select your Audio Interface"
 msgstr ""
 
@@ -408,25 +383,46 @@ msgstr "Visione d’insieme"
 
 #: ../../getting-started/zrythm-overview.rst:8
 msgid ""
-"Zrythm is a highly automated Digital Audio Workstation (DAW) designed to "
-"be featureful and intuitive to use. Zrythm sets itself apart from other "
-"DAWs by allowing extensive automation via built-in LFOs and envelopes ( "
-"Modulators) and intuitive MIDI or audio editing and arranging via "
-"loopable clips."
+"Zrythm is a digital audio workstation designed to be featureful and easy "
+"to use. It has the following features."
 msgstr ""
 
-#: ../../getting-started/zrythm-overview.rst:15
-#, fuzzy
-msgid ""
-"In the usual Composing -> Mixing -> Mastering workflow, Zrythm puts the "
-"most focus on the Composing part. It allows musicians to quickly lay down"
-" and process their musical ideas without taking too much time for "
-"unnecessary work."
+#: ../../getting-started/zrythm-overview.rst:14
+msgid "Limitless automation"
 msgstr ""
-"Nel consueto processo di composizione-> mixing-> mastering, Zrythm mette "
-"il massimo focus sulla parte di composizione. Esso consente ai musicisti "
-"di stabilire rapidamente e elaborare le loro idee musicali senza prendere"
-" troppo tempo per il lavoro inutile."
+
+#: ../../getting-started/zrythm-overview.rst:13
+msgid ""
+"Allows you to automate almost anything with automation events using "
+"straight lines, ramps and curves, or with CV signals from LFO and "
+"envelope plugins."
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:16
+msgid "LV2 plugins"
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:17
+msgid "Supports the free LV2 plugin format."
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:18
+msgid "JACK support"
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:19
+msgid "JACK aware, with support for JACK transport."
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:21
+msgid "Chord assistance"
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:21
+msgid ""
+"Has a chord pad for trying out chords in a scale and a chord track to "
+"help with chord progressions."
+msgstr ""
 
 #~ msgid "Here are a few terms you should be aware of when using Zrythm."
 #~ msgstr ""
@@ -561,4 +557,148 @@ msgstr ""
 #~ "fully translated and available in "
 #~ "`LibraZik <https://librazik.tuxfamily.org/>`_."
 #~ msgstr ""
+
+#~ msgid "https://download.savannah.nongnu.org/releases/zrythm/"
+#~ msgstr ""
+
+#~ msgid "Basic Concepts and Terminology"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Here are a few terms you should"
+#~ " be aware of when using Zrythm. "
+#~ "They are explained further in their "
+#~ "corresponding chapters."
+#~ msgstr ""
+
+#~ msgid "Regions"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Region (Clip) is a container for"
+#~ " MIDI Notes or audio. This is "
+#~ "what a Region looks like in the"
+#~ " arranger."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Regions are edited in the Editor "
+#~ "Panel. In this case, the clip is"
+#~ " looped."
+#~ msgstr ""
+
+#~ msgid "Timeline"
+#~ msgstr ""
+
+#~ msgid "The Timeline is where the song is arranged, also known as Arranger."
+#~ msgstr ""
+
+#~ msgid "Track"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Track is a single slot in "
+#~ "the Timeline containing various Regions "
+#~ "and Automation. It may contain various"
+#~ " lanes, such as Automation Lanes. "
+#~ "There are some special tracks like "
+#~ "the Chord Track and the Marker "
+#~ "Track that contain chords and markers"
+#~ " respectively."
+#~ msgstr ""
+
+#~ msgid "Tracklist"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The Tracklist contains all of the "
+#~ "Tracks in the project. It is split"
+#~ " into the top (pinned) Tracklist and"
+#~ " the bottom (main) Tracklist."
+#~ msgstr ""
+
+#~ msgid "Channel"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Channel is a single slot in "
+#~ "the Mixer. Most types of Tracks "
+#~ "have a corresponding Channel."
+#~ msgstr ""
+
+#~ msgid "Mixer"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The Mixer contains all of the "
+#~ "Channels in the Project and is "
+#~ "used to mix the audio signals from"
+#~ " each Channel."
+#~ msgstr ""
+
+#~ msgid "Range"
+#~ msgstr ""
+
+#~ msgid "A Range is a selection of time between two positions."
+#~ msgstr ""
+
+#~ msgid "MIDI Note"
+#~ msgstr ""
+
+#~ msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
+#~ msgstr ""
+
+#~ msgid "You will be presented with the following"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For Arch GNU/Linux users, Zrythm is "
+#~ "also available in the AUR under "
+#~ "`zrythm <https://aur.archlinux.org/packages/zrythm/>`_ and"
+#~ " `zrythm-git <https://aur.archlinux.org/packages"
+#~ "/zrythm-git/>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "We don't know yet. The oldest "
+#~ "machine tested on was T400 and it"
+#~ " was a bit laggy. If you have"
+#~ " any experiences with older machines "
+#~ "please let us know."
+#~ msgstr ""
+
+#~ msgid "Recommended Requirements"
+#~ msgstr ""
+
+#~ msgid "We recommend running a fairly modern machine."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm is a highly automated Digital "
+#~ "Audio Workstation (DAW) designed to be"
+#~ " featureful and intuitive to use. "
+#~ "Zrythm sets itself apart from other "
+#~ "DAWs by allowing extensive automation "
+#~ "via built-in LFOs and envelopes ("
+#~ " Modulators) and intuitive MIDI or "
+#~ "audio editing and arranging via loopable"
+#~ " clips."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "In the usual Composing -> Mixing "
+#~ "-> Mastering workflow, Zrythm puts the"
+#~ " most focus on the Composing part."
+#~ " It allows musicians to quickly lay"
+#~ " down and process their musical ideas"
+#~ " without taking too much time for "
+#~ "unnecessary work."
+#~ msgstr ""
+#~ "Nel consueto processo di composizione-> "
+#~ "mixing-> mastering, Zrythm mette il "
+#~ "massimo focus sulla parte di "
+#~ "composizione. Esso consente ai musicisti "
+#~ "di stabilire rapidamente e elaborare le"
+#~ " loro idee musicali senza prendere "
+#~ "troppo tempo per il lavoro inutile."
 

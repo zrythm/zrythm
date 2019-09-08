@@ -17,3 +17,4 @@ please install that version of Zrythm.
 
 .. hint::
   Each project file will contain the version of Zrythm it was made with
+  and a date

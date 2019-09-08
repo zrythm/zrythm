@@ -7,15 +7,37 @@ System Requirements
 
 Minimum Requirements
 --------------------
-We don't know yet. The oldest machine tested on was T400 and it was a bit laggy. If you have any experiences with older machines please let us know.
 
-Recommended Requirements
-------------------------
-We recommend running a fairly modern machine.
+Hardware
+~~~~~~~~
+- x86_64, i686 or ARM processor
+
+Software
+~~~~~~~~
+- Unix-compatible OS
+- GTK 3.22 or later
+- A working JACK setup
+
+Recommended
+-----------
+We recommend running a fairly modern machine with the following specs
+so you can take full advantage of Zrythm.
+
+Hardware
+~~~~~~~~
+- A fast processor
+- Large enough monitor
+- Audio interface
+- MIDI keyboard
+
+Software
+~~~~~~~~
+- A JACK patchbay such as Carla or Catia
 
 Audio Interface
 ---------------
-An Audio Interface is recommended as it offers low latency and better quality (especially if recording audio).
+An Audio Interface is recommended as it offers
+low latency and better quality (especially if recording audio).
 
 JACK
 ----

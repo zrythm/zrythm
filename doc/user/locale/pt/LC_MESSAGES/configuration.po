@@ -7,34 +7,34 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"POT-Creation-Date: 2019-09-09 00:34+0100\n"
 "PO-Revision-Date: 2019-09-05 07:58+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualconfiguration/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../../configuration/additional-settings.rst:19
+#: ../../configuration/additional-settings.rst:6
 msgid "Additional Settings"
 msgstr "Configurações adicionais"
 
-#: ../../configuration/additional-settings.rst:21
+#: ../../configuration/additional-settings.rst:8
+#, fuzzy
 msgid ""
 "Zrythm stores all of its configuration using the GSettings mechanism, "
 "which comes with the ``gsettings`` command for changing settings from the"
-" command line."
+" command line, or the optional GUI tool ``dconf-editor``."
 msgstr ""
 "O Zrythm armazena toda a sua configuração usando o mecanismo GSettings, "
-"através do comando ``gsettings`` para alterar as configurações da linha de "
-"comando."
+"através do comando ``gsettings`` para alterar as configurações da linha "
+"de comando."
 
-#: ../../configuration/additional-settings.rst:26
+#: ../../configuration/additional-settings.rst:14
 msgid ""
 "Normally, you shouldn't need to access any of these settings as most of "
 "them are found inside Zrythm's UI, and it is not recommended to edit them"
@@ -43,41 +43,56 @@ msgid ""
 msgstr ""
 "Normalmente você não deve precisar acessar nenhuma dessas configurações, "
 "pois a maioria delas encontra-se dentro da interface do Zrythm e não é "
-"recomendado editá-las, pois o Zrythm valida algumas configurações antes de "
-"gravá-las, mas em alguns casos você pode querer alterá-las manualmente por "
-"algum motivo."
+"recomendado editá-las, pois o Zrythm valida algumas configurações antes "
+"de gravá-las, mas em alguns casos você pode querer alterá-las manualmente"
+" por algum motivo."
 
-#: ../../configuration/additional-settings.rst:34
+#: ../../configuration/additional-settings.rst:23
+msgid "Using gsettings"
+msgstr ""
+
+#: ../../configuration/additional-settings.rst:25
 msgid ""
 "To see what settings are available and for info on how to use "
 "``gsettings`` see ``man gsettings``."
 msgstr ""
-"Para ver quais configurações estão disponíveis e para informações sobre como "
-"usar ``gsettings`` veja ``man gsettings``."
+"Para ver quais configurações estão disponíveis e para informações sobre "
+"como usar ``gsettings`` veja ``man gsettings``."
 
-#: ../../configuration/additional-settings.rst:37
+#: ../../configuration/additional-settings.rst:28
+#, fuzzy
 msgid ""
 "As an example, to change the audio backend you would do ``gsettings set "
-"org.zrythm.preferences audio-backend \"jack\"``"
+"org.zrythm.Zrythm.preferences audio-backend \"jack\"``"
 msgstr ""
-"Como um exemplo, para mudar o backend de áudio você executaria ``gsettings "
-"set org.zrythm.preferences audio-backend \"jack\"``"
+"Como um exemplo, para mudar o backend de áudio você executaria "
+"``gsettings set org.zrythm.preferences audio-backend \"jack\"``"
 
-#: ../../configuration/additional-settings.rst:40
+#: ../../configuration/additional-settings.rst:31
 msgid "You can use the range option to get a list of the available values:"
 msgstr ""
 "Você pode usar a opção de intervalo para obter uma lista dos valores "
 "disponíveis:"
 
-#: ../../configuration/device-setup/intro.rst:19
+#: ../../configuration/additional-settings.rst:39
+msgid "Using dconf-editor"
+msgstr ""
+
+#: ../../configuration/additional-settings.rst:41
+msgid ""
+"Install and run dconf-editor, and navigate to ``org.zrythm.Zrythm``. All "
+"the settings can be found there."
+msgstr ""
+
+#: ../../configuration/device-setup/intro.rst:6
 msgid "Device Setup"
 msgstr "Configuração do Aparelho"
 
-#: ../../configuration/device-setup/intro.rst:22
+#: ../../configuration/device-setup/intro.rst:9
 msgid "Connecting MIDI and Audio Devices"
 msgstr "Conectando Aparelhos de MIDI e Áudio"
 
-#: ../../configuration/device-setup/intro.rst:24
+#: ../../configuration/device-setup/intro.rst:11
 msgid ""
 "On Linux machines, Zrythm works with both ALSA and JACK as available "
 "backends. Depending on the backend selected, the configuration differs."
@@ -85,17 +100,28 @@ msgstr ""
 "Em sistemas Linux, o Zrythm trabalha com ALSA e JACK como backends "
 "disponíveis. Dependendo do backend selecionado, a configuração difere."
 
-#: ../../configuration/device-setup/intro.rst:29
+#: ../../configuration/device-setup/intro.rst:15
+msgid ""
+"Zrythm will auto-scan and allow you to connect to input devices for "
+"recording through the Track Inspector, as below, and in most cases you "
+"don't need to use any external tools or auto-connect mechanism."
+msgstr ""
+
+#: ../../configuration/device-setup/intro.rst:24
 msgid "Auto-Connecting Devices"
 msgstr "Auto-Conectar Aparelhos"
 
-#: ../../configuration/device-setup/intro.rst:31
+#: ../../configuration/device-setup/intro.rst:26
 msgid ""
-"Zrythm has an option to select devices to auto-connect on launch. TODO "
-"explain it."
+"For other types of devices that are not linked to specific tracks, such "
+"as devices that send global MIDI messages and devices that control the "
+"transport, Zrythm has an option to select these devices to auto-connect "
+"to on launch."
 msgstr ""
-"O Zrythm tem uma opção para selecionar aparelhos para auto-conexão na "
-"inicialização. TODO explica isso."
+
+#: ../../configuration/device-setup/intro.rst:32
+msgid "This is a TODO feature"
+msgstr ""
 
 #: ../../configuration/device-setup/intro.rst:35
 msgid "JACK"
@@ -108,9 +134,9 @@ msgid ""
 "MIDI, devices might need to be bridged to JACK using ``a2jmidid``."
 msgstr ""
 "Ao usar o áudio JACK e o backend MIDI, o Zrythm expõe as portas ao JACK, "
-"para que os aparelhos possam ser conectados lá usando uma ferramenta como o "
-"Catia. Note que para MIDI, os aparelhos podem precisar ser ligados em ponte "
-"para JACK usando ``a2jmididid``."
+"para que os aparelhos possam ser conectados lá usando uma ferramenta como"
+" o Catia. Note que para MIDI, os aparelhos podem precisar ser ligados em "
+"ponte para JACK usando ``a2jmididid``."
 
 #: ../../configuration/device-setup/intro.rst:43
 msgid "An example configuration looks like this (in Catia inside Cadence)"
@@ -123,70 +149,72 @@ msgstr "ALSA"
 #: ../../configuration/device-setup/intro.rst:50
 msgid "A tool like Catia can be used to connect MIDI devices to Zrythm."
 msgstr ""
-"Uma ferramenta como o Catia pode ser usada para conectar aparelhos MIDI ao "
-"Zrythm."
+"Uma ferramenta como o Catia pode ser usada para conectar aparelhos MIDI "
+"ao Zrythm."
 
-#: ../../configuration/first-run-wizard.rst:19
+#: ../../configuration/first-run-wizard.rst:6
 msgid "First Run Wizard"
 msgstr "Assistente de primeira execução"
 
-#: ../../configuration/first-run-wizard.rst:21
+#: ../../configuration/first-run-wizard.rst:8
 msgid ""
 "When you first run Zrythm, it will display a wizard that lets you "
 "configure the basic settings that Zrythm will use. These include MIDI "
 "devices, the default Zrythm path, interface language and audio/MIDI "
 "backends."
 msgstr ""
-"Quando você executa o Zrythm pela primeira vez, ele exibe um assistente que "
-"permite-lhe configurar as configurações básicas que o Zrythm usará. Estes "
-"incluem aparelho MIDI, o caminho padrão do Zrythm, idioma da interface e "
-"backends de áudio/MIDI."
+"Quando você executa o Zrythm pela primeira vez, ele exibe um assistente "
+"que permite-lhe configurar as configurações básicas que o Zrythm usará. "
+"Estes incluem aparelho MIDI, o caminho padrão do Zrythm, idioma da "
+"interface e backends de áudio/MIDI."
 
-#: ../../configuration/first-run-wizard.rst:27
+#: ../../configuration/first-run-wizard.rst:14
 msgid "Language Selection"
 msgstr "Seleção de idioma"
 
-#: ../../configuration/first-run-wizard.rst:31
+#: ../../configuration/first-run-wizard.rst:18
 msgid ""
 "Zrythm lets you choose the language of the interface. The interface is "
 "already translated in multiple languages, so choose the language you are "
 "most comfortable in."
 msgstr ""
 "O Zrythm permite-lhe escolher o idioma da interface. A interface já está "
-"traduzida a vários idiomas, por isso escolha o idioma em que se sente mais "
-"confortável."
+"traduzida a vários idiomas, por isso escolha o idioma em que se sente "
+"mais confortável."
 
-#: ../../configuration/first-run-wizard.rst:35
+#: ../../configuration/first-run-wizard.rst:22
 msgid "You must have a locale for the language you want to use enabled."
 msgstr "Você deve ter ativado uma localidade ao idioma que deseja usar."
 
-#: ../../configuration/first-run-wizard.rst:37
+#: ../../configuration/first-run-wizard.rst:24
 msgid ""
 "This is usually not a problem since you are probably already using the "
 "correct locale for your language. In case a locale cannot be found, you "
 "will see this message telling you the steps to enable it."
 msgstr ""
-"Isso geralmente não é um problema, já que você provavelmente já está usando "
-"a localidade correta para o seu idioma. Caso não seja possível encontrar uma "
-"localidade, você verá esta mensagem informando os passos para ativá-lo."
+"Isso geralmente não é um problema, já que você provavelmente já está "
+"usando a localidade correta para o seu idioma. Caso não seja possível "
+"encontrar uma localidade, você verá esta mensagem informando os passos "
+"para ativá-lo."
 
-#: ../../configuration/first-run-wizard.rst:43
+#: ../../configuration/first-run-wizard.rst:30
 msgid "Path"
 msgstr "Caminho"
 
-#: ../../configuration/first-run-wizard.rst:47
+#: ../../configuration/first-run-wizard.rst:34
 msgid ""
 "This is the path where Zrythm will use to save projects, temporary files,"
 " exported audio, etc. The default is \"zrythm\" in the user's directory."
 msgstr ""
-"Este é o caminho onde o Zrythm irá gravar projetos, ficheiros temporários, "
-"áudio exportado, etc. O padrão é \"zrythm\" no diretório do utilizador."
+"Este é o caminho onde o Zrythm irá gravar projetos, ficheiros "
+"temporários, áudio exportado, etc. O padrão é \"zrythm\" no diretório do "
+"utilizador."
 
-#: ../../configuration/first-run-wizard.rst:52
+#: ../../configuration/first-run-wizard.rst:39
 msgid "Audio/MIDI Backends"
 msgstr "Backends de Áudio/MIDI"
 
-#: ../../configuration/first-run-wizard.rst:56
+#: ../../configuration/first-run-wizard.rst:43
 msgid ""
 "Zrythm supports multiple audio and MIDI backend engines. JACK is the "
 "recommended one for both, but it takes some time to set up if this is "
@@ -195,40 +223,40 @@ msgid ""
 msgstr ""
 "O Zrythm suporta múltiplos motores de áudio e backend MIDI. JACK é "
 "recomendado para ambos, mas leva algum tempo para configurar se esta é a "
-"primeira vez que o utiliza. Se você não quiser usar JACK por alguma razão "
-"você pode selecionar outros backends como ALSA."
+"primeira vez que o utiliza. Se você não quiser usar JACK por alguma razão"
+" você pode selecionar outros backends como ALSA."
 
-#: ../../configuration/first-run-wizard.rst:62
+#: ../../configuration/first-run-wizard.rst:49
 msgid ""
 "Click :zbutton:`Test` to try connecting to the backend to see if it is "
 "functional."
 msgstr ""
-"Clique em :zbutton:`Teste` para tentar conectar ao backend para ver se ele é "
-"funcional."
+"Clique em :zbutton:`Teste` para tentar conectar ao backend para ver se "
+"ele é funcional."
 
-#: ../../configuration/first-run-wizard.rst:65
+#: ../../configuration/first-run-wizard.rst:52
 msgid ""
 "JACK MIDI requires a JACK server to be running, which means you probably "
 "want to use it with the JACK audio backend."
 msgstr ""
-"JACK MIDI requer um servidor JACK para ser executado, o que significa que "
-"você provavelmente quer usá-lo com o backend de áudio JACK."
+"JACK MIDI requer um servidor JACK para ser executado, o que significa que"
+" você provavelmente quer usá-lo com o backend de áudio JACK."
 
-#: ../../configuration/first-run-wizard.rst:70
+#: ../../configuration/first-run-wizard.rst:57
 msgid "MIDI Devices"
 msgstr "Aparelhos MIDI"
 
-#: ../../configuration/first-run-wizard.rst:74
+#: ../../configuration/first-run-wizard.rst:61
 msgid ""
 "These are the discovered devices that will be auto-connected and ready to"
 " use every time you run Zrythm. Click \"Rescan\" to scan for devices "
 "again."
 msgstr ""
-"Estes são os aparelhos descobertos que serão auto-conectados e prontos para "
-"uso toda vez que você executar o Zrythm. Clique em \"Redigitalizar\" para "
-"procurar aparelhos novamente."
+"Estes são os aparelhos descobertos que serão auto-conectados e prontos "
+"para uso toda vez que você executar o Zrythm. Clique em \"Redigitalizar\""
+" para procurar aparelhos novamente."
 
-#: ../../configuration/first-run-wizard.rst:78
+#: ../../configuration/first-run-wizard.rst:65
 msgid ""
 "All of the settings mentioned here are also available in the preferences "
 "(Ctr+Shift+P or File->Preferences), so don't worry if you selected the "
@@ -238,23 +266,23 @@ msgstr ""
 "preferências (Ctrl+Shift+P ou Ficheiro->Predefinições), então não se "
 "preocupe se você selecionou as configurações erradas."
 
-#: ../../configuration/intro.rst:19
+#: ../../configuration/intro.rst:6
 msgid "Configuration"
 msgstr "Configuração"
 
-#: ../../configuration/preferences/audio.rst:19
+#: ../../configuration/preferences/audio.rst:6
 msgid "Audio Tab"
 msgstr "Separador Áudio"
 
-#: ../../configuration/preferences/intro.rst:19
+#: ../../configuration/preferences/intro.rst:6
 msgid "Preferences"
 msgstr "Preferências"
 
-#: ../../configuration/preferences/overview.rst:19
+#: ../../configuration/preferences/overview.rst:6
 msgid "Overview"
 msgstr "Visão Geral"
 
-#: ../../configuration/preferences/overview.rst:21
+#: ../../configuration/preferences/overview.rst:8
 msgid ""
 "Zrythm has a Preferences dialog containing all of the global settings "
 "that can be accessed by clicking the gear icon or by ``Ctrl+Shift+P``."
@@ -263,23 +291,23 @@ msgstr ""
 "configurações globais que podem ser acessadas clicando no ícone de "
 "engrenagem ou por ``Ctrl+Shift+P``."
 
-#: ../../configuration/preferences/overview.rst:25
+#: ../../configuration/preferences/overview.rst:12
 msgid ""
 "The Preferences dialog is split into the following sections, which are "
 "explained in the next chapters:"
 msgstr ""
-"O diálogo Preferências é dividido nas seguintes seções, que são explicadas "
-"nos próximos capítulos:"
+"O diálogo Preferências é dividido nas seguintes seções, que são "
+"explicadas nos próximos capítulos:"
 
-#: ../../configuration/preferences/overview.rst:29
+#: ../../configuration/preferences/overview.rst:16
 msgid "Audio"
 msgstr "Áudio"
 
-#: ../../configuration/preferences/overview.rst:30
+#: ../../configuration/preferences/overview.rst:17
 msgid "GUI"
 msgstr "GUI"
 
-#: ../../configuration/preferences/overview.rst:31
+#: ../../configuration/preferences/overview.rst:18
 msgid "Backend"
 msgstr "Backend"
 
@@ -499,3 +527,13 @@ msgstr "Backend"
 
 #~ msgid "Click Configure and select your Audio Interface"
 #~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm has an option to select "
+#~ "devices to auto-connect on launch. "
+#~ "TODO explain it."
+#~ msgstr ""
+#~ "O Zrythm tem uma opção para "
+#~ "selecionar aparelhos para auto-conexão "
+#~ "na inicialização. TODO explica isso."
+

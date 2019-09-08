@@ -5,9 +5,65 @@
 Saving & Loading
 ================
 
+Loading Projects
+----------------
+
+When Zrythm launches, it will ask you to select a project to load from
+a list of recent projects,
+or to create a new one.
+
+.. image:: /_static/img/project_list.png
+   :align: center
+
+When you select a project and click :zbutton:`Apply`, Zrythm will
+load that project.
+
+Creating Projects
+-----------------
+
+In the menu above, if you select :zbutton:`Create new project`,
+Zrythm will ask you for a template to use for creating the new
+Project.
+
+.. image:: /_static/img/project_select_template.png
+   :align: center
+
+.. tip:: A blank template is available, but you can create your
+  own templates by copying a project folder to the ``Templates``
+  directory in the Zrythm installation path.
+
+Once a template (or blank) is selected and you click :zbutton:`Apply`,
+Zrythm will ask you for a parent directory to save the Project
+in and a title for the Project.
+
+.. image:: /_static/img/create_new_project.png
+   :align: center
+
+Once you accept, the new Project will be set up and you will be
+ready to go.
+
+Saving Projects
+---------------
+
 Saving works as you would expect: :zbutton:`Save As...` will save the Project in a new location
 and :zbutton:`Save` will save the Project in the
 previous location.
 
-When loading a Project, Zrythm expects you to
-give it the Project directory.
+.. note:: When saving projects, Zrythm expects you to
+  give it a directory
+
+Automatic Backups
+-----------------
+
+Zrythm has an option to auto-save the current project as a back-up.
+When launching Zrythm and selecting to load your project, Zrythm will
+let you know if there are newer back-ups of that project and ask you
+if you want to load them instead.
+
+.. image:: /_static/img/use_backup.png
+   :align: center
+
+The auto-save interval can be changed (or disabled) in the preferences
+window.
+
+.. tip:: The backups are saved in the project's directory, under ``backups``

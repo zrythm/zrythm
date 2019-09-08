@@ -6,6 +6,10 @@ various distros on
 [OBS (Open Build System)](https://build.opensuse.org/package/show/home:alextee/zrythm#),
 so feel free to use these as a base.
 
+If you package Zrythm in a public repository,
+please let us know - we may add a link on
+on our website.
+
 # Upstream URLs
 
 Please use
@@ -25,6 +29,23 @@ work.
 # Docs
 
 See the `manpage` and `user_manual` meson options.
+
+# Post-Install Commands
+
+Depending on the distro, some of the
+the following commands will need to be run with
+appropriate options. Some distros run these
+automatically.
+
+    glib-compile-schemas
+    fc-cache
+    gtk-update-icon-cache
+    update-mime-database
+    update-desktop-database
+    update-gdk-pixbuf-loaders
+
+See `scripts/meson_post_install.py` for more
+details.
 
 # Bug Reports
 
