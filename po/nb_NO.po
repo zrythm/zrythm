@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-07 23:49+0100\n"
-"PO-Revision-Date: 2019-09-06 16:21+0000\n"
+"PO-Revision-Date: 2019-09-09 17:25+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
 "zrythm/nb_NO/>\n"
@@ -2328,9 +2328,8 @@ msgstr "inngående automasjon og intuitiv digital lyd-arbeidsstasjon"
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:26
-#, fuzzy
 msgid "zrythm"
-msgstr "Zrythm"
+msgstr "zrythm"
 
 #~ msgid ""
 #~ "Project doesn't have a path yet. Please save the project before exporting."
