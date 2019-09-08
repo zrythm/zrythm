@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-07 23:49+0100\n"
-"PO-Revision-Date: 2019-09-06 16:20+0000\n"
+"PO-Revision-Date: 2019-09-08 11:25+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -50,10 +50,13 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"Neuere Sicherung gefunden:\n"
+"  %s.\n"
+"Die neuere Sicherung verwenden?"
 
 #: src/project.c:837
 msgid "Backup saved."
-msgstr ""
+msgstr "Sicherung gespeichert."
 
 #: src/project.c:843
 msgid "Project saved."
@@ -304,9 +307,8 @@ msgid "Last Modified"
 msgstr "Letzte Änderung"
 
 #: src/gui/widgets/project_assistant.c:376
-#, fuzzy
 msgid "Blank project"
-msgstr "Lade Projekt"
+msgstr "Leeres Projekt"
 
 #: src/gui/widgets/left_dock_edge.c:104
 msgid "Inspector"
@@ -1475,7 +1477,6 @@ msgid "Select Project"
 msgstr "Projekt auswählen"
 
 #: resources/ui/project_assistant.ui:43
-#, fuzzy
 msgid "Select a project"
 msgstr "Projekt auswählen"
 
@@ -1488,9 +1489,8 @@ msgid "Removes selected project from the list"
 msgstr "Entfernt das gewählte Projekt aus der Liste"
 
 #: resources/ui/project_assistant.ui:130
-#, fuzzy
 msgid "Select a template"
-msgstr "Wähle einen Ordner"
+msgstr "Eine Vorlage auswählen"
 
 #: resources/ui/chord_selector_window.ui:51
 msgid "Root Note"
@@ -1628,13 +1628,14 @@ msgid "Cancel"
 msgstr "Abbrechen"
 
 #: resources/ui/create_project_dialog.ui:69
-#, fuzzy
 msgid "Parent directory"
-msgstr "Verzeichnis Öffnen"
+msgstr "Übergeordnetes Verzeichnis"
 
 #: resources/ui/create_project_dialog.ui:82
 msgid "Select parent directory to save the project in"
 msgstr ""
+"Wählen Sie das übergeordnete Verzeichnis aus, in dem das Projekt gespeichert "
+"werden soll"
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
@@ -2248,19 +2249,21 @@ msgid "GUI"
 msgstr "Oberfläche"
 
 #: resources/ui/preferences.ui:437 resources/ui/preferences.ui:483
-#, fuzzy
 msgid "Projects"
-msgstr "Projekt"
+msgstr "Projekte"
 
 #: resources/ui/preferences.ui:449
 msgid "Autosave interval"
-msgstr ""
+msgstr "Intervall für automatisches Speichern"
 
 #: resources/ui/preferences.ui:460
 msgid ""
 "Set the interval to auto-save project backups, in minutes. Setting this to 0 "
 "will disable auto-save"
 msgstr ""
+"Legen Sie das Intervall für die automatische Speicherung von Projekt-"
+"Sicherungen in Minuten fest. Wenn Sie diesen Wert auf 0 setzen, wird die "
+"automatische Speicherung deaktiviert"
 
 #: data/zrythm.desktop.in:21
 msgid "Digital Audio Workstation"
