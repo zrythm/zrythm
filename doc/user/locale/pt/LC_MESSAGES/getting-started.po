@@ -7,113 +7,111 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"POT-Creation-Date: 2019-09-08 11:34+0100\n"
 "PO-Revision-Date: 2019-09-01 12:44+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualgetting-started/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
+"/manualgetting-started/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../../getting-started/additional-resources.rst:19
+#: ../../getting-started/additional-resources.rst:6
 msgid "Additional Resources"
 msgstr "Recursos Adicionais"
 
-#: ../../getting-started/additional-resources.rst:22
+#: ../../getting-started/additional-resources.rst:9
 msgid "IRC/Matrix"
 msgstr "IRC/Matrix"
 
-#: ../../getting-started/additional-resources.rst:23
+#: ../../getting-started/additional-resources.rst:10
 msgid ""
 "We offer support on IRC at ``#zrythm`` on Freenode. Matrix users can use "
 "``#zrythmdaw:matrix.org``."
 msgstr ""
-"Oferecemos suporte no IRC em ``##zrythm`` na Freenode. Usuários Matrix podem "
-"usar ``##zrythmdaw:matrix.org``."
+"Oferecemos suporte no IRC em ``##zrythm`` na Freenode. Usuários Matrix "
+"podem usar ``##zrythmdaw:matrix.org``."
 
-#: ../../getting-started/additional-resources.rst:27
+#: ../../getting-started/additional-resources.rst:14
 msgid "Issue Tracker"
 msgstr "Rastreador de Problemas"
 
-#: ../../getting-started/additional-resources.rst:28
+#: ../../getting-started/additional-resources.rst:15
 msgid ""
 "The issue tracker can be found on `Savannah "
 "<https://savannah.nongnu.org/support/?group=zrythm>`_."
 msgstr ""
-"O rastreador de problemas encontra-se em `Savannah <https://savannah.nongnu."
-"org/support/?group=zrythm>`_."
+"O rastreador de problemas encontra-se em `Savannah "
+"<https://savannah.nongnu.org/support/?group=zrythm>`_."
 
-#: ../../getting-started/additional-resources.rst:31
+#: ../../getting-started/additional-resources.rst:18
 msgid "Source Code"
 msgstr "Código- Fonte"
 
-#: ../../getting-started/additional-resources.rst:32
+#: ../../getting-started/additional-resources.rst:19
 msgid ""
 "Zrythm's source code can be found on our `CGit instance "
 "<https://git.zrythm.org/cgit/zrythm/>`_ or in the mirror repository at "
 "`GNU Savannah <http://git.savannah.nongnu.org/cgit/zrythm.git>`_."
 msgstr ""
 "O código-fonte do Zrythm encontra-se na nossa `instância "
-"CGit<https://git.zrythm.org/cgit/zrythm/>`_ ou no repositório espelho em `"
-"GNU Savannah <http://git.savannah.nongnu.org/cgit/zrythm.git>`_."
+"CGit<https://git.zrythm.org/cgit/zrythm/>`_ ou no repositório espelho em "
+"`GNU Savannah <http://git.savannah.nongnu.org/cgit/zrythm.git>`_."
 
-#: ../../getting-started/additional-resources.rst:35
+#: ../../getting-started/additional-resources.rst:22
 msgid "Older Versions"
 msgstr "Versões Mais Antigas"
 
-#: ../../getting-started/additional-resources.rst:36
+#: ../../getting-started/additional-resources.rst:23
 msgid "https://download.savannah.nongnu.org/releases/zrythm/"
 msgstr "https://download.savannah.nongnu.org/releases/zrythm/"
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:19
+#: ../../getting-started/basic-concepts-and-terminology.rst:6
 msgid "Basic Concepts and Terminology"
 msgstr "Conceitos Básicos e Terminologia"
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:21
+#: ../../getting-started/basic-concepts-and-terminology.rst:8
 msgid ""
 "Here are a few terms you should be aware of when using Zrythm. They are "
 "explained further in their corresponding chapters."
 msgstr ""
-"Aqui estão alguns termos que você deve estar ciente ao usar o Zrythm. Eles "
-"são explicados mais adiante nos seus capítulos correspondentes."
+"Aqui estão alguns termos que você deve estar ciente ao usar o Zrythm. "
+"Eles são explicados mais adiante nos seus capítulos correspondentes."
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:24
+#: ../../getting-started/basic-concepts-and-terminology.rst:11
 msgid "Regions"
 msgstr "Regiões"
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:25
+#: ../../getting-started/basic-concepts-and-terminology.rst:12
 msgid ""
 "A Region (Clip) is a container for MIDI Notes or audio. This is what a "
 "Region looks like in the arranger."
 msgstr ""
-"Uma Região (Clip) é um recipiente para notas MIDI ou áudio. É assim que uma "
-"região se parece no arranjador."
+"Uma Região (Clip) é um recipiente para notas MIDI ou áudio. É assim que "
+"uma região se parece no arranjador."
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:29
+#: ../../getting-started/basic-concepts-and-terminology.rst:16
 msgid "Regions are edited in the Editor Panel. In this case, the clip is looped."
 msgstr ""
 "As regiões são editadas no Painel Editorial. Neste caso, o clipe está em "
 "loop."
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:34
+#: ../../getting-started/basic-concepts-and-terminology.rst:21
 msgid "Timeline"
 msgstr "Cronologia"
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:35
+#: ../../getting-started/basic-concepts-and-terminology.rst:22
 msgid "The Timeline is where the song is arranged, also known as Arranger."
-msgstr ""
-"A cronologia é onde a música é arranjada, também conhecida como Arranger."
+msgstr "A cronologia é onde a música é arranjada, também conhecida como Arranger."
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:40
+#: ../../getting-started/basic-concepts-and-terminology.rst:27
 msgid "Track"
 msgstr "Faixa"
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:41
+#: ../../getting-started/basic-concepts-and-terminology.rst:28
 msgid ""
 "A Track is a single slot in the Timeline containing various Regions and "
 "Automation. It may contain various lanes, such as Automation Lanes. There"
@@ -121,94 +119,97 @@ msgid ""
 "contain chords and markers respectively."
 msgstr ""
 "Uma faixa é um único slot na cronologia que contém várias regiões e "
-"automação. Pode conter várias pistas, tais como pistas de automação. Existem "
-"algumas faixas especiais como a faixa de acordes e a faixa de marcação que "
-"contêm acordes e marcadores respectivamente."
+"automação. Pode conter várias pistas, tais como pistas de automação. "
+"Existem algumas faixas especiais como a faixa de acordes e a faixa de "
+"marcação que contêm acordes e marcadores respectivamente."
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:47
+#: ../../getting-started/basic-concepts-and-terminology.rst:34
 msgid "Tracklist"
 msgstr "Lista de faixas"
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:48
+#: ../../getting-started/basic-concepts-and-terminology.rst:35
 msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
-"A Lista de faixas contém todas as Faixas do projeto. Ela é dividida na Lista "
-"de faixas superior (fixa) e na Lista de faixas inferior (principal)."
+"A Lista de faixas contém todas as Faixas do projeto. Ela é dividida na "
+"Lista de faixas superior (fixa) e na Lista de faixas inferior "
+"(principal)."
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:53
+#: ../../getting-started/basic-concepts-and-terminology.rst:40
 msgid "Channel"
 msgstr "Canal"
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:54
+#: ../../getting-started/basic-concepts-and-terminology.rst:41
 msgid ""
 "A Channel is a single slot in the Mixer. Most types of Tracks have a "
 "corresponding Channel."
 msgstr ""
-"Um Canal é um único slot no Misturador. A maioria dos tipos de Faixas tem um "
-"Canal correspondente."
+"Um Canal é um único slot no Misturador. A maioria dos tipos de Faixas tem"
+" um Canal correspondente."
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:59
+#: ../../getting-started/basic-concepts-and-terminology.rst:46
 msgid "Mixer"
 msgstr "Misturador"
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:60
+#: ../../getting-started/basic-concepts-and-terminology.rst:47
 msgid ""
 "The Mixer contains all of the Channels in the Project and is used to mix "
 "the audio signals from each Channel."
 msgstr ""
-"O Misturador contém todos os Canais do Projeto e é usado para misturar os "
-"sinais de áudio de cada Canal."
+"O Misturador contém todos os Canais do Projeto e é usado para misturar os"
+" sinais de áudio de cada Canal."
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:65
+#: ../../getting-started/basic-concepts-and-terminology.rst:52
 msgid "Range"
 msgstr "Intervalo"
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:66
+#: ../../getting-started/basic-concepts-and-terminology.rst:53
 msgid "A Range is a selection of time between two positions."
 msgstr "Um Intervalo é uma seleção de tempo entre duas posições."
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:71
+#: ../../getting-started/basic-concepts-and-terminology.rst:58
 msgid "MIDI Note"
 msgstr "Nota MIDI"
 
-#: ../../getting-started/basic-concepts-and-terminology.rst:72
+#: ../../getting-started/basic-concepts-and-terminology.rst:59
 msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
-"As notas MIDI são usadas para acionar instrumentos virtuais (ou de hardware)."
+"As notas MIDI são usadas para acionar instrumentos virtuais (ou de "
+"hardware)."
 
-#: ../../getting-started/getting-plugins.rst:19
+#: ../../getting-started/getting-plugins.rst:6
 msgid "Getting Plugins"
 msgstr "Obtendo Plugins"
 
-#: ../../getting-started/getting-plugins.rst:21
+#: ../../getting-started/getting-plugins.rst:8
 msgid ""
 "Until Zrythm ships with its own bundled plugins, you must install some "
 "plugins like synthesizers and effects before you can make music."
 msgstr ""
-"Até que o Zrythm seja lançado com seus próprios plugins, você deve instalar "
-"alguns plugins como sintetizadores e efeitos antes de poder fazer música."
+"Até que o Zrythm seja lançado com seus próprios plugins, você deve "
+"instalar alguns plugins como sintetizadores e efeitos antes de poder "
+"fazer música."
 
-#: ../../getting-started/getting-plugins.rst:25
+#: ../../getting-started/getting-plugins.rst:12
 msgid ""
 "Fortunately, there are many plugins to choose from. This guide will show "
 "you a few ways you can install plugins."
 msgstr ""
-"Felizmente, existem muitos plugins para escolher. Este guia irá mostrar-lhe "
-"algumas formas de instalar plugins."
+"Felizmente, existem muitos plugins para escolher. Este guia irá mostrar-"
+"lhe algumas formas de instalar plugins."
 
-#: ../../getting-started/getting-plugins.rst:28
+#: ../../getting-started/getting-plugins.rst:15
 msgid ""
 "If you are on Debian/Ubuntu, we highly recommend checking out the "
 "`KXstudio repositories <https://kx.studio/>`_, since there are many "
 "plugins that can easily be installed via apt."
 msgstr ""
-"Se você está no Debian/Ubuntu, nós recomendamos verificar os repositórios do "
-"`KXstudio <https://kx.studio/>`_, já que existem muitos plugins que podem "
-"ser facilmente instalados via apt."
+"Se você está no Debian/Ubuntu, nós recomendamos verificar os repositórios"
+" do `KXstudio <https://kx.studio/>`_, já que existem muitos plugins que "
+"podem ser facilmente instalados via apt."
 
-#: ../../getting-started/getting-plugins.rst:32
+#: ../../getting-started/getting-plugins.rst:19
 msgid ""
 "If you are on Arch GNU/Linux you're in luck, because you can just "
 "download the entire `pro-audio <https://www.archlinux.org/groups/x86_64"
@@ -216,73 +217,73 @@ msgid ""
 "<https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ groups, or you "
 "can hand-pick the plugins you want from there."
 msgstr ""
-"Se você usa Arch GNU/Linux já está com sorte, porque pode descarregar todos "
-"os grupos `pro-audio <https://www.archlinux.org/groups/x86>`_ ou `lv2-"
-"plugins <https://www.archlinux.org/groups/x86>`_ ou pode escolher os plugins "
-"que quiser de lá manualmente."
+"Se você usa Arch GNU/Linux já está com sorte, porque pode descarregar "
+"todos os grupos `pro-audio <https://www.archlinux.org/groups/x86>`_ ou "
+"`lv2-plugins <https://www.archlinux.org/groups/x86>`_ ou pode escolher os"
+" plugins que quiser de lá manualmente."
 
-#: ../../getting-started/getting-plugins.rst:39
+#: ../../getting-started/getting-plugins.rst:26
 msgid "If you are not sure where to start, please read on."
 msgstr "Se você não tem certeza por onde começar, por favor continue a ler."
 
-#: ../../getting-started/getting-plugins.rst:42
+#: ../../getting-started/getting-plugins.rst:29
 msgid "Recommended Plugin Bundles"
 msgstr "Pacotes de plugins recomendados"
 
-#: ../../getting-started/getting-plugins.rst:44
+#: ../../getting-started/getting-plugins.rst:31
 msgid ""
 "`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ provides a "
 "good variety of synths and a few effects that can get you started for "
 "music making right away."
 msgstr ""
-"`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ fornece uma boa "
-"variedade de sintetizadores e alguns efeitos que podem ajudá-lo a começar a "
-"fazer música imediatamente."
+"`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ fornece uma "
+"boa variedade de sintetizadores e alguns efeitos que podem ajudá-lo a "
+"começar a fazer música imediatamente."
 
-#: ../../getting-started/getting-plugins.rst:48
+#: ../../getting-started/getting-plugins.rst:35
 msgid ""
 "`ZAM Plugins <http://www.zamaudio.com/?p=976>`_ is an effects pack that "
 "contains all the basic effects like Delay, Reverb, Compression, EQ, "
 "Saturation, etc."
 msgstr ""
 "`ZAM Plugins <http://www.zamaudio.com/?p>`_ é um pacote de efeitos que "
-"contém todos os efeitos básicos como delay, reverb, compressão, equalizador, "
-"saturação, etc."
+"contém todos os efeitos básicos como delay, reverb, compressão, "
+"equalizador, saturação, etc."
 
-#: ../../getting-started/getting-plugins.rst:51
+#: ../../getting-started/getting-plugins.rst:38
 msgid "`LSP <https://lsp-plug.in/>`_ has a lot of useful effects."
 msgstr "`LSP <https://lsp-plug.in/>`_ tem muitos efeitos úteis."
 
-#: ../../getting-started/getting-plugins.rst:53
+#: ../../getting-started/getting-plugins.rst:40
 msgid ""
 "`OpenAV <http://openavproductions.com>`_ has some nice plugins worth "
 "checking out."
 msgstr ""
-"' OpenAV < http://openavproductions.com > ' _ tem alguns plugins agradáveis "
-"que valem a pena conferir."
+"' OpenAV < http://openavproductions.com > ' _ tem alguns plugins "
+"agradáveis que valem a pena conferir."
 
-#: ../../getting-started/getting-plugins.rst:55
+#: ../../getting-started/getting-plugins.rst:42
 msgid ""
 "You might also want to check out `X42 Plugins "
 "<http://x42-plugins.com/x42/>`_, which has **A LOT** of MIDI effect and "
 "meter plugins."
 msgstr ""
-"Você pôde também verificar `X42 plugins <http://x42-plugins.com/x42/>`_, que "
-"tem **MUITOS** plugins de efeitos e medidores de MIDI."
+"Você pôde também verificar `X42 plugins <http://x42-plugins.com/x42/>`_, "
+"que tem **MUITOS** plugins de efeitos e medidores de MIDI."
 
-#: ../../getting-started/getting-plugins.rst:60
+#: ../../getting-started/getting-plugins.rst:47
 msgid "Synths"
 msgstr "Sintetizadores"
 
-#: ../../getting-started/getting-plugins.rst:62
+#: ../../getting-started/getting-plugins.rst:49
 msgid ""
 "`Helm <https://tytel.org/helm/>`_ is an excellent subtractive synth that "
 "should be on everyone's toolbox."
 msgstr ""
-"`Helm < https://tytel.org/helm/>` _ é um sintetizador subtrativo excelente "
-"que deve estar na caixa de ferramentas de todos."
+"`Helm < https://tytel.org/helm/>` _ é um sintetizador subtrativo "
+"excelente que deve estar na caixa de ferramentas de todos."
 
-#: ../../getting-started/getting-plugins.rst:65
+#: ../../getting-started/getting-plugins.rst:52
 msgid ""
 "`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_, the "
 "alternative front-end to ZynAddSubFX is one of the most powerful synths "
@@ -292,11 +293,11 @@ msgstr ""
 "front-end alternativo para ZynAddSubFX é um dos sintetizadores mais "
 "poderosos que existe."
 
-#: ../../getting-started/getting-plugins.rst:70
+#: ../../getting-started/getting-plugins.rst:57
 msgid "Percussion Generators"
 msgstr "Geradores de Percussão"
 
-#: ../../getting-started/getting-plugins.rst:72
+#: ../../getting-started/getting-plugins.rst:59
 msgid ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a great kick drum "
 "synthesizer that can also synthesize other types of percussion."
@@ -304,104 +305,80 @@ msgstr ""
 "`GeonKick < https://gitlab.com/iurie/geonkick >` _ é um sintetizador de "
 "tambor de pontapé que também pode sintetizar outros tipos de percussão."
 
-#: ../../getting-started/installation/freebsd.rst:19
+#: ../../getting-started/installation/freebsd.rst:6
 msgid "FreeBSD"
 msgstr "FreeBSD"
 
-#: ../../getting-started/installation/freebsd.rst:21
+#: ../../getting-started/installation/freebsd.rst:8
 msgid ""
 "Thanks to Yuri, Zrythm is packaged for FreeBSD and the package can be "
 "found at `FreshPorts <https://www.freshports.org/audio/zrythm/>`_."
 msgstr ""
-"Graças ao Yuri, o Zrythm está empacotado para o FreeBSD e o pacote encontra-"
-"se em `FreshPorts <https://www.freshports.org/audio/zrythm/>`_."
+"Graças ao Yuri, o Zrythm está empacotado para o FreeBSD e o pacote "
+"encontra-se em `FreshPorts <https://www.freshports.org/audio/zrythm/>`_."
 
-#: ../../getting-started/installation/gnu-linux.rst:19
+#: ../../getting-started/installation/gnu-linux.rst:6
 msgid "GNU/Linux"
 msgstr "GNU/Linux"
 
-#: ../../getting-started/installation/gnu-linux.rst:22
+#: ../../getting-started/installation/gnu-linux.rst:9
 msgid "Official Builds"
 msgstr "Compilações Oficiais"
 
-#: ../../getting-started/installation/gnu-linux.rst:23
+#: ../../getting-started/installation/gnu-linux.rst:10
 msgid ""
 "You can install the latest version of Zrythm for your distro `here "
 "<https://software.opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_"
 msgstr ""
 "Você pode instalar a versão mais recente do Zrythm para sua distro `aqui "
-"<https://software.opensuse.org//download.html? project = home% 3Aalextee & "
-"package = zrythm>`_"
+"<https://software.opensuse.org//download.html? project = home% 3Aalextee "
+"& package = zrythm>`_"
 
-#: ../../getting-started/installation/gnu-linux.rst:25
+#: ../../getting-started/installation/gnu-linux.rst:12
 msgid "You will be presented with the following"
 msgstr "Ser-lhe-á apresentado o seguinte"
 
-#: ../../getting-started/installation/gnu-linux.rst:29
+#: ../../getting-started/installation/gnu-linux.rst:16
 msgid "This is the recommended way to install the latest version for most users."
 msgstr ""
-"Esta é a forma recomendada de instalar a última versão para a maioria dos "
-"usuários."
+"Esta é a forma recomendada de instalar a última versão para a maioria dos"
+" usuários."
 
-#: ../../getting-started/installation/gnu-linux.rst:33
+#: ../../getting-started/installation/gnu-linux.rst:20
 msgid "Flatpak"
 msgstr "Flatpak"
 
-#: ../../getting-started/installation/gnu-linux.rst:34
+#: ../../getting-started/installation/gnu-linux.rst:21
 msgid "Flatpak builds are coming soon."
 msgstr "Compilações Flatpak estão chegando em breve."
 
-#: ../../getting-started/installation/gnu-linux.rst:37
+#: ../../getting-started/installation/gnu-linux.rst:24
 msgid "AppImage"
 msgstr "AppImage"
 
-#: ../../getting-started/installation/gnu-linux.rst:38
+#: ../../getting-started/installation/gnu-linux.rst:25
 msgid "AppImage builds are coming soon."
 msgstr "Compilações de AppImage estão chegando em breve."
 
-#: ../../getting-started/installation/gnu-linux.rst:41
-msgid "KX Studios"
-msgstr "Estúdios KX"
-
-#: ../../getting-started/installation/gnu-linux.rst:42
-msgid ""
-"Thanks to falktx, Zrythm will also be available in the `KX Studio repos "
-"<http://kxstudio.linuxaudio.org/>`_ for Debian users"
-msgstr ""
-"Graças ao falktx, Zrythm também está disponível nos `Repos do Estudio KX "
-"<http://kxstudio.linuxaudio.org/>`_ para usuários de Debian"
-
-#: ../../getting-started/installation/gnu-linux.rst:45
-msgid "LibraZik"
-msgstr "LibraZik"
-
-#: ../../getting-started/installation/gnu-linux.rst:46
-msgid ""
-"For French speaking users, Zrythm is fully translated and available in "
-"`LibraZik <https://librazik.tuxfamily.org/>`_."
-msgstr ""
-"Para usuários que falam francês, o Zrythm está totalmente traduzido e "
-"disponível em `LibraZik <https://librazik.tuxfamily.org/>`_."
-
-#: ../../getting-started/installation/gnu-linux.rst:50
+#: ../../getting-started/installation/gnu-linux.rst:39
 msgid "AUR"
 msgstr "AUR"
 
-#: ../../getting-started/installation/gnu-linux.rst:51
+#: ../../getting-started/installation/gnu-linux.rst:40
 msgid ""
 "For Arch GNU/Linux users, Zrythm is also available in the AUR under "
 "`zrythm <https://aur.archlinux.org/packages/zrythm/>`_ and `zrythm-git "
 "<https://aur.archlinux.org/packages/zrythm-git/>`_."
 msgstr ""
-"Para usuários do Arch GNU/Linux, o Zrythm também está disponível no AUR sob `"
-"zrythm <https://aur.archlinux.org/packages/zrythm/>`_ e `zrythm-git "
+"Para usuários do Arch GNU/Linux, o Zrythm também está disponível no AUR "
+"sob `zrythm <https://aur.archlinux.org/packages/zrythm/>`_ e `zrythm-git "
 "<https://aur.archlinux.org/packages/zrythm-git/>`_."
 
-#: ../../getting-started/installation/gnu-linux.rst:56
+#: ../../getting-started/installation/gnu-linux.rst:45
 msgid "Manual Installation"
 msgstr "Instalação Manual"
 
-#: ../../getting-started/installation/gnu-linux.rst:57
+#: ../../getting-started/installation/gnu-linux.rst:46
 msgid ""
 "Zrythm uses the Meson build system, so the procedure to build and install"
 " is as follows:"
@@ -409,81 +386,81 @@ msgstr ""
 "O Zrythm usa o sistema de construção Meson, então o procedimento para "
 "copilar e instalar é o seguinte:"
 
-#: ../../getting-started/installation/gnu-linux.rst:66
+#: ../../getting-started/installation/gnu-linux.rst:55
 msgid "See the ``meson.options`` file for installation options."
 msgstr "Veja no ficheiro ``meson.options`` para opções de instalação."
 
-#: ../../getting-started/installation/intro.rst:19
+#: ../../getting-started/installation/intro.rst:6
 msgid "Installation"
 msgstr "Instalação"
 
-#: ../../getting-started/installation/macos.rst:19
+#: ../../getting-started/installation/macos.rst:6
 msgid "MacOS"
 msgstr "MacOS"
 
-#: ../../getting-started/installation/macos.rst:21
+#: ../../getting-started/installation/macos.rst:8
 msgid ""
 "Install from source in the same way as for GNU/Linux. No support is "
 "offered."
 msgstr ""
-"Instale do código-fonte da mesma forma como para GNU/Linux. Nenhum apoio é "
-"oferecido."
+"Instale do código-fonte da mesma forma como para GNU/Linux. Nenhum apoio "
+"é oferecido."
 
-#: ../../getting-started/installation/windows.rst:19
+#: ../../getting-started/installation/windows.rst:6
 msgid "Windows"
 msgstr "Windows"
 
-#: ../../getting-started/installation/windows.rst:21
+#: ../../getting-started/installation/windows.rst:8
 msgid "http://www.upgradefromwindows.com"
 msgstr "http://www.upgradefromwindows.com"
 
-#: ../../getting-started/intro.rst:19
+#: ../../getting-started/intro.rst:6
 msgid "Getting Started"
 msgstr "Primeiros Passos"
 
-#: ../../getting-started/system-requirements/intro.rst:19
+#: ../../getting-started/system-requirements/intro.rst:6
 msgid "System Requirements"
 msgstr "Requisitos do Sistema"
 
-#: ../../getting-started/system-requirements/intro.rst:22
+#: ../../getting-started/system-requirements/intro.rst:9
 msgid "Minimum Requirements"
 msgstr "Requisitos Mínimos"
 
-#: ../../getting-started/system-requirements/intro.rst:23
+#: ../../getting-started/system-requirements/intro.rst:10
 msgid ""
 "We don't know yet. The oldest machine tested on was T400 and it was a bit"
 " laggy. If you have any experiences with older machines please let us "
 "know."
 msgstr ""
-"Ainda não sabemos. O sistema mais antigo que foi testado foi a T400 e estava "
-"um pouco atrasada. Se você tem alguma experiência com sistemas mais antigos, "
-"por favor avise-nos."
+"Ainda não sabemos. O sistema mais antigo que foi testado foi a T400 e "
+"estava um pouco atrasada. Se você tem alguma experiência com sistemas "
+"mais antigos, por favor avise-nos."
 
-#: ../../getting-started/system-requirements/intro.rst:26
+#: ../../getting-started/system-requirements/intro.rst:13
 msgid "Recommended Requirements"
 msgstr "Requisitos Recomendados"
 
-#: ../../getting-started/system-requirements/intro.rst:27
+#: ../../getting-started/system-requirements/intro.rst:14
 msgid "We recommend running a fairly modern machine."
 msgstr "Recomendamos usar uma máquina bastante moderna."
 
-#: ../../getting-started/system-requirements/intro.rst:30
+#: ../../getting-started/system-requirements/intro.rst:17
 msgid "Audio Interface"
 msgstr "Interface de Áudio"
 
-#: ../../getting-started/system-requirements/intro.rst:31
+#: ../../getting-started/system-requirements/intro.rst:18
 msgid ""
 "An Audio Interface is recommended as it offers low latency and better "
 "quality (especially if recording audio)."
 msgstr ""
-"Uma interface de áudio é recomendada, pois oferece baixa latência e melhor "
-"qualidade (especialmente se estiver gravando áudio)."
+"Uma interface de áudio é recomendada, pois oferece baixa latência e "
+"melhor qualidade (especialmente se estiver gravando áudio)."
 
-#: ../../getting-started/system-requirements/intro.rst:34
+#: ../../getting-started/system-requirements/intro.rst:21
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../getting-started/system-requirements/intro.rst:35
+#: ../../getting-started/system-requirements/intro.rst:22
 msgid ""
 "JACK needs to be set up and configured before running Zrythm. We "
 "recommend using `Cadence "
@@ -491,22 +468,23 @@ msgid ""
 "the process very easy."
 msgstr ""
 "JACK deve ser instalado e configurado antes de executar o Zrythm. "
-"Recomendamos o uso de `Cadence <http://kxstudio.linuxaudio.org/Applications>`"
-"_, pois torna o processo muito fácil."
+"Recomendamos o uso de `Cadence "
+"<http://kxstudio.linuxaudio.org/Applications>`_, pois torna o processo "
+"muito fácil."
 
-#: ../../getting-started/system-requirements/intro.rst:37
+#: ../../getting-started/system-requirements/intro.rst:24
 msgid "Open Cadence"
 msgstr "Abrir Cadence"
 
-#: ../../getting-started/system-requirements/intro.rst:41
+#: ../../getting-started/system-requirements/intro.rst:28
 msgid "Click Configure and select your Audio Interface"
 msgstr "Clique em Configurar e selecione sua Interface de Áudio"
 
-#: ../../getting-started/zrythm-overview.rst:19
+#: ../../getting-started/zrythm-overview.rst:6
 msgid "Overview"
 msgstr "Visão Geral"
 
-#: ../../getting-started/zrythm-overview.rst:21
+#: ../../getting-started/zrythm-overview.rst:8
 msgid ""
 "Zrythm is a highly automated Digital Audio Workstation (DAW) designed to "
 "be featureful and intuitive to use. Zrythm sets itself apart from other "
@@ -516,21 +494,21 @@ msgid ""
 msgstr ""
 "Zrythm é uma Estação de Trabalho de Áudio Digital (DAW) altamente "
 "automatizada, feito para ser funcional e intuitiva de usar. O Zrythm "
-"distingue-se de outros DAWs em permitir uma automação extensiva através de "
-"LFOs e envelopes (Moduladores) incorporados e MIDI intuitivo ou edição e "
-"organização de áudio através de clipes em loop."
+"distingue-se de outros DAWs em permitir uma automação extensiva através "
+"de LFOs e envelopes (Moduladores) incorporados e MIDI intuitivo ou edição"
+" e organização de áudio através de clipes em loop."
 
-#: ../../getting-started/zrythm-overview.rst:28
+#: ../../getting-started/zrythm-overview.rst:15
 msgid ""
 "In the usual Composing -> Mixing -> Mastering workflow, Zrythm puts the "
 "most focus on the Composing part. It allows musicians to quickly lay down"
 " and process their musical ideas without taking too much time for "
 "unnecessary work."
 msgstr ""
-"No fluxo de trabalho de Composição -> Mixagem -> Masterização, o Zrythm tem "
-"o maior foco na parte de Composição. Ele permite que os músicos  estabeleçam "
-"e processem suas idéias musicais rapidamente sem demorar muito tempo para um "
-"trabalho desnecessário."
+"No fluxo de trabalho de Composição -> Mixagem -> Masterização, o Zrythm "
+"tem o maior foco na parte de Composição. Ele permite que os músicos  "
+"estabeleçam e processem suas idéias musicais rapidamente sem demorar "
+"muito tempo para um trabalho desnecessário."
 
 #~ msgid "Here are a few terms you should be aware of when using Zrythm."
 #~ msgstr ""
@@ -646,3 +624,31 @@ msgstr ""
 #~ "(Modulators) and intuitive MIDI or audio"
 #~ " editing and arranging via clips."
 #~ msgstr ""
+
+#~ msgid "KX Studios"
+#~ msgstr "Estúdios KX"
+
+#~ msgid ""
+#~ "Thanks to falktx, Zrythm will also "
+#~ "be available in the `KX Studio "
+#~ "repos <http://kxstudio.linuxaudio.org/>`_ for Debian"
+#~ " users"
+#~ msgstr ""
+#~ "Graças ao falktx, Zrythm também está "
+#~ "disponível nos `Repos do Estudio KX "
+#~ "<http://kxstudio.linuxaudio.org/>`_ para usuários de"
+#~ " Debian"
+
+#~ msgid "LibraZik"
+#~ msgstr "LibraZik"
+
+#~ msgid ""
+#~ "For French speaking users, Zrythm is "
+#~ "fully translated and available in "
+#~ "`LibraZik <https://librazik.tuxfamily.org/>`_."
+#~ msgstr ""
+#~ "Para usuários que falam francês, o "
+#~ "Zrythm está totalmente traduzido e "
+#~ "disponível em `LibraZik "
+#~ "<https://librazik.tuxfamily.org/>`_."
+

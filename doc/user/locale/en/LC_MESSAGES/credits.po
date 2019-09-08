@@ -1,0 +1,79 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-09-08 11:34+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../credits/intro.rst:6
+msgid "Credits"
+msgstr ""
+
+#: ../../credits/intro.rst:9
+msgid "Translators"
+msgstr ""
+
+#: ../../credits/intro.rst:13
+msgid "French"
+msgstr ""
+
+#: ../../credits/intro.rst:12
+msgid "Nicolas Faure"
+msgstr ""
+
+#: ../../credits/intro.rst:13
+msgid "Olivier Humbert"
+msgstr ""
+
+#: ../../credits/intro.rst:17
+msgid "German"
+msgstr ""
+
+#: ../../credits/intro.rst:16 ../../credits/intro.rst:26
+msgid "Silvério Santos"
+msgstr ""
+
+#: ../../credits/intro.rst:17
+msgid "Waui"
+msgstr ""
+
+#: ../../credits/intro.rst:20
+msgid "Norwegian Bokmal"
+msgstr ""
+
+#: ../../credits/intro.rst:20
+msgid "Allan Nordhøy"
+msgstr ""
+
+#: ../../credits/intro.rst:23
+msgid "Polish"
+msgstr ""
+
+#: ../../credits/intro.rst:23
+msgid "WaldiS"
+msgstr ""
+
+#: ../../credits/intro.rst:26
+msgid "Portuguese:"
+msgstr ""
+
+#: ../../credits/intro.rst:28
+msgid "Italian:"
+msgstr ""
+
+#: ../../credits/intro.rst:29
+msgid "Swann Martinet"
+msgstr ""
+

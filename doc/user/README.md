@@ -22,11 +22,14 @@ Example: https://docs.zrythm.org
 PDF compilation requires texlive. See
 https://tug.org/texlive/quickinstall.html
 
-## LICENSE
-The sources required to build the manual and the
-contents of the manual are licensed under the GNU
-Affero General Public License, version 3 or later.
-The full text of the license can be found in the
+## License
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.3 or any later version published by the Free Software
+Foundation; with the Invariant Sections being just "Credits",
+with no Front-Cover Texts, and with no Back-Cover
+Texts.
+A copy of the license is included in the
 [COPYING](COPYING) file.
 
 ----

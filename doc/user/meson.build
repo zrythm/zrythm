@@ -57,11 +57,21 @@ if (get_option ('user_manual'))
     install_dir: docdir)
 endif
 
+# TODO convert the makefile to meson commands
 run_target (
   'bundle_manual',
   command: [
     'make',
+    'gettext',
     'bundle',
+    ],
+  )
+
+run_target (
+  'manual_gettext',
+  command: [
+    'make',
+    'gettext',
     ],
   )
 

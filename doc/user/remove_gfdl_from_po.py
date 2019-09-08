@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+#
+# This is part of the Zrythm Manual.
+# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# See the file index.rst for copying conditions.
+
+# This is a script to remove GFDL translations from the PO
+# files when "make gettext" is run for the manual
+
+import os
+import re
+
+srcpath = './locale'
+for subdir, dirs, files in os.walk(srcpath):
+    for file in files:
+        if file.endswith('appendix.po'):
+            fullpath = os.path.join(subdir,file)
+            with open(fullpath, 'r') as f :
+                filedata = f.read()
+
+                # remove GFDL translations
+                filedata = re.sub(
+                    r'#:.*?gnu-free-documentation-license.*?msgstr ""\n',
+                    '', filedata, flags=re.DOTALL)
+
+                # clean extra new lines
+                filedata = re.sub(
+                    r'\n{2,600}',
+                    '\n\n', filedata, flags=re.DOTALL)
+
+                with open(fullpath, 'w') as f:
+                  f.write(filedata)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"POT-Creation-Date: 2019-09-08 11:34+0100\n"
 "PO-Revision-Date: 2019-07-02 08:02+0000\n"
 "Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
 "Language: zh\n"
@@ -19,57 +19,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../../appendix/files-and-directories.rst:19
-msgid "Files and Directories"
-msgstr ""
-
-#: ../../appendix/files-and-directories.rst:22
-msgid "Installed Files"
-msgstr ""
-
-#: ../../appendix/files-and-directories.rst:23
-msgid "When Zrythm is installed, it installs the following files by default:"
-msgstr ""
-
-#: ../../appendix/files-and-directories.rst:116
-msgid "Project Files"
-msgstr ""
-
-#: ../../appendix/files-and-directories.rst:117
-msgid ""
-"When Zrythm is launched for the first time, it will also ask you to "
-"select a folder for saving your projects and other project-related files."
-msgstr ""
-
-#: ../../appendix/files-and-directories.rst:121
-msgid "By default, this will be ``~/zrythm``"
-msgstr ""
-
-#: ../../appendix/intro.rst:19
+#: ../../appendix/intro.rst:6
 msgid "Appendix"
 msgstr ""
 
-#: ../../appendix/menu-actions.rst:19
+#: ../../appendix/menu-actions.rst:6
 msgid "Menu Actions"
 msgstr ""
 
-#: ../../appendix/shortcut-keys.rst:19
+#: ../../appendix/shortcut-keys.rst:6
 msgid "Shortcut Keys"
 msgstr ""
 
-#: ../../appendix/shortcut-keys.rst:22
+#: ../../appendix/shortcut-keys.rst:9
 msgid "Global Shortcuts"
 msgstr ""
 
-#: ../../appendix/shortcut-keys.rst:27
+#: ../../appendix/shortcut-keys.rst:14
 msgid "Editor Shortcuts"
 msgstr ""
 
-#: ../../appendix/troubleshooting.rst:19
+#: ../../appendix/troubleshooting.rst:6
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../appendix/troubleshooting.rst:21
+#: ../../appendix/troubleshooting.rst:8
 msgid "TODO"
 msgstr ""
 
