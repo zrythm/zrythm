@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: 2019-07-07 03:08+0000\n"
+"PO-Revision-Date: 2019-09-09 17:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-configuration/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.6.0\n"
 
 #: ../../zrythm-configuration/device-setup/intro.rst:2
@@ -159,7 +159,7 @@ msgstr ""
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:20
 msgid "Open Cadence"
-msgstr "Cadenceを実効する"
+msgstr "Cadenceを実行"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:24
 msgid "Click Configure and select your Audio Interface"
