@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-07 23:49+0100\n"
-"PO-Revision-Date: 2019-09-07 19:25+0000\n"
+"PO-Revision-Date: 2019-09-09 17:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -2227,7 +2227,6 @@ msgid "GUI"
 msgstr "GUI"
 
 #: resources/ui/preferences.ui:437 resources/ui/preferences.ui:483
-#, fuzzy
 msgid "Projects"
 msgstr "プロジェクト"
 
