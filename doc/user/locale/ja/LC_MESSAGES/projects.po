@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-09 00:34+0100\n"
-"PO-Revision-Date: 2019-06-24 06:42+0000\n"
+"PO-Revision-Date: 2019-09-09 17:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualprojects/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/manualprojects/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../projects/creating-projects.rst:6 ../../projects/saving-loading.rst:22
@@ -29,14 +30,16 @@ msgid ""
 "create a new one. By default, Zrythm will use ~/username/Zrythm to create"
 " new Projects."
 msgstr ""
+"Zrythm が最初に起動すると、プロジェクトを読み込むか、新しいプロジェクトを作成するかを選択します。デフォルトでは、Zrythm は ~/ユーザー名/"
+"Zrythm を使用して新しいプロジェクトを作成します。"
 
 #: ../../projects/intro.rst:6
 msgid "Projects"
-msgstr ""
+msgstr "プロジェクト"
 
 #: ../../projects/project-info.rst:6
 msgid "Project Info"
-msgstr ""
+msgstr "プロジェクト情報"
 
 #: ../../projects/project-info.rst:8
 msgid ""
@@ -44,10 +47,12 @@ msgid ""
 "folder with a YAML file describing the Project and additional files used "
 "such as MIDI and audio files."
 msgstr ""
+"Zrythm では、作業はプロジェクト内に保存されます。プロジェクトは、プロジェクト情報を格納する YAML ファイルと MIDI ファイルやオーディオ "
+"ファイルなどの追加ファイルを含むフォルダで構成されます。"
 
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
-msgstr ""
+msgstr "プロジェクト管理と互換性"
 
 #: ../../projects/project-management-and-compatibility.rst:8
 msgid ""
@@ -56,6 +61,8 @@ msgid ""
 "compatibility will be maintained between version changes in order to give"
 " more time to feature development and fixes."
 msgstr ""
+"少なくとも当分の間、Zrythmはローリングリリースモデルに従い、プロジェクトファイル構造は新しいリリースごとに変更される可能性があります。機能の開発と修"
+"正に時間を与えるために、バージョン変更間の互換性は維持されません。"
 
 #: ../../projects/project-management-and-compatibility.rst:13
 msgid ""
@@ -64,39 +71,43 @@ msgid ""
 "if you would like to open a project made using a previous version please "
 "install that version of Zrythm."
 msgstr ""
+"プロジェクトファイル構造に変更がない場合は、以前のバージョンからのプロジェクトを開く可能性がありますが、これは保証されませんので、以前のバージョンを使用し"
+"て作成されたプロジェクトを開きたい場合は、Zrythmのそのバージョンをインストールしてください。"
 
 #: ../../projects/project-management-and-compatibility.rst:19
 msgid ""
 "Each project file will contain the version of Zrythm it was made with and"
 " a date"
-msgstr ""
+msgstr "各プロジェクト ファイルには、作成された Zrythm のバージョンと日付が記載されます。"
 
 #: ../../projects/saving-loading.rst:6
 msgid "Saving & Loading"
-msgstr ""
+msgstr "保存と読み込み"
 
 #: ../../projects/saving-loading.rst:9
-#, fuzzy
 msgid "Loading Projects"
-msgstr "プロジェクトの作成"
+msgstr "プロジェクトの読み込み"
 
 #: ../../projects/saving-loading.rst:11
 msgid ""
 "When Zrythm launches, it will ask you to select a project to load from a "
 "list of recent projects, or to create a new one."
 msgstr ""
+"Zrythm が起動すると、最近のプロジェクトの一覧から読み込むプロジェクトを選択するか、新しいプロジェクトを作成するかを選択するよう求めます。"
 
 #: ../../projects/saving-loading.rst:18
 msgid ""
 "When you select a project and click :zbutton:`Apply`, Zrythm will load "
 "that project."
-msgstr ""
+msgstr "プロジェクトを選択し、:zbutton:`適用`をクリックすると、Zrythmはそのプロジェクトを読み込みます。"
 
 #: ../../projects/saving-loading.rst:24
 msgid ""
 "In the menu above, if you select :zbutton:`Create new project`, Zrythm "
 "will ask you for a template to use for creating the new Project."
 msgstr ""
+"上記のメニューで、:zbutton:`新しいプロジェクトを作成する`を選択すると、Zrythmは新しいプロジェクトの作成に使用するテンプレートを求めるメッ"
+"セージを表示します。"
 
 #: ../../projects/saving-loading.rst:31
 msgid ""
@@ -104,6 +115,8 @@ msgid ""
 "copying a project folder to the ``Templates`` directory in the Zrythm "
 "installation path."
 msgstr ""
+"空白のテンプレートを使用できますが、Zrythm インストール パスの ``テンプレート``ディレクトリにプロジェクト "
+"フォルダをコピーして、独自のテンプレートを作成できます。"
 
 #: ../../projects/saving-loading.rst:35
 msgid ""
@@ -111,17 +124,18 @@ msgid ""
 "Zrythm will ask you for a parent directory to save the Project in and a "
 "title for the Project."
 msgstr ""
+"テンプレート (または空白) が選択され、:zbutton:``適用``をクリックすると、Zrythm "
+"はプロジェクトを保存する親ディレクトリとプロジェクトのタイトルを求めるメッセージを表示します。"
 
 #: ../../projects/saving-loading.rst:42
 msgid ""
 "Once you accept, the new Project will be set up and you will be ready to "
 "go."
-msgstr ""
+msgstr "承認すると、新しいプロジェクトが初期化され、準備が整います。"
 
 #: ../../projects/saving-loading.rst:46
-#, fuzzy
 msgid "Saving Projects"
-msgstr "プロジェクトの作成"
+msgstr "プロジェクトの保存"
 
 #: ../../projects/saving-loading.rst:48
 msgid ""
@@ -129,14 +143,16 @@ msgid ""
 "Project in a new location and :zbutton:`Save` will save the Project in "
 "the previous location."
 msgstr ""
+"保存は期待どおりに機能します。:zbutton:``Save As "
+"...``はプロジェクトを新しい場所に保存し、:zbutton:`Save`はプロジェクトを以前の場所に保存します。"
 
 #: ../../projects/saving-loading.rst:52
 msgid "When saving projects, Zrythm expects you to give it a directory"
-msgstr ""
+msgstr "プロジェクトを保存する際、Zrythm はディレクトリを求めます。"
 
 #: ../../projects/saving-loading.rst:56
 msgid "Automatic Backups"
-msgstr ""
+msgstr "自動バックアップ"
 
 #: ../../projects/saving-loading.rst:58
 msgid ""
@@ -145,16 +161,18 @@ msgid ""
 "know if there are newer back-ups of that project and ask you if you want "
 "to load them instead."
 msgstr ""
+"Zrythm には、現在のプロジェクトをバックアップとして自動保存する機能があります。Zrythm を起動し、プロジェクトの読み込みを選択すると、"
+"Zrythm は、そのプロジェクトの新しいバックアップがあるかどうかを知らせ、代わりに読み込むかどうかの選択を求めます。"
 
 #: ../../projects/saving-loading.rst:66
 msgid ""
 "The auto-save interval can be changed (or disabled) in the preferences "
 "window."
-msgstr ""
+msgstr "自動保存間隔は、設定ウィンドウで変更 (または無効にすることが) できます。"
 
 #: ../../projects/saving-loading.rst:69
 msgid "The backups are saved in the project's directory, under ``backups``"
-msgstr ""
+msgstr "バックアップは、プロジェクト・ディレクトリの``backups``の下に保存されます"
 
 #~ msgid "Importing/Exporting Audio"
 #~ msgstr ""
@@ -268,4 +286,3 @@ msgstr ""
 #~ " you to give it the Project "
 #~ "directory."
 #~ msgstr ""
-
