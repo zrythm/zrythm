@@ -8,40 +8,47 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-09 00:34+0100\n"
-"PO-Revision-Date: 2019-09-01 12:44+0000\n"
+"PO-Revision-Date: 2019-09-11 16:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
 msgid "Basic Concepts and Terminology"
-msgstr ""
+msgstr "Conceitos Básicos e Terminologia"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:8
 msgid ""
 "Here are a few terms you should be aware of when using Zrythm. They are "
 "explained further in their corresponding chapters."
 msgstr ""
+"Aqui estão alguns termos que deve estar ciente ao usar o Zrythm. Eles são "
+"explicados mais adiante nos seus capítulos correspondentes."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
 msgid "Regions"
-msgstr ""
+msgstr "Regiões"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
 msgid ""
 "A Region (Clip) is a container for MIDI Notes or audio. This is what a "
 "Region looks like in the arranger."
 msgstr ""
+"Uma Região (Clip) é um recipiente para notas MIDI ou áudio. É assim que uma "
+"região se parece no arranjador."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:16
 msgid "Regions are edited in the Editor Panel. In this case, the clip is looped."
 msgstr ""
+"As regiões são editadas no Painel Editorial. Neste caso, o clipe está em "
+"loop."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:21
 #: ../../zrythm-interface/timeline.rst:6
@@ -51,10 +58,11 @@ msgstr "Cronologia"
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:22
 msgid "The Timeline is where the song is arranged, also known as Arranger."
 msgstr ""
+"A cronologia é onde a música é arranjada, também conhecida como Arranjador."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
 msgid "Track"
-msgstr ""
+msgstr "Faixa"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:28
 msgid ""
@@ -63,6 +71,10 @@ msgid ""
 " are some special tracks like the Chord Track and the Marker Track that "
 "contain chords and markers respectively."
 msgstr ""
+"Uma faixa é um único slot na cronologia que contém várias regiões e "
+"automação. Pode conter várias pistas, tais como pistas de automação. Existem "
+"algumas faixas especiais como a faixa de acordes e a faixa de marcação que "
+"contêm acordes e marcadores respetivamente."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:34
 #: ../../zrythm-interface/tracklist.rst:6
@@ -74,6 +86,8 @@ msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
+"A Lista de Faixas contém todas as Faixas do projeto. Ela é dividida na Lista "
+"de Faixas superior (fixa) e na Lista de Faixas inferior (principal)."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
 #, fuzzy
@@ -85,6 +99,8 @@ msgid ""
 "A Channel is a single slot in the Mixer. Most types of Tracks have a "
 "corresponding Channel."
 msgstr ""
+"Um Canal é um único slot no Misturador. A maioria das categorias de Faixas "
+"tem um Canal correspondente."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:46
 #: ../../zrythm-interface/mixer.rst:6
@@ -96,22 +112,25 @@ msgid ""
 "The Mixer contains all of the Channels in the Project and is used to mix "
 "the audio signals from each Channel."
 msgstr ""
+"O Misturador contém todos os Canais do Projeto e é usado para misturar os "
+"sinais de áudio de cada Canal."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:52
 msgid "Range"
-msgstr ""
+msgstr "Intervalo"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:53
 msgid "A Range is a selection of time between two positions."
-msgstr ""
+msgstr "Um Intervalo é uma seleção de tempo entre duas posições."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:58
 msgid "MIDI Note"
-msgstr ""
+msgstr "Nota MIDI"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:59
 msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
+"As Notas MIDI são usadas para acionar instrumentos virtuais (ou de hardware)."
 
 #: ../../zrythm-interface/editors.rst:6
 msgid "Editors"
@@ -503,4 +522,3 @@ msgstr ""
 
 #~ msgid "Toolbox"
 #~ msgstr "Caixa de Ferramentas"
-
