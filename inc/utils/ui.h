@@ -147,6 +147,7 @@ typedef enum UiOverlayAction
   UI_OVERLAY_ACTION_CREATING_MOVING,
   UI_OVERLAY_ACTION_RESIZING_L,
   UI_OVERLAY_ACTION_RESIZING_R,
+  UI_OVERLAY_ACTION_RESIZING_R_LOOP,
   UI_OVERLAY_ACTION_RESIZING_UP,
   UI_OVERLAY_ACTION_STRETCHING_L,
   UI_OVERLAY_ACTION_STRETCHING_R,
@@ -193,7 +194,7 @@ typedef enum UiOverlayAction
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
     "z-edit-select", \
-    3, 6);
+    5, 4);
 
 #define ui_set_pencil_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
@@ -228,8 +229,26 @@ typedef enum UiOverlayAction
 #define ui_set_hand_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-hand", \
-    3, 6);
+    "z-labplot-transform-move", \
+    10, 10);
+
+#define ui_set_left_resize_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "left-resize", \
+    0, 10);
+
+#define ui_set_right_resize_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "right-resize", \
+    15, 10);
+
+#define ui_set_right_resize_loop_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "right-resize-loop", \
+    15, 10);
 
 /**
  * Sets cursor from icon name.

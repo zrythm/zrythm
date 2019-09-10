@@ -267,10 +267,13 @@ arranger_widget_set_cursor (
       SET_CURSOR_FROM_NAME ("link");
       break;
     case ARRANGER_CURSOR_RESIZING_L:
-      SET_CURSOR_FROM_NAME ("w-resize");
+      SET_X_CURSOR (left_resize);
       break;
     case ARRANGER_CURSOR_RESIZING_R:
-      SET_CURSOR_FROM_NAME ("e-resize");
+      SET_X_CURSOR (right_resize);
+      break;
+    case ARRANGER_CURSOR_RESIZING_R_LOOP:
+      SET_X_CURSOR (right_resize_loop);
       break;
     case ARRANGER_CURSOR_RESIZING_UP:
       SET_CURSOR_FROM_NAME ("n-resize");
@@ -1955,6 +1958,19 @@ on_motion (
   ar_prv->hover_x = x;
   ar_prv->hover_y = y;
 
+  GdkModifierType state;
+  int has_state =
+    gtk_get_current_event_state (&state);
+  if (has_state)
+    {
+      ar_prv->alt_held =
+        state & GDK_MOD1_MASK;
+      ar_prv->ctrl_held =
+        state & GDK_CONTROL_MASK;
+      ar_prv->shift_held =
+        state & GDK_SHIFT_MASK;
+    }
+
   arranger_widget_refresh_cursor (self);
 
   if (timeline_arranger)
@@ -1969,9 +1985,14 @@ on_motion (
 static gboolean
 on_focus_out (GtkWidget *widget,
                GdkEvent  *event,
-               gpointer   user_data)
+               ArrangerWidget * self)
 {
   g_message ("arranger focus out");
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  ar_prv->alt_held = 0;
+  ar_prv->ctrl_held = 0;
+  ar_prv->shift_held = 0;
 
   return FALSE;
 }

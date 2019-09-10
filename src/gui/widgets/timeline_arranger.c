@@ -310,9 +310,15 @@ timeline_arranger_widget_get_cursor (
                     rw && rw_prv->resize_l;
                   int is_resize_r =
                     rw && rw_prv->resize_r;
+                  int is_resize_loop =
+                    rw && rw_prv->resize_loop;
                   if (is_resize_l)
                     return
                       ARRANGER_CURSOR_RESIZING_L;
+                  else if (is_resize_r &&
+                           is_resize_loop)
+                    return
+                      ARRANGER_CURSOR_RESIZING_R_LOOP;
                   else if (is_resize_r)
                     return
                       ARRANGER_CURSOR_RESIZING_R;
@@ -796,6 +802,16 @@ timeline_arranger_widget_on_drag_begin_region_hit (
 
   self->start_region = region;
 
+  int resize_l =
+    region_widget_is_resize_l (rw, wx);
+  int resize_r =
+    region_widget_is_resize_r (rw, wx);
+  int resize_loop =
+    region_widget_is_resize_loop (rw, wy);
+  int show_cut_lines =
+    region_widget_should_show_cut_lines (
+      ar_prv->alt_held);
+
 #define SET_ACTION(x) \
   ar_prv->action = UI_OVERLAY_ACTION_##x
 
@@ -809,18 +825,19 @@ timeline_arranger_widget_on_drag_begin_region_hit (
       SET_ACTION (AUDITIONING);
       break;
     case TOOL_SELECT_NORMAL:
-      if (region_widget_is_resize_l (rw, wx))
+      if (resize_l)
         SET_ACTION (RESIZING_L);
-      else if (region_widget_is_resize_r (rw, wx))
+      else if (resize_r && resize_loop)
+        SET_ACTION (RESIZING_R_LOOP);
+      else if (resize_r)
         SET_ACTION (RESIZING_R);
-      else if (region_widget_should_show_cut_lines (
-                 ar_prv->alt_held))
+      else if (show_cut_lines)
         SET_ACTION (CUTTING);
       else
         SET_ACTION (STARTING_MOVING);
       break;
     case TOOL_SELECT_STRETCH:
-      if (region_widget_is_resize_l (rw, wx))
+      if (resize_l)
         SET_ACTION (STRETCHING_L);
       else if (region_widget_is_resize_r (rw, wx))
         SET_ACTION (STRETCHING_R);
@@ -1939,6 +1956,7 @@ timeline_arranger_widget_on_drag_end (
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
+    case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
       if (!self->resizing_range)
         {
           Region * main_trans_region =

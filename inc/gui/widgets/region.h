@@ -63,6 +63,15 @@ typedef struct _RegionWidgetPrivate
 
   /** If cursor is at resizing R. */
   int                resize_r;
+
+  /**
+   * If resize cursor should be a loop.
+   *
+   * This only applies if either one of the above
+   * is true.
+   */
+  int                resize_loop;
+
   GtkDrawingArea *   drawing_area;
 
   /** Show a cut line or not. */
@@ -102,6 +111,15 @@ int
 region_widget_is_resize_r (
   RegionWidget * self,
   int             x);
+
+/**
+ * Returns if the current position is for resizing
+ * loop.
+ */
+int
+region_widget_is_resize_loop (
+  RegionWidget * self,
+  int             y);
 
 /**
  * Draws the name of the Region.

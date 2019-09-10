@@ -333,6 +333,9 @@ on_motion (GtkWidget *      widget,
       rw_prv->resize_r =
         region_widget_is_resize_r (
           self, event->x);
+      rw_prv->resize_loop =
+        region_widget_is_resize_loop (
+          self, event->y);
       rw_prv->hover_x = event->x;
     }
 
@@ -467,6 +470,26 @@ region_widget_is_resize_r (
     &allocation);
 
   if (x > allocation.width - RESIZE_CURSOR_SPACE)
+    {
+      return 1;
+    }
+  return 0;
+}
+
+/**
+ * Returns if the current position is for resizing
+ * loop.
+ */
+int
+region_widget_is_resize_loop (
+  RegionWidget * self,
+  int             y)
+{
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+
+  if (y > height / 2)
     {
       return 1;
     }

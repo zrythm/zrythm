@@ -158,6 +158,7 @@ _breeze_icons = [
   'configure-shortcuts',
   'tools-report-bug',
   'delete',
+  'labplot-transform-move',
   'edit-duplicate',
   'applications-internet',
   'draw-eraser',
