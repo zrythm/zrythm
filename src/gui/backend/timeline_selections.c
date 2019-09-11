@@ -253,7 +253,7 @@ timeline_selections_get_end_pos (
   int i;
 
   ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, Region, region, start_pos,
+    ts, Region, region, end_pos,
     transient, after, widget);
   ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, ScaleObject, scale_object, pos,
