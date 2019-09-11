@@ -482,6 +482,7 @@ void
 midi_arranger_widget_on_drag_begin_note_hit (
   MidiArrangerWidget * self,
   double               start_x,
+  double               start_y,
   MidiNoteWidget *     mnw)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);

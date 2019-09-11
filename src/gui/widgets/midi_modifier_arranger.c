@@ -154,6 +154,7 @@ midi_modifier_arranger_widget_get_hit_velocity (
 void
 midi_modifier_arranger_widget_on_drag_begin_velocity_hit (
   MidiModifierArrangerWidget * self,
+  double                       start_x,
   double                       start_y,
   VelocityWidget *             vel_w)
 {

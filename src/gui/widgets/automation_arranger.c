@@ -464,6 +464,7 @@ void
 automation_arranger_widget_on_drag_begin_ap_hit (
   AutomationArrangerWidget * self,
   double                   start_x,
+  double                   start_y,
   AutomationPointWidget *  ap_widget)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);

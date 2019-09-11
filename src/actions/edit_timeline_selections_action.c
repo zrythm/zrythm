@@ -23,6 +23,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
+#include "utils/flags.h"
 
 #include <glib/gi18n.h>
 
@@ -88,6 +89,17 @@ edit_timeline_selections_action_do (
               /* resize */
               region_resize (
                 region, 1, self->ticks,
+                F_NO_LOOP,
+                AO_UPDATE_ALL);
+            }
+          break;
+        case ETS_RESIZE_L_LOOP:
+          if (!self->first_call)
+            {
+              /* resize */
+              region_resize (
+                region, 1, self->ticks,
+                F_LOOP,
                 AO_UPDATE_ALL);
             }
           break;
@@ -97,6 +109,17 @@ edit_timeline_selections_action_do (
               /* resize */
               region_resize (
                 region, 0, self->ticks,
+                F_NO_LOOP,
+                AO_UPDATE_ALL);
+            }
+          break;
+        case ETS_RESIZE_R_LOOP:
+          if (!self->first_call)
+            {
+              /* resize */
+              region_resize (
+                region, 0, self->ticks,
+                F_LOOP,
                 AO_UPDATE_ALL);
             }
           break;
@@ -172,12 +195,26 @@ edit_timeline_selections_action_undo (
         case ETS_RESIZE_L:
           /* resize */
           region_resize (
-            region, 1, - self->ticks, AO_UPDATE_ALL);
+            region, 1, - self->ticks,
+            F_NO_LOOP, AO_UPDATE_ALL);
+          break;
+        case ETS_RESIZE_L_LOOP:
+          /* resize */
+          region_resize (
+            region, 1, - self->ticks, F_LOOP,
+            AO_UPDATE_ALL);
           break;
         case ETS_RESIZE_R:
           /* resize */
           region_resize (
-            region, 0, - self->ticks, AO_UPDATE_ALL);
+            region, 0, - self->ticks,
+            F_NO_LOOP, AO_UPDATE_ALL);
+          break;
+        case ETS_RESIZE_R_LOOP:
+          /* resize */
+          region_resize (
+            region, 0, - self->ticks, F_LOOP,
+            AO_UPDATE_ALL);
           break;
         case ETS_REGION_NAME:
           region->name =
@@ -219,6 +256,8 @@ edit_timeline_selections_action_stringize (
     {
       case ETS_RESIZE_L:
       case ETS_RESIZE_R:
+      case ETS_RESIZE_L_LOOP:
+      case ETS_RESIZE_R_LOOP:
         return g_strdup (_("Resize Object(s)"));
       case ETS_REGION_NAME:
         return g_strdup (_("Change Name"));

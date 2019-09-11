@@ -685,6 +685,87 @@ region_set_clip_start_pos (
 }
 
 /**
+ * Moves the children of the region by the given
+ * amount of ticks.
+ */
+void
+region_add_ticks_to_children (
+  Region *   self,
+  const long ticks)
+{
+  switch (self->type)
+    {
+    case REGION_TYPE_MIDI:
+      for (int i = 0; i < self->num_midi_notes; i++)
+        {
+          midi_note_move (
+            self->midi_notes[i],
+            ticks, 0, AO_UPDATE_ALL);
+        }
+      break;
+    case REGION_TYPE_AUDIO:
+      break;
+    case REGION_TYPE_AUTOMATION:
+      break;
+    case REGION_TYPE_CHORD:
+      break;
+    }
+}
+
+/**
+ * Resizes the object on the left side or right
+ * side by given amount of ticks.
+ *
+ * @param left 1 to resize left side, 0 to resize
+ *   right side.
+ * @param ticks Number of ticks to resize.
+ * @param loop Whether this is a loop-resize (1) or
+ *   a normal resize (0).
+ * @param update_flag ArrangerObjectUpdateFlag.
+ */
+void
+region_resize (
+  Region *   region,
+  const int  left,
+  const long ticks,
+  const int  loop,
+  ArrangerObjectUpdateFlag update_flag)
+{
+  Position tmp;
+  if (left)
+    {
+      POSITION_MOVE_BY_TICKS (
+        tmp, F_NO_USE_CACHED, region, start_pos,
+        ticks, update_flag);
+      POSITION_MOVE_BY_TICKS (
+        tmp, F_NO_USE_CACHED, region,
+        loop_end_pos, - ticks, update_flag);
+      /* move containing items */
+      region_add_ticks_to_children (
+        region_get_main_region (region),
+        - ticks);
+      if (loop)
+        {
+          POSITION_MOVE_BY_TICKS (
+            tmp, F_NO_USE_CACHED, region,
+            loop_start_pos, - ticks, update_flag);
+        }
+    }
+  else
+    {
+      POSITION_MOVE_BY_TICKS (
+        tmp, F_NO_USE_CACHED, region, end_pos,
+        ticks, update_flag);
+      if (!loop)
+        {
+          POSITION_MOVE_BY_TICKS (
+            tmp, F_NO_USE_CACHED, region,
+            loop_end_pos, ticks, update_flag);
+        }
+    }
+}
+
+/**
  * Splits the given Region at the given Position,
  * deletes the original Region and adds 2 new
  * Regions in the same parent (Track or

@@ -82,4 +82,7 @@
 #define F_PADDING 1
 #define F_NO_PADDING 0
 
+#define F_LOOP 1
+#define F_NO_LOOP 0
+
 #endif

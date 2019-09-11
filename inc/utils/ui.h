@@ -146,6 +146,7 @@ typedef enum UiOverlayAction
   UI_OVERLAY_ACTION_CREATING_RESIZING_R,
   UI_OVERLAY_ACTION_CREATING_MOVING,
   UI_OVERLAY_ACTION_RESIZING_L,
+  UI_OVERLAY_ACTION_RESIZING_L_LOOP,
   UI_OVERLAY_ACTION_RESIZING_R,
   UI_OVERLAY_ACTION_RESIZING_R_LOOP,
   UI_OVERLAY_ACTION_RESIZING_UP,
@@ -236,6 +237,12 @@ typedef enum UiOverlayAction
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
     "left-resize", \
+    0, 10);
+
+#define ui_set_left_resize_loop_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "left-resize-loop", \
     0, 10);
 
 #define ui_set_right_resize_cursor(widget) \

@@ -44,6 +44,10 @@ typedef enum EditTimelineSelectionsType
   ETS_RESIZE_L,
   /** Resize one or more object. */
   ETS_RESIZE_R,
+  /** Resize one or more object (loop). */
+  ETS_RESIZE_L_LOOP,
+  /** Resize one or more object (loop). */
+  ETS_RESIZE_R_LOOP,
   /** Edit name for a single Region. */
   ETS_REGION_NAME,
   ETS_REGION_CLIP_START_POS,

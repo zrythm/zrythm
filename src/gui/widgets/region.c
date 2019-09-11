@@ -485,6 +485,16 @@ region_widget_is_resize_loop (
   RegionWidget * self,
   int             y)
 {
+  REGION_WIDGET_GET_PRIVATE (self);
+
+  Region * r = rw_prv->region;
+  if ((position_to_ticks (&r->end_pos) -
+       position_to_ticks (&r->start_pos)) >
+      position_to_ticks (&r->loop_end_pos))
+    {
+      return 1;
+    }
+
   int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));

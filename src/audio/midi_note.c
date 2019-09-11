@@ -49,6 +49,8 @@
 ARRANGER_OBJ_DEFINE_MOVABLE_W_LENGTH (
   MidiNote, midi_note, midi_arranger_selections,
   MA_SELECTIONS);
+ARRANGER_OBJ_DEFINE_RESIZE_NO_LOOP (
+  MidiNote, midi_note);
 
 void
 midi_note_init_loaded (

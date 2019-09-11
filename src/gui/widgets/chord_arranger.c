@@ -337,8 +337,9 @@ chord_arranger_widget_update_visibility (
 void
 chord_arranger_widget_on_drag_begin_chord_hit (
   ChordArrangerWidget * self,
-  double                   start_x,
-  ChordObjectWidget *      cw)
+  double                start_x,
+  double                start_y,
+  ChordObjectWidget *   cw)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 

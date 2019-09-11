@@ -159,6 +159,8 @@ midi_note_schema = {
 
 ARRANGER_OBJ_DECLARE_MOVABLE_W_LENGTH (
   MidiNote, midi_note);
+ARRANGER_OBJ_DECLARE_RESIZE_NO_LOOP (
+  MidiNote, midi_note);
 
 void
 midi_note_init_loaded (

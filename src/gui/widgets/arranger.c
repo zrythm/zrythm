@@ -269,6 +269,9 @@ arranger_widget_set_cursor (
     case ARRANGER_CURSOR_RESIZING_L:
       SET_X_CURSOR (left_resize);
       break;
+    case ARRANGER_CURSOR_RESIZING_L_LOOP:
+      SET_X_CURSOR (left_resize_loop);
+      break;
     case ARRANGER_CURSOR_RESIZING_R:
       SET_X_CURSOR (right_resize);
       break;
@@ -1236,28 +1239,31 @@ drag_begin (GtkGestureDrag *   gesture,
       if (midi_note_widget)
         {
           midi_arranger_widget_on_drag_begin_note_hit (
-            midi_arranger, start_x,
+            midi_arranger, start_x, start_y,
             midi_note_widget);
         }
       else if (rw)
         {
           timeline_arranger_widget_on_drag_begin_region_hit (
-            timeline_arranger, start_x, rw);
+            timeline_arranger, start_x, start_y, rw);
         }
       else if (chord_widget)
         {
           chord_arranger_widget_on_drag_begin_chord_hit (
-            chord_arranger, start_x, chord_widget);
+            chord_arranger, start_x,
+            start_y, chord_widget);
         }
       else if (scale_widget)
         {
           timeline_arranger_widget_on_drag_begin_scale_hit (
-            timeline_arranger, start_x, scale_widget);
+            timeline_arranger, start_x,
+            start_y, scale_widget);
         }
       else if (ap_widget)
         {
           automation_arranger_widget_on_drag_begin_ap_hit (
-            automation_arranger, start_x, ap_widget);
+            automation_arranger, start_x,
+            start_y, ap_widget);
         }
       else if (ac_widget)
         {
@@ -1267,13 +1273,14 @@ drag_begin (GtkGestureDrag *   gesture,
       else if (vel_widget)
         {
           midi_modifier_arranger_widget_on_drag_begin_velocity_hit (
-            midi_modifier_arranger, start_y,
+            midi_modifier_arranger, start_x, start_y,
             vel_widget);
         }
       else if (mw)
         {
           timeline_arranger_widget_on_drag_begin_marker_hit (
-            timeline_arranger, start_x, mw);
+            timeline_arranger, start_x,
+            start_y, mw);
         }
     }
   else /* nothing hit */
@@ -1552,6 +1559,22 @@ drag_update (
 
 #undef DO_SELECT
       break;
+    case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
+      /* snap selections based on new pos */
+      if (timeline_arranger)
+        {
+          timeline_arranger_widget_update_visibility (
+            timeline_arranger);
+          int ret =
+            timeline_arranger_widget_snap_regions_l (
+              timeline_arranger,
+              &ar_prv->curr_pos, 1);
+          if (!ret)
+            timeline_arranger_widget_snap_regions_l (
+              timeline_arranger,
+              &ar_prv->curr_pos, 0);
+        }
+      break;
     case UI_OVERLAY_ACTION_RESIZING_L:
       /* snap selections based on new pos */
       if (timeline_arranger)
@@ -1586,6 +1609,27 @@ drag_update (
     case UI_OVERLAY_ACTION_STRETCHING_L:
       /* TODO */
       g_message ("stretching L");
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
+      if (timeline_arranger)
+        {
+          if (timeline_arranger->resizing_range)
+            timeline_arranger_widget_snap_range_r (
+              &ar_prv->curr_pos);
+          else
+            {
+              timeline_arranger_widget_update_visibility (
+                timeline_arranger);
+              int ret =
+                timeline_arranger_widget_snap_regions_r (
+                  timeline_arranger,
+                  &ar_prv->curr_pos, 1);
+              if (!ret)
+                timeline_arranger_widget_snap_regions_r (
+                  timeline_arranger,
+                  &ar_prv->curr_pos, 0);
+            }
+        }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
     case UI_OVERLAY_ACTION_CREATING_RESIZING_R:

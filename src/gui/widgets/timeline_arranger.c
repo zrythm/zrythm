@@ -312,7 +312,11 @@ timeline_arranger_widget_get_cursor (
                     rw && rw_prv->resize_r;
                   int is_resize_loop =
                     rw && rw_prv->resize_loop;
-                  if (is_resize_l)
+                  if (is_resize_l &&
+                      is_resize_loop)
+                    return
+                      ARRANGER_CURSOR_RESIZING_L_LOOP;
+                  else if (is_resize_l)
                     return
                       ARRANGER_CURSOR_RESIZING_L;
                   else if (is_resize_r &&
@@ -396,11 +400,23 @@ timeline_arranger_widget_get_cursor (
       else
         ac = ARRANGER_CURSOR_RESIZING_L;
       break;
+    case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
+      if (self->resizing_range)
+        ac = ARRANGER_CURSOR_RANGE;
+      else
+        ac = ARRANGER_CURSOR_RESIZING_L_LOOP;
+      break;
     case UI_OVERLAY_ACTION_RESIZING_R:
       if (self->resizing_range)
         ac = ARRANGER_CURSOR_RANGE;
       else
         ac = ARRANGER_CURSOR_RESIZING_R;
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
+      if (self->resizing_range)
+        ac = ARRANGER_CURSOR_RANGE;
+      else
+        ac = ARRANGER_CURSOR_RESIZING_R_LOOP;
       break;
     default:
       ac = ARRANGER_CURSOR_SELECT;
@@ -768,6 +784,7 @@ void
 timeline_arranger_widget_on_drag_begin_region_hit (
   TimelineArrangerWidget * self,
   double                   start_x,
+  double                   start_y,
   RegionWidget *           rw)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
@@ -798,7 +815,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   gtk_widget_translate_coordinates (
     GTK_WIDGET (self),
     GTK_WIDGET (rw),
-    start_x, 0, &wx, &wy);
+    start_x, start_y, &wx, &wy);
 
   self->start_region = region;
 
@@ -825,7 +842,9 @@ timeline_arranger_widget_on_drag_begin_region_hit (
       SET_ACTION (AUDITIONING);
       break;
     case TOOL_SELECT_NORMAL:
-      if (resize_l)
+      if (resize_l && resize_loop)
+        SET_ACTION (RESIZING_L_LOOP);
+      else if (resize_l)
         SET_ACTION (RESIZING_L);
       else if (resize_r && resize_loop)
         SET_ACTION (RESIZING_R_LOOP);
@@ -900,6 +919,7 @@ void
 timeline_arranger_widget_on_drag_begin_scale_hit (
   TimelineArrangerWidget * self,
   double                   start_x,
+  double                   start_y,
   ScaleObjectWidget *      cw)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
@@ -952,6 +972,7 @@ void
 timeline_arranger_widget_on_drag_begin_marker_hit (
   TimelineArrangerWidget * self,
   double                   start_x,
+  double                   start_y,
   MarkerWidget *           mw)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
@@ -1409,9 +1430,20 @@ snap_region_l (
     {
       if (region_validate_start_pos (
             region, new_start_pos))
-        region_set_start_pos (
-          region, new_start_pos,
-          AO_UPDATE_ALL);
+        {
+          /*region_set_start_pos (*/
+            /*region, new_start_pos,*/
+            /*AO_UPDATE_ALL);*/
+          long diff =
+            position_to_ticks (new_start_pos) -
+            position_to_ticks (
+              &region->start_pos);
+          region_resize (
+            region, 1, diff,
+            ar_prv->action ==
+              UI_OVERLAY_ACTION_RESIZING_L_LOOP,
+            AO_UPDATE_ALL);
+        }
     }
 
   return 0;
@@ -1543,8 +1575,16 @@ snap_region_r (
       if (region_validate_end_pos (
             region, new_end_pos))
         {
-          region_set_end_pos (
-            region, new_end_pos, AO_UPDATE_ALL);
+          /*region_set_end_pos (*/
+            /*region, new_end_pos, AO_UPDATE_ALL);*/
+          long diff =
+            position_to_ticks (new_end_pos) -
+            position_to_ticks (&region->end_pos);
+          region_resize (
+            region, 0, diff,
+            ar_prv->action ==
+              UI_OVERLAY_ACTION_RESIZING_R_LOOP,
+            AO_UPDATE_ALL);
 
           /* if creating also set the loop points
            * appropriately */
@@ -1563,9 +1603,6 @@ snap_region_r (
                 region, &tmp, AO_UPDATE_ALL);
 
               /* use the setters */
-              region_set_true_end_pos (
-                region, &region->true_end_pos,
-                AO_UPDATE_ALL);
               region_set_loop_end_pos (
                 region, &region->true_end_pos,
                 AO_UPDATE_ALL);
@@ -1955,8 +1992,30 @@ timeline_arranger_widget_on_drag_end (
             TL_SELECTIONS, 1);
         }
       break;
+    case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
+      if (!self->resizing_range)
+        {
+          Region * main_trans_region =
+            TL_SELECTIONS->regions[0]->obj_info.
+              main_trans;
+          UndoableAction * ua =
+            (UndoableAction *)
+            edit_timeline_selections_action_new (
+              TL_SELECTIONS,
+              ETS_RESIZE_L_LOOP,
+              position_to_ticks (
+                &main_trans_region->start_pos) -
+              position_to_ticks (
+                &main_trans_region->
+                  cache_start_pos),
+              NULL, NULL);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+          timeline_selections_reset_counterparts (
+            TL_SELECTIONS, 1);
+        }
+      break;
     case UI_OVERLAY_ACTION_RESIZING_R:
-    case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
       if (!self->resizing_range)
         {
           Region * main_trans_region =
@@ -1967,6 +2026,28 @@ timeline_arranger_widget_on_drag_end (
             edit_timeline_selections_action_new (
               TL_SELECTIONS,
               ETS_RESIZE_R,
+              position_to_ticks (
+                &main_trans_region->end_pos) -
+              position_to_ticks (
+                &main_trans_region->cache_end_pos),
+              NULL, NULL);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+          timeline_selections_reset_counterparts (
+            TL_SELECTIONS, 1);
+        }
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
+      if (!self->resizing_range)
+        {
+          Region * main_trans_region =
+            TL_SELECTIONS->regions[0]->obj_info.
+              main_trans;
+          UndoableAction * ua =
+            (UndoableAction *)
+            edit_timeline_selections_action_new (
+              TL_SELECTIONS,
+              ETS_RESIZE_R_LOOP,
               position_to_ticks (
                 &main_trans_region->end_pos) -
               position_to_ticks (

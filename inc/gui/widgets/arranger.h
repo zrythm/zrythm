@@ -160,6 +160,7 @@ typedef enum ArrangerCursor
   ARRANGER_CURSOR_GRAB,
   ARRANGER_CURSOR_GRABBING,
   ARRANGER_CURSOR_RESIZING_L,
+  ARRANGER_CURSOR_RESIZING_L_LOOP,
   ARRANGER_CURSOR_RESIZING_R,
   ARRANGER_CURSOR_RESIZING_R_LOOP,
   ARRANGER_CURSOR_RESIZING_UP,
@@ -278,6 +279,7 @@ typedef struct _ArrangerWidgetClass
   arr_name_sc##_arranger_widget_on_drag_begin_##sc##_hit ( \
     arr_name_cc##ArrangerWidget * self, \
     double                        start_x, \
+    double                        start_y, \
     cc##Widget *                  hit_w)
 
 /**

@@ -169,8 +169,12 @@ typedef struct Region
   /* LOCAL POSITIONS STARTING FROM 0.0.0.0 */
   /* ------------------------------------- */
 
-  /** Position that the original region ends in,
-   * without any loops or modifications. */
+  /**
+   * Position that the original region ends in,
+   * without any loops or modifications.
+   *
+   * FIXME Is this just the length?
+   */
   Position     true_end_pos;
 
   /** Start position of the clip. */
@@ -185,6 +189,9 @@ typedef struct Region
    */
   Position     loop_start_pos;
 
+  /** Cache, used in runtime operations. */
+  Position     cache_loop_start_pos;
+
   /** End position of the clip loop.
    *
    * Once this is reached, the clip will go back to
@@ -192,6 +199,9 @@ typedef struct Region
    *
    */
   Position     loop_end_pos;
+
+  /** Cache, used in runtime operations. */
+  Position     cache_loop_end_pos;
 
   /* ---------------------------------------- */
 
@@ -664,6 +674,34 @@ void
 region_set_clip_start_pos (
   Region * region,
   const Position * pos,
+  ArrangerObjectUpdateFlag update_flag);
+
+/**
+ * Moves the children of the region by the given
+ * amount of ticks.
+ */
+void
+region_add_ticks_to_children (
+  Region *   self,
+  const long ticks);
+
+/**
+ * Resizes the object on the left side or right
+ * side by given amount of ticks.
+ *
+ * @param left 1 to resize left side, 0 to resize
+ *   right side.
+ * @param ticks Number of ticks to resize.
+ * @param loop Whether this is a loop-resize (1) or
+ *   a normal resize (0).
+ * @param update_flag ArrangerObjectUpdateFlag.
+ */
+void
+region_resize (
+  Region *   region,
+  const int  left,
+  const long ticks,
+  const int  loop,
   ArrangerObjectUpdateFlag update_flag);
 
 /**

@@ -298,7 +298,7 @@ typedef enum ArrangerObjectUpdateFlag
   void \
   sc##_move ( \
     cc * sc, \
-    long ticks, \
+    const long ticks, \
     int  use_cached_pos, \
     ArrangerObjectUpdateFlag update_flag)
 
@@ -547,14 +547,16 @@ typedef enum ArrangerObjectUpdateFlag
 
 /**
  * Resizes the object on the left side or right
- * side by given amount of ticks.
+ * side by given amount of ticks, for objects that
+ * do not have loops (currently none? keep it as
+ * reference).
  *
  * @param left 1 to resize left side, 0 to resize
  *   right side.
  * @param ticks Number of ticks to resize.
  * @param update_flag ArrangerObjectUpdateFlag.
  */
-#define ARRANGER_OBJ_DECLARE_RESIZE( \
+#define ARRANGER_OBJ_DECLARE_RESIZE_NO_LOOP( \
   cc, sc) \
   void \
   sc##_resize ( \
@@ -563,9 +565,9 @@ typedef enum ArrangerObjectUpdateFlag
     long ticks, \
     ArrangerObjectUpdateFlag update_flag)
 
-#define ARRANGER_OBJ_DEFINE_RESIZE( \
+#define ARRANGER_OBJ_DEFINE_RESIZE_NO_LOOP( \
   cc, sc) \
-  ARRANGER_OBJ_DECLARE_RESIZE (cc, sc) \
+  ARRANGER_OBJ_DECLARE_RESIZE_NO_LOOP (cc, sc) \
   { \
     Position tmp; \
     if (left) \
@@ -677,7 +679,6 @@ typedef enum ArrangerObjectUpdateFlag
   ARRANGER_OBJ_DECLARE_SHIFT_TICKS (cc, sc); \
   ARRANGER_OBJ_DECLARE_GEN_WIDGET (cc, sc); \
   ARRANGER_OBJ_DECLARE_GET_VISIBLE (cc, sc); \
-  ARRANGER_OBJ_DECLARE_RESIZE (cc, sc); \
   ARRANGER_OBJ_DECLARE_VALIDATE_POS ( \
     cc, sc, start_pos); \
   ARRANGER_OBJ_DECLARE_VALIDATE_POS ( \
@@ -694,6 +695,5 @@ typedef enum ArrangerObjectUpdateFlag
   ARRANGER_OBJ_DEFINE_SHIFT_TICKS_W_LENGTH ( \
     cc, sc); \
   ARRANGER_OBJ_DEFINE_GET_VISIBLE (cc, sc); \
-  ARRANGER_OBJ_DEFINE_RESIZE (cc, sc)
 
 #endif
