@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-09 00:34+0100\n"
+"POT-Creation-Date: 2019-09-12 20:16+0100\n"
 "PO-Revision-Date: 2019-08-13 15:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -18,20 +18,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.7.0\n"
-
-#: ../../projects/creating-projects.rst:6 ../../projects/saving-loading.rst:22
-msgid "Creating Projects"
-msgstr "Création de projets"
-
-#: ../../projects/creating-projects.rst:8
-msgid ""
-"When Zrythm first starts, it will ask you to either load a Project or "
-"create a new one. By default, Zrythm will use ~/username/Zrythm to create"
-" new Projects."
-msgstr ""
-"Lorsque Zrythm démarre pour la première fois, il vous demandera soit de "
-"charger un projet, soit d'en créer un nouveau. Par défaut, Zrythm "
-"utilisera ~/username/Zrythm pour créer de nouveaux projets."
 
 #: ../../projects/intro.rst:6
 msgid "Projects"
@@ -109,6 +95,10 @@ msgid ""
 "When you select a project and click :zbutton:`Apply`, Zrythm will load "
 "that project."
 msgstr ""
+
+#: ../../projects/saving-loading.rst:22
+msgid "Creating Projects"
+msgstr "Création de projets"
 
 #: ../../projects/saving-loading.rst:24
 msgid ""
@@ -318,4 +308,18 @@ msgstr ""
 
 #~ msgid "Here is an example of a simple project file:"
 #~ msgstr "Voici un exemple d'un fichier de projet simple :"
+
+#~ msgid ""
+#~ "When Zrythm first starts, it will "
+#~ "ask you to either load a Project"
+#~ " or create a new one. By "
+#~ "default, Zrythm will use ~/username/Zrythm "
+#~ "to create new Projects."
+#~ msgstr ""
+#~ "Lorsque Zrythm démarre pour la première"
+#~ " fois, il vous demandera soit de "
+#~ "charger un projet, soit d'en créer "
+#~ "un nouveau. Par défaut, Zrythm utilisera"
+#~ " ~/username/Zrythm pour créer de nouveaux"
+#~ " projets."
 

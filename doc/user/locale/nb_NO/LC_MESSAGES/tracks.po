@@ -7,48 +7,73 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-12 12:26+0100\n"
+"POT-Creation-Date: 2019-09-12 20:16+0100\n"
 "PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
-"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
-"manualtracks/nb_NO/>\n"
 "Language: nb_NO\n"
+"Language-Team: Norwegian Bokmål "
+"<https://hosted.weblate.org/projects/zrythm/manualtracks/nb_NO/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../../tracks/chord-track/intro.rst:2 ../../tracks/track-types.rst:25
+#: ../../tracks/audio-track.rst:6 ../../tracks/track-types.rst:30
+msgid "Audio Track"
+msgstr "Lydspor"
+
+#: ../../tracks/audio-track.rst:8
+msgid ""
+"An Audio Track contains audio regions and can be used for recording and "
+"playing audio, or for sample playback."
+msgstr ""
+
+#: ../../tracks/audio-track.rst:13 ../../tracks/midi-track.rst:13
+msgid "Inputs"
+msgstr ""
+
+#: ../../tracks/bus-track-audio.rst:6 ../../tracks/track-types.rst:37
+msgid "Bus Track (Audio)"
+msgstr ""
+
+#: ../../tracks/bus-track-midi.rst:6 ../../tracks/track-types.rst:44
+msgid "Bus Track (MIDI)"
+msgstr ""
+
+#: ../../tracks/chord-track.rst:6 ../../tracks/track-types.rst:78
 msgid "Chord Track"
 msgstr ""
 
-#: ../../tracks/chord-track/intro.rst:4
+#: ../../tracks/chord-track.rst:8
 msgid ""
 "The Chord Track contains chord and scale objects that are used to specify"
 " when the song is using a particular chord or scale."
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:2
+#: ../../tracks/chord-track.rst:12
+msgid "For more information, see the section :doc:`../chords-and-scales/intro`."
+msgstr ""
+
+#: ../../tracks/creating-tracks.rst:6
 msgid "Creating Tracks"
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:5
+#: ../../tracks/creating-tracks.rst:9
 msgid "Blank Tracks"
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:7
+#: ../../tracks/creating-tracks.rst:11
 msgid ""
 "To add an empty track, right click on empty space in the Tracklist and "
 "select the type of track you want to add."
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:11
+#: ../../tracks/creating-tracks.rst:15
 msgid "Creating Tracks From Plugins"
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:13
+#: ../../tracks/creating-tracks.rst:17
 msgid ""
 "Plugins can be clicked and dragged from the Plugin Browser and dropped "
 "into empty space in the Tracklist or Mixer to instantiate them. If the "
@@ -56,11 +81,11 @@ msgid ""
 "the plugin is an effect, a Bus Track will be created."
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:20
+#: ../../tracks/creating-tracks.rst:24
 msgid "Creating Audio Tracks From Audio Files"
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:22
+#: ../../tracks/creating-tracks.rst:26
 msgid ""
 "Likewise, to create an Audio Track from an audio file (WAV, FLAC, etc.), "
 "you can drag an audio file from the File Browser into empty space in the "
@@ -68,21 +93,29 @@ msgid ""
 "Audio Clip at the current Playhead position."
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:29
-msgid "Duplicating Tracks"
+#: ../../tracks/creating-tracks.rst:33
+msgid "Creating Tracks by Duplicating"
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:31
+#: ../../tracks/creating-tracks.rst:35
 msgid ""
 "Most Tracks can be duplicated by right clicking inside the Track and "
 "selecting :zbutton:`Duplicate`."
 msgstr ""
 
-#: ../../tracks/instrument-track.rst:2 ../../tracks/track-types.rst:9
+#: ../../tracks/group-track-audio.rst:6 ../../tracks/track-types.rst:55
+msgid "Group Track (Audio)"
+msgstr ""
+
+#: ../../tracks/group-track-midi.rst:6 ../../tracks/track-types.rst:62
+msgid "Group Track (MIDI)"
+msgstr ""
+
+#: ../../tracks/instrument-track.rst:6 ../../tracks/track-types.rst:24
 msgid "Instrument Track"
 msgstr "Instrumentspor"
 
-#: ../../tracks/instrument-track.rst:4
+#: ../../tracks/instrument-track.rst:8
 msgid ""
 "The Instrument Track is used for synths and other instruments. The first "
 "plugin in the strip of the Instrument Track's channel must be an "
@@ -90,140 +123,208 @@ msgid ""
 "created from instrument plugins."
 msgstr ""
 
-#: ../../tracks/instrument-track.rst:12
+#: ../../tracks/instrument-track.rst:16
 msgid "Track View"
 msgstr ""
 
-#: ../../tracks/instrument-track.rst:14 ../../tracks/track-context-menu.rst:4
+#: ../../tracks/instrument-track.rst:18 ../../tracks/track-context-menu.rst:8
 msgid "TODO"
 msgstr "GJENSTÅR"
 
-#: ../../tracks/intro.rst:2
+#: ../../tracks/intro.rst:6
 msgid "Tracks"
 msgstr "Spor"
 
-#: ../../tracks/overview.rst:2
+#: ../../tracks/marker-track.rst:6 ../../tracks/track-types.rst:87
+msgid "Marker Track"
+msgstr ""
+
+#: ../../tracks/master-track.rst:6 ../../tracks/track-types.rst:70
+msgid "Master Track"
+msgstr ""
+
+#: ../../tracks/midi-track.rst:6 ../../tracks/track-types.rst:17
+#, fuzzy
+msgid "MIDI Track"
+msgstr "Lydspor"
+
+#: ../../tracks/midi-track.rst:8
+msgid ""
+"A MIDI track contains MIDI regions and its purpose is for routing MIDI "
+"signals to other instruments (including external instruments and "
+"hardware)."
+msgstr ""
+
+#: ../../tracks/overview.rst:6
 msgid "Overview"
 msgstr "Oversikt"
 
-#: ../../tracks/overview.rst:4
+#: ../../tracks/overview.rst:8
 msgid ""
 "Tracks are the main building blocks of projects. Tracks appear in the "
 "Tracklists (one pinned at the top and one non-pinned) and contain various"
 " information such as regions and automation points."
 msgstr ""
 
-#: ../../tracks/overview.rst:10
+#: ../../tracks/overview.rst:14
 msgid ""
 "Most types of Tracks have a Channel that appears in the mixer. Each Track"
 " has its own page in the Inspector section, which is shown when selecting"
 " a Track."
 msgstr ""
 
-#: ../../tracks/overview.rst:15
+#: ../../tracks/overview.rst:19
 msgid ""
 "There are various kinds of Tracks suited for different purposes, "
 "explained in the following sections."
 msgstr ""
 
-#: ../../tracks/track-context-menu.rst:2
+#: ../../tracks/track-context-menu.rst:6
 msgid "Track Context Menu"
 msgstr ""
 
-#: ../../tracks/track-operations.rst:2
+#: ../../tracks/track-operations.rst:6
 msgid "Track Operations"
 msgstr ""
 
-#: ../../tracks/track-operations.rst:5
+#: ../../tracks/track-operations.rst:9
 msgid "Moving Tracks"
 msgstr ""
 
-#: ../../tracks/track-operations.rst:6
+#: ../../tracks/track-operations.rst:10
 msgid ""
 "Tracks can be moved by clicking and dragging inside empty space in the "
 "Track, and dropping it at another location. The drop locations will be "
 "highlighted as you move the Track."
 msgstr ""
 
-#: ../../tracks/track-operations.rst:12
+#: ../../tracks/track-operations.rst:16
 msgid "Deleting Tracks"
 msgstr ""
 
-#: ../../tracks/track-operations.rst:14
+#: ../../tracks/track-operations.rst:18
 msgid ""
 "Tracks can be deleted by right-clicking them and selecting "
 ":zbutton:`Delete`."
 msgstr ""
 
-#: ../../tracks/track-operations.rst:18
+#: ../../tracks/track-operations.rst:22
 msgid "All Track operations are undoable."
 msgstr ""
 
-#: ../../tracks/track-types.rst:2
+#: ../../tracks/track-types.rst:6
 msgid "Track Types"
 msgstr "Sportyper"
 
-#: ../../tracks/track-types.rst:4
+#: ../../tracks/track-types.rst:8
 msgid ""
 "Zrythm has the following types of Tracks, and they are explained further "
 "in their own sections."
 msgstr ""
 
-#: ../../tracks/track-types.rst:8
+#: ../../tracks/track-types.rst:12
 msgid ""
 "A Track that contains regions holding MIDI notes. It also has automation "
 "lanes for automating its components."
 msgstr ""
 
-#: ../../tracks/track-types.rst:11
-msgid "Audio Track"
-msgstr "Lydspor"
+#: ../../tracks/track-types.rst:16 ../../tracks/track-types.rst:43
+#: ../../tracks/track-types.rst:61 ../../tracks/track-types.rst:77
+msgid "*Input:* **MIDI**, *Output:* **MIDI**"
+msgstr ""
 
-#: ../../tracks/track-types.rst:12
+#: ../../tracks/track-types.rst:18 ../../tracks/track-types.rst:25
+#: ../../tracks/track-types.rst:31
+msgid "*Can record:* **Yes**"
+msgstr ""
+
+#: ../../tracks/track-types.rst:20
+msgid ""
+"Similar to a MIDI track, except that an Instrument Track is bound to an "
+"instrument plugin."
+msgstr ""
+
+#: ../../tracks/track-types.rst:23
+msgid "*Input:* **MIDI**, *Output:* **Audio**"
+msgstr ""
+
+#: ../../tracks/track-types.rst:27
 msgid "A Track containing audio regions, cross-fades, fades and automation."
 msgstr ""
 
-#: ../../tracks/track-types.rst:13
-msgid "Bus Track"
-msgstr "Busspor"
+#: ../../tracks/track-types.rst:29 ../../tracks/track-types.rst:36
+#: ../../tracks/track-types.rst:69
+msgid "*Input:* **Audio**, *Output:* **Audio**"
+msgstr ""
 
-#: ../../tracks/track-types.rst:14
+#: ../../tracks/track-types.rst:33
 msgid "A Track corresponding to a mixer bus. Bus tracks only contain automation"
 msgstr ""
 
-#: ../../tracks/track-types.rst:15
-msgid "Master Track"
+#: ../../tracks/track-types.rst:38 ../../tracks/track-types.rst:45
+#: ../../tracks/track-types.rst:56 ../../tracks/track-types.rst:63
+#: ../../tracks/track-types.rst:71 ../../tracks/track-types.rst:79
+#: ../../tracks/track-types.rst:88
+msgid "*Can record:* **No**"
 msgstr ""
 
-#: ../../tracks/track-types.rst:16
+#: ../../tracks/track-types.rst:40
+msgid ""
+"Similar to an audio Bus Track, except that it handles MIDI instead of "
+"audio."
+msgstr ""
+
+#: ../../tracks/track-types.rst:47
+msgid ""
+"A Group Track is used to route signals from multiple Tracks into one "
+"Track (or \"group\" them). It behaves like a Bus Track with the exception"
+" that other Tracks can route their output signal directly into Group "
+"Track. *Input:* **Audio**, *Output:* **Audio**"
+msgstr ""
+
+#: ../../tracks/track-types.rst:58
+msgid ""
+"Similar to an audio Group Track, except that it handles MIDI instead of "
+"audio."
+msgstr ""
+
+#: ../../tracks/track-types.rst:65
 msgid ""
 "The Master track is a special type of Bus Track that controls the master "
 "fader and contains additional automation options."
 msgstr ""
 
-#: ../../tracks/track-types.rst:21
-msgid "Group Track"
-msgstr ""
-
-#: ../../tracks/track-types.rst:18
-msgid ""
-"A Group Track is used to route signals from multiple Tracks into one "
-"Track. It behaves like a Bus Track with the exception that other Tracks "
-"can route their output signal directly into Group Track."
-msgstr ""
-
-#: ../../tracks/track-types.rst:24
+#: ../../tracks/track-types.rst:73
 msgid ""
 "A Chord Track is a special kind of Track that contains chords and scales "
 "and is a great tool for assisting with chord progressions."
 msgstr ""
 
-#: ../../tracks/track-types.rst:30
-msgid "Marker Track"
-msgstr ""
-
-#: ../../tracks/track-types.rst:28
+#: ../../tracks/track-types.rst:81
 msgid ""
 "A Marker Track is a special kind of Track that contains song markers - "
 "either custom or pre-defined ones like the song start and end markers."
 msgstr ""
+
+#: ../../tracks/track-types.rst:86
+msgid "*Input:* **None**, *Output:* **None**"
+msgstr ""
+
+#~ msgid "Duplicating Tracks"
+#~ msgstr ""
+
+#~ msgid "Bus Track"
+#~ msgstr "Busspor"
+
+#~ msgid "Group Track"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Group Track is used to route "
+#~ "signals from multiple Tracks into one"
+#~ " Track. It behaves like a Bus "
+#~ "Track with the exception that other "
+#~ "Tracks can route their output signal "
+#~ "directly into Group Track."
+#~ msgstr ""
+

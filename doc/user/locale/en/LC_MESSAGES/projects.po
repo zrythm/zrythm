@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-09 00:34+0100\n"
+"POT-Creation-Date: 2019-09-12 20:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,17 +16,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.7.0\n"
-
-#: ../../projects/creating-projects.rst:6 ../../projects/saving-loading.rst:22
-msgid "Creating Projects"
-msgstr ""
-
-#: ../../projects/creating-projects.rst:8
-msgid ""
-"When Zrythm first starts, it will ask you to either load a Project or "
-"create a new one. By default, Zrythm will use ~/username/Zrythm to create"
-" new Projects."
-msgstr ""
 
 #: ../../projects/intro.rst:6
 msgid "Projects"
@@ -87,6 +76,10 @@ msgstr ""
 msgid ""
 "When you select a project and click :zbutton:`Apply`, Zrythm will load "
 "that project."
+msgstr ""
+
+#: ../../projects/saving-loading.rst:22
+msgid "Creating Projects"
 msgstr ""
 
 #: ../../projects/saving-loading.rst:24
@@ -263,5 +256,13 @@ msgstr ""
 #~ "When loading a Project, Zrythm expects"
 #~ " you to give it the Project "
 #~ "directory."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "When Zrythm first starts, it will "
+#~ "ask you to either load a Project"
+#~ " or create a new one. By "
+#~ "default, Zrythm will use ~/username/Zrythm "
+#~ "to create new Projects."
 #~ msgstr ""
 
