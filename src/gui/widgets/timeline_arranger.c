@@ -1494,7 +1494,7 @@ timeline_arranger_widget_snap_regions_l (
     {
       /* main trans region */
       region =
-        region_get_main_trans_region (
+        region_get_main_region (
           TL_SELECTIONS->regions[i]);
 
       /* caclulate new start position */
@@ -1503,17 +1503,6 @@ timeline_arranger_widget_snap_regions_l (
         &region->cache_start_pos);
       position_add_ticks (
         &new_start_pos, delta);
-
-      ret =
-        snap_region_l (
-          self, region, &new_start_pos, dry_run);
-
-      if (ret)
-        return ret;
-
-      /* lane trans region */
-      region =
-        ((Region *) region->obj_info.lane_trans);
 
       ret =
         snap_region_l (

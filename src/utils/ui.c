@@ -92,19 +92,21 @@ ui_set_cursor_from_name (
 }
 
 /**
- * Shows error popup.
+ * Shows a popup message of the given type with the
+ * given message.
  */
 void
-ui_show_error_message_full (
-  GtkWindow * parent_window,
-  const char * message)
+ui_show_message_full (
+  GtkWindow *    parent_window,
+  GtkMessageType type,
+  const char *   message)
 {
   GtkDialogFlags flags =
     GTK_DIALOG_DESTROY_WITH_PARENT;
   GtkWidget * dialog =
     gtk_message_dialog_new (parent_window,
       flags,
-      GTK_MESSAGE_ERROR,
+      type,
       GTK_BUTTONS_CLOSE,
       "%s",
       message);

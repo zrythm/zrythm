@@ -101,8 +101,9 @@ typedef struct Position Position;
  * of the window is needed on the caller side.
  */
 #define ui_show_error_message(win, msg) \
-    ui_show_error_message_full ( \
+    ui_show_message_full ( \
       GTK_WINDOW (win), \
+      GTK_MESSAGE_ERROR, \
       msg);
 
 #define ui_is_widget_revealed(widget) \
@@ -279,9 +280,14 @@ ui_on_motion_set_status_bar_text_cb (
   GdkEvent *  event,
   char *      text);
 
+/**
+ * Shows a popup message of the given type with the
+ * given message.
+ */
 void
-ui_show_error_message_full (
+ui_show_message_full (
   GtkWindow * parent_window,
+  GtkMessageType type,
   const char * message);
 
 /**

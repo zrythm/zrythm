@@ -438,12 +438,28 @@ load (
 
   Project * prj = project_deserialize (yaml);
 
+  if (!string_is_equal (
+        prj->version,
+        PACKAGE_VERSION, 1))
+    {
+      char * str =
+        g_strdup_printf (
+          _("This project was created with a "
+            "different version of Zrythm (%s). "
+            "It may not work correctly."),
+          prj->version);
+      ui_show_message_full (
+        GTK_WINDOW (MAIN_WINDOW),
+        GTK_MESSAGE_WARNING, str);
+      g_free (str);
+    }
+
   if (prj == NULL)
     {
       ui_show_error_message (
         MAIN_WINDOW,
-        "Failed to load project. Please check the "
-        "logs for more information.");
+        _("Failed to load project. Please check the "
+        "logs for more information."));
       RETURN_ERROR;
     }
   g_message ("Project successfully deserialized.");
