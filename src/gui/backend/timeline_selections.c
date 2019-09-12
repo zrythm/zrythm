@@ -664,6 +664,9 @@ timeline_selections_paste_to_pos (
       orig_track->type != track->type)
     return;
 
+  timeline_selections_clear (
+    TL_SELECTIONS);
+
   int pos_ticks = position_to_ticks (pos);
 
   /* get pos of earliest object */
@@ -737,8 +740,11 @@ timeline_selections_paste_to_pos (
           region, REGION_CLONE_COPY_MAIN);
       region_print (cp);
       track_add_region (
-        track, cp, 0, F_GEN_NAME,
-        F_GEN_WIDGET);
+        track, cp, NULL, 0, F_GEN_NAME);
+
+      /* select it */
+      timeline_selections_add_region (
+        TL_SELECTIONS, cp);
     }
   for (i = 0; i < ts->num_scale_objects; i++)
     {

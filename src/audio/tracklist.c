@@ -195,7 +195,7 @@ tracklist_insert_track (
   /* move other tracks */
   for (int i = track->pos + 1;
        i < self->num_tracks; i++)
-    self->tracks[i]->pos = i;
+    track_set_pos (self->tracks[i], i);
 
   if (track->channel)
     channel_connect (track->channel);

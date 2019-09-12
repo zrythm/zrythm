@@ -27,6 +27,7 @@
 
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
+#include "actions/create_timeline_selections_action.h"
 #include "actions/create_tracks_action.h"
 #include "actions/delete_tracks_action.h"
 #include "actions/delete_midi_arranger_selections_action.h"
@@ -696,6 +697,16 @@ on_timeline_clipboard_received (
     {
       timeline_selections_paste_to_pos (
         ts, PLAYHEAD);
+
+      /* create action to make it undoable */
+      /* (by now the TL_SELECTIONS should have
+       * only the pasted items selected) */
+      UndoableAction * ua =
+        (UndoableAction *)
+        create_timeline_selections_action_new (
+          TL_SELECTIONS);
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
     }
 
   /* free ts */
