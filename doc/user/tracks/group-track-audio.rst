@@ -2,9 +2,6 @@
    Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
-Chord Track
-===========
+Group Track (Audio)
+===================
 
-The Chord Track contains chord and scale
-objects that are used to specify when the song
-is using a particular chord or scale.

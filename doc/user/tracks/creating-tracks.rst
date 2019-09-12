@@ -29,8 +29,8 @@ File Browser into empty space in the Tracklist or Mixer.
 This will create an Audio Track containing a single
 Audio Clip at the current Playhead position.
 
-Duplicating Tracks
-==================
+Creating Tracks by Duplicating
+------------------------------
 
 Most Tracks can be duplicated by right clicking
 inside the Track and selecting :zbutton:`Duplicate`.

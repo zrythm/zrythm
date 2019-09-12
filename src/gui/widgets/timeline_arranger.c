@@ -287,8 +287,13 @@ timeline_arranger_widget_get_cursor (
       self,
       ar_prv->hover_x,
       ar_prv->hover_y);
+  MarkerWidget * mw =
+    timeline_arranger_widget_get_hit_marker (
+      self,
+      ar_prv->hover_x,
+      ar_prv->hover_y);
 
-  int is_hit = rw || sw;
+  int is_hit = rw || sw || mw;
 
   switch (action)
     {

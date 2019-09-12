@@ -2,7 +2,13 @@
    Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
-Exporting MIDI Files
-====================
+Audio Track
+===========
 
-TODO
+An Audio Track contains audio regions and can be
+used for recording and playing audio, or for sample
+playback.
+
+Inputs
+------
+

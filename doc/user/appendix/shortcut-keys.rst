@@ -9,8 +9,10 @@ Global Shortcuts
 ----------------
 
 .. image:: /_static/img/global_shortcuts.png
+   :align: center
 
 Editor Shortcuts
 ----------------
 
 .. image:: /_static/img/editor_shortcuts.png
+   :align: center

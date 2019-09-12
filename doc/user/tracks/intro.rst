@@ -10,8 +10,16 @@ Tracks
 
    overview
    track-types
-   chord-track/intro
+   midi-track
    instrument-track
+   audio-track
+   bus-track-midi
+   bus-track-audio
+   group-track-midi
+   group-track-audio
+   master-track
+   chord-track
+   marker-track
    creating-tracks
    track-operations
    track-context-menu
