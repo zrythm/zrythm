@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-09 00:34+0100\n"
-"PO-Revision-Date: 2019-09-11 16:24+0000\n"
+"PO-Revision-Date: 2019-09-12 21:51+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/pt/>\n"
@@ -90,9 +90,8 @@ msgstr ""
 "de Faixas superior (fixa) e na Lista de Faixas inferior (principal)."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
-#, fuzzy
 msgid "Channel"
-msgstr "Canais"
+msgstr "Canal"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:41
 msgid ""
@@ -141,6 +140,8 @@ msgid ""
 "Zrythm has various editors for editing the various events in the Timeline"
 " in detail. These editors appear in the Editor tab in the bottom panel."
 msgstr ""
+"Zrythm tem vários editores para editar os vários eventos na Linha do Tempo "
+"em detalhes. Esses editores aparecem na guia Editor no painel inferior."
 
 #: ../../zrythm-interface/editors.rst:13
 msgid "Piano Roll"
