@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-09 00:34+0100\n"
-"PO-Revision-Date: 2019-09-05 07:58+0000\n"
+"PO-Revision-Date: 2019-09-11 16:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -24,15 +25,14 @@ msgid "Additional Settings"
 msgstr "Configurações adicionais"
 
 #: ../../configuration/additional-settings.rst:8
-#, fuzzy
 msgid ""
 "Zrythm stores all of its configuration using the GSettings mechanism, "
 "which comes with the ``gsettings`` command for changing settings from the"
 " command line, or the optional GUI tool ``dconf-editor``."
 msgstr ""
 "O Zrythm armazena toda a sua configuração usando o mecanismo GSettings, "
-"através do comando ``gsettings`` para alterar as configurações da linha "
-"de comando."
+"através do comando ``gsettings`` para alterar as configurações da linha de "
+"comando ou a ferramenta GUI opcional ``dconf-editor``."
 
 #: ../../configuration/additional-settings.rst:14
 msgid ""
@@ -49,7 +49,7 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:23
 msgid "Using gsettings"
-msgstr ""
+msgstr "Usar gsettings"
 
 #: ../../configuration/additional-settings.rst:25
 msgid ""
@@ -60,13 +60,12 @@ msgstr ""
 "como usar ``gsettings`` veja ``man gsettings``."
 
 #: ../../configuration/additional-settings.rst:28
-#, fuzzy
 msgid ""
 "As an example, to change the audio backend you would do ``gsettings set "
 "org.zrythm.Zrythm.preferences audio-backend \"jack\"``"
 msgstr ""
-"Como um exemplo, para mudar o backend de áudio você executaria "
-"``gsettings set org.zrythm.preferences audio-backend \"jack\"``"
+"Como um exemplo, para mudar o backend de áudio executaria ``gsettings set "
+"org.zrythm.preferences audio-backend \"jack\"``"
 
 #: ../../configuration/additional-settings.rst:31
 msgid "You can use the range option to get a list of the available values:"
@@ -76,13 +75,15 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:39
 msgid "Using dconf-editor"
-msgstr ""
+msgstr "Usar o dconf-editor"
 
 #: ../../configuration/additional-settings.rst:41
 msgid ""
 "Install and run dconf-editor, and navigate to ``org.zrythm.Zrythm``. All "
 "the settings can be found there."
 msgstr ""
+"Instale e execute o dconf-editor e navegue para ``org.zrythm.Zrythm``. Todas "
+"as configurações estão lá."
 
 #: ../../configuration/device-setup/intro.rst:6
 msgid "Device Setup"
@@ -106,6 +107,10 @@ msgid ""
 "recording through the Track Inspector, as below, and in most cases you "
 "don't need to use any external tools or auto-connect mechanism."
 msgstr ""
+"O Zrythm fará a varredura automática e permitirá que conecte a aparelhos de "
+"entrada para gravação através do Inspetor de Faixas, como abaixo, e "
+"geralmente não precisa usar nenhuma ferramenta externa ou mecanismo de "
+"autoconexão."
 
 #: ../../configuration/device-setup/intro.rst:24
 msgid "Auto-Connecting Devices"
@@ -118,10 +123,14 @@ msgid ""
 "transport, Zrythm has an option to select these devices to auto-connect "
 "to on launch."
 msgstr ""
+"Para outras categorias de aparelhos que não estão vinculados a faixas "
+"específicas, como aparelhos que enviam mensagens MIDI globais e aparelhos "
+"que controlam o transporte, o Zrythm tem uma opção para selecionar esses "
+"aparelhos para auto-conexão na inicialização."
 
 #: ../../configuration/device-setup/intro.rst:32
 msgid "This is a TODO feature"
-msgstr ""
+msgstr "Esta é uma característica TODO"
 
 #: ../../configuration/device-setup/intro.rst:35
 msgid "JACK"
@@ -536,4 +545,3 @@ msgstr "Backend"
 #~ "O Zrythm tem uma opção para "
 #~ "selecionar aparelhos para auto-conexão "
 #~ "na inicialização. TODO explica isso."
-

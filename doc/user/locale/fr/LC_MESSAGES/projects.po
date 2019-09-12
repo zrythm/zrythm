@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-12 20:16+0100\n"
-"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"PO-Revision-Date: 2019-09-11 16:23+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualprojects/fr/>\n"
 "Language: fr\n"
-"Language-Team: French "
-"<https://hosted.weblate.org/projects/zrythm/manualprojects/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../projects/intro.rst:6
@@ -67,22 +68,20 @@ msgstr ""
 "précédente, veuillez installer cette version de Zrythm."
 
 #: ../../projects/project-management-and-compatibility.rst:19
-#, fuzzy
 msgid ""
 "Each project file will contain the version of Zrythm it was made with and"
 " a date"
 msgstr ""
-"Chaque fichier de projet contiendra la version de Zrythm avec laquelle il"
-" a été créé"
+"Chaque fichier de projet contiendra la version de Zrythm avec laquelle il a "
+"été créé et la date"
 
 #: ../../projects/saving-loading.rst:6
 msgid "Saving & Loading"
 msgstr "Sauvegarde et chargement"
 
 #: ../../projects/saving-loading.rst:9
-#, fuzzy
 msgid "Loading Projects"
-msgstr "Création de projets"
+msgstr "Chargements de projets"
 
 #: ../../projects/saving-loading.rst:11
 msgid ""
@@ -127,9 +126,8 @@ msgid ""
 msgstr ""
 
 #: ../../projects/saving-loading.rst:46
-#, fuzzy
 msgid "Saving Projects"
-msgstr "Création de projets"
+msgstr "Sauvegarde de projets"
 
 #: ../../projects/saving-loading.rst:48
 msgid ""
@@ -143,15 +141,14 @@ msgstr ""
 "l'emplacement précédent."
 
 #: ../../projects/saving-loading.rst:52
-#, fuzzy
 msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr ""
-"Lors du chargement d'un projet, Zrythm s'attend à ce que vous lui donniez"
-" le répertoire du projet."
+"Lors de la sauvegarde de projets, Zrythm s'attend à ce que vous lui donniez "
+"un répertoire"
 
 #: ../../projects/saving-loading.rst:56
 msgid "Automatic Backups"
-msgstr ""
+msgstr "Sauvegardes automatiques"
 
 #: ../../projects/saving-loading.rst:58
 msgid ""
@@ -322,4 +319,3 @@ msgstr ""
 #~ "un nouveau. Par défaut, Zrythm utilisera"
 #~ " ~/username/Zrythm pour créer de nouveaux"
 #~ " projets."
-
