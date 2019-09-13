@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"PO-Revision-Date: 2019-09-14 11:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/fr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
@@ -64,7 +64,7 @@ msgstr "Fichiers audio et MIDI"
 #: ../../plugins-files/audio-midi-files/overview.rst:19
 #: ../../plugins-files/overview.rst:19
 msgid "Overview"
-msgstr "Vue d'ensemble"
+msgstr "Vue générale"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:21
 msgid ""
