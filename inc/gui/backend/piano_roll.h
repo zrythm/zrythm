@@ -273,6 +273,14 @@ piano_roll_contains_current_note (
   MidiNoteDescriptor * descr);
 
 /**
+ * Returns the current track whose regions are
+ * being shown in the piano roll.
+ */
+Track *
+piano_roll_get_current_track (
+  const PianoRoll * self);
+
+/**
  * Inits the PianoRoll after a Project has been
  * loaded.
  */

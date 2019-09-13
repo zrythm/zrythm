@@ -77,6 +77,9 @@ typedef struct TrackLane
   /** Position of owner Track in the Tracklist. */
   int                 track_pos;
 
+  /** MIDI channel, if MIDI lane, starting at 1. */
+  int                 midi_ch;
+
 } TrackLane;
 
 static const cyaml_schema_field_t

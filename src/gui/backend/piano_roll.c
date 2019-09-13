@@ -242,6 +242,18 @@ piano_roll_set_highlighting (
 }
 
 /**
+ * Returns the current track whose regions are
+ * being shown in the piano roll.
+ */
+Track *
+piano_roll_get_current_track (
+  const PianoRoll * self)
+{
+  /* TODO */
+  return NULL;
+}
+
+/**
  * Sets the MIDI modifier.
  */
 void

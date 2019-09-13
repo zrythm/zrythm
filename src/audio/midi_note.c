@@ -276,7 +276,8 @@ midi_note_set_val (
 {
   /* if currently playing set a note off event. */
   if (midi_note_hit (
-        midi_note, PLAYHEAD->frames))
+        midi_note, PLAYHEAD->frames) &&
+      IS_TRANSPORT_ROLLING)
     {
       MidiEvents * midi_events =
         region_get_track (midi_note->region)->
@@ -284,7 +285,8 @@ midi_note_set_val (
 
       zix_sem_wait (&midi_events->access_sem);
       midi_events_add_note_off (
-        midi_events, 1,
+        midi_events,
+        midi_note->region->lane->midi_ch,
         midi_note->val,
         0, 1);
       zix_sem_post (&midi_events->access_sem);

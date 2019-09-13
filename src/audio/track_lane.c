@@ -65,6 +65,7 @@ track_lane_new (
   self->pos = pos;
   self->track = track;
   self->track_pos = track->pos;
+  self->midi_ch = 1;
 
   self->regions_size = 1;
   self->regions =

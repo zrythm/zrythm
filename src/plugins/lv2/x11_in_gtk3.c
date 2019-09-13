@@ -379,7 +379,8 @@ wrapper_resize(LV2UI_Feature_Handle handle, int width, int height)
 static gboolean
 suil_x11_wrapper_idle(void* data)
 {
-	SuilX11Wrapper* const wrap = Z_SUIL_X11_WRAPPER(data);
+	SuilX11Wrapper* const wrap =
+    Z_SUIL_X11_WRAPPER(data);
 
 	wrap->idle_iface->idle(wrap->instance->handle);
 

@@ -117,7 +117,8 @@ piano_roll_key_send_note_event (
     {
       /* add note on event */
       midi_events_add_note_on (
-        MANUAL_PRESS_EVENTS, 1,
+        MANUAL_PRESS_EVENTS,
+        CLIP_EDITOR->region->lane->midi_ch,
         self->descr->value, 90, 600, 1);
 
       piano_roll_add_current_note (
@@ -127,7 +128,8 @@ piano_roll_key_send_note_event (
     {
       /* add note off event */
       midi_events_add_note_off (
-        MANUAL_PRESS_EVENTS, 1,
+        MANUAL_PRESS_EVENTS,
+        CLIP_EDITOR->region->lane->midi_ch,
         self->descr->value, 600, 1);
 
       piano_roll_remove_current_note (

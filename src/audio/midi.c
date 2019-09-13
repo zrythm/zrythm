@@ -361,6 +361,157 @@ midi_events_copy_to_jack (
 #endif
 
 /**
+ * Adds a note off event to the given MidiEvents.
+ *
+ * @param channel MIDI channel starting from 1.
+ * @param queued Add to queued events instead.
+ */
+void
+midi_events_add_note_off (
+  MidiEvents * self,
+  uint8_t      channel,
+  uint8_t      note_pitch,
+  uint32_t     time,
+  int          queued)
+{
+  MidiEvent * ev;
+  if (queued)
+    ev =
+      &self->queued_events[self->num_queued_events];
+  else
+    ev =
+      &self->events[self->num_events];
+
+  ev->type = MIDI_EVENT_TYPE_NOTE_OFF;
+  ev->channel = channel;
+  ev->note_pitch = note_pitch;
+  ev->time = time;
+  ev->raw_buffer[0] =
+    MIDI_CH1_NOTE_OFF | (channel - 1);
+  ev->raw_buffer[1] = note_pitch;
+  ev->raw_buffer[2] = 90;
+
+  if (queued)
+    self->num_queued_events++;
+  else
+    self->num_events++;
+}
+
+/**
+ * Adds a control event to the given MidiEvents.
+ *
+ * @param channel MIDI channel starting from 1.
+ * @param queued Add to queued events instead.
+ */
+void
+midi_events_add_control_change (
+  MidiEvents * self,
+  uint8_t      channel,
+  uint8_t      controller,
+  uint8_t      control,
+  uint32_t     time,
+  int          queued)
+{
+  MidiEvent * ev;
+  if (queued)
+    ev =
+      &self->queued_events[self->num_queued_events];
+  else
+    ev =
+      &self->events[self->num_events];
+
+  ev->type = MIDI_EVENT_TYPE_CONTROLLER;
+  ev->channel = channel;
+  ev->controller = controller;
+  ev->control = control;
+  ev->time = time;
+  ev->raw_buffer[0] =
+    MIDI_CH1_CTRL_CHANGE | (channel - 1);
+  ev->raw_buffer[1] = controller;
+  ev->raw_buffer[2] = control;
+
+  if (queued)
+    self->num_queued_events++;
+  else
+    self->num_events++;
+}
+
+/**
+ * Adds a control event to the given MidiEvents.
+ *
+ * @param channel MIDI channel starting from 1.
+ * @param queued Add to queued events instead.
+ */
+void
+midi_events_add_pitchbend (
+  MidiEvents * self,
+  uint8_t      channel,
+  int          pitchbend,
+  uint32_t     time,
+  int          queued)
+{
+  MidiEvent * ev;
+  if (queued)
+    ev =
+      &self->queued_events[self->num_queued_events];
+  else
+    ev =
+      &self->events[self->num_events];
+
+  ev->type = MIDI_EVENT_TYPE_PITCHBEND;
+  ev->pitchbend = pitchbend;
+  ev->time = time;
+  ev->raw_buffer[0] =
+    MIDI_CH1_PITCH_WHEEL_RANGE | (channel - 1);
+  ev->raw_buffer[1] = 1;
+  ev->raw_buffer[2] = pitchbend;
+
+  if (queued)
+    self->num_queued_events++;
+  else
+    self->num_events++;
+}
+
+/**
+ * Adds a note on event to the given MidiEvents.
+ *
+ * @param channel MIDI channel starting from 1.
+ * @param queued Add to queued events instead.
+ */
+void
+midi_events_add_note_on (
+  MidiEvents * self,
+  uint8_t      channel,
+  uint8_t      note_pitch,
+  uint8_t      velocity,
+  uint32_t     time,
+  int          queued)
+{
+  MidiEvent * ev;
+  if (queued)
+    ev =
+      &self->queued_events[self->num_queued_events];
+  else
+    ev =
+      &self->events[self->num_events];
+
+  ev->type = MIDI_EVENT_TYPE_NOTE_ON;
+  ev->channel = channel;
+  ev->note_pitch = note_pitch;
+  ev->velocity = velocity;
+  ev->time = time;
+  ev->raw_buffer[0] =
+    MIDI_CH1_NOTE_ON | (channel - 1);
+  ev->raw_buffer[1] = note_pitch;
+  ev->raw_buffer[2] = velocity;
+
+  if (queued)
+    self->num_queued_events++;
+  else
+    self->num_events++;
+}
+
+/**
  * Parses a MidiEvent from a raw MIDI buffer.
  */
 void
@@ -397,7 +548,30 @@ midi_events_add_event_from_buf (
         time, 0);
       break;
     default:
-      g_warning ("Unknown MIDI event received");
+      if (buf_size == 3)
+        {
+          g_warning (
+            "Unknown MIDI event %#x %#x %#x"
+            " received", buf[0], buf[1], buf[2]);
+        }
+      else if (buf_size == 2)
+        {
+          g_warning (
+            "Unknown MIDI event %#x %#x"
+            " received", buf[0], buf[1]);
+        }
+      else if (buf_size == 1)
+        {
+          g_warning (
+            "Unknown MIDI event %#x"
+            " received", buf[0]);
+        }
+      else
+        {
+          g_warning (
+            "Unknown MIDI event of size %d"
+            " received", buf_size);
+        }
       break;
     }
 }

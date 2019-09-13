@@ -44,9 +44,7 @@
 
 /* see http://www.onicos.com/staff/iz/formats/midi-event.html */
 #define MIDI_CH1_NOTE_ON 0x90
-#define MIDI_CH2_NOTE_ON 0x91
 #define MIDI_CH1_NOTE_OFF 0x80
-#define MIDI_CH2_NOTE_OFF 0x81
 #define MIDI_CH1_POLY_AFTERTOUCH 0xA0
 #define MIDI_CH1_CTRL_CHANGE 0xB0
 #define MIDI_CH1_PROG_CHANGE 0xC0
@@ -204,39 +202,17 @@ midi_events_append (
 /**
  * Adds a note on event to the given MidiEvents.
  *
- * @parram queued Add to queued events instead.
+ * @param channel MIDI channel starting from 1.
+ * @param queued Add to queued events instead.
  */
-static inline void
+void
 midi_events_add_note_on (
   MidiEvents * self,
   uint8_t      channel,
   uint8_t      note_pitch,
   uint8_t      velocity,
   uint32_t     time,
-  int          queued)
-{
-  MidiEvent * ev;
-  if (queued)
-    ev =
-      &self->queued_events[self->num_queued_events];
-  else
-    ev =
-      &self->events[self->num_events];
-
-  ev->type = MIDI_EVENT_TYPE_NOTE_ON;
-  ev->channel = channel;
-  ev->note_pitch = note_pitch;
-  ev->velocity = velocity;
-  ev->time = time;
-  ev->raw_buffer[0] = 0x90 | channel;
-  ev->raw_buffer[1] = note_pitch;
-  ev->raw_buffer[2] = velocity;
-
-  if (queued)
-    self->num_queued_events++;
-  else
-    self->num_events++;
-}
+  int          queued);
 
 /**
  * Returrns if the MidiEvents have any note on
@@ -264,108 +240,45 @@ midi_events_add_event_from_buf (
 /**
  * Adds a note off event to the given MidiEvents.
  *
+ * @param channel MIDI channel starting from 1.
  * @param queued Add to queued events instead.
  */
-static inline void
+void
 midi_events_add_note_off (
   MidiEvents * self,
   uint8_t      channel,
   uint8_t      note_pitch,
   uint32_t     time,
-  int          queued)
-{
-  MidiEvent * ev;
-  if (queued)
-    ev =
-      &self->queued_events[self->num_queued_events];
-  else
-    ev =
-      &self->events[self->num_events];
-
-  ev->type = MIDI_EVENT_TYPE_NOTE_OFF;
-  ev->channel = channel;
-  ev->note_pitch = note_pitch;
-  ev->time = time;
-  ev->raw_buffer[0] = 0x80 | channel;
-  ev->raw_buffer[1] = note_pitch;
-  ev->raw_buffer[2] = 90;
-
-  if (queued)
-    self->num_queued_events++;
-  else
-    self->num_events++;
-}
+  int          queued);
 
 /**
  * Adds a control event to the given MidiEvents.
  *
- * @parram queued Add to queued events instead.
+ * @param channel MIDI channel starting from 1.
+ * @param queued Add to queued events instead.
  */
-static inline void
+void
 midi_events_add_control_change (
   MidiEvents * self,
   uint8_t      channel,
   uint8_t      controller,
   uint8_t      control,
   uint32_t     time,
-  int          queued)
-{
-  MidiEvent * ev;
-  if (queued)
-    ev =
-      &self->queued_events[self->num_queued_events];
-  else
-    ev =
-      &self->events[self->num_events];
-
-  ev->type = MIDI_EVENT_TYPE_CONTROLLER;
-  ev->channel = channel;
-  ev->controller = controller;
-  ev->control = control;
-  ev->time = time;
-  ev->raw_buffer[0] = 0xB0 | channel;
-  ev->raw_buffer[1] = controller;
-  ev->raw_buffer[2] = control;
-
-  if (queued)
-    self->num_queued_events++;
-  else
-    self->num_events++;
-}
+  int          queued);
 
 /**
  * Adds a control event to the given MidiEvents.
  *
- * @parram queued Add to queued events instead.
+ * @param channel MIDI channel starting from 1.
+ * @param queued Add to queued events instead.
  */
-static inline void
+void
 midi_events_add_pitchbend (
   MidiEvents * self,
   uint8_t      channel,
   int          pitchbend,
   uint32_t     time,
-  int          queued)
-{
-  MidiEvent * ev;
-  if (queued)
-    ev =
-      &self->queued_events[self->num_queued_events];
-  else
-    ev =
-      &self->events[self->num_events];
-
-  ev->type = MIDI_EVENT_TYPE_PITCHBEND;
-  ev->pitchbend = pitchbend;
-  ev->time = time;
-  ev->raw_buffer[0] = channel;
-  ev->raw_buffer[1] = 1;
-  ev->raw_buffer[2] = pitchbend;
-
-  if (queued)
-    self->num_queued_events++;
-  else
-    self->num_events++;
-}
+  int          queued);
 
 /**
  * Queues MIDI note off to event queue.
