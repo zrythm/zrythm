@@ -621,6 +621,9 @@ project_load (
   PROJECT->version =
     zrythm_get_version (0);
 
+  if (is_template || !filename)
+    project_save (PROJECT, PROJECT->dir, 0);
+
   return 0;
 }
 
