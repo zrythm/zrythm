@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-12 20:16+0100\n"
-"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"PO-Revision-Date: 2019-09-14 11:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/fr/>\n"
 "Language: fr\n"
-"Language-Team: French "
-"<https://hosted.weblate.org/projects/zrythm/manualtracks/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../tracks/audio-track.rst:6 ../../tracks/track-types.rst:30
@@ -28,18 +29,20 @@ msgid ""
 "An Audio Track contains audio regions and can be used for recording and "
 "playing audio, or for sample playback."
 msgstr ""
+"Une piste audio contient des régions audio et peut être utilisée pour "
+"l'enregistrement et la lecture audio, ou pour la lecture d'échantillons."
 
 #: ../../tracks/audio-track.rst:13 ../../tracks/midi-track.rst:13
 msgid "Inputs"
-msgstr ""
+msgstr "Entrées"
 
 #: ../../tracks/bus-track-audio.rst:6 ../../tracks/track-types.rst:37
 msgid "Bus Track (Audio)"
-msgstr ""
+msgstr "Piste de bus (audio)"
 
 #: ../../tracks/bus-track-midi.rst:6 ../../tracks/track-types.rst:44
 msgid "Bus Track (MIDI)"
-msgstr ""
+msgstr "Piste de bus (MIDI)"
 
 #: ../../tracks/chord-track.rst:6 ../../tracks/track-types.rst:78
 msgid "Chord Track"
@@ -57,6 +60,7 @@ msgstr ""
 #: ../../tracks/chord-track.rst:12
 msgid "For more information, see the section :doc:`../chords-and-scales/intro`."
 msgstr ""
+"Pour plus d'informations, voir la section :doc:`.../chords-and-scales/intro`."
 
 #: ../../tracks/creating-tracks.rst:6
 msgid "Creating Tracks"
@@ -110,9 +114,8 @@ msgstr ""
 "position actuelle de la tête de lecture."
 
 #: ../../tracks/creating-tracks.rst:33
-#, fuzzy
 msgid "Creating Tracks by Duplicating"
-msgstr "Créer des pistes à partir des greffons"
+msgstr "Créer des pistes en les dupliquant"
 
 #: ../../tracks/creating-tracks.rst:35
 msgid ""
@@ -123,14 +126,12 @@ msgstr ""
 "dans la piste et en sélectionnant :zbutton:`Dupliquer`."
 
 #: ../../tracks/group-track-audio.rst:6 ../../tracks/track-types.rst:55
-#, fuzzy
 msgid "Group Track (Audio)"
-msgstr "Piste de groupe"
+msgstr "Piste de groupe (audio)"
 
 #: ../../tracks/group-track-midi.rst:6 ../../tracks/track-types.rst:62
-#, fuzzy
 msgid "Group Track (MIDI)"
-msgstr "Piste de groupe"
+msgstr "Piste de groupe (MIDI)"
 
 #: ../../tracks/instrument-track.rst:6 ../../tracks/track-types.rst:24
 msgid "Instrument Track"
@@ -170,9 +171,8 @@ msgid "Master Track"
 msgstr "Piste Master"
 
 #: ../../tracks/midi-track.rst:6 ../../tracks/track-types.rst:17
-#, fuzzy
 msgid "MIDI Track"
-msgstr "Piste audio"
+msgstr "Piste MIDI"
 
 #: ../../tracks/midi-track.rst:8
 msgid ""
@@ -180,10 +180,13 @@ msgid ""
 "signals to other instruments (including external instruments and "
 "hardware)."
 msgstr ""
+"Une piste MIDI contient des régions MIDI et son but est de router les "
+"signaux MIDI vers d'autres instruments (y compris les instruments et le "
+"matériel externes)."
 
 #: ../../tracks/overview.rst:6
 msgid "Overview"
-msgstr "Vue d'ensemble"
+msgstr "Vue générale"
 
 #: ../../tracks/overview.rst:8
 msgid ""
@@ -277,22 +280,24 @@ msgstr ""
 #: ../../tracks/track-types.rst:16 ../../tracks/track-types.rst:43
 #: ../../tracks/track-types.rst:61 ../../tracks/track-types.rst:77
 msgid "*Input:* **MIDI**, *Output:* **MIDI**"
-msgstr ""
+msgstr "*Entrée :* **MIDI**, *Sortie :* **MIDI**"
 
 #: ../../tracks/track-types.rst:18 ../../tracks/track-types.rst:25
 #: ../../tracks/track-types.rst:31
 msgid "*Can record:* **Yes**"
-msgstr ""
+msgstr "*Peut enregistrer :* **Oui**"
 
 #: ../../tracks/track-types.rst:20
 msgid ""
 "Similar to a MIDI track, except that an Instrument Track is bound to an "
 "instrument plugin."
 msgstr ""
+"Semblable à une piste MIDI, sauf qu'une piste d'instrument est liée à un "
+"greffon d'instrument."
 
 #: ../../tracks/track-types.rst:23
 msgid "*Input:* **MIDI**, *Output:* **Audio**"
-msgstr ""
+msgstr "*Entrée :* **MIDI**, *Sortie :* **audio**"
 
 #: ../../tracks/track-types.rst:27
 msgid "A Track containing audio regions, cross-fades, fades and automation."
@@ -303,7 +308,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:29 ../../tracks/track-types.rst:36
 #: ../../tracks/track-types.rst:69
 msgid "*Input:* **Audio**, *Output:* **Audio**"
-msgstr ""
+msgstr "*Entrée :* **audio**, *Sortie :* **audio**"
 
 #: ../../tracks/track-types.rst:33
 msgid "A Track corresponding to a mixer bus. Bus tracks only contain automation"
@@ -316,32 +321,36 @@ msgstr ""
 #: ../../tracks/track-types.rst:71 ../../tracks/track-types.rst:79
 #: ../../tracks/track-types.rst:88
 msgid "*Can record:* **No**"
-msgstr ""
+msgstr "*Peut enregistrer :* **non**"
 
 #: ../../tracks/track-types.rst:40
 msgid ""
 "Similar to an audio Bus Track, except that it handles MIDI instead of "
 "audio."
 msgstr ""
+"Semblable à une piste de bus audio, sauf qu'elle gère du MIDI au lieu de "
+"l'audio."
 
 #: ../../tracks/track-types.rst:47
-#, fuzzy
 msgid ""
 "A Group Track is used to route signals from multiple Tracks into one "
 "Track (or \"group\" them). It behaves like a Bus Track with the exception"
 " that other Tracks can route their output signal directly into Group "
 "Track. *Input:* **Audio**, *Output:* **Audio**"
 msgstr ""
-"Une piste de groupe est utilisée pour acheminer les signaux de plusieurs "
-"pistes vers une seule piste. Il se comporte comme une piste de bus, à "
-"l'exception que d'autres pistes peuvent acheminer leur signal de sortie "
-"directement dans la piste de groupe."
+"Une piste de groupe est utilisée pour router les signaux depuis plusieurs "
+"pistes vers une seule piste (ou les \"grouper\"). Elle se comporte comme une "
+"piste de bus, à l'exception que d'autres pistes peuvent router leur signal "
+"de sortie directement dans la piste de groupe.  *Entrée :* **audio**, *"
+"Sortie :* **audio**"
 
 #: ../../tracks/track-types.rst:58
 msgid ""
 "Similar to an audio Group Track, except that it handles MIDI instead of "
 "audio."
 msgstr ""
+"Semblable à une piste de groupe audio, sauf qu'elle gère du MIDI au lieu "
+"d'audio."
 
 #: ../../tracks/track-types.rst:65
 msgid ""
@@ -371,11 +380,10 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:86
 msgid "*Input:* **None**, *Output:* **None**"
-msgstr ""
+msgstr "*Entrée :* **aucune**, *Sortie:* **aucune**"
 
 #~ msgid "Duplicating Tracks"
 #~ msgstr "Dupliquer des pistes"
 
 #~ msgid "Bus Track"
 #~ msgstr "Piste de bus"
-
