@@ -438,9 +438,10 @@ load (
 
   Project * prj = project_deserialize (yaml);
 
+  char * version = zrythm_get_version (0);
   if (!string_is_equal (
         prj->version,
-        PACKAGE_VERSION, 1))
+        version, 1))
     {
       char * str =
         g_strdup_printf (
@@ -453,6 +454,7 @@ load (
         GTK_MESSAGE_WARNING, str);
       g_free (str);
     }
+  g_free (version);
 
   if (prj == NULL)
     {
