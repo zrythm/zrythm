@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-07 23:49+0100\n"
-"PO-Revision-Date: 2019-09-11 16:23+0000\n"
+"PO-Revision-Date: 2019-09-14 11:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
@@ -2105,7 +2105,7 @@ msgstr "Fichiers de sortie"
 
 #: resources/ui/export_dialog.ui:218
 msgid "Filename Pattern"
-msgstr "Motif du nom de fichier"
+msgstr "Motif de nom de fichier"
 
 #: resources/ui/export_dialog.ui:238
 msgid "Song"
@@ -2113,7 +2113,7 @@ msgstr "Chanson"
 
 #: resources/ui/export_dialog.ui:276
 msgid "Time Range"
-msgstr "intervalle de temps"
+msgstr "Plage temporelle"
 
 #: resources/ui/export_dialog.ui:288
 msgid "Tracks"
