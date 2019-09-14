@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.6.383] - 2019-09-14
+## [0.6.384] - 2019-09-14
 - Switch from AGPL to GFDL for the user manual
 - Add option to resize regions normally or to resize-loop
 - Add warning when loading a project made with a different version of Zrythm

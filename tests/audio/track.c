@@ -60,6 +60,7 @@ main (int argc, char *argv[])
 
   ZRYTHM = calloc (1, sizeof (Zrythm));
   PROJECT = calloc (1, sizeof (Project));
+  AUDIO_ENGINE->block_length = 256;
 
 #define TEST_PREFIX "/audio/track/"
 
