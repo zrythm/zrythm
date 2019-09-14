@@ -225,7 +225,7 @@ node_process (
   GraphNode * node,
   const int   nframes)
 {
-  int i, j, noroll = 0;
+  int noroll = 0;
   Channel * chan;
 
   int local_offset =

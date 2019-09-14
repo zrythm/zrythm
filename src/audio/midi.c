@@ -63,6 +63,10 @@ midi_events_append (
           midi_event_copy  (src_ev, dest_ev);
           dest->num_events++;
         }
+      else
+        {
+          g_warn_if_reached ();
+        }
     }
 }
 
