@@ -37,7 +37,7 @@ typedef struct AudioEngine AudioEngine;
 /**
  * Set up Port Audio.
  */
-void
+int
 pa_setup (
   AudioEngine * self,
   int           loading);

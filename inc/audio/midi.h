@@ -53,6 +53,7 @@
 #define MIDI_ALL_NOTES_OFF 0x7B
 #define MIDI_ALL_SOUND_OFF 0x78
 #define MAX_MIDI_EVENTS 128
+#define MIDI_SYSTEM_MESSAGE 0xF0
 
 /**
  * Type of MIDI event.

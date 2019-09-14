@@ -360,6 +360,8 @@ port_new (
   port->identifier.track_pos = -1;
 
   port->num_dests = 0;
+  g_warn_if_fail (
+    AUDIO_ENGINE->block_length > 0);
   port->buf =
     calloc (AUDIO_ENGINE->block_length,
             sizeof (float));

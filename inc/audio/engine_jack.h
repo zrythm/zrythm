@@ -92,8 +92,9 @@ jack_midi_setup (
  * @param loading Loading a Project or not.
  */
 int
-jack_setup (AudioEngine * self,
-            int           loading);
+jack_setup (
+  AudioEngine * self,
+  int           loading);
 
 const char *
 engine_jack_get_error_message (

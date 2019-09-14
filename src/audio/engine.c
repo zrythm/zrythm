@@ -42,13 +42,16 @@
 #include "audio/sample_playback.h"
 #include "audio/sample_processor.h"
 #include "audio/transport.h"
+#include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
+#include "utils/ui.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #ifdef HAVE_JACK
 #include <jack/jack.h>
@@ -132,19 +135,18 @@ engine_init (
 
   transport_init (&self->transport,
                   loading);
-  sample_processor_init (SAMPLE_PROCESSOR);
 
   /* get audio backend */
   int ab_code =
     g_settings_get_enum (
       S_PREFERENCES,
       "audio-backend");
-  self->audio_backend = AUDIO_BACKEND_DUMMY;
   /* use ifdef's so that dummy is used if the
    * selected backend isn't available */
   switch (ab_code)
     {
-    case AUDIO_BACKEND_DUMMY: // no backend
+    case AUDIO_BACKEND_DUMMY:
+      self->audio_backend = AUDIO_BACKEND_DUMMY;
       break;
 #ifdef HAVE_JACK
     case AUDIO_BACKEND_JACK:
@@ -162,6 +164,7 @@ engine_init (
       break;
 #endif
     default:
+      self->audio_backend = AUDIO_BACKEND_DUMMY;
       g_warn_if_reached ();
       break;
     }
@@ -171,10 +174,10 @@ engine_init (
     g_settings_get_enum (
       S_PREFERENCES,
       "midi-backend");
-  self->midi_backend = MIDI_BACKEND_DUMMY;
   switch (mb_code)
     {
-    case MIDI_BACKEND_DUMMY: // no backend
+    case MIDI_BACKEND_DUMMY:
+      self->midi_backend = MIDI_BACKEND_DUMMY;
       break;
 #ifdef __linux__
     case MIDI_BACKEND_ALSA:
@@ -187,6 +190,8 @@ engine_init (
       break;
 #endif
     default:
+      self->midi_backend = MIDI_BACKEND_DUMMY;
+      g_warn_if_reached ();
       break;
     }
 
@@ -198,6 +203,55 @@ engine_init (
     g_settings_get_enum (
       S_PREFERENCES,
       "pan-algo");
+
+  int ret = 0;
+  switch (self->audio_backend)
+    {
+    case AUDIO_BACKEND_DUMMY:
+      ret =
+        engine_dummy_setup (self, loading);
+      break;
+#ifdef __linux__
+    case AUDIO_BACKEND_ALSA:
+      ret =
+        alsa_setup(self, loading);
+	    break;
+#endif
+#ifdef HAVE_JACK
+    case AUDIO_BACKEND_JACK:
+      ret =
+        jack_setup (self, loading);
+      break;
+#endif
+#ifdef HAVE_PORT_AUDIO
+    case AUDIO_BACKEND_PORT_AUDIO:
+      ret =
+        pa_setup (self, loading);
+      break;
+#endif
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+  if (ret)
+    {
+      char * str =
+        g_strdup_printf (
+          _("Failed to initialize the %s audio "
+            "backend. Will use the dummy backend "
+            "instead. Please check your backend "
+            "settings in the Preferences."),
+          engine_audio_backend_to_string (
+            self->audio_backend));
+      ui_show_message_full (
+        GTK_WINDOW (MAIN_WINDOW),
+        GTK_MESSAGE_WARNING, str);
+      g_free (str);
+
+      self->audio_backend =
+        AUDIO_BACKEND_DUMMY;
+      engine_dummy_setup (self, loading);
+    }
 
   /* init semaphores */
   zix_sem_init (&self->port_operation_lock, 1);
@@ -211,30 +265,7 @@ engine_init (
   /* init audio */
   init_audio (self, loading);
 
-  switch (self->audio_backend)
-    {
-    case AUDIO_BACKEND_DUMMY:
-      engine_dummy_setup (self, loading);
-      break;
-#ifdef __linux__
-    case AUDIO_BACKEND_ALSA:
-	    alsa_setup(self, loading);
-	    break;
-#endif
-#ifdef HAVE_JACK
-    case AUDIO_BACKEND_JACK:
-      jack_setup (self, loading);
-      break;
-#endif
-#ifdef HAVE_PORT_AUDIO
-    case AUDIO_BACKEND_PORT_AUDIO:
-      pa_setup (self, loading);
-      break;
-#endif
-    default:
-      g_warn_if_reached ();
-      break;
-    }
+  sample_processor_init (SAMPLE_PROCESSOR);
 
   /* connect fader to monitor out */
   stereo_ports_connect (
@@ -245,24 +276,47 @@ engine_init (
   init_midi (self, loading);
 
   /* set up midi */
+  int mret = 0;
   switch (self->midi_backend)
     {
     case MIDI_BACKEND_DUMMY:
-      engine_dummy_midi_setup (self, loading);
+      mret =
+        engine_dummy_midi_setup (self, loading);
       break;
 #ifdef __linux__
     case MIDI_BACKEND_ALSA:
-      alsa_midi_setup (self, loading);
+      mret =
+        alsa_midi_setup (self, loading);
       break;
 #endif
 #ifdef HAVE_JACK
     case MIDI_BACKEND_JACK:
-      jack_midi_setup (self, loading);
+      mret =
+        jack_midi_setup (self, loading);
       break;
 #endif
     default:
       g_warn_if_reached ();
       break;
+    }
+  if (mret)
+    {
+      char * str =
+        g_strdup_printf (
+          _("Failed to initialize the %s MIDI "
+            "backend. Will use the dummy backend "
+            "instead. Please check your backend "
+            "settings in the Preferences."),
+          engine_audio_backend_to_string (
+            self->midi_backend));
+      ui_show_message_full (
+        GTK_WINDOW (MAIN_WINDOW),
+        GTK_MESSAGE_WARNING, str);
+      g_free (str);
+
+      self->midi_backend =
+        MIDI_BACKEND_DUMMY;
+      engine_dummy_midi_setup (self, loading);
     }
 
   self->buf_size_set = false;

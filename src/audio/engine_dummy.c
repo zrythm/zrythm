@@ -40,7 +40,7 @@ process_cb (gpointer data)
   return NULL;
 }
 
-void
+int
 engine_dummy_setup (
   AudioEngine * self,
   int           loading)
@@ -61,25 +61,24 @@ engine_dummy_setup (
   /* create ports */
   Port * monitor_out_l, * monitor_out_r;
 
+  const char * monitor_out_l_str =
+    "Monitor out L";
+  const char * monitor_out_r_str =
+    "Monitor out R";
+
   if (loading)
     {
     }
   else
     {
-      monitor_out_l =
-        port_new_with_data (
-          INTERNAL_PA_PORT,
-          TYPE_AUDIO,
-          FLOW_OUTPUT,
-          "Dummy Monitor L",
-          NULL);
-      monitor_out_r =
-        port_new_with_data (
-          INTERNAL_PA_PORT,
-          TYPE_AUDIO,
-          FLOW_OUTPUT,
-          "Dummy Monitor R",
-          NULL);
+      monitor_out_l = port_new_with_type (
+        TYPE_AUDIO,
+        FLOW_OUTPUT,
+        monitor_out_l_str);
+      monitor_out_r = port_new_with_type (
+        TYPE_AUDIO,
+        FLOW_OUTPUT,
+        monitor_out_r_str);
 
       monitor_out_l->identifier.owner_type =
         PORT_OWNER_TYPE_BACKEND;
@@ -95,11 +94,12 @@ engine_dummy_setup (
                 process_cb,
                 self);
 
-
   g_message ("Dummy Engine set up");
+
+  return 0;
 }
 
-void
+int
 engine_dummy_midi_setup (
   AudioEngine * self,
   int           loading)
@@ -119,4 +119,6 @@ engine_dummy_midi_setup (
       /*self->midi_in->identifier.owner_type =*/
         /*PORT_OWNER_TYPE_BACKEND;*/
     }
+
+  return 0;
 }

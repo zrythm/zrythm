@@ -502,6 +502,9 @@ int
 alsa_setup (
   AudioEngine *self, int loading)
 {
+  /* not working atm */
+  return -1;
+
   self->block_length = 512;
   self->sample_rate = 44100;
   self->midi_buf_size = 4096;
@@ -535,9 +538,16 @@ alsa_setup (
       monitor_out_l, monitor_out_r);
 
   pthread_t thread_id;
-  pthread_create(
-    &thread_id, NULL,
-    &audio_thread, self);
+  int ret =
+    pthread_create (
+      &thread_id, NULL,
+      &audio_thread, self);
+  if (ret)
+    {
+      perror (
+        "Failed to create ALSA audio thread:");
+      return -1;
+    }
 
   g_message ("ALSA setup complete");
 
@@ -549,6 +559,9 @@ alsa_midi_setup (
   AudioEngine * self,
   int           loading)
 {
+  /* not working atm */
+  return -1;
+
   if (loading)
     {
     }

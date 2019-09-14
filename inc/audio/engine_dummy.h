@@ -25,7 +25,7 @@ typedef struct AudioEngine AudioEngine;
 /**
  * Sets up a dummy audio engine.
  */
-void
+int
 engine_dummy_setup (
   AudioEngine * self,
   int           loading);
@@ -37,7 +37,7 @@ engine_dummy_process (
 /**
  * Sets up a dummy MIDI engine.
  */
-void
+int
 engine_dummy_midi_setup (
   AudioEngine * self,
   int           loading);

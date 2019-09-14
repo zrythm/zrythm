@@ -622,7 +622,7 @@ project_load (
     zrythm_get_version (0);
 
   if (is_template || !filename)
-    project_save (PROJECT, PROJECT->dir, 0);
+    project_save (PROJECT, PROJECT->dir, 0, 0);
 
   return 0;
 }
@@ -639,7 +639,7 @@ project_autosave_cb (
       PROJECT->datetime_str)
     {
       project_save (
-        PROJECT, PROJECT->dir, 1);
+        PROJECT, PROJECT->dir, 1, 1);
     }
 
   return G_SOURCE_CONTINUE;
@@ -760,12 +760,15 @@ project_get_project_file_path (
  *
  * @param is_backup 1 if this is a backup. Backups
  *   will be saved as <original filename>.bak<num>.
+ * @param show_notification Show a notification
+ *   in the UI that the project was saved.
  */
 int
 project_save (
   Project *    self,
   const char * _dir,
-  int          is_backup)
+  const int    is_backup,
+  const int    show_notification)
 {
   int i, j;
 
@@ -860,15 +863,18 @@ project_save (
       RETURN_ERROR;
     }
 
-  if (is_backup)
+  if (show_notification)
     {
-      ui_show_notification (_("Backup saved."));
-    }
-  else
-    {
-      zrythm_add_to_recent_projects (
-        ZRYTHM, project_file_path);
-      ui_show_notification (_("Project saved."));
+      if (is_backup)
+        {
+          ui_show_notification (_("Backup saved."));
+        }
+      else
+        {
+          zrythm_add_to_recent_projects (
+            ZRYTHM, project_file_path);
+          ui_show_notification (_("Project saved."));
+        }
     }
   g_free (project_file_path);
 

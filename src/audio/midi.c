@@ -512,6 +512,41 @@ midi_events_add_note_on (
 }
 
 /**
+ * Prints a message saying unknown event, with
+ * information about the given event.
+ */
+static void
+print_unknown_event_message (
+  uint8_t * buf,
+  const int buf_size)
+{
+  if (buf_size == 3)
+    {
+      g_warning (
+        "Unknown MIDI event %#x %#x %#x"
+        " received", buf[0], buf[1], buf[2]);
+    }
+  else if (buf_size == 2)
+    {
+      g_warning (
+        "Unknown MIDI event %#x %#x"
+        " received", buf[0], buf[1]);
+    }
+  else if (buf_size == 1)
+    {
+      g_warning (
+        "Unknown MIDI event %#x"
+        " received", buf[0]);
+    }
+  else
+    {
+      g_warning (
+        "Unknown MIDI event of size %d"
+        " received", buf_size);
+    }
+}
+
+/**
  * Parses a MidiEvent from a raw MIDI buffer.
  */
 void
@@ -540,6 +575,14 @@ midi_events_add_event_from_buf (
         buf[1],
         time, 0);
       break;
+    case MIDI_SYSTEM_MESSAGE:
+      /* ignore active sensing */
+      if (buf[0] != 0xFE)
+        {
+          print_unknown_event_message (
+            buf, buf_size);
+        }
+      break;
     case MIDI_CH1_CTRL_CHANGE:
       midi_events_add_control_change (
         self,
@@ -548,30 +591,8 @@ midi_events_add_event_from_buf (
         time, 0);
       break;
     default:
-      if (buf_size == 3)
-        {
-          g_warning (
-            "Unknown MIDI event %#x %#x %#x"
-            " received", buf[0], buf[1], buf[2]);
-        }
-      else if (buf_size == 2)
-        {
-          g_warning (
-            "Unknown MIDI event %#x %#x"
-            " received", buf[0], buf[1]);
-        }
-      else if (buf_size == 1)
-        {
-          g_warning (
-            "Unknown MIDI event %#x"
-            " received", buf[0]);
-        }
-      else
-        {
-          g_warning (
-            "Unknown MIDI event of size %d"
-            " received", buf_size);
-        }
+      print_unknown_event_message (
+        buf, buf_size);
       break;
     }
 }

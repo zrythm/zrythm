@@ -37,16 +37,22 @@
 /**
  * Set up Port Audio.
  */
-void
+int
 pa_setup (
   AudioEngine * self,
   int           loading)
 {
+  /* not working atm */
+  return -1;
+
   g_message ("Setting up Port Audio...");
   PaError err = Pa_Initialize();
   if (err != paNoError)
-    g_warning ("error initializing Port Audio: %s",
-               Pa_GetErrorText (err));
+    {
+      g_warning ("error initializing Port Audio: %s",
+                 Pa_GetErrorText (err));
+      return -1;
+    }
   else
     g_message ("Initialized Port Audio");
 
@@ -101,13 +107,18 @@ pa_setup (
   g_message ("Starting Port Audio stream...");
   err = Pa_StartStream( self->pa_stream );
   if( err != paNoError )
-    g_warning (
-      "error starting Port Audio stream: %s",
-      Pa_GetErrorText (err));
+    {
+      g_warning (
+        "error starting Port Audio stream: %s",
+        Pa_GetErrorText (err));
+      return -1;
+    }
   else
     g_message ("Started Port Audio stream");
 
   g_message ("Port Audio set up");
+
+  return 0;
 }
 
 void
@@ -120,8 +131,8 @@ engine_pa_fill_out_bufs (
       engine->pa_out_buf[i * 2] =
         AUDIO_ENGINE->
           monitor_out->l->buf[i];
-      g_message ("%f",
-                 engine->pa_out_buf[i]);
+      /*g_message ("%f",*/
+                 /*engine->pa_out_buf[i]);*/
       engine->pa_out_buf[i * 2 + 1] =
         AUDIO_ENGINE->
           monitor_out->r->buf[i];

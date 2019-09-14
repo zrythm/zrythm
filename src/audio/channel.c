@@ -1289,71 +1289,79 @@ channel_reconnect_ext_input_ports (
   if (ch->track->type == TRACK_TYPE_INSTRUMENT ||
       ch->track->type == TRACK_TYPE_MIDI)
     {
-      /* disconnect */
-      const char ** prev_ports =
-        jack_port_get_all_connections (
-          AUDIO_ENGINE->client,
-          (jack_port_t *)
-            ch->midi_in->data);
-      if (prev_ports)
+      if (AUDIO_ENGINE->audio_backend ==
+            AUDIO_BACKEND_JACK &&
+          AUDIO_ENGINE->midi_backend ==
+            MIDI_BACKEND_JACK)
         {
-          i = 0;
-          while ((pname = (char *) prev_ports[i]) !=
-                    NULL)
-            {
-              ret =
-                jack_disconnect (
-                  AUDIO_ENGINE->client,
-                  pname,
-                  jack_port_name (
-                    (jack_port_t *)
-                    ch->midi_in->data));
-              g_warn_if_fail (!ret);
-              i++;
-            }
-        }
-
-      /* connect to all external midi ins */
-      if (ch->all_midi_ins)
-        {
-          const char ** ports =
-            jack_get_ports (
+#ifdef HAVE_JACK
+          /* disconnect */
+          const char ** prev_ports =
+            jack_port_get_all_connections (
               AUDIO_ENGINE->client,
-              NULL, JACK_DEFAULT_MIDI_TYPE,
-              JackPortIsOutput |
-              JackPortIsPhysical);
+              (jack_port_t *)
+                ch->midi_in->data);
+          if (prev_ports)
+            {
+              i = 0;
+              while ((pname = (char *) prev_ports[i]) !=
+                        NULL)
+                {
+                  ret =
+                    jack_disconnect (
+                      AUDIO_ENGINE->client,
+                      pname,
+                      jack_port_name (
+                        (jack_port_t *)
+                        ch->midi_in->data));
+                  g_warn_if_fail (!ret);
+                  i++;
+                }
+            }
 
-          i = 0;
-          jack_port_t * jport;
-          while ((pname = (char *) ports[i]) !=
-                    NULL)
+          /* connect to all external midi ins */
+          if (ch->all_midi_ins)
             {
-              ret =
-                jack_connect (
+              const char ** ports =
+                jack_get_ports (
                   AUDIO_ENGINE->client,
-                  pname,
-                  jack_port_name (
-                    (jack_port_t *)
-                    ch->midi_in->data));
-              g_warn_if_fail (!ret);
-              i++;
+                  NULL, JACK_DEFAULT_MIDI_TYPE,
+                  JackPortIsOutput |
+                  JackPortIsPhysical);
+
+              i = 0;
+              jack_port_t * jport;
+              while ((pname = (char *) ports[i]) !=
+                        NULL)
+                {
+                  ret =
+                    jack_connect (
+                      AUDIO_ENGINE->client,
+                      pname,
+                      jack_port_name (
+                        (jack_port_t *)
+                        ch->midi_in->data));
+                  g_warn_if_fail (!ret);
+                  i++;
+                }
             }
-        }
-      /* connect to selected midi ins */
-      else
-        {
-          for (i = 0; i < ch->num_ext_midi_ins;
-               i++)
+          /* connect to selected midi ins */
+          else
             {
-              ret =
-                jack_connect (
-                  AUDIO_ENGINE->client,
-                  ch->ext_midi_ins[i]->full_name,
-                  jack_port_name (
-                    (jack_port_t *)
-                    ch->midi_in->data));
-              g_warn_if_fail (!ret);
+              for (i = 0; i < ch->num_ext_midi_ins;
+                   i++)
+                {
+                  ret =
+                    jack_connect (
+                      AUDIO_ENGINE->client,
+                      ch->ext_midi_ins[i]->full_name,
+                      jack_port_name (
+                        (jack_port_t *)
+                        ch->midi_in->data));
+                  g_warn_if_fail (!ret);
+                }
             }
+#endif
         }
     }
 }
