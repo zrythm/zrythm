@@ -673,6 +673,8 @@ project_get_backups_dir (
 
 /**
  * Returns the exports dir for the given Project.
+ *
+ * Must be g_free()'d.
  */
 char *
 project_get_exports_dir (
@@ -778,6 +780,10 @@ project_save (
    * exist */
   set_dir (self, dir);
   io_mkdir (PROJECT->dir);
+  char * exports_dir =
+    project_get_exports_dir (PROJECT);
+  io_mkdir (exports_dir);
+  g_free (exports_dir);
 
   /* set the title */
   char * basename =
@@ -863,18 +869,17 @@ project_save (
       RETURN_ERROR;
     }
 
-  if (show_notification)
+  if (is_backup)
     {
-      if (is_backup)
-        {
-          ui_show_notification (_("Backup saved."));
-        }
-      else
-        {
-          zrythm_add_to_recent_projects (
-            ZRYTHM, project_file_path);
-          ui_show_notification (_("Project saved."));
-        }
+      if (show_notification)
+        ui_show_notification (_("Backup saved."));
+    }
+  else
+    {
+      zrythm_add_to_recent_projects (
+        ZRYTHM, project_file_path);
+      if (show_notification)
+        ui_show_notification (_("Project saved."));
     }
   g_free (project_file_path);
 

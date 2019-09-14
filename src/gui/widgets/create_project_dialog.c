@@ -117,23 +117,17 @@ create_project_dialog_widget_new ()
   /* get next available "Untitled Project" */
   char * untitled_project =
     g_strdup (_("Untitled Project"));
-  char * dir =
+  char * tmp =
     g_build_filename (
       str,
       untitled_project,
       NULL);
-  int i = 1;
-  while (io_file_exists (dir))
-    {
-      g_free (dir);
-      g_free (untitled_project);
-      untitled_project =
-        g_strdup_printf (
-          "%s (%d)", _("Untitled Project"), i++);
-      dir =
-        g_build_filename (
-          str, untitled_project, NULL);
-    }
+  char * dir =
+    io_get_next_available_filepath (tmp);
+  g_free (tmp);
+  g_free (untitled_project);
+  untitled_project =
+    io_path_get_basename (dir);
   g_free (dir);
   g_free (str);
   gtk_entry_set_text (

@@ -262,3 +262,66 @@ io_get_files_in_dir (
 
   return arr;
 }
+
+/**
+ * Returns a newly allocated path that is either
+ * a copy of the original path if the path does
+ * not exist, or the original path appended with
+ * (n), where n is a number.
+ *
+ * Example: "myfile" -> "myfile (1)"
+ */
+char *
+io_get_next_available_filepath (
+  const char * filepath)
+{
+  int i = 1;
+  char * file_without_ext =
+    io_file_strip_ext (filepath);
+  char * file_ext =
+    io_file_get_ext (filepath);
+  char * new_path = g_strdup (filepath);
+  while (io_file_exists (new_path))
+    {
+      if (g_file_test (
+            new_path, G_FILE_TEST_IS_DIR))
+        {
+          g_free (new_path);
+          new_path =
+            g_strdup_printf (
+              "%s (%d)", filepath, i++);
+        }
+      else
+        {
+          g_free (new_path);
+          new_path =
+            g_strdup_printf (
+              "%s (%d).%s",
+              file_without_ext, i++,
+              file_ext);
+        }
+    }
+  g_free (file_without_ext);
+  g_free (file_ext);
+
+  return new_path;
+}
+
+/**
+ * Opens the given directory using the default
+ * program.
+ */
+void
+io_open_directory (
+  const char * path)
+{
+  g_return_if_fail (
+    g_file_test (path, G_FILE_TEST_IS_DIR));
+  char * command =
+    g_strdup_printf (
+      "xdg-open \"%s\"",
+      path);
+  FILE* file = popen (command, "r");
+  pclose(file);
+  g_free (command);
+}

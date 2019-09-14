@@ -122,6 +122,26 @@ io_get_files_in_dir (
   const char * dir);
 
 /**
+ * Returns a newly allocated path that is either
+ * a copy of the original path if the path does
+ * not exist, or the original path appended with
+ * (n), where n is a number.
+ *
+ * Example: "myfile" -> "myfile (1)"
+ */
+char *
+io_get_next_available_filepath (
+  const char * filepath);
+
+/**
+ * Opens the given directory using the default
+ * program.
+ */
+void
+io_open_directory (
+  const char * path);
+
+/**
  * @}
  */
 

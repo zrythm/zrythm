@@ -55,13 +55,42 @@ get_export_filename (ExportDialogWidget * self)
     exporter_stringize_audio_format (
       gtk_combo_box_get_active (
         self->format));
-  char * str =
+  char * base =
     g_strdup_printf ("%s.%s",
                      "mixdown", // TODO replace
                      format);
+  char * exports_dir =
+    project_get_exports_dir (PROJECT);
+  char * tmp =
+    g_build_filename (
+      exports_dir,
+      base,
+      NULL);
+  char * full_path =
+    io_get_next_available_filepath (tmp);
+  g_free (base);
+  g_free (tmp);
   g_free (format);
+  g_free (exports_dir);
 
-  return str;
+  /* we now have the full path, get only the
+   * basename */
+  base =
+    io_path_get_basename (full_path);
+  g_free (full_path);
+
+  return base;
+}
+
+static gboolean
+on_activate_export_path_link (
+  GtkLabel *label,
+  gchar    *uri,
+  ExportDialogWidget * self)
+{
+  io_open_directory (uri);
+
+  return TRUE;
 }
 
 static void
@@ -82,8 +111,9 @@ update_text (ExportDialogWidget * self)
       "The following files will be created:\n"
       ORANGIZE ("%s") "\n\n"
       "in the directory:\n"
-      ORANGIZE ("%s"),
+      "<a href=\"%s\">" ORANGIZE ("%s") "</a>",
       filename,
+      exports_dir,
       exports_dir);
   gtk_label_set_markup (
     self->output_label,
@@ -91,6 +121,10 @@ update_text (ExportDialogWidget * self)
   g_free (filename);
   g_free (str);
   g_free (exports_dir);
+
+  g_signal_connect (
+    G_OBJECT (self->output_label), "activate-link",
+    G_CALLBACK (on_activate_export_path_link), self);
 
 #undef ORANGE
 #undef ORANGIZE
@@ -380,8 +414,18 @@ export_thread (
 }
 
 static void
-on_export_clicked (GtkButton * btn,
-                   ExportDialogWidget * self)
+on_progress_dialog_closed (
+  GtkDialog * dialog,
+  int         response_id,
+  ExportDialogWidget * self)
+{
+  update_text (self);
+}
+
+static void
+on_export_clicked (
+  GtkButton * btn,
+  ExportDialogWidget * self)
 {
   ExportSettings info;
   info.format =
@@ -472,6 +516,9 @@ on_export_clicked (GtkButton * btn,
   gtk_window_set_transient_for (
     GTK_WINDOW (progress_dialog),
     GTK_WINDOW (self));
+  g_signal_connect (
+    G_OBJECT (progress_dialog), "response",
+    G_CALLBACK (on_progress_dialog_closed), self);
   gtk_dialog_run (GTK_DIALOG (progress_dialog));
   gtk_widget_destroy (GTK_WIDGET (progress_dialog));
 
