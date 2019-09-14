@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.383] - 2019-09-14
+- Switch from AGPL to GFDL for the user manual
+- Add option to resize regions normally or to resize-loop
+- Add warning when loading a project made with a different version of Zrythm
+- When creating a new project, immediately save it
+- Add check for failure in the selected backends when launching Zrythm and revert to dummy backends
+- Print the actual MIDI message when an unknown message is received
+- Append a number to the filename to be exported if a file already exists
+- Fix piano roll key press events not getting propagated to the channel
+- Fix moving notes emitting unnecessary MIDI events
+- Fix basic copy-paste in the timeline
+- Fix regions not getting moved to the new track after moving track position
+- Fix loop selection not taking into account the end position of the last selected object
+- Fix bar 1 not getting drawn in the ruler
+- Fix split cursor remaining enabled after alt tabbing
+- Change region resize behavior when moving the left edge to add space instead of move the items
+- Add MIDI bus and MIDI group tracks
+- Update the user manual
+- Update German, Portuguese, French, Japanese, Norwegian translations
+
 ## [0.6.323] - 2019-09-07
 - Add autosave (backup) mechanism
 - Add support for project templates
