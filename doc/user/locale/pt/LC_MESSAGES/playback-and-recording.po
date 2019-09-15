@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-09-04 15:25+0000\n"
+"PO-Revision-Date: 2019-09-16 19:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/pt/>\n"
@@ -107,8 +107,8 @@ msgid ""
 "The Cue Point is where the Playhead will move to when Play is clicked "
 "while playing or when Stop is clicked while paused."
 msgstr ""
-"O Playhead se moverá ao Ponto de Sinalização quando clicar Reproduzir "
-"durante a reprodução ou Stop durante a pausa."
+"A cabeça de reprodução moverá-se ao Ponto de Sinalização quando clicar "
+"Reproduzir durante a reprodução ou Stop durante a pausa."
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:35
 msgid "Song Start Marker"
@@ -166,7 +166,7 @@ msgstr "Cabeça de Reprodução"
 
 #: ../../playback-and-recording/overview.rst:26
 msgid "The Playhead is the current position in the song."
-msgstr "O Playhead é a posição atual na música."
+msgstr "A Cabeça de Reprodução é a posição atual na música."
 
 #: ../../playback-and-recording/overview.rst:30
 msgid "Position"
@@ -221,8 +221,8 @@ msgid ""
 "If stopped, the song will start playing. If already playing, the Playhead"
 " will move to the Cue point."
 msgstr ""
-"Quando parar, a música começará a reproduzir. Se já estiver a reproduzir, o "
-"Playhead se moverá para o Ponto de Sinalização."
+"Quando parar, a música começará a reproduzir. Se já estiver a reproduzir, a "
+"Cabeça de Reprodução moverá-se para o Ponto de Sinalização."
 
 #: ../../playback-and-recording/transport-controls.rst:31
 msgid "Stop"
@@ -238,7 +238,7 @@ msgstr "Para trás"
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Moves the Playhead backward by the size of 1 snap point."
-msgstr "Move o Playhead para trás por 1 ponto de snap."
+msgstr "Move a Cabeça de Reprodução para trás por 1 ponto de snap."
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid "Forward"
@@ -246,7 +246,7 @@ msgstr "Para a frente"
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid "Moves the Playhead forward by the size of 1 snap point."
-msgstr "Move o Playhead para a frente por 1 ponto de snap."
+msgstr "Move a Cabeça de Reprodução para a frente por 1 ponto de snap."
 
 #: ../../playback-and-recording/transport-controls.rst:42
 msgid "Loop"
@@ -257,8 +257,8 @@ msgid ""
 "If enabled, the Playhead will move back to the Loop Start point when it "
 "reaches the Loop End point."
 msgstr ""
-"Se ativado, o Plazhead voltará para o Inicio do Loop quando atingir o ponto "
-"Final do Loop."
+"Se ativado, a Cabeça de Reprodução voltará para o Inicio do Loop quando "
+"atingir o ponto Final do Loop."
 
 #: ../../playback-and-recording/transport-controls.rst:45
 msgid "Metronome"
