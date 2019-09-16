@@ -59,7 +59,7 @@ typedef struct AutomationTrack
   /** The automation Region's. */
   Region **         regions;
   int               num_regions;
-  int               regions_size;
+  size_t            regions_size;
 
   /**
    * Whether visible or not.

@@ -63,7 +63,7 @@ mixer_schema =
 };
 
 void
-mixer_init_loaded ();
+mixer_init_loaded (void);
 
 /**
  * Recalculates the process acyclic directed graph.
@@ -71,12 +71,6 @@ mixer_init_loaded ();
 void
 mixer_recalc_graph (
   Mixer * mixer);
-
-/**
- * Returns if mixer has soloed channels.
- */
-int
-mixer_has_soloed_channels ();
 
 /**
  * The mixer begins the audio processing process.
@@ -88,13 +82,15 @@ mixer_has_soloed_channels ();
  * and sent to Jack.
  */
 void
-mixer_process ();
+mixer_process (
+  Mixer * mixer);
 
 /**
  * Loads plugins from state files. Used when loading projects.
  */
 void
-mixer_load_plugins ();
+mixer_load_plugins (
+  Mixer * mixer);
 
 /**
  * Moves the given plugin to the given slot in

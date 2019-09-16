@@ -44,25 +44,8 @@ pa_setup (
 
 void
 engine_pa_fill_out_bufs (
-  AudioEngine * engine,
-  int           nframes);
-
-/**
- * This routine will be called by the PortAudio
- * engine when audio is needed.
- *
- * It may called at interrupt level on some
- * machines so don't do anything that could mess up
- * the system like calling malloc() or free().
-*/
-int
-pa_stream_cb (
-  const void *                    in,
-  void *                          out,
-  unsigned long                   nframes,
-  const PaStreamCallbackTimeInfo* time_info,
-  PaStreamCallbackFlags           status_flags,
-  void *                          user_data);
+  AudioEngine *   self,
+  const nframes_t nframes);
 
 /**
  * Opens a Port Audio stream.

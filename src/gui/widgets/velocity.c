@@ -52,20 +52,13 @@ draw_cb (
   cairo_t *cr,
   VelocityWidget * self)
 {
-  guint width, height;
-  GtkStyleContext *context;
-
-  /*g_message ("draw %d (transient? %d)",*/
-             /*self->velocity->vel,*/
-             /*velocity_is_transient (self->velocity));*/
-
-  context =
+  GtkStyleContext *context =
     gtk_widget_get_style_context (GTK_WIDGET (self));
 
-  width =
+  int width =
     gtk_widget_get_allocated_width (
       GTK_WIDGET (self));
-  height =
+  int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
@@ -154,7 +147,7 @@ draw_cb (
   if (DEBUGGING &&
       velocity_is_transient (self->velocity))
     {
-      GdkRGBA color, c2;
+      GdkRGBA c2;
       gdk_rgba_parse (
         &color,
         gdk_rgba_to_string (
@@ -194,7 +187,7 @@ on_motion (GtkWidget *      widget,
     {
       self->resize =
         velocity_widget_is_resize (
-          self, event->y);
+          self, (int) event->y);
     }
 
   if (event->type == GDK_ENTER_NOTIFY)
@@ -263,26 +256,6 @@ velocity_widget_new (Velocity * velocity)
   g_free (tooltip);
 
   return self;
-}
-
-gboolean
-on_btn_press (GtkWidget *widget,
-               GdkEvent  *event,
-               gpointer   user_data)
-{
-  g_message ("press");
-
-  return FALSE;
-}
-
-gboolean
-on_btn_release (GtkWidget *widget,
-               GdkEvent  *event,
-               gpointer   user_data)
-{
-  g_message ("release");
-
-  return FALSE;
 }
 
 static void

@@ -219,7 +219,7 @@ on_plugin_right_click (
       (self->plugin_tree_view));
   if (!gtk_tree_view_get_path_at_pos
       (GTK_TREE_VIEW(self->plugin_tree_view),
-       x, y,
+       (int) x, (int) y,
        &path, &column, NULL, NULL))
 
       // if we can't find path at pos, we surely don't
@@ -423,9 +423,13 @@ create_model_for_plugins (PluginBrowserWidget * self)
     {
       PluginDescriptor * descr =
         PLUGIN_MANAGER->plugin_descriptors[i];
-      gchar * icon_name = "z-plugins";
+      gchar * icon_name = NULL;
       if (plugin_descriptor_is_instrument (descr))
-        icon_name = "z-audio-midi";
+        icon_name =
+          g_strdup ("z-audio-midi");
+      else
+        icon_name =
+          g_strdup ("z-plugins");
       /*else if (!strcmp (descr->category, "Distortion"))*/
         /*icon_name = "z-distortionfx";*/
 
@@ -437,6 +441,7 @@ create_model_for_plugins (PluginBrowserWidget * self)
         PL_COLUMN_NAME, descr->name,
         PL_COLUMN_DESCR, descr,
         -1);
+      g_free (icon_name);
     }
 
   GtkTreeModel * model =
@@ -570,7 +575,8 @@ tree_view_setup (
   if (dnd)
     {
       GtkTargetEntry entries[1];
-      entries[0].target = TARGET_ENTRY_PLUGIN_DESCR;
+      entries[0].target =
+        g_strdup (TARGET_ENTRY_PLUGIN_DESCR);
       entries[0].flags = GTK_TARGET_SAME_APP;
       entries[0].info =
         symap_map (

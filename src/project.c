@@ -76,7 +76,7 @@ tear_down (Project * self)
   if (self->title)
     g_free (self->title);
 
-  engine_tear_down ();
+  engine_tear_down (AUDIO_ENGINE);
 
   track_free (P_CHORD_TRACK);
 
@@ -117,7 +117,7 @@ get_newer_backup (
   Project * self)
 {
   GDir *dir;
-  GError *error;
+  GError *error = NULL;
   const gchar *filename;
   struct stat stat_res;
   struct tm *orig_tm, *nowtm;
@@ -144,6 +144,10 @@ get_newer_backup (
   char * backups_dir =
     project_get_backups_dir (self);
   dir = g_dir_open (backups_dir, 0, &error);
+  if (!dir)
+    {
+      return NULL;
+    }
   while ((filename = g_dir_read_name(dir)))
     {
       char * full_path =
@@ -176,11 +180,13 @@ get_newer_backup (
           g_warning (
             "Failed to get last modified for %s",
             full_path);
+          g_dir_close (dir);
           return NULL;
         }
       g_free (full_path);
     }
   g_free (backups_dir);
+  g_dir_close (dir);
 
   return result;
 }
@@ -274,7 +280,7 @@ project_sanity_check (Project * self)
   /* TODO */
 }
 
-void
+static void
 create_default (Project * self)
 {
   engine_init (&self->audio_engine, 0);
@@ -718,14 +724,14 @@ project_get_states_dir (
  * Returns the audio dir for the given Project.
  */
 char *
-project_get_audio_dir (
+project_get_pool_dir (
   Project * self)
 {
   g_warn_if_fail (self->dir);
   return
     g_build_filename (
       self->dir,
-      PROJECT_AUDIO_DIR,
+      PROJECT_POOL_DIR,
       NULL);
 }
 
@@ -783,7 +789,11 @@ project_save (
   char * exports_dir =
     project_get_exports_dir (PROJECT);
   io_mkdir (exports_dir);
+  char * pool_dir =
+    project_get_pool_dir (PROJECT);
+  io_mkdir (pool_dir);
   g_free (exports_dir);
+  g_free (pool_dir);
 
   /* set the title */
   char * basename =

@@ -155,8 +155,9 @@ arranger_bg_draw_cb (
 
   /* get the interval for bars */
   int bar_interval =
+    (int)
     MAX ((PX_TO_HIDE_BEATS) /
-         rw_prv->px_per_bar, 1);
+         (double) rw_prv->px_per_bar, 1.0);
 
   i = 0;
   double curr_px;

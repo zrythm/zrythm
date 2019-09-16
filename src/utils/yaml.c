@@ -26,24 +26,24 @@
 /**
  * Gets nth line from a string.
  */
-const char *sgets(char *s, int n, char **strp)
-{
-  if (**strp == '\0')
-    return NULL;
-  int i;
-  for (i=0;i<n-1;++i, ++(*strp))
-    {
-      s[i] = **strp;
-      if(**strp == '\0')
-        break;
-      if(**strp == '\n')
-        {
-          s[i+1]='\0';
-          ++(*strp);
-          break;
-        }
-    }
-  if (i==n-1)
-    s[i] = '\0';
-  return s;
-}
+/*static const char *sgets(char *s, int n, char **strp)*/
+/*{*/
+  /*if (**strp == '\0')*/
+    /*return NULL;*/
+  /*int i;*/
+  /*for (i=0;i<n-1;++i, ++(*strp))*/
+    /*{*/
+      /*s[i] = **strp;*/
+      /*if(**strp == '\0')*/
+        /*break;*/
+      /*if(**strp == '\n')*/
+        /*{*/
+          /*s[i+1]='\0';*/
+          /*++(*strp);*/
+          /*break;*/
+        /*}*/
+    /*}*/
+  /*if (i==n-1)*/
+    /*s[i] = '\0';*/
+  /*return s;*/
+/*}*/

@@ -156,8 +156,10 @@ ruler_widget_get_beat_interval (
 
   /* decide the raw interval to keep between beats */
   int _beat_interval =
-    MAX (PX_TO_HIDE_BEATS /
-         rw_prv->px_per_beat, 1);
+    MAX (
+      (int)
+      (PX_TO_HIDE_BEATS / rw_prv->px_per_beat),
+      1);
 
   /* round the interval to the divisors */
   int beat_interval = -1;
@@ -196,8 +198,10 @@ ruler_widget_get_sixteenth_interval (
 
   /* decide the raw interval to keep between sixteenths */
   int _sixteenth_interval =
-    MAX (PX_TO_HIDE_BEATS /
-         rw_prv->px_per_sixteenth, 1);
+    MAX (
+      (int)
+      (PX_TO_HIDE_BEATS /
+      rw_prv->px_per_sixteenth), 1);
 
   /* round the interval to the divisors */
   int sixteenth_interval = -1;
@@ -241,7 +245,7 @@ ruler_draw_cb (
     gtk_widget_get_style_context (
       GTK_WIDGET (self));
 
-  guint height =
+  int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
@@ -346,8 +350,10 @@ ruler_draw_cb (
 
   /* get the interval for bars */
   int bar_interval =
-    MAX ((PX_TO_HIDE_BEATS) /
-         rw_prv->px_per_bar, 1);
+    MAX (
+      (int)
+      (PX_TO_HIDE_BEATS /
+         rw_prv->px_per_bar), 1);
 
   /* draw bars */
   i = - bar_interval;
@@ -529,7 +535,7 @@ drag_begin (GtkGestureDrag *      gesture,
                           &PROJECT->range_2) <= 0;
     }
 
-  guint height =
+  int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
@@ -595,8 +601,8 @@ drag_begin (GtkGestureDrag *      gesture,
     {
       if (timeline_ruler)
         timeline_ruler_on_drag_begin_no_marker_hit (
-          gesture, start_x, start_y, timeline_ruler,
-          height);
+          gesture, start_x, start_y,
+          timeline_ruler, height);
     }
   rw_prv->last_offset_x = 0;
 }
@@ -670,7 +676,8 @@ drag_update (GtkGestureDrag * gesture,
               /* set it */
               region_set_loop_start_pos (
                 r, &local_pos, AO_UPDATE_ALL);
-              transport_update_position_frames ();
+              transport_update_position_frames (
+                TRANSPORT);
               EVENTS_PUSH (
                 ET_CLIP_MARKER_POS_CHANGED, self);
             }
@@ -688,7 +695,8 @@ drag_update (GtkGestureDrag * gesture,
               /* set it */
               region_set_loop_end_pos (
                 r, &local_pos, AO_UPDATE_ALL);
-              transport_update_position_frames ();
+              transport_update_position_frames (
+                TRANSPORT);
               EVENTS_PUSH (
                 ET_CLIP_MARKER_POS_CHANGED, self);
             }
@@ -704,7 +712,8 @@ drag_update (GtkGestureDrag * gesture,
               /* set it */
               region_set_clip_start_pos (
                 r, &local_pos, AO_UPDATE_ALL);
-              transport_update_position_frames ();
+              transport_update_position_frames (
+                TRANSPORT);
               EVENTS_PUSH (
                 ET_CLIP_MARKER_POS_CHANGED, self);
             }
@@ -730,7 +739,7 @@ drag_end (GtkGestureDrag *gesture,
   rw_prv->action = UI_OVERLAY_ACTION_NONE;
 
   if (self == (RulerWidget *) MW_RULER)
-    timeline_ruler_on_drag_end ();
+    timeline_ruler_on_drag_end (MW_RULER);
 }
 
 static void
@@ -767,9 +776,9 @@ ruler_widget_refresh (RulerWidget * self)
   GET_RULER_ALIASES (self);
 
   if (timeline_ruler)
-    timeline_ruler_widget_refresh ();
+    timeline_ruler_widget_refresh (MW_RULER);
   else if (editor_ruler)
-    editor_ruler_widget_refresh ();
+    editor_ruler_widget_refresh (EDITOR_RULER);
 }
 
 /**
@@ -780,8 +789,9 @@ ruler_widget_refresh (RulerWidget * self)
  * Returns if the zoom level was set or not.
  */
 int
-ruler_widget_set_zoom_level (RulerWidget * self,
-                             float         zoom_level)
+ruler_widget_set_zoom_level (
+  RulerWidget * self,
+  double        zoom_level)
 {
   if (zoom_level > MAX_ZOOM_LEVEL)
     {
@@ -793,7 +803,7 @@ ruler_widget_set_zoom_level (RulerWidget * self,
     }
   if (zoom_level < MIN_ZOOM_LEVEL)
     {
-      action_enable_window_action ("zoom-out");
+      action_disable_window_action ("zoom-out");
     }
   else
     {

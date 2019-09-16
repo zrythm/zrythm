@@ -33,6 +33,7 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "utils/cairo.h"
+#include "utils/math.h"
 
 G_DEFINE_TYPE (AutomationRegionWidget,
                automation_region_widget,
@@ -50,15 +51,13 @@ automation_region_draw_cb (
 {
   int i, j;
   REGION_WIDGET_GET_PRIVATE (self);
-  guint width, height;
-  GtkStyleContext *context;
 
-  context =
+  GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
-  width =
+  int width =
     gtk_widget_get_allocated_width (widget);
-  height =
+  int height =
     gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
@@ -104,15 +103,15 @@ automation_region_draw_cb (
         arranger_object_info_get_visible_counterpart (
           &ap->obj_info);
 
-      /* get ratio (0.0 - 1.0) on x where midi note starts
-       * & ends */
-      int ap_start_ticks =
+      /* get ratio (0.0 - 1.0) on x where midi note
+       * starts & ends */
+      long ap_start_ticks =
         position_to_ticks (&ap->pos);
-      int ap_end_ticks = ap_start_ticks;
+      long ap_end_ticks = ap_start_ticks;
       if (next_ap)
         ap_end_ticks =
           position_to_ticks (&next_ap->pos);
-      int tmp_start_ticks, tmp_end_ticks;
+      long tmp_start_ticks, tmp_end_ticks;
 
       /* if before loop end */
       if (position_compare (
@@ -130,7 +129,8 @@ automation_region_draw_cb (
 
               /* calculate draw endpoints */
               tmp_start_ticks =
-                ap_start_ticks + loop_ticks * j;
+                ap_start_ticks +
+                loop_ticks * (long) j;
 
               /* if should be clipped */
               if (next_ap &&
@@ -138,31 +138,35 @@ automation_region_draw_cb (
                     &next_ap->pos,
                     &r->loop_end_pos))
                 tmp_end_ticks =
-                  loop_end_ticks + loop_ticks * j;
+                  loop_end_ticks +
+                  loop_ticks *  (long) j;
               else
                 tmp_end_ticks =
-                  ap_end_ticks + loop_ticks * j;
+                  ap_end_ticks +
+                  loop_ticks *  (long) j;
 
               /* adjust for clip start */
               tmp_start_ticks -= clip_start_ticks;
               tmp_end_ticks -= clip_start_ticks;
 
               x_start =
-                (float) tmp_start_ticks /
-                ticks_in_region;
+                (double) tmp_start_ticks /
+                (double) ticks_in_region;
               x_end =
-                (float) tmp_end_ticks /
-                ticks_in_region;
+                (double) tmp_end_ticks /
+                (double) ticks_in_region;
 
               /* get ratio (0.0 - 1.0) on y where
                * midi note is */
               y_start =
                 1.0 -
+                (double)
                 automation_point_get_normalized_value (
                   ap);
               if (next_ap)
                 y_end =
                   1.0 -
+                  (double)
                   automation_point_get_normalized_value (
                     next_ap);
               else
@@ -203,26 +207,27 @@ automation_region_draw_cb (
                              /*ac_width);*/
                   /*g_message ("y start real %f",*/
                              /*y_start_real);*/
-                  for (double j = x_start_real;
-                       j < (x_start_real) + ac_width;
-                       j += 0.6)
+                  for (double k = x_start_real;
+                       k < (x_start_real) + ac_width;
+                       k += 0.6)
                     {
                       /* in pixels, higher values are lower */
                       ap_y =
                         1.0 -
                         automation_curve_get_normalized_value (
                           ac,
-                          (j - x_start_real) /
+                          (k - x_start_real) /
                             ac_width);
                       ap_y *= ac_height;
 
-                      new_x = j;
+                      new_x = k;
                       if (y_start > y_end)
                         new_y = ap_y + y_end_real;
                       else
                         new_y = ap_y + y_start_real;
 
-                      if (j == 0.0)
+                      if (math_doubles_equal (
+                            k, 0.0, 0.001))
                         {
                           cairo_move_to (
                             cr, new_x, new_y);

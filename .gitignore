@@ -162,3 +162,6 @@ coverage.html
 
 # Flatpak
 .flatpak-builder
+
+# valgrind log
+valog

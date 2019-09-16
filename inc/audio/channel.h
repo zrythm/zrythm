@@ -98,7 +98,7 @@ typedef struct Channel
    */
   AutomationTrack ** ats;
   int                num_ats;
-  int                ats_size;
+  size_t             ats_size;
 
   /**
    * External MIDI inputs that are currently

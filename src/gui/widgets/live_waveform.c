@@ -48,9 +48,9 @@ live_waveform_draw_cb (
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
-  guint width =
+  gint width =
     gtk_widget_get_allocated_width (widget);
-  guint height =
+  gint height =
     gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
@@ -70,11 +70,11 @@ live_waveform_draw_cb (
   /* draw */
   gdk_rgba_parse (&color, "#11FF44");
   gdk_cairo_set_source_rgba (cr, &color);
-  double half_height = height / 2.0;
-  int nframes = AUDIO_ENGINE->nframes;
+  float half_height = (float) height / 2.0f;
+  uint32_t nframes = AUDIO_ENGINE->nframes;
   float val;
   cairo_move_to (cr, 0, half_height);
-  for (int i = 0; i < nframes; i++)
+  for (unsigned int i = 0; i < nframes; i++)
     {
       val =
         MAX (

@@ -1225,7 +1225,7 @@ channel_init_loaded (Channel * ch)
 
   /* init plugins */
   Plugin * pl;
-  for (int i = 0; i < STRIP_SIZE; i++)
+  for (i = 0; i < STRIP_SIZE; i++)
     {
       pl = ch->plugins[i];
       if (!pl)
@@ -1283,7 +1283,6 @@ void
 channel_reconnect_ext_input_ports (
   Channel * ch)
 {
-  char * pname;
   int i = 0;
   int ret;
   if (ch->track->type == TRACK_TYPE_INSTRUMENT ||
@@ -1304,13 +1303,12 @@ channel_reconnect_ext_input_ports (
           if (prev_ports)
             {
               i = 0;
-              while ((pname = (char *) prev_ports[i]) !=
-                        NULL)
+              while (prev_ports[i] != NULL)
                 {
                   ret =
                     jack_disconnect (
                       AUDIO_ENGINE->client,
-                      pname,
+                      prev_ports[i],
                       jack_port_name (
                         (jack_port_t *)
                         ch->midi_in->data));
@@ -1329,20 +1327,21 @@ channel_reconnect_ext_input_ports (
                   JackPortIsOutput |
                   JackPortIsPhysical);
 
-              i = 0;
-              jack_port_t * jport;
-              while ((pname = (char *) ports[i]) !=
-                        NULL)
+              if (ports)
                 {
-                  ret =
-                    jack_connect (
-                      AUDIO_ENGINE->client,
-                      pname,
-                      jack_port_name (
-                        (jack_port_t *)
-                        ch->midi_in->data));
-                  g_warn_if_fail (!ret);
-                  i++;
+                  i = 0;
+                  while (ports[i] != NULL)
+                    {
+                      ret =
+                        jack_connect (
+                          AUDIO_ENGINE->client,
+                          ports[i],
+                          jack_port_name (
+                            (jack_port_t *)
+                            ch->midi_in->data));
+                      g_warn_if_fail (!ret);
+                      i++;
+                    }
                 }
             }
           /* connect to selected midi ins */
@@ -1814,7 +1813,7 @@ init_midi_port (
   int       in,
   int       loading)
 {
-  char * str = in ? "MIDI in" : "MIDI out";
+  const char * str = in ? "MIDI in" : "MIDI out";
   Port ** port =
     in ? &self->midi_in : &self->midi_out;
   PortFlow flow = in ? FLOW_INPUT : FLOW_OUTPUT;

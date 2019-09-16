@@ -20,6 +20,7 @@
 #include "config.h"
 
 #include "audio/engine.h"
+#include "audio/engine_jack.h"
 #include "audio/ext_port.h"
 #include "project.h"
 
@@ -43,7 +44,7 @@ ext_port_init_loaded (
 float *
 ext_port_get_buffer (
   ExtPort * self,
-  int       nframes)
+  nframes_t nframes)
 {
   switch (self->type)
     {
@@ -67,7 +68,7 @@ ext_port_get_buffer (
 void
 ext_port_clear_buffer (
   ExtPort * ext_port,
-  int       nframes)
+  nframes_t nframes)
 {
   float * buf =
     ext_port_get_buffer (ext_port, nframes);
@@ -131,35 +132,34 @@ ext_ports_get (
     case AUDIO_BACKEND_JACK:
       {
 #ifdef HAVE_JACK
-        int flags = 0;
+        long unsigned int flags = 0;
         if (hw)
           flags |= JackPortIsPhysical;
         if (flow == FLOW_INPUT)
           flags |= JackPortIsInput;
         else if (flow == FLOW_OUTPUT)
           flags |= JackPortIsOutput;
-        char * jtype = NULL;
-        if (type == TYPE_AUDIO)
-          jtype = JACK_DEFAULT_AUDIO_TYPE;
-        else if (type == TYPE_EVENT)
-          jtype = JACK_DEFAULT_MIDI_TYPE;
+        const char * jtype =
+          engine_jack_get_jack_type (type);
+        if (!jtype)
+          return;
 
         const char ** ports =
           jack_get_ports (
             AUDIO_ENGINE->client,
             NULL, jtype, flags);
 
-        g_return_if_fail (ports);
+        if (!ports)
+          return;
 
         int i = 0;
-        char * pname;
         jack_port_t * jport;
-        while ((pname = (char *) ports[i]) != NULL)
+        while (ports[i] != NULL)
           {
             jport =
               jack_port_by_name (
                 AUDIO_ENGINE->client,
-                pname);
+                ports[i]);
 
             arr[i] =
               ext_port_from_jack_port (jport);
@@ -201,9 +201,13 @@ ext_port_from_jack_port (
 
   char * aliases[2];
   aliases[0] =
-    (char*) malloc (jack_port_name_size ());
+    (char*)
+    malloc (
+      (size_t) jack_port_name_size ());
   aliases[1] =
-    (char*) malloc (jack_port_name_size ());
+    (char*)
+    malloc (
+      (size_t) jack_port_name_size ());
   self->num_aliases =
     jack_port_get_aliases (
       jport, aliases);

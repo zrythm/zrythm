@@ -465,7 +465,7 @@ creator_filter (
           ChordType type =
             get_selected_chord_type (self);
 
-          if (note == -1 || type == -1)
+          if ((int) note == -1 || (int) type == -1)
             return 0;
 
           return
@@ -482,7 +482,7 @@ creator_filter (
 
           MusicalNote note =
             get_selected_root_note (self);
-          if (note == -1)
+          if ((int) note == -1)
             return 0;
 
           ChordDescriptor * chord =

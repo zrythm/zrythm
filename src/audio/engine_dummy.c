@@ -32,9 +32,11 @@ process_cb (gpointer data)
   while (1)
     {
       engine_process (self, self->block_length);
-      g_usleep (((double) self->block_length /
-                 self->sample_rate) *
-                1000.0 * 1000);
+      g_usleep (
+        ((gulong)
+         (((double) self->block_length /
+           self->sample_rate) *
+           1000.0 * 1000)));
     }
 
   return NULL;
@@ -54,6 +56,7 @@ engine_dummy_setup (
                   TRANSPORT->beats_per_bar > 1);
 
   engine_update_frames_per_tick (
+    self,
     TRANSPORT->beats_per_bar,
     TRANSPORT->bpm,
     self->sample_rate);

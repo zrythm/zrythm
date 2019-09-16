@@ -218,8 +218,8 @@ automation_track_get_normalized_val_at_pos (
   int prev_ap_lower =
     prev_ap_normalized_val <= next_ap_normalized_val;
   float prev_next_diff =
-    fabs (prev_ap_normalized_val -
-          next_ap_normalized_val);
+    (float) fabs (prev_ap_normalized_val -
+           next_ap_normalized_val);
 
   /* ratio of how far in we are in the curve */
   long prev_ap_frames =
@@ -228,11 +228,12 @@ automation_track_get_normalized_val_at_pos (
     position_to_frames (&next_ap->pos);
   double ratio =
     (double) (localp - prev_ap_frames) /
-    (next_ap_frames - prev_ap_frames);
+    (double) (next_ap_frames - prev_ap_frames);
   /*g_message ("ratio %f",*/
              /*ratio);*/
 
-  double result =
+  float result =
+    (float)
     automation_curve_get_normalized_value (
       ac, ratio);
   result = result * prev_next_diff;
@@ -300,7 +301,7 @@ automation_track_clone (
   AutomationTrack * dest =
     calloc (1, sizeof (AutomationTrack));
 
-  dest->regions_size = src->num_regions;
+  dest->regions_size = (size_t) src->num_regions;
   dest->num_regions = src->num_regions;
   dest->regions =
     malloc (dest->regions_size *

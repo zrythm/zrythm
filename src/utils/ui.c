@@ -78,7 +78,8 @@ ui_set_cursor_from_icon_name (
  */
 void
 ui_set_cursor_from_name (
-  GtkWidget * widget, char * name)
+  GtkWidget * widget,
+  const char * name)
 {
   GdkWindow * win =
     gtk_widget_get_parent_window (widget);
@@ -147,7 +148,7 @@ ui_get_hit_child (
       gtk_widget_translate_coordinates (
         GTK_WIDGET (parent),
         GTK_WIDGET (widget),
-        x, y, &wx, &wy);
+        (int) x, (int) y, &wx, &wy);
 
       /* if hit */
       if (wx >= 0 &&
@@ -188,13 +189,21 @@ px_to_pos (
         px = 0.0;
     }
 
-  pos->bars = px / rw_prv->px_per_bar + 1;
+  pos->bars =
+    (int)
+    (px / rw_prv->px_per_bar + 1.0);
   px = fmod (px, rw_prv->px_per_bar);
-  pos->beats = px / rw_prv->px_per_beat + 1;
+  pos->beats =
+    (int)
+    (px / rw_prv->px_per_beat + 1.0);
   px = fmod (px, rw_prv->px_per_beat);
-  pos->sixteenths = px / rw_prv->px_per_sixteenth + 1;
+  pos->sixteenths =
+    (int)
+    (px / rw_prv->px_per_sixteenth + 1.0);
   px = fmod (px, rw_prv->px_per_sixteenth);
-  pos->ticks = px / rw_prv->px_per_tick;
+  pos->ticks =
+    (int)
+    (px / rw_prv->px_per_tick);
   pos->total_ticks = position_to_ticks (pos);
   pos->frames = position_to_frames (pos);
 }
@@ -248,10 +257,12 @@ pos_to_px (
   RULER_WIDGET_GET_PRIVATE (ruler)
 
   int px =
-    (pos->bars - 1) * rw_prv->px_per_bar +
-    (pos->beats - 1) * rw_prv->px_per_beat +
-    (pos->sixteenths - 1) * rw_prv->px_per_sixteenth +
-    pos->ticks * rw_prv->px_per_tick;
+    (int)
+    ((double) (pos->bars - 1) * rw_prv->px_per_bar +
+    (double) (pos->beats - 1) * rw_prv->px_per_beat +
+    (double) (pos->sixteenths - 1) *
+      rw_prv->px_per_sixteenth +
+    (double) pos->ticks * rw_prv->px_per_tick);
 
   if (use_padding)
     px += SPACE_BEFORE_START;
@@ -310,8 +321,10 @@ px_to_frames (
         px = 0.0;
     }
 
-  return (AUDIO_ENGINE->frames_per_tick * px) /
-    rw_prv->px_per_tick;
+  return
+    (long)
+    (((double) AUDIO_ENGINE->frames_per_tick * px) /
+    rw_prv->px_per_tick);
 }
 
 /**
@@ -663,4 +676,22 @@ ui_get_contrast_text_color (
     gdk_rgba_parse (dest, "#323232");
   else
     gdk_rgba_parse (dest, "#CDCDCD");
+}
+
+/**
+ * Used in handlers to get the state mask.
+ */
+GdkModifierType
+ui_get_state_mask (
+  GtkGesture * gesture)
+{
+  GdkEventSequence * _sequence =
+    gtk_gesture_single_get_current_sequence (
+      GTK_GESTURE_SINGLE (gesture));
+  const GdkEvent * _event =
+    gtk_gesture_get_last_event (
+      GTK_GESTURE (gesture), _sequence);
+  GdkModifierType state_mask;
+  gdk_event_get_state (_event, &state_mask);
+  return state_mask;
 }

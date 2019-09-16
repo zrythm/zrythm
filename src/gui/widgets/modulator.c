@@ -32,21 +32,18 @@ G_DEFINE_TYPE (ModulatorWidget,
                modulator_widget,
                TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
-gboolean
+static gboolean
 modulator_graph_draw (
   GtkWidget    *widget,
   cairo_t *cr,
   ModulatorWidget * self)
 {
-  guint width, height;
-  GtkStyleContext *context;
-
-  context =
+  GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
 
-  width =
+  int width =
     gtk_widget_get_allocated_width (widget);
-  height =
+  int height =
     gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
@@ -81,7 +78,8 @@ modulator_graph_draw (
         (port->buf[0] - minf) / sizef;
 
       self->prev_points[i][59] =
-        normalized_val * height;
+        (double) normalized_val *
+        (double) height;
 
       /* draw prev points */
       for (j = 0; j < 59; j++)

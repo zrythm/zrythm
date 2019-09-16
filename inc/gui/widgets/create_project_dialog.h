@@ -49,6 +49,6 @@ typedef struct _CreateProjectDialogWidget
 } CreateProjectDialogWidget;
 
 CreateProjectDialogWidget *
-create_project_dialog_widget_new ();
+create_project_dialog_widget_new (void);
 
 #endif

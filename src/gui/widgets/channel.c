@@ -99,7 +99,7 @@ channel_widget_update_meter_reading (
   double val =
     (channel_get_current_l_db (channel) +
       channel_get_current_r_db (channel)) / 2;
-  if (val == prev)
+  if (math_doubles_equal (val, prev, 0.001))
     return G_SOURCE_CONTINUE;
   char * string;
   if (val < -100.)
@@ -379,7 +379,9 @@ on_whole_channel_press (
 {
   self->n_press = n_press;
 
-  UI_GET_STATE_MASK (gesture);
+  GdkModifierType state_mask =
+    ui_get_state_mask (
+      GTK_GESTURE (gesture));
   self->ctrl_held_at_start =
     state_mask & GDK_CONTROL_MASK;
 }
@@ -519,8 +521,9 @@ setup_phase_panel (ChannelWidget * self)
                        0, 1, 0);
   gtk_label_set_text (
     self->phase_reading,
-    g_strdup_printf ("%.1f",
-                     self->channel->fader.phase));
+    g_strdup_printf (
+      "%.1f",
+      (double) self->channel->fader.phase));
 }
 
 static void
@@ -941,7 +944,9 @@ channel_widget_init (ChannelWidget * self)
     self->inserts_expander, _("Inserts"));
 
   GtkTargetEntry entries[1];
-  entries[0].target = TARGET_ENTRY_TRACK;
+  /* FIXME free */
+  entries[0].target =
+    g_strdup (TARGET_ENTRY_TRACK);
   entries[0].flags = GTK_TARGET_SAME_APP;
   entries[0].info =
     symap_map (ZSYMAP, TARGET_ENTRY_TRACK);

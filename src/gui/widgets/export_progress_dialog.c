@@ -30,6 +30,7 @@
 #include "gui/widgets/export_progress_dialog.h"
 #include "project.h"
 #include "utils/io.h"
+#include "utils/math.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
@@ -69,7 +70,8 @@ tick_cb (
     GTK_PROGRESS_BAR (widget),
     self->info->progress);
 
-  if (self->info->progress == 1.0)
+  if (math_doubles_equal (
+        self->info->progress, 1.0, 0.0001))
     {
       gtk_widget_set_visible (
         GTK_WIDGET (self->ok), 1);

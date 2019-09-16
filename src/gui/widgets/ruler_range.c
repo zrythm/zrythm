@@ -37,14 +37,17 @@ ruler_range_draw_cb (
   cairo_t *cr,
   gpointer data)
 {
-  GtkStyleContext *context;
+  GtkStyleContext *context =
+    gtk_widget_get_style_context (widget);
 
-  context = gtk_widget_get_style_context (widget);
+  int width =
 
-  guint width = gtk_widget_get_allocated_width (widget);
-  guint height = gtk_widget_get_allocated_height (widget);
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
   cairo_set_source_rgba (cr, 0.7, 0.7, 0.7, 1.0);
   cairo_set_line_width (cr, 2);

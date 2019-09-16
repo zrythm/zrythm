@@ -69,7 +69,8 @@ typedef struct _AutomationTrackWidget
  * Creates a new automation_track widget from the given automation_track.
  */
 AutomationTrackWidget *
-automation_track_widget_new ();
+automation_track_widget_new (
+  AutomationTrack * at);
 
 /**
  * Updates GUI.

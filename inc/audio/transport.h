@@ -29,6 +29,8 @@
 #include <stdint.h>
 
 #include "audio/region.h"
+#include "utils/types.h"
+
 #include "zix/sem.h"
 
 /**
@@ -103,14 +105,21 @@ typedef struct Transport
   //Position      end_marker_pos;
 
   /**
-   * The top part (beats_per_par) is the number of beat units
+   * The top part (beats_per_par) is the number of
+   * beat units
    * (the bottom part) there will be per bar.
    *
    * Example: 4/4 = 4 (top) 1/4th (bot) notes per bar.
    * 2/8 = 2 (top) 1/8th (bot) notes per bar.
    */
-  int                beats_per_bar; ///< top part of time signature
-  int                beat_unit;   ///< bottom part of time signature, power of 2
+  int                beats_per_bar;
+
+  /**
+   * Bottom part of the time signature.
+   *
+   * Power of 2.
+   */
+  int                beat_unit;
   BeatUnit           ebeat_unit;
 
   /* ---------- CACHE -------------- */
@@ -123,9 +132,15 @@ typedef struct Transport
 
   /* ------------------------------- */
 
-  uint32_t           position;       ///< Transport position in frames
-	float              bpm;            ///< Transport tempo in beats per minute
-	int               rolling;        ///< Transport speed (0=stop, 1=play)
+  /** Transport position in frames.
+   * FIXME is this used? */
+  nframes_t          position;
+
+  /** Transport tempo in beats per minute. */
+	bpm_t              bpm;
+
+  /** Transport speed (0=stop, 1=play). */
+	int               rolling;
 
   /** Looping or not. */
   int               loop;
@@ -262,14 +277,16 @@ transport_set_metronome_enabled (
  */
 void
 transport_add_to_playhead (
-  Transport * self,
-  const int   nframes);
+  Transport *     self,
+  const nframes_t nframes);
 
 void
-transport_request_pause ();
+transport_request_pause (
+  Transport * self);
 
 void
-transport_request_roll ();
+transport_request_roll (
+  Transport * self);
 
 /**
  * Setter for playhead Position.
@@ -327,7 +344,8 @@ transport_goto_next_marker (
  * Updates the frames in all transport positions
  */
 void
-transport_update_position_frames ();
+transport_update_position_frames (
+  Transport * self);
 
 /**
  * Adds frames to the given global frames, while
@@ -340,7 +358,7 @@ long
 transport_frames_add_frames (
   const Transport * self,
   const long        gframes,
-  const int         frames);
+  const nframes_t   frames);
 
 /**
  * Adds frames to the given position similar to
@@ -352,7 +370,7 @@ void
 transport_position_add_frames (
   const Transport * self,
   Position *        pos,
-  const int         frames);
+  const nframes_t   frames);
 
 void
 transport_set_ebeat_unit (

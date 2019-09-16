@@ -70,12 +70,13 @@ cpu_draw_cb (
   cairo_t * cr,
   CpuWidget * self)
 {
-  guint width, height;
-  GtkStyleContext *context;
-  context = gtk_widget_get_style_context (widget);
+  GtkStyleContext *context =
+  gtk_widget_get_style_context (widget);
 
-  width = gtk_widget_get_allocated_width (widget);
-  height = gtk_widget_get_allocated_height (widget);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -161,7 +162,7 @@ unsigned long prev_total, prev_idle;
  * as a percentage of the real time available per
  * cycle
  */
-gboolean
+static gboolean
 refresh_dsp_load (GtkWidget * widget,
                   GdkFrameClock *frame_clock,
                   gpointer user_data)
@@ -183,8 +184,10 @@ refresh_dsp_load (GtkWidget * widget,
         (AUDIO_ENGINE->block_length * 1000000) /
         AUDIO_ENGINE->sample_rate;
       self->dsp =
-        AUDIO_ENGINE->max_time_taken * 100.0 /
-        block_latency;
+        (int)
+        ((double) AUDIO_ENGINE->max_time_taken *
+           100.0 /
+         (double) block_latency);
 #endif
     }
   else
@@ -213,7 +216,7 @@ FileTimeToInt64 (const FILETIME * ft)
 /**
  * Refreshes CPU load percentage.
  */
-gboolean
+static int
 refresh_cpu_load (GtkWidget * widget,
                   GdkFrameClock *frame_clock,
                   void * data)
@@ -229,9 +232,10 @@ refresh_cpu_load (GtkWidget * widget,
   glibtop_cpu cpu;
   glibtop_get_cpu (&cpu);
   self->cpu =
-    100 -
-    (float) (cpu.idle - prev_idle) /
-    (float) (cpu.total - prev_total) * 100;
+    (int)
+    (100.f -
+      (float) (cpu.idle - prev_idle) /
+      (float) (cpu.total - prev_total) * 100.f);
 
   prev_total = cpu.total;
   prev_idle = cpu.idle;

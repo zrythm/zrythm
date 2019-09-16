@@ -27,7 +27,6 @@
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
-#include "gui/backend/file_manager.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/create_project_dialog.h"
 #include "gui/widgets/first_run_assistant.h"
@@ -78,16 +77,16 @@ static TaskId * task_id; ///< current task;
 static UpdateSplashData * data;
 
 static int
-update_splash (UpdateSplashData *data)
+update_splash (
+  UpdateSplashData * _data)
 {
   /* sometimes this gets called after the splash window
    * gets deleted so added for safety */
   if (!first_run_assistant &&
       splash && GTK_IS_WIDGET (splash))
     {
-      splash_widget_update (splash,
-                            data->message,
-                            data->progress);
+      splash_widget_update (
+        splash, data->message, data->progress);
     }
   return G_SOURCE_REMOVE;
 }
@@ -305,7 +304,6 @@ task_func (
       break;
     case TASK_INIT_PLUGIN_MANAGER:
       plugin_manager_init (&ZRYTHM->plugin_manager);
-      file_manager_init (&ZRYTHM->file_manager);
       data->message =
         _("Setting up backend");
       data->progress = 0.7;
@@ -313,8 +311,6 @@ task_func (
     case TASK_END:
       plugin_manager_scan_plugins (
         &ZRYTHM->plugin_manager);
-      file_manager_load_files (
-        &ZRYTHM->file_manager);
       data->message =
         _("Loading project");
       data->progress = 0.8;
@@ -369,8 +365,8 @@ static void on_setup_main_window (GSimpleAction  *action,
   g_atomic_int_set (&AUDIO_ENGINE->run, 1);
 
   /* add timeout for auto-saving projects */
-  int autosave_interval =
-    g_settings_get_int (
+  unsigned int autosave_interval =
+    g_settings_get_uint (
       S_PREFERENCES, "autosave-interval") * 60;
   if (autosave_interval > 0)
     {
@@ -413,19 +409,21 @@ static void on_load_project (GSimpleAction  *action,
  * It initializes the main window and shows it (not set up
  * yet)
  */
-static void on_init_main_window (GSimpleAction  *action,
-                             GVariant *parameter,
-                             gpointer  data)
+static void on_init_main_window (
+  GSimpleAction  *action,
+  GVariant *parameter,
+  void *          user_data)
 {
+  ZrythmApp * _app = (ZrythmApp *) user_data;
   g_message ("init main window");
 
   gtk_widget_destroy (GTK_WIDGET (splash));
 
-  ZrythmApp * app = ZRYTHM_APP (data);
-  ZRYTHM->main_window = main_window_widget_new (app);
+  ZRYTHM->main_window =
+    main_window_widget_new (_app);
 
   g_action_group_activate_action (
-    G_ACTION_GROUP (app),
+    G_ACTION_GROUP (_app),
     "load_project",
     NULL);
 }
@@ -513,7 +511,7 @@ on_finish (GtkAssistant * _assistant,
 
 static void
 on_first_run_assistant_apply (
-  GtkAssistant * assistant)
+  GtkAssistant * _assistant)
 {
   g_message ("apply");
 
@@ -529,7 +527,7 @@ on_first_run_assistant_apply (
    * before */
   if (assistant)
     {
-      DESTROY_LATER (assistant);
+      DESTROY_LATER (_assistant);
       first_run_assistant = NULL;
     }
 }
@@ -548,17 +546,18 @@ on_first_run_assistant_cancel ()
  * Checks if a project was given in the command line. If not,
  * it prompts the user for a project (start assistant).
  */
-static void on_prompt_for_project (GSimpleAction  *action,
-                             GVariant *parameter,
-                             gpointer  data)
+static void on_prompt_for_project (
+  GSimpleAction * action,
+  GVariant *      parameter,
+  void *          user_data)
 {
+  ZrythmApp * _app = (ZrythmApp *) user_data;
   g_message ("prompt for project");
-  ZrythmApp * app = ZRYTHM_APP (data);
 
   if (ZRYTHM->open_filename)
     {
       g_action_group_activate_action (
-        G_ACTION_GROUP (app),
+        G_ACTION_GROUP (_app),
         "init_main_window",
         NULL);
     }
@@ -625,7 +624,7 @@ char *
 zrythm_get_version (
   int with_v)
 {
-  char * ver = PACKAGE_VERSION;
+  const char * ver = PACKAGE_VERSION;
 
   if (with_v)
     {
@@ -664,10 +663,11 @@ zrythm_app_activate (GApplication * _app)
  * Always gets called after startup and before the tasks.
  */
 static void
-zrythm_app_open (GApplication  *app,
-             GFile        **files,
-             gint           n_files,
-             const gchar   *hint)
+zrythm_app_open (
+  GApplication * _app,
+  GFile **       files,
+  gint           n_files,
+  const gchar *  hint)
 {
   g_warn_if_fail (n_files == 1);
 
@@ -869,7 +869,7 @@ zrythm_app_startup (GApplication* _app)
 }
 
 ZrythmApp *
-zrythm_app_new ()
+zrythm_app_new (void)
 {
   ZrythmApp * self =  g_object_new (
     ZRYTHM_APP_TYPE,
@@ -897,7 +897,7 @@ zrythm_app_class_init (ZrythmAppClass *class)
 }
 
 static void
-zrythm_app_init (ZrythmApp *app)
+zrythm_app_init (ZrythmApp * _app)
 {
   g_message ("initing zrythm app");
 
@@ -925,10 +925,10 @@ zrythm_app_init (ZrythmApp *app)
   };
 
   g_action_map_add_action_entries (
-    G_ACTION_MAP (app),
+    G_ACTION_MAP (_app),
     entries,
     G_N_ELEMENTS (entries),
-    app);
+    _app);
 
   g_message ("added action entries");
 }

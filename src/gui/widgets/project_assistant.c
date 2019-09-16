@@ -120,7 +120,7 @@ on_templates_selection_changed (
 }
 
 
-void
+static void
 on_create_new_project_toggled (
   GtkToggleButton *togglebutton,
   ProjectAssistantWidget * self)

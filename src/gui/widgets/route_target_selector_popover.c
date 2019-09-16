@@ -38,7 +38,7 @@ G_DEFINE_TYPE (RouteTargetSelectorPopoverWidget,
 static int
 update_info_label (
   RouteTargetSelectorPopoverWidget * self,
-  char * label)
+  const char * label)
 {
   gtk_label_set_text (self->info, label);
 
@@ -302,8 +302,9 @@ route_target_selector_popover_widget_new (
     GTK_CONTAINER (self->route_treeview_box),
     GTK_WIDGET (self->route_treeview));
 
-  update_info_label (self,
-                     "No control selected");
+  update_info_label (
+    self,
+    _("No control selected"));
 
   return self;
 }

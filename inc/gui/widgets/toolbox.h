@@ -53,12 +53,12 @@ typedef struct _ToolboxWidget
   GtkToggleButton *     audition_mode;
   GtkImage *            select_img;
 
-  guint                 select_handler_id;
-  guint                 edit_handler_id;
-  guint                 cut_handler_id;
-  guint                 erase_handler_id;
-  guint                 ramp_handler_id;
-  guint                 audition_handler_id;
+  gulong                 select_handler_id;
+  gulong                 edit_handler_id;
+  gulong                 cut_handler_id;
+  gulong                 erase_handler_id;
+  gulong                 ramp_handler_id;
+  gulong                 audition_handler_id;
 } ToolboxWidget;
 
 /**

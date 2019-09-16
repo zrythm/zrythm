@@ -27,6 +27,7 @@
 #define __AUDIO_FADER_H__
 
 #include "audio/port.h"
+#include "utils/types.h"
 #include "utils/yaml.h"
 
 typedef struct StereoPorts StereoPorts;
@@ -260,14 +261,14 @@ fader_copy (
 /**
  * Process the Fader.
  *
- * @param g_frames The global start frames.
+ * @param g_frames The local start frames.
  * @param nframes The number of frames to process.
  */
 void
 fader_process (
-  Fader * self,
-  long    g_frames,
-  int     nframes);
+  Fader *         self,
+  const nframes_t local_offset,
+  const nframes_t nframes);
 
 /**
  * @}

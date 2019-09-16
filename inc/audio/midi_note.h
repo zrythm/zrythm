@@ -26,6 +26,8 @@
 #ifndef __AUDIO_MIDI_NOTE_H__
 #define __AUDIO_MIDI_NOTE_H__
 
+#include <stdint.h>
+
 #include "audio/midi_region.h"
 #include "audio/position.h"
 #include "audio/velocity.h"
@@ -107,10 +109,10 @@ typedef struct MidiNote
   Velocity *      vel;  ///< velocity
 
   /** The note/pitch, (0-127). */
-  int             val;
+  uint8_t         val;
 
   /** Cached note, for live operations. */
-  int             cache_val;
+  uint8_t         cache_val;
 
   /** Muted or not */
   int             muted;
@@ -136,7 +138,7 @@ static const cyaml_schema_field_t
   CYAML_FIELD_MAPPING_PTR (
     "vel", CYAML_FLAG_POINTER,
     MidiNote, vel, velocity_fields_schema),
-	CYAML_FIELD_INT (
+	CYAML_FIELD_UINT (
     "val", CYAML_FLAG_DEFAULT,
     MidiNote, val),
 	CYAML_FIELD_INT (
@@ -187,8 +189,8 @@ midi_note_new (
   MidiRegion * region,
   Position *   start_pos,
   Position *   end_pos,
-  int          val,
-  int          vel,
+  uint8_t      val,
+  uint8_t      vel,
   int          is_main);
 
 /**
@@ -232,8 +234,8 @@ midi_note_update_frames (
 
 void
 midi_note_set_cache_val (
-  MidiNote * self,
-  int        val);
+  MidiNote *    self,
+  const uint8_t val);
 
 /**
  * Returns 1 if the MidiNotes match, 0 if not.
@@ -268,7 +270,7 @@ midi_note_print (
 void
 midi_note_shift_pitch (
   MidiNote * self,
-  int        delta,
+  const int  delta,
   ArrangerObjectUpdateFlag update_flag);
 
 /**
@@ -298,7 +300,7 @@ midi_note_notes_to_events (
 /**
  * Returns the MidiNote length in ticks.
  */
-int
+long
 midi_note_get_length_in_ticks (
   const MidiNote * self);
 
@@ -310,8 +312,8 @@ midi_note_get_length_in_ticks (
  */
 void
 midi_note_set_val (
-  MidiNote * midi_note,
-  int        val,
+  MidiNote *    midi_note,
+  const uint8_t val,
   ArrangerObjectUpdateFlag update_flag);
 
 ARRANGER_OBJ_DECLARE_FREE_ALL_LANELESS (

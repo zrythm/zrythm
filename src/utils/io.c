@@ -33,8 +33,6 @@
 
 #include <gtk/gtk.h>
 
-static char * home_dir;
-
 /**
  * Gets directory part of filename. MUST be freed.
  */
@@ -57,12 +55,6 @@ io_mkdir (const char * dir)
     }
 }
 
-static void
-setup_home_dir ()
-{
-  home_dir = (char *) g_get_home_dir ();
-}
-
 /**
  * Returns file extension or NULL.
  */
@@ -81,15 +73,10 @@ io_file_get_ext (const char * file)
 /**
  * Gets home dir. MUST be freed.
  */
-char *
+const char *
 io_get_home_dir ()
 {
-  if (home_dir == NULL)
-    {
-      setup_home_dir ();
-    }
-
-  return home_dir;
+  return g_get_home_dir ();
 }
 
 /**
@@ -250,7 +237,8 @@ io_get_files_in_dir (
     {
       arr =
         realloc (
-          arr, sizeof (char *) * (count + 2));
+          arr,
+          sizeof (char *) * (size_t) (count + 2));
       arr[count] =
         g_build_filename (
           _dir, filename, NULL);

@@ -291,7 +291,7 @@
     </key>
 
     <!-- KEY: autosave interval -->
-    <key name="autosave-interval" type="i">
+    <key name="autosave-interval" type="u">
       <default>1</default>
       <summary>Autosave interval in minutes</summary>
       <description>

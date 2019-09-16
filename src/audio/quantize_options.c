@@ -21,6 +21,7 @@
 
 #include "audio/engine.h"
 #include "audio/quantize_options.h"
+#include "audio/snap_grid.h"
 #include "audio/transport.h"
 #include "project.h"
 #include "utils/algorithms.h"
@@ -48,8 +49,9 @@ quantize_options_update_quantize_points (
       self->note_length,
       self->note_type);
   long swing_offset =
-    (self->swing / 100.f) *
-    ticks / 2.f;
+    (long)
+    (((float) self->swing / 100.f) *
+    (float) ticks / 2.f);
   while (position_is_before (&tmp, &end_pos))
     {
       position_add_ticks (
@@ -96,7 +98,7 @@ quantize_options_get_amount (
   return self->amount;
 }
 
-float
+unsigned int
 quantize_options_get_randomization (
   QuantizeOptions * self)
 {
@@ -122,7 +124,7 @@ quantize_options_set_amount (
 void
 quantize_options_set_randomization (
   QuantizeOptions * self,
-  float             randomization)
+  unsigned int      randomization)
 {
   self->rand_ticks = randomization;
 }
@@ -134,57 +136,13 @@ quantize_options_set_randomization (
  * Must be free'd.
  */
 char *
-quantize_options_stringize (NoteLength note_length,
-                     NoteType   note_type)
+quantize_options_stringize (
+  NoteLength note_length,
+  NoteType   note_type)
 {
-  char * c = NULL;
-  char * first_part = NULL;
-  switch (note_type)
-    {
-      case NOTE_TYPE_NORMAL:
-        c = "";
-        break;
-      case NOTE_TYPE_DOTTED:
-        c = ".";
-        break;
-      case NOTE_TYPE_TRIPLET:
-        c = "t";
-        break;
-    }
-  switch (note_length)
-    {
-    case NOTE_LENGTH_2_1:
-      first_part = "2/1";
-      break;
-    case NOTE_LENGTH_1_1:
-      first_part = "1/1";
-      break;
-    case NOTE_LENGTH_1_2:
-      first_part = "1/2";
-      break;
-    case NOTE_LENGTH_1_4:
-      first_part = "1/4";
-      break;
-    case NOTE_LENGTH_1_8:
-      first_part = "1/8";
-      break;
-    case NOTE_LENGTH_1_16:
-      first_part = "1/16";
-      break;
-    case NOTE_LENGTH_1_32:
-      first_part = "1/32";
-      break;
-    case NOTE_LENGTH_1_64:
-      first_part = "1/64";
-      break;
-    case NOTE_LENGTH_1_128:
-      first_part = "1/128";
-      break;
-    }
-
-  return g_strdup_printf ("%s%s",
-                          first_part,
-                          c);
+  return
+    snap_grid_stringize (
+      note_length, note_type);
 }
 
 /**
@@ -258,15 +216,19 @@ quantize_options_quantize_position (
     get_prev_point (self, pos);
   Position * next_point =
     get_next_point (self, pos);
+  g_return_val_if_fail (
+    prev_point && next_point, 0);
 
-  const int upper = self->rand_ticks;
-  const int lower = - self->rand_ticks;
+  const int upper = (int) self->rand_ticks;
+  const int lower = - (int) self->rand_ticks;
   int rand_ticks =
+    (int)
     (random() %
-    (upper - lower + 1)) + lower;
+      (upper - lower + 1)) +
+    lower;
 
   /* if previous point is closer */
-  int diff;
+  long diff;
   if (pos->total_ticks -
         prev_point->total_ticks <=
       next_point->total_ticks -
@@ -285,7 +247,9 @@ quantize_options_quantize_position (
     }
 
   /* multiply by amount */
-  diff *= (self->amount / 100.f);
+  diff =
+    (long)
+    ((float) diff * (self->amount / 100.f));
 
   /* add random ticks */
   diff += rand_ticks;
@@ -294,7 +258,7 @@ quantize_options_quantize_position (
   position_add_ticks (
     pos, diff);
 
-  return diff;
+  return (int) diff;
 }
 
 /**

@@ -105,7 +105,6 @@ chord_arranger_widget_set_allocation (
         Z_CHORD_OBJECT_WIDGET (widget);
       ChordObject * co =
         cw->chord_object;
-      Track * track = P_CHORD_TRACK;
       ChordDescriptor * descr =
         CHORD_EDITOR->chords[co->index];
 
@@ -431,12 +430,13 @@ chord_arranger_widget_create_chord (
  * Returns the chord index at y.
  */
 int
-chord_arranger_widget_get_chord_at_y (double y)
+chord_arranger_widget_get_chord_at_y (
+  double y)
 {
   double adj_y = y - 1;
   double adj_px_per_key =
     MW_CHORD_EDITOR_SPACE->px_per_key + 1;
-  return adj_y / adj_px_per_key;
+  return (int) (adj_y / adj_px_per_key);
 }
 
 /**
@@ -559,7 +559,7 @@ chord_arranger_widget_set_size (
   RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
-    rw_prv->total_px,
+    (int) rw_prv->total_px,
     MW_CHORD_EDITOR_SPACE->total_key_px);
 }
 
@@ -595,26 +595,26 @@ chord_arranger_widget_move_items_y (
  * chord_selections_get_start_pos and the
  * arranger's earliest_obj_start_pos.
  */
-static long
-get_moved_diff (
-  ChordArrangerWidget * self)
-{
-#define GET_DIFF(sc,pos_name) \
-  if (CHORD_SELECTIONS->num_##sc##s) \
-    { \
-      return \
-        position_to_ticks ( \
-          &sc##_get_main_trans_##sc ( \
-            CHORD_SELECTIONS->sc##s[0])->pos_name) - \
-        position_to_ticks ( \
-          &sc##_get_main_##sc ( \
-            CHORD_SELECTIONS->sc##s[0])->pos_name); \
-    }
+/*static long*/
+/*get_moved_diff (*/
+  /*ChordArrangerWidget * self)*/
+/*{*/
+/*#define GET_DIFF(sc,pos_name) \*/
+  /*if (CHORD_SELECTIONS->num_##sc##s) \*/
+    /*{ \*/
+      /*return \*/
+        /*position_to_ticks ( \*/
+          /*&sc##_get_main_trans_##sc ( \*/
+            /*CHORD_SELECTIONS->sc##s[0])->pos_name) - \*/
+        /*position_to_ticks ( \*/
+          /*&sc##_get_main_##sc ( \*/
+            /*CHORD_SELECTIONS->sc##s[0])->pos_name); \*/
+    /*}*/
 
-  GET_DIFF (chord_object, pos);
+  /*GET_DIFF (chord_object, pos);*/
 
-  g_return_val_if_reached (0);
-}
+  /*g_return_val_if_reached (0);*/
+/*}*/
 
 /**
  * Sets the default cursor in all selected regions and
@@ -773,39 +773,6 @@ add_children_from_chord_track (
 }
 
 /**
- * Refreshes visibility of children.
- */
-void
-chord_arranger_widget_refresh_visibility (
-  ChordArrangerWidget * self)
-{
-  GList *children, *iter;
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self));
-  /*GtkWidget * w;*/
-  /*RegionWidget * rw;*/
-  /*Region * region;*/
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      /*w = GTK_WIDGET (iter->data);*/
-
-      /*if (Z_IS_REGION_WIDGET (w))*/
-        /*{*/
-          /*rw = Z_REGION_WIDGET (w);*/
-          /*REGION_WIDGET_GET_PRIVATE (rw);*/
-          /*region = rw_prv->region;*/
-
-          /*arranger_object_info_set_widget_visibility_and_state (*/
-            /*&region->obj_info, 1);*/
-        /*}*/
-    }
-  g_list_free (children);
-}
-
-/**
  * Readd children.
  */
 void
@@ -849,14 +816,14 @@ chord_arranger_widget_refresh_children (
 /**
  * Scroll to the given position.
  */
-void
-chord_arranger_widget_scroll_to (
-  ChordArrangerWidget * self,
-  Position *               pos)
-{
-  /* TODO */
+/*void*/
+/*chord_arranger_widget_scroll_to (*/
+  /*ChordArrangerWidget * self,*/
+  /*Position *               pos)*/
+/*{*/
+  /*[> TODO <]*/
 
-}
+/*}*/
 
 static gboolean
 on_focus (

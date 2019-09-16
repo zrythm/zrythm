@@ -430,3 +430,21 @@ tracklist_move_track (
   if (publish_events)
     EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
 }
+
+/**
+ * Returns if the tracklist has soloed tracks.
+ */
+int
+tracklist_has_soloed (
+  const Tracklist * self)
+{
+  Track * track;
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      track = self->tracks[i];
+
+      if (track->solo && track->channel)
+        return 1;
+    }
+  return 0;
+}

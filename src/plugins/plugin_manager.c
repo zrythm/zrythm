@@ -69,15 +69,19 @@ add_category (char * _category)
         g_strdup (_category);
 }
 
-int sort_category_func (const void *a, const void *b) {
-    char * pa = *(char * const *) a, * pb = *(char * const *) b;
-    int r = strcasecmp(pa, pb);
-    if (r)
-      return r;
+static int
+sort_category_func (
+  const void *a, const void *b)
+{
+  const char * pa = (const char *) a;
+  const char * pb = (const char *) b;
+  int r = strcasecmp(pa, pb);
+  if (r)
+    return r;
 
-    /* if equal ignoring case, use opposite of strcmp() result to get
-     * lower before upper */
-    return -strcmp(pa, pb); /* aka: return strcmp(b, a); */
+  /* if equal ignoring case, use opposite of strcmp() result to get
+   * lower before upper */
+  return -strcmp(pa, pb); /* aka: return strcmp(b, a); */
 }
 
 static int sort_plugin_func (
@@ -97,21 +101,21 @@ static int sort_plugin_func (
   return -strcmp(pa->name, pb->name);
 }
 
-void
-print_plugins ()
-{
-  for (int i = 0; i < PLUGIN_MANAGER->num_plugins; i++)
-    {
-      PluginDescriptor * descr =
-        PLUGIN_MANAGER->plugin_descriptors[i];
+/*static void*/
+/*print_plugins ()*/
+/*{*/
+  /*for (int i = 0; i < PLUGIN_MANAGER->num_plugins; i++)*/
+    /*{*/
+      /*PluginDescriptor * descr =*/
+        /*PLUGIN_MANAGER->plugin_descriptors[i];*/
 
-      g_message ("[%d] %s (%s - %s)",
-                 i,
-                 descr->name,
-                 descr->uri,
-                 descr->category_str);
-    }
-}
+      /*g_message ("[%d] %s (%s - %s)",*/
+                 /*i,*/
+                 /*descr->name,*/
+                 /*descr->uri,*/
+                 /*descr->category_str);*/
+    /*}*/
+/*}*/
 
 /**
  * scans for plugins.
@@ -148,11 +152,12 @@ scan_plugins (PluginManager * self)
 
   /* sort alphabetically */
   qsort (PLUGIN_MANAGER->plugin_descriptors,
-         PLUGIN_MANAGER->num_plugins,
+         (size_t) PLUGIN_MANAGER->num_plugins,
          sizeof (Plugin *),
          sort_plugin_func);
   qsort (PLUGIN_MANAGER->plugin_categories,
-         PLUGIN_MANAGER->num_plugin_categories,
+         (size_t)
+           PLUGIN_MANAGER->num_plugin_categories,
          sizeof (char *),
          sort_category_func);
 

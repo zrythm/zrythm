@@ -177,4 +177,8 @@ plugin_manager_init (PluginManager * self);
 void
 plugin_manager_scan_plugins (PluginManager * self);
 
+void
+plugin_manager_free (
+  PluginManager * self);
+
 #endif

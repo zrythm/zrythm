@@ -56,6 +56,6 @@ typedef struct _ChordButtonWidget
  * Creates a ChordButtonWidget.
  */
 ChordButtonWidget *
-chord_button_widget_new ();
+chord_button_widget_new (void);
 
 #endif

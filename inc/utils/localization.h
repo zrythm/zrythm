@@ -64,7 +64,7 @@ localization_get_string_code (
  * exists on the system or not.
  */
 int
-localization_init ();
+localization_init (void);
 
 /**
  * @}

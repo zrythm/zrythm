@@ -19,7 +19,10 @@
 
 #include "audio/audio_bus_track.h"
 #include "audio/channel.h"
+#include "audio/clip.h"
+#include "audio/engine.h"
 #include "audio/instrument_track.h"
+#include "audio/pool.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/center_dock.h"
@@ -28,6 +31,7 @@
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "project.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"
 
@@ -43,28 +47,25 @@ audio_region_draw_cb (AudioRegionWidget * self,
   Region * r = rw_prv->region;
   AudioRegion * ar = (AudioRegion *) r;
 
-  guint width, height;
-  GtkStyleContext *context;
+  GtkStyleContext * context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self));
 
-  context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
-
-  width =
+  int width =
     gtk_widget_get_allocated_width (
       GTK_WIDGET (self));
-  height =
+  int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
-  gtk_render_background (context, cr,
-                         0, 0, width, height);
+  gtk_render_background (
+    context, cr,
+    0, 0, width, height);
 
   GdkRGBA * color = &r->lane->track->color;
-  cairo_set_source_rgba (cr,
-                         color->red + 0.3,
-                         color->green + 0.3,
-                         color->blue + 0.3,
-                         0.9);
+  cairo_set_source_rgba (
+    cr, color->red + 0.3, color->green + 0.3,
+    color->blue + 0.3, 0.9);
   cairo_set_line_width (cr, 1);
 
   /*int num_loops =*/
@@ -73,49 +74,57 @@ audio_region_draw_cb (AudioRegionWidget * self,
     /*region_get_full_length_in_ticks (r);*/
   /*float x_start, y_start, x_end;*/
 
+  AudioClip * clip =
+    AUDIO_POOL->clips[ar->pool_id];
+
   long prev_frames = 0;
   long loop_end_frames =
     position_to_frames (&r->loop_end_pos) *
-    ar->channels;
+    clip->channels;
   /*long loop_start_frames =*/
     /*position_to_frames (&r->loop_end_pos) **/
     /*ar->channels;*/
   long loop_frames =
     region_get_loop_length_in_frames (r) *
-    ar->channels;
+    clip->channels;
   long clip_start_frames =
     position_to_frames (&r->clip_start_pos) *
-    ar->channels;
+    clip->channels;
   /*int px =*/
     /*ui_pos_to_px_timeline (&r->loop_start_pos, 0);*/
   /*Position tmp;*/
   long frame_interval =
-    ui_px_to_frames_timeline (ar->channels, 0);
+    ui_px_to_frames_timeline (clip->channels, 0);
   for (double i = 0.0; i < (double) width; i += 0.6)
     {
       long curr_frames =
-        i * frame_interval;
+        (long) i * frame_interval;
       /*if (curr_frames < loop_start_frames)*/
         curr_frames += clip_start_frames;
       /*else*/
         while (curr_frames >= loop_end_frames)
           curr_frames -= loop_frames;
       float min = 0, max = 0;
-      for (int j = prev_frames; j < curr_frames; j++)
+      for (long j = prev_frames;
+           j < curr_frames; j++)
         {
-          float val = ar->buff[j];
+          float val = clip->frames[j];
           if (val > max)
             max = val;
           if (val < min)
             min = val;
         }
-      min = (min + 1.0) / 2.0; /* normallize */
-      max = (max + 1.0) / 2.0; /* normalize */
+      min = (min + 1.f) / 2.f; /* normallize */
+      max = (max + 1.f) / 2.f; /* normalize */
       z_cairo_draw_vertical_line (
         cr,
         i,
-        MAX (min * height, 0),
-        MIN (max * height, height));
+        MAX (
+          (double) min * (double) height,
+          (double) 0),
+        MIN (
+          (double) max * (double) height,
+          (double) height));
 
       prev_frames = curr_frames;
     }

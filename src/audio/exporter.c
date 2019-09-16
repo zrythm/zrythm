@@ -168,7 +168,8 @@ export_audio (
             &TRANSPORT->loop_start_pos);
     }
 
-  sfinfo.samplerate = AUDIO_ENGINE->sample_rate;
+  sfinfo.samplerate =
+    (int) AUDIO_ENGINE->sample_rate;
   sfinfo.channels = 2;
 
   if (!sf_format_check (&sfinfo))
@@ -253,8 +254,8 @@ export_audio (
         &AUDIO_ENGINE->port_operation_lock);
 
       int count = 0;
-      int nframes = AUDIO_ENGINE->nframes;
-      int out_ptr[nframes * 2];
+      nframes_t nframes = AUDIO_ENGINE->nframes;
+      float out_ptr[nframes * 2];
       do
         {
           /* run process code */
@@ -270,17 +271,20 @@ export_audio (
            * have its Stereo Out ports filled.
            * pass its buffers to the output */
           count= 0;
-          for (int i = 0; i < nframes; i++)
+          float amplitude = (float) (AMPLITUDE);
+          for (unsigned int i = 0; i < nframes; i++)
             {
-              out_ptr[count++] = AMPLITUDE *
+              out_ptr[count++] =
+                amplitude *
                 P_MASTER_TRACK->channel->
                   stereo_out->l->buf[i];
-              out_ptr[count++] = AMPLITUDE *
+              out_ptr[count++] =
+                amplitude *
                 P_MASTER_TRACK->channel->
                   stereo_out->r->buf[i];
             }
 
-          sf_write_int (sndfile, out_ptr, count);
+          sf_write_float (sndfile, out_ptr, count);
 
           info->progress =
             (float)
@@ -352,7 +356,8 @@ export_midi (
 	if ((mf = midiFileCreate (info->file_uri, TRUE)))
 		{
       /* Write tempo information out to track 1 */
-      midiSongAddTempo(mf, 1, TRANSPORT->bpm);
+      midiSongAddTempo (
+        mf, 1, (int) TRANSPORT->bpm);
 
       midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
 

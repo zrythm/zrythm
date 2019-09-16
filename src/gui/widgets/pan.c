@@ -34,22 +34,25 @@ G_DEFINE_TYPE (PanWidget,
 
 static int
 draw_cb (
-  GtkWidget * widget, cairo_t * cr, void* data)
+  GtkWidget * widget,
+  cairo_t * cr,
+  PanWidget * self)
 {
-  guint width, height;
-  GtkStyleContext *context;
-  PanWidget * self = (PanWidget *) widget;
-  context = gtk_widget_get_style_context (widget);
+  GtkStyleContext *context =
+    gtk_widget_get_style_context (widget);
 
-  width = gtk_widget_get_allocated_width (widget);
-  height = gtk_widget_get_allocated_height (widget);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
   /* draw filled in bar */
   float pan_val = GET_VAL;
   /*float intensity = pan_val;*/
-  float value_px = pan_val * width;
+  float value_px = pan_val * (float) width;
   /*const float intensity_inv = 1.0 - intensity;*/
   /*float r = intensity_inv * self->end_color.red   +*/
             /*intensity * self->start_color.red;*/
@@ -81,12 +84,13 @@ get_pan_string (
   float pan_val = GET_VAL - 0.5f;
 
   /* get as percentage */
-  pan_val = (fabs (pan_val) / 0.5f) * 100.f;
+  pan_val = (fabsf (pan_val) / 0.5f) * 100.f;
 
   return
-    g_strdup_printf ("%s%.0f%%",
-                     GET_VAL < 0.5f ? "-" : "",
-                     pan_val);
+    g_strdup_printf (
+      "%s%.0f%%",
+      GET_VAL < 0.5f ? "-" : "",
+      (double) pan_val);
 }
 
 static gboolean
@@ -111,12 +115,6 @@ on_motion (GtkWidget * widget, GdkEvent *event,
   return FALSE;
 }
 
-static double clamp
-(double x, double upper, double lower)
-{
-    return MIN(upper, MAX(x, lower));
-}
-
 static void
 drag_update (GtkGestureDrag * gesture,
                gdouble         offset_x,
@@ -128,16 +126,23 @@ drag_update (GtkGestureDrag * gesture,
   int use_y =
     fabs (offset_y - self->last_y) >
     fabs (offset_x - self->last_x);
-  SET_VAL (clamp (GET_VAL + 0.005 * (use_y ? offset_y - self->last_y : offset_x - self->last_x),
-               1.0f, 0.0f));
+  SET_VAL (
+    CLAMP (
+      GET_VAL +
+      0.005f *
+      (float)
+        (use_y ?
+         offset_y - self->last_y :
+         offset_x - self->last_x),
+      1.0f, 0.0f));
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
   char * str =
     get_pan_string (self);
-  gtk_label_set_text (self->tooltip_label,
-                      str);
+  gtk_label_set_text (
+    self->tooltip_label, str);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), str);
   g_free (str);
@@ -145,12 +150,12 @@ drag_update (GtkGestureDrag * gesture,
 }
 
 static void
-drag_end (GtkGestureDrag *gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_end (
+  GtkGestureDrag *gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  PanWidget *     self)
 {
-  PanWidget * self = (PanWidget *) user_data;
   self->last_x = 0;
   self->last_y = 0;
   gtk_widget_hide (GTK_WIDGET (self->tooltip_win));

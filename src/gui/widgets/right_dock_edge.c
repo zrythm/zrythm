@@ -91,6 +91,7 @@ right_dock_edge_widget_init (
   GtkWidget * img;
   GtkBox * box;
 
+  /* setup file browser */
   self->file_browser =
     file_browser_widget_new ();
   img =

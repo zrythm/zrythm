@@ -27,11 +27,13 @@
 #define __AUDIO_ENGINE_H__
 
 #include "config.h"
+
 #include "audio/control_room.h"
 #include "audio/mixer.h"
 #include "audio/pan.h"
 #include "audio/sample_processor.h"
 #include "audio/transport.h"
+#include "utils/types.h"
 #include "zix/sem.h"
 
 #ifdef HAVE_JACK
@@ -53,6 +55,7 @@ typedef struct Channel Channel;
 typedef struct Plugin Plugin;
 typedef struct Tracklist Tracklist;
 typedef struct ExtPort ExtPort;
+typedef struct AudioPool AudioPool;
 
 /**
  * @defgroup audio Audio
@@ -74,10 +77,6 @@ typedef struct ExtPort ExtPort;
 #define MANUAL_PRESS_EVENTS \
   (AUDIO_ENGINE->midi_editor_manual_press-> \
   midi_events)
-
-#ifdef HAVE_JACK
-typedef jack_nframes_t                nframes_t;
-#endif
 
 //typedef struct MIDI_Controller
 //{
@@ -133,11 +132,11 @@ typedef struct AudioEngine
    *
    * Useful for debugging.
    */
-  long    cycle;
+  long              cycle;
 
 #ifdef HAVE_JACK
   /** JACK client. */
-  jack_client_t *     client;
+  jack_client_t *   client;
 
   /**
    * Whether transport master/client or no
@@ -147,19 +146,19 @@ typedef struct AudioEngine
 #endif
 
   /** Current audio backend. */
-  AudioBackend       audio_backend;
+  AudioBackend      audio_backend;
 
   /** Current MIDI backend. */
-  MidiBackend        midi_backend;
+  MidiBackend       midi_backend;
 
   /** Audio buffer size (block length). */
-	uint32_t           block_length;
+	nframes_t         block_length;
 
   /** Size of MIDI port buffers. */
-	size_t             midi_buf_size;
+	size_t            midi_buf_size;
 
   /** Sample rate. */
-	uint32_t           sample_rate;
+	sample_rate_t     sample_rate;
 
   /** Number of frames/samples per tick. */
   int               frames_per_tick;
@@ -168,7 +167,7 @@ typedef struct AudioEngine
 	int               buf_size_set;
 
   /** The mixer. */
-  Mixer              mixer;
+  Mixer             mixer;
 
   /**
    * Audio intefrace outputs (only 2 are used).
@@ -180,8 +179,8 @@ typedef struct AudioEngine
    * since they are user settings and not project
    * related.
    */
-  ExtPort *           hw_stereo_outs[16];
-  int                 num_hw_stereo_outs;
+  ExtPort *         hw_stereo_outs[16];
+  int               num_hw_stereo_outs;
 
   /**
    * Audio intefrace inputs (only 2 are used).
@@ -196,20 +195,23 @@ typedef struct AudioEngine
    * They should only be used in audio tracks as
    * default recording input.
    */
-  ExtPort *           hw_stereo_ins[16];
-  int                 num_hw_stereo_ins;
+  ExtPort *         hw_stereo_ins[16];
+  int               num_hw_stereo_ins;
 
   /** MIDI Clock in TODO. */
-  Port *              midi_clock_in;
+  Port *            midi_clock_in;
 
   /** The ControlRoom. */
   ControlRoom       control_room;
+
+  /** Audio file pool. */
+  AudioPool *       pool;
 
   /**
    * Monitor - these should be the last ports in
    * the signal chain.
    */
-  StereoPorts *       monitor_out;
+  StereoPorts *     monitor_out;
 
   /**
    * Flag to tell the UI that this channel had
@@ -219,7 +221,7 @@ typedef struct AudioEngine
    * the UI should create a separate event using
    * EVENTS_PUSH.
    */
-  int                  trigger_midi_activity;
+  int               trigger_midi_activity;
 
   /**
    * Manual note press in the piano roll.
@@ -227,39 +229,39 @@ typedef struct AudioEngine
    * This should route to the post MIDI in of the
    * applicable channel.
    */
-  Port              * midi_editor_manual_press;
+  Port *            midi_editor_manual_press;
 
   /** Number of frames/samples in the current
    * cycle. */
-  uint32_t          nframes;
+  nframes_t         nframes;
 
   /** Semaphore for blocking DSP while a plugin and
    * its ports are deleted. */
   ZixSem            port_operation_lock;
 
   /** Ok to process or not. */
-  gint               run;
+  gint              run;
 
   /** 1 if currently exporting. */
-  gint               exporting;
+  gint              exporting;
 
   /** Skip mid-cycle. */
-  gint               skip_cycle;
+  gint              skip_cycle;
 
   /** Send note off MIDI everywhere. */
-  gint               panic;
+  gint              panic;
 
   //ZixSem             alsa_callback_start;
 
   /* ----------- ALSA --------------- */
 #ifdef __linux__
   /** Alsa playback handle. */
-  snd_pcm_t *        playback_handle;
-  snd_seq_t *        seq_handle;
+  snd_pcm_t *       playback_handle;
+  snd_seq_t *       seq_handle;
   snd_pcm_hw_params_t * hw_params;
   snd_pcm_sw_params_t * sw_params;
   /** ALSA audio buffer. */
-  float *            alsa_out_buf;
+  float *           alsa_out_buf;
 
   /**
    * Since ALSA MIDI runs in its own thread,
@@ -290,9 +292,9 @@ typedef struct AudioEngine
    * FIXME this is not really needed, just
    * do the calculations in pa_stream_cb.
    */
-  float *            pa_out_buf;
+  float *           pa_out_buf;
 
-  PaStream *         pa_stream;
+  PaStream *        pa_stream;
 #endif
 
   /**
@@ -311,7 +313,7 @@ typedef struct AudioEngine
   /** When first set, it is equal to the max
    * playback latency of all initial trigger
    * nodes. */
-  long              remaining_latency_preroll;
+  nframes_t         remaining_latency_preroll;
 
   SampleProcessor   sample_processor;
 
@@ -361,7 +363,7 @@ engine_schema =
 void
 engine_realloc_port_buffers (
   AudioEngine * self,
-  int           buf_size);
+  nframes_t     buf_size);
 
 /**
  * Init audio engine.
@@ -381,13 +383,15 @@ engine_activate (
   AudioEngine * self);
 
 /**
- * Updates frames per tick based on the time sig, the BPM,
- * and the sample rate
+ * Updates frames per tick based on the time sig,
+ * the BPM, and the sample rate
  */
 void
-engine_update_frames_per_tick (int beats_per_bar,
-                               int bpm,
-                               int sample_rate);
+engine_update_frames_per_tick (
+  AudioEngine *       self,
+  const int           beats_per_bar,
+  const float         bpm,
+  const sample_rate_t sample_rate);
 
 /**
  * To be called by each implementation to prepare the
@@ -398,7 +402,7 @@ engine_update_frames_per_tick (int beats_per_bar,
 void
 engine_process_prepare (
   AudioEngine * self,
-  uint32_t      nframes);
+  nframes_t     nframes);
 
 /**
  * Processes current cycle.
@@ -409,20 +413,23 @@ engine_process_prepare (
 int
 engine_process (
   AudioEngine * self,
-  uint32_t      nframes);
+  nframes_t     nframes);
 
 /**
  * To be called after processing for common logic.
  */
 void
-engine_post_process ();
+engine_post_process (
+  AudioEngine * self);
 
 /**
  * Called to fill in the external buffers at the end
  * of the processing cycle.
  */
 void
-engine_fill_out_bufs ();
+engine_fill_out_bufs (
+  AudioEngine *   self,
+  const nframes_t nframes);
 
 /**
  * Returns 1 if the port is an engine port or
@@ -457,7 +464,8 @@ engine_midi_backend_to_string (
  * Closes any connections and free's data.
  */
 void
-engine_tear_down ();
+engine_tear_down (
+  AudioEngine * self);
 
 /**
  * @}

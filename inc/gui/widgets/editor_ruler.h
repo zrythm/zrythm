@@ -64,7 +64,8 @@ typedef struct _EditorRulerWidget
 } EditorRulerWidget;
 
 void
-editor_ruler_widget_refresh ();
+editor_ruler_widget_refresh (
+  EditorRulerWidget * self);
 
 /**
  * Called when allocating the children of the

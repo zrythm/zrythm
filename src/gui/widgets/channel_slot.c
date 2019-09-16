@@ -72,11 +72,12 @@ on_drag_data_received (
   Plugin * pl;
   if (atom == plugin_atom)
     {
-      pl =
-        (Plugin *)
+      const Plugin * received_pl =
+        (const Plugin *)
         gtk_selection_data_get_data (data);
-      pl = TRACKLIST->tracks[pl->track_pos]->
-        channel->plugins[pl->slot];
+      pl =
+        TRACKLIST->tracks[received_pl->track_pos]->
+        channel->plugins[received_pl->slot];
       g_warn_if_fail (pl);
       g_warn_if_fail (pl->track);
 
@@ -118,8 +119,8 @@ on_drag_data_received (
     {
       gdk_drag_status (
         context, GDK_ACTION_COPY, time);
-      PluginDescriptor * descr =
-        *(gpointer *)
+      const PluginDescriptor * descr =
+        (const PluginDescriptor *)
         gtk_selection_data_get_data (data);
       g_warn_if_fail (descr);
 
@@ -141,16 +142,16 @@ draw_cb (
   cairo_t * cr,
   ChannelSlotWidget * self)
 {
-  guint width, height;
-  GtkStyleContext *context;
-  context = gtk_widget_get_style_context (widget);
+  GtkStyleContext *context =
+  gtk_widget_get_style_context (widget);
 
-  width = gtk_widget_get_allocated_width (widget);
-  height = gtk_widget_get_allocated_height (widget);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
-
 
   int padding = 2;
   Plugin * plugin =
@@ -188,8 +189,8 @@ draw_cb (
       cairo_set_source_rgba (
         cr, fg.red, fg.green, fg.blue, 1.0);
       int w, h;
-      char * font = "Arial Bold 9";
-      char * text = plugin->descr->name;
+      const char * font = "Arial Bold 9";
+      char * text = g_strdup (plugin->descr->name);
       z_cairo_get_text_extents_for_widget_full (
         widget, text, &w, &h, font,
         PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
@@ -226,7 +227,7 @@ draw_cb (
       /* fill text */
       cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 1.0);
       int w, h;
-      char * font = "Arial Italic 9";
+      const char * font = "Arial Italic 9";
       char * text = _("empty slot");
       z_cairo_get_text_extents_for_widget_full (
         widget, text, &w, &h, font,
@@ -406,7 +407,9 @@ drag_end (GtkGestureDrag *gesture,
 {
   g_message ("drag end");
 
-  UI_GET_STATE_MASK (gesture);
+  GdkModifierType state_mask =
+    ui_get_state_mask (
+      GTK_GESTURE (gesture));
 
   if (self->n_press == 2)
     {
@@ -430,8 +433,6 @@ drag_end (GtkGestureDrag *gesture,
     }
   else if (self->n_press == 1)
     {
-      UI_GET_STATE_MASK (gesture);
-
       int ctrl = 0, pl = 0, ch = 0;
       /* if control click */
       if (state_mask & GDK_CONTROL_MASK)
@@ -641,11 +642,13 @@ channel_slot_widget_new (int slot_index,
   self->channel = cw->channel;
 
   GtkTargetEntry entries[2];
-  entries[0].target = TARGET_ENTRY_PLUGIN;
+  entries[0].target =
+    g_strdup (TARGET_ENTRY_PLUGIN);
   entries[0].flags = GTK_TARGET_SAME_APP;
   entries[0].info =
     symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN);
-  entries[1].target = TARGET_ENTRY_PLUGIN_DESCR;
+  entries[1].target =
+    g_strdup (TARGET_ENTRY_PLUGIN_DESCR);
   entries[1].flags = GTK_TARGET_SAME_APP;
   entries[1].info =
     symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR);

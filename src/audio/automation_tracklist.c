@@ -39,7 +39,7 @@ void
 automation_tracklist_init_loaded (
   AutomationTracklist * self)
 {
-  self->ats_size = self->num_ats;
+  self->ats_size = (size_t) self->num_ats;
   int j;
   AutomationTrack * at;
   for (j = 0; j < self->num_ats; j++)
@@ -280,7 +280,7 @@ automation_tracklist_clone (
   AutomationTracklist * dest)
 {
   AutomationTrack * src_at;
-  dest->ats_size = src->num_ats;
+  dest->ats_size = (size_t) src->num_ats;
   dest->num_ats = src->num_ats;
   dest->ats =
     malloc (dest->ats_size *

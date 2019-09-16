@@ -50,7 +50,7 @@ char *
 string_array_contains_substr (
   char ** str_array,
   int     num_str,
-  char *  substr)
+  const char *  substr)
 {
   for (int i = 0; i < num_str; i++)
     {
@@ -127,7 +127,7 @@ string_convert_to_filename (
 {
   /* convert illegal characters to '_' */
   char * new_str = g_strdup (str);
-  for (int i = 0; i < strlen (str); i++)
+  for (int i = 0; i < (int) strlen (str); i++)
     {
       if (str[i] == '#' ||
           str[i] == '%' ||

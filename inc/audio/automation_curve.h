@@ -27,6 +27,7 @@
 #define __AUDIO_AUTOMATION_CURVE_H__
 
 #include "audio/position.h"
+#include "utils/types.h"
 
 typedef struct AutomationTrack AutomationTrack;
 typedef struct _AutomationCurveWidget
@@ -39,13 +40,13 @@ typedef enum AutomatableType AutomatableType;
  * @{
  */
 
-#define AP_MAX_CURVINESS 6.f
+#define AP_MAX_CURVINESS 6.0
 /*#define AP_MIN_CURVINESS \
   //(1.f / AP_MAX_CURVINESS)*/
-#define AP_MIN_CURVINESS 0.01f
+#define AP_MIN_CURVINESS 0.01
 #define AP_CURVINESS_RANGE \
   (AP_MAX_CURVINESS - AP_MIN_CURVINESS)
-#define AP_MID_CURVINESS 1.f
+#define AP_MID_CURVINESS 1.0
 
 /**
  * Type of AutomationCurve.
@@ -69,7 +70,7 @@ typedef struct AutomationCurve
   Position                pos;
 
   /** Curviness. */
-  float                   curviness;
+  curviness_t             curviness;
   AutomationCurveType     type;
 
   /** Pointer back to parent. */
@@ -161,7 +162,7 @@ automation_curve_update_frames (
 void
 automation_curve_set_curviness (
   AutomationCurve * ac,
-  float             curviness);
+  const curviness_t curviness);
 
 /**
  * Frees the automation point.

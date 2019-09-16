@@ -48,7 +48,8 @@ stack_new (int length)
 {
   Stack * self = calloc (1, sizeof (Stack));
 
-  self->elements = calloc (length, sizeof (void *));
+  self->elements =
+    calloc ((size_t) length, sizeof (void *));
   self->max_length = length;
   self->top = -1;
 

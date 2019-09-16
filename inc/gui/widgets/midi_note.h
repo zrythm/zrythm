@@ -99,11 +99,6 @@ midi_note_widget_is_resize_r (
   MidiNoteWidget * self,
   int              x);
 
-void
-midi_note_widget_update_tooltip (
-  MidiNoteWidget * self,
-  int              show);
-
 /**
  * @}
  */

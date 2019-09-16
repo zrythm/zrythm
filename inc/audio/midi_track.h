@@ -59,8 +59,8 @@ void
 midi_track_fill_midi_events (
   Track *      track,
   const long   g_start_frames,
-  const int    local_start_frame,
-  uint32_t     nframes,
+  const nframes_t local_start_frame,
+  nframes_t     nframes,
   MidiEvents * midi_events);
 
 /**

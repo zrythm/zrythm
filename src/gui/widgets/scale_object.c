@@ -37,15 +37,12 @@ scale_draw_cb (
   cairo_t *   cr,
   ScaleObjectWidget * self)
 {
-  guint width, height;
-  GtkStyleContext *context;
-
-  context =
+  GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
 
-  width =
+  int width =
     gtk_widget_get_allocated_width (widget);
-  height =
+  int height =
     gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (

@@ -46,63 +46,64 @@
  * Adds a port to the array if it doesn't already
  * exist.
  */
-static void
-add_port_if_not_exists (
-  Port **       ports,
-  int *         num_ports,
-  jack_port_t * jport)
-{
-  int found = 0;
-  Port * port = NULL;
-  const char * jport_name =
-    jack_port_short_name (jport);
-  for (int i = 0; i < * num_ports; i++)
-    {
-      port = ports[i];
+/*static void*/
+/*add_port_if_not_exists (*/
+  /*Port **       ports,*/
+  /*int *         num_ports,*/
+  /*jack_port_t * jport)*/
+/*{*/
+  /*int found = 0;*/
+  /*Port * port = NULL;*/
+  /*const char * jport_name =*/
+    /*jack_port_short_name (jport);*/
+  /*for (int i = 0; i < * num_ports; i++)*/
+    /*{*/
+      /*port = ports[i];*/
 
-      if (g_strstr_len (
-            port->identifier.label,
-            strlen (port->identifier.label),
-            jport_name))
-        {
-          found = 1;
-        }
-    }
+      /*if (g_strstr_len (*/
+            /*port->identifier.label,*/
+            /*(gssize)*/
+              /*strlen (port->identifier.label),*/
+            /*jport_name))*/
+        /*{*/
+          /*found = 1;*/
+        /*}*/
+    /*}*/
 
-  if (found)
-    return;
+  /*if (found)*/
+    /*return;*/
 
-  PortType type;
-  PortFlow flow;
+  /*PortType type;*/
+  /*PortFlow flow;*/
 
-  const char * jtype =
-    jack_port_type (jport);
-  if (g_strcmp0 (
-        jtype, JACK_DEFAULT_AUDIO_TYPE))
-    type = TYPE_EVENT;
-  else if (g_strcmp0 (
-        jtype, JACK_DEFAULT_MIDI_TYPE))
-    type = TYPE_AUDIO;
-  else
-    return;
+  /*const char * jtype =*/
+    /*jack_port_type (jport);*/
+  /*if (g_strcmp0 (*/
+        /*jtype, JACK_DEFAULT_AUDIO_TYPE))*/
+    /*type = TYPE_EVENT;*/
+  /*else if (g_strcmp0 (*/
+        /*jtype, JACK_DEFAULT_MIDI_TYPE))*/
+    /*type = TYPE_AUDIO;*/
+  /*else*/
+    /*return;*/
 
-  int jflags = jack_port_flags (jport);
-  if (jflags & JackPortIsInput)
-    flow = FLOW_INPUT;
-  else if (jflags & JackPortIsOutput)
-    flow = FLOW_OUTPUT;
-  else
-    return;
+  /*int jflags = jack_port_flags (jport);*/
+  /*if (jflags & JackPortIsInput)*/
+    /*flow = FLOW_INPUT;*/
+  /*else if (jflags & JackPortIsOutput)*/
+    /*flow = FLOW_OUTPUT;*/
+  /*else*/
+    /*return;*/
 
-  port = port_new_with_data (
-    INTERNAL_JACK_PORT,
-    type,
-    flow,
-    jport_name,
-    (void *) jport);
+  /*port = port_new_with_data (*/
+    /*INTERNAL_JACK_PORT,*/
+    /*type,*/
+    /*flow,*/
+    /*jport_name,*/
+    /*(void *) jport);*/
 
-  ports[(*num_ports)++] = port;
-}
+  /*ports[(*num_ports)++] = port;*/
+/*}*/
 
 /**
  * Refreshes the list of external ports.
@@ -119,14 +120,13 @@ engine_jack_rescan_ports (
       JackPortIsPhysical);
 
   int i = 0;
-  char * pname;
-  jack_port_t * jport;
-  while ((pname = (char *) ports[i]) != NULL)
+  /*jack_port_t * jport;*/
+  while (ports[i] != NULL)
     {
-      jport =
-        jack_port_by_name (
-          self->client,
-          pname);
+      /*jport =*/
+        /*jack_port_by_name (*/
+          /*self->client,*/
+          /*ports[i]);*/
 
       /*add_port_if_not_exists (*/
         /*self->physical_ins,*/
@@ -139,8 +139,8 @@ engine_jack_rescan_ports (
   /* TODO clear unconnected remembered ports */
 }
 
-void
-engine_jack_autoconnect_midi_controllers (
+static void
+autoconnect_midi_controllers (
   AudioEngine * self)
 {
   /* get all output MIDI ports */
@@ -163,10 +163,9 @@ engine_jack_autoconnect_midi_controllers (
 
   int i = 0;
   int j;
-  char * pname;
   char * device;
   /*jack_port_t * port;*/
-  while ((pname = (char *) ports[i]) != NULL)
+  while (ports[i] != NULL)
     {
       /* if port matches one of the selected
        * MIDI devices, connect it to Zrythm
@@ -175,7 +174,7 @@ engine_jack_autoconnect_midi_controllers (
       while ((device = devices[j]) != NULL)
         {
           if (g_str_match_string (
-                device, pname, 1))
+                device, ports[i], 1))
             {
               /*if (jack_connect (*/
                     /*self->client,*/
@@ -201,16 +200,20 @@ engine_jack_autoconnect_midi_controllers (
 
 /** Jack sample rate callback. */
 static int
-sample_rate_cb(uint32_t nframes, void * data)
+sample_rate_cb (
+  uint32_t nframes,
+  AudioEngine * self)
 {
   AUDIO_ENGINE->sample_rate = nframes;
 
   engine_update_frames_per_tick (
+    self,
     TRANSPORT->beats_per_bar,
     TRANSPORT->bpm,
     AUDIO_ENGINE->sample_rate);
 
-  g_message ("JACK: Sample rate changed to %d", nframes);
+  g_message (
+    "JACK: Sample rate changed to %d", nframes);
   return 0;
 }
 
@@ -275,11 +278,12 @@ engine_jack_prepare_process (
       if (pos.valid & JackPositionBBT)
         {
           TRANSPORT->beats_per_bar =
-            pos.beats_per_bar;
+            (int) pos.beats_per_bar;
           transport_set_bpm (
-            TRANSPORT, pos.beats_per_minute);
+            TRANSPORT,
+            (float) pos.beats_per_minute);
           transport_set_beat_unit (
-            TRANSPORT, pos.beat_type);
+            TRANSPORT, (int) pos.beat_type);
         }
     }
 
@@ -321,7 +325,7 @@ timebase_cb (
 
   /* Mandatory fields */
   pos->valid = JackPositionBBT;
-  pos->frame = PLAYHEAD->frames;
+  pos->frame = (jack_nframes_t) PLAYHEAD->frames;
 
   /* BBT */
   pos->bar = PLAYHEAD->bars;
@@ -333,12 +337,13 @@ timebase_cb (
   position_set_to_bar (
     &bar_start, PLAYHEAD->bars);
   pos->bar_start_tick =
-    PLAYHEAD->total_ticks -
-    bar_start.total_ticks;
+    (double)
+    (PLAYHEAD->total_ticks -
+     bar_start.total_ticks);
   pos->beats_per_bar =
-    TRANSPORT->beats_per_bar;
+    (float) TRANSPORT->beats_per_bar;
   pos->beat_type =
-    TRANSPORT->beat_unit;
+    (float) TRANSPORT->beat_unit;
   pos->ticks_per_beat =
     TRANSPORT->ticks_per_beat;
   pos->beats_per_minute = TRANSPORT->bpm;
@@ -433,7 +438,7 @@ jack_midi_setup (
     /*}*/
 
   /* autoconnect MIDI controllers */
-  engine_jack_autoconnect_midi_controllers (
+  autoconnect_midi_controllers (
     AUDIO_ENGINE);
 
   return 0;
@@ -563,7 +568,9 @@ jack_setup (AudioEngine * self,
   jack_set_buffer_size_callback (
     self->client, &buffer_size_cb, self);
   jack_set_sample_rate_callback (
-    self->client, &sample_rate_cb, self);
+    self->client,
+    (JackSampleRateCallback) sample_rate_cb,
+    self);
   jack_set_xrun_callback (
     self->client, &xrun_cb, self->client);
   jack_on_shutdown (
@@ -704,13 +711,14 @@ engine_jack_get_error_message (
 }
 
 void
-jack_tear_down ()
+jack_tear_down (
+  AudioEngine * self)
 {
-  jack_client_close (AUDIO_ENGINE->client);
+  jack_client_close (self->client);
 
   /* init semaphore */
-  zix_sem_init (&AUDIO_ENGINE->port_operation_lock,
-                1);
+  zix_sem_init (
+    &self->port_operation_lock, 1);
 }
 
 /**
@@ -718,8 +726,8 @@ jack_tear_down ()
  */
 void
 engine_jack_fill_out_bufs (
-  AudioEngine * self,
-  int           nframes)
+  AudioEngine *   self,
+  const nframes_t nframes)
 {
   /*g_message ("filling out bufs");*/
   /*g_message ("%p", self->hw_stereo_outs[0]);*/
@@ -792,6 +800,26 @@ engine_jack_activate (
   jack_free (ports);
 
   return 0;
+}
+
+/**
+ * Returns the JACK type string.
+ */
+const char *
+engine_jack_get_jack_type (
+  PortType type)
+{
+  switch (type)
+    {
+    case TYPE_AUDIO:
+      return JACK_DEFAULT_AUDIO_TYPE;
+      break;
+    case TYPE_EVENT:
+      return JACK_DEFAULT_MIDI_TYPE;
+      break;
+    default:
+      return NULL;
+    }
 }
 
 #endif /* HAVE_JACK */

@@ -78,29 +78,11 @@ mixer_init_loaded ()
 }
 
 /**
- * Returns if mixer has soloed channels.
- *
- * This must ignore non-mixer tracks.
- */
-int
-mixer_has_soloed_channels ()
-{
-  Track * track;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
-    {
-      track = TRACKLIST->tracks[i];
-
-      if (track->solo && track->channel)
-        return 1;
-    }
-  return 0;
-}
-
-/**
  * Loads plugins from state files. Used when loading projects.
  */
 void
-mixer_load_plugins ()
+mixer_load_plugins (
+  Mixer * mixer)
 {
   Track * track;
   Channel * ch;
@@ -122,59 +104,6 @@ mixer_load_plugins ()
         }
     }
 }
-
-/**
- * Adds channel to the mixer and connects its ports.
- *
- * This acts like the "connection" function of
- * the channel.
- *
- * Note that this should have nothing to do with
- * the track, but only with the mixer and routing
- * in general.
- *
- * @param recalc_graph Recalculate routing graph.
- */
-/*void*/
-/*mixer_add_channel (*/
-  /*Mixer *   self,*/
-  /*Channel * channel,*/
-  /*int       recalc_graph)*/
-/*{*/
-  /*g_warn_if_fail (channel);*/
-
-  /*if (channel->type == CT_MASTER)*/
-    /*{*/
-      /*self->master = channel;*/
-      /*self->master_id = channel->id;*/
-    /*}*/
-
-  /*channel_connect (channel);*/
-
-  /*if (recalc_graph)*/
-    /*mixer_recalc_graph (self);*/
-/*}*/
-
-/**
- * Removes the given channel from the mixer and
- * disconnects it.
- *
- * @param publish_events Publish GUI events.
- */
-/*void*/
-/*mixer_remove_channel (*/
-  /*Mixer *   self,*/
-  /*Channel * ch,*/
-  /*int       publish_events)*/
-/*{*/
-  /*g_message ("removing channel %s",*/
-             /*ch->track->name);*/
-
-  /*channel_disconnect (ch);*/
-
-  /*if (publish_events)*/
-    /*EVENTS_PUSH (ET_CHANNEL_REMOVED, NULL);*/
-/*}*/
 
 /**
  * Moves the given plugin to the given slot in

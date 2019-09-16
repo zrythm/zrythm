@@ -44,8 +44,8 @@ void
 midi_events_append (
   MidiEvents * src,
   MidiEvents * dest,
-  const int    start_frame,
-  const int    nframes,
+  const nframes_t    start_frame,
+  const nframes_t    nframes,
   int          queued)
 {
   /* queued not implemented yet */
@@ -56,8 +56,7 @@ midi_events_append (
   for (int i = 0; i < src->num_events; i++)
     {
       src_ev = &src->events[i];
-      if (src_ev->time >= 0 &&
-          src_ev->time < nframes)
+      if (src_ev->time < nframes)
         {
           dest_ev = &dest->events[i + dest_index];
           midi_event_copy  (src_ev, dest_ev);
@@ -317,8 +316,8 @@ midi_events_panic (
 static int
 sort_events_func (const void *a, const void *b)
 {
-  MidiEvent * aa = (MidiEvent *) a;
-  MidiEvent * bb = (MidiEvent *) b;
+  const MidiEvent * aa = (const MidiEvent *) a;
+  const MidiEvent * bb = (const MidiEvent *) b;
   return aa->time > bb->time;
 }
 
@@ -330,7 +329,7 @@ midi_events_sort_by_time (
   MidiEvents * self)
 {
   qsort (self->events,
-         self->num_events,
+         (size_t) self->num_events,
          sizeof (MidiEvent),
          sort_events_func);
 }
@@ -373,9 +372,9 @@ midi_events_copy_to_jack (
 void
 midi_events_add_note_off (
   MidiEvents * self,
-  uint8_t      channel,
-  uint8_t      note_pitch,
-  uint32_t     time,
+  midi_byte_t  channel,
+  midi_byte_t  note_pitch,
+  midi_time_t  time,
   int          queued)
 {
   MidiEvent * ev;
@@ -391,7 +390,8 @@ midi_events_add_note_off (
   ev->note_pitch = note_pitch;
   ev->time = time;
   ev->raw_buffer[0] =
-    MIDI_CH1_NOTE_OFF | (channel - 1);
+    (midi_byte_t)
+    (MIDI_CH1_NOTE_OFF | (channel - 1));
   ev->raw_buffer[1] = note_pitch;
   ev->raw_buffer[2] = 90;
 
@@ -430,7 +430,8 @@ midi_events_add_control_change (
   ev->control = control;
   ev->time = time;
   ev->raw_buffer[0] =
-    MIDI_CH1_CTRL_CHANGE | (channel - 1);
+    (midi_byte_t)
+    (MIDI_CH1_CTRL_CHANGE | (channel - 1));
   ev->raw_buffer[1] = controller;
   ev->raw_buffer[2] = control;
 
@@ -449,9 +450,9 @@ midi_events_add_control_change (
 void
 midi_events_add_pitchbend (
   MidiEvents * self,
-  uint8_t      channel,
-  int          pitchbend,
-  uint32_t     time,
+  midi_byte_t  channel,
+  midi_byte_t  pitchbend,
+  midi_time_t  time,
   int          queued)
 {
   MidiEvent * ev;
@@ -466,7 +467,8 @@ midi_events_add_pitchbend (
   ev->pitchbend = pitchbend;
   ev->time = time;
   ev->raw_buffer[0] =
-    MIDI_CH1_PITCH_WHEEL_RANGE | (channel - 1);
+    (midi_byte_t)
+    (MIDI_CH1_PITCH_WHEEL_RANGE | (channel - 1));
   ev->raw_buffer[1] = 1;
   ev->raw_buffer[2] = pitchbend;
 
@@ -505,7 +507,8 @@ midi_events_add_note_on (
   ev->velocity = velocity;
   ev->time = time;
   ev->raw_buffer[0] =
-    MIDI_CH1_NOTE_ON | (channel - 1);
+    (midi_byte_t)
+    (MIDI_CH1_NOTE_ON | (channel - 1));
   ev->raw_buffer[1] = note_pitch;
   ev->raw_buffer[2] = velocity;
 
@@ -555,10 +558,10 @@ print_unknown_event_message (
  */
 void
 midi_events_add_event_from_buf (
-  MidiEvents * self,
-  uint32_t     time,
-  uint8_t *    buf,
-  int          buf_size)
+  MidiEvents *  self,
+  midi_time_t   time,
+  midi_byte_t * buf,
+  int           buf_size)
 {
   uint8_t type = buf[0] & 0xf0;
   uint8_t channel = buf[0] & 0xf;

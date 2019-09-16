@@ -189,7 +189,7 @@ typedef struct Lv2Plugin
   long               gframes;
 
   /** Last BPM known by the plugin. */
-  int                bpm;
+  float              bpm;
 
   /** Base Plugin instance (parent). */
   Plugin             * plugin;
@@ -328,11 +328,6 @@ bool
 lv2_ui_is_resizable (
   Lv2Plugin* plugin);
 
-uint32_t
-lv2_ui_port_index (
-  SuilController controller,
-  const char* symbol);
-
 bool
 lv2_send_to_ui(Lv2Plugin*       plugin,
                 uint32_t    port_index,
@@ -346,7 +341,7 @@ lv2_send_to_ui(Lv2Plugin*       plugin,
 bool
 lv2_plugin_run(
   Lv2Plugin* plugin,
-  const int  nframes);
+  const nframes_t  nframes);
 
 int
 lv2_plugin_update (
@@ -450,7 +445,7 @@ void
 lv2_plugin_process (
   Lv2Plugin * lv2_plugin,
   const long  g_start_frames,
-  const int   nframes);
+  const nframes_t   nframes);
 
 /**
  * Returns the plugin's latency in samples.
@@ -458,7 +453,7 @@ lv2_plugin_process (
  * This will be 0 if the plugin does not report
  * latency.
  */
-long
+nframes_t
 lv2_plugin_get_latency (
   Lv2Plugin * pl);
 

@@ -29,10 +29,10 @@
 #include <gtk/gtk.h>
 
 #define SLIDER_BAR_WIDGET_TYPE \
-  (control_room_widget_get_type ())
+  (slider_bar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   SliderBarWidget,
-  control_room_widget,
+  slider_bar_widget,
   Z, SLIDER_BAR_WIDGET,
   GtkDrawingArea)
 

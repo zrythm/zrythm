@@ -27,6 +27,7 @@
 #ifndef __AUDIO_PORTS_H__
 #define __AUDIO_PORTS_H__
 
+#include "utils/types.h"
 #include "utils/yaml.h"
 
 #ifdef HAVE_JACK
@@ -583,9 +584,9 @@ stereo_ports_connect (
  */
 void
 port_receive_midi_events_from_jack (
-  Port * port,
-  int    start_frames,
-  int    nframes);
+  Port *          port,
+  const nframes_t start_frames,
+  const nframes_t nframes);
 
 /**
  * Receives audio data from the port's exposed
@@ -593,9 +594,9 @@ port_receive_midi_events_from_jack (
  */
 void
 port_receive_audio_data_from_jack (
-  Port * port,
-  int    start_frames,
-  int    nframes);
+  Port *          port,
+  const nframes_t start_frames,
+  const nframes_t nframes);
 
 /**
  * Sends MIDI data from the port to its exposed
@@ -603,9 +604,9 @@ port_receive_audio_data_from_jack (
  */
 void
 port_send_midi_events_to_jack (
-  Port * port,
-  int    start_frames,
-  int    nframes);
+  Port *          port,
+  const nframes_t start_frames,
+  const nframes_t nframes);
 
 /**
  * Sends audio data from the port to its exposed
@@ -614,8 +615,8 @@ port_send_midi_events_to_jack (
 void
 port_send_audio_data_to_jack (
   Port *      port,
-  int         start_frames,
-  int         nframes);
+  const nframes_t start_frames,
+  const nframes_t nframes);
 
 /**
  * Sums the inputs coming in from JACK, before the
@@ -624,8 +625,8 @@ port_send_audio_data_to_jack (
 void
 port_sum_data_from_jack (
   Port * port,
-  const int start_frames,
-  const int nframes);
+  const nframes_t start_frames,
+  const nframes_t nframes);
 
 /**
  * Sends the port data to JACK, after the port
@@ -634,8 +635,8 @@ port_sum_data_from_jack (
 void
 port_send_data_to_jack (
   Port * self,
-  const int start_frame,
-  const int nframes);
+  const nframes_t start_frames,
+  const nframes_t nframes);
 
 /**
  * Returns a full designation of the port in the
@@ -810,8 +811,8 @@ void
 port_apply_fader (
   Port *    port,
   float     amp,
-  const int start_frame,
-  const int nframes);
+  const nframes_t start_frame,
+  const nframes_t nframes);
 
 /**
  * First sets port buf to 0, then sums the given
@@ -826,8 +827,8 @@ port_apply_fader (
 void
 port_sum_signal_from_inputs (
   Port *    port,
-  const int start_frame,
-  const int nframes,
+  const nframes_t start_frame,
+  const nframes_t nframes,
   const int noroll);
 
 /**
@@ -940,7 +941,7 @@ ports_remove (
  * Prints all connections.
  */
 void
-port_print_connections_all ();
+port_print_connections_all (void);
 
 /**
  * Clears the port buffer.
@@ -977,8 +978,8 @@ port_apply_pan (
   float        pan,
   PanLaw       pan_law,
   PanAlgorithm pan_algo,
-  const int    start_frame,
-  const int    nframes);
+  const nframes_t start_frame,
+  const nframes_t nframes);
 
 /**
  * @}

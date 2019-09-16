@@ -56,7 +56,7 @@ setup_autosave_spinbutton (
 {
   GtkAdjustment * adj =
     gtk_adjustment_new (
-      g_settings_get_int (
+      g_settings_get_uint (
         S_PREFERENCES, "autosave-interval"),
       0, 20, 1.0, 5.0, 0.0);
   gtk_spin_button_set_adjustment (
@@ -118,10 +118,10 @@ on_ok_clicked (GtkWidget * widget,
     "open-plugin-uis-on-instantiate",
     gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (self->open_plugin_uis)));
-  g_settings_set_int (
+  g_settings_set_uint (
     S_PREFERENCES,
     "autosave-interval",
-    (int)
+    (unsigned int)
       gtk_spin_button_get_value (
         self->autosave_spin));
   midi_controller_mb_widget_save_settings (
@@ -209,7 +209,10 @@ gtk_widget_class_bind_template_child ( \
 }
 
 static void
-preferences_widget_init (PreferencesWidget * self)
+preferences_widget_init (
+  PreferencesWidget * self)
 {
+  g_type_ensure (MIDI_CONTROLLER_MB_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 }

@@ -52,7 +52,7 @@ on_motion (GtkWidget * widget,
 {
   TimelineMinimapSelectionWidget * self =
     Z_TIMELINE_MINIMAP_SELECTION_WIDGET (user_data);
-  guint width =
+  int width =
     gtk_widget_get_allocated_width (widget);
 
   if (event->type == GDK_MOTION_NOTIFY)

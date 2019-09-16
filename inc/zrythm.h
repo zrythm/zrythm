@@ -29,7 +29,6 @@
 #include "audio/metronome.h"
 #include "audio/snap_grid.h"
 #include "gui/backend/events.h"
-#include "gui/backend/file_manager.h"
 #include "plugins/plugin_manager.h"
 #include "settings/settings.h"
 
@@ -71,8 +70,6 @@ typedef struct Zrythm
    * Manages plugins (loading, instantiating, etc.)
    */
   PluginManager           plugin_manager;
-
-  FileManager             file_manager;
 
   MainWindowWidget *      main_window; ///< main window
 
@@ -173,7 +170,7 @@ Zrythm * zrythm;
 ZrythmApp * zrythm_app;
 
 ZrythmApp *
-zrythm_app_new ();
+zrythm_app_new (void);
 
 void
 zrythm_add_to_recent_projects (

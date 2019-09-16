@@ -25,60 +25,116 @@
 #include <gtk/gtk.h>
 
 /**
- * Returns fader value 0.0 to 1.0 from amp value 0.0 to 2.0 (+6 dbFS).
+ * Returns fader value 0.0 to 1.0 from amp value
+ * 0.0 to 2.0 (+6 dbFS).
  */
-double math_get_fader_val_from_amp (double amp)
+sample_t
+math_get_fader_val_from_amp (
+  sample_t _amp)
 {
-  /* to prevent weird values when amp is very small */
+  double amp = (double) _amp;
+
+  /* to prevent weird values when amp is very
+   * small */
   if (amp <= 0.000001)
-    return 0.0;
+    return 0.f;
   else
     {
       double fader =
         pow (6.0 * log (amp) +
              192.0 * log (2.0), 8.0) /
         (pow (log (2.0), 8.0) * pow (198.0, 8.0));
-      return fader;
+      return (sample_t) fader;
     }
 }
 
 /**
- * Returns amp value 0.0 to 2.0 (+6 dbFS) from fader value 0.0 to 1.0.
+ * Returns amp value 0.0 to 2.0 (+6 dbFS) from
+ * fader value 0.0 to 1.0.
  */
-double math_get_amp_val_from_fader (double fader)
+sample_t
+math_get_amp_val_from_fader (
+  sample_t _fader)
 {
-  double amp = pow (2.0, (1.0 / 6) * (-192 + 198.0 * pow (fader, 1.0 / 8)));
-  return amp;
+  double fader = (double) _fader;
+  double amp =
+    pow (
+      2.0,
+      (1.0 / 6) *
+      (-192 + 198.0 * pow (fader, 1.0 / 8)));
+  return (sample_t) amp;
 }
 
 /**
  * Calculate db using RMS method.
+ *
+ * @param buf Buffer containing the samples.
+ * @param nframes Number of samples.
  */
-double math_calculate_rms_db (
-  float *   buf, ///< buffer containing the samples
-  int       nframes) ///< number of samples
+sample_t
+math_calculate_rms_db (
+  sample_t *      buf,
+  const nframes_t nframes)
 {
-  double sum = 0, sample = 0;
-  for (int i = 0; i < nframes; i += RMS_FRAMES)
+  sample_t sum = 0, sample = 0;
+  for (unsigned int i = 0;
+       i < nframes; i += RMS_FRAMES)
   {
     sample = buf[i];
     sum += (sample * sample);
   }
-  return math_amp_to_dbfs (sqrt (sum / (nframes / (double) RMS_FRAMES)));
+  return
+    math_amp_to_dbfs (
+      sqrtf (
+        sum /
+        ((sample_t) nframes /
+           (sample_t) RMS_FRAMES)));
 }
 
 /**
  * Convert from amplitude 0.0 to 2.0 to dbFS.
  */
-double math_amp_to_dbfs (double amp)
+sample_t
+math_amp_to_dbfs (
+  sample_t amp)
 {
-  return 20.f * log10 (amp);
+  return 20.f * log10f (amp);
 }
 
 /**
  * Convert form dbFS to amplitude 0.0 to 2.0.
  */
-double math_dbfs_to_amp (double dbfs)
+sample_t
+math_dbfs_to_amp (
+  sample_t dbfs)
 {
-  return pow (10.0, (dbfs / 20.0));
+  return powf (10.f, (dbfs / 20.f));
+}
+
+/**
+ * Checks if 2 floating points are equal.
+ *
+ * @param epsilon The allowed differene.
+ */
+int
+math_floats_equal (
+  const float a,
+  const float b,
+  const float epsilon)
+{
+  return fabsf (a - b) < epsilon;
+}
+
+/**
+ * Checks if 2 floating points are equal.
+ *
+ * @param epsilon The allowed differene.
+ */
+int
+math_doubles_equal (
+  const double a,
+  const double b,
+  const double epsilon)
+{
+  return fabs (a - b) < epsilon;
 }

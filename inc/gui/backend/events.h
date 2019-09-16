@@ -47,10 +47,10 @@
   if (EVENTS && \
       !AUDIO_ENGINE->exporting) \
     { \
-      ZEvent * ev = calloc (1, sizeof (ZEvent)); \
-      ev->type = et; \
-      ev->arg = _arg; \
-      g_async_queue_push (EVENTS, ev); \
+      ZEvent * _ev = calloc (1, sizeof (ZEvent)); \
+      _ev->type = et; \
+      _ev->arg = _arg; \
+      g_async_queue_push (EVENTS, _ev); \
     }
 
 /** The event queue. */
@@ -187,18 +187,10 @@ typedef struct ZEvent
 } ZEvent;
 
 /**
- * GSourceFunc to be added using idle add.
- *
- * This will loop indefinintely.
- */
-int
-events_process ();
-
-/**
  * Must be called from a GTK thread.
  */
 GAsyncQueue *
-events_init ();
+events_init (void);
 
 /**
  * @}

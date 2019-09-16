@@ -34,8 +34,10 @@
 static int
 cmpfunc (const void * _a, const void * _b)
 {
-  AutomationPoint * a = *(AutomationPoint **)_a;
-  AutomationPoint * b = *(AutomationPoint **)_b;
+  const AutomationPoint * a =
+    (const AutomationPoint *)_a;
+  const AutomationPoint * b =
+    (const AutomationPoint *)_b;
   int ret = position_compare (&a->pos,
                               &b->pos);
   if (ret == 0 &&
@@ -51,8 +53,10 @@ cmpfunc (const void * _a, const void * _b)
 static int
 cmpfunc_curve (const void * _a, const void * _b)
 {
-  AutomationCurve * a = *(AutomationCurve **)_a;
-  AutomationCurve * b = *(AutomationCurve **)_b;
+  const AutomationCurve * a =
+    (const AutomationCurve *)_a;
+  const AutomationCurve * b =
+    (const AutomationCurve *)_b;
   int ret = position_compare (&a->pos,
                               &b->pos);
   if (ret == 0 &&
@@ -115,11 +119,11 @@ automation_region_force_sort (
 {
   /* sort by position */
   qsort (self->aps,
-         self->num_aps,
+         (size_t) self->num_aps,
          sizeof (AutomationPoint *),
          cmpfunc);
   qsort (self->acs,
-         self->num_acs,
+         (size_t) self->num_acs,
          sizeof (AutomationCurve *),
          cmpfunc_curve);
 
@@ -144,7 +148,7 @@ automation_region_add_ac (
   AutomationCurve * ac)
 {
   /** double array size if full */
-  if (self->num_acs == self->aps_size - 1)
+  if ((size_t) self->num_acs == self->aps_size - 1)
     {
       self->aps_size =
         self->aps_size == 0 ? 1 :
@@ -163,7 +167,7 @@ automation_region_add_ac (
 
   /* sort by position */
   qsort (self->acs,
-         self->num_acs,
+         (size_t) self->num_acs,
          sizeof (AutomationCurve *),
          cmpfunc_curve);
 
@@ -248,7 +252,7 @@ automation_region_add_ap (
 
   /* sort by position */
   qsort (self->aps,
-         self->num_aps,
+         (size_t) self->num_aps,
          sizeof (AutomationPoint *),
          cmpfunc);
 

@@ -19,6 +19,7 @@ lv2_srcs = [
   'control.c',
   'log.c',
   'lv2_evbuf.c',
+  'lv2_gtk.c',
   'qt5_in_gtk3.cpp',
   'state.c',
   'suil_host.c',
@@ -30,4 +31,13 @@ lv2_srcs = [
   'x11_in_gtk3.c',
   ]
 
-zrythm_srcs += files (lv2_srcs)
+lv2_lib = static_library (
+  'lv2-lib',
+  sources: lv2_srcs,
+  dependencies: zrythm_deps,
+  include_directories: all_inc,
+  c_args: [ common_cflags ],
+  link_with: [
+    cyaml,
+    ]
+  )

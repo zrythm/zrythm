@@ -48,9 +48,9 @@ midi_activity_bar_draw_cb (
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
-  guint width =
+  int width =
     gtk_widget_get_allocated_width (widget);
-  guint height =
+  int height =
     gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
@@ -104,20 +104,22 @@ midi_activity_bar_draw_cb (
       gint64 time_diff =
         g_get_real_time () -
         self->last_trigger_time;
-      if (time_diff < MAX_TIME)
+      if ((double) time_diff < MAX_TIME)
         {
           if (self->animation == MAB_ANIMATION_BAR)
             {
               cairo_rectangle (
                 cr, 0,
-                height * (time_diff / MAX_TIME),
+                (double) height *
+                ((double) time_diff / MAX_TIME),
                 width, height);
             }
           else if (self->animation ==
                      MAB_ANIMATION_FLASH)
             {
               color.alpha =
-                1.0 - time_diff / MAX_TIME;
+                1.0 -
+                (double) time_diff / MAX_TIME;
               gdk_cairo_set_source_rgba (
                 cr, &color);
               cairo_rectangle (

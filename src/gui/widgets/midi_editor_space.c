@@ -154,7 +154,7 @@ on_motion (
     {
       PianoRollKeyWidget * key =
         get_piano_roll_key_at_coord (
-          self, event->y);
+          self, (int) event->y);
 
       if (self->last_key != key)
         {
@@ -204,11 +204,11 @@ midi_editor_space_widget_refresh_labels (
     }
 }
 
-static void
-scroll_to_mid_note (
-  MidiEditorSpaceWidget * self)
-{
-}
+/*static void*/
+/*scroll_to_mid_note (*/
+  /*MidiEditorSpaceWidget * self)*/
+/*{*/
+/*}*/
 
 static void
 on_keys_box_size_allocate (
@@ -267,7 +267,7 @@ midi_editor_space_widget_refresh (
         1, 1, 0);
       gtk_widget_set_size_request (
         GTK_WIDGET (lbl),
-        -1, self->px_per_key);
+        -1, (int) self->px_per_key);
       self->piano_roll_key_labels[i] = lbl;
 
       if (!DRUM_MODE)

@@ -31,7 +31,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (
   ExpanderBoxWidgetPrivate * prv = \
      expander_box_widget_get_private (s);
 
-void
+static void
 on_clicked (
   GtkButton *button,
   ExpanderBoxWidget * self)

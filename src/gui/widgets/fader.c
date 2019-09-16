@@ -40,13 +40,15 @@ draw_cb (
   cairo_t * cr,
   void* data)
 {
-  guint width, height;
-  GtkStyleContext *context;
   FaderWidget * self = (FaderWidget *) widget;
-  context = gtk_widget_get_style_context (widget);
 
-  width = gtk_widget_get_allocated_width (widget);
-  height = gtk_widget_get_allocated_height (widget);
+  GtkStyleContext *context =
+  gtk_widget_get_style_context (widget);
+
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -78,25 +80,29 @@ draw_cb (
   cairo_fill(cr);
 
   /* draw filled in bar */
-  float intensity = fader_val;
-  const float intensity_inv = 1.0 - intensity;
-  float r = intensity_inv * self->end_color.red   +
+  double intensity = fader_val;
+  const double intensity_inv = 1.0 - intensity;
+  double r = intensity_inv * self->end_color.red   +
             intensity * self->start_color.red;
-  float g = intensity_inv * self->end_color.green +
+  double g = intensity_inv * self->end_color.green +
             intensity * self->start_color.green;
-  float b = intensity_inv * self->end_color.blue  +
+  double b = intensity_inv * self->end_color.blue  +
             intensity * self->start_color.blue;
-  float a = intensity_inv * self->end_color.alpha  +
+  double a = intensity_inv * self->end_color.alpha  +
             intensity * self->start_color.alpha;
 
   cairo_set_source_rgba (cr, r,g,b,a);
   cairo_new_sub_path (cr);
-  cairo_line_to (cr, x + width, y + (height - value_px));
-  /*cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);*/
-  cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);
-  cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
+  cairo_line_to (
+    cr, x + width, y + (height - value_px));
+  cairo_arc (
+    cr, x + width - radius,
+    y + height - radius, radius,
+    0 * degrees, 90 * degrees);
+  cairo_arc (
+    cr, x + radius, y + height - radius,
+    radius, 90 * degrees, 180 * degrees);
   cairo_line_to (cr, x, y + (height - value_px));
-  /*cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);*/
   cairo_close_path (cr);
 
   cairo_fill(cr);
@@ -105,10 +111,19 @@ draw_cb (
   /* draw border line */
   cairo_set_source_rgba (cr, 0.2, 0.2, 0.2, 1);
   cairo_new_sub_path (cr);
-  cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
-  cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);
-  cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
-  cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
+  cairo_arc (
+    cr, x + width - radius, y + radius,
+    radius, -90 * degrees, 0 * degrees);
+  cairo_arc (
+    cr, x + width - radius,
+    y + height - radius, radius,
+    0 * degrees, 90 * degrees);
+  cairo_arc (
+    cr, x + radius, y + height - radius,
+    radius, 90 * degrees, 180 * degrees);
+  cairo_arc (
+    cr, x + radius, y + radius,
+    radius, 180 * degrees, 270 * degrees);
   cairo_close_path (cr);
 
   /*cairo_set_source_rgba (cr, 0.4, 0.2, 0.05, 0.2);*/
@@ -133,7 +148,8 @@ draw_cb (
                          color.blue,
                          1);
   cairo_set_line_width (cr, 3.0);
-  cairo_move_to (cr, x, y + (height - value_px));
+  cairo_move_to (
+    cr, x, y + (height - value_px));
   cairo_line_to (
     cr, x+ width, y + (height - value_px));
   cairo_stroke (cr);
@@ -186,7 +202,7 @@ drag_begin (GtkGestureDrag *gesture,
 
   char * string =
     g_strdup_printf (
-      "%.1f", self->fader->volume);
+      "%.1f", (double) self->fader->volume);
   gtk_label_set_text (
     self->tooltip_label, string);
   g_free (string);
@@ -212,17 +228,19 @@ drag_update (GtkGestureDrag * gesture,
       GTK_WIDGET (self));
   double adjusted_diff = diff / height;
   double new_fader_val =
-    CLAMP (self->fader->fader_val + adjusted_diff,
-           0.0,
-           1.0);
-  fader_set_fader_val (self->fader, new_fader_val);
+    CLAMP (
+      (double) self->fader->fader_val +
+        adjusted_diff,
+      0.0, 1.0);
+  fader_set_fader_val (
+    self->fader, (float) new_fader_val);
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
   char * string =
     g_strdup_printf (
-      "%.1f", self->fader->volume);
+      "%.1f", (double) self->fader->volume);
   gtk_label_set_text (
     self->tooltip_label, string);
   g_free (string);
@@ -230,10 +248,11 @@ drag_update (GtkGestureDrag * gesture,
 }
 
 static void
-drag_end (GtkGestureDrag *gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_end (
+  GtkGestureDrag *gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  gpointer        user_data)
 {
   FaderWidget * self = (FaderWidget *) user_data;
   self->last_x = 0;
@@ -241,7 +260,7 @@ drag_end (GtkGestureDrag *gesture,
   gtk_widget_hide (GTK_WIDGET (self->tooltip_win));
 }
 
-void
+static void
 on_reset_fader (GtkMenuItem *menuitem,
                FaderWidget * self)
 {

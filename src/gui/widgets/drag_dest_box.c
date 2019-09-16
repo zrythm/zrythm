@@ -45,6 +45,7 @@
 #include "utils/gtk.h"
 #include "utils/flags.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 
@@ -55,12 +56,13 @@ G_DEFINE_TYPE (DragDestBoxWidget,
                GTK_TYPE_EVENT_BOX)
 
 static gboolean
-on_drag_motion (GtkWidget        *widget,
-               GdkDragContext   *context,
-               gint              x,
-               gint              y,
-               guint             time,
-               gpointer          user_data)
+on_drag_motion (
+  GtkWidget        *widget,
+  GdkDragContext   *context,
+  gint              x,
+  gint              y,
+  guint             time,
+  DragDestBoxWidget * self)
 {
   GdkAtom target =
     gtk_drag_dest_find_target (
@@ -69,35 +71,20 @@ on_drag_motion (GtkWidget        *widget,
   if (target == GDK_NONE)
     {
       gtk_drag_unhighlight (widget);
-      gdk_drag_status (context,
-                       0,
-                       time);
-      return FALSE;
+      gdk_drag_status (
+        context, 0, time);
+      return TRUE;
     }
 
-  /* if target atom matches FILE DESCR (see
-   * file_browser.c gtk_selection_data_set) */
-  if (target == GET_ATOM (TARGET_ENTRY_FILE_DESCR))
+  if (target == GET_ATOM (TARGET_ENTRY_URI_LIST))
     {
-      FileDescriptor * fd =
-        MW_FILE_BROWSER->selected_file_descr;
+      /* defer to drag_data_received */
+      /*self->defer_drag_motion_status = 1;*/
 
-      if (fd->type >= FILE_TYPE_DIR)
-        {
-          gtk_drag_unhighlight (widget);
-          gdk_drag_status (context,
-                           0,
-                           time);
-          return FALSE;
-        }
-      else
-        {
-          gtk_drag_highlight (widget);
-          gdk_drag_status (context,
-                           GDK_ACTION_COPY,
-                           time);
-          return TRUE;
-        }
+      /*gtk_drag_get_data (*/
+        /*widget, context, target, time);*/
+
+      return TRUE;
     }
   else if (target ==
            GET_ATOM (TARGET_ENTRY_PLUGIN_DESCR))
@@ -143,31 +130,103 @@ on_drag_data_received (
   if (target == GDK_NONE)
     return;
 
-  if (target == GET_ATOM (TARGET_ENTRY_FILE_DESCR))
+  if (target == GET_ATOM (TARGET_ENTRY_URI_LIST))
     {
-      FileDescriptor * fd =
-        * (gpointer *)
-          gtk_selection_data_get_data (data);
+      char * filepath = NULL;
 
-      /* reject the drop if not applicable */
-      if (fd->type >= FILE_TYPE_DIR)
-        return;
+      char ** uris =
+        gtk_selection_data_get_uris (data);
+      if (uris)
+        {
+          char * uri;
+          int i = 0;
+          while ((uri = uris[i++]) != NULL)
+            {
+              /* strip "file://" */
+              if (!string_contains_substr (
+                    uri, "file://", 0))
+                continue;
 
-      UndoableAction * ua =
-        create_tracks_action_new (
-          TRACK_TYPE_AUDIO,
-          NULL,
-          fd,
-          TRACKLIST->num_tracks,
-          1);
+              if (filepath)
+                g_free (filepath);
+              GError * err = NULL;
+              filepath =
+                g_filename_from_uri (
+                  uri, NULL, &err);
+              if (err)
+                {
+                  g_warning (
+                    "%s", err->message);
+                }
 
-      undo_manager_perform (UNDO_MANAGER, ua);
+              /* only accept 1 file for now */
+              break;
+            }
+          g_strfreev (uris);
+        }
+
+      SupportedFile * file = NULL;
+      if (filepath)
+        {
+          file =
+            supported_file_new_from_path (filepath);
+          g_free (filepath);
+        }
+
+      if (file)
+        {
+          TrackType track_type = 0;
+          if (supported_file_type_is_audio (
+                file->type))
+            {
+              track_type = TRACK_TYPE_AUDIO;
+            }
+          else if (supported_file_type_is_midi (
+                     file->type))
+            {
+              track_type = TRACK_TYPE_MIDI;
+            }
+          else
+            {
+              char * descr =
+                supported_file_type_get_description (
+                  file->type);
+              char * msg =
+                g_strdup_printf (
+                  _("Unsupported file type %s"),
+                  descr);
+              g_free (descr);
+              supported_file_free (file);
+              ui_show_error_message (
+                MAIN_WINDOW, msg);
+              return;
+            }
+
+          UndoableAction * ua =
+            create_tracks_action_new (
+              track_type,
+              NULL,
+              file,
+              TRACKLIST->num_tracks,
+              1);
+          supported_file_free (file);
+
+          undo_manager_perform (UNDO_MANAGER, ua);
+          return;
+        }
+      else
+        {
+          ui_show_error_message (
+            MAIN_WINDOW,
+            _("No file found"));
+          return;
+        }
     }
   else if (target ==
             GET_ATOM (TARGET_ENTRY_PLUGIN_DESCR))
     {
-      PluginDescriptor * pd =
-        * (gpointer *)
+      const PluginDescriptor * pd =
+        (const PluginDescriptor *)
           gtk_selection_data_get_data (data);
 
       if (self->type ==
@@ -208,11 +267,12 @@ on_drag_data_received (
     {
       /* NOTE this is a cloned pointer, don't use
        * it */
-      Plugin * pl =
-        (Plugin *)
+      const Plugin * received_pl =
+        (const Plugin *)
         gtk_selection_data_get_data (data);
-      pl = TRACKLIST->tracks[pl->track_pos]->
-        channel->plugins[pl->slot];
+      Plugin * pl =
+        TRACKLIST->tracks[received_pl->track_pos]->
+          channel->plugins[received_pl->slot];
       g_warn_if_fail (pl);
 
       /* determine if moving or copying */
@@ -430,9 +490,10 @@ multipress_pressed (
  * Creates a drag destination box widget.
  */
 DragDestBoxWidget *
-drag_dest_box_widget_new (GtkOrientation  orientation,
-                          int             spacing,
-                          DragDestBoxType type)
+drag_dest_box_widget_new (
+  GtkOrientation  orientation,
+  int             spacing,
+  DragDestBoxType type)
 {
   /* create */
   DragDestBoxWidget * self =
@@ -456,30 +517,36 @@ drag_dest_box_widget_new (GtkOrientation  orientation,
                           1);
 
   /* set as drag dest */
-  GtkTargetEntry entries[3];
-  entries[0].target = TARGET_ENTRY_PLUGIN_DESCR;
+  GtkTargetEntry entries[4];
+  entries[0].target =
+    g_strdup (TARGET_ENTRY_PLUGIN_DESCR);
   entries[0].flags = GTK_TARGET_SAME_APP;
   entries[0].info =
     symap_map (
       ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR);
-  entries[1].target = TARGET_ENTRY_FILE_DESCR;
+  entries[1].target =
+  g_strdup (TARGET_ENTRY_URI_LIST);
   entries[1].flags = GTK_TARGET_SAME_APP;
   entries[1].info =
-    symap_map (ZSYMAP, TARGET_ENTRY_FILE_DESCR);
-  entries[2].target = TARGET_ENTRY_PLUGIN;
-  entries[2].flags = GTK_TARGET_SAME_APP;
+    symap_map (ZSYMAP, TARGET_ENTRY_URI_LIST);
+  entries[2].target =
+  g_strdup (TARGET_ENTRY_URI_LIST);
+  entries[2].flags = GTK_TARGET_OTHER_APP;
   entries[2].info =
+    symap_map (ZSYMAP, TARGET_ENTRY_URI_LIST);
+  entries[3].target =
+  g_strdup (TARGET_ENTRY_PLUGIN);
+  entries[3].flags = GTK_TARGET_SAME_APP;
+  entries[3].info =
     symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN);
-  gtk_drag_dest_set (GTK_WIDGET (self),
-                     GTK_DEST_DEFAULT_ALL,
-                     entries,
-                     3,
-                     GDK_ACTION_COPY);
+  gtk_drag_dest_set (
+    GTK_WIDGET (self), GTK_DEST_DEFAULT_ALL,
+    entries, 4, GDK_ACTION_COPY);
 
   /* connect signal */
   g_signal_connect (
     GTK_WIDGET (self), "drag-motion",
-    G_CALLBACK(on_drag_motion), NULL);
+    G_CALLBACK(on_drag_motion), self);
   g_signal_connect (
     GTK_WIDGET (self), "drag-data-received",
     G_CALLBACK(on_drag_data_received), self);

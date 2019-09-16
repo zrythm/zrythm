@@ -26,6 +26,8 @@
 #ifndef __AUDIO_VELOCITY_H__
 #define __AUDIO_VELOCITY_H__
 
+#include <stdint.h>
+
 #include "gui/backend/arranger_object.h"
 #include "gui/backend/arranger_object_info.h"
 
@@ -62,11 +64,11 @@ typedef enum VelocityCloneFlag
 typedef struct Velocity
 {
   /** Velocity value (0-127). */
-  int              vel;
+  uint8_t          vel;
 
   /** Cache velocity, used to save the values at
    * the start of actions. */
-  int              cache_vel;
+  uint8_t          cache_vel;
 
   /**
    * Owner.
@@ -84,7 +86,7 @@ typedef struct Velocity
 static const cyaml_schema_field_t
   velocity_fields_schema[] =
 {
-	CYAML_FIELD_INT (
+	CYAML_FIELD_UINT (
 			"vel", CYAML_FLAG_DEFAULT,
 			Velocity, vel),
 
@@ -128,9 +130,9 @@ velocity_init_loaded (
  */
 Velocity *
 velocity_new (
-  MidiNote * midi_note,
-  int        vel,
-  int        is_main);
+  MidiNote *    midi_note,
+  const uint8_t vel,
+  const int     is_main);
 
 /**
  * Sets the MidiNote the Velocity belongs to.
@@ -146,7 +148,7 @@ velocity_set_midi_note (
 void
 velocity_set_cache_vel (
   Velocity * velocity,
-  const int  vel);
+  const uint8_t vel);
 
 /**
  * Finds the actual Velocity in the project from the
@@ -196,15 +198,18 @@ ARRANGER_OBJ_DECLARE_GEN_WIDGET (
 void
 velocity_shift (
   Velocity * self,
-  int        delta);
+  const int  delta);
 
 /**
  * Sets the velocity to the given value.
+ *
+ * The given value may exceed the bounds 0-127,
+ * and will be clamped.
  */
 void
 velocity_set_val (
-  Velocity * self,
-  int        val,
+  Velocity *    self,
+  const int     val,
   ArrangerObjectUpdateFlag update_flag);
 
 ARRANGER_OBJ_DECLARE_FREE_ALL_LANELESS (

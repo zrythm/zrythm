@@ -494,7 +494,7 @@ arranger_widget_px_to_pos (
  * Refreshes all arranger backgrounds.
  */
 void
-arranger_widget_refresh_all_backgrounds ();
+arranger_widget_refresh_all_backgrounds (void);
 
 void
 arranger_widget_get_hit_widgets_in_range (

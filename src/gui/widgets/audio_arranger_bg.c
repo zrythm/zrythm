@@ -21,6 +21,9 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "audio/audio_region.h"
+#include "audio/clip.h"
+#include "audio/engine.h"
+#include "audio/pool.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -56,51 +59,58 @@ draw_audio_clip (GtkWidget * self,
                          0.9);
   cairo_set_line_width (cr, 1);
 
-  guint height =
+  int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
-  guint width =
+  int width =
     gtk_widget_get_allocated_width (
       GTK_WIDGET (self));
 
+  AudioClip * clip =
+    AUDIO_POOL->clips[ar->pool_id];
   long frame_interval =
-    ui_px_to_frames_editor (ar->channels, 0);
+    ui_px_to_frames_editor (clip->channels, 0);
 
   long prev_frames = 0;
   for (double i = SPACE_BEFORE_START_D;
        i < (double) width; i+= 0.6)
     {
       long curr_frames =
-        i * frame_interval;
+        (long) i * frame_interval;
         /*ui_px_to_frames_audio_clip_editor (*/
           /*i * 2.0, 1);*/
       /*g_message ("curr frames %ld, total frames %ld",*/
                  /*curr_frames,*/
                  /*ar->buff_size);*/
-      if (curr_frames >= ar->buff_size)
+      if (curr_frames >=
+          clip->num_frames * clip->channels)
         return;
       /*Position pos;*/
       /*position_init (&pos);*/
       /*position_add_frames (&pos, curr_frames);*/
       /*position_print_yaml (&pos);*/
       float min = 0, max = 0;
-      for (int j = prev_frames; j < curr_frames; j++)
+      for (long j = prev_frames;
+           j < curr_frames; j++)
         {
-          float val = ar->buff[j];
+          float val = clip->frames[j];
           if (val > max)
             max = val;
           if (val < min)
             min = val;
           break;
         }
-      min = (min + 1.0) / 2.0; /* normallize */
-      max = (max + 1.0) / 2.0; /* normalize */
+      min = (min + 1.f) / 2.f; /* normallize */
+      max = (max + 1.f) / 2.f; /* normalize */
       z_cairo_draw_vertical_line (
         cr,
         i,
-        MAX (min * height, 0),
-        MIN (max * height, height));
+        MAX (
+          (double) min * (double) height, 0.0),
+        MIN (
+          (double) max * (double) height,
+          (double) height));
 
       prev_frames = curr_frames;
       /*g_message ("i %f width %f",*/

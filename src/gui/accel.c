@@ -29,9 +29,9 @@
  *
  * Note: not used, doesn't work.
  */
-void
-accel_add_all ()
-{
+/*void*/
+/*accel_add_all ()*/
+/*{*/
   /*gtk_accel_map_add_entry ("<MainWindow>/File/Save",*/
                            /*GDK_KEY_s,*/
                            /*GDK_CONTROL_MASK);*/
@@ -44,7 +44,7 @@ accel_add_all ()
   /*gtk_accel_map_add_entry ("<MainWindow>/File/Quit",*/
                            /*GDK_KEY_q,*/
                            /*GDK_CONTROL_MASK);*/
-}
+/*}*/
 
 /**
  * Install accelerator for an action.

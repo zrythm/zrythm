@@ -31,6 +31,7 @@
 #include "audio/automatable.h"
 #include "audio/port.h"
 #include "plugins/lv2_plugin.h"
+#include "utils/types.h"
 
 #define DUMMY_PLUGIN "Dummy Plugin"
 
@@ -161,7 +162,7 @@ typedef struct Plugin
   /** Ports coming in as input. */
   Port **             in_ports;
   int                 num_in_ports;
-  int                 in_ports_size;
+  size_t              in_ports_size;
 
   /** Outgoing port identifiers for serialization. */
   //PortIdentifier *    out_port_ids;
@@ -169,13 +170,13 @@ typedef struct Plugin
   /** Outgoing ports. */
   Port **             out_ports;
   int                 num_out_ports;
-  int                 out_ports_size;
+  size_t              out_ports_size;
 
   /** Ports with unknown direction (not used). */
   //PortIdentifier *    unknown_port_ids;
   Port **             unknown_ports;
   int                 num_unknown_ports;
-  int                 unknown_ports_size;
+  size_t              unknown_ports_size;
 
   /** The Channel this plugin belongs to. */
   Track              * track;
@@ -191,7 +192,7 @@ typedef struct Plugin
    */
   AutomationTrack **  ats;
   int                 num_ats;
-  int                 ats_size;
+  size_t              ats_size;
 
   /**
    * The slot this plugin is at in its channel.
@@ -205,7 +206,7 @@ typedef struct Plugin
   int                  visible;
 
   /** The latency in samples. */
-  int                  latency;
+  nframes_t            latency;
 
   /**
    * UI has been instantiated or not.
@@ -385,7 +386,7 @@ plugin_add_unknown_port (
  */
 Plugin *
 plugin_new_from_descr (
-  PluginDescriptor * descr);
+  const PluginDescriptor * descr);
 
 /**
  * Removes the automation tracks associated with
@@ -402,9 +403,16 @@ plugin_remove_ats_from_automation_tracklist (
  * Clones the plugin descriptor.
  */
 void
-plugin_clone_descr (
-  PluginDescriptor * src,
+plugin_copy_descr (
+  const PluginDescriptor * src,
   PluginDescriptor * dest);
+
+/**
+ * Clones the plugin descriptor.
+ */
+PluginDescriptor *
+plugin_clone_descr (
+  const PluginDescriptor * src);
 
 /**
  * Clones the given plugin.
@@ -418,7 +426,7 @@ plugin_clone (
  */
 int
 plugin_descriptor_is_instrument (
-  PluginDescriptor * descr);
+  const PluginDescriptor * descr);
 
 /**
  * Returns if the Plugin is an effect or not.
@@ -507,7 +515,7 @@ void
 plugin_process (
   Plugin *    plugin,
   const long  g_start_frames,
-  const int   nframes);
+  const nframes_t   nframes);
 
 /**
  * Process show ui

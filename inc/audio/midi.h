@@ -30,6 +30,7 @@
 
 #include <stdint.h>
 
+#include "utils/types.h"
 #include "zix/sem.h"
 
 #ifdef HAVE_JACK
@@ -80,27 +81,27 @@ typedef struct MidiEvent
   int            pitchbend;
 
   /** The controller, for control events. */
-  uint8_t        controller;
+  midi_byte_t    controller;
 
   /** Control value (also used for modulation
    * wheel (0 ~ 127). */
-  uint8_t        control;
+  midi_byte_t    control;
 
   /** MIDI channel. */
-  uint8_t        channel;
+  midi_byte_t    channel;
 
   /** Note value (0 ~ 127). */
-  uint8_t        note_pitch;
+  midi_byte_t    note_pitch;
 
   /** Velocity (0 ~ 127). */
-  uint8_t        velocity;
+  midi_byte_t    velocity;
 
   /** Time of the MIDI event, in frames from the
    * start of the current cycle. */
-  uint32_t       time;
+  midi_time_t    time;
 
   /** Raw MIDI data. */
-  uint8_t        raw_buffer[3];
+  midi_byte_t    raw_buffer[3];
 
 } MidiEvent;
 
@@ -196,8 +197,8 @@ void
 midi_events_append (
   MidiEvents * src,
   MidiEvents * dest,
-  const int    start_frame,
-  const int    nframes,
+  const nframes_t    start_frame,
+  const nframes_t    nframes,
   int          queued);
 
 /**
@@ -209,10 +210,10 @@ midi_events_append (
 void
 midi_events_add_note_on (
   MidiEvents * self,
-  uint8_t      channel,
-  uint8_t      note_pitch,
-  uint8_t      velocity,
-  uint32_t     time,
+  midi_byte_t  channel,
+  midi_byte_t  note_pitch,
+  midi_byte_t  velocity,
+  midi_time_t  time,
   int          queued);
 
 /**
@@ -233,10 +234,10 @@ midi_events_has_note_on (
  */
 void
 midi_events_add_event_from_buf (
-  MidiEvents * self,
-  uint32_t     time,
-  uint8_t *    buf,
-  int          buf_size);
+  MidiEvents *  self,
+  midi_time_t   time,
+  midi_byte_t * buf,
+  int           buf_size);
 
 /**
  * Adds a note off event to the given MidiEvents.
@@ -247,8 +248,8 @@ midi_events_add_event_from_buf (
 void
 midi_events_add_note_off (
   MidiEvents * self,
-  uint8_t      channel,
-  uint8_t      note_pitch,
+  midi_byte_t  channel,
+  midi_byte_t  note_pitch,
   uint32_t     time,
   int          queued);
 
@@ -261,9 +262,9 @@ midi_events_add_note_off (
 void
 midi_events_add_control_change (
   MidiEvents * self,
-  uint8_t      channel,
-  uint8_t      controller,
-  uint8_t      control,
+  midi_byte_t  channel,
+  midi_byte_t  controller,
+  midi_byte_t  control,
   uint32_t     time,
   int          queued);
 
@@ -276,9 +277,9 @@ midi_events_add_control_change (
 void
 midi_events_add_pitchbend (
   MidiEvents * self,
-  uint8_t      channel,
-  int          pitchbend,
-  uint32_t     time,
+  midi_byte_t  channel,
+  midi_byte_t  pitchbend,
+  midi_time_t  time,
   int          queued);
 
 /**

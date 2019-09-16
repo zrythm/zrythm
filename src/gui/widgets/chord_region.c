@@ -50,15 +50,13 @@ chord_region_draw_cb (
 {
   int i, j;
   REGION_WIDGET_GET_PRIVATE (self);
-  guint width, height;
-  GtkStyleContext *context;
 
-  context =
+  GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
 
-  width =
+  int width =
     gtk_widget_get_allocated_width (widget);
-  height =
+  int height =
     gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
@@ -96,9 +94,9 @@ chord_region_draw_cb (
 
       /* get ratio (0.0 - 1.0) on x where chord
        * starts & ends */
-      int co_start_ticks =
+      long co_start_ticks =
         position_to_ticks (&co->pos);
-      int co_end_ticks;
+      long co_end_ticks;
       if (i < main_region->num_chord_objects - 1)
         {
           next_co =
@@ -109,7 +107,7 @@ chord_region_draw_cb (
       else
         co_end_ticks =
           position_to_ticks (&main_region->end_pos);
-      int tmp_start_ticks, tmp_end_ticks;
+      long tmp_start_ticks, tmp_end_ticks;
 
       /* adjust for clip start */
       /*int adjusted_mn_start_ticks =*/
@@ -158,10 +156,10 @@ chord_region_draw_cb (
 
               x_start =
                 (float) tmp_start_ticks /
-                ticks_in_region;
+                (float) ticks_in_region;
               x_end =
                 (float) tmp_end_ticks /
-                ticks_in_region;
+                (float) ticks_in_region;
 
               cairo_set_source_rgba (
                 cr, 1, 1, 1, 0.3);
@@ -169,9 +167,11 @@ chord_region_draw_cb (
               /* draw */
               cairo_rectangle (
                 cr,
-                x_start * width,
+                (double) x_start * (double) width,
                 0,
-                (x_end - x_start) * width,
+                (double)
+                  (x_end - x_start) *
+                  (double) width,
                 height);
               cairo_fill (cr);
 
@@ -183,7 +183,9 @@ chord_region_draw_cb (
                 cr,
                 widget,
                 chord_descriptor_to_string (descr),
-                x_start * width + 2,
+                (int)
+                ((double) x_start *
+                  (double) width + 2.0),
                 2,
                 Z_CAIRO_FONT,
                 PANGO_ELLIPSIZE_NONE, -1);

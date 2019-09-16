@@ -28,6 +28,8 @@
 #ifndef __AUDIO_SAMPLE_PLAYBACK_H__
 #define __AUDIO_SAMPLE_PLAYBACK_H__
 
+#include "utils/types.h"
+
 /**
  * @addtogroup audio
  *
@@ -40,10 +42,10 @@
 typedef struct SamplePlayback
 {
   /** A pointer to the original buffer. */
-  float **       buf;
+  sample_t **    buf;
 
   /** The number of channels. */
-  int            channels;
+  channels_t     channels;
 
   /** The number of frames in the buffer. */
   long           buf_size;
@@ -57,7 +59,7 @@ typedef struct SamplePlayback
 
   /** Offset relative to the current processing cycle
    * to start playing the sample. */
-  int            start_offset;
+  nframes_t      start_offset;
 } SamplePlayback;
 
 /**
@@ -67,11 +69,11 @@ typedef struct SamplePlayback
 void
 sample_playback_init (
   SamplePlayback * self,
-  float **         buf,
+  sample_t **      buf,
   long             buf_size,
-  int              channels,
+  channels_t       channels,
   float            vol,
-  int              start_offset);
+  nframes_t        start_offset);
 
 /**
  * @}

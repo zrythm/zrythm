@@ -57,6 +57,7 @@ control_room_init (
 
   /* set the monitor volume */
   float amp =
+    (float)
     g_settings_get_double (
       S_UI, "monitor-out-vol");
   fader_set_amp (
@@ -66,7 +67,7 @@ control_room_init (
   fader_init (&self->listen_vol_fader,
               FADER_TYPE_GENERIC,
               NULL);
-  fader_set_amp (&self->listen_vol_fader, 0.1);
+  fader_set_amp (&self->listen_vol_fader, 0.1f);
 }
 
 /**

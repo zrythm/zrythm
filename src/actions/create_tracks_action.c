@@ -22,10 +22,12 @@
 #include "audio/channel.h"
 #include "audio/midi_region.h"
 #include "audio/mixer.h"
+#include "audio/supported_file.h"
 #include "audio/tracklist.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/io.h"
 #include "utils/ui.h"
 
 #include <glib/gi18n.h>
@@ -65,32 +67,64 @@ create (
     }
   else
     {
-      track =
-        track_new (self->type, self->pl_descr.name);
-      track->pos = self->pos + idx;
+      Plugin * pl = NULL;
 
-      Plugin * pl=
-        plugin_new_from_descr (
-          &self->pl_descr);
-      pl->slot = 0;
-      pl->track = track;
-      pl->track_pos = track->pos;
-
-      if (plugin_instantiate (pl) < 0)
+      if (self->file_descr &&
+          self->type == TRACK_TYPE_AUDIO)
         {
-          char * message =
-            g_strdup_printf (
-              _("Error instantiating plugin %s. "
-                "Please see log for details."),
-              pl->descr->name);
+          char * basename =
+            io_path_get_basename (
+              self->file_descr->abs_path);
+          track =
+            track_new (
+              self->type, basename);
+          g_free (basename);
+          track->pos = self->pos + idx;
+        }
+      else if (self->file_descr &&
+               self->type == TRACK_TYPE_MIDI)
+        {
+          char * basename =
+            io_path_get_basename (
+              self->file_descr->abs_path);
+          track =
+            track_new (
+              self->type, basename);
+          g_free (basename);
+          track->pos = self->pos + idx;
+        }
+      /* at this point we can assume it has a
+       * plugin */
+      else
+        {
+          track =
+            track_new (
+              self->type, self->pl_descr.name);
+          track->pos = self->pos + idx;
 
-          if (MAIN_WINDOW)
-            ui_show_error_message (
-              GTK_WINDOW (MAIN_WINDOW),
-              message);
-          g_free (message);
-          plugin_free (pl);
-          return -1;
+          pl=
+            plugin_new_from_descr (
+              &self->pl_descr);
+          pl->slot = 0;
+          pl->track = track;
+          pl->track_pos = track->pos;
+
+          if (plugin_instantiate (pl) < 0)
+            {
+              char * message =
+                g_strdup_printf (
+                  _("Error instantiating plugin %s. "
+                    "Please see log for details."),
+                  pl->descr->name);
+
+              if (MAIN_WINDOW)
+                ui_show_error_message (
+                  GTK_WINDOW (MAIN_WINDOW),
+                  message);
+              g_free (message);
+              plugin_free (pl);
+              return -1;
+            }
         }
 
       if (add_to_project)
@@ -101,7 +135,7 @@ create (
           F_NO_PUBLISH_EVENTS,
           F_NO_RECALC_GRAPH);
 
-      if (track->channel)
+      if (track->channel && pl)
         {
           channel_add_plugin (
             track->channel, pl->slot, pl,
@@ -117,14 +151,14 @@ create (
             &start_pos, PLAYHEAD);
           AudioRegion * ar =
             audio_region_new (
-              self->file_descr.absolute_path,
+              self->file_descr->abs_path,
+              NULL, 0, 0,
               &start_pos, 1);
           track_add_region (
-            track, ar, 0, F_GEN_NAME,
-            F_GEN_WIDGET);
+            track, ar, NULL, 0, F_GEN_NAME);
         }
 
-      if (g_settings_get_int (
+      if (pl && g_settings_get_int (
             S_PREFERENCES,
             "open-plugin-uis-on-instantiate") &&
           add_to_project)
@@ -141,8 +175,8 @@ create (
 UndoableAction *
 create_tracks_action_new (
   TrackType          type,
-  PluginDescriptor * pl_descr,
-  FileDescriptor *   file_descr,
+  const PluginDescriptor * pl_descr,
+  SupportedFile *    file,
   int                pos,
   int                num_tracks)
 {
@@ -154,10 +188,10 @@ create_tracks_action_new (
   ua->type =
 	  UNDOABLE_ACTION_TYPE_CREATE_TRACKS;
   if (pl_descr)
-    plugin_clone_descr (pl_descr, &self->pl_descr);
-  else if (file_descr)
-    file_manager_clone_descr (
-      file_descr, &self->file_descr);
+    plugin_copy_descr (pl_descr, &self->pl_descr);
+  else if (file)
+    self->file_descr =
+      supported_file_clone (file);
   else
     self->is_empty = 1;
   self->pos = pos;
@@ -241,5 +275,7 @@ void
 create_tracks_action_free (
 	CreateTracksAction * self)
 {
+  if (self->file_descr)
+    supported_file_free (self->file_descr);
   free (self);
 }

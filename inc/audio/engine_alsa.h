@@ -24,6 +24,8 @@
 
 #include <stdlib.h>
 
+#include "utils/types.h"
+
 typedef struct AudioEngine AudioEngine;
 
 /**
@@ -66,8 +68,8 @@ engine_alsa_prepare_process (
  */
 void
 engine_alsa_fill_out_bufs (
-  AudioEngine * self,
-  int           nframes);
+  AudioEngine *   self,
+  const nframes_t nframes);
 
 /**
  * Sets up the audio engine to use alsa.

@@ -26,11 +26,11 @@
 void
 sample_playback_init (
   SamplePlayback * self,
-  float **         buf,
+  sample_t **      buf,
   long             buf_size,
-  int              channels,
+  channels_t       channels,
   float            vol,
-  int              start_offset)
+  nframes_t        start_offset)
 {
   self->buf = buf;
   self->buf_size = buf_size;

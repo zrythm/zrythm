@@ -135,6 +135,7 @@ help2man = find_program (
 
 check_headers = [
   'unistd.h',
+  'sys/time.h',
   ]
 
 foreach h : check_headers
@@ -157,28 +158,22 @@ foreach func : check_functions
 endforeach
 
 # Compiler flags
-if cc.get_id() == 'msvc'
-  # Compiler options taken from msvc_recommended_pragmas.h
-  # in GLib, based on _Win32_Programming_ by Rector and Newcomer
-  test_cflags = []
-  add_project_arguments('-FImsvc_recommended_pragmas.h', language: [ 'c', 'cpp' ])
-  add_project_arguments('-D_USE_MATH_DEFINES', language: [ 'c', 'cpp' ])
-elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
-  test_cflags = [
+test_cflags = [
   '-Wall',
-	'-Wno-missing-field-initializers',
-	'-Wno-unused-parameter',
-	'-Wno-sequence-point',
-	'-Wignored-qualifiers',
+  '-Wformat=2',
+  '-Wno-missing-field-initializers',
+  '-Wno-unused-parameter',
+  '-Wno-sequence-point',
+  '-Wignored-qualifiers',
   '-Wno-cast-function-type',
-	'-Werror=implicit-function-declaration',
-	'-Werror=uninitialized',
+  '-Werror=implicit-function-declaration',
+  '-Werror=uninitialized',
   '-Werror=maybe-uninitialized',
-	'-Werror=return-type',
-	'-Werror=int-conversion',
-	'-Werror=format-security',
-	'-Werror=incompatible-pointer-types',
-	'-Werror=implicit-int',
+  '-Werror=return-type',
+  '-Werror=int-conversion',
+  '-Werror=format-security',
+  '-Werror=incompatible-pointer-types',
+  '-Werror=implicit-int',
   '-Werror=multistatement-macros',
   '-Werror=switch',
   '-Werror=overflow',
@@ -186,23 +181,76 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
   '-Werror=enum-compare',
   '-Werror=misleading-indentation',
   '-Werror=int-in-bool-context',
+  '-Werror=type-limits',
+  '-fvisibility=hidden',
   ]
-else
-  test_cflags = []
+
+if (get_option ('buildtype') == 'release')
+  test_cflags += [
+    '-O3',
+    '-ffast-math',
+    '-DPIC',
+    '-fdata-sections',
+    '-ffunction-sections',
+    '-mtune=generic',
+    '-msse',
+    '-msse2',
+    '-mfpmath=sse',
+    ]
 endif
 
 if get_option ('enable_profiling')
   test_cflags += [ '-g', '-pg', 'no-pie' ]
 endif
 
-test_cflags += [
-  '-fPIC',
-  ]
-
 common_cflags = []
 foreach f : test_cflags
   if cc.has_argument (f)
     common_cflags += f
+  endif
+endforeach
+
+test_strict_cflags = [
+  '-Wextra',
+  '-Weverything',
+  '-Werror=cast-qual',
+  '-Werror=clobbered',
+  '-Werror=conversion',
+  '-Werror=disabled-optimization',
+  '-Werror=double-promotion',
+  '-Werror=float-equal',
+  '-Werror=logical-op',
+  '-Werror=pointer-arith',
+  '-Werror=sign-conversion',
+  '-Werror=overlength-strings',
+  '-Werror=stringop-truncation',
+  '-Werror=missing-declarations',
+  '-Werror=redundant-decls',
+  '-Werror=shadow',
+  '-Werror=undef',
+  '-Werror=unused',
+  '-Werror=strict-aliasing',
+  '-fstrict-aliasing',
+  #'-Werror=strict-overflow',
+  '-Wstrict-overflow=2',
+  '-fstrict-overflow',
+  '-Werror=duplicated-branches',
+  '-Werror=duplicated-cond',
+  '-Werror=null-dereference',
+  '-Werror=init-self',
+  '-Werror=jump-misses-init',
+  '-Werror=missing-prototypes',
+  '-Werror=nested-externs',
+  '-Werror=write-strings',
+  '-Werror=implicit-fallthrough',
+  '-Werror=sign-compare',
+  '-Werror=discarded-qualifiers',
+  ]
+
+strict_cflags = []
+foreach f : test_strict_cflags
+  if cc.has_argument (f)
+    strict_cflags += f
   endif
 endforeach
 
@@ -217,12 +265,6 @@ test_ldflags = []
 
 if get_option ('enable_profiling')
   test_ldflags += [ '-g', '-pg', 'no-pie' ]
-endif
-
-if os_linux
-  test_ldflags += [
-    '-lasound',
-    ]
 endif
 
 if not os_darwin
@@ -253,6 +295,7 @@ endif
 libgtop_dep = dependency('libgtop-2.0', required: false)
 if (libgtop_dep.found ())
   cdata.set('HAVE_LIBGTOP', 1)
+  cdata.set('TIME_WITH_SYS_TIME', 0)
 endif
 x11_dep = dependency('x11', required: false)
 if (x11_dep.found ())
@@ -272,6 +315,7 @@ qt5_dep = dependency('Qt5Widgets', required: false)
 yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.22')
 sndfile_dep = dependency('sndfile', version: '>=1.0.25')
+alsa_dep = dependency('alsa', required: false)
 
 zrythm_deps = [
   jack_dep,
@@ -280,6 +324,7 @@ zrythm_deps = [
   gtk_dep,
   sndfile_dep,
   libgtop_dep,
+  alsa_dep,
   dependency('threads'),
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),
@@ -291,6 +336,10 @@ zrythm_deps = [
 if (qt5_dep.found() and get_option('enable_qt5'))
   cdata.set('HAVE_QT5', 1)
   zrythm_deps += qt5_dep
+endif
+if (alsa_dep.found())
+  cdata.set('HAVE_ALSA', 1)
+  zrythm_deps += alsa_dep
 endif
 
 if os_linux
@@ -366,6 +415,8 @@ summary = [
   '------',
   'Zrythm @0@'.format(meson.project_version()),
   '',
+  '  Build type: @0@'.format(
+    get_option('buildtype')),
   '  Profiling: @0@'.format(
     get_option('enable_profiling')),
   '  Build Tests: @0@'.format(get_option('enable_tests')),
@@ -379,7 +430,7 @@ summary = [
   '    Jack: @0@'.format(jack_dep.found()),
   '    PortAudio: @0@'.format(port_audio_dep.found()),
   '    Gtop: @0@'.format(libgtop_dep.found()),
-  'Directories:',
+  '  Directories:',
   '            prefix: @0@'.format(prefix),
   '        includedir: @0@'.format(includedir),
   '            libdir: @0@'.format(libdir),

@@ -72,7 +72,7 @@ typedef struct Track ChordTrack;
 #define PROJECT_BACKUPS_DIR     "backups"
 #define PROJECT_STATES_DIR      "states"
 #define PROJECT_EXPORTS_DIR     "exports"
-#define PROJECT_AUDIO_DIR       "audio"
+#define PROJECT_POOL_DIR        "pool"
 
 /**
  * Selection type, used for displaying info in the
@@ -351,10 +351,10 @@ project_get_states_dir (
   const int is_backup);
 
 /**
- * Returns the audio dir for the given Project.
+ * Returns the pool dir for the given Project.
  */
 char *
-project_get_audio_dir (
+project_get_pool_dir (
   Project * self);
 
 /**

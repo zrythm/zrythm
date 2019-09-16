@@ -31,27 +31,32 @@ G_DEFINE_TYPE (MeterWidget, meter_widget, GTK_TYPE_DRAWING_AREA)
 
 #define GET_REAL_VAL ((*self->getter) (self->object))
 
-static double
+static float
 meter_val_from_real (MeterWidget * self)
 {
-  double amp = math_dbfs_to_amp (GET_REAL_VAL);
+  float amp = math_dbfs_to_amp (GET_REAL_VAL);
   return math_get_fader_val_from_amp (amp);
 }
 
 static int
-draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
+meter_draw_cb (
+  GtkWidget * widget,
+  cairo_t * cr, void* data)
 {
-  guint width, height;
-  GtkStyleContext *context;
   MeterWidget * self = (MeterWidget *) widget;
-  context = gtk_widget_get_style_context (widget);
 
-  width = gtk_widget_get_allocated_width (widget);
-  height = gtk_widget_get_allocated_height (widget);
+  GtkStyleContext *context =
+  gtk_widget_get_style_context (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
-  double meter_val = -1.0;
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
+
+  float meter_val = -1.0;
   switch (self->type)
     {
     case METER_TYPE_DB:
@@ -62,48 +67,50 @@ draw_cb (GtkWidget * widget, cairo_t * cr, void* data)
       g_warn_if_reached ();
       break;
     }
-  double value_px = height * meter_val;
+  float value_px = (float) height * meter_val;
   if (value_px < 0)
     value_px = 0;
 
   /* draw filled in bar */
-  float width_without_padding = width - 4;
+  float width_without_padding =
+    (float) (width - 4);
 
-  float intensity = (float) meter_val;
-  const float intensity_inv = 1.0 - intensity;
-  float r = intensity_inv * self->end_color.red   +
+  double intensity = (double) meter_val;
+  const double intensity_inv = 1.0 - intensity;
+  double r = intensity_inv * self->end_color.red   +
             intensity * self->start_color.red;
-  float g = intensity_inv * self->end_color.green +
+  double g = intensity_inv * self->end_color.green +
             intensity * self->start_color.green;
-  float b = intensity_inv * self->end_color.blue  +
+  double b = intensity_inv * self->end_color.blue  +
             intensity * self->start_color.blue;
   /*float a = intensity_inv * self->end_color.alpha  +*/
             /*intensity * self->start_color.alpha;*/
   cairo_set_source_rgba (cr, r,g,b, 1.0);
   float x = 2;
-  cairo_rectangle (cr,
-                   x,
-                   height - value_px,
-                   x + width_without_padding,
-                   value_px);
+  cairo_rectangle (
+    cr, x,
+    (float) height - value_px,
+    x + width_without_padding,
+    value_px);
   cairo_fill(cr);
 
-
   /* draw border line */
-  cairo_set_source_rgba (cr, 0.1, 0.1, 0.1, 1.0);
+  cairo_set_source_rgba (
+    cr, 0.1, 0.1, 0.1, 1.0);
   cairo_set_line_width (cr, 1.7);
-  cairo_rectangle (cr,
-                   x,
-                   0,
-                   x + width_without_padding,
-                   height);
+  cairo_rectangle (
+    cr, x, 0,
+    x + width_without_padding, height);
   cairo_stroke(cr);
 
   /* draw meter line */
   cairo_set_source_rgba (cr, 0.4, 0.1, 0.05, 1);
   cairo_set_line_width (cr, 1.0);
-  cairo_move_to (cr, x, height - value_px);
-  cairo_line_to (cr, x + width_without_padding, height - value_px);
+  cairo_move_to (
+    cr, x, (float) height - value_px);
+  cairo_line_to (
+    cr, x + width_without_padding,
+    (float) height - value_px);
   cairo_stroke (cr);
 
   return FALSE;
@@ -154,12 +161,15 @@ meter_widget_init (MeterWidget * self)
   gdk_rgba_parse (&self->end_color, "#1DDD6A");
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), self);
-  g_signal_connect (G_OBJECT (self), "enter-notify-event",
-                    G_CALLBACK (on_crossing),  self);
-  g_signal_connect (G_OBJECT(self), "leave-notify-event",
-                    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (meter_draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "enter-notify-event",
+    G_CALLBACK (on_crossing),  self);
+  g_signal_connect (
+    G_OBJECT(self), "leave-notify-event",
+    G_CALLBACK (on_crossing),  self);
 }
 
 static void

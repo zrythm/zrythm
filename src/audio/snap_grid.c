@@ -206,6 +206,59 @@ snap_grid_init (SnapGrid *   self,
   self->snap_to_grid = 1;
 }
 
+static const char *
+get_note_type_str (
+  NoteType type)
+{
+  switch (type)
+    {
+    case NOTE_TYPE_NORMAL:
+      return "";
+    case NOTE_TYPE_DOTTED:
+      return ".";
+    case NOTE_TYPE_TRIPLET:
+      return "t";
+    }
+  return NULL;
+}
+
+static const char *
+get_note_length_str (
+  NoteLength length)
+{
+  switch (length)
+    {
+    case NOTE_LENGTH_2_1:
+      return "2/1";
+      break;
+    case NOTE_LENGTH_1_1:
+      return "1/1";
+      break;
+    case NOTE_LENGTH_1_2:
+      return "1/2";
+      break;
+    case NOTE_LENGTH_1_4:
+      return "1/4";
+      break;
+    case NOTE_LENGTH_1_8:
+      return "1/8";
+      break;
+    case NOTE_LENGTH_1_16:
+      return "1/16";
+      break;
+    case NOTE_LENGTH_1_32:
+      return "1/32";
+      break;
+    case NOTE_LENGTH_1_64:
+      return "1/64";
+      break;
+    case NOTE_LENGTH_1_128:
+      return "1/128";
+      break;
+    }
+  return NULL;
+}
+
 /**
  * Returns the grid intensity as a human-readable string.
  *
@@ -215,50 +268,10 @@ char *
 snap_grid_stringize (NoteLength note_length,
                      NoteType   note_type)
 {
-  char * c = NULL;
-  char * first_part = NULL;
-  switch (note_type)
-    {
-      case NOTE_TYPE_NORMAL:
-        c = "";
-        break;
-      case NOTE_TYPE_DOTTED:
-        c = ".";
-        break;
-      case NOTE_TYPE_TRIPLET:
-        c = "t";
-        break;
-    }
-  switch (note_length)
-    {
-    case NOTE_LENGTH_2_1:
-      first_part = "2/1";
-      break;
-    case NOTE_LENGTH_1_1:
-      first_part = "1/1";
-      break;
-    case NOTE_LENGTH_1_2:
-      first_part = "1/2";
-      break;
-    case NOTE_LENGTH_1_4:
-      first_part = "1/4";
-      break;
-    case NOTE_LENGTH_1_8:
-      first_part = "1/8";
-      break;
-    case NOTE_LENGTH_1_16:
-      first_part = "1/16";
-      break;
-    case NOTE_LENGTH_1_32:
-      first_part = "1/32";
-      break;
-    case NOTE_LENGTH_1_64:
-      first_part = "1/64";
-      break;
-    case NOTE_LENGTH_1_128:
-      first_part = "1/128";
-      break;
-    }
+  const char * c =
+    get_note_type_str (note_type);
+  const char * first_part =
+    get_note_length_str (note_length);
 
   return g_strdup_printf ("%s%s",
                           first_part,

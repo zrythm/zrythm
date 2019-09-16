@@ -47,19 +47,16 @@ region_draw_cb (RegionWidget * self,
                 cairo_t *cr,
                 gpointer data)
 {
-  guint width, height;
-  GtkStyleContext *context;
-
   REGION_WIDGET_GET_PRIVATE (data);
   Region * r = rw_prv->region;
 
-  context =
+  GtkStyleContext *context =
     gtk_widget_get_style_context (
       GTK_WIDGET (self));
-  width =
+  int width =
     gtk_widget_get_allocated_width (
       GTK_WIDGET (self));
-  height =
+  int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
@@ -229,7 +226,7 @@ region_widget_draw_name (
 {
   REGION_WIDGET_GET_PRIVATE (self);
 
-  guint width =
+  int width =
     gtk_widget_get_allocated_width (
       GTK_WIDGET (self));
 
@@ -329,14 +326,14 @@ on_motion (GtkWidget *      widget,
           alt_pressed);
       rw_prv->resize_l =
         region_widget_is_resize_l (
-          self, event->x);
+          self, (int) event->x);
       rw_prv->resize_r =
         region_widget_is_resize_r (
-          self, event->x);
+          self, (int) event->x);
       rw_prv->resize_loop =
         region_widget_is_resize_loop (
-          self, event->y);
-      rw_prv->hover_x = event->x;
+          self, (int) event->y);
+      rw_prv->hover_x = (int) event->x;
     }
 
   if (event->type == GDK_ENTER_NOTIFY)

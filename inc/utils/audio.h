@@ -26,6 +26,8 @@
 #ifndef __UTILS_AUDIO_H__
 #define __UTILS_AUDIO_H__
 
+#include "utils/types.h"
+
 #include <samplerate.h>
 
 /**
@@ -40,45 +42,25 @@
 #define STRIP_SIZE 9
 
 
-struct adinfo;
-
-/**
- * Decodes the given filename (absolute path).
- *
- * @param nfo Pointer to an adinfo struct.
- * @param src_data Pointer to a SRC_DATA struct.
- * @param out_buff Pointer to a buffer array to put
- *   the raw audio data in.
- * @param out_buf_size Pointer to an int to hold the
- *   size of out_buf.
- * @param filename The file to read the audio data
- *   from.
- */
-void
-audio_decode (
-  struct adinfo * nfo,
-  SRC_DATA *      src_data,
-  float **        out_buff,
-  long *          out_buff_size,
-  const char *    filename);
-
 /**
  * Writes the buffer as a raw file to the given
  * path.
+ *
+ * @param size The number of frames per channel.
  */
 void
 audio_write_raw_file (
-  float * buff,
-  long    size,
-  int     samplerate,
-  int     channels,
+  float *      buff,
+  long         nframes,
+  uint32_t     samplerate,
+  unsigned int channels,
   const char * filename);
 
 /**
  * Returns the number of CPU cores.
  */
 int
-audio_get_num_cores ();
+audio_get_num_cores (void);
 
 /**
  * @}

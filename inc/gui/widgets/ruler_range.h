@@ -48,6 +48,6 @@ typedef struct _RulerRangeWidget
 } RulerRangeWidget;
 
 RulerRangeWidget *
-ruler_range_widget_new ();
+ruler_range_widget_new (void);
 
 #endif

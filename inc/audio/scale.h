@@ -360,7 +360,7 @@ musical_scale_to_string (
 /**
  * Returns 1 if the scales are equal.
  */
-static int
+static inline int
 musical_scale_is_equal (
   MusicalScale * a,
   MusicalScale * b)

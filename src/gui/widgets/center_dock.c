@@ -60,9 +60,10 @@ key_release_cb (GtkWidget      * widget,
   return FALSE;
 }
 
-void
-on_hadj_value_changed (GtkAdjustment *adjustment,
-                       gpointer       user_data)
+static void
+on_hadj_value_changed (
+  GtkAdjustment *adjustment,
+  gpointer       user_data)
 {
   /*CenterDockWidget * self =*/
     /*Z_CENTER_DOCK_WIDGET (user_data);*/

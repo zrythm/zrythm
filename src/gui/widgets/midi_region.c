@@ -48,15 +48,13 @@ midi_region_draw_cb (
 {
   int i, j;
   REGION_WIDGET_GET_PRIVATE (self);
-  guint width, height;
-  GtkStyleContext *context;
 
-  context =
+  GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
 
-  width =
+  int width =
     gtk_widget_get_allocated_width (widget);
-  height =
+  int height =
     gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
@@ -90,8 +88,9 @@ midi_region_draw_cb (
       if (mn->val > max_val)
         max_val = mn->val;
     }
-  float y_interval = MAX ((max_val - min_val) + 1.f,
-                          7.f);
+  float y_interval =
+    MAX (
+      (float) (max_val - min_val) + 1.f, 7.f);
   float y_note_size = 1.f / y_interval;
 
   /* draw midi notes */
@@ -114,11 +113,11 @@ midi_region_draw_cb (
 
       /* get ratio (0.0 - 1.0) on x where midi note starts
        * & ends */
-      int mn_start_ticks =
+      long mn_start_ticks =
         position_to_ticks (&mn->start_pos);
-      int mn_end_ticks =
+      long mn_end_ticks =
         position_to_ticks (&mn->end_pos);
-      int tmp_start_ticks, tmp_end_ticks;
+      long tmp_start_ticks, tmp_end_ticks;
 
       /* adjust for clip start */
       /*int adjusted_mn_start_ticks =*/
@@ -152,8 +151,8 @@ midi_region_draw_cb (
               tmp_start_ticks =
                 mn_start_ticks + loop_ticks * j;
               /* if should be clipped */
-              if (position_compare (
-                    &mn->end_pos, &r->loop_end_pos) >= 0)
+              if (position_is_after_or_equal (
+                    &mn->end_pos, &r->loop_end_pos))
                 tmp_end_ticks =
                   loop_end_ticks + loop_ticks * j;
               else
@@ -166,23 +165,24 @@ midi_region_draw_cb (
 
               x_start =
                 (float) tmp_start_ticks /
-                ticks_in_region;
+                (float) ticks_in_region;
               x_end =
                 (float) tmp_end_ticks /
-                ticks_in_region;
+                (float) ticks_in_region;
 
               /* get ratio (0.0 - 1.0) on y where
                * midi note is */
               y_start =
-                (max_val - mn->val) / y_interval;
+                ((float) max_val - (float) mn->val) /
+                y_interval;
 
               /* draw */
               cairo_rectangle (
                 cr,
-                x_start * width,
-                y_start * height,
-                (x_end - x_start) * width,
-                y_note_size * height);
+                x_start * (float) width,
+                y_start * (float) height,
+                (x_end - x_start) * (float) width,
+                y_note_size * (float) height);
               cairo_fill (cr);
             }
         }

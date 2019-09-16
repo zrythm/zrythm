@@ -395,7 +395,7 @@ on_cancel_clicked (GtkButton * btn,
   /*gtk_widget_destroy (GTK_WIDGET (self));*/
 }
 
-void *
+static void *
 export_thread (
   ExportSettings * info)
 {

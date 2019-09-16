@@ -289,7 +289,8 @@ automation_track_widget_get_y_px_from_normalized_val (
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
   int point =
-    allocated_h - normalized_val * allocated_h;
+    allocated_h -
+    (int) (normalized_val * (float) allocated_h);
 
   return point;
 }
@@ -301,6 +302,7 @@ automation_track_widget_update_current_val (
   char * val =
     g_strdup_printf (
       "%.2f",
+      (double)
       automatable_get_val (
         self->at->automatable));
   gtk_label_set_text (self->current_val, val);
@@ -404,7 +406,7 @@ automation_track_widget_get_fvalue_at_y (
             GTK_WIDGET (MW_TIMELINE),
             GTK_WIDGET (self),
             0,
-            _start_y,
+            (int) _start_y,
             &wx,
             &valy);
 
@@ -412,8 +414,9 @@ automation_track_widget_get_fvalue_at_y (
   int widget_size = allocation.height;
   int widget_value = widget_size - valy;
   float widget_ratio =
-    CLAMP ((float) widget_value / widget_size,
-           0.0, 1.0);
+    CLAMP (
+      (float) widget_value / (float) widget_size,
+      0.f, 1.f);
   float automatable_value =
     automatable_normalized_val_to_real (
       a, widget_ratio);

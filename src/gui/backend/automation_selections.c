@@ -123,49 +123,15 @@ automation_selections_set_cache_poses (
 #undef SET_CACHE_POS
 }
 
-/**
- * Set all transient Position's to their main
- * counterparts.
- */
-void
-automation_selections_reset_transient_poses (
-  AutomationSelections * ts)
+ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS (
+  Automation, automation)
 {
-  int i;
-
-#define RESET_TRANS_POS_W_LENGTH(caps,cc,sc) \
-  cc * sc; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_set_start_pos ( \
-        sc, &sc->start_pos, \
-        AO_UPDATE_ALL); \
-      sc##_set_end_pos ( \
-        sc, &sc->end_pos, \
-        AO_UPDATE_ALL); \
-    } \
-  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
-               NULL)
-
-#define RESET_TRANS_POS(caps,cc,sc) \
-  cc * sc; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_set_pos ( \
-        sc, &sc->pos, \
-        AO_UPDATE_ALL); \
-    } \
-  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
-               NULL)
-
-  RESET_TRANS_POS (
-    AUTOMATION_POINT, AutomationPoint,
-    automation_point);
-
-#undef RESET_TRANS_POS_W_LENGTH
-#undef RESET_TRANS_POS
+  for (int i = 0;
+       i < self->num_automation_points; i++)
+    {
+      automation_point_reset_counterpart (
+        self->automation_points[i], reset_trans);
+    }
 }
 
 /**
@@ -321,37 +287,6 @@ DEFINE_CONTAINS_OBJ (
 #undef DEFINE_CONTAINS_OBJ
 
 /**
- * Set all main Position's to their transient
- * counterparts.
- */
-void
-automation_selections_set_to_transient_poses (
-  AutomationSelections * ts)
-{
-  int i;
-
-#define SET_TO_TRANS_POS(caps,cc,sc) \
-  cc * sc, * sc##_trans; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_trans =  \
-        sc##_get_main_trans_##sc (sc); \
-      sc##_set_pos ( \
-        sc, &sc##_trans->pos, \
-        AO_UPDATE_ALL); \
-    } \
-  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
-               NULL)
-
-  SET_TO_TRANS_POS (
-    AUTOMATION_POINT, AutomationPoint,
-    automation_point);
-
-#undef SET_TO_TRANS_POS
-}
-
-/**
  * Clears selections.
  */
 void
@@ -420,27 +355,6 @@ automation_selections_clone (
 }
 
 /**
- * Similar to set_to_transient_poses, but handles
- * values for objects that support them (like
- * AutomationPoint's).
- */
-void
-automation_selections_set_to_transient_values (
-  AutomationSelections * ts)
-{
-  AutomationPoint * ap;
-  for (int i = 0; i < ts->num_automation_points;
-       i++)
-    {
-      ap = ts->automation_points[i];
-      ap->fvalue =
-        automation_point_get_main_trans_automation_point (
-          ap)->fvalue;
-    }
-}
-
-
-/**
  * Moves the AutomationSelections by the given
  * amount of ticks.
  *
@@ -480,13 +394,13 @@ automation_selections_paste_to_pos (
   AutomationSelections * ts,
   Position *           pos)
 {
-  int pos_ticks = position_to_ticks (pos);
+  long pos_ticks = position_to_ticks (pos);
 
   /* get pos of earliest object */
   Position start_pos;
   automation_selections_get_start_pos (
     ts, &start_pos, F_NO_TRANSIENTS, 0);
-  int start_pos_ticks =
+  long start_pos_ticks =
     position_to_ticks (&start_pos);
 
   /* subtract the start pos from every object and
@@ -496,7 +410,8 @@ automation_selections_paste_to_pos (
   curr_ticks = position_to_ticks (x); \
   position_from_ticks (x, pos_ticks + DIFF)
 
-  int curr_ticks, i;
+  long curr_ticks;
+  int i;
   AutomationPoint * ap;
   for (i = 0; i < ts->num_automation_points; i++)
     {
@@ -504,8 +419,9 @@ automation_selections_paste_to_pos (
         ts->automation_points[i];
 
       curr_ticks = position_to_ticks (&ap->pos);
-      position_from_ticks (&ap->pos,
-                           pos_ticks + DIFF);
+      position_from_ticks (
+        &ap->pos,
+        pos_ticks + DIFF);
     }
 #undef DIFF
 }

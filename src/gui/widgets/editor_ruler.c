@@ -61,7 +61,7 @@ editor_ruler_draw_cb (GtkWidget * widget,
       /*GTK_WIDGET (self));*/
 
   /*width = gtk_widget_get_allocated_width (widget);*/
-  guint height =
+  int height =
     gtk_widget_get_allocated_height (widget);
 
   /* get a visible region */
@@ -245,9 +245,10 @@ editor_ruler_widget_set_ruler_marker_position (
 }
 
 void
-editor_ruler_widget_refresh ()
+editor_ruler_widget_refresh (
+  EditorRulerWidget * self)
 {
-  RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
+  RULER_WIDGET_GET_PRIVATE (self);
 
   /*adjust for zoom level*/
   rw_prv->px_per_tick =
@@ -260,15 +261,16 @@ editor_ruler_widget_refresh ()
     rw_prv->px_per_beat * TRANSPORT->beats_per_bar;
 
   Position pos;
-  position_set_to_bar (&pos,
-                       TRANSPORT->total_bars + 1);
+  position_set_to_bar (
+    &pos, TRANSPORT->total_bars + 1);
   rw_prv->total_px =
-    rw_prv->px_per_tick * position_to_ticks (&pos);
+    rw_prv->px_per_tick *
+    (double) position_to_ticks (&pos);
 
   // set the size
   gtk_widget_set_size_request (
     GTK_WIDGET (EDITOR_RULER),
-    rw_prv->total_px,
+    (int) rw_prv->total_px,
     -1);
 
   gtk_widget_queue_allocate (

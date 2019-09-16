@@ -62,15 +62,13 @@ midi_note_draw_cb (
     return FALSE;
 
   /*g_message ("drawing %d", self->midi_note->id);*/
-  guint width, height;
-  GtkStyleContext *context;
 
-  context =
+  GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
 
-  width =
+  int width =
     gtk_widget_get_allocated_width (widget);
-  height =
+  int height =
     gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
@@ -207,10 +205,10 @@ on_motion (GtkWidget *      widget,
     {
       self->resize_l =
         midi_note_widget_is_resize_l (
-          self, event->x);
+          self, (int) event->x);
       self->resize_r =
         midi_note_widget_is_resize_r (
-          self, event->x);
+          self, (int) event->x);
     }
 
   if (event->type == GDK_ENTER_NOTIFY)

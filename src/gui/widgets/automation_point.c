@@ -40,14 +40,15 @@ draw_cb (
   cairo_t *   cr,
   AutomationPointWidget * self)
 {
-  guint width, height;
   GtkStyleContext *context;
 
   context =
     gtk_widget_get_style_context (widget);
 
-  width = gtk_widget_get_allocated_width (widget);
-  height = gtk_widget_get_allocated_height (widget);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -111,7 +112,7 @@ automation_point_widget_update_tooltip (
     g_strdup_printf (
       "%s %f",
       ap->region->at->automatable->label,
-      ap->fvalue);
+      (double) ap->fvalue);
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), tooltip);
   g_free (tooltip);
@@ -122,7 +123,7 @@ automation_point_widget_update_tooltip (
       tooltip =
         g_strdup_printf (
           "%f",
-          ap->fvalue);
+          (double) ap->fvalue);
       gtk_label_set_text (self->tooltip_label,
                           tooltip);
       gtk_window_present (self->tooltip_win);

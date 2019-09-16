@@ -182,7 +182,7 @@ track_widget_is_cursor_in_top_half (
     GTK_WIDGET (MW_TIMELINE),
     GTK_WIDGET (top_grid),
     0,
-    y,
+    (int) y,
     &wx,
     &wy);
 
@@ -441,7 +441,8 @@ on_right_click (GtkGestureMultiPress *gesture,
   TrackWidget * tw = Z_TRACK_WIDGET (user_data);
   TRACK_WIDGET_GET_PRIVATE (tw);
 
-  UI_GET_STATE_MASK (gesture);
+  GdkModifierType state_mask =
+    ui_get_state_mask (GTK_GESTURE (gesture));
 
   Track * track = tw_prv->track;
   if (!track_is_selected (track))
@@ -478,7 +479,8 @@ multipress_pressed (GtkGestureMultiPress *gesture,
   /*if (!gtk_widget_has_focus (GTK_WIDGET (self)))*/
     /*gtk_widget_grab_focus (GTK_WIDGET (self));*/
 
-  UI_GET_STATE_MASK (gesture);
+  GdkModifierType state_mask =
+    ui_get_state_mask (GTK_GESTURE (gesture));
 
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
@@ -983,7 +985,8 @@ track_widget_init (TrackWidget * self)
                          GDK_ALL_EVENTS_MASK);
 
   GtkTargetEntry entries[1];
-  entries[0].target = TARGET_ENTRY_TRACK;
+  entries[0].target =
+    g_strdup (TARGET_ENTRY_TRACK);
   entries[0].flags = GTK_TARGET_SAME_APP;
   entries[0].info =
     symap_map (ZSYMAP, TARGET_ENTRY_TRACK);

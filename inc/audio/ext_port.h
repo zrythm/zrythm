@@ -33,6 +33,7 @@
 #include "audio/passthrough_processor.h"
 #include "plugins/plugin.h"
 #include "utils/audio.h"
+#include "utils/types.h"
 #include "utils/yaml.h"
 
 #include <gdk/gdk.h>
@@ -139,7 +140,7 @@ ext_port_init_loaded (
 float *
 ext_port_get_buffer (
   ExtPort * ext_port,
-  int       nframes);
+  nframes_t nframes);
 
 /**
  * Clears the buffer of the external port.
@@ -147,7 +148,7 @@ ext_port_get_buffer (
 void
 ext_port_clear_buffer (
   ExtPort * ext_port,
-  int       nframes);
+  nframes_t nframes);
 
 /**
  * Exposes the given Port if not exposed and makes

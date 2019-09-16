@@ -29,7 +29,7 @@
 
 UndoableAction *
 create_plugins_action_new (
-  PluginDescriptor * descr,
+  const PluginDescriptor * descr,
   int       track_pos,
   int       slot,
   int       num_plugins)
@@ -43,7 +43,7 @@ create_plugins_action_new (
 
   self->slot = slot;
   self->track_pos = track_pos;
-  plugin_clone_descr (descr, &self->descr);
+  plugin_copy_descr (descr, &self->descr);
   self->num_plugins = num_plugins;
 
   for (int i = 0; i < num_plugins; i++)

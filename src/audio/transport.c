@@ -49,7 +49,7 @@ DEFINE_START_POS;
 void
 transport_set_bpm (
   Transport * self,
-  float bpm)
+  bpm_t       bpm)
 {
   if (bpm < MIN_BPM)
     bpm = MIN_BPM;
@@ -57,6 +57,7 @@ transport_set_bpm (
     bpm = MAX_BPM;
   self->bpm = bpm;
   engine_update_frames_per_tick (
+    AUDIO_ENGINE,
     self->beats_per_bar,
     bpm,
     AUDIO_ENGINE->sample_rate);
@@ -66,8 +67,9 @@ transport_set_bpm (
  * Initialize transport
  */
 void
-transport_init (Transport * self,
-                int         loading)
+transport_init (
+  Transport * self,
+  int         loading)
 {
   g_message ("Initializing transport");
 
@@ -155,17 +157,23 @@ transport_set_beat_unit (
    * with the ticks per note
    */
   self->lticks_per_beat =
-    3840.0 / (double) TRANSPORT->beat_unit;
+    (long)
+    (3840.0 / (double) TRANSPORT->beat_unit);
   self->ticks_per_beat =
-    self->lticks_per_beat;
+    (int) self->lticks_per_beat;
   self->lticks_per_bar =
-    self->lticks_per_beat * self->beats_per_bar;
+    (long)
+    (self->lticks_per_beat * self->beats_per_bar);
   self->ticks_per_bar =
+    (int)
     self->lticks_per_bar;
   self->sixteenths_per_beat =
-    16.0 / (double) self->beat_unit;
+    (int)
+    (16.0 / (double) self->beat_unit);
   self->sixteenths_per_bar =
-    self->sixteenths_per_beat * self->beats_per_bar;
+    (int)
+    (self->sixteenths_per_beat *
+     self->beats_per_bar);
   g_warn_if_fail (self->ticks_per_bar > 0);
   g_warn_if_fail (self->ticks_per_beat > 0);
   g_warn_if_fail (self->lticks_per_bar > 0);
@@ -198,16 +206,18 @@ transport_set_ebeat_unit (
 }
 
 void
-transport_request_pause ()
+transport_request_pause (
+  Transport * self)
 {
-  TRANSPORT->play_state = PLAYSTATE_PAUSE_REQUESTED;
+  self->play_state = PLAYSTATE_PAUSE_REQUESTED;
 }
 
 void
-transport_request_roll ()
+transport_request_roll (
+  Transport * self)
 {
   g_message ("requesting roll");
-  TRANSPORT->play_state = PLAYSTATE_ROLL_REQUESTED;
+  self->play_state = PLAYSTATE_ROLL_REQUESTED;
 }
 
 
@@ -218,8 +228,8 @@ transport_request_roll ()
  */
 void
 transport_add_to_playhead (
-  Transport * self,
-  const int   frames)
+  Transport *     self,
+  const nframes_t frames)
 {
   transport_position_add_frames (
     self, &TRANSPORT->playhead_pos, frames);
@@ -343,20 +353,21 @@ transport_set_metronome_enabled (
  * Updates the frames in all transport positions
  */
 void
-transport_update_position_frames ()
+transport_update_position_frames (
+  Transport * self)
 {
   position_update_frames (
-    &TRANSPORT->playhead_pos);
+    &self->playhead_pos);
   position_update_frames (
-    &TRANSPORT->cue_pos);
+    &self->cue_pos);
   /*position_update_frames (*/
     /*&TRANSPORT->start_marker_pos);*/
   /*position_update_frames (*/
     /*&TRANSPORT->end_marker_pos);*/
   position_update_frames (
-    &TRANSPORT->loop_start_pos);
+    &self->loop_start_pos);
   position_update_frames (
-    &TRANSPORT->loop_end_pos);
+    &self->loop_end_pos);
 }
 
 #define GATHER_MARKERS \
@@ -382,7 +393,8 @@ transport_update_position_frames ()
   position_set_to_pos ( \
     &markers[num_markers++], \
     START_POS); \
-  position_sort_array (markers, num_markers)
+  position_sort_array ( \
+    markers, (size_t) num_markers)
 
 /**
  * Moves the playhead to the prev Marker.
@@ -450,7 +462,7 @@ long
 transport_frames_add_frames (
   const Transport * self,
   const long        gframes,
-  const int         frames)
+  const nframes_t   frames)
 {
   long new_frames = gframes + frames;
 
@@ -479,7 +491,7 @@ void
 transport_position_add_frames (
   const Transport * self,
   Position *        pos,
-  const int         frames)
+  const nframes_t   frames)
 {
   position_from_frames (
     pos,

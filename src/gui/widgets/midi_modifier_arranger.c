@@ -69,13 +69,14 @@ midi_modifier_arranger_widget_set_allocation (
                 0,
                 &wx,
                 &wy);
-      guint height;
-      height = gtk_widget_get_allocated_height (
-        GTK_WIDGET (self));
+      int height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (self));
 
       int vel_px =
-        height *
-        ((float) vw->velocity->vel / 127.f);
+        (int)
+        ((float) height *
+          ((float) vw->velocity->vel / 127.f));
       allocation->x = wx;
       allocation->y = height - vel_px;
       allocation->width = 12;
@@ -199,14 +200,6 @@ midi_modifier_arranger_widget_on_drag_begin_velocity_hit (
 }
 
 void
-midi_modifier_arranger_widget_update_inspector (
-  MidiModifierArrangerWidget * self)
-{
-
-  /* TODO */
-}
-
-void
 midi_modifier_arranger_widget_select_all (
   MidiModifierArrangerWidget *  self,
   int                           select)
@@ -259,7 +252,9 @@ midi_modifier_arranger_widget_ramp (
   int         velocities_size = 1;
   Velocity ** velocities =
     (Velocity **)
-    malloc (velocities_size * sizeof (Velocity *));
+    malloc (
+      (size_t) velocities_size *
+      sizeof (Velocity *));
   int         num_velocities = 0;
   track_get_velocities_in_range (
     region_get_track (CLIP_EDITOR->region),
@@ -297,11 +292,16 @@ midi_modifier_arranger_widget_ramp (
        * http://stackoverflow.com/questions/2965144/ddg#2965188 */
       /* get val in pixels */
       val =
-        y1 + ((y2 - y1)/(x2 - x1))*(px - x1);
+        (int)
+        (y1 +
+         ((y2 - y1)/(x2 - x1)) *
+           ((double) px - x1));
 
       /* normalize and multiply by 127 to get
        * velocity value */
-      val = ((double) val / height) * 127.0;
+      val =
+        (int)
+        (((double) val / (double) height) * 127.0);
       val = CLAMP (val, 1, 127);
       /*g_message ("val %d", val);*/
 
@@ -337,16 +337,18 @@ midi_modifier_arranger_widget_resize_velocities (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  guint height =
+  int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
   double start_ratio =
-    1.0 - ar_prv->start_y / height;
+    1.0 - ar_prv->start_y / (double) height;
   double ratio =
-    1.0 - (ar_prv->start_y + offset_y) / height;
-  int start_val = start_ratio * 127;
-  int val = ratio * 127;
+    1.0 -
+    (ar_prv->start_y + offset_y) /
+      (double) height;
+  int start_val = (int) (start_ratio * 127.0);
+  int val = (int) (ratio * 127.0);
   self->vel_diff = val - start_val;
 
   /*Velocity * vel = self->start_velocity;*/
@@ -502,7 +504,7 @@ midi_modifier_arranger_widget_setup (
   RULER_WIDGET_GET_PRIVATE (MW_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
-    rw_prv->total_px,
+    (int) rw_prv->total_px,
     -1);
 }
 

@@ -28,6 +28,8 @@
 #ifndef __GUI_WIDGETS_FILE_BROWSER_H__
 #define __GUI_WIDGETS_FILE_BROWSER_H__
 
+#include "audio/supported_file.h"
+
 #include <gtk/gtk.h>
 
 #define FILE_BROWSER_WIDGET_TYPE \
@@ -37,9 +39,6 @@ G_DECLARE_FINAL_TYPE (
   file_browser_widget,
   Z, FILE_BROWSER_WIDGET,
   GtkPaned)
-
-typedef struct FileType FileType;
-typedef struct FileDescriptor FileDescriptor;
 
 /**
  * @addtogroup widgets
@@ -63,13 +62,16 @@ typedef struct _FileBrowserWidget
   GtkExpander *          locations_exp;
   GtkBox *               browser_bot;
   GtkLabel *             file_info;
-  FileType *             selected_type;
+  FileType               selected_type;
   GtkTreeModel *         type_tree_model;
   GtkTreeModel *         locations_tree_model;
   GtkTreeModelFilter *   files_tree_model;
   GtkTreeView *          files_tree_view;
+
+  /** The file chooser. */
+  GtkFileChooserWidget * file_chooser;
+
   GtkScrolledWindow *    file_scroll_window;
-  FileDescriptor *       selected_file_descr;
 
   /**
    * A little hack to get the paned position to
@@ -88,7 +90,7 @@ typedef struct _FileBrowserWidget
  * Creates a new FileBrowserWidget.
  */
 FileBrowserWidget *
-file_browser_widget_new ();
+file_browser_widget_new (void);
 
 /**
  * @}

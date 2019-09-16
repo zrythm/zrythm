@@ -277,8 +277,9 @@ midi_region_write_to_midi_file (
       midiTrackAddRaw (
         mf, track->pos, 3, tmp, 1,
         i == 0 ?
-          ev->time :
-          ev->time - events->events[i - 1].time);
+          (int) ev->time :
+          (int)
+          (ev->time - events->events[i - 1].time));
     }
   midi_events_free (events);
 }
@@ -304,7 +305,8 @@ midi_region_export_to_midi_file (
 	if ((mf = midiFileCreate(full_path, TRUE)))
 		{
       /* Write tempo information out to track 1 */
-      midiSongAddTempo(mf, 1, TRANSPORT->bpm);
+      midiSongAddTempo (
+        mf, 1, (int) TRANSPORT->bpm);
 
       /* All data is written out to _tracks_ not
        * channels. We therefore
@@ -366,13 +368,15 @@ midi_region_get_as_events (
       mn = self->midi_notes[i];
       midi_events_add_note_on (
         events, 1, mn->val, mn->vel->vel,
-        position_to_ticks (&mn->start_pos) +
-          region_start,
+        (midi_time_t)
+        (position_to_ticks (&mn->start_pos) +
+          region_start),
         0);
       midi_events_add_note_off (
         events, 1, mn->val,
-        position_to_ticks (&mn->end_pos) +
-          region_start,
+        (midi_time_t)
+        (position_to_ticks (&mn->end_pos) +
+          region_start),
         0);
     }
 

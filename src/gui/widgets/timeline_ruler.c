@@ -144,9 +144,10 @@ timeline_ruler_widget_set_ruler_marker_position (
 }
 
 void
-timeline_ruler_widget_refresh ()
+timeline_ruler_widget_refresh (
+  TimelineRulerWidget * self)
 {
-  RULER_WIDGET_GET_PRIVATE (MW_RULER);
+  RULER_WIDGET_GET_PRIVATE (self);
 
   /*adjust for zoom level*/
   rw_prv->px_per_tick =
@@ -162,12 +163,13 @@ timeline_ruler_widget_refresh ()
   position_set_to_bar (&pos,
                        TRANSPORT->total_bars + 1);
   rw_prv->total_px =
-    rw_prv->px_per_tick * position_to_ticks (&pos);
+    rw_prv->px_per_tick *
+    (double) position_to_ticks (&pos);
 
   // set the size
   gtk_widget_set_size_request (
     GTK_WIDGET (MW_RULER),
-    rw_prv->total_px,
+    (int) rw_prv->total_px,
     -1);
 
   gtk_widget_set_visible (
@@ -180,9 +182,10 @@ timeline_ruler_widget_refresh ()
                MW_RULER);
 }
 
-void
-on_drag_begin_range_hit (TimelineRulerWidget * self,
-                         RulerRangeWidget *    rr)
+static void
+on_drag_begin_range_hit (
+  TimelineRulerWidget * self,
+  RulerRangeWidget *    rr)
 {
   RULER_WIDGET_GET_PRIVATE (self);
 
@@ -206,9 +209,9 @@ on_drag_begin_range_hit (TimelineRulerWidget * self,
 }
 
 void
-timeline_ruler_on_drag_end ()
+timeline_ruler_on_drag_end (
+  TimelineRulerWidget * self)
 {
-  TimelineRulerWidget * self = MW_RULER;
   RULER_WIDGET_GET_PRIVATE (self);
 
   /* hide tooltips */
@@ -223,7 +226,7 @@ timeline_ruler_on_drag_begin_no_marker_hit (
   gdouble               start_x,
   gdouble               start_y,
   TimelineRulerWidget * self,
-  guint                  height)
+  int                  height)
 {
   RULER_WIDGET_GET_PRIVATE (self);
 
@@ -370,16 +373,17 @@ timeline_ruler_on_drag_update (
             fabs (offset_x),
             &diff_pos,
             0);
-          int ticks_diff =
+          long ticks_diff =
             position_to_ticks (&diff_pos);
-          int r1_ticks =
+          long r1_ticks =
             position_to_ticks (
               (&PROJECT->range_1));
-          int r2_ticks =
+          long r2_ticks =
             position_to_ticks (
               (&PROJECT->range_2));
-          int ticks_length =
-            self->range1_first? r2_ticks - r1_ticks :
+          long ticks_length =
+            self->range1_first ?
+            r2_ticks - r1_ticks :
             r1_ticks - r2_ticks;
 
           if (offset_x >= 0)
@@ -518,7 +522,8 @@ timeline_ruler_on_drag_update (
                 {
                   position_set_to_pos (
                     &TRANSPORT->loop_start_pos, &tmp);
-                  transport_update_position_frames ();
+                  transport_update_position_frames (
+                    TRANSPORT);
                   EVENTS_PUSH (
                     ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
                     NULL);
@@ -536,7 +541,8 @@ timeline_ruler_on_drag_update (
                 {
                   position_set_to_pos (
                     &TRANSPORT->loop_end_pos, &tmp);
-                  transport_update_position_frames ();
+                  transport_update_position_frames (
+                    TRANSPORT);
                   EVENTS_PUSH (
                     ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
                     NULL);

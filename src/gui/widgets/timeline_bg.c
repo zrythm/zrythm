@@ -120,7 +120,7 @@ timeline_bg_draw_cb (
   /* draw automation related stuff */
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      Track * track = TRACKLIST->tracks[i];
+      track = TRACKLIST->tracks[i];
 
       /* skip tracks in the other timeline (pinned/
        * non-pinned) */
@@ -146,7 +146,6 @@ timeline_bg_draw_cb (
                 continue;
 
               /* horizontal automation track lines */
-              gint wx, wy;
               gtk_widget_translate_coordinates(
                         GTK_WIDGET (at->widget),
                         GTK_WIDGET (MW_TRACKLIST),

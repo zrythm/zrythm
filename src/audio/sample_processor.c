@@ -45,7 +45,7 @@ sample_processor_init (
 void
 sample_processor_prepare_process (
   SampleProcessor * self,
-  const int         nframes)
+  const nframes_t   nframes)
 {
   port_clear_buffer (self->stereo_out->l);
   port_clear_buffer (self->stereo_out->r);
@@ -94,17 +94,19 @@ sample_processor_remove_sample_playback (
 void
 sample_processor_process (
   SampleProcessor * self,
-  const int         offset,
-  const int         nframes)
+  const nframes_t   offset,
+  const nframes_t   nframes)
 {
-  int i, j;
+  unsigned int j;
+  int i;
   long max_frames;
   SamplePlayback * sp;
   float * l = self->stereo_out->l->buf,
         * r = self->stereo_out->r->buf;
   /*g_message ("processing %d samples",*/
              /*self->num_current_samples);*/
-  for (i = self->num_current_samples - 1; i >= 0; i--)
+  for (i = self->num_current_samples - 1;
+       i >= 0; i--)
     {
       sp = &self->current_samples[i];
 
@@ -194,7 +196,7 @@ void
 sample_processor_queue_metronome (
   SampleProcessor * self,
   MetronomeType     type,
-  int               offset)
+  nframes_t         offset)
 {
   /*g_message ("metronome queued for %d", offset);*/
   SamplePlayback * sp =

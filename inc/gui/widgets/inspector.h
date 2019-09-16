@@ -71,7 +71,7 @@ typedef struct _InspectorWidget
  * Only once per project.
  */
 InspectorWidget *
-inspector_widget_new ();
+inspector_widget_new (void);
 
 /**
  * Refreshes the inspector widget (shows current

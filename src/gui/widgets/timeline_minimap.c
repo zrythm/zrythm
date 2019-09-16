@@ -56,7 +56,8 @@ timeline_minimap_widget_px_to_pos (
     gtk_widget_get_allocated_width (GTK_WIDGET (self));
   double ratio = (double) px / width;
   RULER_WIDGET_GET_PRIVATE (MW_RULER);
-  int px_in_ruler = rw_prv->total_px * ratio;
+  int px_in_ruler =
+    (int) (rw_prv->total_px * ratio);
   ui_px_to_pos_timeline (px_in_ruler,
                 pos,
                 1);
@@ -207,11 +208,10 @@ get_child_position (GtkOverlay   *overlay,
           MW_CENTER_DOCK &&
           MW_CENTER_DOCK->ruler_viewport)
         {
-          guint width, height;
-          width =
+          int width =
             gtk_widget_get_allocated_width (
               GTK_WIDGET (self));
-          height =
+          int height =
             gtk_widget_get_allocated_height (
               GTK_WIDGET (self));
 
@@ -233,9 +233,11 @@ get_child_position (GtkOverlay   *overlay,
           double width_ratio =
             px_width / (double) rw_prv->total_px;
 
-          allocation->x = width * start_ratio;
+          allocation->x =
+            (int) ((double) width * start_ratio);
           allocation->y = 0;
-          allocation->width = width * width_ratio;
+          allocation->width =
+            (int) ((double) width * width_ratio);
           allocation->height = height;
           return TRUE;
         }
@@ -413,7 +415,7 @@ drag_update (GtkGestureDrag * gesture,
       /* handle y */
       move_y (
         self,
-        offset_y);
+        (int) offset_y);
     } /* endif MOVING */
 
   gtk_widget_queue_allocate(GTK_WIDGET (self));

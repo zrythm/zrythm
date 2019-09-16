@@ -48,6 +48,6 @@ typedef struct _ArrangerPlayheadWidget
 } ArrangerPlayheadWidget;
 
 ArrangerPlayheadWidget *
-arranger_playhead_widget_new ();
+arranger_playhead_widget_new (void);
 
 #endif

@@ -79,7 +79,7 @@ typedef struct _FoldableNotebookWidget
  * Creates a FoldableNotebookWidget.
  */
 FoldableNotebookWidget *
-foldable_notebook_widget_new ();
+foldable_notebook_widget_new (void);
 
 /**
  * Sets the folded space visible or not.

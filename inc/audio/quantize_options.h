@@ -69,7 +69,7 @@ typedef struct QuantizeOptions
   float            swing;
 
   /** Number of ticks for randomization. */
-  float            rand_ticks;
+  unsigned int     rand_ticks;
 
   /**
    * Quantize points.
@@ -141,7 +141,7 @@ float
 quantize_options_get_amount (
   QuantizeOptions * self);
 
-float
+unsigned int
 quantize_options_get_randomization (
   QuantizeOptions * self);
 
@@ -158,7 +158,7 @@ quantize_options_set_amount (
 void
 quantize_options_set_randomization (
   QuantizeOptions * self,
-  float             randomization);
+  unsigned int      randomization);
 
 /**
  * Returns the grid intensity as a human-readable string.

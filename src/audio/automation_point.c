@@ -40,6 +40,7 @@
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 
 #define SET_POS(_c,pos_name,_pos,_trans_only) \
   ARRANGER_OBJ_SET_POS ( \
@@ -103,14 +104,15 @@ automation_point_init_loaded (
     /*project_get_automation_track (ap->at_id);*/
 }
 
-int
+static int
 automation_point_is_equal (
   AutomationPoint * a,
   AutomationPoint * b)
 {
   return
     position_is_equal (&a->pos, &b->pos) &&
-    a->fvalue == b->fvalue;
+    math_floats_equal (
+      a->fvalue, b->fvalue, 0.001f);
 }
 
 /**
@@ -230,6 +232,23 @@ automation_point_get_normalized_value (
     self->fvalue);
 }
 
+ARRANGER_OBJ_DECLARE_RESET_COUNTERPART (
+  AutomationPoint, automation_point)
+{
+  AutomationPoint * src =
+    reset_trans ?
+      automation_point_get_main_automation_point (automation_point) :
+      automation_point_get_main_trans_automation_point (automation_point);
+  AutomationPoint * dest =
+    reset_trans ?
+      automation_point_get_main_trans_automation_point (automation_point) :
+      automation_point_get_main_automation_point (automation_point);
+
+  position_set_to_pos (
+    &dest->pos, &src->pos);
+  dest->fvalue = src->fvalue;
+}
+
 /**
  * Moves the AutomationPoint by the given amount of
  * ticks.
@@ -240,86 +259,86 @@ automation_point_get_normalized_value (
  * @return Whether moved or not.
  * FIXME always call this after move !!!!!!!!!
  */
-void
-automation_point_on_move (
-  AutomationPoint * automation_point,
-  long     ticks,
-  int      use_cached_pos,
-  int      trans_only)
-{
-  Position tmp;
-  POSITION_MOVE_BY_TICKS (
-    tmp, use_cached_pos, automation_point, pos,
-    ticks, trans_only);
+/*void*/
+/*automation_point_on_move (*/
+  /*AutomationPoint * automation_point,*/
+  /*long     ticks,*/
+  /*int      use_cached_pos,*/
+  /*int      trans_only)*/
+/*{*/
+  /*Position tmp;*/
+  /*POSITION_MOVE_BY_TICKS (*/
+    /*tmp, use_cached_pos, automation_point, pos,*/
+    /*ticks, trans_only);*/
 
-  AutomationPoint * ap = automation_point;
+  /*AutomationPoint * ap = automation_point;*/
 
-  /* get prev and next value APs */
-  AutomationPoint * prev_ap =
-    automation_region_get_prev_ap (
-      ap->region, ap);
-  AutomationPoint * next_ap =
-    automation_region_get_next_ap (
-      ap->region, ap);
+  /*[> get prev and next value APs <]*/
+  /*AutomationPoint * prev_ap =*/
+    /*automation_region_get_prev_ap (*/
+      /*ap->region, ap);*/
+  /*AutomationPoint * next_ap =*/
+    /*automation_region_get_next_ap (*/
+      /*ap->region, ap);*/
 
-  /* get adjusted pos for this automation point */
-  Position ap_pos;
-  Position * prev_pos = &ap->cache_pos;
-  position_set_to_pos (&ap_pos,
-                       prev_pos);
-  position_add_ticks (&ap_pos, ticks);
+  /*[> get adjusted pos for this automation point <]*/
+  /*Position ap_pos;*/
+  /*Position * prev_pos = &ap->cache_pos;*/
+  /*position_set_to_pos (&ap_pos,*/
+                       /*prev_pos);*/
+  /*position_add_ticks (&ap_pos, ticks);*/
 
-  Position mid_pos;
-  AutomationCurve * ac;
+  /*Position mid_pos;*/
+  /*AutomationCurve * ac;*/
 
-  /* update midway points */
-  if (prev_ap &&
-      position_is_after_or_equal (
-        &ap_pos, &prev_ap->pos))
-    {
-      /* set prev curve point to new midway pos */
-      position_get_midway_pos (
-        &prev_ap->pos, &ap_pos, &mid_pos);
-      ac =
-        automation_region_get_next_curve_ac (
-          ap->region, prev_ap);
-      position_set_to_pos (&ac->pos, &mid_pos);
+  /*[> update midway points <]*/
+  /*if (prev_ap &&*/
+      /*position_is_after_or_equal (*/
+        /*&ap_pos, &prev_ap->pos))*/
+    /*{*/
+      /*[> set prev curve point to new midway pos <]*/
+      /*position_get_midway_pos (*/
+        /*&prev_ap->pos, &ap_pos, &mid_pos);*/
+      /*ac =*/
+        /*automation_region_get_next_curve_ac (*/
+          /*ap->region, prev_ap);*/
+      /*position_set_to_pos (&ac->pos, &mid_pos);*/
 
-      /* set pos for ap */
-      if (!next_ap)
-        {
-          position_set_to_pos (&ap->pos, &ap_pos);
-        }
-    }
-  if (next_ap &&
-      position_is_before_or_equal (
-        &ap_pos, &next_ap->pos))
-    {
-      /* set next curve point to new midway pos */
-      position_get_midway_pos (
-        &ap_pos, &next_ap->pos, &mid_pos);
-      ac =
-        automation_region_get_next_curve_ac (
-          ap->region, ap);
-      position_set_to_pos (&ac->pos, &mid_pos);
+      /*[> set pos for ap <]*/
+      /*if (!next_ap)*/
+        /*{*/
+          /*position_set_to_pos (&ap->pos, &ap_pos);*/
+        /*}*/
+    /*}*/
+  /*if (next_ap &&*/
+      /*position_is_before_or_equal (*/
+        /*&ap_pos, &next_ap->pos))*/
+    /*{*/
+      /*[> set next curve point to new midway pos <]*/
+      /*position_get_midway_pos (*/
+        /*&ap_pos, &next_ap->pos, &mid_pos);*/
+      /*ac =*/
+        /*automation_region_get_next_curve_ac (*/
+          /*ap->region, ap);*/
+      /*position_set_to_pos (&ac->pos, &mid_pos);*/
 
       /* set pos for ap - if no prev ap exists
        * or if the position is also after the
        * prev ap */
-      if ((prev_ap &&
-           position_is_after_or_equal (
-            &ap_pos, &prev_ap->pos)) ||
-          (!prev_ap))
-        {
-          position_set_to_pos (&ap->pos, &ap_pos);
-        }
-    }
-  else if (!prev_ap && !next_ap)
-    {
-      /* set pos for ap */
-      position_set_to_pos (&ap->pos, &ap_pos);
-    }
-}
+      /*if ((prev_ap &&*/
+           /*position_is_after_or_equal (*/
+            /*&ap_pos, &prev_ap->pos)) ||*/
+          /*(!prev_ap))*/
+        /*{*/
+          /*position_set_to_pos (&ap->pos, &ap_pos);*/
+        /*}*/
+    /*}*/
+  /*else if (!prev_ap && !next_ap)*/
+    /*{*/
+      /*[> set pos for ap <]*/
+      /*position_set_to_pos (&ap->pos, &ap_pos);*/
+    /*}*/
+/*}*/
 
 /**
  * Updates the value from given real value and

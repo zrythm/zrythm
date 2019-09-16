@@ -333,12 +333,12 @@ automatable_get_val (Automatable * a)
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
       plugin = a->port->plugin;
-      return plugin->enabled;
+      return (float) plugin->enabled;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
       ch = track_get_channel (a->track);
       return ch->fader.amp;
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:
-      return a->track->mute;
+      return (float) a->track->mute;
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
       ch = track_get_channel (a->track);
       return ch->fader.pan;
@@ -370,7 +370,7 @@ automatable_normalized_val_to_real (
               /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
               real_val =
                 a->minf *
-                  pow (a->maxf / a->minf, val);
+                  powf (a->maxf / a->minf, val);
             }
           else if (ctrl->is_toggle)
             {
@@ -389,7 +389,8 @@ automatable_normalized_val_to_real (
       plugin = a->port->plugin;
       return val > 0.5f;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
-      return math_get_amp_val_from_fader (val);
+      return
+        (float) math_get_amp_val_from_fader (val);
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:
       return val > 0.5f;
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
@@ -420,7 +421,7 @@ automatable_real_val_to_normalized (
             {
               /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
               normalized_val =
-                log (real_val / a->minf) /
+                logf (real_val / a->minf) /
                 (a->maxf / a->minf);
             }
           else if (ctrl->is_toggle)
@@ -440,7 +441,9 @@ automatable_real_val_to_normalized (
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
       return real_val;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
-      return math_get_fader_val_from_amp (real_val);
+      return
+        (float)
+        math_get_fader_val_from_amp (real_val);
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:
       return real_val;
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
@@ -483,7 +486,7 @@ automatable_set_val_from_normalized (
               /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
               real_val =
                 a->minf *
-                  pow (a->maxf / a->minf, val);
+                  powf (a->maxf / a->minf, val);
             }
           else if (ctrl->is_toggle)
             {
@@ -510,6 +513,7 @@ automatable_set_val_from_normalized (
       ch = track_get_channel (a->track);
       fader_set_amp (
         &ch->fader,
+        (float)
         math_get_amp_val_from_fader (val));
       break;
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:

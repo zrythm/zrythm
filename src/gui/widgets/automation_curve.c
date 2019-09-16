@@ -32,6 +32,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/ruler.h"
+#include "utils/math.h"
 #include "utils/ui.h"
 
 G_DEFINE_TYPE (
@@ -40,7 +41,8 @@ G_DEFINE_TYPE (
   GTK_TYPE_DRAWING_AREA)
 
 static double
-curve_val_from_real (AutomationCurveWidget * self)
+curve_val_from_real (
+  AutomationCurveWidget * self)
 {
   double real = self->ac->curviness;
   return
@@ -49,7 +51,8 @@ curve_val_from_real (AutomationCurveWidget * self)
 }
 
 static double
-real_val_from_curve (AutomationCurveWidget * self, double curve)
+real_val_from_curve (
+  AutomationCurveWidget * self, double curve)
 {
   return
     curve * AP_CURVINESS_RANGE +
@@ -77,11 +80,13 @@ drag_update (GtkGestureDrag * gesture,
   double diff = use_y ? offset_y - self->last_y : offset_x - self->last_x;
   /*double height = gtk_widget_get_allocated_height (GTK_WIDGET (self));*/
   double adjusted_diff = diff / 120.0;
-  double new_curve_val = clamp (curve_val_from_real (self) + adjusted_diff,
-                                1.0,
-                                0.0);
-  automation_curve_set_curviness (self->ac,
-                                  real_val_from_curve (self, new_curve_val));
+  double new_curve_val =
+    clamp (
+      curve_val_from_real (self) + adjusted_diff,
+      1.0, 0.0);
+  automation_curve_set_curviness (
+    self->ac,
+    real_val_from_curve (self, new_curve_val));
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -109,13 +114,15 @@ automation_curve_draw_cb (
   /* not cached, redraw */
   if (!self->cache)
     {
-      guint width, height;
+      gint width, height;
       GtkStyleContext *context;
 
       width =
-        gtk_widget_get_allocated_width (GTK_WIDGET (self));
+        gtk_widget_get_allocated_width (
+          GTK_WIDGET (self));
       height =
-        gtk_widget_get_allocated_height (GTK_WIDGET (self));
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (self));
       self->cached_surface =
         cairo_surface_create_similar (
           cairo_get_target (cr),
@@ -157,12 +164,12 @@ automation_curve_draw_cb (
           cairo_set_source_rgba (self->cached_cr, color->red, color->green, color->blue, 0.7);
         /*}*/
 
-      AutomationPoint * next_ap =
-        automation_region_get_ap_after_curve (
-          self->ac->region, self->ac);
-      AutomationPoint * prev_ap =
-        automation_region_get_ap_before_curve (
-          self->ac->region, self->ac);
+      /*AutomationPoint * next_ap =*/
+        /*automation_region_get_ap_after_curve (*/
+          /*self->ac->region, self->ac);*/
+      /*AutomationPoint * prev_ap =*/
+        /*automation_region_get_ap_before_curve (*/
+          /*self->ac->region, self->ac);*/
 
       double automation_point_y;
       double new_x = 0;
@@ -187,7 +194,7 @@ automation_curve_draw_cb (
           new_x = l;
           new_y = automation_point_y;
 
-          if (l == 0.0)
+          if (math_doubles_equal (l, 0.0, 0.01))
             {
               cairo_move_to (self->cached_cr,
                              new_x,

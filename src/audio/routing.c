@@ -90,8 +90,9 @@ node_trigger (
     {
       /*g_message ("all nodes that feed it have completed");*/
         /* reset reference count for next cycle */
-      g_atomic_int_set (&self->refcount,
-                        self->init_refcount);
+      g_atomic_int_set (
+        &self->refcount,
+        (unsigned int) self->init_refcount);
       /*if (self->type == ROUTE_NODE_TYPE_PLUGIN)*/
       /*g_message ("reset refcount to %d",*/
                  /*self->refcount);*/
@@ -192,7 +193,7 @@ print_node (
   char * name = get_node_name (node);
   char * str1 =
     g_strdup_printf (
-      "node [(%d) %s] refcount: %d | terminal: %s | initial: %s | playback latency: %ld",
+      "node [(%d) %s] refcount: %d | terminal: %s | initial: %s | playback latency: %d",
       node->id,
       name,
       node->refcount,
@@ -223,12 +224,12 @@ print_node (
 static void
 node_process (
   GraphNode * node,
-  const int   nframes)
+  const nframes_t   nframes)
 {
   int noroll = 0;
   Channel * chan;
 
-  int local_offset =
+  nframes_t local_offset =
     node->graph->router->local_offset;
 
   /* figure out if we are doing a no-roll */
@@ -426,7 +427,8 @@ node_process (
         {
           /* if muted clear it */
           if (port->track->mute ||
-                (mixer_has_soloed_channels () &&
+                (tracklist_has_soloed (
+                  TRACKLIST) &&
                    !port->track->solo &&
                    port->track != P_MASTER_TRACK))
             {
@@ -480,7 +482,7 @@ add_feeds (
   self->childnodes =
     (GraphNode **) realloc (
       self->childnodes,
-      (1 + self->n_childnodes) *
+      (size_t) (1 + self->n_childnodes) *
         sizeof (GraphNode *));
   self->childnodes[self->n_childnodes++] = dest;
 }
@@ -497,7 +499,7 @@ add_depends (
   self->parentnodes =
     (GraphNode **) realloc (
       self->parentnodes,
-      (self->init_refcount) *
+      (size_t) (self->init_refcount) *
         sizeof (GraphNode *));
   self->parentnodes[self->init_refcount - 1] =
     src;
@@ -636,7 +638,7 @@ graph_main_thread (void * arg)
 /**
  * Initializes as many threads as there are cores.
  */
-void
+static void
 graph_init_threads (
   Graph * graph)
 {
@@ -726,11 +728,11 @@ graph_init_threads (
  * Returns the max playback latency of the trigger
  * nodes.
  */
-static long
+static nframes_t
 graph_get_max_playback_latency (
   Graph * graph)
 {
-  long max = 0;
+  nframes_t max = 0;
   GraphNode * node;
   for (int i = 0; i < graph->n_init_triggers; i++)
     {
@@ -746,7 +748,7 @@ graph_get_max_playback_latency (
  * Returns the max playback latency of the trigger
  * nodes.
  */
-long
+nframes_t
 router_get_max_playback_latency (
   Router * router)
 {
@@ -762,9 +764,11 @@ node_connect (
   GraphNode * from,
   GraphNode * to)
 {
-  if (array_contains (from->childnodes,
-                      from->n_childnodes,
-                      to))
+  g_return_if_fail (from && to);
+  if (array_contains (
+        from->childnodes,
+        from->n_childnodes,
+        to))
     return;
 
   add_feeds (from, to);
@@ -908,12 +912,12 @@ graph_add_node (
   free (graph->trigger_queue);
   graph->trigger_queue =
     (GraphNode **) malloc (
-      ++graph->trigger_queue_size *
+      (size_t) ++graph->trigger_queue_size *
       sizeof (GraphNode *));
   graph->graph_nodes =
     (GraphNode **) realloc (
       graph->graph_nodes,
-      (1 + graph->n_graph_nodes) *
+      (size_t) (1 + graph->n_graph_nodes) *
       sizeof (GraphNode *));
 
   graph->graph_nodes[graph->n_graph_nodes] =
@@ -948,7 +952,7 @@ graph_add_initial_node (
   self->init_trigger_list =
     (GraphNode**)realloc (
       self->init_trigger_list,
-      (1 + self->n_init_triggers) *
+      (size_t) (1 + self->n_init_triggers) *
         sizeof (GraphNode*));
 
   self->init_trigger_list[
@@ -1044,13 +1048,13 @@ graph_destroy (
   free (self);
 }
 
-void
-router_cleanup (
-  Router * self)
-{
-  graph_destroy (self->graph1);
-  graph_destroy (self->graph2);
-}
+/*void*/
+/*router_cleanup (*/
+  /*Router * self)*/
+/*{*/
+  /*graph_destroy (self->graph1);*/
+  /*graph_destroy (self->graph2);*/
+/*}*/
 
 
 /* called from a terminal node (from the Graph worked-thread)
@@ -1083,7 +1087,7 @@ graph_reached_terminal_node (
       /* reset terminal reference count */
       g_atomic_int_set (
         &graph->terminal_refcnt,
-        graph->terminal_node_count);
+        (unsigned int) graph->terminal_node_count);
 
       /* and start the initial nodes */
       /*g_message ("locking trigger mutex to start initial nodes");*/
@@ -1120,8 +1124,8 @@ graph_reached_terminal_node (
 void
 router_start_cycle (
   Router *         self,
-  const int        nsamples,
-  const int        local_offset,
+  const nframes_t  nsamples,
+  const nframes_t  local_offset,
   const Position * pos)
 {
   /*self->n_trigger_queue = 0;*/
@@ -1268,7 +1272,7 @@ connect_port (
  * It returns the plugin's latency if plugin,
  * otherwise 0.
  */
-long
+static nframes_t
 get_node_single_playback_latency (
   GraphNode * node)
 {
@@ -1290,10 +1294,10 @@ get_node_single_playback_latency (
  * @param dest_latency The total destination
  * latency so far.
  */
-void
+static void
 set_node_playback_latency (
   GraphNode * node,
-  long        dest_latency)
+  nframes_t   dest_latency)
 {
   /*long max_latency = 0, parent_latency;*/
 
@@ -1534,7 +1538,7 @@ graph_new (
 
   Fader * fader;
   PassthroughProcessor * prefader;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+  for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       tr = TRACKLIST->tracks[i];
       if (!tr->channel)

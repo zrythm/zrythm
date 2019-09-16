@@ -41,15 +41,14 @@ marker_draw_cb (
   cairo_t *   cr,
   MarkerWidget * self)
 {
-  guint width, height;
   GtkStyleContext *context;
 
   context =
     gtk_widget_get_style_context (widget);
 
-  width =
+  int width =
     gtk_widget_get_allocated_width (widget);
-  height =
+  int height =
     gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (

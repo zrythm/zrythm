@@ -28,6 +28,7 @@
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (AutomatableSelectorPopoverWidget,
                automatable_selector_popover_widget,
@@ -36,7 +37,7 @@ G_DEFINE_TYPE (AutomatableSelectorPopoverWidget,
 static int
 update_info_label (
   AutomatableSelectorPopoverWidget * self,
-  char * label)
+  const char * label)
 {
   gtk_label_set_text (self->info, label);
 
@@ -231,8 +232,9 @@ on_selection_changed (
               self->automatable_treeview));
 
           self->selected_automatable = NULL;
-          update_info_label (self,
-                             "No control selected");
+          update_info_label (
+            self,
+            _("No control selected"));
         }
       else if (model ==
                  self->automatable_model)
@@ -253,8 +255,8 @@ on_selection_changed (
             "Max: %f",
             a->label,
             val_type ? val_type : "Unknown",
-            a->minf,
-            a->maxf);
+            (double) a->minf,
+            (double) a->maxf);
 
           self->selected_automatable = a;
           update_info_label (self,
@@ -374,8 +376,8 @@ automatable_selector_popover_widget_new (
     GTK_CONTAINER (self->automatable_treeview_box),
     GTK_WIDGET (self->automatable_treeview));
 
-  update_info_label (self,
-                     "No control selected");
+  update_info_label (
+    self, _("No control selected"));
 
   return self;
 }

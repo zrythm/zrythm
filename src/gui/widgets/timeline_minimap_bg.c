@@ -44,9 +44,10 @@ draw_cb (
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
-  guint width, height;
-  width = gtk_widget_get_allocated_width (widget);
-  height = gtk_widget_get_allocated_height (widget);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -106,9 +107,9 @@ draw_cb (
         {
           lane = track->lanes[j];
 
-          for (int i = 0; i < lane->num_regions; i++)
+          for (int k = 0; k < lane->num_regions; k++)
             {
-              r = lane->regions[i];
+              r = lane->regions[k];
 
               r = region_get_visible (r);
 

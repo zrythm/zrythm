@@ -70,7 +70,7 @@ edit_midi_arranger_selections_action_new (
       Velocity ** velocities =
         (Velocity **)
         malloc (
-          vel_size * sizeof (Velocity *));
+          (size_t) vel_size * sizeof (Velocity *));
       int num_vel = 0;
       track_get_velocities_in_range (
         region_get_track (CLIP_EDITOR->region),
@@ -81,9 +81,9 @@ edit_midi_arranger_selections_action_new (
         &vel_size, 1);
 
       self->vel_before =
-        malloc (num_vel * sizeof (int));
+        malloc ((size_t) num_vel * sizeof (int));
       self->vel_after =
-        malloc (num_vel * sizeof (int));
+        malloc ((size_t) num_vel * sizeof (int));
 
       Velocity * vel;
       MidiNote * mn;
@@ -170,20 +170,25 @@ edit_midi_arranger_selections_action_do (
           if (!self->first_call)
             {
               /* change velocity */
+              int vel =
+                (int) mn->vel->vel + self->diff;
+              g_warn_if_fail (
+                vel >= 0 && vel <= 127);
               velocity_set_val (
-                mn->vel, mn->vel->vel + self->diff,
+                mn->vel,
+                (uint8_t) vel,
                 AO_UPDATE_ALL);
             }
           break;
         case EMAS_TYPE_VELOCITY_RAMP:
-              /* change velocity */
-              velocity_set_val (
-                mn->vel, self->vel_after[i],
-                AO_UPDATE_ALL);
-              /* set the cache too */
-              ARRANGER_OBJ_SET_PRIMITIVE_VAL (
-                Velocity, mn->vel, cache_vel,
-                self->vel_after[i], AO_UPDATE_ALL);
+          /* change velocity */
+          velocity_set_val (
+            mn->vel, self->vel_after[i],
+            AO_UPDATE_ALL);
+          /* set the cache too */
+          ARRANGER_OBJ_SET_PRIMITIVE_VAL (
+            Velocity, mn->vel, cache_vel,
+            self->vel_after[i], AO_UPDATE_ALL);
           break;
         default:
           g_warn_if_reached ();
@@ -234,7 +239,9 @@ edit_midi_arranger_selections_action_undo (
         case EMAS_TYPE_VELOCITY_CHANGE:
           /* change velocity */
           velocity_set_val (
-            mn->vel, mn->vel->vel - self->diff,
+            mn->vel,
+            (uint8_t)
+              ((int) mn->vel->vel - self->diff),
             AO_UPDATE_ALL);
           break;
         case EMAS_TYPE_VELOCITY_RAMP:
@@ -271,9 +278,9 @@ edit_midi_arranger_selections_action_stringize (
           return g_strdup (_("Change Velocity"));
         else if (self->mas->num_midi_notes > 1)
           return g_strdup (_("Change Velocities"));
+        g_return_val_if_reached (NULL);
       default:
-        g_return_val_if_reached (
-          g_strdup (""));
+        g_return_val_if_reached (NULL);
     }
 }
 

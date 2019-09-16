@@ -67,7 +67,7 @@ typedef struct _ExportDialogWidget
  * Creates an export dialog widget and displays it.
  */
 ExportDialogWidget *
-export_dialog_widget_new ();
+export_dialog_widget_new (void);
 
 /**
  * @}

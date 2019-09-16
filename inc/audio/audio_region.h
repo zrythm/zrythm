@@ -30,6 +30,7 @@
 
 #include "audio/position.h"
 #include "audio/region.h"
+#include "utils/types.h"
 
 typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
@@ -47,10 +48,18 @@ typedef struct Region AudioRegion;
  *
  * @param add_to_project Add Region to project
  *   registry. This should be false when cloning.
+ * @param filename Filename, if loading from
+ *   file, otherwise NULL.
+ * @param frames Float array, if loading from
+ *   float array, otherwise NULL.
+ * @param nframes Number of frames per channel.
  */
 AudioRegion *
 audio_region_new (
   const char *     filename,
+  const float *    frames,
+  const long       nframes,
+  const channels_t channels,
   const Position * start_pos,
   const int        is_main);
 

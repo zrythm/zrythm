@@ -113,5 +113,7 @@ array_sort_alphabetically (char ** array,
                            int     case_sensitive)
 {
   if (!case_sensitive)
-    qsort (array, size, sizeof (char *), alphaBetize);
+    qsort (
+      array, (size_t) size,
+      sizeof (char *), alphaBetize);
 }

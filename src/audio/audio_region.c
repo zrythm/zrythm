@@ -19,6 +19,8 @@
 
 #include "audio/channel.h"
 #include "audio/audio_region.h"
+#include "audio/clip.h"
+#include "audio/pool.h"
 #include "audio/track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/audio_region.h"
@@ -31,10 +33,21 @@
 
 /**
  * Creates a Region for audio data.
+ *
+ * @param add_to_project Add Region to project
+ *   registry. This should be false when cloning.
+ * @param filename Filename, if loading from
+ *   file, otherwise NULL.
+ * @param frames Float array, if loading from
+ *   float array, otherwise NULL.
+ * @param nframes Number of frames per channel.
  */
 AudioRegion *
 audio_region_new (
   const char *     filename,
+  const float *    frames,
+  const long       nframes,
+  const channels_t channels,
   const Position * start_pos,
   const int        is_main)
 {
@@ -42,24 +55,28 @@ audio_region_new (
     calloc (1, sizeof (AudioRegion));
 
   self->type = REGION_TYPE_AUDIO;
+  self->pool_id = -1;
 
-  /* open with ad */
-  struct adinfo nfo;
-  SRC_DATA src_data;
-  float * out_buff;
-  long out_buff_size;
+  AudioClip * clip = NULL;
+  if (filename)
+    clip =
+      audio_clip_new_from_file (filename);
+  else
+    clip =
+      audio_clip_new_from_float_array (
+        frames, nframes, channels, "new audio clip");
+  g_return_val_if_fail (clip, NULL);
 
-  /* decode */
-  audio_decode (
-    &nfo, &src_data, &out_buff, &out_buff_size,
-    filename);
+  self->pool_id =
+    audio_pool_add_clip (
+      AUDIO_POOL, clip);
+  g_warn_if_fail (self->pool_id > -1);
 
   /* set end pos to sample end */
   position_set_to_pos (&self->end_pos,
                        &self->start_pos);
   position_add_frames (&self->end_pos,
-                       src_data.output_frames_gen /
-                       nfo.channels);
+                       clip->num_frames);
 
   /* init */
   region_init ((Region *) self,
@@ -67,50 +84,8 @@ audio_region_new (
                &self->end_pos,
                is_main);
 
-  /* generate a copy of the given filename in the
-   * project dir */
-  char * prj_audio_dir =
-    project_get_audio_dir (
-      PROJECT);
-  g_warn_if_fail (
-    io_file_exists (prj_audio_dir));
-  GFile * file =
-    g_file_new_for_path (filename);
-  char * basename =
-    g_file_get_basename (file);
-  char * new_path =
-    g_build_filename (
-      prj_audio_dir,
-      basename,
-      NULL);
-  char * tmp;
-  int i = 0;
-  while (io_file_exists (new_path))
-    {
-      g_free (new_path);
-      tmp =
-        g_strdup_printf (
-          "%s(%d)",
-          basename, i++);
-      new_path =
-        g_build_filename (
-          prj_audio_dir,
-          tmp,
-          NULL);
-      g_free (tmp);
-    }
-  audio_write_raw_file (
-    out_buff, src_data.output_frames_gen,
-    AUDIO_ENGINE->sample_rate,
-    nfo.channels, new_path);
-  g_free (basename);
-  g_free (file);
-  g_free (prj_audio_dir);
-
-  /*self->buff = buff;*/
-  /*self->buff_size = buff_size;*/
-  /*self->channels = channels;*/
-  /*self->filename = strdup (filename);*/
+  if (is_main)
+    audio_clip_write_to_pool (clip);
 
   return self;
 }
@@ -123,6 +98,4 @@ audio_region_new (
 void
 audio_region_free_members (AudioRegion * self)
 {
-  free (self->buff);
-  g_free (self->filename);
 }

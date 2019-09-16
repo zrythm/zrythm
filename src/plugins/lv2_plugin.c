@@ -53,17 +53,18 @@
 #include "audio/midi.h"
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
-#include "plugins/lv2_gtk.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/control.h"
 #include "plugins/lv2/log.h"
-#include "plugins/lv2/suil.h"
 #include "plugins/lv2/lv2_evbuf.h"
+#include "plugins/lv2/lv2_gtk.h"
+#include "plugins/lv2/suil.h"
 #include "plugins/lv2/worker.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "utils/io.h"
+#include "utils/math.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
@@ -98,7 +99,7 @@
 
 
 bool show_hidden = 1;
-uint32_t buffer_size = 0;
+/*uint32_t buffer_size = 0;*/
 bool dump = false;
 bool print_controls = 0;
 
@@ -141,10 +142,11 @@ init_feature(LV2_Feature* const dest, const char* const URI, void* data)
  *   loading)
 */
 static int
-_create_port(Lv2Plugin*   lv2_plugin,
-            uint32_t lv2_port_index,
-            float    default_value,
-            int            port_exists)
+_create_port (
+  Lv2Plugin*   lv2_plugin,
+  uint32_t lv2_port_index,
+  float    default_value,
+  int            port_exists)
 {
   Lv2Port* const lv2_port =
     &lv2_plugin->ports[lv2_port_index];
@@ -301,10 +303,8 @@ _create_port(Lv2Plugin*   lv2_plugin,
             PM_LILV_NODES.rsz_minimumSize);
   if (min_size && lilv_node_is_int(min_size))
     {
-      lv2_port->buf_size = lilv_node_as_int(min_size);
-      buffer_size = MAX (
-              buffer_size,
-              lv2_port->buf_size * N_BUFFER_CYCLES);
+      lv2_port->buf_size =
+        (size_t) lilv_node_as_int(min_size);
     }
   lilv_node_free(min_size);
 
@@ -332,7 +332,7 @@ lv2_plugin_init_loaded (Lv2Plugin * lv2_plgn)
  *
  * Used when loading a project.
 */
-int
+static int
 lv2_set_ports(Lv2Plugin* lv2_plugin)
 {
   float* default_values =
@@ -351,7 +351,7 @@ lv2_set_ports(Lv2Plugin* lv2_plugin)
        i < lv2_plugin->num_ports; ++i)
     {
       if (_create_port (
-            lv2_plugin, i,
+            lv2_plugin, (uint32_t) i,
             default_values[i], 1) < 0)
         {
           return -1;
@@ -362,12 +362,16 @@ lv2_set_ports(Lv2Plugin* lv2_plugin)
           lv2_plugin->lilv_plugin,
           PM_LILV_NODES.core_InputPort,
           PM_LILV_NODES.core_control);
-  if (control_input) {
-          lv2_plugin->control_in = lilv_port_get_index (lv2_plugin->lilv_plugin,
-                                                    control_input);
-  }
+  if (control_input)
+    {
+      lv2_plugin->control_in =
+        (int)
+        lilv_port_get_index (
+          lv2_plugin->lilv_plugin,
+          control_input);
+    }
 
-  free(default_values);
+  free (default_values);
 
   return 0;
 }
@@ -375,26 +379,36 @@ lv2_set_ports(Lv2Plugin* lv2_plugin)
 /**
    Create port structures from data (via create_port()) for all ports.
 */
-int
-lv2_create_ports(Lv2Plugin* lv2_plugin)
+static int
+lv2_create_ports (
+  Lv2Plugin* lv2_plugin)
 {
-  lv2_plugin->num_ports = lilv_plugin_get_num_ports(lv2_plugin->lilv_plugin);
-  lv2_plugin->ports     = (Lv2Port*) calloc (lv2_plugin->num_ports,
-                                           sizeof (Lv2Port));
-  float* default_values = (float*)calloc(
-                    lilv_plugin_get_num_ports(lv2_plugin->lilv_plugin),
-                    sizeof(float));
-  lilv_plugin_get_port_ranges_float(lv2_plugin->lilv_plugin,
-                                    NULL,
-                                    NULL,
-                                    default_values);
+  lv2_plugin->num_ports =
+    (int)
+    lilv_plugin_get_num_ports (
+      lv2_plugin->lilv_plugin);
+  lv2_plugin->ports =
+    (Lv2Port*)
+    calloc (
+      (size_t) lv2_plugin->num_ports,
+      sizeof (Lv2Port));
+  float* default_values =
+    (float*)
+    calloc (
+      lilv_plugin_get_num_ports (
+        lv2_plugin->lilv_plugin),
+      sizeof(float));
+  lilv_plugin_get_port_ranges_float (
+    lv2_plugin->lilv_plugin,
+    NULL, NULL, default_values);
 
   int i;
   for (i = 0; i < lv2_plugin->num_ports; ++i)
     {
       if (_create_port (
             lv2_plugin,
-            i, default_values[i], 0) < 0)
+            (uint32_t) i,
+            default_values[i], 0) < 0)
         {
           return -1;
         }
@@ -404,12 +418,16 @@ lv2_create_ports(Lv2Plugin* lv2_plugin)
           lv2_plugin->lilv_plugin,
           PM_LILV_NODES.core_InputPort,
           PM_LILV_NODES.core_control);
-  if (control_input) {
-          lv2_plugin->control_in = lilv_port_get_index (lv2_plugin->lilv_plugin,
-                                                    control_input);
-  }
+  if (control_input)
+    {
+      lv2_plugin->control_in =
+        (int)
+        lilv_port_get_index (
+          lv2_plugin->lilv_plugin,
+          control_input);
+    }
 
-  free(default_values);
+  free (default_values);
 
   return 0;
 }
@@ -436,7 +454,7 @@ lv2_allocate_port_buffers(Lv2Plugin* plugin)
               AUDIO_ENGINE->midi_buf_size;
             lv2_port->evbuf =
               lv2_evbuf_new (
-                buf_size,
+                (uint32_t) buf_size,
                 plugin->map.map (
                   plugin->map.handle,
                   lilv_node_as_string (
@@ -447,7 +465,7 @@ lv2_allocate_port_buffers(Lv2Plugin* plugin)
                     PM_LILV_NODES.atom_Sequence)));
             lilv_instance_connect_port (
               plugin->instance,
-              i,
+              (uint32_t) i,
               lv2_evbuf_get_buffer (
                 lv2_port->evbuf));
           }
@@ -535,7 +553,7 @@ lv2_plugin_get_lv2_port_by_symbol (
 	return NULL;
 }
 
-Lv2Control*
+static Lv2Control*
 lv2_control_by_symbol (
   Lv2Plugin * plugin,
   const char* sym)
@@ -552,16 +570,20 @@ lv2_control_by_symbol (
 }
 
 static void
-_print_control_value(Lv2Plugin* plugin, const Lv2Port* port, float value)
+_print_control_value (
+  Lv2Plugin* plugin,
+  const Lv2Port* port,
+  float value)
 {
   const LilvNode* sym =
     lilv_port_get_symbol (
       plugin->lilv_plugin, port->lilv_port);
-  g_message ("%s = %f",
-             lilv_node_as_string(sym), value);
+  g_message (
+    "%s = %f",
+    lilv_node_as_string(sym), (double) value);
 }
 
-void
+static void
 lv2_create_controls (
   Lv2Plugin* lv2_plugin,
   bool writable)
@@ -839,7 +861,9 @@ lv2_ui_write(SuilController controller,
   ev->protocol = protocol;
   ev->size     = buffer_size;
   memcpy(ev->body, buffer, buffer_size);
-  zix_ring_write(plugin->ui_events, buf, sizeof(buf));
+  zix_ring_write (
+    plugin->ui_events, buf,
+    (uint32_t) sizeof(buf));
 }
 
 /**
@@ -882,8 +906,9 @@ receive_ui_events (
         {
           assert(ev.size == sizeof(float));
           port->control = *(float*)body;
-          g_message ("receiving UI event %f",
-                     port->control);
+          g_message (
+            "receiving UI event %f",
+            (double) port->control);
         }
       else if (ev.protocol ==
                PM_URIDS.atom_eventTransfer)
@@ -938,7 +963,7 @@ lv2_init_ui(Lv2Plugin* plugin)
           TYPE_CONTROL)
         {
           lv2_gtk_ui_port_event (
-            plugin, i,
+            plugin, (uint32_t) i,
             sizeof(float), 0,
             &plugin->ports[i].control);
         }
@@ -959,7 +984,7 @@ lv2_init_ui(Lv2Plugin* plugin)
         lv2_atom_forge_deref(&forge, frame.ref);
       lv2_ui_write (
         plugin,
-        plugin->control_in,
+        (uint32_t) plugin->control_in,
         lv2_atom_total_size (atom),
         PM_URIDS.atom_eventTransfer,
         atom);
@@ -976,15 +1001,18 @@ lv2_send_to_ui (
   const void* body)
 {
   /* TODO: Be more disciminate about what to send */
-  char evbuf[sizeof(Lv2ControlChange) + sizeof(LV2_Atom)];
+  char evbuf[
+    sizeof (Lv2ControlChange) +
+    sizeof(LV2_Atom)];
   Lv2ControlChange* ev = (Lv2ControlChange*)evbuf;
-  ev->index    = port_index;
+  ev->index = port_index;
   ev->protocol = PM_URIDS.atom_eventTransfer;
-  ev->size     = sizeof(LV2_Atom) + size;
+  ev->size =
+    (uint32_t) sizeof (LV2_Atom) + size;
 
   LV2_Atom* atom = (LV2_Atom*)ev->body;
   atom->type = type;
-  atom->size = size;
+  atom->size = (uint32_t) size;
 
   if (zix_ring_write_space(plugin->plugin_events) >= sizeof(evbuf) + size) {
           zix_ring_write(plugin->plugin_events, evbuf, sizeof(evbuf));
@@ -1006,7 +1034,7 @@ lv2_send_to_ui (
 bool
 lv2_plugin_run (
   Lv2Plugin* plugin,
-  const int  nframes)
+  const nframes_t nframes)
 {
   /* Read and apply control change events from UI */
   if (plugin->window)
@@ -1034,8 +1062,9 @@ lv2_plugin_run (
   plugin->event_delta_t += nframes;
   bool send_ui_updates = false;
   uint32_t update_frames =
-    AUDIO_ENGINE->sample_rate /
-    plugin->ui_update_hz;
+    (uint32_t)
+    ((float) AUDIO_ENGINE->sample_rate /
+     plugin->ui_update_hz);
   if (plugin->has_ui &&
       plugin->window &&
       (plugin->event_delta_t > update_frames))
@@ -1144,7 +1173,7 @@ _apply_control_arg(Lv2Plugin* plugin, const char* s)
     control, sizeof(float),
     PM_URIDS.atom_Float, &val);
   g_message ("%s = %f",
-             sym, val);
+             sym, (double) val);
 
   return true;
 }
@@ -1188,7 +1217,7 @@ lv2_backend_activate_port(Lv2Plugin * lv2_plugin, uint32_t port_index)
     }
 }
 
-void
+static void
 lv2_set_feature_data (Lv2Plugin * plugin)
 {
   plugin->ext_data.data_access = NULL;
@@ -1249,7 +1278,7 @@ lv2_set_feature_data (Lv2Plugin * plugin)
  * and gets it value when a 0-size buffer is
  * passed.
  */
-long
+nframes_t
 lv2_plugin_get_latency (
   Lv2Plugin * pl)
 {
@@ -1418,39 +1447,47 @@ lv2_create_descriptor_from_lilv (
     }
 
   pd->num_audio_ins =
+    (int)
     lilv_plugin_get_num_ports_of_class (
       lp, PM_LILV_NODES.core_InputPort,
       PM_LILV_NODES.core_AudioPort, NULL);
   pd->num_midi_ins =
+    (int)
     lilv_plugin_get_num_ports_of_class (
       lp, PM_LILV_NODES.core_InputPort,
       PM_LILV_NODES.ev_EventPort, NULL)
     + count_midi_in;
   pd->num_audio_outs =
+    (int)
     lilv_plugin_get_num_ports_of_class (
       lp, PM_LILV_NODES.core_OutputPort,
       PM_LILV_NODES.core_AudioPort, NULL);
   pd->num_midi_outs =
+    (int)
     lilv_plugin_get_num_ports_of_class(
       lp, PM_LILV_NODES.core_OutputPort,
       PM_LILV_NODES.ev_EventPort, NULL)
     + count_midi_out;
   pd->num_ctrl_ins =
+    (int)
     lilv_plugin_get_num_ports_of_class (
       lp, PM_LILV_NODES.core_InputPort,
       PM_LILV_NODES.core_ControlPort,
       NULL);
   pd->num_ctrl_outs =
+    (int)
     lilv_plugin_get_num_ports_of_class (
       lp, PM_LILV_NODES.core_OutputPort,
       PM_LILV_NODES.core_ControlPort,
       NULL);
   pd->num_cv_ins =
+    (int)
     lilv_plugin_get_num_ports_of_class (
       lp, PM_LILV_NODES.core_InputPort,
       PM_LILV_NODES.core_CVPort,
       NULL);
   pd->num_cv_outs =
+    (int)
     lilv_plugin_get_num_ports_of_class (
       lp, PM_LILV_NODES.core_OutputPort,
       PM_LILV_NODES.core_CVPort,
@@ -1686,7 +1723,7 @@ lv2_instantiate (
           return -1;
         }
 
-      self->control_in = (uint32_t)-1;
+      self->control_in = -1;
     }
   else
     {
@@ -1722,7 +1759,7 @@ lv2_instantiate (
             &lv2_port->port_id);
         }
 
-      self->control_in = (uint32_t)-1;
+      self->control_in = -1;
     }
 
   /* Check that any required features are supported */
@@ -1865,11 +1902,14 @@ lv2_instantiate (
        * increasing to avoid overflows.
       */
       PM_LILV_NODES.opts.buffer_size =
-        AUDIO_ENGINE->midi_buf_size *
-        N_BUFFER_CYCLES;
+        (uint32_t)
+          (AUDIO_ENGINE->midi_buf_size *
+          N_BUFFER_CYCLES);
   }
 
-  if (PM_LILV_NODES.opts.update_rate == 0.0)
+  if (math_doubles_equal (
+        PM_LILV_NODES.opts.update_rate,
+        0.0, 0.001))
     {
       /* Calculate a reasonable UI update frequency. */
       /*self->ui_update_hz =*/
@@ -1879,6 +1919,7 @@ lv2_instantiate (
         /*MAX(25.0f, self->ui_update_hz);*/
 
       self->ui_update_hz =
+        (float)
         gdk_monitor_get_refresh_rate (
           gdk_display_get_monitor_at_window (
             gdk_display_get_default (),
@@ -1889,6 +1930,7 @@ lv2_instantiate (
     {
       /* Use user-specified UI update rate. */
       self->ui_update_hz =
+        (float)
         PM_LILV_NODES.opts.update_rate;
       self->ui_update_hz =
         MAX (1.0f, self->ui_update_hz);
@@ -1902,12 +1944,12 @@ lv2_instantiate (
   g_message ("Comm buffers: %d bytes",
              PM_LILV_NODES.opts.buffer_size);
   g_message ("Update rate:  %.01f Hz",
-             self->ui_update_hz);
+             (double) self->ui_update_hz);
 
   static float f_samplerate = 0.f;
 
   f_samplerate =
-    AUDIO_ENGINE->sample_rate;
+    (float) AUDIO_ENGINE->sample_rate;
 
   /* Build options array to pass to plugin */
   const LV2_Options_Option options[] =
@@ -2010,7 +2052,8 @@ lv2_instantiate (
   /* Create Jack ports and connect self->ports
    * to buffers */
   for (i = 0; i < self->num_ports; ++i) {
-      lv2_backend_activate_port(self, i);
+      lv2_backend_activate_port (
+        self, (uint32_t) i);
   }
 
   /* Print initial control values */
@@ -2054,7 +2097,7 @@ void
 lv2_plugin_process (
   Lv2Plugin * lv2_plugin,
   const long  g_start_frames,
-  const int   nframes)
+  const nframes_t   nframes)
 {
 #ifdef HAVE_JACK
   jack_client_t * client = AUDIO_ENGINE->client;
@@ -2063,14 +2106,16 @@ lv2_plugin_process (
 
   /* If transport state is not as expected, then
    * something has changed */
-  const bool xport_changed = (
+  const bool xport_changed =
     lv2_plugin->rolling !=
       (IS_TRANSPORT_ROLLING) ||
     /* FIXME don't save Position in Lv2Plugin.
      * only safe long frames. */
     lv2_plugin->gframes !=
       g_start_frames ||
-    lv2_plugin->bpm != TRANSPORT->bpm);
+    !math_floats_equal (
+      lv2_plugin->bpm,
+      TRANSPORT->bpm, 0.001f);
 
   uint8_t   pos_buf[256];
   LV2_Atom * lv2_pos = (LV2_Atom*) pos_buf;
@@ -2130,7 +2175,7 @@ lv2_plugin_process (
         PM_URIDS.time_beatsPerBar);
       lv2_atom_forge_float (
         forge,
-        TRANSPORT->beats_per_bar);
+        (float) TRANSPORT->beats_per_bar);
       lv2_atom_forge_key (
         forge,
         PM_URIDS.time_beatsPerMinute);
@@ -2164,7 +2209,8 @@ lv2_plugin_process (
           /* connect lv2 ports to plugin port
            * buffers */
           lilv_instance_connect_port (
-            lv2_plugin->instance, p, port->buf);
+            lv2_plugin->instance,
+            (uint32_t) p, port->buf);
         }
       else if (port->identifier.type == TYPE_CV)
         {
@@ -2174,7 +2220,7 @@ lv2_plugin_process (
            * audio port. */
           lilv_instance_connect_port (
             lv2_plugin->instance,
-            p, port->buf);
+            (uint32_t) p, port->buf);
         }
       else if (
         port->identifier.type == TYPE_EVENT &&
@@ -2265,16 +2311,17 @@ lv2_plugin_process (
       port = lv2_port->port;
       if (port->identifier.flow == FLOW_OUTPUT &&
           port->identifier.type == TYPE_CONTROL &&
-          lilv_port_has_property(
+          lilv_port_has_property (
             lv2_plugin->lilv_plugin,
             lv2_port->lilv_port,
             PM_LILV_NODES.core_reportsLatency))
         {
-          if (lv2_plugin->plugin_latency !=
-              lv2_port->control)
+          if (!math_floats_equal (
+                (float) lv2_plugin->plugin_latency,
+                lv2_port->control, 0.001f))
             {
               lv2_plugin->plugin_latency =
-                lv2_port->control;
+                (uint32_t) lv2_port->control;
 #ifdef HAVE_JACK
               jack_recompute_total_latencies (
                 client);
@@ -2286,17 +2333,17 @@ lv2_plugin_process (
           {
             void* buf = NULL;
 
-            for (LV2_Evbuf_Iterator i =
+            for (LV2_Evbuf_Iterator iter =
                    lv2_evbuf_begin(lv2_port->evbuf);
-                 lv2_evbuf_is_valid(i);
-                 i = lv2_evbuf_next(i))
+                 lv2_evbuf_is_valid(iter);
+                 iter = lv2_evbuf_next(iter))
               {
                 // Get event from LV2 buffer
                 uint32_t frames, subframes,
                          type, size;
                 uint8_t* body;
                 lv2_evbuf_get (
-                  i, &frames, &subframes,
+                  iter, &frames, &subframes,
                   &type, &size, &body);
 
                 if (buf && type ==
@@ -2306,7 +2353,7 @@ lv2_plugin_process (
                     /* Write MIDI event to port */
                     midi_events_add_event_from_buf (
                       lv2_port->port->midi_events,
-                      frames, body, size);
+                      frames, body, (int) size);
                   }
 
                 if (lv2_plugin->has_ui &&
@@ -2315,8 +2362,8 @@ lv2_plugin_process (
                   {
                     /* Forward event to UI */
                     lv2_send_to_ui (
-                      lv2_plugin, p, type,
-                      size, body);
+                      lv2_plugin, (uint32_t) p,
+                      type, size, body);
                   }
               }
           }
@@ -2333,9 +2380,9 @@ lv2_plugin_process (
               sizeof(float)];
             Lv2ControlChange* ev =
               (Lv2ControlChange*)buf;
-            ev->index    = p;
+            ev->index = (uint32_t) p;
             ev->protocol = 0;
-            ev->size     = sizeof(float);
+            ev->size = sizeof(float);
             *(float*)ev->body = lv2_port->control;
             /*g_message ("writing ui event %f",*/
                        /*lv2_port->control);*/

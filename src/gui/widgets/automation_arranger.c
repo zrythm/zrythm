@@ -48,6 +48,7 @@
 #include "audio/transport.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_track.h"
@@ -105,7 +106,9 @@ get_automation_point_y (
   int allocated_h =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
-  int point = allocated_h - ap_ratio * allocated_h;
+  int point =
+    allocated_h -
+    (int) (ap_ratio * (float) allocated_h);
   return point;
 }
 
@@ -113,50 +116,55 @@ get_automation_point_y (
  * Returns Y in pixels from the value based on the
  * allocation of the automation arranger.
  */
-static int
-get_automation_curve_y (
-  AutomationArrangerWidget * self,
-  AutomationCurve * ac)
-{
-  AutomationPoint * prev_ap =
-    automation_region_get_ap_before_curve (
-      ac->region, ac);
-  AutomationPoint * next_ap =
-    automation_region_get_ap_after_curve (
-      ac->region, ac);
+/*static int*/
+/*get_automation_curve_y (*/
+  /*AutomationArrangerWidget * self,*/
+  /*AutomationCurve * ac)*/
+/*{*/
+  /*AutomationPoint * prev_ap =*/
+    /*automation_region_get_ap_before_curve (*/
+      /*ac->region, ac);*/
+  /*AutomationPoint * next_ap =*/
+    /*automation_region_get_ap_after_curve (*/
+      /*ac->region, ac);*/
 
-  /* ratio of current value in the range */
-  float ap_ratio;
-  if (ac->curviness >= AP_MID_CURVINESS)
-    {
-      float ap_curviness_range =
-        AP_MAX_CURVINESS - AP_MID_CURVINESS;
-      ap_ratio =
-        (ac->curviness - AP_MID_CURVINESS) /
-        ap_curviness_range;
-      ap_ratio *= 0.5f; /* ratio is only for half */
-      ap_ratio += 0.5f; /* add the missing half */
-    }
-  else
-    {
-      float ap_curviness_range =
-        AP_MID_CURVINESS - AP_MIN_CURVINESS;
-      ap_ratio =
-        (ac->curviness - AP_MIN_CURVINESS) /
-        ap_curviness_range;
-      ap_ratio *= 0.5f; /* ratio is only for half */
-    }
-  int prev_ap_y_pos =
-    get_automation_point_y (self, prev_ap);
-  int next_ap_y_pos =
-    get_automation_point_y (self, next_ap);
-  int ap_max = MAX (prev_ap_y_pos, next_ap_y_pos);
-  int ap_min = MIN (prev_ap_y_pos, next_ap_y_pos);
-  int allocated_h = ap_max - ap_min;
-  int point = ap_max - ap_ratio * allocated_h;
+  /*[> ratio of current value in the range <]*/
+  /*float ap_ratio;*/
+  /*if (ac->curviness >= AP_MID_CURVINESS)*/
+    /*{*/
+      /*float ap_curviness_range =*/
+        /*AP_MAX_CURVINESS - AP_MID_CURVINESS;*/
+      /*ap_ratio =*/
+        /*(float) (ac->curviness - AP_MID_CURVINESS) /*/
+        /*ap_curviness_range;*/
+      /*ap_ratio *= 0.5f; [> ratio is only for half <]*/
+      /*ap_ratio += 0.5f; [> add the missing half <]*/
+    /*}*/
+  /*else*/
+    /*{*/
+      /*float ap_curviness_range =*/
+        /*(float) AP_MID_CURVINESS -*/
+        /*(float) AP_MIN_CURVINESS;*/
+      /*ap_ratio =*/
+        /*(float) (ac->curviness - AP_MIN_CURVINESS) /*/
+        /*ap_curviness_range;*/
+      /*ap_ratio *= 0.5f; [> ratio is only for half <]*/
+    /*}*/
+  /*int prev_ap_y_pos =*/
+    /*get_automation_point_y (self, prev_ap);*/
+  /*int next_ap_y_pos =*/
+    /*get_automation_point_y (self, next_ap);*/
+  /*int ap_max =*/
+    /*MAX (prev_ap_y_pos, next_ap_y_pos);*/
+  /*int ap_min =*/
+    /*MIN (prev_ap_y_pos, next_ap_y_pos);*/
+  /*int allocated_h = ap_max - ap_min;*/
+  /*int point =*/
+    /*ap_max -*/
+    /*(int) (ap_ratio * (float) allocated_h);*/
 
-  return point;
-}
+  /*return point;*/
+/*}*/
 
 /**
  * To be called from get_child_position in parent widget.
@@ -487,8 +495,9 @@ automation_arranger_widget_on_drag_begin_ap_hit (
   /* update arranger action */
   ar_prv->action =
     UI_OVERLAY_ACTION_STARTING_MOVING;
-  ui_set_cursor_from_name (GTK_WIDGET (ap_widget),
-                 "grabbing");
+  ui_set_cursor_from_name (
+    GTK_WIDGET (ap_widget),
+    "grabbing");
 
   /* update selection */
   if (ar_prv->ctrl_held)
@@ -535,7 +544,7 @@ automation_arranger_widget_create_ap (
   float value =
     automatable_normalized_val_to_real (
       at->automatable,
-      (height - start_y) / height);
+      (float) ((height - start_y) / height));
 
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
@@ -725,26 +734,26 @@ automation_arranger_widget_move_items_y (
  * automation_selections_get_start_pos and the
  * arranger's earliest_obj_start_pos.
  */
-static long
-get_moved_diff (
-  AutomationArrangerWidget * self)
-{
-#define GET_DIFF(sc,pos_name) \
-  if (AUTOMATION_SELECTIONS->num_##sc##s) \
-    { \
-      return \
-        position_to_ticks ( \
-          &sc##_get_main_trans_##sc ( \
-            AUTOMATION_SELECTIONS->sc##s[0])->pos_name) - \
-        position_to_ticks ( \
-          &sc##_get_main_##sc ( \
-            AUTOMATION_SELECTIONS->sc##s[0])->pos_name); \
-    }
+/*static long*/
+/*get_moved_diff (*/
+  /*AutomationArrangerWidget * self)*/
+/*{*/
+/*#define GET_DIFF(sc,pos_name) \*/
+  /*if (AUTOMATION_SELECTIONS->num_##sc##s) \*/
+    /*{ \*/
+      /*return \*/
+        /*position_to_ticks ( \*/
+          /*&sc##_get_main_trans_##sc ( \*/
+            /*AUTOMATION_SELECTIONS->sc##s[0])->pos_name) - \*/
+        /*position_to_ticks ( \*/
+          /*&sc##_get_main_##sc ( \*/
+            /*AUTOMATION_SELECTIONS->sc##s[0])->pos_name); \*/
+    /*}*/
 
-  GET_DIFF (automation_point, pos);
+  /*GET_DIFF (automation_point, pos);*/
 
-  g_return_val_if_reached (0);
-}
+  /*g_return_val_if_reached (0);*/
+/*}*/
 
 /**
  * Sets the default cursor in all selected regions and
@@ -933,7 +942,7 @@ add_children_from_region (
 /**
  * Refreshes visibility of children.
  */
-void
+static void
 automation_arranger_widget_refresh_visibility (
   AutomationArrangerWidget * self)
 {
@@ -1010,14 +1019,14 @@ automation_arranger_widget_refresh_children (
 /**
  * Scroll to the given position.
  */
-void
-automation_arranger_widget_scroll_to (
-  AutomationArrangerWidget * self,
-  Position *               pos)
-{
-  /* TODO */
+/*void*/
+/*automation_arranger_widget_scroll_to (*/
+  /*AutomationArrangerWidget * self,*/
+  /*Position *               pos)*/
+/*{*/
+  /*[> TODO <]*/
 
-}
+/*}*/
 
 static gboolean
 on_focus (GtkWidget       *widget,

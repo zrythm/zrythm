@@ -26,6 +26,8 @@
 #ifndef __AUDIO_METRONOME_H__
 #define __AUDIO_METRONOME_H__
 
+#include "utils/types.h"
+
 /**
  * @addtogroup audio
  *
@@ -52,20 +54,26 @@ typedef enum MetronomeType
 typedef struct Metronome
 {
   /** Absolute path of the "emphasis" sample. */
-  char *  emphasis_path;
+  char *     emphasis_path;
 
   /** Absolute path of the "normal" sample. */
-  char *  normal_path;
+  char *     normal_path;
 
   /** The emphasis sample. */
-  float * emphasis;
-  long    emphasis_size;
-  int     emphasis_channels;
+  float *    emphasis;
+
+  /** Size per channel. */
+  long       emphasis_size;
+
+  channels_t emphasis_channels;
 
   /** The normal sample. */
-  float * normal;
-  long    normal_size;
-  int     normal_channels;
+  float *    normal;
+
+  /** Size per channel. */
+  long       normal_size;
+
+  channels_t normal_channels;
 } Metronome;
 
 /**
@@ -86,12 +94,12 @@ metronome_init (
  * @param nframes Number of frames to fill. These must
  *   not exceed the buffer size.
  */
-void
-metronome_fill_buffer (
-  Metronome * self,
-  float *     buf,
-  const long  g_start_frame,
-  const int   nframes);
+//void
+//metronome_fill_buffer (
+  //Metronome * self,
+  //float *     buf,
+  //const long  g_start_frame,
+  //const int   nframes);
 
 /**
  * @}

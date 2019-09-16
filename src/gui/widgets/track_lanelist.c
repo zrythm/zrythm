@@ -128,7 +128,7 @@ track_lanelist_widget_refresh (
         {
           TrackLaneWidget * lw =
             Z_TRACK_LANE_WIDGET (iter->data);
-          TrackLane * lane = lw->lane;
+          lane = lw->lane;
           GValue a = G_VALUE_INIT;
           g_value_init (&a, G_TYPE_INT);
           g_value_set_int (&a, lane->handle_pos);

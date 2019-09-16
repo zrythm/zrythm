@@ -48,7 +48,7 @@ G_DECLARE_DERIVABLE_TYPE (RulerWidget,
  *
  * Used by the ruler and timeline.
  */
-#define DEFAULT_PX_PER_TICK 0.03f
+#define DEFAULT_PX_PER_TICK 0.03
 
 /**
  * Pixels to put before 1st bar.
@@ -57,8 +57,8 @@ G_DECLARE_DERIVABLE_TYPE (RulerWidget,
 #define SPACE_BEFORE_START_F 10.f
 #define SPACE_BEFORE_START_D 10.0
 
-#define MIN_ZOOM_LEVEL 0.05f
-#define MAX_ZOOM_LEVEL 80.f
+#define MIN_ZOOM_LEVEL 0.05
+#define MAX_ZOOM_LEVEL 80.
 
 typedef struct Position Position;
 typedef struct _RulerMarkerWidget RulerMarkerWidget;
@@ -126,7 +126,7 @@ ruler_widget_get_private (RulerWidget * self);
 int
 ruler_widget_set_zoom_level (
   RulerWidget * self,
-  float         zoom_level);
+  double        zoom_level);
 
 /**
  * Returns the beat interval for drawing vertical

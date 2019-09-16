@@ -245,7 +245,7 @@ typedef struct Region
   /** MIDI notes. */
   MidiNote **     midi_notes;
   int             num_midi_notes;
-  int             midi_notes_size;
+  size_t          midi_notes_size;
 
   /**
    * Unended notes started in recording with MIDI NOTE ON
@@ -264,19 +264,8 @@ typedef struct Region
   /** Position to fade out from. */
   Position            fade_out_pos;
 
-  /**
-   * Buffer holding samples/frames.
-   */
-  float *             buff;
-  long                buff_size;
-
-  /** Number of channels in the audio buffer. */
-  int                 channels;
-
-  /**
-   * Original filename.
-   */
-  char *              filename;
+  /** Audio pool ID of the associated audio file. */
+  int                 pool_id;
 
   /* ==== AUDIO REGION END ==== */
 
@@ -289,7 +278,7 @@ typedef struct Region
    */
   AutomationPoint ** aps;
   int                num_aps;
-  int                aps_size;
+  size_t             aps_size;
 
   /**
    * The AutomationCurve's.
@@ -321,7 +310,7 @@ typedef struct Region
   /** ChordObject's in this Region. */
   ChordObject **     chord_objects;
   int                num_chord_objects;
-  int                chord_objects_size;
+  size_t             chord_objects_size;
 
   /* ==== CHORD REGION END ==== */
 
@@ -367,11 +356,9 @@ static const cyaml_schema_field_t
   CYAML_FIELD_MAPPING (
     "fade_out_pos", CYAML_FLAG_DEFAULT,
     Region, fade_out_pos, position_fields_schema),
-  CYAML_FIELD_STRING_PTR (
-    "filename",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Region, filename,
-   	0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "pool_id", CYAML_FLAG_DEFAULT,
+    Region, pool_id),
 	CYAML_FIELD_STRING_PTR (
     "linked_region_name",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,

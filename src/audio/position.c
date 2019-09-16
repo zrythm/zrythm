@@ -93,15 +93,15 @@ cmpfunc (
   const void * a,
   const void * b)
 {
-  Position * posa = (Position *) a;
-  Position * posb = (Position *) b;
+  const Position * posa = (const Position *) a;
+  const Position * posb = (const Position *) b;
   return position_compare (posa, posb);
 }
 
 void
 position_sort_array (
-  Position * array,
-  const int  size)
+  Position *   array,
+  const size_t size)
 {
   qsort (array, size, sizeof (Position),
          cmpfunc);
@@ -215,8 +215,8 @@ position_set_sixteenth (Position * position,
  */
 void
 position_set_tick (
-  Position * position,
-  int      tick)
+  Position *  position,
+  long        tick)
 {
   while (tick < 0 || tick > TICKS_PER_SIXTEENTH_NOTE - 1)
     {
@@ -242,7 +242,7 @@ position_set_tick (
             position->sixteenths + 1);
         }
     }
-  position->ticks = tick;
+  position->ticks = (int) tick;
   position->total_ticks =
     position_to_ticks (position);
   position->frames = position_to_frames (position);
@@ -515,45 +515,53 @@ position_to_ticks (
  * Sets position to the given total tick count.
  */
 inline void
-position_from_ticks (Position * pos,
-                     long       ticks)
+position_from_ticks (
+  Position * pos,
+  long       ticks)
 {
   g_warn_if_fail (TRANSPORT->lticks_per_bar > 0);
   pos->total_ticks = ticks;
   if (ticks >= 0)
     {
       pos->bars =
-        ticks / TRANSPORT->lticks_per_bar + 1;
+        (int)
+        (ticks / TRANSPORT->lticks_per_bar + 1);
       ticks =
         ticks % TRANSPORT->lticks_per_bar;
       pos->beats =
-        ticks / TRANSPORT->lticks_per_beat + 1;
+        (int)
+        (ticks / TRANSPORT->lticks_per_beat + 1);
       ticks =
         ticks % TRANSPORT->lticks_per_beat;
       pos->sixteenths =
-        ticks / TICKS_PER_SIXTEENTH_NOTE + 1;
+        (int)
+        (ticks / TICKS_PER_SIXTEENTH_NOTE + 1);
       ticks = ticks % TICKS_PER_SIXTEENTH_NOTE;
-      pos->ticks = ticks;
+      pos->ticks = (int) ticks;
     }
   else
     {
       pos->bars =
-        ticks / TRANSPORT->lticks_per_bar - 1;
+        (int)
+        (ticks / TRANSPORT->lticks_per_bar - 1);
       ticks =
         ticks % TRANSPORT->lticks_per_bar;
       pos->beats =
-        ticks / TRANSPORT->lticks_per_beat - 1;
+        (int)
+        (ticks / TRANSPORT->lticks_per_beat - 1);
       ticks =
         ticks % TRANSPORT->lticks_per_beat;
       pos->sixteenths =
-        ticks / TICKS_PER_SIXTEENTH_NOTE - 1;
+        (int)
+        (ticks / TICKS_PER_SIXTEENTH_NOTE - 1);
       ticks = ticks % TICKS_PER_SIXTEENTH_NOTE;
-      pos->ticks = ticks;
+      pos->ticks = (int) ticks;
     }
 }
 
 /**
- * Calculates the midway point between the two positions and sets it on pos.
+ * Calculates the midway point between the two
+ * positions and sets it on pos.
  */
 inline void
 position_get_midway_pos (
@@ -561,7 +569,7 @@ position_get_midway_pos (
   Position * end_pos,
   Position * pos) ///< position to set to
 {
-  int end_ticks, start_ticks, ticks_diff;
+  long end_ticks, start_ticks, ticks_diff;
   start_ticks = position_to_ticks (start_pos);
   end_ticks = position_to_ticks (end_pos);
   ticks_diff = end_ticks - start_ticks;

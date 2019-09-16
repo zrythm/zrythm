@@ -69,7 +69,7 @@ typedef struct TrackLane
   /** Regions in this track. */
   Region **           regions;
   int                 num_regions;
-  int                 regions_size;
+  size_t              regions_size;
 
   /** Pointer back to the owner Track. */
   Track *             track;
@@ -78,7 +78,7 @@ typedef struct TrackLane
   int                 track_pos;
 
   /** MIDI channel, if MIDI lane, starting at 1. */
-  int                 midi_ch;
+  uint8_t             midi_ch;
 
 } TrackLane;
 
@@ -108,6 +108,9 @@ track_lane_fields_schema[] =
 	CYAML_FIELD_INT (
     "track_pos", CYAML_FLAG_DEFAULT,
     TrackLane, track_pos),
+	CYAML_FIELD_UINT (
+    "midi_ch", CYAML_FLAG_DEFAULT,
+    TrackLane, midi_ch),
 
 	CYAML_FIELD_END
 };

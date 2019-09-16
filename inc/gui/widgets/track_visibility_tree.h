@@ -73,7 +73,7 @@ track_visibility_tree_widget_refresh (
  * Instantiates a new TrackVisibilityTreeWidget.
  */
 TrackVisibilityTreeWidget *
-track_visibility_tree_widget_new ();
+track_visibility_tree_widget_new (void);
 
 /**
  * @}

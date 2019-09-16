@@ -24,33 +24,69 @@
 
 #include <stdint.h>
 
+#include "utils/types.h"
+
 #define RMS_FRAMES 32
 
 /**
  * Returns fader value 0.0 to 1.0 from amp value 0.0 to 2.0 (+6 dbFS).
  */
-double math_get_fader_val_from_amp (double amp);
+sample_t
+math_get_fader_val_from_amp (
+  sample_t amp);
 
 /**
  * Returns amp value 0.0 to 2.0 (+6 dbFS) from fader value 0.0 to 1.0.
  */
-double math_get_amp_val_from_fader (double fader);
+sample_t
+math_get_amp_val_from_fader (
+  sample_t fader);
 
 /**
  * Calculate db using RMS method.
+ *
+ * @param buf Buffer containing the samples.
+ * @param nframes Number of samples.
  */
-double math_calculate_rms_db (
-  float *   buf, ///< buffer containing the samples
-  int  nframes); ///< number of samples
+sample_t
+math_calculate_rms_db (
+  sample_t *      buf,
+  const nframes_t nframes);
 
 /**
  * Convert from amplitude 0.0 to 2.0 to dbFS.
  */
-double math_amp_to_dbfs (double amp);
+sample_t
+math_amp_to_dbfs (
+  sample_t amp);
 
 /**
  * Convert form dbFS to amplitude 0.0 to 2.0.
  */
-double math_dbfs_to_amp (double dbfs);
+sample_t
+math_dbfs_to_amp (
+  sample_t dbfs);
+
+/**
+ * Checks if 2 floating points are equal.
+ *
+ * @param epsilon The allowed differene.
+ */
+int
+math_floats_equal (
+  const float a,
+  const float b,
+  const float epsilon);
+
+/**
+ * Checks if 2 floating points are equal.
+ *
+ * @param epsilon The allowed differene.
+ */
+int
+math_doubles_equal (
+  const double a,
+  const double b,
+  const double epsilon);
 
 #endif

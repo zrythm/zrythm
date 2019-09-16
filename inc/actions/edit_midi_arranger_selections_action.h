@@ -26,6 +26,8 @@
 #ifndef __UNDO_EDIT_MA_SELECTIONS_ACTION_H__
 #define __UNDO_EDIT_MA_SELECTIONS_ACTION_H__
 
+#include <stdint.h>
+
 #include "actions/undoable_action.h"
 #include "audio/position.h"
 
@@ -87,10 +89,10 @@ typedef struct EditMidiArrangerSelectionsAction
   //int                    vel_size;
 
   /** The original velocities when ramping. */
-  int *                  vel_before;
+  uint8_t *              vel_before;
 
   /** The velocities changed to when ramping. */
-  int *                  vel_after;
+  uint8_t *              vel_after;
 
 } EditMidiArrangerSelectionsAction;
 

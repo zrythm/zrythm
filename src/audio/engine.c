@@ -38,6 +38,7 @@
 #include "audio/metronome.h"
 #include "audio/midi.h"
 #include "audio/mixer.h"
+#include "audio/pool.h"
 #include "audio/routing.h"
 #include "audio/sample_playback.h"
 #include "audio/sample_processor.h"
@@ -58,18 +59,26 @@
 #include <jack/midiport.h>
 #endif
 
- void
-engine_update_frames_per_tick (int beats_per_bar,
-                               int bpm,
-                               int sample_rate)
+/**
+ * Updates frames per tick based on the time sig,
+ * the BPM, and the sample rate
+ */
+void
+engine_update_frames_per_tick (
+  AudioEngine *       self,
+  const int           beats_per_bar,
+  const bpm_t         bpm,
+  const sample_rate_t sample_rate)
 {
-  AUDIO_ENGINE->frames_per_tick =
-    (sample_rate * 60.f * beats_per_bar) /
-    (bpm * TRANSPORT->ticks_per_bar);
+  self->frames_per_tick =
+    (int)
+    (((float) sample_rate * 60.f *
+       (float) beats_per_bar) /
+    (bpm * (float) TRANSPORT->ticks_per_bar));
 
   /* update positions */
   transport_update_position_frames (
-    &AUDIO_ENGINE->transport);
+    &self->transport);
 
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
@@ -328,6 +337,17 @@ engine_init (
   stereo_ports_connect (
     SAMPLE_PROCESSOR->stereo_out,
     self->control_room.monitor_fader.stereo_in, 1);
+
+  /** init audio pool */
+  if (loading)
+    {
+      audio_pool_init_loaded (self->pool);
+    }
+  else
+    {
+      self->pool =
+        audio_pool_new ();
+    }
 }
 
 /**
@@ -367,7 +387,7 @@ engine_is_port_own (
 void
 engine_realloc_port_buffers (
   AudioEngine * self,
-  int           nframes)
+  nframes_t     nframes)
 {
   int i, j;
 
@@ -417,31 +437,32 @@ engine_realloc_port_buffers (
   AUDIO_ENGINE->nframes = nframes;
 }
 
-void
-audio_engine_close (AudioEngine * self)
-{
-  g_message ("closing audio engine...");
+/*void*/
+/*audio_engine_close (*/
+  /*AudioEngine * self)*/
+/*{*/
+  /*g_message ("closing audio engine...");*/
 
-  switch (self->audio_backend)
-    {
-    case AUDIO_BACKEND_DUMMY:
-      break;
-#ifdef HAVE_JACK
-    case AUDIO_BACKEND_JACK:
-      jack_client_close (AUDIO_ENGINE->client);
-      break;
-#endif
-#ifdef HAVE_PORT_AUDIO
-    case AUDIO_BACKEND_PORT_AUDIO:
-      pa_terminate (AUDIO_ENGINE);
-      break;
-#endif
-    case NUM_AUDIO_BACKENDS:
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-}
+  /*switch (self->audio_backend)*/
+    /*{*/
+    /*case AUDIO_BACKEND_DUMMY:*/
+      /*break;*/
+/*#ifdef HAVE_JACK*/
+    /*case AUDIO_BACKEND_JACK:*/
+      /*jack_client_close (AUDIO_ENGINE->client);*/
+      /*break;*/
+/*#endif*/
+/*#ifdef HAVE_PORT_AUDIO*/
+    /*case AUDIO_BACKEND_PORT_AUDIO:*/
+      /*pa_terminate (AUDIO_ENGINE);*/
+      /*break;*/
+/*#endif*/
+    /*case NUM_AUDIO_BACKENDS:*/
+    /*default:*/
+      /*g_warn_if_reached ();*/
+      /*break;*/
+    /*}*/
+/*}*/
 
 /**
  * Clears the underlying backend's output buffers.
@@ -449,7 +470,7 @@ audio_engine_close (AudioEngine * self)
 static void
 clear_output_buffers (
   AudioEngine * self,
-  int           nframes)
+  nframes_t     nframes)
 {
   switch (self->audio_backend)
     {
@@ -622,7 +643,7 @@ static void
 find_and_queue_metronome (
   const Position * start_pos,
   const Position * end_pos,
-  const int        loffset)
+  const nframes_t  loffset)
 {
   /* find each bar / beat change from start
    * to finish */
@@ -637,7 +658,7 @@ find_and_queue_metronome (
 
 
   Position bar_pos;
-  int bar_offset;
+  nframes_t bar_offset;
   for (int i =
          start_pos->beats == 1 &&
          start_pos->sixteenths == 1 &&
@@ -650,7 +671,8 @@ find_and_queue_metronome (
       position_set_to_bar (
         &bar_pos, i + 1);
       bar_offset =
-        bar_pos.frames - start_pos->frames;
+        (nframes_t)
+        (bar_pos.frames - start_pos->frames);
       sample_processor_queue_metronome (
         SAMPLE_PROCESSOR,
         METRONOME_TYPE_EMPHASIS,
@@ -666,7 +688,7 @@ find_and_queue_metronome (
     num_beats_after--;
 
   Position beat_pos;
-  int beat_offset;
+  nframes_t beat_offset;
   for (int i =
          start_pos->sixteenths == 1 &&
          start_pos->ticks == 0 ?
@@ -684,7 +706,8 @@ find_and_queue_metronome (
       if (beat_pos.beats != 1)
         {
           beat_offset =
-            beat_pos.frames - start_pos->frames;
+            (nframes_t)
+            (beat_pos.frames - start_pos->frames);
           sample_processor_queue_metronome (
             SAMPLE_PROCESSOR,
             METRONOME_TYPE_NORMAL,
@@ -700,9 +723,9 @@ find_and_queue_metronome (
  */
 static void
 queue_metronome_events (
- AudioEngine * self,
- const int     loffset,
- const int     nframes)
+ AudioEngine *   self,
+ const nframes_t loffset,
+ const nframes_t nframes)
 {
   Position pos, bar_pos, beat_pos, unlooped_playhead;
   position_init (&bar_pos);
@@ -728,6 +751,7 @@ queue_metronome_events (
       find_and_queue_metronome (
         &TRANSPORT->loop_start_pos, &pos,
         loffset +
+          (nframes_t)
           (TRANSPORT->loop_end_pos.frames -
            PLAYHEAD->frames));
     }
@@ -751,8 +775,9 @@ queue_metronome_events (
 int
 engine_process (
   AudioEngine * self,
-  uint32_t      _nframes)
+  nframes_t     _nframes)
 {
+
   /* Clear output buffers just in case we have to
    * return early */
   clear_output_buffers (self, _nframes);
@@ -766,10 +791,8 @@ engine_process (
   /*count++;*/
   /*self->cycle = count;*/
 
-  uint32_t nframes = _nframes;
-
   /* run pre-process code */
-  engine_process_prepare (self, nframes);
+  engine_process_prepare (self, _nframes);
 
   if (AUDIO_ENGINE->skip_cycle)
     {
@@ -778,16 +801,18 @@ engine_process (
     }
 
   /* puts MIDI in events in the MIDI in port */
-  receive_midi_events (self, nframes, 1);
+  receive_midi_events (self, _nframes, 1);
 
-  long route_latency = 0;
+  nframes_t route_latency = 0;
   GraphNode * start_node;
-  int i, num_samples;
+  int i;
+  nframes_t num_samples;
+  nframes_t nframes = _nframes;
   while (self->remaining_latency_preroll > 0)
     {
       num_samples =
         MIN (
-          nframes, self->remaining_latency_preroll);
+          _nframes, self->remaining_latency_preroll);
       for (i = 0;
            i < MIXER->router.graph2->
              n_init_triggers;
@@ -920,7 +945,8 @@ engine_post_process (
             AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
         {
           jack_transport_locate (
-            self->client, PLAYHEAD->frames);
+            self->client,
+            (jack_nframes_t) PLAYHEAD->frames);
         }
     }
 
@@ -941,15 +967,15 @@ engine_post_process (
  */
 void
 engine_fill_out_bufs (
-  AudioEngine * self,
-  int           nframes)
+  AudioEngine *   self,
+  const nframes_t nframes)
 {
   switch (self->audio_backend)
     {
     case AUDIO_BACKEND_DUMMY:
       break;
     case AUDIO_BACKEND_ALSA:
-#ifdef __linux__
+#ifdef HAVE_ALSA
       engine_alsa_fill_out_bufs (self, nframes);
 #endif
       break;
@@ -972,14 +998,15 @@ engine_fill_out_bufs (
  * Closes any connections and free's data.
  */
 void
-engine_tear_down ()
+engine_tear_down (
+  AudioEngine * self)
 {
   g_message ("tearing down audio engine...");
 
 #ifdef HAVE_JACK
-  if (AUDIO_ENGINE->audio_backend ==
+  if (self->audio_backend ==
         AUDIO_BACKEND_JACK)
-    jack_tear_down ();
+    jack_tear_down (self);
 #endif
 
   /* TODO free data */

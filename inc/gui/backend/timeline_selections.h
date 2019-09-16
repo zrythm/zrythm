@@ -120,31 +120,6 @@ timeline_selections_get_lowest_track (
   int                  transient);
 
 /**
- * Set all transient Position's to their main
- * counterparts.
- */
-void
-timeline_selections_reset_transient_poses (
-  TimelineSelections * ts);
-
-/**
- * Set all main Position's to their transient
- * counterparts.
- */
-void
-timeline_selections_set_to_transient_poses (
-  TimelineSelections * ts);
-
-/**
- * Similar to set_to_transient_poses, but handles
- * values for objects that support them (like
- * AutomationPoint's).
- */
-void
-timeline_selections_set_to_transient_values (
-  TimelineSelections * ts);
-
-/**
  * Code to run after deserializing.
  */
 void

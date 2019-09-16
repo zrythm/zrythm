@@ -139,6 +139,8 @@ inspector_track_widget_init (
     TRACK_PROPERTIES_EXPANDER_WIDGET_TYPE);
   g_type_ensure (
     TRACK_INPUT_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (
+    PORTS_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 }

@@ -56,7 +56,7 @@ init_descriptors (
       descr->value = i;
       descr->marked = 0;
       descr->visible = 1;
-      descr->custom_name = "";
+      descr->custom_name = g_strdup ("");
 
       descr->note_name =
         g_strdup_printf (

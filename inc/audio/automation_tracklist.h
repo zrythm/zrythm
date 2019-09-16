@@ -75,7 +75,7 @@ typedef struct AutomationTracklist
    * Allocated size for the automation track
    * pointer array.
    */
-  int               ats_size;
+  size_t            ats_size;
 
   /**
    * Pointer back to the track.

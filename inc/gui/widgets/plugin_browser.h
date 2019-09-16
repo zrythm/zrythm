@@ -26,6 +26,8 @@
 #ifndef __GUI_WIDGETS_PLUGIN_BROWSER_H__
 #define __GUI_WIDGETS_PLUGIN_BROWSER_H__
 
+#include "plugins/plugin.h"
+
 #include <gtk/gtk.h>
 
 #define PLUGIN_BROWSER_WIDGET_TYPE \
@@ -112,7 +114,7 @@ typedef struct _PluginBrowserWidget
   GtkLabel *           plugin_info;
 
   /** The selected categories. */
-  int                  selected_categories[60];
+  PluginCategory       selected_categories[60];
   int                  num_selected_categories;
 
   GtkTreeModel *       collection_tree_model;
@@ -137,7 +139,7 @@ typedef struct _PluginBrowserWidget
  * Instantiates a new PluginBrowserWidget.
  */
 PluginBrowserWidget *
-plugin_browser_widget_new ();
+plugin_browser_widget_new (void);
 
 /**
  * @}

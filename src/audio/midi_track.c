@@ -76,8 +76,8 @@ void
 midi_track_fill_midi_events (
   Track * track,
   const long        g_start_frames,
-  const int         local_start_frame,
-  uint32_t          nframes,
+  const nframes_t local_start_frame,
+  nframes_t     nframes,
   MidiEvents *      midi_events)
 {
   int i, j, k, jj, num_loops;
@@ -102,7 +102,7 @@ midi_track_fill_midi_events (
       TRANSPORT, g_start_frames, nframes);
   int loop_point_met = g_end_frames < g_start_frames;
   /*int diff_from_loop_start;*/
-  int diff_to_loop_end;
+  unsigned int diff_to_loop_end;
 
   if (loop_point_met)
     {
@@ -110,8 +110,9 @@ midi_track_fill_midi_events (
         /*g_end_frames -*/
         /*TRANSPORT->loop_start_pos.frames;*/
       diff_to_loop_end =
-        TRANSPORT->loop_end_pos.frames -
-        g_start_frames;
+        (unsigned int)
+        (TRANSPORT->loop_end_pos.frames -
+         g_start_frames);
       /*g_message (*/
         /*"loop point met for %s at %ld"*/
         /*"(diff from loop start %d | "*/
@@ -271,7 +272,8 @@ midi_track_fill_midi_events (
                         midi_note->region->
                           lane->midi_ch,
                         midi_note->val,
-                        diff_to_loop_end - 1,
+                        (midi_time_t)
+                        (diff_to_loop_end - 1),
                         1);
                     }
                 }
@@ -312,8 +314,9 @@ midi_track_fill_midi_events (
                             midi_note->region->
                               lane->midi_ch,
                             midi_note->val,
-                            region_end_adjusted -
-                              local_pos,
+                            (midi_time_t)
+                            (region_end_adjusted -
+                              local_pos),
                             1);
                         }
                     }
@@ -373,8 +376,9 @@ midi_track_fill_midi_events (
                             midi_note->region->
                               lane->midi_ch,
                             midi_note->val,
-                            (region_end_frames - 1) -
-                              g_start_frames,
+                            (midi_time_t)
+                            ((region_end_frames - 1) -
+                              g_start_frames),
                             1);
                         }
                     }
@@ -419,9 +423,10 @@ midi_track_fill_midi_events (
                             midi_note->region->
                               lane->midi_ch,
                             midi_note->val,
-                            (loop_end_adjusted -
+                            (midi_time_t)
+                            ((loop_end_adjusted -
                               local_pos) +
-                              diff_to_loop_end,
+                              diff_to_loop_end),
                             1);
                         }
                     }
@@ -465,9 +470,10 @@ midi_track_fill_midi_events (
                           lane->midi_ch,
                         midi_note->val,
                         midi_note->vel->vel,
-                        (loop_end_adjusted -
+                        (midi_time_t)
+                        ((loop_end_adjusted -
                           local_pos) +
-                          mn_start_frames,
+                          mn_start_frames),
                         1);
                     }
                   /* check for note on event in the
@@ -489,9 +495,10 @@ midi_track_fill_midi_events (
                           lane->midi_ch,
                         midi_note->val,
                         midi_note->vel->vel,
-                        (mn_start_frames -
+                        (midi_time_t)
+                        ((mn_start_frames -
                            local_pos) +
-                         diff_to_loop_end,
+                         diff_to_loop_end),
                         1);
                     }
 
@@ -517,10 +524,10 @@ midi_track_fill_midi_events (
                         midi_note->region->
                           lane->midi_ch,
                         midi_note->val,
-                        /*start_frame +*/
-                        (mn_end_frames -
+                        (midi_time_t)
+                        ((mn_end_frames -
                            local_pos) +
-                          diff_to_loop_end,
+                          diff_to_loop_end),
                         1);
                     }
                 }

@@ -55,7 +55,7 @@ typedef struct _VisibilityWidget
  * Only once per project.
  */
 VisibilityWidget *
-visibility_widget_new ();
+visibility_widget_new (void);
 
 /**
  * Refreshes the visibility widget (shows current

@@ -75,8 +75,8 @@ midi_note_new (
   MidiRegion * region,
   Position *   start_pos,
   Position *   end_pos,
-  int          val,
-  int          vel,
+  uint8_t      val,
+  uint8_t      vel,
   int          is_main)
 {
   MidiNote * self =
@@ -235,8 +235,8 @@ midi_note_get_global_start_pos (
 
 void
 midi_note_set_cache_val (
-  MidiNote * self,
-  int        val)
+  MidiNote *    self,
+  const uint8_t val)
 {
   /* see ARRANGER_OBJ_SET_POS */
   midi_note_get_main_midi_note (self)->
@@ -270,8 +270,8 @@ ARRANGER_OBJ_DECLARE_RESET_COUNTERPART (
  */
 void
 midi_note_set_val (
-  MidiNote * midi_note,
-  int        val,
+  MidiNote *    midi_note,
+  const uint8_t val,
   ArrangerObjectUpdateFlag update_flag)
 {
   /* if currently playing set a note off event. */
@@ -306,11 +306,11 @@ ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
  */
 void
 midi_note_shift_pitch (
-  MidiNote * self,
-  int        delta,
+  MidiNote *    self,
+  const int     delta,
   ArrangerObjectUpdateFlag update_flag)
 {
-  self->val += delta;
+  self->val = (uint8_t) ((int) self->val + delta);
   midi_note_set_val (
     self, self->val, update_flag);
 }
@@ -344,7 +344,7 @@ midi_note_update_frames (
 /**
  * Returns the MidiNote length in ticks.
  */
-int
+long
 midi_note_get_length_in_ticks (
   const MidiNote * self)
 {

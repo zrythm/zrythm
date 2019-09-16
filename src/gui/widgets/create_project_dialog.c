@@ -74,7 +74,7 @@ on_cancel_clicked (
     GTK_DIALOG (self), GTK_RESPONSE_CANCEL);
 }
 
-void
+static void
 on_name_changed (
   GtkEditable *editable,
   CreateProjectDialogWidget * self)
@@ -134,7 +134,7 @@ create_project_dialog_widget_new ()
     self->name, untitled_project);
   gtk_editable_select_region (
     GTK_EDITABLE (self->name), 0,
-    strlen (untitled_project));
+    (int) strlen (untitled_project));
   g_free (untitled_project);
 
   gtk_window_set_title (

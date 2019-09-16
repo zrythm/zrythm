@@ -205,8 +205,8 @@ passthrough_processor_copy (
 void
 passthrough_processor_process (
   PassthroughProcessor * self,
-  long    g_frames,
-  int     nframes);
+  const nframes_t g_frames,
+  const nframes_t nframes);
 
 /**
  * @}

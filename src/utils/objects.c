@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "utils/objects.h"
 #include "utils/stack.h"
 
 static Stack * free_stack = NULL;
@@ -32,7 +33,7 @@ static Stack * free_stack = NULL;
 typedef struct FreeElement
 {
   /** Time the element was added to the stack. */
-  guint  time_added;
+  gint64  time_added;
   /** The object to be deleted. */
   void * obj;
   /** The delete function. */

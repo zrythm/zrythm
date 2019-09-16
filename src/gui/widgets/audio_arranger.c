@@ -193,7 +193,7 @@ audio_arranger_widget_setup (
   RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
-    rw_prv->total_px,
+    (int) rw_prv->total_px,
     -1);
 }
 

@@ -21,9 +21,11 @@
 #include "audio/automation_region.h"
 #include "audio/chord_region.h"
 #include "audio/channel.h"
+#include "audio/clip.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/instrument_track.h"
+#include "audio/pool.h"
 #include "audio/region.h"
 #include "audio/track.h"
 #include "ext/audio_decoder/ad.h"
@@ -159,19 +161,6 @@ region_init_loaded (Region * self)
     {
     case REGION_TYPE_AUDIO:
       {
-        /* reload audio */
-        struct adinfo nfo;
-        SRC_DATA src_data;
-        long out_buff_size;
-
-        audio_decode (
-          &nfo, &src_data,
-          &self->buff, &out_buff_size,
-          self->filename);
-
-        self->buff_size =
-          src_data.output_frames_gen;
-        self->channels = nfo.channels;
       }
       break;
     case REGION_TYPE_MIDI:
@@ -184,7 +173,7 @@ region_init_loaded (Region * self)
             midi_note_init_loaded (mn);
           }
         self->midi_notes_size =
-          self->num_midi_notes;
+          (size_t) self->num_midi_notes;
       }
       break;
     case REGION_TYPE_CHORD:
@@ -197,7 +186,7 @@ region_init_loaded (Region * self)
             chord_object_init_loaded (chord);
           }
         self->chord_objects_size =
-          self->num_chord_objects;
+          (size_t) self->num_chord_objects;
         }
       break;
     case REGION_TYPE_AUTOMATION:
@@ -215,7 +204,7 @@ region_init_loaded (Region * self)
             automation_curve_init_loaded (ac);
           }
         self->aps_size =
-          self->num_aps;
+          (size_t) self->num_aps;
       }
       break;
     }
@@ -1146,9 +1135,16 @@ region_clone (
     break;
     case REGION_TYPE_AUDIO:
       {
+        AudioClip * clip =
+          AUDIO_POOL->clips[region->pool_id];
+        g_warn_if_fail (clip && clip->frames);
+
         Region * ar =
           audio_region_new (
-            region->filename,
+            NULL,
+            clip->frames,
+            clip->num_frames,
+            clip->channels,
             &region->start_pos,
             is_main);
 
@@ -1224,6 +1220,8 @@ region_clone (
       }
       break;
     }
+
+  g_return_val_if_fail (new_region, NULL);
 
   /* set caches */
   position_set_to_pos (

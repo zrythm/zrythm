@@ -62,7 +62,7 @@ pinned_tracklist_widget_get_hit_track (
       gtk_widget_translate_coordinates (
         GTK_WIDGET (self),
         GTK_WIDGET (tw),
-        x, y, &wx, &wy);
+        (int) x, (int) y, &wx, &wy);
 
       /* if hit */
       if (wx >= 0 &&
@@ -130,7 +130,7 @@ pinned_tracklist_widget_hard_refresh (
           TrackWidget * tw =
             Z_TRACK_WIDGET (iter->data);
           TRACK_WIDGET_GET_PRIVATE (tw);
-          Track * track = tw_prv->track;
+          track = tw_prv->track;
           GValue a = G_VALUE_INIT;
           g_value_init (&a, G_TYPE_INT);
           g_value_set_int (&a, track->handle_pos);

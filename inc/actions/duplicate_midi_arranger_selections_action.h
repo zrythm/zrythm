@@ -35,10 +35,10 @@ typedef struct DuplicateMidiArrangerSelectionsAction
   MidiArrangerSelections *        mas;
 
   /** Ticks diff. */
-  long   ticks;
+  long       ticks;
 
   /** Value diff. */
-  int    delta;
+  int        delta;
 } DuplicateMidiArrangerSelectionsAction;
 
 UndoableAction *

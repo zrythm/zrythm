@@ -60,7 +60,7 @@ typedef struct CreatePluginsAction
 
 UndoableAction *
 create_plugins_action_new (
-  PluginDescriptor * descr,
+  const PluginDescriptor * descr,
   int       track_pos,
   int       slot,
   int       num_plugins);

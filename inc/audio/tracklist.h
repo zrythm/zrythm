@@ -241,6 +241,13 @@ tracklist_track_name_is_unique (
 }
 
 /**
+ * Returns if the tracklist has soloed tracks.
+ */
+int
+tracklist_has_soloed (
+  const Tracklist * self);
+
+/**
  * @}
  */
 

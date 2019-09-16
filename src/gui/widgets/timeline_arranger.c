@@ -665,7 +665,7 @@ timeline_arranger_widget_select_all (
 
   /* select scales */
   ScaleObject * scale;
-  for (int i = 0;
+  for (i = 0;
        i < P_CHORD_TRACK->num_scales; i++)
     {
       scale = P_CHORD_TRACK->scales[i];
@@ -820,7 +820,7 @@ timeline_arranger_widget_on_drag_begin_region_hit (
   gtk_widget_translate_coordinates (
     GTK_WIDGET (self),
     GTK_WIDGET (rw),
-    start_x, start_y, &wx, &wy);
+    (int) start_x, (int) start_y, &wx, &wy);
 
   self->start_region = region;
 
@@ -1144,7 +1144,7 @@ timeline_arranger_widget_create_chord_or_scale (
   gtk_widget_translate_coordinates (
     GTK_WIDGET (self),
     GTK_WIDGET (track->widget),
-    0, y, NULL, &wy);
+    0, (int) y, NULL, &wy);
 
   if (y >= track_height / 2.0)
     timeline_arranger_widget_create_scale (
@@ -1760,7 +1760,7 @@ timeline_arranger_widget_set_size (
   RULER_WIDGET_GET_PRIVATE (MW_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
-    rw_prv->total_px,
+    (int) rw_prv->total_px,
     hh);
 }
 
@@ -2088,9 +2088,9 @@ timeline_arranger_widget_on_drag_end (
             earliest_trans_pos.total_ticks;
         int tracks_diff =
           timeline_selections_get_highest_track (
-            TL_SELECTIONS, F_NO_TRANSIENTS) -
+            TL_SELECTIONS, F_NO_TRANSIENTS)->pos -
           timeline_selections_get_highest_track (
-            TL_SELECTIONS, F_TRANSIENTS);
+            TL_SELECTIONS, F_TRANSIENTS)->pos;
         UndoableAction * ua =
           (UndoableAction *)
           move_timeline_selections_action_new (
@@ -2118,9 +2118,9 @@ timeline_arranger_widget_on_drag_end (
             earliest_trans_pos.total_ticks;
         int tracks_diff =
           timeline_selections_get_highest_track (
-            TL_SELECTIONS, F_NO_TRANSIENTS) -
+            TL_SELECTIONS, F_NO_TRANSIENTS)->pos -
           timeline_selections_get_highest_track (
-            TL_SELECTIONS, F_TRANSIENTS);
+            TL_SELECTIONS, F_TRANSIENTS)->pos;
         timeline_selections_reset_counterparts (
           TL_SELECTIONS, 0);
         UndoableAction * ua =
@@ -2128,8 +2128,8 @@ timeline_arranger_widget_on_drag_end (
           duplicate_timeline_selections_action_new (
             TL_SELECTIONS,
             ticks_diff, tracks_diff);
-        timeline_selections_reset_transient_poses (
-          TL_SELECTIONS);
+        timeline_selections_reset_counterparts (
+          TL_SELECTIONS, 1);
         timeline_selections_clear (
           TL_SELECTIONS);
         undo_manager_perform (
@@ -2145,10 +2145,8 @@ timeline_arranger_widget_on_drag_end (
     case UI_OVERLAY_ACTION_CREATING_MOVING:
     case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
       {
-        timeline_selections_set_to_transient_poses (
-          TL_SELECTIONS);
-        timeline_selections_set_to_transient_values (
-          TL_SELECTIONS);
+        timeline_selections_reset_counterparts (
+          TL_SELECTIONS, 0);
 
         UndoableAction * ua =
           (UndoableAction *)
@@ -2367,22 +2365,7 @@ add_children_from_audio_track (
   TimelineArrangerWidget * self,
   AudioTrack *             at)
 {
-  TrackLane * lane;
-  Region * r;
-  int i, j;
-  for (j = 0; j < at->num_lanes; j++)
-    {
-      lane = at->lanes[j];
-
-      for (i = 0; i < lane->num_regions; i++)
-        {
-          r = lane->regions[i];
-          gtk_overlay_add_overlay (
-            GTK_OVERLAY (self),
-            GTK_WIDGET (r->widget));
-        }
-    }
-  add_children_from_channel_track (at);
+  add_children_from_midi_track (self, at);
 }
 
 static void
@@ -2403,38 +2386,6 @@ add_children_from_audio_bus_track (
   add_children_from_channel_track (ct);
 }
 
-/**
- * Refreshes visibility of children.
- */
-void
-timeline_arranger_widget_refresh_visibility (
-  TimelineArrangerWidget * self)
-{
-  GList *children, *iter;
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self));
-  GtkWidget * w;
-  RegionWidget * rw;
-  Region * region;
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      w = GTK_WIDGET (iter->data);
-
-      if (Z_IS_REGION_WIDGET (w))
-        {
-          rw = Z_REGION_WIDGET (w);
-          REGION_WIDGET_GET_PRIVATE (rw);
-          region = rw_prv->region;
-
-          arranger_object_info_set_widget_visibility_and_state (
-            &region->obj_info, 1);
-        }
-    }
-  g_list_free (children);
-}
 
 /**
  * Readd children.
@@ -2517,7 +2468,7 @@ timeline_arranger_widget_refresh_children (
         }
     }
 
-  timeline_arranger_widget_refresh_visibility (
+  timeline_arranger_widget_update_visibility (
     self);
 
   gtk_overlay_reorder_overlay (

@@ -178,7 +178,7 @@ set_hw_params (
       "Unable to perriod size %lu for playback: %s",
       period_size,
       snd_strerror (err));
-  self->block_length = period_size;
+  self->block_length = (nframes_t) period_size;
 
   snd_pcm_uframes_t buffer_size =
     period_size * 2; /* 2 channels */
@@ -209,21 +209,22 @@ set_hw_params (
       snd_strerror (err));
 }
 
-static inline int
+static inline snd_pcm_sframes_t
 process_cb (
   AudioEngine* self,
   snd_pcm_sframes_t nframes)
 {
-  self->nframes = nframes;
+  self->nframes = (nframes_t) nframes;
 
-  memset(self->alsa_out_buf, 0, nframes * 2);
-  engine_process (self, nframes);
+  memset (
+    self->alsa_out_buf, 0, (size_t) (nframes * 2));
+  engine_process (self, self->nframes);
 
   return
     snd_pcm_writei (
       self->playback_handle,
       self->alsa_out_buf,
-      nframes);
+      (snd_pcm_uframes_t) nframes);
 }
 
 /**
@@ -237,7 +238,7 @@ on_midi_event (
   snd_seq_event_t *ev;
   Port * port;
 
-  int time = 0;
+  uint32_t time = 0;
 
   do
     {
@@ -262,6 +263,7 @@ on_midi_event (
                      ev->data.control.value);
           midi_events_add_pitchbend (
             port->midi_events, 1,
+            (midi_byte_t)
             ev->data.control.value,
             time++, 1);
           break;
@@ -270,8 +272,8 @@ on_midi_event (
                      ev->data.control.value);
           midi_events_add_control_change (
             port->midi_events,
-            1, ev->data.control.param,
-            ev->data.control.value,
+            1, (midi_byte_t) ev->data.control.param,
+            (midi_byte_t) ev->data.control.value,
             time++, 1);
           break;
         case SND_SEQ_EVENT_NOTEON:
@@ -350,10 +352,10 @@ engine_alsa_test (
  */
 void
 engine_alsa_fill_out_bufs (
-  AudioEngine * self,
-  int           nframes)
+  AudioEngine *   self,
+  const nframes_t nframes)
 {
-  for (int i = 0; i < nframes; i++)
+  for (unsigned int i = 0; i < nframes; i++)
     {
       self->alsa_out_buf[i * 2] =
         self->monitor_out->l->buf[i];
@@ -398,6 +400,7 @@ audio_thread (void * _self)
   engine_realloc_port_buffers (
     self, self->block_length);
   engine_update_frames_per_tick (
+    self,
     TRANSPORT->beats_per_bar,
     TRANSPORT->bpm,
     self->sample_rate);
@@ -405,24 +408,28 @@ audio_thread (void * _self)
   g_usleep (8000);
 
   struct pollfd *pfds;
-  int l1, nfds =
+  int nfds =
     snd_pcm_poll_descriptors_count (
       self->playback_handle);
   pfds =
     (struct pollfd *)
-    alloca(nfds * sizeof(struct pollfd));
+    alloca (
+      (size_t) nfds * sizeof (struct pollfd));
   snd_pcm_poll_descriptors (
-    self->playback_handle, pfds, nfds);
-  int frames_processed;
+    self->playback_handle, pfds,
+    (unsigned int) nfds);
+  nframes_t frames_processed;
+  int l1;
   while (1)
     {
-      if (poll (pfds, nfds, 1000) > 0)
+      if (poll (pfds, (nfds_t) nfds, 1000) > 0)
         {
           for (l1 = 0; l1 < nfds; l1++)
             {
               while (pfds[l1].revents > 0)
                 {
                   frames_processed =
+                    (nframes_t)
                     process_cb (
                       self, self->block_length);
                   if (frames_processed <
@@ -463,12 +470,13 @@ midi_thread (void * _self)
   pfds =
     (struct pollfd *)
     alloca (
-      sizeof (struct pollfd) * seq_nfds);
+      sizeof (struct pollfd) * (size_t) seq_nfds);
   snd_seq_poll_descriptors (
-    self->seq_handle, pfds, seq_nfds, POLLIN);
+    self->seq_handle, pfds,
+    (unsigned int) seq_nfds, POLLIN);
   while (1)
     {
-      if (poll (pfds, seq_nfds, 1000) > 0)
+      if (poll (pfds, (nfds_t) seq_nfds, 1000) > 0)
         {
           for (l1 = 0; l1 < seq_nfds; l1++)
             {

@@ -20,12 +20,11 @@
 #include <stdlib.h>
 
 #include "config.h"
+#include "audio/encoder.h"
 #include "audio/metronome.h"
 #include "utils/audio.h"
 
 #include <gtk/gtk.h>
-
-#include "ext/audio_decoder/ad.h"
 
 /**
  * Initializes the Metronome by loading the samples
@@ -52,19 +51,44 @@ metronome_init (
     g_strdup (
       METRONOME_SAMPLES_DIR "/square_normal.wav");
 
-  /* open with ad */
-  struct adinfo nfo;
-  SRC_DATA src_data;
-
   /* decode */
-  audio_decode (
-    &nfo, &src_data, &self->emphasis,
-    &self->emphasis_size, self->emphasis_path);
-  self->emphasis_channels = nfo.channels;
-  audio_decode (
-    &nfo, &src_data, &self->normal,
-    &self->normal_size, self->normal_path);
-  self->normal_channels = nfo.channels;
+  AudioEncoder * enc =
+    audio_encoder_new_from_file (
+      self->emphasis_path);
+  audio_encoder_decode (
+    enc, 0);
+  self->emphasis =
+    calloc (
+      (size_t)
+        (enc->num_out_frames * enc->channels),
+      sizeof (float));
+  self->emphasis_size = enc->num_out_frames;
+  self->emphasis_channels = enc->channels;
+  for (int i = 0;
+       i < enc->num_out_frames * enc->channels; i++)
+    {
+      self->emphasis[i] = enc->out_frames[i];
+    }
+  audio_encoder_free (enc);
+
+  enc =
+    audio_encoder_new_from_file (
+      self->normal_path);
+  audio_encoder_decode (
+    enc, 0);
+  self->normal =
+    calloc (
+      (size_t)
+        (enc->num_out_frames * enc->channels),
+      sizeof (float));
+  self->normal_size = enc->num_out_frames;
+  self->normal_channels = enc->channels;
+  for (int i = 0;
+       i < enc->num_out_frames * enc->channels; i++)
+    {
+      self->normal[i] = enc->out_frames[i];
+    }
+  audio_encoder_free (enc);
 }
 
 /**
@@ -77,11 +101,11 @@ metronome_init (
  * @param nframes Number of frames to fill. These must
  *   not exceed the buffer size.
  */
-void
-metronome_fill_buffer (
-  Metronome * self,
-  float *     buf,
-  const long  g_start_frame,
-  const int   nframes)
-{
-}
+/*void*/
+/*metronome_fill_buffer (*/
+  /*Metronome * self,*/
+  /*float *     buf,*/
+  /*const long  g_start_frame,*/
+  /*const int   nframes)*/
+/*{*/
+/*}*/

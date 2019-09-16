@@ -21,9 +21,10 @@
 #define __UNDO_CREATE_TRACKS_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "gui/backend/file_manager.h"
 #include "plugins/plugin.h"
 #include "audio/track.h"
+
+typedef struct SupportedFile SupportedFile;
 
 /**
  * @addtogroup actions
@@ -60,14 +61,14 @@ typedef struct CreateTracksAction
 
   /** Filename, if we are making an audio track from
    * a file. */
-  FileDescriptor   file_descr;
+  SupportedFile *  file_descr;
 } CreateTracksAction;
 
 UndoableAction *
 create_tracks_action_new (
   TrackType          type,
-  PluginDescriptor * pl_descr,
-  FileDescriptor *   file_descr,
+  const PluginDescriptor * pl_descr,
+  SupportedFile *    file_descr,
   int                pos,
   int                num_tracks);
 

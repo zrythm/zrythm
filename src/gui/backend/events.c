@@ -642,7 +642,7 @@ clean_duplicates_and_copy (
  *
  * This will loop indefinintely.
  */
-int
+static int
 events_process (void * data)
 {
   GAsyncQueue * q = (GAsyncQueue *) data;
@@ -790,7 +790,8 @@ events_process (void * data)
           snap_grid_update_snap_points (
             SNAP_GRID_TIMELINE);
 
-          timeline_ruler_widget_refresh ();
+          timeline_ruler_widget_refresh (
+            MW_RULER);
           timeline_arranger_widget_set_size (
             MW_TIMELINE);
           timeline_minimap_widget_refresh (
@@ -951,7 +952,8 @@ events_process (void * data)
               MW_MIDI_EDITOR_SPACE, 0);
           break;
         case ET_RULER_STATE_CHANGED:
-          timeline_ruler_widget_refresh ();
+          timeline_ruler_widget_refresh (
+            MW_RULER);
           break;
         case ET_AUTOMATION_TRACK_ADDED:
           on_automation_track_added (
@@ -1044,16 +1046,16 @@ events_process (void * data)
               EDITOR_RULER);
           break;
         case ET_CHORD_KEY_CHANGED:
-          for (int i = 0;
-               i < CHORD_EDITOR->num_chords; i++)
+          for (int j = 0;
+               j < CHORD_EDITOR->num_chords; j++)
             {
-              if (CHORD_EDITOR->chords[i] ==
+              if (CHORD_EDITOR->chords[j] ==
                 (ChordDescriptor *) ev->arg)
                 {
                   gtk_widget_queue_draw (
                     GTK_WIDGET (
                       MW_CHORD_EDITOR_SPACE->
-                        chord_keys[i]));
+                        chord_keys[j]));
                   break;
                 }
             }

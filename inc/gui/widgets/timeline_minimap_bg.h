@@ -41,6 +41,6 @@ typedef struct _TimelineMinimapBgWidget
 } TimelineMinimapBgWidget;
 
 TimelineMinimapBgWidget *
-timeline_minimap_bg_widget_new ();
+timeline_minimap_bg_widget_new (void);
 
 #endif

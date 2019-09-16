@@ -320,8 +320,8 @@ arranger_widget_get_hit_widgets_in_range (
       gtk_widget_translate_coordinates(
                 GTK_WIDGET (self),
                 GTK_WIDGET (widget),
-                start_x,
-                start_y,
+                (int) start_x,
+                (int) start_y,
                 &wx,
                 &wy);
 
@@ -699,8 +699,10 @@ auto_scroll (
   int v_delta = 0;
   int h_delta = 0;
   int adj_x =
+    (int)
     gtk_adjustment_get_value (hadj);
   int adj_y =
+    (int)
     gtk_adjustment_get_value (vadj);
   if (y + border_distance
         >= adj_y + scroll_height)
@@ -970,7 +972,9 @@ multipress_pressed (
   ar_prv->n_press = n_press;
 
   /* set modifier button states */
-  UI_GET_STATE_MASK (gesture);
+  GdkModifierType state_mask =
+    ui_get_state_mask (
+      GTK_GESTURE (gesture));
   if (state_mask & GDK_SHIFT_MASK)
     ar_prv->shift_held = 1;
   if (state_mask & GDK_CONTROL_MASK)
@@ -1412,7 +1416,9 @@ drag_update (
   GET_PRIVATE;
 
   /* state mask needs to be updated */
-  UI_GET_STATE_MASK (gesture);
+  GdkModifierType state_mask =
+    ui_get_state_mask (
+      GTK_GESTURE (gesture));
   if (state_mask & GDK_SHIFT_MASK)
     ar_prv->shift_held = 1;
   else
@@ -1679,6 +1685,7 @@ drag_update (
             midi_modifier_arranger,
             offset_y);
         }
+      break;
     case UI_OVERLAY_ACTION_MOVING:
     case UI_OVERLAY_ACTION_CREATING_MOVING:
       if (timeline_arranger)
@@ -1780,8 +1787,8 @@ drag_update (
 
   if (ar_prv->action != UI_OVERLAY_ACTION_NONE)
     auto_scroll (
-      self, ar_prv->start_x + offset_x,
-      ar_prv->start_y + offset_y);
+      self, (int) (ar_prv->start_x + offset_x),
+      (int) (ar_prv->start_y + offset_y));
 
   /* update last offsets */
   ar_prv->last_offset_x = offset_x;
@@ -1959,13 +1966,13 @@ on_scroll (GtkWidget *widget,
     {
       ruler_widget_set_zoom_level (
         ruler,
-        rw_prv->zoom_level / 1.3f);
+        rw_prv->zoom_level / 1.3);
     }
   else /* scroll up, zoom in */
     {
       ruler_widget_set_zoom_level (
         ruler,
-        rw_prv->zoom_level * 1.3f);
+        rw_prv->zoom_level * 1.3);
     }
 
   new_x = arranger_widget_pos_to_px (
@@ -2021,6 +2028,21 @@ on_motion (
     {
       timeline_arranger_widget_set_cut_lines_visible (
         timeline_arranger);
+    }
+  else if (automation_arranger)
+    {
+    }
+  else if (chord_arranger)
+    {
+    }
+  else if (audio_arranger)
+    {
+    }
+  else if (midi_modifier_arranger)
+    {
+    }
+  else if (midi_arranger)
+    {
     }
 
   return FALSE;
@@ -2253,12 +2275,6 @@ arranger_widget_refresh (
 
   if (midi_arranger)
     {
-      /*RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);*/
-      /*gtk_widget_set_size_request (*/
-        /*GTK_WIDGET (self),*/
-        /*rw_prv->total_px,*/
-        /*gtk_widget_get_allocated_height (*/
-          /*GTK_WIDGET (self)));*/
       midi_arranger_widget_set_size (
         midi_arranger);
       midi_arranger_widget_refresh_children (
@@ -2276,7 +2292,7 @@ arranger_widget_refresh (
       RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
-        rw_prv->total_px,
+        (int) rw_prv->total_px,
         -1);
       midi_modifier_arranger_widget_refresh_children (
         midi_modifier_arranger);
@@ -2286,7 +2302,7 @@ arranger_widget_refresh (
       RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
-        rw_prv->total_px,
+        (int) rw_prv->total_px,
         -1);
       audio_arranger_widget_refresh_children (
         audio_arranger);
@@ -2296,7 +2312,7 @@ arranger_widget_refresh (
       RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
-        rw_prv->total_px,
+        (int) rw_prv->total_px,
         -1);
       chord_arranger_widget_refresh_children (
         chord_arranger);
@@ -2306,7 +2322,7 @@ arranger_widget_refresh (
       RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
-        rw_prv->total_px,
+        (int) rw_prv->total_px,
         -1);
       automation_arranger_widget_refresh_children (
         automation_arranger);

@@ -211,14 +211,17 @@ typedef struct Track
    */
   GdkRGBA             color;
 
-  /* ==== INSTRUMENT & AUDIO TRACK ==== */
+  /* ==== INSTRUMENT/MIDI/AUDIO TRACK ==== */
 
   /** Lanes in this track containing Regions. */
   TrackLane **        lanes;
   int                 num_lanes;
   int                 lanes_size;
 
-  /* ==== INSTRUMENT & AUDIO TRACK END ==== */
+  /** MIDI channel (MIDI/Instrument track only). */
+  uint8_t             midi_ch;
+
+  /* ==== INSTRUMENT/MIDI/AUDIO TRACK END ==== */
 
   /* ==== CHORD TRACK ==== */
 
@@ -374,6 +377,9 @@ track_fields_schema[] =
     "out_signal_type", CYAML_FLAG_DEFAULT,
     Track, out_signal_type, port_type_strings,
     CYAML_ARRAY_LEN (port_type_strings)),
+	CYAML_FIELD_UINT (
+    "midi_ch", CYAML_FLAG_DEFAULT,
+    Track, midi_ch),
 
 	CYAML_FIELD_END
 };

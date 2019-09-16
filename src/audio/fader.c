@@ -175,13 +175,13 @@ fader_set_amp (void * _fader, float amp)
  */
 void
 fader_add_amp (
-  void * _self,
-  float   amp)
+  void *   _self,
+  sample_t amp)
 {
   Fader * self = (Fader *) _self;
 
   self->amp =
-    CLAMP (self->amp + amp, 0.0, 2.0);
+    CLAMP (self->amp + amp, 0.f, 2.f);
 
   self->fader_val =
     math_get_fader_val_from_amp (self->amp);
@@ -296,16 +296,16 @@ fader_copy (
  */
 void
 fader_process (
-  Fader * self,
-  long    start_frame,
-  int     nframes)
+  Fader *         self,
+  const nframes_t start_frame,
+  const nframes_t nframes)
 {
   /*Track * track = self->channel->track;*/
 
   if (self->type == FADER_TYPE_AUDIO_CHANNEL)
     {
       /* first copy the input to output */
-      for (int i = start_frame;
+      for (unsigned int i = start_frame;
            i < start_frame + nframes; i++)
         {
           self->stereo_out->l->buf[i] =

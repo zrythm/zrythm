@@ -50,12 +50,13 @@ draw_cb (GtkWidget *widget, cairo_t *cr,
 
   context = gtk_widget_get_style_context (widget);
 
-  guint width =
+  int width =
     gtk_widget_get_allocated_width (widget);
-  guint height =
+  int height =
     gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
   switch (self->type)
     {

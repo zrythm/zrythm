@@ -22,6 +22,7 @@
 #include "audio/midi_note.h"
 #include "audio/velocity.h"
 #include "gui/widgets/velocity.h"
+#include "utils/types.h"
 
 #include <gtk/gtk.h>
 
@@ -41,9 +42,9 @@ velocity_init_loaded (
  */
 Velocity *
 velocity_new (
-  MidiNote * midi_note,
-  int        vel,
-  int        is_main)
+  MidiNote *    midi_note,
+  const uint8_t vel,
+  const int     is_main)
 {
   Velocity * self = calloc (1, sizeof (Velocity));
 
@@ -135,8 +136,8 @@ velocity_is_equal (
  */
 void
 velocity_set_cache_vel (
-  Velocity * velocity,
-  const int  vel)
+  Velocity *    velocity,
+  const uint8_t vel)
 {
   /* see ARRANGER_OBJ_SET_POS */
   velocity_get_main_velocity (velocity)->
@@ -147,15 +148,19 @@ velocity_set_cache_vel (
 
 /**
  * Sets the velocity to the given value.
+ *
+ * The given value may exceed the bounds 0-127,
+ * and will be clamped.
  */
 void
 velocity_set_val (
-  Velocity * self,
-  int        val,
+  Velocity *    self,
+  const int     val,
   ArrangerObjectUpdateFlag update_flag)
 {
   ARRANGER_OBJ_SET_PRIMITIVE_VAL (
-    Velocity, self, vel, CLAMP (val, 0, 127),
+    Velocity, self, vel,
+    (uint8_t) CLAMP (val, 0, 127),
     update_flag);
 
   /* re-set the midi note value to set a note off
@@ -175,9 +180,11 @@ ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
 void
 velocity_shift (
   Velocity * self,
-  int        delta)
+  const int  delta)
 {
-  self->vel += delta;
+  self->vel =
+    (midi_byte_t)
+    ((int) self->vel + delta);
 }
 
 ARRANGER_OBJ_DEFINE_FREE_ALL_LANELESS (

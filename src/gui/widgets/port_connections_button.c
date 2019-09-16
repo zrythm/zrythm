@@ -71,13 +71,13 @@ port_connections_button_widget_new (
     self->menu_button,
     GTK_ARROW_RIGHT);
 
+  char * str = NULL;
   if (!port->identifier.label)
     {
       g_warning ("No port label");
       goto port_connections_button_new_end;
     }
 
-  char * str = NULL;
   if (port->identifier.owner_type ==
         PORT_OWNER_TYPE_PLUGIN ||
       port->identifier.owner_type ==

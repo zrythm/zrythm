@@ -50,11 +50,10 @@ static void
 handler (int sig)
 {
   void *array[20];
-  size_t size;
   char ** strings;
 
   /* get void*'s for all entries on the stack */
-  size = backtrace(array, 20);
+  int size = backtrace(array, 20);
 
   /* print out all the frames to stderr */
   char * str, * tmp, * tmp2;
@@ -235,9 +234,7 @@ main (int    argc,
     ver);
   g_free (ver);
 
-  /* unset GTK_THEME */
   g_message ("GTK_THEME=%s", getenv ("GTK_THEME"));
-  putenv ("GTK_THEME=");
 
   /* install segfault handler */
   g_message ("Installing signal handler...");
@@ -264,11 +261,7 @@ main (int    argc,
 
   /* init random */
   g_message ("Initing random...");
-#ifdef _WIN32
-  srand (time (NULL));
-#else
-  srandom (time (NULL));
-#endif
+  srandom ((unsigned int) time (NULL));
 
   /* init object utils */
   g_message ("Initing object utils...");

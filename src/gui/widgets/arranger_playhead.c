@@ -31,16 +31,22 @@ G_DEFINE_TYPE (ArrangerPlayheadWidget,
                GTK_TYPE_DRAWING_AREA)
 
 static gboolean
-draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+draw_cb (
+  GtkWidget *widget,
+  cairo_t *cr,
+  gpointer data)
 {
   GtkStyleContext *context;
 
   context = gtk_widget_get_style_context (widget);
 
-  guint width = gtk_widget_get_allocated_width (widget);
-  guint height = gtk_widget_get_allocated_height (widget);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
 
   return 0;
 }

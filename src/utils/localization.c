@@ -66,7 +66,7 @@ localization_get_string_code (
     case UI_CHINESE:
       return g_strdup ("zh");
     default:
-      g_return_val_if_reached ("");
+      g_return_val_if_reached (NULL);
     }
 }
 

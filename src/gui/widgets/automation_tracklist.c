@@ -142,7 +142,7 @@ automation_tracklist_widget_refresh (
         {
           AutomationTrackWidget * atw =
             Z_AUTOMATION_TRACK_WIDGET (iter->data);
-          AutomationTrack * at = atw->at;
+          at = atw->at;
           GValue a = G_VALUE_INIT;
           g_value_init (&a, G_TYPE_INT);
           g_value_set_int (&a, at->handle_pos);

@@ -17,9 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UTILS_DIALOGS_H__
-#define __UTILS_DIALOGS_H__
-
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/dialogs.h"
@@ -108,5 +105,3 @@ GtkDialog * dialogs_get_error_instantiating_plugin_dialog (
         "Please see log for details."));
   return GTK_DIALOG (dialog);
 }
-
-#endif

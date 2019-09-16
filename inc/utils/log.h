@@ -24,6 +24,6 @@
  * Initializes logging to a file.
  */
 void
-log_init ();
+log_init (void);
 
 #endif

@@ -124,50 +124,6 @@ chord_selections_set_cache_poses (
 }
 
 /**
- * Set all transient Position's to their main
- * counterparts.
- */
-void
-chord_selections_reset_transient_poses (
-  ChordSelections * ts)
-{
-  int i;
-
-#define RESET_TRANS_POS_W_LENGTH(caps,cc,sc) \
-  cc * sc; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_set_start_pos ( \
-        sc, &sc->start_pos, \
-        AO_UPDATE_ALL); \
-      sc##_set_end_pos ( \
-        sc, &sc->end_pos, \
-        AO_UPDATE_ALL); \
-    } \
-  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
-               NULL)
-
-#define RESET_TRANS_POS(caps,cc,sc) \
-  cc * sc; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_set_pos ( \
-        sc, &sc->pos, \
-        AO_UPDATE_ALL); \
-    } \
-  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
-               NULL)
-
-  RESET_TRANS_POS (
-    CHORD_OBJECT, ChordObject, chord_object);
-
-#undef RESET_TRANS_POS_W_LENGTH
-#undef RESET_TRANS_POS
-}
-
-/**
  * Returns the position of the leftmost object.
  *
  * If transient is 1, the transient objects are
@@ -327,36 +283,6 @@ DEFINE_CONTAINS_OBJ (
 #undef DEFINE_CONTAINS_OBJ
 
 /**
- * Set all main Position's to their transient
- * counterparts.
- */
-void
-chord_selections_set_to_transient_poses (
-  ChordSelections * ts)
-{
-  int i;
-
-#define SET_TO_TRANS_POS(caps,cc,sc) \
-  cc * sc, * sc##_trans; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_trans =  \
-        sc##_get_main_trans_##sc (sc); \
-      sc##_set_pos ( \
-        sc, &sc##_trans->pos, \
-        AO_UPDATE_ALL); \
-    } \
-  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
-               NULL)
-
-  SET_TO_TRANS_POS (
-    CHORD_OBJECT, ChordObject, chord_object);
-
-#undef SET_TO_TRANS_POS
-}
-
-/**
  * Clears selections.
  */
 void
@@ -422,15 +348,14 @@ chord_selections_clone (
   return new_ts;
 }
 
-/**
- * Similar to set_to_transient_poses, but handles
- * values for objects that support them (like
- * AutomationPoint's).
- */
-void
-chord_selections_set_to_transient_values (
-  ChordSelections * ts)
+ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS (
+  Chord, chord)
 {
+  for (int i = 0; i < self->num_chord_objects; i++)
+    {
+      chord_object_reset_counterpart (
+        self->chord_objects[i], reset_trans);
+    }
 }
 
 /**
@@ -473,13 +398,13 @@ chord_selections_paste_to_pos (
   ChordSelections * ts,
   Position *           pos)
 {
-  int pos_ticks = position_to_ticks (pos);
+  long pos_ticks = position_to_ticks (pos);
 
   /* get pos of earliest object */
   Position start_pos;
   chord_selections_get_start_pos (
     ts, &start_pos, F_NO_TRANSIENTS, 0);
-  int start_pos_ticks =
+  long start_pos_ticks =
     position_to_ticks (&start_pos);
 
   /* subtract the start pos from every object and
@@ -489,7 +414,8 @@ chord_selections_paste_to_pos (
   curr_ticks = position_to_ticks (x); \
   position_from_ticks (x, pos_ticks + DIFF)
 
-  int curr_ticks, i;
+  long curr_ticks;
+  int i;
   ChordObject * chord;
   for (i = 0; i < ts->num_chord_objects; i++)
     {

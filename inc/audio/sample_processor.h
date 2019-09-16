@@ -27,6 +27,7 @@
 #define __AUDIO_SAMPLE_PROCESSOR_H__
 
 #include "audio/sample_playback.h"
+#include "utils/types.h"
 
 typedef struct StereoPorts StereoPorts;
 typedef enum MetronomeType MetronomeType;
@@ -69,10 +70,11 @@ sample_processor_init (
 void
 sample_processor_prepare_process (
   SampleProcessor * self,
-  const int         nframes);
+  const nframes_t   nframes);
 
 /**
- * Process the samples for the given number of frames.
+ * Process the samples for the given number of
+ * frames.
  *
  * @param offset The local offset in the processing
  *   cycle.
@@ -80,8 +82,8 @@ sample_processor_prepare_process (
 void
 sample_processor_process (
   SampleProcessor * self,
-  const int         offset,
-  const int         nframes);
+  const nframes_t   offset,
+  const nframes_t   nframes);
 
 /**
  * Removes a SamplePlayback from the array.
@@ -98,7 +100,7 @@ void
 sample_processor_queue_metronome (
   SampleProcessor * self,
   MetronomeType     type,
-  int               offset);
+  nframes_t         offset);
 
 /**
  * Adds a sample to play to the queue from a file

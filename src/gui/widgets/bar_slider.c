@@ -45,14 +45,14 @@ G_DEFINE_TYPE (
  * Macro to get real value from bar_slider value.
  */
 #define REAL_VAL_FROM_BAR_SLIDER(bar_slider) \
-  (self->min + bar_slider * \
+  (self->min + (float) bar_slider * \
    (self->max - self->min))
 
 /**
  * Converts from real value to bar_slider value
  */
 #define BAR_SLIDER_VAL_FROM_REAL(real) \
-  ((real - self->min) / \
+  (((float) real - self->min) / \
    (self->max - self->min))
 
 /**
@@ -77,9 +77,10 @@ draw_cb (
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
-  guint width, height;
-  width = gtk_widget_get_allocated_width (widget);
-  height = gtk_widget_get_allocated_height (widget);
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -95,11 +96,11 @@ draw_cb (
   const float zero_px =
     ((real_zero - real_min) /
      (real_max - real_min)) *
-    width;
+    (float) width;
   const float val_px =
     ((real_val - real_min) /
      (real_max - real_min)) *
-    width;
+    (float) width;
 
   cairo_set_source_rgba (cr, 1, 1, 1, 0.3);
 
@@ -134,8 +135,9 @@ draw_cb (
         g_strdup_printf (
           "%s%f%s",
           self->prefix,
-          self->convert_to_percentage ?
-          real_val * 100.f : real_val,
+          (double)
+          (self->convert_to_percentage ?
+           real_val * 100.f : real_val),
           self->suffix);
     }
   int we;
@@ -235,7 +237,8 @@ drag_update (
         REAL_VAL_FROM_BAR_SLIDER (
           clamp (
             BAR_SLIDER_VAL_FROM_REAL (GET_REAL_VAL) +
-              (offset_x - self->last_x) /
+              (float) (offset_x - self->last_x) /
+              (float)
               gtk_widget_get_allocated_width (
                 GTK_WIDGET (self)),
             1.0f, 0.0f)));

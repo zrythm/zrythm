@@ -169,20 +169,23 @@ set_port_value(const char* port_symbol,
   }
 
   float fvalue;
-  if (type == plugin->forge.Float) {
-          fvalue = *(const float*)value;
-  } else if (type == plugin->forge.Double) {
-          fvalue = *(const double*)value;
-  } else if (type == plugin->forge.Int) {
-          fvalue = *(const int32_t*)value;
-  } else if (type == plugin->forge.Long) {
-          fvalue = *(const int64_t*)value;
-  } else {
-          g_error ("error: Preset `%s' value has bad type <%s>\n",
-                   port_symbol,
-                   plugin->unmap.unmap(plugin->unmap.handle, type));
-          return;
-  }
+  if (type == plugin->forge.Float)
+    fvalue = *(const float*)value;
+  else if (type == plugin->forge.Double)
+    fvalue = (float) *(const double*)value;
+  else if (type == plugin->forge.Int)
+    fvalue = (float) *(const int32_t*)value;
+  else if (type == plugin->forge.Long)
+    fvalue = (float) *(const int64_t*)value;
+  else
+    {
+      g_warning (
+        "Preset `%s' value has bad type <%s>\n",
+        port_symbol,
+        plugin->unmap.unmap (
+          plugin->unmap.handle, type));
+      return;
+    }
 
   if (TRANSPORT->play_state != PLAYSTATE_ROLLING)
     {

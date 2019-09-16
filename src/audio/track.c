@@ -761,6 +761,7 @@ track_add_region (
 
   if (add_lane)
     {
+      g_warn_if_fail (track->lanes[lane_pos]);
       track_lane_add_region (
         track->lanes[lane_pos],
         region);

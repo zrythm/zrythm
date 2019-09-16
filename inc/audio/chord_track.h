@@ -50,7 +50,7 @@ typedef struct Track ChordTrack;
  * Creates a new chord Track.
  */
 ChordTrack *
-chord_track_new ();
+chord_track_new (void);
 
 /**
  * Inits a chord track (e.g. when cloning).

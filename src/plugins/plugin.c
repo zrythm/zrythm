@@ -118,11 +118,12 @@ plugin_init (
  */
 Plugin *
 plugin_new_from_descr (
-  PluginDescriptor * descr)
+  const PluginDescriptor * descr)
 {
   Plugin * plugin = calloc (1, sizeof (Plugin));
 
-  plugin->descr = descr;
+  plugin->descr =
+    plugin_clone_descr (descr);
   plugin_init (plugin);
 
   if (plugin->descr->protocol == PROT_LV2)
@@ -155,8 +156,8 @@ plugin_remove_ats_from_automation_tracklist (
  * Clones the plugin descriptor.
  */
 void
-plugin_clone_descr (
-  PluginDescriptor * src,
+plugin_copy_descr (
+  const PluginDescriptor * src,
   PluginDescriptor * dest)
 {
   dest->author = g_strdup (src->author);
@@ -176,6 +177,22 @@ plugin_clone_descr (
   dest->protocol = src->protocol;
   dest->path = g_strdup (src->path);
   dest->uri = g_strdup (src->uri);
+}
+
+/**
+ * Clones the plugin descriptor.
+ */
+PluginDescriptor *
+plugin_clone_descr (
+  const PluginDescriptor * src)
+{
+  PluginDescriptor * self =
+    calloc (1, sizeof (PluginDescriptor));
+
+  plugin_copy_descr (
+    src, self);
+
+  return self;
 }
 
 /**
@@ -244,7 +261,7 @@ plugin_update_latency (
  */
 #define ADD_PORT(type) \
   if (pl->num_##type##_ports == \
-        pl->type##_ports_size) \
+        (int) pl->type##_ports_size) \
     { \
       pl->type##_ports_size *= 2; \
       pl->type##_ports = \
@@ -382,7 +399,7 @@ plugin_generate_automation_tracks (
  */
 int
 plugin_descriptor_is_instrument (
-  PluginDescriptor * descr)
+  const PluginDescriptor * descr)
 {
   return
     (descr->category > PC_NONE &&
@@ -615,9 +632,9 @@ plugin_instantiate (
  */
 void
 plugin_process (
-  Plugin *    plugin,
-  const long  g_start_frames,
-  const int   nframes)
+  Plugin *        plugin,
+  const long      g_start_frames,
+  const nframes_t nframes)
 {
   /* if has MIDI input port */
   if (plugin->descr->num_midi_ins > 0)
@@ -711,12 +728,7 @@ plugin_clone (
         }
 
       /* create a new plugin with same descriptor */
-      PluginDescriptor * descr =
-        calloc (1, sizeof (PluginDescriptor));
-      plugin_clone_descr (
-        pl->descr,
-        descr);
-      clone = plugin_new_from_descr (descr);
+      clone = plugin_new_from_descr (pl->descr);
       g_return_val_if_fail (clone, NULL);
 
       /* set the state file on the new Lv2Plugin

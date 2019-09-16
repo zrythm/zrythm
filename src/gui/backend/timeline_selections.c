@@ -153,54 +153,6 @@ timeline_selections_set_cache_poses (
 }
 
 /**
- * Set all transient Position's to their main
- * counterparts.
- */
-void
-timeline_selections_reset_transient_poses (
-  TimelineSelections * ts)
-{
-  int i;
-
-#define RESET_TRANS_POS_W_LENGTH(caps,cc,sc) \
-  cc * sc; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_set_start_pos ( \
-        sc, &sc->start_pos, \
-        AO_UPDATE_ALL); \
-      sc##_set_end_pos ( \
-        sc, &sc->end_pos, \
-        AO_UPDATE_ALL); \
-    } \
-  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
-               NULL)
-
-#define RESET_TRANS_POS(caps,cc,sc) \
-  cc * sc; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_set_pos ( \
-        sc, &sc->pos, \
-        AO_UPDATE_ALL); \
-    } \
-  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
-               NULL)
-
-  RESET_TRANS_POS_W_LENGTH (
-    REGION, Region, region);
-  RESET_TRANS_POS (
-    SCALE_OBJECT, ScaleObject, scale_object);
-  RESET_TRANS_POS (
-    MARKER, Marker, marker);
-
-#undef RESET_TRANS_POS_W_LENGTH
-#undef RESET_TRANS_POS
-}
-
-/**
  * Returns the position of the leftmost object.
  *
  * If transient is 1, the transient objects are
@@ -472,58 +424,6 @@ DEFINE_CONTAINS_OBJ (MARKER, Marker, marker);
 #undef DEFINE_CONTAINS_OBJ
 
 /**
- * Set all main Position's to their transient
- * counterparts.
- */
-void
-timeline_selections_set_to_transient_poses (
-  TimelineSelections * ts)
-{
-  int i;
-
-#define SET_TO_TRANS_POS_W_LENGTH(caps,cc,sc) \
-  cc * sc, * sc##_trans; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_trans =  \
-        sc##_get_main_trans_##sc (sc); \
-      sc##_set_start_pos ( \
-        sc, &sc##_trans->start_pos, \
-        AO_UPDATE_ALL); \
-      sc##_set_end_pos ( \
-        sc, &sc##_trans->end_pos, \
-        AO_UPDATE_ALL); \
-    } \
-  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
-               NULL)
-
-#define SET_TO_TRANS_POS(caps,cc,sc) \
-  cc * sc, * sc##_trans; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_trans =  \
-        sc##_get_main_trans_##sc (sc); \
-      sc##_set_pos ( \
-        sc, &sc##_trans->pos, \
-        AO_UPDATE_ALL); \
-    } \
-  EVENTS_PUSH (ET_##caps##_POSITIONS_CHANGED, \
-               NULL)
-
-  SET_TO_TRANS_POS_W_LENGTH (
-    REGION, Region, region);
-  SET_TO_TRANS_POS (
-    SCALE_OBJECT, ScaleObject, scale_object);
-  SET_TO_TRANS_POS (
-    MARKER, Marker, marker);
-
-#undef SET_TO_TRANS_POS_W_LENGTH
-#undef SET_TO_TRANS_POS
-}
-
-/**
  * Clears selections.
  */
 void
@@ -598,18 +498,6 @@ timeline_selections_clone (
 }
 
 /**
- * Similar to set_to_transient_poses, but handles
- * values for objects that support them (like
- * AutomationPoint's).
- */
-void
-timeline_selections_set_to_transient_values (
-  TimelineSelections * ts)
-{
-}
-
-
-/**
  * Moves the TimelineSelections by the given
  * amount of ticks.
  *
@@ -667,13 +555,13 @@ timeline_selections_paste_to_pos (
   timeline_selections_clear (
     TL_SELECTIONS);
 
-  int pos_ticks = position_to_ticks (pos);
+  long pos_ticks = position_to_ticks (pos);
 
   /* get pos of earliest object */
   Position start_pos;
   timeline_selections_get_start_pos (
     ts, &start_pos, F_NO_TRANSIENTS);
-  int start_pos_ticks =
+  long start_pos_ticks =
     position_to_ticks (&start_pos);
 
   /* subtract the start pos from every object and
@@ -687,7 +575,8 @@ timeline_selections_paste_to_pos (
              ts->num_regions,
              ts->regions[0]->num_midi_notes);
 
-  int curr_ticks, i;
+  long curr_ticks;
+  int i;
   for (i = 0; i < ts->num_regions; i++)
     {
       Region * region = ts->regions[i];

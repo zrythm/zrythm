@@ -51,6 +51,7 @@ bot_dock_edge_widget_init (BotDockEdgeWidget * self)
   g_type_ensure (CLIP_EDITOR_WIDGET_TYPE);
   g_type_ensure (MODULATOR_VIEW_WIDGET_TYPE);
   g_type_ensure (CHORD_PAD_WIDGET_TYPE);
+  g_type_ensure (FOLDABLE_NOTEBOOK_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

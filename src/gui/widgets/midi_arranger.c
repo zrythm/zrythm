@@ -97,6 +97,7 @@ midi_arranger_widget_set_allocation (
         region->start_pos.total_ticks;
       Position tmp;
       int adj_px_per_key =
+        (int)
         MW_MIDI_EDITOR_SPACE->px_per_key + 1;
 
       /* use absolute position */
@@ -225,7 +226,7 @@ midi_arranger_widget_set_size (
   RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
-    rw_prv->total_px,
+    (int) rw_prv->total_px,
     gtk_widget_get_allocated_height (
       GTK_WIDGET (
         MW_MIDI_EDITOR_SPACE->
@@ -417,38 +418,6 @@ midi_arranger_widget_show_context_menu (
 }
 
 /**
- * Resets the transient of each note in the
- * arranger.
- *
- * @param reset_trans 1 to reset the transient from
- *   main, 0 to reset main from transient.
- */
-static void
-midi_arranger_widget_reset_counterparts (
-  MidiArrangerWidget * self,
-  int                  reset_trans)
-{
-  GList *children, *iter;
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self));
-  MidiNoteWidget * mnw = NULL;
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      if (!Z_IS_MIDI_NOTE_WIDGET (iter->data))
-        continue;
-
-      mnw =
-        Z_MIDI_NOTE_WIDGET (iter->data);
-      midi_note_reset_counterpart (
-        mnw->midi_note, reset_trans);
-    }
-  g_list_free (children);
-}
-
-/**
  * Sets transient notes and actual notes
  * visibility based on the current action.
  *
@@ -492,7 +461,7 @@ midi_arranger_widget_on_drag_begin_note_hit (
   gtk_widget_translate_coordinates (
     GTK_WIDGET (self),
     GTK_WIDGET (mnw),
-    start_x, 0, &wx, &wy);
+    (int) start_x, 0, &wx, &wy);
 
   MidiNote * mn =
     midi_note_get_main_midi_note (
@@ -615,7 +584,8 @@ midi_arranger_widget_create_note (
   /* create midi note */
   MidiNote * midi_note =
     midi_note_new (
-      region, &local_pos, &local_pos, note,
+      region, &local_pos, &local_pos,
+      (midi_byte_t) note,
       VELOCITY_DEFAULT, 1);
 
   /* add it to region */
@@ -986,7 +956,9 @@ midi_arranger_widget_move_items_y (
         midi_note_get_main_midi_note (
           MA_SELECTIONS->midi_notes[i]);
       midi_note_set_val (
-        midi_note, midi_note->val + y_delta,
+        midi_note,
+        (midi_byte_t)
+          ((int) midi_note->val + y_delta),
         flag);
       if (midi_note->widget)
         midi_note_widget_update_tooltip (

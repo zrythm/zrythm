@@ -76,7 +76,4 @@ typedef struct _AutomationCurveWidget
 AutomationCurveWidget *
 automation_curve_widget_new (AutomationCurve * ac);
 
-GType automation_curve_widget_get_type(void);
-
 #endif
-

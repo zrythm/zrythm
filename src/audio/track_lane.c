@@ -35,7 +35,7 @@ track_lane_init_loaded (
   TrackLane * lane)
 {
   lane->regions_size =
-    lane->num_regions;
+    (size_t) lane->num_regions;
   int i;
   Region * region;
   for (i = 0; i < lane->num_regions; i++)
@@ -143,7 +143,8 @@ track_lane_clone (
   TrackLane * new_lane =
     calloc (1, sizeof (TrackLane));
 
-  new_lane->regions_size = lane->num_regions;
+  new_lane->regions_size =
+    (size_t) lane->num_regions;
   new_lane->regions =
     malloc (new_lane->regions_size *
             sizeof (Region *));

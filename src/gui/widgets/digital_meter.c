@@ -62,6 +62,7 @@ G_DEFINE_TYPE (DigitalMeterWidget,
 #define GET_POS \
   ((*self->getter) (self->obj, &pos))
 
+
 static gboolean
 draw_cb (
   GtkWidget * widget,
@@ -71,15 +72,11 @@ draw_cb (
   if (!PROJECT->loaded)
     return FALSE;
 
-  guint width, height;
-  /*GdkRGBA color;*/
-  GtkStyleContext *context;
-
-  context =
+  GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
-  width =
+  int width =
     gtk_widget_get_allocated_width (widget);
-  height =
+  int height =
     gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
@@ -329,25 +326,9 @@ draw_cb (
       self->height_end_pos =
         self->height_start_pos + texth;
 
-      char * beat_unit = NULL;
-      switch (TRANSPORT->beat_unit)
-        {
-        case 2:
-          beat_unit = " 2";
-          break;
-        case 4:
-          beat_unit = " 4";
-          break;
-        case 8:
-          beat_unit = " 8";
-          break;
-        case 16:
-          beat_unit = "16";
-          break;
-        default:
-          g_warn_if_reached ();
-          break;
-        }
+      const char * beat_unit =
+        beat_unit_strings[
+          TRANSPORT->ebeat_unit].str;
       char * beats_per_bar;
       if (TRANSPORT->beats_per_bar < 10)
         beats_per_bar =
@@ -558,13 +539,14 @@ on_scroll (
       if (self->update_num)
         {
           transport_set_bpm (
-            TRANSPORT, TRANSPORT->bpm + num);
+            TRANSPORT,
+            TRANSPORT->bpm + (bpm_t) num);
         }
       else if (self->update_dec)
         {
           transport_set_bpm (
             TRANSPORT,
-            TRANSPORT->bpm + num / 100.f);
+            TRANSPORT->bpm + (bpm_t) num / 100.f);
         }
 
       break;
@@ -699,18 +681,20 @@ drag_update (GtkGestureDrag * gesture,
           if (abs (num) > 0)
             {
               transport_set_bpm (
-                TRANSPORT, TRANSPORT->bpm + num);
+                TRANSPORT,
+                TRANSPORT->bpm + (bpm_t) num);
               self->last_y = offset_y;
             }
         }
       else if (self->update_dec)
         {
           dec = (float) diff / 400.f;
-          g_message ("%f", dec);
+          g_message ("%f", (double) dec);
           if (fabs (dec) > 0)
             {
               transport_set_bpm (
-                TRANSPORT, TRANSPORT->bpm + dec);
+                TRANSPORT,
+                TRANSPORT->bpm + (bpm_t) dec);
               self->last_y = offset_y;
             }
 

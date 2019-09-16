@@ -97,15 +97,6 @@ backward_clicked_cb (GtkButton * backward,
   transport_move_playhead (pos, 1);
 }
 
-/**
- * Initializes the transport controls in the main
- * window.
- */
-void
-transport_controls_widget_refresh (MainWindowWidget * mw)
-{
-}
-
 static void
 transport_controls_widget_class_init (
   TransportControlsWidgetClass * _klass)

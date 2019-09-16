@@ -69,7 +69,8 @@ typedef struct _TimelineRulerWidget
 } TimelineRulerWidget;
 
 void
-timeline_ruler_widget_refresh ();
+timeline_ruler_widget_refresh (
+  TimelineRulerWidget * self);
 
 void
 timeline_ruler_widget_set_ruler_range_position (
@@ -92,13 +93,14 @@ timeline_ruler_on_drag_begin_no_marker_hit (
   gdouble               start_x,
   gdouble               start_y,
   TimelineRulerWidget * self,
-  guint                  height);
+  int                  height);
 
 /**
  * Called from ruler drag end.
  */
 void
-timeline_ruler_on_drag_end ();
+timeline_ruler_on_drag_end (
+  TimelineRulerWidget * self);
 
 /**
  * Called from ruler drag update.

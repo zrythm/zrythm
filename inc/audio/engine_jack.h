@@ -73,8 +73,8 @@ engine_jack_set_transport_type (
  */
 void
 engine_jack_fill_out_bufs (
-  AudioEngine * self,
-  int           nframes);
+  AudioEngine *   self,
+  const nframes_t nframes);
 
 /**
  * Sets up the MIDI engine to use jack.
@@ -101,11 +101,19 @@ engine_jack_get_error_message (
   jack_status_t status);
 
 void
-jack_tear_down ();
+jack_tear_down (
+  AudioEngine * self);
 
 int
 engine_jack_activate (
   AudioEngine * self);
+
+/**
+ * Returns the JACK type string.
+ */
+const char *
+engine_jack_get_jack_type (
+  PortType type);
 
 #endif
 #endif /* HAVE_JACK */

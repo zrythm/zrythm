@@ -21,8 +21,10 @@
 #include <stdlib.h>
 
 #include "audio/audio_track.h"
+#include "audio/clip.h"
 #include "audio/automation_tracklist.h"
 #include "audio/engine.h"
+#include "audio/pool.h"
 #include "audio/port.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -56,7 +58,9 @@ audio_track_fill_stereo_in_buffers (
        loop_end_frames,
        loop_frames,
        clip_start_frames;
-  int buff_index, i, j, k;
+  int i, k;
+  long buff_index;
+  unsigned int j;
   long cycle_start_frames =
     position_to_frames (PLAYHEAD);
   long cycle_end_frames =
@@ -93,9 +97,11 @@ audio_track_fill_stereo_in_buffers (
                 local_frames_start -= loop_frames;
 
               buff_index = 0;
-              int block_length =
+              uint32_t block_length =
                 AUDIO_ENGINE->block_length;
-              if (r->channels == 1)
+              AudioClip * clip =
+                AUDIO_POOL->clips[r->pool_id];
+              if (clip->channels == 1)
                 {
                   /*g_message ("1 channel");*/
                   for (j = 0;
@@ -104,15 +110,15 @@ audio_track_fill_stereo_in_buffers (
                     {
                       buff_index = local_frames_start + j;
                       if (buff_index < 0 ||
-                          buff_index >= r->buff_size)
+                          buff_index >= clip->num_frames * clip->channels)
                         continue;
                       stereo_in->l->buf[j] =
-                        r->buff[buff_index];
+                        clip->frames[buff_index];
                       stereo_in->r->buf[j] =
-                        r->buff[buff_index];
+                        clip->frames[buff_index];
                     }
                 }
-              else if (r->channels == 2)
+              else if (clip->channels == 2)
                 {
                   /*g_message ("2 channels");*/
                   for (j = 0;
@@ -123,12 +129,12 @@ audio_track_fill_stereo_in_buffers (
                         j;
                       if (buff_index < 0 ||
                           buff_index + 1 >=
-                            r->buff_size)
+                            clip->num_frames * clip->channels)
                         continue;
                       stereo_in->l->buf[j] =
-                        r->buff[buff_index];
+                        clip->frames[buff_index];
                       stereo_in->r->buf[j] =
-                        r->buff[buff_index + 1];
+                        clip->frames[buff_index + 1];
                     }
                 }
             }

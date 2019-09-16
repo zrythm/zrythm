@@ -192,13 +192,13 @@ passthrough_processor_disconnect_all (
 void
 passthrough_processor_process (
   PassthroughProcessor * self,
-  long    start_frame,
-  int     nframes)
+  const nframes_t start_frame,
+  const nframes_t nframes)
 {
   if (self->type == PP_TYPE_AUDIO_CHANNEL)
     {
       /* copy the input to output */
-      for (int i = start_frame;
+      for (unsigned int i = start_frame;
            i < start_frame + nframes; i++)
         {
           self->stereo_out->l->buf[i] =

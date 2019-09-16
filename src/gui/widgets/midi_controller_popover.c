@@ -75,7 +75,7 @@ get_controllers (
 /**
  * Finds checkbutton with given label.
  */
-GtkWidget *
+static GtkWidget *
 find_checkbutton (
   MidiControllerPopoverWidget * self,
   const char * label)

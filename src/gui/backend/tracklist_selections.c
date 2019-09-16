@@ -256,7 +256,7 @@ tracklist_selections_sort (
   TracklistSelections * self)
 {
   qsort (self->tracks,
-         self->num_tracks,
+         (size_t) self->num_tracks,
          sizeof (Track *),
          sort_tracks_func);
 }
@@ -282,7 +282,8 @@ tracklist_selections_toggle_visibility (
  * Clone the struct for copying, undoing, etc.
  */
 TracklistSelections *
-tracklist_selections_clone ()
+tracklist_selections_clone (
+  TracklistSelections * self)
 {
   TracklistSelections * new_ts =
     calloc (1, sizeof (TracklistSelections));

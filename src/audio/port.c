@@ -41,6 +41,7 @@
 #include "audio/port.h"
 #include "plugins/plugin.h"
 #include "utils/arrays.h"
+#include "utils/math.h"
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
@@ -308,6 +309,8 @@ port_find_from_identifier (
       else if (id->flags &
                  PORT_FLAG_STEREO_R)
         return SAMPLE_PROCESSOR->stereo_out->r;
+      else
+        g_return_val_if_reached (NULL);
     case PORT_OWNER_TYPE_MONITOR_FADER:
       if (id->flow == FLOW_OUTPUT)
         {
@@ -788,15 +791,16 @@ ports_remove (
  */
 void
 port_apply_fader (
-  Port *    port,
-  float     amp,
-  const int start_frame,
-  const int nframes)
+  Port *          port,
+  float           amp,
+  const nframes_t start_frame,
+  const nframes_t nframes)
 {
-  for (int i = start_frame;
+  for (unsigned int i = start_frame;
        i < start_frame + nframes; i++)
     {
-      if (port->buf[i] != 0.f)
+      if (!math_floats_equal (
+            port->buf[i], 0.f, 0.001f))
         port->buf[i] *= amp;
     }
 }
@@ -891,12 +895,13 @@ stereo_ports_new_generic (
 void
 port_sum_signal_from_inputs (
   Port *    port,
-  const int start_frame,
-  const int nframes,
+  const nframes_t start_frame,
+  const nframes_t nframes,
   const int noroll)
 {
   Port * src_port;
-  int k, l;
+  int k;
+  unsigned int l;
 
   g_warn_if_fail (
     start_frame + nframes <=
@@ -1126,8 +1131,8 @@ port_rename_backend (
 void
 port_receive_midi_events_from_jack (
   Port *      self,
-  int         start_frame,
-  int   nframes)
+  const nframes_t         start_frame,
+  const nframes_t   nframes)
 {
   if (self->internal_type !=
         INTERNAL_JACK_PORT ||
@@ -1138,11 +1143,11 @@ port_receive_midi_events_from_jack (
   void * port_buf =
     jack_port_get_buffer (
       JACK_PORT_T (self->data), nframes);
-  int num_events =
+  uint32_t num_events =
     jack_midi_get_event_count (port_buf);
 
   jack_midi_event_t jack_ev;
-  for(int i = 0; i < num_events; i++)
+  for(unsigned i = 0; i < num_events; i++)
     {
       jack_midi_event_get (
         &jack_ev, port_buf, i);
@@ -1150,7 +1155,7 @@ port_receive_midi_events_from_jack (
       if (jack_ev.time >= start_frame &&
           jack_ev.time < start_frame + nframes)
         {
-          uint8_t channel =
+          midi_byte_t channel =
             jack_ev.buffer[0] & 0xf;
           if (self->identifier.owner_type ==
                 PORT_OWNER_TYPE_TRACK &&
@@ -1160,7 +1165,6 @@ port_receive_midi_events_from_jack (
                  TRACK_TYPE_INSTRUMENT) &&
               !self->track->channel->
                 all_midi_channels &&
-              channel >= 0 &&
               !self->track->channel->
                 midi_channels[channel])
             {
@@ -1171,7 +1175,7 @@ port_receive_midi_events_from_jack (
               midi_events_add_event_from_buf (
                 self->midi_events,
                 jack_ev.time, jack_ev.buffer,
-                jack_ev.size);
+                (int) jack_ev.size);
             }
         }
     }
@@ -1185,8 +1189,8 @@ port_receive_midi_events_from_jack (
 void
 port_receive_audio_data_from_jack (
   Port *      port,
-  int         start_frames,
-  int   nframes)
+  const nframes_t         start_frames,
+  const nframes_t   nframes)
 {
   if (port->internal_type !=
         INTERNAL_JACK_PORT ||
@@ -1201,19 +1205,18 @@ port_receive_audio_data_from_jack (
       JACK_PORT_T (port->data),
       AUDIO_ENGINE->nframes);
 
-  for (int i = start_frames;
+  for (unsigned int i = start_frames;
        i < start_frames + nframes; i++)
     {
-      port->buf[i] +=
-        in[i];
+      port->buf[i] += in[i];
     }
 }
 
 void
 port_send_midi_events_to_jack (
   Port *      port,
-  int         start_frames,
-  int   nframes)
+  const nframes_t         start_frames,
+  const nframes_t   nframes)
 {
   if (port->internal_type !=
         INTERNAL_JACK_PORT ||
@@ -1231,8 +1234,8 @@ port_send_midi_events_to_jack (
 void
 port_send_audio_data_to_jack (
   Port *      port,
-  int         start_frames,
-  int         nframes)
+  const nframes_t         start_frames,
+  const nframes_t         nframes)
 {
   if (port->internal_type !=
         INTERNAL_JACK_PORT ||
@@ -1247,7 +1250,7 @@ port_send_audio_data_to_jack (
       JACK_PORT_T (port->data),
       AUDIO_ENGINE->nframes);
 
-  for (int i = start_frames;
+  for (unsigned int i = start_frames;
        i < start_frames + nframes; i++)
     {
       out[i] = port->buf[i];
@@ -1261,8 +1264,8 @@ port_send_audio_data_to_jack (
 void
 port_sum_data_from_jack (
   Port * self,
-  const int start_frame,
-  const int nframes)
+  const nframes_t start_frame,
+  const nframes_t nframes)
 {
   if (self->identifier.owner_type ==
         PORT_OWNER_TYPE_BACKEND ||
@@ -1288,8 +1291,8 @@ port_sum_data_from_jack (
 void
 port_send_data_to_jack (
   Port * self,
-  const int start_frame,
-  const int nframes)
+  const nframes_t start_frame,
+  const nframes_t nframes)
 {
   if (self->internal_type !=
         INTERNAL_JACK_PORT ||
@@ -1323,12 +1326,10 @@ port_set_expose_to_jack (
   else
     g_return_if_reached ();
 
-  char * type = NULL;
-  if (self->identifier.type == TYPE_AUDIO)
-    type = JACK_DEFAULT_AUDIO_TYPE;
-  else if (self->identifier.type == TYPE_EVENT)
-    type = JACK_DEFAULT_MIDI_TYPE;
-  else
+  const char * type =
+    engine_jack_get_jack_type (
+      self->identifier.type);;
+  if (!type)
     g_return_if_reached ();
 
   if (expose)
@@ -1602,10 +1603,9 @@ port_apply_pan (
   float        pan,
   PanLaw       pan_law,
   PanAlgorithm pan_algo,
-  const int    start_frame,
-  const int    nframes)
+  const nframes_t    start_frame,
+  const nframes_t    nframes)
 {
-  int i;
   float calc_r = 0.f, calc_l = 0.f;
   int is_stereo_r =
     port->identifier.flags & PORT_FLAG_STEREO_R;
@@ -1626,10 +1626,11 @@ port_apply_pan (
       break;
     }
 
-  for (i = start_frame;
+  for (unsigned i = start_frame;
        i < start_frame + nframes; i++)
     {
-      if (port->buf[i] == 0.f)
+      if (math_floats_equal (
+            port->buf[i], 0.f, 0.001f))
         continue;
 
       if (is_stereo_r)

@@ -205,6 +205,27 @@ chord_object_set_region (
     }
 }
 
+ARRANGER_OBJ_DECLARE_RESET_COUNTERPART (
+  ChordObject, chord_object)
+{
+  ChordObject * src =
+    reset_trans ?
+      chord_object_get_main_chord_object (
+        chord_object) :
+      chord_object_get_main_trans_chord_object (
+        chord_object);
+  ChordObject * dest =
+    reset_trans ?
+      chord_object_get_main_trans_chord_object (
+        chord_object) :
+      chord_object_get_main_chord_object (
+        chord_object);
+
+  position_set_to_pos (
+    &dest->pos, &src->pos);
+  dest->index = src->index;
+}
+
 ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
   ChordObject, chord_object);
 

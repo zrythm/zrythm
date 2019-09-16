@@ -155,7 +155,7 @@ on_midi_input_changed (
   channel_reconnect_ext_input_ports (ch);
 }
 
-int
+static int
 row_separator_func (
   GtkTreeModel *model,
   GtkTreeIter *iter,

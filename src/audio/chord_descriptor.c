@@ -90,7 +90,7 @@ chord_descriptor_new (
       break;
     }
 
-  int min_seventh_sems =
+  unsigned int min_seventh_sems =
     type == CHORD_TYPE_DIM ? 9 : 10;
 
   /* add accents */
@@ -210,7 +210,7 @@ chord_descriptor_is_key_in_chord (
   for (int i = 0; i < 36; i++)
     {
       if (chord->notes[i] == 1 &&
-          i % 12 == key)
+          i % 12 == (int) key)
         return 1;
     }
   return 0;

@@ -46,7 +46,7 @@ on_mp_press (GtkGestureMultiPress *gesture,
     }
 }
 
-void
+static void
 on_entry_activated (
   GtkEntry *entry,
   EditableLabelWidget * self)

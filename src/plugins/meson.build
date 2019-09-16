@@ -16,7 +16,6 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 plugin_srcs = [
-  'lv2_gtk.c',
   'lv2_plugin.c',
   'plugin.c',
   'plugin_manager.c',

@@ -71,7 +71,8 @@ tracklist_selections_init_loaded (
  * Clone the struct for copying, undoing, etc.
  */
 TracklistSelections *
-tracklist_selections_clone ();
+tracklist_selections_clone (
+  TracklistSelections * self);
 
 /**
  * Gets highest track in the selections.
@@ -156,6 +157,11 @@ tracklist_selections_toggle_visibility (
 void
 tracklist_selections_print (
   TracklistSelections * self);
+
+void
+tracklist_selections_paste_to_pos (
+  TracklistSelections * ts,
+  int           pos);
 
 /**
  * Sorts the tracks by position.

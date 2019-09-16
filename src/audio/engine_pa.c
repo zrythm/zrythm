@@ -64,6 +64,7 @@ pa_setup (
                   TRANSPORT->beats_per_bar > 1);
 
   engine_update_frames_per_tick (
+    self,
     TRANSPORT->beats_per_bar,
     TRANSPORT->bpm,
     self->sample_rate);
@@ -123,18 +124,18 @@ pa_setup (
 
 void
 engine_pa_fill_out_bufs (
-  AudioEngine * engine,
-  int           nframes)
+  AudioEngine *   self,
+  const nframes_t nframes)
 {
-  for (int i = 0; i < nframes; i++)
+  for (unsigned int i = 0; i < nframes; i++)
     {
-      engine->pa_out_buf[i * 2] =
-        AUDIO_ENGINE->
+      self->pa_out_buf[i * 2] =
+        self->
           monitor_out->l->buf[i];
       /*g_message ("%f",*/
                  /*engine->pa_out_buf[i]);*/
-      engine->pa_out_buf[i * 2 + 1] =
-        AUDIO_ENGINE->
+      self->pa_out_buf[i * 2 + 1] =
+        self->
           monitor_out->r->buf[i];
     }
 }
@@ -147,19 +148,20 @@ engine_pa_fill_out_bufs (
  * machines so don't do anything that could mess up
  * the system like calling malloc() or free().
 */
-int
+static int
 pa_stream_cb (
   const void *                    in,
   void *                          out,
   unsigned long                   nframes,
   const PaStreamCallbackTimeInfo* time_info,
   PaStreamCallbackFlags           status_flags,
-  void *                   self)
+  AudioEngine *                   self)
 {
-  engine_process (AUDIO_ENGINE, nframes);
+  engine_process (
+    self, (nframes_t) nframes);
 
   float * outf = (float *) out;
-  for (int i = 0; i < nframes * 2; i++)
+  for (unsigned int i = 0; i < nframes * 2; i++)
     {
       outf[i] = AUDIO_ENGINE->pa_out_buf[i];
     }
@@ -221,7 +223,7 @@ pa_open_stream (AudioEngine * self)
       possibly changing, buffer size.*/
       0,
       /* this is your callback function */
-      pa_stream_cb,
+      (PaStreamCallback *) pa_stream_cb,
       /*This is a pointer that will be passed to
       your callback*/
       self);

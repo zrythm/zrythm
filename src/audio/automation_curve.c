@@ -33,6 +33,7 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "utils/math.h"
 
 void
 automation_curve_init_loaded (
@@ -187,9 +188,10 @@ automation_curve_get_normalized_value (
 void
 automation_curve_set_curviness (
   AutomationCurve * ac,
-  float             curviness)
+  const curviness_t curviness)
 {
-  if (ac->curviness == curviness)
+  if (math_doubles_equal (
+        ac->curviness, curviness, 0.01))
     return;
 
   ac->curviness = curviness;

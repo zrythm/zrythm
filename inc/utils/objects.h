@@ -17,6 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef __UTILS_OBJECTS_H__
+#define __UTILS_OBJECTS_H__
+
 /**
  * @addtogroup utils
  *
@@ -44,8 +47,10 @@ _free_later (
  * file.
  */
 void
-object_utils_init ();
+object_utils_init (void);
 
 /**
  * @}
  */
+
+#endif

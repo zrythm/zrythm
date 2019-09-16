@@ -47,7 +47,7 @@ char *
 string_array_contains_substr (
   char ** str_array,
   int     num_str,
-  char *  substr);
+  const char *  substr);
 
 /**
  * Returns if the given string contains the given

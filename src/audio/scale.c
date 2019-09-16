@@ -425,7 +425,7 @@ musical_scale_is_key_in_scale (
   if (scale->root_key  == key)
     return 1;
 
-  for (int i = 0; i < 12; i++)
+  for (unsigned int i = 0; i < 12; i++)
     {
       /* check given key - scale root key, add
        * 12 to make sure the value is positive, and
@@ -470,7 +470,7 @@ musical_scale_is_accent_in_scale (
         scale, chord_root))
     return 0;
 
-  int min_seventh_sems =
+  unsigned int min_seventh_sems =
     type == CHORD_TYPE_DIM ? 9 : 10;
 
   /* if 7th not in scale no need to check > 7th */

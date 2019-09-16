@@ -42,16 +42,23 @@ typedef struct Position Position;
  */
 #define RESIZE_CURSOR_SPACE 9
 
-/**
+/*
  * Drag n Drop related.
+ * Gtk target entries.
  */
-/* Gtk target entries */
-/* Plugin descriptor, used to instantiate plugins */
+
+/** Plugin descriptor, used to instantiate plugins.
+ */
 #define TARGET_ENTRY_PLUGIN_DESCR "PLUGIN_DESCR"
-/* Plugin ID, used to move/copy plugins */
+
+/** Plugin ID, used to move/copy plugins. */
 #define TARGET_ENTRY_PLUGIN "PLUGIN"
-/* File descriptor */
-#define TARGET_ENTRY_FILE_DESCR "FILE_DESCR"
+
+/* File path. Not used at the moment. */
+#define TARGET_ENTRY_FILE_PATH "FILE_PATH"
+
+/** URI list. */
+#define TARGET_ENTRY_URI_LIST "text/uri-list"
 
 /**
  * Track target entry.
@@ -115,15 +122,9 @@ typedef struct Position Position;
 /**
  * Used in handlers to get the state mask.
  */
-#define UI_GET_STATE_MASK(gesture) \
-  GdkEventSequence * _sequence = \
-    gtk_gesture_single_get_current_sequence ( \
-      GTK_GESTURE_SINGLE (gesture)); \
-  const GdkEvent * _event = \
-    gtk_gesture_get_last_event ( \
-      GTK_GESTURE (gesture), _sequence); \
-  GdkModifierType state_mask; \
-  gdk_event_get_state (_event, &state_mask)
+GdkModifierType
+ui_get_state_mask (
+  GtkGesture * gesture);
 
 /**
  * Various cursor states to be shared.
@@ -272,7 +273,9 @@ ui_set_cursor_from_icon_name (
  * Sets cursor from standard cursor name.
  */
 void
-ui_set_cursor_from_name (GtkWidget * widget, char * name);
+ui_set_cursor_from_name (
+  GtkWidget *  widget,
+  const char * name);
 
 gboolean
 ui_on_motion_set_status_bar_text_cb (
@@ -327,7 +330,7 @@ ui_is_child_hit (
   gtk_widget_translate_coordinates (
     GTK_WIDGET (parent),
     child,
-    x, y, &wx, &wy);
+    (int) x, (int) y, &wx, &wy);
 
   //g_message ("wx wy %d %d", wx, wy);
 

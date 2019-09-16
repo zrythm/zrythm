@@ -214,24 +214,24 @@ activate_about (GSimpleAction *action,
       resources_get_icon (ICON_TYPE_ZRYTHM,
                           "z-splash.svg"));
 
-  char * artists[] =
+  const char * artists[] =
     {
       "Alexandros Theodotou <alex@zrythm.org>",
       NULL
     };
-  char * authors[] =
+  const char * authors[] =
     {
       "Alexandros Theodotou <alex@zrythm.org>",
       "Sascha Bast <sash@mischkonsum.org>",
       "Georg Krause",
       NULL
     };
-  char * documenters[] =
+  const char * documenters[] =
     {
       "Alexandros Theodotou <alex@zrythm.org>",
       NULL
     };
-  char * translators =
+  const char * translators =
       "Alexandros Theodotou\n"
       "Nicolas Faure <sub26nico@laposte.net>\n"
       "Olivier Humbert <trebmuh@tuxfamily.org>\n"
@@ -397,7 +397,7 @@ activate_zoom_in (GSimpleAction *action,
     Z_RULER_WIDGET (MW_RULER));
   ruler_widget_set_zoom_level (
     Z_RULER_WIDGET (MW_RULER),
-    rw_prv->zoom_level * 1.3f);
+    rw_prv->zoom_level * 1.3);
 
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
                NULL);
@@ -469,7 +469,8 @@ activate_loop_selection (GSimpleAction *action,
         &TRANSPORT->loop_end_pos,
         &end);
 
-      transport_update_position_frames ();
+      transport_update_position_frames (
+        TRANSPORT);
       EVENTS_PUSH (
         ET_TIMELINE_LOOP_MARKER_POS_CHANGED,
         NULL);
@@ -484,7 +485,7 @@ activate_new (GSimpleAction *action,
   g_message ("ZOOMING IN");
 }
 
-int
+static int
 run_open_dialog (GtkDialog * dialog)
 {
   int res = gtk_dialog_run (GTK_DIALOG (dialog));
@@ -726,9 +727,10 @@ activate_paste (GSimpleAction *action,
 }
 
 void
-activate_delete (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_delete (
+  GSimpleAction * simple_action,
+  GVariant      * variant,
+  gpointer        user_data)
 {
   if (MAIN_WINDOW->last_focused ==
         GTK_WIDGET (MW_TIMELINE))

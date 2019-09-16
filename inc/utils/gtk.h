@@ -241,12 +241,13 @@ z_gtk_toggle_button_new_with_resource (
   const char * name);
 
 GtkMenuItem *
-z_gtk_create_menu_item (gchar *     label_name,
-                  gchar *         icon_name,
-                  IconType        resource_icon_type,
-                  gchar *         resource,
-                  int             is_toggle,
-                  const char *    action_name);
+z_gtk_create_menu_item (
+  const gchar *   label_name,
+  const gchar *   icon_name,
+  IconType        resource_icon_type,
+  const gchar *   resource,
+  int             is_toggle,
+  const char *    action_name);
 
 /**
  * Returns a pointer stored at the given selection.

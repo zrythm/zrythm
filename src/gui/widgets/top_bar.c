@@ -354,15 +354,11 @@ top_bar_widget_class_init (TopBarWidgetClass * _klass)
 static void
 top_bar_widget_init (TopBarWidget * self)
 {
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      DIGITAL_METER_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      TRANSPORT_CONTROLS_WIDGET_TYPE, NULL)));
-  gtk_widget_destroy (
-    GTK_WIDGET (g_object_new (
-      CPU_WIDGET_TYPE, NULL)));
+  g_type_ensure (DIGITAL_METER_WIDGET_TYPE);
+  g_type_ensure (TRANSPORT_CONTROLS_WIDGET_TYPE);
+  g_type_ensure (CPU_WIDGET_TYPE);
+  g_type_ensure (LIVE_WAVEFORM_WIDGET_TYPE);
+  g_type_ensure (MIDI_ACTIVITY_BAR_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

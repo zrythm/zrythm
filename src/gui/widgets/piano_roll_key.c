@@ -59,15 +59,12 @@ piano_roll_key_draw_cb (
   cairo_t *cr,
   PianoRollKeyWidget * self)
 {
-  guint width, height;
-  GtkStyleContext *context;
-
-  context =
+  GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
 
-  width =
+  int width =
     gtk_widget_get_allocated_width (widget);
-  height =
+  int height =
     gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
@@ -119,7 +116,8 @@ piano_roll_key_send_note_event (
       midi_events_add_note_on (
         MANUAL_PRESS_EVENTS,
         CLIP_EDITOR->region->lane->midi_ch,
-        self->descr->value, 90, 1, 1);
+        (midi_byte_t) self->descr->value,
+        90, 1, 1);
 
       piano_roll_add_current_note (
         PIANO_ROLL, self->descr);
@@ -130,7 +128,7 @@ piano_roll_key_send_note_event (
       midi_events_add_note_off (
         MANUAL_PRESS_EVENTS,
         CLIP_EDITOR->region->lane->midi_ch,
-        self->descr->value, 1, 1);
+        (midi_byte_t) self->descr->value, 1, 1);
 
       piano_roll_remove_current_note (
         PIANO_ROLL, self->descr);
@@ -174,7 +172,7 @@ piano_roll_key_widget_new (
 
   gtk_widget_set_size_request (
     GTK_WIDGET (self), 48,
-    MW_MIDI_EDITOR_SPACE->px_per_key);
+    (int) MW_MIDI_EDITOR_SPACE->px_per_key);
 
   return self;
 }

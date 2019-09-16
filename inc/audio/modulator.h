@@ -96,7 +96,7 @@ modulator_schema = {
  */
 Modulator *
 modulator_new (
-  PluginDescriptor * descr,
+  const PluginDescriptor * descr,
   Track *       track);
 
 #endif // __AUDIO_MODULATOR_H__

@@ -272,15 +272,15 @@ position_set_sixteenth (Position * position,
 void
 position_set_tick (
   Position * position,
-  int        tick);
+  long       tick);
 
 /**
  * Sorts an array of Position's.
  */
 void
 position_sort_array (
-  Position * array,
-  const int  size);
+  Position *   array,
+  const size_t size);
 
 /**
  * Sets position to target position

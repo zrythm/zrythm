@@ -52,6 +52,6 @@ typedef struct _AutomatorWidget
  * Creates a automator widget using the given automator data.
  */
 AutomatorWidget *
-automator_widget_new ();
+automator_widget_new (void);
 
 #endif

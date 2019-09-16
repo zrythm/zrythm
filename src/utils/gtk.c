@@ -279,12 +279,13 @@ z_gtk_toggle_button_new_with_resource (
  * TODO add description.
  */
 GtkMenuItem *
-z_gtk_create_menu_item (gchar *     label_name,
-                  gchar *         icon_name,
-                  IconType        resource_icon_type,
-                  gchar *         resource,
-                  int             is_toggle,
-                  const char *    action_name)
+z_gtk_create_menu_item (
+  const gchar *   label_name,
+  const gchar *   icon_name,
+  IconType        resource_icon_type,
+  const gchar *   resource,
+  int             is_toggle,
+  const char *    action_name)
 {
   GtkWidget *box =
     gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);

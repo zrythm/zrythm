@@ -57,6 +57,6 @@ typedef struct _PreferencesWidget
 } PreferencesWidget;
 
 PreferencesWidget *
-preferences_widget_new ();
+preferences_widget_new (void);
 
 #endif

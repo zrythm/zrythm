@@ -483,13 +483,13 @@ midi_arranger_selections_paste_to_pos (
   MidiArrangerSelections * ts,
   Position *           pos)
 {
-  int pos_ticks = position_to_ticks (pos);
+  long pos_ticks = position_to_ticks (pos);
 
   /* get pos of earliest object */
   Position start_pos;
   midi_arranger_selections_get_start_pos (
     ts, &start_pos, 0, 1);
-  int start_pos_ticks =
+  long start_pos_ticks =
     position_to_ticks (&start_pos);
 
   /* subtract the start pos from every object and
@@ -499,7 +499,8 @@ midi_arranger_selections_paste_to_pos (
   curr_ticks = position_to_ticks (x); \
   position_from_ticks (x, pos_ticks + DIFF)
 
-  int curr_ticks, i;
+  long curr_ticks;
+  int i;
   for (i = 0; i < ts->num_midi_notes; i++)
     {
       MidiNote * midi_note = ts->midi_notes[i];

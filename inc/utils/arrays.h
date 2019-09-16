@@ -75,11 +75,13 @@
  */
 #define array_double_size_if_full( \
   array,count,size,type) \
-  if ((count) == (size)) \
+  if ((size_t) (count) == (size_t) (size)) \
     { \
       (size) = (size) == 0 ? 1 : (size) * 2; \
       (array) = \
-        realloc ((array), sizeof (type) * (size)); \
+        realloc ( \
+          (array), \
+          sizeof (type) * (size_t) (size)); \
     }
 
 /**
