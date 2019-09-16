@@ -493,8 +493,13 @@ transport_position_add_frames (
   Position *        pos,
   const nframes_t   frames)
 {
-  position_from_frames (
-    pos,
+  long new_global_frames =
     transport_frames_add_frames (
-      self, pos->frames, frames));
+      self, pos->frames, frames);
+  position_from_frames (
+    pos, new_global_frames);
+
+  /* set the frames manually again because
+   * position_from_frames rounds them */
+  pos->frames = new_global_frames;
 }

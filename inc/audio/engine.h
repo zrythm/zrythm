@@ -420,7 +420,8 @@ engine_process (
  */
 void
 engine_post_process (
-  AudioEngine * self);
+  AudioEngine * self,
+  const nframes_t nframes);
 
 /**
  * Called to fill in the external buffers at the end

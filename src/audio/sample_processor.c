@@ -37,6 +37,8 @@ sample_processor_init (
     stereo_ports_new_generic (
       0, _("Sample Processor"),
       PORT_OWNER_TYPE_SAMPLE_PROCESSOR, self);
+  g_warn_if_fail (
+    self->stereo_out->l && self->stereo_out->r);
 }
 
 /**

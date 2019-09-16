@@ -253,49 +253,63 @@ export_audio (
       zix_sem_wait (
         &AUDIO_ENGINE->port_operation_lock);
 
-      int count = 0;
-      nframes_t nframes = AUDIO_ENGINE->nframes;
-      float out_ptr[nframes * 2];
+      sf_count_t count = 0;
+      nframes_t nframes;
+      long total_frames =
+        (stop_pos.frames - 1) - start_pos.frames;
+      long covered = 0;
+      float out_ptr[total_frames * 2];
       do
         {
+          /* calculate number of frames to process
+           * this time */
+          nframes =
+            (nframes_t)
+            MIN (
+              (stop_pos.frames - 1) -
+                TRANSPORT->playhead_pos.frames,
+              (long) AUDIO_ENGINE->nframes);
+
           /* run process code */
           engine_process_prepare (
             AUDIO_ENGINE,
-            AUDIO_ENGINE->nframes);
+            nframes);
           router_start_cycle (
-            &MIXER->router, AUDIO_ENGINE->nframes,
+            &MIXER->router, nframes,
             0, PLAYHEAD);
-          engine_post_process (AUDIO_ENGINE);
+          engine_post_process (
+            AUDIO_ENGINE, nframes);
 
           /* by this time, the Master channel should
            * have its Stereo Out ports filled.
            * pass its buffers to the output */
-          count= 0;
-          float amplitude = (float) (AMPLITUDE);
           for (unsigned int i = 0; i < nframes; i++)
             {
               out_ptr[count++] =
-                amplitude *
                 P_MASTER_TRACK->channel->
                   stereo_out->l->buf[i];
               out_ptr[count++] =
-                amplitude *
                 P_MASTER_TRACK->channel->
                   stereo_out->r->buf[i];
             }
 
-          sf_write_float (sndfile, out_ptr, count);
+          covered += nframes;
+          g_warn_if_fail (
+            covered ==
+              TRANSPORT->playhead_pos.frames);
 
           info->progress =
             (float)
             (TRANSPORT->playhead_pos.frames -
               start_pos.frames) /
-            (float) (
-            stop_pos.frames - start_pos.frames);
+            (float) total_frames;
 
         } while (
           TRANSPORT->playhead_pos.frames <
-          stop_pos.frames);
+          stop_pos.frames - 1);
+
+      g_warn_if_fail (covered == total_frames);
+      sf_writef_float (sndfile, out_ptr, covered);
 
       info->progress = 1.f;
 

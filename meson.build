@@ -182,7 +182,6 @@ test_cflags = [
   '-Werror=misleading-indentation',
   '-Werror=int-in-bool-context',
   '-Werror=type-limits',
-  '-fvisibility=hidden',
   ]
 
 if (get_option ('buildtype') == 'release')
@@ -196,6 +195,7 @@ if (get_option ('buildtype') == 'release')
     '-msse',
     '-msse2',
     '-mfpmath=sse',
+    '-fvisibility=hidden',
     ]
 endif
 

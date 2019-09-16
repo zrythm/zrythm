@@ -33,7 +33,10 @@ lv2_srcs = [
 
 lv2_lib = static_library (
   'lv2-lib',
-  sources: lv2_srcs,
+  sources: [
+    config_h,
+    lv2_srcs,
+    ],
   dependencies: zrythm_deps,
   include_directories: all_inc,
   c_args: [ common_cflags ],

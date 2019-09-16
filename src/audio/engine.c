@@ -274,8 +274,6 @@ engine_init (
   /* init audio */
   init_audio (self, loading);
 
-  sample_processor_init (SAMPLE_PROCESSOR);
-
   /* connect fader to monitor out */
   stereo_ports_connect (
     MONITOR_FADER->stereo_out,
@@ -331,6 +329,7 @@ engine_init (
   self->buf_size_set = false;
 
   metronome_init (METRONOME);
+  sample_processor_init (SAMPLE_PROCESSOR);
 
   /* connect the sample processor to the engine
    * output */
@@ -784,7 +783,7 @@ engine_process (
 
   if (!g_atomic_int_get (&self->run))
     {
-      g_message ("ENGINE NOT RUNNING");
+      /*g_message ("ENGINE NOT RUNNING");*/
       return 0;
     }
 
@@ -902,7 +901,7 @@ engine_process (
   /*g_message ("end====================");*/
 
   /* run post-process code */
-  engine_post_process (self);
+  engine_post_process (self, nframes);
 
   /*
    * processing finished, return 0 (OK)
@@ -915,7 +914,8 @@ engine_process (
  */
 void
 engine_post_process (
-  AudioEngine * self)
+  AudioEngine * self,
+  const nframes_t nframes)
 {
   zix_sem_post (&self->port_operation_lock);
 
@@ -923,7 +923,7 @@ engine_post_process (
     {
       /* fill in the external buffers */
       engine_fill_out_bufs (
-        self, self->nframes);
+        self, nframes);
     }
 
   /* stop panicking */
@@ -938,7 +938,7 @@ engine_post_process (
       self->remaining_latency_preroll == 0)
     {
       transport_add_to_playhead (
-        TRANSPORT, self->nframes);
+        TRANSPORT, nframes);
       if (self->audio_backend ==
             AUDIO_BACKEND_JACK &&
           self->transport_type ==
