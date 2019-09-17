@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-09 00:34+0100\n"
-"PO-Revision-Date: 2019-09-14 11:24+0000\n"
+"PO-Revision-Date: 2019-09-18 16:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/fr/>\n"
@@ -77,9 +77,8 @@ msgid ""
 msgstr ""
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
-#, fuzzy
 msgid "Channel"
-msgstr "Canaux"
+msgstr "Canal"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:41
 msgid ""
@@ -361,9 +360,8 @@ msgid "Current playhead position, in bars.beats.sixteenths.ticks"
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:21
-#, fuzzy
 msgid "Transport buttons"
-msgstr "Barre de transport"
+msgstr "Boutons de transport"
 
 #: ../../zrythm-interface/transport-bar.rst:21
 msgid "Controls for stopping, playback, recording, etc."
