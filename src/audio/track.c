@@ -929,7 +929,8 @@ track_free (Track * track)
 
 #undef _FREE_TRACK
 
-  channel_free (track->channel);
+  if (track->channel)
+    channel_free (track->channel);
 
   if (track->widget && GTK_IS_WIDGET (track->widget))
     gtk_widget_destroy (

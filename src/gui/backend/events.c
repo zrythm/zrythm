@@ -647,6 +647,11 @@ events_process (void * data)
 {
   GAsyncQueue * q = (GAsyncQueue *) data;
   /*gint64 curr_time = g_get_monotonic_time ();*/
+  if (q != ZRYTHM->event_queue)
+    {
+      g_async_queue_unref (q);
+      return G_SOURCE_REMOVE;
+    }
 
   g_async_queue_lock (q);
   ZEvent * events[60];

@@ -44,6 +44,7 @@ midi_arranger_selections_init_loaded (
       g_warn_if_fail (mn->region);
       self->midi_notes[i] =
         midi_note_find (mn);
+      g_warn_if_fail (self->midi_notes[i]);
       midi_note_free (mn);
     }
 }

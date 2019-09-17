@@ -1922,10 +1922,8 @@ lv2_plugin_instantiate (
       self->ui_update_hz =
         (float)
         gdk_monitor_get_refresh_rate (
-          gdk_display_get_monitor_at_window (
-            gdk_display_get_default (),
-            gtk_widget_get_window (
-              GTK_WIDGET (MAIN_WINDOW))));
+          gdk_display_get_primary_monitor (
+            gdk_display_get_default ()));
     }
   else
     {

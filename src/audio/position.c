@@ -296,11 +296,13 @@ position_compare (
   const Position * p2)
 {
   /*g_warn_if_reached ();*/
-  if (p1->total_ticks < p2->total_ticks)
+  long p1_ticks = position_to_ticks (p1);
+  long p2_ticks = position_to_ticks (p2);
+  if (p1_ticks < p2_ticks)
     return -1;
-  if (p1->total_ticks == p2->total_ticks)
+  if (p1_ticks == p2_ticks)
     return 0;
-  if (p1->total_ticks > p2->total_ticks)
+  if (p1_ticks > p2_ticks)
     return 1;
   g_return_val_if_reached (-2);
 }

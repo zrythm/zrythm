@@ -488,10 +488,8 @@ load (
       PROJECT = prj;
 
       MainWindowWidget * mww = MAIN_WINDOW;
-
-      g_message ("recreating main window...");
-      MAIN_WINDOW =
-        main_window_widget_new (zrythm_app);
+      MAIN_WINDOW = NULL;
+      ZRYTHM->event_queue = NULL;
 
       g_message ("destroying previous main "
                  "window...");
@@ -562,6 +560,13 @@ load (
     &PROJECT->quantize_opts_timeline);
   quantize_options_update_quantize_points (
     &PROJECT->quantize_opts_editor);
+
+  if (loading_while_running)
+    {
+      g_message ("recreating main window...");
+      MAIN_WINDOW =
+        main_window_widget_new (zrythm_app);
+    }
 
   /* sanity check */
   project_sanity_check (PROJECT);
