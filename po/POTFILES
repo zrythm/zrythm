@@ -2,13 +2,13 @@ inc/dir.h
 inc/project.h
 inc/Wrapper.h
 inc/zrythm.h
-inc/plugins/lv2_gtk.h
 inc/plugins/dir.h
 inc/plugins/lv2_plugin.h
 inc/plugins/plugin.h
 inc/plugins/lv2_port.h
 inc/plugins/plugin_manager.h
 inc/plugins/vst/vestige.h
+inc/plugins/lv2/lv2_gtk.h
 inc/plugins/lv2/worker.h
 inc/plugins/lv2/urid.h
 inc/plugins/lv2/lv2_external_ui.h
@@ -26,6 +26,7 @@ inc/gui/widgets/piano_roll_key.h
 inc/gui/widgets/bot_dock_edge.h
 inc/gui/widgets/timeline_minimap.h
 inc/gui/widgets/foldable_notebook.h
+inc/gui/widgets/midi_bus_track.h
 inc/gui/widgets/export_progress_dialog.h
 inc/gui/widgets/view_toolbar.h
 inc/gui/widgets/arranger_object.h
@@ -67,6 +68,7 @@ inc/gui/widgets/modulator.h
 inc/gui/widgets/inspector_plugin.h
 inc/gui/widgets/plugin_browser.h
 inc/gui/widgets/timeline_toolbar.h
+inc/gui/widgets/midi_group_track.h
 inc/gui/widgets/toolbox.h
 inc/gui/widgets/track_top_grid.h
 inc/gui/widgets/track_lanelist.h
@@ -216,13 +218,13 @@ inc/gui/backend/arranger_object_info.h
 inc/gui/backend/chord_selections.h
 inc/gui/backend/chord_editor.h
 inc/gui/backend/clip_editor.h
-inc/gui/backend/file_manager.h
 inc/gui/backend/mixer_selections.h
 inc/utils/flags.h
 inc/utils/dir.h
 inc/utils/audio.h
 inc/utils/smf.h
 inc/utils/hashtable.h
+inc/utils/types.h
 inc/utils/datetime.h
 inc/utils/ui.h
 inc/utils/algorithms.h
@@ -243,6 +245,8 @@ inc/utils/resources.h
 inc/utils/gtk.h
 inc/settings/settings.h
 inc/audio/midi.h
+inc/audio/encoder.h
+inc/audio/midi_bus_track.h
 inc/audio/tracklist.h
 inc/audio/position.h
 inc/audio/audio_group_track.h
@@ -259,6 +263,8 @@ inc/audio/marker_track.h
 inc/audio/automation_track.h
 inc/audio/master_track.h
 inc/audio/modulator.h
+inc/audio/midi_group_track.h
+inc/audio/clip.h
 inc/audio/snap_grid.h
 inc/audio/engine_jack.h
 inc/audio/engine_dummy.h
@@ -272,6 +278,7 @@ inc/audio/rack_controller.h
 inc/audio/automation_point.h
 inc/audio/automation_region.h
 inc/audio/mixer.h
+inc/audio/pool.h
 inc/audio/sample_playback.h
 inc/audio/channel_track.h
 inc/audio/automatable.h
@@ -279,6 +286,7 @@ inc/audio/track_lane.h
 inc/audio/chord_descriptor.h
 inc/audio/chord_region.h
 inc/audio/ext_port.h
+inc/audio/audio_file.h
 inc/audio/engine.h
 inc/audio/engine_alsa.h
 inc/audio/scale.h
@@ -293,6 +301,7 @@ inc/audio/control_room.h
 inc/audio/metronome.h
 inc/audio/channel.h
 inc/audio/routing.h
+inc/audio/supported_file.h
 inc/audio/midi_track.h
 inc/audio/velocity.h
 inc/audio/pan.h
@@ -334,12 +343,12 @@ inc/actions/edit_tracks_action.h
 src/zrythm.c
 src/project.c
 src/main.c
-src/plugins/lv2_gtk.c
 src/plugins/plugin_manager.c
 src/plugins/plugin.c
 src/plugins/lv2_plugin.c
 src/plugins/lv2/state.c
 src/plugins/lv2/x11_in_gtk3.c
+src/plugins/lv2/lv2_gtk.c
 src/plugins/lv2/suil_instance.c
 src/plugins/lv2/lv2_evbuf.c
 src/plugins/lv2/worker.c
@@ -354,6 +363,7 @@ src/gui/widgets/tracklist_header.c
 src/gui/widgets/chord_arranger.c
 src/gui/widgets/snap_box.c
 src/gui/widgets/audio_group_track.c
+src/gui/widgets/midi_group_track.c
 src/gui/widgets/tracklist.c
 src/gui/widgets/rack_row.c
 src/gui/widgets/create_project_dialog.c
@@ -424,6 +434,7 @@ src/gui/widgets/transport_controls.c
 src/gui/widgets/cpu.c
 src/gui/widgets/inspector_editor.c
 src/gui/widgets/timeline_arranger.c
+src/gui/widgets/midi_bus_track.c
 src/gui/widgets/automation_arranger.c
 src/gui/widgets/mixer.c
 src/gui/widgets/help_toolbar.c
@@ -521,7 +532,6 @@ src/gui/widgets/dzl/dzl-dock.c
 src/gui/widgets/dzl/dzl-dock-widget.c
 src/gui/widgets/gtk/gtkeventcontrollermotion.c
 src/gui/backend/arranger_object_info.c
-src/gui/backend/file_manager.c
 src/gui/backend/clip_editor.c
 src/gui/backend/automation_selections.c
 src/gui/backend/timeline_selections.c
@@ -552,7 +562,9 @@ src/utils/ui.c
 src/utils/resources.c
 src/utils/string.c
 src/settings/settings.c
+src/audio/encoder.c
 src/audio/audio_group_track.c
+src/audio/midi_group_track.c
 src/audio/tracklist.c
 src/audio/midi_note.c
 src/audio/chord_track.c
@@ -573,6 +585,8 @@ src/audio/marker_track.c
 src/audio/control_room.c
 src/audio/transport.c
 src/audio/exporter.c
+src/audio/supported_file.c
+src/audio/midi_bus_track.c
 src/audio/mixer.c
 src/audio/engine_pa.c
 src/audio/region.c
@@ -599,9 +613,11 @@ src/audio/chord_object.c
 src/audio/metronome.c
 src/audio/channel_track.c
 src/audio/sample_processor.c
+src/audio/pool.c
 src/audio/track.c
 src/audio/midi_track.c
 src/audio/scale.c
+src/audio/clip.c
 src/audio/fader.c
 src/audio/engine_jack.c
 src/actions/duplicate_chord_selections_action.c
