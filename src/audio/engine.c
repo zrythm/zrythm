@@ -726,14 +726,17 @@ queue_metronome_events (
  const nframes_t loffset,
  const nframes_t nframes)
 {
-  Position pos, bar_pos, beat_pos, unlooped_playhead;
+  Position pos, bar_pos, beat_pos,
+           unlooped_playhead;
   position_init (&bar_pos);
   position_init (&beat_pos);
   position_set_to_pos (&pos, PLAYHEAD);
-  position_set_to_pos (&unlooped_playhead, PLAYHEAD);
+  position_set_to_pos (
+    &unlooped_playhead, PLAYHEAD);
   transport_position_add_frames (
     TRANSPORT, &pos, nframes);
-  position_add_frames (&unlooped_playhead, nframes);
+  position_add_frames (
+    &unlooped_playhead, nframes);
   int loop_crossed =
     unlooped_playhead.frames !=
     pos.frames;

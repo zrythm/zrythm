@@ -265,15 +265,22 @@ position_set_to_pos (
   pos->frames = position_to_frames (pos);
 }
 
+/**
+ * Adds the frames to the position and updates
+ * the rest of the fields, and makes sure the
+ * frames are still accurate.
+ */
 void
-position_add_frames (Position * position,
-                     long       frames)
+position_add_frames (
+  Position * pos,
+  const long frames)
 {
-  position->frames += frames;
+  long new_frames = pos->frames + frames;
   position_set_tick (
-    position,
-    position->ticks +
+    pos,
+    pos->ticks +
       frames / AUDIO_ENGINE->frames_per_tick);
+  pos->frames = new_frames;
 }
 
 /**

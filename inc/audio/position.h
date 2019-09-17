@@ -290,9 +290,15 @@ position_set_to_pos (
   Position * position,
   const Position * target);
 
+/**
+ * Adds the frames to the position and updates
+ * the rest of the fields, and makes sure the
+ * frames are still accurate.
+ */
 void
-position_add_frames (Position * position,
-                     long       frames);
+position_add_frames (
+  Position * pos,
+  const long frames);
 
 /**
  * Converts position bars/beats/quarter beats/ticks to frames
