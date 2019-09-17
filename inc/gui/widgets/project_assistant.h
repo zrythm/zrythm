@@ -54,6 +54,7 @@ G_DECLARE_FINAL_TYPE (ProjectAssistantWidget,
 typedef struct ProjectInfo
 {
   char *   name;
+  /** Full path. */
   char *   filename;
   char *   modified;
 } ProjectInfo;

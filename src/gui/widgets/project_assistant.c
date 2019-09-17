@@ -65,20 +65,38 @@ on_projects_selection_changed (
         g_value_get_pointer (&value);
       if (self->project_selection)
         {
-          gtk_assistant_set_page_complete (
-            GTK_ASSISTANT (self),
-            gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 0),
-            1);
-          /*gtk_assistant_set_page_complete (*/
-            /*GTK_ASSISTANT (self),*/
-            /*gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 1),*/
-            /*1);*/
-          /*set_label (self);*/
+          char * last_modified =
+            io_file_get_last_modified_datetime (
+              self->project_selection->filename);
+          if (last_modified)
+            {
+              gtk_assistant_set_page_complete (
+                GTK_ASSISTANT (self),
+                gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 0),
+                1);
+              g_free (last_modified);
+            }
+          else
+            {
+              gtk_assistant_set_page_complete (
+                GTK_ASSISTANT (self),
+                gtk_assistant_get_nth_page (
+                  GTK_ASSISTANT (self), 0),
+                0);
+            }
         }
 
       g_list_free_full (
         selected_rows,
         (GDestroyNotify) gtk_tree_path_free);
+
+      gtk_widget_set_sensitive (
+        GTK_WIDGET (self->remove_btn), 1);
+    }
+  else
+    {
+      gtk_widget_set_sensitive (
+        GTK_WIDGET (self->remove_btn), 0);
     }
 }
 
@@ -132,8 +150,6 @@ on_create_new_project_toggled (
     GTK_WIDGET (self->templates_box), active);
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->projects), !active);
-  gtk_widget_set_sensitive (
-    GTK_WIDGET (self->remove_btn), !active);
   self->load_template = active;
 
   if (active)
@@ -143,6 +159,8 @@ on_create_new_project_toggled (
         gtk_assistant_get_nth_page (
           GTK_ASSISTANT (self), 0),
         1);
+      gtk_widget_set_sensitive (
+        GTK_WIDGET (self->remove_btn), 0);
     }
   else
     {
@@ -154,6 +172,13 @@ on_create_new_project_toggled (
             gtk_assistant_get_nth_page (
               GTK_ASSISTANT (self), 0),
             0);
+          gtk_widget_set_sensitive (
+            GTK_WIDGET (self->remove_btn), 0);
+        }
+      else
+        {
+          gtk_widget_set_sensitive (
+            GTK_WIDGET (self->remove_btn), 1);
         }
     }
 }
@@ -309,7 +334,8 @@ on_project_remove_clicked (
         self->project_selection->filename);
 
       /* remove from treeview */
-      for (int ii = 0;
+      int ii;
+      for (ii = 0;
            ii < self->num_project_infos; ii++)
         {
           if (&self->project_infos[ii] ==
@@ -326,9 +352,37 @@ on_project_remove_clicked (
               break;
             }
         }
+      /* refresh treeview */
+      refresh_projects (self);
 
-        /* refresh treeview */
-        refresh_projects (self);
+      /* select next project */
+      GtkTreePath * path =
+        gtk_tree_path_new_from_indices (
+          ii, -1);
+      GtkTreeSelection *selection =
+        gtk_tree_view_get_selection (
+          GTK_TREE_VIEW (self->projects));
+      GtkTreeIter iter;
+      int iter_set =
+        gtk_tree_model_get_iter (
+          self->project_model, &iter, path);
+      if (iter_set)
+        {
+          gtk_tree_selection_select_iter (
+            selection, &iter);
+          gtk_widget_set_sensitive (
+            GTK_WIDGET (btn), 1);
+        }
+      else
+        {
+          gtk_widget_set_sensitive (
+            GTK_WIDGET (btn), 0);
+          gtk_assistant_set_page_complete (
+            GTK_ASSISTANT (self),
+            gtk_assistant_get_nth_page (
+              GTK_ASSISTANT (self), 0),
+            0);
+        }
     }
 }
 
@@ -408,6 +462,8 @@ project_assistant_widget_new (
   GtkTreeSelection *selection =
     gtk_tree_view_get_selection (
       GTK_TREE_VIEW (self->projects));
+  gtk_tree_selection_set_mode (
+    selection, GTK_SELECTION_BROWSE);
   GtkTreeIter iter;
   gtk_tree_model_get_iter_first (
     self->project_model,

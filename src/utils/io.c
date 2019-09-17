@@ -171,7 +171,8 @@ io_file_get_creation_datetime (const char * filename)
 }
 
 char *
-io_file_get_last_modified_datetime (const char * filename)
+io_file_get_last_modified_datetime (
+  const char * filename)
 {
   struct stat result;
   struct tm *nowtm;
