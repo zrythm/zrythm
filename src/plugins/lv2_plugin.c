@@ -1573,7 +1573,7 @@ lv2_free (Lv2Plugin * plugin)
  * @param preset_uri URI of preset to load.
  */
 int
-lv2_instantiate (
+lv2_plugin_instantiate (
   Lv2Plugin *  self,
   char * preset_uri)
 {
@@ -1673,7 +1673,8 @@ lv2_instantiate (
   else if (self->state_file)
     {
       char * states_dir =
-        project_get_states_dir (PROJECT, 0);
+        project_get_states_dir (
+          PROJECT, PROJECT->backup_dir != NULL);
       char * state_file_path =
         g_build_filename (
           states_dir,

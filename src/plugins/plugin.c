@@ -606,8 +606,8 @@ plugin_instantiate (
       {
         g_message ("state file: %s",
                    pl->lv2->state_file);
-        if (lv2_instantiate (pl->lv2,
-                             NULL))
+        if (lv2_plugin_instantiate (
+              pl->lv2, NULL))
           {
             g_warning ("lv2 instantiate failed");
             return -1;

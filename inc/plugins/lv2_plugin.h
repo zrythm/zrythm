@@ -418,7 +418,7 @@ lv2_load_from_state (
  * @param preset_uri URI of preset to load.
  */
 int
-lv2_instantiate (
+lv2_plugin_instantiate (
   Lv2Plugin *  plugin,
   char * preset_uri);
 

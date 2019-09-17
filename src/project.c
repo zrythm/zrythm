@@ -443,6 +443,8 @@ load (
   g_free (project_file_path);
 
   Project * prj = project_deserialize (yaml);
+  prj->backup_dir =
+    g_strdup (PROJECT->backup_dir);
 
   char * version = zrythm_get_version (0);
   if (!string_is_equal (

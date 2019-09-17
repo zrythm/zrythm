@@ -779,7 +779,6 @@ engine_process (
   AudioEngine * self,
   nframes_t     _nframes)
 {
-
   /* Clear output buffers just in case we have to
    * return early */
   clear_output_buffers (self, _nframes);
