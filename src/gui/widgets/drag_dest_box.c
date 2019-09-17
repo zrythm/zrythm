@@ -225,9 +225,10 @@ on_drag_data_received (
   else if (target ==
             GET_ATOM (TARGET_ENTRY_PLUGIN_DESCR))
     {
-      const PluginDescriptor * pd =
-        (const PluginDescriptor *)
-          gtk_selection_data_get_data (data);
+      PluginDescriptor * pd = NULL;
+      const guchar *my_data =
+        gtk_selection_data_get_data (data);
+      memcpy (&pd, my_data, sizeof (pd));
 
       if (self->type ==
           DRAG_DEST_BOX_TYPE_MIXER ||
@@ -267,9 +268,11 @@ on_drag_data_received (
     {
       /* NOTE this is a cloned pointer, don't use
        * it */
-      const Plugin * received_pl =
-        (const Plugin *)
+      Plugin * received_pl = NULL;
+      const guchar *my_data =
         gtk_selection_data_get_data (data);
+      memcpy (
+        &received_pl, my_data, sizeof (received_pl));
       Plugin * pl =
         TRACKLIST->tracks[received_pl->track_pos]->
           channel->plugins[received_pl->slot];

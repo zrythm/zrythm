@@ -120,46 +120,6 @@ on_selection_changed (
     }
 }
 
-/*static void*/
-/*on_drag_data_get (GtkWidget        *widget,*/
-               /*GdkDragContext   *context,*/
-               /*GtkSelectionData *data,*/
-               /*guint             info,*/
-               /*guint             time,*/
-               /*gpointer          user_data)*/
-/*{*/
-  /*GtkTreeSelection * ts = (GtkTreeSelection *) user_data;*/
-  /*GList * selected_rows =*/
-    /*gtk_tree_selection_get_selected_rows (*/
-      /*ts, NULL);*/
-  /*GtkTreePath * tp =*/
-    /*(GtkTreePath *) g_list_first (selected_rows)->*/
-      /*data;*/
-  /*GtkTreeIter iter;*/
-  /*gtk_tree_model_get_iter (*/
-    /*GTK_TREE_MODEL (*/
-      /*MW_FILE_BROWSER->files_tree_model),*/
-    /*&iter,*/
-    /*tp);*/
-  /*GValue value = G_VALUE_INIT;*/
-  /*gtk_tree_model_get_value (*/
-    /*GTK_TREE_MODEL (*/
-      /*MW_FILE_BROWSER->files_tree_model),*/
-    /*&iter,*/
-    /*COLUMN_DESCR,*/
-    /*&value);*/
-  /*FileDescriptor * descr =*/
-    /*g_value_get_pointer (&value);*/
-
-  /*gtk_selection_data_set (*/
-    /*data,*/
-    /*gdk_atom_intern_static_string (*/
-      /*TARGET_ENTRY_FILE_DESCR),*/
-    /*32,*/
-    /*(const guchar *)&descr,*/
-    /*sizeof (FileDescriptor));*/
-/*}*/
-
 static GtkTreeModel *
 create_model_for_types ()
 {

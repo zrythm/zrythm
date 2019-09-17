@@ -618,8 +618,8 @@ on_drag_data_get (
     gdk_atom_intern_static_string (
       TARGET_ENTRY_TRACK),
     32,
-    (const guchar *) P_MASTER_TRACK,
-    sizeof (Track));
+    (const guchar *) &P_MASTER_TRACK,
+    sizeof (P_MASTER_TRACK));
 }
 
 /**

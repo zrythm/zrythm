@@ -195,7 +195,7 @@ if (get_option ('buildtype') == 'release')
     '-msse',
     '-msse2',
     '-mfpmath=sse',
-    '-fvisibility=hidden',
+    #'-fvisibility=hidden',
     ]
 endif
 

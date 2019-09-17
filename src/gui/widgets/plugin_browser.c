@@ -360,7 +360,7 @@ on_drag_data_get (GtkWidget        *widget,
       TARGET_ENTRY_PLUGIN_DESCR),
     32,
     (const guchar *)&descr,
-    sizeof (PluginDescriptor));
+    sizeof (descr));
 }
 
 static GtkTreeModel *

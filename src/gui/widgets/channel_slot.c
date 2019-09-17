@@ -72,9 +72,11 @@ on_drag_data_received (
   Plugin * pl;
   if (atom == plugin_atom)
     {
-      const Plugin * received_pl =
-        (const Plugin *)
+      Plugin * received_pl = NULL;
+      const guchar *my_data =
         gtk_selection_data_get_data (data);
+      memcpy (
+        &received_pl, my_data, sizeof (received_pl));
       pl =
         TRACKLIST->tracks[received_pl->track_pos]->
         channel->plugins[received_pl->slot];
@@ -119,9 +121,10 @@ on_drag_data_received (
     {
       gdk_drag_status (
         context, GDK_ACTION_COPY, time);
-      const PluginDescriptor * descr =
-        (const PluginDescriptor *)
+      PluginDescriptor * descr = NULL;
+      const guchar *my_data =
         gtk_selection_data_get_data (data);
+      memcpy (&descr, my_data, sizeof (descr));
       g_warn_if_fail (descr);
 
       UndoableAction * ua =
@@ -585,8 +588,8 @@ on_drag_data_get (
     gdk_atom_intern_static_string (
       TARGET_ENTRY_PLUGIN),
     32,
-    (const guchar *) pl,
-    sizeof (Plugin));
+    (const guchar *) &pl,
+    sizeof (pl));
 }
 
 static void
