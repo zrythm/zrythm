@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-09 00:34+0100\n"
-"PO-Revision-Date: 2019-09-06 16:21+0000\n"
+"PO-Revision-Date: 2019-09-16 19:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/de/>\n"
 "Language: de\n"
-"Language-Team: German "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -24,15 +25,15 @@ msgid "Additional Settings"
 msgstr "Zusätzliche Einstellungen"
 
 #: ../../configuration/additional-settings.rst:8
-#, fuzzy
 msgid ""
 "Zrythm stores all of its configuration using the GSettings mechanism, "
 "which comes with the ``gsettings`` command for changing settings from the"
 " command line, or the optional GUI tool ``dconf-editor``."
 msgstr ""
 "Zrythm benutzt zum Speichern aller seiner Konfigurationen den GSettings-"
-"Mechanismus, der mit dem Befehl ``gsettings`` kommt, um Einstellungen von"
-" der Kommandozeile aus zu ändern."
+"Mechanismus, der mit dem Befehl ``gsettings`` kommt, um Einstellungen von "
+"der Kommandozeile aus oder mit dem alternativen Werkzeug ``dconf-editor`` zu "
+"ändern."
 
 #: ../../configuration/additional-settings.rst:14
 msgid ""
@@ -49,7 +50,7 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:23
 msgid "Using gsettings"
-msgstr ""
+msgstr "Verwendung von gsettings"
 
 #: ../../configuration/additional-settings.rst:25
 msgid ""
@@ -60,13 +61,12 @@ msgstr ""
 "wie ``gsettings`` benutzt wird, siehe ``man gsettings``."
 
 #: ../../configuration/additional-settings.rst:28
-#, fuzzy
 msgid ""
 "As an example, to change the audio backend you would do ``gsettings set "
 "org.zrythm.Zrythm.preferences audio-backend \"jack\"``"
 msgstr ""
-"Als Beispiel dafür, wie du das Audio-Backend wechselst, könntest du "
-"``gsettings set org.zrythm.preferences audio-backend \"jack\"`` ausführen"
+"Als Beispiel dafür, wie das Audio-Backend gewechselt wird, könntest du ``"
+"gsettings set org.zrythm.preferences audio-backend \"jack\"`` ausführen"
 
 #: ../../configuration/additional-settings.rst:31
 msgid "You can use the range option to get a list of the available values:"
@@ -76,13 +76,15 @@ msgstr ""
 
 #: ../../configuration/additional-settings.rst:39
 msgid "Using dconf-editor"
-msgstr ""
+msgstr "Verwendung des dconf-Editors"
 
 #: ../../configuration/additional-settings.rst:41
 msgid ""
 "Install and run dconf-editor, and navigate to ``org.zrythm.Zrythm``. All "
 "the settings can be found there."
 msgstr ""
+"Installiere und starte den dconf-editor und navigiere "
+"``org.zrythm.Zrythm.Zrythm``. Dort findest Du alle Einstellungen."
 
 #: ../../configuration/device-setup/intro.rst:6
 msgid "Device Setup"
@@ -107,6 +109,10 @@ msgid ""
 "recording through the Track Inspector, as below, and in most cases you "
 "don't need to use any external tools or auto-connect mechanism."
 msgstr ""
+"Zrythm scannt automatisch und ermöglicht es, sich mit den Eingabegeräten für "
+"die Aufnahme über den Track Inspector zu verbinden, wie unten beschrieben "
+"und in den meisten Fällen müssen keine externen Tools oder automatische "
+"Verbindungsmechanismen verwendet werden."
 
 #: ../../configuration/device-setup/intro.rst:24
 msgid "Auto-Connecting Devices"
@@ -119,10 +125,14 @@ msgid ""
 "transport, Zrythm has an option to select these devices to auto-connect "
 "to on launch."
 msgstr ""
+"Für andere Arten von Geräten, die nicht mit bestimmten Spuren verknüpft "
+"sind, wie z. B. Geräte, die globale MIDI-Befehle senden und Geräte, die den "
+"Transport steuern, hat Zrythm die Möglichkeit, die Geräte auszuwählen, mit "
+"denen beim Start eine automatische Verbindung hergestellt werden soll."
 
 #: ../../configuration/device-setup/intro.rst:32
 msgid "This is a TODO feature"
-msgstr ""
+msgstr "Dies ist eine TODO-Funktion"
 
 #: ../../configuration/device-setup/intro.rst:35
 msgid "JACK"
@@ -565,4 +575,3 @@ msgstr "Backend"
 #~ "Zrythm hat eine Option, Geräte beim "
 #~ "Start automatisch zu verbinden. ZU "
 #~ "ERLEDIGEN erklären."
-

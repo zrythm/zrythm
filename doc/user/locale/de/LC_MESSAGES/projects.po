@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-12 20:16+0100\n"
-"PO-Revision-Date: 2019-09-06 16:21+0000\n"
+"PO-Revision-Date: 2019-09-16 19:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"manualprojects/de/>\n"
 "Language: de\n"
-"Language-Team: German "
-"<https://hosted.weblate.org/projects/zrythm/manualprojects/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../projects/intro.rst:6
@@ -68,32 +69,36 @@ msgstr ""
 "von Zrythm."
 
 #: ../../projects/project-management-and-compatibility.rst:19
-#, fuzzy
 msgid ""
 "Each project file will contain the version of Zrythm it was made with and"
 " a date"
-msgstr "Jede Projektdatei enthält die Version von Zrythm mit der sie gemacht wurde"
+msgstr ""
+"Jede Projektdatei enthält die Version von Zrythm, mit der sie erstellt "
+"wurde, sowie ein Datum"
 
 #: ../../projects/saving-loading.rst:6
 msgid "Saving & Loading"
 msgstr "Speichern & Laden"
 
 #: ../../projects/saving-loading.rst:9
-#, fuzzy
 msgid "Loading Projects"
-msgstr "Projekte erstellen"
+msgstr "Laden von Projekten"
 
 #: ../../projects/saving-loading.rst:11
 msgid ""
 "When Zrythm launches, it will ask you to select a project to load from a "
 "list of recent projects, or to create a new one."
 msgstr ""
+"Wenn Zrythm gestartet wird, wirst du aufgefordert, ein zu ladendes Projekt "
+"aus einer Liste der letzten Projekte auszuwählen oder ein neues zu erstellen."
 
 #: ../../projects/saving-loading.rst:18
 msgid ""
 "When you select a project and click :zbutton:`Apply`, Zrythm will load "
 "that project."
 msgstr ""
+"Wenn du ein Projekt auswählst und auf :zbutton:`Anwenden` klickst, lädt "
+"Zrythm dieses Projekt."
 
 #: ../../projects/saving-loading.rst:22
 msgid "Creating Projects"
@@ -104,6 +109,8 @@ msgid ""
 "In the menu above, if you select :zbutton:`Create new project`, Zrythm "
 "will ask you for a template to use for creating the new Project."
 msgstr ""
+"Wenn du im obigen Menü :zbutton:`Neues Projekt erzeugen` wählst, fragt "
+"Zrythm nach einer Vorlage zur Erstellung des neuen Projekts."
 
 #: ../../projects/saving-loading.rst:31
 msgid ""
@@ -111,6 +118,9 @@ msgid ""
 "copying a project folder to the ``Templates`` directory in the Zrythm "
 "installation path."
 msgstr ""
+"Eine leere Vorlage ist verfügbar, aber du kannst deine eigenen Vorlagen "
+"erstellen, indem du einen Projektordner in das Verzeichnis ``Templates`` im "
+"Zrythm-Installationspfad kopierst."
 
 #: ../../projects/saving-loading.rst:35
 msgid ""
@@ -118,17 +128,21 @@ msgid ""
 "Zrythm will ask you for a parent directory to save the Project in and a "
 "title for the Project."
 msgstr ""
+"Sobald eine Vorlage (oder Leer) ausgewählt wurde und du auf "
+":zbutton:`Anwenden` klickst, fragt Zrythm nach einem übergeordneten "
+"Verzeichnis zum Speichern des Projekts und einem Titel für das Projekt."
 
 #: ../../projects/saving-loading.rst:42
 msgid ""
 "Once you accept, the new Project will be set up and you will be ready to "
 "go."
 msgstr ""
+"Sobald du zugestimmt hast, wird das neue Projekt eingerichtet und du bist "
+"bereit loszulegen."
 
 #: ../../projects/saving-loading.rst:46
-#, fuzzy
 msgid "Saving Projects"
-msgstr "Projekte erstellen"
+msgstr "Speichern von Projekten"
 
 #: ../../projects/saving-loading.rst:48
 msgid ""
@@ -141,15 +155,14 @@ msgstr ""
 " speichert das Projekt am vorherigen Ort."
 
 #: ../../projects/saving-loading.rst:52
-#, fuzzy
 msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr ""
-"Beim Laden eines Projektes erwartet Zrythm von dir, das "
-"Projektverzeichnis anzugeben."
+"Beim Speichern von Projekten erwartet Zrythm, dass du ihm ein Verzeichnis "
+"angibst"
 
 #: ../../projects/saving-loading.rst:56
 msgid "Automatic Backups"
-msgstr ""
+msgstr "Automatische Sicherungen"
 
 #: ../../projects/saving-loading.rst:58
 msgid ""
@@ -158,16 +171,24 @@ msgid ""
 "know if there are newer back-ups of that project and ask you if you want "
 "to load them instead."
 msgstr ""
+"Zrythm hat die Möglichkeit, das aktuelle Projekt automatisch als Sicherung "
+"zu speichern. Wenn du Zrythm startest und dein Projekt laden möchtest, wird "
+"Zrythm darüber informieren, ob es neuere Sicherungen dieses Projekts gibt, "
+"und fragen, ob du sie stattdessen laden möchtest."
 
 #: ../../projects/saving-loading.rst:66
 msgid ""
 "The auto-save interval can be changed (or disabled) in the preferences "
 "window."
 msgstr ""
+"Das Intervall für die automatische Speicherung kann im Einstellungsfenster "
+"geändert (oder deaktiviert) werden."
 
 #: ../../projects/saving-loading.rst:69
 msgid "The backups are saved in the project's directory, under ``backups``"
 msgstr ""
+"Die Sicherungen werden im Verzeichnis des Projekts gespeichert, unter "
+"``Backups``"
 
 #~ msgid "Importing/Exporting Audio"
 #~ msgstr ""
@@ -286,4 +307,3 @@ msgstr ""
 #~ "erstellen. Standardmäßig nutzt Zrythm "
 #~ "~/benutzername/Zrythm, um ein neues Projekt"
 #~ " zu erstellen."
-

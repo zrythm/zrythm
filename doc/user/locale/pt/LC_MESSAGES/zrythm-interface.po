@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-09 00:34+0100\n"
-"PO-Revision-Date: 2019-09-12 21:51+0000\n"
+"PO-Revision-Date: 2019-09-16 19:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/pt/>\n"
@@ -141,7 +141,7 @@ msgid ""
 " in detail. These editors appear in the Editor tab in the bottom panel."
 msgstr ""
 "Zrythm tem vários editores para editar os vários eventos na Linha do Tempo "
-"em detalhes. Esses editores aparecem na guia Editor no painel inferior."
+"em detalhes. Esses editores aparecem no separador Editor no painel inferior."
 
 #: ../../zrythm-interface/editors.rst:13
 msgid "Piano Roll"
@@ -154,10 +154,14 @@ msgid ""
 "Region is selected, the Editor tab will display the Piano Roll, allowing "
 "you to edit that region."
 msgstr ""
+"Os Cílindros de Piano, ou Arranjador MIDI, é o editor mais utilizado. Pode "
+"ser usado para editar regiões MIDI, que contêm notas MIDI. Quando uma região "
+"MIDI é selecionada, o separador Editor exibirá os Cílindros de Piano, "
+"permitindo que edite essa região."
 
 #: ../../zrythm-interface/editors.rst:24
 msgid "Automation Editor"
-msgstr ""
+msgstr "Editor de Automação"
 
 #: ../../zrythm-interface/editors.rst:26
 msgid ""
@@ -166,58 +170,66 @@ msgid ""
 "The Automation Editor will appear in the Editor tab when an Automation "
 "Region is selected."
 msgstr ""
+"Em Zrythm, a automação também é incluída em regiões (chamadas Regiões de "
+"Automação). Isso permite que a automação seja repetida, assim como as "
+"regiões MIDI. O Editor de Automação aparecerá no separador Editor quando uma "
+"Região de Automação for selecionada."
 
 #: ../../zrythm-interface/editors.rst:34
 msgid "This is a work in progress"
-msgstr ""
+msgstr "Este é um trabalho em andamento"
 
 #: ../../zrythm-interface/editors.rst:37
 msgid "Chord Editor"
-msgstr ""
+msgstr "Editor de Acordes"
 
 #: ../../zrythm-interface/editors.rst:39
 msgid "The Chord Editor is used for editing Chord Regions."
-msgstr ""
+msgstr "O Editor de Acordes é usado para editar Regiões de Acordes."
 
 #: ../../zrythm-interface/editors.rst:41
 msgid "WIP"
-msgstr ""
+msgstr "WIP"
 
 #: ../../zrythm-interface/global-menus.rst:6
 msgid "Global Menus"
-msgstr ""
+msgstr "Menus Globais"
 
 #: ../../zrythm-interface/global-menus.rst:8
 msgid "Zrythm has the following global menus at the top of its interface."
-msgstr ""
+msgstr "O Zrythm tem os seguintes menus globais no topo da sua interface."
 
 #: ../../zrythm-interface/global-menus.rst:14
 msgid "Zrythm icon"
-msgstr ""
+msgstr "Ícone do Zrythm"
 
 #: ../../zrythm-interface/global-menus.rst:14
 msgid "Clicking this will show the About dialog"
-msgstr ""
+msgstr "Ao clicar neste botão a caixa de diálogo Sobre aparecerá"
 
 #: ../../zrythm-interface/global-menus.rst:17
 msgid "Home"
-msgstr ""
+msgstr "Início"
 
 #: ../../zrythm-interface/global-menus.rst:17
 msgid ""
 "Contains various buttons and controls that are used often during editing "
 "and arranging"
 msgstr ""
+"Contém vários botões e controles que são usados com frequência durante a "
+"edição e arranjamento"
 
 #: ../../zrythm-interface/global-menus.rst:20
 msgid "Project"
-msgstr ""
+msgstr "Projeto"
 
 #: ../../zrythm-interface/global-menus.rst:20
 msgid ""
 "Various project-related actions such as saving, loading and exporting "
 "MIDI or audio"
 msgstr ""
+"Várias ações relacionadas ao projeto, como gravar, carregar e exportar MIDI "
+"ou áudio"
 
 #: ../../zrythm-interface/global-menus.rst:23
 msgid "View"
@@ -228,6 +240,8 @@ msgid ""
 "Controls to change the appearance of Zrythm and its various areas, such "
 "as zooming"
 msgstr ""
+"Controles para alterar a aparência do Zrythm e as suas várias áreas, tais "
+"como zoom"
 
 #: ../../zrythm-interface/global-menus.rst:25
 msgid "Help"
@@ -235,7 +249,7 @@ msgstr "Ajuda"
 
 #: ../../zrythm-interface/global-menus.rst:26
 msgid "Links for reporting bugs, donating, chatting, etc."
-msgstr ""
+msgstr "Ligações para reportar bugs, doar, conversar, etc."
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Zrythm's Interface"
@@ -251,12 +265,17 @@ msgid ""
 "area of the timeline. It can be moved around and resized to change the "
 "visible area."
 msgstr ""
+"O minimapa da cronologia é uma pequena caixa que representa a área visível "
+"atual da cronologia. Pode ser deslocado e redimensionado para alterar a área "
+"visível."
 
 #: ../../zrythm-interface/mixer.rst:8
 msgid ""
 "The Mixer tab contains the Mixer, where all the visible Channels in the "
 "project are shown."
 msgstr ""
+"O separador Misturador contém o Misturador, onde todos os canais visíveis no "
+"projeto são exibidos."
 
 #: ../../zrythm-interface/ruler.rst:6
 msgid "Ruler"
@@ -268,32 +287,37 @@ msgid ""
 "whether it is the timeline arranger or the piano roll or the sample "
 "editor."
 msgstr ""
+"Uma régua é para mostrar a posição dos eventos num determinado arranjador, "
+"seja ele o arranjador da cronologia ou os cílindros de piano ou o editor de "
+"amostras."
 
 #: ../../zrythm-interface/ruler.rst:15
 msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers/ indicators."
 msgstr ""
+"A régua exibirá mais ou menos informações dependendo do nível de zoom atual. "
+"Ele também exibirá os seguintes marcadores/indicadores."
 
 #: ../../zrythm-interface/ruler.rst:19
 msgid "Cue point"
-msgstr ""
+msgstr "Ponto de sinalização"
 
 #: ../../zrythm-interface/ruler.rst:20
 msgid "Displayed as a blue, right-pointing arrow."
-msgstr ""
+msgstr "Exibido como uma seta azul, apontando para a direita."
 
 #: ../../zrythm-interface/ruler.rst:21
 msgid "Playhead position"
-msgstr ""
+msgstr "Posição da cabeça de reprodução"
 
 #: ../../zrythm-interface/ruler.rst:22
 msgid "Shown as a grey, down-facing arrow."
-msgstr ""
+msgstr "Mostrada como uma seta cinzenta, virada para baixo."
 
 #: ../../zrythm-interface/ruler.rst:30
 msgid "Loop points"
-msgstr ""
+msgstr "Pontos de loop"
 
 #: ../../zrythm-interface/ruler.rst:24
 msgid ""
@@ -301,24 +325,33 @@ msgid ""
 "green if loop is enabled, or grey if disabled. Can be dragged to "
 "reposition."
 msgstr ""
+"Mostrado como 2 setas verdes e a área entre elas é mostrada em verde "
+"brilhante, se o loop estiver ativado, ou cinzenta se desativado. Pode ser "
+"arrastado para o reposicionamento."
 
 #: ../../zrythm-interface/ruler.rst:28
 msgid ""
 "In the timeline arranger, these are the global loop points. In arrangers "
 "found in the editor, these are the region loop points."
 msgstr ""
+"No organizador da cronologia, estes são os pontos de loop globais. Nos "
+"arranjadores encontrados no editor, estes são os pontos de loop de região."
 
 #: ../../zrythm-interface/ruler.rst:32
 msgid ""
 "Clicking and dragging on empty space in the ruler will allow you to "
 "reposition the playhead."
 msgstr ""
+"Clicar e arrastar no espaço vazio na régua permitirá que reposicione a "
+"cabeça de reprodução."
 
 #: ../../zrythm-interface/ruler.rst:35
 msgid ""
 "Hold :zbutton:`Shift` to disable snapping momentarily while moving things"
 " around"
 msgstr ""
+"Segure :zbutton:`Shift` para desativar o snapping momentaneamente enquanto "
+"move coisas"
 
 #: ../../zrythm-interface/status-bar.rst:6
 msgid "Status Bar"
@@ -329,6 +362,8 @@ msgid ""
 "The status bar contains information about the currently active audio "
 "backend."
 msgstr ""
+"A barra de estado contém informações sobre o backend de áudio atualmente "
+"ativo."
 
 #: ../../zrythm-interface/timeline.rst:8
 msgid ""
@@ -337,6 +372,10 @@ msgid ""
 " against time. Some events will open separate windows for further editing"
 " when clicked."
 msgstr ""
+"A linha do tempo é a área principal onde a música é composta. Geralmente "
+"consiste numa coleção de eventos - principalmente regiões - que são "
+"posicionados a par do tempo. Alguns eventos abrirão janelas separadas para "
+"posterior edição quando clicados."
 
 #: ../../zrythm-interface/timeline.rst:16
 msgid ""
@@ -344,6 +383,9 @@ msgid ""
 "a scrollable timeline below it. This way you can pin tracks you want to "
 "always be visible at the top."
 msgstr ""
+"A Cronologia é dividida numa cronologia superior que permanece fixa no topo "
+"e uma cronologia rolável abaixo dela. Desta forma, pode fixar faixas que "
+"deseja que estejam sempre visíveis no topo."
 
 #: ../../zrythm-interface/transport-bar.rst:6
 msgid "Transport Bar"
@@ -354,45 +396,49 @@ msgid ""
 "The transport bar contains controls for changing the behavior of "
 "playback. It includes the following items."
 msgstr ""
+"A barra de transporte contém controlos para alterar o comportamento da "
+"reprodução. Inclui os seguintes itens."
 
 #: ../../zrythm-interface/transport-bar.rst:14
 msgid "Metronome toggle"
-msgstr ""
+msgstr "Alternância metrônomo"
 
 #: ../../zrythm-interface/transport-bar.rst:15
 msgid "Toggles the metronome on/off"
-msgstr ""
+msgstr "Liga/desliga o metrônomo alternamente"
 
 #: ../../zrythm-interface/transport-bar.rst:16
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ../../zrythm-interface/transport-bar.rst:17
 msgid "Song tempo (beats per minute)"
-msgstr ""
+msgstr "Ritmo da canção (batidas por minuto)"
 
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid "Playhed"
-msgstr ""
+msgstr "Cabeça de reprodução"
 
 #: ../../zrythm-interface/transport-bar.rst:19
 msgid "Current playhead position, in bars.beats.sixteenths.ticks"
 msgstr ""
+"Posição atual da cabeça de reprodução, em barras.batidas.decimos-sextos.ticks"
 
 #: ../../zrythm-interface/transport-bar.rst:21
-#, fuzzy
 msgid "Transport buttons"
-msgstr "Barra De Transporte"
+msgstr "Botões de transporte"
 
 #: ../../zrythm-interface/transport-bar.rst:21
 msgid "Controls for stopping, playback, recording, etc."
-msgstr ""
+msgstr "Controlos para parar, reproduzir, gravar, etc."
 
 #: ../../zrythm-interface/transport-bar.rst:23
 msgid ""
 "Widgets like the BPM meter can be changed by clicking and dragging, or by"
 " hovering over them with the cursor and scrolling"
 msgstr ""
+"Widgets como o medidor de BPM podem ser alterados clicando e arrastando, ou "
+"pairando sobre eles com o cursor e rolando"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
 msgid "Zrythm Interface Overview"

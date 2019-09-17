@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-07 23:49+0100\n"
-"PO-Revision-Date: 2019-09-08 11:25+0000\n"
+"PO-Revision-Date: 2019-09-16 19:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -1987,7 +1987,7 @@ msgstr "Nome do marcador"
 
 #: resources/ui/header_notebook.ui:37
 msgid "Home"
-msgstr "Home"
+msgstr "Início"
 
 #: resources/ui/header_notebook.ui:74
 msgid "View"

@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-09 00:34+0100\n"
-"PO-Revision-Date: 2019-09-06 16:21+0000\n"
+"PO-Revision-Date: 2019-09-16 19:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/de/>\n"
 "Language: de\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -54,7 +55,7 @@ msgstr ""
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
 msgid "Track"
-msgstr ""
+msgstr "Spur"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:28
 msgid ""
@@ -191,7 +192,7 @@ msgstr ""
 
 #: ../../zrythm-interface/global-menus.rst:20
 msgid "Project"
-msgstr ""
+msgstr "Projekt"
 
 #: ../../zrythm-interface/global-menus.rst:20
 msgid ""
@@ -345,7 +346,7 @@ msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:16
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ../../zrythm-interface/transport-bar.rst:17
 msgid "Song tempo (beats per minute)"
@@ -505,4 +506,3 @@ msgstr ""
 
 #~ msgid "Toolbox"
 #~ msgstr "Werkzeugkasten"
-

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-12 20:16+0100\n"
-"PO-Revision-Date: 2019-09-11 16:23+0000\n"
+"PO-Revision-Date: 2019-09-15 18:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualprojects/fr/>\n"
@@ -88,12 +88,16 @@ msgid ""
 "When Zrythm launches, it will ask you to select a project to load from a "
 "list of recent projects, or to create a new one."
 msgstr ""
+"Lorsque Zrythm se lance, il vous demandera de sélectionner un projet à "
+"charger depuis une liste de projets récents, ou d'en créer un nouveau."
 
 #: ../../projects/saving-loading.rst:18
 msgid ""
 "When you select a project and click :zbutton:`Apply`, Zrythm will load "
 "that project."
 msgstr ""
+"Lorsque vous sélectionnez un projet et cliquez sur :zbutton:`Appliquer`, "
+"Zrythm chargera ce projet."
 
 #: ../../projects/saving-loading.rst:22
 msgid "Creating Projects"
@@ -104,6 +108,9 @@ msgid ""
 "In the menu above, if you select :zbutton:`Create new project`, Zrythm "
 "will ask you for a template to use for creating the new Project."
 msgstr ""
+"Dans le menu ci-dessus, si vous sélectionnez :zbutton:`Créer un nouveau "
+"projet`, Zrythm vous demandera un modèle à utiliser pour créer le nouveau "
+"projet."
 
 #: ../../projects/saving-loading.rst:31
 msgid ""
@@ -111,6 +118,9 @@ msgid ""
 "copying a project folder to the ``Templates`` directory in the Zrythm "
 "installation path."
 msgstr ""
+"Un modèle vierge est disponible, mais vous pouvez créer vos propres modèles "
+"en copiant un dossier de projet dans le répertoire ``Templates`' du chemin "
+"d'installation de Zrythm."
 
 #: ../../projects/saving-loading.rst:35
 msgid ""
@@ -118,12 +128,17 @@ msgid ""
 "Zrythm will ask you for a parent directory to save the Project in and a "
 "title for the Project."
 msgstr ""
+"Une fois qu'un modèle (ou vide) est sélectionné et que vous cliquez sur "
+":zbutton:`Appliquer`, Zrythm vous demandera un répertoire parent où "
+"sauvegarder le projet et un titre pour le projet."
 
 #: ../../projects/saving-loading.rst:42
 msgid ""
 "Once you accept, the new Project will be set up and you will be ready to "
 "go."
 msgstr ""
+"Une fois que vous aurez accepté, le nouveau projet sera mis en place et vous "
+"serez prêt à commencer."
 
 #: ../../projects/saving-loading.rst:46
 msgid "Saving Projects"
@@ -157,16 +172,24 @@ msgid ""
 "know if there are newer back-ups of that project and ask you if you want "
 "to load them instead."
 msgstr ""
+"Zrythm a une option pour sauvegarder automatiquement le projet en cours en "
+"tant que sauvegarde de secours. Lorsque vous lancez Zrythm et choisissez de "
+"charger votre projet, Zrythm vous indiquera s'il existe de nouvelles "
+"sauvegardes de ce projet et vous demandera si vous souhaitez les charger."
 
 #: ../../projects/saving-loading.rst:66
 msgid ""
 "The auto-save interval can be changed (or disabled) in the preferences "
 "window."
 msgstr ""
+"L'intervalle de sauvegarde automatique peut être modifié (ou désactivé) dans "
+"la fenêtre des préférences."
 
 #: ../../projects/saving-loading.rst:69
 msgid "The backups are saved in the project's directory, under ``backups``"
 msgstr ""
+"Les sauvegardes sont sauvegardées dans le répertoire du projet, sous \" "
+"backups \""
 
 #~ msgid "Importing/Exporting Audio"
 #~ msgstr "Importer / Exporter l'Audio"
