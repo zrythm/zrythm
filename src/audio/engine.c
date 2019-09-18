@@ -120,14 +120,14 @@ init_audio (
 
   control_room_init (CONTROL_ROOM, loading);
 
-  if (loading)
-    {
+  /*if (loading)*/
+    /*{*/
       /*stereo_ports_init_loaded (self->stereo_in);*/
       /*stereo_ports_init_loaded (self->monitor_out);*/
-    }
-  else
-    {
-    }
+    /*}*/
+  /*else*/
+    /*{*/
+    /*}*/
 }
 
 /**

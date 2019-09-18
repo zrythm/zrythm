@@ -30,11 +30,12 @@
  * ensure that the program is releasable.
  * 1. Run the test suite locally *
  * 2. Check that it compiles with both gcc and clang *
- * 3. Switch to staging and update the changelog
+ * 3. Check if the build compiles with --buildtype "debugoptimized" and "release"
+ * 4. Switch to staging and update the changelog
  * using "version" as the version
- * 4. Follow the rest of the steps in git-packaging-hooks
- * 5. Test the Debian and Arch packages
- * 6. Merge staging back to master
+ * 5. Follow the rest of the steps in git-packaging-hooks
+ * 6. Test the Debian and Arch packages
+ * 7. Merge staging back to master
  *
  * @note Steps marked with (*) are performed
  * automatically by git-packaging-hooks

@@ -186,7 +186,6 @@ test_cflags = [
 
 if (get_option ('buildtype') == 'release')
   test_cflags += [
-    '-O3',
     '-ffast-math',
     '-DPIC',
     '-fdata-sections',

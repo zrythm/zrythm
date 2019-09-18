@@ -45,7 +45,7 @@ at_fixture_set_up (
   /* needed to set TRANSPORT */
   transport_init (TRANSPORT, 0);
   engine_update_frames_per_tick (
-    4, 140, 44000);
+    AUDIO_ENGINE, 4, 140, 44000);
 
   fixture->at =
     calloc (1, sizeof (AutomationTrack));

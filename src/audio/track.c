@@ -409,8 +409,8 @@ track_set_recording (Track *   track,
       return;
     }
 
-  if (recording)
-    {
+  /*if (recording)*/
+    /*{*/
       /* FIXME just enable the connections */
       /*port_connect (*/
         /*AUDIO_ENGINE->stereo_in->l,*/
@@ -421,9 +421,9 @@ track_set_recording (Track *   track,
       /*port_connect (*/
         /*AUDIO_ENGINE->midi_in,*/
         /*channel->midi_in, 1);*/
-    }
-  else
-    {
+    /*}*/
+  /*else*/
+    /*{*/
       /* FIXME just disable the connections */
       /*port_disconnect (*/
         /*AUDIO_ENGINE->stereo_in->l,*/
@@ -434,7 +434,7 @@ track_set_recording (Track *   track,
       /*port_disconnect (*/
         /*AUDIO_ENGINE->midi_in,*/
         /*channel->midi_in);*/
-    }
+    /*}*/
 
   track->recording = recording;
 

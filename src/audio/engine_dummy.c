@@ -109,11 +109,11 @@ engine_dummy_midi_setup (
 {
   self->midi_buf_size = 4096;
 
-  if (loading)
-    {
-    }
-  else
-    {
+  /*if (loading)*/
+    /*{*/
+    /*}*/
+  /*else*/
+    /*{*/
       /*self->midi_in =*/
         /*port_new_with_type (*/
           /*TYPE_EVENT,*/
@@ -121,7 +121,7 @@ engine_dummy_midi_setup (
           /*"Dummy MIDI In");*/
       /*self->midi_in->identifier.owner_type =*/
         /*PORT_OWNER_TYPE_BACKEND;*/
-    }
+    /*}*/
 
   return 0;
 }

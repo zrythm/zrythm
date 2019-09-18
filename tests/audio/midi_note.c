@@ -36,7 +36,7 @@ fixture_set_up (
 {
   transport_init (TRANSPORT, 0);
   engine_update_frames_per_tick (
-    4, 140, 44000);
+    AUDIO_ENGINE, 4, 140, 44000);
 
   Position start_pos, end_pos;
   position_set_to_bar (&start_pos, 2);

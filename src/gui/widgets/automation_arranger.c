@@ -866,11 +866,11 @@ automation_arranger_widget_on_drag_end (
         AUTOMATION_SELECTIONS);
     }
   /* if something was created */
-  else if (ar_prv->action ==
-             UI_OVERLAY_ACTION_CREATING_MOVING ||
-           ar_prv->action ==
-             UI_OVERLAY_ACTION_CREATING_RESIZING_R)
-    {
+  /*else if (ar_prv->action ==*/
+             /*UI_OVERLAY_ACTION_CREATING_MOVING ||*/
+           /*ar_prv->action ==*/
+             /*UI_OVERLAY_ACTION_CREATING_RESIZING_R)*/
+    /*{*/
       /*automation_selections_set_to_transient_poses (*/
         /*TL_SELECTIONS);*/
       /*automation_selections_set_to_transient_values (*/
@@ -882,7 +882,7 @@ automation_arranger_widget_on_drag_end (
           /*TL_SELECTIONS);*/
       /*undo_manager_perform (*/
         /*UNDO_MANAGER, ua);*/
-    }
+    /*}*/
   /* if didn't click on something */
   else
     {

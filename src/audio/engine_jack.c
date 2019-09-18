@@ -382,8 +382,8 @@ jack_midi_setup (
       self->client, JACK_DEFAULT_MIDI_TYPE);
 #endif
 
-  if (loading)
-    {
+  /*if (loading)*/
+    /*{*/
       /*self->midi_in->data =*/
         /*(void *) jack_port_register (*/
           /*self->client, "MIDI_in",*/
@@ -394,9 +394,9 @@ jack_midi_setup (
           /*self->client, "MIDI_out",*/
           /*JACK_DEFAULT_MIDI_TYPE,*/
           /*JackPortIsOutput, 0);*/
-    }
-  else
-    {
+    /*}*/
+  /*else*/
+    /*{*/
       /*self->midi_in =*/
         /*port_new_with_data (*/
           /*INTERNAL_JACK_PORT,*/
@@ -421,7 +421,7 @@ jack_midi_setup (
             /*JackPortIsOutput, 0));*/
       /*self->midi_out->identifier.owner_type =*/
         /*PORT_OWNER_TYPE_BACKEND;*/
-    }
+    /*}*/
 
   /* init queue */
   /*self->midi_in->midi_events =*/

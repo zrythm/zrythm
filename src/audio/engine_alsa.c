@@ -570,12 +570,12 @@ alsa_midi_setup (
   /* not working atm */
   return -1;
 
-  if (loading)
-    {
-    }
-  else
-    {
-    }
+  /*if (loading)*/
+    /*{*/
+    /*}*/
+  /*else*/
+    /*{*/
+    /*}*/
 
   pthread_t thread_id;
   pthread_create (
