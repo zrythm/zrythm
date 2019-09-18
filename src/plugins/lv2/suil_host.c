@@ -16,6 +16,9 @@
 */
 
 #include "config.h"
+
+#ifndef HAVE_SUIL
+
 #include "plugins/lv2/suil.h"
 
 #ifdef HAVE_X11
@@ -61,3 +64,5 @@ suil_init(int* argc, char*** argv, SuilArg key, ...)
   XInitThreads ();
 #endif
 }
+
+#endif /* ifndef HAVE_SUIL */

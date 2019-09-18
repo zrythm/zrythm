@@ -18,10 +18,12 @@
    @file suil.h API for Suil, an LV2 UI wrapper library.
 */
 
+#include "config.h"
+
+#ifndef HAVE_SUIL
+
 #ifndef SUIL_SUIL_H
 #define SUIL_SUIL_H
-
-#include "config.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -411,3 +413,5 @@ suil_add_feature(LV2_Feature*** features,
 }
 
 #endif /* SUIL_SUIL_H */
+
+#endif /* ifndef HAVE_SUIL */

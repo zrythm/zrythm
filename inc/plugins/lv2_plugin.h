@@ -41,6 +41,8 @@
 #ifndef __PLUGINS_LV2_PLUGIN_H__
 #define __PLUGINS_LV2_PLUGIN_H__
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,7 +57,6 @@
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/worker.h"
 #include "plugins/lv2_port.h"
-#include "plugins/lv2/suil.h"
 #include "zix/ring.h"
 #include "zix/sem.h"
 #include "zix/thread.h"
@@ -70,6 +71,12 @@
 #include <lv2/lv2plug.in/ns/ext/state/state.h>
 
 #include <sratom/sratom.h>
+
+#ifdef HAVE_SUIL
+#include <suil/suil.h>
+#else
+#include "plugins/lv2/suil.h"
+#endif
 
 #ifdef __clang__
 #    define REALTIME __attribute__((annotate("realtime")))

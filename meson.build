@@ -309,12 +309,25 @@ port_audio_dep = dependency (
 if (port_audio_dep.found ())
   cdata.set('HAVE_PORT_AUDIO', 1)
 endif
-qt5_dep = dependency('Qt5Widgets', required: false)
+suil_dep = dependency (
+  'suil-0', required: false, version: '>=0.10.4')
+if (suil_dep.found ())
+  cdata.set('HAVE_SUIL', 1)
+endif
+alsa_dep = dependency('alsa', required: false)
+if (alsa_dep.found ())
+  cdata.set('HAVE_ALSA', 1)
+endif
+cyaml_dep = dependency(
+  'libcyaml', required: false, version: '>=0.2')
+if (cyaml_dep.found ())
+  cdata.set('HAVE_CYAML', 1)
+endif
 
+qt5_dep = dependency('Qt5Widgets', required: false)
 yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.22')
 sndfile_dep = dependency('sndfile', version: '>=1.0.25')
-alsa_dep = dependency('alsa', required: false)
 
 zrythm_deps = [
   jack_dep,
@@ -324,6 +337,8 @@ zrythm_deps = [
   sndfile_dep,
   libgtop_dep,
   alsa_dep,
+  suil_dep,
+  cyaml_dep,
   dependency('threads'),
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),
@@ -335,10 +350,6 @@ zrythm_deps = [
 if (qt5_dep.found() and get_option('enable_qt5'))
   cdata.set('HAVE_QT5', 1)
   zrythm_deps += qt5_dep
-endif
-if (alsa_dep.found())
-  cdata.set('HAVE_ALSA', 1)
-  zrythm_deps += alsa_dep
 endif
 
 if os_linux

@@ -30,7 +30,6 @@
 
 #include "ext/audio_decoder/ad.h"
 #include "gui/widgets/main_window.h"
-#include "plugins/lv2/suil.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
@@ -41,6 +40,12 @@
 
 #ifdef HAVE_LIBGTOP
 #include <glibtop.h>
+#endif
+
+#ifdef HAVE_SUIL
+#include <suil/suil.h>
+#else
+#include "plugins/lv2/suil.h"
 #endif
 
 #include <fftw3.h>

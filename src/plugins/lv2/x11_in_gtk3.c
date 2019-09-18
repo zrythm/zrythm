@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#ifndef HAVE_SUIL
+
 #ifdef HAVE_X11
 
 #include <assert.h>
@@ -485,4 +487,6 @@ suil_wrapper_new_x11(SuilHost*      host,
 	return wrapper;
 }
 
-#endif
+#endif /* ifdef HAVE X11 */
+
+#endif /* ifndef HAVE_SUIL */

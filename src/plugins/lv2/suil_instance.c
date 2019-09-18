@@ -15,6 +15,9 @@
 */
 
 #include "config.h"
+
+#ifndef HAVE_SUIL
+
 #include "plugins/lv2/suil.h"
 
 #include <gtk/gtk.h>
@@ -306,3 +309,5 @@ suil_instance_extension_data(SuilInstance* instance,
 	}
 	return NULL;
 }
+
+#endif /* ifndef HAVE_SUIL */
