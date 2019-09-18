@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-09 00:34+0100\n"
+"POT-Creation-Date: 2019-09-18 01:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -166,8 +166,8 @@ msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:34
 msgid ""
-"This is the path where Zrythm will use to save projects, temporary files,"
-" exported audio, etc. The default is \"zrythm\" in the user's directory."
+"This is the path where Zrythm will save projects, temporary files, "
+"exported audio, etc. The default is \"zrythm\" in the user's directory."
 msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:39
@@ -487,5 +487,13 @@ msgstr ""
 #~ "Zrythm has an option to select "
 #~ "devices to auto-connect on launch. "
 #~ "TODO explain it."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This is the path where Zrythm will"
+#~ " use to save projects, temporary "
+#~ "files, exported audio, etc. The default"
+#~ " is \"zrythm\" in the user's "
+#~ "directory."
 #~ msgstr ""
 

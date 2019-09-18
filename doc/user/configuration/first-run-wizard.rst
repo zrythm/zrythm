@@ -31,7 +31,7 @@ Path
 
 .. image:: /_static/img/first-run-path.png
 
-This is the path where Zrythm will use to save projects,
+This is the path where Zrythm will save projects,
 temporary files, exported audio, etc. The default is
 "zrythm" in the user's directory.
 

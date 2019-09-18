@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-12 20:16+0100\n"
+"POT-Creation-Date: 2019-09-18 01:11+0100\n"
 "PO-Revision-Date: 2019-09-15 18:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
-"manualprojects/fr/>\n"
 "Language: fr\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/zrythm/manualprojects/fr/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../projects/intro.rst:6
@@ -38,6 +37,61 @@ msgstr ""
 "consistent en un dossier avec un fichier YAML décrivant le projet et les "
 "fichiers supplémentaires utilisés tels que les fichiers MIDI et audio."
 
+#: ../../projects/project-info.rst:14
+msgid "Project Structure"
+msgstr ""
+
+#: ../../projects/project-info.rst:38
+msgid "backups"
+msgstr ""
+
+#: ../../projects/project-info.rst:39
+msgid "Regular backups taken automatically by Zrythm"
+msgstr ""
+
+#: ../../projects/project-info.rst:40
+msgid "myproject.bak"
+msgstr ""
+
+#: ../../projects/project-info.rst:41
+msgid "An example backup project"
+msgstr ""
+
+#: ../../projects/project-info.rst:43
+msgid "states"
+msgstr ""
+
+#: ../../projects/project-info.rst:43
+msgid "Contains plugin states at the time of save (for LV2)"
+msgstr ""
+
+#: ../../projects/project-info.rst:46
+msgid "exports"
+msgstr ""
+
+#: ../../projects/project-info.rst:46
+msgid "Default directory for exporting files related to the project"
+msgstr ""
+
+#: ../../projects/project-info.rst:49
+msgid "pool"
+msgstr ""
+
+#: ../../projects/project-info.rst:49
+msgid ""
+"Used by Zrythm to store and load files used by the Project, such as audio"
+" files"
+msgstr ""
+
+#: ../../projects/project-info.rst:51
+#, fuzzy
+msgid "project.yml"
+msgstr "Projets"
+
+#: ../../projects/project-info.rst:52
+msgid "The Project file"
+msgstr ""
+
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
 msgstr "Gestion de projet et compatibilité"
@@ -55,7 +109,7 @@ msgstr ""
 "changements de version afin de donner plus de temps pour le développement"
 " des fonctionnalités et les corrections."
 
-#: ../../projects/project-management-and-compatibility.rst:13
+#: ../../projects/project-management-and-compatibility.rst:19
 msgid ""
 "It may be possible to open projects from previous versions if there was "
 "no change in the project file structure, but this is not guaranteed, so "
@@ -67,13 +121,13 @@ msgstr ""
 "garanti. Si vous souhaitez ouvrir un projet créé avec une version "
 "précédente, veuillez installer cette version de Zrythm."
 
-#: ../../projects/project-management-and-compatibility.rst:19
+#: ../../projects/project-management-and-compatibility.rst:28
 msgid ""
 "Each project file will contain the version of Zrythm it was made with and"
 " a date"
 msgstr ""
-"Chaque fichier de projet contiendra la version de Zrythm avec laquelle il a "
-"été créé et la date"
+"Chaque fichier de projet contiendra la version de Zrythm avec laquelle il"
+" a été créé et la date"
 
 #: ../../projects/saving-loading.rst:6
 msgid "Saving & Loading"
@@ -109,8 +163,8 @@ msgid ""
 "will ask you for a template to use for creating the new Project."
 msgstr ""
 "Dans le menu ci-dessus, si vous sélectionnez :zbutton:`Créer un nouveau "
-"projet`, Zrythm vous demandera un modèle à utiliser pour créer le nouveau "
-"projet."
+"projet`, Zrythm vous demandera un modèle à utiliser pour créer le nouveau"
+" projet."
 
 #: ../../projects/saving-loading.rst:31
 msgid ""
@@ -118,9 +172,9 @@ msgid ""
 "copying a project folder to the ``Templates`` directory in the Zrythm "
 "installation path."
 msgstr ""
-"Un modèle vierge est disponible, mais vous pouvez créer vos propres modèles "
-"en copiant un dossier de projet dans le répertoire ``Templates`' du chemin "
-"d'installation de Zrythm."
+"Un modèle vierge est disponible, mais vous pouvez créer vos propres "
+"modèles en copiant un dossier de projet dans le répertoire ``Templates`' "
+"du chemin d'installation de Zrythm."
 
 #: ../../projects/saving-loading.rst:35
 msgid ""
@@ -137,8 +191,8 @@ msgid ""
 "Once you accept, the new Project will be set up and you will be ready to "
 "go."
 msgstr ""
-"Une fois que vous aurez accepté, le nouveau projet sera mis en place et vous "
-"serez prêt à commencer."
+"Une fois que vous aurez accepté, le nouveau projet sera mis en place et "
+"vous serez prêt à commencer."
 
 #: ../../projects/saving-loading.rst:46
 msgid "Saving Projects"
@@ -158,8 +212,8 @@ msgstr ""
 #: ../../projects/saving-loading.rst:52
 msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr ""
-"Lors de la sauvegarde de projets, Zrythm s'attend à ce que vous lui donniez "
-"un répertoire"
+"Lors de la sauvegarde de projets, Zrythm s'attend à ce que vous lui "
+"donniez un répertoire"
 
 #: ../../projects/saving-loading.rst:56
 msgid "Automatic Backups"
@@ -172,18 +226,19 @@ msgid ""
 "know if there are newer back-ups of that project and ask you if you want "
 "to load them instead."
 msgstr ""
-"Zrythm a une option pour sauvegarder automatiquement le projet en cours en "
-"tant que sauvegarde de secours. Lorsque vous lancez Zrythm et choisissez de "
-"charger votre projet, Zrythm vous indiquera s'il existe de nouvelles "
-"sauvegardes de ce projet et vous demandera si vous souhaitez les charger."
+"Zrythm a une option pour sauvegarder automatiquement le projet en cours "
+"en tant que sauvegarde de secours. Lorsque vous lancez Zrythm et "
+"choisissez de charger votre projet, Zrythm vous indiquera s'il existe de "
+"nouvelles sauvegardes de ce projet et vous demandera si vous souhaitez "
+"les charger."
 
 #: ../../projects/saving-loading.rst:66
 msgid ""
 "The auto-save interval can be changed (or disabled) in the preferences "
 "window."
 msgstr ""
-"L'intervalle de sauvegarde automatique peut être modifié (ou désactivé) dans "
-"la fenêtre des préférences."
+"L'intervalle de sauvegarde automatique peut être modifié (ou désactivé) "
+"dans la fenêtre des préférences."
 
 #: ../../projects/saving-loading.rst:69
 msgid "The backups are saved in the project's directory, under ``backups``"
@@ -342,3 +397,4 @@ msgstr ""
 #~ "un nouveau. Par défaut, Zrythm utilisera"
 #~ " ~/username/Zrythm pour créer de nouveaux"
 #~ " projets."
+

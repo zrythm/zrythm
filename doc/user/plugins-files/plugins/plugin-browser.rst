@@ -9,6 +9,7 @@ The Plugin Browser makes it easy to browse and
 filter Plugins installed on your computer.
 
 .. image:: /_static/img/plugin_browser.png
+   :align: center
 
 Filters Tab
 -----------
@@ -42,9 +43,16 @@ Modulators
   These plugins output CV signals and can be used to modulate
   other plugin or track parameters.
 MIDI Effects
-  These plugins modify incoming MIDI signals and can be used
-  in the MIDI signal chain of an Instrument or MIDI track
-  (coming soon).
+  These plugins modify incoming MIDI signals and
+  can be used
+  in the MIDI signal chain of an Instrument or MIDI
+  track (coming soon).
+
+Zrythm looks inside the Plugin's metadata to
+determine what type the Plugin is. If that is not
+enough, Zrythm makes a decision based on the
+number of audio, MIDI, control and CV input and
+output ports a Plugin has.
 
 Instantiating Plugins
 ---------------------

@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-12 20:16+0100\n"
+"POT-Creation-Date: 2019-09-18 01:11+0100\n"
 "PO-Revision-Date: 2019-09-16 19:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualprojects/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/zrythm/manualprojects/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../projects/intro.rst:6
@@ -38,6 +37,61 @@ msgstr ""
 "consistem em uma pasta com um ficheiro YAML descrevendo o Projeto e "
 "ficheiros adicionais usados como MIDI e ficheiros de áudio."
 
+#: ../../projects/project-info.rst:14
+msgid "Project Structure"
+msgstr ""
+
+#: ../../projects/project-info.rst:38
+msgid "backups"
+msgstr ""
+
+#: ../../projects/project-info.rst:39
+msgid "Regular backups taken automatically by Zrythm"
+msgstr ""
+
+#: ../../projects/project-info.rst:40
+msgid "myproject.bak"
+msgstr ""
+
+#: ../../projects/project-info.rst:41
+msgid "An example backup project"
+msgstr ""
+
+#: ../../projects/project-info.rst:43
+msgid "states"
+msgstr ""
+
+#: ../../projects/project-info.rst:43
+msgid "Contains plugin states at the time of save (for LV2)"
+msgstr ""
+
+#: ../../projects/project-info.rst:46
+msgid "exports"
+msgstr ""
+
+#: ../../projects/project-info.rst:46
+msgid "Default directory for exporting files related to the project"
+msgstr ""
+
+#: ../../projects/project-info.rst:49
+msgid "pool"
+msgstr ""
+
+#: ../../projects/project-info.rst:49
+msgid ""
+"Used by Zrythm to store and load files used by the Project, such as audio"
+" files"
+msgstr ""
+
+#: ../../projects/project-info.rst:51
+#, fuzzy
+msgid "project.yml"
+msgstr "Projetos"
+
+#: ../../projects/project-info.rst:52
+msgid "The Project file"
+msgstr ""
+
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
 msgstr "Gestão de Projetos e Compatibilidade"
@@ -55,7 +109,7 @@ msgstr ""
 "versão, a fim de dar mais tempo para o desenvolvimento de recursos e "
 "correções."
 
-#: ../../projects/project-management-and-compatibility.rst:13
+#: ../../projects/project-management-and-compatibility.rst:19
 msgid ""
 "It may be possible to open projects from previous versions if there was "
 "no change in the project file structure, but this is not guaranteed, so "
@@ -63,11 +117,11 @@ msgid ""
 "install that version of Zrythm."
 msgstr ""
 "Pode ser possível abrir projetos de versões anteriores se não houve "
-"alteração na estrutura de ficheiros do projeto, mas isso não é garantido, "
-"então se gostaria de abrir um projeto feito usando uma versão anterior, por "
-"favor instale essa versão do Zrythm."
+"alteração na estrutura de ficheiros do projeto, mas isso não é garantido,"
+" então se gostaria de abrir um projeto feito usando uma versão anterior, "
+"por favor instale essa versão do Zrythm."
 
-#: ../../projects/project-management-and-compatibility.rst:19
+#: ../../projects/project-management-and-compatibility.rst:28
 msgid ""
 "Each project file will contain the version of Zrythm it was made with and"
 " a date"
@@ -149,8 +203,8 @@ msgid ""
 "Project in a new location and :zbutton:`Save` will save the Project in "
 "the previous location."
 msgstr ""
-"Gravar funciona como esperaria: :zbutton:`Save As...` salvará o Projeto num "
-"novo local e :zbutton:`Save` salvará o Projeto no local anterior."
+"Gravar funciona como esperaria: :zbutton:`Save As...` salvará o Projeto "
+"num novo local e :zbutton:`Save` salvará o Projeto no local anterior."
 
 #: ../../projects/saving-loading.rst:52
 msgid "When saving projects, Zrythm expects you to give it a directory"
@@ -300,3 +354,4 @@ msgstr "Os backups são gravados no diretório do projeto, em ``backups```"
 #~ "carregue um projeto ou crie um "
 #~ "novo. Por padrão, o Zrythm usará "
 #~ "~/username/Zrythm para criar novos Projetos."
+

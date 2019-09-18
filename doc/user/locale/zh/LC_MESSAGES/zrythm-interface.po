@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-09 00:34+0100\n"
+"POT-Creation-Date: 2019-09-18 01:11+0100\n"
 "PO-Revision-Date: 2019-08-07 14:26+0000\n"
 "Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
 "Language: zh\n"
@@ -31,26 +31,19 @@ msgid ""
 msgstr ""
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
-msgid "Regions"
+msgid "Region"
 msgstr ""
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
 msgid ""
-"A Region (Clip) is a container for MIDI Notes or audio. This is what a "
-"Region looks like in the arranger."
+"A Region (Clip) is a container for MIDI Notes, audio or other events. "
+"Regions can be repeated, like below."
 msgstr ""
 
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:16
-msgid "Regions are edited in the Editor Panel. In this case, the clip is looped."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:21
-#: ../../zrythm-interface/timeline.rst:6
-msgid "Timeline"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:22
-msgid "The Timeline is where the song is arranged, also known as Arranger."
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:19
+msgid ""
+"The content of the Regions can be edited in an Editor, such as the Piano "
+"Roll, found in the Editor tab in the bottom panel."
 msgstr ""
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
@@ -65,51 +58,30 @@ msgid ""
 "contain chords and markers respectively."
 msgstr ""
 
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:34
-#: ../../zrythm-interface/tracklist.rst:6
-msgid "Tracklist"
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:35
-msgid ""
-"The Tracklist contains all of the Tracks in the project. It is split into"
-" the top (pinned) Tracklist and the bottom (main) Tracklist."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:39
 msgid "Channel"
 msgstr ""
 
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:41
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
 msgid ""
 "A Channel is a single slot in the Mixer. Most types of Tracks have a "
-"corresponding Channel."
+"corresponding Channel, which is used for adjusting the Track's volume, "
+"pan and other settings."
 msgstr ""
 
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:46
-#: ../../zrythm-interface/mixer.rst:6
-msgid "Mixer"
-msgstr "混音器"
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:47
-msgid ""
-"The Mixer contains all of the Channels in the Project and is used to mix "
-"the audio signals from each Channel."
-msgstr ""
-
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:52
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
 msgid "Range"
 msgstr ""
 
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:53
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:50
 msgid "A Range is a selection of time between two positions."
 msgstr ""
 
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:58
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:56
 msgid "MIDI Note"
 msgstr ""
 
-#: ../../zrythm-interface/basic-concepts-and-terminology.rst:59
+#: ../../zrythm-interface/basic-concepts-and-terminology.rst:57
 msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
 
@@ -232,10 +204,15 @@ msgid ""
 "visible area."
 msgstr ""
 
+#: ../../zrythm-interface/mixer.rst:6
+msgid "Mixer"
+msgstr "混音器"
+
 #: ../../zrythm-interface/mixer.rst:8
 msgid ""
 "The Mixer tab contains the Mixer, where all the visible Channels in the "
-"project are shown."
+"project are shown. The Mixer is used to mix the audio signals from each "
+"Channel."
 msgstr ""
 
 #: ../../zrythm-interface/ruler.rst:6
@@ -310,6 +287,10 @@ msgid ""
 "backend."
 msgstr ""
 
+#: ../../zrythm-interface/timeline.rst:6
+msgid "Timeline"
+msgstr ""
+
 #: ../../zrythm-interface/timeline.rst:8
 msgid ""
 "The timeline is the main area where the song is composed. It generally "
@@ -323,6 +304,16 @@ msgid ""
 "The Timeline is split into a top timeline that remains fixed on top, and "
 "a scrollable timeline below it. This way you can pin tracks you want to "
 "always be visible at the top."
+msgstr ""
+
+#: ../../zrythm-interface/tracklist.rst:6
+msgid "Tracklist"
+msgstr ""
+
+#: ../../zrythm-interface/tracklist.rst:8
+msgid ""
+"The Tracklist contains all of the Tracks in the project. It is split into"
+" the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:6
@@ -492,5 +483,43 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Toolbox"
+#~ msgstr ""
+
+#~ msgid "Regions"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Region (Clip) is a container for"
+#~ " MIDI Notes or audio. This is "
+#~ "what a Region looks like in the"
+#~ " arranger."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Regions are edited in the Editor "
+#~ "Panel. In this case, the clip is"
+#~ " looped."
+#~ msgstr ""
+
+#~ msgid "The Timeline is where the song is arranged, also known as Arranger."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Channel is a single slot in "
+#~ "the Mixer. Most types of Tracks "
+#~ "have a corresponding Channel."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The Mixer contains all of the "
+#~ "Channels in the Project and is "
+#~ "used to mix the audio signals from"
+#~ " each Channel."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The Mixer tab contains the Mixer, "
+#~ "where all the visible Channels in "
+#~ "the project are shown."
 #~ msgstr ""
 

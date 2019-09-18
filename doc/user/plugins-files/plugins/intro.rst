@@ -8,7 +8,6 @@ Plugins
 .. toctree::
    :maxdepth: 4
 
-   plugin-types
    plugin-browser
    plugin-window
    inspector-page

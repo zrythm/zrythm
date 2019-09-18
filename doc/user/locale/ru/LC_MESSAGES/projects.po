@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-12 20:16+0100\n"
+"POT-Creation-Date: 2019-09-18 01:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,6 +32,60 @@ msgid ""
 "such as MIDI and audio files."
 msgstr ""
 
+#: ../../projects/project-info.rst:14
+msgid "Project Structure"
+msgstr ""
+
+#: ../../projects/project-info.rst:38
+msgid "backups"
+msgstr ""
+
+#: ../../projects/project-info.rst:39
+msgid "Regular backups taken automatically by Zrythm"
+msgstr ""
+
+#: ../../projects/project-info.rst:40
+msgid "myproject.bak"
+msgstr ""
+
+#: ../../projects/project-info.rst:41
+msgid "An example backup project"
+msgstr ""
+
+#: ../../projects/project-info.rst:43
+msgid "states"
+msgstr ""
+
+#: ../../projects/project-info.rst:43
+msgid "Contains plugin states at the time of save (for LV2)"
+msgstr ""
+
+#: ../../projects/project-info.rst:46
+msgid "exports"
+msgstr ""
+
+#: ../../projects/project-info.rst:46
+msgid "Default directory for exporting files related to the project"
+msgstr ""
+
+#: ../../projects/project-info.rst:49
+msgid "pool"
+msgstr ""
+
+#: ../../projects/project-info.rst:49
+msgid ""
+"Used by Zrythm to store and load files used by the Project, such as audio"
+" files"
+msgstr ""
+
+#: ../../projects/project-info.rst:51
+msgid "project.yml"
+msgstr ""
+
+#: ../../projects/project-info.rst:52
+msgid "The Project file"
+msgstr ""
+
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
 msgstr ""
@@ -44,7 +98,7 @@ msgid ""
 " more time to feature development and fixes."
 msgstr ""
 
-#: ../../projects/project-management-and-compatibility.rst:13
+#: ../../projects/project-management-and-compatibility.rst:19
 msgid ""
 "It may be possible to open projects from previous versions if there was "
 "no change in the project file structure, but this is not guaranteed, so "
@@ -52,7 +106,7 @@ msgid ""
 "install that version of Zrythm."
 msgstr ""
 
-#: ../../projects/project-management-and-compatibility.rst:19
+#: ../../projects/project-management-and-compatibility.rst:28
 msgid ""
 "Each project file will contain the version of Zrythm it was made with and"
 " a date"

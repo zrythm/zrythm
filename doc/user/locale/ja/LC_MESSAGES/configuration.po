@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-09 00:34+0100\n"
+"POT-Creation-Date: 2019-09-18 01:11+0100\n"
 "PO-Revision-Date: 2019-08-13 15:24+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language: ja\n"
@@ -179,9 +179,10 @@ msgid "Path"
 msgstr "パス"
 
 #: ../../configuration/first-run-wizard.rst:34
+#, fuzzy
 msgid ""
-"This is the path where Zrythm will use to save projects, temporary files,"
-" exported audio, etc. The default is \"zrythm\" in the user's directory."
+"This is the path where Zrythm will save projects, temporary files, "
+"exported audio, etc. The default is \"zrythm\" in the user's directory."
 msgstr "これは、Zrythmがプロジェクト、一時ファイル、エクスポートされたオーディオなどを保存するために使用するパスです。デフォルトは、ユーザーのディレクトリに「zrythm」です。"
 
 #: ../../configuration/first-run-wizard.rst:39

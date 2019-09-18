@@ -5,8 +5,10 @@
 Mixer
 =====
 
-The Mixer tab contains the Mixer, where all the visible Channels
-in the project are shown.
+The Mixer tab contains the Mixer, where all the
+visible Channels in the project are shown.
+The Mixer is used to mix the audio signals from
+each Channel.
 
 .. image:: /_static/img/mixer.png
    :align: center

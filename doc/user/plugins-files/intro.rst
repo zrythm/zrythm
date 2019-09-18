@@ -8,6 +8,5 @@ Plugins & Files
 .. toctree::
    :maxdepth: 4
 
-   overview
    plugins/intro
    audio-midi-files/intro

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-12 20:16+0100\n"
+"POT-Creation-Date: 2019-09-18 01:11+0100\n"
 "PO-Revision-Date: 2019-09-09 17:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language: ja\n"
@@ -36,6 +36,61 @@ msgstr ""
 "Zrythm では、作業はプロジェクト内に保存されます。プロジェクトは、プロジェクト情報を格納する YAML ファイルと MIDI "
 "ファイルやオーディオ ファイルなどの追加ファイルを含むフォルダで構成されます。"
 
+#: ../../projects/project-info.rst:14
+msgid "Project Structure"
+msgstr ""
+
+#: ../../projects/project-info.rst:38
+msgid "backups"
+msgstr ""
+
+#: ../../projects/project-info.rst:39
+msgid "Regular backups taken automatically by Zrythm"
+msgstr ""
+
+#: ../../projects/project-info.rst:40
+msgid "myproject.bak"
+msgstr ""
+
+#: ../../projects/project-info.rst:41
+msgid "An example backup project"
+msgstr ""
+
+#: ../../projects/project-info.rst:43
+msgid "states"
+msgstr ""
+
+#: ../../projects/project-info.rst:43
+msgid "Contains plugin states at the time of save (for LV2)"
+msgstr ""
+
+#: ../../projects/project-info.rst:46
+msgid "exports"
+msgstr ""
+
+#: ../../projects/project-info.rst:46
+msgid "Default directory for exporting files related to the project"
+msgstr ""
+
+#: ../../projects/project-info.rst:49
+msgid "pool"
+msgstr ""
+
+#: ../../projects/project-info.rst:49
+msgid ""
+"Used by Zrythm to store and load files used by the Project, such as audio"
+" files"
+msgstr ""
+
+#: ../../projects/project-info.rst:51
+#, fuzzy
+msgid "project.yml"
+msgstr "プロジェクト"
+
+#: ../../projects/project-info.rst:52
+msgid "The Project file"
+msgstr ""
+
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
 msgstr "プロジェクト管理と互換性"
@@ -48,7 +103,7 @@ msgid ""
 " more time to feature development and fixes."
 msgstr "少なくとも当分の間、Zrythmはローリングリリースモデルに従い、プロジェクトファイル構造は新しいリリースごとに変更される可能性があります。機能の開発と修正に時間を与えるために、バージョン変更間の互換性は維持されません。"
 
-#: ../../projects/project-management-and-compatibility.rst:13
+#: ../../projects/project-management-and-compatibility.rst:19
 msgid ""
 "It may be possible to open projects from previous versions if there was "
 "no change in the project file structure, but this is not guaranteed, so "
@@ -56,7 +111,7 @@ msgid ""
 "install that version of Zrythm."
 msgstr "プロジェクトファイル構造に変更がない場合は、以前のバージョンからのプロジェクトを開く可能性がありますが、これは保証されませんので、以前のバージョンを使用して作成されたプロジェクトを開きたい場合は、Zrythmのそのバージョンをインストールしてください。"
 
-#: ../../projects/project-management-and-compatibility.rst:19
+#: ../../projects/project-management-and-compatibility.rst:28
 msgid ""
 "Each project file will contain the version of Zrythm it was made with and"
 " a date"

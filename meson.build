@@ -45,8 +45,8 @@ docdir = join_paths (datadir, 'doc', 'zrythm')
 # Used for building manpages, manual, etc., using
 # foreach
 locales = [
-  'de', 'es', 'fr', 'it', 'ja', 'pt', 'pt_BR',
-  'ru', 'zh', 'hi', 'ar', 'ko', 'nb_NO']
+  'de', 'en', 'fr', 'ja', 'pt', 'pt_BR',
+  'nb_NO']
 
 cdata = configuration_data ()
 cdata.set_quoted (

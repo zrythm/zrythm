@@ -7,343 +7,302 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"POT-Creation-Date: 2019-09-18 01:11+0100\n"
 "PO-Revision-Date: 2019-09-02 00:21+0000\n"
 "Last-Translator: Swann Martinet <swann.ranskassa@laposte.net>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
-"manualplugins-files/it/>\n"
 "Language: it\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm"
+"/manualplugins-files/it/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:19
+#: ../../plugins-files/audio-midi-files/file-browser.rst:6
 msgid "File Browser"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:21
+#: ../../plugins-files/audio-midi-files/file-browser.rst:8
 msgid ""
 "The File Browser makes it easy to navigate through files on your computer"
 " or through your custom collections."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:26
+#: ../../plugins-files/audio-midi-files/file-browser.rst:13
 msgid "Filtering"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:28
-#: ../../plugins-files/audio-midi-files/file-browser.rst:33
+#: ../../plugins-files/audio-midi-files/file-browser.rst:15
+#: ../../plugins-files/audio-midi-files/file-browser.rst:20
 msgid "TODO"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:31
+#: ../../plugins-files/audio-midi-files/file-browser.rst:18
 msgid "Collections"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:36
+#: ../../plugins-files/audio-midi-files/file-browser.rst:23
 msgid "Importing Files"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:38
+#: ../../plugins-files/audio-midi-files/file-browser.rst:25
 msgid ""
 "Files are imported by either double clicking them in the browser or "
 "dragging and dropping them into a track."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/intro.rst:19
+#: ../../plugins-files/audio-midi-files/intro.rst:6
 msgid "Audio & MIDI Files"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:19
-#: ../../plugins-files/overview.rst:19
+#: ../../plugins-files/audio-midi-files/overview.rst:6
 msgid "Overview"
 msgstr "Visione d’insieme"
 
-#: ../../plugins-files/audio-midi-files/overview.rst:21
+#: ../../plugins-files/audio-midi-files/overview.rst:8
 msgid ""
 "Zrythm can import MIDI and audio files into the project. The files can be"
 " imported by dragging and dropping from your computer or from the File "
 "Browser into a track."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:27
+#: ../../plugins-files/audio-midi-files/overview.rst:14
 msgid "Supported Audio Formats"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/overview.rst:28
+#: ../../plugins-files/audio-midi-files/overview.rst:15
 msgid "Zrythm supports OGG, FLAC, WAV and MP3."
 msgstr ""
 
-#: ../../plugins-files/intro.rst:19
+#: ../../plugins-files/intro.rst:6
 msgid "Plugins & Files"
 msgstr ""
 
-#: ../../plugins-files/overview.rst:21
-msgid ""
-"Zrythm allows you to drag-n-drop LV2 plugins and various files from the "
-"browsers on the right panel. This section will explain the various "
-"supported plugin and file types and their browsers."
-msgstr ""
-
-#: ../../plugins-files/plugins/inspector-page.rst:19
+#: ../../plugins-files/plugins/inspector-page.rst:6
 msgid "Inspector Page"
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:21
+#: ../../plugins-files/plugins/inspector-page.rst:8
 msgid ""
 "When a Plugin is selected in the Mixer, its page will appear in the "
 "Inspector as follows."
 msgstr ""
 
-#: ../../plugins-files/plugins/inspector-page.rst:27
+#: ../../plugins-files/plugins/inspector-page.rst:14
 msgid ""
 "This page will display information about the Plugin and allow you to "
 "route inputs and outputs to each port of the Plugin, for example to route"
 " an LFO output to a Filter Plugin's filter cutoff parameter."
 msgstr ""
 
-#: ../../plugins-files/plugins/intro.rst:19
+#: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:19
+#: ../../plugins-files/plugins/plugin-browser.rst:6
 msgid "Plugin Browser"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:21
+#: ../../plugins-files/plugins/plugin-browser.rst:8
 msgid ""
 "The Plugin Browser makes it easy to browse and filter Plugins installed "
 "on your computer."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:27
+#: ../../plugins-files/plugins/plugin-browser.rst:15
 msgid "Filters Tab"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:28
+#: ../../plugins-files/plugins/plugin-browser.rst:16
 msgid ""
 "The filters tab at the top allows you to select how to filter the "
 "Plugins. There are 3 tabs:"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:33
+#: ../../plugins-files/plugins/plugin-browser.rst:21
 msgid "Collection"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:32
+#: ../../plugins-files/plugins/plugin-browser.rst:20
 msgid ""
 "This tab contains your collections. You can create collections such as "
 "\"MySynths\" and filter by the selected collections."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:36
+#: ../../plugins-files/plugins/plugin-browser.rst:24
 msgid "Category"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:36
+#: ../../plugins-files/plugins/plugin-browser.rst:24
 msgid ""
 "Filter Plugins by category based on the plugin metadata, such as "
 "\"Delay\", \"Distortion\", etc."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:40
+#: ../../plugins-files/plugins/plugin-browser.rst:28
 msgid "Protocol"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:39
+#: ../../plugins-files/plugins/plugin-browser.rst:27
 msgid ""
 "Allows you to filter plugins based their protocol (LV2 or VST). Not "
 "operational at the moment."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:43
+#: ../../plugins-files/plugins/plugin-browser.rst:31
 msgid "Filter Buttons"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:44
+#: ../../plugins-files/plugins/plugin-browser.rst:32
 msgid ""
 "Additionally to the above, you can filter plugins based on their type. "
 "The following types exist:"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:48
+#: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid "Instrument"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:48
+#: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid "These plugins will create an instrument track when added to the project."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:52
-#: ../../plugins-files/plugins/plugin-types.rst:28
+#: ../../plugins-files/plugins/plugin-browser.rst:40
 msgid "Effects"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:51
+#: ../../plugins-files/plugins/plugin-browser.rst:39
 msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
 "in the mixer or can be instantiated to create new bus tracks."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:55
-#: ../../plugins-files/plugins/plugin-types.rst:33
+#: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid "Modulators"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:55
+#: ../../plugins-files/plugins/plugin-browser.rst:43
 msgid ""
 "These plugins output CV signals and can be used to modulate other plugin "
 "or track parameters."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:60
+#: ../../plugins-files/plugins/plugin-browser.rst:49
 msgid "MIDI Effects"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:58
+#: ../../plugins-files/plugins/plugin-browser.rst:46
 msgid ""
 "These plugins modify incoming MIDI signals and can be used in the MIDI "
 "signal chain of an Instrument or MIDI track (coming soon)."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:63
+#: ../../plugins-files/plugins/plugin-browser.rst:51
+msgid ""
+"Zrythm looks inside the Plugin's metadata to determine what type the "
+"Plugin is. If that is not enough, Zrythm makes a decision based on the "
+"number of audio, MIDI, control and CV input and output ports a Plugin "
+"has."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:58
 msgid "Instantiating Plugins"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:64
+#: ../../plugins-files/plugins/plugin-browser.rst:59
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:69
+#: ../../plugins-files/plugins/plugin-browser.rst:64
 msgid "Drag-n-Drop"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:67
+#: ../../plugins-files/plugins/plugin-browser.rst:62
 msgid ""
 "Drag and drop the selected plugin into empty space in the Tracklist or "
 "into empty space in the Mixer to create a new track using that plugin. If"
 " the plugin is a modulator, you can drop it into the Modulators Tab."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:73
+#: ../../plugins-files/plugins/plugin-browser.rst:68
 msgid "Double Click/Enter"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:72
+#: ../../plugins-files/plugins/plugin-browser.rst:67
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-types.rst:19
-msgid "Plugin Types"
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-types.rst:21
-msgid "There are three types of Plugins in Zrythm."
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-types.rst:24
-msgid "Instruments"
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-types.rst:24
-msgid ""
-"Instruments are Plugins that are used to generate sound, such as synths "
-"or pianos."
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-types.rst:27
-msgid ""
-"Effects are Plugins that change the audio signal passed to them. Examples"
-" are Reverb, Chorus and Flanger."
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-types.rst:31
-msgid ""
-"Modulators are used to modulate the parameters of other Plugins. These "
-"include LFOs and envelopes."
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-types.rst:36
-msgid "Supported Formats"
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-types.rst:38
-msgid "Zrythm supports LV2 Plugins at the moment."
-msgstr ""
-
-#: ../../plugins-files/plugins/plugin-window.rst:19
+#: ../../plugins-files/plugins/plugin-window.rst:6
 msgid "Plugin Window"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:21
+#: ../../plugins-files/plugins/plugin-window.rst:8
 msgid ""
 "When Plugin UIs are opened, a window such as the following will be "
 "displayed, if the plugin ships with its own UI."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:28
+#: ../../plugins-files/plugins/plugin-window.rst:15
 msgid ""
 "If the plugin does not ship with its own UI, the following generic UI "
 "will be generated for it."
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:19
+#: ../../plugins-files/plugins/ports.rst:6
 msgid "Ports"
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:21
+#: ../../plugins-files/plugins/ports.rst:8
 msgid ""
 "Plugins expose Ports that are used internally to route MIDI and audio "
 "signals to/from and externally for automation."
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:25
+#: ../../plugins-files/plugins/ports.rst:12
 msgid ""
 "A Port can only be an Input Port or an Output Port and can have one of "
 "the following types."
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:31
+#: ../../plugins-files/plugins/ports.rst:18
 msgid "Audio"
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:29
+#: ../../plugins-files/plugins/ports.rst:16
 msgid ""
 "Ports of this type receive or send raw audio signals. Usually, Effect "
 "Plugins will have at least two of these as inputs for Left and Right, and"
 " at least two as outputs."
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:35
+#: ../../plugins-files/plugins/ports.rst:22
 msgid "Event"
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:34
+#: ../../plugins-files/plugins/ports.rst:21
 msgid ""
 "Event Ports are mainly used for routing MIDI signals. Instrument Plugins "
 "will have at least one Event Port."
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:39
+#: ../../plugins-files/plugins/ports.rst:26
 msgid "Control"
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:38
+#: ../../plugins-files/plugins/ports.rst:25
 msgid ""
 "Control Ports are Plugin parameters that are usually shown inside the "
 "Plugin's UI. These can be automated in automation lanes."
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:47
+#: ../../plugins-files/plugins/ports.rst:34
 msgid "CV"
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:42
+#: ../../plugins-files/plugins/ports.rst:29
 msgid ""
 "CV Ports are continuous signals that can be fed into or emitted from "
 "Plugins, and are mainly used by the Modulators. Each Modulator will have "
@@ -351,18 +310,18 @@ msgid ""
 "for automation."
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:49
+#: ../../plugins-files/plugins/ports.rst:36
 msgid ""
 "Usually, only Ports of the same type can be connected, with the exception"
 " of CV ports. CV output Ports may be routed to both CV input Ports and "
 "Control input Ports."
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:54
+#: ../../plugins-files/plugins/ports.rst:41
 msgid "Output Ports may only be routed to Input Ports and vice versa."
 msgstr ""
 
-#: ../../plugins-files/plugins/ports.rst:58
+#: ../../plugins-files/plugins/ports.rst:45
 msgid ""
 "Channels also have their own Ports, for example for the Fader, Pan, and "
 "Enabled (On/Off)."
@@ -373,3 +332,46 @@ msgstr ""
 #~ " Mixer, its page will appear in "
 #~ "the Inspector, like the following."
 #~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm allows you to drag-n-drop LV2 "
+#~ "plugins and various files from the "
+#~ "browsers on the right panel. This "
+#~ "section will explain the various "
+#~ "supported plugin and file types and "
+#~ "their browsers."
+#~ msgstr ""
+
+#~ msgid "Plugin Types"
+#~ msgstr ""
+
+#~ msgid "There are three types of Plugins in Zrythm."
+#~ msgstr ""
+
+#~ msgid "Instruments"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Instruments are Plugins that are used"
+#~ " to generate sound, such as synths"
+#~ " or pianos."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Effects are Plugins that change the "
+#~ "audio signal passed to them. Examples"
+#~ " are Reverb, Chorus and Flanger."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Modulators are used to modulate the "
+#~ "parameters of other Plugins. These "
+#~ "include LFOs and envelopes."
+#~ msgstr ""
+
+#~ msgid "Supported Formats"
+#~ msgstr ""
+
+#~ msgid "Zrythm supports LV2 Plugins at the moment."
+#~ msgstr ""
+

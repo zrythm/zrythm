@@ -22,7 +22,7 @@ AppImage builds are coming soon.
 
 Fedora
 ------
-For Fedora users, ycollect maintains a Zrythm package in
+For Fedora users, ycollet maintains a Zrythm package in
 `copr <https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/>`_
 
 ..

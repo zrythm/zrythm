@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-09 00:34+0100\n"
+"POT-Creation-Date: 2019-09-18 01:11+0100\n"
 "PO-Revision-Date: 2019-08-07 14:26+0000\n"
 "Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
 "Language: zh\n"
@@ -219,7 +219,7 @@ msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:25
 msgid ""
-"For Fedora users, ycollect maintains a Zrythm package in `copr "
+"For Fedora users, ycollet maintains a Zrythm package in `copr "
 "<https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/>`_"
 msgstr ""
 
@@ -697,4 +697,10 @@ msgstr ""
 #~ msgstr ""
 #~ "在通常的Composing  - &gt; Mixing  - &gt; "
 #~ "Mastering工作流程中，Zrythm最关注的是Composing部分"
+
+#~ msgid ""
+#~ "For Fedora users, ycollect maintains a"
+#~ " Zrythm package in `copr "
+#~ "<https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/>`_"
+#~ msgstr ""
 
