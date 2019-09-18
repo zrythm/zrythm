@@ -48,15 +48,19 @@ then TraceStage "running staging-specific post-commit hooks"
 
      # rebuild, install, and verify
      tmp_builddir="tmp_builddir"
+     tmp_installdir="/tmp/zrythm/tmp_installdir"
      TraceStep "re-configuring meson"
      rm -rf $tmp_builddir > /dev/null
      for compiler in clang gcc; do
-       CC=$compiler CXX=$compiler meson $tmp_builddir -Denable_tests=true 2> /dev/null
-       TraceStep "verifying re-build/test"
-       ninja -C $tmp_builddir test > /dev/null
-       #ninja -C $tmp_builddir install > /dev/null
-       #ninja -C $tmp_builddir uninstall > /dev/null
-       rm -rf $tmp_builddir > /dev/null
+       for buildtype in debug debugoptimized release; do
+         CC=$compiler CXX=$compiler meson $tmp_builddir --buildtype=$buildtype -Denable_tests=true 2> /dev/null
+         TraceStep "verifying re-build/test"
+         ninja -C $tmp_builddir test > /dev/null
+         DESTDIR=$tmp_installdir ninja -C $tmp_builddir install > /dev/null
+         DESTDIR=$tmp_installdir ninja -C $tmp_builddir uninstall > /dev/null
+         rm -rf $tmp_builddir > /dev/null
+         rm -rf $tmp_installdir > /dev/null
+       done
      done
 
      # commit automated changes, and ensure signed

@@ -48,11 +48,12 @@ MIDI Effects
   in the MIDI signal chain of an Instrument or MIDI
   track (coming soon).
 
-Zrythm looks inside the Plugin's metadata to
-determine what type the Plugin is. If that is not
-enough, Zrythm makes a decision based on the
-number of audio, MIDI, control and CV input and
-output ports a Plugin has.
+.. note::
+  Zrythm looks inside the Plugin's metadata to
+  determine what type the Plugin is. If that is not
+  enough, Zrythm makes a decision based on the
+  number of audio, MIDI, control and CV input and
+  output ports a Plugin has.
 
 Instantiating Plugins
 ---------------------
