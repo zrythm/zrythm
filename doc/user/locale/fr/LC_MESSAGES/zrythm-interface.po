@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-09 00:34+0100\n"
-"PO-Revision-Date: 2019-09-18 16:24+0000\n"
+"PO-Revision-Date: 2019-09-19 15:33+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/fr/>\n"
@@ -22,27 +22,33 @@ msgstr ""
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
 msgid "Basic Concepts and Terminology"
-msgstr ""
+msgstr "Concepts de base et terminologie"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:8
 msgid ""
 "Here are a few terms you should be aware of when using Zrythm. They are "
 "explained further in their corresponding chapters."
 msgstr ""
+"Voici quelques termes que vous devriez connaître lorsque vous utilisez "
+"Zrythm. Ils sont expliqués plus en détail dans les chapitres correspondants."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
 msgid "Regions"
-msgstr ""
+msgstr "Régions"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
 msgid ""
 "A Region (Clip) is a container for MIDI Notes or audio. This is what a "
 "Region looks like in the arranger."
 msgstr ""
+"Une région (clip) est un conteneur pour les notes MIDI ou l'audio. Voici à "
+"quoi ressemble une région dans l'arrangeur."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:16
 msgid "Regions are edited in the Editor Panel. In this case, the clip is looped."
 msgstr ""
+"Les régions sont éditées dans le panneau d'édition. Dans ce cas, le clip est "
+"bouclé."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:21
 #: ../../zrythm-interface/timeline.rst:6
@@ -52,6 +58,8 @@ msgstr "Ligne temporelle"
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:22
 msgid "The Timeline is where the song is arranged, also known as Arranger."
 msgstr ""
+"La ligne temporelle est l'endroit où le morceau est arrangé, également "
+"connue sous le nom d'arrangeur."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
 msgid "Track"
@@ -64,6 +72,11 @@ msgid ""
 " are some special tracks like the Chord Track and the Marker Track that "
 "contain chords and markers respectively."
 msgstr ""
+"Une piste est un emplacement unique dans la ligne temporelle contenant "
+"diverses régions et automatisation. Il peut contenir plusieurs lignes, "
+"telles que des lignes d'automatisation. Il y a quelques pistes spéciales "
+"comme la piste d'accords et la piste de marqueurs qui contiennent "
+"respectivement des accords et des marqueurs."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:34
 #: ../../zrythm-interface/tracklist.rst:6
@@ -75,6 +88,9 @@ msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
+"La liste de pistes contient toutes les pistes du projet. Elle est divisée en "
+"une liste de pistes supérieure (épinglée) et une liste de pistes inférieure "
+"(principale)."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
 msgid "Channel"
@@ -85,6 +101,8 @@ msgid ""
 "A Channel is a single slot in the Mixer. Most types of Tracks have a "
 "corresponding Channel."
 msgstr ""
+"Un canal est un emplacement unique dans le mixeur. La plupart des types de "
+"pistes ont un canal correspondant."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:46
 #: ../../zrythm-interface/mixer.rst:6
@@ -96,22 +114,26 @@ msgid ""
 "The Mixer contains all of the Channels in the Project and is used to mix "
 "the audio signals from each Channel."
 msgstr ""
+"Le mixeur contient tous les canaux du projet et est utilisé pour mixer les "
+"signaux audio de chaque canal."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:52
 msgid "Range"
-msgstr ""
+msgstr "Plage"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:53
 msgid "A Range is a selection of time between two positions."
-msgstr ""
+msgstr "Une plage est une sélection de temps entre deux positions."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:58
 msgid "MIDI Note"
-msgstr ""
+msgstr "Note MIDI"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:59
 msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
+"Les notes MIDI sont utilisées pour déclencher des instruments virtuels (ou "
+"matériels)."
 
 #: ../../zrythm-interface/editors.rst:6
 msgid "Editors"
@@ -122,6 +144,9 @@ msgid ""
 "Zrythm has various editors for editing the various events in the Timeline"
 " in detail. These editors appear in the Editor tab in the bottom panel."
 msgstr ""
+"Zrythm dispose de plusieurs éditeurs pour éditer en détail les différents "
+"événements de la ligne temporelle. Ces éditeurs apparaissent dans l'onglet "
+"Éditeur du panneau inférieur."
 
 #: ../../zrythm-interface/editors.rst:13
 msgid "Piano Roll"
@@ -134,10 +159,14 @@ msgid ""
 "Region is selected, the Editor tab will display the Piano Roll, allowing "
 "you to edit that region."
 msgstr ""
+"Le Piano Roll, ou arrangeur MIDI, est l'éditeur le plus utilisé. Il peut "
+"être utilisé pour éditer des régions MIDI, qui contiennent des notes MIDI. "
+"Lorsqu'une région MIDI est sélectionnée, l'onglet Éditeur affiche le Piano "
+"Roll, vous permettant d'éditer cette région."
 
 #: ../../zrythm-interface/editors.rst:24
 msgid "Automation Editor"
-msgstr ""
+msgstr "Éditeur d'automatisation"
 
 #: ../../zrythm-interface/editors.rst:26
 msgid ""
@@ -146,38 +175,42 @@ msgid ""
 "The Automation Editor will appear in the Editor tab when an Automation "
 "Region is selected."
 msgstr ""
+"Dans Zrythm, l'automatisation est également incluse dans les régions ("
+"appelées régions d'automatisation). Cela permet de répéter l'automation, un "
+"peu comme les régions MIDI. L'éditeur d'automatisation apparaîtra dans "
+"l'onglet éditeur lorsqu'une région d'automatisation est sélectionnée."
 
 #: ../../zrythm-interface/editors.rst:34
 msgid "This is a work in progress"
-msgstr ""
+msgstr "C'est un travail en cours"
 
 #: ../../zrythm-interface/editors.rst:37
 msgid "Chord Editor"
-msgstr ""
+msgstr "Éditeur d'accords"
 
 #: ../../zrythm-interface/editors.rst:39
 msgid "The Chord Editor is used for editing Chord Regions."
-msgstr ""
+msgstr "L'éditeur d'accords est utilisé pour éditer les régions d'accords."
 
 #: ../../zrythm-interface/editors.rst:41
 msgid "WIP"
-msgstr ""
+msgstr "Travail en cours"
 
 #: ../../zrythm-interface/global-menus.rst:6
 msgid "Global Menus"
-msgstr ""
+msgstr "Menus globaux"
 
 #: ../../zrythm-interface/global-menus.rst:8
 msgid "Zrythm has the following global menus at the top of its interface."
-msgstr ""
+msgstr "Zrythm a les menus globaux suivants en haut de son interface."
 
 #: ../../zrythm-interface/global-menus.rst:14
 msgid "Zrythm icon"
-msgstr ""
+msgstr "Icône Zrythm"
 
 #: ../../zrythm-interface/global-menus.rst:14
 msgid "Clicking this will show the About dialog"
-msgstr ""
+msgstr "En cliquant dessus, vous verrez la boîte de dialogue d'à propos"
 
 #: ../../zrythm-interface/global-menus.rst:17
 msgid "Home"
@@ -188,6 +221,8 @@ msgid ""
 "Contains various buttons and controls that are used often during editing "
 "and arranging"
 msgstr ""
+"Contient divers boutons et contrôles qui sont souvent utilisés lors de "
+"l'édition et de l'arrangement"
 
 #: ../../zrythm-interface/global-menus.rst:20
 msgid "Project"
@@ -198,6 +233,8 @@ msgid ""
 "Various project-related actions such as saving, loading and exporting "
 "MIDI or audio"
 msgstr ""
+"Diverses actions liées au projet telles que la sauvegarde, le chargement et "
+"l'exportation MIDI ou audio"
 
 #: ../../zrythm-interface/global-menus.rst:23
 msgid "View"
@@ -208,6 +245,8 @@ msgid ""
 "Controls to change the appearance of Zrythm and its various areas, such "
 "as zooming"
 msgstr ""
+"Contrôles pour changer l'apparence de Zrythm et de ses différentes zones, "
+"comme le zoom"
 
 #: ../../zrythm-interface/global-menus.rst:25
 msgid "Help"
@@ -215,7 +254,7 @@ msgstr "Aide"
 
 #: ../../zrythm-interface/global-menus.rst:26
 msgid "Links for reporting bugs, donating, chatting, etc."
-msgstr ""
+msgstr "Liens pour signaler des bogues, faire un don, tchatter, etc."
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Zrythm's Interface"
@@ -231,12 +270,17 @@ msgid ""
 "area of the timeline. It can be moved around and resized to change the "
 "visible area."
 msgstr ""
+"La ligne temporelle minimap est une petite boîte qui représente la zone "
+"visible actuelle de la ligne temporelle. Elle peut être déplacée et "
+"redimensionnée pour modifier la zone visible."
 
 #: ../../zrythm-interface/mixer.rst:8
 msgid ""
 "The Mixer tab contains the Mixer, where all the visible Channels in the "
 "project are shown."
 msgstr ""
+"L'onglet du mixeur contient le mixeur, où tous les canaux visibles du projet "
+"sont affichés."
 
 #: ../../zrythm-interface/ruler.rst:6
 msgid "Ruler"
@@ -248,12 +292,17 @@ msgid ""
 "whether it is the timeline arranger or the piano roll or the sample "
 "editor."
 msgstr ""
+"Une règle est utilisée pour montrer la position des événements dans un "
+"arrangeur donné, que ce soit l'arrangeur de ligne temporelle, ou du piano-"
+"roll, ou de l'éditeur d'échantillons."
 
 #: ../../zrythm-interface/ruler.rst:15
 msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers/ indicators."
 msgstr ""
+"La règle affichera plus ou moins d'informations en fonction du niveau de "
+"zoom actuel. Elle affichera également les marqueurs/indicateurs suivants."
 
 #: ../../zrythm-interface/ruler.rst:19
 msgid "Cue point"
