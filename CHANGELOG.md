@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.421] - 2019-09-19
+- Add ability to select MIDI channel for the piano roll per track and per lane
+- Add direct out in the track properties
+- Add audio pool (WIP)
+- Use GtkFileBrowserWidget for the file browser
+- Add optimization flags for release builds
+- Add stricter compilation flags for normal builds
+- Fix song export
+- Fix loading backup projects containing plugins
+- Fix loading a project while Zrythm is already running
+- Fix allowing to select projects that don't exist in the project assistant
+- Add additional checks for the pre-release scripts
+- Use installed suil if available instead of local one
+- Update parts of the documentation
+- Update French, German, Portuguese translations
+
 ## [0.6.384] - 2019-09-14
 - Switch from AGPL to GFDL for the user manual
 - Add option to resize regions normally or to resize-loop
