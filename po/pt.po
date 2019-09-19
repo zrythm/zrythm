@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-17 10:46+0100\n"
-"PO-Revision-Date: 2019-09-16 19:24+0000\n"
+"PO-Revision-Date: 2019-09-18 16:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -60,10 +60,14 @@ msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
 "work correctly."
 msgstr ""
+"Este projeto foi criado com uma versão diferente do Zrythm (%s). Pode não "
+"funcionar corretamente."
 
 #: src/project.c:469
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
+"Falha ao carregar o projeto. Por favor, verifique os registos para mais "
+"informações."
 
 #: src/project.c:885
 msgid "Backup saved."
@@ -432,46 +436,39 @@ msgstr "Assinatura de Tempo - Batidas por barra / Unidade de batida"
 #: src/gui/widgets/drag_dest_box.c:196
 #, c-format
 msgid "Unsupported file type %s"
-msgstr ""
+msgstr "Tipo de ficheiro não suportado %s"
 
 #: src/gui/widgets/drag_dest_box.c:221
-#, fuzzy
 msgid "No file found"
-msgstr "Controladores encontrados"
+msgstr "Nenhum ficheiro encontrado"
 
 #: src/gui/widgets/drag_dest_box.c:369
 msgid "Add _MIDI Track"
 msgstr "Adicionar Faixa de _MIDI"
 
 #: src/gui/widgets/drag_dest_box.c:382 src/audio/track.c:1093
-#, fuzzy
 msgid "Audio Bus"
-msgstr "Saídas Áudio"
+msgstr "Bus Áudio"
 
 #: src/gui/widgets/drag_dest_box.c:393 src/audio/track.c:1096
-#, fuzzy
 msgid "MIDI Bus"
-msgstr "Saídas MIDI"
+msgstr "Bus MIDI"
 
 #: src/gui/widgets/drag_dest_box.c:405
-#, fuzzy
 msgid "Add Bus Track"
-msgstr "Adicionar Faixa de_Bus"
+msgstr "Adicionar Faixa de Bus"
 
 #: src/gui/widgets/drag_dest_box.c:416 src/audio/track.c:1105
-#, fuzzy
 msgid "Audio Group"
-msgstr "Saídas Áudio"
+msgstr "Grupo de Áudio"
 
 #: src/gui/widgets/drag_dest_box.c:427 src/audio/track.c:1108
-#, fuzzy
 msgid "MIDI Group"
-msgstr "Saídas MIDI"
+msgstr "Grupo de MIDI"
 
 #: src/gui/widgets/drag_dest_box.c:439
-#, fuzzy
 msgid "Add Group Track"
-msgstr "Adicionar Faixa de _Grupo"
+msgstr "Adicionar Faixa de Grupo"
 
 #: src/gui/widgets/instrument_track.c:216 src/gui/widgets/midi_track.c:190
 #: resources/ui/transport_controls.ui:36
@@ -651,9 +648,8 @@ msgstr "Saída Estéreo"
 #: src/gui/widgets/automatable_selector_popover.c:237
 #: src/gui/widgets/automatable_selector_popover.c:380
 #: src/gui/widgets/route_target_selector_popover.c:307
-#, fuzzy
 msgid "No control selected"
-msgstr "Nenhum clipe selecionado"
+msgstr "Nenhum controle selecionado"
 
 #: src/gui/widgets/snap_grid.c:95
 msgid "Snap/Grid options"
@@ -962,6 +958,9 @@ msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
+"Falha ao inicializar o backend de áudio %s. Vai usar o backend fictício em "
+"vez disso. Por favor, verifique as configurações do seu backend nas "
+"Preferências."
 
 #: src/audio/engine.c:313
 #, c-format
@@ -969,6 +968,8 @@ msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
+"Falha ao inicializar o backend MIDI %s. Vai usar backend fictício em vez "
+"disso. Por favor, verifique as configurações do seu backend nas Preferências."
 
 #: src/audio/track_lane.c:64
 #, c-format
@@ -1017,9 +1018,8 @@ msgid "Chord"
 msgstr "Acorde"
 
 #: src/audio/track.c:1111
-#, fuzzy
 msgid "Marker"
-msgstr "Marcadores"
+msgstr "Marcador"
 
 #. TODO
 #: src/audio/scale.c:563

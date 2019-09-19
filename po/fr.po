@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-17 10:46+0100\n"
-"PO-Revision-Date: 2019-09-14 11:24+0000\n"
+"PO-Revision-Date: 2019-09-18 16:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -62,10 +62,14 @@ msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
 "work correctly."
 msgstr ""
+"Ce projet a été créé avec une version différente de Zrythm (%s). Il se peut "
+"qu'il ne fonctionne pas correctement."
 
 #: src/project.c:469
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
+"Impossible de charger le projet. Veuillez consulter les journaux pour plus "
+"d'informations."
 
 #: src/project.c:885
 msgid "Backup saved."
@@ -437,46 +441,39 @@ msgstr "Signature temporelle - Battements par barre / unité de battement"
 #: src/gui/widgets/drag_dest_box.c:196
 #, c-format
 msgid "Unsupported file type %s"
-msgstr ""
+msgstr "Type de fichier non-supporté %s"
 
 #: src/gui/widgets/drag_dest_box.c:221
-#, fuzzy
 msgid "No file found"
-msgstr "Contrôleurs trouvés"
+msgstr "Fichier introuvable"
 
 #: src/gui/widgets/drag_dest_box.c:369
 msgid "Add _MIDI Track"
 msgstr "Ajouter une piste _MIDI"
 
 #: src/gui/widgets/drag_dest_box.c:382 src/audio/track.c:1093
-#, fuzzy
 msgid "Audio Bus"
-msgstr "Sorties Audio"
+msgstr "Bus audio"
 
 #: src/gui/widgets/drag_dest_box.c:393 src/audio/track.c:1096
-#, fuzzy
 msgid "MIDI Bus"
-msgstr "Sorties MIDI"
+msgstr "Bus MIDI"
 
 #: src/gui/widgets/drag_dest_box.c:405
-#, fuzzy
 msgid "Add Bus Track"
-msgstr "Ajouter une piste de _bus"
+msgstr "Ajouter une piste de bus"
 
 #: src/gui/widgets/drag_dest_box.c:416 src/audio/track.c:1105
-#, fuzzy
 msgid "Audio Group"
-msgstr "Sorties Audio"
+msgstr "Groupe audio"
 
 #: src/gui/widgets/drag_dest_box.c:427 src/audio/track.c:1108
-#, fuzzy
 msgid "MIDI Group"
-msgstr "Sortie MIDI"
+msgstr "Groupe MIDI"
 
 #: src/gui/widgets/drag_dest_box.c:439
-#, fuzzy
 msgid "Add Group Track"
-msgstr "Ajouter une piste de _groupe"
+msgstr "Ajouter une piste de groupe"
 
 #: src/gui/widgets/instrument_track.c:216 src/gui/widgets/midi_track.c:190
 #: resources/ui/transport_controls.ui:36
@@ -656,9 +653,8 @@ msgstr "Sortie Stéréo"
 #: src/gui/widgets/automatable_selector_popover.c:237
 #: src/gui/widgets/automatable_selector_popover.c:380
 #: src/gui/widgets/route_target_selector_popover.c:307
-#, fuzzy
 msgid "No control selected"
-msgstr "Aucun clip sélectionné"
+msgstr "Aucun contrôle sélectionné"
 
 #: src/gui/widgets/snap_grid.c:95
 msgid "Snap/Grid options"
@@ -968,6 +964,9 @@ msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
+"Échec de l'initialisation du dorsal audio %s. On utilisera le dorsal factice "
+"(dummy) à la place. Veuillez vérifier vos paramètres de dorsal dans les "
+"Préférences."
 
 #: src/audio/engine.c:313
 #, c-format
@@ -975,6 +974,9 @@ msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
+"Échec de l'initialisation du dorsal MIDI %s. On utilisera le dorsal factice "
+"(dummy) à la place. Veuillez vérifier vos paramètres de dorsal dans les "
+"Préférences."
 
 #: src/audio/track_lane.c:64
 #, c-format
@@ -1023,9 +1025,8 @@ msgid "Chord"
 msgstr "Accord"
 
 #: src/audio/track.c:1111
-#, fuzzy
 msgid "Marker"
-msgstr "Marqueurs"
+msgstr "Marqueur"
 
 #. TODO
 #: src/audio/scale.c:563
