@@ -17,7 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * \file
+ *
+ * Track properties box.
+ */
 
 #ifndef __GUI_WIDGETS_TRACK_PROPERTIES_EXPANDER_H__
 #define __GUI_WIDGETS_TRACK_PROPERTIES_EXPANDER_H__
@@ -38,6 +42,14 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _EditableLabelWidget
   EditableLabelWidget;
 typedef struct Track Track;
+typedef struct _RouteTargetSelectorWidget
+  RouteTargetSelectorWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 typedef struct _TrackPropertiesExpanderWidget
 {
@@ -49,6 +61,14 @@ typedef struct _TrackPropertiesExpanderWidget
    * This should take up the whole row.
    */
   EditableLabelWidget *   name;
+
+  /** Piano roll MIDI channel selector. */
+  GtkComboBoxText *       piano_roll_midi_ch;
+
+  /** Label for showing/hiding. */
+  GtkWidget *             piano_roll_midi_ch_lbl;
+
+  RouteTargetSelectorWidget * direct_out;
 
   /* TODO midi inputs, etc. See Instrument Track
    * Inspector from cubase manual. */
@@ -63,7 +83,8 @@ typedef struct _TrackPropertiesExpanderWidget
  */
 void
 track_properties_expander_widget_refresh (
-  TrackPropertiesExpanderWidget * self);
+  TrackPropertiesExpanderWidget * self,
+  Track *                         track);
 
 /**
  * Sets up the TrackPropertiesExpanderWidget.
@@ -72,5 +93,9 @@ void
 track_properties_expander_widget_setup (
   TrackPropertiesExpanderWidget * self,
   Track *                             track);
+
+/**
+ * @}
+ */
 
 #endif

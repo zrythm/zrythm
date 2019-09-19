@@ -269,8 +269,8 @@ midi_track_fill_midi_events (
                         /*diff_to_loop_end - 1);*/
                       midi_events_add_note_off (
                         midi_events,
-                        midi_note->region->
-                          lane->midi_ch,
+                        midi_region_get_midi_ch (
+                          midi_note->region),
                         midi_note->val,
                         (midi_time_t)
                         (diff_to_loop_end - 1),
@@ -311,8 +311,8 @@ midi_track_fill_midi_events (
                               /*local_pos);*/
                           midi_events_add_note_off (
                             midi_events,
-                            midi_note->region->
-                              lane->midi_ch,
+                            midi_region_get_midi_ch (
+                              midi_note->region),
                             midi_note->val,
                             (midi_time_t)
                             (region_end_adjusted -
@@ -373,8 +373,8 @@ midi_track_fill_midi_events (
                               /*g_start_frames);*/
                           midi_events_add_note_off (
                             midi_events,
-                            midi_note->region->
-                              lane->midi_ch,
+                            midi_region_get_midi_ch (
+                              midi_note->region),
                             midi_note->val,
                             (midi_time_t)
                             ((region_end_frames - 1) -
@@ -420,8 +420,8 @@ midi_track_fill_midi_events (
                            */
                           midi_events_add_note_off (
                             midi_events,
-                            midi_note->region->
-                              lane->midi_ch,
+                            midi_region_get_midi_ch (
+                              midi_note->region),
                             midi_note->val,
                             (midi_time_t)
                             ((loop_end_adjusted -
@@ -466,8 +466,8 @@ midi_track_fill_midi_events (
                         /*midi_note->start_pos.frames);*/
                       midi_events_add_note_on (
                         midi_events,
-                        midi_note->region->
-                          lane->midi_ch,
+                        midi_region_get_midi_ch (
+                          midi_note->region),
                         midi_note->val,
                         midi_note->vel->vel,
                         (midi_time_t)
@@ -491,8 +491,8 @@ midi_track_fill_midi_events (
                         /*diff_to_loop_end);*/
                       midi_events_add_note_on (
                         midi_events,
-                        midi_note->region->
-                          lane->midi_ch,
+                        midi_region_get_midi_ch (
+                          midi_note->region),
                         midi_note->val,
                         midi_note->vel->vel,
                         (midi_time_t)
@@ -521,8 +521,8 @@ midi_track_fill_midi_events (
                         /*midi_note->end_pos.frames);*/
                       midi_events_add_note_off (
                         midi_events,
-                        midi_note->region->
-                          lane->midi_ch,
+                        midi_region_get_midi_ch (
+                          midi_note->region),
                         midi_note->val,
                         (midi_time_t)
                         ((mn_end_frames -

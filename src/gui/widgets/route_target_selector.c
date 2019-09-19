@@ -35,71 +35,95 @@ G_DEFINE_TYPE (RouteTargetSelectorWidget,
 #define MAX_CHARS 8
 
 static void
-on_clicked (GtkButton * button,
-            RouteTargetSelectorWidget * self)
-{
-  if (self->owner->channel->track->type ==
-        TRACK_TYPE_MASTER)
-    gtk_widget_set_visible (
-      GTK_WIDGET (self->popover), 0);
-}
-
-static void
 set_label (RouteTargetSelectorWidget * self)
 {
-  ChannelWidget * cw = self->owner;
-  if (!(cw && cw->channel->output &&
-          cw->channel->output))
+  if (self->channel &&
+      self->channel->output)
     {
-      g_message ("NONE");
-      return;
+      Track * track = self->channel->output;
+      g_return_if_fail (track->name);
+
+      gtk_label_set_text (
+        self->label,
+        track->name);
     }
-
-  Track * track = cw->channel->output;
-  g_return_if_fail (track->name);
-
-  gtk_label_set_text (
-    self->label,
-    track->name);
-  gtk_label_set_max_width_chars (
-    self->label, MAX_CHARS);
+  else
+    {
+      gtk_label_set_markup (
+        self->label,
+        _("<tt><i>Engine</i></tt>"));
+    }
 }
 
 void
 route_target_selector_widget_refresh (
-  RouteTargetSelectorWidget * self)
-{
-  set_label (self);
-}
-
-void
-route_target_selector_widget_setup (
   RouteTargetSelectorWidget * self,
-  ChannelWidget *            owner)
+  Channel *                   channel)
 {
-  self->owner = owner;
-  if (self->owner->channel->track->type ==
+  self->channel = channel;
+
+  set_label (self);
+
+  if (GTK_IS_WIDGET (self->popover))
+    gtk_widget_destroy (
+      GTK_WIDGET (self->popover));
+  self->popover = NULL;
+  gtk_menu_button_set_popover (
+    GTK_MENU_BUTTON (self), NULL);
+
+  /* if unroutable */
+  if (!self->channel)
+    {
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (self->box),
+        _("Cannot be routed"));
+    }
+  /* if routed by default and cannot be changed */
+  else if (
+      self->channel->track->type ==
         TRACK_TYPE_MASTER)
     {
       gtk_widget_set_tooltip_text (
         GTK_WIDGET (self->box),
-        _("Routed to Stereo Out"));
+        _("Routed to engine"));
     }
+  /* if routable */
   else
     {
       gtk_widget_set_tooltip_text (
         GTK_WIDGET (self->box),
         _("Select channel to route signal to"));
+      self->popover =
+        route_target_selector_popover_widget_new (
+          self);
+      gtk_menu_button_set_popover (
+        GTK_MENU_BUTTON (self),
+        GTK_WIDGET (self->popover));
     }
+}
 
-  self->popover =
-    route_target_selector_popover_widget_new (
-      self);
-  gtk_menu_button_set_popover (
-    GTK_MENU_BUTTON (self),
-    GTK_WIDGET (self->popover));
+void
+route_target_selector_widget_setup (
+  RouteTargetSelectorWidget * self,
+  Channel *                   channel)
+{
+  self->channel = channel;
 
   set_label (self);
+}
+
+RouteTargetSelectorWidget *
+route_target_selector_widget_new (
+  Channel * channel)
+{
+  RouteTargetSelectorWidget * self =
+    g_object_new (
+      ROUTE_TARGET_SELECTOR_WIDGET_TYPE, NULL);
+
+  route_target_selector_widget_setup (
+    self, channel);
+
+  return self;
 }
 
 static void
@@ -135,8 +159,6 @@ route_target_selector_widget_init (
       GTK_WIDGET (self->label));
   gtk_style_context_add_class (
     context, "channel_label_smaller");
-  gtk_label_set_max_width_chars (
-    self->label, MAX_CHARS);
   gtk_label_set_ellipsize (
     self->label, PANGO_ELLIPSIZE_END);
 
@@ -152,10 +174,6 @@ route_target_selector_widget_init (
                     1);
   gtk_container_add (GTK_CONTAINER (self),
                      GTK_WIDGET (self->box));
-  g_signal_connect (G_OBJECT (self),
-                    "clicked",
-                    G_CALLBACK (on_clicked),
-                    self);
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }

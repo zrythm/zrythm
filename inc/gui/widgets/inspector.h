@@ -74,6 +74,13 @@ InspectorWidget *
 inspector_widget_new (void);
 
 /**
+ * Sets up the inspector widget.
+ */
+void
+inspector_widget_setup (
+  InspectorWidget * self);
+
+/**
  * Refreshes the inspector widget (shows current
  * selections.
  *

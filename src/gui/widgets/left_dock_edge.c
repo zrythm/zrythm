@@ -71,6 +71,9 @@ left_dock_edge_widget_setup (
           GTK_WIDGET (self)))),
     GTK_POS_LEFT);
 
+  inspector_widget_setup (
+    self->inspector);
+
   /* remember divider pos */
   DzlDockRevealer * revealer =
     get_revealer (self);

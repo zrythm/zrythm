@@ -56,6 +56,9 @@ typedef struct _RouteTargetSelectorPopoverWidget
 
   GtkLabel *              info;
   RouteTargetSelectorType type;
+
+  /** Newly selected track. */
+  Track *                 new_track;
 } RouteTargetSelectorPopoverWidget;
 
 /**

@@ -77,7 +77,12 @@ typedef struct TrackLane
   /** Position of owner Track in the Tracklist. */
   int                 track_pos;
 
-  /** MIDI channel, if MIDI lane, starting at 1. */
+  /**
+   * MIDI channel, if MIDI lane, starting at 1.
+   *
+   * If this is set to 0, the value will be
+   * inherited from the Track.
+   */
   uint8_t             midi_ch;
 
 } TrackLane;

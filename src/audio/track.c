@@ -116,6 +116,7 @@ track_init (Track * self)
 {
   self->visible = 1;
   self->handle_pos = 1;
+  self->midi_ch = 1;
   track_add_lane (self);
 }
 

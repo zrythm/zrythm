@@ -335,6 +335,25 @@ midi_region_export_to_midi_file (
 }
 
 /**
+ * Returns the MIDI channel that this region should
+ * be played on, starting from 1.
+ */
+uint8_t
+midi_region_get_midi_ch (
+  const Region * self)
+{
+  uint8_t ret;
+  if (self->lane->midi_ch > 0)
+    ret = self->lane->midi_ch;
+  else
+    ret = self->lane->track->midi_ch;
+
+  g_warn_if_fail (ret > 0);
+
+  return ret;
+}
+
+/**
  * Returns a newly initialized MidiEvents with
  * the contents of the region converted into
  * events.

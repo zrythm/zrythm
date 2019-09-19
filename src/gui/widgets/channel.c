@@ -618,7 +618,7 @@ static void
 refresh_output (ChannelWidget * self)
 {
   route_target_selector_widget_refresh (
-    self->output);
+    self->output, self->channel);
 }
 
 static void
@@ -767,7 +767,7 @@ channel_widget_new (Channel * channel)
     self->name, self->channel->track,
     track_get_name, track_set_name);
   route_target_selector_widget_setup (
-    self->output, self);
+    self->output, self->channel);
   channel_widget_refresh (self);
 
   gtk_widget_add_tick_callback (
@@ -909,6 +909,8 @@ channel_widget_init (ChannelWidget * self)
     context, "channel_label");
   gtk_label_set_max_width_chars (
     self->name->label, 10);
+  gtk_label_set_max_width_chars (
+    self->output->label, 9);
 
   /* setup inserts */
   GtkWidget * inserts_scroll =

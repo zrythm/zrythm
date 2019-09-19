@@ -26,6 +26,8 @@
 #ifndef __AUDIO_MIDI_REGION_H__
 #define __AUDIO_MIDI_REGION_H__
 
+#include <stdint.h>
+
 typedef struct Track Track;
 typedef struct Position Position;
 typedef struct MidiNote MidiNote;
@@ -176,6 +178,14 @@ midi_region_export_to_midi_file (
   const char *   full_path,
   int            midi_version,
   const int      export_full);
+
+/**
+ * Returns the MIDI channel that this region should
+ * be played on, starting from 1.
+ */
+uint8_t
+midi_region_get_midi_ch (
+  const Region * self);
 
 /**
  * Returns a newly initialized MidiEvents with

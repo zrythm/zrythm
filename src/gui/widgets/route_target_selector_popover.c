@@ -31,9 +31,10 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (RouteTargetSelectorPopoverWidget,
-               route_target_selector_popover_widget,
-               GTK_TYPE_POPOVER)
+G_DEFINE_TYPE (
+  RouteTargetSelectorPopoverWidget,
+  route_target_selector_popover_widget,
+  GTK_TYPE_POPOVER)
 
 static int
 update_info_label (
@@ -81,11 +82,12 @@ create_model_for_routes (
                 track->type ==
                   TRACK_TYPE_MIDI_GROUP))
         {
-          if (track !=
-                self->owner->owner->
+          if (self->owner->channel &&
+              track !=
+                self->owner->
                   channel->track &&
               track->in_signal_type ==
-                self->owner->owner->
+                self->owner->
                   channel->track->out_signal_type)
             {
               // Add a new row to the model
@@ -148,8 +150,8 @@ on_selection_changed (
   GtkTreeModel * model =
     gtk_tree_view_get_model (tv);
   GList * selected_rows =
-    gtk_tree_selection_get_selected_rows (ts,
-                                          NULL);
+    gtk_tree_selection_get_selected_rows (
+      ts, NULL);
   if (selected_rows)
     {
       GtkTreePath * tp =
@@ -204,9 +206,7 @@ on_selection_changed (
           update_info_label (self,
                              label);
 
-          channel_update_output (
-            self->owner->owner->channel,
-            track);
+          self->new_track = track;
         }
     }
 }
@@ -260,11 +260,52 @@ tree_view_create (
 }
 
 static void
-on_closed (RouteTargetSelectorPopoverWidget *self,
-               gpointer    user_data)
+on_closed (
+  RouteTargetSelectorPopoverWidget *self,
+  gpointer    user_data)
 {
+  gtk_widget_destroy (GTK_WIDGET (self));
+
+  /* if new track selected, update routing */
+  if (self->new_track &&
+      self->new_track !=
+        self->owner->channel->output)
+    {
+      channel_update_output (
+        self->owner->channel,
+        self->new_track);
+    }
+
   route_target_selector_widget_refresh (
-    self->owner);
+    self->owner, self->owner->channel);
+  g_object_set (
+    self->owner, "active", 0, NULL);
+}
+
+static int
+select_group_func (
+  GtkTreeModel * model,
+  GtkTreePath *  path,
+  GtkTreeIter *  iter,
+  RouteTargetSelectorPopoverWidget * self)
+{
+  Track * iter_track;
+  gtk_tree_model_get (
+    model, iter, 1, &iter_track, -1);
+
+  if (iter_track ==
+        self->owner->channel->output)
+    {
+      GtkTreeSelection * rts =
+        gtk_tree_view_get_selection (
+          self->route_treeview);
+      gtk_tree_selection_select_iter (
+        rts, iter);
+
+      return TRUE;
+    }
+
+  return FALSE;
 }
 
 /**
@@ -276,7 +317,8 @@ route_target_selector_popover_widget_new (
 {
   RouteTargetSelectorPopoverWidget * self =
     g_object_new (
-      ROUTE_TARGET_SELECTOR_POPOVER_WIDGET_TYPE, NULL);
+      ROUTE_TARGET_SELECTOR_POPOVER_WIDGET_TYPE,
+      NULL);
 
   self->owner = owner;
   self->type_model =
@@ -304,7 +346,67 @@ route_target_selector_popover_widget_new (
 
   update_info_label (
     self,
-    _("No control selected"));
+    _("No output selected"));
+
+  /* select output */
+  if (self->owner->channel &&
+      self->owner->channel->output)
+    {
+      Track * track =
+        self->owner->channel->output;
+
+      GtkTreePath *path;
+      GtkTreeIter iter;
+
+      if (track->type == TRACK_TYPE_MASTER)
+        {
+          /* select Master group */
+          path =
+            gtk_tree_path_new_from_string (
+              "0");
+          gtk_tree_model_get_iter (
+            self->type_model, &iter, path);
+          GtkTreeSelection * tts =
+            gtk_tree_view_get_selection (
+              self->type_treeview);
+          gtk_tree_selection_select_path (
+            tts, path);
+          gtk_tree_path_free (path);
+
+          /* select master route */
+          path =
+            gtk_tree_path_new_from_string (
+              "0");
+          gtk_tree_model_get_iter (
+            self->route_model, &iter, path);
+          GtkTreeSelection * rts =
+            gtk_tree_view_get_selection (
+              self->route_treeview);
+          gtk_tree_selection_select_path (
+            rts, path);
+          gtk_tree_path_free (path);
+        }
+      else
+        {
+          path =
+            gtk_tree_path_new_from_string (
+              "1");
+          gtk_tree_model_get_iter (
+            self->type_model, &iter, path);
+          GtkTreeSelection * tts =
+            gtk_tree_view_get_selection (
+              self->type_treeview);
+          gtk_tree_selection_select_path (
+            tts, path);
+          gtk_tree_path_free (path);
+
+          gtk_tree_model_foreach (
+            self->route_model,
+            (GtkTreeModelForeachFunc)
+              select_group_func,
+            self);
+        }
+    }
 
   return self;
 }
@@ -313,7 +415,8 @@ static void
 route_target_selector_popover_widget_class_init (
   RouteTargetSelectorPopoverWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "route_target_selector.ui");
 

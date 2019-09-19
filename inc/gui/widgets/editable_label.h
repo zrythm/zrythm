@@ -28,11 +28,11 @@
 
 #define EDITABLE_LABEL_WIDGET_TYPE \
   (editable_label_widget_get_type ())
-G_DECLARE_FINAL_TYPE (EditableLabelWidget,
-                      editable_label_widget,
-                      Z,
-                      EDITABLE_LABEL_WIDGET,
-                      GtkEventBox)
+G_DECLARE_FINAL_TYPE (
+  EditableLabelWidget,
+  editable_label_widget,
+  Z, EDITABLE_LABEL_WIDGET,
+  GtkEventBox)
 
 /**
  * A label that shows a popover when clicked.

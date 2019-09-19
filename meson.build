@@ -182,6 +182,7 @@ test_cflags = [
   '-Werror=misleading-indentation',
   '-Werror=int-in-bool-context',
   '-Werror=type-limits',
+  '-Werror=deprecated-declarations',
   ]
 
 if (get_option ('buildtype') == 'release')

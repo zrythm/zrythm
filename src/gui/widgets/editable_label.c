@@ -31,22 +31,6 @@ G_DEFINE_TYPE (EditableLabelWidget,
                GTK_TYPE_EVENT_BOX)
 
 static void
-on_mp_press (GtkGestureMultiPress *gesture,
-             gint                  n_press,
-             gdouble               x,
-             gdouble               y,
-             EditableLabelWidget * self)
-{
-  if (n_press == 2)
-    {
-      gtk_popover_popup (self->popover);
-      gtk_entry_set_text (
-        self->entry,
-        (*self->getter) (self->object));
-    }
-}
-
-static void
 on_entry_activated (
   GtkEntry *entry,
   EditableLabelWidget * self)
@@ -56,6 +40,53 @@ on_entry_activated (
     gtk_entry_get_text (self->entry));
   gtk_widget_set_visible (
     GTK_WIDGET (self->popover), 0);
+}
+
+static void
+on_popover_closed (
+  GtkPopover * popover,
+  EditableLabelWidget * self)
+{
+  gtk_widget_destroy (GTK_WIDGET (popover));
+}
+
+static void
+on_mp_press (GtkGestureMultiPress *gesture,
+             gint                  n_press,
+             gdouble               x,
+             gdouble               y,
+             EditableLabelWidget * self)
+{
+  if (n_press == 2)
+    {
+      self->popover =
+        GTK_POPOVER (
+          gtk_popover_new (GTK_WIDGET (self)));
+      GtkEntry * entry =
+        GTK_ENTRY (gtk_entry_new ());
+      self->entry = entry;
+      gtk_widget_set_visible (
+        GTK_WIDGET (entry), 1);
+      gtk_entry_set_text (
+        self->entry,
+        (*self->getter) (self->object));
+
+      gtk_container_add (
+        GTK_CONTAINER (self->popover),
+        GTK_WIDGET (entry));
+
+      g_signal_connect (
+        G_OBJECT (self->entry), "activate",
+        G_CALLBACK (on_entry_activated), self);
+      g_signal_connect (
+        G_OBJECT (self->popover), "closed",
+        G_CALLBACK (on_popover_closed), self);
+
+      gtk_popover_popup (self->popover);
+      gtk_entry_set_text (
+        self->entry,
+        (*self->getter) (self->object));
+    }
 }
 
 /**
@@ -78,9 +109,6 @@ _editable_label_widget_setup (
 
   if (object)
     {
-      gtk_entry_set_text (
-        self->entry,
-        (*self->getter) (self->object));
       gtk_label_set_text (
         self->label,
         (*self->getter) (self->object));
@@ -142,30 +170,11 @@ editable_label_widget_init (
   gtk_label_set_ellipsize (
     self->label, PANGO_ELLIPSIZE_END);
 
-  self->popover =
-    GTK_POPOVER (
-      gtk_popover_new (GTK_WIDGET (self)));
-  GtkEntry * entry =
-    GTK_ENTRY (gtk_entry_new ());
-  self->entry = entry;
-  gtk_widget_set_visible (
-    GTK_WIDGET (entry), 1);
-
-  gtk_container_add (
-    GTK_CONTAINER (self->popover),
-    GTK_WIDGET (entry));
-
   self->mp =
     GTK_GESTURE_MULTI_PRESS (
       gtk_gesture_multi_press_new (
         GTK_WIDGET (self)));
 
-  g_signal_connect (
-    G_OBJECT (self->entry), "activate",
-    G_CALLBACK (on_entry_activated), self);
-  /*g_signal_connect (*/
-    /*G_OBJECT (self->popover), "closed",*/
-    /*G_CALLBACK (on_popover_closed), self);*/
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",
     G_CALLBACK (on_mp_press), self);

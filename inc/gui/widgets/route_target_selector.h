@@ -30,15 +30,15 @@ G_DECLARE_FINAL_TYPE (
   Z, ROUTE_TARGET_SELECTOR_WIDGET,
   GtkMenuButton)
 
+typedef struct _RouteTargetSelectorPopoverWidget
+  RouteTargetSelectorPopoverWidget;
+typedef struct _ChannelWidget ChannelWidget;
+
 /**
  * @addtogroup widgets
  *
  * @{
  */
-
-typedef struct _RouteTargetSelectorPopoverWidget
-  RouteTargetSelectorPopoverWidget;
-typedef struct _ChannelWidget ChannelWidget;
 
 typedef struct _RouteTargetSelectorWidget
 {
@@ -54,17 +54,22 @@ typedef struct _RouteTargetSelectorWidget
 
   /** Popover content holder. */
   GtkBox                  * content;
-  ChannelWidget *   owner;
+  Channel *          channel;
 } RouteTargetSelectorWidget;
+
+RouteTargetSelectorWidget *
+route_target_selector_widget_new (
+  Channel * channel);
 
 void
 route_target_selector_widget_setup (
   RouteTargetSelectorWidget * self,
-  ChannelWidget *            owner);
+  Channel *                   channel);
 
 void
 route_target_selector_widget_refresh (
-  RouteTargetSelectorWidget * self);
+  RouteTargetSelectorWidget * self,
+  Channel *                   channel);
 
 /**
  * @}

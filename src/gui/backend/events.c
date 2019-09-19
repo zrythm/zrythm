@@ -172,7 +172,7 @@ on_channel_output_changed (
   if (ch->widget)
     {
       route_target_selector_widget_refresh (
-        ch->widget->output);
+        ch->widget->output, ch);
     }
 }
 

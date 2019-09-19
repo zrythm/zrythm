@@ -70,15 +70,24 @@ inspector_widget_refresh (
     }
 }
 
+/**
+ * Sets up the inspector widget.
+ */
+void
+inspector_widget_setup (
+  InspectorWidget * self)
+{
+  inspector_track_widget_setup (
+    self->track,
+    TRACKLIST_SELECTIONS);
+}
+
 InspectorWidget *
 inspector_widget_new ()
 {
   InspectorWidget * self =
     g_object_new (INSPECTOR_WIDGET_TYPE, NULL);
 
-  inspector_track_widget_show_tracks (
-    self->track,
-    TRACKLIST_SELECTIONS);
   gtk_stack_set_visible_child (
     self->stack,
     GTK_WIDGET (self->track));

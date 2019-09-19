@@ -45,7 +45,7 @@ inspector_track_widget_show_tracks (
     {
       track = tls->tracks[0];
 
-      track_properties_expander_widget_setup (
+      track_properties_expander_widget_refresh (
         self->instrument_track_info,
         track);
 
@@ -107,6 +107,22 @@ inspector_track_widget_show_tracks (
             /*GTK_WIDGET (self->midi_out), 0);*/
         }
     }
+}
+
+/**
+ * Sets up the inspector track widget for the first
+ * time.
+ */
+void
+inspector_track_widget_setup (
+  InspectorTrackWidget * self,
+  TracklistSelections *  tls)
+{
+  Track * track = tls->tracks[0];
+
+  track_properties_expander_widget_setup (
+    self->instrument_track_info,
+    track);
 }
 
 static void

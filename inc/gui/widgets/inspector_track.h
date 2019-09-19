@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Inspector section for tracks.
+ */
+
 #ifndef __GUI_WIDGETS_INSPECTOR_TRACK_H__
 #define __GUI_WIDGETS_INSPECTOR_TRACK_H__
 
@@ -24,11 +30,11 @@
 
 #define INSPECTOR_TRACK_WIDGET_TYPE \
   (inspector_track_widget_get_type ())
-G_DECLARE_FINAL_TYPE (InspectorTrackWidget,
-                      inspector_track_widget,
-                      Z,
-                      INSPECTOR_TRACK_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  InspectorTrackWidget,
+  inspector_track_widget,
+  Z, INSPECTOR_TRACK_WIDGET,
+  GtkBox)
 
 typedef struct TracklistSelections
   TracklistSelections;
@@ -38,6 +44,12 @@ typedef struct _PortsExpanderWidget
   PortsExpanderWidget;
 typedef struct _TrackInputExpanderWidget
   TrackInputExpanderWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 typedef struct _InspectorTrackWidget
 {
@@ -54,5 +66,18 @@ void
 inspector_track_widget_show_tracks (
   InspectorTrackWidget * self,
   TracklistSelections *  tls);
+
+/**
+ * Sets up the inspector track widget for the first
+ * time.
+ */
+void
+inspector_track_widget_setup (
+  InspectorTrackWidget * self,
+  TracklistSelections *  tls);
+
+/**
+ * @}
+ */
 
 #endif
