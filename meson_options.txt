@@ -56,3 +56,9 @@ option (
   type: 'boolean',
   value: false,
   description: 'Build and install user manual')
+
+option (
+  'strict_flags',
+  type: 'boolean',
+  value: false,
+  description: 'Compile and link with strict flags (-Werror)')

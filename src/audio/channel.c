@@ -996,7 +996,7 @@ channel_handle_recording (Channel * self)
   position_set_to_pos (&tmp, PLAYHEAD);
   position_add_frames (
     &tmp,
-    AUDIO_ENGINE->nframes + 1);
+    (long) AUDIO_ENGINE->nframes + 1);
 
   if (track_has_piano_roll (self->track))
     {

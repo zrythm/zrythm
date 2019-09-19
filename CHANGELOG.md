@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.6.421] - 2019-09-19
+## [0.6.422] - 2019-09-19
 - Add ability to select MIDI channel for the piano roll per track and per lane
 - Add direct out in the track properties
 - Add audio pool (WIP)

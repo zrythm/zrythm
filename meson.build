@@ -17,7 +17,7 @@
 
 project (
   'zrythm', ['c', 'cpp'],
-  version: '0.6.421',
+  version: '0.6.422',
   license: 'AGPLv3+',
   meson_version: '>= 0.46.0',
   default_options: [
@@ -166,23 +166,6 @@ test_cflags = [
   '-Wno-sequence-point',
   '-Wignored-qualifiers',
   '-Wno-cast-function-type',
-  '-Werror=implicit-function-declaration',
-  '-Werror=uninitialized',
-  '-Werror=maybe-uninitialized',
-  '-Werror=return-type',
-  '-Werror=int-conversion',
-  '-Werror=format-security',
-  '-Werror=incompatible-pointer-types',
-  '-Werror=implicit-int',
-  '-Werror=multistatement-macros',
-  '-Werror=switch',
-  '-Werror=overflow',
-  '-Werror=array-bounds',
-  '-Werror=enum-compare',
-  '-Werror=misleading-indentation',
-  '-Werror=int-in-bool-context',
-  '-Werror=type-limits',
-  '-Werror=deprecated-declarations',
   ]
 
 if (get_option ('buildtype') == 'release')
@@ -245,14 +228,34 @@ test_strict_cflags = [
   '-Werror=implicit-fallthrough',
   '-Werror=sign-compare',
   '-Werror=discarded-qualifiers',
+  '-Werror=float-conversion',
+  '-Werror=implicit-function-declaration',
+  '-Werror=uninitialized',
+  '-Werror=maybe-uninitialized',
+  '-Werror=return-type',
+  '-Werror=int-conversion',
+  '-Werror=format-security',
+  '-Werror=incompatible-pointer-types',
+  '-Werror=implicit-int',
+  '-Werror=multistatement-macros',
+  '-Werror=switch',
+  '-Werror=overflow',
+  '-Werror=array-bounds',
+  '-Werror=enum-compare',
+  '-Werror=misleading-indentation',
+  '-Werror=int-in-bool-context',
+  '-Werror=type-limits',
+  '-Werror=deprecated-declarations',
   ]
 
 strict_cflags = []
-foreach f : test_strict_cflags
-  if cc.has_argument (f)
-    strict_cflags += f
-  endif
-endforeach
+if get_option ('strict_flags')
+  foreach f : test_strict_cflags
+    if cc.has_argument (f)
+      strict_cflags += f
+    endif
+  endforeach
+endif
 
 # add -Wformat -Werror=format-security
 if cc.get_id() == 'gcc'
@@ -430,6 +433,7 @@ summary = [
     get_option('buildtype')),
   '  Profiling: @0@'.format(
     get_option('enable_profiling')),
+  '  Strict flags: @0@'.format(get_option('strict_flags')),
   '  Build Tests: @0@'.format(get_option('enable_tests')),
   '  Generate developer docs: @0@'.format(get_option('gen_dev_docs')),
   '  Build/install manpage: @0@'.format(get_option('manpage')),
