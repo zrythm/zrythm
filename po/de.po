@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-17 10:46+0100\n"
-"PO-Revision-Date: 2019-09-21 16:27+0000\n"
+"PO-Revision-Date: 2019-09-22 21:27+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
 "\n"
@@ -947,7 +947,7 @@ msgstr "Akkorde"
 
 #: src/audio/channel.c:1864
 msgid "Piano Roll"
-msgstr "Klavierrolle"
+msgstr "Notenrolle"
 
 #: src/audio/marker_track.c:39 src/audio/marker_track.c:57
 msgid "Markers"
@@ -1511,7 +1511,7 @@ msgstr "Persönlich"
 
 #: resources/ui/bot_dock_edge.ui:46
 msgid "Piano roll panel"
-msgstr "Klavierrollen Panel"
+msgstr "Notenrollen-Panel"
 
 #: resources/ui/bot_dock_edge.ui:61
 msgid "Editor"
