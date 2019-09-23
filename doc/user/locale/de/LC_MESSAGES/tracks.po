@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-12 20:16+0100\n"
-"PO-Revision-Date: 2019-09-16 19:24+0000\n"
+"PO-Revision-Date: 2019-09-22 21:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/de/>\n"
@@ -29,6 +29,8 @@ msgid ""
 "An Audio Track contains audio regions and can be used for recording and "
 "playing audio, or for sample playback."
 msgstr ""
+"Eine Audiospur enthält Audiobereiche und kann für die Aufnahme und "
+"Wiedergabe von Audio oder für die Wiedergabe von Samples verwendet werden."
 
 #: ../../tracks/audio-track.rst:13 ../../tracks/midi-track.rst:13
 msgid "Inputs"
@@ -36,11 +38,11 @@ msgstr "Eingänge"
 
 #: ../../tracks/bus-track-audio.rst:6 ../../tracks/track-types.rst:37
 msgid "Bus Track (Audio)"
-msgstr ""
+msgstr "Busspur (Audio)"
 
 #: ../../tracks/bus-track-midi.rst:6 ../../tracks/track-types.rst:44
 msgid "Bus Track (MIDI)"
-msgstr ""
+msgstr "Busspur (MIDI)"
 
 #: ../../tracks/chord-track.rst:6 ../../tracks/track-types.rst:78
 msgid "Chord Track"
@@ -58,6 +60,8 @@ msgstr ""
 #: ../../tracks/chord-track.rst:12
 msgid "For more information, see the section :doc:`../chords-and-scales/intro`."
 msgstr ""
+"Weitere Informationen finden Sie im Abschnitt :doc:`../chords-and-scales/"
+"intro`."
 
 #: ../../tracks/creating-tracks.rst:6
 msgid "Creating Tracks"
@@ -110,9 +114,8 @@ msgstr ""
 "Abspielkopfes."
 
 #: ../../tracks/creating-tracks.rst:33
-#, fuzzy
 msgid "Creating Tracks by Duplicating"
-msgstr "Spuren aus Erweiterungen erzeugen"
+msgstr "Spuren durch Duplizieren erstellen"
 
 #: ../../tracks/creating-tracks.rst:35
 msgid ""
@@ -123,14 +126,12 @@ msgstr ""
 ":zbutton:`Duplizieren` dupliziert werden."
 
 #: ../../tracks/group-track-audio.rst:6 ../../tracks/track-types.rst:55
-#, fuzzy
 msgid "Group Track (Audio)"
-msgstr "Gruppenspur"
+msgstr "Gruppenspur (Audio)"
 
 #: ../../tracks/group-track-midi.rst:6 ../../tracks/track-types.rst:62
-#, fuzzy
 msgid "Group Track (MIDI)"
-msgstr "Gruppenspur"
+msgstr "Gruppenspur (MIDI)"
 
 #: ../../tracks/instrument-track.rst:6 ../../tracks/track-types.rst:24
 msgid "Instrument Track"
@@ -169,9 +170,8 @@ msgid "Master Track"
 msgstr "Masterspur"
 
 #: ../../tracks/midi-track.rst:6 ../../tracks/track-types.rst:17
-#, fuzzy
 msgid "MIDI Track"
-msgstr "Audiospur"
+msgstr "MIDI-Spur"
 
 #: ../../tracks/midi-track.rst:8
 msgid ""
@@ -179,6 +179,9 @@ msgid ""
 "signals to other instruments (including external instruments and "
 "hardware)."
 msgstr ""
+"Eine MIDI-Spur enthält MIDI-Regionen und dient dazu, MIDI-Signale an andere "
+"Instrumente (einschließlich externer Instrumente und Hardware) "
+"weiterzuleiten."
 
 #: ../../tracks/overview.rst:6
 msgid "Overview"
@@ -273,22 +276,24 @@ msgstr ""
 #: ../../tracks/track-types.rst:16 ../../tracks/track-types.rst:43
 #: ../../tracks/track-types.rst:61 ../../tracks/track-types.rst:77
 msgid "*Input:* **MIDI**, *Output:* **MIDI**"
-msgstr ""
+msgstr "*Eingang:* **MIDI**, *Ausgang:* **MIDI**"
 
 #: ../../tracks/track-types.rst:18 ../../tracks/track-types.rst:25
 #: ../../tracks/track-types.rst:31
 msgid "*Can record:* **Yes**"
-msgstr ""
+msgstr "*Kann aufnehmen:* **Ja**"
 
 #: ../../tracks/track-types.rst:20
 msgid ""
 "Similar to a MIDI track, except that an Instrument Track is bound to an "
 "instrument plugin."
 msgstr ""
+"Einer MIDI-Spur ähnlich, nur dass eine Instrumentenspur an ein Instrumenten-"
+"Plugin gebunden ist."
 
 #: ../../tracks/track-types.rst:23
 msgid "*Input:* **MIDI**, *Output:* **Audio**"
-msgstr ""
+msgstr "*Eingang:* **MIDI**, *Ausgang:* **Audio**"
 
 #: ../../tracks/track-types.rst:27
 msgid "A Track containing audio regions, cross-fades, fades and automation."
@@ -299,7 +304,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:29 ../../tracks/track-types.rst:36
 #: ../../tracks/track-types.rst:69
 msgid "*Input:* **Audio**, *Output:* **Audio**"
-msgstr ""
+msgstr "*Eingang:* **Audio**, *Ausgang:* **Audio**"
 
 #: ../../tracks/track-types.rst:33
 msgid "A Track corresponding to a mixer bus. Bus tracks only contain automation"
@@ -312,32 +317,34 @@ msgstr ""
 #: ../../tracks/track-types.rst:71 ../../tracks/track-types.rst:79
 #: ../../tracks/track-types.rst:88
 msgid "*Can record:* **No**"
-msgstr ""
+msgstr "*Kann aufnehmen:* **Nein**"
 
 #: ../../tracks/track-types.rst:40
 msgid ""
 "Similar to an audio Bus Track, except that it handles MIDI instead of "
 "audio."
 msgstr ""
+"Einer Audiobusspur ähnlich, nur dass sie MIDI anstelle von Audio verarbeitet."
 
 #: ../../tracks/track-types.rst:47
-#, fuzzy
 msgid ""
 "A Group Track is used to route signals from multiple Tracks into one "
 "Track (or \"group\" them). It behaves like a Bus Track with the exception"
 " that other Tracks can route their output signal directly into Group "
 "Track. *Input:* **Audio**, *Output:* **Audio**"
 msgstr ""
-"Eine Gruppenspur wird benutzt, um Signale von mehreren Spuren in eine "
-"Spur zu routen. Sie verhält sich wie eine Busspur, mit der Ausnahme, dass"
-" andere Spuren ihr Ausgangssignal direkt in die Gruppenspur routen "
-"können."
+"Eine Gruppenspur wird verwendet, um Signale von mehreren Spuren in eine Spur "
+"zu leiten (oder sie zu \"gruppieren\"). Es verhält sich wie eine Busspur, "
+"mit der Ausnahme, dass andere Spuren ihr Ausgangssignal direkt in die "
+"Gruppenspur leiten können. *Eingang:* * **Audio**, *Ausgang:* * * **Audio**"
 
 #: ../../tracks/track-types.rst:58
 msgid ""
 "Similar to an audio Group Track, except that it handles MIDI instead of "
 "audio."
 msgstr ""
+"Einer Audiogruppenspur ähnlich, nur dass er MIDI anstelle von Audio "
+"verarbeitet."
 
 #: ../../tracks/track-types.rst:65
 msgid ""
@@ -367,7 +374,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:86
 msgid "*Input:* **None**, *Output:* **None**"
-msgstr ""
+msgstr "*Eingang:* **Keine**, *Ausgang:* **Keine**"
 
 #~ msgid "Duplicating Tracks"
 #~ msgstr "Spuren duplizieren"

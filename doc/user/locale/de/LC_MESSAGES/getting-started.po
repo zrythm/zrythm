@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-18 01:11+0100\n"
-"PO-Revision-Date: 2019-09-01 12:44+0000\n"
+"PO-Revision-Date: 2019-09-22 21:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/de/>\n"
 "Language: de\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm"
-"/manualgetting-started/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../getting-started/additional-resources.rst:6
@@ -67,13 +68,12 @@ msgid "Older Versions"
 msgstr "Ältere Versionen"
 
 #: ../../getting-started/additional-resources.rst:23
-#, fuzzy
 msgid ""
 "Older releases of Zrythm can be found on `Savannah downloads "
 "<https://download.savannah.nongnu.org/releases/zrythm/>`_"
 msgstr ""
-"Die Fehlerdatenbank befindet sich auf `Savannah "
-"<https://savannah.nongnu.org/support/?group=zrythm>`_."
+"Ältere Versionen von Zrythm finden Sie unter `Savannah Downloads "
+"<https://download.savannah.nongnu.org/releases/zrythm/>``_"
 
 #: ../../getting-started/getting-plugins.rst:6
 msgid "Getting Plugins"
@@ -189,6 +189,8 @@ msgid ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synth that is "
 "closely modeled on the Yamaha DX7."
 msgstr ""
+"`Dexed <http://asb2m10.github.io/dexed/>``_ Dexed ist ein FM-Synth, der eng "
+"an die Yamaha DX7 angelehnt ist."
 
 #: ../../getting-started/getting-plugins.rst:55
 msgid ""
@@ -265,13 +267,15 @@ msgstr "AppImage-Builds kommen bald."
 
 #: ../../getting-started/installation/gnu-linux.rst:24
 msgid "Fedora"
-msgstr ""
+msgstr "Fedora"
 
 #: ../../getting-started/installation/gnu-linux.rst:25
 msgid ""
 "For Fedora users, ycollet maintains a Zrythm package in `copr "
 "<https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/>`_"
 msgstr ""
+"Für Fedora-Benutzer verwaltet ycollect ein Zrythm-Paket in `copr "
+"<https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/>`_"
 
 #: ../../getting-started/installation/gnu-linux.rst:34
 msgid "LibraZik"
@@ -282,20 +286,21 @@ msgid ""
 "Zrythm is available in `LibraZik 2 <https://librazik.tuxfamily.org/>`_ "
 "for testing."
 msgstr ""
+"Zrythm ist in `LibraZik 2 <https://librazik.tuxfamily.org/>``_ zum Testen "
+"verfügbar."
 
 #: ../../getting-started/installation/gnu-linux.rst:39
 msgid "AUR"
 msgstr "AUR"
 
 #: ../../getting-started/installation/gnu-linux.rst:40
-#, fuzzy
 msgid ""
 "For Arch GNU/Linux users, Zrythm is available in the AUR under `zrythm "
 "<https://aur.archlinux.org/packages/zrythm/>`_ and `zrythm-git "
 "<https://aur.archlinux.org/packages/zrythm-git/>`_."
 msgstr ""
-"Für Nutzer von Arch GNU/Linux ist Zrythm auch in der AUR verfügbar unter "
-"`zrythm <https://aur.archlinux.org/packages/zrythm/>`_ und `zrythm-git "
+"Für Nutzer von Arch GNU/Linux ist Zrythm auch in der AUR verfügbar unter `"
+"zrythm <https://aur.archlinux.org/packages/zrythm/>`_ und `zrythm-git "
 "<https://aur.archlinux.org/packages/zrythm-git/>`_."
 
 #: ../../getting-started/installation/gnu-linux.rst:45
@@ -353,59 +358,60 @@ msgstr "Minimale Voraussetzungen"
 #: ../../getting-started/system-requirements/intro.rst:12
 #: ../../getting-started/system-requirements/intro.rst:27
 msgid "Hardware"
-msgstr ""
+msgstr "Hardware"
 
 #: ../../getting-started/system-requirements/intro.rst:13
 msgid "x86_64, i686 or ARM processor"
-msgstr ""
+msgstr "x86_64, i686 oder ARM Prozessor"
 
 #: ../../getting-started/system-requirements/intro.rst:16
 #: ../../getting-started/system-requirements/intro.rst:34
 msgid "Software"
-msgstr ""
+msgstr "Software"
 
 #: ../../getting-started/system-requirements/intro.rst:17
 msgid "Unix-compatible OS"
-msgstr ""
+msgstr "Unix-kompatibles Betriebssystem"
 
 #: ../../getting-started/system-requirements/intro.rst:18
 msgid "GTK 3.22 or later"
-msgstr ""
+msgstr "GTK 3.22 oder höher"
 
 #: ../../getting-started/system-requirements/intro.rst:19
 msgid "A working JACK setup"
-msgstr ""
+msgstr "Ein funktionierendes JACK-Setup"
 
 #: ../../getting-started/system-requirements/intro.rst:22
 msgid "Recommended"
-msgstr ""
+msgstr "Empfohlen"
 
 #: ../../getting-started/system-requirements/intro.rst:23
 msgid ""
 "We recommend running a fairly modern machine with the following specs so "
 "you can take full advantage of Zrythm."
 msgstr ""
+"Wir empfehlen den Betrieb einer ziemlich modernen Maschine mit den folgenden "
+"Spezifikationen, damit Sie die Vorteile von Zrythm voll ausschöpfen können."
 
 #: ../../getting-started/system-requirements/intro.rst:28
 msgid "A fast processor"
-msgstr ""
+msgstr "Ein schneller Prozessor"
 
 #: ../../getting-started/system-requirements/intro.rst:29
 msgid "Large enough monitor"
-msgstr ""
+msgstr "Monitor, der groß genug ist"
 
 #: ../../getting-started/system-requirements/intro.rst:30
-#, fuzzy
 msgid "Audio interface"
-msgstr "Audiointerface"
+msgstr "Audio-Schnittstelle"
 
 #: ../../getting-started/system-requirements/intro.rst:31
 msgid "MIDI keyboard"
-msgstr ""
+msgstr "MIDI-Keyboard"
 
 #: ../../getting-started/system-requirements/intro.rst:35
 msgid "A JACK patchbay such as Carla or Catia"
-msgstr ""
+msgstr "Ein JACK-Patchbay wie Carla oder Catia"
 
 #: ../../getting-started/system-requirements/intro.rst:38
 msgid "Audio Interface"
@@ -452,10 +458,12 @@ msgid ""
 "Zrythm is a digital audio workstation designed to be featureful and easy "
 "to use. It has the following features."
 msgstr ""
+"Zrythm ist eine digitale Audio-Workstation, die auf Funktionalität und "
+"Benutzerfreundlichkeit ausgelegt ist. Es hat die folgenden Eigenschaften."
 
 #: ../../getting-started/zrythm-overview.rst:14
 msgid "Limitless automation"
-msgstr ""
+msgstr "Grenzenlose Automatisierung"
 
 #: ../../getting-started/zrythm-overview.rst:13
 msgid ""
@@ -463,32 +471,37 @@ msgid ""
 "straight lines, ramps and curves, or with CV signals from LFO and "
 "envelope plugins."
 msgstr ""
+"Ermöglicht die Automatisierung fast aller Automatisierungsereignisse mit "
+"Geraden, Rampen und Kurven oder mit CV-Signalen von LFO- und Hüllkurven-"
+"Plugins."
 
 #: ../../getting-started/zrythm-overview.rst:16
 msgid "LV2 plugins"
-msgstr ""
+msgstr "LV2-Plugins"
 
 #: ../../getting-started/zrythm-overview.rst:17
 msgid "Supports the free LV2 plugin format."
-msgstr ""
+msgstr "Unterstützt das freie LV2-Plugin-Format."
 
 #: ../../getting-started/zrythm-overview.rst:18
 msgid "JACK support"
-msgstr ""
+msgstr "JACK-Unterstützung"
 
 #: ../../getting-started/zrythm-overview.rst:19
 msgid "JACK aware, with support for JACK transport."
-msgstr ""
+msgstr "JACK-agnostisch, mit Unterstützung für den JACK-Transport."
 
 #: ../../getting-started/zrythm-overview.rst:21
 msgid "Chord assistance"
-msgstr ""
+msgstr "Akkordassistenz"
 
 #: ../../getting-started/zrythm-overview.rst:21
 msgid ""
 "Has a chord pad for trying out chords in a scale and a chord track to "
 "help with chord progressions."
 msgstr ""
+"Hat ein Akkordpad zum Ausprobieren von Akkorden in einer Skala und eine "
+"Akkordspur, um bei Akkordfolgen zu helfen."
 
 #~ msgid "Here are a few terms you should be aware of when using Zrythm."
 #~ msgstr ""

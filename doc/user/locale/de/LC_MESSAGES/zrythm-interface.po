@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-18 01:11+0100\n"
-"PO-Revision-Date: 2019-09-16 19:24+0000\n"
+"PO-Revision-Date: 2019-09-22 21:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: de\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm"
@@ -21,13 +21,16 @@ msgstr ""
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
 msgid "Basic Concepts and Terminology"
-msgstr ""
+msgstr "Grundbegriffe und Terminologie"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:8
 msgid ""
 "Here are a few terms you should be aware of when using Zrythm. They are "
 "explained further in their corresponding chapters."
 msgstr ""
+"Hier sind ein paar Begriffe, mit denen du vertraut sein solltest, wenn du "
+"Zrythm benutzt. Sie werden in ihren entsprechenden Kapiteln weiter "
+"ausgeführt."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
 msgid "Region"
@@ -38,12 +41,15 @@ msgid ""
 "A Region (Clip) is a container for MIDI Notes, audio or other events. "
 "Regions can be repeated, like below."
 msgstr ""
+"Eine Region (Clip) ist ein Behälter für MIDI-Noten oder Audio. So sieht eine "
+"Region im Arrangeur aus."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:19
 msgid ""
 "The content of the Regions can be edited in an Editor, such as the Piano "
 "Roll, found in the Editor tab in the bottom panel."
 msgstr ""
+"Die Zeitachse ist, wo das Lied arrangiert wird, auch bekannt als Arrangeur."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
 msgid "Track"
@@ -56,11 +62,15 @@ msgid ""
 " are some special tracks like the Chord Track and the Marker Track that "
 "contain chords and markers respectively."
 msgstr ""
+"Eine Spur ist ein einzelner Slot in der Zeitachse, der verschiedene Regionen "
+"und Automationen beinhaltet. Sie kann verschiedene Unterspuren wie "
+"Automationsspuren enthalten. Es gibt besondere Spuren wie die Akkord-Spur "
+"und die Markerspur, die jeweils Akkorde und Marker beinhalten."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:39
 #, fuzzy
 msgid "Channel"
-msgstr "Kanäle"
+msgstr "Kanal"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
 msgid ""
@@ -68,22 +78,26 @@ msgid ""
 "corresponding Channel, which is used for adjusting the Track's volume, "
 "pan and other settings."
 msgstr ""
+"Der Mixer enthält alle Kanäle im Projekt und dient zum Mischen der "
+"Audiosignale von jedem Kanal."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
 msgid "Range"
-msgstr ""
+msgstr "Bereich"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:50
 msgid "A Range is a selection of time between two positions."
-msgstr ""
+msgstr "Ein Bereich ist eine Auswahl der Zeit zwischen zwei Positionen."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:56
 msgid "MIDI Note"
-msgstr ""
+msgstr "MIDI-Note"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:57
 msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
+"MIDI-Noten werden zum Auslösen von virtuellen (oder Hardware-)Instrumenten "
+"verwendet."
 
 #: ../../zrythm-interface/editors.rst:6
 msgid "Editors"
@@ -94,10 +108,13 @@ msgid ""
 "Zrythm has various editors for editing the various events in the Timeline"
 " in detail. These editors appear in the Editor tab in the bottom panel."
 msgstr ""
+"Zrythm verfügt über verschiedene Editoren, um die verschiedenen Ereignisse "
+"in der Timeline im Detail zu bearbeiten. Diese Editoren werden auf der "
+"Registerkarte Editor im unteren Bereich angezeigt."
 
 #: ../../zrythm-interface/editors.rst:13
 msgid "Piano Roll"
-msgstr "Klavierrolle"
+msgstr "Notenrolle"
 
 #: ../../zrythm-interface/editors.rst:15
 msgid ""
@@ -106,10 +123,15 @@ msgid ""
 "Region is selected, the Editor tab will display the Piano Roll, allowing "
 "you to edit that region."
 msgstr ""
+"Die Notenrolle, oder MIDI Arrangeur, ist der am häufigsten verwendete "
+"Editor. Sie kann verwendet werden, um MIDI-Regionen zu bearbeiten, die MIDI-"
+"Noten enthalten. Wenn eine MIDI-Region ausgewählt ist, wird auf der "
+"Registerkarte Editor die Notenrolle angezeigt, mit der Sie diese Region "
+"bearbeiten können."
 
 #: ../../zrythm-interface/editors.rst:24
 msgid "Automation Editor"
-msgstr ""
+msgstr "Automatisierungseditor"
 
 #: ../../zrythm-interface/editors.rst:26
 msgid ""
@@ -118,48 +140,57 @@ msgid ""
 "The Automation Editor will appear in the Editor tab when an Automation "
 "Region is selected."
 msgstr ""
+"In Zrythm ist die Automatisierung auch in Regionen eingeschlossen ("
+"sogenannte Automatisierungsregionen). Dadurch kann die Automatisierung wie "
+"bei MIDI-Regionen wiederholt werden. Der Automatisierungseditor wird auf der "
+"Registerkarte Editor angezeigt, wenn ein Automatisierungsbereich ausgewählt "
+"ist."
 
 #: ../../zrythm-interface/editors.rst:34
 msgid "This is a work in progress"
-msgstr ""
+msgstr "Dies ist eine noch nicht abgeschlossene Arbeit"
 
 #: ../../zrythm-interface/editors.rst:37
 msgid "Chord Editor"
-msgstr ""
+msgstr "Akkord-Editor"
 
 #: ../../zrythm-interface/editors.rst:39
 msgid "The Chord Editor is used for editing Chord Regions."
-msgstr ""
+msgstr "Der Akkordeditor wird zum Bearbeiten von Akkordbereichen verwendet."
 
 #: ../../zrythm-interface/editors.rst:41
 msgid "WIP"
-msgstr ""
+msgstr "WIP"
 
 #: ../../zrythm-interface/global-menus.rst:6
 msgid "Global Menus"
-msgstr ""
+msgstr "Globale Menüs"
 
 #: ../../zrythm-interface/global-menus.rst:8
 msgid "Zrythm has the following global menus at the top of its interface."
 msgstr ""
+"In Zrythm sind die folgenden globalen Menüs am oberen Rand der "
+"Benutzeroberfläche."
 
 #: ../../zrythm-interface/global-menus.rst:14
 msgid "Zrythm icon"
-msgstr ""
+msgstr "Zrythm-Symbol"
 
 #: ../../zrythm-interface/global-menus.rst:14
 msgid "Clicking this will show the About dialog"
-msgstr ""
+msgstr "Wenn Sie darauf klicken, wird das Dialogfeld Info angezeigt"
 
 #: ../../zrythm-interface/global-menus.rst:17
 msgid "Home"
-msgstr ""
+msgstr "Startseite"
 
 #: ../../zrythm-interface/global-menus.rst:17
 msgid ""
 "Contains various buttons and controls that are used often during editing "
 "and arranging"
 msgstr ""
+"Enthält verschiedene Schaltflächen und Bedienelemente, die häufig beim "
+"Bearbeiten und Arrangieren verwendet werden"
 
 #: ../../zrythm-interface/global-menus.rst:20
 msgid "Project"
@@ -170,6 +201,8 @@ msgid ""
 "Various project-related actions such as saving, loading and exporting "
 "MIDI or audio"
 msgstr ""
+"Verschiedene projektbezogene Aktionen wie Speichern, Laden und Exportieren "
+"von MIDI oder Audio"
 
 #: ../../zrythm-interface/global-menus.rst:23
 msgid "View"
@@ -180,6 +213,8 @@ msgid ""
 "Controls to change the appearance of Zrythm and its various areas, such "
 "as zooming"
 msgstr ""
+"Steuerelemente, um das Aussehen von Zrythm und seinen verschiedenen "
+"Bereichen zu ändern, wie z.B. das Zoomen"
 
 #: ../../zrythm-interface/global-menus.rst:25
 msgid "Help"
@@ -187,7 +222,7 @@ msgstr "Hilfe"
 
 #: ../../zrythm-interface/global-menus.rst:26
 msgid "Links for reporting bugs, donating, chatting, etc."
-msgstr ""
+msgstr "Links zum Melden von Fehlern, zum Spenden und Chatten, etc."
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Zrythm's Interface"
@@ -195,7 +230,7 @@ msgstr "Zrythms Oberfläche"
 
 #: ../../zrythm-interface/mini-timeline.rst:6
 msgid "Timeline Minimap"
-msgstr "Zeitleistenminikarte"
+msgstr "Zeitachsenminikarte"
 
 #: ../../zrythm-interface/mini-timeline.rst:8
 msgid ""
@@ -203,6 +238,9 @@ msgid ""
 "area of the timeline. It can be moved around and resized to change the "
 "visible area."
 msgstr ""
+"Die Zeitachsenminikarte ist ein kleines Kästchen, das den aktuellen "
+"sichtbaren Bereich der Zeitachse darstellt. Sie kann verschoben und in der "
+"Größe verändert werden, um den sichtbaren Bereich zu ändern."
 
 #: ../../zrythm-interface/mixer.rst:6
 msgid "Mixer"
@@ -214,6 +252,8 @@ msgid ""
 "project are shown. The Mixer is used to mix the audio signals from each "
 "Channel."
 msgstr ""
+"Die Registerkarte Mixer enthält den Mixer, in dem alle sichtbaren Kanäle des "
+"Projekts angezeigt werden."
 
 #: ../../zrythm-interface/ruler.rst:6
 msgid "Ruler"
@@ -225,32 +265,37 @@ msgid ""
 "whether it is the timeline arranger or the piano roll or the sample "
 "editor."
 msgstr ""
+"Ein Lineal wird verwendet, um die Position von Ereignissen in einem "
+"bestimmten Arrangeur anzuzeigen, sei es der Zeitachsen-Arrangeur, die "
+"Notenrolle oder der Sample-Editor."
 
 #: ../../zrythm-interface/ruler.rst:15
 msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers/ indicators."
 msgstr ""
+"Das Lineal zeigt je nach aktueller Zoomstufe mehr oder weniger Informationen "
+"an. Es werden auch die folgenden Marker/Indikatoren angezeigt."
 
 #: ../../zrythm-interface/ruler.rst:19
 msgid "Cue point"
-msgstr ""
+msgstr "Cue-Punkt"
 
 #: ../../zrythm-interface/ruler.rst:20
 msgid "Displayed as a blue, right-pointing arrow."
-msgstr ""
+msgstr "Wird als blauer, nach rechts zeigender Pfeil angezeigt."
 
 #: ../../zrythm-interface/ruler.rst:21
 msgid "Playhead position"
-msgstr ""
+msgstr "Abspielposition"
 
 #: ../../zrythm-interface/ruler.rst:22
 msgid "Shown as a grey, down-facing arrow."
-msgstr ""
+msgstr "Wird als grauer, nach unten zeigender Pfeil dargestellt."
 
 #: ../../zrythm-interface/ruler.rst:30
 msgid "Loop points"
-msgstr ""
+msgstr "Schleifenpunkte"
 
 #: ../../zrythm-interface/ruler.rst:24
 msgid ""
@@ -258,24 +303,33 @@ msgid ""
 "green if loop is enabled, or grey if disabled. Can be dragged to "
 "reposition."
 msgstr ""
+"Wird als 2 grüne Pfeile dargestellt, der Bereich zwischen ihnen wird "
+"hellgrün angezeigt, wenn die Schleife aktiviert ist oder grau, wenn "
+"deaktiviert. Kann zur Neupositionierung gezogen werden."
 
 #: ../../zrythm-interface/ruler.rst:28
 msgid ""
 "In the timeline arranger, these are the global loop points. In arrangers "
 "found in the editor, these are the region loop points."
 msgstr ""
+"Im Zeitachsen-Arrangeur sind dies die globalen Loop-Punkte. Bei Arrangeuren, "
+"die im Editor gefunden werden, sind dies die Regionsschleifenpunkte."
 
 #: ../../zrythm-interface/ruler.rst:32
 msgid ""
 "Clicking and dragging on empty space in the ruler will allow you to "
 "reposition the playhead."
 msgstr ""
+"Wenn Sie auf das leere Feld im Lineal klicken und ziehen, können Sie den "
+"Abspielkopf neu positionieren."
 
 #: ../../zrythm-interface/ruler.rst:35
 msgid ""
 "Hold :zbutton:`Shift` to disable snapping momentarily while moving things"
 " around"
 msgstr ""
+"Halten Sie die Taste :zbutton:`Shift` gedrückt, um das kurzzeitige Schnappen "
+"zu deaktivieren, während Sie Dinge bewegen"
 
 #: ../../zrythm-interface/status-bar.rst:6
 msgid "Status Bar"
@@ -286,6 +340,7 @@ msgid ""
 "The status bar contains information about the currently active audio "
 "backend."
 msgstr ""
+"Die Statusleiste enthält Informationen über das aktuell aktive Audio-Backend."
 
 #: ../../zrythm-interface/timeline.rst:6
 msgid "Timeline"
@@ -298,6 +353,10 @@ msgid ""
 " against time. Some events will open separate windows for further editing"
 " when clicked."
 msgstr ""
+"Die Zeitachse ist der Hauptbereich, in dem der Song komponiert wird. Sie "
+"besteht in der Regel aus einer Sammlung von Ereignissen - meist Regionen -, "
+"die gegen die Zeit positioniert sind. Einige Ereignisse öffnen separate "
+"Fenster zur weiteren Bearbeitung, wenn sie angeklickt werden."
 
 #: ../../zrythm-interface/timeline.rst:16
 msgid ""
@@ -305,6 +364,9 @@ msgid ""
 "a scrollable timeline below it. This way you can pin tracks you want to "
 "always be visible at the top."
 msgstr ""
+"Die Zeitachse ist unterteilt in eine obere Zeitachse, die oben fixiert "
+"bleibt, und eine scrollbare Zeitachse darunter. Auf diese Weise können Sie "
+"Spuren anheften, die Sie immer oben sichtbar haben möchten."
 
 #: ../../zrythm-interface/tracklist.rst:6
 msgid "Tracklist"
@@ -325,14 +387,16 @@ msgid ""
 "The transport bar contains controls for changing the behavior of "
 "playback. It includes the following items."
 msgstr ""
+"Die Transportleiste enthält Bedienelemente zum Ändern des "
+"Wiedergabeverhaltens. Es enthält die folgenden Elemente."
 
 #: ../../zrythm-interface/transport-bar.rst:14
 msgid "Metronome toggle"
-msgstr ""
+msgstr "Metronom-Umschalter"
 
 #: ../../zrythm-interface/transport-bar.rst:15
 msgid "Toggles the metronome on/off"
-msgstr ""
+msgstr "Schaltet das Metronom ein/aus"
 
 #: ../../zrythm-interface/transport-bar.rst:16
 msgid "BPM"
@@ -340,30 +404,32 @@ msgstr "BPM"
 
 #: ../../zrythm-interface/transport-bar.rst:17
 msgid "Song tempo (beats per minute)"
-msgstr ""
+msgstr "Liedtempo (Beats pro Minute)"
 
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid "Playhed"
-msgstr ""
+msgstr "Abspielkopf"
 
 #: ../../zrythm-interface/transport-bar.rst:19
 msgid "Current playhead position, in bars.beats.sixteenths.ticks"
 msgstr ""
+"Aktuelle Position des Abspielkopfes, in Leisten.Schläge.Sechzehntel.Ticks"
 
 #: ../../zrythm-interface/transport-bar.rst:21
-#, fuzzy
 msgid "Transport buttons"
-msgstr "Transportleiste"
+msgstr "Transportknöpfe"
 
 #: ../../zrythm-interface/transport-bar.rst:21
 msgid "Controls for stopping, playback, recording, etc."
-msgstr ""
+msgstr "Bedienelemente für Stopp, Wiedergabe, Aufnahme, etc."
 
 #: ../../zrythm-interface/transport-bar.rst:23
 msgid ""
 "Widgets like the BPM meter can be changed by clicking and dragging, or by"
 " hovering over them with the cursor and scrolling"
 msgstr ""
+"Widgets wie der BPM-Meter können durch Klicken und Ziehen geändert werden "
+"oder indem man mit dem Cursor über sie fährt und scrollt"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
 msgid "Zrythm Interface Overview"
@@ -412,16 +478,15 @@ msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:22
 msgid "Arranger Panel (4)"
-msgstr "Arrangerfeld (4)"
+msgstr "Arrangeurfeld (4)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:22
 msgid ""
 "This is where the action happens. The main panel mainly consists of the "
 "Timeline Arranger and the Project's Tracks on the left side."
 msgstr ""
-"Das ist, wo die Action stattfindet. Das Hauptpanel besteht hauptsächlich "
-"aus dem Zeitleistenarranger und den Spuren des Projektes auf der linken "
-"Seite."
+"Das ist, wo die Action stattfindet. Das Hauptpanel besteht hauptsächlich aus "
+"dem Zeitachsenarrangeur und den Spuren des Projektes auf der linken Seite."
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:25
 msgid "Toolbar (5)"

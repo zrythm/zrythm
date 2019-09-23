@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-17 10:46+0100\n"
-"PO-Revision-Date: 2019-09-08 11:25+0000\n"
+"PO-Revision-Date: 2019-09-22 21:27+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -60,10 +60,14 @@ msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
 "work correctly."
 msgstr ""
+"Dieses Projekt wurde mit einer anderen Version von Zrythm (%s) erstellt. Es "
+"funktioniert möglicherweise nicht richtig."
 
 #: src/project.c:469
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
+"Das Projekt konnte nicht geladen werden. Bitte überprüfen Sie die Protokolle "
+"für weitere Informationen."
 
 #: src/project.c:885
 msgid "Backup saved."
@@ -435,46 +439,39 @@ msgstr "Taktangabe – Schläge pro Takt / Schlageinheit"
 #: src/gui/widgets/drag_dest_box.c:196
 #, c-format
 msgid "Unsupported file type %s"
-msgstr ""
+msgstr "Nicht unterstützter Dateityp %s"
 
 #: src/gui/widgets/drag_dest_box.c:221
-#, fuzzy
 msgid "No file found"
-msgstr "Gefundene Controller"
+msgstr "Keine Datei gefunden"
 
 #: src/gui/widgets/drag_dest_box.c:369
 msgid "Add _MIDI Track"
 msgstr "_MIDI-Spur hinzufügen"
 
 #: src/gui/widgets/drag_dest_box.c:382 src/audio/track.c:1093
-#, fuzzy
 msgid "Audio Bus"
-msgstr "Audioausgänge"
+msgstr "Audio-Bus"
 
 #: src/gui/widgets/drag_dest_box.c:393 src/audio/track.c:1096
-#, fuzzy
 msgid "MIDI Bus"
-msgstr "MIDI-Ausgänge"
+msgstr "MIDI-Bus"
 
 #: src/gui/widgets/drag_dest_box.c:405
-#, fuzzy
 msgid "Add Bus Track"
-msgstr "_Busspur hinzufügen"
+msgstr "Busspur hinzufügen"
 
 #: src/gui/widgets/drag_dest_box.c:416 src/audio/track.c:1105
-#, fuzzy
 msgid "Audio Group"
-msgstr "Audioausgänge"
+msgstr "Audiogruppe"
 
 #: src/gui/widgets/drag_dest_box.c:427 src/audio/track.c:1108
-#, fuzzy
 msgid "MIDI Group"
-msgstr "MIDI-Ausgang"
+msgstr "MIDI-Gruppe"
 
 #: src/gui/widgets/drag_dest_box.c:439
-#, fuzzy
 msgid "Add Group Track"
-msgstr "_Gruppenspur hinzufügen"
+msgstr "Gruppenspur hinzufügen"
 
 #: src/gui/widgets/instrument_track.c:216 src/gui/widgets/midi_track.c:190
 #: resources/ui/transport_controls.ui:36
@@ -654,9 +651,8 @@ msgstr "Stereo Out"
 #: src/gui/widgets/automatable_selector_popover.c:237
 #: src/gui/widgets/automatable_selector_popover.c:380
 #: src/gui/widgets/route_target_selector_popover.c:307
-#, fuzzy
 msgid "No control selected"
-msgstr "Kein Clip ausgewählt"
+msgstr "Kein Steuerelement ausgewählt"
 
 #: src/gui/widgets/snap_grid.c:95
 msgid "Snap/Grid options"
@@ -951,7 +947,7 @@ msgstr "Akkorde"
 
 #: src/audio/channel.c:1864
 msgid "Piano Roll"
-msgstr "Klavierrolle"
+msgstr "Notenrolle"
 
 #: src/audio/marker_track.c:39 src/audio/marker_track.c:57
 msgid "Markers"
@@ -969,6 +965,9 @@ msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
+"Das Audio-Backend %s konnte nicht initialisiert werden. Benutze stattdessen "
+"das Dummy-Backend. Bitte überprüfen Sie Ihre Backend-Einstellungen in den "
+"Einstellungen."
 
 #: src/audio/engine.c:313
 #, c-format
@@ -976,6 +975,9 @@ msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
+"Das %s MIDI-Backend konnte nicht initialisiert werden. Benutze stattdessen "
+"das Dummy-Backend. Bitte überprüfen Sie Ihre Backend-Einstellungen in den "
+"Einstellungen."
 
 #: src/audio/track_lane.c:64
 #, c-format
@@ -1024,7 +1026,6 @@ msgid "Chord"
 msgstr "Akkord"
 
 #: src/audio/track.c:1111
-#, fuzzy
 msgid "Marker"
 msgstr "Marker"
 
@@ -1510,7 +1511,7 @@ msgstr "Persönlich"
 
 #: resources/ui/bot_dock_edge.ui:46
 msgid "Piano roll panel"
-msgstr "Klavierrollen Panel"
+msgstr "Notenrollen-Panel"
 
 #: resources/ui/bot_dock_edge.ui:61
 msgid "Editor"
@@ -2056,7 +2057,7 @@ msgstr "Markername"
 
 #: resources/ui/header_notebook.ui:37
 msgid "Home"
-msgstr "Vorstellung"
+msgstr "Startseite"
 
 #: resources/ui/header_notebook.ui:74
 msgid "View"

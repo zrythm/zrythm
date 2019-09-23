@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-18 01:11+0100\n"
-"PO-Revision-Date: 2019-09-19 15:33+0000\n"
+"PO-Revision-Date: 2019-09-21 16:28+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm"
@@ -276,23 +276,23 @@ msgstr ""
 
 #: ../../zrythm-interface/ruler.rst:19
 msgid "Cue point"
-msgstr ""
+msgstr "Point de repère"
 
 #: ../../zrythm-interface/ruler.rst:20
 msgid "Displayed as a blue, right-pointing arrow."
-msgstr ""
+msgstr "Affiché sous la forme d'une flèche bleue pointant vers la droite."
 
 #: ../../zrythm-interface/ruler.rst:21
 msgid "Playhead position"
-msgstr ""
+msgstr "Position de la tête de lecture"
 
 #: ../../zrythm-interface/ruler.rst:22
 msgid "Shown as a grey, down-facing arrow."
-msgstr ""
+msgstr "Représenté par une flèche grise orientée vers le bas."
 
 #: ../../zrythm-interface/ruler.rst:30
 msgid "Loop points"
-msgstr ""
+msgstr "Points de bouclage"
 
 #: ../../zrythm-interface/ruler.rst:24
 msgid ""
@@ -300,24 +300,34 @@ msgid ""
 "green if loop is enabled, or grey if disabled. Can be dragged to "
 "reposition."
 msgstr ""
+"Représenté par 2 flèches vertes, et la zone entre elles est affichée en vert "
+"vif si la boucle est activée, ou en gris si elle est désactivée. Peut être "
+"glissé pour être repositionné."
 
 #: ../../zrythm-interface/ruler.rst:28
 msgid ""
 "In the timeline arranger, these are the global loop points. In arrangers "
 "found in the editor, these are the region loop points."
 msgstr ""
+"Dans l'arrangeur de ligne temporelle, ce sont les points de boucle globaux. "
+"Dans les arrangeurs trouvés dans l'éditeur, ce sont les points de bouclage "
+"de région."
 
 #: ../../zrythm-interface/ruler.rst:32
 msgid ""
 "Clicking and dragging on empty space in the ruler will allow you to "
 "reposition the playhead."
 msgstr ""
+"Cliquer et faire glisser sur l'espace vide dans la règle vous permettra de "
+"repositionner la tête de lecture."
 
 #: ../../zrythm-interface/ruler.rst:35
 msgid ""
 "Hold :zbutton:`Shift` to disable snapping momentarily while moving things"
 " around"
 msgstr ""
+"Maintenir :zbutton:`MAJ' pour désactiver l'accrochage momentanément tout en "
+"déplaçant les objets"
 
 #: ../../zrythm-interface/status-bar.rst:6
 msgid "Status Bar"
@@ -328,6 +338,8 @@ msgid ""
 "The status bar contains information about the currently active audio "
 "backend."
 msgstr ""
+"La barre d'état contient des informations sur le dorsal audio actuellement "
+"actif."
 
 #: ../../zrythm-interface/timeline.rst:6
 msgid "Timeline"
@@ -340,6 +352,10 @@ msgid ""
 " against time. Some events will open separate windows for further editing"
 " when clicked."
 msgstr ""
+"La ligne temporelle est la zone principale où le morceau est composé. Il "
+"s'agit généralement d'un ensemble d'événements - principalement des régions -"
+" qui se positionnent dans le temps. Certains événements ouvrent des fenêtres "
+"séparées pour une modification ultérieure lorsqu'on clique dessus."
 
 #: ../../zrythm-interface/timeline.rst:16
 msgid ""
@@ -347,6 +363,9 @@ msgid ""
 "a scrollable timeline below it. This way you can pin tracks you want to "
 "always be visible at the top."
 msgstr ""
+"La ligne temporelle est divisée en une ligne temporelle supérieure qui reste "
+"fixe sur le dessus et une ligne temporelle déroulante en dessous. De cette "
+"façon, vous pouvez épingler les pistes que vous voulez toujours voir en haut."
 
 #: ../../zrythm-interface/tracklist.rst:6
 msgid "Tracklist"
@@ -367,14 +386,16 @@ msgid ""
 "The transport bar contains controls for changing the behavior of "
 "playback. It includes the following items."
 msgstr ""
+"La barre de transport contient des contrôles permettant de modifier le "
+"comportement de la lecture. Elle comprend les éléments suivants."
 
 #: ../../zrythm-interface/transport-bar.rst:14
 msgid "Metronome toggle"
-msgstr ""
+msgstr "Basculement du métronome"
 
 #: ../../zrythm-interface/transport-bar.rst:15
 msgid "Toggles the metronome on/off"
-msgstr ""
+msgstr "Bascule le métronome actif/inactif"
 
 #: ../../zrythm-interface/transport-bar.rst:16
 msgid "BPM"
@@ -382,15 +403,17 @@ msgstr "BPM"
 
 #: ../../zrythm-interface/transport-bar.rst:17
 msgid "Song tempo (beats per minute)"
-msgstr ""
+msgstr "Tempo du morceau (battements par minute)"
 
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid "Playhed"
-msgstr ""
+msgstr "Tête de lecture"
 
 #: ../../zrythm-interface/transport-bar.rst:19
 msgid "Current playhead position, in bars.beats.sixteenths.ticks"
 msgstr ""
+"Position actuelle de la tête de lecture, en mesures.battements.double-"
+"croches.tics"
 
 #: ../../zrythm-interface/transport-bar.rst:21
 msgid "Transport buttons"
@@ -398,13 +421,16 @@ msgstr "Boutons de transport"
 
 #: ../../zrythm-interface/transport-bar.rst:21
 msgid "Controls for stopping, playback, recording, etc."
-msgstr ""
+msgstr "Contrôles d'arrêt, de lecture, d'enregistrement, etc."
 
 #: ../../zrythm-interface/transport-bar.rst:23
 msgid ""
 "Widgets like the BPM meter can be changed by clicking and dragging, or by"
 " hovering over them with the cursor and scrolling"
 msgstr ""
+"Les widgets tels que l'indicateur de BPM peuvent être changés en cliquant et "
+"en faisant glisser, ou en les survolant avec le curseur et en faisant "
+"défiler l'écran"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
 msgid "Zrythm Interface Overview"
