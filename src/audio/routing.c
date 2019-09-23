@@ -400,8 +400,10 @@ node_process (
                   0, 1);
               if (ret)
                 audio_track_fill_stereo_in_buffers (
-                  (AudioTrack *)chan->track,
-                  chan->stereo_in);
+                  chan->track,
+                  g_start_frames,
+                  local_offset,
+                  nframes);
               break;
             case TRACK_TYPE_MASTER:
             case TRACK_TYPE_AUDIO_BUS:

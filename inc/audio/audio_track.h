@@ -40,12 +40,15 @@ void
 audio_track_setup (AudioTrack * self);
 
 /**
- * Fills stereo in buffers with info from the current clip.
+ * Fills stereo in buffers with info from the
+ * current clip.
  */
 void
 audio_track_fill_stereo_in_buffers (
-  AudioTrack *  self,
-  StereoPorts * stereo_in);
+  AudioTrack *    self,
+  const long      g_start_frames,
+  const nframes_t local_start_frame,
+  nframes_t       nframes);
 
 /**
  * Frees the track.

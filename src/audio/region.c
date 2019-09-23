@@ -73,18 +73,19 @@ region_init (
   const Position * end_pos,
   const int        is_main)
 {
-  position_set_to_pos (&self->start_pos,
-                       start_pos);
-  position_set_to_pos (&self->end_pos,
-                       end_pos);
+  position_set_to_pos (
+    &self->start_pos, start_pos);
+  position_set_to_pos (
+    &self->end_pos, end_pos);
   position_init (&self->clip_start_pos);
   long length =
     region_get_full_length_in_ticks (self);
-  position_from_ticks (&self->true_end_pos,
-                       length);
+  position_from_ticks (
+    &self->true_end_pos, length);
   position_init (&self->loop_start_pos);
-  position_set_to_pos (&self->loop_end_pos,
-                       &self->true_end_pos);
+  position_set_to_pos (
+    &self->loop_end_pos,
+    &self->true_end_pos);
   self->linked_region_name = NULL;
 
   if (is_main)
@@ -345,9 +346,11 @@ region_gen_widget (
 
 #define GEN_W(type,sc) \
   case REGION_TYPE_##type: \
-    r->widget = \
-      Z_REGION_WIDGET ( \
-        sc##_region_widget_new (r)); \
+    if (!r->widget) \
+      r->widget = \
+        Z_REGION_WIDGET ( \
+          sc##_region_widget_new (r)); \
+      g_warn_if_fail (r->widget); \
     break
 
       switch (r->type)

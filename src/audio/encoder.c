@@ -72,9 +72,11 @@ audio_encoder_new_from_file (
     ad_read (handle,
              self->in_frames,
              in_buff_size);
-  g_message ("in buff size: %lu, %ld samples read",
-             in_buff_size,
-             samples_read);
+  g_message (
+    "in buff size: %lu, %ld samples read "
+    "including channels",
+    in_buff_size,
+    samples_read);
 
   /* get resample ratio */
   self->resample_ratio =
@@ -119,22 +121,23 @@ audio_encoder_decode (
     (long)
     ((double) self->num_in_frames *
        self->resample_ratio);
+  size_t out_buf_size =
+    (size_t)
+    (self->num_out_frames * self->channels);
   self->out_frames =
     malloc (
-      (size_t) (
-        self->num_out_frames * self->channels) *
+      out_buf_size *
       sizeof (float));
-  g_message ("out_buff_size %ld, sizeof float %ld, "
-             "sizeof long %ld, src ratio %f",
-             self->num_out_frames * self->channels,
-             sizeof (float),
-             sizeof (long),
-             self->resample_ratio);
+  g_message (
+    "out_buff_size %ld, src ratio %f",
+    out_buf_size,
+    self->resample_ratio);
 
   int err;
   SRC_STATE * state =
     src_callback_new (
-      (src_callback_t) src_cb, SRC_SINC_BEST_QUALITY,
+      (src_callback_t) src_cb,
+      SRC_SINC_BEST_QUALITY,
       (int) self->channels, &err, self);
   if (!state)
     {
@@ -146,16 +149,39 @@ audio_encoder_decode (
   /* start reading */
   long frames_read = -1;
   long total_read = 0;
+  long frames_to_read = 0;
   do
     {
+      frames_to_read =
+        MIN (
+          6000,
+          (long) self->num_out_frames - total_read);
+      g_message (
+        "attempting to read %ld frames",
+        frames_to_read);
       frames_read =
         src_callback_read (
           state, self->resample_ratio,
-          MIN (
-            6000, self->num_out_frames - total_read),
-          &self->out_frames[total_read]);
-      g_message ("read %ld frames", frames_read);
+          frames_to_read,
+          &self->out_frames[
+            total_read * self->channels]);
+
+      /* handle errors */
+      int err_ret =
+        src_error (state);
+      if (err_ret)
+        {
+          g_warning (
+            "An error occurred: %s",
+            src_strerror (err_ret));
+          break;
+        }
+
       total_read += frames_read;
+      g_message (
+        "read %ld frames, %ld remaining",
+        frames_read,
+        (long) self->num_out_frames - total_read);
 
       if (frames_read == -1)
         break;
@@ -164,8 +190,9 @@ audio_encoder_decode (
 
   g_message ("total frames read: %ld", total_read);
   g_message (
-    "out frames expected: %ld",
-    self->num_out_frames);
+    "out frames expected: %ld (with channels: %ld)",
+    self->num_out_frames,
+    self->num_out_frames * self->channels);
   g_warn_if_fail (frames_read != -1);
 }
 

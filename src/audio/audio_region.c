@@ -73,10 +73,10 @@ audio_region_new (
   g_warn_if_fail (self->pool_id > -1);
 
   /* set end pos to sample end */
-  position_set_to_pos (&self->end_pos,
-                       &self->start_pos);
-  position_add_frames (&self->end_pos,
-                       clip->num_frames);
+  position_set_to_pos (
+    &self->end_pos, start_pos);
+  position_add_frames (
+    &self->end_pos, clip->num_frames);
 
   /* init */
   region_init ((Region *) self,

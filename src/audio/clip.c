@@ -24,6 +24,7 @@
 #include "audio/engine.h"
 #include "project.h"
 #include "utils/audio.h"
+#include "utils/math.h"
 #include "utils/io.h"
 
 #include <gtk/gtk.h>
@@ -49,9 +50,17 @@ audio_clip_new_from_file (
       (size_t) enc->num_out_frames * enc->channels,
       sizeof (float));
   self->num_frames = enc->num_out_frames;
+  for (long i = 0;
+       i < self->num_frames * enc->channels; i++)
+    {
+      self->frames[i] =
+        enc->out_frames[i];
+    }
   self->channels = enc->channels;
   self->name = io_path_get_basename (full_path);
   self->pool_id = -1;
+
+  audio_encoder_free (enc);
 
   return self;
 }

@@ -200,14 +200,17 @@ midi_region_draw_cb (
 }
 
 MidiRegionWidget *
-midi_region_widget_new (MidiRegion * midi_region)
+midi_region_widget_new (
+  Region * midi_region)
 {
   MidiRegionWidget * self =
-    g_object_new (MIDI_REGION_WIDGET_TYPE,
-                  NULL);
+    g_object_new (
+      MIDI_REGION_WIDGET_TYPE,
+      NULL);
 
-  region_widget_setup (Z_REGION_WIDGET (self),
-                       (Region *) midi_region);
+  region_widget_setup (
+    Z_REGION_WIDGET (self),
+    midi_region);
   REGION_WIDGET_GET_PRIVATE (self);
 
   /* connect signals */

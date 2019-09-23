@@ -40,8 +40,9 @@ G_DEFINE_TYPE (AudioRegionWidget,
                REGION_WIDGET_TYPE)
 
 static gboolean
-audio_region_draw_cb (AudioRegionWidget * self,
-         cairo_t *cr, gpointer data)
+audio_region_draw_cb (
+  AudioRegionWidget * self,
+  cairo_t *cr, gpointer data)
 {
   REGION_WIDGET_GET_PRIVATE (data);
   Region * r = rw_prv->region;
@@ -68,60 +69,54 @@ audio_region_draw_cb (AudioRegionWidget * self,
     color->blue + 0.3, 0.9);
   cairo_set_line_width (cr, 1);
 
-  /*int num_loops =*/
-    /*region_get_num_loops (r, 1);*/
-  /*long ticks_in_region =*/
-    /*region_get_full_length_in_ticks (r);*/
-  /*float x_start, y_start, x_end;*/
-
   AudioClip * clip =
     AUDIO_POOL->clips[ar->pool_id];
 
   long prev_frames = 0;
   long loop_end_frames =
-    position_to_frames (&r->loop_end_pos) *
-    clip->channels;
-  /*long loop_start_frames =*/
-    /*position_to_frames (&r->loop_end_pos) **/
-    /*ar->channels;*/
+    position_to_frames (&r->loop_end_pos);
   long loop_frames =
-    region_get_loop_length_in_frames (r) *
-    clip->channels;
+    region_get_loop_length_in_frames (r);
   long clip_start_frames =
-    position_to_frames (&r->clip_start_pos) *
-    clip->channels;
-  /*int px =*/
-    /*ui_pos_to_px_timeline (&r->loop_start_pos, 0);*/
-  /*Position tmp;*/
-  long frame_interval =
-    ui_px_to_frames_timeline (clip->channels, 0);
+    position_to_frames (&r->clip_start_pos);
   for (double i = 0.0; i < (double) width; i += 0.6)
     {
+      /* current single channel frames */
       long curr_frames =
-        (long) i * frame_interval;
-      /*if (curr_frames < loop_start_frames)*/
-        curr_frames += clip_start_frames;
-      /*else*/
-        while (curr_frames >= loop_end_frames)
+        ui_px_to_frames_timeline (i, 0);
+      curr_frames += clip_start_frames;
+      while (curr_frames >= loop_end_frames)
+        {
           curr_frames -= loop_frames;
+        }
       float min = 0, max = 0;
       for (long j = prev_frames;
            j < curr_frames; j++)
         {
-          float val = clip->frames[j];
-          if (val > max)
-            max = val;
-          if (val < min)
-            min = val;
+          for (unsigned int k = 0;
+               k < clip->channels; k++)
+            {
+              long index =
+                j * clip->channels + k;
+              g_warn_if_fail (
+                index <
+                  clip->num_frames * clip->channels);
+              float val =
+                clip->frames[index];
+              if (val > max)
+                max = val;
+              if (val < min)
+                min = val;
+            }
         }
-      min = (min + 1.f) / 2.f; /* normallize */
-      max = (max + 1.f) / 2.f; /* normalize */
+      /* normalize */
+      min = (min + 1.f) / 2.f;
+      max = (max + 1.f) / 2.f;
       z_cairo_draw_vertical_line (
         cr,
         i,
         MAX (
-          (double) min * (double) height,
-          (double) 0),
+          (double) min * (double) height, 0.0),
         MIN (
           (double) max * (double) height,
           (double) height));
@@ -147,14 +142,15 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
 }
 
 AudioRegionWidget *
-audio_region_widget_new (AudioRegion * audio_region)
+audio_region_widget_new (
+  AudioRegion * audio_region)
 {
-  g_message ("Creating audio region widget...");
   AudioRegionWidget * self =
-    g_object_new (AUDIO_REGION_WIDGET_TYPE, NULL);
+    g_object_new (
+      AUDIO_REGION_WIDGET_TYPE, NULL);
 
-  region_widget_setup (Z_REGION_WIDGET (self),
-                       (Region *) audio_region);
+  region_widget_setup (
+    Z_REGION_WIDGET (self), audio_region);
 
   /* connect signals */
   g_signal_connect (

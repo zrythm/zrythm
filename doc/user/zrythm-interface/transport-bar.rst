@@ -15,7 +15,7 @@ Metronome toggle
   Toggles the metronome on/off
 BPM
   Song tempo (beats per minute)
-Playhed
+Playhead
   Current playhead position, in bars.beats.sixteenths.ticks
 Transport buttons
   Controls for stopping, playback, recording, etc.

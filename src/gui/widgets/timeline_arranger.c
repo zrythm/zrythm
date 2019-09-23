@@ -2339,17 +2339,16 @@ add_children_from_midi_track (
               if (k == 0)
                 r = region_get_main_region (r);
               else if (k == 1)
-                r = region_get_main_trans_region (r);
+                r =
+                  region_get_main_trans_region (r);
               else if (k == 2)
                 r = region_get_lane_region (r);
               else if (k == 3)
-                r = region_get_lane_trans_region (r);
+                r =
+                  region_get_lane_trans_region (r);
 
               if (!r->widget)
-                r->widget =
-                  Z_REGION_WIDGET (
-                    midi_region_widget_new (
-                      r));
+                region_gen_widget (r);
 
               gtk_overlay_add_overlay (
                 GTK_OVERLAY (self),
