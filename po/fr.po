@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-09-17 10:46+0100\n"
+"POT-Creation-Date: 2019-09-23 12:35+0100\n"
 "PO-Revision-Date: 2019-09-18 16:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
-"\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
+">\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,7 +41,7 @@ msgstr "Configuration du moteur"
 msgid "Loading project"
 msgstr "Chargement du projet"
 
-#: src/project.c:311 src/audio/track.c:1099
+#: src/project.c:311 src/audio/track.c:1101
 msgid "Master"
 msgstr "Master"
 
@@ -56,7 +56,7 @@ msgstr ""
 "  %s.\n"
 "Utiliser la sauvegarde la plus récente  ?"
 
-#: src/project.c:454
+#: src/project.c:456
 #, c-format
 msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
@@ -65,26 +65,26 @@ msgstr ""
 "Ce projet a été créé avec une version différente de Zrythm (%s). Il se peut "
 "qu'il ne fonctionne pas correctement."
 
-#: src/project.c:469
+#: src/project.c:471
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "Impossible de charger le projet. Veuillez consulter les journaux pour plus "
 "d'informations."
 
-#: src/project.c:885
+#: src/project.c:892
 msgid "Backup saved."
 msgstr "Sauvegarde sauvegardée."
 
-#: src/project.c:892
+#: src/project.c:899
 msgid "Project saved."
 msgstr "Projet sauvegardé."
 
-#: src/main.c:62
+#: src/main.c:67
 #, c-format
 msgid "Error: signal %d - Backtrace:"
 msgstr "Erreur : signal %d - Backtrace :"
 
-#: src/main.c:116
+#: src/main.c:121
 #, c-format
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
@@ -92,7 +92,7 @@ msgstr ""
 "Zrythm a planté. Veuillez nous aider à corriger cela en %ssoumettant un "
 "rapport de bogue%s."
 
-#: src/main.c:168
+#: src/main.c:173
 #, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
@@ -123,7 +123,7 @@ msgstr ""
 "Supporter ce projet à https://liberapay.com/Zrythm\n"
 "Site ouèbe https://www.zrythm.org\n"
 
-#: src/main.c:227
+#: src/main.c:232
 #, c-format
 msgid ""
 "Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
@@ -152,7 +152,7 @@ msgstr ""
 "Supporter ce projet à https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/plugins/plugin_manager.c:228
+#: src/plugins/plugin_manager.c:230
 msgid "Error loading LV2 bundle dir: "
 msgstr "Erreur lors du chargement du répertoire bundle LV2: "
 
@@ -230,11 +230,31 @@ msgstr "Longueur de note"
 msgid "note type"
 msgstr "type de note"
 
-#: src/gui/widgets/track_properties_expander.c:82
-msgid "Track Info"
-msgstr "Information sur la piste"
+#: src/gui/widgets/track_properties_expander.c:78
+#, fuzzy, c-format
+msgid "MIDI Channel %s"
+msgstr "Canal %s"
 
-#: src/gui/widgets/channel.c:944
+#: src/gui/widgets/track_properties_expander.c:186
+#, fuzzy
+msgid "Track Name"
+msgstr "Nom de piste"
+
+#: src/gui/widgets/track_properties_expander.c:198
+#, fuzzy
+msgid "Direct Out"
+msgstr "Sortie Stéréo"
+
+#: src/gui/widgets/track_properties_expander.c:215 src/audio/channel.c:1864
+msgid "Piano Roll"
+msgstr "Piano Roll"
+
+#: src/gui/widgets/track_properties_expander.c:229
+#, fuzzy
+msgid "Track Properties"
+msgstr "Propriétés de la piste"
+
+#: src/gui/widgets/channel.c:946
 msgid "Inserts"
 msgstr "Inserts"
 
@@ -250,7 +270,7 @@ msgstr "Pas d'entrée"
 msgid "All Channels"
 msgstr "Tous les canaux"
 
-#: src/gui/widgets/track_input_expander.c:269
+#: src/gui/widgets/track_input_expander.c:269 src/gui/widgets/track_lane.c:105
 #, c-format
 msgid "Channel %s"
 msgstr "Canal %s"
@@ -308,29 +328,29 @@ msgstr ""
 "2. Lancez <b>locale-gen</b> en root\n"
 "3. Redémarrez Zrythm"
 
-#: src/gui/widgets/project_assistant.c:238
+#: src/gui/widgets/project_assistant.c:263
 #: resources/ui/create_project_dialog.ui:95 resources/ui/control.ui:45
 msgid "Name"
 msgstr "Nom"
 
-#: src/gui/widgets/project_assistant.c:248
+#: src/gui/widgets/project_assistant.c:273
 #: resources/ui/first_run_assistant.ui:144
 msgid "Path"
 msgstr "Chemin"
 
-#: src/gui/widgets/project_assistant.c:258
+#: src/gui/widgets/project_assistant.c:283
 msgid "Last Modified"
 msgstr "Modifié dernièrement"
 
-#: src/gui/widgets/project_assistant.c:376
+#: src/gui/widgets/project_assistant.c:430
 msgid "Blank project"
 msgstr "Projet vierge"
 
-#: src/gui/widgets/left_dock_edge.c:104
+#: src/gui/widgets/left_dock_edge.c:107
 msgid "Inspector"
 msgstr "Inspecteur"
 
-#: src/gui/widgets/left_dock_edge.c:124
+#: src/gui/widgets/left_dock_edge.c:127
 #: resources/ui/chord_selector_window.ui:682
 msgid "Visibility"
 msgstr "Visibilité"
@@ -401,15 +421,15 @@ msgstr "position de départ"
 msgid "No object selected"
 msgstr "Aucun objet sélectionné"
 
-#: src/gui/widgets/inspector.c:156
+#: src/gui/widgets/inspector.c:165
 msgid "Track properties"
 msgstr "Propriétés de la piste"
 
-#: src/gui/widgets/inspector.c:166
+#: src/gui/widgets/inspector.c:175
 msgid "Editor properties"
 msgstr "Propriétés de l'éditeur"
 
-#: src/gui/widgets/inspector.c:176
+#: src/gui/widgets/inspector.c:185
 msgid "Plugin properties"
 msgstr "Propriétés de greffon"
 
@@ -447,31 +467,31 @@ msgstr "Type de fichier non-supporté %s"
 msgid "No file found"
 msgstr "Fichier introuvable"
 
-#: src/gui/widgets/drag_dest_box.c:369
+#: src/gui/widgets/drag_dest_box.c:372
 msgid "Add _MIDI Track"
 msgstr "Ajouter une piste _MIDI"
 
-#: src/gui/widgets/drag_dest_box.c:382 src/audio/track.c:1093
+#: src/gui/widgets/drag_dest_box.c:385 src/audio/track.c:1095
 msgid "Audio Bus"
 msgstr "Bus audio"
 
-#: src/gui/widgets/drag_dest_box.c:393 src/audio/track.c:1096
+#: src/gui/widgets/drag_dest_box.c:396 src/audio/track.c:1098
 msgid "MIDI Bus"
 msgstr "Bus MIDI"
 
-#: src/gui/widgets/drag_dest_box.c:405
+#: src/gui/widgets/drag_dest_box.c:408
 msgid "Add Bus Track"
 msgstr "Ajouter une piste de bus"
 
-#: src/gui/widgets/drag_dest_box.c:416 src/audio/track.c:1105
+#: src/gui/widgets/drag_dest_box.c:419 src/audio/track.c:1107
 msgid "Audio Group"
 msgstr "Groupe audio"
 
-#: src/gui/widgets/drag_dest_box.c:427 src/audio/track.c:1108
+#: src/gui/widgets/drag_dest_box.c:430 src/audio/track.c:1110
 msgid "MIDI Group"
 msgstr "Groupe MIDI"
 
-#: src/gui/widgets/drag_dest_box.c:439
+#: src/gui/widgets/drag_dest_box.c:442
 msgid "Add Group Track"
 msgstr "Ajouter une piste de groupe"
 
@@ -510,8 +530,8 @@ msgstr ""
 "Le niveau pour paramétrer les autres canaux  lorsque Listen est activé sur "
 "un canal"
 
-#: src/gui/widgets/channel_slot.c:231 src/gui/widgets/channel_slot.c:246
-#: src/gui/widgets/channel_slot.c:691
+#: src/gui/widgets/channel_slot.c:234 src/gui/widgets/channel_slot.c:249
+#: src/gui/widgets/channel_slot.c:694
 msgid "empty slot"
 msgstr "emplacement libre"
 
@@ -588,6 +608,10 @@ msgstr "Faire un don"
 msgid "Report a Bug"
 msgstr "Rapporter un bogue"
 
+#: src/gui/widgets/track_lane.c:96
+msgid "Inherit"
+msgstr ""
+
 #: src/gui/widgets/home_toolbar.c:57 src/gui/widgets/home_toolbar.c:116
 #: resources/ui/home_toolbar.ui:34
 msgid "Undo"
@@ -638,21 +662,29 @@ msgstr "Navigateur de fichier"
 msgid "Plugin Browser"
 msgstr "Navigateur de greffon"
 
-#: src/gui/widgets/route_target_selector.c:86
-msgid "Routed to Stereo Out"
+#: src/gui/widgets/route_target_selector.c:54
+msgid "<tt><i>Engine</i></tt>"
+msgstr ""
+
+#: src/gui/widgets/route_target_selector.c:79
+msgid "Cannot be routed"
+msgstr ""
+
+#: src/gui/widgets/route_target_selector.c:88
+#, fuzzy
+msgid "Routed to engine"
 msgstr "Routé vers la Sortie Stéréo"
 
-#: src/gui/widgets/route_target_selector.c:92
+#: src/gui/widgets/route_target_selector.c:95
 msgid "Select channel to route signal to"
 msgstr "Sélectionner le canal pour acheminer le signal"
 
-#: src/gui/widgets/route_target_selector.c:132
+#: src/gui/widgets/route_target_selector.c:156
 msgid "Stereo Out"
 msgstr "Sortie Stéréo"
 
 #: src/gui/widgets/automatable_selector_popover.c:237
 #: src/gui/widgets/automatable_selector_popover.c:380
-#: src/gui/widgets/route_target_selector_popover.c:307
 msgid "No control selected"
 msgstr "Aucun contrôle sélectionné"
 
@@ -753,11 +785,12 @@ msgstr "Entrée MIDI"
 msgid "MIDI Out"
 msgstr "Sortie MIDI"
 
-#: src/gui/widgets/route_target_selector_popover.c:187
+#: src/gui/widgets/route_target_selector_popover.c:189
+#: src/gui/widgets/route_target_selector_popover.c:349
 msgid "No output selected"
 msgstr "Aucune sortie sélectionnée"
 
-#: src/gui/widgets/route_target_selector_popover.c:201
+#: src/gui/widgets/route_target_selector_popover.c:203
 #, c-format
 msgid "Routing to %s"
 msgstr "Routage vers %s"
@@ -944,10 +977,6 @@ msgstr "Sine (puissance égale)"
 msgid "Chords"
 msgstr "Accords"
 
-#: src/audio/channel.c:1864
-msgid "Piano Roll"
-msgstr "Piano Roll"
-
 #: src/audio/marker_track.c:39 src/audio/marker_track.c:57
 msgid "Markers"
 msgstr "Marqueurs"
@@ -1008,23 +1037,23 @@ msgstr "Sortie pré-fader MIDI"
 msgid "Sample Processor"
 msgstr "Processeur d'échantillon"
 
-#: src/audio/track.c:1084
+#: src/audio/track.c:1086
 msgid "Instrument"
 msgstr "Instrument"
 
-#: src/audio/track.c:1087
+#: src/audio/track.c:1089
 msgid "Audio"
 msgstr "Audio"
 
-#: src/audio/track.c:1090
+#: src/audio/track.c:1092
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/track.c:1102 resources/ui/editor_toolbar.ui:58
+#: src/audio/track.c:1104 resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "Accord"
 
-#: src/audio/track.c:1111
+#: src/audio/track.c:1113
 msgid "Marker"
 msgstr "Marqueur"
 
@@ -1919,9 +1948,18 @@ msgstr "Longueur"
 msgid "Muted"
 msgstr "Muet"
 
-#: resources/ui/track_lane.ui:35
+#: resources/ui/track_lane.ui:34
 msgid "Lane 1"
 msgstr "Voie 1"
+
+#: resources/ui/track_lane.ui:106
+#, fuzzy
+msgid "MIDI Ch"
+msgstr "MIDI"
+
+#: resources/ui/track_lane.ui:121
+msgid "MIDI channel for this lane"
+msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:36
 msgid "Select MIDI file"
@@ -2333,6 +2371,9 @@ msgstr ""
 #: data/zrythm.desktop.in:26
 msgid "zrythm"
 msgstr "zrythm"
+
+#~ msgid "Track Info"
+#~ msgstr "Information sur la piste"
 
 #~ msgid "Bus"
 #~ msgstr "Bus"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-09-17 10:46+0100\n"
+"POT-Creation-Date: 2019-09-23 12:35+0100\n"
 "PO-Revision-Date: 2019-05-09 12:18+0000\n"
 "Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
 "Language-Team: Hindi <https://translate.zrythm.org/projects/zrythm/zrythm/hi/"
@@ -39,7 +39,7 @@ msgstr ""
 msgid "Loading project"
 msgstr ""
 
-#: src/project.c:311 src/audio/track.c:1099
+#: src/project.c:311 src/audio/track.c:1101
 msgid "Master"
 msgstr ""
 
@@ -51,37 +51,37 @@ msgid ""
 "Use the newer backup?"
 msgstr ""
 
-#: src/project.c:454
+#: src/project.c:456
 #, c-format
 msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
 "work correctly."
 msgstr ""
 
-#: src/project.c:469
+#: src/project.c:471
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 
-#: src/project.c:885
+#: src/project.c:892
 msgid "Backup saved."
 msgstr ""
 
-#: src/project.c:892
+#: src/project.c:899
 msgid "Project saved."
 msgstr ""
 
-#: src/main.c:62
+#: src/main.c:67
 #, c-format
 msgid "Error: signal %d - Backtrace:"
 msgstr ""
 
-#: src/main.c:116
+#: src/main.c:121
 #, c-format
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
 msgstr ""
 
-#: src/main.c:168
+#: src/main.c:173
 #, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
@@ -99,7 +99,7 @@ msgid ""
 "Website https://www.zrythm.org\n"
 msgstr ""
 
-#: src/main.c:227
+#: src/main.c:232
 #, c-format
 msgid ""
 "Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
@@ -116,7 +116,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:228
+#: src/plugins/plugin_manager.c:230
 msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
@@ -194,11 +194,28 @@ msgstr ""
 msgid "note type"
 msgstr ""
 
-#: src/gui/widgets/track_properties_expander.c:82
-msgid "Track Info"
+#: src/gui/widgets/track_properties_expander.c:78
+#, c-format
+msgid "MIDI Channel %s"
 msgstr ""
 
-#: src/gui/widgets/channel.c:944
+#: src/gui/widgets/track_properties_expander.c:186
+msgid "Track Name"
+msgstr ""
+
+#: src/gui/widgets/track_properties_expander.c:198
+msgid "Direct Out"
+msgstr ""
+
+#: src/gui/widgets/track_properties_expander.c:215 src/audio/channel.c:1864
+msgid "Piano Roll"
+msgstr ""
+
+#: src/gui/widgets/track_properties_expander.c:229
+msgid "Track Properties"
+msgstr ""
+
+#: src/gui/widgets/channel.c:946
 msgid "Inserts"
 msgstr ""
 
@@ -214,7 +231,7 @@ msgstr ""
 msgid "All Channels"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:269
+#: src/gui/widgets/track_input_expander.c:269 src/gui/widgets/track_lane.c:105
 #, c-format
 msgid "Channel %s"
 msgstr ""
@@ -264,29 +281,29 @@ msgid ""
 "3. Restart Zrythm"
 msgstr ""
 
-#: src/gui/widgets/project_assistant.c:238
+#: src/gui/widgets/project_assistant.c:263
 #: resources/ui/create_project_dialog.ui:95 resources/ui/control.ui:45
 msgid "Name"
 msgstr ""
 
-#: src/gui/widgets/project_assistant.c:248
+#: src/gui/widgets/project_assistant.c:273
 #: resources/ui/first_run_assistant.ui:144
 msgid "Path"
 msgstr ""
 
-#: src/gui/widgets/project_assistant.c:258
+#: src/gui/widgets/project_assistant.c:283
 msgid "Last Modified"
 msgstr ""
 
-#: src/gui/widgets/project_assistant.c:376
+#: src/gui/widgets/project_assistant.c:430
 msgid "Blank project"
 msgstr ""
 
-#: src/gui/widgets/left_dock_edge.c:104
+#: src/gui/widgets/left_dock_edge.c:107
 msgid "Inspector"
 msgstr ""
 
-#: src/gui/widgets/left_dock_edge.c:124
+#: src/gui/widgets/left_dock_edge.c:127
 #: resources/ui/chord_selector_window.ui:682
 msgid "Visibility"
 msgstr ""
@@ -357,15 +374,15 @@ msgstr ""
 msgid "No object selected"
 msgstr ""
 
-#: src/gui/widgets/inspector.c:156
+#: src/gui/widgets/inspector.c:165
 msgid "Track properties"
 msgstr ""
 
-#: src/gui/widgets/inspector.c:166
+#: src/gui/widgets/inspector.c:175
 msgid "Editor properties"
 msgstr ""
 
-#: src/gui/widgets/inspector.c:176
+#: src/gui/widgets/inspector.c:185
 msgid "Plugin properties"
 msgstr ""
 
@@ -403,31 +420,31 @@ msgstr ""
 msgid "No file found"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:369
+#: src/gui/widgets/drag_dest_box.c:372
 msgid "Add _MIDI Track"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:382 src/audio/track.c:1093
+#: src/gui/widgets/drag_dest_box.c:385 src/audio/track.c:1095
 msgid "Audio Bus"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:393 src/audio/track.c:1096
+#: src/gui/widgets/drag_dest_box.c:396 src/audio/track.c:1098
 msgid "MIDI Bus"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:405
+#: src/gui/widgets/drag_dest_box.c:408
 msgid "Add Bus Track"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:416 src/audio/track.c:1105
+#: src/gui/widgets/drag_dest_box.c:419 src/audio/track.c:1107
 msgid "Audio Group"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:427 src/audio/track.c:1108
+#: src/gui/widgets/drag_dest_box.c:430 src/audio/track.c:1110
 msgid "MIDI Group"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:439
+#: src/gui/widgets/drag_dest_box.c:442
 msgid "Add Group Track"
 msgstr ""
 
@@ -464,8 +481,8 @@ msgstr ""
 msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:231 src/gui/widgets/channel_slot.c:246
-#: src/gui/widgets/channel_slot.c:691
+#: src/gui/widgets/channel_slot.c:234 src/gui/widgets/channel_slot.c:249
+#: src/gui/widgets/channel_slot.c:694
 msgid "empty slot"
 msgstr ""
 
@@ -542,6 +559,10 @@ msgstr ""
 msgid "Report a Bug"
 msgstr ""
 
+#: src/gui/widgets/track_lane.c:96
+msgid "Inherit"
+msgstr ""
+
 #: src/gui/widgets/home_toolbar.c:57 src/gui/widgets/home_toolbar.c:116
 #: resources/ui/home_toolbar.ui:34
 msgid "Undo"
@@ -592,21 +613,28 @@ msgstr ""
 msgid "Plugin Browser"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector.c:86
-msgid "Routed to Stereo Out"
+#: src/gui/widgets/route_target_selector.c:54
+msgid "<tt><i>Engine</i></tt>"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector.c:92
+#: src/gui/widgets/route_target_selector.c:79
+msgid "Cannot be routed"
+msgstr ""
+
+#: src/gui/widgets/route_target_selector.c:88
+msgid "Routed to engine"
+msgstr ""
+
+#: src/gui/widgets/route_target_selector.c:95
 msgid "Select channel to route signal to"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector.c:132
+#: src/gui/widgets/route_target_selector.c:156
 msgid "Stereo Out"
 msgstr ""
 
 #: src/gui/widgets/automatable_selector_popover.c:237
 #: src/gui/widgets/automatable_selector_popover.c:380
-#: src/gui/widgets/route_target_selector_popover.c:307
 msgid "No control selected"
 msgstr ""
 
@@ -708,11 +736,12 @@ msgstr ""
 msgid "MIDI Out"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector_popover.c:187
+#: src/gui/widgets/route_target_selector_popover.c:189
+#: src/gui/widgets/route_target_selector_popover.c:349
 msgid "No output selected"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector_popover.c:201
+#: src/gui/widgets/route_target_selector_popover.c:203
 #, c-format
 msgid "Routing to %s"
 msgstr ""
@@ -897,10 +926,6 @@ msgstr ""
 msgid "Chords"
 msgstr ""
 
-#: src/audio/channel.c:1864
-msgid "Piano Roll"
-msgstr ""
-
 #: src/audio/marker_track.c:39 src/audio/marker_track.c:57
 msgid "Markers"
 msgstr ""
@@ -955,23 +980,23 @@ msgstr ""
 msgid "Sample Processor"
 msgstr ""
 
-#: src/audio/track.c:1084
+#: src/audio/track.c:1086
 msgid "Instrument"
 msgstr ""
 
-#: src/audio/track.c:1087
+#: src/audio/track.c:1089
 msgid "Audio"
 msgstr ""
 
-#: src/audio/track.c:1090
+#: src/audio/track.c:1092
 msgid "MIDI"
 msgstr ""
 
-#: src/audio/track.c:1102 resources/ui/editor_toolbar.ui:58
+#: src/audio/track.c:1104 resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr ""
 
-#: src/audio/track.c:1111
+#: src/audio/track.c:1113
 msgid "Marker"
 msgstr ""
 
@@ -1857,8 +1882,16 @@ msgstr ""
 msgid "Muted"
 msgstr ""
 
-#: resources/ui/track_lane.ui:35
+#: resources/ui/track_lane.ui:34
 msgid "Lane 1"
+msgstr ""
+
+#: resources/ui/track_lane.ui:106
+msgid "MIDI Ch"
+msgstr ""
+
+#: resources/ui/track_lane.ui:121
+msgid "MIDI channel for this lane"
 msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:36
