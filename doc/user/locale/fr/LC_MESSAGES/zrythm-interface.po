@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-18 01:11+0100\n"
-"PO-Revision-Date: 2019-09-21 16:28+0000\n"
+"PO-Revision-Date: 2019-09-24 07:14+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/fr/>\n"
 "Language: fr\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -33,7 +34,7 @@ msgstr ""
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
 msgid "Region"
-msgstr ""
+msgstr "Région"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
 msgid ""
@@ -69,7 +70,6 @@ msgstr ""
 "respectivement des accords et des marqueurs."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:39
-#, fuzzy
 msgid "Channel"
 msgstr "Canal"
 
@@ -376,6 +376,9 @@ msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
 msgstr ""
+"La liste de piste contient toutes les pistes du projet. Elle est divisée en "
+"une liste de piste supérieure (épinglée) et une liste de piste inférieure "
+"(principale)."
 
 #: ../../zrythm-interface/transport-bar.rst:6
 msgid "Transport Bar"
@@ -603,4 +606,3 @@ msgstr ""
 #~ "where all the visible Channels in "
 #~ "the project are shown."
 #~ msgstr ""
-
