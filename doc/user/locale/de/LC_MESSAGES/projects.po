@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-18 01:11+0100\n"
-"PO-Revision-Date: 2019-09-16 19:24+0000\n"
+"PO-Revision-Date: 2019-09-24 07:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"manualprojects/de/>\n"
 "Language: de\n"
-"Language-Team: German "
-"<https://hosted.weblate.org/projects/zrythm/manualprojects/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../projects/intro.rst:6
@@ -39,58 +40,59 @@ msgstr ""
 
 #: ../../projects/project-info.rst:14
 msgid "Project Structure"
-msgstr ""
+msgstr "Projektstruktur"
 
 #: ../../projects/project-info.rst:38
 msgid "backups"
-msgstr ""
+msgstr "Sicherungen"
 
 #: ../../projects/project-info.rst:39
 msgid "Regular backups taken automatically by Zrythm"
-msgstr ""
+msgstr "Regelmäßige Sicherungen, die automatisch von Zrythm erstellt werden"
 
 #: ../../projects/project-info.rst:40
 msgid "myproject.bak"
-msgstr ""
+msgstr "myproject.bak"
 
 #: ../../projects/project-info.rst:41
 msgid "An example backup project"
-msgstr ""
+msgstr "Ein Beispiel für ein Sicherungsprojekt"
 
 #: ../../projects/project-info.rst:43
 msgid "states"
-msgstr ""
+msgstr "Zustände"
 
 #: ../../projects/project-info.rst:43
 msgid "Contains plugin states at the time of save (for LV2)"
-msgstr ""
+msgstr "Enthält Plugin-Zustände zum Zeitpunkt des Speicherns (für LV2)"
 
 #: ../../projects/project-info.rst:46
 msgid "exports"
-msgstr ""
+msgstr "Exporte"
 
 #: ../../projects/project-info.rst:46
 msgid "Default directory for exporting files related to the project"
-msgstr ""
+msgstr "Standardverzeichnis zum Exportieren von Dateien mit Bezug zum Projekt"
 
 #: ../../projects/project-info.rst:49
 msgid "pool"
-msgstr ""
+msgstr "Pool"
 
 #: ../../projects/project-info.rst:49
 msgid ""
 "Used by Zrythm to store and load files used by the Project, such as audio"
 " files"
 msgstr ""
+"Wird von Zrythm verwendet, um vom Projekt verwendete Dateien zu speichern "
+"und zu laden, wie beispielsweise Audiodateien"
 
 #: ../../projects/project-info.rst:51
-#, fuzzy
 msgid "project.yml"
-msgstr "Projekte"
+msgstr "project.yml"
 
 #: ../../projects/project-info.rst:52
 msgid "The Project file"
-msgstr ""
+msgstr "Die Projektdatei"
 
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
@@ -362,4 +364,3 @@ msgstr ""
 #~ "erstellen. Standardmäßig nutzt Zrythm "
 #~ "~/benutzername/Zrythm, um ein neues Projekt"
 #~ " zu erstellen."
-
