@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-23 12:35+0100\n"
-"PO-Revision-Date: 2019-09-18 16:24+0000\n"
+"PO-Revision-Date: 2019-09-24 07:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -227,28 +227,25 @@ msgid "note type"
 msgstr "tipo de nota"
 
 #: src/gui/widgets/track_properties_expander.c:78
-#, fuzzy, c-format
+#, c-format
 msgid "MIDI Channel %s"
-msgstr "Canal %s"
+msgstr "Canal MIDI %s"
 
 #: src/gui/widgets/track_properties_expander.c:186
-#, fuzzy
 msgid "Track Name"
-msgstr "Nome da faixa"
+msgstr "Nome da Faixa"
 
 #: src/gui/widgets/track_properties_expander.c:198
-#, fuzzy
 msgid "Direct Out"
-msgstr "Saída Estéreo"
+msgstr "Saída Direta"
 
 #: src/gui/widgets/track_properties_expander.c:215 src/audio/channel.c:1864
 msgid "Piano Roll"
 msgstr "Cílindros de Piano"
 
 #: src/gui/widgets/track_properties_expander.c:229
-#, fuzzy
 msgid "Track Properties"
-msgstr "Propriedades da faixa"
+msgstr "Propriedades da Faixa"
 
 #: src/gui/widgets/channel.c:946
 msgid "Inserts"
@@ -605,7 +602,7 @@ msgstr "Reportar um erro"
 
 #: src/gui/widgets/track_lane.c:96
 msgid "Inherit"
-msgstr ""
+msgstr "Herdar"
 
 #: src/gui/widgets/home_toolbar.c:57 src/gui/widgets/home_toolbar.c:116
 #: resources/ui/home_toolbar.ui:34
@@ -659,16 +656,15 @@ msgstr "Navegador de Plugins"
 
 #: src/gui/widgets/route_target_selector.c:54
 msgid "<tt><i>Engine</i></tt>"
-msgstr ""
+msgstr "<tt><i>Motor</i></tt>"
 
 #: src/gui/widgets/route_target_selector.c:79
 msgid "Cannot be routed"
-msgstr ""
+msgstr "Não pode ser roteado"
 
 #: src/gui/widgets/route_target_selector.c:88
-#, fuzzy
 msgid "Routed to engine"
-msgstr "Encaminhado para Saída Estéreo"
+msgstr "Roteado para o motor"
 
 #: src/gui/widgets/route_target_selector.c:95
 msgid "Select channel to route signal to"
@@ -1944,13 +1940,12 @@ msgid "Lane 1"
 msgstr "Pista 1"
 
 #: resources/ui/track_lane.ui:106
-#, fuzzy
 msgid "MIDI Ch"
-msgstr "MIDI"
+msgstr "Can MIDI"
 
 #: resources/ui/track_lane.ui:121
 msgid "MIDI channel for this lane"
-msgstr ""
+msgstr "Canal MIDI para esta pista"
 
 #: resources/ui/export_midi_file_dialog.ui:36
 msgid "Select MIDI file"
