@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-18 01:11+0100\n"
-"PO-Revision-Date: 2019-09-12 21:51+0000\n"
+"PO-Revision-Date: 2019-09-24 07:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualgetting-started/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../getting-started/additional-resources.rst:6
@@ -264,7 +265,6 @@ msgid "Fedora"
 msgstr "Fedora"
 
 #: ../../getting-started/installation/gnu-linux.rst:25
-#, fuzzy
 msgid ""
 "For Fedora users, ycollet maintains a Zrythm package in `copr "
 "<https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/>`_"
@@ -825,4 +825,3 @@ msgstr ""
 #~ "  estabeleçam e processem suas idéias "
 #~ "musicais rapidamente sem demorar muito "
 #~ "tempo para um trabalho desnecessário."
-
