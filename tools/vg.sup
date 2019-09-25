@@ -1,0 +1,22 @@
+{
+  <glib>
+  Memcheck:Cond
+  ...
+  obj:/usr/lib/libglib-2.0.so.0.6000.7
+  ...
+}
+
+{
+  <recompute_visible_regions>
+  Memcheck:Cond
+  fun:recompute_visible_regions_internal
+  ...
+}
+
+{
+  <recompute_visible_regions>
+  Memcheck:Cond
+  ...
+  fun:cairo_region_create_rectangle
+  ...
+}

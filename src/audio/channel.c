@@ -1015,8 +1015,7 @@ channel_handle_recording (Channel * self)
             midi_region_new (
               PLAYHEAD, &tmp, 1);
           track_add_region (
-            self->track, mr, 0, F_GEN_NAME,
-            F_GEN_WIDGET);
+            self->track, mr, NULL, 0, F_GEN_NAME);
         }
 
       /* convert MIDI data to midi notes */

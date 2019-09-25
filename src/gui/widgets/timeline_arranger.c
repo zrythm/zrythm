@@ -121,6 +121,8 @@ timeline_arranger_widget_set_allocation (
         (ui_pos_to_px_timeline (
           &rw_prv->region->end_pos,
           1) - allocation->x) - 1;
+      if (allocation->width < 1)
+        allocation->width = 1;
 
       TRACK_WIDGET_GET_PRIVATE (track->widget);
 

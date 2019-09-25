@@ -343,7 +343,8 @@ node_process (
                   if (TRANSPORT->recording &&
                         chan->track->recording)
                     {
-                      channel_handle_recording (chan);
+                      channel_handle_recording (
+                        chan);
                     }
 
                   /* fill midi events to pass to
