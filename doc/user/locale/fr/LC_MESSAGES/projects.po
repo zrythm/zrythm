@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-18 01:11+0100\n"
-"PO-Revision-Date: 2019-09-15 18:24+0000\n"
+"PO-Revision-Date: 2019-09-24 07:14+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualprojects/fr/>\n"
 "Language: fr\n"
-"Language-Team: French "
-"<https://hosted.weblate.org/projects/zrythm/manualprojects/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../projects/intro.rst:6
@@ -39,58 +40,59 @@ msgstr ""
 
 #: ../../projects/project-info.rst:14
 msgid "Project Structure"
-msgstr ""
+msgstr "Structure du projet"
 
 #: ../../projects/project-info.rst:38
 msgid "backups"
-msgstr ""
+msgstr "sauvegardes"
 
 #: ../../projects/project-info.rst:39
 msgid "Regular backups taken automatically by Zrythm"
-msgstr ""
+msgstr "Sauvegardes régulières faites automatiquement par Zrythm"
 
 #: ../../projects/project-info.rst:40
 msgid "myproject.bak"
-msgstr ""
+msgstr "monprojet.bak"
 
 #: ../../projects/project-info.rst:41
 msgid "An example backup project"
-msgstr ""
+msgstr "Un exemple de sauvegarde de projet"
 
 #: ../../projects/project-info.rst:43
 msgid "states"
-msgstr ""
+msgstr "états"
 
 #: ../../projects/project-info.rst:43
 msgid "Contains plugin states at the time of save (for LV2)"
-msgstr ""
+msgstr "Contient les états du greffon au moment de la sauvegarde (pour LV2)"
 
 #: ../../projects/project-info.rst:46
 msgid "exports"
-msgstr ""
+msgstr "exportations"
 
 #: ../../projects/project-info.rst:46
 msgid "Default directory for exporting files related to the project"
-msgstr ""
+msgstr "Répertoire par défaut pour exporter les fichiers liés au projet"
 
 #: ../../projects/project-info.rst:49
 msgid "pool"
-msgstr ""
+msgstr "ensemble"
 
 #: ../../projects/project-info.rst:49
 msgid ""
 "Used by Zrythm to store and load files used by the Project, such as audio"
 " files"
 msgstr ""
+"Utilisé par Zrythm pour stocker et charger les fichiers utilisés par le "
+"projet, tels que les fichiers audio"
 
 #: ../../projects/project-info.rst:51
-#, fuzzy
 msgid "project.yml"
-msgstr "Projets"
+msgstr "projet.yml"
 
 #: ../../projects/project-info.rst:52
 msgid "The Project file"
-msgstr ""
+msgstr "Le fichier-projet"
 
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
@@ -397,4 +399,3 @@ msgstr ""
 #~ "un nouveau. Par défaut, Zrythm utilisera"
 #~ " ~/username/Zrythm pour créer de nouveaux"
 #~ " projets."
-

@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-23 12:35+0100\n"
-"PO-Revision-Date: 2019-09-22 21:27+0000\n"
+"PO-Revision-Date: 2019-09-24 07:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -230,12 +230,11 @@ msgid "note type"
 msgstr "Notentyp"
 
 #: src/gui/widgets/track_properties_expander.c:78
-#, fuzzy, c-format
+#, c-format
 msgid "MIDI Channel %s"
-msgstr "Kanal %s"
+msgstr "MIDI-Kanal %s"
 
 #: src/gui/widgets/track_properties_expander.c:186
-#, fuzzy
 msgid "Track Name"
 msgstr "Spurname"
 
@@ -249,7 +248,6 @@ msgid "Piano Roll"
 msgstr "Notenrolle"
 
 #: src/gui/widgets/track_properties_expander.c:229
-#, fuzzy
 msgid "Track Properties"
 msgstr "Spureigenschaften"
 
@@ -608,7 +606,7 @@ msgstr "Einen Fehler melden"
 
 #: src/gui/widgets/track_lane.c:96
 msgid "Inherit"
-msgstr ""
+msgstr "Erben"
 
 #: src/gui/widgets/home_toolbar.c:57 src/gui/widgets/home_toolbar.c:116
 #: resources/ui/home_toolbar.ui:34
@@ -666,10 +664,9 @@ msgstr ""
 
 #: src/gui/widgets/route_target_selector.c:79
 msgid "Cannot be routed"
-msgstr ""
+msgstr "Kann nicht geroutet werden"
 
 #: src/gui/widgets/route_target_selector.c:88
-#, fuzzy
 msgid "Routed to engine"
 msgstr "Geroutet zu Stereo Out"
 
@@ -1954,13 +1951,12 @@ msgid "Lane 1"
 msgstr "Unterspur 1"
 
 #: resources/ui/track_lane.ui:106
-#, fuzzy
 msgid "MIDI Ch"
-msgstr "MIDI"
+msgstr "MIDI-Kan"
 
 #: resources/ui/track_lane.ui:121
 msgid "MIDI channel for this lane"
-msgstr ""
+msgstr "MIDI-Kanal für diese Spur"
 
 #: resources/ui/export_midi_file_dialog.ui:36
 msgid "Select MIDI file"

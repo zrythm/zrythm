@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-18 01:11+0100\n"
-"PO-Revision-Date: 2019-09-16 19:24+0000\n"
+"PO-Revision-Date: 2019-09-24 07:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -32,21 +33,24 @@ msgstr ""
 " explicados mais adiante nos seus capítulos correspondentes."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
-#, fuzzy
 msgid "Region"
-msgstr "Regiões"
+msgstr "Região"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
 msgid ""
 "A Region (Clip) is a container for MIDI Notes, audio or other events. "
 "Regions can be repeated, like below."
 msgstr ""
+"Uma Região (Clipe) é um contentor para notas MIDI, áudio ou outros eventos. "
+"As regiões podem ser repetidas, como abaixo."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:19
 msgid ""
 "The content of the Regions can be edited in an Editor, such as the Piano "
 "Roll, found in the Editor tab in the bottom panel."
 msgstr ""
+"O conteúdo das Regiões pode ser editado num Editor, como os cílindros de "
+"piano, encontrando-se no separador Editor no painel inferior."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
 msgid "Track"
@@ -69,14 +73,14 @@ msgid "Channel"
 msgstr "Canal"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
-#, fuzzy
 msgid ""
 "A Channel is a single slot in the Mixer. Most types of Tracks have a "
 "corresponding Channel, which is used for adjusting the Track's volume, "
 "pan and other settings."
 msgstr ""
-"Um Canal é um único slot no Misturador. A maioria das categorias de "
-"Faixas tem um Canal correspondente."
+"Um Canal é um único slot no Misturador. A maioria das categorias de Faixas "
+"têm um Canal correspondente, que é usado para ajustar o volume, a pan e "
+"outras definições da Faixa."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
 msgid "Range"
@@ -240,14 +244,14 @@ msgid "Mixer"
 msgstr "Misturador"
 
 #: ../../zrythm-interface/mixer.rst:8
-#, fuzzy
 msgid ""
 "The Mixer tab contains the Mixer, where all the visible Channels in the "
 "project are shown. The Mixer is used to mix the audio signals from each "
 "Channel."
 msgstr ""
-"O Misturador contém todos os Canais do Projeto e é usado para misturar os"
-" sinais de áudio de cada Canal."
+"O separador Misturador contém o Misturador, mostrando todos os Canais "
+"visíveis do projeto. O Misturador é usado para misturar os sinais de áudio "
+"de cada Canal."
 
 #: ../../zrythm-interface/ruler.rst:6
 msgid "Ruler"
@@ -594,4 +598,3 @@ msgstr ""
 #~ "O separador Misturador contém o "
 #~ "Misturador, onde todos os canais "
 #~ "visíveis no projeto são exibidos."
-
