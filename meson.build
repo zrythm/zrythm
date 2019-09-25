@@ -411,7 +411,8 @@ add_project_link_arguments (
   )
 
 meson.add_install_script (
-  join_paths ('scripts', 'meson_post_install.py'))
+  join_paths ('scripts', 'meson_post_install.py'),
+  '@0@'.format(get_option('user_manual')))
 
 ext_srcs = []
 

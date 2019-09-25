@@ -18,8 +18,9 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
-import subprocess
 import shutil
+import subprocess
+import sys
 
 prefix = os.environ.get('MESON_INSTALL_PREFIX', '/usr/local')
 datadir = os.path.join(prefix, 'share')
@@ -51,33 +52,36 @@ if not os.environ.get('DESTDIR'):
 
 # create hard links for fonts for user manual to
 # make size smaller
+#
 # symlinks don't work because of CORS
-en_parent_dir = os.path.join(docdir, 'en')
-for lang in ['de', 'fr', 'ja', 'pt', 'pt_BR',
-        'nb_NO']:
-    # dir containing en, fr, de, etc.
-    parent_dir = os.path.join(docdir, lang)
-    fonts_dir = os.path.join (parent_dir, '_static', 'fonts')
-    en_fonts_dir = os.path.join (en_parent_dir, '_static', 'fonts')
-    if (os.path.exists(fonts_dir)):
-        print ("recreating {}".format(fonts_dir))
-        shutil.rmtree(fonts_dir)
-        os.mkdir(fonts_dir)
-    print ("linking {}".format(fonts_dir))
-    for dirpath, dirnames, filenames in os.walk(en_fonts_dir):
-        for filename in filenames:
-            localdir = dirpath.replace(en_fonts_dir, '')
-            if (len(localdir) > 0 and
-                    localdir[0] == '/'):
-                localdir = localdir[1:]
-            os.makedirs(
-                os.path.join(
-                    fonts_dir, localdir),
-                exist_ok=True)
-            os.link(
-                os.path.join(
-                    en_fonts_dir, localdir,
-                    filename),
-                os.path.join(
-                    fonts_dir, localdir,
-                    filename))
+#
+# the first argument will be true if the
+# "install user manual" option is set
+if (sys.argv[1] == 'true'):
+    en_parent_dir = os.path.join(docdir, 'en')
+    for lang in ['de', 'fr', 'ja', 'pt', 'pt_BR',
+            'nb_NO']:
+        # dir containing en, fr, de, etc.
+        parent_dir = os.path.join(docdir, lang)
+        fonts_dir = os.path.join (parent_dir, '_static', 'fonts')
+        en_fonts_dir = os.path.join (en_parent_dir, '_static', 'fonts')
+        if (os.path.exists(fonts_dir)):
+            shutil.rmtree(fonts_dir)
+            os.mkdir(fonts_dir)
+        for dirpath, dirnames, filenames in os.walk(en_fonts_dir):
+            for filename in filenames:
+                localdir = dirpath.replace(en_fonts_dir, '')
+                if (len(localdir) > 0 and
+                        localdir.startswith(os.path.sep)):
+                    localdir = localdir[len(os.path.sep):]
+                os.makedirs(
+                    os.path.join(
+                        fonts_dir, localdir),
+                    exist_ok=True)
+                os.link(
+                    os.path.join(
+                        en_fonts_dir, localdir,
+                        filename),
+                    os.path.join(
+                        fonts_dir, localdir,
+                        filename))
