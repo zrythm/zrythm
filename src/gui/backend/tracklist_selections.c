@@ -112,6 +112,15 @@ tracklist_selections_add_track (
       EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                    NULL);
     }
+
+  /* if recording is not already
+   * on, turn these on */
+  if (!track->recording && track->channel)
+    {
+      track_set_recording (track, 1);
+      track->channel->record_set_automatically =
+        1;
+    }
 }
 
 /**
@@ -154,6 +163,16 @@ tracklist_selections_remove_track (
       EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                    NULL);
       return;
+    }
+
+    /* if record mode was set automatically
+     * when the track was selected, turn record
+     * off */
+  if (track->channel &&
+      track->channel->record_set_automatically)
+    {
+      track_set_recording (track, 0);
+      track->channel->record_set_automatically = 0;
     }
 
   array_delete (

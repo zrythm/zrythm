@@ -342,49 +342,6 @@ track_select (
         self);
     }
 
-  /* auto-set recording mode */
-  Channel * ch = self->channel;
-  switch (self->type)
-    {
-    case TRACK_TYPE_INSTRUMENT:
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_MIDI:
-      g_warn_if_fail (ch);
-      g_message (
-        "%sselecting track %s, recording %d sa %d",
-        select ? "" : "de",
-        self->name,
-        self->recording,
-        ch->record_set_automatically);
-      /* if selecting the track and recording is not already
-       * on, turn these on */
-      if (select && !self->recording)
-        {
-          track_set_recording (self, 1);
-          ch->record_set_automatically = 1;
-        }
-      /* if deselecting and record mode was
-       * automatically
-       * set when the track was selected, turn
-       * these off */
-      else if (!select &&
-               ch->record_set_automatically)
-        {
-          track_set_recording (self, 0);
-          ch->record_set_automatically = 0;
-        }
-      break;
-    case TRACK_TYPE_CHORD:
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_AUDIO_BUS:
-    case TRACK_TYPE_AUDIO_GROUP:
-    case TRACK_TYPE_MIDI_BUS:
-    case TRACK_TYPE_MIDI_GROUP:
-      break;
-    default:
-      break;
-    }
-
   if (fire_events)
     {
       EVENTS_PUSH (ET_TRACK_CHANGED,
@@ -393,11 +350,13 @@ track_select (
 }
 
 /**
- * Sets recording and connects/disconnects the JACK ports.
+ * Sets recording and connects/disconnects the
+ * JACK ports.
  */
 void
-track_set_recording (Track *   track,
-                     int       recording)
+track_set_recording (
+  Track *   track,
+  int       recording)
 {
   Channel * channel =
     track_get_channel (track);
@@ -1023,7 +982,7 @@ track_get_channel (Track * track)
     case TRACK_TYPE_MIDI:
       return track->channel;
     default:
-      g_return_val_if_reached (NULL);
+      return NULL;
     }
 }
 
