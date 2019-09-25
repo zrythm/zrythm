@@ -46,6 +46,9 @@ typedef struct Region AudioRegion;
 /**
  * Creates a Region for audio data.
  *
+ * FIXME First create the
+ * audio on the pool and then pass the pool id here.
+ *
  * @param add_to_project Add Region to project
  *   registry. This should be false when cloning.
  * @param filename Filename, if loading from

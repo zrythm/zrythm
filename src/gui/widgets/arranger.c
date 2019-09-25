@@ -147,10 +147,11 @@ arranger_widget_get_private (ArrangerWidget * self)
  * Gets called to set the position/size of each overlayed widget.
  */
 static gboolean
-get_child_position (GtkOverlay   *self,
-                    GtkWidget    *widget,
-                    GdkRectangle *allocation,
-                    gpointer      user_data)
+get_child_position (
+  GtkOverlay   *overlay,
+  GtkWidget    *widget,
+  GdkRectangle *allocation,
+  ArrangerWidget * self)
 {
   GET_ARRANGER_ALIASES (self);
 
@@ -1916,11 +1917,12 @@ tick_cb (
 #include "gui/widgets/timeline_minimap.h"
 
 static gboolean
-on_scroll (GtkWidget *widget,
-           GdkEventScroll  *event,
-           ArrangerWidget * self)
+on_scroll (
+  GtkWidget *widget,
+  GdkEventScroll  *event,
+  ArrangerWidget * self)
 {
-  GET_ARRANGER_ALIASES (widget);
+  GET_ARRANGER_ALIASES (self);
   if (!(event->state & GDK_CONTROL_MASK))
     return FALSE;
 
@@ -2166,7 +2168,7 @@ arranger_widget_setup (
   /* connect signals */
   g_signal_connect (
     G_OBJECT (self), "get-child-position",
-    G_CALLBACK (get_child_position), NULL);
+    G_CALLBACK (get_child_position), self);
   g_signal_connect (
     G_OBJECT(ar_prv->drag), "drag-begin",
     G_CALLBACK (drag_begin),  self);

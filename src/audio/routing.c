@@ -387,23 +387,16 @@ node_process (
 
           /* fill stereo in buffers with info from
            * the current clip */
-          int ret;
+          /*int ret;*/
           switch (chan->track->type)
             {
             case TRACK_TYPE_AUDIO:
-              if (g_atomic_int_get (
-                &chan->filled_stereo_in_bufs))
-                break;
-              ret =
-                g_atomic_int_compare_and_exchange (
-                  &chan->filled_stereo_in_bufs,
-                  0, 1);
-              if (ret)
-                audio_track_fill_stereo_in_buffers (
-                  chan->track,
-                  g_start_frames,
-                  local_offset,
-                  nframes);
+              audio_track_fill_stereo_in_from_clip (
+                chan->track,
+                port,
+                g_start_frames,
+                local_offset,
+                nframes);
               break;
             case TRACK_TYPE_MASTER:
             case TRACK_TYPE_AUDIO_BUS:

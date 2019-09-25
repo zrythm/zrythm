@@ -520,6 +520,8 @@ timeline_arranger_widget_get_track_at_y (
       if (!track->visible)
         continue;
 
+      g_warn_if_fail (track->widget);
+
       if (ui_is_child_hit (
             GTK_WIDGET (self),
             GTK_WIDGET (track->widget),

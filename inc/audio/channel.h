@@ -173,7 +173,11 @@ typedef struct Channel
    */
   Port *           midi_out;
 
-  /** Flag used while processing. */
+  /**
+   * Flag used while processing.
+   *
+   * FIXME maybe not used anymore.
+   */
   int              filled_stereo_in_bufs;
 
   /*

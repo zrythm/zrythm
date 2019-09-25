@@ -800,8 +800,10 @@ port_apply_fader (
        i < start_frame + nframes; i++)
     {
       if (!math_floats_equal (
-            port->buf[i], 0.f, 0.001f))
-        port->buf[i] *= amp;
+            port->buf[i], 0.f, 0.00000001f))
+        {
+          port->buf[i] *= amp;
+        }
     }
 }
 
@@ -977,9 +979,6 @@ port_sum_signal_from_inputs (
           src_port = port->srcs[k];
 
           /* sum the signals */
-          /*g_message ("port %s start frame %ld nframes %d",*/
-                     /*port->identifier.label,*/
-                     /*start_frame, nframes);*/
           for (l = start_frame; l < nframes; l++)
             {
               port->buf[l] += src_port->buf[l];
@@ -1630,7 +1629,7 @@ port_apply_pan (
        i < start_frame + nframes; i++)
     {
       if (math_floats_equal (
-            port->buf[i], 0.f, 0.001f))
+            port->buf[i], 0.f, 0.00000001f))
         continue;
 
       if (is_stereo_r)

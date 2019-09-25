@@ -28,11 +28,11 @@
 
 #define ARRANGER_WIDGET_TYPE ( \
   arranger_widget_get_type ())
-G_DECLARE_DERIVABLE_TYPE (ArrangerWidget,
-                          arranger_widget,
-                          Z,
-                          ARRANGER_WIDGET,
-                          GtkOverlay)
+G_DECLARE_DERIVABLE_TYPE (
+  ArrangerWidget,
+  arranger_widget,
+  Z, ARRANGER_WIDGET,
+  GtkOverlay)
 
 /** Object selection macros. */
 #define ARRANGER_WIDGET_SELECT_MIDI_NOTE( \

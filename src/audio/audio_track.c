@@ -28,6 +28,7 @@
 #include "audio/port.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/math.h"
 
 void
 audio_track_init (Track * track)
@@ -47,10 +48,13 @@ audio_track_setup (AudioTrack * self)
 /**
  * Fills stereo in buffers with info from the
  * current clip.
+ *
+ * @param port The port (L or R).
  */
 void
-audio_track_fill_stereo_in_buffers (
+audio_track_fill_stereo_in_from_clip (
   AudioTrack *    self,
+  Port *          port,
   const long      g_start_frames,
   const nframes_t local_start_frame,
   nframes_t       nframes)
@@ -59,6 +63,7 @@ audio_track_fill_stereo_in_buffers (
        region_end_frames,
        local_frames_start,
        /*local_frames_end,*/
+       loop_start_frames,
        loop_end_frames,
        loop_frames,
        clip_start_frames;
@@ -97,6 +102,9 @@ audio_track_fill_stereo_in_buffers (
               /*local_frames_end =*/
                 /*local_frames_start + nframes;*/
 
+              loop_start_frames =
+                position_to_frames (
+                  &r->loop_start_pos);
               loop_end_frames =
                 position_to_frames (
                   &r->loop_end_pos);
@@ -140,38 +148,62 @@ audio_track_fill_stereo_in_buffers (
               frames_to_process -=
                 (long) frames_to_skip;
 
+              long current_local_frames =
+                local_frames_start;
               for (j = frames_to_skip;
                    j < frames_to_process;
                    j++)
                 {
-                  buff_index =
-                    clip->channels *
-                    (local_frames_start + j);
-                  g_warn_if_fail (buff_index >= 0);
+                  current_local_frames =
+                    local_frames_start + j;
 
-                  if (buff_index +
-                        (clip->channels - 1) >=
-                      clip->num_frames *
-                        clip->channels)
+                  /* if loop point hit in the
+                   * cycle, go back to loop start */
+                  while (
+                    current_local_frames >=
+                    loop_end_frames)
                     {
-                      g_warn_if_reached ();
-                      self->channel->stereo_in->
-                        l->buf[j] = 0.f;
-                      self->channel->stereo_in->
-                        r->buf[j] = 0.f;
-                      continue;
+                      current_local_frames =
+                        (current_local_frames -
+                          loop_end_frames) +
+                        loop_start_frames;
                     }
 
-                  self->channel->stereo_in->
-                      l->buf[j] =
-                    clip->frames[buff_index];
-                  /* FIXME assumes at most 2
-                   * channels */
-                  self->channel->stereo_in->
-                    r->buf[j] =
-                    clip->frames[
-                      buff_index +
-                        (clip->channels - 1)];
+                  buff_index =
+                    clip->channels *
+                    (current_local_frames);
+
+                  /* make sure we are within the
+                   * bounds of the frame array */
+                  g_warn_if_fail (
+                    buff_index >= 0 &&
+                    buff_index +
+                      (clip->channels - 1) <
+                      clip->channels *
+                        clip->num_frames);
+
+                  if (
+                    port ==
+                    self->channel->stereo_in->l)
+                    {
+                      port->buf[j] =
+                        clip->frames[buff_index];
+                    }
+                  else if (
+                    port ==
+                    self->channel->stereo_in->r)
+                    {
+                      port->buf[j] =
+                        clip->frames[
+                          buff_index +
+                            (clip->channels - 1)];
+                    }
+                  else
+                    {
+                      g_warning (
+                        "The port given is not "
+                        "this channel's port");
+                    }
                 }
             }
         }

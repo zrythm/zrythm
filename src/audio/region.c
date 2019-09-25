@@ -1152,6 +1152,7 @@ region_clone (
             is_main);
 
         new_region = ar;
+        new_region->pool_id = region->pool_id;
       }
     break;
     case REGION_TYPE_AUTOMATION:

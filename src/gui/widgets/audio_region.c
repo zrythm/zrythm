@@ -41,44 +41,44 @@ G_DEFINE_TYPE (AudioRegionWidget,
 
 static gboolean
 audio_region_draw_cb (
-  AudioRegionWidget * self,
-  cairo_t *cr, gpointer data)
+  GtkWidget *         widget,
+  cairo_t *           cr,
+  AudioRegionWidget * self)
 {
-  REGION_WIDGET_GET_PRIVATE (data);
+  REGION_WIDGET_GET_PRIVATE (self);
   Region * r = rw_prv->region;
-  AudioRegion * ar = (AudioRegion *) r;
+  Region * main_region =
+    region_get_main_region (r);
 
   GtkStyleContext * context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self));
+    gtk_widget_get_style_context (widget);
 
   int width =
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (self));
+    gtk_widget_get_allocated_width (widget);
   int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr,
     0, 0, width, height);
 
-  GdkRGBA * color = &r->lane->track->color;
+  GdkRGBA * color =
+    &main_region->lane->track->color;
   cairo_set_source_rgba (
-    cr, color->red + 0.3, color->green + 0.3,
-    color->blue + 0.3, 0.9);
+    cr, color->red + 0.4, color->green + 0.4,
+    color->blue + 0.4, 1);
   cairo_set_line_width (cr, 1);
 
   AudioClip * clip =
-    AUDIO_POOL->clips[ar->pool_id];
+    AUDIO_POOL->clips[main_region->pool_id];
 
   long prev_frames = 0;
   long loop_end_frames =
-    position_to_frames (&r->loop_end_pos);
+    position_to_frames (&main_region->loop_end_pos);
   long loop_frames =
-    region_get_loop_length_in_frames (r);
+    region_get_loop_length_in_frames (main_region);
   long clip_start_frames =
-    position_to_frames (&r->clip_start_pos);
+    position_to_frames (&main_region->clip_start_pos);
   for (double i = 0.0; i < (double) width; i += 0.6)
     {
       /* current single channel frames */
@@ -124,6 +124,14 @@ audio_region_draw_cb (
       prev_frames = curr_frames;
     }
 
+  region_widget_draw_name (
+    Z_REGION_WIDGET (self),
+    cr);
+
+  region_widget_draw_cut_line (
+    Z_REGION_WIDGET (self),
+    cr);
+
  return FALSE;
 }
 
@@ -151,10 +159,11 @@ audio_region_widget_new (
 
   region_widget_setup (
     Z_REGION_WIDGET (self), audio_region);
+  REGION_WIDGET_GET_PRIVATE (self);
 
   /* connect signals */
   g_signal_connect (
-    G_OBJECT (self), "draw",
+    G_OBJECT (rw_prv->drawing_area), "draw",
     G_CALLBACK (audio_region_draw_cb), self);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",

@@ -42,10 +42,13 @@ audio_track_setup (AudioTrack * self);
 /**
  * Fills stereo in buffers with info from the
  * current clip.
+ *
+ * @param port The port (L or R).
  */
 void
-audio_track_fill_stereo_in_buffers (
+audio_track_fill_stereo_in_from_clip (
   AudioTrack *    self,
+  Port *          port,
   const long      g_start_frames,
   const nframes_t local_start_frame,
   nframes_t       nframes);

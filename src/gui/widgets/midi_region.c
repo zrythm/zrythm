@@ -42,8 +42,8 @@ G_DEFINE_TYPE (MidiRegionWidget,
 
 static gboolean
 midi_region_draw_cb (
-  GtkWidget * widget,
-  cairo_t *cr,
+  GtkWidget *        widget,
+  cairo_t *          cr,
   MidiRegionWidget * self)
 {
   int i, j;
