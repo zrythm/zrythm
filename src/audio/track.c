@@ -997,7 +997,8 @@ track_get_region_at_pos (
   int i, j;
 
   if (track->type == TRACK_TYPE_INSTRUMENT ||
-      track->type == TRACK_TYPE_AUDIO)
+      track->type == TRACK_TYPE_AUDIO ||
+      track->type == TRACK_TYPE_MIDI)
     {
       TrackLane * lane;
       Region * r;
@@ -1008,10 +1009,10 @@ track_get_region_at_pos (
           for (j = 0; j < lane->num_regions; j++)
             {
               r = lane->regions[j];
-              if (position_is_after_or_equal (
-                    pos, &r->start_pos) &&
-                  position_is_before_or_equal (
-                    pos, &r->end_pos))
+              if (pos->frames >=
+                    r->start_pos.frames &&
+                  pos->frames <=
+                    r->end_pos.frames)
                 return r;
             }
         }

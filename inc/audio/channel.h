@@ -282,10 +282,20 @@ void
 channel_init_loaded (Channel * channel);
 
 /**
- * Handles the recording logic inside the process cycle.
+ * Handles the recording logic inside the process
+ * cycle.
+ *
+ * The MidiEvents are already dequeued at this
+ * point.
+ *
+ * @param g_frames_start Global start frames.
+ * @param nframes Number of frames to process.
  */
 void
-channel_handle_recording (Channel * self);
+channel_handle_recording (
+  Channel *       self,
+  const long      g_frames_start,
+  const nframes_t nframes);
 
 /**
  * Appends all channel ports and optionally

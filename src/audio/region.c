@@ -75,17 +75,21 @@ region_init (
 {
   position_set_to_pos (
     &self->start_pos, start_pos);
+  self->start_pos.frames = start_pos->frames;
   position_set_to_pos (
     &self->end_pos, end_pos);
+  self->end_pos.frames = end_pos->frames;
   position_init (&self->clip_start_pos);
   long length =
-    region_get_full_length_in_ticks (self);
-  position_from_ticks (
+    region_get_full_length_in_frames (self);
+  position_from_frames (
     &self->true_end_pos, length);
   position_init (&self->loop_start_pos);
   position_set_to_pos (
     &self->loop_end_pos,
     &self->true_end_pos);
+  self->loop_end_pos.frames =
+    self->true_end_pos.frames;
   self->linked_region_name = NULL;
 
   if (is_main)
@@ -1043,13 +1047,13 @@ region_get_num_loops (
 {
   int i = 0;
   long loop_size =
-    region_get_loop_length_in_ticks (region);
+    region_get_loop_length_in_frames (region);
   g_warn_if_fail (loop_size > 0);
   long full_size =
-    region_get_full_length_in_ticks (region);
+    region_get_full_length_in_frames (region);
   long loop_start =
-    position_to_ticks (&region->loop_start_pos) -
-    position_to_ticks (&region->clip_start_pos);
+    position_to_frames (&region->loop_start_pos) -
+    position_to_frames (&region->clip_start_pos);
   long curr_ticks = loop_start;
 
   while (curr_ticks < full_size)

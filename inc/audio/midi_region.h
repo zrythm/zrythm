@@ -64,13 +64,17 @@ midi_region_add_midi_note (
   MidiNote * midi_note);
 
 /**
- * Returns the midi note with the given pitch from the
- * unended notes.
+ * Returns the midi note with the given pitch from
+ * the unended notes.
  *
  * Used when recording.
+ *
+ * @param pitch The pitch. If -1, it returns any
+ *   unended note. This is useful when the loop
+ *   point is met and we want to end them all.
  */
 MidiNote *
-midi_region_find_unended_note (
+midi_region_pop_unended_note (
   MidiRegion * self,
   int          pitch);
 

@@ -983,47 +983,124 @@ disconnect_prev_next (
  *
  * The MidiEvents are already dequeued at this
  * point.
+ *
+ * @param g_frames_start Global start frames.
+ * @param nframes Number of frames to process.
  */
 REALTIME
 void
-channel_handle_recording (Channel * self)
+channel_handle_recording (
+  Channel *       self,
+  const long      g_frames_start,
+  const nframes_t nframes)
 {
-  Region * region =
-    track_get_region_at_pos (
-      self->track, PLAYHEAD);
-  /* get end position TODO snap */
-  Position tmp;
-  position_set_to_pos (&tmp, PLAYHEAD);
-  position_add_frames (
-    &tmp,
-    (long) AUDIO_ENGINE->nframes + 1);
+  /* get end position */
+  long start_frames = g_frames_start;
+  long end_frames =
+    g_frames_start + (long) nframes;
+
+  /* adjust for transport loop end */
+  int loop_met = 0;
+  if (end_frames >= TRANSPORT->loop_end_pos.frames)
+    {
+      loop_met = 1;
+      start_frames =
+        TRANSPORT->loop_start_pos.frames;
+      end_frames =
+        (end_frames -
+           TRANSPORT->loop_end_pos.frames) +
+        start_frames;
+    }
+
+  Position start_pos, end_pos;
+  position_from_frames (
+    &start_pos, start_frames);
+  position_from_frames (
+    &end_pos, end_frames);
 
   if (track_has_piano_roll (self->track))
     {
-      MidiRegion * mr = (MidiRegion *) region;
+      /* get the recording region */
+      Region * region =
+        self->track->recording_region;
 
-      if (region) /* if inside a region */
+      if (region)
         {
-          /* set region end pos */
-          region_set_end_pos (
-            region, &tmp, AO_UPDATE_ALL);
+          if (loop_met)
+            {
+              /* set current region end pos  to
+               * transport loop end */
+              region_set_end_pos (
+                region, &TRANSPORT->loop_end_pos,
+                AO_UPDATE_ALL);
+              region->end_pos.frames =
+                TRANSPORT->loop_end_pos.frames;
+              region_set_loop_end_pos (
+                region, &TRANSPORT->loop_end_pos,
+                AO_UPDATE_ALL);
+              region->loop_end_pos.frames =
+                TRANSPORT->loop_end_pos.frames;
+
+              /* start new region in new lane at
+               * TRANSPORT loop start */
+              Region * new_region =
+                midi_region_new (
+                  &TRANSPORT->loop_start_pos,
+                  &end_pos, 1);
+              track_add_region (
+                self->track, new_region, NULL,
+                region->lane_pos + 1, F_GEN_NAME);
+              region = new_region;
+            }
+          else /* loop not met */
+            {
+              /* set region end pos */
+              region_set_end_pos (
+                region, &end_pos, AO_UPDATE_ALL);
+              region->end_pos.frames =
+                end_pos.frames;
+              region_set_loop_end_pos (
+                region, &end_pos, AO_UPDATE_ALL);
+              region->loop_end_pos.frames =
+                end_pos.frames;
+            }
         }
-      else /* if not already in a region */
+      else
         {
           /* create region */
-          mr =
+          region =
             midi_region_new (
-              PLAYHEAD, &tmp, 1);
+              &start_pos, &end_pos, 1);
           track_add_region (
-            self->track, mr, NULL, 0, F_GEN_NAME);
+            self->track, region, NULL,
+            self->track->num_lanes - 1,
+            F_GEN_NAME);
+        }
+
+      self->track->recording_region =
+        region;
+
+      MidiEvents * midi_events =
+        self->midi_in->midi_events;
+      MidiNote * mn;
+
+      /* add midi note off if loop met */
+      if (loop_met)
+        {
+          while (
+            (mn =
+              midi_region_pop_unended_note (
+                region, -1)))
+            {
+              midi_note_set_end_pos (
+                mn, &TRANSPORT->loop_end_pos,
+                AO_UPDATE_ALL);
+            }
         }
 
       /* convert MIDI data to midi notes */
-      MidiEvents * midi_events =
-        self->midi_in->midi_events;
       if (midi_events->num_events > 0)
         {
-          MidiNote * mn;
           for (int i = 0;
                i < midi_events->num_events; i++)
             {
@@ -1035,24 +1112,26 @@ channel_handle_recording (Channel * self)
                   case MIDI_EVENT_TYPE_NOTE_ON:
                     mn =
                       midi_note_new (
-                        mr, PLAYHEAD, &tmp,
+                        region, &start_pos,
+                        &end_pos,
                         ev->note_pitch,
                         ev->velocity, 1);
                     midi_region_add_midi_note (
-                      mr, mn);
+                      region, mn);
 
                     /* add to unended notes */
                     array_append (
-                      mr->unended_notes,
-                      mr->num_unended_notes,
+                      region->unended_notes,
+                      region->num_unended_notes,
                       mn);
                     break;
                   case MIDI_EVENT_TYPE_NOTE_OFF:
                     mn =
-                      midi_region_find_unended_note (
-                        mr, ev->note_pitch);
+                      midi_region_pop_unended_note (
+                        region, ev->note_pitch);
+                    g_warn_if_fail (mn);
                     midi_note_set_end_pos (
-                      mn, &tmp, AO_UPDATE_ALL);
+                      mn, &end_pos, AO_UPDATE_ALL);
                     break;
                   default:
                     /* TODO */

@@ -221,6 +221,9 @@ typedef struct Track
   /** MIDI channel (MIDI/Instrument track only). */
   uint8_t             midi_ch;
 
+  /** Region currently recording on. */
+  Region *            recording_region;
+
   /* ==== INSTRUMENT/MIDI/AUDIO TRACK END ==== */
 
   /* ==== CHORD TRACK ==== */

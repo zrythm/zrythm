@@ -477,7 +477,9 @@ position_snap (
  * TODO
  */
 void
-position_from_seconds (Position * position, double secs)
+position_from_seconds (
+  Position * position,
+  double secs)
 {
   /*AUDIO_ENGINE->frames_per_tick;*/
   /*AUDIO_ENGINE->sample_rate;*/

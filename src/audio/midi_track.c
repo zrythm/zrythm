@@ -80,7 +80,7 @@ midi_track_fill_midi_events (
   nframes_t     nframes,
   MidiEvents *      midi_events)
 {
-  int i, j, k, jj, num_loops;
+  int i, j, k, jj, kk, num_loops;
   long g_end_frames;
   long local_pos, local_end_pos;
   long loop_start_adjusted,
@@ -255,12 +255,12 @@ midi_track_fill_midi_events (
                * reached within this cycle */
               if (loop_point_met && k == 0)
                 {
-                  for (i = 0;
-                       i < region->num_midi_notes;
-                       i++)
+                  for (kk = 0;
+                       kk < region->num_midi_notes;
+                       kk++)
                     {
                       midi_note =
-                        region->midi_notes[i];
+                        region->midi_notes[kk];
 
                       /* FIXME check if note is on
                        * first */
@@ -285,12 +285,12 @@ midi_track_fill_midi_events (
                   region_end_adjusted <=
                     local_end_pos)
                 {
-                  for (i = 0;
-                       i < region->num_midi_notes;
-                       i++)
+                  for (kk = 0;
+                       kk < region->num_midi_notes;
+                       kk++)
                     {
                       midi_note =
-                        region->midi_notes[i];
+                        region->midi_notes[kk];
 
                       mn_start_frames =
                         midi_note->start_pos.frames;
@@ -329,12 +329,12 @@ midi_track_fill_midi_events (
                        region_end_frames <
                          g_end_frames)
                 {
-                  for (i = 0;
-                       i < region->num_midi_notes;
-                       i++)
+                  for (kk = 0;
+                       kk < region->num_midi_notes;
+                       kk++)
                     {
                       midi_note =
-                        region->midi_notes[i];
+                        region->midi_notes[kk];
 
                       mn_start_frames =
                         midi_note->start_pos.frames;
@@ -388,12 +388,12 @@ midi_track_fill_midi_events (
                * will be back to the loop start) */
               else if (local_end_pos <= local_pos)
                 {
-                  for (i = 0;
-                       i < region->num_midi_notes;
-                       i++)
+                  for (kk = 0;
+                       kk < region->num_midi_notes;
+                       kk++)
                     {
                       midi_note =
-                        region->midi_notes[i];
+                        region->midi_notes[kk];
 
                       mn_start_frames =
                         midi_note->start_pos.frames;
@@ -436,12 +436,12 @@ midi_track_fill_midi_events (
               local_pos -= clip_start_frames;
               local_end_pos -= clip_start_frames;
 
-              for (i = 0;
-                   i < region->num_midi_notes;
-                   i++)
+              for (kk = 0;
+                   kk < region->num_midi_notes;
+                   kk++)
                 {
                   midi_note =
-                    region->midi_notes[i];
+                    region->midi_notes[kk];
 
                   mn_start_frames =
                     midi_note->start_pos.frames;

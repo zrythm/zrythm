@@ -254,8 +254,6 @@ node_process (
       if (!node->terminal)
         return;
     }
-  /*g_message ("processing");*/
-  /*print_node (node);*/
 
   /* global positions in frames (samples) */
   long g_start_frames;
@@ -315,7 +313,8 @@ node_process (
     }
   else if (node->type == ROUTE_NODE_TYPE_PORT)
     {
-      /* decide what to do based on what port it is */
+      /* decide what to do based on what port it
+       * is */
       Port * port = node->port;
 
       /* if piano roll */
@@ -344,12 +343,12 @@ node_process (
                         chan->track->recording)
                     {
                       channel_handle_recording (
-                        chan);
+                        chan, g_start_frames,
+                        nframes);
                     }
 
                   /* fill midi events to pass to
                    * ins plugin */
-                  /*g_message ("filling PR events");*/
                   midi_track_fill_midi_events (
                     chan->track,
                     g_start_frames,
@@ -559,6 +558,7 @@ graph_worker_thread (void * g)
           g_warn_if_fail (
             graph->idle_thread_cnt <=
             graph->num_threads);
+          /*g_message ("unlocking");*/
           pthread_mutex_unlock (
             &graph->trigger_mutex);
           /*g_message ("waiting trigger");*/
@@ -577,6 +577,7 @@ graph_worker_thread (void * g)
               graph->trigger_queue[
                 --graph->n_trigger_queue];
         }
+      /*g_message ("unlocking");*/
       pthread_mutex_unlock (&graph->trigger_mutex);
 
       /* process graph-node */
@@ -1010,9 +1011,12 @@ graph_terminate (
 	pthread_mutex_unlock (&self->trigger_mutex);
 
 	/* wake-up sleeping threads */
-	for (int i = 0; i < tc; ++i) {
-		zix_sem_post (&self->trigger);
-	}
+	for (int i = 0; i < tc; ++i)
+    {
+      /*g_message ("posting trigger to wake up "*/
+                 /*"sleeping threads");*/
+      zix_sem_post (&self->trigger);
+    }
 	/* and the main thread */
   /*g_message ("locking trigger mutex to post callback");*/
 	pthread_mutex_lock (&self->trigger_mutex);
@@ -1074,7 +1078,7 @@ graph_reached_terminal_node (
       zix_sem_post (&graph->callback_done);
 
       /* now wait for the next cycle to begin */
-      /*g_message ("waiting callback start");*/
+      /*g_message ("waiting for next cycle to begin");*/
       zix_sem_wait (&graph->callback_start);
 
       if (graph->terminate)
@@ -1140,7 +1144,7 @@ router_start_cycle (
     AUDIO_ENGINE->remaining_latency_preroll;
   self->local_offset = local_offset;
   zix_sem_post (&self->graph1->callback_start);
-  /*g_message ("waiting callback done");*/
+  /*g_message ("waiting for cycle to finish");*/
   /*for (int i = 0; i < self->num_threads; i++)*/
   zix_sem_wait (&self->graph1->callback_done);
   /*g_message ("num trigger nodes at end: %d, num init trigger nodes at end %d, num_max trigger nodes at end: %d",*/
@@ -1426,6 +1430,11 @@ graph_new (
       g_warn_if_fail (tr);
       if (!tr->channel)
         continue;
+
+      /* add the track */
+      /*graph_add_node ( \*/
+        /*self, ROUTE_NODE_TYPE_TRACK,*/
+        /*&tr);*/
 
       /* add the fader */
       graph_add_node ( \

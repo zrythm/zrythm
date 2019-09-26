@@ -108,22 +108,43 @@ midi_region_add_midi_note (
 }
 
 /**
- * Returns the midi note with the given pitch from the
- * unended notes.
+ * Returns the midi note with the given pitch from
+ * the unended notes.
  *
  * Used when recording.
+ *
+ * @param pitch The pitch. If -1, it returns any
+ *   unended note. This is useful when the loop
+ *   point is met and we want to end them all.
  */
 MidiNote *
-midi_region_find_unended_note (MidiRegion * self,
-                               int          pitch)
+midi_region_pop_unended_note (
+  MidiRegion * self,
+  int          pitch)
 {
+  MidiNote * match = NULL;
   for (int i = 0; i < self->num_unended_notes; i++)
     {
       MidiNote * mn = self->unended_notes[i];
-      if (mn->val == pitch)
-        return mn;
+      if (pitch == -1 ||
+          mn->val == pitch)
+        {
+          match = mn;
+          break;
+        }
     }
-  g_warn_if_reached ();
+
+  if (match)
+    {
+      /* pop it from the array */
+      array_delete (
+        self->unended_notes,
+        self->num_unended_notes,
+        match);
+
+      return match;
+    }
+
   return NULL;
 }
 
@@ -131,7 +152,8 @@ midi_region_find_unended_note (MidiRegion * self,
  * Gets first midi note
  */
 MidiNote *
-midi_region_get_first_midi_note (MidiRegion * region)
+midi_region_get_first_midi_note (
+  MidiRegion * region)
 {
 	MidiNote * result = 0;
 	for (int i = 0;

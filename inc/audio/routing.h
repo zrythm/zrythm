@@ -54,6 +54,8 @@ typedef enum GraphNodeType
   ROUTE_NODE_TYPE_PORT,
   /** Plugin processor. */
   ROUTE_NODE_TYPE_PLUGIN,
+  /** Track processor. */
+  //ROUTE_NODE_TYPE_TRACK,
   /** Fader/pan processor. */
   ROUTE_NODE_TYPE_FADER,
   /** Fader/pan processor for monitor. */
