@@ -32,6 +32,7 @@
 
 typedef struct StereoPorts StereoPorts;
 typedef struct Port Port;
+typedef struct Channel Channel;
 
 /**
  * @addtogroup audio
@@ -52,8 +53,6 @@ typedef enum FaderType
   /** For generic uses. */
   FADER_TYPE_GENERIC,
 } FaderType;
-
-typedef struct Channel Channel;
 
 /**
  * A Fader is a processor that is used for volume

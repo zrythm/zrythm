@@ -46,15 +46,13 @@ audio_track_setup (AudioTrack * self)
 }
 
 /**
- * Fills stereo in buffers with info from the
- * current clip.
- *
- * @param port The port (L or R).
+ * Fills the buffers in the given StereoPorts with
+ * the frames from the current clip.
  */
 void
-audio_track_fill_stereo_in_from_clip (
+audio_track_fill_stereo_ports_from_clip (
   AudioTrack *    self,
-  Port *          port,
+  StereoPorts *   stereo_ports,
   const long      g_start_frames,
   const nframes_t local_start_frame,
   nframes_t       nframes)
@@ -182,28 +180,12 @@ audio_track_fill_stereo_in_from_clip (
                       clip->channels *
                         clip->num_frames);
 
-                  if (
-                    port ==
-                    self->channel->stereo_in->l)
-                    {
-                      port->buf[j] =
-                        clip->frames[buff_index];
-                    }
-                  else if (
-                    port ==
-                    self->channel->stereo_in->r)
-                    {
-                      port->buf[j] =
-                        clip->frames[
-                          buff_index +
-                            (clip->channels - 1)];
-                    }
-                  else
-                    {
-                      g_warning (
-                        "The port given is not "
-                        "this channel's port");
-                    }
+                  stereo_ports->l->buf[j] =
+                    clip->frames[buff_index];
+                  stereo_ports->r->buf[j] =
+                    clip->frames[
+                      buff_index +
+                        (clip->channels - 1)];
                 }
             }
         }

@@ -34,6 +34,7 @@
 #include "audio/scale.h"
 #include "audio/scale_object.h"
 #include "audio/track_lane.h"
+#include "audio/track_processor.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
@@ -262,6 +263,14 @@ typedef struct Track
   Channel *           channel;
 
   /* ==== CHANNEL TRACK END ==== */
+
+  /**
+   * The TrackProcessor, used for processing.
+   *
+   * This is the starting point when processing
+   * a Track.
+   */
+  TrackProcessor      processor;
 
   AutomationTracklist automation_tracklist;
 

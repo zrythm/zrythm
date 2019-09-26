@@ -542,6 +542,50 @@ void
 plugin_update_automatables (Plugin * plugin);
 
 /**
+ * Connect the output Ports of the given source
+ * Plugin to the input Ports of the given
+ * destination Plugin.
+ *
+ * Used when automatically connecting a Plugin
+ * in the Channel strip to the next Plugin.
+ */
+void
+plugin_connect_to_plugin (
+  Plugin * src,
+  Plugin * dest);
+
+/**
+ * Disconnect the automatic connections from the
+ * given source Plugin to the given destination
+ * Plugin.
+ */
+void
+plugin_disconnect_from_plugin (
+  Plugin * src,
+  Plugin * dest);
+
+/**
+ * Connects the Plugin's output Port's to the
+ * input Port's of the given Channel's prefader.
+ *
+ * Used when doing automatic connections.
+ */
+void
+plugin_connect_to_prefader (
+  Plugin *  pl,
+  Channel * ch);
+
+/**
+ * Disconnect the automatic connections from the
+ * Plugin to the Channel's prefader (if last
+ * Plugin).
+ */
+void
+plugin_disconnect_from_prefader (
+  Plugin *  pl,
+  Channel * ch);
+
+/**
  * To be called immediately when a channel or plugin
  * is deleted.
  *

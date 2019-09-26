@@ -281,7 +281,7 @@ midi_note_set_val (
     {
       MidiEvents * midi_events =
         region_get_track (midi_note->region)->
-          channel->piano_roll->midi_events;
+          processor.piano_roll->midi_events;
 
       zix_sem_wait (&midi_events->access_sem);
       midi_events_add_note_off (

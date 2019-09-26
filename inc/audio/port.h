@@ -96,6 +96,9 @@ typedef enum PortOwnerType
   /* monitor fader */
   PORT_OWNER_TYPE_MONITOR_FADER,
 
+  /* TrackProcessor. */
+  PORT_OWNER_TYPE_TRACK_PROCESSOR,
+
   PORT_OWNER_TYPE_SAMPLE_PROCESSOR,
 } PortOwnerType;
 
@@ -334,6 +337,8 @@ port_owner_type_strings[] =
 	{ "track",     PORT_OWNER_TYPE_TRACK   },
 	{ "pre-fader", PORT_OWNER_TYPE_PREFADER   },
 	{ "fader",     PORT_OWNER_TYPE_FADER   },
+	{ "track processor",
+    PORT_OWNER_TYPE_TRACK_PROCESSOR   },
 	{ "monitor fader",
     PORT_OWNER_TYPE_MONITOR_FADER },
 	{ "sample processor",
@@ -836,6 +841,14 @@ port_sum_signal_from_inputs (
  */
 void
 port_set_owner_track (
+  Port *    port,
+  Track *   track);
+
+/**
+ * Sets the owner track & its ID.
+ */
+void
+port_set_owner_track_processor (
   Port *    port,
   Track *   track);
 

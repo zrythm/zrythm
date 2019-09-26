@@ -49,13 +49,12 @@
  * @{
  */
 
-#define MASTER_POS -1 /* master channel special position */
 #define FOREACH_STRIP for (int i = 0; i < STRIP_SIZE; i++)
 #define FOREACH_AUTOMATABLE(ch) for (int i = 0; i < ch->num_automatables; i++)
 #define MAX_FADER_AMP 1.42f
 #define channel_get_fader_automatable(ch) \
-  channel_get_automatable (ch, \
-                           AUTOMATABLE_TYPE_CHANNEL_FADER)
+  channel_get_automatable (\
+    ch, AUTOMATABLE_TYPE_CHANNEL_FADER)
 
 typedef struct _ChannelWidget ChannelWidget;
 typedef struct Track Track;
@@ -143,42 +142,11 @@ typedef struct Channel
   PassthroughProcessor prefader;
 
   /**
-   * L & R audio input ports.
-   */
-  StereoPorts *    stereo_in;
-
-  /**
-   * MIDI input for receiving MIDI signals from
-   * the piano roll (i.e., MIDI notes inside
-   * regions) or other sources.
-   */
-  Port *           piano_roll;
-
-  /**
-   * MIDI in port ID.
-   *
-   * This port is for receiving MIDI signals from
-   * an external MIDI source.
-   *
-   * This is also where piano roll, midi in and midi
-   * manual press will be routed to and this will
-   * be the port used to pass midi to the plugins.
-   */
-  Port *           midi_in;
-
-  /**
    * MIDI output for sending MIDI signals to other
    * destinations, such as other channels when
    * directly routed (eg MIDI track to ins track).
    */
   Port *           midi_out;
-
-  /**
-   * Flag used while processing.
-   *
-   * FIXME maybe not used anymore.
-   */
-  int              filled_stereo_in_bufs;
 
   /*
    * Ports for direct (track-to-track) routing with
@@ -225,24 +193,9 @@ channel_fields_schema[] =
     "fader", CYAML_FLAG_DEFAULT,
     Channel, fader, fader_fields_schema),
 	CYAML_FIELD_MAPPING_PTR (
-    "stereo_in",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Channel, stereo_in,
-    stereo_ports_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
-    "midi_in",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Channel, midi_in,
-    port_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
     "midi_out",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Channel, midi_out,
-    port_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
-    "piano_roll",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Channel, piano_roll,
     port_fields_schema),
 	CYAML_FIELD_MAPPING_PTR (
     "stereo_out",
@@ -456,7 +409,15 @@ channel_reconnect_ext_input_ports (
  * Returns the index of the last active slot.
  */
 int
-channel_get_last_active_slot_index (Channel * channel);
+channel_get_last_active_slot_index (
+  Channel * channel);
+
+/**
+ * Returns the last Plugin in the strip.
+ */
+Plugin *
+channel_get_last_plugin (
+  Channel * self);
 
 /**
  * Returns the index on the mixer.

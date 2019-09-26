@@ -131,7 +131,8 @@ timeline_arranger_widget_set_allocation (
         &rw_prv->region->obj_info;
       if (arranger_object_info_is_lane (nfo))
         {
-          if (!track->lanes_visible)
+          if (!track->lanes_visible ||
+              !GTK_IS_WIDGET (lane->widget))
             return;
 
           gtk_widget_translate_coordinates(

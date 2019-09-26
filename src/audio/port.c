@@ -43,6 +43,7 @@
 #include "utils/arrays.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 
 #include <gtk/gtk.h>
 
@@ -71,6 +72,7 @@ port_init_loaded (Port * this)
       g_warn_if_fail (port->plugin); \
       break; \
     case PORT_OWNER_TYPE_TRACK: \
+    case PORT_OWNER_TYPE_TRACK_PROCESSOR: \
       port->track = \
         TRACKLIST->tracks[id->track_pos]; \
       g_warn_if_fail (port->track); \
@@ -177,6 +179,46 @@ port_find_from_identifier (
           break;
         }
       break;
+    case PORT_OWNER_TYPE_TRACK_PROCESSOR:
+      tr = TRACKLIST->tracks[id->track_pos];
+      g_warn_if_fail (tr);
+      switch (id->type)
+        {
+        case TYPE_EVENT:
+          if (id->flow == FLOW_OUTPUT)
+            {
+              return tr->processor.midi_out;
+            }
+          else if (id->flow == FLOW_INPUT)
+            {
+              if (id->flags & PORT_FLAG_PIANO_ROLL)
+                return tr->processor.piano_roll;
+              else
+                return tr->processor.midi_in;
+            }
+          break;
+        case TYPE_AUDIO:
+          if (id->flow == FLOW_OUTPUT)
+            {
+              if (id->flags & PORT_FLAG_STEREO_L)
+                return tr->processor.stereo_out->l;
+              else if (id->flags &
+                         PORT_FLAG_STEREO_R)
+                return tr->processor.stereo_out->r;
+            }
+          else if (id->flow == FLOW_INPUT)
+            {
+              if (id->flags & PORT_FLAG_STEREO_L)
+                return tr->processor.stereo_in->l;
+              else if (id->flags &
+                         PORT_FLAG_STEREO_R)
+                return tr->processor.stereo_in->r;
+            }
+          break;
+        default:
+          break;
+        }
+      break;
     case PORT_OWNER_TYPE_TRACK:
       tr = TRACKLIST->tracks[id->track_pos];
       g_warn_if_fail (tr);
@@ -189,13 +231,6 @@ port_find_from_identifier (
             {
               return ch->midi_out;
             }
-          else if (id->flow == FLOW_INPUT)
-            {
-              if (id->flags & PORT_FLAG_PIANO_ROLL)
-                return ch->piano_roll;
-              else
-                return ch->midi_in;
-            }
           break;
         case TYPE_AUDIO:
           if (id->flow == FLOW_OUTPUT)
@@ -205,14 +240,6 @@ port_find_from_identifier (
               else if (id->flags &
                          PORT_FLAG_STEREO_R)
                 return ch->stereo_out->r;
-            }
-          else if (id->flow == FLOW_INPUT)
-            {
-              if (id->flags & PORT_FLAG_STEREO_L)
-                return ch->stereo_in->l;
-              else if (id->flags &
-                         PORT_FLAG_STEREO_R)
-                return ch->stereo_in->r;
             }
           break;
         default:
@@ -552,6 +579,19 @@ port_set_owner_track (
 }
 
 /**
+ * Sets the owner track & its ID.
+ */
+void
+port_set_owner_track_processor (
+  Port *    port,
+  Track *   track)
+{
+  port_set_owner_track (port, track);
+  port->identifier.owner_type =
+    PORT_OWNER_TYPE_TRACK_PROCESSOR;
+}
+
+/**
  * Sets the owner fader & its ID.
  */
 void
@@ -654,9 +694,10 @@ port_connect (
       /*dest->has_modulators = 1;*/
     }
 
-  g_message ("Connected port (%s) to (%s)",
-             src->identifier.label,
-             dest->identifier.label);
+  g_message (
+    "Connected port \"%s\" to \"%s\"",
+    port_get_full_designation (src),
+    port_get_full_designation (dest));
   return 0;
 }
 
@@ -706,9 +747,10 @@ port_disconnect (Port * src, Port * dest)
         }
     }
 
-  g_message ("Disconnected port (%s) from (%s)",
-             src->identifier.label,
-             dest->identifier.label);
+  g_message (
+    "Disconnected port \"%s\" from \"%s\"",
+    port_get_full_designation (src),
+    port_get_full_designation (dest));
   return 0;
 }
 
@@ -863,6 +905,12 @@ stereo_ports_new_generic (
       port_set_owner_track (
         ports->r, (Track *) owner);
       break;
+    case PORT_OWNER_TYPE_TRACK_PROCESSOR:
+      port_set_owner_track_processor (
+        ports->l, (Track *) owner);
+      port_set_owner_track_processor (
+        ports->r, (Track *) owner);
+      break;
     case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:
       port_set_owner_sample_processor (
         ports->l, (SampleProcessor *) owner);
@@ -920,9 +968,9 @@ port_sum_signal_from_inputs (
        * by a track), otherwise always consider
        * incoming external data */
       if (port->identifier.owner_type !=
-            PORT_OWNER_TYPE_TRACK ||
+            PORT_OWNER_TYPE_TRACK_PROCESSOR ||
           (port->identifier.owner_type ==
-             PORT_OWNER_TYPE_TRACK &&
+             PORT_OWNER_TYPE_TRACK_PROCESSOR &&
            port->track->recording))
         {
           port_sum_data_from_jack (
@@ -955,7 +1003,7 @@ port_sum_signal_from_inputs (
               /*AUDIO_ENGINE->trigger_midi_activity = 1;*/
             /*}*/
           if (port->identifier.owner_type ==
-                PORT_OWNER_TYPE_TRACK)
+                PORT_OWNER_TYPE_TRACK_PROCESSOR)
             {
               port->track->trigger_midi_activity = 1;
             }
@@ -1157,7 +1205,7 @@ port_receive_midi_events_from_jack (
           midi_byte_t channel =
             jack_ev.buffer[0] & 0xf;
           if (self->identifier.owner_type ==
-                PORT_OWNER_TYPE_TRACK &&
+                PORT_OWNER_TYPE_TRACK_PROCESSOR &&
               (self->track->type ==
                  TRACK_TYPE_MIDI ||
                self->track->type ==
@@ -1171,6 +1219,15 @@ port_receive_midi_events_from_jack (
             }
           else
             {
+              /*g_message (*/
+                /*"JACK MIDI (%s): adding events "*/
+                /*"from buffer:\n"*/
+                /*"[%u] %hhx %hhx %hhx",*/
+                /*port_get_full_designation (self),*/
+                /*jack_ev.time,*/
+                /*jack_ev.buffer[0],*/
+                /*jack_ev.buffer[1],*/
+                /*jack_ev.buffer[2]);*/
               midi_events_add_event_from_buf (
                 self->midi_events,
                 jack_ev.time, jack_ev.buffer,
@@ -1179,10 +1236,18 @@ port_receive_midi_events_from_jack (
         }
     }
 
-  if(self->midi_events->num_events > 0)
-    g_message ("JACK MIDI (%s): have %d events",
-               self->identifier.label,
-               num_events);
+  if (self->midi_events->num_events > 0)
+    {
+      MidiEvent * ev =
+        &self->midi_events->events[0];
+      g_message (
+        "JACK MIDI (%s): have %d events\n"
+        "first event is: [%u] %hhx %hhx %hhx",
+        port_get_full_designation (self),
+        num_events,
+        ev->time, ev->raw_buffer[0],
+        ev->raw_buffer[1], ev->raw_buffer[2]);
+    }
 }
 
 void
@@ -1482,6 +1547,7 @@ port_get_full_designation (
           id->label);
       break;
     case PORT_OWNER_TYPE_TRACK:
+    case PORT_OWNER_TYPE_TRACK_PROCESSOR:
     case PORT_OWNER_TYPE_PREFADER:
     case PORT_OWNER_TYPE_FADER:
       return

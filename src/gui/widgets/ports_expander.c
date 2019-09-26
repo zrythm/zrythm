@@ -455,13 +455,13 @@ ports_expander_widget_setup_track (
       break;
     case PE_TRACK_PORT_TYPE_STEREO_IN:
       ADD_SINGLE (
-        tr->channel->stereo_in->l);
+        tr->processor.stereo_in->l);
       ADD_SINGLE (
-        tr->channel->stereo_in->r);
+        tr->processor.stereo_in->r);
       break;
     case PE_TRACK_PORT_TYPE_MIDI_IN:
       ADD_SINGLE (
-        tr->channel->midi_in);
+        tr->processor.midi_in);
       break;
     case PE_TRACK_PORT_TYPE_MIDI_OUT:
       ADD_SINGLE (

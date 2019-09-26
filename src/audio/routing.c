@@ -38,6 +38,7 @@
 #include "audio/port.h"
 #include "audio/routing.h"
 #include "audio/track.h"
+#include "audio/track_processor.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/stoat.h"
@@ -149,7 +150,9 @@ get_node_name (
     {
     case ROUTE_NODE_TYPE_PLUGIN:
       return
-        g_strdup (node->pl->descr->name);
+        g_strdup_printf (
+          "%s (Plugin)",
+          node->pl->descr->name);
       break;
     case ROUTE_NODE_TYPE_PORT:
       return
@@ -160,6 +163,11 @@ get_node_name (
         g_strdup_printf (
           "%s Fader",
           node->fader->channel->track->name);
+      break;
+    case ROUTE_NODE_TYPE_TRACK:
+      return
+        g_strdup (
+          node->track->name);
       break;
     case ROUTE_NODE_TYPE_PREFADER:
       return
@@ -226,8 +234,9 @@ node_process (
   GraphNode * node,
   const nframes_t   nframes)
 {
+  /*g_message ("processing %s",*/
+             /*get_node_name (node));*/
   int noroll = 0;
-  Channel * chan;
 
   nframes_t local_offset =
     node->graph->router->local_offset;
@@ -311,106 +320,28 @@ node_process (
         node->sample_processor, local_offset,
         nframes);
     }
+  else if (node->type ==
+           ROUTE_NODE_TYPE_TRACK)
+    {
+      track_processor_process (
+        &node->track->processor,
+        g_start_frames, local_offset,
+        nframes);
+    }
   else if (node->type == ROUTE_NODE_TYPE_PORT)
     {
       /* decide what to do based on what port it
        * is */
       Port * port = node->port;
 
-      /* if piano roll */
-      if (port->identifier.flags &
-            PORT_FLAG_PIANO_ROLL)
-        {
-          chan = port->track->channel;
-
-          if (chan->track->type ==
-                TRACK_TYPE_INSTRUMENT ||
-              chan->track->type ==
-                TRACK_TYPE_MIDI)
-            {
-              /* panic MIDI if necessary */
-              if (g_atomic_int_get (
-                    &AUDIO_ENGINE->panic))
-                {
-                  midi_events_panic (
-                    port->midi_events, 1);
-                }
-              /* get events from track if playing */
-              else if (TRANSPORT->play_state ==
-                       PLAYSTATE_ROLLING)
-                {
-                  if (TRANSPORT->recording &&
-                        chan->track->recording)
-                    {
-                      channel_handle_recording (
-                        chan, g_start_frames,
-                        nframes);
-                    }
-
-                  /* fill midi events to pass to
-                   * ins plugin */
-                  midi_track_fill_midi_events (
-                    chan->track,
-                    g_start_frames,
-                    local_offset,
-                    nframes,
-                    port->midi_events);
-                }
-              midi_events_dequeue (
-                port->midi_events);
-              if (port->midi_events->num_events > 0)
-                g_message (
-                  "piano roll port %s has %d events",
-                  port->identifier.label,
-                  port->midi_events->num_events);
-            }
-        }
-
       /* if midi editor manual press */
-      else if (port == AUDIO_ENGINE->
+      if (port == AUDIO_ENGINE->
             midi_editor_manual_press)
         {
           midi_events_dequeue (
             AUDIO_ENGINE->
               midi_editor_manual_press->
                 midi_events);
-        }
-
-      /* if channel stereo in */
-      else if (
-          port->identifier.type == TYPE_AUDIO &&
-          port->identifier.flow == FLOW_INPUT &&
-          port->identifier.owner_type ==
-            PORT_OWNER_TYPE_TRACK)
-        {
-          chan = port->track->channel;
-
-          /* fill stereo in buffers with info from
-           * the current clip */
-          /*int ret;*/
-          switch (chan->track->type)
-            {
-            case TRACK_TYPE_AUDIO:
-              audio_track_fill_stereo_in_from_clip (
-                chan->track,
-                port,
-                g_start_frames,
-                local_offset,
-                nframes);
-              break;
-            case TRACK_TYPE_MASTER:
-            case TRACK_TYPE_AUDIO_BUS:
-            case TRACK_TYPE_AUDIO_GROUP:
-            case TRACK_TYPE_INSTRUMENT:
-            case TRACK_TYPE_CHORD:
-            case TRACK_TYPE_MARKER:
-            case TRACK_TYPE_MIDI:
-            default:
-              port_sum_signal_from_inputs (
-                port, local_offset,
-                nframes, noroll);
-              break;
-            }
         }
 
       /* if channel stereo out port */
@@ -805,6 +736,22 @@ find_node_from_plugin (
 }
 
 static GraphNode *
+find_node_from_track (
+  Graph * graph,
+  Track * track)
+{
+  GraphNode * node;
+  for (int i = 0; i < graph->n_graph_nodes; i++)
+    {
+      node = graph->graph_nodes[i];
+      if (node->type == ROUTE_NODE_TYPE_TRACK &&
+          node->track == track)
+        return node;
+    }
+  return NULL;
+}
+
+static GraphNode *
 find_node_from_fader (
   Graph * graph,
   Fader * fader)
@@ -882,20 +829,32 @@ graph_node_new (
   node->id = graph->n_graph_nodes;
   node->graph = graph;
   node->type = type;
-  if (type == ROUTE_NODE_TYPE_PLUGIN)
-    node->pl = (Plugin *) data;
-  else if (type == ROUTE_NODE_TYPE_PORT)
-    node->port = (Port *) data;
-  else if (type == ROUTE_NODE_TYPE_FADER)
-    node->fader = (Fader *) data;
-  else if (type == ROUTE_NODE_TYPE_MONITOR_FADER)
-    node->fader = (Fader *) data;
-  else if (type == ROUTE_NODE_TYPE_PREFADER)
-    node->prefader = (PassthroughProcessor *) data;
-  else if (type ==
-             ROUTE_NODE_TYPE_SAMPLE_PROCESSOR)
-    node->sample_processor =
-      (SampleProcessor *) data;
+  switch (type)
+    {
+    case ROUTE_NODE_TYPE_PLUGIN:
+      node->pl = (Plugin *) data;
+      break;
+    case ROUTE_NODE_TYPE_PORT:
+      node->port = (Port *) data;
+      break;
+    case ROUTE_NODE_TYPE_FADER:
+      node->fader = (Fader *) data;
+      break;
+    case ROUTE_NODE_TYPE_MONITOR_FADER:
+      node->fader = (Fader *) data;
+      break;
+    case ROUTE_NODE_TYPE_PREFADER:
+      node->prefader =
+        (PassthroughProcessor *) data;
+      break;
+    case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
+      node->sample_processor =
+        (SampleProcessor *) data;
+      break;
+    case ROUTE_NODE_TYPE_TRACK:
+      node->track = (Track *) data;
+      break;
+    }
 
   return node;
 }
@@ -935,8 +894,9 @@ graph_add_terminal_node (
   node->terminal = 1;
   self->terminal_nodes[
     self->terminal_node_count - 1] = node;
-  /*g_message ("adding terminal node %d",*/
-             /*node->id);*/
+  /*g_message ("adding terminal node %s",*/
+             /*get_node_name (node));*/
+  /*g_warn_if_reached ();*/
   return node;
 }
 
@@ -1189,16 +1149,20 @@ add_port (
         graph_add_terminal_node (
           self, ROUTE_NODE_TYPE_PORT, port);
     }
-  else if (port->num_dests == 0 &&
-           port->num_srcs == 0 &&
-           owner != PORT_OWNER_TYPE_PLUGIN &&
-           owner != PORT_OWNER_TYPE_FADER &&
-           owner != PORT_OWNER_TYPE_MONITOR_FADER &&
-           owner != PORT_OWNER_TYPE_PREFADER)
+  else if (
+    port->num_dests == 0 &&
+    port->num_srcs == 0 &&
+    owner != PORT_OWNER_TYPE_PLUGIN &&
+    owner != PORT_OWNER_TYPE_FADER &&
+    owner != PORT_OWNER_TYPE_MONITOR_FADER &&
+    owner != PORT_OWNER_TYPE_PREFADER &&
+    owner != PORT_OWNER_TYPE_TRACK_PROCESSOR)
     {
     }
   else if (port->num_srcs == 0 &&
       !(owner == PORT_OWNER_TYPE_PLUGIN &&
+        port->identifier.flow == FLOW_OUTPUT) &&
+      !(owner == PORT_OWNER_TYPE_TRACK_PROCESSOR &&
         port->identifier.flow == FLOW_OUTPUT) &&
       !(owner == PORT_OWNER_TYPE_FADER &&
         port->identifier.flow == FLOW_OUTPUT) &&
@@ -1212,8 +1176,11 @@ add_port (
     graph_add_initial_node (
       self, ROUTE_NODE_TYPE_PORT, port);
   else if (port->num_dests == 0 &&
-           port->num_srcs > 0 &&
+           /*port->num_srcs > 0 &&*/
            !(owner == PORT_OWNER_TYPE_PLUGIN &&
+             port->identifier.flow ==
+               FLOW_INPUT) &&
+           !(owner == PORT_OWNER_TYPE_TRACK_PROCESSOR &&
              port->identifier.flow ==
                FLOW_INPUT) &&
            !(owner == PORT_OWNER_TYPE_FADER &&
@@ -1432,9 +1399,9 @@ graph_new (
         continue;
 
       /* add the track */
-      /*graph_add_node ( \*/
-        /*self, ROUTE_NODE_TYPE_TRACK,*/
-        /*&tr);*/
+      graph_add_node ( \
+        self, ROUTE_NODE_TYPE_TRACK,
+        tr);
 
       /* add the fader */
       graph_add_node ( \
@@ -1541,14 +1508,50 @@ graph_new (
     find_node_from_port (self, port);
   node_connect (node, node2);
 
-  Fader * fader;
-  PassthroughProcessor * prefader;
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       tr = TRACKLIST->tracks[i];
       if (!tr->channel)
         continue;
 
+      /* connect the track */
+      node =
+        find_node_from_track (
+          self, tr);
+      g_warn_if_fail (node);
+      if (tr->in_signal_type == TYPE_AUDIO)
+        {
+          port = tr->processor.stereo_in->l;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node2, node);
+          port = tr->processor.stereo_in->r;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node2, node);
+          port = tr->processor.stereo_out->l;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node, node2);
+          port = tr->processor.stereo_out->r;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node, node2);
+        }
+      else if (tr->in_signal_type == TYPE_EVENT)
+        {
+          port = tr->processor.midi_in;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node2, node);
+          port = tr->processor.midi_out;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node, node2);
+        }
+
+      Fader * fader;
+      PassthroughProcessor * prefader;
       fader = &tr->channel->fader;
       prefader = &tr->channel->prefader;
 
@@ -1556,6 +1559,7 @@ graph_new (
       node =
         find_node_from_fader (
           self, fader);
+      g_warn_if_fail (node);
       if (fader->type == FADER_TYPE_AUDIO_CHANNEL)
         {
           port = fader->stereo_in->l;
@@ -1592,6 +1596,7 @@ graph_new (
       node =
         find_node_from_prefader (
           self, prefader);
+      g_warn_if_fail (node);
       if (prefader->type ==
             PP_TYPE_AUDIO_CHANNEL)
         {
@@ -1631,6 +1636,7 @@ graph_new (
  \
           node = \
             find_node_from_plugin (self, pl); \
+          g_warn_if_fail (node); \
           for (k = 0; k < pl->num_in_ports; k++) \
             { \
               port = pl->in_ports[k]; \

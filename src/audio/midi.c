@@ -563,8 +563,9 @@ midi_events_add_event_from_buf (
   midi_byte_t * buf,
   int           buf_size)
 {
-  uint8_t type = buf[0] & 0xf0;
-  uint8_t channel = buf[0] & 0xf;
+  midi_byte_t type = buf[0] & 0xf0;
+  midi_byte_t channel =
+    (midi_byte_t) ((buf[0] & 0xf) + 1);
   switch (type)
     {
     case MIDI_CH1_NOTE_ON:
@@ -619,15 +620,14 @@ midi_panic_all (
       midi_events, queued);
 
   Track * track;
-  Channel * ch;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
-      ch = track->channel;
 
-      if (ch && track_has_piano_roll (track))
+      if (track_has_piano_roll (track))
         midi_events_panic (
-          ch->piano_roll->midi_events, queued);
+          track->processor.piano_roll->midi_events,
+          queued);
     }
 }
 

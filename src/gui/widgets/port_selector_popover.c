@@ -164,14 +164,14 @@ create_model_for_ports (
           if (type == TYPE_AUDIO ||
               type == TYPE_CV)
             {
-              port = ch->stereo_in->l;
+              port = track->processor.stereo_in->l;
               ADD_ROW;
-              port = ch->stereo_in->r;
+              port = track->processor.stereo_in->r;
               ADD_ROW;
             }
           else if (type == TYPE_EVENT)
             {
-              port = ch->midi_in;
+              port = track->processor.midi_in;
               ADD_ROW;
             }
         }

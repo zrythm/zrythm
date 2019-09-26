@@ -71,6 +71,7 @@ audio_srcs = [
   'supported_file.c',
   'track.c',
   'track_lane.c',
+  'track_processor.c',
   'tracklist.c',
   'transport.c',
   'velocity.c',

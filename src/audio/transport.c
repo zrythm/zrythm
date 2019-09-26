@@ -281,13 +281,11 @@ transport_move_playhead (
   Track * track;
   Region * region;
   MidiNote * midi_note;
-  Channel * channel;
   MidiEvents * midi_events;
   TrackLane * lane;
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
-      channel = track->channel;
 
       for (k = 0; k < track->num_lanes; k++)
         {
@@ -312,15 +310,18 @@ transport_move_playhead (
                         midi_note, PLAYHEAD->frames))
                     {
                       midi_events =
-                        channel->piano_roll->
-                          midi_events;
+                        track->processor.
+                          piano_roll->
+                            midi_events;
 
-                      zix_sem_wait (&midi_events->access_sem);
+                      zix_sem_wait (
+                        &midi_events->access_sem);
                       midi_events_add_note_off (
                         midi_events, 1,
                         midi_note->val,
                         0, 1);
-                      zix_sem_post (&midi_events->access_sem);
+                      zix_sem_post (
+                        &midi_events->access_sem);
                     }
                 }
             }

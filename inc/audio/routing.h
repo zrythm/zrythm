@@ -55,7 +55,7 @@ typedef enum GraphNodeType
   /** Plugin processor. */
   ROUTE_NODE_TYPE_PLUGIN,
   /** Track processor. */
-  //ROUTE_NODE_TYPE_TRACK,
+  ROUTE_NODE_TYPE_TRACK,
   /** Fader/pan processor. */
   ROUTE_NODE_TYPE_FADER,
   /** Fader/pan processor for monitor. */
@@ -98,6 +98,8 @@ typedef struct GraphNode
 
   /** Fader, if fader. */
   Fader *       fader;
+
+  Track *       track;
 
   /** Pre-Fader, if prefader node. */
   PassthroughProcessor * prefader;
