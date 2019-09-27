@@ -98,6 +98,41 @@ audio_clip_new_from_float_array (
 }
 
 /**
+ * Create an audio clip while recording.
+ *
+ * The frames will keep getting reallocated until
+ * the recording is finished.
+ *
+ * @param nframes Number of frames to allocate. This
+ *   should be the current cycle's frames when
+ *   called during recording.
+ */
+AudioClip *
+audio_clip_new_recording (
+  const channels_t channels,
+  const long       nframes,
+  const char *     name)
+{
+  AudioClip * self =
+    calloc (1, sizeof (AudioClip));
+
+  self->channels = channels;
+  self->frames =
+    calloc (
+      (size_t) (nframes * self->channels),
+      sizeof (sample_t));
+  self->num_frames = nframes;
+  self->name = g_strdup (name);
+  self->pool_id = -1;
+  for (long i = 0; i < nframes * channels; i++)
+    {
+      self->frames[i] = 0.f;
+    }
+
+  return self;
+}
+
+/**
  * Writes the clip to the pool as a wav file.
  */
 void

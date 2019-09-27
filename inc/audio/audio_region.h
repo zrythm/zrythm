@@ -36,6 +36,7 @@ typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
 typedef struct Track Track;
 typedef struct Region AudioRegion;
+typedef struct AudioClip AudioClip;
 
 /**
  * @addtogroup audio
@@ -65,6 +66,14 @@ audio_region_new (
   const channels_t channels,
   const Position * start_pos,
   const int        is_main);
+
+/**
+ * Returns the audio clip associated with the
+ * Region.
+ */
+AudioClip *
+audio_region_get_clip (
+  const Region * self);
 
 /**
  * Frees members only but not the audio region itself.

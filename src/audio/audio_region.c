@@ -58,13 +58,26 @@ audio_region_new (
   self->pool_id = -1;
 
   AudioClip * clip = NULL;
+  int recording = 0;
   if (filename)
-    clip =
-      audio_clip_new_from_file (filename);
+    {
+      clip =
+        audio_clip_new_from_file (filename);
+    }
+  else if (frames)
+    {
+      clip =
+        audio_clip_new_from_float_array (
+          frames, nframes, channels,
+          "new audio clip");
+    }
   else
-    clip =
-      audio_clip_new_from_float_array (
-        frames, nframes, channels, "new audio clip");
+    {
+      clip =
+        audio_clip_new_recording (
+          2, nframes, "new audio clip");
+      recording = 1;
+    }
   g_return_val_if_fail (clip, NULL);
 
   self->pool_id =
@@ -79,15 +92,34 @@ audio_region_new (
     &self->end_pos, clip->num_frames);
 
   /* init */
-  region_init ((Region *) self,
-               start_pos,
-               &self->end_pos,
-               is_main);
+  region_init (
+    self, start_pos, &self->end_pos, is_main);
 
-  if (is_main)
+  if (is_main && !recording)
     audio_clip_write_to_pool (clip);
 
   return self;
+}
+
+/**
+ * Returns the audio clip associated with the
+ * Region.
+ */
+AudioClip *
+audio_region_get_clip (
+  const Region * self)
+{
+  g_return_val_if_fail (
+    self->pool_id >= 0 &&
+    self->type == REGION_TYPE_AUDIO,
+    NULL);
+
+  AudioClip * clip =
+    AUDIO_POOL->clips[self->pool_id];
+
+  g_return_val_if_fail (clip, NULL);
+
+  return clip;
 }
 
 /**

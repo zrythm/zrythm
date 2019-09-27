@@ -1053,10 +1053,6 @@ create_item (ArrangerWidget * self,
                 lane, NULL, &pos);
               break;
             case TRACK_TYPE_AUDIO:
-              timeline_arranger_widget_create_region (
-                timeline_arranger,
-                REGION_TYPE_AUDIO, track,
-                lane, NULL, &pos);
               break;
             case TRACK_TYPE_MASTER:
               break;

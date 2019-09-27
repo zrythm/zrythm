@@ -379,6 +379,18 @@ show_context_menu (DragDestBoxWidget * self)
     GTK_MENU_SHELL(menu),
     GTK_WIDGET (menu_item));
 
+  menu_item =
+    z_gtk_create_menu_item (
+      _("Add Audio Track"),
+      NULL,
+      ICON_TYPE_GNOME_BUILDER,
+      NULL,
+      0,
+      "win.create-audio-track");
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL(menu),
+    GTK_WIDGET (menu_item));
+
   submenu = gtk_menu_new ();
   menu_item =
     z_gtk_create_menu_item (

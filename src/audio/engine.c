@@ -259,6 +259,8 @@ engine_init (
 
       self->audio_backend =
         AUDIO_BACKEND_DUMMY;
+      self->midi_backend =
+        MIDI_BACKEND_DUMMY;
       engine_dummy_setup (self, loading);
     }
 

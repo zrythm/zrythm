@@ -17,8 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/audio_region.h"
 #include "audio/audio_track.h"
 #include "audio/channel.h"
+#include "audio/clip.h"
 #include "audio/control_room.h"
 #include "audio/engine.h"
 #include "audio/fader.h"
@@ -298,7 +300,10 @@ handle_recording (
   if (!TRANSPORT->recording ||
       !tr->recording ||
       !IS_TRANSPORT_ROLLING)
-    return;
+    {
+      tr->recording_region = NULL;
+      return;
+    }
 
   /* get end position */
   long start_frames = g_start_frames;
@@ -307,7 +312,10 @@ handle_recording (
 
   /* adjust for transport loop end */
   int loop_met = 0;
-  if (end_frames >= TRANSPORT->loop_end_pos.frames)
+  nframes_t frames_till_loop = 0;
+  if ((frames_till_loop =
+         transport_is_loop_point_met (
+           TRANSPORT, g_start_frames, nframes)))
     {
       loop_met = 1;
       start_frames =
@@ -324,16 +332,35 @@ handle_recording (
   position_from_frames (
     &end_pos, end_frames);
 
-  if (track_has_piano_roll (tr))
+  int is_audio = tr->type == TRACK_TYPE_AUDIO;
+
+  if (track_has_piano_roll (tr) ||
+      is_audio)
     {
       /* get the recording region */
       Region * region =
         tr->recording_region;
 
+      /* the region before the loop point, if
+       * loop point is met */
+      Region * region_before_loop_end = NULL;
+
+      /* the clip, if audio */
+      AudioClip * clip = NULL;
+      AudioClip * clip_before_loop_end = NULL;
+
       if (region)
         {
+          if (is_audio)
+            {
+              clip =
+                audio_region_get_clip (region);
+            }
           if (loop_met)
             {
+              region_before_loop_end = region;
+              clip_before_loop_end = clip;
+
               /* set current region end pos  to
                * transport loop end */
               region_set_end_pos (
@@ -341,6 +368,19 @@ handle_recording (
                 AO_UPDATE_ALL);
               region->end_pos.frames =
                 TRANSPORT->loop_end_pos.frames;
+              if (is_audio)
+                {
+                  clip->num_frames =
+                    region->end_pos.frames -
+                    region->start_pos.frames;
+                  clip->frames =
+                    (sample_t *) realloc (
+                    clip->frames,
+                    (size_t)
+                    (clip->num_frames *
+                       clip->channels) *
+                    sizeof (sample_t));
+                }
               region_set_loop_end_pos (
                 region, &TRANSPORT->loop_end_pos,
                 AO_UPDATE_ALL);
@@ -349,14 +389,32 @@ handle_recording (
 
               /* start new region in new lane at
                * TRANSPORT loop start */
-              Region * new_region =
-                midi_region_new (
-                  &TRANSPORT->loop_start_pos,
-                  &end_pos, 1);
+              Region * new_region;
+              if (track_has_piano_roll (tr))
+                {
+                  new_region =
+                    midi_region_new (
+                      &TRANSPORT->loop_start_pos,
+                      &end_pos, 1);
+                }
+              else if (tr->type == TRACK_TYPE_AUDIO)
+                {
+                  new_region =
+                    audio_region_new (
+                      NULL, NULL, nframes, 2,
+                      &TRANSPORT->loop_start_pos,
+                      1);
+                }
               track_add_region (
                 tr, new_region, NULL,
                 region->lane_pos + 1, F_GEN_NAME);
               region = new_region;
+
+              if (is_audio)
+                {
+                  clip =
+                    audio_region_get_clip (region);
+                }
             }
           else /* loop not met */
             {
@@ -365,6 +423,19 @@ handle_recording (
                 region, &end_pos, AO_UPDATE_ALL);
               region->end_pos.frames =
                 end_pos.frames;
+              if (is_audio)
+                {
+                  clip->num_frames =
+                    region->end_pos.frames -
+                    region->start_pos.frames;
+                  clip->frames =
+                    (sample_t *) realloc (
+                    clip->frames,
+                    (size_t)
+                    (clip->num_frames *
+                       clip->channels) *
+                    sizeof (sample_t));
+                }
               region_set_loop_end_pos (
                 region, &end_pos, AO_UPDATE_ALL);
               region->loop_end_pos.frames =
@@ -374,78 +445,187 @@ handle_recording (
       else
         {
           /* create region */
-          region =
-            midi_region_new (
-              &start_pos, &end_pos, 1);
+          if (track_has_piano_roll (tr))
+            {
+              region =
+                midi_region_new (
+                  &start_pos, &end_pos, 1);
+            }
+          else if (tr->type == TRACK_TYPE_AUDIO)
+            {
+              region =
+                audio_region_new (
+                  NULL, NULL, nframes, 2,
+                  &start_pos, 1);
+            }
           track_add_region (
             tr, region, NULL,
             tr->num_lanes - 1,
             F_GEN_NAME);
+
+          if (is_audio)
+            {
+              clip =
+                audio_region_get_clip (region);
+            }
         }
 
       tr->recording_region =
         region;
 
-      MidiEvents * midi_events =
-        self->midi_in->midi_events;
-      MidiNote * mn;
-
-      /* add midi note off if loop met */
-      if (loop_met)
+      if (track_has_piano_roll (tr))
         {
-          while (
-            (mn =
-              midi_region_pop_unended_note (
-                region, -1)))
-            {
-              midi_note_set_end_pos (
-                mn, &TRANSPORT->loop_end_pos,
-                AO_UPDATE_ALL);
-            }
-        }
+          MidiEvents * midi_events =
+            self->midi_in->midi_events;
+          MidiNote * mn;
 
-      /* convert MIDI data to midi notes */
-      if (midi_events->num_events > 0)
-        {
-          for (int i = 0;
-               i < midi_events->num_events; i++)
+          /* add midi note off if loop met */
+          if (loop_met)
             {
-              MidiEvent * ev =
-                & midi_events->events[i];
-
-              switch (ev->type)
+              while (
+                (mn =
+                  midi_region_pop_unended_note (
+                    region_before_loop_end, -1)))
                 {
-                  case MIDI_EVENT_TYPE_NOTE_ON:
-                    mn =
-                      midi_note_new (
-                        region, &start_pos,
-                        &end_pos,
-                        ev->note_pitch,
-                        ev->velocity, 1);
-                    midi_region_add_midi_note (
-                      region, mn);
-
-                    /* add to unended notes */
-                    array_append (
-                      region->unended_notes,
-                      region->num_unended_notes,
-                      mn);
-                    break;
-                  case MIDI_EVENT_TYPE_NOTE_OFF:
-                    mn =
-                      midi_region_pop_unended_note (
-                        region, ev->note_pitch);
-                    if (mn)
-                      midi_note_set_end_pos (
-                        mn, &end_pos, AO_UPDATE_ALL);
-                    break;
-                  default:
-                    /* TODO */
-                    break;
+                  midi_note_set_end_pos (
+                    mn, &TRANSPORT->loop_end_pos,
+                    AO_UPDATE_ALL);
                 }
-            } /* for loop num events */
-        } /* if have midi events */
-    } /* if channel type MIDI */
+            }
+
+          /* convert MIDI data to midi notes */
+          if (midi_events->num_events > 0)
+            {
+              for (int i = 0;
+                   i < midi_events->num_events; i++)
+                {
+                  MidiEvent * ev =
+                    & midi_events->events[i];
+
+                  switch (ev->type)
+                    {
+                      case MIDI_EVENT_TYPE_NOTE_ON:
+                        mn =
+                          midi_note_new (
+                            region, &start_pos,
+                            &end_pos,
+                            ev->note_pitch,
+                            ev->velocity, 1);
+                        midi_region_add_midi_note (
+                          region, mn);
+
+                        /* add to unended notes */
+                        array_append (
+                          region->unended_notes,
+                          region->num_unended_notes,
+                          mn);
+                        break;
+                      case MIDI_EVENT_TYPE_NOTE_OFF:
+                        mn =
+                          midi_region_pop_unended_note (
+                            region, ev->note_pitch);
+                        if (mn)
+                          midi_note_set_end_pos (
+                            mn, &end_pos, AO_UPDATE_ALL);
+                        break;
+                      default:
+                        /* TODO */
+                        break;
+                    }
+                } /* for loop num events */
+            } /* if have midi events */
+        } /* if track has piano roll */
+      else if (is_audio)
+        {
+          if (loop_met)
+            {
+              /* handle the samples until loop end */
+              long clip_offset_before_loop =
+                g_start_frames -
+                region_before_loop_end->
+                  start_pos.frames;
+              for (
+                nframes_t i =
+                  local_offset;
+                i <
+                  local_offset +
+                    frames_till_loop;
+                i++)
+                {
+                  g_warn_if_fail (
+                    clip_offset_before_loop >= 0 &&
+                    clip_offset_before_loop <
+                      clip_before_loop_end->
+                        num_frames);
+                  g_warn_if_fail (
+                    i >= local_offset &&
+                    i < local_offset + nframes);
+                  clip_before_loop_end->frames[
+                    clip_before_loop_end->channels *
+                      clip_offset_before_loop] =
+                        self->stereo_in->l->buf[i];
+                  clip_before_loop_end->frames[
+                    clip_before_loop_end->channels *
+                      (clip_offset_before_loop++)] =
+                        self->stereo_in->r->buf[i];
+                }
+
+              /* handle samples after loop start */
+              long clip_offset = 0;
+              for (
+                nframes_t i =
+                  nframes -
+                    (local_offset +
+                      frames_till_loop);
+                i < nframes;
+                i++)
+                {
+                  g_warn_if_fail (
+                    clip_offset >= 0 &&
+                    clip_offset <
+                      clip->num_frames);
+                  g_warn_if_fail (
+                    i >= local_offset &&
+                    i < local_offset + nframes);
+                  clip->frames[
+                    clip->channels *
+                      clip_offset] =
+                        self->stereo_in->l->buf[i];
+                  clip->frames[
+                    clip->channels *
+                      (clip_offset++)] =
+                        self->stereo_in->r->buf[i];
+                }
+            }
+
+          /* handle the samples normally */
+          nframes_t cur_local_offset =
+            local_offset;
+          for (long i =
+                 start_frames -
+                   region->start_pos.frames;
+               i <
+                 end_frames -
+                   region->start_pos.frames; i++)
+            {
+              g_warn_if_fail (
+                i >= 0 &&
+                i < clip->num_frames);
+              g_warn_if_fail (
+                cur_local_offset >= local_offset &&
+                cur_local_offset <
+                  local_offset + nframes);
+              clip->frames[
+                i * clip->channels] =
+                  self->stereo_in->l->buf[
+                    cur_local_offset];
+              clip->frames[
+                i * clip->channels] =
+                  self->stereo_in->l->buf[
+                    cur_local_offset++];
+            }
+        } /* if audio track */
+    } /* if track is MIDI or AUDIO */
 }
 
 /**

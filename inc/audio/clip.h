@@ -81,6 +81,22 @@ audio_clip_new_from_float_array (
   const char *     name);
 
 /**
+ * Create an audio clip while recording.
+ *
+ * The frames will keep getting reallocated until
+ * the recording is finished.
+ *
+ * @param nframes Number of frames to allocate. This
+ *   should be the current cycle's frames when
+ *   called during recording.
+ */
+AudioClip *
+audio_clip_new_recording (
+  const channels_t channels,
+  const long       nframes,
+  const char *     name);
+
+/**
  * Writes the given audio clip data to a file.
  */
 void

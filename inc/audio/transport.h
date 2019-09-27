@@ -378,6 +378,19 @@ transport_set_ebeat_unit (
   BeatUnit bu);
 
 /**
+ * Returns the number of processable frames until
+ * and excluding the loop end point as a positive
+ * number (>= 1) if the loop point was met between
+ * g_start_frames and (g_start_frames + nframes),
+ * otherwise returns 0;
+ */
+nframes_t
+transport_is_loop_point_met (
+  const Transport * self,
+  const long        g_start_frames,
+  const nframes_t   nframes);
+
+/**
  * @}
  */
 

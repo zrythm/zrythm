@@ -504,3 +504,30 @@ transport_position_add_frames (
    * position_from_frames rounds them */
   pos->frames = new_global_frames;
 }
+
+/**
+ * Returns the number of processable frames until
+ * and excluding the loop end point as a positive
+ * number (>= 1) if the loop point was met between
+ * g_start_frames and (g_start_frames + nframes),
+ * otherwise returns 0;
+ */
+nframes_t
+transport_is_loop_point_met (
+  const Transport * self,
+  const long        g_start_frames,
+  const nframes_t   nframes)
+{
+  if (
+    IS_TRANSPORT_LOOPING &&
+    self->loop_end_pos.frames > g_start_frames &&
+    self->loop_end_pos.frames <=
+      g_start_frames + nframes)
+    {
+      return
+        (nframes_t)
+        (self->loop_end_pos.frames -
+         g_start_frames);
+    }
+  return 0;
+}
