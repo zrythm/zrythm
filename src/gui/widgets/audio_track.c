@@ -35,6 +35,7 @@
 #include "gui/widgets/audio_track.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/track_lanelist.h"
 #include "gui/widgets/track_top_grid.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
@@ -42,6 +43,7 @@
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (AudioTrackWidget,
                audio_track_widget,
@@ -57,9 +59,10 @@ G_DEFINE_TYPE (AudioTrackWidget,
 AudioTrackWidget *
 audio_track_widget_new (Track * track)
 {
-  AudioTrackWidget * self = g_object_new (
-                            AUDIO_TRACK_WIDGET_TYPE,
-                            NULL);
+  AudioTrackWidget * self =
+    g_object_new (
+      AUDIO_TRACK_WIDGET_TYPE,
+      NULL);
 
   TRACK_WIDGET_GET_PRIVATE (self);
 
@@ -67,11 +70,19 @@ audio_track_widget_new (Track * track)
   color_area_widget_set_color (tw_prv->color,
                                &track->color);
 
+  /* create lanelist */
+  tw_prv->lanelist =
+    track_lanelist_widget_new (track);
+  gtk_container_add (
+    GTK_CONTAINER (tw_prv->paned),
+    GTK_WIDGET (tw_prv->lanelist));
+
   /* setup automation tracklist */
   AutomationTracklist * automation_tracklist =
     track_get_automation_tracklist (track);
   automation_tracklist->widget =
-    automation_tracklist_widget_new (automation_tracklist);
+    automation_tracklist_widget_new (
+      automation_tracklist);
   gtk_container_add (
     GTK_CONTAINER (tw_prv->paned),
     GTK_WIDGET (automation_tracklist->widget));
@@ -91,6 +102,11 @@ audio_track_widget_new (Track * track)
       self->solo, "toggled",
       G_CALLBACK (track_widget_on_solo_toggled),
       self);
+  g_signal_connect (
+    self->show_lanes,
+    "toggled",
+    G_CALLBACK (track_widget_on_show_lanes_toggled),
+    self);
   g_signal_connect (
     self->show_automation,
     "toggled",
@@ -147,6 +163,8 @@ audio_track_widget_refresh (AudioTrackWidget * self)
     track_get_automation_tracklist (tw_prv->track);
   automation_tracklist_widget_refresh (
     automation_tracklist->widget);
+
+  track_lanelist_widget_refresh (tw_prv->lanelist);
 }
 
 static void
@@ -179,6 +197,12 @@ audio_track_widget_init (AudioTrackWidget * self)
   self->show_automation =
     z_gtk_toggle_button_new_with_icon (
       "z-node-type-cusp");
+  self->show_lanes =
+    z_gtk_toggle_button_new_with_icon (
+      "z-format-justify-fill");
+  ui_add_widget_tooltip (
+    self->show_lanes,
+    _("Show track lanes"));
 
   /* set buttons to upper controls */
   gtk_box_pack_start (
@@ -201,6 +225,12 @@ audio_track_widget_init (AudioTrackWidget * self)
     0);
 
   /* pack buttons to bot controls */
+  gtk_box_pack_start (
+    GTK_BOX (tw_prv->top_grid->bot_controls),
+    GTK_WIDGET (self->show_lanes),
+    Z_GTK_NO_EXPAND,
+    Z_GTK_NO_FILL,
+    0);
   gtk_box_pack_start (
     GTK_BOX (tw_prv->top_grid->bot_controls),
     GTK_WIDGET (self->show_automation),

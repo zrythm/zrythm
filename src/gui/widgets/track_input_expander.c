@@ -93,9 +93,11 @@ on_midi_channels_changed (
 }
 
 static void
-on_midi_input_changed (
-  GtkComboBox * widget,
-  TrackInputExpanderWidget * self)
+on_ext_input_changed (
+  TrackInputExpanderWidget * self,
+  GtkComboBox *              widget,
+  const int                  midi,
+  const int                  left)
 {
   const char * id =
     gtk_combo_box_get_active_id (widget);
@@ -107,31 +109,84 @@ on_midi_input_changed (
   if (string_is_equal (id, "all", 1))
     {
       g_message ("all selected");
-      if (ch->all_midi_ins)
-        return;
-      ch->all_midi_ins = 1;
+
+      if (midi)
+        {
+          if (ch->all_midi_ins)
+            return;
+          ch->all_midi_ins = 1;
+        }
+      else if (left)
+        {
+          if (ch->all_stereo_l_ins)
+            return;
+          ch->all_stereo_l_ins = 1;
+        }
+      else
+        {
+          if (ch->all_stereo_r_ins)
+            return;
+          ch->all_stereo_r_ins = 1;
+        }
     }
   else if (string_is_equal (id, "none", 1))
     {
       g_message ("none selected");
-      ch->all_midi_ins = 0;
-      ext_ports_free (
-        ch->ext_midi_ins,
-        ch->num_ext_midi_ins);
-      ch->num_ext_midi_ins = 0;
+      if (midi)
+        {
+          ch->all_midi_ins = 0;
+          ext_ports_free (
+            ch->ext_midi_ins,
+            ch->num_ext_midi_ins);
+          ch->num_ext_midi_ins = 0;
+        }
+      else if (left)
+        {
+          ch->all_stereo_l_ins = 0;
+          ext_ports_free (
+            ch->ext_stereo_l_ins,
+            ch->num_ext_stereo_l_ins);
+          ch->num_ext_stereo_l_ins = 0;
+        }
+      else
+        {
+          ch->all_stereo_r_ins = 0;
+          ext_ports_free (
+            ch->ext_stereo_r_ins,
+            ch->num_ext_stereo_r_ins);
+          ch->num_ext_stereo_r_ins = 0;
+        }
     }
   else
     {
       g_message ("%s selected", id);
-      ext_ports_free (
-        ch->ext_midi_ins,
-        ch->num_ext_midi_ins);
-      ch->all_midi_ins = 0;
+      if (midi)
+        {
+          ext_ports_free (
+            ch->ext_midi_ins,
+            ch->num_ext_midi_ins);
+          ch->all_midi_ins = 0;
+        }
+      else if (left)
+        {
+          ext_ports_free (
+            ch->ext_stereo_l_ins,
+            ch->num_ext_stereo_l_ins);
+          ch->all_stereo_l_ins = 0;
+        }
+      else
+        {
+          ext_ports_free (
+            ch->ext_stereo_r_ins,
+            ch->num_ext_stereo_r_ins);
+          ch->all_stereo_r_ins = 0;
+        }
 
       ExtPort * ports[60];
       int       num_ports;
       ext_ports_get (
-        TYPE_EVENT, FLOW_OUTPUT, 1, ports,
+        midi ? TYPE_EVENT : TYPE_AUDIO,
+        FLOW_OUTPUT, 1, ports,
         &num_ports);
       ExtPort * port;
       for (int i = 0; i < num_ports; i++)
@@ -143,9 +198,24 @@ on_midi_input_changed (
           if (string_is_equal (
                 port->full_name, id, 1))
             {
-              ch->num_ext_midi_ins = 1;
-              ch->ext_midi_ins[0] =
-                ext_port_clone (port);
+              if (midi)
+                {
+                  ch->num_ext_midi_ins = 1;
+                  ch->ext_midi_ins[0] =
+                    ext_port_clone (port);
+                }
+              else if (left)
+                {
+                  ch->num_ext_stereo_l_ins = 1;
+                  ch->ext_stereo_l_ins[0] =
+                    ext_port_clone (port);
+                }
+              else
+                {
+                  ch->num_ext_stereo_r_ins = 1;
+                  ch->ext_stereo_r_ins[0] =
+                    ext_port_clone (port);
+                }
               break;
             }
         }
@@ -153,6 +223,30 @@ on_midi_input_changed (
     }
 
   channel_reconnect_ext_input_ports (ch);
+}
+
+static void
+on_midi_input_changed (
+  GtkComboBox * widget,
+  TrackInputExpanderWidget * self)
+{
+  on_ext_input_changed (self, widget, 1, 0);
+}
+
+static void
+on_stereo_l_input_changed (
+  GtkComboBox * widget,
+  TrackInputExpanderWidget * self)
+{
+  on_ext_input_changed (self, widget, 0, 1);
+}
+
+static void
+on_stereo_r_input_changed (
+  GtkComboBox * widget,
+  TrackInputExpanderWidget * self)
+{
+  on_ext_input_changed (self, widget, 0, 0);
 }
 
 static int
@@ -171,18 +265,39 @@ row_separator_func (
     return 0;
 }
 
+/**
+ * Sets up external inputs combo box.
+ *
+ * @param midi 1 for MIDI inputs.
+ * @param left If midi is 0, then this indicates
+ *   whether to use the left channel (1) or right
+ *   (0).
+ */
 static void
-setup_midi_ins_cb (
-  TrackInputExpanderWidget * self)
+setup_ext_ins_cb (
+  TrackInputExpanderWidget * self,
+  const int                  midi,
+  const int                  left)
 {
-  GtkComboBox * cb = self->midi_input;
+  GtkComboBox * cb = NULL;
+  if (midi)
+    cb = self->midi_input;
+  else if (left)
+    cb = self->stereo_l_input;
+  else
+    cb = self->stereo_r_input;
 
   gtk_combo_box_text_remove_all (
     GTK_COMBO_BOX_TEXT (cb));
 
-  gtk_combo_box_text_append (
-    GTK_COMBO_BOX_TEXT (cb),
-    "all", _("All MIDI Inputs"));
+  if (midi)
+    gtk_combo_box_text_append (
+      GTK_COMBO_BOX_TEXT (cb),
+      "all", _("All MIDI Inputs"));
+  else
+    gtk_combo_box_text_append (
+      GTK_COMBO_BOX_TEXT (cb),
+      "all", _("All Audio Inputs"));
   gtk_combo_box_text_append (
     GTK_COMBO_BOX_TEXT (cb),
     "separator", "separator");
@@ -191,7 +306,8 @@ setup_midi_ins_cb (
   ExtPort * ports[60];
   int       num_ports;
   ext_ports_get (
-    TYPE_EVENT, FLOW_OUTPUT, 1, ports, &num_ports);
+    midi ? TYPE_EVENT : TYPE_AUDIO,
+    FLOW_OUTPUT, 1, ports, &num_ports);
 
   ExtPort * port;
   char * label;
@@ -227,23 +343,46 @@ setup_midi_ins_cb (
 
   /* select the correct value */
   Channel * ch = self->track->channel;
-  if (ch->all_midi_ins)
-    g_value_set_string (&a, "all");
-  else if (ch->num_ext_midi_ins == 0)
-    g_value_set_string (&a, "none");
+  if (midi)
+    {
+      if (ch->all_midi_ins)
+        g_value_set_string (&a, "all");
+      else if (ch->num_ext_midi_ins == 0)
+        g_value_set_string (&a, "none");
+      else
+        {
+          g_value_set_string (
+            &a, ch->ext_midi_ins[0]->full_name);
+        }
+    }
+  else if (left)
+    {
+      if (ch->all_stereo_l_ins)
+        g_value_set_string (&a, "all");
+      else if (ch->num_ext_stereo_l_ins == 0)
+        g_value_set_string (&a, "none");
+      else
+        {
+          g_value_set_string (
+            &a, ch->ext_stereo_l_ins[0]->full_name);
+        }
+    }
   else
     {
-      g_value_set_string (
-        &a, ch->ext_midi_ins[0]->full_name);
+      if (ch->all_stereo_r_ins)
+        g_value_set_string (&a, "all");
+      else if (ch->num_ext_stereo_r_ins == 0)
+        g_value_set_string (&a, "none");
+      else
+        {
+          g_value_set_string (
+            &a, ch->ext_stereo_r_ins[0]->full_name);
+        }
     }
   g_object_set_property (
     G_OBJECT (cb),
     "active-id",
     &a);
-
-  expander_box_widget_set_icon_name (
-    Z_EXPANDER_BOX_WIDGET (self),
-    "z-audio-midi");
 }
 
 static void
@@ -336,12 +475,26 @@ track_input_expander_widget_refresh (
     track->type == TRACK_TYPE_INSTRUMENT ||
     track->type == TRACK_TYPE_AUDIO);
 
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->midi_input), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->midi_channels), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->stereo_l_input), 0);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->stereo_r_input), 0);
+
   if (track->type == TRACK_TYPE_MIDI ||
       track->type == TRACK_TYPE_INSTRUMENT)
     {
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->midi_input), 1);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->midi_channels), 1);
+
       /* refresh model and select appropriate
        * input */
-      setup_midi_ins_cb (self);
+      setup_ext_ins_cb (self, 1, 0);
       setup_midi_channels_cb (self);
 
       expander_box_widget_set_icon_name (
@@ -350,6 +503,16 @@ track_input_expander_widget_refresh (
     }
   else if (track->type == TRACK_TYPE_AUDIO)
     {
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->stereo_l_input), 1);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->stereo_r_input), 1);
+
+      /* refresh model and select appropriate
+       * input */
+      setup_ext_ins_cb (self, 0, 1);
+      setup_ext_ins_cb (self, 0, 0);
+
       expander_box_widget_set_icon_resource (
         Z_EXPANDER_BOX_WIDGET (self),
         ICON_TYPE_ZRYTHM,
@@ -405,6 +568,35 @@ track_input_expander_widget_init (
     self->midi_channels, "changed",
     G_CALLBACK (on_midi_channels_changed), self);
 
+  /* setup audio inputs */
+  self->stereo_l_input =
+    GTK_COMBO_BOX (gtk_combo_box_text_new ());
+  two_col_expander_box_widget_add_single (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    GTK_WIDGET (self->stereo_l_input));
+  gtk_combo_box_set_row_separator_func (
+    self->stereo_l_input,
+    (GtkTreeViewRowSeparatorFunc)
+      row_separator_func,
+    self, NULL);
+  g_signal_connect (
+    self->stereo_l_input, "changed",
+    G_CALLBACK (on_stereo_l_input_changed), self);
+
+  self->stereo_r_input =
+    GTK_COMBO_BOX (gtk_combo_box_text_new ());
+  two_col_expander_box_widget_add_single (
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
+    GTK_WIDGET (self->stereo_r_input));
+  gtk_combo_box_set_row_separator_func (
+    self->stereo_r_input,
+    (GtkTreeViewRowSeparatorFunc)
+      row_separator_func,
+    self, NULL);
+  g_signal_connect (
+    self->stereo_r_input, "changed",
+    G_CALLBACK (on_stereo_r_input_changed), self);
+
   /* set name and icon */
   expander_box_widget_set_label (
     Z_EXPANDER_BOX_WIDGET (self),
@@ -415,6 +607,10 @@ track_input_expander_widget_init (
 
   z_gtk_combo_box_set_ellipsize_mode (
     self->midi_input, PANGO_ELLIPSIZE_END);
+  z_gtk_combo_box_set_ellipsize_mode (
+    self->stereo_l_input, PANGO_ELLIPSIZE_END);
+  z_gtk_combo_box_set_ellipsize_mode (
+    self->stereo_r_input, PANGO_ELLIPSIZE_END);
   z_gtk_combo_box_set_ellipsize_mode (
     self->midi_channels, PANGO_ELLIPSIZE_END);
 }

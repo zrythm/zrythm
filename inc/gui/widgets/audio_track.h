@@ -48,6 +48,7 @@ typedef struct _AudioTrackWidget
   GtkToggleButton *             record;
   GtkToggleButton *             solo;
   GtkToggleButton *             mute;
+  GtkToggleButton *             show_lanes;
   GtkToggleButton *             show_automation;
 } AudioTrackWidget;
 

@@ -166,14 +166,19 @@ track_lane_widget_new (
   self->lane = lane;
 
   /* setup midi channel box */
-  gtk_combo_box_set_row_separator_func (
-    GTK_COMBO_BOX (self->midi_ch_cb),
-    (GtkTreeViewRowSeparatorFunc)
-      row_separator_func,
-    self, NULL);
-  g_signal_connect (
-    self->midi_ch_cb, "changed",
-    G_CALLBACK (on_midi_channels_changed), self);
+  if (track_has_piano_roll (lane->track))
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->midi_ch_box), 1);
+      gtk_combo_box_set_row_separator_func (
+        GTK_COMBO_BOX (self->midi_ch_cb),
+        (GtkTreeViewRowSeparatorFunc)
+          row_separator_func,
+        self, NULL);
+      g_signal_connect (
+        self->midi_ch_cb, "changed",
+        G_CALLBACK (on_midi_channels_changed), self);
+    }
 
   track_lane_widget_refresh (
     self);

@@ -118,6 +118,44 @@ typedef struct Channel
   int               all_midi_ins;
 
   /**
+   * External audio L inputs that are currently
+   * connected to this channel as official inputs,
+   * unless all_stereo_l_ins is enabled.
+   *
+   * These should be serialized every time and
+   * if all_stereo_l_ins is not enabled, connected to
+   * when the project gets loaded.
+   *
+   * If all_stereo_l_ins is enabled, these are
+   * ignored.
+   */
+  ExtPort *         ext_stereo_l_ins[32];
+  int               num_ext_stereo_l_ins;
+
+  /** If 1, the channel will connect to all
+   * stereo L ins found. */
+  int               all_stereo_l_ins;
+
+  /**
+   * External audio R inputs that are currently
+   * connected to this channel as official inputs,
+   * unless all_stereo_r_ins is enabled.
+   *
+   * These should be serialized every time and
+   * if all_stereo_r_ins is not enabled, connected to
+   * when the project gets loaded.
+   *
+   * If all_stereo_r_ins is enabled, these are
+   * ignored.
+   */
+  ExtPort *         ext_stereo_r_ins[32];
+  int               num_ext_stereo_r_ins;
+
+  /** If 1, the channel will connect to all
+   * stereo R ins found. */
+  int               all_stereo_r_ins;
+
+  /**
    * 1 or 0 flags for each channel to enable it or
    * disable it.
    *
@@ -216,6 +254,20 @@ channel_fields_schema[] =
     "midi_channels", CYAML_FLAG_DEFAULT,
     Channel, midi_channels,
     &int_schema, 16),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "ext_stereo_l_ins", CYAML_FLAG_DEFAULT,
+    Channel, ext_stereo_l_ins, num_ext_stereo_l_ins,
+    &ext_port_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_INT (
+    "all_stereo_l_ins", CYAML_FLAG_DEFAULT,
+    Channel, all_stereo_l_ins),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "ext_stereo_r_ins", CYAML_FLAG_DEFAULT,
+    Channel, ext_stereo_r_ins, num_ext_stereo_r_ins,
+    &ext_port_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_INT (
+    "all_stereo_r_ins", CYAML_FLAG_DEFAULT,
+    Channel, all_stereo_r_ins),
   CYAML_FIELD_INT (
     "all_midi_channels", CYAML_FLAG_DEFAULT,
     Channel, all_midi_channels),

@@ -510,6 +510,123 @@ channel_expose_ports_to_backend (
 }
 
 /**
+ * Reconnects the given port (either
+ * TrackProcessor's stereo in L/R or midi in).
+ */
+static void
+reconnect_jack_ext_in (
+  Channel * ch,
+  Port *    in_port)
+{
+#ifdef HAVE_JACK
+  int i = 0;
+  int ret;
+  TrackProcessor * processor =
+    &ch->track->processor;
+  const int is_midi_in =
+    in_port == processor->midi_in;
+  const int is_stereo_l_in =
+    in_port == processor->stereo_in->l;
+  const int is_stereo_r_in =
+    in_port == processor->stereo_in->r;
+
+  /* disconnect */
+  const char ** prev_ports =
+    jack_port_get_all_connections (
+      AUDIO_ENGINE->client,
+      (jack_port_t *)
+        in_port->data);
+  if (prev_ports)
+    {
+      i = 0;
+      while (prev_ports[i] != NULL)
+        {
+          ret =
+            jack_disconnect (
+              AUDIO_ENGINE->client,
+              prev_ports[i],
+              jack_port_name (
+                (jack_port_t *)
+                in_port->data));
+          g_warn_if_fail (!ret);
+          i++;
+        }
+    }
+
+  /* connect to all external midi ins */
+  if ((is_midi_in &&
+       ch->all_midi_ins) ||
+      (is_stereo_l_in &&
+       ch->all_stereo_l_ins) ||
+      (is_stereo_r_in &&
+       ch->all_stereo_r_ins))
+    {
+      const char ** ports =
+        jack_get_ports (
+          AUDIO_ENGINE->client,
+          NULL,
+          is_midi_in ?
+            JACK_DEFAULT_MIDI_TYPE :
+            JACK_DEFAULT_AUDIO_TYPE,
+          JackPortIsOutput |
+          JackPortIsPhysical);
+
+      if (ports)
+        {
+          i = 0;
+          while (ports[i] != NULL)
+            {
+              ret =
+                jack_connect (
+                  AUDIO_ENGINE->client,
+                  ports[i],
+                  jack_port_name (
+                    (jack_port_t *)
+                    in_port->data));
+              g_warn_if_fail (!ret);
+              i++;
+            }
+        }
+    }
+  /* connect to selected ports */
+  else
+    {
+      int num = 0;
+      ExtPort ** arr = NULL;
+      if (is_midi_in)
+        {
+          num = ch->num_ext_midi_ins;
+          arr = ch->ext_midi_ins;
+        }
+      else if (is_stereo_l_in)
+        {
+          num = ch->num_ext_stereo_l_ins;
+          arr = ch->ext_stereo_l_ins;
+        }
+      else if (is_stereo_r_in)
+        {
+          num = ch->num_ext_stereo_r_ins;
+          arr = ch->ext_stereo_r_ins;
+        }
+
+      for (i = 0; i < num; i++)
+        {
+          ret =
+            jack_connect (
+              AUDIO_ENGINE->client,
+              arr[i]->full_name,
+              jack_port_name (
+                (jack_port_t *)
+                in_port->data));
+          g_warn_if_fail (!ret);
+        }
+    }
+#else
+  g_return_if_reached ();
+#endif
+}
+
+/**
  * Called when the input has changed for Midi,
  * Instrument or Audio tracks.
  */
@@ -517,8 +634,6 @@ void
 channel_reconnect_ext_input_ports (
   Channel * ch)
 {
-  int i = 0;
-  int ret;
   if (ch->track->type == TRACK_TYPE_INSTRUMENT ||
       ch->track->type == TRACK_TYPE_MIDI)
     {
@@ -528,75 +643,23 @@ channel_reconnect_ext_input_ports (
             MIDI_BACKEND_JACK)
         {
 #ifdef HAVE_JACK
-          /* disconnect */
-          const char ** prev_ports =
-            jack_port_get_all_connections (
-              AUDIO_ENGINE->client,
-              (jack_port_t *)
-                ch->track->processor.midi_in->data);
-          if (prev_ports)
-            {
-              i = 0;
-              while (prev_ports[i] != NULL)
-                {
-                  ret =
-                    jack_disconnect (
-                      AUDIO_ENGINE->client,
-                      prev_ports[i],
-                      jack_port_name (
-                        (jack_port_t *)
-                        ch->track->processor.
-                          midi_in->data));
-                  g_warn_if_fail (!ret);
-                  i++;
-                }
-            }
-
-          /* connect to all external midi ins */
-          if (ch->all_midi_ins)
-            {
-              const char ** ports =
-                jack_get_ports (
-                  AUDIO_ENGINE->client,
-                  NULL, JACK_DEFAULT_MIDI_TYPE,
-                  JackPortIsOutput |
-                  JackPortIsPhysical);
-
-              if (ports)
-                {
-                  i = 0;
-                  while (ports[i] != NULL)
-                    {
-                      ret =
-                        jack_connect (
-                          AUDIO_ENGINE->client,
-                          ports[i],
-                          jack_port_name (
-                            (jack_port_t *)
-                            ch->track->processor.
-                              midi_in->data));
-                      g_warn_if_fail (!ret);
-                      i++;
-                    }
-                }
-            }
-          /* connect to selected midi ins */
-          else
-            {
-              for (i = 0; i < ch->num_ext_midi_ins;
-                   i++)
-                {
-                  ret =
-                    jack_connect (
-                      AUDIO_ENGINE->client,
-                      ch->ext_midi_ins[i]->full_name,
-                      jack_port_name (
-                        (jack_port_t *)
-                        ch->track->processor.
-                          midi_in->data));
-                  g_warn_if_fail (!ret);
-                }
-            }
+          reconnect_jack_ext_in (
+            ch, ch->track->processor.midi_in);
+#endif
+        }
+    }
+  else if (ch->track->type == TRACK_TYPE_AUDIO)
+    {
+      if (AUDIO_ENGINE->audio_backend ==
+            AUDIO_BACKEND_JACK &&
+          AUDIO_ENGINE->midi_backend ==
+            MIDI_BACKEND_JACK)
+        {
+#ifdef HAVE_JACK
+          reconnect_jack_ext_in (
+            ch, ch->track->processor.stereo_in->l);
+          reconnect_jack_ext_in (
+            ch, ch->track->processor.stereo_in->r);
 #endif
         }
     }

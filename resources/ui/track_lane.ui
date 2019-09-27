@@ -92,7 +92,7 @@
     </child>
     <child>
       <object class="GtkBox" id="midi_ch_box">
-        <property name="visible">True</property>
+        <property name="visible">False</property>
         <property name="can_focus">False</property>
         <property name="margin_left">4</property>
         <property name="margin_right">4</property>
