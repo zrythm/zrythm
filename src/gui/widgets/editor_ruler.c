@@ -153,20 +153,22 @@ editor_ruler_widget_set_ruler_marker_position (
   RulerMarkerWidget *    rm,
   GtkAllocation *       allocation)
 {
-  long start_ticks =
-    position_to_ticks (
-      &CLIP_EDITOR->region->start_pos);
   Position tmp;
   switch (rm->type)
     {
     case RULER_MARKER_TYPE_LOOP_START:
       if (CLIP_EDITOR->region)
         {
+          long start_ticks =
+            position_to_ticks (
+              &CLIP_EDITOR->region->start_pos);
           long loop_start_ticks =
             position_to_ticks (
-              &CLIP_EDITOR->region->loop_start_pos) +
+              &CLIP_EDITOR->region->
+                loop_start_pos) +
             start_ticks;
-          position_from_ticks (&tmp, loop_start_ticks);
+          position_from_ticks (
+            &tmp, loop_start_ticks);
           allocation->x =
             ui_pos_to_px_editor (
               &tmp,
@@ -181,11 +183,15 @@ editor_ruler_widget_set_ruler_marker_position (
     case RULER_MARKER_TYPE_LOOP_END:
       if (CLIP_EDITOR->region)
         {
+          long start_ticks =
+            position_to_ticks (
+              &CLIP_EDITOR->region->start_pos);
           long loop_end_ticks =
             position_to_ticks (
               &CLIP_EDITOR->region->loop_end_pos) +
             start_ticks;
-          position_from_ticks (&tmp, loop_end_ticks);
+          position_from_ticks (
+            &tmp, loop_end_ticks);
           allocation->x =
             ui_pos_to_px_editor (
               &tmp,
@@ -200,11 +206,16 @@ editor_ruler_widget_set_ruler_marker_position (
     case RULER_MARKER_TYPE_CLIP_START:
       if (CLIP_EDITOR->region)
         {
+          long start_ticks =
+            position_to_ticks (
+              &CLIP_EDITOR->region->start_pos);
           long clip_start_ticks =
             position_to_ticks (
-              &CLIP_EDITOR->region->clip_start_pos) +
+              &CLIP_EDITOR->region->
+                clip_start_pos) +
             start_ticks;
-          position_from_ticks (&tmp, clip_start_ticks);
+          position_from_ticks (
+            &tmp, clip_start_ticks);
           allocation->x =
             ui_pos_to_px_editor (
               &tmp,

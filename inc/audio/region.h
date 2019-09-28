@@ -580,8 +580,6 @@ region_get_num_loops (
   Region * region,
   int      count_incomplete_loops);
 
-/* TODO shift by delta number of tracks */
-
 /**
  * Sets the track lane.
  */
@@ -589,6 +587,35 @@ void
 region_set_lane (
   Region * region,
   TrackLane * lane);
+
+/**
+ * Moves the given Region to the given TrackLane.
+ *
+ * Works with TrackLane's of other Track's as well.
+ *
+ * Maintains the selection status of the
+ * Region.
+ *
+ * Assumes that the Region is already in a
+ * TrackLane.
+ */
+void
+region_move_to_lane (
+  Region * region,
+  TrackLane * lane);
+
+/**
+ * Moves the Region to the given Track, maintaining
+ * the selection status of the Region and the
+ * TrackLane position.
+ *
+ * Assumes that the Region is already in a
+ * TrackLane.
+ */
+void
+region_move_to_track (
+  Region * region,
+  Track *  track);
 
 /**
  * Sets the automation track.

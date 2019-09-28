@@ -83,6 +83,10 @@ typedef struct _TimelineArrangerWidget
   ScaleObject *        start_scale;
   Marker *             start_marker;
 
+  /** The number of visible tracks moved during a
+   * moving operation between tracks. */
+  int                  visible_track_diff;
+
   int                  last_timeline_obj_bars;
 
   /** Whether this TimelineArrangerWidget is for

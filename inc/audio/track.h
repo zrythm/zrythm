@@ -378,6 +378,10 @@ track_fields_schema[] =
     Track, channel,
     channel_fields_schema),
   CYAML_FIELD_MAPPING (
+    "processor", CYAML_FLAG_DEFAULT,
+    Track, processor,
+    track_processor_fields_schema),
+  CYAML_FIELD_MAPPING (
     "automation_tracklist", CYAML_FLAG_DEFAULT,
     Track, automation_tracklist,
     automation_tracklist_fields_schema),
@@ -659,6 +663,23 @@ track_add_modulator (
   Modulator * modulator);
 
 /**
+ * Returns if regions in tracks from type1 can
+ * be moved to type2.
+ */
+static inline int
+track_type_is_compatible_for_moving (
+  const TrackType type1,
+  const TrackType type2)
+{
+  return
+    type1 == type2 ||
+    (type1 == TRACK_TYPE_MIDI &&
+     type2 == TRACK_TYPE_INSTRUMENT) ||
+    (type1 == TRACK_TYPE_INSTRUMENT &&
+     type2 == TRACK_TYPE_MIDI);
+}
+
+/**
  * Updates the frames of each position in each child
  * of the track recursively.
  */
@@ -681,6 +702,22 @@ track_get_fader_type (
 PassthroughProcessorType
 track_get_passthrough_processor_type (
   const Track * track);
+
+/**
+ * Creates missing TrackLane's until pos.
+ */
+void
+track_create_missing_lanes (
+  Track *   track,
+  const int pos);
+
+/**
+ * Removes the empty last lanes of the Track
+ * (except the last one).
+ */
+void
+track_remove_empty_last_lanes (
+  Track * track);
 
 /**
  * Wrapper for each track type.

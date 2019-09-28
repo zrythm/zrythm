@@ -284,7 +284,6 @@ on_clip_editor_region_changed ()
   /* TODO */
   /*gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);*/
   Region * r = CLIP_EDITOR->region;
-  g_warn_if_fail (r);
 
   if (r)
     {

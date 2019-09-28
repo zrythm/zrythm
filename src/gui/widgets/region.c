@@ -226,14 +226,18 @@ region_widget_draw_name (
 {
   REGION_WIDGET_GET_PRIVATE (self);
 
+  Region * region = rw_prv->region;
+  g_return_if_fail (
+    region &&
+    region->name);
+
   int width =
     gtk_widget_get_allocated_width (
       GTK_WIDGET (self));
 
   char * str =
-    g_strdup (rw_prv->region->name);
+    g_strdup (region->name);
   char * new_str = str;
-  Region * region = rw_prv->region;
   if (DEBUGGING)
     {
       if (region_is_transient (region))

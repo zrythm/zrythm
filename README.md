@@ -36,11 +36,8 @@ See [PACKAGING.md](PACKAGING.md).
 For contributing guidelines see [CONTRIBUTING.md](CONTRIBUTING.md). Be sure to take a look at the
 [Developer Docs](https://docs.zrythm.org)
 
-For any bugs please raise an issue or join a
-chatroom below
-
-## Chatrooms
-`#zrythm` channel on freenode (for Matrix users `#zrythmdaw:matrix.org`).
+If you find any bugs please submit a bug report
+below.
 
 ## Mailing lists
 zrythm-dev@nongnu.org for developers, zrythm-user@nongnu.org for users
@@ -74,11 +71,10 @@ Some files, where specified, are licensed under
 different licenses.
 
 ## Support
-We appreciate contributions of any size -- donations
-enable us to spend more time working on the project,
-and help cover our infrastructure expenses.
+If you would like to support this project please
+donate below - donations enable us to spend more
+time working on the project.
 
-### LiberaPay
 https://liberapay.com/Zrythm/
 
 ----

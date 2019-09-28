@@ -120,9 +120,12 @@
   }
 
 static const cyaml_config_t config = {
-	.log_level = CYAML_LOG_WARNING, /* Logging errors and warnings only. */
-	.log_fn = cyaml_log,            /* Use the default logging function. */
-	.mem_fn = cyaml_mem,            /* Use the default memory allocator. */
+  /** log level: DEBUG, WARNING, INFO... */
+	.log_level = CYAML_LOG_INFO,
+  /* use the default loggin function */
+	.log_fn = cyaml_log,
+  /* use the default memory allocator */
+	.mem_fn = cyaml_mem,
 };
 
 static const cyaml_schema_value_t

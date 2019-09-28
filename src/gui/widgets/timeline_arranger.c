@@ -1832,6 +1832,105 @@ timeline_arranger_widget_setup (
     NULL);
 }
 
+/**
+ * Move the selected Regions to the new Track.
+ *
+ * @param new_track_is_before 1 if the Region's
+ *   should move to their previous tracks, 0 for
+ *   their next tracks.
+ */
+static void
+move_regions_to_new_tracks (
+  TimelineArrangerWidget * self,
+  const int                new_track_is_before)
+{
+  int i;
+
+  /* store selected regions because they will be
+   * deselected during moving */
+  Region * regions[600];
+  int num_regions = 0;
+  Region * region;
+  for (i = 0; i < TL_SELECTIONS->num_regions; i++)
+    {
+      regions[num_regions++] =
+        TL_SELECTIONS->regions[i];
+    }
+
+  /* check that all regions can be moved to a
+   * compatible track */
+  int compatible = 1;
+  for (i = 0; i < num_regions; i++)
+    {
+      region = regions[i];
+      Track * region_track =
+        region_get_track (region);
+      if (new_track_is_before)
+        {
+          Track * prev_visible =
+            tracklist_get_prev_visible_track (
+              TRACKLIST, region_get_track (region));
+          if (
+            !prev_visible ||
+            !track_type_is_compatible_for_moving (
+               region_track->type,
+               prev_visible->type))
+            {
+              compatible = 0;
+              break;
+            }
+        }
+      else
+        {
+          Track * next_visible =
+            tracklist_get_next_visible_track (
+              TRACKLIST, region_get_track (region));
+          if (
+            !next_visible ||
+            !track_type_is_compatible_for_moving (
+               region_track->type,
+               next_visible->type))
+            {
+              compatible = 0;
+              break;
+            }
+        }
+    }
+  if (!compatible)
+    return;
+
+  /* new positions are all compatible, move the
+   * regions */
+  self->visible_track_diff +=
+    new_track_is_before ? -1 : 1;
+  for (i = 0; i < num_regions; i++)
+    {
+      region = regions[i];
+      Track * region_track =
+        region_get_track (region);
+      g_warn_if_fail (region && region_track);
+      Track * track_to_move_to = NULL;
+
+      if (new_track_is_before)
+        {
+          track_to_move_to =
+            tracklist_get_prev_visible_track (
+              TRACKLIST, region_track);
+        }
+      else
+        {
+          track_to_move_to =
+            tracklist_get_next_visible_track (
+              TRACKLIST,
+              region->lane->track);
+        }
+      g_warn_if_fail (track_to_move_to);
+
+      region_move_to_track (
+        region, track_to_move_to);
+    }
+}
+
 void
 timeline_arranger_widget_move_items_y (
   TimelineArrangerWidget * self,
@@ -1839,120 +1938,32 @@ timeline_arranger_widget_move_items_y (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  if (TL_SELECTIONS->num_regions)
+  /* get old track and new track */
+  Track * track =
+    timeline_arranger_widget_get_track_at_y (
+    self, ar_prv->start_y + offset_y);
+  Track * old_track =
+    timeline_arranger_widget_get_track_at_y (
+    self, ar_prv->start_y);
+  g_warn_if_fail (old_track);
+  const int new_track_is_equal =
+    track == old_track;
+  const int new_track_is_before =
+    old_track && track &&
+    track->pos < old_track->pos;
+
+  /* if new track is equal, move lanes or
+   * automation lanes */
+  if (new_track_is_equal)
     {
-      /* check if should be moved to new track */
-      Track * track =
-        timeline_arranger_widget_get_track_at_y (
-        self, ar_prv->start_y + offset_y);
-      Track * old_track =
-        region_get_track (self->start_region);
+      /* TODO */
+    }
+  /* otherwise move tracks */
+  else
+    {
       if (track)
-        {
-          Track * pt =
-            tracklist_get_prev_visible_track (
-              TRACKLIST, old_track);
-          Track * nt =
-            tracklist_get_next_visible_track (
-              TRACKLIST, old_track);
-          Track * tt =
-            tracklist_get_first_visible_track (
-              TRACKLIST);
-          Track * bt =
-            tracklist_get_last_visible_track (
-              TRACKLIST);
-          /* highest selected track */
-          Track * hst =
-            timeline_selections_get_highest_track (
-              TL_SELECTIONS,
-              arranger_widget_is_in_moving_operation (
-                Z_ARRANGER_WIDGET (self)));
-          /* lowest selected track */
-          Track * lst =
-            timeline_selections_get_lowest_track (
-              TL_SELECTIONS,
-              arranger_widget_is_in_moving_operation (
-                Z_ARRANGER_WIDGET (self)));
-
-          if (region_get_track (self->start_region)
-                != track)
-            {
-              /* if new track is lower and bot region is not at the lowest track */
-              if (track == nt &&
-                  lst != bt)
-                {
-                  /* shift all selected regions to their next track */
-                  for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
-                    {
-                      Region * region =
-                        TL_SELECTIONS->regions[i];
-                      region = region_get_main_trans_region (region);
-                      nt =
-                        tracklist_get_next_visible_track (
-                          TRACKLIST,
-                          region->lane->track);
-                      old_track = region->lane->track;
-                      if (old_track->type == nt->type)
-                        {
-                          if (nt->type ==
-                                TRACK_TYPE_INSTRUMENT)
-                            {
-                              track_remove_region (
-                                old_track,
-                                region, F_NO_FREE);
-                              track_add_region (
-                                nt, region, NULL,
-                                0, F_NO_GEN_NAME);
-                            }
-                          else if (nt->type ==
-                                     TRACK_TYPE_AUDIO)
-                            {
-                              /* TODO */
-
-                            }
-                        }
-                    }
-                }
-              else if (track == pt &&
-                       hst != tt)
-                {
-                  /*g_message ("track %s top region track %s tt %s",*/
-                             /*track->channel->name,*/
-                             /*self->top_region->track->channel->name,*/
-                             /*tt->channel->name);*/
-                  /* shift all selected regions to their prev track */
-                  for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
-                    {
-                      Region * region = TL_SELECTIONS->regions[i];
-                      pt =
-                        tracklist_get_prev_visible_track (
-                          TRACKLIST,
-                          region->lane->track);
-                      old_track = region->lane->track;
-                      if (old_track->type == pt->type)
-                        {
-                          if (pt->type ==
-                                TRACK_TYPE_INSTRUMENT)
-                            {
-                              track_remove_region (
-                                old_track,
-                                region, F_NO_FREE);
-                              track_add_region (
-                                pt, region, 0,
-                                F_NO_GEN_NAME,
-                                F_NO_GEN_WIDGET);
-                            }
-                          else if (pt->type ==
-                                     TRACK_TYPE_AUDIO)
-                            {
-                              /* TODO */
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        move_regions_to_new_tracks (
+          self, new_track_is_before);
     }
 }
 
@@ -2091,16 +2102,12 @@ timeline_arranger_widget_on_drag_end (
         long ticks_diff =
           earliest_main_pos.total_ticks -
             earliest_trans_pos.total_ticks;
-        int tracks_diff =
-          timeline_selections_get_highest_track (
-            TL_SELECTIONS, F_NO_TRANSIENTS)->pos -
-          timeline_selections_get_highest_track (
-            TL_SELECTIONS, F_TRANSIENTS)->pos;
         UndoableAction * ua =
           (UndoableAction *)
           move_timeline_selections_action_new (
             TL_SELECTIONS,
-            ticks_diff, tracks_diff);
+            ticks_diff,
+            self->visible_track_diff);
         undo_manager_perform (
           UNDO_MANAGER, ua);
         timeline_selections_reset_counterparts (
@@ -2197,6 +2204,7 @@ timeline_arranger_widget_on_drag_end (
   self->resizing_range_start = 0;
   self->start_region = NULL;
   self->start_region_was_selected = 0;
+  self->visible_track_diff = 0;
 
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

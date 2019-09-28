@@ -128,6 +128,94 @@ region_set_lane (
 }
 
 /**
+ * Moves the Region to the given Track, maintaining
+ * the selection status of the Region and the
+ * TrackLane position.
+ *
+ * Assumes that the Region is already in a
+ * TrackLane.
+ */
+void
+region_move_to_track (
+  Region * region,
+  Track *  track)
+{
+  g_return_if_fail (region && track);
+
+  Track * region_track =
+    region_get_track (region);
+  g_return_if_fail (region_track);
+
+  if (region_track == track)
+    return;
+
+  int selected = region_is_selected (region);
+
+  /* create lanes if they don't exist */
+  track_create_missing_lanes (
+    track, region->lane_pos);
+
+  /* remove the region from its old track */
+  track_remove_region (
+    region_track,
+    region, F_NO_FREE);
+
+  /* add the region to its new track */
+  track_add_region (
+    track, region, NULL,
+    region->lane_pos, F_NO_GEN_NAME);
+  region_set_lane (
+    region, track->lanes[region->lane_pos]);
+
+  /* reselect if necessary */
+  region_select (
+    region, selected);
+
+  /* remove empty lanes if the region was the last
+   * on its track lane */
+  track_remove_empty_last_lanes (
+    region_track);
+}
+
+/**
+ * Moves the given Region to the given TrackLane.
+ *
+ * Works with TrackLane's of other Track's as well.
+ *
+ * Maintains the selection status of the
+ * Region.
+ *
+ * Assumes that the Region is already in a
+ * TrackLane.
+ */
+void
+region_move_to_lane (
+  Region * region,
+  TrackLane * lane)
+{
+  g_return_if_fail (region && lane);
+
+  Track * region_track =
+    region_get_track (region);
+  g_return_if_fail (region_track);
+
+  int selected = region_is_selected (region);
+
+  if (region_track != lane->track)
+    {
+      track_remove_region (
+        region_track,
+        region, F_NO_FREE);
+      track_add_region (
+        lane->track, region, NULL,
+        lane->pos, F_NO_GEN_NAME);
+      region_select (
+        region, selected);
+    }
+  region_set_lane (region, lane);
+}
+
+/**
  * Sets the automation track.
  */
 void

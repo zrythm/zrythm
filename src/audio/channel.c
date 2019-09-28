@@ -526,8 +526,10 @@ reconnect_jack_ext_in (
   const int is_midi_in =
     in_port == processor->midi_in;
   const int is_stereo_l_in =
+    processor->stereo_in &&
     in_port == processor->stereo_in->l;
   const int is_stereo_r_in =
+    processor->stereo_in &&
     in_port == processor->stereo_in->r;
 
   /* disconnect */

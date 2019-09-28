@@ -200,7 +200,7 @@ tracklist_get_track_pos (
 
 ChordTrack *
 tracklist_get_chord_track (
-  Tracklist * self);
+  const Tracklist * self);
 
 int
 tracklist_get_last_visible_pos (
@@ -223,6 +223,27 @@ Track *
 tracklist_get_next_visible_track (
   Tracklist * self,
   Track * track);
+
+/**
+ * Returns the Track after delta visible Track's.
+ *
+ * Negative delta searches backwards.
+ */
+Track *
+tracklist_get_visible_track_after_delta (
+  Tracklist * self,
+  Track *           track,
+  int               delta);
+
+/**
+ * Returns the number of visible Tracks between
+ * src and dest (negative if dest is before src).
+ */
+int
+tracklist_get_visible_track_diff (
+  Tracklist * self,
+  const Track *     src,
+  const Track *     dest);
 
 /**
  * Returns 1 if the track name is not taken.

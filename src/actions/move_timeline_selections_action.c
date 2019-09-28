@@ -82,6 +82,31 @@ move_timeline_selections_action_do (
         ScaleObject, scale_object);
       SHIFT_OBJ_POSITIVE (
         Marker, marker);
+
+      if (self->delta)
+        {
+          for (i = 0; i < self->ts->num_regions; i++)
+            {
+              /* get the actual object */
+              region =
+                region_find (self->ts->regions[i]);
+              g_warn_if_fail (region);
+
+              Track * track_to_move_to =
+                tracklist_get_visible_track_after_delta (
+                  TRACKLIST,
+                  region_get_track (region),
+                  self->delta);
+
+              /* shift the actual object by tracks */
+              region_move_to_track (
+                region, track_to_move_to);
+              /* also shift the copy */
+              region_move_to_track (
+                self->ts->regions[i],
+                track_to_move_to);
+            }
+        }
     }
 
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
@@ -107,6 +132,30 @@ move_timeline_selections_action_undo (
     ScaleObject, scale_object);
   SHIFT_OBJ_NEGATIVE (
     Marker, marker);
+  if (self->delta)
+    {
+      for (i = 0; i < self->ts->num_regions; i++)
+        {
+          /* get the actual object */
+          region =
+            region_find (self->ts->regions[i]);
+          g_warn_if_fail (region);
+
+          Track * track_to_move_to =
+            tracklist_get_visible_track_after_delta (
+              TRACKLIST,
+              region_get_track (region),
+              - self->delta);
+
+          /* shift the actual object by tracks */
+          region_move_to_track (
+            region, track_to_move_to);
+          /* also shift the copy */
+          region_move_to_track (
+            self->ts->regions[i],
+            track_to_move_to);
+        }
+    }
 
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

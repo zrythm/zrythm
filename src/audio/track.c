@@ -756,6 +756,41 @@ track_add_region (
 }
 
 /**
+ * Creates missing TrackLane's until pos.
+ */
+void
+track_create_missing_lanes (
+  Track *   track,
+  const int pos)
+{
+  while (track->num_lanes < pos + 2)
+    {
+      track_add_lane (track);
+    }
+}
+
+/**
+ * Removes the empty last lanes of the Track
+ * (except the last one).
+ */
+void
+track_remove_empty_last_lanes (
+  Track * track)
+{
+  for (int i = track->num_lanes - 1; i >= 1; i--)
+    {
+      if (track->lanes[i]->num_regions == 0 &&
+          track->lanes[i - 1]->num_regions == 0)
+        {
+          track->num_lanes--;
+          free_later (
+            track->lanes[i], track_lane_free);
+        }
+    }
+
+}
+
+/**
  * Returns if the Track should have a piano roll.
  */
 int

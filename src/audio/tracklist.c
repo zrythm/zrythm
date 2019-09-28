@@ -80,6 +80,45 @@ tracklist_get_visible_tracks (
     }
 }
 
+/**
+ * Returns the number of visible Tracks between
+ * src and dest (negative if dest is before src).
+ */
+int
+tracklist_get_visible_track_diff (
+  Tracklist * self,
+  const Track *     src,
+  const Track *     dest)
+{
+  g_return_val_if_fail (src && dest, 0);
+
+  int count = 0;
+  if (src->pos < dest->pos)
+    {
+      for (int i = src->pos; i < dest->pos; i++)
+        {
+          Track * track = self->tracks[i];
+          if (track->visible)
+            {
+              count++;
+            }
+        }
+    }
+  else if (src->pos > dest->pos)
+    {
+      for (int i = dest->pos; i < src->pos; i++)
+        {
+          Track * track = self->tracks[i];
+          if (track->visible)
+            {
+              count--;
+            }
+        }
+    }
+
+  return count;
+}
+
 int
 tracklist_contains_master_track (
   Tracklist * self)
@@ -209,7 +248,7 @@ tracklist_insert_track (
 
 ChordTrack *
 tracklist_get_chord_track (
-  Tracklist * self)
+  const Tracklist * self)
 {
   Track * track;
   for (int i = 0; i < self->num_tracks; i++)
@@ -244,9 +283,11 @@ tracklist_get_track_pos (
   Tracklist * self,
   Track *     track)
 {
-  return array_index_of ((void **) self->tracks,
-                         self->num_tracks,
-                         (void *) track);
+  return
+    array_index_of (
+      (void **) self->tracks,
+      self->num_tracks,
+      (void *) track);
 }
 
 int
@@ -277,6 +318,53 @@ tracklist_get_last_visible_track (
     }
   g_warn_if_reached ();
   return NULL;
+}
+
+/**
+ * Returns the Track after delta visible Track's.
+ *
+ * Negative delta searches backwards.
+ */
+Track *
+tracklist_get_visible_track_after_delta (
+  Tracklist * self,
+  Track *           track,
+  int               delta)
+{
+  if (delta > 0)
+    {
+      Track * vis_track = track;
+      while (delta > 0)
+        {
+          vis_track =
+            tracklist_get_next_visible_track (
+              self, vis_track);
+
+          if (!vis_track)
+            return NULL;
+
+          delta--;
+        }
+      return vis_track;
+    }
+  else if (delta < 0)
+    {
+      Track * vis_track = track;
+      while (delta < 0)
+        {
+          vis_track =
+            tracklist_get_prev_visible_track (
+              self, vis_track);
+
+          if (!vis_track)
+            return NULL;
+
+          delta++;
+        }
+      return vis_track;
+    }
+  else
+    return track;
 }
 
 Track *
