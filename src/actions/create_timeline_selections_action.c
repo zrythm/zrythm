@@ -92,13 +92,15 @@ create_timeline_selections_action_do (
             track->automation_tracklist.
               ats[region->at_index];
           track_add_region (
-            track, region, at, -1, F_GEN_NAME);
+            track, region, at, -1, F_GEN_NAME,
+            F_PUBLISH_EVENTS);
         }
       else
         {
           track_add_region (
             track, region, NULL, region->lane_pos,
-            F_GEN_NAME);
+            F_GEN_NAME,
+            F_PUBLISH_EVENTS);
         }
 
       /* remember its name */
@@ -172,7 +174,8 @@ create_timeline_selections_action_undo (
 
       /* remove it */
       track_remove_region (
-        region->lane->track, region, F_FREE);
+        region->lane->track, region,
+        F_PUBLISH_EVENTS, F_FREE);
     }
   ScaleObject * scale_object;
   for (i = 0; i < self->ts->num_scale_objects; i++)

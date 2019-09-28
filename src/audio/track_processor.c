@@ -407,7 +407,8 @@ handle_recording (
                 }
               track_add_region (
                 tr, new_region, NULL,
-                region->lane_pos + 1, F_GEN_NAME);
+                region->lane_pos + 1, F_GEN_NAME,
+                F_PUBLISH_EVENTS);
               region = new_region;
 
               if (is_audio)
@@ -461,7 +462,7 @@ handle_recording (
           track_add_region (
             tr, region, NULL,
             tr->num_lanes - 1,
-            F_GEN_NAME);
+            F_GEN_NAME, F_PUBLISH_EVENTS);
 
           if (is_audio)
             {

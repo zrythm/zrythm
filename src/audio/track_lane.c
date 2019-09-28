@@ -208,8 +208,9 @@ track_lane_free (
 {
   if (self->widget)
     {
-      g_object_unref (
-        G_OBJECT (self->widget));
+      if (GTK_IS_WIDGET (self->widget))
+        g_object_unref (
+          G_OBJECT (self->widget));
     }
 
   if (self->name)

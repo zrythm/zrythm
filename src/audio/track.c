@@ -667,7 +667,8 @@ track_add_region (
   Region * region,
   AutomationTrack * at,
   int      lane_pos,
-  int      gen_name)
+  int      gen_name,
+  int      fire_events)
 {
   g_warn_if_fail (
     region->obj_info.counterpart ==
@@ -751,8 +752,11 @@ track_add_region (
                     region);
     }
 
-  EVENTS_PUSH (ET_REGION_CREATED,
-               region);
+  if (fire_events)
+    {
+      EVENTS_PUSH (ET_REGION_CREATED,
+                   region);
+    }
 }
 
 /**
@@ -777,11 +781,17 @@ void
 track_remove_empty_last_lanes (
   Track * track)
 {
+  g_return_if_fail (track);
+  g_message ("removing empty last lanes from %s",
+             track->name);
   for (int i = track->num_lanes - 1; i >= 1; i--)
     {
+      g_message ("lane %d has %d regions",
+                 i, track->lanes[i]->num_regions);
       if (track->lanes[i]->num_regions == 0 &&
           track->lanes[i - 1]->num_regions == 0)
         {
+          g_message ("removing lane %d", i);
           track->num_lanes--;
           free_later (
             track->lanes[i], track_lane_free);
@@ -844,14 +854,18 @@ track_set_pos (
  */
 void
 track_remove_region (
-  Track * track,
+  Track *  track,
   Region * region,
-  int     free)
+  int      fire_events,
+  int      free)
 {
   region_disconnect (region);
 
   g_warn_if_fail (region->lane_pos >= 0);
 
+  g_message (
+    "removed region from lane %d (track %s)",
+    region->lane_pos, track->name);
   array_delete (
     track->lanes[region->lane_pos]->regions,
     track->lanes[region->lane_pos]->num_regions,
@@ -860,7 +874,10 @@ track_remove_region (
   if (free)
     free_later (region, region_free_all);
 
-  EVENTS_PUSH (ET_REGION_REMOVED, track);
+  if (fire_events)
+    {
+      EVENTS_PUSH (ET_REGION_REMOVED, track);
+    }
 }
 
 /**

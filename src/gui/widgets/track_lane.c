@@ -153,7 +153,6 @@ track_lane_widget_refresh (
   /* setup midi channels combo box */
   if (track_has_piano_roll (self->lane->track))
     setup_midi_channels_cb (self);
-  g_message ("refreshing");
 }
 
 TrackLaneWidget *

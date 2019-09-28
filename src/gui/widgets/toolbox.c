@@ -85,7 +85,6 @@ void
 toolbox_widget_refresh (
   ToolboxWidget * self)
 {
-  g_message ("refreshing");
 #define BLOCK_SIGNAL_HANDLER(lowercase) \
   g_signal_handler_block ( \
     self->lowercase##_mode, \

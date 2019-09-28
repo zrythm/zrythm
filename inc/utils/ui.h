@@ -310,7 +310,7 @@ ui_show_message_full (
  *   The bigger the padding the more space the
  *   child will have to get hit.
  */
-static inline int
+int
 ui_is_child_hit (
   GtkWidget * parent,
   GtkWidget *    child,
@@ -319,33 +319,7 @@ ui_is_child_hit (
   const double         x,
   const double         y,
   const double         x_padding,
-  const double         y_padding)
-{
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (
-    child,
-    &allocation);
-
-  gint wx, wy;
-  gtk_widget_translate_coordinates (
-    GTK_WIDGET (parent),
-    child,
-    (int) x, (int) y, &wx, &wy);
-
-  //g_message ("wx wy %d %d", wx, wy);
-
-  /* if hit */
-  if ((!check_x ||
-        (wx >= - x_padding &&
-         wx <= allocation.width + x_padding)) &&
-      (!check_y ||
-        (wy >= - y_padding &&
-         wy <= allocation.height + y_padding)))
-    {
-      return 1;
-    }
-  return 0;
-}
+  const double         y_padding);
 
 /**
  * Returns the matching hit child, or NULL.

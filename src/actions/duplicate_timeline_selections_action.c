@@ -116,7 +116,8 @@ duplicate_timeline_selections_action_do (
     /* add */
     track_add_region (
       TRACKLIST->tracks[region->track_pos],
-      region, 0, F_GEN_NAME, F_GEN_WIDGET),
+      region, NULL, 0, F_GEN_NAME,
+      F_PUBLISH_EVENTS),
     /* remember the new name */
     g_free (self->ts->regions[i]->name);
     self->ts->regions[i]->name =
@@ -155,7 +156,7 @@ duplicate_timeline_selections_action_undo (
     /* remove */
     track_remove_region (
       region->lane->track,
-      region, F_FREE));
+      region, F_PUBLISH_EVENTS, F_FREE));
   UNDO_OBJECT (
     ScaleObject, scale_object,
     /* remove */

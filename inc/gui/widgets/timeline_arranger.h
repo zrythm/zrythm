@@ -87,6 +87,10 @@ typedef struct _TimelineArrangerWidget
    * moving operation between tracks. */
   int                  visible_track_diff;
 
+  /** The number of visible lanes moved during a
+   * moving operation between tracks. */
+  int                  visible_lane_diff;
+
   int                  last_timeline_obj_bars;
 
   /** Whether this TimelineArrangerWidget is for

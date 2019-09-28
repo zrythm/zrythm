@@ -155,7 +155,8 @@ create (
               NULL, 0, 0,
               &start_pos, 1);
           track_add_region (
-            track, ar, NULL, 0, F_GEN_NAME);
+            track, ar, NULL, 0, F_GEN_NAME,
+            F_PUBLISH_EVENTS);
         }
 
       if (pl && g_settings_get_int (

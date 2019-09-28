@@ -1041,10 +1041,10 @@ events_process (void * data)
             GTK_WIDGET (EDITOR_RULER));
           break;
         case ET_TIMELINE_OBJECTS_IN_TRANSIT:
-          timeline_arranger_widget_refresh_children (
-            MW_TIMELINE);
-          timeline_arranger_widget_refresh_children (
-            MW_PINNED_TIMELINE);
+          /*timeline_arranger_widget_refresh_children (*/
+            /*MW_TIMELINE);*/
+          /*timeline_arranger_widget_refresh_children (*/
+            /*MW_PINNED_TIMELINE);*/
           if (TL_SELECTIONS->num_regions > 0)
             editor_ruler_widget_refresh (
               EDITOR_RULER);

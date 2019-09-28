@@ -504,7 +504,8 @@ track_add_region (
   Region *          region,
   AutomationTrack * at,
   int               lane_pos,
-  int               gen_name);
+  int               gen_name,
+  int               fire_events);
 
 /**
  * Writes the track to the given MIDI file.
@@ -535,9 +536,10 @@ track_select (
  */
 void
 track_remove_region (
-  Track * track,
+  Track *  track,
   Region * region,
-  int     free);
+  int      fire_events,
+  int      free);
 
 /**
  * Returns the region at the given position, or NULL.

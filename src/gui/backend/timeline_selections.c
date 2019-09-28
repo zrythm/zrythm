@@ -629,7 +629,8 @@ timeline_selections_paste_to_pos (
           region, REGION_CLONE_COPY_MAIN);
       region_print (cp);
       track_add_region (
-        track, cp, NULL, 0, F_GEN_NAME);
+        track, cp, NULL, 0, F_GEN_NAME,
+        F_PUBLISH_EVENTS);
 
       /* select it */
       timeline_selections_add_region (

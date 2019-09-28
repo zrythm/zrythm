@@ -528,7 +528,7 @@ timeline_arranger_widget_get_track_at_y (
       if (ui_is_child_hit (
             GTK_WIDGET (self),
             GTK_WIDGET (track->widget),
-            0, 1, 0, y, 0, 0))
+            0, 1, 0, y, 0, 1))
         return track;
     }
 
@@ -1099,19 +1099,20 @@ timeline_arranger_widget_create_region (
         track, region, NULL,
         lane ? lane->pos :
         (track->num_lanes == 1 ?
-         0 : track->num_lanes - 2), F_GEN_NAME);
+         0 : track->num_lanes - 2), F_GEN_NAME,
+        F_PUBLISH_EVENTS);
       break;
     case REGION_TYPE_AUDIO:
       break;
     case REGION_TYPE_CHORD:
       track_add_region (
         track, region, NULL,
-        -1, F_GEN_NAME);
+        -1, F_GEN_NAME, F_PUBLISH_EVENTS);
       break;
     case REGION_TYPE_AUTOMATION:
       track_add_region (
         track, region, at,
-        -1, F_GEN_NAME);
+        -1, F_GEN_NAME, F_PUBLISH_EVENTS);
       break;
     }
 
@@ -1352,7 +1353,7 @@ timeline_arranger_widget_select (
           /* delete the enclosed region */
           track_remove_region (
             region->lane->track, region,
-            F_FREE);
+            F_PUBLISH_EVENTS, F_FREE);
         }
       else
         {
@@ -1833,6 +1834,90 @@ timeline_arranger_widget_setup (
 }
 
 /**
+ * Move the selected Regions to new Lanes.
+ *
+ * @param track The track to make the move in. All
+ *   Regions must be in this Track.
+ * @param new_lane_is_before 1 if the Region's
+ *   should move to their previous lanes, 0 for
+ *   their next lanes.
+ */
+static void
+move_regions_to_new_lanes (
+  TimelineArrangerWidget * self,
+  Track *                  track,
+  const int                new_lane_is_before)
+{
+  int i;
+
+  /* check that:
+   * - all regions are in the same track
+   * - only lane regions are selected
+   * - the lane bounds are not exceeded */
+  int compatible = 1;
+  Region * region;
+  for (i = 0; i < TL_SELECTIONS->num_regions; i++)
+    {
+      region = TL_SELECTIONS->regions[i];
+      Track * region_track =
+        region_get_track (region);
+      if (region_track != track ||
+          !region->lane ||
+         (new_lane_is_before &&
+          region->lane_pos - 1 < 0))
+        {
+          compatible = 0;
+          break;
+        }
+    }
+  if (TL_SELECTIONS->num_scale_objects ||
+      TL_SELECTIONS->num_markers)
+    compatible = 0;
+  if (!compatible)
+    return;
+
+  /* store selected regions because they will be
+   * deselected during moving */
+  Region * regions[600];
+  int num_regions = 0;
+  for (i = 0; i < TL_SELECTIONS->num_regions; i++)
+    {
+      regions[num_regions++] =
+        TL_SELECTIONS->regions[i];
+    }
+
+  /* new positions are all compatible, move the
+   * regions */
+  self->visible_lane_diff +=
+    new_lane_is_before ? -1 : 1;
+  for (i = 0; i < num_regions; i++)
+    {
+      region = regions[i];
+      TrackLane * region_lane =
+        region->lane;
+      g_warn_if_fail (region && region_lane);
+
+      TrackLane * lane_to_move_to = NULL;
+      if (new_lane_is_before)
+        {
+          lane_to_move_to =
+            track->lanes[region->lane_pos - 1];
+        }
+      else
+        {
+          track_create_missing_lanes (
+            track, region->lane_pos + 1);
+          lane_to_move_to =
+            track->lanes[region->lane_pos + 1];
+        }
+      g_warn_if_fail (lane_to_move_to);
+
+      region_move_to_lane (
+        region, lane_to_move_to);
+    }
+}
+
+/**
  * Move the selected Regions to the new Track.
  *
  * @param new_track_is_before 1 if the Region's
@@ -1944,24 +2029,46 @@ timeline_arranger_widget_move_items_y (
     self, ar_prv->start_y + offset_y);
   Track * old_track =
     timeline_arranger_widget_get_track_at_y (
-    self, ar_prv->start_y);
-  g_warn_if_fail (old_track);
+    self, ar_prv->start_y + ar_prv->last_offset_y);
   const int new_track_is_equal =
     track == old_track;
   const int new_track_is_before =
     old_track && track &&
     track->pos < old_track->pos;
 
+  /* TODO automations and other lanes */
+  TrackLane * lane =
+    timeline_arranger_widget_get_track_lane_at_y (
+    self, ar_prv->start_y + offset_y);
+  TrackLane * old_lane =
+    timeline_arranger_widget_get_track_lane_at_y (
+    self, ar_prv->start_y + ar_prv->last_offset_y);
+  /*g_warn_if_fail (old_lane);*/
+  const int new_lane_is_equal =
+    lane == old_lane;
+  const int new_lane_is_before =
+    old_lane && lane &&
+    lane->pos < old_lane->pos;
+
   /* if new track is equal, move lanes or
    * automation lanes */
   if (new_track_is_equal)
     {
-      /* TODO */
+      if (old_lane && lane &&
+          old_lane->track == lane->track &&
+          !new_lane_is_equal &&
+          /* don't move lanes if inside a
+           * moving operation between tracks */
+          self->visible_track_diff == 0)
+        {
+          move_regions_to_new_lanes (
+            self, lane->track, new_lane_is_before);
+        }
     }
   /* otherwise move tracks */
   else
     {
-      if (track)
+      if (track && old_track)
         move_regions_to_new_tracks (
           self, new_track_is_before);
     }
@@ -2198,7 +2305,7 @@ timeline_arranger_widget_on_drag_end (
   timeline_arranger_widget_update_visibility (
     self);
 
-  timeline_arranger_widget_refresh_children (self);
+  /*timeline_arranger_widget_refresh_children (self);*/
 
   self->resizing_range = 0;
   self->resizing_range_start = 0;
@@ -2360,7 +2467,7 @@ add_children_from_midi_track (
                 r =
                   region_get_lane_trans_region (r);
 
-              if (!r->widget)
+              if (!GTK_IS_WIDGET (r->widget))
                 region_gen_widget (r);
 
               gtk_overlay_add_overlay (

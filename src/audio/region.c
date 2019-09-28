@@ -158,12 +158,13 @@ region_move_to_track (
   /* remove the region from its old track */
   track_remove_region (
     region_track,
-    region, F_NO_FREE);
+    region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
 
   /* add the region to its new track */
   track_add_region (
     track, region, NULL,
-    region->lane_pos, F_NO_GEN_NAME);
+    region->lane_pos, F_NO_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
   region_set_lane (
     region, track->lanes[region->lane_pos]);
 
@@ -205,14 +206,18 @@ region_move_to_lane (
     {
       track_remove_region (
         region_track,
-        region, F_NO_FREE);
+        region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
       track_add_region (
         lane->track, region, NULL,
-        lane->pos, F_NO_GEN_NAME);
+        lane->pos,
+        F_NO_GEN_NAME,
+        F_NO_PUBLISH_EVENTS);
       region_select (
         region, selected);
     }
   region_set_lane (region, lane);
+
+  track_remove_empty_last_lanes (region_track);
 }
 
 /**
@@ -914,10 +919,12 @@ region_split (
   /* add them to the track */
   track_add_region (
     region_get_track (region),
-    *r1, region->at, region->lane_pos, 1);
+    *r1, region->at, region->lane_pos,
+    F_GEN_NAME, F_PUBLISH_EVENTS);
   track_add_region (
     region_get_track (region),
-    *r2, region->at, region->lane_pos, 1);
+    *r2, region->at, region->lane_pos,
+    F_GEN_NAME, F_PUBLISH_EVENTS);
 
   /* generate widgets so update visibility in the
    * arranger can work */
@@ -942,7 +949,7 @@ region_split (
   /* remove and free the original region */
   track_remove_region (
     region_get_track (region),
-    region, F_FREE);
+    region, F_PUBLISH_EVENTS, F_FREE);
 
   EVENTS_PUSH (ET_REGION_CREATED, *r1);
   EVENTS_PUSH (ET_REGION_CREATED, *r2);
@@ -973,7 +980,8 @@ region_unsplit (
   /* add it to the track */
   track_add_region (
     region_get_track (r1),
-    *region, r1->at, r1->lane_pos, 1);
+    *region, r1->at, r1->lane_pos,
+    F_GEN_NAME, F_PUBLISH_EVENTS);
 
   /* generate widgets so update visibility in the
    * arranger can work */
@@ -995,10 +1003,10 @@ region_unsplit (
   /* remove and free the original regions */
   track_remove_region (
     region_get_track (r1),
-    r1, F_FREE);
+    r1, F_PUBLISH_EVENTS, F_FREE);
   track_remove_region (
     region_get_track (r2),
-    r2, F_FREE);
+    r2, F_PUBLISH_EVENTS, F_FREE);
 
   EVENTS_PUSH (ET_REGION_CREATED, *region);
 }

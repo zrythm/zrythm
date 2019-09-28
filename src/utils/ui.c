@@ -372,6 +372,60 @@ ui_px_to_frames_editor (
 }
 
 /**
+ * Returns if the child is hit or not by the
+ * coordinates in parent.
+ *
+ * @param check_x Check x-axis for match.
+ * @param check_y Check y-axis for match.
+ * @param x x in parent space.
+ * @param y y in parent space.
+ * @param x_padding Padding to add to the x
+ *   of the object when checking if hit.
+ *   The bigger the padding the more space the
+ *   child will have to get hit.
+ * @param y_padding Padding to add to the y
+ *   of the object when checking if hit.
+ *   The bigger the padding the more space the
+ *   child will have to get hit.
+ */
+int
+ui_is_child_hit (
+  GtkWidget * parent,
+  GtkWidget *    child,
+  const int            check_x,
+  const int            check_y,
+  const double         x,
+  const double         y,
+  const double         x_padding,
+  const double         y_padding)
+{
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (
+    child,
+    &allocation);
+
+  gint wx, wy;
+  gtk_widget_translate_coordinates (
+    GTK_WIDGET (parent),
+    child,
+    (int) x, (int) y, &wx, &wy);
+
+  //g_message ("wx wy %d %d", wx, wy);
+
+  /* if hit */
+  if ((!check_x ||
+        (wx >= - x_padding &&
+         wx <= allocation.width + x_padding)) &&
+      (!check_y ||
+        (wy >= - y_padding &&
+         wy <= allocation.height + y_padding)))
+    {
+      return 1;
+    }
+  return 0;
+}
+
+/**
  * Hides the notification.
  *
  * Used ui_show_notification to be called after
