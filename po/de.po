@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-23 12:35+0100\n"
-"PO-Revision-Date: 2019-09-24 07:14+0000\n"
+"PO-Revision-Date: 2019-09-29 11:56+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
 "\n"
@@ -239,9 +239,8 @@ msgid "Track Name"
 msgstr "Spurname"
 
 #: src/gui/widgets/track_properties_expander.c:198
-#, fuzzy
 msgid "Direct Out"
-msgstr "Stereo Out"
+msgstr "Direct Out"
 
 #: src/gui/widgets/track_properties_expander.c:215 src/audio/channel.c:1864
 msgid "Piano Roll"
@@ -660,7 +659,7 @@ msgstr "Erweiterungsbrowser"
 
 #: src/gui/widgets/route_target_selector.c:54
 msgid "<tt><i>Engine</i></tt>"
-msgstr ""
+msgstr "<tt><i>Engine</i></tt>"
 
 #: src/gui/widgets/route_target_selector.c:79
 msgid "Cannot be routed"
