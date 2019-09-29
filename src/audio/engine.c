@@ -885,7 +885,7 @@ engine_process (
     {
       /* queue metronome if met within this cycle */
       if (TRANSPORT->metronome_enabled &&
-          IS_TRANSPORT_ROLLING)
+          TRANSPORT_IS_ROLLING)
         {
           queue_metronome_events (
             self, _nframes - nframes, nframes);
@@ -938,7 +938,7 @@ engine_post_process (
 
   /* move the playhead if rolling and not
    * pre-rolling */
-  if (IS_TRANSPORT_ROLLING &&
+  if (TRANSPORT_IS_ROLLING &&
       self->remaining_latency_preroll == 0)
     {
       transport_add_to_playhead (

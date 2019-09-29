@@ -284,6 +284,23 @@ position_add_frames (
 }
 
 /**
+ * Returns the Position in milliseconds.
+ */
+long
+position_to_ms (
+  const Position * pos)
+{
+  if (position_to_frames (pos) == 0)
+    {
+      return 0;
+    }
+  return
+    (long)
+    ((1000.0 * (double) position_to_frames (pos)) /
+     ((double) AUDIO_ENGINE->sample_rate));
+}
+
+/**
  * Compares 2 positions.
  *
  * negative = p1 < p2

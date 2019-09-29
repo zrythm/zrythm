@@ -49,14 +49,6 @@ key_release_cb (GtkWidget      * widget,
                  GdkEventKey * event,
                  gpointer       data)
 {
-  if (event && event->keyval == GDK_KEY_space)
-    {
-      if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
-        transport_request_pause (TRANSPORT);
-      else if (TRANSPORT->play_state == PLAYSTATE_PAUSED)
-        transport_request_roll (TRANSPORT);
-    }
-
   return FALSE;
 }
 

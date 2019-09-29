@@ -1085,6 +1085,22 @@ activate_goto_next_marker (
 }
 
 void
+activate_play_pause (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  if (TRANSPORT_IS_ROLLING)
+    {
+      transport_request_pause (TRANSPORT);
+    }
+  else if (TRANSPORT_IS_PAUSED)
+    {
+      transport_request_roll (TRANSPORT);
+    }
+}
+
+void
 activate_delete_selected_tracks (
   GSimpleAction *action,
   GVariant      *variant,

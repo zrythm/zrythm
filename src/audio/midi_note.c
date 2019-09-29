@@ -277,7 +277,7 @@ midi_note_set_val (
   /* if currently playing set a note off event. */
   if (midi_note_hit (
         midi_note, PLAYHEAD->frames) &&
-      IS_TRANSPORT_ROLLING)
+      TRANSPORT_IS_ROLLING)
     {
       MidiEvents * midi_events =
         region_get_track (midi_note->region)->

@@ -56,7 +56,8 @@ accel_install_action_accelerator (
   const char *     action_name)
 {
   g_warn_if_fail (zrythm_app);
-  const char *accels[] = { primary, secondary };
+  const char *accels[] =
+    { primary, secondary, NULL };
   gtk_application_set_accels_for_action (
     GTK_APPLICATION (zrythm_app),
     action_name,

@@ -360,6 +360,12 @@ activate_goto_next_marker (
   gpointer       user_data);
 
 void
+activate_play_pause (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+void
 change_state_dim_output (
   GSimpleAction * action,
   GVariant *      value,

@@ -73,7 +73,7 @@ audio_track_fill_stereo_ports_from_clip (
   long cycle_end_frames =
     cycle_start_frames + nframes;
 
-  if (!IS_TRANSPORT_ROLLING)
+  if (!TRANSPORT_IS_ROLLING)
     return;
 
   Region * r;

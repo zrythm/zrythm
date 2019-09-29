@@ -48,9 +48,11 @@
 #define DEFAULT_BEAT_UNIT BEAT_UNIT_4
 
 #define PLAYHEAD (&TRANSPORT->playhead_pos)
-#define IS_TRANSPORT_ROLLING \
+#define TRANSPORT_IS_ROLLING \
   (TRANSPORT->play_state == PLAYSTATE_ROLLING)
-#define IS_TRANSPORT_LOOPING \
+#define TRANSPORT_IS_PAUSED \
+  (TRANSPORT->play_state == PLAYSTATE_PAUSED)
+#define TRANSPORT_IS_LOOPING \
   (TRANSPORT->loop)
 
 typedef enum BeatUnit

@@ -409,7 +409,20 @@ transport_goto_prev_marker (
   for (i = num_markers - 1; i >= 0; i--)
     {
       if (position_is_before (
-            &markers[i], &self->playhead_pos))
+            &markers[i], &self->playhead_pos) &&
+          TRANSPORT_IS_ROLLING &&
+          i > 0 &&
+          (position_to_ms (&self->playhead_pos) -
+             position_to_ms (&markers[i])) <
+           180)
+        {
+          transport_move_playhead (
+            &markers[i - 1], 1);
+          break;
+        }
+      else if (
+        position_is_before (
+          &markers[i], &self->playhead_pos))
         {
           transport_move_playhead (
             &markers[i], 1);
@@ -469,7 +482,7 @@ transport_frames_add_frames (
 
   /* if start frames were before the loop-end point
    * and the new frames are after (loop crossed) */
-  if (IS_TRANSPORT_LOOPING &&
+  if (TRANSPORT_IS_LOOPING &&
       gframes < self->loop_end_pos.frames &&
       new_frames >= self->loop_end_pos.frames)
     {
@@ -519,7 +532,7 @@ transport_is_loop_point_met (
   const nframes_t   nframes)
 {
   if (
-    IS_TRANSPORT_LOOPING &&
+    TRANSPORT_IS_LOOPING &&
     self->loop_end_pos.frames > g_start_frames &&
     self->loop_end_pos.frames <=
       g_start_frames + nframes)

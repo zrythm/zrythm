@@ -854,12 +854,15 @@ zrythm_app_startup (GApplication* _app)
   accel_install_primary_action_accelerator (
     "6",
     "win.audition-mode");
-  accel_install_primary_action_accelerator (
-    "KP_4",
+  accel_install_action_accelerator (
+    "KP_4", "BackSpace",
     "win.goto-prev-marker");
   accel_install_primary_action_accelerator (
     "KP_6",
     "win.goto-next-marker");
+  accel_install_primary_action_accelerator (
+    "space",
+    "win.play-pause");
   accel_install_primary_action_accelerator (
     "Q",
     "win.quick-quantize::global");

@@ -325,6 +325,13 @@ position_from_frames (
 }
 
 /**
+ * Returns the Position in milliseconds.
+ */
+long
+position_to_ms (
+  const Position * pos);
+
+/**
  * Compares 2 positions.
  *
  * negative = p1 is earlier

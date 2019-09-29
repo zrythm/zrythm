@@ -2107,7 +2107,7 @@ lv2_plugin_process (
    * something has changed */
   const bool xport_changed =
     lv2_plugin->rolling !=
-      (IS_TRANSPORT_ROLLING) ||
+      (TRANSPORT_IS_ROLLING) ||
     /* FIXME don't save Position in Lv2Plugin.
      * only safe long frames. */
     lv2_plugin->gframes !=
@@ -2184,7 +2184,7 @@ lv2_plugin_process (
 
   /* Update transport state to expected values for
    * next cycle */
-  if (IS_TRANSPORT_ROLLING)
+  if (TRANSPORT_IS_ROLLING)
     {
       lv2_plugin->gframes =
         transport_frames_add_frames (

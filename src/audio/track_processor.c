@@ -299,7 +299,7 @@ handle_recording (
 
   if (!TRANSPORT->recording ||
       !tr->recording ||
-      !IS_TRANSPORT_ROLLING)
+      !TRANSPORT_IS_ROLLING)
     {
       tr->recording_region = NULL;
       return;
