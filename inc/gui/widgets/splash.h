@@ -1,7 +1,5 @@
 /*
- * gui/widgets/splash.h - Splash window
- *
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,11 +26,11 @@
 
 #define SPLASH_WINDOW_WIDGET_TYPE \
   (splash_window_widget_get_type ())
-G_DECLARE_FINAL_TYPE (SplashWindowWidget,
-                      splash_window_widget,
-                      Z,
-                      SPLASH_WINDOW_WIDGET,
-                      GtkWindow)
+G_DECLARE_FINAL_TYPE (
+  SplashWindowWidget,
+  splash_window_widget,
+  Z, SPLASH_WINDOW_WIDGET,
+  GtkWindow)
 
 typedef struct _SplashWindowWidget
 {

@@ -22,23 +22,23 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (SplashWindowWidget,
-               splash_window_widget,
-               GTK_TYPE_WINDOW)
-
+G_DEFINE_TYPE (
+  SplashWindowWidget,
+  splash_window_widget,
+  GTK_TYPE_WINDOW)
 
 SplashWindowWidget *
-splash_window_widget_new (ZrythmApp * app)
+splash_window_widget_new (
+  ZrythmApp * app)
 {
   SplashWindowWidget * self =
-    g_object_new (SPLASH_WINDOW_WIDGET_TYPE,
-                  "application", app,
-                  "visible", 1,
-                  NULL);
-  gtk_progress_bar_set_fraction (self->progress_bar,
-                                 0.0);
-  gtk_window_set_keep_below (
-    GTK_WINDOW (self), 1);
+    g_object_new (
+      SPLASH_WINDOW_WIDGET_TYPE,
+      "application", G_APPLICATION (app),
+      "title", "Zrythm",
+      NULL);
+  gtk_progress_bar_set_fraction (
+    self->progress_bar, 0.0);
 
   return self;
 }
@@ -48,10 +48,10 @@ splash_widget_update (SplashWindowWidget * self,
                       const char         * message,
                       gdouble            progress)
 {
-  gtk_label_set_text (self->label,
-                      message);
-  gtk_progress_bar_set_fraction (self->progress_bar,
-                                 progress);
+  gtk_label_set_text (
+    self->label, message);
+  gtk_progress_bar_set_fraction (
+    self->progress_bar, progress);
 }
 
 static void
@@ -59,8 +59,8 @@ splash_window_widget_class_init (
   SplashWindowWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "splash.ui");
+  resources_set_class_template (
+    klass, "splash.ui");
 
   gtk_widget_class_bind_template_child (
     klass,
@@ -77,4 +77,3 @@ splash_window_widget_init (SplashWindowWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }
-

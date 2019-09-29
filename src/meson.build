@@ -15,25 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-gen_gtk_gresources = find_program (
-  join_paths (
-    resources_dir, 'gen-gtk-gresources-xml.py'))
-zrythm_gresources_xml = configure_file (
-  output: 'zrythm.gresources.xml',
-  input: join_paths (
-    resources_dir, 'gen-gtk-gresources-xml.py'),
-  command: [
-    gen_gtk_gresources,
-    resources_dir,
-    '@OUTPUT@'
-    ])
-zrythm_resources = gnome.compile_resources (
-  'zrythm-resources',
-  zrythm_gresources_xml,
-  source_dir: resources_dir,
-  c_name: 'zrythm',
-)
-
 zrythm_main = files ('main.c')
 zrythm_srcs = files ([
   'project.c',

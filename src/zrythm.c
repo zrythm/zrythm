@@ -351,9 +351,11 @@ task_completed_cb (GObject *source_object,
  *
  * This is the final step.
  */
-static void on_setup_main_window (GSimpleAction  *action,
-                             GVariant *parameter,
-                             gpointer  user_data)
+static void
+on_setup_main_window (
+  GSimpleAction  *action,
+  GVariant *parameter,
+  gpointer  user_data)
 {
   g_message ("setup main window");
 
@@ -680,7 +682,8 @@ zrythm_app_open (
  * First function that gets called.
  */
 static void
-zrythm_app_startup (GApplication* _app)
+zrythm_app_startup (
+  GApplication* _app)
 {
   g_message ("startup");
   G_APPLICATION_CLASS (zrythm_app_parent_class)->

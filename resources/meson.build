@@ -15,6 +15,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
+gen_gtk_gresources = find_program (
+  'gen-gtk-gresources-xml.py')
+zrythm_gresources_xml = configure_file (
+  output: 'zrythm.gresources.xml',
+  input: 'gen-gtk-gresources-xml.py',
+  command: [
+    gen_gtk_gresources,
+    meson.current_source_dir(),
+    '@OUTPUT@'
+    ])
+zrythm_resources = gnome.compile_resources (
+  'zrythm-resources',
+  zrythm_gresources_xml,
+  source_dir: resources_dir,
+  c_name: 'zrythm',
+)
+
 # install app icon
 install_data (
   join_paths ('icons', 'zrythm', 'zrythm.svg'),

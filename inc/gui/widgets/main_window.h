@@ -38,11 +38,11 @@
 
 #define MAIN_WINDOW_WIDGET_TYPE \
   (main_window_widget_get_type ())
-G_DECLARE_FINAL_TYPE (MainWindowWidget,
-                      main_window_widget,
-                      Z,
-                      MAIN_WINDOW_WIDGET,
-                      GtkApplicationWindow)
+G_DECLARE_FINAL_TYPE (
+  MainWindowWidget,
+  main_window_widget,
+  Z, MAIN_WINDOW_WIDGET,
+  GtkApplicationWindow)
 
 typedef struct _HeaderNotebookWidget
   HeaderNotebookWidget;
@@ -84,23 +84,31 @@ typedef struct _MainWindowWidget
 } MainWindowWidget;
 
 /**
- * Creates a main_window widget using the given main_window data.
+ * Creates a main_window widget using the given
+ * app data.
  */
 MainWindowWidget *
-main_window_widget_new (ZrythmApp * app);
+main_window_widget_new (
+  ZrythmApp * app);
 
+/**
+ * Refreshes the state of the main window.
+ */
 void
-main_window_widget_refresh (MainWindowWidget * self);
+main_window_widget_refresh (
+  MainWindowWidget * self);
 
 /**
  * TODO
  */
 void
-main_window_widget_open (MainWindowWidget  * win,
-                         GFile             * file);
+main_window_widget_open (
+  MainWindowWidget  * win,
+  GFile             * file);
 
 void
-main_window_widget_quit (MainWindowWidget * self);
+main_window_widget_quit (
+  MainWindowWidget * self);
 
 /**
  * @}

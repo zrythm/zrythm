@@ -32,7 +32,6 @@
     <property name="window_position">center-always</property>
     <property name="default_width">580</property>
     <property name="default_height">300</property>
-    <property name="type_hint">splashscreen</property>
     <property name="decorated">False</property>
     <property name="deletable">False</property>
     <child>

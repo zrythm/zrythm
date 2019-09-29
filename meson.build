@@ -418,10 +418,10 @@ ext_srcs = []
 
 subdir ('po')
 subdir ('ext')
+subdir ('resources')
 subdir ('src')
 subdir ('tests')
 subdir ('data')
-subdir ('resources')
 subdir ('doc')
 subdir ('scripts')
 
