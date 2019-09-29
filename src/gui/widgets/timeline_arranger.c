@@ -1923,11 +1923,13 @@ move_regions_to_new_lanes (
  * @param new_track_is_before 1 if the Region's
  *   should move to their previous tracks, 0 for
  *   their next tracks.
+ *
+ * @return 1 if moved.
  */
-static void
+static int
 move_regions_to_new_tracks (
   TimelineArrangerWidget * self,
-  const int                new_track_is_before)
+  const int                vis_track_diff)
 {
   int i;
 
@@ -1950,70 +1952,44 @@ move_regions_to_new_tracks (
       region = regions[i];
       Track * region_track =
         region_get_track (region);
-      if (new_track_is_before)
+      Track * visible =
+        tracklist_get_visible_track_after_delta (
+          TRACKLIST,
+          region_get_track (region),
+          vis_track_diff);
+      if (
+        !visible ||
+        !track_type_is_compatible_for_moving (
+           region_track->type,
+           visible->type))
         {
-          Track * prev_visible =
-            tracklist_get_prev_visible_track (
-              TRACKLIST, region_get_track (region));
-          if (
-            !prev_visible ||
-            !track_type_is_compatible_for_moving (
-               region_track->type,
-               prev_visible->type))
-            {
-              compatible = 0;
-              break;
-            }
-        }
-      else
-        {
-          Track * next_visible =
-            tracklist_get_next_visible_track (
-              TRACKLIST, region_get_track (region));
-          if (
-            !next_visible ||
-            !track_type_is_compatible_for_moving (
-               region_track->type,
-               next_visible->type))
-            {
-              compatible = 0;
-              break;
-            }
+          compatible = 0;
+          break;
         }
     }
   if (!compatible)
-    return;
+    return 0;
 
   /* new positions are all compatible, move the
    * regions */
-  self->visible_track_diff +=
-    new_track_is_before ? -1 : 1;
   for (i = 0; i < num_regions; i++)
     {
       region = regions[i];
       Track * region_track =
         region_get_track (region);
       g_warn_if_fail (region && region_track);
-      Track * track_to_move_to = NULL;
-
-      if (new_track_is_before)
-        {
-          track_to_move_to =
-            tracklist_get_prev_visible_track (
-              TRACKLIST, region_track);
-        }
-      else
-        {
-          track_to_move_to =
-            tracklist_get_next_visible_track (
-              TRACKLIST,
-              region->lane->track);
-        }
+      Track * track_to_move_to =
+        tracklist_get_visible_track_after_delta (
+          TRACKLIST,
+          region_get_track (region),
+          vis_track_diff);
       g_warn_if_fail (track_to_move_to);
 
       region_move_to_track (
         region, track_to_move_to);
     }
+
+  return 1;
 }
 
 void
@@ -2023,18 +1999,20 @@ timeline_arranger_widget_move_items_y (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  /* get old track and new track */
+  /* get old track, track where last change
+   * happened, and new track */
   Track * track =
     timeline_arranger_widget_get_track_at_y (
     self, ar_prv->start_y + offset_y);
   Track * old_track =
     timeline_arranger_widget_get_track_at_y (
-    self, ar_prv->start_y + ar_prv->last_offset_y);
+    self, ar_prv->start_y);
+  Track * last_track =
+    tracklist_get_visible_track_after_delta (
+      TRACKLIST, old_track,
+      self->visible_track_diff);
   const int new_track_is_equal =
-    track == old_track;
-  const int new_track_is_before =
-    old_track && track &&
-    track->pos < old_track->pos;
+    track == last_track;
 
   /* TODO automations and other lanes */
   TrackLane * lane =
@@ -2056,10 +2034,7 @@ timeline_arranger_widget_move_items_y (
     {
       if (old_lane && lane &&
           old_lane->track == lane->track &&
-          !new_lane_is_equal &&
-          /* don't move lanes if inside a
-           * moving operation between tracks */
-          self->visible_track_diff == 0)
+          !new_lane_is_equal)
         {
           move_regions_to_new_lanes (
             self, lane->track, new_lane_is_before);
@@ -2068,9 +2043,26 @@ timeline_arranger_widget_move_items_y (
   /* otherwise move tracks */
   else
     {
-      if (track && old_track)
-        move_regions_to_new_tracks (
-          self, new_track_is_before);
+      if (track && last_track && old_track)
+        {
+          int cur_diff =
+            tracklist_get_visible_track_diff (
+              TRACKLIST, old_track, track);
+          int delta =
+            tracklist_get_visible_track_diff (
+              TRACKLIST, last_track, track);
+          if (delta != 0)
+            {
+              int moved =
+                move_regions_to_new_tracks (
+                  self, delta);
+              if (moved)
+                {
+                  self->visible_track_diff =
+                    cur_diff;
+                }
+            }
+        }
     }
 }
 

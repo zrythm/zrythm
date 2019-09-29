@@ -84,7 +84,8 @@ typedef struct _TimelineArrangerWidget
   Marker *             start_marker;
 
   /** The number of visible tracks moved during a
-   * moving operation between tracks. */
+   * moving operation between tracks up to the last
+   * cycle. */
   int                  visible_track_diff;
 
   /** The number of visible lanes moved during a
