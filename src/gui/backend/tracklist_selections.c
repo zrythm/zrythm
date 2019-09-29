@@ -302,12 +302,10 @@ tracklist_selections_toggle_visibility (
  */
 TracklistSelections *
 tracklist_selections_clone (
-  TracklistSelections * self)
+  TracklistSelections * src)
 {
   TracklistSelections * new_ts =
     calloc (1, sizeof (TracklistSelections));
-
-  TracklistSelections * src = TRACKLIST_SELECTIONS;
 
   for (int i = 0; i < src->num_tracks; i++)
     {

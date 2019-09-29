@@ -876,7 +876,7 @@ track_widget_on_solo_toggled (
 void
 track_widget_on_mute_toggled (
   GtkToggleButton * btn,
-  void *            data)
+  TrackWidget *     data)
 {
   TRACK_WIDGET_GET_PRIVATE (data);
   track_set_muted (

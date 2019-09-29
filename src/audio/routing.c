@@ -348,7 +348,6 @@ node_process (
       else if (port->track &&
           port->identifier.owner_type ==
             PORT_OWNER_TYPE_TRACK &&
-          port->identifier.type == TYPE_AUDIO &&
           port->identifier.flow == FLOW_OUTPUT)
         {
           /* if muted clear it */
@@ -358,8 +357,7 @@ node_process (
                    !port->track->solo &&
                    port->track != P_MASTER_TRACK))
             {
-              /* TODO */
-              /*port_clear_buffer (port);*/
+              port_clear_buffer (port);
             }
           /* if not muted/soloed process it */
           else

@@ -569,6 +569,35 @@ static void on_prompt_for_project (
             S_GENERAL,
             "first-run"))
         {
+          /* warranty disclaimer */
+          GtkDialogFlags flags =
+            GTK_DIALOG_DESTROY_WITH_PARENT;
+          GtkWidget * dialog =
+            gtk_message_dialog_new (
+              NULL,
+              flags,
+              GTK_MESSAGE_INFO,
+              GTK_BUTTONS_OK,
+"Copyright (C) 2018-2019 Alexandros Theodotou\n"
+"\n"
+"Zrythm is free software: you can redistribute it and/or modify\n"
+"it under the terms of the GNU Affero General Public License as published by\n"
+"the Free Software Foundation, either version 3 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"Zrythm is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU Affero General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU Affero General Public License\n"
+"along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.");
+          gtk_window_set_title (
+            GTK_WINDOW (dialog),
+            _("License Information"));
+          gtk_dialog_run (GTK_DIALOG (dialog));
+          gtk_widget_destroy (dialog);
+
           first_run_assistant =
             first_run_assistant_widget_new (
               GTK_WINDOW (splash));

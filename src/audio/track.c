@@ -409,18 +409,20 @@ track_set_recording (
  * to the undo stack.
  */
 void
-track_set_muted (Track * track,
-                 int     mute,
-                 int     trigger_undo)
+track_set_muted (
+  Track * track,
+  int     mute,
+  int     trigger_undo)
 {
+  TracklistSelections tls;
+  tls.tracks[0] = track;
+  tls.num_tracks = 1;
   UndoableAction * action =
     edit_tracks_action_new (
       EDIT_TRACK_ACTION_TYPE_MUTE,
       track,
-      TRACKLIST_SELECTIONS,
+      &tls,
       0.f, 0.f, 0, mute);
-  g_message ("setting mute to %d",
-             mute);
   if (trigger_undo)
     {
       undo_manager_perform (UNDO_MANAGER,
@@ -506,15 +508,19 @@ track_get_velocities_in_range (
  * adds the action to the undo stack.
  */
 void
-track_set_soloed (Track * track,
-                  int     solo,
-                  int     trigger_undo)
+track_set_soloed (
+  Track * track,
+  int     solo,
+  int     trigger_undo)
 {
+  TracklistSelections tls;
+  tls.tracks[0] = track;
+  tls.num_tracks = 1;
   UndoableAction * action =
     edit_tracks_action_new (
       EDIT_TRACK_ACTION_TYPE_SOLO,
       track,
-      TRACKLIST_SELECTIONS,
+      &tls,
       0.f, 0.f, solo, 0);
   if (trigger_undo)
     {

@@ -174,7 +174,7 @@ track_widget_on_solo_toggled (
 void
 track_widget_on_mute_toggled (
   GtkToggleButton * btn,
-  void *            data);
+  TrackWidget *     data);
 
 /**
  * Blocks all signal handlers.

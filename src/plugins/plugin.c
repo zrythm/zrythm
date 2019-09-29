@@ -709,7 +709,7 @@ plugin_clone (
           pl->descr->name);
       char * states_dir =
         project_get_states_dir (
-          PROJECT, 0);
+          PROJECT, PROJECT->backup_dir != NULL);
       char * state_dir_plugin =
         g_build_filename (states_dir,
                           tmp,

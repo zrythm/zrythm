@@ -275,6 +275,9 @@ midi_track_fill_midi_events (
                         (midi_time_t)
                         (diff_to_loop_end - 1),
                         1);
+                      g_warn_if_fail (
+                        diff_to_loop_end - 1 <
+                        local_start_frame + nframes);
                     }
                 }
               /* send all MIDI notes off if end of
@@ -318,6 +321,11 @@ midi_track_fill_midi_events (
                             (region_end_adjusted -
                               local_pos),
                             1);
+                          g_warn_if_fail (
+                            region_end_adjusted -
+                              local_pos <
+                            local_start_frame +
+                              nframes);
                         }
                     }
                 }
@@ -380,6 +388,12 @@ midi_track_fill_midi_events (
                             ((region_end_frames - 1) -
                               g_start_frames),
                             1);
+                          g_warn_if_fail (
+                            (region_end_frames -
+                               1) -
+                               g_start_frames <
+                            local_start_frame +
+                              nframes);
                         }
                     }
                   continue;
@@ -428,6 +442,12 @@ midi_track_fill_midi_events (
                               local_pos) +
                               diff_to_loop_end),
                             1);
+                          g_warn_if_fail (
+                            ((loop_end_adjusted -
+                              local_pos) +
+                              diff_to_loop_end) <
+                            local_start_frame +
+                              nframes);
                         }
                     }
                 }
@@ -529,6 +549,12 @@ midi_track_fill_midi_events (
                            local_pos) +
                           diff_to_loop_end),
                         1);
+                      g_warn_if_fail (
+                        ((mn_end_frames -
+                           local_pos) +
+                          diff_to_loop_end) <
+                        local_start_frame +
+                          nframes);
                     }
                 }
             }
