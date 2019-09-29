@@ -401,7 +401,7 @@ handle_recording (
                 {
                   new_region =
                     audio_region_new (
-                      NULL, NULL, nframes, 2,
+                      -1, NULL, NULL, nframes, 2,
                       &TRANSPORT->loop_start_pos,
                       1);
                 }
@@ -456,7 +456,7 @@ handle_recording (
             {
               region =
                 audio_region_new (
-                  NULL, NULL, nframes, 2,
+                  -1, NULL, NULL, nframes, 2,
                   &start_pos, 1);
             }
           track_add_region (

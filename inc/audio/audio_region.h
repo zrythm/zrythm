@@ -50,8 +50,8 @@ typedef struct AudioClip AudioClip;
  * FIXME First create the
  * audio on the pool and then pass the pool id here.
  *
- * @param add_to_project Add Region to project
- *   registry. This should be false when cloning.
+ * @param pool_id The pool ID. This is used when
+ *   creating clone regions (non-main).
  * @param filename Filename, if loading from
  *   file, otherwise NULL.
  * @param frames Float array, if loading from
@@ -60,6 +60,7 @@ typedef struct AudioClip AudioClip;
  */
 AudioRegion *
 audio_region_new (
+  const int        pool_id,
   const char *     filename,
   const float *    frames,
   const long       nframes,

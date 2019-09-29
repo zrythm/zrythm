@@ -26,7 +26,8 @@
 #ifndef __AUDIO_POOL_H__
 #define __AUDIO_POOL_H__
 
-typedef struct AudioClip AudioClip;
+#include "audio/clip.h"
+#include "utils/yaml.h"
 
 /**
  * @addtogroup audio
@@ -51,12 +52,31 @@ typedef struct AudioPool
   /** The clips. */
   AudioClip **   clips;
 
-  /** File counter. */
+  /** Clip counter. */
   int            num_clips;
 
   /** Array sizes. */
   size_t         clips_size;
 } AudioPool;
+
+static const cyaml_schema_field_t
+audio_pool_fields_schema[] =
+{
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "clips", CYAML_FLAG_POINTER,
+    AudioPool, clips, num_clips,
+    &audio_clip_schema, 0, CYAML_UNLIMITED),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+audio_pool_schema =
+{
+	CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    AudioPool, audio_pool_fields_schema),
+};
 
 /**
  * Inits after loading a project.

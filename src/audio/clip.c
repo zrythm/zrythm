@@ -29,18 +29,11 @@
 
 #include <gtk/gtk.h>
 
-/**
- * Creates an audio clip from a file.
- *
- * The name used is the basename of the file.
- */
-AudioClip *
-audio_clip_new_from_file (
+static void
+audio_clip_init_from_file (
+  AudioClip * self,
   const char * full_path)
 {
-  AudioClip * self =
-    calloc (1, sizeof (AudioClip));
-
   AudioEncoder * enc =
     audio_encoder_new_from_file (full_path);
   audio_encoder_decode (enc, 1);
@@ -58,9 +51,45 @@ audio_clip_new_from_file (
     }
   self->channels = enc->channels;
   self->name = io_path_get_basename (full_path);
-  self->pool_id = -1;
 
   audio_encoder_free (enc);
+}
+
+/**
+ * Inits after loading a Project.
+ */
+void
+audio_clip_init_loaded (
+  AudioClip * self)
+{
+  char * pool_dir =
+    project_get_pool_dir (PROJECT);
+  char * noext =
+    io_file_strip_ext (self->name);
+  char * tmp =
+    g_build_filename (
+      pool_dir, noext, NULL);
+  char * filepath =
+    g_strdup_printf ("%s.wav", tmp);
+
+  audio_clip_init_from_file (self, filepath);
+}
+
+/**
+ * Creates an audio clip from a file.
+ *
+ * The name used is the basename of the file.
+ */
+AudioClip *
+audio_clip_new_from_file (
+  const char * full_path)
+{
+  AudioClip * self =
+    calloc (1, sizeof (AudioClip));
+
+  audio_clip_init_from_file (self, full_path);
+
+  self->pool_id = -1;
 
   return self;
 }
@@ -146,9 +175,11 @@ audio_clip_write_to_pool (
       PROJECT);
   g_warn_if_fail (
     io_file_exists (prj_pool_dir));
+  char * without_ext =
+    io_file_strip_ext (self->name);
   char * basename =
     g_strdup_printf (
-      "%s.wav", self->name);
+      "%s.wav", without_ext);
   char * new_path =
     g_build_filename (
       prj_pool_dir,
@@ -172,6 +203,7 @@ audio_clip_write_to_pool (
     /*}*/
   audio_clip_write_to_file (
     self, new_path);
+  g_free (without_ext);
   g_free (basename);
   g_free (prj_pool_dir);
 }

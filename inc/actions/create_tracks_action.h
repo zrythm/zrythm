@@ -62,6 +62,15 @@ typedef struct CreateTracksAction
   /** Filename, if we are making an audio track from
    * a file. */
   SupportedFile *  file_descr;
+
+  /**
+   * When this action is created, it will create
+   * the audio file and add it to the pool.
+   *
+   * New audio regions should use this ID to avoid
+   * duplication.
+   */
+  int              pool_id;
 } CreateTracksAction;
 
 UndoableAction *

@@ -395,8 +395,8 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 region_schema = {
-	CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
-			Region, region_fields_schema),
+  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
+    Region, region_fields_schema),
 };
 
 ARRANGER_OBJ_DECLARE_MOVABLE_W_LENGTH (

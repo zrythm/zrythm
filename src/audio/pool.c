@@ -33,7 +33,12 @@ void
 audio_pool_init_loaded (
   AudioPool * self)
 {
-  /* TODO */
+  self->clips_size = (size_t) self->num_clips;
+
+  for (int i = 0; i < self->num_clips; i++)
+    {
+      audio_clip_init_loaded (self->clips[i]);
+    }
 }
 
 /**

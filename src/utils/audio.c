@@ -35,7 +35,7 @@
 static int num_cores = 0;
 
 /**
- * Writes the buffer as a raw file to the given
+ * Writes the buffer as a WAV file to the given
  * path.
  *
  * @param size The number of frames per channel.

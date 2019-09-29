@@ -34,8 +34,11 @@
 /**
  * Creates a Region for audio data.
  *
- * @param add_to_project Add Region to project
- *   registry. This should be false when cloning.
+ * FIXME First create the
+ * audio on the pool and then pass the pool id here.
+ *
+ * @param pool_id The pool ID. This is used if not
+ *   -1.
  * @param filename Filename, if loading from
  *   file, otherwise NULL.
  * @param frames Float array, if loading from
@@ -44,6 +47,7 @@
  */
 AudioRegion *
 audio_region_new (
+  const int        pool_id,
   const char *     filename,
   const float *    frames,
   const long       nframes,
@@ -59,31 +63,41 @@ audio_region_new (
 
   AudioClip * clip = NULL;
   int recording = 0;
-  if (filename)
+  if (pool_id == -1)
     {
-      clip =
-        audio_clip_new_from_file (filename);
-    }
-  else if (frames)
-    {
-      clip =
-        audio_clip_new_from_float_array (
-          frames, nframes, channels,
-          "new audio clip");
+      if (filename)
+        {
+          clip =
+            audio_clip_new_from_file (filename);
+        }
+      else if (frames)
+        {
+          clip =
+            audio_clip_new_from_float_array (
+              frames, nframes, channels,
+              "new audio clip");
+        }
+      else
+        {
+          clip =
+            audio_clip_new_recording (
+              2, nframes, "new recording clip");
+          recording = 1;
+        }
+      g_return_val_if_fail (clip, NULL);
+
+      self->pool_id =
+        audio_pool_add_clip (
+          AUDIO_POOL, clip);
+      g_warn_if_fail (self->pool_id > -1);
     }
   else
     {
+      self->pool_id = pool_id;
       clip =
-        audio_clip_new_recording (
-          2, nframes, "new audio clip");
-      recording = 1;
+          AUDIO_POOL->clips[pool_id];
+      g_warn_if_fail (clip && clip->frames);
     }
-  g_return_val_if_fail (clip, NULL);
-
-  self->pool_id =
-    audio_pool_add_clip (
-      AUDIO_POOL, clip);
-  g_warn_if_fail (self->pool_id > -1);
 
   /* set end pos to sample end */
   position_set_to_pos (

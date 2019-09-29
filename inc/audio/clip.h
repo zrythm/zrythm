@@ -27,6 +27,7 @@
 #define __AUDIO_CLIP_H__
 
 #include "utils/types.h"
+#include "utils/yaml.h"
 
 /**
  * @addtogroup audio
@@ -57,6 +58,33 @@ typedef struct AudioClip
   /** ID (index) in the audio pool. */
   int           pool_id;
 } AudioClip;
+
+static const cyaml_schema_field_t
+audio_clip_fields_schema[] =
+{
+  CYAML_FIELD_STRING_PTR (
+    "name", CYAML_FLAG_POINTER,
+    AudioClip, name,
+   	0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "pool_id", CYAML_FLAG_DEFAULT,
+    AudioClip, pool_id),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+audio_clip_schema = {
+  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
+    AudioClip, audio_clip_fields_schema),
+};
+
+/**
+ * Inits after loading a Project.
+ */
+void
+audio_clip_init_loaded (
+  AudioClip * self);
 
 /**
  * Creates an audio clip from a file.

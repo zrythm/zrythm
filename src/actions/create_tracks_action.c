@@ -145,15 +145,22 @@ create (
 
       if (self->type == TRACK_TYPE_AUDIO)
         {
-          /* create an audio region & add to track */
+          /* create an audio region & add to
+           * track */
           Position start_pos;
           position_set_to_pos (
             &start_pos, PLAYHEAD);
           AudioRegion * ar =
             audio_region_new (
-              self->file_descr->abs_path,
+              add_to_project ? self->pool_id : -1,
+              add_to_project ?
+                NULL :
+                self->file_descr->abs_path,
               NULL, 0, 0,
               &start_pos, 1);
+          if (!add_to_project)
+            self->pool_id =
+              ar->pool_id;
           track_add_region (
             track, ar, NULL, 0, F_GEN_NAME,
             F_PUBLISH_EVENTS);

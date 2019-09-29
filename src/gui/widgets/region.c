@@ -449,6 +449,11 @@ region_widget_is_resize_l (
   RegionWidget * self,
   int             x)
 {
+  /* FIXME temporary */
+  REGION_WIDGET_GET_PRIVATE (self);
+  if (rw_prv->region->type == REGION_TYPE_AUDIO)
+    return 0;
+
   if (x < RESIZE_CURSOR_SPACE)
     {
       return 1;
@@ -489,6 +494,10 @@ region_widget_is_resize_loop (
   REGION_WIDGET_GET_PRIVATE (self);
 
   Region * r = rw_prv->region;
+
+  if (r->type == REGION_TYPE_AUDIO)
+    return 1;
+
   if ((position_to_ticks (&r->end_pos) -
        position_to_ticks (&r->start_pos)) >
       position_to_ticks (&r->loop_end_pos))

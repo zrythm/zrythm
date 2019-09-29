@@ -31,6 +31,7 @@
 #include "audio/control_room.h"
 #include "audio/mixer.h"
 #include "audio/pan.h"
+#include "audio/pool.h"
 #include "audio/sample_processor.h"
 #include "audio/transport.h"
 #include "utils/types.h"
@@ -55,7 +56,6 @@ typedef struct Channel Channel;
 typedef struct Plugin Plugin;
 typedef struct Tracklist Tracklist;
 typedef struct ExtPort ExtPort;
-typedef struct AudioPool AudioPool;
 
 /**
  * @defgroup audio Audio
@@ -348,6 +348,10 @@ engine_fields_schema[] =
     "control_room", CYAML_FLAG_DEFAULT,
     AudioEngine, control_room,
     control_room_fields_schema),
+	CYAML_FIELD_MAPPING_PTR (
+    "pool", CYAML_FLAG_POINTER,
+    AudioEngine, pool,
+    audio_pool_fields_schema),
 
 	CYAML_FIELD_END
 };

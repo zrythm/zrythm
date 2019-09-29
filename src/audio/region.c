@@ -1238,16 +1238,13 @@ region_clone (
     break;
     case REGION_TYPE_AUDIO:
       {
-        AudioClip * clip =
-          AUDIO_POOL->clips[region->pool_id];
-        g_warn_if_fail (clip && clip->frames);
-
         Region * ar =
           audio_region_new (
+            region->pool_id,
             NULL,
-            clip->frames,
-            clip->num_frames,
-            clip->channels,
+            NULL,
+            -1,
+            0,
             &region->start_pos,
             is_main);
 
