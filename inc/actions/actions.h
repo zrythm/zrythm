@@ -240,6 +240,12 @@ activate_fullscreen (GSimpleAction *action,
                   gpointer       user_data);
 
 void
+activate_news (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+void
 activate_manual (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data);

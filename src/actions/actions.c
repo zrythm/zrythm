@@ -129,9 +129,24 @@ action_disable_app_action (
 }
 
 void
-activate_manual (GSimpleAction *action,
-                GVariant      *variant,
-                gpointer       user_data)
+activate_news (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  gtk_show_uri_on_window (
+    GTK_WINDOW (MAIN_WINDOW),
+    "https://git.zrythm.org/cgit/zrythm/plain/"
+    "CHANGELOG.md",
+    0,
+    NULL);
+}
+
+void
+activate_manual (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
 {
 #ifdef MANUAL_PATH
   UiLanguage lang =

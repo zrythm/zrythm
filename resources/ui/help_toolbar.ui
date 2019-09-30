@@ -50,6 +50,19 @@
       </packing>
     </child>
     <child>
+      <object class="GtkToolButton" id="news">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">app.news</property>
+        <property name="icon_name">z-news-subscribe</property>
+        <property name="tooltip-text" translatable="yes">News</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
       <object class="GtkToolButton" id="shortcuts">
         <property name="visible">1</property>
         <property name="icon-name">z-configure-shortcuts</property>

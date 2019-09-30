@@ -951,6 +951,7 @@ zrythm_app_init (ZrythmApp * _app)
     { "fullscreen", activate_fullscreen },
     { "chat", activate_chat },
     { "manual", activate_manual },
+    { "news", activate_news },
     { "bugreport", activate_bugreport },
     { "donate", activate_donate },
     { "iconify", activate_iconify },
