@@ -27,7 +27,7 @@ At the moment, Zrythm works with Jack (recommended) and ALSA.
 For Jack setup instructions see
 https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack
 
-For more information see the [user manual](doc/user/README.md).
+For more information see the [user manual](http://manual.zrythm.org/).
 
 ## Packaging
 See [PACKAGING.md](PACKAGING.md).

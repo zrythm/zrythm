@@ -27,6 +27,7 @@
 #include "gui/widgets/midi_controller_mb.h"
 #include "gui/widgets/preferences.h"
 #include "settings/settings.h"
+#include "utils/flags.h"
 #include "utils/localization.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
@@ -49,6 +50,53 @@ enum
   VALUE_COL,
   TEXT_COL
 };
+
+static void
+on_language_changed (
+  GtkComboBox *widget,
+  PreferencesWidget * self)
+{
+  UiLanguage lang =
+    gtk_combo_box_get_active (widget);
+
+  /* if locale exists */
+  char * match =
+    localization_locale_exists (lang);
+  if (match)
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->locale_not_available),
+        F_NOT_VISIBLE);
+      g_free (match);
+    }
+  /* locale doesn't exist */
+  else
+    {
+      /* show warning */
+      char * template =
+        _("A locale for the language you have selected is \
+not available. Please enable one first using \
+the steps below and try again.\n\
+1. Uncomment any locale starting with the \
+language code <b>%s</b> in <b>/etc/locale.gen</b> (needs \
+root privileges)\n\
+2. Run <b>locale-gen</b> as root\n\
+3. Restart Zrythm");
+      char * code =
+      localization_get_string_code (lang);
+      char * str =
+        g_strdup_printf (
+          template,
+          code);
+      gtk_label_set_markup (
+        self->locale_not_available,
+        str);
+      g_free (str);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->locale_not_available),
+        F_VISIBLE);
+    }
+}
 
 static void
 setup_autosave_spinbutton (
@@ -192,6 +240,7 @@ gtk_widget_class_bind_template_child ( \
   BIND_CHILD (midi_backend);
   BIND_CHILD (midi_controllers);
   BIND_CHILD (language);
+  BIND_CHILD (locale_not_available);
   BIND_CHILD (pan_algo);
   BIND_CHILD (pan_law);
   BIND_CHILD (open_plugin_uis);
@@ -215,4 +264,8 @@ preferences_widget_init (
   g_type_ensure (MIDI_CONTROLLER_MB_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  g_signal_connect (
+    G_OBJECT (self->language), "changed",
+    G_CALLBACK (on_language_changed), self);
 }

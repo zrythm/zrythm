@@ -71,19 +71,16 @@ localization_get_string_code (
 }
 
 /**
- * Sets the locale to the currently selected one and
- * inits gettext.
+ * Returns the first locale found matching the given
+ * language, or NULL if a locale for the given
+ * language does not exist.
  *
- * Returns if a locale for the selected language
- * exists on the system or not.
+ * Must be free'd with g_free().
  */
-int
-localization_init ()
+char *
+localization_locale_exists (
+  UiLanguage lang)
 {
-#ifdef _WIN32
-  /* TODO */
-  setlocale (LC_ALL, "C");
-#else
   /* get available locales on the system */
   FILE *fp;
   char path[1035];
@@ -106,15 +103,6 @@ localization_init ()
   /* close */
   pclose (fp);
 
-  /* get selected locale */
-  GSettings * prefs =
-    g_settings_new ("org.zrythm.Zrythm.preferences");
-  UiLanguage lang =
-    g_settings_get_enum (
-      prefs,
-      "language");
-  g_object_unref (G_OBJECT (prefs));
-
 #define IS_MATCH(caps,code) \
   case UI_##caps: \
     match = string_array_contains_substr ( \
@@ -122,7 +110,6 @@ localization_init ()
           num_installed_locales, \
           code); \
     break;
-
 
   char * match = NULL;
   switch (lang)
@@ -144,11 +131,42 @@ localization_init ()
 
 #undef IS_MATCH
 
+  return match;
+}
+
+/**
+ * Sets the locale to the currently selected one and
+ * inits gettext.
+ *
+ * Returns if a locale for the selected language
+ * exists on the system or not.
+ */
+int
+localization_init ()
+{
+#ifdef _WIN32
+  /* TODO */
+  setlocale (LC_ALL, "C");
+#else
+
+  /* get selected locale */
+  GSettings * prefs =
+    g_settings_new ("org.zrythm.Zrythm.preferences");
+  UiLanguage lang =
+    g_settings_get_enum (
+      prefs,
+      "language");
+  g_object_unref (G_OBJECT (prefs));
+
+  char * match =
+    localization_locale_exists (lang);
+
   if (match)
     {
       g_message ("setting locale to %s",
                  match);
       setlocale (LC_ALL, match);
+      g_free (match);
     }
   else
     {

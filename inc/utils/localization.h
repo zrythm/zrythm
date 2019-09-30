@@ -57,6 +57,17 @@ localization_get_string_code (
   UiLanguage lang);
 
 /**
+ * Returns the first locale found matching the given
+ * language, or NULL if a locale for the given
+ * language does not exist.
+ *
+ * Must be free'd with g_free().
+ */
+char *
+localization_locale_exists (
+  UiLanguage lang);
+
+/**
  * Sets the locale to the currently selected one and
  * inits gettext.
  *
