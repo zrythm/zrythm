@@ -128,17 +128,53 @@ region_set_lane (
 }
 
 /**
+ * @param track Track to use for getting the lane.
+ *   If this is NULL, lane is used.
+ * @param lane Lane to use. If this is NULL,
+ *   track is used.
+ */
+static void
+set_tmp_lane_to_visible_counterparts (
+  Region *    region,
+  Track *     track,
+  TrackLane * lane)
+{
+#define SET_IF_VISIBLE(x) \
+  region = \
+    region_get_##x##_region (region); \
+  if ( \
+    arranger_object_info_should_be_visible ( \
+      &region->obj_info)) \
+    { \
+      region->tmp_lane = \
+        track ? \
+          track->lanes[region->lane_pos] : \
+          lane; \
+    }
+
+  SET_IF_VISIBLE (main);
+  SET_IF_VISIBLE (lane);
+
+#undef SET_IF_VISIBLE
+}
+
+/**
  * Moves the Region to the given Track, maintaining
  * the selection status of the Region and the
  * TrackLane position.
  *
  * Assumes that the Region is already in a
  * TrackLane.
+ *
+ * @param tmp If the Region should be moved
+ *   temporarily (the tmp_lane member will be used
+ *   instead of actually moving).
  */
 void
 region_move_to_track (
-  Region * region,
-  Track *  track)
+  Region *  region,
+  Track *   track,
+  const int tmp)
 {
   g_return_if_fail (region && track);
 
@@ -146,36 +182,50 @@ region_move_to_track (
     region_get_track (region);
   g_return_if_fail (region_track);
 
-  if (region_track == track)
-    return;
+  if (tmp)
+    {
+      /* create lanes if they don't exist */
+      track_create_missing_lanes (
+        track, region->lane_pos);
 
-  int selected = region_is_selected (region);
+      set_tmp_lane_to_visible_counterparts (
+        region, track, NULL);
+    }
+  else
+    {
+      if (region_track == track)
+        return;
 
-  /* create lanes if they don't exist */
-  track_create_missing_lanes (
-    track, region->lane_pos);
+      int selected = region_is_selected (region);
 
-  /* remove the region from its old track */
-  track_remove_region (
-    region_track,
-    region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
+      /* create lanes if they don't exist */
+      track_create_missing_lanes (
+        track, region->lane_pos);
 
-  /* add the region to its new track */
-  track_add_region (
-    track, region, NULL,
-    region->lane_pos, F_NO_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
-  region_set_lane (
-    region, track->lanes[region->lane_pos]);
+      /* remove the region from its old track */
+      track_remove_region (
+        region_track,
+        region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
 
-  /* reselect if necessary */
-  region_select (
-    region, selected);
+      /* add the region to its new track */
+      track_add_region (
+        track, region, NULL,
+        region->lane_pos, F_NO_GEN_NAME,
+        F_NO_PUBLISH_EVENTS);
+      region_set_lane (
+        region, track->lanes[region->lane_pos]);
 
-  /* remove empty lanes if the region was the last
-   * on its track lane */
-  track_remove_empty_last_lanes (
-    region_track);
+      /* reselect if necessary */
+      region_select (
+        region, selected);
+
+      /* remove empty lanes if the region was the
+       * last on its track lane */
+      track_remove_empty_last_lanes (
+        region_track);
+
+      region->tmp_lane = NULL;
+    }
 }
 
 /**
@@ -188,11 +238,16 @@ region_move_to_track (
  *
  * Assumes that the Region is already in a
  * TrackLane.
+ *
+ * @param tmp If the Region should be moved
+ *   temporarily (the tmp_lane member will be used
+ *   instead of actually moving).
  */
 void
 region_move_to_lane (
-  Region * region,
-  TrackLane * lane)
+  Region *    region,
+  TrackLane * lane,
+  const int   tmp)
 {
   g_return_if_fail (region && lane);
 
@@ -200,10 +255,16 @@ region_move_to_lane (
     region_get_track (region);
   g_return_if_fail (region_track);
 
-  int selected = region_is_selected (region);
-
-  if (region_track != lane->track)
+  if (tmp)
     {
+      g_warn_if_fail (lane->pos >= 0);
+      set_tmp_lane_to_visible_counterparts (
+        region, NULL, lane);
+    }
+  else
+    {
+      int selected = region_is_selected (region);
+
       track_remove_region (
         region_track,
         region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
@@ -214,10 +275,14 @@ region_move_to_lane (
         F_NO_PUBLISH_EVENTS);
       region_select (
         region, selected);
-    }
-  region_set_lane (region, lane);
+      region_set_lane (region, lane);
+      g_warn_if_fail (
+        lane->pos == region->lane_pos);
 
-  track_remove_empty_last_lanes (region_track);
+      track_create_missing_lanes (
+        region_track, lane->pos);
+      track_remove_empty_last_lanes (region_track);
+    }
 }
 
 /**

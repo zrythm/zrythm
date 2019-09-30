@@ -450,12 +450,12 @@ tracklist_remove_track (
   g_warn_if_fail (
     track->pos == idx);
 
+  tracklist_selections_remove_track (
+    TRACKLIST_SELECTIONS, track);
   array_delete (
     self->tracks,
     self->num_tracks,
     track);
-  tracklist_selections_remove_track (
-    TRACKLIST_SELECTIONS, track);
 
   track_set_pos (track, -1);
 

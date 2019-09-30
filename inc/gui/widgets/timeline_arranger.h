@@ -88,9 +88,10 @@ typedef struct _TimelineArrangerWidget
    * cycle. */
   int                  visible_track_diff;
 
-  /** The number of visible lanes moved during a
-   * moving operation between tracks. */
-  int                  visible_lane_diff;
+  /** The number of lanes moved during a
+   * moving operation between lanes, up to the last
+   * cycle. */
+  int                  lane_diff;
 
   int                  last_timeline_obj_bars;
 

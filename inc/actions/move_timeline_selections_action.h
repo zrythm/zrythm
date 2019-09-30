@@ -35,17 +35,24 @@ typedef struct MoveTimelineSelectionsAction
   /** Tracks moved. */
   int         delta;
 
+  /** Lanes moved. */
+  int         delta_lanes;
+
   int         first_call;
 
   /** Timeline selections clone. */
   TimelineSelections * ts;
 } MoveTimelineSelectionsAction;
 
+/**
+ * Creates a new MoveTimelineSelectionsAction.
+ */
 UndoableAction *
 move_timeline_selections_action_new (
   TimelineSelections * ts,
-  long                 ticks,
-  int                  delta);
+  const long           ticks,
+  const int            delta,
+  const int            delta_lanes);
 
 int
 move_timeline_selections_action_do (

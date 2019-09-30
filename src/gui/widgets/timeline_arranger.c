@@ -102,6 +102,7 @@ timeline_arranger_widget_set_allocation (
   GtkWidget *          widget,
   GdkRectangle *       allocation)
 {
+  ARRANGER_WIDGET_GET_PRIVATE (self);
   if (Z_IS_REGION_WIDGET (widget))
     {
       RegionWidget * rw = Z_REGION_WIDGET (widget);
@@ -109,6 +110,18 @@ timeline_arranger_widget_set_allocation (
       Region * region = rw_prv->region;
       TrackLane * lane = region->lane;
       Track * track = region_get_track (region);
+
+      /* if region has a tmp_lane then it means
+       * that we are in an operation we should
+       * display it there instead of its original
+       * lane */
+      if (ar_prv->action !=
+            UI_OVERLAY_ACTION_NONE &&
+          region->tmp_lane)
+        {
+          lane = region->tmp_lane;
+          track = lane->track;
+        }
 
       if (!track->widget)
         track->widget = track_widget_new (track);
@@ -1836,85 +1849,77 @@ timeline_arranger_widget_setup (
 /**
  * Move the selected Regions to new Lanes.
  *
- * @param track The track to make the move in. All
- *   Regions must be in this Track.
- * @param new_lane_is_before 1 if the Region's
- *   should move to their previous lanes, 0 for
- *   their next lanes.
+ * @param diff The delta to move the
+ *   Tracks.
+ *
+ * @return 1 if moved.
  */
-static void
+static int
 move_regions_to_new_lanes (
   TimelineArrangerWidget * self,
-  Track *                  track,
-  const int                new_lane_is_before)
+  const int                diff)
 {
   int i;
-
-  /* check that:
-   * - all regions are in the same track
-   * - only lane regions are selected
-   * - the lane bounds are not exceeded */
-  int compatible = 1;
-  Region * region;
-  for (i = 0; i < TL_SELECTIONS->num_regions; i++)
-    {
-      region = TL_SELECTIONS->regions[i];
-      Track * region_track =
-        region_get_track (region);
-      if (region_track != track ||
-          !region->lane ||
-         (new_lane_is_before &&
-          region->lane_pos - 1 < 0))
-        {
-          compatible = 0;
-          break;
-        }
-    }
-  if (TL_SELECTIONS->num_scale_objects ||
-      TL_SELECTIONS->num_markers)
-    compatible = 0;
-  if (!compatible)
-    return;
 
   /* store selected regions because they will be
    * deselected during moving */
   Region * regions[600];
   int num_regions = 0;
+  Region * region;
   for (i = 0; i < TL_SELECTIONS->num_regions; i++)
     {
       regions[num_regions++] =
         TL_SELECTIONS->regions[i];
     }
 
-  /* new positions are all compatible, move the
-   * regions */
-  self->visible_lane_diff +=
-    new_lane_is_before ? -1 : 1;
+  /* check that:
+   * - all regions are in the same track
+   * - only lane regions are selected
+   * - the lane bounds are not exceeded */
+  int compatible = 1;
   for (i = 0; i < num_regions; i++)
     {
       region = regions[i];
-      TrackLane * region_lane =
-        region->lane;
-      g_warn_if_fail (region && region_lane);
+      region =
+        region_get_lane_region (region);
+      TrackLane * lane = region->lane;
+      if (region->tmp_lane)
+        lane = region->tmp_lane;
+      if (lane->pos + diff < 0)
+        {
+          compatible = 0;
+          break;
+        }
+    }
+  if (TL_SELECTIONS->num_scale_objects > 0 ||
+      TL_SELECTIONS->num_markers > 0)
+    compatible = 0;
+  if (!compatible)
+    return 0;
+
+  /* new positions are all compatible, move the
+   * regions */
+  for (i = 0; i < num_regions; i++)
+    {
+      region = regions[i];
+      region =
+        region_get_lane_region (region);
+      TrackLane * lane = region->lane;
+      if (region->tmp_lane)
+        lane = region->tmp_lane;
+      g_warn_if_fail (region && lane);
 
       TrackLane * lane_to_move_to = NULL;
-      if (new_lane_is_before)
-        {
-          lane_to_move_to =
-            track->lanes[region->lane_pos - 1];
-        }
-      else
-        {
-          track_create_missing_lanes (
-            track, region->lane_pos + 1);
-          lane_to_move_to =
-            track->lanes[region->lane_pos + 1];
-        }
+      track_create_missing_lanes (
+        lane->track, lane->pos + diff);
+      lane_to_move_to =
+        lane->track->lanes[lane->pos + diff];
       g_warn_if_fail (lane_to_move_to);
 
       region_move_to_lane (
-        region, lane_to_move_to);
+        region, lane_to_move_to, 1);
     }
+  return 1;
 }
 
 /**
@@ -1950,12 +1955,18 @@ move_regions_to_new_tracks (
   for (i = 0; i < num_regions; i++)
     {
       region = regions[i];
+      region =
+        (Region *)
+        arranger_object_info_get_visible_counterpart (
+          &region->obj_info);
       Track * region_track =
         region_get_track (region);
+      if (region->tmp_lane)
+        region_track = region->tmp_lane->track;
       Track * visible =
         tracklist_get_visible_track_after_delta (
           TRACKLIST,
-          region_get_track (region),
+          region_track,
           vis_track_diff);
       if (
         !visible ||
@@ -1975,18 +1986,24 @@ move_regions_to_new_tracks (
   for (i = 0; i < num_regions; i++)
     {
       region = regions[i];
+      region =
+        (Region *)
+        arranger_object_info_get_visible_counterpart (
+          &region->obj_info);
       Track * region_track =
         region_get_track (region);
+      if (region->tmp_lane)
+        region_track = region->tmp_lane->track;
       g_warn_if_fail (region && region_track);
       Track * track_to_move_to =
         tracklist_get_visible_track_after_delta (
           TRACKLIST,
-          region_get_track (region),
+          region_track,
           vis_track_diff);
       g_warn_if_fail (track_to_move_to);
 
       region_move_to_track (
-        region, track_to_move_to);
+        region, track_to_move_to, 1);
     }
 
   return 1;
@@ -2011,8 +2028,6 @@ timeline_arranger_widget_move_items_y (
     tracklist_get_visible_track_after_delta (
       TRACKLIST, old_track,
       self->visible_track_diff);
-  const int new_track_is_equal =
-    track == last_track;
 
   /* TODO automations and other lanes */
   TrackLane * lane =
@@ -2020,47 +2035,55 @@ timeline_arranger_widget_move_items_y (
     self, ar_prv->start_y + offset_y);
   TrackLane * old_lane =
     timeline_arranger_widget_get_track_lane_at_y (
-    self, ar_prv->start_y + ar_prv->last_offset_y);
-  /*g_warn_if_fail (old_lane);*/
-  const int new_lane_is_equal =
-    lane == old_lane;
-  const int new_lane_is_before =
-    old_lane && lane &&
-    lane->pos < old_lane->pos;
+    self, ar_prv->start_y);
+  TrackLane * last_lane = NULL;
+  if (old_lane)
+    last_lane =
+      old_lane->track->lanes[
+        old_lane->pos + self->lane_diff];
 
   /* if new track is equal, move lanes or
    * automation lanes */
-  if (new_track_is_equal)
+  if (track && last_track &&
+      track == last_track &&
+      self->visible_track_diff == 0 &&
+      old_lane && lane && last_lane)
     {
-      if (old_lane && lane &&
-          old_lane->track == lane->track &&
-          !new_lane_is_equal)
+      int cur_diff =
+        lane->pos - old_lane->pos;
+      int delta =
+        lane->pos - last_lane->pos;
+      if (delta != 0)
         {
-          move_regions_to_new_lanes (
-            self, lane->track, new_lane_is_before);
+          int moved =
+            move_regions_to_new_lanes (
+              self, delta);
+          if (moved)
+            {
+              self->lane_diff =
+                cur_diff;
+            }
         }
     }
   /* otherwise move tracks */
-  else
+  else if (track && last_track && old_track &&
+           track != last_track)
     {
-      if (track && last_track && old_track)
+      int cur_diff =
+        tracklist_get_visible_track_diff (
+          TRACKLIST, old_track, track);
+      int delta =
+        tracklist_get_visible_track_diff (
+          TRACKLIST, last_track, track);
+      if (delta != 0)
         {
-          int cur_diff =
-            tracklist_get_visible_track_diff (
-              TRACKLIST, old_track, track);
-          int delta =
-            tracklist_get_visible_track_diff (
-              TRACKLIST, last_track, track);
-          if (delta != 0)
+          int moved =
+            move_regions_to_new_tracks (
+              self, delta);
+          if (moved)
             {
-              int moved =
-                move_regions_to_new_tracks (
-                  self, delta);
-              if (moved)
-                {
-                  self->visible_track_diff =
-                    cur_diff;
-                }
+              self->visible_track_diff =
+                cur_diff;
             }
         }
     }
@@ -2075,6 +2098,16 @@ timeline_arranger_widget_on_drag_end (
   TimelineArrangerWidget * self)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  /* clear tmp_lane from selected regions */
+  for (int i = 0; i < TL_SELECTIONS->num_regions;
+       i++)
+    {
+      Region * region = TL_SELECTIONS->regions[i];
+      ARRANGER_OBJ_SET_PRIMITIVE_VAL (
+        Region, region, tmp_lane,
+        NULL, AO_UPDATE_ALL);
+    }
 
   switch (ar_prv->action)
     {
@@ -2206,7 +2239,8 @@ timeline_arranger_widget_on_drag_end (
           move_timeline_selections_action_new (
             TL_SELECTIONS,
             ticks_diff,
-            self->visible_track_diff);
+            self->visible_track_diff,
+            self->lane_diff);
         undo_manager_perform (
           UNDO_MANAGER, ua);
         timeline_selections_reset_counterparts (
@@ -2297,13 +2331,12 @@ timeline_arranger_widget_on_drag_end (
   timeline_arranger_widget_update_visibility (
     self);
 
-  /*timeline_arranger_widget_refresh_children (self);*/
-
   self->resizing_range = 0;
   self->resizing_range_start = 0;
   self->start_region = NULL;
   self->start_region_was_selected = 0;
   self->visible_track_diff = 0;
+  self->lane_diff = 0;
 
   EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED,
                NULL);

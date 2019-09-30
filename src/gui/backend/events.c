@@ -1015,6 +1015,7 @@ events_process (void * data)
               /*GTK_WIDGET (MW_PINNED_TRACKLIST)));*/
           break;
         case ET_TRACK_LANE_ADDED:
+        case ET_TRACK_LANE_REMOVED:
           tracklist_widget_soft_refresh (
             MW_TRACKLIST);
           timeline_arranger_widget_update_visibility (

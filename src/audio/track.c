@@ -676,6 +676,7 @@ track_add_region (
   int      gen_name,
   int      fire_events)
 {
+  g_message ("adding region to lane %d", lane_pos);
   g_warn_if_fail (
     region->obj_info.counterpart ==
     AOI_COUNTERPART_MAIN);
@@ -728,16 +729,13 @@ track_add_region (
 
   if (add_lane)
     {
+      /* enable extra lane if necessary */
+      track_create_missing_lanes (track, lane_pos);
+
       g_warn_if_fail (track->lanes[lane_pos]);
       track_lane_add_region (
         track->lanes[lane_pos],
         region);
-
-      /* enable extra lane if necessary */
-      if (lane_pos == track->num_lanes - 1)
-        {
-          track_add_lane (track);
-        }
     }
 
   if (add_at)
@@ -775,6 +773,7 @@ track_create_missing_lanes (
 {
   while (track->num_lanes < pos + 2)
     {
+      g_message ("adding missing lane");
       track_add_lane (track);
     }
 }
@@ -790,10 +789,16 @@ track_remove_empty_last_lanes (
   g_return_if_fail (track);
   g_message ("removing empty last lanes from %s",
              track->name);
+  int removed = 0;
   for (int i = track->num_lanes - 1; i >= 1; i--)
     {
       g_message ("lane %d has %d regions",
                  i, track->lanes[i]->num_regions);
+      if (track->lanes[i]->num_regions > 1)
+        g_warn_if_reached ();
+      if (track->lanes[i]->num_regions > 0)
+        break;
+
       if (track->lanes[i]->num_regions == 0 &&
           track->lanes[i - 1]->num_regions == 0)
         {
@@ -801,9 +806,14 @@ track_remove_empty_last_lanes (
           track->num_lanes--;
           free_later (
             track->lanes[i], track_lane_free);
+          removed = 1;
         }
     }
 
+  if (removed)
+    {
+      EVENTS_PUSH (ET_TRACK_LANE_REMOVED, NULL);
+    }
 }
 
 /**

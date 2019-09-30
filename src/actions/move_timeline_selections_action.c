@@ -27,13 +27,14 @@
 #include <glib/gi18n.h>
 
 /**
- * Note: this action will add delta beats
- * to start and end pos of all selected midi_notes */
+ * Creates a new MoveTimelineSelectionsAction.
+ */
 UndoableAction *
 move_timeline_selections_action_new (
   TimelineSelections * ts,
-  long                 ticks,
-  int                  delta)
+  const long           ticks,
+  const int            delta,
+  const int            delta_lanes)
 {
 	MoveTimelineSelectionsAction * self =
     calloc (1, sizeof (
@@ -44,6 +45,7 @@ move_timeline_selections_action_new (
 
   self->ts = timeline_selections_clone (ts);
   self->delta = delta;
+  self->delta_lanes = delta_lanes;
   self->ticks = ticks;
   self->first_call = 1;
 
@@ -82,30 +84,51 @@ move_timeline_selections_action_do (
         ScaleObject, scale_object);
       SHIFT_OBJ_POSITIVE (
         Marker, marker);
+    }
 
-      if (self->delta)
+  if (self->delta)
+    {
+      Region * region = NULL;
+      for (i = 0; i < self->ts->num_regions; i++)
         {
-          for (i = 0; i < self->ts->num_regions; i++)
-            {
-              /* get the actual object */
-              region =
-                region_find (self->ts->regions[i]);
-              g_warn_if_fail (region);
+          /* get the actual object */
+          region =
+            region_find (self->ts->regions[i]);
+          g_warn_if_fail (region);
 
-              Track * track_to_move_to =
-                tracklist_get_visible_track_after_delta (
-                  TRACKLIST,
-                  region_get_track (region),
-                  self->delta);
+          Track * track_to_move_to =
+            tracklist_get_visible_track_after_delta (
+              TRACKLIST,
+              region_get_track (region),
+              self->delta);
 
-              /* shift the actual object by tracks */
-              region_move_to_track (
-                region, track_to_move_to);
-              /* also shift the copy */
-              region_move_to_track (
-                self->ts->regions[i],
-                track_to_move_to);
-            }
+          /* shift the actual object by tracks */
+          region_move_to_track (
+            region, track_to_move_to, 0);
+        }
+    }
+  else if (self->delta_lanes)
+    {
+      Region * region = NULL;
+      for (i = 0; i < self->ts->num_regions; i++)
+        {
+          /* get the actual object */
+          region =
+            region_find (self->ts->regions[i]);
+          g_warn_if_fail (region);
+
+          Track * region_track =
+            region_get_track (region);
+          track_create_missing_lanes (
+            region_track,
+            region->lane->pos + self->delta_lanes);
+          TrackLane * lane_to_move_to =
+            region_track->lanes[
+              region->lane->pos + self->delta_lanes];
+
+          /* shift the actual object by lanes */
+          region_move_to_lane (
+            region, lane_to_move_to, 0);
         }
     }
 
@@ -149,11 +172,30 @@ move_timeline_selections_action_undo (
 
           /* shift the actual object by tracks */
           region_move_to_track (
-            region, track_to_move_to);
-          /* also shift the copy */
-          region_move_to_track (
-            self->ts->regions[i],
-            track_to_move_to);
+            region, track_to_move_to, 0);
+        }
+    }
+  else if (self->delta_lanes)
+    {
+      for (i = 0; i < self->ts->num_regions; i++)
+        {
+          /* get the actual object */
+          region =
+            region_find (self->ts->regions[i]);
+          g_warn_if_fail (region);
+
+          Track * region_track =
+            region_get_track (region);
+          track_create_missing_lanes (
+            region_track,
+            region->lane->pos - self->delta_lanes);
+          TrackLane * lane_to_move_to =
+            region_track->lanes[
+              region->lane->pos - self->delta_lanes];
+
+          /* shift the actual object by lanes */
+          region_move_to_lane (
+            region, lane_to_move_to, 0);
         }
     }
 

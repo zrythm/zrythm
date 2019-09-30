@@ -315,6 +315,14 @@ typedef struct Region
   /* ==== CHORD REGION END ==== */
 
   /**
+   * Current lane for this Region.
+   *
+   * Used in live operations temporarily and in
+   * the widgets for positioning if it's non-NULL.
+   */
+  TrackLane *        tmp_lane;
+
+  /**
    * Info on whether this Region is transient/lane
    * and pointers to transient/lane equivalents.
    */
@@ -598,11 +606,16 @@ region_set_lane (
  *
  * Assumes that the Region is already in a
  * TrackLane.
+ *
+ * @param tmp If the Region should be moved
+ *   temporarily (the tmp_lane member will be used
+ *   instead of actually moving).
  */
 void
 region_move_to_lane (
-  Region * region,
-  TrackLane * lane);
+  Region *    region,
+  TrackLane * lane,
+  const int   tmp);
 
 /**
  * Moves the Region to the given Track, maintaining
@@ -611,11 +624,16 @@ region_move_to_lane (
  *
  * Assumes that the Region is already in a
  * TrackLane.
+ *
+ * @param tmp If the Region should be moved
+ *   temporarily (the tmp_lane member will be used
+ *   instead of actually moving).
  */
 void
 region_move_to_track (
-  Region * region,
-  Track *  track);
+  Region *  region,
+  Track *   track,
+  const int tmp);
 
 /**
  * Sets the automation track.

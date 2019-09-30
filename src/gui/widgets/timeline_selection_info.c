@@ -190,7 +190,8 @@ on_drag_end ()
       timeline_selections_get_highest_track (
         TL_SELECTIONS, F_TRANSIENTS)->pos -
       timeline_selections_get_highest_track (
-        TL_SELECTIONS, F_NO_TRANSIENTS)->pos);
+        TL_SELECTIONS, F_NO_TRANSIENTS)->pos,
+      0);
   undo_manager_perform (
     UNDO_MANAGER, ua);
 }
