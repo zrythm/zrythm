@@ -24,7 +24,7 @@ Build-Depends: debhelper (>=9),
                libsamplerate0-dev,
                libyaml-dev
 Standards-Version: 3.9.8
-Homepage: https://git.zrythm.org/zrythm/zrythm/
+Homepage: https://www.zrythm.org/
 
 Package: zrythm
 Architecture: any
