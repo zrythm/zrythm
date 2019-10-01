@@ -2261,18 +2261,15 @@ timeline_arranger_widget_on_drag_end (
         long ticks_diff =
           earliest_main_pos.total_ticks -
             earliest_trans_pos.total_ticks;
-        int tracks_diff =
-          timeline_selections_get_highest_track (
-            TL_SELECTIONS, F_NO_TRANSIENTS)->pos -
-          timeline_selections_get_highest_track (
-            TL_SELECTIONS, F_TRANSIENTS)->pos;
         timeline_selections_reset_counterparts (
           TL_SELECTIONS, 0);
         UndoableAction * ua =
           (UndoableAction *)
           duplicate_timeline_selections_action_new (
             TL_SELECTIONS,
-            ticks_diff, tracks_diff);
+            ticks_diff,
+            self->visible_track_diff,
+            self->lane_diff);
         timeline_selections_reset_counterparts (
           TL_SELECTIONS, 1);
         timeline_selections_clear (

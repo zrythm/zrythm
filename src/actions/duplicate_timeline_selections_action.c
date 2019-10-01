@@ -44,7 +44,8 @@ UndoableAction *
 duplicate_timeline_selections_action_new (
   TimelineSelections * ts,
   long                 ticks,
-  int                  delta)
+  const int            delta,
+  const int            delta_lanes)
 {
   DuplicateTimelineSelectionsAction * self =
     calloc (1, sizeof (
@@ -56,6 +57,7 @@ duplicate_timeline_selections_action_new (
   self->ts = timeline_selections_clone (ts);
   self->ticks = ticks;
   self->delta = delta;
+  self->delta_lanes = delta_lanes;
 
   return ua;
 }
@@ -116,12 +118,58 @@ duplicate_timeline_selections_action_do (
     /* add */
     track_add_region (
       TRACKLIST->tracks[region->track_pos],
-      region, NULL, 0, F_GEN_NAME,
+      region, NULL, region->lane_pos, F_GEN_NAME,
       F_PUBLISH_EVENTS),
     /* remember the new name */
     g_free (self->ts->regions[i]->name);
     self->ts->regions[i]->name =
       g_strdup (region->name));
+  if (self->delta)
+    {
+      for (i = 0; i < self->ts->num_regions; i++)
+        {
+          /* get the newly created object */
+          region =
+            region_find (self->ts->regions[i]);
+          g_warn_if_fail (region);
+
+          Track * track_to_move_to =
+            tracklist_get_visible_track_after_delta (
+              TRACKLIST,
+              region_get_track (region),
+              self->delta);
+
+          /* shift the actual object by tracks */
+          region_move_to_track (
+            region, track_to_move_to, 0);
+        }
+    }
+  else if (self->delta_lanes)
+    {
+      for (i = 0; i < self->ts->num_regions; i++)
+        {
+          /* get the newly created object */
+          region =
+            region_find (self->ts->regions[i]);
+          g_warn_if_fail (region);
+
+          Track * region_track =
+            region_get_track (region);
+          int new_lane_pos =
+            region->lane->pos +  self->delta_lanes;
+          g_warn_if_fail (new_lane_pos >= 0);
+          track_create_missing_lanes (
+            region_track,
+            new_lane_pos);
+          TrackLane * lane_to_move_to =
+            region_track->lanes[
+              new_lane_pos];
+
+          /* shift the actual object by lanes */
+          region_move_to_lane (
+            region, lane_to_move_to, 0);
+        }
+    }
 
   DO_OBJECT (
     SCALE_OBJECT, ScaleObject, scale_object,

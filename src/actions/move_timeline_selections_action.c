@@ -119,12 +119,15 @@ move_timeline_selections_action_do (
 
           Track * region_track =
             region_get_track (region);
+          int new_lane_pos =
+            region->lane->pos +  self->delta_lanes;
+          g_warn_if_fail (new_lane_pos >= 0);
           track_create_missing_lanes (
             region_track,
-            region->lane->pos + self->delta_lanes);
+            new_lane_pos);
           TrackLane * lane_to_move_to =
             region_track->lanes[
-              region->lane->pos + self->delta_lanes];
+              new_lane_pos];
 
           /* shift the actual object by lanes */
           region_move_to_lane (
@@ -186,12 +189,15 @@ move_timeline_selections_action_undo (
 
           Track * region_track =
             region_get_track (region);
+          int new_lane_pos =
+            region->lane->pos - self->delta_lanes;
+          g_warn_if_fail (new_lane_pos >= 0);
           track_create_missing_lanes (
             region_track,
-            region->lane->pos - self->delta_lanes);
+            new_lane_pos);
           TrackLane * lane_to_move_to =
             region_track->lanes[
-              region->lane->pos - self->delta_lanes];
+              new_lane_pos];
 
           /* shift the actual object by lanes */
           region_move_to_lane (

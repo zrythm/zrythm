@@ -43,7 +43,9 @@ if get_option ('enable_tests')
 
     exe = executable (
       test_name, source,
-      c_args : common_cflags,
+      c_args : [
+        common_cflags,
+        ],
       dependencies : [
         zrythm_deps,
         ],

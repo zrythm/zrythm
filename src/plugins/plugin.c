@@ -22,6 +22,8 @@
 
 #define _GNU_SOURCE 1  /* To pick up REG_RIP */
 
+#include "config.h"
+
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
@@ -130,6 +132,7 @@ plugin_new_from_descr (
     {
       lv2_create_from_uri (plugin, descr->uri);
     }
+
   return plugin;
 }
 

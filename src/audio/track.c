@@ -794,8 +794,6 @@ track_remove_empty_last_lanes (
     {
       g_message ("lane %d has %d regions",
                  i, track->lanes[i]->num_regions);
-      if (track->lanes[i]->num_regions > 1)
-        g_warn_if_reached ();
       if (track->lanes[i]->num_regions > 0)
         break;
 

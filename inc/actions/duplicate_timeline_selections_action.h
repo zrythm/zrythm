@@ -37,15 +37,19 @@ typedef struct DuplicateTimelineSelectionsAction
   /** Ticks diff. */
   long   ticks;
 
-  /** Value (# of Tracks) diff. */
-  int    delta;
+  /** Tracks moved. */
+  int         delta;
+
+  /** Lanes moved. */
+  int         delta_lanes;
 } DuplicateTimelineSelectionsAction;
 
 UndoableAction *
 duplicate_timeline_selections_action_new (
   TimelineSelections * ts,
   long                 ticks,
-  int                  delta);
+  const int            delta,
+  const int            delta_lanes);
 
 int
 duplicate_timeline_selections_action_do (

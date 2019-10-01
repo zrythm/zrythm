@@ -649,6 +649,22 @@ ARRANGER_OBJ_DECLARE_RESET_COUNTERPART (
     &dest->start_pos, &src->start_pos);
   position_set_to_pos (
     &dest->end_pos, &src->end_pos);
+  dest->tmp_lane = src->tmp_lane;
+
+  src =
+    reset_trans ?
+      region_get_lane_region (region) :
+      region_get_lane_trans_region (region);
+  dest =
+    reset_trans ?
+      region_get_lane_trans_region (region) :
+      region_get_lane_region (region);
+
+  position_set_to_pos (
+    &dest->start_pos, &src->start_pos);
+  position_set_to_pos (
+    &dest->end_pos, &src->end_pos);
+  dest->tmp_lane = src->tmp_lane;
 }
 
 /**
