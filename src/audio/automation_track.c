@@ -218,7 +218,7 @@ automation_track_get_normalized_val_at_pos (
   int prev_ap_lower =
     prev_ap_normalized_val <= next_ap_normalized_val;
   float prev_next_diff =
-    (float) fabs (prev_ap_normalized_val -
+    (float) fabsf (prev_ap_normalized_val -
            next_ap_normalized_val);
 
   /* ratio of how far in we are in the curve */

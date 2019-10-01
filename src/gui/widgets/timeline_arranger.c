@@ -1907,13 +1907,17 @@ move_regions_to_new_lanes (
       TrackLane * lane = region->lane;
       if (region->tmp_lane)
         lane = region->tmp_lane;
-      g_warn_if_fail (region && lane);
+      g_return_val_if_fail (region && lane, -1);
 
       TrackLane * lane_to_move_to = NULL;
+      int new_lane_pos =
+        lane->pos +  diff;
+      g_return_val_if_fail (
+        new_lane_pos >= 0, -1);
       track_create_missing_lanes (
-        lane->track, lane->pos + diff);
+        lane->track, new_lane_pos);
       lane_to_move_to =
-        lane->track->lanes[lane->pos + diff];
+        lane->track->lanes[new_lane_pos];
       g_warn_if_fail (lane_to_move_to);
 
       region_move_to_lane (

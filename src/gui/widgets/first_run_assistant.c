@@ -70,8 +70,10 @@ audio_midi_backend_selection_validate (
   FirstRunAssistantWidget * self)
 {
   AudioBackend ab =
+    (AudioBackend)
     gtk_combo_box_get_active (self->audio_backend);
   MidiBackend mb =
+    (MidiBackend)
     gtk_combo_box_get_active (self->midi_backend);
 
   /* test audio backends */
@@ -158,13 +160,14 @@ on_audio_backend_changed (
   FirstRunAssistantWidget * self)
 {
   AudioBackend ab =
+    (AudioBackend)
     gtk_combo_box_get_active (widget);
 
   /* update settings */
   g_settings_set_enum (
     S_PREFERENCES,
     "audio-backend",
-    ab);
+    (int) ab);
 }
 
 static void
@@ -173,13 +176,14 @@ on_midi_backend_changed (
   FirstRunAssistantWidget * self)
 {
   MidiBackend mb =
+    (MidiBackend)
     gtk_combo_box_get_active (widget);
 
   /* update settings */
   g_settings_set_enum (
     S_PREFERENCES,
     "midi-backend",
-    mb);
+    (int) mb);
 }
 
 static void
@@ -188,13 +192,14 @@ on_language_changed (
   FirstRunAssistantWidget * self)
 {
   UiLanguage lang =
+    (UiLanguage)
     gtk_combo_box_get_active (widget);
 
   /* update settings */
   g_settings_set_enum (
     S_PREFERENCES,
     "language",
-    lang);
+    (int) lang);
 
   /* if locale exists */
   if (localization_init ())

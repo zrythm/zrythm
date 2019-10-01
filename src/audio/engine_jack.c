@@ -346,7 +346,8 @@ timebase_cb (
     (float) TRANSPORT->beat_unit;
   pos->ticks_per_beat =
     TRANSPORT->ticks_per_beat;
-  pos->beats_per_minute = TRANSPORT->bpm;
+  pos->beats_per_minute =
+    (double) TRANSPORT->bpm;
 }
 
 /**

@@ -150,6 +150,7 @@ activate_manual (
 {
 #ifdef MANUAL_PATH
   UiLanguage lang =
+    (UiLanguage)
     g_settings_get_enum (
       S_PREFERENCES,
       "language");
@@ -453,7 +454,7 @@ activate_original_size (GSimpleAction *action,
 {
   RULER_WIDGET_GET_PRIVATE (
     Z_RULER_WIDGET (MW_RULER));
-  rw_prv->zoom_level = DEFAULT_ZOOM_LEVEL;
+  rw_prv->zoom_level = (double) DEFAULT_ZOOM_LEVEL;
 
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
                NULL);

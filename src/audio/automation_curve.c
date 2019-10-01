@@ -74,7 +74,7 @@ automation_curve_new (
   AutomationCurve * ac =
     _create_new (pos);
 
-  ac->curviness = 1.f;
+  ac->curviness = 1.0;
   switch (a_type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:

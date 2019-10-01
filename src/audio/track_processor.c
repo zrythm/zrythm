@@ -389,7 +389,7 @@ handle_recording (
 
               /* start new region in new lane at
                * TRANSPORT loop start */
-              Region * new_region;
+              Region * new_region = NULL;
               if (track_has_piano_roll (tr))
                 {
                   new_region =
@@ -541,34 +541,37 @@ handle_recording (
           if (loop_met)
             {
               /* handle the samples until loop end */
-              long clip_offset_before_loop =
-                g_start_frames -
-                region_before_loop_end->
-                  start_pos.frames;
-              for (
-                nframes_t i =
-                  local_offset;
-                i <
-                  local_offset +
-                    frames_till_loop;
-                i++)
+              if (region_before_loop_end)
                 {
-                  g_warn_if_fail (
-                    clip_offset_before_loop >= 0 &&
-                    clip_offset_before_loop <
-                      clip_before_loop_end->
-                        num_frames);
-                  g_warn_if_fail (
-                    i >= local_offset &&
-                    i < local_offset + nframes);
-                  clip_before_loop_end->frames[
-                    clip_before_loop_end->channels *
-                      clip_offset_before_loop] =
-                        self->stereo_in->l->buf[i];
-                  clip_before_loop_end->frames[
-                    clip_before_loop_end->channels *
-                      (clip_offset_before_loop++)] =
-                        self->stereo_in->r->buf[i];
+                  long clip_offset_before_loop =
+                    g_start_frames -
+                    region_before_loop_end->
+                      start_pos.frames;
+                  for (
+                    nframes_t i =
+                      local_offset;
+                    i <
+                      local_offset +
+                        frames_till_loop;
+                    i++)
+                    {
+                      g_warn_if_fail (
+                        clip_offset_before_loop >= 0 &&
+                        clip_offset_before_loop <
+                          clip_before_loop_end->
+                            num_frames);
+                      g_warn_if_fail (
+                        i >= local_offset &&
+                        i < local_offset + nframes);
+                      clip_before_loop_end->frames[
+                        clip_before_loop_end->channels *
+                          clip_offset_before_loop] =
+                            self->stereo_in->l->buf[i];
+                      clip_before_loop_end->frames[
+                        clip_before_loop_end->channels *
+                          (clip_offset_before_loop++)] =
+                            self->stereo_in->r->buf[i];
+                    }
                 }
 
               /* handle samples after loop start */

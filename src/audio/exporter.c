@@ -299,10 +299,10 @@ export_audio (
               TRANSPORT->playhead_pos.frames);
 
           info->progress =
-            (float)
+            (double)
             (TRANSPORT->playhead_pos.frames -
               start_pos.frames) /
-            (float) total_frames;
+            (double) total_frames;
 
         } while (
           TRANSPORT->playhead_pos.frames <
@@ -311,7 +311,7 @@ export_audio (
       g_warn_if_fail (covered == total_frames);
       sf_writef_float (sndfile, out_ptr, covered);
 
-      info->progress = 1.f;
+      info->progress = 1.0;
 
       zix_sem_post (
         &AUDIO_ENGINE->port_operation_lock);
@@ -394,13 +394,13 @@ export_midi (
                 track, mf);
             }
           info->progress =
-            (float) i /
-            (float) TRACKLIST->num_tracks;
+            (double) i /
+            (double) TRACKLIST->num_tracks;
         }
 
       midiFileClose(mf);
     }
-  info->progress = 1.f;
+  info->progress = 1.0;
 }
 
 /**

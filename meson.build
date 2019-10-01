@@ -194,8 +194,6 @@ foreach f : test_cflags
 endforeach
 
 test_strict_cflags = [
-  '-Wextra',
-  '-Weverything',
   '-Werror=cast-qual',
   '-Werror=clobbered',
   '-Werror=conversion',
@@ -247,6 +245,13 @@ test_strict_cflags = [
   '-Werror=type-limits',
   '-Werror=deprecated-declarations',
   ]
+
+if cc.get_id() == 'gcc'
+  test_strict_cflags += [
+    '-Wextra',
+    '-Weverything',
+    ]
+endif
 
 strict_cflags = []
 if get_option ('strict_flags')

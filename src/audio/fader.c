@@ -221,7 +221,8 @@ fader_set_fader_val (
   if (self == MONITOR_FADER)
     {
       g_settings_set_double (
-        S_UI, "monitor-out-vol", self->amp);
+        S_UI, "monitor-out-vol",
+        (double) self->amp);
     }
 }
 

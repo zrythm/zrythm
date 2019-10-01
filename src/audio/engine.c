@@ -205,10 +205,12 @@ engine_init (
     }
 
   self->pan_law =
+    (PanLaw)
     g_settings_get_enum (
       S_PREFERENCES,
       "pan-law");
   self->pan_algo =
+    (PanAlgorithm)
     g_settings_get_enum (
       S_PREFERENCES,
       "pan-algo");
@@ -316,7 +318,7 @@ engine_init (
             "backend. Will use the dummy backend "
             "instead. Please check your backend "
             "settings in the Preferences."),
-          engine_audio_backend_to_string (
+          engine_midi_backend_to_string (
             self->midi_backend));
       ui_show_message_full (
         GTK_WINDOW (MAIN_WINDOW),
