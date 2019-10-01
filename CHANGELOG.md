@@ -1,6 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.479] - 2019-10-01
+- Add audio recording functionality
+- Add track processor for processing track input ports and recording
+- Add input selectors for audio tracks
+- Add global spacebar key binding for play and pause
+- Add warranty disclaimer on first run
+- Add warning in the Preferences when selecting a language for which a locale is not installed
+- Add News button that points to the CHANGELOG
+- Go to previous marker if backspace is pressed twice
+- Allow undoable moving and copy-moving of regions to other tracks and other lanes
+- Move panel toggles to View toolbar
+- Only allow tracks with audio outs to be routed to Master
+- Fix audio clip import and playback
+- Fix MIDI recording
+- Fix record not getting disarmed when clicking on another track
+- Fix mute/solo not working properly
+- Fix splash screen problems in ubuntu
+- Create hard links for identical files in the user manual
+- Remove unused x42 plugins from distribution
+- Update French, German, Japanese, Portuguese translations
+
 ## [0.6.422] - 2019-09-19
 - Add ability to select MIDI channel for the piano roll per track and per lane
 - Add direct out in the track properties
