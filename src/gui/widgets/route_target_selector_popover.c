@@ -118,17 +118,22 @@ create_model_for_types (
                                    G_TYPE_STRING,
                                    G_TYPE_INT);
 
-  gtk_list_store_append (list_store, &iter);
-  gtk_list_store_set (
-    list_store, &iter,
-    0, "Master",
-    1, ROUTE_TARGET_TYPE_MASTER,
-    -1);
+  if (self->owner->channel->track->
+        out_signal_type ==
+      TYPE_AUDIO)
+    {
+      gtk_list_store_append (list_store, &iter);
+      gtk_list_store_set (
+        list_store, &iter,
+        0, _("Master"),
+        1, ROUTE_TARGET_TYPE_MASTER,
+        -1);
+    }
 
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
     list_store, &iter,
-    0, "Group",
+    0, _("Group"),
     1, ROUTE_TARGET_TYPE_GROUP,
     -1);
 
@@ -331,11 +336,20 @@ route_target_selector_popover_widget_new (
     GTK_CONTAINER (self->type_treeview_box),
     GTK_WIDGET (self->type_treeview));
 
-  RouteTargetSelectorType type =
-    ROUTE_TARGET_TYPE_MASTER;
-
-  self->route_model =
-    create_model_for_routes (self, type);
+  if (self->owner->channel->track->
+        out_signal_type ==
+      TYPE_AUDIO)
+    {
+      self->route_model =
+        create_model_for_routes (
+          self, ROUTE_TARGET_TYPE_MASTER);
+    }
+  else
+    {
+      self->route_model =
+        create_model_for_routes (
+          self, -1);
+    }
   self->route_treeview =
     tree_view_create (
       self,

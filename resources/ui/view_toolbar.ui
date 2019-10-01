@@ -87,5 +87,63 @@
         <property name="action-name">app.fullscreen</property>
       </object>
     </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="left_panel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon-name">builder-view-left-pane-symbolic-light</property>
+        <property name="action_name">win.toggle-left-panel</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="bot_panel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon-name">builder-view-bottom-pane-symbolic-light</property>
+        <property name="action_name">win.toggle-bot-panel</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="top_panel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon-name">builder-view-top-pane-symbolic-light</property>
+        <property name="action_name">win.toggle-top-panel</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="right_panel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="icon-name">builder-view-right-pane-symbolic-light</property>
+        <property name="action_name">win.toggle-right-panel</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
   </template>
 </interface>

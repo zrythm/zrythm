@@ -79,35 +79,9 @@ header_notebook_widget_init (
   z_gtk_set_tooltip_for_actionable ( \
     GTK_ACTIONABLE (self->x), \
     tooltip)
-  SET_TOOLTIP (left_panel, _("Toggle Left Panel"));
-  SET_TOOLTIP (bot_panel, _("Toggle Bottom Panel"));
-  SET_TOOLTIP (top_panel, _("Toggle Top Panel"));
-  SET_TOOLTIP (
-    right_panel, _("Toggle Right Panel"));
   SET_TOOLTIP (z_icon, _("About Zrythm"));
   SET_TOOLTIP (preferences, _("Preferences"));
 #undef SET_TOOLTIP
-
-  GtkWidget * img;
-#define SET_TOGGLE_PX_SIZE(x) \
-  img = \
-    gtk_bin_get_child ( \
-      GTK_BIN (self->x)); \
-  img = \
-    gtk_bin_get_child ( \
-      GTK_BIN (img)); \
-  img = \
-    z_gtk_container_get_single_child ( \
-      GTK_CONTAINER (img)); \
-  gtk_image_set_pixel_size ( \
-    GTK_IMAGE (img), 16)
-
-  SET_TOGGLE_PX_SIZE (left_panel);
-  SET_TOGGLE_PX_SIZE (right_panel);
-  SET_TOGGLE_PX_SIZE (bot_panel);
-  SET_TOGGLE_PX_SIZE (top_panel);
-
-#undef SET_TOGGLE_PX_SIZE
 }
 
 static void
@@ -124,10 +98,6 @@ header_notebook_widget_class_init (HeaderNotebookWidgetClass * _klass)
     HeaderNotebookWidget, \
     x)
 
-  BIND_CHILD (left_panel);
-  BIND_CHILD (bot_panel);
-  BIND_CHILD (top_panel);
-  BIND_CHILD (right_panel);
   BIND_CHILD (home_toolbar);
   BIND_CHILD (project_toolbar);
   BIND_CHILD (view_toolbar);

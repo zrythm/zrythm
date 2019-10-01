@@ -57,10 +57,6 @@ typedef struct _HeaderNotebookWidget
   ProjectToolbarWidget * project_toolbar;
   ViewToolbarWidget * view_toolbar;
   HelpToolbarWidget * help_toolbar;
-  GtkToolButton * left_panel;
-  GtkToolButton * bot_panel;
-  GtkToolButton * top_panel;
-  GtkToolButton * right_panel;
 
   GtkToolButton *     preferences;
   GtkToolButton *     z_icon;

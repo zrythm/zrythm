@@ -121,7 +121,7 @@
 
 static const cyaml_config_t config = {
   /** log level: DEBUG, WARNING, INFO... */
-	.log_level = CYAML_LOG_INFO,
+	.log_level = CYAML_LOG_WARNING,
   /* use the default loggin function */
 	.log_fn = cyaml_log,
   /* use the default memory allocator */

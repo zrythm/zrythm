@@ -48,7 +48,8 @@ on_switch_page (
       widget =
         z_gtk_container_get_single_child (
           GTK_CONTAINER (box));
-      gtk_widget_set_visible (widget, 1);
+      gtk_widget_set_visible (
+        widget, (guint) i == page_num ? 1 : 0);
     }
 }
 

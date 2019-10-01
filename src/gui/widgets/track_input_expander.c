@@ -331,9 +331,33 @@ setup_ext_ins_cb (
   gtk_combo_box_text_append (
     GTK_COMBO_BOX_TEXT (cb),
     "separator", "separator");
-  gtk_combo_box_text_append (
-    GTK_COMBO_BOX_TEXT (cb),
-    "none", _("No inputs"));
+  if (midi)
+    {
+      gtk_combo_box_text_append (
+        GTK_COMBO_BOX_TEXT (cb),
+        "none", _("No inputs"));
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (cb),
+        _("MIDI inputs for recording"));
+    }
+  else
+    {
+      gtk_combo_box_text_append (
+        GTK_COMBO_BOX_TEXT (cb),
+        "none",
+        left ?
+          _("No left input") :
+          _("No right input"));
+      char * str =
+        g_strdup_printf (
+          _("Audio input (%s) for recording"),
+          /* TRANSLATORS: Left and Right */
+          left ? _("L") : _("R"));
+      gtk_widget_set_tooltip_text (
+        GTK_WIDGET (cb),
+        str);
+      g_free (str);
+    }
 
   gtk_widget_set_visible (
     GTK_WIDGET (cb), 1);

@@ -46,6 +46,10 @@ typedef struct _ViewToolbarWidget
   GtkToolButton *    original_size;
   GtkToolButton *    best_fit;
   GtkToolButton *    fullscreen;
+  GtkToolButton * left_panel;
+  GtkToolButton * bot_panel;
+  GtkToolButton * top_panel;
+  GtkToolButton * right_panel;
 } ViewToolbarWidget;
 
 #endif
