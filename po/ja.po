@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-23 12:35+0100\n"
-"PO-Revision-Date: 2019-09-09 17:25+0000\n"
+"PO-Revision-Date: 2019-10-01 15:56+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -51,17 +51,20 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"新しいバックアップが見つかりました:\n"
+"  %s.\n"
+"新しいバックアップを使用しますか?"
 
 #: src/project.c:456
 #, c-format
 msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
 "work correctly."
-msgstr ""
+msgstr "このプロジェクトは、Zrythm (%s) の異なるバージョンで作成されました。正しく動作しない可能性があります。"
 
 #: src/project.c:471
 msgid "Failed to load project. Please check the logs for more information."
-msgstr ""
+msgstr "プロジェクトの読み込みに失敗しました。詳細については、ログを確認してください。"
 
 #: src/project.c:892
 msgid "Backup saved."
@@ -210,26 +213,23 @@ msgid "note type"
 msgstr "音符の種類"
 
 #: src/gui/widgets/track_properties_expander.c:78
-#, fuzzy, c-format
+#, c-format
 msgid "MIDI Channel %s"
-msgstr "チャンネル%s"
+msgstr "MIDI チャンネル %s"
 
 #: src/gui/widgets/track_properties_expander.c:186
-#, fuzzy
 msgid "Track Name"
 msgstr "トラック名"
 
 #: src/gui/widgets/track_properties_expander.c:198
-#, fuzzy
 msgid "Direct Out"
-msgstr "ステレオ出力"
+msgstr "ダイレクトアウト"
 
 #: src/gui/widgets/track_properties_expander.c:215 src/audio/channel.c:1864
 msgid "Piano Roll"
 msgstr "ピアノロール"
 
 #: src/gui/widgets/track_properties_expander.c:229
-#, fuzzy
 msgid "Track Properties"
 msgstr "トラックの属性"
 
@@ -320,9 +320,8 @@ msgid "Last Modified"
 msgstr "最新更新日"
 
 #: src/gui/widgets/project_assistant.c:430
-#, fuzzy
 msgid "Blank project"
-msgstr "空のプロジェクト"
+msgstr "空白のプロジェクト"
 
 #: src/gui/widgets/left_dock_edge.c:107
 msgid "Inspector"
@@ -439,46 +438,39 @@ msgstr "拍子 - 小節あたりの拍数/拍単位"
 #: src/gui/widgets/drag_dest_box.c:196
 #, c-format
 msgid "Unsupported file type %s"
-msgstr ""
+msgstr "サポートされていないファイルの種類 %s"
 
 #: src/gui/widgets/drag_dest_box.c:221
-#, fuzzy
 msgid "No file found"
-msgstr "コントローラが見つかりました"
+msgstr "ファイルが見つかりません"
 
 #: src/gui/widgets/drag_dest_box.c:372
 msgid "Add _MIDI Track"
 msgstr "MIDIトラックを追加 (_M)"
 
 #: src/gui/widgets/drag_dest_box.c:385 src/audio/track.c:1095
-#, fuzzy
 msgid "Audio Bus"
-msgstr "出力音響"
+msgstr "オーディオバス"
 
 #: src/gui/widgets/drag_dest_box.c:396 src/audio/track.c:1098
-#, fuzzy
 msgid "MIDI Bus"
-msgstr "MIDI出力"
+msgstr "MIDIバス"
 
 #: src/gui/widgets/drag_dest_box.c:408
-#, fuzzy
 msgid "Add Bus Track"
-msgstr "バストラックを追加 (_B)"
+msgstr "バストラックを追加"
 
 #: src/gui/widgets/drag_dest_box.c:419 src/audio/track.c:1107
-#, fuzzy
 msgid "Audio Group"
-msgstr "出力音響"
+msgstr "オーディオ グループ"
 
 #: src/gui/widgets/drag_dest_box.c:430 src/audio/track.c:1110
-#, fuzzy
 msgid "MIDI Group"
-msgstr "MIDI出力"
+msgstr "MIDIグループ"
 
 #: src/gui/widgets/drag_dest_box.c:442
-#, fuzzy
 msgid "Add Group Track"
-msgstr "グループトラックの追加 (_G)"
+msgstr "グループトラックの追加"
 
 #: src/gui/widgets/instrument_track.c:216 src/gui/widgets/midi_track.c:190
 #: resources/ui/transport_controls.ui:36
@@ -532,12 +524,10 @@ msgid "Protocol"
 msgstr "プロトコル"
 
 #: src/gui/widgets/export_progress_dialog.c:81
-#, fuzzy
 msgid "Exported"
 msgstr "エクスポートしました"
 
 #: src/gui/widgets/export_progress_dialog.c:152
-#, fuzzy
 msgid "Export Progress"
 msgstr "エクスポートの進行状況"
 
@@ -596,7 +586,7 @@ msgstr "バグを報告"
 
 #: src/gui/widgets/track_lane.c:96
 msgid "Inherit"
-msgstr ""
+msgstr "継承"
 
 #: src/gui/widgets/home_toolbar.c:57 src/gui/widgets/home_toolbar.c:116
 #: resources/ui/home_toolbar.ui:34
@@ -650,16 +640,15 @@ msgstr "プラグインブラウザ"
 
 #: src/gui/widgets/route_target_selector.c:54
 msgid "<tt><i>Engine</i></tt>"
-msgstr ""
+msgstr "<tt><i>エンジン</i></tt>"
 
 #: src/gui/widgets/route_target_selector.c:79
 msgid "Cannot be routed"
-msgstr ""
+msgstr "ルーティングできません"
 
 #: src/gui/widgets/route_target_selector.c:88
-#, fuzzy
 msgid "Routed to engine"
-msgstr "ステレオ出力にルーティング中"
+msgstr "エンジンにルーティング中"
 
 #: src/gui/widgets/route_target_selector.c:95
 msgid "Select channel to route signal to"
@@ -671,9 +660,8 @@ msgstr "ステレオ出力"
 
 #: src/gui/widgets/automatable_selector_popover.c:237
 #: src/gui/widgets/automatable_selector_popover.c:380
-#, fuzzy
 msgid "No control selected"
-msgstr "クリップが選択されていません"
+msgstr "コントロールが選択されていません"
 
 #: src/gui/widgets/snap_grid.c:95
 msgid "Snap/Grid options"
@@ -757,7 +745,6 @@ msgid "CV Outs"
 msgstr "CV出力"
 
 #: src/gui/widgets/ports_expander.c:390
-#, fuzzy
 msgid "Sends"
 msgstr "センド"
 
@@ -978,14 +965,14 @@ msgstr "PortAudioエラー：%s"
 msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
-msgstr ""
+msgstr "%s オーディオ バックエンドの初期化に失敗しました。代わりにダミーバックエンドを使用します。環境設定でバックエンドの設定を確認してください。"
 
 #: src/audio/engine.c:313
 #, c-format
 msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
-msgstr ""
+msgstr "%s のMIDI バックエンドの初期化に失敗しました。代わりにダミーバックエンドを使用します。環境設定でバックエンドの設定を確認してください。"
 
 #: src/audio/track_lane.c:64
 #, c-format
@@ -1034,9 +1021,8 @@ msgid "Chord"
 msgstr "和音"
 
 #: src/audio/track.c:1113
-#, fuzzy
 msgid "Marker"
-msgstr "目印"
+msgstr "マーカー"
 
 #. TODO
 #: src/audio/scale.c:563
@@ -1545,7 +1531,6 @@ msgid "Select Project"
 msgstr "プロジェクトを選択"
 
 #: resources/ui/project_assistant.ui:43
-#, fuzzy
 msgid "Select a project"
 msgstr "プロジェクトを選択"
 
@@ -1558,9 +1543,8 @@ msgid "Removes selected project from the list"
 msgstr "選択したプロジェクトをリストから削除します"
 
 #: resources/ui/project_assistant.ui:130
-#, fuzzy
 msgid "Select a template"
-msgstr "フォルダ選択"
+msgstr "テンプレートを選択"
 
 #: resources/ui/chord_selector_window.ui:51
 msgid "Root Note"
@@ -1698,13 +1682,12 @@ msgid "Cancel"
 msgstr "取り消し"
 
 #: resources/ui/create_project_dialog.ui:69
-#, fuzzy
 msgid "Parent directory"
-msgstr "プロジェクトを開く"
+msgstr "親ディレクトリ"
 
 #: resources/ui/create_project_dialog.ui:82
 msgid "Select parent directory to save the project in"
-msgstr ""
+msgstr "プロジェクトを保存する親ディレクトリを選択してください"
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
@@ -1933,28 +1916,24 @@ msgid "Lane 1"
 msgstr "レーン１"
 
 #: resources/ui/track_lane.ui:106
-#, fuzzy
 msgid "MIDI Ch"
-msgstr "MIDI"
+msgstr "MIDI Ch"
 
 #: resources/ui/track_lane.ui:121
 msgid "MIDI channel for this lane"
-msgstr ""
+msgstr "このレーンの MIDI チャンネル"
 
 #: resources/ui/export_midi_file_dialog.ui:36
-#, fuzzy
 msgid "Select MIDI file"
-msgstr "フォルダ選択"
+msgstr "MIDIファイルを選択"
 
 #: resources/ui/export_midi_file_dialog.ui:69
-#, fuzzy
 msgid "_Export"
 msgstr "エクスポート"
 
 #: resources/ui/export_midi_file_dialog.ui:104
-#, fuzzy
 msgid "Region content"
-msgstr "リージョン"
+msgstr "リージョンの内容"
 
 #: resources/ui/export_midi_file_dialog.ui:116
 msgid ""
@@ -1965,28 +1944,24 @@ msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:120
 msgid "Base region"
-msgstr ""
+msgstr "元のリージョン"
 
 #: resources/ui/export_midi_file_dialog.ui:121
-#, fuzzy
 msgid "Full region"
-msgstr "全画面表示"
+msgstr "リージョン全体"
 
 #: resources/ui/export_midi_file_dialog.ui:145
 #: resources/ui/export_midi_file_dialog.ui:157
-#, fuzzy
 msgid "MIDI format"
-msgstr "MIDI出力"
+msgstr "MIDI 形式"
 
 #: resources/ui/export_midi_file_dialog.ui:161
-#, fuzzy
 msgid "Format 0"
-msgstr "フォーマット"
+msgstr "フォーマット0"
 
 #: resources/ui/export_midi_file_dialog.ui:162
-#, fuzzy
 msgid "Format 1"
-msgstr "フォーマット"
+msgstr "フォーマット 1"
 
 #: resources/ui/modulator_view.ui:53 resources/ui/clip_editor_inner.ui:53
 msgid "Track name"
@@ -2037,18 +2012,16 @@ msgid "LFO 1"
 msgstr "LFO１"
 
 #: resources/ui/export_progress_dialog.ui:25
-#, fuzzy
 msgid "Open Directory"
-msgstr "プロジェクトを開く"
+msgstr "ディレクトリを開く"
 
 #: resources/ui/export_progress_dialog.ui:28
 msgid "Opens the containing directory"
-msgstr ""
+msgstr "含まれるディレクトリを開きます"
 
 #: resources/ui/export_progress_dialog.ui:69
-#, fuzzy
 msgid "Exporting..."
-msgstr "...としてエクスポート"
+msgstr "エクスポート中…"
 
 #: resources/ui/automation_track.ui:95
 msgid "RW"
@@ -2249,7 +2222,7 @@ msgstr "エンジン"
 
 #: resources/ui/preferences.ui:135
 msgid "The audio backend to connect to"
-msgstr ""
+msgstr "接続するオーディオ バックエンド"
 
 #: resources/ui/preferences.ui:148
 msgid "MIDI Controllers"
@@ -2257,7 +2230,7 @@ msgstr "MIDIコントローラー"
 
 #: resources/ui/preferences.ui:181
 msgid "The MIDI backend to connect to"
-msgstr ""
+msgstr "接続する MIDI バックエンド"
 
 #: resources/ui/preferences.ui:193
 msgid "Pan Algorithm"
@@ -2269,16 +2242,15 @@ msgstr "Pan Law"
 
 #: resources/ui/preferences.ui:215
 msgid "The pan algorithm to use"
-msgstr ""
+msgstr "使用するパンのアルゴリズム"
 
 #: resources/ui/preferences.ui:227
 msgid "The pan law to use"
-msgstr ""
+msgstr "使用するパン法則"
 
 #: resources/ui/preferences.ui:239
-#, fuzzy
 msgid "Zrythm path"
-msgstr "Zrythm"
+msgstr "Zrythmのパス"
 
 #: resources/ui/preferences.ui:250
 msgid "The global Zrythm working path for non-project related files"
@@ -2294,7 +2266,7 @@ msgstr "常にプラグインUIを開く"
 
 #: resources/ui/preferences.ui:294
 msgid "Always show the plugin UI when instantiating a plugin"
-msgstr ""
+msgstr "プラグインをインスタンス化する際は、常にプラグイン UI を表示する"
 
 #: resources/ui/preferences.ui:329
 msgid "Main Window"
@@ -2314,7 +2286,7 @@ msgstr "インターフェイス"
 
 #: resources/ui/preferences.ui:403
 msgid "The language of the Zrythm interface"
-msgstr ""
+msgstr "Zrythmインターフェイスの言語"
 
 #: resources/ui/preferences.ui:420
 msgid "GUI"
@@ -2326,20 +2298,20 @@ msgstr "プロジェクト"
 
 #: resources/ui/preferences.ui:449
 msgid "Autosave interval"
-msgstr ""
+msgstr "自動保存間隔"
 
 #: resources/ui/preferences.ui:460
+#, fuzzy
 msgid ""
 "Set the interval to auto-save project backups, in minutes. Setting this to 0 "
 "will disable auto-save"
-msgstr ""
+msgstr "プロジェクトのバックアップを自動保存する間隔を分単位で設定します。これを0に設定すると、自動保存が無効になります"
 
 #: data/zrythm.desktop.in:21
 msgid "Digital Audio Workstation"
 msgstr "デジタル・オーディオ・ワークステーション"
 
 #: data/zrythm.desktop.in:23
-#, fuzzy
 msgid "highly automated and intuitive digital audio workstation"
 msgstr "高度に自動化された直感的なデジタルオーディオワークステーション"
 
