@@ -22,7 +22,12 @@ import shutil
 import subprocess
 import sys
 
-prefix = os.environ.get('MESON_INSTALL_PREFIX', '/usr/local')
+destdir = os.environ.get('DESTDIR')
+if destdir:
+    prefix = destdir + os.sep + os.environ.get('MESON_INSTALL_PREFIX', '/usr/local')
+else:
+    prefix = os.environ.get(
+        'MESON_INSTALL_PREFIX', '/usr/local')
 datadir = os.path.join(prefix, 'share')
 
 schemadir = os.path.join(datadir, 'glib-2.0', 'schemas')

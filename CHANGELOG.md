@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.6.479] - 2019-10-01
+## [0.6.480] - 2019-10-01
 - Add audio recording functionality
 - Add track processor for processing track input ports and recording
 - Add input selectors for audio tracks
