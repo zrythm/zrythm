@@ -115,7 +115,8 @@ piano_roll_key_send_note_event (
       /* add note on event */
       midi_events_add_note_on (
         MANUAL_PRESS_EVENTS,
-        CLIP_EDITOR->region->lane->midi_ch,
+        midi_region_get_midi_ch (
+          CLIP_EDITOR->region),
         (midi_byte_t) self->descr->value,
         90, 1, 1);
 
@@ -127,7 +128,8 @@ piano_roll_key_send_note_event (
       /* add note off event */
       midi_events_add_note_off (
         MANUAL_PRESS_EVENTS,
-        CLIP_EDITOR->region->lane->midi_ch,
+        midi_region_get_midi_ch (
+          CLIP_EDITOR->region),
         (midi_byte_t) self->descr->value, 1, 1);
 
       piano_roll_remove_current_note (
