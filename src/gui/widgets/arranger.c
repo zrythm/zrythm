@@ -36,12 +36,14 @@
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_arranger_bg.h"
 #include "gui/widgets/automation_curve.h"
+#include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_arranger_bg.h"
+#include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/chord_object.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
@@ -682,6 +684,7 @@ auto_scroll (
 
 	GtkScrolledWindow *scroll =
 		arranger_widget_get_scrolled_window (self);
+  g_return_if_fail (scroll);
   int h_scroll_speed = 20;
   int v_scroll_speed = 10;
   int border_distance = 5;
@@ -1143,6 +1146,80 @@ drag_cancel (
   g_message ("drag cancelled");
 }
 
+/**
+ * Sets the start pos of the earliest object and
+ * the flag whether the earliest object exists.
+ */
+static void
+set_earliest_obj (
+  ArrangerWidget * self)
+{
+  GET_PRIVATE;
+
+  position_set_to_bar (
+    &ar_prv->earliest_obj_start_pos, 2000);
+
+#define _SET_WITH_GLOBAL( \
+  _arranger, _selections, _selections_name) \
+  else if ( \
+    _arranger && \
+    _selections_name##_selections_has_any ( \
+    _selections)) \
+    { \
+      _selections_name##_selections_get_start_pos ( \
+        _selections, \
+        &ar_prv->earliest_obj_start_pos, \
+        0, 1); \
+      _selections_name##_selections_set_cache_poses ( \
+        _selections); \
+      ar_prv->earliest_obj_exists = 1; \
+    }
+
+  GET_ARRANGER_ALIASES (self);
+  if (timeline_arranger &&
+      timeline_selections_has_any (
+        TL_SELECTIONS))
+    {
+      timeline_selections_get_start_pos (
+        TL_SELECTIONS,
+        &ar_prv->earliest_obj_start_pos,
+        0);
+      timeline_selections_set_cache_poses (
+        TL_SELECTIONS);
+      ar_prv->earliest_obj_exists = 1;
+    }
+  _SET_WITH_GLOBAL (
+    midi_arranger, MA_SELECTIONS, midi_arranger)
+  _SET_WITH_GLOBAL (
+    chord_arranger, CHORD_SELECTIONS, chord)
+  _SET_WITH_GLOBAL (
+    automation_arranger, AUTOMATION_SELECTIONS,
+    automation)
+  else if (midi_modifier_arranger &&
+           midi_arranger_selections_has_any (
+             MA_SELECTIONS))
+    {
+      midi_arranger_selections_get_start_pos (
+        MA_SELECTIONS,
+        &ar_prv->earliest_obj_start_pos,
+        0, 1);
+      midi_arranger_selections_set_cache_poses (
+        MA_SELECTIONS);
+      ar_prv->earliest_obj_exists = 1;
+    }
+  else if (audio_arranger)
+    {
+      g_warn_if_reached ();
+      /* TODO */
+    }
+  else
+    {
+      ar_prv->earliest_obj_exists = 0;
+    }
+
+#undef _SET_WITH_GLOBAL
+}
+
 static void
 drag_begin (GtkGestureDrag *   gesture,
             gdouble            start_x,
@@ -1355,49 +1432,9 @@ drag_begin (GtkGestureDrag *   gesture,
         }
     }
 
-  /* set start pos */
-  position_set_to_bar (
-    &ar_prv->earliest_obj_start_pos, 2000);
-  if (timeline_arranger &&
-      timeline_selections_has_any (
-        TL_SELECTIONS))
-    {
-      timeline_selections_get_start_pos (
-        TL_SELECTIONS,
-        &ar_prv->earliest_obj_start_pos,
-        0);
-      timeline_selections_set_cache_poses (
-        TL_SELECTIONS);
-      ar_prv->earliest_obj_exists = 1;
-    }
-  else if (midi_arranger &&
-           midi_arranger_selections_has_any (
-             MA_SELECTIONS))
-    {
-      midi_arranger_selections_get_start_pos (
-        MA_SELECTIONS,
-        &ar_prv->earliest_obj_start_pos,
-        0, 1);
-      midi_arranger_selections_set_cache_poses (
-        MA_SELECTIONS);
-      ar_prv->earliest_obj_exists = 1;
-    }
-  else if (midi_modifier_arranger &&
-           midi_arranger_selections_has_any (
-             MA_SELECTIONS))
-    {
-      midi_arranger_selections_get_start_pos (
-        MA_SELECTIONS,
-        &ar_prv->earliest_obj_start_pos,
-        0, 1);
-      midi_arranger_selections_set_cache_poses (
-        MA_SELECTIONS);
-      ar_prv->earliest_obj_exists = 1;
-    }
-  else
-    {
-      ar_prv->earliest_obj_exists = 0;
-    }
+  /* set the start pos of the earliest object and
+   * the flag whether the earliest object exists */
+  set_earliest_obj (self);
 
   arranger_widget_refresh_cursor (self);
 }
@@ -1710,9 +1747,18 @@ drag_update (
           midi_arranger_widget_move_items_y (
             midi_arranger,
             offset_y);
-          /*auto_scroll (*/
-            /*self, ar_prv->start_x + offset_x,*/
-            /*ar_prv->start_y + offset_y);*/
+        }
+      else if (automation_arranger)
+        {
+          automation_arranger_widget_update_visibility (
+            automation_arranger);
+          automation_arranger_widget_move_items_x (
+            automation_arranger,
+            ar_prv->adj_ticks_diff,
+            F_NOT_COPY_MOVING);
+          automation_arranger_widget_move_items_y (
+            automation_arranger,
+            offset_y);
         }
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
@@ -1881,9 +1927,10 @@ arranger_widget_get_scrolled_window (
   else if (audio_arranger)
     return MW_AUDIO_EDITOR_SPACE->arranger_scroll;
   else if (chord_arranger)
-    return NULL;
+    return MW_CHORD_EDITOR_SPACE->arranger_scroll;
   else if (automation_arranger)
-    return NULL;
+    return MW_AUTOMATION_EDITOR_SPACE->
+      arranger_scroll;
 
   return NULL;
 }

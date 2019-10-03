@@ -262,8 +262,6 @@ sort_tracks_func (const void *a, const void *b)
 {
   Track * aa = * (Track * const *) a;
   Track * bb = * (Track * const *) b;
-  g_message ("aa pos %d bb pos %d",
-             aa->pos, bb->pos);
   return aa->pos > bb->pos;
 }
 

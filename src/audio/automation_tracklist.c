@@ -414,6 +414,28 @@ automation_tracklist_remove_at (
     ET_AUTOMATION_TRACKLIST_AT_REMOVED, self)
 }
 
+/**
+ * Returns the number of visible AutomationTrack's.
+ */
+int
+automation_tracklist_get_num_visible (
+  AutomationTracklist * self)
+{
+  AutomationTrack * at;
+  int i;
+  int count = 0;
+  for (i = 0; i < self->num_ats; i++)
+    {
+      at = self->ats[i];
+      if (at->created && at->visible)
+        {
+          count++;
+        }
+    }
+
+  return count;
+}
+
 /*static void*/
 /*remove_automation_track (*/
   /*AutomationTracklist * self,*/

@@ -149,8 +149,9 @@ automation_selections_get_start_pos (
   int                  transient,
   int                  global)
 {
-  position_set_to_bar (pos,
-                       TRANSPORT->total_bars);
+  position_set_to_bar (
+    pos, TRANSPORT->total_bars);
+
   GtkWidget * widget = NULL;
   (void) widget; // avoid unused warnings
 
@@ -159,6 +160,12 @@ automation_selections_get_start_pos (
   ARRANGER_OBJ_SET_GIVEN_POS_TO (
     ts, AutomationPoint, automation_point, pos,
     transient, before, widget);
+
+  if (global)
+    position_add_ticks (
+      pos,
+      ts->automation_points[0]->region->
+        start_pos.total_ticks);
 }
 
 /**

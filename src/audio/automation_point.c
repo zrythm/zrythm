@@ -354,15 +354,14 @@ automation_point_update_fvalue (
     AutomationPoint, self, fvalue, real_val,
     update_flag);
 
+  g_return_if_fail (self->region);
   Automatable * a = self->region->at->automatable;
   automatable_set_val_from_normalized (
     a,
     automatable_real_val_to_normalized (
       a, real_val), 1);
-  AutomationCurve * ac =
-    self->region->acs[self->index];
-  if (ac && ac->widget)
-    ac->widget->cache = 0;
+
+  EVENTS_PUSH (ET_AUTOMATION_POINT_CHANGED, self);
 }
 
 /**

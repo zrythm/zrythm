@@ -92,13 +92,11 @@ size_allocate_cb (GtkWidget * widget, GtkAllocation * allocation, void * data)
 
 static void
 on_add_track_clicked (
-  GtkWidget * widget,
-  void * data)
+  GtkWidget *             widget,
+  AutomationTrackWidget * self)
 {
-  AutomationTrackWidget * self =
-    Z_AUTOMATION_TRACK_WIDGET (data);
-
-  /* get next non visible automation track and add its widget via
+  /* get next non visible automation track and add
+   * its widget via
    * track_widget_add_automatoin_track_widget */
   AutomationTracklist * atl =
     track_get_automation_tracklist (
@@ -106,19 +104,33 @@ on_add_track_clicked (
   AutomationTrack * at =
     automation_tracklist_get_first_invisible_at (
       atl);
-  if (!at)
-    return;
+  g_return_if_fail (at);
 
   if (!at->created)
-    {
-      at->created = 1;
-    }
-  else
-    {
-      at->visible = 1;
-    }
+    at->created = 1;
+  at->visible = 1;
 
   EVENTS_PUSH (ET_AUTOMATION_TRACK_ADDED, at);
+}
+
+static void
+on_remove_track_clicked (
+  GtkWidget *             widget,
+  AutomationTrackWidget * self)
+{
+  /* don't remove if last visible */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (
+      self->at->track);
+  if (automation_tracklist_get_num_visible (
+        atl) == 1)
+    return;
+
+  self->at->visible = 0;
+
+  EVENTS_PUSH (
+    ET_AUTOMATION_TRACK_REMOVED,
+    self->at);
 }
 
 /**
@@ -389,6 +401,10 @@ automation_track_widget_new (
   return self;
 }
 
+/**
+ * Gets the float value at the given Y coordinate
+ * relative to the AutomationTrackWidget.
+ */
 float
 automation_track_widget_get_fvalue_at_y (
   AutomationTrackWidget * self,
@@ -493,4 +509,7 @@ automation_track_widget_class_init (
   gtk_widget_class_bind_template_callback (
     klass,
     on_add_track_clicked);
+  gtk_widget_class_bind_template_callback (
+    klass,
+    on_remove_track_clicked);
 }

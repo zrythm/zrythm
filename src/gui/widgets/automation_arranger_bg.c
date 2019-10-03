@@ -48,6 +48,9 @@ automation_arranger_draw_cb (
   GdkRectangle rect;
   gdk_cairo_get_clip_rectangle (cr, &rect);
 
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
   /* draw automation related stuff */
   Region * r =
     clip_editor_get_region_for_widgets (
@@ -67,9 +70,9 @@ automation_arranger_draw_cb (
           r->at->automatable));
 
   int y_px =
-    automation_track_widget_get_y_px_from_normalized_val (
-      r->at->widget,
-      normalized_val);
+    height -
+      (int)
+      ((float) height * normalized_val);
 
   /* show line at current val */
   cairo_set_source_rgba (

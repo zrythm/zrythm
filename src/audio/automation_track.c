@@ -115,8 +115,8 @@ automation_track_get_ac_at_pos (
 }
 
 /**
- * Returns the last Region before the given
- * Position.
+ * Returns the Region that surrounds the
+ * given Position, if any.
  */
 Region *
 automation_track_get_region_before_pos (
@@ -124,7 +124,8 @@ automation_track_get_region_before_pos (
   const Position *        pos)
 {
   Region * region;
-  for (int i = 0; i < self->num_regions; i++)
+  for (int i = self->num_regions - 1;
+       i >= 0; i--)
     {
       region = self->regions[i];
 
@@ -151,7 +152,9 @@ automation_track_get_ap_before_pos (
       self, pos);
 
   if (!r)
-    return NULL;
+    {
+      return NULL;
+    }
 
   long local_pos =
     region_timeline_frames_to_local (
@@ -191,7 +194,9 @@ automation_track_get_normalized_val_at_pos (
 
   /* no automation points yet, return negative
    * (no change) */
-  if (!ac && !prev_ap)
+  if (ac && !prev_ap)
+    g_warn_if_reached ();
+  if (!ac || !prev_ap)
     return -1.f;
 
   long localp =

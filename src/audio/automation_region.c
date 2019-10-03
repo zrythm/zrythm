@@ -34,12 +34,13 @@
 static int
 cmpfunc (const void * _a, const void * _b)
 {
-  const AutomationPoint * a =
-    (const AutomationPoint *)_a;
-  const AutomationPoint * b =
-    (const AutomationPoint *)_b;
-  int ret = position_compare (&a->pos,
-                              &b->pos);
+  AutomationPoint * a =
+    *(AutomationPoint * const *) _a;
+  AutomationPoint * b =
+    *(AutomationPoint * const *)_b;
+  int ret =
+    position_compare (
+      &a->pos, &b->pos);
   if (ret == 0 &&
       a->index <
       b->index)
@@ -53,12 +54,12 @@ cmpfunc (const void * _a, const void * _b)
 static int
 cmpfunc_curve (const void * _a, const void * _b)
 {
-  const AutomationCurve * a =
-    (const AutomationCurve *)_a;
-  const AutomationCurve * b =
-    (const AutomationCurve *)_b;
-  int ret = position_compare (&a->pos,
-                              &b->pos);
+  AutomationCurve * a =
+    *(AutomationCurve * const *)_a;
+  AutomationCurve * b =
+    *(AutomationCurve * const *)_b;
+  int ret = position_compare (
+    &a->pos, &b->pos);
   if (ret == 0 &&
       a->index <
       b->index)
@@ -170,6 +171,9 @@ automation_region_add_ac (
          (size_t) self->num_acs,
          sizeof (AutomationCurve *),
          cmpfunc_curve);
+  g_warn_if_fail (
+    automation_region_get_ap_before_curve (self, ac)->pos.total_ticks <
+    automation_region_get_ap_after_curve (self, ac)->pos.total_ticks);
 
   /* refresh indices */
   for (int i = 0;
@@ -238,6 +242,10 @@ automation_region_add_ap (
   AutomationPoint * ap,
   int               gen_curves)
 {
+  g_return_if_fail (
+    ap ==
+    automation_point_get_main_automation_point (ap));
+
   /* add point */
   array_double_size_if_full (
     self->aps, self->num_aps, self->aps_size,
@@ -255,6 +263,12 @@ automation_region_add_ap (
          (size_t) self->num_aps,
          sizeof (AutomationPoint *),
          cmpfunc);
+  if (self->num_aps > 1)
+    {
+      g_warn_if_fail (
+        self->aps[self->num_aps - 1]->pos.total_ticks >
+        self->aps[self->num_aps - 2]->pos.total_ticks);
+    }
 
   /* refresh indices */
   for (int i = 0; i < self->num_aps; i++)

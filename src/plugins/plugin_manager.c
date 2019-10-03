@@ -75,8 +75,10 @@ static int
 sort_category_func (
   const void *a, const void *b)
 {
-  const char * pa = (const char *) a;
-  const char * pb = (const char *) b;
+  char * pa =
+    *(char * const *) a;
+  char * pb =
+    *(char * const *) b;
   int r = strcasecmp(pa, pb);
   if (r)
     return r;

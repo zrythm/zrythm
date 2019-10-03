@@ -314,11 +314,14 @@ midi_events_panic (
 }
 
 static int
-sort_events_func (const void *a, const void *b)
+sort_events_func (
+  const void * _a, const void * _b)
 {
-  const MidiEvent * aa = (const MidiEvent *) a;
-  const MidiEvent * bb = (const MidiEvent *) b;
-  return aa->time > bb->time;
+  MidiEvent * a =
+    *(MidiEvent * const *) _a;
+  MidiEvent * b =
+    *(MidiEvent * const *) _b;
+  return (int) a->time - (int) b->time;
 }
 
 /**

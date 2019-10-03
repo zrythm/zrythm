@@ -202,6 +202,7 @@ automation_arranger_widget_set_allocation (
         ui_pos_to_px_editor (
           &tmp, 1) -
           AP_WIDGET_POINT_SIZE / 2;
+      g_warn_if_fail (allocation->x >= 0);
 
       allocation->y =
         (get_automation_point_y (self, ap)) -
@@ -221,8 +222,10 @@ automation_arranger_widget_set_allocation (
       AutomationPoint * next_ap =
         automation_region_get_ap_after_curve (
           ac->region, ac);
-      if (!prev_ap || !next_ap)
-        g_return_if_reached ();
+      g_return_if_fail (
+        !prev_ap || !next_ap ||
+        prev_ap->pos.total_ticks <=
+          next_ap->pos.total_ticks);
 
       /* use transient or non transient region
        * depending on which is visible */
@@ -241,6 +244,7 @@ automation_arranger_widget_set_allocation (
       allocation->x =
         ui_pos_to_px_editor (
           &tmp, 1);
+      g_warn_if_fail (allocation->x >= 0);
       int prev_y =
         get_automation_point_y (self, prev_ap);
       int next_y =
@@ -257,6 +261,7 @@ automation_arranger_widget_set_allocation (
         (ui_pos_to_px_editor (
           &tmp, 1) -
          allocation->x);
+      g_warn_if_fail (allocation->width >= 0);
 
       allocation->height =
         (prev_y > next_y ?
@@ -527,8 +532,11 @@ automation_arranger_widget_create_ap (
   Region *           region)
 {
   AutomationTrack * at = CLIP_EDITOR->region->at;
-  g_warn_if_fail (at);
+  g_return_if_fail (at);
   ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  ar_prv->action =
+    UI_OVERLAY_ACTION_CREATING_MOVING;
 
   /* get local pos */
   Position local_pos;
@@ -559,15 +567,18 @@ automation_arranger_widget_create_ap (
   automation_region_add_ap (
     CLIP_EDITOR->region, ap, F_GEN_CURVE_POINTS);
 
-  automation_point_gen_widget (ap);
-
   /* set visibility */
+  automation_point_gen_widget (ap);
   arranger_object_info_set_widget_visibility_and_state (
     &ap->obj_info, 1);
 
   /* set position to all counterparts */
   automation_point_set_pos (
     ap, &local_pos, AO_UPDATE_ALL);
+
+  /* set the cache position */
+  automation_point_set_cache_pos (
+    ap, &local_pos);
 
   EVENTS_PUSH (
     ET_AUTOMATION_POINT_CREATED, ap);
@@ -657,9 +668,7 @@ automation_arranger_widget_move_items_x (
 {
   automation_selections_add_ticks (
     AUTOMATION_SELECTIONS, ticks_diff, F_USE_CACHED,
-    copy_moving ?
-      AO_UPDATE_TRANS :
-      AO_UPDATE_ALL);
+    AO_UPDATE_NON_TRANS);
 
   /* for arranger refresh */
   EVENTS_PUSH (ET_AUTOMATION_OBJECTS_IN_TRANSIT,
@@ -693,6 +702,40 @@ automation_arranger_widget_setup (
     self);
 }
 
+/**
+ * Gets the float value at the given Y coordinate
+ * relative to the automation arranger.
+ */
+static float
+get_fvalue_at_y (
+  AutomationArrangerWidget * self,
+  double                     y)
+{
+  float height =
+    (float)
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+
+  g_return_val_if_fail (
+    CLIP_EDITOR->region &&
+    CLIP_EDITOR->region->type ==
+      REGION_TYPE_AUTOMATION, -1.f);
+  Automatable * a =
+    CLIP_EDITOR->region->at->automatable;
+
+  /* get ratio from widget */
+  float widget_value = height - (float) y;
+  float widget_ratio =
+    CLAMP (
+      widget_value / height,
+      0.f, 1.f);
+  float automatable_value =
+    automatable_normalized_val_to_real (
+      a, widget_ratio);
+
+  return automatable_value;
+}
+
 void
 automation_arranger_widget_move_items_y (
   AutomationArrangerWidget * self,
@@ -715,11 +758,11 @@ automation_arranger_widget_move_items_y (
             automation_point_get_main_automation_point (ap);
 
           float fval =
-            automation_track_widget_get_fvalue_at_y (
-              ap->region->at->widget,
+            get_fvalue_at_y (
+              self,
               ar_prv->start_y + offset_y);
           automation_point_update_fvalue (
-            ap, fval, AO_UPDATE_TRANS);
+            ap, fval, AO_UPDATE_NON_TRANS);
         }
       automation_point_widget_update_tooltip (
         self->start_ap->widget, 1);

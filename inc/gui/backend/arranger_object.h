@@ -608,34 +608,38 @@ typedef enum ArrangerObjectUpdateFlag
  */
 #define ARRANGER_OBJ_SET_PRIMITIVE_VAL( \
   cc,obj,val_name,val_value, update_flag) \
-  switch (update_flag) \
-    { \
-    case AO_UPDATE_THIS: \
-      obj->val_name = val_value; \
-      break; \
-    case AO_UPDATE_TRANS: \
-      obj = (cc *) obj->obj_info.main_trans; \
-      obj->val_name = val_value; \
-      obj = (cc *) obj->obj_info.lane_trans; \
-      obj->val_name = val_value; \
-      break; \
-    case AO_UPDATE_NON_TRANS: \
-      obj = (cc *) obj->obj_info.main; \
-      obj->val_name = val_value; \
-      obj = (cc *) obj->obj_info.lane; \
-      obj->val_name = val_value; \
-      break; \
-    case AO_UPDATE_ALL: \
-      obj = (cc *) obj->obj_info.main; \
-      obj->val_name = val_value; \
-      obj = (cc *) obj->obj_info.lane; \
-      obj->val_name = val_value; \
-      obj = (cc *) obj->obj_info.main_trans; \
-      obj->val_name = val_value; \
-      obj = (cc *) obj->obj_info.lane_trans; \
-      obj->val_name = val_value; \
-      break; \
-    }
+  { \
+    cc * _tmp = obj; \
+    switch (update_flag) \
+      { \
+      case AO_UPDATE_THIS: \
+        obj->val_name = val_value; \
+        break; \
+      case AO_UPDATE_TRANS: \
+        obj = (cc *) obj->obj_info.main_trans; \
+        obj->val_name = val_value; \
+        obj = (cc *) obj->obj_info.lane_trans; \
+        obj->val_name = val_value; \
+        break; \
+      case AO_UPDATE_NON_TRANS: \
+        obj = (cc *) obj->obj_info.main; \
+        obj->val_name = val_value; \
+        obj = (cc *) obj->obj_info.lane; \
+        obj->val_name = val_value; \
+        break; \
+      case AO_UPDATE_ALL: \
+        obj = (cc *) obj->obj_info.main; \
+        obj->val_name = val_value; \
+        obj = (cc *) obj->obj_info.lane; \
+        obj->val_name = val_value; \
+        obj = (cc *) obj->obj_info.main_trans; \
+        obj->val_name = val_value; \
+        obj = (cc *) obj->obj_info.lane_trans; \
+        obj->val_name = val_value; \
+        break; \
+      } \
+    obj = _tmp; \
+  }
 
 /**
  * Declares the minimal funcs for a movable arranger

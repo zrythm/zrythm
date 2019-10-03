@@ -25,14 +25,15 @@
 #include <gtk/gtk.h>
 
 int
-scale_point_cmp(const Lv2ScalePoint* a, const Lv2ScalePoint* b)
+scale_point_cmp (
+  const void * _a,
+  const void * _b)
 {
-  if (a->value < b->value) {
-          return -1;
-  } else if (a->value == b->value) {
-          return 0;
-  }
-  return 1;
+  Lv2ScalePoint * a =
+    *(Lv2ScalePoint * const *) _a;
+  Lv2ScalePoint * b =
+    *(Lv2ScalePoint * const *) _b;
+  return a->value - b->value;
 }
 
 Lv2Control*
@@ -146,8 +147,7 @@ lv2_new_port_control(Lv2Plugin* plugin, uint32_t index)
         }
 
       qsort (id->points, np, sizeof(Lv2ScalePoint),
-            (int (*)(const void*, const void*))
-              scale_point_cmp);
+             scale_point_cmp);
       id->n_points = np;
 
       lilv_scale_points_free(sp);

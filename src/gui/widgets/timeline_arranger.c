@@ -1132,7 +1132,7 @@ timeline_arranger_widget_create_region (
   /* set visibility */
   region_gen_widget (region);
   arranger_object_info_set_widget_visibility_and_state (
-        &region->obj_info, 1);
+     &region->obj_info, 1);
 
   region_set_cache_end_pos (
     region, &region->end_pos);

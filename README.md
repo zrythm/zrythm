@@ -14,7 +14,7 @@ More info at https://www.zrythm.org
 # Current state
 
 Zrythm is currently in alpha.
-![screenshot](https://www.zrythm.org/static/images/aug_22_2019.png)
+![screenshot](https://www.zrythm.org/static/images/oct_1_2019.png)
 
 ## Currently supported plugin protocols:
 - LV2

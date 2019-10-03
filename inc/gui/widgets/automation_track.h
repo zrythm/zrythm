@@ -93,7 +93,8 @@ automation_track_widget_get_y_px_from_normalized_val (
   float                  fval);
 
 /**
- * Gets the float value at the y-point of the automation track.
+ * Gets the float value at the given Y coordinate
+ * relative to the AutomationTrackWidget.
  */
 float
 automation_track_widget_get_fvalue_at_y (

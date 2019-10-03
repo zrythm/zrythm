@@ -35,6 +35,8 @@
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_arranger.h"
+#include "gui/widgets/automation_arranger.h"
+#include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
@@ -705,6 +707,26 @@ events_process (void * data)
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MW_CHORD_ARRANGER));
           break;
+        case ET_AUTOMATION_POINT_CHANGED:
+          {
+            AutomationPoint * ap =
+              (AutomationPoint *) ev->arg;
+            if (ap->index > 0 &&
+                ap->index <
+                  ap->region->num_aps - 1)
+              {
+                AutomationCurve * ac =
+                  ap->region->acs[ap->index];
+                if (ac &&
+                    GTK_IS_WIDGET (ac->widget))
+                  {
+                    ac->widget->cache = 0;
+                    gtk_widget_queue_draw (
+                      GTK_WIDGET (ac->widget));
+                  }
+              }
+          }
+          break;
         case ET_AUTOMATION_POINT_REMOVED:
         case ET_AUTOMATION_CURVE_REMOVED:
         case ET_AUTOMATION_POINT_CREATED:
@@ -960,6 +982,7 @@ events_process (void * data)
             MW_RULER);
           break;
         case ET_AUTOMATION_TRACK_ADDED:
+        case ET_AUTOMATION_TRACK_REMOVED:
           on_automation_track_added (
             (AutomationTrack *) ev->arg);
           break;
@@ -1049,6 +1072,10 @@ events_process (void * data)
           if (TL_SELECTIONS->num_regions > 0)
             editor_ruler_widget_refresh (
               EDITOR_RULER);
+          break;
+        case ET_AUTOMATION_OBJECTS_IN_TRANSIT:
+          /*gtk_widget_queue_allocate (*/
+            /*GTK_WIDGET (MW_AUTOMATION_ARRANGER));*/
           break;
         case ET_CHORD_KEY_CHANGED:
           for (int j = 0;

@@ -414,24 +414,25 @@ track_set_muted (
   int     mute,
   int     trigger_undo)
 {
-  TracklistSelections tls;
-  tls.tracks[0] = track;
-  tls.num_tracks = 1;
-  UndoableAction * action =
-    edit_tracks_action_new (
-      EDIT_TRACK_ACTION_TYPE_MUTE,
-      track,
-      &tls,
-      0.f, 0.f, 0, mute);
   if (trigger_undo)
     {
+      TracklistSelections tls;
+      tls.tracks[0] = track;
+      tls.num_tracks = 1;
+      UndoableAction * action =
+        edit_tracks_action_new (
+          EDIT_TRACK_ACTION_TYPE_MUTE,
+          track,
+          &tls,
+          0.f, 0.f, 0, mute);
       undo_manager_perform (UNDO_MANAGER,
                             action);
     }
   else
     {
-      edit_tracks_action_do (
-        (EditTracksAction *) action);
+      track->mute = mute;
+      EVENTS_PUSH (
+        ET_TRACK_STATE_CHANGED, track);
     }
 }
 
@@ -695,19 +696,33 @@ track_add_region (
   if (gen_name)
     {
       int count = 1;
-      char * name = g_strdup (track->name);
+
+      /* Name to try to assign */
+      char * orig_name = NULL;
+      if (at)
+        orig_name =
+          g_strdup_printf (
+            "%s - %s",
+            track->name, at->automatable->label);
+      else
+        orig_name = g_strdup (track->name);
+
+      char * name = g_strdup (orig_name);
       while (region_find_by_name (name))
         {
           g_free (name);
           name =
             g_strdup_printf ("%s %d",
-                             track->name,
+                             orig_name,
                              count++);
         }
       region_set_name (
         region, name);
-      g_message ("reigon name: %s", name);
+      g_message (
+        "track_add_region - region name: %s",
+        name);
       g_free (name);
+      g_free (orig_name);
     }
 
   int add_lane = 0, add_at = 0, add_chord = 0;

@@ -93,8 +93,10 @@ cmpfunc (
   const void * a,
   const void * b)
 {
-  const Position * posa = (const Position *) a;
-  const Position * posb = (const Position *) b;
+  Position * posa =
+    *(Position * const *) a;
+  Position * posb =
+    *(Position * const *) b;
   return position_compare (posa, posb);
 }
 

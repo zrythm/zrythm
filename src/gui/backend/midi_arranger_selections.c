@@ -78,8 +78,8 @@ midi_arranger_selections_get_start_pos (
   int                  transient,
   int                  global)
 {
-  position_set_to_bar (pos,
-                       TRANSPORT->total_bars);
+  position_set_to_bar (
+    pos, TRANSPORT->total_bars);
 
   GtkWidget * widget = NULL;
   (void) widget; // avoid unused warnings

@@ -218,6 +218,13 @@ AutomationTrack *
 automation_tracklist_get_first_invisible_at (
   AutomationTracklist * self);
 
+/**
+ * Returns the number of visible AutomationTrack's.
+ */
+int
+automation_tracklist_get_num_visible (
+  AutomationTracklist * self);
+
 void
 automation_tracklist_free_members (
   AutomationTracklist * self);
