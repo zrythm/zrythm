@@ -40,6 +40,7 @@
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
+#include "gui/widgets/about_dialog.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/bot_bar.h"
@@ -225,60 +226,12 @@ activate_about (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)
 {
-  GtkImage * img =
-    GTK_IMAGE (
-      resources_get_icon (ICON_TYPE_ZRYTHM,
-                          "z-splash.svg"));
-
-  const char * artists[] =
-    {
-      "Alexandros Theodotou <alex@zrythm.org>",
-      NULL
-    };
-  const char * authors[] =
-    {
-      "Alexandros Theodotou <alex@zrythm.org>",
-      "Sascha Bast <sash@mischkonsum.org>",
-      "Georg Krause",
-      NULL
-    };
-  const char * documenters[] =
-    {
-      "Alexandros Theodotou <alex@zrythm.org>",
-      NULL
-    };
-  const char * translators =
-      "Alexandros Theodotou\n"
-      "Nicolas Faure <sub26nico@laposte.net>\n"
-      "Olivier Humbert <trebmuh@tuxfamily.org>\n"
-      "Waui\n"
-      "Allan Nordhøy <epost@anotheragency.no>\n"
-      "WaldiS <admin@sto.ugu.pl>\n"
-      "Silvério Santos\n"
-      "Swann Martinet";
-
-  char * version =
-    zrythm_get_version (1);
-
-  gtk_show_about_dialog (
-    GTK_WINDOW (MAIN_WINDOW),
-    "artists", artists,
-    "authors", authors,
-    "copyright", "Copyright (C) 2018-2019 Alexandros Theodotou",
-    "documenters", documenters,
-    /*"logo-icon-name", "z",*/
-    "logo", gtk_image_get_pixbuf (img),
-    "program-name", "Zrythm",
-    "comments", _("a highly automated and intuitive digital audio workstation"),
-    "license-type", GTK_LICENSE_AGPL_3_0,
-    "translator-credits", translators,
-    "website", "https://www.zrythm.org",
-    "website-label", _("Website"),
-    "version", version,
-    NULL);
-  gtk_widget_destroy (GTK_WIDGET (img));
-
-  g_free (version);
+  GtkDialog * dialog =
+    GTK_DIALOG (
+      about_dialog_widget_new (
+        GTK_WINDOW (MAIN_WINDOW)));
+  gtk_dialog_run (dialog);
+  gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 void

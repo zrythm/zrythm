@@ -16,6 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 widget_srcs = [
+  'about_dialog.c',
   'arranger_bg.c',
   'arranger.c',
   'arranger_playhead.c',

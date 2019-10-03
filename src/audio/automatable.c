@@ -121,6 +121,9 @@ automatable_init_loaded (Automatable * self)
       /* TODO */
       break;
     }
+  self->minf = get_minf (self);
+  self->maxf = get_maxf (self);
+  self->sizef = self->maxf - self->minf;
 }
 
 /**

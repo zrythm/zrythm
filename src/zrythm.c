@@ -28,6 +28,7 @@
 #include "audio/tracklist.h"
 #include "gui/accel.h"
 #include "gui/backend/piano_roll.h"
+#include "gui/widgets/about_dialog.h"
 #include "gui/widgets/create_project_dialog.h"
 #include "gui/widgets/first_run_assistant.h"
 #include "gui/widgets/main_window.h"
