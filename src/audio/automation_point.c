@@ -76,7 +76,7 @@ automation_point_set_region_and_index (
   Region *          region,
   int               index)
 {
-  g_return_if_fail (region);
+  g_return_if_fail (ap && region);
 
   for (int i = 0; i < 2; i++)
     {
@@ -97,11 +97,14 @@ automation_point_set_region_and_index (
 
 void
 automation_point_init_loaded (
-  AutomationPoint * ap)
+  AutomationPoint * self)
 {
-  /* TODO */
-  /*ap->at =*/
-    /*project_get_automation_track (ap->at_id);*/
+  ARRANGER_OBJECT_SET_AS_MAIN (
+    AUTOMATION_POINT, AutomationPoint,
+    automation_point);
+
+  automation_point_set_region_and_index (
+    self, self->region, self->index);
 }
 
 static int
@@ -206,10 +209,6 @@ automation_point_clone (
   AutomationPoint * ap =
     automation_point_new_float (
       src->fvalue, &src->pos, is_main);
-
-  if (src->region)
-    automation_point_set_region_and_index (
-      ap, src->region, src->index);
 
   position_set_to_pos (
     &ap->pos, &src->pos);

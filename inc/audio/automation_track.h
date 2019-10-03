@@ -24,6 +24,7 @@
 #include "audio/automation_curve.h"
 #include "audio/automation_point.h"
 #include "audio/position.h"
+#include "audio/region.h"
 
 #define MAX_AUTOMATION_POINTS 1200
 
@@ -88,6 +89,10 @@ static const cyaml_schema_field_t
     CYAML_FLAG_DEFAULT,
     AutomationTrack, automatable,
     automatable_fields_schema),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "regions", CYAML_FLAG_POINTER,
+    AutomationTrack, regions, num_regions,
+    &region_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
     "created", CYAML_FLAG_DEFAULT,
     AutomationTrack, created),

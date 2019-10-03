@@ -43,6 +43,18 @@ automation_track_init_loaded (
 {
   self->automatable->track = self->track;
   automatable_init_loaded (self->automatable);
+
+  /* init regions */
+  self->regions_size =
+    (size_t) self->num_regions;
+  int i;
+  Region * region;
+  for (i = 0; i < self->num_regions; i++)
+    {
+      region = self->regions[i];
+      region->at = self;
+      region_init_loaded (region);
+    }
 }
 
 AutomationTrack *

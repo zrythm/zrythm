@@ -132,6 +132,10 @@ ext_ports_get (
     case AUDIO_BACKEND_JACK:
       {
 #ifdef HAVE_JACK
+        if (AUDIO_ENGINE->midi_backend !=
+              MIDI_BACKEND_JACK)
+          return;
+
         long unsigned int flags = 0;
         if (hw)
           flags |= JackPortIsPhysical;

@@ -359,11 +359,13 @@ region_init_loaded (Region * self)
         for (i = 0; i < self->num_aps; i++)
           {
             ap = self->aps[i];
+            ap->region = self;
             automation_point_init_loaded (ap);
           }
         for (i = 0; i < self->num_acs; i++)
           {
             ac = self->acs[i];
+            ac->region = self;
             automation_curve_init_loaded (ac);
           }
         self->aps_size =
@@ -375,7 +377,15 @@ region_init_loaded (Region * self)
   ARRANGER_OBJECT_SET_AS_MAIN (
     REGION, Region, region);
 
-  region_set_lane (self, self->lane);
+  if (region_type_has_lane (self->type))
+    {
+      region_set_lane (self, self->lane);
+    }
+  else if (self->type == REGION_TYPE_AUTOMATION)
+    {
+      region_set_automation_track (
+        self, self->at);
+    }
 }
 
 /**
@@ -389,6 +399,19 @@ region_find (
   Region * clone)
 {
   return region_find_by_name (clone->name);
+}
+
+/**
+ * Returns if the given Region type can exist
+ * in TrackLane's.
+ */
+int
+region_type_has_lane (
+  const RegionType type)
+{
+  return
+    type == REGION_TYPE_MIDI ||
+    type == REGION_TYPE_AUDIO;
 }
 
 /**

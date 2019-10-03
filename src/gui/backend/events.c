@@ -38,6 +38,7 @@
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_editor_space.h"
+#include "gui/widgets/automation_region.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -274,6 +275,12 @@ refresh_editor_ruler_and_arranger ()
   arranger_widget_refresh (
     Z_ARRANGER_WIDGET (
       MW_MIDI_MODIFIER_ARRANGER));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (
+      MW_AUTOMATION_ARRANGER));
+  arranger_widget_refresh (
+    Z_ARRANGER_WIDGET (
+      MW_CHORD_ARRANGER));
 
   CLIP_EDITOR->region_changed = 0;
 
@@ -317,6 +324,14 @@ on_automation_value_changed (
 {
   AutomationTrack * at =
     automatable_get_automation_track (a);
+  Region * r;
+  for (int i = 0; i < at->num_regions; i++)
+    {
+      r = at->regions[i];
+      if (GTK_IS_WIDGET (r->widget))
+        Z_AUTOMATION_REGION_WIDGET (
+          r->widget)->cache = 0;
+    }
   if (at && at->widget)
     automation_track_widget_update_current_val (
       at->widget);
@@ -725,6 +740,8 @@ events_process (void * data)
                       GTK_WIDGET (ac->widget));
                   }
               }
+            Z_AUTOMATION_REGION_WIDGET (
+              ap->region->widget)->cache = 0;
           }
           break;
         case ET_AUTOMATION_POINT_REMOVED:
@@ -859,8 +876,6 @@ events_process (void * data)
         case ET_CLIP_EDITOR_REGION_CHANGED:
           on_clip_editor_region_changed ();
           break;
-        case ET_AUTOMATION_TRACK_CHANGED:
-          break;
         case ET_TRACK_BOT_PANED_VISIBILITY_CHANGED:
           tracklist_widget_soft_refresh (
             MW_TRACKLIST);
@@ -983,6 +998,7 @@ events_process (void * data)
           break;
         case ET_AUTOMATION_TRACK_ADDED:
         case ET_AUTOMATION_TRACK_REMOVED:
+        case ET_AUTOMATION_TRACK_CHANGED:
           on_automation_track_added (
             (AutomationTrack *) ev->arg);
           break;
@@ -1098,8 +1114,9 @@ events_process (void * data)
             TOP_BAR);
           break;
         default:
-          g_message ("event not implemented yet");
-          /* unimplemented */
+          g_message (
+            "event %d not implemented yet",
+            ev->type);
           break;
         }
 

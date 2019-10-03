@@ -53,6 +53,13 @@ typedef struct Region AutomationRegion;
 typedef struct _AutomationRegionWidget
 {
   RegionWidget             parent_instance;
+
+  /* Draw caching (set to 0 to redraw). */
+  int                      cache;
+
+  cairo_t *                cached_cr;
+
+  cairo_surface_t *        cached_surface;
 } AutomationRegionWidget;
 
 /**

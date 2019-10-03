@@ -318,32 +318,6 @@ automation_region_add_ap (
                ap);
 }
 
-AutomationPoint *
-automation_region_get_ap_before_curve (
-  Region *          self,
-  AutomationCurve * ac)
-{
-  if (ac && ac->index < self->num_aps)
-    return self->aps[ac->index];
-
-  return NULL;
-}
-
-/**
- * Returns the ap after the curve point.
- */
-AutomationPoint *
-automation_region_get_ap_after_curve (
-  Region *          self,
-  AutomationCurve * ac)
-{
-  if (ac &&
-      ac->index < self->num_aps - 1)
-    return self->aps[ac->index + 1];
-
-  return NULL;
-}
-
 /**
  * Returns the automation point before the position.
  */

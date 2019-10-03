@@ -636,6 +636,14 @@ region_move_to_track (
   const int tmp);
 
 /**
+ * Returns if the given Region type can exist
+ * in TrackLane's.
+ */
+int
+region_type_has_lane (
+  const RegionType type);
+
+/**
  * Sets the automation track.
  */
 void

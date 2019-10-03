@@ -30,20 +30,18 @@
  */
 sample_t
 math_get_fader_val_from_amp (
-  sample_t _amp)
+  sample_t amp)
 {
-  double amp = (double) _amp;
-
   /* to prevent weird values when amp is very
    * small */
-  if (amp <= 0.000001)
+  if (amp <= 0.000001f)
     return 0.f;
   else
     {
       double fader =
-        pow (6.0 * log (amp) +
-             192.0 * log (2.0), 8.0) /
-        (pow (log (2.0), 8.0) * pow (198.0, 8.0));
+        powf (6.f * logf (amp) +
+             192.f * logf (2.f), 8.f) /
+        (powf (logf (2.f), 8.f) * powf (198.f, 8.f));
       return (sample_t) fader;
     }
 }
@@ -89,52 +87,4 @@ math_calculate_rms_db (
         sum /
         ((sample_t) nframes /
            (sample_t) RMS_FRAMES)));
-}
-
-/**
- * Convert from amplitude 0.0 to 2.0 to dbFS.
- */
-sample_t
-math_amp_to_dbfs (
-  sample_t amp)
-{
-  return 20.f * log10f (amp);
-}
-
-/**
- * Convert form dbFS to amplitude 0.0 to 2.0.
- */
-sample_t
-math_dbfs_to_amp (
-  sample_t dbfs)
-{
-  return powf (10.f, (dbfs / 20.f));
-}
-
-/**
- * Checks if 2 floating points are equal.
- *
- * @param epsilon The allowed differene.
- */
-int
-math_floats_equal (
-  const float a,
-  const float b,
-  const float epsilon)
-{
-  return fabsf (a - b) < epsilon;
-}
-
-/**
- * Checks if 2 floating points are equal.
- *
- * @param epsilon The allowed differene.
- */
-int
-math_doubles_equal (
-  const double a,
-  const double b,
-  const double epsilon)
-{
-  return fabs (a - b) < epsilon;
 }

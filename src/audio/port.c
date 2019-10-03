@@ -105,6 +105,9 @@ port_init_loaded (Port * this)
     {
       port_set_expose_to_backend (this, 1);
     }
+
+  this->buf =
+    calloc (80000, sizeof (float));
 }
 
 /**
@@ -1336,7 +1339,11 @@ port_sum_data_from_jack (
       self->internal_type !=
         INTERNAL_JACK_PORT ||
       self->identifier.flow !=
-        FLOW_INPUT)
+        FLOW_INPUT ||
+      AUDIO_ENGINE->audio_backend !=
+        AUDIO_BACKEND_JACK ||
+      AUDIO_ENGINE->midi_backend !=
+        MIDI_BACKEND_JACK)
     return;
 
   /* append events from JACK if any */
@@ -1361,7 +1368,11 @@ port_send_data_to_jack (
   if (self->internal_type !=
         INTERNAL_JACK_PORT ||
       self->identifier.flow !=
-        FLOW_OUTPUT)
+        FLOW_OUTPUT ||
+      AUDIO_ENGINE->audio_backend !=
+        AUDIO_BACKEND_JACK ||
+      AUDIO_ENGINE->midi_backend !=
+        MIDI_BACKEND_JACK)
     return;
 
   /* send midi events */

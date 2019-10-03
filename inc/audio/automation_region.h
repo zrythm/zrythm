@@ -26,6 +26,9 @@
 #ifndef __AUDIO_AUTOMATION_REGION_H__
 #define __AUDIO_AUTOMATION_REGION_H__
 
+#include "audio/automation_curve.h"
+#include "audio/region.h"
+
 typedef struct Track Track;
 typedef struct Position Position;
 typedef struct AutomationPoint AutomationPoint;
@@ -105,18 +108,31 @@ automation_region_get_next_ap (
  * Returns the AutomationPoint before the given
  * AutomationCurve.
  */
-AutomationPoint *
+static inline AutomationPoint *
 automation_region_get_ap_before_curve (
   Region *          self,
-  AutomationCurve * ac);
+  AutomationCurve * ac)
+{
+  if (ac && ac->index < self->num_aps)
+    return self->aps[ac->index];
+
+  return NULL;
+}
 
 /**
  * Returns the ap after the curve point.
  */
-AutomationPoint *
+static inline AutomationPoint *
 automation_region_get_ap_after_curve (
   Region *          self,
-  AutomationCurve * ac);
+  AutomationCurve * ac)
+{
+  if (ac &&
+      ac->index < self->num_aps - 1)
+    return self->aps[ac->index + 1];
+
+  return NULL;
+}
 
 /**
  * Returns the curve point right after the given ap

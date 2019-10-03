@@ -2380,6 +2380,9 @@ add_children_from_channel_track (
               if (!GTK_IS_WIDGET (region->widget))
                 region_gen_widget (region);
 
+              Z_AUTOMATION_REGION_WIDGET (
+                region->widget)->cache = 0;
+
               gtk_overlay_add_overlay (
                 GTK_OVERLAY (MW_TIMELINE),
                 GTK_WIDGET (region->widget));

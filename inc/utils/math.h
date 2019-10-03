@@ -22,6 +22,8 @@
 #ifndef __UTILS_MATH_H__
 #define __UTILS_MATH_H__
 
+#include <float.h>
+#include <math.h>
 #include <stdint.h>
 
 #include "utils/types.h"
@@ -56,37 +58,49 @@ math_calculate_rms_db (
 /**
  * Convert from amplitude 0.0 to 2.0 to dbFS.
  */
-sample_t
+static inline sample_t
 math_amp_to_dbfs (
-  sample_t amp);
+  sample_t amp)
+{
+  return 20.f * log10f (amp);
+}
 
 /**
  * Convert form dbFS to amplitude 0.0 to 2.0.
  */
-sample_t
+static inline sample_t
 math_dbfs_to_amp (
-  sample_t dbfs);
+  sample_t dbfs)
+{
+  return powf (10.f, (dbfs / 20.f));
+}
 
 /**
  * Checks if 2 floating points are equal.
  *
  * @param epsilon The allowed differene.
  */
-int
+static inline int
 math_floats_equal (
   const float a,
   const float b,
-  const float epsilon);
+  const float epsilon)
+{
+  return fabsf (a - b) < epsilon;
+}
 
 /**
- * Checks if 2 floating points are equal.
+ * Checks if 2 doubles are equal.
  *
  * @param epsilon The allowed differene.
  */
-int
+static inline int
 math_doubles_equal (
   const double a,
   const double b,
-  const double epsilon);
+  const double epsilon)
+{
+  return fabs (a - b) < epsilon;
+}
 
 #endif

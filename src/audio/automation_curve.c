@@ -39,10 +39,6 @@ void
 automation_curve_init_loaded (
   AutomationCurve * ac)
 {
-  /*ac->at =*/
-  /*TODO */
-    /*project_get_automation_track (ac->at_id);*/
-
 }
 
 static AutomationCurve *
