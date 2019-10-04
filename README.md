@@ -46,7 +46,7 @@ zrythm-dev@nongnu.org for developers, zrythm-user@nongnu.org for users
 https://savannah.nongnu.org/support/?group=zrythm
 
 ## Releases
-https://savannah.nongnu.org/files/?group=zrythm
+https://www.zrythm.org/releases
 
 ## License
 Zrythm is free software: you can redistribute it and/or modify

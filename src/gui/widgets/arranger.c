@@ -1551,39 +1551,40 @@ drag_update (
       break;
     }
 
+#define MOVE_ITEMS(_arranger,_copy_moving) \
+      if (_arranger) \
+        { \
+          _arranger##_widget_update_visibility ( \
+            _arranger); \
+          if ((MidiArrangerWidget *) _arranger == \
+              midi_arranger) \
+            { \
+              midi_modifier_arranger_widget_update_visibility ( \
+                midi_modifier_arranger); \
+            } \
+          _arranger##_widget_move_items_x ( \
+            _arranger, \
+            ar_prv->adj_ticks_diff, \
+            _copy_moving); \
+          _arranger##_widget_move_items_y ( \
+            _arranger, \
+            offset_y); \
+        }
+
   /* if drawing a selection */
   switch (ar_prv->action)
     {
     case UI_OVERLAY_ACTION_SELECTING:
       /* find and select objects inside selection */
-      if (timeline_arranger)
-        {
-          timeline_arranger_widget_select (
-            timeline_arranger,
-            offset_x,
-            offset_y,
-            F_NO_DELETE);
-        }
-      else if (midi_arranger)
-        {
-          midi_arranger_widget_select (
-            midi_arranger,
-            offset_x,
-            offset_y,
-            F_NO_DELETE);
-        }
-      else if (midi_modifier_arranger)
-        {
-          midi_modifier_arranger_widget_select (
-            midi_modifier_arranger,
-            offset_x,
-            offset_y,
-            F_NO_DELETE);
-        }
-      else if (audio_arranger)
-        {
-          /* TODO */
-        }
+#define DO_SELECT(sc) \
+  if (sc##_arranger) \
+    { \
+      sc##_arranger_widget_select ( \
+        sc##_arranger, offset_x, offset_y, \
+        F_NO_DELETE); \
+    }
+      FORALL_ARRANGERS (DO_SELECT);
+#undef DO_SELECT
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
       /* find and delete objects inside
@@ -1592,11 +1593,10 @@ drag_update (
   if (sc##_arranger) \
     { \
       sc##_arranger_widget_select ( \
-        sc##_arranger, offset_x, offset_y, 1); \
+        sc##_arranger, offset_x, offset_y, \
+        F_DELETE); \
     }
-
       FORALL_ARRANGERS (DO_SELECT);
-
 #undef DO_SELECT
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
@@ -1722,73 +1722,24 @@ drag_update (
       break;
     case UI_OVERLAY_ACTION_MOVING:
     case UI_OVERLAY_ACTION_CREATING_MOVING:
-      if (timeline_arranger)
-        {
-          timeline_arranger_widget_update_visibility (
-            timeline_arranger);
-          timeline_arranger_widget_move_items_x (
-            timeline_arranger,
-            ar_prv->adj_ticks_diff,
-            F_NOT_COPY_MOVING);
-          timeline_arranger_widget_move_items_y (
-            timeline_arranger,
-            offset_y);
-        }
-      else if (midi_arranger)
-        {
-          midi_arranger_widget_update_visibility (
-            midi_arranger);
-          midi_modifier_arranger_widget_update_visibility (
-            midi_modifier_arranger);
-          midi_arranger_widget_move_items_x (
-            midi_arranger,
-            ar_prv->adj_ticks_diff,
-            F_NOT_COPY_MOVING);
-          midi_arranger_widget_move_items_y (
-            midi_arranger,
-            offset_y);
-        }
-      else if (automation_arranger)
-        {
-          automation_arranger_widget_update_visibility (
-            automation_arranger);
-          automation_arranger_widget_move_items_x (
-            automation_arranger,
-            ar_prv->adj_ticks_diff,
-            F_NOT_COPY_MOVING);
-          automation_arranger_widget_move_items_y (
-            automation_arranger,
-            offset_y);
-        }
+      MOVE_ITEMS (
+        timeline_arranger, F_NOT_COPY_MOVING);
+      MOVE_ITEMS (
+        midi_arranger, F_NOT_COPY_MOVING);
+      MOVE_ITEMS (
+        automation_arranger, F_NOT_COPY_MOVING);
+      MOVE_ITEMS (
+        chord_arranger, F_NOT_COPY_MOVING);
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
-      if (timeline_arranger)
-        {
-          timeline_arranger_widget_update_visibility (
-            timeline_arranger);
-          timeline_arranger_widget_move_items_x (
-            timeline_arranger,
-            ar_prv->adj_ticks_diff,
-            F_COPY_MOVING);
-          timeline_arranger_widget_move_items_y (
-            timeline_arranger,
-            offset_y);
-        }
-      else if (midi_arranger)
-        {
-          midi_arranger_widget_update_visibility (
-            midi_arranger);
-          midi_modifier_arranger_widget_update_visibility (
-            midi_modifier_arranger);
-          midi_arranger_widget_move_items_x (
-            midi_arranger,
-            ar_prv->adj_ticks_diff,
-            F_COPY_MOVING);
-          midi_arranger_widget_move_items_y (
-            midi_arranger,
-            offset_y);
-          /*auto_scroll(self);*/
-        }
+      MOVE_ITEMS (
+        timeline_arranger, F_COPY_MOVING);
+      MOVE_ITEMS (
+        midi_arranger, F_COPY_MOVING);
+      MOVE_ITEMS (
+        automation_arranger, F_COPY_MOVING);
+      MOVE_ITEMS (
+        chord_arranger, F_COPY_MOVING);
       break;
     case UI_OVERLAY_ACTION_AUTOFILLING:
       /* TODO */
@@ -1827,6 +1778,7 @@ drag_update (
       /* TODO */
       break;
     }
+#undef MOVE_ITEMS
 
   if (ar_prv->action != UI_OVERLAY_ACTION_NONE)
     auto_scroll (

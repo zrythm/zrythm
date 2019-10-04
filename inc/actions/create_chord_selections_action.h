@@ -40,7 +40,14 @@ typedef struct CreateChordSelectionsAction
   /**
    * A clone of the chord selections at the time.
    */
-  ChordSelections * ts;
+  ChordSelections * cs;
+
+  /**
+   * Whether this is the first run or not.
+   *
+   * Used when doing the action for the first time.
+   */
+  int               first_run;
 } CreateChordSelectionsAction;
 
 /**

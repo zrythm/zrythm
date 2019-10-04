@@ -126,6 +126,7 @@ chord_object_init_loaded (
  */
 ChordObject *
 chord_object_new (
+  Region * region,
   int index,
   int is_main);
 

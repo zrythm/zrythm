@@ -12,8 +12,8 @@ on our website.
 
 # Upstream URLs
 
-Please use
-https://download.savannah.nongnu.org/releases/zrythm/
+You can use
+https://www.zrythm.org/releases
 to fetch tarballs. The project's home page is
 https://www.zrythm.org. The git repositories are
 on our [CGit instance](https://git.zrythm.org/cgit/).

@@ -138,8 +138,9 @@ chord_selections_get_start_pos (
   int               transient,
   int               global)
 {
-  position_set_to_bar (pos,
-                       TRANSPORT->total_bars);
+  position_set_to_bar (
+    pos, TRANSPORT->total_bars);
+
   GtkWidget * widget = NULL;
   (void) widget; // avoid unused warnings
 
@@ -150,9 +151,10 @@ chord_selections_get_start_pos (
     transient, before, widget);
 
   if (global)
-    {
-      /* TODO convert to global pos */
-    }
+    position_add_ticks (
+      pos,
+      ts->chord_objects[0]->region->
+        start_pos.total_ticks);
 }
 
 /**

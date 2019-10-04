@@ -456,23 +456,6 @@ automation_arranger_widget_show_context_menu (
   gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
 }
 
-/**
- * Sets the visibility of the transient and non-
- * transient objects, lane and non-lane.
- *
- * E.g. when moving regions, it hides the original
- * ones.
- */
-void
-automation_arranger_widget_update_visibility (
-  AutomationArrangerWidget * self)
-{
-  ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
-    AUTOMATION_SELECTIONS->automation_points,
-    AUTOMATION_SELECTIONS->num_automation_points,
-    AutomationPoint, automation_point);
-}
-
 void
 automation_arranger_widget_on_drag_begin_ap_hit (
   AutomationArrangerWidget * self,
@@ -982,37 +965,13 @@ add_children_from_region (
     }
 }
 
-/**
- * Refreshes visibility of children.
- */
-static void
-automation_arranger_widget_refresh_visibility (
-  AutomationArrangerWidget * self)
+ARRANGER_W_DECLARE_UPDATE_VISIBILITY (
+  Automation, automation)
 {
-  GList *children, *iter;
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self));
-  /*GtkWidget * w;*/
-  /*RegionWidget * rw;*/
-  /*Region * region;*/
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      /*w = GTK_WIDGET (iter->data);*/
-
-      /*if (Z_IS_REGION_WIDGET (w))*/
-        /*{*/
-          /*rw = Z_REGION_WIDGET (w);*/
-          /*REGION_WIDGET_GET_PRIVATE (rw);*/
-          /*region = rw_prv->region;*/
-
-          /*arranger_object_info_set_widget_visibility_and_state (*/
-            /*&region->obj_info, 1);*/
-        /*}*/
-    }
-  g_list_free (children);
+  ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
+    AUTOMATION_SELECTIONS->automation_points,
+    AUTOMATION_SELECTIONS->num_automation_points,
+    AutomationPoint, automation_point);
 }
 
 /**
@@ -1051,7 +1010,7 @@ automation_arranger_widget_refresh_children (
   add_children_from_region (
     self, region);
 
-  automation_arranger_widget_refresh_visibility (
+  automation_arranger_widget_update_visibility (
     self);
 
   gtk_overlay_reorder_overlay (

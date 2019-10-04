@@ -677,7 +677,6 @@ track_add_region (
   int      gen_name,
   int      fire_events)
 {
-  g_message ("adding region to lane %d", lane_pos);
   g_warn_if_fail (
     region->obj_info.counterpart ==
     AOI_COUNTERPART_MAIN);
@@ -892,13 +891,22 @@ track_remove_region (
 
   g_warn_if_fail (region->lane_pos >= 0);
 
-  g_message (
-    "removed region from lane %d (track %s)",
-    region->lane_pos, track->name);
-  array_delete (
-    track->lanes[region->lane_pos]->regions,
-    track->lanes[region->lane_pos]->num_regions,
-    region);
+  if (region_type_has_lane (region->type))
+    {
+      array_delete (
+        track->lanes[region->lane_pos]->
+          regions,
+        track->lanes[region->lane_pos]->
+          num_regions,
+        region);
+    }
+  else if (region->type == REGION_TYPE_CHORD)
+    {
+      array_delete (
+        track->chord_regions,
+        track->num_chord_regions,
+        region);
+    }
 
   if (free)
     free_later (region, region_free_all);

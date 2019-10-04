@@ -19,6 +19,7 @@
 
 #include "actions/create_chord_selections_action.h"
 #include "audio/chord_object.h"
+#include "audio/chord_region.h"
 #include "audio/chord_track.h"
 #include "audio/marker.h"
 #include "audio/marker_track.h"
@@ -51,7 +52,8 @@ create_chord_selections_action_new (
   ua->type =
     UNDOABLE_ACTION_TYPE_CREATE_CHORD_SELECTIONS;
 
-  self->ts = chord_selections_clone (ts);
+  self->cs = chord_selections_clone (ts);
+  self->first_run = 1;
 
   return ua;
 }
@@ -62,9 +64,16 @@ create_chord_selections_action_do (
 {
   int i;
 
+  if (!self->first_run)
+    {
+      /* clear current selections */
+      chord_selections_clear (
+        CHORD_SELECTIONS);
+    }
+
   ChordObject * chord;
 	for (i = 0;
-       i < self->ts->num_chord_objects; i++)
+       i < self->cs->num_chord_objects; i++)
     {
       /* check if the region already exists. due to
        * how the arranger creates regions, the region
@@ -72,23 +81,34 @@ create_chord_selections_action_do (
        * need to do anything. when redoing we will
        * need to create a clone instead */
       if (chord_object_find (
-            self->ts->chord_objects[i]))
+            self->cs->chord_objects[i]))
         continue;
 
       /* clone the clone */
       chord =
         chord_object_clone (
-          self->ts->chord_objects[i],
+          self->cs->chord_objects[i],
           CHORD_OBJECT_CLONE_COPY_MAIN);
 
-      /* add it to track */
-      chord_track_add_chord (
-        P_CHORD_TRACK,
-        chord);
+      /* find the region */
+      chord->region =
+        region_find_by_name (chord->region_name);
+      g_return_val_if_fail (chord->region, -1);
+
+      /* add it to the region */
+      chord_region_add_chord_object (
+        chord->region, chord);
+
+      /* select it */
+      chord_object_select (
+        chord, F_SELECT);
     }
 
-  EVENTS_PUSH (ET_CHORD_SELECTIONS_CREATED,
+  EVENTS_PUSH (ET_CHORD_OBJECT_CREATED,
                NULL);
+
+  if (self->first_run)
+    self->first_run = 0;
 
   return 0;
 }
@@ -99,19 +119,20 @@ create_chord_selections_action_undo (
 {
   int i;
   ChordObject * chord_object;
-  for (i = 0; i < self->ts->num_chord_objects; i++)
+  for (i = 0; i < self->cs->num_chord_objects; i++)
     {
-      /* get the actual region */
+      /* get the actual chord */
       chord_object =
         chord_object_find (
-          self->ts->chord_objects[i]);
+          self->cs->chord_objects[i]);
 
       /* remove it */
-      chord_track_remove_chord (
-        P_CHORD_TRACK, chord_object, F_FREE);
+      chord_region_remove_chord_object (
+        chord_object->region,
+        chord_object, F_FREE);
     }
 
-  EVENTS_PUSH (ET_CHORD_SELECTIONS_REMOVED,
+  EVENTS_PUSH (ET_CHORD_OBJECT_REMOVED,
                NULL);
 
   return 0;
@@ -129,7 +150,7 @@ void
 create_chord_selections_action_free (
   CreateChordSelectionsAction * self)
 {
-  chord_selections_free (self->ts);
+  chord_selections_free (self->cs);
 
   free (self);
 }

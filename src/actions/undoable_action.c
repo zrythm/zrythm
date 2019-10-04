@@ -19,14 +19,16 @@
 
 #include "actions/copy_plugins_action.h"
 #include "actions/copy_tracks_action.h"
-#include "actions/create_plugins_action.h"
+#include "actions/create_chord_selections_action.h"
 #include "actions/create_midi_arranger_selections_action.h"
+#include "actions/create_plugins_action.h"
 #include "actions/create_timeline_selections_action.h"
 #include "actions/create_tracks_action.h"
 #include "actions/delete_midi_arranger_selections_action.h"
 #include "actions/delete_plugins_action.h"
 #include "actions/delete_timeline_selections_action.h"
 #include "actions/delete_tracks_action.h"
+#include "actions/duplicate_chord_selections_action.h"
 #include "actions/duplicate_midi_arranger_selections_action.h"
 #include "actions/duplicate_timeline_selections_action.h"
 #include "actions/edit_chord_action.h"
@@ -36,6 +38,7 @@
 #include "actions/edit_plugins_action.h"
 #include "actions/edit_tracks_action.h"
 #include "actions/edit_timeline_selections_action.h"
+#include "actions/move_chord_selections_action.h"
 #include "actions/move_midi_arranger_selections_action.h"
 #include "actions/move_plugins_action.h"
 #include "actions/move_tracks_action.h"
@@ -135,6 +138,21 @@ undoable_action_do (UndoableAction * self)
     DO_ACTION (DELETE_MA_SELECTIONS,
                delete_midi_arranger_selections,
                DeleteMidiArrangerSelections);
+    DO_ACTION (CREATE_CHORD_SELECTIONS,
+               create_chord_selections,
+               CreateChordSelections);
+    DO_ACTION (MOVE_CHORD_SELECTIONS,
+               move_chord_selections,
+               MoveChordSelections);
+    /*DO_ACTION (EDIT_CHORD_SELECTIONS,*/
+               /*edit_chord_selections,*/
+               /*EditChordSelections);*/
+    DO_ACTION (DUPLICATE_CHORD_SELECTIONS,
+               duplicate_chord_selections,
+               DuplicateChordSelections);
+    /*DO_ACTION (DELETE_CHORD_SELECTIONS,*/
+               /*delete_chord_selections,*/
+               /*DeleteChordSelections);*/
     default:
       g_warn_if_reached ();
       return -1;
@@ -232,6 +250,21 @@ undoable_action_undo (UndoableAction * self)
     UNDO_ACTION (DELETE_MA_SELECTIONS,
                delete_midi_arranger_selections,
                DeleteMidiArrangerSelections);
+    UNDO_ACTION (CREATE_CHORD_SELECTIONS,
+               create_chord_selections,
+               CreateChordSelections);
+    UNDO_ACTION (MOVE_CHORD_SELECTIONS,
+               move_chord_selections,
+               MoveChordSelections);
+    /*UNDO_ACTION (EDIT_CHORD_SELECTIONS,*/
+               /*edit_chord_selections,*/
+               /*EditChordSelections);*/
+    UNDO_ACTION (DUPLICATE_CHORD_SELECTIONS,
+               duplicate_chord_selections,
+               DuplicateChordSelections);
+    /*UNDO_ACTION (DELETE_CHORD_SELECTIONS,*/
+               /*delete_chord_selections,*/
+               /*DeleteChordSelections);*/
     default:
       g_warn_if_reached ();
       return -1;
@@ -323,6 +356,21 @@ undoable_action_free (UndoableAction * self)
     FREE_ACTION (DELETE_MA_SELECTIONS,
                delete_midi_arranger_selections,
                DeleteMidiArrangerSelections);
+    FREE_ACTION (CREATE_CHORD_SELECTIONS,
+               create_chord_selections,
+               CreateChordSelections);
+    FREE_ACTION (MOVE_CHORD_SELECTIONS,
+               move_chord_selections,
+               MoveChordSelections);
+    /*FREE_ACTION (EDIT_CHORD_SELECTIONS,*/
+               /*edit_chord_selections,*/
+               /*EditChordSelections);*/
+    FREE_ACTION (DUPLICATE_CHORD_SELECTIONS,
+               duplicate_chord_selections,
+               DuplicateChordSelections);
+    /*FREE_ACTION (DELETE_CHORD_SELECTIONS,*/
+               /*delete_chord_selections,*/
+               /*DeleteChordSelections);*/
     default:
       g_warn_if_reached ();
       break;
@@ -420,6 +468,21 @@ undoable_action_stringize (
     STRINGIZE_UA (DELETE_MA_SELECTIONS,
                   DeleteMidiArrangerSelections,
                   delete_midi_arranger_selections);
+    STRINGIZE_UA (CREATE_CHORD_SELECTIONS,
+               CreateChordSelections,
+               create_chord_selections);
+    STRINGIZE_UA (MOVE_CHORD_SELECTIONS,
+               MoveChordSelections,
+               move_chord_selections);
+    /*STRINGIZE_UA (EDIT_CHORD_SELECTIONS,*/
+               /*edit_chord_selections,*/
+               /*EditChordSelections);*/
+    STRINGIZE_UA (DUPLICATE_CHORD_SELECTIONS,
+               DuplicateChordSelections,
+               duplicate_chord_selections);
+    /*STRINGIZE_UA (DELETE_CHORD_SELECTIONS,*/
+               /*delete_chord_selections,*/
+               /*DeleteChordSelections);*/
     default:
       g_return_val_if_reached (
         g_strdup (""));

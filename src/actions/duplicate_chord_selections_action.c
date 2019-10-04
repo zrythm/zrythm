@@ -18,8 +18,9 @@
  */
 
 #include "actions/duplicate_chord_selections_action.h"
-#include "audio/chord_track.h"
 #include "audio/chord_object.h"
+#include "audio/chord_region.h"
+#include "audio/chord_track.h"
 #include "audio/marker.h"
 #include "audio/marker_track.h"
 #include "audio/scale_object.h"
@@ -81,8 +82,8 @@ duplicate_chord_selections_action_new (
         self->ts->sc##s[i], self->ticks, \
         AO_UPDATE_THIS); \
       /* select it */ \
-      sc##_widget_select ( \
-        sc->widget, F_SELECT); \
+      sc##_select ( \
+        sc, F_SELECT); \
       remember_code; \
     }
 
@@ -95,8 +96,8 @@ duplicate_chord_selections_action_new (
         sc##_find ( \
           self->ts->sc##s[i]); \
       /* unselect it */ \
-      sc##_widget_select ( \
-        sc->widget, F_NO_SELECT); \
+      sc##_select ( \
+        sc, F_NO_SELECT); \
       /* remove it */ \
       remove_code; \
       /* unshift the clone */ \
@@ -114,9 +115,9 @@ duplicate_chord_selections_action_do (
   DO_OBJECT (
     CHORD_OBJECT, ChordObject, chord_object,
     /* add */
-    chord_track_add_chord (
-      P_CHORD_TRACK,
-      chord_object, F_GEN_WIDGET),);
+    chord_region_add_chord_object (
+      chord_object->region,
+      chord_object),);
 
   EVENTS_PUSH (ET_CHORD_SELECTIONS_CHANGED,
                NULL);
@@ -133,8 +134,8 @@ duplicate_chord_selections_action_undo (
   UNDO_OBJECT (
     ChordObject, chord_object,
     /* remove */
-    chord_track_remove_chord (
-      P_CHORD_TRACK,
+    chord_region_remove_chord_object (
+      chord_object->region,
       chord_object, F_FREE));
 
   EVENTS_PUSH (ET_CHORD_SELECTIONS_CHANGED,

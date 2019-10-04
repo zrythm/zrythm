@@ -959,16 +959,6 @@ events_process (void * data)
           break;
         /* FIXME rename to MIDI_NOTE_ADDED_TO_REGION */
         case ET_MIDI_NOTE_CREATED:
-          /*z_gtk_overlay_add_if_not_exists (*/
-            /*GTK_OVERLAY (MIDI_ARRANGER),*/
-            /*GTK_WIDGET (((MidiNote *) ev->arg)->widget));*/
-          /*z_gtk_overlay_add_if_not_exists (*/
-            /*GTK_OVERLAY (MIDI_MODIFIER_ARRANGER),*/
-            /*GTK_WIDGET (((MidiNote *) ev->arg)->vel->widget));*/
-          /*gtk_widget_queue_allocate (*/
-            /*GTK_WIDGET (MIDI_ARRANGER));*/
-          /*arranger_widget_refresh (*/
-            /*Z_ARRANGER_WIDGET (MIDI_ARRANGER));*/
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
           arranger_widget_refresh (

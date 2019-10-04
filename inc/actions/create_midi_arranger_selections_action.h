@@ -42,6 +42,13 @@ typedef struct CreateMidiArrangerSelectionsAction
    * time.
    */
   MidiArrangerSelections *        mas;
+
+  /**
+   * Whether this is the first run or not.
+   *
+   * Used when doing the action for the first time.
+   */
+  int               first_run;
 } CreateMidiArrangerSelectionsAction;
 
 /**

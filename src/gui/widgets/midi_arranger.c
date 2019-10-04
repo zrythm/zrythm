@@ -417,15 +417,8 @@ midi_arranger_widget_show_context_menu (
   gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
 }
 
-/**
- * Sets transient notes and actual notes
- * visibility based on the current action.
- *
- * Loops through all currently shown notes.
- */
-void
-midi_arranger_widget_update_visibility (
-  MidiArrangerWidget * self)
+ARRANGER_W_DECLARE_UPDATE_VISIBILITY (
+  Midi, midi)
 {
   GList *children, *iter;
   children =

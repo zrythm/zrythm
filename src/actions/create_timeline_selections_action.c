@@ -95,6 +95,12 @@ create_timeline_selections_action_do (
             track, region, at, -1, F_GEN_NAME,
             F_PUBLISH_EVENTS);
         }
+      else if (region->type == REGION_TYPE_CHORD)
+        {
+          track_add_region (
+            P_CHORD_TRACK, region, NULL, -1,
+            F_GEN_NAME, F_PUBLISH_EVENTS);
+        }
       else
         {
           track_add_region (
@@ -174,7 +180,7 @@ create_timeline_selections_action_undo (
 
       /* remove it */
       track_remove_region (
-        region->lane->track, region,
+        region_get_track (region), region,
         F_PUBLISH_EVENTS, F_FREE);
     }
   ScaleObject * scale_object;

@@ -52,6 +52,7 @@ chord_object_init_loaded (
  */
 ChordObject *
 chord_object_new (
+  Region * region,
   int index,
   int is_main)
 {
@@ -59,6 +60,9 @@ chord_object_new (
     calloc (1, sizeof (ChordObject));
 
   self->index = index;
+  self->region = region;
+  self->region_name =
+    g_strdup (region->name);
 
   if (is_main)
     {
@@ -172,7 +176,8 @@ chord_object_clone (
     is_main = 1;
 
   ChordObject * chord =
-    chord_object_new (src->index, is_main);
+    chord_object_new (
+      src->region, src->index, is_main);
 
   position_set_to_pos (
     &chord->pos, &src->pos);

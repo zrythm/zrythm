@@ -778,16 +778,8 @@ timeline_arranger_widget_show_context_menu (
   gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
 }
 
-/**
- * Sets the visibility of the transient and non-
- * transient objects, lane and non-lane.
- *
- * E.g. when moving regions, it hides the original
- * ones.
- */
-void
-timeline_arranger_widget_update_visibility (
-  TimelineArrangerWidget * self)
+ARRANGER_W_DECLARE_UPDATE_VISIBILITY (
+  Timeline, timeline)
 {
   ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
     TL_SELECTIONS->regions,

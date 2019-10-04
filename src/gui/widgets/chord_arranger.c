@@ -316,21 +316,32 @@ chord_arranger_widget_show_context_menu (
   gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
 }
 
-/**
- * Sets the visibility of the transient and non-
- * transient objects, lane and non-lane.
- *
- * E.g. when moving regions, it hides the original
- * ones.
- */
-void
-chord_arranger_widget_update_visibility (
-  ChordArrangerWidget * self)
+ARRANGER_W_DECLARE_UPDATE_VISIBILITY (
+  Chord, chord)
 {
   ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
     CHORD_SELECTIONS->chord_objects,
     CHORD_SELECTIONS->num_chord_objects,
     ChordObject, chord_object);
+
+  GList *children, *iter;
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (self));
+  ChordObjectWidget * cow = NULL;
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      if (!Z_IS_CHORD_OBJECT_WIDGET (iter->data))
+        continue;
+
+      cow =
+        Z_CHORD_OBJECT_WIDGET (iter->data);
+      arranger_object_info_set_widget_visibility_and_state (
+        &cow->chord_object->obj_info, 1);
+    }
+  g_list_free (children);
 }
 
 void
@@ -405,7 +416,7 @@ chord_arranger_widget_create_chord (
   /* create a new chord */
   ChordObject * chord =
     chord_object_new (
-      chord_index, 1);
+      CLIP_EDITOR->region, chord_index, 1);
 
   /* add it to chord region */
   chord_region_add_chord_object (
@@ -516,9 +527,7 @@ chord_arranger_widget_move_items_x (
 {
   chord_selections_add_ticks (
     CHORD_SELECTIONS, ticks_diff, F_USE_CACHED,
-    copy_moving ?
-      AO_UPDATE_TRANS :
-      AO_UPDATE_ALL);
+    AO_UPDATE_NON_TRANS);
 
   /* for arranger refresh */
   EVENTS_PUSH (ET_CHORD_OBJECTS_IN_TRANSIT,
@@ -652,51 +661,57 @@ chord_arranger_widget_on_drag_end (
       break;
     case UI_OVERLAY_ACTION_MOVING:
       {
-        Position earliest_trans_pos;
+        Position earliest_main_pos,
+                 earliest_trans_pos;
         chord_selections_get_start_pos (
           CHORD_SELECTIONS,
-          &earliest_trans_pos, F_TRANSIENTS, 0);
-        /*UndoableAction * ua =*/
-          /*(UndoableAction *)*/
-          /*move_chord_selections_action_new (*/
-            /*TL_SELECTIONS,*/
-            /*position_to_ticks (*/
-              /*&earliest_trans_pos) -*/
-            /*position_to_ticks (*/
-              /*&ar_prv->earliest_obj_start_pos),*/
-            /*chord_selections_get_highest_track (*/
-              /*TL_SELECTIONS, F_TRANSIENTS) -*/
-            /*chord_selections_get_highest_track (*/
-              /*TL_SELECTIONS, F_NO_TRANSIENTS));*/
-        /*undo_manager_perform (*/
-          /*UNDO_MANAGER, ua);*/
+          &earliest_main_pos, 0, 0);
+        chord_selections_get_start_pos (
+          CHORD_SELECTIONS,
+          &earliest_trans_pos, 1, 0);
+        long ticks_diff =
+          earliest_main_pos.total_ticks -
+            earliest_trans_pos.total_ticks;
+        UndoableAction * ua =
+          (UndoableAction *)
+          move_chord_selections_action_new (
+            CHORD_SELECTIONS,
+            ticks_diff,
+            0);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
+        chord_selections_reset_counterparts (
+          CHORD_SELECTIONS, 1);
       }
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
       {
-        Position earliest_trans_pos;
+        Position earliest_main_pos,
+                 earliest_trans_pos;
         chord_selections_get_start_pos (
           CHORD_SELECTIONS,
-          &earliest_trans_pos, F_TRANSIENTS, 0);
-        /*UndoableAction * ua =*/
-          /*(UndoableAction *)*/
-          /*duplicate_chord_selections_action_new (*/
-            /*TL_SELECTIONS,*/
-            /*position_to_ticks (*/
-              /*&earliest_trans_pos) -*/
-            /*position_to_ticks (*/
-              /*&ar_prv->earliest_obj_start_pos),*/
-            /*chord_selections_get_highest_track (*/
-              /*TL_SELECTIONS, F_TRANSIENTS) -*/
-            /*chord_selections_get_highest_track (*/
-              /*TL_SELECTIONS, F_NO_TRANSIENTS));*/
-        /*chord_selections_reset_transient_poses (*/
-          /*TL_SELECTIONS);*/
-        /*chord_selections_clear (*/
-          /*TL_SELECTIONS);*/
-        /*undo_manager_perform (*/
-          /*UNDO_MANAGER, ua);*/
+          &earliest_main_pos, 0, 0);
+        chord_selections_get_start_pos (
+          CHORD_SELECTIONS,
+          &earliest_trans_pos, 1, 0);
+        long ticks_diff =
+          earliest_main_pos.total_ticks -
+            earliest_trans_pos.total_ticks;
+        chord_selections_reset_counterparts (
+          CHORD_SELECTIONS, 0);
+        UndoableAction * ua =
+          (UndoableAction *)
+          duplicate_chord_selections_action_new (
+            CHORD_SELECTIONS,
+            ticks_diff,
+            0);
+        chord_selections_reset_counterparts (
+          CHORD_SELECTIONS, 1);
+        chord_selections_clear (
+          CHORD_SELECTIONS);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
       }
       break;
     case UI_OVERLAY_ACTION_NONE:
@@ -708,17 +723,12 @@ chord_arranger_widget_on_drag_end (
       break;
     case UI_OVERLAY_ACTION_CREATING_MOVING:
       {
-        /*chord_selections_set_to_transient_poses (*/
-          /*CHORD_SELECTIONS);*/
-        /*chord_selections_set_to_transient_values (*/
-          /*CHORD_SELECTIONS);*/
-
-        /*UndoableAction * ua =*/
-          /*(UndoableAction *)*/
-          /*create_chord_selections_action_new (*/
-            /*TL_SELECTIONS);*/
-        /*undo_manager_perform (*/
-          /*UNDO_MANAGER, ua);*/
+        UndoableAction * ua =
+          (UndoableAction *)
+          create_chord_selections_action_new (
+            CHORD_SELECTIONS);
+        undo_manager_perform (
+          UNDO_MANAGER, ua);
       }
       break;
     /* if didn't click on something */
@@ -738,7 +748,6 @@ add_children_from_chord_track (
   ChordArrangerWidget * self,
   ChordTrack *          ct)
 {
-  g_message ("ADDING CHILDREN");
   int i, j, k;
   Region * r;
   ChordObject * c;
@@ -762,7 +771,6 @@ add_children_from_chord_track (
               if (!c->widget)
                 c->widget =
                   chord_object_widget_new (c);
-              g_message ("ADDING CHORD");
 
               gtk_overlay_add_overlay (
                 GTK_OVERLAY (self),
@@ -805,8 +813,6 @@ chord_arranger_widget_refresh_children (
 
   add_children_from_chord_track (
     self, P_CHORD_TRACK);
-
-  chord_arranger_widget_update_visibility (self);
 
   gtk_overlay_reorder_overlay (
     GTK_OVERLAY (self),

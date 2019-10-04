@@ -141,7 +141,8 @@ chord_region_draw_cb (
               tmp_start_ticks =
                 co_start_ticks + loop_ticks * j;
               /* if should be clipped */
-              if (position_is_after_or_equal (
+              if (next_co &&
+                  position_is_after_or_equal (
                     &next_co->pos,
                     &r->loop_end_pos))
                 tmp_end_ticks =

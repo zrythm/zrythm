@@ -32,7 +32,7 @@ typedef struct MoveChordSelectionsAction
   /** Ticks moved. */
   long        ticks;
 
-  /** Tracks moved. */
+  /** Number of chords moved (y axis). */
   int         delta;
 
   int         first_call;
@@ -44,8 +44,8 @@ typedef struct MoveChordSelectionsAction
 UndoableAction *
 move_chord_selections_action_new (
   ChordSelections * ts,
-  long                 ticks,
-  int                  delta);
+  long              ticks,
+  int               delta);
 
 int
 move_chord_selections_action_do (

@@ -43,6 +43,7 @@ create_midi_arranger_selections_action_new (
 
   self->mas =
     midi_arranger_selections_clone (mas);
+  self->first_run = 1;
 
   return ua;
 }
@@ -51,6 +52,13 @@ int
 create_midi_arranger_selections_action_do (
   CreateMidiArrangerSelectionsAction * self)
 {
+  if (!self->first_run)
+    {
+      /* clear current selections */
+      midi_arranger_selections_clear (
+        MA_SELECTIONS);
+    }
+
   MidiNote * mn;
 	for (int i = 0; i < self->mas->num_midi_notes; i++)
     {
@@ -82,9 +90,16 @@ create_midi_arranger_selections_action_do (
       /* add it to the region */
       midi_region_add_midi_note (
         mn->region, mn);
+
+      /* select it */
+      midi_note_select (
+        mn, F_SELECT);
     }
   EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
                NULL);
+
+  if (self->first_run)
+    self->first_run = 0;
 
   return 0;
 }

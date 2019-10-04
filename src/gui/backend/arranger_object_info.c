@@ -20,8 +20,12 @@
 #include "audio/track.h"
 #include "gui/backend/arranger_object_info.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_arranger.h"
+#include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_arranger.h"
+#include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/midi_arranger.h"
@@ -85,7 +89,7 @@ arranger_object_info_should_be_visible (
       break;
     case AOI_TYPE_CHORD_OBJECT:
       arranger =
-        Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
+        Z_ARRANGER_WIDGET (MW_CHORD_ARRANGER);
       break;
     case AOI_TYPE_SCALE_OBJECT:
       arranger =
@@ -97,7 +101,7 @@ arranger_object_info_should_be_visible (
       break;
     case AOI_TYPE_AUTOMATION_POINT:
       arranger =
-        Z_ARRANGER_WIDGET (MW_TIMELINE);
+        Z_ARRANGER_WIDGET (MW_AUTOMATION_ARRANGER);
       break;
     case AOI_TYPE_MIDI_NOTE:
       arranger =
