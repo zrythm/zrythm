@@ -340,6 +340,53 @@ static bool test_file_load_basic_invalid(
 }
 
 /**
+ * Test saving to a file when an erro occurs.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_file_save_basic_invalid(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const struct target_struct {
+		int value;
+	} data = {
+		.value = 9,
+	};
+	static const struct cyaml_schema_field mapping_schema[] = {
+		{
+			.key = "key",
+			.value = {
+				.type = CYAML_INT,
+				.flags = CYAML_FLAG_DEFAULT,
+				.data_size = 0,
+			},
+			.data_offset = offsetof(struct target_struct, value),
+		},
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.config = config,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_save_file("build/save.yaml", config, &top_schema, &data, 0);
+	if (err != CYAML_ERR_INVALID_DATA_SIZE) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
  * Run the YAML file tests.
  *
  * \param[in]  rc         The ttest report context.
@@ -376,6 +423,7 @@ bool file_tests(
 	pass &= test_file_load_bad_path(rc, &config);
 	pass &= test_file_save_bad_path(rc, &config);
 	pass &= test_file_load_basic_invalid(rc, &config);
+	pass &= test_file_save_basic_invalid(rc, &config);
 
 	return pass;
 }

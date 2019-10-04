@@ -79,4 +79,25 @@ static inline void * cyaml__alloc(
 	return cyaml__realloc(config, NULL, 0, size, clean);
 }
 
+/**
+ * Helper for string duplication using the client's choice of allocator routine.
+ *
+ * \param[in]  config  The CYAML client config.
+ * \param[in]  str     The string to duplicate.
+ * \return Pointer to new string on success, or `NULL` on failure.
+ */
+static inline char * cyaml__strdup(
+		const cyaml_config_t *config,
+		const char *str)
+{
+	size_t len = strlen(str) + 1;
+	char *dup = cyaml__alloc(config, len, false);
+	if (dup == NULL) {
+		return NULL;
+	}
+
+	memcpy(dup, str, len);
+	return dup;
+}
+
 #endif

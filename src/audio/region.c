@@ -346,6 +346,7 @@ region_init_loaded (Region * self)
              i++)
           {
             chord = self->chord_objects[i];
+            chord->region = self;
             chord_object_init_loaded (chord);
           }
         self->chord_objects_size =

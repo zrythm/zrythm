@@ -1301,6 +1301,72 @@ static bool test_err_load_schema_bad_data_size_8(
 }
 
 /**
+ * Test loading with schema with data size (9) for flags.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_schema_bad_data_size_9(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const cyaml_strval_t strings[] = {
+		{ "foo", 0 },
+		{ "bar", 1 },
+		{ "baz", 2 },
+		{ "bat", 3 },
+	};
+	static const unsigned char yaml[] =
+		"key:\n"
+		"  - bat\n"
+		"  - bar\n";
+	struct target_struct {
+		int value;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		{
+			.key = "key",
+			.value = {
+				.type = CYAML_FLAGS,
+				.flags = CYAML_FLAG_DEFAULT,
+				.data_size = 9,
+				.enumeration = {
+					.strings = strings,
+					.count = CYAML_ARRAY_LEN(strings),
+				},
+			},
+			.data_offset = offsetof(struct target_struct, value),
+		},
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = config,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_INVALID_DATA_SIZE) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	if (data_tgt != NULL) {
+		return ttest_fail(&tc, "Data non-NULL on error.");
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
  * Test saving with schema with data size (0).
  *
  * \param[in]  report  The test report context.
@@ -4642,6 +4708,9 @@ static bool test_err_load_alloc_oom_1(
 /**
  * Test loading, with all memory allocation failure at every possible point.
  *
+ * Uses aliases and anchors, to exercies the event/anchor recording error
+ * paths too.
+ *
  * \param[in]  report  The test report context.
  * \param[in]  config  The CYAML config to use for the test.
  * \return true if test passes, false otherwise.
@@ -4665,23 +4734,33 @@ static bool test_err_load_alloc_oom_2(
 	};
 	cyaml_config_t cfg = *config;
 	static const unsigned char yaml[] =
-		"animals:\n"
-		"  - kind: cat\n"
-		"    sound: meow\n"
-		"    position: [ 1, 2, 1]\n"
-		"    flags:\n"
-		"      - first\n"
-		"      - second\n"
-		"      - third\n"
-		"      - fourth\n"
+		"anchors:\n"
+		"  - &a1 {"
+		"      kind: cat,\n"
+		"      sound: meow,\n"
+		"      position: &a2 [ 1, 2, 1],\n"
+		"      flags: &a3 [\n"
+		"        first,\n"
+		"        &a4 second,\n"
+		"        third,\n"
+		"        fourth,\n"
+		"      ]\n"
+		"    }\n"
 		"  - kind: snake\n"
-		"    sound: hiss\n"
-		"    position: [ 3, 1, 0]\n"
-		"    flags:\n"
-		"      - first\n"
-		"      - second\n"
-		"      - third\n"
-		"      - fourth\n";
+		"    sound: &a5 hiss\n"
+		"    position: &a6 [ 3, 1, 0]\n"
+		"    flags: &a7 [\n"
+		"      first,\n"
+		"      second,\n"
+		"      third,\n"
+		"      fourth,\n"
+		"    ]\n"
+		"animals:\n"
+		"  - *a1\n"
+		"  - kind: snake\n"
+		"    sound: *a5\n"
+		"    position: *a6\n"
+		"    flags: *a7\n";
 	struct animal_s {
 		char *kind;
 		char *sound;
@@ -4714,6 +4793,7 @@ static bool test_err_load_alloc_oom_2(
 				animal_schema),
 	};
 	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_IGNORE("anchors", CYAML_FLAG_OPTIONAL),
 		CYAML_FIELD_SEQUENCE("animals", CYAML_FLAG_POINTER,
 				struct target_struct, animal,
 				&animal_entry_schema, 0, CYAML_UNLIMITED),
@@ -5067,6 +5147,7 @@ static bool test_err_load_flag_value_alias(
 		ttest_report_ctx_t *report,
 		const cyaml_config_t *config)
 {
+	cyaml_config_t cfg = *config;
 	struct target_struct {
 		unsigned a;
 		unsigned b;
@@ -5099,14 +5180,16 @@ static bool test_err_load_flag_value_alias(
 	};
 	test_data_t td = {
 		.data = (cyaml_data_t **) &data_tgt,
-		.config = config,
+		.config = &cfg,
 		.schema = &top_schema,
 	};
 	cyaml_err_t err;
 
+	cfg.flags |= CYAML_CFG_NO_ALIAS;
+
 	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
 
-	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), &cfg, &top_schema,
 			(cyaml_data_t **) &data_tgt, NULL);
 	if (err != CYAML_ERR_ALIAS) {
 		return ttest_fail(&tc, cyaml_strerror(err));
@@ -5126,6 +5209,7 @@ static bool test_err_load_bitfield_value_alias_1(
 		ttest_report_ctx_t *report,
 		const cyaml_config_t *config)
 {
+	cyaml_config_t cfg = *config;
 	static const cyaml_bitdef_t bitvals[] = {
 		{ .name = "7", .offset =  0, .bits =  1 },
 		{ .name = "a", .offset =  1, .bits =  2 },
@@ -5166,14 +5250,16 @@ static bool test_err_load_bitfield_value_alias_1(
 	};
 	test_data_t td = {
 		.data = (cyaml_data_t **) &data_tgt,
-		.config = config,
+		.config = &cfg,
 		.schema = &top_schema,
 	};
 	cyaml_err_t err;
 
+	cfg.flags |= CYAML_CFG_NO_ALIAS;
+
 	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
 
-	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), &cfg, &top_schema,
 			(cyaml_data_t **) &data_tgt, NULL);
 	if (err != CYAML_ERR_ALIAS) {
 		return ttest_fail(&tc, cyaml_strerror(err));
@@ -5193,6 +5279,7 @@ static bool test_err_load_bitfield_value_alias_2(
 		ttest_report_ctx_t *report,
 		const cyaml_config_t *config)
 {
+	cyaml_config_t cfg = *config;
 	static const cyaml_bitdef_t bitvals[] = {
 		{ .name = "7", .offset =  0, .bits =  1 },
 		{ .name = "a", .offset =  1, .bits =  2 },
@@ -5233,14 +5320,16 @@ static bool test_err_load_bitfield_value_alias_2(
 	};
 	test_data_t td = {
 		.data = (cyaml_data_t **) &data_tgt,
-		.config = config,
+		.config = &cfg,
 		.schema = &top_schema,
 	};
 	cyaml_err_t err;
 
+	cfg.flags |= CYAML_CFG_NO_ALIAS;
+
 	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
 
-	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), &cfg, &top_schema,
 			(cyaml_data_t **) &data_tgt, NULL);
 	if (err != CYAML_ERR_ALIAS) {
 		return ttest_fail(&tc, cyaml_strerror(err));
@@ -5256,10 +5345,70 @@ static bool test_err_load_bitfield_value_alias_2(
  * \param[in]  config  The CYAML config to use for the test.
  * \return true if test passes, false otherwise.
  */
-static bool test_err_load_mapping_value_alias(
+static bool test_err_load_mapping_key_alias(
 		ttest_report_ctx_t *report,
 		const cyaml_config_t *config)
 {
+	cyaml_config_t cfg = *config;
+	struct target_struct {
+		char *a;
+		char *b;
+		char *c;
+		char *d;
+	};
+	static const unsigned char yaml[] =
+		"a: &example b\n"
+		"*example: test\n"
+		"c: meh\n"
+		"d: foo\n";
+	struct target_struct *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_STRING_PTR("a", CYAML_FLAG_POINTER,
+				struct target_struct, a, 0, CYAML_UNLIMITED),
+		CYAML_FIELD_STRING_PTR("b", CYAML_FLAG_POINTER,
+				struct target_struct, b, 0, CYAML_UNLIMITED),
+		CYAML_FIELD_STRING_PTR("c", CYAML_FLAG_POINTER,
+				struct target_struct, c, 0, CYAML_UNLIMITED),
+		CYAML_FIELD_STRING_PTR("d", CYAML_FLAG_POINTER,
+				struct target_struct, d, 0, CYAML_UNLIMITED),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = &cfg,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	cfg.flags |= CYAML_CFG_NO_ALIAS;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), &cfg, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_ALIAS) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading a mapping with an aliased value.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_mapping_value_alias_1(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	cyaml_config_t cfg = *config;
 	struct target_struct {
 		char *a;
 		char *b;
@@ -5289,6 +5438,167 @@ static bool test_err_load_mapping_value_alias(
 	};
 	test_data_t td = {
 		.data = (cyaml_data_t **) &data_tgt,
+		.config = &cfg,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	cfg.flags |= CYAML_CFG_NO_ALIAS;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), &cfg, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_ALIAS) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading a mapping with an aliased value.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_mapping_value_alias_2(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	cyaml_config_t cfg = *config;
+	struct target_struct {
+		char *a;
+		char *b;
+		char *c;
+		char *d;
+	};
+	static const unsigned char yaml[] =
+		"a: 9\n"
+		"b: &foo d\n"
+		"c: *d\n";
+	struct target_struct *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_STRING_PTR("a", CYAML_FLAG_POINTER,
+				struct target_struct, a, 0, CYAML_UNLIMITED),
+		CYAML_FIELD_STRING_PTR("b", CYAML_FLAG_POINTER,
+				struct target_struct, b, 0, CYAML_UNLIMITED),
+		CYAML_FIELD_STRING_PTR("d", CYAML_FLAG_POINTER,
+				struct target_struct, d, 0, CYAML_UNLIMITED),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = &cfg,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	cfg.flags |= CYAML_CFG_NO_ALIAS | CYAML_CFG_IGNORE_UNKNOWN_KEYS;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), &cfg, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_ALIAS) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading a mapping with an aliased value.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_mapping_value_alias_3(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	cyaml_config_t cfg = *config;
+	struct target_struct {
+		char *a;
+		char *b;
+	};
+	static const unsigned char yaml[] =
+		"a: 9\n"
+		"b: &foo d\n"
+		"c: [a, b, c, *foo]\n";
+	struct target_struct *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_STRING_PTR("a", CYAML_FLAG_POINTER,
+				struct target_struct, a, 0, CYAML_UNLIMITED),
+		CYAML_FIELD_STRING_PTR("b", CYAML_FLAG_POINTER,
+				struct target_struct, b, 0, CYAML_UNLIMITED),
+		CYAML_FIELD_IGNORE("c", CYAML_FLAG_DEFAULT),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = &cfg,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	cfg.flags |= CYAML_CFG_NO_ALIAS;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), &cfg, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_ALIAS) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading with an aliased string value.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_invalid_alias(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const unsigned char yaml[] =
+		"test_string_anchor: &foo Hello World!\n"
+		"test_string: *bar\n"
+		"test_int: 9\n";
+	struct target_struct {
+		char * test_value_string;
+		int test_value_int;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_IGNORE("test_string_anchor", CYAML_FLAG_OPTIONAL),
+		CYAML_FIELD_STRING_PTR("test_string", CYAML_FLAG_POINTER,
+				struct target_struct, test_value_string,
+				0, CYAML_UNLIMITED),
+		CYAML_FIELD_INT("test_int", CYAML_FLAG_DEFAULT,
+				struct target_struct, test_value_int),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
 		.config = config,
 		.schema = &top_schema,
 	};
@@ -5298,7 +5608,69 @@ static bool test_err_load_mapping_value_alias(
 
 	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
 			(cyaml_data_t **) &data_tgt, NULL);
-	if (err != CYAML_ERR_ALIAS) {
+	if (err != CYAML_ERR_INVALID_ALIAS) {
+		return ttest_fail(&tc, cyaml_strerror(err));
+	}
+
+	return ttest_pass(&tc);
+}
+
+/**
+ * Test loading an incomplete alias.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_err_load_incomplete_alias(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	static const unsigned char yaml[] =
+		"anchors:\n"
+		"  - &a1 {\n"
+		"      a: 777,\n"
+		"      b: *a1,\n"
+		"    }\n"
+		"test: *a1\n";
+	struct my_test {
+		int a;
+		char *b;
+	};
+	struct target_struct {
+		struct my_test test;
+	} *data_tgt = NULL;
+	static const struct cyaml_schema_field inner_mapping_schema[] = {
+		CYAML_FIELD_INT("a", CYAML_FLAG_DEFAULT,
+				struct my_test, a),
+		CYAML_FIELD_STRING_PTR("b", CYAML_FLAG_POINTER,
+				struct my_test, b,
+				0, CYAML_UNLIMITED),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_field mapping_schema[] = {
+		CYAML_FIELD_IGNORE("anchors", CYAML_FLAG_OPTIONAL),
+		CYAML_FIELD_MAPPING("test", CYAML_FLAG_DEFAULT,
+				struct target_struct, test,
+				inner_mapping_schema),
+		CYAML_FIELD_END
+	};
+	static const struct cyaml_schema_value top_schema = {
+		CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+				struct target_struct, mapping_schema),
+	};
+	test_data_t td = {
+		.data = (cyaml_data_t **) &data_tgt,
+		.config = config,
+		.schema = &top_schema,
+	};
+	cyaml_err_t err;
+
+	ttest_ctx_t tc = ttest_start(report, __func__, cyaml_cleanup, &td);
+
+	err = cyaml_load_data(yaml, YAML_LEN(yaml), config, &top_schema,
+			(cyaml_data_t **) &data_tgt, NULL);
+	if (err != CYAML_ERR_INVALID_ALIAS) {
 		return ttest_fail(&tc, cyaml_strerror(err));
 	}
 
@@ -5365,6 +5737,7 @@ bool errs_tests(
 	pass &= test_err_load_schema_bad_data_size_6(rc, &config);
 	pass &= test_err_load_schema_bad_data_size_7(rc, &config);
 	pass &= test_err_load_schema_bad_data_size_8(rc, &config);
+	pass &= test_err_load_schema_bad_data_size_9(rc, &config);
 	pass &= test_err_save_schema_bad_data_size_1(rc, &config);
 	pass &= test_err_save_schema_bad_data_size_2(rc, &config);
 	pass &= test_err_save_schema_bad_data_size_3(rc, &config);
@@ -5451,8 +5824,13 @@ bool errs_tests(
 
 	ttest_heading(rc, "Alias tests");
 
+	pass &= test_err_load_invalid_alias(rc, &config);
+	pass &= test_err_load_incomplete_alias(rc, &config);
 	pass &= test_err_load_flag_value_alias(rc, &config);
-	pass &= test_err_load_mapping_value_alias(rc, &config);
+	pass &= test_err_load_mapping_key_alias(rc, &config);
+	pass &= test_err_load_mapping_value_alias_1(rc, &config);
+	pass &= test_err_load_mapping_value_alias_2(rc, &config);
+	pass &= test_err_load_mapping_value_alias_3(rc, &config);
 	pass &= test_err_load_bitfield_value_alias_1(rc, &config);
 	pass &= test_err_load_bitfield_value_alias_2(rc, &config);
 

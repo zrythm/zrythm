@@ -110,12 +110,12 @@ static inline bool ttest_pass(
 
 	tc->report->passed++;
 
-	if (tc->report->quiet == false) {
-		fprintf(stderr, "  PASS: %s\n", tc->name);
-	}
-
 	if (tc->cleanup != NULL) {
 		tc->cleanup(tc->cleanup_data);
+	}
+
+	if (tc->report->quiet == false) {
+		fprintf(stderr, "  PASS: %s\n", tc->name);
 	}
 
 	return true;
@@ -147,6 +147,8 @@ static inline bool ttest_fail(
 	va_end(args);
 	fprintf(stderr, ")\n");
 
+	/* Cleanup after printing result, in case `reason` refers to cleaned up
+	 * memory. */
 	if (tc->cleanup != NULL) {
 		tc->cleanup(tc->cleanup_data);
 	}
@@ -171,12 +173,12 @@ static inline bool ttest_todo(
 
 	tc->report->todo++;
 
-	if (tc->report->quiet == false) {
-		fprintf(stderr, "  TODO: %s\n", tc->name);
-	}
-
 	if (tc->cleanup != NULL) {
 		tc->cleanup(tc->cleanup_data);
+	}
+
+	if (tc->report->quiet == false) {
+		fprintf(stderr, "  TODO: %s\n", tc->name);
 	}
 
 	return true;

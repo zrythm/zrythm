@@ -10,6 +10,7 @@
  */
 
 #include <stdbool.h>
+#include <assert.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -48,7 +49,7 @@
 	const uint32_t cyaml_version =
 			((0 << 16) |
 			 (1 <<  8) |
-			 (1 <<  0) |
+			 (2 <<  0) |
 			 CYAML_RELEASE_FLAG);
 #endif
 
@@ -68,7 +69,7 @@ void cyaml_log(
 		[CYAML_LOG_WARNING] = "WARNING",
 		[CYAML_LOG_ERROR]   = "ERROR",
 	};
-	fprintf(stderr, "libcyaml: %s: ", strings[level]);
+	fprintf(stderr, "libcyaml: %7.7s: ", strings[level]);
 	vfprintf(stderr, fmt, args);
 }
 
@@ -83,6 +84,7 @@ const char * cyaml_strerror(
 		[CYAML_ERR_FILE_OPEN]             = "Could not open file",
 		[CYAML_ERR_INVALID_KEY]           = "Invalid key",
 		[CYAML_ERR_INVALID_VALUE]         = "Invalid value",
+		[CYAML_ERR_INVALID_ALIAS]         = "No anchor found for alias",
 		[CYAML_ERR_INTERNAL_ERROR]        = "Internal error",
 		[CYAML_ERR_UNEXPECTED_EVENT]      = "Unexpected event",
 		[CYAML_ERR_STRING_LENGTH_MIN]     = "String length too short",
@@ -111,5 +113,6 @@ const char * cyaml_strerror(
 	if ((unsigned)err >= CYAML_ERR__COUNT) {
 		return "Invalid error code";
 	}
+	assert(strings[err] != NULL);
 	return strings[err];
 }

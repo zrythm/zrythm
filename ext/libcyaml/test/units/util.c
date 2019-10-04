@@ -69,6 +69,38 @@ static bool test_util_memory_funcs(
 }
 
 /**
+ * Test cyaml memory functions.
+ *
+ * \param[in]  report  The test report context.
+ * \param[in]  config  The CYAML config to use for the test.
+ * \return true if test passes, false otherwise.
+ */
+static bool test_util_strdup(
+		ttest_report_ctx_t *report,
+		const cyaml_config_t *config)
+{
+	ttest_ctx_t tc = ttest_start(report, __func__, NULL, NULL);
+	const char *orig = "Hello!";
+	char *copy;
+
+	/* Create test allocation */
+	copy = cyaml__strdup(config, orig);
+	if (copy == NULL) {
+		return ttest_fail(&tc, "Memory allocation failed.");
+	}
+
+	/* Confirm string duplication. */
+	if (strcmp(orig, copy) != 0) {
+		return ttest_fail(&tc, "String not copied correctly.");
+	}
+
+	/* Free test allocation. */
+	cyaml__free(config, copy);
+
+	return ttest_pass(&tc);
+}
+
+/**
  * Test invalid state machine state.
  *
  * \param[in]  report  The test report context.
@@ -200,6 +232,7 @@ bool util_tests(
 
 	ttest_heading(rc, "Memory utility functions");
 
+	pass &= test_util_strdup(rc, &config);
 	pass &= test_util_memory_funcs(rc, &config);
 
 	ttest_heading(rc, "Error code tests");

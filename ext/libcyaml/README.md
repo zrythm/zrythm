@@ -1,7 +1,7 @@
 LibCYAML: Schema-based YAML parsing and serialisation
 =====================================================
 
-[![Build Status](https://travis-ci.org/tlsa/libcyaml.svg?branch=master)](https://travis-ci.org/tlsa/libcyaml) [![Code Coverage](https://codecov.io/gh/tlsa/libcyaml/branch/master/graph/badge.svg)](https://codecov.io/gh/tlsa/libcyaml)
+[![Build Status](https://travis-ci.org/tlsa/libcyaml.svg?branch=master)](https://travis-ci.org/tlsa/libcyaml) [![Code Coverage](https://codecov.io/gh/tlsa/libcyaml/branch/master/graph/badge.svg)](https://codecov.io/gh/tlsa/libcyaml) [![Code Quality](https://img.shields.io/lgtm/grade/cpp/g/tlsa/libcyaml.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/tlsa/libcyaml/alerts/)
 
 LibCYAML is a C library for reading and writing structured YAML documents.
 It is written in ISO C11 and licensed under the ISC licence.
@@ -33,6 +33,7 @@ arranged in memory.
   conform to your schema.
 * Uses standard [`libyaml`](https://github.com/yaml/libyaml) library for
   low-level YAML read / write.
+* Support for YAML aliases and anchors.
 
 Status
 ------

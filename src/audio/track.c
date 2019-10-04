@@ -77,6 +77,13 @@ track_init_loaded (Track * track)
       marker->track = track;
       marker_init_loaded (marker);
     }
+  Region * region;
+  for (i = 0; i < track->num_chord_regions; i++)
+    {
+      region = track->chord_regions[i];
+      region->track_pos = track->pos;
+      region_init_loaded (region);
+    }
 
   /* init loaded channel */
   Channel * ch;

@@ -62,12 +62,16 @@ static void cyaml__free_sequence(
 	const cyaml_schema_value_t *schema = sequence_schema->sequence.entry;
 	uint32_t data_size = schema->data_size;
 
+	cyaml__log(cfg, CYAML_LOG_DEBUG,
+			"Free: Freeing sequence with count: %u\n", count);
+
 	if (schema->flags & CYAML_FLAG_POINTER) {
 		data_size = sizeof(data);
 	}
 
 	for (unsigned i = 0; i < count; i++) {
-		cyaml__log(cfg, CYAML_LOG_DEBUG, "Freeing sequence entry: %u\n", i);
+		cyaml__log(cfg, CYAML_LOG_DEBUG,
+				"Free: Freeing sequence entry: %u\n", i);
 		cyaml__free_value(cfg, schema, data + data_size * i, 0);
 	}
 }
@@ -88,7 +92,8 @@ static void cyaml__free_mapping(
 
 	while (schema->key != NULL) {
 		unsigned count = 0;
-		cyaml__log(cfg, CYAML_LOG_DEBUG, "Freeing key: %s (at offset: %u)\n",
+		cyaml__log(cfg, CYAML_LOG_DEBUG,
+				"Free: Freeing key: %s (at offset: %u)\n",
 				schema->key, (unsigned)schema->data_offset);
 		if (schema->value.type == CYAML_SEQUENCE) {
 			cyaml_err_t err;
@@ -129,7 +134,7 @@ static void cyaml__free_value(
 	}
 
 	if (schema->flags & CYAML_FLAG_POINTER) {
-		cyaml__log(cfg, CYAML_LOG_DEBUG, "Freeing: %p\n", data);
+		cyaml__log(cfg, CYAML_LOG_DEBUG, "Free: Freeing: %p\n", data);
 		cyaml__free(cfg, data);
 	}
 }
@@ -150,6 +155,7 @@ cyaml_err_t cyaml_free(
 	if (schema == NULL) {
 		return CYAML_ERR_BAD_PARAM_NULL_SCHEMA;
 	}
+	cyaml__log(config, CYAML_LOG_DEBUG, "Free: Top level data: %p\n", data);
 	cyaml__free_value(config, schema, (void *)&data, seq_count);
 	return CYAML_OK;
 }

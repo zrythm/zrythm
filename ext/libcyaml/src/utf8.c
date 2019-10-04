@@ -48,12 +48,12 @@ unsigned cyaml_utf8_get_codepoint(
 		const uint8_t *s,
 		unsigned *len)
 {
+	unsigned c = 0;
+	bool sf = false;
+
 	if (*len == 1) {
 		return s[0];
-	} else if ((*len > 0) && (*len <= 4)) {
-		unsigned c = 0;
-		bool sf;
-
+	} else if ((*len > 1) && (*len <= 4)) {
 		/* Compose first byte into codepoint. */
 		c |= (s[0] & ((1 << (7 - *len)) - 1)) << ((*len - 1) * 6);
 
@@ -70,36 +70,37 @@ unsigned cyaml_utf8_get_codepoint(
 			/* Compose continuation byte into codepoint. */
 			c |= (0x3f & s[i]) << ((*len - i - 1) * 6);
 		}
-
-		/* Non-shortest forms are forbidden.
-		 *
-		 * The following table shows the bits available for each
-		 * byte sequence length, as well as the bit-delta to the
-		 * shorter sequence.
-		 *
-		 * | Bytes | Bits | Bit delta | Data                    |
-		 * | ----- | ---- | --------- | ----------------------- |
-		 * | 1     |  7   | N/A       | 0xxxxxxx                |
-		 * | 2     |  11  | 4         | 110xxxxx + 10xxxxxx x 1 |
-		 * | 3     |  16  | 5         | 1110xxxx + 10xxxxxx x 2 |
-		 * | 4     |  21  | 5         | 11110xxx + 10xxxxxx x 3 |
-		 *
-		 * So here we check that the top "bit-delta" bits are not all
-		 * clear for the byte length,
-		 */
-		switch (*len) {
-		case 2: sf = (c & (((1 << 4) - 1) << (11 - 4))) != 0; break;
-		case 3: sf = (c & (((1 << 5) - 1) << (16 - 5))) != 0; break;
-		case 4: sf = (c & (((1 << 5) - 1) << (21 - 5))) != 0; break;
-		}
-
-		if (!sf) {
-			/* Codepoint representation was not shortest-form. */
-			goto invalid;
-		}
-
-		return c;
 	}
+
+	/* Non-shortest forms are forbidden.
+	 *
+	 * The following table shows the bits available for each
+	 * byte sequence length, as well as the bit-delta to the
+	 * shorter sequence.
+	 *
+	 * | Bytes | Bits | Bit delta | Data                    |
+	 * | ----- | ---- | --------- | ----------------------- |
+	 * | 1     |  7   | N/A       | 0xxxxxxx                |
+	 * | 2     |  11  | 4         | 110xxxxx + 10xxxxxx x 1 |
+	 * | 3     |  16  | 5         | 1110xxxx + 10xxxxxx x 2 |
+	 * | 4     |  21  | 5         | 11110xxx + 10xxxxxx x 3 |
+	 *
+	 * So here we check that the top "bit-delta" bits are not all
+	 * clear for the byte length,
+	 */
+	switch (*len) {
+	case 2: sf = (c & (((1 << 4) - 1) << (11 - 4))) != 0; break;
+	case 3: sf = (c & (((1 << 5) - 1) << (16 - 5))) != 0; break;
+	case 4: sf = (c & (((1 << 5) - 1) << (21 - 5))) != 0; break;
+	default: goto invalid;
+	}
+
+	if (!sf) {
+		/* Codepoint representation was not shortest-form. */
+		goto invalid;
+	}
+
+	return c;
 
 invalid:
 	return 0xfffd; /* REPLACEMENT CHARACTER */

@@ -79,7 +79,7 @@ typedef enum cyaml_type {
 	CYAML_MAPPING,
 	/**
 	 * Value is a bit field.  Values of this type require an array of value
-	 * definititions in the schema entry.  If the bitfield is used to store
+	 * definitions in the schema entry.  If the bitfield is used to store
 	 * only single-bit flags, it may be better to use \ref CYAML_FLAGS
 	 * instead.
 	 *
@@ -134,6 +134,23 @@ typedef enum cyaml_flag {
 	CYAML_FLAG_OPTIONAL = (1 << 0), /**< Mapping field is optional. */
 	CYAML_FLAG_POINTER  = (1 << 1), /**< Value is a pointer to its type. */
 	/**
+	 * Permit `NULL` values for \ref CYAML_FLAG_POINTER types.
+	 *
+	 * When loading YAML, any of the following values be loaded as a NULL
+	 * pointer:
+	 *
+	 * * `null`,
+	 * * `Null`,
+	 * * `NULL`,
+	 * * `~`,
+	 *
+	 * Note that as a side effect, a \ref CYAML_STRING field with one of
+	 * these values will not store the literal string.
+	 *
+	 * When saving, a NULL value will be recorded in the YAML as `null`.
+	 */
+	CYAML_FLAG_ALLOW_NULL_PTR = (1 << 2),
+	/**
 	 * Make value handling strict.
 	 *
 	 * For \ref CYAML_ENUM and \ref CYAML_FLAGS types, in strict mode
@@ -145,7 +162,7 @@ typedef enum cyaml_flag {
 	 * * For \ref CYAML_FLAGS, the values are bitwise ORed together.
 	 *   The numerical values are treated as unsigned,
 	 */
-	CYAML_FLAG_STRICT   = (1 << 2),
+	CYAML_FLAG_STRICT   = (1 << 3),
 	/**
 	 * When saving, emit mapping / sequence value in block style.
 	 *
@@ -162,7 +179,7 @@ typedef enum cyaml_flag {
 	 *       \ref cyaml_cfg_flags CYAML behavioural configuration flags,
 	 *       then libyaml's default behaviour is used.
 	 */
-	CYAML_FLAG_BLOCK    = (1 << 3),
+	CYAML_FLAG_BLOCK    = (1 << 4),
 	/**
 	 * When saving, emit mapping / sequence value in flow style.
 	 *
@@ -179,7 +196,7 @@ typedef enum cyaml_flag {
 	 *       \ref cyaml_cfg_flags CYAML behavioural configuration flags,
 	 *       then libyaml's default behaviour is used.
 	 */
-	CYAML_FLAG_FLOW     = (1 << 4),
+	CYAML_FLAG_FLOW     = (1 << 5),
 	/**
 	 * When comparing strings for this value, compare with case sensitivity.
 	 *
@@ -197,7 +214,7 @@ typedef enum cyaml_flag {
 	 *       enums and flags it applies to the comparison of
 	 *       \ref cyaml_strval strings.
 	 */
-	CYAML_FLAG_CASE_SENSITIVE   = (1 << 5),
+	CYAML_FLAG_CASE_SENSITIVE   = (1 << 6),
 	/**
 	 * When comparing strings for this value, compare with case sensitivity.
 	 *
@@ -215,7 +232,7 @@ typedef enum cyaml_flag {
 	 *       enums and flags it applies to the comparison of
 	 *       \ref cyaml_strval strings.
 	 */
-	CYAML_FLAG_CASE_INSENSITIVE = (1 << 6),
+	CYAML_FLAG_CASE_INSENSITIVE = (1 << 7),
 } cyaml_flag_e;
 
 /**
@@ -306,7 +323,7 @@ typedef struct cyaml_schema_value {
 		} mapping;
 		/** \ref CYAML_BITFIELD type-specific schema data. */
 		struct {
-			/** Array of bit defintiions for the bitfield. */
+			/** Array of bit definitions for the bitfield. */
 			const struct cyaml_bitdef *bitdefs;
 			/** Entry count for bitdefs array. */
 			uint32_t count;
@@ -452,21 +469,34 @@ typedef enum cyaml_cfg_flags {
 	 * By default, strings are compared with case sensitivity.
 	 */
 	CYAML_CFG_CASE_INSENSITIVE    = (1 << 4),
+	/**
+	 * When loading, don't allow YAML aliases in the document.
+	 *
+	 * If this option is enabled, anchors will be ignored, and the
+	 * error code \ref CYAML_ERR_ALIAS will be returned if an alias
+	 * is encountered.
+	 *
+	 * Setting this removes the overhead of recording anchors, so
+	 * it may be worth setting if aliases are not required, and
+	 * memory is constrained.
+	 */
+	CYAML_CFG_NO_ALIAS            = (1 << 5),
 } cyaml_cfg_flags_t;
 
 /**
  * CYAML function return codes indicating success or reason for failure.
  *
- * Use \ref cyaml_strerror() to convert and error code to a human-readable
+ * Use \ref cyaml_strerror() to convert an error code to a human-readable
  * string.
  */
 typedef enum cyaml_err {
 	CYAML_OK,                        /**< Success. */
 	CYAML_ERR_OOM,                   /**< Memory allocation failed. */
-	CYAML_ERR_ALIAS,                 /**< YAML alias is unsupported. */
+	CYAML_ERR_ALIAS,                 /**< See \ref CYAML_CFG_NO_ALIAS. */
 	CYAML_ERR_FILE_OPEN,             /**< Failed to open file. */
 	CYAML_ERR_INVALID_KEY,           /**< Mapping key rejected by schema. */
 	CYAML_ERR_INVALID_VALUE,         /**< Value rejected by schema. */
+	CYAML_ERR_INVALID_ALIAS,         /**< No anchor found for alias. */
 	CYAML_ERR_INTERNAL_ERROR,        /**< Internal error in LibCYAML. */
 	CYAML_ERR_UNEXPECTED_EVENT,      /**< YAML event rejected by schema. */
 	CYAML_ERR_STRING_LENGTH_MIN,     /**< String length too short. */

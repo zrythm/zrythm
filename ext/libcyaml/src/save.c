@@ -123,7 +123,7 @@ static cyaml_err_t cyaml__emit_event_helper(
 {
 	if (valid == 0) {
 		cyaml__log(ctx->config, CYAML_LOG_ERROR,
-				"LibYAML: Failed to initialise event\n");
+				"Save: LibYAML: Failed to initialise event\n");
 		return CYAML_ERR_LIBYAML_EVENT_INIT;
 	}
 
@@ -131,7 +131,7 @@ static cyaml_err_t cyaml__emit_event_helper(
 	valid = yaml_emitter_emit(ctx->emitter, event);
 	if (valid == 0) {
 		cyaml__log(ctx->config, CYAML_LOG_ERROR,
-				"LibYAML: Failed to emit event: %s\n",
+				"Save: LibYAML: Failed to emit event: %s\n",
 				ctx->emitter->problem);
 		return CYAML_ERR_LIBYAML_EMITTER;
 	}
@@ -317,7 +317,7 @@ static cyaml_err_t cyaml__stack_push(
 	}
 
 	cyaml__log(ctx->config, CYAML_LOG_DEBUG,
-			"PUSH[%u]: %s\n", ctx->stack_idx,
+			"Save: PUSH[%u]: %s\n", ctx->stack_idx,
 			cyaml__state_to_str(state));
 
 	ctx->stack[ctx->stack_idx] = s;
@@ -394,7 +394,7 @@ static cyaml_err_t cyaml__stack_pop(
 
 	idx--;
 
-	cyaml__log(ctx->config, CYAML_LOG_DEBUG, "POP[%u]: %s\n", idx,
+	cyaml__log(ctx->config, CYAML_LOG_DEBUG, "Save: POP[%u]: %s\n", idx,
 			cyaml__state_to_str(ctx->state->state));
 
 	ctx->state = (idx == 0) ? NULL : &ctx->stack[idx - 1];
@@ -423,7 +423,7 @@ static const uint8_t * cyaml__data_handle_pointer(
 		const uint8_t *data = cyaml_data_read_pointer(data_in);
 
 		cyaml__log(config, CYAML_LOG_DEBUG,
-				"Handle pointer: %p --> %p\n",
+				"Save: Handle pointer: %p --> %p\n",
 				data_in, data);
 
 		return data;
@@ -441,7 +441,7 @@ static void cyaml__backtrace(
 		const cyaml_ctx_t *ctx)
 {
 	if (ctx->stack_idx > 1) {
-		cyaml__log(ctx->config, CYAML_LOG_ERROR, "Backtrace:\n");
+		cyaml__log(ctx->config, CYAML_LOG_ERROR, "Save: Backtrace:\n");
 	} else {
 		return;
 	}
@@ -489,9 +489,10 @@ static cyaml_err_t cyaml__emit_scalar(
 	yaml_event_t event;
 
 	if (schema == NULL) {
-		cyaml__log(ctx->config, CYAML_LOG_INFO, "[%s]\n", value);
+		cyaml__log(ctx->config, CYAML_LOG_INFO, "Save: [%s]\n", value);
 	} else {
-		cyaml__log(ctx->config, CYAML_LOG_INFO, "  <%s>\n", value);
+		cyaml__log(ctx->config, CYAML_LOG_INFO,
+				"Save:   <%s>\n", value);
 	}
 
 	ret = yaml_scalar_event_initialize(&event, NULL,
@@ -968,11 +969,17 @@ static cyaml_err_t cyaml__write_value(
 	cyaml_err_t err;
 
 	cyaml__log(ctx->config, CYAML_LOG_DEBUG,
-			"Writing value of type '%s'%s\n",
+			"Save: Writing value of type '%s'%s\n",
 			cyaml__type_to_str(schema->type),
 			schema->flags & CYAML_FLAG_POINTER ? " (pointer)" : "");
 
 	data = cyaml__data_handle_pointer(ctx->config, schema, data);
+
+	if (data == NULL &&
+			schema->flags & CYAML_FLAG_POINTER &&
+			schema->flags & CYAML_FLAG_ALLOW_NULL_PTR) {
+		return cyaml__emit_scalar(ctx, schema, "null", YAML_STR_TAG);
+	}
 
 	switch (schema->type) {
 	case CYAML_INT:   /* Fall through. */
@@ -1105,8 +1112,7 @@ static cyaml_err_t cyaml__write_mapping(
 			}
 		}
 
-		err = cyaml__emit_scalar(ctx, NULL, field->key,
-				YAML_STR_TAG);
+		err = cyaml__emit_scalar(ctx, NULL, field->key, YAML_STR_TAG);
 		if (err != CYAML_OK) {
 			return err;
 		}
@@ -1123,7 +1129,8 @@ static cyaml_err_t cyaml__write_mapping(
 				return err;
 			}
 			cyaml__log(ctx->config, CYAML_LOG_INFO,
-			"Sequence entry count: %u\n", seq_count);
+					"Save: Sequence entry count: %u\n",
+					seq_count);
 
 		} else if (field->value.type == CYAML_SEQUENCE_FIXED) {
 			seq_count = field->value.sequence.min;
@@ -1176,7 +1183,7 @@ static cyaml_err_t cyaml__write_sequence(
 		offset = data_size * ctx->state->sequence.entry;
 
 		cyaml__log(ctx->config, CYAML_LOG_INFO,
-				"Sequence entry %u of %u\n",
+				"Save: Sequence entry %u of %u\n",
 				ctx->state->sequence.entry + 1,
 				ctx->state->sequence.count);
 
@@ -1279,7 +1286,8 @@ static cyaml_err_t cyaml__save(
 	}
 
 	do {
-		cyaml__log(ctx.config, CYAML_LOG_DEBUG, "Handle state %s\n",
+		cyaml__log(ctx.config, CYAML_LOG_DEBUG,
+				"Save: Handle state %s\n",
 				cyaml__state_to_str(ctx.state->state));
 		err = fn[ctx.state->state](&ctx);
 		if (err != CYAML_OK) {
@@ -1293,7 +1301,7 @@ static cyaml_err_t cyaml__save(
 
 	if (!yaml_emitter_flush(emitter)) {
 		cyaml__log(config, CYAML_LOG_ERROR,
-				"LibYAML: Failed to flush emitter: %s\n",
+				"Save: LibYAML: Failed to flush emitter: %s\n",
 				emitter->problem);
 		err = CYAML_ERR_LIBYAML_EMITTER;
 	}
@@ -1321,22 +1329,22 @@ cyaml_err_t cyaml_save_file(
 	cyaml_err_t err;
 	yaml_emitter_t emitter;
 
-	/* Initialize parser */
+	/* Initialize emitter */
 	if (!yaml_emitter_initialize(&emitter)) {
 		return CYAML_ERR_LIBYAML_EMITTER_INIT;
 	}
 
-	/* Open input file. */
+	/* Open output file. */
 	file = fopen(path, "w");
 	if (file == NULL) {
 		yaml_emitter_delete(&emitter);
 		return CYAML_ERR_FILE_OPEN;
 	}
 
-	/* Set input file */
+	/* Set output file */
 	yaml_emitter_set_output_file(&emitter, file);
 
-	/* Parse the input */
+	/* Serialise to the output */
 	err = cyaml__save(config, schema, data, seq_count, &emitter);
 	if (err != CYAML_OK) {
 		yaml_emitter_delete(&emitter);
@@ -1423,15 +1431,15 @@ cyaml_err_t cyaml_save_data(
 		.err = CYAML_OK,
 	};
 
-	/* Initialize parser */
+	/* Initialize emitter */
 	if (!yaml_emitter_initialize(&emitter)) {
 		return CYAML_ERR_LIBYAML_EMITTER_INIT;
 	}
 
-	/* Set input file */
+	/* Set output buffer */
 	yaml_emitter_set_output(&emitter, cyaml__buffer_handler, &buffer_ctx);
 
-	/* Parse the input */
+	/* Serialise to the output */
 	err = cyaml__save(config, schema, data, seq_count, &emitter);
 	if (err != CYAML_OK) {
 		yaml_emitter_delete(&emitter);
