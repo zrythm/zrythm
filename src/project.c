@@ -510,25 +510,6 @@ load (
 
   g_free (dir);
 
-  /* init channel plugins */
-  Track * track;
-  Plugin * pl;
-  Channel * ch;
-  for (int i = 0; i < TRACKLIST->num_tracks; i++)
-    {
-      track = TRACKLIST->tracks[i];
-      ch = track->channel;
-      if (!ch)
-        continue;
-
-      for (int j = 0;
-           j < ch->num_aggregated_plugins; j++)
-        {
-          pl = ch->aggregated_plugins[j];
-          ch->plugins[pl->slot] = pl;
-        }
-    }
-
   tracklist_init_loaded (&PROJECT->tracklist);
   clip_editor_init_loaded (CLIP_EDITOR);
 

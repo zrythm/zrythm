@@ -77,18 +77,6 @@ typedef struct Channel
   Plugin *         plugins[STRIP_SIZE];
 
   /**
-   * Used for serializing/deserializing because
-   * libcyaml doesn't handle NULLS in an array.
-   *
-   * The NULLS are removed and the plugins are
-   * aggregated here. They are put back in the
-   * original array when deserializing by using
-   * the Plugin's pos variable.
-   */
-  Plugin *         aggregated_plugins[STRIP_SIZE];
-  int              num_aggregated_plugins;
-
-  /**
    * A subset of the automation tracks in the
    * automation tracklist of the track of this
    * channel.
@@ -218,11 +206,11 @@ typedef struct Channel
 static const cyaml_schema_field_t
 channel_fields_schema[] =
 {
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "aggregated_plugins", CYAML_FLAG_DEFAULT,
-    Channel, aggregated_plugins,
-    num_aggregated_plugins,
-    &plugin_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_FIXED (
+    "plugins",
+    CYAML_FLAG_DEFAULT,
+    Channel, plugins,
+    &plugin_schema, STRIP_SIZE),
   CYAML_FIELD_MAPPING (
     "prefader", CYAML_FLAG_DEFAULT,
     Channel, prefader,

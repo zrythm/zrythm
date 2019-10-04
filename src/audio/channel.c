@@ -442,20 +442,6 @@ channel_init_loaded (Channel * ch)
     ch->output =
       TRACKLIST->tracks[ch->output_pos];
 
-  /* if aggregated plugins not already expanded */
-  if (ch->num_aggregated_plugins &&
-      !ch->plugins[0])
-    {
-      /* expand them */
-      Plugin * pl;
-      for (i = 0; i < ch->num_aggregated_plugins;
-           i++)
-        {
-          pl = ch->aggregated_plugins[i];
-          ch->plugins[pl->slot] = pl;
-        }
-    }
-
   /* init plugins */
   Plugin * pl;
   for (i = 0; i < STRIP_SIZE; i++)
@@ -1034,16 +1020,6 @@ void
 channel_prepare_for_serialization (
   Channel * ch)
 {
-  for (int i = 0; i < STRIP_SIZE; i++)
-    {
-      if (ch->plugins[i])
-        {
-          array_append (
-            ch->aggregated_plugins,
-            ch->num_aggregated_plugins,
-            ch->plugins[i]);
-        }
-    }
 }
 
 /**
