@@ -74,10 +74,10 @@ cdata.set (
   meson.build_root ())
 cdata.set_quoted (
   'ISSUE_TRACKER_URL',
-  'https://savannah.nongnu.org/support/?group=zrythm')
+  'https://redmine.zrythm.org/projects/zrythm/issues')
 cdata.set_quoted (
   'NEW_ISSUE_URL',
-  'https://savannah.nongnu.org/support/?func=additem&group=zrythm')
+  'https://redmine.zrythm.org/projects/zrythm/issues/new')
 if (get_option ('user_manual'))
   cdata.set_quoted (
     'MANUAL_PATH', docdir)

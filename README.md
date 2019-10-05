@@ -43,7 +43,7 @@ below.
 zrythm-dev@nongnu.org for developers, zrythm-user@nongnu.org for users
 
 ## Bug Tracker
-https://savannah.nongnu.org/support/?group=zrythm
+https://redmine.zrythm.org/projects/zrythm/issues
 
 ## Releases
 https://www.zrythm.org/releases

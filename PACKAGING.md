@@ -47,11 +47,6 @@ automatically.
 See `scripts/meson_post_install.py` for more
 details.
 
-# Bug Reports
-
-Bug reports and feature requests should be created
-on [Savannah](https://savannah.nongnu.org/support/?group=zrythm).
-
 # Patches
 
 Please send a patch if something does not build

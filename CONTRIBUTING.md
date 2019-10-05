@@ -182,8 +182,7 @@ GUI thread. Any GTK-related code must be run from
 the GUI thread only.
 
 ## Submitting Patches
-You can use whatever method you like for sending
-patches. There's [Savannah](https://savannah.nongnu.org/support/?group=zrythm), mailing lists and IRC.
+Please use [Redmine](https://redmine.zrythm.org/projects/zrythm/issues)
 
 # Profiling
 Use the `enable profiling` option when running meson,
@@ -204,7 +203,7 @@ and submit a patch.
 
 # Testing
 Test Zrythm and report bugs, ideas and suggestions
-on [Savannah](https://savannah.nongnu.org/support/?group=zrythm).
+on the issue tracker.
 
 # Troubleshooting
 TODO

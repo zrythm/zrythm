@@ -6,8 +6,9 @@ Testing
 =======
 
 You can fetch the latest master branch from https://git.zrythm.org/cgit/zrythm/snapshot/zrythm-master.tar.gz
-and start testing the latest features. You can report any
-bugs, ideas and impressions by creating an issue on `Savannah <https://savannah.nongnu.org/support/?group=zrythm>`_.
+and start testing the latest features. You can
+report any bugs, ideas and impressions by creating
+an issue on `Redmine <https://redmine.zrythm.org/projects/zrythm/issues>`_.
 
 If you are on Arch Linux or derivatives such as Parabola, the
 latest master branch can be installed via the ``zrythm-git``

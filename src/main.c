@@ -114,7 +114,8 @@ handler (int sig)
       report_template, NULL, FALSE);
   char * atag =
     g_strdup_printf (
-      "<a href=\"https://savannah.nongnu.org/support/?func=additem&amp;group=zrythm&amp;prefill[summary]=Bug Report (enter details)&amp;prefill[details]=%s\">",
+      "<a href=\"%s?issue[description]=%s\">",
+      NEW_ISSUE_URL,
       report_template_escaped);
   char * markup =
     g_strdup_printf (
@@ -176,9 +177,10 @@ print_help ()
     "  -v, --version   output version information and exit\n\n"
     "Examples:\n"
     "  zrythm          run normally\n\n"
-    "Write comments and bugs to https://savannah.nongnu.org/support/?group=zrythm\n"
+    "Write comments and bugs to %s\n"
     "Support this project at https://liberapay.com/Zrythm\n"
-    "Website https://www.zrythm.org\n"));
+    "Website https://www.zrythm.org\n"),
+    ISSUE_TRACKER_URL);
 }
 
 /**
@@ -234,9 +236,9 @@ main (int    argc,
     "This is free software, and you are welcome to redistribute it\n"
     "under certain conditions. Look at the file `COPYING' within this\n"
     "distribution for details.\n\n"
-    "Write comments and bugs to https://savannah.nongnu.org/support/?group=zrythm\n"
+    "Write comments and bugs to %s\n"
     "Support this project at https://liberapay.com/Zrythm\n\n"),
-    ver);
+    ver, ISSUE_TRACKER_URL);
   g_free (ver);
 
   g_message ("GTK_THEME=%s", getenv ("GTK_THEME"));
