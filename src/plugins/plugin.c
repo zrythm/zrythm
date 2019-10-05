@@ -96,6 +96,7 @@ plugin_init (
   plugin->out_ports_size = 1;
   plugin->unknown_ports_size = 1;
   plugin->ats_size = 1;
+  plugin->slot = -1;
 
   plugin->in_ports =
     calloc (1, sizeof (Port *));
@@ -220,6 +221,45 @@ plugin_add_automation_track (
   AutomationTracklist * atl =
     track_get_automation_tracklist (self->track);
   automation_tracklist_add_at (atl, at);
+}
+
+/**
+ * Sets the channel and slot on the plugin and
+ * its ports.
+ */
+void
+plugin_set_channel_and_slot (
+  Plugin *  pl,
+  Channel * ch,
+  int       slot)
+{
+  pl->track = ch->track;
+  pl->track_pos = ch->track->pos;
+  pl->slot = slot;
+
+  int i;
+  Port * port;
+  for (i = 0; i < pl->num_in_ports; i++)
+    {
+      port = pl->in_ports[i];
+      port_set_owner_plugin (port, pl);
+    }
+  for (i = 0; i < pl->num_out_ports; i++)
+    {
+      port = pl->out_ports[i];
+      port_set_owner_plugin (port, pl);
+    }
+  for (i = 0; i < pl->num_unknown_ports; i++)
+    {
+      port = pl->unknown_ports[i];
+      port_set_owner_plugin (port, pl);
+    }
+
+  if (pl->descr->protocol == PROT_LV2)
+    {
+      lv2_plugin_update_port_identifiers (
+        pl->lv2);
+    }
 }
 
 /**
@@ -1043,10 +1083,6 @@ plugin_disconnect_from_prefader (
   Plugin *  pl,
   Channel * ch)
 {
-  Plugin * last_pl =
-    channel_get_last_plugin (ch);
-  g_return_if_fail (last_pl == pl);
-
   int i;
   Port * out_port;
   PortType type = ch->track->out_signal_type;

@@ -167,10 +167,16 @@ typedef struct Lv2Plugin
   /** ID of the delete-event signal so that we can
    * deactivate before freeing the plugin. */
   gulong             delete_event_id;
-	Lv2Port*          ports;          ///< Port array of size num_ports
-	Lv2Controls        controls;       ///< Available plugin controls
-	int                num_ports;      ///< Size of the two following arrays:
-	uint32_t           plugin_latency; ///< Latency reported by plugin (if any)
+
+  /** Port array of size num_ports. */
+	Lv2Port*          ports;
+	int                num_ports;
+
+  /** Available Lv2Plugin controls. */
+	Lv2Controls        controls;
+
+  /** Latency reported by the Lv2Plugin, if any. */
+	uint32_t           plugin_latency;
 	float              ui_update_hz;   ///< Frequency of UI updates
 	uint32_t           event_delta_t;  ///< Frames since last update sent to UI
 	uint32_t           midi_event_id;  ///< MIDI event class ID in event context
@@ -482,6 +488,13 @@ lv2_plugin_save_state_to_file (
 int
 lv2_plugin_save_state_to_str (
   Lv2Plugin * lv2_plugin);
+
+/**
+ * Updates theh PortIdentifier's in the Lv2Plugin.
+ */
+void
+lv2_plugin_update_port_identifiers (
+  Lv2Plugin * self);
 
 /**
  * Frees the Lv2Plugin.

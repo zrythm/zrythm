@@ -508,6 +508,8 @@ port_identifier_copy (
   PortIdentifier * src,
   PortIdentifier * dest)
 {
+  if (dest->label)
+    g_free (dest->label);
   dest->label = g_strdup (src->label);
   dest->owner_type = src->owner_type;
   dest->type = src->type;
@@ -517,6 +519,14 @@ port_identifier_copy (
   dest->track_pos = src->track_pos;
   dest->port_index = src->port_index;
 }
+
+/**
+ * Returns if the 2 PortIdentifier's are equal.
+ */
+int
+port_identifier_is_equal (
+  PortIdentifier * src,
+  PortIdentifier * dest);
 
 void
 stereo_ports_init_loaded (StereoPorts * sp);

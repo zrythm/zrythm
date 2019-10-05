@@ -1412,9 +1412,8 @@ channel_add_plugin (
              plugin->descr->name,
              channel->track->name, pos);
   channel->plugins[pos] = plugin;
-  plugin->track = channel->track;
-  plugin->track_pos = channel->track->pos;
-  plugin->slot = pos;
+  plugin_set_channel_and_slot (
+    plugin, channel, pos);
 
   Plugin * next_plugin = NULL;
   for (i = pos + 1; i < STRIP_SIZE; i++)

@@ -37,7 +37,9 @@ scale_point_cmp (
 }
 
 Lv2Control*
-lv2_new_port_control(Lv2Plugin* plugin, uint32_t index)
+lv2_new_port_control (
+  Lv2Plugin* plugin,
+  uint32_t index)
 {
   Lv2Port * port  = &plugin->ports[index];
   const LilvPort * lport = port->lilv_port;

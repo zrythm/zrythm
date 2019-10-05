@@ -423,6 +423,16 @@ plugin_clone (
   Plugin * pl);
 
 /**
+ * Sets the channel and slot on the plugin and
+ * its ports.
+ */
+void
+plugin_set_channel_and_slot (
+  Plugin *  pl,
+  Channel * ch,
+  int       slot);
+
+/**
  * Returns if the Plugin is an instrument or not.
  */
 int

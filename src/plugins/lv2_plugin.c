@@ -178,15 +178,8 @@ _create_port (
       lv2_port->port->track =
         lv2_plugin->plugin->track;
 
-      PortIdentifier * pi =
-        &lv2_port->port->identifier;
-      pi->owner_type =
-        PORT_OWNER_TYPE_PLUGIN;
-      pi->plugin_slot = lv2_plugin->plugin->slot;
-      pi->track_pos =
-        lv2_plugin->plugin->track->pos;
-      pi->owner_type =
-        PORT_OWNER_TYPE_PLUGIN;
+      port_set_owner_plugin (
+        lv2_port->port, lv2_plugin->plugin);
     }
   lv2_port->port->lv2_port = lv2_port;
   lv2_port->evbuf     = NULL;
@@ -322,8 +315,10 @@ lv2_plugin_init_loaded (Lv2Plugin * lv2_plgn)
         port_find_from_identifier (
           &lv2_port->port_id);
       lv2_port->port->lv2_port = lv2_port;
-      g_message ("set lv2 port %p to %s",
-                 lv2_port, lv2_port->port->identifier.label);
+      g_warn_if_fail (
+        port_identifier_is_equal (
+          &lv2_port->port_id,
+          &lv2_port->port->identifier));
     }
 }
 
@@ -2507,6 +2502,23 @@ lv2_plugin_save_state_to_file (
   lilv_state_free (state);
 
   return 0;
+}
+
+/**
+ * Updates theh PortIdentifier's in the Lv2Plugin.
+ */
+void
+lv2_plugin_update_port_identifiers (
+  Lv2Plugin * self)
+{
+  Lv2Port * port;
+  for (int i = 0; i < self->num_ports; i++)
+    {
+      port = &self->ports[i];
+      port_identifier_copy (
+        &port->port->identifier,
+        &port->port_id);
+    }
 }
 
 /**
