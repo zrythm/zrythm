@@ -29,10 +29,10 @@ scale_point_cmp (
   const void * _a,
   const void * _b)
 {
-  Lv2ScalePoint * a =
-    *(Lv2ScalePoint * const *) _a;
-  Lv2ScalePoint * b =
-    *(Lv2ScalePoint * const *) _b;
+  const Lv2ScalePoint * a =
+    (Lv2ScalePoint const *) _a;
+  const Lv2ScalePoint * b =
+    (Lv2ScalePoint const *) _b;
   return a->value - b->value;
 }
 
