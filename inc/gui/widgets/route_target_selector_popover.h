@@ -31,10 +31,17 @@ G_DECLARE_FINAL_TYPE (
   Z, ROUTE_TARGET_SELECTOR_POPOVER_WIDGET,
   GtkPopover)
 
+/**
+ * Filter for tracks.
+ */
 typedef enum RouteTargetSelectorType
 {
+  /** Master track. */
   ROUTE_TARGET_TYPE_MASTER,
+  /** Compatible Group tracks. */
   ROUTE_TARGET_TYPE_GROUP,
+  /** Instrument track. */
+  ROUTE_TARGET_TYPE_INSTRUMENT,
 } RouteTargetSelectorType;
 
 typedef struct _RouteTargetSelectorWidget

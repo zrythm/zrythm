@@ -100,6 +100,25 @@ create_model_for_routes (
                 -1);
             }
         }
+      else if (type ==
+                 ROUTE_TARGET_TYPE_INSTRUMENT &&
+               track->type ==
+                 TRACK_TYPE_INSTRUMENT)
+        {
+          if (self->owner->channel &&
+              track !=
+                self->owner->channel->track)
+            {
+              // Add a new row to the model
+              gtk_list_store_append (
+                list_store, &iter);
+              gtk_list_store_set (
+                list_store, &iter,
+                0, track->name,
+                1, track,
+                -1);
+            }
+        }
     }
 
   return GTK_TREE_MODEL (list_store);
@@ -136,6 +155,20 @@ create_model_for_types (
     0, _("Group"),
     1, ROUTE_TARGET_TYPE_GROUP,
     -1);
+
+  TrackType type =
+    self->owner->channel->track->type;
+  if (type == TRACK_TYPE_MIDI ||
+      type == TRACK_TYPE_MIDI_GROUP ||
+      type == TRACK_TYPE_MIDI_BUS)
+    {
+      gtk_list_store_append (list_store, &iter);
+      gtk_list_store_set (
+        list_store, &iter,
+        0, _("Instrument"),
+        1, ROUTE_TARGET_TYPE_INSTRUMENT,
+        -1);
+    }
 
   return GTK_TREE_MODEL (list_store);
 }
