@@ -481,6 +481,46 @@ midi_events_add_pitchbend (
     self->num_events++;
 }
 
+static int
+cmpfunc (
+  const void * _a,
+  const void * _b)
+{
+  const MidiEvent * a =
+    (MidiEvent const *) _a;
+  const MidiEvent * b =
+    (MidiEvent const *) _b;
+  return (int) a->time - (int) b->time;
+}
+
+/**
+ * Sorts the MidiEvents by time.
+ */
+void
+midi_events_sort (
+  MidiEvents * self,
+  const int    queued)
+{
+  MidiEvent * events;
+  size_t num_events;
+  if (queued)
+    {
+      events =
+        self->queued_events;
+      num_events =
+        (size_t) self->num_queued_events;
+    }
+  else
+    {
+      events =
+        self->events;
+      num_events =
+        (size_t) self->num_events;
+    }
+  qsort (events, num_events, sizeof (MidiEvent),
+         cmpfunc);
+}
+
 /**
  * Adds a note on event to the given MidiEvents.
  *

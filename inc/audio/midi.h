@@ -338,6 +338,14 @@ midi_events_copy_to_jack (
 #endif
 
 /**
+ * Sorts the MidiEvents by time.
+ */
+void
+midi_events_sort (
+  MidiEvents * self,
+  const int    queued);
+
+/**
  * Frees the MIDI events.
  */
 void

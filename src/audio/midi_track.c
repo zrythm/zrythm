@@ -487,11 +487,11 @@ midi_track_fill_midi_events (
                     }
                   /* check for note on event in the
                    * normal case */
-                  else if (midi_note->start_pos.
-                        frames >=
-                        local_pos &&
-                      midi_note->start_pos.frames <
-                        local_end_pos_excl)
+                  else if (
+                    midi_note->start_pos.frames >=
+                      local_pos &&
+                    midi_note->start_pos.frames <
+                      local_end_pos_excl)
                     {
                       time =
                         (midi_time_t)
@@ -511,10 +511,20 @@ midi_track_fill_midi_events (
                     }
 
                   /* note off event */
-                  if (midi_note->end_pos.frames >=
+                  /* if note ends within the
+                   * cycle */
+                  if (
+                      /* note ends after the cycle
+                       * start */
+                      midi_note->end_pos.frames >=
                         local_pos &&
-                      midi_note->end_pos.frames <
-                        local_end_pos_excl)
+                      /* either note ends before
+                       * the cycle end or the region
+                       * looped */
+                      (midi_note->end_pos.frames <
+                         local_end_pos_excl ||
+                       local_end_pos_excl <
+                         local_pos))
                     {
                       time =
                         (midi_time_t)
@@ -536,6 +546,9 @@ midi_track_fill_midi_events (
             }
         }
     }
+
+  /* sort events */
+  midi_events_sort (midi_events, 1);
 
   zix_sem_post (&midi_events->access_sem);
 }
