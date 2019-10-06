@@ -778,10 +778,19 @@ engine_jack_activate (
     jack_get_ports (
       self->client, NULL, JACK_DEFAULT_AUDIO_TYPE,
       JackPortIsPhysical|JackPortIsInput);
-  if (ports == NULL) {
-          g_error ("no physical playback ports\n");
-          exit (1);
-  }
+  if (ports == NULL ||
+      ports[0] == NULL ||
+      ports[1] == NULL)
+    {
+      g_critical (
+        "no physical playback ports found");
+      return -1;
+    }
+
+  g_return_val_if_fail (
+    self->monitor_out->l->data &&
+      self->monitor_out->r->data,
+    -1);
 
   if (jack_connect (
         self->client,
@@ -789,14 +798,20 @@ engine_jack_activate (
           JACK_PORT_T (
             self->monitor_out->l->data)),
         ports[0]))
-    g_critical ("cannot connect output ports\n");
+    {
+      g_critical ("cannot connect output ports");
+      return -1;
+    }
 
   if (jack_connect (
         self->client,
         jack_port_name (
           JACK_PORT_T (self->monitor_out->r->data)),
         ports[1]))
-    g_critical ("cannot connect output ports\n");
+    {
+      g_critical ("cannot connect output ports");
+      return -1;
+    }
 
   jack_free (ports);
 
