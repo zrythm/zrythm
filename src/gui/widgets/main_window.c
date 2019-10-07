@@ -202,8 +202,8 @@ main_window_widget_class_init (
     klass,
     on_state_changed);
 
-  gtk_widget_class_set_css_name (klass,
-                                 "main-window");
+  gtk_widget_class_set_css_name (
+    klass, "main-window");
 }
 
 static void

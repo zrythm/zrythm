@@ -28,6 +28,7 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
+#include "utils/arrays.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -49,26 +50,31 @@
 #include <lv2/lv2plug.in/ns/extensions/units/units.h>
 
 /**
- * If category not already set in the categories, add it.
+ * If category not already set in the categories,
+ * add it.
  */
 static void
-add_category (char * _category)
+add_category (
+  PluginManager * self,
+  char * _category)
 {
   if (!string_is_ascii (_category))
     {
-      g_warning ("Invalid LV2 category name, skipping...");
+      g_warning (
+        "Invalid LV2 category name, skipping...");
     }
-  for (int i = 0; i < PLUGIN_MANAGER->num_plugin_categories; i++)
+  for (int i = 0;
+       i < self->num_plugin_categories; i++)
     {
-      char * category = PLUGIN_MANAGER->plugin_categories[i];
+      char * category = self->plugin_categories[i];
       if (!strcmp (category, _category))
         {
           return;
         }
     }
-    PLUGIN_MANAGER->plugin_categories[
-      PLUGIN_MANAGER->num_plugin_categories++] =
-        g_strdup (_category);
+  self->plugin_categories[
+    self->num_plugin_categories++] =
+      g_strdup (_category);
 }
 
 static int
@@ -133,24 +139,44 @@ scan_plugins (PluginManager * self)
   LilvWorld * world = LILV_WORLD;
   const LilvPlugins * plugins =
     lilv_world_get_all_plugins (world);
-  /*const LilvPluginClasses * plugin_classes =*/
-                              /*lilv_world_get_plugin_classes (world);*/
   LV2_NODES.lilv_plugins = plugins;
 
 
   /* iterate plugins */
   LILV_FOREACH(plugins, i, plugins)
     {
-      const LilvPlugin* p = lilv_plugins_get(plugins, i);
+      const LilvPlugin* p =
+        lilv_plugins_get(plugins, i);
 
       PluginDescriptor * descriptor =
         lv2_create_descriptor_from_lilv (p);
 
       if (descriptor)
         {
-          PLUGIN_MANAGER->plugin_descriptors[PLUGIN_MANAGER->num_plugins++] =
-            descriptor;
-          add_category (descriptor->category_str);
+          array_append (
+            self->plugin_descriptors,
+            self->num_plugins,
+            descriptor);
+          add_category (
+            self, descriptor->category_str);
+        }
+    }
+
+  /* add carla */
+  for (int i = CARLA_PLUGIN_RACK;
+       i <= CARLA_PLUGIN_PATCHBAY; i++)
+    {
+      for (int j = 0; j < 2; j++)
+        {
+          PluginDescriptor * descr =
+            carla_native_plugin_get_descriptor (
+              i, j);
+          g_warn_if_fail (descr);
+
+          array_append (
+            self->plugin_descriptors,
+            self->num_plugins,
+            descr);
         }
     }
 

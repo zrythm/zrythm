@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-18 01:11+0100\n"
+"POT-Creation-Date: 2019-10-06 19:16+0100\n"
 "PO-Revision-Date: 2019-09-09 17:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language: ja\n"
@@ -41,21 +41,19 @@ msgstr "課題管理システム"
 
 #: ../../getting-started/additional-resources.rst:15
 msgid ""
-"The issue tracker can be found on `Savannah "
-"<https://savannah.nongnu.org/support/?group=zrythm>`_."
+"The issue tracker can be found on our `Redmine instance "
+"<https://redmine.zrythm.org/projects/zrythm/issues>`_."
 msgstr ""
-"課題トラッカーは`Savannah "
-"<https://savannah.nongnu.org/support/?group=zrythm>`_にあります。"
 
 #: ../../getting-started/additional-resources.rst:18
 msgid "Source Code"
 msgstr "ソースコード"
 
 #: ../../getting-started/additional-resources.rst:19
+#, fuzzy
 msgid ""
 "Zrythm's source code can be found on our `CGit instance "
-"<https://git.zrythm.org/cgit/zrythm/>`_ or in the mirror repository at "
-"`GNU Savannah <http://git.savannah.nongnu.org/cgit/zrythm.git>`_."
+"<https://git.zrythm.org/cgit/zrythm/>`_."
 msgstr ""
 "Zrythmのソースコードは私たちの `CGitインスタンス "
 "<https://git.zrythm.org/cgit/zrythm/>`_、または`GNU Savannahのミラーリポジトリ "
@@ -66,9 +64,10 @@ msgid "Older Versions"
 msgstr "旧バージョン"
 
 #: ../../getting-started/additional-resources.rst:23
+#, fuzzy
 msgid ""
-"Older releases of Zrythm can be found on `Savannah downloads "
-"<https://download.savannah.nongnu.org/releases/zrythm/>`_"
+"Older releases of Zrythm can be found on the `Releases page "
+"<https://www.zrythm.org/releases>`_"
 msgstr ""
 "Zrythmの旧リリースは、`Savannah downloads "
 "<https://download.savannah.nongnu.org/releases/zrythm/>`_に提供されています"
@@ -680,4 +679,12 @@ msgstr ""
 #~ " Zrythm package in `copr "
 #~ "<https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/>`_"
 #~ msgstr ""
+
+#~ msgid ""
+#~ "The issue tracker can be found on"
+#~ " `Savannah "
+#~ "<https://savannah.nongnu.org/support/?group=zrythm>`_."
+#~ msgstr ""
+#~ "課題トラッカーは`Savannah "
+#~ "<https://savannah.nongnu.org/support/?group=zrythm>`_にあります。"
 

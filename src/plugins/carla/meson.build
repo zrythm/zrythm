@@ -15,13 +15,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-plugin_srcs = [
-  'lv2_plugin.c',
-  'plugin.c',
-  'plugin_manager.c',
+carla_plugin_srcs = [
+  'native_plugin.c',
   ]
 
-zrythm_srcs += files (plugin_srcs)
-
-subdir ('carla')
-subdir ('lv2')
+carla_plugin_lib = static_library (
+  'carla-plugin-lib',
+  sources: [
+    config_h,
+    carla_plugin_srcs,
+    ],
+  dependencies: zrythm_deps,
+  include_directories: all_inc,
+  c_args: [ common_cflags, strict_cflags ],
+  link_with: [
+    cyaml,
+    ]
+  )

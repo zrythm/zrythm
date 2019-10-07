@@ -394,6 +394,18 @@ z_gtk_setup_foldable_notebook (
   GtkNotebook * notebook);
 
 /**
+ * Get the window ID of the given widget.
+ *
+ * Works for X11 only for now.
+ *
+ * @ret An X11 "Window" masked as void * to avoid
+ *   name collisions in the header.
+ */
+void *
+z_gtk_widget_get_gdk_window_id (
+  GtkWidget * widget);
+
+/**
  * @}
  */
 #endif

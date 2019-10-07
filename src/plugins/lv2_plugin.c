@@ -681,36 +681,43 @@ lv2_ui_instantiate (
   char* binary_path =
     lilv_file_uri_parse (binary_uri, NULL);
 
-  const LV2_Feature data_feature = {
-          LV2_DATA_ACCESS_URI, &plugin->ext_data
-  };
-  const LV2_Feature idle_feature = {
-          LV2_UI__idleInterface, NULL
-  };
+  const LV2_Feature data_feature =
+    {
+      LV2_DATA_ACCESS_URI, &plugin->ext_data
+    };
+  const LV2_Feature idle_feature =
+    {
+      LV2_UI__idleInterface, NULL
+    };
 
   if (plugin->externalui)
     {
-      const LV2_Feature external_lv_feature = {
-        LV2_EXTERNAL_UI_DEPRECATED_URI, parent
-      };
-      const LV2_Feature external_kx_feature = {
-        LV2_EXTERNAL_UI__Host, parent
-      };
-      const LV2_Feature instance_feature = {
-        NS_EXT "instance-access",
-        lilv_instance_get_handle(plugin->instance)
-      };
-      const LV2_Feature* ui_features[] = {
-        &plugin->map_feature, &plugin->unmap_feature,
-        &instance_feature,
-        &data_feature,
-        &idle_feature,
-        &plugin->log_feature,
-        &external_lv_feature,
-        &external_kx_feature,
-        &plugin->options_feature,
-        NULL
-      };
+      const LV2_Feature external_lv_feature =
+        {
+          LV2_EXTERNAL_UI_DEPRECATED_URI, parent
+        };
+      const LV2_Feature external_kx_feature =
+        {
+          LV2_EXTERNAL_UI__Host, parent
+        };
+      const LV2_Feature instance_feature =
+        {
+          NS_EXT "instance-access",
+          lilv_instance_get_handle(plugin->instance)
+        };
+      const LV2_Feature* ui_features[] =
+        {
+          &plugin->map_feature,
+          &plugin->unmap_feature,
+          &instance_feature,
+          &data_feature,
+          &idle_feature,
+          &plugin->log_feature,
+          &external_lv_feature,
+          &external_kx_feature,
+          &plugin->options_feature,
+          NULL
+        };
 
       plugin->ui_instance = suil_instance_new(
         plugin->ui_host,
@@ -736,33 +743,43 @@ lv2_ui_instantiate (
   else
     {
 
-      const LV2_Feature parent_feature = {
-              LV2_UI__parent, parent
-      };
-      const LV2_Feature instance_feature = {
-              NS_EXT "instance-access", lilv_instance_get_handle(plugin->instance)
-      };
-      const LV2_Feature* ui_features[] = {
-              &plugin->map_feature, &plugin->unmap_feature,
-              &instance_feature,
-              &data_feature,
-              &idle_feature,
-              &plugin->log_feature,
-              &parent_feature,
-              &plugin->options_feature,
-              NULL
-      };
+      const LV2_Feature parent_feature =
+        {
+          LV2_UI__parent, parent
+        };
+      const LV2_Feature instance_feature =
+        {
+          NS_EXT "instance-access",
+          lilv_instance_get_handle (
+            plugin->instance)
+        };
+      const LV2_Feature* ui_features[] =
+        {
+          &plugin->map_feature,
+          &plugin->unmap_feature,
+          &instance_feature,
+          &data_feature,
+          &idle_feature,
+          &plugin->log_feature,
+          &parent_feature,
+          &plugin->options_feature,
+          NULL
+        };
 
-      plugin->ui_instance = suil_instance_new(
-              plugin->ui_host,
-              plugin,
-              native_ui_type,
-              lilv_node_as_uri(lilv_plugin_get_uri(plugin->lilv_plugin)),
-              lilv_node_as_uri(lilv_ui_get_uri(plugin->ui)),
-              lilv_node_as_uri(plugin->ui_type),
-              bundle_path,
-              binary_path,
-              ui_features);
+      plugin->ui_instance =
+        suil_instance_new (
+          plugin->ui_host,
+          plugin,
+          native_ui_type,
+          lilv_node_as_uri (
+            lilv_plugin_get_uri (
+              plugin->lilv_plugin)),
+          lilv_node_as_uri (
+            lilv_ui_get_uri (plugin->ui)),
+          lilv_node_as_uri (plugin->ui_type),
+          bundle_path,
+          binary_path,
+          ui_features);
     }
 
   lilv_free(binary_path);

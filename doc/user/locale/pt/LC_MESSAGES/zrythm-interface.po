@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-18 01:11+0100\n"
+"POT-Creation-Date: 2019-10-06 19:16+0100\n"
 "PO-Revision-Date: 2019-09-24 07:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualzrythm-interface/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
+"/manualzrythm-interface/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -41,8 +40,8 @@ msgid ""
 "A Region (Clip) is a container for MIDI Notes, audio or other events. "
 "Regions can be repeated, like below."
 msgstr ""
-"Uma Região (Clipe) é um contentor para notas MIDI, áudio ou outros eventos. "
-"As regiões podem ser repetidas, como abaixo."
+"Uma Região (Clipe) é um contentor para notas MIDI, áudio ou outros "
+"eventos. As regiões podem ser repetidas, como abaixo."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:19
 msgid ""
@@ -78,9 +77,9 @@ msgid ""
 "corresponding Channel, which is used for adjusting the Track's volume, "
 "pan and other settings."
 msgstr ""
-"Um Canal é um único slot no Misturador. A maioria das categorias de Faixas "
-"têm um Canal correspondente, que é usado para ajustar o volume, a pan e "
-"outras definições da Faixa."
+"Um Canal é um único slot no Misturador. A maioria das categorias de "
+"Faixas têm um Canal correspondente, que é usado para ajustar o volume, a "
+"pan e outras definições da Faixa."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
 msgid "Range"
@@ -250,8 +249,8 @@ msgid ""
 "Channel."
 msgstr ""
 "O separador Misturador contém o Misturador, mostrando todos os Canais "
-"visíveis do projeto. O Misturador é usado para misturar os sinais de áudio "
-"de cada Canal."
+"visíveis do projeto. O Misturador é usado para misturar os sinais de "
+"áudio de cada Canal."
 
 #: ../../zrythm-interface/ruler.rst:6
 msgid "Ruler"
@@ -410,7 +409,8 @@ msgid "Song tempo (beats per minute)"
 msgstr "Ritmo da canção (batidas por minuto)"
 
 #: ../../zrythm-interface/transport-bar.rst:18
-msgid "Playhed"
+#, fuzzy
+msgid "Playhead"
 msgstr "Cabeça de reprodução"
 
 #: ../../zrythm-interface/transport-bar.rst:19
@@ -598,3 +598,4 @@ msgstr ""
 #~ "O separador Misturador contém o "
 #~ "Misturador, onde todos os canais "
 #~ "visíveis no projeto são exibidos."
+

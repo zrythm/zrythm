@@ -479,6 +479,10 @@ setup_midi_channels_cb (
     G_OBJECT (cb),
     "active-id",
     &a);
+
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (cb),
+    _("MIDI channel to filter to"));
 }
 
 

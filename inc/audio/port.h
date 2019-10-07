@@ -264,7 +264,13 @@ typedef struct Port
    * used.
    */
   PortInternalType    internal_type;
-  Lv2Port *          lv2_port; ///< used for LV2
+
+  /** Used for LV2. */
+  Lv2Port *           lv2_port;
+
+  /** Index of the control parameter (for Carla
+   * plugin ports). */
+  uint32_t            carla_param_index;
 
   /**
    * Pointer to arbitrary data.

@@ -24,6 +24,8 @@
 #include "plugins/lv2/control.h"
 #include "utils/yaml.h"
 
+#include "CarlaNativePlugin.h"
+
 #define IS_AUTOMATABLE_LV2_CONTROL(x) x->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL && \
                                    x->control
 #define IS_AUTOMATABLE_CH_FADER(x) x->type == AUTOMATABLE_TYPE_CHANNEL_FADER
@@ -42,6 +44,12 @@ typedef struct Channel Channel;
 typedef struct AutomatableTrack AutomatableTrack;
 typedef struct Plugin Plugin;
 typedef struct AutomationTrack AutomationTrack;
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
 
 /**
  * An automatable control.
@@ -72,6 +80,9 @@ typedef struct Automatable
    *
    * When loading, this can be fetched using the
    * port.
+   *
+   * FIXME convert to getter function, having
+   * this everywhere is confusing.
    */
   Lv2Control *     control;
 
@@ -169,10 +180,22 @@ automatable_create_mute (Channel * channel);
 Automatable *
 automatable_create_pan (Channel * channel);
 
+/**
+ * Creates an automatable for an LV2 control.
+ */
 Automatable *
 automatable_create_lv2_control (
   Plugin *       plugin,
   Lv2Control * control);
+
+/**
+ * Creates an automatable for a Carla native
+ * plugin control.
+ */
+Automatable *
+automatable_create_carla_control (
+  Plugin *          plugin,
+  const NativeParameter * param);
 
 Automatable *
 automatable_create_plugin_enabled (Plugin * plugin);
@@ -241,13 +264,22 @@ automatable_set_val_from_normalized (
   int           automating);
 
 /**
- * Gets automation track for given automatable, if any.
+ * Gets automation track for given automatable, if
+ * any.
  */
 AutomationTrack *
 automatable_get_automation_track (
   Automatable * automatable);
 
+/**
+ * Frees the automatable.
+ */
 void
-automatable_free (Automatable * automatable);
+automatable_free (
+  Automatable * automatable);
+
+/**
+ * @}
+ */
 
 #endif /* __AUDIO_AUTOMATABLE_H__ */

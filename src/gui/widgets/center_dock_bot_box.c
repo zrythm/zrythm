@@ -43,7 +43,6 @@ center_dock_bot_box_widget_init (
                         "plus.svg"));
 }
 
-
 static void
 center_dock_bot_box_widget_class_init (
   CenterDockBotBoxWidgetClass * _klass)

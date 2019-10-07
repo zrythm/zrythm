@@ -129,9 +129,19 @@ plugin_new_from_descr (
     plugin_clone_descr (descr);
   plugin_init (plugin);
 
-  if (plugin->descr->protocol == PROT_LV2)
+  switch (plugin->descr->protocol)
     {
+    case PROT_LV2:
       lv2_create_from_uri (plugin, descr->uri);
+      break;
+    case PROT_CARLA:
+      carla_native_plugin_create (plugin);
+      break;
+    default:
+      g_warning (
+        "Plugin protocol %d not supported",
+        plugin->descr->protocol);
+      break;
     }
 
   return plugin;
@@ -181,6 +191,7 @@ plugin_copy_descr (
   dest->protocol = src->protocol;
   dest->path = g_strdup (src->path);
   dest->uri = g_strdup (src->uri);
+  dest->carla_type = src->carla_type;
 }
 
 /**
@@ -315,6 +326,7 @@ plugin_update_latency (
     } \
   port->identifier.port_index = \
     pl->num_##type##_ports; \
+  port_set_owner_plugin (port, pl); \
   array_append ( \
     pl->type##_ports, \
     pl->num_##type##_ports, \
@@ -413,13 +425,15 @@ plugin_generate_automation_tracks (
     plugin, at);
 
   /* add plugin control automatables */
-  if (plugin->descr->protocol == PROT_LV2)
+  switch (plugin->descr->protocol)
     {
-      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->lv2;
-      for (int j = 0; j < lv2_plugin->controls.n_controls; j++)
+    case PROT_LV2:
+      for (int j = 0;
+           j < plugin->lv2->controls.n_controls;
+           j++)
         {
           Lv2Control * control =
-            lv2_plugin->controls.controls[j];
+            plugin->lv2->controls.controls[j];
           a =
             automatable_create_lv2_control (
               plugin, control);
@@ -427,10 +441,30 @@ plugin_generate_automation_tracks (
           plugin_add_automation_track (
             plugin, at);
         }
-    }
-  else
-    {
-      g_warning ("Plugin protocol not supported yet (gen automatables)");
+      break;
+    case PROT_CARLA:
+      for (uint32_t i = 0;
+           i <
+             carla_native_plugin_get_param_count (
+               plugin->carla);
+           i++)
+        {
+          const NativeParameter * param =
+            carla_native_plugin_get_param_info (
+              plugin->carla, i);
+          a =
+            automatable_create_carla_control (
+              plugin, param);
+          at = automation_track_new (a);
+          plugin_add_automation_track (
+            plugin, at);
+        }
+      break;
+    default:
+      g_warning (
+        "Plugin protocol not supported yet "
+        "(gen automatables)");
+      break;
     }
 }
 
@@ -543,14 +577,14 @@ plugin_descriptor_is_midi_modifier (
 #undef IS_CAT
 
 /**
- * Returns the PluginCategory matching the given
+ * Returns the ZPluginCategory matching the given
  * string.
  */
-PluginCategory
+ZPluginCategory
 plugin_descriptor_string_to_category (
   const char * str)
 {
-  PluginCategory category = PC_NONE;
+  ZPluginCategory category = PC_NONE;
 
 #define CHECK_CAT(term,cat) \
   if (g_strrstr (str, term)) \
@@ -646,16 +680,18 @@ plugin_instantiate (
   switch (pl->descr->protocol)
     {
     case PROT_LV2:
-      {
-        g_message ("state file: %s",
-                   pl->lv2->state_file);
-        if (lv2_plugin_instantiate (
-              pl->lv2, NULL))
-          {
-            g_warning ("lv2 instantiate failed");
-            return -1;
-          }
-      }
+      g_message ("state file: %s",
+                 pl->lv2->state_file);
+      if (lv2_plugin_instantiate (
+            pl->lv2, NULL))
+        {
+          g_warning ("lv2 instantiate failed");
+          return -1;
+        }
+      break;
+    case PROT_CARLA:
+      carla_native_plugin_instantiate (
+        pl->carla);
       break;
     default:
       g_warn_if_reached ();
@@ -704,18 +740,25 @@ plugin_process (
 void
 plugin_open_ui (Plugin *plugin)
 {
-  if (plugin->descr->protocol == PROT_LV2)
+  switch (plugin->descr->protocol)
     {
-      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->lv2;
-      if (GTK_IS_WINDOW (lv2_plugin->window))
+    case PROT_LV2:
+      if (GTK_IS_WINDOW (plugin->lv2->window))
         {
           gtk_window_present (
-            GTK_WINDOW (lv2_plugin->window));
+            GTK_WINDOW (plugin->lv2->window));
         }
       else
         {
-          lv2_open_ui (lv2_plugin);
+          lv2_open_ui (plugin->lv2);
         }
+      break;
+    case PROT_CARLA:
+      carla_native_plugin_show_ui (
+        plugin->carla, 1);
+      break;
+    default:
+      g_return_if_reached ();
     }
 }
 
@@ -739,7 +782,8 @@ plugin_clone (
   Plugin * pl)
 {
   Plugin * clone = NULL;
-  if (pl->descr->protocol == PROT_LV2)
+  PluginProtocol prot = pl->descr->protocol;
+  if (prot == PROT_LV2)
     {
       /* NOTE from rgareus:
        * I think you can use   lilv_state_restore (lilv_state_new_from_instance (..), ...)
@@ -787,6 +831,10 @@ plugin_clone (
 
       /* delete the state file */
       io_remove (pl->lv2->state_file);
+    }
+  else if (prot == PROT_CARLA)
+    {
+      /* TODO */
     }
 
   g_return_val_if_fail (clone, NULL);

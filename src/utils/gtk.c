@@ -23,6 +23,8 @@
 #include "utils/string.h"
 #include "utils/ui.h"
 
+#include <gdk/gdkx.h>
+
 int
 z_gtk_widget_destroy_idle (
   GtkWidget * widget)
@@ -474,4 +476,23 @@ z_gtk_widget_add_style_class (
   gtk_style_context_add_class (
     gtk_widget_get_style_context (widget),
     class_name);
+}
+
+/**
+ * Get the window ID of the given widget.
+ *
+ * Works for X11 only for now.
+ *
+ * @ret An X11 "Window" masked as void * to avoid
+ *   name collisions in the header.
+ */
+void *
+z_gtk_widget_get_gdk_window_id (
+  GtkWidget * widget)
+{
+  return
+    (void *)
+    gdk_x11_window_get_xid (
+      GDK_WINDOW (
+        gtk_widget_get_window (widget)));
 }

@@ -223,6 +223,36 @@ automatable_create_lv2_control (
   return a;
 }
 
+/**
+ * Creates an automatable for a Carla native
+ * plugin control.
+ */
+Automatable *
+automatable_create_carla_control (
+  Plugin *          plugin,
+  const NativeParameter * param)
+{
+  Automatable * a = _create_blank ();
+
+  a->port =
+    carla_native_plugin_get_port_from_param (
+      plugin->carla, param);
+  a->port_id = calloc (1, sizeof (PortIdentifier));
+  port_identifier_copy (
+    &a->port->identifier, a->port_id);
+
+  a->type = AUTOMATABLE_TYPE_PLUGIN_CONTROL;
+  a->track = plugin->track;
+  a->slot = plugin->slot;
+  a->label =
+    g_strdup (param->name);
+  a->minf = param->ranges.min;
+  a->maxf = param->ranges.max;
+  a->sizef = a->maxf - a->minf;
+
+  return a;
+}
+
 Automatable *
 automatable_create_plugin_enabled (
   Plugin * plugin)

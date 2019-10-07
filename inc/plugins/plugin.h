@@ -30,6 +30,7 @@
 
 #include "audio/automatable.h"
 #include "audio/port.h"
+#include "plugins/carla/native_plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "utils/types.h"
 
@@ -42,7 +43,7 @@
 
 typedef struct Channel Channel;
 
-typedef enum PluginCategory
+typedef enum ZPluginCategory
 {
   /* None specified */
   PC_NONE,
@@ -85,15 +86,19 @@ typedef enum PluginCategory
   PC_CONVERTER,
   PC_FUNCTION,
   PC_MIXER,
-} PluginCategory;
+} ZPluginCategory;
 
 typedef enum PluginProtocol
 {
- PROT_LV2,
- PROT_DSSI,
- PROT_LADSPA,
- PROT_VST,
- PROT_VST3
+  /** LV2 plugin. */
+  PROT_LV2,
+  PROT_DSSI,
+  PROT_LADSPA,
+  PROT_VST,
+  PROT_VST3,
+
+  /** Carla native plugin. */
+  PROT_CARLA,
 } PluginProtocol;
 
 typedef enum PluginArchitecture
@@ -103,17 +108,16 @@ typedef enum PluginArchitecture
 } PluginArchitecture;
 
 /***
- * A descriptor to be implemented by all plugins
- * This will be used throughout the UI
+ * A descriptor to be implemented by all plugins.
  */
 typedef struct PluginDescriptor
 {
   char                 * author;
   char                 * name;
   char                 * website;
-  PluginCategory   category;
+  ZPluginCategory   category;
   /** Lv2 plugin subcategory. */
-  char                 * category_str;
+  char *           category_str;
   /** Number of audio input ports. */
   int              num_audio_ins;
   /** Number of MIDI input ports. */
@@ -140,6 +144,8 @@ typedef struct PluginDescriptor
   char                 * path;
   /** Lv2Plugin URI. */
   char                 * uri;
+  /** Carla plugin type, if Carla. */
+  CarlaPluginType  carla_type;
 } PluginDescriptor;
 
 /**
@@ -148,10 +154,11 @@ typedef struct PluginDescriptor
  */
 typedef struct Plugin
 {
-  /**
-   * Pointer back to plugin in its original format.
-   */
+  /** Pointer LV2 plugin, if LV2. */
   Lv2Plugin *          lv2;
+
+  /** Pointer to CarlaNativePlugin, if Carla. */
+  CarlaNativePlugin *  carla;
 
   /** Descriptor. */
   PluginDescriptor *   descr;
@@ -461,10 +468,10 @@ plugin_descriptor_is_midi_modifier (
   PluginDescriptor * descr);
 
 /**
- * Returns the PluginCategory matching the given
+ * Returns the ZPluginCategory matching the given
  * string.
  */
-PluginCategory
+ZPluginCategory
 plugin_descriptor_string_to_category (
   const char * str);
 

@@ -46,6 +46,7 @@ zrythm_lib = static_library (
   link_with: [
     cyaml,
     lv2_lib,
+    carla_plugin_lib,
     dzl_lib,
     audio_decoder,
     midilib,

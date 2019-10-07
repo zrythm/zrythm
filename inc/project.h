@@ -56,8 +56,6 @@ typedef struct Port Port;
 typedef struct Channel Channel;
 typedef struct Plugin Plugin;
 typedef struct Track Track;
-typedef struct Region Region;
-typedef struct MidiNote MidiNote;
 typedef struct Track ChordTrack;
 
 /**
