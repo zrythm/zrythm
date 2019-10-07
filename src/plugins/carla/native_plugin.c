@@ -20,8 +20,11 @@
 #include <stdlib.h>
 
 #include "audio/engine.h"
+#include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
+#include "plugins/carla/engine_interface.h"
+#include "plugins/carla/plugin_interface.h"
 #include "plugins/carla/native_plugin.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -49,7 +52,8 @@ host_get_sample_rate (
 {
   double sample_rate = 44000.0;
   if (AUDIO_ENGINE->sample_rate > 0)
-    sample_rate = (double) AUDIO_ENGINE->sample_rate;
+    sample_rate =
+      (double) AUDIO_ENGINE->sample_rate;
 
   return sample_rate;
 }
@@ -123,9 +127,9 @@ create (CarlaPluginType type)
   CarlaNativePlugin * self =
     calloc (1, sizeof (CarlaNativePlugin));
 
-  self->host.handle = ZRYTHM;
+  self->host.handle = self;
   self->host.uiName =
-    g_strdup ("Zrythm - Carla");
+    g_strdup ("Zrythm");
   self->host.uiParentId = 0;
     /*(uintptr_t)*/
     /*z_gtk_widget_get_gdk_window_id (*/
@@ -186,6 +190,90 @@ create (CarlaPluginType type)
       &self->host);
 
   return self;
+}
+
+/**
+ * Wrapper to get the CarlaPlugin instance.
+ */
+CarlaPluginHandle
+carla_native_plugin_get_plugin_handle (
+  CarlaNativePlugin * self)
+{
+  CarlaEngineHandle engine =
+    carla_engine_get_from_native_plugin (
+      self->descriptor, self->handle);
+  CarlaPluginHandle plugin =
+    carla_engine_get_plugin (
+      engine, self->carla_plugin_id);
+
+  return plugin;
+}
+
+/**
+ * Processes the plugin for this cycle.
+ */
+void
+carla_native_plugin_proces (
+  CarlaNativePlugin * self,
+  const long          g_start_frames,
+  const nframes_t     nframes)
+{
+  const float * inbuf[] =
+    {
+      self->stereo_in->l->buf,
+      self->stereo_in->r->buf
+    };
+  float * outbuf[] =
+    {
+      self->stereo_out->l->buf,
+      self->stereo_out->r->buf
+    };
+  const float * cvinbuf[] =
+    {
+      self->cv_in->l->buf,
+      self->cv_in->r->buf
+    };
+  float * cvoutbuf[] =
+    {
+      self->cv_out->l->buf,
+      self->cv_out->r->buf
+    };
+
+  self->time_info.playing =
+    TRANSPORT_IS_ROLLING;
+  self->time_info.frame =
+    (uint64_t) g_start_frames;
+  self->time_info.bbt.bar =
+    PLAYHEAD->bars;
+  self->time_info.bbt.beat =
+    PLAYHEAD->beats;
+  self->time_info.bbt.tick =
+    PLAYHEAD->sixteenths *
+      TICKS_PER_SIXTEENTH_NOTE +
+    PLAYHEAD->ticks;
+  Position bar_start;
+  position_set_to_bar (
+    &bar_start, PLAYHEAD->bars);
+  self->time_info.bbt.barStartTick =
+    (double)
+    (PLAYHEAD->total_ticks -
+     bar_start.total_ticks);
+  self->time_info.bbt.beatsPerBar =
+    (float)
+    TRANSPORT->beats_per_bar;
+  self->time_info.bbt.beatType =
+    (float)
+    TRANSPORT->beat_unit;
+  self->time_info.bbt.ticksPerBeat =
+    TRANSPORT->ticks_per_beat;
+  self->time_info.bbt.beatsPerMinute =
+    TRANSPORT->bpm;
+
+  CarlaPluginHandle plugin =
+    carla_native_plugin_get_plugin_handle (self);
+  carla_plugin_process (
+    plugin, inbuf,
+    outbuf, cvinbuf, cvoutbuf, nframes);
 }
 
 /**
@@ -256,6 +344,7 @@ create_ports (
   CarlaNativePlugin * self)
 {
   Port * port;
+  Port * tmp;
 
   /* create midi in/out */
   port =
@@ -263,11 +352,13 @@ create_ports (
       TYPE_EVENT, FLOW_INPUT, "MIDI in");
   plugin_add_in_port (
     self->plugin, port);
+  self->midi_in = port;
   port =
     port_new_with_type (
       TYPE_EVENT, FLOW_OUTPUT, "MIDI out");
   plugin_add_out_port (
     self->plugin, port);
+  self->midi_out = port;
 
   /* create stereo in/out */
   port =
@@ -275,21 +366,60 @@ create_ports (
       TYPE_AUDIO, FLOW_INPUT, "Stereo in L");
   plugin_add_in_port (
     self->plugin, port);
+  tmp = port;
   port =
     port_new_with_type (
       TYPE_AUDIO, FLOW_INPUT, "Stereo in R");
   plugin_add_in_port (
     self->plugin, port);
+  self->stereo_in =
+    stereo_ports_new_from_existing (
+      tmp, port);
+
+  port =
+    port_new_with_type (
+      TYPE_AUDIO, FLOW_INPUT, "CV in L");
+  plugin_add_in_port (
+    self->plugin, port);
+  tmp = port;
+  port =
+    port_new_with_type (
+      TYPE_AUDIO, FLOW_INPUT, "CV in R");
+  plugin_add_in_port (
+    self->plugin, port);
+  self->cv_in =
+    stereo_ports_new_from_existing (
+      tmp, port);
+
   port =
     port_new_with_type (
       TYPE_AUDIO, FLOW_OUTPUT, "Stereo out L");
   plugin_add_out_port (
     self->plugin, port);
+  tmp = port;
   port =
     port_new_with_type (
       TYPE_AUDIO, FLOW_OUTPUT, "Stereo out R");
   plugin_add_out_port (
     self->plugin, port);
+  self->stereo_out =
+    stereo_ports_new_from_existing (
+      tmp, port);
+
+  port =
+    port_new_with_type (
+      TYPE_AUDIO, FLOW_OUTPUT, "CV out L");
+  plugin_add_out_port (
+    self->plugin, port);
+  tmp = port;
+  port =
+    port_new_with_type (
+      TYPE_AUDIO, FLOW_OUTPUT, "CV out R");
+  plugin_add_out_port (
+    self->plugin, port);
+  self->cv_out =
+    stereo_ports_new_from_existing (
+      tmp, port);
 
   /* create controls */
   uint32_t num_ports =
@@ -324,6 +454,52 @@ create_ports (
 }
 
 /**
+ * Carla engine callback.
+ */
+static void
+engine_callback (
+  void* ptr,
+  EngineCallbackOpcode action,
+  unsigned int pluginId,
+  int value1,
+  int value2,
+  float value3,
+  const char* valueStr)
+{
+  CarlaNativePlugin * self =
+    (CarlaNativePlugin *) ptr;
+
+  switch (action)
+    {
+    case ENGINE_CALLBACK_PARAMETER_VALUE_CHANGED:
+      break;
+    case ENGINE_CALLBACK_PLUGIN_ADDED:
+      self->carla_plugin_id = pluginId;
+      break;
+    case ENGINE_CALLBACK_UI_STATE_CHANGED:
+      if (value1 == 1 ||
+          value1 == 0)
+        {
+          self->plugin->visible = value1;
+        }
+      else
+        {
+          g_warning (
+            "Plugin \"%s\" UI crashed",
+            self->plugin->descr->name);
+        }
+      break;
+    case ENGINE_CALLBACK_PATCHBAY_CLIENT_ADDED:
+    case ENGINE_CALLBACK_PATCHBAY_PORT_ADDED:
+      /* ignore */
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+}
+
+/**
  * Instantiates the plugin.
  *
  * @ret 0 if no errors, non-zero if errors.
@@ -338,6 +514,18 @@ carla_native_plugin_instantiate (
     self->descriptor->ui_show,
     -1);
 
+  /* get internal engine and add plugin */
+  CarlaEngineHandle engine =
+    carla_engine_get_from_native_plugin (
+      self->descriptor, self->handle);
+  carla_engine_set_callback (
+    engine, engine_callback, self);
+  carla_engine_add_plugin_simple (
+    engine, PLUGIN_VST2,
+    "/usr/lib/vst/3BandEQ-vst.so",
+    "3BandEQ VST",
+    "label123", 0, NULL);
+
   /* create ports */
   create_ports (self);
 
@@ -349,6 +537,29 @@ carla_native_plugin_instantiate (
 }
 
 /**
+ * Tick callback for the plugin UI.
+ */
+static int
+carla_plugin_tick_cb (
+  GtkWidget * widget,
+  GdkFrameClock * frame_clock,
+  CarlaNativePlugin * self)
+{
+  if (self->plugin->visible &&
+      MAIN_WINDOW)
+    {
+      CarlaPluginHandle plugin =
+        carla_native_plugin_get_plugin_handle (
+          self);
+      carla_plugin_ui_idle (plugin);
+
+      return G_SOURCE_CONTINUE;
+    }
+  else
+    return G_SOURCE_REMOVE;
+}
+
+/**
  * Shows or hides the UI.
  */
 void
@@ -356,8 +567,16 @@ carla_native_plugin_show_ui (
   CarlaNativePlugin * self,
   int                 show)
 {
-  self->descriptor->ui_show (
-    self->handle, 1);
+  CarlaPluginHandle plugin =
+    carla_native_plugin_get_plugin_handle (self);
+  carla_plugin_show_custom_ui (
+    plugin, show);
+
+  g_warn_if_fail (MAIN_WINDOW);
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (MAIN_WINDOW),
+    (GtkTickCallback) carla_plugin_tick_cb,
+    self, NULL);
 }
 
 /**

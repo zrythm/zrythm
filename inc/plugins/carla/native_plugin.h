@@ -33,6 +33,7 @@
 #include "CarlaNativePlugin.h"
 
 typedef struct PluginDescriptor PluginDescriptor;
+typedef void * CarlaPluginHandle;
 
 /**
  * @addtogroup plugins
@@ -64,6 +65,25 @@ typedef struct CarlaNativePlugin
 
   /** Pointer back to Plugin. */
   Plugin *                 plugin;
+
+  /** Plugin ID inside carla engine. */
+  unsigned int             carla_plugin_id;
+
+  /** Pointer to the in ports in the Plugin. */
+  StereoPorts *            stereo_in;
+
+  StereoPorts *            cv_in;
+
+  /** Pointer to the in port in the Plugin. */
+  Port *                   midi_in;
+
+  /** Pointer to the out ports in the Plugin. */
+  StereoPorts *            stereo_out;
+
+  StereoPorts *            cv_out;
+
+  /** Pointer to the out port in the Plugin. */
+  Port *                   midi_out;
 } CarlaNativePlugin;
 
 /**
@@ -113,6 +133,13 @@ carla_native_plugin_get_param_info (
 }
 
 /**
+ * Wrapper to get the CarlaPlugin instance.
+ */
+CarlaPluginHandle
+carla_native_plugin_get_plugin_handle (
+  CarlaNativePlugin * self);
+
+/**
  * Wrapper to get param value at given index.
  */
 static inline float
@@ -133,6 +160,15 @@ carla_native_plugin_get_param_value (
 int
 carla_native_plugin_instantiate (
   CarlaNativePlugin * self);
+
+/**
+ * Processes the plugin for this cycle.
+ */
+void
+carla_native_plugin_proces (
+  CarlaNativePlugin * self,
+  const long          g_start_frames,
+  const nframes_t     nframes);
 
 /**
  * Shows or hides the UI.

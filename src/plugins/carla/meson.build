@@ -16,7 +16,9 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 carla_plugin_srcs = [
+  'engine_interface.cpp',
   'native_plugin.c',
+  'plugin_interface.cpp',
   ]
 
 carla_plugin_lib = static_library (

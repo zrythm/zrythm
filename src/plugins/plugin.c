@@ -715,23 +715,19 @@ plugin_process (
   const long      g_start_frames,
   const nframes_t nframes)
 {
-  /* if has MIDI input port */
-  if (plugin->descr->num_midi_ins > 0)
+  switch (plugin->descr->protocol)
     {
-      /* if recording, write MIDI events to the region TODO */
-
-        /* if there is a midi note in this buffer range TODO */
-          /* add midi events to input port */
-    }
-
-  if (plugin->descr->protocol == PROT_LV2)
-    {
+    case PROT_LV2:
       lv2_plugin_process (
         plugin->lv2, g_start_frames, nframes);
+      break;
+    case PROT_CARLA:
+      carla_native_plugin_proces (
+        plugin->carla, g_start_frames, nframes);
+      break;
+    default:
+      g_warn_if_reached ();
     }
-
-  /*g_atomic_int_set (&plugin->processed, 1);*/
-  /*zix_sem_post (&plugin->processed_sem);*/
 }
 
 /**
