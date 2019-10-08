@@ -33,11 +33,30 @@
  */
 
 /**
+ * Returns if the character is ASCII.
+ */
+static inline int
+string_char_is_ascii (
+  const char character)
+{
+  return character >= 32 && character <= 126;
+}
+
+/**
  * Returns if the string is ASCII.
  */
 int
 string_is_ascii (
   const char * string);
+
+/**
+ * Returns a new string up to the character before
+ * the first non-ascii character, or until the
+ * end.
+ */
+char *
+string_stop_at_first_non_ascii (
+  const char * str);
 
 /**
  * Returns the matched string if the string array
@@ -62,6 +81,29 @@ string_contains_substr (
   const char * substr,
   const int    accept_alternatives);
 
+int
+string_ends_with (
+  const char * str,
+  const char * end_str,
+  const int    ignore_case);
+
+/**
+ * Removes non-ascii characters from the given
+ * string.
+ */
+void
+string_remove_non_ascii_chars (
+  char * str);
+
+/**
+ * Removes occurrences of the given character
+ * from the string.
+ */
+void
+string_remove_char (
+  char *     str,
+  const char remove);
+
 /**
  * Returns if the two strings are equal.
  */
@@ -80,6 +122,15 @@ string_is_equal (
 char *
 string_convert_to_filename (
   const char * str);
+
+/**
+ * Returns the index of the first occurrence of
+ * the search char, or -1 if not found.
+ */
+int
+string_index_of_char (
+  const char * str,
+  const char   search_char);
 
 /**
  * Removes any bak, bak1 etc suffixes from the

@@ -29,12 +29,17 @@
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
 #include "utils/arrays.h"
+#include "utils/io.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+
+#ifdef HAVE_CARLA
+#include <CarlaUtils.h>
+#endif
 
 #include <lv2/lv2plug.in/ns/ext/event/event.h>
 #include <lv2/lv2plug.in/ns/ext/options/options.h>
@@ -127,13 +132,11 @@ static int sort_plugin_func (
     /*}*/
 /*}*/
 
-/**
- * scans for plugins.
- */
 static void
-scan_plugins (PluginManager * self)
+scan_and_add_lv2 (
+  PluginManager * self)
 {
-  g_message ("scanning plugins...");
+  g_message ("Scanning LV2...");
 
   /* load all plugins with lilv */
   LilvWorld * world = LILV_WORLD;
@@ -161,24 +164,173 @@ scan_plugins (PluginManager * self)
             self, descriptor->category_str);
         }
     }
+}
 
-  /* add carla */
-  for (int i = CARLA_PLUGIN_RACK;
-       i <= CARLA_PLUGIN_PATCHBAY; i++)
+#ifdef HAVE_CARLA
+static void
+scan_and_add_vst2 (
+  PluginManager * self)
+{
+  char * vst_path =
+    g_strdup (getenv ("VST_PATH"));
+  if (!vst_path)
+    vst_path =
+      g_strdup ("/usr/lib/vst:/usr/local/lib/vst");
+
+  char ** paths =
+    g_strsplit (vst_path, ":", 0);
+  int path_idx = 0;
+  char * path;
+  while ((path = paths[path_idx++]) != NULL)
     {
-      for (int j = 0; j < 2; j++)
+      if (!g_file_test (path, G_FILE_TEST_EXISTS))
+        continue;
+
+      char ** plugins =
+        io_get_files_in_dir_ending_in (
+          path, 1, ".so");
+      if (!plugins)
+        continue;
+
+      char * plugin;
+      int plugin_idx = 0;
+      while ((plugin = plugins[plugin_idx++]) !=
+               NULL)
         {
-          PluginDescriptor * descr =
-            carla_native_plugin_get_descriptor (
-              i, j);
-          g_warn_if_fail (descr);
+          PluginDescriptor * descriptor =
+            carla_native_plugin_get_descriptor_from_path (
+              plugin, PLUGIN_VST2);
+
+          if (descriptor)
+            {
+              /*g_message ("found VST2: %s",*/
+                         /*descriptor->name);*/
+              array_append (
+                self->plugin_descriptors,
+                self->num_plugins,
+                descriptor);
+              add_category (
+                self, descriptor->category_str);
+            }
+        }
+      g_strfreev (plugins);
+    }
+
+  g_free (vst_path);
+}
+#endif
+
+#ifdef HAVE_CARLA
+static void
+scan_and_add_sfz (
+  PluginManager * self)
+{
+  /* scan SFZ */
+  char ** sfz_search_paths =
+    g_settings_get_strv (
+      S_PREFERENCES, "sfz-search-paths");
+  char * path;
+  int path_idx = 0;
+  while ((path = sfz_search_paths[path_idx++]) !=
+           NULL)
+    {
+      if (!g_file_test (path, G_FILE_TEST_EXISTS))
+        continue;
+
+      unsigned int count =
+        carla_get_cached_plugin_count (
+          PLUGIN_SFZ, path);
+      for (unsigned int i = 0; i < count; i++)
+        {
+          const CarlaCachedPluginInfo * info =
+            carla_get_cached_plugin_info (
+              PLUGIN_SFZ, i);
+
+          if (!info->valid)
+            continue;
+
+          PluginDescriptor * descriptor =
+            carla_native_plugin_get_descriptor_from_cached (
+              info, PLUGIN_SFZ);
+          /*g_message ("found SFZ: %s", info->name);*/
 
           array_append (
             self->plugin_descriptors,
             self->num_plugins,
-            descr);
+            descriptor);
+          add_category (
+            self, descriptor->category_str);
         }
     }
+  g_strfreev (sfz_search_paths);
+}
+#endif
+
+#ifdef HAVE_CARLA
+static void
+scan_and_add_sf2 (
+  PluginManager * self)
+{
+  /* scan SF2 */
+  char ** sf2_search_paths =
+    g_settings_get_strv (
+      S_PREFERENCES, "sf2-search-paths");
+  char * path;
+  int path_idx = 0;
+  while ((path = sf2_search_paths[path_idx++]) !=
+           NULL)
+    {
+      if (!g_file_test (path, G_FILE_TEST_EXISTS))
+        continue;
+
+      char ** plugins =
+        io_get_files_in_dir_ending_in (
+          path, 1, ".sf2");
+      if (!plugins)
+        continue;
+
+      char * plugin;
+      int plugin_idx = 0;
+      while ((plugin = plugins[plugin_idx++]) !=
+               NULL)
+        {
+          PluginDescriptor * descriptor =
+            carla_native_plugin_get_descriptor_from_path (
+              plugin, PLUGIN_SF2);
+
+          if (descriptor)
+            {
+              g_message ("found SF2: %s",
+                         descriptor->name);
+              array_append (
+                self->plugin_descriptors,
+                self->num_plugins,
+                descriptor);
+              add_category (
+                self, descriptor->category_str);
+            }
+        }
+      g_strfreev (plugins);
+    }
+  g_strfreev (sf2_search_paths);
+}
+#endif
+
+/**
+ * scans for plugins.
+ */
+static void
+scan_plugins (PluginManager * self)
+{
+  g_message ("scanning plugins...");
+
+  scan_and_add_lv2 (self);
+#ifdef HAVE_CARLA
+  scan_and_add_sfz (self);
+  (void) scan_and_add_sf2;
+  /*scan_and_add_sf2 (self);*/
+  scan_and_add_vst2 (self);
+#endif
 
   /* sort alphabetically */
   qsort (PLUGIN_MANAGER->plugin_descriptors,

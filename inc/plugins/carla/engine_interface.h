@@ -25,7 +25,7 @@
 
 #include "config.h"
 
-#ifdef HAVE_CARLA_NATIVE_PLUGIN
+#ifdef HAVE_CARLA
 
 #ifndef __PLUGINS_CARLA_ENGINE_INTERFACE_H__
 #define __PLUGINS_CARLA_ENGINE_INTERFACE_H__

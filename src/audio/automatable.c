@@ -223,6 +223,7 @@ automatable_create_lv2_control (
   return a;
 }
 
+#ifdef HAVE_CARLA
 /**
  * Creates an automatable for a Carla native
  * plugin control.
@@ -252,6 +253,7 @@ automatable_create_carla_control (
 
   return a;
 }
+#endif
 
 Automatable *
 automatable_create_plugin_enabled (

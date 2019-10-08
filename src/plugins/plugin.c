@@ -129,20 +129,28 @@ plugin_new_from_descr (
     plugin_clone_descr (descr);
   plugin_init (plugin);
 
-  switch (plugin->descr->protocol)
+#ifdef HAVE_CARLA
+  if (plugin->descr->open_with_carla)
     {
-    case PROT_LV2:
-      lv2_create_from_uri (plugin, descr->uri);
-      break;
-    case PROT_CARLA:
       carla_native_plugin_create (plugin);
-      break;
-    default:
-      g_warning (
-        "Plugin protocol %d not supported",
-        plugin->descr->protocol);
-      break;
     }
+  else
+    {
+#endif
+      switch (plugin->descr->protocol)
+        {
+        case PROT_LV2:
+          lv2_create_from_uri (plugin, descr->uri);
+          break;
+        default:
+          g_warning (
+            "Plugin protocol %d not supported",
+            plugin->descr->protocol);
+          break;
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
 
   return plugin;
 }
@@ -191,7 +199,10 @@ plugin_copy_descr (
   dest->protocol = src->protocol;
   dest->path = g_strdup (src->path);
   dest->uri = g_strdup (src->uri);
+#ifdef HAVE_CARLA
+  dest->open_with_carla = src->open_with_carla;
   dest->carla_type = src->carla_type;
+#endif
 }
 
 /**
@@ -425,24 +436,9 @@ plugin_generate_automation_tracks (
     plugin, at);
 
   /* add plugin control automatables */
-  switch (plugin->descr->protocol)
+#ifdef HAVE_CARLA
+  if (plugin->descr->open_with_carla)
     {
-    case PROT_LV2:
-      for (int j = 0;
-           j < plugin->lv2->controls.n_controls;
-           j++)
-        {
-          Lv2Control * control =
-            plugin->lv2->controls.controls[j];
-          a =
-            automatable_create_lv2_control (
-              plugin, control);
-          at = automation_track_new (a);
-          plugin_add_automation_track (
-            plugin, at);
-        }
-      break;
-    case PROT_CARLA:
       for (uint32_t i = 0;
            i <
              carla_native_plugin_get_param_count (
@@ -459,13 +455,36 @@ plugin_generate_automation_tracks (
           plugin_add_automation_track (
             plugin, at);
         }
-      break;
-    default:
-      g_warning (
-        "Plugin protocol not supported yet "
-        "(gen automatables)");
-      break;
     }
+  else
+    {
+#endif
+      switch (plugin->descr->protocol)
+        {
+        case PROT_LV2:
+          for (int j = 0;
+               j < plugin->lv2->controls.n_controls;
+               j++)
+            {
+              Lv2Control * control =
+                plugin->lv2->controls.controls[j];
+              a =
+                automatable_create_lv2_control (
+                  plugin, control);
+              at = automation_track_new (a);
+              plugin_add_automation_track (
+                plugin, at);
+            }
+          break;
+        default:
+          g_warning (
+            "Plugin protocol not supported yet "
+            "(gen automatables)");
+          break;
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
 }
 
 #define IS_CAT(x) \
@@ -639,6 +658,27 @@ plugin_descriptor_string_to_category (
 }
 
 /**
+ * Frees the plugin descriptor.
+ */
+void
+plugin_descriptor_free (
+  PluginDescriptor * self)
+{
+  if (self->category_str)
+    g_free (self->category_str);
+  if (self->author)
+    g_free (self->author);
+  if (self->website)
+    g_free (self->website);
+  if (self->path)
+    g_free (self->path);
+  if (self->uri)
+    g_free (self->uri);
+
+  free (self);
+}
+
+/**
  * Sets the track and track_pos on the plugin.
  */
 void
@@ -677,27 +717,34 @@ plugin_instantiate (
   g_message ("Instantiating %s...",
              pl->descr->name);
 
-  switch (pl->descr->protocol)
+#ifdef HAVE_CARLA
+  if (pl->descr->open_with_carla)
     {
-    case PROT_LV2:
-      g_message ("state file: %s",
-                 pl->lv2->state_file);
-      if (lv2_plugin_instantiate (
-            pl->lv2, NULL))
-        {
-          g_warning ("lv2 instantiate failed");
-          return -1;
-        }
-      break;
-    case PROT_CARLA:
       carla_native_plugin_instantiate (
         pl->carla);
-      break;
-    default:
-      g_warn_if_reached ();
-      return -1;
-      break;
     }
+  else
+    {
+#endif
+      switch (pl->descr->protocol)
+        {
+        case PROT_LV2:
+          g_message ("state file: %s",
+                     pl->lv2->state_file);
+          if (lv2_plugin_instantiate (
+                pl->lv2, NULL))
+            {
+              g_warning ("lv2 instantiate failed");
+              return -1;
+            }
+          break;
+        default:
+          g_return_val_if_reached (-1);
+          break;
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
   pl->enabled = 1;
 
   return 0;
@@ -715,19 +762,27 @@ plugin_process (
   const long      g_start_frames,
   const nframes_t nframes)
 {
-  switch (plugin->descr->protocol)
+#ifdef HAVE_CARLA
+  if (plugin->descr->open_with_carla)
     {
-    case PROT_LV2:
-      lv2_plugin_process (
-        plugin->lv2, g_start_frames, nframes);
-      break;
-    case PROT_CARLA:
       carla_native_plugin_proces (
         plugin->carla, g_start_frames, nframes);
-      break;
-    default:
-      g_warn_if_reached ();
     }
+  else
+    {
+#endif
+      switch (plugin->descr->protocol)
+        {
+        case PROT_LV2:
+          lv2_plugin_process (
+            plugin->lv2, g_start_frames, nframes);
+          break;
+        default:
+          g_warn_if_reached ();
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
 }
 
 /**
@@ -736,26 +791,34 @@ plugin_process (
 void
 plugin_open_ui (Plugin *plugin)
 {
-  switch (plugin->descr->protocol)
+#ifdef HAVE_CARLA
+  if (plugin->descr->open_with_carla)
     {
-    case PROT_LV2:
-      if (GTK_IS_WINDOW (plugin->lv2->window))
-        {
-          gtk_window_present (
-            GTK_WINDOW (plugin->lv2->window));
-        }
-      else
-        {
-          lv2_open_ui (plugin->lv2);
-        }
-      break;
-    case PROT_CARLA:
       carla_native_plugin_show_ui (
         plugin->carla, 1);
-      break;
-    default:
-      g_return_if_reached ();
     }
+  else
+    {
+#endif
+      switch (plugin->descr->protocol)
+        {
+        case PROT_LV2:
+          if (GTK_IS_WINDOW (plugin->lv2->window))
+            {
+              gtk_window_present (
+                GTK_WINDOW (plugin->lv2->window));
+            }
+          else
+            {
+              lv2_open_ui (plugin->lv2);
+            }
+          break;
+        default:
+          g_return_if_reached ();
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
 }
 
 /**
@@ -828,10 +891,12 @@ plugin_clone (
       /* delete the state file */
       io_remove (pl->lv2->state_file);
     }
-  else if (prot == PROT_CARLA)
+#ifdef HAVE_CARLA
+  else if (prot == PROT_CARLA_INTERNAL)
     {
       /* TODO */
     }
+#endif
 
   g_return_val_if_fail (clone, NULL);
   clone->slot = pl->slot;

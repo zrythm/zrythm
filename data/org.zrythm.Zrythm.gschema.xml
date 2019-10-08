@@ -204,7 +204,7 @@
         be auto-connected.</description>
     </key>
 
-    <!-- Selected language -->
+    <!-- KEY: language -->
     <key name="language"
       enum="org.zrythm.Zrythm.preferences.language-enum">
       <default>"english"</default>
@@ -214,6 +214,7 @@
       </description>
     </key>
 
+    <!-- KEY: open-plugin-uis-on-instantiate -->
     <key name="open-plugin-uis-on-instantiate" type="i">
       <default>1</default>
       <summary>Open plugin UIs when they are instantiated</summary>
@@ -221,6 +222,26 @@
         Open plugin UIs when they are dragged and
         dropped or activated in the plugin browser
         or not.
+      </description>
+    </key>
+
+    <!-- KEY: sfz-search-path -->
+    <key name="sfz-search-paths" type="as">
+      <default>[]</default>
+      <summary>Search paths for SFZ instruments</summary>
+      <description>
+        The search paths to scan for SFZ
+        instruments.
+      </description>
+    </key>
+
+    <!-- KEY: sf2-search-path -->
+    <key name="sf2-search-paths" type="as">
+      <default>[]</default>
+      <summary>Search paths for SF2 instruments</summary>
+      <description>
+        The search paths to scan for SF2
+        instruments.
       </description>
     </key>
 

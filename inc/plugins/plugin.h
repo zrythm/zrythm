@@ -92,13 +92,28 @@ typedef enum PluginProtocol
 {
   /** LV2 plugin. */
   PROT_LV2,
+  /** DSSI. */
   PROT_DSSI,
+  /** LADSPA. */
   PROT_LADSPA,
+  /** VST2. */
   PROT_VST,
+  /** VST3. **/
   PROT_VST3,
-
-  /** Carla native plugin. */
-  PROT_CARLA,
+  /** AU (Mac). */
+  PROT_AU,
+  /** SoundFont 2 file. */
+  PROT_SF2,
+  /** SoundFont file. */
+  PROT_SFZ,
+  /** JACK application. */
+  PROT_JACK,
+#ifdef HAVE_CARLA
+  /** Carla internal plugin (rack, patchbay, or
+   * other plugins that are maintained by Carla
+   * such as Bypass and LFO). */
+  PROT_CARLA_INTERNAL,
+#endif
 } PluginProtocol;
 
 typedef enum PluginArchitecture
@@ -140,12 +155,18 @@ typedef struct PluginDescriptor
   PluginArchitecture   arch;
   /** Plugin protocol (Lv2/DSSI/LADSPA/VST...). */
   PluginProtocol       protocol;
-  /** Path, if not an Lv2Plugin which uses URIs. */
+  /** Path, if not an Lv2Plugin which uses URIs.
+   * Carla will use this. */
   char                 * path;
   /** Lv2Plugin URI. */
   char                 * uri;
-  /** Carla plugin type, if Carla. */
+#ifdef HAVE_CARLA_NATIVE_PLUGIN
+  /** 1 if this plugin is to be instantiated
+   * through Carla. */
+  int              open_with_carla;
+  /** Carla plugin type, if Carla internal plugin. */
   CarlaPluginType  carla_type;
+#endif
 } PluginDescriptor;
 
 /**
@@ -157,8 +178,10 @@ typedef struct Plugin
   /** Pointer LV2 plugin, if LV2. */
   Lv2Plugin *          lv2;
 
+#ifdef HAVE_CARLA
   /** Pointer to CarlaNativePlugin, if Carla. */
   CarlaNativePlugin *  carla;
+#endif
 
   /** Descriptor. */
   PluginDescriptor *   descr;
@@ -262,7 +285,8 @@ descriptor_fields_schema[] =
     PluginDescriptor, name,
    	0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
-    "website", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    "website",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     PluginDescriptor, website,
    	0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
@@ -474,6 +498,13 @@ plugin_descriptor_is_midi_modifier (
 ZPluginCategory
 plugin_descriptor_string_to_category (
   const char * str);
+
+/**
+ * Frees the plugin descriptor.
+ */
+void
+plugin_descriptor_free (
+  PluginDescriptor * self);
 
 /**
  * Moves the Plugin's automation from one Channel

@@ -20,11 +20,15 @@
 #ifndef __AUDIO_AUTOMATABLE_H__
 #define __AUDIO_AUTOMATABLE_H__
 
+#include "config.h"
+
 #include "audio/port.h"
 #include "plugins/lv2/control.h"
 #include "utils/yaml.h"
 
+#ifdef HAVE_CARLA
 #include "CarlaNativePlugin.h"
+#endif
 
 #define IS_AUTOMATABLE_LV2_CONTROL(x) x->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL && \
                                    x->control
@@ -188,6 +192,7 @@ automatable_create_lv2_control (
   Plugin *       plugin,
   Lv2Control * control);
 
+#ifdef HAVE_CARLA
 /**
  * Creates an automatable for a Carla native
  * plugin control.
@@ -196,6 +201,7 @@ Automatable *
 automatable_create_carla_control (
   Plugin *          plugin,
   const NativeParameter * param);
+#endif
 
 Automatable *
 automatable_create_plugin_enabled (Plugin * plugin);

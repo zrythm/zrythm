@@ -17,8 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
+#ifdef HAVE_CARLA
+
 #include "plugins/carla/engine_interface.h"
-#include "CarlaEngine.hpp"
+#include <CarlaEngine.hpp>
 
 extern "C"
 {
@@ -81,3 +85,5 @@ carla_engine_get_plugin (
 #undef GET_ENGINE
 
 }
+
+#endif // if HAVE_CARLA

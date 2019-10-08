@@ -21,10 +21,14 @@
 
 #include <string.h>
 
+#include "utils/arrays.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
 
+/**
+ * Returns if the string is ASCII.
+ */
 int
 string_is_ascii (const char * string)
 {
@@ -33,13 +37,31 @@ string_is_ascii (const char * string)
     return 0;
   for (i = 0; i < strlen (string); i++)
     {
-      if (string[i] < 32 ||
-          string[i] > 126)
+      if (!string_char_is_ascii (string[i]))
         {
           return 0;
         }
     }
   return 1;
+}
+
+/**
+ * Returns a new string up to the character before
+ * the first non-ascii character, or until the
+ * end.
+ */
+char *
+string_stop_at_first_non_ascii (
+  const char * str)
+{
+  for (int i = 0; i < (int) strlen (str); i++)
+    {
+      if (!string_char_is_ascii (str[i]))
+        return
+          g_strdup_printf (
+            "%.*s", i, str);
+    }
+  return g_strdup (str);
 }
 
 /**
@@ -115,6 +137,16 @@ string_contains_substr (
       accept_alternatives);
 }
 
+int
+string_ends_with (
+  const char * str,
+  const char * end_str,
+  const int    ignore_case)
+{
+  /* TODO */
+  g_return_val_if_reached (-1);
+}
+
 /**
  * Returns a newly allocated string that is a
  * filename version of the given string.
@@ -150,6 +182,79 @@ string_convert_to_filename (
         new_str[i] = '_';
     }
   return new_str;
+}
+
+/**
+ * Removes non-ascii characters from the given
+ * string.
+ */
+void
+string_remove_non_ascii_chars (
+  char * str)
+{
+  int count, len;
+  for (len = 0; str[len] != '\0'; ++len);
+  g_warn_if_fail (len > 0);
+
+  count = len - 1;
+  while (count >= 0 && str[count] != 0)
+    {
+      char chr = str[count];
+      if (chr < 32 ||
+          chr > 126)
+        {
+          array_delete (
+            str, len, chr);
+          len--;
+        }
+      count--;
+    }
+}
+
+/**
+ * Removes occurrences of the given character
+ * from the string.
+ */
+void
+string_remove_char (
+  char *     str,
+  const char remove)
+{
+  int count, len;
+  for (len = 0; str[len] != '\0'; ++len);
+  g_warn_if_fail (len > 0);
+
+  count = len - 1;
+  while (count >= 0 && str[count] != 0)
+    {
+      char chr = str[count];
+      if (chr == remove)
+        {
+          array_delete (
+            str, len, chr);
+          len--;
+        }
+      count--;
+    }
+}
+
+/**
+ * Returns the index of the first occurrence of
+ * the search char, or -1 if not found.
+ */
+int
+string_index_of_char (
+  const char * str,
+  const char   search_char)
+{
+  int len = (int) strlen (str);
+  for (int i = 0; i < len; i++)
+    {
+      if (str[i] == search_char)
+        return i;
+    }
+
+  return -1;
 }
 
 /**

@@ -117,9 +117,23 @@ io_rmdir (
  * @return a NULL terminated array of strings that
  *   must be free'd with g_strfreev().
  */
+#define io_get_files_in_dir(dir) \
+  io_get_files_in_dir_ending_in (dir, 0, NULL)
+
+/**
+ * Returns a list of the files in the given
+ * directory.
+ *
+ * @param dir The directory to look for.
+ *
+ * @return a NULL terminated array of strings that
+ *   must be free'd with g_strfreev().
+ */
 char **
-io_get_files_in_dir (
-  const char * dir);
+io_get_files_in_dir_ending_in (
+  const char * dir,
+  const int    recursive,
+  const char * end_string);
 
 /**
  * Returns a newly allocated path that is either

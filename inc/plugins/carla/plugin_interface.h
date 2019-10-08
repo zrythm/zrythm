@@ -25,7 +25,7 @@
 
 #include "config.h"
 
-#ifdef HAVE_CARLA_NATIVE_PLUGIN
+#ifdef HAVE_CARLA
 
 #ifndef __PLUGINS_CARLA_PLUGIN_INTERFACE_H__
 #define __PLUGINS_CARLA_PLUGIN_INTERFACE_H__
@@ -55,6 +55,66 @@ carla_plugin_process (
   const float ** const cv_in,
   float ** const cv_out,
   const uint32_t frames);
+
+void
+carla_plugin_get_real_name (
+  CarlaPluginHandle handle,
+  char * const      name);
+
+void
+carla_plugin_get_maker (
+  CarlaPluginHandle handle,
+  char * const      name);
+
+int
+carla_plugin_get_category (
+  CarlaPluginHandle handle);
+
+uint32_t
+carla_plugin_get_audio_in_count (
+  CarlaPluginHandle handle);
+
+uint32_t
+carla_plugin_get_audio_out_count (
+  CarlaPluginHandle handle);
+
+uint32_t
+carla_plugin_get_cv_in_count (
+  CarlaPluginHandle handle);
+
+uint32_t
+carla_plugin_get_cv_out_count (
+  CarlaPluginHandle handle);
+
+uint32_t
+carla_plugin_get_midi_in_count (
+  CarlaPluginHandle handle);
+
+uint32_t
+carla_plugin_get_midi_out_count (
+  CarlaPluginHandle handle);
+
+uint32_t
+carla_plugin_get_parameter_count (
+  CarlaPluginHandle handle);
+
+uint32_t
+carla_plugin_get_parameter_in_count (
+  CarlaPluginHandle handle);
+
+uint32_t
+carla_plugin_get_parameter_out_count (
+  CarlaPluginHandle handle);
+
+int
+carla_plugin_save_state_to_file (
+  CarlaPluginHandle handle,
+  const char * const filename);
+
+int
+carla_plugin_load_state_from_file (
+  CarlaPluginHandle handle,
+  const char * const filename);
 
 #ifdef __cplusplus
 }

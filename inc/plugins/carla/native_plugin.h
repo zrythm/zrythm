@@ -25,12 +25,13 @@
 
 #include "config.h"
 
-#ifdef HAVE_CARLA_NATIVE_PLUGIN
+#ifdef HAVE_CARLA
 
 #ifndef __PLUGINS_CARLA_NATIVE_PLUGIN_H__
 #define __PLUGINS_CARLA_NATIVE_PLUGIN_H__
 
-#include "CarlaNativePlugin.h"
+#include <CarlaNativePlugin.h>
+#include <CarlaUtils.h>
 
 typedef struct PluginDescriptor PluginDescriptor;
 typedef void * CarlaPluginHandle;
@@ -46,6 +47,7 @@ typedef void * CarlaPluginHandle;
  */
 typedef enum CarlaPluginType
 {
+  CARLA_PLUGIN_NONE,
   CARLA_PLUGIN_RACK,
   CARLA_PLUGIN_PATCHBAY,
   CARLA_PLUGIN_PATCHBAY16,
@@ -59,7 +61,7 @@ typedef struct CarlaNativePlugin
   NativeHostDescriptor     host;
   const NativePluginDescriptor * descriptor;
 
-  uint32_t                 midi_event_count;
+  uint32_t                 num_midi_events;
   NativeMidiEvent          midi_events[200];
   NativeTimeInfo           time_info;
 
@@ -90,22 +92,30 @@ typedef struct CarlaNativePlugin
  * Creates an instance of a CarlaNativePlugin inside
  * the given Plugin.
  *
- * The given Plugin must have its descriptor filled in.
+ * The given Plugin must have its descriptor filled
+ * in.
  */
 void
 carla_native_plugin_create (
   Plugin * plugin);
 
 /**
- * Returns a filled in descriptor for the given
- * type.
- *
- * @param ins Set the descriptor to be an instrument.
+ * Returns a filled in descriptor from the
+ * given binary path.
  */
 PluginDescriptor *
-carla_native_plugin_get_descriptor (
-  CarlaPluginType type,
-  int             ins);
+carla_native_plugin_get_descriptor_from_path (
+  const char * path,
+  PluginType   type);
+
+/**
+ * Returns a filled in descriptor from the
+ * CarlaCachedPluginInfo.
+ */
+PluginDescriptor *
+carla_native_plugin_get_descriptor_from_cached (
+  const CarlaCachedPluginInfo * info,
+  PluginType              type);
 
 /**
  * Wrapper to get param count.
@@ -200,4 +210,4 @@ carla_native_plugin_free (
 
 #endif // header guard
 
-#endif // HAVE_CARLA_NATIVE_PLUGIN
+#endif // HAVE_CARLA

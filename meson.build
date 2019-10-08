@@ -206,7 +206,7 @@ test_strict_cflags = [
   '-Werror=overlength-strings',
   '-Werror=stringop-truncation',
   '-Werror=missing-declarations',
-  '-Werror=redundant-decls',
+  #'-Werror=redundant-decls',
   '-Werror=shadow',
   '-Werror=undef',
   '-Werror=unused',
@@ -332,23 +332,11 @@ cyaml_dep = dependency(
 if (cyaml_dep.found ())
   cdata.set('HAVE_CYAML', 1)
 endif
+
 carla_native_plugin_dep = dependency(
   'carla-native-plugin', required: false)
-if (carla_native_plugin_dep.found ())
-  cdata.set('HAVE_CARLA_NATIVE_PLUGIN', 1)
-  carla_native_plugin_dep = declare_dependency(
-    link_args: [
-      '-Wl,-rpath=/usr/lib/carla',
-      '-L/usr/lib/carla',
-      '-lcarla_native-plugin',
-      ],
-    compile_args: [
-      '-DREAL_BUILD',
-      '-I/usr/include/carla',
-      '-I/usr/include/carla/includes'
-      ])
-endif
-
+carla_utils_dep = dependency(
+  'carla-utils', required: false)
 qt5_dep = dependency('Qt5Widgets', required: false)
 yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.22')
@@ -364,7 +352,6 @@ zrythm_deps = [
   alsa_dep,
   suil_dep,
   cyaml_dep,
-  carla_native_plugin_dep,
   dependency('threads'),
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),
@@ -376,6 +363,42 @@ zrythm_deps = [
 if (qt5_dep.found() and get_option('enable_qt5'))
   cdata.set('HAVE_QT5', 1)
   zrythm_deps += qt5_dep
+endif
+
+if (carla_native_plugin_dep.found() and carla_utils_dep.found() and get_option('enable_carla'))
+  cdata.set('HAVE_CARLA', 1)
+  # workaround because carla's pc files are broken
+  carla_includedir = carla_native_plugin_dep.get_pkgconfig_variable('includedir')
+  carla_libdir = carla_native_plugin_dep.get_pkgconfig_variable('libdir')
+  carla_native_plugin_dep = declare_dependency(
+    link_args: [
+      '-Wl,-rpath=' + carla_libdir,
+      '-L' + carla_libdir,
+      '-lcarla_native-plugin',
+      ],
+    compile_args: [
+      '-DREAL_BUILD',
+      '-I' + carla_includedir,
+      '-I' + join_paths (carla_includedir, 'includes'),
+      ])
+  # workaround because carla's pc files are broken
+  carla_includedir = carla_utils_dep.get_pkgconfig_variable('includedir')
+  carla_libdir = carla_utils_dep.get_pkgconfig_variable('libdir')
+  carla_utils_dep = declare_dependency(
+    link_args: [
+      '-Wl,-rpath=' + carla_libdir,
+      '-L' + carla_libdir,
+      '-lcarla_utils',
+      ],
+    compile_args: [
+      '-DREAL_BUILD',
+      '-I' + carla_includedir,
+      '-I' + join_paths (carla_includedir, 'includes'),
+      '-I' + join_paths (carla_includedir, 'utils'),
+      ])
+  zrythm_deps += [
+    carla_native_plugin_dep,
+    carla_utils_dep, ]
 endif
 
 if os_linux

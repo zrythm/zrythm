@@ -17,6 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
+#ifdef HAVE_CARLA
+
 #include "plugins/carla/plugin_interface.h"
 #include "CarlaPlugin.hpp"
 
@@ -58,4 +62,129 @@ carla_plugin_process (
     audio_in, audio_out, cv_in, cv_out, frames);
 }
 
+void
+carla_plugin_get_real_name (
+  CarlaPluginHandle handle,
+  char * const      name)
+{
+  GET_PLUGIN;
+  plugin->getRealName (name);
 }
+
+void
+carla_plugin_get_maker (
+  CarlaPluginHandle handle,
+  char * const      name)
+{
+  GET_PLUGIN;
+  plugin->getMaker (name);
+}
+
+
+int
+carla_plugin_get_category (
+  CarlaPluginHandle handle)
+{
+  GET_PLUGIN;
+  return plugin->getCategory ();
+}
+
+uint32_t
+carla_plugin_get_audio_in_count (
+  CarlaPluginHandle handle)
+{
+  GET_PLUGIN;
+  return plugin->getAudioInCount ();
+}
+
+uint32_t
+carla_plugin_get_audio_out_count (
+  CarlaPluginHandle handle)
+{
+  GET_PLUGIN;
+  return plugin->getAudioOutCount ();
+}
+
+uint32_t
+carla_plugin_get_cv_in_count (
+  CarlaPluginHandle handle)
+{
+  GET_PLUGIN;
+  return plugin->getCVInCount ();
+}
+
+uint32_t
+carla_plugin_get_cv_out_count (
+  CarlaPluginHandle handle)
+{
+  GET_PLUGIN;
+  return plugin->getCVOutCount ();
+}
+
+uint32_t
+carla_plugin_get_midi_in_count (
+  CarlaPluginHandle handle)
+{
+  GET_PLUGIN;
+  return plugin->getMidiInCount ();
+}
+
+uint32_t
+carla_plugin_get_midi_out_count (
+  CarlaPluginHandle handle)
+{
+  GET_PLUGIN;
+  return plugin->getMidiOutCount ();
+}
+
+uint32_t
+carla_plugin_get_parameter_count (
+  CarlaPluginHandle handle)
+{
+  GET_PLUGIN;
+  return plugin->getParameterCount ();
+}
+
+uint32_t
+carla_plugin_get_parameter_in_count (
+  CarlaPluginHandle handle)
+{
+  GET_PLUGIN;
+  uint32_t ins, outs;
+  plugin->getParameterCountInfo (
+    ins, outs);
+  return ins;
+}
+
+uint32_t
+carla_plugin_get_parameter_out_count (
+  CarlaPluginHandle handle)
+{
+  GET_PLUGIN;
+  uint32_t ins, outs;
+  plugin->getParameterCountInfo (
+    ins, outs);
+  return outs;
+}
+
+int
+carla_plugin_save_state_to_file (
+  CarlaPluginHandle handle,
+  const char * const filename)
+{
+  GET_PLUGIN;
+  return plugin->saveStateToFile (filename);
+}
+
+int
+carla_plugin_load_state_from_file (
+  CarlaPluginHandle handle,
+  const char * const filename)
+{
+  GET_PLUGIN;
+  return plugin->loadStateFromFile (filename);
+}
+
+}
+
+#endif // HAVE_CARLA

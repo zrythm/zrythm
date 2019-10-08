@@ -171,8 +171,10 @@ init_recent_projects ()
         }
 
       ZRYTHM->recent_projects[
-        ZRYTHM->num_recent_projects++] = prj;
+        ZRYTHM->num_recent_projects++] =
+          g_strdup (prj);
     }
+  g_strfreev (recent_projects);
 
   /* set last element to NULL because the call
    * takes a NULL terminated array */
