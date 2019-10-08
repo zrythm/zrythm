@@ -30,115 +30,6 @@ G_DEFINE_TYPE (TrackLaneWidget,
                track_lane_widget,
                GTK_TYPE_GRID)
 
-static void
-on_midi_channels_changed (
-  GtkComboBox * widget,
-  TrackLaneWidget * self)
-{
-  const char * id =
-    gtk_combo_box_get_active_id (widget);
-
-  if (!id)
-    return;
-
-  TrackLane * lane = self->lane;
-  if (string_is_equal (id, "inherit", 1))
-    {
-      lane->midi_ch = 0;
-    }
-  else
-    {
-      char * str;
-      for (int i = 1; i <= 16; i++)
-        {
-          str =
-            g_strdup_printf (
-              "%d", i);
-          if (string_is_equal (
-                str, id, 1))
-            {
-              lane->midi_ch = (uint8_t) i;
-              g_free (str);
-              break;
-            }
-          g_free (str);
-        }
-    }
-}
-
-static int
-row_separator_func (
-  GtkTreeModel *model,
-  GtkTreeIter *iter,
-  TrackLaneWidget * self)
-{
-  GValue a = G_VALUE_INIT;
-  /*g_value_init (&a, G_TYPE_STRING);*/
-  gtk_tree_model_get_value (model, iter, 0, &a);
-  const char * val = g_value_get_string (&a);
-  if (val && string_is_equal (val, "separator", 1))
-    return 1;
-  else
-    return 0;
-}
-
-static void
-setup_midi_channels_cb (
-  TrackLaneWidget * self)
-{
-  GtkComboBoxText * cb = self->midi_ch_cb;
-
-  gtk_combo_box_text_remove_all (
-    cb);
-
-  gtk_combo_box_text_append (
-    cb,
-    "inherit", _("Inherit"));
-  gtk_combo_box_text_append (
-    cb,
-    "separator", "separator");
-
-  char * id, * lbl;
-  for (int i = 1; i <= 16; i++)
-    {
-      id = g_strdup_printf ("%d", i);
-      lbl = g_strdup_printf (_("Channel %s"), id);
-
-      gtk_combo_box_text_append (
-        cb,
-        id, lbl);
-
-      g_free (id);
-      g_free (lbl);
-    }
-
-  gtk_widget_set_visible (
-    GTK_WIDGET (cb), 1);
-
-  /* select the correct value */
-  TrackLane * lane = self->lane;
-  GValue a = G_VALUE_INIT;
-  g_value_init (&a, G_TYPE_STRING);
-  if (lane->midi_ch > 0)
-    {
-      g_message ("setting %d", lane->midi_ch);
-      id = g_strdup_printf ("%d", lane->midi_ch);
-      g_value_set_string (&a, id);
-      g_free (id);
-    }
-  else if (lane->midi_ch == 0)
-    {
-      g_value_set_string (&a, "inherit");
-    }
-  else
-    g_warn_if_reached ();
-
-  g_object_set_property (
-    G_OBJECT (cb),
-    "active-id",
-    &a);
-}
-
 /**
  * Updates changes in the backend to the ui.
  */
@@ -149,10 +40,6 @@ track_lane_widget_refresh (
   gtk_label_set_text (
     self->label,
     self->lane->name);
-
-  /* setup midi channels combo box */
-  if (track_has_piano_roll (self->lane->track))
-    setup_midi_channels_cb (self);
 }
 
 TrackLaneWidget *
@@ -163,21 +50,6 @@ track_lane_widget_new (
     g_object_new (TRACK_LANE_WIDGET_TYPE, NULL);
 
   self->lane = lane;
-
-  /* setup midi channel box */
-  if (track_has_piano_roll (lane->track))
-    {
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->midi_ch_box), 1);
-      gtk_combo_box_set_row_separator_func (
-        GTK_COMBO_BOX (self->midi_ch_cb),
-        (GtkTreeViewRowSeparatorFunc)
-          row_separator_func,
-        self, NULL);
-      g_signal_connect (
-        self->midi_ch_cb, "changed",
-        G_CALLBACK (on_midi_channels_changed), self);
-    }
 
   track_lane_widget_refresh (
     self);
@@ -207,8 +79,6 @@ track_lane_widget_class_init (
   BIND_CHILD (label);
   BIND_CHILD (mute);
   BIND_CHILD (solo);
-  BIND_CHILD (midi_ch_box);
-  BIND_CHILD (midi_ch_cb);
 }
 
 static void

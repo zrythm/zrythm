@@ -45,10 +45,6 @@ typedef struct _TrackLaneWidget
   GtkToggleButton *    solo;
   GtkToggleButton *    mute;
 
-  /** MIDI channel selector. */
-  GtkBox *             midi_ch_box;
-  GtkComboBoxText *    midi_ch_cb;
-
   /** Pointer to backend. */
   TrackLane *          lane;
 } TrackLaneWidget;

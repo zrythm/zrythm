@@ -32,84 +32,6 @@ G_DEFINE_TYPE (TrackPropertiesExpanderWidget,
                track_properties_expander_widget,
                TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
-static void
-on_midi_channels_changed (
-  GtkComboBox * widget,
-  TrackPropertiesExpanderWidget * self)
-{
-  const char * id =
-    gtk_combo_box_get_active_id (widget);
-
-  if (!id)
-    return;
-
-  Track * track = self->track;
-  g_warn_if_fail (track);
-  char * str;
-  for (int i = 1; i <= 16; i++)
-    {
-      str =
-        g_strdup_printf (
-          "%d", i);
-      if (string_is_equal (
-            str, id, 1))
-        {
-          track->midi_ch = (uint8_t) i;
-          g_free (str);
-          break;
-        }
-      g_free (str);
-    }
-}
-
-static void
-setup_piano_roll_midi_channels_cb (
-  TrackPropertiesExpanderWidget * self)
-{
-  GtkComboBoxText * cb = self->piano_roll_midi_ch;
-
-  gtk_combo_box_text_remove_all (cb);
-
-  char * id, * lbl;
-  for (int i = 1; i <= 16; i++)
-    {
-      id = g_strdup_printf ("%d", i);
-      lbl =
-        g_strdup_printf (_("MIDI Channel %s"), id);
-
-      gtk_combo_box_text_append (
-        cb,
-        id, lbl);
-
-      g_free (id);
-      g_free (lbl);
-    }
-
-  gtk_widget_set_visible (
-    GTK_WIDGET (cb), 1);
-
-  /* select the correct value */
-  Track * track = self->track;
-  GValue a = G_VALUE_INIT;
-  g_value_init (&a, G_TYPE_STRING);
-  if (track->midi_ch > 0)
-    {
-      id =
-        g_strdup_printf ("%d", track->midi_ch);
-      g_value_set_string (&a, id);
-      g_free (id);
-    }
-
-  g_object_set_property (
-    G_OBJECT (cb),
-    "active-id",
-    &a);
-
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (cb),
-    _("MIDI channel to send piano roll events to"));
-}
-
 /**
  * Refreshes each field.
  */
@@ -120,26 +42,6 @@ track_properties_expander_widget_refresh (
 {
   g_warn_if_fail (track);
   self->track = track;
-
-  /* set midi channel for piano roll */
-  if (track_has_piano_roll (self->track))
-    {
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->piano_roll_midi_ch), 1);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->piano_roll_midi_ch_lbl),
-        1);
-      setup_piano_roll_midi_channels_cb (
-        self);
-    }
-  else
-    {
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->piano_roll_midi_ch), 0);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->piano_roll_midi_ch_lbl),
-        0);
-    }
 
   route_target_selector_widget_refresh (
     self->direct_out, track->channel);
@@ -206,24 +108,6 @@ track_properties_expander_widget_setup (
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->direct_out));
-
-  /* add piano roll channel */
-  self->piano_roll_midi_ch =
-    GTK_COMBO_BOX_TEXT (
-      gtk_combo_box_text_new ());
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->piano_roll_midi_ch), 1);
-  g_signal_connect (
-    self->piano_roll_midi_ch, "changed",
-    G_CALLBACK (on_midi_channels_changed), self);
-  CREATE_LABEL (_("Piano Roll"));
-  self->piano_roll_midi_ch_lbl = lbl;
-  two_col_expander_box_widget_add_single (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    lbl);
-  two_col_expander_box_widget_add_single (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    GTK_WIDGET (self->piano_roll_midi_ch));
 
 #undef CREATE_LABEL
 

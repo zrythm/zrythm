@@ -91,49 +91,6 @@
       </packing>
     </child>
     <child>
-      <object class="GtkBox" id="midi_ch_box">
-        <property name="visible">False</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">4</property>
-        <property name="margin_right">4</property>
-        <property name="margin_top">2</property>
-        <property name="margin_bottom">2</property>
-        <property name="spacing">2</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">MIDI Ch</property>
-            <attributes>
-              <attribute name="font-desc" value="Sans Bold 8"/>
-            </attributes>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkComboBoxText" id="midi_ch_cb">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="tooltip_text" translatable="yes">MIDI channel for this lane</property>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">2</property>
-        <property name="width">2</property>
-      </packing>
-    </child>
-    <child>
       <placeholder/>
     </child>
     <child>

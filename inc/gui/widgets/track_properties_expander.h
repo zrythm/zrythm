@@ -62,12 +62,6 @@ typedef struct _TrackPropertiesExpanderWidget
    */
   EditableLabelWidget *   name;
 
-  /** Piano roll MIDI channel selector. */
-  GtkComboBoxText *       piano_roll_midi_ch;
-
-  /** Label for showing/hiding. */
-  GtkWidget *             piano_roll_midi_ch_lbl;
-
   RouteTargetSelectorWidget * direct_out;
 
   /* TODO midi inputs, etc. See Instrument Track
