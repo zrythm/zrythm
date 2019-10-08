@@ -175,4 +175,3 @@ widget_srcs = [
 zrythm_srcs += files (widget_srcs)
 
 subdir ('dzl')
-subdir ('gtk')
