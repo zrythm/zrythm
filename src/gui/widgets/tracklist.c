@@ -20,6 +20,8 @@
 /** \file
  */
 
+#include "actions/copy_tracks_action.h"
+#include "actions/move_tracks_action.h"
 #include "audio/audio_bus_track.h"
 #include "audio/channel.h"
 #include "audio/chord_track.h"
@@ -66,6 +68,212 @@ on_resize_end (TracklistWidget * self,
     "position",
     &a);
   track->handle_pos = g_value_get_int (&a);
+}
+
+static void
+on_drag_leave (
+  GtkWidget      *widget,
+  GdkDragContext *context,
+  guint           time,
+  TracklistWidget * self)
+{
+  Track * track;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track = TRACKLIST->tracks[i];
+      if (track->visible &&
+          track->widget)
+        {
+          track_widget_do_highlight (
+            track->widget, 0, 0, 0);
+        }
+
+    }
+}
+
+static void
+on_drag_motion (
+  GtkWidget *widget,
+  GdkDragContext *context,
+  gint x,
+  gint y,
+  guint time,
+  TracklistWidget * self)
+{
+  GdkModifierType mask;
+  z_gtk_widget_get_mask (
+    widget, &mask);
+  if (mask & GDK_CONTROL_MASK)
+    gdk_drag_status (context, GDK_ACTION_COPY, time);
+  else
+    gdk_drag_status (context, GDK_ACTION_MOVE, time);
+
+  /* get track widget at the x,y point */
+  GList *children, *iter;
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (self));
+  TrackWidget * hit_tw = NULL;
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      if (Z_IS_TRACK_WIDGET (iter->data))
+        {
+          TrackWidget * tw =
+            Z_TRACK_WIDGET (iter->data);
+
+          if (ui_is_child_hit (
+                GTK_WIDGET (self),
+                GTK_WIDGET (tw),
+                1, 1, x, y, 0, 1))
+            {
+              hit_tw = tw;
+            }
+          else
+            {
+              track_widget_do_highlight (
+                tw, x, y, 0);
+            }
+        }
+    }
+  g_list_free(children);
+
+  if (hit_tw)
+    {
+      GtkAllocation allocation;
+      gtk_widget_get_allocation (
+        GTK_WIDGET (hit_tw),
+        &allocation);
+
+      gint wx, wy;
+      gtk_widget_translate_coordinates (
+        GTK_WIDGET (self),
+        GTK_WIDGET (hit_tw),
+        (int) x, (int) y, &wx, &wy);
+      track_widget_do_highlight (
+        hit_tw, wx, wy, 1);
+    }
+}
+
+static void
+on_drag_data_received (
+  GtkWidget        *widget,
+  GdkDragContext   *context,
+  gint              x,
+  gint              y,
+  GtkSelectionData *data,
+  guint             info,
+  guint             time,
+  TracklistWidget * self)
+{
+  g_message ("drag data received on tracklist");
+
+  /* get track widget at the x,y point */
+  GList *children, *iter;
+  children =
+    gtk_container_get_children (
+      GTK_CONTAINER (self));
+  TrackWidget * hit_tw = NULL;
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      if (Z_IS_TRACK_WIDGET (iter->data))
+        {
+          TrackWidget * tw =
+            Z_TRACK_WIDGET (iter->data);
+
+          if (ui_is_child_hit (
+                GTK_WIDGET (self),
+                GTK_WIDGET (tw),
+                1, 1, x, y, 0, 1))
+            {
+              hit_tw = tw;
+            }
+          else
+            {
+              track_widget_do_highlight (
+                tw, x, y, 0);
+            }
+        }
+    }
+  g_list_free(children);
+
+  g_return_if_fail (hit_tw);
+
+  TRACK_WIDGET_GET_PRIVATE (hit_tw);
+  Track * this = tw_prv->track;
+
+  /* determine if moving or copying */
+  GdkDragAction action =
+    gdk_drag_context_get_selected_action (
+      context);
+
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (
+    GTK_WIDGET (hit_tw),
+    &allocation);
+
+  gint wx, wy;
+  gtk_widget_translate_coordinates (
+    GTK_WIDGET (self),
+    GTK_WIDGET (hit_tw),
+    (int) x, (int) y, &wx, &wy);
+
+  int h =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (hit_tw));
+
+  /* determine position to move to */
+  int pos;
+  if (wy < h / 2)
+    {
+      if (this->pos <=
+          MW_MIXER->start_drag_track->pos)
+        pos = this->pos;
+      else
+        {
+          Track * prev =
+            tracklist_get_prev_visible_track (
+              TRACKLIST, this);
+          pos =
+            prev ? prev->pos : this->pos;
+        }
+    }
+  else
+    {
+      if (this->pos >=
+          MW_MIXER->start_drag_track->pos)
+        pos = this->pos;
+      else
+        {
+          Track * next =
+            tracklist_get_next_visible_track (
+              TRACKLIST, this);
+          pos =
+            next ? next->pos : this->pos;
+        }
+    }
+
+  UndoableAction * ua = NULL;
+  if (action == GDK_ACTION_COPY)
+    {
+      ua =
+        copy_tracks_action_new (
+          TRACKLIST_SELECTIONS, pos);
+    }
+  else if (action == GDK_ACTION_MOVE)
+    {
+      ua =
+        move_tracks_action_new (
+          TRACKLIST_SELECTIONS, pos);
+    }
+
+  g_warn_if_fail (ua);
+
+  undo_manager_perform (
+    UNDO_MANAGER, ua);
 }
 
 TrackWidget *
@@ -153,8 +361,8 @@ tracklist_widget_hard_refresh (
   g_object_unref (self->ddbox);
 
   /* set handle position.
-   * this is done because the position resets to -1 every
-   * time a child is added or deleted */
+   * this is done because the position resets to -1
+   * every time a child is added or deleted */
   GList *children, *iter;
   children =
     gtk_container_get_children (GTK_CONTAINER (self));
@@ -230,9 +438,37 @@ tracklist_widget_init (TracklistWidget * self)
                    GTK_WIDGET (self->ddbox));
 
   /* make widget able to notify */
-  gtk_widget_add_events (GTK_WIDGET (self),
-                         GDK_ALL_EVENTS_MASK);
+  gtk_widget_add_events (
+    GTK_WIDGET (self),
+    GDK_ALL_EVENTS_MASK);
 
+  GtkTargetEntry entries[1];
+  entries[0].target =
+    g_strdup (TARGET_ENTRY_TRACK);
+  entries[0].flags = GTK_TARGET_SAME_APP;
+  entries[0].info =
+    symap_map (ZSYMAP, TARGET_ENTRY_TRACK);
+
+  /* set as drag dest for track (the track will
+   * be moved based on which half it was dropped in,
+   * top or bot) */
+  gtk_drag_dest_set (
+    GTK_WIDGET (self),
+    GTK_DEST_DEFAULT_MOTION |
+      GTK_DEST_DEFAULT_DROP,
+    entries,
+    1,
+    GDK_ACTION_MOVE | GDK_ACTION_COPY);
+
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-data-received",
+    G_CALLBACK(on_drag_data_received), self);
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-motion",
+    G_CALLBACK (on_drag_motion), self);
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-leave",
+    G_CALLBACK (on_drag_leave), self);
   g_signal_connect (
     G_OBJECT (self), "key-press-event",
     G_CALLBACK (on_key_action), self);

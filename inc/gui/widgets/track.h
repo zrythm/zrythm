@@ -245,6 +245,20 @@ track_widget_is_cursor_in_top_half (
   double        y);
 
 /**
+ * Highlights/unhighlights the Tracks
+ * appropriately.
+ *
+ * @param highlight 1 to highlight top or bottom,
+ *   0 to unhighlight all.
+ */
+void
+track_widget_do_highlight (
+  TrackWidget * self,
+  gint          x,
+  gint          y,
+  const int     highlight);
+
+/**
  * @}
  */
 

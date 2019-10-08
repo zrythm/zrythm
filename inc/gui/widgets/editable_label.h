@@ -61,6 +61,13 @@ typedef struct _EditableLabelWidget
 } EditableLabelWidget;
 
 /**
+ * Shows the popover.
+ */
+void
+editable_label_widget_show_popover (
+  EditableLabelWidget * self);
+
+/**
  * Sets up an existing EditableLabelWidget.
  *
  * @param get_val Getter function.

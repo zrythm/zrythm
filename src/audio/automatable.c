@@ -240,6 +240,24 @@ automatable_create_plugin_enabled (
   return a;
 }
 
+Automatable *
+automatable_clone (
+  Automatable * src)
+{
+  Automatable * a = _create_blank ();
+
+  a->index = src->index;
+  a->type = src->type;
+  a->track_id = src->track_id;
+  a->slot = src->slot;
+  a->label = g_strdup (src->label);
+  a->minf = src->minf;
+  a->maxf = src->maxf;
+  a->sizef = src->sizef;
+
+  return a;
+}
+
 int
 automatable_is_bool (Automatable * a)
 {

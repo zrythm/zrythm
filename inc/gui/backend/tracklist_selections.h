@@ -114,7 +114,7 @@ tracklist_selections_contains_track (
 
 void
 tracklist_selections_remove_track (
-  TracklistSelections * self,
+  TracklistSelections * ts,
   Track *               track);
 
 /**

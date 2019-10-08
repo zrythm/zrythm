@@ -17,8 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/copy_tracks_action.h"
-#include "actions/move_tracks_action.h"
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/audio_bus_track.h"
@@ -334,14 +332,79 @@ track_widget_get_private (TrackWidget * self)
   return track_widget_get_instance_private (self);
 }
 
+static TrackLane *
+get_lane_at_y (
+  TrackWidget * self,
+  double        y)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+  Track * track = tw_prv->track;
+
+  if (!track->lanes_visible)
+    return NULL;
+
+  TrackLane * lane = NULL;
+  for (int i = 0; i < track->num_lanes; i++)
+    {
+      lane = track->lanes[i];
+
+      g_message ("checking %d", i);
+      if (lane->widget &&
+          ui_is_child_hit (
+            GTK_WIDGET (self),
+            GTK_WIDGET (lane->widget),
+            0, 1, 0, y, 0, 0))
+        {
+          return lane;
+        }
+    }
+
+  return NULL;
+}
+
+/**
+ * Info to pass when selecting a MIDI channel from
+ * the context menu.
+ */
+typedef struct MidiChSelectionInfo
+{
+  /** Either one of these should be set. */
+  Track *     track;
+  TrackLane * lane;
+
+  /** MIDI channel (1-16), or 0 for lane to
+   * inherit. */
+  midi_byte_t ch;
+} MidiChSelectionInfo;
+
 static void
-show_context_menu (TrackWidget * self)
+on_midi_ch_selected (
+  GtkMenuItem *         menu_item,
+  MidiChSelectionInfo * info)
+{
+  if (info->lane)
+    {
+      info->lane->midi_ch = info->ch;
+    }
+  if (info->track)
+    {
+      info->track->midi_ch = info->ch;
+    }
+  free (info);
+}
+
+static void
+show_context_menu (
+  TrackWidget * self,
+  double        y)
 {
   GtkWidget *menu;
   GtkMenuItem *menuitem;
   menu = gtk_menu_new();
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;
+  TrackLane * lane =
+    get_lane_at_y (self, y);
 
 #define APPEND(mi) \
   gtk_menu_shell_append ( \
@@ -423,6 +486,117 @@ show_context_menu (TrackWidget * self)
       APPEND (menuitem);
     }
 
+  /* add midi channel selectors */
+  if (track_has_piano_roll (track))
+    {
+      menuitem =
+        GTK_MENU_ITEM (
+          gtk_menu_item_new_with_label (
+            _("Track MIDI Ch")));
+
+      GtkMenu * submenu =
+        GTK_MENU (gtk_menu_new ());
+      gtk_widget_set_visible (
+        GTK_WIDGET (submenu), 1);
+      GtkMenuItem * submenu_item;
+      for (int i = 1; i <= 16; i++)
+        {
+          char * lbl =
+            g_strdup_printf (
+              _("%sMIDI Channel %d"),
+              i == track->midi_ch ? "* " : "",
+              i);
+          submenu_item =
+            GTK_MENU_ITEM (
+              gtk_menu_item_new_with_label (lbl));
+          g_free (lbl);
+
+          MidiChSelectionInfo * info =
+            calloc (
+              1, sizeof (MidiChSelectionInfo));
+          info->track = track;
+          info->ch = (midi_byte_t) i;
+          g_signal_connect (
+            G_OBJECT (submenu_item), "activate",
+            G_CALLBACK (on_midi_ch_selected),
+            info);
+
+          gtk_menu_shell_append (
+            GTK_MENU_SHELL (submenu),
+            GTK_WIDGET (submenu_item));
+          gtk_widget_set_visible (
+            GTK_WIDGET (submenu_item), 1);
+        }
+
+      gtk_menu_item_set_submenu (
+        menuitem, GTK_WIDGET (submenu));
+      gtk_widget_set_visible (
+        GTK_WIDGET (menuitem), 1);
+
+      APPEND (menuitem);
+
+      if (lane)
+        {
+          char * lbl =
+            g_strdup_printf (
+              _("Lane %d MIDI Ch"),
+              lane->pos);
+          menuitem =
+            GTK_MENU_ITEM (
+              gtk_menu_item_new_with_label (
+                lbl));
+          g_free (lbl);
+
+          submenu =
+            GTK_MENU (gtk_menu_new ());
+          gtk_widget_set_visible (
+            GTK_WIDGET (submenu), 1);
+          for (int i = 0; i <= 16; i++)
+            {
+              if (i == 0)
+                lbl =
+                  g_strdup_printf (
+                    _("%sInherit"),
+                    lane->midi_ch == i ? "* " : "");
+              else
+                lbl =
+                  g_strdup_printf (
+                    _("%sMIDI Channel %d"),
+                    lane->midi_ch == i ? "* " : "",
+                    i);
+              submenu_item =
+                GTK_MENU_ITEM (
+                  gtk_menu_item_new_with_label (
+                    lbl));
+              g_free (lbl);
+
+              MidiChSelectionInfo * info =
+                calloc (
+                  1, sizeof (MidiChSelectionInfo));
+              info->lane = lane;
+              info->ch = (midi_byte_t) i;
+              g_signal_connect (
+                G_OBJECT (submenu_item), "activate",
+                G_CALLBACK (on_midi_ch_selected),
+                info);
+
+              gtk_menu_shell_append (
+                GTK_MENU_SHELL (submenu),
+                GTK_WIDGET (submenu_item));
+              gtk_widget_set_visible (
+                GTK_WIDGET (submenu_item), 1);
+            }
+
+          gtk_menu_item_set_submenu (
+            menuitem, GTK_WIDGET (submenu));
+          gtk_widget_set_visible (
+            GTK_WIDGET (menuitem), 1);
+
+          APPEND (menuitem);
+        }
+    }
+
+
 #undef APPEND
 
   gtk_menu_attach_to_widget (
@@ -461,21 +635,23 @@ on_right_click (GtkGestureMultiPress *gesture,
     }
   if (n_press == 1)
     {
-      show_context_menu (tw);
+      show_context_menu (tw, y);
     }
 }
 
 static void
-multipress_pressed (GtkGestureMultiPress *gesture,
-               gint                  n_press,
-               gdouble               x,
-               gdouble               y,
-               gpointer              user_data)
+multipress_pressed (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  gpointer              user_data)
 {
   TrackWidget * self =
     Z_TRACK_WIDGET (user_data);
 
-  /* FIXME should do this via focus on click property */
+  /* FIXME should do this via focus on click
+   * property */
   /*if (!gtk_widget_has_focus (GTK_WIDGET (self)))*/
     /*gtk_widget_grab_focus (GTK_WIDGET (self));*/
 
@@ -524,83 +700,6 @@ on_drag_update (GtkGestureDrag * gesture,
 }
 
 static void
-on_drag_data_received (
-  GtkWidget        *widget,
-  GdkDragContext   *context,
-  gint              x,
-  gint              y,
-  GtkSelectionData *data,
-  guint             info,
-  guint             time,
-  TrackWidget * self)
-{
-  g_message ("drag data received");
-  TRACK_WIDGET_GET_PRIVATE (self);
-  Track * this = tw_prv->track;
-
-  /* determine if moving or copying */
-  GdkDragAction action =
-    gdk_drag_context_get_selected_action (
-      context);
-
-  /*tracklist_selections_gprint (*/
-    /*TRACKLIST_SELECTIONS);*/
-
-  int h =
-    gtk_widget_get_allocated_height (widget);
-
-  /* determine position to move to */
-  int pos;
-  if (y < h / 2)
-    {
-      if (this->pos <=
-          MW_MIXER->start_drag_track->pos)
-        pos = this->pos;
-      else
-        {
-          Track * prev =
-            tracklist_get_prev_visible_track (
-              TRACKLIST, this);
-          pos =
-            prev ? prev->pos : this->pos;
-        }
-    }
-  else
-    {
-      if (this->pos >=
-          MW_MIXER->start_drag_track->pos)
-        pos = this->pos;
-      else
-        {
-          Track * next =
-            tracklist_get_next_visible_track (
-              TRACKLIST, this);
-          pos =
-            next ? next->pos : this->pos;
-        }
-    }
-
-  UndoableAction * ua = NULL;
-  if (action == GDK_ACTION_COPY)
-    {
-      ua =
-        copy_tracks_action_new (
-          TRACKLIST_SELECTIONS, pos);
-    }
-  else if (action == GDK_ACTION_MOVE)
-    {
-      ua =
-        move_tracks_action_new (
-          TRACKLIST_SELECTIONS, pos);
-    }
-
-  g_warn_if_fail (ua);
-
-  undo_manager_perform (
-    UNDO_MANAGER, ua);
-}
-
-static void
 on_drag_data_get (
   GtkWidget        *widget,
   GdkDragContext   *context,
@@ -609,8 +708,6 @@ on_drag_data_get (
   guint             time,
   TrackWidget * self)
 {
-  g_message ("drag data get");
-
   /* Not really needed since the selections are
    * used. just send master */
   gtk_selection_data_set (
@@ -631,7 +728,6 @@ on_dnd_drag_begin (
   GdkDragContext *context,
   TrackWidget * self)
 {
-  g_message ("dnd drag begin");
   TRACK_WIDGET_GET_PRIVATE (self);
 
   Track * track = tw_prv->track;
@@ -668,103 +764,82 @@ on_dnd_drag_begin (
 /**
  * Highlights/unhighlights the Tracks
  * appropriately.
+ *
+ * @param highlight 1 to highlight top or bottom,
+ *   0 to unhighlight all.
  */
-static void
-do_highlight (
+void
+track_widget_do_highlight (
   TrackWidget * self,
-  gint x,
-  gint y)
+  gint          x,
+  gint          y,
+  const int     highlight)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
 
-  /* if we are closer to the start of selection than
-   * the end */
-  int h =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
-  if (y < h / 2)
+  if (highlight)
     {
-      /* highlight top */
-      gtk_drag_highlight (
+      /* if we are closer to the start of selection
+       * than the end */
+      int h =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (self));
+      if (y < h / 2)
+        {
+          /* highlight top */
+          gtk_drag_highlight (
+            GTK_WIDGET (
+              tw_prv->highlight_top_box));
+          gtk_widget_set_size_request (
+            GTK_WIDGET (
+              tw_prv->highlight_top_box),
+            -1, 2);
+
+          /* unhilight bot */
+          gtk_drag_unhighlight (
+            GTK_WIDGET (
+              tw_prv->highlight_bot_box));
+          gtk_widget_set_size_request (
+            GTK_WIDGET (
+              tw_prv->highlight_bot_box),
+            -1, -1);
+        }
+      else
+        {
+          /* highlight bot */
+          gtk_drag_highlight (
+            GTK_WIDGET (
+              tw_prv->highlight_bot_box));
+          gtk_widget_set_size_request (
+            GTK_WIDGET (
+              tw_prv->highlight_bot_box),
+            -1, 2);
+
+          /* unhilight top */
+          gtk_drag_unhighlight (
+            GTK_WIDGET (
+              tw_prv->highlight_top_box));
+          gtk_widget_set_size_request (
+            GTK_WIDGET (
+              tw_prv->highlight_top_box),
+            -1, -1);
+        }
+    }
+  else
+    {
+      gtk_drag_unhighlight (
         GTK_WIDGET (
           tw_prv->highlight_top_box));
       gtk_widget_set_size_request (
-        GTK_WIDGET (
-          tw_prv->highlight_top_box),
-        -1, 2);
-
-      /* unhilight bot */
+        GTK_WIDGET (tw_prv->highlight_top_box),
+        -1, -1);
       gtk_drag_unhighlight (
         GTK_WIDGET (
           tw_prv->highlight_bot_box));
       gtk_widget_set_size_request (
-        GTK_WIDGET (
-          tw_prv->highlight_bot_box),
+        GTK_WIDGET (tw_prv->highlight_bot_box),
         -1, -1);
     }
-  else
-    {
-      /* highlight bot */
-      gtk_drag_highlight (
-        GTK_WIDGET (
-          tw_prv->highlight_bot_box));
-      gtk_widget_set_size_request (
-        GTK_WIDGET (
-          tw_prv->highlight_bot_box),
-        -1, 2);
-
-      /* unhilight top */
-      gtk_drag_unhighlight (
-        GTK_WIDGET (
-          tw_prv->highlight_top_box));
-      gtk_widget_set_size_request (
-        GTK_WIDGET (
-          tw_prv->highlight_top_box),
-        -1, -1);
-    }
-}
-
-static void
-on_drag_motion (
-  GtkWidget *widget,
-  GdkDragContext *context,
-  gint x,
-  gint y,
-  guint time,
-  TrackWidget * self)
-{
-  GdkModifierType mask;
-  z_gtk_widget_get_mask (
-    widget, &mask);
-  if (mask & GDK_CONTROL_MASK)
-    gdk_drag_status (context, GDK_ACTION_COPY, time);
-  else
-    gdk_drag_status (context, GDK_ACTION_MOVE, time);
-
-  do_highlight (self, x, y);
-}
-
-static void
-on_drag_leave (
-  GtkWidget      *widget,
-  GdkDragContext *context,
-  guint           time,
-  TrackWidget * self)
-{
-  g_message ("on_drag_leave");
-  TRACK_WIDGET_GET_PRIVATE (self);
-
-  /*do_highlight (self);*/
-  gtk_drag_unhighlight (
-    GTK_WIDGET (tw_prv->highlight_top_box));
-  gtk_widget_set_size_request (
-    GTK_WIDGET (tw_prv->highlight_top_box),
-    -1, -1);
-  gtk_drag_unhighlight (
-    GTK_WIDGET (tw_prv->highlight_bot_box));
-  gtk_widget_set_size_request (
-    GTK_WIDGET (tw_prv->highlight_bot_box),
-    -1, -1);
 }
 
 /**
@@ -972,7 +1047,8 @@ track_widget_init (TrackWidget * self)
 
   tw_prv->multipress =
     GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self)));
   tw_prv->right_mouse_mp =
     GTK_GESTURE_MULTI_PRESS (
       gtk_gesture_multi_press_new (GTK_WIDGET (self)));
@@ -995,16 +1071,6 @@ track_widget_init (TrackWidget * self)
   gtk_drag_source_set (
     GTK_WIDGET (tw_prv->event_box),
     GDK_BUTTON1_MASK,
-    entries,
-    1,
-    GDK_ACTION_MOVE | GDK_ACTION_COPY);
-  /* set as drag dest for track (the track will
-   * be moved based on which half it was dropped in,
-   * top or bot) */
-  gtk_drag_dest_set (
-    GTK_WIDGET (self),
-    GTK_DEST_DEFAULT_MOTION |
-      GTK_DEST_DEFAULT_DROP,
     entries,
     1,
     GDK_ACTION_MOVE | GDK_ACTION_COPY);
@@ -1038,18 +1104,9 @@ track_widget_init (TrackWidget * self)
     "drag-begin",
     G_CALLBACK(on_dnd_drag_begin), self);
   g_signal_connect (
-    GTK_WIDGET (self), "drag-data-received",
-    G_CALLBACK(on_drag_data_received), self);
-  g_signal_connect (
     GTK_WIDGET (tw_prv->event_box),
     "drag-data-get",
     G_CALLBACK (on_drag_data_get), self);
-  g_signal_connect (
-    GTK_WIDGET (self), "drag-motion",
-    G_CALLBACK (on_drag_motion), self);
-  g_signal_connect (
-    GTK_WIDGET (self), "drag-leave",
-    G_CALLBACK (on_drag_leave), self);
   g_signal_connect (
     G_OBJECT(self), "destroy",
     G_CALLBACK (on_destroy),  NULL);

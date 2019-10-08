@@ -21,8 +21,10 @@
  */
 
 #include "actions/copy_plugins_action.h"
+#include "actions/copy_tracks_action.h"
 #include "actions/create_tracks_action.h"
 #include "actions/move_plugins_action.h"
+#include "actions/move_tracks_action.h"
 #include "audio/channel.h"
 #include "audio/mixer.h"
 #include "audio/modulator.h"
@@ -54,6 +56,29 @@
 G_DEFINE_TYPE (DragDestBoxWidget,
                drag_dest_box_widget,
                GTK_TYPE_EVENT_BOX)
+
+static void
+on_drag_leave (
+  GtkWidget      *widget,
+  GdkDragContext *context,
+  guint           time,
+  DragDestBoxWidget * self)
+{
+  GdkAtom target =
+    gtk_drag_dest_find_target (
+      widget, context, NULL);
+
+  if (target ==
+        GET_ATOM (TARGET_ENTRY_TRACK))
+    {
+      /* unhighlight bottom part of last track */
+      Track * track =
+        tracklist_get_last_visible_track (
+          TRACKLIST);
+      track_widget_do_highlight (
+        track->widget, 0, 0, 0);
+    }
+}
 
 static gboolean
 on_drag_motion (
@@ -108,6 +133,31 @@ on_drag_motion (
         gdk_drag_status (
           context, GDK_ACTION_MOVE, time);
       return TRUE;
+    }
+  else if (target ==
+             GET_ATOM (TARGET_ENTRY_TRACK))
+    {
+      GdkModifierType mask;
+      z_gtk_widget_get_mask (
+        widget, &mask);
+      if (mask & GDK_CONTROL_MASK)
+        gdk_drag_status (
+          context, GDK_ACTION_COPY, time);
+      else
+        gdk_drag_status (
+          context, GDK_ACTION_MOVE, time);
+      gtk_drag_unhighlight (widget);
+
+      /* highlight bottom part of last track */
+      Track * track =
+        tracklist_get_last_visible_track (
+          TRACKLIST);
+      int track_height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (track->widget));
+      track_widget_do_highlight (
+        track->widget, 0,
+        track_height - 1, 1);
     }
 
   return FALSE;
@@ -263,7 +313,7 @@ on_drag_data_received (
             track, modulator);
         }
     }
-  else if ((target =
+  else if ((target ==
             GET_ATOM (TARGET_ENTRY_PLUGIN)))
     {
       /* NOTE this is a cloned pointer, don't use
@@ -298,6 +348,37 @@ on_drag_data_received (
               MIXER_SELECTIONS,
               NULL, 0);
         }
+      g_warn_if_fail (ua);
+
+      undo_manager_perform (
+        UNDO_MANAGER, ua);
+    }
+  else if ((target ==
+            GET_ATOM (TARGET_ENTRY_TRACK)))
+    {
+      int pos =
+        tracklist_get_last_visible_pos (
+          TRACKLIST);
+
+      /* determine if moving or copying */
+      GdkDragAction action =
+        gdk_drag_context_get_selected_action (
+          context);
+
+      UndoableAction * ua = NULL;
+      if (action == GDK_ACTION_COPY)
+        {
+          ua =
+            copy_tracks_action_new (
+              TRACKLIST_SELECTIONS, pos);
+        }
+      else if (action == GDK_ACTION_MOVE)
+        {
+          ua =
+            move_tracks_action_new (
+              TRACKLIST_SELECTIONS, pos);
+        }
+
       g_warn_if_fail (ua);
 
       undo_manager_perform (
@@ -532,7 +613,7 @@ drag_dest_box_widget_new (
                           1);
 
   /* set as drag dest */
-  GtkTargetEntry entries[4];
+  GtkTargetEntry entries[5];
   entries[0].target =
     g_strdup (TARGET_ENTRY_PLUGIN_DESCR);
   entries[0].flags = GTK_TARGET_SAME_APP;
@@ -554,9 +635,14 @@ drag_dest_box_widget_new (
   entries[3].flags = GTK_TARGET_SAME_APP;
   entries[3].info =
     symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN);
+  entries[4].target =
+  g_strdup (TARGET_ENTRY_TRACK);
+  entries[4].flags = GTK_TARGET_SAME_APP;
+  entries[4].info =
+    symap_map (ZSYMAP, TARGET_ENTRY_TRACK);
   gtk_drag_dest_set (
     GTK_WIDGET (self), GTK_DEST_DEFAULT_ALL,
-    entries, 4, GDK_ACTION_COPY);
+    entries, 5, GDK_ACTION_COPY);
 
   /* connect signal */
   g_signal_connect (
@@ -581,10 +667,12 @@ drag_dest_box_widget_init (DragDestBoxWidget * self)
 {
   self->multipress =
     GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self)));
   self->right_mouse_mp =
     GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (self)));
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (self->right_mouse_mp),
     GDK_BUTTON_SECONDARY);
@@ -592,10 +680,10 @@ drag_dest_box_widget_init (DragDestBoxWidget * self)
     GTK_GESTURE_DRAG (
       gtk_gesture_drag_new (GTK_WIDGET (self)));
 
-
   /* make widget able to notify */
-  gtk_widget_add_events (GTK_WIDGET (self),
-                         GDK_ALL_EVENTS_MASK);
+  gtk_widget_add_events (
+    GTK_WIDGET (self),
+    GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
   g_signal_connect (
@@ -619,6 +707,9 @@ drag_dest_box_widget_init (DragDestBoxWidget * self)
   g_signal_connect (
     G_OBJECT(self), "leave-notify-event",
     G_CALLBACK (on_motion),  self);
+  g_signal_connect (
+    GTK_WIDGET (self), "drag-leave",
+    G_CALLBACK (on_drag_leave), self);
 }
 
 static void

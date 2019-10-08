@@ -219,11 +219,19 @@ tracklist_insert_track (
   /* FIXME do it externally */
   set_track_name (self, track);
 
-  array_insert (
-    self->tracks,
-    self->num_tracks,
-    pos,
-    track);
+  /* if adding at the end, append it, otherwise
+   * insert it */
+  if (pos == self->num_tracks)
+    {
+      array_append (
+        self->tracks, self->num_tracks, track);
+    }
+  else
+    {
+      array_insert (
+        self->tracks, self->num_tracks,
+        pos, track);
+    }
 
   track_set_pos (track, pos);
 
@@ -232,7 +240,7 @@ tracklist_insert_track (
     TRACKLIST_SELECTIONS, track);
 
   /* move other tracks */
-  for (int i = track->pos + 1;
+  for (int i = 0;
        i < self->num_tracks; i++)
     track_set_pos (self->tracks[i], i);
 
@@ -460,7 +468,7 @@ tracklist_remove_track (
   track_set_pos (track, -1);
 
   /* move all other tracks */
-  for (int i = track->pos;
+  for (int i = 0;
        i < self->num_tracks; i++)
     track_set_pos (track, i);
 

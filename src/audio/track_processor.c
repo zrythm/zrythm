@@ -648,6 +648,24 @@ track_processor_process (
 {
   Track * tr = self->track;
 
+  /* if record is not armed, clear the input buffers
+   * to ignore the data */
+  if (!tr->recording &&
+      track_type_can_record (tr->type))
+    {
+      switch (tr->in_signal_type)
+        {
+        case TYPE_EVENT:
+          port_clear_buffer (self->midi_in);
+          break;
+        case TYPE_AUDIO:
+          port_clear_buffer (self->stereo_in->l);
+          port_clear_buffer (self->stereo_in->r);
+        default:
+          break;
+        }
+    }
+
   /* set the audio clip contents to stereo out */
   if (tr->type == TRACK_TYPE_AUDIO)
     {

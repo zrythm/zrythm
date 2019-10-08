@@ -117,7 +117,8 @@ tracklist_selections_add_track (
    * on, turn these on */
   if (!track->recording && track->channel)
     {
-      track_set_recording (track, 1);
+      track_set_recording (
+        track, 1);
       track->channel->record_set_automatically =
         1;
     }
@@ -152,11 +153,10 @@ tracklist_selections_select_all (
 void
 tracklist_selections_remove_track (
   TracklistSelections * ts,
-  Track *             track)
+  Track *               track)
 {
-  if (!array_contains (ts->tracks,
-                       ts->num_tracks,
-                       track))
+  if (!array_contains (
+        ts->tracks, ts->num_tracks, track))
     {
       EVENTS_PUSH (ET_TRACK_CHANGED,
                    track);
@@ -171,7 +171,8 @@ tracklist_selections_remove_track (
   if (track->channel &&
       track->channel->record_set_automatically)
     {
-      track_set_recording (track, 0);
+      track_set_recording (
+        track, 0);
       track->channel->record_set_automatically = 0;
     }
 

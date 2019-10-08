@@ -178,6 +178,10 @@ automatable_create_mute (Channel * channel);
 Automatable *
 automatable_create_pan (Channel * channel);
 
+Automatable *
+automatable_clone (
+  Automatable * src);
+
 /**
  * Creates an automatable for an LV2 control.
  */

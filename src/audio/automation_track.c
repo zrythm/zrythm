@@ -324,6 +324,9 @@ automation_track_clone (
     malloc (dest->regions_size *
             sizeof (Region *));
 
+  dest->automatable =
+    automatable_clone (src->automatable);
+
   Region * src_region;
   for (int j = 0; j < src->num_regions; j++)
     {

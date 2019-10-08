@@ -465,8 +465,9 @@ track_set_muted (Track * track,
  * JACK ports.
  */
 void
-track_set_recording (Track *   self,
-                     int       recording);
+track_set_recording (
+  Track *   track,
+  int       recording);
 
 /**
  * Sets track soloed and optionally adds the action
@@ -556,6 +557,20 @@ track_get_region_at_pos (
 Region *
 track_get_last_region (
   Track *    track);
+
+
+/**
+ * Returns if the Track can record.
+ */
+static inline int
+track_type_can_record (
+  const TrackType type)
+{
+  return
+    type == TRACK_TYPE_AUDIO ||
+    type == TRACK_TYPE_MIDI ||
+    type == TRACK_TYPE_INSTRUMENT;
+}
 
 /**
  * Wrapper.

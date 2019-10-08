@@ -345,8 +345,7 @@ track_select (
   else
     {
       tracklist_selections_remove_track (
-        TRACKLIST_SELECTIONS,
-        self);
+        TRACKLIST_SELECTIONS, self);
     }
 
   if (fire_events)
@@ -404,8 +403,6 @@ track_set_recording (
     /*}*/
 
   track->recording = recording;
-
-  mixer_recalc_graph (MIXER);
 
   EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
                track);
