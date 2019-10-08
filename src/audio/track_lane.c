@@ -21,9 +21,11 @@
 
 #include "audio/track.h"
 #include "audio/track_lane.h"
+#include "audio/tracklist.h"
 #include "utils/arrays.h"
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiinfo.h"
+#include "project.h"
 
 #include <glib/gi18n.h>
 
@@ -115,13 +117,23 @@ track_lane_add_region (
 /**
  * Sets the track position to the lane and all its
  * members recursively.
+ *
+ * @param set_pointers Sets the Track pointers as
+ *   well.
  */
 void
 track_lane_set_track_pos (
   TrackLane * self,
-  const int   pos)
+  const int   pos,
+  const int   set_pointers)
 {
   self->track_pos = pos;
+  if (set_pointers)
+    {
+      g_warn_if_fail (
+        TRACKLIST && TRACKLIST->tracks[pos]);
+      self->track = TRACKLIST->tracks[pos];
+    }
 
   for (int i = 0; i < self->num_regions; i++)
     {
@@ -142,13 +154,27 @@ track_lane_clone (
   TrackLane * new_lane =
     calloc (1, sizeof (TrackLane));
 
+  new_lane->name =
+    g_strdup (lane->name);
   new_lane->regions_size =
     (size_t) lane->num_regions;
   new_lane->regions =
     malloc (new_lane->regions_size *
             sizeof (Region *));
+  new_lane->handle_pos =
+    lane->handle_pos;
+  new_lane->pos = lane->pos;
+  new_lane->mute = lane->mute;
+  new_lane->solo = lane->solo;
+  new_lane->midi_ch = lane->midi_ch;
 
   Region * region, * new_region;
+  new_lane->num_regions = lane->num_regions;
+  new_lane->regions =
+    realloc (
+      new_lane->regions,
+      sizeof (Region *) *
+        (size_t) lane->num_regions);
   for (int i = 0; i < lane->num_regions; i++)
     {
       /* clone region */
@@ -157,11 +183,11 @@ track_lane_clone (
         region_clone (
           region, REGION_CLONE_COPY_MAIN);
 
-      /* add to new lane */
-      array_append (
-        new_lane->regions,
-        new_lane->num_regions,
-        new_region);
+      new_lane->regions[i] = new_region;
+      region_set_lane (new_region, new_lane);
+
+      region_gen_name (
+        new_region, region->name, NULL, NULL);
     }
 
   return new_lane;

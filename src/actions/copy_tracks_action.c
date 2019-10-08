@@ -65,13 +65,16 @@ copy_tracks_action_do (
         F_NO_RECALC_GRAPH);
 
       /* select it */
-      /* TODO */
+      track_select (
+        track, F_SELECT, 1,
+        F_NO_PUBLISH_EVENTS);
     }
 
   mixer_recalc_graph (MIXER);
 
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                NULL);
+  EVENTS_PUSH (ET_TRACK_ADDED, NULL);
 
   return 0;
 }

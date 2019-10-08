@@ -411,12 +411,17 @@ void
 track_init_loaded (Track * track);
 
 /**
- * Only to be used by implementing structs.
+ * Inits the Track, optionally adding a single
+ * lane.
  *
- * Sets member variables to default values.
+ * @param add_lane Add a lane. This should be used
+ *   for new Tracks. When cloning, the lanes should
+ *   be cloned so this should be 0.
  */
 void
-track_init (Track * track);
+track_init (
+  Track *   self,
+  const int add_lane);
 
 /**
  * Creates a track with the given label and returns
@@ -424,11 +429,14 @@ track_init (Track * track);
  *
  * If the TrackType is one that needs a Channel,
  * then a Channel is also created for the track.
+ *
+ * @param with_lane Init the Track with a lane.
  */
 Track *
 track_new (
   TrackType type,
-  char * label);
+  char * label,
+  const int with_lane);
 
 /**
  * Clones the track and returns the clone.

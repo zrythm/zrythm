@@ -75,7 +75,8 @@ copy_plugins_action_do (
           plugin_descriptor_is_instrument (
             orig_pl->descr) ?
           TRACK_TYPE_INSTRUMENT :
-          TRACK_TYPE_AUDIO_BUS, str);
+          TRACK_TYPE_AUDIO_BUS, str,
+          F_WITH_LANE);
       g_free (str);
       g_return_val_if_fail (track, -1);
 

@@ -19,6 +19,7 @@
 
 #include "audio/track.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "zrythm.h"
 
 #include <glib.h>
@@ -36,7 +37,8 @@ fixture_set_up (
   fixture->ins_track =
     track_new (
       TRACK_TYPE_INSTRUMENT,
-      "Test Instrument Track 1");
+      "Test Instrument Track 1",
+      F_WITH_LANE);
 }
 
 static void

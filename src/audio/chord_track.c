@@ -25,6 +25,7 @@
 #include "gui/backend/events.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 
 #include <glib/gi18n.h>
@@ -49,7 +50,9 @@ ChordTrack *
 chord_track_new ()
 {
   ChordTrack * self =
-    track_new (TRACK_TYPE_CHORD, _("Chords"));
+    track_new (
+      TRACK_TYPE_CHORD, _("Chords"),
+      F_WITHOUT_LANE);
 
   gdk_rgba_parse (&self->color, "#0328fa");
 

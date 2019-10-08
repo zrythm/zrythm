@@ -308,7 +308,9 @@ create_default (Project * self)
 
   /* add master channel to mixer and tracklist */
   track =
-    track_new (TRACK_TYPE_MASTER, _("Master"));
+    track_new (
+      TRACK_TYPE_MASTER, _("Master"),
+      F_WITHOUT_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);

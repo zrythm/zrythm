@@ -118,8 +118,18 @@ track_add_lane (
                self->lanes[self->num_lanes - 1]);
 }
 
+/**
+ * Inits the Track, optionally adding a single
+ * lane.
+ *
+ * @param add_lane Add a lane. This should be used
+ *   for new Tracks. When cloning, the lanes should
+ *   be cloned so this should be 0.
+ */
 void
-track_init (Track * self)
+track_init (
+  Track *   self,
+  const int add_lane)
 {
   self->visible = 1;
   self->handle_pos = 1;
@@ -133,16 +143,19 @@ track_init (Track * self)
  *
  * If the TrackType is one that needs a Channel,
  * then a Channel is also created for the track.
+ *
+ * @param with_lane Init the Track with a lane.
  */
 Track *
 track_new (
   TrackType type,
-  char * label)
+  char * label,
+  const int with_lane)
 {
   Track * track =
     calloc (1, sizeof (Track));
 
-  track_init (track);
+  track_init (track, with_lane);
 
   track->name = g_strdup (label);
 
@@ -263,8 +276,7 @@ track_clone (Track * track)
   int j;
   Track * new_track =
     track_new (
-      track->type,
-      track->name);
+      track->type, track->name, F_WITHOUT_LANE);
 
 #define COPY_MEMBER(a) \
   new_track->a = track->a
@@ -288,22 +300,24 @@ track_clone (Track * track)
       Channel * ch =
         channel_clone (track->channel, new_track);
       new_track->channel = ch;
-      ch->track = track;
+      ch->track = new_track;
     }
 
   TrackLane * lane, * new_lane;
+  new_track->num_lanes = track->num_lanes;
+  new_track->lanes =
+    realloc (
+      new_track->lanes,
+      sizeof (TrackLane *) *
+        (size_t) track->num_lanes);
   for (j = 0; j < track->num_lanes; j++)
     {
       /* clone lane */
        lane = track->lanes[j];
        new_lane =
          track_lane_clone (lane);
-
-       /* add to new track */
-       array_append (
-         new_track->lanes,
-         new_track->num_lanes,
-         new_lane);
+       new_lane->track = new_track;
+       new_track->lanes[j] = new_lane;
     }
 
   automation_tracklist_clone (
@@ -698,34 +712,8 @@ track_add_region (
 
   if (gen_name)
     {
-      int count = 1;
-
-      /* Name to try to assign */
-      char * orig_name = NULL;
-      if (at)
-        orig_name =
-          g_strdup_printf (
-            "%s - %s",
-            track->name, at->automatable->label);
-      else
-        orig_name = g_strdup (track->name);
-
-      char * name = g_strdup (orig_name);
-      while (region_find_by_name (name))
-        {
-          g_free (name);
-          name =
-            g_strdup_printf ("%s %d",
-                             orig_name,
-                             count++);
-        }
-      region_set_name (
-        region, name);
-      g_message (
-        "track_add_region - region name: %s",
-        name);
-      g_free (name);
-      g_free (orig_name);
+      region_gen_name (
+        region, NULL, at, track);
     }
 
   int add_lane = 0, add_at = 0, add_chord = 0;
@@ -857,7 +845,7 @@ track_set_pos (
   for (int i = 0; i < track->num_lanes; i++)
     {
       track_lane_set_track_pos (
-        track->lanes[i], pos);
+        track->lanes[i], pos, 1);
     }
   automation_tracklist_update_track_pos (
     &track->automation_tracklist, track);

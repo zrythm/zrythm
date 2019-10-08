@@ -85,4 +85,7 @@
 #define F_LOOP 1
 #define F_NO_LOOP 0
 
+#define F_WITH_LANE 1
+#define F_WITHOUT_LANE 0
+
 #endif

@@ -163,11 +163,15 @@ track_lane_update_frames (
 /**
  * Sets the track position to the lane and all its
  * members recursively.
+ *
+ * @param set_pointers Sets the Track pointers as
+ *   well.
  */
 void
 track_lane_set_track_pos (
   TrackLane * self,
-  const int   pos);
+  const int   pos,
+  const int   set_pointers);
 
 /**
  * Clones the TrackLane.

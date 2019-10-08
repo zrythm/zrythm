@@ -788,6 +788,8 @@ plugin_clone (
       /* delete the state file */
       io_remove (pl->lv2->state_file);
     }
+  g_return_val_if_fail (
+    pl->num_in_ports || pl->num_out_ports, NULL);
 
   g_return_val_if_fail (clone, NULL);
   clone->slot = pl->slot;

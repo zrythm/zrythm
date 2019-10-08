@@ -56,7 +56,7 @@ create (
 
       track =
         track_new (
-          self->type, label);
+          self->type, label, F_WITH_LANE);
       if (add_to_project)
         tracklist_insert_track (
           TRACKLIST,
@@ -77,7 +77,7 @@ create (
               self->file_descr->abs_path);
           track =
             track_new (
-              self->type, basename);
+              self->type, basename, F_WITH_LANE);
           g_free (basename);
           track->pos = self->pos + idx;
         }
@@ -89,7 +89,7 @@ create (
               self->file_descr->abs_path);
           track =
             track_new (
-              self->type, basename);
+              self->type, basename, F_WITH_LANE);
           g_free (basename);
           track->pos = self->pos + idx;
         }
@@ -99,7 +99,8 @@ create (
         {
           track =
             track_new (
-              self->type, self->pl_descr.name);
+              self->type, self->pl_descr.name,
+              F_WITH_LANE);
           track->pos = self->pos + idx;
 
           pl=

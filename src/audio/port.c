@@ -1131,7 +1131,9 @@ port_set_expose_to_backend (
       switch (AUDIO_ENGINE->audio_backend)
         {
         case AUDIO_BACKEND_JACK:
+#ifdef HAVE_JACK
           port_set_expose_to_jack (self, expose);
+#endif
           break;
         default:
           break;
@@ -1142,12 +1144,17 @@ port_set_expose_to_backend (
       switch (AUDIO_ENGINE->midi_backend)
         {
         case MIDI_BACKEND_JACK:
+#ifdef HAVE_JACK
           port_set_expose_to_jack (self, expose);
+#endif
           break;
         case MIDI_BACKEND_ALSA:
+#ifdef HAVE_ALSA
           port_set_expose_to_alsa (self, expose);
+#endif
           break;
-        default:break;
+        default:
+          break;
         }
     }
   else
@@ -1442,9 +1449,17 @@ port_set_expose_to_jack (
     }
   else
     {
-      jack_port_unregister (
-        AUDIO_ENGINE->client,
-        JACK_PORT_T (self->data));
+      int ret =
+        jack_port_unregister (
+          AUDIO_ENGINE->client,
+          JACK_PORT_T (self->data));
+      if (ret)
+        {
+          g_warning (
+            "JACK port unregister error: %s",
+            engine_jack_get_error_message (
+              (jack_status_t) ret));
+        }
       self->internal_type = INTERNAL_NONE;
       self->data = NULL;
     }

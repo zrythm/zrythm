@@ -186,18 +186,32 @@ set_track_name (
   char * new_label = g_strdup (track->name);
   while (get_track_by_name (self, new_label))
     {
+      int orig_says_copy =
+        g_str_has_suffix (track->name, "(Copy)");
       g_free (new_label);
-      /*if (DEBUGGING)*/
-        /*new_label =*/
-          /*g_strdup_printf ("[%d] %s %d",*/
-                           /*track->id,*/
-                           /*track->name,*/
-                           /*count++);*/
-      /*else*/
-        new_label =
-          g_strdup_printf ("%s %d",
-                           track->name,
-                           count++);
+
+      if (orig_says_copy && count == 1)
+        {
+          new_label =
+            g_strdup_printf (
+              "%.*s (Copy %d)",
+              (int) strlen (track->name) - 6,
+              track->name,
+              count);
+        }
+      else if (count == 1)
+        {
+          new_label =
+            g_strdup_printf (
+              "%s (Copy)", track->name);
+        }
+      else
+        {
+          new_label =
+            g_strdup_printf (
+              "%s (Copy %d)", track->name, count);
+        }
+      count++;
     }
   track->name = new_label;
 }

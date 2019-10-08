@@ -23,6 +23,7 @@
 #include "audio/track.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
@@ -52,7 +53,7 @@ marker_track_default ()
 
   Track * track = (Track *) self;
   track->type = TRACK_TYPE_MARKER;
-  track_init (track);
+  track_init (track, F_WITHOUT_LANE);
 
   self->name = g_strdup (_("Markers"));
 

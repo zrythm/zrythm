@@ -597,6 +597,18 @@ region_set_lane (
   TrackLane * lane);
 
 /**
+ * Generates a name for the Region, either using
+ * the given AutomationTrack or Track, or appending
+ * to the given base name.
+ */
+void
+region_gen_name (
+  Region *          region,
+  const char *      base_name,
+  AutomationTrack * at,
+  Track *           track);
+
+/**
  * Moves the given Region to the given TrackLane.
  *
  * Works with TrackLane's of other Track's as well.

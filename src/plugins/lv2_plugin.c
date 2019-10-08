@@ -140,13 +140,15 @@ init_feature(LV2_Feature* const dest, const char* const URI, void* data)
  *
  * @param port_exists If zrythm port exists (when
  *   loading)
+ *
+ * @return Non-zero if fail.
 */
 static int
-_create_port (
-  Lv2Plugin*   lv2_plugin,
-  uint32_t lv2_port_index,
-  float    default_value,
-  int            port_exists)
+create_port (
+  Lv2Plugin *    lv2_plugin,
+  const uint32_t lv2_port_index,
+  const float    default_value,
+  const int      port_exists)
 {
   Lv2Port* const lv2_port =
     &lv2_plugin->ports[lv2_port_index];
@@ -174,12 +176,30 @@ _create_port (
       lv2_port->port = port_new (port_name);
       g_free (port_name);
       lv2_port->port->plugin = lv2_plugin->plugin;
-      g_warn_if_fail (lv2_plugin->plugin->track);
-      lv2_port->port->track =
-        lv2_plugin->plugin->track;
 
-      port_set_owner_plugin (
-        lv2_port->port, lv2_plugin->plugin);
+      Port * port = lv2_port->port;
+
+      /* the plugin might not have a track assigned
+       * to it (eg when cloning) */
+      if (lv2_plugin->plugin->track)
+        {
+          port->track =
+            lv2_plugin->plugin->track;
+
+          port_set_owner_plugin (
+            port, lv2_plugin->plugin);
+        }
+      else
+        {
+          Plugin * pl = lv2_plugin->plugin;
+          port->plugin = pl;
+          port->identifier.track_pos =
+            pl->track_pos;
+          port->identifier.plugin_slot =
+            pl->slot;
+          port->identifier.owner_type =
+            PORT_OWNER_TYPE_PLUGIN;
+        }
     }
   lv2_port->port->lv2_port = lv2_port;
   lv2_port->evbuf     = NULL;
@@ -323,106 +343,103 @@ lv2_plugin_init_loaded (Lv2Plugin * lv2_plgn)
 }
 
 /**
- * Set port structures from data (via create_port()) for all ports.
- *
- * Used when loading a project.
-*/
+ * Create port structures from data (via
+ * create_port()) for all ports.
+ */
 static int
-lv2_set_ports(Lv2Plugin* lv2_plugin)
+lv2_create_or_init_ports (
+  Lv2Plugin* self)
 {
-  float* default_values =
-    (float*)calloc(
-      lilv_plugin_get_num_ports (
-        lv2_plugin->lilv_plugin),
-        sizeof(float));
-  lilv_plugin_get_port_ranges_float (
-    lv2_plugin->lilv_plugin,
-    NULL,
-    NULL,
-    default_values);
+  /* zrythm ports exist when loading a
+   * project since they are serialized */
+  int ports_exist =
+    self->num_ports > 0;
 
-  int i;
-  for (i = 0;
-       i < lv2_plugin->num_ports; ++i)
+  if (ports_exist)
     {
-      if (_create_port (
-            lv2_plugin, (uint32_t) i,
-            default_values[i], 1) < 0)
-        {
-          return -1;
-        }
-    }
-
-  const LilvPort* control_input = lilv_plugin_get_port_by_designation (
-          lv2_plugin->lilv_plugin,
-          PM_LILV_NODES.core_InputPort,
-          PM_LILV_NODES.core_control);
-  if (control_input)
-    {
-      lv2_plugin->control_in =
+      g_warn_if_fail (
+        self->num_ports ==
         (int)
-        lilv_port_get_index (
-          lv2_plugin->lilv_plugin,
-          control_input);
+        lilv_plugin_get_num_ports (
+          self->lilv_plugin));
+    }
+  else
+    {
+      self->num_ports =
+        (int)
+        lilv_plugin_get_num_ports (
+          self->lilv_plugin);
+      self->ports =
+        (Lv2Port*)
+        calloc (
+          (size_t) self->num_ports,
+          sizeof (Lv2Port));
     }
 
-  free (default_values);
-
-  return 0;
-}
-
-/**
-   Create port structures from data (via create_port()) for all ports.
-*/
-static int
-lv2_create_ports (
-  Lv2Plugin* lv2_plugin)
-{
-  lv2_plugin->num_ports =
-    (int)
-    lilv_plugin_get_num_ports (
-      lv2_plugin->lilv_plugin);
-  lv2_plugin->ports =
-    (Lv2Port*)
-    calloc (
-      (size_t) lv2_plugin->num_ports,
-      sizeof (Lv2Port));
   float* default_values =
     (float*)
     calloc (
       lilv_plugin_get_num_ports (
-        lv2_plugin->lilv_plugin),
+        self->lilv_plugin),
       sizeof(float));
   lilv_plugin_get_port_ranges_float (
-    lv2_plugin->lilv_plugin,
+    self->lilv_plugin,
     NULL, NULL, default_values);
 
   int i;
-  for (i = 0; i < lv2_plugin->num_ports; ++i)
+  for (i = 0; i < self->num_ports; ++i)
     {
-      if (_create_port (
-            lv2_plugin,
-            (uint32_t) i,
-            default_values[i], 0) < 0)
-        {
-          return -1;
-        }
+      g_return_val_if_fail (
+        create_port (
+          self, (uint32_t) i,
+          default_values[i], ports_exist) == 0,
+        -1);
     }
 
-  const LilvPort* control_input = lilv_plugin_get_port_by_designation (
-          lv2_plugin->lilv_plugin,
-          PM_LILV_NODES.core_InputPort,
-          PM_LILV_NODES.core_control);
+  /* set control input */
+  const LilvPort* control_input =
+    lilv_plugin_get_port_by_designation (
+      self->lilv_plugin,
+      PM_LILV_NODES.core_InputPort,
+      PM_LILV_NODES.core_control);
   if (control_input)
     {
-      lv2_plugin->control_in =
+      self->control_in =
         (int)
         lilv_port_get_index (
-          lv2_plugin->lilv_plugin,
+          self->lilv_plugin,
           control_input);
     }
 
   free (default_values);
+
+  if (!ports_exist)
+    {
+      /* Set the zrythm plugin ports */
+      for (i = 0; i < self->num_ports; ++i)
+        {
+          Lv2Port * lv2_port = &self->ports[i];
+          Port * port = lv2_port->port;
+          port->plugin = self->plugin;
+          if (port->identifier.flow == FLOW_INPUT)
+            {
+              plugin_add_in_port (
+                self->plugin, port);
+            }
+          else if (port->identifier.flow ==
+                   FLOW_OUTPUT)
+            {
+              plugin_add_out_port (
+                self->plugin, port);
+            }
+
+          /* remember the identifier for
+           * saving/loading */
+          port_identifier_copy (
+            &port->identifier,
+            &lv2_port->port_id);
+        }
+    }
 
   return 0;
 }
@@ -1572,12 +1589,11 @@ lv2_plugin_instantiate (
   Lv2Plugin *  self,
   char * preset_uri)
 {
-  Plugin * plugin = self->plugin;
   int i;
 
   lv2_set_feature_data (self);
 
-  zix_sem_init(&self->work_lock, 1);
+  zix_sem_init (&self->work_lock, 1);
 
   self->map.handle = self;
   self->map.map = urid_map_uri;
@@ -1712,51 +1728,13 @@ lv2_plugin_instantiate (
         {
           g_warning ("Failed to find plugin");
         }
-
-      /* Set default values for all ports */
-      if (lv2_set_ports (self) < 0)
-        {
-          return -1;
-        }
-
-      self->control_in = -1;
     }
-  else
-    {
-      /* Set default values for all ports */
-      if (lv2_create_ports (self) < 0)
-        {
-          return -1;
-        }
 
-      /* Set the zrythm plugin ports */
-      for (i = 0; i < self->num_ports; ++i)
-        {
-          Lv2Port * lv2_port = &self->ports[i];
-          Port * port = lv2_port->port;
-          port->plugin = plugin;
-          port->identifier.plugin_slot =
-            plugin->slot;
-          port->identifier.track_pos =
-            plugin->track_pos;
-          if (port->identifier.flow == FLOW_INPUT)
-            {
-              plugin_add_in_port (plugin, port);
-            }
-          else if (port->identifier.flow ==
-                   FLOW_OUTPUT)
-            {
-              plugin_add_out_port (plugin, port);
-            }
+  /* Set default values for all ports */
+  g_return_val_if_fail (
+    lv2_create_or_init_ports (self) == 0, -1);
 
-          /* remember the identifier for saving/loading */
-          port_identifier_copy (
-            &port->identifier,
-            &lv2_port->port_id);
-        }
-
-      self->control_in = -1;
-    }
+  self->control_in = -1;
 
   /* Check that any required features are supported */
   LilvNodes* req_feats =

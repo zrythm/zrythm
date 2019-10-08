@@ -1683,8 +1683,11 @@ channel_clone (
     {
       if (ch->plugins[i])
         {
-          clone->plugins[i] =
+          Plugin * clone_pl =
             plugin_clone (ch->plugins[i]);
+          channel_add_plugin (
+            clone, i, clone_pl, F_NO_CONFIRM,
+            F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH);
         }
     }
 

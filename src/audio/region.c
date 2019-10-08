@@ -100,6 +100,48 @@ region_init (
 }
 
 /**
+ * Generates a name for the Region, either using
+ * the given AutomationTrack or Track, or appending
+ * to the given base name.
+ */
+void
+region_gen_name (
+  Region *          region,
+  const char *      base_name,
+  AutomationTrack * at,
+  Track *           track)
+{
+  int count = 1;
+
+  /* Name to try to assign */
+  char * orig_name = NULL;
+  if (base_name)
+    orig_name =
+      g_strdup (base_name);
+  else if (at)
+    orig_name =
+      g_strdup_printf (
+        "%s - %s",
+        track->name, at->automatable->label);
+  else
+    orig_name = g_strdup (track->name);
+
+  char * name = g_strdup (orig_name);
+  while (region_find_by_name (name))
+    {
+      g_free (name);
+      name =
+        g_strdup_printf ("%s %d",
+                         orig_name,
+                         count++);
+    }
+  region_set_name (
+    region, name);
+  g_free (name);
+  g_free (orig_name);
+}
+
+/**
  * Sets the track lane.
  */
 void
