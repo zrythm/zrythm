@@ -28,6 +28,18 @@
                                    x->control
 #define IS_AUTOMATABLE_CH_FADER(x) x->type == AUTOMATABLE_TYPE_CHANNEL_FADER
 
+typedef struct Track Track;
+typedef struct Channel Channel;
+typedef struct AutomatableTrack AutomatableTrack;
+typedef struct Plugin Plugin;
+typedef struct AutomationTrack AutomationTrack;
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
 typedef enum AutomatableType
 {
   AUTOMATABLE_TYPE_PLUGIN_CONTROL,
@@ -37,17 +49,11 @@ typedef enum AutomatableType
   AUTOMATABLE_TYPE_CHANNEL_PAN
 } AutomatableType;
 
-typedef struct Track Track;
-typedef struct Channel Channel;
-typedef struct AutomatableTrack AutomatableTrack;
-typedef struct Plugin Plugin;
-typedef struct AutomationTrack AutomationTrack;
-
 /**
  * An automatable control.
  *
- * These are not meant to be serialized and are generated
- * at run time.
+ * These are not meant to be serialized and are
+ * generated at run time.
  */
 typedef struct Automatable
 {
@@ -72,6 +78,9 @@ typedef struct Automatable
    *
    * When loading, this can be fetched using the
    * port.
+   *
+   * FIXME use a getter, having this everywhere is
+   * confusing.
    */
   Lv2Control *     control;
 
@@ -169,6 +178,9 @@ automatable_create_mute (Channel * channel);
 Automatable *
 automatable_create_pan (Channel * channel);
 
+/**
+ * Creates an automatable for an LV2 control.
+ */
 Automatable *
 automatable_create_lv2_control (
   Plugin *       plugin,

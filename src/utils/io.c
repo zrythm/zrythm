@@ -215,39 +215,84 @@ io_rmdir (
 }
 
 /**
+ * Appends files to the given array from the given
+ * dir if they end in the given string.
+ *
+ * @param end_string If empty, appends all files.
+ */
+static void
+append_files_from_dir_ending_in (
+  char ***     files,
+  int *        num_files,
+  const int    recursive,
+  const char * _dir,
+  const char * end_string)
+{
+  GDir *dir;
+  GError *error;
+  const gchar *filename;
+  char * full_path;
+
+  dir = g_dir_open (_dir, 0, &error);
+  while ((filename = g_dir_read_name (dir)))
+    {
+      full_path =
+        g_build_filename (
+          _dir, filename, NULL);
+
+      /* recurse if necessary */
+      if (recursive &&
+          g_file_test (
+            full_path, G_FILE_TEST_IS_DIR))
+        {
+          append_files_from_dir_ending_in (
+            files, num_files, recursive, full_path,
+            end_string);
+        }
+
+      if (!end_string ||
+          (end_string &&
+             g_str_has_suffix (
+               full_path, end_string)))
+        {
+          *files =
+            realloc (
+              *files,
+              sizeof (char *) *
+                (size_t) (*num_files + 2));
+          (*files)[(*num_files)] =
+            g_strdup (full_path);
+          (*num_files)++;
+        }
+
+      g_free (full_path);
+    }
+
+  /* NULL terminate */
+  (*files)[*num_files] = NULL;
+}
+
+/**
  * Returns a list of the files in the given
  * directory.
+ *
+ * @param dir The directory to look for.
  *
  * @return a NULL terminated array of strings that
  *   must be free'd with g_strfreev().
  */
 char **
-io_get_files_in_dir (
-  const char * _dir)
+io_get_files_in_dir_ending_in (
+  const char * _dir,
+  const int    recursive,
+  const char * end_string)
 {
-  GDir *dir;
-  GError *error;
-  const gchar *filename;
-
   char ** arr =
     calloc (1, sizeof (char *));
   int count = 0;
 
-  dir = g_dir_open (_dir, 0, &error);
-  while ((filename = g_dir_read_name (dir)))
-    {
-      arr =
-        realloc (
-          arr,
-          sizeof (char *) * (size_t) (count + 2));
-      arr[count] =
-        g_build_filename (
-          _dir, filename, NULL);
-      count++;
-    }
-
-  /* NULL terminate */
-  arr[count] = NULL;
+  append_files_from_dir_ending_in (
+    &arr, &count, recursive, _dir, end_string);
 
   return arr;
 }

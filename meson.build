@@ -332,22 +332,6 @@ cyaml_dep = dependency(
 if (cyaml_dep.found ())
   cdata.set('HAVE_CYAML', 1)
 endif
-carla_native_plugin_dep = dependency(
-  'carla-native-plugin', required: false)
-if (carla_native_plugin_dep.found ())
-  cdata.set('HAVE_CARLA_NATIVE_PLUGIN', 1)
-  carla_native_plugin_dep = declare_dependency(
-    link_args: [
-      '-Wl,-rpath=/usr/lib/carla',
-      '-L/usr/lib/carla',
-      '-lcarla_native-plugin',
-      ],
-    compile_args: [
-      '-DREAL_BUILD',
-      '-I/usr/include/carla',
-      '-I/usr/include/carla/includes'
-      ])
-endif
 
 qt5_dep = dependency('Qt5Widgets', required: false)
 yaml_dep = dependency('yaml-0.1')
@@ -364,7 +348,6 @@ zrythm_deps = [
   alsa_dep,
   suil_dep,
   cyaml_dep,
-  carla_native_plugin_dep,
   dependency('threads'),
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),
