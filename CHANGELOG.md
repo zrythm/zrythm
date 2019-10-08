@@ -1,6 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.502] - 2019-10-08
+- Add caching for drawing automation regions
+- Allow direct routing from midi track to instrument track
+- Move issue tracker to Redmine
+- Send MIDI note offs 1 sample before the loop/region ends
+- Add additional checks when connecting monitor outs to JACK
+- Move MIDI channel selectors for tracks and lanes in context menus
+- Updated to new libcyaml (allow-null feature)
+- Fix pan widget not setting the right values
+- Fix moving of tracks to not skip space in-between or space after the last track
+- Fix MIDI note on being sent at the end point of the region
+- Fix MIDI note still playing if its end point is after loop end
+- Fix qsort comparison regression
+- Fix various automation-related bugs
+- Fix piano roll keys not sending correct MIDI channel
+- Fix various chord object-related actions
+- Fix chord regions not getting loaded properly
+- Fix plugin slot not getting serialized for LV2 port IDs
+- Fix warning messages while playing back MIDI regions
+- Minor refactoring
+
 ## [0.6.480] - 2019-10-01
 - Add audio recording functionality
 - Add track processor for processing track input ports and recording
