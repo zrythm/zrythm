@@ -829,7 +829,6 @@ ruler_widget_set_zoom_level (
 static void
 ruler_widget_init (RulerWidget * self)
 {
-  g_message ("initing ruler...");
   GET_PRIVATE;
 
   rw_prv->zoom_level = DEFAULT_ZOOM_LEVEL;

@@ -520,14 +520,11 @@ REALTIME
 static void *
 graph_main_thread (void * arg)
 {
-  g_message ("THREAD CREATED");
   Graph * graph = (Graph *) arg;
 
   /* wait for initial process callback */
   /*g_message ("waiting callback start");*/
   zix_sem_wait (&graph->callback_start);
-
-  g_message ("received message callback start in main thread of graph %p", graph);
 
   /*g_message ("locking in main thread");*/
   pthread_mutex_lock (&graph->trigger_mutex);
@@ -986,10 +983,10 @@ void
 graph_destroy (
   Graph * self)
 {
-  g_message ("destroying graph %p (router g1 %p g2 %p",
-             self,
-             self->router->graph1,
-             self->router->graph2);
+  g_message (
+    "destroying graph %p (router g1 %p g2 %p)",
+    self, self->router->graph1,
+    self->router->graph2);
   int i;
   self->destroying = 1;
 
@@ -1714,12 +1711,13 @@ graph_new (
         self->terminal_nodes[i], 0);
     }
 
-  g_message ("num trigger nodes %d",
-             self->n_init_triggers);
-  g_message ("num max trigger nodes %d",
-             self->trigger_queue_size);
-  g_message ("num terminal nodes %d",
-             self->terminal_node_count);
+  g_message (
+    "num trigger nodes %d | "
+    "num max trigger nodes %d | "
+    "num terminal nodes %d",
+    self->n_init_triggers,
+    self->trigger_queue_size,
+    self->terminal_node_count);
   graph_print (self);
 
   zix_sem_init (&self->callback_start, 0);

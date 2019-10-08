@@ -57,8 +57,6 @@ free_later_source ()
       gint64 curr_time =
         g_get_monotonic_time ();
 
-      g_message ("stack size %d", ssize);
-
       FreeElement * el;
       for (int i = 0; i < ssize; i++)
         {
@@ -78,7 +76,6 @@ free_later_source ()
                 (FreeElement *)
                 stack_pop_last (free_stack);
               el->dfunc (el->obj);
-              g_message ("free'd object");
             }
           else
             {

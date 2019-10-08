@@ -15,13 +15,14 @@ Hardware
 Software
 ~~~~~~~~
 - Unix-compatible OS
-- GTK 3.22 or later
+- GTK 3.24 or higher
 - A working JACK setup
 
 Recommended
 -----------
-We recommend running a fairly modern machine with the following specs
-so you can take full advantage of Zrythm.
+We recommend running a fairly modern machine with the
+following specs so you can take full advantage of
+Zrythm.
 
 Hardware
 ~~~~~~~~

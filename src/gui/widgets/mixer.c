@@ -92,8 +92,6 @@ mixer_widget_hard_refresh (MixerWidget * self)
           !gtk_widget_get_parent (
             GTK_WIDGET (ch->widget))) /* not master */
         {
-          g_message ("hard refresh mixer %d",
-                     i);
           gtk_box_pack_start (
             self->channels_box,
             GTK_WIDGET (ch->widget),

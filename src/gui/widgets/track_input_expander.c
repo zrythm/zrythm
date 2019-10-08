@@ -47,14 +47,12 @@ on_midi_channels_changed (
   Channel * ch = self->track->channel;
   if (string_is_equal (id, "all", 1))
     {
-      g_message ("all selected");
       if (ch->all_midi_channels)
         return;
       ch->all_midi_channels = 1;
     }
   else if (string_is_equal (id, "none", 1))
     {
-      g_message ("none selected");
       ch->all_midi_channels = 0;
       for (int i = 0; i < 16; i++)
         {
@@ -63,7 +61,6 @@ on_midi_channels_changed (
     }
   else
     {
-      g_message ("%s selected", id);
       ch->all_midi_channels = 0;
 
       /* clear */
@@ -108,8 +105,6 @@ on_ext_input_changed (
   Channel * ch = self->track->channel;
   if (string_is_equal (id, "all", 1))
     {
-      g_message ("all selected");
-
       if (midi)
         {
           if (ch->all_midi_ins)
@@ -131,7 +126,6 @@ on_ext_input_changed (
     }
   else if (string_is_equal (id, "none", 1))
     {
-      g_message ("none selected");
       if (midi)
         {
           ch->all_midi_ins = 0;
@@ -159,7 +153,6 @@ on_ext_input_changed (
     }
   else
     {
-      g_message ("%s selected", id);
       if (midi)
         {
           ext_ports_free (
@@ -192,8 +185,8 @@ on_ext_input_changed (
       for (int i = 0; i < num_ports; i++)
         {
           port = ports[i];
-          g_message ("checking %s",
-                     port->full_name);
+          /*g_message ("checking %s",*/
+                     /*port->full_name);*/
 
           if (string_is_equal (
                 port->full_name, id, 1))

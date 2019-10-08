@@ -288,12 +288,14 @@ track_clone (Track * track)
   COPY_MEMBER (mute);
   COPY_MEMBER (solo);
   COPY_MEMBER (recording);
+  COPY_MEMBER (pinned);
   COPY_MEMBER (active);
   COPY_MEMBER (color.red);
   COPY_MEMBER (color.green);
   COPY_MEMBER (color.blue);
   COPY_MEMBER (color.alpha);
   COPY_MEMBER (pos);
+  COPY_MEMBER (midi_ch);
 
   if (track->channel)
     {
@@ -779,7 +781,6 @@ track_create_missing_lanes (
 {
   while (track->num_lanes < pos + 2)
     {
-      g_message ("adding missing lane");
       track_add_lane (track);
     }
 }

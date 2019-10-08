@@ -31,22 +31,14 @@
 void
 undo_manager_init (UndoManager * self)
 {
-  g_message ("undo manager init");
-  g_message ("%p %p",
-             self, UNDO_MANAGER);
+  g_message ("Initializing undo manager...");
   self->undo_stack =
     stack_new (MAX_UNDO_STACK_LENGTH);
-  g_message ("%p %p",
-             self->undo_stack, UNDO_MANAGER->undo_stack);
   self->redo_stack =
     stack_new (MAX_UNDO_STACK_LENGTH);
   self->undo_stack->top = -1;
   self->redo_stack->top = -1;
-  g_message ("stack size %d",
-             stack_size (self->undo_stack));
   stack_is_empty (self->undo_stack);
-  g_message ("undo manager %p",
-             UNDO_MANAGER->undo_stack);
 }
 
 /**

@@ -106,6 +106,7 @@ copy_tracks_action_undo (
 
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                NULL);
+  EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
 
   return 0;
 }

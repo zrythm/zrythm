@@ -928,8 +928,8 @@ digital_meter_widget_new (
   NoteType *        note_type,
   const char *      caption)
 {
-  g_message ("Creating digital meter...");
-  DigitalMeterWidget * self = g_object_new (DIGITAL_METER_WIDGET_TYPE, NULL);
+  DigitalMeterWidget * self =
+    g_object_new (DIGITAL_METER_WIDGET_TYPE, NULL);
 
   self->type = type;
   self->caption = g_strdup (caption);
