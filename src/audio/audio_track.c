@@ -88,7 +88,7 @@ audio_track_fill_stereo_ports_from_clip (
           if (region_is_hit_by_range (
                 r,
                 cycle_start_frames,
-                cycle_end_frames))
+                cycle_end_frames, 1))
             {
               region_start_frames =
                 position_to_frames (&r->start_pos);

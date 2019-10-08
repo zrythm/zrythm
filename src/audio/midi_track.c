@@ -243,6 +243,7 @@ midi_track_fill_midi_events (
   int transport_loop_met =
     g_end_frames_excl < g_start_frames;
   unsigned int diff_to_loop_end;
+  int region_hit_exclusive = 0;
 
   if (transport_loop_met)
     {
@@ -285,8 +286,19 @@ midi_track_fill_midi_events (
                       if (!region_is_hit_by_range (
                             r, g_start_frames,
                             TRANSPORT->
-                              loop_end_pos.frames))
+                              loop_end_pos.frames,
+                          1))
                         continue;
+
+                      /* check also if region is
+                       * hit without counting its
+                       * end point */
+                      region_hit_exclusive =
+                        region_is_hit_by_range (
+                          r, g_start_frames,
+                          TRANSPORT->
+                            loop_end_pos.frames,
+                          0);
                     }
                   /* check second half */
                   else if (k == 1)
@@ -296,8 +308,20 @@ midi_track_fill_midi_events (
                             r,
                             TRANSPORT->
                               loop_start_pos.frames,
-                            g_end_frames_excl))
+                            g_end_frames_excl,
+                          1))
                         continue;
+
+                      /* check also if region is
+                       * hit without counting its
+                       * end point */
+                      region_hit_exclusive =
+                        region_is_hit_by_range (
+                          r,
+                          TRANSPORT->
+                            loop_start_pos.frames,
+                          g_end_frames_excl,
+                          0);
                     }
                 }
               else
@@ -305,8 +329,17 @@ midi_track_fill_midi_events (
                   /* skip regions not hit */
                   if (!region_is_hit_by_range (
                         r, g_start_frames,
-                        g_end_frames_excl))
+                        g_end_frames_excl,
+                      1))
                     continue;
+
+                  /* check also if region is
+                   * hit without counting its
+                   * end point */
+                  region_hit_exclusive =
+                    region_is_hit_by_range (
+                      r, g_start_frames,
+                      g_end_frames_excl, 0);
                 }
 
               /* get local positions */
@@ -464,7 +497,8 @@ midi_track_fill_midi_events (
 
                   /* check for note on event in
                    * between a region loop point */
-                  if (local_pos >
+                  if (region_hit_exclusive &&
+                      local_pos >
                         local_end_pos_excl &&
                       mn_start_frames <
                         local_end_pos_excl)
@@ -488,6 +522,7 @@ midi_track_fill_midi_events (
                   /* check for note on event in the
                    * normal case */
                   else if (
+                    region_hit_exclusive &&
                     midi_note->start_pos.frames >=
                       local_pos &&
                     midi_note->start_pos.frames <

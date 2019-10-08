@@ -1220,7 +1220,8 @@ int
 region_is_hit_by_range (
   const Region * region,
   const long     gframes_start,
-  const long     gframes_end)
+  const long     gframes_end,
+  const int      end_inclusive)
 {
   /* 4 cases:
    * - region start is inside range
@@ -1228,13 +1229,34 @@ region_is_hit_by_range (
    * - start is inside region
    * - end is inside region
    */
-  return
-    (gframes_start <= region->start_pos.frames &&
-     gframes_end > region->start_pos.frames) ||
-    (gframes_start <= region->end_pos.frames &&
-     gframes_end > region->end_pos.frames) ||
-    region_is_hit (region, gframes_start) ||
-    region_is_hit (region, gframes_end);
+  if (end_inclusive)
+    {
+      return
+        (gframes_start <=
+           region->start_pos.frames &&
+         gframes_end >
+           region->start_pos.frames) ||
+        (gframes_start <=
+           region->end_pos.frames &&
+         gframes_end >
+           region->end_pos.frames) ||
+        region_is_hit (region, gframes_start) ||
+        region_is_hit (region, gframes_end);
+    }
+  else
+    {
+      return
+        (gframes_start <=
+           region->start_pos.frames &&
+         gframes_end >
+           region->start_pos.frames) ||
+        (gframes_start <
+           region->end_pos.frames &&
+         gframes_end >
+           region->end_pos.frames) ||
+        region_is_hit (region, gframes_start) ||
+        region_is_hit (region, gframes_end - 1);
+    }
 }
 
 /**

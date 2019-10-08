@@ -778,7 +778,8 @@ int
 region_is_hit_by_range (
   const Region * region,
   const long     gframes_start,
-  const long     gframes_end);
+  const long     gframes_end,
+  const int      end_inclusive);
 
 void
 region_unpack (Region * region);
