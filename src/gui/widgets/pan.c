@@ -116,25 +116,28 @@ on_motion (GtkWidget * widget, GdkEvent *event,
 }
 
 static void
-drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_update (
+  GtkGestureDrag * gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  PanWidget *     self)
 {
-  PanWidget * self = (PanWidget *) user_data;
   offset_y = - offset_y;
   int use_y =
     fabs (offset_y - self->last_y) >
     fabs (offset_x - self->last_x);
-  SET_VAL (
+  float diff =
+    0.005f *
+    (float)
+      (use_y ?
+       offset_y - self->last_y :
+       offset_x - self->last_x);
+
+  float new_val =
     CLAMP (
-      GET_VAL +
-      0.005f *
-      (float)
-        (use_y ?
-         offset_y - self->last_y :
-         offset_x - self->last_x),
-      1.0f, 0.0f));
+      GET_VAL + diff, 0.0f, 1.0f);
+
+  SET_VAL (new_val);
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));

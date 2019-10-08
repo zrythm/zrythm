@@ -27,6 +27,7 @@
 
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
+#include "actions/copy_tracks_action.h"
 #include "actions/create_timeline_selections_action.h"
 #include "actions/create_tracks_action.h"
 #include "actions/delete_tracks_action.h"
@@ -1029,8 +1030,12 @@ activate_duplicate_selected_tracks (
   GVariant      *variant,
   gpointer       user_data)
 {
-  g_message ("duplicating selected tracks");
+  UndoableAction * ua =
+    copy_tracks_action_new (
+      TRACKLIST_SELECTIONS,
+      TRACKLIST_SELECTIONS->tracks[0]->pos + 1);
 
+  undo_manager_perform (UNDO_MANAGER, ua);
 }
 
 void
