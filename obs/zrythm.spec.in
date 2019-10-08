@@ -61,15 +61,15 @@ and is designed to be intuitive to use.
 %build
 rm -rf build
 %if 0%{?suse_version}
-meson build --prefix=/usr -Denable_tests=true -Dmanpage=true
+meson build --prefix=/usr -Denable_tests=true -Dmanpage=true -Dbuildtype=release
 %endif
 %if 0%{?fedora_version}
 # todo with qt5
-meson build --prefix=/usr -Denable_tests=true -Dmanpage=true
+meson build --prefix=/usr -Denable_tests=true -Dmanpage=true -Dbuildtype=release
 %endif
 %if 0%{?mageia}
 # todo with qt5
-meson build --prefix=/usr -Denable_tests=true -Dmanpage=true
+meson build --prefix=/usr -Denable_tests=true -Dmanpage=true -Dbuildtype=release
 %endif
 ninja -C build
 

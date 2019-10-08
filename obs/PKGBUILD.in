@@ -23,7 +23,7 @@ _rootdir="${pkgname}-v${pkgver}"
 
 build() {
   cd $_rootdir
-  meson build --prefix=/usr -Denable_tests=true -Duser_manual=true -Dmanpage=true
+  meson build --prefix=/usr -Denable_tests=true -Duser_manual=true -Dmanpage=true -Dbuildtype=release
   ninja -C build
 }
 
