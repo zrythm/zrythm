@@ -142,6 +142,7 @@ audio_encoder_decode (
       g_warning (
         "Failed to create a src callback: %s",
         src_strerror (err));
+      return;
     }
 
   /* start reading */
@@ -186,6 +187,7 @@ audio_encoder_decode (
 
     } while (frames_read > 0);
 
+  src_delete (state);
   g_message ("--audio decoding end--");
 
   if (total_read != self->num_out_frames)

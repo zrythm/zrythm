@@ -360,7 +360,37 @@ bar_slider_widget_init (
 }
 
 static void
-bar_slider_widget_class_init (
-  BarSliderWidgetClass * klass)
+finalize (
+  BarSliderWidget * self)
 {
+  if (self->suffix)
+    g_free (self->suffix);
+  if (self->prefix)
+    g_free (self->prefix);
+  if (self->drag)
+    g_object_unref (self->drag);
+
+  G_OBJECT_CLASS (
+    bar_slider_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
+bar_slider_widget_class_init (
+  BarSliderWidgetClass * _klass)
+{
+  /* <ebassi> alextee: Rule of thumb: use dispose()
+   * for releasing references to objects you acquired
+   * from the outside, and finalize() to release
+   * memory/references you allocated internally.
+   *
+   * <ebassi> alextee: There's basically no reason to
+   * override destroy(); always use dispose/finalize
+   * <ebassi> alextee: The "destroy" signal is for
+   * other code, using your widget, to release references
+   * they might have */
+  GObjectClass * klass =
+    G_OBJECT_CLASS (_klass);
+
+  klass->finalize = (GObjectFinalizeFunc) finalize;
 }

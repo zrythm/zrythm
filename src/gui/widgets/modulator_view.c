@@ -69,10 +69,10 @@ modulator_view_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  GdkRGBA * color = calloc (1, sizeof (GdkRGBA));
-  gdk_rgba_parse (color, "gray");
+  GdkRGBA color;
+  gdk_rgba_parse (&color, "gray");
   color_area_widget_set_color (
-    self->color, color);
+    self->color, &color);
 
   DragDestBoxWidget * drag_dest =
     drag_dest_box_widget_new (
@@ -96,16 +96,13 @@ modulator_view_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "modulator-view");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    ModulatorViewWidget,
-    color);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ModulatorViewWidget,
-    track_name);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ModulatorViewWidget,
-    modulators_box);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, \
+    ModulatorViewWidget, \
+    x)
+
+  BIND_CHILD (color);
+  BIND_CHILD (track_name);
+  BIND_CHILD (modulators_box);
 }

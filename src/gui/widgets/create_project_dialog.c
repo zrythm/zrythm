@@ -42,6 +42,7 @@ respond (
       gtk_entry_get_text (
         GTK_ENTRY (self->name)),
       NULL);
+  g_free (str);
 
   /* TODO validate */
 

@@ -267,17 +267,21 @@ char *
 create_tracks_action_stringize (
 	CreateTracksAction * self)
 {
+  char * type =
+    track_stringize_type (
+      self->type);
+  char * ret;
   if (self->num_tracks == 1)
-    return g_strdup_printf (
-      _("Create %s Track"),
-      track_stringize_type (
-        self->type));
+    ret = g_strdup_printf (
+      _("Create %s Track"), type);
   else
-    return g_strdup_printf (
+    ret = g_strdup_printf (
       _("Create %d %s Tracks"),
-      self->num_tracks,
-      track_stringize_type (
-        self->type));
+      self->num_tracks, type);
+
+  g_free (type);
+
+  return ret;
 }
 
 void

@@ -119,6 +119,8 @@ midi_note_set_region (
         mn = midi_note_get_main_trans_midi_note (midi_note);
 
       mn->region = region;
+      if (mn->region_name)
+        g_free (mn->region_name);
       mn->region_name = g_strdup (region->name);
     }
 }

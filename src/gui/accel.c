@@ -125,4 +125,5 @@ accel_set_accel_label_from_action (
         accel_key,
         accel_mods);
     }
+  g_strfreev (accels);
 }

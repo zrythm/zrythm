@@ -574,6 +574,7 @@ reconnect_jack_ext_in (
               g_warn_if_fail (!ret);
               i++;
             }
+          jack_free (ports);
         }
     }
   /* connect to selected ports */
@@ -826,13 +827,6 @@ channel_connect (
             P_MASTER_TRACK->processor.
               stereo_in->r,
             1);
-          g_message (
-            "connected %s to %s",
-            port_get_full_designation (
-              ch->stereo_out->l),
-            port_get_full_designation (
-              P_MASTER_TRACK->processor.
-                stereo_in->l));
         }
     }
 

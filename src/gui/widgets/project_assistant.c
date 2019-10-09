@@ -410,7 +410,7 @@ project_assistant_widget_new (
       char * project_name = g_path_get_basename (dir);
       self->project_infos[i].name = project_name;
       self->project_infos[i].filename =
-        ZRYTHM->recent_projects[i];
+        g_strdup (ZRYTHM->recent_projects[i]);
       self->project_infos[i].modified =
         io_file_get_last_modified_datetime (
           ZRYTHM->recent_projects[i]);
@@ -438,14 +438,14 @@ project_assistant_widget_new (
     {
       self->template_infos[
         self->num_template_infos].name =
-        g_path_get_basename (
-          ZRYTHM->templates[count]);
+          g_path_get_basename (
+            ZRYTHM->templates[count]);
       self->template_infos[
         self->num_template_infos].filename =
-        g_build_filename (
-          ZRYTHM->templates[count],
-          PROJECT_FILE,
-          NULL);
+          g_build_filename (
+            ZRYTHM->templates[count],
+            PROJECT_FILE,
+            NULL);
       self->template_infos[
         self->num_template_infos].modified =
           io_file_get_last_modified_datetime (
@@ -500,6 +500,27 @@ project_assistant_widget_new (
 }
 
 static void
+finalize (
+  ProjectAssistantWidget * self)
+{
+  int i;
+  for (i = 0; i < self->num_project_infos; i++)
+    {
+      project_info_free_elements (
+        &self->project_infos[i]);
+    }
+  for (i = 0; i < self->num_template_infos; i++)
+    {
+      project_info_free_elements (
+        &self->template_infos[i]);
+    }
+
+  G_OBJECT_CLASS (
+    project_assistant_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
 project_assistant_widget_class_init (
   ProjectAssistantWidgetClass * _klass)
 {
@@ -533,6 +554,10 @@ project_assistant_widget_class_init (
 
 #undef BIND_CHILD
 #undef BIND_CALLBACK
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
 }
 
 static void

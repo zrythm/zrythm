@@ -1060,20 +1060,21 @@ track_widget_init (TrackWidget * self)
   gtk_widget_add_events (GTK_WIDGET (self),
                          GDK_ALL_EVENTS_MASK);
 
-  GtkTargetEntry entries[1];
-  entries[0].target =
-    g_strdup (TARGET_ENTRY_TRACK);
-  entries[0].flags = GTK_TARGET_SAME_APP;
-  entries[0].info =
-    symap_map (ZSYMAP, TARGET_ENTRY_TRACK);
+  char * entry_track = g_strdup (TARGET_ENTRY_TRACK);
+  GtkTargetEntry entries[] = {
+    {
+      entry_track, GTK_TARGET_SAME_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_TRACK),
+    },
+  };
 
   /* set as drag source for track */
   gtk_drag_source_set (
     GTK_WIDGET (tw_prv->event_box),
     GDK_BUTTON1_MASK,
-    entries,
-    1,
+    entries, G_N_ELEMENTS (entries),
     GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  g_free (entry_track);
 
   g_signal_connect (
     G_OBJECT (tw_prv->multipress), "pressed",

@@ -97,10 +97,9 @@ char *
 io_file_strip_ext (const char * filename)
 {
   char ** parts = g_strsplit (filename, ".", 2);
-  char * file_part = parts[0];
-  char * ext_part = parts[1];
-
-  g_free (ext_part);
+  char * file_part =
+    g_strdup (parts[0]);
+  g_strfreev (parts);
   return file_part;
 }
 

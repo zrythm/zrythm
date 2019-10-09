@@ -936,6 +936,8 @@ track_add_modulator (
 void
 track_free (Track * track)
 {
+  if (track->name)
+    g_free (track->name);
 
   /* remove regions */
   /* FIXME move inside *_track_free */

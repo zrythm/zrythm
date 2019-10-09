@@ -181,6 +181,7 @@ get_newer_backup (
             "Failed to get last modified for %s",
             full_path);
           g_dir_close (dir);
+          g_free (backups_dir);
           return NULL;
         }
       g_free (full_path);
@@ -445,6 +446,7 @@ load (
   g_free (project_file_path);
 
   Project * prj = project_deserialize (yaml);
+  g_free (yaml);
   prj->backup_dir =
     g_strdup (PROJECT->backup_dir);
 

@@ -37,10 +37,12 @@ log_writer (
   gpointer user_data)
 {
   /* write to file */
-  g_fprintf (
-    logfile, "%s\n",
+  char * str =
     g_log_writer_format_fields (
-      log_level, fields, n_fields, 0));
+      log_level, fields, n_fields, 0);
+  g_fprintf (
+    logfile, "%s\n", str);
+  g_free (str);
   fflush (logfile);
 
   /* call the default log writer */

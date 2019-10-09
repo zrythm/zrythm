@@ -717,10 +717,15 @@ port_connect (
       /*dest->has_modulators = 1;*/
     }
 
+  char * sd =
+    port_get_full_designation (src);
+  char * dd =
+    port_get_full_designation (dest);
   g_message (
     "Connected port \"%s\" to \"%s\"",
-    port_get_full_designation (src),
-    port_get_full_designation (dest));
+    sd, dd);
+  g_free (sd);
+  g_free (dd);
   return 0;
 }
 
@@ -770,10 +775,15 @@ port_disconnect (Port * src, Port * dest)
         }
     }
 
+  char * sd =
+    port_get_full_designation (src);
+  char * dd =
+    port_get_full_designation (dest);
   g_message (
     "Disconnected port \"%s\" from \"%s\"",
-    port_get_full_designation (src),
-    port_get_full_designation (dest));
+    sd, dd);
+  g_free (sd);
+  g_free (dd);
   return 0;
 }
 

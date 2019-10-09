@@ -76,6 +76,7 @@ free_later_source ()
                 (FreeElement *)
                 stack_pop_last (free_stack);
               el->dfunc (el->obj);
+              free (el);
             }
           else
             {

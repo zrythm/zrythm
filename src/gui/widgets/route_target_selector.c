@@ -64,12 +64,11 @@ route_target_selector_widget_refresh (
 
   set_label (self);
 
-  if (GTK_IS_WIDGET (self->popover))
-    gtk_widget_destroy (
-      GTK_WIDGET (self->popover));
-  self->popover = NULL;
   gtk_menu_button_set_popover (
     GTK_MENU_BUTTON (self), NULL);
+  if (self->popover && GTK_IS_WIDGET (self->popover))
+    g_object_unref (self->popover);
+  self->popover = NULL;
 
   /* if unroutable */
   if (!self->channel)
@@ -127,9 +126,25 @@ route_target_selector_widget_new (
 }
 
 static void
+finalize (
+  RouteTargetSelectorWidget * self)
+{
+  if (self->popover && G_IS_OBJECT (self->popover))
+    g_object_unref (self->popover);
+
+  G_OBJECT_CLASS (
+    route_target_selector_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
 route_target_selector_widget_class_init (
   RouteTargetSelectorWidgetClass * _klass)
 {
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (_klass);
+
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
 }
 
 static void

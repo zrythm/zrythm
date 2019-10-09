@@ -922,6 +922,7 @@ node_free (
   GraphNode * node)
 {
   free (node->childnodes);
+  free (node->parentnodes);
   free (node);
 }
 
@@ -939,6 +940,7 @@ graph_free (
 		node_free (self->graph_nodes[i]);
     }
 	free (self->graph_nodes);
+  free (self->init_trigger_list);
 
   pthread_mutex_destroy (&self->trigger_mutex);
 

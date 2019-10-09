@@ -1786,7 +1786,8 @@ timeline_arranger_widget_set_size (
 static int
 update_last_timeline_object ()
 {
-  if (!MAIN_WINDOW || !GTK_IS_WIDGET (MAIN_WINDOW))
+  if (!ZRYTHM || !MAIN_WINDOW ||
+      !GTK_IS_WIDGET (MAIN_WINDOW))
     return G_SOURCE_CONTINUE;
 
   TimelineArrangerWidget * self = MW_TIMELINE;

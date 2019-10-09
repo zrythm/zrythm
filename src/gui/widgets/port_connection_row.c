@@ -78,12 +78,15 @@ port_connection_row_widget_new (
     1,1,0);
 
   /* bar slider */
+  char * designation =
+    is_input ?
+      port_get_full_designation (src) :
+      port_get_full_designation (dest);
   char * label =
     g_strdup_printf (
       "%s ",
-      is_input ?
-        port_get_full_designation (src) :
-        port_get_full_designation (dest));
+      designation);
+  g_free (designation);
   self->slider =
     bar_slider_widget_new_port (
       src, dest, label);

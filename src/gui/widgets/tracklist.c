@@ -442,12 +442,13 @@ tracklist_widget_init (TracklistWidget * self)
     GTK_WIDGET (self),
     GDK_ALL_EVENTS_MASK);
 
-  GtkTargetEntry entries[1];
-  entries[0].target =
-    g_strdup (TARGET_ENTRY_TRACK);
-  entries[0].flags = GTK_TARGET_SAME_APP;
-  entries[0].info =
-    symap_map (ZSYMAP, TARGET_ENTRY_TRACK);
+  char * entry_track = g_strdup (TARGET_ENTRY_TRACK);
+  GtkTargetEntry entries[] = {
+    {
+      entry_track, GTK_TARGET_SAME_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_TRACK),
+    },
+  };
 
   /* set as drag dest for track (the track will
    * be moved based on which half it was dropped in,
@@ -456,9 +457,9 @@ tracklist_widget_init (TracklistWidget * self)
     GTK_WIDGET (self),
     GTK_DEST_DEFAULT_MOTION |
       GTK_DEST_DEFAULT_DROP,
-    entries,
-    1,
+    entries, G_N_ELEMENTS (entries),
     GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  g_free (entry_track);
 
   g_signal_connect (
     GTK_WIDGET (self), "drag-data-received",

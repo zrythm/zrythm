@@ -644,33 +644,36 @@ channel_slot_widget_new (int slot_index,
   self->slot_index = slot_index;
   self->channel = cw->channel;
 
-  GtkTargetEntry entries[2];
-  entries[0].target =
+  char * entry_plugin =
     g_strdup (TARGET_ENTRY_PLUGIN);
-  entries[0].flags = GTK_TARGET_SAME_APP;
-  entries[0].info =
-    symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN);
-  entries[1].target =
+  char * entry_plugin_descr =
     g_strdup (TARGET_ENTRY_PLUGIN_DESCR);
-  entries[1].flags = GTK_TARGET_SAME_APP;
-  entries[1].info =
-    symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR);
+  GtkTargetEntry entries[] = {
+    {
+      entry_plugin, GTK_TARGET_SAME_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN),
+    },
+    {
+      entry_plugin_descr, GTK_TARGET_SAME_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR),
+    },
+  };
 
   /* set as drag source for plugin */
   gtk_drag_source_set (
     GTK_WIDGET (self),
     GDK_BUTTON1_MASK,
-    entries,
-    1,
+    entries, 1,
     GDK_ACTION_MOVE | GDK_ACTION_COPY);
   /* set as drag dest for both plugins and
    * plugin descriptors */
   gtk_drag_dest_set (
     GTK_WIDGET (self),
     GTK_DEST_DEFAULT_ALL,
-    entries,
-    2,
+    entries, G_N_ELEMENTS (entries),
     GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  g_free (entry_plugin);
+  g_free (entry_plugin_descr);
 
   return self;
 }

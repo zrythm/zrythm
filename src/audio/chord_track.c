@@ -38,7 +38,6 @@ chord_track_init (
   Track * self)
 {
   self->type = TRACK_TYPE_CHORD;
-  self->name = g_strdup (_("Chords"));
 
   gdk_rgba_parse (&self->color, "#0328fa");
 }

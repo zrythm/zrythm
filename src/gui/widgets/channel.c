@@ -519,11 +519,13 @@ setup_phase_panel (ChannelWidget * self)
   gtk_box_pack_end (self->phase_controls,
                        GTK_WIDGET (self->phase_knob),
                        0, 1, 0);
-  gtk_label_set_text (
-    self->phase_reading,
+  char * str =
     g_strdup_printf (
       "%.1f",
-      (double) self->channel->fader.phase));
+      (double) self->channel->fader.phase);
+  gtk_label_set_text (
+    self->phase_reading, str);
+  g_free (str);
 }
 
 static void
@@ -945,21 +947,21 @@ channel_widget_init (ChannelWidget * self)
   expander_box_widget_set_label (
     self->inserts_expander, _("Inserts"));
 
-  GtkTargetEntry entries[1];
-  /* FIXME free */
-  entries[0].target =
-    g_strdup (TARGET_ENTRY_TRACK);
-  entries[0].flags = GTK_TARGET_SAME_APP;
-  entries[0].info =
-    symap_map (ZSYMAP, TARGET_ENTRY_TRACK);
+  char * entry_track = g_strdup (TARGET_ENTRY_TRACK);
+  GtkTargetEntry entries[] = {
+    {
+      entry_track, GTK_TARGET_SAME_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_TRACK),
+    },
+  };
 
-  /* set as drag source for channel */
+  /* set as drag source for track */
   gtk_drag_source_set (
     GTK_WIDGET (self->icon_and_name_event_box),
     GDK_BUTTON1_MASK,
-    entries,
-    1,
+    entries, G_N_ELEMENTS (entries),
     GDK_ACTION_MOVE | GDK_ACTION_COPY);
+
   /* set as drag dest for channel (the channel will
    * be moved based on which half it was dropped in,
    * left or right) */
@@ -967,9 +969,9 @@ channel_widget_init (ChannelWidget * self)
     GTK_WIDGET (self),
     GTK_DEST_DEFAULT_MOTION |
       GTK_DEST_DEFAULT_DROP,
-    entries,
-    1,
+    entries, G_N_ELEMENTS (entries),
     GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  g_free (entry_track);
 
   self->mp =
     GTK_GESTURE_MULTI_PRESS (

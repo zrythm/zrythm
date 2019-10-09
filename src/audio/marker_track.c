@@ -37,7 +37,6 @@ marker_track_init (
   Track * self)
 {
   self->type = TRACK_TYPE_MARKER;
-  self->name = g_strdup (_("Markers"));
 
   gdk_rgba_parse (&self->color, "#A3289a");
 }
@@ -48,16 +47,10 @@ marker_track_init (
 MarkerTrack *
 marker_track_default ()
 {
-  MarkerTrack * self =
-    calloc (1, sizeof (MarkerTrack));
-
-  Track * track = (Track *) self;
-  track->type = TRACK_TYPE_MARKER;
-  track_init (track, F_WITHOUT_LANE);
-
-  self->name = g_strdup (_("Markers"));
-
-  gdk_rgba_parse (&self->color, "#A3289a");
+  Track * self =
+    track_new (
+      TRACK_TYPE_MARKER, _("Markers"),
+      F_WITHOUT_LANE);
 
   /* add start and end markers */
   Marker * marker;

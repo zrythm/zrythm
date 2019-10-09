@@ -388,6 +388,7 @@ arranger_widget_get_hit_widgets_in_range (
           array[(*array_size)++] = widget;
         }
     }
+  g_list_free (children);
 }
 
 /**

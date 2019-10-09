@@ -252,10 +252,13 @@ row_separator_func (
   /*g_value_init (&a, G_TYPE_STRING);*/
   gtk_tree_model_get_value (model, iter, 0, &a);
   const char * val = g_value_get_string (&a);
+  int ret;
   if (val && string_is_equal (val, "separator", 1))
-    return 1;
+    ret = 1;
   else
-    return 0;
+    ret = 0;
+  g_value_unset (&a);
+  return ret;
 }
 
 /**
@@ -400,6 +403,8 @@ setup_ext_ins_cb (
     G_OBJECT (cb),
     "active-id",
     &a);
+
+  g_value_unset (&a);
 }
 
 static void
@@ -472,6 +477,8 @@ setup_midi_channels_cb (
     G_OBJECT (cb),
     "active-id",
     &a);
+
+  g_value_unset (&a);
 
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (cb),

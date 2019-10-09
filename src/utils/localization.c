@@ -97,7 +97,8 @@ localization_locale_exists (
   /* Read the output a line at a time - output it. */
   while (fgets(path, sizeof(path)-1, fp) != NULL) {
     installed_locales[num_installed_locales++] =
-      g_strdup (path);
+      g_strdup_printf (
+        "%s", g_strchomp (path));
   }
 
   /* close */

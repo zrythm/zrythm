@@ -59,6 +59,18 @@ typedef struct ProjectInfo
   char *   modified;
 } ProjectInfo;
 
+static inline void
+project_info_free_elements (
+  ProjectInfo * info)
+{
+  if (info->name)
+    g_free (info->name);
+  if (info->filename)
+    g_free (info->filename);
+  if (info->modified)
+    g_free (info->modified);
+}
+
 enum
 {
   COLUMN_NAME,

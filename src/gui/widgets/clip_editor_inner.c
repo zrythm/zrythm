@@ -174,10 +174,22 @@ clip_editor_inner_widget_init (ClipEditorInnerWidget * self)
   gtk_widget_set_size_request (
     GTK_WIDGET (self->ruler_scroll), -1, 32);
 
-  GdkRGBA * color = calloc (1, sizeof (GdkRGBA));
-  gdk_rgba_parse (color, "gray");
+  GdkRGBA color;
+  gdk_rgba_parse (&color, "gray");
   color_area_widget_set_color (
-    self->color_bar, color);
+    self->color_bar, &color);
+}
+
+static void
+finalize (
+  ClipEditorInnerWidget * self)
+{
+  if (self->left_of_ruler_size_group)
+    g_object_unref (self->left_of_ruler_size_group);
+
+  G_OBJECT_CLASS (
+    clip_editor_inner_widget_parent_class)->
+      finalize (G_OBJECT (self));
 }
 
 static void
@@ -189,56 +201,26 @@ clip_editor_inner_widget_class_init (
     klass,
     "clip_editor_inner.ui");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    color_bar);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    bot_of_arranger_toolbar);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    track_name_label);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    left_of_ruler_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    ruler_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    ruler_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    ruler);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    toggle_notation);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    editor_stack);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    midi_editor_space);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    audio_editor_space);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    chord_editor_space);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorInnerWidget,
-    automation_editor_space);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, \
+    ClipEditorInnerWidget, \
+    x);
+
+  BIND_CHILD (color_bar);
+  BIND_CHILD (bot_of_arranger_toolbar);
+  BIND_CHILD (track_name_label);
+  BIND_CHILD (left_of_ruler_box);
+  BIND_CHILD (ruler_scroll);
+  BIND_CHILD (ruler_viewport);
+  BIND_CHILD (ruler);
+  BIND_CHILD (toggle_notation);
+  BIND_CHILD (editor_stack);
+  BIND_CHILD (midi_editor_space);
+  BIND_CHILD (audio_editor_space);
+  BIND_CHILD (chord_editor_space);
+  BIND_CHILD (automation_editor_space);
+
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
 }

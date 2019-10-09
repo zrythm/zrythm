@@ -187,6 +187,9 @@ inspector_widget_init (InspectorWidget * self)
     GTK_CONTAINER (self->stack),
     GTK_WIDGET (self->plugin),
     "title", &iconval3);
+  g_value_unset (&iconval1);
+  g_value_unset (&iconval2);
+  g_value_unset (&iconval3);
 
   GList *children, *iter;
   children =

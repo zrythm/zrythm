@@ -70,7 +70,7 @@ ui_set_cursor_from_icon_name (
       pixbuf,
       offset_x,
       offset_y);
-  gdk_window_set_cursor(win, cursor);
+  gdk_window_set_cursor (win, cursor);
 }
 
 /**

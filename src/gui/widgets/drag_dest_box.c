@@ -607,42 +607,50 @@ drag_dest_box_widget_new (
     }
 
   /* make expandable */
-  gtk_widget_set_vexpand (GTK_WIDGET (self),
-                          1);
-  gtk_widget_set_hexpand (GTK_WIDGET (self),
-                          1);
+  gtk_widget_set_vexpand (
+    GTK_WIDGET (self), 1);
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self), 1);
 
   /* set as drag dest */
-  GtkTargetEntry entries[5];
-  entries[0].target =
+  char * entry_track =
+    g_strdup (TARGET_ENTRY_TRACK);
+  char * entry_plugin_descr =
     g_strdup (TARGET_ENTRY_PLUGIN_DESCR);
-  entries[0].flags = GTK_TARGET_SAME_APP;
-  entries[0].info =
-    symap_map (
-      ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR);
-  entries[1].target =
-  g_strdup (TARGET_ENTRY_URI_LIST);
-  entries[1].flags = GTK_TARGET_SAME_APP;
-  entries[1].info =
-    symap_map (ZSYMAP, TARGET_ENTRY_URI_LIST);
-  entries[2].target =
-  g_strdup (TARGET_ENTRY_URI_LIST);
-  entries[2].flags = GTK_TARGET_OTHER_APP;
-  entries[2].info =
-    symap_map (ZSYMAP, TARGET_ENTRY_URI_LIST);
-  entries[3].target =
-  g_strdup (TARGET_ENTRY_PLUGIN);
-  entries[3].flags = GTK_TARGET_SAME_APP;
-  entries[3].info =
-    symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN);
-  entries[4].target =
-  g_strdup (TARGET_ENTRY_TRACK);
-  entries[4].flags = GTK_TARGET_SAME_APP;
-  entries[4].info =
-    symap_map (ZSYMAP, TARGET_ENTRY_TRACK);
+  char * entry_uri_list =
+    g_strdup (TARGET_ENTRY_URI_LIST);
+  char * entry_plugin =
+    g_strdup (TARGET_ENTRY_PLUGIN);
+  GtkTargetEntry entries[] = {
+    {
+      entry_plugin_descr, GTK_TARGET_SAME_APP,
+      symap_map (
+        ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR),
+    },
+    {
+      entry_uri_list, GTK_TARGET_SAME_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_URI_LIST),
+    },
+    {
+      entry_uri_list, GTK_TARGET_OTHER_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_URI_LIST),
+    },
+    {
+      entry_plugin, GTK_TARGET_SAME_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN),
+    },
+    {
+      entry_track, GTK_TARGET_SAME_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_TRACK),
+    }
+  };
   gtk_drag_dest_set (
     GTK_WIDGET (self), GTK_DEST_DEFAULT_ALL,
-    entries, 5, GDK_ACTION_COPY);
+    entries, G_N_ELEMENTS (entries), GDK_ACTION_COPY);
+  g_free (entry_track);
+  g_free (entry_plugin);
+  g_free (entry_plugin_descr);
+  g_free (entry_uri_list);
 
   /* connect signal */
   g_signal_connect (

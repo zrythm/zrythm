@@ -240,13 +240,13 @@ on_selection_changed (
             g_strdup_printf (
             _("Routing to %s"),
             track->name);
-
-          update_info_label (self,
-                             label);
+          update_info_label (self, label);
+          g_free (label);
 
           self->new_track = track;
         }
     }
+  g_list_free (selected_rows);
 }
 
 static GtkTreeView *

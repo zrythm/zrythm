@@ -574,19 +574,21 @@ tree_view_setup (
 
   if (dnd)
     {
-      GtkTargetEntry entries[1];
-      entries[0].target =
+      char * entry_plugin_descr =
         g_strdup (TARGET_ENTRY_PLUGIN_DESCR);
-      entries[0].flags = GTK_TARGET_SAME_APP;
-      entries[0].info =
-        symap_map (
-          ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR);
+      GtkTargetEntry entries[] = {
+        {
+          entry_plugin_descr, GTK_TARGET_SAME_APP,
+          symap_map (ZSYMAP, TARGET_ENTRY_PLUGIN_DESCR),
+        },
+      };
       gtk_tree_view_enable_model_drag_source (
         GTK_TREE_VIEW (tree_view),
         GDK_BUTTON1_MASK,
-        entries,
-        1,
+        entries, G_N_ELEMENTS (entries),
         GDK_ACTION_COPY);
+      g_free (entry_plugin_descr);
+
       g_signal_connect (
         GTK_WIDGET (tree_view), "drag-data-get",
         G_CALLBACK (on_drag_data_get), tree_view);
@@ -1023,6 +1025,9 @@ plugin_browser_widget_init (
     GTK_CONTAINER (self->stack),
     GTK_WIDGET (self->protocol_scroll),
     "title", &iconval3);
+  g_value_unset (&iconval1);
+  g_value_unset (&iconval2);
+  g_value_unset (&iconval3);
 
   GList *children, *iter;
   children =

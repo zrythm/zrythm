@@ -166,8 +166,10 @@ create_port (
         port_find_from_identifier (
           &lv2_port->port_id);
       lv2_port->port->buf =
-        calloc (AUDIO_ENGINE->block_length,
-                sizeof (float));
+        realloc (
+          lv2_port->port->buf,
+          (size_t) AUDIO_ENGINE->block_length *
+            sizeof (float));
     }
   else
     {
@@ -1354,6 +1356,7 @@ lv2_create_descriptor_from_lilv (
       lilv_node_free(name);
       return NULL;
     }
+  lilv_free (path);
 
   if (lilv_plugin_has_feature (
         lp, PM_LILV_NODES.core_inPlaceBroken))
@@ -1532,6 +1535,7 @@ lv2_create_from_uri (
     lilv_plugins_get_by_uri (
       PM_LILV_NODES.lilv_plugins,
       lv2_uri);
+  lilv_node_free (lv2_uri);
 
   if (!lilv_plugin)
     {
@@ -1704,6 +1708,7 @@ lv2_plugin_instantiate (
             "Failed to load state from %s\n",
             state_file_path);
         }
+      g_free (state_file_path);
 
       LilvNode * lv2_uri =
         lilv_node_duplicate (

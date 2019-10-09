@@ -224,6 +224,9 @@ ext_port_from_jack_port (
   else if (self->num_aliases == 1)
     self->alias1 = g_strdup (aliases[0]);
 
+  free (aliases[0]);
+  free (aliases[1]);
+
   return self;
 }
 

@@ -976,8 +976,25 @@ _digital_meter_widget_new_for_position (
 }
 
 static void
+finalize (
+  DigitalMeterWidget * self)
+{
+  if (self->caption)
+    g_free (self->caption);
+  if (self->drag)
+    g_object_unref (self->drag);
+
+  G_OBJECT_CLASS (
+    digital_meter_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
 digital_meter_widget_class_init (DigitalMeterWidgetClass * klass)
 {
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
 }
 
 static void
