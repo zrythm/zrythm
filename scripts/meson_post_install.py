@@ -41,16 +41,19 @@ if not os.environ.get('DESTDIR'):
     subprocess.call(['glib-compile-schemas', schemadir])
     print('Updating font cache...')
     subprocess.call(['fc-cache', fontsdir])
-    print('Updating icon cache...')
-    subprocess.call(['touch', datadir + '/icons/hicolor'])
-    subprocess.call(['gtk-update-icon-cache'])
-    print('Updating MIME database...')
-    subprocess.call([
-        'update-mime-database', mime_dir])
-    print('Updating desktop database...')
-    if not os.path.exists(desktop_database_dir):
-        os.makedirs(desktop_database_dir)
-    subprocess.call(['update-desktop-database', '-q', desktop_database_dir])
+    if shutil.which('gtk-update-icon-cache'):
+        print('Updating icon cache...')
+        subprocess.call(['touch', datadir + '/icons/hicolor'])
+        subprocess.call(['gtk-update-icon-cache'])
+    if shutil.which('update-mime-database'):
+        print('Updating MIME database...')
+        subprocess.call([
+            'update-mime-database', mime_dir])
+    if shutil.which('update-desktop-database'):
+        print('Updating desktop database...')
+        if not os.path.exists(desktop_database_dir):
+            os.makedirs(desktop_database_dir)
+        subprocess.call(['update-desktop-database', '-q', desktop_database_dir])
 
     if shutil.which('update-gdk-pixbuf-loaders') is not None:
         subprocess.call(['update-gdk-pixbuf-loaders'])

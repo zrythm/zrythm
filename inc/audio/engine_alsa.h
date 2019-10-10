@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifdef __linux__
+#ifdef HAVE_ALSA
 
 #ifndef __AUDIO_ENGINE_ALSA_H__
 #define __AUDIO_ENGINE_ALSA_H__

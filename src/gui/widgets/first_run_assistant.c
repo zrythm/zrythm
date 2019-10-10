@@ -91,8 +91,10 @@ audio_midi_backend_selection_validate (
 #endif
       break;
     case AUDIO_BACKEND_ALSA:
+#ifdef HAVE_ALSA
       if (engine_alsa_test (GTK_WINDOW (self)))
         return;
+#endif
       break;
     case AUDIO_BACKEND_PORT_AUDIO:
 #ifdef HAVE_PORT_AUDIO
@@ -124,8 +126,10 @@ audio_midi_backend_selection_validate (
 #endif
       break;
     case MIDI_BACKEND_ALSA:
+#ifdef HAVE_ALSA
       if (engine_alsa_test (GTK_WINDOW (self)))
         return;
+#endif
       break;
     default:
       break;

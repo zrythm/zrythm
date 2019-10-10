@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -313,8 +313,8 @@ on_drag_data_received (
             track, modulator);
         }
     }
-  else if ((target ==
-            GET_ATOM (TARGET_ENTRY_PLUGIN)))
+  else if (target ==
+            GET_ATOM (TARGET_ENTRY_PLUGIN))
     {
       /* NOTE this is a cloned pointer, don't use
        * it */
@@ -353,8 +353,8 @@ on_drag_data_received (
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
-  else if ((target ==
-            GET_ATOM (TARGET_ENTRY_TRACK)))
+  else if (target ==
+            GET_ATOM (TARGET_ENTRY_TRACK))
     {
       int pos =
         tracklist_get_last_visible_pos (

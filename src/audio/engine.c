@@ -534,7 +534,9 @@ engine_process_prepare (
 #endif
       break;
     case AUDIO_BACKEND_ALSA:
+#ifdef HAVE_ALSA
       engine_alsa_prepare_process (self);
+#endif
       break;
     default:
       break;
