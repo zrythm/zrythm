@@ -590,6 +590,8 @@ engine_process_prepare (
            * into account the latency compensation.
            * maybe automation should be a port/
            * processor in the signal chain. */
+          /* FIXME this is the most processor hungry
+           * part of zrythm */
           val =
             automation_track_get_normalized_val_at_pos (
               at, PLAYHEAD);

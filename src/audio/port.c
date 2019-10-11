@@ -874,7 +874,7 @@ port_apply_fader (
   for (unsigned int i = start_frame;
        i < start_frame + nframes; i++)
     {
-      if (!math_floats_equal (
+      if (!MATH_FLOATS_EQUAL (
             port->buf[i], 0.f, 0.00000001f))
         {
           port->buf[i] *= amp;
@@ -1750,8 +1750,8 @@ port_apply_pan (
   for (unsigned i = start_frame;
        i < start_frame + nframes; i++)
     {
-      if (math_floats_equal (
-            port->buf[i], 0.f, 0.00000001f))
+      if (MATH_FLOATS_EQUAL (
+            port->buf[i], 0.f, 0.0000001f))
         continue;
 
       if (is_stereo_r)

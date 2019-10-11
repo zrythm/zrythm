@@ -1888,7 +1888,7 @@ arranger_widget_get_scrolled_window (
 }
 
 static gboolean
-tick_cb (
+arranger_tick_cb (
   GtkWidget *     widget,
   GdkFrameClock * frame_clock,
   gpointer        user_data)
@@ -2202,7 +2202,7 @@ arranger_widget_setup (
     G_CALLBACK (on_grab_broken), self);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), tick_cb,
+    GTK_WIDGET (self), arranger_tick_cb,
     NULL, NULL);
 }
 

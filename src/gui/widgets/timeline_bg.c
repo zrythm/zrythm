@@ -66,7 +66,7 @@ timeline_bg_draw_cb (
 
   ArrangerBgWidgetPrivate * prv =
     arranger_bg_widget_get_private (
-      Z_ARRANGER_BG_WIDGET (widget));
+      (ArrangerBgWidget *) (widget));
 
   /* handle horizontal drawing for tracks */
   GtkWidget * tw_widget;
@@ -76,10 +76,10 @@ timeline_bg_draw_cb (
   int line_y, i, j;
   int is_unpinned_timeline =
     prv->arranger ==
-      Z_ARRANGER_WIDGET (MW_TIMELINE);
+      (ArrangerWidget *) (MW_TIMELINE);
   int is_pinned_timeline =
     prv->arranger ==
-      Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
+      (ArrangerWidget *) (MW_PINNED_TIMELINE);
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];

@@ -85,31 +85,31 @@ arranger_object_info_should_be_visible (
     {
     case AOI_TYPE_REGION:
       arranger =
-        Z_ARRANGER_WIDGET (MW_TIMELINE);
+        (ArrangerWidget *) (MW_TIMELINE);
       break;
     case AOI_TYPE_CHORD_OBJECT:
       arranger =
-        Z_ARRANGER_WIDGET (MW_CHORD_ARRANGER);
+        (ArrangerWidget *) (MW_CHORD_ARRANGER);
       break;
     case AOI_TYPE_SCALE_OBJECT:
       arranger =
-        Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
+        (ArrangerWidget *) (MW_PINNED_TIMELINE);
       break;
     case AOI_TYPE_MARKER:
       arranger =
-        Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE);
+        (ArrangerWidget *) (MW_PINNED_TIMELINE);
       break;
     case AOI_TYPE_AUTOMATION_POINT:
       arranger =
-        Z_ARRANGER_WIDGET (MW_AUTOMATION_ARRANGER);
+        (ArrangerWidget *) (MW_AUTOMATION_ARRANGER);
       break;
     case AOI_TYPE_MIDI_NOTE:
       arranger =
-        Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER);
+        (ArrangerWidget *) (MW_MIDI_ARRANGER);
       break;
     case AOI_TYPE_VELOCITY:
       arranger =
-        Z_ARRANGER_WIDGET (MW_MIDI_MODIFIER_ARRANGER);
+        (ArrangerWidget *) (MW_MIDI_MODIFIER_ARRANGER);
       break;
     }
   g_warn_if_fail (arranger);

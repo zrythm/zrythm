@@ -29,6 +29,8 @@
 #include "utils/types.h"
 
 #define RMS_FRAMES 32
+#define MATH_FLOATS_EQUAL(a,b,epsilon) \
+  (fabsf (a - b) < epsilon)
 
 /**
  * Returns fader value 0.0 to 1.0 from amp value 0.0 to 2.0 (+6 dbFS).

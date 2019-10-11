@@ -36,6 +36,7 @@
 #include "actions/duplicate_midi_arranger_selections_action.h"
 #include "actions/quantize_timeline_selections.h"
 #include "audio/instrument_track.h"
+#include "audio/midi.h"
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/backend/midi_arranger_selections.h"
@@ -1067,6 +1068,7 @@ activate_play_pause (
   if (TRANSPORT_IS_ROLLING)
     {
       transport_request_pause (TRANSPORT);
+      midi_panic_all (1);
     }
   else if (TRANSPORT_IS_PAUSED)
     {

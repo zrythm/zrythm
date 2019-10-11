@@ -36,8 +36,9 @@ play_clicked_cb (
 {
   if (TRANSPORT->play_state == PLAYSTATE_ROLLING)
     {
-      position_set_to_pos (&TRANSPORT->playhead_pos,
-                           &TRANSPORT->cue_pos);
+      position_set_to_pos (
+        &TRANSPORT->playhead_pos,
+        &TRANSPORT->cue_pos);
     }
   else
     {

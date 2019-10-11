@@ -171,9 +171,17 @@ automation_region_add_ac (
          (size_t) self->num_acs,
          sizeof (AutomationCurve *),
          cmpfunc_curve);
+
+  AutomationPoint * before_curve =
+    automation_region_get_ap_before_curve (
+      self, ac);
+  AutomationPoint * after_curve =
+    automation_region_get_ap_after_curve (
+      self, ac);
   g_warn_if_fail (
-    automation_region_get_ap_before_curve (self, ac)->pos.total_ticks <
-    automation_region_get_ap_after_curve (self, ac)->pos.total_ticks);
+    before_curve && after_curve &&
+    before_curve->pos.total_ticks <
+      after_curve->pos.total_ticks);
 
   /* refresh indices */
   for (int i = 0;

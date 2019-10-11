@@ -114,7 +114,7 @@ automation_point_is_equal (
 {
   return
     position_is_equal (&a->pos, &b->pos) &&
-    math_floats_equal (
+    MATH_FLOATS_EQUAL (
       a->fvalue, b->fvalue, 0.001f);
 }
 
