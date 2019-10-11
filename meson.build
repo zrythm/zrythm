@@ -23,7 +23,8 @@ project (
   default_options: [
     'warning_level=1',
     'buildtype=debug',
-    'c_std=gnu11' ],
+    'c_std=gnu11',
+    ],
   )
 
 gnome = import('gnome')

@@ -43,13 +43,6 @@ G_DEFINE_TYPE (CpuWidget,
                cpu_widget,
                GTK_TYPE_DRAWING_AREA)
 
-/**
- * In microseconds.
- */
-#define TIME_TO_UPDATE_CPU_LOAD 600000
-static gint64 last_time_updated_cpu = 0;
-static gint64 last_time_updated_dsp = 0;
-
 #define BAR_HEIGHT 12
 #define BAR_WIDTH 3
 #define NUM_BARS 12
@@ -163,17 +156,9 @@ unsigned long prev_total, prev_idle;
  * cycle
  */
 static gboolean
-refresh_dsp_load (GtkWidget * widget,
-                  GdkFrameClock *frame_clock,
-                  gpointer user_data)
+refresh_dsp_load (
+  CpuWidget * self)
 {
-  gint64 curr_time = g_get_monotonic_time ();
-  if (curr_time - last_time_updated_dsp <
-      TIME_TO_UPDATE_CPU_LOAD)
-    return G_SOURCE_CONTINUE;
-
-  CpuWidget * self = Z_CPU_WIDGET (widget);
-
   if (g_atomic_int_get (&AUDIO_ENGINE->run))
     {
 
@@ -194,7 +179,6 @@ refresh_dsp_load (GtkWidget * widget,
     self->dsp = 0;
 
   AUDIO_ENGINE->max_time_taken = 0;
-  last_time_updated_dsp = curr_time;
 
   return G_SOURCE_CONTINUE;
 }
@@ -217,17 +201,9 @@ FileTimeToInt64 (const FILETIME * ft)
  * Refreshes CPU load percentage.
  */
 static int
-refresh_cpu_load (GtkWidget * widget,
-                  GdkFrameClock *frame_clock,
-                  void * data)
+refresh_cpu_load (
+  CpuWidget * self)
 {
-  gint64 curr_time = g_get_monotonic_time ();
-  if (curr_time - last_time_updated_cpu <
-      TIME_TO_UPDATE_CPU_LOAD)
-    return G_SOURCE_CONTINUE;
-
-  CpuWidget * self = Z_CPU_WIDGET (widget);
-
 #ifdef HAVE_LIBGTOP
   glibtop_cpu cpu;
   glibtop_get_cpu (&cpu);
@@ -287,10 +263,8 @@ refresh_cpu_load (GtkWidget * widget,
     "CPU: %d%%\nDSP: %d%%",
     self->cpu, self->dsp);
   gtk_widget_set_tooltip_text (
-    widget, ttip);
-  gtk_widget_queue_draw (widget);
-
-  last_time_updated_cpu = curr_time;
+    (GtkWidget *) self, ttip);
+  gtk_widget_queue_draw ((GtkWidget *) self);
 
   return G_SOURCE_CONTINUE;
 }
@@ -325,17 +299,10 @@ void
 cpu_widget_setup (
   CpuWidget * self)
 {
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self),
-    refresh_cpu_load,
-    NULL,
-    NULL);
-
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self),
-    refresh_dsp_load,
-    NULL,
-    NULL);
+  g_timeout_add_seconds (
+    1, (GSourceFunc) refresh_cpu_load, self);
+  g_timeout_add_seconds (
+    1, (GSourceFunc) refresh_dsp_load, self);
 }
 
 static void

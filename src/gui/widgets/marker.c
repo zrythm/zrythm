@@ -187,14 +187,16 @@ marker_widget_init (MarkerWidget * self)
     G_OBJECT (self->drawing_area), "draw",
     G_CALLBACK (marker_draw_cb), self);
   g_signal_connect (
-    G_OBJECT (self->drawing_area), "enter-notify-event",
+    G_OBJECT (self->drawing_area),
+    "enter-notify-event",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
     G_OBJECT (self->drawing_area),
     "motion-notify-event",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
-    G_OBJECT (self->drawing_area), "leave-notify-event",
+    G_OBJECT (self->drawing_area),
+    "leave-notify-event",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",

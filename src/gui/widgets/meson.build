@@ -172,6 +172,11 @@ widget_srcs = [
   'visibility.c',
   ]
 
-zrythm_srcs += files (widget_srcs)
-
 subdir ('dzl')
+
+widgets_lib = static_library (
+  'zrythm-widgets-lib',
+  sources: widget_srcs,
+  dependencies: zrythm_deps,
+  include_directories: all_inc,
+  )
