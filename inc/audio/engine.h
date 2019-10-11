@@ -302,8 +302,9 @@ typedef struct AudioEngine
    */
   Transport         transport;
 
+  /** Pan law. */
   PanLaw            pan_law;
-
+  /** Pan algorithm */
   PanAlgorithm      pan_algo;
 
   gint64            last_time_taken;
@@ -440,10 +441,15 @@ engine_fill_out_bufs (
  * Returns 1 if the port is an engine port or
  * control room port, otherwise 0.
  */
-int
-engine_is_port_own (
-  AudioEngine * self,
-  const Port *  port);
+#define engine_is_port_own(self,port) \
+  (port == \
+    CONTROL_ROOM->monitor_fader.stereo_in->l || \
+  port == \
+    CONTROL_ROOM->monitor_fader.stereo_in->r || \
+  port == \
+    CONTROL_ROOM->monitor_fader.stereo_out->l || \
+  port == \
+    CONTROL_ROOM->monitor_fader.stereo_out->r)
 
 /**
  * Returns the audio backend as a string.

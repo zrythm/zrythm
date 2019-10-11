@@ -292,12 +292,8 @@ test_ldflags += [
   '-lfftw3f_threads'
   ]
 
-if (meson.version() >= '0.46.0')
-  common_ldflags = cc.get_supported_link_arguments (
-    test_ldflags)
-else
-  common_ldflags = test_ldflags
-endif
+common_ldflags = cc.get_supported_link_arguments (
+  test_ldflags)
 
 # set config defines
 libgtop_dep = dependency('libgtop-2.0', required: false)

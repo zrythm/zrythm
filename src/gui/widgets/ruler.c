@@ -337,7 +337,7 @@ ruler_draw_cb (
   /* draw lines */
   int i = 0;
   double curr_px;
-  char * text;
+  char text[40];
   int textw, texth;
 
   /* get sixteenth interval */
@@ -371,9 +371,8 @@ ruler_draw_cb (
       cairo_line_to (cr, curr_px, height / 3);
       cairo_stroke (cr);
       cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
-      text = g_strdup_printf ("%d", i + 1);
+      sprintf (text, "%d", i + 1);
       pango_layout_set_markup (layout, text, -1);
-      g_free (text);
       pango_layout_get_pixel_size (
         layout, &textw, &texth);
       cairo_move_to (
@@ -410,14 +409,12 @@ ruler_draw_cb (
             {
               cairo_set_source_rgb (
                 cr, 0.5, 0.5, 0.5);
-              text =
-                g_strdup_printf (
-                  "%d.%d",
-                  i / beats_per_bar + 1,
-                  i % beats_per_bar + 1);
+              sprintf (
+                text, "%d.%d",
+                i / beats_per_bar + 1,
+                i % beats_per_bar + 1);
               pango_layout_set_markup (
                 layout, text, -1);
-              g_free (text);
               pango_layout_get_pixel_size (
                 layout, &textw, &texth);
               cairo_move_to (
@@ -452,17 +449,15 @@ ruler_draw_cb (
             {
               cairo_set_source_rgb (
                 cr, 0.5, 0.5, 0.5);
-              text =
-                g_strdup_printf (
-                  "%d.%d.%d",
-                  i / TRANSPORT->
-                    sixteenths_per_bar + 1,
-                  ((i / sixteenths_per_beat) %
-                    beats_per_bar) + 1,
-                  i % sixteenths_per_beat + 1);
+              sprintf (
+                text, "%d.%d.%d",
+                i / TRANSPORT->
+                  sixteenths_per_bar + 1,
+                ((i / sixteenths_per_beat) %
+                  beats_per_bar) + 1,
+                i % sixteenths_per_beat + 1);
               pango_layout_set_markup (
                 layout, text, -1);
-              g_free (text);
               pango_layout_get_pixel_size (
                 layout, &textw, &texth);
               cairo_move_to (

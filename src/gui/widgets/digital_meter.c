@@ -64,7 +64,7 @@ G_DEFINE_TYPE (DigitalMeterWidget,
 
 
 static gboolean
-draw_cb (
+dm_draw_cb (
   GtkWidget * widget,
   cairo_t *cr,
   DigitalMeterWidget * self)
@@ -120,7 +120,8 @@ draw_cb (
   /*gdk_cairo_set_source_rgba (cr, &color);*/
   cairo_set_source_rgba (
     cr, 0.0, 1.0, 0.1, 1.0);
-  char * text = NULL;
+  char text[20];
+  char * heap_text = NULL;
   int num_part, dec_part, bars, beats, sixteenths, ticks;
   int textw, texth;
   Position pos;
@@ -157,25 +158,23 @@ draw_cb (
 
       /* draw integer part */
       if (num_part < 100)
-        text = g_strdup_printf (" %d", num_part);
+        sprintf (text, "!%d", num_part);
       else
-        text = g_strdup_printf ("%d", num_part);
+        sprintf (text, "%d", num_part);
       z_cairo_draw_text_full (
         cr, widget, text, self->num_part_start_pos,
         self->height_start_pos, SEG7_FONT,
         PANGO_ELLIPSIZE_NONE, -1);
-      g_free (text);
 
       /* draw decimal part */
       if (dec_part < 10)
-        text = g_strdup_printf ("0%d", dec_part);
+        sprintf (text, "0%d", dec_part);
       else
-        text = g_strdup_printf ("%d", dec_part);
+        sprintf (text, "%d", dec_part);
       z_cairo_draw_text_full (
         cr, widget, text, self->dec_part_start_pos,
         self->height_start_pos, SEG7_FONT,
         PANGO_ELLIPSIZE_NONE, -1);
-      g_free (text);
 
       break;
     case DIGITAL_METER_TYPE_POSITION:
@@ -222,59 +221,53 @@ draw_cb (
         self->height_start_pos + texth;
 
       if (bars < -100)
-        text = g_strdup_printf ("%d", bars);
+        sprintf (text, "%d", bars);
       else if (bars < -10)
-        text = g_strdup_printf ("!%d", bars);
+        sprintf (text, "!%d", bars);
       else if (bars < 0)
-        text = g_strdup_printf ("!!%d", bars);
+        sprintf (text, "!!%d", bars);
       else if (bars < 10)
-        text = g_strdup_printf ("!!!%d", bars);
+        sprintf (text, "!!!%d", bars);
       else if (bars < 100)
-        text = g_strdup_printf ("!!%d", bars);
+        sprintf (text, "!!%d", bars);
       else
-        text = g_strdup_printf ("!%d", bars);
+        sprintf (text, "!%d", bars);
       z_cairo_draw_text_full (
         cr, widget, text, self->bars_start_pos,
         self->height_start_pos, SEG7_FONT,
         PANGO_ELLIPSIZE_NONE, -1);
-      g_free (text);
 
-      text =
-        g_strdup_printf ("%d", abs (beats));
+      sprintf (text, "%d", abs (beats));
       z_cairo_draw_text_full (
         cr, widget, text, self->beats_start_pos,
         self->height_start_pos, SEG7_FONT,
         PANGO_ELLIPSIZE_NONE, -1);
-      g_free (text);
 
-      text =
-        g_strdup_printf ("%d", abs (sixteenths));
+      sprintf (text, "%d", abs (sixteenths));
       z_cairo_draw_text_full (
         cr, widget, text, self->sixteenths_start_pos,
         self->height_start_pos, SEG7_FONT,
         PANGO_ELLIPSIZE_NONE, -1);
-      g_free (text);
 
       if (abs (ticks) < 10)
-        text = g_strdup_printf ("00%d", abs (ticks));
+        sprintf (text, "00%d", abs (ticks));
       else if (abs (ticks) < 100)
-        text = g_strdup_printf ("0%d", abs (ticks));
+        sprintf (text, "0%d", abs (ticks));
       else
-        text = g_strdup_printf ("%d", abs (ticks));
+        sprintf (text, "%d", abs (ticks));
       z_cairo_draw_text_full (
         cr, widget, text, self->ticks_start_pos,
         self->height_start_pos, SEG7_FONT,
         PANGO_ELLIPSIZE_NONE, -1);
-      g_free (text);
 
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
-      text =
+      heap_text =
         snap_grid_stringize (
           *self->note_length,
           *self->note_type);
       z_cairo_get_text_extents_for_widget_full (
-        widget, text, &textw, &texth,
+        widget, heap_text, &textw, &texth,
         NORMAL_FONT, PANGO_ELLIPSIZE_NONE, -1);
       self->height_start_pos =
         PADDING_TOP +
@@ -282,27 +275,27 @@ draw_cb (
       self->height_end_pos =
         self->height_start_pos + texth;
       z_cairo_draw_text_full (
-        cr, widget, text, width / 2 - textw / 2,
+        cr, widget, heap_text, width / 2 - textw / 2,
         self->height_start_pos, NORMAL_FONT,
         PANGO_ELLIPSIZE_NONE, -1);
-      g_free (text);
+      g_free (heap_text);
 
       break;
     case DIGITAL_METER_TYPE_NOTE_TYPE:
       switch (*self->note_type)
         {
         case NOTE_TYPE_NORMAL:
-          text = _("normal");
+          heap_text = _("normal");
           break;
         case NOTE_TYPE_DOTTED:
-          text = _("dotted");
+          heap_text = _("dotted");
           break;
         case NOTE_TYPE_TRIPLET:
-          text = _("triplet");
+          heap_text = _("triplet");
           break;
         }
       z_cairo_get_text_extents_for_widget_full (
-        widget, text, &textw, &texth,
+        widget, heap_text, &textw, &texth,
         NORMAL_FONT, PANGO_ELLIPSIZE_NONE, -1);
       self->height_start_pos =
         PADDING_TOP +
@@ -310,7 +303,7 @@ draw_cb (
       self->height_end_pos =
         self->height_start_pos + texth;
       z_cairo_draw_text_full (
-        cr, widget, text, width / 2 - textw / 2,
+        cr, widget, heap_text, width / 2 - textw / 2,
         self->height_start_pos, NORMAL_FONT,
         PANGO_ELLIPSIZE_NONE, -1);
 
@@ -329,24 +322,30 @@ draw_cb (
       const char * beat_unit =
         beat_unit_strings[
           TRANSPORT->ebeat_unit].str;
-      char * beats_per_bar;
       if (TRANSPORT->beats_per_bar < 10)
-        beats_per_bar =
-          g_strdup_printf (" %d",
-                           TRANSPORT->beats_per_bar);
+        {
+          text[0] = ' ';
+          text[1] =
+            (char)
+            (TRANSPORT->beats_per_bar + '0');
+        }
       else
-        beats_per_bar =
-          g_strdup_printf ("%d",
-                           TRANSPORT->beats_per_bar);
-      text = g_strdup_printf ("%s/%s",
-                              beats_per_bar,
-                              beat_unit);
-      g_free (beats_per_bar);
+        {
+          text[0] =
+            (char)
+            ((TRANSPORT->beats_per_bar / 10) + '0');
+          text[1] =
+            (char)
+            ((TRANSPORT->beats_per_bar % 10) + '0');
+        }
+      text[2] = '\0';
+      heap_text =
+        g_strdup_printf ("%s/%s", text, beat_unit);
       z_cairo_draw_text_full (
-        cr, widget, text, width / 2 - textw / 2,
+        cr, widget, heap_text, width / 2 - textw / 2,
         self->height_start_pos, SEG7_FONT,
         PANGO_ELLIPSIZE_NONE, -1);
-      g_free (text);
+      g_free (heap_text);
 
       break;
     }
@@ -915,7 +914,7 @@ init_dm (
 
   g_signal_connect (
     G_OBJECT (self), "draw",
-    G_CALLBACK (draw_cb), self);
+    G_CALLBACK (dm_draw_cb), self);
 }
 
 /**

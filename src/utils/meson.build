@@ -21,6 +21,7 @@ util_srcs = [
   'cairo.c',
   'datetime.c',
   'dialogs.c',
+  'dictionary.c',
   'gtk.c',
   'io.c',
   'localization.c',

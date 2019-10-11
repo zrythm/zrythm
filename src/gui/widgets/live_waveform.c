@@ -43,8 +43,6 @@ live_waveform_draw_cb (
   cairo_t *         cr,
   LiveWaveformWidget * self)
 {
-  GdkRGBA color;
-
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
@@ -59,22 +57,22 @@ live_waveform_draw_cb (
   /* draw border */
   if (self->draw_border)
     {
-      gdk_rgba_parse (&color, "white");
-      color.alpha = 0.2;
-      gdk_cairo_set_source_rgba (cr, &color);
+      self->color_white.alpha = 0.2;
+      gdk_cairo_set_source_rgba (
+        cr, &self->color_white);
       z_cairo_rounded_rectangle (
         cr, 0, 0, width, height, 1.0, 4.0);
       cairo_stroke (cr);
     }
 
   /* draw */
-  gdk_rgba_parse (&color, "#11FF44");
-  gdk_cairo_set_source_rgba (cr, &color);
+  gdk_cairo_set_source_rgba (
+    cr, &self->color_green);
   float half_height = (float) height / 2.0f;
   uint32_t nframes = AUDIO_ENGINE->nframes;
   float val;
   cairo_move_to (cr, 0, half_height);
-  for (unsigned int i = 0; i < nframes; i++)
+  for (unsigned int i = 0; i < nframes; i += 4)
     {
       val =
         MAX (
@@ -129,6 +127,8 @@ live_waveform_widget_init (
 {
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), _("Live waveform indicator"));
+  gdk_rgba_parse (&self->color_white, "white");
+  gdk_rgba_parse (&self->color_green, "#11FF44");
 }
 
 static void

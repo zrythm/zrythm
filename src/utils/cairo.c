@@ -18,6 +18,8 @@
  */
 
 #include "utils/cairo.h"
+#include "utils/dictionary.h"
+#include "zrythm.h"
 
 void
 z_cairo_draw_selection (cairo_t * cr,
@@ -188,6 +190,8 @@ z_cairo_draw_text_full (
 
 /**
  * Returns a surface for the icon name.
+ *
+ * FIXME create a cache.
  */
 cairo_surface_t *
 z_cairo_get_surface_from_icon_name (
@@ -195,21 +199,43 @@ z_cairo_get_surface_from_icon_name (
   int          size,
   int          scale)
 {
-  GdkPixbuf * pixbuf =
-    gtk_icon_theme_load_icon (
-      gtk_icon_theme_get_default (),
-      icon_name,
-      size,
-      0,
-      NULL);
-  g_return_val_if_fail (pixbuf, NULL);
-
   cairo_surface_t * surface =
-    gdk_cairo_surface_create_from_pixbuf (
-      pixbuf, 0,
-      NULL);
+    dictionary_find_simple (
+      CAIRO_CACHES->icon_surface_dict,
+      icon_name, cairo_surface_t);
+  if (!surface)
+    {
+      GdkPixbuf * pixbuf =
+        gtk_icon_theme_load_icon (
+          gtk_icon_theme_get_default (),
+          icon_name,
+          size,
+          0,
+          NULL);
+      g_return_val_if_fail (pixbuf, NULL);
 
-  g_object_unref (pixbuf);
+      surface =
+        gdk_cairo_surface_create_from_pixbuf (
+          pixbuf, 0,
+          NULL);
+      g_object_unref (pixbuf);
+
+      dictionary_add (
+        CAIRO_CACHES->icon_surface_dict,
+        icon_name, surface);
+    }
 
   return surface;
+}
+
+
+CairoCaches *
+z_cairo_caches_new (void)
+{
+  CairoCaches * self =
+    calloc (1, sizeof (CairoCaches));
+  self->icon_surface_dict =
+    dictionary_new ();
+
+  return self;
 }

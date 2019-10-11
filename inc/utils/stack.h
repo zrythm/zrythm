@@ -17,14 +17,24 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
+/**
+ * \file
+ *
+ * Stack implementation.
  */
+
 #ifndef __UTILS_STACK_H__
 #define __UTILS_STACK_H__
 
 #include <stdlib.h>
 
 #include <gtk/gtk.h>
+
+/**
+ * @addtogroup utils
+ *
+ * @{
+ */
 
 #define STACK_PUSH(s, element) \
   stack_push (s, (void *) element)
@@ -66,5 +76,9 @@ stack_pop (Stack * s);
  */
 void *
 stack_pop_last (Stack * s);
+
+/**
+ * @}
+ */
 
 #endif

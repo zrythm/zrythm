@@ -81,10 +81,10 @@ typedef struct _BarSliderWidget
 
   /** The suffix to show after the value (eg "%" for
    * percentages). */
-  char *             suffix;
+  char               suffix[50];
 
   /** The prefix to show before the value. */
-  char *             prefix;
+  char               prefix[50];
 
   /** Maximum value. */
   float              max;

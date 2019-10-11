@@ -34,6 +34,9 @@ G_DEFINE_TYPE (MidiActivityBarWidget,
 /** 250 ms */
 static const double MAX_TIME = 250000.0;
 
+static GdkRGBA other_color;
+static int other_color_set = 0;
+
 /**
  * Draws the color picker.
  */
@@ -59,7 +62,9 @@ midi_activity_bar_draw_cb (
   /* draw border */
   if (self->draw_border)
     {
-      gdk_rgba_parse (&color, "white");
+      color.red = 1.0;
+      color.green = 1.0;
+      color.blue = 1.0;
       color.alpha = 0.2;
       gdk_cairo_set_source_rgba (cr, &color);
       cairo_rectangle (cr, 0, 0, width, height);
@@ -78,8 +83,12 @@ midi_activity_bar_draw_cb (
       break;
     }
 
-  gdk_rgba_parse (&color, "#11FF44");
-  gdk_cairo_set_source_rgba (cr, &color);
+  if (!other_color_set)
+    {
+      gdk_rgba_parse (&other_color, "#11FF44");
+      other_color_set = 1;
+    }
+  gdk_cairo_set_source_rgba (cr, &other_color);
   if (trigger)
     {
       cairo_rectangle (cr, 0, 0, width, height);
@@ -117,11 +126,11 @@ midi_activity_bar_draw_cb (
           else if (self->animation ==
                      MAB_ANIMATION_FLASH)
             {
-              color.alpha =
+              other_color.alpha =
                 1.0 -
                 (double) time_diff / MAX_TIME;
               gdk_cairo_set_source_rgba (
-                cr, &color);
+                cr, &other_color);
               cairo_rectangle (
                 cr, 0, 0, width, height);
             }

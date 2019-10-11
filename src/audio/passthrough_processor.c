@@ -198,14 +198,14 @@ passthrough_processor_process (
   if (self->type == PP_TYPE_AUDIO_CHANNEL)
     {
       /* copy the input to output */
-      for (unsigned int i = start_frame;
-           i < start_frame + nframes; i++)
-        {
-          self->stereo_out->l->buf[i] =
-            self->stereo_in->l->buf[i];
-          self->stereo_out->r->buf[i] =
-            self->stereo_in->r->buf[i];
-        }
+      memcpy (
+        &self->stereo_out->l->buf[start_frame],
+        &self->stereo_in->l->buf[start_frame],
+        nframes * sizeof (float));
+      memcpy (
+        &self->stereo_out->r->buf[start_frame],
+        &self->stereo_in->r->buf[start_frame],
+        nframes * sizeof (float));
     }
 
   if (self->type == PP_TYPE_MIDI_CHANNEL)

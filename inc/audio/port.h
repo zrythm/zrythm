@@ -822,12 +822,19 @@ port_disconnect_dests (Port * src)
  *   0 in this cycle.
  * @param nframes The number of frames to process.
  */
-void
+static inline void
 port_apply_fader (
   Port *    port,
   float     amp,
-  const nframes_t start_frame,
-  const nframes_t nframes);
+  nframes_t start_frame,
+  const nframes_t nframes)
+{
+  nframes_t end = start_frame + nframes;
+  while (start_frame < end)
+    {
+      port->buf[start_frame++] *= amp;
+    }
+}
 
 /**
  * First sets port buf to 0, then sums the given
@@ -1001,7 +1008,7 @@ port_apply_pan (
   float        pan,
   PanLaw       pan_law,
   PanAlgorithm pan_algo,
-  const nframes_t start_frame,
+  nframes_t start_frame,
   const nframes_t nframes);
 
 /**

@@ -574,22 +574,22 @@ arranger_widget_refresh_all_backgrounds ()
 
   ar_prv =
     arranger_widget_get_private (
-      Z_ARRANGER_WIDGET (MW_TIMELINE));
+      (ArrangerWidget *) (MW_TIMELINE));
   gtk_widget_queue_draw (
     GTK_WIDGET (ar_prv->bg));
   ar_prv =
     arranger_widget_get_private (
-      Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
+      (ArrangerWidget *) (MW_MIDI_ARRANGER));
   gtk_widget_queue_draw (
     GTK_WIDGET (ar_prv->bg));
   ar_prv =
     arranger_widget_get_private (
-      Z_ARRANGER_WIDGET (MW_MIDI_MODIFIER_ARRANGER));
+      (ArrangerWidget *) (MW_MIDI_MODIFIER_ARRANGER));
   gtk_widget_queue_draw (
     GTK_WIDGET (ar_prv->bg));
   ar_prv =
     arranger_widget_get_private (
-      Z_ARRANGER_WIDGET (MW_AUDIO_ARRANGER));
+      (ArrangerWidget *) (MW_AUDIO_ARRANGER));
   gtk_widget_queue_draw (
     GTK_WIDGET (ar_prv->bg));
 }
@@ -2085,7 +2085,7 @@ arranger_widget_setup (
   /* create and set background widgets, setup */
   if (midi_arranger)
     {
-      ar_prv->bg = Z_ARRANGER_BG_WIDGET (
+      ar_prv->bg = (ArrangerBgWidget *) (
         midi_arranger_bg_widget_new (
           Z_RULER_WIDGET (EDITOR_RULER),
           self));
@@ -2094,7 +2094,7 @@ arranger_widget_setup (
     }
   else if (timeline_arranger)
     {
-      ar_prv->bg = Z_ARRANGER_BG_WIDGET (
+      ar_prv->bg = (ArrangerBgWidget *) (
         timeline_bg_widget_new (
           Z_RULER_WIDGET (MW_RULER),
           self));
@@ -2103,7 +2103,7 @@ arranger_widget_setup (
     }
   else if (midi_modifier_arranger)
     {
-      ar_prv->bg = Z_ARRANGER_BG_WIDGET (
+      ar_prv->bg = (ArrangerBgWidget *) (
         midi_modifier_arranger_bg_widget_new (
           Z_RULER_WIDGET (EDITOR_RULER),
           self));
@@ -2112,7 +2112,7 @@ arranger_widget_setup (
     }
   else if (audio_arranger)
     {
-      ar_prv->bg = Z_ARRANGER_BG_WIDGET (
+      ar_prv->bg = (ArrangerBgWidget *) (
         audio_arranger_bg_widget_new (
           Z_RULER_WIDGET (EDITOR_RULER),
           self));
@@ -2121,7 +2121,7 @@ arranger_widget_setup (
     }
   else if (chord_arranger)
     {
-      ar_prv->bg = Z_ARRANGER_BG_WIDGET (
+      ar_prv->bg = (ArrangerBgWidget *) (
         chord_arranger_bg_widget_new (
           Z_RULER_WIDGET (EDITOR_RULER),
           self));
@@ -2130,7 +2130,7 @@ arranger_widget_setup (
     }
   else if (automation_arranger)
     {
-      ar_prv->bg = Z_ARRANGER_BG_WIDGET (
+      ar_prv->bg = (ArrangerBgWidget *) (
         automation_arranger_bg_widget_new (
           Z_RULER_WIDGET (EDITOR_RULER),
           self));

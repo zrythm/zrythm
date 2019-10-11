@@ -368,26 +368,6 @@ engine_activate (
 #endif
 }
 
-/**
- * Returns 1 if the port is an engine port or
- * control room port, otherwise 0.
- */
-int
-engine_is_port_own (
-  AudioEngine * self,
-  const Port *  port)
-{
-  return
-    port ==
-      CONTROL_ROOM->monitor_fader.stereo_in->l ||
-    port ==
-      CONTROL_ROOM->monitor_fader.stereo_in->r ||
-    port ==
-      CONTROL_ROOM->monitor_fader.stereo_out->l ||
-    port ==
-      CONTROL_ROOM->monitor_fader.stereo_out->r;
-}
-
 void
 engine_realloc_port_buffers (
   AudioEngine * self,

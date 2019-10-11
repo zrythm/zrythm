@@ -70,22 +70,23 @@ bot_bar_widget_update_status (
   "<span " \
   "foreground=\"" ORANGE "\">" x "</span>"
 
-  char * str =
-    g_strdup_printf (
-      "%s: " ORANGIZE ("%s") " | "
-      "%s: " ORANGIZE ("%s") " | "
-      "%s: " ORANGIZE ("%d frames") " | "
-      "%s: " ORANGIZE ("%d Hz"),
-      "Audio backend",
-      engine_audio_backend_to_string (
-        AUDIO_ENGINE->audio_backend),
-      "MIDI backend",
-      engine_midi_backend_to_string (
-        AUDIO_ENGINE->midi_backend),
-      "Audio buffer size",
-      AUDIO_ENGINE->block_length,
-      "Sample rate",
-      AUDIO_ENGINE->sample_rate);
+  char str[400];
+  sprintf (
+    str,
+    "%s: " ORANGIZE ("%s") " | "
+    "%s: " ORANGIZE ("%s") " | "
+    "%s: " ORANGIZE ("%d frames") " | "
+    "%s: " ORANGIZE ("%d Hz"),
+    "Audio backend",
+    engine_audio_backend_to_string (
+      AUDIO_ENGINE->audio_backend),
+    "MIDI backend",
+    engine_midi_backend_to_string (
+      AUDIO_ENGINE->midi_backend),
+    "Audio buffer size",
+    AUDIO_ENGINE->block_length,
+    "Sample rate",
+    AUDIO_ENGINE->sample_rate);
 
 #undef ORANGE
 #undef ORANGIZE
@@ -93,7 +94,6 @@ bot_bar_widget_update_status (
   gtk_statusbar_push (MW_STATUS_BAR,
                       MW_BOT_BAR->context_id,
                       str);
-  g_free (str);
 }
 
 static gboolean

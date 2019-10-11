@@ -858,31 +858,6 @@ ports_remove (
 }
 
 /**
- * Apply given fader value to port.
- *
- * @param start_frame The start frame offset from
- *   0 in this cycle.
- * @param nframes The number of frames to process.
- */
-void
-port_apply_fader (
-  Port *          port,
-  float           amp,
-  const nframes_t start_frame,
-  const nframes_t nframes)
-{
-  for (unsigned int i = start_frame;
-       i < start_frame + nframes; i++)
-    {
-      if (!MATH_FLOATS_EQUAL (
-            port->buf[i], 0.f, 0.00000001f))
-        {
-          port->buf[i] *= amp;
-        }
-    }
-}
-
-/**
  * Creates stereo ports for generic use.
  *
  * @param in 1 for in, 0 for out.
@@ -1045,10 +1020,9 @@ port_sum_signal_from_inputs (
     case TYPE_AUDIO:
       if (noroll)
         {
-          for (l = start_frame; l < nframes; l++)
-            {
-              port->buf[l] = 0;
-            }
+          memset (
+            &port->buf[start_frame], 0,
+            nframes * sizeof (float));
           break;
         }
 
@@ -1724,7 +1698,7 @@ port_apply_pan (
   float        pan,
   PanLaw       pan_law,
   PanAlgorithm pan_algo,
-  const nframes_t    start_frame,
+  nframes_t    start_frame,
   const nframes_t    nframes)
 {
   float calc_r = 0.f, calc_l = 0.f;
@@ -1747,20 +1721,16 @@ port_apply_pan (
       break;
     }
 
-  for (unsigned i = start_frame;
-       i < start_frame + nframes; i++)
+  nframes_t end = start_frame + nframes;
+  while (start_frame < end)
     {
-      if (MATH_FLOATS_EQUAL (
-            port->buf[i], 0.f, 0.0000001f))
-        continue;
-
       if (is_stereo_r)
         {
-          port->buf[i] *= calc_r;
+          port->buf[start_frame++] *= calc_r;
           continue;
         }
 
-      port->buf[i] *= calc_l;
+      port->buf[start_frame++] *= calc_l;
     }
 }
 

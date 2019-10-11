@@ -28,11 +28,27 @@
 
 #include <gtk/gtk.h>
 
+typedef struct Dictionary Dictionary;
+
 /**
  * @addtogroup utils
  *
  * @{
  */
+
+/**
+ * Caches for cairo.
+ */
+typedef struct CairoCaches
+{
+  /**
+   * Icon surface dictionary:
+   *   icon name: cairo_surface_t
+   */
+  Dictionary * icon_surface_dict;
+} CairoCaches;
+
+#define CAIRO_CACHES (ZRYTHM->cairo_caches)
 
 /**
  * Default font for drawing pango text.
@@ -186,5 +202,8 @@ z_cairo_get_surface_from_icon_name (
   const char * icon_name,
   int          size,
   int          scale);
+
+CairoCaches *
+z_cairo_caches_new (void);
 
 #endif

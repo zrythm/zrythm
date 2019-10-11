@@ -118,27 +118,31 @@ draw_cb (
     }
   cairo_fill (cr);
 
-  char * str;
+  char str[102];
   if (self->decimals == 0)
     {
-      str =
-        g_strdup_printf (
-          "%s%d%s",
-          self->prefix,
-          (int) (self->convert_to_percentage ?
-            real_val * 100 : real_val),
-          self->suffix);
+      sprintf (
+        str, "%s%d%s",
+        self->prefix,
+        (int) (self->convert_to_percentage ?
+          real_val * 100 : real_val),
+        self->suffix);
     }
-    else
+    else if (self->decimals < 5)
     {
-      str =
-        g_strdup_printf (
-          "%s%f%s",
-          self->prefix,
-          (double)
-          (self->convert_to_percentage ?
-           real_val * 100.f : real_val),
-          self->suffix);
+      sprintf (
+        str,
+        "%s%.*f%s",
+        self->prefix,
+        self->decimals,
+        (double)
+        (self->convert_to_percentage ?
+         real_val * 100.f : real_val),
+        self->suffix);
+    }
+  else
+    {
+      g_warn_if_reached ();
     }
   int we;
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
@@ -281,6 +285,11 @@ _bar_slider_widget_new (
 {
   g_warn_if_fail (object);
 
+  if (!prefix || !suffix)
+    {
+      g_warning ("pass empty strings instead of NULLs");
+    }
+
   BarSliderWidget * self =
     g_object_new (BAR_SLIDER_WIDGET_TYPE, NULL);
   self->type = type;
@@ -293,8 +302,8 @@ _bar_slider_widget_new (
   self->zero = zero; /* default 0.05f */
   self->last_x = 0;
   self->start_x = 0;
-  self->suffix = g_strdup (suffix);
-  self->prefix = g_strdup (prefix);
+  strcpy (self->suffix, suffix);
+  strcpy (self->prefix, prefix);
   self->decimals = decimals;
   self->mode = mode;
   self->convert_to_percentage =
@@ -363,10 +372,6 @@ static void
 finalize (
   BarSliderWidget * self)
 {
-  if (self->suffix)
-    g_free (self->suffix);
-  if (self->prefix)
-    g_free (self->prefix);
   if (self->drag)
     g_object_unref (self->drag);
 

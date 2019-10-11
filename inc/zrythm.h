@@ -44,6 +44,7 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _MainWindowWidget MainWindowWidget;
 typedef struct Project Project;
 typedef struct Symap Symap;
+typedef struct CairoCaches CairoCaches;
 
 /**
  * @addtogroup general
@@ -142,6 +143,8 @@ typedef struct Zrythm
    * String interner for internal things.
    */
   Symap *                 symap;
+
+  CairoCaches *           cairo_caches;
 
   /**
    * In debug mode or not (determined by GSetting).

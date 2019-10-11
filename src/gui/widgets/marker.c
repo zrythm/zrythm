@@ -81,15 +81,12 @@ marker_draw_cb (
   cairo_close_path (cr);
   cairo_fill(cr);
 
-  char * str = g_strdup (self->marker->name);
+  char str[100];
+  sprintf (str, "%s", self->marker->name);
   if (DEBUGGING &&
       marker_is_transient (self->marker))
     {
-      char * tmp =
-        g_strdup_printf (
-          "%s [t]", str);
-      g_free (str);
-      str = tmp;
+      strcat (str, " [t]");
     }
 
   GdkRGBA c2;
@@ -97,8 +94,8 @@ marker_draw_cb (
     color, &c2);
   cairo_set_source_rgba (
     cr, c2.red, c2.green, c2.blue, 1.0);
-  z_cairo_draw_text (cr, widget, str);
-  g_free (str);
+  z_cairo_draw_text (
+    cr, widget, str);
 
  return FALSE;
 }

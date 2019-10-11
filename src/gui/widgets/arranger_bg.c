@@ -127,31 +127,17 @@ arranger_bg_draw_cb (
       cairo_fill (cr);
     }
 
-  /* in order they appear */
-  Position * range_first_pos, * range_second_pos;
-  if (position_is_before_or_equal (
-        &PROJECT->range_1, &PROJECT->range_2))
-    {
-      range_first_pos = &PROJECT->range_1;
-      range_second_pos = &PROJECT->range_2;
-    }
-  else
-    {
-      range_first_pos = &PROJECT->range_2;
-      range_second_pos = &PROJECT->range_1;
-    }
-
   /* handle vertical drawing */
 
   /* get sixteenth interval */
   int sixteenth_interval =
     ruler_widget_get_sixteenth_interval (
-      Z_RULER_WIDGET (ab_prv->ruler));
+      (RulerWidget *) (ab_prv->ruler));
 
   /* get the beat interval */
   int beat_interval =
     ruler_widget_get_beat_interval (
-      Z_RULER_WIDGET (ab_prv->ruler));
+      (RulerWidget *) (ab_prv->ruler));
 
   /* get the interval for bars */
   int bar_interval =
@@ -223,12 +209,25 @@ arranger_bg_draw_cb (
 
   /* draw selections */
   arranger_bg_widget_draw_selections (
-    ab_prv->arranger,
-    cr);
+    ab_prv->arranger, cr);
 
   /* draw range */
   if (PROJECT->has_range)
     {
+      /* in order they appear */
+      Position * range_first_pos, * range_second_pos;
+      if (position_is_before_or_equal (
+            &PROJECT->range_1, &PROJECT->range_2))
+        {
+          range_first_pos = &PROJECT->range_1;
+          range_second_pos = &PROJECT->range_2;
+        }
+      else
+        {
+          range_first_pos = &PROJECT->range_2;
+          range_second_pos = &PROJECT->range_1;
+        }
+
       int range_first_px, range_second_px;
       range_first_px =
         ui_pos_to_px_timeline (range_first_pos, 1);

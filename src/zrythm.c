@@ -41,6 +41,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/cairo.h"
 #include "utils/gtk.h"
 #include "utils/localization.h"
 #include "utils/log.h"
@@ -293,6 +294,7 @@ task_func (
       break;
     case TASK_INIT_SETTINGS:
       ZRYTHM->symap = symap_new ();
+      CAIRO_CACHES = z_cairo_caches_new ();
       settings_init (&ZRYTHM->settings);
       ZRYTHM->debug =
         g_settings_get_int (

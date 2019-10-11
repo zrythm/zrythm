@@ -105,7 +105,7 @@ timeline_arranger_widget_set_allocation (
   ARRANGER_WIDGET_GET_PRIVATE (self);
   if (Z_IS_REGION_WIDGET (widget))
     {
-      RegionWidget * rw = Z_REGION_WIDGET (widget);
+      RegionWidget * rw = (RegionWidget*) (widget);
       REGION_WIDGET_GET_PRIVATE (rw);
       Region * region = rw_prv->region;
       TrackLane * lane = region->lane;
@@ -149,8 +149,8 @@ timeline_arranger_widget_set_allocation (
             return;
 
           gtk_widget_translate_coordinates(
-            GTK_WIDGET (lane->widget),
-            GTK_WIDGET (self),
+            (GtkWidget *) (lane->widget),
+            (GtkWidget *) (self),
             0, 0,
             &wx, &wy);
 
@@ -163,8 +163,8 @@ timeline_arranger_widget_set_allocation (
       else
         {
           gtk_widget_translate_coordinates(
-            GTK_WIDGET (track->widget),
-            GTK_WIDGET (self),
+            (GtkWidget *) (track->widget),
+            (GtkWidget *) (self),
             0, 0,
             &wx, &wy);
 
@@ -194,34 +194,34 @@ timeline_arranger_widget_set_allocation (
                 return;
 
               gtk_widget_translate_coordinates (
-                GTK_WIDGET (at->widget),
-                GTK_WIDGET (self),
+                (GtkWidget *) (at->widget),
+                (GtkWidget *) (self),
                 0, 0, &wx, &wy);
               allocation->y = wy;
               allocation->height =
                 gtk_widget_get_allocated_height (
-                  GTK_WIDGET (at->widget));
+                  (GtkWidget *) (at->widget));
             }
           else
             {
               allocation->y = wy;
               allocation->height =
                 gtk_widget_get_allocated_height (
-                  GTK_WIDGET (tw_prv->top_grid));
+                  (GtkWidget *) (tw_prv->top_grid));
             }
         }
     }
   else if (Z_IS_SCALE_OBJECT_WIDGET (widget))
     {
       ScaleObjectWidget * cw =
-        Z_SCALE_OBJECT_WIDGET (widget);
+        (ScaleObjectWidget *) (widget);
       ScaleObject * so = cw->scale_object;
       Track * track = P_CHORD_TRACK;
 
       gint wx, wy;
       gtk_widget_translate_coordinates (
-        GTK_WIDGET (track->widget),
-        GTK_WIDGET (self),
+        (GtkWidget *) (track->widget),
+        (GtkWidget *) (self),
         0, 0, &wx, &wy);
 
       allocation->x =
@@ -239,7 +239,7 @@ timeline_arranger_widget_set_allocation (
 
       int track_height =
         gtk_widget_get_allocated_height (
-          GTK_WIDGET (track->widget));
+          (GtkWidget *) (track->widget));
       int obj_height =
         texth + Z_CAIRO_TEXT_PADDING * 2;
       allocation->y =
@@ -249,13 +249,13 @@ timeline_arranger_widget_set_allocation (
   else if (Z_IS_MARKER_WIDGET (widget))
     {
       MarkerWidget * mw =
-        Z_MARKER_WIDGET (widget);
+        (MarkerWidget *) (widget);
       Track * track = P_MARKER_TRACK;
 
       gint wx, wy;
       gtk_widget_translate_coordinates (
-        GTK_WIDGET (track->widget),
-        GTK_WIDGET (self),
+        (GtkWidget *) (track->widget),
+        (GtkWidget *) (self),
         0, 0, &wx, &wy);
 
       allocation->x =

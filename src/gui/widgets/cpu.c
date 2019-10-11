@@ -281,13 +281,13 @@ refresh_cpu_load (GtkWidget * widget,
     self->cpu = -1.0f;
 #endif
 
-  char * ttip =
-    g_strdup_printf (
-      "CPU: %d%%\nDSP: %d%%",
-      self->cpu, self->dsp);
+  char ttip[100];
+  sprintf (
+    ttip,
+    "CPU: %d%%\nDSP: %d%%",
+    self->cpu, self->dsp);
   gtk_widget_set_tooltip_text (
     widget, ttip);
-  g_free (ttip);
   gtk_widget_queue_draw (widget);
 
   last_time_updated_cpu = curr_time;
