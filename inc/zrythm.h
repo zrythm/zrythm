@@ -57,6 +57,7 @@ typedef struct Symap Symap;
 
 #define MAX_RECENT_PROJECTS 20
 #define DEBUGGING (ZRYTHM->debug)
+#define TESTING (ZRYTHM->testing)
 
 /**
  * To be used throughout the program.
@@ -146,6 +147,13 @@ typedef struct Zrythm
    * In debug mode or not (determined by GSetting).
    */
   int                     debug;
+
+  /**
+   * Used when running the tests.
+   *
+   * This is set by the TESTING environment variable.
+   */
+  int                     testing;
 } Zrythm;
 
 /**

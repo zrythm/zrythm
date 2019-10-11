@@ -267,7 +267,7 @@ static const cyaml_schema_field_t
     Project, range_1, position_fields_schema),
   CYAML_FIELD_MAPPING (
     "range_2", CYAML_FLAG_DEFAULT,
-    Project, range_1, position_fields_schema),
+    Project, range_2, position_fields_schema),
 	CYAML_FIELD_INT (
     "has_range", CYAML_FLAG_DEFAULT,
     Project, has_range),

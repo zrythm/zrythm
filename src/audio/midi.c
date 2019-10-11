@@ -648,6 +648,115 @@ midi_events_add_event_from_buf (
     }
 }
 
+void
+midi_event_print (
+  const MidiEvent * ev)
+{
+  g_message (
+    "~MIDI EVENT~\n"
+    "Type: %u\n"
+    "Channel: %u\n"
+    "Pitch: %u\n"
+    "Velocity: %u\n"
+    "Time: %u\n"
+    "Raw: %hhx %hhx %hhx",
+    ev->type, ev->channel, ev->note_pitch,
+    ev->velocity, ev->time, ev->raw_buffer[0],
+    ev->raw_buffer[1], ev->raw_buffer[2]);
+}
+
+int
+midi_events_are_equal (
+  const MidiEvent * src,
+  const MidiEvent * dest)
+{
+  int ret =
+    dest->type == src->type &&
+    dest->pitchbend == src->pitchbend &&
+    dest->controller == src->controller &&
+    dest->control == src->control &&
+    dest->channel == src->channel &&
+    dest->note_pitch == src->note_pitch &&
+    (src->type != MIDI_EVENT_TYPE_NOTE_ON ||
+      (src->type == MIDI_EVENT_TYPE_NOTE_ON &&
+       dest->velocity == src->velocity)) &&
+    dest->time == src->time &&
+    dest->raw_buffer[0] == src->raw_buffer[0] &&
+    dest->raw_buffer[1] == src->raw_buffer[1] &&
+    dest->raw_buffer[2] == src->raw_buffer[2];
+  return ret;
+}
+
+void
+midi_events_print (
+  MidiEvents * self,
+  const int    queued)
+{
+  MidiEvent * arr =
+    queued ?
+      self->queued_events :
+      self->events;
+  MidiEvent * ev1;
+#define NUM_EVENTS \
+  (queued ? self->num_queued_events : \
+   self->num_events)
+
+  int i;
+  for (i = 0; i < NUM_EVENTS; i++)
+    {
+      ev1 = &arr[i];
+      midi_event_print (ev1);
+    }
+}
+
+/**
+ * Clears duplicates.
+ *
+ * @param queued Clear duplicates from queued events
+ * instead.
+ */
+void
+midi_events_clear_duplicates (
+  MidiEvents * self,
+  const int    queued)
+{
+  MidiEvent * arr =
+    queued ?
+      self->queued_events :
+      self->events;
+  MidiEvent * ev1, * ev2;
+#define NUM_EVENTS \
+  (queued ? self->num_queued_events : \
+   self->num_events)
+
+  int i, j, k;
+  for (i = 0; i < NUM_EVENTS; i++)
+    {
+      ev1 = &arr[i];
+
+      for (j = i + 1; j < NUM_EVENTS; j++)
+        {
+          ev2 = &arr[j];
+
+          if (midi_events_are_equal (ev1, ev2))
+            {
+              g_message (
+                "removing duplicate MIDI event");
+              for (k = j; k < NUM_EVENTS; k++)
+                {
+                  midi_event_copy (
+                    &arr[k + 1], &arr[k]);
+                }
+              if (queued)
+                self->num_queued_events--;
+              else
+                self->num_events--;
+              j--;
+            }
+        }
+    }
+}
+
 /**
  * Queues MIDI note off to event queues.
  *

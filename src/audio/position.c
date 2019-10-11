@@ -435,7 +435,7 @@ snap_pos (
  */
 void
 position_set_min_size (
-  Position * start_pos,
+  const Position * start_pos,
   Position * end_pos,
   SnapGrid * snap)
 {
@@ -444,6 +444,7 @@ position_set_min_size (
     end_pos,
     snap_grid_get_note_ticks (snap->note_length,
                               snap->note_type));
+  position_update_frames (end_pos);
 }
 
 /**
@@ -511,7 +512,7 @@ position_to_ticks (
 {
   g_warn_if_fail (TRANSPORT->ticks_per_bar > 0);
   long ticks;
-  if (pos->bars >= 0)
+  if (pos->bars > 0)
     {
       ticks = (pos->bars - 1) *
         TRANSPORT->ticks_per_bar;
@@ -525,7 +526,7 @@ position_to_ticks (
         ticks += pos->ticks;
       return ticks;
     }
-  else
+  else if (pos->bars < 0)
     {
       ticks = (pos->bars + 1) *
         TRANSPORT->ticks_per_bar;
@@ -539,6 +540,8 @@ position_to_ticks (
         ticks += pos->ticks;
       return ticks;
     }
+  else
+    g_return_val_if_reached (-1);
 }
 
 /**

@@ -51,10 +51,10 @@ transport_set_bpm (
   Transport * self,
   bpm_t       bpm)
 {
-  if (bpm < MIN_BPM)
-    bpm = MIN_BPM;
-  else if (bpm > MAX_BPM)
-    bpm = MAX_BPM;
+  if (bpm < TRANSPORT_MIN_BPM)
+    bpm = TRANSPORT_MIN_BPM;
+  else if (bpm > TRANSPORT_MAX_BPM)
+    bpm = TRANSPORT_MAX_BPM;
   self->bpm = bpm;
   engine_update_frames_per_tick (
     AUDIO_ENGINE,
@@ -82,10 +82,12 @@ transport_init (
     {
       // set inital total number of beats
       // this is applied to the ruler
-      self->total_bars = DEFAULT_TOTAL_BARS;
+      self->total_bars =
+        TRANSPORT_DEFAULT_TOTAL_BARS;
 
       /* set BPM related defaults */
-      self->beats_per_bar = DEFAULT_BEATS_PER_BAR;
+      self->beats_per_bar =
+        TRANSPORT_DEFAULT_BEATS_PER_BAR;
       transport_set_beat_unit (self, 4);
 
       // set positions of playhead, start/end markers
@@ -100,12 +102,15 @@ transport_init (
 
       self->loop = 1;
 
-      self->metronome_enabled =
-        g_settings_get_int (
-          S_UI,
-          "metronome-enabled");
+      if (!TESTING)
+        {
+          self->metronome_enabled =
+            g_settings_get_int (
+              S_UI,
+              "metronome-enabled");
+        }
 
-      transport_set_bpm (self, DEFAULT_BPM);
+      transport_set_bpm (self, TRANSPORT_DEFAULT_BPM);
     }
 
   /* set playstate */
@@ -297,7 +302,7 @@ transport_move_playhead (
               region = lane->regions[l];
 
               if (!region_is_hit (
-                    region, PLAYHEAD->frames))
+                    region, PLAYHEAD->frames, 1))
                 continue;
 
               for (j = 0;

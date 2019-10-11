@@ -388,7 +388,7 @@ position_snap (
  */
 void
 position_set_min_size (
-  Position * start_pos,
+  const Position * start_pos,
   Position * end_pos,
   SnapGrid * snap);
 

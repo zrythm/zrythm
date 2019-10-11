@@ -129,8 +129,8 @@ arranger_bg_draw_cb (
 
   /* in order they appear */
   Position * range_first_pos, * range_second_pos;
-  if (position_compare (&PROJECT->range_1,
-                        &PROJECT->range_2) <= 0)
+  if (position_is_before_or_equal (
+        &PROJECT->range_1, &PROJECT->range_2))
     {
       range_first_pos = &PROJECT->range_1;
       range_second_pos = &PROJECT->range_2;

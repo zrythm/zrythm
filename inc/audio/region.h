@@ -776,11 +776,14 @@ region_update_frames (
  * or not.
  *
  * @param gframes Global position in frames.
+ * @param inclusive Whether the last frame should
+ *   be counted as part of the region.
  */
 int
 region_is_hit (
   const Region * region,
-  const long     gframes);
+  const long     gframes,
+  const int      inclusive);
 
 /**
  * Returns if any part of the Region is inside the

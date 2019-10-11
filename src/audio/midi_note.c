@@ -63,6 +63,10 @@ midi_note_init_loaded (
 
   self->vel->midi_note = self;
   velocity_init_loaded (self->vel);
+  position_set_to_pos (
+    &self->cache_start_pos, &self->start_pos);
+  position_set_to_pos (
+    &self->cache_end_pos, &self->end_pos);
 }
 
 /**
@@ -337,10 +341,13 @@ midi_note_update_frames (
     &self->start_pos);
   position_update_frames (
     &self->end_pos);
-  position_update_frames (
-    &self->cache_start_pos);
-  position_update_frames (
-    &self->cache_end_pos);
+  if (self->cache_start_pos.bars > 0)
+    {
+      position_update_frames (
+        &self->cache_start_pos);
+      position_update_frames (
+        &self->cache_end_pos);
+    }
 }
 
 /**

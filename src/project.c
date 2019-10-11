@@ -348,6 +348,11 @@ create_default (Project * self)
   quantize_options_update_quantize_points (
     &PROJECT->quantize_opts_editor);
 
+  position_set_to_bar (
+    &PROJECT->range_1, 1);
+  position_set_to_bar (
+    &PROJECT->range_2, 1);
+
   header_notebook_widget_set_subtitle (
     MW_HEADER_NOTEBOOK,
     PROJECT->title);

@@ -82,6 +82,7 @@ region_init (
   position_init (&self->clip_start_pos);
   long length =
     region_get_full_length_in_frames (self);
+  g_warn_if_fail (length > 0);
   position_from_frames (
     &self->true_end_pos, length);
   position_init (&self->loop_start_pos);
@@ -659,10 +660,13 @@ region_update_frames (
     &self->loop_start_pos);
   position_update_frames (
     &self->loop_end_pos);
-  position_update_frames (
-    &self->fade_in_pos);
-  position_update_frames (
-    &self->fade_out_pos);
+  if (self->type == REGION_TYPE_AUDIO)
+    {
+      position_update_frames (
+        &self->fade_in_pos);
+      position_update_frames (
+        &self->fade_out_pos);
+    }
 
   MidiNote * mn;
   for (i = 0; i < self->num_midi_notes; i++)
@@ -1241,17 +1245,24 @@ region_at_position (
  * or not.
  *
  * @param gframes Global position in frames.
+ * @param inclusive Whether the last frame should
+ *   be counted as part of the region.
  */
 int
 region_is_hit (
   const Region * region,
-  const long     gframes)
+  const long     gframes,
+  const int      inclusive)
 {
   return
     region->start_pos.frames <=
       gframes &&
-    region->end_pos.frames >
-      gframes;
+    ((inclusive &&
+      region->end_pos.frames >=
+        gframes) ||
+     (!inclusive &&
+      region->end_pos.frames >
+        gframes));
 }
 
 /**
@@ -1276,14 +1287,14 @@ region_is_hit_by_range (
       return
         (gframes_start <=
            region->start_pos.frames &&
-         gframes_end >
+         gframes_end >=
            region->start_pos.frames) ||
         (gframes_start <=
            region->end_pos.frames &&
-         gframes_end >
+         gframes_end >=
            region->end_pos.frames) ||
-        region_is_hit (region, gframes_start) ||
-        region_is_hit (region, gframes_end);
+        region_is_hit (region, gframes_start, 1) ||
+        region_is_hit (region, gframes_end, 1);
     }
   else
     {
@@ -1296,8 +1307,8 @@ region_is_hit_by_range (
            region->end_pos.frames &&
          gframes_end >
            region->end_pos.frames) ||
-        region_is_hit (region, gframes_start) ||
-        region_is_hit (region, gframes_end - 1);
+        region_is_hit (region, gframes_start, 0) ||
+        region_is_hit (region, gframes_end, 0);
     }
 }
 

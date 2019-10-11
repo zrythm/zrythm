@@ -142,8 +142,8 @@ engine_init (
 {
   g_message ("Initializing audio engine...");
 
-  transport_init (&self->transport,
-                  loading);
+  transport_init (
+    &self->transport, loading);
 
   /* get audio backend */
   int ab_code =

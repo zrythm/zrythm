@@ -1052,6 +1052,11 @@ timeline_arranger_widget_create_region (
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_RESIZING_R;
 
+  Position end_pos;
+  position_set_min_size (
+    pos, &end_pos,
+    ar_prv->snap_grid);
+
   /* create a new region */
   Region * region = NULL;
   switch (type)
@@ -1059,43 +1064,38 @@ timeline_arranger_widget_create_region (
     case REGION_TYPE_MIDI:
       region =
         midi_region_new (
-          pos, pos, 1);
+          pos, &end_pos, 1);
       break;
     case REGION_TYPE_AUDIO:
       break;
     case REGION_TYPE_CHORD:
       region =
         chord_region_new (
-          pos, pos, 1);
+          pos, &end_pos, 1);
       break;
     case REGION_TYPE_AUTOMATION:
       region =
         automation_region_new (
-          pos, pos, 1);
+          pos, &end_pos, 1);
       break;
     }
 
-  Position tmp;
   self->start_region = region;
-  position_set_min_size (
-    &region->start_pos,
-    &tmp,
-    ar_prv->snap_grid);
-  region_set_end_pos (
-    region, &tmp, AO_UPDATE_ALL);
-  long length =
-    region_get_full_length_in_ticks (region);
-  position_from_ticks (
-    &region->true_end_pos, length);
-  region_set_true_end_pos (
-    region, &region->true_end_pos, AO_UPDATE_ALL);
-  position_init (&tmp);
-  region_set_clip_start_pos (
-    region, &tmp, AO_UPDATE_ALL);
-  region_set_loop_start_pos (
-    region, &tmp, AO_UPDATE_ALL);
-  region_set_loop_end_pos (
-    region, &region->true_end_pos, AO_UPDATE_ALL);
+  /*region_set_end_pos (*/
+    /*region, &end_pos, AO_UPDATE_ALL);*/
+  /*long length =*/
+    /*region_get_full_length_in_ticks (region);*/
+  /*position_from_ticks (*/
+    /*&region->true_end_pos, length);*/
+  /*region_set_true_end_pos (*/
+    /*region, &region->true_end_pos, AO_UPDATE_ALL);*/
+  /*position_init (&tmp);*/
+  /*region_set_clip_start_pos (*/
+    /*region, &tmp, AO_UPDATE_ALL);*/
+  /*region_set_loop_start_pos (*/
+    /*region, &tmp, AO_UPDATE_ALL);*/
+  /*region_set_loop_end_pos (*/
+    /*region, &region->true_end_pos, AO_UPDATE_ALL);*/
 
   switch (type)
     {
@@ -1713,8 +1713,7 @@ timeline_arranger_widget_snap_range_r (
       pos,
       SNAP_GRID_TIMELINE);
   position_set_to_pos (
-    &PROJECT->range_2,
-    pos);
+    &PROJECT->range_2, pos);
   project_set_has_range (1);
 
   EVENTS_PUSH (ET_RANGE_SELECTION_CHANGED,

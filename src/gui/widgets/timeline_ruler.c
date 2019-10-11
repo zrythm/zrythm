@@ -51,8 +51,8 @@ timeline_ruler_widget_set_ruler_range_position (
   GtkAllocation *       allocation)
 {
   int range1_first =
-    position_compare (&PROJECT->range_1,
-                      &PROJECT->range_2) <= 0;
+    position_is_before_or_equal (
+      &PROJECT->range_1, &PROJECT->range_2);
 
   if (range1_first)
     {

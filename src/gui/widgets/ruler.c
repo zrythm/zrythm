@@ -531,8 +531,8 @@ drag_begin (GtkGestureDrag *      gesture,
   if (timeline_ruler)
     {
       timeline_ruler->range1_first =
-        position_compare (&PROJECT->range_1,
-                          &PROJECT->range_2) <= 0;
+        position_is_before_or_equal (
+          &PROJECT->range_1, &PROJECT->range_2);
     }
 
   int height =

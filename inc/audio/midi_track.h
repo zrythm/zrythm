@@ -32,6 +32,12 @@ typedef struct Automatable Automatable;
 typedef struct Region MidiRegion;
 
 /**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+/**
  * Initializes an midi track.
  */
 void
@@ -45,6 +51,11 @@ midi_track_setup (Track * self);
  *
  * The events are dequeued right after the call to
  * this function.
+ *
+ * Caveats:
+ * - This will not work properly if the loop sizes
+ *   (region or transport) are smaller than nframes,
+ *   so small sizes should not be allowed.
  *
  * @param g_start_frame Global start frame.
  * @param local_start_frame The start frame offset
@@ -70,5 +81,9 @@ midi_track_fill_midi_events (
  */
 void
 midi_track_free (Track * track);
+
+/**
+ * @}
+ */
 
 #endif // __AUDIO_MIDI_TRACK_H__

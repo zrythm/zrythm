@@ -32,6 +32,7 @@ if get_option ('enable_tests')
   tests = [
     'audio/automation_track',
     'audio/midi_note',
+    'audio/midi_track',
     'audio/region',
     'audio/track',
     ]
@@ -39,7 +40,7 @@ if get_option ('enable_tests')
 
   foreach test_name : tests
     source = [ test_name + '.c', config_h ]
-    test_name = 'zrythm:' + ' '.join(test_name.split('/'))
+    test_name = '/'.join(test_name.split('/'))
 
     exe = executable (
       test_name, source,

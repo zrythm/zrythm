@@ -23,6 +23,8 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
+#include "tests/helpers/zrythm.h"
+
 #include <glib.h>
 
 typedef struct
@@ -39,9 +41,117 @@ fixture_set_up (
   engine_update_frames_per_tick (
     AUDIO_ENGINE, 4, 140, 44000);
 
-  /*Position start_pos =*/
-  /*fixture->midi_region =*/
-    /*midi_region_new (*/
+  Position start_pos, end_pos;
+  position_set_to_bar (&start_pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  fixture->midi_region =
+    midi_region_new (
+      &start_pos, &end_pos, 1);
+}
+
+static void
+test_region_is_hit_by_range ()
+{
+  /*RegionFixture _fixture;*/
+  /*RegionFixture * fixture =*/
+    /*&_fixture;*/
+  /*fixture_set_up (fixture);*/
+
+  /*Region * r = fixture->midi_region;*/
+}
+
+static void
+test_region_is_hit ()
+{
+  RegionFixture _fixture;
+  RegionFixture * fixture =
+    &_fixture;
+  fixture_set_up (fixture);
+
+  Region * r = fixture->midi_region;
+  position_update_frames (&r->start_pos);
+  position_update_frames (&r->end_pos);
+
+  Position pos;
+  int ret;
+
+  /*
+   * Position: Region start
+   *
+   * Expected result:
+   * Returns true either exclusive or inclusive.
+   */
+  position_set_to_pos (&pos, &r->start_pos);
+  position_update_frames (&pos);
+  ret =
+    region_is_hit (r, pos.frames, 0);
+  g_assert_cmpint (ret, ==, 1);
+  ret =
+    region_is_hit (r, pos.frames, 1);
+  g_assert_cmpint (ret, ==, 1);
+
+  /*
+   * Position: Region start - 1 frame
+   *
+   * Expected result:
+   * Returns false either exclusive or inclusive.
+   */
+  position_set_to_pos (&pos, &r->start_pos);
+  position_update_frames (&pos);
+  position_add_frames (&pos, -1);
+  ret =
+    region_is_hit (r, pos.frames, 0);
+  g_assert_cmpint (ret, ==, 0);
+  ret =
+    region_is_hit (r, pos.frames, 1);
+  g_assert_cmpint (ret, ==, 0);
+
+  /*
+   * Position: Region end
+   *
+   * Expected result:
+   * Returns true for inclusive, false for not.
+   */
+  position_set_to_pos (&pos, &r->end_pos);
+  position_update_frames (&pos);
+  ret =
+    region_is_hit (r, pos.frames, 0);
+  g_assert_cmpint (ret, ==, 0);
+  ret =
+    region_is_hit (r, pos.frames, 1);
+  g_assert_cmpint (ret, ==, 1);
+
+  /*
+   * Position: Region end - 1
+   *
+   * Expected result:
+   * Returns true for both.
+   */
+  position_set_to_pos (&pos, &r->end_pos);
+  position_update_frames (&pos);
+  position_add_frames (&pos, -1);
+  ret =
+    region_is_hit (r, pos.frames, 0);
+  g_assert_cmpint (ret, ==, 1);
+  ret =
+    region_is_hit (r, pos.frames, 1);
+  g_assert_cmpint (ret, ==, 1);
+
+  /*
+   * Position: Region end + 1
+   *
+   * Expected result:
+   * Returns false for both.
+   */
+  position_set_to_pos (&pos, &r->end_pos);
+  position_update_frames (&pos);
+  position_add_frames (&pos, 1);
+  ret =
+    region_is_hit (r, pos.frames, 0);
+  g_assert_cmpint (ret, ==, 0);
+  ret =
+    region_is_hit (r, pos.frames, 1);
+  g_assert_cmpint (ret, ==, 0);
 }
 
 static void
@@ -143,14 +253,19 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  ZRYTHM = calloc (1, sizeof (Zrythm));
-  PROJECT = calloc (1, sizeof (Project));
+  test_helper_zrythm_init ();
 
 #define TEST_PREFIX "/audio/region/"
 
-  /*g_test_add_func (*/
-    /*TEST_PREFIX "test new region",*/
-    /*(GTestFunc) test_new_region);*/
+  g_test_add_func (
+    TEST_PREFIX "test new region",
+    (GTestFunc) test_new_region);
+  g_test_add_func (
+    TEST_PREFIX "test region is hit",
+    (GTestFunc) test_region_is_hit);
+  g_test_add_func (
+    TEST_PREFIX "test region is hit by range",
+    (GTestFunc) test_region_is_hit_by_range);
 
   return g_test_run ();
 }

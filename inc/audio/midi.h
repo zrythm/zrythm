@@ -29,6 +29,7 @@
 #include "config.h"
 
 #include <stdint.h>
+#include <string.h>
 
 #include "utils/types.h"
 #include "zix/sem.h"
@@ -166,16 +167,17 @@ midi_event_copy (
   MidiEvent * src,
   MidiEvent * dest)
 {
-  dest->pitchbend = src->pitchbend;
-  dest->controller = src->controller;
-  dest->control = src->control;
-  dest->channel = src->channel;
-  dest->note_pitch = src->note_pitch;
-  dest->velocity = src->velocity;
-  dest->time = src->time;
-  for (int i = 0; i < 3; i++)
-    dest->raw_buffer[i] = src->raw_buffer[i];
+  memcpy (dest, src, sizeof (MidiEvent));
 }
+
+void
+midi_event_print (
+  const MidiEvent * ev);
+
+int
+midi_events_are_equal (
+  const MidiEvent * src,
+  const MidiEvent * dest);
 
 /**
  * Sorts the MIDI events by time ascendingly.
@@ -183,6 +185,11 @@ midi_event_copy (
 void
 midi_events_sort_by_time (
   MidiEvents * self);
+
+void
+midi_events_print (
+  MidiEvents * self,
+  const int    queued);
 
 /**
  * Appends the events from src to dest
@@ -299,6 +306,17 @@ void
 midi_events_clear (
   MidiEvents * midi_events,
   int          queued);
+
+/**
+ * Clears duplicates.
+ *
+ * @param queued Clear duplicates from queued events
+ * instead.
+ */
+void
+midi_events_clear_duplicates (
+  MidiEvents * midi_events,
+  const int    queued);
 
 /**
  * Copies the queue contents to the original struct

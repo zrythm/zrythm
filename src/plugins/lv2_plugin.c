@@ -2243,13 +2243,9 @@ lv2_plugin_process (
                   MidiEvent * ev =
                     &port->midi_events->events[i];
                   g_message (
-                    "writing plugin event %d:\n"
-                    "buf time %u %hhx %hhx %hhx",
-                    i,
-                    ev->time,
-                    ev->raw_buffer[0],
-                    ev->raw_buffer[1],
-                    ev->raw_buffer[2]);
+                    "writing plugin event %d",
+                    i);
+                  midi_event_print (ev);
                   lv2_evbuf_write (
                     &iter,
                     ev->time, 0,

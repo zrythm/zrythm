@@ -73,6 +73,7 @@ marker_new (
 
   self->name = g_strdup (name);
   self->type = MARKER_TYPE_CUSTOM;
+  position_set_bar (&self->pos, 1);
 
   if (is_main)
     {

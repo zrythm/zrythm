@@ -19,6 +19,8 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
 #include "audio/engine.h"
