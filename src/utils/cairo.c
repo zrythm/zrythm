@@ -72,31 +72,10 @@ z_cairo_draw_vertical_line (
 
 /**
  * Gets the width of the given text in pixels
- * for the given widget when z_cairo_draw_text()
- * is used.
- *
- * @param widget The widget to derive a PangoLayout
- *   from.
- * @param text The text to draw.
- * @param width The width to fill in.
- * @param height The height to fill in.
- */
-void
-z_cairo_get_text_extents_for_widget (
-  GtkWidget *  widget,
-  const char * text,
-  int *        width,
-  int *        height)
-{
-  z_cairo_get_text_extents_for_widget_full (
-    widget, text, width, height, Z_CAIRO_FONT,
-    PANGO_ELLIPSIZE_NONE, -1);
-}
-
-/**
- * Gets the width of the given text in pixels
  * for the given widget when using the given font
  * settings.
+ *
+ * FIXME very CPU hungry function.
  *
  * @param widget The widget to derive a PangoLayout
  *   from.
@@ -114,9 +93,12 @@ z_cairo_get_text_extents_for_widget_full (
   PangoEllipsizeMode ellipsize_mode,
   int          ellipsize_padding)
 {
-  PangoLayout *layout;
+  PangoLayout * layout;
   PangoFontDescription *desc;
 
+  /* The GTK docs say the followng so this can be
+   * cached. */
+  /* If you keep a PangoLayout created in this way around, you need to re-create it when the widget PangoContext is replaced. This can be tracked by using the “screen-changed” signal on the widget. */
   layout =
     gtk_widget_create_pango_layout (
       widget, text);
@@ -132,6 +114,7 @@ z_cairo_get_text_extents_for_widget_full (
         layout, ellipsize_mode);
     }
   pango_layout_set_markup (layout, text, -1);
+  /* FIXME cache in CAIRO_CACHES */
   desc =
     pango_font_description_from_string (
       font);
@@ -227,7 +210,6 @@ z_cairo_get_surface_from_icon_name (
 
   return surface;
 }
-
 
 CairoCaches *
 z_cairo_caches_new (void)

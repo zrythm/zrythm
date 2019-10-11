@@ -22,8 +22,6 @@
  * Ports are passed when processing audio signals. They carry buffers
  * with data */
 
-#define M_PIF 3.14159265358979323846f
-
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -1650,11 +1648,12 @@ port_clear_buffer (Port * port)
  * Applies the pan to the given L/R ports.
  */
 void
-port_apply_pan_stereo (Port *       l,
-                       Port *       r,
-                       float        pan,
-                       PanLaw       pan_law,
-                       PanAlgorithm pan_algo)
+port_apply_pan_stereo (
+  Port *       l,
+  Port *       r,
+  float        pan,
+  PanLaw       pan_law,
+  PanAlgorithm pan_algo)
 {
   /* FIXME not used */
   g_warn_if_reached ();
@@ -1701,27 +1700,13 @@ port_apply_pan (
   nframes_t    start_frame,
   const nframes_t    nframes)
 {
-  float calc_r = 0.f, calc_l = 0.f;
-  int is_stereo_r =
-    port->identifier.flags & PORT_FLAG_STEREO_R;
-
-  switch (pan_algo)
-    {
-    case PAN_ALGORITHM_SINE_LAW:
-      calc_l = sinf ((1.f - pan) * (M_PIF / 2.f));
-      calc_r = sinf (pan * (M_PIF / 2.f));
-      break;
-    case PAN_ALGORITHM_SQUARE_ROOT:
-      calc_l = sqrtf (1.f - pan);
-      calc_r = sqrtf (pan);
-      break;
-    case PAN_ALGORITHM_LINEAR:
-      calc_l = 1.f - pan;
-      calc_r = pan;
-      break;
-    }
+  float calc_r, calc_l;
+  pan_get_calc_lr (
+    pan_law, pan_algo, pan, &calc_l, &calc_r);
 
   nframes_t end = start_frame + nframes;
+  int is_stereo_r =
+    port->identifier.flags & PORT_FLAG_STEREO_R;
   while (start_frame < end)
     {
       if (is_stereo_r)

@@ -120,12 +120,11 @@ z_cairo_rounded_rectangle (
  * @param width The width to fill in.
  * @param height The height to fill in.
  */
-void
-z_cairo_get_text_extents_for_widget (
-  GtkWidget *  widget,
-  const char * text,
-  int *        width,
-  int *        height);
+#define z_cairo_get_text_extents_for_widget( \
+  _widget, _text, _width, _height) \
+  z_cairo_get_text_extents_for_widget_full ( \
+    _widget, _text, _width, _height, Z_CAIRO_FONT, \
+    PANGO_ELLIPSIZE_NONE, -1)
 
 /**
  * Gets the width of the given text in pixels

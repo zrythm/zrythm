@@ -72,7 +72,8 @@ G_DECLARE_DERIVABLE_TYPE (
 
 #define ARRANGER_WIDGET_GET_PRIVATE(self) \
   ArrangerWidgetPrivate * ar_prv = \
-    arranger_widget_get_private (Z_ARRANGER_WIDGET (self));
+    arranger_widget_get_private ( \
+      (ArrangerWidget *) (self));
 #define ARRANGER_IS_TIMELINE(self) \
   (Z_IS_TIMELINE_ARRANGER_WIDGET (self))
 #define ARRANGER_IS_MIDI(self) \

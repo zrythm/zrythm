@@ -32,15 +32,16 @@
 
 #define RULER_WIDGET_TYPE \
   (ruler_widget_get_type ())
-G_DECLARE_DERIVABLE_TYPE (RulerWidget,
-                          ruler_widget,
-                          Z,
-                          RULER_WIDGET,
-                          GtkOverlay)
+G_DECLARE_DERIVABLE_TYPE (
+  RulerWidget,
+  ruler_widget,
+  Z, RULER_WIDGET,
+  GtkOverlay)
 
 #define RULER_WIDGET_GET_PRIVATE(self) \
   RulerWidgetPrivate * rw_prv = \
-    ruler_widget_get_private (Z_RULER_WIDGET (self));
+    ruler_widget_get_private ( \
+      (RulerWidget *) (self));
 
 /**
  * Pixels to draw between each beat, before being

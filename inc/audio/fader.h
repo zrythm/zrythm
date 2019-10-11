@@ -266,7 +266,7 @@ fader_copy (
 void
 fader_process (
   Fader *         self,
-  const nframes_t local_offset,
+  nframes_t local_offset,
   const nframes_t nframes);
 
 /**

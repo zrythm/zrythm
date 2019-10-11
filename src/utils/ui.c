@@ -245,7 +245,7 @@ ui_px_to_pos_editor (double               px,
     return;
 
   px_to_pos (px, pos, has_padding,
-             Z_RULER_WIDGET (EDITOR_RULER));
+             (RulerWidget *) (EDITOR_RULER));
 }
 
 static int
@@ -283,7 +283,7 @@ ui_pos_to_px_timeline (
     return 0;
 
   return pos_to_px (
-    pos, use_padding, Z_RULER_WIDGET (MW_RULER));
+    pos, use_padding, (RulerWidget *) (MW_RULER));
 }
 
 /**

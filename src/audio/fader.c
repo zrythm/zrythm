@@ -282,10 +282,7 @@ fader_copy (
   Fader * src,
   Fader * dest)
 {
-  dest->volume = src->volume;
-  dest->amp = src->amp;
-  dest->phase = src->phase;
-  dest->pan = src->pan;
+  memcpy (dest, src, sizeof (Fader));
 }
 
 /**
@@ -298,42 +295,33 @@ fader_copy (
 void
 fader_process (
   Fader *         self,
-  const nframes_t start_frame,
+  nframes_t       start_frame,
   const nframes_t nframes)
 {
   /*Track * track = self->channel->track;*/
 
   if (self->type == FADER_TYPE_AUDIO_CHANNEL)
     {
-      /* first copy the input to output */
-      memcpy (
-        &self->stereo_out->l->buf[start_frame],
-        &self->stereo_in->l->buf[start_frame],
-        nframes * sizeof (float));
-      memcpy (
-        &self->stereo_out->r->buf[start_frame],
-        &self->stereo_in->r->buf[start_frame],
-        nframes * sizeof (float));
-
-      /* apply fader */
-      port_apply_fader (
-        self->stereo_out->l, self->amp,
-        start_frame, nframes);
-      port_apply_fader (
-        self->stereo_out->r, self->amp,
-        start_frame, nframes);
-
-      /* apply pan */
-      port_apply_pan (
-        self->stereo_out->l, self->pan,
+      nframes_t end = start_frame + nframes;
+      float calc_l, calc_r;
+      pan_get_calc_lr (
         AUDIO_ENGINE->pan_law,
         AUDIO_ENGINE->pan_algo,
-        start_frame, nframes);
-      port_apply_pan (
-        self->stereo_out->r, self->pan,
-        AUDIO_ENGINE->pan_law,
-        AUDIO_ENGINE->pan_algo,
-        start_frame, nframes);
+        self->pan,
+        &calc_l, &calc_r);
+      while (start_frame < end)
+        {
+          /* 1. get input
+           * 2. apply fader
+           * 3. apply pan */
+          self->stereo_out->l->buf[start_frame] =
+            self->stereo_in->l->buf[start_frame] *
+              self->amp * calc_l;
+          self->stereo_out->r->buf[start_frame] =
+            self->stereo_in->r->buf[start_frame] *
+              self->amp * calc_r;
+          start_frame++;
+        }
     }
 
   if (self->type == FADER_TYPE_MIDI_CHANNEL)

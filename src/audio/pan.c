@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,31 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __AUDIO_PAN_H__
-#define __AUDIO_PAN_H__
+#include <math.h>
 
-/** \file
- */
+#include "audio/pan.h"
 
-/**
- * See https://www.hackaudio.com/digital-signal-processing/stereo-audio/square-law-panning/
- */
-typedef enum PanLaw
-{
-  PAN_LAW_0DB,
-  PAN_LAW_MINUS_3DB,
-  PAN_LAW_MINUS_6DB
-} PanLaw;
-
-/**
- * See https://www.harmonycentral.com/articles/the-truth-about-panning-laws
- */
-typedef enum PanAlgorithm
-{
-  PAN_ALGORITHM_LINEAR,
-  PAN_ALGORITHM_SQUARE_ROOT,
-  PAN_ALGORITHM_SINE_LAW
-} PanAlgorithm;
+#define M_PIF 3.14159265358979323846f
 
 void
 pan_get_calc_lr (
@@ -49,6 +29,21 @@ pan_get_calc_lr (
   PanAlgorithm algo,
   float        pan,
   float *      calc_l,
-  float *      calc_r);
-
-#endif
+  float *      calc_r)
+{
+  switch (algo)
+    {
+    case PAN_ALGORITHM_SINE_LAW:
+      *calc_l = sinf ((1.f - pan) * (M_PIF / 2.f));
+      *calc_r = sinf (pan * (M_PIF / 2.f));
+      break;
+    case PAN_ALGORITHM_SQUARE_ROOT:
+      *calc_l = sqrtf (1.f - pan);
+      *calc_r = sqrtf (pan);
+      break;
+    case PAN_ALGORITHM_LINEAR:
+      *calc_l = 1.f - pan;
+      *calc_r = pan;
+      break;
+    }
+}
