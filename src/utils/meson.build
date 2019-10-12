@@ -27,6 +27,7 @@ util_srcs = [
   'localization.c',
   'log.c',
   'math.c',
+  'mpmc_queue.c',
   'objects.c',
   'resources.c',
   'smf.c',

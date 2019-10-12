@@ -64,10 +64,10 @@ route_target_selector_widget_refresh (
 
   set_label (self);
 
+  /*if (self->popover && GTK_IS_WIDGET (self->popover))*/
+    /*g_object_unref (self->popover);*/
   gtk_menu_button_set_popover (
     GTK_MENU_BUTTON (self), NULL);
-  if (self->popover && GTK_IS_WIDGET (self->popover))
-    g_object_unref (self->popover);
   self->popover = NULL;
 
   /* if unroutable */

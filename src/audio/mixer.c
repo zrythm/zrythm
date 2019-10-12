@@ -62,7 +62,10 @@ mixer_recalc_graph (
   Mixer * mixer)
 {
   if (mixer->router.graph2)
-    free_later (mixer->router.graph2, graph_destroy);
+    {
+      free_later (
+        mixer->router.graph2, graph_destroy);
+    }
   else
     router_init (&mixer->router);
 

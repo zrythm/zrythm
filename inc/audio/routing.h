@@ -36,12 +36,19 @@ typedef struct GraphNode GraphNode;
 typedef struct Graph Graph;
 typedef struct PassthroughProcessor
   PassthroughProcessor;
+typedef struct MPMCQueue MPMCQueue;
 
 /**
  * @addtogroup audio
  *
  * @{
  */
+
+#define mpmc_queue_push_back_node(q,x) \
+  mpmc_queue_push_back (q, (void *) x)
+
+#define mpmc_queue_dequeue_node(q,x) \
+  mpmc_queue_dequeue (q, (void *) x)
 
 /**
  * Graph nodes can be either ports or processors.
@@ -127,6 +134,22 @@ typedef struct GraphNode
 
 typedef struct Router Router;
 
+typedef struct GraphThread
+{
+  /** 1 if main thread. */
+  int                  is_main;
+#ifdef HAVE_JACK
+  jack_native_thread_t jthread;
+#endif
+  pthread_t            pthread;
+
+  /** Thread ID in zrythm. */
+  int                  id;
+
+  /** Pointer back to the graph. */
+  Graph *              graph;
+} GraphThread;
+
 /**
  * Graph.
  */
@@ -139,7 +162,8 @@ typedef struct Graph
    * destroyed. */
   int          destroying;
 
-  /** List of all graph nodes (only used for memory management) */
+  /** List of all graph nodes (only used for memory
+   * management) */
   GraphNode **  graph_nodes;
   int           n_graph_nodes;
 
@@ -165,10 +189,10 @@ typedef struct Graph
 
   /** Working trigger nodes to be updated while
    * processing. */
-  GraphNode ** trigger_queue;
-  int  n_trigger_queue;
+  //GraphNode ** trigger_queue;
+  //int  n_trigger_queue;
   /** Max size - preallocated array. */
-  int  trigger_queue_size;
+  //int  trigger_queue_size;
 
   /** Synchronization with main process callback. */
   ZixSem          callback_start;
@@ -179,27 +203,25 @@ typedef struct Graph
 
   /* these following are protected by
    * _trigger_mutex */
-  pthread_mutex_t trigger_mutex;
+  //pthread_mutex_t trigger_mutex;
+
+  /** Queue containing nodes that can be
+   * processed. */
+  MPMCQueue *     trigger_queue;
+
+  /** Number of entries in trigger queue. */
+  volatile guint  trigger_queue_size;
 
   /** flag to exit, terminate all process-threads */
   volatile gint     terminate;
 
   /** Number of threads waiting for work. */
-  volatile int      idle_thread_cnt;
+  volatile guint      idle_thread_cnt;
 
   /* ------------------------------------ */
 
-  /**
-   * Threads.
-   *
-   * If backend is JACK, jack threads are used.
-   * */
-#ifdef HAVE_JACK
-  jack_native_thread_t jthreads[16];
-  jack_native_thread_t jmain_thread;
-#endif
-  pthread_t            main_thread;
-  pthread_t            threads[16];
+  GraphThread          threads[16];
+  GraphThread          main_thread;
   gint                 num_threads;
 
 } Graph;

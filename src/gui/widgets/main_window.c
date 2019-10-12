@@ -101,7 +101,8 @@ on_close_notification_clicked (
 }
 
 void
-main_window_widget_refresh (MainWindowWidget * self)
+main_window_widget_refresh (
+  MainWindowWidget * self)
 {
   header_notebook_widget_setup (
     MW_HEADER_NOTEBOOK,
