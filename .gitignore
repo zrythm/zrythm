@@ -165,3 +165,6 @@ coverage.html
 
 # valgrind log
 valog
+
+# callgrind
+callgrind*
