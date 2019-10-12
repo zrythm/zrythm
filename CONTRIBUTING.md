@@ -16,16 +16,13 @@ Contributing Guidelines
     │   ├── samples                  # Audio samples
     │   └── zrythm.desktop.in        # Desktop file
     ├── doc                          # Documentation
-    │   ├── *.h                      # Doxygen pages
-    │   ├── Doxyfile.cfg.in          # Doxygen conf
-    │   ├── Doxyfile-mcss.in         # Doxygen mcss conf
-    │   ├── group_defs.dox           # TODO
-    │   └── m.css                    # m.css theme for html docs
+    │   ├── dev                      # Developer docs
+    │   ├── man                      # Manpage
+    │   └── user                     # User manual
     ├── ext                          # External libs
     │   ├── audio_decoder            # Audio decoder by rgareus
     │   ├── libcyaml                 # Yaml serialization
     │   ├── midilib                  # MIDI file serialization
-    │   ├── README                   # Disclaimer
     │   └── zix                      # Data struct utils
     ├── git-packaging-hooks          # Git hooks for packaging
     ├── inc                          # Include dir
@@ -40,6 +37,7 @@ Contributing Guidelines
     │   ├── settings                 # Settings
     │   ├── utils                    # Various utils
     │   └── zrythm.h                 # Main zrythm struct
+    ├── INSTALL.md                   # Installation instructions
     ├── meson.build                  # Meson conf
     ├── meson.options                # Meson options
     ├── plugins                      # Bundled plugins
@@ -50,54 +48,78 @@ Contributing Guidelines
     │   └── zrythm.pot               # Source strings
     ├── README.md                    # Main README file
     ├── resources                    # Bundled resources
-    │   ├── fonts                    # Fonts FIXME move to data
     │   ├── gen-gtk-resources-xml.py # Gtk resources generator
     │   ├── icons                    # Icons
-    │   ├── samples                  # Samples FIXME move to data
     │   ├── theme                    # Parent GTK theme
     │   ├── theme.css                # Zrythm GTK theme
     │   └── ui                       # GTK ui files for widgets
     ├── scripts                      # various scripts
     │   ├── collect_translatables.sh # Prints the translatable files
-    │   ├── meson_post_install.py    # Commands to run after install
+    │   └── meson_post_install.py    # Commands to run after install
     ├── src                          # Source (.c) counterparts of inc
-    ├── tests                        # Automated tests
+    ├── tests                        # Unit tests
+    │   └── helpers                  # Test helpers
     ├── THANKS                       # Thanks notice
     ├── THIRDPARTY_LICENSE           # Linked library license information
-    ├── tools                        # TODO
+    ├── tools                        # Various tools
     └── TRANSLATORS                  # List of translators
 
 # Debugging
-Use `gdb build/src/zrythm`
+Use `GDK_SYNCHRONIZE=1 G_DEBUG=fatal_warnings gdb build/src/zrythm`.
+`G_DEBUG=fatal_warnings` will trigger break points at
+warning messages, and is very useful when debugging.
 
-There is also
+`GDK_SYNCHRONIZE=1` will make all X requests
+synchronously, which can be useful for UI debugging,
+but it will slow down performance.
 
-    G_DEBUG=fatal_warnings,signals,actions G_ENABLE_DIAGNOSTIC=1 gdb build/src/zrythm
+An easy way to test something is to add a
+`g_warning ("hello");` or
+`g_warn_if_reached ();`
+and it will automatically break there for you.
 
-`G_DEBUG` will trigger break points at GTK warning
-messages and `G_ENABLE_DIAGNOSTIC` is used to break
+For more information on warnings and assertions see
+https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html
+
+Additional options can be added to `G_DEBUG`, like
+`G_DEBUG=fatal_warnings,signals,actions`.
+
+There is also `G_ENABLE_DIAGNOSTIC=1` to break
 at deprecation warnings for GTK+3 (must all be fixed
 before porting to GTK+4).
 
 ## UI Debugging
-GTK comes with a very handy tool called GTK
-inspector that can be used to inspect GTK widgets.
-More info on how to enable it and use it can be
+GTK comes with a very powerful tool called
+GTK inspector that can be used to inspect UI widgets
+and change their properties live (while the
+application is running).
+
+This is very useful when looking to try out different
+widget properties to see what works before
+implementing them. Adding custom CSS is also possible.
+For example, the following CSS can be entered live
+to color all the track backgrounds red.
+
+    track {
+      background-color: red;
+    }
+
+More info on how to enable and use the inspector can be
 found here:
 https://wiki.gnome.org/action/show/Projects/GTK/Inspector
 
 # Tests and Coverage
 To run the test suite, use
 
-    meson _build -Denable_tests
+    meson build -Denable_tests
 
 followed by
 
-    meson test -C _build
+    meson test -C build
 
 To get a coverage report use
 
-    meson _build -Denable_tests=true -Denable_coverage=true
+    meson build -Denable_tests=true -Denable_coverage=true
 
 followed by the test command above, followed by
 

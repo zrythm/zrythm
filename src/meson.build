@@ -62,11 +62,14 @@ zrythm_exe = executable (
     zrythm_main,
     zrythm_resources,
     ],
-  dependencies : zrythm_deps,
+  dependencies : [
+    zrythm_deps,
+    ],
   link_with: [
     zrythm_lib,
     ],
   export_dynamic: true,
+  gui_app: true,
   include_directories: all_inc,
   c_args: [ common_cflags ],
   link_args: common_ldflags,

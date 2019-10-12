@@ -9,7 +9,8 @@ The project uses meson, so the steps are
     ninja -C build
 
 To see all available options, type the following
-after the build directory is initialized
+after the build directory is initialized, or look
+inside `meson_options.txt`.
 
     meson configure build
 

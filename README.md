@@ -3,17 +3,23 @@ Zrythm
 
 [![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
 
-Zrythm is a highly automated Digital Audio Workstation (DAW) designed to be featureful and intuitive to use. Zrythm sets itself apart from other DAWs by allowing extensive automation via built-in LFOs and envelopes and intuitive MIDI or audio editing and arranging via clips.
+Zrythm is a digital audio workstation designed to be
+featureful and easy to use. It allows limitless
+automation, supports LV2 plugins, works with the JACK
+audio backend, provides chord assistance, is free
+software and can be used in English, French,
+Portuguese, Japanese and German.
 
-In the usual Composing -> Mixing -> Mastering workflow, Zrythm puts the most focus on the Composing part. It allows musicians to quickly lay down and process their musical ideas without taking too much time for unnecessary work.
+It is written in C using the GTK+3 toolkit and uses
+the meson build system.
 
-It is written in C and uses the GTK+3 toolkit, with bits and pieces taken from other programs like Ardour and Jalv.
-
-More info at https://www.zrythm.org
+More info can be found at https://www.zrythm.org
 
 # Current state
 
-Zrythm is currently in alpha.
+Zrythm is currently in alpha. Most of the essential
+DAW features are implemented and we are working
+towards a stable release.
 ![screenshot](https://www.zrythm.org/static/images/oct_1_2019.png)
 
 ## Currently supported plugin protocols:
@@ -23,24 +29,29 @@ Zrythm is currently in alpha.
 See [INSTALL.md](INSTALL.md).
 
 ## Using
-At the moment, Zrythm works with Jack (recommended) and ALSA.
+At the moment, Zrythm works with JACK (recommended)
+~~and ALSA~~.
 For Jack setup instructions see
 https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack
 
-For more information see the [user manual](http://manual.zrythm.org/).
+For more information on using Zrythm see the
+[user manual](http://manual.zrythm.org/), which is
+also available in PDF, epub and HTML.
 
 ## Packaging
 See [PACKAGING.md](PACKAGING.md).
 
 ## Contributing
-For contributing guidelines see [CONTRIBUTING.md](CONTRIBUTING.md). Be sure to take a look at the
+For contributing guidelines see
+[CONTRIBUTING.md](CONTRIBUTING.md).
+We also recommend taking a look at the
 [Developer Docs](https://docs.zrythm.org)
 
-If you find any bugs please submit a bug report
-below.
+Please submit patches and bug reports below.
 
 ## Mailing lists
-zrythm-dev@nongnu.org for developers, zrythm-user@nongnu.org for users
+~~zrythm-dev@nongnu.org for developers, zrythm-user@nongnu.org for users~~
+We are working on new mailing lists
 
 ## Bug Tracker
 https://redmine.zrythm.org/projects/zrythm/issues
