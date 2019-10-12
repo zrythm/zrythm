@@ -795,7 +795,7 @@ engine_process (
 
   nframes_t route_latency = 0;
   GraphNode * start_node;
-  int i;
+  size_t i;
   nframes_t num_samples;
   nframes_t nframes = _nframes;
   while (self->remaining_latency_preroll > 0)
@@ -804,12 +804,12 @@ engine_process (
         MIN (
           _nframes, self->remaining_latency_preroll);
       for (i = 0;
-           i < MIXER->router.graph2->
+           i < MIXER->router.graph->
              n_init_triggers;
            i++)
         {
           start_node =
-            MIXER->router.graph2->
+            MIXER->router.graph->
               init_trigger_list[i];
           route_latency =
             start_node->playback_latency;

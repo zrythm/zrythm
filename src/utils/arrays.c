@@ -28,6 +28,8 @@
 
 #include "utils/arrays.h"
 
+#include <glib.h>
+
 /**
  * Returns 1 if element exists in array, 0 if not.
  */
@@ -93,6 +95,76 @@ _array_index_of (void ** array, int size, void * element)
         return i;
     }
   return -1;
+}
+
+/**
+ * Swaps the elements of the 2 arrays.
+ *
+ * The arrays must be of pointers.
+ *
+ * @param arr1 Dest array.
+ * @param arr2 Source array.
+ */
+void
+_array_dynamic_swap (
+  void ***  arr1,
+  size_t * sz1,
+  void ***  arr2,
+  size_t * sz2)
+{
+  g_return_if_fail (
+    arr1 && arr2 && *arr1 && *arr2);
+  int is_1_larger =
+    *sz1 > *sz2;
+
+  void *** large_arr;
+  size_t * large_sz;
+  void *** small_arr;
+  size_t * small_sz;
+  if (is_1_larger)
+    {
+      large_arr = arr1;
+      large_sz = sz1;
+      small_arr = arr2;
+      small_sz = sz2;
+    }
+  else
+    {
+      large_arr = arr2;
+      large_sz = sz2;
+      small_arr = arr1;
+      small_sz = sz1;
+    }
+
+  /* resize the small array */
+  *small_arr =
+    realloc (
+      *small_arr, *large_sz * sizeof (void *));
+
+  /* copy the elements of the small array in tmp */
+  void * tmp[*small_sz > 0 ? *small_sz : 1];
+  memcpy (
+    tmp, *small_arr, sizeof (void *) * *small_sz);
+
+  /* copy elements from large array to small */
+  memcpy (
+    *small_arr, *large_arr,
+    sizeof (void *) * *large_sz);
+
+  /* resize large array */
+  *large_arr =
+    realloc (
+      *large_arr, *small_sz * sizeof (void *));
+
+  /* copy the elements from temp to large array */
+  memcpy (
+    *large_arr, tmp, sizeof (void *) * *small_sz);
+
+  /* update the sizes */
+  size_t orig_large_sz = *large_sz;
+  size_t orig_small_sz = *small_sz;
+  *large_sz = orig_small_sz;
+  *small_sz = orig_large_sz;
 }
 
 static int

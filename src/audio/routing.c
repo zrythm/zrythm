@@ -42,6 +42,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/mpmc_queue.h"
+#include "utils/objects.h"
 #include "utils/stoat.h"
 
 #ifdef HAVE_JACK
@@ -544,13 +545,13 @@ graph_main_thread (void * arg)
       /* Can't run without a graph */
       g_warn_if_fail (self->n_graph_nodes > 0);
       g_warn_if_fail (self->n_init_triggers > 0);
-      g_warn_if_fail (self->terminal_node_count > 0);
+      g_warn_if_fail (self->n_terminal_nodes > 0);
     }
 
 	/* bootstrap trigger-list.
 	 * (later this is done by
    * Graph_reached_terminal_node)*/
-	for (int i = 0;
+	for (size_t i = 0;
        i < self->n_init_triggers; ++i)
     {
       g_atomic_int_inc (&self->trigger_queue_size);
@@ -607,22 +608,81 @@ graph_terminate (
   pthread_join (self->main_thread.pthread, NULL);
 #endif
 
-	self->init_trigger_list = NULL;
-	self->n_init_triggers   = 0;
-	self->trigger_queue     = NULL;
-  free (self->init_trigger_list);
-  free (self->trigger_queue);
+	/*self->init_trigger_list = NULL;*/
+	/*self->n_init_triggers   = 0;*/
+	/*self->trigger_queue     = NULL;*/
+  /*free (self->init_trigger_list);*/
+  /*free (self->trigger_queue);*/
 }
 
 /**
- * Initializes as many threads as there are cores.
+ * Creates a thread.
+ *
+ * @param self The GraphThread to fill in.
+ * @param id The index of the thread.
+ * @param graph The graph to set to the thread.
+ * @param is_main 1 if main thread.
+ *
+ * @return 1 if created, 0 if error.
+ */
+static int
+create_thread (
+  GraphThread * self,
+  const int     id,
+  const int     is_main,
+  Graph *       graph)
+{
+  self->id = id;
+  self->graph = graph;
+
+#ifdef HAVE_JACK
+  if (AUDIO_ENGINE->audio_backend ==
+        AUDIO_BACKEND_JACK)
+    {
+      jack_client_create_thread (
+        AUDIO_ENGINE->client,
+        &self->jthread,
+        jack_client_real_time_priority (
+          AUDIO_ENGINE->client),
+        jack_is_realtime (
+          AUDIO_ENGINE->client),
+        is_main ?
+          graph_main_thread :
+          graph_worker_thread,
+        self);
+
+      g_return_val_if_fail (
+        (int) self->jthread != -1, 0);
+    }
+  else
+    {
+#endif
+      if (pthread_create (
+          &self->pthread, NULL,
+          is_main ?
+            &graph_main_thread :
+            &graph_worker_thread,
+          self))
+        {
+          g_return_val_if_reached (0);
+        }
+#ifdef HAVE_JACK
+    }
+#endif
+
+  return 1;
+}
+
+/**
+ * Starts as many threads as there are cores.
  *
  * @return 1 if graph started, 0 otherwise.
  */
-static int
+int
 graph_start (
   Graph * graph)
 {
+  int ret;
   int num_cores = audio_get_num_cores ();
   graph->num_threads = num_cores - 2;
 
@@ -631,84 +691,25 @@ graph_start (
    * in total N_CORES - 1 threads */
   for (int i = 0; i < graph->num_threads; i++)
     {
-      graph->threads[i].id = i;
-      graph->threads[i].graph = graph;
-#ifdef HAVE_JACK
-      if (AUDIO_ENGINE->audio_backend ==
-            AUDIO_BACKEND_JACK)
+      ret =
+        create_thread (
+          &graph->threads[i], i, 0, graph);
+      if (!ret)
         {
-          jack_client_create_thread (
-            AUDIO_ENGINE->client,
-            &graph->threads[i].jthread,
-            jack_client_real_time_priority (
-              AUDIO_ENGINE->client),
-            jack_is_realtime (AUDIO_ENGINE->client),
-            graph_worker_thread,
-            &graph->threads[i]);
-
-          if ((int) graph->threads[i].jthread == -1)
-            {
-              g_warning (
-                "%lu: Failed creating thread %d",
-                graph->threads[i].jthread, i);
-              return 0;
-            }
+          graph_terminate (graph);
+          return 0;
         }
-      else
-        {
-#endif
-          pthread_create (
-            &graph->threads[i].pthread, NULL,
-            &graph_worker_thread,
-            &graph->threads[i]);
-          g_message ("created thread %d", i);
-#ifdef HAVE_JACK
-        }
-#endif
     }
 
   /* and the main thread */
-  graph->main_thread.graph = graph;
-  graph->main_thread.id = -1;
-#ifdef HAVE_JACK
-  if (AUDIO_ENGINE->audio_backend ==
-        AUDIO_BACKEND_JACK)
+  ret =
+    create_thread (
+      &graph->main_thread, -1, 1, graph);
+  if (!ret)
     {
-      jack_client_create_thread (
-        AUDIO_ENGINE->client,
-        &graph->main_thread.jthread,
-        jack_client_real_time_priority (
-          AUDIO_ENGINE->client),
-        jack_is_realtime (AUDIO_ENGINE->client),
-        graph_main_thread,
-        &graph->main_thread);
-
-      if ((int) graph->main_thread.jthread == -1)
-        {
-          g_warning (
-            "%lu: Failed creating main thread",
-            graph->main_thread.jthread);
-          graph_terminate (graph);
-          return 0;
-        }
+      graph_terminate (graph);
+      return 0;
     }
-  else
-    {
-#endif
-      if (pthread_create (
-          &graph->main_thread.pthread, NULL,
-          &graph_main_thread,
-          &graph->main_thread))
-        {
-          graph_terminate (graph);
-          return 0;
-        }
-
-      g_message ("created main thread");
-      graph->main_thread.is_main = 1;
-#ifdef HAVE_JACK
-    }
-#endif
 
   /* breathe */
   sched_yield ();
@@ -725,7 +726,8 @@ graph_get_max_playback_latency (
 {
   nframes_t max = 0;
   GraphNode * node;
-  for (int i = 0; i < graph->n_init_triggers; i++)
+  for (size_t i = 0;
+       i < graph->n_init_triggers; i++)
     {
       node =  graph->init_trigger_list[i];
       if (node->playback_latency > max)
@@ -745,7 +747,7 @@ router_get_max_playback_latency (
 {
   router->max_playback_latency =
     graph_get_max_playback_latency (
-      router->graph2);
+      router->graph);
 
   return router->max_playback_latency;
 }
@@ -772,9 +774,10 @@ find_node_from_port (
   const Port * port)
 {
   GraphNode * node;
-  for (int i = 0; i < graph->n_graph_nodes; i++)
+  for (size_t i = 0;
+       i < graph->num_setup_graph_nodes; i++)
     {
-      node = graph->graph_nodes[i];
+      node = graph->setup_graph_nodes[i];
       if (node->type == ROUTE_NODE_TYPE_PORT &&
           node->port == port)
         return node;
@@ -788,9 +791,10 @@ find_node_from_plugin (
   Plugin * pl)
 {
   GraphNode * node;
-  for (int i = 0; i < graph->n_graph_nodes; i++)
+  for (size_t i = 0;
+       i < graph->num_setup_graph_nodes; i++)
     {
-      node = graph->graph_nodes[i];
+      node = graph->setup_graph_nodes[i];
       if (node->type == ROUTE_NODE_TYPE_PLUGIN &&
           node->pl == pl)
         return node;
@@ -804,9 +808,10 @@ find_node_from_track (
   Track * track)
 {
   GraphNode * node;
-  for (int i = 0; i < graph->n_graph_nodes; i++)
+  for (size_t i = 0;
+       i < graph->num_setup_graph_nodes; i++)
     {
-      node = graph->graph_nodes[i];
+      node = graph->setup_graph_nodes[i];
       if (node->type == ROUTE_NODE_TYPE_TRACK &&
           node->track == track)
         return node;
@@ -820,9 +825,10 @@ find_node_from_fader (
   Fader * fader)
 {
   GraphNode * node;
-  for (int i = 0; i < graph->n_graph_nodes; i++)
+  for (size_t i = 0;
+       i < graph->num_setup_graph_nodes; i++)
     {
-      node = graph->graph_nodes[i];
+      node = graph->setup_graph_nodes[i];
       if (node->type == ROUTE_NODE_TYPE_FADER &&
           node->fader == fader)
         return node;
@@ -836,9 +842,10 @@ find_node_from_prefader (
   PassthroughProcessor * prefader)
 {
   GraphNode * node;
-  for (int i = 0; i < graph->n_graph_nodes; i++)
+  for (size_t i = 0;
+       i < graph->num_setup_graph_nodes; i++)
     {
-      node = graph->graph_nodes[i];
+      node = graph->setup_graph_nodes[i];
       if (node->type == ROUTE_NODE_TYPE_PREFADER &&
           node->prefader == prefader)
         return node;
@@ -852,9 +859,10 @@ find_node_from_sample_processor (
   SampleProcessor * sample_processor)
 {
   GraphNode * node;
-  for (int i = 0; i < graph->n_graph_nodes; i++)
+  for (size_t i = 0;
+       i < graph->num_setup_graph_nodes; i++)
     {
-      node = graph->graph_nodes[i];
+      node = graph->setup_graph_nodes[i];
       if (node->type ==
             ROUTE_NODE_TYPE_SAMPLE_PROCESSOR &&
           node->sample_processor ==
@@ -870,9 +878,10 @@ find_node_from_monitor_fader (
   Fader * fader)
 {
   GraphNode * node;
-  for (int i = 0; i < graph->n_graph_nodes; i++)
+  for (size_t i = 0;
+       i < graph->num_setup_graph_nodes; i++)
     {
-      node = graph->graph_nodes[i];
+      node = graph->setup_graph_nodes[i];
       if (node->type ==
             ROUTE_NODE_TYPE_MONITOR_FADER &&
           node->fader == fader)
@@ -889,7 +898,7 @@ graph_node_new (
 {
   GraphNode * node =
     calloc (1, sizeof (GraphNode));
-  node->id = graph->n_graph_nodes;
+  node->id = (int) graph->num_setup_graph_nodes;
   node->graph = graph;
   node->type = type;
   switch (type)
@@ -928,21 +937,18 @@ graph_add_node (
   GraphNodeType type,
   void * data)
 {
-  /*free (graph->trigger_queue);*/
-  /*graph->trigger_queue =*/
-    /*(GraphNode **) malloc (*/
-      /*(size_t) ++graph->trigger_queue_size **/
-      /*sizeof (GraphNode *));*/
-  ++graph->trigger_queue_size;
-  graph->graph_nodes =
+  graph->setup_graph_nodes =
     (GraphNode **) realloc (
-      graph->graph_nodes,
-      (size_t) (1 + graph->n_graph_nodes) *
+      graph->setup_graph_nodes,
+      (size_t) (1 + graph->num_setup_graph_nodes) *
       sizeof (GraphNode *));
 
-  graph->graph_nodes[graph->n_graph_nodes] =
+  GraphNode * node =
     graph_node_new (graph, type, data);
-  return graph->graph_nodes[graph->n_graph_nodes++];
+  graph->setup_graph_nodes[
+    graph->num_setup_graph_nodes++] = node;
+
+  return node;
 }
 
 static inline GraphNode *
@@ -951,16 +957,20 @@ graph_add_terminal_node (
   GraphNodeType type,
   void * data)
 {
-  self->terminal_refcnt =
-    ++self->terminal_node_count;
   GraphNode * node =
     graph_add_node (self, type, data);
   node->terminal = 1;
-  self->terminal_nodes[
-    self->terminal_node_count - 1] = node;
-  /*g_message ("adding terminal node %s",*/
-             /*get_node_name (node));*/
-  /*g_warn_if_reached ();*/
+
+  /* used for calculating latencies */
+  self->setup_terminal_nodes =
+    (GraphNode **) realloc (
+      self->setup_terminal_nodes,
+      (size_t)
+      (1 + self->num_setup_terminal_nodes) *
+        sizeof (GraphNode *));
+  self->setup_terminal_nodes[
+    self->num_setup_terminal_nodes++] = node;
+
   return node;
 }
 
@@ -970,19 +980,19 @@ graph_add_initial_node (
   GraphNodeType type,
   void * data)
 {
-  self->init_trigger_list =
+  self->setup_init_trigger_list =
     (GraphNode**)realloc (
-      self->init_trigger_list,
-      (size_t) (1 + self->n_init_triggers) *
+      self->setup_init_trigger_list,
+      (size_t) (1 + self->num_setup_init_triggers) *
         sizeof (GraphNode*));
 
-  self->init_trigger_list[
-    self->n_init_triggers] =
-      graph_add_node (self, type, data);
-	GraphNode * node =
-    self->init_trigger_list[
-      self->n_init_triggers++];
+  GraphNode * node =
+    graph_add_node (self, type, data);
   node->initial = 1;
+
+  self->setup_init_trigger_list[
+    self->num_setup_init_triggers++] = node;
+
   return node;
 }
 
@@ -1006,10 +1016,12 @@ graph_free (
 
   for (i = 0; i < self->n_graph_nodes; ++i)
     {
-		node_free (self->graph_nodes[i]);
+      node_free (self->graph_nodes[i]);
     }
 	free (self->graph_nodes);
   free (self->init_trigger_list);
+  free (self->setup_graph_nodes);
+  free (self->setup_init_trigger_list);
 
   zix_sem_destroy (&self->callback_start);
   zix_sem_destroy (&self->callback_done);
@@ -1022,8 +1034,8 @@ graph_destroy (
 {
   g_message (
     "destroying graph %p (router g1 %p g2 %p)",
-    self, self->router->graph1,
-    self->router->graph2);
+    self, self->router->graph,
+    self->router->graph);
   int i;
   self->destroying = 1;
 
@@ -1039,15 +1051,6 @@ graph_destroy (
   graph_free (self);
   free (self);
 }
-
-/*void*/
-/*router_cleanup (*/
-  /*Router * self)*/
-/*{*/
-  /*graph_destroy (self->graph1);*/
-  /*graph_destroy (self->graph2);*/
-/*}*/
-
 
 /* called from a terminal node (from the Graph worked-thread)
  * to indicate it has completed processing.
@@ -1095,10 +1098,10 @@ graph_reached_terminal_node (
       /* reset terminal reference count */
       g_atomic_int_set (
         &self->terminal_refcnt,
-        (unsigned int) self->terminal_node_count);
+        (unsigned int) self->n_terminal_nodes);
 
       /* and start the initial nodes */
-      for (int i = 0;
+      for (size_t i = 0;
            i < self->n_init_triggers; ++i)
         {
           g_atomic_int_inc (
@@ -1125,29 +1128,38 @@ router_start_cycle (
   const nframes_t  local_offset,
   const Position * pos)
 {
-  if (!self->graph2)
+  if (!zix_sem_try_wait (&self->graph_access))
     return;
 
-  self->graph1 = self->graph2;
   self->nsamples = nsamples;
   self->global_offset =
     self->max_playback_latency -
     AUDIO_ENGINE->remaining_latency_preroll;
   self->local_offset = local_offset;
-  zix_sem_post (&self->graph1->callback_start);
-  zix_sem_wait (&self->graph1->callback_done);
+  zix_sem_post (&self->graph->callback_start);
+  zix_sem_wait (&self->graph->callback_done);
+
+  zix_sem_post (&self->graph_access);
 }
 
 void
 graph_print (
-  Graph * graph)
+  Graph * self)
 {
   g_message ("==printing graph");
   /*GraphNode * node;*/
-  for (int i = 0; i < graph->n_graph_nodes; i++)
+  for (size_t i = 0;
+       i < self->num_setup_graph_nodes; i++)
     {
-      print_node (graph->graph_nodes[i]);
+      print_node (self->setup_graph_nodes[i]);
     }
+  g_message (
+    "num trigger nodes %ld | "
+    /*"num max trigger nodes %d | "*/
+    "num terminal nodes %lu",
+    self->num_setup_init_triggers,
+    /*self->trigger_queue_size,*/
+    self->num_setup_terminal_nodes);
   g_message ("==finish printing graph");
 }
 
@@ -1363,13 +1375,14 @@ graph_is_valid (
         }
     }
 
-  for (i = 0; i < self->n_graph_nodes; i++)
+  for (size_t j = 0;
+       j < self->num_setup_graph_nodes; j++)
     {
-      n = self->graph_nodes[i];
+      n = self->setup_graph_nodes[j];
       if (n->n_childnodes > 0 ||
           n->init_refcount > 0)
         {
-          graph_print (self);
+          /*graph_print (self);*/
           /*g_warning ("graph invalid");*/
           return 0;
         }
@@ -1378,28 +1391,65 @@ graph_is_valid (
   return 1;
 }
 
-/**
- * Returns a new graph, or NULL if the graph is
- * invalid.
- *
- * Optionally adds a new connection for the given
- * src and dest ports.
- *
- * Should be used every time the graph is changed.
+static void
+graph_clear_setup (
+  Graph * self)
+{
+  for (size_t i = 0;
+       i < self->num_setup_graph_nodes; i++)
+    {
+      free_later (
+        self->setup_graph_nodes[i], free);
+    }
+  self->num_setup_graph_nodes = 0;
+  self->num_setup_init_triggers = 0;
+  self->num_setup_terminal_nodes = 0;
+}
+
+static void
+graph_rechain (
+  Graph * self)
+{
+  g_warn_if_fail (
+    g_atomic_int_get (
+      &self->terminal_refcnt) == 0);
+  g_warn_if_fail (
+    g_atomic_int_get (
+      &self->trigger_queue_size) == 0);
+
+  array_dynamic_swap (
+    &self->graph_nodes, &self->n_graph_nodes,
+    &self->setup_graph_nodes,
+    &self->num_setup_graph_nodes);
+  array_dynamic_swap (
+    &self->init_trigger_list,
+    &self->n_init_triggers,
+    &self->setup_init_trigger_list,
+    &self->num_setup_init_triggers);
+
+  self->n_terminal_nodes =
+    (int) self->num_setup_terminal_nodes;
+  g_atomic_int_set (
+    &self->terminal_refcnt,
+    (guint) self->n_terminal_nodes);
+
+  mpmc_queue_reserve (
+    self->trigger_queue,
+    (size_t) self->n_graph_nodes);
+
+  graph_clear_setup (self);
+}
+
+/*
+ * Adds the graph nodes and connections, then
+ * rechains.
  */
-Graph *
-graph_new (
-  Router * router,
-  const Port *   src,
-  const Port *   dest)
+void
+graph_setup (
+  Graph * self)
 {
   int i, j, k;
   GraphNode * node, * node2;
-  Graph * self = calloc (1, sizeof (Graph));
-  g_warn_if_fail (router);
-  self->router = router;
-  self->trigger_queue =
-    mpmc_queue_new ();
 
   /* ========================
    * first add all the nodes
@@ -1712,64 +1762,81 @@ graph_new (
         self, port);
     }
 
-  /* connect the src/dest if not NULL */
-  /* this code is only for creating graphs to test
-   * if the connection between src->dest is valid */
-  if (src && dest)
-    {
-      node =
-        find_node_from_port (self, src);
-      node2 =
-        find_node_from_port (self, dest);
-      node_connect (node, node2);
-
-      if (graph_is_valid (self))
-        return self;
-      else
-        {
-          graph_free (self);
-          return NULL;
-        }
-    }
-
   /* ========================
    * calculate latencies of each port and each
    * processor
    * ======================== */
 
-  for (i = 0; i < self->terminal_node_count; i++)
+  for (size_t ii = 0;
+       ii < self->num_setup_terminal_nodes; ii++)
     {
       set_node_playback_latency (
-        self->terminal_nodes[i], 0);
+        self->setup_terminal_nodes[ii], 0);
     }
 
-  g_message (
-    "num trigger nodes %d | "
-    "num max trigger nodes %d | "
-    "num terminal nodes %d",
-    self->n_init_triggers,
-    self->trigger_queue_size,
-    self->terminal_node_count);
   graph_print (self);
+
+  graph_rechain (self);
+}
+
+/**
+ * Adds a new connection for the given
+ * src and dest ports and validates the graph.
+ *
+ * @return 1 for ok, 0 for invalid.
+ */
+int
+graph_validate (
+  Router *     router,
+  const Port * src,
+  const Port * dest)
+{
+  g_return_val_if_fail (src && dest, 0);
+  Graph * self = graph_new (router);
+
+  graph_setup (self);
+
+  /* connect the src/dest if not NULL */
+  /* this code is only for creating graphs to test
+   * if the connection between src->dest is valid */
+  GraphNode * node, * node2;
+  node =
+    find_node_from_port (self, src);
+  node2 =
+    find_node_from_port (self, dest);
+  node_connect (node, node2);
+
+  int valid = graph_is_valid (self);
+  graph_free (self);
+
+  return valid;
+}
+
+/**
+ * Returns a new graph.
+ */
+Graph *
+graph_new (
+  Router * router)
+{
+  Graph * self = calloc (1, sizeof (Graph));
+  g_warn_if_fail (router);
+  self->router = router;
+  self->trigger_queue =
+    mpmc_queue_new ();
+  self->init_trigger_list =
+    calloc (1, sizeof (GraphNode *));
+  self->graph_nodes =
+    calloc (1, sizeof (GraphNode *));
 
   zix_sem_init (&self->callback_start, 0);
   zix_sem_init (&self->callback_done, 0);
   zix_sem_init (&self->trigger, 0);
 
+  g_atomic_int_set (&self->terminal_refcnt, 0);
   g_atomic_int_set (&self->terminate, 0);
   g_atomic_int_set (&self->idle_thread_cnt, 0);
   g_atomic_int_set (&self->trigger_queue_size, 0);
-
-  g_atomic_int_set (
-    &self->terminal_refcnt,
-    (guint) self->terminal_node_count);
-
-  mpmc_queue_reserve (
-    self->trigger_queue,
-    (size_t) self->n_graph_nodes);
-
-  /* create worker threads */
-  graph_start (self);
 
   return self;
 }
@@ -1778,8 +1845,7 @@ void
 router_init (
   Router * self)
 {
-  /* create the initial graph */
-  self->graph1 = graph_new (self, NULL, NULL);
+  zix_sem_init (&self->graph_access, 1);
 
-  self->graph2 = NULL;
+  self->graph = NULL;
 }

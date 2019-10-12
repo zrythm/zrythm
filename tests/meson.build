@@ -35,6 +35,7 @@ if get_option ('enable_tests')
     'audio/midi_track',
     'audio/region',
     'audio/track',
+    'utils/arrays',
     ]
 
 

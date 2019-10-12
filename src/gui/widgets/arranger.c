@@ -148,7 +148,7 @@ arranger_widget_get_private (ArrangerWidget * self)
  * Gets called to set the position/size of each overlayed widget.
  */
 static gboolean
-get_child_position (
+arranger_get_child_position (
   GtkOverlay   *overlay,
   GtkWidget    *widget,
   GdkRectangle *allocation,
@@ -2163,7 +2163,7 @@ arranger_widget_setup (
   /* connect signals */
   g_signal_connect (
     G_OBJECT (self), "get-child-position",
-    G_CALLBACK (get_child_position), self);
+    G_CALLBACK (arranger_get_child_position), self);
   g_signal_connect (
     G_OBJECT(ar_prv->drag), "drag-begin",
     G_CALLBACK (drag_begin),  self);

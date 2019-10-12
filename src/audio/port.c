@@ -656,15 +656,8 @@ ports_can_be_connected (
   const Port * src,
   const Port *dest)
 {
-  Graph * graph =
-    graph_new (&MIXER->router, src, dest);
-  if (graph)
-    {
-      graph_free (graph);
-      return 1;
-    }
-  else
-    return 0;
+  return
+    graph_validate (&MIXER->router, src, dest);
 }
 
 /**

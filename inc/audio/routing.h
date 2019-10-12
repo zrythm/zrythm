@@ -125,10 +125,6 @@ typedef struct GraphNode
   /** The route's playback latency. */
   nframes_t          route_playback_latency;
 
-  /** Set to a specific number and checked to see
-   * if this is a valid node. */
-  //int  validate;
-
   GraphNodeType type;
 } GraphNode;
 
@@ -136,14 +132,17 @@ typedef struct Router Router;
 
 typedef struct GraphThread
 {
-  /** 1 if main thread. */
-  int                  is_main;
 #ifdef HAVE_JACK
   jack_native_thread_t jthread;
 #endif
   pthread_t            pthread;
 
-  /** Thread ID in zrythm. */
+  /**
+   * Thread index in zrythm.
+   *
+   * The main thread will be -1 and the rest in
+   * sequence starting from 0.
+   */
   int                  id;
 
   /** Pointer back to the graph. */
@@ -171,28 +170,16 @@ typedef struct Graph
 	 * These run concurrently at the start of each
    * cycle to kick off processing */
   GraphNode ** init_trigger_list;
-  int         n_init_triggers;
+  size_t       n_init_triggers;
 
   /* Terminal node reference count. */
   /** Number of graph nodes without an outgoing
    * edge. */
-  gint          terminal_node_count;
-
-  /** Used only when constructing the graph so we
-   * can traverse the graph backwards to calculate
-   * the playback latencies. */
-  GraphNode *   terminal_nodes[20];
+  gint          n_terminal_nodes;
 
   /** Remaining unprocessed terminal nodes in this
    * cycle. */
   volatile gint terminal_refcnt;
-
-  /** Working trigger nodes to be updated while
-   * processing. */
-  //GraphNode ** trigger_queue;
-  //int  n_trigger_queue;
-  /** Max size - preallocated array. */
-  //int  trigger_queue_size;
 
   /** Synchronization with main process callback. */
   ZixSem          callback_start;
@@ -200,10 +187,6 @@ typedef struct Graph
 
   /** Wake up graph node process threads. */
   ZixSem          trigger;
-
-  /* these following are protected by
-   * _trigger_mutex */
-  //pthread_mutex_t trigger_mutex;
 
   /** Queue containing nodes that can be
    * processed. */
@@ -218,6 +201,20 @@ typedef struct Graph
   /** Number of threads waiting for work. */
   volatile guint      idle_thread_cnt;
 
+  /** Chain used to setup in the background.
+	 * This is applied and cleared by graph_rechain()
+	 */
+  GraphNode **         setup_graph_nodes;
+  size_t               num_setup_graph_nodes;
+  GraphNode **         setup_init_trigger_list;
+  size_t               num_setup_init_triggers;
+
+  /** Used only when constructing the graph so we
+   * can traverse the graph backwards to calculate
+   * the playback latencies. */
+  GraphNode **         setup_terminal_nodes;
+  size_t               num_setup_terminal_nodes;
+
   /* ------------------------------------ */
 
   GraphThread          threads[16];
@@ -228,8 +225,7 @@ typedef struct Graph
 
 typedef struct Router
 {
-  Graph * graph1;
-  Graph * graph2;
+  Graph * graph;
 
   /** Number of samples to process in this cycle. */
   nframes_t   nsamples;
@@ -245,22 +241,10 @@ typedef struct Router
   /** Offset in the current cycle. */
   nframes_t   local_offset;
 
-} Router;
+  /** Used when recalculating the graph. */
+  ZixSem               graph_access;
 
-/**
- * Returns a new graph, or NULL if the graph is
- * invalid.
- *
- * Optionally adds a new connection for the given
- * src and dest ports.
- *
- * Should be used every time the graph is changed.
- */
-Graph *
-graph_new (
-  Router * router,
-  const Port *   src,
-  const Port *   dest);
+} Router;
 
 void
 router_init (
@@ -295,6 +279,42 @@ graph_print (
 void
 graph_destroy (
   Graph * graph);
+
+/*
+ * Adds the graph nodes and connections, then
+ * rechains.
+ */
+void
+graph_setup (
+  Graph * self);
+
+/**
+ * Adds a new connection for the given
+ * src and dest ports and validates the graph.
+ *
+ * @return 1 for ok, 0 for invalid.
+ */
+int
+graph_validate (
+  Router *     router,
+  const Port * src,
+  const Port * dest);
+
+/**
+ * Starts as many threads as there are cores.
+ *
+ * @return 1 if graph started, 0 otherwise.
+ */
+int
+graph_start (
+  Graph * graph);
+
+/**
+ * Returns a new graph.
+ */
+Graph *
+graph_new (
+  Router * router);
 
 /**
  * Frees the graph and its members.

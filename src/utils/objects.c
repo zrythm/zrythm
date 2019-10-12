@@ -118,7 +118,7 @@ _free_later (
 void
 object_utils_init ()
 {
-  free_stack = stack_new (800);
+  free_stack = stack_new (8000);
 
-  g_timeout_add (5000, free_later_source, NULL);
+  g_timeout_add (2000, free_later_source, NULL);
 }

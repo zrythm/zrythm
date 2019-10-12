@@ -61,18 +61,20 @@ void
 mixer_recalc_graph (
   Mixer * mixer)
 {
-  if (mixer->router.graph2)
+  Router * router = &mixer->router;
+  if (!router->graph)
     {
-      free_later (
-        mixer->router.graph2, graph_destroy);
+      router_init (router);
+      router->graph =
+        graph_new (router);
+      graph_setup (router->graph);
+      graph_start (router->graph);
+      return;
     }
-  else
-    router_init (&mixer->router);
 
-  /* create the spare graph. this will be copied to
-   * graph1 and used in processing */
-  mixer->router.graph2 =
-    graph_new (&mixer->router, NULL, NULL);
+  zix_sem_wait (&router->graph_access);
+  graph_setup (router->graph);
+  zix_sem_post (&router->graph_access);
 }
 
 void

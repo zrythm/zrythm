@@ -162,6 +162,26 @@
                    size, \
                    (void *) element)
 
+#define array_dynamic_swap(arr1,sz1,arr2,sz2) \
+  _array_dynamic_swap ( \
+    (void ***) arr1, (size_t *) sz1, \
+    (void ***) arr2, (size_t *) sz2)
+
+/**
+ * Swaps the elements of the 2 arrays.
+ *
+ * The arrays must be of pointers.
+ *
+ * @param arr1 Dest array.
+ * @param arr2 Source array.
+ */
+void
+_array_dynamic_swap (
+  void ***  arr1,
+  size_t * sz1,
+  void ***  arr2,
+  size_t * sz2);
+
 static inline int
 array_contains_int (
   int * array,
