@@ -134,8 +134,13 @@ chord_arranger_widget_set_allocation (
       char * chord_str =
         chord_descriptor_to_string (descr);
       int textw, texth;
+      PangoLayout * layout =
+        z_cairo_create_default_pango_layout (
+          widget);
       z_cairo_get_text_extents_for_widget (
-        widget, chord_str, &textw, &texth);
+        widget, layout,
+        chord_str, &textw, &texth);
+      g_object_unref (layout);
       g_free (chord_str);
       allocation->width =
         textw + CHORD_OBJECT_WIDGET_TRIANGLE_W +

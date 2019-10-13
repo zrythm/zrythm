@@ -180,16 +180,18 @@ chord_region_draw_cb (
                 cr, 0, 0, 0, 1);
 
               /* draw name */
+              PangoLayout * layout =
+                z_cairo_create_default_pango_layout (
+                  widget);
               z_cairo_draw_text_full (
-                cr,
-                widget,
+                cr, widget,
+                layout,
                 chord_descriptor_to_string (descr),
                 (int)
                 ((double) x_start *
                   (double) width + 2.0),
-                2,
-                Z_CAIRO_FONT,
-                PANGO_ELLIPSIZE_NONE, -1);
+                2);
+              g_object_unref (layout);
             }
         }
     }

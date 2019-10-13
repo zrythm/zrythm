@@ -146,9 +146,8 @@ draw_cb (
     }
   int we;
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
-  z_cairo_get_text_extents_for_widget_full (
-    GTK_WIDGET (self), str, &we, NULL,
-    Z_CAIRO_FONT, PANGO_ELLIPSIZE_NONE, -1);
+  z_cairo_get_text_extents_for_widget (
+    widget, self->layout, str, &we, NULL);
   if (width < we)
     {
       gtk_widget_set_size_request (
@@ -157,9 +156,9 @@ draw_cb (
         height);
     }
   z_cairo_draw_text_full (
-    cr, widget, str, width / 2 - we / 2,
-    Z_CAIRO_TEXT_PADDING, Z_CAIRO_FONT,
-    PANGO_ELLIPSIZE_NONE, -1);
+    cr, widget, self->layout, str,
+    width / 2 - we / 2,
+    Z_CAIRO_TEXT_PADDING);
 
   if (self->hover)
     {
@@ -262,6 +261,37 @@ drag_end (
   self->start_x = 0;
 }
 
+static void
+recreate_pango_layouts (
+  BarSliderWidget * self)
+{
+  if (PANGO_IS_LAYOUT (self->layout))
+    g_object_unref (self->layout);
+
+  self->layout =
+    z_cairo_create_pango_layout (
+      (GtkWidget *) self, Z_CAIRO_FONT,
+      PANGO_ELLIPSIZE_NONE, -1);
+}
+
+static void
+on_size_allocate (
+  GtkWidget *          widget,
+  GdkRectangle *       allocation,
+  BarSliderWidget * self)
+{
+  recreate_pango_layouts (self);
+}
+
+static void
+on_screen_changed (
+  GtkWidget *          widget,
+  GdkScreen *          previous_screen,
+  BarSliderWidget * self)
+{
+  recreate_pango_layouts (self);
+}
+
 /**
  * Creates a bar slider widget for floats.
  */
@@ -350,6 +380,20 @@ _bar_slider_widget_new (
 }
 
 static void
+finalize (
+  BarSliderWidget * self)
+{
+  if (self->drag)
+    g_object_unref (self->drag);
+  if (self->layout)
+    g_object_unref (self->layout);
+
+  G_OBJECT_CLASS (
+    bar_slider_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
 bar_slider_widget_init (
   BarSliderWidget * self)
 {
@@ -366,18 +410,13 @@ bar_slider_widget_init (
 
   gtk_widget_set_visible (
     GTK_WIDGET (self), 1);
-}
 
-static void
-finalize (
-  BarSliderWidget * self)
-{
-  if (self->drag)
-    g_object_unref (self->drag);
-
-  G_OBJECT_CLASS (
-    bar_slider_widget_parent_class)->
-      finalize (G_OBJECT (self));
+  g_signal_connect (
+    G_OBJECT (self), "screen-changed",
+    G_CALLBACK (on_screen_changed),  self);
+  g_signal_connect (
+    G_OBJECT (self), "size-allocate",
+    G_CALLBACK (on_size_allocate),  self);
 }
 
 static void

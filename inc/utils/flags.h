@@ -88,4 +88,7 @@
 #define F_WITH_LANE 1
 #define F_WITHOUT_LANE 0
 
+#define F_CONNECT 1
+#define F_DISCONNECT 0
+
 #endif

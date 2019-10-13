@@ -192,17 +192,14 @@ draw_cb (
       cairo_set_source_rgba (
         cr, fg.red, fg.green, fg.blue, 1.0);
       int w, h;
-      const char * font = "Arial Bold 9";
-      char * text = g_strdup (plugin->descr->name);
-      z_cairo_get_text_extents_for_widget_full (
-        widget, text, &w, &h, font,
-        PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+      z_cairo_get_text_extents_for_widget (
+        widget, self->pl_name_layout,
+        plugin->descr->name, &w, &h);
       z_cairo_draw_text_full (
-        cr, widget, text, width / 2 - w / 2,
-        height / 2 - h / 2, font,
-        PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
-      if (text != plugin->descr->name)
-        g_free (text);
+        cr, widget, self->pl_name_layout,
+        plugin->descr->name,
+        width / 2 - w / 2,
+        height / 2 - h / 2);
 
       /* update tooltip */
       if (!self->pl_name ||
@@ -220,25 +217,27 @@ draw_cb (
   else
     {
       /* fill background */
-      cairo_set_source_rgba (cr, 0.1, 0.1, 0.1, 1.0);
+      cairo_set_source_rgba (
+        cr, 0.1, 0.1, 0.1, 1.0);
       cairo_move_to (cr, padding, padding);
       cairo_line_to (cr, padding, height - padding);
-      cairo_line_to (cr, width - padding, height - padding);
+      cairo_line_to (
+        cr, width - padding, height - padding);
       cairo_line_to (cr, width - padding, padding);
       cairo_fill(cr);
 
       /* fill text */
-      cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 1.0);
+      cairo_set_source_rgba (
+        cr, 0.3, 0.3, 0.3, 1.0);
       int w, h;
-      const char * font = "Arial Italic 9";
       char * text = _("empty slot");
-      z_cairo_get_text_extents_for_widget_full (
-        widget, text, &w, &h, font,
-        PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+      z_cairo_get_text_extents_for_widget (
+        widget, self->empty_slot_layout, text,
+        &w, &h);
       z_cairo_draw_text_full (
-        cr, widget, text, width / 2 - w / 2,
-        height / 2 - h / 2, font,
-        PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+        cr, widget, self->empty_slot_layout,
+        text, width / 2 - w / 2,
+        height / 2 - h / 2);
 
       /* update tooltip */
       if (self->pl_name)
@@ -633,14 +632,72 @@ on_motion (
   return FALSE;
 }
 
+static void
+recreate_pango_layouts (
+  ChannelSlotWidget * self)
+{
+  if (PANGO_IS_LAYOUT (self->empty_slot_layout))
+    g_object_unref (self->empty_slot_layout);
+  if (PANGO_IS_LAYOUT (self->pl_name_layout))
+    g_object_unref (self->pl_name_layout);
+
+  self->empty_slot_layout =
+    z_cairo_create_pango_layout (
+      (GtkWidget *) self, "Arial Italic 9",
+      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+  self->pl_name_layout =
+    z_cairo_create_pango_layout (
+      (GtkWidget *) self, "Arial Bold 9",
+      PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
+}
+
+static void
+on_size_allocate (
+  GtkWidget *          widget,
+  GdkRectangle *       allocation,
+  ChannelSlotWidget * self)
+{
+  recreate_pango_layouts (self);
+}
+
+static void
+on_screen_changed (
+  GtkWidget *          widget,
+  GdkScreen *          previous_screen,
+  ChannelSlotWidget * self)
+{
+  recreate_pango_layouts (self);
+}
+
+static void
+finalize (
+  ChannelSlotWidget * self)
+{
+  if (self->pl_name)
+    g_free (self->pl_name);
+  if (self->drag)
+    g_object_unref (self->drag);
+  if (self->empty_slot_layout)
+    g_object_unref (self->empty_slot_layout);
+  if (self->pl_name_layout)
+    g_object_unref (self->pl_name_layout);
+
+  G_OBJECT_CLASS (
+    channel_slot_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
 /**
  * Creates a new ChannelSlot widget and binds it to the given value.
  */
 ChannelSlotWidget *
-channel_slot_widget_new (int slot_index,
-                         ChannelWidget * cw)
+channel_slot_widget_new (
+  int slot_index,
+  ChannelWidget * cw)
 {
-  ChannelSlotWidget * self = g_object_new (CHANNEL_SLOT_WIDGET_TYPE, NULL);
+  ChannelSlotWidget * self =
+    g_object_new (
+      CHANNEL_SLOT_WIDGET_TYPE, NULL);
   self->slot_index = slot_index;
   self->channel = cw->channel;
 
@@ -757,4 +814,9 @@ channel_slot_widget_class_init (
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "channel-slot");
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }

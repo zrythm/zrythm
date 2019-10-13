@@ -38,11 +38,13 @@ typedef struct Channel Channel;
 
 typedef struct _ChannelSlotWidget
 {
-  GtkDrawingArea         parent_instance;
-  Channel                * channel; ///< the channel this belongs to
-  int                    slot_index; ///< the channel slot index
-  GtkGestureMultiPress *   multipress;
-  GtkGestureDrag *         drag;
+  GtkDrawingArea       parent_instance;
+  /** The Channel this belongs to. */
+  Channel *            channel;
+  /** The Channel slot index. */
+  int                  slot_index;
+  GtkGestureMultiPress * multipress;
+  GtkGestureDrag *     drag;
 
   /**
    * Previous plugin name at
@@ -50,12 +52,17 @@ typedef struct _ChannelSlotWidget
    *
    * If this changes, the tooltip is changed.
    */
-  char *                  pl_name;
+  char *               pl_name;
 
   /** For multipress. */
-  int                      n_press;
+  int                  n_press;
 
-  GtkGestureMultiPress *   right_mouse_mp;
+  GtkGestureMultiPress * right_mouse_mp;
+
+  /** Layout cache for empty slot. */
+  PangoLayout *        empty_slot_layout;
+  /** Layout cache for plugin name. */
+  PangoLayout *        pl_name_layout;
 } ChannelSlotWidget;
 
 /**

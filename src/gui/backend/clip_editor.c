@@ -22,7 +22,8 @@
  *
  * Piano roll backend.
  *
- * This is meant to be serialized along with each project.
+ * This is meant to be serialized along with each
+ * project.
  */
 
 #include <stdlib.h>
@@ -31,6 +32,7 @@
 #include "gui/backend/clip_editor.h"
 #include "audio/track.h"
 #include "project.h"
+#include "utils/flags.h"
 
 /**
  * Inits the ClipEditor after a Project is loaded.
@@ -54,17 +56,28 @@ clip_editor_set_region (
   ClipEditor * self,
   Region *     region)
 {
+  int recalc_graph = 0;
   if (self->region && self->region->type ==
         REGION_TYPE_MIDI)
-    channel_reattach_midi_editor_manual_press_port (
-      track_get_channel (
-        region_get_track (self->region)),
-      0);
+    {
+      channel_reattach_midi_editor_manual_press_port (
+        track_get_channel (
+          region_get_track (self->region)),
+        F_DISCONNECT, F_NO_RECALC_GRAPH);
+      recalc_graph = 1;
+    }
   if (region->type == REGION_TYPE_MIDI)
-    channel_reattach_midi_editor_manual_press_port (
-      track_get_channel (
-        region_get_track (region)),
-      1);
+    {
+      channel_reattach_midi_editor_manual_press_port (
+        track_get_channel (
+          region_get_track (region)),
+        F_CONNECT, F_NO_RECALC_GRAPH);
+      recalc_graph = 1;
+    }
+
+  if (recalc_graph)
+    mixer_recalc_graph (MIXER);
+
   self->region = region;
 
   if (self->region_name)

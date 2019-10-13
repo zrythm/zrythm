@@ -38,14 +38,25 @@
 
 #include <glib/gi18n-lib.h>
 
-G_DEFINE_TYPE_WITH_PRIVATE (RegionWidget,
-                            region_widget,
-                            GTK_TYPE_BOX)
+G_DEFINE_TYPE_WITH_PRIVATE (
+  RegionWidget,
+  region_widget,
+  GTK_TYPE_BOX)
+
+#define NAME_FONT "Sans SemiBold 9"
+#define NAME_PADDING_R 5
+#define NAME_BOX_HEIGHT 19
+#define NAME_BOX_CURVINESS 4.0
+
+
+/** Background color for the name. */
+static GdkRGBA name_bg_color;
 
 static gboolean
-region_draw_cb (RegionWidget * self,
-                cairo_t *cr,
-                gpointer data)
+region_draw_cb (
+  RegionWidget * self,
+  cairo_t *cr,
+  gpointer data)
 {
   REGION_WIDGET_GET_PRIVATE (data);
   Region * r = rw_prv->region;
@@ -231,85 +242,49 @@ region_widget_draw_name (
     region &&
     region->name);
 
-  int width =
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (self));
-
-  char * str =
-    g_strdup (region->name);
-  char * new_str = str;
+  char str[200];
+  strcpy (str, region->name);
   if (DEBUGGING)
     {
       if (region_is_transient (region))
         {
-          new_str =
-            g_strdup_printf (
-              "%s [t]", str);
-          g_free (str);
-          str = new_str;
+          strcat (str, " [t]");
         }
       if (region_is_lane (region))
         {
-          new_str =
-            g_strdup_printf (
-              "%s [l]", str);
-          g_free (str);
-          str = new_str;
+          strcat (str, " [l]");
         }
     }
 
-#define FONT "Sans SemiBold 9"
-#define PADDING_R 5
-#define HEIGHT 19
-#define CURVINESS 4.0
-
   /* draw dark bg behind text */
-  PangoLayout *layout;
-  PangoFontDescription *desc;
-  /* Create a PangoLayout, set the font and text */
-  layout = pango_cairo_create_layout (cr);
-  pango_layout_set_text (layout, str, -1);
-  desc = pango_font_description_from_string (FONT);
-  pango_layout_set_font_description (layout, desc);
-  pango_font_description_free (desc);
-  pango_layout_set_ellipsize (
-    layout, PANGO_ELLIPSIZE_END);
-  pango_layout_set_width (
-    layout,
-    pango_units_from_double (width - PADDING_R));
+  PangoLayout * layout = rw_prv->layout;
+  pango_layout_set_text (
+    layout, str, -1);
   PangoRectangle pangorect;
   /* get extents */
   pango_layout_get_pixel_extents (
     layout, NULL, &pangorect);
-  GdkRGBA c2;
-  gdk_rgba_parse (&c2, "#323232");
-  cairo_set_source_rgba (
-    cr, c2.red, c2.green, c2.blue, 0.8);
-  double radius = CURVINESS / 1.0;
+  gdk_cairo_set_source_rgba (
+    cr, &name_bg_color);
+  double radius = NAME_BOX_CURVINESS / 1.0;
   double degrees = G_PI / 180.0;
   cairo_new_sub_path (cr);
-  cairo_move_to (cr, pangorect.width + PADDING_R, 0);
+  cairo_move_to (
+    cr, pangorect.width + NAME_PADDING_R, 0);
   cairo_arc (
-    cr, (pangorect.width + PADDING_R) - radius,
-    HEIGHT - radius, radius,
+    cr, (pangorect.width + NAME_PADDING_R) - radius,
+    NAME_BOX_HEIGHT - radius, radius,
     0 * degrees, 90 * degrees);
-  cairo_line_to (cr, 0, HEIGHT);
+  cairo_line_to (cr, 0, NAME_BOX_HEIGHT);
   cairo_line_to (cr, 0, 0);
   cairo_close_path (cr);
   cairo_fill (cr);
-#undef PADDING_R
-#undef HEIGHT
-#undef CURVINESS
-#undef FONT
 
   /* draw text */
   cairo_set_source_rgba (
     cr, 1, 1, 1, 1);
   cairo_translate (cr, 2, 2);
   pango_cairo_show_layout (cr, layout);
-  /* free the layout object */
-  g_object_unref (layout);
-  g_free (str);
 }
 
 static int
@@ -522,6 +497,57 @@ region_widget_get_private (RegionWidget * self)
   return region_widget_get_instance_private (self);
 }
 
+static void
+recreate_pango_layouts (
+  RegionWidget * self,
+  GdkRectangle * allocation)
+{
+  REGION_WIDGET_GET_PRIVATE (self);
+
+  if (PANGO_IS_LAYOUT (rw_prv->layout))
+    g_object_unref (rw_prv->layout);
+
+  GtkWidget * widget = (GtkWidget *) self;
+
+  PangoFontDescription *desc;
+  rw_prv->layout =
+    gtk_widget_create_pango_layout (
+      widget, NULL);
+  desc =
+    pango_font_description_from_string (
+      NAME_FONT);
+  pango_layout_set_font_description (
+    rw_prv->layout, desc);
+  pango_font_description_free (desc);
+  pango_layout_set_ellipsize (
+    rw_prv->layout, PANGO_ELLIPSIZE_END);
+  if (allocation)
+    {
+      pango_layout_set_width (
+        rw_prv->layout,
+        pango_units_from_double (
+          allocation->width - NAME_PADDING_R));
+    }
+}
+
+static void
+on_size_allocate (
+  GtkWidget *    widget,
+  GdkRectangle * allocation,
+  RegionWidget * self)
+{
+  recreate_pango_layouts (self, allocation);
+}
+
+static void
+on_screen_changed (
+  GtkWidget *    widget,
+  GdkScreen *    previous_screen,
+  RegionWidget * self)
+{
+  recreate_pango_layouts (self, NULL);
+}
+
 /**
  * Destroys the widget completely.
  */
@@ -547,12 +573,30 @@ region_widget_delete (RegionWidget *self)
 }
 
 static void
+finalize (
+  RegionWidget * self)
+{
+  REGION_WIDGET_GET_PRIVATE (self);
+
+  if (PANGO_IS_LAYOUT (rw_prv->layout))
+    g_object_unref (rw_prv->layout);
+
+  G_OBJECT_CLASS (
+    region_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
 region_widget_class_init (
   RegionWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "region");
+
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
 
 static void
@@ -561,4 +605,16 @@ region_widget_init (
 {
   gtk_widget_set_visible (GTK_WIDGET (self), 1);
   g_object_ref (self);
+
+  /* this should really be a singleton but ok for
+   * now */
+  gdk_rgba_parse (&name_bg_color, "#323232");
+  name_bg_color.alpha = 0.8;
+
+  g_signal_connect (
+    G_OBJECT (self), "screen-changed",
+    G_CALLBACK (on_screen_changed),  self);
+  g_signal_connect (
+    G_OBJECT (self), "size-allocate",
+    G_CALLBACK (on_size_allocate),  self);
 }

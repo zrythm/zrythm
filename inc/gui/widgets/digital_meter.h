@@ -125,6 +125,11 @@ typedef struct _DigitalMeterWidget
 
   /** Caption to show above, NULL to not show. */
   char *     caption;
+
+  /** Cached layouts for drawing text. */
+  PangoLayout * caption_layout;
+  PangoLayout * seg7_layout;
+  PangoLayout * normal_layout;
 } DigitalMeterWidget;
 
 /**

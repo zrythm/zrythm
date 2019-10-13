@@ -157,7 +157,13 @@ draw_cb (
       ui_get_contrast_text_color (
         &color, &c2);
       gdk_cairo_set_source_rgba (cr, &c2);
-      z_cairo_draw_text (cr, widget, "[t]");
+      PangoLayout * layout =
+        z_cairo_create_default_pango_layout (
+          widget);
+      z_cairo_draw_text (
+        cr, widget,
+        layout, "[t]");
+      g_object_unref (layout);
     }
 
  return FALSE;

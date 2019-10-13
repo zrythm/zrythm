@@ -115,7 +115,7 @@ To run the test suite, use
 
 followed by
 
-    meson test -C build
+    ninja -C build test
 
 To get a coverage report use
 
@@ -129,7 +129,32 @@ or for html output
 
     gcovr -r . --html -o coverage.html
 
-# Translations
+# Profiling
+## gprof
+To profile with gprof,
+use the `enable_profiling` option when running meson,
+then build and run the program normally. The program
+must end gracefully (ie, not Ctrl-C). When the
+program ends, run
+
+    gprof build/src/zrythm > results
+
+and check the results file for the profiling results.
+
+## Callgrind
+Alternatively, you can use callgrind with kcachegrind.
+Build Zrythm normally and then run it through
+callgrind as follows:
+
+    valgrind --tool=callgrind build/src/zrythm
+
+When you are finished, close Zrythm and run
+`kcachegrind` in the same directory to display the
+profiling info in the kcachegrind GUI.
+For more information, see
+https://docs.kde.org/stable5/en/kdesdk/kcachegrind/using-kcachegrind.html and
+
+# Collecting Translations
 To collect all translatable filenames into
 `po/POTFILES`, generate the POT file and update
 the PO files, use
@@ -206,26 +231,16 @@ the GUI thread only.
 ## Submitting Patches
 Please use [Redmine](https://redmine.zrythm.org/projects/zrythm/issues)
 
-# Profiling
-Use the `enable profiling` option when running meson,
-then build and run the program normally. The program
-must end gracefully (ie, not Ctrl-C). When the
-program ends, run
-
-    gprof build/src/zrythm > results
-
-and check the results file for the profiling results.
-
-# Translating
+# Translating Zrythm
 Zrythm is translated on Weblate:
 <https://hosted.weblate.org/engage/zrythm/?utm_source=widget>
 
 Alternatively, you can edit the PO files directly
 and submit a patch.
 
-# Testing
-Test Zrythm and report bugs, ideas and suggestions
-on the issue tracker.
+# Testing and Feedback
+Test Zrythm and report bugs, ideas, feedback and
+suggestions on the issue tracker.
 
 # Troubleshooting
 TODO

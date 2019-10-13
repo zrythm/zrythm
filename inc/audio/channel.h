@@ -479,7 +479,8 @@ channel_get_plugin_index (Channel * channel,
 void
 channel_reattach_midi_editor_manual_press_port (
   Channel * channel,
-  int     connect);
+  int       connect,
+  const int recalc_graph);
 
 /**
  * Convenience method to get the first active plugin in the channel

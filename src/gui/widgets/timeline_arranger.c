@@ -171,8 +171,13 @@ timeline_arranger_widget_set_allocation (
           if (region->type == REGION_TYPE_CHORD)
             {
               int textw, texth;
+              PangoLayout * layout =
+                z_cairo_create_default_pango_layout (
+                  widget);
               z_cairo_get_text_extents_for_widget (
-                widget, "Aa", &textw, &texth);
+                widget, layout,
+                "Aa", &textw, &texth);
+              g_object_unref (layout);
 
               allocation->y = wy;
               /* full height minus the space the
@@ -230,8 +235,13 @@ timeline_arranger_widget_set_allocation (
       char * scale_str =
         musical_scale_to_string (so->scale);
       int textw, texth;
+      PangoLayout * layout =
+        z_cairo_create_default_pango_layout (
+          widget);
       z_cairo_get_text_extents_for_widget (
-        widget, scale_str, &textw, &texth);
+        widget, layout,
+        scale_str, &textw, &texth);
+      g_object_unref (layout);
       g_free (scale_str);
       allocation->width =
         textw + SCALE_OBJECT_WIDGET_TRIANGLE_W +
@@ -262,8 +272,13 @@ timeline_arranger_widget_set_allocation (
         ui_pos_to_px_timeline (
           &mw->marker->pos, 1);
       int textw, texth;
+      PangoLayout * layout =
+        z_cairo_create_default_pango_layout (
+          widget);
       z_cairo_get_text_extents_for_widget (
-        widget, mw->marker->name, &textw, &texth);
+        widget, layout,
+        mw->marker->name, &textw, &texth);
+      g_object_unref (layout);
       allocation->width =
         textw + MARKER_WIDGET_TRIANGLE_W +
         Z_CAIRO_TEXT_PADDING * 2;

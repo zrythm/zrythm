@@ -61,7 +61,12 @@ chord_key_draw_cb (
     chord_descriptor_to_string (self->descr);
   cairo_set_source_rgba (
     cr, 1,1,1,1);
-  z_cairo_draw_text (cr, widget, str);
+  PangoLayout * layout =
+    z_cairo_create_default_pango_layout (
+      widget);
+  z_cairo_draw_text (
+    cr, widget, layout, str);
+  g_object_unref (layout);
   g_free (str);
 
  return FALSE;

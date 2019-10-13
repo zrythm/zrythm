@@ -129,8 +129,8 @@ static void
 finalize (
   RouteTargetSelectorWidget * self)
 {
-  if (self->popover && G_IS_OBJECT (self->popover))
-    g_object_unref (self->popover);
+  /*if (self->popover && G_IS_OBJECT (self->popover))*/
+    /*g_object_unref (self->popover);*/
 
   G_OBJECT_CLASS (
     route_target_selector_widget_parent_class)->

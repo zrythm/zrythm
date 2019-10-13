@@ -45,7 +45,7 @@ typedef struct CairoCaches
    * Icon surface dictionary:
    *   icon name: cairo_surface_t
    */
-  Dictionary * icon_surface_dict;
+  Dictionary *  icon_surface_dict;
 } CairoCaches;
 
 #define CAIRO_CACHES (ZRYTHM->cairo_caches)
@@ -109,27 +109,15 @@ z_cairo_rounded_rectangle (
   cairo_close_path (cr);
 }
 
-/**
- * Gets the width of the given text in pixels
- * for the given widget when z_cairo_draw_text()
- * is used.
- *
- * @param widget The widget to derive a PangoLayout
- *   from.
- * @param text The text to draw.
- * @param width The width to fill in.
- * @param height The height to fill in.
- */
 #define z_cairo_get_text_extents_for_widget( \
-  _widget, _text, _width, _height) \
-  z_cairo_get_text_extents_for_widget_full ( \
-    _widget, _text, _width, _height, Z_CAIRO_FONT, \
-    PANGO_ELLIPSIZE_NONE, -1)
+  _widget,_layout,_text,_width,_height) \
+  _z_cairo_get_text_extents_for_widget ( \
+    (GtkWidget *) _widget, _layout, _text, \
+    _width, _height)
 
 /**
  * Gets the width of the given text in pixels
- * for the given widget when using the given font
- * settings.
+ * for the given widget.
  *
  * @param widget The widget to derive a PangoLayout
  *   from.
@@ -138,14 +126,20 @@ z_cairo_rounded_rectangle (
  * @param height The height to fill in.
  */
 void
-z_cairo_get_text_extents_for_widget_full (
+_z_cairo_get_text_extents_for_widget (
   GtkWidget *  widget,
+  PangoLayout * layout,
   const char * text,
   int *        width,
-  int *        height,
-  const char * font,
-  PangoEllipsizeMode ellipsize_mode,
-  int          ellipsize_padding);
+  int *        height);
+
+/**
+ * Draw text with default padding.
+ */
+#define z_cairo_draw_text(cr,widget,layout,text) \
+  z_cairo_draw_text_full ( \
+    cr, widget, layout, text, Z_CAIRO_TEXT_PADDING, \
+    Z_CAIRO_TEXT_PADDING)
 
 /**
  * Draws the given text using the given font
@@ -153,26 +147,12 @@ z_cairo_get_text_extents_for_widget_full (
  */
 void
 z_cairo_draw_text_full (
-  cairo_t *    cr,
-  GtkWidget *  widget,
-  const char * text,
-  int          start_x,
-  int          start_y,
-  const char * font,
-  PangoEllipsizeMode ellipsize_mode,
-  int          ellipsize_padding);
-
-static inline void
-z_cairo_draw_text (
-  cairo_t *    cr,
-  GtkWidget *  widget,
-  const char * text)
-{
-  z_cairo_draw_text_full (
-    cr, widget, text, Z_CAIRO_TEXT_PADDING,
-    Z_CAIRO_TEXT_PADDING, Z_CAIRO_FONT,
-    PANGO_ELLIPSIZE_NONE, -1);
-}
+  cairo_t *     cr,
+  GtkWidget *   widget,
+  PangoLayout * layout,
+  const char *  text,
+  int           start_x,
+  int           start_y);
 
 /**
  * Draws a diamond shape.
@@ -201,6 +181,24 @@ z_cairo_get_surface_from_icon_name (
   const char * icon_name,
   int          size,
   int          scale);
+
+/**
+ * Creates a PangoLayout to be cached in widgets
+ * based on the given settings.
+ */
+PangoLayout *
+z_cairo_create_pango_layout (
+  GtkWidget *  widget,
+  const char * font,
+  PangoEllipsizeMode ellipsize_mode,
+  int          ellipsize_padding);
+
+/**
+ * Creates a PangoLayout with default settings.
+ */
+PangoLayout *
+z_cairo_create_default_pango_layout (
+  GtkWidget *  widget);
 
 CairoCaches *
 z_cairo_caches_new (void);

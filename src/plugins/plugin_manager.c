@@ -133,15 +133,14 @@ scan_plugins (PluginManager * self)
   LilvWorld * world = LILV_WORLD;
   const LilvPlugins * plugins =
     lilv_world_get_all_plugins (world);
-  /*const LilvPluginClasses * plugin_classes =*/
-                              /*lilv_world_get_plugin_classes (world);*/
   LV2_NODES.lilv_plugins = plugins;
 
 
   /* iterate plugins */
   LILV_FOREACH(plugins, i, plugins)
     {
-      const LilvPlugin* p = lilv_plugins_get(plugins, i);
+      const LilvPlugin* p =
+        lilv_plugins_get (plugins, i);
 
       PluginDescriptor * descriptor =
         lv2_create_descriptor_from_lilv (p);

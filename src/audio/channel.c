@@ -1549,36 +1549,9 @@ channel_get_first_plugin (Channel * channel)
 void
 channel_reattach_midi_editor_manual_press_port (
   Channel * channel,
-  int     connect)
+  int       connect,
+  const int recalc_graph)
 {
-  /* find first plugin */
-  /*Plugin * plugin =*/
-    /*channel_get_first_plugin (channel);*/
-
-  /*if (plugin)*/
-    /*{*/
-      /*if (channel->type == CT_MIDI)*/
-        /*{*/
-          /* Connect/Disconnect MIDI editor manual
-           * press port to the plugin */
-          /*for (int i = 0; i < plugin->num_in_ports; i++)*/
-            /*{*/
-              /*Port * port = plugin->in_ports[i];*/
-              /*if (port->identifier.type == TYPE_EVENT &&*/
-                  /*port->identifier.flow == FLOW_INPUT)*/
-                /*{*/
-                  /*if (connect)*/
-                    /*{*/
-                      /*port_connect (AUDIO_ENGINE->midi_editor_manual_press, port, 1);*/
-                    /*}*/
-                  /*else*/
-                    /*{*/
-                    /*port_disconnect (AUDIO_ENGINE->midi_editor_manual_press, port);*/
-                    /*}*/
-                /*}*/
-            /*}*/
-        /*}*/
-    /*}*/
   if (connect)
     port_connect (
       AUDIO_ENGINE->midi_editor_manual_press,
@@ -1588,7 +1561,8 @@ channel_reattach_midi_editor_manual_press_port (
       AUDIO_ENGINE->midi_editor_manual_press,
       channel->track->processor.midi_in);
 
-  mixer_recalc_graph (MIXER);
+  if (recalc_graph)
+    mixer_recalc_graph (MIXER);
 }
 
 /**

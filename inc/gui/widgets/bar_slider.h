@@ -134,8 +134,10 @@ typedef struct _BarSliderWidget
   /* ----- FOR PORTS ONLY ------- */
   /** Destination index for the destination
    * multipliers of the port. */
-  int                   dest_index;
+  int             dest_index;
 
+  /** Cache layout. */
+  PangoLayout *   layout;
 } BarSliderWidget;
 
 /**

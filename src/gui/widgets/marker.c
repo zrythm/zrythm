@@ -94,8 +94,12 @@ marker_draw_cb (
     color, &c2);
   cairo_set_source_rgba (
     cr, c2.red, c2.green, c2.blue, 1.0);
+  PangoLayout * layout =
+    z_cairo_create_default_pango_layout (
+      widget);
   z_cairo_draw_text (
-    cr, widget, str);
+    cr, widget, layout, str);
+  g_object_unref (layout);
 
  return FALSE;
 }

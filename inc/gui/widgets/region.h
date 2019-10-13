@@ -79,6 +79,9 @@ typedef struct _RegionWidgetPrivate
 
   /** Last hover position. */
   int                hover_x;
+
+  /** Cache layout for drawing the name. */
+  PangoLayout *      layout;
 } RegionWidgetPrivate;
 
 typedef struct _RegionWidgetClass
