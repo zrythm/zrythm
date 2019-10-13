@@ -88,6 +88,13 @@ There is also `G_ENABLE_DIAGNOSTIC=1` to break
 at deprecation warnings for GTK+3 (must all be fixed
 before porting to GTK+4).
 
+## Environment Variables
+In addition to GTK/GLib variables, Zrythm
+understands the following environment variables.
+- `ZRYTHM_DSP_THREADS` - number of threads
+  to use for DSP, including the main one
+- `NO_SCAN_PLUGINS` - disable plugin scanning
+
 ## UI Debugging
 GTK comes with a very powerful tool called
 GTK inspector that can be used to inspect UI widgets

@@ -38,20 +38,6 @@
 #include <gtk/gtk.h>
 
 /**
- * Initializes given position to all 0
- */
-void
-position_init (Position * position)
-{
-  position->bars = 1;
-  position->beats = 1;
-  position->sixteenths = 1;
-  position->ticks = 0;
-  position->total_ticks = 0;
-  position->frames = 0;
-}
-
-/**
  * Converts position bars/beats/quarter beats/ticks to frames
  *
  * Note: transport must be setup by this point.
@@ -97,7 +83,10 @@ cmpfunc (
     (Position const *) a;
   const Position * posb =
     (Position const *) b;
-  return position_compare (posa, posb);
+  return
+    (int)
+    CLAMP (
+      position_compare (posa, posb), -1, 1);
 }
 
 void
@@ -251,23 +240,6 @@ position_set_tick (
 }
 
 /**
- * Sets position to target position
- */
-void
-position_set_to_pos (
-  Position * pos,
-  const Position * target)
-{
-  pos->bars = target->bars;
-  pos->beats = target->beats;
-  pos->sixteenths = target->sixteenths;
-  pos->ticks = target->ticks;
-  pos->total_ticks =
-    position_to_ticks (pos);
-  pos->frames = position_to_frames (pos);
-}
-
-/**
  * Adds the frames to the position and updates
  * the rest of the fields, and makes sure the
  * frames are still accurate.
@@ -300,30 +272,6 @@ position_to_ms (
     (long)
     ((1000.0 * (double) position_to_frames (pos)) /
      ((double) AUDIO_ENGINE->sample_rate));
-}
-
-/**
- * Compares 2 positions.
- *
- * negative = p1 < p2
- * 0 = equal
- * positive = p1 > p2
- */
-inline int
-position_compare (
-  const Position * p1,
-  const Position * p2)
-{
-  /*g_warn_if_reached ();*/
-  long p1_ticks = position_to_ticks (p1);
-  long p2_ticks = position_to_ticks (p2);
-  if (p1_ticks < p2_ticks)
-    return -1;
-  if (p1_ticks == p2_ticks)
-    return 0;
-  if (p1_ticks > p2_ticks)
-    return 1;
-  g_return_val_if_reached (-2);
 }
 
 /**
@@ -362,11 +310,12 @@ get_prev_snap_point (
   for (int i = sg->num_snap_points - 1; i >= 0; i--)
     {
       snap_point = &sg->snap_points[i];
-      if (position_compare (snap_point,
-                            pos) <= 0)
+      if (position_is_before_or_equal (
+            snap_point, pos))
         {
-          position_set_to_pos (prev_snap_point,
-                               snap_point);
+          position_set_to_pos (
+            prev_snap_point,
+            snap_point);
           return;
         }
     }
@@ -552,7 +501,11 @@ position_from_ticks (
   Position * pos,
   long       ticks)
 {
-  g_warn_if_fail (TRANSPORT->lticks_per_bar > 0);
+  g_return_if_fail (
+    TRANSPORT->lticks_per_bar > 0 &&
+    TRANSPORT->lticks_per_beat > 0 &&
+    TICKS_PER_SIXTEENTH_NOTE > 0 &&
+    AUDIO_ENGINE->frames_per_tick > 0);
   pos->total_ticks = ticks;
   if (ticks >= 0)
     {
@@ -590,6 +543,8 @@ position_from_ticks (
       ticks = ticks % TICKS_PER_SIXTEENTH_NOTE;
       pos->ticks = (int) ticks;
     }
+  pos->frames =
+    AUDIO_ENGINE->frames_per_tick * pos->total_ticks;
 }
 
 /**
@@ -630,8 +585,7 @@ position_get_ticks_diff (
     end_pos->total_ticks -
     start_pos->total_ticks;
   int is_negative = ticks_diff < 0;
-  Position diff_pos;
-  position_init (&diff_pos);
+  POSITION_INIT_ON_STACK (diff_pos);
   position_add_ticks (
     &diff_pos, labs (ticks_diff));
   if (sg && SNAP_GRID_ANY_SNAP(sg))

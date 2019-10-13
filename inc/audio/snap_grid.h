@@ -41,8 +41,6 @@
 #define SNAP_GRID_MIDI \
   (&PROJECT->snap_grid_midi)
 
-#define MAX_SNAP_POINTS 120096
-
 typedef enum NoteLength
 {
   NOTE_LENGTH_2_1,
@@ -84,13 +82,15 @@ typedef struct SnapGrid
   int              snap_to_events;
 
   /**
-   * Snap points to be used by the grid and by position
+   * Snap points to be used by the grid and by
+   * position
    * to calculate previous/next snap point.
    *
    * Cache.
    */
-  Position         snap_points[MAX_SNAP_POINTS];
+  Position *       snap_points;
   int              num_snap_points;
+  size_t           snap_points_size;
 } SnapGrid;
 
 static const cyaml_strval_t
@@ -150,14 +150,16 @@ snap_grid_schema = {
 };
 
 void
-snap_grid_init (SnapGrid *   self,
-                NoteLength   note_length);
+snap_grid_init (
+  SnapGrid *   self,
+  NoteLength   note_length);
 
 /**
  * Updates snap points.
  */
 void
-snap_grid_update_snap_points (SnapGrid * self);
+snap_grid_update_snap_points (
+  SnapGrid * self);
 
 /**
  * Sets note length and re-calculates snap points.

@@ -17,45 +17,39 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Zrythm test helper.
- */
+#include "audio/position.h"
 
-#ifndef __TEST_HELPERS_ZRYTHM_H__
-#define __TEST_HELPERS_ZRYTHM_H__
+#include "tests/helpers/zrythm.h"
 
-#include "audio/engine_dummy.h"
-#include "project.h"
-#include "zrythm.h"
-
-#include <glib.h>
-
-/**
- * @addtogroup tests
- *
- * @{
- */
-
-/**
- * To be called by every test's main to initialize
- * Zrythm to default values.
- */
 static void
-test_helper_zrythm_init ()
+test_position_from_ticks ()
 {
-  ZRYTHM = calloc (1, sizeof (Zrythm));
-  ZRYTHM->testing = 1;
-  PROJECT = calloc (1, sizeof (Project));
-  AUDIO_ENGINE->block_length = 256;
+  Position pos = {
+    4, 4, 4, 4, 4, 4
+  };
+  long ticks = 50000;
 
-  transport_init (TRANSPORT, 0);
-  engine_dummy_setup (AUDIO_ENGINE, 0);
+  /* assert values are correct */
+  position_from_ticks (&pos, ticks);
+  g_assert_cmpint (
+    pos.bars, ==,
+    ticks / TRANSPORT->lticks_per_bar + 1);
+  g_assert_cmpint (
+    pos.bars, >, 0);
 }
 
-/**
- * @}
- */
+int
+main (int argc, char *argv[])
+{
+  g_test_init (&argc, &argv, NULL);
 
-#endif
+  test_helper_zrythm_init ();
+
+#define TEST_PREFIX "/audio/position/"
+
+  g_test_add_func (
+    TEST_PREFIX "test position from ticks",
+    (GTestFunc) test_position_from_ticks);
+
+  return g_test_run ();
+}

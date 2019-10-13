@@ -22,6 +22,7 @@
 #include "audio/transport.h"
 #include "project.h"
 #include "utils/algorithms.h"
+#include "utils/arrays.h"
 
 #include <gtk/gtk.h>
 
@@ -165,6 +166,19 @@ snap_grid_get_note_ticks (NoteLength note_length,
   return -1;
 }
 
+static void
+add_snap_point (
+  SnapGrid * self,
+  Position * snap_point)
+{
+  array_double_size_if_full (
+    self->snap_points, self->num_snap_points,
+    self->snap_points_size, Position);
+  position_set_to_pos (
+    &self->snap_points[self->num_snap_points++],
+    snap_point);
+}
+
 /**
  * Updates snap points.
  */
@@ -185,25 +199,28 @@ snap_grid_update_snap_points (SnapGrid * self)
                               self->note_type);
   while (position_is_before (&tmp, &end_pos))
     {
+      g_warn_if_fail (TRANSPORT->lticks_per_bar > 0);
       position_add_ticks (
-        &tmp,
-        ticks);
-      /*position_print_yaml (&tmp);*/
-      position_set_to_pos (
-        &self->snap_points[self->num_snap_points++],
-        &tmp);
+        &tmp, ticks);
+      add_snap_point (
+        self, &tmp);
     }
 }
 
 void
-snap_grid_init (SnapGrid *   self,
-                NoteLength   note_length)
+snap_grid_init (
+  SnapGrid *   self,
+  NoteLength   note_length)
 {
   self->grid_auto = 1;
   self->note_length = note_length;
   self->num_snap_points = 0;
   self->note_type = NOTE_TYPE_NORMAL;
   self->snap_to_grid = 1;
+
+  self->snap_points =
+    calloc (1, sizeof (Position));
+  self->snap_points_size = 1;
 }
 
 static const char *

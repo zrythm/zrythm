@@ -207,9 +207,9 @@ export_audio (
 
       Position prev_playhead_pos;
       /* position to start at */
-      Position start_pos;
+      POSITION_INIT_ON_STACK (start_pos);
       /* position to stop at */
-      Position stop_pos; // position to stop at
+      POSITION_INIT_ON_STACK (stop_pos);
       position_set_to_pos (
         &prev_playhead_pos,
         &TRANSPORT->playhead_pos);

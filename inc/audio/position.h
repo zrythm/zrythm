@@ -36,10 +36,10 @@
 
 #define TICKS_PER_QUARTER_NOTE 960
 #define TICKS_PER_SIXTEENTH_NOTE 240
-#define position_add_ticks(position, _ticks) \
+#define position_add_ticks(_pos, _ticks) \
   position_from_ticks ( \
-    position, \
-    (position)->total_ticks + _ticks)
+    (_pos), \
+    (_pos)->total_ticks + _ticks)
 #define position_add_sixteenths(position, _s) \
   position_set_sixteenth (position, \
                      (position)->sixteenths + _s)
@@ -55,6 +55,16 @@
                  0, \
                  0, \
                  sg)
+
+/**
+ * Compares 2 positions based on their frames.
+ *
+ * negative = p1 is earlier
+ * 0 = equal
+ * positive = p2 is earlier
+ */
+#define position_compare(p1,p2) \
+  ((p1)->frames - (p2)->frames)
 
 /** Checks if _pos is before _cmp. */
 #define position_is_before(_pos,_cmp) \
@@ -92,6 +102,25 @@
     .total_ticks = 0, \
     .frames = 0 }; \
   static const Position * START_POS = &__start_pos;
+
+/** Inits the default position on the stack. */
+#define POSITION_INIT_ON_STACK(name) \
+  Position name = { \
+    .bars = 1, \
+    .beats = 1, \
+    .sixteenths = 1, \
+    .ticks = 0, \
+    .total_ticks = 0, \
+    .frames = 0, \
+  }
+
+/**
+ * Initializes given position.
+ *
+ * Assumes the given argument is a Pointer *.
+ */
+#define position_init(__pos) \
+  *(__pos) = POSITION_START_POS
 
 /**
  * Moves the Position of an object only has a
@@ -233,10 +262,19 @@ static const cyaml_schema_value_t
 };
 
 /**
- * Initializes given position to all 0
+ * Default start position to be used for setting
+ * structs equal
+ * (i.e., new_pos = POSITION_START_POS),
+ * and calculations.
  */
-void
-position_init (Position * position);
+static const Position POSITION_START_POS = {
+  .bars = 1,
+  .beats = 1,
+  .sixteenths = 1,
+  .ticks = 0,
+  .total_ticks = 0,
+  .frames = 0
+};
 
 /**
  * Sets position to given bar
@@ -284,11 +322,11 @@ position_sort_array (
 
 /**
  * Sets position to target position
+ *
+ * Assumes each position is Position *.
  */
-void
-position_set_to_pos (
-  Position * position,
-  const Position * target);
+#define position_set_to_pos(_pos,_target) \
+  *(_pos) = *(_target)
 
 /**
  * Adds the frames to the position and updates
@@ -330,18 +368,6 @@ position_from_frames (
 long
 position_to_ms (
   const Position * pos);
-
-/**
- * Compares 2 positions.
- *
- * negative = p1 is earlier
- * 0 = equal
- * positive = p2 is earlier
- */
-int
-position_compare (
-  const Position * p1,
-  const Position * p2);
 
 long
 position_to_ticks (

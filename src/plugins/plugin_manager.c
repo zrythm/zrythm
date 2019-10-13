@@ -127,8 +127,10 @@ static int sort_plugin_func (
 static void
 scan_plugins (PluginManager * self)
 {
-  return;
   g_message ("scanning plugins...");
+
+  if (getenv ("NO_SCAN_PLUGINS"))
+    return;
 
   /* load all plugins with lilv */
   LilvWorld * world = LILV_WORLD;

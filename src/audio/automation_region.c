@@ -38,7 +38,7 @@ cmpfunc (const void * _a, const void * _b)
     *(AutomationPoint * const *) _a;
   AutomationPoint * b =
     *(AutomationPoint * const *)_b;
-  int ret =
+  long ret =
     position_compare (
       &a->pos, &b->pos);
   if (ret == 0 &&
@@ -48,7 +48,7 @@ cmpfunc (const void * _a, const void * _b)
       return -1;
     }
 
-  return ret;
+  return (int) CLAMP (ret, -1, 1);
 }
 
 static int
@@ -58,8 +58,9 @@ cmpfunc_curve (const void * _a, const void * _b)
     *(AutomationCurve * const *)_a;
   AutomationCurve * b =
     *(AutomationCurve * const *)_b;
-  int ret = position_compare (
-    &a->pos, &b->pos);
+  long ret =
+    position_compare (
+      &a->pos, &b->pos);
   if (ret == 0 &&
       a->index <
       b->index)
@@ -67,7 +68,7 @@ cmpfunc_curve (const void * _a, const void * _b)
       return -1;
     }
 
-  return ret;
+  return (int) CLAMP (ret, -1, 1);
 }
 
 Region *

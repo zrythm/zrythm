@@ -43,9 +43,9 @@
 #include "utils/cairo.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (MidiNoteWidget,
-               midi_note_widget,
-               GTK_TYPE_BOX)
+G_DEFINE_TYPE (
+  MidiNoteWidget, midi_note_widget,
+  GTK_TYPE_BOX)
 
 /**
  * Space on the edges to show resize cursors

@@ -33,6 +33,7 @@ if get_option ('enable_tests')
     'audio/automation_track',
     'audio/midi_note',
     'audio/midi_track',
+    'audio/position',
     'audio/region',
     'audio/track',
     'utils/arrays',

@@ -1333,7 +1333,7 @@ timeline_arranger_widget_select (
   GtkWidget *  sc##_widgets[800]; \
   int          num_##sc##_widgets = 0; \
   arranger_widget_get_hit_widgets_in_range ( \
-    Z_ARRANGER_WIDGET (self), \
+    (ArrangerWidget *) (self), \
     caps##_WIDGET_TYPE, \
     ar_prv->start_x, \
     ar_prv->start_y, \
@@ -1347,7 +1347,7 @@ timeline_arranger_widget_select (
   for (i = 0; i < num_region_widgets; i++)
     {
       region_widget =
-        Z_REGION_WIDGET (region_widgets[i]);
+        (RegionWidget *) (region_widgets[i]);
       REGION_WIDGET_GET_PRIVATE (region_widget);
 
       region =

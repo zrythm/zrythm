@@ -25,8 +25,6 @@
 
 #include "tests/helpers/zrythm.h"
 
-#include <glib.h>
-
 typedef struct
 {
   Region * midi_region;

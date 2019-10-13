@@ -573,7 +573,7 @@ musical_scale_strcpy (
   MusicalScale * scale,
   char *         buf)
 {
-#define RETURN_SCALE_STR(uppercase,str) \
+#define SET_SCALE_STR(uppercase,str) \
   case SCALE_##uppercase: \
     sprintf ( \
       buf, "%s %s", \
@@ -584,13 +584,13 @@ musical_scale_strcpy (
 
   switch (scale->type)
     {
-      RETURN_SCALE_STR (
+      SET_SCALE_STR (
         CHROMATIC, "Chromatic");
-      RETURN_SCALE_STR (
+      SET_SCALE_STR (
         IONIAN, "Ionian (Major)");
-      RETURN_SCALE_STR (
+      SET_SCALE_STR (
         AEOLIAN, "Aeolian (Natural Minor)");
-      RETURN_SCALE_STR (
+      SET_SCALE_STR (
         HARMONIC_MINOR, "Harmonic Minor");
     default:
       /* TODO */

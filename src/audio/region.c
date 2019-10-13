@@ -1227,12 +1227,12 @@ region_at_position (
           region = midi_regions[i];
         }
 
-      g_warn_if_fail (region);
+      g_return_val_if_fail (region, NULL);
 
-      if (position_compare (pos,
-                            &region->start_pos) >= 0 &&
-          position_compare (pos,
-                            &region->end_pos) <= 0)
+      if (position_is_after_or_equal (
+            pos, &region->start_pos) &&
+          position_is_before_or_equal (
+            pos, &region->end_pos))
         {
           return region;
         }
@@ -1328,8 +1328,8 @@ region_get_num_loops (
   long full_size =
     region_get_full_length_in_frames (region);
   long loop_start =
-    position_to_frames (&region->loop_start_pos) -
-    position_to_frames (&region->clip_start_pos);
+    region->loop_start_pos.frames -
+    region->clip_start_pos.frames;
   long curr_ticks = loop_start;
 
   while (curr_ticks < full_size)

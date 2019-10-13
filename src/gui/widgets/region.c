@@ -123,13 +123,14 @@ region_draw_cb (
 
   Position tmp;
   long loop_start_ticks =
-    position_to_ticks (&r->loop_start_pos);
+    r->loop_start_pos.total_ticks;
   long loop_end_ticks =
-    position_to_ticks (&r->loop_end_pos);
+    r->loop_end_pos.total_ticks;
+  g_warn_if_fail (loop_end_ticks > loop_start_ticks);
   long loop_ticks =
     region_get_loop_length_in_ticks (r);
   long clip_start_ticks =
-    position_to_ticks (&r->clip_start_pos);
+    r->clip_start_pos.total_ticks;
 
   position_from_ticks (
     &tmp, loop_start_ticks - clip_start_ticks);
