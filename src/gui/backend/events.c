@@ -57,6 +57,7 @@
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/marker.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/editor_ruler.h"
@@ -1102,6 +1103,10 @@ events_process (void * data)
           g_message ("doing");
           top_bar_widget_refresh (
             TOP_BAR);
+          break;
+        case ET_MARKER_NAME_CHANGED:
+          marker_widget_recreate_pango_layouts (
+            (MarkerWidget *) ev->arg);
           break;
         default:
           g_message (

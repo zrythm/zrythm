@@ -127,6 +127,7 @@ static int sort_plugin_func (
 static void
 scan_plugins (PluginManager * self)
 {
+  return;
   g_message ("scanning plugins...");
 
   /* load all plugins with lilv */

@@ -358,6 +358,15 @@ musical_scale_to_string (
   MusicalScale * scale);
 
 /**
+ * Same as above but uses a buffer instead of
+ * allocating.
+ */
+void
+musical_scale_strcpy (
+  MusicalScale * scale,
+  char *         buf);
+
+/**
  * Returns 1 if the scales are equal.
  */
 static inline int

@@ -94,12 +94,8 @@ marker_draw_cb (
     color, &c2);
   cairo_set_source_rgba (
     cr, c2.red, c2.green, c2.blue, 1.0);
-  PangoLayout * layout =
-    z_cairo_create_default_pango_layout (
-      widget);
   z_cairo_draw_text (
-    cr, widget, layout, str);
-  g_object_unref (layout);
+    cr, widget, self->layout, str);
 
  return FALSE;
 }
@@ -150,7 +146,51 @@ marker_widget_new (Marker * marker)
 
   self->marker = marker;
 
+  marker_widget_recreate_pango_layouts (self);
+
   return self;
+}
+
+void
+marker_widget_recreate_pango_layouts (
+  MarkerWidget * self)
+{
+  if (PANGO_IS_LAYOUT (self->layout))
+    g_object_unref (self->layout);
+
+  g_return_if_fail (
+    self->marker && self->marker->name);
+
+  self->layout =
+    z_cairo_create_default_pango_layout (
+      (GtkWidget *) self);
+  z_cairo_get_text_extents_for_widget (
+    (GtkWidget *) self, self->layout,
+    self->marker->name, &self->textw, &self->texth);
+}
+
+
+static void
+on_screen_changed (
+  GtkWidget *          widget,
+  GdkScreen *          previous_screen,
+  MarkerWidget * self)
+{
+  marker_widget_recreate_pango_layouts (self);
+}
+
+static void
+finalize (
+  MarkerWidget * self)
+{
+  if (self->layout)
+    g_object_unref (self->layout);
+  if (self->mp)
+    g_object_unref (self->mp);
+
+  G_OBJECT_CLASS (
+    marker_widget_parent_class)->
+      finalize (G_OBJECT (self));
 }
 
 static void
@@ -160,6 +200,11 @@ marker_widget_class_init (MarkerWidgetClass * _klass)
     GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "marker");
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
 
 static void
@@ -205,6 +250,9 @@ marker_widget_init (MarkerWidget * self)
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",
     G_CALLBACK (on_press), self);
+  g_signal_connect (
+    G_OBJECT (self), "screen-changed",
+    G_CALLBACK (on_screen_changed),  self);
 
   g_object_ref (self);
 }

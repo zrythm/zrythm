@@ -117,7 +117,7 @@ marker_set_name (
 
       c->name = g_strdup (name);
     }
-
+  EVENTS_PUSH (ET_MARKER_NAME_CHANGED, marker);
 }
 
 /**

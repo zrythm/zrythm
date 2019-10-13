@@ -109,6 +109,10 @@ typedef struct _TimelineArrangerWidget
    * so range1 can be set.
    */
   int                  resizing_range_start;
+
+  /** Cache for chord object height, used during
+   * child size allocation. */
+  int                  chord_obj_height;
 } TimelineArrangerWidget;
 
 ARRANGER_W_DECLARE_FUNCS (

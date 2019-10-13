@@ -170,14 +170,18 @@ timeline_arranger_widget_set_allocation (
 
           if (region->type == REGION_TYPE_CHORD)
             {
-              int textw, texth;
-              PangoLayout * layout =
-                z_cairo_create_default_pango_layout (
-                  widget);
-              z_cairo_get_text_extents_for_widget (
-                widget, layout,
-                "Aa", &textw, &texth);
-              g_object_unref (layout);
+              if (!self->chord_obj_height)
+                {
+                  int textw, texth;
+                  PangoLayout * layout =
+                    z_cairo_create_default_pango_layout (
+                      widget);
+                  z_cairo_get_text_extents_for_widget (
+                    widget, layout,
+                    "Aa", &textw, &texth);
+                  g_object_unref (layout);
+                  self->chord_obj_height = texth;
+                }
 
               allocation->y = wy;
               /* full height minus the space the
@@ -186,7 +190,8 @@ timeline_arranger_widget_set_allocation (
               allocation->height =
                 gtk_widget_get_allocated_height (
                   GTK_WIDGET (tw_prv->top_grid)) -
-                (texth + Z_CAIRO_TEXT_PADDING * 4);
+                (self->chord_obj_height +
+                   Z_CAIRO_TEXT_PADDING * 4);
 
             }
           else if (region->type ==
@@ -218,9 +223,9 @@ timeline_arranger_widget_set_allocation (
     }
   else if (Z_IS_SCALE_OBJECT_WIDGET (widget))
     {
-      ScaleObjectWidget * cw =
+      ScaleObjectWidget * sw =
         (ScaleObjectWidget *) (widget);
-      ScaleObject * so = cw->scale_object;
+      ScaleObject * so = sw->scale_object;
       Track * track = P_CHORD_TRACK;
 
       gint wx, wy;
@@ -232,26 +237,15 @@ timeline_arranger_widget_set_allocation (
       allocation->x =
         ui_pos_to_px_timeline (
           &so->pos, 1);
-      char * scale_str =
-        musical_scale_to_string (so->scale);
-      int textw, texth;
-      PangoLayout * layout =
-        z_cairo_create_default_pango_layout (
-          widget);
-      z_cairo_get_text_extents_for_widget (
-        widget, layout,
-        scale_str, &textw, &texth);
-      g_object_unref (layout);
-      g_free (scale_str);
       allocation->width =
-        textw + SCALE_OBJECT_WIDGET_TRIANGLE_W +
+        sw->textw + SCALE_OBJECT_WIDGET_TRIANGLE_W +
         Z_CAIRO_TEXT_PADDING * 2;
 
       int track_height =
         gtk_widget_get_allocated_height (
           (GtkWidget *) (track->widget));
       int obj_height =
-        texth + Z_CAIRO_TEXT_PADDING * 2;
+        sw->texth + Z_CAIRO_TEXT_PADDING * 2;
       allocation->y =
         (wy + track_height) - obj_height;
       allocation->height = obj_height;
@@ -271,23 +265,15 @@ timeline_arranger_widget_set_allocation (
       allocation->x =
         ui_pos_to_px_timeline (
           &mw->marker->pos, 1);
-      int textw, texth;
-      PangoLayout * layout =
-        z_cairo_create_default_pango_layout (
-          widget);
-      z_cairo_get_text_extents_for_widget (
-        widget, layout,
-        mw->marker->name, &textw, &texth);
-      g_object_unref (layout);
       allocation->width =
-        textw + MARKER_WIDGET_TRIANGLE_W +
+        mw->textw + MARKER_WIDGET_TRIANGLE_W +
         Z_CAIRO_TEXT_PADDING * 2;
 
       int track_height =
         gtk_widget_get_allocated_height (
           GTK_WIDGET (track->widget));
       int obj_height =
-        texth + Z_CAIRO_TEXT_PADDING * 2;
+        mw->texth + Z_CAIRO_TEXT_PADDING * 2;
       allocation->y =
         (wy + track_height) - obj_height;
       allocation->height = obj_height;

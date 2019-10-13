@@ -155,6 +155,17 @@ scale_object_widget_new (ScaleObject * scale)
 
   self->scale_object = scale;
 
+  char scale_str[100];
+  musical_scale_strcpy (
+    scale->scale, scale_str);
+  PangoLayout * layout =
+    z_cairo_create_default_pango_layout (
+      (GtkWidget *) self);
+  z_cairo_get_text_extents_for_widget (
+    (GtkWidget *) self, layout,
+    scale_str, &self->textw, &self->texth);
+  g_object_unref (layout);
+
   return self;
 }
 

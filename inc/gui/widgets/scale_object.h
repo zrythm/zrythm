@@ -57,6 +57,14 @@ typedef struct _ScaleObjectWidget
 
   /** For double click. */
   GtkGestureMultiPress * mp;
+
+  /** Cache pango layout TODO. */
+  PangoLayout *    layout;
+
+  /** Cache text H extents and W extents for
+   * the widget. */
+  int              textw;
+  int              texth;
 } ScaleObjectWidget;
 
 /**

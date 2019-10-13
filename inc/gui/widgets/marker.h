@@ -57,6 +57,13 @@ typedef struct _MarkerWidget
 
   /** For double click. */
   GtkGestureMultiPress * mp;
+
+  PangoLayout *    layout;
+
+  /** Cache text H extents and W extents for
+   * the widget. */
+  int              textw;
+  int              texth;
 } MarkerWidget;
 
 /**
@@ -65,6 +72,10 @@ typedef struct _MarkerWidget
 MarkerWidget *
 marker_widget_new (
   Marker * marker);
+
+void
+marker_widget_recreate_pango_layouts (
+  MarkerWidget * self);
 
 /**
  * @}
