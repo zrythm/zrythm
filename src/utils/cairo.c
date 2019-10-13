@@ -172,8 +172,6 @@ z_cairo_draw_text_full (
 
 /**
  * Returns a surface for the icon name.
- *
- * FIXME create a cache.
  */
 cairo_surface_t *
 z_cairo_get_surface_from_icon_name (

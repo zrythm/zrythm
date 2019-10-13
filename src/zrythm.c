@@ -54,46 +54,21 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (ZrythmApp,
-               zrythm_app,
-               GTK_TYPE_APPLICATION);
-
-typedef struct UpdateSplashData
-{
-  const char * message;
-  gdouble progress;
-} UpdateSplashData;
-
-typedef enum TaskId
-{
-  TASK_START,
-  TASK_INIT_SETTINGS,
-  TASK_INIT_AUDIO_ENGINE,
-  TASK_INIT_PLUGIN_MANAGER,
-  TASK_END
-} TaskId;
+G_DEFINE_TYPE (
+  ZrythmApp, zrythm_app,
+  GTK_TYPE_APPLICATION);
 
 static SplashWindowWidget * splash;
 static GApplication * app;
 static FirstRunAssistantWidget * first_run_assistant;
 static ProjectAssistantWidget * assistant;
-static TaskId * task_id; ///< current task;
-static UpdateSplashData * data;
 
-static int
-update_splash (
-  UpdateSplashData * _data)
-{
-  /* sometimes this gets called after the splash window
-   * gets deleted so added for safety */
-  if (!first_run_assistant &&
-      splash && GTK_IS_WIDGET (splash))
-    {
-      splash_widget_update (
-        splash, data->message, data->progress);
-    }
-  return G_SOURCE_REMOVE;
-}
+#define SET_PROG(txt,num) \
+  g_message (txt); \
+  strcpy ( \
+    ZRYTHM->status, \
+    txt); \
+  ZRYTHM->progress = num
 
 /**
  * Gets the zrythm directory (by default
@@ -126,21 +101,18 @@ init_dirs_and_files ()
   io_mkdir (ZRYTHM->zrythm_dir);
 
   ZRYTHM->projects_dir =
-    g_build_filename (ZRYTHM->zrythm_dir,
-                      "Projects",
-                      NULL);
+    g_build_filename (
+      ZRYTHM->zrythm_dir, "Projects", NULL);
   io_mkdir (ZRYTHM->projects_dir);
 
   ZRYTHM->templates_dir =
-    g_build_filename (ZRYTHM->zrythm_dir,
-                      "Templates",
-                      NULL);
+    g_build_filename (
+      ZRYTHM->zrythm_dir, "Templates", NULL);
   io_mkdir (ZRYTHM->templates_dir);
 
   ZRYTHM->log_dir =
-    g_build_filename (ZRYTHM->zrythm_dir,
-                      "log",
-                      NULL);
+    g_build_filename (
+      ZRYTHM->zrythm_dir, "log", NULL);
   io_mkdir (ZRYTHM->log_dir);
 }
 
@@ -274,84 +246,6 @@ zrythm_remove_recent_project (
 
 }
 
-static void
-task_func (
-  GTask *task,
-  gpointer source_object,
-  gpointer task_data,
-  GCancellable *cancellable)
-{
-  /* sleep to give the splash screen time to open.
-   * for some reason it delays if no sleep */
-  g_usleep (10000);
-
-  switch (*task_id)
-    {
-    case TASK_START:
-      data->message =
-        _("Initializing settings");
-      data->progress = 0.3;
-      break;
-    case TASK_INIT_SETTINGS:
-      ZRYTHM->symap = symap_new ();
-      CAIRO_CACHES = z_cairo_caches_new ();
-      settings_init (&ZRYTHM->settings);
-      ZRYTHM->debug =
-        g_settings_get_int (
-          S_GENERAL,
-          "debug");
-      data->message =
-        _("Initializing audio engine");
-      data->progress = 0.4;
-      break;
-    case TASK_INIT_AUDIO_ENGINE:
-      data->message =
-        _("Initializing plugin manager");
-      data->progress = 0.6;
-      break;
-    case TASK_INIT_PLUGIN_MANAGER:
-      plugin_manager_init (&ZRYTHM->plugin_manager);
-      data->message =
-        _("Setting up backend");
-      data->progress = 0.7;
-      break;
-    case TASK_END:
-      plugin_manager_scan_plugins (
-        &ZRYTHM->plugin_manager);
-      data->message =
-        _("Loading project");
-      data->progress = 0.8;
-      break;
-    }
-}
-
-static void
-task_completed_cb (GObject *source_object,
-                        GAsyncResult *res,
-                        gpointer user_data)
-{
-  g_idle_add ((GSourceFunc) update_splash, data);
-  if (*task_id == TASK_END)
-    {
-      g_action_group_activate_action (
-        G_ACTION_GROUP (zrythm_app),
-        "prompt_for_project",
-        NULL);
-    }
-  else
-    {
-      (*task_id)++;
-      GTask * task = g_task_new (zrythm_app,
-                                 NULL,
-                                 task_completed_cb,
-                                 (gpointer) task_id);
-      g_task_set_task_data (task,
-                            (gpointer) task_id,
-                            NULL);
-      g_task_run_in_thread (task, task_func);
-    }
-}
-
 /**
  * Called after the main window and the project have been
  * initialized. Sets up the window using the backend.
@@ -364,7 +258,9 @@ on_setup_main_window (
   GVariant *parameter,
   gpointer  user_data)
 {
-  g_message ("setup main window");
+  SET_PROG (
+    _("Setting up main window"),
+    0.98);
 
   ZRYTHM->event_queue =
     events_init ();
@@ -385,7 +281,7 @@ on_setup_main_window (
         NULL);
     }
 
-  free (data);
+  gtk_widget_destroy (GTK_WIDGET (splash));
 }
 
 /**
@@ -399,7 +295,9 @@ static void on_load_project (GSimpleAction  *action,
                              GVariant *parameter,
                              gpointer  user_data)
 {
-  g_message ("load_project");
+  SET_PROG (
+    _("Loading project"),
+    0.8);
 
   project_load (
     ZRYTHM->open_filename,
@@ -424,9 +322,10 @@ static void on_init_main_window (
   void *          user_data)
 {
   ZrythmApp * _app = (ZrythmApp *) user_data;
-  g_message ("init main window");
 
-  gtk_widget_destroy (GTK_WIDGET (splash));
+  SET_PROG (
+    _("Initializing main window"),
+    0.8);
 
   ZRYTHM->main_window =
     main_window_widget_new (_app);
@@ -435,6 +334,43 @@ static void on_init_main_window (
     G_ACTION_GROUP (_app),
     "load_project",
     NULL);
+}
+
+static void *
+init_thread (
+  gpointer data)
+{
+  SET_PROG (
+    _("Initializing symap"),
+    0.0);
+  ZRYTHM->symap = symap_new ();
+  SET_PROG (
+    _("Initializing cairo caches"),
+    0.05);
+  CAIRO_CACHES = z_cairo_caches_new ();
+  SET_PROG (
+    _("Initializing settings"),
+    0.1);
+  settings_init (&ZRYTHM->settings);
+  ZRYTHM->debug =
+    g_settings_get_int (
+      S_GENERAL, "debug");
+  SET_PROG (
+    _("Initializing plugin manager"),
+    0.2);
+  plugin_manager_init (&ZRYTHM->plugin_manager);
+  SET_PROG (
+    _("Scanning plugins"),
+    0.4);
+  plugin_manager_scan_plugins (
+    &ZRYTHM->plugin_manager);
+
+  g_action_group_activate_action (
+    G_ACTION_GROUP (zrythm_app),
+    "prompt_for_project",
+    NULL);
+
+  return NULL;
 }
 
 static void
@@ -507,10 +443,6 @@ on_finish (GtkAssistant * _assistant,
     {
       gtk_widget_set_visible (
         GTK_WIDGET (assistant), 0);
-      data->message =
-        "Finishing";
-      data->progress = 1.0;
-      update_splash (data);
       g_action_group_activate_action (
         G_ACTION_GROUP (zrythm_app),
         "init_main_window",
@@ -620,13 +552,22 @@ static void on_prompt_for_project (
         }
 
       /* init zrythm folders ~/Zrythm */
+      SET_PROG (
+        _("Initializing Zrythm directories"),
+        0.7);
       init_dirs_and_files ();
       init_recent_projects ();
       init_templates ();
 
       /* init log */
-      g_message ("Initing log...");
+      SET_PROG (
+        _("Initializing logging system"),
+        0.75);
       log_init ();
+
+      SET_PROG (
+        _("Waiting for project"),
+        0.8);
 
       /* show the assistant */
       assistant =
@@ -638,9 +579,6 @@ static void on_prompt_for_project (
       g_signal_connect (
         G_OBJECT (assistant), "cancel",
         G_CALLBACK (on_finish), (void *) 1);
-      /*g_idle_add (*/
-        /*(GSourceFunc) gtk_window_present,*/
-        /*GTK_WINDOW (assistant));*/
       gtk_window_present (GTK_WINDOW (assistant));
 
 #ifdef __APPLE__
@@ -682,8 +620,8 @@ zrythm_get_version (
 }
 
 /*
- * Called after startup if no filename is passed on command
- * line.
+ * Called after startup if no filename is passed on
+ * command line.
  */
 static void
 zrythm_app_activate (GApplication * _app)
@@ -722,9 +660,11 @@ zrythm_app_startup (
   GApplication* _app)
 {
   g_message ("startup");
-  G_APPLICATION_CLASS (zrythm_app_parent_class)->
-    startup (_app);
-  g_message ("called startup on G_APPLICATION_CLASS");
+  G_APPLICATION_CLASS (
+    zrythm_app_parent_class)->
+      startup (_app);
+  g_message (
+    "called startup on G_APPLICATION_CLASS");
 
   app = _app;
 
@@ -786,18 +726,12 @@ zrythm_app_startup (
     GTK_WINDOW (splash));
   g_message ("presented splash widget");
 
-  /* start initialization task */
-  task_id = calloc (1, sizeof (TaskId));
-  *task_id = TASK_START;
-  data = calloc (1, sizeof (UpdateSplashData));
-  GTask * task = g_task_new (app,
-                             NULL,
-                             task_completed_cb,
-                             (gpointer) task_id);
-  g_task_set_task_data (task,
-                        (gpointer) task_id,
-                        NULL);
-  g_task_run_in_thread (task, task_func);
+  /* start initialization in another thread */
+  ZRYTHM->init_thread =
+    g_thread_new (
+      "init_thread",
+      (GThreadFunc) init_thread,
+      ZRYTHM);
 
   /* install accelerators for each action */
   accel_install_primary_action_accelerator (

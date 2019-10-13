@@ -157,6 +157,20 @@ typedef struct Zrythm
    * This is set by the TESTING environment variable.
    */
   int                     testing;
+
+  /** Initialization thread. */
+  GThread *               init_thread;
+
+  /** Status text to be used in the splash screen. */
+  char                    status[200];
+
+  /**
+   * Progress done (0.0 ~ 1.0).
+   *
+   * To be used in things like the splash screen,
+   * loading projects, etc.
+   */
+  double                  progress;
 } Zrythm;
 
 /**

@@ -27,6 +27,35 @@ G_DEFINE_TYPE (
   splash_window_widget,
   GTK_TYPE_WINDOW)
 
+static gboolean
+splash_tick_cb (
+  GtkWidget *widget,
+  GdkFrameClock *frame_clock,
+  SplashWindowWidget * self)
+{
+  gtk_label_set_text (
+    self->label, ZRYTHM->status);
+  gtk_progress_bar_set_fraction (
+    self->progress_bar, ZRYTHM->progress);
+
+  return G_SOURCE_CONTINUE;
+}
+
+static void
+finalize (
+  SplashWindowWidget * self)
+{
+  if (ZRYTHM->init_thread)
+    {
+      g_thread_join (ZRYTHM->init_thread);
+      ZRYTHM->init_thread = NULL;
+    }
+
+  G_OBJECT_CLASS (
+    splash_window_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
 SplashWindowWidget *
 splash_window_widget_new (
   ZrythmApp * app)
@@ -37,21 +66,18 @@ splash_window_widget_new (
       "application", G_APPLICATION (app),
       "title", "Zrythm",
       NULL);
+  g_return_val_if_fail (
+    Z_IS_SPLASH_WINDOW_WIDGET (self), NULL);
+
   gtk_progress_bar_set_fraction (
     self->progress_bar, 0.0);
 
-  return self;
-}
+  gtk_widget_add_tick_callback (
+    (GtkWidget *) self,
+    (GtkTickCallback) splash_tick_cb,
+    self, NULL);
 
-void
-splash_widget_update (SplashWindowWidget * self,
-                      const char         * message,
-                      gdouble            progress)
-{
-  gtk_label_set_text (
-    self->label, message);
-  gtk_progress_bar_set_fraction (
-    self->progress_bar, progress);
+  return self;
 }
 
 static void
@@ -70,6 +96,11 @@ splash_window_widget_class_init (
     klass,
     SplashWindowWidget,
     progress_bar);
+
+  GObjectClass * oklass =
+    G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
 
 static void

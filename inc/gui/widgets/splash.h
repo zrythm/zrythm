@@ -34,21 +34,16 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _SplashWindowWidget
 {
-  GtkWindow     parent_instance;
-  GtkLabel                 * label;
-  GtkProgressBar           * progress_bar;
+  GtkWindow         parent_instance;
+  GtkLabel        * label;
+  GtkProgressBar  * progress_bar;
 } SplashWindowWidget;
 
 /**
- * Creates a splash_window widget using the given splash_window data.
+ * Creates a splash_window widget.
  */
 SplashWindowWidget *
-splash_window_widget_new (ZrythmApp * app);
-
-void
-splash_widget_update (SplashWindowWidget * self,
-                      const char         * message,
-                      gdouble            progress);
+splash_window_widget_new (
+  ZrythmApp * app);
 
 #endif
-

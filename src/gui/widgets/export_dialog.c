@@ -505,9 +505,11 @@ on_export_clicked (
              info.file_uri);
 
   /* start exporting in a new thread */
-  g_thread_new ("export_thread",
-                (GThreadFunc) export_thread,
-                &info);
+  GThread * thread =
+    g_thread_new (
+      "export_thread",
+      (GThreadFunc) export_thread,
+      &info);
 
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
@@ -521,6 +523,8 @@ on_export_clicked (
     G_CALLBACK (on_progress_dialog_closed), self);
   gtk_dialog_run (GTK_DIALOG (progress_dialog));
   gtk_widget_destroy (GTK_WIDGET (progress_dialog));
+
+  g_thread_join (thread);
 
   /* restart engine */
   AUDIO_ENGINE->exporting = 0;

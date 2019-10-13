@@ -805,6 +805,12 @@ channel_slot_widget_init (
   g_signal_connect (
     G_OBJECT (self->right_mouse_mp), "pressed",
     G_CALLBACK (on_right_click), self);
+  g_signal_connect (
+    G_OBJECT (self), "screen-changed",
+    G_CALLBACK (on_screen_changed),  self);
+  g_signal_connect (
+    G_OBJECT (self), "size-allocate",
+    G_CALLBACK (on_size_allocate),  self);
 }
 
 static void
