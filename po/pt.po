@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-23 12:35+0100\n"
-"PO-Revision-Date: 2019-09-24 07:14+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2019-10-14 15:52+0000\n"
+"Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
 "Language: pt\n"
@@ -21,19 +21,19 @@ msgstr ""
 
 #: src/zrythm.c:286
 msgid "Initializing settings"
-msgstr "Inicializando configurações"
+msgstr "A Inicializar as configurações"
 
 #: src/zrythm.c:297
 msgid "Initializing audio engine"
-msgstr "Inicializando o mecanismo de áudio"
+msgstr "A inicializar o mecanismo de áudio"
 
 #: src/zrythm.c:302
 msgid "Initializing plugin manager"
-msgstr "Inicializando o gerenciador de plugins"
+msgstr "A inicializar o gestor de plug-ins"
 
 #: src/zrythm.c:308
 msgid "Setting up backend"
-msgstr "Configurando o backend"
+msgstr "A configurar \"backend\""
 
 #: src/zrythm.c:315
 msgid "Loading project"
