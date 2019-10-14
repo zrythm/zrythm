@@ -323,14 +323,8 @@ lv2_ui_port_index (
 bool
 lv2_discover_ui(Lv2Plugin* plugin);
 
-int
-lv2_open_ui(Lv2Plugin* plugin);
-
 void
 lv2_init_ui(Lv2Plugin* plugin);
-
-int
-lv2_close_ui(Lv2Plugin* plugin);
 
 void
 lv2_ui_instantiate(Lv2Plugin*       plugin,

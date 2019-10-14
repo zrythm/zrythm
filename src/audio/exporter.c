@@ -250,15 +250,29 @@ export_audio (
       TRANSPORT->play_state =
         PLAYSTATE_ROLLING;
 
+      /* set jack freewheeling mode */
+#ifdef HAVE_JACK
+      if (AUDIO_ENGINE->audio_backend ==
+            AUDIO_BACKEND_JACK)
+        {
+          jack_set_freewheel (
+            AUDIO_ENGINE->client, 1);
+        }
+#endif
+
       zix_sem_wait (
         &AUDIO_ENGINE->port_operation_lock);
 
-      sf_count_t count = 0;
       nframes_t nframes;
-      long total_frames =
-        (stop_pos.frames - 1) - start_pos.frames;
-      long covered = 0;
-      float out_ptr[total_frames * 2];
+      g_return_if_fail (
+        stop_pos.frames >= 1 ||
+        start_pos.frames >= 0);
+      const unsigned long total_frames =
+        (unsigned long)
+        ((stop_pos.frames - 1) -
+         start_pos.frames);
+      sf_count_t covered = 0;
+      float out_ptr[AUDIO_ENGINE->nframes * 2];
       do
         {
           /* calculate number of frames to process
@@ -283,12 +297,12 @@ export_audio (
           /* by this time, the Master channel should
            * have its Stereo Out ports filled.
            * pass its buffers to the output */
-          for (unsigned int i = 0; i < nframes; i++)
+          for (nframes_t i = 0; i < nframes; i++)
             {
-              out_ptr[count++] =
+              out_ptr[i * 2] =
                 P_MASTER_TRACK->channel->
                   stereo_out->l->buf[i];
-              out_ptr[count++] =
+              out_ptr[i * 2 + 1] =
                 P_MASTER_TRACK->channel->
                   stereo_out->r->buf[i];
             }
@@ -298,20 +312,38 @@ export_audio (
             covered ==
               TRANSPORT->playhead_pos.frames);
 
+          /* write the frames for the current
+           * cycle */
+          sf_writef_float (
+            sndfile, out_ptr, nframes);
+
+          /* seek to the next position in the file */
+          sf_seek (
+            sndfile, nframes, SEEK_CUR);
+
           info->progress =
             (double)
             (TRANSPORT->playhead_pos.frames -
               start_pos.frames) /
             (double) total_frames;
-
         } while (
           TRANSPORT->playhead_pos.frames <
           stop_pos.frames - 1);
 
-      g_warn_if_fail (covered == total_frames);
-      sf_writef_float (sndfile, out_ptr, covered);
+      g_warn_if_fail (
+        covered == (sf_count_t) total_frames);
 
       info->progress = 1.0;
+
+      /* set jack freewheeling mode */
+#ifdef HAVE_JACK
+      if (AUDIO_ENGINE->audio_backend ==
+            AUDIO_BACKEND_JACK)
+        {
+          jack_set_freewheel (
+            AUDIO_ENGINE->client, 0);
+        }
+#endif
 
       zix_sem_post (
         &AUDIO_ENGINE->port_operation_lock);
@@ -320,7 +352,6 @@ export_audio (
       position_set_to_pos (
         &TRANSPORT->playhead_pos,
         &prev_playhead_pos);
-
 
       sf_close (sndfile);
     }

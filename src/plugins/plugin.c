@@ -38,6 +38,7 @@
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/control.h"
+#include "plugins/lv2/lv2_gtk.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/io.h"
@@ -707,7 +708,7 @@ plugin_open_ui (Plugin *plugin)
 {
   if (plugin->descr->protocol == PROT_LV2)
     {
-      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->lv2;
+      Lv2Plugin * lv2_plugin = plugin->lv2;
       if (GTK_IS_WINDOW (lv2_plugin->window))
         {
           gtk_window_present (
@@ -718,7 +719,7 @@ plugin_open_ui (Plugin *plugin)
         }
       else
         {
-          lv2_open_ui (lv2_plugin);
+          lv2_gtk_open_ui (lv2_plugin);
         }
     }
 }
@@ -816,7 +817,7 @@ plugin_close_ui (Plugin *plugin)
         gtk_window_close (
           GTK_WINDOW (lv2_plugin->window));
       else
-        lv2_close_ui (lv2_plugin);
+        lv2_gtk_close_ui (lv2_plugin);
     }
 }
 

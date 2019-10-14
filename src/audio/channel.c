@@ -39,6 +39,7 @@
 #include "audio/track_processor.h"
 #include "audio/transport.h"
 #include "plugins/lv2_plugin.h"
+#include "plugins/lv2/lv2_gtk.h"
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -1323,7 +1324,7 @@ channel_remove_plugin (
                 g_signal_handler_disconnect (
                   lv2_plugin->window,
                   lv2_plugin->delete_event_id);
-              lv2_close_ui (lv2_plugin);
+              lv2_gtk_close_ui (lv2_plugin);
             }
           plugin_disconnect (plugin);
           free_later (plugin, plugin_free);

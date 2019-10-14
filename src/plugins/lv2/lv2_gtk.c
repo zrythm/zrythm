@@ -1521,7 +1521,7 @@ void
 on_external_ui_closed(void* controller)
 {
   Lv2Plugin* jalv = (Lv2Plugin *) controller;
-  lv2_close_ui(jalv);
+  lv2_gtk_close_ui (jalv);
 }
 
 bool
@@ -1544,7 +1544,8 @@ on_delete_event (GtkWidget *widget,
 }
 
 int
-lv2_open_ui(Lv2Plugin* plugin)
+lv2_gtk_open_ui (
+  Lv2Plugin* plugin)
 {
   GtkWidget* window =
     gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -1557,7 +1558,6 @@ lv2_open_ui(Lv2Plugin* plugin)
     gtk_window_set_transient_for (
       GTK_WINDOW (window),
       GTK_WINDOW (MAIN_WINDOW));
-
 
   plugin->window = window;
   plugin->delete_event_id =
@@ -1664,7 +1664,8 @@ lv2_open_ui(Lv2Plugin* plugin)
 }
 
 int
-lv2_close_ui(Lv2Plugin* plugin)
+lv2_gtk_close_ui (
+  Lv2Plugin* plugin)
 {
   if (plugin->window)
     {

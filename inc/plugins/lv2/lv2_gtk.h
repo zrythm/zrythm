@@ -67,6 +67,14 @@ lv2_gtk_set_float_control (
   const Lv2Control* control,
   float value);
 
+int
+lv2_gtk_open_ui (
+  Lv2Plugin* plugin);
+
+int
+lv2_gtk_close_ui (
+  Lv2Plugin* plugin);
+
 /**
  * @}
  */

@@ -1097,7 +1097,7 @@ lv2_plugin_update (gpointer data)
   /* Check quit flag and close if set. */
   if (zix_sem_try_wait(&plugin->exit_sem))
     {
-      lv2_close_ui(plugin);
+      lv2_gtk_close_ui(plugin);
       return false;
     }
 
