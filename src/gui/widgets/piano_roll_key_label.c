@@ -20,7 +20,12 @@
 #include "audio/chord_track.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/piano_roll.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/editable_label.h"
+#include "gui/widgets/midi_editor_space.h"
+#include "gui/widgets/piano_roll_key.h"
 #include "gui/widgets/piano_roll_key_label.h"
 #include "project.h"
 

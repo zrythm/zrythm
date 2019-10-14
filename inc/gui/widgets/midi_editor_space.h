@@ -163,6 +163,15 @@ midi_editor_space_widget_refresh (
   MidiEditorSpaceWidget * self);
 
 /**
+ * Gets the PianoRollKeyWidget corresponding to the
+ * given PianoRollKeyLabelWidget.
+ */
+PianoRollKeyWidget *
+midi_editor_space_widget_get_key_for_label (
+  MidiEditorSpaceWidget *   self,
+  PianoRollKeyLabelWidget * label);
+
+/**
  * @}
  */
 

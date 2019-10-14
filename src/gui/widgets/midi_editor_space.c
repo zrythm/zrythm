@@ -104,11 +104,16 @@ get_piano_roll_key_at_coord (
   MidiEditorSpaceWidget * self,
   int                     y)
 {
-  PianoRollKeyWidget * key = NULL;
-  for (int i = 0; i < 128; i++)
+  GtkWidget * key = NULL;
+  for (int i = 0; i < 128 + 128; i++)
     {
-      key =
-        self->piano_roll_keys[i];
+      if (i < 128)
+        key =
+          (GtkWidget *) self->piano_roll_keys[i];
+      else
+        key =
+          (GtkWidget *)
+          self->piano_roll_key_labels[i];
 
       if (y > 0)
         {
@@ -118,7 +123,8 @@ get_piano_roll_key_at_coord (
                 GTK_WIDGET (key),
                 0, 1, 0, y, 0, 0))
             {
-              return key;
+              return
+                self->piano_roll_keys[i % 128];
             }
         }
       else
@@ -131,10 +137,9 @@ get_piano_roll_key_at_coord (
             {
               /* somehow if negative we get 1 key
                * off, adjust */
-              key =
-                self->piano_roll_keys[
-                  MAX (i - 1, 0)];
-              return key;
+              int idx = MAX ((i % 128) - 1, 0);
+              return
+                self->piano_roll_keys[idx % 128];
             }
         }
     }
@@ -179,8 +184,9 @@ on_released (
 {
   self->note_pressed = 0;
   self->note_released = 1;
-  piano_roll_key_send_note_event (
-    self->last_key, 0);
+  if (self->last_key)
+    piano_roll_key_send_note_event (
+      self->last_key, 0);
   self->last_key = NULL;
 }
 
@@ -202,6 +208,25 @@ midi_editor_space_widget_refresh_labels (
         piano_roll_key_label_widget_refresh (
           self->piano_roll_key_labels[i]);
     }
+}
+
+/**
+ * Gets the PianoRollKeyWidget corresponding to the
+ * given PianoRollKeyLabelWidget.
+ */
+PianoRollKeyWidget *
+midi_editor_space_widget_get_key_for_label (
+  MidiEditorSpaceWidget *   self,
+  PianoRollKeyLabelWidget * label)
+{
+  PianoRollKeyWidget * key;
+  for (int i = 0; i < 128; i++)
+    {
+      key = self->piano_roll_keys[i];
+      if (label->descr == key->descr)
+        return key;
+    }
+  g_return_val_if_reached (NULL);
 }
 
 /*static void*/

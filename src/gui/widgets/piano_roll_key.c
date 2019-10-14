@@ -110,6 +110,7 @@ piano_roll_key_send_note_event (
   PianoRollKeyWidget * self,
   int                  on)
 {
+  g_return_if_fail (self);
   if (on)
     {
       /* add note on event */
