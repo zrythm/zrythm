@@ -567,7 +567,6 @@ test_fill_midi_events ()
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
     events);
-  midi_events_print (events, 1);
   g_assert_cmpint (
     events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
@@ -580,6 +579,40 @@ test_fill_midi_events ()
     ev->type, ==, MIDI_EVENT_TYPE_NOTE_ON);
   g_assert_cmpuint (
     ev->time, ==, 10);
+  midi_events_clear (events, 1);
+
+  /**
+   * Premise: note ends on region end (no loops).
+   * Start: before region end
+   * End: after region end
+   *
+   * Expected result:
+   * 1 MIDI note off, no notes on.
+   */
+  position_set_to_bar (
+    &r->start_pos, 2);
+  position_set_to_bar (
+    &r->end_pos, 3);
+  position_set_to_bar (
+    &r->loop_end_pos, 2);
+  position_set_to_bar (
+    &mn->start_pos, 1);
+  position_set_to_bar (
+    &mn->end_pos, 2);
+  position_set_to_pos (
+    &pos, &r->end_pos);
+  position_add_frames (&pos, - 10);
+  midi_track_fill_midi_events (
+    track, pos.frames, 0, BUFFER_SIZE,
+    events);
+  midi_events_print (events, 1);
+  g_assert_cmpint (
+    events->num_queued_events, ==, 1);
+  ev = &events->queued_events[0];
+  g_assert_cmpuint (
+    ev->type, ==, MIDI_EVENT_TYPE_NOTE_OFF);
+  g_assert_cmpuint (
+    ev->time, ==, 9);
   midi_events_clear (events, 1);
 }
 

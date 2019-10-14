@@ -220,11 +220,6 @@ note_ons_during_region_loop (
     mn->region->loop_end_pos.frames -
       r_local_pos;
 
-  /* get global frames at region end */
-  long g_r_end =
-    mn->region->start_pos.frames +
-    mn->region->end_pos.frames;
-
   /* get global frames at loop end */
   long g_r_loop_end =
     g_frames_start + frames_till_r_loop_end;
@@ -265,8 +260,9 @@ note_ons_during_region_loop (
         r_local_end_pos &&
     /* we are still inside the region */
     r_local_end_pos + g_r_loop_end +
-    (mn->start_pos.frames -
-      mn->region->loop_start_pos.frames) < g_r_end)
+      (mn->start_pos.frames -
+        mn->region->loop_start_pos.frames) <
+    mn->region->end_pos.frames)
     {
       g_message (
         "midi note on during region loop (after "
