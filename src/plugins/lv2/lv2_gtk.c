@@ -40,6 +40,7 @@
 #include "audio/engine.h"
 #include "audio/track.h"
 #include "gui/widgets/instrument_track.h"
+#include "gui/widgets/main_window.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_gtk.h"
 #include "plugins/lv2/suil.h"
@@ -200,24 +201,37 @@ symbolify (const char* in)
 static void
 set_window_title (Lv2Plugin* plugin)
 {
-  const char* name_str =
+  g_return_if_fail (
+    plugin && plugin->plugin &&
+    plugin->plugin->track &&
+    plugin->plugin->track->name);
+  const char* track_name =
     plugin->plugin->track->name;
+  const char* plugin_name =
+    plugin->plugin->descr->name;
+  g_return_if_fail (track_name && plugin_name);
 
+  char title[500];
+  sprintf (
+    title,
+    "%s (%s)",
+    track_name, plugin_name);
   if (plugin->preset)
     {
       const char* preset_label =
         lilv_state_get_label(plugin->preset);
-      char* title =
-        g_strdup_printf (
-          "%s - %s",  name_str, preset_label);
-      gtk_window_set_title (
-        GTK_WINDOW(plugin->window), title);
-      free(title);
+      g_return_if_fail (preset_label);
+      char preset_part[500];
+      sprintf (
+        preset_part, " - %s",
+        preset_label);
+      strcat (
+        title, preset_part);
     }
-else
+
   gtk_window_set_title (
     GTK_WINDOW(plugin->window),
-    name_str);
+    title);
 }
 
 static void
@@ -1532,10 +1546,18 @@ on_delete_event (GtkWidget *widget,
 int
 lv2_open_ui(Lv2Plugin* plugin)
 {
-  GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  GtkWidget* window =
+    gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_icon_name (
     GTK_WINDOW (window),
     "zrythm");
+
+  if (g_settings_get_int (
+        S_PREFERENCES, "plugin-uis-stay-on-top"))
+    gtk_window_set_transient_for (
+      GTK_WINDOW (window),
+      GTK_WINDOW (MAIN_WINDOW));
+
 
   plugin->window = window;
   plugin->delete_event_id =
@@ -1630,7 +1652,7 @@ lv2_open_ui(Lv2Plugin* plugin)
       gtk_window_present(GTK_WINDOW(window));
   }
 
-  lv2_init_ui(plugin);
+  lv2_init_ui (plugin);
 
   plugin->plugin->ui_instantiated = 1;
 

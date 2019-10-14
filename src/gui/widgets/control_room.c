@@ -34,13 +34,14 @@ G_DEFINE_TYPE (ControlRoomWidget,
                GTK_TYPE_GRID)
 
 /**
- * Sets up the ControlRoomWidget.
+ * Creates a ControlRoomWidget.
  */
-void
-control_room_widget_setup (
-  ControlRoomWidget * self,
+ControlRoomWidget *
+control_room_widget_new (
   ControlRoom *       control_room)
 {
+  ControlRoomWidget * self =
+    g_object_new (CONTROL_ROOM_WIDGET_TYPE, NULL);
   self->control_room = control_room;
 
   KnobWidget * knob =
@@ -75,6 +76,8 @@ control_room_widget_setup (
     /*GTK_CONTAINER (*/
       /*self->listen_dim_slider_placeholder),*/
     /*GTK_WIDGET (self->listen_dim_slider));*/
+
+  return self;
 }
 
 static void

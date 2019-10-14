@@ -73,6 +73,9 @@ typedef struct _FoldableNotebookWidget
   /** Previous paned position before setting it to
    * max/min. */
   //int                    prev_paned_pos;
+
+  /** Revealer position before hiding. */
+  int                    prev_pos;
 } FoldableNotebookWidget;
 
 /**

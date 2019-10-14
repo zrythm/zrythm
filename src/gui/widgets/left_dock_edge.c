@@ -102,7 +102,7 @@ left_dock_edge_widget_init (
   img =
     gtk_image_new_from_icon_name (
       "z-document-properties",
-      GTK_ICON_SIZE_SMALL_TOOLBAR);
+      GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Inspector"));
   GtkBox * inspector_box =
@@ -122,7 +122,7 @@ left_dock_edge_widget_init (
   img =
     gtk_image_new_from_icon_name (
       "z-visibility",
-      GTK_ICON_SIZE_SMALL_TOOLBAR);
+      GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Visibility"));
   self->visibility = visibility_widget_new ();

@@ -51,6 +51,7 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/export_dialog.h"
+#include "gui/widgets/file_browser_window.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
@@ -78,6 +79,8 @@
 #include <gtk/gtk.h>
 
 #include <glib/gi18n.h>
+
+static GtkWindow * file_browser_window = NULL;
 
 void
 action_enable_window_action (
@@ -1272,4 +1275,30 @@ activate_unlink_jack_transport (
   gpointer       user_data)
 {
   g_message ("unlink jack transport");
+}
+
+void
+activate_show_file_browser (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
+{
+  if (file_browser_window)
+    {
+      gtk_window_close (
+        file_browser_window);
+      file_browser_window = FALSE;
+    }
+  else
+    {
+      file_browser_window =
+        GTK_WINDOW (
+          file_browser_window_widget_new ());
+      g_return_if_fail (file_browser_window);
+      gtk_window_set_transient_for (
+        file_browser_window,
+        (GtkWindow *) MAIN_WINDOW);
+      gtk_widget_show_all (
+        (GtkWidget *) file_browser_window);
+    }
 }

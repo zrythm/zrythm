@@ -71,6 +71,7 @@ widget_srcs = [
   'export_progress_dialog.c',
   'fader.c',
   'file_browser.c',
+  'file_browser_window.c',
   'first_run_assistant.c',
   'foldable_notebook.c',
   'audio_group_track.c',

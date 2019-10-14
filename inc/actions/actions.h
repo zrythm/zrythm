@@ -19,6 +19,13 @@
 
 #include <gtk/gtk.h>
 
+#define DECLARE_SIMPLE(x) \
+  void \
+  activate_##x ( \
+    GSimpleAction *action, \
+    GVariant      *variant, \
+    gpointer       user_data)
+
 void
 action_enable_window_action (
   const char * action_name);
@@ -418,3 +425,7 @@ activate_unlink_jack_transport (
   GSimpleAction *action,
   GVariant      *variant,
   gpointer       user_data);
+
+DECLARE_SIMPLE (show_file_browser);
+
+#undef DECLARE_SIMPLE

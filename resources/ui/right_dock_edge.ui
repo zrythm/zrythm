@@ -31,24 +31,6 @@
         <property name="can-focus">1</property>
         <property name="tab-pos">right</property>
         <property name="vexpand">1</property>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">1</property>
-            <child>
-              <object class="ControlRoomWidget" id="control_room">
-                <property name="visible">1</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child type="tab">
-          <object class="GtkImage">
-            <property name="visible">1</property>
-            <property name="icon-name">z-audio-headphones</property>
-            <property name="pixel-size">16</property>
-            <property name="tooltip-text" translatable="yes">Control Room</property>
-          </object>
-        </child>
       </object>
       <packing>
         <property name="expand">False</property>

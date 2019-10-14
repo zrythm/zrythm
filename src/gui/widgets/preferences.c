@@ -120,6 +120,11 @@ setup_plugins (PreferencesWidget * self)
     g_settings_get_int (
       S_PREFERENCES,
       "open-plugin-uis-on-instantiate"));
+  gtk_toggle_button_set_active (
+    GTK_TOGGLE_BUTTON (self->keep_plugin_uis_on_top),
+    g_settings_get_int (
+      S_PREFERENCES,
+      "plugin-uis-stay-on-top"));
 }
 
 static void
@@ -166,6 +171,12 @@ on_ok_clicked (GtkWidget * widget,
     "open-plugin-uis-on-instantiate",
     gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (self->open_plugin_uis)));
+  g_settings_set_int (
+    S_PREFERENCES,
+    "plugin-uis-stay-on-top",
+    gtk_toggle_button_get_active (
+      GTK_TOGGLE_BUTTON (
+        self->keep_plugin_uis_on_top)));
   g_settings_set_uint (
     S_PREFERENCES,
     "autosave-interval",
@@ -244,6 +255,7 @@ gtk_widget_class_bind_template_child ( \
   BIND_CHILD (pan_algo);
   BIND_CHILD (pan_law);
   BIND_CHILD (open_plugin_uis);
+  BIND_CHILD (keep_plugin_uis_on_top);
   BIND_CHILD (zpath_fc);
   BIND_CHILD (autosave_spin);
 

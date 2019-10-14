@@ -56,7 +56,6 @@ typedef struct _RightDockEdgeWidget
   GtkBox                   parent_instance;
   FoldableNotebookWidget * right_notebook;
   PluginBrowserWidget *    plugin_browser;
-  FileBrowserWidget *      file_browser;
   ControlRoomWidget *      control_room;
 } RightDockEdgeWidget;
 

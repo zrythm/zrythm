@@ -34,6 +34,7 @@
 #include "audio/track.h"
 #include "audio/transport.h"
 #include "gui/widgets/instrument_track.h"
+#include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/control.h"
@@ -711,6 +712,9 @@ plugin_open_ui (Plugin *plugin)
         {
           gtk_window_present (
             GTK_WINDOW (lv2_plugin->window));
+          gtk_window_set_transient_for (
+            GTK_WINDOW (lv2_plugin->window),
+            (GtkWindow *) MAIN_WINDOW);
         }
       else
         {

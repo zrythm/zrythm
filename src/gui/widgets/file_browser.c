@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -239,7 +239,8 @@ on_position_change (
 FileBrowserWidget *
 file_browser_widget_new ()
 {
-  FileBrowserWidget * self = g_object_new (FILE_BROWSER_WIDGET_TYPE, NULL);
+  FileBrowserWidget * self =
+    g_object_new (FILE_BROWSER_WIDGET_TYPE, NULL);
 
   g_message ("Instantiating file_browser widget...");
 

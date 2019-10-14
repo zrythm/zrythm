@@ -122,58 +122,6 @@ static int sort_plugin_func (
 /*}*/
 
 /**
- * scans for plugins.
- */
-static void
-scan_plugins (PluginManager * self)
-{
-  g_message ("scanning plugins...");
-
-  if (getenv ("NO_SCAN_PLUGINS"))
-    return;
-
-  /* load all plugins with lilv */
-  LilvWorld * world = LILV_WORLD;
-  const LilvPlugins * plugins =
-    lilv_world_get_all_plugins (world);
-  LV2_NODES.lilv_plugins = plugins;
-
-
-  /* iterate plugins */
-  LILV_FOREACH(plugins, i, plugins)
-    {
-      const LilvPlugin* p =
-        lilv_plugins_get (plugins, i);
-
-      PluginDescriptor * descriptor =
-        lv2_create_descriptor_from_lilv (p);
-
-      if (descriptor)
-        {
-          PLUGIN_MANAGER->plugin_descriptors[PLUGIN_MANAGER->num_plugins++] =
-            descriptor;
-          add_category (descriptor->category_str);
-        }
-    }
-
-  /* sort alphabetically */
-  qsort (PLUGIN_MANAGER->plugin_descriptors,
-         (size_t) PLUGIN_MANAGER->num_plugins,
-         sizeof (Plugin *),
-         sort_plugin_func);
-  qsort (PLUGIN_MANAGER->plugin_categories,
-         (size_t)
-           PLUGIN_MANAGER->num_plugin_categories,
-         sizeof (char *),
-         sort_category_func);
-
-  g_message ("%d Plugins scanned.",
-             PLUGIN_MANAGER->num_plugins);
-
-  /*print_plugins ();*/
-}
-
-/**
  * Initializes plugin manager.
  */
 void
@@ -535,10 +483,79 @@ plugin_manager_init (PluginManager * self)
 #undef SYMAP_MAP
 }
 
+/**
+ * Scans for plugins, optionally updating the
+ * progress.
+ *
+ * @param max_progress Maximum progress for this
+ *   stage.
+ * @param progress Pointer to a double (0.0-1.0) to
+ *   update based on the current progress.
+ */
 void
-plugin_manager_scan_plugins (PluginManager * self)
+plugin_manager_scan_plugins (
+  PluginManager * self,
+  const double    max_progress,
+  double *        progress)
 {
-  scan_plugins (self);
+  g_message ("scanning plugins...");
+
+  double start_progress =
+    progress ? *progress : 0;
+
+  if (getenv ("NO_SCAN_PLUGINS"))
+    return;
+
+  /* load all plugins with lilv */
+  LilvWorld * world = LILV_WORLD;
+  const LilvPlugins * plugins =
+    lilv_world_get_all_plugins (world);
+  LV2_NODES.lilv_plugins = plugins;
+
+  double size = (double) lilv_plugins_size (plugins);
+
+  /* iterate plugins */
+  unsigned int count = 0;
+  LILV_FOREACH(plugins, i, plugins)
+    {
+      const LilvPlugin* p =
+        lilv_plugins_get (plugins, i);
+
+      PluginDescriptor * descriptor =
+        lv2_create_descriptor_from_lilv (p);
+
+      if (descriptor)
+        {
+          PLUGIN_MANAGER->plugin_descriptors[
+            PLUGIN_MANAGER->num_plugins++] =
+              descriptor;
+          add_category (descriptor->category_str);
+        }
+
+      count++;
+
+      if (progress)
+        *progress =
+          start_progress +
+          ((double) count / size) *
+            (max_progress - start_progress);
+    }
+
+  /* sort alphabetically */
+  qsort (PLUGIN_MANAGER->plugin_descriptors,
+         (size_t) PLUGIN_MANAGER->num_plugins,
+         sizeof (Plugin *),
+         sort_plugin_func);
+  qsort (PLUGIN_MANAGER->plugin_categories,
+         (size_t)
+           PLUGIN_MANAGER->num_plugin_categories,
+         sizeof (char *),
+         sort_category_func);
+
+  g_message ("%d Plugins scanned.",
+             PLUGIN_MANAGER->num_plugins);
+
+  /*print_plugins ();*/
 }
 
 void

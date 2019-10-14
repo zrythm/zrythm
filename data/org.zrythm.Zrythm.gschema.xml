@@ -207,6 +207,7 @@
       </description>
     </key>
 
+    <!-- KEY: open-plugin-uis-on-instantiate -->
     <key name="open-plugin-uis-on-instantiate" type="i">
       <default>1</default>
       <summary>Open plugin UIs when they are instantiated</summary>
@@ -217,6 +218,17 @@
       </description>
     </key>
 
+    <!-- KEY: plugin-uis-stay-on-top -->
+    <key name="plugin-uis-stay-on-top" type="i">
+      <default>1</default>
+      <summary>Whether plugin UIs should always be shown on top of the main window</summary>
+      <description>
+        If this is set to 1, plugin UIs will always
+        be shown on top of the main window.
+      </description>
+    </key>
+
+    <!-- KEY: edit-region-size -->
     <key name="edit-region-size" type="i">
       <default>4</default>
       <summary>Region Size</summary>

@@ -363,7 +363,8 @@ init_thread (
     _("Scanning plugins"),
     0.4);
   plugin_manager_scan_plugins (
-    &ZRYTHM->plugin_manager);
+    &ZRYTHM->plugin_manager,
+    0.7, &ZRYTHM->progress);
 
   g_action_group_activate_action (
     G_ACTION_GROUP (zrythm_app),

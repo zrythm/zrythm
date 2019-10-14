@@ -172,10 +172,19 @@ void
 plugin_manager_init (PluginManager * self);
 
 /**
- * Scans for plugins.
+ * Scans for plugins, optionally updating the
+ * progress.
+ *
+ * @param max_progress Maximum progress for this
+ *   stage.
+ * @param progress Pointer to a double (0.0-1.0) to
+ *   update based on the current progress.
  */
 void
-plugin_manager_scan_plugins (PluginManager * self);
+plugin_manager_scan_plugins (
+  PluginManager * self,
+  const double    max_progress,
+  double *        progress);
 
 void
 plugin_manager_free (

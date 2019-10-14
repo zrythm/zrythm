@@ -49,6 +49,7 @@ typedef struct _PreferencesWidget
   MidiControllerMbWidget * midi_controllers;
   Preferences *            preferences;
   GtkCheckButton *         open_plugin_uis;
+  GtkCheckButton *         keep_plugin_uis_on_top;
   GtkComboBox *            language;
   GtkLabel *               locale_not_available;
   GtkSpinButton *          autosave_spin;

@@ -747,9 +747,6 @@ on_map_event (
       gtk_paned_set_position (
         GTK_PANED (self), divider_pos);
       self->first_time_position_set = 1;
-      g_message (
-        "setting plugin browser divider pos to %d",
-        divider_pos);
     }
 
   return FALSE;

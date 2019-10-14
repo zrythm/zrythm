@@ -322,6 +322,10 @@ main_window_widget_init (MainWindowWidget * self)
     /* control room */
     { "toggle-dim-output", NULL, NULL,
       "true", change_state_dim_output },
+
+    /* file browser */
+    { "show-file-browser",
+      activate_show_file_browser },
   };
 
   g_action_map_add_action_entries (
