@@ -465,11 +465,12 @@ project_assistant_widget_new (
   gtk_tree_selection_set_mode (
     selection, GTK_SELECTION_BROWSE);
   GtkTreeIter iter;
-  gtk_tree_model_get_iter_first (
-    self->project_model,
-    &iter);
-  gtk_tree_selection_select_iter (
-    selection, &iter);
+  int ret =
+    gtk_tree_model_get_iter_first (
+      self->project_model, &iter);
+  if (ret)
+    gtk_tree_selection_select_iter (
+      selection, &iter);
 
   refresh_templates (self);
   gtk_tree_view_set_search_column (
@@ -484,6 +485,8 @@ project_assistant_widget_new (
   add_columns (GTK_TREE_VIEW (self->templates));
 
   /* select the first template */
+  g_return_val_if_fail (
+    self->num_template_infos > 0, NULL);
   self->template_selection =
     &self->template_infos[0];
 
@@ -493,8 +496,6 @@ project_assistant_widget_new (
     GTK_WINDOW (self), parent);
   gtk_window_set_attached_to (
     GTK_WINDOW (self), GTK_WIDGET (parent));
-  gtk_window_set_keep_above (
-    GTK_WINDOW (self), 1);
 
   return self;
 }

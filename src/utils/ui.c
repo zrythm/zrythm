@@ -111,6 +111,10 @@ ui_show_message_full (
       GTK_BUTTONS_CLOSE,
       "%s",
       message);
+  gtk_window_set_title (
+    GTK_WINDOW (dialog), "Zrythm");
+  gtk_window_set_icon_name (
+    GTK_WINDOW (dialog), "zrythm");
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 }

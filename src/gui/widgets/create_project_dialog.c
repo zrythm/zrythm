@@ -106,6 +106,8 @@ create_project_dialog_widget_new ()
   CreateProjectDialogWidget * self =
     g_object_new (
       CREATE_PROJECT_DIALOG_WIDGET_TYPE,
+      "title", _("Create New Project"),
+      "icon-name", "zrythm",
       NULL);
 
   char * str =
@@ -137,10 +139,6 @@ create_project_dialog_widget_new ()
     GTK_EDITABLE (self->name), 0,
     (int) strlen (untitled_project));
   g_free (untitled_project);
-
-  gtk_window_set_title (
-    GTK_WINDOW (self),
-    _("Create new project"));
 
   gtk_widget_grab_focus (GTK_WIDGET (self->name));
 
