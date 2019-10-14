@@ -35,7 +35,6 @@ subdir('utils')
 zrythm_lib = static_library (
   'zrythm-lib',
   sources: [
-    config_h,
     zrythm_srcs,
     ext_srcs,
     ],
@@ -58,7 +57,6 @@ objects = []
 zrythm_exe = executable (
   'zrythm',
   sources: [
-    config_h,
     zrythm_main,
     zrythm_resources,
     ],

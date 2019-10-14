@@ -381,10 +381,14 @@ tmp_h = configure_file (
   output: 'tmp.h',
   configuration: cdata,
   )
-config_h = vcs_tag (
+config_h_vcs = vcs_tag (
   input: tmp_h,
   output: 'config.h',
   )
+config_h_dep = declare_dependency (
+  sources: config_h_vcs,
+  )
+zrythm_deps += config_h_dep
 
 test_cflags_c_only = [
   '-Wno-bad-function-cast',

@@ -41,7 +41,7 @@ if get_option ('enable_tests')
 
 
   foreach test_name : tests
-    source = [ test_name + '.c', config_h ]
+    source = [ test_name + '.c' ]
     test_name = ' - '.join(test_name.split('/'))
 
     exe = executable (
