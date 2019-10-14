@@ -53,6 +53,7 @@ inc/gui/widgets/route_target_selector.h
 inc/gui/widgets/marker.h
 inc/gui/widgets/snap_grid_popover.h
 inc/gui/widgets/midi_note.h
+inc/gui/widgets/file_browser_window.h
 inc/gui/widgets/port_connection_row.h
 inc/gui/widgets/snap_box.h
 inc/gui/widgets/midi_controller_popover.h
@@ -72,6 +73,7 @@ inc/gui/widgets/midi_group_track.h
 inc/gui/widgets/toolbox.h
 inc/gui/widgets/track_top_grid.h
 inc/gui/widgets/track_lanelist.h
+inc/gui/widgets/about_dialog.h
 inc/gui/widgets/snap_grid.h
 inc/gui/widgets/timeline_selection_info.h
 inc/gui/widgets/editor_ruler.h
@@ -199,9 +201,6 @@ inc/gui/widgets/dzl/dzl-gtk.h
 inc/gui/widgets/dzl/dzl-dock-transient-grab.h
 inc/gui/widgets/dzl/dzl-dock-bin.h
 inc/gui/widgets/dzl/dzl-tab-strip.h
-inc/gui/widgets/gtk/gtkeventcontrollerprivate.h
-inc/gui/widgets/gtk/gtkeventcontroller.h
-inc/gui/widgets/gtk/gtkeventcontrollermotion.h
 inc/gui/backend/audio_clip_editor.h
 inc/gui/backend/arranger_object.h
 inc/gui/backend/dir.h
@@ -237,8 +236,11 @@ inc/utils/localization.h
 inc/utils/stoat.h
 inc/utils/objects.h
 inc/utils/string.h
+inc/utils/dictionary.h
 inc/utils/general.h
 inc/utils/math.h
+inc/utils/mpmc_queue.h
+inc/utils/env.h
 inc/utils/cairo.h
 inc/utils/log.h
 inc/utils/resources.h
@@ -256,6 +258,7 @@ inc/audio/dir.h
 inc/audio/audio_bus_track.h
 inc/audio/sample_processor.h
 inc/audio/engine_pa.h
+inc/audio/track_processor.h
 inc/audio/marker.h
 inc/audio/midi_note.h
 inc/audio/audio_track.h
@@ -424,6 +427,7 @@ src/gui/widgets/arranger.c
 src/gui/widgets/plugin_browser.c
 src/gui/widgets/toolbox.c
 src/gui/widgets/knob_with_name.c
+src/gui/widgets/about_dialog.c
 src/gui/widgets/export_progress_dialog.c
 src/gui/widgets/bot_bar.c
 src/gui/widgets/midi_controller_popover.c
@@ -487,6 +491,7 @@ src/gui/widgets/export_dialog.c
 src/gui/widgets/chord_object.c
 src/gui/widgets/timeline_minimap_selection.c
 src/gui/widgets/route_target_selector_popover.c
+src/gui/widgets/file_browser_window.c
 src/gui/widgets/inspector_ap.c
 src/gui/widgets/project_toolbar.c
 src/gui/widgets/audio_editor_space.c
@@ -530,7 +535,6 @@ src/gui/widgets/dzl/dzl-dock-bin-edge.c
 src/gui/widgets/dzl/dzl-dock-stack.c
 src/gui/widgets/dzl/dzl-dock.c
 src/gui/widgets/dzl/dzl-dock-widget.c
-src/gui/widgets/gtk/gtkeventcontrollermotion.c
 src/gui/backend/arranger_object_info.c
 src/gui/backend/clip_editor.c
 src/gui/backend/automation_selections.c
@@ -548,6 +552,7 @@ src/utils/io.c
 src/utils/cairo.c
 src/utils/datetime.c
 src/utils/smf.c
+src/utils/env.c
 src/utils/objects.c
 src/utils/localization.c
 src/utils/yaml.c
@@ -560,9 +565,12 @@ src/utils/gtk.c
 src/utils/dialogs.c
 src/utils/ui.c
 src/utils/resources.c
+src/utils/mpmc_queue.c
+src/utils/dictionary.c
 src/utils/string.c
 src/settings/settings.c
 src/audio/encoder.c
+src/audio/track_processor.c
 src/audio/audio_group_track.c
 src/audio/midi_group_track.c
 src/audio/tracklist.c
@@ -606,6 +614,7 @@ src/audio/ext_port.c
 src/audio/automation_curve.c
 src/audio/automatable.c
 src/audio/audio_track.c
+src/audio/pan.c
 src/audio/passthrough_processor.c
 src/audio/automation_tracklist.c
 src/audio/audio_region.c
