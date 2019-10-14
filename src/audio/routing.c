@@ -1173,11 +1173,15 @@ graph_print (
 
 /**
  * Add the port to the nodes.
+ *
+ * @param drop_if_unnecessary Drops the port
+ *   if it doesn't connect anywhere.
  */
 static inline void
 add_port (
-  Graph * self,
-  Port *   port)
+  Graph *      self,
+  Port * port,
+  const int    drop_if_unnecessary)
 {
   PortOwnerType owner =
     port->identifier.owner_type;
@@ -1194,7 +1198,9 @@ add_port (
         graph_add_terminal_node (
           self, ROUTE_NODE_TYPE_PORT, port);
     }
+  /* drop ports without sources and dests */
   else if (
+    drop_if_unnecessary &&
     port->num_dests == 0 &&
     port->num_srcs == 0 &&
     owner != PORT_OWNER_TYPE_PLUGIN &&
@@ -1451,10 +1457,14 @@ graph_rechain (
 /*
  * Adds the graph nodes and connections, then
  * rechains.
+ *
+ * @param drop_unnecessary_ports Drops any ports
+ *   that don't connect anywhere.
  */
 void
 graph_setup (
-  Graph * self)
+  Graph *   self,
+  const int drop_unnecessary_ports)
 {
   int i, j, k;
   GraphNode * node, * node2;
@@ -1552,7 +1562,7 @@ graph_setup (
         continue;
 
       add_port (
-        self, port);
+        self, port, drop_unnecessary_ports);
     }
 
   /* ========================
@@ -1802,7 +1812,16 @@ graph_validate (
   g_return_val_if_fail (src && dest, 0);
   Graph * self = graph_new (router);
 
-  graph_setup (self);
+  graph_setup (self, 0);
+
+  /* swap because graph_setup() rechains and puts
+   * the setup nodes in the live nodes. */
+  GraphNode ** tmp =
+    self->setup_graph_nodes;
+  size_t prev_size = self->num_setup_graph_nodes;
+  self->setup_graph_nodes = self->graph_nodes;
+  self->num_setup_graph_nodes =
+    (size_t) self->n_graph_nodes;
 
   /* connect the src/dest if not NULL */
   /* this code is only for creating graphs to test
@@ -1815,6 +1834,12 @@ graph_validate (
   node_connect (node, node2);
 
   int valid = graph_is_valid (self);
+
+  /* put setup graph nodes back so they can be
+   * freed properly */
+  self->setup_graph_nodes = tmp;
+  self->num_setup_graph_nodes = prev_size;
+
   graph_free (self);
 
   return valid;

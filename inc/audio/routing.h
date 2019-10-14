@@ -283,10 +283,14 @@ graph_destroy (
 /*
  * Adds the graph nodes and connections, then
  * rechains.
+ *
+ * @param drop_unnecessary_ports Drops any ports
+ *   that don't connect anywhere.
  */
 void
 graph_setup (
-  Graph * self);
+  Graph *   self,
+  const int drop_unnecessary_ports);
 
 /**
  * Adds a new connection for the given

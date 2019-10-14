@@ -141,8 +141,10 @@ create_model_for_ports (
       Channel * ch = track->channel;
       if (flow == FLOW_INPUT)
         {
-          if (type == TYPE_AUDIO ||
-              type == TYPE_CV)
+          if ((type == TYPE_AUDIO ||
+               type == TYPE_CV) &&
+              track->out_signal_type ==
+                TYPE_AUDIO)
             {
               port = ch->prefader.stereo_out->l;
               ADD_ROW;
@@ -153,7 +155,9 @@ create_model_for_ports (
               port = ch->fader.stereo_out->r;
               ADD_ROW;
             }
-          else if (type == TYPE_EVENT)
+          else if (type == TYPE_EVENT &&
+                   track->out_signal_type ==
+                     TYPE_EVENT)
             {
               port = ch->midi_out;
               ADD_ROW;
@@ -161,15 +165,19 @@ create_model_for_ports (
         }
       else if (flow == FLOW_OUTPUT)
         {
-          if (type == TYPE_AUDIO ||
-              type == TYPE_CV)
+          if ((type == TYPE_AUDIO ||
+               type == TYPE_CV) &&
+              track->in_signal_type ==
+                TYPE_AUDIO)
             {
               port = track->processor.stereo_in->l;
               ADD_ROW;
               port = track->processor.stereo_in->r;
               ADD_ROW;
             }
-          else if (type == TYPE_EVENT)
+          else if (type == TYPE_EVENT &&
+                   track->in_signal_type ==
+                     TYPE_EVENT)
             {
               port = track->processor.midi_in;
               ADD_ROW;
