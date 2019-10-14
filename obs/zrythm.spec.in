@@ -14,7 +14,7 @@ License:       AGPLv3+
 URL:           https://www.zrythm.org
 Source0:       https://git.zrythm.org/cgit/zrythm/snapshot/zrythm-v%{version}.tar.gz
 BuildRequires: gcc-c++ gcc pkgconfig
-BuildRequires: gtk3-devel python3
+BuildRequires: gtk3-devel >=3.24 python3
 BuildRequires: lilv-devel
 BuildRequires: lv2-devel
 BuildRequires: libsndfile-devel
@@ -27,7 +27,7 @@ BuildRequires: fftw-devel
 BuildRequires: portaudio-devel
 BuildRequires: meson
 BuildRequires: help2man
-Requires: gtk3
+Requires: gtk3 >= 3.24
 Requires: ladspa
 Requires: lilv libsamplerate
 Requires: lv2
