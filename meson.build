@@ -17,7 +17,7 @@
 
 project (
   'zrythm', ['c', 'cpp'],
-  version: '0.7.001',
+  version: '0.7.002',
   license: 'AGPLv3+',
   meson_version: '>= 0.46.0',
   default_options: [
@@ -149,12 +149,21 @@ endforeach
 libm = cc.find_library('m', required: false)
 
 check_functions = [
-  'mlock',
-  'jack_set_property',
+  ['mlock',libm],
   ]
+
+jack_dep = dependency ('jack', required: false)
+if (jack_dep.found ())
+  cdata.set('HAVE_JACK', 1)
+  check_functions += [
+    ['jack_set_property',[jack_dep]],
+    ['jack_client_stop_thread', [jack_dep]],
+    ]
+endif
+
 foreach func : check_functions
-  if cc.has_function(func, dependencies: libm)
-    cdata.set('HAVE_' + func.underscorify().to_upper(), 1)
+  if cc.has_function(func[0], dependencies: func[1])
+    cdata.set('HAVE_' + func[0].underscorify().to_upper(), 1)
   endif
 endforeach
 
@@ -305,10 +314,6 @@ endif
 x11_dep = dependency('x11', required: false)
 if (x11_dep.found ())
   cdata.set('HAVE_X11', 1)
-endif
-jack_dep = dependency ('jack', required: false)
-if (jack_dep.found ())
-  cdata.set('HAVE_JACK', 1)
 endif
 port_audio_dep = dependency (
   'portaudio-2.0', required: false)

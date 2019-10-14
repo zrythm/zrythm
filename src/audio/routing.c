@@ -593,13 +593,23 @@ graph_terminate (
 #ifdef HAVE_JACK
   for (int i = 0; i < self->num_threads; i++)
     {
+#ifdef HAVE_JACK_CLIENT_STOP_THREAD
       jack_client_stop_thread (
         AUDIO_ENGINE->client,
         self->threads[i].jthread);
+#else
+      pthread_join (
+        self->threads[i].jthread, NULL);
+#endif
     }
+#ifdef HAVE_JACK_CLIENT_STOP_THREAD
   jack_client_stop_thread (
     AUDIO_ENGINE->client,
     self->main_thread.jthread);
+#else
+  pthread_join (
+    self->main_thread.jthread, NULL);
+#endif
 #else
   for (int i = 0; i < self->num_threads; i++)
     {
