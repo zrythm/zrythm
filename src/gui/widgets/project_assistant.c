@@ -49,49 +49,50 @@ on_projects_selection_changed (
     gtk_tree_selection_get_selected_rows (
       self->projects_selection,
       NULL);
-  if (selected_rows)
+  if (selected_rows && g_list_first (selected_rows))
     {
       GtkTreePath * tp =
-        (GtkTreePath *)g_list_first (selected_rows)->data;
-      gtk_tree_model_get_iter (self->project_model,
-                               &iter,
-                               tp);
-      GValue value = G_VALUE_INIT;
-      gtk_tree_model_get_value (self->project_model,
-                                &iter,
-                                COLUMN_PROJECT_INFO,
-                                &value);
-      self->project_selection =
-        g_value_get_pointer (&value);
-      if (self->project_selection)
+        (GtkTreePath *)
+        g_list_first (selected_rows)->data;
+      if (gtk_tree_model_get_iter (
+            self->project_model, &iter, tp))
         {
-          char * last_modified =
-            io_file_get_last_modified_datetime (
-              self->project_selection->filename);
-          if (last_modified)
+          GValue value = G_VALUE_INIT;
+          gtk_tree_model_get_value (
+            self->project_model, &iter,
+            COLUMN_PROJECT_INFO, &value);
+          self->project_selection =
+            g_value_get_pointer (&value);
+          if (self->project_selection)
             {
-              gtk_assistant_set_page_complete (
-                GTK_ASSISTANT (self),
-                gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 0),
-                1);
-              g_free (last_modified);
+              char * last_modified =
+                io_file_get_last_modified_datetime (
+                  self->project_selection->filename);
+              if (last_modified)
+                {
+                  gtk_assistant_set_page_complete (
+                    GTK_ASSISTANT (self),
+                    gtk_assistant_get_nth_page (GTK_ASSISTANT (self), 0),
+                    1);
+                  g_free (last_modified);
+                }
+              else
+                {
+                  gtk_assistant_set_page_complete (
+                    GTK_ASSISTANT (self),
+                    gtk_assistant_get_nth_page (
+                      GTK_ASSISTANT (self), 0),
+                    0);
+                }
             }
-          else
-            {
-              gtk_assistant_set_page_complete (
-                GTK_ASSISTANT (self),
-                gtk_assistant_get_nth_page (
-                  GTK_ASSISTANT (self), 0),
-                0);
-            }
+
+          g_list_free_full (
+            selected_rows,
+            (GDestroyNotify) gtk_tree_path_free);
+
+          gtk_widget_set_sensitive (
+            GTK_WIDGET (self->remove_btn), 1);
         }
-
-      g_list_free_full (
-        selected_rows,
-        (GDestroyNotify) gtk_tree_path_free);
-
-      gtk_widget_set_sensitive (
-        GTK_WIDGET (self->remove_btn), 1);
     }
   else
     {
