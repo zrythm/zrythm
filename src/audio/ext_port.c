@@ -127,6 +127,7 @@ ext_ports_get (
   ExtPort ** arr,
   int *      size)
 {
+  *size = 0;
   switch (AUDIO_ENGINE->audio_backend)
     {
     case AUDIO_BACKEND_JACK:
