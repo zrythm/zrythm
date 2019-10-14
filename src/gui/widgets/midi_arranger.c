@@ -1132,26 +1132,35 @@ add_children_from_region (
   MidiArrangerWidget * self,
   Region *             region)
 {
+  g_return_if_fail (
+    self && GTK_IS_OVERLAY (self) && region);
+
   int i, j;
   MidiNote * mn;
   for (i = 0; i < region->num_midi_notes; i++)
     {
       mn = region->midi_notes[i];
 
-      for (j = 0; j < 2; j++)
+      for (j = 0;
+           j <= AOI_COUNTERPART_MAIN_TRANSIENT; j++)
         {
-          if (j == 0)
-            mn = midi_note_get_main_midi_note (mn);
-          else if (j == 1)
-            mn = midi_note_get_main_trans_midi_note (mn);
+          if (j == AOI_COUNTERPART_MAIN)
+            mn =
+              midi_note_get_main_midi_note (mn);
+          else if (
+            j == AOI_COUNTERPART_MAIN_TRANSIENT)
+            mn =
+              midi_note_get_main_trans_midi_note (
+                mn);
+
+          g_return_if_fail (mn);
 
           if (!mn->widget)
             mn->widget =
               midi_note_widget_new (mn);
 
-          gtk_overlay_add_overlay (
-            GTK_OVERLAY (self),
-            GTK_WIDGET (mn->widget));
+          ARRANGER_WIDGET_ADD_OBJ_CHILD (
+            self, mn);
         }
     }
 }

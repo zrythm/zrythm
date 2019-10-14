@@ -42,6 +42,7 @@
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/cairo.h"
+#include "utils/env.h"
 #include "utils/gtk.h"
 #include "utils/localization.h"
 #include "utils/log.h"
@@ -353,8 +354,7 @@ init_thread (
     0.1);
   settings_init (&ZRYTHM->settings);
   ZRYTHM->debug =
-    g_settings_get_int (
-      S_GENERAL, "debug");
+    env_get_int ("ZRYTHM_DEBUG", 0);
   SET_PROG (
     _("Initializing plugin manager"),
     0.2);

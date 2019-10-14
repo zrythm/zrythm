@@ -635,9 +635,8 @@ add_children_from_region (
             vel->widget =
               velocity_widget_new (vel);
 
-          gtk_overlay_add_overlay (
-            GTK_OVERLAY (self),
-            GTK_WIDGET (vel->widget));
+          ARRANGER_WIDGET_ADD_OBJ_CHILD (
+            self, vel);
         }
     }
 }

@@ -137,6 +137,22 @@ G_DECLARE_DERIVABLE_TYPE (
                       ticks_diff); \
   obj_name##_set_pos (obj, (tmp_pos));
 
+/**
+ * Used for pushing transients to the bottom on
+ * the z axis.
+ */
+#define ARRANGER_WIDGET_ADD_OBJ_CHILD( \
+  _self,_child) \
+  gtk_overlay_add_overlay ( \
+    (GtkOverlay *) _self, \
+    (GtkWidget *) _child->widget); \
+  if (arranger_object_info_is_transient ( \
+        &_child->obj_info)) \
+    { \
+      gtk_overlay_reorder_overlay ( \
+        (GtkOverlay *) _self, \
+        (GtkWidget *) _child->widget, 0); \
+    }
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;

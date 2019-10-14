@@ -946,9 +946,8 @@ add_children_from_region (
             ap->widget =
               automation_point_widget_new (ap);
 
-          gtk_overlay_add_overlay (
-            GTK_OVERLAY (self),
-            GTK_WIDGET (ap->widget));
+          ARRANGER_WIDGET_ADD_OBJ_CHILD (
+            self, ap);
         }
     }
   for (j = 0; j < region->num_acs; j++)

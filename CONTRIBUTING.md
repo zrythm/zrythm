@@ -94,6 +94,8 @@ understands the following environment variables.
 - `ZRYTHM_DSP_THREADS` - number of threads
   to use for DSP, including the main one
 - `NO_SCAN_PLUGINS` - disable plugin scanning
+- `ZRYTHM_DEBUG` - shows additional debug info about
+  objects
 
 ## UI Debugging
 GTK comes with a very powerful tool called

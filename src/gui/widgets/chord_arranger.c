@@ -777,9 +777,8 @@ add_children_from_chord_track (
                 c->widget =
                   chord_object_widget_new (c);
 
-              gtk_overlay_add_overlay (
-                GTK_OVERLAY (self),
-                GTK_WIDGET (c->widget));
+              ARRANGER_WIDGET_ADD_OBJ_CHILD (
+                self, c);
             }
         }
     }

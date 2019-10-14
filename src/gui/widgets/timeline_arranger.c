@@ -2338,6 +2338,7 @@ timeline_arranger_widget_on_drag_end (
 
 static void
 add_children_from_channel_track (
+  TimelineArrangerWidget * self,
   ChannelTrack * ct)
 {
   if (!((Track *)ct)->bot_paned_visible)
@@ -2376,9 +2377,8 @@ add_children_from_channel_track (
               Z_AUTOMATION_REGION_WIDGET (
                 region->widget)->cache = 0;
 
-              gtk_overlay_add_overlay (
-                GTK_OVERLAY (MW_TIMELINE),
-                GTK_WIDGET (region->widget));
+              ARRANGER_WIDGET_ADD_OBJ_CHILD (
+                self, region);
             }
         }
     }
@@ -2403,9 +2403,8 @@ add_children_from_chord_track (
           if (!c->widget)
             scale_object_gen_widget (c);
 
-          gtk_overlay_add_overlay (
-            GTK_OVERLAY (self),
-            GTK_WIDGET (c->widget));
+          ARRANGER_WIDGET_ADD_OBJ_CHILD (
+            self, c);
         }
     }
 
@@ -2426,9 +2425,8 @@ add_children_from_chord_track (
           if (!region->widget)
             region_gen_widget (region);
 
-          gtk_overlay_add_overlay (
-            GTK_OVERLAY (self),
-            GTK_WIDGET (region->widget));
+          ARRANGER_WIDGET_ADD_OBJ_CHILD (
+            self, region);
         }
     }
 }
@@ -2453,9 +2451,8 @@ add_children_from_marker_track (
             m->widget =
               marker_widget_new (m);
 
-          gtk_overlay_add_overlay (
-            GTK_OVERLAY (self),
-            GTK_WIDGET (m->widget));
+          ARRANGER_WIDGET_ADD_OBJ_CHILD (
+            self, m);
         }
     }
 }
@@ -2465,6 +2462,9 @@ add_children_from_midi_track (
   TimelineArrangerWidget * self,
   Track *                  it)
 {
+  g_return_if_fail (
+    self && GTK_IS_OVERLAY (self) && it);
+
   TrackLane * lane;
   Region * r;
   int i, j, k;
@@ -2489,16 +2489,17 @@ add_children_from_midi_track (
                 r =
                   region_get_lane_trans_region (r);
 
+              g_return_if_fail (r);
+
               if (!GTK_IS_WIDGET (r->widget))
                 region_gen_widget (r);
 
-              gtk_overlay_add_overlay (
-                GTK_OVERLAY (self),
-                GTK_WIDGET (r->widget));
+              ARRANGER_WIDGET_ADD_OBJ_CHILD (
+                self, r);
             }
         }
     }
-  add_children_from_channel_track (it);
+  add_children_from_channel_track (self, it);
 }
 
 static void
@@ -2515,7 +2516,7 @@ add_children_from_master_track (
   MasterTrack *            mt)
 {
   ChannelTrack * ct = (ChannelTrack *) mt;
-  add_children_from_channel_track (ct);
+  add_children_from_channel_track (self, ct);
 }
 
 static void
@@ -2524,7 +2525,7 @@ add_children_from_audio_bus_track (
   AudioBusTrack *               mt)
 {
   ChannelTrack * ct = (ChannelTrack *) mt;
-  add_children_from_channel_track (ct);
+  add_children_from_channel_track (self, ct);
 }
 
 

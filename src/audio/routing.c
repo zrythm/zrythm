@@ -41,6 +41,7 @@
 #include "audio/track_processor.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/env.h"
 #include "utils/mpmc_queue.h"
 #include "utils/objects.h"
 #include "utils/stoat.h"
@@ -682,37 +683,20 @@ int
 graph_start (
   Graph * graph)
 {
-  int ret;
-  int num_cores = 0, num_threads_incl_main = 0;
+  int num_cores = audio_get_num_cores ();
+  graph->num_threads =
+    env_get_int (
+      "ZRYTHM_DSP_THREADS",
+      num_cores - 2);
+  g_warn_if_fail (graph->num_threads >= 0);
 
-  /* use as many threads as passed if any */
-  const char * env =
-    getenv ("ZRYTHM_DSP_THREADS");
-  if (env)
-    {
-      num_threads_incl_main =
-        atoi (env);
-      if (num_threads_incl_main <= 0)
-        num_threads_incl_main = 0;
-    }
-
-  if (num_threads_incl_main > 0)
-    {
-      graph->num_threads =
-        num_threads_incl_main - 1;
-    }
-  else
-    {
-      num_cores = audio_get_num_cores ();
-      graph->num_threads = num_cores - 2;
-    }
-
-  g_return_val_if_fail (
-    graph->num_threads >= 0, 0);
+  graph->num_threads =
+    MAX (graph->num_threads, 0);
 
   /* create worker threads (num cores - 2 because
    * the main thread will become a worker too, so
    * in total N_CORES - 1 threads */
+  int ret;
   for (int i = 0; i < graph->num_threads; i++)
     {
       ret =

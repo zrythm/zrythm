@@ -123,13 +123,6 @@
         run or not.</description>
     </key>
 
-    <key name="debug" type="i">
-      <default>0</default>
-      <summary>Debug mode</summary>
-      <description>Whether in debug mode or not
-      </description>
-    </key>
-
     <key name="dir" type="s">
       <default>""</default>
       <summary>Zrythm directory</summary>

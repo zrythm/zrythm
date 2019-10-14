@@ -185,15 +185,13 @@ add_snap_point (
 void
 snap_grid_update_snap_points (SnapGrid * self)
 {
-  Position tmp, end_pos;
-  position_init (&tmp);
+  POSITION_INIT_ON_STACK (tmp);
+  Position end_pos;
   position_set_to_bar (
     &end_pos,
     TRANSPORT->total_bars + 1);
   self->num_snap_points = 0;
-  position_set_to_pos (
-    &self->snap_points[self->num_snap_points++],
-    &tmp);
+  add_snap_point (self, &tmp);
   long ticks =
     snap_grid_get_note_ticks (self->note_length,
                               self->note_type);

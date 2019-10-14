@@ -22,6 +22,7 @@ util_srcs = [
   'datetime.c',
   'dialogs.c',
   'dictionary.c',
+  'env.c',
   'gtk.c',
   'io.c',
   'localization.c',

@@ -20,6 +20,7 @@ More info can be found at https://www.zrythm.org
 Zrythm is currently in alpha. Most of the essential
 DAW features are implemented and we are working
 towards a stable release.
+
 ![screenshot](https://www.zrythm.org/static/images/oct_1_2019.png)
 
 ## Currently supported plugin protocols:
@@ -50,8 +51,7 @@ We also recommend taking a look at the
 Please submit patches and bug reports below.
 
 ## Mailing lists
-~~zrythm-dev@nongnu.org for developers, zrythm-user@nongnu.org for users~~
-We are working on new mailing lists
+user@zrythm.org, dev@zrythm.org
 
 ## Bug Tracker
 https://redmine.zrythm.org/projects/zrythm/issues
