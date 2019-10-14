@@ -1,27 +1,27 @@
-# Portuguese translations for zrythm package.
-# Copyright (C) 2019 THE zrythm'S COPYRIGHT HOLDER
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# alex <alex@zrythm.org>, 2019.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: zrythm 0.4.088\n"
+"Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-23 12:35+0100\n"
-"PO-Revision-Date: 2019-10-14 15:52+0000\n"
+"PO-Revision-Date: 2019-10-14 15:53+0000\n"
 "Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
-"pt/>\n"
-"Language: pt\n"
+"Language-Team: Portuguese (Portugal) <https://hosted.weblate.org/projects/"
+"zrythm/zrythm/pt_PT/>\n"
+"Language: pt_PT\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 3.9-dev\n"
 
 #: src/zrythm.c:286
 msgid "Initializing settings"
-msgstr "A Inicializar as configurações"
+msgstr "A inicializar as configurações"
 
 #: src/zrythm.c:297
 msgid "Initializing audio engine"
@@ -33,15 +33,15 @@ msgstr "A inicializar o gestor de plug-ins"
 
 #: src/zrythm.c:308
 msgid "Setting up backend"
-msgstr "A configurar \"backend\""
+msgstr "A definir \"backend\""
 
 #: src/zrythm.c:315
 msgid "Loading project"
-msgstr "Carregando o projeto"
+msgstr "A carregar o projeto"
 
 #: src/project.c:311 src/audio/track.c:1101
 msgid "Master"
-msgstr "Mestre"
+msgstr "Master"
 
 #: src/project.c:391
 #, c-format
@@ -50,9 +50,6 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
-"Encontrámos um backup mais recente:\n"
-"  %s.\n"
-"Usar o backup mais recente?"
 
 #: src/project.c:456
 #, c-format
@@ -60,35 +57,29 @@ msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
 "work correctly."
 msgstr ""
-"Este projeto foi criado com uma versão diferente do Zrythm (%s). Pode não "
-"funcionar corretamente."
 
 #: src/project.c:471
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
-"Falha ao carregar o projeto. Por favor, verifique os registos para mais "
-"informações."
 
 #: src/project.c:892
 msgid "Backup saved."
-msgstr "Backup guardado."
+msgstr "Cópia de segurança guardada."
 
 #: src/project.c:899
 msgid "Project saved."
-msgstr "Projeto gravado."
+msgstr "Projeto guardado."
 
 #: src/main.c:67
 #, c-format
 msgid "Error: signal %d - Backtrace:"
-msgstr "Erro: sinal %d - Backtrace:"
+msgstr ""
 
 #: src/main.c:121
 #, c-format
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
 msgstr ""
-"Zrythm travou. Por favor, ajude-nos a corrigir isso %ssubmetendo um "
-"relatório de bug%s."
 
 #: src/main.c:173
 #, c-format
@@ -107,18 +98,6 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "Website https://www.zrythm.org\n"
 msgstr ""
-"Utilização: zrythm [ OPÇÕES ] [ PROJETO-NAME ]\n"
-"\n"
-"Opções:\n"
-"  -h, --help      mostra esta ajuda e sai\n"
-"  -v, --version   exibe informação de versão e sai\n"
-"\n"
-"Exemplos:\n"
-"  zrythm          executar normalmente\n"
-"\n"
-"Escreva comentários e bugs para https://savannah.nongnu.org/support/?group\n"
-"Apoie este projecto em https://liberapay.com/Zrythm\n"
-"Website https://www.zrythm.org\n"
 
 #: src/main.c:232
 #, c-format
@@ -136,25 +115,14 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
-"\n"
-"Zrythm tem ABSOLUTAMENTE NEHUMA GARANTIA!\n"
-"\n"
-"É software livre e você está convidado de redistribuí-lo\n"
-"sob certas condições. Olhe para o ficheiro `COPYING' dentro desta\n"
-"distribuição para detalhes.\n"
-"\n"
-"Escreva comentários e bugs em https://savannah.nongnu.org/support/?group\n"
-"Apoie este projecto em https://liberapay.com/Zrythm\n"
-"\n"
 
 #: src/plugins/plugin_manager.c:230
 msgid "Error loading LV2 bundle dir: "
-msgstr "Erro ao carregar o diretório de molhos LV2: "
+msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:150
 msgid "Save State"
-msgstr "Gravar Estado"
+msgstr "Guardar Estado"
 
 #: src/plugins/lv2/lv2_gtk.c:153 src/plugins/lv2/lv2_gtk.c:568
 #: src/utils/dialogs.c:41 src/utils/dialogs.c:71 src/actions/actions.c:561
@@ -166,7 +134,7 @@ msgstr "_Cancelar"
 
 #: src/plugins/lv2/lv2_gtk.c:154 src/actions/actions.c:563
 msgid "_Save"
-msgstr "_Gravar"
+msgstr "_Guardar"
 
 #: src/plugins/lv2/lv2_gtk.c:468
 msgid "URI (Optional):"
@@ -174,11 +142,11 @@ msgstr "URI (Opcional):"
 
 #: src/plugins/lv2/lv2_gtk.c:472
 msgid "_Prefix plugin name"
-msgstr "_Prefixo do nome do plugin"
+msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:563
 msgid "Delete Preset?"
-msgstr "Apagar Predefinição?"
+msgstr "Eliminar pré-ajuste?"
 
 #: src/plugins/lv2/lv2_gtk.c:569 src/utils/dialogs.c:69
 #: resources/ui/port_selector_popover.ui:227 resources/ui/marker_dialog.ui:61
@@ -187,11 +155,11 @@ msgstr "_OK"
 
 #: src/plugins/lv2/lv2_gtk.c:782
 msgid "Unknown widget type for value"
-msgstr "Tipo de widget desconhecido para valor"
+msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:808
 msgid "Unknown widget type for value\n"
-msgstr "Tipo de widget desconhecido para valor\n"
+msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:1438
 msgid "Close"
@@ -199,7 +167,7 @@ msgstr "Fechar"
 
 #: src/gui/widgets/create_project_dialog.c:119
 msgid "Untitled Project"
-msgstr "Projeto sem título"
+msgstr "Projeto Sem Nome"
 
 #: src/gui/widgets/create_project_dialog.c:142
 #: resources/ui/project_assistant.ui:86 resources/ui/shortcuts.ui:104
@@ -208,11 +176,11 @@ msgstr "Criar novo projeto"
 
 #: src/gui/widgets/port_connections_popover.c:58
 msgid "INPUTS"
-msgstr "ENTRADAS"
+msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:77
 msgid "OUTPUTS"
-msgstr "SAÍDAS"
+msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:163
 msgid "Add"
@@ -220,11 +188,11 @@ msgstr "Adicionar"
 
 #: src/gui/widgets/quantize_dialog.c:112
 msgid "note length"
-msgstr "duração da nota"
+msgstr ""
 
 #: src/gui/widgets/quantize_dialog.c:121
 msgid "note type"
-msgstr "tipo de nota"
+msgstr ""
 
 #: src/gui/widgets/track_properties_expander.c:78
 #, c-format
@@ -237,11 +205,11 @@ msgstr "Nome da Faixa"
 
 #: src/gui/widgets/track_properties_expander.c:198
 msgid "Direct Out"
-msgstr "Saída Direta"
+msgstr ""
 
 #: src/gui/widgets/track_properties_expander.c:215 src/audio/channel.c:1864
 msgid "Piano Roll"
-msgstr "Cílindros de Piano"
+msgstr ""
 
 #: src/gui/widgets/track_properties_expander.c:229
 msgid "Track Properties"
@@ -249,15 +217,15 @@ msgstr "Propriedades da Faixa"
 
 #: src/gui/widgets/channel.c:946
 msgid "Inserts"
-msgstr "Inserções"
+msgstr ""
 
 #: src/gui/widgets/track_input_expander.c:185
 msgid "All MIDI Inputs"
-msgstr "Todas as Entradas MIDI"
+msgstr ""
 
 #: src/gui/widgets/track_input_expander.c:220
 msgid "No inputs"
-msgstr "Sem entradas"
+msgstr ""
 
 #: src/gui/widgets/track_input_expander.c:260
 msgid "All Channels"
@@ -266,42 +234,41 @@ msgstr "Todos os Canais"
 #: src/gui/widgets/track_input_expander.c:269 src/gui/widgets/track_lane.c:105
 #, c-format
 msgid "Channel %s"
-msgstr "Canal %s"
+msgstr ""
 
 #: src/gui/widgets/track_input_expander.c:284
 msgid "No channel"
-msgstr "Nenhum canal"
+msgstr ""
 
 #: src/gui/widgets/track_input_expander.c:411
 msgid "Inputs"
-msgstr "Entradas"
+msgstr ""
 
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
 msgid "Select..."
-msgstr "Selecione..."
+msgstr "Selecionar..."
 
 #: src/gui/widgets/midi_controller_mb.c:119
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr ""
-"Clique para ativar os controladores MIDI para ser conectado automaticamente"
 
 #: src/gui/widgets/first_run_assistant.c:87
 #: src/gui/widgets/first_run_assistant.c:120
 msgid "JACK functionality is disabled"
-msgstr "A funcionalidade JACK está desativada"
+msgstr ""
 
 #: src/gui/widgets/first_run_assistant.c:102
 msgid "PortAudio functionality is disabled"
-msgstr "A funcionalidade PortAudio está desativada"
+msgstr ""
 
 #: src/gui/widgets/first_run_assistant.c:137
 msgid "Backend combination not supported"
-msgstr "Combinação backend não suportada"
+msgstr ""
 
 #: src/gui/widgets/first_run_assistant.c:143
 msgid "The selected backends are operational"
-msgstr "Os backends selecionados estão operacionais"
+msgstr ""
 
 #: src/gui/widgets/first_run_assistant.c:224
 #, c-format
@@ -313,12 +280,6 @@ msgid ""
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart Zrythm"
 msgstr ""
-"A localidade para o idioma selecionado não está disponível. Por favor, "
-"primeiro ative uma usando os passos abaixo e tente novamente.\n"
-"1. Descomentar qualquer localidade começando com o código de idioma <b>%s</"
-"b> em <b>/etc/locale.gen</b> (precisa de privilégios de root)\n"
-"2. Executar <b>locale-gen</b> como root\n"
-"3. Reiniciar Zrythm"
 
 #: src/gui/widgets/project_assistant.c:263
 #: resources/ui/create_project_dialog.ui:95 resources/ui/control.ui:45
@@ -349,60 +310,60 @@ msgstr "Visibilidade"
 
 #: src/gui/widgets/top_bar.c:43 src/gui/widgets/ruler_marker.c:254
 msgid "Playhead"
-msgstr "Cabeça de Reprodução"
+msgstr ""
 
 #: src/gui/widgets/top_bar.c:45
 msgid "Playhead [Jack Timebase Master]"
-msgstr "Cabeça de Reprodução [Base de tempo mestre Jack]"
+msgstr ""
 
 #: src/gui/widgets/top_bar.c:47
 msgid "Playhead [Jack Client]"
-msgstr "Cabeça de Reprodução [Cliente Jack]"
+msgstr ""
 
 #: src/gui/widgets/top_bar.c:127
 msgid "Become JACK Transport master"
-msgstr "Tornar-se Mestre de Transporte JACK"
+msgstr ""
 
 #: src/gui/widgets/top_bar.c:146
 msgid "Sync to JACK Transport"
-msgstr "Sincronizar com o transporte JACK"
+msgstr ""
 
 #: src/gui/widgets/top_bar.c:169
 msgid "Unlink JACK Transport"
-msgstr "Desvincular o transporte JACK"
+msgstr ""
 
 #: src/gui/widgets/top_bar.c:228
 msgid "playhead"
-msgstr "cabeça de reprodução"
+msgstr ""
 
 #: src/gui/widgets/top_bar.c:262
 msgid "JACK Transport client"
-msgstr "Cliente de transporte de JACK"
+msgstr ""
 
 #: src/gui/widgets/top_bar.c:282
 msgid "JACK Timebase master"
-msgstr "JACK Base de tempo mestre"
+msgstr ""
 
 #: src/gui/widgets/top_bar.c:375
 msgid "time sig."
-msgstr "sig. de tempo"
+msgstr ""
 
 #: src/gui/widgets/export_midi_file_dialog.c:83
 #, c-format
 msgid "Exporting MIDI region \"%s\""
-msgstr "Exportação da região MIDI \"%s\""
+msgstr ""
 
 #: src/gui/widgets/port_selector_popover.c:52
 msgid "No port selected"
-msgstr "Nenhuma porta selecionada"
+msgstr ""
 
 #: src/gui/widgets/port_selector_popover.c:83
 msgid "These ports cannot be connected"
-msgstr "Estas portas não podem ser conectadas"
+msgstr ""
 
 #: src/gui/widgets/port_selector_popover.c:276
 msgid "Track Ports"
-msgstr "Portas de Faixa"
+msgstr "Portas da Faixa"
 
 #: src/gui/widgets/editor_selection_info.c:61
 msgid "start position"
@@ -423,7 +384,7 @@ msgstr "Propriedades do editor"
 
 #: src/gui/widgets/inspector.c:185
 msgid "Plugin properties"
-msgstr "Propriedades do plugin"
+msgstr "Propriedades do plug-in"
 
 #: src/gui/widgets/digital_meter.c:295
 msgid "normal"
@@ -431,15 +392,15 @@ msgstr "normal"
 
 #: src/gui/widgets/digital_meter.c:298
 msgid "dotted"
-msgstr "pontilhado"
+msgstr ""
 
 #: src/gui/widgets/digital_meter.c:301
 msgid "triplet"
-msgstr "trio"
+msgstr ""
 
 #: src/gui/widgets/digital_meter.c:857
 msgid "Tempo/BPM"
-msgstr "Ritmo/BPM"
+msgstr ""
 
 #: src/gui/widgets/digital_meter.c:872 resources/ui/inspector_master.ui:79
 #: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
@@ -448,32 +409,32 @@ msgstr "Posição"
 
 #: src/gui/widgets/digital_meter.c:901
 msgid "Time Signature - Beats per bar / Beat unit"
-msgstr "Assinatura de Tempo - Batidas por barra / Unidade de batida"
+msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:196
 #, c-format
 msgid "Unsupported file type %s"
-msgstr "Tipo de ficheiro não suportado %s"
+msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:221
 msgid "No file found"
-msgstr "Nenhum ficheiro encontrado"
+msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:372
 msgid "Add _MIDI Track"
-msgstr "Adicionar Faixa de _MIDI"
+msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:385 src/audio/track.c:1095
 msgid "Audio Bus"
-msgstr "Bus Áudio"
+msgstr "Bus de Áudio"
 
 #: src/gui/widgets/drag_dest_box.c:396 src/audio/track.c:1098
 msgid "MIDI Bus"
-msgstr "Bus MIDI"
+msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:408
 msgid "Add Bus Track"
-msgstr "Adicionar Faixa de Bus"
+msgstr ""
 
 #: src/gui/widgets/drag_dest_box.c:419 src/audio/track.c:1107
 msgid "Audio Group"
@@ -485,47 +446,45 @@ msgstr "Grupo de MIDI"
 
 #: src/gui/widgets/drag_dest_box.c:442
 msgid "Add Group Track"
-msgstr "Adicionar Faixa de Grupo"
+msgstr ""
 
 #: src/gui/widgets/instrument_track.c:216 src/gui/widgets/midi_track.c:190
 #: resources/ui/transport_controls.ui:36
 msgid "Record"
-msgstr "Registro"
+msgstr "Gravar"
 
 #: src/gui/widgets/instrument_track.c:250 src/gui/widgets/midi_track.c:218
 msgid "Show automation lanes"
-msgstr "Mostrar faixas de automação"
+msgstr ""
 
 #: src/gui/widgets/instrument_track.c:256 src/gui/widgets/midi_track.c:224
 msgid "Show track lanes"
-msgstr "Mostrar pistas de faixas"
+msgstr ""
 
 #: src/gui/widgets/instrument_track.c:262 src/gui/widgets/midi_track.c:230
 msgid "Lock track"
-msgstr "Bloquear faixa"
+msgstr ""
 
 #: src/gui/widgets/instrument_track.c:268
 msgid "Freeze track"
-msgstr "Congelar faixa"
+msgstr ""
 
 #: src/gui/widgets/control_room.c:54
 msgid "Monitor out"
-msgstr "Monitorizar a saída"
+msgstr ""
 
 #: src/gui/widgets/control_room.c:66
 msgid "Listen dim level"
-msgstr "Ouvir o nível de dim"
+msgstr ""
 
 #: src/gui/widgets/control_room.c:69
 msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
-"O nível no qual os outros canais são definidos quando escutar for ativado "
-"num canal"
 
 #: src/gui/widgets/channel_slot.c:234 src/gui/widgets/channel_slot.c:249
 #: src/gui/widgets/channel_slot.c:694
 msgid "empty slot"
-msgstr "compartimento vazio"
+msgstr ""
 
 #: src/gui/widgets/plugin_browser.c:1001 resources/ui/file_browser.ui:63
 msgid "Collection"
@@ -545,33 +504,33 @@ msgstr "Exportado"
 
 #: src/gui/widgets/export_progress_dialog.c:152
 msgid "Export Progress"
-msgstr "Progresso da Exportação"
+msgstr ""
 
 #: src/gui/widgets/port_connections_button.c:147
 msgid "Expose port to JACK"
-msgstr "Expor a porta para JACK"
+msgstr ""
 
 #: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:65
 #: resources/ui/quantize_dialog.ui:143
 msgid "start"
-msgstr "iniciar"
+msgstr ""
 
 #: src/gui/widgets/timeline_selection_info.c:275 src/audio/marker_track.c:73
 #: resources/ui/quantize_dialog.ui:156
 msgid "end"
-msgstr "fim"
+msgstr ""
 
 #: src/gui/widgets/timeline_selection_info.c:285
 msgid "clip start (rel.)"
-msgstr "início do clipe (rel.)"
+msgstr ""
 
 #: src/gui/widgets/timeline_selection_info.c:295
 msgid "loop start (rel.)"
-msgstr "início do loop (rel.)"
+msgstr ""
 
 #: src/gui/widgets/timeline_selection_info.c:305
 msgid "loop end (rel.)"
-msgstr "final do loop (rel.)"
+msgstr ""
 
 #: src/gui/widgets/timeline_selection_info.c:333
 #: src/gui/widgets/timeline_selection_info.c:357
@@ -582,7 +541,7 @@ msgstr "posição"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
-msgstr "Chat (Matrix)"
+msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:40
 msgid "Manual"
@@ -598,16 +557,16 @@ msgstr "Doar"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
-msgstr "Reportar um erro"
+msgstr "Reportar um Erro"
 
 #: src/gui/widgets/track_lane.c:96
 msgid "Inherit"
-msgstr "Herdar"
+msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:57 src/gui/widgets/home_toolbar.c:116
 #: resources/ui/home_toolbar.ui:34
 msgid "Undo"
-msgstr "Desfazer"
+msgstr "Anular"
 
 #: src/gui/widgets/home_toolbar.c:58 src/gui/widgets/home_toolbar.c:118
 #: resources/ui/home_toolbar.ui:47
@@ -632,7 +591,7 @@ msgstr "Duplicar"
 
 #: src/gui/widgets/home_toolbar.c:128
 msgid "Delete"
-msgstr "Apagar"
+msgstr "Eliminar"
 
 #: src/gui/widgets/home_toolbar.c:130
 msgid "Clear Selection"
@@ -640,68 +599,68 @@ msgstr "Limpar Seleção"
 
 #: src/gui/widgets/home_toolbar.c:132
 msgid "Select All"
-msgstr "Selecionar todos"
+msgstr "Selecionar Tudo"
 
 #: src/gui/widgets/home_toolbar.c:134
 msgid "Loop Selection"
-msgstr "Seleção de Loop"
+msgstr ""
 
 #: src/gui/widgets/right_dock_edge.c:102
 msgid "File Browser"
-msgstr "Navegador de Ficheiros"
+msgstr ""
 
 #: src/gui/widgets/right_dock_edge.c:126
 msgid "Plugin Browser"
-msgstr "Navegador de Plugins"
+msgstr ""
 
 #: src/gui/widgets/route_target_selector.c:54
 msgid "<tt><i>Engine</i></tt>"
-msgstr "<tt><i>Motor</i></tt>"
+msgstr "<tt><i>Mecanismo</i></tt>"
 
 #: src/gui/widgets/route_target_selector.c:79
 msgid "Cannot be routed"
-msgstr "Não pode ser roteado"
+msgstr ""
 
 #: src/gui/widgets/route_target_selector.c:88
 msgid "Routed to engine"
-msgstr "Roteado para o motor"
+msgstr ""
 
 #: src/gui/widgets/route_target_selector.c:95
 msgid "Select channel to route signal to"
-msgstr "Selecionar o canal para onde rotear o sinal"
+msgstr ""
 
 #: src/gui/widgets/route_target_selector.c:156
 msgid "Stereo Out"
-msgstr "Saída Estéreo"
+msgstr ""
 
 #: src/gui/widgets/automatable_selector_popover.c:237
 #: src/gui/widgets/automatable_selector_popover.c:380
 msgid "No control selected"
-msgstr "Nenhum controle selecionado"
+msgstr ""
 
 #: src/gui/widgets/snap_grid.c:95
 msgid "Snap/Grid options"
-msgstr "Opções de snap/grade"
+msgstr ""
 
 #: src/gui/widgets/header_notebook.c:82
 msgid "Toggle Left Panel"
-msgstr "Alternar Painel Esquerdo"
+msgstr ""
 
 #: src/gui/widgets/header_notebook.c:83
 msgid "Toggle Bottom Panel"
-msgstr "Alternar Painel Inferior"
+msgstr ""
 
 #: src/gui/widgets/header_notebook.c:84
 msgid "Toggle Top Panel"
-msgstr "Alternar Painel Superior"
+msgstr ""
 
 #: src/gui/widgets/header_notebook.c:86
 msgid "Toggle Right Panel"
-msgstr "Alternar Painel Direito"
+msgstr ""
 
 #: src/gui/widgets/header_notebook.c:87
 msgid "About Zrythm"
-msgstr "Sobre o Zrythm"
+msgstr "Sobre Zrythm"
 
 #: src/gui/widgets/header_notebook.c:88 resources/ui/shortcuts.ui:40
 #: resources/ui/preferences.ui:27
@@ -714,77 +673,77 @@ msgstr "ambos"
 
 #: src/gui/widgets/piano_roll_key_label.c:103
 msgid "scale"
-msgstr "escala"
+msgstr ""
 
 #: src/gui/widgets/piano_roll_key_label.c:122
 msgid "chord"
-msgstr "acorde"
+msgstr ""
 
 #: src/gui/widgets/live_waveform.c:131
 msgid "Live waveform indicator"
-msgstr "Indicador de forma de onda ao vivo"
+msgstr ""
 
 #: src/gui/widgets/clip_editor_inner.c:165
 msgid "Select a region..."
-msgstr "Selecione uma região...."
+msgstr "Selecionar uma região..."
 
 #: src/gui/widgets/ports_expander.c:165
 msgid "Control Ins"
-msgstr "Controlar Entradas"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:168
 msgid "Control Outs"
-msgstr "Controlar Saídas"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:171
 msgid "Audio Ins"
-msgstr "Entradas Áudio"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:174
 msgid "Audio Outs"
-msgstr "Saídas Áudio"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:177
 msgid "MIDI Ins"
-msgstr "Entradas MIDI"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:180
 msgid "MIDI Outs"
-msgstr "Saídas MIDI"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:183
 msgid "CV Ins"
-msgstr "Entradas CV"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:186
 msgid "CV Outs"
-msgstr "Saídas CV"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:390
 msgid "Sends"
-msgstr "Enviar"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:397
 msgid "Stereo In"
-msgstr "Entrada Estéreo"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:404
 msgid "MIDI In"
-msgstr "Entradas MIDI"
+msgstr ""
 
 #: src/gui/widgets/ports_expander.c:412
 msgid "MIDI Out"
-msgstr "Saídas MIDI"
+msgstr ""
 
 #: src/gui/widgets/route_target_selector_popover.c:189
 #: src/gui/widgets/route_target_selector_popover.c:349
 msgid "No output selected"
-msgstr "Nenhuma saída selecionada"
+msgstr ""
 
 #: src/gui/widgets/route_target_selector_popover.c:203
 #, c-format
 msgid "Routing to %s"
-msgstr "Roteamento para %s"
+msgstr ""
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
@@ -792,11 +751,11 @@ msgstr "Novo Projeto"
 
 #: src/gui/widgets/project_toolbar.c:40
 msgid "Save"
-msgstr "Gravar"
+msgstr "Guardar"
 
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Save As"
-msgstr "Gravar Como"
+msgstr "Guardar Como"
 
 #: src/gui/widgets/project_toolbar.c:42 src/utils/dialogs.c:38
 msgid "Open Project"
@@ -812,11 +771,11 @@ msgstr "Alternar Barra de Estado"
 
 #: src/gui/widgets/view_toolbar.c:40
 msgid "Zoom In"
-msgstr "Aumentar"
+msgstr "Zoom +"
 
 #: src/gui/widgets/view_toolbar.c:41
 msgid "Zoom Out"
-msgstr "Reduzir"
+msgstr "Zoom -"
 
 #: src/gui/widgets/view_toolbar.c:42
 msgid "Original Size"
@@ -828,15 +787,15 @@ msgstr "Melhor Ajuste"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
-msgstr "Ecrã inteiro"
+msgstr "Ecrã Completo"
 
 #: src/gui/widgets/track.c:365
 msgid "_Delete Track"
-msgstr "_Apagar Faixa"
+msgstr "_Eliminar Faixa"
 
 #: src/gui/widgets/track.c:368
 msgid "_Delete Tracks"
-msgstr "_Apagar Faixas"
+msgstr "_Eliminar Faixas"
 
 #: src/gui/widgets/track.c:383
 msgid "_Duplicate Track"
@@ -852,53 +811,52 @@ msgstr "Adicionar Região"
 
 #: src/gui/widgets/track.c:416
 msgid "Hide Track"
-msgstr "Esconder Faixa"
+msgstr "Ocultar Faixa"
 
 #: src/gui/widgets/track.c:417
 msgid "Hide Tracks"
-msgstr "Esconder Faixas"
+msgstr "Ocultar Faixas"
 
 #: src/gui/widgets/fader.c:336
 msgid "Fader"
-msgstr "Fader"
+msgstr ""
 
 #: src/gui/widgets/dzl/dzl-animation.c:752
 #, c-format
 msgid "Cannot locate property %s in class %s"
-msgstr "Não é possível localizar a propriedade %s na classe %s"
+msgstr ""
 
 #: src/gui/widgets/dzl/dzl-animation.c:1099
 #: src/gui/widgets/dzl/dzl-animation.c:1105
 #, c-format
 msgid "Failed to find property %s in %s"
-msgstr "Falha em encontrar a propriedade %s em %s"
+msgstr ""
 
 #: src/gui/widgets/dzl/dzl-animation.c:1113
 #, c-format
 msgid "Failed to find property %s in %s or parent %s"
-msgstr "Falhou em encontrar a propriedade %s em %s ou no pai %s"
+msgstr ""
 
 #: src/gui/widgets/dzl/dzl-animation.c:1123
 #, c-format
 msgid "Failed to retrieve va_list value: %s"
-msgstr "Falha ao recuperar o valor va_list: %s"
+msgstr ""
 
 #: src/utils/dialogs.c:43
 msgid "_Open"
-msgstr "_ Abrir"
+msgstr "_Abrir"
 
 #: src/utils/dialogs.c:66
 msgid "Overwrite Plugin"
-msgstr "Sobrescrever Plugin"
+msgstr ""
 
 #: src/utils/dialogs.c:80
 msgid "A plugin already exists at the selected slot. Overwrite it?"
-msgstr "Já existe um plugin no compartimento selecionado. Sobrescrever?"
+msgstr ""
 
 #: src/utils/dialogs.c:104
 msgid "Error instantiating plugin. Please see log for details."
 msgstr ""
-"Erro ao instanciar o plugin. Por favor, veja o registo para mais detalhes."
 
 #: src/utils/ui.c:484
 msgid "English [en]"
@@ -943,39 +901,39 @@ msgstr "Chinês [zh]"
 #. TRANSLATORS: Dummy audio backend
 #: src/utils/ui.c:510 src/utils/ui.c:528
 msgid "Dummy"
-msgstr "Dummy"
+msgstr ""
 
 #: src/utils/ui.c:529
 msgid "ALSA Sequencer"
-msgstr "Sequenciador ALSA"
+msgstr ""
 
 #. TRANSLATORS: Pan algorithm
 #: src/utils/ui.c:547
 msgid "Linear"
-msgstr "Linear"
+msgstr ""
 
 #: src/utils/ui.c:548
 msgid "Square Root"
-msgstr "Raiz Quadrada"
+msgstr ""
 
 #: src/utils/ui.c:549
 msgid "Sine (Equal Power)"
-msgstr "Seno (Potência Igual)"
+msgstr ""
 
 #: src/audio/chord_track.c:40 src/audio/chord_track.c:52
 #: resources/ui/inspector_chord.ui:31
 msgid "Chords"
-msgstr "Acordes"
+msgstr ""
 
 #: src/audio/marker_track.c:39 src/audio/marker_track.c:57
 msgid "Markers"
-msgstr "Marcadores"
+msgstr ""
 
 #: src/audio/engine_pa.c:256 src/audio/engine_pa.c:276
 #: src/audio/engine_pa.c:287
 #, c-format
 msgid "PortAudio Error: %s"
-msgstr "Erro PortAudio: %s"
+msgstr ""
 
 #: src/audio/engine.c:249
 #, c-format
@@ -983,9 +941,6 @@ msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
-"Falha ao inicializar o backend de áudio %s. Vai usar o backend fictício em "
-"vez disso. Por favor, verifique as configurações do seu backend nas "
-"Preferências."
 
 #: src/audio/engine.c:313
 #, c-format
@@ -993,38 +948,36 @@ msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
-"Falha ao inicializar o backend MIDI %s. Vai usar backend fictício em vez "
-"disso. Por favor, verifique as configurações do seu backend nas Preferências."
 
 #: src/audio/track_lane.c:64
 #, c-format
 msgid "Lane %d"
-msgstr "Pista %d"
+msgstr ""
 
 #: src/audio/engine_alsa.c:338
 #, c-format
 msgid "ALSA Error: %s"
-msgstr "Erro ALSA: %s"
+msgstr ""
 
 #: src/audio/passthrough_processor.c:92
 msgid "Pre-Fader in"
-msgstr "Pré-Fader entrada"
+msgstr ""
 
 #: src/audio/passthrough_processor.c:98
 msgid "Pre-Fader out"
-msgstr "Pré-Fader saída"
+msgstr ""
 
 #: src/audio/passthrough_processor.c:106
 msgid "MIDI pre-fader in"
-msgstr "Pré-fader MIDI entrada"
+msgstr ""
 
 #: src/audio/passthrough_processor.c:119
 msgid "MIDI pre-fader out"
-msgstr "Pré-fader MIDI saída"
+msgstr ""
 
 #: src/audio/sample_processor.c:38
 msgid "Sample Processor"
-msgstr "Processador de Exemplo"
+msgstr ""
 
 #: src/audio/track.c:1086
 msgid "Instrument"
@@ -1040,99 +993,99 @@ msgstr "MIDI"
 
 #: src/audio/track.c:1104 resources/ui/editor_toolbar.ui:58
 msgid "Chord"
-msgstr "Acorde"
+msgstr ""
 
 #: src/audio/track.c:1113
 msgid "Marker"
-msgstr "Marcador"
+msgstr ""
 
 #. TODO
 #: src/audio/scale.c:563
 msgid "Unimplemented"
-msgstr "Não implementado"
+msgstr ""
 
 #: src/audio/fader.c:104
 msgid "Fader in"
-msgstr "Fader entrada"
+msgstr ""
 
 #: src/audio/fader.c:113
 msgid "Fader out"
-msgstr "Fader saída"
+msgstr ""
 
 #: src/audio/fader.c:125
 msgid "MIDI fader in"
-msgstr "Fader MIDI entrada"
+msgstr ""
 
 #: src/audio/fader.c:138
 msgid "MIDI fader out"
-msgstr "Fader MIDI saída"
+msgstr ""
 
 #: src/audio/engine_jack.c:511
 #, c-format
 msgid "JACK Error: %s"
-msgstr "Erro JACK: %s"
+msgstr ""
 
 #. TRANSLATORS: JACK failure messages
 #: src/audio/engine_jack.c:650
 msgid "Overall operation failed"
-msgstr "Operação geral falhou"
+msgstr ""
 
 #: src/audio/engine_jack.c:653
 msgid "The operation contained an invalid or unsupported option"
-msgstr "A operação continha uma opção inválida ou não suportada"
+msgstr ""
 
 #: src/audio/engine_jack.c:657
 msgid "The desired client name was not unique"
-msgstr "O nome do cliente desejado não foi exclusivo"
+msgstr ""
 
 #: src/audio/engine_jack.c:660
 msgid "Unable to connect to the JACK server"
-msgstr "Impossível conectar ao servidor JACK"
+msgstr ""
 
 #: src/audio/engine_jack.c:663
 msgid "Communication error with the JACK server"
-msgstr "Erro de comunicação com o servidor JACK"
+msgstr ""
 
 #: src/audio/engine_jack.c:666
 msgid "Requested client does not exist"
-msgstr "O cliente solicitado não existe"
+msgstr ""
 
 #: src/audio/engine_jack.c:669
 msgid "Unable to load internal client"
-msgstr "Impossível carregar o cliente interno"
+msgstr ""
 
 #: src/audio/engine_jack.c:672
 msgid "Unable to initialize client"
-msgstr "Impossível inicializar o cliente"
+msgstr ""
 
 #: src/audio/engine_jack.c:675
 msgid "Unable to access shared memory"
-msgstr "Impossível acessar a memória compartilhada"
+msgstr ""
 
 #: src/audio/engine_jack.c:678
 msgid "Client's protocol version does not match"
-msgstr "A versão de protocolo do cliente não corresponde"
+msgstr ""
 
 #: src/audio/engine_jack.c:681
 msgid "Backend error"
-msgstr "Erro backend"
+msgstr ""
 
 #: src/audio/engine_jack.c:684
 msgid "Client zombie"
-msgstr "Cliente zumbi"
+msgstr ""
 
 #: src/actions/duplicate_chord_selections_action.c:151
 msgid "Duplicate Chord(s)"
-msgstr "Acorde(s) Duplicado(s)"
+msgstr ""
 
 #: src/actions/delete_timeline_selections_action.c:103
 #: src/actions/delete_midi_arranger_selections_action.c:103
 msgid "Delete Object(s)"
-msgstr "Apagar Objeto(s)"
+msgstr ""
 
 #: src/actions/create_chord_selections_action.c:125
 msgid "Create Chord(s)"
-msgstr "Criar Acorde(s)"
+msgstr ""
 
 #: src/actions/create_plugins_action.c:139
 #, c-format
@@ -1146,29 +1099,28 @@ msgstr "Criar %d %ss"
 
 #: src/actions/delete_tracks_action.c:113
 msgid "Delete Track"
-msgstr "Apagar Faixa"
+msgstr "Eliminar Faixa"
 
 #: src/actions/delete_tracks_action.c:116
 #, c-format
 msgid "Delete %d Tracks"
-msgstr "Apagar %d Faixas"
+msgstr "Eliminar %d Faixas"
 
 #: src/actions/edit_marker_action.c:87
 msgid "Change Marker"
-msgstr "Alterar Marcador"
+msgstr ""
 
 #: src/actions/actions.c:256
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
-"uma estação de trabalho de áudio digital altamente automatizada e intuitiva"
 
 #: src/actions/actions.c:260
 msgid "Website"
-msgstr "Site"
+msgstr "Site da Web"
 
 #: src/actions/actions.c:558
 msgid "Save Project"
-msgstr "Gravar Projeto"
+msgstr "Guardar Projeto"
 
 #: src/actions/copy_plugins_action.c:186
 #, c-format
@@ -1178,7 +1130,7 @@ msgstr "Copiar %s"
 #: src/actions/copy_plugins_action.c:190
 #, c-format
 msgid "Copy %d Plugins"
-msgstr "Copiar %d Plugins"
+msgstr "Copiar %d Plug-ins"
 
 #: src/actions/move_midi_arranger_selections_action.c:125
 #: src/actions/move_timeline_selections_action.c:122
@@ -1192,28 +1144,28 @@ msgstr "Duplicar Objeto(s)"
 
 #: src/actions/edit_midi_arranger_selections_action.c:274
 msgid "Resize MIDI Note(s)"
-msgstr "Redimensionar nota(s) MIDI"
+msgstr ""
 
 #: src/actions/edit_midi_arranger_selections_action.c:278
 msgid "Change Velocity"
-msgstr "Modificar Velocidade"
+msgstr ""
 
 #: src/actions/edit_midi_arranger_selections_action.c:280
 msgid "Change Velocities"
-msgstr "Modificar Velocidades"
+msgstr ""
 
 #: src/actions/move_automation_selections_action.c:114
 msgid "Move Automation"
-msgstr "Mover Automação"
+msgstr ""
 
 #: src/actions/create_timeline_selections_action.c:210
 #: src/actions/create_midi_arranger_selections_action.c:119
 msgid "Create Object(s)"
-msgstr "Criar Objecto(s)"
+msgstr ""
 
 #: src/actions/quantize_timeline_selections.c:167
 msgid "Quantize Object(s)"
-msgstr "Quantificar Objeto(s)"
+msgstr ""
 
 #: src/actions/move_plugins_action.c:147
 #, c-format
@@ -1223,43 +1175,43 @@ msgstr "Mover %s"
 #: src/actions/move_plugins_action.c:151
 #, c-format
 msgid "Move %d Plugins"
-msgstr "Mover %d Plugins"
+msgstr "Mover %d Plug-ins"
 
 #: src/actions/move_chord_selections_action.c:114
 msgid "Move Chord(s)"
-msgstr "Mover Acorde(s)"
+msgstr ""
 
 #: src/actions/edit_timeline_selections_action.c:261
 msgid "Resize Object(s)"
-msgstr "Redimensionar Objeto(s)"
+msgstr ""
 
 #: src/actions/edit_timeline_selections_action.c:263
 msgid "Change Name"
-msgstr "Modificar Nome"
+msgstr ""
 
 #: src/actions/edit_timeline_selections_action.c:265
 msgid "Change Clip Start Position"
-msgstr "Modificar a Posição Inicial do Clipe"
+msgstr ""
 
 #: src/actions/edit_timeline_selections_action.c:267
 msgid "Change Loop Start Position"
-msgstr "Modificar a Posição de Início de Loop"
+msgstr ""
 
 #: src/actions/edit_timeline_selections_action.c:269
 msgid "Change Loop End Position"
-msgstr "Modificar a Posição Final do Loop"
+msgstr ""
 
 #: src/actions/edit_timeline_selections_action.c:271
 msgid "Cut Region(s)"
-msgstr "Cortar Região(s)"
+msgstr ""
 
 #: src/actions/edit_tracks_action.c:160
 msgid "Solo Track"
-msgstr "Fazer a Faixa Solo"
+msgstr ""
 
 #: src/actions/edit_tracks_action.c:163
 msgid "Unsolo Track"
-msgstr "Desfazer a Faixa Solo"
+msgstr ""
 
 #: src/actions/edit_tracks_action.c:167
 msgid "Mute Track"
@@ -1267,24 +1219,24 @@ msgstr "Silenciar Faixa"
 
 #: src/actions/edit_tracks_action.c:170
 msgid "Unmute Track"
-msgstr "Desativar Silenciar Faixa"
+msgstr ""
 
 #: src/actions/edit_tracks_action.c:173
 msgid "Change Fader"
-msgstr "Modificar Fader"
+msgstr ""
 
 #: src/actions/edit_tracks_action.c:176
 msgid "Change Pan"
-msgstr "Modificar Pan"
+msgstr ""
 
 #: src/actions/move_tracks_action.c:128
 msgid "Move Track"
-msgstr "Mover Faixa"
+msgstr ""
 
 #: src/actions/move_tracks_action.c:131
 #, c-format
 msgid "Move %d Tracks"
-msgstr "Mover %d Faixas"
+msgstr ""
 
 #: src/actions/duplicate_automation_selections_action.c:150
 msgid "Duplicate Automation"
@@ -1299,7 +1251,6 @@ msgstr "%s Faixa"
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
-"Erro ao instanciar o plugin %s. Por favor, veja o registo para mais detalhes."
 
 #: src/actions/create_tracks_action.c:263
 #, c-format
@@ -1313,44 +1264,44 @@ msgstr "Criar %d %s Faixas"
 
 #: src/actions/create_automation_selections_action.c:131
 msgid "Create Automation Point(s)"
-msgstr "Criar Ponto(s) de Automação"
+msgstr ""
 
 #: src/actions/edit_chord_action.c:92
 msgid "Change Chord"
-msgstr "Modificar Acorde"
+msgstr ""
 
 #: src/actions/edit_scale_action.c:92
 msgid "Change Scale"
-msgstr "Modificar Escala"
+msgstr ""
 
 #: src/actions/delete_plugins_action.c:111
 msgid "Delete Plugin"
-msgstr "Apagar Plugin"
+msgstr ""
 
 #: src/actions/delete_plugins_action.c:114
 #, c-format
 msgid "Delete %d Plugins"
-msgstr "Apagar %d Plugins"
+msgstr ""
 
 #: resources/ui/rack_plugin.ui:31
 msgid "Plugin 1"
-msgstr "Plugin 1"
+msgstr "Plug-in 1"
 
 #: resources/ui/rack_plugin.ui:53
 msgid "in"
-msgstr "entrada"
+msgstr ""
 
 #: resources/ui/rack_plugin.ui:63
 msgid "out"
-msgstr "saída"
+msgstr ""
 
 #: resources/ui/rack_row.ui:60
 msgid "expander"
-msgstr "expansor"
+msgstr ""
 
 #: resources/ui/first_run_assistant.ui:27
 msgid "Setup Zrythm"
-msgstr "Configuração do Zrythm"
+msgstr ""
 
 #: resources/ui/first_run_assistant.ui:51
 msgid ""
@@ -1358,9 +1309,6 @@ msgid ""
 " This will guide you through the basic setup of Zrythm. First, choose your "
 "language."
 msgstr ""
-"Bem-vindo a Zrythm.\n"
-" Isto irá guiá-lo através da configuração básica do Zrythm. Primeiro, "
-"escolha a sua língua."
 
 #: resources/ui/first_run_assistant.ui:89 resources/ui/preferences.ui:392
 msgid "Language"
@@ -1371,145 +1319,143 @@ msgid ""
 "Next, choose the  location to use for saving temporary files and projects "
 "(or accept the default)"
 msgstr ""
-"Em seguida, escolha o local para gravar ficheiros temporários e projetos (ou "
-"aceite o padrão)"
 
 #: resources/ui/first_run_assistant.ui:120
 msgid "Select a folder"
-msgstr "Selecione uma pasta"
+msgstr ""
 
 #: resources/ui/first_run_assistant.ui:130
 msgid "Reset"
-msgstr "Redefinir"
+msgstr ""
 
 #: resources/ui/first_run_assistant.ui:134
 msgid "Resets the path to the default"
-msgstr "Redefine o caminho para o padrão"
+msgstr ""
 
 #: resources/ui/first_run_assistant.ui:161
 msgid "Select the audio and MIDI engine backends to use"
-msgstr "Selecione o áudio e os backends do motor MIDI usados"
+msgstr ""
 
 #: resources/ui/first_run_assistant.ui:179 resources/ui/preferences.ui:170
 msgid "MIDI Backend"
-msgstr "Backend MIDI"
+msgstr ""
 
 #: resources/ui/first_run_assistant.ui:192 resources/ui/preferences.ui:124
 msgid "Audio Backend"
-msgstr "Backend Áudio"
+msgstr ""
 
 #: resources/ui/first_run_assistant.ui:229
 msgid "Test"
-msgstr "Teste"
+msgstr ""
 
 #: resources/ui/first_run_assistant.ui:233
 msgid "Tests the backends"
-msgstr "Testa os backends"
+msgstr ""
 
 #: resources/ui/first_run_assistant.ui:244
 msgid "Backends"
-msgstr "Backends"
+msgstr ""
 
 #: resources/ui/right_dock_edge.ui:49
 msgid "Control Room"
-msgstr "Sala de Controlo"
+msgstr ""
 
 #: resources/ui/scale_selector_window.ui:51
 msgid "Root Key"
-msgstr "Chave Raiz"
+msgstr ""
 
 #: resources/ui/scale_selector_window.ui:80
 #: resources/ui/chord_selector_window.ui:78
 #: resources/ui/chord_selector_window.ui:522
 msgid "C"
-msgstr "Dó"
+msgstr "C"
 
 #: resources/ui/scale_selector_window.ui:93
 #: resources/ui/chord_selector_window.ui:91
 #: resources/ui/chord_selector_window.ui:535
 msgid "D♭"
-msgstr "Ré♭"
+msgstr "D♭"
 
 #: resources/ui/scale_selector_window.ui:106
 #: resources/ui/chord_selector_window.ui:104
 #: resources/ui/chord_selector_window.ui:548
 msgid "D"
-msgstr "Ré"
+msgstr "D"
 
 #: resources/ui/scale_selector_window.ui:119
 #: resources/ui/chord_selector_window.ui:117
 #: resources/ui/chord_selector_window.ui:561
 msgid "E♭"
-msgstr "Mi♭"
+msgstr "E♭"
 
 #: resources/ui/scale_selector_window.ui:132
 #: resources/ui/chord_selector_window.ui:130
 #: resources/ui/chord_selector_window.ui:574
 msgid "E"
-msgstr "Mi"
+msgstr "E"
 
 #: resources/ui/scale_selector_window.ui:145
 #: resources/ui/chord_selector_window.ui:143
 #: resources/ui/chord_selector_window.ui:587
 msgid "F"
-msgstr "Fa"
+msgstr "F"
 
 #: resources/ui/scale_selector_window.ui:158
 #: resources/ui/chord_selector_window.ui:156
 #: resources/ui/chord_selector_window.ui:600
 msgid "F♯"
-msgstr "Fa♯"
+msgstr "F♯"
 
 #: resources/ui/scale_selector_window.ui:171
 #: resources/ui/chord_selector_window.ui:169
 #: resources/ui/chord_selector_window.ui:613
 msgid "G"
-msgstr "Sol"
+msgstr "G"
 
 #: resources/ui/scale_selector_window.ui:184
 #: resources/ui/chord_selector_window.ui:182
 #: resources/ui/chord_selector_window.ui:626
 msgid "A♭"
-msgstr "La♭"
+msgstr "A♭"
 
 #: resources/ui/scale_selector_window.ui:197
 #: resources/ui/chord_selector_window.ui:195
 #: resources/ui/chord_selector_window.ui:639
 msgid "A"
-msgstr "La"
+msgstr "A"
 
 #: resources/ui/scale_selector_window.ui:210
 #: resources/ui/chord_selector_window.ui:208
 #: resources/ui/chord_selector_window.ui:652
 msgid "B♭"
-msgstr "Ci♭"
+msgstr "B♭"
 
 #: resources/ui/scale_selector_window.ui:223
 #: resources/ui/chord_selector_window.ui:221
 #: resources/ui/chord_selector_window.ui:665
 msgid "B"
-msgstr "Ci"
+msgstr "B"
 
 #: resources/ui/scale_selector_window.ui:240 resources/ui/inspector_chord.ui:43
 #: resources/ui/editor_toolbar.ui:59
 msgid "Scale"
-msgstr "Escala"
+msgstr ""
 
 #: resources/ui/scale_selector_window.ui:267
 msgid "Chromatic"
-msgstr "Cromático"
+msgstr ""
 
 #: resources/ui/scale_selector_window.ui:280
 msgid "Ionian (Major)"
-msgstr "Jónico (Major)"
+msgstr ""
 
 #: resources/ui/scale_selector_window.ui:293
 msgid "Aeolian (Natural Minor)"
-msgstr "Eólica (Menor Natural)"
+msgstr ""
 
 #: resources/ui/scale_selector_window.ui:306
 msgid "Harmonic Minor"
-msgstr "Harmônica Menor"
+msgstr ""
 
 #: resources/ui/scale_selector_window.ui:342
 #: resources/ui/chord_selector_window.ui:746
@@ -1519,16 +1465,16 @@ msgstr "Criador"
 #: resources/ui/scale_selector_window.ui:358
 #: resources/ui/chord_selector_window.ui:876
 msgid "TODO keyboard"
-msgstr "TODO Teclado"
+msgstr ""
 
 #: resources/ui/scale_selector_window.ui:368
 #: resources/ui/chord_selector_window.ui:886 resources/ui/export_dialog.ui:250
 msgid "Custom"
-msgstr "Personalizado"
+msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:46
 msgid "Piano roll panel"
-msgstr "Painel cílindros de piano"
+msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:61
 msgid "Editor"
@@ -1536,7 +1482,7 @@ msgstr "Editor"
 
 #: resources/ui/bot_dock_edge.ui:84
 msgid "Mixer panel"
-msgstr "Painel Misturador"
+msgstr "Painel do misturador"
 
 #: resources/ui/bot_dock_edge.ui:99
 msgid "Mixer"
@@ -1548,7 +1494,7 @@ msgstr "Moduladores"
 
 #: resources/ui/bot_dock_edge.ui:173
 msgid "Chord Pad"
-msgstr "Pad Acordes"
+msgstr ""
 
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
@@ -1556,7 +1502,7 @@ msgstr "Selecionar Projeto"
 
 #: resources/ui/project_assistant.ui:43
 msgid "Select a project"
-msgstr "Selecione um projeto"
+msgstr "Selelcionar um projeto"
 
 #: resources/ui/project_assistant.ui:102
 msgid "Remove"
@@ -1564,15 +1510,15 @@ msgstr "Remover"
 
 #: resources/ui/project_assistant.ui:106
 msgid "Removes selected project from the list"
-msgstr "Remove o projeto selecionado da lista"
+msgstr ""
 
 #: resources/ui/project_assistant.ui:130
 msgid "Select a template"
-msgstr "Selecione um modelo"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:51
 msgid "Root Note"
-msgstr "Nota de Raiz"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:238 resources/ui/file_browser.ui:84
 #: resources/ui/snap_grid_popover.ui:127
@@ -1581,31 +1527,31 @@ msgstr "Tipo"
 
 #: resources/ui/chord_selector_window.ui:264
 msgid "maj"
-msgstr "maj"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:277
 msgid "min"
-msgstr "min"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:290
 msgid "dim"
-msgstr "dim"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:303
 msgid "sus4"
-msgstr "sus4"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:316
 msgid "sus2"
-msgstr "sus2"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:329
 msgid "aug"
-msgstr "aug"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:346
 msgid "Accent"
-msgstr "Acento"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:374
 msgid "7"
@@ -1645,15 +1591,15 @@ msgstr "6/13"
 
 #: resources/ui/chord_selector_window.ui:495
 msgid "Bass Note"
-msgstr "Nota Baixo"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:700
 msgid "All"
-msgstr "Todos"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:716
 msgid "In scale"
-msgstr "Em escala"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:767
 msgid "I"
@@ -1685,15 +1631,15 @@ msgstr "VII"
 
 #: resources/ui/chord_selector_window.ui:865
 msgid "Diatonic"
-msgstr "Diatônico"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:897
 msgid "TODO"
-msgstr "A FAZER"
+msgstr ""
 
 #: resources/ui/chord_selector_window.ui:907
 msgid "Circle of Fifths"
-msgstr "Círculo de Quintos"
+msgstr ""
 
 #: resources/ui/create_project_dialog.ui:23
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
@@ -1707,11 +1653,11 @@ msgstr "Cancelar"
 
 #: resources/ui/create_project_dialog.ui:69
 msgid "Parent directory"
-msgstr "Abrir diretório"
+msgstr "Diretoria fonte"
 
 #: resources/ui/create_project_dialog.ui:82
 msgid "Select parent directory to save the project in"
-msgstr "Selecione o diretório pai para lá gravar o projeto"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
@@ -1723,7 +1669,7 @@ msgstr "Geral"
 
 #: resources/ui/shortcuts.ui:54
 msgid "Toggle Fullscreen"
-msgstr "Alternar ecrã inteiro"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:61
 msgid "Quit"
@@ -1731,19 +1677,19 @@ msgstr "Sair"
 
 #: resources/ui/shortcuts.ui:71
 msgid "Panels"
-msgstr "Painéis"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:75
 msgid "Toggle left panel"
-msgstr "Alternar painel esquerdo"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:82
 msgid "Toggle right panel"
-msgstr "Alternar painel direito"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:89
 msgid "Toggle bottom panel"
-msgstr "Alternar painel inferior"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:99 resources/ui/header_notebook.ui:55
 msgid "Project"
@@ -1755,7 +1701,7 @@ msgstr "Abrir um projeto"
 
 #: resources/ui/shortcuts.ui:118
 msgid "Save the project"
-msgstr "Gravar o projeto"
+msgstr "Guardar o projeto"
 
 #: resources/ui/shortcuts.ui:127
 msgid "Copy and Paste"
@@ -1767,23 +1713,23 @@ msgstr "Copiar seleção para a área de transferência"
 
 #: resources/ui/shortcuts.ui:139
 msgid "Cut selection to clipboard"
-msgstr "Cortar seleção para a área de transferência"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:146
 msgid "Paste from clipboard"
-msgstr "Colar da área de transferência"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:155
 msgid "Undo and Redo"
-msgstr "Desfazer e Refazer"
+msgstr "Anular e Refazer"
 
 #: resources/ui/shortcuts.ui:160
 msgid "Undo previous command"
-msgstr "Desfazer comando anterior"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:167
 msgid "Redo previous command"
-msgstr "Refazer comando anterior"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:176
 msgid "Selections"
@@ -1795,11 +1741,11 @@ msgstr "Selecionar tudo"
 
 #: resources/ui/shortcuts.ui:188
 msgid "Unselect all"
-msgstr "Desmarcar tudo"
+msgstr "Desselecionar tudo"
 
 #: resources/ui/shortcuts.ui:200
 msgid "Editor Shortcuts"
-msgstr "Atalhos do Editor"
+msgstr "Editar Atalhos"
 
 #: resources/ui/shortcuts.ui:204
 msgid "Tool"
@@ -1807,35 +1753,35 @@ msgstr "Ferramenta"
 
 #: resources/ui/shortcuts.ui:208
 msgid "Select/Stretch tool"
-msgstr "Ferramenta de Selecionar / Alongar"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:215
 msgid "Pencil tool"
-msgstr "Ferramenta de lápis"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:222
 msgid "Eraser tool"
-msgstr "Ferramenta de borracha"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:229
 msgid "Ramp tool"
-msgstr "Ferramenta de rampa"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:236
 msgid "Audition tool"
-msgstr "Ferramenta de audição"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:246
 msgid "Zooming"
-msgstr "Amunentando"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:251
 msgid "Zoom in"
-msgstr "Aumentar"
+msgstr "Zoom +"
 
 #: resources/ui/shortcuts.ui:258
 msgid "Zoom out"
-msgstr "Diminuir"
+msgstr "Zoom -"
 
 #: resources/ui/shortcuts.ui:265
 msgid "Best fit"
@@ -1847,117 +1793,117 @@ msgstr "Tamanho original"
 
 #: resources/ui/shortcuts.ui:281
 msgid "Quantizing"
-msgstr "Quantificação"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:286 resources/ui/quantize_box.ui:39
 msgid "Quick Quantize"
-msgstr "Quantificação rápida"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:293
 msgid "Quantize"
-msgstr "Quantificar"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:302
 msgid "Looping"
-msgstr "Looping"
+msgstr ""
 
 #: resources/ui/shortcuts.ui:307
 msgid "Loop selection"
-msgstr "Seleção de loop"
+msgstr ""
 
 #: resources/ui/midi_controller_popover.ui:37
 msgid "Controllers found"
-msgstr "Controladores encontrados"
+msgstr ""
 
 #: resources/ui/midi_controller_popover.ui:79
 msgid "Rescan"
-msgstr "Verificar novamente"
+msgstr ""
 
 #: resources/ui/midi_controller_popover.ui:83
 msgid "Scan again for MIDI controllers"
-msgstr "Procurar novamente por controladores MIDI"
+msgstr ""
 
 #: resources/ui/midi_editor_space.ui:144 resources/ui/chord_editor_space.ui:152
 #: resources/ui/automation_editor_space.ui:114
 msgid "Velocity"
-msgstr "Velocidade"
+msgstr ""
 
 #: resources/ui/midi_editor_space.ui:145 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:115
 msgid "Pitch Wheel"
-msgstr "Roda de Tom"
+msgstr ""
 
 #: resources/ui/midi_editor_space.ui:146 resources/ui/chord_editor_space.ui:154
 #: resources/ui/automation_editor_space.ui:116
 msgid "Mod Wheel"
-msgstr "Roda Mod"
+msgstr ""
 
 #: resources/ui/midi_editor_space.ui:147 resources/ui/chord_editor_space.ui:155
 #: resources/ui/automation_editor_space.ui:117
 msgid "Aftertouch"
-msgstr "Aftertouch"
+msgstr ""
 
 #: resources/ui/automatable_selector.ui:104
 msgid "label"
-msgstr "etiqueta"
+msgstr ""
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
-msgstr "Impor escala"
+msgstr ""
 
 #: resources/ui/inspector_master.ui:31 resources/ui/inspector_ap.ui:31
 #: resources/ui/inspector_midi.ui:31
 msgid "Region"
-msgstr "Região"
+msgstr ""
 
 #: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
 #: resources/ui/inspector_midi.ui:43
 msgid "region_name"
-msgstr "nome_da_região"
+msgstr ""
 
 #: resources/ui/inspector_master.ui:44 resources/ui/inspector_ap.ui:44
 #: resources/ui/inspector_midi.ui:44
 msgid "Enter region name..."
-msgstr "Introduza o nome da região..."
+msgstr ""
 
 #: resources/ui/inspector_master.ui:67 resources/ui/inspector_ap.ui:67
 #: resources/ui/inspector_midi.ui:67
 msgid "Color"
-msgstr "Cor"
+msgstr ""
 
 #: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
 #: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:88
 msgid "Length"
-msgstr "Comprimento"
+msgstr ""
 
 #: resources/ui/inspector_master.ui:113 resources/ui/inspector_ap.ui:113
 #: resources/ui/inspector_midi.ui:113
 msgid "Muted"
-msgstr "Silenciado"
+msgstr ""
 
 #: resources/ui/track_lane.ui:34
 msgid "Lane 1"
-msgstr "Pista 1"
+msgstr ""
 
 #: resources/ui/track_lane.ui:106
 msgid "MIDI Ch"
-msgstr "Can MIDI"
+msgstr ""
 
 #: resources/ui/track_lane.ui:121
 msgid "MIDI channel for this lane"
-msgstr "Canal MIDI para esta pista"
+msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:36
 msgid "Select MIDI file"
-msgstr "Selecionar ficheiro MIDI"
+msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:69
 msgid "_Export"
-msgstr "_Exportar"
+msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:104
 msgid "Region content"
-msgstr "Conteúdo da região"
+msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:116
 msgid ""
@@ -1965,202 +1911,199 @@ msgid ""
 "points), or \"Full region\" to save the whole region as Zrythm would play it "
 "(traversing loops)."
 msgstr ""
-"Seleccione \"Região base\" para gravar a região original (sem loops/pontos "
-"de início de clipe), ou \"Região completa\" para gravar toda a região como "
-"Zrythm a reproduziria (loops transversais)."
 
 #: resources/ui/export_midi_file_dialog.ui:120
 msgid "Base region"
-msgstr "Região de base"
+msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:121
 msgid "Full region"
-msgstr "Região completa"
+msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:145
 #: resources/ui/export_midi_file_dialog.ui:157
 msgid "MIDI format"
-msgstr "Formato MIDI"
+msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:161
 msgid "Format 0"
-msgstr "Format 0"
+msgstr ""
 
 #: resources/ui/export_midi_file_dialog.ui:162
 msgid "Format 1"
-msgstr "Format 1"
+msgstr ""
 
 #: resources/ui/modulator_view.ui:53 resources/ui/clip_editor_inner.ui:53
 msgid "Track name"
-msgstr "Nome da faixa"
+msgstr ""
 
 #: resources/ui/port_selector_popover.ui:36
 msgid "Select a port..."
-msgstr "Selecione uma porta...."
+msgstr ""
 
 #: resources/ui/port_selector_popover.ui:61
 msgid "Track"
-msgstr "Faixa"
+msgstr ""
 
 #: resources/ui/port_selector_popover.ui:114
 msgid "Plugin"
-msgstr "Plugin"
+msgstr ""
 
 #: resources/ui/port_selector_popover.ui:167
 msgid "Port"
-msgstr "Porta"
+msgstr ""
 
 #: resources/ui/transport_controls.ui:54
 msgid "Play"
-msgstr "Reproduzir"
+msgstr ""
 
 #: resources/ui/transport_controls.ui:69
 msgid "Stop"
-msgstr "Parar"
+msgstr ""
 
 #: resources/ui/transport_controls.ui:87
 msgid "Backward"
-msgstr "Para trás"
+msgstr ""
 
 #: resources/ui/transport_controls.ui:105
 msgid "Forward"
-msgstr "Para a frente"
+msgstr ""
 
 #: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:238
 msgid "Loop"
-msgstr "Loop"
+msgstr ""
 
 #: resources/ui/splash.ui:66
 msgid "Initializing..."
-msgstr "Inicializando..."
+msgstr ""
 
 #: resources/ui/automator.ui:32
 msgid "LFO 1"
-msgstr "LFO 1"
+msgstr ""
 
 #: resources/ui/export_progress_dialog.ui:25
 msgid "Open Directory"
-msgstr "Abrir Diretório"
+msgstr ""
 
 #: resources/ui/export_progress_dialog.ui:28
 msgid "Opens the containing directory"
-msgstr "Abre o diretório acima"
+msgstr ""
 
 #: resources/ui/export_progress_dialog.ui:69
 msgid "Exporting..."
-msgstr "Exportando..."
+msgstr ""
 
 #: resources/ui/automation_track.ui:95
 msgid "RW"
-msgstr "RW"
+msgstr ""
 
 #: resources/ui/automation_track.ui:99
 msgid "Write automation"
-msgstr "Automação de gravação"
+msgstr ""
 
 #: resources/ui/automation_track.ui:112
 msgid "R"
-msgstr "R"
+msgstr ""
 
 #: resources/ui/automation_track.ui:116
 msgid "Read automation"
-msgstr "Automação de leitura"
+msgstr ""
 
 #: resources/ui/automation_track.ui:137
 msgid "0.0"
-msgstr "0.0"
+msgstr ""
 
 #: resources/ui/file_browser.ui:107
 msgid "Location"
-msgstr "Localização"
+msgstr ""
 
 #: resources/ui/marker_dialog.ui:94
 msgid "Marker name"
-msgstr "Nome do marcador"
+msgstr ""
 
 #: resources/ui/header_notebook.ui:37
 msgid "Home"
-msgstr "Início"
+msgstr ""
 
 #: resources/ui/header_notebook.ui:74
 msgid "View"
-msgstr "Visualização"
+msgstr ""
 
 #: resources/ui/header_notebook.ui:93
 msgid "Help"
-msgstr "Ajuda"
+msgstr ""
 
 #: resources/ui/header_notebook.ui:146
 msgid "Project name"
-msgstr "Nome do projeto"
+msgstr ""
 
 #: resources/ui/quantize_dialog.ui:7
 msgid "Quantize Options"
-msgstr "Opções de Quantificação"
+msgstr ""
 
 #: resources/ui/quantize_dialog.ui:23
 msgid "_Quantize"
-msgstr "_Quantificar"
+msgstr ""
 
 #: resources/ui/quantize_dialog.ui:77
 msgid "Quantize to"
-msgstr "Quantificar para"
+msgstr ""
 
 #: resources/ui/quantize_dialog.ui:132
 msgid "Adjust"
-msgstr "Ajustar"
+msgstr ""
 
 #: resources/ui/quantize_dialog.ui:183
 msgid "Amount"
-msgstr "Quantidade"
+msgstr ""
 
 #: resources/ui/quantize_dialog.ui:223
 msgid "Swing"
-msgstr "Balanço"
+msgstr ""
 
 #: resources/ui/quantize_dialog.ui:251
 msgid "Randomization"
-msgstr "Randomização"
+msgstr ""
 
 #: resources/ui/top_bar.ui:31
 msgid "Metronome"
-msgstr "Metrónomo"
+msgstr ""
 
 #: resources/ui/top_bar.ui:87
 msgid "MIDI in activity"
-msgstr "MIDI em atividade"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:27
 msgid "Export As..."
-msgstr "Exportar como..."
+msgstr ""
 
 #: resources/ui/export_dialog.ui:59
 msgid "Export"
-msgstr "Exportar"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:86
 msgid "Artist"
-msgstr "Artista"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:97
 msgid "Genre"
-msgstr "Gênero"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:108 data/zrythm.desktop.in:20
 msgid "Zrythm"
-msgstr "Zrythm"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:119
 msgid "Electronic"
-msgstr "Eletrônica"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:130
 msgid "Format"
-msgstr "Formato"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:149
 msgid "Dither"
-msgstr "Dither"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:176
 msgid ""
@@ -2172,292 +2115,174 @@ msgid ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 msgstr ""
-"Os seguintes ficheiros serão criados:\n"
-"\n"
-"Master.wav\n"
-"\n"
-"no diretório:\n"
-"\n"
-"/home/alex/Zrythm/Projects/project1/exports/20181023"
 
 #: resources/ui/export_dialog.ui:194
 msgid "Output Files"
-msgstr "Ficheiros de Saída"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:206
 msgid "Filename Pattern"
-msgstr "Padrão de Nome de Ficheiro"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:226
 msgid "Song"
-msgstr "Canção"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:264
 msgid "Time Range"
-msgstr "Intervalo de Tempo"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:276
 msgid "Tracks"
-msgstr "Faixas"
+msgstr ""
 
 #: resources/ui/export_dialog.ui:297
 msgid "Bit depth"
-msgstr "Profundidade de bits"
+msgstr ""
 
 #: resources/ui/main_window.ui:119
 msgid "This is an app-notification. Click the button to dismiss"
-msgstr "Isto é uma notificação de aplicação. Clique no botão para descartar"
+msgstr ""
 
 #: resources/ui/clip_editor.ui:30
 msgid "No clip selected"
-msgstr "Nenhum clipe selecionado"
+msgstr ""
 
 #: resources/ui/quantize_box.ui:61
 msgid "Full Quantize..."
-msgstr "Quantificação Completa..."
+msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:37
 msgid "Grid"
-msgstr "Grelha"
+msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:47
 msgid "Adaptive Grid"
-msgstr "Grade Adaptativa"
+msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:66
 msgid "Snap"
-msgstr "Snap"
+msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:87
 msgid "Note length to snap to"
-msgstr "Comprimento da nota para snap"
+msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:126
 msgid "Note type"
-msgstr "Tipo de nota"
+msgstr ""
 
 #: resources/ui/editor_toolbar.ui:47
 msgid "Highlight"
-msgstr "Destacar"
+msgstr ""
 
 #: resources/ui/editor_toolbar.ui:57
 msgid "None"
-msgstr "Nenhum"
+msgstr ""
 
 #: resources/ui/editor_toolbar.ui:60
 msgid "Both"
-msgstr "Ambos"
+msgstr ""
 
 #: resources/ui/preferences.ui:110
 msgid "Engine"
-msgstr "Motor"
+msgstr ""
 
 #: resources/ui/preferences.ui:135
 msgid "The audio backend to connect to"
-msgstr "O backend de áudio para se conectar"
+msgstr ""
 
 #: resources/ui/preferences.ui:148
 msgid "MIDI Controllers"
-msgstr "Controladores MIDI"
+msgstr ""
 
 #: resources/ui/preferences.ui:181
 msgid "The MIDI backend to connect to"
-msgstr "O backend MIDI para se conectar"
+msgstr ""
 
 #: resources/ui/preferences.ui:193
 msgid "Pan Algorithm"
-msgstr "Algoritmo de Pan"
+msgstr ""
 
 #: resources/ui/preferences.ui:204
 msgid "Pan Law"
-msgstr "Lei Pan"
+msgstr ""
 
 #: resources/ui/preferences.ui:215
 msgid "The pan algorithm to use"
-msgstr "O algoritmo de pan para usar"
+msgstr ""
 
 #: resources/ui/preferences.ui:227
 msgid "The pan law to use"
-msgstr "A Pan law para usar"
+msgstr ""
 
 #: resources/ui/preferences.ui:239
 msgid "Zrythm path"
-msgstr "Caminho de Zrythm"
+msgstr ""
 
 #: resources/ui/preferences.ui:250
 msgid "The global Zrythm working path for non-project related files"
 msgstr ""
-"O caminho de trabalho global do Zrythm para ficheiros não relacionados a "
-"projetos"
 
 #: resources/ui/preferences.ui:280 resources/ui/preferences.ui:313
 msgid "Plugins"
-msgstr "Plugins"
+msgstr ""
 
 #: resources/ui/preferences.ui:290
 msgid "Always open plugin UIs"
-msgstr "Sempre abrir UIs de plugins"
+msgstr ""
 
 #: resources/ui/preferences.ui:294
 msgid "Always show the plugin UI when instantiating a plugin"
-msgstr "Mostrar sempre o plugin UI ao instanciar um plugin"
+msgstr ""
 
 #: resources/ui/preferences.ui:329
 msgid "Main Window"
-msgstr "Janela Principal"
+msgstr ""
 
 #: resources/ui/preferences.ui:339
 msgid "Show native decoration"
-msgstr "Mostrar decoração nativa"
+msgstr ""
 
 #: resources/ui/preferences.ui:362
 msgid "Editing"
-msgstr "Edição"
+msgstr ""
 
 #: resources/ui/preferences.ui:378
 msgid "Interface"
-msgstr "Interface"
+msgstr ""
 
 #: resources/ui/preferences.ui:403
 msgid "The language of the Zrythm interface"
-msgstr "O idioma da interface Zrythm"
+msgstr ""
 
 #: resources/ui/preferences.ui:420
 msgid "GUI"
-msgstr "GUI"
+msgstr ""
 
 #: resources/ui/preferences.ui:437 resources/ui/preferences.ui:483
 msgid "Projects"
-msgstr "Projetos"
+msgstr ""
 
 #: resources/ui/preferences.ui:449
 msgid "Autosave interval"
-msgstr "Intervalo de gravamento automático"
+msgstr ""
 
 #: resources/ui/preferences.ui:460
 msgid ""
 "Set the interval to auto-save project backups, in minutes. Setting this to 0 "
 "will disable auto-save"
 msgstr ""
-"Definir o intervalo para gravar automaticamente os backups do projeto, em "
-"minutos. Configura-lo para 0 irá desativar a gravação automática"
 
 #: data/zrythm.desktop.in:21
 msgid "Digital Audio Workstation"
-msgstr "Estação de Trabalho de Áudio Digital"
+msgstr ""
 
 #: data/zrythm.desktop.in:23
 msgid "highly automated and intuitive digital audio workstation"
 msgstr ""
-"uma estação de trabalho de áudio digital altamente automatizada e intuitiva"
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:26
 msgid "zrythm"
-msgstr "zrythm"
-
-#~ msgid "Track Info"
-#~ msgstr "Informações da Faixa"
-
-#~ msgid "Bus"
-#~ msgstr "Bus"
-
-#~ msgid "Group"
-#~ msgstr "Grupo"
-
-#~ msgid "Export Audio"
-#~ msgstr "Exportar Áudio"
-
-#~ msgid ""
-#~ "Project doesn't have a path yet. Please save the project before exporting."
-#~ msgstr ""
-#~ "O projecto ainda não tem um caminho. Por favor, grave o projeto antes de "
-#~ "exportar."
-
-#~ msgid "Left"
-#~ msgstr "Esquerda"
-
-#~ msgid "Bot"
-#~ msgstr "Robô"
-
-#~ msgid "Right"
-#~ msgstr "Direita"
-
-#~ msgid "Show Lanes - Shows the track's lanes"
-#~ msgstr "Mostrar pistas - Mostra as pistas da faixa"
-
-#~ msgid ""
-#~ "Channel Slot - Double click to open plugin - Click and drag to move plugin"
-#~ msgstr ""
-#~ "Compartimento de Canal - Clique duas vezes para abrir o plugin - Clique e "
-#~ "arraste para mover o plugin"
-
-#~ msgid ""
-#~ "Region - Click and drag to move around (hold Shift to disable snapping) - "
-#~ "Double click to bring up the clip editor"
-#~ msgstr ""
-#~ "Região - Clique e arraste para mover-se (segure Shift para desativar o "
-#~ "snapping) - Clique duas vezes para abrir o editor de clipes"
-
-#~ msgid ""
-#~ "Marker - Click and drag to move - HoldShift to bypass snapping - Double "
-#~ "click to edit name"
-#~ msgstr ""
-#~ "Marcador - Clique e arraste para mover - Segure Shift para contornar o "
-#~ "snapping - Clique duas vezes para editar o nome"
-
-#~ msgid ""
-#~ "Chord - Click and drag to move around (hold Shift to disable snapping)"
-#~ msgstr ""
-#~ "Acorde - Clique e arraste para mover-se (segure Shift para desativar "
-#~ "snapping)"
-
-#~ msgid "Solo"
-#~ msgstr "Solo"
-
-#~ msgid "Mute"
-#~ msgstr "Silenciar"
-
-#~ msgid "Freeze"
-#~ msgstr "Congelar"
-
-#~ msgid "Lock"
-#~ msgstr "Bloquear"
-
-#~ msgid "Show UI"
-#~ msgstr "Mostrar UI"
-
-#~ msgid "Show Automation Lanes"
-#~ msgstr "Mostrar Pistas de Automação"
-
-#~ msgid ""
-#~ "Track - Change track parameters like Solo/Mute... - Click the icon on the "
-#~ "bottom right to bring up the automation lanes - Double click to show "
-#~ "corresponding channel in Mixer (if applicable)"
-#~ msgstr ""
-#~ "Track - Altera os parâmetros da faixa como Solo/Silenciar.... - Clique no "
-#~ "ícone no canto direito inferior para abrir as pistas de automação - "
-#~ "Clique duas vezes para mostrar o canal correspondente no Misturador (se "
-#~ "aplicável)"
-
-#~ msgid "Fader - Click and drag to change value"
-#~ msgstr "Fader - Clique e arraste para alterar o valor"
-
-#~ msgid ""
-#~ "Finally, select the MIDI devices you wish to auto-connect when Zrythm "
-#~ "starts (You can skip this step and set them up later)"
-#~ msgstr ""
-#~ "Finalmente, selecione os aparelhos MIDI que você deseja auto-conectar "
-#~ "quando o Zrythm iniciar (você pode pular este passo e configurá-los mais "
-#~ "tarde)"
-
-#~ msgid "MIDI Devices"
-#~ msgstr "Aparelhos MIDI"
-
-#~ msgid "When instantiating a plugin always show its UI"
-#~ msgstr "Ao instanciar um plugin mostrar sempre sua interface do usuário"
-
-#~ msgid "An highly automated, intuitive, Digital Audio Workstation (DAW)"
-#~ msgstr ""
-#~ "Uma estação de trabalho de áudio digital altamente automatizada e "
-#~ "intuitiva"
+msgstr ""
