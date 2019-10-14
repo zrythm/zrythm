@@ -3,6 +3,11 @@
   <mime-type type="application/x-zrythm-project">
     <comment>Zrythm project</comment>
     <comment xml:lang="fr">Projet Zrythm</comment>
-    <glob pattern="*.zrythm"/>
+    <glob pattern="*.zpj"/>
+  </mime-type>
+  <!-- see #1062 -->
+  <mime-type type="application/x-zrythm-package">
+    <comment>Zrythm package</comment>
+    <glob pattern="*.zpx"/>
   </mime-type>
 </mime-info>

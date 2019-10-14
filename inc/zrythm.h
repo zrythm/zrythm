@@ -36,9 +36,7 @@
 
 #define ZRYTHM_APP_TYPE (zrythm_app_get_type ())
 G_DECLARE_FINAL_TYPE (
-  ZrythmApp,
-  zrythm_app,
-  ZRYTHM, APP,
+  ZrythmApp, zrythm_app, ZRYTHM, APP,
   GtkApplication)
 
 typedef struct _MainWindowWidget MainWindowWidget;

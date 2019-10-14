@@ -68,7 +68,7 @@ typedef struct Track ChordTrack;
 
 #define PROJECT                 ZRYTHM->project
 #define DEFAULT_PROJECT_NAME    "Untitled Project"
-#define PROJECT_FILE            "project.yml"
+#define PROJECT_FILE            "project.zpj"
 #define PROJECT_BACKUPS_DIR     "backups"
 #define PROJECT_STATES_DIR      "states"
 #define PROJECT_EXPORTS_DIR     "exports"
