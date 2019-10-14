@@ -1,6 +1,36 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.001] - 2019-10-14
+- Use a lock-free queue while processing instead of a mutex
+- Add caching where pango is used to draw text
+- Add `ZRYTHM_DSP_THREADS`, `NO_SCAN_PLUGINS` and `ZRYTHM_DEBUG` environment variables
+- Add .zpx and .zpj extensions for Zrythm projects and packages
+- Add option (on by default) to keep plugin windows on top
+- Move file browser to popup window instead of right panel
+- Show plugin scan progress
+- Make panel icons larger
+- Change plugin window titles to show track name, plugin name and preset, if any
+- Various optimizations
+- Add some missing dialog icons
+- Add additional checks in the project assistant
+- Export in chunks when exporting the project to audio
+- Fix MIDI note staying on after region ends
+- Fix crash when no hardware ports found
+- Fix error when project list is empty
+- Fix panels getting weird positions when hiding and re-showing
+- Fix various memory leaks
+- Fix osx build
+- Fix crash when clicking piano roll key labels
+- Fix some crashes when duplicating tracks
+- Fix graph getting recalculated twice when clicking on a region
+- Fix crash when trying to add a port connection
+- Fix grab broken warnings when clicking on a MIDI note after project load
+- Set GTK dependency to 3.24
+- Clean up log messages
+- Make `config_h` a meson dependency to ensure it gets generated before building sources
+- Add tests for MIDI track and position
+
 ## [0.6.502] - 2019-10-08
 - Add caching for drawing automation regions
 - Allow direct routing from midi track to instrument track
