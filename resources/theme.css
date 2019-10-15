@@ -127,7 +127,7 @@ scale-object,
 midi-note,
 velocity
 {
-  box-shadow: 2px 2px 6px alpha (black, 0.1);
+  /*box-shadow: 2px 2px 6px alpha (black, 0.1);*/
 }
 
 region
@@ -143,7 +143,7 @@ midi-note:selected,
 velocity:selected,
 automation-point:selected
 {
-  box-shadow: 2px 2px 10px @selection_color;
+  /*box-shadow: 2px 2px 10px @selection_color;*/
   /*border-color: gray;*/
   /*border-width: 1px;*/
   /*border-style: solid;*/
@@ -163,7 +163,7 @@ velocity:hover,
 automation-point:hover,
 automation-curve:hover
 {
-  box-shadow: 2px 2px 10px @hover_color;
+  /*box-shadow: 2px 2px 10px @hover_color;*/
 }
 
 arranger-playhead

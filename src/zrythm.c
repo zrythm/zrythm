@@ -47,6 +47,7 @@
 #include "utils/localization.h"
 #include "utils/log.h"
 #include "utils/io.h"
+#include "utils/ui.h"
 #include "zrythm.h"
 
 #include "Wrapper.h"
@@ -346,9 +347,10 @@ init_thread (
     0.0);
   ZRYTHM->symap = symap_new ();
   SET_PROG (
-    _("Initializing cairo caches"),
+    _("Initializing caches"),
     0.05);
   CAIRO_CACHES = z_cairo_caches_new ();
+  UI_CACHES = ui_caches_new ();
   SET_PROG (
     _("Initializing settings"),
     0.1);

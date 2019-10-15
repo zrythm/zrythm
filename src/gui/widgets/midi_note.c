@@ -186,7 +186,7 @@ midi_note_draw_cb (
     }
 
   GdkRGBA c2;
-  ui_get_contrast_text_color (
+  ui_get_contrast_color (
     &color, &c2);
   gdk_cairo_set_source_rgba (cr, &c2);
   if (DEBUGGING || !PIANO_ROLL->drum_mode)

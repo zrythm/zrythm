@@ -43,6 +43,7 @@ typedef struct _MainWindowWidget MainWindowWidget;
 typedef struct Project Project;
 typedef struct Symap Symap;
 typedef struct CairoCaches CairoCaches;
+typedef struct UiCaches UiCaches;
 
 /**
  * @addtogroup general
@@ -143,6 +144,8 @@ typedef struct Zrythm
   Symap *                 symap;
 
   CairoCaches *           cairo_caches;
+
+  UiCaches *              ui_caches;
 
   /**
    * In debug mode or not (determined by GSetting).

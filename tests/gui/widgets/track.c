@@ -56,7 +56,7 @@ test_instrument_track_fishbowl ()
   g_type_ensure (DZL_TYPE_MULTI_PANED);
   guint count =
     fishbowl_window_widget_run (
-      fishbowl_creation_func, 10);
+      fishbowl_creation_func, 100);
 }
 
 int

@@ -54,22 +54,19 @@ static GdkRGBA name_bg_color;
 
 static gboolean
 region_draw_cb (
-  RegionWidget * self,
+  GtkWidget * widget,
   cairo_t *cr,
-  gpointer data)
+  RegionWidget * self)
 {
-  REGION_WIDGET_GET_PRIVATE (data);
+  REGION_WIDGET_GET_PRIVATE (self);
   Region * r = rw_prv->region;
 
   GtkStyleContext *context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self));
+    gtk_widget_get_style_context (widget);
   int width =
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (self));
+    gtk_widget_get_allocated_width (widget);
   int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self));
+    gtk_widget_get_allocated_height (widget);
 
   gtk_render_background (
     context, cr, 0, 0, width, height);
@@ -96,17 +93,32 @@ region_draw_cb (
     color.alpha = 0.2;
   else
     color.alpha = region_is_transient (r) ? 0.7 : 1.0;
-  gdk_cairo_set_source_rgba (
-    cr, &color);
   if (region_is_selected (r))
     {
-      cairo_set_source_rgba (
-        cr,
-        color.red + 0.4,
-        color.green + 0.2,
-        color.blue + 0.2,
-        DEBUGGING ? 0.5 : 1.0);
+      color.red += 0.4;
+      color.green += 0.2;
+      color.blue += 0.2;
+      color.alpha = DEBUGGING ? 0.5 : 1.0;
     }
+  else if (
+    gtk_widget_get_state_flags (GTK_WIDGET (self)) &
+      GTK_STATE_FLAG_PRELIGHT)
+    {
+      if (ui_is_color_very_bright (&color))
+        {
+          color.red -= 0.1;
+          color.green -= 0.1;
+          color.blue -= 0.1;
+        }
+      else
+        {
+          color.red += 0.1;
+          color.green += 0.1;
+          color.blue += 0.1;
+        }
+    }
+  gdk_cairo_set_source_rgba (
+    cr, &color);
 
   z_cairo_rounded_rectangle (
     cr, 0, 0, width, height, 1.0, 4.0);
@@ -604,8 +616,6 @@ region_widget_class_init (
   RegionWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "region");
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize =

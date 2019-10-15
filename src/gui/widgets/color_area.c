@@ -73,9 +73,9 @@ color_area_draw_cb (
               NULL);
 
           GdkRGBA c2, c3;
-          ui_get_contrast_text_color (
+          ui_get_contrast_color (
             color, &c2);
-          ui_get_contrast_text_color (
+          ui_get_contrast_color (
             &c2, &c3);
 
           /* add shadow in the back */

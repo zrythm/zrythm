@@ -154,7 +154,7 @@ draw_cb (
           &region_get_track (
             self->velocity->midi_note->region)->
               color));
-      ui_get_contrast_text_color (
+      ui_get_contrast_color (
         &color, &c2);
       gdk_cairo_set_source_rgba (cr, &c2);
       PangoLayout * layout =

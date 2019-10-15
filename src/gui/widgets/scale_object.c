@@ -90,7 +90,7 @@ scale_draw_cb (
     }
 
   GdkRGBA c2;
-  ui_get_contrast_text_color (
+  ui_get_contrast_color (
     color, &c2);
   cairo_set_source_rgba (
     cr, c2.red, c2.green, c2.blue, 1.0);

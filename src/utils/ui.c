@@ -724,16 +724,36 @@ ui_setup_pan_law_combo_box (
  * @param dest The desination color to write to.
  */
 void
-ui_get_contrast_text_color (
+ui_get_contrast_color (
   GdkRGBA * src,
   GdkRGBA * dest)
 {
   /* if color is too bright use dark text,
    * otherwise use bright text */
-  if (src->red + src->green + src->blue >= 1.5)
-    gdk_rgba_parse (dest, "#323232");
+  if (ui_is_color_bright (src))
+    *dest = UI_CACHES->dark_text;
   else
-    gdk_rgba_parse (dest, "#CDCDCD");
+    *dest = UI_CACHES->bright_text;
+}
+
+/**
+ * Returns if the color is bright or not.
+ */
+int
+ui_is_color_bright (
+  GdkRGBA * src)
+{
+  return src->red + src->green + src->blue >= 1.5;
+}
+
+/**
+ * Returns if the color is very bright or not.
+ */
+int
+ui_is_color_very_bright (
+  GdkRGBA * src)
+{
+  return src->red + src->green + src->blue >= 2.0;
 }
 
 /**
@@ -752,4 +772,16 @@ ui_get_state_mask (
   GdkModifierType state_mask;
   gdk_event_get_state (_event, &state_mask);
   return state_mask;
+}
+
+UiCaches *
+ui_caches_new ()
+{
+  UiCaches * self =
+    calloc (1, sizeof (UiCaches));
+
+  gdk_rgba_parse (&self->dark_text, "#323232");
+  gdk_rgba_parse (&self->bright_text, "#CDCDCD");
+
+  return self;
 }

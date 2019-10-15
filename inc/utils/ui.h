@@ -29,13 +29,21 @@
 
 #include <gtk/gtk.h>
 
+typedef struct Position Position;
+
 /**
  * @addtogroup widgets
  *
  * @{
  */
 
-typedef struct Position Position;
+typedef struct UiCaches
+{
+  GdkRGBA       dark_text;
+  GdkRGBA       bright_text;
+} UiCaches;
+
+#define UI_CACHES (ZRYTHM->ui_caches)
 
 /**
  * Space on the edges to show resize cursors
@@ -465,9 +473,26 @@ ui_setup_pan_law_combo_box (
  * @param dest The desination color to write to.
  */
 void
-ui_get_contrast_text_color (
+ui_get_contrast_color (
   GdkRGBA * src,
   GdkRGBA * dest);
+
+/**
+ * Returns if the color is bright or not.
+ */
+int
+ui_is_color_bright (
+  GdkRGBA * src);
+
+/**
+ * Returns if the color is very bright or not.
+ */
+int
+ui_is_color_very_bright (
+  GdkRGBA * src);
+
+UiCaches *
+ui_caches_new (void);
 
 /**
  * @}
