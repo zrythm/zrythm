@@ -83,14 +83,12 @@ void
 resources_set_class_template (GtkWidgetClass * klass,
                               const char * filename)
 {
-  char * path = g_strdup_printf ("%s%s%s",
-                   RESOURCE_PATH,
-                   TEMPLATE_PATH,
-                   filename);
+  char path[500];
+  sprintf (
+    path, "%s%s%s", RESOURCE_PATH,
+    TEMPLATE_PATH, filename);
   gtk_widget_class_set_template_from_resource (
-    klass,
-    path);
-  g_free (path);
+    klass, path);
 }
 
 void

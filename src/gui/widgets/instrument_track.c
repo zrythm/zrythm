@@ -80,9 +80,11 @@ instrument_track_widget_new (Track * track)
 
   TRACK_WIDGET_GET_PRIVATE (self);
 
+  tw_prv->track = track;
+
   /* setup color */
-  color_area_widget_set_color (tw_prv->color,
-                               &track->color);
+  color_area_widget_set_color (
+    tw_prv->color, &track->color);
 
   /* create lanelist */
   tw_prv->lanelist =

@@ -103,6 +103,8 @@ track_widget_refresh (TrackWidget * self)
       Z_##caps##_TRACK_WIDGET (self)); \
     break
 
+  g_return_if_fail (tw_prv && tw_prv->track);
+
   switch (tw_prv->track->type)
     {
       REFRESH_TW (INSTRUMENT, instrument);

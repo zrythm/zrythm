@@ -74,28 +74,37 @@ region_draw_cb (
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
-  GdkRGBA * color;
-    color =
-      &TRACKLIST->tracks[
-        rw_prv->region->track_pos]->color;
-  double alpha;
+  Track * track = NULL;
+  if (TRACKLIST &&
+      TRACKLIST->num_tracks >
+        rw_prv->region->track_pos)
+    track =
+      TRACKLIST->tracks[rw_prv->region->track_pos];
+
+  GdkRGBA color;
+  if (track)
+    color = track->color;
+  else if (TESTING)
+    {
+      color.red = 1;
+      color.green = 0;
+      color.blue = 0;
+      color.alpha = 1;
+    }
+
   if (DEBUGGING)
-    alpha = 0.2;
+    color.alpha = 0.2;
   else
-    alpha = region_is_transient (r) ? 0.7 : 1.0;
-  cairo_set_source_rgba (
-    cr,
-    color->red,
-    color->green,
-    color->blue,
-    alpha);
+    color.alpha = region_is_transient (r) ? 0.7 : 1.0;
+  gdk_cairo_set_source_rgba (
+    cr, &color);
   if (region_is_selected (r))
     {
       cairo_set_source_rgba (
         cr,
-        color->red + 0.4,
-        color->green + 0.2,
-        color->blue + 0.2,
+        color.red + 0.4,
+        color.green + 0.2,
+        color.blue + 0.2,
         DEBUGGING ? 0.5 : 1.0);
     }
 
@@ -293,6 +302,9 @@ on_motion (GtkWidget *      widget,
            GdkEventMotion * event,
            RegionWidget *   self)
 {
+  if (!MAIN_WINDOW || !MW_TIMELINE)
+    return FALSE;
+
   ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
   REGION_WIDGET_GET_PRIVATE (self);
 

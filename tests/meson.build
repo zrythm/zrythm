@@ -36,16 +36,22 @@ if get_option ('enable_tests')
     'audio/position',
     'audio/region',
     'audio/track',
+    'gui/widgets/region',
+    'gui/widgets/track',
     'utils/arrays',
     ]
 
 
   foreach test_name : tests
     source = [ test_name + '.c' ]
-    test_name = ' - '.join(test_name.split('/'))
+    test_name = '_'.join(test_name.split('/'))
 
     exe = executable (
-      test_name, source,
+      test_name,
+      sources: [
+        source,
+        zrythm_resources,
+        ],
       c_args : [
         common_cflags,
         ],
