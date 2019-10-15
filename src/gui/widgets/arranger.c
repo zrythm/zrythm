@@ -138,6 +138,9 @@ DEFINE_START_POS
   func (midi_modifier); \
   func (chord); \
 
+#define ACTION_IS(x) \
+  (ar_prv->action == UI_OVERLAY_ACTION_##x)
+
 ArrangerWidgetPrivate *
 arranger_widget_get_private (ArrangerWidget * self)
 {
@@ -1585,6 +1588,8 @@ drag_update (
     }
       FORALL_ARRANGERS (DO_SELECT);
 #undef DO_SELECT
+      EVENTS_PUSH (
+        ET_SELECTING_IN_ARRANGER, self);
       break;
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
       /* find and delete objects inside
@@ -1598,6 +1603,8 @@ drag_update (
     }
       FORALL_ARRANGERS (DO_SELECT);
 #undef DO_SELECT
+      EVENTS_PUSH (
+        ET_SELECTING_IN_ARRANGER, self);
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
       /* snap selections based on new pos */
@@ -1801,6 +1808,13 @@ drag_end (GtkGestureDrag *gesture,
     (ArrangerWidget *) user_data;
   GET_PRIVATE;
 
+  if (ACTION_IS (SELECTING) ||
+      ACTION_IS (DELETE_SELECTING))
+    {
+      EVENTS_PUSH (
+        ET_SELECTING_IN_ARRANGER, self);
+    }
+
   GET_ARRANGER_ALIASES (self);
 
 #define ON_DRAG_END(sc) \
@@ -1861,6 +1875,20 @@ arranger_widget_pos_to_px (
 }
 
 /**
+ * Causes a redraw of the background.
+ */
+void
+arranger_widget_redraw_bg (
+  ArrangerWidget * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+  ARRANGER_BG_WIDGET_GET_PRIVATE (ar_prv->bg);
+  ab_prv->redraw = 1;
+  gtk_widget_queue_draw (
+    GTK_WIDGET (ar_prv->bg));
+}
+
+/**
  * Gets the corresponding scrolled window.
  */
 GtkScrolledWindow *
@@ -1917,6 +1945,8 @@ on_scroll (
   GdkEventScroll  *event,
   ArrangerWidget * self)
 {
+  arranger_widget_redraw_bg (self);
+
   GET_ARRANGER_ALIASES (self);
   if (!(event->state & GDK_CONTROL_MASK))
     return FALSE;

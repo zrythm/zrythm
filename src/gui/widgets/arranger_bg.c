@@ -57,214 +57,275 @@ arranger_bg_draw_cb (
 {
   ARRANGER_BG_WIDGET_GET_PRIVATE (self);
 
-  int i = 0;
-
-  GdkRectangle rect;
-  gdk_cairo_get_clip_rectangle (cr,
-	                        &rect);
-
   RULER_WIDGET_GET_PRIVATE (ab_prv->ruler);
   if (rw_prv->px_per_bar < 2.0)
     return FALSE;
 
-  GtkStyleContext *context;
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (
+    cr, &rect);
 
-  context = gtk_widget_get_style_context (widget);
-
-  gtk_render_background (context, cr,
-                         rect.x, rect.y,
-                         rect.width, rect.height);
-
-  /* draw loop background */
-  if (TRANSPORT->loop)
+  if (ab_prv->redraw ||
+      !gdk_rectangle_equal (
+         &rect, &ab_prv->last_rect))
     {
-      double start_px = 0, end_px = 0;
-      if (ab_prv->arranger ==
-            (ArrangerWidget *) MW_TIMELINE ||
-          ab_prv->arranger ==
-            (ArrangerWidget *) MW_PINNED_TIMELINE)
+      ab_prv->last_rect = rect;
+      int i = 0;
+
+      GtkStyleContext *context =
+        gtk_widget_get_style_context (widget);
+
+      /*int width =*/
+        /*gtk_widget_get_allocated_width (widget);*/
+      /*int height =*/
+        /*gtk_widget_get_allocated_height (widget);*/
+
+      ab_prv->cached_surface =
+        cairo_surface_create_similar (
+          cairo_get_target (cr),
+          CAIRO_CONTENT_COLOR_ALPHA,
+          rect.width, rect.height);
+      ab_prv->cached_cr =
+        cairo_create (ab_prv->cached_surface);
+
+      gtk_render_background (
+        context, ab_prv->cached_cr, 0, 0,
+        rect.width, rect.height);
+
+      /* draw loop background */
+      if (TRANSPORT->loop)
         {
-          start_px =
-            ui_pos_to_px_timeline (
-              &TRANSPORT->loop_start_pos, 1);
-          end_px =
-            ui_pos_to_px_timeline (
-              &TRANSPORT->loop_end_pos, 1);
+          double start_px = 0, end_px = 0;
+          if (ab_prv->arranger ==
+                (ArrangerWidget *) MW_TIMELINE ||
+              ab_prv->arranger ==
+                (ArrangerWidget *) MW_PINNED_TIMELINE)
+            {
+              start_px =
+                ui_pos_to_px_timeline (
+                  &TRANSPORT->loop_start_pos, 1);
+              end_px =
+                ui_pos_to_px_timeline (
+                  &TRANSPORT->loop_end_pos, 1);
+            }
+          else
+            {
+              start_px =
+                ui_pos_to_px_editor (
+                  &TRANSPORT->loop_start_pos, 1);
+              end_px =
+                ui_pos_to_px_editor (
+                  &TRANSPORT->loop_end_pos, 1);
+            }
+          cairo_set_source_rgba (
+            ab_prv->cached_cr, 0, 0.9, 0.7, 0.08);
+          cairo_set_line_width (
+            ab_prv->cached_cr, 2);
+
+          /* if transport loop start is within the
+           * screen */
+          if (start_px > rect.x &&
+              start_px <= rect.x + rect.width)
+            {
+              /* draw the loop start line */
+              double x =
+                (start_px - rect.x) + 1.0;
+              cairo_move_to (
+                ab_prv->cached_cr, x, 0);
+              cairo_line_to (
+                ab_prv->cached_cr, x, rect.height);
+              cairo_stroke (ab_prv->cached_cr);
+            }
+          /* if transport loop end is within the
+           * screen */
+          if (end_px > rect.x &&
+              end_px < rect.x + rect.width)
+            {
+              double x =
+                (end_px - rect.x) - 1.0;
+              cairo_move_to (
+                ab_prv->cached_cr, x, 0);
+              cairo_line_to (
+                ab_prv->cached_cr, x, rect.height);
+              cairo_stroke (ab_prv->cached_cr);
+            }
+
+          /* draw transport loop area */
+          cairo_set_source_rgba (
+            ab_prv->cached_cr, 0, 0.9, 0.7, 0.02);
+          double loop_start_local_x =
+            MAX (0, start_px - rect.x);
+          cairo_rectangle (
+            ab_prv->cached_cr,
+            loop_start_local_x, 0,
+            end_px - MAX (rect.x, start_px),
+            rect.height);
+          cairo_fill (ab_prv->cached_cr);
         }
-      else
-        {
-          start_px =
-            ui_pos_to_px_editor (
-              &TRANSPORT->loop_start_pos, 1);
-          end_px =
-            ui_pos_to_px_editor (
-              &TRANSPORT->loop_end_pos, 1);
-        }
-      cairo_set_source_rgba (cr, 0, 0.9, 0.7, 0.08);
-      cairo_set_line_width (cr, 2);
-      if (start_px > rect.x)
-        {
-          cairo_move_to (
-            cr, start_px + 1.0, rect.y);
-          cairo_line_to (
-            cr, start_px + 1.0, rect.height);
-          cairo_stroke (cr);
-        }
-      if (end_px < rect.x + rect.width)
-        {
-          cairo_move_to (
-            cr, end_px - 1.0, rect.y);
-          cairo_line_to (
-            cr, end_px - 1.0, rect.height);
-          cairo_stroke (cr);
-        }
-      cairo_set_source_rgba (cr, 0, 0.9, 0.7, 0.02);
-      cairo_rectangle (
-        cr, MAX (rect.x, start_px), rect.y,
-        /* FIXME use rect properly, this exceeds */
-        end_px - MAX (rect.x, start_px),
-        rect.height);
-      cairo_fill (cr);
-    }
 
-  /* handle vertical drawing */
+      /* handle vertical drawing */
 
-  /* get sixteenth interval */
-  int sixteenth_interval =
-    ruler_widget_get_sixteenth_interval (
-      (RulerWidget *) (ab_prv->ruler));
+      /* get sixteenth interval */
+      int sixteenth_interval =
+        ruler_widget_get_sixteenth_interval (
+          (RulerWidget *) (ab_prv->ruler));
 
-  /* get the beat interval */
-  int beat_interval =
-    ruler_widget_get_beat_interval (
-      (RulerWidget *) (ab_prv->ruler));
+      /* get the beat interval */
+      int beat_interval =
+        ruler_widget_get_beat_interval (
+          (RulerWidget *) (ab_prv->ruler));
 
-  /* get the interval for bars */
-  int bar_interval =
-    (int)
-    MAX ((PX_TO_HIDE_BEATS) /
-         (double) rw_prv->px_per_bar, 1.0);
+      /* get the interval for bars */
+      int bar_interval =
+        (int)
+        MAX ((PX_TO_HIDE_BEATS) /
+             (double) rw_prv->px_per_bar, 1.0);
 
-  i = 0;
-  double curr_px;
-  while ((curr_px =
-          rw_prv->px_per_bar * (i += bar_interval) +
-          SPACE_BEFORE_START) <
+      i = 0;
+      double curr_px;
+      while (
+        (curr_px =
+           rw_prv->px_per_bar * (i += bar_interval) +
+             SPACE_BEFORE_START) <
          rect.x + rect.width)
-    {
-      if (curr_px < rect.x)
-        continue;
-
-      cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
-      cairo_set_line_width (cr, 1);
-      cairo_move_to (cr, curr_px, rect.y);
-      cairo_line_to (cr,
-                     curr_px, rect.y + rect.height);
-      cairo_stroke (cr);
-    }
-  i = 0;
-  if (beat_interval > 0)
-    {
-      while ((curr_px =
-              rw_prv->px_per_beat *
-                (i += beat_interval) +
-              SPACE_BEFORE_START) <
-             rect.x + rect.width)
         {
           if (curr_px < rect.x)
             continue;
 
           cairo_set_source_rgb (
-            cr, 0.25, 0.25, 0.25);
-          cairo_set_line_width (cr, 0.6);
-          cairo_move_to (cr, curr_px, rect.y);
+            ab_prv->cached_cr, 0.3, 0.3, 0.3);
+          double x = curr_px - rect.x;
+          cairo_set_line_width (ab_prv->cached_cr, 1);
+          cairo_move_to (
+            ab_prv->cached_cr, x, 0);
           cairo_line_to (
-            cr,
-            curr_px, rect.y + rect.height);
-          cairo_stroke (cr);
+            ab_prv->cached_cr, x, rect.height);
+          cairo_stroke (ab_prv->cached_cr);
         }
-    }
-  i = 0;
-  if (sixteenth_interval > 0)
-    {
-      while ((curr_px =
-              rw_prv->px_per_sixteenth *
-                (i += sixteenth_interval) +
-              SPACE_BEFORE_START) <
-             rect.x + rect.width)
+      i = 0;
+      if (beat_interval > 0)
         {
-          if (curr_px < rect.x)
-            continue;
+          while ((curr_px =
+                  rw_prv->px_per_beat *
+                    (i += beat_interval) +
+                  SPACE_BEFORE_START) <
+                 rect.x + rect.width)
+            {
+              if (curr_px < rect.x)
+                continue;
 
-          cairo_set_source_rgb (
-            cr, 0.2, 0.2, 0.2);
-          cairo_set_line_width (cr, 0.5);
-          cairo_move_to (cr, curr_px, rect.y);
-          cairo_line_to (
-            cr,
-            curr_px, rect.y + rect.height);
-          cairo_stroke (cr);
+              cairo_set_source_rgb (
+                ab_prv->cached_cr, 0.25, 0.25, 0.25);
+              cairo_set_line_width (
+                ab_prv->cached_cr, 0.6);
+              double x = curr_px - rect.x;
+              cairo_move_to (
+                ab_prv->cached_cr, x, 0);
+              cairo_line_to (
+                ab_prv->cached_cr, x, rect.height);
+              cairo_stroke (ab_prv->cached_cr);
+            }
         }
+      i = 0;
+      if (sixteenth_interval > 0)
+        {
+          while ((curr_px =
+                  rw_prv->px_per_sixteenth *
+                    (i += sixteenth_interval) +
+                  SPACE_BEFORE_START) <
+                 rect.x + rect.width)
+            {
+              if (curr_px < rect.x)
+                continue;
+
+              cairo_set_source_rgb (
+                ab_prv->cached_cr, 0.2, 0.2, 0.2);
+              cairo_set_line_width (
+                ab_prv->cached_cr, 0.5);
+              double x = curr_px - rect.x;
+              cairo_move_to (
+                ab_prv->cached_cr, x, 0);
+              cairo_line_to (
+                ab_prv->cached_cr, x, rect.height);
+              cairo_stroke (ab_prv->cached_cr);
+            }
+        }
+
+      /* draw selections */
+      arranger_bg_widget_draw_selections (
+        ab_prv->arranger, ab_prv->cached_cr, &rect);
+
+      /* draw range */
+      if (PROJECT->has_range)
+        {
+          /* in order they appear */
+          Position * range_first_pos, * range_second_pos;
+          if (position_is_before_or_equal (
+                &PROJECT->range_1, &PROJECT->range_2))
+            {
+              range_first_pos = &PROJECT->range_1;
+              range_second_pos = &PROJECT->range_2;
+            }
+          else
+            {
+              range_first_pos = &PROJECT->range_2;
+              range_second_pos = &PROJECT->range_1;
+            }
+
+          int range_first_px, range_second_px;
+          range_first_px =
+            ui_pos_to_px_timeline (
+              range_first_pos, 1);
+          range_second_px =
+            ui_pos_to_px_timeline (
+              range_second_pos, 1);
+          cairo_set_source_rgba (
+            ab_prv->cached_cr, 0.3, 0.3, 0.3, 0.3);
+          cairo_rectangle (
+            ab_prv->cached_cr,
+            MAX (0, range_first_px - rect.x), 0,
+            range_second_px -
+              MAX (rect.x, range_first_px),
+            rect.height);
+          cairo_fill (ab_prv->cached_cr);
+          cairo_set_source_rgba (
+            ab_prv->cached_cr, 0.8, 0.8, 0.8, 0.4);
+          cairo_set_line_width (ab_prv->cached_cr, 2);
+
+          /* if start is within the screen */
+          if (range_first_px > rect.x &&
+              range_first_px <= rect.x + rect.width)
+            {
+              /* draw the start line */
+              double x =
+                (range_first_px - rect.x) + 1.0;
+              cairo_move_to (
+                ab_prv->cached_cr, x, 0);
+              cairo_line_to (
+                ab_prv->cached_cr, x, rect.height);
+              cairo_stroke (ab_prv->cached_cr);
+            }
+          /* if end is within the screen */
+          if (range_second_px > rect.x &&
+              range_second_px < rect.x + rect.width)
+            {
+              double x =
+                (range_second_px - rect.x) - 1.0;
+              cairo_move_to (
+                ab_prv->cached_cr, x, 0);
+              cairo_line_to (
+                ab_prv->cached_cr, x, rect.height);
+              cairo_stroke (ab_prv->cached_cr);
+            }
+        }
+      ab_prv->redraw = 0;
     }
 
-  /* draw selections */
-  arranger_bg_widget_draw_selections (
-    ab_prv->arranger, cr);
+  cairo_set_source_surface (
+    cr, ab_prv->cached_surface, rect.x, rect.y);
+  cairo_paint (cr);
 
-  /* draw range */
-  if (PROJECT->has_range)
-    {
-      /* in order they appear */
-      Position * range_first_pos, * range_second_pos;
-      if (position_is_before_or_equal (
-            &PROJECT->range_1, &PROJECT->range_2))
-        {
-          range_first_pos = &PROJECT->range_1;
-          range_second_pos = &PROJECT->range_2;
-        }
-      else
-        {
-          range_first_pos = &PROJECT->range_2;
-          range_second_pos = &PROJECT->range_1;
-        }
-
-      int range_first_px, range_second_px;
-      range_first_px =
-        ui_pos_to_px_timeline (range_first_pos, 1);
-      range_second_px =
-        ui_pos_to_px_timeline (range_second_pos, 1);
-      cairo_set_source_rgba (
-        cr, 0.3, 0.3, 0.3, 0.3);
-      cairo_rectangle (
-        cr,
-        range_first_px > rect.x ?
-          range_first_px :
-          rect.x,
-        rect.y,
-        range_second_px < rect.x + rect.width ?
-          range_second_px - range_first_px :
-          (rect.x + rect.width) - range_first_px,
-        rect.height);
-      cairo_fill (cr);
-      cairo_set_source_rgba (cr, 0.8, 0.8, 0.8, 0.4);
-      cairo_set_line_width (cr, 2);
-      z_cairo_draw_vertical_line (
-        cr,
-        range_first_px > rect.x ?
-          range_first_px :
-          rect.x,
-        rect.y,
-        rect.y + rect.height);
-      z_cairo_draw_vertical_line (
-        cr,
-        range_second_px < rect.x + rect.width ?
-          range_second_px :
-          rect.x + rect.width,
-        rect.y,
-        rect.y + rect.height);
-    }
-
-  return 0;
+  return FALSE;
 }
 
 static gboolean
@@ -290,7 +351,8 @@ on_motion (GtkWidget *widget,
 void
 arranger_bg_widget_draw_selections (
   ArrangerWidget * self,
-  cairo_t *        cr)
+  cairo_t *        cr,
+  GdkRectangle *   rect)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
@@ -311,7 +373,8 @@ arranger_bg_widget_draw_selections (
     case UI_OVERLAY_ACTION_SELECTING:
     case UI_OVERLAY_ACTION_DELETE_SELECTING:
       z_cairo_draw_selection (
-        cr, ar_prv->start_x, ar_prv->start_y,
+        cr, ar_prv->start_x - rect->x,
+        ar_prv->start_y - rect->y,
         offset_x, offset_y);
       break;
     case UI_OVERLAY_ACTION_RAMPING:
@@ -319,11 +382,14 @@ arranger_bg_widget_draw_selections (
         cr, 0.9, 0.9, 0.9, 1.0);
       cairo_set_line_width (cr, 2.0);
       cairo_move_to (
-        cr, ar_prv->start_x, ar_prv->start_y);
+        cr, ar_prv->start_x -  rect->x,
+        ar_prv->start_y - rect->y);
       cairo_line_to (
         cr,
-        ar_prv->start_x + ar_prv->last_offset_x,
-        ar_prv->start_y + ar_prv->last_offset_y);
+        (ar_prv->start_x + ar_prv->last_offset_x) -
+          rect->x,
+        (ar_prv->start_y + ar_prv->last_offset_y) -
+          rect->y);
       cairo_stroke (cr);
       break;
     default:
@@ -382,9 +448,11 @@ arranger_bg_widget_refresh (ArrangerBgWidget * self)
 }
 
 ArrangerBgWidgetPrivate *
-arranger_bg_widget_get_private (ArrangerBgWidget * self)
+arranger_bg_widget_get_private (
+  ArrangerBgWidget * self)
 {
-  return arranger_bg_widget_get_instance_private (self);
+  return
+    arranger_bg_widget_get_instance_private (self);
 }
 
 static void

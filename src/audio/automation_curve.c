@@ -192,7 +192,7 @@ automation_curve_set_curviness (
 
   ac->curviness = curviness;
   if (ac->widget)
-    ac->widget->cache = 0;
+    ac->widget->redraw = 1;
 }
 
 /**

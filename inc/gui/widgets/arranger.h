@@ -560,4 +560,11 @@ int
 arranger_widget_refresh (
   ArrangerWidget * self);
 
+/**
+ * Causes a redraw of the background.
+ */
+void
+arranger_widget_redraw_bg (
+  ArrangerWidget * self);
+
 #endif

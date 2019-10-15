@@ -56,16 +56,23 @@ typedef struct Track Track;
 
 typedef struct _ColorAreaWidget
 {
-  GtkDrawingArea      parent_instance;
+  GtkDrawingArea    parent_instance;
 
   /** Color pointer to set/read value. */
-  GdkRGBA  *          color;
+  GdkRGBA  *        color;
 
   /** The type. */
   ColorAreaType     type;
 
   /** Track, if track. */
   Track *           track;
+
+  /** Set to 1 to redraw. */
+  int               redraw;
+
+  cairo_t *                cached_cr;
+
+  cairo_surface_t *        cached_surface;
 } ColorAreaWidget;
 
 /**

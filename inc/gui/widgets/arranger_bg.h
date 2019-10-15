@@ -17,6 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Arranger background.
+ */
+
 #ifndef __GUI_WIDGETS_ARRANGER_BG_H__
 #define __GUI_WIDGETS_ARRANGER_BG_H__
 
@@ -30,6 +36,14 @@ G_DECLARE_DERIVABLE_TYPE (ArrangerBgWidget,
                           ARRANGER_BG_WIDGET,
                           GtkDrawingArea)
 
+typedef struct _ArrangerWidget ArrangerWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 #define ARRANGER_BG_WIDGET_GET_PRIVATE(self) \
   ArrangerBgWidgetPrivate * ab_prv = \
     arranger_bg_widget_get_private ( \
@@ -39,12 +53,23 @@ typedef struct _RulerWidget RulerWidget;
 
 typedef struct
 {
-  int                      total_px;
-  double                   start_x; ///< for dragging
-  GtkGestureDrag *         drag;
-  GtkGestureMultiPress  *  multipress;
-  RulerWidget *            ruler; ///< associated ruler
-  ArrangerWidget *         arranger; ///< parent arranger
+  int                     total_px;
+  double                  start_x; ///< for dragging
+  GtkGestureDrag *        drag;
+  GtkGestureMultiPress  * multipress;
+  RulerWidget *           ruler; ///< associated ruler
+  /** Owner arranger. */
+  ArrangerWidget *        arranger;
+
+  /** Set to 1 to redraw. */
+  int               redraw;
+
+  cairo_t *               cached_cr;
+
+  cairo_surface_t *       cached_surface;
+
+  /** Rectangle in the last call. */
+  GdkRectangle            last_rect;
 } ArrangerBgWidgetPrivate;
 
 typedef struct _ArrangerBgWidgetClass
@@ -73,7 +98,12 @@ arranger_bg_widget_refresh (
  */
 void
 arranger_bg_widget_draw_selections (
-  ArrangerWidget * arranger,
-  cairo_t *        cr);
+  ArrangerWidget * self,
+  cairo_t *        cr,
+  GdkRectangle *   rect);
+
+/**
+ * @}
+ */
 
 #endif

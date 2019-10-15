@@ -32,6 +32,7 @@
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/arranger_playhead.h"
+#include "gui/widgets/arranger_bg.h"
 #include "gui/widgets/audio_arranger.h"
 #include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_arranger.h"
@@ -88,6 +89,19 @@
   ((EventType) stack_pop (ev->et_stack))
 #define ARG_POP(ev) \
   ((void *) stack_pop (ev->arg_stack))
+
+static void
+redraw_all_arranger_bgs ()
+{
+  arranger_widget_redraw_bg (
+    Z_ARRANGER_WIDGET (MW_TIMELINE));
+  arranger_widget_redraw_bg (
+    Z_ARRANGER_WIDGET (MW_MIDI_MODIFIER_ARRANGER));
+  arranger_widget_redraw_bg (
+    Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
+  arranger_widget_redraw_bg (
+    Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
+}
 
 static int
 on_playhead_changed ()
@@ -206,11 +220,7 @@ on_track_state_changed (Track * track)
 static void
 on_range_selection_changed ()
 {
-  ARRANGER_WIDGET_GET_PRIVATE (
-    MW_TIMELINE);
-  gtk_widget_queue_draw (
-    GTK_WIDGET (
-      ar_prv->bg));
+  redraw_all_arranger_bgs ();
   gtk_widget_set_visible (
     GTK_WIDGET (MW_RULER->range),
     PROJECT->has_range);
@@ -736,7 +746,7 @@ events_process (void * data)
                 if (ac &&
                     GTK_IS_WIDGET (ac->widget))
                   {
-                    ac->widget->cache = 0;
+                    ac->widget->redraw = 1;
                     gtk_widget_queue_draw (
                       GTK_WIDGET (ac->widget));
                   }
@@ -818,6 +828,7 @@ events_process (void * data)
             GTK_WIDGET (MW_RULER));
           gtk_widget_queue_draw (
             GTK_WIDGET (EDITOR_RULER));
+          redraw_all_arranger_bgs ();
           break;
         case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
@@ -1107,6 +1118,10 @@ events_process (void * data)
         case ET_MARKER_NAME_CHANGED:
           marker_widget_recreate_pango_layouts (
             (MarkerWidget *) ev->arg);
+          break;
+        case ET_SELECTING_IN_ARRANGER:
+          arranger_widget_redraw_bg (
+            Z_ARRANGER_WIDGET (ev->arg));
           break;
         default:
           g_message (

@@ -20,6 +20,7 @@
 #include "audio/track.h"
 #include "gui/widgets/instrument_track.h"
 #include "gui/widgets/dzl/dzl-multi-paned.h"
+#include "gui/widgets/track_top_grid.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
@@ -46,6 +47,10 @@ fishbowl_creation_func ()
     GTK_WIDGET (itw), 200, -1);
   track_widget_refresh (
     Z_TRACK_WIDGET (itw));
+  /*TRACK_WIDGET_GET_PRIVATE (itw);*/
+  /* problem is somewhere inside top grid - upper controls*/
+  /*gtk_widget_unparent (*/
+    /*GTK_WIDGET (tw_prv->top_grid->bot_controls));*/
 
   return GTK_WIDGET (itw);
 }

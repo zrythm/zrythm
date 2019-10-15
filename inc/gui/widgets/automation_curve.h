@@ -59,8 +59,8 @@ typedef struct _AutomationCurveWidget
 
   ACW_CursorState             cursor_state;
 
-  /* Draw caching (set to 0 to redraw). */
-  int                      cache;
+  /* Set to 1 to redraw. */
+  int                      redraw;
 
   cairo_t *                cached_cr;
 

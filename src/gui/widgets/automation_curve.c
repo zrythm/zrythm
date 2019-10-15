@@ -103,16 +103,13 @@ drag_end (GtkGestureDrag *gesture,
   self->last_y = 0;
 }
 
-/* TODO cache because when the playhead covers it
- * it has to get redrawn */
 static gboolean
 automation_curve_draw_cb (
   AutomationCurveWidget * self,
   cairo_t *cr,
   gpointer data)
 {
-  /* not cached, redraw */
-  if (!self->cache)
+  if (self->redraw)
     {
       gint width, height;
       GtkStyleContext *context;
@@ -208,7 +205,7 @@ automation_curve_draw_cb (
 
       cairo_stroke (self->cached_cr);
 
-      self->cache = 1;
+      self->redraw = 0;
     }
 
   cairo_set_source_surface (
@@ -235,7 +232,7 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
         GTK_STATE_FLAG_PRELIGHT,
         0);
 
-      self->cache = 0;
+      self->redraw = 1;
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
@@ -244,7 +241,7 @@ on_motion (GtkWidget * widget, GdkEventMotion *event)
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);
 
-      self->cache = 0;
+      self->redraw = 1;
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }

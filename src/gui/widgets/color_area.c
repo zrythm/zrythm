@@ -38,65 +38,91 @@ color_area_draw_cb (
   cairo_t *         cr,
   ColorAreaWidget * self)
 {
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-
-  GdkRGBA * color;
-  if (self->type == COLOR_AREA_TYPE_TRACK)
-    color = &self->track->color;
-  else
-    color = self->color;
-
-  cairo_rectangle (cr, 0, 0, width, height);
-  gdk_cairo_set_source_rgba (cr, color);
-  cairo_fill (cr);
-
-  /* show track icon */
-  if (self->type == COLOR_AREA_TYPE_TRACK)
+  if (self->redraw)
     {
-      TRACK_WIDGET_GET_PRIVATE (self->track->widget);
+      GtkStyleContext * context =
+        gtk_widget_get_style_context (widget);
 
-      if (tw_prv->icon)
+      int width =
+        gtk_widget_get_allocated_width (widget);
+      int height =
+        gtk_widget_get_allocated_height (widget);
+
+      self->cached_surface =
+        cairo_surface_create_similar (
+          cairo_get_target (cr),
+          CAIRO_CONTENT_COLOR_ALPHA,
+          width,
+          height);
+      self->cached_cr =
+        cairo_create (self->cached_surface);
+
+      gtk_render_background (
+        context, self->cached_cr, 0, 0, width, height);
+
+      GdkRGBA * color;
+      if (self->type == COLOR_AREA_TYPE_TRACK)
+        color = &self->track->color;
+      else
+        color = self->color;
+
+      cairo_rectangle (self->cached_cr, 0, 0, width, height);
+      gdk_cairo_set_source_rgba (self->cached_cr, color);
+      cairo_fill (self->cached_cr);
+
+      /* show track icon */
+      if (self->type == COLOR_AREA_TYPE_TRACK)
         {
-          cairo_surface_t * surface =
-            gdk_cairo_surface_create_from_pixbuf (
-              tw_prv->icon,
-              0,
-              NULL);
+          TRACK_WIDGET_GET_PRIVATE (
+            self->track->widget);
 
-          GdkRGBA c2, c3;
-          ui_get_contrast_color (
-            color, &c2);
-          ui_get_contrast_color (
-            &c2, &c3);
+          if (tw_prv->icon)
+            {
+              cairo_surface_t * surface =
+                gdk_cairo_surface_create_from_pixbuf (
+                  tw_prv->icon, 0, NULL);
 
-          /* add shadow in the back */
-          cairo_set_source_rgba (
-            cr, c3.red, c3.green, c3.blue, 0.4);
-          cairo_mask_surface(
-            cr, surface, 2, 2);
-          cairo_fill(cr);
+              GdkRGBA c2, c3;
+              ui_get_contrast_color (
+                color, &c2);
+              ui_get_contrast_color (
+                &c2, &c3);
 
-          /* add main icon */
-          cairo_set_source_rgba (
-            cr, c2.red, c2.green, c2.blue, 1);
-          /*cairo_set_source_surface (*/
-            /*cr, surface, 1, 1);*/
-          cairo_mask_surface(
-            cr, surface, 1, 1);
-          cairo_fill (cr);
+              /* add shadow in the back */
+              cairo_set_source_rgba (
+                self->cached_cr, c3.red,
+                c3.green, c3.blue, 0.4);
+              cairo_mask_surface(
+                self->cached_cr, surface, 2, 2);
+              cairo_fill(self->cached_cr);
+
+              /* add main icon */
+              cairo_set_source_rgba (
+                self->cached_cr, c2.red, c2.green, c2.blue, 1);
+              /*cairo_set_source_surface (*/
+                /*self->cached_cr, surface, 1, 1);*/
+              cairo_mask_surface(
+                self->cached_cr, surface, 1, 1);
+              cairo_fill (self->cached_cr);
+            }
         }
+      self->redraw = 0;
     }
 
+  cairo_set_source_surface (
+    cr, self->cached_surface, 0, 0);
+  cairo_paint (cr);
+
   return FALSE;
+}
+
+static void
+on_size_allocate (
+  GtkWidget    *widget,
+  GdkRectangle *allocation,
+  ColorAreaWidget * self)
+{
+  self->redraw = 1;
 }
 
 /**
@@ -145,8 +171,12 @@ static void
 color_area_widget_init (ColorAreaWidget * self)
 {
   g_signal_connect (
+    G_OBJECT (self), "size-allocate",
+    G_CALLBACK (on_size_allocate), self);
+  g_signal_connect (
     G_OBJECT (self), "draw",
     G_CALLBACK (color_area_draw_cb), self);
+  self->redraw = 1;
 }
 
 static void
