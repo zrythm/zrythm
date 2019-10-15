@@ -319,6 +319,20 @@ on_key_action (
   return FALSE;
 }
 
+static void
+on_size_allocate (
+  GtkWidget *       widget,
+  GdkRectangle *    allocation,
+  TracklistWidget * self)
+{
+  if (!TRACKLIST)
+    return;
+
+  EVENTS_PUSH (
+    ET_TRACKS_RESIZED, self);
+  g_message ("pushed");
+}
+
 void
 tracklist_widget_hard_refresh (
   TracklistWidget * self)
@@ -478,7 +492,10 @@ tracklist_widget_init (TracklistWidget * self)
     G_CALLBACK (on_key_action), self);
   g_signal_connect (
     G_OBJECT (self), "resize-drag-end",
-    G_CALLBACK (on_resize_end), NULL);
+    G_CALLBACK (on_resize_end), self);
+  g_signal_connect (
+    G_OBJECT (self), "size-allocate",
+    G_CALLBACK (on_size_allocate), self);
 }
 
 static void

@@ -58,8 +58,18 @@ typedef struct _TimelineBgWidget
  * arranger and ruler.
  */
 TimelineBgWidget *
-timeline_bg_widget_new (RulerWidget *    ruler,
-                        ArrangerWidget * arranger);
+timeline_bg_widget_new (
+  RulerWidget *    ruler,
+  ArrangerWidget * arranger);
+
+/**
+ * To be called by the arranger bg during drawing.
+ */
+void
+timeline_bg_widget_draw (
+  TimelineBgWidget * self,
+  cairo_t *          cr,
+  GdkRectangle *     rect);
 
 /**
  * @}

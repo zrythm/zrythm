@@ -1123,6 +1123,16 @@ events_process (void * data)
           arranger_widget_redraw_bg (
             Z_ARRANGER_WIDGET (ev->arg));
           break;
+        case ET_TRACKS_RESIZED:
+          g_warn_if_fail (ev->arg);
+          if (Z_IS_TRACKLIST_WIDGET (ev->arg))
+            arranger_widget_redraw_bg (
+              Z_ARRANGER_WIDGET (MW_TIMELINE));
+          else if (Z_IS_PINNED_TRACKLIST_WIDGET (
+                     ev->arg))
+            arranger_widget_redraw_bg (
+              Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
+          break;
         default:
           g_message (
             "event %d not implemented yet",

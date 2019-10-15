@@ -39,9 +39,10 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE_WITH_PRIVATE (ArrangerBgWidget,
-                            arranger_bg_widget,
-                            GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE_WITH_PRIVATE (
+  ArrangerBgWidget,
+  arranger_bg_widget,
+  GTK_TYPE_DRAWING_AREA)
 
 /**
  * Minimum number of pixels between beat lines.
@@ -318,6 +319,12 @@ arranger_bg_draw_cb (
               cairo_stroke (ab_prv->cached_cr);
             }
         }
+
+      if (Z_IS_TIMELINE_BG_WIDGET (self))
+        timeline_bg_widget_draw (
+          Z_TIMELINE_BG_WIDGET (self),
+          ab_prv->cached_cr, &rect);
+
       ab_prv->redraw = 0;
     }
 

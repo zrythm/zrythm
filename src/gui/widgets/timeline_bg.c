@@ -54,19 +54,18 @@ G_DEFINE_TYPE (TimelineBgWidget,
                timeline_bg_widget,
                ARRANGER_BG_WIDGET_TYPE)
 
-static gboolean
-timeline_bg_draw_cb (
-  GtkWidget *widget,
-  cairo_t *cr,
-  TimelineBgWidget * self)
+/**
+ * To be called by the arranger bg during drawing.
+ */
+void
+timeline_bg_widget_draw (
+  TimelineBgWidget * self,
+  cairo_t *          cr,
+  GdkRectangle *     rect)
 {
-  GdkRectangle rect;
-  gdk_cairo_get_clip_rectangle (cr,
-                                &rect);
-
   ArrangerBgWidgetPrivate * prv =
     arranger_bg_widget_get_private (
-      (ArrangerBgWidget *) (widget));
+      Z_ARRANGER_BG_WIDGET (self));
 
   /* handle horizontal drawing for tracks */
   GtkWidget * tw_widget;
@@ -100,20 +99,19 @@ timeline_bg_draw_cb (
       tw_widget = (GtkWidget *) tw;
 
       gtk_widget_translate_coordinates (
-        tw_widget,
-        widget,
+        tw_widget, (GtkWidget *) self,
         0, 0, &wx, &wy);
 
       line_y =
         wy +
-        gtk_widget_get_allocated_height (tw_widget);
+        gtk_widget_get_allocated_height (
+          tw_widget);
 
-      if (line_y > rect.y &&
-          line_y < (rect.y + rect.height))
+      if (line_y > rect->y &&
+          line_y < (rect->y + rect->height))
         {
           z_cairo_draw_horizontal_line (
-            cr, line_y, rect.x,
-            rect.x + rect.width, 1.0);
+            cr, line_y, 0, rect->width, 1.0);
         }
     }
 
@@ -147,20 +145,14 @@ timeline_bg_draw_cb (
 
               /* horizontal automation track lines */
               gtk_widget_translate_coordinates(
-                        GTK_WIDGET (at->widget),
-                        GTK_WIDGET (MW_TRACKLIST),
-                        0,
-                        0,
-                        &wx,
-                        &wy);
-              if (wy > rect.y &&
-                  wy < (rect.y + rect.height))
+                GTK_WIDGET (at->widget),
+                GTK_WIDGET (MW_TRACKLIST),
+                0, 0, &wx, &wy);
+              if (wy > rect->y &&
+                  wy < (rect->y + rect->height))
                 z_cairo_draw_horizontal_line (
-                  cr,
-                  wy,
-                  rect.x,
-                  rect.x + rect.width,
-                  0.2);
+                  cr, wy - rect->y, 0,
+                  rect->width, 0.2);
 
               float normalized_val =
                 automation_track_get_normalized_val_at_pos (
@@ -186,8 +178,11 @@ timeline_bg_draw_cb (
                 track->color.blue,
                 0.3);
               cairo_set_line_width (cr, 1);
-              cairo_move_to (cr, rect.x, wy + y_px);
-              cairo_line_to (cr, rect.x + rect.width, wy + y_px);
+              cairo_move_to (
+                cr, 0, (wy - rect->y) + y_px);
+              cairo_line_to (
+                cr, rect->width,
+                (wy - rect->y) + y_px);
               cairo_stroke (cr);
 
               /* show shade under the line */
@@ -208,8 +203,6 @@ timeline_bg_draw_cb (
             }
         }
     }
-
-  return 0;
 }
 
 /*static gboolean*/
@@ -247,9 +240,9 @@ timeline_bg_widget_init (TimelineBgWidget *self )
   gtk_widget_add_events (GTK_WIDGET (self),
                          GDK_ALL_EVENTS_MASK);
 
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (timeline_bg_draw_cb), NULL);
+  /*g_signal_connect (*/
+    /*G_OBJECT (self), "draw",*/
+    /*G_CALLBACK (timeline_bg_draw_cb), NULL);*/
   /*g_signal_connect (*/
     /*G_OBJECT(self), "motion-notify-event",*/
     /*G_CALLBACK (on_motion),  self);*/
