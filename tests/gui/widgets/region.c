@@ -55,7 +55,8 @@ test_midi_region_fishbowl ()
 {
   guint region_count =
     fishbowl_window_widget_run (
-      fishbowl_creation_func, 20);
+      fishbowl_creation_func,
+      DEFAULT_FISHBOWL_TIME);
 }
 
 int

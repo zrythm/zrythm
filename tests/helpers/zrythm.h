@@ -38,6 +38,9 @@
  * @{
  */
 
+/** Time to run fishbowl, in seconds */
+#define DEFAULT_FISHBOWL_TIME 20
+
 /**
  * To be called by every test's main to initialize
  * Zrythm to default values.

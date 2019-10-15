@@ -29,20 +29,22 @@ if get_option ('enable_tests')
     '-fPIC',
   ]
 
+  # path, is parallel
   tests = [
-    'audio/automation_track',
-    'audio/midi_note',
-    'audio/midi_track',
-    'audio/position',
-    'audio/region',
-    'audio/track',
-    'gui/widgets/region',
-    'gui/widgets/track',
-    'utils/arrays',
+    ['audio/automation_track', true],
+    ['audio/midi_note', true],
+    ['audio/midi_track', true],
+    ['audio/position', true],
+    ['audio/region', true],
+    ['audio/track', true],
+    ['gui/widgets/region', false],
+    ['gui/widgets/track', false],
+    ['utils/arrays', true],
     ]
 
-
-  foreach test_name : tests
+  foreach _test : tests
+    test_name = _test[0]
+    parallel = _test[1]
     source = [ test_name + '.c' ]
     test_name = '_'.join(test_name.split('/'))
 
@@ -64,7 +66,10 @@ if get_option ('enable_tests')
     )
 
     suite = ['zrythm']
-    test (test_name, exe, env: test_env, suite: suite)
+    test (
+      test_name, exe,
+      env: test_env, suite: suite,
+      is_parallel: parallel)
   endforeach
 
 endif

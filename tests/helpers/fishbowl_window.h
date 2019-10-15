@@ -104,7 +104,7 @@ fishbowl_window_widget_new (
   gtk_fishbowl_set_creation_func (
     self->bowl, creation_func);
   gtk_fishbowl_set_update_delay (
-    self->bowl, G_USEC_PER_SEC / 2);
+    self->bowl, G_USEC_PER_SEC / 3);
 
   return self;
 }
