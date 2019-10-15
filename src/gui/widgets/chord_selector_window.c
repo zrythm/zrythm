@@ -531,6 +531,7 @@ chord_selector_window_widget_new (
   ChordSelectorWindowWidget * self =
     g_object_new (
       CHORD_SELECTOR_WINDOW_WIDGET_TYPE,
+      "icon-name", "zrythm",
       NULL);
 
   self->descr = descr;
