@@ -70,9 +70,8 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  gtk_init (&argc, &argv);
   test_helper_zrythm_init ();
-  test_helper_zrythm_gui_init ();
+  test_helper_zrythm_gui_init (argc, argv);
 
 #define TEST_PREFIX "/gui/widgets/track/"
 

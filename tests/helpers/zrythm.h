@@ -63,8 +63,19 @@ test_helper_zrythm_init ()
  * initialize the UI (GTK).
  */
 static void
-test_helper_zrythm_gui_init ()
+test_helper_zrythm_gui_init (
+  int argc, char *argv[])
 {
+  if (gtk_init_check (&argc, &argv))
+    {
+      gtk_init (&argc, &argv);
+    }
+  else
+    {
+      g_test_skip ("No display found");
+      exit (77);
+    }
+
   /* set theme */
   g_object_set (gtk_settings_get_default (),
                 "gtk-theme-name",
