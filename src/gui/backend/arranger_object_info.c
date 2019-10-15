@@ -22,16 +22,22 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
+#include "gui/widgets/automation_point.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/chord_object.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/marker.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/midi_note.h"
+#include "gui/widgets/scale_object.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/velocity.h"
 
 #include <gtk/gtk.h>
 
@@ -271,8 +277,7 @@ arranger_object_info_set_widget_visibility_and_state (
         GTK_WIDGET (lc->widget), \
         GTK_STATE_FLAG_SELECTED); \
     } \
-  gtk_widget_queue_draw ( \
-    GTK_WIDGET (lc->widget))
+  lc##_widget_force_redraw (lc->widget)
 
 /**
  * Sets a counterpart of the given object visible

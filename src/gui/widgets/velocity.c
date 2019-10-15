@@ -242,6 +242,14 @@ velocity_widget_update_tooltip (
   g_free (tooltip);
 }
 
+void
+velocity_widget_force_redraw (
+  VelocityWidget * self)
+{
+  self->redraw = 1;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
 /**
  * Creates a velocity.
  */

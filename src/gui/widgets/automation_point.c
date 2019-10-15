@@ -70,6 +70,14 @@ draw_cb (
  return FALSE;
 }
 
+void
+automation_point_widget_force_redraw (
+  AutomationPointWidget * self)
+{
+  self->redraw = 1;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
 static void
 on_motion (GtkWidget * widget,
            GdkEventMotion *event)

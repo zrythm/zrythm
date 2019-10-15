@@ -64,6 +64,13 @@ typedef struct _MarkerWidget
    * the widget. */
   int              textw;
   int              texth;
+
+  /** Set to 1 to redraw. */
+  int                redraw;
+
+  cairo_t *          cached_cr;
+
+  cairo_surface_t *  cached_surface;
 } MarkerWidget;
 
 /**
@@ -75,6 +82,10 @@ marker_widget_new (
 
 void
 marker_widget_recreate_pango_layouts (
+  MarkerWidget * self);
+
+void
+marker_widget_force_redraw (
   MarkerWidget * self);
 
 /**

@@ -62,6 +62,13 @@ typedef struct _AutomationPointWidget
   UiCursorState          state;
   GtkWindow *            tooltip_win;
   GtkLabel *             tooltip_label;
+
+  /** Set to 1 to redraw. */
+  int                redraw;
+
+  cairo_t *          cached_cr;
+
+  cairo_surface_t *  cached_surface;
 } AutomationPointWidget;
 
 /**
@@ -70,6 +77,10 @@ typedef struct _AutomationPointWidget
 AutomationPointWidget *
 automation_point_widget_new (
   AutomationPoint * automation_point);
+
+void
+automation_point_widget_force_redraw (
+  AutomationPointWidget * self);
 
 /**
  * Updates the tooltips.

@@ -51,17 +51,26 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _MidiNoteWidget
 {
-  GtkBox                   parent_instance;
-  GtkDrawingArea *         drawing_area;
-  MidiNote *               midi_note; ///< the midi_note associated with this
-  GtkWindow *            tooltip_win;
-  GtkLabel *             tooltip_label;
+  GtkBox             parent_instance;
+  GtkDrawingArea *   drawing_area;
+
+  /** The MidiNote associated with this widget. */
+  MidiNote *         midi_note;
+  GtkWindow *        tooltip_win;
+  GtkLabel *         tooltip_label;
 
   /** If cursor is at resizing L. */
-  int                      resize_l;
+  int                resize_l;
 
   /** If cursor is at resizing R. */
-  int                      resize_r;
+  int                resize_r;
+
+  /** Set to 1 to redraw. */
+  int                redraw;
+
+  cairo_t *          cached_cr;
+
+  cairo_surface_t *  cached_surface;
 } MidiNoteWidget;
 
 /**
@@ -80,6 +89,10 @@ void
 midi_note_widget_update_tooltip (
   MidiNoteWidget * self,
   int              show);
+
+void
+midi_note_widget_force_redraw (
+  MidiNoteWidget * self);
 
 /**
  * Returns if the current position is for resizing

@@ -50,9 +50,10 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (TimelineBgWidget,
-               timeline_bg_widget,
-               ARRANGER_BG_WIDGET_TYPE)
+G_DEFINE_TYPE (
+  TimelineBgWidget,
+  timeline_bg_widget,
+  ARRANGER_BG_WIDGET_TYPE)
 
 /**
  * To be called by the arranger bg during drawing.
@@ -237,13 +238,7 @@ timeline_bg_widget_class_init (
 static void
 timeline_bg_widget_init (TimelineBgWidget *self )
 {
-  gtk_widget_add_events (GTK_WIDGET (self),
-                         GDK_ALL_EVENTS_MASK);
-
-  /*g_signal_connect (*/
-    /*G_OBJECT (self), "draw",*/
-    /*G_CALLBACK (timeline_bg_draw_cb), NULL);*/
-  /*g_signal_connect (*/
-    /*G_OBJECT(self), "motion-notify-event",*/
-    /*G_CALLBACK (on_motion),  self);*/
+  gtk_widget_add_events (
+    GTK_WIDGET (self),
+    GDK_ALL_EVENTS_MASK);
 }

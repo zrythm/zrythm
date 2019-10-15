@@ -35,30 +35,6 @@
 
 #include <gtk/gtk.h>
 
-#define ADD_OBJECT(caps,sc) \
-  if (!array_contains ( \
-         ts->sc##s, ts->num_##sc##s, sc)) \
-    { \
-      array_append ( \
-        ts->sc##s, ts->num_##sc##s, sc); \
-      EVENTS_PUSH ( \
-        ET_ARRANGER_OBJECT_SELECTION_CHANGED, \
-        &sc->obj_info); \
-    }
-
-#define REMOVE_OBJECT(caps,sc) \
-  if (!array_contains ( \
-         ts->sc##s, ts->num_##sc##s, sc)) \
-    { \
-      EVENTS_PUSH ( \
-        ET_ARRANGER_OBJECT_SELECTION_CHANGED, \
-        &sc->obj_info); \
-      return; \
-    } \
-  array_delete ( \
-    ts->sc##s, ts->num_##sc##s, sc)
-
-
 void
 timeline_selections_init_loaded (
   TimelineSelections * ts)
@@ -379,7 +355,7 @@ timeline_selections_get_lowest_track (
     TimelineSelections * ts, \
     cc *                 sc) \
   { \
-    ADD_OBJECT (caps, sc); \
+    ARRANGER_SELECTIONS_ADD_OBJECT (ts, caps, sc); \
   }
 
 DEFINE_ADD_OBJECT (REGION, Region, region);
@@ -395,7 +371,7 @@ DEFINE_ADD_OBJECT (MARKER, Marker, marker);
     TimelineSelections * ts, \
     cc *                 sc) \
   { \
-    REMOVE_OBJECT (caps, sc); \
+    ARRANGER_SELECTIONS_REMOVE_OBJECT (ts, caps, sc); \
   }
 
 DEFINE_REMOVE_OBJ (REGION, Region, region);

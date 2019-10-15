@@ -211,9 +211,8 @@ on_motion (
   /*g_message ("hovered note: %d",*/
              /*MIDI_ARRANGER->hovered_note);*/
 
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-  gtk_widget_queue_draw (
-              GTK_WIDGET (ar_prv->bg));
+  arranger_widget_redraw_bg (
+    Z_ARRANGER_WIDGET (self));
 
   return FALSE;
 }

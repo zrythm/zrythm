@@ -774,6 +774,48 @@ ui_get_state_mask (
   return state_mask;
 }
 
+/**
+ * Gets the color the widget should be.
+ *
+ * @param color The original color.
+ * @param is_selected Whether the widget is supposed
+ *   to be selected or not.
+ */
+void
+ui_get_arranger_object_color (
+  GdkRGBA *    color,
+  const int    is_hovered,
+  const int    is_selected,
+  const int    is_transient)
+{
+  if (DEBUGGING)
+    color->alpha = 0.2;
+  else
+    color->alpha = is_transient ? 0.7 : 1.0;
+  if (is_selected)
+    {
+      color->red += 0.4;
+      color->green += 0.2;
+      color->blue += 0.2;
+      color->alpha = DEBUGGING ? 0.5 : 1.0;
+    }
+  else if (is_hovered)
+    {
+      if (ui_is_color_very_bright (color))
+        {
+          color->red -= 0.1;
+          color->green -= 0.1;
+          color->blue -= 0.1;
+        }
+      else
+        {
+          color->red += 0.1;
+          color->green += 0.1;
+          color->blue += 0.1;
+        }
+    }
+}
+
 UiCaches *
 ui_caches_new ()
 {

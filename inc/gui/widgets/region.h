@@ -82,6 +82,13 @@ typedef struct _RegionWidgetPrivate
 
   /** Cache layout for drawing the name. */
   PangoLayout *      layout;
+
+  /** Set to 1 to redraw. */
+  int                redraw;
+
+  cairo_t *          cached_cr;
+
+  cairo_surface_t *  cached_surface;
 } RegionWidgetPrivate;
 
 typedef struct _RegionWidgetClass
@@ -139,6 +146,10 @@ region_widget_draw_name (
  */
 void
 region_widget_delete (RegionWidget *self);
+
+void
+region_widget_force_redraw (
+  RegionWidget * self);
 
 /**
  * Draws the cut line if in cut mode.

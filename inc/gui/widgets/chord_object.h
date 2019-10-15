@@ -59,6 +59,13 @@ typedef struct _ChordObjectWidget
 
   /** For double click. */
   GtkGestureMultiPress * mp;
+
+  /** Set to 1 to redraw. */
+  int                redraw;
+
+  cairo_t *          cached_cr;
+
+  cairo_surface_t *  cached_surface;
 } ChordObjectWidget;
 
 /**
@@ -67,6 +74,10 @@ typedef struct _ChordObjectWidget
 ChordObjectWidget *
 chord_object_widget_new (
   ChordObject * chord);
+
+void
+chord_object_widget_force_redraw (
+  ChordObjectWidget * self);
 
 /**
  * @}

@@ -17,6 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * MIDI arranger background.
+ */
+
 #ifndef __GUI_WIDGETS_MIDI_ARRANGER_BG_H__
 #define __GUI_WIDGETS_MIDI_ARRANGER_BG_H__
 
@@ -32,6 +38,12 @@ G_DECLARE_FINAL_TYPE (MidiArrangerBgWidget,
                       MIDI_ARRANGER_BG_WIDGET,
                       ArrangerBgWidget);
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 typedef struct _MidiArrangerBgWidget
 {
   ArrangerBgWidget         parent_instance;
@@ -41,7 +53,18 @@ typedef struct _MidiArrangerBgWidget
  * Creates a timeline widget using the given timeline data.
  */
 MidiArrangerBgWidget *
-midi_arranger_bg_widget_new (RulerWidget *    ruler,
-                             ArrangerWidget * arranger);
+midi_arranger_bg_widget_new (
+  RulerWidget *    ruler,
+  ArrangerWidget * arranger);
+
+void
+midi_arranger_bg_widget_draw (
+  MidiArrangerBgWidget * self,
+  cairo_t *              cr,
+  GdkRectangle *         rect);
+
+/**
+ * @}
+ */
 
 #endif

@@ -19,14 +19,14 @@
 
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_bg.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
-#include "gui/widgets/main_window.h"
-#include "gui/widgets/arranger.h"
-#include "gui/widgets/arranger_bg.h"
 #include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
@@ -323,6 +323,10 @@ arranger_bg_draw_cb (
       if (Z_IS_TIMELINE_BG_WIDGET (self))
         timeline_bg_widget_draw (
           Z_TIMELINE_BG_WIDGET (self),
+          ab_prv->cached_cr, &rect);
+      if (Z_IS_MIDI_ARRANGER_BG_WIDGET (self))
+        midi_arranger_bg_widget_draw (
+          Z_MIDI_ARRANGER_BG_WIDGET (self),
           ab_prv->cached_cr, &rect);
 
       ab_prv->redraw = 0;

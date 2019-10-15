@@ -65,6 +65,13 @@ typedef struct _ScaleObjectWidget
    * the widget. */
   int              textw;
   int              texth;
+
+  /** Set to 1 to redraw. */
+  int                redraw;
+
+  cairo_t *          cached_cr;
+
+  cairo_surface_t *  cached_surface;
 } ScaleObjectWidget;
 
 /**
@@ -73,6 +80,10 @@ typedef struct _ScaleObjectWidget
 ScaleObjectWidget *
 scale_object_widget_new (
   ScaleObject * scale);
+
+void
+scale_object_widget_force_redraw (
+  ScaleObjectWidget * self);
 
 /**
  * @}

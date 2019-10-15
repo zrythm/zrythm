@@ -37,70 +37,89 @@ scale_draw_cb (
   cairo_t *   cr,
   ScaleObjectWidget * self)
 {
-  GtkStyleContext *context =
-    gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-
-  GdkRGBA * color = &P_CHORD_TRACK->color;
-  cairo_set_source_rgba (
-    cr, color->red, color->green, color->blue,
-    scale_object_is_transient (self->scale_object) ?
-      0.7 : 1);
-  if (scale_object_is_selected (self->scale_object))
+  if (self->redraw)
     {
-      cairo_set_source_rgba (
-        cr, color->red + 0.4, color->green + 0.2,
-        color->blue + 0.2, 1);
-    }
-  cairo_rectangle (
-    cr, 0, 0,
-    width - SCALE_OBJECT_WIDGET_TRIANGLE_W, height);
-  cairo_fill(cr);
+      GtkStyleContext *context =
+        gtk_widget_get_style_context (widget);
 
-  cairo_move_to (
-    cr, width - SCALE_OBJECT_WIDGET_TRIANGLE_W, 0);
-  cairo_line_to (
-    cr, width, height);
-  cairo_line_to (
-    cr, width - SCALE_OBJECT_WIDGET_TRIANGLE_W,
-    height);
-  cairo_line_to (
-    cr, width - SCALE_OBJECT_WIDGET_TRIANGLE_W, 0);
-  cairo_close_path (cr);
-  cairo_fill(cr);
+      int width =
+        gtk_widget_get_allocated_width (widget);
+      int height =
+        gtk_widget_get_allocated_height (widget);
 
-  char * str =
-    musical_scale_to_string (
-      self->scale_object->scale);
-  if (DEBUGGING &&
-      scale_object_is_transient (self->scale_object))
-    {
-      char * tmp =
-        g_strdup_printf (
-          "%s [t]", str);
+      self->cached_surface =
+        cairo_surface_create_similar (
+          cairo_get_target (cr),
+          CAIRO_CONTENT_COLOR_ALPHA,
+          width, height);
+      self->cached_cr =
+        cairo_create (self->cached_surface);
+
+      gtk_render_background (
+        context, self->cached_cr, 0, 0, width, height);
+
+      /* set color */
+      GdkRGBA color = P_CHORD_TRACK->color;
+      ui_get_arranger_object_color (
+        &color,
+        gtk_widget_get_state_flags (
+          GTK_WIDGET (self)) &
+          GTK_STATE_FLAG_PRELIGHT,
+        scale_object_is_selected (
+          self->scale_object),
+        scale_object_is_transient (
+          self->scale_object));
+      gdk_cairo_set_source_rgba (
+        self->cached_cr, &color);
+
+      cairo_rectangle (
+        self->cached_cr, 0, 0,
+        width - SCALE_OBJECT_WIDGET_TRIANGLE_W, height);
+      cairo_fill(self->cached_cr);
+
+      cairo_move_to (
+        self->cached_cr, width - SCALE_OBJECT_WIDGET_TRIANGLE_W, 0);
+      cairo_line_to (
+        self->cached_cr, width, height);
+      cairo_line_to (
+        self->cached_cr, width - SCALE_OBJECT_WIDGET_TRIANGLE_W,
+        height);
+      cairo_line_to (
+        self->cached_cr, width - SCALE_OBJECT_WIDGET_TRIANGLE_W, 0);
+      cairo_close_path (self->cached_cr);
+      cairo_fill(self->cached_cr);
+
+      char * str =
+        musical_scale_to_string (
+          self->scale_object->scale);
+      if (DEBUGGING &&
+          scale_object_is_transient (self->scale_object))
+        {
+          char * tmp =
+            g_strdup_printf (
+              "%s [t]", str);
+          g_free (str);
+          str = tmp;
+        }
+
+      GdkRGBA c2;
+      ui_get_contrast_color (
+        &color, &c2);
+      gdk_cairo_set_source_rgba (
+        self->cached_cr, &c2);
+      PangoLayout * layout =
+        z_cairo_create_default_pango_layout (
+          widget);
+      z_cairo_draw_text (
+        self->cached_cr, widget, layout, str);
+      g_object_unref (layout);
       g_free (str);
-      str = tmp;
+      self->redraw = 0;
     }
 
-  GdkRGBA c2;
-  ui_get_contrast_color (
-    color, &c2);
-  cairo_set_source_rgba (
-    cr, c2.red, c2.green, c2.blue, 1.0);
-  PangoLayout * layout =
-    z_cairo_create_default_pango_layout (
-      widget);
-  z_cairo_draw_text (
-    cr, widget, layout, str);
-  g_object_unref (layout);
-  g_free (str);
+  cairo_set_source_surface (
+    cr, self->cached_surface, 0, 0);
+  cairo_paint (cr);
 
  return FALSE;
 }
@@ -124,6 +143,14 @@ on_press (
     }
 }
 
+void
+scale_object_widget_force_redraw (
+  ScaleObjectWidget * self)
+{
+  self->redraw = 1;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
 static gboolean
 on_motion (
   GtkWidget *      widget,
@@ -143,6 +170,7 @@ on_motion (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);
     }
+  scale_object_widget_force_redraw (self);
 
   return FALSE;
 }
@@ -173,11 +201,8 @@ static void
 scale_object_widget_class_init (
   ScaleObjectWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  /* "scale" is taken by gtk */
-  gtk_widget_class_set_css_name (
-    klass, "scale-object");
+  /*GtkWidgetClass * klass =*/
+    /*GTK_WIDGET_CLASS (_klass);*/
 }
 
 static void
@@ -224,5 +249,6 @@ scale_object_widget_init (
     G_OBJECT (self->mp), "pressed",
     G_CALLBACK (on_press), self);
 
+  self->redraw = 1;
   g_object_ref (self);
 }

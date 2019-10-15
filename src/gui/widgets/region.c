@@ -59,134 +59,128 @@ region_draw_cb (
   RegionWidget * self)
 {
   REGION_WIDGET_GET_PRIVATE (self);
-  Region * r = rw_prv->region;
 
-  GtkStyleContext *context =
-    gtk_widget_get_style_context (widget);
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-
-  Track * track = NULL;
-  if (TRACKLIST &&
-      TRACKLIST->num_tracks >
-        rw_prv->region->track_pos)
-    track =
-      TRACKLIST->tracks[rw_prv->region->track_pos];
-
-  GdkRGBA color;
-  if (track)
-    color = track->color;
-  else if (TESTING)
+  if (rw_prv->redraw)
     {
-      color.red = 1;
-      color.green = 0;
-      color.blue = 0;
-      color.alpha = 1;
-    }
+      Region * r = rw_prv->region;
 
-  if (DEBUGGING)
-    color.alpha = 0.2;
-  else
-    color.alpha = region_is_transient (r) ? 0.7 : 1.0;
-  if (region_is_selected (r))
-    {
-      color.red += 0.4;
-      color.green += 0.2;
-      color.blue += 0.2;
-      color.alpha = DEBUGGING ? 0.5 : 1.0;
-    }
-  else if (
-    gtk_widget_get_state_flags (GTK_WIDGET (self)) &
-      GTK_STATE_FLAG_PRELIGHT)
-    {
-      if (ui_is_color_very_bright (&color))
+      GtkStyleContext *context =
+        gtk_widget_get_style_context (widget);
+      int width =
+        gtk_widget_get_allocated_width (widget);
+      int height =
+        gtk_widget_get_allocated_height (widget);
+
+      rw_prv->cached_surface =
+        cairo_surface_create_similar (
+          cairo_get_target (cr),
+          CAIRO_CONTENT_COLOR_ALPHA,
+          width, height);
+      rw_prv->cached_cr =
+        cairo_create (rw_prv->cached_surface);
+
+      gtk_render_background (
+        context, rw_prv->cached_cr,
+        0, 0, width, height);
+
+      Track * track = NULL;
+      if (TRACKLIST &&
+          TRACKLIST->num_tracks >
+            rw_prv->region->track_pos)
+        track =
+          TRACKLIST->tracks[rw_prv->region->track_pos];
+
+      /* set color */
+      GdkRGBA color;
+      if (track)
+        color = track->color;
+      else if (TESTING)
         {
-          color.red -= 0.1;
-          color.green -= 0.1;
-          color.blue -= 0.1;
+          color.red = 1;
+          color.green = 0;
+          color.blue = 0;
+          color.alpha = 1;
         }
-      else
-        {
-          color.red += 0.1;
-          color.green += 0.1;
-          color.blue += 0.1;
-        }
-    }
-  gdk_cairo_set_source_rgba (
-    cr, &color);
+      ui_get_arranger_object_color (
+        &color,
+        gtk_widget_get_state_flags (GTK_WIDGET (self)) &
+          GTK_STATE_FLAG_PRELIGHT,
+        region_is_selected (r),
+        region_is_transient (r));
+      gdk_cairo_set_source_rgba (
+        rw_prv->cached_cr, &color);
 
-  z_cairo_rounded_rectangle (
-    cr, 0, 0, width, height, 1.0, 4.0);
-  cairo_fill(cr);
-  /*cairo_set_source_rgba (cr,*/
-                         /*color->red,*/
-                         /*color->green,*/
-                         /*color->blue,*/
-                         /*1.0);*/
-  /*cairo_rectangle(cr, 0, 0, width, height);*/
-  /*cairo_set_line_width (cr, 3.5);*/
-  /*cairo_stroke (cr);*/
+      z_cairo_rounded_rectangle (
+        rw_prv->cached_cr, 0, 0, width, height, 1.0, 4.0);
+      cairo_fill(rw_prv->cached_cr);
+      /*cairo_set_source_rgba (rw_prv->cached_cr,*/
+                             /*color->red,*/
+                             /*color->green,*/
+                             /*color->blue,*/
+                             /*1.0);*/
+      /*cairo_rectangle(rw_prv->cached_cr, 0, 0, width, height);*/
+      /*cairo_set_line_width (rw_prv->cached_cr, 3.5);*/
+      /*cairo_stroke (rw_prv->cached_cr);*/
 
-  /* draw loop points */
-  double dashes[] = { 5 };
-  cairo_set_dash (cr, dashes, 1, 0);
-  cairo_set_line_width (cr, 1);
-  cairo_set_source_rgba (cr,
-                         0,
-                         0,
-                         0,
-                         1.0);
-
-  Position tmp;
-  long loop_start_ticks =
-    r->loop_start_pos.total_ticks;
-  long loop_end_ticks =
-    r->loop_end_pos.total_ticks;
-  g_warn_if_fail (loop_end_ticks > loop_start_ticks);
-  long loop_ticks =
-    region_get_loop_length_in_ticks (r);
-  long clip_start_ticks =
-    r->clip_start_pos.total_ticks;
-
-  position_from_ticks (
-    &tmp, loop_start_ticks - clip_start_ticks);
-  int px =
-    ui_pos_to_px_timeline (&tmp, 0);
-  if (px != 0)
-    {
+      /* draw loop points */
+      double dashes[] = { 5 };
+      cairo_set_dash (rw_prv->cached_cr, dashes, 1, 0);
+      cairo_set_line_width (rw_prv->cached_cr, 1);
       cairo_set_source_rgba (
-        cr, 0, 1, 0, 1.0);
-      cairo_move_to (cr, px, 0);
-      cairo_line_to (cr, px, height);
-      cairo_stroke (cr);
-    }
+        rw_prv->cached_cr, 0, 0, 0, 1.0);
 
-  int num_loops = region_get_num_loops (r, 1);
-  for (int i = 0; i < num_loops; i++)
-    {
+      Position tmp;
+      long loop_start_ticks =
+        r->loop_start_pos.total_ticks;
+      long loop_end_ticks =
+        r->loop_end_pos.total_ticks;
+      g_warn_if_fail (loop_end_ticks > loop_start_ticks);
+      long loop_ticks =
+        region_get_loop_length_in_ticks (r);
+      long clip_start_ticks =
+        r->clip_start_pos.total_ticks;
+
       position_from_ticks (
-        &tmp, loop_end_ticks + loop_ticks * i);
-
-      /* adjust for clip_start */
-      position_add_ticks (
-        &tmp, - clip_start_ticks);
-
-      px = ui_pos_to_px_timeline (&tmp, 0);
-
-      if (px <= (int) width - 1)
+        &tmp, loop_start_ticks - clip_start_ticks);
+      int px =
+        ui_pos_to_px_timeline (&tmp, 0);
+      if (px != 0)
         {
           cairo_set_source_rgba (
-            cr, 0, 0, 0, 1.0);
-          cairo_move_to (cr, px, 0);
-          cairo_line_to (cr, px, height);
-          cairo_stroke (cr);
+            rw_prv->cached_cr, 0, 1, 0, 1.0);
+          cairo_move_to (rw_prv->cached_cr, px, 0);
+          cairo_line_to (rw_prv->cached_cr, px, height);
+          cairo_stroke (rw_prv->cached_cr);
         }
+
+      int num_loops = region_get_num_loops (r, 1);
+      for (int i = 0; i < num_loops; i++)
+        {
+          position_from_ticks (
+            &tmp, loop_end_ticks + loop_ticks * i);
+
+          /* adjust for clip_start */
+          position_add_ticks (
+            &tmp, - clip_start_ticks);
+
+          px = ui_pos_to_px_timeline (&tmp, 0);
+
+          if (px <= (int) width - 1)
+            {
+              cairo_set_source_rgba (
+                rw_prv->cached_cr, 0, 0, 0, 1.0);
+              cairo_move_to (rw_prv->cached_cr, px, 0);
+              cairo_line_to (rw_prv->cached_cr, px, height);
+              cairo_stroke (rw_prv->cached_cr);
+            }
+        }
+
+      rw_prv->redraw = 0;
     }
+
+  cairo_set_source_surface (
+    cr, rw_prv->cached_surface, 0, 0);
+  cairo_paint (cr);
 
  return FALSE;
 }
@@ -361,6 +355,7 @@ on_motion (GtkWidget *      widget,
           GTK_STATE_FLAG_PRELIGHT);
       rw_prv->show_cut = 0;
     }
+  rw_prv->redraw = 1;
 
   return FALSE;
 }
@@ -562,6 +557,10 @@ on_size_allocate (
   RegionWidget * self)
 {
   recreate_pango_layouts (self, allocation);
+  REGION_WIDGET_GET_PRIVATE (self);
+  rw_prv->redraw = 1;
+  gtk_widget_queue_draw (
+    GTK_WIDGET (self));
 }
 
 static void
@@ -571,6 +570,15 @@ on_screen_changed (
   RegionWidget * self)
 {
   recreate_pango_layouts (self, NULL);
+}
+
+void
+region_widget_force_redraw (
+  RegionWidget * self)
+{
+  REGION_WIDGET_GET_PRIVATE (self);
+  rw_prv->redraw = 1;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 /**
@@ -640,4 +648,7 @@ region_widget_init (
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
     G_CALLBACK (on_size_allocate),  self);
+
+  REGION_WIDGET_GET_PRIVATE (self);
+  rw_prv->redraw = 1;
 }

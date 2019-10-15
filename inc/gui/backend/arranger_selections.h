@@ -320,6 +320,31 @@
   ARRANGER_SELECTIONS_DECLARE_REMOVE_OBJ ( \
     cc, sc, obj_cc, obj_sc)
 
+#define ARRANGER_SELECTIONS_ADD_OBJECT( \
+  _sel,caps,sc) \
+  if (!array_contains ( \
+         _sel->sc##s, _sel->num_##sc##s, sc)) \
+    { \
+      array_append ( \
+        _sel->sc##s, _sel->num_##sc##s, sc); \
+      EVENTS_PUSH ( \
+        ET_ARRANGER_OBJECT_SELECTION_CHANGED, \
+        &sc->obj_info); \
+    }
+
+#define ARRANGER_SELECTIONS_REMOVE_OBJECT( \
+  _sel,caps,sc) \
+  if (!array_contains ( \
+         _sel->sc##s, _sel->num_##sc##s, sc)) \
+    { \
+      EVENTS_PUSH ( \
+        ET_ARRANGER_OBJECT_SELECTION_CHANGED, \
+        &sc->obj_info); \
+      return; \
+    } \
+  array_delete ( \
+    _sel->sc##s, _sel->num_##sc##s, sc)
+
 /**
 * @}
 */

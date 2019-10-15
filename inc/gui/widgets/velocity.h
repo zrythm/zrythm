@@ -54,6 +54,13 @@ typedef struct _VelocityWidget
 
   /** If cursor is at resizing position. */
   int              resize;
+
+  /** Set to 1 to redraw. */
+  int                redraw;
+
+  cairo_t *          cached_cr;
+
+  cairo_surface_t *  cached_surface;
 } VelocityWidget;
 
 /**
@@ -62,6 +69,10 @@ typedef struct _VelocityWidget
 VelocityWidget *
 velocity_widget_new (
   Velocity * velocity);
+
+void
+velocity_widget_force_redraw (
+  VelocityWidget * self);
 
 /**
  * Returns if the current position is for resizing.

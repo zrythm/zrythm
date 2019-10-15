@@ -19,11 +19,14 @@
 
 #include "audio/marker.h"
 #include "audio/marker_track.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/bot_bar.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker.h"
 #include "gui/widgets/marker_dialog.h"
+#include "gui/widgets/timeline_arranger.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"
@@ -41,63 +44,85 @@ marker_draw_cb (
   cairo_t *   cr,
   MarkerWidget * self)
 {
-  GtkStyleContext *context;
-
-  context =
-    gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-
-  GdkRGBA * color = &P_MARKER_TRACK->color;
-  cairo_set_source_rgba (
-    cr, color->red, color->green, color->blue,
-    marker_is_transient (self->marker) ?
-      0.7 : 1);
-  if (marker_is_selected (self->marker))
+  if (self->redraw)
     {
-      cairo_set_source_rgba (
-        cr, color->red + 0.4, color->green + 0.2,
-        color->blue + 0.2, 1);
+      GtkStyleContext * context =
+        gtk_widget_get_style_context (widget);
+
+      int width =
+        gtk_widget_get_allocated_width (widget);
+      int height =
+        gtk_widget_get_allocated_height (widget);
+
+      self->cached_surface =
+        cairo_surface_create_similar (
+          cairo_get_target (cr),
+          CAIRO_CONTENT_COLOR_ALPHA,
+          width, height);
+      self->cached_cr =
+        cairo_create (self->cached_surface);
+
+      gtk_render_background (
+        context, self->cached_cr, 0, 0, width, height);
+
+      /* set color */
+      GdkRGBA color = P_MARKER_TRACK->color;
+      ui_get_arranger_object_color (
+        &color,
+        gtk_widget_get_state_flags (GTK_WIDGET (self)) &
+          GTK_STATE_FLAG_PRELIGHT,
+        marker_is_selected (self->marker),
+        marker_is_transient (self->marker));
+      gdk_cairo_set_source_rgba (
+        self->cached_cr, &color);
+
+      cairo_rectangle (
+        self->cached_cr, 0, 0,
+        width - MARKER_WIDGET_TRIANGLE_W, height);
+      cairo_fill(self->cached_cr);
+
+      cairo_move_to (
+        self->cached_cr, width - MARKER_WIDGET_TRIANGLE_W, 0);
+      cairo_line_to (
+        self->cached_cr, width, height);
+      cairo_line_to (
+        self->cached_cr, width - MARKER_WIDGET_TRIANGLE_W, height);
+      cairo_line_to (
+        self->cached_cr, width - MARKER_WIDGET_TRIANGLE_W, 0);
+      cairo_close_path (self->cached_cr);
+      cairo_fill(self->cached_cr);
+
+      char str[100];
+      sprintf (str, "%s", self->marker->name);
+      if (DEBUGGING &&
+          marker_is_transient (self->marker))
+        {
+          strcat (str, " [t]");
+        }
+
+      GdkRGBA c2;
+      ui_get_contrast_color (
+        &color, &c2);
+      gdk_cairo_set_source_rgba (self->cached_cr, &c2);
+      z_cairo_draw_text (
+        self->cached_cr, widget, self->layout, str);
+
+      self->redraw = 0;
     }
-  cairo_rectangle (
-    cr, 0, 0,
-    width - MARKER_WIDGET_TRIANGLE_W, height);
-  cairo_fill(cr);
 
-  cairo_move_to (
-    cr, width - MARKER_WIDGET_TRIANGLE_W, 0);
-  cairo_line_to (
-    cr, width, height);
-  cairo_line_to (
-    cr, width - MARKER_WIDGET_TRIANGLE_W, height);
-  cairo_line_to (
-    cr, width - MARKER_WIDGET_TRIANGLE_W, 0);
-  cairo_close_path (cr);
-  cairo_fill(cr);
-
-  char str[100];
-  sprintf (str, "%s", self->marker->name);
-  if (DEBUGGING &&
-      marker_is_transient (self->marker))
-    {
-      strcat (str, " [t]");
-    }
-
-  GdkRGBA c2;
-  ui_get_contrast_color (
-    color, &c2);
-  cairo_set_source_rgba (
-    cr, c2.red, c2.green, c2.blue, 1.0);
-  z_cairo_draw_text (
-    cr, widget, self->layout, str);
+  cairo_set_source_surface (
+    cr, self->cached_surface, 0, 0);
+  cairo_paint (cr);
 
  return FALSE;
+}
+
+void
+marker_widget_force_redraw (
+  MarkerWidget * self)
+{
+  self->redraw = 1;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 static void
@@ -125,6 +150,20 @@ on_motion (
   GdkEventMotion *event,
   MarkerWidget * self)
 {
+  ArrangerWidgetPrivate * ar_prv;
+  if (P_MARKER_TRACK->pinned)
+    {
+      ar_prv =
+        arranger_widget_get_private (
+          Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
+    }
+  else
+    {
+      ar_prv =
+        arranger_widget_get_private (
+          Z_ARRANGER_WIDGET (MW_TIMELINE));
+    }
+
   if (event->type == GDK_ENTER_NOTIFY)
     {
       gtk_widget_set_state_flags (
@@ -132,6 +171,15 @@ on_motion (
         GTK_STATE_FLAG_PRELIGHT,
         0);
     }
+  else if (event->type == GDK_LEAVE_NOTIFY)
+    {
+      if (ar_prv->action !=
+            UI_OVERLAY_ACTION_MOVING)
+        gtk_widget_unset_state_flags (
+          GTK_WIDGET (self),
+          GTK_STATE_FLAG_PRELIGHT);
+    }
+  marker_widget_force_redraw (self);
 
   return FALSE;
 }
@@ -198,8 +246,6 @@ marker_widget_class_init (MarkerWidgetClass * _klass)
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "marker");
 
   GObjectClass * oklass =
     G_OBJECT_CLASS (klass);
@@ -253,6 +299,8 @@ marker_widget_init (MarkerWidget * self)
   g_signal_connect (
     G_OBJECT (self), "screen-changed",
     G_CALLBACK (on_screen_changed),  self);
+
+  self->redraw = 1;
 
   g_object_ref (self);
 }

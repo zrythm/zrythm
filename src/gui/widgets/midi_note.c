@@ -61,144 +61,169 @@ midi_note_draw_cb (
   if (!GTK_IS_WIDGET (self))
     return FALSE;
 
-  /*g_message ("drawing %d", self->midi_note->id);*/
-
-  GtkStyleContext *context =
-    gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-
-  MidiNote * mn = self->midi_note;
-  Region * region = mn->region;
-  GdkRGBA * track_color =
-    &region->lane->track->color;
-  Position global_start_pos;
-  midi_note_get_global_start_pos (
-    mn, &global_start_pos);
-  ChordObject * co =
-    chord_track_get_chord_at_pos (
-      P_CHORD_TRACK, &global_start_pos);
-  ScaleObject * so =
-    chord_track_get_scale_at_pos (
-      P_CHORD_TRACK, &global_start_pos);
-  GdkRGBA color;
-  int in_scale =
-    so && musical_scale_is_key_in_scale (
-      so->scale, mn->val % 12);
-  int in_chord =
-    co && chord_descriptor_is_key_in_chord (
-      chord_object_get_chord_descriptor (co),
-      mn->val % 12);
-
-  if (PIANO_ROLL->highlighting ==
-        PR_HIGHLIGHT_BOTH &&
-      in_scale && in_chord)
+  if (self->redraw)
     {
-      gdk_rgba_parse (&color, "#FF22FF");
-    }
-  else if ((PIANO_ROLL->highlighting ==
-        PR_HIGHLIGHT_SCALE ||
-      PIANO_ROLL->highlighting ==
-        PR_HIGHLIGHT_BOTH) && in_scale)
-    {
-      gdk_rgba_parse (&color, "#662266");
-    }
-  else if ((PIANO_ROLL->highlighting ==
-        PR_HIGHLIGHT_CHORD ||
-      PIANO_ROLL->highlighting ==
-        PR_HIGHLIGHT_BOTH) && in_chord)
-    {
-      gdk_rgba_parse (&color, "#BB22BB");
-    }
-  else
-    {
-      gdk_rgba_parse (
-        &color,
-        gdk_rgba_to_string (track_color));
-    }
+      GtkStyleContext *context =
+        gtk_widget_get_style_context (widget);
 
-  /* draw notes of main region */
-  if (region == CLIP_EDITOR->region)
-    {
-      cairo_set_source_rgba (
-        cr,
-        color.red,
-        color.green,
-        color.blue,
-        midi_note_is_transient (self->midi_note) ? 0.7 : 1);
-      if (midi_note_is_selected (self->midi_note))
+      int width =
+        gtk_widget_get_allocated_width (widget);
+      int height =
+        gtk_widget_get_allocated_height (widget);
+
+      self->cached_surface =
+        cairo_surface_create_similar (
+          cairo_get_target (cr),
+          CAIRO_CONTENT_COLOR_ALPHA,
+          width, height);
+      self->cached_cr =
+        cairo_create (self->cached_surface);
+
+      gtk_render_background (
+        context, self->cached_cr, 0, 0, width, height);
+
+      MidiNote * mn = self->midi_note;
+      Region * region = mn->region;
+      GdkRGBA * track_color =
+        &region->lane->track->color;
+      Position global_start_pos;
+      midi_note_get_global_start_pos (
+        mn, &global_start_pos);
+      ChordObject * co =
+        chord_track_get_chord_at_pos (
+          P_CHORD_TRACK, &global_start_pos);
+      ScaleObject * so =
+        chord_track_get_scale_at_pos (
+          P_CHORD_TRACK, &global_start_pos);
+      GdkRGBA color;
+      int in_scale =
+        so && musical_scale_is_key_in_scale (
+          so->scale, mn->val % 12);
+      int in_chord =
+        co && chord_descriptor_is_key_in_chord (
+          chord_object_get_chord_descriptor (co),
+          mn->val % 12);
+
+      if (PIANO_ROLL->highlighting ==
+            PR_HIGHLIGHT_BOTH &&
+          in_scale && in_chord)
         {
-          cairo_set_source_rgba (
-            cr, color.red + 0.4,
-            color.green + 0.2,
-            color.blue + 0.2,
-            DEBUGGING ? 0.3 : 1);
+          gdk_rgba_parse (&color, "#FF22FF");
         }
-      if (PIANO_ROLL->drum_mode)
+      else if ((PIANO_ROLL->highlighting ==
+            PR_HIGHLIGHT_SCALE ||
+          PIANO_ROLL->highlighting ==
+            PR_HIGHLIGHT_BOTH) && in_scale)
         {
-          z_cairo_diamond (cr, 0, 0, width, height);
+          gdk_rgba_parse (&color, "#662266");
+        }
+      else if ((PIANO_ROLL->highlighting ==
+            PR_HIGHLIGHT_CHORD ||
+          PIANO_ROLL->highlighting ==
+            PR_HIGHLIGHT_BOTH) && in_chord)
+        {
+          gdk_rgba_parse (&color, "#BB22BB");
         }
       else
         {
-          z_cairo_rounded_rectangle (
-            cr, 0, 0, width, height, 1.0, 4.0);
+          gdk_rgba_parse (
+            &color,
+            gdk_rgba_to_string (track_color));
         }
-      cairo_fill(cr);
-    }
-  /* draw other notes */
-  else
-    {
-      cairo_set_source_rgba (
-        cr, color.red, color.green,
-        color.blue, 0.5);
-      if (PIANO_ROLL->drum_mode)
+
+      /* draw notes of main region */
+      if (region == CLIP_EDITOR->region)
         {
-          z_cairo_diamond (cr, 0, 0, width, height);
+          /* get color */
+          ui_get_arranger_object_color (
+            &color,
+            gtk_widget_get_state_flags (
+              GTK_WIDGET (self)) &
+              GTK_STATE_FLAG_PRELIGHT,
+            midi_note_is_selected (self->midi_note),
+            midi_note_is_transient (self->midi_note));
+          gdk_cairo_set_source_rgba (
+            self->cached_cr, &color);
+
+          if (PIANO_ROLL->drum_mode)
+            {
+              z_cairo_diamond (
+                self->cached_cr, 0, 0, width, height);
+            }
+          else
+            {
+              z_cairo_rounded_rectangle (
+                self->cached_cr, 0, 0, width, height,
+                1.0, 4.0);
+            }
+          cairo_fill(self->cached_cr);
         }
+      /* draw other notes */
       else
         {
-          z_cairo_rounded_rectangle (
-            cr, 0, 0, width, height, 1.0, 4.0);
-        }
-      cairo_fill(cr);
-    }
+          /* get color */
+          ui_get_arranger_object_color (
+            &color,
+            gtk_widget_get_state_flags (
+              GTK_WIDGET (self)) &
+              GTK_STATE_FLAG_PRELIGHT,
+            midi_note_is_selected (self->midi_note),
+            midi_note_is_transient (self->midi_note));
+          color.alpha = 0.5;
+          gdk_cairo_set_source_rgba (
+            self->cached_cr, &color);
 
-  char * str =
-    g_strdup_printf (
-      "%s<sup>%d</sup>",
-      chord_descriptor_note_to_string (
-        mn->val % 12),
-      mn->val / 12 - 1);
-  if (DEBUGGING &&
-      midi_note_is_transient (self->midi_note))
-    {
-      char * tmp =
+          if (PIANO_ROLL->drum_mode)
+            {
+              z_cairo_diamond (
+                self->cached_cr, 0, 0, width, height);
+            }
+          else
+            {
+              z_cairo_rounded_rectangle (
+                self->cached_cr, 0, 0, width, height,
+                1.0, 4.0);
+            }
+          cairo_fill(self->cached_cr);
+        }
+
+      char * str =
         g_strdup_printf (
-          "%s [t]", str);
+          "%s<sup>%d</sup>",
+          chord_descriptor_note_to_string (
+            mn->val % 12),
+          mn->val / 12 - 1);
+      if (DEBUGGING &&
+          midi_note_is_transient (self->midi_note))
+        {
+          char * tmp =
+            g_strdup_printf (
+              "%s [t]", str);
+          g_free (str);
+          str = tmp;
+        }
+
+      GdkRGBA c2;
+      ui_get_contrast_color (
+        &color, &c2);
+      gdk_cairo_set_source_rgba (self->cached_cr, &c2);
+      if (DEBUGGING || !PIANO_ROLL->drum_mode)
+        {
+          PangoLayout * layout =
+            z_cairo_create_default_pango_layout (
+              widget);
+          z_cairo_draw_text (
+            self->cached_cr, widget, layout, str);
+          g_object_unref (layout);
+        }
       g_free (str);
-      str = tmp;
+
+      self->redraw = 0;
     }
 
-  GdkRGBA c2;
-  ui_get_contrast_color (
-    &color, &c2);
-  gdk_cairo_set_source_rgba (cr, &c2);
-  if (DEBUGGING || !PIANO_ROLL->drum_mode)
-    {
-      PangoLayout * layout =
-        z_cairo_create_default_pango_layout (
-          widget);
-      z_cairo_draw_text (
-        cr, widget, layout, str);
-      g_object_unref (layout);
-    }
-  g_free (str);
+  cairo_set_source_surface (
+    cr, self->cached_surface, 0, 0);
+  cairo_paint (cr);
 
  return FALSE;
 }
@@ -231,6 +256,7 @@ on_motion (GtkWidget *      widget,
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);
     }
+  midi_note_widget_force_redraw (self);
 
   return FALSE;
 }
@@ -270,6 +296,14 @@ midi_note_widget_is_resize_r (
       return 1;
     }
   return 0;
+}
+
+void
+midi_note_widget_force_redraw (
+  MidiNoteWidget * self)
+{
+  self->redraw = 1;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 void
@@ -366,10 +400,8 @@ static void
 midi_note_widget_class_init (
   MidiNoteWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "midi-note");
+  /*GtkWidgetClass * klass =*/
+    /*GTK_WIDGET_CLASS (_klass);*/
 }
 
 static void
@@ -427,6 +459,8 @@ midi_note_widget_init (MidiNoteWidget * self)
     /*GTK_WIDGET (self->tooltip_label));*/
   /*gtk_window_set_position (*/
     /*self->tooltip_win, GTK_WIN_POS_MOUSE);*/
+
+  self->redraw = 1;
 
   g_object_ref (self);
 }

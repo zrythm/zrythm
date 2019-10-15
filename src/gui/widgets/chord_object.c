@@ -40,74 +40,91 @@ chord_draw_cb (
   cairo_t *   cr,
   ChordObjectWidget * self)
 {
-  GtkStyleContext *context =
-    gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-
-  GdkRGBA * color = &P_CHORD_TRACK->color;
-  ChordObject * chord_object =
-    self->chord_object;
-  ChordDescriptor * descr =
-    CHORD_EDITOR->chords[chord_object->index];
-  cairo_set_source_rgba (
-    cr, color->red, color->green, color->blue,
-    chord_object_is_transient (chord_object) ?
-      0.7 : 1);
-  if (chord_object_is_selected (chord_object))
+  if (self->redraw)
     {
+      GtkStyleContext *context =
+        gtk_widget_get_style_context (widget);
+
+      int width =
+        gtk_widget_get_allocated_width (widget);
+      int height =
+        gtk_widget_get_allocated_height (widget);
+
+      self->cached_surface =
+        cairo_surface_create_similar (
+          cairo_get_target (cr),
+          CAIRO_CONTENT_COLOR_ALPHA,
+          width, height);
+      self->cached_cr =
+        cairo_create (self->cached_surface);
+
+      gtk_render_background (
+        context, self->cached_cr, 0, 0, width, height);
+
+      GdkRGBA * color = &P_CHORD_TRACK->color;
+      ChordObject * chord_object =
+        self->chord_object;
+      ChordDescriptor * descr =
+        CHORD_EDITOR->chords[chord_object->index];
       cairo_set_source_rgba (
-        cr, color->red + 0.4, color->green + 0.2,
-        color->blue + 0.2, 1);
-    }
-  cairo_rectangle (
-    cr, 0, 0,
-    width - CHORD_OBJECT_WIDGET_TRIANGLE_W, height);
-  cairo_fill(cr);
+        self->cached_cr, color->red, color->green, color->blue,
+        chord_object_is_transient (chord_object) ?
+          0.7 : 1);
+      if (chord_object_is_selected (chord_object))
+        {
+          cairo_set_source_rgba (
+            self->cached_cr, color->red + 0.4, color->green + 0.2,
+            color->blue + 0.2, 1);
+        }
+      cairo_rectangle (
+        self->cached_cr, 0, 0,
+        width - CHORD_OBJECT_WIDGET_TRIANGLE_W, height);
+      cairo_fill(self->cached_cr);
 
-  cairo_move_to (
-    cr, width - CHORD_OBJECT_WIDGET_TRIANGLE_W, 0);
-  cairo_line_to (
-    cr, width, height);
-  cairo_line_to (
-    cr, width - CHORD_OBJECT_WIDGET_TRIANGLE_W,
-    height);
-  cairo_line_to (
-    cr, width - CHORD_OBJECT_WIDGET_TRIANGLE_W, 0);
-  cairo_close_path (cr);
-  cairo_fill(cr);
+      cairo_move_to (
+        self->cached_cr, width - CHORD_OBJECT_WIDGET_TRIANGLE_W, 0);
+      cairo_line_to (
+        self->cached_cr, width, height);
+      cairo_line_to (
+        self->cached_cr, width - CHORD_OBJECT_WIDGET_TRIANGLE_W,
+        height);
+      cairo_line_to (
+        self->cached_cr, width - CHORD_OBJECT_WIDGET_TRIANGLE_W, 0);
+      cairo_close_path (self->cached_cr);
+      cairo_fill(self->cached_cr);
 
-  char * str =
-    chord_descriptor_to_string (descr);
-  if (DEBUGGING &&
-      chord_object_is_transient (
-        chord_object))
-    {
-      char * tmp =
-        g_strdup_printf (
-          "%s [t]", str);
+      char * str =
+        chord_descriptor_to_string (descr);
+      if (DEBUGGING &&
+          chord_object_is_transient (
+            chord_object))
+        {
+          char * tmp =
+            g_strdup_printf (
+              "%s [t]", str);
+          g_free (str);
+          str = tmp;
+        }
+
+      GdkRGBA c2;
+      ui_get_contrast_color (
+        color, &c2);
+      cairo_set_source_rgba (
+        self->cached_cr, c2.red, c2.green, c2.blue, 1.0);
+      PangoLayout * layout =
+        z_cairo_create_default_pango_layout (
+          widget);
+      z_cairo_draw_text (
+        self->cached_cr, widget, layout, str);
+      g_object_unref (layout);
       g_free (str);
-      str = tmp;
+
+      self->redraw = 0;
     }
 
-  GdkRGBA c2;
-  ui_get_contrast_color (
-    color, &c2);
-  cairo_set_source_rgba (
-    cr, c2.red, c2.green, c2.blue, 1.0);
-  PangoLayout * layout =
-    z_cairo_create_default_pango_layout (
-      widget);
-  z_cairo_draw_text (
-    cr, widget, layout, str);
-  g_object_unref (layout);
-  g_free (str);
+  cairo_set_source_surface (
+    cr, self->cached_surface, 0, 0);
+  cairo_paint (cr);
 
  return FALSE;
 }
@@ -132,6 +149,14 @@ on_press (
     }
 }
 
+void
+chord_object_widget_force_redraw (
+  ChordObjectWidget * self)
+{
+  self->redraw = 1;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
 static gboolean
 on_motion (
   GtkWidget *      widget,
@@ -151,6 +176,7 @@ on_motion (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);
     }
+  chord_object_widget_force_redraw (self);
 
   return FALSE;
 }
@@ -170,10 +196,8 @@ static void
 chord_object_widget_class_init (
   ChordObjectWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "chord");
+  /*GtkWidgetClass * klass =*/
+    /*GTK_WIDGET_CLASS (_klass);*/
 }
 
 static void
@@ -219,6 +243,8 @@ chord_object_widget_init (
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",
     G_CALLBACK (on_press), self);
+
+  self->redraw = 1;
 
   g_object_ref (self);
 }

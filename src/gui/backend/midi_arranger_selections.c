@@ -266,37 +266,19 @@ midi_arranger_selections_contains_midi_note (
 void
 midi_arranger_selections_add_midi_note (
   MidiArrangerSelections * mas,
-  MidiNote *               note)
+  MidiNote *               midi_note)
 {
-  if (!array_contains (mas->midi_notes,
-                      mas->num_midi_notes,
-                      note))
-    {
-      array_append (mas->midi_notes,
-                    mas->num_midi_notes,
-                    note);
-
-      EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
-                   note);
-    }
+  ARRANGER_SELECTIONS_ADD_OBJECT (
+    mas, MidiNote, midi_note);
 }
 
 void
 midi_arranger_selections_remove_midi_note (
   MidiArrangerSelections * mas,
-  MidiNote *               note)
+  MidiNote *               midi_note)
 {
-  if (!array_contains (mas->midi_notes,
-                       mas->num_midi_notes,
-                       note))
-    {
-      return;
-    }
-
-  array_delete (
-    mas->midi_notes,
-    mas->num_midi_notes,
-    note);
+  ARRANGER_SELECTIONS_REMOVE_OBJECT (
+    mas, MidiNote, midi_note);
 }
 
 ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS (

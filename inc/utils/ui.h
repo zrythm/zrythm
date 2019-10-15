@@ -491,6 +491,20 @@ int
 ui_is_color_very_bright (
   GdkRGBA * src);
 
+/**
+ * Gets the color the widget should be.
+ *
+ * @param color The original color.
+ * @param is_selected Whether the widget is supposed
+ *   to be selected or not.
+ */
+void
+ui_get_arranger_object_color (
+  GdkRGBA *    color,
+  const int    is_hovered,
+  const int    is_selected,
+  const int    is_transient);
+
 UiCaches *
 ui_caches_new (void);
 
