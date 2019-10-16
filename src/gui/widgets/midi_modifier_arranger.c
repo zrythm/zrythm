@@ -30,18 +30,21 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/velocity.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
 
-G_DEFINE_TYPE (MidiModifierArrangerWidget,
-               midi_modifier_arranger_widget,
-               ARRANGER_WIDGET_TYPE)
+G_DEFINE_TYPE (
+  MidiModifierArrangerWidget,
+  midi_modifier_arranger_widget,
+  ARRANGER_WIDGET_TYPE)
 
 /**
- * To be called from get_child_position in parent widget.
+ * To be called from get_child_position in parent
+ * widget.
  *
  * Used to allocate the overlay children.
  */

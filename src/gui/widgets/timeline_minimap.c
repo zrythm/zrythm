@@ -33,6 +33,7 @@
 #include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_minimap_bg.h"
 #include "gui/widgets/timeline_minimap_selection.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "utils/ui.h"
@@ -80,7 +81,7 @@ move_selection_x (
   GtkAdjustment * adj =
     gtk_scrollable_get_hadjustment (
       GTK_SCROLLABLE (
-        MW_CENTER_DOCK->ruler_viewport));
+        MW_TIMELINE_PANEL->ruler_viewport));
   gtk_adjustment_set_value (adj,
                             ruler_px);
 }
@@ -124,7 +125,7 @@ resize_selection_l (
       GtkAdjustment * adj =
         gtk_scrollable_get_hadjustment (
           GTK_SCROLLABLE (
-            MW_CENTER_DOCK->ruler_viewport));
+            MW_TIMELINE_PANEL->ruler_viewport));
       gtk_adjustment_set_value (adj,
                                 ruler_px);
 
@@ -172,7 +173,7 @@ resize_selection_r (
       GtkAdjustment * adj =
         gtk_scrollable_get_hadjustment (
           GTK_SCROLLABLE (
-            MW_CENTER_DOCK->ruler_viewport));
+            MW_TIMELINE_PANEL->ruler_viewport));
       gtk_adjustment_set_value (adj,
                                 ruler_px);
 
@@ -206,7 +207,8 @@ get_child_position (GtkOverlay   *overlay,
     {
       if (MAIN_WINDOW &&
           MW_CENTER_DOCK &&
-          MW_CENTER_DOCK->ruler_viewport)
+          MW_TIMELINE_PANEL &&
+          MW_TIMELINE_PANEL->ruler_viewport)
         {
           int width =
             gtk_widget_get_allocated_width (
@@ -220,13 +222,13 @@ get_child_position (GtkOverlay   *overlay,
           GtkAdjustment * adj =
             gtk_scrollable_get_hadjustment (
               GTK_SCROLLABLE (
-                MW_CENTER_DOCK->ruler_viewport));
+                MW_TIMELINE_PANEL->ruler_viewport));
           double px_start =
             gtk_adjustment_get_value (adj);
           double px_width =
             gtk_widget_get_allocated_width (
               GTK_WIDGET (
-                MW_CENTER_DOCK->ruler_viewport));
+                MW_TIMELINE_PANEL->ruler_viewport));
 
           double start_ratio =
             px_start / (double) rw_prv->total_px;

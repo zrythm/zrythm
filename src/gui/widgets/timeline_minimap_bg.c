@@ -24,6 +24,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap_bg.h"
+#include "gui/widgets/timeline_panel.h"
 #include "project.h"
 
 #include <gtk/gtk.h>

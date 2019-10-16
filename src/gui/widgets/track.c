@@ -50,6 +50,7 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_top_grid.h"
 #include "gui/widgets/tracklist.h"

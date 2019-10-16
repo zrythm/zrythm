@@ -40,7 +40,7 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_TRACKLIST MW_CENTER_DOCK->tracklist
+#define MW_TRACKLIST MW_TIMELINE_PANEL->tracklist
 
 typedef struct _TrackWidget TrackWidget;
 typedef struct _DragDestBoxWidget DragDestBoxWidget;

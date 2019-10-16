@@ -48,9 +48,9 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_TIMELINE MW_CENTER_DOCK->timeline
+#define MW_TIMELINE MW_TIMELINE_PANEL->timeline
 #define MW_PINNED_TIMELINE \
-  MW_CENTER_DOCK->pinned_timeline
+  MW_TIMELINE_PANEL->pinned_timeline
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;

@@ -31,6 +31,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/timeline_bg.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "settings/settings.h"

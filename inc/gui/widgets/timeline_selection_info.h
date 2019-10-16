@@ -40,7 +40,7 @@ G_DECLARE_FINAL_TYPE (
   Z, TIMELINE_SELECTION_INFO_WIDGET,
   GtkStack);
 
-#define MW_TS_INFO MW_CENTER_DOCK->selection_info
+#define MW_TS_INFO MW_TIMELINE_PANEL->selection_info
 
 typedef struct _SelectionInfoWidget
   SelectionInfoWidget;

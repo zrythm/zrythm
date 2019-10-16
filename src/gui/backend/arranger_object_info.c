@@ -37,6 +37,7 @@
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/scale_object.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/velocity.h"
 
 #include <gtk/gtk.h>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Center dock.
+ */
+
 #ifndef __GUI_WIDGETS_CENTER_DOCK_H__
 #define __GUI_WIDGETS_CENTER_DOCK_H__
 
@@ -27,75 +33,41 @@
 
 #define CENTER_DOCK_WIDGET_TYPE \
   (center_dock_widget_get_type ())
-G_DECLARE_FINAL_TYPE (CenterDockWidget,
-                      center_dock_widget,
-                      Z,
-                      CENTER_DOCK_WIDGET,
-                      DzlDockBin)
+G_DECLARE_FINAL_TYPE (
+  CenterDockWidget,
+  center_dock_widget,
+  Z, CENTER_DOCK_WIDGET,
+  DzlDockBin)
+
+typedef struct _LeftDockEdgeWidget
+  LeftDockEdgeWidget;
+typedef struct _RightDockEdgeWidget
+  RightDockEdgeWidget;
+typedef struct _BotDockEdgeWidget BotDockEdgeWidget;
+typedef struct _TimelinePanelWidget
+  TimelinePanelWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 #define MW_CENTER_DOCK MAIN_WINDOW->center_dock
 
-typedef struct _RulerWidget RulerWidget;
-typedef struct _TracklistWidget TracklistWidget;
-typedef struct _SnapGridWidget SnapGridWidget;
-typedef struct _TimelineArrangerWidget TimelineArrangerWidget;
-typedef struct _TimelineRulerWidget TimelineRulerWidget;
-typedef struct _LeftDockEdgeWidget LeftDockEdgeWidget;
-typedef struct _RightDockEdgeWidget RightDockEdgeWidget;
-typedef struct _BotDockEdgeWidget BotDockEdgeWidget;
-typedef struct _CenterDockBotBoxWidget CenterDockBotBoxWidget;
-typedef struct _TracklistHeaderWidget TracklistHeaderWidget;
-typedef struct _PinnedTracklistWidget
-  PinnedTracklistWidget;
-typedef struct _TimelineToolbarWidget
-  TimelineToolbarWidget;
-
+/**
+ * Center dock.
+ */
 typedef struct _CenterDockWidget
 {
   DzlDockBin               parent_instance;
-  TimelineSelectionInfoWidget * selection_info;
-  GtkBox                   * editor_top;
 
-  /** The paned containing the
-   * PinnedTracklistWidget and the
-   * TracklistWidget. */
-  GtkPaned *               tracklist_paned;
+  /** Event viewr + timeline panel. */
+  GtkPaned *               timeline_plus_event_viewer_paned;
 
-  GtkPaned                 * tracklist_timeline;
-  GtkBox                   * tracklist_top;
-  GtkScrolledWindow        * tracklist_scroll;
-  GtkViewport              * tracklist_viewport;
-  PinnedTracklistWidget * pinned_tracklist;
-  TracklistHeaderWidget *  tracklist_header;
-  TracklistWidget          * tracklist;
+  /** Timeline panel. */
+  TimelinePanelWidget *    timeline_panel;
 
-  /** Scroll for ruler holding the viewport. */
-  GtkScrolledWindow *      ruler_scroll;
-
-  /** Viewport for ruler holding the ruler. */
-  GtkViewport *            ruler_viewport;
-
-  /** Ruler. */
-  TimelineRulerWidget *    ruler;
-
-  /** The paned dividing the pinned and unpinned
-   * timelines. */
-  GtkPaned *               timeline_divider_pane;
-
-  GtkScrolledWindow *      timeline_scroll;
-  GtkViewport *            timeline_viewport;
-
-  /** The main timeline. */
-  TimelineArrangerWidget * timeline;
-
-  TimelineToolbarWidget *  timeline_toolbar;
-
-  GtkScrolledWindow *      pinned_timeline_scroll;
-  GtkViewport *            pinned_timeline_viewport;
-
-  /** The pinned timeline above the main one. */
-  TimelineArrangerWidget * pinned_timeline;
-
-  CenterDockBotBoxWidget * bot_box;
   LeftDockEdgeWidget *     left_dock_edge;
   RightDockEdgeWidget *    right_dock_edge;
   BotDockEdgeWidget *      bot_dock_edge;
@@ -103,6 +75,11 @@ typedef struct _CenterDockWidget
 } CenterDockWidget;
 
 void
-center_dock_widget_setup (CenterDockWidget * self);
+center_dock_widget_setup (
+  CenterDockWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

@@ -24,6 +24,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/backend/events.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -155,11 +156,11 @@ on_size_allocate (
       /*MW_CENTER_DOCK->pinned_timeline_scroll),*/
     /*-1, allocation->height);*/
   if (gtk_paned_get_position (
-        MW_CENTER_DOCK->timeline_divider_pane) !=
+        MW_TIMELINE_PANEL->timeline_divider_pane) !=
       allocation->height)
     {
       gtk_paned_set_position (
-        MW_CENTER_DOCK->timeline_divider_pane,
+        MW_TIMELINE_PANEL->timeline_divider_pane,
         allocation->height);
     }
 }

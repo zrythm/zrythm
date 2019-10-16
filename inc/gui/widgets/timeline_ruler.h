@@ -33,16 +33,22 @@
 
 #define TIMELINE_RULER_WIDGET_TYPE \
   (timeline_ruler_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TimelineRulerWidget,
-                      timeline_ruler_widget,
-                      Z,
-                      TIMELINE_RULER_WIDGET,
-                      RulerWidget)
-
-#define MW_RULER MW_CENTER_DOCK->ruler
+G_DECLARE_FINAL_TYPE (
+  TimelineRulerWidget,
+  timeline_ruler_widget,
+  Z, TIMELINE_RULER_WIDGET,
+  RulerWidget)
 
 typedef struct _RulerRangeWidget RulerRangeWidget;
 typedef struct _RulerMarkerWidget RulerMarkerWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define MW_RULER MW_TIMELINE_PANEL->ruler
 
 typedef struct _TimelineRulerWidget
 {
@@ -111,5 +117,9 @@ timeline_ruler_on_drag_update (
   gdouble         offset_x,
   gdouble         offset_y,
   TimelineRulerWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

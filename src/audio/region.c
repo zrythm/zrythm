@@ -40,6 +40,7 @@
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_panel.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"

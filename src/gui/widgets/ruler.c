@@ -17,12 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Ruler widget.
- */
-
 #include <math.h>
 
 #include "actions/actions.h"
@@ -42,6 +36,7 @@
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/ruler_range.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -50,9 +45,10 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE_WITH_PRIVATE (RulerWidget,
-                            ruler_widget,
-                            GTK_TYPE_OVERLAY)
+G_DEFINE_TYPE_WITH_PRIVATE (
+  RulerWidget,
+  ruler_widget,
+  GTK_TYPE_OVERLAY)
 
 #define Y_SPACING 5
 #define FONT "Monospace"

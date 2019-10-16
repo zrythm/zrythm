@@ -33,6 +33,7 @@
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/ruler_range.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "utils/ui.h"

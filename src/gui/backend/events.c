@@ -44,7 +44,6 @@
 #include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/channel.h"
@@ -70,7 +69,9 @@
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_bot_box.h"
 #include "gui/widgets/timeline_minimap.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/timeline_selection_info.h"
 #include "gui/widgets/toolbox.h"
@@ -767,8 +768,8 @@ events_process (void * data)
           break;
         case ET_TL_SELECTIONS_CHANGED:
           inspector_widget_refresh (MW_INSPECTOR);
-          timeline_selection_info_widget_refresh (
-            MW_TS_INFO, TL_SELECTIONS);
+          /*timeline_selection_info_widget_refresh (*/
+            /*MW_TS_INFO, TL_SELECTIONS);*/
           break;
         case ET_TL_SELECTIONS_CREATED:
         case ET_TL_SELECTIONS_REMOVED:

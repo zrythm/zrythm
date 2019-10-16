@@ -17,7 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file */
+/**
+ * \file
+ *
+ * Timeline minimap.
+ */
 
 #ifndef __GUI_WIDGETS_TIMELINE_MINIMAP_H__
 #define __GUI_WIDGETS_TIMELINE_MINIMAP_H__
@@ -28,18 +32,24 @@
 
 #define TIMELINE_MINIMAP_WIDGET_TYPE \
   (timeline_minimap_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TimelineMinimapWidget,
-                      timeline_minimap_widget,
-                      Z,
-                      TIMELINE_MINIMAP_WIDGET,
-                      GtkOverlay)
-
-#define MW_TIMELINE_MINIMAP \
-  MW_CENTER_DOCK_BOT_BOX->timeline_minimap
+G_DECLARE_FINAL_TYPE (
+  TimelineMinimapWidget,
+  timeline_minimap_widget,
+  Z, TIMELINE_MINIMAP_WIDGET,
+  GtkOverlay)
 
 typedef struct _TimelineMinimapBgWidget TimelineMinimapBgWidget;
 typedef struct _TimelineMinimapSelectionWidget TimelineMinimapSelectionWidget;
 typedef struct TimelineMinimap TimelineMinimap;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define MW_TIMELINE_MINIMAP \
+  MW_TIMELINE_BOT_BOX->timeline_minimap
 
 typedef enum TimelineMinimapAction
 {
@@ -85,5 +95,9 @@ timeline_minimap_widget_px_to_pos (
 void
 timeline_minimap_widget_refresh (
   TimelineMinimapWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

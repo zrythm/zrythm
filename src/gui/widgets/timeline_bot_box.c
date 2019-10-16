@@ -18,19 +18,19 @@
  */
 
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/center_dock_bot_box.h"
+#include "gui/widgets/timeline_bot_box.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/timeline_minimap.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (CenterDockBotBoxWidget,
-               center_dock_bot_box_widget,
+G_DEFINE_TYPE (TimelineBotBoxWidget,
+               timeline_bot_box_widget,
                GTK_TYPE_BOX)
 
 static void
-center_dock_bot_box_widget_init (
-  CenterDockBotBoxWidget * self)
+timeline_bot_box_widget_init (
+  TimelineBotBoxWidget * self)
 {
   g_type_ensure (TIMELINE_MINIMAP_WIDGET_TYPE);
 
@@ -45,13 +45,13 @@ center_dock_bot_box_widget_init (
 
 
 static void
-center_dock_bot_box_widget_class_init (
-  CenterDockBotBoxWidgetClass * _klass)
+timeline_bot_box_widget_class_init (
+  TimelineBotBoxWidgetClass * _klass)
 {
   GtkWidgetClass * klass =
     GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
-    klass, "center_dock_bot_box.ui");
+    klass, "timeline_bot_box.ui");
 
   gtk_widget_class_set_css_name (
     klass, "center-dock-bot-box");
@@ -59,7 +59,7 @@ center_dock_bot_box_widget_class_init (
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
     klass, \
-    CenterDockBotBoxWidget, \
+    TimelineBotBoxWidget, \
     x)
 
   BIND_CHILD (left_tb);

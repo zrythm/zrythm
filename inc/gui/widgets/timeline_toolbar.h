@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Timeline toolbar.
+ */
+
 #ifndef __GUI_WIDGETS_TIMELINE_TOOLBAR_H__
 #define __GUI_WIDGETS_TIMELINE_TOOLBAR_H__
 
@@ -30,17 +36,19 @@ G_DECLARE_FINAL_TYPE (
   Z, TIMELINE_TOOLBAR_WIDGET,
   GtkToolbar)
 
-/**
- * \file
- */
-
-#define MW_TIMELINE_TOOLBAR \
-  MW_CENTER_DOCK->timeline_toolbar
-
 typedef struct _ToolboxWidget ToolboxWidget;
 typedef struct _QuantizeMbWidget QuantizeMbWidget;
 typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
 typedef struct _SnapGridWidget SnapGridWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define MW_TIMELINE_TOOLBAR \
+  MW_TIMELINE_PANEL->timeline_toolbar
 
 /**
  * The Timeline toolbar in the top.
@@ -55,5 +63,9 @@ typedef struct _TimelineToolbarWidget
 void
 timeline_toolbar_widget_setup (
   TimelineToolbarWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

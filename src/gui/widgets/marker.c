@@ -27,6 +27,7 @@
 #include "gui/widgets/marker.h"
 #include "gui/widgets/marker_dialog.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_panel.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"

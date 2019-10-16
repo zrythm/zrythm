@@ -17,30 +17,47 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_CENTER_DOCK_BOT_BOX_H__
-#define __GUI_WIDGETS_CENTER_DOCK_BOT_BOX_H__
+/**
+ * \file
+ *
+ * Bot part of timeline panel (with timeline minimap).
+ */
+
+#ifndef __GUI_WIDGETS_TIMELINE_BOT_BOX_H__
+#define __GUI_WIDGETS_TIMELINE_BOT_BOX_H__
 
 #include <gtk/gtk.h>
 
-#define CENTER_DOCK_BOT_BOX_WIDGET_TYPE \
-  (center_dock_bot_box_widget_get_type ())
+#define TIMELINE_BOT_BOX_WIDGET_TYPE \
+  (timeline_bot_box_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  CenterDockBotBoxWidget,
-  center_dock_bot_box_widget,
-  Z, CENTER_DOCK_BOT_BOX_WIDGET,
+  TimelineBotBoxWidget,
+  timeline_bot_box_widget,
+  Z, TIMELINE_BOT_BOX_WIDGET,
   GtkBox)
 
-#define MW_CENTER_DOCK_BOT_BOX \
-  MW_CENTER_DOCK->bot_box
+typedef struct _TimelineMinimapWidget
+  TimelineMinimapWidget;
 
-typedef struct _TimelineMinimapWidget TimelineMinimapWidget;
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
-typedef struct _CenterDockBotBoxWidget
+#define MW_TIMELINE_BOT_BOX \
+  MW_TIMELINE_PANEL->bot_box
+
+typedef struct _TimelineBotBoxWidget
 {
   GtkBox                   parent_instance;
   GtkToolbar               * left_tb;
   GtkToolButton            * instrument_add;
   TimelineMinimapWidget *  timeline_minimap;
-} CenterDockBotBoxWidget;
+} TimelineBotBoxWidget;
+
+/**
+ * @}
+ */
 
 #endif

@@ -47,7 +47,6 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/center_dock_bot_box.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/export_dialog.h"
@@ -63,7 +62,9 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
+#include "gui/widgets/timeline_bot_box.h"
 #include "gui/widgets/timeline_minimap.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/tracklist.h"
@@ -837,10 +838,16 @@ activate_toggle_top_panel (
   GVariant      *variant,
   gpointer       user_data)
 {
+  g_return_if_fail (
+    MW_CENTER_DOCK &&
+    MW_CENTER_DOCK->
+      timeline_plus_event_viewer_paned);
+  GtkWidget * widget =
+    (GtkWidget *)
+    MW_CENTER_DOCK->
+      timeline_plus_event_viewer_paned;
   gtk_widget_set_visible (
-    GTK_WIDGET (MW_CENTER_DOCK->editor_top),
-    !gtk_widget_get_visible (
-      GTK_WIDGET (MW_CENTER_DOCK->editor_top)));
+    widget, !gtk_widget_get_visible (widget));
 }
 
 void

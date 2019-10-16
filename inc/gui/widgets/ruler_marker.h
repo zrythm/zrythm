@@ -36,11 +36,20 @@
 
 #define RULER_MARKER_WIDGET_TYPE \
   (ruler_marker_widget_get_type ())
-G_DECLARE_FINAL_TYPE (RulerMarkerWidget,
-                      ruler_marker_widget,
-                      Z,
-                      RULER_MARKER_WIDGET,
-                      GtkDrawingArea)
+G_DECLARE_FINAL_TYPE (
+  RulerMarkerWidget,
+  ruler_marker_widget,
+  Z, RULER_MARKER_WIDGET,
+  GtkDrawingArea)
+
+typedef struct _RulerWidget RulerWidget;
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 #define TL_RULER_PLAYHEAD \
   (ruler_widget_get_private ( \
     Z_RULER_WIDGET (MW_RULER))->playhead)
@@ -77,8 +86,9 @@ typedef struct _RulerMarkerWidget
 } RulerMarkerWidget;
 
 RulerMarkerWidget *
-ruler_marker_widget_new (RulerWidget * ruler,
-                         RulerMarkerType type);
+ruler_marker_widget_new (
+  RulerWidget * ruler,
+  RulerMarkerType type);
 
 /**
  * Updates the tooltips.
@@ -87,5 +97,9 @@ void
 ruler_marker_widget_update_tooltip (
   RulerMarkerWidget * self,
   int              show);
+
+/**
+ * @}
+ */
 
 #endif

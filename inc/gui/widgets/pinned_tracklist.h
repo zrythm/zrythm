@@ -49,7 +49,7 @@ G_DECLARE_FINAL_TYPE (
  */
 
 #define MW_PINNED_TRACKLIST \
-  MW_CENTER_DOCK->pinned_tracklist
+  MW_TIMELINE_PANEL->pinned_tracklist
 
 typedef struct Tracklist Tracklist;
 typedef struct _TrackWidget TrackWidget;

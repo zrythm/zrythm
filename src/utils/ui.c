@@ -29,6 +29,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "utils/gtk.h"

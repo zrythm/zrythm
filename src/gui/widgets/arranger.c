@@ -63,6 +63,9 @@
 #include "gui/widgets/scale_object.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
+#include "gui/widgets/timeline_bot_box.h"
+#include "gui/widgets/timeline_minimap.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
@@ -1900,7 +1903,7 @@ arranger_widget_get_scrolled_window (
   GET_ARRANGER_ALIASES (self);
 
   if (timeline_arranger)
-    return MW_CENTER_DOCK->timeline_scroll;
+    return MW_TIMELINE_PANEL->timeline_scroll;
   else if (midi_arranger)
     return MW_MIDI_EDITOR_SPACE->arranger_scroll;
   else if (midi_modifier_arranger)
@@ -1938,8 +1941,6 @@ arranger_tick_cb (
 
   return G_SOURCE_CONTINUE;
 }
-#include "gui/widgets/center_dock_bot_box.h"
-#include "gui/widgets/timeline_minimap.h"
 
 static gboolean
 on_scroll (

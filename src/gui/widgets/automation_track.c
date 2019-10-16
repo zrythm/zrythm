@@ -35,6 +35,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/arrays.h"
