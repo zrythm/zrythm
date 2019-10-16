@@ -330,7 +330,6 @@ on_size_allocate (
 
   EVENTS_PUSH (
     ET_TRACKS_RESIZED, self);
-  g_message ("pushed");
 }
 
 void

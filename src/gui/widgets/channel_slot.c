@@ -47,6 +47,122 @@ G_DEFINE_TYPE (ChannelSlotWidget,
 
 #define ELLIPSIZE_PADDING 2
 
+static int
+draw_cb (
+  GtkWidget * widget,
+  cairo_t * cr,
+  ChannelSlotWidget * self)
+{
+  GtkStyleContext *context =
+  gtk_widget_get_style_context (widget);
+
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  gtk_render_background (
+    context, cr, 0, 0, width, height);
+
+  int padding = 2;
+  Plugin * plugin =
+    self->channel->plugins[self->slot_index];
+  if (plugin)
+    {
+      GdkRGBA bg, fg;
+      fg = UI_COLOR_BLACK;
+      if (!plugin->enabled)
+        bg = UI_COLORS->matcha;
+      if (plugin->visible)
+        bg = UI_COLORS->bright_green;
+      else
+        bg = UI_COLORS->darkish_green;
+
+      /* fill background */
+      cairo_set_source_rgba (
+        cr, bg.red, bg.green, bg.blue, 1.0);
+      cairo_move_to (cr, padding, padding);
+      cairo_line_to (cr, padding, height - padding);
+      cairo_line_to (cr, width - padding, height - padding);
+      cairo_line_to (cr, width - padding, padding);
+      cairo_fill(cr);
+
+      /* fill text */
+      cairo_set_source_rgba (
+        cr, fg.red, fg.green, fg.blue, 1.0);
+      int w, h;
+      z_cairo_get_text_extents_for_widget (
+        widget, self->pl_name_layout,
+        plugin->descr->name, &w, &h);
+      z_cairo_draw_text_full (
+        cr, widget, self->pl_name_layout,
+        plugin->descr->name,
+        width / 2 - w / 2,
+        height / 2 - h / 2);
+
+      /* update tooltip */
+      if (!self->pl_name ||
+          !g_strcmp0 (
+            plugin->descr->name, self->pl_name))
+        {
+          if (self->pl_name)
+            g_free (self->pl_name);
+          self->pl_name =
+            g_strdup (plugin->descr->name);
+          gtk_widget_set_tooltip_text (
+            widget, self->pl_name);
+        }
+    }
+  else
+    {
+      /* fill background */
+      cairo_set_source_rgba (
+        cr, 0.1, 0.1, 0.1, 1.0);
+      cairo_move_to (cr, padding, padding);
+      cairo_line_to (cr, padding, height - padding);
+      cairo_line_to (
+        cr, width - padding, height - padding);
+      cairo_line_to (cr, width - padding, padding);
+      cairo_fill(cr);
+
+      /* fill text */
+      cairo_set_source_rgba (
+        cr, 0.3, 0.3, 0.3, 1.0);
+      int w, h;
+      char * text = _("empty slot");
+      z_cairo_get_text_extents_for_widget (
+        widget, self->empty_slot_layout, text,
+        &w, &h);
+      z_cairo_draw_text_full (
+        cr, widget, self->empty_slot_layout,
+        text, width / 2 - w / 2,
+        height / 2 - h / 2);
+
+      /* update tooltip */
+      if (self->pl_name)
+        {
+          g_free (self->pl_name);
+          self->pl_name = NULL;
+          gtk_widget_set_tooltip_text (
+            widget, _("empty slot"));
+        }
+    }
+
+  //highlight if grabbed or if mouse is hovering over me
+  /*if (self->hover)*/
+    /*{*/
+      /*cairo_set_source_rgba (cr, 0.8, 0.8, 0.8, 0.12 );*/
+      /*cairo_new_sub_path (cr);*/
+      /*cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);*/
+      /*cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);*/
+      /*cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);*/
+      /*cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);*/
+      /*cairo_close_path (cr);*/
+      /*cairo_fill (cr);*/
+    /*}*/
+  return FALSE;
+}
+
 static void
 on_drag_data_received (
   GtkWidget        *widget,
@@ -139,130 +255,6 @@ on_drag_data_received (
   gtk_widget_queue_draw (widget);
 }
 
-static int
-draw_cb (
-  GtkWidget * widget,
-  cairo_t * cr,
-  ChannelSlotWidget * self)
-{
-  GtkStyleContext *context =
-  gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-
-  int padding = 2;
-  Plugin * plugin =
-    self->channel->plugins[self->slot_index];
-  if (plugin)
-    {
-      GdkRGBA bg, fg;
-      gdk_rgba_parse (&fg, "#000000");
-      if (!plugin->enabled)
-        {
-          /* matcha */
-          gdk_rgba_parse (&bg, "#2eb398");
-        }
-      if (plugin->visible)
-        {
-          /* bright green */
-          gdk_rgba_parse (&bg, "#1DDD6A");
-        }
-      else
-        {
-          /* darkish green */
-          gdk_rgba_parse (&bg, "#1A884c");
-        }
-
-      /* fill background */
-      cairo_set_source_rgba (
-        cr, bg.red, bg.green, bg.blue, 1.0);
-      cairo_move_to (cr, padding, padding);
-      cairo_line_to (cr, padding, height - padding);
-      cairo_line_to (cr, width - padding, height - padding);
-      cairo_line_to (cr, width - padding, padding);
-      cairo_fill(cr);
-
-      /* fill text */
-      cairo_set_source_rgba (
-        cr, fg.red, fg.green, fg.blue, 1.0);
-      int w, h;
-      z_cairo_get_text_extents_for_widget (
-        widget, self->pl_name_layout,
-        plugin->descr->name, &w, &h);
-      z_cairo_draw_text_full (
-        cr, widget, self->pl_name_layout,
-        plugin->descr->name,
-        width / 2 - w / 2,
-        height / 2 - h / 2);
-
-      /* update tooltip */
-      if (!self->pl_name ||
-          !g_strcmp0 (
-            plugin->descr->name, self->pl_name))
-        {
-          if (self->pl_name)
-            g_free (self->pl_name);
-          self->pl_name =
-            g_strdup (plugin->descr->name);
-          gtk_widget_set_tooltip_text (
-            widget, self->pl_name);
-        }
-    }
-  else
-    {
-      /* fill background */
-      cairo_set_source_rgba (
-        cr, 0.1, 0.1, 0.1, 1.0);
-      cairo_move_to (cr, padding, padding);
-      cairo_line_to (cr, padding, height - padding);
-      cairo_line_to (
-        cr, width - padding, height - padding);
-      cairo_line_to (cr, width - padding, padding);
-      cairo_fill(cr);
-
-      /* fill text */
-      cairo_set_source_rgba (
-        cr, 0.3, 0.3, 0.3, 1.0);
-      int w, h;
-      char * text = _("empty slot");
-      z_cairo_get_text_extents_for_widget (
-        widget, self->empty_slot_layout, text,
-        &w, &h);
-      z_cairo_draw_text_full (
-        cr, widget, self->empty_slot_layout,
-        text, width / 2 - w / 2,
-        height / 2 - h / 2);
-
-      /* update tooltip */
-      if (self->pl_name)
-        {
-          g_free (self->pl_name);
-          self->pl_name = NULL;
-          gtk_widget_set_tooltip_text (
-            widget, _("empty slot"));
-        }
-    }
-
-  //highlight if grabbed or if mouse is hovering over me
-  /*if (self->hover)*/
-    /*{*/
-      /*cairo_set_source_rgba (cr, 0.8, 0.8, 0.8, 0.12 );*/
-      /*cairo_new_sub_path (cr);*/
-      /*cairo_arc (cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);*/
-      /*cairo_arc (cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);*/
-      /*cairo_arc (cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);*/
-      /*cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);*/
-      /*cairo_close_path (cr);*/
-      /*cairo_fill (cr);*/
-    /*}*/
-  return FALSE;
-}
 
 /**
  * Control not pressed, no plugin exists,

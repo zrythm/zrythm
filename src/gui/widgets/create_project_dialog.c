@@ -183,4 +183,3 @@ create_project_dialog_widget_class_init (
 
 #undef BIND_CHILD
 }
-

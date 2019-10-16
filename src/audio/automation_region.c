@@ -365,7 +365,11 @@ automation_region_get_next_curve_ac (
 {
   /* if not last or only AP */
   if (ap->index != self->num_aps - 1)
-    return self->acs[ap->index];
+    {
+      g_return_val_if_fail (
+        ap->index < self->num_acs, NULL);
+      return self->acs[ap->index];
+    }
 
   return NULL;
 }

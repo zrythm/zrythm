@@ -113,7 +113,7 @@ get_piano_roll_key_at_coord (
       else
         key =
           (GtkWidget *)
-          self->piano_roll_key_labels[i];
+          self->piano_roll_key_labels[i % 128];
 
       if (y > 0)
         {

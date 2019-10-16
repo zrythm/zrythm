@@ -37,13 +37,32 @@ typedef struct Position Position;
  * @{
  */
 
-typedef struct UiCaches
+#define UI_CACHES (ZRYTHM->ui_caches)
+#define UI_COLORS (&UI_CACHES->colors)
+
+static const GdkRGBA UI_COLOR_BLACK = {
+  0, 0, 0, 1
+};
+
+/**
+ * Commonly used UI colors.
+ */
+typedef struct UiColors
 {
   GdkRGBA       dark_text;
   GdkRGBA       bright_text;
-} UiCaches;
+  GdkRGBA       matcha;
+  GdkRGBA       bright_green;
+  GdkRGBA       darkish_green;
+} UiColors;
 
-#define UI_CACHES (ZRYTHM->ui_caches)
+/**
+ * Caches.
+ */
+typedef struct UiCaches
+{
+  UiColors      colors;
+} UiCaches;
 
 /**
  * Space on the edges to show resize cursors

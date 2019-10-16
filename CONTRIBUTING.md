@@ -126,17 +126,8 @@ followed by
 
     ninja -C build test
 
-To get a coverage report use
-
-    meson build -Denable_tests=true -Denable_coverage=true
-
-followed by the test command above, followed by
-
-    gcovr -r .
-
-or for html output
-
-    gcovr -r . --html -o coverage.html
+To get a coverage report see
+https://mesonbuild.com/howtox.html#producing-a-coverage-report
 
 # Profiling
 ## gprof

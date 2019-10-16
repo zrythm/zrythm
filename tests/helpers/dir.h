@@ -17,39 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUI_WIDGETS_SPLASH_H__
-#define __GUI_WIDGETS_SPLASH_H__
-
-#include "zrythm.h"
-
-#include <gtk/gtk.h>
-
-#define SPLASH_WINDOW_WIDGET_TYPE \
-  (splash_window_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  SplashWindowWidget,
-  splash_window_widget,
-  Z, SPLASH_WINDOW_WIDGET,
-  GtkWindow)
-
-typedef struct _SplashWindowWidget
-{
-  GtkWindow         parent_instance;
-  GtkLabel        * label;
-  GtkProgressBar  * progress_bar;
-
-  guint             tick_cb_id;
-} SplashWindowWidget;
-
 /**
- * Creates a splash_window widget.
+ * @dir helpers Test helpers.
  */
-SplashWindowWidget *
-splash_window_widget_new (
-  ZrythmApp * app);
-
-void
-splash_window_widget_close (
-  SplashWindowWidget * self);
-
-#endif

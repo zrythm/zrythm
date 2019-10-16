@@ -459,6 +459,7 @@ handle_recording (
                   -1, NULL, NULL, nframes, 2,
                   &start_pos, 1);
             }
+          g_return_if_fail (region);
           track_add_region (
             tr, region, NULL,
             tr->num_lanes - 1,
@@ -506,6 +507,7 @@ handle_recording (
                   switch (ev->type)
                     {
                       case MIDI_EVENT_TYPE_NOTE_ON:
+                        g_return_if_fail (region);
                         mn =
                           midi_note_new (
                             region, &start_pos,
@@ -522,6 +524,7 @@ handle_recording (
                           mn);
                         break;
                       case MIDI_EVENT_TYPE_NOTE_OFF:
+                        g_return_if_fail (region);
                         mn =
                           midi_region_pop_unended_note (
                             region, ev->note_pitch);
@@ -605,6 +608,7 @@ handle_recording (
           /* handle the samples normally */
           nframes_t cur_local_offset =
             local_offset;
+          g_return_if_fail (region);
           for (long i =
                  start_frames -
                    region->start_pos.frames;

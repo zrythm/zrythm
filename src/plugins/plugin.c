@@ -769,15 +769,13 @@ plugin_clone (
         pl->lv2,
         state_dir_plugin);
       g_free (state_dir_plugin);
-      if (!pl->lv2->state_file)
-        {
-          g_warn_if_reached ();
-          return NULL;
-        }
+      g_return_val_if_fail (
+        pl->lv2->state_file, NULL);
 
       /* create a new plugin with same descriptor */
       clone = plugin_new_from_descr (pl->descr);
-      g_return_val_if_fail (clone, NULL);
+      g_return_val_if_fail (
+        clone && clone->lv2, NULL);
 
       /* set the state file on the new Lv2Plugin
        * as the state filed saved on the original

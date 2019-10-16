@@ -45,7 +45,8 @@
  */
 #define EVENTS_PUSH(et,_arg) \
   if (EVENTS && \
-      !AUDIO_ENGINE->exporting) \
+      (!AUDIO_ENGINE || \
+       !AUDIO_ENGINE->exporting)) \
     { \
       ZEvent * _ev = calloc (1, sizeof (ZEvent)); \
       _ev->type = et; \

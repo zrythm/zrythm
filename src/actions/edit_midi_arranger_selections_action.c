@@ -81,9 +81,9 @@ edit_midi_arranger_selections_action_new (
         &vel_size, 1);
 
       self->vel_before =
-        malloc ((size_t) num_vel * sizeof (int));
+        calloc ((size_t) num_vel, sizeof (int));
       self->vel_after =
-        malloc ((size_t) num_vel * sizeof (int));
+        calloc ((size_t) num_vel, sizeof (int));
 
       Velocity * vel;
       MidiNote * mn;

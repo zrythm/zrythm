@@ -861,12 +861,11 @@ project_save (
     project_get_project_file_path (
       self, is_backup);
   char * yaml = project_serialize (PROJECT);
+  g_return_val_if_fail (yaml, -1);
   GError *err = NULL;
   g_file_set_contents (
-    project_file_path,
-    yaml,
-    -1,
-    &err);
+    project_file_path, yaml, -1, &err);
+  g_free (yaml);
   if (err != NULL)
     {
       // Report error to user, and free error

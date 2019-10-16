@@ -106,7 +106,7 @@ z_cairo_create_pango_layout (
       pango_layout_set_width (
         layout,
         pango_units_from_double (
-          MIN (
+          MAX (
             gtk_widget_get_allocated_width (
               widget) -
             ellipsize_padding * 2, 1)));
@@ -144,6 +144,8 @@ _z_cairo_get_text_extents_for_widget (
   int *        width,
   int *        height)
 {
+  g_return_if_fail (
+    layout && widget && text);
   pango_layout_set_markup (layout, text, -1);
   pango_layout_get_pixel_size (
     layout, width, height);
@@ -162,6 +164,8 @@ z_cairo_draw_text_full (
   int           start_x,
   int           start_y)
 {
+  g_return_if_fail (
+    cr && layout && widget && text);
   cairo_translate (cr, start_x, start_y);
 
   pango_layout_set_markup (layout, text, -1);
@@ -179,6 +183,7 @@ z_cairo_get_surface_from_icon_name (
   int          size,
   int          scale)
 {
+  g_return_val_if_fail (icon_name, NULL);
   cairo_surface_t * surface =
     dictionary_find_simple (
       CAIRO_CACHES->icon_surface_dict,

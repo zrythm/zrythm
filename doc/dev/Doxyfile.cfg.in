@@ -810,6 +810,7 @@ WARN_LOGFILE           =
 INPUT                  = \
   @MESON_SOURCE_ROOT@/src \
   @MESON_SOURCE_ROOT@/inc \
+  @MESON_SOURCE_ROOT@/tests \
   @MESON_SOURCE_ROOT@/doc/dev/mainpage.h \
   @MESON_SOURCE_ROOT@/doc/dev/processing_cycle.h \
   @MESON_SOURCE_ROOT@/doc/dev/cyaml_schemas.h \

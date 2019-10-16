@@ -64,7 +64,7 @@ G_DEFINE_TYPE (DigitalMeterWidget,
 
 
 static gboolean
-dm_draw_cb (
+digital_meter_draw_cb (
   GtkWidget * widget,
   cairo_t *cr,
   DigitalMeterWidget * self)
@@ -926,9 +926,10 @@ init_dm (
       /* caption + padding between caption and
        * BPM + padding top/bottom */
       gtk_widget_set_size_request (
-        GTK_WIDGET (self), textw + PADDING_W * 2,
+        GTK_WIDGET (self),
+        textw + PADDING_W * 2 + HALF_SPACE_BETWEEN * 3,
         caption_texth + HALF_SPACE_BETWEEN +
-        texth + PADDING_TOP * 2);
+          texth + PADDING_TOP * 2);
 
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
@@ -965,7 +966,7 @@ init_dm (
 
   g_signal_connect (
     G_OBJECT (self), "draw",
-    G_CALLBACK (dm_draw_cb), self);
+    G_CALLBACK (digital_meter_draw_cb), self);
 }
 
 /**

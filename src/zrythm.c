@@ -283,7 +283,7 @@ on_setup_main_window (
         NULL);
     }
 
-  gtk_widget_destroy (GTK_WIDGET (splash));
+  splash_window_widget_close (splash);
 }
 
 /**

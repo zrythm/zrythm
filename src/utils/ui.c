@@ -731,9 +731,9 @@ ui_get_contrast_color (
   /* if color is too bright use dark text,
    * otherwise use bright text */
   if (ui_is_color_bright (src))
-    *dest = UI_CACHES->dark_text;
+    *dest = UI_COLORS->dark_text;
   else
-    *dest = UI_CACHES->bright_text;
+    *dest = UI_COLORS->bright_text;
 }
 
 /**
@@ -822,8 +822,12 @@ ui_caches_new ()
   UiCaches * self =
     calloc (1, sizeof (UiCaches));
 
-  gdk_rgba_parse (&self->dark_text, "#323232");
-  gdk_rgba_parse (&self->bright_text, "#CDCDCD");
+  UiColors * colors = &self->colors;
+  gdk_rgba_parse (&colors->dark_text, "#323232");
+  gdk_rgba_parse (&colors->bright_text, "#cdcdcd");
+  gdk_rgba_parse (&colors->matcha, "#2eb398");
+  gdk_rgba_parse (&colors->bright_green, "#1ddd6a");
+  gdk_rgba_parse (&colors->darkish_green, "#1a884c");
 
   return self;
 }

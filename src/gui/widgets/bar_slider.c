@@ -315,11 +315,6 @@ _bar_slider_widget_new (
 {
   g_warn_if_fail (object);
 
-  if (!prefix || !suffix)
-    {
-      g_warning ("pass empty strings instead of NULLs");
-    }
-
   BarSliderWidget * self =
     g_object_new (BAR_SLIDER_WIDGET_TYPE, NULL);
   self->type = type;
@@ -332,8 +327,8 @@ _bar_slider_widget_new (
   self->zero = zero; /* default 0.05f */
   self->last_x = 0;
   self->start_x = 0;
-  strcpy (self->suffix, suffix);
-  strcpy (self->prefix, prefix);
+  strcpy (self->suffix, suffix ? suffix : "");
+  strcpy (self->prefix, prefix ? prefix : "");
   self->decimals = decimals;
   self->mode = mode;
   self->convert_to_percentage =

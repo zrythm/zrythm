@@ -514,6 +514,8 @@ arranger_widget_select (
         }
     }
 
+  g_return_if_fail (array || num);
+
   /* if we are deselecting and the item is
    * selected */
   if (!select &&

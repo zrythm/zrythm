@@ -41,6 +41,15 @@ splash_tick_cb (
   return G_SOURCE_CONTINUE;
 }
 
+void
+splash_window_widget_close (
+  SplashWindowWidget * self)
+{
+  gtk_widget_remove_tick_callback (
+    GTK_WIDGET (self), self->tick_cb_id);
+  gtk_window_close (GTK_WINDOW (self));
+}
+
 static void
 finalize (
   SplashWindowWidget * self)
@@ -72,10 +81,11 @@ splash_window_widget_new (
   gtk_progress_bar_set_fraction (
     self->progress_bar, 0.0);
 
-  gtk_widget_add_tick_callback (
-    (GtkWidget *) self,
-    (GtkTickCallback) splash_tick_cb,
-    self, NULL);
+  self->tick_cb_id =
+    gtk_widget_add_tick_callback (
+      (GtkWidget *) self,
+      (GtkTickCallback) splash_tick_cb,
+      self, NULL);
 
   return self;
 }
