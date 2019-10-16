@@ -577,7 +577,8 @@ multipress_pressed (
     &state_mask);
 
   mixer_selections_clear (
-    MIXER_SELECTIONS);
+    MIXER_SELECTIONS,
+    F_PUBLISH_EVENTS);
   tracklist_selections_select_last_visible (
     TRACKLIST_SELECTIONS);
 }

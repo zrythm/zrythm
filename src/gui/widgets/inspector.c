@@ -49,7 +49,8 @@ void
 inspector_widget_refresh (
   InspectorWidget * self)
 {
-  if (PROJECT->last_selection == SELECTION_TYPE_TRACK)
+  if (PROJECT->last_selection ==
+        SELECTION_TYPE_TRACK)
     {
       inspector_track_widget_show_tracks (
         self->track,

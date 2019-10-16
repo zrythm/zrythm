@@ -113,8 +113,6 @@ port_connections_popover_widget_new (
 
   self->owner = owner;
 
-  port_connections_popover_widget_refresh (self);
-
   return self;
 }
 

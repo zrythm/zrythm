@@ -264,7 +264,8 @@ select_no_ctrl_no_pl_no_ch (
   ChannelSlotWidget * self)
 {
   mixer_selections_clear (
-    MIXER_SELECTIONS);
+    MIXER_SELECTIONS,
+    F_PUBLISH_EVENTS);
 }
 
 /**
@@ -275,7 +276,8 @@ select_no_ctrl_no_pl_ch (
   ChannelSlotWidget * self)
 {
   mixer_selections_clear (
-    MIXER_SELECTIONS);
+    MIXER_SELECTIONS,
+    F_PUBLISH_EVENTS);
 }
 
 /**
@@ -286,7 +288,8 @@ select_no_ctrl_pl_no_ch (
   ChannelSlotWidget * self)
 {
   mixer_selections_clear (
-    MIXER_SELECTIONS);
+    MIXER_SELECTIONS,
+    F_NO_PUBLISH_EVENTS);
 
   mixer_selections_add_slot (
     MIXER_SELECTIONS,
@@ -308,7 +311,8 @@ select_no_ctrl_pl_ch (
         self->slot_index))
     {
       mixer_selections_clear (
-        MIXER_SELECTIONS);
+        MIXER_SELECTIONS,
+        F_NO_PUBLISH_EVENTS);
 
       mixer_selections_add_slot (
         MIXER_SELECTIONS,
@@ -325,7 +329,8 @@ select_ctrl_no_pl_no_ch (
   ChannelSlotWidget * self)
 {
   mixer_selections_clear (
-    MIXER_SELECTIONS);
+    MIXER_SELECTIONS,
+    F_PUBLISH_EVENTS);
 }
 
 /**
@@ -336,7 +341,8 @@ select_ctrl_no_pl_ch (
   ChannelSlotWidget * self)
 {
   mixer_selections_clear (
-    MIXER_SELECTIONS);
+    MIXER_SELECTIONS,
+    F_PUBLISH_EVENTS);
 }
 
 /**
@@ -348,7 +354,8 @@ select_ctrl_pl_no_ch (
 {
   /* make it the only selection */
   mixer_selections_clear (
-    MIXER_SELECTIONS);
+    MIXER_SELECTIONS,
+    F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
     MIXER_SELECTIONS,
     self->channel,
@@ -399,8 +406,6 @@ drag_end (GtkGestureDrag *gesture,
                gdouble         offset_y,
                ChannelSlotWidget * self)
 {
-  g_message ("drag end");
-
   GdkModifierType state_mask =
     ui_get_state_mask (
       GTK_GESTURE (gesture));
@@ -479,7 +484,6 @@ multipress_pressed (
   ChannelSlotWidget *   self)
 {
   self->n_press = n_press;
-  g_message ("multipress n pres %d", self->n_press);
 
   PROJECT->last_selection =
     SELECTION_TYPE_PLUGIN;

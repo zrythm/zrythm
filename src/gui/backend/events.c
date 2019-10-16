@@ -780,7 +780,12 @@ events_process (void * data)
               MW_PINNED_TIMELINE));
           break;
         case ET_TRACKLIST_SELECTIONS_CHANGED:
-          inspector_widget_refresh (MW_INSPECTOR);
+          /* only refresh the inspector if the
+           * tracklist selection changed by
+           * clicking on a track */
+          if (PROJECT->last_selection ==
+                SELECTION_TYPE_TRACK)
+            inspector_widget_refresh (MW_INSPECTOR);
           mixer_widget_soft_refresh (MW_MIXER);
           break;
         case ET_RULER_SIZE_CHANGED:
@@ -913,9 +918,6 @@ events_process (void * data)
           break;
         case ET_ARRANGER_OBJECT_SELECTION_CHANGED:
           arranger_object_info_set_widget_visibility_and_state ((ArrangerObjectInfo *) ev->arg, 1);
-          break;
-        case ET_PLUGIN_SELECTION_CHANGED:
-          on_mixer_selections_changed ();
           break;
         case ET_TRACK_CHANGED:
           on_track_changed ((Track *) ev->arg);

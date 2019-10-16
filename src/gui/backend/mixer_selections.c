@@ -104,7 +104,8 @@ mixer_selections_add_slot (
   if (!ms->track ||
       ch != ms->track->channel)
     {
-      mixer_selections_clear (ms);
+      mixer_selections_clear (
+        ms, F_NO_PUBLISH_EVENTS);
       ms->track_pos = ch->track->pos;
       ms->track = ch->track;
     }
@@ -122,7 +123,7 @@ mixer_selections_add_slot (
     slot,
     ch->plugins[slot]);
 
-  EVENTS_PUSH (ET_PLUGIN_SELECTION_CHANGED,
+  EVENTS_PUSH (ET_MIXER_SELECTIONS_CHANGED,
                ch->plugins[slot]);
 }
 
@@ -195,7 +196,8 @@ mixer_selections_contains_plugin (
  */
 void
 mixer_selections_clear (
-  MixerSelections * ms)
+  MixerSelections * ms,
+  const int         pub_events)
 {
   int i;
 
@@ -205,8 +207,11 @@ mixer_selections_clear (
         ms, ms->slots[i], 0);
     }
 
-  EVENTS_PUSH (ET_MIXER_SELECTIONS_CHANGED,
-               NULL);
+  if (pub_events)
+    {
+      EVENTS_PUSH (ET_MIXER_SELECTIONS_CHANGED,
+                   NULL);
+    }
 
   g_message ("cleared mixer selections");
 }

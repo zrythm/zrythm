@@ -23,6 +23,7 @@
 #include "gui/backend/mixer_selections.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "utils/flags.h"
 
 #include <glib/gi18n.h>
 
@@ -71,7 +72,8 @@ move_plugins_action_do (
     /*mixer_selections_get_highest_slot (self->ms);*/
 
   /* clear selections to readd each plugin moved */
-  mixer_selections_clear (MIXER_SELECTIONS);
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
 
   /*int diff;*/
   int to_slot;
@@ -118,7 +120,8 @@ move_plugins_action_undo (
   g_return_val_if_fail (current_ch, -1);
 
   /* clear selections to readd each plugin moved */
-  mixer_selections_clear (MIXER_SELECTIONS);
+  mixer_selections_clear (
+    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
 
   for (int i = 0; i < self->ms->num_slots; i++)
     {

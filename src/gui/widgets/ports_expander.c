@@ -158,37 +158,36 @@ ports_expander_widget_setup_plugin (
   self->owner_type = PORT_OWNER_TYPE_PLUGIN;
 
   /* set name and icon */
-  char * full_str = NULL;
+  char fullstr[200];
 
   if (type == TYPE_CONTROL &&
       flow == FLOW_INPUT)
-    full_str = g_strdup (_("Control Ins"));
+    strcpy (fullstr, _("Control Ins"));
   else if (type == TYPE_CONTROL &&
       flow == FLOW_OUTPUT)
-    full_str = g_strdup (_("Control Outs"));
+    strcpy (fullstr, _("Control Outs"));
   else if (type == TYPE_AUDIO &&
       flow == FLOW_INPUT)
-    full_str = g_strdup (_("Audio Ins"));
+    strcpy (fullstr, _("Audio Ins"));
   else if (type == TYPE_AUDIO &&
       flow == FLOW_OUTPUT)
-    full_str = g_strdup (_("Audio Outs"));
+    strcpy (fullstr, _("Audio Outs"));
   else if (type == TYPE_EVENT &&
       flow == FLOW_INPUT)
-    full_str = g_strdup (_("MIDI Ins"));
+    strcpy (fullstr, _("MIDI Ins"));
   else if (type == TYPE_EVENT &&
       flow == FLOW_OUTPUT)
-    full_str = g_strdup (_("MIDI Outs"));
+    strcpy (fullstr, _("MIDI Outs"));
   else if (type == TYPE_CV &&
       flow == FLOW_INPUT)
-    full_str = g_strdup (_("CV Ins"));
+    strcpy (fullstr, _("CV Ins"));
   else if (type == TYPE_CV &&
       flow == FLOW_OUTPUT)
-    full_str = g_strdup (_("CV Outs"));
+    strcpy (fullstr, _("CV Outs"));
 
   expander_box_widget_set_label (
     Z_EXPANDER_BOX_WIDGET (self),
-    full_str);
-  g_free (full_str);
+    fullstr);
 
   set_icon_from_port_type (self, type);
 

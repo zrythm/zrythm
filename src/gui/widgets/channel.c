@@ -413,8 +413,6 @@ on_btn_release (GtkWidget *widget,
                GdkEventButton  *event,
                ChannelWidget * self)
 {
-  g_message ("btn release");
-
   if (self->dragged || self->selected_in_dnd)
     return FALSE;
 

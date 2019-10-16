@@ -161,7 +161,8 @@ mixer_selections_remove_slot (
  */
 void
 mixer_selections_clear (
-  MixerSelections * ms);
+  MixerSelections * ms,
+  const int         pub_events);
 
 void
 mixer_selections_free (MixerSelections * self);

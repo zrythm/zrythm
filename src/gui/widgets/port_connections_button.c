@@ -43,6 +43,14 @@ on_jack_toggled (
       GTK_TOGGLE_BUTTON (widget)));
 }
 
+static int
+refresh_popover (
+  PortConnectionsPopoverWidget * popover)
+{
+  port_connections_popover_widget_refresh (popover);
+  return G_SOURCE_REMOVE;
+}
+
 PortConnectionsButtonWidget *
 port_connections_button_widget_new (
   Port * port)
@@ -62,16 +70,19 @@ port_connections_button_widget_new (
   gtk_container_add (
     GTK_CONTAINER (self),
     GTK_WIDGET (self->menu_button));
+  PortConnectionsPopoverWidget * popover =
+    port_connections_popover_widget_new (self);
   gtk_menu_button_set_popover (
     self->menu_button,
-    GTK_WIDGET (
-      port_connections_popover_widget_new (
-      self)));
+    GTK_WIDGET (popover));
+  g_idle_add (
+    (GSourceFunc) refresh_popover, popover);
   gtk_menu_button_set_direction (
     self->menu_button,
     GTK_ARROW_RIGHT);
 
-  char * str = NULL;
+  char str[200];
+  int has_str = 0;
   if (!port->identifier.label)
     {
       g_warning ("No port label");
@@ -89,27 +100,26 @@ port_connections_button_widget_new (
     {
       if (port->identifier.flow == FLOW_INPUT)
         {
-          str =
-            g_strdup_printf (
-              "%s (%d)",
-              port->identifier.label,
-              port->num_srcs);
+          sprintf (
+            str, "%s (%d)",
+            port->identifier.label,
+            port->num_srcs);
+          has_str = 1;
         }
       else if (port->identifier.flow == FLOW_OUTPUT)
         {
-          str =
-            g_strdup_printf (
-              "%s (%d)",
-              port->identifier.label,
-              port->num_dests);
+          sprintf (
+            str, "%s (%d)",
+            port->identifier.label,
+            port->num_dests);
+          has_str = 1;
         }
     }
 
-  if (str)
+  if (has_str)
     {
       gtk_button_set_label (
         GTK_BUTTON (self->menu_button), str);
-      g_free (str);
       GtkLabel * label =
         GTK_LABEL (
           gtk_bin_get_child (
@@ -149,7 +159,8 @@ port_connections_button_widget_new (
             GTK_OVERLAY (self),
             GTK_WIDGET (self->jack));
           if (port->data &&
-              port->internal_type == INTERNAL_JACK_PORT)
+              port->internal_type ==
+                INTERNAL_JACK_PORT)
             {
               gtk_toggle_button_set_active (
                 self->jack, 1);
