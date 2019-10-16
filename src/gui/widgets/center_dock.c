@@ -19,6 +19,7 @@
 
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/event_viewer.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/pinned_tracklist.h"
@@ -32,9 +33,10 @@ G_DEFINE_TYPE (
   DZL_TYPE_DOCK_BIN)
 
 static gboolean
-key_release_cb (GtkWidget      * widget,
-                 GdkEventKey * event,
-                 gpointer       data)
+key_release_cb (
+  GtkWidget *   widget,
+  GdkEventKey * event,
+  gpointer      data)
 {
   return FALSE;
 }
@@ -60,6 +62,9 @@ center_dock_widget_setup (
 
   timeline_panel_widget_setup (
     self->timeline_panel);
+  event_viewer_widget_setup (
+    self->event_viewer,
+    EVENT_VIEWER_TYPE_TIMELINE);
 
   bot_dock_edge_widget_setup (
     self->bot_dock_edge);
@@ -86,6 +91,7 @@ center_dock_widget_init (CenterDockWidget * self)
   g_type_ensure (RIGHT_DOCK_EDGE_WIDGET_TYPE);
   g_type_ensure (LEFT_DOCK_EDGE_WIDGET_TYPE);
   g_type_ensure (TIMELINE_PANEL_WIDGET_TYPE);
+  g_type_ensure (EVENT_VIEWER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -124,6 +130,7 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
     klass, CenterDockWidget, x)
 
   BIND_CHILD (main_paned);
+  BIND_CHILD (event_viewer);
   BIND_CHILD (timeline_panel);
   BIND_CHILD (left_dock_edge);
   BIND_CHILD (bot_dock_edge);

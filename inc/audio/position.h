@@ -459,8 +459,17 @@ position_get_ticks_diff (
  * Must be free'd by caller.
  */
 char *
-position_stringize (
+position_stringize_allocate (
   const Position * pos);
+
+/**
+ * Creates a string in the form of "0.0.0.0" from
+ * the given position.
+ */
+void
+position_stringize (
+  const Position * pos,
+  char *           buf);
 
 /**
  * Prints the Position in the "0.0.0.0" form.

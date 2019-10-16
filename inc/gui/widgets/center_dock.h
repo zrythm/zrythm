@@ -46,6 +46,7 @@ typedef struct _RightDockEdgeWidget
 typedef struct _BotDockEdgeWidget BotDockEdgeWidget;
 typedef struct _TimelinePanelWidget
   TimelinePanelWidget;
+typedef struct _EventViewerWidget EventViewerWidget;
 
 /**
  * @addtogroup widgets
@@ -63,7 +64,11 @@ typedef struct _CenterDockWidget
   DzlDockBin               parent_instance;
 
   /** Event viewr + timeline panel. */
-  GtkPaned *               timeline_plus_event_viewer_paned;
+  GtkPaned *
+    timeline_plus_event_viewer_paned;
+
+  /** Event viewer. */
+  EventViewerWidget *      event_viewer;
 
   /** Timeline panel. */
   TimelinePanelWidget *    timeline_panel;

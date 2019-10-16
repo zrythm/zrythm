@@ -89,6 +89,9 @@
                       </object>
                     </child>
                   </object>
+                  <packing>
+                    <property name="shrink">0</property>
+                  </packing>
                 </child>
               </object>
             </child>
@@ -98,9 +101,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="timeline_ruler">
+          <object class="GtkBox"
+            id="timelines_plus_ruler">
             <property name="visible">1</property>
             <property name="orientation">vertical</property>
+            <!--<property name="width-request">40</property>-->
             <child>
               <object class="GtkScrolledWindow" id="ruler_scroll">
                 <property name="height-request">42</property>
@@ -175,10 +180,16 @@
                       </object>
                     </child>
                   </object>
+                  <packing>
+                    <property name="shrink">0</property>
+                  </packing>
                 </child>
               </object>
             </child>
           </object>
+          <packing>
+            <property name="shrink">0</property>
+          </packing>
         </child>
       </object>
     </child>

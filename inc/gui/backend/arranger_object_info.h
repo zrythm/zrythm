@@ -29,6 +29,8 @@
 
 #include <gtk/gtk.h>
 
+typedef struct _ArrangerWidget ArrangerWidget;
+
 /**
  * @addtogroup gui_backend
  *
@@ -175,6 +177,13 @@ arranger_object_info_is_main (
     self->counterpart ==
       AOI_COUNTERPART_MAIN_TRANSIENT);
 }
+
+/**
+ * Gets the arranger for this arranger object.
+ */
+ArrangerWidget *
+arranger_object_info_get_arranger (
+  ArrangerObjectInfo * self);
 
 /**
  * Returns if the object represented by the

@@ -837,6 +837,11 @@ region_set_name (
   Region * region,
   char *   name);
 
+void
+region_get_type_as_string (
+  RegionType type,
+  char *     buf);
+
 /**
  * Removes the MIDI note and its components
  * completely.

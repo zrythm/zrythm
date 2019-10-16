@@ -64,6 +64,7 @@ widget_srcs = [
   'editable_label.c',
   'editor_toolbar.c',
   'editor_selection_info.c',
+  'event_viewer.c',
   'expander_box.c',
   'export_dialog.c',
   'export_midi_file_dialog.c',

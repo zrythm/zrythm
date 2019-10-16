@@ -216,18 +216,20 @@ ruler_marker_widget_update_tooltip (
   /* set tooltip window */
   if (show)
     {
-      char * tooltip = NULL;
+      char tooltip[50];
+      int set = 0;
       if (self->type == RULER_MARKER_TYPE_PLAYHEAD)
-        tooltip=
-          position_stringize (PLAYHEAD);
-
-      if (tooltip)
         {
-          gtk_label_set_text (self->tooltip_label,
-                              tooltip);
+          position_stringize (PLAYHEAD, tooltip);
+          set = 1;
+        }
+
+      if (set)
+        {
+          gtk_label_set_text (
+            self->tooltip_label, tooltip);
           gtk_window_present (self->tooltip_win);
 
-          g_free (tooltip);
         }
     }
   else

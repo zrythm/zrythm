@@ -50,6 +50,7 @@
 #include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/event_viewer.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/header_notebook.h"
 #include "gui/widgets/home_toolbar.h"
@@ -727,6 +728,8 @@ events_process (void * data)
             Z_ARRANGER_WIDGET (MW_TIMELINE));
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
+          event_viewer_widget_refresh (
+            MW_TIMELINE_EVENT_VIEWER);
           break;
         case ET_CHORD_OBJECT_CREATED:
         case ET_CHORD_OBJECT_CHANGED:
@@ -768,6 +771,8 @@ events_process (void * data)
           break;
         case ET_TL_SELECTIONS_CHANGED:
           inspector_widget_refresh (MW_INSPECTOR);
+          event_viewer_widget_refresh (
+            MW_TIMELINE_EVENT_VIEWER);
           /*timeline_selection_info_widget_refresh (*/
             /*MW_TS_INFO, TL_SELECTIONS);*/
           break;
@@ -918,7 +923,11 @@ events_process (void * data)
         case ET_REGION_CHANGED:
           break;
         case ET_ARRANGER_OBJECT_SELECTION_CHANGED:
+          g_warn_if_fail (ev->arg);
           arranger_object_info_set_widget_visibility_and_state ((ArrangerObjectInfo *) ev->arg, 1);
+          event_viewer_widget_refresh_for_arranger (
+            arranger_object_info_get_arranger (
+              ((ArrangerObjectInfo *) ev->arg)));
           break;
         case ET_TRACK_CHANGED:
           on_track_changed ((Track *) ev->arg);
@@ -1086,6 +1095,8 @@ events_process (void * data)
             GTK_WIDGET (EDITOR_RULER));
           break;
         case ET_TIMELINE_OBJECTS_IN_TRANSIT:
+          event_viewer_widget_refresh (
+            MW_TIMELINE_EVENT_VIEWER);
           /*timeline_arranger_widget_refresh_children (*/
             /*MW_TIMELINE);*/
           /*timeline_arranger_widget_refresh_children (*/

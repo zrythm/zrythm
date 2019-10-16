@@ -194,5 +194,6 @@ timeline_panel_widget_class_init (TimelinePanelWidgetClass * _klass)
   BIND_CHILD (pinned_timeline_viewport);
   BIND_CHILD (pinned_timeline);
   BIND_CHILD (timeline_toolbar);
+  BIND_CHILD (timelines_plus_ruler);
   BIND_CHILD (bot_box);
 }

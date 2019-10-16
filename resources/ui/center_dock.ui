@@ -37,15 +37,28 @@
               <object class="TimelinePanelWidget"
                 id="timeline_panel">
                 <property name="visible">1</property>
+                <property name="hexpand">1</property>
               </object>
+              <packing>
+                <property name="shrink">0</property>
+                <property name="resize">1</property>
+              </packing>
             </child>
             <child>
-              <object class="GtkBox"
+              <object class="EventViewerWidget"
                 id="event_viewer">
                 <property name="visible">1</property>
               </object>
+              <packing>
+                <property name="shrink">0</property>
+                <property name="resize">0</property>
+              </packing>
             </child>
           </object>
+          <packing>
+            <property name="shrink">0</property>
+            <property name="resize">1</property>
+          </packing>
         </child>
         <child>
           <object class="BotDockEdgeWidget" id="bot_dock_edge"/>

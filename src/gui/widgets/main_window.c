@@ -33,6 +33,7 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/editor_toolbar.h"
+#include "gui/widgets/event_viewer.h"
 #include "gui/widgets/file_browser.h"
 #include "gui/widgets/header_notebook.h"
 #include "gui/widgets/inspector.h"
@@ -149,8 +150,9 @@ main_window_widget_refresh (
   g_warn_if_fail (TRACKLIST_SELECTIONS->tracks[0]);
   EVENTS_PUSH (ET_TRACK_CHANGED,
                TRACKLIST_SELECTIONS->tracks[0]);
-  EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
-               NULL);
+  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED, NULL);
+  event_viewer_widget_refresh (
+    MW_TIMELINE_EVENT_VIEWER);
 }
 
 static void

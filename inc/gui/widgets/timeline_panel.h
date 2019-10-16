@@ -87,6 +87,9 @@ typedef struct _TimelinePanelWidget
   TracklistHeaderWidget * tracklist_header;
   TracklistWidget *       tracklist;
 
+  /** Box for the timelines and the ruler. */
+  GtkBox *                timelines_plus_ruler;
+
   /** Scroll for ruler holding the viewport. */
   GtkScrolledWindow *     ruler_scroll;
 

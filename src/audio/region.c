@@ -47,6 +47,8 @@
 #include "utils/audio.h"
 #include "utils/yaml.h"
 
+#include <glib/gi18n.h>
+
 #include <sndfile.h>
 #include <samplerate.h>
 
@@ -444,6 +446,30 @@ region_find (
   Region * clone)
 {
   return region_find_by_name (clone->name);
+}
+
+void
+region_get_type_as_string (
+  RegionType type,
+  char *     buf)
+{
+  g_return_if_fail (
+    type >= 0 && type <= REGION_TYPE_CHORD);
+  switch (type)
+    {
+    case REGION_TYPE_MIDI:
+      strcpy (buf, _("MIDI"));
+      break;
+    case REGION_TYPE_AUDIO:
+      strcpy (buf, _("Audio"));
+      break;
+    case REGION_TYPE_AUTOMATION:
+      strcpy (buf, _("Automation"));
+      break;
+    case REGION_TYPE_CHORD:
+      strcpy (buf, _("Chord"));
+      break;
+    }
 }
 
 /**

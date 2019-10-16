@@ -74,17 +74,8 @@ arranger_object_info_is_lane (
       AOI_COUNTERPART_LANE_TRANSIENT);
 }
 
-/**
- * Returns if the object represented by the
- * ArrangerObjectInfo should be visible.
- *
- * This is counterpart-specific, ie. it checks
- * if the transient should be visible or lane
- * counterpart should be visible, etc., based on
- * what is given.
- */
-int
-arranger_object_info_should_be_visible (
+ArrangerWidget *
+arranger_object_info_get_arranger (
   ArrangerObjectInfo * self)
 {
   ArrangerWidget * arranger = NULL;
@@ -119,7 +110,26 @@ arranger_object_info_should_be_visible (
         (ArrangerWidget *) (MW_MIDI_MODIFIER_ARRANGER);
       break;
     }
+
   g_warn_if_fail (arranger);
+  return arranger;
+}
+
+/**
+ * Returns if the object represented by the
+ * ArrangerObjectInfo should be visible.
+ *
+ * This is counterpart-specific, ie. it checks
+ * if the transient should be visible or lane
+ * counterpart should be visible, etc., based on
+ * what is given.
+ */
+int
+arranger_object_info_should_be_visible (
+  ArrangerObjectInfo * self)
+{
+  ArrangerWidget * arranger =
+    arranger_object_info_get_arranger (self);
 
   ARRANGER_WIDGET_GET_PRIVATE (arranger);
 
