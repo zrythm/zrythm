@@ -249,6 +249,19 @@ void
 midi_note_delete (MidiNote * midi_note);
 
 /**
+ * Gets the MIDI note's value as a string (eg
+ * "C#4").
+ *
+ * @param use_markup Use markup to show the octave
+ *   as a superscript.
+ */
+void
+midi_note_get_val_as_string (
+  MidiNote * self,
+  char *     buf,
+  const int  use_markup);
+
+/**
  * For debugging.
  */
 void

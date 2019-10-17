@@ -21,6 +21,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_pad.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/event_viewer.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/modulator_view.h"
@@ -41,6 +42,10 @@ bot_dock_edge_widget_setup (
     MW_CENTER_DOCK->main_paned,
     NULL,
     GTK_POS_BOTTOM);
+
+  event_viewer_widget_setup (
+    self->event_viewer,
+    EVENT_VIEWER_TYPE_EDITOR);
 }
 
 static void
@@ -73,20 +78,13 @@ bot_dock_edge_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "bot-dock-edge");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    BotDockEdgeWidget,
-    bot_notebook);
-  gtk_widget_class_bind_template_child (
-    klass,
-    BotDockEdgeWidget,
-    clip_editor);
-  gtk_widget_class_bind_template_child (
-    klass,
-    BotDockEdgeWidget,
-    mixer);
-  gtk_widget_class_bind_template_child (
-    klass,
-    BotDockEdgeWidget,
-    modulator_view);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, BotDockEdgeWidget, x)
+
+  BIND_CHILD (bot_notebook);
+  BIND_CHILD (clip_editor);
+  BIND_CHILD (mixer);
+  BIND_CHILD (event_viewer);
+  BIND_CHILD (modulator_view);
 }

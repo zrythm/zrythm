@@ -34,13 +34,13 @@
       <object class="GtkBox" id="main_box">
         <property name="visible">1</property>
         <property name="orientation">vertical</property>
-        <child>
-          <object class="EditorSelectionInfoWidget"
-            id="editor_selections">
-            <property name="visible">1</property>
-            <property name="vexpand">0</property>
-          </object>
-        </child>
+        <!--<child>-->
+          <!--<object class="EditorSelectionInfoWidget"-->
+            <!--id="editor_selections">-->
+            <!--<property name="visible">1</property>-->
+            <!--<property name="vexpand">0</property>-->
+          <!--</object>-->
+        <!--</child>-->
         <child>
           <object class="EditorToolbarWidget"
             id="editor_toolbar">

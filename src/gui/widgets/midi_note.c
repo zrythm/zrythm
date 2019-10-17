@@ -80,7 +80,8 @@ midi_note_draw_cb (
         cairo_create (self->cached_surface);
 
       gtk_render_background (
-        context, self->cached_cr, 0, 0, width, height);
+        context, self->cached_cr, 0, 0,
+        width, height);
 
       MidiNote * mn = self->midi_note;
       Region * region = mn->region;
@@ -187,26 +188,19 @@ midi_note_draw_cb (
           cairo_fill(self->cached_cr);
         }
 
-      char * str =
-        g_strdup_printf (
-          "%s<sup>%d</sup>",
-          chord_descriptor_note_to_string (
-            mn->val % 12),
-          mn->val / 12 - 1);
+      char str[30];
+      midi_note_get_val_as_string (mn, str, 1);
       if (DEBUGGING &&
           midi_note_is_transient (self->midi_note))
         {
-          char * tmp =
-            g_strdup_printf (
-              "%s [t]", str);
-          g_free (str);
-          str = tmp;
+          strcat (str, " [t]");
         }
 
       GdkRGBA c2;
       ui_get_contrast_color (
         &color, &c2);
-      gdk_cairo_set_source_rgba (self->cached_cr, &c2);
+      gdk_cairo_set_source_rgba (
+        self->cached_cr, &c2);
       if (DEBUGGING || !PIANO_ROLL->drum_mode)
         {
           PangoLayout * layout =
@@ -216,7 +210,6 @@ midi_note_draw_cb (
             self->cached_cr, widget, layout, str);
           g_object_unref (layout);
         }
-      g_free (str);
 
       self->redraw = 0;
     }

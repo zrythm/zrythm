@@ -52,6 +52,7 @@ typedef struct _ModulatorViewWidget
   ModulatorViewWidget;
 typedef struct _FoldableNotebookWidget
   FoldableNotebookWidget;
+typedef struct _EventViewerWidget EventViewerWidget;
 
 /**
  * Bot dock widget.
@@ -64,6 +65,9 @@ typedef struct _BotDockEdgeWidget
   /** Wrapper. */
   //GtkBox *                 modulator_view_box;
   ModulatorViewWidget *    modulator_view;
+
+  /** Event viewer. */
+  EventViewerWidget *      event_viewer;
 
   /** Wrapper. */
   //GtkBox *                 clip_editor_box;

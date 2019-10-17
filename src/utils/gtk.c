@@ -168,6 +168,27 @@ z_gtk_container_remove_children_of_type (
   g_list_free (children);
 }
 
+void
+z_gtk_tree_view_remove_all_columns (
+  GtkTreeView * treeview)
+{
+  g_return_if_fail (
+    treeview && GTK_IS_TREE_VIEW (treeview));
+
+  GtkTreeViewColumn *column;
+  GList * list, * iter;
+  list =
+    gtk_tree_view_get_columns (treeview);
+  for (iter = list; iter != NULL;
+       iter = g_list_next (iter))
+    {
+      column =
+        GTK_TREE_VIEW_COLUMN (iter->data);
+      gtk_tree_view_remove_column (
+        treeview, column);
+    }
+}
+
 /**
  * Configures a simple value-text combo box using
  * the given model.

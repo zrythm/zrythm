@@ -46,6 +46,8 @@ typedef struct _ArrangerWidget ArrangerWidget;
 
 #define MW_TIMELINE_EVENT_VIEWER \
   MW_CENTER_DOCK->event_viewer
+#define MW_EDITOR_EVENT_VIEWER \
+  MW_BOT_DOCK_EDGE->event_viewer
 
 typedef enum EventViewerType
 {
@@ -58,6 +60,9 @@ typedef enum EventViewerEventType
   EVENT_VIEWER_ET_REGION,
   EVENT_VIEWER_ET_MARKER,
   EVENT_VIEWER_ET_SCALE_OBJECT,
+  EVENT_VIEWER_ET_MIDI_NOTE,
+  EVENT_VIEWER_ET_CHORD_OBJECT,
+  EVENT_VIEWER_ET_AUTOMATION_POINT,
 } EventViewerEventType;
 
 typedef struct _EventViewerWidget

@@ -56,7 +56,7 @@ typedef struct _ClipEditorWidget
   GtkBox                  parent_instance;
 
   GtkBox *                main_box;
-  EditorSelectionInfoWidget * editor_selections;
+  //EditorSelectionInfoWidget * editor_selections;
   EditorToolbarWidget *   editor_toolbar;
   ClipEditorInnerWidget * clip_editor_inner;
   GtkLabel *              no_selection_label;

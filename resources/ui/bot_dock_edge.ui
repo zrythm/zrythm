@@ -34,8 +34,28 @@
           <object class="GtkBox">
             <property name="visible">1</property>
             <child>
-              <object class="ClipEditorWidget" id="clip_editor">
+              <object class="GtkPaned"
+                id="clip_editor_plus_event_viewer_paned">
                 <property name="visible">1</property>
+                <child>
+                  <object class="ClipEditorWidget" id="clip_editor">
+                    <property name="visible">1</property>
+                  </object>
+                  <packing>
+                    <property name="shrink">0</property>
+                    <property name="resize">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="EventViewerWidget"
+                    id="event_viewer">
+                    <property name="visible">1</property>
+                  </object>
+                  <packing>
+                    <property name="shrink">0</property>
+                    <property name="resize">0</property>
+                  </packing>
+                </child>
               </object>
             </child>
           </object>

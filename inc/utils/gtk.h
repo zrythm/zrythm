@@ -166,6 +166,10 @@ z_gtk_notebook_get_current_tab_label_widget (
         notebook));
 }
 
+void
+z_gtk_tree_view_remove_all_columns (
+  GtkTreeView * treeview);
+
 int
 z_gtk_widget_destroy_idle (
   GtkWidget * widget);

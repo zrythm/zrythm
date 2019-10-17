@@ -20,7 +20,6 @@
 #include "gui/backend/clip_editor.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
-#include "gui/widgets/editor_selection_info.h"
 #include "gui/widgets/editor_toolbar.h"
 #include "utils/resources.h"
 
@@ -44,7 +43,6 @@ static void
 clip_editor_widget_init (ClipEditorWidget * self)
 {
   g_type_ensure (CLIP_EDITOR_INNER_WIDGET_TYPE);
-  g_type_ensure (EDITOR_SELECTION_INFO_WIDGET_TYPE);
   g_type_ensure (EDITOR_TOOLBAR_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
@@ -65,10 +63,6 @@ clip_editor_widget_class_init (
     klass,
     ClipEditorWidget,
     main_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ClipEditorWidget,
-    editor_selections);
   gtk_widget_class_bind_template_child (
     klass,
     ClipEditorWidget,

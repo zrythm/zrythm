@@ -164,7 +164,7 @@ coverage.html
 .flatpak-builder
 
 # valgrind log
-valog
+valog*
 
 # callgrind
 callgrind*

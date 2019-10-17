@@ -239,6 +239,37 @@ midi_note_get_global_start_pos (
       &self->region->start_pos));
 }
 
+/**
+ * Gets the MIDI note's value as a string (eg
+ * "C#4").
+ *
+ * @param use_markup Use markup to show the octave
+ *   as a superscript.
+ */
+void
+midi_note_get_val_as_string (
+  MidiNote * self,
+  char *     buf,
+  const int  use_markup)
+{
+  const char * note_str =
+    chord_descriptor_note_to_string (
+      self->val % 12);
+  const int note_val = self->val / 12 - 1;
+  if (use_markup)
+    {
+      sprintf (
+        buf, "%s<sup>%d</sup>",
+        note_str, note_val);
+    }
+  else
+    {
+      sprintf (
+        buf, "%s%d",
+        note_str, note_val);
+    }
+}
+
 void
 midi_note_set_cache_val (
   MidiNote *    self,

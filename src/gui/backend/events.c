@@ -400,8 +400,8 @@ on_midi_note_selection_changed ()
   gtk_widget_queue_allocate (
     GTK_WIDGET (MW_MIDI_MODIFIER_ARRANGER));
 
-  editor_selection_info_widget_refresh (
-    MW_MAS_INFO, MA_SELECTIONS);
+  event_viewer_widget_refresh (
+    MW_EDITOR_EVENT_VIEWER);
 }
 
 static void
