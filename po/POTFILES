@@ -43,11 +43,13 @@ inc/gui/widgets/timeline_bg.h
 inc/gui/widgets/chord_track.h
 inc/gui/widgets/quantize_box.h
 inc/gui/widgets/automation_curve.h
+inc/gui/widgets/event_viewer.h
 inc/gui/widgets/midi_editor_space.h
 inc/gui/widgets/chord_arranger.h
 inc/gui/widgets/dir.h
 inc/gui/widgets/audio_bus_track.h
 inc/gui/widgets/slider_bar.h
+inc/gui/widgets/timeline_panel.h
 inc/gui/widgets/rack_plugin.h
 inc/gui/widgets/route_target_selector.h
 inc/gui/widgets/marker.h
@@ -125,6 +127,7 @@ inc/gui/widgets/timeline_minimap_selection.h
 inc/gui/widgets/file_browser.h
 inc/gui/widgets/port_connections_popover.h
 inc/gui/widgets/arranger_bg.h
+inc/gui/widgets/timeline_bot_box.h
 inc/gui/widgets/inspector_track.h
 inc/gui/widgets/inspector_editor.h
 inc/gui/widgets/create_project_dialog.h
@@ -163,7 +166,6 @@ inc/gui/widgets/automator.h
 inc/gui/widgets/center_dock.h
 inc/gui/widgets/drag_dest_box.h
 inc/gui/widgets/inspector_ap.h
-inc/gui/widgets/center_dock_bot_box.h
 inc/gui/widgets/top_bar.h
 inc/gui/widgets/midi_modifier_arranger.h
 inc/gui/widgets/color_area.h
@@ -481,8 +483,10 @@ src/gui/widgets/track_lanelist.c
 src/gui/widgets/scale_selector_window.c
 src/gui/widgets/pan.c
 src/gui/widgets/bar_slider.c
+src/gui/widgets/timeline_panel.c
 src/gui/widgets/timeline_toolbar.c
 src/gui/widgets/automation_tracklist.c
+src/gui/widgets/event_viewer.c
 src/gui/widgets/audio_region.c
 src/gui/widgets/ports_expander.c
 src/gui/widgets/arranger_playhead.c
@@ -503,13 +507,13 @@ src/gui/widgets/audio_arranger.c
 src/gui/widgets/automation_editor_space.c
 src/gui/widgets/file_browser.c
 src/gui/widgets/inspector_track.c
-src/gui/widgets/center_dock_bot_box.c
 src/gui/widgets/timeline_minimap.c
 src/gui/widgets/track_visibility_tree.c
 src/gui/widgets/midi_activity_bar.c
 src/gui/widgets/track.c
 src/gui/widgets/midi_track.c
 src/gui/widgets/color_area.c
+src/gui/widgets/timeline_bot_box.c
 src/gui/widgets/inspector_midi.c
 src/gui/widgets/chord_editor_space.c
 src/gui/widgets/fader.c
@@ -665,7 +669,6 @@ src/actions/delete_plugins_action.c
 resources/ui/rack_plugin.ui
 resources/ui/rack_row.ui
 resources/ui/inspector_plugin.ui
-resources/ui/center_dock_bot_box.ui
 resources/ui/first_run_assistant.ui
 resources/ui/view_toolbar.ui
 resources/ui/right_dock_edge.ui
@@ -674,6 +677,7 @@ resources/ui/track.ui
 resources/ui/scale_selector_window.ui
 resources/ui/bot_dock_edge.ui
 resources/ui/expander_box.ui
+resources/ui/fishbowl_window.ui
 resources/ui/timeline_toolbar.ui
 resources/ui/track_top_grid.ui
 resources/ui/project_assistant.ui
@@ -688,6 +692,7 @@ resources/ui/midi_editor_space.ui
 resources/ui/automatable_selector.ui
 resources/ui/help_toolbar.ui
 resources/ui/inspector_chord.ui
+resources/ui/timeline_panel.ui
 resources/ui/mixer.ui
 resources/ui/chord_editor_space.ui
 resources/ui/automation_editor_space.ui
@@ -709,6 +714,7 @@ resources/ui/automator.ui
 resources/ui/bot_bar.ui
 resources/ui/control_room.ui
 resources/ui/export_progress_dialog.ui
+resources/ui/event_viewer.ui
 resources/ui/automation_track.ui
 resources/ui/file_browser.ui
 resources/ui/marker_dialog.ui
@@ -723,6 +729,7 @@ resources/ui/export_dialog.ui
 resources/ui/plugin_browser.ui
 resources/ui/main_window.ui
 resources/ui/clip_editor.ui
+resources/ui/timeline_bot_box.ui
 resources/ui/toolbox.ui
 resources/ui/quantize_box.ui
 resources/ui/snap_grid_popover.ui
