@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-17 14:02+0100\n"
-"PO-Revision-Date: 2019-10-01 15:56+0000\n"
+"PO-Revision-Date: 2019-10-18 13:53+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -18,31 +18,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 3.9.1-dev\n"
 
 #: src/zrythm.c:264
-#, fuzzy
 msgid "Setting up main window"
-msgstr "バックエンドを設定中"
+msgstr "メイン ウィンドウを設定中"
 
 #: src/zrythm.c:301
 msgid "Loading project"
 msgstr "プロジェクトを読み込み中"
 
 #: src/zrythm.c:329
-#, fuzzy
 msgid "Initializing main window"
-msgstr "オーディオ処理装置を初期化中"
+msgstr "メイン ウィンドウを初期化中"
 
 #: src/zrythm.c:346
-#, fuzzy
 msgid "Initializing symap"
-msgstr "初期化中…"
+msgstr "symapを初期化中"
 
 #: src/zrythm.c:350
-#, fuzzy
 msgid "Initializing caches"
-msgstr "オーディオ処理装置を初期化中"
+msgstr "キャッシュを初期化中"
 
 #: src/zrythm.c:355
 msgid "Initializing settings"
@@ -54,21 +50,19 @@ msgstr "プラグインマネージャの初期化"
 
 #: src/zrythm.c:365
 msgid "Scanning plugins"
-msgstr ""
+msgstr "プラグインをスキャン中"
 
 #: src/zrythm.c:539
 msgid "License Information"
-msgstr ""
+msgstr "ライセンス情報"
 
 #: src/zrythm.c:562
-#, fuzzy
 msgid "Initializing Zrythm directories"
-msgstr "設定を初期化中"
+msgstr "Zrythm ディレクトリを初期化中"
 
 #: src/zrythm.c:570
-#, fuzzy
 msgid "Initializing logging system"
-msgstr "設定を初期化中"
+msgstr "ログシステムを初期化中"
 
 #: src/zrythm.c:575
 #, fuzzy
@@ -222,9 +216,8 @@ msgid "Close"
 msgstr "閉じる"
 
 #: src/gui/widgets/create_project_dialog.c:109
-#, fuzzy
 msgid "Create New Project"
-msgstr "プロジェクトの新規作成"
+msgstr "新規プロジェクトを作成"
 
 #: src/gui/widgets/create_project_dialog.c:122
 msgid "Untitled Project"
@@ -271,9 +264,8 @@ msgid "All MIDI Inputs"
 msgstr "すべてのMIDI入力"
 
 #: src/gui/widgets/track_input_expander.c:296
-#, fuzzy
 msgid "All Audio Inputs"
-msgstr "入力音響"
+msgstr "すべてのオーディオ入力"
 
 #: src/gui/widgets/track_input_expander.c:334
 msgid "No inputs"
@@ -281,27 +273,25 @@ msgstr "入力なし"
 
 #: src/gui/widgets/track_input_expander.c:337
 msgid "MIDI inputs for recording"
-msgstr ""
+msgstr "録音用のMIDI入力"
 
 #: src/gui/widgets/track_input_expander.c:345
-#, fuzzy
 msgid "No left input"
-msgstr "入力なし"
+msgstr "左入力なし"
 
 #: src/gui/widgets/track_input_expander.c:346
-#, fuzzy
 msgid "No right input"
-msgstr "入力なし"
+msgstr "右入力なし"
 
 #: src/gui/widgets/track_input_expander.c:349
 #, c-format
 msgid "Audio input (%s) for recording"
-msgstr ""
+msgstr "録音用のオーディオ入力(%s)"
 
 #. TRANSLATORS: Left and Right
 #: src/gui/widgets/track_input_expander.c:351
 msgid "L"
-msgstr ""
+msgstr "左"
 
 #: src/gui/widgets/track_input_expander.c:351
 #: resources/ui/automation_track.ui:100
@@ -322,9 +312,8 @@ msgid "No channel"
 msgstr "チャンネルなし"
 
 #: src/gui/widgets/track_input_expander.c:485
-#, fuzzy
 msgid "MIDI channel to filter to"
-msgstr "このレーンの MIDI チャンネル"
+msgstr "フィルターするMIDIチャンネル"
 
 #: src/gui/widgets/track_input_expander.c:631
 msgid "Inputs"
@@ -517,9 +506,8 @@ msgid "Add _MIDI Track"
 msgstr "MIDIトラックを追加 (_M)"
 
 #: src/gui/widgets/drag_dest_box.c:465
-#, fuzzy
 msgid "Add Audio Track"
-msgstr "オーディオトラックを追加 (_A)"
+msgstr "オーディオトラックを追加"
 
 #: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1139
 msgid "Audio Bus"
@@ -717,9 +705,8 @@ msgid "Control Room"
 msgstr "管理室"
 
 #: src/gui/widgets/right_dock_edge.c:152
-#, fuzzy
 msgid "Show file browser"
-msgstr "ファイルブラウザー"
+msgstr "ファイルブラウザを表示"
 
 #: src/gui/widgets/route_target_selector.c:54
 msgid "<tt><i>Engine</i></tt>"
@@ -799,27 +786,22 @@ msgid "Type"
 msgstr "種類"
 
 #: src/gui/widgets/event_viewer.c:248
-#, fuzzy
 msgid "Start"
 msgstr "開始"
 
 #: src/gui/widgets/event_viewer.c:259
-#, fuzzy
 msgid "Clip start"
-msgstr "クリップ開始（相対的）"
+msgstr "クリップ開始"
 
 #: src/gui/widgets/event_viewer.c:270
-#, fuzzy
 msgid "Loop start"
-msgstr "ループ開始（相対的）"
+msgstr "ループ開始"
 
 #: src/gui/widgets/event_viewer.c:281
-#, fuzzy
 msgid "Loop end"
-msgstr "ループ中"
+msgstr "ループ終了"
 
 #: src/gui/widgets/event_viewer.c:292
-#, fuzzy
 msgid "End"
 msgstr "終わり"
 
@@ -982,24 +964,23 @@ msgid "Hide Tracks"
 msgstr "トラックを非表示にする"
 
 #: src/gui/widgets/track.c:498
-#, fuzzy
 msgid "Track MIDI Ch"
-msgstr "MIDI Ch"
+msgstr "トラックのMIDI Ch"
 
 #: src/gui/widgets/track.c:509 src/gui/widgets/track.c:567
-#, fuzzy, c-format
+#, c-format
 msgid "%sMIDI Channel %d"
-msgstr "MIDI チャンネル %s"
+msgstr "%s MIDI チャンネル %d"
 
 #: src/gui/widgets/track.c:545
-#, fuzzy, c-format
+#, c-format
 msgid "Lane %d MIDI Ch"
-msgstr "レーン%d"
+msgstr "レーン%d Midi Ch"
 
 #: src/gui/widgets/track.c:562
-#, fuzzy, c-format
+#, c-format
 msgid "%sInherit"
-msgstr "継承"
+msgstr "%s 継承"
 
 #: src/gui/widgets/fader.c:336
 msgid "Fader"
@@ -1131,9 +1112,8 @@ msgid "Audio"
 msgstr "オーディオ"
 
 #: src/audio/region.c:467
-#, fuzzy
 msgid "Automation"
-msgstr "自動操作イベントを移動"
+msgstr "オートメーション"
 
 #: src/audio/region.c:470 src/audio/track.c:1148
 #: resources/ui/editor_toolbar.ui:58
@@ -2029,7 +2009,7 @@ msgstr "ラベル"
 
 #: resources/ui/help_toolbar.ui:58
 msgid "News"
-msgstr ""
+msgstr "ニュース"
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
@@ -2166,7 +2146,7 @@ msgstr "エクスポート中…"
 
 #: resources/ui/event_viewer.ui:13
 msgid "Event Viewer"
-msgstr ""
+msgstr "イベント ビューア"
 
 #: resources/ui/automation_track.ui:31
 msgid "Control this automation track is for"
@@ -2194,14 +2174,12 @@ msgid "0.0"
 msgstr "0.0"
 
 #: resources/ui/automation_track.ui:143
-#, fuzzy
 msgid "Remove automation track"
-msgstr "オートメーションを読み取る"
+msgstr "オートメーション トラックを削除"
 
 #: resources/ui/automation_track.ui:164
-#, fuzzy
 msgid "Add automation track"
-msgstr "オートメーションを読み取る"
+msgstr "オートメーション トラックを追加"
 
 #: resources/ui/file_browser.ui:107
 msgid "Location"
@@ -2414,7 +2392,7 @@ msgstr "Zrythmのパス"
 
 #: resources/ui/preferences.ui:250
 msgid "The global Zrythm working path for non-project related files"
-msgstr ""
+msgstr "プロジェクト以外の関連ファイル用のグローバル Zrythm 作業パス"
 
 #: resources/ui/preferences.ui:280 resources/ui/preferences.ui:329
 msgid "Plugins"
@@ -2430,7 +2408,7 @@ msgstr "プラグインをインスタンス化する際は、常にプラグイ
 
 #: resources/ui/preferences.ui:306
 msgid "Keep plugin UIs on top"
-msgstr ""
+msgstr "プラグインの UI を常に一番上に表示"
 
 #: resources/ui/preferences.ui:310
 msgid "Keep plugin UI windows on top of the main window"
