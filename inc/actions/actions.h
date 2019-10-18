@@ -427,5 +427,7 @@ activate_unlink_jack_transport (
   gpointer       user_data);
 
 DECLARE_SIMPLE (show_file_browser);
+DECLARE_SIMPLE (toggle_timeline_event_viewer);
+DECLARE_SIMPLE (toggle_editor_event_viewer);
 
 #undef DECLARE_SIMPLE

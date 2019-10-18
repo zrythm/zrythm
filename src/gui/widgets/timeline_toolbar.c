@@ -69,12 +69,11 @@ timeline_toolbar_widget_class_init (
   gtk_widget_class_set_css_name (
     klass, "timeline-toolbar");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    TimelineToolbarWidget,
-    snap_grid_timeline);
-  gtk_widget_class_bind_template_child (
-    klass,
-    TimelineToolbarWidget,
-    quantize_box);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, TimelineToolbarWidget, x)
+
+  BIND_CHILD (snap_grid_timeline);
+  BIND_CHILD (quantize_box);
+  BIND_CHILD (event_viewer_toggle);
 }

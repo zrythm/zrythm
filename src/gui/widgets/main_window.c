@@ -329,6 +329,12 @@ main_window_widget_init (MainWindowWidget * self)
     /* file browser */
     { "show-file-browser",
       activate_show_file_browser },
+
+    /* show/hide event viewers */
+    { "toggle-timeline-event-viewer",
+      activate_toggle_timeline_event_viewer },
+    { "toggle-editor-event-viewer",
+      activate_toggle_editor_event_viewer },
   };
 
   g_action_map_add_action_entries (

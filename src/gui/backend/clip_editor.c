@@ -78,6 +78,15 @@ clip_editor_set_region (
   if (recalc_graph)
     mixer_recalc_graph (MIXER);
 
+  /* if first time showing a region, show the
+   * event viewer as necessary */
+  if (!self->region && region)
+    {
+      EVENTS_PUSH (
+        ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED,
+        NULL);
+    }
+
   self->region = region;
 
   if (self->region_name)

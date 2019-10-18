@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/backend/clip_editor.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_pad.h"
@@ -26,6 +27,7 @@
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/modulator_view.h"
 #include "gui/widgets/rack.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -46,6 +48,19 @@ bot_dock_edge_widget_setup (
   event_viewer_widget_setup (
     self->event_viewer,
     EVENT_VIEWER_TYPE_EDITOR);
+
+  /* set event viewer visibility */
+  int visibility = 0;
+  if (
+    g_settings_get_int (
+      S_UI, "editor-event-viewer-visible") &&
+    CLIP_EDITOR->region)
+    {
+      visibility = 1;
+    }
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->event_viewer),
+    visibility);
 }
 
 static void

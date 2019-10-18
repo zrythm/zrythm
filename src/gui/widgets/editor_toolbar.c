@@ -98,16 +98,12 @@ editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
   gtk_widget_class_set_css_name (
     klass, "editor-toolbar");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    EditorToolbarWidget,
-    chord_highlighting);
-  gtk_widget_class_bind_template_child (
-    klass,
-    EditorToolbarWidget,
-    snap_grid_midi);
-  gtk_widget_class_bind_template_child (
-    klass,
-    EditorToolbarWidget,
-    quantize_box);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, EditorToolbarWidget, x)
+
+  BIND_CHILD (chord_highlighting);
+  BIND_CHILD (snap_grid_midi);
+  BIND_CHILD (quantize_box);
+  BIND_CHILD (event_viewer_toggle);
 }

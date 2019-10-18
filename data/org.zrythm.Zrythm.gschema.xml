@@ -415,6 +415,28 @@
       </description>
     </key>
 
+    <!-- KEY: timeline event viewer visible -->
+    <key name="timeline-event-viewer-visible"
+         type="i">
+      <default>0</default>
+      <summary>Timeline event viewer visibility</summary>
+      <description>
+        Whether the timeline event viewer is visible
+        or not.
+      </description>
+    </key>
+
+    <!-- KEY: editor event viewer visible -->
+    <key name="editor-event-viewer-visible"
+         type="i">
+      <default>0</default>
+      <summary>Editor event viewer visibility</summary>
+      <description>
+        Whether the editor event viewer is visible
+        or not.
+      </description>
+    </key>
+
     <!-- KEY: monitor out volume -->
     <key name="monitor-out-vol"
          type="d">

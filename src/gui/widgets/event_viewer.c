@@ -416,7 +416,7 @@ append_midi_columns (
   renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      _("Name"), renderer, "text",
+      _("Note"), renderer, "text",
       MIDI_COLUMN_NAME, NULL);
   gtk_tree_view_column_set_sort_column_id (
     column, MIDI_COLUMN_NAME);

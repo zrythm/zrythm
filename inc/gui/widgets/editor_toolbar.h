@@ -47,10 +47,11 @@ typedef struct _SnapGridWidget SnapGridWidget;
  */
 typedef struct _EditorToolbarWidget
 {
-  GtkToolbar         parent_instance;
-  GtkComboBoxText * chord_highlighting;
-  SnapGridWidget           * snap_grid_midi;
+  GtkToolbar          parent_instance;
+  GtkComboBoxText *   chord_highlighting;
+  SnapGridWidget *    snap_grid_midi;
   QuantizeBoxWidget * quantize_box;
+  GtkToolButton *     event_viewer_toggle;
 } EditorToolbarWidget;
 
 void

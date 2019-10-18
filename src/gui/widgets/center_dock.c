@@ -66,6 +66,12 @@ center_dock_widget_setup (
     self->event_viewer,
     EVENT_VIEWER_TYPE_TIMELINE);
 
+  /* set event viewer visibility */
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->event_viewer),
+    g_settings_get_int (
+      S_UI, "timeline-event-viewer-visible"));
+
   bot_dock_edge_widget_setup (
     self->bot_dock_edge);
   left_dock_edge_widget_setup (

@@ -46,5 +46,28 @@
         </child>
       </object>
     </child>
+    <!-- extra space so we can add widgets at the
+         end -->
+    <child>
+      <object class="GtkToolItem">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">1</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton" id="event_viewer_toggle">
+        <property name="visible">True</property>
+        <property name="action-name">win.toggle-timeline-event-viewer</property>
+        <property name="icon-name">ev</property>
+        <property name="tooltip-text" translatable="yes">Toggle event viewer</property>
+      </object>
+    </child>
   </template>
 </interface>

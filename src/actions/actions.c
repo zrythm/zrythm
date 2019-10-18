@@ -49,6 +49,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/event_viewer.h"
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/file_browser_window.h"
 #include "gui/widgets/main_window.h"
@@ -1308,4 +1309,46 @@ activate_show_file_browser (
       gtk_widget_show_all (
         (GtkWidget *) file_browser_window);
     }
+}
+
+void
+activate_toggle_timeline_event_viewer (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
+{
+  if (!MW_TIMELINE_EVENT_VIEWER)
+    return;
+
+  int new_visibility =
+    !gtk_widget_get_visible (
+       GTK_WIDGET (MW_TIMELINE_EVENT_VIEWER));
+
+  g_settings_set_int (
+    S_UI, "timeline-event-viewer-visible",
+    new_visibility);
+  gtk_widget_set_visible (
+    GTK_WIDGET (MW_TIMELINE_EVENT_VIEWER),
+    new_visibility);
+}
+
+void
+activate_toggle_editor_event_viewer (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
+{
+  if (!MW_EDITOR_EVENT_VIEWER)
+    return;
+
+  int new_visibility =
+    !gtk_widget_get_visible (
+       GTK_WIDGET (MW_EDITOR_EVENT_VIEWER));
+
+  g_settings_set_int (
+    S_UI, "editor-event-viewer-visible",
+    new_visibility);
+  gtk_widget_set_visible (
+    GTK_WIDGET (MW_EDITOR_EVENT_VIEWER),
+    new_visibility);
 }

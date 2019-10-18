@@ -1147,6 +1147,12 @@ events_process (void * data)
             arranger_widget_redraw_bg (
               Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
           break;
+        case ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED:
+          gtk_widget_set_visible (
+            GTK_WIDGET (MW_EDITOR_EVENT_VIEWER),
+            g_settings_get_int (
+              S_UI, "editor-event-viewer-visible"));
+          break;
         default:
           g_message (
             "event %d not implemented yet",
