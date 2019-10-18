@@ -60,7 +60,6 @@ Contributing Guidelines
     ├── tests                        # Unit tests
     │   └── helpers                  # Test helpers
     ├── THANKS                       # Thanks notice
-    ├── THIRDPARTY_LICENSE           # Linked library license information
     ├── tools                        # Various tools
     └── TRANSLATORS                  # List of translators
 
