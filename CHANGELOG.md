@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.021] - 2019-10-18
+- Add fishbowl benchmark tests for widgets
+- Optimize and cache various widgets
+- Make clicking on plugins in the mixer more responsive
+- Add event viewers for the timeline and editors
+- Fix channel slot names not displaying
+- Fix track routing getting ignored when record is not armed in the targe track
+- Update Japanese translations
+
 ## [0.7.002] - 2019-10-14
 - Use a lock-free queue while processing instead of a mutex
 - Add caching where pango is used to draw text
@@ -506,4 +515,3 @@ Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
 notice and this notice are preserved.  This file is offered as-is,
 without any warranty.
-
