@@ -38,6 +38,7 @@
    sg->snap_to_events)
 #define SNAP_GRID_TIMELINE \
   (&PROJECT->snap_grid_timeline)
+/* FIXME rename to snap grid editor */
 #define SNAP_GRID_MIDI \
   (&PROJECT->snap_grid_midi)
 

@@ -183,10 +183,31 @@ arranger_get_child_position (
                audio_arranger) &&
                CLIP_EDITOR->region)
         {
-          allocation->x =
-            ui_pos_to_px_editor (
-              &TRANSPORT->playhead_pos,
-              1);
+          Region * r =
+            region_at_position (
+              region_get_track (
+                CLIP_EDITOR->region),
+              PLAYHEAD);
+          Position tmp;
+          if (r)
+            {
+              long region_local_frames =
+                region_timeline_frames_to_local (
+                  r, PLAYHEAD->frames, 1);
+              region_local_frames +=
+                r->start_pos.frames;
+              position_from_frames (
+                &tmp, region_local_frames);
+              allocation->x =
+                ui_pos_to_px_editor (
+                  &tmp, 1);
+            }
+          else
+            {
+              allocation->x =
+                ui_pos_to_px_editor (
+                  PLAYHEAD, 1);
+            }
         }
       allocation->y = 0;
       allocation->width = 2;

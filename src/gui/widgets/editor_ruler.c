@@ -35,32 +35,33 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (EditorRulerWidget,
-               editor_ruler_widget,
-               RULER_WIDGET_TYPE)
+G_DEFINE_TYPE (
+  EditorRulerWidget,
+  editor_ruler_widget,
+  RULER_WIDGET_TYPE)
+
+#define ACTION_IS(x) \
+  (rw_prv->action == UI_OVERLAY_ACTION_##x)
+#define TARGET_IS(x) \
+  (rw_prv->target == RW_TARGET_##x)
 
 static gboolean
-editor_ruler_draw_cb (GtkWidget * widget,
-         cairo_t *cr,
-         EditorRulerWidget * self)
+editor_ruler_draw_cb (
+  GtkWidget * widget,
+  cairo_t *cr,
+  EditorRulerWidget * self)
 {
-  /* engine is run only set after everything is set up
-   * so this is a good way to decide if we should draw
-   * or not */
+  /* engine is run only set after everything is
+   * set up so this is a good way to decide if we
+   * should draw or not */
   if (!g_atomic_int_get (&AUDIO_ENGINE->run) ||
       !CLIP_EDITOR->region)
     return FALSE;
 
   GdkRectangle rect;
-  gdk_cairo_get_clip_rectangle (cr,
-                                &rect);
+  gdk_cairo_get_clip_rectangle (
+    cr, &rect);
 
-  /*GtkStyleContext *context;*/
-  /*context =*/
-    /*gtk_widget_get_style_context (*/
-      /*GTK_WIDGET (self));*/
-
-  /*width = gtk_widget_get_allocated_width (widget);*/
   int height =
     gtk_widget_get_allocated_height (widget);
 
@@ -253,6 +254,152 @@ editor_ruler_widget_set_ruler_marker_position (
       break;
     }
 
+}
+
+void
+editor_ruler_on_drag_begin_no_marker_hit (
+  EditorRulerWidget * self,
+  gdouble             start_x,
+  gdouble             start_y)
+{
+  RULER_WIDGET_GET_PRIVATE (self);
+
+  Position pos;
+  ui_px_to_pos_editor (
+    start_x, &pos, 1);
+  if (!rw_prv->shift_held)
+    position_snap_simple (
+      &pos, SNAP_GRID_MIDI);
+  transport_move_playhead (&pos, 1);
+  rw_prv->action =
+    UI_OVERLAY_ACTION_STARTING_MOVING;
+  rw_prv->target = RW_TARGET_PLAYHEAD;
+}
+
+void
+editor_ruler_on_drag_update (
+  EditorRulerWidget * self,
+  gdouble             offset_x,
+  gdouble             offset_y)
+{
+  RULER_WIDGET_GET_PRIVATE (self);
+
+  if (ACTION_IS (MOVING))
+    {
+      Position editor_pos;
+      Position region_local_pos;
+      Region * r = CLIP_EDITOR->region;
+
+      /* convert px to position */
+      if (self)
+        ui_px_to_pos_editor (
+          rw_prv->start_x + offset_x,
+          &editor_pos, 1);
+
+      /* snap if not shift held */
+      if (!rw_prv->shift_held)
+        position_snap_simple (
+          &editor_pos, SNAP_GRID_MIDI);
+
+      position_from_ticks (
+        &region_local_pos,
+        position_to_ticks (&editor_pos) -
+        position_to_ticks (&r->start_pos));
+
+      if (TARGET_IS (LOOP_START))
+        {
+          /* make the position local to the region
+           * for less calculations */
+          /* if position is acceptable */
+          if (position_compare (
+                &region_local_pos,
+                &r->loop_end_pos) < 0 &&
+              position_compare (
+                &region_local_pos,
+                &r->clip_start_pos) >= 0)
+            {
+              /* set it */
+              region_set_loop_start_pos (
+                r, &region_local_pos, AO_UPDATE_ALL);
+              transport_update_position_frames (
+                TRANSPORT);
+              EVENTS_PUSH (
+                ET_CLIP_MARKER_POS_CHANGED, self);
+            }
+        }
+      else if (TARGET_IS (LOOP_END))
+        {
+          /* if position is acceptable */
+          if (position_compare (
+                &region_local_pos,
+                &r->loop_start_pos) > 0 &&
+              position_compare (
+                &region_local_pos,
+                &r->clip_start_pos) > 0)
+            {
+              /* set it */
+              region_set_loop_end_pos (
+                r, &region_local_pos, AO_UPDATE_ALL);
+              transport_update_position_frames (
+                TRANSPORT);
+              EVENTS_PUSH (
+                ET_CLIP_MARKER_POS_CHANGED, self);
+            }
+        }
+      else if (TARGET_IS (CLIP_START))
+        {
+          /* if position is acceptable */
+          if (position_compare (
+                &region_local_pos,
+                &r->loop_start_pos) <= 0)
+            {
+              /* set it */
+              region_set_clip_start_pos (
+                r, &region_local_pos, AO_UPDATE_ALL);
+              transport_update_position_frames (
+                TRANSPORT);
+              EVENTS_PUSH (
+                ET_CLIP_MARKER_POS_CHANGED, self);
+            }
+        }
+      else if (TARGET_IS (PLAYHEAD))
+        {
+          Position timeline_start,
+                   timeline_end;
+          position_init (&timeline_start);
+          position_init (&timeline_end);
+          position_add_bars (
+            &timeline_end,
+            TRANSPORT->total_bars);
+
+          /* if position is acceptable */
+          if (position_compare (
+                &editor_pos, &timeline_start) >= 0 &&
+              position_compare (
+                &editor_pos, &timeline_end) <= 0)
+            {
+              transport_move_playhead (
+                &editor_pos, 1);
+              EVENTS_PUSH (
+                ET_PLAYHEAD_POS_CHANGED, NULL);
+            }
+
+          ruler_marker_widget_update_tooltip (
+            rw_prv->playhead, 1);
+        }
+    }
+}
+
+void
+editor_ruler_on_drag_end (
+  EditorRulerWidget * self)
+{
+  RULER_WIDGET_GET_PRIVATE (self);
+
+  /* hide tooltips */
+  if (TARGET_IS (PLAYHEAD))
+    ruler_marker_widget_update_tooltip (
+      rw_prv->playhead, 0);
 }
 
 void

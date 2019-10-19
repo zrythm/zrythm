@@ -95,10 +95,9 @@ timeline_ruler_widget_set_ruler_marker_position (
  */
 void
 timeline_ruler_on_drag_begin_no_marker_hit (
-  GtkGestureDrag *       gesture,
+  TimelineRulerWidget * self,
   gdouble               start_x,
   gdouble               start_y,
-  TimelineRulerWidget * self,
   int                  height);
 
 /**
@@ -113,10 +112,9 @@ timeline_ruler_on_drag_end (
  */
 void
 timeline_ruler_on_drag_update (
-  GtkGestureDrag * gesture,
-  gdouble         offset_x,
-  gdouble         offset_y,
-  TimelineRulerWidget * self);
+  TimelineRulerWidget * self,
+  gdouble               offset_x,
+  gdouble               offset_y);
 
 /**
  * @}

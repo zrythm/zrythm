@@ -44,6 +44,10 @@ G_DEFINE_TYPE (TimelineRulerWidget,
                timeline_ruler_widget,
                RULER_WIDGET_TYPE)
 
+#define ACTION_IS(x) \
+  (rw_prv->action == UI_OVERLAY_ACTION_##x)
+#define TARGET_IS(x) \
+  (rw_prv->target == RW_TARGET_##x)
 
 void
 timeline_ruler_widget_set_ruler_range_position (
@@ -223,10 +227,9 @@ timeline_ruler_on_drag_end (
 
 void
 timeline_ruler_on_drag_begin_no_marker_hit (
-  GtkGestureDrag *       gesture,
+  TimelineRulerWidget * self,
   gdouble               start_x,
   gdouble               start_y,
-  TimelineRulerWidget * self,
   int                  height)
 {
   RULER_WIDGET_GET_PRIVATE (self);
@@ -293,15 +296,14 @@ timeline_ruler_on_drag_begin_no_marker_hit (
 
 void
 timeline_ruler_on_drag_update (
-  GtkGestureDrag * gesture,
-  gdouble         offset_x,
-  gdouble         offset_y,
-  TimelineRulerWidget * self)
+  TimelineRulerWidget * self,
+  gdouble               offset_x,
+  gdouble               offset_y)
 {
   RULER_WIDGET_GET_PRIVATE (self);
 
   /* handle x */
-  if (rw_prv->action == UI_OVERLAY_ACTION_RESIZING_L)
+  if (ACTION_IS (RESIZING_L))
     {
       if (rw_prv->target == RW_TARGET_RANGE)
         {
@@ -332,7 +334,7 @@ timeline_ruler_on_drag_update (
         }
     } /* endif RESIZING_L */
 
-  else if (rw_prv->action == UI_OVERLAY_ACTION_RESIZING_R)
+  else if (ACTION_IS (RESIZING_R))
     {
       if (rw_prv->target ==
             RW_TARGET_RANGE)
@@ -365,7 +367,7 @@ timeline_ruler_on_drag_update (
     } /*endif RESIZING_R */
 
   /* if moving the selection */
-  else if (rw_prv->action == UI_OVERLAY_ACTION_MOVING)
+  else if (ACTION_IS (MOVING))
     {
       if (rw_prv->target == RW_TARGET_RANGE)
         {

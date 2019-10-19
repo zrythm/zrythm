@@ -78,6 +78,25 @@ editor_ruler_widget_set_ruler_marker_position (
   GtkAllocation *     allocation);
 
 /**
+ * Called from ruler drag begin.
+ */
+void
+editor_ruler_on_drag_begin_no_marker_hit (
+  EditorRulerWidget * self,
+  gdouble             start_x,
+  gdouble             start_y);
+
+void
+editor_ruler_on_drag_update (
+  EditorRulerWidget * self,
+  gdouble             offset_x,
+  gdouble             offset_y);
+
+void
+editor_ruler_on_drag_end (
+  EditorRulerWidget * self);
+
+/**
  * @}
  */
 

@@ -39,6 +39,10 @@ midi_arranger_selections_init_loaded (
   for (i = 0; i < self->num_midi_notes; i++)
     {
       mn = self->midi_notes[i];
+      position_update_frames (
+        &mn->start_pos);
+      position_update_frames (
+        &mn->end_pos);
       mn->region =
         region_find_by_name (mn->region_name);
       g_warn_if_fail (mn->region);

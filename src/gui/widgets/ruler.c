@@ -83,7 +83,10 @@ G_DEFINE_TYPE_WITH_PRIVATE (
   else if (Z_IS_EDITOR_RULER_WIDGET (self)) \
     { \
       editor_ruler = Z_EDITOR_RULER_WIDGET (self); \
-    } \
+    }
+
+#define ACTION_IS(x) \
+  (rw_prv->action == UI_OVERLAY_ACTION_##x)
 
 /**
  * Gets called to set the position/size of each overlayed widget.
@@ -592,17 +595,21 @@ drag_begin (GtkGestureDrag *      gesture,
     {
       if (timeline_ruler)
         timeline_ruler_on_drag_begin_no_marker_hit (
-          gesture, start_x, start_y,
-          timeline_ruler, height);
+          timeline_ruler, start_x, start_y,
+          height);
+      else if (editor_ruler)
+        editor_ruler_on_drag_begin_no_marker_hit (
+          editor_ruler, start_x, start_y);
     }
   rw_prv->last_offset_x = 0;
 }
 
 static void
-drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-            RulerWidget * self)
+drag_update (
+  GtkGestureDrag * gesture,
+  gdouble          offset_x,
+  gdouble          offset_y,
+  RulerWidget *    self)
 {
   RULER_WIDGET_GET_PRIVATE (self);
   GET_RULER_ALIASES (self);
@@ -617,99 +624,21 @@ drag_update (GtkGestureDrag * gesture,
   else
     rw_prv->shift_held = 0;
 
-  if (rw_prv->action ==
-      UI_OVERLAY_ACTION_STARTING_MOVING)
+  if (ACTION_IS (STARTING_MOVING))
     {
       rw_prv->action = UI_OVERLAY_ACTION_MOVING;
     }
 
   if (timeline_ruler)
-    timeline_ruler_on_drag_update (
-      gesture, offset_x, offset_y, timeline_ruler);
-  /* handle x */
-  /* if moving the selection */
-  else if ((editor_ruler) &&
-           rw_prv->action ==
-             UI_OVERLAY_ACTION_MOVING)
     {
-      Position tmp;
-      Position local_pos;
-      Region * r = CLIP_EDITOR->region;
-
-      /* convert px to position */
-      if (editor_ruler)
-        ui_px_to_pos_editor (
-          rw_prv->start_x + offset_x,
-          &tmp, 1);
-
-      /* snap if not shift held */
-      if (!rw_prv->shift_held)
-        position_snap_simple (
-          &tmp, SNAP_GRID_MIDI);
-
-      position_from_ticks (
-        &local_pos,
-        position_to_ticks (&tmp) -
-        position_to_ticks (&r->start_pos));
-
-      if (rw_prv->target == RW_TARGET_LOOP_START)
-        {
-          /* make the position local to the region
-           * for less calculations */
-          /* if position is acceptable */
-          if (position_compare (
-                &local_pos,
-                &r->loop_end_pos) < 0 &&
-              position_compare (
-                &local_pos,
-                &r->clip_start_pos) >= 0)
-            {
-              /* set it */
-              region_set_loop_start_pos (
-                r, &local_pos, AO_UPDATE_ALL);
-              transport_update_position_frames (
-                TRANSPORT);
-              EVENTS_PUSH (
-                ET_CLIP_MARKER_POS_CHANGED, self);
-            }
-        }
-      else if (rw_prv->target == RW_TARGET_LOOP_END)
-        {
-          /* if position is acceptable */
-          if (position_compare (
-                &local_pos,
-                &r->loop_start_pos) > 0 &&
-              position_compare (
-                &local_pos,
-                &r->clip_start_pos) > 0)
-            {
-              /* set it */
-              region_set_loop_end_pos (
-                r, &local_pos, AO_UPDATE_ALL);
-              transport_update_position_frames (
-                TRANSPORT);
-              EVENTS_PUSH (
-                ET_CLIP_MARKER_POS_CHANGED, self);
-            }
-        }
-      else if (rw_prv->target ==
-                 RW_TARGET_CLIP_START)
-        {
-          /* if position is acceptable */
-          if (position_compare (
-                &local_pos,
-                &r->loop_start_pos) <= 0)
-            {
-              /* set it */
-              region_set_clip_start_pos (
-                r, &local_pos, AO_UPDATE_ALL);
-              transport_update_position_frames (
-                TRANSPORT);
-              EVENTS_PUSH (
-                ET_CLIP_MARKER_POS_CHANGED, self);
-            }
-        }
-    } /* endif MOVING */
+      timeline_ruler_on_drag_update (
+        timeline_ruler, offset_x, offset_y);
+    }
+  else if (editor_ruler)
+    {
+      editor_ruler_on_drag_update (
+        editor_ruler, offset_x, offset_y);
+    }
 
   rw_prv->last_offset_x = offset_x;
 
@@ -723,14 +652,27 @@ drag_end (GtkGestureDrag *gesture,
           RulerWidget *   self)
 {
   RULER_WIDGET_GET_PRIVATE (self);
+  GET_RULER_ALIASES (self);
 
   rw_prv->start_x = 0;
   rw_prv->shift_held = 0;
 
   rw_prv->action = UI_OVERLAY_ACTION_NONE;
 
-  if (self == (RulerWidget *) MW_RULER)
-    timeline_ruler_on_drag_end (MW_RULER);
+  if (timeline_ruler)
+    timeline_ruler_on_drag_end (timeline_ruler);
+  else if (editor_ruler)
+    editor_ruler_on_drag_end (editor_ruler);
+}
+
+static gboolean
+on_grab_broken (
+  GtkWidget *widget,
+  GdkEvent  *event,
+  gpointer   user_data)
+{
+  g_warning ("ruler grab broken");
+  return FALSE;
 }
 
 static void
@@ -767,9 +709,11 @@ ruler_widget_refresh (RulerWidget * self)
   GET_RULER_ALIASES (self);
 
   if (timeline_ruler)
-    timeline_ruler_widget_refresh (MW_RULER);
+    timeline_ruler_widget_refresh (
+      timeline_ruler);
   else if (editor_ruler)
-    editor_ruler_widget_refresh (EDITOR_RULER);
+    editor_ruler_widget_refresh (
+      editor_ruler);
 }
 
 /**
@@ -826,12 +770,10 @@ ruler_widget_init (RulerWidget * self)
 
   rw_prv->bg =
     GTK_DRAWING_AREA (gtk_drawing_area_new ());
-  gtk_widget_set_visible (GTK_WIDGET (rw_prv->bg),
-                          1);
-  gtk_container_add (GTK_CONTAINER (self),
-                     GTK_WIDGET (rw_prv->bg));
-  gtk_widget_add_events (GTK_WIDGET (rw_prv->bg),
-                         GDK_ALL_EVENTS_MASK);
+  gtk_widget_set_visible (
+    GTK_WIDGET (rw_prv->bg), 1);
+  gtk_container_add (
+    GTK_CONTAINER (self), GTK_WIDGET (rw_prv->bg));
 
   rw_prv->playhead =
     ruler_marker_widget_new (
@@ -841,8 +783,8 @@ ruler_widget_init (RulerWidget * self)
     GTK_WIDGET (rw_prv->playhead));
 
   /* make it able to notify */
-  gtk_widget_add_events (GTK_WIDGET (rw_prv->bg),
-                         GDK_ALL_EVENTS_MASK);
+  gtk_widget_add_events (
+    GTK_WIDGET (rw_prv->bg), GDK_ALL_EVENTS_MASK);
 
   rw_prv->drag = GTK_GESTURE_DRAG (
     gtk_gesture_drag_new (GTK_WIDGET (self)));
@@ -872,6 +814,9 @@ ruler_widget_init (RulerWidget * self)
     G_OBJECT(rw_prv->drag), "drag-end",
     G_CALLBACK (drag_end),  self);
   g_signal_connect (
+    G_OBJECT (self), "grab-broken-event",
+    G_CALLBACK (on_grab_broken), self);
+  g_signal_connect (
     G_OBJECT (rw_prv->multipress), "pressed",
     G_CALLBACK (multipress_pressed), self);
 }
@@ -880,6 +825,6 @@ static void
 ruler_widget_class_init (RulerWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "ruler");
+  gtk_widget_class_set_css_name (
+    klass, "ruler");
 }

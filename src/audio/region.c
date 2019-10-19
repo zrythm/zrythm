@@ -1230,38 +1230,21 @@ region_at_position (
   Track    * track,
   Position * pos)
 {
-  int num_regions = 0;
-  MidiRegion ** midi_regions;
-  if (track->type == TRACK_TYPE_AUDIO)
+  TrackLane * lane;
+  Region * region;
+  for (int i = 0; i < track->num_lanes; i++)
     {
-
-    }
-  else if (track->type == TRACK_TYPE_INSTRUMENT)
-    {
-      /* FIXME using lane 0 */
-      num_regions = track->lanes[0]->num_regions;
-      midi_regions = track->lanes[0]->regions;
-    }
-  for (int i = 0; i < num_regions; i++)
-    {
-      Region * region = NULL;
-      if (track->type == TRACK_TYPE_AUDIO)
+      lane = track->lanes[i];
+      for (int j = 0; j < lane->num_regions; j++)
         {
-
-        }
-      else if (track->type == TRACK_TYPE_INSTRUMENT)
-        {
-          region = midi_regions[i];
-        }
-
-      g_return_val_if_fail (region, NULL);
-
-      if (position_is_after_or_equal (
-            pos, &region->start_pos) &&
-          position_is_before_or_equal (
-            pos, &region->end_pos))
-        {
-          return region;
+          region = lane->regions[j];
+          if (position_is_after_or_equal (
+                pos, &region->start_pos) &&
+              position_is_before_or_equal (
+                pos, &region->end_pos))
+            {
+              return region;
+            }
         }
     }
   return NULL;
