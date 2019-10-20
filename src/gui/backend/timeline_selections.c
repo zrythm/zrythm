@@ -17,8 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <limits.h>
+
 #include "audio/chord_track.h"
 #include "audio/engine.h"
+#include "audio/marker_track.h"
 #include "audio/position.h"
 #include "audio/track.h"
 #include "audio/transport.h"
@@ -78,8 +81,9 @@ timeline_selections_post_deserialize (
 
 #define _SET_OBJ(sc) \
   for (i = 0; i < ts->num_##sc##s; i++) \
-    ts->sc##s[i]->obj_info.main =  \
-      ts->sc##s[i];
+    { \
+      sc##_post_deserialize (ts->sc##s[i]); \
+    }
 
   _SET_OBJ (region);
   _SET_OBJ (marker);
@@ -269,7 +273,7 @@ ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS (
  * instead.
  */
 Track *
-timeline_selections_get_highest_track (
+timeline_selections_get_last_track (
   TimelineSelections * ts,
   int                  transient)
 {
@@ -311,11 +315,11 @@ timeline_selections_get_highest_track (
  * instead.
  */
 Track *
-timeline_selections_get_lowest_track (
+timeline_selections_get_first_track (
   TimelineSelections * ts,
   int                  transient)
 {
-  int track_pos = 8000;
+  int track_pos = INT_MAX;
   Track * track = NULL;
   int tmp_pos;
   Track * tmp_track;
@@ -340,7 +344,14 @@ timeline_selections_get_lowest_track (
         region = ts->regions[i]->obj_info.main;
       CHECK_POS (region_get_track (region));
     }
-  CHECK_POS (P_CHORD_TRACK);
+  if (ts->num_scale_objects > 0)
+    {
+      CHECK_POS (P_CHORD_TRACK);
+    }
+  if (ts->num_markers > 0)
+    {
+      CHECK_POS (P_MARKER_TRACK);
+    }
 
   return track;
 #undef CHECK_POS
@@ -512,21 +523,210 @@ timeline_selections_add_ticks (
 #undef UPDATE_TL_POSES
 }
 
+/**
+ * Gets index of the lowest track in the selections.
+ *
+ * Used during pasting.
+ */
+static int
+get_lowest_track_pos (
+  TimelineSelections * ts)
+{
+  int track_pos = INT_MAX;
+  int tmp_pos, i;
+
+#define CHECK_POS(_pos) \
+  tmp_pos = _pos; \
+  if (tmp_pos < track_pos) \
+    { \
+      track_pos = tmp_pos; \
+    }
+
+  Region * region;
+  for (i = 0; i < ts->num_regions; i++)
+    {
+      region = ts->regions[i];
+      CHECK_POS (region->track_pos);
+    }
+  if (ts->num_scale_objects > 0)
+    {
+      CHECK_POS (ts->chord_track_vis_index);
+    }
+  if (ts->num_markers > 0)
+    {
+      CHECK_POS (ts->marker_track_vis_index);
+    }
+
+#undef CHECK_POS
+
+  return track_pos;
+}
+
+/**
+ * Replaces the track positions in each object with
+ * visible track indices starting from 0.
+ *
+ * Used during copying.
+ */
+void
+timeline_selections_set_vis_track_indices (
+  TimelineSelections * ts)
+{
+  int i;
+  Track * highest_tr =
+    timeline_selections_get_first_track (ts, 0);
+
+  Region * region;
+  for (i = 0; i < ts->num_regions; i++)
+    {
+      region = ts->regions[i];
+      region->track_pos =
+        tracklist_get_visible_track_diff (
+          TRACKLIST, highest_tr,
+          TRACKLIST->tracks[region->track_pos]);
+    }
+  if (ts->num_scale_objects > 0)
+    ts->chord_track_vis_index =
+      tracklist_get_visible_track_diff (
+        TRACKLIST, highest_tr, P_CHORD_TRACK);
+  if (ts->num_markers > 0)
+    ts->marker_track_vis_index =
+      tracklist_get_visible_track_diff (
+        TRACKLIST, highest_tr, P_MARKER_TRACK);
+}
+
+/**
+ * Saves the track positions in the poses array
+ * and the size in num_poses.
+ */
+static void
+get_track_poses (
+  TimelineSelections * ts,
+  int *                poses,
+  int *                num_poses)
+{
+  int i;
+  Region * region;
+  for (i = 0; i < ts->num_regions; i++)
+    {
+      region = ts->regions[i];
+      g_warn_if_fail (region->track_pos >= 0);
+      if (!array_contains_int (
+            poses, *num_poses, region->track_pos))
+        {
+          array_append (
+            poses, *num_poses, region->track_pos);
+        }
+    }
+  if (ts->num_scale_objects > 0)
+    if (!array_contains_int (
+          poses, *num_poses,
+          ts->chord_track_vis_index))
+      {
+        array_append (
+          poses, *num_poses,
+          ts->chord_track_vis_index);
+      }
+  if (ts->num_markers > 0)
+    if (!array_contains_int (
+          poses, *num_poses,
+          ts->marker_track_vis_index))
+      {
+        array_append (
+          poses, *num_poses,
+          ts->marker_track_vis_index);
+      }
+}
+
+/**
+ * Returns if the selections can be pasted.
+ *
+ * @param pos Position to paste to.
+ * @param idx Track index to start pasting to.
+ */
+int
+timeline_selections_can_be_pasted (
+  TimelineSelections * ts,
+  Position *           pos,
+  const int            idx)
+{
+  int i, j;
+  Region * r;
+  /*Marker * m;*/
+  /*ScaleObject * s;*/
+  int lowest_track_pos =
+    get_lowest_track_pos (ts);
+  Track * cur_track =
+    TRACKLIST_SELECTIONS->tracks[0];
+  int poses[800];
+  int num_poses = 0;
+  get_track_poses (ts, poses, &num_poses);
+  g_return_val_if_fail (
+    cur_track && num_poses > 0 &&
+    lowest_track_pos < INT_MAX, 0);
+
+  /*check if enough visible tracks exist and the*/
+  /*content can be pasted in each*/
+  int ts_pos;
+  for (i = 0; i < num_poses; i++)
+    {
+      ts_pos = poses[i];
+      g_return_val_if_fail (ts_pos >= 0, 0);
+
+      /*[> track at the new position <]*/
+      Track * tr =
+        tracklist_get_visible_track_after_delta (
+          TRACKLIST, cur_track, ts_pos);
+      if (!tr)
+        {
+          g_message (
+            "no track at current pos (%d) + "
+            "ts pos (%d)",
+            cur_track->pos, ts_pos);
+          return 0;
+        }
+
+      /*[> check if content matches <]*/
+      for (j = 0; j < ts->num_regions; j++)
+        {
+          /*[> get region at this ts_pos <]*/
+          r = ts->regions[j];
+          if (r->track_pos != ts_pos)
+            continue;
+
+           /*check if this track can host this*/
+           /*region*/
+          if (!track_type_can_host_region_type (
+                tr->type, r->type))
+            {
+              g_message (
+                "track %s cant host region type %d",
+                tr->name, r->type);
+              return 0;
+            }
+        }
+
+      /*[> check for chord track/marker track too <]*/
+      if (ts->num_scale_objects > 0 &&
+          ts_pos == ts->chord_track_vis_index &&
+          tr->type != TRACK_TYPE_CHORD)
+        return 0;
+      if (ts->num_markers > 0 &&
+          ts_pos == ts->marker_track_vis_index &&
+          tr->type != TRACK_TYPE_MARKER)
+        return 0;
+    }
+
+  return 1;
+}
+
 void
 timeline_selections_paste_to_pos (
   TimelineSelections * ts,
   Position *           pos)
 {
-  /* get selected track and check if valid for
-   * pasting */
   Track * track =
     TRACKLIST_SELECTIONS->tracks[0];
-  Track * orig_track =
-    TRACKLIST->tracks[ts->regions[0]->track_pos];
-  /* only allow lane regions for now */
-  if (ts->num_regions == 0 ||
-      orig_track->type != track->type)
-    return;
 
   timeline_selections_clear (
     TL_SELECTIONS);
@@ -547,15 +747,15 @@ timeline_selections_paste_to_pos (
   curr_ticks = position_to_ticks (x); \
   position_from_ticks (x, pos_ticks + DIFF)
 
-  g_message ("[before loop]num regions %d num midi notes %d",
-             ts->num_regions,
-             ts->regions[0]->num_midi_notes);
-
   long curr_ticks;
   int i;
   for (i = 0; i < ts->num_regions; i++)
     {
       Region * region = ts->regions[i];
+      Track * region_track =
+        tracklist_get_visible_track_after_delta (
+          TRACKLIST, track, region->track_pos);
+      g_return_if_fail (region_track);
 
       /* update positions */
       curr_ticks =
@@ -599,14 +799,16 @@ timeline_selections_paste_to_pos (
             }
         }
 
+      /* TODO automation points */
+
       /* clone and add to track */
       Region * cp =
         region_clone (
           region, REGION_CLONE_COPY_MAIN);
-      region_print (cp);
+      /* FIXME does not with automation regions */
       track_add_region (
-        track, cp, NULL, 0, F_GEN_NAME,
-        F_PUBLISH_EVENTS);
+        region_track, cp, NULL, region->lane_pos,
+        F_GEN_NAME, F_PUBLISH_EVENTS);
 
       /* select it */
       timeline_selections_add_region (
@@ -619,6 +821,36 @@ timeline_selections_paste_to_pos (
       curr_ticks = position_to_ticks (&scale->pos);
       position_from_ticks (&scale->pos,
                            pos_ticks + DIFF);
+
+      /* clone and add to track */
+      ScaleObject * clone =
+        scale_object_clone (
+          scale, SCALE_OBJECT_CLONE_COPY_MAIN);
+      chord_track_add_scale (
+        P_CHORD_TRACK, clone);
+
+      /* select it */
+      timeline_selections_add_scale_object (
+        TL_SELECTIONS, clone);
+    }
+  for (i = 0; i < ts->num_markers; i++)
+    {
+      Marker * m = ts->markers[i];
+
+      curr_ticks = position_to_ticks (&m->pos);
+      position_from_ticks (
+        &m->pos, pos_ticks + DIFF);
+
+      /* clone and add to track */
+      Marker * clone =
+        marker_clone (
+          m, MARKER_CLONE_COPY_MAIN);
+      marker_track_add_marker (
+        P_MARKER_TRACK, clone);
+
+      /* select it */
+      timeline_selections_add_marker (
+        TL_SELECTIONS, clone);
     }
 #undef DIFF
 }

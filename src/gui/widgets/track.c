@@ -487,6 +487,18 @@ show_context_menu (
           0,
           "win.hide-selected-tracks");
       APPEND (menuitem);
+
+      menuitem =
+        z_gtk_create_menu_item (
+          num_selected == 1 ?
+            _("Pin/Unpin Track") :
+            _("Pin/Unpin Tracks"),
+          "z-window-pin",
+          0,
+          NULL,
+          0,
+          "win.pin-selected-tracks");
+      APPEND (menuitem);
     }
 
   /* add midi channel selectors */
@@ -1128,28 +1140,14 @@ track_widget_class_init (TrackWidgetClass * _klass)
   gtk_widget_class_set_css_name (klass,
                                  "track");
 
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    color);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    paned);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    top_grid);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    event_box);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    highlight_top_box);
-  gtk_widget_class_bind_template_child_private (
-    klass,
-    TrackWidget,
-    highlight_bot_box);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child_private ( \
+    klass, TrackWidget, x)
+
+  BIND_CHILD (color);
+  BIND_CHILD (paned);
+  BIND_CHILD (top_grid);
+  BIND_CHILD (event_box);
+  BIND_CHILD (highlight_top_box);
+  BIND_CHILD (highlight_bot_box);
 }

@@ -431,6 +431,13 @@ void
 region_init_loaded (Region * region);
 
 /**
+ * Mainly used for copy-pasting.
+ */
+void
+region_post_deserialize (
+  Region * self);
+
+/**
  * Finds the region corresponding to the given one.
  *
  * This should be called when we have a copy or a

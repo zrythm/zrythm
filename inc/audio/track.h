@@ -155,6 +155,12 @@ typedef struct Track
    */
   int                 pos;
 
+  /**
+   * Used to remember the position before pinned,
+   * so it can be moved back there when unpinned.
+   */
+  int                 pos_before_pinned;
+
   /** The type of track this is. */
   TrackType           type;
 
@@ -329,6 +335,9 @@ track_fields_schema[] =
 	CYAML_FIELD_INT (
     "pos", CYAML_FLAG_DEFAULT,
     Track, pos),
+	CYAML_FIELD_INT (
+    "pos_before_pinned", CYAML_FLAG_DEFAULT,
+    Track, pos_before_pinned),
 	CYAML_FIELD_INT (
     "lanes_visible", CYAML_FLAG_DEFAULT,
     Track, lanes_visible),
@@ -566,6 +575,14 @@ Region *
 track_get_last_region (
   Track *    track);
 
+/**
+ * Returns if the given TrackType can host the
+ * given RegionType.
+ */
+int
+track_type_can_host_region_type (
+  const TrackType  tt,
+  const RegionType rt);
 
 /**
  * Returns if the Track can record.

@@ -252,7 +252,8 @@ tracklist_selections_select_last_visible (
   TracklistSelections * ts)
 {
   Track * track =
-    tracklist_get_last_visible_track (TRACKLIST);;
+    tracklist_get_last_track (
+      TRACKLIST, 0, 1);
   g_warn_if_fail (track);
   tracklist_selections_select_single (
     ts, track);
@@ -294,6 +295,23 @@ tracklist_selections_toggle_visibility (
     }
 
   EVENTS_PUSH (ET_TRACK_VISIBILITY_CHANGED, NULL);
+}
+
+/**
+ * Toggle pin/unpin of the selected tracks.
+ */
+void
+tracklist_selections_toggle_pinned (
+  TracklistSelections * ts)
+{
+  Track * track;
+  for (int i = 0; i < ts->num_tracks; i++)
+    {
+      track = ts->tracks[i];
+      tracklist_set_track_pinned (
+        TRACKLIST, track, !track->pinned,
+        F_PUBLISH_EVENTS, F_RECALC_GRAPH);
+    }
 }
 
 /**

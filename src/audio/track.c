@@ -525,6 +525,35 @@ track_get_velocities_in_range (
 }
 
 /**
+ * Returns if the given TrackType can host the
+ * given RegionType.
+ */
+int
+track_type_can_host_region_type (
+  const TrackType  tt,
+  const RegionType rt)
+{
+  switch (rt)
+    {
+    case REGION_TYPE_MIDI:
+      return
+        tt == TRACK_TYPE_MIDI ||
+        tt == TRACK_TYPE_INSTRUMENT;
+    case REGION_TYPE_AUDIO:
+      return
+        tt == TRACK_TYPE_AUDIO;
+    case REGION_TYPE_AUTOMATION:
+      return
+        tt != TRACK_TYPE_CHORD &&
+        tt != TRACK_TYPE_MARKER;
+    case REGION_TYPE_CHORD:
+      return
+        tt == TRACK_TYPE_CHORD;
+    }
+  g_return_val_if_reached (-1);
+}
+
+/**
  * Sets track soloed, updates UI and optionally
  * adds the action to the undo stack.
  */
@@ -1256,6 +1285,13 @@ track_update_frames (
 const char *
 track_get_name (Track * track)
 {
+  if (DEBUGGING)
+    {
+      return
+        g_strdup_printf (
+          "%d %s",
+          track->pos, track->name);
+    }
   return track->name;
 }
 

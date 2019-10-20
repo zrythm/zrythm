@@ -948,12 +948,20 @@ events_process (void * data)
           on_track_name_changed ((Track *) ev->arg);
           break;
         case ET_REFRESH_ARRANGER:
+          /* remove the children of the pinned
+           * timeline first because one of them
+           * will be added to the unpinned
+           * tracklist when unpinning */
+          timeline_arranger_widget_remove_children (
+            MW_PINNED_TIMELINE);
+
           if (MW_TIMELINE)
             arranger_widget_refresh (
               Z_ARRANGER_WIDGET (MW_TIMELINE));
           if (MW_PINNED_TIMELINE)
             arranger_widget_refresh (
-              Z_ARRANGER_WIDGET (MW_TIMELINE));
+              Z_ARRANGER_WIDGET (
+                MW_PINNED_TIMELINE));
           break;
         case ET_TIMELINE_VIEWPORT_CHANGED:
           timeline_minimap_widget_refresh (
@@ -1033,6 +1041,14 @@ events_process (void * data)
         case ET_TRACKS_MOVED:
           if (MW_MIXER)
             mixer_widget_hard_refresh (MW_MIXER);
+
+          /* remove the children of the pinned
+           * tracklist first because one of them
+           * will be added to the unpinned
+           * tracklist when unpinning */
+          z_gtk_container_remove_all_children (
+            GTK_CONTAINER (MW_PINNED_TRACKLIST));
+
           if (MW_TRACKLIST)
             tracklist_widget_hard_refresh (
               MW_TRACKLIST);

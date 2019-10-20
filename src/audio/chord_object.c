@@ -48,6 +48,17 @@ chord_object_init_loaded (
 }
 
 /**
+ * Mainly used for copy-pasting.
+ */
+void
+chord_object_post_deserialize (
+  ChordObject * self)
+{
+  g_return_if_fail (self);
+  self->obj_info.main = self;
+}
+
+/**
  * Creates a ChordObject.
  */
 ChordObject *

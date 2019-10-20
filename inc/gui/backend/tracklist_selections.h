@@ -152,6 +152,13 @@ tracklist_selections_toggle_visibility (
   TracklistSelections * ts);
 
 /**
+ * Toggle pin/unpin of the selected tracks.
+ */
+void
+tracklist_selections_toggle_pinned (
+  TracklistSelections * ts);
+
+/**
  * For debugging.
  */
 void

@@ -62,6 +62,18 @@ typedef struct Tracklist
    * These should always be sorted in the same way
    * they should appear in the GUI and include
    * hidden tracks.
+   *
+   * Pinned tracks should have lower indices. Ie,
+   * the sequence must be:
+   * {
+   *   pinned track,
+   *   pinned track,
+   *   pinned track,
+   *   track,
+   *   track,
+   *   track,
+   *   ...
+   * }
    */
   Track *             tracks[MAX_TRACKS];
 
@@ -193,6 +205,20 @@ tracklist_append_track (
   int         publish_events,
   int         recalc_graph);
 
+/**
+ * Pins or unpins the Track.
+ */
+void
+tracklist_set_track_pinned (
+  Tracklist * self,
+  Track *     track,
+  const int   pinned,
+  int         publish_events,
+  int         recalc_graph);
+
+/**
+ * Returns the index of the given Track.
+ */
 int
 tracklist_get_track_pos (
   Tracklist * self,
@@ -202,48 +228,88 @@ ChordTrack *
 tracklist_get_chord_track (
   const Tracklist * self);
 
-int
-tracklist_get_last_visible_pos (
-  Tracklist * self);
-
-Track*
-tracklist_get_last_visible_track (
-  Tracklist * self);
-
+/**
+ * Returns the first visible Track.
+ *
+ * @param pinned 1 to check the pinned tracklist,
+ *   0 to check the non-pinned tracklist.
+ */
 Track *
 tracklist_get_first_visible_track (
-  Tracklist * self);
+  Tracklist * self,
+  const int   pinned);
 
+/**
+ * Returns the previous visible Track in the same
+ * Tracklist as the given one (ie, pinned or not).
+ */
 Track *
 tracklist_get_prev_visible_track (
   Tracklist * self,
-  Track * track);
+  Track *     track);
 
+/**
+ * Returns the index of the last Track.
+ *
+ * @param pinned_only Only consider pinned Track's.
+ * @param visible_only Only consider visible
+ *   Track's.
+ */
+int
+tracklist_get_last_pos (
+  Tracklist * self,
+  const int   pinned_only,
+  const int   visible_only);
+
+/**
+ * Returns the last Track.
+ *
+ * @param pinned_only Only consider pinned Track's.
+ * @param visible_only Only consider visible
+ *   Track's.
+ */
+Track*
+tracklist_get_last_track (
+  Tracklist * self,
+  const int   pinned_only,
+  const int   visible_only);
+
+/**
+ * Returns the next visible Track in the same
+ * Tracklist as the given one (ie, pinned or not).
+ */
 Track *
 tracklist_get_next_visible_track (
   Tracklist * self,
-  Track * track);
+  Track *     track);
 
 /**
  * Returns the Track after delta visible Track's.
  *
  * Negative delta searches backwards.
+ *
+ * This function searches tracks only in the same
+ * Tracklist as the given one (ie, pinned or not).
  */
 Track *
 tracklist_get_visible_track_after_delta (
   Tracklist * self,
-  Track *           track,
-  int               delta);
+  Track *     track,
+  int         delta);
 
 /**
  * Returns the number of visible Tracks between
  * src and dest (negative if dest is before src).
+ *
+ * The caller is responsible for checking that
+ * both tracks are in the same tracklist (ie,
+ * pinned or not).
  */
 int
 tracklist_get_visible_track_diff (
-  Tracklist * self,
-  const Track *     src,
-  const Track *     dest);
+  Tracklist *   self,
+  const Track * src,
+  const Track * dest);
 
 /**
  * Returns 1 if the track name is not taken.

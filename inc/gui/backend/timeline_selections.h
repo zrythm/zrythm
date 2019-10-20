@@ -59,6 +59,12 @@ typedef struct TimelineSelections
   /** Selected Marker's. */
   Marker *            markers[200];
   int                 num_markers;
+
+  /** Visible track index, used during copying. */
+  int                 chord_track_vis_index;
+
+  /** Visible track index, used during copying. */
+  int                 marker_track_vis_index;
 } TimelineSelections;
 
 static const cyaml_schema_field_t
@@ -77,6 +83,12 @@ static const cyaml_schema_field_t
     "markers", CYAML_FLAG_DEFAULT,
     TimelineSelections, markers, num_markers,
     &marker_schema, 0, CYAML_UNLIMITED),
+	CYAML_FIELD_INT (
+    "chord_track_vis_index", CYAML_FLAG_DEFAULT,
+    TimelineSelections, chord_track_vis_index),
+	CYAML_FIELD_INT (
+    "marker_track_vis_index", CYAML_FLAG_DEFAULT,
+    TimelineSelections, marker_track_vis_index),
 
 	CYAML_FIELD_END
 };
@@ -104,7 +116,7 @@ ARRANGER_SELECTIONS_DECLARE_OBJ_FUNCS (
  * instead.
  */
 Track *
-timeline_selections_get_highest_track (
+timeline_selections_get_first_track (
   TimelineSelections * ts,
   int                  transient);
 
@@ -115,9 +127,31 @@ timeline_selections_get_highest_track (
  * instead.
  */
 Track *
-timeline_selections_get_lowest_track (
+timeline_selections_get_last_track (
   TimelineSelections * ts,
   int                  transient);
+
+/**
+ * Replaces the track positions in each object with
+ * visible track indices starting from 0.
+ *
+ * Used during copying.
+ */
+void
+timeline_selections_set_vis_track_indices (
+  TimelineSelections * ts);
+
+/**
+ * Returns if the selections can be pasted.
+ *
+ * @param pos Position to paste to.
+ * @param idx Track index to start pasting to.
+ */
+int
+timeline_selections_can_be_pasted (
+  TimelineSelections * ts,
+  Position *           pos,
+  const int            idx);
 
 /**
  * Code to run after deserializing.

@@ -249,6 +249,12 @@ static const cyaml_schema_field_t
 	CYAML_FIELD_INT (
     "ticks", CYAML_FLAG_DEFAULT,
     Position, ticks),
+	CYAML_FIELD_INT (
+    "total_ticks", CYAML_FLAG_DEFAULT,
+    Position, total_ticks),
+	CYAML_FIELD_INT (
+    "frames", CYAML_FLAG_DEFAULT,
+    Position, frames),
 
 	CYAML_FIELD_END
 };

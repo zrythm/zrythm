@@ -122,6 +122,13 @@ chord_object_init_loaded (
   ChordObject * self);
 
 /**
+ * Mainly used for copy-pasting.
+ */
+void
+chord_object_post_deserialize (
+  ChordObject * self);
+
+/**
  * Creates a ChordObject.
  */
 ChordObject *

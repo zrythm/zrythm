@@ -90,7 +90,8 @@ tracklist_get_visible_track_diff (
   const Track *     src,
   const Track *     dest)
 {
-  g_return_val_if_fail (src && dest, 0);
+  g_return_val_if_fail (
+    src && dest, 0);
 
   int count = 0;
   if (src->pos < dest->pos)
@@ -312,46 +313,71 @@ tracklist_get_track_pos (
       (void *) track);
 }
 
+/**
+ * Returns the index of the last Track.
+ *
+ * @param pinned_only Only consider pinned Track's.
+ * @param visible_only Only consider visible
+ *   Track's.
+ */
 int
-tracklist_get_last_visible_pos (
-  Tracklist * self)
+tracklist_get_last_pos (
+  Tracklist * self,
+  const int   pinned_only,
+  const int   visible_only)
 {
+  Track * tr;
   for (int i = self->num_tracks - 1; i >= 0; i--)
     {
-      if (self->tracks[i]->visible)
+      tr = self->tracks[i];
+      if (((pinned_only && tr->pinned) ||
+           !pinned_only) &&
+          ((visible_only && tr->visible) ||
+           !visible_only))
         {
           return i;
         }
     }
-  g_warn_if_reached ();
-  return -1;
+  g_return_val_if_reached (-1);
 }
 
+/**
+ * Returns the last Track.
+ *
+ * @param pinned_only Only consider pinned Track's.
+ * @param visible_only Only consider visible
+ *   Track's.
+ */
 Track*
-tracklist_get_last_visible_track (
-  Tracklist * self)
+tracklist_get_last_track (
+  Tracklist * self,
+  const int   pinned_only,
+  const int   visible_only)
 {
-  for (int i = self->num_tracks - 1; i >= 0; i--)
-    {
-      if (self->tracks[i]->visible)
-        {
-          return self->tracks[i];
-        }
-    }
-  g_warn_if_reached ();
-  return NULL;
+  int idx =
+    tracklist_get_last_pos (
+      self, pinned_only, visible_only);
+  g_return_val_if_fail (
+    idx >= 0 && idx < self->num_tracks, NULL);
+  Track * tr =
+    self->tracks[idx];
+
+  return tr;
 }
 
 /**
  * Returns the Track after delta visible Track's.
  *
  * Negative delta searches backwards.
+ *
+ * This function searches tracks only in the same
+ * Tracklist as the given one (ie, pinned or not).
  */
 Track *
 tracklist_get_visible_track_after_delta (
   Tracklist * self,
-  Track *           track,
-  int               delta)
+  Track *     track,
+  int         delta)
 {
   if (delta > 0)
     {
@@ -389,13 +415,22 @@ tracklist_get_visible_track_after_delta (
     return track;
 }
 
+/**
+ * Returns the first visible Track.
+ *
+ * @param pinned 1 to check the pinned tracklist,
+ *   0 to check the non-pinned tracklist.
+ */
 Track *
 tracklist_get_first_visible_track (
-  Tracklist * self)
+  Tracklist * self,
+  const int   pinned)
 {
+  Track * tr;
   for (int i = 0; i < self->num_tracks; i++)
     {
-      if (self->tracks[i]->visible)
+      tr = self->tracks[i];
+      if (tr->visible && tr->pinned == pinned)
         {
           return self->tracks[i];
         }
@@ -404,37 +439,95 @@ tracklist_get_first_visible_track (
   return NULL;
 }
 
+/**
+ * Returns the previous visible Track.
+ */
 Track *
 tracklist_get_prev_visible_track (
   Tracklist * self,
-  Track * track)
+  Track *     track)
 {
+  Track * tr;
   for (int i =
        tracklist_get_track_pos (self, track) - 1;
        i >= 0; i--)
     {
-      if (self->tracks[i]->visible)
+      tr = self->tracks[i];
+      if (tr->visible)
         {
-          g_warn_if_fail (self->tracks[i] != track);
-          return self->tracks[i];
+          g_warn_if_fail (tr != track);
+          return tr;
         }
     }
   return NULL;
 }
 
+/**
+ * Pins or unpins the Track.
+ */
+void
+tracklist_set_track_pinned (
+  Tracklist * self,
+  Track *     track,
+  const int   pinned,
+  int         publish_events,
+  int         recalc_graph)
+{
+  if (track->pinned == pinned)
+    return;
+
+  int last_pinned_pos =
+    tracklist_get_last_pos (
+      self, 1, 0);
+  if (pinned)
+    {
+      /* move track to last pinned pos + 1 */
+      tracklist_move_track (
+        self, track, last_pinned_pos + 1,
+        publish_events,
+        recalc_graph);
+      track->pinned = 1;
+      track->pos_before_pinned =
+        track->pos;
+    }
+  else
+    {
+      /* move track to previous pos */
+      g_return_if_fail (
+        track->pos_before_pinned >= 0);
+      int pos_to_move_to;
+      if (track->pos_before_pinned <=
+            last_pinned_pos)
+        pos_to_move_to = last_pinned_pos + 1;
+      else
+        pos_to_move_to = track->pos_before_pinned;
+      track->pinned = 0;
+      tracklist_move_track (
+        self, track, pos_to_move_to,
+        publish_events, recalc_graph);
+      track->pos_before_pinned = -1;
+    }
+}
+
+/**
+ * Returns the next visible Track in the same
+ * Tracklist.
+ */
 Track *
 tracklist_get_next_visible_track (
   Tracklist * self,
-  Track * track)
+  Track *     track)
 {
+  Track * tr;
   for (int i =
        tracklist_get_track_pos (self, track) + 1;
        i < self->num_tracks; i++)
     {
-      if (self->tracks[i]->visible)
+      tr = self->tracks[i];
+      if (tr->visible)
         {
-          g_warn_if_fail (self->tracks[i] != track);
-          return self->tracks[i];
+          g_warn_if_fail (tr != track);
+          return tr;
         }
     }
   return NULL;

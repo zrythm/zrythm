@@ -73,8 +73,8 @@ on_drag_leave (
     {
       /* unhighlight bottom part of last track */
       Track * track =
-        tracklist_get_last_visible_track (
-          TRACKLIST);
+        tracklist_get_last_track (
+          TRACKLIST, 0, 1);
       track_widget_do_highlight (
         track->widget, 0, 0, 0);
     }
@@ -150,8 +150,8 @@ on_drag_motion (
 
       /* highlight bottom part of last track */
       Track * track =
-        tracklist_get_last_visible_track (
-          TRACKLIST);
+        tracklist_get_last_track (
+          TRACKLIST, 0, 1);
       int track_height =
         gtk_widget_get_allocated_height (
           GTK_WIDGET (track->widget));
@@ -357,8 +357,8 @@ on_drag_data_received (
             GET_ATOM (TARGET_ENTRY_TRACK))
     {
       int pos =
-        tracklist_get_last_visible_pos (
-          TRACKLIST);
+        tracklist_get_last_pos (
+          TRACKLIST, 0, 1);
 
       /* determine if moving or copying */
       GdkDragAction action =

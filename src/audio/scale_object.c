@@ -48,6 +48,17 @@ scale_object_init_loaded (
 }
 
 /**
+ * Mainly used for copy-pasting.
+ */
+void
+scale_object_post_deserialize (
+  ScaleObject * self)
+{
+  g_return_if_fail (self);
+  self->obj_info.main = self;
+}
+
+/**
  * Creates a ScaleObject.
  */
 ScaleObject *

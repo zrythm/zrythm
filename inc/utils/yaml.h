@@ -130,8 +130,9 @@ static const cyaml_config_t config = {
 
 static const cyaml_schema_value_t
 int_schema = {
-	CYAML_VALUE_INT (CYAML_FLAG_DEFAULT,
-                   typeof (int)),
+	CYAML_VALUE_INT (
+    CYAML_FLAG_DEFAULT,
+    typeof (int)),
 };
 
 static const cyaml_schema_value_t

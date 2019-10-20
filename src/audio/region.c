@@ -104,6 +104,26 @@ region_init (
 }
 
 /**
+ * Mainly used for copy-pasting.
+ */
+void
+region_post_deserialize (
+  Region * self)
+{
+  g_return_if_fail (self);
+  self->obj_info.main = self;
+
+  MidiNote * mn;
+  for (int i = 0; i < self->num_midi_notes; i++)
+    {
+      mn = self->midi_notes[i];
+      mn->region = self;
+      midi_note_post_deserialize (
+        self->midi_notes[i]);
+    }
+}
+
+/**
  * Generates a name for the Region, either using
  * the given AutomationTrack or Track, or appending
  * to the given base name.
@@ -1590,6 +1610,8 @@ region_timeline_frames_to_local (
           long loop_size =
             region_get_loop_length_in_frames (
               region);
+          g_return_val_if_fail (
+            loop_size > 0, 0);
 
           diff_frames += clip_start_frames;
 

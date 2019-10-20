@@ -98,6 +98,10 @@ static const cyaml_schema_field_t
   CYAML_FIELD_MAPPING (
     "pos", CYAML_FLAG_DEFAULT,
     ScaleObject, pos, position_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "scale", CYAML_FLAG_POINTER,
+    ScaleObject, scale,
+    musical_scale_fields_schema),
 
 	CYAML_FIELD_END
 };
@@ -116,6 +120,13 @@ ARRANGER_OBJ_DECLARE_MOVABLE (
  */
 void
 scale_object_init_loaded (
+  ScaleObject * self);
+
+/**
+ * Mainly used for copy-pasting.
+ */
+void
+scale_object_post_deserialize (
   ScaleObject * self);
 
 /**

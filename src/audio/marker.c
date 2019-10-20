@@ -49,6 +49,17 @@ ARRANGER_OBJ_DECLARE_VALIDATE_POS (
       pos, START_POS);
 }
 
+/**
+ * Mainly used for copy-pasting.
+ */
+void
+marker_post_deserialize (
+  Marker * self)
+{
+  g_return_if_fail (self);
+  self->obj_info.main = self;
+}
+
 void
 marker_pos_setter (
   Marker * marker,

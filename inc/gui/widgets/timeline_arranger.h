@@ -275,6 +275,13 @@ timeline_arranger_widget_set_cut_lines_visible (
   TimelineArrangerWidget * self);
 
 /**
+ * To be called when pinning/unpinning.
+ */
+void
+timeline_arranger_widget_remove_children (
+  TimelineArrangerWidget * self);
+
+/**
  * @}
  */
 

@@ -187,9 +187,9 @@ on_drag_end ()
     move_timeline_selections_action_new (
       TL_SELECTIONS,
       ticks_diff,
-      timeline_selections_get_highest_track (
+      timeline_selections_get_first_track (
         TL_SELECTIONS, F_TRANSIENTS)->pos -
-      timeline_selections_get_highest_track (
+      timeline_selections_get_first_track (
         TL_SELECTIONS, F_NO_TRANSIENTS)->pos,
       0);
   undo_manager_perform (

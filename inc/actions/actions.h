@@ -355,6 +355,8 @@ activate_hide_selected_tracks (
   GVariant      *variant,
   gpointer       user_data);
 
+DECLARE_SIMPLE (pin_selected_tracks);
+
 void
 activate_snap_events (GSimpleAction *action,
                   GVariant      *variant,

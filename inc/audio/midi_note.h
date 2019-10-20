@@ -169,6 +169,13 @@ midi_note_init_loaded (
   MidiNote * self);
 
 /**
+ * Mainly used for copy-pasting.
+ */
+void
+midi_note_post_deserialize (
+  MidiNote * self);
+
+/**
  * Gets the global Position of the MidiNote's
  * start_pos.
  *

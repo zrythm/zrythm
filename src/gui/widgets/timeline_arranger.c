@@ -2529,12 +2529,11 @@ add_children_from_audio_bus_track (
   add_children_from_channel_track (self, ct);
 }
 
-
 /**
- * Readd children.
+ * To be called when pinning/unpinning.
  */
 void
-timeline_arranger_widget_refresh_children (
+timeline_arranger_widget_remove_children (
   TimelineArrangerWidget * self)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
@@ -2560,6 +2559,19 @@ timeline_arranger_widget_refresh_children (
         }
     }
   g_list_free (children);
+}
+
+/**
+ * Readd children.
+ */
+void
+timeline_arranger_widget_refresh_children (
+  TimelineArrangerWidget * self)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  timeline_arranger_widget_remove_children (
+    self);
 
   /* add tracks */
   for (int i = 0; i < TRACKLIST->num_tracks; i++)

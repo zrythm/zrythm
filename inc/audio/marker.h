@@ -145,6 +145,13 @@ void
 marker_init_loaded (Marker * self);
 
 /**
+ * Mainly used for copy-pasting.
+ */
+void
+marker_post_deserialize (
+  Marker * self);
+
+/**
  * Creates a Marker.
  */
 Marker *

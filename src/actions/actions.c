@@ -638,17 +638,26 @@ activate_cut (GSimpleAction *action,
 
 
 void
-activate_copy (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_copy (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
 {
-  if (MAIN_WINDOW->last_focused == GTK_WIDGET (MW_TIMELINE))
+  if (MAIN_WINDOW->last_focused ==
+        GTK_WIDGET (MW_TIMELINE) ||
+      MAIN_WINDOW->last_focused ==
+        GTK_WIDGET (MW_PINNED_TIMELINE))
     {
+      TimelineSelections * ts =
+        timeline_selections_clone (
+          TL_SELECTIONS);
+      timeline_selections_set_vis_track_indices (
+        ts);
       gtk_clipboard_set_text (
         DEFAULT_CLIPBOARD,
-        timeline_selections_serialize (
-          TL_SELECTIONS),
+        timeline_selections_serialize (ts),
         -1);
+      timeline_selections_free (ts);
     }
 }
 
@@ -658,36 +667,43 @@ on_timeline_clipboard_received (
   const char *       text,
   gpointer           data)
 {
-  g_message ("clipboard data received: %s",
-             text);
+  /*g_message ("clipboard data received: %s", text);*/
 
   if (!text)
     return;
-  TimelineSelections * ts =
-    timeline_selections_deserialize (text);
-  timeline_selections_post_deserialize (ts);
-  g_message ("printing deserialized");
-  timeline_selections_print_yaml (ts);
-
   if (MAIN_WINDOW->last_focused ==
-      GTK_WIDGET (MW_TIMELINE))
+        GTK_WIDGET (MW_TIMELINE) ||
+      MAIN_WINDOW->last_focused ==
+        GTK_WIDGET (MW_PINNED_TIMELINE))
     {
-      timeline_selections_paste_to_pos (
-        ts, PLAYHEAD);
+      TimelineSelections * ts =
+        timeline_selections_deserialize (text);
+      timeline_selections_post_deserialize (ts);
 
-      /* create action to make it undoable */
-      /* (by now the TL_SELECTIONS should have
-       * only the pasted items selected) */
-      UndoableAction * ua =
-        (UndoableAction *)
-        create_timeline_selections_action_new (
-          TL_SELECTIONS);
-      undo_manager_perform (
-        UNDO_MANAGER, ua);
+      if (timeline_selections_can_be_pasted (
+            ts, PLAYHEAD,
+            TRACKLIST_SELECTIONS->tracks[0]->pos))
+        {
+          g_message ("can paste");
+          timeline_selections_paste_to_pos (
+            ts, PLAYHEAD);
+
+          /* create action to make it undoable */
+          /* (by now the TL_SELECTIONS should have
+           * only the pasted items selected) */
+          UndoableAction * ua =
+            (UndoableAction *)
+            create_timeline_selections_action_new (
+              TL_SELECTIONS);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          g_message ("can't paste");
+        }
+      timeline_selections_free (ts);
     }
-
-  /* free ts */
-  g_message ("paste done");
 }
 
 void
@@ -1111,6 +1127,18 @@ activate_hide_selected_tracks (
   g_message ("hiding selected tracks");
 
   tracklist_selections_toggle_visibility (
+    TRACKLIST_SELECTIONS);
+}
+
+void
+activate_pin_selected_tracks (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  g_message ("pin/unpinning selected tracks");
+
+  tracklist_selections_toggle_pinned (
     TRACKLIST_SELECTIONS);
 }
 

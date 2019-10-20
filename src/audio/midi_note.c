@@ -70,6 +70,17 @@ midi_note_init_loaded (
 }
 
 /**
+ * Mainly used for copy-pasting.
+ */
+void
+midi_note_post_deserialize (
+  MidiNote * self)
+{
+  g_return_if_fail (self);
+  self->obj_info.main = self;
+}
+
+/**
  * @param is_main Is main MidiNote. If this is 1 then
  *   arranger_object_info_init_main() is called to
  *   create a transient midi note in obj_info.

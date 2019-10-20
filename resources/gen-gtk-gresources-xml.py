@@ -174,6 +174,7 @@ _breeze_icons = [
   'window-close-symbolic',
   'window-maximize',
   'window-minimize',
+  'window-pin',
   'zoom-in',
   'zoom-out',
   'zoom-fit-best',
