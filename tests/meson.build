@@ -37,10 +37,15 @@ if get_option ('enable_tests')
     ['audio/position', true],
     ['audio/region', true],
     ['audio/track', true],
-    ['gui/widgets/region', false],
-    ['gui/widgets/track', false],
     ['utils/arrays', true],
     ]
+
+  if get_option ('enable_gui_tests')
+    tests += [
+      ['gui/widgets/region', false],
+      ['gui/widgets/track', false],
+      ]
+  endif
 
   foreach _test : tests
     test_name = _test[0]

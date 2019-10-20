@@ -28,6 +28,12 @@ option (
   description: 'Whether to compile unit tests')
 
 option (
+  'enable_gui_tests',
+  type: 'boolean',
+  value: false,
+  description: 'Whether to compile GUI unit tests')
+
+option (
   'enable_qt5',
   type: 'boolean',
   value: false,

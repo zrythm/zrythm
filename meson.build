@@ -446,7 +446,8 @@ summary = [
   '  Profiling: @0@'.format(
     get_option('enable_profiling')),
   '  Strict flags: @0@'.format(get_option('strict_flags')),
-  '  Build Tests: @0@'.format(get_option('enable_tests')),
+  '  Build tests: @0@'.format(get_option('enable_tests')),
+  '  Build GUI tests: @0@'.format(get_option('enable_gui_tests')),
   '  Generate developer docs: @0@'.format(get_option('gen_dev_docs')),
   '  Build/install manpage: @0@'.format(get_option('manpage')),
   '  Build/install user manual: @0@'.format(get_option('user_manual')),
