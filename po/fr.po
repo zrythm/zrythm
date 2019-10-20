@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-17 14:02+0100\n"
-"PO-Revision-Date: 2019-10-19 22:53+0000\n"
+"PO-Revision-Date: 2019-10-21 17:53+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
@@ -1152,9 +1152,8 @@ msgid "Audio"
 msgstr "Audio"
 
 #: src/audio/region.c:467
-#, fuzzy
 msgid "Automation"
-msgstr "Déplacer l'automatisation"
+msgstr "Automatisation"
 
 #: src/audio/region.c:470 src/audio/track.c:1148
 #: resources/ui/editor_toolbar.ui:58
