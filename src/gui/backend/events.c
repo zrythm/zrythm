@@ -405,6 +405,22 @@ on_midi_note_selection_changed ()
 }
 
 static void
+on_chord_selection_changed ()
+{
+ Region * region = CLIP_EDITOR->region;
+
+  if (region && region->widget)
+    gtk_widget_queue_draw (
+      GTK_WIDGET (region->widget));
+
+  gtk_widget_queue_allocate (
+    GTK_WIDGET (MW_CHORD_ARRANGER));
+
+  event_viewer_widget_refresh (
+    MW_EDITOR_EVENT_VIEWER);
+}
+
+static void
 on_midi_note_changed (MidiNote * midi_note)
 {
   Velocity * vel;
@@ -926,6 +942,9 @@ events_process (void * data)
         case ET_MA_SELECTIONS_CHANGED:
            on_midi_note_selection_changed();
             break;
+        case ET_CHORD_SELECTIONS_CHANGED:
+           on_chord_selection_changed();
+            break;
         case ET_MIDI_NOTE_CHANGED:
           /*g_message ("mn changed %p",*/
                      /*((MidiNote *)ev->arg)->widget);*/
@@ -1181,7 +1200,7 @@ events_process (void * data)
               S_UI, "editor-event-viewer-visible"));
           break;
         default:
-          g_message (
+          g_warning (
             "event %d not implemented yet",
             ev->type);
           break;

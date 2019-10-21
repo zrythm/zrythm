@@ -548,6 +548,16 @@ arranger_widget_select (
           midi_arranger_selections_clear (
             MA_SELECTIONS);
         }
+      else if (chord_arranger)
+        {
+          chord_selections_clear (
+            CHORD_SELECTIONS);
+        }
+      else if (automation_arranger)
+        {
+          automation_selections_clear (
+            AUTOMATION_SELECTIONS);
+        }
     }
 
   g_return_if_fail (array || num);

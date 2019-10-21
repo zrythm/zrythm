@@ -568,6 +568,8 @@ project_assistant_widget_init (
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  gtk_window_set_title (
+    GTK_WINDOW (self), _("Project Assistant"));
   g_signal_connect(
     G_OBJECT (self->remove_btn), "clicked",
     G_CALLBACK (on_project_remove_clicked), self);

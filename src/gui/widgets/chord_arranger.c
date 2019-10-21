@@ -359,14 +359,15 @@ chord_arranger_widget_on_drag_begin_chord_hit (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   ChordObject * chord = cw->chord_object;
-  self->start_chord_object = chord;
+  self->start_chord_object =
+    chord_object_get_main_chord_object (chord);
 
   /* update arranger action */
   ar_prv->action =
     UI_OVERLAY_ACTION_STARTING_MOVING;
   /* FIXME cursor should be set automatically */
-  ui_set_cursor_from_name (
-    GTK_WIDGET (cw), "grabbing");
+  /*ui_set_cursor_from_name (*/
+    /*GTK_WIDGET (cw), "grabbing");*/
 
   int selected = chord_object_is_selected (chord);
 
@@ -648,35 +649,26 @@ chord_arranger_widget_on_drag_end (
          * moving*/
         if (ar_prv->ctrl_held)
           {
-            /*if (self->start_region &&*/
-                /*self->start_region_was_selected)*/
-              /*{*/
+            if (self->start_chord_object &&
+                chord_object_is_selected (
+                  self->start_chord_object))
+              {
                 /*[> deselect it <]*/
-                /*ARRANGER_WIDGET_SELECT_REGION (*/
-                  /*self, self->start_region,*/
-                  /*F_NO_SELECT, F_APPEND);*/
-              /*}*/
-          }
-        else if (ar_prv->n_press == 2)
-          {
-            /* double click on object */
-            /*g_message ("DOUBLE CLICK");*/
+                ARRANGER_WIDGET_SELECT_CHORD (
+                  self, self->start_chord_object,
+                  F_NO_SELECT, F_APPEND);
+              }
           }
       }
       break;
     case UI_OVERLAY_ACTION_MOVING:
       {
-        Position earliest_main_pos,
-                 earliest_trans_pos;
-        chord_selections_get_start_pos (
-          CHORD_SELECTIONS,
-          &earliest_main_pos, 0, 0);
-        chord_selections_get_start_pos (
-          CHORD_SELECTIONS,
-          &earliest_trans_pos, 1, 0);
+        ChordObject * co =
+          chord_object_get_main_chord_object (
+            CHORD_SELECTIONS->chord_objects[0]);
         long ticks_diff =
-          earliest_main_pos.total_ticks -
-            earliest_trans_pos.total_ticks;
+          co->pos.total_ticks -
+            co->cache_pos.total_ticks;
         UndoableAction * ua =
           (UndoableAction *)
           move_chord_selections_action_new (
@@ -692,29 +684,21 @@ chord_arranger_widget_on_drag_end (
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
       {
-        Position earliest_main_pos,
-                 earliest_trans_pos;
-        chord_selections_get_start_pos (
-          CHORD_SELECTIONS,
-          &earliest_main_pos, 0, 0);
-        chord_selections_get_start_pos (
-          CHORD_SELECTIONS,
-          &earliest_trans_pos, 1, 0);
+        ChordObject * co =
+          chord_object_get_main_chord_object (
+            CHORD_SELECTIONS->chord_objects[0]);
         long ticks_diff =
-          earliest_main_pos.total_ticks -
-            earliest_trans_pos.total_ticks;
+          co->pos.total_ticks -
+            co->cache_pos.total_ticks;
         chord_selections_reset_counterparts (
           CHORD_SELECTIONS, 0);
         UndoableAction * ua =
           (UndoableAction *)
           duplicate_chord_selections_action_new (
             CHORD_SELECTIONS,
-            ticks_diff,
-            0);
+            ticks_diff, 0);
         chord_selections_reset_counterparts (
-          CHORD_SELECTIONS, 1);
-        chord_selections_clear (
-          CHORD_SELECTIONS);
+          CHORD_SELECTIONS, 0);
         undo_manager_perform (
           UNDO_MANAGER, ua);
       }
@@ -764,14 +748,19 @@ add_children_from_chord_track (
         {
           c = r->chord_objects[j];
 
-          for (k = 0 ; k < 2; k++)
+          for (k = 0 ;
+               k <= AOI_COUNTERPART_MAIN_TRANSIENT;
+               k++)
             {
-              if (k == 0)
+              if (k == AOI_COUNTERPART_MAIN)
                 c =
                   chord_object_get_main_chord_object (c);
-              else if (k == 1)
+              else if (
+                k == AOI_COUNTERPART_MAIN_TRANSIENT)
                 c =
                   chord_object_get_main_trans_chord_object (c);
+
+              g_return_if_fail (c);
 
               if (!c->widget)
                 c->widget =

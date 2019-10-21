@@ -146,6 +146,8 @@ G_DECLARE_DERIVABLE_TYPE (
   gtk_overlay_add_overlay ( \
     (GtkOverlay *) _self, \
     (GtkWidget *) _child->widget); \
+  arranger_object_info_set_widget_visibility_and_state ( \
+    &_child->obj_info, 0); \
   if (arranger_object_info_is_transient ( \
         &_child->obj_info)) \
     { \

@@ -62,6 +62,8 @@ create_timeline_selections_action_do (
 {
   int i;
 
+  timeline_selections_clear (TL_SELECTIONS);
+
   Track * track;
   AutomationTrack * at;
   Region * region;
@@ -72,8 +74,13 @@ create_timeline_selections_action_do (
        * should already exist the first time so no
        * need to do anything. when redoing we will
        * need to create a clone instead */
-      if (region_find (self->ts->regions[i]))
-        continue;
+      Region * found =
+        region_find (self->ts->regions[i]);
+      if (found)
+        {
+          region_select (found, 1);
+          continue;
+        }
 
       /* clone the clone */
       region =
@@ -109,6 +116,9 @@ create_timeline_selections_action_do (
             F_PUBLISH_EVENTS);
         }
 
+      /* select it */
+      region_select (region, 1);
+
       /* remember its name */
       g_free (self->ts->regions[i]->name);
       self->ts->regions[i]->name =
@@ -123,9 +133,14 @@ create_timeline_selections_action_do (
        * should already exist the first time so no
        * need to do anything. when redoing we will
        * need to create a clone instead */
-      if (scale_object_find (
-            self->ts->scale_objects[i]))
-        continue;
+      ScaleObject * found =
+        scale_object_find (
+          self->ts->scale_objects[i]);
+      if (found)
+        {
+          scale_object_select (found, 1);
+          continue;
+        }
 
       /* clone the clone */
       scale =
@@ -136,6 +151,9 @@ create_timeline_selections_action_do (
       /* add it to track */
       chord_track_add_scale (
         P_CHORD_TRACK, scale);
+
+      /* select it */
+      scale_object_select (scale, 1);
     }
   Marker * marker;
 	for (i = 0;
@@ -146,9 +164,14 @@ create_timeline_selections_action_do (
        * should already exist the first time so no
        * need to do anything. when redoing we will
        * need to create a clone instead */
-      if (marker_find (
-            self->ts->markers[i]))
-        continue;
+      Marker * found =
+        marker_find (
+          self->ts->markers[i]);
+      if (found)
+        {
+          marker_select (found, 1);
+          continue;
+        }
 
       /* clone the clone */
       marker =
@@ -159,6 +182,9 @@ create_timeline_selections_action_do (
       /* add it to track */
       marker_track_add_marker (
         P_MARKER_TRACK, marker);
+
+      /* select it */
+      marker_select (marker, 1);
     }
 
   EVENTS_PUSH (ET_TL_SELECTIONS_CREATED,

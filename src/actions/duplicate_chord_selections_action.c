@@ -112,6 +112,10 @@ duplicate_chord_selections_action_do (
 {
   int i;
 
+  /* clear selections */
+  chord_selections_clear (
+    CHORD_SELECTIONS);
+
   DO_OBJECT (
     CHORD_OBJECT, ChordObject, chord_object,
     /* add */

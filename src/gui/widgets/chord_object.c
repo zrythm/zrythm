@@ -61,35 +61,41 @@ chord_draw_cb (
       gtk_render_background (
         context, self->cached_cr, 0, 0, width, height);
 
-      GdkRGBA * color = &P_CHORD_TRACK->color;
+      /* get color */
+      GdkRGBA color = P_CHORD_TRACK->color;
       ChordObject * chord_object =
         self->chord_object;
+      ui_get_arranger_object_color (
+        &color,
+        gtk_widget_get_state_flags (
+          GTK_WIDGET (self)) &
+          GTK_STATE_FLAG_PRELIGHT,
+        chord_object_is_selected (
+          self->chord_object),
+        chord_object_is_transient (
+          self->chord_object));
       ChordDescriptor * descr =
         CHORD_EDITOR->chords[chord_object->index];
-      cairo_set_source_rgba (
-        self->cached_cr, color->red, color->green, color->blue,
-        chord_object_is_transient (chord_object) ?
-          0.7 : 1);
-      if (chord_object_is_selected (chord_object))
-        {
-          cairo_set_source_rgba (
-            self->cached_cr, color->red + 0.4, color->green + 0.2,
-            color->blue + 0.2, 1);
-        }
+      gdk_cairo_set_source_rgba (
+        self->cached_cr, &color);
       cairo_rectangle (
         self->cached_cr, 0, 0,
-        width - CHORD_OBJECT_WIDGET_TRIANGLE_W, height);
+        width - CHORD_OBJECT_WIDGET_TRIANGLE_W,
+        height);
       cairo_fill(self->cached_cr);
 
       cairo_move_to (
-        self->cached_cr, width - CHORD_OBJECT_WIDGET_TRIANGLE_W, 0);
+        self->cached_cr,
+        width - CHORD_OBJECT_WIDGET_TRIANGLE_W, 0);
       cairo_line_to (
         self->cached_cr, width, height);
       cairo_line_to (
-        self->cached_cr, width - CHORD_OBJECT_WIDGET_TRIANGLE_W,
+        self->cached_cr,
+        width - CHORD_OBJECT_WIDGET_TRIANGLE_W,
         height);
       cairo_line_to (
-        self->cached_cr, width - CHORD_OBJECT_WIDGET_TRIANGLE_W, 0);
+        self->cached_cr,
+        width - CHORD_OBJECT_WIDGET_TRIANGLE_W, 0);
       cairo_close_path (self->cached_cr);
       cairo_fill(self->cached_cr);
 
@@ -108,9 +114,9 @@ chord_draw_cb (
 
       GdkRGBA c2;
       ui_get_contrast_color (
-        color, &c2);
-      cairo_set_source_rgba (
-        self->cached_cr, c2.red, c2.green, c2.blue, 1.0);
+        &color, &c2);
+      gdk_cairo_set_source_rgba (
+        self->cached_cr, &c2);
       PangoLayout * layout =
         z_cairo_create_default_pango_layout (
           widget);
