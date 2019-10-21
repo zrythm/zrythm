@@ -145,7 +145,8 @@ static const cyaml_schema_field_t
     "muted", CYAML_FLAG_DEFAULT,
     MidiNote, muted),
   CYAML_FIELD_STRING_PTR (
-    "region_name", CYAML_FLAG_POINTER,
+    "region_name",
+    CYAML_FLAG_OPTIONAL | CYAML_FLAG_POINTER,
     MidiNote, region_name,
    	0, CYAML_UNLIMITED),
 

@@ -1226,6 +1226,12 @@ region_set_name (
     g_strdup (name);
   region_get_lane_trans_region (region)->name =
     g_strdup (name);
+
+  for (int i = 0; i < region->num_midi_notes; i++)
+    {
+      midi_note_set_region (
+        region->midi_notes[i], region);
+    }
 }
 
 ARRANGER_OBJ_DECLARE_VALIDATE_POS (

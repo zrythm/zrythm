@@ -276,14 +276,30 @@ create_model_for_plugins (
 
   if (track)
     {
-      // Add a new row to the model
-      gtk_list_store_append (list_store, &iter);
-      gtk_list_store_set (
-        list_store, &iter,
-        0, "z-inode-directory",
-        1, _("Track Ports"),
-        2, dummy_plugin,
-        -1);
+      /* skip track ports if the owner port is
+       * a track port of the same track */
+      if (!((self->port->identifier.owner_type ==
+             PORT_OWNER_TYPE_TRACK &&
+           self->port->track == track) ||
+          (self->port->identifier.owner_type ==
+             PORT_OWNER_TYPE_FADER &&
+           self->port->track == track) ||
+          (self->port->identifier.owner_type ==
+             PORT_OWNER_TYPE_PREFADER &&
+           self->port->track == track) ||
+          (self->port->identifier.owner_type ==
+             PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+           self->port->track == track)))
+        {
+          // Add a new row to the model
+          gtk_list_store_append (list_store, &iter);
+          gtk_list_store_set (
+            list_store, &iter,
+            0, "z-inode-directory",
+            1, _("Track Ports"),
+            2, dummy_plugin,
+            -1);
+        }
 
       Channel * ch = track->channel;
       Plugin * pl;
@@ -332,17 +348,14 @@ on_selection_changed (
         (GtkTreePath *)
           g_list_first (selected_rows)->data;
       GtkTreeIter iter;
-      gtk_tree_model_get_iter (model,
-                               &iter,
-                               tp);
+      gtk_tree_model_get_iter (
+        model, &iter, tp);
       GValue value = G_VALUE_INIT;
 
       if (model == self->track_model)
         {
-          gtk_tree_model_get_value (model,
-                                    &iter,
-                                    2,
-                                    &value);
+          gtk_tree_model_get_value (
+            model, &iter, 2, &value);
           self->selected_track =
             g_value_get_pointer (&value);
           self->plugin_model =
