@@ -24,18 +24,6 @@
 
 #include <gtk/gtk.h>
 
-/**
- * @defgroup widgets Widgets
- *
- * Widgets are custom GUI elements that reflect the
- * backend.
- *
- * @{
- */
-
-#define MAIN_WINDOW ZRYTHM->main_window
-#define MW MAIN_WINDOW
-
 #define MAIN_WINDOW_WIDGET_TYPE \
   (main_window_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
@@ -49,6 +37,21 @@ typedef struct _HeaderNotebookWidget
 typedef struct _CenterDockWidget CenterDockWidget;
 typedef struct _BotBarWidget BotBarWidget;
 typedef struct _TopBarWidget TopBarWidget;
+
+/**
+ * @defgroup widgets Widgets
+ *
+ * Widgets are custom GUI elements that reflect the
+ * backend.
+ *
+ * @{
+ */
+
+#define MAIN_WINDOW ZRYTHM->main_window
+#define MW MAIN_WINDOW
+
+#define MAIN_WINDOW_LAST_FOCUSED_IS(x) \
+  (MAIN_WINDOW->last_focused == GTK_WIDGET(x))
 
 /**
  * The main window of Zrythm.

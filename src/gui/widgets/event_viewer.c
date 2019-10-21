@@ -213,7 +213,6 @@ add_from_widget (
         MIDI_COLUMN_END_POS, end_pos,
         MIDI_COLUMN_OBJ, mn,
         -1);
-      g_message ("added midi note");
     }
 }
 

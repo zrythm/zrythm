@@ -108,6 +108,25 @@ midi_arranger_selections_get_lowest_note (
   int                      transient);
 
 /**
+ * Code to run after deserializing.
+ */
+void
+midi_arranger_selections_post_deserialize (
+  MidiArrangerSelections * ts);
+
+/**
+ * Returns if the selections can be pasted.
+ *
+ * @param pos Position to paste to.
+ * @param region Region to paste to.
+ */
+int
+midi_arranger_selections_can_be_pasted (
+  MidiArrangerSelections * ts,
+  Position *               pos,
+  Region *                 region);
+
+/**
  * Adds a Velocity (MidiNote) to the selections.
  */
 #define midi_arranger_selections_add_velocity( \

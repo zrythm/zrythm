@@ -69,6 +69,9 @@ midi_arranger_selections_has_any (
  * If transient is 1, the transient objects are
  * checked instead.
  *
+ * Assumes that the region is the currently
+ * selected Region in the ClipEditor.
+ *
  * The return value will be stored in pos.
  *
  * @param global Return global (timeline) Position,
@@ -94,11 +97,14 @@ midi_arranger_selections_get_start_pos (
     mas, MidiNote, midi_note, start_pos,
     transient, before, widget);
 
+  Region * r = CLIP_EDITOR->region;
+  g_return_if_fail (
+    r && r->type == REGION_TYPE_MIDI);
+
   if (global)
     position_add_ticks (
       pos,
-      mas->midi_notes[0]->region->
-        start_pos.total_ticks);
+      r->start_pos.total_ticks);
 }
 
 /**
@@ -465,6 +471,47 @@ midi_arranger_selections_add_ticks (
     }
 }
 
+/**
+ * Code to run after deserializing.
+ */
+void
+midi_arranger_selections_post_deserialize (
+  MidiArrangerSelections * ts)
+{
+  int i;
+
+#define _SET_OBJ(sc) \
+  for (i = 0; i < ts->num_##sc##s; i++) \
+    { \
+      sc##_post_deserialize (ts->sc##s[i]); \
+    }
+
+  _SET_OBJ (midi_note);
+
+#undef _SET_OBJ
+}
+
+/**
+ * Returns if the selections can be pasted.
+ *
+ * @param pos Position to paste to.
+ * @param region Region to paste to.
+ */
+int
+midi_arranger_selections_can_be_pasted (
+  MidiArrangerSelections * ts,
+  Position *               pos,
+  Region *                 r)
+{
+  if (!r || r->type != REGION_TYPE_MIDI)
+    return 0;
+
+  if (r->start_pos.frames + pos->frames < 0)
+    return 0;
+
+  return 1;
+}
+
 void
 midi_arranger_selections_paste_to_pos (
   MidiArrangerSelections * ts,
@@ -491,6 +538,9 @@ midi_arranger_selections_paste_to_pos (
   for (i = 0; i < ts->num_midi_notes; i++)
     {
       MidiNote * midi_note = ts->midi_notes[i];
+      midi_note->region = CLIP_EDITOR->region;
+      midi_note->region_name =
+        g_strdup (CLIP_EDITOR->region->name);
 
       /* update positions */
       curr_ticks =

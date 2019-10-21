@@ -28,6 +28,7 @@
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
 #include "actions/copy_tracks_action.h"
+#include "actions/create_midi_arranger_selections_action.h"
 #include "actions/create_timeline_selections_action.h"
 #include "actions/create_tracks_action.h"
 #include "actions/delete_tracks_action.h"
@@ -643,21 +644,43 @@ activate_copy (
   GVariant      *variant,
   gpointer       user_data)
 {
-  if (MAIN_WINDOW->last_focused ==
-        GTK_WIDGET (MW_TIMELINE) ||
-      MAIN_WINDOW->last_focused ==
-        GTK_WIDGET (MW_PINNED_TIMELINE))
+  if (MAIN_WINDOW_LAST_FOCUSED_IS (
+        MW_TIMELINE) ||
+      MAIN_WINDOW_LAST_FOCUSED_IS (
+        MW_PINNED_TIMELINE))
     {
       TimelineSelections * ts =
         timeline_selections_clone (
           TL_SELECTIONS);
       timeline_selections_set_vis_track_indices (
         ts);
+      char * serialized =
+        timeline_selections_serialize (ts);
+      g_return_if_fail (serialized);
+      g_message ("copying timeline selections");
       gtk_clipboard_set_text (
         DEFAULT_CLIPBOARD,
-        timeline_selections_serialize (ts),
-        -1);
+        serialized, -1);
       timeline_selections_free (ts);
+      g_free (serialized);
+    }
+  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_MIDI_ARRANGER) ||
+           MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_MIDI_MODIFIER_ARRANGER))
+    {
+      MidiArrangerSelections * mas =
+        midi_arranger_selections_clone (
+          MA_SELECTIONS);
+      char * serialized =
+        midi_arranger_selections_serialize (mas);
+      g_return_if_fail (serialized);
+      g_message ("copying midi selections");
+      gtk_clipboard_set_text (
+        DEFAULT_CLIPBOARD,
+        serialized, -1);
+      midi_arranger_selections_free (mas);
+      g_free (serialized);
     }
 }
 
@@ -667,14 +690,15 @@ on_timeline_clipboard_received (
   const char *       text,
   gpointer           data)
 {
-  /*g_message ("clipboard data received: %s", text);*/
-
   if (!text)
     return;
-  if (MAIN_WINDOW->last_focused ==
-        GTK_WIDGET (MW_TIMELINE) ||
-      MAIN_WINDOW->last_focused ==
-        GTK_WIDGET (MW_PINNED_TIMELINE))
+
+  if ((MAIN_WINDOW_LAST_FOCUSED_IS (
+         MW_TIMELINE) ||
+       MAIN_WINDOW_LAST_FOCUSED_IS (
+         MW_PINNED_TIMELINE)) &&
+      g_str_has_prefix (
+        text, "regions:"))
     {
       TimelineSelections * ts =
         timeline_selections_deserialize (text);
@@ -684,7 +708,7 @@ on_timeline_clipboard_received (
             ts, PLAYHEAD,
             TRACKLIST_SELECTIONS->tracks[0]->pos))
         {
-          g_message ("can paste");
+          g_message ("pasting timeline selections");
           timeline_selections_paste_to_pos (
             ts, PLAYHEAD);
 
@@ -700,9 +724,44 @@ on_timeline_clipboard_received (
         }
       else
         {
-          g_message ("can't paste");
+          g_message ("can't paste timeline selections");
         }
       timeline_selections_free (ts);
+    }
+  else if ((MAIN_WINDOW_LAST_FOCUSED_IS (
+              MW_MIDI_ARRANGER) ||
+            MAIN_WINDOW_LAST_FOCUSED_IS (
+              MW_MIDI_MODIFIER_ARRANGER)) &&
+            g_str_has_prefix (
+              text, "midi_notes:"))
+    {
+      MidiArrangerSelections * mas =
+        midi_arranger_selections_deserialize (text);
+      midi_arranger_selections_post_deserialize (
+        mas);
+
+      if (midi_arranger_selections_can_be_pasted (
+            mas, PLAYHEAD, CLIP_EDITOR->region))
+        {
+          g_message ("pasting midi selections");
+          midi_arranger_selections_paste_to_pos (
+            mas, PLAYHEAD);
+
+          /* create action to make it undoable */
+          /* (by now the TL_SELECTIONS should have
+           * only the pasted items selected) */
+          UndoableAction * ua =
+            (UndoableAction *)
+            create_midi_arranger_selections_action_new (
+              MA_SELECTIONS);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          g_message ("can't paste midi selections");
+        }
+      midi_arranger_selections_free (mas);
     }
 }
 

@@ -67,6 +67,7 @@
       { \
         g_warning ("error %s", \
                    cyaml_strerror (err)); \
+        return NULL; \
       } \
  \
     char * new_str = \
@@ -100,6 +101,7 @@
         g_warning ( \
           "cyaml error: %s", \
           cyaml_strerror (err)); \
+        return NULL; \
       } \
  \
     return self; \
