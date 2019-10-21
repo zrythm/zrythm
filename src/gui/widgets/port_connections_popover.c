@@ -54,8 +54,11 @@ port_connections_popover_widget_refresh (
     /*{*/
       if (owner->port->identifier.flow == FLOW_INPUT)
         {
-          gtk_label_set_text (
-            self->title, _("INPUTS"));
+          if (GTK_IS_LABEL (self->title))
+            {
+              gtk_label_set_text (
+                self->title, _("INPUTS"));
+            }
 
           for (int i = 0;
                i < owner->port->num_srcs; i++)
@@ -73,8 +76,11 @@ port_connections_popover_widget_refresh (
       else if (owner->port->identifier.flow ==
                  FLOW_OUTPUT)
         {
-          gtk_label_set_text (
-            self->title, _("OUTPUTS"));
+          if (GTK_IS_LABEL (self->title))
+            {
+              gtk_label_set_text (
+                self->title, _("OUTPUTS"));
+            }
 
           for (int i = 0;
                i < owner->port->num_dests; i++)
@@ -91,13 +97,16 @@ port_connections_popover_widget_refresh (
         }
     /*}*/
 
-  PortSelectorPopoverWidget * psp =
-    port_selector_popover_widget_new (
-      self, self->owner->port);
-  gtk_menu_button_set_popover (
-    self->add,
-    GTK_WIDGET (psp));
-  gtk_widget_set_visible (GTK_WIDGET (psp), 0);
+  if (GTK_IS_MENU_BUTTON (self->add))
+    {
+      PortSelectorPopoverWidget * psp =
+        port_selector_popover_widget_new (
+          self, self->owner->port);
+      gtk_menu_button_set_popover (
+        self->add,
+        GTK_WIDGET (psp));
+      gtk_widget_set_visible (GTK_WIDGET (psp), 0);
+    }
 }
 
 /**

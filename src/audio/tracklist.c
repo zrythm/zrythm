@@ -338,7 +338,10 @@ tracklist_get_last_pos (
           return i;
         }
     }
-  g_return_val_if_reached (-1);
+
+  /* no track with given options found,
+   * select the last */
+  return self->num_tracks - 1;
 }
 
 /**
