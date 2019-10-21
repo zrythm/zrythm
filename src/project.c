@@ -284,6 +284,22 @@ project_sanity_check (Project * self)
 static void
 create_default (Project * self)
 {
+  int loading_while_running = self->loaded;
+  if (loading_while_running)
+    {
+      tear_down (self);
+      PROJECT = calloc (1, sizeof (Project));
+      self = PROJECT;
+
+      MainWindowWidget * mww = MAIN_WINDOW;
+      MAIN_WINDOW = NULL;
+      ZRYTHM->event_queue = NULL;
+
+      g_message ("destroying previous main "
+                 "window...");
+      gtk_widget_destroy (GTK_WIDGET (mww));
+    }
+
   engine_init (&self->audio_engine, 0);
   undo_manager_init (&self->undo_manager);
 
@@ -324,6 +340,13 @@ create_default (Project * self)
   create_and_set_dir_and_title (
     self, ZRYTHM->create_project_path);
 
+  if (loading_while_running)
+    {
+      g_message ("recreating main window...");
+      MAIN_WINDOW =
+        main_window_widget_new (zrythm_app);
+    }
+
   self->loaded = 1;
 
   snap_grid_init (
@@ -352,6 +375,18 @@ create_default (Project * self)
     &PROJECT->range_1, 1);
   position_set_to_bar (
     &PROJECT->range_2, 1);
+
+  /* mimic behavior when starting the app */
+  if (loading_while_running)
+    {
+      if (ZRYTHM->event_queue)
+        g_async_queue_unref (ZRYTHM->event_queue);
+      ZRYTHM->event_queue =
+        events_init ();
+      main_window_widget_refresh (MAIN_WINDOW);
+
+      g_atomic_int_set (&AUDIO_ENGINE->run, 1);
+    }
 
   header_notebook_widget_set_subtitle (
     MW_HEADER_NOTEBOOK,

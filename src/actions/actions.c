@@ -50,6 +50,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/create_project_dialog.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/file_browser_window.h"
@@ -60,6 +61,7 @@
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/preferences.h"
+#include "gui/widgets/project_assistant.h"
 #include "gui/widgets/quantize_dialog.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -454,12 +456,132 @@ activate_loop_selection (GSimpleAction *action,
     }
 }
 
+static void
+on_project_new_finish (
+  GtkAssistant * _assistant,
+  gpointer       user_data)
+{
+  ProjectAssistantWidget * pa =
+    Z_PROJECT_ASSISTANT_WIDGET (_assistant);
+  ZRYTHM->creating_project = 1;
+  if (user_data) /* if cancel */
+    {
+      gtk_widget_destroy (GTK_WIDGET (_assistant));
+      ZRYTHM->open_filename = NULL;
+    }
+  /* if we are loading a template and template
+   * exists */
+  else if (pa->load_template &&
+           pa->template_selection &&
+           pa->template_selection->
+             filename[0] != '-')
+    {
+      ZRYTHM->open_filename =
+        pa->template_selection->filename;
+      g_message (
+        "Creating project from template: %s",
+        ZRYTHM->open_filename);
+      ZRYTHM->opening_template = 1;
+    }
+  /* if we are loading a project */
+  else if (!pa->load_template &&
+           pa->project_selection)
+    {
+      ZRYTHM->open_filename =
+        pa->project_selection->filename;
+      g_message (
+        "Loading project: %s",
+        zrythm->open_filename);
+      ZRYTHM->creating_project = 0;
+    }
+  /* no selection, load blank project */
+  else
+    {
+      ZRYTHM->open_filename = NULL;
+      g_message (
+        "Creating blank project");
+    }
+
+  /* if not loading a project, show dialog to
+   * select directory and name */
+  int quit = 0;
+  if (zrythm->creating_project)
+    {
+      CreateProjectDialogWidget * dialog =
+        create_project_dialog_widget_new ();
+
+      int ret =
+        gtk_dialog_run (GTK_DIALOG (dialog));
+      if (ret != GTK_RESPONSE_OK)
+        quit = 1;
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+
+      g_message ("creating project %s",
+                 zrythm->create_project_path);
+    }
+
+  if (quit)
+    {
+      /* FIXME error if the assistant is deleted
+       * here, setting invisible for now, but
+       * eventually must be destroyed */
+      gtk_widget_set_visible (GTK_WIDGET (pa), 0);
+    }
+  else
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (pa), 0);
+      project_load (
+        ZRYTHM->open_filename,
+        ZRYTHM->opening_template);
+    }
+}
+
 void
 activate_new (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  g_message ("ZOOMING IN");
+  GtkWidget *dialog;
+  GtkDialogFlags flags =
+    GTK_DIALOG_MODAL |
+    GTK_DIALOG_DESTROY_WITH_PARENT;
+  dialog =
+    gtk_dialog_new_with_buttons (
+      _("Create new project"),
+      GTK_WINDOW (MAIN_WINDOW),
+      flags,
+      _("Yes"),
+      GTK_RESPONSE_ACCEPT,
+      _("No"),
+      GTK_RESPONSE_REJECT,
+      NULL);
+  GtkWidget * label =
+    gtk_label_new (
+      _("Any unsaved changes to the current "
+        "project will be lost. Continue?"));
+  gtk_widget_set_visible (label, 1);
+  GtkWidget * content =
+    gtk_dialog_get_content_area (
+      GTK_DIALOG (dialog));
+  gtk_container_add (
+    GTK_CONTAINER (content), label);
+  int res = gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+    {
+      ProjectAssistantWidget * pa =
+        project_assistant_widget_new (
+          GTK_WINDOW (MAIN_WINDOW), 1);
+      g_signal_connect (
+        G_OBJECT (pa), "apply",
+        G_CALLBACK (on_project_new_finish), NULL);
+      g_signal_connect (
+        G_OBJECT (pa), "cancel",
+        G_CALLBACK (on_project_new_finish),
+        (void *) 1);
+      gtk_window_present (GTK_WINDOW (pa));
+    }
 }
 
 static int

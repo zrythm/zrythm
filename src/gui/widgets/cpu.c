@@ -293,16 +293,34 @@ on_motion (GtkWidget * widget, GdkEvent *event)
 }
 
 /**
- * Creates a new Cpu widget and binds it to the given value.
+ * Creates a new Cpu widget and binds it to the
+ * given value.
  */
 void
 cpu_widget_setup (
   CpuWidget * self)
 {
-  g_timeout_add_seconds (
-    1, (GSourceFunc) refresh_cpu_load, self);
-  g_timeout_add_seconds (
-    1, (GSourceFunc) refresh_dsp_load, self);
+  self->cpu_source_id =
+    g_timeout_add_seconds (
+      1, (GSourceFunc) refresh_cpu_load, self);
+  self->dsp_source_id =
+    g_timeout_add_seconds (
+      1, (GSourceFunc) refresh_dsp_load, self);
+}
+
+static void
+finalize (
+  CpuWidget * self)
+{
+  /* remove the timeout callbacks */
+  g_source_remove (
+    self->cpu_source_id);
+  g_source_remove (
+    self->dsp_source_id);
+
+  G_OBJECT_CLASS (
+    cpu_widget_parent_class)->
+      finalize (G_OBJECT (self));
 }
 
 static void
@@ -329,7 +347,12 @@ cpu_widget_init (CpuWidget * self)
 static void
 cpu_widget_class_init (CpuWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "cpu");
+
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }

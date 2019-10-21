@@ -51,6 +51,10 @@ typedef struct _CpuWidget
 
   /** DSP load (0-100). */
   int                    dsp;
+
+  /** Source func IDs. */
+  guint                  cpu_source_id;
+  guint                  dsp_source_id;
 } CpuWidget;
 
 /**
