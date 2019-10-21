@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-10-17 14:02+0100\n"
+"POT-Creation-Date: 2019-10-21 19:37+0100\n"
 "PO-Revision-Date: 2019-10-21 17:53+0000\n"
 "Last-Translator: André Menrath <andre.menrath@posteo.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
-"\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
+">\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -72,12 +72,12 @@ msgstr "Initialisiere Einstellungen"
 msgid "Waiting for project"
 msgstr "Lade Projekt"
 
-#: src/project.c:313 src/gui/widgets/route_target_selector_popover.c:147
-#: src/audio/track.c:1145
+#: src/project.c:329 src/gui/widgets/route_target_selector_popover.c:147
+#: src/audio/track.c:1174
 msgid "Master"
 msgstr "Master"
 
-#: src/project.c:399
+#: src/project.c:434
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -88,7 +88,7 @@ msgstr ""
 "  %s.\n"
 "Die neuere Sicherung verwenden?"
 
-#: src/project.c:465
+#: src/project.c:500
 #, c-format
 msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
@@ -97,17 +97,17 @@ msgstr ""
 "Dieses Projekt wurde mit einer anderen Version von Zrythm (%s) erstellt. Es "
 "funktioniert möglicherweise nicht richtig."
 
-#: src/project.c:480
+#: src/project.c:515
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "Das Projekt konnte nicht geladen werden. Bitte überprüfen Sie die Protokolle "
 "für weitere Informationen."
 
-#: src/project.c:881
+#: src/project.c:916
 msgid "Backup saved."
 msgstr "Sicherung gespeichert."
 
-#: src/project.c:888
+#: src/project.c:923
 msgid "Project saved."
 msgstr "Projekt gespeichert."
 
@@ -192,14 +192,14 @@ msgid "Save State"
 msgstr "Status speichern"
 
 #: src/plugins/lv2/lv2_gtk.c:154 src/plugins/lv2/lv2_gtk.c:582
-#: src/utils/dialogs.c:41 src/utils/dialogs.c:71 src/actions/actions.c:536
+#: src/utils/dialogs.c:41 src/utils/dialogs.c:71 src/actions/actions.c:660
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "_Abbrechen"
 
-#: src/plugins/lv2/lv2_gtk.c:155 src/actions/actions.c:538
+#: src/plugins/lv2/lv2_gtk.c:155 src/actions/actions.c:662
 msgid "_Save"
 msgstr "_Speichern"
 
@@ -241,15 +241,15 @@ msgstr "Neues Projekt erstellen"
 msgid "Untitled Project"
 msgstr "Unbenanntes Projekt"
 
-#: src/gui/widgets/port_connections_popover.c:58
+#: src/gui/widgets/port_connections_popover.c:60
 msgid "INPUTS"
 msgstr "EINGÄNGE"
 
-#: src/gui/widgets/port_connections_popover.c:77
+#: src/gui/widgets/port_connections_popover.c:82
 msgid "OUTPUTS"
 msgstr "AUSGÄNGE"
 
-#: src/gui/widgets/port_connections_popover.c:161
+#: src/gui/widgets/port_connections_popover.c:170
 msgid "Add"
 msgstr "Hinzufügen"
 
@@ -385,7 +385,7 @@ msgstr ""
 "2. Führe  <b>locale-gen</b> als Root aus\n"
 "3. Starte Zrythm neu"
 
-#: src/gui/widgets/project_assistant.c:264 src/gui/widgets/event_viewer.c:226
+#: src/gui/widgets/project_assistant.c:264 src/gui/widgets/event_viewer.c:333
 #: resources/ui/create_project_dialog.ui:95 resources/ui/control.ui:45
 msgid "Name"
 msgstr "Name"
@@ -465,7 +465,7 @@ msgstr "Kein Port ausgewählt"
 msgid "These ports cannot be connected"
 msgstr "Diese Ports können nicht verbunden werden"
 
-#: src/gui/widgets/port_selector_popover.c:284
+#: src/gui/widgets/port_selector_popover.c:299
 msgid "Track Ports"
 msgstr "Spurports"
 
@@ -533,11 +533,11 @@ msgstr "_MIDI-Spur hinzufügen"
 msgid "Add Audio Track"
 msgstr "_Audiospur hinzufügen"
 
-#: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1139
+#: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1168
 msgid "Audio Bus"
 msgstr "Audio-Bus"
 
-#: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1142
+#: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1171
 msgid "MIDI Bus"
 msgstr "MIDI-Bus"
 
@@ -545,11 +545,11 @@ msgstr "MIDI-Bus"
 msgid "Add Bus Track"
 msgstr "Busspur hinzufügen"
 
-#: src/gui/widgets/drag_dest_box.c:512 src/audio/track.c:1151
+#: src/gui/widgets/drag_dest_box.c:512 src/audio/track.c:1180
 msgid "Audio Group"
 msgstr "Audiogruppe"
 
-#: src/gui/widgets/drag_dest_box.c:523 src/audio/track.c:1154
+#: src/gui/widgets/drag_dest_box.c:523 src/audio/track.c:1183
 msgid "MIDI Group"
 msgstr "MIDI-Gruppe"
 
@@ -792,49 +792,80 @@ msgstr "Live-Wellenformanzeige"
 msgid "Select a region..."
 msgstr "Wähle eine Region aus…"
 
-#: src/gui/widgets/event_viewer.c:61 resources/ui/inspector_master.ui:31
+#: src/gui/widgets/event_viewer.c:84 resources/ui/inspector_master.ui:31
 #: resources/ui/inspector_ap.ui:31 resources/ui/inspector_midi.ui:31
 msgid "Region"
 msgstr "Region"
 
-#: src/gui/widgets/event_viewer.c:64 src/audio/track.c:1157
+#: src/gui/widgets/event_viewer.c:87 src/audio/track.c:1186
 msgid "Marker"
 msgstr "Marker"
 
-#: src/gui/widgets/event_viewer.c:67 resources/ui/scale_selector_window.ui:240
+#: src/gui/widgets/event_viewer.c:90 resources/ui/scale_selector_window.ui:240
 #: resources/ui/inspector_chord.ui:43 resources/ui/editor_toolbar.ui:59
 msgid "Scale"
 msgstr "Tonleiter"
 
-#: src/gui/widgets/event_viewer.c:237 resources/ui/chord_selector_window.ui:238
+#: src/gui/widgets/event_viewer.c:93
+#, fuzzy
+msgid "MIDI note"
+msgstr "MIDI-Eingang"
+
+#: src/gui/widgets/event_viewer.c:96 src/audio/region.c:490
+#: src/audio/track.c:1177 resources/ui/editor_toolbar.ui:58
+msgid "Chord"
+msgstr "Akkord"
+
+#: src/gui/widgets/event_viewer.c:99
+#, fuzzy
+msgid "Automation point"
+msgstr "Automation verschieben"
+
+#: src/gui/widgets/event_viewer.c:344 resources/ui/chord_selector_window.ui:238
 #: resources/ui/file_browser.ui:84 resources/ui/snap_grid_popover.ui:127
 msgid "Type"
 msgstr "Typ"
 
-#: src/gui/widgets/event_viewer.c:248
+#: src/gui/widgets/event_viewer.c:355 src/gui/widgets/event_viewer.c:451
 #, fuzzy
 msgid "Start"
 msgstr "Anfang"
 
-#: src/gui/widgets/event_viewer.c:259
+#: src/gui/widgets/event_viewer.c:366
 #, fuzzy
 msgid "Clip start"
 msgstr "Anfang des Clips (rel.)"
 
-#: src/gui/widgets/event_viewer.c:270
+#: src/gui/widgets/event_viewer.c:377
 #, fuzzy
 msgid "Loop start"
 msgstr "Anfang der Schleife (rel.)"
 
-#: src/gui/widgets/event_viewer.c:281
+#: src/gui/widgets/event_viewer.c:388
 #, fuzzy
 msgid "Loop end"
 msgstr "Schleifenwiedergabe"
 
-#: src/gui/widgets/event_viewer.c:292
+#: src/gui/widgets/event_viewer.c:399 src/gui/widgets/event_viewer.c:462
 #, fuzzy
 msgid "End"
 msgstr "Ende"
+
+#: src/gui/widgets/event_viewer.c:418
+#, fuzzy
+msgid "Note"
+msgstr "Grundton"
+
+#: src/gui/widgets/event_viewer.c:429
+#, fuzzy
+msgid "Pitch"
+msgstr "Tonhöhenrad"
+
+#: src/gui/widgets/event_viewer.c:440 resources/ui/midi_editor_space.ui:144
+#: resources/ui/chord_editor_space.ui:152
+#: resources/ui/automation_editor_space.ui:115
+msgid "Velocity"
+msgstr "Anschlagstärke"
 
 #: src/gui/widgets/ports_expander.c:165
 msgid "Control Ins"
@@ -888,7 +919,7 @@ msgstr "MIDI-Ausgang"
 msgid "Group"
 msgstr "Gruppe"
 
-#: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1130
+#: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1159
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -994,22 +1025,30 @@ msgstr "Spur verstecken"
 msgid "Hide Tracks"
 msgstr "Spuren verstecken"
 
-#: src/gui/widgets/track.c:498
+#: src/gui/widgets/track.c:494
+msgid "Pin/Unpin Track"
+msgstr ""
+
+#: src/gui/widgets/track.c:495
+msgid "Pin/Unpin Tracks"
+msgstr ""
+
+#: src/gui/widgets/track.c:510
 #, fuzzy
 msgid "Track MIDI Ch"
 msgstr "MIDI-Kan"
 
-#: src/gui/widgets/track.c:509 src/gui/widgets/track.c:567
+#: src/gui/widgets/track.c:521 src/gui/widgets/track.c:579
 #, fuzzy, c-format
 msgid "%sMIDI Channel %d"
 msgstr "MIDI-Kanal %s"
 
-#: src/gui/widgets/track.c:545
+#: src/gui/widgets/track.c:557
 #, fuzzy, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "Unterspur %d"
 
-#: src/gui/widgets/track.c:562
+#: src/gui/widgets/track.c:574
 #, fuzzy, c-format
 msgid "%sInherit"
 msgstr "Erben"
@@ -1140,23 +1179,18 @@ msgstr "Marker"
 msgid "PortAudio Error: %s"
 msgstr "PortAudio-Fehler: %s"
 
-#: src/audio/region.c:461 src/audio/track.c:1136
+#: src/audio/region.c:481 src/audio/track.c:1165
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/region.c:464 src/audio/track.c:1133
+#: src/audio/region.c:484 src/audio/track.c:1162
 msgid "Audio"
 msgstr "Audio"
 
-#: src/audio/region.c:467
+#: src/audio/region.c:487
 #, fuzzy
 msgid "Automation"
 msgstr "Automation verschieben"
-
-#: src/audio/region.c:470 src/audio/track.c:1148
-#: resources/ui/editor_toolbar.ui:58
-msgid "Chord"
-msgstr "Akkord"
 
 #: src/audio/engine.c:251
 #, c-format
@@ -1319,7 +1353,25 @@ msgstr "Lösche %d Tracks"
 msgid "Change Marker"
 msgstr "Marker ändern"
 
-#: src/actions/actions.c:533
+#: src/actions/actions.c:551 resources/ui/project_assistant.ui:86
+#: resources/ui/shortcuts.ui:104
+msgid "Create new project"
+msgstr "Neues Projekt erstellen"
+
+#: src/actions/actions.c:554
+msgid "Yes"
+msgstr ""
+
+#: src/actions/actions.c:556
+#, fuzzy
+msgid "No"
+msgstr "Keine"
+
+#: src/actions/actions.c:561
+msgid "Any unsaved changes to the current project will be lost. Continue?"
+msgstr ""
+
+#: src/actions/actions.c:657
 msgid "Save Project"
 msgstr "Projekt speichern"
 
@@ -1671,33 +1723,38 @@ msgstr "ZU ERLEDIGEN Klaviatur"
 msgid "Custom"
 msgstr "Persönlich"
 
-#: resources/ui/bot_dock_edge.ui:46
+#: resources/ui/bot_dock_edge.ui:66
 msgid "Piano roll panel"
 msgstr "Notenrollen-Panel"
 
-#: resources/ui/bot_dock_edge.ui:61
+#: resources/ui/bot_dock_edge.ui:81
 msgid "Editor"
 msgstr "Editor"
 
-#: resources/ui/bot_dock_edge.ui:84
+#: resources/ui/bot_dock_edge.ui:104
 msgid "Mixer panel"
 msgstr "Mixerfeld"
 
-#: resources/ui/bot_dock_edge.ui:99
+#: resources/ui/bot_dock_edge.ui:119
 msgid "Mixer"
 msgstr "Mixer"
 
-#: resources/ui/bot_dock_edge.ui:136
+#: resources/ui/bot_dock_edge.ui:156
 msgid "Modulators"
 msgstr "Modulatoren"
 
-#: resources/ui/bot_dock_edge.ui:173
+#: resources/ui/bot_dock_edge.ui:193
 msgid "Chord Pad"
 msgstr "Akkord-Pad"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
 msgstr ""
+
+#: resources/ui/timeline_toolbar.ui:69 resources/ui/editor_toolbar.ui:103
+#, fuzzy
+msgid "Toggle event viewer"
+msgstr "Linkes Panel ein-/ausblenden"
 
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
@@ -1706,10 +1763,6 @@ msgstr "Projekt auswählen"
 #: resources/ui/project_assistant.ui:43
 msgid "Select a project"
 msgstr "Projekt auswählen"
-
-#: resources/ui/project_assistant.ui:86 resources/ui/shortcuts.ui:104
-msgid "Create new project"
-msgstr "Neues Projekt erstellen"
 
 #: resources/ui/project_assistant.ui:102
 msgid "Remove"
@@ -2026,11 +2079,6 @@ msgstr "Erneut suchen"
 #: resources/ui/midi_controller_popover.ui:83
 msgid "Scan again for MIDI controllers"
 msgstr "Scanne erneut nach MIDI-Controllern"
-
-#: resources/ui/midi_editor_space.ui:144 resources/ui/chord_editor_space.ui:152
-#: resources/ui/automation_editor_space.ui:115
-msgid "Velocity"
-msgstr "Anschlagstärke"
 
 #: resources/ui/midi_editor_space.ui:145 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:116
