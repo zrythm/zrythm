@@ -73,4 +73,8 @@ typedef struct _AutomationCurveWidget
 AutomationCurveWidget *
 automation_curve_widget_new (AutomationCurve * ac);
 
+void
+automation_curve_widget_force_redraw (
+  AutomationCurveWidget * self);
+
 #endif

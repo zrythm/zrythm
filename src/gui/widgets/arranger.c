@@ -180,14 +180,26 @@ arranger_get_child_position (
             1) - 1;
       else if ((midi_arranger ||
                midi_modifier_arranger ||
+               automation_arranger ||
                audio_arranger) &&
                CLIP_EDITOR->region)
         {
-          Region * r =
-            region_at_position (
-              region_get_track (
-                CLIP_EDITOR->region),
-              PLAYHEAD);
+          Region * r = NULL;
+          if (automation_arranger)
+            {
+              r =
+                region_at_position (
+                  NULL, CLIP_EDITOR->region->at,
+                  PLAYHEAD);
+            }
+          else
+            {
+              r =
+                region_at_position (
+                  region_get_track (
+                    CLIP_EDITOR->region),
+                  NULL, PLAYHEAD);
+            }
           Position tmp;
           if (r)
             {

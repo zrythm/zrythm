@@ -810,15 +810,16 @@ region_unpack (Region * region);
  * Returns the region at the given position in the
  * given Track.
  *
- * @param track The track to look in.
+ * @param at The automation track to look in.
+ * @param track The track to look in, if at is
+ *   NULL.
  * @param pos The position.
- *
- * FIXME with lanes there can be multiple positions.
  */
 Region *
 region_at_position (
-  Track    * track,
-  Position * pos);
+  Track    *        track,
+  AutomationTrack * at,
+  Position *        pos);
 
 /**
  * Generates the filename for this region.

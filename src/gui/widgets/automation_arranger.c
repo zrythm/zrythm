@@ -958,6 +958,9 @@ add_children_from_region (
         ac->widget =
           automation_curve_widget_new (ac);
 
+      automation_curve_widget_force_redraw (
+        ac->widget);
+
       gtk_overlay_add_overlay (
         GTK_OVERLAY (self),
         GTK_WIDGET (ac->widget));
@@ -1033,7 +1036,6 @@ static gboolean
 on_focus (GtkWidget       *widget,
           gpointer         user_data)
 {
-  /*g_message ("automation focused");*/
   MAIN_WINDOW->last_focused = widget;
 
   return FALSE;

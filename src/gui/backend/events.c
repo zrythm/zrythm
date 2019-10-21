@@ -741,8 +741,8 @@ events_process (void * data)
           {
             AutomationPoint * ap =
               (AutomationPoint *) ev->arg;
-            if (ap->index > 0 &&
-                ap->index <
+            /* if not last, draw next curve */
+            if (ap->index <
                   ap->region->num_aps - 1)
               {
                 AutomationCurve * ac =
@@ -750,9 +750,20 @@ events_process (void * data)
                 if (ac &&
                     GTK_IS_WIDGET (ac->widget))
                   {
-                    ac->widget->redraw = 1;
-                    gtk_widget_queue_draw (
-                      GTK_WIDGET (ac->widget));
+                    automation_curve_widget_force_redraw (
+                      ac->widget);
+                  }
+              }
+            /* if not first, draw previous curve */
+            if (ap->index > 0)
+              {
+                AutomationCurve * ac =
+                  ap->region->acs[ap->index - 1];
+                if (ac &&
+                    GTK_IS_WIDGET (ac->widget))
+                  {
+                    automation_curve_widget_force_redraw (
+                      ac->widget);
                   }
               }
             Z_AUTOMATION_REGION_WIDGET (

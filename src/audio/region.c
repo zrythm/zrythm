@@ -1248,22 +1248,42 @@ ARRANGER_OBJ_DECLARE_VALIDATE_POS (
  * Returns the region at the given position in the
  * given Track.
  *
- * @param track The track to look in.
+ * @param at The automation track to look in.
+ * @param track The track to look in, if at is
+ *   NULL.
  * @param pos The position.
  */
 Region *
 region_at_position (
-  Track    * track,
-  Position * pos)
+  Track    *        track,
+  AutomationTrack * at,
+  Position *        pos)
 {
-  TrackLane * lane;
   Region * region;
-  for (int i = 0; i < track->num_lanes; i++)
+  if (track)
     {
-      lane = track->lanes[i];
-      for (int j = 0; j < lane->num_regions; j++)
+      TrackLane * lane;
+      for (int i = 0; i < track->num_lanes; i++)
         {
-          region = lane->regions[j];
+          lane = track->lanes[i];
+          for (int j = 0; j < lane->num_regions; j++)
+            {
+              region = lane->regions[j];
+              if (position_is_after_or_equal (
+                    pos, &region->start_pos) &&
+                  position_is_before_or_equal (
+                    pos, &region->end_pos))
+                {
+                  return region;
+                }
+            }
+        }
+    }
+  else if (at)
+    {
+      for (int i = 0; i < at->num_regions; i++)
+        {
+          region = at->regions[i];
           if (position_is_after_or_equal (
                 pos, &region->start_pos) &&
               position_is_before_or_equal (

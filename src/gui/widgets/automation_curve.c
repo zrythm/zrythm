@@ -1,7 +1,5 @@
 /*
- * gui/widgets/automation_curve.c- AutomationCurve
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,7 +26,13 @@
 #include "audio/instrument_track.h"
 #include "audio/track.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_arranger.h"
+#include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/bot_bar.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/automation_curve.h"
 #include "gui/widgets/ruler.h"
@@ -66,12 +70,20 @@ static double clamp
 }
 
 static void
-drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_update (
+  GtkGestureDrag * gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  AutomationCurveWidget * self)
 {
-  AutomationCurveWidget * self = (AutomationCurveWidget *) user_data;
+  if (MW_AUTOMATION_ARRANGER)
+    {
+      ARRANGER_WIDGET_GET_PRIVATE (
+        MW_AUTOMATION_ARRANGER);
+      if (ar_prv->action != UI_OVERLAY_ACTION_NONE)
+        return;
+    }
+
   offset_y = - offset_y;
   /*int use_y = fabs (offset_y - self->last_y) >*/
     /*fabs (offset_x - self->last_x);*/
@@ -93,12 +105,12 @@ drag_update (GtkGestureDrag * gesture,
 }
 
 static void
-drag_end (GtkGestureDrag *gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_end (
+  GtkGestureDrag * gesture,
+  gdouble          offset_x,
+  gdouble          offset_y,
+  AutomationCurveWidget * self)
 {
-  AutomationCurveWidget * self = (AutomationCurveWidget *) user_data;
   self->last_x = 0;
   self->last_y = 0;
 }
@@ -213,6 +225,14 @@ automation_curve_draw_cb (
   cairo_paint (cr);
 
   return FALSE;
+}
+
+void
+automation_curve_widget_force_redraw (
+  AutomationCurveWidget * self)
+{
+  self->redraw = 1;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 static void
