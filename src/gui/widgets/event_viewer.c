@@ -27,6 +27,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/chord_object.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/event_viewer.h"
@@ -70,6 +71,14 @@ enum MidiColumns
   MIDI_COLUMN_END_POS,
   MIDI_COLUMN_OBJ,
   NUM_MIDI_COLUMNS,
+};
+
+enum ChordColumns
+{
+  CHORD_COLUMN_NAME,
+  CHORD_COLUMN_START_POS,
+  CHORD_COLUMN_OBJ,
+  NUM_CHORD_COLUMNS,
 };
 
 static void
@@ -214,6 +223,34 @@ add_from_widget (
         MIDI_COLUMN_OBJ, mn,
         -1);
     }
+  else if (Z_IS_CHORD_OBJECT_WIDGET (widget))
+    {
+      ChordObjectWidget * cw =
+        Z_CHORD_OBJECT_WIDGET (widget);
+      g_return_if_fail (cw->chord_object);
+      ChordObject * c = cw->chord_object;
+
+      /* skip non-mains */
+      if (!chord_object_is_main (c) ||
+          chord_object_is_transient (c))
+        return;
+
+      ChordDescriptor * descr =
+        chord_object_get_chord_descriptor (c);
+      chord_descriptor_to_string (
+        descr, name);
+      get_event_type_as_string (
+        EVENT_VIEWER_ET_CHORD_OBJECT, type);
+      position_stringize (
+        &c->pos, start_pos);
+      gtk_list_store_append (store, iter);
+      gtk_list_store_set (
+        store, iter,
+        CHORD_COLUMN_NAME, name,
+        CHORD_COLUMN_START_POS, start_pos,
+        CHORD_COLUMN_OBJ, c,
+        -1);
+    }
 }
 
 #define ADD_FOREACH_IN_ARRANGER(arranger) \
@@ -287,6 +324,29 @@ create_midi_model (
 }
 
 static GtkTreeModel *
+create_chord_model (
+  EventViewerWidget * self)
+{
+  GtkListStore *store;
+  GtkTreeIter iter;
+
+  /* create list store */
+  store =
+    gtk_list_store_new (
+      NUM_CHORD_COLUMNS,
+      G_TYPE_STRING,
+      G_TYPE_STRING,
+      G_TYPE_POINTER);
+
+  /* add data to the list */
+  GList *children, * children_iter;
+  ADD_FOREACH_IN_ARRANGER (
+    MW_CHORD_ARRANGER);
+
+  return GTK_TREE_MODEL (store);
+}
+
+static GtkTreeModel *
 create_editor_model (
   EventViewerWidget * self)
 {
@@ -302,11 +362,11 @@ create_editor_model (
       return create_midi_model (self);
       break;
     case REGION_TYPE_AUDIO:
-      /*return_create_midi_model (self);*/
       break;
     case REGION_TYPE_AUTOMATION:
       break;
     case REGION_TYPE_CHORD:
+      return create_chord_model (self);
       break;
     }
 
@@ -467,6 +527,36 @@ append_midi_columns (
     self->treeview, column);
 }
 
+static void
+append_chord_columns (
+  EventViewerWidget * self)
+{
+  GtkCellRenderer *renderer;
+  GtkTreeViewColumn *column;
+
+  /* column for name */
+  renderer = gtk_cell_renderer_text_new ();
+  column =
+    gtk_tree_view_column_new_with_attributes (
+      _("Chord"), renderer, "text",
+      CHORD_COLUMN_NAME, NULL);
+  gtk_tree_view_column_set_sort_column_id (
+    column, CHORD_COLUMN_NAME);
+  gtk_tree_view_append_column (
+    self->treeview, column);
+
+  /* column for start pos */
+  renderer = gtk_cell_renderer_text_new ();
+  column =
+    gtk_tree_view_column_new_with_attributes (
+      _("Position"), renderer, "text",
+      CHORD_COLUMN_START_POS, NULL);
+  gtk_tree_view_column_set_sort_column_id (
+    column, CHORD_COLUMN_START_POS);
+  gtk_tree_view_append_column (
+    self->treeview, column);
+}
+
 /**
  * @return If columns added.
  */
@@ -489,6 +579,8 @@ add_editor_columns (
       break;
     case REGION_TYPE_AUDIO:
       break;
+    case REGION_TYPE_CHORD:
+      append_chord_columns (self);
     default:
       break;
     }

@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/chord_region.h"
 #include "audio/chord_track.h"
 #include "audio/engine.h"
 #include "audio/position.h"
@@ -326,6 +327,26 @@ chord_selections_clone (
   return new_ts;
 }
 
+/**
+ * Code to run after deserializing.
+ */
+void
+chord_selections_post_deserialize (
+  ChordSelections * ts)
+{
+  int i;
+
+#define _SET_OBJ(sc) \
+  for (i = 0; i < ts->num_##sc##s; i++) \
+    { \
+      sc##_post_deserialize (ts->sc##s[i]); \
+    }
+
+  _SET_OBJ (chord_object);
+
+#undef _SET_OBJ
+}
+
 ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS (
   Chord, chord)
 {
@@ -334,6 +355,27 @@ ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS (
       chord_object_reset_counterpart (
         self->chord_objects[i], reset_trans);
     }
+}
+
+/**
+ * Returns if the selections can be pasted.
+ *
+ * @param pos Position to paste to.
+ * @param region Region to paste to.
+ */
+int
+chord_selections_can_be_pasted (
+  ChordSelections * ts,
+  Position *        pos,
+  Region *          r)
+{
+  if (!r || r->type != REGION_TYPE_CHORD)
+    return 0;
+
+  if (r->start_pos.frames + pos->frames < 0)
+    return 0;
+
+  return 1;
 }
 
 /**
@@ -374,9 +416,19 @@ chord_selections_add_ticks (
 void
 chord_selections_paste_to_pos (
   ChordSelections * ts,
-  Position *           pos)
+  Position *        playhead)
 {
-  long pos_ticks = position_to_ticks (pos);
+  g_return_if_fail (
+    CLIP_EDITOR->region &&
+    CLIP_EDITOR->region->type == REGION_TYPE_CHORD);
+
+  /* get region-local pos */
+  Position pos;
+  pos.frames =
+    region_timeline_frames_to_local (
+      CLIP_EDITOR->region, playhead->frames, 0);
+  position_from_frames (&pos, pos.frames);
+  long pos_ticks = position_to_ticks (&pos);
 
   /* get pos of earliest object */
   Position start_pos;
@@ -398,10 +450,21 @@ chord_selections_paste_to_pos (
   for (i = 0; i < ts->num_chord_objects; i++)
     {
       chord = ts->chord_objects[i];
+      chord->region = CLIP_EDITOR->region;
+      chord->region_name =
+        g_strdup (CLIP_EDITOR->region->name);
 
       curr_ticks = position_to_ticks (&chord->pos);
-      position_from_ticks (&chord->pos,
-                           pos_ticks + DIFF);
+      position_from_ticks (
+        &chord->pos, pos_ticks + DIFF);
+
+      /* clone and add to track */
+      ChordObject * cp =
+        chord_object_clone (
+          chord,
+          CHORD_OBJECT_CLONE_COPY_MAIN);
+      chord_region_add_chord_object (
+        cp->region, cp);
     }
 #undef DIFF
 }

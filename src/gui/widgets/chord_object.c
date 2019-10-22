@@ -99,17 +99,13 @@ chord_draw_cb (
       cairo_close_path (self->cached_cr);
       cairo_fill(self->cached_cr);
 
-      char * str =
-        chord_descriptor_to_string (descr);
+      char str[100];
+      chord_descriptor_to_string (descr, str);
       if (DEBUGGING &&
           chord_object_is_transient (
             chord_object))
         {
-          char * tmp =
-            g_strdup_printf (
-              "%s [t]", str);
-          g_free (str);
-          str = tmp;
+          strcat (str, " [t]");
         }
 
       GdkRGBA c2;
@@ -123,7 +119,6 @@ chord_draw_cb (
       z_cairo_draw_text (
         self->cached_cr, widget, layout, str);
       g_object_unref (layout);
-      g_free (str);
 
       self->redraw = 0;
     }

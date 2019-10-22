@@ -57,8 +57,8 @@ chord_key_draw_cb (
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
-  char * str =
-    chord_descriptor_to_string (self->descr);
+  char str[100];
+  chord_descriptor_to_string (self->descr, str);
   cairo_set_source_rgba (
     cr, 1,1,1,1);
   PangoLayout * layout =
@@ -67,7 +67,6 @@ chord_key_draw_cb (
   z_cairo_draw_text (
     cr, widget, layout, str);
   g_object_unref (layout);
-  g_free (str);
 
  return FALSE;
 }

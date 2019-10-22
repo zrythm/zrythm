@@ -214,6 +214,14 @@
     cc##Selections * mas)
 
 /**
+ * Code to run after deserializing.
+ */
+#define ARRANGER_SELECTIONS_DECLARE_POST_DESERIALIZE(cc,sc) \
+  void \
+  sc##_selections_post_deserialize ( \
+    cc##Selections * self)
+
+/**
  * Frees the selections.
  */
 #define ARRANGER_SELECTIONS_DECLARE_FREE(cc,sc) \
@@ -251,6 +259,7 @@
     cc,sc); \
   ARRANGER_SELECTIONS_DECLARE_ADD_TICKS (cc,sc); \
   ARRANGER_SELECTIONS_DECLARE_CLEAR (cc,sc); \
+  ARRANGER_SELECTIONS_DECLARE_POST_DESERIALIZE (cc,sc); \
   ARRANGER_SELECTIONS_DECLARE_FREE (cc,sc); \
   ARRANGER_SELECTIONS_DECLARE_FREE_FULL (cc,sc)
 
@@ -270,6 +279,7 @@
     cc,sc); \
   ARRANGER_SELECTIONS_DECLARE_ADD_TICKS (cc,sc); \
   ARRANGER_SELECTIONS_DECLARE_CLEAR (cc,sc); \
+  ARRANGER_SELECTIONS_DECLARE_POST_DESERIALIZE (cc,sc); \
   ARRANGER_SELECTIONS_DECLARE_FREE (cc,sc); \
   ARRANGER_SELECTIONS_DECLARE_FREE_FULL (cc,sc)
 

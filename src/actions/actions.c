@@ -28,6 +28,8 @@
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
 #include "actions/copy_tracks_action.h"
+#include "actions/create_automation_selections_action.h"
+#include "actions/create_chord_selections_action.h"
 #include "actions/create_midi_arranger_selections_action.h"
 #include "actions/create_timeline_selections_action.h"
 #include "actions/create_tracks_action.h"
@@ -45,9 +47,13 @@
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/about_dialog.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_arranger.h"
+#include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_arranger.h"
+#include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/create_project_dialog.h"
@@ -804,6 +810,38 @@ activate_copy (
       midi_arranger_selections_free (mas);
       g_free (serialized);
     }
+  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_CHORD_ARRANGER))
+    {
+      ChordSelections * cs =
+        chord_selections_clone (
+          CHORD_SELECTIONS);
+      char * serialized =
+        chord_selections_serialize (cs);
+      g_return_if_fail (serialized);
+      g_message ("copying chord selections");
+      gtk_clipboard_set_text (
+        DEFAULT_CLIPBOARD,
+        serialized, -1);
+      chord_selections_free (cs);
+      g_free (serialized);
+    }
+  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_AUTOMATION_ARRANGER))
+    {
+      AutomationSelections * cs =
+        automation_selections_clone (
+          AUTOMATION_SELECTIONS);
+      char * serialized =
+        automation_selections_serialize (cs);
+      g_return_if_fail (serialized);
+      g_message ("copying automation selections");
+      gtk_clipboard_set_text (
+        DEFAULT_CLIPBOARD,
+        serialized, -1);
+      automation_selections_free (cs);
+      g_free (serialized);
+    }
 }
 
 static void
@@ -884,6 +922,39 @@ on_timeline_clipboard_received (
           g_message ("can't paste midi selections");
         }
       midi_arranger_selections_free (mas);
+    }
+  else if (MAIN_WINDOW_LAST_FOCUSED_IS (
+             MW_CHORD_ARRANGER) &&
+           g_str_has_prefix (
+             text, "chord_objects:"))
+    {
+      ChordSelections * mas =
+        chord_selections_deserialize (text);
+      chord_selections_post_deserialize (
+        mas);
+
+      if (chord_selections_can_be_pasted (
+            mas, PLAYHEAD, CLIP_EDITOR->region))
+        {
+          g_message ("pasting midi selections");
+          chord_selections_paste_to_pos (
+            mas, PLAYHEAD);
+
+          /* create action to make it undoable */
+          /* (by now the TL_SELECTIONS should have
+           * only the pasted items selected) */
+          UndoableAction * ua =
+            (UndoableAction *)
+            create_chord_selections_action_new (
+              CHORD_SELECTIONS);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      else
+        {
+          g_message ("can't paste chord selections");
+        }
+      chord_selections_free (mas);
     }
 }
 

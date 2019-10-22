@@ -311,8 +311,16 @@ chord_descriptor_note_to_string (
  * MUST be free'd by caller.
  */
 char *
+chord_descriptor_to_new_string (
+  const ChordDescriptor * chord);
+
+/**
+ * Returns the chord in human readable string.
+ */
+void
 chord_descriptor_to_string (
-  ChordDescriptor * chord);
+  const ChordDescriptor * chord,
+  char *                  str);
 
 /**
  * Frees the ChordDescriptor.

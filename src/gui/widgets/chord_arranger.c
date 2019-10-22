@@ -131,8 +131,8 @@ chord_arranger_widget_set_allocation (
         adj_px_per_key *
         co->index;
 
-      char * chord_str =
-        chord_descriptor_to_string (descr);
+      char chord_str[100];
+      chord_descriptor_to_string (descr, chord_str);
       int textw, texth;
       PangoLayout * layout =
         z_cairo_create_default_pango_layout (
@@ -141,7 +141,6 @@ chord_arranger_widget_set_allocation (
         widget, layout,
         chord_str, &textw, &texth);
       g_object_unref (layout);
-      g_free (chord_str);
       allocation->width =
         textw + CHORD_OBJECT_WIDGET_TRIANGLE_W +
         Z_CAIRO_TEXT_PADDING * 2;
@@ -365,9 +364,6 @@ chord_arranger_widget_on_drag_begin_chord_hit (
   /* update arranger action */
   ar_prv->action =
     UI_OVERLAY_ACTION_STARTING_MOVING;
-  /* FIXME cursor should be set automatically */
-  /*ui_set_cursor_from_name (*/
-    /*GTK_WIDGET (cw), "grabbing");*/
 
   int selected = chord_object_is_selected (chord);
 

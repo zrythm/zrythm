@@ -466,36 +466,30 @@ automation_arranger_widget_on_drag_begin_ap_hit (
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
   AutomationPoint * ap =
-    ap_widget->automation_point;
+    automation_point_get_main_automation_point (
+      ap_widget->automation_point);
   ar_prv->start_pos_px = start_x;
-  self->start_ap = ap;
-  if (!automation_selections_contains_ap (
-        AUTOMATION_SELECTIONS, ap))
-    {
-      AUTOMATION_SELECTIONS->automation_points[0] =
-        ap;
-      AUTOMATION_SELECTIONS->num_automation_points =
-        1;
-    }
-
   self->start_ap = ap;
 
   /* update arranger action */
   ar_prv->action =
     UI_OVERLAY_ACTION_STARTING_MOVING;
-  ui_set_cursor_from_name (
-    GTK_WIDGET (ap_widget),
-    "grabbing");
 
-  /* update selection */
-  if (ar_prv->ctrl_held)
+  int selected =
+    automation_point_is_selected (ap);
+
+  /* if ctrl held & not selected, add to
+   * selections */
+  if (ar_prv->ctrl_held && !selected)
     {
       ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
         self, ap, F_SELECT, F_APPEND);
     }
-  else
+  /* if ctrl not held & not selected, make it
+   * the only selection */
+  else if (!ar_prv->ctrl_held &&
+           !selected)
     {
-      automation_arranger_widget_select_all (self, 0);
       ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
         self, ap, F_SELECT, F_NO_APPEND);
     }

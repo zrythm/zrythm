@@ -75,6 +75,18 @@ ARRANGER_SELECTIONS_DECLARE_FUNCS (
 ARRANGER_SELECTIONS_DECLARE_OBJ_FUNCS (
   Chord, chord, ChordObject, chord_object);
 
+/**
+ * Returns if the selections can be pasted.
+ *
+ * @param pos Position to paste to.
+ * @param region Region to paste to.
+ */
+int
+chord_selections_can_be_pasted (
+  ChordSelections * ts,
+  Position *        pos,
+  Region *          region);
+
 SERIALIZE_INC (ChordSelections,
                chord_selections)
 DESERIALIZE_INC (ChordSelections,

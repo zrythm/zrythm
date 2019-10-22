@@ -515,14 +515,24 @@ midi_arranger_selections_can_be_pasted (
 void
 midi_arranger_selections_paste_to_pos (
   MidiArrangerSelections * ts,
-  Position *           pos)
+  Position *               playhead)
 {
-  long pos_ticks = position_to_ticks (pos);
+  g_return_if_fail (
+    CLIP_EDITOR->region &&
+    CLIP_EDITOR->region->type == REGION_TYPE_MIDI);
+
+  /* get region-local pos */
+  Position pos;
+  pos.frames =
+    region_timeline_frames_to_local (
+      CLIP_EDITOR->region, playhead->frames, 0);
+  position_from_frames (&pos, pos.frames);
+  long pos_ticks = position_to_ticks (&pos);
 
   /* get pos of earliest object */
   Position start_pos;
   midi_arranger_selections_get_start_pos (
-    ts, &start_pos, 0, 1);
+    ts, &start_pos, F_NO_TRANSIENTS, 0);
   long start_pos_ticks =
     position_to_ticks (&start_pos);
 

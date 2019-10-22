@@ -100,6 +100,9 @@ static const cyaml_schema_field_t
   CYAML_FIELD_MAPPING (
     "pos", CYAML_FLAG_DEFAULT,
     ChordObject, pos, position_fields_schema),
+	CYAML_FIELD_INT (
+    "index", CYAML_FLAG_DEFAULT,
+    ChordObject, index),
 
 	CYAML_FIELD_END
 };

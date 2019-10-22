@@ -55,15 +55,27 @@ draw_cb (
 
   Track * track =
     self->automation_point->region->at->track;
-  GdkRGBA * color = &track->color;
-  cairo_set_source_rgba (
-    cr, color->red, color->green, color->blue, 0.7);
-  cairo_arc (cr,
-             width / 2,
-             height / 2,
-             width / 2 - AP_WIDGET_PADDING,
-             0,
-             2 * G_PI);
+
+  /* get color */
+  GdkRGBA color = track->color;
+  ui_get_arranger_object_color (
+    &color,
+    gtk_widget_get_state_flags (
+      GTK_WIDGET (self)) &
+      GTK_STATE_FLAG_PRELIGHT,
+    automation_point_is_selected (
+      self->automation_point),
+    automation_point_is_transient (
+      self->automation_point));
+  gdk_cairo_set_source_rgba (
+    cr, &color);
+
+  /* draw circle */
+  cairo_arc (
+    cr,
+    width / 2, height / 2,
+    width / 2 - AP_WIDGET_PADDING, 0,
+    2 * G_PI);
   cairo_stroke_preserve(cr);
   cairo_fill(cr);
 
@@ -99,7 +111,6 @@ on_motion (GtkWidget * widget,
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      ui_set_cursor_from_name (widget, "default");
       gtk_widget_unset_state_flags (
         GTK_WIDGET (self),
         GTK_STATE_FLAG_PRELIGHT);

@@ -222,11 +222,25 @@ chord_descriptor_is_key_in_chord (
  * MUST be free'd by caller.
  */
 char *
-chord_descriptor_to_string (
-  ChordDescriptor * chord)
+chord_descriptor_to_new_string (
+  const ChordDescriptor * chord)
 {
-  char * str = g_strdup_printf (
-    "%s%s",
+  char tmp[100];
+  chord_descriptor_to_string (
+    chord, tmp);
+  return g_strdup (tmp);
+}
+
+/**
+ * Returns the chord in human readable string.
+ */
+void
+chord_descriptor_to_string (
+  const ChordDescriptor * chord,
+  char *                  str)
+{
+  sprintf (
+    str, "%s%s",
     chord_descriptor_note_to_string (
       chord->root_note),
     chord_descriptor_chord_type_to_string (
@@ -234,29 +248,21 @@ chord_descriptor_to_string (
 
   if (chord->accent > CHORD_ACC_NONE)
     {
-      char * str2 =
-        g_strdup_printf (
-          "%s %s",
-          str,
-          chord_descriptor_chord_accent_to_string (
-            chord->accent));
-      g_free (str);
-      str = str2;
+      strcat (str, " ");
+      strcat (
+        str,
+        chord_descriptor_chord_accent_to_string (
+          chord->accent));
     }
   if (chord->has_bass &&
       (chord->bass_note != chord->root_note))
     {
-      char * str2 =
-        g_strdup_printf (
-          "%s/%s",
-          str,
-          chord_descriptor_note_to_string (
-            chord->bass_note));
-      g_free (str);
-      str = str2;
+      strcat (str, "/");
+      strcat (
+        str,
+        chord_descriptor_note_to_string (
+          chord->bass_note));
     }
-
-  return str;
 }
 
 void

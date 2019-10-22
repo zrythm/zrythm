@@ -80,7 +80,6 @@ chord_region_draw_cb (
     position_to_ticks (&r->clip_start_pos);
   ChordObject * co;
   ChordObject * next_co = NULL;
-  ChordDescriptor * descr;
   for (i = 0; i < main_region->num_chord_objects;
        i++)
     {
@@ -90,7 +89,8 @@ chord_region_draw_cb (
         (ChordObject *)
         arranger_object_info_get_visible_counterpart (
           &co->obj_info);
-      descr = chord_object_get_chord_descriptor (co);
+      const ChordDescriptor * descr =
+        chord_object_get_chord_descriptor (co);
 
       /* get ratio (0.0 - 1.0) on x where chord
        * starts & ends */
@@ -183,10 +183,13 @@ chord_region_draw_cb (
               PangoLayout * layout =
                 z_cairo_create_default_pango_layout (
                   widget);
+              char descr_str[100];
+              chord_descriptor_to_string (
+                descr, descr_str);
               z_cairo_draw_text_full (
                 cr, widget,
                 layout,
-                chord_descriptor_to_string (descr),
+                descr_str,
                 (int)
                 ((double) x_start *
                   (double) width + 2.0),

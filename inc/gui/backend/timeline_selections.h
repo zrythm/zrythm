@@ -153,13 +153,6 @@ timeline_selections_can_be_pasted (
   Position *           pos,
   const int            idx);
 
-/**
- * Code to run after deserializing.
- */
-void
-timeline_selections_post_deserialize (
-  TimelineSelections * ts);
-
 SERIALIZE_INC (
   TimelineSelections, timeline_selections)
 DESERIALIZE_INC (
