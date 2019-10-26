@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-21 19:37+0100\n"
-"PO-Revision-Date: 2019-10-26 12:30+0000\n"
+"PO-Revision-Date: 2019-10-28 15:53+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
 "\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9.1-dev\n"
+"X-Generator: Weblate 3.9.1\n"
 
 #: src/zrythm.c:264
 msgid "Setting up main window"
@@ -144,8 +144,7 @@ msgstr ""
 "Beispiele:\n"
 "  zrythm          führt das Programm normal aus\n"
 "\n"
-"Kommentare und Fehler bitte melden unter https://savannah.nongnu.org/support/"
-"?group=zrythm\n"
+"Kommentare und Fehler bitte melden unter %s\n"
 "Unterstütze dieses Projekt auf https://liberapay.com/Zrythm\n"
 "Webseite https://www.zrythm.org\n"
 
@@ -2221,7 +2220,7 @@ msgstr "Ereignisanzeige"
 
 #: resources/ui/automation_track.ui:31
 msgid "Control this automation track is for"
-msgstr ""
+msgstr "Steuerelement, für den diese Automatisierungsspur ist"
 
 #: resources/ui/automation_track.ui:43
 msgid "Mute automation track"
