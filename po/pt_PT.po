@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-09-23 12:35+0100\n"
-"PO-Revision-Date: 2019-10-19 22:53+0000\n"
+"PO-Revision-Date: 2019-10-27 13:24+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese (Portugal) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_PT/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: src/zrythm.c:286
 msgid "Initializing settings"
-msgstr "A inicializar as configurações"
+msgstr "A Inicializar as configurações"
 
 #: src/zrythm.c:297
 msgid "Initializing audio engine"
@@ -37,11 +37,11 @@ msgstr "A definir \"backend\""
 
 #: src/zrythm.c:315
 msgid "Loading project"
-msgstr "A carregar o projeto"
+msgstr "Carregando o projeto"
 
 #: src/project.c:311 src/audio/track.c:1101
 msgid "Master"
-msgstr "Master"
+msgstr "Mestre"
 
 #: src/project.c:391
 #, c-format
@@ -71,11 +71,11 @@ msgstr ""
 
 #: src/project.c:892
 msgid "Backup saved."
-msgstr "Cópia de segurança guardada."
+msgstr "Backup guardado."
 
 #: src/project.c:899
 msgid "Project saved."
-msgstr "Projeto guardado."
+msgstr "Projeto gravado."
 
 #: src/main.c:67
 #, c-format
@@ -107,6 +107,19 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "Website https://www.zrythm.org\n"
 msgstr ""
+"Utilização: zrythm [ OPÇÕES ] [ NOME DO PROJETO ]\n"
+"\n"
+"Opções:\n"
+"  -h, --help      mostra esta ajuda e sai\n"
+"  -v, --version   exibe informações de versão e sai\n"
+"\n"
+"Exemplos:\n"
+"  zrythm          executar normalmente\n"
+"\n"
+"Escreva comentários e bugs para https://savannah.nongnu.org/support/?group="
+"zrythm\n"
+"Apoie este projecto em https://liberapay.com/Zrythm\n"
+"Website https://www.zrythm.org\n"
 
 #: src/main.c:232
 #, c-format
@@ -124,6 +137,18 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
+"Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
+"\n"
+"Zrythm tem ABSOLUTAMENTE NEHUMA GARANTIA!\n"
+"\n"
+"É software livre e está convidado de redistribuí-lo\n"
+"sob certas condições. Olhe no ficheiro `COPYING' dentro desta\n"
+"distribuição para detalhes.\n"
+"\n"
+"Escreva comentários e bugs em https://savannah.nongnu.org/support/?group="
+"zrythm\n"
+"Apoie este projeto em https://liberapay.com/Zrythm\n"
+"\n"
 
 #: src/plugins/plugin_manager.c:230
 msgid "Error loading LV2 bundle dir: "
@@ -131,7 +156,7 @@ msgstr "Erro ao carregar o diretório de molhos LV2: "
 
 #: src/plugins/lv2/lv2_gtk.c:150
 msgid "Save State"
-msgstr "Guardar Estado"
+msgstr "Gravar Estado"
 
 #: src/plugins/lv2/lv2_gtk.c:153 src/plugins/lv2/lv2_gtk.c:568
 #: src/utils/dialogs.c:41 src/utils/dialogs.c:71 src/actions/actions.c:561
@@ -143,7 +168,7 @@ msgstr "_Cancelar"
 
 #: src/plugins/lv2/lv2_gtk.c:154 src/actions/actions.c:563
 msgid "_Save"
-msgstr "_Guardar"
+msgstr "_Gravar"
 
 #: src/plugins/lv2/lv2_gtk.c:468
 msgid "URI (Optional):"
@@ -155,7 +180,7 @@ msgstr "_Prefixo do nome do plugin"
 
 #: src/plugins/lv2/lv2_gtk.c:563
 msgid "Delete Preset?"
-msgstr "Eliminar pré-ajuste?"
+msgstr "Apagar Predefinição?"
 
 #: src/plugins/lv2/lv2_gtk.c:569 src/utils/dialogs.c:69
 #: resources/ui/port_selector_popover.ui:227 resources/ui/marker_dialog.ui:61
@@ -176,7 +201,7 @@ msgstr "Fechar"
 
 #: src/gui/widgets/create_project_dialog.c:119
 msgid "Untitled Project"
-msgstr "Projeto Sem Nome"
+msgstr "Projeto sem título"
 
 #: src/gui/widgets/create_project_dialog.c:142
 #: resources/ui/project_assistant.ui:86 resources/ui/shortcuts.ui:104
@@ -185,7 +210,7 @@ msgstr "Criar novo projeto"
 
 #: src/gui/widgets/port_connections_popover.c:58
 msgid "INPUTS"
-msgstr ""
+msgstr "ENTRADAS"
 
 #: src/gui/widgets/port_connections_popover.c:77
 msgid "OUTPUTS"
@@ -201,7 +226,7 @@ msgstr "duração da nota"
 
 #: src/gui/widgets/quantize_dialog.c:121
 msgid "note type"
-msgstr ""
+msgstr "tipo de nota"
 
 #: src/gui/widgets/track_properties_expander.c:78
 #, c-format
@@ -251,7 +276,7 @@ msgstr "Nenhum canal"
 
 #: src/gui/widgets/track_input_expander.c:411
 msgid "Inputs"
-msgstr ""
+msgstr "Entradas"
 
 #: src/gui/widgets/midi_controller_mb.c:46
 #: src/gui/widgets/midi_controller_mb.c:116
@@ -326,7 +351,7 @@ msgstr "Visibilidade"
 
 #: src/gui/widgets/top_bar.c:43 src/gui/widgets/ruler_marker.c:254
 msgid "Playhead"
-msgstr ""
+msgstr "Cabeça de Reprodução"
 
 #: src/gui/widgets/top_bar.c:45
 msgid "Playhead [Jack Timebase Master]"
@@ -350,7 +375,7 @@ msgstr "Desvincular o transporte JACK"
 
 #: src/gui/widgets/top_bar.c:228
 msgid "playhead"
-msgstr ""
+msgstr "cabeça de reprodução"
 
 #: src/gui/widgets/top_bar.c:262
 msgid "JACK Transport client"
@@ -379,7 +404,7 @@ msgstr "Estas portas não podem ser conectadas"
 
 #: src/gui/widgets/port_selector_popover.c:276
 msgid "Track Ports"
-msgstr "Portas da Faixa"
+msgstr "Portas de Faixa"
 
 #: src/gui/widgets/editor_selection_info.c:61
 msgid "start position"
@@ -400,7 +425,7 @@ msgstr "Propriedades do editor"
 
 #: src/gui/widgets/inspector.c:185
 msgid "Plugin properties"
-msgstr "Propriedades do plug-in"
+msgstr "Propriedades do plugin"
 
 #: src/gui/widgets/digital_meter.c:295
 msgid "normal"
@@ -467,7 +492,7 @@ msgstr "Adicionar Faixa de Grupo"
 #: src/gui/widgets/instrument_track.c:216 src/gui/widgets/midi_track.c:190
 #: resources/ui/transport_controls.ui:36
 msgid "Record"
-msgstr "Gravar"
+msgstr "Registro"
 
 #: src/gui/widgets/instrument_track.c:250 src/gui/widgets/midi_track.c:218
 msgid "Show automation lanes"
@@ -575,16 +600,16 @@ msgstr "Doar"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Report a Bug"
-msgstr "Reportar um Erro"
+msgstr "Reportar um erro"
 
 #: src/gui/widgets/track_lane.c:96
 msgid "Inherit"
-msgstr ""
+msgstr "Herdar"
 
 #: src/gui/widgets/home_toolbar.c:57 src/gui/widgets/home_toolbar.c:116
 #: resources/ui/home_toolbar.ui:34
 msgid "Undo"
-msgstr "Anular"
+msgstr "Desfazer"
 
 #: src/gui/widgets/home_toolbar.c:58 src/gui/widgets/home_toolbar.c:118
 #: resources/ui/home_toolbar.ui:47
@@ -609,7 +634,7 @@ msgstr "Duplicar"
 
 #: src/gui/widgets/home_toolbar.c:128
 msgid "Delete"
-msgstr "Eliminar"
+msgstr "Apagar"
 
 #: src/gui/widgets/home_toolbar.c:130
 msgid "Clear Selection"
@@ -621,7 +646,7 @@ msgstr "Selecionar Tudo"
 
 #: src/gui/widgets/home_toolbar.c:134
 msgid "Loop Selection"
-msgstr ""
+msgstr "Seleção de Loop"
 
 #: src/gui/widgets/right_dock_edge.c:102
 msgid "File Browser"
@@ -633,7 +658,7 @@ msgstr "Navegador de Plugins"
 
 #: src/gui/widgets/route_target_selector.c:54
 msgid "<tt><i>Engine</i></tt>"
-msgstr "<tt><i>Mecanismo</i></tt>"
+msgstr "<tt><i>Motor</i></tt>"
 
 #: src/gui/widgets/route_target_selector.c:79
 msgid "Cannot be routed"
@@ -662,11 +687,11 @@ msgstr "Opções de snap/grade"
 
 #: src/gui/widgets/header_notebook.c:82
 msgid "Toggle Left Panel"
-msgstr ""
+msgstr "Alternar Painel Esquerdo"
 
 #: src/gui/widgets/header_notebook.c:83
 msgid "Toggle Bottom Panel"
-msgstr ""
+msgstr "Alternar Painel Inferior"
 
 #: src/gui/widgets/header_notebook.c:84
 msgid "Toggle Top Panel"
@@ -674,11 +699,11 @@ msgstr "Alternar Painel Superior"
 
 #: src/gui/widgets/header_notebook.c:86
 msgid "Toggle Right Panel"
-msgstr ""
+msgstr "Alternar Painel Direito"
 
 #: src/gui/widgets/header_notebook.c:87
 msgid "About Zrythm"
-msgstr "Sobre Zrythm"
+msgstr "Sobre o Zrythm"
 
 #: src/gui/widgets/header_notebook.c:88 resources/ui/shortcuts.ui:40
 #: resources/ui/preferences.ui:27
@@ -691,11 +716,11 @@ msgstr "ambos"
 
 #: src/gui/widgets/piano_roll_key_label.c:103
 msgid "scale"
-msgstr ""
+msgstr "escala"
 
 #: src/gui/widgets/piano_roll_key_label.c:122
 msgid "chord"
-msgstr ""
+msgstr "acorde"
 
 #: src/gui/widgets/live_waveform.c:131
 msgid "Live waveform indicator"
@@ -769,11 +794,11 @@ msgstr "Novo Projeto"
 
 #: src/gui/widgets/project_toolbar.c:40
 msgid "Save"
-msgstr "Guardar"
+msgstr "Gravar"
 
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Save As"
-msgstr "Guardar Como"
+msgstr "Gravar Como"
 
 #: src/gui/widgets/project_toolbar.c:42 src/utils/dialogs.c:38
 msgid "Open Project"
@@ -805,15 +830,15 @@ msgstr "Melhor Ajuste"
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
-msgstr "Ecrã Completo"
+msgstr "Ecrã inteiro"
 
 #: src/gui/widgets/track.c:365
 msgid "_Delete Track"
-msgstr "_Eliminar Faixa"
+msgstr "_Apagar Faixa"
 
 #: src/gui/widgets/track.c:368
 msgid "_Delete Tracks"
-msgstr "_Eliminar Faixas"
+msgstr "_Apagar Faixas"
 
 #: src/gui/widgets/track.c:383
 msgid "_Duplicate Track"
@@ -829,11 +854,11 @@ msgstr "Adicionar Região"
 
 #: src/gui/widgets/track.c:416
 msgid "Hide Track"
-msgstr "Ocultar Faixa"
+msgstr "Esconder Faixa"
 
 #: src/gui/widgets/track.c:417
 msgid "Hide Tracks"
-msgstr "Ocultar Faixas"
+msgstr "Esconder Faixas"
 
 #: src/gui/widgets/fader.c:336
 msgid "Fader"
@@ -1017,7 +1042,7 @@ msgstr "MIDI"
 
 #: src/audio/track.c:1104 resources/ui/editor_toolbar.ui:58
 msgid "Chord"
-msgstr ""
+msgstr "Acorde"
 
 #: src/audio/track.c:1113
 msgid "Marker"
@@ -1123,12 +1148,12 @@ msgstr "Criar %d %ss"
 
 #: src/actions/delete_tracks_action.c:113
 msgid "Delete Track"
-msgstr "Eliminar Faixa"
+msgstr "Apagar Faixa"
 
 #: src/actions/delete_tracks_action.c:116
 #, c-format
 msgid "Delete %d Tracks"
-msgstr "Eliminar %d Faixas"
+msgstr "Apagar %d Faixas"
 
 #: src/actions/edit_marker_action.c:87
 msgid "Change Marker"
@@ -1141,11 +1166,11 @@ msgstr ""
 
 #: src/actions/actions.c:260
 msgid "Website"
-msgstr "Site da Web"
+msgstr "Site"
 
 #: src/actions/actions.c:558
 msgid "Save Project"
-msgstr "Guardar Projeto"
+msgstr "Gravar Projeto"
 
 #: src/actions/copy_plugins_action.c:186
 #, c-format
@@ -1155,7 +1180,7 @@ msgstr "Copiar %s"
 #: src/actions/copy_plugins_action.c:190
 #, c-format
 msgid "Copy %d Plugins"
-msgstr "Copiar %d Plug-ins"
+msgstr "Copiar %d Plugins"
 
 #: src/actions/move_midi_arranger_selections_action.c:125
 #: src/actions/move_timeline_selections_action.c:122
@@ -1200,7 +1225,7 @@ msgstr "Mover %s"
 #: src/actions/move_plugins_action.c:151
 #, c-format
 msgid "Move %d Plugins"
-msgstr "Mover %d Plug-ins"
+msgstr "Mover %d Plugins"
 
 #: src/actions/move_chord_selections_action.c:114
 msgid "Move Chord(s)"
@@ -1311,7 +1336,7 @@ msgstr "Apagar %d Plugins"
 
 #: resources/ui/rack_plugin.ui:31
 msgid "Plugin 1"
-msgstr "Plug-in 1"
+msgstr "Plugin 1"
 
 #: resources/ui/rack_plugin.ui:53
 msgid "in"
@@ -1399,78 +1424,78 @@ msgstr "Chave Raiz"
 #: resources/ui/chord_selector_window.ui:78
 #: resources/ui/chord_selector_window.ui:522
 msgid "C"
-msgstr "C"
+msgstr "Dó"
 
 #: resources/ui/scale_selector_window.ui:93
 #: resources/ui/chord_selector_window.ui:91
 #: resources/ui/chord_selector_window.ui:535
 msgid "D♭"
-msgstr "D♭"
+msgstr "Ré♭"
 
 #: resources/ui/scale_selector_window.ui:106
 #: resources/ui/chord_selector_window.ui:104
 #: resources/ui/chord_selector_window.ui:548
 msgid "D"
-msgstr "D"
+msgstr "Ré"
 
 #: resources/ui/scale_selector_window.ui:119
 #: resources/ui/chord_selector_window.ui:117
 #: resources/ui/chord_selector_window.ui:561
 msgid "E♭"
-msgstr "E♭"
+msgstr "Mi♭"
 
 #: resources/ui/scale_selector_window.ui:132
 #: resources/ui/chord_selector_window.ui:130
 #: resources/ui/chord_selector_window.ui:574
 msgid "E"
-msgstr "E"
+msgstr "Mi"
 
 #: resources/ui/scale_selector_window.ui:145
 #: resources/ui/chord_selector_window.ui:143
 #: resources/ui/chord_selector_window.ui:587
 msgid "F"
-msgstr "F"
+msgstr "Fa"
 
 #: resources/ui/scale_selector_window.ui:158
 #: resources/ui/chord_selector_window.ui:156
 #: resources/ui/chord_selector_window.ui:600
 msgid "F♯"
-msgstr "F♯"
+msgstr "Fa♯"
 
 #: resources/ui/scale_selector_window.ui:171
 #: resources/ui/chord_selector_window.ui:169
 #: resources/ui/chord_selector_window.ui:613
 msgid "G"
-msgstr "G"
+msgstr "Sol"
 
 #: resources/ui/scale_selector_window.ui:184
 #: resources/ui/chord_selector_window.ui:182
 #: resources/ui/chord_selector_window.ui:626
 msgid "A♭"
-msgstr "A♭"
+msgstr "La♭"
 
 #: resources/ui/scale_selector_window.ui:197
 #: resources/ui/chord_selector_window.ui:195
 #: resources/ui/chord_selector_window.ui:639
 msgid "A"
-msgstr "A"
+msgstr "La"
 
 #: resources/ui/scale_selector_window.ui:210
 #: resources/ui/chord_selector_window.ui:208
 #: resources/ui/chord_selector_window.ui:652
 msgid "B♭"
-msgstr "B♭"
+msgstr "Ci♭"
 
 #: resources/ui/scale_selector_window.ui:223
 #: resources/ui/chord_selector_window.ui:221
 #: resources/ui/chord_selector_window.ui:665
 msgid "B"
-msgstr "B"
+msgstr "Ci"
 
 #: resources/ui/scale_selector_window.ui:240 resources/ui/inspector_chord.ui:43
 #: resources/ui/editor_toolbar.ui:59
 msgid "Scale"
-msgstr ""
+msgstr "Escala"
 
 #: resources/ui/scale_selector_window.ui:267
 msgid "Chromatic"
@@ -1513,7 +1538,7 @@ msgstr "Editor"
 
 #: resources/ui/bot_dock_edge.ui:84
 msgid "Mixer panel"
-msgstr "Painel do misturador"
+msgstr "Painel Misturador"
 
 #: resources/ui/bot_dock_edge.ui:99
 msgid "Mixer"
@@ -1684,7 +1709,7 @@ msgstr "Cancelar"
 
 #: resources/ui/create_project_dialog.ui:69
 msgid "Parent directory"
-msgstr "Diretoria fonte"
+msgstr "Diretório acima"
 
 #: resources/ui/create_project_dialog.ui:82
 msgid "Select parent directory to save the project in"
@@ -1712,15 +1737,15 @@ msgstr "Painéis"
 
 #: resources/ui/shortcuts.ui:75
 msgid "Toggle left panel"
-msgstr ""
+msgstr "Alternar painel esquerdo"
 
 #: resources/ui/shortcuts.ui:82
 msgid "Toggle right panel"
-msgstr ""
+msgstr "Alternar painel direito"
 
 #: resources/ui/shortcuts.ui:89
 msgid "Toggle bottom panel"
-msgstr ""
+msgstr "Alternar painel inferior"
 
 #: resources/ui/shortcuts.ui:99 resources/ui/header_notebook.ui:55
 msgid "Project"
@@ -1732,7 +1757,7 @@ msgstr "Abrir um projeto"
 
 #: resources/ui/shortcuts.ui:118
 msgid "Save the project"
-msgstr "Guardar o projeto"
+msgstr "Gravar o projeto"
 
 #: resources/ui/shortcuts.ui:127
 msgid "Copy and Paste"
@@ -1752,7 +1777,7 @@ msgstr "Colar da área de transferência"
 
 #: resources/ui/shortcuts.ui:155
 msgid "Undo and Redo"
-msgstr "Anular e Refazer"
+msgstr "Desfazer e Refazer"
 
 #: resources/ui/shortcuts.ui:160
 msgid "Undo previous command"
@@ -1772,11 +1797,11 @@ msgstr "Selecionar tudo"
 
 #: resources/ui/shortcuts.ui:188
 msgid "Unselect all"
-msgstr "Desselecionar tudo"
+msgstr "Desmarcar tudo"
 
 #: resources/ui/shortcuts.ui:200
 msgid "Editor Shortcuts"
-msgstr "Editar Atalhos"
+msgstr "Atalhos do Editor"
 
 #: resources/ui/shortcuts.ui:204
 msgid "Tool"
@@ -1840,7 +1865,7 @@ msgstr "Looping"
 
 #: resources/ui/shortcuts.ui:307
 msgid "Loop selection"
-msgstr ""
+msgstr "Seleção de loop"
 
 #: resources/ui/midi_controller_popover.ui:37
 msgid "Controllers found"
@@ -1918,11 +1943,11 @@ msgstr "Pista 1"
 
 #: resources/ui/track_lane.ui:106
 msgid "MIDI Ch"
-msgstr ""
+msgstr "Can MIDI"
 
 #: resources/ui/track_lane.ui:121
 msgid "MIDI channel for this lane"
-msgstr ""
+msgstr "Canal MIDI para esta pista"
 
 #: resources/ui/export_midi_file_dialog.ui:36
 msgid "Select MIDI file"
@@ -1969,7 +1994,7 @@ msgstr "Format 1"
 
 #: resources/ui/modulator_view.ui:53 resources/ui/clip_editor_inner.ui:53
 msgid "Track name"
-msgstr ""
+msgstr "Nome da faixa"
 
 #: resources/ui/port_selector_popover.ui:36
 msgid "Select a port..."
@@ -2125,7 +2150,7 @@ msgstr "Gênero"
 
 #: resources/ui/export_dialog.ui:108 data/zrythm.desktop.in:20
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:119
 msgid "Electronic"
@@ -2211,7 +2236,7 @@ msgstr "Comprimento da nota para snap"
 
 #: resources/ui/snap_grid_popover.ui:126
 msgid "Note type"
-msgstr ""
+msgstr "Tipo de nota"
 
 #: resources/ui/editor_toolbar.ui:47
 msgid "Highlight"
@@ -2223,7 +2248,7 @@ msgstr "Nenhum"
 
 #: resources/ui/editor_toolbar.ui:60
 msgid "Both"
-msgstr ""
+msgstr "Ambos"
 
 #: resources/ui/preferences.ui:110
 msgid "Engine"
@@ -2285,7 +2310,7 @@ msgstr "Janela Principal"
 
 #: resources/ui/preferences.ui:339
 msgid "Show native decoration"
-msgstr ""
+msgstr "Mostrar decoração nativa"
 
 #: resources/ui/preferences.ui:362
 msgid "Editing"
@@ -2331,4 +2356,4 @@ msgstr ""
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:26
 msgid "zrythm"
-msgstr ""
+msgstr "zrythm"
