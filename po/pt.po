@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-21 19:37+0100\n"
-"PO-Revision-Date: 2019-10-23 15:53+0000\n"
+"PO-Revision-Date: 2019-10-28 15:53+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9.1-dev\n"
+"X-Generator: Weblate 3.9.1\n"
 
 #: src/zrythm.c:264
 msgid "Setting up main window"
@@ -521,7 +521,7 @@ msgstr "Adicionar Faixa de Áudio"
 
 #: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1168
 msgid "Audio Bus"
-msgstr "Bus Áudio"
+msgstr "Bus de Áudio"
 
 #: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1171
 msgid "MIDI Bus"
@@ -1056,7 +1056,7 @@ msgstr "Falha ao recuperar o valor va_list: %s"
 
 #: src/utils/dialogs.c:43
 msgid "_Open"
-msgstr "_ Abrir"
+msgstr "_Abrir"
 
 #: src/utils/dialogs.c:66
 msgid "Overwrite Plugin"
@@ -1726,11 +1726,11 @@ msgstr "Alternar visualizador de eventos"
 
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
-msgstr "Selecionar Projeto"
+msgstr "Selecionar um Projeto"
 
 #: resources/ui/project_assistant.ui:43
 msgid "Select a project"
-msgstr "Selecione um projeto"
+msgstr "Selecionar um projeto"
 
 #: resources/ui/project_assistant.ui:102
 msgid "Remove"
@@ -1876,11 +1876,11 @@ msgstr "Cancelar"
 
 #: resources/ui/create_project_dialog.ui:69
 msgid "Parent directory"
-msgstr "Abrir diretório"
+msgstr "Diretório acima"
 
 #: resources/ui/create_project_dialog.ui:82
 msgid "Select parent directory to save the project in"
-msgstr "Selecione o diretório pai para lá gravar o projeto"
+msgstr "Selecione o diretório acima para lá gravar o projeto"
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
@@ -2210,9 +2210,8 @@ msgid "Event Viewer"
 msgstr "Visualizador de Eventos"
 
 #: resources/ui/automation_track.ui:31
-#, fuzzy
 msgid "Control this automation track is for"
-msgstr "Controle que esta faixa de automação seja para"
+msgstr "Controle, para qual esta faixa de automação é"
 
 #: resources/ui/automation_track.ui:43
 msgid "Mute automation track"
