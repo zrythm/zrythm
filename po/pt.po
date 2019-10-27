@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-21 19:37+0100\n"
 "PO-Revision-Date: 2019-10-28 15:53+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
 "Language: pt\n"
@@ -599,7 +599,7 @@ msgstr "Protocolo"
 #: src/gui/widgets/about_dialog.c:78
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
-"uma estação de trabalho de áudio digital altamente automatizada e intuitiva"
+"Uma estação de trabalho de áudio digital altamente automatizada e intuitiva"
 
 #: src/gui/widgets/about_dialog.c:82
 msgid "Website"
