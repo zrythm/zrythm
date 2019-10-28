@@ -63,50 +63,56 @@ chord_region_draw_cb (
     context, cr, 0, 0, width, height);
 
   Region * r = rw_prv->region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
   Region * main_region =
-    region_get_main_region (r);
+    region_get_main (r);
+  ArrangerObject * main_region_obj =
+    (ArrangerObject *) main_region;
   int num_loops =
-    region_get_num_loops (r, 1);
+    arranger_object_get_num_loops (r_obj, 1);
   long ticks_in_region =
-    region_get_full_length_in_ticks (r);
+    arranger_object_get_length_in_ticks (r_obj);
   float x_start, x_end;
 
   /* draw midi notes */
   long loop_end_ticks =
-    position_to_ticks (&r->loop_end_pos);
+    r_obj->loop_end_pos.total_ticks;
   long loop_ticks =
-    region_get_loop_length_in_ticks (r);
+    arranger_object_get_loop_length_in_ticks (r_obj);
   long clip_start_ticks =
-    position_to_ticks (&r->clip_start_pos);
+    r_obj->clip_start_pos.total_ticks;
   ChordObject * co;
   ChordObject * next_co = NULL;
+  ArrangerObject * next_co_obj = NULL;
   for (i = 0; i < main_region->num_chord_objects;
        i++)
     {
-      co = main_region->chord_objects[i];
-
       co =
-        (ChordObject *)
-        arranger_object_info_get_visible_counterpart (
-          &co->obj_info);
+        chord_object_get_visible_counterpart (
+          main_region->chord_objects[i]);
+      ArrangerObject * co_obj =
+        (ArrangerObject *) co;
       const ChordDescriptor * descr =
         chord_object_get_chord_descriptor (co);
 
       /* get ratio (0.0 - 1.0) on x where chord
        * starts & ends */
       long co_start_ticks =
-        position_to_ticks (&co->pos);
+        co_obj->pos.total_ticks;
       long co_end_ticks;
       if (i < main_region->num_chord_objects - 1)
         {
           next_co =
             main_region->chord_objects[i + 1];
+          next_co_obj =
+            (ArrangerObject *) next_co;
           co_end_ticks =
-            position_to_ticks (&next_co->pos);
+            next_co_obj->pos.total_ticks;
         }
       else
         co_end_ticks =
-          position_to_ticks (&main_region->end_pos);
+          main_region_obj->end_pos.total_ticks;
       long tmp_start_ticks, tmp_end_ticks;
 
       /* adjust for clip start */
@@ -124,16 +130,16 @@ chord_region_draw_cb (
 
         /*}*/
       /* if before loop end */
-      if (position_compare (
-            &co->pos, &r->loop_end_pos) < 0)
+      if (position_is_before (
+            &co_obj->pos, &r_obj->loop_end_pos))
         {
           for (j = 0; j < num_loops; j++)
             {
               /* if note started before loop start
                * only draw it once */
-              if (position_compare (
-                    &co->pos,
-                    &r->loop_start_pos) < 0 &&
+              if (position_is_before (
+                    &co_obj->pos,
+                    &r_obj->loop_start_pos) &&
                   j != 0)
                 break;
 
@@ -143,8 +149,8 @@ chord_region_draw_cb (
               /* if should be clipped */
               if (next_co &&
                   position_is_after_or_equal (
-                    &next_co->pos,
-                    &r->loop_end_pos))
+                    &next_co_obj->pos,
+                    &r_obj->loop_end_pos))
                 tmp_end_ticks =
                   loop_end_ticks + loop_ticks * j;
               else
@@ -216,11 +222,11 @@ chord_region_widget_new (
 
   region_widget_setup (
     Z_REGION_WIDGET (self), region);
-  REGION_WIDGET_GET_PRIVATE (self);
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
   /* connect signals */
   g_signal_connect (
-    G_OBJECT (rw_prv->drawing_area), "draw",
+    G_OBJECT (ao_prv->drawing_area), "draw",
     G_CALLBACK (chord_region_draw_cb), self);
 
   return self;

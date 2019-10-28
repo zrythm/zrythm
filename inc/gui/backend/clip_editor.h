@@ -135,6 +135,14 @@ clip_editor_get_region_for_widgets (
   ClipEditor * self);
 
 /**
+ * Causes the selected Region to be redrawin in the
+ * UI, if any.
+ */
+void
+clip_editor_redraw_region (
+  ClipEditor * self);
+
+/**
  * @}
  */
 

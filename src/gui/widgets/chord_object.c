@@ -32,7 +32,7 @@
 G_DEFINE_TYPE (
   ChordObjectWidget,
   chord_object_widget,
-  GTK_TYPE_BOX)
+  ARRANGER_OBJECT_WIDGET_TYPE)
 
 static gboolean
 chord_draw_cb (
@@ -40,7 +40,9 @@ chord_draw_cb (
   cairo_t *   cr,
   ChordObjectWidget * self)
 {
-  if (self->redraw)
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
+
+  if (ao_prv->redraw)
     {
       GtkStyleContext *context =
         gtk_widget_get_style_context (widget);
@@ -50,16 +52,17 @@ chord_draw_cb (
       int height =
         gtk_widget_get_allocated_height (widget);
 
-      self->cached_surface =
+      ao_prv->cached_surface =
         cairo_surface_create_similar (
           cairo_get_target (cr),
           CAIRO_CONTENT_COLOR_ALPHA,
           width, height);
-      self->cached_cr =
-        cairo_create (self->cached_surface);
+      ao_prv->cached_cr =
+        cairo_create (ao_prv->cached_surface);
 
       gtk_render_background (
-        context, self->cached_cr, 0, 0, width, height);
+        context, ao_prv->cached_cr,
+        0, 0, width, height);
 
       /* get color */
       GdkRGBA color = P_CHORD_TRACK->color;
@@ -77,27 +80,27 @@ chord_draw_cb (
       ChordDescriptor * descr =
         CHORD_EDITOR->chords[chord_object->index];
       gdk_cairo_set_source_rgba (
-        self->cached_cr, &color);
+        ao_prv->cached_cr, &color);
       cairo_rectangle (
-        self->cached_cr, 0, 0,
+        ao_prv->cached_cr, 0, 0,
         width - CHORD_OBJECT_WIDGET_TRIANGLE_W,
         height);
-      cairo_fill(self->cached_cr);
+      cairo_fill (ao_prv->cached_cr);
 
       cairo_move_to (
-        self->cached_cr,
+        ao_prv->cached_cr,
         width - CHORD_OBJECT_WIDGET_TRIANGLE_W, 0);
       cairo_line_to (
-        self->cached_cr, width, height);
+        ao_prv->cached_cr, width, height);
       cairo_line_to (
-        self->cached_cr,
+        ao_prv->cached_cr,
         width - CHORD_OBJECT_WIDGET_TRIANGLE_W,
         height);
       cairo_line_to (
-        self->cached_cr,
+        ao_prv->cached_cr,
         width - CHORD_OBJECT_WIDGET_TRIANGLE_W, 0);
-      cairo_close_path (self->cached_cr);
-      cairo_fill(self->cached_cr);
+      cairo_close_path (ao_prv->cached_cr);
+      cairo_fill (ao_prv->cached_cr);
 
       char str[100];
       chord_descriptor_to_string (descr, str);
@@ -112,19 +115,19 @@ chord_draw_cb (
       ui_get_contrast_color (
         &color, &c2);
       gdk_cairo_set_source_rgba (
-        self->cached_cr, &c2);
+        ao_prv->cached_cr, &c2);
       PangoLayout * layout =
         z_cairo_create_default_pango_layout (
           widget);
       z_cairo_draw_text (
-        self->cached_cr, widget, layout, str);
+        ao_prv->cached_cr, widget, layout, str);
       g_object_unref (layout);
 
-      self->redraw = 0;
+      ao_prv->redraw = 0;
     }
 
   cairo_set_source_surface (
-    cr, self->cached_surface, 0, 0);
+    cr, ao_prv->cached_surface, 0, 0);
   cairo_paint (cr);
 
  return FALSE;
@@ -150,43 +153,15 @@ on_press (
     }
 }
 
-void
-chord_object_widget_force_redraw (
-  ChordObjectWidget * self)
-{
-  self->redraw = 1;
-  gtk_widget_queue_draw (GTK_WIDGET (self));
-}
-
-static gboolean
-on_motion (
-  GtkWidget *      widget,
-  GdkEventMotion * event,
-  ChordObjectWidget * self)
-{
-  if (event->type == GDK_ENTER_NOTIFY)
-    {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT,
-        0);
-    }
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT);
-    }
-  chord_object_widget_force_redraw (self);
-
-  return FALSE;
-}
-
 ChordObjectWidget *
 chord_object_widget_new (ChordObject * chord)
 {
   ChordObjectWidget * self =
     g_object_new (CHORD_OBJECT_WIDGET_TYPE, NULL);
+
+  arranger_object_widget_setup (
+    Z_ARRANGER_OBJECT_WIDGET (self),
+    (ArrangerObject *) chord);
 
   self->chord_object = chord;
 
@@ -194,58 +169,43 @@ chord_object_widget_new (ChordObject * chord)
 }
 
 static void
+finalize (
+  ChordObjectWidget * self)
+{
+  if (self->mp)
+    g_object_unref (self->mp);
+
+  G_OBJECT_CLASS (
+    chord_object_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
 chord_object_widget_class_init (
   ChordObjectWidgetClass * _klass)
 {
-  /*GtkWidgetClass * klass =*/
-    /*GTK_WIDGET_CLASS (_klass);*/
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
 
 static void
 chord_object_widget_init (
   ChordObjectWidget * self)
 {
-  self->drawing_area =
-    GTK_DRAWING_AREA (gtk_drawing_area_new ());
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->drawing_area), 1);
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (self->drawing_area), 1);
-  gtk_container_add (
-    GTK_CONTAINER (self),
-    GTK_WIDGET (self->drawing_area));
-
-  /* GDK_ALL_EVENTS_MASK is needed, otherwise the
-   * grab gets broken */
-  gtk_widget_add_events (
-    GTK_WIDGET (self->drawing_area),
-    GDK_ALL_EVENTS_MASK);
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
   self->mp =
     GTK_GESTURE_MULTI_PRESS (
       gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->drawing_area)));
+        GTK_WIDGET (ao_prv->drawing_area)));
 
   g_signal_connect (
-    G_OBJECT (self->drawing_area), "draw",
+    G_OBJECT (ao_prv->drawing_area), "draw",
     G_CALLBACK (chord_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self->drawing_area),
-    "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self->drawing_area),
-    "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self->drawing_area),
-    "motion-notify-event",
-    G_CALLBACK (on_motion),  self);
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",
     G_CALLBACK (on_press), self);
-
-  self->redraw = 1;
-
-  g_object_ref (self);
 }

@@ -57,8 +57,7 @@ audio_track_fill_stereo_ports_from_clip (
   const nframes_t local_start_frame,
   nframes_t       nframes)
 {
-  long region_start_frames,
-       region_end_frames,
+  long region_end_frames,
        local_frames_start,
        /*local_frames_end,*/
        loop_start_frames,
@@ -77,6 +76,7 @@ audio_track_fill_stereo_ports_from_clip (
     return;
 
   Region * r;
+  ArrangerObject * r_obj;
   TrackLane * lane;
   for (k = 0; k < self->num_lanes; k++)
     {
@@ -85,32 +85,32 @@ audio_track_fill_stereo_ports_from_clip (
       for (i = 0; i < lane->num_regions; i++)
         {
           r = lane->regions[i];
+          r_obj = (ArrangerObject *) r;
           if (region_is_hit_by_range (
                 r,
                 cycle_start_frames,
                 cycle_end_frames, 1))
             {
-              region_start_frames =
-                position_to_frames (&r->start_pos);
               region_end_frames =
-                position_to_frames (&r->end_pos);
+                r_obj->end_pos.frames;
               local_frames_start =
                 cycle_start_frames -
-                  region_start_frames;
+                  r_obj->pos.frames;
               /*local_frames_end =*/
                 /*local_frames_start + nframes;*/
 
               loop_start_frames =
                 position_to_frames (
-                  &r->loop_start_pos);
+                  &r_obj->loop_start_pos);
               loop_end_frames =
                 position_to_frames (
-                  &r->loop_end_pos);
+                  &r_obj->loop_end_pos);
               loop_frames =
-                region_get_loop_length_in_frames (r);
+                arranger_object_get_loop_length_in_frames (
+                  r_obj);
               clip_start_frames =
                 position_to_frames (
-                  &r->clip_start_pos);
+                  &r_obj->clip_start_pos);
               local_frames_start +=
                 clip_start_frames;
               while (local_frames_start >=

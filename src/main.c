@@ -50,35 +50,32 @@
 
 #include <fftw3.h>
 
+#define BACKTRACE_SIZE 30
+
 /** SIGSEGV handler. */
 static void
 handler (int sig)
 {
-  void *array[20];
+  void *array[BACKTRACE_SIZE];
   char ** strings;
 
   /* get void*'s for all entries on the stack */
-  int size = backtrace(array, 20);
+  int size = backtrace (array, BACKTRACE_SIZE);
 
   /* print out all the frames to stderr */
-  char * str, * tmp, * tmp2;
-  str =
-    g_strdup_printf (
-      _("Error: signal %d - Backtrace:"), sig);
+  char message[3000], current_line[800];
+  sprintf (
+    message,
+    _("Error: signal %d - Backtrace:"), sig);
   strings = backtrace_symbols (array, size);
-
   for (int i = 0; i < size; i++)
     {
-      tmp2 = str;
-      tmp = g_strdup_printf ("%s", strings[i]);
-      str =
-        g_strconcat (
-          str, "\n", tmp, NULL);
-      g_free (tmp);
-      g_free (tmp2);
+      sprintf (current_line, "%s\n", strings[i]);
+      strcat (message, current_line);
     }
+  free (strings);
 
-  g_message ("%s", str);
+  g_message ("%s", message);
 
   GtkDialogFlags flags =
     GTK_DIALOG_DESTROY_WITH_PARENT;
@@ -103,11 +100,9 @@ handler (int sig)
       "> What is expected to happen?\n\n"
       "# Version\n%s\n\n"
       "# Other info\n"
-      "> Context, etc.\n\n"
+      "> Context, distro, etc.\n\n"
       "# Backtrace\n%s\n",
-      ver,
-      str
-      );
+      ver, message);
   g_free (ver);
   char * report_template_escaped =
     g_uri_escape_string (
@@ -130,7 +125,7 @@ handler (int sig)
     markup);
   gtk_message_dialog_format_secondary_markup (
     GTK_MESSAGE_DIALOG (dialog),
-    "%s", str);
+    "%s", message);
   GtkLabel * label =
     z_gtk_message_dialog_get_label (
       GTK_MESSAGE_DIALOG (dialog), 1);
@@ -139,8 +134,6 @@ handler (int sig)
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 
-  free (strings);
-  g_free (str);
   g_free (report_template);
   g_free (atag);
   g_free (markup);

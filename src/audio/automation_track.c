@@ -53,7 +53,8 @@ automation_track_init_loaded (
     {
       region = self->regions[i];
       region->at = self;
-      region_init_loaded (region);
+      arranger_object_init_loaded (
+        (ArrangerObject *) region);
     }
 }
 
@@ -136,15 +137,16 @@ automation_track_get_region_before_pos (
   const Position *        pos)
 {
   Region * region;
+  ArrangerObject * r_obj;
   for (int i = self->num_regions - 1;
        i >= 0; i--)
     {
       region = self->regions[i];
-
+      r_obj = (ArrangerObject *) region;
       if (position_is_before_or_equal (
-            &region->start_pos, pos) &&
+            &r_obj->pos, pos) &&
           position_is_after_or_equal (
-            &region->end_pos, pos))
+            &r_obj->end_pos, pos))
         return region;
     }
   return NULL;
@@ -170,14 +172,15 @@ automation_track_get_ap_before_pos (
 
   long local_pos =
     region_timeline_frames_to_local (
-    r, pos->frames, 1);
+      r, pos->frames, 1);
 
   AutomationPoint * ap;
+  ArrangerObject * obj;
   for (int i = r->num_aps - 1; i >= 0; i--)
     {
       ap = r->aps[i];
-
-      if (ap->pos.frames <= local_pos)
+      obj = (ArrangerObject *) ap;
+      if (obj->pos.frames <= local_pos)
         return ap;
     }
 
@@ -203,6 +206,8 @@ automation_track_get_normalized_val_at_pos (
   AutomationPoint * prev_ap =
     automation_track_get_ap_before_pos (
       self, pos);
+  ArrangerObject * prev_ap_obj =
+    (ArrangerObject *) prev_ap;
 
   /* no automation points yet, return negative
    * (no change) */
@@ -218,6 +223,8 @@ automation_track_get_normalized_val_at_pos (
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
       prev_ap->region, prev_ap);
+  ArrangerObject * next_ap_obj =
+    (ArrangerObject *) next_ap;
   /*g_message ("prev fvalue %f next %f",*/
              /*prev_ap->fvalue,*/
              /*next_ap->fvalue);*/
@@ -240,9 +247,9 @@ automation_track_get_normalized_val_at_pos (
 
   /* ratio of how far in we are in the curve */
   long prev_ap_frames =
-    position_to_frames (&prev_ap->pos);
+    position_to_frames (&prev_ap_obj->pos);
   long next_ap_frames =
-    position_to_frames (&next_ap->pos);
+    position_to_frames (&next_ap_obj->pos);
   double ratio =
     (double) (localp - prev_ap_frames) /
     (double) (next_ap_frames - prev_ap_frames);
@@ -278,8 +285,8 @@ automation_track_update_frames (
 {
   for (int i = 0; i < self->num_regions; i++)
     {
-      region_update_frames (
-        self->regions[i]);
+      arranger_object_update_frames (
+        (ArrangerObject *) self->regions[i]);
     }
 }
 
@@ -293,16 +300,17 @@ automation_track_get_last_region (
   Position pos;
   position_init (&pos);
   Region * region, * last_region = NULL;
+  ArrangerObject * r_obj;
   for (int i = 0; i < self->num_regions; i++)
     {
       region = self->regions[i];
-
+      r_obj = (ArrangerObject *) region;
       if (position_is_after (
-            &region->end_pos, &pos))
+            &r_obj->end_pos, &pos))
         {
           last_region = region;
           position_set_to_pos (
-            &pos, &region->end_pos);
+            &pos, &r_obj->end_pos);
         }
     }
   return last_region;
@@ -332,8 +340,10 @@ automation_track_clone (
     {
       src_region = src->regions[j];
       dest->regions[j] =
-        region_clone (
-          src_region, REGION_CLONE_COPY_MAIN);
+        (Region *)
+        arranger_object_clone (
+          (ArrangerObject *) src_region,
+          ARRANGER_OBJECT_CLONE_COPY_MAIN);
     }
 
   return dest;

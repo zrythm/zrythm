@@ -45,18 +45,30 @@
  */
 typedef struct ChordSelections
 {
-  /** Selected ChordObject's. */
-  ChordObject * chord_objects[600];
-  int           num_chord_objects;
+  /** Base struct. */
+  ArrangerSelections  base;
+
+  /** Selected ChordObject's.
+   *
+   * These are used for
+   * serialization/deserialization only. */
+  ChordObject **      chord_objects;
+  int                 num_chord_objects;
+  size_t              chord_objects_size;
 
 } ChordSelections;
 
 static const cyaml_schema_field_t
   chord_selections_fields_schema[] =
 {
+  CYAML_FIELD_MAPPING (
+    "base", CYAML_FLAG_DEFAULT,
+    ChordSelections, base,
+    arranger_selections_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "chord_objects", CYAML_FLAG_DEFAULT,
-    ChordSelections, chord_objects, num_chord_objects,
+    "chord_objects", CYAML_FLAG_POINTER,
+    ChordSelections, chord_objects,
+    num_chord_objects,
     &chord_object_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
@@ -70,11 +82,6 @@ chord_selections_schema = {
     chord_selections_fields_schema),
 };
 
-ARRANGER_SELECTIONS_DECLARE_FUNCS (
-  Chord, chord);
-ARRANGER_SELECTIONS_DECLARE_OBJ_FUNCS (
-  Chord, chord, ChordObject, chord_object);
-
 /**
  * Returns if the selections can be pasted.
  *
@@ -86,6 +93,11 @@ chord_selections_can_be_pasted (
   ChordSelections * ts,
   Position *        pos,
   Region *          region);
+
+void
+chord_selections_paste_to_pos (
+  ChordSelections * ts,
+  Position *        playhead);
 
 SERIALIZE_INC (ChordSelections,
                chord_selections)

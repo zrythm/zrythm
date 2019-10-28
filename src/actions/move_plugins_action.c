@@ -38,7 +38,7 @@ move_plugins_action_new (
     	MovePluginsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UNDOABLE_ACTION_TYPE_MOVE_PLUGINS;
+	  UA_MOVE_PLUGINS;
 
   self->to_slot = to_slot;
   g_warn_if_fail (ms->plugins[0]->track);

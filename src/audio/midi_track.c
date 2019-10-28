@@ -87,7 +87,10 @@ send_notes_off_at (
   midi_time_t        time,
   NoteProcessingType type)
 {
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
   MidiNote * mn;
+  ArrangerObject * mn_obj;
   switch (type)
     {
     case TYPE_TRANSPORT_LOOP:
@@ -117,26 +120,29 @@ send_notes_off_at (
         long tmp_start;
         long tmp_end;
         int num_loops =
-          region_get_num_loops (region, 0);
+          arranger_object_get_num_loops (r_obj, 0);
         long region_end_adjusted =
-          region_get_full_length_in_frames (
-            region);
+          arranger_object_get_length_in_frames (
+            r_obj);
         long loop_length_frames =
-          region_get_loop_length_in_frames (region);
+          arranger_object_get_loop_length_in_frames (
+            r_obj);
 
         for (int i = 0;
              i < region->num_midi_notes;
              i++)
           {
             mn = region->midi_notes[i];
+            mn_obj =
+              (ArrangerObject *) mn;
 
             /* add num_loops * loop_ticks to the
              * midi note start & end poses to get
              * last pos in region */
             tmp_start =
-              mn->start_pos.frames;
+              mn_obj->pos.frames;
             tmp_end =
-              mn->end_pos.frames;
+              mn_obj->end_pos.frames;
             for (int j = 0; j < num_loops; j++)
               {
                 tmp_start +=
@@ -167,19 +173,21 @@ send_notes_off_at (
         "--- sending notes off REGION_LOOP_END");
       {
         long region_loop_end_adj =
-          region->loop_end_pos.frames -
-          region->clip_start_pos.frames;
+          r_obj->loop_end_pos.frames -
+          r_obj->clip_start_pos.frames;
         for (int i = 0;
              i < region->num_midi_notes;
              i++)
           {
             mn = region->midi_notes[i];
+            mn_obj =
+              (ArrangerObject *) mn;
 
             /* if note is on at the boundary, send
              * note off */
-            if (mn->start_pos.frames <
+            if (mn_obj->pos.frames <
                   region_loop_end_adj &&
-                mn->end_pos.frames >=
+                mn_obj->end_pos.frames >=
                   region_loop_end_adj)
               {
                 midi_events_add_note_off (
@@ -202,7 +210,7 @@ send_notes_off_at (
 static inline void
 note_ons_during_region_loop (
   MidiEvents *     midi_events,
-  const MidiNote * mn,
+  MidiNote *       mn,
   const long       r_local_pos,
   const long       r_local_end_pos,
   const long       g_frames_start,
@@ -215,9 +223,14 @@ note_ons_during_region_loop (
   if (r_local_end_pos > r_local_pos)
     return;
 
+  ArrangerObject * r_obj =
+    (ArrangerObject *) mn->region;
+  ArrangerObject * mn_obj =
+    (ArrangerObject *) mn;
+
   /* get frames till r loop end */
   long frames_till_r_loop_end =
-    mn->region->loop_end_pos.frames -
+    r_obj->loop_end_pos.frames -
       r_local_pos;
 
   /* get global frames at loop end */
@@ -233,16 +246,16 @@ note_ons_during_region_loop (
 
   if (
     /* mn starts before the loop point */
-    mn->start_pos.frames >= r_local_pos &&
-    mn->start_pos.frames <
-      mn->region->loop_end_pos.frames - 1)
+    mn_obj->pos.frames >= r_local_pos &&
+    mn_obj->pos.frames <
+      r_obj->loop_end_pos.frames - 1)
     {
       g_message (
         "midi note on during region loop (before "
         "loop point)");
       midi_time_t time =
         (midi_time_t)
-        (mn->start_pos.frames - r_local_pos);
+        (mn_obj->pos.frames - r_local_pos);
       midi_events_add_note_on (
         midi_events,
         midi_region_get_midi_ch (mn->region),
@@ -253,23 +266,23 @@ note_ons_during_region_loop (
     }
   /* mn starts after the loop point */
   else if (
-    mn->start_pos.frames >=
-      mn->region->loop_start_pos.frames &&
-    mn->start_pos.frames <
-      mn->region->loop_start_pos.frames +
+    mn_obj->pos.frames >=
+      r_obj->loop_start_pos.frames &&
+    mn_obj->pos.frames <
+      r_obj->loop_start_pos.frames +
         r_local_end_pos &&
     /* we are still inside the region */
     r_local_end_pos + g_r_loop_end +
-      (mn->start_pos.frames -
-        mn->region->loop_start_pos.frames) <
-    mn->region->end_pos.frames)
+      (mn_obj->pos.frames -
+         r_obj->loop_start_pos.frames) <
+       r_obj->end_pos.frames)
     {
       g_message (
         "midi note on during region loop (after "
         "loop point)");
       midi_time_t time =
         (midi_time_t)
-        (mn->region->loop_end_pos.frames -
+        (r_obj->loop_end_pos.frames -
            r_local_pos);
       midi_events_add_note_on (
         midi_events,
@@ -371,6 +384,7 @@ midi_track_fill_midi_events (
   long g_end_frames;
   long r_local_pos, r_local_end_pos;
   Region * r;
+  ArrangerObject * r_obj, * mn_obj;
   MidiNote * mn;
   midi_time_t time;
 
@@ -410,6 +424,7 @@ midi_track_fill_midi_events (
           for (i = 0; i < lane->num_regions; i++)
             {
               r = lane->regions[i];
+              r_obj = (ArrangerObject *) r;
               region_loop_met = 0;
 
               /* skip if region is not hit
@@ -488,22 +503,22 @@ midi_track_fill_midi_events (
               /* if region actually ends on the
                * timeline within this cycle */
               if (
-                r->end_pos.frames !=
+                r_obj->end_pos.frames !=
                   TRANSPORT->loop_end_pos.frames &&
                 /* greater than because we need at
                  * least 1 sample before */
-                r->end_pos.frames >
+                r_obj->end_pos.frames >
                   g_start_frames &&
                 /* <= because we need 1 sample
                  * before */
-                r->end_pos.frames <=
+                r_obj->end_pos.frames <=
                   g_end_frames)
                 {
                   time =
                     (midi_time_t)
                     /* -1 sample to end 1 sample
                      * earlier than the end pos */
-                    ((r->end_pos.frames - 1) -
+                    ((r_obj->end_pos.frames - 1) -
                       g_start_frames);
                   send_notes_off_at (
                     r, midi_events, time,
@@ -524,7 +539,7 @@ midi_track_fill_midi_events (
                    * end point */
                   time =
                     (midi_time_t)
-                    (((r->loop_end_pos.frames -
+                    (((r_obj->loop_end_pos.frames -
                       r_local_pos)) - 1);
                   send_notes_off_at (
                     r, midi_events, time,
@@ -540,6 +555,8 @@ midi_track_fill_midi_events (
                 {
                   mn =
                     r->midi_notes[kk];
+                  mn_obj =
+                    (ArrangerObject *) mn;
 
                   /* add note ons during region
                    * loop */
@@ -557,18 +574,18 @@ midi_track_fill_midi_events (
                     region_hit_exclusive &&
                     /* make sure note is after clip
                      * start */
-                    mn->start_pos.frames >=
-                      r->clip_start_pos.frames &&
-                    mn->start_pos.frames >=
+                    mn_obj->pos.frames >=
+                      r_obj->clip_start_pos.frames &&
+                    mn_obj->pos.frames >=
                       r_local_pos &&
-                    mn->start_pos.frames <
+                    mn_obj->pos.frames <
                       r_local_pos + nframes)
                     {
                       g_message (
                         "normal note on");
                       time =
                         (midi_time_t)
-                        ((mn->start_pos.frames -
+                        ((mn_obj->pos.frames -
                            r_local_pos) +
                          diff_to_tp_loop_end);
                       midi_events_add_note_on (
@@ -589,12 +606,12 @@ midi_track_fill_midi_events (
                   if (
                     /* note ends after the cycle
                      * start */
-                    mn->end_pos.frames >=
+                    mn_obj->end_pos.frames >=
                       r_local_pos &&
                     /* either note ends before
                      * the cycle end or the region
                      * looped */
-                    (mn->end_pos.frames <=
+                    (mn_obj->end_pos.frames <=
                        r_local_end_pos ||
                      region_loop_met))
                     {
@@ -602,17 +619,17 @@ midi_track_fill_midi_events (
                        * note ends before the cycle
                        * end or the region was
                        * looped */
-                      if (mn->end_pos.frames <=
+                      if (mn_obj->end_pos.frames <=
                             r_local_end_pos)
                         time =
                           (midi_time_t)
-                          (((mn->end_pos.frames -
+                          (((mn_obj->end_pos.frames -
                              r_local_pos) - 1) +
                             diff_to_tp_loop_end);
                       else /* region was looped */
                         time =
                           (midi_time_t)
-                          ((r->loop_end_pos.frames -
+                          ((r_obj->loop_end_pos.frames -
                               r_local_pos) - 1);
                       midi_events_add_note_off (
                         midi_events,

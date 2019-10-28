@@ -31,7 +31,6 @@
 #include "audio/chord_descriptor.h"
 #include "audio/position.h"
 #include "gui/backend/arranger_object.h"
-#include "gui/backend/arranger_object_info.h"
 #include "utils/yaml.h"
 
 /**
@@ -41,28 +40,27 @@
  */
 
 #define chord_object_is_main(c) \
-  arranger_object_info_is_main ( \
-    &c->obj_info)
-
+  arranger_object_is_main ( \
+    (ArrangerObject *) c)
 #define chord_object_is_transient(r) \
-  arranger_object_info_is_transient ( \
-    &r->obj_info)
+  arranger_object_is_transient ( \
+    (ArrangerObject *) r)
+#define chord_object_get_main(r) \
+  ((ChordObject *) \
+   arranger_object_get_main ( \
+     (ArrangerObject *) r))
+#define chord_object_get_main_trans(r) \
+  ((ChordObject *) \
+   arranger_object_get_main_trans ( \
+     (ArrangerObject *) r))
+#define chord_object_is_selected(r) \
+  arranger_object_is_selected ( \
+    (ArrangerObject *) r)
+#define chord_object_get_visible_counterpart(r) \
+  ((ChordObject *) \
+   arranger_object_get_visible_counterpart ( \
+     (ArrangerObject *) r))
 
-/** Gets the main counterpart of the ChordObject. */
-#define chord_object_get_main_chord_object(r) \
-  ((ChordObject *) r->obj_info.main)
-
-/** Gets the transient counterpart of the ChordObject. */
-#define chord_object_get_main_trans_chord_object(r) \
-  ((ChordObject *) r->obj_info.main_trans)
-
-typedef enum ChordObjectCloneFlag
-{
-  CHORD_OBJECT_CLONE_COPY_MAIN,
-  CHORD_OBJECT_CLONE_COPY,
-} ChordObjectCloneFlag;
-
-typedef struct _ChordObjectWidget ChordObjectWidget;
 typedef struct ChordDescriptor ChordDescriptor;
 
 /**
@@ -71,12 +69,8 @@ typedef struct ChordDescriptor ChordDescriptor;
  */
 typedef struct ChordObject
 {
-  /** ChordObject object position (if used in chord
-   * Track). */
-  Position            pos;
-
-  /** Cache, used in runtime operations. */
-  Position            cache_pos;
+  /** Base struct. */
+  ArrangerObject  base;
 
   /** The index of the chord it belongs to
    * (0 topmost). */
@@ -88,18 +82,15 @@ typedef struct ChordObject
   /** Used in clones to identify a region instead of
    * cloning the whole Region. */
   char *              region_name;
-
-  ChordObjectWidget * widget;
-
-  ArrangerObjectInfo  obj_info;
 } ChordObject;
 
 static const cyaml_schema_field_t
   chord_object_fields_schema[] =
 {
   CYAML_FIELD_MAPPING (
-    "pos", CYAML_FLAG_DEFAULT,
-    ChordObject, pos, position_fields_schema),
+    "base", CYAML_FLAG_DEFAULT,
+    ChordObject, base,
+    arranger_object_fields_schema),
 	CYAML_FIELD_INT (
     "index", CYAML_FLAG_DEFAULT,
     ChordObject, index),
@@ -109,27 +100,10 @@ static const cyaml_schema_field_t
 
 static const cyaml_schema_value_t
 chord_object_schema = {
-	CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
-			ChordObject, chord_object_fields_schema),
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    ChordObject, chord_object_fields_schema),
 };
-
-
-ARRANGER_OBJ_DECLARE_MOVABLE (
-  ChordObject, chord_object);
-
-/**
- * Init the ChordObject after the Project is loaded.
- */
-void
-chord_object_init_loaded (
-  ChordObject * self);
-
-/**
- * Mainly used for copy-pasting.
- */
-void
-chord_object_post_deserialize (
-  ChordObject * self);
 
 /**
  * Creates a ChordObject.
@@ -140,15 +114,10 @@ chord_object_new (
   int index,
   int is_main);
 
-static inline int
+int
 chord_object_is_equal (
   ChordObject * a,
-  ChordObject * b)
-{
-  return
-    !position_compare(&a->pos, &b->pos) &&
-    a->index == b->index;
-}
+  ChordObject * b);
 
 /**
  * Sets the Track of the chord.
@@ -167,43 +136,12 @@ chord_object_get_chord_descriptor (
   ChordObject * self);
 
 /**
- * Updates the frames of each position in each child
- * of the ChordObject recursively.
- */
-void
-chord_object_update_frames (
-  ChordObject * self);
-
-/**
- * Finds the ChordObject in the project
- * corresponding to the given one.
- */
-ChordObject *
-chord_object_find (
-  ChordObject * clone);
-
-/**
  * Finds the ChordObject in the project
  * corresponding to the given one's position.
  */
 ChordObject *
 chord_object_find_by_pos (
   ChordObject * clone);
-
-/**
- * Clones the given chord.
- */
-ChordObject *
-chord_object_clone (
-  ChordObject * src,
-  ChordObjectCloneFlag flag);
-
-/**
- * Frees the ChordObject.
- */
-void
-chord_object_free (
-  ChordObject * self);
 
 /**
  * @}

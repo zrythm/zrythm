@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/edit_midi_arranger_selections_action.h"
+#include "actions/arranger_selections.h"
 #include "audio/midi_note.h"
 #include "audio/velocity.h"
 #include "gui/widgets/arranger.h"
@@ -62,11 +62,13 @@ midi_modifier_arranger_widget_set_allocation (
       /* use transient or non transient note
        * depending on which is visible */
       MidiNote * mn = vw->velocity->midi_note;
-      mn = midi_note_get_visible (mn);
+      ArrangerObject * mn_obj =
+        arranger_object_get_visible_counterpart (
+          (ArrangerObject *) mn);
 
       gint wx, wy;
       gtk_widget_translate_coordinates(
-                GTK_WIDGET (mn->widget),
+                GTK_WIDGET (mn_obj->widget),
                 GTK_WIDGET (self),
                 0,
                 0,
@@ -129,100 +131,10 @@ midi_modifier_arranger_widget_select (
         Z_VELOCITY_WIDGET (velocities[i]);
       Velocity * vel =
         vel_w->velocity;
-      ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-        MW_MIDI_ARRANGER,
-        vel->midi_note,
-        1,
-        1);
+      arranger_object_select (
+        (ArrangerObject *) vel->midi_note,
+        F_SELECT, F_APPEND);
     }
-}
-
-VelocityWidget *
-midi_modifier_arranger_widget_get_hit_velocity (
-  MidiModifierArrangerWidget *  self,
-  double                        x,
-  double                        y)
-{
-  GtkWidget * widget =
-    ui_get_hit_child (
-      GTK_CONTAINER (self),
-      x,
-      y,
-      VELOCITY_WIDGET_TYPE);
-  if (widget)
-    return Z_VELOCITY_WIDGET (widget);
-
-  return NULL;
-}
-
-void
-midi_modifier_arranger_widget_on_drag_begin_velocity_hit (
-  MidiModifierArrangerWidget * self,
-  double                       start_x,
-  double                       start_y,
-  VelocityWidget *             vel_w)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  self->start_velocity = vel_w->velocity;
-
-  /* update arranger action */
-  if (vel_w->resize)
-    ar_prv->action = UI_OVERLAY_ACTION_RESIZING_UP;
-  else
-    ar_prv->action = UI_OVERLAY_ACTION_NONE;
-
-  int selected =
-    velocity_is_selected (self->start_velocity);
-
-  MidiNote * mn = self->start_velocity->midi_note;
-
-  /* select midi note if unselected */
-  if (P_TOOL == TOOL_EDIT ||
-      P_TOOL == TOOL_SELECT_NORMAL ||
-      P_TOOL == TOOL_SELECT_STRETCH)
-    {
-      /* if ctrl held & not selected, add to
-       * selections */
-      if (ar_prv->ctrl_held &&
-          !selected)
-        {
-          ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-            self, mn, F_SELECT, F_APPEND);
-        }
-      /* if ctrl not held & not selected, make it
-       * the only
-       * selection */
-      else if (!ar_prv->ctrl_held &&
-               !selected)
-        {
-          ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-            self, mn, F_SELECT, F_NO_APPEND);
-        }
-    }
-}
-
-void
-midi_modifier_arranger_widget_select_all (
-  MidiModifierArrangerWidget *  self,
-  int                           select)
-{
-
-  /* TODO */
-}
-
-/**
- * Shows context menu.
- *
- * To be called from parent on right click.
- */
-void
-midi_modifier_arranger_widget_show_context_menu (
-  MidiModifierArrangerWidget * self,
-  double                       x,
-  double                       y)
-{
-  /* TODO */
 }
 
 /**
@@ -251,6 +163,10 @@ midi_modifier_arranger_widget_ramp (
       &selection_start_pos,
     F_PADDING);
 
+  ArrangerObject * region_obj =
+    (ArrangerObject *) CLIP_EDITOR->region;
+  g_return_if_fail (region_obj);
+
   /* find enclosed velocities */
   int         velocities_size = 1;
   Velocity ** velocities =
@@ -260,7 +176,7 @@ midi_modifier_arranger_widget_ramp (
       sizeof (Velocity *));
   int         num_velocities = 0;
   track_get_velocities_in_range (
-    region_get_track (CLIP_EDITOR->region),
+    arranger_object_get_track (region_obj),
     &selection_start_pos,
     &selection_end_pos,
     &velocities,
@@ -315,7 +231,7 @@ midi_modifier_arranger_widget_ramp (
   /* find velocities not hit */
   num_velocities = 0;
   track_get_velocities_in_range (
-    region_get_track (CLIP_EDITOR->region),
+    arranger_object_get_track (region_obj),
     &selection_start_pos,
     &selection_end_pos,
     &velocities,
@@ -374,7 +290,7 @@ midi_modifier_arranger_widget_resize_velocities (
         MA_SELECTIONS->midi_notes[i]->vel;
 
       vel =
-        velocity_get_main_trans_velocity (vel);
+        velocity_get_main_trans (vel);
       velocity_set_val (
         vel,
         CLAMP (
@@ -382,13 +298,14 @@ midi_modifier_arranger_widget_resize_velocities (
           1, 127),
         AO_UPDATE_ALL);
 
-      /*g_message ("set val to %d (transient? %d)",*/
-                 /*vel->vel,*/
-                 /*velocity_is_transient (vel));*/
-
-      if (vel->widget)
-        velocity_widget_update_tooltip (
-          vel->widget, 1);
+      ArrangerObject * vel_obj =
+        (ArrangerObject *) vel;
+      if (GTK_IS_WIDGET (vel_obj->widget))
+        {
+          arranger_object_widget_update_tooltip (
+            Z_ARRANGER_OBJECT_WIDGET (
+              vel_obj->widget), 1);
+        }
     }
 }
 
@@ -414,26 +331,33 @@ midi_modifier_arranger_widget_on_drag_end (
         MA_SELECTIONS->midi_notes[i];
       vel = midi_note->vel;
 
-      if (vel->widget)
-        velocity_widget_update_tooltip (
-          vel->widget, 0);
+      ArrangerObject * vel_obj =
+        (ArrangerObject *) vel;
+      if (Z_IS_ARRANGER_OBJECT_WIDGET (
+            vel_obj->widget))
+        {
+          arranger_object_widget_update_tooltip (
+            (ArrangerObjectWidget *)
+            vel_obj->widget, 0);
+        }
 
-      EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
-                   midi_note);
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CHANGED, midi_note);
     }
 
-  midi_modifier_arranger_widget_update_visibility (
-    self);
+  arranger_widget_update_visibility (
+    (ArrangerWidget *) self);
 
   switch (ar_prv->action)
     {
     case UI_OVERLAY_ACTION_RESIZING_UP:
       {
+        /* FIXME */
         UndoableAction * ua =
-          (UndoableAction *)
-          emas_action_new_vel_change (
-            MA_SELECTIONS,
-            self->vel_diff);
+          arranger_selections_action_new_edit (
+            (ArrangerSelections *) MA_SELECTIONS,
+            (ArrangerSelections *) MA_SELECTIONS,
+            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
         undo_manager_perform (
           UNDO_MANAGER, ua);
       }
@@ -455,11 +379,10 @@ midi_modifier_arranger_widget_on_drag_end (
             &selection_start_pos,
           F_PADDING);
         UndoableAction * ua =
-          (UndoableAction *)
-          emas_action_new_vel_ramp (
-            MA_SELECTIONS,
-            &selection_start_pos,
-            &selection_end_pos);
+          arranger_selections_action_new_edit (
+            (ArrangerSelections *) MA_SELECTIONS,
+            (ArrangerSelections *) MA_SELECTIONS,
+            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
         if (ua)
           undo_manager_perform (
             UNDO_MANAGER, ua);
@@ -467,35 +390,6 @@ midi_modifier_arranger_widget_on_drag_end (
       break;
     default:
       break;
-    }
-
-
-  self->start_velocity = NULL;
-
-  /* if didn't click on something */
-  if (ar_prv->action !=
-        UI_OVERLAY_ACTION_STARTING_MOVING)
-    {
-      self->start_velocity = NULL;
-    }
-}
-
-/**
- * Sets transient Velocity and actual Velocity
- * visibility based on the current action.
- */
-void
-midi_modifier_arranger_widget_update_visibility (
-  MidiModifierArrangerWidget * self)
-{
-  /* see ARRANGER_SET_OBJ_VISIBILITY_ARRAY */
-  Velocity * vel;
-  for (int i = 0;
-       i < MA_SELECTIONS->num_midi_notes; i++)
-    {
-      vel = MA_SELECTIONS->midi_notes[i]->vel;
-      arranger_object_info_set_widget_visibility_and_state (
-        &vel->obj_info, 1);
     }
 }
 
@@ -518,8 +412,8 @@ midi_modifier_arranger_widget_setup (
 ArrangerCursor
 midi_modifier_arranger_widget_get_cursor (
   MidiModifierArrangerWidget * self,
-  UiOverlayAction action,
-  Tool            tool)
+  UiOverlayAction              action,
+  Tool                         tool)
 {
   ArrangerCursor ac = ARRANGER_CURSOR_SELECT;
   ARRANGER_WIDGET_GET_PRIVATE (self);
@@ -531,16 +425,20 @@ midi_modifier_arranger_widget_get_cursor (
           tool == TOOL_SELECT_STRETCH ||
           tool == TOOL_EDIT)
         {
-          VelocityWidget * vw =
-            midi_modifier_arranger_widget_get_hit_velocity (
-              self,
-              ar_prv->hover_x,
-              ar_prv->hover_y);
+          ArrangerObject * vel_obj =
+            arranger_widget_get_hit_arranger_object (
+              (ArrangerWidget *) self,
+              VELOCITY_WIDGET_TYPE,
+              ar_prv->hover_x, ar_prv->hover_y);
+          int is_hit = vel_obj != NULL;
+          int is_resize = 0;
 
-          int is_hit =
-            vw != NULL;
-          int is_resize =
-            vw && vw->resize;
+          if (is_hit)
+            {
+              ARRANGER_OBJECT_WIDGET_GET_PRIVATE (
+                vel_obj->widget);
+              is_resize = ao_prv->resize_up;
+            }
 
           /*g_message ("hit resize %d %d",*/
                      /*is_hit, is_resize);*/
@@ -627,19 +525,27 @@ add_children_from_region (
         {
           if (j == 0)
             vel =
-              velocity_get_main_velocity (
+              velocity_get_main (
                 mn->vel);
           else if (j == 1)
             vel =
-              velocity_get_main_trans_velocity (
+              velocity_get_main_trans (
                 mn->vel);
 
-          if (!vel->widget)
-            vel->widget =
-              velocity_widget_new (vel);
+          g_return_if_fail (vel);
 
-          ARRANGER_WIDGET_ADD_OBJ_CHILD (
-            self, vel);
+          ArrangerObject * vel_obj =
+            (ArrangerObject *) vel;
+
+          if (!Z_IS_ARRANGER_OBJECT_WIDGET (
+                vel_obj->widget))
+            {
+              arranger_object_gen_widget (
+                vel_obj);
+            }
+
+          arranger_widget_add_overlay_child (
+            (ArrangerWidget *) self, vel_obj);
         }
     }
 }

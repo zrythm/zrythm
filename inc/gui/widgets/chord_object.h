@@ -36,7 +36,7 @@ G_DECLARE_FINAL_TYPE (
   ChordObjectWidget,
   chord_object_widget,
   Z, CHORD_OBJECT_WIDGET,
-  GtkBox);
+  ArrangerObjectWidget);
 
 typedef struct ChordObjectObject ChordObjectObject;
 
@@ -53,19 +53,11 @@ typedef struct ChordObjectObject ChordObjectObject;
  */
 typedef struct _ChordObjectWidget
 {
-  GtkBox           parent_instance;
-  GtkDrawingArea * drawing_area;
+  ArrangerObjectWidget parent_instance;
   ChordObject *    chord_object;
 
   /** For double click. */
   GtkGestureMultiPress * mp;
-
-  /** Set to 1 to redraw. */
-  int                redraw;
-
-  cairo_t *          cached_cr;
-
-  cairo_surface_t *  cached_surface;
 } ChordObjectWidget;
 
 /**
@@ -74,10 +66,6 @@ typedef struct _ChordObjectWidget
 ChordObjectWidget *
 chord_object_widget_new (
   ChordObject * chord);
-
-void
-chord_object_widget_force_redraw (
-  ChordObjectWidget * self);
 
 /**
  * @}

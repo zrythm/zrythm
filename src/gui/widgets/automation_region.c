@@ -35,9 +35,10 @@
 #include "utils/cairo.h"
 #include "utils/math.h"
 
-G_DEFINE_TYPE (AutomationRegionWidget,
-               automation_region_widget,
-               REGION_WIDGET_TYPE)
+G_DEFINE_TYPE (
+  AutomationRegionWidget,
+  automation_region_widget,
+  REGION_WIDGET_TYPE)
 
 
 #define Y_PADDING 6.f
@@ -49,8 +50,10 @@ automation_region_draw_cb (
   cairo_t *cr,
   AutomationRegionWidget * self)
 {
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
+
   /* not cached, redraw */
-  if (!self->cache)
+  if (ao_prv->redraw)
     {
       int i, j;
       REGION_WIDGET_GET_PRIVATE (self);
@@ -62,37 +65,43 @@ automation_region_draw_cb (
         gtk_widget_get_allocated_width (widget);
       int height =
         gtk_widget_get_allocated_height (widget);
-      self->cached_surface =
+      ao_prv->cached_surface =
         cairo_surface_create_similar (
           cairo_get_target (cr),
           CAIRO_CONTENT_COLOR_ALPHA,
           width,
           height);
-      self->cached_cr =
-        cairo_create (self->cached_surface);
+      ao_prv->cached_cr =
+        cairo_create (ao_prv->cached_surface);
 
       gtk_render_background (
-        context, self->cached_cr, 0, 0, width, height);
+        context, ao_prv->cached_cr,
+        0, 0, width, height);
 
       cairo_set_source_rgba (
-        self->cached_cr, 1, 1, 1, 1);
+        ao_prv->cached_cr, 1, 1, 1, 1);
 
       Region * r = rw_prv->region;
       Region * main_region =
-        region_get_main_region (r);
+        region_get_main (r);
       int num_loops =
-        region_get_num_loops (r, 1);
+        arranger_object_get_num_loops (
+          (ArrangerObject *) r, 1);
       long ticks_in_region =
-        region_get_full_length_in_ticks (r);
+        arranger_object_get_length_in_ticks (
+          (ArrangerObject *) r);
       double x_start, y_start, x_end, y_end;
 
       /* draw automation */
       long loop_end_ticks =
-        position_to_ticks (&r->loop_end_pos);
+        ((ArrangerObject *) r)->
+          loop_end_pos.total_ticks;
       long loop_ticks =
-        region_get_loop_length_in_ticks (r);
+        arranger_object_get_loop_length_in_ticks (
+          (ArrangerObject *) r);
       long clip_start_ticks =
-        position_to_ticks (&r->clip_start_pos);
+        ((ArrangerObject *) r)->
+          clip_start_pos.total_ticks;
       AutomationPoint * ap, * next_ap;
       AutomationCurve * ac;
       for (i = 0; i < main_region->num_aps; i++)
@@ -111,30 +120,39 @@ automation_region_draw_cb (
 
           ap =
             (AutomationPoint *)
-            arranger_object_info_get_visible_counterpart (
-              &ap->obj_info);
+            arranger_object_get_visible_counterpart (
+              (ArrangerObject *) ap);
 
-          /* get ratio (0.0 - 1.0) on x where midi note
-           * starts & ends */
+          /* get ratio (0.0 - 1.0) on x where midi
+           * note starts & ends */
           long ap_start_ticks =
-            position_to_ticks (&ap->pos);
+            ((ArrangerObject *) ap)->
+              pos.total_ticks;
           long ap_end_ticks = ap_start_ticks;
           if (next_ap)
-            ap_end_ticks =
-              position_to_ticks (&next_ap->pos);
+            {
+              ap_end_ticks =
+                ((ArrangerObject *) next_ap)->
+                  pos.total_ticks;
+            }
           long tmp_start_ticks, tmp_end_ticks;
 
           /* if before loop end */
-          if (position_compare (
-                &ap->pos, &r->loop_end_pos) < 0)
+          ArrangerObject * r_obj =
+            (ArrangerObject *) r;
+          ArrangerObject * ap_obj =
+            (ArrangerObject *) ap;
+          if (position_is_before (
+                &ap_obj->pos,
+                &r_obj->loop_end_pos))
             {
               for (j = 0; j < num_loops; j++)
                 {
                   /* if ap started before loop start
                    * only draw it once */
                   if (position_is_before (
-                        &ap->pos,
-                        &r->loop_start_pos) &&
+                        &ap_obj->pos,
+                        &r_obj->loop_start_pos) &&
                       j != 0)
                     break;
 
@@ -144,10 +162,12 @@ automation_region_draw_cb (
                     loop_ticks * (long) j;
 
                   /* if should be clipped */
+                  ArrangerObject * next_ap_obj =
+                    (ArrangerObject *) next_ap;
                   if (next_ap &&
                       position_is_after_or_equal (
-                        &next_ap->pos,
-                        &r->loop_end_pos))
+                        &next_ap_obj->pos,
+                        &r_obj->loop_end_pos))
                     tmp_end_ticks =
                       loop_end_ticks +
                       loop_ticks *  (long) j;
@@ -195,12 +215,12 @@ automation_region_draw_cb (
                   /* draw ap */
                   int padding = 1;
                   cairo_rectangle (
-                    self->cached_cr,
+                    ao_prv->cached_cr,
                     x_start_real - padding,
                     y_start_real - padding,
                     2 * padding,
                     2 * padding);
-                  cairo_fill (self->cached_cr);
+                  cairo_fill (ao_prv->cached_cr);
 
                   /* draw ac */
                   if (ac)
@@ -241,26 +261,29 @@ automation_region_draw_cb (
                                 k, 0.0, 0.001))
                             {
                               cairo_move_to (
-                                self->cached_cr, new_x, new_y);
+                                ao_prv->cached_cr,
+                                new_x, new_y);
                             }
 
                           cairo_line_to (
-                            self->cached_cr, new_x, new_y);
+                            ao_prv->cached_cr,
+                            new_x, new_y);
                         }
-                      cairo_stroke (self->cached_cr);
+                      cairo_stroke (
+                        ao_prv->cached_cr);
                     }
                 }
             }
         }
 
       region_widget_draw_name (
-        Z_REGION_WIDGET (self), self->cached_cr);
+        Z_REGION_WIDGET (self), ao_prv->cached_cr);
 
-      self->cache = 1;
+      ao_prv->redraw = 0;
     }
 
   cairo_set_source_surface (
-    cr, self->cached_surface, 0, 0);
+    cr, ao_prv->cached_surface, 0, 0);
   cairo_paint (cr);
 
   return FALSE;
@@ -277,11 +300,11 @@ automation_region_widget_new (
 
   region_widget_setup (
     Z_REGION_WIDGET (self), region);
-  REGION_WIDGET_GET_PRIVATE (self);
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
   /* connect signals */
   g_signal_connect (
-    G_OBJECT (rw_prv->drawing_area), "draw",
+    G_OBJECT (ao_prv->drawing_area), "draw",
     G_CALLBACK (automation_region_draw_cb), self);
 
   return self;

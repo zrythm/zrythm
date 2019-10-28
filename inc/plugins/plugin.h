@@ -282,7 +282,8 @@ descriptor_fields_schema[] =
 	  PluginDescriptor, num_audio_outs),
   CYAML_FIELD_ENUM (
     "arch", CYAML_FLAG_DEFAULT,
-    PluginDescriptor, arch, plugin_architecture_strings,
+    PluginDescriptor, arch,
+    plugin_architecture_strings,
     CYAML_ARRAY_LEN (plugin_architecture_strings)),
   CYAML_FIELD_ENUM (
     "protocol", CYAML_FLAG_DEFAULT,

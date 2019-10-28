@@ -55,11 +55,13 @@ clip_editor_inner_widget_refresh (
   ClipEditorInnerWidget * self)
 {
   Region * r = CLIP_EDITOR->region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
   Track * track = NULL;
 
   if (r)
     {
-      track = region_get_track (r);
+      track = arranger_object_get_track (r_obj);
 
       color_area_widget_set_color (
         self->color_bar,

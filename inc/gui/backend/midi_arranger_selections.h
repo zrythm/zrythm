@@ -45,18 +45,27 @@
  */
 typedef struct MidiArrangerSelections
 {
+  /** Base struct. */
+  ArrangerSelections base;
+
   /** Selected notes. */
-  MidiNote *               midi_notes[600];
-  int                      num_midi_notes;
+  MidiNote **        midi_notes;
+  int                num_midi_notes;
+  size_t             midi_notes_size;
 
 } MidiArrangerSelections;
 
 static const cyaml_schema_field_t
   midi_arranger_selections_fields_schema[] =
 {
+  CYAML_FIELD_MAPPING (
+    "base", CYAML_FLAG_DEFAULT,
+    MidiArrangerSelections, base,
+    arranger_selections_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "midi_notes", CYAML_FLAG_DEFAULT,
-    MidiArrangerSelections, midi_notes, num_midi_notes,
+    "midi_notes", CYAML_FLAG_POINTER,
+    MidiArrangerSelections, midi_notes,
+    num_midi_notes,
     &midi_note_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
@@ -69,33 +78,6 @@ midi_arranger_selections_schema = {
     MidiArrangerSelections,
     midi_arranger_selections_fields_schema),
 };
-
-ARRANGER_SELECTIONS_DECLARE_FUNCS (
-  MidiArranger, midi_arranger);
-ARRANGER_SELECTIONS_DECLARE_OBJ_FUNCS (
-  MidiArranger, midi_arranger, MidiNote, midi_note);
-
-/**
- * Gets first (position-wise) MidiNote.
- *
- * If transient is 1, the transient notes are
- * checked instead.
- */
-MidiNote *
-midi_arranger_selections_get_first_midi_note (
-  MidiArrangerSelections * mas,
-  int                      transient);
-
-/**
- * Gets last (position-wise) MidiNote.
- *
- * If transient is 1, the transient notes are
- * checked instead.
- */
-MidiNote *
-midi_arranger_selections_get_last_midi_note (
-  MidiArrangerSelections * mas,
-  int                      transient);
 
 MidiNote *
 midi_arranger_selections_get_highest_note (
@@ -119,22 +101,10 @@ midi_arranger_selections_can_be_pasted (
   Position *               pos,
   Region *                 region);
 
-/**
- * Adds a Velocity (MidiNote) to the selections.
- */
-#define midi_arranger_selections_add_velocity( \
-  mas, vel) \
-  midi_arranger_selections_add_midi_note ( \
-    mas, vel->midi_note)
-
-/**
- * Removes a Velocity (MidiNote) from the
- * selections.
- */
-#define midi_arranger_selections_remove_velocity( \
-  mas, vel) \
-  midi_arranger_selections_remove_midi_note ( \
-    mas, vel->midi_note)
+void
+midi_arranger_selections_paste_to_pos (
+  MidiArrangerSelections * ts,
+  Position *               playhead);
 
 SERIALIZE_INC (MidiArrangerSelections,
                midi_arranger_selections)

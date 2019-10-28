@@ -43,8 +43,10 @@ track_lane_init_loaded (
   for (i = 0; i < lane->num_regions; i++)
     {
       region = lane->regions[i];
+      ArrangerObject * r_obj =
+        (ArrangerObject *) region;
       region->lane = lane;
-      region_init_loaded (region);
+      arranger_object_init_loaded (r_obj);
     }
 }
 
@@ -88,7 +90,9 @@ track_lane_update_frames (
   for (int i = 0; i < self->num_regions; i++)
     {
       r = self->regions[i];
-      region_update_frames (r);
+      ArrangerObject * r_obj =
+        (ArrangerObject *) r;
+      arranger_object_update_frames (r_obj);
     }
 }
 
@@ -180,8 +184,10 @@ track_lane_clone (
       /* clone region */
       region = lane->regions[i];
       new_region =
-        region_clone (
-          region, REGION_CLONE_COPY_MAIN);
+        (Region *)
+        arranger_object_clone (
+          (ArrangerObject *) region,
+          ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
       new_lane->regions[i] = new_region;
       region_set_lane (new_region, new_lane);
@@ -243,7 +249,8 @@ track_lane_free (
     g_free (self->name);
 
   for (int i = 0; i < self->num_regions; i++)
-    region_free_all (self->regions[i]);
+    arranger_object_free_all (
+      (ArrangerObject *) self->regions[i]);
 
   free (self);
 }

@@ -17,62 +17,56 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Undoable actions.
+ */
+
 #ifndef __UNDO_UNDOABLE_ACTION_H__
 #define __UNDO_UNDOABLE_ACTION_H__
 
+/**
+ * @addtogroup actions
+ *
+ * @{
+ */
+
+/**
+ * Type of UndoableAction.
+ */
 typedef enum UndoableActionType
 {
   /* --------- Track/Channel ---------- */
-  UNDOABLE_ACTION_TYPE_CREATE_TRACKS,
-  UNDOABLE_ACTION_TYPE_MOVE_TRACKS,
+  UA_CREATE_TRACKS,
+  UA_MOVE_TRACKS,
   /** Edit track/channel parameters. */
-  UNDOABLE_ACTION_TYPE_EDIT_TRACKS,
-  UNDOABLE_ACTION_TYPE_COPY_TRACKS,
-  UNDOABLE_ACTION_TYPE_DELETE_TRACKS,
+  UA_EDIT_TRACKS,
+  UA_COPY_TRACKS,
+  UA_DELETE_TRACKS,
 
   /* ---------------- end ----------------- */
 
   /* ---------------- Plugin --------------- */
 
-  UNDOABLE_ACTION_TYPE_CREATE_PLUGINS,
-  UNDOABLE_ACTION_TYPE_MOVE_PLUGINS,
-  UNDOABLE_ACTION_TYPE_EDIT_PLUGINS,
-  UNDOABLE_ACTION_TYPE_COPY_PLUGINS,
-  UNDOABLE_ACTION_TYPE_DELETE_PLUGINS,
+  UA_CREATE_PLUGINS,
+  UA_MOVE_PLUGINS,
+  UA_EDIT_PLUGINS,
+  UA_COPY_PLUGINS,
+  UA_DELETE_PLUGINS,
 
   /* ---------------- end ----------------- */
 
-  /* --------- TIMELINE SELECTIONS ---------- */
-  /**
-   * Delete selections on timeline.
-   */
-  UNDOABLE_ACTION_TYPE_CREATE_TL_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_MOVE_TL_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_EDIT_TL_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_DUPLICATE_TL_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_DELETE_TL_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_QUANTIZE_TL_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_EDIT_SCALE,
-  UNDOABLE_ACTION_TYPE_EDIT_MARKER,
+  /* --------- ARRANGER SELECTIONS ---------- */
 
-  /* ---------------- end ----------------- */
-
-  /* ---------- CHORD_SELECTIONS --------------- */
-
-  UNDOABLE_ACTION_TYPE_CREATE_CHORD_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_MOVE_CHORD_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_DUPLICATE_CHORD_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_EDIT_CHORD,
-
-  /* --------------- end ---------------- */
-
-  /* -------- MIDI ARRANGER SELECTIONS --------- */
-
-  UNDOABLE_ACTION_TYPE_CREATE_MA_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_MOVE_MA_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_EDIT_MA_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_DUPLICATE_MA_SELECTIONS,
-  UNDOABLE_ACTION_TYPE_DELETE_MA_SELECTIONS,
+  UA_CREATE_ARRANGER_SELECTIONS,
+  UA_MOVE_ARRANGER_SELECTIONS,
+  UA_RESIZE_ARRANGER_SELECTIONS,
+  UA_SPLIT_ARRANGER_SELECTIONS,
+  UA_EDIT_ARRANGER_SELECTIONS,
+  UA_DUPLICATE_ARRANGER_SELECTIONS,
+  UA_DELETE_ARRANGER_SELECTIONS,
+  UA_QUANTIZE_ARRANGER_SELECTIONS,
 
   /* ---------------- end ----------------- */
 
@@ -95,7 +89,8 @@ typedef struct UndoableAction
  * @return Non-zero if errors occurred.
  */
 int
-undoable_action_do (UndoableAction * self);
+undoable_action_do (
+  UndoableAction * self);
 
 /**
  * Undoes the action.
@@ -103,10 +98,12 @@ undoable_action_do (UndoableAction * self);
  * @return Non-zero if errors occurred.
  */
 int
-undoable_action_undo (UndoableAction * self);
+undoable_action_undo (
+  UndoableAction * self);
 
 void
-undoable_action_free (UndoableAction * self);
+undoable_action_free (
+  UndoableAction * self);
 
 /**
  * Stringizes the action to be used in Undo/Redo
@@ -117,5 +114,9 @@ undoable_action_free (UndoableAction * self);
 char *
 undoable_action_stringize (
   UndoableAction * ua);
+
+/**
+ * @}
+ */
 
 #endif

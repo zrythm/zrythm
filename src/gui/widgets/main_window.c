@@ -150,7 +150,8 @@ main_window_widget_refresh (
   g_warn_if_fail (TRACKLIST_SELECTIONS->tracks[0]);
   EVENTS_PUSH (ET_TRACK_CHANGED,
                TRACKLIST_SELECTIONS->tracks[0]);
-  EVENTS_PUSH (ET_TL_SELECTIONS_CHANGED, NULL);
+  EVENTS_PUSH (
+    ET_ARRANGER_SELECTIONS_CHANGED, TL_SELECTIONS);
   event_viewer_widget_refresh (
     MW_TIMELINE_EVENT_VIEWER);
 }

@@ -42,7 +42,7 @@
 G_DEFINE_TYPE (
   AutomationCurveWidget,
   automation_curve_widget,
-  GTK_TYPE_DRAWING_AREA)
+  ARRANGER_OBJECT_WIDGET_TYPE)
 
 static double
 curve_val_from_real (
@@ -61,12 +61,6 @@ real_val_from_curve (
   return
     curve * AP_CURVINESS_RANGE +
     AP_MIN_CURVINESS;
-}
-
-static double clamp
-(double x, double upper, double lower)
-{
-    return MIN(upper, MAX(x, lower));
 }
 
 static void
@@ -93,15 +87,17 @@ drag_update (
   /*double height = gtk_widget_get_allocated_height (GTK_WIDGET (self));*/
   double adjusted_diff = diff / 120.0;
   double new_curve_val =
-    clamp (
+    CLAMP (
       curve_val_from_real (self) + adjusted_diff,
-      1.0, 0.0);
+      0.0, 1.0);
   automation_curve_set_curviness (
     self->ac,
     real_val_from_curve (self, new_curve_val));
   self->last_x = offset_x;
   self->last_y = offset_y;
-  gtk_widget_queue_draw (GTK_WIDGET (self));
+
+  arranger_object_widget_force_redraw (
+    Z_ARRANGER_OBJECT_WIDGET (self));
 }
 
 static void
@@ -117,61 +113,50 @@ drag_end (
 
 static gboolean
 automation_curve_draw_cb (
-  AutomationCurveWidget * self,
-  cairo_t *cr,
-  gpointer data)
+  GtkWidget *             widget,
+  cairo_t *               cr,
+  AutomationCurveWidget * self)
 {
-  if (self->redraw)
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
+
+  if (ao_prv->redraw)
     {
       gint width, height;
       GtkStyleContext *context;
 
       width =
-        gtk_widget_get_allocated_width (
-          GTK_WIDGET (self));
+        gtk_widget_get_allocated_width (widget);
       height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (self));
-      self->cached_surface =
+        gtk_widget_get_allocated_height (widget);
+      ao_prv->cached_surface =
         cairo_surface_create_similar (
           cairo_get_target (cr),
           CAIRO_CONTENT_COLOR_ALPHA,
           width,
           height);
-      self->cached_cr =
-        cairo_create (self->cached_surface);
+      ao_prv->cached_cr =
+        cairo_create (ao_prv->cached_surface);
 
       context =
-        gtk_widget_get_style_context (GTK_WIDGET (self));
+        gtk_widget_get_style_context (widget);
 
-      gtk_render_background (context, self->cached_cr, 0, 0, width, height);
+      gtk_render_background (
+        context, ao_prv->cached_cr,
+        0, 0, width, height);
 
       /*cairo_rectangle (self->cached_cr, 0, 0, width, height);*/
       /*cairo_fill (self->cached_cr);*/
 
-      GdkRGBA * color;
       Track * track = self->ac->region->at->track;
-      color = &track->color;
-      /*if (self->hover)*/
-        /*{*/
-          /*cairo_set_source_rgba (self->cached_cr,*/
-                                 /*color->red + 0.2,*/
-                                 /*color->green + 0.2,*/
-                                 /*color->blue + 0.2,*/
-                                 /*0.8);*/
-        /*}*/
-      /*else if (self->selected)*/
-        /*{*/
-          /*cairo_set_source_rgba (self->cached_cr,*/
-                                 /*color->red + 0.4,*/
-                                 /*color->green + 0.4,*/
-                                 /*color->blue + 0.4,*/
-                                 /*0.8);*/
-        /*}*/
-      /*else*/
-        /*{*/
-          cairo_set_source_rgba (self->cached_cr, color->red, color->green, color->blue, 0.7);
-        /*}*/
+      GdkRGBA color = track->color;
+      ui_get_arranger_object_color (
+        &color,
+        gtk_widget_get_state_flags (
+          GTK_WIDGET (self)) &
+          GTK_STATE_FLAG_PRELIGHT,
+          0, 0);
+      gdk_cairo_set_source_rgba (
+        cr, &color);
 
       /*AutomationPoint * next_ap =*/
         /*automation_region_get_ap_after_curve (*/
@@ -205,65 +190,26 @@ automation_curve_draw_cb (
 
           if (math_doubles_equal (l, 0.0, 0.01))
             {
-              cairo_move_to (self->cached_cr,
-                             new_x,
-                             new_y);
+              cairo_move_to (
+                ao_prv->cached_cr,
+                new_x, new_y);
             }
 
-          cairo_line_to (self->cached_cr,
-                         new_x,
-                         new_y);
+          cairo_line_to (
+            ao_prv->cached_cr,
+            new_x, new_y);
         }
 
-      cairo_stroke (self->cached_cr);
+      cairo_stroke (ao_prv->cached_cr);
 
-      self->redraw = 0;
+      ao_prv->redraw = 0;
     }
 
   cairo_set_source_surface (
-    cr, self->cached_surface, 0, 0);
+    cr, ao_prv->cached_surface, 0, 0);
   cairo_paint (cr);
 
   return FALSE;
-}
-
-void
-automation_curve_widget_force_redraw (
-  AutomationCurveWidget * self)
-{
-  self->redraw = 1;
-  gtk_widget_queue_draw (GTK_WIDGET (self));
-}
-
-static void
-on_motion (GtkWidget * widget, GdkEventMotion *event)
-{
-  AutomationCurveWidget * self =
-    Z_AUTOMATION_CURVE_WIDGET (widget);
-
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (widget,
-                             &allocation);
-
-  if (event->type == GDK_ENTER_NOTIFY)
-    {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT,
-        0);
-
-      self->redraw = 1;
-    }
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      ui_set_cursor_from_name (widget, "default");
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT);
-
-      self->redraw = 1;
-    }
-  gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 AutomationCurveWidget *
@@ -276,30 +222,11 @@ automation_curve_widget_new (AutomationCurve * ac)
       "visible", 1,
       NULL);
 
+  arranger_object_widget_setup (
+    Z_ARRANGER_OBJECT_WIDGET (self),
+    (ArrangerObject *) ac);
+
   self->ac = ac;
-
-  gtk_widget_add_events (GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
-  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new (GTK_WIDGET (self)));
-
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (automation_curve_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self), "motion-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-update",
-    G_CALLBACK (drag_update),  self);
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-end",
-    G_CALLBACK (drag_end),  self);
 
   return self;
 }
@@ -318,5 +245,21 @@ static void
 automation_curve_widget_init (
   AutomationCurveWidget * self)
 {
-  g_object_ref (self);
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
+
+  self->drag =
+    GTK_GESTURE_DRAG (
+      gtk_gesture_drag_new (
+        GTK_WIDGET (ao_prv->drawing_area)));
+
+  /* connect signals */
+  g_signal_connect (
+    G_OBJECT (ao_prv->drawing_area), "draw",
+    G_CALLBACK (automation_curve_draw_cb), self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-update",
+    G_CALLBACK (drag_update), self);
+  g_signal_connect (
+    G_OBJECT(self->drag), "drag-end",
+    G_CALLBACK (drag_end), self);
 }

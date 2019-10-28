@@ -32,7 +32,6 @@
 #include "audio/midi_region.h"
 #include "audio/position.h"
 #include "gui/backend/arranger_object.h"
-#include "gui/backend/arranger_object_info.h"
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
@@ -53,40 +52,37 @@ typedef struct _AudioClipWidget AudioClipWidget;
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
 
 #define region_is_transient(r) \
-  arranger_object_info_is_transient ( \
-    &r->obj_info)
+  arranger_object_is_transient ( \
+    (ArrangerObject *) r)
 #define region_is_lane(r) \
-  arranger_object_info_is_lane ( \
-    &r->obj_info)
+  arranger_object_is_lane ( \
+    (ArrangerObject *) r)
 #define region_is_main(r) \
-  arranger_object_info_is_main ( \
-    &r->obj_info)
-
-/**
- * Gets the TrackLane counterpart of the Region.
- *
- * Only applies to Regions that have lanes.
- */
-#define region_get_lane_region(r) \
-  ((Region *) r->obj_info.lane)
-
-/** Gets the non-TrackLane counterpart of the Region. */
-#define region_get_main_region(r) \
-  ((Region *) r->obj_info.main)
-
-/**
- * Gets the TrackLane counterpart of the Region
- * (transient).
- *
- * Only applies to Regions that have lanes.
- */
-#define region_get_lane_trans_region(r) \
-  ((Region *) r->obj_info.lane_trans)
-
-/** Gets the non-TrackLane counterpart of the Region
- * (transient). */
-#define region_get_main_trans_region(r) \
-  ((Region *) r->obj_info.main_trans)
+  arranger_object_is_main ( \
+    (ArrangerObject *) r)
+#define region_get_lane(r) \
+  ((Region *) \
+   arranger_object_get_lane ( \
+     (ArrangerObject *) r))
+#define region_get_main(r) \
+  ((Region *) \
+   arranger_object_get_main ( \
+     (ArrangerObject *) r))
+#define region_get_lane_trans(r) \
+  ((Region *) \
+   arranger_object_get_lane_trans ( \
+     (ArrangerObject *) r))
+#define region_get_main_trans(r) \
+  ((Region *) \
+   arranger_object_get_main_trans ( \
+     (ArrangerObject *) r))
+#define region_is_selected(r) \
+  arranger_object_is_selected ( \
+    (ArrangerObject *) r)
+#define region_get_visible_counterpart(r) \
+  ((Region *) \
+   arranger_object_get_visible_counterpart ( \
+     (ArrangerObject *) r))
 
 /**
  * Type of Region.
@@ -114,23 +110,6 @@ region_type_bitvals[] =
 };
 
 /**
- * Flag do indicate how to clone the Region.
- */
-typedef enum RegionCloneFlag
-{
-  /** Create a new Region to be added to a
-   * Track as a main Region. */
-  REGION_CLONE_COPY_MAIN,
-
-  /** Create a new Region that will not be used
-   * as a main Region. */
-  REGION_CLONE_COPY,
-
-  /** TODO */
-  REGION_CLONE_LINK
-} RegionCloneFlag;
-
-/**
  * A region (clip) is an object on the timeline that
  * contains either MidiNote's or AudioClip's.
  *
@@ -143,72 +122,16 @@ typedef enum RegionCloneFlag
  */
 typedef struct Region
 {
+  /** Base struct. */
+  ArrangerObject base;
+
   /**
    * Unique Region name to be shown on the
    * RegionWidget.
    */
-  char         * name;
+  char *         name;
 
-  RegionType   type;
-
-  /* GLOBAL POSITIONS ON THE TIMELINE */
-  /* -------------------------------- */
-
-  /** Start position in the timeline. */
-  Position     start_pos;
-
-  /** Cache, used in runtime operations. */
-  Position     cache_start_pos;
-
-  /** End position in the timeline. */
-  Position     end_pos;
-
-  /** Cache, used in runtime operations. */
-  Position     cache_end_pos;
-
-  /* LOCAL POSITIONS STARTING FROM 0.0.0.0 */
-  /* ------------------------------------- */
-
-  /**
-   * Position that the original region ends in,
-   * without any loops or modifications.
-   *
-   * FIXME Is this just the length?
-   */
-  Position     true_end_pos;
-
-  /** Start position of the clip. */
-  Position     clip_start_pos;
-
-  /** Start position of the clip loop.
-   *
-   * The first time the region plays it will start
-   * playing from the clip_start_pos and then loop
-   * to this position.
-   *
-   */
-  Position     loop_start_pos;
-
-  /** Cache, used in runtime operations. */
-  Position     cache_loop_start_pos;
-
-  /** End position of the clip loop.
-   *
-   * Once this is reached, the clip will go back to
-   * the clip  loop start position.
-   *
-   */
-  Position     loop_end_pos;
-
-  /** Cache, used in runtime operations. */
-  Position     cache_loop_end_pos;
-
-  /* ---------------------------------------- */
-
-  /**
-   * Region widget.
-   */
-  RegionWidget * widget;
+  RegionType     type;
 
   /**
    * Owner Track position.
@@ -257,12 +180,6 @@ typedef struct Region
   /* ==== MIDI REGION END ==== */
 
   /* ==== AUDIO REGION ==== */
-
-  /** Position to fade in until. */
-  Position            fade_in_pos;
-
-  /** Position to fade out from. */
-  Position            fade_out_pos;
 
   /** Audio pool ID of the associated audio file. */
   int                 pool_id;
@@ -321,17 +238,14 @@ typedef struct Region
    * the widgets for positioning if it's non-NULL.
    */
   TrackLane *        tmp_lane;
-
-  /**
-   * Info on whether this Region is transient/lane
-   * and pointers to transient/lane equivalents.
-   */
-  ArrangerObjectInfo  obj_info;
 } Region;
 
 static const cyaml_schema_field_t
   region_fields_schema[] =
 {
+  CYAML_FIELD_MAPPING (
+    "base", CYAML_FLAG_DEFAULT,
+    Region, base, arranger_object_fields_schema),
   CYAML_FIELD_STRING_PTR (
     "name", CYAML_FLAG_POINTER,
     Region, name,
@@ -340,30 +254,6 @@ static const cyaml_schema_field_t
     "type", CYAML_FLAG_DEFAULT,
     Region, type, region_type_bitvals,
     CYAML_ARRAY_LEN (region_type_bitvals)),
-  CYAML_FIELD_MAPPING (
-    "start_pos", CYAML_FLAG_DEFAULT,
-    Region, start_pos, position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "end_pos", CYAML_FLAG_DEFAULT,
-    Region, end_pos, position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "true_end_pos", CYAML_FLAG_DEFAULT,
-    Region, true_end_pos, position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "clip_start_pos", CYAML_FLAG_DEFAULT,
-    Region, clip_start_pos, position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "loop_start_pos", CYAML_FLAG_DEFAULT,
-    Region, loop_start_pos, position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "loop_end_pos", CYAML_FLAG_DEFAULT,
-    Region, loop_end_pos, position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "fade_in_pos", CYAML_FLAG_DEFAULT,
-    Region, fade_in_pos, position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "fade_out_pos", CYAML_FLAG_DEFAULT,
-    Region, fade_out_pos, position_fields_schema),
 	CYAML_FIELD_INT (
     "pool_id", CYAML_FLAG_DEFAULT,
     Region, pool_id),
@@ -407,9 +297,6 @@ region_schema = {
     Region, region_fields_schema),
 };
 
-ARRANGER_OBJ_DECLARE_MOVABLE_W_LENGTH (
-  Region, region);
-
 /**
  * Only to be used by implementing structs.
  *
@@ -425,29 +312,6 @@ region_init (
   const int        is_main);
 
 /**
- * Inits freshly loaded region.
- */
-void
-region_init_loaded (Region * region);
-
-/**
- * Mainly used for copy-pasting.
- */
-void
-region_post_deserialize (
-  Region * self);
-
-/**
- * Finds the region corresponding to the given one.
- *
- * This should be called when we have a copy or a
- * clone, to get the actual region in the project.
- */
-Region *
-region_find (
-  Region * r);
-
-/**
  * Looks for the Region under the given name.
  *
  * Warning: very expensive function.
@@ -456,41 +320,9 @@ Region *
 region_find_by_name (
   const char * name);
 
-/**
- * Splits the given Region at the given Position,
- * deletes the original Region and adds 2 new
- * Regions in the same parent (Track or
- * AutomationTrack).
- *
- * The given region must be the main region, as this
- * will create 2 new main regions.
- *
- * @param region The Region to split. This Region
- *   will be deleted.
- * @param pos The Position to split at.
- * @param pos_is_local If the position is local (1)
- *   or global (0).
- * @param r1 Address to hold the pointer to the
- *   newly created region 1.
- * @param r2 Address to hold the pointer to the
- *   newly created region 2.
- */
-void
-region_split (
-  Region *         region,
-  const Position * pos,
-  const int        pos_is_local,
-  Region **        r1,
-  Region **        r2);
-
-/**
- * Undoes what region_split() did.
- */
-void
-region_unsplit (
-  Region *         r1,
-  Region *         r2,
-  Region **        region);
+#define region_set_track_pos(_r,_pos) \
+  arranger_object_set_primitive ( \
+    Region, _r, track_pos, _pos, AO_UPDATE_ALL)
 
 /**
  * Print region info for debugging.
@@ -512,45 +344,6 @@ region_find_midi_note (
   MidiNote * _mn);
 
 /**
- * Returns the full length as it appears on the
- * timeline in ticks.
- */
-long
-region_get_full_length_in_ticks (
-  Region * region);
-
-/**
- * Returns the full length as it appears on the
- * timeline in frames.
- */
-long
-region_get_full_length_in_frames (
-  const Region * region);
-
-/**
- * Returns the true length as it appears on the
- * piano roll (not taking into account any looping)
- * in ticks.
- */
-long
-region_get_true_length_in_ticks (
-  Region * region);
-
-/**
- * Returns the length of the loop in frames.
- */
-long
-region_get_loop_length_in_frames (
-  const Region * region);
-
-/**
- * Returns the length of the loop in ticks.
- */
-long
-region_get_loop_length_in_ticks (
-  const Region * region);
-
-/**
  * Converts frames on the timeline (global)
  * to local frames (in the clip).
  *
@@ -566,34 +359,9 @@ region_get_loop_length_in_ticks (
  */
 long
 region_timeline_frames_to_local (
-  const Region * region,
+  Region * region,
   const long     timeline_frames,
   const int      normalize);
-
-/**
- * Returns the Track this Region is in.
- */
-Track *
-region_get_track (
-  const Region * region);
-
-/**
- * Sets the Track position to the Region and all its
- * members recursively.
- */
-void
-region_set_track_pos (
-  Region *  region,
-  const int pos);
-
-/**
- * Returns the number of loops in the region,
- * optionally including incomplete ones.
- */
-int
-region_get_num_loops (
-  Region * region,
-  int      count_incomplete_loops);
 
 /**
  * Sets the track lane.
@@ -670,24 +438,6 @@ region_set_automation_track (
   Region * region,
   AutomationTrack * at);
 
-ARRANGER_OBJ_DECLARE_POS_GETTER (
-  Region, region, clip_start_pos);
-
-ARRANGER_OBJ_DECLARE_POS_SETTER (
-  Region, region, clip_start_pos);
-
-ARRANGER_OBJ_DECLARE_POS_GETTER (
-  Region, region, loop_start_pos);
-
-ARRANGER_OBJ_DECLARE_POS_SETTER (
-  Region, region, loop_start_pos);
-
-ARRANGER_OBJ_DECLARE_POS_GETTER (
-  Region, region, loop_end_pos);
-
-ARRANGER_OBJ_DECLARE_POS_SETTER (
-  Region, region, loop_end_pos);
-
 /**
  * Copies the data from src to dest.
  *
@@ -698,85 +448,6 @@ void
 region_copy (
   Region * src,
   Region * dest);
-
-/**
- * Checks if position is valid then sets it.
- */
-void
-region_set_true_end_pos (
-  Region * region,
-  const Position * pos,
-  ArrangerObjectUpdateFlag update_flag);
-
-/**
- * Checks if position is valid then sets it.
- */
-void
-region_set_loop_end_pos (
-  Region * region,
-  const Position * pos,
-  ArrangerObjectUpdateFlag update_flag);
-
-/**
- * Checks if position is valid then sets it.
- */
-void
-region_set_loop_start_pos (
-  Region * region,
-  const Position * pos,
-  ArrangerObjectUpdateFlag update_flag);
-
-/**
- * Checks if position is valid then sets it.
- */
-void
-region_set_clip_start_pos (
-  Region * region,
-  const Position * pos,
-  ArrangerObjectUpdateFlag update_flag);
-
-/**
- * Moves the children of the region by the given
- * amount of ticks.
- */
-void
-region_add_ticks_to_children (
-  Region *   self,
-  const long ticks);
-
-/**
- * Resizes the object on the left side or right
- * side by given amount of ticks.
- *
- * @param left 1 to resize left side, 0 to resize
- *   right side.
- * @param ticks Number of ticks to resize.
- * @param loop Whether this is a loop-resize (1) or
- *   a normal resize (0).
- * @param update_flag ArrangerObjectUpdateFlag.
- */
-void
-region_resize (
-  Region *   region,
-  const int  left,
-  const long ticks,
-  const int  loop,
-  ArrangerObjectUpdateFlag update_flag);
-
-/**
- * Updates the frames of each position in each child
- * of the region recursively.
- */
-void
-region_update_frames (
-  Region * self);
-
-/**
- * Returns if Region is (should be) visible.
- */
-#define region_should_be_visible(mn) \
-  arranger_object_info_should_be_visible ( \
-    mn->obj_info)
 
 /**
  * Returns if the position is inside the region
@@ -803,9 +474,6 @@ region_is_hit_by_range (
   const long     gframes_end,
   const int      end_inclusive);
 
-void
-region_unpack (Region * region);
-
 /**
  * Returns the region at the given position in the
  * given Track.
@@ -828,13 +496,6 @@ region_at_position (
  */
 char *
 region_generate_filename (Region * region);
-
-/**
- * Returns the region with the earliest start point.
- */
-Region *
-region_get_start_region (Region ** regions,
-                         int       num_regions);
 
 /**
  * Sets Region name (without appending anything to
@@ -860,17 +521,6 @@ region_remove_midi_note (
   MidiNote * midi_note);
 
 /**
- * Clone region.
- *
- * Creates a new region and either links to the
- * original or copies every field.
- */
-Region *
-region_clone (
-  Region *        region,
-  RegionCloneFlag flag);
-
-/**
  * Disconnects the region and anything using it.
  *
  * Does not free the Region or its children's
@@ -879,19 +529,6 @@ region_clone (
 void
 region_disconnect (
   Region * self);
-
-/**
- * Frees each Region stored in obj_info.
- */
-void
-region_free_all (
-  Region * region);
-
-/**
- * Frees a single Region and its components.
- */
-void
-region_free (Region * region);
 
 SERIALIZE_INC (Region, region)
 DESERIALIZE_INC (Region, region)

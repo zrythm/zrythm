@@ -340,10 +340,13 @@ handle_recording (
       /* get the recording region */
       Region * region =
         tr->recording_region;
+      ArrangerObject * r_obj =
+        (ArrangerObject *) region;
 
       /* the region before the loop point, if
        * loop point is met */
       Region * region_before_loop_end = NULL;
+      ArrangerObject * r_obj_before_loop_end;
 
       /* the clip, if audio */
       AudioClip * clip = NULL;
@@ -359,20 +362,22 @@ handle_recording (
           if (loop_met)
             {
               region_before_loop_end = region;
+              r_obj_before_loop_end =
+                (ArrangerObject *)
+                region;
               clip_before_loop_end = clip;
 
               /* set current region end pos  to
                * transport loop end */
-              region_set_end_pos (
-                region, &TRANSPORT->loop_end_pos,
-                AO_UPDATE_ALL);
-              region->end_pos.frames =
+              arranger_object_end_pos_setter (
+                r_obj, &TRANSPORT->loop_end_pos);
+              r_obj->end_pos.frames =
                 TRANSPORT->loop_end_pos.frames;
               if (is_audio)
                 {
                   clip->num_frames =
-                    region->end_pos.frames -
-                    region->start_pos.frames;
+                    r_obj->end_pos.frames -
+                    r_obj->pos.frames;
                   clip->frames =
                     (sample_t *) realloc (
                     clip->frames,
@@ -381,10 +386,9 @@ handle_recording (
                        clip->channels) *
                     sizeof (sample_t));
                 }
-              region_set_loop_end_pos (
-                region, &TRANSPORT->loop_end_pos,
-                AO_UPDATE_ALL);
-              region->loop_end_pos.frames =
+              arranger_object_loop_end_pos_setter (
+                r_obj, &TRANSPORT->loop_end_pos);
+              r_obj->loop_end_pos.frames =
                 TRANSPORT->loop_end_pos.frames;
 
               /* start new region in new lane at
@@ -420,15 +424,15 @@ handle_recording (
           else /* loop not met */
             {
               /* set region end pos */
-              region_set_end_pos (
-                region, &end_pos, AO_UPDATE_ALL);
-              region->end_pos.frames =
+              arranger_object_end_pos_setter (
+                r_obj, &end_pos);
+              r_obj->end_pos.frames =
                 end_pos.frames;
               if (is_audio)
                 {
                   clip->num_frames =
-                    region->end_pos.frames -
-                    region->start_pos.frames;
+                    r_obj->end_pos.frames -
+                    r_obj->pos.frames;
                   clip->frames =
                     (sample_t *) realloc (
                     clip->frames,
@@ -437,9 +441,9 @@ handle_recording (
                        clip->channels) *
                     sizeof (sample_t));
                 }
-              region_set_loop_end_pos (
-                region, &end_pos, AO_UPDATE_ALL);
-              region->loop_end_pos.frames =
+              arranger_object_loop_end_pos_setter (
+                r_obj, &end_pos);
+              r_obj->loop_end_pos.frames =
                 end_pos.frames;
             }
         }
@@ -480,6 +484,7 @@ handle_recording (
           MidiEvents * midi_events =
             self->midi_in->midi_events;
           MidiNote * mn;
+          ArrangerObject * mn_obj;
 
           /* add midi note off if loop met */
           if (loop_met)
@@ -489,9 +494,11 @@ handle_recording (
                   midi_region_pop_unended_note (
                     region_before_loop_end, -1)))
                 {
-                  midi_note_set_end_pos (
-                    mn, &TRANSPORT->loop_end_pos,
-                    AO_UPDATE_ALL);
+                  mn_obj =
+                    (ArrangerObject *) mn;
+                  arranger_object_end_pos_setter (
+                    mn_obj,
+                    &TRANSPORT->loop_end_pos);
                 }
             }
 
@@ -529,8 +536,12 @@ handle_recording (
                           midi_region_pop_unended_note (
                             region, ev->note_pitch);
                         if (mn)
-                          midi_note_set_end_pos (
-                            mn, &end_pos, AO_UPDATE_ALL);
+                          {
+                            mn_obj =
+                              (ArrangerObject *) mn;
+                            arranger_object_end_pos_setter (
+                              mn_obj, &end_pos);
+                          }
                         break;
                       default:
                         /* TODO */
@@ -548,8 +559,8 @@ handle_recording (
                 {
                   long clip_offset_before_loop =
                     g_start_frames -
-                    region_before_loop_end->
-                      start_pos.frames;
+                    r_obj_before_loop_end->
+                      pos.frames;
                   for (
                     nframes_t i =
                       local_offset;
@@ -609,12 +620,14 @@ handle_recording (
           nframes_t cur_local_offset =
             local_offset;
           g_return_if_fail (region);
+          r_obj =
+            (ArrangerObject *) region;
           for (long i =
                  start_frames -
-                   region->start_pos.frames;
+                   r_obj->pos.frames;
                i <
                  end_frames -
-                   region->start_pos.frames; i++)
+                   r_obj->pos.frames; i++)
             {
               g_warn_if_fail (
                 i >= 0 &&

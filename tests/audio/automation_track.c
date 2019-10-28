@@ -39,8 +39,8 @@ static void
 at_fixture_set_up (
   AutomationTrackFixture * fixture)
 {
-  AutomationPoint * ap;
-  AutomationCurve * ac;
+  /*AutomationPoint * ap;*/
+  /*AutomationCurve * ac;*/
 
   /* needed to set TRANSPORT */
   transport_init (TRANSPORT, 0);
@@ -96,10 +96,10 @@ at_fixture_set_up (
 static void
 get_x_relevant_to_pos ()
 {
-  /*AutomationTrackFixture _fixture;*/
-  /*AutomationTrackFixture * fixture =*/
-    /*&_fixture;*/
-  /*at_fixture_set_up (fixture);*/
+  AutomationTrackFixture _fixture;
+  AutomationTrackFixture * fixture =
+    &_fixture;
+  at_fixture_set_up (fixture);
 
   /*Position pos;*/
   /*AutomationPoint * ap;*/

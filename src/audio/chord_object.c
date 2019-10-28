@@ -26,38 +26,6 @@
 #include "project.h"
 #include "utils/flags.h"
 
-#define SET_POS(_c,pos_name,_pos,_trans_only) \
-  ARRANGER_OBJ_SET_POS ( \
-    chord_object, _c, pos_name, _pos, _trans_only)
-
-DEFINE_START_POS;
-
-ARRANGER_OBJ_DEFINE_MOVABLE (
-  ChordObject, chord_object, chord_selections,
-  CHORD_SELECTIONS);
-
-/**
- * Init the ChordObject after the Project is loaded.
- */
-void
-chord_object_init_loaded (
-  ChordObject * self)
-{
-  ARRANGER_OBJECT_SET_AS_MAIN (
-   CHORD_OBJECT, ChordObject, chord_object);
-}
-
-/**
- * Mainly used for copy-pasting.
- */
-void
-chord_object_post_deserialize (
-  ChordObject * self)
-{
-  g_return_if_fail (self);
-  self->obj_info.main = self;
-}
-
 /**
  * Creates a ChordObject.
  */
@@ -70,6 +38,10 @@ chord_object_new (
   ChordObject * self =
     calloc (1, sizeof (ChordObject));
 
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+  obj->type = ARRANGER_OBJECT_TYPE_CHORD_OBJECT;
+
   self->index = index;
   self->region = region;
   self->region_name =
@@ -77,54 +49,10 @@ chord_object_new (
 
   if (is_main)
     {
-      ARRANGER_OBJECT_SET_AS_MAIN (
-        CHORD_OBJECT, ChordObject, chord_object);
+      arranger_object_set_as_main (obj);
     }
 
   return self;
-}
-
-ARRANGER_OBJ_DECLARE_VALIDATE_POS (
-  ChordObject, chord_object, pos)
-{
-  return
-    position_is_after_or_equal (
-      pos, START_POS);
-}
-
-void
-chord_object_pos_setter (
-  ChordObject * chord_object,
-  const Position * pos)
-{
-  if (chord_object_validate_pos (chord_object, pos))
-    {
-      chord_object_set_pos (
-        chord_object, pos, AO_UPDATE_ALL);
-    }
-}
-
-/**
- * Finds the ChordObject in the project
- * corresponding to the given one.
- */
-ChordObject *
-chord_object_find (
-  ChordObject * clone)
-{
-  /* get actual region - clone's region might be
-   * an unused clone */
-  Region *r = region_find (clone->region);
-
-  ChordObject * chord;
-  for (int i = 0; i < r->num_chord_objects; i++)
-    {
-      chord = r->chord_objects[i];
-      if (chord_object_is_equal (
-            chord, clone))
-        return chord;
-    }
-  return NULL;
 }
 
 /**
@@ -135,18 +63,22 @@ ChordDescriptor *
 chord_object_get_chord_descriptor (
   ChordObject * self)
 {
+  g_return_val_if_fail (CLIP_EDITOR, NULL);
   return CHORD_EDITOR->chords[self->index];
 }
 
-/**
- * Updates the frames of each position in each child
- * of the ChordObject recursively.
- */
-void
-chord_object_update_frames (
-  ChordObject * self)
+int
+chord_object_is_equal (
+  ChordObject * a,
+  ChordObject * b)
 {
-  position_update_frames (&self->pos);
+  ArrangerObject * obj_a =
+    (ArrangerObject *) a;
+  ArrangerObject * obj_b =
+    (ArrangerObject *) b;
+  return
+    position_is_equal (&obj_a->pos, &obj_b->pos) &&
+    a->index == b->index;
 }
 
 /**
@@ -161,39 +93,25 @@ chord_object_find_by_pos (
 {
   /* get actual region - clone's region might be
    * an unused clone */
-  Region *r = region_find (clone->region);
+  Region *r =
+    (Region *)
+    arranger_object_find (
+      (ArrangerObject *) clone->region);
+  g_return_val_if_fail (r, NULL);
 
   ChordObject * chord;
+  ArrangerObject * c_obj;
+  ArrangerObject * clone_obj =
+    (ArrangerObject *) clone;
   for (int i = 0; i < r->num_chord_objects; i++)
     {
       chord = r->chord_objects[i];
+      c_obj = (ArrangerObject *) chord;
       if (position_is_equal (
-            &chord->pos, &clone->pos))
+            &c_obj->pos, &clone_obj->pos))
         return chord;
     }
   return NULL;
-}
-
-/**
- * Clones the given chord.
- */
-ChordObject *
-chord_object_clone (
-  ChordObject * src,
-  ChordObjectCloneFlag flag)
-{
-  int is_main = 0;
-  if (flag == CHORD_OBJECT_CLONE_COPY_MAIN)
-    is_main = 1;
-
-  ChordObject * chord =
-    chord_object_new (
-      src->region, src->index, is_main);
-
-  position_set_to_pos (
-    &chord->pos, &src->pos);
-
-  return chord;
 }
 
 /**
@@ -208,58 +126,11 @@ chord_object_set_region (
   for (int i = 0; i < 2; i++)
     {
       if (i == AOI_COUNTERPART_MAIN)
-        co =
-          chord_object_get_main_chord_object (
-            self);
+        co = chord_object_get_main (self);
       else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
-        co =
-          chord_object_get_main_trans_chord_object (
-            self);
+        co = chord_object_get_main_trans (self);
 
       co->region = region;
       co->region_name = g_strdup (region->name);
     }
-}
-
-ARRANGER_OBJ_DECLARE_RESET_COUNTERPART (
-  ChordObject, chord_object)
-{
-  ChordObject * src =
-    reset_trans ?
-      chord_object_get_main_chord_object (
-        chord_object) :
-      chord_object_get_main_trans_chord_object (
-        chord_object);
-  ChordObject * dest =
-    reset_trans ?
-      chord_object_get_main_trans_chord_object (
-        chord_object) :
-      chord_object_get_main_chord_object (
-        chord_object);
-
-  position_set_to_pos (
-    &dest->pos, &src->pos);
-  dest->index = src->index;
-}
-
-ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
-  ChordObject, chord_object);
-
-/**
- * Frees the ChordObject.
- */
-void
-chord_object_free (
-  ChordObject * self)
-{
-  if (self->widget)
-    {
-      gtk_widget_destroy (
-        GTK_WIDGET (self->widget));
-    }
-
-  if (self->region_name)
-    g_free (self->region_name);
-
-  free (self);
 }

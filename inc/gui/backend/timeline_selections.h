@@ -48,39 +48,47 @@
  */
 typedef struct TimelineSelections
 {
+  /** Base struct. */
+  ArrangerSelections base;
+
   /** Selected TrackLane Region's. */
-  Region *            regions[600];
-  int                 num_regions;
+  Region **          regions;
+  int                num_regions;
+  size_t             regions_size;
 
-  /** Selected ScaleObject's. */
-  ScaleObject *       scale_objects[800];
-  int                 num_scale_objects;
+  ScaleObject **     scale_objects;
+  int                num_scale_objects;
+  size_t             scale_objects_size;
 
-  /** Selected Marker's. */
-  Marker *            markers[200];
-  int                 num_markers;
-
-  /** Visible track index, used during copying. */
-  int                 chord_track_vis_index;
+  Marker **          markers;
+  int                num_markers;
+  size_t             markers_size;
 
   /** Visible track index, used during copying. */
-  int                 marker_track_vis_index;
+  int                chord_track_vis_index;
+
+  /** Visible track index, used during copying. */
+  int                marker_track_vis_index;
 } TimelineSelections;
 
 static const cyaml_schema_field_t
   timeline_selections_fields_schema[] =
 {
+  CYAML_FIELD_MAPPING (
+    "base", CYAML_FLAG_DEFAULT,
+    TimelineSelections, base,
+    arranger_selections_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "regions", CYAML_FLAG_DEFAULT,
+    "regions", CYAML_FLAG_POINTER,
     TimelineSelections, regions, num_regions,
     &region_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "scale_objects", CYAML_FLAG_DEFAULT,
+    "scale_objects", CYAML_FLAG_POINTER,
     TimelineSelections, scale_objects,
     num_scale_objects,
     &scale_object_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "markers", CYAML_FLAG_DEFAULT,
+    "markers", CYAML_FLAG_POINTER,
     TimelineSelections, markers, num_markers,
     &marker_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
@@ -99,15 +107,6 @@ timeline_selections_schema = {
     CYAML_FLAG_POINTER, TimelineSelections,
     timeline_selections_fields_schema),
 };
-
-ARRANGER_SELECTIONS_DECLARE_TIMELINE_FUNCS (
-  Timeline, timeline);
-ARRANGER_SELECTIONS_DECLARE_OBJ_FUNCS (
-  Timeline, timeline, Region, region);
-ARRANGER_SELECTIONS_DECLARE_OBJ_FUNCS (
-  Timeline, timeline, ScaleObject, scale_object);
-ARRANGER_SELECTIONS_DECLARE_OBJ_FUNCS (
-  Timeline, timeline, Marker, marker);
 
 /**
  * Gets highest track in the selections.
@@ -152,6 +151,11 @@ timeline_selections_can_be_pasted (
   TimelineSelections * ts,
   Position *           pos,
   const int            idx);
+
+void
+timeline_selections_paste_to_pos (
+  TimelineSelections * ts,
+  Position *           pos);
 
 SERIALIZE_INC (
   TimelineSelections, timeline_selections)

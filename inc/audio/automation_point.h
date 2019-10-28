@@ -28,7 +28,6 @@
 
 #include "audio/position.h"
 #include "gui/backend/arranger_object.h"
-#include "gui/backend/arranger_object_info.h"
 
 typedef struct AutomationTrack AutomationTrack;
 typedef struct _AutomationPointWidget
@@ -41,69 +40,57 @@ AutomationPointWidget;
  */
 
 #define automation_point_is_main(c) \
-  arranger_object_info_is_main ( \
-    &c->obj_info)
-
+  arranger_object_is_main ( \
+    (ArrangerObject *) c)
 #define automation_point_is_transient(r) \
-  arranger_object_info_is_transient ( \
-    &r->obj_info)
-
-/** Gets the main counterpart of the AutomationPoint. */
-#define automation_point_get_main_automation_point(r) \
-  ((AutomationPoint *) r->obj_info.main)
-
-/** Gets the transient counterpart of the AutomationPoint. */
-#define automation_point_get_main_trans_automation_point(r) \
-  ((AutomationPoint *) r->obj_info.main_trans)
-
-typedef enum AutomationPointCloneFlag
-{
-  AUTOMATION_POINT_CLONE_COPY_MAIN,
-  AUTOMATION_POINT_CLONE_COPY,
-} AutomationPointCloneFlag;
+  arranger_object_is_transient ( \
+    (ArrangerObject *) r)
+#define automation_point_get_main(r) \
+  ((AutomationPoint *) \
+   arranger_object_get_main ( \
+     (ArrangerObject *) r))
+#define automation_point_get_main_trans(r) \
+  ((AutomationPoint *) \
+   arranger_object_get_main_trans ( \
+     (ArrangerObject *) r))
+#define automation_point_is_selected(r) \
+  arranger_object_is_selected ( \
+    (ArrangerObject *) r)
 
 /**
- * An automation point living inside an AutomationTrack.
+ * An automation point inside an AutomationTrack.
  */
 typedef struct AutomationPoint
 {
-  /** Position in the AutomationTrack. */
-  Position           pos;
+  /** Base struct. */
+  ArrangerObject  base;
 
-  /** Cache, used in runtime operations. */
-  Position           cache_pos;
-
-  float              fvalue; ///< float value
-  int                bvalue; ///< boolean value
-  int                svalue; ///< step value
+  float           fvalue; ///< float value
+  int             bvalue; ///< boolean value
+  int             svalue; ///< step value
 
   /**
    * Pointer back to parent.
    */
-  Region *           region;
-
-  /** GUI Widget. */
-  AutomationPointWidget *  widget;
+  Region *        region;
 
   /** Used in clones to identify a region instead of
    * cloning the whole Region. */
-  char *              region_name;
+  char *          region_name;
 
   /** Index in the region, for faster
    * performance when getting ap before/after
    * curve. */
-  int                index;
-
-  /** Object info. */
-  ArrangerObjectInfo  obj_info;
+  int             index;
 } AutomationPoint;
 
 static const cyaml_schema_field_t
 automation_point_fields_schema[] =
 {
   CYAML_FIELD_MAPPING (
-    "pos", CYAML_FLAG_DEFAULT,
-    AutomationPoint, pos, position_fields_schema),
+    "base", CYAML_FLAG_DEFAULT,
+    AutomationPoint, base,
+    arranger_object_fields_schema),
 	CYAML_FIELD_INT (
     "svalue", CYAML_FLAG_DEFAULT,
     AutomationPoint, svalue),
@@ -126,21 +113,6 @@ automation_point_schema = {
     CYAML_FLAG_POINTER,
     AutomationPoint, automation_point_fields_schema),
 };
-
-ARRANGER_OBJ_DECLARE_MOVABLE (
-  AutomationPoint, automation_point);
-
-void
-automation_point_init_loaded (
-  AutomationPoint * ap);
-
-/**
- * Finds the automation point in the project matching
- * the params of the given one.
- */
-AutomationPoint *
-automation_point_find (
-  AutomationPoint * src);
 
 /**
  * Creates an AutomationPoint in the given
@@ -185,34 +157,10 @@ float
 automation_point_get_normalized_value (
   AutomationPoint * ap);
 
-/**
- * Updates the frames of each position in each child
- * of the AutomationPoint recursively.
- */
-void
-automation_point_update_frames (
-  AutomationPoint * self);
-
-/**
- * Clones the atuomation point.
- */
-AutomationPoint *
-automation_point_clone (
-  AutomationPoint * src,
-  AutomationPointCloneFlag flag);
-
-/**
- * Returns the Track this AutomationPoint is in.
- */
-Track *
-automation_point_get_track (
-  AutomationPoint * ap);
-
-/**
- * Frees the automation point.
- */
-void
-automation_point_free (AutomationPoint * ap);
+int
+automation_point_is_equal (
+  AutomationPoint * a,
+  AutomationPoint * b);
 
 /**
  * @}

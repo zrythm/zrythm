@@ -85,14 +85,8 @@ midi_region_add_midi_note (
   MidiRegion * region,
   MidiNote * midi_note)
 {
-  g_warn_if_fail (
-    midi_note->obj_info.counterpart ==
-    AOI_COUNTERPART_MAIN);
-  g_warn_if_fail (
-    midi_note->obj_info.main &&
-    midi_note->obj_info.main_trans &&
-    midi_note->obj_info.lane &&
-    midi_note->obj_info.lane_trans);
+  g_return_if_fail (
+    midi_note_is_main (midi_note));
 
   midi_note_set_region (midi_note, region);
 
@@ -103,8 +97,8 @@ midi_region_add_midi_note (
                 region->num_midi_notes,
                 midi_note);
 
-  EVENTS_PUSH (ET_MIDI_NOTE_CREATED,
-               midi_note);
+  EVENTS_PUSH (
+    ET_ARRANGER_OBJECT_CREATED, midi_note);
 }
 
 /**
@@ -155,14 +149,17 @@ MidiNote *
 midi_region_get_first_midi_note (
   MidiRegion * region)
 {
-	MidiNote * result = 0;
+	MidiNote * result = NULL;
 	for (int i = 0;
 		i < region->num_midi_notes;
 		i++)
 	{
-		if (result == 0
-			|| position_to_ticks(&result->end_pos) >
-		position_to_ticks(&region->midi_notes[i]->end_pos))
+		if (
+      !result	||
+      ((ArrangerObject *) result)->
+        end_pos.total_ticks >
+      ((ArrangerObject *) region->midi_notes[i])->
+        end_pos.total_ticks)
 		{
 			result = region->midi_notes[i];
 		}
@@ -173,16 +170,20 @@ midi_region_get_first_midi_note (
  * Gets last midi note
  */
 MidiNote *
-midi_region_get_last_midi_note (MidiRegion * region)
+midi_region_get_last_midi_note (
+  MidiRegion * region)
 {
-	MidiNote * result = 0;
+	MidiNote * result = NULL;
 	for (int i = 0;
 		i < region->num_midi_notes;
 		i++)
 	{
-		if (result == 0
-			|| position_to_ticks(&result->end_pos) <
-			position_to_ticks(&region->midi_notes[i]->end_pos))
+		if (
+      !result ||
+      ((ArrangerObject *) result)->
+        end_pos.total_ticks <
+			((ArrangerObject *) region->midi_notes[i])->
+        end_pos.total_ticks)
 		{
 			result = region->midi_notes[i];
 		}
@@ -194,15 +195,16 @@ midi_region_get_last_midi_note (MidiRegion * region)
  * Gets highest midi note
  */
 MidiNote *
-midi_region_get_highest_midi_note (MidiRegion * region)
+midi_region_get_highest_midi_note (
+  MidiRegion * region)
 {
-	MidiNote * result = 0;
+	MidiNote * result = NULL;
 	for (int i = 0;
 		i < region->num_midi_notes;
 		i++)
 	{
-		if (result == 0
-			|| result->val < region->midi_notes[i]->val)
+		if (!result ||
+			  result->val < region->midi_notes[i]->val)
 		{
 			result = region->midi_notes[i];
 		}
@@ -214,15 +216,16 @@ midi_region_get_highest_midi_note (MidiRegion * region)
  * Gets lowest midi note
  */
 MidiNote *
-midi_region_get_lowest_midi_note (MidiRegion * region)
+midi_region_get_lowest_midi_note (
+  MidiRegion * region)
 {
-	MidiNote * result = 0;
+	MidiNote * result = NULL;
 	for (int i = 0;
 		i < region->num_midi_notes;
 		i++)
 	{
-		if (result == 0
-			|| result->val > region->midi_notes[i]->val)
+		if (!result ||
+        result->val > region->midi_notes[i]->val)
 		{
 			result = region->midi_notes[i];
 		}
@@ -246,22 +249,28 @@ midi_region_remove_midi_note (
 {
   if (MA_SELECTIONS)
     {
-      midi_arranger_selections_remove_midi_note (
-        MA_SELECTIONS,
-        midi_note);
+      arranger_selections_remove_object (
+        (ArrangerSelections *) MA_SELECTIONS,
+        (ArrangerObject *) midi_note);
     }
-  if (MW_MIDI_ARRANGER->start_midi_note ==
-        midi_note)
-    MW_MIDI_ARRANGER->start_midi_note = NULL;
+
+  ARRANGER_WIDGET_GET_PRIVATE (
+    MW_MIDI_ARRANGER);
+  if (ar_prv->start_object ==
+        (ArrangerObject *) midi_note)
+    {
+      ar_prv->start_object = NULL;
+    }
 
   array_delete (region->midi_notes,
                 region->num_midi_notes,
                 midi_note);
   if (free)
-    free_later (midi_note, midi_note_free_all);
+    free_later (midi_note, arranger_object_free_all);
 
   if (pub_event)
-    EVENTS_PUSH (ET_MIDI_NOTE_REMOVED, NULL);
+    EVENTS_PUSH (
+      ET_ARRANGER_OBJECT_REMOVED, NULL);
 }
 
 /**
@@ -277,7 +286,7 @@ midi_region_remove_midi_note (
  */
 void
 midi_region_write_to_midi_file (
-  const Region * self,
+  Region * self,
   MIDI_FILE *    mf,
   const int      add_region_start,
   const int      export_full)
@@ -287,7 +296,10 @@ midi_region_write_to_midi_file (
       self, add_region_start, export_full);
   MidiEvent * ev;
   int i;
-  Track * track = region_get_track (self);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) self;
+  Track * track =
+    arranger_object_get_track (r_obj);
   for (i = 0; i < events->num_events; i++)
     {
       ev = &events->events[i];
@@ -317,7 +329,7 @@ midi_region_write_to_midi_file (
  */
 void
 midi_region_export_to_midi_file (
-  const Region * self,
+  Region * self,
   const char *   full_path,
   int            midi_version,
   const int      export_full)
@@ -391,32 +403,38 @@ midi_region_get_midi_ch (
  */
 MidiEvents *
 midi_region_get_as_events (
-  const Region * self,
+  Region * self,
   const int      add_region_start,
   const int      full)
 {
   MidiEvents * events =
     midi_events_new (NULL);
 
+  ArrangerObject * self_obj =
+    (ArrangerObject *) self;
+
   long region_start = 0;
   if (add_region_start)
     region_start =
-      position_to_ticks (&self->start_pos);
+      self_obj->pos.total_ticks;
 
   MidiNote * mn;
   for (int i = 0; i < self->num_midi_notes; i++)
     {
       mn = self->midi_notes[i];
+      ArrangerObject * mn_obj =
+        (ArrangerObject *) mn;
+
       midi_events_add_note_on (
         events, 1, mn->val, mn->vel->vel,
         (midi_time_t)
-        (position_to_ticks (&mn->start_pos) +
+        (position_to_ticks (&mn_obj->pos) +
           region_start),
         0);
       midi_events_add_note_off (
         events, 1, mn->val,
         (midi_time_t)
-        (position_to_ticks (&mn->end_pos) +
+        (position_to_ticks (&mn_obj->end_pos) +
           region_start),
         0);
     }
@@ -438,10 +456,12 @@ midi_region_free_members (MidiRegion * self)
 {
   for (int i = 0; i < self->num_midi_notes; i++)
     {
-      midi_note_free_all (self->midi_notes[i]);
+      arranger_object_free_all (
+        (ArrangerObject *) self->midi_notes[i]);
     }
   for (int i = 0; i < self->num_unended_notes; i++)
     {
-      midi_note_free_all (self->unended_notes[i]);
+      arranger_object_free_all (
+        (ArrangerObject *) self->unended_notes[i]);
     }
 }

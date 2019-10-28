@@ -36,7 +36,7 @@ edit_plugins_action_new (
     	EditPluginsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UNDOABLE_ACTION_TYPE_EDIT_PLUGINS;
+	  UA_EDIT_PLUGINS;
 
   self->ms = mixer_selections_clone (ms);
   self->type = type;

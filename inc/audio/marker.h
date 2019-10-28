@@ -30,7 +30,6 @@
 
 #include "audio/position.h"
 #include "gui/backend/arranger_object.h"
-#include "gui/backend/arranger_object_info.h"
 #include "utils/yaml.h"
 
 /**
@@ -40,26 +39,22 @@
  */
 
 #define marker_is_main(c) \
-  arranger_object_info_is_main ( \
-    &c->obj_info)
-
+  arranger_object_is_main ( \
+    (ArrangerObject *) c)
 #define marker_is_transient(r) \
-  arranger_object_info_is_transient ( \
-    &r->obj_info)
-
-/** Gets the main counterpart of the Marker. */
-#define marker_get_main_marker(r) \
-  ((Marker *) r->obj_info.main)
-
-/** Gets the transient counterpart of the Marker. */
-#define marker_get_main_trans_marker(r) \
-  ((Marker *) r->obj_info.main_trans)
-
-typedef enum MarkerCloneFlag
-{
-  MARKER_CLONE_COPY_MAIN,
-  MARKER_CLONE_COPY,
-} MarkerCloneFlag;
+  arranger_object_is_transient ( \
+    (ArrangerObject *) r)
+#define marker_get_main(r) \
+  ((Marker *) \
+   arranger_object_get_main ( \
+     (ArrangerObject *) r))
+#define marker_get_main_trans(r) \
+  ((Marker *) \
+   arranger_object_get_main_trans ( \
+     (ArrangerObject *) r))
+#define marker_is_selected(r) \
+  arranger_object_is_selected ( \
+    (ArrangerObject *) r)
 
 /**
  * Marker type.
@@ -82,18 +77,13 @@ marker_type_strings[] =
 	{ "custom",    MARKER_TYPE_CUSTOM   },
 };
 
-typedef struct _MarkerWidget MarkerWidget;
-
 /**
  * Marker for the MarkerTrack.
  */
 typedef struct Marker
 {
-  /** Marker position. */
-  Position          pos;
-
-  /** Cache, used in runtime operations. */
-  Position          cache_pos;
+  /** Base struct. */
+  ArrangerObject  base;
 
   /** Marker type. */
   MarkerType        type;
@@ -106,17 +96,15 @@ typedef struct Marker
 
   /** Cache. */
   Track *        track;
-
-  /** Widget used to represent the Marker in the
-   * UI. */
-  MarkerWidget *    widget;
-
-  ArrangerObjectInfo   obj_info;
 } Marker;
 
 static const cyaml_schema_field_t
   marker_fields_schema[] =
 {
+  CYAML_FIELD_MAPPING (
+    "base", CYAML_FLAG_DEFAULT,
+    Marker, base,
+    arranger_object_fields_schema),
   CYAML_FIELD_STRING_PTR (
     "name", CYAML_FLAG_POINTER,
     Marker, name,
@@ -125,31 +113,16 @@ static const cyaml_schema_field_t
     "type", CYAML_FLAG_DEFAULT,
     Marker, type, marker_type_strings,
     CYAML_ARRAY_LEN (marker_type_strings)),
-  CYAML_FIELD_MAPPING (
-    "pos", CYAML_FLAG_DEFAULT,
-    Marker, pos, position_fields_schema),
 
 	CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 marker_schema = {
-  CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
     Marker, marker_fields_schema),
 };
-
-ARRANGER_OBJ_DECLARE_MOVABLE (
-  Marker, marker);
-
-void
-marker_init_loaded (Marker * self);
-
-/**
- * Mainly used for copy-pasting.
- */
-void
-marker_post_deserialize (
-  Marker * self);
 
 /**
  * Creates a Marker.
@@ -178,38 +151,9 @@ marker_set_track (
 /**
  * Sets the name to all the Marker's counterparts.
  */
-void
-marker_set_name (
-  Marker * marker,
-  const char * name);
-
-/**
- * Updates the frames of each position in each child
- * of the Marker recursively.
- */
-void
-marker_update_frames (
-  Marker * self);
-
-/**
- * Finds the marker in the project corresponding to
- * the given one.
- */
-Marker *
-marker_find (
-  Marker * clone);
-
-Marker *
-marker_clone (
-  Marker * src,
-  MarkerCloneFlag flag);
-
-/**
- * Frees the Marker.
- */
-void
-marker_free (
-  Marker * self);
+#define marker_set_name(_self,_name) \
+  arranger_object_set_string ( \
+    Marker, _self, name, _name, AO_UPDATE_ALL)
 
 /**
  * @}

@@ -50,21 +50,12 @@ typedef struct _ChordArrangerWidget
 {
   ArrangerWidget  parent_instance;
 
-  /**
-   * Start ChordObject acting on. This is the
-   * ChordObject that was clicked, even though
-   * there could be more selected.
-   */
-  ChordObject *   start_chord_object;
-
   /** Index of the chord being hovered on. */
   int             hovered_index;
 } ChordArrangerWidget;
 
 ARRANGER_W_DECLARE_FUNCS (
   Chord, chord);
-ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
-  Chord, chord, ChordObject, chord);
 
 /**
  * Returns the chord index at y.

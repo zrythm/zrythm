@@ -17,8 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/edit_timeline_selections_action.h"
-#include "actions/move_timeline_selections_action.h"
+#include "actions/arranger_selections.h"
 #include "audio/position.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/automation_point.h"

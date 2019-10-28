@@ -195,7 +195,7 @@ create_tracks_action_new (
 
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UNDOABLE_ACTION_TYPE_CREATE_TRACKS;
+	  UA_CREATE_TRACKS;
   if (pl_descr)
     plugin_copy_descr (pl_descr, &self->pl_descr);
   else if (file)

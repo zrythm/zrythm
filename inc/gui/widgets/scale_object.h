@@ -26,6 +26,8 @@
 #ifndef __GUI_WIDGETS_SCALE_OBJECT_H__
 #define __GUI_WIDGETS_SCALE_OBJECT_H__
 
+#include "gui/widgets/arranger_object.h"
+
 #include <gtk/gtk.h>
 
 #define SCALE_OBJECT_WIDGET_TYPE \
@@ -34,7 +36,7 @@ G_DECLARE_FINAL_TYPE (
   ScaleObjectWidget,
   scale_object_widget,
   Z, SCALE_OBJECT_WIDGET,
-  GtkBox);
+  ArrangerObjectWidget);
 
 typedef struct ScaleObjectObject ScaleObjectObject;
 
@@ -51,8 +53,7 @@ typedef struct ScaleObjectObject ScaleObjectObject;
  */
 typedef struct _ScaleObjectWidget
 {
-  GtkBox           parent_instance;
-  GtkDrawingArea * drawing_area;
+  ArrangerObjectWidget parent_instance;
   ScaleObject *    scale_object;
 
   /** For double click. */
@@ -66,12 +67,6 @@ typedef struct _ScaleObjectWidget
   int              textw;
   int              texth;
 
-  /** Set to 1 to redraw. */
-  int                redraw;
-
-  cairo_t *          cached_cr;
-
-  cairo_surface_t *  cached_surface;
 } ScaleObjectWidget;
 
 /**
@@ -80,10 +75,6 @@ typedef struct _ScaleObjectWidget
 ScaleObjectWidget *
 scale_object_widget_new (
   ScaleObject * scale);
-
-void
-scale_object_widget_force_redraw (
-  ScaleObjectWidget * self);
 
 /**
  * @}

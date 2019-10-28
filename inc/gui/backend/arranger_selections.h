@@ -27,50 +27,126 @@
 #ifndef __GUI_BACKEND_ARRANGER_SELECTIONS_H__
 #define __GUI_BACKEND_ARRANGER_SELECTIONS_H__
 
+#include "utils/yaml.h"
+
+typedef struct ArrangerObject ArrangerObject;
+typedef struct Position Position;
+typedef enum ArrangerObjectUpdateFlag
+  ArrangerObjectUpdateFlag;
+
 /**
  * @addtogroup gui_backend
  *
  * @{
  */
 
+typedef enum ArrangerSelectionsType
+{
+  ARRANGER_SELECTIONS_TYPE_CHORD,
+  ARRANGER_SELECTIONS_TYPE_TIMELINE,
+  ARRANGER_SELECTIONS_TYPE_MIDI,
+  ARRANGER_SELECTIONS_TYPE_AUTOMATION,
+} ArrangerSelectionsType;
+
+typedef struct ArrangerSelections
+{
+  /** Type of selections. */
+  ArrangerSelectionsType type;
+} ArrangerSelections;
+
+static const cyaml_strval_t
+arranger_selections_type_strings[] =
+{
+	{ "Chord",
+    ARRANGER_SELECTIONS_TYPE_CHORD    },
+	{ "Timeline",
+    ARRANGER_SELECTIONS_TYPE_TIMELINE   },
+	{ "MIDI",
+    ARRANGER_SELECTIONS_TYPE_MIDI },
+	{ "Automation",
+    ARRANGER_SELECTIONS_TYPE_AUTOMATION   },
+};
+
+static const cyaml_schema_field_t
+arranger_selections_fields_schema[] =
+{
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    ArrangerSelections, type,
+    arranger_selections_type_strings,
+    CYAML_ARRAY_LEN (
+      arranger_selections_type_strings)),
+
+	CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+arranger_selections_schema = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER, ArrangerSelections,
+    arranger_selections_fields_schema),
+};
+
 /**
  * Inits the selections after loading a project.
  */
-#define ARRANGER_SELECTIONS_DECLARE_INIT_LOADED( \
-  cc,sc) \
-  void \
-  sc##_selections_init_loaded ( \
-    cc##Selections * self)
+void
+arranger_selections_init_loaded (
+  ArrangerSelections * self);
 
-#define ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS( \
-  cc,sc) \
-  /**
-   * Resets the given counterparts from the other
-   * counterparts.
-   *
-   * @param reset_trans 1 to reset the transient
-   *   from main, 0 to reset main from transient.
-   */ \
-  void \
-  sc##_selections_reset_counterparts ( \
-    cc##Selections * self, \
-    const int        reset_trans)
+/**
+ * Initializes the selections.
+ */
+void
+arranger_selections_init (
+  ArrangerSelections *   self,
+  ArrangerSelectionsType type);
+
+/**
+ * Appends the given object to the selections.
+ */
+void
+arranger_selections_add_object (
+  ArrangerSelections * self,
+  ArrangerObject *     obj);
+
+/**
+ * Resets the given counterparts from the other
+ * counterparts.
+ *
+ * @param reset_trans 1 to reset the transient
+ *   from main, 0 to reset main from transient.
+ */
+void
+arranger_selections_reset_counterparts (
+  ArrangerSelections * self,
+  const int            reset_trans);
+
+/**
+ * Updates the visibility and selection state for
+ * all objects in the selections.
+ *
+ * Eg, when moving or resizing, it hides the
+ * original objects and only shows the transients.
+ * When copy- moving, it shows both.
+ */
+void
+arranger_selections_update_widget_visibility (
+  ArrangerSelections * self);
 
 /**
  * Clone the struct for copying, undoing, etc.
  */
-#define ARRANGER_SELECTIONS_DECLARE_CLONE(cc,sc) \
-  cc##Selections * \
-  sc##_selections_clone ( \
-    const cc##Selections * mas)
+ArrangerSelections *
+arranger_selections_clone (
+  ArrangerSelections * self);
 
 /**
  * Returns if there are any selections.
  */
-#define ARRANGER_SELECTIONS_DECLARE_HAS_ANY(cc,sc) \
-  int \
-  sc##_selections_has_any ( \
-    cc##Selections * mas)
+int
+arranger_selections_has_any (
+  ArrangerSelections * self);
 
 /**
  * Returns the position of the leftmost object.
@@ -82,32 +158,15 @@
  *   otherwise returns the local (from the start
  *   of the Region) Position.
  */
-#define ARRANGER_SELECTIONS_DECLARE_GET_START_POS_W_GLOBAL( \
-  cc,sc) \
-  void \
-  sc##_selections_get_start_pos ( \
-    cc##Selections * mas, \
-    Position *       pos, \
-    int              transient, \
-    int              global)
+void
+arranger_selections_get_start_pos (
+  ArrangerSelections * self,
+  Position *           pos,
+  int                  transient,
+  int                  global);
 
 /**
- * Returns the position of the leftmost object.
- *
- * @param transient If 1, the transient objects are
- *   checked instead.
- * @param pos The return value will be stored here.
- */
-#define ARRANGER_SELECTIONS_DECLARE_GET_START_POS( \
-  cc,sc) \
-  void \
-  sc##_selections_get_start_pos ( \
-    cc##Selections * mas, \
-    Position *       pos, \
-    int              transient)
-
-/**
- * Returns the position of the rightmost object.
+ * Returns the end position of the rightmost object.
  *
  * @param pos The return value will be stored here.
  * @param transient If 1, the transient objects are
@@ -116,65 +175,42 @@
  *   otherwise returns the local (from the start
  *   of the Region) Position.
  */
-#define ARRANGER_SELECTIONS_DECLARE_GET_END_POS_W_GLOBAL( \
-  cc,sc) \
-  void \
-  sc##_selections_get_end_pos ( \
-    cc##Selections * mas, \
-    Position *       pos, \
-    int              transient, \
-    int              global)
+void
+arranger_selections_get_end_pos (
+  ArrangerSelections * self,
+  Position *           pos,
+  int                  transient,
+  int                  global);
 
 /**
- * Returns the position of the rightmost object.
- *
- * @param pos The return value will be stored here.
- * @param transient If 1, the transient objects are
- * checked instead.
- */
-#define ARRANGER_SELECTIONS_DECLARE_GET_END_POS( \
-  cc,sc) \
-  void \
-  sc##_selections_get_end_pos ( \
-    cc##Selections * mas, \
-    Position *       pos, \
-    int              transient)
-
-/**
- * Gets first object's widget.
+ * Gets first object.
  *
  * @param transient If 1, transient objects are
  *   checked instead.
  */
-#define ARRANGER_SELECTIONS_DECLARE_GET_FIRST_OBJ( \
-  cc,sc) \
-  GtkWidget * \
-  sc##_selections_get_first_object ( \
-    cc##Selections * mas, \
-    int              transient)
+ArrangerObject *
+arranger_selections_get_first_object (
+  ArrangerSelections * self,
+  const int            transient);
 
 /**
- * Gets last object's widget.
+ * Gets last object.
  *
  * @param transient If 1, transient objects are
  *   checked instead.
  */
-#define ARRANGER_SELECTIONS_DECLARE_GET_LAST_OBJ( \
-  cc,sc) \
-  GtkWidget * \
-  sc##_selections_get_last_object ( \
-    cc##Selections * mas, \
-    int              transient)
+ArrangerObject *
+arranger_selections_get_last_object (
+  ArrangerSelections * self,
+  const int            transient);
 
 /**
  * Pastes the given selections to the given Position.
  */
-#define ARRANGER_SELECTIONS_DECLARE_PASTE_TO_POS( \
-  cc,sc) \
-  void \
-  sc##_selections_paste_to_pos ( \
-    cc##Selections * ts, \
-    Position *       pos)
+//void
+//arranger_selections_paste_to_pos (
+  //ArrangerSelections * self,
+  //Position *           pos);
 
 /**
  * Sets the cache Position's for each object in
@@ -182,11 +218,20 @@
  *
  * Used by the ArrangerWidget's.
  */
-#define ARRANGER_SELECTIONS_DECLARE_SET_CACHE_POSES( \
-  cc,sc) \
-  void \
-  sc##_selections_set_cache_poses ( \
-    cc##Selections * mas)
+void
+arranger_selections_set_cache_poses (
+  ArrangerSelections * self);
+
+/**
+ * Returns all objects in the selections in a
+ * newly allocated array that should be free'd.
+ *
+ * @param size A pointer to save the size into.
+ */
+ArrangerObject **
+arranger_selections_get_all_objects (
+  ArrangerSelections * self,
+  int *                size);
 
 /**
  * Moves the selections by the given
@@ -197,37 +242,33 @@
  * @param ticks Ticks to add.
  * @param update_flag ArrangerObjectUpdateFlag.
  */
-#define ARRANGER_SELECTIONS_DECLARE_ADD_TICKS(cc,sc) \
-  void \
-  sc##_selections_add_ticks ( \
-    cc##Selections *         mas, \
-    long                     ticks, \
-    int                      use_cached_pos, \
-    ArrangerObjectUpdateFlag update_flag)
+void
+arranger_selections_add_ticks (
+  ArrangerSelections *     self,
+  const long               ticks,
+  const int                use_cached_pos,
+  ArrangerObjectUpdateFlag update_flag);
 
 /**
  * Clears selections.
  */
-#define ARRANGER_SELECTIONS_DECLARE_CLEAR(cc,sc) \
-  void \
-  sc##_selections_clear ( \
-    cc##Selections * mas)
+void
+arranger_selections_clear (
+  ArrangerSelections * self);
 
 /**
  * Code to run after deserializing.
  */
-#define ARRANGER_SELECTIONS_DECLARE_POST_DESERIALIZE(cc,sc) \
-  void \
-  sc##_selections_post_deserialize ( \
-    cc##Selections * self)
+void
+arranger_selections_post_deserialize (
+  ArrangerSelections * self);
 
 /**
- * Frees the selections.
+ * Frees the selections but not the objects.
  */
-#define ARRANGER_SELECTIONS_DECLARE_FREE(cc,sc) \
-  void \
-  sc##_selections_free ( \
-    cc##Selections * self)
+void
+arranger_selections_free (
+  ArrangerSelections * self);
 
 /**
  * Frees all the objects as well.
@@ -235,63 +276,9 @@
  * To be used in actions where the selections are
  * all clones.
  */
-#define ARRANGER_SELECTIONS_DECLARE_FREE_FULL(cc,sc) \
-  void \
-  sc##_selections_free_full ( \
-    cc##Selections * self)
-
-/**
- * Declares all of the above functions.
- */
-#define ARRANGER_SELECTIONS_DECLARE_FUNCS(cc,sc) \
-  ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS ( \
-    cc, sc); \
-  ARRANGER_SELECTIONS_DECLARE_INIT_LOADED (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_CLONE (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_HAS_ANY (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_GET_START_POS_W_GLOBAL (\
-    cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_GET_END_POS_W_GLOBAL (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_GET_FIRST_OBJ (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_GET_LAST_OBJ (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_PASTE_TO_POS (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_SET_CACHE_POSES ( \
-    cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_ADD_TICKS (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_CLEAR (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_POST_DESERIALIZE (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_FREE (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_FREE_FULL (cc,sc)
-
-#define ARRANGER_SELECTIONS_DECLARE_TIMELINE_FUNCS( \
-  cc,sc) \
-  ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS ( \
-    cc, sc); \
-  ARRANGER_SELECTIONS_DECLARE_INIT_LOADED (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_CLONE (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_HAS_ANY (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_GET_START_POS (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_GET_END_POS (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_GET_FIRST_OBJ (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_GET_LAST_OBJ (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_PASTE_TO_POS (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_SET_CACHE_POSES ( \
-    cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_ADD_TICKS (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_CLEAR (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_POST_DESERIALIZE (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_FREE (cc,sc); \
-  ARRANGER_SELECTIONS_DECLARE_FREE_FULL (cc,sc)
-
-/**
- * Adds the arranger object to the selections.
- */
-#define ARRANGER_SELECTIONS_DECLARE_ADD_OBJ( \
-  cc,sc,obj_cc,obj_sc) \
-  void \
-  sc##_selections_add_##obj_sc ( \
-    cc##Selections * self, \
-    obj_cc *         obj_sc)
+void
+arranger_selections_free_full (
+  ArrangerSelections * self);
 
 /**
  * Returns if the arranger object is in the
@@ -300,60 +287,18 @@
  * The object must be the main object (see
  * ArrangerObjectInfo).
  */
-#define ARRANGER_SELECTIONS_DECLARE_CONTAINS_OBJ( \
-  cc,sc,obj_cc,obj_sc) \
-  int \
-  sc##_selections_contains_##obj_sc ( \
-    cc##Selections * self, \
-    obj_cc *        obj_sc)
+int
+arranger_selections_contains_object (
+  ArrangerSelections * self,
+  ArrangerObject *     obj);
 
 /**
  * Removes the arranger object from the selections.
  */
-#define ARRANGER_SELECTIONS_DECLARE_REMOVE_OBJ( \
-  cc,sc,obj_cc,obj_sc) \
-  void \
-  sc##_selections_remove_##obj_sc ( \
-    cc##Selections * ts, \
-    obj_cc *         obj_sc)
-
-/**
- * Declares the above arranger object-related
- * functions.
- */
-#define ARRANGER_SELECTIONS_DECLARE_OBJ_FUNCS( \
-  cc,sc,obj_cc,obj_sc) \
-  ARRANGER_SELECTIONS_DECLARE_ADD_OBJ ( \
-    cc, sc, obj_cc, obj_sc); \
-  ARRANGER_SELECTIONS_DECLARE_CONTAINS_OBJ ( \
-    cc, sc, obj_cc, obj_sc); \
-  ARRANGER_SELECTIONS_DECLARE_REMOVE_OBJ ( \
-    cc, sc, obj_cc, obj_sc)
-
-#define ARRANGER_SELECTIONS_ADD_OBJECT( \
-  _sel,caps,sc) \
-  if (!array_contains ( \
-         _sel->sc##s, _sel->num_##sc##s, sc)) \
-    { \
-      array_append ( \
-        _sel->sc##s, _sel->num_##sc##s, sc); \
-      EVENTS_PUSH ( \
-        ET_ARRANGER_OBJECT_SELECTION_CHANGED, \
-        &sc->obj_info); \
-    }
-
-#define ARRANGER_SELECTIONS_REMOVE_OBJECT( \
-  _sel,caps,sc) \
-  if (!array_contains ( \
-         _sel->sc##s, _sel->num_##sc##s, sc)) \
-    { \
-      EVENTS_PUSH ( \
-        ET_ARRANGER_OBJECT_SELECTION_CHANGED, \
-        &sc->obj_info); \
-      return; \
-    } \
-  array_delete ( \
-    _sel->sc##s, _sel->num_##sc##s, sc)
+void
+arranger_selections_remove_object (
+  ArrangerSelections * self,
+  ArrangerObject *     obj);
 
 /**
 * @}

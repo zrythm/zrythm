@@ -36,7 +36,7 @@ delete_tracks_action_new (
 
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UNDOABLE_ACTION_TYPE_DELETE_TRACKS;
+	  UA_DELETE_TRACKS;
 
   self->tls = tracklist_selections_clone (tls);
   tracklist_selections_sort (self->tls);

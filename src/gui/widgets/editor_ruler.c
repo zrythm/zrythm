@@ -31,6 +31,7 @@
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler_marker.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -68,9 +69,12 @@ editor_ruler_draw_cb (
   /* get a visible region */
   Region * region = CLIP_EDITOR->region;
   region =
-    region_get_main_region (region);
+    region_get_main (region);
+  ArrangerObject * region_obj =
+    (ArrangerObject *) region;
 
-  Track * track = region_get_track (region);
+  Track * track =
+    arranger_object_get_track (region_obj);
 
   int px_start, px_end;
 
@@ -78,14 +82,15 @@ editor_ruler_draw_cb (
   cairo_set_source_rgba (
     cr, 1, track->color.green + 0.2,
     track->color.blue + 0.2, 1.0);
-  if (region_should_be_visible (&region))
+  if (arranger_object_should_be_visible (
+        region_obj))
     {
       px_start =
         ui_pos_to_px_editor (
-          &region->start_pos, 1);
+          &region_obj->pos, 1);
       px_end =
         ui_pos_to_px_editor (
-          &region->end_pos, 1);
+          &region_obj->end_pos, 1);
       cairo_rectangle (
         cr, px_start, 0,
         px_end - px_start, height / 4.0);
@@ -94,15 +99,18 @@ editor_ruler_draw_cb (
 
   /* draw its transient if copy-moving */
   region =
-    region_get_main_trans_region (region);
-  if (region_should_be_visible (&region))
+    region_get_main_trans (region);
+  region_obj =
+    (ArrangerObject *) region;
+  if (arranger_object_should_be_visible (
+        region_obj))
     {
       px_start =
         ui_pos_to_px_editor (
-          &region->start_pos, 1);
+          &region_obj->pos, 1);
       px_end =
         ui_pos_to_px_editor (
-          &region->end_pos, 1);
+          &region_obj->end_pos, 1);
       cairo_rectangle (
         cr, px_start, 0,
         px_end - px_start, height / 4.0);
@@ -110,11 +118,12 @@ editor_ruler_draw_cb (
     }
 
   /* draw the other regions */
-  cairo_set_source_rgba (cr,
-                         track->color.red,
-                         track->color.green,
-                         track->color.blue,
-                         0.5);
+  cairo_set_source_rgba (
+    cr,
+    track->color.red,
+    track->color.green,
+    track->color.blue,
+    0.5);
   Region * other_region;
   TrackLane * lane;
   for (int j = 0; j < track->num_lanes; j++)
@@ -124,16 +133,18 @@ editor_ruler_draw_cb (
       for (int i = 0; i < lane->num_regions; i++)
         {
           other_region = lane->regions[i];
+          ArrangerObject * other_region_obj =
+            (ArrangerObject *) other_region;
           if (!g_strcmp0 (region->name,
                          other_region->name))
             continue;
 
           px_start =
             ui_pos_to_px_editor (
-              &other_region->start_pos, 1);
+              &other_region_obj->pos, 1);
           px_end =
             ui_pos_to_px_editor (
-              &other_region->end_pos, 1);
+              &other_region_obj->end_pos, 1);
           cairo_rectangle (
             cr, px_start, 0,
             px_end - px_start, height / 4.0);
@@ -160,13 +171,14 @@ editor_ruler_widget_set_ruler_marker_position (
     case RULER_MARKER_TYPE_LOOP_START:
       if (CLIP_EDITOR->region)
         {
+          ArrangerObject * region_obj =
+            (ArrangerObject *) CLIP_EDITOR->region;
           long start_ticks =
             position_to_ticks (
-              &CLIP_EDITOR->region->start_pos);
+              &region_obj->pos);
           long loop_start_ticks =
             position_to_ticks (
-              &CLIP_EDITOR->region->
-                loop_start_pos) +
+              &region_obj->loop_start_pos) +
             start_ticks;
           position_from_ticks (
             &tmp, loop_start_ticks);
@@ -184,12 +196,14 @@ editor_ruler_widget_set_ruler_marker_position (
     case RULER_MARKER_TYPE_LOOP_END:
       if (CLIP_EDITOR->region)
         {
+          ArrangerObject * region_obj =
+            (ArrangerObject *) CLIP_EDITOR->region;
           long start_ticks =
             position_to_ticks (
-              &CLIP_EDITOR->region->start_pos);
+              &region_obj->pos);
           long loop_end_ticks =
             position_to_ticks (
-              &CLIP_EDITOR->region->loop_end_pos) +
+              &region_obj->loop_end_pos) +
             start_ticks;
           position_from_ticks (
             &tmp, loop_end_ticks);
@@ -207,13 +221,14 @@ editor_ruler_widget_set_ruler_marker_position (
     case RULER_MARKER_TYPE_CLIP_START:
       if (CLIP_EDITOR->region)
         {
+          ArrangerObject * region_obj =
+            (ArrangerObject *) CLIP_EDITOR->region;
           long start_ticks =
             position_to_ticks (
-              &CLIP_EDITOR->region->start_pos);
+              &region_obj->pos);
           long clip_start_ticks =
             position_to_ticks (
-              &CLIP_EDITOR->region->
-                clip_start_pos) +
+              &region_obj->clip_start_pos) +
             start_ticks;
           position_from_ticks (
             &tmp, clip_start_ticks);
@@ -289,6 +304,8 @@ editor_ruler_on_drag_update (
       Position editor_pos;
       Position region_local_pos;
       Region * r = CLIP_EDITOR->region;
+      ArrangerObject * r_obj =
+        (ArrangerObject *) r;
 
       /* convert px to position */
       if (self)
@@ -304,7 +321,7 @@ editor_ruler_on_drag_update (
       position_from_ticks (
         &region_local_pos,
         position_to_ticks (&editor_pos) -
-        position_to_ticks (&r->start_pos));
+        position_to_ticks (&r_obj->pos));
 
       if (TARGET_IS (LOOP_START))
         {
@@ -313,14 +330,17 @@ editor_ruler_on_drag_update (
           /* if position is acceptable */
           if (position_compare (
                 &region_local_pos,
-                &r->loop_end_pos) < 0 &&
+                &r_obj->loop_end_pos) < 0 &&
               position_compare (
                 &region_local_pos,
-                &r->clip_start_pos) >= 0)
+                &r_obj->clip_start_pos) >= 0)
             {
               /* set it */
-              region_set_loop_start_pos (
-                r, &region_local_pos, AO_UPDATE_ALL);
+              arranger_object_set_position (
+                r_obj, &region_local_pos,
+                ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
+                F_NO_CACHED, F_VALIDATE,
+                AO_UPDATE_ALL);
               transport_update_position_frames (
                 TRANSPORT);
               EVENTS_PUSH (
@@ -332,14 +352,17 @@ editor_ruler_on_drag_update (
           /* if position is acceptable */
           if (position_compare (
                 &region_local_pos,
-                &r->loop_start_pos) > 0 &&
+                &r_obj->loop_start_pos) > 0 &&
               position_compare (
                 &region_local_pos,
-                &r->clip_start_pos) > 0)
+                &r_obj->clip_start_pos) > 0)
             {
               /* set it */
-              region_set_loop_end_pos (
-                r, &region_local_pos, AO_UPDATE_ALL);
+              arranger_object_set_position (
+                r_obj, &region_local_pos,
+                ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
+                F_NO_CACHED, F_VALIDATE,
+                AO_UPDATE_ALL);
               transport_update_position_frames (
                 TRANSPORT);
               EVENTS_PUSH (
@@ -349,13 +372,16 @@ editor_ruler_on_drag_update (
       else if (TARGET_IS (CLIP_START))
         {
           /* if position is acceptable */
-          if (position_compare (
+          if (position_is_before_or_equal (
                 &region_local_pos,
-                &r->loop_start_pos) <= 0)
+                &r_obj->loop_start_pos))
             {
               /* set it */
-              region_set_clip_start_pos (
-                r, &region_local_pos, AO_UPDATE_ALL);
+              arranger_object_set_position (
+                r_obj, &region_local_pos,
+                ARRANGER_OBJECT_POSITION_TYPE_CLIP_START,
+                F_NO_CACHED, F_VALIDATE,
+                AO_UPDATE_ALL);
               transport_update_position_frames (
                 TRANSPORT);
               EVENTS_PUSH (
@@ -373,10 +399,10 @@ editor_ruler_on_drag_update (
             TRANSPORT->total_bars);
 
           /* if position is acceptable */
-          if (position_compare (
-                &editor_pos, &timeline_start) >= 0 &&
-              position_compare (
-                &editor_pos, &timeline_end) <= 0)
+          if (position_is_after_or_equal (
+                &editor_pos, &timeline_start) &&
+              position_is_before_or_equal (
+                &editor_pos, &timeline_end))
             {
               transport_move_playhead (
                 &editor_pos, 1);
@@ -398,8 +424,10 @@ editor_ruler_on_drag_end (
 
   /* hide tooltips */
   if (TARGET_IS (PLAYHEAD))
-    ruler_marker_widget_update_tooltip (
-      rw_prv->playhead, 0);
+    {
+      ruler_marker_widget_update_tooltip (
+        rw_prv->playhead, 0);
+    }
 }
 
 void

@@ -162,7 +162,7 @@ midi_region_remove_all_midi_notes (
  */
 void
 midi_region_write_to_midi_file (
-  const Region * self,
+  Region * self,
   MIDI_FILE *    mf,
   const int      add_region_start,
   const int      export_full);
@@ -178,7 +178,7 @@ midi_region_write_to_midi_file (
  */
 void
 midi_region_export_to_midi_file (
-  const Region * self,
+  Region * self,
   const char *   full_path,
   int            midi_version,
   const int      export_full);
@@ -207,7 +207,7 @@ midi_region_get_midi_ch (
  */
 MidiEvents *
 midi_region_get_as_events (
-  const Region * self,
+  Region * self,
   const int      add_region_start,
   const int      full);
 

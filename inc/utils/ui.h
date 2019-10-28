@@ -54,6 +54,9 @@ typedef struct UiColors
   GdkRGBA       matcha;
   GdkRGBA       bright_green;
   GdkRGBA       darkish_green;
+  GdkRGBA       highlight_both;
+  GdkRGBA       highlight_in_scale;
+  GdkRGBA       highlight_in_chord;
 } UiColors;
 
 /**
@@ -67,7 +70,7 @@ typedef struct UiCaches
 /**
  * Space on the edges to show resize cursors
  */
-#define RESIZE_CURSOR_SPACE 9
+#define UI_RESIZE_CURSOR_SPACE 9
 
 /*
  * Drag n Drop related.

@@ -43,9 +43,6 @@ typedef struct _MidiModifierArrangerWidget
 {
   ArrangerWidget parent_instance;
 
-  /** Clicked Velocity. */
-  Velocity *     start_velocity;
-
   /** 1-127. */
   int            start_vel_val;
 
@@ -62,8 +59,6 @@ typedef struct _MidiModifierArrangerWidget
 
 ARRANGER_W_DECLARE_FUNCS (
   MidiModifier, midi_modifier);
-ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
-  MidiModifier, midi_modifier, Velocity, velocity);
 
 void
 midi_modifier_arranger_widget_resize_velocities (

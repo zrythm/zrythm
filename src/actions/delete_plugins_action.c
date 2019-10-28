@@ -38,7 +38,7 @@ delete_plugins_action_new (
     	DeletePluginsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UNDOABLE_ACTION_TYPE_DELETE_PLUGINS;
+	  UA_DELETE_PLUGINS;
 
   self->tr_pos = tr->pos;
   self->slot = slot;

@@ -85,10 +85,28 @@
     }
 
 /**
- * Deletes element from array and rearranges other elements
- * accordingly.
+ * Deletes element from array and rearranges other
+ * elements accordingly.
  */
 #define array_delete(array,size,element) \
+  for (int ii = 0; ii < size; ii++) \
+    { \
+      if ((void *) array[ii] == (void *) element) \
+        { \
+          --size; \
+          for (int jj = ii; jj < size; jj++) \
+            { \
+              array[jj] = array[jj + 1]; \
+            } \
+          break; \
+        } \
+    }
+
+/**
+ * Deletes element from array and rearranges other
+ * elements accordingly.
+ */
+#define array_delete_primitive(array,size,element) \
   for (int ii = 0; ii < size; ii++) \
     { \
       if (array[ii] == element) \

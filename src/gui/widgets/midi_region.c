@@ -71,11 +71,13 @@ midi_region_draw_cb (
   MidiRegion * r =
     (MidiRegion *) rw_prv->region;
   Region * main_region =
-    region_get_main_region (r);
+    region_get_main (r);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
   int num_loops =
-    region_get_num_loops (r, 1);
+    arranger_object_get_num_loops (r_obj, 1);
   long ticks_in_region =
-    region_get_full_length_in_ticks (r);
+    arranger_object_get_length_in_ticks (r_obj);
   float x_start, y_start, x_end;
 
   int min_val = 127, max_val = 0;
@@ -95,11 +97,13 @@ midi_region_draw_cb (
 
   /* draw midi notes */
   long loop_end_ticks =
-    position_to_ticks (&r->loop_end_pos);
+    r_obj->loop_end_pos.total_ticks;
   long loop_ticks =
-    region_get_loop_length_in_ticks (r);
+    arranger_object_get_loop_length_in_ticks (
+      r_obj);
   long clip_start_ticks =
-    position_to_ticks (&r->clip_start_pos);
+    r_obj->clip_start_pos.total_ticks;
+
   /*int px =*/
     /*ui_pos_to_px_timeline (&r->loop_start_pos, 0);*/
   for (i = 0; i < main_region->num_midi_notes; i++)
@@ -108,15 +112,17 @@ midi_region_draw_cb (
 
       mn =
         (MidiNote *)
-        arranger_object_info_get_visible_counterpart (
-          &mn->obj_info);
+        arranger_object_get_visible_counterpart (
+          (ArrangerObject *) mn);
+      ArrangerObject * mn_obj =
+        (ArrangerObject *) mn;
 
       /* get ratio (0.0 - 1.0) on x where midi note starts
        * & ends */
       long mn_start_ticks =
-        position_to_ticks (&mn->start_pos);
+        position_to_ticks (&mn_obj->pos);
       long mn_end_ticks =
-        position_to_ticks (&mn->end_pos);
+        position_to_ticks (&mn_obj->end_pos);
       long tmp_start_ticks, tmp_end_ticks;
 
       /* adjust for clip start */
@@ -134,16 +140,17 @@ midi_region_draw_cb (
 
         /*}*/
       /* if before loop end */
-      if (position_compare (
-            &mn->start_pos, &r->loop_end_pos) < 0)
+      if (position_is_before (
+            &mn_obj->pos,
+            &r_obj->loop_end_pos))
         {
           for (j = 0; j < num_loops; j++)
             {
               /* if note started before loop start
                * only draw it once */
-              if (position_compare (
-                    &mn->start_pos,
-                    &r->loop_start_pos) < 0 &&
+              if (position_is_before (
+                    &mn_obj->pos,
+                    &r_obj->loop_start_pos) &&
                   j != 0)
                 break;
 
@@ -152,7 +159,8 @@ midi_region_draw_cb (
                 mn_start_ticks + loop_ticks * j;
               /* if should be clipped */
               if (position_is_after_or_equal (
-                    &mn->end_pos, &r->loop_end_pos))
+                    &mn_obj->end_pos,
+                    &r_obj->loop_end_pos))
                 tmp_end_ticks =
                   loop_end_ticks + loop_ticks * j;
               else
@@ -189,12 +197,10 @@ midi_region_draw_cb (
     }
 
   region_widget_draw_name (
-    Z_REGION_WIDGET (self),
-    cr);
+    Z_REGION_WIDGET (self), cr);
 
   region_widget_draw_cut_line (
-    Z_REGION_WIDGET (self),
-    cr);
+    Z_REGION_WIDGET (self), cr);
 
  return FALSE;
 }
@@ -211,11 +217,11 @@ midi_region_widget_new (
   region_widget_setup (
     Z_REGION_WIDGET (self),
     midi_region);
-  REGION_WIDGET_GET_PRIVATE (self);
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
   /* connect signals */
   g_signal_connect (
-    G_OBJECT (rw_prv->drawing_area), "draw",
+    G_OBJECT (ao_prv->drawing_area), "draw",
     G_CALLBACK (midi_region_draw_cb), self);
 
   return self;

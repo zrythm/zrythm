@@ -570,11 +570,14 @@ load (
                  port->identifier.label);
     }
 
-  timeline_selections_init_loaded (
+  arranger_selections_init_loaded (
+    (ArrangerSelections *)
     &PROJECT->timeline_selections);
-  midi_arranger_selections_init_loaded (
+  arranger_selections_init_loaded (
+    (ArrangerSelections *)
     &PROJECT->midi_arranger_selections);
-  tracklist_selections_init_loaded (
+  arranger_selections_init_loaded (
+    (ArrangerSelections *)
     &PROJECT->tracklist_selections);
 
   snap_grid_update_snap_points (

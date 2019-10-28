@@ -27,24 +27,26 @@
 
 #include <gtk/gtk.h>
 
-#define AUDIO_REGION_WIDGET_TYPE (audio_region_widget_get_type ())
-G_DECLARE_FINAL_TYPE (AudioRegionWidget,
-                      audio_region_widget,
-                      Z,
-                      AUDIO_REGION_WIDGET,
-                      RegionWidget);
+#define AUDIO_REGION_WIDGET_TYPE ( \
+  audio_region_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  AudioRegionWidget,
+  audio_region_widget,
+  Z, AUDIO_REGION_WIDGET,
+  RegionWidget);
 
 typedef struct Region AudioRegion;
 
 typedef struct _AudioRegionWidget
 {
-  RegionWidget             parent_instance;
+  RegionWidget        parent_instance;
 } AudioRegionWidget;
 
 /**
  * Creates a region.
  */
 AudioRegionWidget *
-audio_region_widget_new (AudioRegion * audio_region);
+audio_region_widget_new (
+  AudioRegion * audio_region);
 
 #endif

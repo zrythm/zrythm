@@ -24,54 +24,6 @@
 #include "utils/flags.h"
 #include "utils/string.h"
 
-#define SET_POS(_c,pos_name,_pos,_trans_only) \
-  ARRANGER_OBJ_SET_POS ( \
-    marker, _c, pos_name, _pos, _trans_only)
-
-DEFINE_START_POS;
-
-ARRANGER_OBJ_DEFINE_MOVABLE (
-  Marker, marker, timeline_selections,
-  TL_SELECTIONS);
-
-void
-marker_init_loaded (Marker * self)
-{
-  ARRANGER_OBJECT_SET_AS_MAIN (
-   MARKER, Marker, marker);
-}
-
-ARRANGER_OBJ_DECLARE_VALIDATE_POS (
-  Marker, marker, pos)
-{
-  return
-    position_is_after_or_equal (
-      pos, START_POS);
-}
-
-/**
- * Mainly used for copy-pasting.
- */
-void
-marker_post_deserialize (
-  Marker * self)
-{
-  g_return_if_fail (self);
-  self->obj_info.main = self;
-}
-
-void
-marker_pos_setter (
-  Marker * marker,
-  const Position * pos)
-{
-  if (marker_validate_pos (marker, pos))
-    {
-      marker_set_pos (
-        marker, pos, AO_UPDATE_ALL);
-    }
-}
-
 /**
  * Creates a Marker.
  */
@@ -82,14 +34,17 @@ marker_new (
 {
   Marker * self = calloc (1, sizeof (Marker));
 
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+  obj->type = ARRANGER_OBJECT_TYPE_MARKER;
+
   self->name = g_strdup (name);
   self->type = MARKER_TYPE_CUSTOM;
-  position_set_bar (&self->pos, 1);
+  position_set_bar (&obj->pos, 1);
 
   if (is_main)
     {
-      ARRANGER_OBJECT_SET_AS_MAIN (
-        MARKER, Marker, marker);
+      arranger_object_set_as_main (obj);
     }
 
   return self;
@@ -107,30 +62,6 @@ marker_set_track (
   marker->track_pos = track->pos;
 }
 
-ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
-  Marker, marker);
-
-/**
- * Sets the name to all the Marker's counterparts.
- */
-void
-marker_set_name (
-  Marker * marker,
-  const char * name)
-{
-  Marker * c = marker;
-  for (int i = 0; i < 2; i++)
-    {
-      if (i == 0)
-        c = marker_get_main_marker (c);
-      else if (i == 1)
-        c = marker_get_main_trans_marker (c);
-
-      c->name = g_strdup (name);
-    }
-  EVENTS_PUSH (ET_MARKER_NAME_CHANGED, marker);
-}
-
 /**
  * Returns if the two Marker's are equal.
  */
@@ -139,77 +70,11 @@ marker_is_equal (
   Marker * a,
   Marker * b)
 {
+  ArrangerObject * obj_a =
+    (ArrangerObject *) a;
+  ArrangerObject * obj_b =
+    (ArrangerObject *) b;
   return
-    position_is_equal (&a->pos, &b->pos) &&
+    position_is_equal (&obj_a->pos, &obj_b->pos) &&
     string_is_equal (a->name, b->name, 1);
-}
-
-Marker *
-marker_clone (
-  Marker * src,
-  MarkerCloneFlag flag)
-{
-  int is_main = 0;
-  if (flag == MARKER_CLONE_COPY_MAIN)
-    is_main = 1;
-
-  Marker * marker =
-    marker_new (src->name, is_main);
-
-  position_set_to_pos (
-    &marker->pos, &src->pos);
-
-  return marker;
-}
-
-/**
- * Finds the chord in the project corresponding to the
- * given one.
- */
-Marker *
-marker_find (
-  Marker * clone)
-{
-  for (int i = 0;
-       i < P_MARKER_TRACK->num_markers; i++)
-    {
-      if (marker_is_equal (
-            P_MARKER_TRACK->markers[i],
-            clone))
-        return P_MARKER_TRACK->markers[i];
-    }
-  return NULL;
-}
-
-/**
- * Updates the frames of each position in each child
- * of the Marker recursively.
- */
-void
-marker_update_frames (
-  Marker * self)
-{
-  position_update_frames (&self->pos);
-}
-
-/**
- * Frees the Marker.
- */
-void
-marker_free (Marker * self)
-{
-  if (self->obj_info.counterpart ==
-        AOI_COUNTERPART_MAIN)
-    {
-      marker_free (
-        self->obj_info.main_trans);
-      marker_free (
-        self->obj_info.lane);
-      marker_free (
-        self->obj_info.lane_trans);
-    }
-
-  g_free (self->name);
-
-  free (self);
 }

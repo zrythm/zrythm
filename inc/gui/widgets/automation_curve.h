@@ -22,15 +22,17 @@
 #ifndef __GUI_WIDGETS_AUTOMATION_CURVE_H__
 #define __GUI_WIDGETS_AUTOMATION_CURVE_H__
 
+#include "gui/widgets/arranger_object.h"
+
 #include <gtk/gtk.h>
 
 #define AUTOMATION_CURVE_WIDGET_TYPE \
   (automation_curve_widget_get_type ())
-G_DECLARE_FINAL_TYPE (AutomationCurveWidget,
-                      automation_curve_widget,
-                      Z,
-                      AUTOMATION_CURVE_WIDGET,
-                      GtkDrawingArea)
+G_DECLARE_FINAL_TYPE (
+  AutomationCurveWidget,
+  automation_curve_widget,
+  Z, AUTOMATION_CURVE_WIDGET,
+  ArrangerObjectWidget)
 
 /*
  * extra space on top and bottom to make room for width 2
@@ -38,43 +40,27 @@ G_DECLARE_FINAL_TYPE (AutomationCurveWidget,
 #define AC_Y_PADDING 2.0
 #define AC_Y_HALF_PADDING (AC_Y_PADDING / 2.0)
 
-typedef enum ACW_CursorState
-{
-  ACW_STATE_NONE,
-} ACW_CursorState;
-
 typedef struct AutomationCurve AutomationCurve;
 
 typedef struct _AutomationCurveWidget
 {
-  GtkDrawingArea              parent_instance;
-  AutomationCurve *           ac;   ///< the automation curve associated with this
-  //int                         hover;
-  //int                         selected;
+  ArrangerObjectWidget parent_instance;
+
+  /** The AutomationCurve associated with this
+   * widget. */
+  AutomationCurve *    ac;
 
   /* for dragging */
-  GtkGestureDrag *            drag;
-  double                      last_x;
-  double                      last_y;
-
-  ACW_CursorState             cursor_state;
-
-  /* Set to 1 to redraw. */
-  int                      redraw;
-
-  cairo_t *                cached_cr;
-
-  cairo_surface_t *        cached_surface;
+  GtkGestureDrag *     drag;
+  double               last_x;
+  double               last_y;
 } AutomationCurveWidget;
 
 /**
  * Creates a automation_curve.
  */
 AutomationCurveWidget *
-automation_curve_widget_new (AutomationCurve * ac);
-
-void
-automation_curve_widget_force_redraw (
-  AutomationCurveWidget * self);
+automation_curve_widget_new (
+  AutomationCurve * ac);
 
 #endif

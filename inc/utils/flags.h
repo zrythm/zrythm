@@ -61,8 +61,8 @@
 #define F_GEN_NAME 1
 #define F_NO_GEN_NAME 0
 
-#define F_USE_CACHED 1
-#define F_NO_USE_CACHED 0
+#define F_CACHED 1
+#define F_NO_CACHED 0
 
 #define F_COPY_MOVING 1
 #define F_NOT_COPY_MOVING 0
@@ -90,5 +90,8 @@
 
 #define F_CONNECT 1
 #define F_DISCONNECT 0
+
+#define F_GLOBAL 1
+#define F_NOT_GLOBAL 0
 
 #endif

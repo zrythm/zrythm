@@ -30,9 +30,10 @@
 #include "project.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (AutomationPointWidget,
-               automation_point_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  AutomationPointWidget,
+  automation_point_widget,
+  ARRANGER_OBJECT_WIDGET_TYPE)
 
 static gboolean
 draw_cb (
@@ -82,78 +83,6 @@ draw_cb (
  return FALSE;
 }
 
-void
-automation_point_widget_force_redraw (
-  AutomationPointWidget * self)
-{
-  self->redraw = 1;
-  gtk_widget_queue_draw (GTK_WIDGET (self));
-}
-
-static void
-on_motion (GtkWidget * widget,
-           GdkEventMotion *event)
-{
-  AutomationPointWidget * self =
-    Z_AUTOMATION_POINT_WIDGET (widget);
-
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (widget,
-                             &allocation);
-
-  if (event->type == GDK_ENTER_NOTIFY)
-    {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT,
-        0);
-
-    }
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT);
-    }
-  gtk_widget_queue_draw (GTK_WIDGET (self));
-}
-
-void
-automation_point_widget_update_tooltip (
-  AutomationPointWidget * self,
-  int              show)
-{
-  AutomationPoint * ap =
-    self->automation_point;
-
-  /* set tooltip text */
-  char * tooltip =
-    g_strdup_printf (
-      "%s %f",
-      ap->region->at->automatable->label,
-      (double) ap->fvalue);
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self), tooltip);
-  g_free (tooltip);
-
-  /* set tooltip window */
-  if (show)
-    {
-      tooltip =
-        g_strdup_printf (
-          "%f",
-          (double) ap->fvalue);
-      gtk_label_set_text (self->tooltip_label,
-                          tooltip);
-      gtk_window_present (self->tooltip_win);
-
-      g_free (tooltip);
-    }
-  else
-    gtk_widget_hide (
-      GTK_WIDGET (self->tooltip_win));
-}
-
 AutomationPointWidget *
 automation_point_widget_new (
   AutomationPoint * ap)
@@ -163,27 +92,12 @@ automation_point_widget_new (
       AUTOMATION_POINT_WIDGET_TYPE,
       "visible", 1,
       NULL);
-  /*g_message ("Creating automation_point widget... %p",*/
-             /*self);*/
+
+  arranger_object_widget_setup (
+    Z_ARRANGER_OBJECT_WIDGET (self),
+    (ArrangerObject *) ap);
 
   self->automation_point = ap;
-
-  gtk_widget_add_events (
-    GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
-
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT (self), "draw",
-    G_CALLBACK (draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self), "motion-notify-event",
-    G_CALLBACK (on_motion),  self);
 
   return self;
 }
@@ -202,21 +116,10 @@ static void
 automation_point_widget_init (
   AutomationPointWidget * self)
 {
-  /* set tooltip window */
-  self->tooltip_win =
-    GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
-  gtk_window_set_type_hint (
-    self->tooltip_win,
-    GDK_WINDOW_TYPE_HINT_TOOLTIP);
-  self->tooltip_label =
-    GTK_LABEL (gtk_label_new ("label"));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->tooltip_label), 1);
-  gtk_container_add (
-    GTK_CONTAINER (self->tooltip_win),
-    GTK_WIDGET (self->tooltip_label));
-  gtk_window_set_position (
-    self->tooltip_win, GTK_WIN_POS_MOUSE);
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
-  g_object_ref (self);
+  /* connect signals */
+  g_signal_connect (
+    G_OBJECT (ao_prv->drawing_area), "draw",
+    G_CALLBACK (draw_cb), self);
 }

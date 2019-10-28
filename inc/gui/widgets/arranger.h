@@ -34,127 +34,13 @@ G_DECLARE_DERIVABLE_TYPE (
   Z, ARRANGER_WIDGET,
   GtkOverlay)
 
-/** Object selection macros. */
-#define ARRANGER_WIDGET_SELECT_MIDI_NOTE( \
-  self, child, select, append) \
-  arranger_widget_select ( \
-    Z_ARRANGER_WIDGET (self), \
-    MIDI_NOTE_WIDGET_TYPE, \
-    (void *) child, select, append);
-#define ARRANGER_WIDGET_SELECT_REGION( \
-  self, child, select, append) \
-  arranger_widget_select ( \
-    Z_ARRANGER_WIDGET (self), \
-    REGION_WIDGET_TYPE, \
-    (void *) child, select, append);
-#define ARRANGER_WIDGET_SELECT_CHORD( \
-  self, child, select, append) \
-  arranger_widget_select ( \
-    Z_ARRANGER_WIDGET (self), \
-    CHORD_OBJECT_WIDGET_TYPE, (void *) child, select, append);
-#define ARRANGER_WIDGET_SELECT_SCALE( \
-  self, child, select, append) \
-  arranger_widget_select ( \
-    Z_ARRANGER_WIDGET (self), \
-    SCALE_OBJECT_WIDGET_TYPE, (void *) child, select, append);
-#define ARRANGER_WIDGET_SELECT_MARKER( \
-  self, child, select, append) \
-  arranger_widget_select ( \
-    Z_ARRANGER_WIDGET (self), \
-    MARKER_WIDGET_TYPE, (void *) child, \
-    select, append);
-#define ARRANGER_WIDGET_SELECT_AUTOMATION_POINT( \
-  self, child, select, append) \
-  arranger_widget_select ( \
-    Z_ARRANGER_WIDGET (self), \
-    AUTOMATION_POINT_WIDGET_TYPE, \
-    (void *) child, select, append);
-
 #define ARRANGER_WIDGET_GET_PRIVATE(self) \
   ArrangerWidgetPrivate * ar_prv = \
     arranger_widget_get_private ( \
       (ArrangerWidget *) (self));
-#define ARRANGER_IS_TIMELINE(self) \
-  (Z_IS_TIMELINE_ARRANGER_WIDGET (self))
-#define ARRANGER_IS_MIDI(self) \
-  (Z_IS_MIDI_ARRANGER_WIDGET (self))
-#define ARRANGER_IS_MIDI_MODIFIER(self) \
-  (Z_IS_MIDI_MODIFIER_ARRANGER_WIDGET (self))
 
-/**
- * Updates the visibility of the transient/non-
- * transient objects based on the current action.
- *
- * E.g. when moving or resizing, it hides the original
- * objects and only shows the transients. When copy-
- * moving, it shows both.
- *
- * param cc CamelCase.
- * param lc lower_case.
- */
-#define ARRANGER_SET_OBJ_VISIBILITY_ARRAY( \
-  array, size,cc,lc) \
-  cc * lc; \
-  for (int i = 0; i < size; i++) \
-    { \
-      lc = array[i]; \
-      arranger_object_info_set_widget_visibility_and_state ( \
-        &lc->obj_info, 1); \
-    }
-
-/**
- * Moves an object with length (Region, MidiNote,
- * etc.) by the given ticks_diff.
- */
-#define ARRANGER_MOVE_OBJ_BY_TICKS_W_LENGTH( \
-  obj, obj_name, prev_start_pos, ticks_diff, \
-  tmp_pos, tmp_length_ticks) \
-  tmp_length_ticks = \
-    obj->end_pos.total_ticks - \
-    obj->start_pos.total_ticks; \
-  position_set_to_pos ((tmp_pos), \
-                       (prev_start_pos)); \
-  position_add_ticks ( \
-    (tmp_pos), \
-    ticks_diff + tmp_length_ticks); \
-  obj_name##_set_end_pos (obj, (tmp_pos)); \
-  position_set_to_pos ((tmp_pos), \
-                       (prev_start_pos)); \
-  position_add_ticks ((tmp_pos), \
-                      ticks_diff); \
-  obj_name##_set_start_pos (obj, (tmp_pos))
-
-/**
- * Moves an object without length (AutomationPoint,
- * Chord, etc.) by the given ticks_diff.
- */
-#define ARRANGER_MOVE_OBJ_BY_TICKS( \
-  obj, obj_name, prev_start_pos, ticks_diff, \
-  tmp_pos) \
-  position_set_to_pos ((tmp_pos), \
-                       (prev_start_pos)); \
-  position_add_ticks ((tmp_pos), \
-                      ticks_diff); \
-  obj_name##_set_pos (obj, (tmp_pos));
-
-/**
- * Used for pushing transients to the bottom on
- * the z axis.
- */
-#define ARRANGER_WIDGET_ADD_OBJ_CHILD( \
-  _self,_child) \
-  gtk_overlay_add_overlay ( \
-    (GtkOverlay *) _self, \
-    (GtkWidget *) _child->widget); \
-  arranger_object_info_set_widget_visibility_and_state ( \
-    &_child->obj_info, 0); \
-  if (arranger_object_info_is_transient ( \
-        &_child->obj_info)) \
-    { \
-      gtk_overlay_reorder_overlay ( \
-        (GtkOverlay *) _self, \
-        (GtkWidget *) _child->widget, 0); \
-    }
+#define ARRANGER_WIDGET_GET_ACTION(arr,actn) \
+  (arranger_widget_get_private (arr)->action == UI_OVERLAY_ACTION_##actn)
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
@@ -221,6 +107,18 @@ typedef struct
    * at the start of the drag. */
   Position             earliest_obj_start_pos;
 
+  /** The object that was clicked in this drag
+   * cycle, if any. */
+  ArrangerObject *       start_object;
+
+  /** Whether the start object was selected before
+   * drag_begin. */
+  int                    start_object_was_selected;
+
+  /** A clone of the ArrangerSelections on drag
+   * begin. */
+  ArrangerSelections *  sel_at_start;
+
   /** Start Position of the earliest object
    * currently. */
   //Position             earliest_obj_pos;
@@ -278,51 +176,6 @@ typedef struct _ArrangerWidgetClass
   GtkOverlayClass       parent_class;
 } ArrangerWidgetClass;
 
-/**
- * Declares the get hit function.
- */
-#define ARRANGER_W_DECLARE_GET_HIT_WIDGET( \
-  arr_name_cc,arr_name_sc,cc,sc) \
-  cc##Widget * \
-  arr_name_sc##_arranger_widget_get_hit_##sc ( \
-    arr_name_cc##ArrangerWidget * self, \
-    double                        x, \
-    double                        y)
-
-/**
- * Declares the drag begin hit function.
- */
-#define ARRANGER_W_DECLARE_ON_DRAG_BEGIN_X_HIT( \
-  arr_name_cc,arr_name_sc,cc,sc) \
-  void \
-  arr_name_sc##_arranger_widget_on_drag_begin_##sc##_hit ( \
-    arr_name_cc##ArrangerWidget * self, \
-    double                        start_x, \
-    double                        start_y, \
-    cc##Widget *                  hit_w)
-
-/**
- * Sets up an arranger object by declaring the
- * following functions:
- *   - get hit
- *   - on drag begin hit
- */
-#define ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS( \
-  arr_name_cc,arr_name_sc,cc,sc) \
-ARRANGER_W_DECLARE_GET_HIT_WIDGET ( \
-  arr_name_cc, arr_name_sc, cc, sc); \
-ARRANGER_W_DECLARE_ON_DRAG_BEGIN_X_HIT ( \
-  arr_name_cc, arr_name_sc, cc, sc)
-
-/**
- * Selects all objects.
- */
-#define ARRANGER_W_DECLARE_SELECT_ALL(cc,sc) \
-  void \
-  sc##_arranger_widget_select_all ( \
-    cc##ArrangerWidget * self, \
-    int                 select)
-
 /** Called from get_child_position to allocate
  * the overlay children */
 #define ARRANGER_W_DECLARE_SET_ALLOCATION(cc,sc) \
@@ -331,16 +184,6 @@ ARRANGER_W_DECLARE_ON_DRAG_BEGIN_X_HIT ( \
     cc##ArrangerWidget * self, \
     GtkWidget *          widget, \
     GdkRectangle *       allocation)
-
-/**
- * Sets transient object and actual object
- * visibility based on the current action.
- */
-#define ARRANGER_W_DECLARE_UPDATE_VISIBILITY( \
-  cc,sc) \
-  void \
-  sc##_arranger_widget_update_visibility ( \
-    cc##ArrangerWidget * self)
 
 /**
  * Returns the appropriate cursor based on the
@@ -352,20 +195,6 @@ ARRANGER_W_DECLARE_ON_DRAG_BEGIN_X_HIT ( \
     cc##ArrangerWidget * self, \
     UiOverlayAction action, \
     Tool            tool)
-
-/**
- * Moves the corresponding selections by the given
- * amount of ticks.
- *
- * @param ticks_diff Ticks to move by.
- * @param copy_moving 1 if copy-moving.
- */
-#define ARRANGER_W_DECLARE_MOVE_ITEMS_X(cc,sc) \
-  void \
-  sc##_arranger_widget_move_items_x ( \
-    cc##ArrangerWidget * self, \
-    long                 ticks_diff, \
-    int                  copy_moving)
 
 /**
  * Called when moving selected items in
@@ -412,19 +241,6 @@ ARRANGER_W_DECLARE_ON_DRAG_BEGIN_X_HIT ( \
     const int                delete)
 
 /**
- * Shows context menu.
- *
- * To be called from parent on right click.
- */
-#define ARRANGER_W_DECLARE_SHOW_CONTEXT_MENU( \
-  cc,sc) \
-  void \
-  sc##_arranger_widget_show_context_menu ( \
-    cc##ArrangerWidget * self, \
-    gdouble              x, \
-    gdouble              y)
-
-/**
  * Called on drag end to set default cursors back,
  * clear any start* variables, call actions, etc.
  */
@@ -449,28 +265,27 @@ ARRANGER_W_DECLARE_ON_DRAG_BEGIN_X_HIT ( \
  */
 #define ARRANGER_W_DECLARE_FUNCS( \
   cc,sc) \
-  ARRANGER_W_DECLARE_SELECT_ALL (cc, sc); \
   ARRANGER_W_DECLARE_SET_ALLOCATION (cc, sc); \
-  ARRANGER_W_DECLARE_UPDATE_VISIBILITY (cc, sc); \
   ARRANGER_W_DECLARE_GET_CURSOR (cc, sc); \
-  ARRANGER_W_DECLARE_MOVE_ITEMS_X (cc, sc); \
   ARRANGER_W_DECLARE_MOVE_ITEMS_Y (cc, sc); \
   ARRANGER_W_DECLARE_REFRESH_CHILDREN (cc, sc); \
   ARRANGER_W_DECLARE_SETUP (cc, sc); \
   ARRANGER_W_DECLARE_SELECT (cc, sc); \
-  ARRANGER_W_DECLARE_SHOW_CONTEXT_MENU (cc, sc); \
   ARRANGER_W_DECLARE_ON_DRAG_END (cc, sc); \
   ARRANGER_W_DECLARE_SET_SIZE (cc, sc)
 
 /**
- * Creates a timeline widget using the given timeline data.
+ * Creates a timeline widget using the given
+ * timeline data.
  */
 void
-arranger_widget_setup (ArrangerWidget *   self,
-                       SnapGrid *         snap_grid);
+arranger_widget_setup (
+  ArrangerWidget *   self,
+  SnapGrid *         snap_grid);
 
 ArrangerWidgetPrivate *
-arranger_widget_get_private (ArrangerWidget * self);
+arranger_widget_get_private (
+  ArrangerWidget * self);
 
 /**
  * Sets the cursor on the arranger and all of its
@@ -489,6 +304,24 @@ arranger_widget_pos_to_px (
 
 void
 arranger_widget_refresh_cursor (
+  ArrangerWidget * self);
+
+/**
+ * Used for pushing transients to the bottom on
+ * the z axis.
+ */
+void
+arranger_widget_add_overlay_child (
+  ArrangerWidget * self,
+  ArrangerObject * obj);
+
+/**
+ * Sets transient object and actual object
+ * visibility for every ArrangerObject in the
+ * ArrangerWidget based on the current action.
+ */
+void
+arranger_widget_update_visibility (
   ArrangerWidget * self);
 
 /**
@@ -526,6 +359,17 @@ arranger_widget_get_hit_widgets_in_range (
   GtkWidget **      array, ///< array to fill
   int *             array_size); ///< array_size to fill
 
+/**
+ * Returns the ArrangerObject of the given type
+ * at (x,y).
+ */
+ArrangerObject *
+arranger_widget_get_hit_arranger_object (
+  ArrangerWidget *   self,
+  ArrangerObjectType type,
+  const double       x,
+  const double       y);
+
 void
 arranger_widget_select_all (
   ArrangerWidget *  self,
@@ -540,6 +384,14 @@ arranger_widget_select_all (
  */
 int
 arranger_widget_is_in_moving_operation (
+  ArrangerWidget * self);
+
+/**
+ * Returns the ArrangerSelections for this
+ * ArrangerWidget.
+ */
+ArrangerSelections *
+arranger_widget_get_selections (
   ArrangerWidget * self);
 
 /**

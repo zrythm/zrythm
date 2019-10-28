@@ -40,7 +40,7 @@ move_tracks_action_new (
 
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UNDOABLE_ACTION_TYPE_MOVE_TRACKS;
+	  UA_MOVE_TRACKS;
 
   self->pos = pos;
   self->tls = tracklist_selections_clone (tls);

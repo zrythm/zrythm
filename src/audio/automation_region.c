@@ -38,9 +38,13 @@ cmpfunc (const void * _a, const void * _b)
     *(AutomationPoint * const *) _a;
   AutomationPoint * b =
     *(AutomationPoint * const *)_b;
+  ArrangerObject * a_obj =
+    (ArrangerObject *) a;
+  ArrangerObject * b_obj =
+    (ArrangerObject *) b;
   long ret =
     position_compare (
-      &a->pos, &b->pos);
+      &a_obj->pos, &b_obj->pos);
   if (ret == 0 &&
       a->index <
       b->index)
@@ -58,9 +62,13 @@ cmpfunc_curve (const void * _a, const void * _b)
     *(AutomationCurve * const *)_a;
   AutomationCurve * b =
     *(AutomationCurve * const *)_b;
+  ArrangerObject * a_obj =
+    (ArrangerObject *) a;
+  ArrangerObject * b_obj =
+    (ArrangerObject *) b;
   long ret =
     position_compare (
-      &a->pos, &b->pos);
+      &a_obj->pos, &b_obj->pos);
   if (ret == 0 &&
       a->index <
       b->index)
@@ -104,11 +112,13 @@ automation_region_print_automation (
   Region * self)
 {
   AutomationPoint * ap;
+  ArrangerObject * ap_obj;
   for (int i = 0; i < self->num_aps; i++)
     {
       ap = self->aps[i];
+      ap_obj = (ArrangerObject *) ap;
       g_message ("%d", i);
-      position_print_yaml (&ap->pos);
+      position_print_yaml (&ap_obj->pos);
     }
 }
 
@@ -176,13 +186,17 @@ automation_region_add_ac (
   AutomationPoint * before_curve =
     automation_region_get_ap_before_curve (
       self, ac);
+  ArrangerObject * before_curve_obj =
+    (ArrangerObject *) before_curve;
   AutomationPoint * after_curve =
     automation_region_get_ap_after_curve (
       self, ac);
+  ArrangerObject * after_curve_obj =
+    (ArrangerObject *) after_curve;
   g_warn_if_fail (
     before_curve && after_curve &&
-    before_curve->pos.total_ticks <
-      after_curve->pos.total_ticks);
+    before_curve_obj->pos.total_ticks <
+      after_curve_obj->pos.total_ticks);
 
   /* refresh indices */
   for (int i = 0;
@@ -190,7 +204,7 @@ automation_region_add_ac (
        i++)
     self->acs[i]->index = i;
 
-  EVENTS_PUSH (ET_AUTOMATION_CURVE_CREATED, ac);
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, ac);
 }
 
 static void
@@ -201,21 +215,25 @@ create_curve_point_before (
 {
   Position mid_pos;
 
+  ArrangerObject * prev_ap_obj =
+    (ArrangerObject *) prev_ap;
+  ArrangerObject * ap_obj =
+    (ArrangerObject *) ap;
+
   /* get midpoint between prev ap and current */
-  position_get_midway_pos (&prev_ap->pos,
-                           &ap->pos,
-                           &mid_pos);
+  position_get_midway_pos (
+    &prev_ap_obj->pos, &ap_obj->pos, &mid_pos);
   g_warn_if_fail (
     position_is_before_or_equal (
-      &mid_pos, &ap->pos));
+      &mid_pos, &ap_obj->pos));
   g_warn_if_fail (
     position_is_after_or_equal (
-      &mid_pos, &prev_ap->pos));
+      &mid_pos, &prev_ap_obj->pos));
 
   /* create curve point at mid pos */
   AutomationCurve * curve =
     automation_curve_new (
-      self->at->automatable->type, &mid_pos);
+      self->at->automatable->type, &mid_pos, 1);
   automation_region_add_ac (self, curve);
 }
 
@@ -227,15 +245,19 @@ create_curve_point_after (
 {
   Position mid_pos;
 
+  ArrangerObject * ap_obj =
+    (ArrangerObject *) ap;
+  ArrangerObject * next_ap_obj =
+    (ArrangerObject *) next_ap;
+
   /* get midpoint between prev ap and current */
-  position_get_midway_pos (&ap->pos,
-                           &next_ap->pos,
-                           &mid_pos);
+  position_get_midway_pos (
+    &ap_obj->pos, &next_ap_obj->pos, &mid_pos);
 
   /* create curve point at mid pos */
   AutomationCurve * curve =
     automation_curve_new (
-      self->at->automatable->type, &mid_pos);
+      self->at->automatable->type, &mid_pos, 1);
   automation_region_add_ac (self, curve);
 }
 
@@ -252,8 +274,7 @@ automation_region_add_ap (
   int               gen_curves)
 {
   g_return_if_fail (
-    ap ==
-    automation_point_get_main_automation_point (ap));
+    automation_point_is_main (ap));
 
   /* add point */
   array_double_size_if_full (
@@ -274,9 +295,15 @@ automation_region_add_ap (
          cmpfunc);
   if (self->num_aps > 1)
     {
+      ArrangerObject * obj_a =
+        (ArrangerObject *)
+        self->aps[self->num_aps - 1];
+      ArrangerObject * obj_b =
+        (ArrangerObject *)
+        self->aps[self->num_aps - 2];
       g_warn_if_fail (
-        self->aps[self->num_aps - 1]->pos.total_ticks >
-        self->aps[self->num_aps - 2]->pos.total_ticks);
+        obj_a->pos.total_ticks >
+        obj_b->pos.total_ticks);
     }
 
   /* refresh indices */
@@ -323,8 +350,8 @@ automation_region_add_ap (
         }
     }
 
-  EVENTS_PUSH (ET_AUTOMATION_POINT_CREATED,
-               ap);
+  EVENTS_PUSH (
+    ET_ARRANGER_OBJECT_CREATED, ap);
 }
 
 /**
@@ -385,8 +412,9 @@ automation_region_remove_ap (
   int               free)
 {
   /* deselect */
-  automation_selections_remove_automation_point (
-    AUTOMATION_SELECTIONS, ap);
+  arranger_object_select (
+    (ArrangerObject *) ap, F_NO_SELECT,
+    F_APPEND);
 
   /* remove the curves first */
   AutomationPoint * prev_ap =
@@ -433,15 +461,13 @@ automation_region_remove_ap (
         self, prev_ap, next_ap);
     }
 
-  array_delete (self->aps,
-                self->num_aps,
-                ap);
-
+  array_delete (
+    self->aps, self->num_aps, ap);
 
   if (free)
-    free_later (ap, automation_point_free);
+    free_later (ap, arranger_object_free_all);
 
-  EVENTS_PUSH (ET_AUTOMATION_POINT_REMOVED, NULL);
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_REMOVED, NULL);
 }
 
 /**
@@ -454,15 +480,14 @@ automation_region_remove_ac (
   AutomationCurve * ac,
   int               free)
 {
-  array_delete (self->acs,
-                self->num_acs,
-                ac);
+  array_delete (
+    self->acs, self->num_acs, ac);
   g_warn_if_fail (ac);
   if (free)
     free_later (
-      ac, automation_curve_free);
+      ac, arranger_object_free);
 
-  EVENTS_PUSH (ET_AUTOMATION_CURVE_REMOVED, NULL);
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_REMOVED, NULL);
 }
 
 /**

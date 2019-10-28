@@ -42,7 +42,7 @@
 G_DEFINE_TYPE_WITH_PRIVATE (
   RegionWidget,
   region_widget,
-  GTK_TYPE_BOX)
+  ARRANGER_OBJECT_WIDGET_TYPE)
 
 #define NAME_FONT "Sans SemiBold 9"
 #define NAME_PADDING_R 5
@@ -60,8 +60,9 @@ region_draw_cb (
   RegionWidget * self)
 {
   REGION_WIDGET_GET_PRIVATE (self);
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
-  if (rw_prv->redraw)
+  if (ao_prv->redraw)
     {
       Region * r = rw_prv->region;
 
@@ -72,16 +73,16 @@ region_draw_cb (
       int height =
         gtk_widget_get_allocated_height (widget);
 
-      rw_prv->cached_surface =
+      ao_prv->cached_surface =
         cairo_surface_create_similar (
           cairo_get_target (cr),
           CAIRO_CONTENT_COLOR_ALPHA,
           width, height);
-      rw_prv->cached_cr =
-        cairo_create (rw_prv->cached_surface);
+      ao_prv->cached_cr =
+        cairo_create (ao_prv->cached_surface);
 
       gtk_render_background (
-        context, rw_prv->cached_cr,
+        context, ao_prv->cached_cr,
         0, 0, width, height);
 
       Track * track = NULL;
@@ -104,16 +105,18 @@ region_draw_cb (
         }
       ui_get_arranger_object_color (
         &color,
-        gtk_widget_get_state_flags (GTK_WIDGET (self)) &
+        gtk_widget_get_state_flags (
+          GTK_WIDGET (self)) &
           GTK_STATE_FLAG_PRELIGHT,
         region_is_selected (r),
         region_is_transient (r));
       gdk_cairo_set_source_rgba (
-        rw_prv->cached_cr, &color);
+        ao_prv->cached_cr, &color);
 
       z_cairo_rounded_rectangle (
-        rw_prv->cached_cr, 0, 0, width, height, 1.0, 4.0);
-      cairo_fill(rw_prv->cached_cr);
+        ao_prv->cached_cr, 0, 0,
+        width, height, 1.0, 4.0);
+      cairo_fill (ao_prv->cached_cr);
       /*cairo_set_source_rgba (rw_prv->cached_cr,*/
                              /*color->red,*/
                              /*color->green,*/
@@ -125,21 +128,26 @@ region_draw_cb (
 
       /* draw loop points */
       double dashes[] = { 5 };
-      cairo_set_dash (rw_prv->cached_cr, dashes, 1, 0);
-      cairo_set_line_width (rw_prv->cached_cr, 1);
+      cairo_set_dash (
+        ao_prv->cached_cr, dashes, 1, 0);
+      cairo_set_line_width (ao_prv->cached_cr, 1);
       cairo_set_source_rgba (
-        rw_prv->cached_cr, 0, 0, 0, 1.0);
+        ao_prv->cached_cr, 0, 0, 0, 1.0);
 
+      ArrangerObject * r_obj =
+        (ArrangerObject *) r;
       Position tmp;
       long loop_start_ticks =
-        r->loop_start_pos.total_ticks;
+        r_obj->loop_start_pos.total_ticks;
       long loop_end_ticks =
-        r->loop_end_pos.total_ticks;
-      g_warn_if_fail (loop_end_ticks > loop_start_ticks);
+        r_obj->loop_end_pos.total_ticks;
+      g_warn_if_fail (
+        loop_end_ticks > loop_start_ticks);
       long loop_ticks =
-        region_get_loop_length_in_ticks (r);
+        arranger_object_get_loop_length_in_ticks (
+          r_obj);
       long clip_start_ticks =
-        r->clip_start_pos.total_ticks;
+        r_obj->clip_start_pos.total_ticks;
 
       position_from_ticks (
         &tmp, loop_start_ticks - clip_start_ticks);
@@ -148,13 +156,15 @@ region_draw_cb (
       if (px != 0)
         {
           cairo_set_source_rgba (
-            rw_prv->cached_cr, 0, 1, 0, 1.0);
-          cairo_move_to (rw_prv->cached_cr, px, 0);
-          cairo_line_to (rw_prv->cached_cr, px, height);
-          cairo_stroke (rw_prv->cached_cr);
+            ao_prv->cached_cr, 0, 1, 0, 1.0);
+          cairo_move_to (ao_prv->cached_cr, px, 0);
+          cairo_line_to (
+            ao_prv->cached_cr, px, height);
+          cairo_stroke (ao_prv->cached_cr);
         }
 
-      int num_loops = region_get_num_loops (r, 1);
+      int num_loops =
+        arranger_object_get_num_loops (r_obj, 1);
       for (int i = 0; i < num_loops; i++)
         {
           position_from_ticks (
@@ -169,18 +179,21 @@ region_draw_cb (
           if (px <= (int) width - 1)
             {
               cairo_set_source_rgba (
-                rw_prv->cached_cr, 0, 0, 0, 1.0);
-              cairo_move_to (rw_prv->cached_cr, px, 0);
-              cairo_line_to (rw_prv->cached_cr, px, height);
-              cairo_stroke (rw_prv->cached_cr);
+                ao_prv->cached_cr, 0, 0, 0, 1.0);
+              cairo_move_to (
+                ao_prv->cached_cr, px, 0);
+              cairo_line_to (
+                ao_prv->cached_cr, px, height);
+              cairo_stroke (
+                ao_prv->cached_cr);
             }
         }
 
-      rw_prv->redraw = 0;
+      ao_prv->redraw = 0;
     }
 
   cairo_set_source_surface (
-    cr, rw_prv->cached_surface, 0, 0);
+    cr, ao_prv->cached_surface, 0, 0);
   cairo_paint (cr);
 
  return FALSE;
@@ -196,6 +209,8 @@ region_widget_draw_cut_line (
 {
   REGION_WIDGET_GET_PRIVATE (self);
   Region * r = rw_prv->region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
 
   if (rw_prv->show_cut)
     {
@@ -208,16 +223,18 @@ region_widget_draw_cut_line (
       /* get absolute position */
       start_pos_px =
         ui_pos_to_px_timeline (
-          &r->start_pos, F_PADDING);
+          &r_obj->pos, F_PADDING);
       Position pos;
       ui_px_to_pos_timeline (
         start_pos_px + rw_prv->hover_x,
         &pos, F_PADDING);
 
       /* snap */
+      Track * track =
+        arranger_object_get_track (r_obj);
       ArrangerWidgetPrivate * ar_prv =
         arranger_widget_get_private (
-          region_get_track (r)->pinned ?
+          track->pinned ?
             Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE) :
             Z_ARRANGER_WIDGET (MW_TIMELINE));
       if (!ar_prv->shift_held)
@@ -450,7 +467,7 @@ region_widget_is_resize_l (
   if (rw_prv->region->type == REGION_TYPE_AUDIO)
     return 0;
 
-  if (x < RESIZE_CURSOR_SPACE)
+  if (x < UI_RESIZE_CURSOR_SPACE)
     {
       return 1;
     }
@@ -471,7 +488,7 @@ region_widget_is_resize_r (
     GTK_WIDGET (self),
     &allocation);
 
-  if (x > allocation.width - RESIZE_CURSOR_SPACE)
+  if (x > allocation.width - UI_RESIZE_CURSOR_SPACE)
     {
       return 1;
     }
@@ -490,13 +507,15 @@ region_widget_is_resize_loop (
   REGION_WIDGET_GET_PRIVATE (self);
 
   Region * r = rw_prv->region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
 
   if (r->type == REGION_TYPE_AUDIO)
     return 1;
 
-  if ((position_to_ticks (&r->end_pos) -
-       position_to_ticks (&r->start_pos)) >
-      position_to_ticks (&r->loop_end_pos))
+  if ((position_to_ticks (&r_obj->end_pos) -
+       position_to_ticks (&r_obj->pos)) >
+      position_to_ticks (&r_obj->loop_end_pos))
     {
       return 1;
     }

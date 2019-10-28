@@ -71,13 +71,10 @@ chord_track_add_scale (
   g_warn_if_fail (
     track->type == TRACK_TYPE_CHORD && scale);
   g_warn_if_fail (
-    scale->obj_info.counterpart ==
-      AOI_COUNTERPART_MAIN);
+    scale_object_is_main (scale));
   g_warn_if_fail (
-    scale->obj_info.main &&
-    scale->obj_info.main_trans &&
-    scale->obj_info.lane &&
-    scale->obj_info.lane_trans);
+    scale_object_get_main (scale) &&
+    scale_object_get_main_trans (scale));
 
   scale_object_set_track (scale, track);
   array_double_size_if_full (
@@ -87,7 +84,7 @@ chord_track_add_scale (
                 track->num_scales,
                 scale);
 
-  EVENTS_PUSH (ET_SCALE_OBJECT_CREATED, scale);
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, scale);
 }
 
 /**
@@ -100,11 +97,13 @@ chord_track_get_scale_at_pos (
   const Position * pos)
 {
   ScaleObject * scale = NULL;
+  ArrangerObject * s_obj;
   for (int i = ct->num_scales - 1; i >= 0; i--)
     {
       scale = ct->scales[i];
+      s_obj = (ArrangerObject *) scale;
       if (position_is_before_or_equal (
-            &scale->pos, pos))
+            &s_obj->pos, pos))
         return scale;
     }
   return NULL;
@@ -126,13 +125,15 @@ chord_track_get_chord_at_pos (
     return NULL;
 
   ChordObject * chord = NULL;
+  ArrangerObject * c_obj;
   int i;
   for (i = region->num_chord_objects - 1;
        i >= 0; i--)
     {
       chord = region->chord_objects[i];
+      c_obj = (ArrangerObject *) chord;
       if (position_is_before_or_equal (
-            &chord->pos, pos))
+            &c_obj->pos, pos))
         return chord;
     }
   return NULL;
@@ -148,16 +149,16 @@ chord_track_remove_scale (
   int free)
 {
   /* deselect */
-  timeline_selections_remove_scale_object (
-    TL_SELECTIONS, scale);
+  arranger_object_select (
+    (ArrangerObject *) scale, F_NO_SELECT,
+    F_APPEND);
 
-  array_delete (self->scales,
-                self->num_scales,
-                scale);
+  array_delete (
+    self->scales, self->num_scales, scale);
   if (free)
-    free_later (scale, scale_object_free);
+    free_later (scale, arranger_object_free_all);
 
-  EVENTS_PUSH (ET_SCALE_OBJECT_REMOVED, self);
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_REMOVED, self);
 }
 
 void
@@ -165,5 +166,6 @@ chord_track_free (ChordTrack * self)
 {
   /* remove chords */
   for (int i = 0; i < self->num_chord_regions; i++)
-    region_free (self->chord_regions[i]);
+    arranger_object_free_all (
+      (ArrangerObject *) self->chord_regions[i]);
 }

@@ -159,9 +159,10 @@ piano_roll_remove_current_note (
                       self->num_current_notes,
                       descr->value))
     {
-      array_delete (self->current_notes,
-                    self->num_current_notes,
-                    descr->value);
+      array_delete_primitive (
+        self->current_notes,
+        self->num_current_notes,
+        descr->value);
     }
 }
 

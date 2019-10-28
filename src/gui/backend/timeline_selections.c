@@ -38,234 +38,6 @@
 
 #include <gtk/gtk.h>
 
-void
-timeline_selections_init_loaded (
-  TimelineSelections * ts)
-{
-  int i;
-
-#define _SET_OBJ(sc) \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    ts->sc##s[i] = sc##_find (ts->sc##s[i]);
-
-  _SET_OBJ (region);
-  _SET_OBJ (marker);
-  _SET_OBJ (scale_object);
-
-#undef _SET_OBJ
-}
-
-/**
- * Returns if there are any selections.
- */
-int
-timeline_selections_has_any (
-  TimelineSelections * ts)
-{
-  return (
-    ts->num_regions > 0 ||
-    ts->num_scale_objects > 0 ||
-    ts->num_markers > 0);
-}
-
-/**
- * Code to run after deserializing.
- *
- * Used for copy-paste.
- */
-void
-timeline_selections_post_deserialize (
-  TimelineSelections * ts)
-{
-  int i;
-
-#define _SET_OBJ(sc) \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc##_post_deserialize (ts->sc##s[i]); \
-    }
-
-  _SET_OBJ (region);
-  _SET_OBJ (marker);
-  _SET_OBJ (scale_object);
-
-#undef _SET_OBJ
-}
-
-/**
- * Sets the cache Position's for each object in
- * the selection.
- *
- * Used by the ArrangerWidget's.
- */
-void
-timeline_selections_set_cache_poses (
-  TimelineSelections * ts)
-{
-  int i;
-
-#define SET_CACHE_POS_W_LENGTH(cc,sc) \
-  cc * sc; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_set_cache_start_pos ( \
-        sc, &sc->start_pos); \
-      sc##_set_cache_end_pos ( \
-        sc, &sc->end_pos); \
-    }
-
-#define SET_CACHE_POS(cc,sc) \
-  cc * sc; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_set_cache_pos ( \
-        sc, &sc->pos); \
-    }
-
-  SET_CACHE_POS_W_LENGTH (Region, region);
-  SET_CACHE_POS (ScaleObject, scale_object);
-  SET_CACHE_POS (Marker, marker);
-
-#undef SET_CACHE_POS_W_LENGTH
-#undef SET_CACHE_POS
-}
-
-/**
- * Returns the position of the leftmost object.
- *
- * If transient is 1, the transient objects are
- * checked instead.
- *
- * The return value will be stored in pos.
- */
-void
-timeline_selections_get_start_pos (
-  TimelineSelections * ts,
-  Position *           pos,
-  int                  transient)
-{
-  position_set_to_bar (pos,
-                       TRANSPORT->total_bars);
-  GtkWidget * widget = NULL;
-  (void) widget; // avoid unused warnings
-
-  int i;
-
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, Region, region, start_pos,
-    transient, before, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, ScaleObject, scale_object, pos,
-    transient, before, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, Marker, marker, pos,
-    transient, before, widget);
-}
-
-/**
- * Returns the position of the rightmost object.
- *
- * If transient is 1, the transient objects are
- * checked instead.
- *
- * The return value will be stored in pos.
- */
-void
-timeline_selections_get_end_pos (
-  TimelineSelections * ts,
-  Position *           pos,
-  int                  transient)
-{
-  position_init (pos);
-  GtkWidget * widget = NULL;
-  (void) widget; // avoid unused warnings
-
-  int i;
-
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, Region, region, end_pos,
-    transient, after, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, ScaleObject, scale_object, pos,
-    transient, after, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, Marker, marker, pos,
-    transient, after, widget);
-}
-
-/**
- * Gets first object's widget.
- *
- * If transient is 1, transient objects are checked
- * instead.
- */
-GtkWidget *
-timeline_selections_get_first_object (
-  TimelineSelections * ts,
-  int                  transient)
-{
-  Position _pos;
-  Position * pos = &_pos;
-  GtkWidget * widget = NULL;
-  position_set_to_bar (
-    pos, TRANSPORT->total_bars);
-  int i;
-
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, Region, region, start_pos,
-    transient, before, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, ScaleObject, scale_object, pos,
-    transient, before, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, Marker, marker, pos,
-    transient, before, widget);
-
-  return widget;
-}
-
-/**
- * Gets last object's widget.
- *
- * If transient is 1, transient objects rae checked
- * instead.
- */
-GtkWidget *
-timeline_selections_get_last_object (
-  TimelineSelections * ts,
-  int                  transient)
-{
-  Position _pos;
-  Position * pos = &_pos;
-  GtkWidget * widget = NULL;
-  position_init (pos);
-  int i;
-
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, Region, region, start_pos,
-    transient, after, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, ScaleObject, scale_object, pos,
-    transient, after, widget);
-  ARRANGER_OBJ_SET_GIVEN_POS_TO (
-    ts, Marker, marker, pos,
-    transient, after, widget);
-
-  return widget;
-}
-
-ARRANGER_SELECTIONS_DECLARE_RESET_COUNTERPARTS (
-  Timeline, timeline)
-{
-  for (int i = 0; i < self->num_regions; i++)
-    {
-      region_reset_counterpart (
-        self->regions[i], reset_trans);
-    }
-}
-
 /**
  * Gets highest track in the selections.
  *
@@ -296,11 +68,16 @@ timeline_selections_get_last_track (
   Region * region;
   for (int i = 0; i < ts->num_regions; i++)
     {
+      region = ts->regions[i];
       if (transient)
-        region = ts->regions[i]->obj_info.main_trans;
+        region = region_get_main_trans (region);
       else
-        region = ts->regions[i]->obj_info.main;
-      CHECK_POS (region_get_track (region));
+        region = region_get_main (region);
+      ArrangerObject * r_obj =
+        (ArrangerObject *) region;
+      Track * _track =
+        arranger_object_get_track (r_obj);
+      CHECK_POS (_track);
     }
   CHECK_POS (P_CHORD_TRACK);
 
@@ -338,11 +115,16 @@ timeline_selections_get_first_track (
   Region * region;
   for (int i = 0; i < ts->num_regions; i++)
     {
+      region = ts->regions[i];
       if (transient)
-        region = ts->regions[i]->obj_info.main_trans;
+        region = region_get_main_trans (region);
       else
-        region = ts->regions[i]->obj_info.main;
-      CHECK_POS (region_get_track (region));
+        region = region_get_main (region);
+      ArrangerObject * r_obj =
+        (ArrangerObject *) region;
+      Track * _track =
+        arranger_object_get_track (r_obj);
+      CHECK_POS (_track);
     }
   if (ts->num_scale_objects > 0)
     {
@@ -355,172 +137,6 @@ timeline_selections_get_first_track (
 
   return track;
 #undef CHECK_POS
-}
-
-/**
- * Adds an object to the selections.
- */
-#define DEFINE_ADD_OBJECT(caps,cc,sc) \
-  void \
-  timeline_selections_add_##sc ( \
-    TimelineSelections * ts, \
-    cc *                 sc) \
-  { \
-    ARRANGER_SELECTIONS_ADD_OBJECT (ts, caps, sc); \
-  }
-
-DEFINE_ADD_OBJECT (REGION, Region, region);
-DEFINE_ADD_OBJECT (
-  SCALE_OBJECT, ScaleObject, scale_object);
-DEFINE_ADD_OBJECT (MARKER, Marker, marker);
-
-#undef DEFINE_ADD_OBJECT
-
-#define DEFINE_REMOVE_OBJ(caps,cc,sc) \
-  void \
-  timeline_selections_remove_##sc ( \
-    TimelineSelections * ts, \
-    cc *                 sc) \
-  { \
-    ARRANGER_SELECTIONS_REMOVE_OBJECT (ts, caps, sc); \
-  }
-
-DEFINE_REMOVE_OBJ (REGION, Region, region);
-DEFINE_REMOVE_OBJ (
-  SCALE_OBJECT, ScaleObject, scale_object);
-DEFINE_REMOVE_OBJ (MARKER, Marker, marker);
-
-#undef DEFINE_REMOVE_OBJ
-
-#define DEFINE_CONTAINS_OBJ(caps,cc,sc) \
-  int \
-  timeline_selections_contains_##sc ( \
-    TimelineSelections * self, \
-    cc *                 sc) \
-  { \
-    return \
-      array_contains ( \
-        self->sc##s, self->num_##sc##s, sc); \
-  }
-
-DEFINE_CONTAINS_OBJ (REGION, Region, region);
-DEFINE_CONTAINS_OBJ (
-  SCALE_OBJECT, ScaleObject, scale_object);
-DEFINE_CONTAINS_OBJ (MARKER, Marker, marker);
-
-#undef DEFINE_CONTAINS_OBJ
-
-/**
- * Clears selections.
- */
-void
-timeline_selections_clear (
-  TimelineSelections * ts)
-{
-  int i;
-
-/* use caches because ts->* will be operated on. */
-#define TL_REMOVE_OBJS(caps,cc,sc) \
-  int num_##sc##s; \
-  cc * sc; \
-  static cc * sc##s[600]; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc##s[i] = ts->sc##s[i]; \
-    } \
-  num_##sc##s = ts->num_##sc##s; \
-  for (i = 0; i < num_##sc##s; i++) \
-    { \
-      sc = sc##s[i]; \
-      timeline_selections_remove_##sc (ts, sc); \
-      EVENTS_PUSH ( \
-        ET_ARRANGER_OBJECT_SELECTION_CHANGED, \
-        &sc->obj_info); \
-    }
-
-  TL_REMOVE_OBJS (
-    REGION, Region, region);
-  TL_REMOVE_OBJS (
-    SCALE_OBJECT, ScaleObject, scale_object);
-  TL_REMOVE_OBJS (
-    MARKER, Marker, marker);
-
-#undef TL_REMOVE_OBJS
-}
-
-/**
- * Clone the struct for copying, undoing, etc.
- */
-TimelineSelections *
-timeline_selections_clone (
-  const TimelineSelections * src)
-{
-  TimelineSelections * new_ts =
-    calloc (1, sizeof (TimelineSelections));
-
-  int i;
-
-#define TL_CLONE_OBJS(caps,cc,sc) \
-  cc * sc, * new_##sc; \
-  for (i = 0; i < src->num_##sc##s; i++) \
-    { \
-      sc = src->sc##s[i]; \
-      new_##sc = \
-        sc##_clone (sc, caps##_CLONE_COPY_MAIN); \
-      array_append ( \
-        new_ts->sc##s, new_ts->num_##sc##s, \
-        new_##sc); \
-    }
-
-  TL_CLONE_OBJS (
-    REGION, Region, region);
-  TL_CLONE_OBJS (
-    SCALE_OBJECT, ScaleObject, scale_object);
-  TL_CLONE_OBJS (
-    MARKER, Marker, marker);
-
-#undef TL_CLONE_OBJS
-
-  return new_ts;
-}
-
-/**
- * Moves the TimelineSelections by the given
- * amount of ticks.
- *
- * @param ticks Ticks to add.
- * @param use_cached_pos Add the ticks to the cached
- *   Position's instead of the current Position's.
- * @param ticks Ticks to add.
- * @param update_flag ArrangerObjectUpdateFlag.
- */
-void
-timeline_selections_add_ticks (
-  TimelineSelections * ts,
-  long                 ticks,
-  int                  use_cached_pos,
-  ArrangerObjectUpdateFlag update_flag)
-{
-  int i;
-
-#define UPDATE_TL_POSES(cc,sc) \
-  cc * sc; \
-  for (i = 0; i < ts->num_##sc##s; i++) \
-    { \
-      sc = ts->sc##s[i]; \
-      sc##_move ( \
-        sc, ticks, use_cached_pos, \
-        update_flag); \
-    }
-
-  UPDATE_TL_POSES (
-    Region, region);
-  UPDATE_TL_POSES (
-    ScaleObject, scale_object);
-  UPDATE_TL_POSES (
-    Marker, marker);
-
-#undef UPDATE_TL_POSES
 }
 
 /**
@@ -728,15 +344,16 @@ timeline_selections_paste_to_pos (
   Track * track =
     TRACKLIST_SELECTIONS->tracks[0];
 
-  timeline_selections_clear (
-    TL_SELECTIONS);
+  arranger_selections_clear (
+    (ArrangerSelections *) TL_SELECTIONS);
 
   long pos_ticks = position_to_ticks (pos);
 
   /* get pos of earliest object */
   Position start_pos;
-  timeline_selections_get_start_pos (
-    ts, &start_pos, F_NO_TRANSIENTS);
+  arranger_selections_get_start_pos (
+    (ArrangerSelections *) ts, &start_pos,
+    F_NO_TRANSIENTS, F_GLOBAL);
   long start_pos_ticks =
     position_to_ticks (&start_pos);
 
@@ -752,6 +369,8 @@ timeline_selections_paste_to_pos (
   for (i = 0; i < ts->num_regions; i++)
     {
       Region * region = ts->regions[i];
+      ArrangerObject * r_obj =
+        (ArrangerObject *) region;
       Track * region_track =
         tracklist_get_visible_track_after_delta (
           TRACKLIST, track, region->track_pos);
@@ -759,15 +378,13 @@ timeline_selections_paste_to_pos (
 
       /* update positions */
       curr_ticks =
-        position_to_ticks (&region->start_pos);
+        position_to_ticks (&r_obj->pos);
       position_from_ticks (
-        &region->start_pos,
-        pos_ticks + DIFF);
+        &r_obj->pos, pos_ticks + DIFF);
       curr_ticks =
-        position_to_ticks (&region->end_pos);
+        position_to_ticks (&r_obj->end_pos);
       position_from_ticks (
-        &region->end_pos,
-        pos_ticks + DIFF);
+        &r_obj->end_pos, pos_ticks + DIFF);
       /* TODO */
       /*position_set_to_pos (&region->unit_end_pos,*/
                            /*&region->end_pos);*/
@@ -786,16 +403,19 @@ timeline_selections_paste_to_pos (
           for (int j = 0; j < mr->num_midi_notes; j++)
             {
               MidiNote * mn = mr->midi_notes[j];
+              ArrangerObject * mn_obj =
+                (ArrangerObject *) mn;
               g_message ("old midi start");
               /*position_print_yaml (&mn->start_pos);*/
               g_message ("bars %d",
-                         mn->start_pos.bars);
+                         mn_obj->pos.bars);
               g_message ("new midi start");
-              ADJUST_POSITION (&mn->start_pos);
-              position_print_yaml (&mn->start_pos);
+              ADJUST_POSITION (&mn_obj->pos);
+              position_print_yaml (
+                &mn_obj->pos);
               g_message ("old midi start");
-              ADJUST_POSITION (&mn->end_pos);
-              position_print_yaml (&mn->end_pos);
+              ADJUST_POSITION (&mn_obj->end_pos);
+              position_print_yaml (&mn_obj->end_pos);
             }
         }
 
@@ -803,82 +423,71 @@ timeline_selections_paste_to_pos (
 
       /* clone and add to track */
       Region * cp =
-        region_clone (
-          region, REGION_CLONE_COPY_MAIN);
+        (Region *)
+        arranger_object_clone (
+          r_obj,
+          ARRANGER_OBJECT_CLONE_COPY_MAIN);
       /* FIXME does not with automation regions */
       track_add_region (
         region_track, cp, NULL, region->lane_pos,
         F_GEN_NAME, F_PUBLISH_EVENTS);
 
       /* select it */
-      timeline_selections_add_region (
-        TL_SELECTIONS, cp);
+      arranger_object_select (
+        (ArrangerObject *) cp, F_SELECT,
+        F_APPEND);
     }
   for (i = 0; i < ts->num_scale_objects; i++)
     {
       ScaleObject * scale = ts->scale_objects[i];
+      ArrangerObject * s_obj =
+        (ArrangerObject *) scale;
 
-      curr_ticks = position_to_ticks (&scale->pos);
-      position_from_ticks (&scale->pos,
-                           pos_ticks + DIFF);
+      curr_ticks =
+        position_to_ticks (&s_obj->pos);
+      position_from_ticks (
+        &s_obj->pos, pos_ticks + DIFF);
 
       /* clone and add to track */
       ScaleObject * clone =
-        scale_object_clone (
-          scale, SCALE_OBJECT_CLONE_COPY_MAIN);
+        (ScaleObject *)
+        arranger_object_clone (
+          s_obj,
+          ARRANGER_OBJECT_CLONE_COPY_MAIN);
       chord_track_add_scale (
         P_CHORD_TRACK, clone);
 
       /* select it */
-      timeline_selections_add_scale_object (
-        TL_SELECTIONS, clone);
+      arranger_object_select (
+        (ArrangerObject *) clone, F_SELECT,
+        F_APPEND);
     }
   for (i = 0; i < ts->num_markers; i++)
     {
       Marker * m = ts->markers[i];
+      ArrangerObject * m_obj =
+        (ArrangerObject *) m;
 
-      curr_ticks = position_to_ticks (&m->pos);
+      curr_ticks =
+        position_to_ticks (&m_obj->pos);
       position_from_ticks (
-        &m->pos, pos_ticks + DIFF);
+        &m_obj->pos, pos_ticks + DIFF);
 
       /* clone and add to track */
       Marker * clone =
-        marker_clone (
-          m, MARKER_CLONE_COPY_MAIN);
+        (Marker *)
+        arranger_object_clone (
+          m_obj,
+          ARRANGER_OBJECT_CLONE_COPY_MAIN);
       marker_track_add_marker (
         P_MARKER_TRACK, clone);
 
       /* select it */
-      timeline_selections_add_marker (
-        TL_SELECTIONS, clone);
+      arranger_object_select (
+        (ArrangerObject *) clone, F_SELECT,
+        F_APPEND);
     }
 #undef DIFF
-}
-
-void
-timeline_selections_free_full (
-  TimelineSelections * self)
-{
-  int i;
-  for (i = 0; i < self->num_regions; i++)
-    {
-      region_free (self->regions[i]);
-    }
-  for (i = 0; i < self->num_markers; i++)
-    {
-      marker_free (self->markers[i]);
-    }
-  for (i = 0; i < self->num_scale_objects; i++)
-    {
-      scale_object_free (self->scale_objects[i]);
-    }
-}
-
-void
-timeline_selections_free (
-  TimelineSelections * self)
-{
-  free (self);
 }
 
 SERIALIZE_SRC (

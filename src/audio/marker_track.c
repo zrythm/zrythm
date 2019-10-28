@@ -57,17 +57,21 @@ marker_track_default ()
   Position pos;
   marker =
     marker_new (_("start"), 1);
+  ArrangerObject * m_obj =
+    (ArrangerObject *) marker;
   position_set_to_bar (&pos, 1);
-  marker_set_pos (
-    marker, &pos, AO_UPDATE_ALL);
+  arranger_object_pos_setter (
+    m_obj, &pos);
   marker->type = MARKER_TYPE_START;
   marker_track_add_marker (
     self, marker);
   marker =
     marker_new (_("end"), 1);
+  m_obj =
+    (ArrangerObject *) marker;
   position_set_to_bar (&pos, 129);
-  marker_set_pos (
-    marker, &pos, AO_UPDATE_ALL);
+  arranger_object_pos_setter (
+    m_obj, &pos);
   marker->type = MARKER_TYPE_END;
   marker_track_add_marker (
     self, marker);
@@ -128,13 +132,10 @@ marker_track_add_marker (
   g_warn_if_fail (
     track->type == TRACK_TYPE_MARKER && marker);
   g_warn_if_fail (
-    marker->obj_info.counterpart ==
-      AOI_COUNTERPART_MAIN);
+    marker_is_main (marker));
   g_warn_if_fail (
-    marker->obj_info.main &&
-    marker->obj_info.main_trans &&
-    marker->obj_info.lane &&
-    marker->obj_info.lane_trans);
+    marker_get_main (marker) &&
+    marker_get_main_trans (marker));
 
   marker_set_track (marker, track);
   array_double_size_if_full (
@@ -144,7 +145,8 @@ marker_track_add_marker (
                 track->num_markers,
                 marker);
 
-  EVENTS_PUSH (ET_MARKER_CREATED, marker);
+  EVENTS_PUSH (
+    ET_ARRANGER_OBJECT_CREATED, marker);
 }
 
 /**
@@ -157,17 +159,18 @@ marker_track_remove_marker (
   int           free)
 {
   /* deselect */
-  timeline_selections_remove_marker (
-    TL_SELECTIONS, marker);
+  arranger_selections_remove_object (
+    (ArrangerSelections *) TL_SELECTIONS,
+    (ArrangerObject *) marker);
 
-  array_delete (self->markers,
-                self->num_markers,
-                marker);
+  array_delete (
+    self->markers, self->num_markers, marker);
 
   if (free)
-    free_later (marker, marker_free);
+    free_later (marker, arranger_object_free_all);
 
-  EVENTS_PUSH (ET_MARKER_REMOVED, self);
+  EVENTS_PUSH (
+    ET_ARRANGER_OBJECT_REMOVED, self);
 }
 
 void

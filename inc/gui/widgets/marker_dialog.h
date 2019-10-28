@@ -36,13 +36,14 @@ G_DECLARE_FINAL_TYPE (
   Z, MARKER_DIALOG_WIDGET,
   GtkDialog)
 
+typedef struct _MarkerWidget MarkerWidget;
+typedef struct Marker Marker;
+
 /**
  * @addtogroup widgets
  *
  * @{
  */
-
-typedef struct Marker Marker;
 
 /**
  * A dialog to edit a Marker's name.

@@ -38,7 +38,7 @@ copy_plugins_action_new (
     	CopyPluginsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UNDOABLE_ACTION_TYPE_COPY_PLUGINS;
+	  UA_COPY_PLUGINS;
 
   self->ms = mixer_selections_clone (ms);
   self->slot = slot;

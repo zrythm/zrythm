@@ -38,7 +38,7 @@ G_DECLARE_FINAL_TYPE (
   AutomationPointWidget,
   automation_point_widget,
   Z, AUTOMATION_POINT_WIDGET,
-  GtkBox)
+  ArrangerObjectWidget)
 
 /**
  * @addtogroup widgets
@@ -53,22 +53,11 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _AutomationPointWidget
 {
-  GtkBox                 parent_instance;
+  ArrangerObjectWidget   parent_instance;
 
   /** The AutomationPoint associated with the
    * widget. */
   AutomationPoint *      automation_point;
-
-  UiCursorState          state;
-  GtkWindow *            tooltip_win;
-  GtkLabel *             tooltip_label;
-
-  /** Set to 1 to redraw. */
-  int                redraw;
-
-  cairo_t *          cached_cr;
-
-  cairo_surface_t *  cached_surface;
 } AutomationPointWidget;
 
 /**
@@ -77,18 +66,6 @@ typedef struct _AutomationPointWidget
 AutomationPointWidget *
 automation_point_widget_new (
   AutomationPoint * automation_point);
-
-void
-automation_point_widget_force_redraw (
-  AutomationPointWidget * self);
-
-/**
- * Updates the tooltips.
- */
-void
-automation_point_widget_update_tooltip (
-  AutomationPointWidget * self,
-  int              show);
 
 /**
  * @}

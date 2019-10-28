@@ -157,33 +157,6 @@ audio_arranger_widget_get_cursor (
 
 }
 
-/**
- * Shows context menu.
- *
- * To be called from parent on right click.
- */
-void
-audio_arranger_widget_show_context_menu (
-  AudioArrangerWidget * self,
-  gdouble              x,
-  gdouble              y)
-{
-  GtkWidget *menu, *menuitem;
-
-  menu = gtk_menu_new();
-
-  menuitem = gtk_menu_item_new_with_label("Do something");
-
-  /*g_signal_connect(menuitem, "activate",*/
-                   /*(GCallback) view_popup_menu_onDoSomething, treeview);*/
-
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-
-  gtk_widget_show_all(menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
-}
-
 void
 audio_arranger_widget_setup (
   AudioArrangerWidget * self)
@@ -195,13 +168,6 @@ audio_arranger_widget_setup (
     GTK_WIDGET (self),
     (int) rw_prv->total_px,
     -1);
-}
-
-void
-audio_arranger_widget_select_all (
-  AudioArrangerWidget *  self,
-  int               select)
-{
 }
 
 /**
@@ -230,16 +196,6 @@ audio_arranger_widget_select (
  */
 void
 audio_arranger_widget_on_drag_end (
-  AudioArrangerWidget * self)
-{
-}
-
-/**
- * Sets transient notes and actual notes
- * visibility based on the current action.
- */
-void
-audio_arranger_widget_update_visibility (
   AudioArrangerWidget * self)
 {
 }

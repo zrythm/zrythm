@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/quantize_timeline_selections.h"
+#include "actions/arranger_selections.h"
 #include "audio/quantize_options.h"
 #include "gui/widgets/bar_slider.h"
 #include "gui/widgets/digital_meter.h"
@@ -72,9 +72,9 @@ on_quantize_clicked (
   else if (QUANTIZE_OPTIONS_IS_TIMELINE (self->opts))
     {
       UndoableAction * ua =
-        (UndoableAction *)
-        quantize_timeline_selections_action_new (
-          TL_SELECTIONS, self->opts);
+        arranger_selections_action_new_quantize (
+          (ArrangerSelections *) TL_SELECTIONS,
+          self->opts);
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }

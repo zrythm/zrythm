@@ -68,21 +68,24 @@ track_init_loaded (Track * track)
     {
       scale = track->scales[i];
       scale->track = track;
-      scale_object_init_loaded (scale);
+      arranger_object_init_loaded (
+        (ArrangerObject *) scale);
     }
   Marker * marker;
   for (i = 0; i < track->num_markers; i++)
     {
       marker = track->markers[i];
       marker->track = track;
-      marker_init_loaded (marker);
+      arranger_object_init_loaded (
+        (ArrangerObject *) marker);
     }
   Region * region;
   for (i = 0; i < track->num_chord_regions; i++)
     {
       region = track->chord_regions[i];
       region->track_pos = track->pos;
-      region_init_loaded (region);
+      arranger_object_init_loaded (
+        (ArrangerObject *) region);
     }
 
   /* init loaded channel */
@@ -627,6 +630,7 @@ track_get_last_region (
 {
   int i, j;
   Region * last_region = NULL, * r;
+  ArrangerObject * r_obj;
   Position tmp;
   position_init (&tmp);
 
@@ -641,13 +645,13 @@ track_get_last_region (
           for (j = 0; j < lane->num_regions; j++)
             {
               r = lane->regions[j];
+              r_obj = (ArrangerObject *) r;
               if (position_is_after (
-                    &r->end_pos,
-                    &tmp))
+                    &r_obj->end_pos, &tmp))
                 {
                   last_region = r;
                   position_set_to_pos (
-                    &tmp, &r->end_pos);
+                    &tmp, &r_obj->end_pos);
                 }
             }
         }
@@ -660,16 +664,17 @@ track_get_last_region (
     {
       at = atl->ats[i];
       r = automation_track_get_last_region (at);
+      r_obj = (ArrangerObject *) r;
 
       if (!r)
         continue;
 
       if (position_is_after (
-            &r->end_pos, &tmp))
+            &r_obj->end_pos, &tmp))
         {
           last_region = r;
           position_set_to_pos (
-            &tmp, &r->end_pos);
+            &tmp, &r_obj->end_pos);
         }
     }
 
@@ -726,14 +731,12 @@ track_add_region (
   int      gen_name,
   int      fire_events)
 {
+  g_warn_if_fail (region_is_main (region));
   g_warn_if_fail (
-    region->obj_info.counterpart ==
-    AOI_COUNTERPART_MAIN);
-  g_warn_if_fail (
-    region->obj_info.main &&
-    region->obj_info.main_trans &&
-    region->obj_info.lane &&
-    region->obj_info.lane_trans);
+    region_get_main (region) &&
+    region_get_lane (region) &&
+    region_get_main_trans (region) &&
+    region_get_lane_trans (region));
 
   if (region->type == REGION_TYPE_AUTOMATION)
     {
@@ -795,8 +798,8 @@ track_add_region (
 
   if (fire_events)
     {
-      EVENTS_PUSH (ET_REGION_CREATED,
-                   region);
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CREATED, region);
     }
 }
 
@@ -931,11 +934,12 @@ track_remove_region (
     }
 
   if (free)
-    free_later (region, region_free_all);
+    free_later (region, arranger_object_free_all);
 
   if (fire_events)
     {
-      EVENTS_PUSH (ET_REGION_REMOVED, track);
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_REMOVED, track);
     }
 }
 
@@ -1115,6 +1119,7 @@ track_get_region_at_pos (
     {
       TrackLane * lane;
       Region * r;
+      ArrangerObject * r_obj;
       for (i = 0; i < track->num_lanes; i++)
         {
           lane = track->lanes[i];
@@ -1122,10 +1127,11 @@ track_get_region_at_pos (
           for (j = 0; j < lane->num_regions; j++)
             {
               r = lane->regions[j];
+              r_obj = (ArrangerObject *) r;
               if (pos->frames >=
-                    r->start_pos.frames &&
+                    r_obj->pos.frames &&
                   pos->frames <=
-                    r->end_pos.frames)
+                    r_obj->end_pos.frames)
                 return r;
             }
         }
@@ -1133,14 +1139,15 @@ track_get_region_at_pos (
   else if (track->type == TRACK_TYPE_CHORD)
     {
       Region * r;
-
+      ArrangerObject * r_obj;
       for (j = 0; j < track->num_chord_regions; j++)
         {
           r = track->chord_regions[j];
+          r_obj = (ArrangerObject *) r;
           if (position_is_after_or_equal (
-                pos, &r->start_pos) &&
+                pos, &r_obj->pos) &&
               position_is_before_or_equal (
-                pos, &r->end_pos))
+                pos, &r_obj->end_pos))
             return r;
         }
     }
@@ -1261,17 +1268,20 @@ track_update_frames (
     }
   for (i = 0; i < self->num_chord_regions; i++)
     {
-      region_update_frames (
+      arranger_object_update_frames (
+        (ArrangerObject *)
         self->chord_regions[i]);
     }
   for (i = 0; i < self->num_scales; i++)
     {
-      scale_object_update_frames (
+      arranger_object_update_frames (
+        (ArrangerObject *)
         self->scales[i]);
     }
   for (i = 0; i < self->num_markers; i++)
     {
-      marker_update_frames (
+      arranger_object_update_frames (
+        (ArrangerObject *)
         self->markers[i]);
     }
 

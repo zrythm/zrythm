@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/edit_marker_action.h"
+#include "actions/arranger_selections.h"
 #include "audio/marker.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
@@ -50,11 +50,34 @@ on_response (
 
       /* TODO validate, if false return */
 
+      arranger_selections_clear (
+        (ArrangerSelections *) TL_SELECTIONS);
+      arranger_selections_add_object (
+        (ArrangerSelections *) TL_SELECTIONS,
+        (ArrangerObject *) self->marker);
+
+      ArrangerSelections * before =
+        arranger_selections_clone (
+          (ArrangerSelections *) TL_SELECTIONS);
+      ArrangerSelections * after =
+        arranger_selections_clone (
+          (ArrangerSelections *) TL_SELECTIONS);
+      TimelineSelections * tl_after =
+        (TimelineSelections *) after;
+      arranger_object_set_name (
+        (ArrangerObject *) tl_after->markers[0],
+        text, AO_UPDATE_THIS);
+
       UndoableAction * ua =
-        edit_marker_action_new (
-          self->marker->marker, text);
+        arranger_selections_action_new_edit (
+          before, after,
+          ARRANGER_SELECTIONS_ACTION_EDIT_NAME);
       undo_manager_perform (
         UNDO_MANAGER, ua);
+      arranger_selections_free_full (
+        before);
+      arranger_selections_free_full (
+        after);
     }
 
   gtk_widget_destroy (GTK_WIDGET (self));
@@ -83,7 +106,9 @@ marker_dialog_widget_new (
       NULL);
 
   self->marker =
-    marker_get_main_marker (owner->marker)->widget;
+    Z_MARKER_WIDGET (
+      arranger_object_get_main (
+        (ArrangerObject *) owner->marker)->widget);
 
   gtk_window_set_transient_for (
     GTK_WINDOW (self),

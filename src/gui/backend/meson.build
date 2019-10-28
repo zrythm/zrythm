@@ -16,7 +16,8 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 backend_srcs = [
-  'arranger_object_info.c',
+  'arranger_object.c',
+  'arranger_selections.c',
   'audio_clip_editor.c',
   'automation_editor.c',
   'automation_selections.c',

@@ -24,11 +24,9 @@
  * objects.
  */
 
+#include "actions/arranger_selections.h"
 #include "actions/undoable_action.h"
-#include "actions/create_chord_selections_action.h"
 #include "actions/undo_manager.h"
-#include "actions/duplicate_chord_selections_action.h"
-#include "actions/move_chord_selections_action.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/audio_track.h"
@@ -111,19 +109,24 @@ chord_arranger_widget_set_allocation (
       /* use transient or non transient region
        * depending on which is visible */
       Region * region = co->region;
-      region = region_get_visible (region);
+      region =
+        region_get_visible_counterpart (region);
+      ArrangerObject * region_obj =
+        (ArrangerObject *) region;
 
       long region_start_ticks =
-        region->start_pos.total_ticks;
+        region_obj->pos.total_ticks;
       Position tmp;
       int adj_px_per_key =
         MW_CHORD_EDITOR_SPACE->px_per_key + 1;
 
       /* use absolute position */
+      ArrangerObject * co_obj =
+        (ArrangerObject *) co;
       position_from_ticks (
         &tmp,
         region_start_ticks +
-        co->pos.total_ticks);
+        co_obj->pos.total_ticks);
       allocation->x =
         ui_pos_to_px_editor (
           &tmp, 1);
@@ -163,13 +166,11 @@ chord_arranger_widget_get_cursor (
 
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  ChordObjectWidget * cw =
-    chord_arranger_widget_get_hit_chord (
-      self,
-      ar_prv->hover_x,
-      ar_prv->hover_y);
-
-  int is_hit = cw != NULL;
+  int is_hit =
+    arranger_widget_get_hit_arranger_object (
+      (ArrangerWidget *) self,
+      ARRANGER_OBJECT_TYPE_CHORD_OBJECT,
+      ar_prv->hover_x, ar_prv->hover_y) != NULL;
 
   switch (action)
     {
@@ -239,157 +240,6 @@ chord_arranger_widget_get_cursor (
   return ac;
 }
 
-#define GET_HIT_WIDGET(caps,cc,sc) \
-cc##Widget * \
-chord_arranger_widget_get_hit_##sc ( \
-  ChordArrangerWidget *  self, \
-  double                    x, \
-  double                    y) \
-{ \
-  GtkWidget * widget = \
-    ui_get_hit_child ( \
-      GTK_CONTAINER (self), x, y, \
-      caps##_WIDGET_TYPE); \
-  if (widget) \
-    { \
-      return Z_##caps##_WIDGET (widget); \
-    } \
-  return NULL; \
-}
-
-GET_HIT_WIDGET (
-  CHORD_OBJECT, ChordObject, chord);
-
-#undef GET_HIT_WIDGET
-
-void
-chord_arranger_widget_select_all (
-  ChordArrangerWidget *  self,
-  int                       select)
-{
-  chord_selections_clear (CHORD_SELECTIONS);
-
-  /* select everything else */
-  Region * r = CLIP_EDITOR->region;
-  ChordObject * chord;
-  for (int i = 0; i < r->num_chord_objects; i++)
-    {
-      chord = r->chord_objects[i];
-      chord_object_select (
-        chord, select);
-    }
-}
-
-/**
- * Shows context menu.
- *
- * To be called from parent on right click.
- */
-void
-chord_arranger_widget_show_context_menu (
-  ChordArrangerWidget * self,
-  gdouble              x,
-  gdouble              y)
-{
-  GtkWidget *menu, *menuitem;
-
-  /*RegionWidget * clicked_region =*/
-    /*chord_arranger_widget_get_hit_region (*/
-      /*self, x, y);*/
-  /*ChordWidget * clicked_chord =*/
-    /*chord_arranger_widget_get_hit_chord (*/
-      /*self, x, y);*/
-  /*AutomationPointWidget * clicked_ap =*/
-    /*chord_arranger_widget_get_hit_ap (*/
-      /*self, x, y);*/
-  /*AutomationCurveWidget * ac =*/
-    /*chord_arranger_widget_get_hit_curve (*/
-      /*self, x, y);*/
-
-  menu = gtk_menu_new();
-
-  menuitem = gtk_menu_item_new_with_label("Do something");
-
-  /*g_signal_connect(menuitem, "activate",*/
-                   /*(GCallback) view_popup_menu_onDoSomething, treeview);*/
-
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-
-  gtk_widget_show_all(menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
-}
-
-ARRANGER_W_DECLARE_UPDATE_VISIBILITY (
-  Chord, chord)
-{
-  ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
-    CHORD_SELECTIONS->chord_objects,
-    CHORD_SELECTIONS->num_chord_objects,
-    ChordObject, chord_object);
-
-  GList *children, *iter;
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self));
-  ChordObjectWidget * cow = NULL;
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      if (!Z_IS_CHORD_OBJECT_WIDGET (iter->data))
-        continue;
-
-      cow =
-        Z_CHORD_OBJECT_WIDGET (iter->data);
-      arranger_object_info_set_widget_visibility_and_state (
-        &cow->chord_object->obj_info, 1);
-    }
-  g_list_free (children);
-}
-
-void
-chord_arranger_widget_on_drag_begin_chord_hit (
-  ChordArrangerWidget * self,
-  double                start_x,
-  double                start_y,
-  ChordObjectWidget *   cw)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  ChordObject * chord = cw->chord_object;
-  self->start_chord_object =
-    chord_object_get_main_chord_object (chord);
-
-  /* update arranger action */
-  ar_prv->action =
-    UI_OVERLAY_ACTION_STARTING_MOVING;
-
-  int selected = chord_object_is_selected (chord);
-
-  /* select chord if unselected */
-  if (P_TOOL == TOOL_SELECT_NORMAL ||
-      P_TOOL == TOOL_SELECT_STRETCH ||
-      P_TOOL == TOOL_EDIT)
-    {
-      /* if ctrl held & not selected, add to
-       * selections */
-      if (ar_prv->ctrl_held && !selected)
-        {
-          ARRANGER_WIDGET_SELECT_CHORD (
-            self, chord, F_SELECT, F_APPEND);
-        }
-      /* if ctrl not held & not selected, make it
-       * the only selection */
-      else if (!ar_prv->ctrl_held &&
-               !selected)
-        {
-          ARRANGER_WIDGET_SELECT_CHORD (
-            self, chord, F_SELECT, F_NO_APPEND);
-        }
-    }
-}
-
 /**
  * Create a ChordObject at the given Position in the
  * given Track.
@@ -408,35 +258,42 @@ chord_arranger_widget_create_chord (
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
 
+  ArrangerObject * region_obj =
+    (ArrangerObject *) region;
+
   /* get local pos */
   Position local_pos;
   position_from_ticks (
     &local_pos,
     pos->total_ticks -
-    region->start_pos.total_ticks);
+    region_obj->pos.total_ticks);
 
   /* create a new chord */
   ChordObject * chord =
     chord_object_new (
       CLIP_EDITOR->region, chord_index, 1);
+  ArrangerObject * chord_obj =
+    (ArrangerObject *) chord;
 
   /* add it to chord region */
   chord_region_add_chord_object (
     region, chord);
 
-  chord_object_gen_widget (chord);
+  arranger_object_gen_widget (chord_obj);
 
   /* set visibility */
-  arranger_object_info_set_widget_visibility_and_state (
-    &chord->obj_info, 1);
+  arranger_object_set_widget_visibility_and_state (
+    chord_obj, 1);
 
-  chord_object_set_pos (
-    chord, &local_pos, AO_UPDATE_ALL);
+  arranger_object_set_position (
+    chord_obj, &local_pos,
+    ARRANGER_OBJECT_POSITION_TYPE_START,
+    F_NO_CACHED, F_NO_VALIDATE,
+    AO_UPDATE_ALL);
 
-  EVENTS_PUSH (ET_CHORD_OBJECT_CREATED, chord);
-  ARRANGER_WIDGET_SELECT_CHORD (
-    self, chord, F_SELECT,
-    F_NO_APPEND);
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, chord);
+  arranger_object_select (
+    chord_obj, F_SELECT, F_NO_APPEND);
 }
 
 /**
@@ -499,41 +356,24 @@ chord_arranger_widget_select (
           chord_object_widgets[i]);
 
       chord_object =
-        chord_object_get_main_chord_object (
+        chord_object_get_main (
           chord_object_widget->chord_object);
 
       if (delete)
-        chord_region_remove_chord_object (
-          chord_object->region,
-          chord_object, F_FREE);
+        {
+          chord_region_remove_chord_object (
+            chord_object->region,
+            chord_object, F_FREE);
+        }
       else
-        ARRANGER_WIDGET_SELECT_CHORD (
-          self, chord_object, F_SELECT, F_APPEND);
+        {
+          arranger_object_select (
+            (ArrangerObject *) chord_object,
+            F_SELECT, F_APPEND);
+        }
     }
 
 #undef FIND_ENCLOSED_WIDGETS_OF_TYPE
-}
-
-/**
- * Moves the ChordSelections by the given
- * amount of ticks.
- *
- * @param ticks_diff Ticks to move by.
- * @param copy_moving 1 if copy-moving.
- */
-void
-chord_arranger_widget_move_items_x (
-  ChordArrangerWidget * self,
-  long                     ticks_diff,
-  int                      copy_moving)
-{
-  chord_selections_add_ticks (
-    CHORD_SELECTIONS, ticks_diff, F_USE_CACHED,
-    AO_UPDATE_NON_TRANS);
-
-  /* for arranger refresh */
-  EVENTS_PUSH (ET_CHORD_OBJECTS_IN_TRANSIT,
-               NULL);
 }
 
 static int
@@ -645,13 +485,13 @@ chord_arranger_widget_on_drag_end (
          * moving*/
         if (ar_prv->ctrl_held)
           {
-            if (self->start_chord_object &&
-                chord_object_is_selected (
-                  self->start_chord_object))
+            if (ar_prv->start_object &&
+                arranger_object_is_selected (
+                  ar_prv->start_object))
               {
                 /*[> deselect it <]*/
-                ARRANGER_WIDGET_SELECT_CHORD (
-                  self, self->start_chord_object,
+                arranger_object_select (
+                  ar_prv->start_object,
                   F_NO_SELECT, F_APPEND);
               }
           }
@@ -660,20 +500,23 @@ chord_arranger_widget_on_drag_end (
     case UI_OVERLAY_ACTION_MOVING:
       {
         ChordObject * co =
-          chord_object_get_main_chord_object (
+          chord_object_get_main (
             CHORD_SELECTIONS->chord_objects[0]);
+        ArrangerObject * co_obj =
+          (ArrangerObject *) co;
         long ticks_diff =
-          co->pos.total_ticks -
-            co->cache_pos.total_ticks;
+          co_obj->pos.total_ticks -
+            co_obj->cache_pos.total_ticks;
         UndoableAction * ua =
           (UndoableAction *)
-          move_chord_selections_action_new (
+          arranger_selections_action_new_move_chord (
             CHORD_SELECTIONS,
             ticks_diff,
             0);
         undo_manager_perform (
           UNDO_MANAGER, ua);
-        chord_selections_reset_counterparts (
+        arranger_selections_reset_counterparts (
+          (ArrangerSelections *)
           CHORD_SELECTIONS, 1);
       }
       break;
@@ -681,19 +524,23 @@ chord_arranger_widget_on_drag_end (
     case UI_OVERLAY_ACTION_MOVING_LINK:
       {
         ChordObject * co =
-          chord_object_get_main_chord_object (
+          chord_object_get_main (
             CHORD_SELECTIONS->chord_objects[0]);
+        ArrangerObject * co_obj =
+          (ArrangerObject *) co;
         long ticks_diff =
-          co->pos.total_ticks -
-            co->cache_pos.total_ticks;
-        chord_selections_reset_counterparts (
+          co_obj->pos.total_ticks -
+            co_obj->cache_pos.total_ticks;
+        arranger_selections_reset_counterparts (
+          (ArrangerSelections *)
           CHORD_SELECTIONS, 0);
         UndoableAction * ua =
           (UndoableAction *)
-          duplicate_chord_selections_action_new (
+          arranger_selections_action_new_duplicate_chord (
             CHORD_SELECTIONS,
             ticks_diff, 0);
-        chord_selections_reset_counterparts (
+        arranger_selections_reset_counterparts (
+          (ArrangerSelections *)
           CHORD_SELECTIONS, 0);
         undo_manager_perform (
           UNDO_MANAGER, ua);
@@ -702,16 +549,16 @@ chord_arranger_widget_on_drag_end (
     case UI_OVERLAY_ACTION_NONE:
     case UI_OVERLAY_ACTION_STARTING_SELECTION:
       {
-        chord_selections_clear (
+        arranger_selections_clear (
+          (ArrangerSelections *)
           CHORD_SELECTIONS);
       }
       break;
     case UI_OVERLAY_ACTION_CREATING_MOVING:
       {
         UndoableAction * ua =
-          (UndoableAction *)
-          create_chord_selections_action_new (
-            CHORD_SELECTIONS);
+          arranger_selections_action_new_create (
+            (ArrangerSelections *) CHORD_SELECTIONS);
         undo_manager_perform (
           UNDO_MANAGER, ua);
       }
@@ -723,9 +570,9 @@ chord_arranger_widget_on_drag_end (
       break;
     }
   ar_prv->action = UI_OVERLAY_ACTION_NONE;
-  chord_arranger_widget_update_visibility (self);
-
-  EVENTS_PUSH (ET_CHORD_SELECTIONS_CHANGED, NULL);
+  arranger_widget_update_visibility (
+    (ArrangerWidget *) self);
+  EVENTS_PUSH (ET_ARRANGER_SELECTIONS_CHANGED, NULL);
 }
 
 static void
@@ -750,20 +597,21 @@ add_children_from_chord_track (
             {
               if (k == AOI_COUNTERPART_MAIN)
                 c =
-                  chord_object_get_main_chord_object (c);
+                  chord_object_get_main (c);
               else if (
                 k == AOI_COUNTERPART_MAIN_TRANSIENT)
                 c =
-                  chord_object_get_main_trans_chord_object (c);
+                  chord_object_get_main_trans (c);
 
               g_return_if_fail (c);
+              ArrangerObject * obj =
+                (ArrangerObject *) c;
 
-              if (!c->widget)
-                c->widget =
-                  chord_object_widget_new (c);
+              if (!obj->widget)
+                arranger_object_gen_widget (obj);
 
-              ARRANGER_WIDGET_ADD_OBJ_CHILD (
-                self, c);
+              arranger_widget_add_overlay_child (
+                (ArrangerWidget *) self, obj);
             }
         }
     }

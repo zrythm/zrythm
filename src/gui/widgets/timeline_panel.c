@@ -151,8 +151,8 @@ timeline_panel_widget_init (TimelinePanelWidget * self)
   g_type_ensure (TIMELINE_RULER_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_HEADER_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_WIDGET_TYPE);
-  g_type_ensure (
-    TIMELINE_SELECTION_INFO_WIDGET_TYPE);
+  /*g_type_ensure (*/
+    /*TIMELINE_SELECTION_INFO_WIDGET_TYPE);*/
   g_type_ensure (PINNED_TRACKLIST_WIDGET_TYPE);
   g_type_ensure (TIMELINE_TOOLBAR_WIDGET_TYPE);
 

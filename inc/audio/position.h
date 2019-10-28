@@ -92,27 +92,9 @@
   (position_is_after_or_equal (_pos, _start) && \
    position_is_before (_pos, _end))
 
-/** Start Position to be used in calculations. */
-#define DEFINE_START_POS \
-  static const Position __start_pos = { \
-    .bars = 1, \
-    .beats = 1, \
-    .sixteenths = 1, \
-    .ticks = 0, \
-    .total_ticks = 0, \
-    .frames = 0 }; \
-  static const Position * START_POS = &__start_pos;
-
 /** Inits the default position on the stack. */
 #define POSITION_INIT_ON_STACK(name) \
-  Position name = { \
-    .bars = 1, \
-    .beats = 1, \
-    .sixteenths = 1, \
-    .ticks = 0, \
-    .total_ticks = 0, \
-    .frames = 0, \
-  }
+  Position name = POSITION_START;
 
 /**
  * Initializes given position.
@@ -120,79 +102,7 @@
  * Assumes the given argument is a Pointer *.
  */
 #define position_init(__pos) \
-  *(__pos) = POSITION_START_POS
-
-/**
- * Moves the Position of an object only has a
- * start position defined by the argument pos_name
- * and a cache position
- * named cache_##pos_name by the given amount of
- * ticks.
- *
- * This also assumes that there is a SET_POS
- * defined. See audio/chord_object.c for an example.
- *
- * This doesn't allow the start position to be
- * less than 1.1.1.0.
- *
- * @param _use_cached An int variable set to 1 for
- *   using the cached positions or 0 for moving the
- *   normal positions.
- * @param _obj The object.
- * @param _pos_name The name of the position.
- * @param _ticks The number of ticks to move by.
- * @param _tmp_pos A Position variable to use for
- *   calculations so we don't create one in the
- *   macro.
- * @param trans_only Move transients only.
- */
-#define POSITION_MOVE_BY_TICKS( \
-  _tmp_pos,_use_cached,_obj,_pos_name,_ticks, \
-  _update_flag) \
-  if (_use_cached) \
-    position_set_to_pos ( \
-      &_tmp_pos, &_obj->cache_##_pos_name); \
-  else \
-    position_set_to_pos ( \
-      &_tmp_pos, &_obj->_pos_name); \
-  position_add_ticks ( \
-    &_tmp_pos, _ticks); \
-  SET_POS (_obj, _pos_name, &_tmp_pos, \
-           _update_flag); \
-
-/**
- * Moves the Position of an object that has a start
- * and end position named start_pos and end_pos and
- * cached positions named cache_start_pos and
- * cache_end_pos by given amount of ticks.
- *
- * This also assumes that there is a SET_POS
- * defined. See audio/region.c for an example.
- *
- * This doesn't allow the start position to be
- * less than 1.1.1.0.
- *
- * @param _use_cached An int variable set to 1 for
- *   using the cached positions or 0 for moving the
- *   normal positions.
- * @param _obj The object.
- * @param _ticks The number of ticks to move by.
- * @param _tmp_pos A Position variable to use for
- *   calculations so we don't create one in the
- *   macro.
- * @param _update_flag ArrangerObjectUpdateFlag.
- */
-#define POSITION_MOVE_BY_TICKS_W_LENGTH( \
-  _tmp_pos,_use_cached,_obj,_ticks, \
-  _update_flag) \
-  /* start pos */ \
-  POSITION_MOVE_BY_TICKS ( \
-    _tmp_pos, _use_cached, _obj, start_pos, \
-    _ticks, _update_flag); \
-  /* end pos */ \
-  POSITION_MOVE_BY_TICKS ( \
-    _tmp_pos, _use_cached, _obj, end_pos, \
-    _ticks, _update_flag)
+  *(__pos) = POSITION_START
 
 typedef struct SnapGrid SnapGrid;
 typedef struct Track Track;
@@ -267,13 +177,9 @@ static const cyaml_schema_value_t
     Position, position_fields_schema),
 };
 
-/**
- * Default start position to be used for setting
- * structs equal
- * (i.e., new_pos = POSITION_START_POS),
- * and calculations.
- */
-static const Position POSITION_START_POS = {
+/** Start Position to be used in calculations. */
+static const Position POSITION_START =
+{
   .bars = 1,
   .beats = 1,
   .sixteenths = 1,

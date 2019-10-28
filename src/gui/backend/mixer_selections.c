@@ -140,10 +140,8 @@ mixer_selections_remove_slot (
   int               publish_events)
 {
   g_message ("removing slot %d", slot);
-  array_delete (
-    ms->slots,
-    ms->num_slots,
-    slot);
+  array_delete_primitive (
+    ms->slots, ms->num_slots, slot);
 
   if (ms->num_slots == 0)
     {

@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/edit_scale_action.h"
+#include "actions/arranger_selections.h"
 #include "audio/scale.h"
 #include "audio/scale_object.h"
 #include "gui/widgets/center_dock.h"
@@ -41,12 +41,35 @@ on_delete_event (
   GdkEvent  *event,
   ScaleSelectorWindowWidget * self)
 {
+  arranger_selections_clear (
+    (ArrangerSelections *) TL_SELECTIONS);
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (
+    self->scale);
+  arranger_selections_add_object (
+    (ArrangerSelections *) TL_SELECTIONS,
+    ao_prv->arranger_object);
+
+  ArrangerSelections * before =
+    arranger_selections_clone (
+      (ArrangerSelections *) TL_SELECTIONS);
+  ArrangerSelections * after =
+    arranger_selections_clone (
+      (ArrangerSelections *) TL_SELECTIONS);
+  TimelineSelections * tl_after =
+    (TimelineSelections *) after;
+  tl_after->scale_objects[0]->scale =
+    musical_scale_clone (self->descr);
+
   UndoableAction * ua =
-    edit_scale_action_new (
-      self->scale->scale_object,
-      self->descr);
+    arranger_selections_action_new_edit (
+      before, after,
+      ARRANGER_SELECTIONS_ACTION_EDIT_SCALE);
   undo_manager_perform (
     UNDO_MANAGER, ua);
+  arranger_selections_free_full (
+    before);
+  arranger_selections_free_full (
+    after);
 
   return FALSE;
 }
@@ -183,8 +206,10 @@ scale_selector_window_widget_new (
       NULL);
 
   self->scale =
-    scale_object_get_main_scale_object (
-      owner->scale_object)->widget;
+    (ScaleObjectWidget *)
+    ((ArrangerObject *)
+    scale_object_get_main (
+      owner->scale_object))->widget;
 
   gtk_window_set_transient_for (
     GTK_WINDOW (self),

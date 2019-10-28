@@ -37,7 +37,7 @@ copy_tracks_action_new (
                  CopyTracksAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-    UNDOABLE_ACTION_TYPE_COPY_TRACKS;
+    UA_COPY_TRACKS;
 
   self->tls = tracklist_selections_clone (tls);
   self->pos = pos;

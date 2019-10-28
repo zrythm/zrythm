@@ -73,7 +73,7 @@ chord_region_add_chord_object (
 
   chord_object_set_region (chord, self);
 
-  EVENTS_PUSH (ET_CHORD_OBJECT_CREATED, chord);
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, chord);
 }
 
 /**
@@ -88,8 +88,9 @@ chord_region_remove_chord_object (
   int           free)
 {
   /* deselect */
-  chord_selections_remove_chord_object (
-    CHORD_SELECTIONS, chord);
+  arranger_object_select (
+    (ArrangerObject *) chord, F_NO_SELECT,
+    F_APPEND);
 
   array_delete (self->chord_objects,
                 self->num_chord_objects,
@@ -97,9 +98,9 @@ chord_region_remove_chord_object (
 
 
   if (free)
-    free_later (chord, chord_object_free);
+    free_later (chord, arranger_object_free_all);
 
-  EVENTS_PUSH (ET_CHORD_OBJECT_REMOVED, NULL);
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_REMOVED, NULL);
 }
 
 /**

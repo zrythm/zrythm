@@ -113,10 +113,14 @@ test_fill_midi_events ()
   Region * r =
     prepare_region_with_note_at_start_to_end (
       pitch1, vel1);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
   track_add_region (
     track, r, NULL, 0, 1, 0);
   MidiNote * mn =
     r->midi_notes[0];
+  ArrangerObject * mn_obj =
+    (ArrangerObject *) mn;
 
   /* -- BASIC TESTS (no loops) -- */
 
@@ -191,7 +195,7 @@ test_fill_midi_events ()
    * the region end.
    */
   position_set_to_pos (
-    &pos, &r->end_pos);
+    &pos, &r_obj->end_pos);
   position_add_frames (&pos, (- BUFFER_SIZE) - 1);
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
@@ -208,7 +212,7 @@ test_fill_midi_events ()
    * region end.
    */
   position_set_to_pos (
-    &pos, &r->end_pos);
+    &pos, &r_obj->end_pos);
   position_add_frames (&pos, - BUFFER_SIZE);
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
@@ -230,11 +234,11 @@ test_fill_midi_events ()
    * is exclusive.
    */
   position_add_ticks (
-    &mn->end_pos, -5);
-  position_update_frames (&mn->end_pos);
+    &mn_obj->end_pos, -5);
+  position_update_frames (&mn_obj->end_pos);
   position_set_to_pos (
-    &pos, &mn->end_pos);
-  pos.frames = mn->end_pos.frames;
+    &pos, &mn_obj->end_pos);
+  pos.frames = mn_obj->end_pos.frames;
   position_add_frames (&pos, - BUFFER_SIZE);
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
@@ -245,7 +249,7 @@ test_fill_midi_events ()
   g_assert_cmpuint (
     ev->time, ==, BUFFER_SIZE - 1);
   position_set_to_pos (
-    &mn->end_pos, &r->end_pos);
+    &mn_obj->end_pos, &r_obj->end_pos);
   midi_events_clear (events, 1);
 
   /*
@@ -257,11 +261,11 @@ test_fill_midi_events ()
    * its actual end.
    */
   position_add_ticks (
-    &mn->end_pos, -5);
-  position_update_frames (&mn->end_pos);
+    &mn_obj->end_pos, -5);
+  position_update_frames (&mn_obj->end_pos);
   position_set_to_pos (
-    &pos, &mn->end_pos);
-  pos.frames = mn->end_pos.frames;
+    &pos, &mn_obj->end_pos);
+  pos.frames = mn_obj->end_pos.frames;
   position_add_frames (&pos, (- BUFFER_SIZE) + 1);
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
@@ -272,7 +276,7 @@ test_fill_midi_events ()
   g_assert_cmpuint (
     ev->time, ==, BUFFER_SIZE - 2);
   position_set_to_pos (
-    &mn->end_pos, &r->end_pos);
+    &mn_obj->end_pos, &r_obj->end_pos);
   midi_events_clear (events, 1);
 
   /*
@@ -284,7 +288,7 @@ test_fill_midi_events ()
    * the region's actual end.
    */
   position_set_to_pos (
-    &pos, &r->end_pos);
+    &pos, &r_obj->end_pos);
   position_add_frames (&pos, (- BUFFER_SIZE) + 1);
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
@@ -306,24 +310,24 @@ test_fill_midi_events ()
    * MidiNote <-1.1.1.1>
    */
   position_set_to_bar (
-    &r->start_pos, 2);
+    &r_obj->pos, 2);
   position_set_to_bar (
-    &r->end_pos, 4);
+    &r_obj->end_pos, 4);
   position_set_to_bar (
-    &r->loop_end_pos, 2);
-  position_update_frames (&r->start_pos);
-  position_update_frames (&r->end_pos);
-  position_update_frames (&r->loop_end_pos);
+    &r_obj->loop_end_pos, 2);
+  position_update_frames (&r_obj->pos);
+  position_update_frames (&r_obj->end_pos);
+  position_update_frames (&r_obj->loop_end_pos);
   position_set_to_bar (
-    &mn->start_pos, 1);
+    &mn_obj->pos, 1);
   position_add_ticks (
-    &mn->start_pos, -1);
-  position_update_frames (&mn->start_pos);
+    &mn_obj->pos, -1);
+  position_update_frames (&mn_obj->pos);
   position_set_to_pos (
-    &mn->end_pos, &mn->start_pos);
+    &mn_obj->end_pos, &mn_obj->pos);
   position_add_ticks (
-    &mn->end_pos, 2000);
-  position_update_frames (&mn->end_pos);
+    &mn_obj->end_pos, 2000);
+  position_update_frames (&mn_obj->end_pos);
 
   /*
    * Premise: note starts 1 tick before region.
@@ -334,7 +338,7 @@ test_fill_midi_events ()
    * No MIDI note event.
    */
   position_set_to_pos (
-    &pos, &r->start_pos);
+    &pos, &r_obj->pos);
   position_add_frames (&pos, -365);
   midi_track_fill_midi_events (
     track, pos.frames, 0, 512,
@@ -351,27 +355,27 @@ test_fill_midi_events ()
    * MidiNote <1.1.1.7 ~ 2.1.1.7>
    */
   position_set_to_bar (
-    &r->start_pos, 2);
+    &r_obj->pos, 2);
   position_set_to_bar (
-    &r->end_pos, 4);
+    &r_obj->end_pos, 4);
   position_set_to_bar (
-    &r->loop_end_pos, 2);
+    &r_obj->loop_end_pos, 2);
   position_add_ticks (
-    &r->loop_start_pos, 7);
-  position_update_frames (&r->start_pos);
-  position_update_frames (&r->end_pos);
-  position_update_frames (&r->loop_start_pos);
-  position_update_frames (&r->loop_end_pos);
+    &r_obj->loop_start_pos, 7);
+  position_update_frames (&r_obj->pos);
+  position_update_frames (&r_obj->end_pos);
+  position_update_frames (&r_obj->loop_start_pos);
+  position_update_frames (&r_obj->loop_end_pos);
   position_set_to_bar (
-    &mn->start_pos, 1);
+    &mn_obj->pos, 1);
   position_add_ticks (
-    &mn->start_pos, 7);
+    &mn_obj->pos, 7);
   position_set_to_bar (
-    &mn->end_pos, 2);
+    &mn_obj->end_pos, 2);
   position_add_ticks (
-    &mn->end_pos, 7);
-  position_update_frames (&mn->start_pos);
-  position_update_frames (&mn->end_pos);
+    &mn_obj->end_pos, 7);
+  position_update_frames (&mn_obj->pos);
+  position_update_frames (&mn_obj->end_pos);
 
   /*
    * Premise: note starts at the loop_start point
@@ -413,21 +417,21 @@ test_fill_midi_events ()
    * MidiNote <1.1.1.0 ~ (2000 ticks later)>
    */
   position_set_to_bar (
-    &r->start_pos, 2);
+    &r_obj->pos, 2);
   position_set_to_bar (
-    &r->end_pos, 3);
-  position_update_frames (&r->start_pos);
-  position_update_frames (&r->end_pos);
+    &r_obj->end_pos, 3);
+  position_update_frames (&r_obj->pos);
+  position_update_frames (&r_obj->end_pos);
   position_set_to_bar (
-    &mn->start_pos, 1);
-  position_update_frames (&mn->start_pos);
+    &mn_obj->pos, 1);
+  position_update_frames (&mn_obj->pos);
   position_set_to_pos (
-    &mn->end_pos, &mn->start_pos);
+    &mn_obj->end_pos, &mn_obj->pos);
   position_add_ticks (
-    &mn->end_pos, 2000);
-  position_update_frames (&mn->end_pos);
+    &mn_obj->end_pos, 2000);
+  position_update_frames (&mn_obj->end_pos);
   position_set_to_pos (
-    &r->loop_end_pos, &mn->end_pos);
+    &r_obj->loop_end_pos, &mn_obj->end_pos);
 
   /*
    * Premise: note starts 1 tick before region.
@@ -438,10 +442,10 @@ test_fill_midi_events ()
    * No MIDI note event.
    */
   position_add_ticks (
-    &mn->start_pos, -1);
-  position_update_frames (&mn->start_pos);
+    &mn_obj->pos, -1);
+  position_update_frames (&mn_obj->pos);
   position_set_to_pos (
-    &pos, &r->start_pos);
+    &pos, &r_obj->pos);
   position_add_frames (&pos, -6);
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
@@ -449,8 +453,8 @@ test_fill_midi_events ()
   g_assert_cmpint (
     events->num_queued_events, ==, 0);
   position_add_ticks (
-    &mn->start_pos, 1);
-  position_update_frames (&mn->start_pos);
+    &mn_obj->pos, 1);
+  position_update_frames (&mn_obj->pos);
 
   /*
    * Start: way before region start
@@ -493,7 +497,7 @@ test_fill_midi_events ()
    * MIDI note at correct time.
    */
   position_set_to_pos (
-    &pos, &r->start_pos);
+    &pos, &r_obj->pos);
   position_add_frames (&pos, - 10);
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
@@ -513,7 +517,7 @@ test_fill_midi_events ()
    * MIDI note at correct time.
    */
   position_set_to_pos (
-    &pos, &r->start_pos);
+    &pos, &r_obj->pos);
   position_add_frames (&pos, - 10);
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
@@ -534,23 +538,23 @@ test_fill_midi_events ()
    * MidiNote <1.1.1.0 ~ (2000 ticks later)>
    */
   position_set_to_bar (
-    &r->start_pos, 2);
+    &r_obj->pos, 2);
   position_set_to_bar (
-    &r->end_pos, 3);
+    &r_obj->end_pos, 3);
   position_set_to_bar (
-    &r->loop_start_pos, 1);
-  position_update_frames (&r->start_pos);
-  position_update_frames (&r->end_pos);
+    &r_obj->loop_start_pos, 1);
+  position_update_frames (&r_obj->pos);
+  position_update_frames (&r_obj->end_pos);
   position_set_to_bar (
-    &mn->start_pos, 1);
-  position_update_frames (&mn->start_pos);
+    &mn_obj->pos, 1);
+  position_update_frames (&mn_obj->pos);
   position_set_to_pos (
-    &mn->end_pos, &mn->start_pos);
+    &mn_obj->end_pos, &mn_obj->pos);
   position_add_ticks (
-    &mn->end_pos, 2000);
-  position_update_frames (&mn->end_pos);
+    &mn_obj->end_pos, 2000);
+  position_update_frames (&mn_obj->end_pos);
   position_set_to_pos (
-    &r->loop_end_pos, &mn->end_pos);
+    &r_obj->loop_end_pos, &mn_obj->end_pos);
 
   /**
    * Start: before region loop point
@@ -561,8 +565,8 @@ test_fill_midi_events ()
    * MIDI note on at the loop point.
    */
   position_set_to_pos (
-    &pos, &r->loop_end_pos);
-  position_add_frames (&pos, r->start_pos.frames);
+    &pos, &r_obj->loop_end_pos);
+  position_add_frames (&pos, r_obj->pos.frames);
   position_add_frames (&pos, - 10);
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
@@ -590,17 +594,17 @@ test_fill_midi_events ()
    * 1 MIDI note off, no notes on.
    */
   position_set_to_bar (
-    &r->start_pos, 2);
+    &r_obj->pos, 2);
   position_set_to_bar (
-    &r->end_pos, 3);
+    &r_obj->end_pos, 3);
   position_set_to_bar (
-    &r->loop_end_pos, 2);
+    &r_obj->loop_end_pos, 2);
   position_set_to_bar (
-    &mn->start_pos, 1);
+    &mn_obj->pos, 1);
   position_set_to_bar (
-    &mn->end_pos, 2);
+    &mn_obj->end_pos, 2);
   position_set_to_pos (
-    &pos, &r->end_pos);
+    &pos, &r_obj->end_pos);
   position_add_frames (&pos, - 10);
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,

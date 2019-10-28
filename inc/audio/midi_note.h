@@ -32,7 +32,6 @@
 #include "audio/position.h"
 #include "audio/velocity.h"
 #include "gui/backend/arranger_object.h"
-#include "gui/backend/arranger_object_info.h"
 
 typedef struct _MidiNoteWidget MidiNoteWidget;
 typedef struct Channel Channel;
@@ -48,65 +47,42 @@ typedef struct Velocity Velocity;
  */
 
 #define midi_note_is_main(r) \
-  arranger_object_info_is_main ( \
-    &r->obj_info)
-
+  arranger_object_is_main ( \
+    (ArrangerObject *) r)
 #define midi_note_is_transient(r) \
-  arranger_object_info_is_transient ( \
-    &r->obj_info)
-
-/** Gets the transient counterpart of the
- * MidiNote. */
-#define midi_note_get_main_trans_midi_note(r) \
-  ((MidiNote *) r->obj_info.main_trans)
-
-/** Gets the main counterpart of the
- * MidiNote. */
-#define midi_note_get_main_midi_note(r) \
-  ((MidiNote *) r->obj_info.main)
-
-typedef enum MidiNoteCloneFlag
-{
-  /** Create a new MidiNote to be added to a
-   * Region as a main MidiNote. */
-  MIDI_NOTE_CLONE_COPY_MAIN,
-
-  /** Create a new MidiNote that will not be used
-   * as a main MidiNote. */
-  MIDI_NOTE_CLONE_COPY,
-  MIDI_NOTE_CLONE_LINK
-} MidiNoteCloneFlag;
+  arranger_object_is_transient ( \
+    (ArrangerObject *) r)
+#define midi_note_get_main(r) \
+  ((MidiNote *) \
+   arranger_object_get_main ( \
+     (ArrangerObject *) r))
+#define midi_note_get_main_trans(r) \
+  ((MidiNote *) \
+   arranger_object_get_main_trans ( \
+     (ArrangerObject *) r))
+#define midi_note_is_selected(r) \
+  arranger_object_is_selected ( \
+    (ArrangerObject *) r)
+#define midi_note_get_visible_counterpart(r) \
+  ((MidiNote *) \
+   arranger_object_get_visible_counterpart ( \
+     (ArrangerObject *) r))
 
 /**
- * A MIDI note living inside a Region and shown on the
+ * A MIDI note inside a Region shown in the
  * piano roll.
  */
 typedef struct MidiNote
 {
-  /** Start Position. */
-  Position        start_pos;
+  /** Base struct. */
+  ArrangerObject  base;
 
-  /** Cache start Position. */
-  Position        cache_start_pos;
-
-  /** End Position. */
-  Position        end_pos;
-
-  /** Cached end Position, for live operations. */
-  Position        cache_end_pos;
-
-  /** GUI widget. */
-  MidiNoteWidget  * widget;
-
-  /**
-   * Owner.
-   *
-   * For convenience only (cache).
-   */
-  Region *        region; ///< cache
+  /** Owner region (cache). */
+  Region *        region;
   char *          region_name;
 
-  Velocity *      vel;  ///< velocity
+  /** Velocity. */
+  Velocity *      vel;
 
   /** The note/pitch, (0-127). */
   uint8_t         val;
@@ -116,25 +92,15 @@ typedef struct MidiNote
 
   /** Muted or not */
   int             muted;
-
-  /**
-   * Info on whether this MidiNote is transient/lane
-   * and pointers to transient/lane equivalents.
-   */
-  ArrangerObjectInfo obj_info;
 } MidiNote;
 
 static const cyaml_schema_field_t
   midi_note_fields_schema[] =
 {
   CYAML_FIELD_MAPPING (
-    "start_pos",
-    /* direct struct inside struct -> default */
-    CYAML_FLAG_DEFAULT,
-    MidiNote, start_pos, position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "end_pos", CYAML_FLAG_DEFAULT,
-    MidiNote, end_pos, position_fields_schema),
+    "base", CYAML_FLAG_DEFAULT,
+    MidiNote, base,
+    arranger_object_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
     "vel", CYAML_FLAG_POINTER,
     MidiNote, vel, velocity_fields_schema),
@@ -159,22 +125,6 @@ midi_note_schema = {
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     MidiNote, midi_note_fields_schema),
 };
-
-ARRANGER_OBJ_DECLARE_MOVABLE_W_LENGTH (
-  MidiNote, midi_note);
-ARRANGER_OBJ_DECLARE_RESIZE_NO_LOOP (
-  MidiNote, midi_note);
-
-void
-midi_note_init_loaded (
-  MidiNote * self);
-
-/**
- * Mainly used for copy-pasting.
- */
-void
-midi_note_post_deserialize (
-  MidiNote * self);
 
 /**
  * Gets the global Position of the MidiNote's
@@ -209,37 +159,6 @@ midi_note_set_region (
   MidiNote * midi_note,
   Region *   region);
 
-/**
- * Finds the actual MidiNote in the project from the
- * given clone.
- */
-MidiNote *
-midi_note_find (
-  MidiNote * clone);
-
-/**
- * Gets the Track this MidiNote is in.
- */
-Track *
-midi_note_get_track (
-  MidiNote * self);
-
-/**
- * Deep clones the midi note.
- */
-MidiNote *
-midi_note_clone (
-  MidiNote *  src,
-  MidiNoteCloneFlag flag);
-
-/**
- * Updates the frames of each position in each child
- * of the MidiNote recursively.
- */
-void
-midi_note_update_frames (
-  MidiNote * self);
-
 void
 midi_note_set_cache_val (
   MidiNote *    self,
@@ -252,9 +171,6 @@ int
 midi_note_is_equal (
   MidiNote * src,
   MidiNote * dest);
-
-void
-midi_note_delete (MidiNote * midi_note);
 
 /**
  * Gets the MIDI note's value as a string (eg
@@ -277,13 +193,6 @@ midi_note_print (
   MidiNote * mn);
 
 /**
- * Returns if MidiNote is (should be) visible.
- */
-#define midi_note_should_be_visible(mn) \
-  arranger_object_info_should_be_visible ( \
-    mn->obj_info)
-
-/**
  * Shifts MidiNote's position and/or value.
  *
  * @param delta Y (0-127)
@@ -300,7 +209,7 @@ midi_note_shift_pitch (
  */
 int
 midi_note_hit (
-  const MidiNote * midi_note,
+  MidiNote * midi_note,
   const long       gframes);
 
 /**
@@ -319,32 +228,14 @@ midi_note_notes_to_events (
   MidiEvents * events);
 
 /**
- * Returns the MidiNote length in ticks.
- */
-long
-midi_note_get_length_in_ticks (
-  const MidiNote * self);
-
-#define midi_note_reset_transient(mn) \
-  midi_note_reset_counterpart (mn, 1)
-
-/**
- * Sets the pitch of the MidiNote.
+ * Sends a note off if currently playing and sets
+ * the pitch of the MidiNote.
  */
 void
 midi_note_set_val (
   MidiNote *    midi_note,
   const uint8_t val,
   ArrangerObjectUpdateFlag update_flag);
-
-ARRANGER_OBJ_DECLARE_FREE_ALL_LANELESS (
-  MidiNote, midi_note);
-
-/**
- * Frees a single MidiNote and its components.
- */
-void
-midi_note_free (MidiNote * self);
 
 /**
  * @}

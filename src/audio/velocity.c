@@ -26,17 +26,6 @@
 
 #include <gtk/gtk.h>
 
-
-void
-velocity_init_loaded (
-  Velocity * self)
-{
-  ARRANGER_OBJECT_SET_AS_MAIN (
-    VELOCITY, Velocity, velocity);
-
-  velocity_set_midi_note (self, self->midi_note);
-}
-
 /**
  * Creates a new Velocity with the given value.
  */
@@ -46,15 +35,19 @@ velocity_new (
   const uint8_t vel,
   const int     is_main)
 {
-  Velocity * self = calloc (1, sizeof (Velocity));
+  Velocity * self =
+    calloc (1, sizeof (Velocity));
+
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+  obj->type = ARRANGER_OBJECT_TYPE_VELOCITY;
 
   self->vel = vel;
   self->midi_note = midi_note;
 
   if (is_main)
     {
-      ARRANGER_OBJECT_SET_AS_MAIN (
-        VELOCITY, Velocity, velocity);
+      arranger_object_set_as_main (obj);
     }
 
   return self;
@@ -73,48 +66,13 @@ velocity_set_midi_note (
     {
       if (i == AOI_COUNTERPART_MAIN)
         vel =
-          velocity_get_main_velocity (velocity);
+          velocity_get_main (velocity);
       else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
         vel =
-          velocity_get_main_trans_velocity (
-            velocity);
+          velocity_get_main_trans (velocity);
 
       vel->midi_note = midi_note;
     }
-}
-
-/**
- * Finds the actual Velocity in the project from the
- * given clone.
- */
-Velocity *
-velocity_find (
-  Velocity * clone)
-{
-  MidiNote * mn =
-    midi_note_find (clone->midi_note);
-  g_return_val_if_fail (mn && mn->vel, NULL);
-
-  return mn->vel;
-}
-
-/**
- * Clones the Velocity.
- */
-Velocity *
-velocity_clone (
-  Velocity * src,
-  VelocityCloneFlag flag)
-{
-  int is_main = 0;
-  if (flag == VELOCITY_CLONE_COPY_MAIN)
-    is_main = 1;
-
-  Velocity * vel =
-    velocity_new (
-      src->midi_note, src->vel, is_main);
-
-  return vel;
 }
 
 /**
@@ -140,9 +98,9 @@ velocity_set_cache_vel (
   const uint8_t vel)
 {
   /* see ARRANGER_OBJ_SET_POS */
-  velocity_get_main_velocity (velocity)->
+  velocity_get_main (velocity)->
     cache_vel = vel;
-  velocity_get_main_trans_velocity (velocity)->
+  velocity_get_main_trans (velocity)->
     cache_vel = vel;
 }
 
@@ -158,20 +116,18 @@ velocity_set_val (
   const int     val,
   ArrangerObjectUpdateFlag update_flag)
 {
-  ARRANGER_OBJ_SET_PRIMITIVE_VAL (
+  arranger_object_set_primitive (
     Velocity, self, vel,
     (uint8_t) CLAMP (val, 0, 127),
     update_flag);
 
   /* re-set the midi note value to set a note off
    * event */
-  midi_note_set_val (self->midi_note,
-                     self->midi_note->val,
-                     update_flag);
+  midi_note_set_val (
+    self->midi_note,
+    self->midi_note->val,
+    update_flag);
 }
-
-ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
-  Velocity, velocity);
 
 /**
  * Changes the Velocity by the given amount of
@@ -185,17 +141,4 @@ velocity_shift (
   self->vel =
     (midi_byte_t)
     ((int) self->vel + delta);
-}
-
-ARRANGER_OBJ_DEFINE_FREE_ALL_LANELESS (
-  Velocity, velocity);
-
-void
-velocity_free (Velocity * self)
-{
-  if (self->widget)
-    gtk_widget_destroy (
-      GTK_WIDGET (self->widget));
-
-  free (self);
 }

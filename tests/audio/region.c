@@ -67,8 +67,10 @@ test_region_is_hit ()
   fixture_set_up (fixture);
 
   Region * r = fixture->midi_region;
-  position_update_frames (&r->start_pos);
-  position_update_frames (&r->end_pos);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
+  position_update_frames (&r_obj->pos);
+  position_update_frames (&r_obj->end_pos);
 
   Position pos;
   int ret;
@@ -79,7 +81,7 @@ test_region_is_hit ()
    * Expected result:
    * Returns true either exclusive or inclusive.
    */
-  position_set_to_pos (&pos, &r->start_pos);
+  position_set_to_pos (&pos, &r_obj->pos);
   position_update_frames (&pos);
   ret =
     region_is_hit (r, pos.frames, 0);
@@ -94,7 +96,7 @@ test_region_is_hit ()
    * Expected result:
    * Returns false either exclusive or inclusive.
    */
-  position_set_to_pos (&pos, &r->start_pos);
+  position_set_to_pos (&pos, &r_obj->pos);
   position_update_frames (&pos);
   position_add_frames (&pos, -1);
   ret =
@@ -110,7 +112,7 @@ test_region_is_hit ()
    * Expected result:
    * Returns true for inclusive, false for not.
    */
-  position_set_to_pos (&pos, &r->end_pos);
+  position_set_to_pos (&pos, &r_obj->end_pos);
   position_update_frames (&pos);
   ret =
     region_is_hit (r, pos.frames, 0);
@@ -125,7 +127,7 @@ test_region_is_hit ()
    * Expected result:
    * Returns true for both.
    */
-  position_set_to_pos (&pos, &r->end_pos);
+  position_set_to_pos (&pos, &r_obj->end_pos);
   position_update_frames (&pos);
   position_add_frames (&pos, -1);
   ret =
@@ -141,7 +143,7 @@ test_region_is_hit ()
    * Expected result:
    * Returns false for both.
    */
-  position_set_to_pos (&pos, &r->end_pos);
+  position_set_to_pos (&pos, &r_obj->end_pos);
   position_update_frames (&pos);
   position_add_frames (&pos, 1);
   ret =
@@ -166,32 +168,42 @@ test_new_region ()
   Region * region =
     midi_region_new (
       &start_pos, &end_pos, 1);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) region;
 
   g_assert_nonnull (region);
   g_assert_true (
     region->type == REGION_TYPE_MIDI);
   g_assert_true (
     position_is_equal (
-      &start_pos, &region->start_pos));
+      &start_pos, &r_obj->pos));
   g_assert_true (
     position_is_equal (
-      &end_pos, &region->end_pos));
+      &end_pos, &r_obj->end_pos));
   position_init (&tmp);
   g_assert_true (
     position_is_equal (
-      &tmp, &region->clip_start_pos));
+      &tmp, &r_obj->clip_start_pos));
 
   g_assert_false (region->muted);
   g_assert_cmpint (region->num_midi_notes, ==, 0);
 
   Region * main_region =
-    region_get_main_region (region);
+    region_get_main (region);
+  ArrangerObject * r_main =
+    (ArrangerObject *) main_region;
   Region * main_trans_region =
-    region_get_main_trans_region (region);
+    region_get_main_trans (region);
+  ArrangerObject * r_main_trans =
+    (ArrangerObject *) main_trans_region;
   Region * lane_region =
-    region_get_lane_region (region);
+    region_get_lane (region);
+  ArrangerObject * r_lane =
+    (ArrangerObject *) lane_region;
   Region * lane_trans_region =
-    region_get_lane_trans_region (region);
+    region_get_lane_trans (region);
+  ArrangerObject * r_lane_trans =
+    (ArrangerObject *) lane_trans_region;
 
   g_assert_true (region == main_region);
   g_assert_nonnull (main_region);
@@ -226,24 +238,30 @@ test_new_region ()
   g_assert_false (
     region_is_main (lane_region));
 
-  position_set_to_pos (&tmp, &region->start_pos);
+  position_set_to_pos (&tmp, &r_obj->pos);
   position_add_ticks (&tmp, 12);
-  if (region_validate_start_pos (
-        region, &tmp))
-    region_set_start_pos (
-      region, &tmp, AO_UPDATE_TRANS);
+  if (arranger_object_validate_pos (
+        r_obj, &tmp,
+        ARRANGER_OBJECT_POSITION_TYPE_START))
+    {
+      arranger_object_set_position (
+        r_obj, &tmp,
+        ARRANGER_OBJECT_POSITION_TYPE_START,
+        F_NO_CACHED, F_NO_VALIDATE,
+        AO_UPDATE_TRANS);
+    }
   g_assert_true (
     position_is_equal (
-      &tmp, &main_trans_region->start_pos));
+      &tmp, &r_main_trans->pos));
   g_assert_true (
     position_is_equal (
-      &tmp, &lane_trans_region->start_pos));
+      &tmp, &r_lane_trans->pos));
   g_assert_false (
     position_is_equal (
-      &tmp, &main_region->start_pos));
+      &tmp, &r_main->pos));
   g_assert_false (
     position_is_equal (
-      &tmp, &lane_region->start_pos));
+      &tmp, &r_lane->pos));
 }
 
 int

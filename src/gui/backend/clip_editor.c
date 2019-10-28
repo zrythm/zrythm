@@ -30,6 +30,7 @@
 
 #include "audio/channel.h"
 #include "gui/backend/clip_editor.h"
+#include "gui/widgets/arranger_object.h"
 #include "audio/track.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -60,17 +61,21 @@ clip_editor_set_region (
   if (self->region && self->region->type ==
         REGION_TYPE_MIDI)
     {
+      Track * track =
+        arranger_object_get_track (
+          (ArrangerObject *) self->region);
       channel_reattach_midi_editor_manual_press_port (
-        track_get_channel (
-          region_get_track (self->region)),
+        track_get_channel (track),
         F_DISCONNECT, F_NO_RECALC_GRAPH);
       recalc_graph = 1;
     }
   if (region->type == REGION_TYPE_MIDI)
     {
+      Track * track =
+        arranger_object_get_track (
+          (ArrangerObject *) self->region);
       channel_reattach_midi_editor_manual_press_port (
-        track_get_channel (
-          region_get_track (region)),
+        track_get_channel (track),
         F_CONNECT, F_NO_RECALC_GRAPH);
       recalc_graph = 1;
     }
@@ -100,6 +105,26 @@ clip_editor_set_region (
 
   EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED,
                NULL);
+}
+
+/**
+ * Causes the selected Region to be redrawin in the
+ * UI, if any.
+ */
+void
+clip_editor_redraw_region (
+  ClipEditor * self)
+{
+  Region * r =
+    self->region;
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
+  if (r_obj &&
+      Z_IS_ARRANGER_OBJECT_WIDGET (r_obj->widget))
+    {
+      arranger_object_widget_force_redraw (
+        (ArrangerObjectWidget *) r_obj->widget);
+    }
 }
 
 /**

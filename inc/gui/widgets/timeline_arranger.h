@@ -63,25 +63,12 @@ typedef struct AutomationCurve AutomationCurve;
 typedef struct _RegionWidget RegionWidget;
 typedef struct ChordObject ChordObject;
 typedef struct ScaleObject ScaleObject;
+typedef struct _ScaleObjectWidget ScaleObjectWidget;
 typedef struct _MarkerWidget MarkerWidget;
 
 typedef struct _TimelineArrangerWidget
 {
   ArrangerWidget       parent_instance;
-
-  /**
-   * Start Region acting on. This is the
-   * Region that was clicked, even though
-   * there could be more selected.
-   */
-  Region *             start_region;
-
-  /** Whether the start_region was selected before
-   * drag_begin. */
-  int                  start_region_was_selected;
-
-  ScaleObject *        start_scale;
-  Marker *             start_marker;
 
   /** The number of visible tracks moved during a
    * moving operation between tracks up to the last
@@ -117,12 +104,6 @@ typedef struct _TimelineArrangerWidget
 
 ARRANGER_W_DECLARE_FUNCS (
   Timeline, timeline);
-ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
-  Timeline, timeline, Region, region);
-ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
-  Timeline, timeline, ScaleObject, scale);
-ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
-  Timeline, timeline, Marker, marker);
 
 void
 timeline_arranger_widget_snap_range_r (
@@ -143,6 +124,11 @@ Track *
 timeline_arranger_widget_get_track_at_y (
   TimelineArrangerWidget * self,
   double y);
+
+void
+timeline_arranger_on_export_as_midi_file_clicked (
+  GtkMenuItem * menuitem,
+  Region *      r);
 
 /**
  * Returns the hit AutomationTrack at y.

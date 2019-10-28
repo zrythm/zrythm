@@ -17,9 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- */
-
 #include <math.h>
 
 #include "audio/automatable.h"
@@ -29,29 +26,30 @@
 #include "audio/port.h"
 #include "audio/position.h"
 #include "audio/track.h"
+#include "gui/backend/arranger_object.h"
 #include "gui/widgets/automation_curve.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/math.h"
 
-void
-automation_curve_init_loaded (
-  AutomationCurve * ac)
-{
-}
-
 static AutomationCurve *
 _create_new (
-  /*Region *         region,*/
-  const Position * pos)
+  const Position * pos,
+  const int        is_main)
 {
   AutomationCurve * self =
     calloc (1, sizeof (AutomationCurve));
 
-  /*self->region = region;*/
-  position_set_to_pos (&self->pos,
-                       pos);
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+  obj->pos = *pos;
+  obj->type = ARRANGER_OBJECT_TYPE_AUTOMATION_CURVE;
+
+  if (is_main)
+    {
+      arranger_object_set_as_main (obj);
+    }
 
   return self;
 }
@@ -65,10 +63,13 @@ _create_new (
 AutomationCurve *
 automation_curve_new (
   const AutomatableType a_type,
-  const Position * pos)
+  const Position *      pos,
+  const int             is_main)
 {
   AutomationCurve * ac =
-    _create_new (pos);
+    _create_new (pos, is_main);
+  ArrangerObject * ac_obj =
+    (ArrangerObject *) ac;
 
   ac->curviness = 1.0;
   switch (a_type)
@@ -84,7 +85,9 @@ automation_curve_new (
       ac->type = AUTOMATION_CURVE_TYPE_BOOL;
       break;
     }
-  ac->widget = automation_curve_widget_new (ac);
+  ac_obj->widget =
+    GTK_WIDGET (
+      automation_curve_widget_new (ac));
 
   return ac;
 }
@@ -113,17 +116,6 @@ get_y_normalized (
       double val = pow (1.0 - pow (x, 1.0 / curviness), (1.0 / (1.0 / curviness)));
       return 1.0 - val;
     }
-}
-
-/**
- * Updates the frames of each position in each child
- * of the AutomationCurve recursively.
- */
-void
-automation_curve_update_frames (
-  AutomationCurve * self)
-{
-  position_update_frames (&self->pos);
 }
 
 /**
@@ -191,19 +183,12 @@ automation_curve_set_curviness (
     return;
 
   ac->curviness = curviness;
-  if (ac->widget)
-    ac->widget->redraw = 1;
+  ArrangerObject * ac_obj =
+    (ArrangerObject *) ac;
+  if (Z_IS_ARRANGER_OBJECT_WIDGET (ac_obj->widget))
+    {
+      ARRANGER_OBJECT_WIDGET_GET_PRIVATE (
+        ac_obj->widget);
+      ao_prv->redraw = 1;
+    }
 }
-
-/**
- * Destroys the widget and frees memory.
- */
-void
-automation_curve_free (AutomationCurve * ac)
-{
-  if (GTK_IS_WIDGET (ac->widget))
-    gtk_widget_destroy (GTK_WIDGET (ac->widget));
-
-  free (ac);
-}
-

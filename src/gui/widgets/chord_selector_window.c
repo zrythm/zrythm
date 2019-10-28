@@ -17,7 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "actions/edit_chord_action.h"
 #include "audio/chord_descriptor.h"
 #include "audio/chord_object.h"
 #include "audio/chord_track.h"
@@ -536,10 +535,15 @@ chord_selector_window_widget_new (
 
   self->descr = descr;
 
+  ArrangerObject * region_obj =
+    (ArrangerObject *)
+    CLIP_EDITOR->region;
+  g_return_val_if_fail (region_obj, NULL);
+
   self->scale =
     chord_track_get_scale_at_pos (
       P_CHORD_TRACK,
-      &CLIP_EDITOR->region->start_pos);
+      &region_obj->pos);
 
   gtk_window_set_transient_for (
     GTK_WINDOW (self),

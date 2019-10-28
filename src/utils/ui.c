@@ -829,6 +829,12 @@ ui_caches_new ()
   gdk_rgba_parse (&colors->matcha, "#2eb398");
   gdk_rgba_parse (&colors->bright_green, "#1ddd6a");
   gdk_rgba_parse (&colors->darkish_green, "#1a884c");
+  gdk_rgba_parse (
+    &colors->highlight_both, "#ff22ff");
+  gdk_rgba_parse (
+    &colors->highlight_in_scale, "#662266");
+  gdk_rgba_parse (
+    &colors->highlight_in_chord, "#bb22bb");
 
   return self;
 }

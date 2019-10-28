@@ -22,41 +22,9 @@
 #include "audio/scale_object.h"
 #include "audio/chord_track.h"
 #include "audio/position.h"
-#include "gui/widgets/scale_object.h"
+#include "gui/backend/arranger_object.h"
 #include "project.h"
 #include "utils/flags.h"
-
-#define SET_POS(_c,pos_name,_pos,_trans_only) \
-  ARRANGER_OBJ_SET_POS ( \
-    scale_object, _c, pos_name, _pos, _trans_only)
-
-DEFINE_START_POS;
-
-ARRANGER_OBJ_DEFINE_MOVABLE (
-  ScaleObject, scale_object, timeline_selections,
-  TL_SELECTIONS);
-
-/**
- * Init the ScaleObject after the Project is loaded.
- */
-void
-scale_object_init_loaded (
-  ScaleObject * self)
-{
-  ARRANGER_OBJECT_SET_AS_MAIN (
-   SCALE_OBJECT, ScaleObject, scale_object);
-}
-
-/**
- * Mainly used for copy-pasting.
- */
-void
-scale_object_post_deserialize (
-  ScaleObject * self)
-{
-  g_return_if_fail (self);
-  self->obj_info.main = self;
-}
 
 /**
  * Creates a ScaleObject.
@@ -69,68 +37,32 @@ scale_object_new (
   ScaleObject * self =
     calloc (1, sizeof (ScaleObject));
 
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+  obj->type = ARRANGER_OBJECT_TYPE_SCALE_OBJECT;
+
   self->scale = descr;
 
   if (is_main)
     {
-      ARRANGER_OBJECT_SET_AS_MAIN (
-        SCALE_OBJECT, ScaleObject, scale_object);
+      arranger_object_set_as_main (obj);
     }
 
   return self;
 }
 
-/**
- * Finds the ScaleObject in the project
- * corresponding to the given one.
- */
-ScaleObject *
-scale_object_find (
-  ScaleObject * clone)
+int
+scale_object_is_equal (
+  ScaleObject * a,
+  ScaleObject * b)
 {
-  for (int i = 0;
-       i < P_CHORD_TRACK->num_scales; i++)
-    {
-      if (scale_object_is_equal (
-            P_CHORD_TRACK->scales[i],
-            clone))
-        return P_CHORD_TRACK->scales[i];
-    }
-  return NULL;
-}
-
-/**
- * Updates the frames of each position in each child
- * of the ScaleObject recursively.
- */
-void
-scale_object_update_frames (
-  ScaleObject * self)
-{
-  position_update_frames (&self->pos);
-}
-
-/**
- * Clones the given scale.
- */
-ScaleObject *
-scale_object_clone (
-  ScaleObject * src,
-  ScaleObjectCloneFlag flag)
-{
-  int is_main = 0;
-  if (flag == SCALE_OBJECT_CLONE_COPY_MAIN)
-    is_main = 1;
-
-  MusicalScale * musical_scale =
-    musical_scale_clone (src->scale);
-  ScaleObject * scale =
-    scale_object_new (musical_scale, is_main);
-
-  position_set_to_pos (
-    &scale->pos, &src->pos);
-
-  return scale;
+  ArrangerObject * obj_a =
+    (ArrangerObject *) a;
+  ArrangerObject * obj_b =
+    (ArrangerObject *) b;
+  return
+    position_is_equal (&obj_a->pos, &obj_b->pos) &&
+    musical_scale_is_equal (a->scale, b->scale);
 }
 
 /**
@@ -143,48 +75,5 @@ scale_object_set_track (
 {
   self->track = track;
   self->track_pos = track->pos;
-}
-
-ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
-  ScaleObject, scale_object);
-
-ARRANGER_OBJ_DECLARE_VALIDATE_POS (
-  ScaleObject, scale_object, pos)
-{
-  return
-    position_is_after_or_equal (pos, START_POS);
-}
-
-void
-scale_object_pos_setter (
-  ScaleObject * scale_object,
-  const Position * pos)
-{
-  if (scale_object_validate_pos (scale_object, pos))
-    {
-      scale_object_set_pos (
-        scale_object, pos, AO_UPDATE_ALL);
-    }
-}
-
-/**
- * Returns the Track this ScaleObject is in.
- */
-Track *
-scale_object_get_track (
-  ScaleObject * self)
-{
-  return TRACKLIST->tracks[self->track_pos];
-}
-
-/**
- * Frees the ScaleObject.
- */
-void
-scale_object_free (
-  ScaleObject * self)
-{
-  musical_scale_free (self->scale);
-  free (self);
 }
 

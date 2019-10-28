@@ -36,9 +36,9 @@ editor_selection_info_widget_refresh (
   EditorSelectionInfoWidget * self,
   MidiArrangerSelections * mas)
 {
-  GtkWidget * fo =
-    midi_arranger_selections_get_first_object (
-      mas, 0);
+  ArrangerObject * obj =
+    arranger_selections_get_first_object (
+      (ArrangerSelections *) mas, 0);
 
   selection_info_widget_clear (
     self->selection_info);
@@ -46,17 +46,14 @@ editor_selection_info_widget_refresh (
     GTK_STACK (self),
     GTK_WIDGET (self->no_selection_label));
 
-  if (Z_IS_MIDI_NOTE_WIDGET (fo))
+  if (obj->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
     {
-      MidiNote * mn =
-        Z_MIDI_NOTE_WIDGET (fo)->midi_note;
-
       DigitalMeterWidget * dm =
         digital_meter_widget_new_for_position (
-          mn,
+          obj,
           NULL,
-          midi_note_get_start_pos,
-          midi_note_set_start_pos,
+          arranger_object_get_pos,
+          arranger_object_pos_setter,
           NULL,
           _("start position"));
       digital_meter_set_draw_line (dm, 1);

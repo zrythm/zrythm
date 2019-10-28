@@ -29,7 +29,6 @@
 #include <stdint.h>
 
 #include "gui/backend/arranger_object.h"
-#include "gui/backend/arranger_object_info.h"
 
 #include <cyaml/cyaml.h>
 
@@ -42,27 +41,37 @@ typedef struct _VelocityWidget VelocityWidget;
  * @{
  */
 
+#define velocity_is_main(r) \
+  arranger_object_is_main ( \
+    (ArrangerObject *) r)
+#define velocity_is_transient(r) \
+  arranger_object_is_transient ( \
+    (ArrangerObject *) r)
+#define velocity_get_main(r) \
+  ((Velocity *) \
+   arranger_object_get_main ( \
+     (ArrangerObject *) r))
+#define velocity_get_main_trans(r) \
+  ((Velocity *) \
+   arranger_object_get_main_trans ( \
+     (ArrangerObject *) r))
+#define velocity_is_selected(r) \
+  arranger_object_is_selected ( \
+    (ArrangerObject *) r)
+
 /**
  * Default velocity.
  */
 #define VELOCITY_DEFAULT 90
-
-typedef enum VelocityCloneFlag
-{
-  /** Create a new Velocity to be added to a
-   * MidiNote as a main Velocity. */
-  VELOCITY_CLONE_COPY_MAIN,
-
-  /** Create a new Velocity that will not be used
-   * as a main Velocity. */
-  VELOCITY_CLONE_COPY,
-} VelocityCloneFlag;
 
 /**
  * The MidiNote velocity.
  */
 typedef struct Velocity
 {
+  /** Base struct. */
+  ArrangerObject  base;
+
   /** Velocity value (0-127). */
   uint8_t          vel;
 
@@ -76,21 +85,20 @@ typedef struct Velocity
    * For convenience only.
    */
   MidiNote *       midi_note;
-
-  /** The widget. */
-  VelocityWidget * widget;
-
-  ArrangerObjectInfo obj_info;
 } Velocity;
 
 static const cyaml_schema_field_t
-  velocity_fields_schema[] =
+velocity_fields_schema[] =
 {
-	CYAML_FIELD_UINT (
-			"vel", CYAML_FLAG_DEFAULT,
-			Velocity, vel),
+  CYAML_FIELD_MAPPING (
+    "base", CYAML_FLAG_DEFAULT,
+    Velocity, base,
+    arranger_object_fields_schema),
+  CYAML_FIELD_UINT (
+    "vel", CYAML_FLAG_DEFAULT,
+    Velocity, vel),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
@@ -99,31 +107,6 @@ velocity_schema = {
     CYAML_FLAG_POINTER,
     Velocity, velocity_fields_schema),
 };
-
-#define velocity_is_main(r) \
-  arranger_object_info_is_main ( \
-    &r->obj_info)
-
-#define velocity_is_transient(r) \
-  arranger_object_info_is_transient ( \
-    &r->obj_info)
-
-/** Gets the transient counterpart of the
- * Velocity. */
-#define velocity_get_main_trans_velocity(r) \
-  ((Velocity *) r->obj_info.main_trans)
-
-/** Gets the main counterpart of the
- * Velocity. */
-#define velocity_get_main_velocity(r) \
-  ((Velocity *) r->obj_info.main)
-
-/**
- * Init after loading a Project.
- */
-void
-velocity_init_loaded (
-  Velocity * self);
 
 /**
  * Creates a new Velocity with the given value.
@@ -151,45 +134,12 @@ velocity_set_cache_vel (
   const uint8_t vel);
 
 /**
- * Finds the actual Velocity in the project from the
- * given clone.
- */
-Velocity *
-velocity_find (
-  Velocity * clone);
-
-/**
- * Clones the Velocity.
- */
-Velocity *
-velocity_clone (
-  Velocity * src,
-  VelocityCloneFlag flag);
-
-/**
  * Returns 1 if the Velocity's match, 0 if not.
  */
 int
 velocity_is_equal (
   Velocity * src,
   Velocity * dest);
-
-/**
- * Wrapper that calls midi_note_is_selected().
- */
-#define velocity_is_selected(vel) \
-  midi_note_is_selected ( \
-    velocity_get_main_velocity (vel)->midi_note)
-
-/**
- * Returns if Velocity is (should be) visible.
- */
-#define velocity_should_be_visible(vel) \
-  arranger_object_info_should_be_visible ( \
-    vel->obj_info)
-
-ARRANGER_OBJ_DECLARE_GEN_WIDGET (
-  Velocity, velocity);
 
 /**
  * Changes the Velocity by the given amount of
@@ -211,15 +161,6 @@ velocity_set_val (
   Velocity *    self,
   const int     val,
   ArrangerObjectUpdateFlag update_flag);
-
-ARRANGER_OBJ_DECLARE_FREE_ALL_LANELESS (
-  Velocity, velocity);
-
-/**
- * Destroys the velocity instance.
- */
-void
-velocity_free (Velocity * self);
 
 /**
  * @}

@@ -46,7 +46,7 @@ edit_tracks_action_new (
     calloc (1, sizeof (EditTracksAction));
 
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type = UNDOABLE_ACTION_TYPE_EDIT_TRACKS;
+  ua->type = UA_EDIT_TRACKS;
 
   self->type = type;
   self->main_track_pos = main_track->pos;

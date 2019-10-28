@@ -39,7 +39,7 @@ create_plugins_action_new (
     	CreatePluginsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UNDOABLE_ACTION_TYPE_CREATE_PLUGINS;
+	  UA_CREATE_PLUGINS;
 
   self->slot = slot;
   self->track_pos = track_pos;

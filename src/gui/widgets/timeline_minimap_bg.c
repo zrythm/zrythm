@@ -56,14 +56,18 @@ draw_cb (
   Marker * start =
     marker_track_get_start_marker (
       P_MARKER_TRACK);
+  ArrangerObject * start_obj =
+    (ArrangerObject *) start;
   Marker * end =
     marker_track_get_end_marker (
       P_MARKER_TRACK);
+  ArrangerObject * end_obj =
+    (ArrangerObject *) end;
   int song_px =
     ui_pos_to_px_timeline (
-      &start->pos, 1) -
+      &start_obj->pos, 1) -
     ui_pos_to_px_timeline (
-      &end->pos, 1);
+      &end_obj->pos, 1);
   /*int region_px;*/
 
   int total_track_height = 0;
@@ -103,23 +107,24 @@ draw_cb (
                              0.2);
 
       TrackLane * lane;
-      Region * r;
+      ArrangerObject * r_obj;
       for (int j = 0; j < track->num_lanes; j++)
         {
           lane = track->lanes[j];
 
           for (int k = 0; k < lane->num_regions; k++)
             {
-              r = lane->regions[k];
-
-              r = region_get_visible (r);
+              r_obj =
+                (ArrangerObject *) lane->regions[k];
+              r_obj =
+                arranger_object_get_visible_counterpart (r_obj);
 
               int px_start =
                 ui_pos_to_px_timeline (
-                  &r->start_pos, 1);
+                  &r_obj->pos, 1);
               int px_end =
                 ui_pos_to_px_timeline (
-                  &r->end_pos, 1);
+                  &r_obj->end_pos, 1);
               int px_length =
                 px_end - px_start;
 

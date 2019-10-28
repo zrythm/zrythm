@@ -42,27 +42,21 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 
-#define SET_POS(_c,pos_name,_pos,_trans_only) \
-  ARRANGER_OBJ_SET_POS ( \
-    automation_point, _c, pos_name, _pos, \
-    _trans_only)
-
-ARRANGER_OBJ_DEFINE_MOVABLE (
-  AutomationPoint, automation_point,
-  automation_selections, AUTOMATION_SELECTIONS);
-
 static AutomationPoint *
 _create_new (
   const Position *        pos)
 {
-  AutomationPoint * ap =
+  AutomationPoint * self =
     calloc (1, sizeof (AutomationPoint));
 
-  position_set_to_pos (
-    &ap->pos, pos);
-  ap->index = -1;
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+  obj->pos = *pos;
+  obj->type = ARRANGER_OBJECT_TYPE_AUTOMATION_POINT;
 
-  return ap;
+  self->index = -1;
+
+  return self;
 }
 
 /**
@@ -82,12 +76,10 @@ automation_point_set_region_and_index (
     {
       if (i == AOI_COUNTERPART_MAIN)
         ap =
-  automation_point_get_main_automation_point (
-    ap);
+          automation_point_get_main (ap);
       else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
         ap =
-  automation_point_get_main_trans_automation_point (
-    ap);
+          automation_point_get_main_trans (ap);
 
       ap->region = region;
       ap->region_name = g_strdup (region->name);
@@ -95,64 +87,19 @@ automation_point_set_region_and_index (
     }
 }
 
-void
-automation_point_init_loaded (
-  AutomationPoint * self)
-{
-  ARRANGER_OBJECT_SET_AS_MAIN (
-    AUTOMATION_POINT, AutomationPoint,
-    automation_point);
-
-  automation_point_set_region_and_index (
-    self, self->region, self->index);
-}
-
-static int
+int
 automation_point_is_equal (
   AutomationPoint * a,
   AutomationPoint * b)
 {
+  ArrangerObject * a_obj =
+    (ArrangerObject *) a;
+  ArrangerObject * b_obj =
+    (ArrangerObject *) b;
   return
-    position_is_equal (&a->pos, &b->pos) &&
+    position_is_equal (&a_obj->pos, &b_obj->pos) &&
     MATH_FLOATS_EQUAL (
       a->fvalue, b->fvalue, 0.001f);
-}
-
-/**
- * Returns the Track this AutomationPoint is in.
- */
-Track *
-automation_point_get_track (
-  AutomationPoint * ap)
-{
-  return ap->region->at->track;
-}
-
-/**
- * Finds the automation point in the project matching
- * the params of the given one.
- */
-AutomationPoint *
-automation_point_find (
-  AutomationPoint * src)
-{
-  g_warn_if_fail (src->region);
-
-  /* the src region might be an unused clone, find
-   * the actual region. */
-  Region * region =
-    region_find (src->region);
-
-  int i;
-  AutomationPoint * ap;
-  for (i = 0; i < region->num_aps; i++)
-    {
-      ap = region->aps[i];
-      if (automation_point_is_equal (src, ap))
-        return ap;
-    }
-
-  return NULL;
 }
 
 /**
@@ -172,48 +119,11 @@ automation_point_new_float (
 
   if (is_main)
     {
-      ARRANGER_OBJECT_SET_AS_MAIN (
-        AUTOMATION_POINT, AutomationPoint,
-        automation_point);
+      arranger_object_set_as_main (
+        (ArrangerObject *) self);
     }
 
   return self;
-}
-
-/**
- * Updates the frames of each position in each child
- * of the AutomationPoint recursively.
- */
-void
-automation_point_update_frames (
-  AutomationPoint * self)
-{
-  position_update_frames (&self->pos);
-}
-
-ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
-  AutomationPoint, automation_point);
-
-/**
- * Clones the atuomation point.
- */
-AutomationPoint *
-automation_point_clone (
-  AutomationPoint * src,
-  AutomationPointCloneFlag flag)
-{
-  int is_main = 0;
-  if (flag == AUTOMATION_POINT_CLONE_COPY_MAIN)
-    is_main = 1;
-
-  AutomationPoint * ap =
-    automation_point_new_float (
-      src->fvalue, &src->pos, is_main);
-
-  position_set_to_pos (
-    &ap->pos, &src->pos);
-
-  return ap;
 }
 
 /**
@@ -229,23 +139,6 @@ automation_point_get_normalized_value (
   return automatable_real_val_to_normalized (
     self->region->at->automatable,
     self->fvalue);
-}
-
-ARRANGER_OBJ_DECLARE_RESET_COUNTERPART (
-  AutomationPoint, automation_point)
-{
-  AutomationPoint * src =
-    reset_trans ?
-      automation_point_get_main_automation_point (automation_point) :
-      automation_point_get_main_trans_automation_point (automation_point);
-  AutomationPoint * dest =
-    reset_trans ?
-      automation_point_get_main_trans_automation_point (automation_point) :
-      automation_point_get_main_automation_point (automation_point);
-
-  position_set_to_pos (
-    &dest->pos, &src->pos);
-  dest->fvalue = src->fvalue;
 }
 
 /**
@@ -349,7 +242,7 @@ automation_point_update_fvalue (
   float             real_val,
   ArrangerObjectUpdateFlag update_flag)
 {
-  ARRANGER_OBJ_SET_PRIMITIVE_VAL (
+  arranger_object_set_primitive (
     AutomationPoint, self, fvalue, real_val,
     update_flag);
 
@@ -360,21 +253,6 @@ automation_point_update_fvalue (
     automatable_real_val_to_normalized (
       a, real_val), 1);
 
-  EVENTS_PUSH (ET_AUTOMATION_POINT_CHANGED, self);
-}
-
-/**
- * Destroys the widget and frees memory.
- */
-void
-automation_point_free (
-  AutomationPoint * self)
-{
-  if (GTK_IS_WIDGET (self->widget))
-    gtk_widget_destroy (GTK_WIDGET (self->widget));
-
-  if (self->region_name)
-    g_free (self->region_name);
-
-  free (self);
+  EVENTS_PUSH (
+    ET_ARRANGER_OBJECT_CHANGED, self);
 }

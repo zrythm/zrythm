@@ -123,11 +123,13 @@ add_from_widget (
   char loop_start[50];
   char loop_end[50];
   char end_pos[50];
+  ArrangerObject * obj = NULL;
   if (Z_IS_REGION_WIDGET (widget))
     {
       REGION_WIDGET_GET_PRIVATE (widget);
       g_return_if_fail (rw_prv->region);
       Region * r = rw_prv->region;
+      obj = (ArrangerObject *) r;
 
       /* skip non-mains */
       if (!region_is_main (r) ||
@@ -137,15 +139,15 @@ add_from_widget (
       region_get_type_as_string (
         r->type, type);
       position_stringize (
-        &r->start_pos, start_pos);
+        &obj->pos, start_pos);
       position_stringize (
-        &r->end_pos, end_pos);
+        &obj->end_pos, end_pos);
       position_stringize (
-        &r->clip_start_pos, clip_start);
+        &obj->clip_start_pos, clip_start);
       position_stringize (
-        &r->loop_start_pos, loop_start);
+        &obj->loop_start_pos, loop_start);
       position_stringize (
-        &r->loop_end_pos, loop_end);
+        &obj->loop_end_pos, loop_end);
       gtk_list_store_append (store, iter);
       gtk_list_store_set (
         store, iter,
@@ -165,6 +167,7 @@ add_from_widget (
         Z_MARKER_WIDGET (widget);
       g_return_if_fail (mw->marker);
       Marker * m = mw->marker;
+      obj = (ArrangerObject *) m;
 
       /* skip non-mains */
       if (!marker_is_main (m) ||
@@ -174,7 +177,7 @@ add_from_widget (
       get_event_type_as_string (
         EVENT_VIEWER_ET_MARKER, type);
       position_stringize (
-        &m->pos, start_pos);
+        &obj->pos, start_pos);
       gtk_list_store_append (store, iter);
       gtk_list_store_set (
         store, iter,
@@ -194,6 +197,7 @@ add_from_widget (
         Z_MIDI_NOTE_WIDGET (widget);
       g_return_if_fail (mnw->midi_note);
       MidiNote * mn = mnw->midi_note;
+      obj = (ArrangerObject *) mn;
 
       /* skip non-mains */
       if (!midi_note_is_main (mn) ||
@@ -205,9 +209,9 @@ add_from_widget (
       get_event_type_as_string (
         EVENT_VIEWER_ET_MIDI_NOTE, type);
       position_stringize (
-        &mn->start_pos, start_pos);
+        &obj->pos, start_pos);
       position_stringize (
-        &mn->end_pos, end_pos);
+        &obj->end_pos, end_pos);
       char pitch[10];
       char vel[10];
       sprintf (pitch, "%d", mn->val);
@@ -229,6 +233,7 @@ add_from_widget (
         Z_CHORD_OBJECT_WIDGET (widget);
       g_return_if_fail (cw->chord_object);
       ChordObject * c = cw->chord_object;
+      obj = (ArrangerObject *) c;
 
       /* skip non-mains */
       if (!chord_object_is_main (c) ||
@@ -242,7 +247,7 @@ add_from_widget (
       get_event_type_as_string (
         EVENT_VIEWER_ET_CHORD_OBJECT, type);
       position_stringize (
-        &c->pos, start_pos);
+        &obj->pos, start_pos);
       gtk_list_store_append (store, iter);
       gtk_list_store_set (
         store, iter,

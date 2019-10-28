@@ -56,8 +56,11 @@ automation_arranger_draw_cb (
     clip_editor_get_region_for_widgets (
       CLIP_EDITOR);
   g_return_val_if_fail (r && r->at, FALSE);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
 
-  Track * track = region_get_track (r);
+  Track * track =
+    arranger_object_get_track (r_obj);
 
   float normalized_val =
     automation_track_get_normalized_val_at_pos (

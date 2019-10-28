@@ -26,18 +26,11 @@
 #include "config.h"
 
 #include "actions/actions.h"
+#include "actions/arranger_selections.h"
 #include "actions/undo_manager.h"
 #include "actions/copy_tracks_action.h"
-#include "actions/create_automation_selections_action.h"
-#include "actions/create_chord_selections_action.h"
-#include "actions/create_midi_arranger_selections_action.h"
-#include "actions/create_timeline_selections_action.h"
 #include "actions/create_tracks_action.h"
 #include "actions/delete_tracks_action.h"
-#include "actions/delete_midi_arranger_selections_action.h"
-#include "actions/delete_timeline_selections_action.h"
-#include "actions/duplicate_midi_arranger_selections_action.h"
-#include "actions/quantize_timeline_selections.h"
 #include "audio/instrument_track.h"
 #include "audio/midi.h"
 #include "audio/track.h"
@@ -437,15 +430,17 @@ activate_loop_selection (GSimpleAction *action,
   if (MAIN_WINDOW->last_focused ==
       GTK_WIDGET (MW_TIMELINE))
     {
-      if (!timeline_selections_has_any (
-            TL_SELECTIONS))
+      if (!arranger_selections_has_any (
+            (ArrangerSelections *) TL_SELECTIONS))
         return;
 
       Position start, end;
-      timeline_selections_get_start_pos (
-        TL_SELECTIONS, &start, F_NO_TRANSIENTS);
-      timeline_selections_get_end_pos (
-        TL_SELECTIONS, &end, F_NO_TRANSIENTS);
+      arranger_selections_get_start_pos (
+        (ArrangerSelections *) TL_SELECTIONS,
+        &start, F_NO_TRANSIENTS, F_GLOBAL);
+      arranger_selections_get_end_pos (
+        (ArrangerSelections *) TL_SELECTIONS,
+        &end, F_NO_TRANSIENTS, F_GLOBAL);
 
       position_set_to_pos (
         &TRANSPORT->loop_start_pos,
@@ -778,8 +773,9 @@ activate_copy (
         MW_PINNED_TIMELINE))
     {
       TimelineSelections * ts =
-        timeline_selections_clone (
-          TL_SELECTIONS);
+        (TimelineSelections *)
+        arranger_selections_clone (
+          (ArrangerSelections *) TL_SELECTIONS);
       timeline_selections_set_vis_track_indices (
         ts);
       char * serialized =
@@ -789,7 +785,8 @@ activate_copy (
       gtk_clipboard_set_text (
         DEFAULT_CLIPBOARD,
         serialized, -1);
-      timeline_selections_free (ts);
+      arranger_selections_free (
+        (ArrangerSelections *) ts);
       g_free (serialized);
     }
   else if (MAIN_WINDOW_LAST_FOCUSED_IS (
@@ -798,8 +795,9 @@ activate_copy (
              MW_MIDI_MODIFIER_ARRANGER))
     {
       MidiArrangerSelections * mas =
-        midi_arranger_selections_clone (
-          MA_SELECTIONS);
+        (MidiArrangerSelections *)
+        arranger_selections_clone (
+          (ArrangerSelections *) MA_SELECTIONS);
       char * serialized =
         midi_arranger_selections_serialize (mas);
       g_return_if_fail (serialized);
@@ -807,14 +805,17 @@ activate_copy (
       gtk_clipboard_set_text (
         DEFAULT_CLIPBOARD,
         serialized, -1);
-      midi_arranger_selections_free (mas);
+      arranger_selections_free (
+        (ArrangerSelections *) mas);
       g_free (serialized);
     }
   else if (MAIN_WINDOW_LAST_FOCUSED_IS (
              MW_CHORD_ARRANGER))
     {
       ChordSelections * cs =
-        chord_selections_clone (
+        (ChordSelections *)
+        arranger_selections_clone (
+          (ArrangerSelections *)
           CHORD_SELECTIONS);
       char * serialized =
         chord_selections_serialize (cs);
@@ -823,14 +824,17 @@ activate_copy (
       gtk_clipboard_set_text (
         DEFAULT_CLIPBOARD,
         serialized, -1);
-      chord_selections_free (cs);
+      arranger_selections_free (
+        (ArrangerSelections *) cs);
       g_free (serialized);
     }
   else if (MAIN_WINDOW_LAST_FOCUSED_IS (
              MW_AUTOMATION_ARRANGER))
     {
       AutomationSelections * cs =
-        automation_selections_clone (
+        (AutomationSelections *)
+        arranger_selections_clone (
+          (ArrangerSelections *)
           AUTOMATION_SELECTIONS);
       char * serialized =
         automation_selections_serialize (cs);
@@ -839,7 +843,8 @@ activate_copy (
       gtk_clipboard_set_text (
         DEFAULT_CLIPBOARD,
         serialized, -1);
-      automation_selections_free (cs);
+      arranger_selections_free (
+        (ArrangerSelections *) cs);
       g_free (serialized);
     }
 }
@@ -862,7 +867,8 @@ on_timeline_clipboard_received (
     {
       TimelineSelections * ts =
         timeline_selections_deserialize (text);
-      timeline_selections_post_deserialize (ts);
+      arranger_selections_post_deserialize (
+        (ArrangerSelections *) ts);
 
       if (timeline_selections_can_be_pasted (
             ts, PLAYHEAD,
@@ -877,7 +883,8 @@ on_timeline_clipboard_received (
            * only the pasted items selected) */
           UndoableAction * ua =
             (UndoableAction *)
-            create_timeline_selections_action_new (
+            arranger_selections_action_new_create (
+              (ArrangerSelections *)
               TL_SELECTIONS);
           undo_manager_perform (
             UNDO_MANAGER, ua);
@@ -886,7 +893,8 @@ on_timeline_clipboard_received (
         {
           g_message ("can't paste timeline selections");
         }
-      timeline_selections_free (ts);
+      arranger_selections_free (
+        (ArrangerSelections *) ts);
     }
   else if ((MAIN_WINDOW_LAST_FOCUSED_IS (
               MW_MIDI_ARRANGER) ||
@@ -897,8 +905,8 @@ on_timeline_clipboard_received (
     {
       MidiArrangerSelections * mas =
         midi_arranger_selections_deserialize (text);
-      midi_arranger_selections_post_deserialize (
-        mas);
+      arranger_selections_post_deserialize (
+        (ArrangerSelections *) mas);
 
       if (midi_arranger_selections_can_be_pasted (
             mas, PLAYHEAD, CLIP_EDITOR->region))
@@ -912,7 +920,8 @@ on_timeline_clipboard_received (
            * only the pasted items selected) */
           UndoableAction * ua =
             (UndoableAction *)
-            create_midi_arranger_selections_action_new (
+            arranger_selections_action_new_create (
+              (ArrangerSelections *)
               MA_SELECTIONS);
           undo_manager_perform (
             UNDO_MANAGER, ua);
@@ -921,7 +930,8 @@ on_timeline_clipboard_received (
         {
           g_message ("can't paste midi selections");
         }
-      midi_arranger_selections_free (mas);
+      arranger_selections_free (
+        (ArrangerSelections *) mas);
     }
   else if (MAIN_WINDOW_LAST_FOCUSED_IS (
              MW_CHORD_ARRANGER) &&
@@ -930,8 +940,8 @@ on_timeline_clipboard_received (
     {
       ChordSelections * mas =
         chord_selections_deserialize (text);
-      chord_selections_post_deserialize (
-        mas);
+      arranger_selections_post_deserialize (
+        (ArrangerSelections *) mas);
 
       if (chord_selections_can_be_pasted (
             mas, PLAYHEAD, CLIP_EDITOR->region))
@@ -945,23 +955,27 @@ on_timeline_clipboard_received (
            * only the pasted items selected) */
           UndoableAction * ua =
             (UndoableAction *)
-            create_chord_selections_action_new (
+            arranger_selections_action_new_create (
+              (ArrangerSelections *)
               CHORD_SELECTIONS);
           undo_manager_perform (
             UNDO_MANAGER, ua);
         }
       else
         {
-          g_message ("can't paste chord selections");
+          g_message (
+            "can't paste chord selections");
         }
-      chord_selections_free (mas);
+      arranger_selections_free (
+        (ArrangerSelections *) mas);
     }
 }
 
 void
-activate_paste (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_paste (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
 {
   g_message ("paste");
   gtk_clipboard_request_text (
@@ -980,16 +994,18 @@ activate_delete (
         GTK_WIDGET (MW_TIMELINE))
     {
       UndoableAction * action =
-        delete_timeline_selections_action_new (
+        arranger_selections_action_new_delete (
+          (ArrangerSelections *)
           TL_SELECTIONS);
-      undo_manager_perform (UNDO_MANAGER,
-                            action);
+      undo_manager_perform (
+        UNDO_MANAGER, action);
     }
   else if (MAIN_WINDOW->last_focused ==
              GTK_WIDGET (MW_MIDI_ARRANGER))
     {
       UndoableAction * action =
-        delete_midi_arranger_selections_action_new (
+        arranger_selections_action_new_delete (
+          (ArrangerSelections *)
           MA_SELECTIONS);
       undo_manager_perform (
         UNDO_MANAGER, action);
@@ -1012,9 +1028,10 @@ activate_duplicate (GSimpleAction *action,
 }
 
 void
-activate_clear_selection (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_clear_selection (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
 {
   g_message ("ZOOMING IN");
 }
@@ -1028,8 +1045,8 @@ activate_select_all (
 	if (MAIN_WINDOW->last_focused
 		== GTK_WIDGET (MW_MIDI_ARRANGER))
 	{
-		midi_arranger_widget_select_all (
-			Z_MIDI_ARRANGER_WIDGET (
+		arranger_widget_select_all (
+			Z_ARRANGER_WIDGET (
 				MAIN_WINDOW->last_focused),
 			1);
 	}
@@ -1452,9 +1469,8 @@ activate_quick_quantize (
   if (string_is_equal (variant, "timeline", 1))
     {
       UndoableAction * ua =
-        (UndoableAction *)
-        quantize_timeline_selections_action_new (
-          TL_SELECTIONS,
+        arranger_selections_action_new_quantize (
+          (ArrangerSelections *) TL_SELECTIONS,
           QUANTIZE_OPTIONS_TIMELINE);
       undo_manager_perform (
         UNDO_MANAGER, ua);
@@ -1468,9 +1484,8 @@ activate_quick_quantize (
           GTK_WIDGET (MW_TIMELINE))
         {
           UndoableAction * ua =
-            (UndoableAction *)
-            quantize_timeline_selections_action_new (
-              TL_SELECTIONS,
+            arranger_selections_action_new_quantize (
+              (ArrangerSelections *) TL_SELECTIONS,
               QUANTIZE_OPTIONS_TIMELINE);
           undo_manager_perform (
             UNDO_MANAGER, ua);
@@ -1480,7 +1495,6 @@ activate_quick_quantize (
     {
       g_return_if_reached ();
     }
-  g_message ("quantize");
 }
 
 void

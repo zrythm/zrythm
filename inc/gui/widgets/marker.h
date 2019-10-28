@@ -26,6 +26,8 @@
 #ifndef __GUI_WIDGETS_MARKER_H__
 #define __GUI_WIDGETS_MARKER_H__
 
+#include "gui/widgets/arranger_object.h"
+
 #include <gtk/gtk.h>
 
 #define MARKER_WIDGET_TYPE \
@@ -34,7 +36,7 @@ G_DECLARE_FINAL_TYPE (
   MarkerWidget,
   marker_widget,
   Z, MARKER_WIDGET,
-  GtkBox);
+  ArrangerObjectWidget);
 
 typedef struct Marker Marker;
 
@@ -51,26 +53,18 @@ typedef struct Marker Marker;
  */
 typedef struct _MarkerWidget
 {
-  GtkBox           parent_instance;
-  GtkDrawingArea * drawing_area;
-  Marker *         marker;
+  ArrangerObjectWidget parent_instance;
+  Marker *             marker;
 
   /** For double click. */
   GtkGestureMultiPress * mp;
 
-  PangoLayout *    layout;
+  PangoLayout *        layout;
 
   /** Cache text H extents and W extents for
    * the widget. */
-  int              textw;
-  int              texth;
-
-  /** Set to 1 to redraw. */
-  int                redraw;
-
-  cairo_t *          cached_cr;
-
-  cairo_surface_t *  cached_surface;
+  int                  textw;
+  int                  texth;
 } MarkerWidget;
 
 /**
@@ -82,10 +76,6 @@ marker_widget_new (
 
 void
 marker_widget_recreate_pango_layouts (
-  MarkerWidget * self);
-
-void
-marker_widget_force_redraw (
   MarkerWidget * self);
 
 /**

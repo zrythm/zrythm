@@ -45,17 +45,24 @@
  */
 typedef struct AutomationSelections
 {
+  ArrangerSelections base;
+
   /** Selected AutomationObject's. */
-  AutomationPoint * automation_points[600];
-  int               num_automation_points;
+  AutomationPoint ** automation_points;
+  int                num_automation_points;
+  size_t             automation_points_size;
 
 } AutomationSelections;
 
 static const cyaml_schema_field_t
   automation_selections_fields_schema[] =
 {
+  CYAML_FIELD_MAPPING (
+    "base", CYAML_FLAG_DEFAULT,
+    AutomationSelections, base,
+    arranger_selections_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "automation_points", CYAML_FLAG_DEFAULT,
+    "automation_points", CYAML_FLAG_POINTER,
     AutomationSelections, automation_points,
     num_automation_points,
     &automation_point_schema, 0, CYAML_UNLIMITED),
@@ -71,14 +78,10 @@ automation_selections_schema = {
     automation_selections_fields_schema),
 };
 
-ARRANGER_SELECTIONS_DECLARE_FUNCS (
-  Automation, automation);
-ARRANGER_SELECTIONS_DECLARE_OBJ_FUNCS (
-  Automation, automation, AutomationPoint,
-  automation_point);
-
-#define automation_selections_contains_ap \
-  automation_selections_contains_automation_point
+void
+automation_selections_paste_to_pos (
+  AutomationSelections * ts,
+  Position *           pos);
 
 SERIALIZE_INC (AutomationSelections,
                automation_selections)

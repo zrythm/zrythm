@@ -105,6 +105,26 @@ redraw_all_arranger_bgs ()
     Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
 }
 
+static void
+on_arranger_selections_in_transit (
+  ArrangerSelections * sel)
+{
+  g_return_if_fail (sel);
+
+  switch (sel->type)
+  {
+  case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+    event_viewer_widget_refresh (
+      MW_TIMELINE_EVENT_VIEWER);
+    if (TL_SELECTIONS->num_regions > 0)
+      editor_ruler_widget_refresh (
+        EDITOR_RULER);
+    break;
+  default:
+    break;
+  }
+}
+
 static int
 on_playhead_changed ()
 {
@@ -341,9 +361,14 @@ on_automation_value_changed (
   for (int i = 0; i < at->num_regions; i++)
     {
       r = at->regions[i];
-      if (GTK_IS_WIDGET (r->widget))
-        Z_AUTOMATION_REGION_WIDGET (
-          r->widget)->cache = 0;
+      ArrangerObject * r_obj =
+        (ArrangerObject *) r;
+      if (Z_IS_ARRANGER_OBJECT_WIDGET (
+            r_obj->widget))
+        {
+          arranger_object_widget_force_redraw (
+            (ArrangerObjectWidget *) r_obj->widget);
+        }
     }
   if (at && at->widget)
     automation_track_widget_update_current_val (
@@ -389,112 +414,42 @@ on_plugins_removed (Channel * ch)
 }
 
 static void
-on_midi_note_selection_changed ()
+on_arranger_selections_changed (
+  ArrangerSelections * sel)
 {
- Region * region = CLIP_EDITOR->region;
-
-  if (region && region->widget)
-    gtk_widget_queue_draw (
-      GTK_WIDGET (region->widget));
-
-  gtk_widget_queue_allocate (
-    GTK_WIDGET (MW_MIDI_MODIFIER_ARRANGER));
-
-  event_viewer_widget_refresh (
-    MW_EDITOR_EVENT_VIEWER);
-}
-
-static void
-on_chord_selection_changed ()
-{
- Region * region = CLIP_EDITOR->region;
-
-  if (region && region->widget)
-    gtk_widget_queue_draw (
-      GTK_WIDGET (region->widget));
-
-  gtk_widget_queue_allocate (
-    GTK_WIDGET (MW_CHORD_ARRANGER));
-
-  event_viewer_widget_refresh (
-    MW_EDITOR_EVENT_VIEWER);
-}
-
-static void
-on_midi_note_changed (MidiNote * midi_note)
-{
-  Velocity * vel;
-  for (int i = 0; i < 2; i++)
+  switch (sel->type)
     {
-      if (i == 0)
-        {
-          midi_note =
-            midi_note_get_main_midi_note (
-              midi_note);
-
-          /* select the velocities */
-          for (int j = 0; j < 2; j++)
-            {
-              if (j == 0)
-                vel =
-                  velocity_get_main_velocity (
-                    midi_note->vel);
-              else if (j == 1)
-                vel =
-                  velocity_get_main_trans_velocity (
-                    midi_note->vel);
-
-              if (GTK_IS_WIDGET (vel->widget))
-                {
-                  if (velocity_is_selected (vel))
-                    {
-                      gtk_widget_set_state_flags (
-                        GTK_WIDGET (vel->widget),
-                        GTK_STATE_FLAG_SELECTED,
-                        0);
-                    }
-                  else
-                    {
-                      gtk_widget_unset_state_flags (
-                        GTK_WIDGET (vel->widget),
-                        GTK_STATE_FLAG_SELECTED);
-                    }
-                  gtk_widget_queue_draw (
-                    GTK_WIDGET (vel->widget));
-                }
-
-            }
-        }
-      else if (i == 1)
-        midi_note =
-          midi_note_get_main_trans_midi_note (midi_note);
-
-      if (GTK_IS_WIDGET (midi_note->widget))
-        {
-          if (midi_note_is_selected (midi_note))
-            {
-              gtk_widget_set_state_flags (
-                GTK_WIDGET (midi_note->widget),
-                GTK_STATE_FLAG_SELECTED,
-                0);
-            }
-          else
-            {
-              gtk_widget_unset_state_flags (
-                GTK_WIDGET (midi_note->widget),
-                GTK_STATE_FLAG_SELECTED);
-            }
-          gtk_widget_queue_draw (
-            GTK_WIDGET (midi_note->widget));
-        }
+    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+      event_viewer_widget_refresh (
+        MW_TIMELINE_EVENT_VIEWER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_MIDI:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      gtk_widget_queue_allocate (
+        GTK_WIDGET (MW_CHORD_ARRANGER));
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_CHORD:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      gtk_widget_queue_allocate (
+        GTK_WIDGET (MW_CHORD_ARRANGER));
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      gtk_widget_queue_allocate (
+        GTK_WIDGET (MW_CHORD_ARRANGER));
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
     }
 
-  if (midi_note->region->widget)
-    gtk_widget_queue_draw (
-      GTK_WIDGET (midi_note->region->widget));
+  inspector_widget_refresh (MW_INSPECTOR);
 }
 
-static inline void
+static void
 on_mixer_selections_changed ()
 {
   Plugin * pl;
@@ -584,6 +539,151 @@ on_track_name_changed (Track * track)
   track_widget_refresh (track->widget);
   inspector_widget_refresh (MW_INSPECTOR);
   visibility_widget_refresh (MW_VISIBILITY);
+}
+
+static void
+on_arranger_object_changed (
+  ArrangerObject * obj)
+{
+  g_return_if_fail (obj);
+
+  /* parent region, if any */
+  ArrangerObject * parent_r_obj =
+    (ArrangerObject *)
+    arranger_object_get_region (obj);
+
+  switch (obj->type)
+    {
+    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+      {
+        AutomationPoint * ap =
+          (AutomationPoint *) obj;
+
+        ArrangerObject * next_ac_obj = NULL;
+        ArrangerObject * prev_ac_obj = NULL;
+        /* if not last, draw next curve */
+        if (ap->index <
+              ap->region->num_aps - 1)
+          {
+            next_ac_obj =
+              (ArrangerObject *)
+              ap->region->acs[ap->index];
+          }
+        /* if not first, draw previous curve */
+        if (ap->index > 0)
+          {
+            prev_ac_obj =
+              (ArrangerObject *)
+              ap->region->acs[ap->index - 1];
+          }
+
+        for (int i = 0; i < 2; i++)
+          {
+            ArrangerObject * _obj = NULL;
+            if (i == 0)
+              _obj = next_ac_obj;
+            else
+              _obj = prev_ac_obj;
+
+            if (obj &&
+                Z_IS_ARRANGER_OBJECT_WIDGET (
+                  _obj->widget))
+              {
+                arranger_object_widget_force_redraw (
+                  (ArrangerObjectWidget *)
+                  _obj->widget);
+              }
+          }
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+      {
+        MidiNote * mn =
+          (MidiNote *)
+          arranger_object_get_main (obj);
+        ArrangerObject * vel_obj =
+          (ArrangerObject *) mn->vel;
+        if (vel_obj->widget)
+          {
+            arranger_object_set_widget_visibility_and_state (
+              vel_obj, 1);
+          }
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_REGION:
+      /* redraw editor ruler if region
+       * positions were changed */
+      gtk_widget_queue_allocate (
+        GTK_WIDGET (EDITOR_RULER));
+      gtk_widget_queue_draw (
+        GTK_WIDGET (EDITOR_RULER));
+      break;
+    case ARRANGER_OBJECT_TYPE_MARKER:
+      {
+        MarkerWidget * mw =
+          (MarkerWidget *) obj->widget;
+        if (Z_IS_MARKER_WIDGET (mw))
+          {
+            marker_widget_recreate_pango_layouts (
+              mw);
+          }
+      }
+      break;
+    default:
+      break;
+    }
+
+  /* redraw parent region */
+  if (parent_r_obj)
+    {
+      ArrangerObjectWidget * obj_w =
+        (ArrangerObjectWidget *)
+        parent_r_obj->widget;
+      if (obj_w)
+        arranger_object_widget_force_redraw (
+          obj_w);
+    }
+
+  /* redraw this */
+  ArrangerObjectWidget * obj_w =
+    (ArrangerObjectWidget *) obj->widget;
+  if (obj_w)
+    arranger_object_widget_force_redraw (obj_w);
+
+  /* refresh arranger */
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
+  arranger_widget_refresh (arranger);
+}
+
+static void
+on_arranger_object_created (
+  ArrangerObject * obj)
+{
+  /* refresh arranger */
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
+  arranger_widget_refresh (arranger);
+}
+
+static void
+on_arranger_object_removed (
+  ArrangerObject * obj)
+{
+  if (obj->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE ||
+      obj->type == ARRANGER_OBJECT_TYPE_VELOCITY)
+    {
+      midi_arranger_widget_refresh_children (
+        MW_MIDI_ARRANGER);
+      midi_modifier_arranger_widget_refresh_children (
+        MW_MIDI_MODIFIER_ARRANGER);
+    }
+  else
+    {
+      ArrangerWidget * arranger =
+        arranger_object_get_arranger (obj);
+      arranger_widget_refresh (arranger);
+    }
 }
 
 static void
@@ -731,80 +831,24 @@ events_process (void * data)
           mixer_widget_hard_refresh (
             MW_MIXER);
           break;
-        case ET_REGION_CREATED:
-        case ET_MARKER_CREATED:
-        case ET_SCALE_OBJECT_CREATED:
-        case ET_SCALE_OBJECT_CHANGED:
-        case ET_REGION_REMOVED:
-        case ET_SCALE_OBJECT_REMOVED:
-        case ET_MARKER_REMOVED:
-          /* FIXME track is passed so only
-           * refresh that track */
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MW_TIMELINE));
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
-          event_viewer_widget_refresh (
-            MW_TIMELINE_EVENT_VIEWER);
+        case ET_ARRANGER_OBJECT_CREATED:
+          on_arranger_object_created (
+            (ArrangerObject *) ev->arg);
           break;
-        case ET_CHORD_OBJECT_CREATED:
-        case ET_CHORD_OBJECT_CHANGED:
-        case ET_CHORD_OBJECT_REMOVED:
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MW_CHORD_ARRANGER));
+        case ET_ARRANGER_OBJECT_CHANGED:
+          on_arranger_object_changed (
+            (ArrangerObject *) ev->arg);
           break;
-        case ET_AUTOMATION_POINT_CHANGED:
-          {
-            AutomationPoint * ap =
-              (AutomationPoint *) ev->arg;
-            /* if not last, draw next curve */
-            if (ap->index <
-                  ap->region->num_aps - 1)
-              {
-                AutomationCurve * ac =
-                  ap->region->acs[ap->index];
-                if (ac &&
-                    GTK_IS_WIDGET (ac->widget))
-                  {
-                    automation_curve_widget_force_redraw (
-                      ac->widget);
-                  }
-              }
-            /* if not first, draw previous curve */
-            if (ap->index > 0)
-              {
-                AutomationCurve * ac =
-                  ap->region->acs[ap->index - 1];
-                if (ac &&
-                    GTK_IS_WIDGET (ac->widget))
-                  {
-                    automation_curve_widget_force_redraw (
-                      ac->widget);
-                  }
-              }
-            Z_AUTOMATION_REGION_WIDGET (
-              ap->region->widget)->cache = 0;
-          }
+        case ET_ARRANGER_OBJECT_REMOVED:
+          on_arranger_object_removed (
+            (ArrangerObject *) ev->arg);
           break;
-        case ET_AUTOMATION_POINT_REMOVED:
-        case ET_AUTOMATION_CURVE_REMOVED:
-        case ET_AUTOMATION_POINT_CREATED:
-        case ET_AUTOMATION_CURVE_CREATED:
-          /* FIXME automation track is passed so
-           * only refresh the automation lane */
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (
-              MW_AUTOMATION_ARRANGER));
+        case ET_ARRANGER_SELECTIONS_CHANGED:
+          on_arranger_selections_changed (
+            (ArrangerSelections *) ev->arg);
           break;
-        case ET_TL_SELECTIONS_CHANGED:
-          inspector_widget_refresh (MW_INSPECTOR);
-          event_viewer_widget_refresh (
-            MW_TIMELINE_EVENT_VIEWER);
-          /*timeline_selection_info_widget_refresh (*/
-            /*MW_TS_INFO, TL_SELECTIONS);*/
-          break;
-        case ET_TL_SELECTIONS_CREATED:
-        case ET_TL_SELECTIONS_REMOVED:
+        case ET_ARRANGER_SELECTIONS_CREATED:
+        case ET_ARRANGER_SELECTIONS_REMOVED:
           arranger_widget_refresh (
             Z_ARRANGER_WIDGET (
               MW_TIMELINE));
@@ -857,9 +901,7 @@ events_process (void * data)
         case ET_CLIP_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
             GTK_WIDGET (ev->arg)); // ruler widget
-          gtk_widget_queue_draw (
-            GTK_WIDGET (
-              CLIP_EDITOR->region->widget));
+          clip_editor_redraw_region (CLIP_EDITOR);
           break;
         case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
@@ -933,31 +975,13 @@ events_process (void * data)
         case ET_TRACK_LANES_VISIBILITY_CHANGED:
           tracklist_widget_soft_refresh (
             MW_TRACKLIST);
-          timeline_arranger_widget_update_visibility (
-            MW_TIMELINE);
+          arranger_widget_update_visibility (
+            (ArrangerWidget *) MW_TIMELINE);
+          arranger_widget_update_visibility (
+            (ArrangerWidget *) MW_PINNED_TIMELINE);
           break;
         case ET_TRACK_ADDED:
           on_track_added ((Track *) ev->arg);
-          break;
-        case ET_MA_SELECTIONS_CHANGED:
-           on_midi_note_selection_changed();
-            break;
-        case ET_CHORD_SELECTIONS_CHANGED:
-           on_chord_selection_changed();
-            break;
-        case ET_MIDI_NOTE_CHANGED:
-          /*g_message ("mn changed %p",*/
-                     /*((MidiNote *)ev->arg)->widget);*/
-          on_midi_note_changed ((MidiNote *) ev->arg);
-          break;
-        case ET_REGION_CHANGED:
-          break;
-        case ET_ARRANGER_OBJECT_SELECTION_CHANGED:
-          g_warn_if_fail (ev->arg);
-          arranger_object_info_set_widget_visibility_and_state ((ArrangerObjectInfo *) ev->arg, 1);
-          event_viewer_widget_refresh_for_arranger (
-            arranger_object_info_get_arranger (
-              ((ArrangerObjectInfo *) ev->arg)));
           break;
         case ET_TRACK_CHANGED:
           on_track_changed ((Track *) ev->arg);
@@ -1018,26 +1042,6 @@ events_process (void * data)
         case ET_UNDO_REDO_ACTION_DONE:
           home_toolbar_widget_refresh_undo_redo_buttons (
             MW_HOME_TOOLBAR);
-          break;
-        /* FIXME rename to MIDI_NOTE_ADDED_TO_REGION */
-        case ET_MIDI_NOTE_CREATED:
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (
-              MW_MIDI_MODIFIER_ARRANGER));
-          break;
-        case ET_MIDI_NOTE_REMOVED:
-          /*g_object_ref (((MidiNote *) ev->arg)->widget);*/
-          /*gtk_container_remove (*/
-            /*GTK_CONTAINER (MIDI_ARRANGER),*/
-            /*GTK_WIDGET (((MidiNote *) ev->arg)->widget));*/
-          /*arranger_widget_refresh (*/
-            /*Z_ARRANGER_WIDGET (MIDI_ARRANGER));*/
-          midi_arranger_widget_refresh_children (
-            MW_MIDI_ARRANGER);
-          midi_modifier_arranger_widget_refresh_children (
-            MW_MIDI_MODIFIER_ARRANGER);
           break;
         case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
           if (MW_MIDI_EDITOR_SPACE)
@@ -1117,8 +1121,8 @@ events_process (void * data)
         case ET_TRACK_LANE_REMOVED:
           tracklist_widget_soft_refresh (
             MW_TRACKLIST);
-          timeline_arranger_widget_update_visibility (
-            MW_TIMELINE);
+          arranger_widget_update_visibility (
+            (ArrangerWidget *) MW_TIMELINE);
           break;
         case ET_LOOP_TOGGLED:
           arranger_widget_refresh_all_backgrounds ();
@@ -1127,33 +1131,9 @@ events_process (void * data)
           gtk_widget_queue_draw (
             GTK_WIDGET (EDITOR_RULER));
           break;
-        case ET_MARKER_POSITIONS_CHANGED:
-        case ET_CHORD_OBJECT_POSITIONS_CHANGED:
-        case ET_SCALE_OBJECT_POSITIONS_CHANGED:
-          /* TODO */
-          break;
-        case ET_REGION_POSITIONS_CHANGED:
-          /* redraw midi ruler if region
-           * positions were changed */
-          gtk_widget_queue_allocate (
-            GTK_WIDGET (EDITOR_RULER));
-          gtk_widget_queue_draw (
-            GTK_WIDGET (EDITOR_RULER));
-          break;
-        case ET_TIMELINE_OBJECTS_IN_TRANSIT:
-          event_viewer_widget_refresh (
-            MW_TIMELINE_EVENT_VIEWER);
-          /*timeline_arranger_widget_refresh_children (*/
-            /*MW_TIMELINE);*/
-          /*timeline_arranger_widget_refresh_children (*/
-            /*MW_PINNED_TIMELINE);*/
-          if (TL_SELECTIONS->num_regions > 0)
-            editor_ruler_widget_refresh (
-              EDITOR_RULER);
-          break;
-        case ET_AUTOMATION_OBJECTS_IN_TRANSIT:
-          /*gtk_widget_queue_allocate (*/
-            /*GTK_WIDGET (MW_AUTOMATION_ARRANGER));*/
+        case ET_ARRANGER_SELECTIONS_IN_TRANSIT:
+          on_arranger_selections_in_transit (
+            (ArrangerSelections *) ev->arg);
           break;
         case ET_CHORD_KEY_CHANGED:
           for (int j = 0;
@@ -1174,10 +1154,6 @@ events_process (void * data)
           g_message ("doing");
           top_bar_widget_refresh (
             TOP_BAR);
-          break;
-        case ET_MARKER_NAME_CHANGED:
-          marker_widget_recreate_pango_layouts (
-            (MarkerWidget *) ev->arg);
           break;
         case ET_SELECTING_IN_ARRANGER:
           arranger_widget_redraw_bg (

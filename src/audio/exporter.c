@@ -146,10 +146,12 @@ export_audio (
   if (info->time_range ==
         TIME_RANGE_SONG)
     {
-      Marker * start =
+      ArrangerObject * start =
+        (ArrangerObject *)
         marker_track_get_start_marker (
           P_MARKER_TRACK);
-      Marker * end =
+      ArrangerObject * end =
+        (ArrangerObject *)
         marker_track_get_end_marker (
           P_MARKER_TRACK);
       sfinfo.frames =
@@ -216,10 +218,12 @@ export_audio (
       if (info->time_range ==
             TIME_RANGE_SONG)
         {
-          Marker * start =
+          ArrangerObject * start =
+            (ArrangerObject *)
             marker_track_get_start_marker (
               P_MARKER_TRACK);
-          Marker * end =
+          ArrangerObject * end =
+            (ArrangerObject *)
             marker_track_get_end_marker (
               P_MARKER_TRACK);
           position_set_to_pos (

@@ -118,6 +118,7 @@
     complete);
 
 typedef enum IconType IconType;
+
 /**
  * For readability, instead of using 0s and 1s.
  */

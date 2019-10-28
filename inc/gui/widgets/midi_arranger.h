@@ -50,27 +50,12 @@ typedef struct _MidiArrangerWidget
 {
   ArrangerWidget           parent_instance;
 
-  /**
-   * Start MIDI note acting on. This is the note
-   * that was clicked, even though there could be
-   * more selected.
-   */
-  MidiNote *               start_midi_note;
-
-  /**
-   * Clone of the start MidiNote to reference
-   * parameters during actions.
-   */
-  //MidiNote *               start_midi_note_clone;
-
   /** The note currently hovering over */
   int                      hovered_note;
 } MidiArrangerWidget;
 
 ARRANGER_W_DECLARE_FUNCS (
   Midi, midi);
-ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
-  Midi, midi, MidiNote, note);
 
 /**
  * Returns the note value (0-127) at y.

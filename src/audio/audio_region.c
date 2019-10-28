@@ -57,6 +57,8 @@ audio_region_new (
 {
   AudioRegion * self =
     calloc (1, sizeof (AudioRegion));
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
 
   self->type = REGION_TYPE_AUDIO;
   self->pool_id = -1;
@@ -101,13 +103,13 @@ audio_region_new (
 
   /* set end pos to sample end */
   position_set_to_pos (
-    &self->end_pos, start_pos);
+    &obj->end_pos, start_pos);
   position_add_frames (
-    &self->end_pos, clip->num_frames);
+    &obj->end_pos, clip->num_frames);
 
   /* init */
   region_init (
-    self, start_pos, &self->end_pos, is_main);
+    self, start_pos, &obj->end_pos, is_main);
 
   if (is_main && !recording)
     audio_clip_write_to_pool (clip);

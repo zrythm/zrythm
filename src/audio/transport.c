@@ -40,8 +40,6 @@
 
 #include <gtk/gtk.h>
 
-DEFINE_START_POS;
-
 /**
  * Sets BPM and does any necessary processing (like
  * notifying interested parties).
@@ -383,9 +381,12 @@ transport_update_position_frames (
   for (i = 0; \
        i < P_MARKER_TRACK->num_markers; i++) \
     { \
+      ArrangerObject * m_obj = \
+        (ArrangerObject *) \
+        P_MARKER_TRACK->markers[i]; \
        position_set_to_pos ( \
           &markers[num_markers++], \
-          &P_MARKER_TRACK->markers[i]->pos); \
+          &m_obj->pos); \
     } \
   position_set_to_pos ( \
     &markers[num_markers++], \
@@ -398,7 +399,7 @@ transport_update_position_frames (
     &self->loop_end_pos); \
   position_set_to_pos ( \
     &markers[num_markers++], \
-    START_POS); \
+    &POSITION_START); \
   position_sort_array ( \
     markers, (size_t) num_markers)
 

@@ -24,11 +24,9 @@
  * objects.
  */
 
+#include "actions/arranger_selections.h"
 #include "actions/undoable_action.h"
-#include "actions/create_automation_selections_action.h"
 #include "actions/undo_manager.h"
-#include "actions/duplicate_automation_selections_action.h"
-#include "actions/move_automation_selections_action.h"
 #include "audio/automation_region.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
@@ -183,21 +181,26 @@ automation_arranger_widget_set_allocation (
         Z_AUTOMATION_POINT_WIDGET (widget);
       AutomationPoint * ap =
         ap_widget->automation_point;
+      ArrangerObject * ap_obj =
+        (ArrangerObject *) ap;
       /*Automatable * a = ap->at->automatable;*/
 
       /* use transient or non transient region
        * depending on which is visible */
       Region * region = ap->region;
-      region = region_get_visible (region);
+      region =
+        region_get_visible_counterpart (region);
+      ArrangerObject * region_obj =
+        (ArrangerObject *) region;
 
       /* use absolute position */
       long region_start_ticks =
-        region->start_pos.total_ticks;
+        region_obj->pos.total_ticks;
       Position tmp;
       position_from_ticks (
         &tmp,
         region_start_ticks +
-        ap->pos.total_ticks);
+        ap_obj->pos.total_ticks);
       allocation->x =
         ui_pos_to_px_editor (
           &tmp, 1) -
@@ -219,27 +222,34 @@ automation_arranger_widget_set_allocation (
       AutomationPoint * prev_ap =
         automation_region_get_ap_before_curve (
           ac->region, ac);
+      ArrangerObject * prev_ap_obj =
+        (ArrangerObject *) prev_ap;
       AutomationPoint * next_ap =
         automation_region_get_ap_after_curve (
           ac->region, ac);
+      ArrangerObject * next_ap_obj =
+        (ArrangerObject *) next_ap;
       g_return_if_fail (
         !prev_ap || !next_ap ||
-        prev_ap->pos.total_ticks <=
-          next_ap->pos.total_ticks);
+        prev_ap_obj->pos.total_ticks <=
+          next_ap_obj->pos.total_ticks);
 
       /* use transient or non transient region
        * depending on which is visible */
       Region * region = ac->region;
-      region = region_get_visible (region);
+      region =
+        region_get_visible_counterpart (region);
+      ArrangerObject * region_obj =
+        (ArrangerObject *) region;
 
       /* use absolute position */
       long region_start_ticks =
-        region->start_pos.total_ticks;
+        region_obj->pos.total_ticks;
       Position tmp;
       position_from_ticks (
         &tmp,
         region_start_ticks +
-        prev_ap->pos.total_ticks);
+        prev_ap_obj->pos.total_ticks);
 
       allocation->x =
         ui_pos_to_px_editor (
@@ -256,7 +266,7 @@ automation_arranger_widget_set_allocation (
       position_from_ticks (
         &tmp,
         region_start_ticks +
-        next_ap->pos.total_ticks);
+        next_ap_obj->pos.total_ticks);
       allocation->width =
         (ui_pos_to_px_editor (
           &tmp, 1) -
@@ -284,18 +294,15 @@ automation_arranger_widget_get_cursor (
 
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  AutomationPointWidget * apw =
-    automation_arranger_widget_get_hit_ap (
-      self,
-      ar_prv->hover_x,
-      ar_prv->hover_y);
-  AutomationCurveWidget * acw =
-    automation_arranger_widget_get_hit_ac (
-      self,
-      ar_prv->hover_x,
-      ar_prv->hover_y);
-
-  int is_hit = apw || acw;
+  int is_hit =
+    arranger_widget_get_hit_arranger_object (
+      (ArrangerWidget *) self,
+      ARRANGER_OBJECT_TYPE_AUTOMATION_POINT,
+      ar_prv->hover_x, ar_prv->hover_y) &&
+    arranger_widget_get_hit_arranger_object (
+      (ArrangerWidget *) self,
+      ARRANGER_OBJECT_TYPE_AUTOMATION_CURVE,
+      ar_prv->hover_x, ar_prv->hover_y);
 
   switch (action)
     {
@@ -365,136 +372,6 @@ automation_arranger_widget_get_cursor (
   return ac;
 }
 
-#define GET_HIT_WIDGET(caps,cc,sc) \
-cc##Widget * \
-automation_arranger_widget_get_hit_##sc ( \
-  AutomationArrangerWidget *  self, \
-  double                    x, \
-  double                    y) \
-{ \
-  GtkWidget * widget = \
-    ui_get_hit_child ( \
-      GTK_CONTAINER (self), x, y, \
-      caps##_WIDGET_TYPE); \
-  if (widget) \
-    { \
-      return Z_##caps##_WIDGET (widget); \
-    } \
-  return NULL; \
-}
-
-GET_HIT_WIDGET (
-  AUTOMATION_POINT, AutomationPoint, ap);
-GET_HIT_WIDGET (
-  AUTOMATION_CURVE, AutomationCurve, ac);
-
-#undef GET_HIT_WIDGET
-
-void
-automation_arranger_widget_select_all (
-  AutomationArrangerWidget *  self,
-  int                       select)
-{
-  int i;
-
-  automation_selections_clear (AUTOMATION_SELECTIONS);
-
-  Region * region = CLIP_EDITOR->region;
-
-  /* select everything else */
-  AutomationPoint * ap;
-  for (i = 0; i < region->num_aps; i++)
-    {
-      ap = region->aps[i];
-      automation_point_select (
-        ap, select);
-    }
-
-  /**
-   * Deselect range if deselecting all.
-   */
-  if (!select)
-    {
-      project_set_has_range (0);
-    }
-}
-
-/**
- * Shows context menu.
- *
- * To be called from parent on right click.
- */
-void
-automation_arranger_widget_show_context_menu (
-  AutomationArrangerWidget * self,
-  gdouble              x,
-  gdouble              y)
-{
-  GtkWidget *menu, *menuitem;
-
-  /*RegionWidget * clicked_region =*/
-    /*automation_arranger_widget_get_hit_region (*/
-      /*self, x, y);*/
-  /*AutomationPointWidget * clicked_ap =*/
-    /*automation_arranger_widget_get_hit_ap (*/
-      /*self, x, y);*/
-  /*AutomationCurveWidget * ac =*/
-    /*automation_arranger_widget_get_hit_curve (*/
-      /*self, x, y);*/
-
-  menu = gtk_menu_new();
-
-  menuitem = gtk_menu_item_new_with_label("Do something");
-
-  /*g_signal_connect(menuitem, "activate",*/
-                   /*(GCallback) view_popup_menu_onDoSomething, treeview);*/
-
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-
-  gtk_widget_show_all(menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
-}
-
-void
-automation_arranger_widget_on_drag_begin_ap_hit (
-  AutomationArrangerWidget * self,
-  double                   start_x,
-  double                   start_y,
-  AutomationPointWidget *  ap_widget)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  AutomationPoint * ap =
-    automation_point_get_main_automation_point (
-      ap_widget->automation_point);
-  ar_prv->start_pos_px = start_x;
-  self->start_ap = ap;
-
-  /* update arranger action */
-  ar_prv->action =
-    UI_OVERLAY_ACTION_STARTING_MOVING;
-
-  int selected =
-    automation_point_is_selected (ap);
-
-  /* if ctrl held & not selected, add to
-   * selections */
-  if (ar_prv->ctrl_held && !selected)
-    {
-      ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
-        self, ap, F_SELECT, F_APPEND);
-    }
-  /* if ctrl not held & not selected, make it
-   * the only selection */
-  else if (!ar_prv->ctrl_held &&
-           !selected)
-    {
-      ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
-        self, ap, F_SELECT, F_NO_APPEND);
-    }
-}
-
 /**
  * Create an AutomationPointat the given Position
  * in the given Track's AutomationTrack.
@@ -515,12 +392,15 @@ automation_arranger_widget_create_ap (
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
 
+  ArrangerObject * region_obj =
+    (ArrangerObject *) region;
+
   /* get local pos */
   Position local_pos;
   position_from_ticks (
     &local_pos,
     pos->total_ticks -
-    region->start_pos.total_ticks);
+    region_obj->pos.total_ticks);
 
   int height =
     gtk_widget_get_allocated_height (
@@ -538,29 +418,38 @@ automation_arranger_widget_create_ap (
   AutomationPoint * ap =
     automation_point_new_float (
       value, &local_pos, F_MAIN);
-  self->start_ap = ap;
+  ArrangerObject * ap_obj =
+    (ArrangerObject *) ap;
+
+  /* set it as start object */
+  ar_prv->start_object = ap_obj;
 
   /* add it to automation track */
   automation_region_add_ap (
     CLIP_EDITOR->region, ap, F_GEN_CURVE_POINTS);
 
   /* set visibility */
-  automation_point_gen_widget (ap);
-  arranger_object_info_set_widget_visibility_and_state (
-    &ap->obj_info, 1);
+  arranger_object_gen_widget (
+    ap_obj);
+  arranger_object_set_widget_visibility_and_state (
+    ap_obj, 1);
 
   /* set position to all counterparts */
-  automation_point_set_pos (
-    ap, &local_pos, AO_UPDATE_ALL);
-
-  /* set the cache position */
-  automation_point_set_cache_pos (
-    ap, &local_pos);
+  arranger_object_set_position (
+    ap_obj, &local_pos,
+    ARRANGER_OBJECT_POSITION_TYPE_START,
+    F_NO_CACHED, F_NO_VALIDATE,
+    AO_UPDATE_ALL);
+  arranger_object_set_position (
+    ap_obj, &local_pos,
+    ARRANGER_OBJECT_POSITION_TYPE_START,
+    F_CACHED, F_NO_VALIDATE,
+    AO_UPDATE_ALL);
 
   EVENTS_PUSH (
-    ET_AUTOMATION_POINT_CREATED, ap);
-  ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
-    self, ap, F_SELECT,
+    ET_ARRANGER_OBJECT_CREATED, ap);
+  arranger_object_select (
+    ap_obj, F_SELECT,
     F_NO_APPEND);
 }
 
@@ -615,41 +504,23 @@ automation_arranger_widget_select (
           automation_point_widgets[i]);
 
       automation_point =
-        automation_point_get_main_automation_point (
-          automation_point_widget->automation_point);
+        automation_point_get_main (
+          automation_point_widget->
+            automation_point);
 
       if (delete)
         automation_region_remove_ap (
           automation_point->region,
           automation_point, F_FREE);
       else
-        ARRANGER_WIDGET_SELECT_AUTOMATION_POINT (
-          self, automation_point, F_SELECT, F_APPEND);
+        {
+          arranger_object_select (
+            (ArrangerObject *) automation_point,
+            F_SELECT, F_APPEND);
+        }
     }
 
 #undef FIND_ENCLOSED_WIDGETS_OF_TYPE
-}
-
-/**
- * Moves the AutomationSelections by the given
- * amount of ticks.
- *
- * @param ticks_diff Ticks to move by.
- * @param copy_moving 1 if copy-moving.
- */
-void
-automation_arranger_widget_move_items_x (
-  AutomationArrangerWidget * self,
-  long                     ticks_diff,
-  int                      copy_moving)
-{
-  automation_selections_add_ticks (
-    AUTOMATION_SELECTIONS, ticks_diff, F_USE_CACHED,
-    AO_UPDATE_NON_TRANS);
-
-  /* for arranger refresh */
-  EVENTS_PUSH (ET_AUTOMATION_OBJECTS_IN_TRANSIT,
-               NULL);
 }
 
 /**
@@ -732,7 +603,7 @@ automation_arranger_widget_move_items_y (
               automation_points[i];
 
           ap =
-            automation_point_get_main_automation_point (ap);
+            automation_point_get_main (ap);
 
           float fval =
             get_fvalue_at_y (
@@ -741,8 +612,11 @@ automation_arranger_widget_move_items_y (
           automation_point_update_fvalue (
             ap, fval, AO_UPDATE_NON_TRANS);
         }
-      automation_point_widget_update_tooltip (
-        self->start_ap->widget, 1);
+      ArrangerObject * start_ap_obj =
+        (ArrangerObject *) self->start_ap;
+      arranger_object_widget_update_tooltip (
+        Z_ARRANGER_OBJECT_WIDGET (
+          start_ap_obj->widget), 1);
     }
 }
 
@@ -792,8 +666,10 @@ automation_arranger_widget_on_drag_end (
     {
       ap =
         AUTOMATION_SELECTIONS->automation_points[i];
-      automation_point_widget_update_tooltip (
-        ap->widget, 0);
+      ArrangerObject * obj =
+        (ArrangerObject *) ap;
+      arranger_object_widget_update_tooltip (
+        (ArrangerObjectWidget *) obj->widget, 0);
     }
 
   if (ar_prv->action ==
@@ -882,7 +758,8 @@ automation_arranger_widget_on_drag_end (
            ar_prv->action ==
              UI_OVERLAY_ACTION_STARTING_SELECTION)
     {
-      automation_selections_clear (
+      arranger_selections_clear (
+        (ArrangerSelections *)
         AUTOMATION_SELECTIONS);
     }
   /* if something was created */
@@ -908,13 +785,14 @@ automation_arranger_widget_on_drag_end (
     {
     }
   ar_prv->action = UI_OVERLAY_ACTION_NONE;
-  automation_arranger_widget_update_visibility (
-    self);
+  arranger_widget_update_visibility (
+    (ArrangerWidget *) self);
 
   self->start_ap = NULL;
 
-  EVENTS_PUSH (ET_AUTOMATION_SELECTIONS_CHANGED,
-               NULL);
+  EVENTS_PUSH (
+    ET_ARRANGER_SELECTIONS_CHANGED,
+    AUTOMATION_SELECTIONS);
 }
 
 static void
@@ -932,42 +810,39 @@ add_children_from_region (
       for (k = 0; k < 2; k++)
         {
           if (k == 0)
-            ap = automation_point_get_main_automation_point (ap);
+            ap = automation_point_get_main (ap);
           else if (k == 1)
-            ap = automation_point_get_main_trans_automation_point (ap);
+            ap =
+              automation_point_get_main_trans (ap);
 
-          if (!GTK_IS_WIDGET (ap->widget))
-            ap->widget =
-              automation_point_widget_new (ap);
+          ArrangerObject * obj =
+            (ArrangerObject *) ap;
 
-          ARRANGER_WIDGET_ADD_OBJ_CHILD (
-            self, ap);
+          if (!GTK_IS_WIDGET (obj->widget))
+            {
+              arranger_object_gen_widget (obj);
+            }
+
+          arranger_widget_add_overlay_child (
+            (ArrangerWidget *) self, obj);
         }
     }
   for (j = 0; j < region->num_acs; j++)
     {
       ac = region->acs[j];
 
-      if (!GTK_IS_WIDGET (ac->widget))
-        ac->widget =
-          automation_curve_widget_new (ac);
+      ArrangerObject * obj =
+        (ArrangerObject *) ac;
+      if (!GTK_IS_WIDGET (obj->widget))
+        arranger_object_gen_widget (obj);
 
-      automation_curve_widget_force_redraw (
-        ac->widget);
+      arranger_object_widget_force_redraw (
+        Z_ARRANGER_OBJECT_WIDGET (obj->widget));
 
       gtk_overlay_add_overlay (
         GTK_OVERLAY (self),
-        GTK_WIDGET (ac->widget));
+        GTK_WIDGET (obj->widget));
     }
-}
-
-ARRANGER_W_DECLARE_UPDATE_VISIBILITY (
-  Automation, automation)
-{
-  ARRANGER_SET_OBJ_VISIBILITY_ARRAY (
-    AUTOMATION_SELECTIONS->automation_points,
-    AUTOMATION_SELECTIONS->num_automation_points,
-    AutomationPoint, automation_point);
 }
 
 /**
@@ -1006,8 +881,8 @@ automation_arranger_widget_refresh_children (
   add_children_from_region (
     self, region);
 
-  automation_arranger_widget_update_visibility (
-    self);
+  arranger_widget_update_visibility (
+    (ArrangerWidget *) self);
 
   gtk_overlay_reorder_overlay (
     GTK_OVERLAY (self),

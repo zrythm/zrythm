@@ -38,7 +38,7 @@ G_DECLARE_FINAL_TYPE (
   MidiNoteWidget,
   midi_note_widget,
   Z, MIDI_NOTE_WIDGET,
-  GtkBox)
+  ArrangerObjectWidget)
 
 /**
  * @addtogroup widgets
@@ -51,26 +51,11 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _MidiNoteWidget
 {
-  GtkBox             parent_instance;
-  GtkDrawingArea *   drawing_area;
+  ArrangerObjectWidget parent_instance;
 
   /** The MidiNote associated with this widget. */
   MidiNote *         midi_note;
-  GtkWindow *        tooltip_win;
-  GtkLabel *         tooltip_label;
 
-  /** If cursor is at resizing L. */
-  int                resize_l;
-
-  /** If cursor is at resizing R. */
-  int                resize_r;
-
-  /** Set to 1 to redraw. */
-  int                redraw;
-
-  cairo_t *          cached_cr;
-
-  cairo_surface_t *  cached_surface;
 } MidiNoteWidget;
 
 /**
@@ -78,39 +63,6 @@ typedef struct _MidiNoteWidget
  */
 MidiNoteWidget *
 midi_note_widget_new (MidiNote * midi_note);
-
-/**
- * Destroys the widget completely.
- */
-void
-midi_note_widget_destroy (MidiNoteWidget *self);
-
-void
-midi_note_widget_update_tooltip (
-  MidiNoteWidget * self,
-  int              show);
-
-void
-midi_note_widget_force_redraw (
-  MidiNoteWidget * self);
-
-/**
- * Returns if the current position is for resizing
- * L.
- */
-int
-midi_note_widget_is_resize_l (
-  MidiNoteWidget * self,
-  int              x);
-
-/**
- * Returns if the current position is for resizing
- * L.
- */
-int
-midi_note_widget_is_resize_r (
-  MidiNoteWidget * self,
-  int              x);
 
 /**
  * @}

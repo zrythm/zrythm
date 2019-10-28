@@ -77,10 +77,6 @@ typedef struct _AutomationArrangerWidget
 
 ARRANGER_W_DECLARE_FUNCS (
   Automation, automation);
-ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
-  Automation, automation, AutomationPoint, ap);
-ARRANGER_W_DECLARE_CHILD_OBJ_FUNCS (
-  Automation, automation, AutomationCurve, ac);
 
 /**
  * Create an AutomationPointat the given Position

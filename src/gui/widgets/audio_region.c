@@ -35,9 +35,10 @@
 #include "utils/cairo.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (AudioRegionWidget,
-               audio_region_widget,
-               REGION_WIDGET_TYPE)
+G_DEFINE_TYPE (
+  AudioRegionWidget,
+  audio_region_widget,
+  REGION_WIDGET_TYPE)
 
 static gboolean
 audio_region_draw_cb (
@@ -48,7 +49,9 @@ audio_region_draw_cb (
   REGION_WIDGET_GET_PRIVATE (self);
   Region * r = rw_prv->region;
   Region * main_region =
-    region_get_main_region (r);
+    region_get_main (r);
+  ArrangerObject * main_obj =
+    (ArrangerObject *) main_region;
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
@@ -74,11 +77,12 @@ audio_region_draw_cb (
 
   long prev_frames = 0;
   long loop_end_frames =
-    position_to_frames (&main_region->loop_end_pos);
+    main_obj->loop_end_pos.frames;
   long loop_frames =
-    region_get_loop_length_in_frames (main_region);
+    arranger_object_get_loop_length_in_frames (
+      main_obj);
   long clip_start_frames =
-    position_to_frames (&main_region->clip_start_pos);
+    main_obj->clip_start_pos.frames;
   for (double i = 0.0; i < (double) width; i += 0.6)
     {
       /* current single channel frames */
@@ -135,20 +139,6 @@ audio_region_draw_cb (
  return FALSE;
 }
 
-/**
- * Sets the appropriate cursor.
- */
-static void
-on_motion (GtkWidget * widget, GdkEventMotion *event)
-{
-  /*AudioRegionWidget * self = Z_AUDIO_REGION_WIDGET (widget);*/
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (widget,
-                             &allocation);
-  /*ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);*/
-  /*REGION_WIDGET_GET_PRIVATE (self);*/
-}
-
 AudioRegionWidget *
 audio_region_widget_new (
   AudioRegion * audio_region)
@@ -159,32 +149,25 @@ audio_region_widget_new (
 
   region_widget_setup (
     Z_REGION_WIDGET (self), audio_region);
-  REGION_WIDGET_GET_PRIVATE (self);
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
   /* connect signals */
   g_signal_connect (
-    G_OBJECT (rw_prv->drawing_area), "draw",
+    G_OBJECT (ao_prv->drawing_area), "draw",
     G_CALLBACK (audio_region_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (self), "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self), "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(self), "motion-notify-event",
-    G_CALLBACK (on_motion),  self);
 
   return self;
 }
 
 static void
-audio_region_widget_class_init (AudioRegionWidgetClass * klass)
+audio_region_widget_class_init (
+  AudioRegionWidgetClass * klass)
 {
 }
 
 static void
-audio_region_widget_init (AudioRegionWidget * self)
+audio_region_widget_init (
+  AudioRegionWidget * self)
 {
 }
 

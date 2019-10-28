@@ -38,7 +38,7 @@ G_DECLARE_DERIVABLE_TYPE (
   RegionWidget,
   region_widget,
   Z, REGION_WIDGET,
-  GtkBox)
+  ArrangerObjectWidget)
 
 /**
  * @addtogroup widgets
@@ -93,7 +93,7 @@ typedef struct _RegionWidgetPrivate
 
 typedef struct _RegionWidgetClass
 {
-  GtkBoxClass parent_class;
+  ArrangerObjectWidgetClass parent_class;
 } RegionWidgetClass;
 
 /**

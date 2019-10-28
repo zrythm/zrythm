@@ -42,44 +42,6 @@
 #include "utils/flags.h"
 #include "utils/string.h"
 
-#define SET_POS(r,pos_name,pos,update_flag) \
-  ARRANGER_OBJ_SET_POS ( \
-    midi_note, r, pos_name, pos, update_flag)
-
-ARRANGER_OBJ_DEFINE_MOVABLE_W_LENGTH (
-  MidiNote, midi_note, midi_arranger_selections,
-  MA_SELECTIONS);
-ARRANGER_OBJ_DEFINE_RESIZE_NO_LOOP (
-  MidiNote, midi_note);
-
-void
-midi_note_init_loaded (
-  MidiNote * self)
-{
-  ARRANGER_OBJECT_SET_AS_MAIN (
-    MIDI_NOTE, MidiNote, midi_note);
-
-  midi_note_set_region (self, self->region);
-
-  self->vel->midi_note = self;
-  velocity_init_loaded (self->vel);
-  position_set_to_pos (
-    &self->cache_start_pos, &self->start_pos);
-  position_set_to_pos (
-    &self->cache_end_pos, &self->end_pos);
-}
-
-/**
- * Mainly used for copy-pasting.
- */
-void
-midi_note_post_deserialize (
-  MidiNote * self)
-{
-  g_return_if_fail (self);
-  self->obj_info.main = self;
-}
-
 /**
  * @param is_main Is main MidiNote. If this is 1 then
  *   arranger_object_info_init_main() is called to
@@ -97,10 +59,13 @@ midi_note_new (
   MidiNote * self =
     calloc (1, sizeof (MidiNote));
 
-  position_set_to_pos (&self->start_pos,
-                       start_pos);
-  position_set_to_pos (&self->end_pos,
-                       end_pos);
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+  obj->pos = *start_pos;
+  obj->end_pos = *end_pos;
+  obj->type = ARRANGER_OBJECT_TYPE_MIDI_NOTE;
+  obj->has_length = 1;
+
   self->region = region;
   self->region_name =
     g_strdup (region->name);
@@ -110,8 +75,7 @@ midi_note_new (
 
   if (is_main)
     {
-      ARRANGER_OBJECT_SET_AS_MAIN (
-        MIDI_NOTE, MidiNote, midi_note);
+      arranger_object_set_as_main (obj);
     }
 
   return self;
@@ -129,9 +93,9 @@ midi_note_set_region (
   for (int i = 0; i < 2; i++)
     {
       if (i == AOI_COUNTERPART_MAIN)
-        mn = midi_note_get_main_midi_note (midi_note);
+        mn = midi_note_get_main (midi_note);
       else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
-        mn = midi_note_get_main_trans_midi_note (midi_note);
+        mn = midi_note_get_main_trans (midi_note);
 
       mn->region = region;
       if (mn->region_name)
@@ -141,75 +105,25 @@ midi_note_set_region (
 }
 
 /**
- * Finds the actual MidiNote in the project from the
- * given clone.
- */
-MidiNote *
-midi_note_find (
-  MidiNote * clone)
-{
-  Region * r =
-    region_find_by_name (clone->region_name);
-  g_warn_if_fail (r);
-
-  for (int i = 0; i < r->num_midi_notes; i++)
-    {
-      if (midi_note_is_equal (
-            r->midi_notes[i],
-            clone))
-        return r->midi_notes[i];
-    }
-  return NULL;
-}
-
-/**
- * Deep clones the midi note.
- */
-MidiNote *
-midi_note_clone (
-  MidiNote *  src,
-  MidiNoteCloneFlag flag)
-{
-  int is_main = 0;
-  if (flag == MIDI_NOTE_CLONE_COPY_MAIN)
-    is_main = 1;
-
-  MidiNote * mn =
-    midi_note_new (
-      src->region, &src->start_pos, &src->end_pos,
-      src->val, src->vel->vel, is_main);
-
-  return mn;
-}
-
-/**
- * Gets the Track this MidiNote is in.
- */
-Track *
-midi_note_get_track (
-  MidiNote * self)
-{
-  return TRACKLIST->tracks[self->region->track_pos];
-}
-
-/**
  * For debugging.
  */
 void
 midi_note_print (
   MidiNote * mn)
 {
+  ArrangerObject * obj =
+    (ArrangerObject *) mn;
   g_message (
     "MidiNote: start pos %d.%d.%d.%d "
     "end pos %d.%d.%d.%d",
-    mn->start_pos.bars,
-    mn->start_pos.beats,
-    mn->start_pos.sixteenths,
-    mn->start_pos.ticks,
-    mn->end_pos.bars,
-    mn->end_pos.beats,
-    mn->end_pos.sixteenths,
-    mn->end_pos.ticks);
+    obj->pos.bars,
+    obj->pos.beats,
+    obj->pos.sixteenths,
+    obj->pos.ticks,
+    obj->end_pos.bars,
+    obj->end_pos.beats,
+    obj->end_pos.sixteenths,
+    obj->end_pos.ticks);
 }
 
 /**
@@ -220,11 +134,15 @@ midi_note_is_equal (
   MidiNote * src,
   MidiNote * dest)
 {
+  ArrangerObject * src_obj =
+    (ArrangerObject *) src;
+  ArrangerObject * dest_obj =
+    (ArrangerObject *) dest;
   return
     position_is_equal (
-      &src->start_pos, &dest->start_pos) &&
+      &src_obj->pos, &dest_obj->pos) &&
     position_is_equal (
-      &src->end_pos, &dest->end_pos) &&
+      &src_obj->end_pos, &dest_obj->end_pos) &&
     src->val == dest->val &&
     src->muted == dest->muted &&
     string_is_equal (
@@ -242,12 +160,16 @@ midi_note_get_global_start_pos (
   MidiNote * self,
   Position * pos)
 {
+  ArrangerObject * self_obj =
+    (ArrangerObject *) self;
+  ArrangerObject * region_obj =
+    (ArrangerObject *) self->region;
   position_set_to_pos (
-    pos, &self->start_pos);
+    pos, &self_obj->pos);
   position_add_ticks (
     pos,
     position_to_ticks (
-      &self->region->start_pos));
+      &region_obj->pos));
 }
 
 /**
@@ -286,35 +208,13 @@ midi_note_set_cache_val (
   MidiNote *    self,
   const uint8_t val)
 {
-  /* see ARRANGER_OBJ_SET_POS */
-  midi_note_get_main_midi_note (self)->
-    cache_val = val;
-  midi_note_get_main_trans_midi_note (self)->
-    cache_val = val;
-}
-
-ARRANGER_OBJ_DECLARE_RESET_COUNTERPART (
-  MidiNote, midi_note)
-{
-  MidiNote * src =
-    reset_trans ?
-      midi_note_get_main_midi_note (midi_note) :
-      midi_note_get_main_trans_midi_note (midi_note);
-  MidiNote * dest =
-    reset_trans ?
-      midi_note_get_main_trans_midi_note (midi_note) :
-      midi_note_get_main_midi_note (midi_note);
-
-  position_set_to_pos (
-    &dest->start_pos, &src->start_pos);
-  position_set_to_pos (
-    &dest->end_pos, &src->end_pos);
-  dest->vel->vel = src->vel->vel;
-  dest->val = src->val;
+  arranger_object_set_primitive (
+    MidiNote, self, cache_val, val, AO_UPDATE_ALL);
 }
 
 /**
- * Sets the pitch of the MidiNote.
+ * Sends a note off if currently playing and sets
+ * the pitch of the MidiNote.
  */
 void
 midi_note_set_val (
@@ -327,9 +227,15 @@ midi_note_set_val (
         midi_note, PLAYHEAD->frames) &&
       TRANSPORT_IS_ROLLING)
     {
+      ArrangerObject * r_obj =
+        (ArrangerObject *) midi_note->region;
+      g_return_if_fail (r_obj);
+      Track * track =
+        arranger_object_get_track (r_obj);
+      g_return_if_fail (track);
+
       MidiEvents * midi_events =
-        region_get_track (midi_note->region)->
-          processor.piano_roll->midi_events;
+        track->processor.piano_roll->midi_events;
 
       zix_sem_wait (&midi_events->access_sem);
       midi_events_add_note_off (
@@ -340,12 +246,9 @@ midi_note_set_val (
       zix_sem_post (&midi_events->access_sem);
     }
 
-  ARRANGER_OBJ_SET_PRIMITIVE_VAL (
+  arranger_object_set_primitive (
     MidiNote, midi_note, val, val, update_flag);
 }
-
-ARRANGER_OBJ_DEFINE_GEN_WIDGET_LANELESS (
-  MidiNote, midi_note);
 
 /**
  * Shifts MidiNote's position and/or value.
@@ -363,57 +266,18 @@ midi_note_shift_pitch (
     self, self->val, update_flag);
 }
 
-void
-midi_note_delete (MidiNote * midi_note)
-{
-  if (midi_note->widget)
-    g_object_unref (midi_note->widget);
-  free (midi_note);
-}
-
-/**
- * Updates the frames of each position in each child
- * of the MidiNote recursively.
- */
-void
-midi_note_update_frames (
-  MidiNote * self)
-{
-  position_update_frames (
-    &self->start_pos);
-  position_update_frames (
-    &self->end_pos);
-  if (self->cache_start_pos.bars > 0)
-    {
-      position_update_frames (
-        &self->cache_start_pos);
-      position_update_frames (
-        &self->cache_end_pos);
-    }
-}
-
-/**
- * Returns the MidiNote length in ticks.
- */
-long
-midi_note_get_length_in_ticks (
-  const MidiNote * self)
-{
-  return
-    position_to_ticks (&self->end_pos) -
-    position_to_ticks (&self->start_pos);
-}
-
 /**
  * Returns if the MIDI note is hit at given pos (in
  * the timeline).
  */
 int
 midi_note_hit (
-  const MidiNote * midi_note,
+  MidiNote * midi_note,
   const long       gframes)
 {
   Region * region = midi_note->region;
+  ArrangerObject * region_obj =
+    (ArrangerObject *) region;
 
   /* get local positions */
   long local_pos =
@@ -423,35 +287,17 @@ midi_note_hit (
   /* add clip_start position to start from
    * there */
   long clip_start_frames =
-    region->clip_start_pos.frames;
+    region_obj->clip_start_pos.frames;
   local_pos += clip_start_frames;
 
   /* check for note on event on the
    * boundary */
   /* FIXME ok? it was < and >= before */
-  if (midi_note->start_pos.frames <= local_pos &&
-      midi_note->end_pos.frames > local_pos)
+  ArrangerObject * midi_note_obj =
+    (ArrangerObject *) midi_note;
+  if (midi_note_obj->pos.frames <= local_pos &&
+      midi_note_obj->end_pos.frames > local_pos)
     return 1;
 
   return 0;
-}
-
-ARRANGER_OBJ_DEFINE_FREE_ALL_LANELESS (
-  MidiNote, midi_note);
-
-void
-midi_note_free (MidiNote * self)
-{
-  if (self->widget)
-    {
-      midi_note_widget_destroy (
-        self->widget);
-    }
-
-  velocity_free_all (self->vel);
-
-  if (self->region_name)
-    g_free (self->region_name);
-
-  free (self);
 }

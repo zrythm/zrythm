@@ -27,40 +27,25 @@
 #define __GUI_WIDGETS_VELOCITY_H__
 
 #include "audio/velocity.h"
+#include "gui/widgets/arranger_object.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
 #define VELOCITY_WIDGET_TYPE \
   (velocity_widget_get_type ())
-G_DECLARE_FINAL_TYPE (VelocityWidget,
-                      velocity_widget,
-                      Z,
-                      VELOCITY_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  VelocityWidget,
+  velocity_widget,
+  Z, VELOCITY_WIDGET,
+  ArrangerObjectWidget)
 
 typedef struct _VelocityWidget
 {
-  GtkBox           parent_instance;
-
-  /** The drawing area. */
-  GtkDrawingArea * drawing_area;
+  ArrangerObjectWidget parent_instance;
 
   /** The Velocity associated with this. */
   Velocity *       velocity;
-
-  GtkWindow *      tooltip_win;
-  GtkLabel *       tooltip_label;
-
-  /** If cursor is at resizing position. */
-  int              resize;
-
-  /** Set to 1 to redraw. */
-  int                redraw;
-
-  cairo_t *          cached_cr;
-
-  cairo_surface_t *  cached_surface;
 } VelocityWidget;
 
 /**
@@ -69,26 +54,5 @@ typedef struct _VelocityWidget
 VelocityWidget *
 velocity_widget_new (
   Velocity * velocity);
-
-void
-velocity_widget_force_redraw (
-  VelocityWidget * self);
-
-/**
- * Returns if the current position is for resizing.
- */
-int
-velocity_widget_is_resize (
-  VelocityWidget * self,
-  int              y);
-
-/**
- * Updates the tooltips and shows the tooltip
- * window (when dragging) or not.
- */
-void
-velocity_widget_update_tooltip (
-  VelocityWidget * self,
-  int              show);
 
 #endif

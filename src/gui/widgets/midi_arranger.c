@@ -17,10 +17,7 @@
 * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "actions/create_midi_arranger_selections_action.h"
-#include "actions/edit_midi_arranger_selections_action.h"
-#include "actions/duplicate_midi_arranger_selections_action.h"
-#include "actions/move_midi_arranger_selections_action.h"
+#include "actions/arranger_selections.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
@@ -68,8 +65,6 @@ G_DEFINE_TYPE (MidiArrangerWidget,
                midi_arranger_widget,
                ARRANGER_WIDGET_TYPE)
 
-DEFINE_START_POS
-
 /**
  * To be called from get_child_position in parent
  * widget.
@@ -87,14 +82,21 @@ midi_arranger_widget_set_allocation (
       MidiNoteWidget * midi_note_widget =
         Z_MIDI_NOTE_WIDGET (widget);
       MidiNote * mn = midi_note_widget->midi_note;
+      ArrangerObject * mn_obj =
+        (ArrangerObject *) mn;
 
       /* use transient or non transient region
        * depending on which is visible */
       Region * region = mn->region;
-      region = region_get_visible (region);
+      region =
+        (Region *)
+        arranger_object_get_visible_counterpart (
+          (ArrangerObject *) region);
+      ArrangerObject * region_obj =
+        (ArrangerObject *) region;
 
       long region_start_ticks =
-        region->start_pos.total_ticks;
+        region_obj->pos.total_ticks;
       Position tmp;
       int adj_px_per_key =
         (int)
@@ -104,7 +106,7 @@ midi_arranger_widget_set_allocation (
       position_from_ticks (
         &tmp,
         region_start_ticks +
-        mn->start_pos.total_ticks);
+        mn_obj->pos.total_ticks);
       allocation->x =
         ui_pos_to_px_editor (
           &tmp, 1);
@@ -125,7 +127,7 @@ midi_arranger_widget_set_allocation (
           position_from_ticks (
             &tmp,
             region_start_ticks +
-            mn->end_pos.total_ticks);
+            mn_obj->end_pos.total_ticks);
           allocation->width =
             ui_pos_to_px_editor (
               &tmp, 1) - allocation->x;
@@ -149,51 +151,6 @@ midi_arranger_widget_get_note_at_y (double y)
     return
       PIANO_ROLL->piano_descriptors[
         (int)(adj_y / adj_px_per_key)].value;
-}
-
-MidiNoteWidget *
-midi_arranger_widget_get_hit_note (
-  MidiArrangerWidget *  self,
-  double                x,
-  double                y)
-{
-  GtkWidget * widget =
-    ui_get_hit_child (
-      GTK_CONTAINER (self),
-      x,
-      y,
-      MIDI_NOTE_WIDGET_TYPE);
-  if (widget)
-    {
-      MidiNoteWidget * mn_w =
-        Z_MIDI_NOTE_WIDGET (widget);
-      self->start_midi_note = mn_w->midi_note;
-      return mn_w;
-    }
-  return NULL;
-}
-
-void
-midi_arranger_widget_select_all (
-  MidiArrangerWidget *  self,
-  int               select)
-{
-  if (!CLIP_EDITOR->region)
-    return;
-
-  /*midi_arranger_selections_clear (*/
-    /*MA_SELECTIONS);*/
-
-  /* select midi notes */
-  MidiRegion * mr =
-    (MidiRegion *) CLIP_EDITOR_SELECTED_REGION;
-  for (int i = 0; i < mr->num_midi_notes; i++)
-    {
-      MidiNote * midi_note = mr->midi_notes[i];
-      midi_note_select (
-        midi_note, select);
-    }
-  /*arranger_widget_refresh(&self->parent_instance);*/
 }
 
 static int
@@ -259,6 +216,14 @@ midi_arranger_widget_get_cursor (
 
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
+  ArrangerObject * obj =
+    arranger_widget_get_hit_arranger_object (
+      (ArrangerWidget *) self,
+      MIDI_NOTE_WIDGET_TYPE,
+      ar_prv->hover_x, ar_prv->hover_y);
+  int is_hit = obj != NULL;
+
+
   switch (action)
     {
     case UI_OVERLAY_ACTION_NONE:
@@ -266,18 +231,15 @@ midi_arranger_widget_get_cursor (
           tool == TOOL_SELECT_STRETCH ||
           tool == TOOL_EDIT)
         {
-          MidiNoteWidget * mnw =
-            midi_arranger_widget_get_hit_note (
-              self,
-              ar_prv->hover_x,
-              ar_prv->hover_y);
+          int is_resize_l = 0, is_resize_r = 0;
 
-          int is_hit =
-            mnw != NULL;
-          int is_resize_l =
-            mnw && mnw->resize_l;
-          int is_resize_r =
-            mnw && mnw->resize_r;
+          if (is_hit)
+            {
+              ARRANGER_OBJECT_WIDGET_GET_PRIVATE (
+                obj->widget);
+              is_resize_l = ao_prv->resize_l;
+              is_resize_r = ao_prv->resize_r;
+            }
 
           if (is_hit && is_resize_l &&
               !PIANO_ROLL->drum_mode)
@@ -350,200 +312,6 @@ midi_arranger_widget_get_cursor (
 }
 
 /**
- * Shows context menu.
- *
- * To be called from parent on right click.
- */
-void
-midi_arranger_widget_show_context_menu (
-  MidiArrangerWidget * self,
-  gdouble              x,
-  gdouble              y)
-{
-  GtkWidget *menu;
-  GtkMenuItem * menu_item;
-
-  MidiNoteWidget * clicked_note =
-    midi_arranger_widget_get_hit_note (
-      self, x, y);
-
-  if (clicked_note)
-    {
-      int selected =
-        midi_note_is_selected (
-          clicked_note->midi_note);
-      if (!selected)
-        ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-          self, clicked_note->midi_note,
-          F_SELECT, F_NO_APPEND);
-    }
-  else
-    {
-      midi_arranger_widget_select_all (
-        self, F_NO_SELECT);
-      midi_arranger_selections_clear (
-        MA_SELECTIONS);
-    }
-
-#define APPEND_TO_MENU \
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), \
-                         GTK_WIDGET (menu_item))
-
-  menu = gtk_menu_new();
-
-  menu_item = CREATE_CUT_MENU_ITEM;
-  APPEND_TO_MENU;
-  menu_item = CREATE_COPY_MENU_ITEM;
-  APPEND_TO_MENU;
-  menu_item = CREATE_PASTE_MENU_ITEM;
-  APPEND_TO_MENU;
-  menu_item = CREATE_DELETE_MENU_ITEM;
-  APPEND_TO_MENU;
-  menu_item = CREATE_DUPLICATE_MENU_ITEM;
-  APPEND_TO_MENU;
-  menu_item =
-    GTK_MENU_ITEM (gtk_separator_menu_item_new ());
-  APPEND_TO_MENU;
-  menu_item = CREATE_CLEAR_SELECTION_MENU_ITEM;
-  APPEND_TO_MENU;
-  menu_item = CREATE_SELECT_ALL_MENU_ITEM;
-  APPEND_TO_MENU;
-
-#undef APPEND_TO_MENU
-
-  gtk_widget_show_all(menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
-}
-
-ARRANGER_W_DECLARE_UPDATE_VISIBILITY (
-  Midi, midi)
-{
-  GList *children, *iter;
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self));
-  MidiNoteWidget * mnw = NULL;
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      if (!Z_IS_MIDI_NOTE_WIDGET (iter->data))
-        continue;
-
-      mnw =
-        Z_MIDI_NOTE_WIDGET (iter->data);
-      arranger_object_info_set_widget_visibility_and_state (
-        &mnw->midi_note->obj_info, 1);
-    }
-  g_list_free (children);
-}
-
-void
-midi_arranger_widget_on_drag_begin_note_hit (
-  MidiArrangerWidget * self,
-  double               start_x,
-  double               start_y,
-  MidiNoteWidget *     mnw)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  /* get x as local to the midi note */
-  gint wx, wy;
-  gtk_widget_translate_coordinates (
-    GTK_WIDGET (self),
-    GTK_WIDGET (mnw),
-    (int) start_x, 0, &wx, &wy);
-
-  MidiNote * mn =
-    midi_note_get_main_midi_note (
-      mnw->midi_note);
-  self->start_midi_note = mn;
-  /*self->start_midi_note_clone =*/
-    /*midi_note_clone (mn, MIDI_NOTE_CLONE_COPY);*/
-
-  /* update arranger action */
-  switch (P_TOOL)
-    {
-    case TOOL_ERASER:
-      ar_prv->action =
-        UI_OVERLAY_ACTION_ERASING;
-      break;
-    case TOOL_AUDITION:
-      ar_prv->action =
-        UI_OVERLAY_ACTION_AUDITIONING;
-      break;
-    case TOOL_SELECT_NORMAL:
-      if (midi_note_widget_is_resize_l (mnw, wx) &&
-          !PIANO_ROLL->drum_mode)
-        ar_prv->action =
-          UI_OVERLAY_ACTION_RESIZING_L;
-      else if (midi_note_widget_is_resize_r (
-                 mnw, wx) &&
-               !PIANO_ROLL->drum_mode)
-        ar_prv->action =
-          UI_OVERLAY_ACTION_RESIZING_R;
-      else
-        ar_prv->action =
-          UI_OVERLAY_ACTION_STARTING_MOVING;
-      break;
-    case TOOL_SELECT_STRETCH:
-      if (midi_note_widget_is_resize_l (mnw, wx))
-        ar_prv->action =
-          UI_OVERLAY_ACTION_STRETCHING_L;
-      else if (midi_note_widget_is_resize_r (mnw, wx))
-        ar_prv->action =
-          UI_OVERLAY_ACTION_STRETCHING_R;
-      else
-        ar_prv->action =
-          UI_OVERLAY_ACTION_STARTING_MOVING;
-      break;
-    case TOOL_EDIT:
-      if (midi_note_widget_is_resize_l (mnw, wx))
-        ar_prv->action =
-          UI_OVERLAY_ACTION_RESIZING_L;
-      else if (midi_note_widget_is_resize_r (mnw, wx))
-        ar_prv->action =
-          UI_OVERLAY_ACTION_RESIZING_R;
-      else
-        ar_prv->action =
-          UI_OVERLAY_ACTION_STARTING_MOVING;
-      break;
-    case TOOL_CUT:
-      /* TODO */
-      break;
-    case TOOL_RAMP:
-      break;
-    }
-
-  int selected = midi_note_is_selected (mn);
-
-  /* select midi note if unselected */
-  if (P_TOOL == TOOL_EDIT ||
-      P_TOOL == TOOL_SELECT_NORMAL ||
-      P_TOOL == TOOL_SELECT_STRETCH)
-    {
-      /* if ctrl held & not selected, add to
-       * selections */
-      if (ar_prv->ctrl_held &&
-          !selected)
-        {
-          ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-            self, mn, F_SELECT, F_APPEND);
-        }
-      /* if ctrl not held & not selected, make it
-       * the only
-       * selection */
-      else if (!ar_prv->ctrl_held &&
-               !selected)
-        {
-          ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-            self, mn, F_SELECT, F_NO_APPEND);
-        }
-    }
-}
-
-/**
  * Called on drag begin in parent when background is double
  * clicked (i.e., a note is created).
  * @param pos The absolute position in the piano
@@ -554,16 +322,19 @@ midi_arranger_widget_create_note (
   MidiArrangerWidget * self,
   Position * pos,
   int                  note,
-  MidiRegion * region)
+  Region * region)
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  ArrangerObject * region_obj =
+    (ArrangerObject *) region;
 
   /* get local pos */
   Position local_pos;
   position_from_ticks (
     &local_pos,
     pos->total_ticks -
-    region->start_pos.total_ticks);
+    region_obj->pos.total_ticks);
 
   /* set action */
   if (PIANO_ROLL->drum_mode)
@@ -579,33 +350,42 @@ midi_arranger_widget_create_note (
       region, &local_pos, &local_pos,
       (midi_byte_t) note,
       VELOCITY_DEFAULT, 1);
+  ArrangerObject * midi_note_obj =
+    (ArrangerObject *) midi_note;
 
   /* add it to region */
   midi_region_add_midi_note (
     region, midi_note);
 
-  midi_note_gen_widget (midi_note);
+  arranger_object_gen_widget (midi_note_obj);
 
   /* set visibility */
-  arranger_object_info_set_widget_visibility_and_state (
-    &midi_note->obj_info, 1);
+  arranger_object_set_widget_visibility_and_state (
+    midi_note_obj, 1);
 
+  /* set end pos */
   Position tmp;
   position_set_min_size (
-    &midi_note->start_pos,
-    &tmp,
-    ar_prv->snap_grid);
-  midi_note_set_end_pos (
-    midi_note, &tmp, AO_UPDATE_ALL);
+    &midi_note_obj->pos,
+    &tmp, ar_prv->snap_grid);
+  arranger_object_set_position (
+    midi_note_obj, &tmp,
+    ARRANGER_OBJECT_POSITION_TYPE_END,
+    F_NO_CACHED, F_NO_VALIDATE, AO_UPDATE_ALL);
+  arranger_object_set_position (
+    midi_note_obj, &tmp,
+    ARRANGER_OBJECT_POSITION_TYPE_END,
+    F_CACHED, F_NO_VALIDATE, AO_UPDATE_ALL);
 
-  midi_note_set_cache_end_pos (
-    midi_note, &midi_note->end_pos);
-  self->start_midi_note =
-    midi_note;
+  /* set as start object */
+  ar_prv->start_object = midi_note_obj;
 
-  EVENTS_PUSH (ET_MIDI_NOTE_CREATED, midi_note);
-  ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-    self, midi_note, F_SELECT, F_NO_APPEND);
+  EVENTS_PUSH (
+    ET_ARRANGER_OBJECT_CREATED, midi_note);
+
+  /* select it */
+  arranger_object_select (
+    midi_note_obj, F_SELECT, F_NO_APPEND);
 }
 
 /**
@@ -644,25 +424,28 @@ midi_arranger_widget_select (
     midi_note_widgets,
     &num_midi_note_widgets);
 
-  MidiNoteWidget * midi_note_widget;
-  MidiNote * midi_note;
+  ArrangerObjectWidget * midi_note_widget;
+  ArrangerObject * midi_note_obj;
   if (delete)
     {
       /* delete the enclosed midi notes */
       for (int i = 0; i < num_midi_note_widgets; i++)
         {
           midi_note_widget =
-            Z_MIDI_NOTE_WIDGET (
+            Z_ARRANGER_OBJECT_WIDGET (
               midi_note_widgets[i]);
-          midi_note =
-            midi_note_get_main_midi_note (
-              midi_note_widget->midi_note);
+          ARRANGER_OBJECT_WIDGET_GET_PRIVATE (
+            midi_note_widget);
+          midi_note_obj =
+            arranger_object_get_main (
+              ao_prv->arranger_object);
+
+          MidiNote * mn =
+            (MidiNote *) midi_note_obj;
 
           midi_region_remove_midi_note (
-            midi_note->region,
-            midi_note,
-            F_NO_FREE,
-            F_PUBLISH_EVENTS);
+            mn->region, mn,
+            F_NO_FREE, F_PUBLISH_EVENTS);
         }
     }
   else
@@ -671,13 +454,15 @@ midi_arranger_widget_select (
       for (int i = 0; i < num_midi_note_widgets; i++)
         {
           midi_note_widget =
-            Z_MIDI_NOTE_WIDGET (
+            Z_ARRANGER_OBJECT_WIDGET (
               midi_note_widgets[i]);
-          midi_note =
-            midi_note_get_main_midi_note (
-              midi_note_widget->midi_note);
-          ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-            self, midi_note, F_SELECT, F_APPEND);
+          ARRANGER_OBJECT_WIDGET_GET_PRIVATE (
+            midi_note_widget);
+          midi_note_obj =
+            arranger_object_get_main (
+              ao_prv->arranger_object);
+          arranger_object_select (
+            midi_note_obj, F_SELECT, F_APPEND);
         }
     }
 }
@@ -703,30 +488,36 @@ midi_arranger_widget_snap_midi_notes_l (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
+  ArrangerObject * r_obj =
+    (ArrangerObject *) CLIP_EDITOR->region;
+
   /* get delta with first clicked note's start
    * pos */
   long delta;
   delta =
     pos->total_ticks -
-    (self->start_midi_note->
-      cache_start_pos.total_ticks +
-    CLIP_EDITOR->region->start_pos.total_ticks);
+    (ar_prv->start_object->
+      cache_pos.total_ticks +
+    r_obj->pos.total_ticks);
 
   Position new_start_pos, new_global_start_pos;
   MidiNote * midi_note;
+  ArrangerObject * mn_obj;
   for (int i = 0;
        i < MA_SELECTIONS->num_midi_notes;
        i++)
     {
       midi_note =
-        midi_note_get_main_trans_midi_note (
+        midi_note_get_main_trans (
           MA_SELECTIONS->midi_notes[i]);
+      mn_obj =
+        (ArrangerObject *) midi_note;
 
       /* calculate new start pos by adding
        * delta to the cached start pos */
       position_set_to_pos (
         &new_start_pos,
-        &midi_note->cache_start_pos);
+        &mn_obj->cache_pos);
       position_add_ticks (
         &new_start_pos, delta);
 
@@ -737,8 +528,7 @@ midi_arranger_widget_snap_midi_notes_l (
         &new_start_pos);
       position_add_ticks (
         &new_global_start_pos,
-        CLIP_EDITOR->region->
-          start_pos.total_ticks);
+        r_obj->pos.total_ticks);
 
       /* snap the global pos */
       if (SNAP_GRID_ANY_SNAP (
@@ -755,20 +545,20 @@ midi_arranger_widget_snap_midi_notes_l (
         &new_global_start_pos);
       position_add_ticks (
         &new_start_pos,
-        - CLIP_EDITOR->region->
-          start_pos.total_ticks);
+        - r_obj->pos.total_ticks);
 
       if (position_is_before (
             &new_global_start_pos,
-            START_POS) ||
+            &POSITION_START) ||
           position_is_after_or_equal (
             &new_start_pos,
-            &midi_note->end_pos))
+            &mn_obj->end_pos))
         return -1;
       else if (!dry_run)
-        midi_note_set_start_pos (
-          midi_note, &new_start_pos,
-          AO_UPDATE_ALL);
+        {
+          arranger_object_pos_setter (
+            mn_obj, &new_start_pos);
+        }
     }
   return 0;
 }
@@ -794,13 +584,16 @@ midi_arranger_widget_snap_midi_notes_r (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
+  ArrangerObject * r_obj =
+    (ArrangerObject *) CLIP_EDITOR->region;
+
   /* get delta with first clicked notes's end
    * pos */
   long delta =
     pos->total_ticks -
-    (self->start_midi_note->
+    (ar_prv->start_object->
       cache_end_pos.total_ticks +
-    CLIP_EDITOR->region->start_pos.total_ticks);
+    r_obj->pos.total_ticks);
 
   MidiNote * midi_note;
   Position new_end_pos, new_global_end_pos;
@@ -809,14 +602,19 @@ midi_arranger_widget_snap_midi_notes_r (
        i++)
     {
       midi_note =
-        midi_note_get_main_midi_note (
+        midi_note_get_main (
           MA_SELECTIONS->midi_notes[i]);
+      ArrangerObject * mn_obj =
+        (ArrangerObject *) midi_note;
+
+      Track * track =
+        arranger_object_get_track (mn_obj);
 
       /* get new end pos by adding delta
        * to the cached end pos */
       position_set_to_pos (
         &new_end_pos,
-        &midi_note->cache_end_pos);
+        &mn_obj->cache_end_pos);
       position_add_ticks (
         &new_end_pos, delta);
 
@@ -826,18 +624,15 @@ midi_arranger_widget_snap_midi_notes_r (
         &new_end_pos);
       position_add_ticks (
         &new_global_end_pos,
-        CLIP_EDITOR->region->
-          start_pos.total_ticks);
+        r_obj->pos.total_ticks);
 
       /* snap the global pos */
       if (SNAP_GRID_ANY_SNAP (
             ar_prv->snap_grid) &&
           !ar_prv->shift_held)
         position_snap (
-          NULL, &new_global_end_pos,
-          midi_note->region->lane->track,
-          NULL,
-          ar_prv->snap_grid);
+          NULL, &new_global_end_pos, track,
+          NULL, ar_prv->snap_grid);
 
       /* convert it back to a local pos */
       position_set_to_pos (
@@ -845,39 +640,18 @@ midi_arranger_widget_snap_midi_notes_r (
         &new_global_end_pos);
       position_add_ticks (
         &new_end_pos,
-        - CLIP_EDITOR->region->
-          start_pos.total_ticks);
+        - r_obj->pos.total_ticks);
 
       if (position_is_before_or_equal (
             &new_end_pos,
-            &midi_note->start_pos))
+            &mn_obj->pos))
         return -1;
       else if (!dry_run)
-        midi_note_set_end_pos (
-          midi_note, &new_end_pos,
-          AO_UPDATE_ALL);
+        arranger_object_end_pos_setter (
+          mn_obj, &new_end_pos);
     }
   return 0;
 }
-
-/**
- * Moves the MidiArrangerSelections by the given
- * amount of ticks
- *
- * @param ticks_diff Ticks to move by.
- * @param copy_moving 1 if copy-moving.
- */
-void
-midi_arranger_widget_move_items_x (
-  MidiArrangerWidget * self,
-  long                 ticks_diff,
-  int                  copy_moving)
-{
-  midi_arranger_selections_add_ticks (
-    MA_SELECTIONS, ticks_diff, F_USE_CACHED,
-    AO_UPDATE_NON_TRANS);
-}
-
 
 /**
  * Called on move items_y setup.
@@ -893,9 +667,8 @@ calc_deltamax_for_note_movement (int y_delta)
        i++)
     {
       midi_note =
-        midi_note_get_main_midi_note (
-          MA_SELECTIONS->
-            midi_notes[i]);
+        midi_note_get_main (
+          MA_SELECTIONS->midi_notes[i]);
       /*g_message ("midi note val %d, y delta %d",*/
                  /*midi_note->val, y_delta);*/
       if (midi_note->val + y_delta < 0)
@@ -925,8 +698,8 @@ midi_arranger_widget_move_items_y (
   int y_delta;
   /* first note selected */
   int first_note_selected =
-    midi_note_get_main_midi_note (
-      self->start_midi_note)->val;
+    midi_note_get_main (
+      ar_prv->start_object)->val;
   /* note at cursor */
   int note_at_cursor =
     midi_arranger_widget_get_note_at_y (
@@ -945,16 +718,22 @@ midi_arranger_widget_move_items_y (
        i++)
     {
       midi_note =
-        midi_note_get_main_midi_note (
+        midi_note_get_main (
           MA_SELECTIONS->midi_notes[i]);
+      ArrangerObject * mn_obj =
+        (ArrangerObject *) midi_note;
       midi_note_set_val (
         midi_note,
         (midi_byte_t)
           ((int) midi_note->val + y_delta),
         flag);
-      if (midi_note->widget)
-        midi_note_widget_update_tooltip (
-          midi_note->widget, 0);
+      if (Z_IS_ARRANGER_OBJECT_WIDGET (
+            mn_obj->widget))
+        {
+          arranger_object_widget_update_tooltip (
+            Z_ARRANGER_OBJECT_WIDGET (
+              mn_obj->widget), 0);
+        }
     }
 }
 
@@ -978,49 +757,55 @@ midi_arranger_widget_on_drag_end (
     {
       midi_note =
         MA_SELECTIONS->midi_notes[i];
+      ArrangerObject * mn_obj =
+        (ArrangerObject *) midi_note;
 
-      if (midi_note->widget)
-        midi_note_widget_update_tooltip (
-          midi_note->widget, 0);
+      if (Z_IS_ARRANGER_OBJECT_WIDGET (
+            mn_obj->widget))
+        {
+          arranger_object_widget_update_tooltip (
+            Z_ARRANGER_OBJECT_WIDGET (
+              mn_obj->widget), 0);
+        }
 
-      EVENTS_PUSH (ET_MIDI_NOTE_CHANGED,
-                   midi_note);
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CREATED, midi_note);
     }
 
   switch (ar_prv->action)
     {
     case UI_OVERLAY_ACTION_RESIZING_L:
     {
-      MidiNote * trans_note =
-        midi_note_get_main_trans_midi_note (
+      ArrangerObject * trans_note =
+        arranger_object_get_main_trans (
           MA_SELECTIONS->midi_notes[0]);
       UndoableAction * ua =
-        (UndoableAction *)
-        emas_action_new_resize_l (
-          MA_SELECTIONS,
-          trans_note->start_pos.total_ticks -
-          trans_note->cache_start_pos.total_ticks);
+        arranger_selections_action_new_resize (
+          (ArrangerSelections *) MA_SELECTIONS,
+          ARRANGER_SELECTIONS_ACTION_RESIZE_L,
+          trans_note->pos.total_ticks -
+          trans_note->cache_pos.total_ticks);
       undo_manager_perform (
         UNDO_MANAGER, ua);
-      midi_arranger_selections_reset_counterparts (
-        MA_SELECTIONS, 1);
+      arranger_selections_reset_counterparts (
+        (ArrangerSelections *) MA_SELECTIONS, 1);
     }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
     {
-      MidiNote * trans_note =
-        midi_note_get_main_trans_midi_note (
+      ArrangerObject * trans_note =
+        arranger_object_get_main_trans (
           MA_SELECTIONS->midi_notes[0]);
       UndoableAction * ua =
-        (UndoableAction *)
-        emas_action_new_resize_r (
-          MA_SELECTIONS,
+        arranger_selections_action_new_resize (
+          (ArrangerSelections *) MA_SELECTIONS,
+          ARRANGER_SELECTIONS_ACTION_RESIZE_R,
           trans_note->end_pos.total_ticks -
           trans_note->cache_end_pos.total_ticks);
       undo_manager_perform (
         UNDO_MANAGER, ua);
-      midi_arranger_selections_reset_counterparts (
-        MA_SELECTIONS, 1);
+      arranger_selections_reset_counterparts (
+        (ArrangerSelections *) MA_SELECTIONS, 1);
     }
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
@@ -1028,56 +813,58 @@ midi_arranger_widget_on_drag_end (
       /* if something was clicked with ctrl without
        * moving*/
       if (ar_prv->ctrl_held)
-        if (self->start_midi_note&&
-            midi_note_is_selected (
-              self->start_midi_note))
+        if (ar_prv->start_object &&
+            arranger_object_is_selected (
+              ar_prv->start_object))
           {
             /* deselect it */
-            ARRANGER_WIDGET_SELECT_MIDI_NOTE (
-              self, self->start_midi_note,
+            arranger_object_select (
+              ar_prv->start_object,
               F_NO_SELECT, F_APPEND);
           }
     }
       break;
     case UI_OVERLAY_ACTION_MOVING:
     {
-      MidiNote * note =
-        midi_note_get_main_midi_note (
+      ArrangerObject * note_obj =
+        arranger_object_get_main (
           MA_SELECTIONS->midi_notes[0]);
+      MidiNote * mn =
+        (MidiNote *) note_obj;
       long ticks_diff =
-        note->start_pos.total_ticks -
-          note->cache_start_pos.total_ticks;
+        note_obj->pos.total_ticks -
+          note_obj->cache_pos.total_ticks;
       int pitch_diff =
-        note->val - note->cache_val;
+        mn->val - mn->cache_val;
       UndoableAction * ua =
-        move_midi_arranger_selections_action_new (
-          MA_SELECTIONS,
-          ticks_diff,
-          pitch_diff);
+        arranger_selections_action_new_move_midi (
+          MA_SELECTIONS, ticks_diff, pitch_diff);
       undo_manager_perform (
         UNDO_MANAGER, ua);
-      midi_arranger_selections_reset_counterparts (
-        MA_SELECTIONS, 1);
+      arranger_selections_reset_counterparts (
+        (ArrangerSelections *) MA_SELECTIONS, 1);
     }
       break;
     /* if copy/link-moved */
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
     {
-      MidiNote * note =
-        midi_note_get_main_midi_note (
+      ArrangerObject * note_obj =
+        arranger_object_get_main (
           MA_SELECTIONS->midi_notes[0]);
+      MidiNote * mn =
+        (MidiNote *) note_obj;
       long ticks_diff =
-        note->start_pos.total_ticks -
-          note->cache_start_pos.total_ticks;
+        note_obj->pos.total_ticks -
+          note_obj->cache_pos.total_ticks;
       int pitch_diff =
-        note->val - note->cache_val;
-      midi_arranger_selections_reset_counterparts (
-        MA_SELECTIONS, 0);
+        mn->val - mn->cache_val;
+      arranger_selections_reset_counterparts (
+        (ArrangerSelections *) MA_SELECTIONS, 0);
       UndoableAction * ua =
         (UndoableAction *)
-        duplicate_midi_arranger_selections_action_new (
-          MA_SELECTIONS,
+        arranger_selections_action_new_duplicate_midi (
+          (ArrangerSelections *) MA_SELECTIONS,
           ticks_diff,
           pitch_diff);
       undo_manager_perform (
@@ -1086,17 +873,16 @@ midi_arranger_widget_on_drag_end (
       break;
     case UI_OVERLAY_ACTION_NONE:
     {
-      midi_arranger_selections_clear (
-        MA_SELECTIONS);
+      arranger_selections_clear (
+        (ArrangerSelections *) MA_SELECTIONS);
     }
       break;
     /* something was created */
     case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
     {
       UndoableAction * ua =
-        (UndoableAction *)
-        create_midi_arranger_selections_action_new (
-          MA_SELECTIONS);
+        arranger_selections_action_new_create (
+          (ArrangerSelections *) MA_SELECTIONS);
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
@@ -1108,22 +894,22 @@ midi_arranger_widget_on_drag_end (
       break;
     }
   ar_prv->action = UI_OVERLAY_ACTION_NONE;
-  midi_arranger_widget_update_visibility (
-    self);
-  midi_modifier_arranger_widget_update_visibility (
-    MW_MIDI_MODIFIER_ARRANGER);
+  arranger_widget_update_visibility (
+    (ArrangerWidget *) self);
+  arranger_widget_update_visibility (
+    (ArrangerWidget *) MW_MIDI_MODIFIER_ARRANGER);
 
   midi_arranger_widget_refresh_children (self);
 
-  self->start_midi_note = NULL;
+  ar_prv->start_object = NULL;
   /*if (self->start_midi_note_clone)*/
     /*{*/
       /*midi_note_free (self->start_midi_note_clone);*/
       /*self->start_midi_note_clone = NULL;*/
     /*}*/
 
-  EVENTS_PUSH (ET_MA_SELECTIONS_CHANGED,
-               NULL);
+  EVENTS_PUSH (
+    ET_ARRANGER_SELECTIONS_CHANGED, MA_SELECTIONS);
 }
 
 static inline void
@@ -1144,22 +930,25 @@ add_children_from_region (
            j <= AOI_COUNTERPART_MAIN_TRANSIENT; j++)
         {
           if (j == AOI_COUNTERPART_MAIN)
-            mn =
-              midi_note_get_main_midi_note (mn);
+            mn = midi_note_get_main (mn);
           else if (
             j == AOI_COUNTERPART_MAIN_TRANSIENT)
-            mn =
-              midi_note_get_main_trans_midi_note (
-                mn);
+            mn = midi_note_get_main_trans (mn);
 
           g_return_if_fail (mn);
 
-          if (!mn->widget)
-            mn->widget =
-              midi_note_widget_new (mn);
+          ArrangerObject * mn_obj =
+            (ArrangerObject *) mn;
 
-          ARRANGER_WIDGET_ADD_OBJ_CHILD (
-            self, mn);
+          if (!Z_IS_ARRANGER_OBJECT_WIDGET (
+                mn_obj->widget))
+            {
+              arranger_object_gen_widget (
+                mn_obj);
+            }
+
+          arranger_widget_add_overlay_child (
+            (ArrangerWidget *) self, mn_obj);
         }
     }
 }

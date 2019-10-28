@@ -27,6 +27,7 @@
 #define __AUDIO_AUTOMATION_CURVE_H__
 
 #include "audio/position.h"
+#include "gui/backend/arranger_object.h"
 #include "utils/types.h"
 
 typedef struct AutomationTrack AutomationTrack;
@@ -58,30 +59,25 @@ typedef enum AutomationCurveType
   AUTOMATION_CURVE_TYPE_FLOAT
 } AutomationCurveType;
 
-
 /**
  * The curve between two AutomationPoint's.
  */
 typedef struct AutomationCurve
 {
-  /**
-   * Midway position between previous ap and next ap.
-   */
-  Position                pos;
+  /** Base struct. */
+  ArrangerObject      base;
 
   /** Curviness. */
-  curviness_t             curviness;
-  AutomationCurveType     type;
+  curviness_t         curviness;
+  AutomationCurveType type;
 
   /** Pointer back to parent. */
-  Region *                region;
-
-  AutomationCurveWidget * widget;
+  Region *            region;
 
   /** Index in the automation track, for faster
    * performance when getting ap before/after
    * curve. */
-  int                     index;
+  int                 index;
 } AutomationCurve;
 
 static const cyaml_strval_t
@@ -96,8 +92,9 @@ static const cyaml_schema_field_t
   automation_curve_fields_schema[] =
 {
   CYAML_FIELD_MAPPING (
-    "pos", CYAML_FLAG_DEFAULT,
-    AutomationCurve, pos, position_fields_schema),
+    "base", CYAML_FLAG_DEFAULT,
+    AutomationCurve, base,
+    arranger_object_fields_schema),
 	CYAML_FIELD_FLOAT (
     "curviness", CYAML_FLAG_DEFAULT,
     AutomationCurve, curviness),
@@ -120,10 +117,6 @@ automation_curve_schema = {
     AutomationCurve, automation_curve_fields_schema),
 };
 
-void
-automation_curve_init_loaded (
-  AutomationCurve * ac);
-
 /**
  * Creates an AutomationCurve.
  *
@@ -133,7 +126,8 @@ automation_curve_init_loaded (
 AutomationCurve *
 automation_curve_new (
   const AutomatableType a_type,
-  const Position * pos);
+  const Position *      pos,
+  const int             is_main);
 
 /**
  * The function to return a point on the curve.
@@ -149,27 +143,12 @@ automation_curve_get_normalized_value (
   double            x);
 
 /**
- * Updates the frames of each position in each child
- * of the AutomationCurve recursively.
- */
-void
-automation_curve_update_frames (
-  AutomationCurve * self);
-
-/**
  * Sets the curviness of the AutomationCurve.
  */
 void
 automation_curve_set_curviness (
   AutomationCurve * ac,
   const curviness_t curviness);
-
-/**
- * Frees the automation point.
- */
-void
-automation_curve_free (
-  AutomationCurve * ap);
 
 /**
  * @}

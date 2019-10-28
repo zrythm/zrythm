@@ -60,14 +60,14 @@ on_motion (GtkWidget * widget,
       gtk_widget_set_state_flags (GTK_WIDGET (self),
                                   GTK_STATE_FLAG_PRELIGHT,
                                   0);
-      if (event->x < RESIZE_CURSOR_SPACE)
+      if (event->x < UI_RESIZE_CURSOR_SPACE)
         {
           self->cursor = UI_CURSOR_STATE_RESIZE_L;
           if (self->parent->action != TIMELINE_MINIMAP_ACTION_MOVING)
             ui_set_cursor_from_name (widget, "w-resize");
         }
       else if (event->x > width -
-                 RESIZE_CURSOR_SPACE)
+                 UI_RESIZE_CURSOR_SPACE)
         {
           self->cursor = UI_CURSOR_STATE_RESIZE_R;
           if (self->parent->action != TIMELINE_MINIMAP_ACTION_MOVING)
