@@ -219,7 +219,7 @@ midi_arranger_widget_get_cursor (
   ArrangerObject * obj =
     arranger_widget_get_hit_arranger_object (
       (ArrangerWidget *) self,
-      MIDI_NOTE_WIDGET_TYPE,
+      ARRANGER_OBJECT_TYPE_MIDI_NOTE,
       ar_prv->hover_x, ar_prv->hover_y);
   int is_hit = obj != NULL;
 
@@ -508,7 +508,7 @@ midi_arranger_widget_snap_midi_notes_l (
        i++)
     {
       midi_note =
-        midi_note_get_main_trans (
+        midi_note_get_main (
           MA_SELECTIONS->midi_notes[i]);
       mn_obj =
         (ArrangerObject *) midi_note;
@@ -560,6 +560,11 @@ midi_arranger_widget_snap_midi_notes_l (
             mn_obj, &new_start_pos);
         }
     }
+
+  EVENTS_PUSH (
+    ET_ARRANGER_SELECTIONS_CHANGED,
+    MA_SELECTIONS);
+
   return 0;
 }
 
@@ -647,9 +652,16 @@ midi_arranger_widget_snap_midi_notes_r (
             &mn_obj->pos))
         return -1;
       else if (!dry_run)
-        arranger_object_end_pos_setter (
-          mn_obj, &new_end_pos);
+        {
+          arranger_object_end_pos_setter (
+            mn_obj, &new_end_pos);
+        }
     }
+
+  EVENTS_PUSH (
+    ET_ARRANGER_SELECTIONS_CHANGED,
+    MA_SELECTIONS);
+
   return 0;
 }
 

@@ -467,7 +467,9 @@ automation_region_remove_ap (
   if (free)
     free_later (ap, arranger_object_free_all);
 
-  EVENTS_PUSH (ET_ARRANGER_OBJECT_REMOVED, NULL);
+  EVENTS_PUSH (
+    ET_ARRANGER_OBJECT_REMOVED,
+    ARRANGER_OBJECT_TYPE_AUTOMATION_POINT);
 }
 
 /**
@@ -487,7 +489,9 @@ automation_region_remove_ac (
     free_later (
       ac, arranger_object_free);
 
-  EVENTS_PUSH (ET_ARRANGER_OBJECT_REMOVED, NULL);
+  EVENTS_PUSH (
+    ET_ARRANGER_OBJECT_REMOVED,
+    ARRANGER_OBJECT_TYPE_AUTOMATION_CURVE);
 }
 
 /**

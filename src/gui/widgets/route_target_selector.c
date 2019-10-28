@@ -70,6 +70,10 @@ route_target_selector_widget_refresh (
     GTK_MENU_BUTTON (self), NULL);
   self->popover = NULL;
 
+  g_return_if_fail (
+    !self->channel ||
+    (self->channel && self->channel->track));
+
   /* if unroutable */
   if (!self->channel)
     {

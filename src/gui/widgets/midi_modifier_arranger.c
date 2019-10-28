@@ -428,7 +428,7 @@ midi_modifier_arranger_widget_get_cursor (
           ArrangerObject * vel_obj =
             arranger_widget_get_hit_arranger_object (
               (ArrangerWidget *) self,
-              VELOCITY_WIDGET_TYPE,
+              ARRANGER_OBJECT_TYPE_VELOCITY,
               ar_prv->hover_x, ar_prv->hover_y);
           int is_hit = vel_obj != NULL;
           int is_resize = 0;

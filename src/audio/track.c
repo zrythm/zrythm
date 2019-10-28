@@ -95,6 +95,9 @@ track_init_loaded (Track * track)
       ch = track->channel;
       ch->track = track;
       channel_init_loaded (ch);
+      g_message (
+        "track %s (ch %p) %p %p", track->name,
+        track->channel, ch->track, track);
     }
 
   /* set track to automation tracklist */
@@ -939,7 +942,8 @@ track_remove_region (
   if (fire_events)
     {
       EVENTS_PUSH (
-        ET_ARRANGER_OBJECT_REMOVED, track);
+        ET_ARRANGER_OBJECT_REMOVED,
+        ARRANGER_OBJECT_TYPE_REGION);
     }
 }
 

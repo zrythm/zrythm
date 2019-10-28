@@ -50,7 +50,7 @@
     { \
       ZEvent * _ev = calloc (1, sizeof (ZEvent)); \
       _ev->type = et; \
-      _ev->arg = _arg; \
+      _ev->arg = (void *) _arg; \
       g_async_queue_push (EVENTS, _ev); \
     }
 

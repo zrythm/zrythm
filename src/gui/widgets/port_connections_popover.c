@@ -216,4 +216,5 @@ port_connections_popover_widget_init (
   gtk_container_add (
     GTK_CONTAINER (self),
     GTK_WIDGET (self->main_box));
+  g_object_ref (self);
 }

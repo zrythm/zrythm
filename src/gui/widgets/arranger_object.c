@@ -172,10 +172,22 @@ on_motion (
   /* if leaving */
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT);
-      ao_prv->show_cut = 0;
+      ArrangerWidget * arranger =
+        arranger_object_get_arranger (
+          ao_prv->arranger_object);
+      ARRANGER_WIDGET_GET_PRIVATE (arranger);
+      if (ar_prv->action !=
+            UI_OVERLAY_ACTION_MOVING &&
+          ar_prv->action !=
+            UI_OVERLAY_ACTION_RESIZING_L &&
+          ar_prv->action !=
+            UI_OVERLAY_ACTION_RESIZING_R)
+        {
+          gtk_widget_unset_state_flags (
+            GTK_WIDGET (self),
+            GTK_STATE_FLAG_PRELIGHT);
+          ao_prv->show_cut = 0;
+        }
     }
   arranger_object_widget_force_redraw (self);
 

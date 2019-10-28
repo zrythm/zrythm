@@ -73,7 +73,7 @@ clip_editor_set_region (
     {
       Track * track =
         arranger_object_get_track (
-          (ArrangerObject *) self->region);
+          (ArrangerObject *) region);
       channel_reattach_midi_editor_manual_press_port (
         track_get_channel (track),
         F_CONNECT, F_NO_RECALC_GRAPH);

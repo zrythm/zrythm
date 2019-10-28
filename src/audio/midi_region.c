@@ -269,8 +269,11 @@ midi_region_remove_midi_note (
     free_later (midi_note, arranger_object_free_all);
 
   if (pub_event)
-    EVENTS_PUSH (
-      ET_ARRANGER_OBJECT_REMOVED, NULL);
+    {
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_REMOVED,
+        ARRANGER_OBJECT_TYPE_MIDI_NOTE);
+    }
 }
 
 /**

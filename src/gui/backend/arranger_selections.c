@@ -331,6 +331,9 @@ arranger_selections_clone (
       new_ts =
         calloc (1, sizeof (TimelineSelections));
       new_ts->base = src_ts->base;
+      arranger_selections_init (
+        (ArrangerSelections *) new_ts,
+        ARRANGER_SELECTIONS_TYPE_TIMELINE);
       CLONE_OBJS (
         src_ts, new_ts, Region, region);
       CLONE_OBJS (
@@ -342,6 +345,9 @@ arranger_selections_clone (
       src_mas = (MidiArrangerSelections *) self;
       new_mas =
         calloc (1, sizeof (MidiArrangerSelections *));
+      arranger_selections_init (
+        (ArrangerSelections *) new_mas,
+        ARRANGER_SELECTIONS_TYPE_MIDI);
       new_mas->base = src_mas->base;
       CLONE_OBJS (
         src_mas, new_mas, MidiNote, midi_note);
@@ -350,6 +356,9 @@ arranger_selections_clone (
       src_as = (AutomationSelections *) self;
       new_as =
         calloc (1, sizeof (AutomationSelections *));
+      arranger_selections_init (
+        (ArrangerSelections *) new_as,
+        ARRANGER_SELECTIONS_TYPE_AUTOMATION);
       new_as->base = src_as->base;
       CLONE_OBJS (
         src_as, new_as, AutomationPoint,
@@ -359,6 +368,9 @@ arranger_selections_clone (
       src_cs = (ChordSelections *) self;
       new_cs =
         calloc (1, sizeof (ChordSelections *));
+      arranger_selections_init (
+        (ArrangerSelections *) new_cs,
+        ARRANGER_SELECTIONS_TYPE_CHORD);
       new_cs->base = src_cs->base;
       CLONE_OBJS (
         src_cs, new_cs, ChordObject, chord_object);

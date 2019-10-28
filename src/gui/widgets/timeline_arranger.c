@@ -1146,7 +1146,8 @@ timeline_arranger_widget_snap_regions_l (
     }
 
   EVENTS_PUSH (
-    ET_ARRANGER_SELECTIONS_CHANGED, NULL);
+    ET_ARRANGER_SELECTIONS_CHANGED,
+    TL_SELECTIONS);
 
   return 0;
 }

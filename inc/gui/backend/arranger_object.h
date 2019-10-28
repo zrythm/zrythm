@@ -32,6 +32,8 @@
 typedef struct ArrangerObject ArrangerObject;
 typedef struct ArrangerSelections ArrangerSelections;
 typedef struct _ArrangerWidget ArrangerWidget;
+typedef struct _ArrangerObjectWidget
+  ArrangerObjectWidget;
 
 /**
  * @addtogroup gui_backend
@@ -1024,6 +1026,13 @@ arranger_object_set_name (
   ArrangerObject *         self,
   const char *             name,
   ArrangerObjectUpdateFlag flag);
+
+/**
+ * Returns the widget for the object.
+ */
+ArrangerObjectWidget *
+arranger_object_get_widget (
+  ArrangerObject * self);
 
 /**
  * @}

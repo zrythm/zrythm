@@ -158,7 +158,9 @@ chord_track_remove_scale (
   if (free)
     free_later (scale, arranger_object_free_all);
 
-  EVENTS_PUSH (ET_ARRANGER_OBJECT_REMOVED, self);
+  EVENTS_PUSH (
+    ET_ARRANGER_OBJECT_REMOVED,
+    ARRANGER_OBJECT_TYPE_SCALE_OBJECT);
 }
 
 void

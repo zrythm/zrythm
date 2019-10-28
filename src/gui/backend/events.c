@@ -414,10 +414,10 @@ on_plugins_removed (Channel * ch)
 }
 
 static void
-on_arranger_selections_changed (
-  ArrangerSelections * sel)
+refresh_for_selections_type (
+  ArrangerSelectionsType type)
 {
-  switch (sel->type)
+  switch (type)
     {
     case ARRANGER_SELECTIONS_TYPE_TIMELINE:
       event_viewer_widget_refresh (
@@ -445,8 +445,43 @@ on_arranger_selections_changed (
         MW_EDITOR_EVENT_VIEWER);
       break;
     }
+}
+
+static void
+on_arranger_selections_changed (
+  ArrangerSelections * sel)
+{
+  int size = 0;
+  ArrangerObject ** objs =
+    arranger_selections_get_all_objects (
+      sel, &size);
+  for (int i = 0; i < size; i++)
+    {
+      ArrangerObject * obj = objs[i];
+      ArrangerObjectWidget * obj_w =
+        arranger_object_get_widget (obj);
+      if (!obj_w)
+        continue;
+      arranger_object_widget_force_redraw (obj_w);
+    }
+
+  refresh_for_selections_type (sel->type);
 
   inspector_widget_refresh (MW_INSPECTOR);
+}
+
+static void
+on_arranger_selections_created (
+  ArrangerSelections * sel)
+{
+  on_arranger_selections_changed (sel);
+}
+
+static void
+on_arranger_selections_removed (
+  ArrangerSelectionsType type)
+{
+  refresh_for_selections_type (type);
 }
 
 static void
@@ -668,21 +703,36 @@ on_arranger_object_created (
 
 static void
 on_arranger_object_removed (
-  ArrangerObject * obj)
+  ArrangerObjectType type)
 {
-  if (obj->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE ||
-      obj->type == ARRANGER_OBJECT_TYPE_VELOCITY)
+  switch (type)
     {
+    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+    case ARRANGER_OBJECT_TYPE_VELOCITY:
       midi_arranger_widget_refresh_children (
         MW_MIDI_ARRANGER);
       midi_modifier_arranger_widget_refresh_children (
         MW_MIDI_MODIFIER_ARRANGER);
-    }
-  else
-    {
-      ArrangerWidget * arranger =
-        arranger_object_get_arranger (obj);
-      arranger_widget_refresh (arranger);
+      break;
+    case ARRANGER_OBJECT_TYPE_REGION:
+    case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
+    case ARRANGER_OBJECT_TYPE_MARKER:
+      timeline_arranger_widget_refresh_children (
+        MW_TIMELINE);
+      timeline_arranger_widget_refresh_children (
+        MW_PINNED_TIMELINE);
+      break;
+    case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
+      chord_arranger_widget_refresh_children (
+        MW_CHORD_ARRANGER);
+      break;
+    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+    case ARRANGER_OBJECT_TYPE_AUTOMATION_CURVE:
+      automation_arranger_widget_refresh_children (
+        MW_AUTOMATION_ARRANGER);
+      break;
+    default:
+      g_return_if_reached ();
     }
 }
 
@@ -841,20 +891,19 @@ events_process (void * data)
           break;
         case ET_ARRANGER_OBJECT_REMOVED:
           on_arranger_object_removed (
-            (ArrangerObject *) ev->arg);
+            (ArrangerObjectType) ev->arg);
           break;
         case ET_ARRANGER_SELECTIONS_CHANGED:
           on_arranger_selections_changed (
             (ArrangerSelections *) ev->arg);
           break;
         case ET_ARRANGER_SELECTIONS_CREATED:
+          on_arranger_selections_created (
+            (ArrangerSelections *) ev->arg);
+          break;
         case ET_ARRANGER_SELECTIONS_REMOVED:
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (
-              MW_TIMELINE));
-          arranger_widget_refresh (
-            Z_ARRANGER_WIDGET (
-              MW_PINNED_TIMELINE));
+          on_arranger_selections_removed (
+            (ArrangerSelectionsType) ev->arg);
           break;
         case ET_TRACKLIST_SELECTIONS_CHANGED:
           /* only refresh the inspector if the
@@ -1174,6 +1223,11 @@ events_process (void * data)
             GTK_WIDGET (MW_EDITOR_EVENT_VIEWER),
             g_settings_get_int (
               S_UI, "editor-event-viewer-visible"));
+          break;
+        case ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED:
+          arranger_widget_refresh (
+            (ArrangerWidget *)
+            MW_MIDI_MODIFIER_ARRANGER);
           break;
         default:
           g_warning (

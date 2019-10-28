@@ -100,7 +100,9 @@ chord_region_remove_chord_object (
   if (free)
     free_later (chord, arranger_object_free_all);
 
-  EVENTS_PUSH (ET_ARRANGER_OBJECT_REMOVED, NULL);
+  EVENTS_PUSH (
+    ET_ARRANGER_OBJECT_REMOVED,
+    ARRANGER_OBJECT_TYPE_CHORD_OBJECT);
 }
 
 /**

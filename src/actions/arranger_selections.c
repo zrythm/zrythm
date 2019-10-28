@@ -499,7 +499,7 @@ do_or_undo_move (
                * match */
               midi_note_shift_pitch (
                 (MidiNote *) objs[i],
-                delta_pitch, AO_UPDATE_ALL);
+                delta_pitch, AO_UPDATE_THIS);
             }
 
           if (delta_lanes != 0)
@@ -657,7 +657,7 @@ do_or_undo_duplicate (
            * match */
           midi_note_shift_pitch (
             (MidiNote *) objs[i],
-            delta_pitch, AO_UPDATE_ALL);
+            delta_pitch, AO_UPDATE_THIS);
         }
 
       if (delta_lanes != 0)
@@ -709,7 +709,7 @@ do_or_undo_duplicate (
   else
     {
       EVENTS_PUSH (
-        ET_ARRANGER_SELECTIONS_REMOVED, sel);
+        ET_ARRANGER_SELECTIONS_REMOVED, sel->type);
     }
 
   self->first_run = 0;
@@ -815,7 +815,7 @@ do_or_undo_create_or_delete (
   else
     {
       EVENTS_PUSH (
-        ET_ARRANGER_SELECTIONS_REMOVED, sel);
+        ET_ARRANGER_SELECTIONS_REMOVED, sel->type);
     }
 
   self->first_run = 0;

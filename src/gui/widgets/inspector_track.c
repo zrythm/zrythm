@@ -120,6 +120,10 @@ inspector_track_widget_setup (
 {
   Track * track = tls->tracks[0];
 
+  g_message ("track %p, channel %p",
+             track, track->channel);
+  g_return_if_fail (track->channel->track == track);
+
   track_properties_expander_widget_setup (
     self->instrument_track_info,
     track);

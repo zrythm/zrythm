@@ -58,37 +58,9 @@ typedef struct _RegionWidgetPrivate
   /** Region associated with this widget. */
   Region *           region;
 
-  /** If cursor is at resizing L. */
-  int                resize_l;
-
-  /** If cursor is at resizing R. */
-  int                resize_r;
-
-  /**
-   * If resize cursor should be a loop.
-   *
-   * This only applies if either one of the above
-   * is true.
-   */
-  int                resize_loop;
-
-  GtkDrawingArea *   drawing_area;
-
-  /** Show a cut line or not. */
-  int                show_cut;
-
-  /** Last hover position. */
-  int                hover_x;
-
   /** Cache layout for drawing the name. */
   PangoLayout *      layout;
 
-  /** Set to 1 to redraw. */
-  int                redraw;
-
-  cairo_t *          cached_cr;
-
-  cairo_surface_t *  cached_surface;
 } RegionWidgetPrivate;
 
 typedef struct _RegionWidgetClass
@@ -146,18 +118,6 @@ region_widget_draw_name (
  */
 void
 region_widget_delete (RegionWidget *self);
-
-void
-region_widget_force_redraw (
-  RegionWidget * self);
-
-/**
- * Draws the cut line if in cut mode.
- */
-void
-region_widget_draw_cut_line (
-  RegionWidget * self,
-  cairo_t *      cr);
 
 /**
  * Returns if region widgets should show cut lines.

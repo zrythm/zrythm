@@ -282,6 +282,27 @@ project_sanity_check (Project * self)
 }
 
 static void
+init_selections (Project * self)
+{
+  arranger_selections_init (
+    (ArrangerSelections *)
+    &self->automation_selections,
+    ARRANGER_SELECTIONS_TYPE_AUTOMATION);
+  arranger_selections_init (
+    (ArrangerSelections *)
+    &self->chord_selections,
+    ARRANGER_SELECTIONS_TYPE_CHORD);
+  arranger_selections_init (
+    (ArrangerSelections *)
+    &self->timeline_selections,
+    ARRANGER_SELECTIONS_TYPE_TIMELINE);
+  arranger_selections_init (
+    (ArrangerSelections *)
+    &self->midi_arranger_selections,
+    ARRANGER_SELECTIONS_TYPE_MIDI);
+}
+
+static void
 create_default (Project * self)
 {
   int loading_while_running = self->loaded;
@@ -299,6 +320,9 @@ create_default (Project * self)
                  "window...");
       gtk_widget_destroy (GTK_WIDGET (mww));
     }
+
+  /* initialize selections */
+  init_selections (self);
 
   engine_init (&self->audio_engine, 0);
   undo_manager_init (&self->undo_manager);

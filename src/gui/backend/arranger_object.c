@@ -486,6 +486,12 @@ arranger_object_is_position_valid (
             pos, &POSITION_START);
       }
       break;
+    case ARRANGER_OBJECT_POSITION_TYPE_LOOP_END:
+      {
+        /* TODO */
+        is_valid = 1;
+      }
+      break;
     case ARRANGER_OBJECT_POSITION_TYPE_CLIP_START:
       {
         Position * loop_end_pos =
@@ -497,6 +503,12 @@ arranger_object_is_position_valid (
             pos, loop_end_pos) &&
           position_is_after_or_equal (
             pos, &POSITION_START);
+      }
+      break;
+    case ARRANGER_OBJECT_POSITION_TYPE_END:
+      {
+        /* TODO */
+        is_valid = 1;
       }
       break;
     default:
@@ -673,7 +685,7 @@ arranger_object_move (
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_START,
-        F_CACHED, F_NO_VALIDATE, update_flag);
+        F_NO_CACHED, F_NO_VALIDATE, update_flag);
     }
 }
 
@@ -1585,6 +1597,8 @@ Track *
 arranger_object_get_track (
   ArrangerObject * self)
 {
+  g_return_val_if_fail (self, NULL);
+
   Track * track = NULL;
 
   switch (self->type)
@@ -2715,4 +2729,14 @@ arranger_object_set_name (
       break;
     }
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CHANGED, self);
+}
+
+/**
+ * Returns the widget for the object.
+ */
+ArrangerObjectWidget *
+arranger_object_get_widget (
+  ArrangerObject * self)
+{
+  return Z_ARRANGER_OBJECT_WIDGET (self->widget);
 }

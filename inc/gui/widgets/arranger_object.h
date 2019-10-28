@@ -83,13 +83,13 @@ typedef struct _ArrangerObjectWidgetPrivate
   /** Last hover position. */
   int                hover_x;
 
-  /** Set to 1 to redraw. */
-  int                redraw;
-
   /** A tooltip window to show while dragging
    * the object. */
   GtkWindow *        tooltip_win;
   GtkLabel *         tooltip_label;
+
+  /** Set to 1 to redraw. */
+  int                redraw;
 
   /** Cairo caches. */
   cairo_t *          cached_cr;

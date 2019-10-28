@@ -2190,8 +2190,15 @@ arranger_widget_get_hit_arranger_object (
         GTK_CONTAINER (self), x, y,
         arranger_object_get_widget_type_for_type (
           type)));
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (obj_w);
-  return ao_prv->arranger_object;
+  if (obj_w)
+    {
+      ARRANGER_OBJECT_WIDGET_GET_PRIVATE (obj_w);
+      return ao_prv->arranger_object;
+    }
+  else
+    {
+      return NULL;
+    }
 }
 
 int
@@ -2273,6 +2280,7 @@ arranger_widget_update_visibility (
       aow = \
         Z_ARRANGER_OBJECT_WIDGET (iter->data); \
       ARRANGER_OBJECT_WIDGET_GET_PRIVATE (aow); \
+      g_warn_if_fail (ao_prv->arranger_object); \
       arranger_object_set_widget_visibility_and_state ( \
         ao_prv->arranger_object, 1); \
     } \

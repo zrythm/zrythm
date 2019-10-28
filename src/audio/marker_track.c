@@ -170,7 +170,8 @@ marker_track_remove_marker (
     free_later (marker, arranger_object_free_all);
 
   EVENTS_PUSH (
-    ET_ARRANGER_OBJECT_REMOVED, self);
+    ET_ARRANGER_OBJECT_REMOVED,
+    ARRANGER_OBJECT_TYPE_MARKER);
 }
 
 void

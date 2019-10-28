@@ -200,66 +200,6 @@ region_draw_cb (
 }
 
 /**
- * Draws the cut line if in cut mode.
- */
-void
-region_widget_draw_cut_line (
-  RegionWidget * self,
-  cairo_t *      cr)
-{
-  REGION_WIDGET_GET_PRIVATE (self);
-  Region * r = rw_prv->region;
-  ArrangerObject * r_obj =
-    (ArrangerObject *) r;
-
-  if (rw_prv->show_cut)
-    {
-      int start_pos_px;
-      double px;
-      int height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (self));
-
-      /* get absolute position */
-      start_pos_px =
-        ui_pos_to_px_timeline (
-          &r_obj->pos, F_PADDING);
-      Position pos;
-      ui_px_to_pos_timeline (
-        start_pos_px + rw_prv->hover_x,
-        &pos, F_PADDING);
-
-      /* snap */
-      Track * track =
-        arranger_object_get_track (r_obj);
-      ArrangerWidgetPrivate * ar_prv =
-        arranger_widget_get_private (
-          track->pinned ?
-            Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE) :
-            Z_ARRANGER_WIDGET (MW_TIMELINE));
-      if (!ar_prv->shift_held)
-        position_snap_simple (
-          &pos, SNAP_GRID_TIMELINE);
-
-      /* convert back to px */
-      px =
-        ui_pos_to_px_timeline (
-          &pos, F_PADDING);
-
-      /* convert to local px */
-      px -= start_pos_px;
-
-      double dashes[] = { 5 };
-      cairo_set_dash (cr, dashes, 1, 0);
-      cairo_set_source_rgba (
-        cr, 1, 1, 1, 1.0);
-      cairo_move_to (cr, px, 0);
-      cairo_line_to (cr, px, height);
-      cairo_stroke (cr);
-    }
-}
-
-/**
  * Draws the name of the Region.
  *
  * To be called during a cairo draw callback.
@@ -321,92 +261,6 @@ region_widget_draw_name (
   pango_cairo_show_layout (cr, layout);
 }
 
-static int
-on_motion (GtkWidget *      widget,
-           GdkEventMotion * event,
-           RegionWidget *   self)
-{
-  if (!MAIN_WINDOW || !MW_TIMELINE)
-    return FALSE;
-
-  ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
-  REGION_WIDGET_GET_PRIVATE (self);
-
-  int alt_pressed =
-    event->state & GDK_MOD1_MASK;
-
-  if (event->type == GDK_MOTION_NOTIFY)
-    {
-      rw_prv->show_cut =
-        region_widget_should_show_cut_lines (
-          alt_pressed);
-      rw_prv->resize_l =
-        region_widget_is_resize_l (
-          self, (int) event->x);
-      rw_prv->resize_r =
-        region_widget_is_resize_r (
-          self, (int) event->x);
-      rw_prv->resize_loop =
-        region_widget_is_resize_loop (
-          self, (int) event->y);
-      rw_prv->hover_x = (int) event->x;
-    }
-
-  if (event->type == GDK_ENTER_NOTIFY)
-    {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
-        GTK_STATE_FLAG_PRELIGHT,
-        0);
-    }
-  /* if leaving */
-  else if (event->type == GDK_LEAVE_NOTIFY)
-    {
-      if (ar_prv->action !=
-            UI_OVERLAY_ACTION_MOVING &&
-          ar_prv->action !=
-            UI_OVERLAY_ACTION_RESIZING_L &&
-          ar_prv->action !=
-            UI_OVERLAY_ACTION_RESIZING_R)
-        gtk_widget_unset_state_flags (
-          GTK_WIDGET (self),
-          GTK_STATE_FLAG_PRELIGHT);
-      rw_prv->show_cut = 0;
-    }
-  rw_prv->redraw = 1;
-
-  return FALSE;
-}
-
-/**
- * Returns if region widgets should show cut lines.
- *
- * @param alt_pressed Whether alt is currently
- *   pressed.
- */
-int
-region_widget_should_show_cut_lines (
-  int alt_pressed)
-{
-  switch (P_TOOL)
-    {
-    case TOOL_SELECT_NORMAL:
-    case TOOL_SELECT_STRETCH:
-      if (alt_pressed)
-        return 1;
-      else
-        return 0;
-      break;
-    case TOOL_CUT:
-      return 1;
-      break;
-    default:
-      return 0;
-      break;
-    }
-  g_return_val_if_reached (-1);
-}
-
 /**
  * Sets up the RegionWidget.
  */
@@ -417,40 +271,17 @@ region_widget_setup (
 {
   REGION_WIDGET_GET_PRIVATE (self);
 
+  arranger_object_widget_setup (
+    Z_ARRANGER_OBJECT_WIDGET (self),
+    (ArrangerObject *) region);
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
+
   rw_prv->region = region;
-
-  rw_prv->drawing_area =
-    GTK_DRAWING_AREA (gtk_drawing_area_new ());
-  gtk_container_add (
-    GTK_CONTAINER (self),
-    GTK_WIDGET (rw_prv->drawing_area));
-  gtk_widget_set_visible (
-    GTK_WIDGET (rw_prv->drawing_area), 1);
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (rw_prv->drawing_area), 1);
-
-  /* GDK_ALL_EVENTS_MASK is needed, otherwise the
-   * grab gets broken */
-  gtk_widget_add_events (
-    GTK_WIDGET (rw_prv->drawing_area),
-    GDK_ALL_EVENTS_MASK);
 
   /* connect signals */
   g_signal_connect (
-    G_OBJECT (rw_prv->drawing_area), "draw",
+    G_OBJECT (ao_prv->drawing_area), "draw",
     G_CALLBACK (region_draw_cb), self);
-  g_signal_connect (
-    G_OBJECT (rw_prv->drawing_area),
-    "enter-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(rw_prv->drawing_area),
-    "leave-notify-event",
-    G_CALLBACK (on_motion),  self);
-  g_signal_connect (
-    G_OBJECT(rw_prv->drawing_area),
-    "motion-notify-event",
-    G_CALLBACK (on_motion),  self);
 }
 
 /**
@@ -577,10 +408,8 @@ on_size_allocate (
   RegionWidget * self)
 {
   recreate_pango_layouts (self, allocation);
-  REGION_WIDGET_GET_PRIVATE (self);
-  rw_prv->redraw = 1;
-  gtk_widget_queue_draw (
-    GTK_WIDGET (self));
+  arranger_object_widget_force_redraw (
+    Z_ARRANGER_OBJECT_WIDGET (self));
 }
 
 static void
@@ -592,28 +421,14 @@ on_screen_changed (
   recreate_pango_layouts (self, NULL);
 }
 
-void
-region_widget_force_redraw (
-  RegionWidget * self)
-{
-  REGION_WIDGET_GET_PRIVATE (self);
-  rw_prv->redraw = 1;
-  gtk_widget_queue_draw (GTK_WIDGET (self));
-}
-
 /**
  * Destroys the widget completely.
  */
 void
 region_widget_delete (RegionWidget *self)
 {
-  REGION_WIDGET_GET_PRIVATE (self);
-
   gtk_widget_set_sensitive (
     GTK_WIDGET (self), 0);
-  gtk_container_remove (
-    GTK_CONTAINER (self),
-    GTK_WIDGET (rw_prv->drawing_area));
 
   if (gtk_widget_is_ancestor (
         GTK_WIDGET (self),
@@ -668,7 +483,4 @@ region_widget_init (
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
     G_CALLBACK (on_size_allocate),  self);
-
-  REGION_WIDGET_GET_PRIVATE (self);
-  rw_prv->redraw = 1;
 }
