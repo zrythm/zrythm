@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-21 19:37+0100\n"
-"PO-Revision-Date: 2019-10-19 22:53+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2019-10-28 15:53+0000\n"
+"Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
 "Language: pt\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9.1-dev\n"
+"X-Generator: Weblate 3.9.1\n"
 
 #: src/zrythm.c:264
 msgid "Setting up main window"
@@ -49,7 +49,7 @@ msgstr "A inicializar o gestor de plug-ins"
 
 #: src/zrythm.c:365
 msgid "Scanning plugins"
-msgstr ""
+msgstr "Procurar plugins"
 
 #: src/zrythm.c:539
 msgid "License Information"
@@ -321,9 +321,8 @@ msgid "No channel"
 msgstr "Nenhum canal"
 
 #: src/gui/widgets/track_input_expander.c:485
-#, fuzzy
 msgid "MIDI channel to filter to"
-msgstr "Canal MIDI para esta pista"
+msgstr "Canal MIDI por qual filtrar"
 
 #: src/gui/widgets/track_input_expander.c:631
 msgid "Inputs"
@@ -522,7 +521,7 @@ msgstr "Adicionar Faixa de Áudio"
 
 #: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1168
 msgid "Audio Bus"
-msgstr "Bus Áudio"
+msgstr "Bus de Áudio"
 
 #: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1171
 msgid "MIDI Bus"
@@ -600,7 +599,7 @@ msgstr "Protocolo"
 #: src/gui/widgets/about_dialog.c:78
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
-"uma estação de trabalho de áudio digital altamente automatizada e intuitiva"
+"Uma estação de trabalho de áudio digital altamente automatizada e intuitiva"
 
 #: src/gui/widgets/about_dialog.c:82
 msgid "Website"
@@ -794,9 +793,8 @@ msgid "Scale"
 msgstr "Escala"
 
 #: src/gui/widgets/event_viewer.c:93
-#, fuzzy
 msgid "MIDI note"
-msgstr "Entradas MIDI"
+msgstr "Nota MIDI"
 
 #: src/gui/widgets/event_viewer.c:96 src/audio/region.c:490
 #: src/audio/track.c:1177 resources/ui/editor_toolbar.ui:58
@@ -804,9 +802,8 @@ msgid "Chord"
 msgstr "Acorde"
 
 #: src/gui/widgets/event_viewer.c:99
-#, fuzzy
 msgid "Automation point"
-msgstr "Automação"
+msgstr "Ponto de automação"
 
 #: src/gui/widgets/event_viewer.c:344 resources/ui/chord_selector_window.ui:238
 #: resources/ui/file_browser.ui:84 resources/ui/snap_grid_popover.ui:127
@@ -834,14 +831,12 @@ msgid "End"
 msgstr "Fim"
 
 #: src/gui/widgets/event_viewer.c:418
-#, fuzzy
 msgid "Note"
-msgstr "Nota de Raiz"
+msgstr "Nota"
 
 #: src/gui/widgets/event_viewer.c:429
-#, fuzzy
 msgid "Pitch"
-msgstr "Roda de Tom"
+msgstr "Tom"
 
 #: src/gui/widgets/event_viewer.c:440 resources/ui/midi_editor_space.ui:144
 #: resources/ui/chord_editor_space.ui:152
@@ -1009,11 +1004,11 @@ msgstr "Esconder Faixas"
 
 #: src/gui/widgets/track.c:494
 msgid "Pin/Unpin Track"
-msgstr ""
+msgstr "Fixar / Desafixar Faixa"
 
 #: src/gui/widgets/track.c:495
 msgid "Pin/Unpin Tracks"
-msgstr ""
+msgstr "Fixar / Desafixar Faixas"
 
 #: src/gui/widgets/track.c:510
 msgid "Track MIDI Ch"
@@ -1061,7 +1056,7 @@ msgstr "Falha ao recuperar o valor va_list: %s"
 
 #: src/utils/dialogs.c:43
 msgid "_Open"
-msgstr "_ Abrir"
+msgstr "_Abrir"
 
 #: src/utils/dialogs.c:66
 msgid "Overwrite Plugin"
@@ -1335,16 +1330,16 @@ msgstr "Criar novo projeto"
 
 #: src/actions/actions.c:554
 msgid "Yes"
-msgstr ""
+msgstr "Sim"
 
 #: src/actions/actions.c:556
-#, fuzzy
 msgid "No"
-msgstr "Nenhum"
+msgstr "Não"
 
 #: src/actions/actions.c:561
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
+"Quaisquer alterações não gravadas no projeto atual serão perdidas. Continuar?"
 
 #: src/actions/actions.c:657
 msgid "Save Project"
@@ -1723,20 +1718,19 @@ msgstr "Pad Acordes"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
-msgstr ""
+msgstr "Aquário"
 
 #: resources/ui/timeline_toolbar.ui:69 resources/ui/editor_toolbar.ui:103
-#, fuzzy
 msgid "Toggle event viewer"
-msgstr "Visualizador de Eventos"
+msgstr "Alternar visualizador de eventos"
 
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
-msgstr "Selecionar Projeto"
+msgstr "Selecionar um Projeto"
 
 #: resources/ui/project_assistant.ui:43
 msgid "Select a project"
-msgstr "Selecione um projeto"
+msgstr "Selecionar um projeto"
 
 #: resources/ui/project_assistant.ui:102
 msgid "Remove"
@@ -1882,11 +1876,11 @@ msgstr "Cancelar"
 
 #: resources/ui/create_project_dialog.ui:69
 msgid "Parent directory"
-msgstr "Abrir diretório"
+msgstr "Diretório acima"
 
 #: resources/ui/create_project_dialog.ui:82
 msgid "Select parent directory to save the project in"
-msgstr "Selecione o diretório pai para lá gravar o projeto"
+msgstr "Selecione o diretório acima para lá gravar o projeto"
 
 #: resources/ui/shortcuts.ui:31
 msgid "Global Shortcuts"
@@ -2217,7 +2211,7 @@ msgstr "Visualizador de Eventos"
 
 #: resources/ui/automation_track.ui:31
 msgid "Control this automation track is for"
-msgstr ""
+msgstr "Controle, para qual esta faixa de automação é"
 
 #: resources/ui/automation_track.ui:43
 msgid "Mute automation track"

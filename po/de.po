@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-21 19:37+0100\n"
-"PO-Revision-Date: 2019-10-21 17:53+0000\n"
-"Last-Translator: André Menrath <andre.menrath@posteo.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2019-10-28 15:53+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9.1-dev\n"
+"X-Generator: Weblate 3.9.1\n"
 
 #: src/zrythm.c:264
 msgid "Setting up main window"
@@ -32,14 +32,12 @@ msgid "Initializing main window"
 msgstr "Initialisiere Hauptfenster"
 
 #: src/zrythm.c:346
-#, fuzzy
 msgid "Initializing symap"
-msgstr "Initialisiere…"
+msgstr "Initialisieren von symap"
 
 #: src/zrythm.c:350
-#, fuzzy
 msgid "Initializing caches"
-msgstr "Initialisiere Cache"
+msgstr "Initialisiere Caches"
 
 #: src/zrythm.c:355
 msgid "Initializing settings"
@@ -58,19 +56,16 @@ msgid "License Information"
 msgstr "Lizenzinformationen"
 
 #: src/zrythm.c:562
-#, fuzzy
 msgid "Initializing Zrythm directories"
-msgstr "Initialisiere Einstellungen"
+msgstr "Initialisiere Zrythm-Verzeichnisse"
 
 #: src/zrythm.c:570
-#, fuzzy
 msgid "Initializing logging system"
-msgstr "Initialisiere Einstellungen"
+msgstr "Initialisiere das Protokollierungssystem"
 
 #: src/zrythm.c:575
-#, fuzzy
 msgid "Waiting for project"
-msgstr "Lade Projekt"
+msgstr "Warte auf das Projekt"
 
 #: src/project.c:329 src/gui/widgets/route_target_selector_popover.c:147
 #: src/audio/track.c:1174
@@ -125,7 +120,7 @@ msgstr ""
 "Fehlermeldung ein%s."
 
 #: src/main.c:174
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
@@ -143,19 +138,18 @@ msgstr ""
 "Benutzung: zrythm [ OPTIONEN] [ PROJEKTNAME ]\n"
 "\n"
 "Optionen:\n"
-"  -h, --help      zeige die Hilfe an und schließe\n"
-"  -v, --version   gib Versionsinformationen aus und schließe\n"
+"  -h, --help      zeigt diese Hilfe an und schließt das Programm\n"
+"  -v, --version   gibt die Versionsnummer aus und schließt das Programm\n"
 "\n"
 "Beispiele:\n"
-"  zrythm          führe normal aus\n"
+"  zrythm          führt das Programm normal aus\n"
 "\n"
-"Schreibe Kommentare und Fehler an https://savannah.nongnu.org/support/?"
-"group=zrythm\n"
+"Kommentare und Fehler bitte melden unter %s\n"
 "Unterstütze dieses Projekt auf https://liberapay.com/Zrythm\n"
 "Webseite https://www.zrythm.org\n"
 
 #: src/main.c:234
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
 "\n"
@@ -173,13 +167,12 @@ msgstr ""
 "\n"
 "Zrythm kommt mit ABSOLUT KEINER GARANTIE!\n"
 "\n"
-"Das ist freie Software, und du bist willkommen, sie unter bestimmten "
+"Das ist freie Software und du bist willkommen, sie unter bestimmten "
 "Bedingungen\n"
-"weiterzuverteilen. Siehe für Details in die Datei `COPYING' in dieser "
+"weiterzuverteilen. Für Details siehe die Datei `COPYING' in dieser "
 "Distribution.\n"
 "\n"
-"Schreibe Kommentare und Fehler an https://savannah.nongnu.org/support/?"
-"group=zrythm\n"
+"Schreibe Kommentare und Fehler an %s\n"
 "Unterstütze dieses Projekt auf https://liberapay.com/Zrythm\n"
 "\n"
 
@@ -233,7 +226,6 @@ msgid "Close"
 msgstr "Schließen"
 
 #: src/gui/widgets/create_project_dialog.c:109
-#, fuzzy
 msgid "Create New Project"
 msgstr "Neues Projekt erstellen"
 
@@ -282,9 +274,8 @@ msgid "All MIDI Inputs"
 msgstr "Alle MIDI-Eingänge"
 
 #: src/gui/widgets/track_input_expander.c:296
-#, fuzzy
 msgid "All Audio Inputs"
-msgstr "Audioeingänge"
+msgstr "Alle Audioeingänge"
 
 #: src/gui/widgets/track_input_expander.c:334
 msgid "No inputs"
@@ -292,27 +283,25 @@ msgstr "Keine Eingänge"
 
 #: src/gui/widgets/track_input_expander.c:337
 msgid "MIDI inputs for recording"
-msgstr ""
+msgstr "MIDI-Eingänge für die Aufnahme"
 
 #: src/gui/widgets/track_input_expander.c:345
-#, fuzzy
 msgid "No left input"
-msgstr "Keine Eingänge"
+msgstr "Kein linker Eingang"
 
 #: src/gui/widgets/track_input_expander.c:346
-#, fuzzy
 msgid "No right input"
-msgstr "Keine Eingänge"
+msgstr "Kein rechter Eingang"
 
 #: src/gui/widgets/track_input_expander.c:349
 #, c-format
 msgid "Audio input (%s) for recording"
-msgstr ""
+msgstr "Audioeingang (%s) für die Aufnahme"
 
 #. TRANSLATORS: Left and Right
 #: src/gui/widgets/track_input_expander.c:351
 msgid "L"
-msgstr ""
+msgstr "L"
 
 #: src/gui/widgets/track_input_expander.c:351
 #: resources/ui/automation_track.ui:100
@@ -333,9 +322,8 @@ msgid "No channel"
 msgstr "Kein Kanal"
 
 #: src/gui/widgets/track_input_expander.c:485
-#, fuzzy
 msgid "MIDI channel to filter to"
-msgstr "MIDI-Kanal für diese Spur"
+msgstr "MIDI-Kanal zum Filtern nach"
 
 #: src/gui/widgets/track_input_expander.c:631
 msgid "Inputs"
@@ -529,9 +517,8 @@ msgid "Add _MIDI Track"
 msgstr "_MIDI-Spur hinzufügen"
 
 #: src/gui/widgets/drag_dest_box.c:465
-#, fuzzy
 msgid "Add Audio Track"
-msgstr "_Audiospur hinzufügen"
+msgstr "Audiospur hinzufügen"
 
 #: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1168
 msgid "Audio Bus"
@@ -730,9 +717,8 @@ msgid "Control Room"
 msgstr "Kontrollraum"
 
 #: src/gui/widgets/right_dock_edge.c:152
-#, fuzzy
 msgid "Show file browser"
-msgstr "Dateibrowser"
+msgstr "Dateibrowser anzeigen"
 
 #: src/gui/widgets/route_target_selector.c:54
 msgid "<tt><i>Engine</i></tt>"
@@ -807,9 +793,8 @@ msgid "Scale"
 msgstr "Tonleiter"
 
 #: src/gui/widgets/event_viewer.c:93
-#, fuzzy
 msgid "MIDI note"
-msgstr "MIDI-Eingang"
+msgstr "MIDI-Note"
 
 #: src/gui/widgets/event_viewer.c:96 src/audio/region.c:490
 #: src/audio/track.c:1177 resources/ui/editor_toolbar.ui:58
@@ -817,9 +802,8 @@ msgid "Chord"
 msgstr "Akkord"
 
 #: src/gui/widgets/event_viewer.c:99
-#, fuzzy
 msgid "Automation point"
-msgstr "Automation verschieben"
+msgstr "Automatisierungspunkt"
 
 #: src/gui/widgets/event_viewer.c:344 resources/ui/chord_selector_window.ui:238
 #: resources/ui/file_browser.ui:84 resources/ui/snap_grid_popover.ui:127
@@ -827,39 +811,32 @@ msgid "Type"
 msgstr "Typ"
 
 #: src/gui/widgets/event_viewer.c:355 src/gui/widgets/event_viewer.c:451
-#, fuzzy
 msgid "Start"
 msgstr "Anfang"
 
 #: src/gui/widgets/event_viewer.c:366
-#, fuzzy
 msgid "Clip start"
-msgstr "Anfang des Clips (rel.)"
+msgstr "Anfang des Clips"
 
 #: src/gui/widgets/event_viewer.c:377
-#, fuzzy
 msgid "Loop start"
-msgstr "Anfang der Schleife (rel.)"
+msgstr "Anfang der Schleife"
 
 #: src/gui/widgets/event_viewer.c:388
-#, fuzzy
 msgid "Loop end"
-msgstr "Schleifenwiedergabe"
+msgstr "Schleifenende"
 
 #: src/gui/widgets/event_viewer.c:399 src/gui/widgets/event_viewer.c:462
-#, fuzzy
 msgid "End"
 msgstr "Ende"
 
 #: src/gui/widgets/event_viewer.c:418
-#, fuzzy
 msgid "Note"
-msgstr "Grundton"
+msgstr "Note"
 
 #: src/gui/widgets/event_viewer.c:429
-#, fuzzy
 msgid "Pitch"
-msgstr "Tonhöhenrad"
+msgstr "Tonhöhe"
 
 #: src/gui/widgets/event_viewer.c:440 resources/ui/midi_editor_space.ui:144
 #: resources/ui/chord_editor_space.ui:152
@@ -1027,31 +1004,30 @@ msgstr "Spuren verstecken"
 
 #: src/gui/widgets/track.c:494
 msgid "Pin/Unpin Track"
-msgstr ""
+msgstr "Spur fixieren/lösen"
 
 #: src/gui/widgets/track.c:495
 msgid "Pin/Unpin Tracks"
-msgstr ""
+msgstr "Spuren fixieren/lösen"
 
 #: src/gui/widgets/track.c:510
-#, fuzzy
 msgid "Track MIDI Ch"
-msgstr "MIDI-Kan"
+msgstr "Spur MIDI-Kan"
 
 #: src/gui/widgets/track.c:521 src/gui/widgets/track.c:579
-#, fuzzy, c-format
+#, c-format
 msgid "%sMIDI Channel %d"
-msgstr "MIDI-Kanal %s"
+msgstr "%sMIDI-Kanal %d"
 
 #: src/gui/widgets/track.c:557
-#, fuzzy, c-format
+#, c-format
 msgid "Lane %d MIDI Ch"
-msgstr "Unterspur %d"
+msgstr "Unterspur %d MIDI-Kan"
 
 #: src/gui/widgets/track.c:574
-#, fuzzy, c-format
+#, c-format
 msgid "%sInherit"
-msgstr "Erben"
+msgstr "%sErben"
 
 #: src/gui/widgets/fader.c:336
 msgid "Fader"
@@ -1188,9 +1164,8 @@ msgid "Audio"
 msgstr "Audio"
 
 #: src/audio/region.c:487
-#, fuzzy
 msgid "Automation"
-msgstr "Automation verschieben"
+msgstr "Automatisierung"
 
 #: src/audio/engine.c:251
 #, c-format
@@ -1360,16 +1335,17 @@ msgstr "Neues Projekt erstellen"
 
 #: src/actions/actions.c:554
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: src/actions/actions.c:556
-#, fuzzy
 msgid "No"
-msgstr "Keine"
+msgstr "Nein"
 
 #: src/actions/actions.c:561
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
+"Alle nicht gespeicherten Änderungen am aktuellen Projekt gehen verloren. "
+"Fortfahren?"
 
 #: src/actions/actions.c:657
 msgid "Save Project"
@@ -1749,12 +1725,11 @@ msgstr "Akkord-Pad"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
-msgstr ""
+msgstr "Fischglas"
 
 #: resources/ui/timeline_toolbar.ui:69 resources/ui/editor_toolbar.ui:103
-#, fuzzy
 msgid "Toggle event viewer"
-msgstr "Linkes Panel ein-/ausblenden"
+msgstr "Ereignisanzeige ein-/ausblenden"
 
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
@@ -2101,7 +2076,7 @@ msgstr "Label"
 
 #: resources/ui/help_toolbar.ui:58
 msgid "News"
-msgstr ""
+msgstr "Nachrichten"
 
 #: resources/ui/inspector_chord.ui:55
 msgid "Enforce scale"
@@ -2241,16 +2216,15 @@ msgstr "Exportieren....."
 
 #: resources/ui/event_viewer.ui:13
 msgid "Event Viewer"
-msgstr ""
+msgstr "Ereignisanzeige"
 
 #: resources/ui/automation_track.ui:31
 msgid "Control this automation track is for"
-msgstr ""
+msgstr "Steuerelement, für den diese Automatisierungsspur ist"
 
 #: resources/ui/automation_track.ui:43
-#, fuzzy
 msgid "Mute automation track"
-msgstr "Automation schreiben"
+msgstr "Stummschaltung der Automatisierungsspur"
 
 #: resources/ui/automation_track.ui:83
 msgid "RW"
@@ -2269,14 +2243,12 @@ msgid "0.0"
 msgstr "0.0"
 
 #: resources/ui/automation_track.ui:143
-#, fuzzy
 msgid "Remove automation track"
-msgstr "Automation lesen"
+msgstr "Automatisierungsspur entfernen"
 
 #: resources/ui/automation_track.ui:164
-#, fuzzy
 msgid "Add automation track"
-msgstr "Automation lesen"
+msgstr "Automatisierungsspur hinzufügen"
 
 #: resources/ui/file_browser.ui:107
 msgid "Location"
@@ -2514,11 +2486,11 @@ msgstr ""
 
 #: resources/ui/preferences.ui:306
 msgid "Keep plugin UIs on top"
-msgstr ""
+msgstr "Plugin-Benutzeroberflächen im Vordergrund halten"
 
 #: resources/ui/preferences.ui:310
 msgid "Keep plugin UI windows on top of the main window"
-msgstr ""
+msgstr "Plugin-Benutzeroberflächen-Fenster über dem Hauptfenster belassen"
 
 #: resources/ui/preferences.ui:345
 msgid "Main Window"
