@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-28 15:59+0000\n"
-"PO-Revision-Date: 2019-10-28 15:53+0000\n"
-"Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
+"PO-Revision-Date: 2019-10-29 19:53+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
 "Language: pt\n"
@@ -391,9 +391,8 @@ msgid "Blank project"
 msgstr "Projeto em branco"
 
 #: src/gui/widgets/project_assistant.c:572
-#, fuzzy
 msgid "Project Assistant"
-msgstr "Projeto gravado."
+msgstr "Assistente de Projeto"
 
 #: src/gui/widgets/left_dock_edge.c:107
 msgid "Inspector"
@@ -653,9 +652,8 @@ msgid "position"
 msgstr "posição"
 
 #: src/gui/widgets/timeline_arranger.c:846
-#, fuzzy
 msgid "Custom Marker"
-msgstr "Marcador"
+msgstr "Marcador personalizado"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -1300,9 +1298,8 @@ msgid "Client zombie"
 msgstr "Cliente zumbi"
 
 #: src/actions/arranger_selections.c:1296
-#, fuzzy
 msgid "Edit arranger object(s)"
-msgstr "Criar Objecto(s)"
+msgstr "Processar objeto(s) arranjado(s)"
 
 #: src/actions/create_plugins_action.c:139
 #, c-format
