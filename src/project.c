@@ -586,12 +586,11 @@ load (
   int num_ports;
   Port * port;
   port_get_all (ports, &num_ports);
+  g_message ("Initializing loaded Ports...");
   for (int i = 0; i < num_ports; i++)
     {
       port = ports[i];
       port_init_loaded (port);
-      g_message ("init loaded %s",
-                 port->identifier.label);
     }
 
   arranger_selections_init_loaded (
@@ -602,6 +601,12 @@ load (
     &PROJECT->midi_arranger_selections);
   arranger_selections_init_loaded (
     (ArrangerSelections *)
+    &PROJECT->chord_selections);
+  arranger_selections_init_loaded (
+    (ArrangerSelections *)
+    &PROJECT->automation_selections);
+
+  tracklist_selections_init_loaded (
     &PROJECT->tracklist_selections);
 
   snap_grid_update_snap_points (

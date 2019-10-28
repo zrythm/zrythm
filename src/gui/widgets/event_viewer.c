@@ -569,13 +569,20 @@ static int
 add_editor_columns (
   EventViewerWidget * self)
 {
-  /* first remove existing columns */
-  z_gtk_tree_view_remove_all_columns (
-    self->treeview);
-
   Region * r = CLIP_EDITOR->region;
   if (!r)
     return 0;
+
+  /* if the region type is the same no need to
+   * remove/readd columns */
+  if (self->region_type == r->type)
+    return 1;
+  else
+    self->region_type = r->type;
+
+  /* first remove existing columns */
+  z_gtk_tree_view_remove_all_columns (
+    self->treeview);
 
   switch (r->type)
     {
@@ -679,6 +686,8 @@ event_viewer_widget_init (
   EventViewerWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->region_type = -1;
 }
 
 

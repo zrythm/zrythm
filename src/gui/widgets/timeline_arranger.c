@@ -1928,10 +1928,6 @@ timeline_arranger_widget_on_drag_end (
       break;
     }
 
-  ar_prv->action = UI_OVERLAY_ACTION_NONE;
-  arranger_widget_update_visibility (
-    (ArrangerWidget *) self);
-
   self->resizing_range = 0;
   self->resizing_range_start = 0;
   self->visible_track_diff = 0;

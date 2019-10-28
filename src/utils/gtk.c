@@ -187,6 +187,7 @@ z_gtk_tree_view_remove_all_columns (
       gtk_tree_view_remove_column (
         treeview, column);
     }
+  g_list_free (list);
 }
 
 /**

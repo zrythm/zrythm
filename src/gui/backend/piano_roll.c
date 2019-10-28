@@ -202,9 +202,11 @@ piano_roll_init_loaded (
  */
 const MidiNoteDescriptor *
 piano_roll_find_midi_note_descriptor_by_val (
-  PianoRoll * self,
-  int         val)
+  PianoRoll *   self,
+  const uint8_t val)
 {
+  g_return_val_if_fail (val < 128, NULL);
+
   MidiNoteDescriptor * descr;
   for (int i = 0; i < 128; i++)
     {
@@ -213,7 +215,7 @@ piano_roll_find_midi_note_descriptor_by_val (
       else
         descr = &self->piano_descriptors[i];
 
-      if (descr->value == val)
+      if (descr->value == (int) val)
         return descr;
     }
   g_return_val_if_reached (NULL);

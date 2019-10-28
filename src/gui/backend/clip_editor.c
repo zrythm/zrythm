@@ -42,6 +42,7 @@ void
 clip_editor_init_loaded (
   ClipEditor * self)
 {
+  g_message ("Initializing loaded Clip Editor...");
   self->region =
     region_find_by_name (self->region_name);
   piano_roll_init_loaded (&self->piano_roll);

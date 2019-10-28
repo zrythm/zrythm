@@ -1094,6 +1094,11 @@ create_widget (
         (GtkWidget *)
         scale_object_widget_new (
           (ScaleObject *) self);
+    case TYPE (VELOCITY):
+      return
+        (GtkWidget *)
+        velocity_widget_new (
+          (Velocity *) self);
     default:
       g_return_val_if_reached (NULL);
       break;
@@ -1145,10 +1150,14 @@ void
 arranger_object_free_all (
   ArrangerObject * self)
 {
-  arranger_object_free (self->info.main);
-  arranger_object_free (self->info.main_trans);
-  arranger_object_free (self->info.lane);
-  arranger_object_free (self->info.lane_trans);
+  if (self->info.main)
+    arranger_object_free (self->info.main);
+  if (self->info.main_trans)
+    arranger_object_free (self->info.main_trans);
+  if (self->info.lane)
+    arranger_object_free (self->info.lane);
+  if (self->info.lane_trans)
+    arranger_object_free (self->info.lane_trans);
 }
 
 static void
@@ -1274,6 +1283,8 @@ ArrangerObject *
 arranger_object_get_visible_counterpart (
   ArrangerObject * self)
 {
+  g_return_val_if_fail (self, NULL);
+
   self = arranger_object_get_main (self);
   if (!arranger_object_should_be_visible (self))
     self = arranger_object_get_main_trans (self);
@@ -1680,6 +1691,8 @@ ArrangerWidget *
 arranger_object_get_arranger (
   ArrangerObject * self)
 {
+  g_return_val_if_fail (self, NULL);
+
   Track * track =
     arranger_object_get_track (self);
 
@@ -1765,6 +1778,8 @@ int
 arranger_object_should_be_visible (
   ArrangerObject * self)
 {
+  g_return_val_if_fail (self, 0);
+
   ArrangerWidget * arranger =
     arranger_object_get_arranger (self);
 
@@ -2141,6 +2156,8 @@ clone_region (
             for (i = 0;
                  i < mr_orig->num_midi_notes; i++)
               {
+                mr_orig->midi_notes[i]->region =
+                  mr;
                 MidiNote * mn =
                   (MidiNote *)
                   arranger_object_clone (
@@ -2271,6 +2288,8 @@ clone_midi_note (
   MidiNote *              src,
   ArrangerObjectCloneFlag flag)
 {
+  g_return_val_if_fail (src->region, NULL);
+
   int is_main =
     flag == ARRANGER_OBJECT_CLONE_COPY_MAIN;
 

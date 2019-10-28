@@ -183,6 +183,13 @@ arranger_selections_get_end_pos (
   int                  global);
 
 /**
+ * Returns the number of selected objects.
+ */
+int
+arranger_selections_get_num_objects (
+  ArrangerSelections * self);
+
+/**
  * Gets first object.
  *
  * @param transient If 1, transient objects are

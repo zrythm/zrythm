@@ -43,14 +43,6 @@ on_jack_toggled (
       GTK_TOGGLE_BUTTON (widget)));
 }
 
-static int
-refresh_popover (
-  PortConnectionsPopoverWidget * popover)
-{
-  port_connections_popover_widget_refresh (popover);
-  return G_SOURCE_REMOVE;
-}
-
 PortConnectionsButtonWidget *
 port_connections_button_widget_new (
   Port * port)
@@ -75,8 +67,8 @@ port_connections_button_widget_new (
   gtk_menu_button_set_popover (
     self->menu_button,
     GTK_WIDGET (popover));
-  g_idle_add (
-    (GSourceFunc) refresh_popover, popover);
+  port_connections_popover_widget_refresh (
+    popover);
   gtk_menu_button_set_direction (
     self->menu_button,
     GTK_ARROW_RIGHT);
@@ -186,9 +178,21 @@ port_connections_button_new_end:
 }
 
 static void
+finalize (
+  PortConnectionsButtonWidget * self)
+{
+  G_OBJECT_CLASS (
+    port_connections_button_widget_parent_class)->
+      finalize (G_OBJECT (self));
+}
+
+static void
 port_connections_button_widget_class_init (
   PortConnectionsButtonWidgetClass * klass)
 {
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
 
 static void

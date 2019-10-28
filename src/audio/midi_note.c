@@ -56,6 +56,8 @@ midi_note_new (
   uint8_t      vel,
   int          is_main)
 {
+  g_return_val_if_fail (region, NULL);
+
   MidiNote * self =
     calloc (1, sizeof (MidiNote));
 
@@ -222,6 +224,8 @@ midi_note_set_val (
   const uint8_t val,
   ArrangerObjectUpdateFlag update_flag)
 {
+  g_return_if_fail (val < 128);
+
   /* if currently playing set a note off event. */
   if (midi_note_hit (
         midi_note, PLAYHEAD->frames) &&

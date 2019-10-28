@@ -784,15 +784,6 @@ automation_arranger_widget_on_drag_end (
   else
     {
     }
-  ar_prv->action = UI_OVERLAY_ACTION_NONE;
-  arranger_widget_update_visibility (
-    (ArrangerWidget *) self);
-
-  self->start_ap = NULL;
-
-  EVENTS_PUSH (
-    ET_ARRANGER_SELECTIONS_CHANGED,
-    AUTOMATION_SELECTIONS);
 }
 
 static void

@@ -294,8 +294,8 @@ piano_roll_init_loaded (
  */
 const MidiNoteDescriptor *
 piano_roll_find_midi_note_descriptor_by_val (
-  PianoRoll * self,
-  int         val);
+  PianoRoll *   self,
+  const uint8_t val);
 
 static inline char *
 midi_note_descriptor_get_custom_name (

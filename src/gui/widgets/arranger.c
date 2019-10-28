@@ -545,9 +545,6 @@ select_all_timeline (
 {
   int i,j,k;
 
-  arranger_selections_clear (
-    (ArrangerSelections *) TL_SELECTIONS);
-
   /* select everything else */
   Region * r;
   Track * track;
@@ -630,9 +627,6 @@ select_all_midi (
   if (!CLIP_EDITOR->region)
     return;
 
-  /*midi_arranger_selections_clear (*/
-    /*MA_SELECTIONS);*/
-
   /* select midi notes */
   MidiRegion * mr =
     (MidiRegion *) CLIP_EDITOR_SELECTED_REGION;
@@ -651,9 +645,6 @@ select_all_chord (
   ChordArrangerWidget *  self,
   int                    select)
 {
-  arranger_selections_clear (
-    (ArrangerSelections *) CHORD_SELECTIONS);
-
   /* select everything else */
   Region * r = CLIP_EDITOR->region;
   ChordObject * chord;
@@ -689,9 +680,6 @@ select_all_automation (
 {
   int i;
 
-  arranger_selections_clear (
-    (ArrangerSelections *) AUTOMATION_SELECTIONS);
-
   Region * region = CLIP_EDITOR->region;
 
   /* select everything else */
@@ -723,6 +711,8 @@ arranger_widget_select_all (
 #define ARR_SELECT_ALL(sc) \
   if (sc##_arranger) \
     { \
+      arranger_selections_clear ( \
+        (ArrangerSelections *) sc##_arranger); \
       select_all_##sc ( \
         sc##_arranger, select); \
     }
@@ -2148,11 +2138,13 @@ drag_end (GtkGestureDrag *gesture,
 #undef ON_DRAG_END
 
   /* if clicked on nothing */
-  if (ar_prv->action ==
-           UI_OVERLAY_ACTION_STARTING_SELECTION)
+  if (ACTION_IS (STARTING_SELECTION))
     {
       /* deselect all */
+      g_message (
+        "clicked on empty space, deselecting all");
       arranger_widget_select_all (self, 0);
+      arranger_widget_update_visibility (self);
     }
 
   /* reset start coordinates and offsets */

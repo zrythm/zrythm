@@ -75,6 +75,10 @@ typedef struct _EventViewerWidget
 
   /** Type. */
   EventViewerType        type;
+
+  /** Used by the editor EV to check if it should
+   * readd the columns. */
+  RegionType             region_type;
 } EventViewerWidget;
 
 /**

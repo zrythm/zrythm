@@ -41,6 +41,7 @@ void
 tracklist_init_loaded (
   Tracklist * self)
 {
+  g_message ("initializing loaded Tracklist...");
   int i;
   Track * track;
   /*Channel * chan;*/

@@ -569,10 +569,6 @@ chord_arranger_widget_on_drag_end (
       }
       break;
     }
-  ar_prv->action = UI_OVERLAY_ACTION_NONE;
-  arranger_widget_update_visibility (
-    (ArrangerWidget *) self);
-  EVENTS_PUSH (ET_ARRANGER_SELECTIONS_CHANGED, NULL);
 }
 
 static void

@@ -180,13 +180,18 @@ arranger_selections_add_object (
   if (obj->type == ARRANGER_OBJECT_TYPE_##caps) \
     { \
       cc * sc = (cc *) obj; \
-      array_double_size_if_full ( \
-        sel->sc##s, sel->num_##sc##s, \
-        sel->sc##s_size, cc *); \
-      array_append ( \
-        sel->sc##s, \
-        sel->num_##sc##s, \
-        sc); \
+      if (!array_contains ( \
+             sel->sc##s, sel->num_##sc##s, \
+             sc)) \
+        { \
+          array_double_size_if_full ( \
+            sel->sc##s, sel->num_##sc##s, \
+            sel->sc##s_size, cc *); \
+          array_append ( \
+            sel->sc##s, \
+            sel->num_##sc##s, \
+            sc); \
+        } \
     }
 
   /* add the object to the child selections */
@@ -344,7 +349,7 @@ arranger_selections_clone (
     case TYPE (MIDI):
       src_mas = (MidiArrangerSelections *) self;
       new_mas =
-        calloc (1, sizeof (MidiArrangerSelections *));
+        calloc (1, sizeof (MidiArrangerSelections));
       arranger_selections_init (
         (ArrangerSelections *) new_mas,
         ARRANGER_SELECTIONS_TYPE_MIDI);
@@ -355,7 +360,7 @@ arranger_selections_clone (
     case TYPE (AUTOMATION):
       src_as = (AutomationSelections *) self;
       new_as =
-        calloc (1, sizeof (AutomationSelections *));
+        calloc (1, sizeof (AutomationSelections));
       arranger_selections_init (
         (ArrangerSelections *) new_as,
         ARRANGER_SELECTIONS_TYPE_AUTOMATION);
@@ -367,7 +372,7 @@ arranger_selections_clone (
     case TYPE (CHORD):
       src_cs = (ChordSelections *) self;
       new_cs =
-        calloc (1, sizeof (ChordSelections *));
+        calloc (1, sizeof (ChordSelections));
       arranger_selections_init (
         (ArrangerSelections *) new_cs,
         ARRANGER_SELECTIONS_TYPE_CHORD);
@@ -1035,6 +1040,58 @@ arranger_selections_clear (
 }
 
 /**
+ * Returns the number of selected objects.
+ */
+int
+arranger_selections_get_num_objects (
+  ArrangerSelections * self)
+{
+  TimelineSelections * ts;
+  ChordSelections * cs;
+  MidiArrangerSelections * mas;
+  AutomationSelections * as;
+
+  int size = 0;
+
+#define ADD_OBJ(sel,sc) \
+  for (int i = 0; i < sel->num_##sc##s; i++) \
+    { \
+      size++; \
+    }
+
+  switch (self->type)
+    {
+    case TYPE (TIMELINE):
+      ts = (TimelineSelections *) self;
+      ADD_OBJ (
+        ts, region);
+      ADD_OBJ (
+        ts, scale_object);
+      ADD_OBJ (
+        ts, marker);
+      break;
+    case TYPE (MIDI):
+      mas = (MidiArrangerSelections *) self;
+      ADD_OBJ (
+        mas, midi_note);
+      break;
+    case TYPE (AUTOMATION):
+      as = (AutomationSelections *) self;
+      ADD_OBJ (
+        as, automation_point);
+      break;
+    case TYPE (CHORD):
+      cs = (ChordSelections *) self;
+      ADD_OBJ (
+        cs, chord_object);
+      break;
+    }
+#undef ADD_OBJ
+
+  return size;
+}
+
+/**
  * Code to run after deserializing.
  */
 void
@@ -1231,15 +1288,33 @@ arranger_selections_contains_object (
         }
       break;
     case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      if (obj->type ==
-            ARRANGER_OBJECT_TYPE_MIDI_NOTE)
-        {
-          return
-            array_contains (
-              mas->midi_notes,
-              mas->num_midi_notes, obj);
-        }
+      {
+        mas = (MidiArrangerSelections *) self;
+        switch (obj->type)
+          {
+          case ARRANGER_OBJECT_TYPE_VELOCITY:
+            {
+              Velocity * vel =
+                (Velocity *) obj;
+              return
+                array_contains (
+                  mas->midi_notes,
+                  mas->num_midi_notes,
+                  vel->midi_note);
+            }
+            break;
+          case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+            {
+              return
+                array_contains (
+                  mas->midi_notes,
+                  mas->num_midi_notes, obj);
+            }
+            break;
+          default:
+            g_return_val_if_reached (-1);
+          }
+      }
       break;
     case TYPE (AUTOMATION):
       as = (AutomationSelections *) self;

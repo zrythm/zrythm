@@ -87,7 +87,9 @@ midi_arranger_widget_set_allocation (
 
       /* use transient or non transient region
        * depending on which is visible */
-      Region * region = mn->region;
+      Region * region =
+        (midi_note_get_main (mn))->region;
+      g_return_if_fail (region);
       region =
         (Region *)
         arranger_object_get_visible_counterpart (
@@ -724,10 +726,9 @@ midi_arranger_widget_move_items_y (
   ArrangerObjectUpdateFlag flag =
     AO_UPDATE_NON_TRANS;
 
-  for (int i = 0;
-       i < MA_SELECTIONS->
-             num_midi_notes;
-       i++)
+  g_message ("midi notes %d", MA_SELECTIONS->num_midi_notes);
+  int i;
+  for (i = 0; i < MA_SELECTIONS->num_midi_notes; i++)
     {
       midi_note =
         midi_note_get_main (
@@ -905,13 +906,6 @@ midi_arranger_widget_on_drag_end (
     }
       break;
     }
-  ar_prv->action = UI_OVERLAY_ACTION_NONE;
-  arranger_widget_update_visibility (
-    (ArrangerWidget *) self);
-  arranger_widget_update_visibility (
-    (ArrangerWidget *) MW_MIDI_MODIFIER_ARRANGER);
-
-  midi_arranger_widget_refresh_children (self);
 
   ar_prv->start_object = NULL;
   /*if (self->start_midi_note_clone)*/

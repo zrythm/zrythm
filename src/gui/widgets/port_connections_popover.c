@@ -42,6 +42,8 @@ port_connections_popover_widget_refresh (
 {
   PortConnectionsButtonWidget * owner =
     self->owner;
+  g_return_if_fail (
+    Z_IS_PORT_CONNECTIONS_BUTTON_WIDGET (self->owner));
 
   z_gtk_container_destroy_all_children (
     GTK_CONTAINER (self->ports_box));

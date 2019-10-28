@@ -39,17 +39,17 @@ G_DECLARE_FINAL_TYPE (
  */
 typedef struct _PortConnectionsButtonWidget
 {
-  GtkOverlay      parent_instance;
+  GtkOverlay        parent_instance;
 
   /** The menu button. */
-  GtkMenuButton *  menu_button;
+  GtkMenuButton *   menu_button;
 
   /** Port this is for. */
-  Port *         port;
+  Port *            port;
 
   /** Overlay to hold the main button and jack
    * button. */
-  GtkOverlay *     overlay;
+  GtkOverlay *      overlay;
 
   /**
    * Jack button to expose port to jack.
