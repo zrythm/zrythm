@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-10-21 19:37+0100\n"
+"POT-Creation-Date: 2019-10-28 15:59+0000\n"
 "PO-Revision-Date: 2019-10-28 15:53+0000\n"
 "Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -67,12 +67,12 @@ msgstr "Inicialização do sistema de registro de dados"
 msgid "Waiting for project"
 msgstr "Aguardando projeto"
 
-#: src/project.c:329 src/gui/widgets/route_target_selector_popover.c:147
-#: src/audio/track.c:1174
+#: src/project.c:353 src/gui/widgets/route_target_selector_popover.c:147
+#: src/audio/track.c:1185
 msgid "Master"
 msgstr "Mestre"
 
-#: src/project.c:434
+#: src/project.c:458
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -83,7 +83,7 @@ msgstr ""
 "  %s.\n"
 "Usar o backup mais recente?"
 
-#: src/project.c:500
+#: src/project.c:524
 #, c-format
 msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
@@ -92,26 +92,26 @@ msgstr ""
 "Este projeto foi criado com uma versão diferente do Zrythm (%s). Pode não "
 "funcionar corretamente."
 
-#: src/project.c:515
+#: src/project.c:539
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "Falha ao carregar o projeto. Por favor, verifique os registos para mais "
 "informações."
 
-#: src/project.c:916
+#: src/project.c:948
 msgid "Backup saved."
 msgstr "Backup guardado."
 
-#: src/project.c:923
+#: src/project.c:955
 msgid "Project saved."
 msgstr "Projeto gravado."
 
-#: src/main.c:67
+#: src/main.c:69
 #, c-format
 msgid "Error: signal %d - Backtrace:"
 msgstr "Erro: sinal %d - Backtrace:"
 
-#: src/main.c:122
+#: src/main.c:117
 #, c-format
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
@@ -119,7 +119,7 @@ msgstr ""
 "Zrythm travou. Por favor, ajude-nos a corrigir isso %ssubmetendo um "
 "relatório de bug%s."
 
-#: src/main.c:174
+#: src/main.c:167
 #, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
@@ -148,7 +148,7 @@ msgstr ""
 "Apoie este projecto em https://liberapay.com/Zrythm\n"
 "Website https://www.zrythm.org\n"
 
-#: src/main.c:234
+#: src/main.c:227
 #, c-format
 msgid ""
 "Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
@@ -184,14 +184,14 @@ msgid "Save State"
 msgstr "Gravar Estado"
 
 #: src/plugins/lv2/lv2_gtk.c:154 src/plugins/lv2/lv2_gtk.c:582
-#: src/utils/dialogs.c:41 src/utils/dialogs.c:71 src/actions/actions.c:660
+#: src/utils/dialogs.c:41 src/utils/dialogs.c:71 src/actions/actions.c:661
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "_Cancelar"
 
-#: src/plugins/lv2/lv2_gtk.c:155 src/actions/actions.c:662
+#: src/plugins/lv2/lv2_gtk.c:155 src/actions/actions.c:663
 msgid "_Save"
 msgstr "_Gravar"
 
@@ -232,15 +232,15 @@ msgstr "Criar Novo Projeto"
 msgid "Untitled Project"
 msgstr "Projeto sem título"
 
-#: src/gui/widgets/port_connections_popover.c:60
+#: src/gui/widgets/port_connections_popover.c:62
 msgid "INPUTS"
 msgstr "ENTRADAS"
 
-#: src/gui/widgets/port_connections_popover.c:82
+#: src/gui/widgets/port_connections_popover.c:84
 msgid "OUTPUTS"
 msgstr "SAÍDAS"
 
-#: src/gui/widgets/port_connections_popover.c:170
+#: src/gui/widgets/port_connections_popover.c:172
 msgid "Add"
 msgstr "Adicionar"
 
@@ -372,7 +372,7 @@ msgstr ""
 "2. Executar <b>locale-gen</b> como root\n"
 "3. Reiniciar Zrythm"
 
-#: src/gui/widgets/project_assistant.c:264 src/gui/widgets/event_viewer.c:333
+#: src/gui/widgets/project_assistant.c:264 src/gui/widgets/event_viewer.c:398
 #: resources/ui/create_project_dialog.ui:95 resources/ui/control.ui:45
 msgid "Name"
 msgstr "Nome"
@@ -389,6 +389,11 @@ msgstr "Última Modificação"
 #: src/gui/widgets/project_assistant.c:431
 msgid "Blank project"
 msgstr "Projeto em branco"
+
+#: src/gui/widgets/project_assistant.c:572
+#, fuzzy
+msgid "Project Assistant"
+msgstr "Projeto gravado."
 
 #: src/gui/widgets/left_dock_edge.c:107
 msgid "Inspector"
@@ -456,12 +461,12 @@ msgstr "Estas portas não podem ser conectadas"
 msgid "Track Ports"
 msgstr "Portas de Faixa"
 
-#: src/gui/widgets/editor_selection_info.c:61
+#: src/gui/widgets/editor_selection_info.c:58
 msgid "start position"
 msgstr "posição inicial"
 
-#: src/gui/widgets/editor_selection_info.c:88
-#: src/gui/widgets/timeline_selection_info.c:431
+#: src/gui/widgets/editor_selection_info.c:85
+#: src/gui/widgets/timeline_selection_info.c:430
 msgid "No object selected"
 msgstr "Nenhum objeto selecionado"
 
@@ -493,8 +498,9 @@ msgstr "trio"
 msgid "Tempo/BPM"
 msgstr "Ritmo/BPM"
 
-#: src/gui/widgets/digital_meter.c:922 resources/ui/inspector_master.ui:79
-#: resources/ui/inspector_ap.ui:79 resources/ui/inspector_midi.ui:79
+#: src/gui/widgets/digital_meter.c:922 src/gui/widgets/event_viewer.c:557
+#: resources/ui/inspector_master.ui:79 resources/ui/inspector_ap.ui:79
+#: resources/ui/inspector_midi.ui:79
 msgid "Position"
 msgstr "Posição"
 
@@ -519,11 +525,11 @@ msgstr "Adicionar Faixa de _MIDI"
 msgid "Add Audio Track"
 msgstr "Adicionar Faixa de Áudio"
 
-#: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1168
+#: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1179
 msgid "Audio Bus"
 msgstr "Bus de Áudio"
 
-#: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1171
+#: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1182
 msgid "MIDI Bus"
 msgstr "Bus MIDI"
 
@@ -531,11 +537,11 @@ msgstr "Bus MIDI"
 msgid "Add Bus Track"
 msgstr "Adicionar Faixa de Bus"
 
-#: src/gui/widgets/drag_dest_box.c:512 src/audio/track.c:1180
+#: src/gui/widgets/drag_dest_box.c:512 src/audio/track.c:1191
 msgid "Audio Group"
 msgstr "Grupo de Áudio"
 
-#: src/gui/widgets/drag_dest_box.c:523 src/audio/track.c:1183
+#: src/gui/widgets/drag_dest_box.c:523 src/audio/track.c:1194
 msgid "MIDI Group"
 msgstr "Grupo de MIDI"
 
@@ -613,38 +619,43 @@ msgstr "Exportado"
 msgid "Export Progress"
 msgstr "Progresso da Exportação"
 
-#: src/gui/widgets/port_connections_button.c:157
+#: src/gui/widgets/port_connections_button.c:149
 msgid "Expose port to JACK"
 msgstr "Expor a porta para JACK"
 
-#: src/gui/widgets/timeline_selection_info.c:266 src/audio/marker_track.c:59
+#: src/gui/widgets/timeline_selection_info.c:265 src/audio/marker_track.c:59
 #: resources/ui/quantize_dialog.ui:143
 msgid "start"
 msgstr "iniciar"
 
-#: src/gui/widgets/timeline_selection_info.c:276 src/audio/marker_track.c:67
+#: src/gui/widgets/timeline_selection_info.c:275 src/audio/marker_track.c:69
 #: resources/ui/quantize_dialog.ui:156
 msgid "end"
 msgstr "fim"
 
-#: src/gui/widgets/timeline_selection_info.c:286
+#: src/gui/widgets/timeline_selection_info.c:285
 msgid "clip start (rel.)"
 msgstr "início do clipe (rel.)"
 
-#: src/gui/widgets/timeline_selection_info.c:296
+#: src/gui/widgets/timeline_selection_info.c:295
 msgid "loop start (rel.)"
 msgstr "início do loop (rel.)"
 
-#: src/gui/widgets/timeline_selection_info.c:306
+#: src/gui/widgets/timeline_selection_info.c:305
 msgid "loop end (rel.)"
 msgstr "final do loop (rel.)"
 
-#: src/gui/widgets/timeline_selection_info.c:334
-#: src/gui/widgets/timeline_selection_info.c:358
-#: src/gui/widgets/timeline_selection_info.c:381
-#: src/gui/widgets/timeline_selection_info.c:406
+#: src/gui/widgets/timeline_selection_info.c:333
+#: src/gui/widgets/timeline_selection_info.c:357
+#: src/gui/widgets/timeline_selection_info.c:380
+#: src/gui/widgets/timeline_selection_info.c:405
 msgid "position"
 msgstr "posição"
+
+#: src/gui/widgets/timeline_arranger.c:846
+#, fuzzy
+msgid "Custom Marker"
+msgstr "Marcador"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -724,19 +735,19 @@ msgstr "Mostrar navegador de ficheiros"
 msgid "<tt><i>Engine</i></tt>"
 msgstr "<tt><i>Motor</i></tt>"
 
-#: src/gui/widgets/route_target_selector.c:78
+#: src/gui/widgets/route_target_selector.c:82
 msgid "Cannot be routed"
 msgstr "Não pode ser roteado"
 
-#: src/gui/widgets/route_target_selector.c:87
+#: src/gui/widgets/route_target_selector.c:91
 msgid "Routed to engine"
 msgstr "Roteado para o motor"
 
-#: src/gui/widgets/route_target_selector.c:94
+#: src/gui/widgets/route_target_selector.c:98
 msgid "Select channel to route signal to"
 msgstr "Selecionar o canal para onde rotear o sinal"
 
-#: src/gui/widgets/route_target_selector.c:171
+#: src/gui/widgets/route_target_selector.c:175
 msgid "Stereo Out"
 msgstr "Saída Estéreo"
 
@@ -774,71 +785,72 @@ msgstr "acorde"
 msgid "Live waveform indicator"
 msgstr "Indicador de forma de onda ao vivo"
 
-#: src/gui/widgets/clip_editor_inner.c:165
+#: src/gui/widgets/clip_editor_inner.c:167
 msgid "Select a region..."
 msgstr "Selecione uma região...."
 
-#: src/gui/widgets/event_viewer.c:84 resources/ui/inspector_master.ui:31
+#: src/gui/widgets/event_viewer.c:93 resources/ui/inspector_master.ui:31
 #: resources/ui/inspector_ap.ui:31 resources/ui/inspector_midi.ui:31
 msgid "Region"
 msgstr "Região"
 
-#: src/gui/widgets/event_viewer.c:87 src/audio/track.c:1186
+#: src/gui/widgets/event_viewer.c:96 src/audio/track.c:1197
 msgid "Marker"
 msgstr "Marcador"
 
-#: src/gui/widgets/event_viewer.c:90 resources/ui/scale_selector_window.ui:240
+#: src/gui/widgets/event_viewer.c:99 resources/ui/scale_selector_window.ui:240
 #: resources/ui/inspector_chord.ui:43 resources/ui/editor_toolbar.ui:59
 msgid "Scale"
 msgstr "Escala"
 
-#: src/gui/widgets/event_viewer.c:93
+#: src/gui/widgets/event_viewer.c:102
 msgid "MIDI note"
 msgstr "Nota MIDI"
 
-#: src/gui/widgets/event_viewer.c:96 src/audio/region.c:490
-#: src/audio/track.c:1177 resources/ui/editor_toolbar.ui:58
+#: src/gui/widgets/event_viewer.c:105 src/gui/widgets/event_viewer.c:546
+#: src/audio/region.c:374 src/audio/track.c:1188
+#: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "Acorde"
 
-#: src/gui/widgets/event_viewer.c:99
+#: src/gui/widgets/event_viewer.c:108
 msgid "Automation point"
 msgstr "Ponto de automação"
 
-#: src/gui/widgets/event_viewer.c:344 resources/ui/chord_selector_window.ui:238
+#: src/gui/widgets/event_viewer.c:409 resources/ui/chord_selector_window.ui:238
 #: resources/ui/file_browser.ui:84 resources/ui/snap_grid_popover.ui:127
 msgid "Type"
 msgstr "Tipo"
 
-#: src/gui/widgets/event_viewer.c:355 src/gui/widgets/event_viewer.c:451
+#: src/gui/widgets/event_viewer.c:420 src/gui/widgets/event_viewer.c:516
 msgid "Start"
 msgstr "Início"
 
-#: src/gui/widgets/event_viewer.c:366
+#: src/gui/widgets/event_viewer.c:431
 msgid "Clip start"
 msgstr "Início do clipe"
 
-#: src/gui/widgets/event_viewer.c:377
+#: src/gui/widgets/event_viewer.c:442
 msgid "Loop start"
 msgstr "início do loop"
 
-#: src/gui/widgets/event_viewer.c:388
+#: src/gui/widgets/event_viewer.c:453
 msgid "Loop end"
 msgstr "Fim do loop"
 
-#: src/gui/widgets/event_viewer.c:399 src/gui/widgets/event_viewer.c:462
+#: src/gui/widgets/event_viewer.c:464 src/gui/widgets/event_viewer.c:527
 msgid "End"
 msgstr "Fim"
 
-#: src/gui/widgets/event_viewer.c:418
+#: src/gui/widgets/event_viewer.c:483
 msgid "Note"
 msgstr "Nota"
 
-#: src/gui/widgets/event_viewer.c:429
+#: src/gui/widgets/event_viewer.c:494
 msgid "Pitch"
 msgstr "Tom"
 
-#: src/gui/widgets/event_viewer.c:440 resources/ui/midi_editor_space.ui:144
+#: src/gui/widgets/event_viewer.c:505 resources/ui/midi_editor_space.ui:144
 #: resources/ui/chord_editor_space.ui:152
 #: resources/ui/automation_editor_space.ui:115
 msgid "Velocity"
@@ -896,7 +908,7 @@ msgstr "Saídas MIDI"
 msgid "Group"
 msgstr "Grupo"
 
-#: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1159
+#: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1170
 msgid "Instrument"
 msgstr "Instrumento"
 
@@ -1151,15 +1163,15 @@ msgstr "Marcadores"
 msgid "PortAudio Error: %s"
 msgstr "Erro PortAudio: %s"
 
-#: src/audio/region.c:481 src/audio/track.c:1165
+#: src/audio/region.c:365 src/audio/track.c:1176
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/region.c:484 src/audio/track.c:1162
+#: src/audio/region.c:368 src/audio/track.c:1173
 msgid "Audio"
 msgstr "Áudio"
 
-#: src/audio/region.c:487
+#: src/audio/region.c:371
 msgid "Automation"
 msgstr "Automação"
 
@@ -1182,7 +1194,7 @@ msgstr ""
 "Falha ao inicializar o backend MIDI %s. Vai usar backend fictício em vez "
 "disso. Por favor, verifique as configurações do seu backend nas Preferências."
 
-#: src/audio/track_lane.c:66
+#: src/audio/track_lane.c:68
 #, c-format
 msgid "Lane %d"
 msgstr "Pista %d"
@@ -1287,18 +1299,10 @@ msgstr "Erro backend"
 msgid "Client zombie"
 msgstr "Cliente zumbi"
 
-#: src/actions/duplicate_chord_selections_action.c:152
-msgid "Duplicate Chord(s)"
-msgstr "Acorde(s) Duplicado(s)"
-
-#: src/actions/delete_timeline_selections_action.c:104
-#: src/actions/delete_midi_arranger_selections_action.c:103
-msgid "Delete Object(s)"
-msgstr "Apagar Objeto(s)"
-
-#: src/actions/create_chord_selections_action.c:146
-msgid "Create Chord(s)"
-msgstr "Criar Acorde(s)"
+#: src/actions/arranger_selections.c:1296
+#, fuzzy
+msgid "Edit arranger object(s)"
+msgstr "Criar Objecto(s)"
 
 #: src/actions/create_plugins_action.c:139
 #, c-format
@@ -1319,29 +1323,25 @@ msgstr "Apagar Faixa"
 msgid "Delete %d Tracks"
 msgstr "Apagar %d Faixas"
 
-#: src/actions/edit_marker_action.c:87
-msgid "Change Marker"
-msgstr "Alterar Marcador"
-
-#: src/actions/actions.c:551 resources/ui/project_assistant.ui:86
+#: src/actions/actions.c:552 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
 msgid "Create new project"
 msgstr "Criar novo projeto"
 
-#: src/actions/actions.c:554
+#: src/actions/actions.c:555
 msgid "Yes"
 msgstr "Sim"
 
-#: src/actions/actions.c:556
+#: src/actions/actions.c:557
 msgid "No"
 msgstr "Não"
 
-#: src/actions/actions.c:561
+#: src/actions/actions.c:562
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
 "Quaisquer alterações não gravadas no projeto atual serão perdidas. Continuar?"
 
-#: src/actions/actions.c:657
+#: src/actions/actions.c:658
 msgid "Save Project"
 msgstr "Gravar Projeto"
 
@@ -1355,41 +1355,6 @@ msgstr "Copiar %s"
 msgid "Copy %d Plugins"
 msgstr "Copiar %d Plugins"
 
-#: src/actions/move_midi_arranger_selections_action.c:125
-#: src/actions/move_timeline_selections_action.c:219
-msgid "Move Object(s)"
-msgstr "Mover Objeto(s)"
-
-#: src/actions/duplicate_timeline_selections_action.c:232
-#: src/actions/duplicate_midi_arranger_selections_action.c:130
-msgid "Duplicate Object(s)"
-msgstr "Duplicar Objeto(s)"
-
-#: src/actions/edit_midi_arranger_selections_action.c:274
-msgid "Resize MIDI Note(s)"
-msgstr "Redimensionar nota(s) MIDI"
-
-#: src/actions/edit_midi_arranger_selections_action.c:278
-msgid "Change Velocity"
-msgstr "Modificar Velocidade"
-
-#: src/actions/edit_midi_arranger_selections_action.c:280
-msgid "Change Velocities"
-msgstr "Modificar Velocidades"
-
-#: src/actions/move_automation_selections_action.c:114
-msgid "Move Automation"
-msgstr "Mover Automação"
-
-#: src/actions/create_timeline_selections_action.c:219
-#: src/actions/create_midi_arranger_selections_action.c:134
-msgid "Create Object(s)"
-msgstr "Criar Objecto(s)"
-
-#: src/actions/quantize_timeline_selections.c:167
-msgid "Quantize Object(s)"
-msgstr "Quantificar Objeto(s)"
-
 #: src/actions/move_plugins_action.c:150
 #, c-format
 msgid "Move %s"
@@ -1399,34 +1364,6 @@ msgstr "Mover %s"
 #, c-format
 msgid "Move %d Plugins"
 msgstr "Mover %d Plugins"
-
-#: src/actions/move_chord_selections_action.c:114
-msgid "Move Chord(s)"
-msgstr "Mover Acorde(s)"
-
-#: src/actions/edit_timeline_selections_action.c:261
-msgid "Resize Object(s)"
-msgstr "Redimensionar Objeto(s)"
-
-#: src/actions/edit_timeline_selections_action.c:263
-msgid "Change Name"
-msgstr "Modificar Nome"
-
-#: src/actions/edit_timeline_selections_action.c:265
-msgid "Change Clip Start Position"
-msgstr "Modificar a Posição Inicial do Clipe"
-
-#: src/actions/edit_timeline_selections_action.c:267
-msgid "Change Loop Start Position"
-msgstr "Modificar a Posição de Início de Loop"
-
-#: src/actions/edit_timeline_selections_action.c:269
-msgid "Change Loop End Position"
-msgstr "Modificar a Posição Final do Loop"
-
-#: src/actions/edit_timeline_selections_action.c:271
-msgid "Cut Region(s)"
-msgstr "Cortar Região(s)"
 
 #: src/actions/edit_tracks_action.c:160
 msgid "Solo Track"
@@ -1461,10 +1398,6 @@ msgstr "Mover Faixa"
 msgid "Move %d Tracks"
 msgstr "Mover %d Faixas"
 
-#: src/actions/duplicate_automation_selections_action.c:150
-msgid "Duplicate Automation"
-msgstr "Duplicar Automação"
-
 #: src/actions/create_tracks_action.c:54
 #, c-format
 msgid "%s Track"
@@ -1485,18 +1418,6 @@ msgstr "Criar %s Faixa"
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "Criar %d %s Faixas"
-
-#: src/actions/create_automation_selections_action.c:131
-msgid "Create Automation Point(s)"
-msgstr "Criar Ponto(s) de Automação"
-
-#: src/actions/edit_chord_action.c:92
-msgid "Change Chord"
-msgstr "Modificar Acorde"
-
-#: src/actions/edit_scale_action.c:92
-msgid "Change Scale"
-msgstr "Modificar Escala"
 
 #: src/actions/delete_plugins_action.c:111
 msgid "Delete Plugin"
@@ -2530,6 +2451,72 @@ msgstr ""
 #: data/zrythm.desktop.in:26
 msgid "zrythm"
 msgstr "zrythm"
+
+#~ msgid "Duplicate Chord(s)"
+#~ msgstr "Acorde(s) Duplicado(s)"
+
+#~ msgid "Delete Object(s)"
+#~ msgstr "Apagar Objeto(s)"
+
+#~ msgid "Create Chord(s)"
+#~ msgstr "Criar Acorde(s)"
+
+#~ msgid "Change Marker"
+#~ msgstr "Alterar Marcador"
+
+#~ msgid "Move Object(s)"
+#~ msgstr "Mover Objeto(s)"
+
+#~ msgid "Duplicate Object(s)"
+#~ msgstr "Duplicar Objeto(s)"
+
+#~ msgid "Resize MIDI Note(s)"
+#~ msgstr "Redimensionar nota(s) MIDI"
+
+#~ msgid "Change Velocity"
+#~ msgstr "Modificar Velocidade"
+
+#~ msgid "Change Velocities"
+#~ msgstr "Modificar Velocidades"
+
+#~ msgid "Move Automation"
+#~ msgstr "Mover Automação"
+
+#~ msgid "Quantize Object(s)"
+#~ msgstr "Quantificar Objeto(s)"
+
+#~ msgid "Move Chord(s)"
+#~ msgstr "Mover Acorde(s)"
+
+#~ msgid "Resize Object(s)"
+#~ msgstr "Redimensionar Objeto(s)"
+
+#~ msgid "Change Name"
+#~ msgstr "Modificar Nome"
+
+#~ msgid "Change Clip Start Position"
+#~ msgstr "Modificar a Posição Inicial do Clipe"
+
+#~ msgid "Change Loop Start Position"
+#~ msgstr "Modificar a Posição de Início de Loop"
+
+#~ msgid "Change Loop End Position"
+#~ msgstr "Modificar a Posição Final do Loop"
+
+#~ msgid "Cut Region(s)"
+#~ msgstr "Cortar Região(s)"
+
+#~ msgid "Duplicate Automation"
+#~ msgstr "Duplicar Automação"
+
+#~ msgid "Create Automation Point(s)"
+#~ msgstr "Criar Ponto(s) de Automação"
+
+#~ msgid "Change Chord"
+#~ msgstr "Modificar Acorde"
+
+#~ msgid "Change Scale"
+#~ msgstr "Modificar Escala"
 
 #~ msgid "Show native decoration"
 #~ msgstr "Mostrar decoração nativa"
