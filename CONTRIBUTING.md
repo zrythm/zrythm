@@ -153,6 +153,15 @@ profiling info in the kcachegrind GUI.
 For more information, see
 https://docs.kde.org/stable5/en/kdesdk/kcachegrind/using-kcachegrind.html and
 
+# Real-time safety
+Use the following to get a stoat report.
+
+    CC=stoat-compile CXX=stoat-compile++ meson build
+    ninja -C build run_stoat
+
+For more info see
+https://github.com/fundamental/stoat
+
 # Collecting Translations
 To collect all translatable filenames into
 `po/POTFILES`, generate the POT file and update

@@ -21,3 +21,18 @@ collect_translatables = run_target (
     'collect_translatables.sh',
     ],
   )
+
+# run stoat
+if (stoat.found() and
+  meson.get_compiler('c').get_id() == 'clang' and
+  meson.get_compiler('cpp').get_id() == 'clang')
+run_target (
+  'run_stoat',
+  command: [
+    'run_stoat.sh',
+    ],
+  depends: [
+    zrythm_lib,
+    ]
+  )
+endif

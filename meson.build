@@ -133,6 +133,8 @@ sphinx_build = find_program (
 help2man = find_program (
   ['help2man'],
   required: get_option ('manpage'))
+stoat = find_program (
+  ['stoat'], required: false)
 
 check_headers = [
   'unistd.h',
