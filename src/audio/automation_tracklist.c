@@ -66,6 +66,7 @@ automation_tracklist_add_at (
     at);
 
   at->track = self->track;
+  at->index = self->num_ats - 1;
 }
 
 void

@@ -2216,9 +2216,15 @@ clone_region (
             src_ac = ar_orig->acs[j];
             ArrangerObject * src_ac_obj =
               (ArrangerObject *) src_ac;
+            Track * track =
+              arranger_object_get_track (
+                (ArrangerObject *) ar_orig);
+            AutomationTrack * at =
+              track->automation_tracklist.ats[
+                ar_orig->at_index];
             dest_ac =
               automation_curve_new (
-                ar_orig->at->automatable->type,
+                at->automatable->type,
                 &src_ac_obj->pos, 1);
             automation_region_add_ac (
               ar, dest_ac);
@@ -2373,7 +2379,7 @@ clone_automation_point (
 /**
  * Clone the ArrangerObject.
  *
- * Creates a new region and either links to the
+ * Creates a new object and either links to the
  * original or copies every field.
  */
 ArrangerObject *
@@ -2406,6 +2412,9 @@ arranger_object_clone (
       new_obj =
         clone_automation_point (
           (AutomationPoint *) self, flag);
+      break;
+    case TYPE (AUTOMATION_CURVE):
+      new_obj = self;
       break;
     case TYPE (MARKER):
       new_obj =

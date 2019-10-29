@@ -68,8 +68,6 @@ automation_curve_new (
 {
   AutomationCurve * ac =
     _create_new (pos, is_main);
-  ArrangerObject * ac_obj =
-    (ArrangerObject *) ac;
 
   ac->curviness = 1.0;
   switch (a_type)
@@ -85,9 +83,6 @@ automation_curve_new (
       ac->type = AUTOMATION_CURVE_TYPE_BOOL;
       break;
     }
-  ac_obj->widget =
-    GTK_WIDGET (
-      automation_curve_widget_new (ac));
 
   return ac;
 }
