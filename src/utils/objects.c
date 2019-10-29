@@ -19,6 +19,7 @@
 
 #include "utils/objects.h"
 #include "utils/stack.h"
+#include "zrythm.h"
 
 static Stack * free_stack = NULL;
 
@@ -101,6 +102,12 @@ _free_later (
   void (*dfunc) (void *))
 {
   g_warn_if_fail (free_stack != NULL);
+
+  if (ZRYTHM_TESTING)
+    {
+      dfunc (object);
+      return;
+    }
 
   FreeElement * free_element =
     calloc (1, sizeof (FreeElement));

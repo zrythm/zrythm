@@ -1196,14 +1196,22 @@ void
 arranger_object_free_all (
   ArrangerObject * self)
 {
-  if (self->info.main)
-    arranger_object_free (self->info.main);
-  if (self->info.main_trans)
-    arranger_object_free (self->info.main_trans);
-  if (self->info.lane)
-    arranger_object_free (self->info.lane);
-  if (self->info.lane_trans)
-    arranger_object_free (self->info.lane_trans);
+  ArrangerObject * _main =
+    self->info.main;
+  ArrangerObject * _main_trans =
+    self->info.main_trans;
+  ArrangerObject * _lane =
+    self->info.lane;
+  ArrangerObject * _lane_trans =
+    self->info.lane_trans;
+  if (_main)
+    arranger_object_free (_main);
+  if (_main_trans)
+    arranger_object_free (_main_trans);
+  if (_lane)
+    arranger_object_free (_lane);
+  if (_lane_trans)
+    arranger_object_free (_lane_trans);
 }
 
 static void
@@ -1235,6 +1243,7 @@ static void
 free_midi_note (
   MidiNote * self)
 {
+  g_return_if_fail (self->vel);
   arranger_object_free_all (
     (ArrangerObject *) self->vel);
 

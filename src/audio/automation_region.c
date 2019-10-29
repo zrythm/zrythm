@@ -94,9 +94,9 @@ automation_region_new (
   self->aps =
     malloc (self->aps_size *
             sizeof (AutomationPoint *));
-  self->aps =
+  self->acs =
     malloc ((self->aps_size - 1) *
-            sizeof (AutomationPoint *));
+            sizeof (AutomationCurve *));
 
   region_init (
     self, start_pos, end_pos, is_main);
