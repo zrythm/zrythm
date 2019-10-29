@@ -33,6 +33,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 
 /**
  * Initializes the tracklist when loading a project.
@@ -284,6 +285,25 @@ tracklist_get_chord_track (
         }
     }
   g_warn_if_reached ();
+  return NULL;
+}
+
+/**
+ * Returns the Track matching the given name, if
+ * any.
+ */
+Track *
+tracklist_find_track_by_name (
+  Tracklist *  self,
+  const char * name)
+{
+  Track * track;
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      track = self->tracks[i];
+      if (string_is_equal (name, track->name, 0))
+        return track;
+    }
   return NULL;
 }
 

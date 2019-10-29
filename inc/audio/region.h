@@ -439,6 +439,13 @@ region_set_automation_track (
   AutomationTrack * at);
 
 /**
+ * Gets the AutomationTrack using the saved index.
+ */
+AutomationTrack *
+region_get_automation_track (
+  Region * region);
+
+/**
  * Copies the data from src to dest.
  *
  * Used when doing/undoing changes in name,

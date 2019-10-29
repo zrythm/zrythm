@@ -625,6 +625,52 @@ arranger_object_set_position (
 }
 
 /**
+ * Returns the type as a string.
+ */
+const char *
+arranger_object_stringize_type (
+  ArrangerObjectType type)
+{
+  return arranger_object_type_strings[type].str;
+}
+
+/**
+ * Prints debug information about the given
+ * object.
+ */
+void
+arranger_object_print (
+  ArrangerObject * self)
+{
+  g_return_if_fail (self);
+
+  const char * type =
+    arranger_object_stringize_type (self->type);
+
+  char positions[500];
+  if (self->has_length)
+    {
+      sprintf (
+        positions, "(%d.%d.%d.%d ~ %d.%d.%d.%d)",
+        self->pos.bars, self->pos.beats,
+        self->pos.sixteenths, self->pos.ticks,
+        self->end_pos.bars, self->end_pos.beats,
+        self->end_pos.sixteenths,
+        self->end_pos.ticks);
+    }
+  else
+    {
+      sprintf (
+        positions, "(%d.%d.%d.%d)",
+        self->pos.bars, self->pos.beats,
+        self->pos.sixteenths, self->pos.ticks);
+    }
+  g_message (
+    "%s %s",
+    type, positions);
+}
+
+/**
  * Moves the object by the given amount of
  * ticks.
  *
@@ -1975,9 +2021,18 @@ static ArrangerObject *
 find_region (
   Region * self)
 {
-  return
+  ArrangerObject * obj =
     (ArrangerObject *)
     region_find_by_name (self->name);
+  ArrangerObject * self_obj =
+    (ArrangerObject *) self;
+  g_warn_if_fail (
+    position_is_equal (
+      &self_obj->pos, &obj->pos) &&
+    position_is_equal (
+      &self_obj->end_pos, &obj->end_pos));
+
+  return obj;
 }
 
 static ArrangerObject *
@@ -2216,12 +2271,10 @@ clone_region (
             src_ac = ar_orig->acs[j];
             ArrangerObject * src_ac_obj =
               (ArrangerObject *) src_ac;
-            Track * track =
-              arranger_object_get_track (
-                (ArrangerObject *) ar_orig);
+
             AutomationTrack * at =
-              track->automation_tracklist.ats[
-                ar_orig->at_index];
+              region_get_automation_track (
+                ar_orig);
             dest_ac =
               automation_curve_new (
                 at->automatable->type,
@@ -2287,6 +2340,34 @@ clone_region (
   new_region->at_index = region->at_index;
 
   return (ArrangerObject *) new_region;
+}
+
+/**
+ * Returns a pointer to the name of the object,
+ * if the object can have names.
+ */
+const char *
+arranger_object_get_name (
+  ArrangerObject * self)
+{
+  switch (self->type)
+    {
+    case ARRANGER_OBJECT_TYPE_REGION:
+      {
+        Region * r = (Region *) self;
+        return r->name;
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MARKER:
+      {
+        Marker * m = (Marker *) self;
+        return m->name;
+      }
+      break;
+    default:
+      break;
+    }
+  return NULL;
 }
 
 static ArrangerObject *

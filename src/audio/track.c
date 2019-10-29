@@ -935,6 +935,13 @@ track_remove_region (
         track->num_chord_regions,
         region);
     }
+  else if (region->type == REGION_TYPE_AUTOMATION)
+    {
+      AutomationTrack * at =
+        region_get_automation_track (region);
+      array_delete (
+        at->regions, at->num_regions, region);
+    }
 
   if (free)
     free_later (region, arranger_object_free_all);

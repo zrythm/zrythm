@@ -48,13 +48,21 @@
 #define MUSICAL_SCALE_TYPE SCALE_IONIAN
 #define MUSICAL_SCALE_ROOT NOTE_A
 
+#define MOVE_TICKS 400
+
+#define TOTAL_TL_SELECTIONS 5
+
+#define MIDI_TRACK_NAME "Midi track"
+
+#define MIDI_REGION_LANE 2
+
 Position p1, p2;
 
 /**
  * Bootstraps the test with test data.
  */
 static void
-bootstrap ()
+bootstrap_timeline ()
 {
   /* Create and add a MidiRegion with a MidiNote */
   position_set_to_bar (&p1, 2);
@@ -62,12 +70,12 @@ bootstrap ()
   Region * r =
     midi_region_new (&p1, &p2, 1);
   Track * track =
-    track_new (TRACK_TYPE_MIDI, "Midi track", 1);
+    track_new (TRACK_TYPE_MIDI, MIDI_TRACK_NAME, 1);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
   track_add_region (
-    track, r, NULL, 0, 1, 0);
+    track, r, NULL, MIDI_REGION_LANE, 1, 0);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
@@ -180,16 +188,35 @@ bootstrap ()
 /**
  * Checks that the objects are back to their original
  * state.
+ * @param check_selections Also checks that the
+ *   selections are back to where they were.
  */
 static void
-check_objects_vs_original_state ()
+check_timeline_objects_vs_original_state (
+  const int check_selections)
 {
-  g_assert_cmpint (
-    TL_SELECTIONS->num_regions, ==, 3);
+  if (check_selections)
+    {
+      g_assert_cmpint (
+        TL_SELECTIONS->num_regions, ==, 3);
+      g_assert_cmpint (
+        TL_SELECTIONS->num_markers, ==, 1);
+      g_assert_cmpint (
+        TL_SELECTIONS->num_scale_objects, ==, 1);
+    }
+
+  Track * midi_track =
+    tracklist_find_track_by_name (
+      TRACKLIST, MIDI_TRACK_NAME);
+  g_assert_nonnull (midi_track);
 
   /* check midi region */
+  g_assert_cmpint (
+    midi_track->lanes[MIDI_REGION_LANE]->
+      num_regions, ==, 1);
   ArrangerObject * obj =
-    (ArrangerObject *) TL_SELECTIONS->regions[0];
+    (ArrangerObject *)
+    midi_track->lanes[MIDI_REGION_LANE]->regions[0];
   g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmppos (&obj->end_pos, &p2);
   Region * r =
@@ -205,10 +232,234 @@ check_objects_vs_original_state ()
   g_assert_cmppos (&obj->end_pos, &p2);
 
   /* check automation region */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (P_MASTER_TRACK);
+  g_assert_nonnull (atl);
+  Automatable * a =
+    channel_get_automatable (
+      P_MASTER_TRACK->channel,
+      AUTOMATABLE_TYPE_CHANNEL_PAN);
+  g_assert_nonnull (a);
+  AutomationTrack * at =
+    automation_tracklist_get_at_from_automatable (
+      atl, a);
+  g_assert_nonnull (at);
+  g_assert_cmpint (at->num_regions, ==, 1);
   obj =
-    (ArrangerObject *) TL_SELECTIONS->regions[1];
+    (ArrangerObject *) at->regions[0];
   g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmppos (&obj->end_pos, &p2);
+  r =
+    (Region *) obj;
+  g_assert_cmpint (r->num_aps, ==, 2);
+  AutomationPoint * ap =
+    r->aps[0];
+  obj = (ArrangerObject *) ap;
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmpfloat_with_epsilon (
+    ap->fvalue, AP_VAL1, 0.000001f);
+  ap =
+    r->aps[1];
+  obj = (ArrangerObject *) ap;
+  g_assert_cmppos (&obj->pos, &p2);
+  g_assert_cmpfloat_with_epsilon (
+    ap->fvalue, AP_VAL2, 0.000001f);
+
+  /* check marker */
+  g_assert_cmpint (
+    P_MARKER_TRACK->num_markers, ==, 3);
+  obj =
+    (ArrangerObject *) P_MARKER_TRACK->markers[2];
+  Marker * m = (Marker *) obj;
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmpstr (m->name, ==, MARKER_NAME);
+
+  /* check scale object */
+  g_assert_cmpint (
+    P_CHORD_TRACK->num_scales, ==, 1);
+  obj =
+    (ArrangerObject *)
+    P_CHORD_TRACK->scales[0];
+  ScaleObject * s = (ScaleObject *) obj;
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmpint (
+    s->scale->type, ==, MUSICAL_SCALE_TYPE);
+  g_assert_cmpint (
+    s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
+}
+/**
+ * Checks that the objects are deleted.
+ */
+static void
+check_timeline_objects_deleted ()
+{
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) TL_SELECTIONS), ==, 0);
+
+  Track * midi_track =
+    tracklist_find_track_by_name (
+      TRACKLIST, MIDI_TRACK_NAME);
+  g_assert_nonnull (midi_track);
+
+  /* check midi region */
+  g_assert_cmpint (
+    midi_track->lanes[MIDI_REGION_LANE]->
+      num_regions, ==, 0);
+
+  /* check automation region */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (P_MASTER_TRACK);
+  g_assert_nonnull (atl);
+  Automatable * a =
+    channel_get_automatable (
+      P_MASTER_TRACK->channel,
+      AUTOMATABLE_TYPE_CHANNEL_PAN);
+  g_assert_nonnull (a);
+  AutomationTrack * at =
+    automation_tracklist_get_at_from_automatable (
+      atl, a);
+  g_assert_nonnull (at);
+  g_assert_cmpint (at->num_regions, ==, 0);
+
+  /* check marker */
+  g_assert_cmpint (
+    P_MARKER_TRACK->num_markers, ==, 2);
+
+  /* check scale object */
+  g_assert_cmpint (
+    P_CHORD_TRACK->num_scales, ==, 0);
+}
+
+static void
+test_create_timeline ()
+{
+  /* do create */
+  UndoableAction * ua =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* check */
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) TL_SELECTIONS), ==,
+    TOTAL_TL_SELECTIONS);
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) MA_SELECTIONS), ==, 1);
+  check_timeline_objects_vs_original_state (1);
+
+  /* undo and check that the objects are deleted */
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) MA_SELECTIONS), ==, 0);
+  check_timeline_objects_deleted ();
+
+  /* redo and check that the objects are there */
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) TL_SELECTIONS), ==,
+    TOTAL_TL_SELECTIONS);
+  check_timeline_objects_vs_original_state (1);
+}
+
+static void
+test_delete_timeline ()
+{
+  /* do delete */
+  UndoableAction * ua =
+    arranger_selections_action_new_delete (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* check */
+  check_timeline_objects_deleted ();
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) MA_SELECTIONS), ==, 0);
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) CHORD_SELECTIONS),
+    ==, 0);
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) AUTOMATION_SELECTIONS),
+    ==, 0);
+
+  /* undo and check that the objects are created */
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) TL_SELECTIONS), ==,
+    TOTAL_TL_SELECTIONS);
+  check_timeline_objects_vs_original_state (1);
+
+  /* redo and check that the objects are gone */
+  undo_manager_redo (UNDO_MANAGER);
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) TL_SELECTIONS), ==, 0);
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) MA_SELECTIONS), ==, 0);
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) CHORD_SELECTIONS),
+    ==, 0);
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) AUTOMATION_SELECTIONS),
+    ==, 0);
+  check_timeline_objects_deleted ();
+
+  /* undo again to prepare for next test */
+  undo_manager_undo (UNDO_MANAGER);
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) TL_SELECTIONS), ==,
+    TOTAL_TL_SELECTIONS);
+  check_timeline_objects_vs_original_state (1);
+}
+
+static void
+check_after_move_timeline ()
+{
+  /* check */
+  g_assert_cmpint (
+    arranger_selections_get_num_objects (
+      (ArrangerSelections *) TL_SELECTIONS), ==,
+    TOTAL_TL_SELECTIONS);
+
+  /* check midi region */
+  ArrangerObject * obj =
+    (ArrangerObject *) TL_SELECTIONS->regions[0];
+  Position p1_after_move, p2_after_move;
+  p1_after_move = p1;
+  p2_after_move = p2;
+  position_add_ticks (&p1_after_move, MOVE_TICKS);
+  position_add_ticks (&p2_after_move, MOVE_TICKS);
+  g_assert_cmppos (&obj->pos, &p1_after_move);
+  g_assert_cmppos (&obj->end_pos, &p2_after_move);
+  Region * r =
+    (Region *) obj;
+  g_assert_cmpint (r->num_midi_notes, ==, 1);
+  MidiNote * mn =
+    r->midi_notes[0];
+  obj =
+    (ArrangerObject *) mn;
+  g_assert_cmpuint (mn->val, ==, MN_VAL);
+  g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->end_pos, &p2);
+
+  /* check automation region */
+  obj =
+    (ArrangerObject *) TL_SELECTIONS->regions[1];
+  g_assert_cmppos (&obj->pos, &p1_after_move);
+  g_assert_cmppos (&obj->end_pos, &p2_after_move);
   r =
     (Region *) obj;
   g_assert_cmpint (r->num_aps, ==, 2);
@@ -231,7 +482,7 @@ check_objects_vs_original_state ()
   obj =
     (ArrangerObject *) TL_SELECTIONS->markers[0];
   Marker * m = (Marker *) obj;
-  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->pos, &p1_after_move);
   g_assert_cmpstr (m->name, ==, MARKER_NAME);
 
   /* check scale object */
@@ -241,7 +492,7 @@ check_objects_vs_original_state ()
     (ArrangerObject *)
     TL_SELECTIONS->scale_objects[0];
   ScaleObject * s = (ScaleObject *) obj;
-  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->pos, &p1_after_move);
   g_assert_cmpint (
     s->scale->type, ==, MUSICAL_SCALE_TYPE);
   g_assert_cmpint (
@@ -249,88 +500,212 @@ check_objects_vs_original_state ()
 }
 
 static void
-test_create ()
+test_move_timeline ()
 {
-  /* do create */
+  /* do move ticks */
+  arranger_selections_add_ticks (
+    (ArrangerSelections *) TL_SELECTIONS, MOVE_TICKS,
+    0, AO_UPDATE_ALL);
   UndoableAction * ua =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
+    arranger_selections_action_new_move_timeline (
+      TL_SELECTIONS, MOVE_TICKS, 0, 0);
   undo_manager_perform (UNDO_MANAGER, ua);
 
   /* check */
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) TL_SELECTIONS), ==, 5);
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) MA_SELECTIONS), ==, 1);
-  check_objects_vs_original_state ();
+  check_after_move_timeline ();
 
-  /* undo and check that the objects are deleted */
+  /* undo and check that the objects are at their
+   * original state*/
   undo_manager_undo (UNDO_MANAGER);
   g_assert_cmpint (
     arranger_selections_get_num_objects (
-      (ArrangerSelections *) TL_SELECTIONS), ==, 0);
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) MA_SELECTIONS), ==, 0);
+      (ArrangerSelections *) TL_SELECTIONS), ==,
+    TOTAL_TL_SELECTIONS);
+  check_timeline_objects_vs_original_state (1);
 
-  /* redo and check that the objects are there */
+  /* redo and check that the objects are moved
+   * again */
   undo_manager_redo (UNDO_MANAGER);
+  check_after_move_timeline ();
+
+  /* undo again to prepare for next test */
+  undo_manager_undo (UNDO_MANAGER);
   g_assert_cmpint (
     arranger_selections_get_num_objects (
-      (ArrangerSelections *) TL_SELECTIONS), ==, 5);
-  check_objects_vs_original_state ();
+      (ArrangerSelections *) TL_SELECTIONS), ==,
+    TOTAL_TL_SELECTIONS);
+  check_timeline_objects_vs_original_state (1);
 }
 
 static void
-test_delete ()
+check_after_duplicate_timeline ()
 {
-  /* do delete */
-  UndoableAction * ua =
-    arranger_selections_action_new_delete (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, ua);
-
   /* check */
   g_assert_cmpint (
     arranger_selections_get_num_objects (
-      (ArrangerSelections *) TL_SELECTIONS), ==, 0);
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) MA_SELECTIONS), ==, 0);
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) CHORD_SELECTIONS),
-    ==, 0);
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) AUTOMATION_SELECTIONS),
-    ==, 0);
+      (ArrangerSelections *) TL_SELECTIONS), ==,
+    TOTAL_TL_SELECTIONS);
 
-  /* undo and check that the objects are created */
+  Track * midi_track =
+    tracklist_find_track_by_name (
+      TRACKLIST, MIDI_TRACK_NAME);
+  g_assert_nonnull (midi_track);
+
+  /* check midi region */
+  g_assert_cmpint (
+    midi_track->lanes[MIDI_REGION_LANE]->
+      num_regions, ==, 2);
+  ArrangerObject * obj =
+    (ArrangerObject *)
+    midi_track->lanes[MIDI_REGION_LANE]->regions[0];
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->end_pos, &p2);
+  Region * r =
+    (Region *) obj;
+  g_assert_cmpint (r->num_midi_notes, ==, 1);
+  MidiNote * mn =
+    r->midi_notes[0];
+  obj =
+    (ArrangerObject *) mn;
+  g_assert_cmpuint (mn->val, ==, MN_VAL);
+  g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->end_pos, &p2);
+  obj =
+    (ArrangerObject *)
+    midi_track->lanes[MIDI_REGION_LANE]->regions[1];
+  Position p1_after_move, p2_after_move;
+  p1_after_move = p1;
+  p2_after_move = p2;
+  position_add_ticks (&p1_after_move, MOVE_TICKS);
+  position_add_ticks (&p2_after_move, MOVE_TICKS);
+  g_assert_cmppos (&obj->pos, &p1_after_move);
+  g_assert_cmppos (&obj->end_pos, &p2_after_move);
+  r =
+    (Region *) obj;
+  g_assert_cmpint (r->num_midi_notes, ==, 1);
+  mn =
+    r->midi_notes[0];
+  obj =
+    (ArrangerObject *) mn;
+  g_assert_cmpuint (mn->val, ==, MN_VAL);
+  g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->end_pos, &p2);
+
+  /* check automation region */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (P_MASTER_TRACK);
+  g_assert_nonnull (atl);
+  Automatable * a =
+    channel_get_automatable (
+      P_MASTER_TRACK->channel,
+      AUTOMATABLE_TYPE_CHANNEL_PAN);
+  g_assert_nonnull (a);
+  AutomationTrack * at =
+    automation_tracklist_get_at_from_automatable (
+      atl, a);
+  g_assert_nonnull (at);
+  g_assert_cmpint (at->num_regions, ==, 2);
+  obj =
+    (ArrangerObject *) at->regions[0];
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->end_pos, &p2);
+  r =
+    (Region *) obj;
+  g_assert_cmpint (r->num_aps, ==, 2);
+  AutomationPoint * ap =
+    r->aps[0];
+  obj = (ArrangerObject *) ap;
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmpfloat_with_epsilon (
+    ap->fvalue, AP_VAL1, 0.000001f);
+  ap =
+    r->aps[1];
+  obj = (ArrangerObject *) ap;
+  g_assert_cmppos (&obj->pos, &p2);
+  g_assert_cmpfloat_with_epsilon (
+    ap->fvalue, AP_VAL2, 0.000001f);
+  obj =
+    (ArrangerObject *) at->regions[1];
+  g_assert_cmppos (&obj->pos, &p1_after_move);
+  g_assert_cmppos (&obj->end_pos, &p2_after_move);
+  r =
+    (Region *) obj;
+  g_assert_cmpint (r->num_aps, ==, 2);
+  ap = r->aps[0];
+  obj = (ArrangerObject *) ap;
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmpfloat_with_epsilon (
+    ap->fvalue, AP_VAL1, 0.000001f);
+  ap = r->aps[1];
+  obj = (ArrangerObject *) ap;
+  g_assert_cmppos (&obj->pos, &p2);
+  g_assert_cmpfloat_with_epsilon (
+    ap->fvalue, AP_VAL2, 0.000001f);
+
+  /* check marker */
+  g_assert_cmpint (
+    P_MARKER_TRACK->num_markers, ==, 4);
+  obj =
+    (ArrangerObject *) P_MARKER_TRACK->markers[2];
+  Marker * m = (Marker *) obj;
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmpstr (m->name, ==, MARKER_NAME);
+  obj =
+    (ArrangerObject *) P_MARKER_TRACK->markers[3];
+  m = (Marker *) obj;
+  g_assert_cmppos (&obj->pos, &p1_after_move);
+  g_assert_cmpstr (m->name, ==, MARKER_NAME);
+
+  /* check scale object */
+  g_assert_cmpint (
+    P_CHORD_TRACK->num_scales, ==, 2);
+  obj =
+    (ArrangerObject *)
+    P_CHORD_TRACK->scales[0];
+  ScaleObject * s = (ScaleObject *) obj;
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmpint (
+    s->scale->type, ==, MUSICAL_SCALE_TYPE);
+  g_assert_cmpint (
+    s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
+  obj =
+    (ArrangerObject *)
+    P_CHORD_TRACK->scales[1];
+  s = (ScaleObject *) obj;
+  g_assert_cmppos (&obj->pos, &p1_after_move);
+  g_assert_cmpint (
+    s->scale->type, ==, MUSICAL_SCALE_TYPE);
+  g_assert_cmpint (
+    s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
+}
+
+static void
+test_duplicate_timeline ()
+{
+  /* do duplicate */
+  UndoableAction * ua =
+    arranger_selections_action_new_duplicate_timeline (
+      TL_SELECTIONS, MOVE_TICKS, 0, 0);
+  undo_manager_perform (UNDO_MANAGER, ua);
+
+  /* check */
+  check_after_duplicate_timeline ();
+
+  /* undo and check that the objects are at their
+   * original state*/
   undo_manager_undo (UNDO_MANAGER);
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) TL_SELECTIONS), ==, 5);
-  check_objects_vs_original_state ();
+  check_timeline_objects_vs_original_state (0);
 
-  /* redo and check that the objects are gone */
+  /* redo and check that the objects are moved
+   * again */
   undo_manager_redo (UNDO_MANAGER);
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) TL_SELECTIONS), ==, 0);
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) MA_SELECTIONS), ==, 0);
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) CHORD_SELECTIONS),
-    ==, 0);
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) AUTOMATION_SELECTIONS),
-    ==, 0);
+  check_after_duplicate_timeline ();
+
+  /* undo again to prepare for next test */
+  undo_manager_undo (UNDO_MANAGER);
+  check_timeline_objects_vs_original_state (0);
 }
 
 int
@@ -340,16 +715,21 @@ main (int argc, char *argv[])
 
   test_helper_zrythm_init ();
 
-  bootstrap ();
-
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  bootstrap_timeline ();
   g_test_add_func (
-    TEST_PREFIX "test create",
-    (GTestFunc) test_create);
+    TEST_PREFIX "test create timeline",
+    (GTestFunc) test_create_timeline);
   g_test_add_func (
-    TEST_PREFIX "test delete",
-    (GTestFunc) test_delete);
+    TEST_PREFIX "test delete timeline",
+    (GTestFunc) test_delete_timeline);
+  g_test_add_func (
+    TEST_PREFIX "test move timeline",
+    (GTestFunc) test_move_timeline);
+  g_test_add_func (
+    TEST_PREFIX "test duplicate timeline",
+    (GTestFunc) test_duplicate_timeline);
 
   return g_test_run ();
 }

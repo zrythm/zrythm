@@ -29,6 +29,7 @@
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 
 #include <glib/gi18n.h>
 
@@ -588,6 +589,19 @@ do_or_undo_duplicate (
 
           /* add to track */
           add_object_to_project (obj);
+
+          /* remember the new name */
+          if (!string_is_equal (
+                arranger_object_get_name (
+                  obj),
+                arranger_object_get_name (
+                  objs[i]), 0))
+            {
+              arranger_object_set_name (
+                objs[i],
+                arranger_object_get_name (obj),
+                AO_UPDATE_THIS);
+            }
         }
       else
         {

@@ -475,6 +475,25 @@ region_find_midi_note (
 }
 
 /**
+ * Gets the AutomationTrack using the saved index.
+ */
+AutomationTrack *
+region_get_automation_track (
+  Region * region)
+{
+  Track * track =
+    arranger_object_get_track (
+      (ArrangerObject *) region);
+  g_return_val_if_fail (
+    track->automation_tracklist.num_ats >
+    region->at_index, NULL);
+
+  return
+    track->automation_tracklist.ats[
+      region->at_index];
+}
+
+/**
  * Print region info for debugging.
  */
 void

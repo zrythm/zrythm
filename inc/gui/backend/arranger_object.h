@@ -420,6 +420,14 @@ arranger_object_get_region (
   ArrangerObject * self);
 
 /**
+ * Returns a pointer to the name of the object,
+ * if the object can have names.
+ */
+const char *
+arranger_object_get_name (
+  ArrangerObject * self);
+
+/**
  * Returns if the object represented by the
  * ArrrangerObjectInfo should be visible.
  *
@@ -518,6 +526,14 @@ arranger_object_reset_counterparts (
  */
 int
 arranger_object_is_selected (
+  ArrangerObject * self);
+
+/**
+ * Prints debug information about the given
+ * object.
+ */
+void
+arranger_object_print (
   ArrangerObject * self);
 
 /**
@@ -650,6 +666,13 @@ arranger_object_set_position (
   const int                  cached,
   const int                  validate,
   ArrangerObjectUpdateFlag   update_flag);
+
+/**
+ * Returns the type as a string.
+ */
+const char *
+arranger_object_stringize_type (
+  ArrangerObjectType type);
 
 /**
  * Moves the object by the given amount of

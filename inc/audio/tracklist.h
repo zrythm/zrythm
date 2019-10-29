@@ -128,6 +128,15 @@ tracklist_get_visible_tracks (
   Track **    visible_tracks,
   int *       num_visible);
 
+/**
+ * Returns the Track matching the given name, if
+ * any.
+ */
+Track *
+tracklist_find_track_by_name (
+  Tracklist *  self,
+  const char * name);
+
 int
 tracklist_contains_master_track (
   Tracklist * self);
