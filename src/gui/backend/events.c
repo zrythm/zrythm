@@ -620,7 +620,7 @@ on_arranger_object_changed (
             else
               _obj = prev_ac_obj;
 
-            if (obj &&
+            if (_obj &&
                 Z_IS_ARRANGER_OBJECT_WIDGET (
                   _obj->widget))
               {

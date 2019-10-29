@@ -92,6 +92,7 @@ arranger_object_get_selections_for_type (
     case TYPE (CHORD_OBJECT):
       return (ArrangerSelections *) CHORD_SELECTIONS;
     case TYPE (AUTOMATION_POINT):
+    case TYPE (AUTOMATION_CURVE):
       return
         (ArrangerSelections *) AUTOMATION_SELECTIONS;
     default:
@@ -1126,6 +1127,11 @@ create_widget (
         (GtkWidget *)
         automation_point_widget_new (
           (AutomationPoint *) self);
+    case TYPE (AUTOMATION_CURVE):
+      return
+        (GtkWidget *)
+        automation_curve_widget_new (
+          (AutomationCurve *) self);
     case TYPE (MARKER):
       return
         (GtkWidget *)
@@ -1709,6 +1715,16 @@ arranger_object_get_track (
         track = ap->region->at->track;
       }
       break;
+    case TYPE (AUTOMATION_CURVE):
+      {
+        AutomationCurve * ac =
+          (AutomationCurve *) self;
+        g_return_val_if_fail (
+          ac->region && ac->region->at &&
+          ac->region->at->track, NULL);
+        track = ac->region->at->track;
+      }
+      break;
     case TYPE (MIDI_NOTE):
       {
         MidiNote * mn = (MidiNote *) self;
@@ -1801,6 +1817,7 @@ arranger_object_get_arranger (
       }
       break;
     case TYPE (AUTOMATION_POINT):
+    case TYPE (AUTOMATION_CURVE):
       arranger =
         (ArrangerWidget *) (MW_AUTOMATION_ARRANGER);
       break;

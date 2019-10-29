@@ -613,7 +613,8 @@ automation_arranger_widget_move_items_y (
             ap, fval, AO_UPDATE_NON_TRANS);
         }
       ArrangerObject * start_ap_obj =
-        (ArrangerObject *) self->start_ap;
+        ar_prv->start_object;
+      g_return_if_fail (start_ap_obj);
       arranger_object_widget_update_tooltip (
         Z_ARRANGER_OBJECT_WIDGET (
           start_ap_obj->widget), 1);
