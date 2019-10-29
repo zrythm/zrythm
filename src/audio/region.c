@@ -804,10 +804,34 @@ region_disconnect (
         (ArrangerSelections *) TL_SELECTIONS,
         (ArrangerObject *) self);
     }
-  ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
-  if (ar_prv->start_object ==
-        (ArrangerObject *) self)
-    ar_prv->start_object = NULL;
+  for (int i = 0; i < self->num_midi_notes; i++)
+    {
+      MidiNote * mn = self->midi_notes[i];
+      arranger_selections_remove_object (
+        (ArrangerSelections *) MA_SELECTIONS,
+        (ArrangerObject *) mn);
+    }
+  for (int i = 0; i < self->num_chord_objects; i++)
+    {
+      ChordObject * c = self->chord_objects[i];
+      arranger_selections_remove_object (
+        (ArrangerSelections *) CHORD_SELECTIONS,
+        (ArrangerObject *) c);
+    }
+  for (int i = 0; i < self->num_aps; i++)
+    {
+      AutomationPoint * ap = self->aps[i];
+      arranger_selections_remove_object (
+        (ArrangerSelections *) AUTOMATION_SELECTIONS,
+        (ArrangerObject *) ap);
+    }
+  if (ZRYTHM_HAVE_UI)
+    {
+      ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
+      if (ar_prv->start_object ==
+            (ArrangerObject *) self)
+        ar_prv->start_object = NULL;
+    }
 }
 
 SERIALIZE_SRC (Region, region)

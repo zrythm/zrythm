@@ -100,15 +100,15 @@ transport_init (
 
       self->loop = 1;
 
-      if (!TESTING)
-        {
-          self->metronome_enabled =
-            g_settings_get_int (
-              S_UI,
-              "metronome-enabled");
-        }
+      self->metronome_enabled =
+        ZRYTHM_TESTING ?
+        1 :
+        g_settings_get_int (
+          S_UI,
+          "metronome-enabled");
 
-      transport_set_bpm (self, TRANSPORT_DEFAULT_BPM);
+      transport_set_bpm (
+        self, TRANSPORT_DEFAULT_BPM);
     }
 
   /* set playstate */

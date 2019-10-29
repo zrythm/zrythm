@@ -96,7 +96,7 @@ region_draw_cb (
       GdkRGBA color;
       if (track)
         color = track->color;
-      else if (TESTING)
+      else
         {
           color.red = 1;
           color.green = 0;

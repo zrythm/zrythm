@@ -31,6 +31,7 @@ if get_option ('enable_tests')
 
   # path, is parallel
   tests = [
+    ['actions/arranger_selections', true],
     ['audio/automation_track', true],
     ['audio/midi_note', true],
     ['audio/midi_track', true],

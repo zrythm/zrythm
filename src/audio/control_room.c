@@ -57,9 +57,11 @@ control_room_init (
 
   /* set the monitor volume */
   float amp =
-    (float)
-    g_settings_get_double (
-      S_UI, "monitor-out-vol");
+    ZRYTHM_TESTING ?
+      1.f :
+      (float)
+      g_settings_get_double (
+        S_UI, "monitor-out-vol");
   fader_set_amp (
     &self->monitor_fader, amp);
 

@@ -370,6 +370,16 @@ project_get_project_file_path (
   const int is_backup);
 
 /**
+ * Initializes the selections in the project.
+ *
+ * @note
+ * Not meant to be used anywhere besides
+ * tests and project.c
+ */
+void
+project_init_selections (Project * self);
+
+/**
  * Sets if the project has range and updates UI.
  */
 void

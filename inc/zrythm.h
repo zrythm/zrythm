@@ -57,7 +57,8 @@ typedef struct UiCaches UiCaches;
 
 #define MAX_RECENT_PROJECTS 20
 #define DEBUGGING (ZRYTHM->debug)
-#define TESTING (ZRYTHM->testing)
+#define ZRYTHM_TESTING (ZRYTHM->testing)
+#define ZRYTHM_HAVE_UI (ZRYTHM->have_ui)
 
 /**
  * To be used throughout the program.
@@ -172,6 +173,10 @@ typedef struct Zrythm
    * loading projects, etc.
    */
   double                  progress;
+
+  /** 1 if Zrythm has a UI, 0 if headless (eg, when
+   * unit-testing). */
+  int                     have_ui;
 } Zrythm;
 
 /**

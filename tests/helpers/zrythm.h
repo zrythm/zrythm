@@ -26,11 +26,17 @@
 #ifndef __TEST_HELPERS_ZRYTHM_H__
 #define __TEST_HELPERS_ZRYTHM_H__
 
+#include "audio/chord_track.h"
 #include "audio/engine_dummy.h"
+#include "audio/marker_track.h"
+#include "audio/tracklist.h"
 #include "project.h"
+#include "utils/objects.h"
+#include "utils/flags.h"
 #include "zrythm.h"
 
 #include <glib.h>
+#include <glib/gi18n.h>
 
 /**
  * @addtogroup tests
@@ -41,31 +47,76 @@
 /** Time to run fishbowl, in seconds */
 #define DEFAULT_FISHBOWL_TIME 20
 
+/** Compares 2 Position pointers. */
+#define g_assert_cmppos(a,b) \
+  g_assert_cmpmem ( \
+    a, sizeof (Position), b, sizeof (Position))
+
 /**
  * To be called by every test's main to initialize
  * Zrythm to default values.
  */
-static void
+void
 test_helper_zrythm_init ()
 {
+  object_utils_init ();
+
   ZRYTHM = calloc (1, sizeof (Zrythm));
   ZRYTHM->symap = symap_new ();
   ZRYTHM->testing = 1;
+  ZRYTHM->have_ui = 0;
   PROJECT = calloc (1, sizeof (Project));
   AUDIO_ENGINE->block_length = 256;
 
-  transport_init (TRANSPORT, 0);
-  engine_dummy_setup (AUDIO_ENGINE, 0);
+  project_init_selections (PROJECT);
+
+  AUDIO_ENGINE->audio_backend =
+    AUDIO_BACKEND_DUMMY;
+  AUDIO_ENGINE->midi_backend =
+    MIDI_BACKEND_DUMMY;
+  engine_init (AUDIO_ENGINE, 0);
+  engine_update_frames_per_tick (
+    AUDIO_ENGINE, 4, 140, 44000);
+  undo_manager_init (&PROJECT->undo_manager);
+
+  /* init pinned tracks */
+  Track * track =
+    chord_track_new ();
+  tracklist_append_track (
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
+    F_NO_RECALC_GRAPH);
+  track->pinned = 1;
+  TRACKLIST->chord_track = track;
+  track =
+    marker_track_default ();
+  tracklist_append_track (
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
+    F_NO_RECALC_GRAPH);
+  track->pinned = 1;
+  TRACKLIST->marker_track = track;
+
+  /* add master channel to mixer and tracklist */
+  track =
+    track_new (
+      TRACK_TYPE_MASTER, _("Master"),
+      F_WITHOUT_LANE);
+  tracklist_append_track (
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
+    F_NO_RECALC_GRAPH);
+  TRACKLIST->master_track = track;
+  tracklist_selections_add_track (
+    TRACKLIST_SELECTIONS, track);
 }
 
 /**
  * To be called after test_helper_zrythm_init() to
  * initialize the UI (GTK).
  */
-static void
+void
 test_helper_zrythm_gui_init (
   int argc, char *argv[])
 {
+  ZRYTHM->have_ui = 1;
   if (gtk_init_check (&argc, &argv))
     {
       gtk_init (&argc, &argv);

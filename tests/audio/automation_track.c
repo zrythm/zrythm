@@ -25,6 +25,8 @@
 #include "utils/arrays.h"
 #include "zrythm.h"
 
+#include "tests/helpers/zrythm.h"
+
 #include <glib.h>
 #include <locale.h>
 
@@ -43,7 +45,7 @@ at_fixture_set_up (
   /*AutomationCurve * ac;*/
 
   /* needed to set TRANSPORT */
-  transport_init (TRANSPORT, 0);
+  /*transport_init (TRANSPORT, 0);*/
   engine_update_frames_per_tick (
     AUDIO_ENGINE, 4, 140, 44000);
 
@@ -152,8 +154,7 @@ main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-  ZRYTHM = calloc (1, sizeof (Zrythm));
-  PROJECT = calloc (1, sizeof (Project));
+  test_helper_zrythm_init ();
 
 #define TEST_PREFIX "/audio/automation_track/"
 

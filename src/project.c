@@ -281,8 +281,15 @@ project_sanity_check (Project * self)
   /* TODO */
 }
 
-static void
-init_selections (Project * self)
+/**
+ * Initializes the selections in the project.
+ *
+ * @note
+ * Not meant to be used anywhere besides
+ * tests and project.c
+ */
+void
+project_init_selections (Project * self)
 {
   arranger_selections_init (
     (ArrangerSelections *)
@@ -302,6 +309,10 @@ init_selections (Project * self)
     ARRANGER_SELECTIONS_TYPE_MIDI);
 }
 
+/**
+ * Not to be used anywhere else. This is only made
+ * public for testing.
+ */
 static void
 create_default (Project * self)
 {
@@ -322,7 +333,7 @@ create_default (Project * self)
     }
 
   /* initialize selections */
-  init_selections (self);
+  project_init_selections (self);
 
   engine_init (&self->audio_engine, 0);
   undo_manager_init (&self->undo_manager);

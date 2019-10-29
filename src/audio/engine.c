@@ -146,10 +146,14 @@ engine_init (
     &self->transport, loading);
 
   /* get audio backend */
-  int ab_code =
-    g_settings_get_enum (
-      S_PREFERENCES,
-      "audio-backend");
+  AudioBackend ab_code =
+    ZRYTHM_TESTING ?
+      self->audio_backend :
+      (AudioBackend)
+      g_settings_get_enum (
+        S_PREFERENCES,
+        "audio-backend");
+
   /* use ifdef's so that dummy is used if the
    * selected backend isn't available */
   switch (ab_code)
@@ -179,10 +183,13 @@ engine_init (
     }
 
   /* get midi backend */
-  int mb_code =
-    g_settings_get_enum (
-      S_PREFERENCES,
-      "midi-backend");
+  MidiBackend mb_code =
+    ZRYTHM_TESTING ?
+      self->midi_backend :
+      (MidiBackend)
+      g_settings_get_enum (
+        S_PREFERENCES,
+        "midi-backend");
   switch (mb_code)
     {
     case MIDI_BACKEND_DUMMY:
@@ -205,15 +212,19 @@ engine_init (
     }
 
   self->pan_law =
-    (PanLaw)
-    g_settings_get_enum (
-      S_PREFERENCES,
-      "pan-law");
+    ZRYTHM_TESTING ?
+      PAN_LAW_MINUS_3DB :
+      (PanLaw)
+      g_settings_get_enum (
+        S_PREFERENCES,
+        "pan-law");
   self->pan_algo =
-    (PanAlgorithm)
-    g_settings_get_enum (
-      S_PREFERENCES,
-      "pan-algo");
+    ZRYTHM_TESTING ?
+      PAN_ALGORITHM_SINE_LAW :
+      (PanAlgorithm)
+      g_settings_get_enum (
+        S_PREFERENCES,
+        "pan-algo");
 
   int ret = 0;
   switch (self->audio_backend)
@@ -246,18 +257,21 @@ engine_init (
     }
   if (ret)
     {
-      char * str =
-        g_strdup_printf (
-          _("Failed to initialize the %s audio "
-            "backend. Will use the dummy backend "
-            "instead. Please check your backend "
-            "settings in the Preferences."),
-          engine_audio_backend_to_string (
-            self->audio_backend));
-      ui_show_message_full (
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_MESSAGE_WARNING, str);
-      g_free (str);
+      if (!ZRYTHM_TESTING)
+        {
+          char * str =
+            g_strdup_printf (
+              _("Failed to initialize the %s audio "
+                "backend. Will use the dummy backend "
+                "instead. Please check your backend "
+                "settings in the Preferences."),
+              engine_audio_backend_to_string (
+                self->audio_backend));
+          ui_show_message_full (
+            GTK_WINDOW (MAIN_WINDOW),
+            GTK_MESSAGE_WARNING, str);
+          g_free (str);
+        }
 
       self->audio_backend =
         AUDIO_BACKEND_DUMMY;
@@ -312,18 +326,21 @@ engine_init (
     }
   if (mret)
     {
-      char * str =
-        g_strdup_printf (
-          _("Failed to initialize the %s MIDI "
-            "backend. Will use the dummy backend "
-            "instead. Please check your backend "
-            "settings in the Preferences."),
-          engine_midi_backend_to_string (
-            self->midi_backend));
-      ui_show_message_full (
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_MESSAGE_WARNING, str);
-      g_free (str);
+      if (!ZRYTHM_TESTING)
+        {
+          char * str =
+            g_strdup_printf (
+              _("Failed to initialize the %s MIDI "
+                "backend. Will use the dummy backend "
+                "instead. Please check your backend "
+                "settings in the Preferences."),
+              engine_midi_backend_to_string (
+                self->midi_backend));
+          ui_show_message_full (
+            GTK_WINDOW (MAIN_WINDOW),
+            GTK_MESSAGE_WARNING, str);
+          g_free (str);
+        }
 
       self->midi_backend =
         MIDI_BACKEND_DUMMY;

@@ -863,6 +863,7 @@ zrythm_app_new (void)
   self->zrythm = calloc (1, sizeof (Zrythm));
   ZRYTHM = self->zrythm;
   ZRYTHM->project = calloc (1, sizeof (Project));
+  ZRYTHM->have_ui = 1;
 
   return self;
 }
