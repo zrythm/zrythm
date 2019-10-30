@@ -128,6 +128,8 @@ port_connections_popover_widget_new (
     GTK_POPOVER (self),
     GTK_WIDGET (owner));
 
+  port_connections_popover_widget_refresh (self);
+
   return self;
 }
 

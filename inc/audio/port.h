@@ -715,6 +715,38 @@ port_get_multiplier_by_index (
 }
 
 /**
+ * Returns the minimum possible value for this
+ * port.
+ *
+ * Note that for Audio we should consider the
+ * amp (0.0 and 2.0).
+ */
+float
+port_get_minf (
+  Port * self);
+
+/**
+ * Returns the maximum possible value for this
+ * port.
+ *
+ * Note that for Audio we should consider the
+ * amp (0.0 and 2.0).
+ */
+float
+port_get_maxf (
+  Port * self);
+
+/**
+ * Returns the zero value for the given port.
+ *
+ * Note that for Audio we should consider the
+ * amp (0.0 and 2.0).
+ */
+float
+port_get_zerof (
+  Port * self);
+
+/**
  * Deletes port, doing required cleanup and updating counters.
  */
 void
@@ -787,13 +819,14 @@ port_set_expose_to_alsa (
  * Sets the given control value to the
  * corresponding underlying structure in the Port.
  *
- * The given value must be normalized between
- * 0 and 1.
+ * @param is_normalized Whether the given value is
+ * normalized between 0 and 1.
  */
 void
 port_set_control_value (
   Port *      self,
-  const float val);
+  const float val,
+  const int   is_normalized);
 
 /**
  * Connets src to dest.

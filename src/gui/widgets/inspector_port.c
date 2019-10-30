@@ -190,8 +190,6 @@ on_double_click (
 
   PortConnectionsPopoverWidget * popover =
     port_connections_popover_widget_new (self);
-  port_connections_popover_widget_refresh (
-    popover);
   /*gtk_popover_popdown (GTK_POPOVER (popover));*/
   gtk_widget_show_all (GTK_WIDGET (popover));
 }
@@ -257,7 +255,7 @@ set_port_value (
   InspectorPortWidget * self,
   float                 val)
 {
-  port_set_control_value (self->port, val);
+  port_set_control_value (self->port, val, 0);
 }
 
 static gboolean
@@ -345,43 +343,19 @@ inspector_port_widget_new (
 
   if (has_str)
     {
-      float minf = 0.f, maxf = 1.f, zero = 0.f;
+      float minf = port_get_minf (port);
+      float maxf = port_get_maxf (port);
+      float zerof = port_get_zerof (port);
       int editable = 0;
-      switch (port->identifier.type)
-        {
-        case TYPE_AUDIO:
-          minf = 0.f;
-          maxf = 2.f;
-          zero = 0.0f;
-          break;
-        case TYPE_CV:
-          minf = -1.f;
-          maxf = 1.f;
-          zero = 0.0f;
-          break;
-        case TYPE_EVENT:
-          minf = 0.f;
-          maxf = 1.f;
-          zero = 0.f;
-          break;
-        case TYPE_CONTROL:
-          /* FIXME this wont work with zrythm controls
-           * like volume and pan */
-          minf = port->lv2_port->lv2_control->minf;
-          maxf = port->lv2_port->lv2_control->maxf;
-          zero = minf;
-          editable = 1;
-          break;
-        default:
-          break;
-        }
+      if (port->identifier.type == TYPE_CONTROL)
+        editable = 1;
       self->bar_slider =
         _bar_slider_widget_new (
           BAR_SLIDER_TYPE_NORMAL,
           (float (*) (void *)) get_port_value,
           (void (*) (void *, float)) set_port_value,
           (void *) self, NULL, minf, maxf, -1, 20,
-          zero, 0, 2, BAR_SLIDER_UPDATE_MODE_CURSOR,
+          zerof, 0, 2, BAR_SLIDER_UPDATE_MODE_CURSOR,
           str, "");
       self->bar_slider->show_value = 0;
       self->bar_slider->editable = editable;
@@ -390,7 +364,7 @@ inspector_port_widget_new (
         GTK_WIDGET (self->bar_slider));
       self->minf = minf;
       self->maxf = maxf;
-      self->zerof = zero;
+      self->zerof = zerof;
 
       /* keep drawing the bar slider */
       gtk_widget_add_tick_callback (

@@ -73,8 +73,9 @@ on_ok_clicked (
         src, dest, 0);
       mixer_recalc_graph (MIXER);
 
-      port_connections_popover_widget_refresh (
-        self->owner);
+      gtk_widget_destroy (GTK_WIDGET (self->owner));
+      /*port_connections_popover_widget_refresh (*/
+        /*self->owner);*/
     }
   else
     {

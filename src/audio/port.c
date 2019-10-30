@@ -824,22 +824,131 @@ port_disconnect_all (Port * port)
  * Sets the given control value to the
  * corresponding underlying structure in the Port.
  *
- * The given value must be normalized between
- * 0 and 1.
+ * @param is_normalized Whether the given value is
+ * normalized between 0 and 1.
  */
 void
 port_set_control_value (
   Port *      self,
-  const float val)
+  const float val,
+  const int   is_normalized)
 {
   g_return_if_fail (
     self->identifier.type == TYPE_CONTROL);
 
-  self->base_value = val;
   if (self->lv2_port)
     {
-      self->lv2_port->control = val;
+      if (is_normalized)
+        {
+          float minf = port_get_minf (self);
+          float maxf = port_get_maxf (self);
+          self->base_value =
+            minf + val * (maxf - minf);
+        }
+      else
+        {
+          self->base_value = val;
+        }
+      self->lv2_port->control =
+        self->base_value;
     }
+  else
+    g_warn_if_reached ();
+}
+
+/**
+ * Returns the minimum possible value for this
+ * port.
+ *
+ * Note that for Audio we should consider the
+ * amp (0.0 and 2.0).
+ */
+float
+port_get_minf (
+  Port * port)
+{
+  switch (port->identifier.type)
+    {
+    case TYPE_AUDIO:
+      return 0.f;
+    case TYPE_CV:
+      return -1.f;
+    case TYPE_EVENT:
+      return  0.f;
+    case TYPE_CONTROL:
+      /* FIXME this wont work with zrythm controls
+       * like volume and pan */
+      g_return_val_if_fail (
+        port->lv2_port &&
+        port->lv2_port->lv2_control, 0.f);
+      return port->lv2_port->lv2_control->minf;
+    default:
+      break;
+    }
+  g_return_val_if_reached (0.f);
+}
+
+/**
+ * Returns the maximum possible value for this
+ * port.
+ *
+ * Note that for Audio we should consider the
+ * amp (0.0 and 2.0).
+ */
+float
+port_get_maxf (
+  Port * port)
+{
+  switch (port->identifier.type)
+    {
+    case TYPE_AUDIO:
+      return 2.f;
+    case TYPE_CV:
+      return 1.f;
+    case TYPE_EVENT:
+      return  1.f;
+    case TYPE_CONTROL:
+      /* FIXME this wont work with zrythm controls
+       * like volume and pan */
+      g_return_val_if_fail (
+        port->lv2_port &&
+        port->lv2_port->lv2_control, 0.f);
+      return port->lv2_port->lv2_control->maxf;
+    default:
+      break;
+    }
+  g_return_val_if_reached (0.f);
+}
+
+/**
+ * Returns the zero value for the given port.
+ *
+ * Note that for Audio we should consider the
+ * amp (0.0 and 2.0).
+ */
+float
+port_get_zerof (
+  Port * port)
+{
+  switch (port->identifier.type)
+    {
+    case TYPE_AUDIO:
+      return 0.f;
+    case TYPE_CV:
+      return 0.f;
+    case TYPE_EVENT:
+      return 0.f;
+    case TYPE_CONTROL:
+      /* FIXME this wont work with zrythm controls
+       * like volume and pan */
+      g_return_val_if_fail (
+        port->lv2_port &&
+        port->lv2_port->lv2_control, 0.f);
+      return port->lv2_port->lv2_control->minf;
+    default:
+      break;
+    }
+  g_return_val_if_reached (0.f);
 }
 
 /**
