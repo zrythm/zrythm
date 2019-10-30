@@ -31,15 +31,15 @@ G_DECLARE_FINAL_TYPE (
   Z, PORT_CONNECTIONS_POPOVER_WIDGET,
   GtkPopover)
 
-typedef struct _PortConnectionsButtonWidget
-  PortConnectionsButtonWidget;
+typedef struct _InspectorPortWidget
+  InspectorPortWidget;
 
 typedef struct _PortConnectionsPopoverWidget
 {
   GtkPopover              parent_instance;
 
   /** The owner button. */
-  PortConnectionsButtonWidget * owner;
+  InspectorPortWidget * owner;
 
   /** The main vertical box containing everything. */
   GtkBox *         main_box;
@@ -59,7 +59,7 @@ typedef struct _PortConnectionsPopoverWidget
  */
 PortConnectionsPopoverWidget *
 port_connections_popover_widget_new (
-  PortConnectionsButtonWidget * owner);
+  InspectorPortWidget * owner);
 
 /**
  * Refreshes the popover.

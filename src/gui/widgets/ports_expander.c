@@ -22,8 +22,8 @@
 #include "audio/port.h"
 #include "audio/track.h"
 #include "gui/widgets/editable_label.h"
+#include "gui/widgets/inspector_port.h"
 #include "gui/widgets/ports_expander.h"
-#include "gui/widgets/port_connections_button.h"
 #include "plugins/plugin.h"
 #include "project.h"
 
@@ -204,7 +204,20 @@ ports_expander_widget_setup_plugin (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     -1, -1, -1, 120);
 
-  PortConnectionsButtonWidget * pcb;
+  TwoColExpanderBoxWidgetPrivate * prv =
+    two_col_expander_box_widget_get_private (
+      Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
+  gtk_widget_set_vexpand_set (
+    GTK_WIDGET (prv->content), 1);
+
+#define ADD_SINGLE(x) \
+  ip = \
+    inspector_port_widget_new (x); \
+  two_col_expander_box_widget_add_single ( \
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), \
+    GTK_WIDGET (ip))
+
+  InspectorPortWidget * ip;
   Port * port;
   if (type == TYPE_CONTROL &&
       flow == FLOW_INPUT)
@@ -216,13 +229,7 @@ ports_expander_widget_setup_plugin (
                 != TYPE_CONTROL)
             continue;
 
-          pcb =
-            port_connections_button_widget_new (
-              port);
-
-          two_col_expander_box_widget_add_single (
-            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-            GTK_WIDGET (pcb));
+          ADD_SINGLE (port);
         }
     }
   else if (type == TYPE_CONTROL &&
@@ -235,13 +242,7 @@ ports_expander_widget_setup_plugin (
                 != TYPE_CONTROL)
             continue;
 
-          pcb =
-            port_connections_button_widget_new (
-              port);
-
-          two_col_expander_box_widget_add_single (
-            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-            GTK_WIDGET (pcb));
+          ADD_SINGLE (port);
         }
     }
   else if (type == TYPE_CV &&
@@ -254,13 +255,7 @@ ports_expander_widget_setup_plugin (
                 != TYPE_CV)
             continue;
 
-          pcb =
-            port_connections_button_widget_new (
-              port);
-
-          two_col_expander_box_widget_add_single (
-            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-            GTK_WIDGET (pcb));
+          ADD_SINGLE (port);
         }
     }
   else if (type == TYPE_CV &&
@@ -273,13 +268,7 @@ ports_expander_widget_setup_plugin (
                 != TYPE_CV)
             continue;
 
-          pcb =
-            port_connections_button_widget_new (
-              port);
-
-          two_col_expander_box_widget_add_single (
-            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-            GTK_WIDGET (pcb));
+          ADD_SINGLE (port);
         }
     }
   else if (type == TYPE_AUDIO &&
@@ -292,13 +281,7 @@ ports_expander_widget_setup_plugin (
                 != TYPE_AUDIO)
             continue;
 
-          pcb =
-            port_connections_button_widget_new (
-              port);
-
-          two_col_expander_box_widget_add_single (
-            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-            GTK_WIDGET (pcb));
+          ADD_SINGLE (port);
         }
     }
   else if (type == TYPE_AUDIO &&
@@ -311,13 +294,7 @@ ports_expander_widget_setup_plugin (
                 != TYPE_AUDIO)
             continue;
 
-          pcb =
-            port_connections_button_widget_new (
-              port);
-
-          two_col_expander_box_widget_add_single (
-            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-            GTK_WIDGET (pcb));
+          ADD_SINGLE (port);
         }
     }
   else if (type == TYPE_EVENT &&
@@ -330,13 +307,7 @@ ports_expander_widget_setup_plugin (
                 != TYPE_EVENT)
             continue;
 
-          pcb =
-            port_connections_button_widget_new (
-              port);
-
-          two_col_expander_box_widget_add_single (
-            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-            GTK_WIDGET (pcb));
+          ADD_SINGLE (port);
         }
     }
   else if (type == TYPE_EVENT &&
@@ -349,15 +320,10 @@ ports_expander_widget_setup_plugin (
                 != TYPE_EVENT)
             continue;
 
-          pcb =
-            port_connections_button_widget_new (
-              port);
-
-          two_col_expander_box_widget_add_single (
-            Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-            GTK_WIDGET (pcb));
+          ADD_SINGLE (port);
         }
     }
+#undef ADD_SINGLE
 
   ports_expander_widget_refresh (
     self);
@@ -421,14 +387,20 @@ ports_expander_widget_setup_track (
   two_col_expander_box_widget_remove_children (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
 
+  TwoColExpanderBoxWidgetPrivate * prv =
+    two_col_expander_box_widget_get_private (
+      Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
+  gtk_widget_set_vexpand_set (
+    GTK_WIDGET (prv->content), 1);
+
 #define ADD_SINGLE(x) \
-  pcb = \
-    port_connections_button_widget_new (x); \
+  ip = \
+    inspector_port_widget_new (x); \
   two_col_expander_box_widget_add_single ( \
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), \
-    GTK_WIDGET (pcb))
+    GTK_WIDGET (ip))
 
-  PortConnectionsButtonWidget * pcb;
+  InspectorPortWidget * ip;
   switch (type)
     {
     case PE_TRACK_PORT_TYPE_SENDS:

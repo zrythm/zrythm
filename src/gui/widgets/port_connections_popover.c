@@ -21,7 +21,7 @@
 #include "audio/automation_track.h"
 #include "audio/channel_track.h"
 #include "gui/widgets/port_connection_row.h"
-#include "gui/widgets/port_connections_button.h"
+#include "gui/widgets/inspector_port.h"
 #include "gui/widgets/port_connections_popover.h"
 #include "gui/widgets/port_selector_popover.h"
 #include "gui/widgets/automation_track.h"
@@ -32,18 +32,19 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (PortConnectionsPopoverWidget,
-               port_connections_popover_widget,
-               GTK_TYPE_POPOVER)
+G_DEFINE_TYPE (
+  PortConnectionsPopoverWidget,
+  port_connections_popover_widget,
+  GTK_TYPE_POPOVER)
 
 void
 port_connections_popover_widget_refresh (
   PortConnectionsPopoverWidget * self)
 {
-  PortConnectionsButtonWidget * owner =
+  InspectorPortWidget * owner =
     self->owner;
   g_return_if_fail (
-    Z_IS_PORT_CONNECTIONS_BUTTON_WIDGET (self->owner));
+    Z_IS_INSPECTOR_PORT_WIDGET (self->owner));
 
   z_gtk_container_destroy_all_children (
     GTK_CONTAINER (self->ports_box));
@@ -116,21 +117,36 @@ port_connections_popover_widget_refresh (
  */
 PortConnectionsPopoverWidget *
 port_connections_popover_widget_new (
-  PortConnectionsButtonWidget * owner)
+  InspectorPortWidget * owner)
 {
   PortConnectionsPopoverWidget * self =
     g_object_new (
       PORT_CONNECTIONS_POPOVER_WIDGET_TYPE, NULL);
 
   self->owner = owner;
+  gtk_popover_set_relative_to (
+    GTK_POPOVER (self),
+    GTK_WIDGET (owner));
 
   return self;
+}
+
+static void
+finalize (
+  PortConnectionsPopoverWidget * self)
+{
+  G_OBJECT_CLASS (
+    port_connections_popover_widget_parent_class)->
+      finalize (G_OBJECT (self));
 }
 
 static void
 port_connections_popover_widget_class_init (
   PortConnectionsPopoverWidgetClass * _klass)
 {
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) finalize;
 }
 
 static void

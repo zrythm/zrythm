@@ -119,7 +119,13 @@ draw_cb (
   cairo_fill (cr);
 
   char str[102];
-  if (self->decimals == 0)
+  if (!self->show_value)
+    {
+      sprintf (
+        str, "%s%s",
+        self->prefix, self->suffix);
+    }
+  else if (self->decimals == 0)
     {
       sprintf (
         str, "%s%d%s",
@@ -128,7 +134,7 @@ draw_cb (
           real_val * 100 : real_val),
         self->suffix);
     }
-    else if (self->decimals < 5)
+  else if (self->decimals < 5)
     {
       sprintf (
         str,
@@ -202,6 +208,9 @@ drag_begin (
   double           offset_y,
   BarSliderWidget * self)
 {
+  if (!self->editable)
+    return;
+
   if (self->mode == BAR_SLIDER_UPDATE_MODE_CURSOR)
     {
       SET_REAL_VAL (
@@ -223,6 +232,9 @@ drag_update (
   gdouble         offset_y,
   BarSliderWidget * self)
 {
+  if (!self->editable)
+    return;
+
   if (self->mode == BAR_SLIDER_UPDATE_MODE_CURSOR)
     {
       SET_REAL_VAL (
@@ -257,6 +269,9 @@ drag_end (
   gdouble         offset_y,
   BarSliderWidget * self)
 {
+  if (!self->editable)
+    return;
+
   self->last_x = 0;
   self->start_x = 0;
 }
@@ -271,8 +286,7 @@ recreate_pango_layouts (
   self->layout =
     z_cairo_create_pango_layout (
       (GtkWidget *) self, Z_CAIRO_FONT,
-      PANGO_ELLIPSIZE_NONE, -1);
-}
+      PANGO_ELLIPSIZE_NONE, -1); }
 
 static void
 on_size_allocate (
@@ -392,6 +406,9 @@ static void
 bar_slider_widget_init (
   BarSliderWidget * self)
 {
+  self->show_value = 1;
+  self->editable = 1;
+
   /* make it able to notify */
   gtk_widget_set_has_window (
     GTK_WIDGET (self), TRUE);

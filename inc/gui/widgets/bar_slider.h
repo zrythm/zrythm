@@ -81,10 +81,10 @@ typedef struct _BarSliderWidget
 
   /** The suffix to show after the value (eg "%" for
    * percentages). */
-  char               suffix[50];
+  char               suffix[100];
 
   /** The prefix to show before the value. */
-  char               prefix[50];
+  char               prefix[100];
 
   /** Maximum value. */
   float              max;
@@ -127,6 +127,13 @@ typedef struct _BarSliderWidget
 
   /** The type of slider. */
   BarSliderType   type;
+
+  /** Whether to show the value in text or just the
+   * prefix + suffix. */
+  int             show_value;
+
+  /** Whether the user can change the value. */
+  int             editable;
 
   /** Multiply the value by 100 when showing it. */
   int             convert_to_percentage;
