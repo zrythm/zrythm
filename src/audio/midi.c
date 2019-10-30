@@ -253,6 +253,91 @@ midi_events_has_note_on (
 }
 
 /**
+ * Saves a string representation of the given
+ * control change event in the given buffer.
+ *
+ * @param buf The string buffer to fill, or NULL
+ *   to only get the channel.
+ *
+ * @return The MIDI channel, or -1 if not ctrl
+ *   change.
+ */
+int
+midi_ctrl_change_get_ch_and_description (
+  midi_byte_t * ctrl_change,
+  char *        buf)
+{
+  /* assert the given event is a ctrl change event */
+  if (ctrl_change[0] < 0xB0 ||
+      ctrl_change[0] > 0xBF)
+    {
+      return -1;
+    }
+
+  if (buf)
+    {
+      if (ctrl_change[1] >= 0x08 &&
+          ctrl_change[1] <= 0x1F)
+        {
+          sprintf (
+            buf, "Continuous controller #%u",
+            ctrl_change[1]);
+        }
+      else if (ctrl_change[1] >= 0x28 &&
+               ctrl_change[1] <= 0x3F)
+        {
+          sprintf (
+            buf, "Continuous controller #%u",
+            ctrl_change[1] - 0x28);
+        }
+      else
+        {
+          switch (ctrl_change[1])
+            {
+            case 0x00:
+            case 0x20:
+              strcpy (
+                buf, "Continuous controller #0");
+              break;
+            case 0x01:
+            case 0x21:
+              strcpy (buf, "Modulation wheel");
+              break;
+            case 0x02:
+            case 0x22:
+              strcpy (buf, "Breath control");
+              break;
+            case 0x03:
+            case 0x23:
+              strcpy (
+                buf, "Continuous controller #3");
+              break;
+            case 0x04:
+            case 0x24:
+              strcpy (buf, "Foot controller");
+              break;
+            case 0x05:
+            case 0x25:
+              strcpy (buf, "Portamento time");
+              break;
+            case 0x06:
+            case 0x26:
+              strcpy (buf, "Data Entry");
+              break;
+            case 0x07:
+            case 0x27:
+              strcpy (buf, "Main Volume");
+              break;
+            default:
+              strcpy (buf, "Unknown");
+              break;
+            }
+        }
+    }
+  return (ctrl_change[0] - 0xB0) + 1;
+}
+
+/**
  * Copies the queue contents to the original struct
  */
 void

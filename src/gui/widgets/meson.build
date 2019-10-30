@@ -38,6 +38,7 @@ widget_srcs = [
   'automation_tracklist.c',
   'automator.c',
   'bar_slider.c',
+  'bind_cc_dialog.c',
   'bot_bar.c',
   'bot_dock_edge.c',
   'audio_bus_track.c',

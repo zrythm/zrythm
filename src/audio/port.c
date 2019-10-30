@@ -821,6 +821,28 @@ port_disconnect_all (Port * port)
 }
 
 /**
+ * Sets the given control value to the
+ * corresponding underlying structure in the Port.
+ *
+ * The given value must be normalized between
+ * 0 and 1.
+ */
+void
+port_set_control_value (
+  Port *      self,
+  const float val)
+{
+  g_return_if_fail (
+    self->identifier.type == TYPE_CONTROL);
+
+  self->base_value = val;
+  if (self->lv2_port)
+    {
+      self->lv2_port->control = val;
+    }
+}
+
+/**
  * Removes all the given ports from the project,
  * optionally freeing them.
  */

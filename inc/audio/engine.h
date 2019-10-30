@@ -328,6 +328,13 @@ typedef struct AudioEngine
 
   SampleProcessor   sample_processor;
 
+  /** To be set to 1 when the CC from the Midi in
+   * port should be captured. */
+  int               capture_cc;
+
+  /** Last MIDI CC captured. */
+  midi_byte_t       last_cc[3];
+
 } AudioEngine;
 
 static const cyaml_schema_field_t

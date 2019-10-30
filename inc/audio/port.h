@@ -784,6 +784,18 @@ port_set_expose_to_alsa (
 #endif
 
 /**
+ * Sets the given control value to the
+ * corresponding underlying structure in the Port.
+ *
+ * The given value must be normalized between
+ * 0 and 1.
+ */
+void
+port_set_control_value (
+  Port *      self,
+  const float val);
+
+/**
  * Connets src to dest.
  *
  * @param locked Lock the connection or not.

@@ -43,15 +43,44 @@ midi_mappings_bind (
 {
   MidiMapping * mapping =
     &self->mappings[self->num_mappings];
-  mapping->key[0] = buf[0];
-  mapping->key[1] = buf[1];
-  mapping->key[2] = buf[2];
-  mapping->device_port =
-    ext_port_clone (device_port);
+  memcpy (
+    mapping->key, buf, sizeof (midi_byte_t) * 3);
+  /*mapping->device_port =*/
+    /*ext_port_clone (device_port);*/
   mapping->dest_id =
     dest_port->identifier;
   mapping->dest = dest_port;
   self->num_mappings++;
+
+  char str[100];
+  midi_ctrl_change_get_ch_and_description (
+    buf, str);
+  g_message (
+    "bounded MIDI mapping from %s to %s",
+    str, dest_port->identifier.label);
+}
+
+/**
+ * Applies the given buffer to the matching ports.
+ */
+void
+midi_mappings_apply (
+  MidiMappings * self,
+  midi_byte_t *  buf)
+{
+  for (int i = 0; i < self->num_mappings; i++)
+    {
+      MidiMapping * mapping = &self->mappings[i];
+
+      if (mapping->key[0] == buf[0] &&
+          mapping->key[1] == buf[1])
+        {
+          g_return_if_fail (mapping->dest);
+          port_set_control_value (
+            mapping->dest,
+            (float) buf[2] / 127.f);
+        }
+    }
 }
 
 /**

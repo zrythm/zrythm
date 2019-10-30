@@ -34,7 +34,10 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (ExportDialogWidget, export_dialog_widget, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (
+  ExportDialogWidget,
+  export_dialog_widget,
+  GTK_TYPE_DIALOG)
 
 enum
 {
@@ -569,58 +572,24 @@ export_dialog_widget_class_init (ExportDialogWidgetClass * _klass)
   resources_set_class_template (klass,
                                 "export_dialog.ui");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    cancel_button);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    export_button);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    export_artist);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    export_genre);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    filename_pattern);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    bit_depth);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    tracks);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    time_range_song);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    time_range_loop);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    time_range_custom);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    format);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    dither);
-  gtk_widget_class_bind_template_child (
-    klass,
-    ExportDialogWidget,
-    output_label);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, ExportDialogWidget, x)
+
+  BIND_CHILD (cancel_button);
+  BIND_CHILD (export_button);
+  BIND_CHILD (export_artist);
+  BIND_CHILD (export_genre);
+  BIND_CHILD (filename_pattern);
+  BIND_CHILD (bit_depth);
+  BIND_CHILD (tracks);
+  BIND_CHILD (time_range_song);
+  BIND_CHILD (time_range_loop);
+  BIND_CHILD (time_range_custom);
+  BIND_CHILD (format);
+  BIND_CHILD (dither);
+  BIND_CHILD (output_label);
+
   gtk_widget_class_bind_template_callback (
     klass,
     on_cancel_clicked);

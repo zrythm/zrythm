@@ -131,8 +131,8 @@ init_midi (
     midi_events_new (self->midi_in);
 
   /* Expose midi in */
-  /*port_set_expose_to_backend (*/
-    /*self->midi_in, 1);*/
+  port_set_expose_to_backend (
+    self->midi_in, 1);
 }
 
 static void
@@ -658,8 +658,30 @@ receive_midi_events (
       break;
     }
 
-  if (self->midi_in->midi_events->num_events > 0)
-    self->trigger_midi_activity = 1;
+  MidiEvents * events =
+    self->midi_in->midi_events;
+  if (events->num_events > 0)
+    {
+      self->trigger_midi_activity = 1;
+
+      /* capture cc if capturing */
+      if (self->capture_cc)
+        {
+          memcpy (
+            self->last_cc,
+            events->events[
+              events->num_events - 1].raw_buffer,
+            sizeof (midi_byte_t) * 3);
+        }
+
+      /* send cc to mapped ports */
+      for (int i = 0; i < events->num_events; i++)
+        {
+          MidiEvent * ev = &events->events[i];
+          midi_mappings_apply (
+            self->midi_mappings, ev->raw_buffer);
+        }
+    }
 }
 
 /**

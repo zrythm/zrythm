@@ -21,8 +21,10 @@
 
 #include "audio/engine.h"
 #include "audio/midi.h"
+#include "audio/midi_mapping.h"
 #include "audio/port.h"
 #include "gui/widgets/bar_slider.h"
+#include "gui/widgets/bind_cc_dialog.h"
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/port_connections_popover.h"
 #include "project.h"
@@ -93,9 +95,22 @@ on_bind_midi_cc (
   GtkMenuItem *         menuitem,
   InspectorPortWidget * self)
 {
-  /*Port * port = self->port;*/
+  BindCcDialogWidget * dialog =
+    bind_cc_dialog_widget_new ();
 
-  /*midi_byte_t bytes[3];*/
+  int ret =
+    gtk_dialog_run (GTK_DIALOG (dialog));
+
+  if (ret == GTK_RESPONSE_ACCEPT)
+    {
+      if (dialog->cc[0])
+        {
+          midi_mappings_bind (
+            MIDI_MAPPINGS, dialog->cc,
+            NULL, self->port);
+        }
+    }
+  gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 static void
@@ -108,14 +123,18 @@ show_context_menu (
 
   menu = gtk_menu_new();
 
-  menuitem =
-    gtk_menu_item_new_with_label (
-      _("Bind MIDI CC"));
-  g_signal_connect (
-    menuitem, "activate",
-    G_CALLBACK (on_bind_midi_cc), self);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL(menu), menuitem);
+  if (self->port->identifier.type ==
+        TYPE_CONTROL)
+    {
+      menuitem =
+        gtk_menu_item_new_with_label (
+          _("Bind MIDI CC"));
+      g_signal_connect (
+        menuitem, "activate",
+        G_CALLBACK (on_bind_midi_cc), self);
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL(menu), menuitem);
+    }
 
   gtk_widget_show_all (menu);
 
@@ -220,16 +239,7 @@ set_port_value (
   InspectorPortWidget * self,
   float                 val)
 {
-  Port * port = self->port;
-  switch (port->identifier.type)
-    {
-    case TYPE_CONTROL:
-      port->lv2_port->control = val;
-      port->base_value = val;
-      break;
-    default:
-      break;
-    }
+  port_set_control_value (self->port, val);
 }
 
 static gboolean

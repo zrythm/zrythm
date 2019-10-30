@@ -138,6 +138,14 @@ midi_mappings_bind (
   ExtPort *      device_port,
   Port *         dest_port);
 
+/**
+ * Applies the given buffer to the matching ports.
+ */
+void
+midi_mappings_apply (
+  MidiMappings * self,
+  midi_byte_t *  buf);
+
 /*
  * @}
  */

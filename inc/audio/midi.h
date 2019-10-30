@@ -290,6 +290,17 @@ midi_events_add_pitchbend (
   int          queued);
 
 /**
+ * Saves a string representation of the given
+ * control change event in the given buffer.
+ *
+ * @return The MIDI channel
+ */
+int
+midi_ctrl_change_get_ch_and_description (
+  midi_byte_t * ctrl_change,
+  char *        buf);
+
+/**
  * Queues MIDI note off to event queue.
  */
 void
