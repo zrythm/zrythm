@@ -87,12 +87,37 @@ get_port_str (
 }
 
 static void
+on_bind_midi_cc (
+  GtkMenuItem *         menuitem,
+  InspectorPortWidget * self)
+{
+  /*Port * port = self->port;*/
+
+  /*midi_byte_t bytes[3];*/
+}
+
+static void
 show_context_menu (
   InspectorPortWidget * self,
   gdouble               x,
   gdouble               y)
 {
-  /* TODO */
+  GtkWidget *menu, *menuitem;
+
+  menu = gtk_menu_new();
+
+  menuitem =
+    gtk_menu_item_new_with_label (
+      _("Bind MIDI CC"));
+  g_signal_connect (
+    menuitem, "activate",
+    G_CALLBACK (on_bind_midi_cc), self);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL(menu), menuitem);
+
+  gtk_widget_show_all (menu);
+
+  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
 }
 
 static void
@@ -143,6 +168,13 @@ get_port_value (
   switch (port->identifier.type)
     {
     case TYPE_AUDIO:
+      {
+        float rms =
+          math_calculate_rms_db (
+            port->buf, AUDIO_ENGINE->block_length);
+        return math_dbfs_to_amp (rms);
+      }
+      break;
     case TYPE_CV:
       {
         float rms =
@@ -194,6 +226,7 @@ set_port_value (
     {
     case TYPE_CONTROL:
       port->lv2_port->control = val;
+      port->base_value = val;
       break;
     default:
       break;
@@ -243,9 +276,13 @@ inspector_port_widget_new (
       switch (port->identifier.type)
         {
         case TYPE_AUDIO:
-        case TYPE_CV:
           minf = 0.f;
           maxf = 2.f;
+          zero = 0.0f;
+          break;
+        case TYPE_CV:
+          minf = -1.f;
+          maxf = 1.f;
           zero = 0.0f;
           break;
         case TYPE_EVENT:

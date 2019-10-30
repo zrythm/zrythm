@@ -37,6 +37,7 @@
 #include "audio/engine_pa.h"
 #include "audio/metronome.h"
 #include "audio/midi.h"
+#include "audio/midi_mapping.h"
 #include "audio/mixer.h"
 #include "audio/pool.h"
 #include "audio/routing.h"
@@ -93,8 +94,14 @@ init_midi (
 {
   g_message ("initializing MIDI...");
 
-  if (!loading)
+  if (loading)
     {
+      midi_mappings_init_loaded (
+        self->midi_mappings);
+    }
+  else
+    {
+      /* init midi editor manual press */
       self->midi_editor_manual_press =
         port_new_with_type (
           TYPE_EVENT,
@@ -103,12 +110,29 @@ init_midi (
       self->midi_editor_manual_press->
         identifier.flags |=
           PORT_FLAG_MANUAL_PRESS;
+
+      /* init midi in */
+      self->midi_in =
+        port_new_with_type (
+          TYPE_EVENT,
+          FLOW_INPUT,
+          "MIDI in");
+
+      /* init midi mappings */
+      self->midi_mappings =
+        midi_mappings_new ();
     }
 
-  /* init MIDI queues for manual press */
+  /* init MIDI queues */
   self->midi_editor_manual_press->midi_events =
     midi_events_new (
       self->midi_editor_manual_press);
+  self->midi_in->midi_events =
+    midi_events_new (self->midi_in);
+
+  /* Expose midi in */
+  /*port_set_expose_to_backend (*/
+    /*self->midi_in, 1);*/
 }
 
 static void
@@ -551,6 +575,7 @@ engine_process_prepare (
 
   /* reset all buffers */
   fader_clear_buffers (MONITOR_FADER);
+  port_clear_buffer (self->midi_in);
   port_clear_buffer (self->midi_editor_manual_press);
   port_clear_buffer (self->monitor_out->l);
   port_clear_buffer (self->monitor_out->r);
@@ -619,8 +644,8 @@ receive_midi_events (
     {
 #ifdef HAVE_JACK
     case MIDI_BACKEND_JACK:
-      /*port_receive_midi_events_from_jack (*/
-        /*self->midi_in, 0, nframes);*/
+      port_receive_midi_events_from_jack (
+        self->midi_in, 0, nframes);
       break;
 #endif
 #ifdef __linux__
@@ -633,8 +658,8 @@ receive_midi_events (
       break;
     }
 
-  /*if (self->midi_in->midi_events->num_events > 0)*/
-    /*self->trigger_midi_activity = 1;*/
+  if (self->midi_in->midi_events->num_events > 0)
+    self->trigger_midi_activity = 1;
 }
 
 /**

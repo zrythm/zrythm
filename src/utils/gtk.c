@@ -343,7 +343,8 @@ z_gtk_create_menu_item (
         action_name);
     }
 
-  gtk_box_pack_end (GTK_BOX (box), label, TRUE, TRUE, 0);
+  gtk_box_pack_end (
+    GTK_BOX (box), label, TRUE, TRUE, 0);
 
   gtk_container_add (GTK_CONTAINER (menu_item), box);
 

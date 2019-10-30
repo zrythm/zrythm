@@ -18,9 +18,7 @@
  */
 
 /**
- * @defgroup plugins Plugins
- *
- * Code related to audio Plugins (LV2).
+ * @addtogroup plugins
  *
  * @{
  */

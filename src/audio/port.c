@@ -1070,15 +1070,14 @@ port_sum_signal_from_inputs (
                   val_to_use =
                     port->lv2_port->control;
 
-                /* TODO replace 1.f with modulator
-                 * depth */
                 port->lv2_port->control =
                   CLAMP (
                     val_to_use +
-                      depth_range * src_port->buf[0] *
-                      src_port->multipliers[
-                        port_get_dest_index (
-                          src_port, port)],
+                      depth_range *
+                        src_port->buf[0] *
+                        src_port->multipliers[
+                          port_get_dest_index (
+                            src_port, port)],
                     minf, maxf);
               }
           }

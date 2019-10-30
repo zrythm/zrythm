@@ -56,12 +56,10 @@ typedef struct Channel Channel;
 typedef struct Plugin Plugin;
 typedef struct Tracklist Tracklist;
 typedef struct ExtPort ExtPort;
+typedef struct MidiMappings MidiMappings;
 
 /**
- * @defgroup audio Audio
- *
- * The audio module contains DSP and audio related
- * code.
+ * @addtogroup audio Audio
  *
  * @{
  */
@@ -125,6 +123,9 @@ typedef enum AudioEngineJackTransportType
   AUDIO_ENGINE_NO_JACK_TRANSPORT,
 } AudioEngineJackTransportType;
 
+/**
+ * The audio engine.
+ */
 typedef struct AudioEngine
 {
   /**
@@ -231,6 +232,12 @@ typedef struct AudioEngine
    */
   Port *            midi_editor_manual_press;
 
+  /**
+   * Port used for receiving MIDI in messages for
+   * binding CC and other non-recording purposes.
+   */
+  Port *            midi_in;
+
   /** Number of frames/samples in the current
    * cycle. */
   nframes_t         nframes;
@@ -250,6 +257,9 @@ typedef struct AudioEngine
 
   /** Send note off MIDI everywhere. */
   gint              panic;
+
+  /** MIDI bindings. */
+  MidiMappings *    midi_mappings;
 
   //ZixSem             alsa_callback_start;
 

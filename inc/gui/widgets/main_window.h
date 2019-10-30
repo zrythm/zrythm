@@ -39,10 +39,7 @@ typedef struct _BotBarWidget BotBarWidget;
 typedef struct _TopBarWidget TopBarWidget;
 
 /**
- * @defgroup widgets Widgets
- *
- * Widgets are custom GUI elements that reflect the
- * backend.
+ * @addtogroup widgets
  *
  * @{
  */

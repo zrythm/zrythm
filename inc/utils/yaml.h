@@ -138,6 +138,13 @@ int_schema = {
 };
 
 static const cyaml_schema_value_t
+uint8_t_schema = {
+	CYAML_VALUE_UINT (
+    CYAML_FLAG_DEFAULT,
+    typeof (uint8_t)),
+};
+
+static const cyaml_schema_value_t
 float_schema = {
 	CYAML_VALUE_FLOAT (
     CYAML_FLAG_DEFAULT,

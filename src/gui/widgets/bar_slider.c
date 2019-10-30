@@ -118,7 +118,7 @@ draw_cb (
     }
   cairo_fill (cr);
 
-  char str[102];
+  char str[450];
   if (!self->show_value)
     {
       sprintf (

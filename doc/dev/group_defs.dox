@@ -18,14 +18,67 @@
  */
 
 /**
+ * @defgroup actions Actions
+ * @brief User action implementations.
+ */
+
+/**
  * @defgroup audio Audio
  * @brief DSP and audio related code.
  * 
  * @{
  */
 
-/** @defgroup subgroup Sub Group */
+/* note: make this ** to enable it */
+/* @defgroup subgroup Sub Group */
 
 /**
  * @}
+ */
+
+/**
+ * @defgroup events Events
+ * @brief UI event handling.
+ */
+
+/**
+ * @defgroup general General
+ * @brief Uncategorized.
+ */
+
+/**
+ * @defgroup gui_backend GUI Backend
+ * @brief Serializable structs that define how the
+ *   GUI should behave.
+ */
+
+/**
+ * @defgroup lv2 LV2
+ * @brief LV2 plugin related code.
+ */
+
+/**
+ * @defgroup plugins Plugins
+ * @brief Audio plugin handling.
+ */
+
+/**
+ * @defgroup project Project
+ * @brief Project initialization, saving and loading.
+ */
+
+/**
+ * @defgroup tests Tests
+ * @brief Testing helpers.
+ */
+
+/**
+ * @defgroup utils Utilities
+ * @brief Various utilities.
+ */
+
+/**
+ * @defgroup widgets Widgets
+ * @brief Custom GUI elements that reflect the 
+ *   backend.
  */
