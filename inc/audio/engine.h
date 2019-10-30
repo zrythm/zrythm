@@ -258,9 +258,6 @@ typedef struct AudioEngine
   /** Send note off MIDI everywhere. */
   gint              panic;
 
-  /** MIDI bindings. */
-  MidiMappings *    midi_mappings;
-
   //ZixSem             alsa_callback_start;
 
   /* ----------- ALSA --------------- */

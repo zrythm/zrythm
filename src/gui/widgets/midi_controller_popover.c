@@ -19,6 +19,7 @@
 
 #include <string.h>
 
+#include "audio/ext_port.h"
 #include "gui/widgets/midi_controller_mb.h"
 #include "gui/widgets/midi_controller_popover.h"
 #include "settings/settings.h"
@@ -44,32 +45,17 @@ get_controllers (
   char ** controllers,
   int *   num_controllers)
 {
-  FILE *fp;
-  char line[1035];
-  char cname[400];
-  char dummy[400];
+  ExtPort * ports[100];
+  int size = 0;
+  ext_ports_get (
+    TYPE_EVENT, FLOW_OUTPUT, 1, ports, &size);
 
-  /* Open the command for reading. */
-  fp = popen("amidi -l", "r");
-  if (fp == NULL) {
-    g_error ("localization_init: popen failed");
-    exit(1);
-  }
-
-  /* Read the output a line at a time - output it. */
-  int i = 0;
-  while (fgets(line, sizeof(line)-1, fp) != NULL)
+  for (int i = 0; i < size; i++)
     {
-      if (i++ == 0)
-        continue;
-
-      sscanf (line, "%s %s %s", dummy, dummy, cname);
       controllers[(*num_controllers)++] =
-        g_strdup (cname);
+        g_strdup (ports[i]->full_name);
     }
-
-  /* close */
-  pclose (fp);
+  ext_ports_free (ports, size);
 }
 
 /**

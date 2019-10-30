@@ -149,9 +149,9 @@ autoconnect_midi_controllers (
       self->client,
       NULL, JACK_DEFAULT_MIDI_TYPE,
       JackPortIsPhysical |
-      JackPortIsOutput);
+        JackPortIsOutput);
 
-  if(!ports) return;
+  if (!ports) return;
 
   /* get selected MIDI devices */
   char ** devices =
@@ -176,18 +176,24 @@ autoconnect_midi_controllers (
           if (g_str_match_string (
                 device, ports[i], 1))
             {
-              /*if (jack_connect (*/
-                    /*self->client,*/
-                    /*pname,*/
-                    /*jack_port_name (*/
-                      /*JACK_PORT_T (*/
-                        /*self->midi_in->data))))*/
-                /*g_warning (*/
-                  /*"Failed connecting %s to %s",*/
-                  /*pname,*/
-                  /*self->midi_in->identifier.label);*/
-
-
+              int ret =
+                jack_connect (
+                  self->client,
+                  ports[i],
+                  jack_port_name (
+                    JACK_PORT_T (
+                      self->midi_in->data)));
+              if (ret)
+                {
+                  g_warning (
+                    "Failed connecting %s to %s:\n"
+                    "%s",
+                    ports[i],
+                    self->midi_in->identifier.
+                      label,
+                    engine_jack_get_error_message (
+                      ret));
+                }
               break;
             }
           j++;
@@ -437,10 +443,6 @@ jack_midi_setup (
     /*{*/
       /*g_warning ("no more JACK ports available");*/
     /*}*/
-
-  /* autoconnect MIDI controllers */
-  autoconnect_midi_controllers (
-    AUDIO_ENGINE);
 
   return 0;
 }
@@ -792,6 +794,7 @@ engine_jack_activate (
       self->monitor_out->r->data,
     -1);
 
+  g_message ("connecting to system out ports...");
   if (jack_connect (
         self->client,
         jack_port_name (
@@ -812,6 +815,10 @@ engine_jack_activate (
       g_critical ("cannot connect output ports");
       return -1;
     }
+
+  /* autoconnect MIDI controllers */
+  autoconnect_midi_controllers (
+    AUDIO_ENGINE);
 
   jack_free (ports);
 

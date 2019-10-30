@@ -18,6 +18,7 @@
  */
 
 #include "audio/midi_mapping.h"
+#include "utils/arrays.h"
 
 /**
  * Initializes the MidiMappings after a Project
@@ -93,4 +94,40 @@ midi_mappings_new ()
     calloc (1, sizeof (MidiMappings));
 
   return self;
+}
+
+/**
+ * Get MIDI mappings for the given port.
+ *
+ * @param size Size to set.
+ *
+ * @return a newly allocated array that must be
+ * free'd with free().
+ */
+MidiMapping **
+midi_mappings_get_for_port (
+  MidiMappings * self,
+  Port *         dest_port,
+  int *          count)
+{
+  g_return_val_if_fail (self && dest_port, NULL);
+
+  MidiMapping ** arr = NULL;
+  *count = 0;
+  for (int i = 0; i < self->num_mappings; i++)
+    {
+      MidiMapping * mapping =
+        &self->mappings[i];
+      if (mapping->dest == dest_port)
+        {
+          arr =
+            realloc (
+              arr,
+              (size_t) (*count + 1) *
+                sizeof (MidiMapping *));
+          array_append (
+            arr, *count, mapping);
+        }
+    }
+  return arr;
 }

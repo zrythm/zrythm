@@ -36,7 +36,7 @@
  * @{
  */
 
-#define MIDI_MAPPINGS (AUDIO_ENGINE->midi_mappings)
+#define MIDI_MAPPINGS (PROJECT->midi_mappings)
 
 /**
  * A mapping from a MIDI value to a destination.
@@ -145,6 +145,20 @@ void
 midi_mappings_apply (
   MidiMappings * self,
   midi_byte_t *  buf);
+
+/**
+ * Get MIDI mappings for the given port.
+ *
+ * @param size Size to set.
+ *
+ * @return a newly allocated array that must be
+ * free'd with free().
+ */
+MidiMapping **
+midi_mappings_get_for_port (
+  MidiMappings * self,
+  Port *         dest_port,
+  int *          size);
 
 /*
  * @}

@@ -31,6 +31,7 @@
 
 #include "actions/undo_manager.h"
 #include "audio/engine.h"
+#include "audio/midi_mapping.h"
 #include "audio/midi_note.h"
 #include "audio/port.h"
 #include "audio/quantize_options.h"
@@ -182,6 +183,9 @@ typedef struct Project
    */
   AudioEngine        audio_engine;
 
+  /** MIDI bindings. */
+  MidiMappings *    midi_mappings;
+
   /**
    * Currently selected tool (select - normal,
    * select - stretch, edit, delete, ramp, audition)
@@ -271,6 +275,10 @@ static const cyaml_schema_field_t
 	CYAML_FIELD_INT (
     "has_range", CYAML_FLAG_DEFAULT,
     Project, has_range),
+  CYAML_FIELD_MAPPING_PTR (
+    "midi_mappings", CYAML_FLAG_POINTER,
+    Project, midi_mappings,
+    midi_mappings_fields_schema),
 
 	CYAML_FIELD_END
 };

@@ -338,6 +338,9 @@ create_default (Project * self)
   engine_init (&self->audio_engine, 0);
   undo_manager_init (&self->undo_manager);
 
+  /* init midi mappings */
+  self->midi_mappings = midi_mappings_new ();
+
   self->title =
     g_path_get_basename (
       ZRYTHM->create_project_path);
@@ -603,6 +606,8 @@ load (
       port = ports[i];
       port_init_loaded (port);
     }
+  midi_mappings_init_loaded (
+    PROJECT->midi_mappings);
 
   arranger_selections_init_loaded (
     (ArrangerSelections *)

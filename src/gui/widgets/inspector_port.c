@@ -70,21 +70,39 @@ get_port_str (
       port->identifier.owner_type ==
         PORT_OWNER_TYPE_PREFADER)
     {
+      int num_midi_mappings = 0;
+      MidiMapping ** mappings =
+        midi_mappings_get_for_port (
+          MIDI_MAPPINGS, port, &num_midi_mappings);
+      if (mappings)
+        free (mappings);
+
+      const char * star =
+        (num_midi_mappings > 0 ? "*" : "");
       if (port->identifier.flow == FLOW_INPUT)
         {
+#define ORANGIZE(x) \
+  "<span " \
+  "foreground=\"" UI_COLOR_BRIGHT_ORANGE "\">" x "</span>"
           sprintf (
-            buf, "%s <small><sup>%d</sup></small>",
+            buf, "%s <small><sup>"
+            ORANGIZE ("%d%s")
+            "</sup></small>",
             port->identifier.label,
-            port->num_srcs);
+            port->num_srcs, star);
           return 1;
         }
       else if (port->identifier.flow == FLOW_OUTPUT)
         {
           sprintf (
-            buf, "%s <small><sup>%d</sup></small>",
+            buf, "%s <small><sup>"
+            ORANGIZE ("%d%s")
+            "</sup></small>",
             port->identifier.label,
-            port->num_dests);
+            port->num_dests, star);
           return 1;
+#undef ORANGIZE
+#undef GREENIZE
         }
     }
   return 0;
@@ -256,15 +274,15 @@ bar_slider_tick_cb (
   /* if enough time passed, try to update the
    * tooltip */
   gint64 now = g_get_real_time ();
-  if (now - self->last_tooltip_change > 800000)
+  if (now - self->last_tooltip_change > 100000)
     {
       char str[500];
       char * full_designation =
         port_get_full_designation (self->port);
       const char * src_or_dest_str =
         self->port->identifier.flow == FLOW_INPUT ?
-        _("Linked IN ports") :
-        _("Linked OUT ports");
+        _("Incoming signals") :
+        _("Outgoing signals");
       sprintf (
         str, "<b>%s</b>\n"
         "%s: <b>%d</b>\n"

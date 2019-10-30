@@ -96,8 +96,6 @@ init_midi (
 
   if (loading)
     {
-      midi_mappings_init_loaded (
-        self->midi_mappings);
     }
   else
     {
@@ -117,10 +115,6 @@ init_midi (
           TYPE_EVENT,
           FLOW_INPUT,
           "MIDI in");
-
-      /* init midi mappings */
-      self->midi_mappings =
-        midi_mappings_new ();
     }
 
   /* init MIDI queues */
@@ -679,7 +673,7 @@ receive_midi_events (
         {
           MidiEvent * ev = &events->events[i];
           midi_mappings_apply (
-            self->midi_mappings, ev->raw_buffer);
+            MIDI_MAPPINGS, ev->raw_buffer);
         }
     }
 }
