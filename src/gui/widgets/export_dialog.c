@@ -30,6 +30,7 @@
 #include "project.h"
 #include "utils/io.h"
 #include "utils/resources.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 
@@ -99,10 +100,9 @@ update_text (ExportDialogWidget * self)
   char * filename =
     get_export_filename (self);
 
-#define ORANGE "#2eb398"
 #define ORANGIZE(x) \
   "<span " \
-  "foreground=\"" ORANGE "\">" x "</span>"
+  "foreground=\"" UI_COLOR_MATCHA "\">" x "</span>"
 
   char * exports_dir =
     project_get_exports_dir (PROJECT);
@@ -126,7 +126,6 @@ update_text (ExportDialogWidget * self)
     G_OBJECT (self->output_label), "activate-link",
     G_CALLBACK (on_activate_export_path_link), self);
 
-#undef ORANGE
 #undef ORANGIZE
 }
 

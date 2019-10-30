@@ -28,6 +28,8 @@
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
+#include "utils/string.h"
+#include "utils/ui.h"
 
 #include <glib/gi18n.h>
 
@@ -69,7 +71,7 @@ get_port_str (
       if (port->identifier.flow == FLOW_INPUT)
         {
           sprintf (
-            buf, "%s (%d)",
+            buf, "%s <small><sup>%d</sup></small>",
             port->identifier.label,
             port->num_srcs);
           return 1;
@@ -77,7 +79,7 @@ get_port_str (
       else if (port->identifier.flow == FLOW_OUTPUT)
         {
           sprintf (
-            buf, "%s (%d)",
+            buf, "%s <small><sup>%d</sup></small>",
             port->identifier.label,
             port->num_dests);
           return 1;
@@ -177,10 +179,7 @@ get_port_value (
       break;
     case TYPE_CV:
       {
-        float rms =
-          math_calculate_rms_db (
-            port->buf, AUDIO_ENGINE->block_length);
-        return math_dbfs_to_amp (rms);
+        return port->buf[0];
       }
       break;
     case TYPE_EVENT:
@@ -239,9 +238,56 @@ bar_slider_tick_cb (
   GdkFrameClock *   frame_clock,
   InspectorPortWidget * self)
 {
+  /* set bar slider label */
   get_port_str (
     self->port,
     self->bar_slider->prefix);
+
+  /* if enough time passed, try to update the
+   * tooltip */
+  gint64 now = g_get_real_time ();
+  if (now - self->last_tooltip_change > 800000)
+    {
+      char str[500];
+      char * full_designation =
+        port_get_full_designation (self->port);
+      const char * src_or_dest_str =
+        self->port->identifier.flow == FLOW_INPUT ?
+        _("Linked IN ports") :
+        _("Linked OUT ports");
+      sprintf (
+        str, "<b>%s</b>\n"
+        "%s: <b>%d</b>\n"
+        "%s: <b>%f</b>\n"
+        "%s: <b>%f</b> | "
+        "%s: <b>%f</b>",
+        full_designation,
+        src_or_dest_str,
+        self->port->identifier.flow == FLOW_INPUT ?
+          self->port->num_srcs :
+          self->port->num_dests,
+        _("Current val"),
+        (double) get_port_value (self),
+        _("Min"), (double) self->minf,
+        _("Max"), (double) self->maxf);
+
+      /* if the tooltip changed, update it */
+      char * cur_tooltip =
+        gtk_widget_get_tooltip_markup (widget);
+      if (!string_is_equal (cur_tooltip, str, 0))
+        {
+          gtk_widget_set_tooltip_markup (
+            widget, str);
+        }
+
+      /* cleanup */
+      if (cur_tooltip)
+        g_free (cur_tooltip);
+      g_free (full_designation);
+
+      /* remember time */
+      self->last_tooltip_change = now;
+    }
   gtk_widget_queue_draw (widget);
 
   return G_SOURCE_CONTINUE;
@@ -314,9 +360,9 @@ inspector_port_widget_new (
       gtk_container_add (
         GTK_CONTAINER (self),
         GTK_WIDGET (self->bar_slider));
-      g_message (
-        "%s: minf %f maxf %f zero %f",
-        str, (double) minf, (double) maxf, (double) zero);
+      self->minf = minf;
+      self->maxf = maxf;
+      self->zerof = zero;
 
       /* keep drawing the bar slider */
       gtk_widget_add_tick_callback (

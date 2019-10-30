@@ -108,13 +108,13 @@ draw_cb (
   if (real_val < real_zero)
     {
       cairo_rectangle (
-        cr, val_px, 0, zero_px, height);
+        cr, val_px, 0, zero_px - val_px, height);
     }
   /* draw from zero to val */
   else
     {
       cairo_rectangle (
-        cr, zero_px, 0, val_px, height);
+        cr, zero_px, 0, val_px - zero_px, height);
     }
   cairo_fill (cr);
 

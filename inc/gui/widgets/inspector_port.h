@@ -59,6 +59,19 @@ typedef struct _InspectorPortWidget
   /** Last MIDI event trigger time, for MIDI ports. */
   gint64            last_midi_trigger_time;
 
+  /**
+   * Last time the tooltip changed.
+   *
+   * Used to avoid excessive updating of the
+   * tooltip text.
+   */
+  gint64            last_tooltip_change;
+
+  /** Caches from the port. */
+  float             minf;
+  float             maxf;
+  float             zerof;
+
   /** Port this is for. */
   Port *            port;
 

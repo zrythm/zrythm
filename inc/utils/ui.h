@@ -40,6 +40,16 @@ typedef struct Position Position;
 #define UI_CACHES (ZRYTHM->ui_caches)
 #define UI_COLORS (&UI_CACHES->colors)
 
+#define UI_COLOR_DARK_TEXT "#323232"
+#define UI_COLOR_BRIGHT_TEXT "#cdcdcd"
+#define UI_COLOR_MATCHA "#2eb398"
+#define UI_COLOR_BRIGHT_GREEN "#1ddd6a"
+#define UI_COLOR_DARKISH_GREEN "#1a884c"
+#define UI_COLOR_BRIGHT_ORANGE "#F79616"
+#define UI_COLOR_DARK_ORANGE "#D68A0C"
+#define UI_COLOR_YELLOW "#F9CA1B"
+#define UI_COLOR_PURPLE "#9D3955"
+
 static const GdkRGBA UI_COLOR_BLACK = {
   0, 0, 0, 1
 };

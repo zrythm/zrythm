@@ -29,6 +29,7 @@
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/ui.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -65,10 +66,10 @@ bot_bar_widget_update_status (
     MW_STATUS_BAR,
     MW_BOT_BAR->context_id);
 
-#define ORANGE "#F79616"
+  /*const char * orange = UI_COLOR_BRIGHT_ORANGE;*/
 #define ORANGIZE(x) \
   "<span " \
-  "foreground=\"" ORANGE "\">" x "</span>"
+  "foreground=\"" UI_COLOR_BRIGHT_ORANGE "\">" x "</span>"
 
   char str[400];
   sprintf (
@@ -88,7 +89,6 @@ bot_bar_widget_update_status (
     "Sample rate",
     AUDIO_ENGINE->sample_rate);
 
-#undef ORANGE
 #undef ORANGIZE
 
   gtk_statusbar_push (MW_STATUS_BAR,

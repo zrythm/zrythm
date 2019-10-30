@@ -824,11 +824,16 @@ ui_caches_new ()
     calloc (1, sizeof (UiCaches));
 
   UiColors * colors = &self->colors;
-  gdk_rgba_parse (&colors->dark_text, "#323232");
-  gdk_rgba_parse (&colors->bright_text, "#cdcdcd");
-  gdk_rgba_parse (&colors->matcha, "#2eb398");
-  gdk_rgba_parse (&colors->bright_green, "#1ddd6a");
-  gdk_rgba_parse (&colors->darkish_green, "#1a884c");
+  gdk_rgba_parse (
+    &colors->dark_text, UI_COLOR_DARK_TEXT);
+  gdk_rgba_parse (
+    &colors->bright_text, UI_COLOR_BRIGHT_TEXT);
+  gdk_rgba_parse (
+    &colors->matcha, UI_COLOR_MATCHA);
+  gdk_rgba_parse (
+    &colors->bright_green, UI_COLOR_BRIGHT_GREEN);
+  gdk_rgba_parse (
+    &colors->darkish_green, UI_COLOR_DARKISH_GREEN);
   gdk_rgba_parse (
     &colors->highlight_both, "#ff22ff");
   gdk_rgba_parse (
