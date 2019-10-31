@@ -31,7 +31,6 @@
 
 #include "zrythm.h"
 #include "project.h"
-#include "audio/automation_curve.h"
 #include "audio/automation_point.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"

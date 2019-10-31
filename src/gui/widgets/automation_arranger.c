@@ -47,7 +47,6 @@
 #include "gui/backend/automation_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_arranger.h"
-#include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_point.h"
@@ -111,60 +110,6 @@ get_automation_point_y (
 }
 
 /**
- * Returns Y in pixels from the value based on the
- * allocation of the automation arranger.
- */
-/*static int*/
-/*get_automation_curve_y (*/
-  /*AutomationArrangerWidget * self,*/
-  /*AutomationCurve * ac)*/
-/*{*/
-  /*AutomationPoint * prev_ap =*/
-    /*automation_region_get_ap_before_curve (*/
-      /*ac->region, ac);*/
-  /*AutomationPoint * next_ap =*/
-    /*automation_region_get_ap_after_curve (*/
-      /*ac->region, ac);*/
-
-  /*[> ratio of current value in the range <]*/
-  /*float ap_ratio;*/
-  /*if (ac->curviness >= AP_MID_CURVINESS)*/
-    /*{*/
-      /*float ap_curviness_range =*/
-        /*AP_MAX_CURVINESS - AP_MID_CURVINESS;*/
-      /*ap_ratio =*/
-        /*(float) (ac->curviness - AP_MID_CURVINESS) /*/
-        /*ap_curviness_range;*/
-      /*ap_ratio *= 0.5f; [> ratio is only for half <]*/
-      /*ap_ratio += 0.5f; [> add the missing half <]*/
-    /*}*/
-  /*else*/
-    /*{*/
-      /*float ap_curviness_range =*/
-        /*(float) AP_MID_CURVINESS -*/
-        /*(float) AP_MIN_CURVINESS;*/
-      /*ap_ratio =*/
-        /*(float) (ac->curviness - AP_MIN_CURVINESS) /*/
-        /*ap_curviness_range;*/
-      /*ap_ratio *= 0.5f; [> ratio is only for half <]*/
-    /*}*/
-  /*int prev_ap_y_pos =*/
-    /*get_automation_point_y (self, prev_ap);*/
-  /*int next_ap_y_pos =*/
-    /*get_automation_point_y (self, next_ap);*/
-  /*int ap_max =*/
-    /*MAX (prev_ap_y_pos, next_ap_y_pos);*/
-  /*int ap_min =*/
-    /*MIN (prev_ap_y_pos, next_ap_y_pos);*/
-  /*int allocated_h = ap_max - ap_min;*/
-  /*int point =*/
-    /*ap_max -*/
-    /*(int) (ap_ratio * (float) allocated_h);*/
-
-  /*return point;*/
-/*}*/
-
-/**
  * To be called from get_child_position in parent widget.
  *
  * Used to allocate the overlay children.
@@ -180,10 +125,9 @@ automation_arranger_widget_set_allocation (
       AutomationPointWidget * ap_widget =
         Z_AUTOMATION_POINT_WIDGET (widget);
       AutomationPoint * ap =
-        ap_widget->automation_point;
+        ap_widget->ap;
       ArrangerObject * ap_obj =
         (ArrangerObject *) ap;
-      /*Automatable * a = ap->at->automatable;*/
 
       /* use transient or non transient region
        * depending on which is visible */
@@ -210,73 +154,48 @@ automation_arranger_widget_set_allocation (
       allocation->y =
         (get_automation_point_y (self, ap)) -
         AP_WIDGET_POINT_SIZE / 2;
-      allocation->width = AP_WIDGET_POINT_SIZE;
-      allocation->height = AP_WIDGET_POINT_SIZE;
-    }
-  else if (Z_IS_AUTOMATION_CURVE_WIDGET (widget))
-    {
-      AutomationCurveWidget * acw =
-        Z_AUTOMATION_CURVE_WIDGET (widget);
-      AutomationCurve * ac = acw->ac;
 
-      AutomationPoint * prev_ap =
-        automation_region_get_ap_before_curve (
-          ac->region, ac);
-      ArrangerObject * prev_ap_obj =
-        (ArrangerObject *) prev_ap;
       AutomationPoint * next_ap =
-        automation_region_get_ap_after_curve (
-          ac->region, ac);
-      ArrangerObject * next_ap_obj =
-        (ArrangerObject *) next_ap;
-      g_return_if_fail (
-        !prev_ap || !next_ap ||
-        prev_ap_obj->pos.total_ticks <=
-          next_ap_obj->pos.total_ticks);
+        automation_region_get_next_ap (
+          ap->region, ap);
 
-      /* use transient or non transient region
-       * depending on which is visible */
-      Region * region = ac->region;
-      region =
-        region_get_visible_counterpart (region);
-      ArrangerObject * region_obj =
-        (ArrangerObject *) region;
+      if (next_ap)
+        {
+          ArrangerObject * next_obj =
+            (ArrangerObject *) next_ap;
 
-      /* use absolute position */
-      long region_start_ticks =
-        region_obj->pos.total_ticks;
-      Position tmp;
-      position_from_ticks (
-        &tmp,
-        region_start_ticks +
-        prev_ap_obj->pos.total_ticks);
+          /* get relative position from the
+           * start AP to the next ap. */
+          position_from_ticks (
+            &tmp,
+            next_obj->pos.total_ticks -
+              ap_obj->pos.total_ticks);
 
-      allocation->x =
-        ui_pos_to_px_editor (
-          &tmp, 1);
-      g_warn_if_fail (allocation->x >= 0);
-      int prev_y =
-        get_automation_point_y (self, prev_ap);
-      int next_y =
-        get_automation_point_y (self, next_ap);
-      allocation->y =
-        (prev_y > next_y ? next_y : prev_y);
+          /* width is the relative position in px
+           * plus half an AP_WIDGET_POINT_SIZE for
+           * each side */
+          allocation->width =
+            AP_WIDGET_POINT_SIZE +
+            ui_pos_to_px_editor (&tmp, 1);
 
-      /* use absolute position */
-      position_from_ticks (
-        &tmp,
-        region_start_ticks +
-        next_ap_obj->pos.total_ticks);
-      allocation->width =
-        (ui_pos_to_px_editor (
-          &tmp, 1) -
-         allocation->x);
-      g_warn_if_fail (allocation->width >= 0);
+          int cur_y =
+            get_automation_point_y (self, ap);
+          int next_y =
+            get_automation_point_y (self, next_ap);
 
-      allocation->height =
-        (prev_y > next_y ?
-         prev_y - next_y :
-         next_y - prev_y);
+          /* height is the relative relative diff in
+           * px between the two points plus half an
+           * AP_WIDGET_POINT_SIZE for each side */
+          allocation->height =
+            (cur_y > next_y ?
+             cur_y - next_y :
+             next_y - cur_y) + AP_WIDGET_POINT_SIZE;
+        }
+      else
+        {
+          allocation->width = AP_WIDGET_POINT_SIZE;
+          allocation->height = AP_WIDGET_POINT_SIZE;
+        }
     }
 }
 
@@ -298,11 +217,7 @@ automation_arranger_widget_get_cursor (
     arranger_widget_get_hit_arranger_object (
       (ArrangerWidget *) self,
       ARRANGER_OBJECT_TYPE_AUTOMATION_POINT,
-      ar_prv->hover_x, ar_prv->hover_y) &&
-    arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self,
-      ARRANGER_OBJECT_TYPE_AUTOMATION_CURVE,
-      ar_prv->hover_x, ar_prv->hover_y);
+      ar_prv->hover_x, ar_prv->hover_y) != NULL;
 
   switch (action)
     {
@@ -426,7 +341,7 @@ automation_arranger_widget_create_ap (
 
   /* add it to automation track */
   automation_region_add_ap (
-    CLIP_EDITOR->region, ap, F_GEN_CURVE_POINTS);
+    CLIP_EDITOR->region, ap);
 
   /* set visibility */
   arranger_object_gen_widget (
@@ -505,8 +420,7 @@ automation_arranger_widget_select (
 
       automation_point =
         automation_point_get_main (
-          automation_point_widget->
-            automation_point);
+          automation_point_widget->ap);
 
       if (delete)
         automation_region_remove_ap (
@@ -649,6 +563,42 @@ automation_arranger_widget_move_items_y (
 
   /*g_return_val_if_reached (0);*/
 /*}*/
+
+/**
+ * Change curviness of selected curves.
+ */
+void
+automation_arranger_widget_resize_curves (
+  AutomationArrangerWidget * self,
+  double                     offset_y)
+{
+  ARRANGER_WIDGET_GET_PRIVATE (self);
+
+  offset_y = - offset_y;
+  /*double multiplier = 0.005;*/
+  double diff = offset_y - ar_prv->last_offset_y;
+  /*double height = gtk_widget_get_allocated_height (GTK_WIDGET (self));*/
+  double adjusted_diff = diff / 120.0;
+  for (int i = 0;
+       i < AUTOMATION_SELECTIONS->num_automation_points; i++)
+    {
+      AutomationPoint * ap =
+        AUTOMATION_SELECTIONS->automation_points[i];
+      double new_curve_val =
+        CLAMP (
+          automation_point_get_normalized_curviness (
+            ap) + adjusted_diff,
+          0.0, 1.0);
+      automation_point_set_curviness (
+        ap,
+        automation_point_get_curviness_from_normalized (
+          new_curve_val));
+    }
+
+  EVENTS_PUSH (
+    ET_ARRANGER_SELECTIONS_CHANGED,
+    AUTOMATION_SELECTIONS);
+}
 
 /**
  * Sets the default cursor in all selected regions and
@@ -794,7 +744,6 @@ add_children_from_region (
 {
   int j,k;
   AutomationPoint * ap;
-  AutomationCurve * ac;
   for (j = 0; j < region->num_aps; j++)
     {
       ap = region->aps[j];
@@ -818,22 +767,6 @@ add_children_from_region (
           arranger_widget_add_overlay_child (
             (ArrangerWidget *) self, obj);
         }
-    }
-  for (j = 0; j < region->num_acs; j++)
-    {
-      ac = region->acs[j];
-
-      ArrangerObject * obj =
-        (ArrangerObject *) ac;
-      if (!GTK_IS_WIDGET (obj->widget))
-        arranger_object_gen_widget (obj);
-
-      arranger_object_widget_force_redraw (
-        Z_ARRANGER_OBJECT_WIDGET (obj->widget));
-
-      gtk_overlay_add_overlay (
-        GTK_OVERLAY (self),
-        GTK_WIDGET (obj->widget));
     }
 }
 

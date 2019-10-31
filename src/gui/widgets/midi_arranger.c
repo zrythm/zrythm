@@ -18,7 +18,6 @@
 */
 
 #include "actions/arranger_selections.h"
-#include "audio/automation_track.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/midi_region.h"
@@ -28,9 +27,6 @@
 #include "audio/transport.h"
 #include "audio/velocity.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/automation_curve.h"
-#include "gui/widgets/automation_point.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"

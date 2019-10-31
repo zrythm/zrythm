@@ -26,7 +26,6 @@
 #define __AUDIO_REGION_H__
 
 #include "audio/automation_point.h"
-#include "audio/automation_curve.h"
 #include "audio/chord_object.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
@@ -198,15 +197,6 @@ typedef struct Region
   size_t             aps_size;
 
   /**
-   * The AutomationCurve's.
-   *
-   * Their size will always be aps_size - 1 (or 0 if
-   * there are no AutomationPoint's).
-   */
-  AutomationCurve ** acs;
-  int                num_acs;
-
-  /**
    * Pointer back to the AutomationTrack.
    *
    * This doesn't have to be serialized - during
@@ -279,10 +269,6 @@ static const cyaml_schema_field_t
     "aps", CYAML_FLAG_POINTER,
     Region, aps, num_aps,
     &automation_point_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "acs", CYAML_FLAG_POINTER,
-    Region, acs, num_acs,
-    &automation_curve_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "chord_objects", CYAML_FLAG_POINTER,
     Region, chord_objects, num_chord_objects,

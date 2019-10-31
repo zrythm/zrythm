@@ -28,7 +28,6 @@ widget_srcs = [
   'audio_track.c',
   'automatable_selector_button.c',
   'automatable_selector_popover.c',
-  'automation_curve.c',
   'automation_arranger.c',
   'automation_arranger_bg.c',
   'automation_editor_space.c',

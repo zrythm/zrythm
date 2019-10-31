@@ -249,7 +249,7 @@ add_object_to_project (
 
         /* add it to the region */
         automation_region_add_ap (
-          ap->region, ap, F_GEN_CURVE_POINTS);
+          ap->region, ap);
       }
       break;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:

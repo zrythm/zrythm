@@ -32,7 +32,6 @@
 #include "audio/position.h"
 #include "audio/track.h"
 #include "gui/widgets/automation_arranger.h"
-#include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/center_dock.h"
@@ -53,6 +52,7 @@ _create_new (
     (ArrangerObject *) self;
   obj->pos = *pos;
   obj->type = ARRANGER_OBJECT_TYPE_AUTOMATION_POINT;
+  self->curviness = 1.0;
 
   self->index = -1;
 
@@ -255,4 +255,129 @@ automation_point_update_fvalue (
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_CHANGED, self);
+}
+
+/**
+ * TODO add description.
+ *
+ * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+ * @param x X-coordinate.
+ * @param curviness Curviness variable.
+ * @param start_at_1 Start at lower point.
+ */
+static double
+get_y_normalized (
+  double x,
+  double curviness,
+  int    start_at_1)
+{
+  if (start_at_1)
+    {
+      double val = pow (1.0 - pow (x, curviness), (1.0 / curviness));
+      return val;
+    }
+  else
+    {
+      double val = pow (1.0 - pow (x, 1.0 / curviness), (1.0 / (1.0 / curviness)));
+      return 1.0 - val;
+    }
+}
+
+/**
+ * The function to return a point on the curve.
+ *
+ * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+ *
+ * @param ap The start point (0, 0).
+ * @param x Normalized x.
+ */
+double
+automation_point_get_normalized_value_in_curve (
+  AutomationPoint * self,
+  double            x)
+{
+  AutomationPoint * next_ap =
+    automation_region_get_next_ap (
+      self->region, self);
+
+  double dy;
+
+  /* if next point is lower */
+  if (automation_point_get_normalized_value (
+        next_ap) <
+      automation_point_get_normalized_value (
+        self))
+    {
+      /* start higher */
+      dy =
+        get_y_normalized (
+          x, self->curviness, 1);
+      /*g_message ("dy %f", dy);*/
+      return dy;
+
+      /* reverse the value because in pixels
+       * higher y values are actually lower */
+      /*return 1.0 - dy;*/
+    }
+  else
+    {
+      dy =
+        get_y_normalized (
+          x, self->curviness, 0);
+      /*g_message ("dy %f", dy);*/
+      return dy;
+
+      /*return - dy;*/
+    }
+}
+
+/**
+ * Sets the curviness of the AutomationPoint.
+ */
+void
+automation_point_set_curviness (
+  AutomationPoint * self,
+  const curviness_t curviness)
+{
+  if (math_doubles_equal (
+        self->curviness, curviness, 0.01))
+    return;
+
+  arranger_object_set_primitive (
+    AutomationPoint, self, curviness, curviness,
+    AO_UPDATE_ALL);
+  ArrangerObject * obj = (ArrangerObject *) self;
+  if (Z_IS_ARRANGER_OBJECT_WIDGET (obj->widget))
+    {
+      arranger_object_widget_force_redraw (
+        Z_ARRANGER_OBJECT_WIDGET (obj->widget));
+    }
+}
+
+/**
+ * Convenience function to return the Automatable
+ * that this AutomationPoint is for.
+ */
+Automatable *
+automation_point_get_automatable (
+  AutomationPoint * self)
+{
+  AutomationTrack * at =
+    automation_point_get_automation_track (self);
+  g_return_val_if_fail (at, NULL);
+
+  return at->automatable;
+}
+
+/**
+ * Convenience function to return the
+ * AutomationTrack that this AutomationPoint is in.
+ */
+AutomationTrack *
+automation_point_get_automation_track (
+  AutomationPoint * self)
+{
+  g_return_val_if_fail (
+    self && self->region && self->region->at, NULL);
+  return self->region->at;
 }

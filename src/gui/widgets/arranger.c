@@ -35,7 +35,6 @@
 #include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_arranger_bg.h"
-#include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_point.h"
@@ -1635,9 +1634,6 @@ on_drag_begin_handle_hit_object (
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
       SET_ACTION (STARTING_MOVING);
       break;
-    case ARRANGER_OBJECT_TYPE_AUTOMATION_CURVE:
-      SET_ACTION (NONE);
-      break;
     case ARRANGER_OBJECT_TYPE_VELOCITY:
       if (is_resize_up)
         SET_ACTION (RESIZING_UP);
@@ -2025,6 +2021,12 @@ drag_update (
         {
           midi_modifier_arranger_widget_resize_velocities (
             midi_modifier_arranger,
+            offset_y);
+        }
+      else if (automation_arranger)
+        {
+          automation_arranger_widget_resize_curves (
+            automation_arranger,
             offset_y);
         }
       break;

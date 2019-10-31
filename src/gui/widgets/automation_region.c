@@ -19,7 +19,7 @@
 
 #include <math.h>
 
-#include "audio/audio_bus_track.h"
+#include "audio/automation_region.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/midi_note.h"
@@ -103,45 +103,37 @@ automation_region_draw_cb (
         ((ArrangerObject *) r)->
           clip_start_pos.total_ticks;
       AutomationPoint * ap, * next_ap;
-      AutomationCurve * ac;
       for (i = 0; i < main_region->num_aps; i++)
         {
           ap = main_region->aps[i];
-          if (i == main_region->num_aps - 1)
-            {
-              ac = NULL;
-              next_ap = NULL;
-            }
-          else
-            {
-              ac = main_region->acs[i];
-              next_ap = main_region->aps[i + 1];
-            }
-
-          ap =
-            (AutomationPoint *)
-            arranger_object_get_visible_counterpart (
-              (ArrangerObject *) ap);
-
-          /* get ratio (0.0 - 1.0) on x where midi
-           * note starts & ends */
-          long ap_start_ticks =
-            ((ArrangerObject *) ap)->
-              pos.total_ticks;
-          long ap_end_ticks = ap_start_ticks;
-          if (next_ap)
-            {
-              ap_end_ticks =
-                ((ArrangerObject *) next_ap)->
-                  pos.total_ticks;
-            }
-          long tmp_start_ticks, tmp_end_ticks;
-
-          /* if before loop end */
+          next_ap =
+            automation_region_get_next_ap (
+              main_region, ap);
           ArrangerObject * r_obj =
             (ArrangerObject *) r;
           ArrangerObject * ap_obj =
             (ArrangerObject *) ap;
+          ArrangerObject * next_ap_obj =
+            (ArrangerObject *) next_ap;
+
+          ap =
+            (AutomationPoint *)
+            arranger_object_get_visible_counterpart (
+              ap_obj);
+
+          /* get ratio (0.0 - 1.0) on x where midi
+           * note starts & ends */
+          long ap_start_ticks =
+            ap_obj->pos.total_ticks;
+          long ap_end_ticks = ap_start_ticks;
+          if (next_ap)
+            {
+              ap_end_ticks =
+                next_ap_obj->pos.total_ticks;
+            }
+          long tmp_start_ticks, tmp_end_ticks;
+
+          /* if before loop end */
           if (position_is_before (
                 &ap_obj->pos,
                 &r_obj->loop_end_pos))
@@ -162,8 +154,6 @@ automation_region_draw_cb (
                     loop_ticks * (long) j;
 
                   /* if should be clipped */
-                  ArrangerObject * next_ap_obj =
-                    (ArrangerObject *) next_ap;
                   if (next_ap &&
                       position_is_after_or_equal (
                         &next_ap_obj->pos,
@@ -177,8 +167,10 @@ automation_region_draw_cb (
                       loop_ticks *  (long) j;
 
                   /* adjust for clip start */
-                  tmp_start_ticks -= clip_start_ticks;
-                  tmp_end_ticks -= clip_start_ticks;
+                  tmp_start_ticks -=
+                    clip_start_ticks;
+                  tmp_end_ticks -=
+                    clip_start_ticks;
 
                   x_start =
                     (double) tmp_start_ticks /
@@ -222,8 +214,8 @@ automation_region_draw_cb (
                     2 * padding);
                   cairo_fill (ao_prv->cached_cr);
 
-                  /* draw ac */
-                  if (ac)
+                  /* draw curve */
+                  if (next_ap)
                     {
                       double new_x, ap_y, new_y;
                       double ac_height =
@@ -245,8 +237,8 @@ automation_region_draw_cb (
                           /* in pixels, higher values are lower */
                           ap_y =
                             1.0 -
-                            automation_curve_get_normalized_value (
-                              ac,
+                            automation_point_get_normalized_value_in_curve (
+                              ap,
                               (k - x_start_real) /
                                 ac_width);
                           ap_y *= ac_height;

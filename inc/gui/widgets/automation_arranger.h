@@ -92,6 +92,14 @@ automation_arranger_widget_create_ap (
   Region *                   region);
 
 /**
+ * Change curviness of selected curves.
+ */
+void
+automation_arranger_widget_resize_curves (
+  AutomationArrangerWidget * self,
+  double                     offset_y);
+
+/**
  * @}
  */
 

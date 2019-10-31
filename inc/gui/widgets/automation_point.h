@@ -57,7 +57,7 @@ typedef struct _AutomationPointWidget
 
   /** The AutomationPoint associated with the
    * widget. */
-  AutomationPoint *      automation_point;
+  AutomationPoint *      ap;
 } AutomationPointWidget;
 
 /**

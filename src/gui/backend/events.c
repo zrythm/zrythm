@@ -23,6 +23,7 @@
  * Events for calling refresh on widgets.
  */
 
+#include "audio/automation_region.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
@@ -37,7 +38,6 @@
 #include "gui/widgets/audio_editor_space.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_arranger.h"
-#include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_region.h"
 #include "gui/widgets/automation_track.h"
@@ -591,34 +591,23 @@ on_arranger_object_changed (
     {
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
       {
-        AutomationPoint * ap =
-          (AutomationPoint *) obj;
+        ArrangerObject * prev_ap_obj =
+          (ArrangerObject *)
+          automation_region_get_prev_ap (
+            ((AutomationPoint *) obj)->region,
+            (AutomationPoint *) obj);
 
-        ArrangerObject * next_ac_obj = NULL;
-        ArrangerObject * prev_ac_obj = NULL;
-        /* if not last, draw next curve */
-        if (ap->index <
-              ap->region->num_aps - 1)
-          {
-            next_ac_obj =
-              (ArrangerObject *)
-              ap->region->acs[ap->index];
-          }
-        /* if not first, draw previous curve */
-        if (ap->index > 0)
-          {
-            prev_ac_obj =
-              (ArrangerObject *)
-              ap->region->acs[ap->index - 1];
-          }
-
+        /* redraw this ap and also the previous one
+         * if any */
         for (int i = 0; i < 2; i++)
           {
             ArrangerObject * _obj = NULL;
             if (i == 0)
-              _obj = next_ac_obj;
+              _obj = obj;
+            else if (prev_ap_obj)
+              _obj = prev_ap_obj;
             else
-              _obj = prev_ac_obj;
+              break;
 
             if (_obj &&
                 Z_IS_ARRANGER_OBJECT_WIDGET (
@@ -727,7 +716,6 @@ on_arranger_object_removed (
         MW_CHORD_ARRANGER);
       break;
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-    case ARRANGER_OBJECT_TYPE_AUTOMATION_CURVE:
       automation_arranger_widget_refresh_children (
         MW_AUTOMATION_ARRANGER);
       break;

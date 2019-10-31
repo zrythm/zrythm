@@ -20,7 +20,6 @@
 #include <math.h>
 
 #include "audio/automatable.h"
-#include "audio/automation_curve.h"
 #include "audio/automation_track.h"
 #include "audio/automation_point.h"
 #include "audio/automation_region.h"
@@ -99,34 +98,6 @@ automation_track_add_region (
   region_set_automation_track (region, self);
 }
 
-
-/**
- * Returns the automation curve at the given pos.
- *
- * This is supposed to be global so it belongs here
- * instead of the automation Region.
- */
-AutomationCurve *
-automation_track_get_ac_at_pos (
-  AutomationTrack * self,
-  Position *        pos)
-{
-  AutomationPoint * prev_ap =
-    automation_track_get_ap_before_pos (
-      self, pos);
-  if (!prev_ap)
-    return NULL;
-  AutomationPoint * next_ap =
-    automation_region_get_next_ap (
-      prev_ap->region, prev_ap);
-  if (!next_ap)
-    return NULL;
-
-  return
-    automation_region_get_next_curve_ac (
-      next_ap->region, prev_ap);
-}
-
 /**
  * Returns the Region that surrounds the
  * given Position, if any.
@@ -200,72 +171,68 @@ automation_track_get_normalized_val_at_pos (
   Position *        pos)
 {
   g_return_val_if_fail (self, 0.f);
-  AutomationCurve * ac =
-    automation_track_get_ac_at_pos (
-      self, pos);
-  AutomationPoint * prev_ap =
+  AutomationPoint * ap =
     automation_track_get_ap_before_pos (
       self, pos);
-  ArrangerObject * prev_ap_obj =
-    (ArrangerObject *) prev_ap;
+  ArrangerObject * ap_obj =
+    (ArrangerObject *) ap;
 
   /* no automation points yet, return negative
    * (no change) */
-  if (ac && !prev_ap)
-    g_warn_if_reached ();
-  if (!ac || !prev_ap)
+  if (!ap)
     return -1.f;
 
   long localp =
     region_timeline_frames_to_local (
-      prev_ap->region, pos->frames, 1);
+      ap->region, pos->frames, 1);
 
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
-      prev_ap->region, prev_ap);
+      ap->region, ap);
   ArrangerObject * next_ap_obj =
     (ArrangerObject *) next_ap;
   /*g_message ("prev fvalue %f next %f",*/
              /*prev_ap->fvalue,*/
              /*next_ap->fvalue);*/
-  float prev_ap_normalized_val =
+  float ap_normalized_val =
     automation_point_get_normalized_value (
-      prev_ap);
+      ap);
 
   /* return value at last ap */
   if (!next_ap)
-    return prev_ap_normalized_val;
+    return ap_normalized_val;
 
   float next_ap_normalized_val =
     automation_point_get_normalized_value (
       next_ap);
   int prev_ap_lower =
-    prev_ap_normalized_val <= next_ap_normalized_val;
-  float prev_next_diff =
-    (float) fabsf (prev_ap_normalized_val -
-           next_ap_normalized_val);
+    ap_normalized_val <= next_ap_normalized_val;
+  float cur_next_diff =
+    (float)
+    fabsf (
+      ap_normalized_val - next_ap_normalized_val);
 
   /* ratio of how far in we are in the curve */
-  long prev_ap_frames =
-    position_to_frames (&prev_ap_obj->pos);
+  long ap_frames =
+    position_to_frames (&ap_obj->pos);
   long next_ap_frames =
     position_to_frames (&next_ap_obj->pos);
   double ratio =
-    (double) (localp - prev_ap_frames) /
-    (double) (next_ap_frames - prev_ap_frames);
+    (double) (localp - ap_frames) /
+    (double) (next_ap_frames - ap_frames);
   /*g_message ("ratio %f",*/
              /*ratio);*/
 
   float result =
     (float)
-    automation_curve_get_normalized_value (
-      ac, ratio);
-  result = result * prev_next_diff;
+    automation_point_get_normalized_value_in_curve (
+      ap, ratio);
+  result = result * cur_next_diff;
   /*g_message ("halfbaked result %f start at lower %d",*/
              /*result, prev_ap_lower);*/
   if (prev_ap_lower)
     result +=
-      prev_ap_normalized_val;
+      ap_normalized_val;
   else
     result +=
       next_ap_normalized_val;

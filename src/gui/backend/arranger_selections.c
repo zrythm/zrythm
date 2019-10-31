@@ -173,8 +173,7 @@ arranger_selections_add_object (
       break;
     case TYPE (AUTOMATION):
       g_return_if_fail (
-        obj->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT ||
-        obj->type == ARRANGER_OBJECT_TYPE_AUTOMATION_CURVE);
+        obj->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT);
       break;
     }
 
@@ -242,18 +241,6 @@ arranger_selections_add_object (
       {
         AutomationSelections * sel =
           (AutomationSelections *) self;
-        if (obj->type ==
-              ARRANGER_OBJECT_TYPE_AUTOMATION_CURVE)
-          {
-            AutomationCurve * ac =
-              (AutomationCurve *) obj;
-            g_warn_if_fail (ac->region);
-            obj =
-              (ArrangerObject *)
-              automation_region_get_ap_before_curve (
-                ac->region, ac);
-            g_warn_if_fail (obj);
-          }
         ADD_OBJ (
           sel, AUTOMATION_POINT,
           AutomationPoint, automation_point);
@@ -1336,20 +1323,6 @@ arranger_selections_contains_object (
       as = (AutomationSelections *) self;
       switch (obj->type)
         {
-        case ARRANGER_OBJECT_TYPE_AUTOMATION_CURVE:
-          {
-            AutomationCurve * ac =
-              (AutomationCurve *) obj;
-            g_return_val_if_fail (ac->region, 0);
-            AutomationPoint * ap =
-              automation_region_get_ap_before_curve (
-                ac->region, ac);
-            return
-              array_contains (
-                as->automation_points,
-                as->num_automation_points, ap);
-          }
-          break;
         case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
           {
             return

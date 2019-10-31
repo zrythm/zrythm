@@ -21,7 +21,6 @@
 #define __AUDIO_AUTOMATION_TRACK_H__
 
 #include "audio/automatable.h"
-#include "audio/automation_curve.h"
 #include "audio/automation_point.h"
 #include "audio/position.h"
 #include "audio/region.h"
@@ -165,14 +164,6 @@ automation_track_clone (
  */
 void
 automation_track_free (AutomationTrack * at);
-
-/**
- * Returns the automation curve at the given pos.
- */
-AutomationCurve *
-automation_track_get_ac_at_pos (
-  AutomationTrack * self,
-  Position *        pos);
 
 /**
  * Returns the automation point before the pos.

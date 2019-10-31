@@ -26,7 +26,6 @@
 #ifndef __AUDIO_AUTOMATION_REGION_H__
 #define __AUDIO_AUTOMATION_REGION_H__
 
-#include "audio/automation_curve.h"
 #include "audio/region.h"
 
 typedef struct Track Track;
@@ -69,27 +68,16 @@ automation_region_force_sort (
   Region * self);
 
 /**
- * Adds automation point and optionally generates
- * curve points accordingly.
- *
- * @param gen_curve_points Generate AutomationCurve's.
+ * Adds an AutomationPoint to the Region.
  */
 void
 automation_region_add_ap (
   Region *          self,
-  AutomationPoint * ap,
-  int               gen_curves);
+  AutomationPoint * ap);
 
 /**
- * Adds the given AutomationCurve.
- */
-void
-automation_region_add_ac (
-  Region *          self,
-  AutomationCurve * ac);
-
-/**
- * Returns the AutomationPoint before the position.
+ * Returns the AutomationPoint before the given
+ * one.
  */
 AutomationPoint *
 automation_region_get_prev_ap (
@@ -97,7 +85,8 @@ automation_region_get_prev_ap (
   AutomationPoint * ap);
 
 /**
- * Returns the AutomationPoint after the position.
+ * Returns the AutomationPoint after the given
+ * one.
  */
 AutomationPoint *
 automation_region_get_next_ap (
@@ -105,63 +94,16 @@ automation_region_get_next_ap (
   AutomationPoint * ap);
 
 /**
- * Returns the AutomationPoint before the given
- * AutomationCurve.
- */
-static inline AutomationPoint *
-automation_region_get_ap_before_curve (
-  Region *          self,
-  AutomationCurve * ac)
-{
-  if (ac && ac->index < self->num_aps)
-    return self->aps[ac->index];
-
-  return NULL;
-}
-
-/**
- * Returns the ap after the curve point.
- */
-static inline AutomationPoint *
-automation_region_get_ap_after_curve (
-  Region *          self,
-  AutomationCurve * ac)
-{
-  if (ac &&
-      ac->index < self->num_aps - 1)
-    return self->aps[ac->index + 1];
-
-  return NULL;
-}
-
-/**
- * Returns the curve point right after the given ap
- */
-AutomationCurve *
-automation_region_get_next_curve_ac (
-  Region *          self,
-  AutomationPoint * ap);
-
-/**
- * Removes the given AutomationPoint from the Region.
+ * Removes the AutomationPoint from the Region,
+ * optionally freeing it.
  *
- * @param free Optionally free the AutomationPoint.
+ * @param free Free the AutomationPoint after
+ *   removing it.
  */
 void
 automation_region_remove_ap (
   Region *          self,
   AutomationPoint * ap,
-  int               free);
-
-/**
- * Removes the given AutomationCurve from the Region.
- *
- * @param free Optionally free the AutomationCurve.
- */
-void
-automation_region_remove_ac (
-  Region *          self,
-  AutomationCurve * ac,
   int               free);
 
 /**

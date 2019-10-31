@@ -30,7 +30,6 @@
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/audio_region.h"
 #include "gui/widgets/automation_arranger.h"
-#include "gui/widgets/automation_curve.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_region.h"
@@ -92,7 +91,6 @@ arranger_object_get_selections_for_type (
     case TYPE (CHORD_OBJECT):
       return (ArrangerSelections *) CHORD_SELECTIONS;
     case TYPE (AUTOMATION_POINT):
-    case TYPE (AUTOMATION_CURVE):
       return
         (ArrangerSelections *) AUTOMATION_SELECTIONS;
     default:
@@ -152,8 +150,6 @@ arranger_object_get_widget_type_for_type (
       return MIDI_NOTE_WIDGET_TYPE;
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
       return AUTOMATION_POINT_WIDGET_TYPE;
-    case ARRANGER_OBJECT_TYPE_AUTOMATION_CURVE:
-      return AUTOMATION_CURVE_WIDGET_TYPE;
     case ARRANGER_OBJECT_TYPE_VELOCITY:
       return VELOCITY_WIDGET_TYPE;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
@@ -349,13 +345,6 @@ arranger_object_get_region (
         AutomationPoint * ap =
           (AutomationPoint *) self;
         return ap->region;
-      }
-      break;
-    case ARRANGER_OBJECT_TYPE_AUTOMATION_CURVE:
-      {
-        AutomationCurve * ac =
-          (AutomationCurve *) self;
-        return ac->region;
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -881,20 +870,12 @@ init_loaded_region (
     case REGION_TYPE_AUTOMATION:
       {
         AutomationPoint * ap;
-        AutomationCurve * ac;
         for (i = 0; i < self->num_aps; i++)
           {
             ap = self->aps[i];
             ap->region = self;
             arranger_object_init_loaded (
               (ArrangerObject *) ap);
-          }
-        for (i = 0; i < self->num_acs; i++)
-          {
-            ac = self->acs[i];
-            ac->region = self;
-            arranger_object_init_loaded (
-              (ArrangerObject *) ac);
           }
         self->aps_size =
           (size_t) self->num_aps;
@@ -1072,12 +1053,6 @@ arranger_object_update_frames (
             (ArrangerObject *) r->aps[i]);
         }
 
-      for (i = 0; i < r->num_acs; i++)
-        {
-          arranger_object_update_frames (
-            (ArrangerObject *) r->acs[i]);
-        }
-
       for (i = 0; i < r->num_chord_objects; i++)
         {
           arranger_object_update_frames (
@@ -1127,11 +1102,6 @@ create_widget (
         (GtkWidget *)
         automation_point_widget_new (
           (AutomationPoint *) self);
-    case TYPE (AUTOMATION_CURVE):
-      return
-        (GtkWidget *)
-        automation_curve_widget_new (
-          (AutomationCurve *) self);
     case TYPE (MARKER):
       return
         (GtkWidget *)
@@ -1308,13 +1278,6 @@ arranger_object_free (
         if (ap->region_name)
           g_free (ap->region_name);
         free (ap);
-      }
-      return;
-    case TYPE (AUTOMATION_CURVE):
-      {
-        AutomationCurve * ac =
-          (AutomationCurve *) self;
-        free (ac);
       }
       return;
     case TYPE (VELOCITY):
@@ -1715,16 +1678,6 @@ arranger_object_get_track (
         track = ap->region->at->track;
       }
       break;
-    case TYPE (AUTOMATION_CURVE):
-      {
-        AutomationCurve * ac =
-          (AutomationCurve *) self;
-        g_return_val_if_fail (
-          ac->region && ac->region->at &&
-          ac->region->at->track, NULL);
-        track = ac->region->at->track;
-      }
-      break;
     case TYPE (MIDI_NOTE):
       {
         MidiNote * mn = (MidiNote *) self;
@@ -1817,7 +1770,6 @@ arranger_object_get_arranger (
       }
       break;
     case TYPE (AUTOMATION_POINT):
-    case TYPE (AUTOMATION_CURVE):
       arranger =
         (ArrangerWidget *) (MW_AUTOMATION_ARRANGER);
       break;
@@ -2275,7 +2227,6 @@ clone_region (
         Region * ar_orig = region;
 
         AutomationPoint * src_ap, * dest_ap;
-        AutomationCurve * src_ac, * dest_ac;
 
         /* add automation points */
         for (j = 0; j < ar_orig->num_aps; j++)
@@ -2288,25 +2239,7 @@ clone_region (
                 src_ap->fvalue,
                 &src_ap_obj->pos, F_MAIN);
             automation_region_add_ap (
-              ar, dest_ap, 0);
-          }
-
-        /* add automation curves */
-        for (j = 0; j < ar_orig->num_acs; j++)
-          {
-            src_ac = ar_orig->acs[j];
-            ArrangerObject * src_ac_obj =
-              (ArrangerObject *) src_ac;
-
-            AutomationTrack * at =
-              region_get_automation_track (
-                ar_orig);
-            dest_ac =
-              automation_curve_new (
-                at->automatable->type,
-                &src_ac_obj->pos, 1);
-            automation_region_add_ac (
-              ar, dest_ac);
+              ar, dest_ap);
           }
 
         new_region = ar;
@@ -2519,9 +2452,6 @@ arranger_object_clone (
       new_obj =
         clone_automation_point (
           (AutomationPoint *) self, flag);
-      break;
-    case TYPE (AUTOMATION_CURVE):
-      new_obj = self;
       break;
     case TYPE (MARKER):
       new_obj =

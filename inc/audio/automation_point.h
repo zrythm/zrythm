@@ -28,7 +28,9 @@
 
 #include "audio/position.h"
 #include "gui/backend/arranger_object.h"
+#include "utils/types.h"
 
+typedef struct Automatable Automatable;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct _AutomationPointWidget
 AutomationPointWidget;
@@ -38,6 +40,14 @@ AutomationPointWidget;
  *
  * @{
  */
+
+#define AP_MAX_CURVINESS 6.0
+/*#define AP_MIN_CURVINESS \
+  //(1.f / AP_MAX_CURVINESS)*/
+#define AP_MIN_CURVINESS 0.01
+#define AP_CURVINESS_RANGE \
+  (AP_MAX_CURVINESS - AP_MIN_CURVINESS)
+#define AP_MID_CURVINESS 1.0
 
 #define automation_point_is_main(c) \
   arranger_object_is_main ( \
@@ -58,6 +68,23 @@ AutomationPointWidget;
     (ArrangerObject *) r)
 
 /**
+ * Returns the curviness from 0.0 (min curviness) to
+ * 1.0 (max curviness).
+ */
+#define \
+automation_point_get_normalized_curviness(x) \
+  ((x->curviness - AP_MIN_CURVINESS) / \
+    AP_CURVINESS_RANGE)
+
+/**
+ * Returns the curviness value from a normalized
+ * curviness.
+ */
+#define \
+automation_point_get_curviness_from_normalized(x) \
+  ((x) * AP_CURVINESS_RANGE + AP_MIN_CURVINESS)
+
+/**
  * An automation point inside an AutomationTrack.
  */
 typedef struct AutomationPoint
@@ -68,6 +95,9 @@ typedef struct AutomationPoint
   float           fvalue; ///< float value
   int             bvalue; ///< boolean value
   int             svalue; ///< step value
+
+  /** Curviness. */
+  double          curviness;
 
   /**
    * Pointer back to parent.
@@ -103,6 +133,9 @@ automation_point_fields_schema[] =
   CYAML_FIELD_INT (
     "index", CYAML_FLAG_DEFAULT,
     AutomationPoint, index),
+	CYAML_FIELD_FLOAT (
+    "curviness", CYAML_FLAG_DEFAULT,
+    AutomationPoint, curviness),
 
 	CYAML_FIELD_END
 };
@@ -156,6 +189,43 @@ automation_point_set_region_and_index (
 float
 automation_point_get_normalized_value (
   AutomationPoint * ap);
+
+/**
+ * The function to return a point on the curve.
+ *
+ * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+ *
+ * @param ap The start point (0, 0).
+ * @param x Normalized x.
+ */
+double
+automation_point_get_normalized_value_in_curve (
+  AutomationPoint * ap,
+  double            x);
+
+/**
+ * Sets the curviness of the AutomationPoint.
+ */
+void
+automation_point_set_curviness (
+  AutomationPoint * ap,
+  const curviness_t curviness);
+
+/**
+ * Convenience function to return the Automatable
+ * that this AutomationPoint is for.
+ */
+Automatable *
+automation_point_get_automatable (
+  AutomationPoint * self);
+
+/**
+ * Convenience function to return the
+ * AutomationTrack that this AutomationPoint is in.
+ */
+AutomationTrack *
+automation_point_get_automation_track (
+  AutomationPoint * self);
 
 int
 automation_point_is_equal (

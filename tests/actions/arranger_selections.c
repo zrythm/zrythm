@@ -113,7 +113,7 @@ bootstrap_timeline ()
     automation_point_new_float (
       AP_VAL1, &p1, 1);
   automation_region_add_ap (
-    r, ap, F_GEN_CURVE_POINTS);
+    r, ap);
   arranger_selections_add_object (
     (ArrangerSelections *) AUTOMATION_SELECTIONS,
     (ArrangerObject *) ap);
@@ -121,7 +121,7 @@ bootstrap_timeline ()
     automation_point_new_float (
       AP_VAL2, &p2, 1);
   automation_region_add_ap (
-    r, ap, F_GEN_CURVE_POINTS);
+    r, ap);
   arranger_selections_add_object (
     (ArrangerSelections *) AUTOMATION_SELECTIONS,
     (ArrangerObject *) ap);
