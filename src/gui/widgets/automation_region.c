@@ -55,8 +55,9 @@ automation_region_draw_cb (
   /* not cached, redraw */
   if (ao_prv->redraw)
     {
-      int i, j;
       REGION_WIDGET_GET_PRIVATE (self);
+
+      int i, j;
 
       GtkStyleContext * context =
         gtk_widget_get_style_context (widget);
@@ -77,6 +78,16 @@ automation_region_draw_cb (
       gtk_render_background (
         context, ao_prv->cached_cr,
         0, 0, width, height);
+
+      /* draw background rectangle */
+      region_widget_draw_background (
+        (RegionWidget *) self, widget,
+        ao_prv->cached_cr);
+
+      /* draw loop dashes */
+      region_widget_draw_loop_points (
+        (RegionWidget *) self, widget,
+        ao_prv->cached_cr);
 
       cairo_set_source_rgba (
         ao_prv->cached_cr, 1, 1, 1, 1);
@@ -224,12 +235,6 @@ automation_region_draw_cb (
                       double ac_width =
                         fabs (x_end - x_start);
                       ac_width *= width;
-                      /*g_message ("ac height %f",*/
-                                 /*ac_height);*/
-                      /*g_message ("ac width %f",*/
-                                 /*ac_width);*/
-                      /*g_message ("y start real %f",*/
-                                 /*y_start_real);*/
                       for (double k = x_start_real;
                            k < (x_start_real) + ac_width;
                            k += 0.6)
@@ -270,6 +275,10 @@ automation_region_draw_cb (
 
       region_widget_draw_name (
         Z_REGION_WIDGET (self), ao_prv->cached_cr);
+
+      arranger_object_widget_draw_cut_line (
+        Z_ARRANGER_OBJECT_WIDGET (self),
+        ao_prv->cached_cr);
 
       ao_prv->redraw = 0;
     }

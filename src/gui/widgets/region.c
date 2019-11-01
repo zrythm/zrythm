@@ -53,150 +53,135 @@ G_DEFINE_TYPE_WITH_PRIVATE (
 /** Background color for the name. */
 static GdkRGBA name_bg_color;
 
-static gboolean
-region_draw_cb (
-  GtkWidget * widget,
-  cairo_t *cr,
-  RegionWidget * self)
+/**
+ * Draws the loop points (dashes).
+ */
+void
+region_widget_draw_loop_points (
+  RegionWidget * self,
+  GtkWidget *    widget,
+  cairo_t *      cr)
 {
   REGION_WIDGET_GET_PRIVATE (self);
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
+  Region * r = rw_prv->region;
 
-  if (ao_prv->redraw)
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  double dashes[] = { 5 };
+  cairo_set_dash (
+    cr, dashes, 1, 0);
+  cairo_set_line_width (cr, 1);
+  cairo_set_source_rgba (
+    cr, 0, 0, 0, 1.0);
+
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
+  Position tmp;
+  long loop_start_ticks =
+    r_obj->loop_start_pos.total_ticks;
+  long loop_end_ticks =
+    r_obj->loop_end_pos.total_ticks;
+  g_warn_if_fail (
+    loop_end_ticks > loop_start_ticks);
+  long loop_ticks =
+    arranger_object_get_loop_length_in_ticks (
+      r_obj);
+  long clip_start_ticks =
+    r_obj->clip_start_pos.total_ticks;
+
+  position_from_ticks (
+    &tmp, loop_start_ticks - clip_start_ticks);
+  int px =
+    ui_pos_to_px_timeline (&tmp, 0);
+  if (px != 0)
     {
-      Region * r = rw_prv->region;
-
-      GtkStyleContext *context =
-        gtk_widget_get_style_context (widget);
-      int width =
-        gtk_widget_get_allocated_width (widget);
-      int height =
-        gtk_widget_get_allocated_height (widget);
-
-      ao_prv->cached_surface =
-        cairo_surface_create_similar (
-          cairo_get_target (cr),
-          CAIRO_CONTENT_COLOR_ALPHA,
-          width, height);
-      ao_prv->cached_cr =
-        cairo_create (ao_prv->cached_surface);
-
-      gtk_render_background (
-        context, ao_prv->cached_cr,
-        0, 0, width, height);
-
-      Track * track = NULL;
-      if (TRACKLIST &&
-          TRACKLIST->num_tracks >
-            rw_prv->region->track_pos)
-        track =
-          TRACKLIST->tracks[rw_prv->region->track_pos];
-
-      /* set color */
-      GdkRGBA color;
-      if (track)
-        color = track->color;
-      else
-        {
-          color.red = 1;
-          color.green = 0;
-          color.blue = 0;
-          color.alpha = 1;
-        }
-      ui_get_arranger_object_color (
-        &color,
-        gtk_widget_get_state_flags (
-          GTK_WIDGET (self)) &
-          GTK_STATE_FLAG_PRELIGHT,
-        region_is_selected (r),
-        region_is_transient (r));
-      gdk_cairo_set_source_rgba (
-        ao_prv->cached_cr, &color);
-
-      z_cairo_rounded_rectangle (
-        ao_prv->cached_cr, 0, 0,
-        width, height, 1.0, 4.0);
-      cairo_fill (ao_prv->cached_cr);
-      /*cairo_set_source_rgba (rw_prv->cached_cr,*/
-                             /*color->red,*/
-                             /*color->green,*/
-                             /*color->blue,*/
-                             /*1.0);*/
-      /*cairo_rectangle(rw_prv->cached_cr, 0, 0, width, height);*/
-      /*cairo_set_line_width (rw_prv->cached_cr, 3.5);*/
-      /*cairo_stroke (rw_prv->cached_cr);*/
-
-      /* draw loop points */
-      double dashes[] = { 5 };
-      cairo_set_dash (
-        ao_prv->cached_cr, dashes, 1, 0);
-      cairo_set_line_width (ao_prv->cached_cr, 1);
       cairo_set_source_rgba (
-        ao_prv->cached_cr, 0, 0, 0, 1.0);
-
-      ArrangerObject * r_obj =
-        (ArrangerObject *) r;
-      Position tmp;
-      long loop_start_ticks =
-        r_obj->loop_start_pos.total_ticks;
-      long loop_end_ticks =
-        r_obj->loop_end_pos.total_ticks;
-      g_warn_if_fail (
-        loop_end_ticks > loop_start_ticks);
-      long loop_ticks =
-        arranger_object_get_loop_length_in_ticks (
-          r_obj);
-      long clip_start_ticks =
-        r_obj->clip_start_pos.total_ticks;
-
-      position_from_ticks (
-        &tmp, loop_start_ticks - clip_start_ticks);
-      int px =
-        ui_pos_to_px_timeline (&tmp, 0);
-      if (px != 0)
-        {
-          cairo_set_source_rgba (
-            ao_prv->cached_cr, 0, 1, 0, 1.0);
-          cairo_move_to (ao_prv->cached_cr, px, 0);
-          cairo_line_to (
-            ao_prv->cached_cr, px, height);
-          cairo_stroke (ao_prv->cached_cr);
-        }
-
-      int num_loops =
-        arranger_object_get_num_loops (r_obj, 1);
-      for (int i = 0; i < num_loops; i++)
-        {
-          position_from_ticks (
-            &tmp, loop_end_ticks + loop_ticks * i);
-
-          /* adjust for clip_start */
-          position_add_ticks (
-            &tmp, - clip_start_ticks);
-
-          px = ui_pos_to_px_timeline (&tmp, 0);
-
-          if (px <= (int) width - 1)
-            {
-              cairo_set_source_rgba (
-                ao_prv->cached_cr, 0, 0, 0, 1.0);
-              cairo_move_to (
-                ao_prv->cached_cr, px, 0);
-              cairo_line_to (
-                ao_prv->cached_cr, px, height);
-              cairo_stroke (
-                ao_prv->cached_cr);
-            }
-        }
-
-      ao_prv->redraw = 0;
+        cr, 0, 1, 0, 1.0);
+      cairo_move_to (cr, px, 0);
+      cairo_line_to (
+        cr, px, height);
+      cairo_stroke (cr);
     }
 
-  cairo_set_source_surface (
-    cr, ao_prv->cached_surface, 0, 0);
-  cairo_paint (cr);
+  int num_loops =
+    arranger_object_get_num_loops (r_obj, 1);
+  for (int i = 0; i < num_loops; i++)
+    {
+      position_from_ticks (
+        &tmp, loop_end_ticks + loop_ticks * i);
 
- return FALSE;
+      /* adjust for clip_start */
+      position_add_ticks (
+        &tmp, - clip_start_ticks);
+
+      px = ui_pos_to_px_timeline (&tmp, 0);
+
+      if (px <= (int) width - 1)
+        {
+          cairo_set_source_rgba (
+            cr, 0, 0, 0, 1.0);
+          cairo_move_to (
+            cr, px, 0);
+          cairo_line_to (
+            cr, px, height);
+          cairo_stroke (
+            cr);
+        }
+    }
+
+  cairo_set_dash (
+    cr, NULL, 0, 0);
+}
+
+/**
+ * Draws the background rectangle.
+ */
+void
+region_widget_draw_background (
+  RegionWidget * self,
+  GtkWidget *    widget,
+  cairo_t *      cr)
+{
+  REGION_WIDGET_GET_PRIVATE (self);
+  Region * r = rw_prv->region;
+
+  int width =
+    gtk_widget_get_allocated_width (widget);
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  Track * track =
+    arranger_object_get_track (
+      (ArrangerObject *) r);
+
+  /* set color */
+  GdkRGBA color;
+  if (track)
+    color = track->color;
+  else
+    {
+      color.red = 1;
+      color.green = 0;
+      color.blue = 0;
+      color.alpha = 1;
+    }
+  ui_get_arranger_object_color (
+    &color,
+    gtk_widget_get_state_flags (
+      GTK_WIDGET (self)) &
+      GTK_STATE_FLAG_PRELIGHT,
+    region_is_selected (r),
+    region_is_transient (r));
+  gdk_cairo_set_source_rgba (
+    cr, &color);
+
+  /* draw arc-rectangle */
+  z_cairo_rounded_rectangle (
+    cr, 0, 0, width, height, 1.0, 4.0);
+  cairo_fill (cr);
 }
 
 /**
@@ -274,14 +259,8 @@ region_widget_setup (
   arranger_object_widget_setup (
     Z_ARRANGER_OBJECT_WIDGET (self),
     (ArrangerObject *) region);
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
   rw_prv->region = region;
-
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT (ao_prv->drawing_area), "draw",
-    G_CALLBACK (region_draw_cb), self);
 }
 
 /**

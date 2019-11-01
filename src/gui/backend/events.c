@@ -440,7 +440,7 @@ refresh_for_selections_type (
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
       clip_editor_redraw_region (CLIP_EDITOR);
       gtk_widget_queue_allocate (
-        GTK_WIDGET (MW_CHORD_ARRANGER));
+        GTK_WIDGET (MW_AUTOMATION_ARRANGER));
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
       break;
@@ -458,6 +458,8 @@ on_arranger_selections_changed (
   for (int i = 0; i < size; i++)
     {
       ArrangerObject * obj = objs[i];
+      g_warn_if_fail (
+        arranger_object_is_main (obj));
       ArrangerObjectWidget * obj_w =
         arranger_object_get_widget (obj);
       if (!obj_w)
@@ -688,6 +690,13 @@ on_arranger_object_created (
   ArrangerWidget * arranger =
     arranger_object_get_arranger (obj);
   arranger_widget_refresh (arranger);
+
+  if (obj->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+    {
+      arranger_widget_refresh (
+        (ArrangerWidget *)
+        MW_MIDI_MODIFIER_ARRANGER);
+    }
 }
 
 static void

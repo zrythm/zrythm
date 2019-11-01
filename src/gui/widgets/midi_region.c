@@ -46,161 +46,172 @@ midi_region_draw_cb (
   cairo_t *          cr,
   MidiRegionWidget * self)
 {
-  int i, j;
-  REGION_WIDGET_GET_PRIVATE (self);
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
-  GtkStyleContext *context =
-    gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-
-  /*cairo_set_source_rgba (cr,*/
-                         /*color->red - 0.3,*/
-                         /*color->green - 0.3,*/
-                         /*color->blue - 0.3,*/
-                         /*0.9);*/
-  cairo_set_source_rgba (
-    cr, 1, 1, 1, 1);
-
-  MidiRegion * r =
-    (MidiRegion *) rw_prv->region;
-  Region * main_region =
-    region_get_main (r);
-  ArrangerObject * r_obj =
-    (ArrangerObject *) r;
-  int num_loops =
-    arranger_object_get_num_loops (r_obj, 1);
-  long ticks_in_region =
-    arranger_object_get_length_in_ticks (r_obj);
-  float x_start, y_start, x_end;
-
-  int min_val = 127, max_val = 0;
-  for (i = 0; i < main_region->num_midi_notes; i++)
+  /* not cached, redraw */
+  if (ao_prv->redraw)
     {
-      MidiNote * mn = main_region->midi_notes[i];
+      int i, j;
+      REGION_WIDGET_GET_PRIVATE (self);
 
-      if (mn->val < min_val)
-        min_val = mn->val;
-      if (mn->val > max_val)
-        max_val = mn->val;
-    }
-  float y_interval =
-    MAX (
-      (float) (max_val - min_val) + 1.f, 7.f);
-  float y_note_size = 1.f / y_interval;
+      GtkStyleContext *context =
+        gtk_widget_get_style_context (widget);
 
-  /* draw midi notes */
-  long loop_end_ticks =
-    r_obj->loop_end_pos.total_ticks;
-  long loop_ticks =
-    arranger_object_get_loop_length_in_ticks (
-      r_obj);
-  long clip_start_ticks =
-    r_obj->clip_start_pos.total_ticks;
+      int width =
+        gtk_widget_get_allocated_width (widget);
+      int height =
+        gtk_widget_get_allocated_height (widget);
+      ao_prv->cached_surface =
+        cairo_surface_create_similar (
+          cairo_get_target (cr),
+          CAIRO_CONTENT_COLOR_ALPHA,
+          width,
+          height);
+      ao_prv->cached_cr =
+        cairo_create (ao_prv->cached_surface);
 
-  /*int px =*/
-    /*ui_pos_to_px_timeline (&r->loop_start_pos, 0);*/
-  for (i = 0; i < main_region->num_midi_notes; i++)
-    {
-      MidiNote * mn = main_region->midi_notes[i];
+      gtk_render_background (
+        context, ao_prv->cached_cr, 0, 0,
+        width, height);
 
-      mn =
-        (MidiNote *)
-        arranger_object_get_visible_counterpart (
-          (ArrangerObject *) mn);
-      ArrangerObject * mn_obj =
-        (ArrangerObject *) mn;
+      /* draw background rectangle */
+      region_widget_draw_background (
+        (RegionWidget *) self, widget,
+        ao_prv->cached_cr);
 
-      /* get ratio (0.0 - 1.0) on x where midi note starts
-       * & ends */
-      long mn_start_ticks =
-        position_to_ticks (&mn_obj->pos);
-      long mn_end_ticks =
-        position_to_ticks (&mn_obj->end_pos);
-      long tmp_start_ticks, tmp_end_ticks;
+      /* draw loop dashes */
+      region_widget_draw_loop_points (
+        (RegionWidget *) self, widget,
+        ao_prv->cached_cr);
 
-      /* adjust for clip start */
-      /*int adjusted_mn_start_ticks =*/
-        /*mn_start_ticks - clip_start_ticks;*/
-      /*int adjusted_mn_end_ticks =*/
-        /*mn_end_ticks - clip_end_ticks;*/
+      cairo_set_source_rgba (
+        ao_prv->cached_cr, 1, 1, 1, 1);
 
-      /* if before loop start & after clip start */
-      /*if (position_compare (*/
-            /*&mn->start_pos, &r->loop_start_pos) < 0 &&*/
-          /*position_compare (*/
-            /*&mn->start_pos, &r->clip_start_pos) >= 0)*/
-        /*{*/
+      MidiRegion * r =
+        (MidiRegion *) rw_prv->region;
+      Region * main_region =
+        region_get_main (r);
+      ArrangerObject * r_obj =
+        (ArrangerObject *) r;
+      int num_loops =
+        arranger_object_get_num_loops (r_obj, 1);
+      long ticks_in_region =
+        arranger_object_get_length_in_ticks (r_obj);
+      float x_start, y_start, x_end;
 
-        /*}*/
-      /* if before loop end */
-      if (position_is_before (
-            &mn_obj->pos,
-            &r_obj->loop_end_pos))
+      int min_val = 127, max_val = 0;
+      for (i = 0; i < main_region->num_midi_notes; i++)
         {
-          for (j = 0; j < num_loops; j++)
+          MidiNote * mn = main_region->midi_notes[i];
+
+          if (mn->val < min_val)
+            min_val = mn->val;
+          if (mn->val > max_val)
+            max_val = mn->val;
+        }
+      float y_interval =
+        MAX (
+          (float) (max_val - min_val) + 1.f, 7.f);
+      float y_note_size = 1.f / y_interval;
+
+      /* draw midi notes */
+      long loop_end_ticks =
+        r_obj->loop_end_pos.total_ticks;
+      long loop_ticks =
+        arranger_object_get_loop_length_in_ticks (
+          r_obj);
+      long clip_start_ticks =
+        r_obj->clip_start_pos.total_ticks;
+
+      for (i = 0; i < main_region->num_midi_notes; i++)
+        {
+          MidiNote * mn = main_region->midi_notes[i];
+
+          mn =
+            (MidiNote *)
+            arranger_object_get_visible_counterpart (
+              (ArrangerObject *) mn);
+          ArrangerObject * mn_obj =
+            (ArrangerObject *) mn;
+
+          /* get ratio (0.0 - 1.0) on x where midi note
+           * starts & ends */
+          long mn_start_ticks =
+            position_to_ticks (&mn_obj->pos);
+          long mn_end_ticks =
+            position_to_ticks (&mn_obj->end_pos);
+          long tmp_start_ticks, tmp_end_ticks;
+
+          /* if before loop end */
+          if (position_is_before (
+                &mn_obj->pos,
+                &r_obj->loop_end_pos))
             {
-              /* if note started before loop start
-               * only draw it once */
-              if (position_is_before (
-                    &mn_obj->pos,
-                    &r_obj->loop_start_pos) &&
-                  j != 0)
-                break;
+              for (j = 0; j < num_loops; j++)
+                {
+                  /* if note started before loop start
+                   * only draw it once */
+                  if (position_is_before (
+                        &mn_obj->pos,
+                        &r_obj->loop_start_pos) &&
+                      j != 0)
+                    break;
 
-              /* calculate draw endpoints */
-              tmp_start_ticks =
-                mn_start_ticks + loop_ticks * j;
-              /* if should be clipped */
-              if (position_is_after_or_equal (
-                    &mn_obj->end_pos,
-                    &r_obj->loop_end_pos))
-                tmp_end_ticks =
-                  loop_end_ticks + loop_ticks * j;
-              else
-                tmp_end_ticks =
-                  mn_end_ticks + loop_ticks * j;
+                  /* calculate draw endpoints */
+                  tmp_start_ticks =
+                    mn_start_ticks + loop_ticks * j;
+                  /* if should be clipped */
+                  if (position_is_after_or_equal (
+                        &mn_obj->end_pos,
+                        &r_obj->loop_end_pos))
+                    tmp_end_ticks =
+                      loop_end_ticks + loop_ticks * j;
+                  else
+                    tmp_end_ticks =
+                      mn_end_ticks + loop_ticks * j;
 
-              /* adjust for clip start */
-              tmp_start_ticks -= clip_start_ticks;
-              tmp_end_ticks -= clip_start_ticks;
+                  /* adjust for clip start */
+                  tmp_start_ticks -= clip_start_ticks;
+                  tmp_end_ticks -= clip_start_ticks;
 
-              x_start =
-                (float) tmp_start_ticks /
-                (float) ticks_in_region;
-              x_end =
-                (float) tmp_end_ticks /
-                (float) ticks_in_region;
+                  x_start =
+                    (float) tmp_start_ticks /
+                    (float) ticks_in_region;
+                  x_end =
+                    (float) tmp_end_ticks /
+                    (float) ticks_in_region;
 
-              /* get ratio (0.0 - 1.0) on y where
-               * midi note is */
-              y_start =
-                ((float) max_val - (float) mn->val) /
-                y_interval;
+                  /* get ratio (0.0 - 1.0) on y where
+                   * midi note is */
+                  y_start =
+                    ((float) max_val - (float) mn->val) /
+                    y_interval;
 
-              /* draw */
-              cairo_rectangle (
-                cr,
-                x_start * (float) width,
-                y_start * (float) height,
-                (x_end - x_start) * (float) width,
-                y_note_size * (float) height);
-              cairo_fill (cr);
+                  /* draw */
+                  cairo_rectangle (
+                    ao_prv->cached_cr,
+                    x_start * (float) width,
+                    y_start * (float) height,
+                    (x_end - x_start) * (float) width,
+                    y_note_size * (float) height);
+                  cairo_fill (ao_prv->cached_cr);
+                }
             }
         }
+
+      region_widget_draw_name (
+        Z_REGION_WIDGET (self), ao_prv->cached_cr);
+
+      arranger_object_widget_draw_cut_line (
+        Z_ARRANGER_OBJECT_WIDGET (self),
+        ao_prv->cached_cr);
+
+      ao_prv->redraw = 0;
     }
 
-  region_widget_draw_name (
-    Z_REGION_WIDGET (self), cr);
-
-  arranger_object_widget_draw_cut_line (
-    Z_ARRANGER_OBJECT_WIDGET (self), cr);
+  cairo_set_source_surface (
+    cr, ao_prv->cached_surface, 0, 0);
+  cairo_paint (cr);
 
  return FALSE;
 }

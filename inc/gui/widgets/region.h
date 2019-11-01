@@ -132,6 +132,24 @@ region_widget_should_show_cut_lines (
   int alt_pressed);
 
 /**
+ * Draws the loop points (dashes).
+ */
+void
+region_widget_draw_loop_points (
+  RegionWidget * self,
+  GtkWidget *    widget,
+  cairo_t *      cr);
+
+/**
+ * Draws the background rectangle.
+ */
+void
+region_widget_draw_background (
+  RegionWidget * self,
+  GtkWidget *    widget,
+  cairo_t *      cr);
+
+/**
  * Returns the private struct.
  */
 RegionWidgetPrivate *
