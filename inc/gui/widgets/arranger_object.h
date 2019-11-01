@@ -125,6 +125,7 @@ arranger_object_widget_is_resize_l (
 int
 arranger_object_widget_is_resize_up (
   ArrangerObjectWidget * self,
+  const int              x,
   const int              y);
 
 /**

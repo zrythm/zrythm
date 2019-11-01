@@ -92,7 +92,10 @@ typedef struct AutomationPoint
   /** Base struct. */
   ArrangerObject  base;
 
-  float           fvalue; ///< float value
+  /** Float value. */
+  float           fvalue;
+
+  /* note: these are not used at the moment. */
   int             bvalue; ///< boolean value
   int             svalue; ///< step value
 

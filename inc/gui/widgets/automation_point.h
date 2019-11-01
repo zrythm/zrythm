@@ -47,9 +47,6 @@ G_DECLARE_FINAL_TYPE (
  */
 
 #define AP_WIDGET_POINT_SIZE 6
-#define AP_WIDGET_CURVE_H 2
-#define AP_WIDGET_CURVE_W 8
-#define AP_WIDGET_PADDING 1
 
 typedef struct _AutomationPointWidget
 {

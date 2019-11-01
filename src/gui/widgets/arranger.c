@@ -1479,7 +1479,7 @@ on_drag_begin_handle_hit_object (
       obj_w, wx);
   int is_resize_up =
     arranger_object_widget_is_resize_up (
-      obj_w, wy);
+      obj_w, wx, wy);
   int is_resize_loop =
     arranger_object_widget_is_resize_loop (
       obj_w, wy);
@@ -1632,7 +1632,10 @@ on_drag_begin_handle_hit_object (
         }
       break;
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-      SET_ACTION (STARTING_MOVING);
+      if (is_resize_up)
+        SET_ACTION (RESIZING_UP);
+      else
+        SET_ACTION (STARTING_MOVING);
       break;
     case ARRANGER_OBJECT_TYPE_VELOCITY:
       if (is_resize_up)
@@ -2111,6 +2114,7 @@ drag_update (
 
   arranger_widget_refresh_cursor (self);
 }
+
 static void
 drag_end (GtkGestureDrag *gesture,
                gdouble         offset_x,

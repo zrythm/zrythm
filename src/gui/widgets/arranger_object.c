@@ -19,6 +19,7 @@
 
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_point.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
@@ -155,7 +156,7 @@ on_motion (
           self, (int) event->x);
       ao_prv->resize_up =
         arranger_object_widget_is_resize_up (
-          self, (int) event->y);
+          self, (int) event->x, (int) event->y);
       ao_prv->resize_loop =
         arranger_object_widget_is_resize_loop (
           self, (int) event->y);
@@ -300,13 +301,18 @@ arranger_object_widget_is_resize_r (
 int
 arranger_object_widget_is_resize_up (
   ArrangerObjectWidget * self,
+  const int              x,
   const int              y)
 {
   ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
-  if (ao_prv->arranger_object->type ==
-        ARRANGER_OBJECT_TYPE_VELOCITY &&
-      y < UI_RESIZE_CURSOR_SPACE)
+  if ((ao_prv->arranger_object->type ==
+         ARRANGER_OBJECT_TYPE_VELOCITY &&
+       y < UI_RESIZE_CURSOR_SPACE) ||
+      (ao_prv->arranger_object->type ==
+         ARRANGER_OBJECT_TYPE_AUTOMATION_POINT &&
+       (x > AP_WIDGET_POINT_SIZE ||
+        y > AP_WIDGET_POINT_SIZE)))
     {
       return 1;
     }

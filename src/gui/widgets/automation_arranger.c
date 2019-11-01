@@ -151,10 +151,6 @@ automation_arranger_widget_set_allocation (
           AP_WIDGET_POINT_SIZE / 2;
       g_warn_if_fail (allocation->x >= 0);
 
-      allocation->y =
-        (get_automation_point_y (self, ap)) -
-        AP_WIDGET_POINT_SIZE / 2;
-
       AutomationPoint * next_ap =
         automation_region_get_next_ap (
           ap->region, ap);
@@ -176,12 +172,17 @@ automation_arranger_widget_set_allocation (
            * each side */
           allocation->width =
             AP_WIDGET_POINT_SIZE +
-            ui_pos_to_px_editor (&tmp, 1);
+            ui_pos_to_px_editor (&tmp, 0);
 
           int cur_y =
             get_automation_point_y (self, ap);
           int next_y =
             get_automation_point_y (self, next_ap);
+
+          allocation->y =
+            (cur_y > next_y ?
+             next_y : cur_y) -
+            AP_WIDGET_POINT_SIZE / 2;
 
           /* height is the relative relative diff in
            * px between the two points plus half an
@@ -193,6 +194,10 @@ automation_arranger_widget_set_allocation (
         }
       else
         {
+          allocation->y =
+            (get_automation_point_y (self, ap)) -
+            AP_WIDGET_POINT_SIZE / 2;
+
           allocation->width = AP_WIDGET_POINT_SIZE;
           allocation->height = AP_WIDGET_POINT_SIZE;
         }
@@ -574,21 +579,20 @@ automation_arranger_widget_resize_curves (
 {
   ARRANGER_WIDGET_GET_PRIVATE (self);
 
-  offset_y = - offset_y;
-  /*double multiplier = 0.005;*/
   double diff = offset_y - ar_prv->last_offset_y;
-  /*double height = gtk_widget_get_allocated_height (GTK_WIDGET (self));*/
-  double adjusted_diff = diff / 120.0;
+  diff = - diff;
+  diff = diff / 120.0;
   for (int i = 0;
        i < AUTOMATION_SELECTIONS->num_automation_points; i++)
     {
       AutomationPoint * ap =
         AUTOMATION_SELECTIONS->automation_points[i];
+      double normalized_curviness =
+        automation_point_get_normalized_curviness (
+          ap);
       double new_curve_val =
         CLAMP (
-          automation_point_get_normalized_curviness (
-            ap) + adjusted_diff,
-          0.0, 1.0);
+          normalized_curviness + diff, 0.0, 1.0);
       automation_point_set_curviness (
         ap,
         automation_point_get_curviness_from_normalized (
@@ -744,7 +748,7 @@ add_children_from_region (
 {
   int j,k;
   AutomationPoint * ap;
-  for (j = 0; j < region->num_aps; j++)
+  for (j = region->num_aps - 1; j >= 0; j--)
     {
       ap = region->aps[j];
 

@@ -68,9 +68,14 @@ draw_cb (
         context, ao_prv->cached_cr, 0, 0,
         width, height);
 
+      AutomationPoint * ap = self->ap;
+      AutomationPoint * next_ap =
+        automation_region_get_next_ap (
+          ap->region, ap);
+
       Track * track =
         arranger_object_get_track (
-          (ArrangerObject *) self->ap);
+          (ArrangerObject *) ap);
       g_return_val_if_fail (track, FALSE);
 
       /* get color */
@@ -87,18 +92,23 @@ draw_cb (
       gdk_cairo_set_source_rgba (
         ao_prv->cached_cr, &color);
 
+      int upslope =
+        next_ap && ap->fvalue < next_ap->fvalue;
+
       /* draw circle */
       cairo_arc (
         ao_prv->cached_cr,
         AP_WIDGET_POINT_SIZE / 2,
-        AP_WIDGET_POINT_SIZE / 2,
+        (upslope ?
+           height -
+           AP_WIDGET_POINT_SIZE / 2 :
+           AP_WIDGET_POINT_SIZE / 2),
         AP_WIDGET_POINT_SIZE / 2,
         0, 2 * G_PI);
       cairo_stroke_preserve(ao_prv->cached_cr);
       cairo_fill(ao_prv->cached_cr);
 
-      if (automation_region_get_next_ap (
-            self->ap->region, self->ap))
+      if (next_ap)
         {
           /* draw the curve */
           double automation_point_y;
@@ -109,8 +119,16 @@ draw_cb (
           /* set starting point */
           double new_y;
 
+          /* ignore the space between the center
+           * of each point and the edges (2 of them
+           * so a full AP_WIDGET_POINT_SIZE) */
+          double width_for_curve =
+            width - AP_WIDGET_POINT_SIZE;
+          double height_for_curve =
+            height - AP_WIDGET_POINT_SIZE;
+
           for (double l = 0.0;
-               l <= ((double) width);
+               l <= (double) width_for_curve;
                l = l + 0.1)
             {
               /* in pixels, higher values are lower */
@@ -118,8 +136,8 @@ draw_cb (
                 1.0 -
                 automation_point_get_normalized_value_in_curve (
                   self->ap,
-                  l / width);
-              automation_point_y *= height;
+                  l / width_for_curve);
+              automation_point_y *= height_for_curve;
 
               new_x = l;
               new_y = automation_point_y;
@@ -128,15 +146,24 @@ draw_cb (
                 {
                   cairo_move_to (
                     ao_prv->cached_cr,
-                    new_x, new_y);
+                    new_x +
+                      AP_WIDGET_POINT_SIZE / 2,
+                    new_y +
+                      AP_WIDGET_POINT_SIZE / 2);
                 }
 
               cairo_line_to (
                 ao_prv->cached_cr,
-                new_x, new_y);
+                new_x +
+                  AP_WIDGET_POINT_SIZE / 2,
+                new_y +
+                  AP_WIDGET_POINT_SIZE / 2);
             }
 
           cairo_stroke (ao_prv->cached_cr);
+        }
+      else /* no next ap */
+        {
         }
 
       ao_prv->redraw = 0;
