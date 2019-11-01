@@ -28,7 +28,12 @@
 
 #include "utils/types.h"
 
-#define RMS_FRAMES 32
+/**
+ * Frames to skip when calculating the RMS.
+ *
+ * The higher the more CPU intensive.
+ */
+#define MATH_RMS_FRAMES 1
 #define MATH_FLOATS_EQUAL(a,b,epsilon) \
   (fabsf (a - b) < epsilon)
 

@@ -76,7 +76,7 @@ math_calculate_rms_db (
 {
   sample_t sum = 0, sample = 0;
   for (unsigned int i = 0;
-       i < nframes; i += RMS_FRAMES)
+       i < nframes; i += MATH_RMS_FRAMES)
   {
     sample = buf[i];
     sum += (sample * sample);
@@ -86,5 +86,5 @@ math_calculate_rms_db (
       sqrtf (
         sum /
         ((sample_t) nframes /
-           (sample_t) RMS_FRAMES)));
+           (sample_t) MATH_RMS_FRAMES)));
 }
