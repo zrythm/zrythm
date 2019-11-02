@@ -40,7 +40,6 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/plugin_browser.h"
-#include "gui/widgets/rack.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_arranger.h"

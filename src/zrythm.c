@@ -37,7 +37,6 @@
 #include "gui/widgets/project_assistant.h"
 #include "gui/widgets/splash.h"
 #include "plugins/plugin_manager.h"
-#include "plugins/lv2/symap.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
@@ -47,6 +46,7 @@
 #include "utils/localization.h"
 #include "utils/log.h"
 #include "utils/io.h"
+#include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 

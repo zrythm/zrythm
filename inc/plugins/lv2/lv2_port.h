@@ -105,4 +105,19 @@ static const cyaml_schema_value_t
   Lv2Port, lv2_port_fields_schema),
 };
 
+/**
+ * Function to get a port's value from its string
+ * symbol.
+ *
+ * Used when saving the state.
+ * This function MUST set size and type
+ * appropriately.
+ */
+const void *
+lv2_port_get_value_from_symbol (
+  const char * port_sym,
+  void       * user_data,
+  uint32_t   * size,
+  uint32_t   * type);
+
 #endif

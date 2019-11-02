@@ -54,12 +54,12 @@
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/lv2_plugin.h"
-#include "plugins/lv2/control.h"
-#include "plugins/lv2/log.h"
+#include "plugins/lv2/lv2_control.h"
+#include "plugins/lv2/lv2_log.h"
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/lv2_gtk.h"
 #include "plugins/lv2/suil.h"
-#include "plugins/lv2/worker.h"
+#include "plugins/lv2/lv2_worker.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -70,25 +70,16 @@
 #include <gtk/gtk.h>
 
 #include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
+#include <lv2/lv2plug.in/ns/ext/instance-access/instance-access.h>
 #include <lv2/lv2plug.in/ns/ext/patch/patch.h>
 #include <lv2/lv2plug.in/ns/ext/time/time.h>
 
 #include <lilv/lilv.h>
 #include <sratom/sratom.h>
 
-
 #define NS_RDF "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define NS_XSD "http://www.w3.org/2001/XMLSchema#"
-#define NS_EXT "http://lv2plug.in/ns/ext/"
-
-
-#ifndef MIN
-#    define MIN(a, b) (((a) < (b)) ? (a) : (b))
-#endif
-
-#ifndef MAX
-#    define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#endif
+#define NS "http://lv2plug.in/ns/"
 
 /* Size factor for UI ring buffers.  The ring size is a few times the size of
    an event output to give the UI a chance to keep up.  Experiments with Ingen,
@@ -103,28 +94,35 @@ bool show_hidden = 1;
 bool dump = false;
 bool print_controls = 0;
 
-/** Return true iff Zrythm supports the given feature. */
-static bool
-_feature_is_supported (Lv2Plugin * plugin,
-                      const char* uri)
+/**
+ * Returns whether Zrythm supports the given
+ * feature.
+ */
+static int
+feature_is_supported (
+  Lv2Plugin * plugin,
+  const char* uri)
 {
-  if (!strcmp(uri, "http://lv2plug.in/ns/lv2core#isLive"))
+  if (string_is_equal (uri, LV2_CORE__isLive, 1))
+    return 1;
+
+  for (const LV2_Feature * const * f =
+         plugin->features; *f; ++f)
     {
-      return true;
+      if (string_is_equal (uri, (*f)->URI, 1))
+        return 1;
     }
-  for (const LV2_Feature*const* f = plugin->features; *f; ++f)
-    {
-      if (!strcmp(uri, (*f)->URI))
-        {
-          return true;
-        }
-    }
-  return false;
+  return 0;
 }
 
-
+/**
+ * Initializes the given feature.
+ */
 static void
-init_feature(LV2_Feature* const dest, const char* const URI, void* data)
+init_feature (
+  LV2_Feature* const dest,
+  const char* const URI,
+  void* data)
 {
 	dest->URI = URI;
 	dest->data = data;
@@ -493,7 +491,8 @@ lv2_allocate_port_buffers(Lv2Plugin* plugin)
  * Function to get a port value.
  *
  * Used when saving the state.
- * This function MUST set size and type appropriately.
+ * This function MUST set size and type
+ * appropriately.
  */
 static const void *
 lv2_get_port_value (
@@ -716,7 +715,7 @@ lv2_ui_instantiate (
         LV2_EXTERNAL_UI__Host, parent
       };
       const LV2_Feature instance_feature = {
-        NS_EXT "instance-access",
+        LV2_INSTANCE_ACCESS_URI,
         lilv_instance_get_handle(plugin->instance)
       };
       const LV2_Feature* ui_features[] = {
@@ -759,7 +758,7 @@ lv2_ui_instantiate (
               LV2_UI__parent, parent
       };
       const LV2_Feature instance_feature = {
-              NS_EXT "instance-access", lilv_instance_get_handle(plugin->instance)
+              LV2_INSTANCE_ACCESS_URI, lilv_instance_get_handle(plugin->instance)
       };
       const LV2_Feature* ui_features[] = {
               &plugin->map_feature, &plugin->unmap_feature,
@@ -833,7 +832,8 @@ lv2_ui_write (
   Lv2Plugin* const plugin =
     (Lv2Plugin*)controller;
 
-  if (protocol != 0 && protocol != PM_URIDS.atom_eventTransfer)
+  if (protocol != 0 &&
+      protocol != PM_URIDS.atom_eventTransfer)
     {
       g_warning (
         "UI write with unsupported protocol %d (%s)",
@@ -875,9 +875,9 @@ lv2_ui_write (
   ev->index    = port_index;
   ev->protocol = protocol;
   ev->size     = buffer_size;
-  memcpy(ev->body, buffer, buffer_size);
+  memcpy (ev->body, buffer, buffer_size);
   zix_ring_write (
-    plugin->ui_events, buf,
+    plugin->ui_to_plugin_events, buf,
     (uint32_t) sizeof(buf));
 }
 
@@ -897,16 +897,16 @@ receive_ui_events (
 
   Lv2ControlChange ev;
   const size_t space =
-    zix_ring_read_space (plugin->ui_events);
+    zix_ring_read_space (plugin->ui_to_plugin_events);
   for (size_t i = 0; i < space;
        i += sizeof(ev) + ev.size)
     {
       zix_ring_read (
-        plugin->ui_events,
+        plugin->ui_to_plugin_events,
         (char*)&ev, sizeof(ev));
       char body[ev.size];
       if (zix_ring_read (
-            plugin->ui_events, body, ev.size) !=
+            plugin->ui_to_plugin_events, body, ev.size) !=
           ev.size)
         {
           g_warning (
@@ -1007,8 +1007,12 @@ lv2_init_ui(Lv2Plugin* plugin)
     }
 }
 
-bool
-lv2_send_to_ui (
+/**
+ * Send event to UI, called during the real time
+ * audio thread when processing the plugin.
+ */
+static int
+send_event_to_ui (
   Lv2Plugin*       plugin,
   uint32_t    port_index,
   uint32_t    type,
@@ -1029,17 +1033,27 @@ lv2_send_to_ui (
   atom->type = type;
   atom->size = (uint32_t) size;
 
-  if (zix_ring_write_space(plugin->plugin_events) >= sizeof(evbuf) + size) {
-          zix_ring_write(plugin->plugin_events, evbuf, sizeof(evbuf));
-          zix_ring_write(plugin->plugin_events, (const char*)body, size);
-          return true;
-  } else
+  if (zix_ring_write_space (
+        plugin->plugin_to_ui_events) >=
+      sizeof(evbuf) + size)
     {
-      PluginDescriptor * descr = ((Plugin *)plugin)->descr;
-      g_warning ("lv2_send_to_ui: %s (%s) => UI buffer overflow!",
-                 descr->name,
-                 descr->uri);
-      return false;
+      zix_ring_write (
+        plugin->plugin_to_ui_events, evbuf,
+        sizeof(evbuf));
+      zix_ring_write (
+        plugin->plugin_to_ui_events,
+        (const char*)body, size);
+      return 1;
+    }
+  else
+    {
+      PluginDescriptor * descr =
+        ((Plugin *)plugin)->descr;
+      g_warning (
+        "Buffer overflow when sending plugin %s "
+        "(%s) event to its UI",
+        descr->name, descr->uri);
+      return 0;
     }
 }
 
@@ -1056,7 +1070,7 @@ lv2_plugin_run (
     receive_ui_events (plugin, nframes);
 
   /* Run plugin for this cycle */
-  lilv_instance_run(plugin->instance, nframes);
+  lilv_instance_run (plugin->instance, nframes);
 
   /* Process any worker replies. */
   lv2_worker_emit_responses (
@@ -1106,20 +1120,27 @@ lv2_plugin_update (gpointer data)
   if (plugin->window)
     {
       Lv2ControlChange ev;
-      const size_t  space = zix_ring_read_space(plugin->plugin_events);
+      const size_t  space =
+        zix_ring_read_space (
+          plugin->plugin_to_ui_events);
       for (size_t i = 0;
            i + sizeof(ev) < space;
            i += sizeof(ev) + ev.size)
         {
           /* Read event header to get the size */
-          zix_ring_read(plugin->plugin_events, (char*)&ev, sizeof(ev));
+          zix_ring_read (
+            plugin->plugin_to_ui_events,
+            (char*)&ev, sizeof(ev));
 
           /* Resize read buffer if necessary */
-          plugin->ui_event_buf = realloc(plugin->ui_event_buf, ev.size);
+          plugin->ui_event_buf =
+            realloc (plugin->ui_event_buf, ev.size);
           void* const buf = plugin->ui_event_buf;
 
           /* Read event body */
-          zix_ring_read(plugin->plugin_events, (char*)buf, ev.size);
+          zix_ring_read (
+            plugin->plugin_to_ui_events,
+            (char*)buf, ev.size);
 
           if (dump && ev.protocol ==
               PM_URIDS.atom_eventTransfer)
@@ -1135,8 +1156,9 @@ lv2_plugin_update (gpointer data)
                   atom->type, atom->size,
                   LV2_ATOM_BODY(atom));
               g_message (
-                "## Plugin => UI (%u bytes) ##"
-                "\n%s\n", atom->size, str);
+                "Event from plugin to its UI "
+                "(%u bytes): %s",
+                atom->size, str);
               free(str);
             }
 
@@ -1751,7 +1773,7 @@ lv2_plugin_instantiate (
       const char* uri =
         lilv_node_as_uri (
           lilv_nodes_get (req_feats, f));
-      if (!_feature_is_supported (self, uri))
+      if (!feature_is_supported (self, uri))
         {
           g_warning ("Feature %s is not supported\n", uri);
           lilv_nodes_free (req_feats);
@@ -1971,10 +1993,12 @@ lv2_plugin_instantiate (
 	  (void*)self->options);
 
   /* Create Plugin <=> UI communication buffers */
-  self->ui_events     = zix_ring_new(PM_LILV_NODES.opts.buffer_size);
-  self->plugin_events = zix_ring_new(PM_LILV_NODES.opts.buffer_size);
-  zix_ring_mlock(self->ui_events);
-  zix_ring_mlock(self->plugin_events);
+  self->ui_to_plugin_events =
+    zix_ring_new (PM_LILV_NODES.opts.buffer_size);
+  self->plugin_to_ui_events =
+    zix_ring_new (PM_LILV_NODES.opts.buffer_size);
+  zix_ring_mlock (self->ui_to_plugin_events);
+  zix_ring_mlock (self->plugin_to_ui_events);
 
   /* Instantiate the plugin */
   self->instance =
@@ -2221,7 +2245,7 @@ lv2_plugin_process (
 
           if (lv2_plugin->request_update)
             {
-              /* Plugin state has changed, request
+              /* Plugin lv2_state.has changed, request
                * an update */
               const LV2_Atom_Object get = {
                       { sizeof(LV2_Atom_Object_Body),
@@ -2322,6 +2346,7 @@ lv2_plugin_process (
                   iter, &frames, &subframes,
                   &type, &size, &body);
 
+                /* if midi event */
                 if (buf && type ==
                     PM_URIDS.
                       midi_MidiEvent)
@@ -2332,12 +2357,13 @@ lv2_plugin_process (
                       frames, body, (int) size);
                   }
 
+                /* if UI is instantiated */
                 if (lv2_plugin->has_ui &&
                     lv2_plugin->window &&
                     !lv2_port->old_api)
                   {
-                    /* Forward event to UI */
-                    lv2_send_to_ui (
+                    /* forward event to UI */
+                    send_event_to_ui (
                       lv2_plugin, (uint32_t) p,
                       type, size, body);
                   }
@@ -2371,16 +2397,18 @@ lv2_plugin_process (
               /*}*/
 
             if (zix_ring_write (
-                  lv2_plugin->plugin_events,
+                  lv2_plugin->plugin_to_ui_events,
                   buf,
                   sizeof(buf))
                 < sizeof(buf))
               {
                 PluginDescriptor * descr =
                   lv2_plugin->plugin->descr;
-                g_warning ("lv2_plugin_process: %s (%s) => UI buffer overflow!",
-                           descr->name,
-                           descr->uri);
+                g_warning (
+                  "Buffer overflow when writing "
+                  "events from plugin %s (%s) to "
+                  "its UI",
+                  descr->name, descr->uri);
               }
           }
     }
@@ -2411,23 +2439,23 @@ lv2_cleanup (Lv2Plugin *lv2_plugin)
 
   /* Clean up */
   free(lv2_plugin->ports);
-  zix_ring_free(lv2_plugin->ui_events);
-  zix_ring_free(lv2_plugin->plugin_events);
-  for (LilvNode** n =
-         (LilvNode**)&PM_LILV_NODES;
-       *n; ++n) {
-          lilv_node_free(*n);
-  }
-  suil_host_free(lv2_plugin->ui_host);
-  sratom_free(lv2_plugin->sratom);
-  sratom_free(lv2_plugin->ui_sratom);
-  lilv_uis_free(lv2_plugin->uis);
+  zix_ring_free(lv2_plugin->ui_to_plugin_events);
+  zix_ring_free(lv2_plugin->plugin_to_ui_events);
+  for (LilvNode** n = (LilvNode**)&PM_LILV_NODES;
+       *n; ++n)
+    {
+      lilv_node_free(*n);
+    }
+  suil_host_free (lv2_plugin->ui_host);
+  sratom_free (lv2_plugin->sratom);
+  sratom_free (lv2_plugin->ui_sratom);
+  lilv_uis_free (lv2_plugin->uis);
 
-  zix_sem_destroy(&lv2_plugin->exit_sem);
+  zix_sem_destroy (&lv2_plugin->exit_sem);
 
-  remove(lv2_plugin->temp_dir);
-  free(lv2_plugin->temp_dir);
-  free(lv2_plugin->ui_event_buf);
+  remove (lv2_plugin->temp_dir);
+  free (lv2_plugin->temp_dir);
+  free (lv2_plugin->ui_event_buf);
 }
 
 int
@@ -2460,13 +2488,11 @@ lv2_plugin_save_state_to_file (
       "%s.ttl",
       lv2_plugin->plugin->descr->name);
   /* FIXME check for return value */
-  int rc = lilv_state_save (LILV_WORLD,
-                            &lv2_plugin->map,
-                            &lv2_plugin->unmap,
-                            state,
-                            NULL,
-                            dir,
-                            label);
+  int rc =
+    lilv_state_save (
+      LILV_WORLD, &lv2_plugin->map,
+      &lv2_plugin->unmap, state, NULL,
+      dir, label);
   if (rc)
     {
       g_warning ("Lilv save state failed");
@@ -2474,9 +2500,7 @@ lv2_plugin_save_state_to_file (
     }
   char * tmp = g_path_get_basename (dir);
   lv2_plugin->state_file =
-    g_build_filename (tmp,
-                      label,
-                      NULL);
+    g_build_filename (tmp, label, NULL);
   g_free (label);
   g_free (tmp);
   lilv_state_free (state);

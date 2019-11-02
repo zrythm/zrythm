@@ -26,7 +26,6 @@
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/modulator_view.h"
-#include "gui/widgets/rack.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -67,7 +66,6 @@ static void
 bot_dock_edge_widget_init (BotDockEdgeWidget * self)
 {
   g_type_ensure (MIXER_WIDGET_TYPE);
-  g_type_ensure (RACK_WIDGET_TYPE);
   g_type_ensure (CLIP_EDITOR_WIDGET_TYPE);
   g_type_ensure (MODULATOR_VIEW_WIDGET_TYPE);
   g_type_ensure (CHORD_PAD_WIDGET_TYPE);

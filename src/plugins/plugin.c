@@ -37,7 +37,7 @@
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2_plugin.h"
-#include "plugins/lv2/control.h"
+#include "plugins/lv2/lv2_control.h"
 #include "plugins/lv2/lv2_gtk.h"
 #include "project.h"
 #include "utils/arrays.h"

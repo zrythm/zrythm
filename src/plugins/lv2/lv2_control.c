@@ -17,7 +17,7 @@
 #include "audio/engine.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
-#include "plugins/lv2/control.h"
+#include "plugins/lv2/lv2_control.h"
 #include "project.h"
 
 #include <lilv/lilv.h>

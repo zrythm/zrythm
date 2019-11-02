@@ -21,7 +21,7 @@
 #define __AUDIO_AUTOMATABLE_H__
 
 #include "audio/port.h"
-#include "plugins/lv2/control.h"
+#include "plugins/lv2/lv2_control.h"
 #include "utils/yaml.h"
 
 #define IS_AUTOMATABLE_LV2_CONTROL(x) x->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL && \

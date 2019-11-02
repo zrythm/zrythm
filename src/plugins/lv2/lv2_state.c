@@ -32,7 +32,7 @@
 #include <gtk/gtk.h>
 
 #ifdef HAVE_LV2_STATE
-#    include "lv2/lv2plug.in/ns/ext/state/state.h"
+#    include "lv2/lv2plug.in/ns/ext/state/lv2_state.h"
 #endif
 
 #define NS_ZRYTHM "https://lv2.zrythm.org/ns/zrythm#"
@@ -206,7 +206,9 @@ set_port_value(const char* port_symbol,
       ev->protocol = 0;
       ev->size     = sizeof(fvalue);
       *(float*)ev->body = fvalue;
-      zix_ring_write(plugin->plugin_events, buf, sizeof(buf));
+      zix_ring_write (
+        plugin->plugin_to_ui_events, buf,
+        sizeof(buf));
     }
 }
 

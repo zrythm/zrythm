@@ -53,10 +53,10 @@
 
 #include "audio/position.h"
 #include "audio/port.h"
-#include "plugins/lv2/control.h"
+#include "plugins/lv2/lv2_control.h"
 #include "plugins/lv2/lv2_evbuf.h"
-#include "plugins/lv2/worker.h"
-#include "plugins/lv2_port.h"
+#include "plugins/lv2/lv2_worker.h"
+#include "plugins/lv2/lv2_port.h"
 #include "zix/ring.h"
 #include "zix/sem.h"
 #include "zix/thread.h"
@@ -126,10 +126,10 @@ typedef struct Lv2Plugin
 	Sratom*            sratom;
   /** Atom serializer for UI thread. */
 	Sratom*            ui_sratom;
-  /** Port events from UI. */
-	ZixRing*           ui_events;
-  /** Port events from plugin. */
-	ZixRing*           plugin_events;
+  /** Port events from UI to plugin. */
+	ZixRing*           ui_to_plugin_events;
+  /** Port events from plugin to UI. */
+	ZixRing*           plugin_to_ui_events;
   /** Buffer for readding UI port events. */
 	void*              ui_event_buf;
   /** Worker thread implementation. */
@@ -334,13 +334,6 @@ lv2_ui_instantiate(Lv2Plugin*       plugin,
 bool
 lv2_ui_is_resizable (
   Lv2Plugin* plugin);
-
-bool
-lv2_send_to_ui(Lv2Plugin*       plugin,
-                uint32_t    port_index,
-                uint32_t    type,
-                uint32_t    size,
-                const void* body);
 
 /**
  * Runs the plugin for this cycle.

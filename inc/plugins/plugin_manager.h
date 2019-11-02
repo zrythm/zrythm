@@ -20,8 +20,8 @@
 #ifndef __PLUGINS_PLUGIN_MANAGER_H__
 #define __PLUGINS_PLUGIN_MANAGER_H__
 
-#include "plugins/lv2/urid.h"
-#include "plugins/lv2/symap.h"
+#include "plugins/lv2/lv2_urid.h"
+#include "utils/symap.h"
 
 #include <lilv/lilv.h>
 

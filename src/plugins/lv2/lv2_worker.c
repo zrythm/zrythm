@@ -15,7 +15,7 @@
 */
 
 #include "plugins/lv2_plugin.h"
-#include "plugins/lv2/worker.h"
+#include "plugins/lv2/lv2_worker.h"
 
 static LV2_Worker_Status
 lv2_worker_respond(LV2_Worker_Respond_Handle handle,

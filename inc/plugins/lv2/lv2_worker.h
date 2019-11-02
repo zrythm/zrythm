@@ -39,20 +39,23 @@ typedef struct {
 } LV2_Worker;
 
 void
-lv2_worker_init(Lv2Plugin*                       plugin,
-                 LV2_Worker*                 worker,
-                 const LV2_Worker_Interface* iface,
-                 bool                        threaded);
+lv2_worker_init (
+  Lv2Plugin*                       plugin,
+  LV2_Worker*                 worker,
+  const LV2_Worker_Interface* iface,
+  bool                        threaded);
 
 void
-lv2_worker_finish(LV2_Worker* worker);
+lv2_worker_finish (LV2_Worker* worker);
 
 LV2_Worker_Status
-lv2_worker_schedule(LV2_Worker_Schedule_Handle handle,
-                     uint32_t                   size,
-                     const void*                data);
+lv2_worker_schedule (
+  LV2_Worker_Schedule_Handle handle,
+  uint32_t                   size,
+  const void*                data);
 
 void
-lv2_worker_emit_responses(LV2_Worker* worker, LilvInstance* instance);
+lv2_worker_emit_responses (
+  LV2_Worker* worker, LilvInstance* instance);
 
 #endif

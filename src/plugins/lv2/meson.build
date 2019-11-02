@@ -16,18 +16,16 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 lv2_srcs = [
-  'control.c',
-  'log.c',
+  'lv2_control.c',
+  'lv2_log.c',
   'lv2_evbuf.c',
   'lv2_gtk.c',
   'qt5_in_gtk3.cpp',
-  'state.c',
+  'lv2_state.c',
   'suil_host.c',
   'suil_instance.c',
-  'symap.c',
-  'urid.c',
-  'win_in_gtk3.cpp',
-  'worker.c',
+  'lv2_urid.c',
+  'lv2_worker.c',
   'x11_in_gtk3.c',
   ]
 

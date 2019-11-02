@@ -42,12 +42,12 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
-#include "plugins/lv2/symap.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/flags.h"
 #include "utils/resources.h"
 #include "utils/string.h"
+#include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 

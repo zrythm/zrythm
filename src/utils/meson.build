@@ -34,6 +34,7 @@ util_srcs = [
   'smf.c',
   'stack.c',
   'string.c',
+  'symap.c',
   'ui.c',
   'yaml.c',
   ]

@@ -31,7 +31,7 @@
 #include "audio/region.h"
 #include "audio/track.h"
 #include "audio/velocity.h"
-#include "plugins/lv2/control.h"
+#include "plugins/lv2/lv2_control.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
 #include "gui/widgets/track.h"

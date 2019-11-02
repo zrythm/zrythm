@@ -18,30 +18,46 @@
  */
 
 #include "plugins/lv2_plugin.h"
-#include "plugins/lv2/urid.h"
+#include "plugins/lv2/lv2_log.h"
+#include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
-#include "zix/sem.h"
 #include "zrythm.h"
 
-LV2_URID
-urid_map_uri (
-  LV2_URID_Map_Handle handle,
-  const char*         uri)
+int
+lv2_vprintf(LV2_Log_Handle handle,
+             LV2_URID       type,
+             const char*    fmt,
+             va_list        ap)
 {
-  zix_sem_wait (&PM_SYMAP_LOCK);
-  const LV2_URID id = symap_map (PM_SYMAP, uri);
-  zix_sem_post (&PM_SYMAP_LOCK);
-  return id;
+  Lv2Plugin* plugin  = (Lv2Plugin*) handle;
+  GLogLevelFlags level;
+  if (type == PM_URIDS.log_Trace)
+    level = G_LOG_LEVEL_DEBUG;
+  else if (type == PM_URIDS.log_Error)
+    level = G_LOG_LEVEL_ERROR;
+  else if (type == PM_URIDS.log_Warning)
+    level = G_LOG_LEVEL_WARNING;
+  else
+    level = G_LOG_LEVEL_MESSAGE;
+
+  g_logv (plugin->plugin->descr->name,
+          level,
+          fmt,
+          ap);
+
+  return 0;
 }
 
-const char *
-urid_unmap_uri (
-  LV2_URID_Unmap_Handle handle,
-  LV2_URID              urid)
+int
+lv2_printf(LV2_Log_Handle handle,
+            LV2_URID       type,
+            const char*    fmt, ...)
 {
-  zix_sem_wait (&PM_SYMAP_LOCK);
-  const char* uri = symap_unmap (PM_SYMAP, urid);
-  zix_sem_post (&PM_SYMAP_LOCK);
-  return uri;
-}
+	va_list args;
+	va_start(args, fmt);
+	const int ret =
+    lv2_vprintf(handle, type, fmt, args);
+	va_end(args);
 
+  return ret;
+}
