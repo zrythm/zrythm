@@ -823,11 +823,12 @@ lv2_ui_is_resizable(Lv2Plugin* plugin)
  * Write from ui
  */
 void
-lv2_ui_write(SuilController controller,
-              uint32_t      port_index,
-              uint32_t      buffer_size,
-              uint32_t       protocol, ///< format
-              const void*    buffer)
+lv2_ui_write (
+  SuilController controller,
+  uint32_t       port_index,
+  uint32_t       buffer_size,
+  uint32_t       protocol, ///< format
+  const void*    buffer)
 {
   Lv2Plugin* const plugin =
     (Lv2Plugin*)controller;
