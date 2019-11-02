@@ -100,10 +100,130 @@ get_port_index (
 }
 
 /**
+ * Read and apply control change events from UI,
+ * for plugins that have their own UIs.
+ *
+ * Called in the real-time audio thread during
+ * plugin processing.
+ *
+ * @param nframes Used for event ports.
+ */
+void
+lv2_ui_read_and_apply_events (
+  Lv2Plugin * plugin,
+  uint32_t nframes)
+{
+  if (!plugin->has_custom_ui)
+    {
+      return;
+    }
+
+  Lv2ControlChange ev;
+  const size_t space =
+    zix_ring_read_space (
+      plugin->ui_to_plugin_events);
+  for (size_t i = 0; i < space;
+       i += sizeof(ev) + ev.size)
+    {
+      zix_ring_read (
+        plugin->ui_to_plugin_events,
+        (char*)&ev, sizeof(ev));
+      char body[ev.size];
+      if (zix_ring_read (
+            plugin->ui_to_plugin_events, body,
+            ev.size) !=
+          ev.size)
+        {
+          g_warning (
+            "Error reading from UI ring buffer");
+          break;
+        }
+      g_warn_if_fail (
+        (int) ev.index < plugin->num_ports);
+      Lv2Port* const port =
+        &plugin->ports[ev.index];
+      if (ev.protocol == 0)
+        {
+          assert(ev.size == sizeof(float));
+          port->control = *(float*)body;
+          port->received_ui_event = 1;
+        }
+      else if (ev.protocol ==
+               PM_URIDS.atom_eventTransfer)
+        {
+          LV2_Evbuf_Iterator e =
+            lv2_evbuf_end (port->evbuf);
+          const LV2_Atom* const atom =
+            (const LV2_Atom*)body;
+          lv2_evbuf_write (
+            &e, nframes, 0, atom->type, atom->size,
+            (const uint8_t*)
+              LV2_ATOM_BODY_CONST(atom));
+        }
+      else
+        {
+          g_warning (
+            "Unknown control change protocol %d",
+            ev.protocol);
+        }
+    }
+}
+
+/**
+ * Send event to UI, called during the real time
+ * audio thread when processing the plugin.
+ */
+int
+lv2_ui_send_event_from_plugin_to_ui (
+  Lv2Plugin *  plugin,
+  uint32_t     port_index,
+  uint32_t     type,
+  uint32_t     size,
+  const void * body)
+{
+  /* TODO: Be more disciminate about what to send */
+  char evbuf[
+    sizeof (Lv2ControlChange) +
+    sizeof (LV2_Atom)];
+  Lv2ControlChange* ev = (Lv2ControlChange*) evbuf;
+  ev->index = port_index;
+  ev->protocol = PM_URIDS.atom_eventTransfer;
+  ev->size =
+    (uint32_t) sizeof (LV2_Atom) + size;
+
+  LV2_Atom* atom = (LV2_Atom*)ev->body;
+  atom->type = type;
+  atom->size = (uint32_t) size;
+
+  if (zix_ring_write_space (
+        plugin->plugin_to_ui_events) >=
+      sizeof(evbuf) + size)
+    {
+      zix_ring_write (
+        plugin->plugin_to_ui_events, evbuf,
+        sizeof(evbuf));
+      zix_ring_write (
+        plugin->plugin_to_ui_events,
+        (const char*)body, size);
+      return 1;
+    }
+  else
+    {
+      PluginDescriptor * descr =
+        ((Plugin *)plugin)->descr;
+      g_warning (
+        "Buffer overflow when sending plugin %s "
+        "(%s) event to its UI",
+        descr->name, descr->uri);
+      return 0;
+    }
+}
+
+/**
  * Write events from the plugin's UI to the plugin.
  */
 void
-lv2_ui_write_events_from_ui_to_plugin (
+lv2_ui_send_event_from_ui_to_plugin (
   Lv2Plugin *    plugin,
   uint32_t       port_index,
   uint32_t       buffer_size,
@@ -171,7 +291,7 @@ lv2_ui_instantiate (
   plugin->ui_host =
     suil_host_new (
       (SuilPortWriteFunc)
-      lv2_ui_write_events_from_ui_to_plugin,
+      lv2_ui_send_event_from_ui_to_plugin,
       get_port_index, NULL, NULL);
   plugin->extuiptr = NULL;
 
@@ -313,7 +433,7 @@ lv2_ui_init (
 
       const LV2_Atom* atom =
         lv2_atom_forge_deref(&forge, frame.ref);
-      lv2_ui_write_events_from_ui_to_plugin (
+      lv2_ui_send_event_from_ui_to_plugin (
         plugin,
         (uint32_t) plugin->control_in,
         lv2_atom_total_size (atom),

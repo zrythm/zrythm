@@ -795,11 +795,7 @@ plugin_close_ui (Plugin *plugin)
     {
       Lv2Plugin * lv2_plugin =
         (Lv2Plugin *) plugin->lv2;
-      if (GTK_IS_WINDOW (lv2_plugin->window))
-        gtk_window_close (
-          GTK_WINDOW (lv2_plugin->window));
-      else
-        lv2_gtk_close_ui (lv2_plugin);
+      lv2_gtk_close_ui (lv2_plugin);
     }
 }
 

@@ -18,18 +18,22 @@
 #include "plugins/lv2/lv2_worker.h"
 
 static LV2_Worker_Status
-lv2_worker_respond(LV2_Worker_Respond_Handle handle,
-                    uint32_t                  size,
-                    const void*               data)
+lv2_worker_respond (
+  LV2_Worker_Respond_Handle handle,
+  uint32_t                  size,
+  const void*               data)
 {
 	LV2_Worker* worker = (LV2_Worker*)handle;
-	zix_ring_write(worker->responses, (const char*)&size, sizeof(size));
-	zix_ring_write(worker->responses, (const char*)data, size);
+	zix_ring_write (
+    worker->responses, (const char*)&size,
+    sizeof(size));
+	zix_ring_write (
+    worker->responses, (const char*)data, size);
 	return LV2_WORKER_SUCCESS;
 }
 
 static void*
-worker_func(void* data)
+worker_func (void* data)
 {
 	LV2_Worker* worker = (LV2_Worker*)data;
 	Lv2Plugin*       plugin   = worker->plugin;
@@ -62,10 +66,11 @@ worker_func(void* data)
 }
 
 void
-lv2_worker_init(Lv2Plugin*                       plugin,
-                 LV2_Worker*                 worker,
-                 const LV2_Worker_Interface* iface,
-                 bool                        threaded)
+lv2_worker_init (
+  Lv2Plugin*                   plugin,
+  LV2_Worker*                  worker,
+  const LV2_Worker_Interface * iface,
+  bool                         threaded)
 {
 	worker->iface = iface;
 	worker->threaded = threaded;
@@ -94,42 +99,61 @@ lv2_worker_finish(LV2_Worker* worker)
 }
 
 LV2_Worker_Status
-lv2_worker_schedule(LV2_Worker_Schedule_Handle handle,
-                     uint32_t                   size,
-                     const void*                data)
+lv2_worker_schedule (
+  LV2_Worker_Schedule_Handle handle,
+  uint32_t                   size,
+  const void*                data)
 {
-	LV2_Worker* worker = (LV2_Worker*)handle;
-	Lv2Plugin*       plugin   = worker->plugin;
-	if (worker->threaded) {
-		// Schedule a request to be executed by the worker thread
-		zix_ring_write(worker->requests, (const char*)&size, sizeof(size));
-		zix_ring_write(worker->requests, (const char*)data, size);
-		zix_sem_post(&worker->sem);
-	} else {
-		// Execute work immediately in this thread
-		zix_sem_wait(&plugin->work_lock);
-		worker->iface->work(
-			plugin->instance->lv2_handle, lv2_worker_respond, worker, size, data);
-		zix_sem_post(&plugin->work_lock);
-	}
+	LV2_Worker * worker = (LV2_Worker *) handle;
+	Lv2Plugin * plugin = worker->plugin;
+	if (worker->threaded)
+    {
+      /* Schedule a request to be executed by the
+       * worker thread */
+      zix_ring_write (
+        worker->requests, (const char*)&size,
+        sizeof(size));
+      zix_ring_write (
+        worker->requests, (const char*)data, size);
+      zix_sem_post (&worker->sem);
+    }
+  else
+    {
+      /* Execute work immediately in this thread */
+      zix_sem_wait (&plugin->work_lock);
+      worker->iface->work (
+        plugin->instance->lv2_handle,
+        lv2_worker_respond, worker, size, data);
+      zix_sem_post (&plugin->work_lock);
+    }
 	return LV2_WORKER_SUCCESS;
 }
 
 void
-lv2_worker_emit_responses(LV2_Worker* worker, LilvInstance* instance)
+lv2_worker_emit_responses (
+  LV2_Worker* worker,
+  LilvInstance* instance)
 {
-	if (worker->responses) {
-		uint32_t read_space = zix_ring_read_space(worker->responses);
-		while (read_space) {
-			uint32_t size = 0;
-			zix_ring_read(worker->responses, (char*)&size, sizeof(size));
+	if (worker->responses)
+    {
+      uint32_t read_space =
+        zix_ring_read_space (worker->responses);
+      while (read_space)
+        {
+          uint32_t size = 0;
+          zix_ring_read (
+            worker->responses,
+            (char*)&size, sizeof(size));
 
-			zix_ring_read(worker->responses, (char*)worker->response, size);
+          zix_ring_read (
+            worker->responses,
+            (char*)worker->response, size);
 
-			worker->iface->work_response(
-				instance->lv2_handle, size, worker->response);
+          worker->iface->work_response (
+            instance->lv2_handle, size,
+            worker->response);
 
-			read_space -= sizeof(size) + size;
-		}
-	}
+          read_space -= sizeof(size) + size;
+        }
+    }
 }

@@ -296,7 +296,7 @@ lv2_control_set_control (
       const LV2_Atom* atom =
         lv2_atom_forge_deref (
           &forge, frame.ref);
-      lv2_ui_write_events_from_ui_to_plugin (
+      lv2_ui_send_event_from_ui_to_plugin (
         plugin, plugin->control_in,
         lv2_atom_total_size(atom),
         PM_URIDS.atom_eventTransfer, atom);

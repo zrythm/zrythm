@@ -101,18 +101,18 @@ typedef struct Lv2Plugin
 {
   LV2_Extension_Data_Feature ext_data;
 
-  LV2_Feature map_feature;
-  LV2_Feature unmap_feature;
-  LV2_Feature make_path_feature;
-  LV2_Feature sched_feature;
-  LV2_Feature state_sched_feature;
-  LV2_Feature safe_restore_feature;
-  LV2_Feature log_feature;
-  LV2_Feature options_feature;
-  LV2_Feature def_state_feature;
+  LV2_Feature        map_feature;
+  LV2_Feature        unmap_feature;
+  LV2_Feature        make_path_feature;
+  LV2_Feature        sched_feature;
+  LV2_Feature        state_sched_feature;
+  LV2_Feature        safe_restore_feature;
+  LV2_Feature        log_feature;
+  LV2_Feature        options_feature;
+  LV2_Feature        def_state_feature;
 
   /** These features have no data */
-  LV2_Feature buf_size_features[3];
+  LV2_Feature        buf_size_features[3];
 
   const LV2_Feature* features[11];
 
@@ -162,8 +162,15 @@ typedef struct Lv2Plugin
 	SuilHost*          ui_host;
   /** Plugin UI instance (shared library). */
 	SuilInstance*      ui_instance;
-  /** Window (if applicable) (GtkWindow). */
+
+  /**
+   * Window (if applicable) (GtkWindow).
+   *
+   * This is used by both generic UIs and X11/etc
+   * UIs.
+   */
 	void*              window;
+
   /** ID of the delete-event signal so that we can
    * deactivate before freeing the plugin. */
   gulong             delete_event_id;
@@ -178,11 +185,17 @@ typedef struct Lv2Plugin
   /** Latency reported by the Lv2Plugin, if any. */
 	uint32_t           plugin_latency;
 	float              ui_update_hz;   ///< Frequency of UI updates
-	uint32_t           event_delta_t;  ///< Frames since last update sent to UI
+
+  /** Frames since last update sent to UI. */
+	uint32_t           event_delta_t;
 	uint32_t           midi_event_id;  ///< MIDI event class ID in event context
 	bool               exit;           ///< True iff execution is finished
-	bool               has_ui;         ///< True iff a control UI is present
-	bool               request_update; ///< True iff a plugin update is needed
+
+  /** Whether the plugin has its own UI. */
+	bool               has_custom_ui;
+
+  /** Whether a plugin update is needed. */
+	bool               request_update;
 	bool               safe_restore;   ///< Plugin restore() is thread-safe
 	int                control_in;     ///< Index of control input port
   ZixSem exit_sem;  /**< Exit semaphore */
@@ -190,9 +203,15 @@ typedef struct Lv2Plugin
   LV2_External_UI_Widget* extuiptr;  ///< data structure used for external-ui
   GtkCheckMenuItem* active_preset_item;
   bool              updating;
-	LV2_URID_Map       map;            ///< URI => Int map
-	LV2_URID_Unmap     unmap;          ///< Int => URI map
-	SerdEnv*           env;            ///< Environment for RDF printing
+
+  /** URI => Int map. */
+	LV2_URID_Map       map;
+
+  /** Int => URI map. */
+	LV2_URID_Unmap     unmap;
+
+  /** Environment for RDF printing. */
+	SerdEnv*           env;
 
   /** Transport was rolling or not last cycle. */
   int                rolling;
@@ -205,10 +224,10 @@ typedef struct Lv2Plugin
   float              bpm;
 
   /** Base Plugin instance (parent). */
-  Plugin             * plugin;
+  Plugin *           plugin;
 
   /** For saving/loading the state. */
-  char               * state_file;
+  char *             state_file;
 
   /** plugin feature data */
   LV2_State_Make_Path make_path;

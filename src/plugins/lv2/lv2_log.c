@@ -24,10 +24,11 @@
 #include "zrythm.h"
 
 int
-lv2_vprintf(LV2_Log_Handle handle,
-             LV2_URID       type,
-             const char*    fmt,
-             va_list        ap)
+lv2_log_vprintf (
+  LV2_Log_Handle handle,
+  LV2_URID       type,
+  const char*    fmt,
+  va_list        ap)
 {
   Lv2Plugin* plugin  = (Lv2Plugin*) handle;
   GLogLevelFlags level;
@@ -40,24 +41,24 @@ lv2_vprintf(LV2_Log_Handle handle,
   else
     level = G_LOG_LEVEL_MESSAGE;
 
-  g_logv (plugin->plugin->descr->name,
-          level,
-          fmt,
-          ap);
+  g_logv (
+    plugin->plugin->descr->name,
+    level, fmt, ap);
 
   return 0;
 }
 
 int
-lv2_printf(LV2_Log_Handle handle,
-            LV2_URID       type,
-            const char*    fmt, ...)
+lv2_log_printf (
+  LV2_Log_Handle handle,
+  LV2_URID       type,
+  const char*    fmt, ...)
 {
 	va_list args;
-	va_start(args, fmt);
+	va_start (args, fmt);
 	const int ret =
-    lv2_vprintf(handle, type, fmt, args);
-	va_end(args);
+    lv2_log_vprintf (handle, type, fmt, args);
+	va_end (args);
 
   return ret;
 }

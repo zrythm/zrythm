@@ -28,7 +28,7 @@
 typedef struct Lv2Plugin Lv2Plugin;
 
 typedef struct {
-	Lv2Plugin*                 plugin;       ///< Pointer back to the plugin
+	Lv2Plugin *                 plugin;       ///< Pointer back to the plugin
 	ZixRing*                    requests;   ///< Requests to the worker
 	ZixRing*                    responses;  ///< Responses from the worker
 	void*                       response;   ///< Worker response buffer

@@ -78,6 +78,17 @@ typedef struct Lv2Port
    * 0.0f. */
 	float           control;
 
+  /**
+   * Whether the port received a UI event from
+   * the plugin UI in this cycle.
+   *
+   * This is used to avoid re-sending that event
+   * to the plugin.
+   *
+   * @note for control ports only.
+   */
+  int             received_ui_event;
+
   /** The value in the previous cycle. */
   //float           prev_control;
 

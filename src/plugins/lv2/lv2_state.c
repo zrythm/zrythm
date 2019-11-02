@@ -161,11 +161,12 @@ lv2_state_unload_presets (
 }
 
 static void
-set_port_value(const char* port_symbol,
-               void*       user_data,
-               const void* value,
-               uint32_t    size,
-               uint32_t    type)
+set_port_value (
+  const char* port_symbol,
+  void*       user_data,
+  const void* value,
+  uint32_t    size,
+  uint32_t    type)
 {
   Lv2Plugin*        plugin = (Lv2Plugin*)user_data;
   Lv2Port* port =
@@ -201,12 +202,12 @@ set_port_value(const char* port_symbol,
       port->control = fvalue;
     } else {
       // Send value to running plugin
-      lv2_ui_write_events_from_ui_to_plugin (
+      lv2_ui_send_event_from_ui_to_plugin (
         plugin, port->index,
         sizeof(fvalue), 0, &fvalue);
     }
 
-  if (plugin->has_ui)
+  if (plugin->window)
     {
       // Update UI
       char buf[sizeof(Lv2ControlChange) + sizeof(fvalue)];

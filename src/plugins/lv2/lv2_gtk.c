@@ -1714,14 +1714,14 @@ lv2_gtk_open_ui (
     {
       g_message ("Creating window for UI...");
       GtkWidget* widget =
-        (GtkWidget*)
-        suil_instance_get_widget (
-          plugin->ui_instance);
+        GTK_WIDGET (
+          suil_instance_get_widget (
+            plugin->ui_instance));
 
       gtk_container_add (
         GTK_CONTAINER (alignment), widget);
       gtk_window_set_resizable (
-        GTK_WINDOW(window),
+        GTK_WINDOW (window),
         lv2_ui_is_resizable(plugin));
       gtk_widget_show_all(vbox);
       gtk_widget_grab_focus(widget);
@@ -1781,9 +1781,6 @@ lv2_gtk_close_ui (
         GTK_WINDOW (plugin->window));
       /*gtk_widget_destroy (*/
         /*GTK_WIDGET (plugin->window));*/
-      /*gtk_widget_destroy (*/
-        /*GTK_WIDGET (plugin->window));*/
-      /*g_message ("destroy");*/
     }
   return TRUE;
 }

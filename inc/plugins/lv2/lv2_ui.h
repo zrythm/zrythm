@@ -60,15 +60,41 @@ lv2_ui_instantiate (
   void*        parent);
 
 /**
+ * Read and apply control change events from UI,
+ * for plugins that have their own UIs.
+ *
+ * Called in the real-time audio thread during
+ * plugin processing.
+ *
+ * @param nframes Used for event ports.
+ */
+void
+lv2_ui_read_and_apply_events (
+  Lv2Plugin * plugin,
+  uint32_t nframes);
+
+/**
  * Write events from the plugin's UI to the plugin.
  */
 void
-lv2_ui_write_events_from_ui_to_plugin (
+lv2_ui_send_event_from_ui_to_plugin (
   Lv2Plugin *    plugin,
   uint32_t       port_index,
   uint32_t       buffer_size,
   uint32_t       protocol, ///< format
   const void*    buffer);
+
+/**
+ * Send event to UI, called during the real time
+ * audio thread when processing the plugin.
+ */
+int
+lv2_ui_send_event_from_plugin_to_ui (
+  Lv2Plugin *  plugin,
+  uint32_t     port_index,
+  uint32_t     type,
+  uint32_t     size,
+  const void * body);
 
 /**
  * @}
