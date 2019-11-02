@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-28 15:59+0000\n"
-"PO-Revision-Date: 2019-10-28 15:53+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"PO-Revision-Date: 2019-11-02 13:27+0000\n"
+"Last-Translator: Nicolas FAURE <sub26nico@laposte.net>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9.1\n"
+"X-Generator: Weblate 3.10-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -36,7 +36,7 @@ msgstr "Initialisation de la fenêtre principale"
 #: src/zrythm.c:346
 #, fuzzy
 msgid "Initializing symap"
-msgstr "Initialisation..."
+msgstr "Initialisation de mappage de symboles"
 
 #: src/zrythm.c:350
 msgid "Initializing caches"
@@ -395,9 +395,8 @@ msgid "Blank project"
 msgstr "Projet vierge"
 
 #: src/gui/widgets/project_assistant.c:572
-#, fuzzy
 msgid "Project Assistant"
-msgstr "Projet sauvegardé."
+msgstr "Assistant de projet"
 
 #: src/gui/widgets/left_dock_edge.c:107
 msgid "Inspector"
@@ -658,9 +657,8 @@ msgid "position"
 msgstr "position"
 
 #: src/gui/widgets/timeline_arranger.c:846
-#, fuzzy
 msgid "Custom Marker"
-msgstr "Marqueur"
+msgstr "Marqueur personnalisé"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -1307,9 +1305,8 @@ msgid "Client zombie"
 msgstr "Client zombie"
 
 #: src/actions/arranger_selections.c:1296
-#, fuzzy
 msgid "Edit arranger object(s)"
-msgstr "Éditer l'objet"
+msgstr "Modifier le(s) objet(s) de l'arrangeur"
 
 #: src/actions/create_plugins_action.c:139
 #, c-format
@@ -1648,7 +1645,7 @@ msgstr "Tablette d'accord"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
-msgstr ""
+msgstr "Cuvette à poisson"
 
 #: resources/ui/timeline_toolbar.ui:69 resources/ui/editor_toolbar.ui:103
 msgid "Toggle event viewer"
@@ -2141,7 +2138,7 @@ msgstr "Afficheur d'événement"
 
 #: resources/ui/automation_track.ui:31
 msgid "Control this automation track is for"
-msgstr ""
+msgstr "Le contrôle de cette piste d'automatisation est pour"
 
 #: resources/ui/automation_track.ui:43
 msgid "Mute automation track"

@@ -8,65 +8,65 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-28 15:59+0000\n"
-"PO-Revision-Date: 2019-05-09 12:18+0000\n"
-"Last-Translator: Weblate Admin <weblate.admin@zrythm.org>\n"
-"Language-Team: Arabic <https://translate.zrythm.org/projects/zrythm/zrythm/"
-"ar/>\n"
+"PO-Revision-Date: 2019-11-01 13:18+0000\n"
+"Last-Translator: AymenStudios <aymencarbonaro@gmail.com>\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/zrythm/zrythm/ar/>"
+"\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 3.6.1\n"
+"X-Generator: Weblate 3.10-dev\n"
 
 #: src/zrythm.c:264
 msgid "Setting up main window"
-msgstr ""
+msgstr "إعداد النافذة الرئيسية"
 
 #: src/zrythm.c:301
 msgid "Loading project"
-msgstr ""
+msgstr "تحميل المشروع"
 
 #: src/zrythm.c:329
 msgid "Initializing main window"
-msgstr ""
+msgstr "بدء النافذة الرئيسية"
 
 #: src/zrythm.c:346
 msgid "Initializing symap"
-msgstr ""
+msgstr "بدء الـSymap"
 
 #: src/zrythm.c:350
 msgid "Initializing caches"
-msgstr ""
+msgstr "تحضير الملفات المؤقتة"
 
 #: src/zrythm.c:355
 msgid "Initializing settings"
-msgstr ""
+msgstr "تحضير الإعدادات"
 
 #: src/zrythm.c:361
 msgid "Initializing plugin manager"
-msgstr ""
+msgstr "تحضير مدير الإضافات"
 
 #: src/zrythm.c:365
 msgid "Scanning plugins"
-msgstr ""
+msgstr "فحص الإضافات"
 
 #: src/zrythm.c:539
 msgid "License Information"
-msgstr ""
+msgstr "معلومات ترخيص البرنامج"
 
 #: src/zrythm.c:562
 msgid "Initializing Zrythm directories"
-msgstr ""
+msgstr "تحضير مجلدات Zrythm"
 
 #: src/zrythm.c:570
 msgid "Initializing logging system"
-msgstr ""
+msgstr "تحضير نظام السجلات"
 
 #: src/zrythm.c:575
 msgid "Waiting for project"
-msgstr ""
+msgstr "انتظار المشروع"
 
 #: src/project.c:353 src/gui/widgets/route_target_selector_popover.c:147
 #: src/audio/track.c:1185
@@ -87,18 +87,20 @@ msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
 "work correctly."
 msgstr ""
+"هذا المشروع تم انشائه بإستخدام اصدار مختلف من نفس البرنامج (%s)\n"
+"قد لا يعمل بالشكل الصحيح"
 
 #: src/project.c:539
 msgid "Failed to load project. Please check the logs for more information."
-msgstr ""
+msgstr "فشلت عملية تحميل المشروع ، رجاءا تحقق من السجلات للمزيد من المعلومات"
 
 #: src/project.c:948
 msgid "Backup saved."
-msgstr ""
+msgstr "تم حفظ النسخة الاحتياطية"
 
 #: src/project.c:955
 msgid "Project saved."
-msgstr ""
+msgstr "تم حفظ المشروع"
 
 #: src/main.c:69
 #, c-format
@@ -110,6 +112,8 @@ msgstr ""
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
 msgstr ""
+"لقد توقف التطبيق عن العمل ، يمكنك مساعدتنا في تصحيح هذه المشكلة عن طريق %s "
+"ارسال تقرير خطأ %s."
 
 #: src/main.c:167
 #, c-format
@@ -150,7 +154,7 @@ msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:151
 msgid "Save State"
-msgstr ""
+msgstr "حفظ الحالة"
 
 #: src/plugins/lv2/lv2_gtk.c:154 src/plugins/lv2/lv2_gtk.c:582
 #: src/utils/dialogs.c:41 src/utils/dialogs.c:71 src/actions/actions.c:661
@@ -158,11 +162,11 @@ msgstr ""
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
-msgstr ""
+msgstr "_إلغاء"
 
 #: src/plugins/lv2/lv2_gtk.c:155 src/actions/actions.c:663
 msgid "_Save"
-msgstr ""
+msgstr "_حفظ"
 
 #: src/plugins/lv2/lv2_gtk.c:482
 msgid "URI (Optional):"
@@ -174,12 +178,12 @@ msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:577
 msgid "Delete Preset?"
-msgstr ""
+msgstr "حذف اعداد هذه الاضافة؟"
 
 #: src/plugins/lv2/lv2_gtk.c:583 src/utils/dialogs.c:69
 #: resources/ui/port_selector_popover.ui:227 resources/ui/marker_dialog.ui:61
 msgid "_OK"
-msgstr ""
+msgstr "_أوكي"
 
 #: src/plugins/lv2/lv2_gtk.c:796
 msgid "Unknown widget type for value"
@@ -191,11 +195,11 @@ msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:1452
 msgid "Close"
-msgstr ""
+msgstr "إغلاق"
 
 #: src/gui/widgets/create_project_dialog.c:109
 msgid "Create New Project"
-msgstr ""
+msgstr "إنشاء مشروع جديد"
 
 #: src/gui/widgets/create_project_dialog.c:122
 msgid "Untitled Project"
@@ -211,19 +215,19 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_popover.c:172
 msgid "Add"
-msgstr ""
+msgstr "إضافة"
 
 #: src/gui/widgets/quantize_dialog.c:112
 msgid "note length"
-msgstr ""
+msgstr "عرض النوتة"
 
 #: src/gui/widgets/quantize_dialog.c:121
 msgid "note type"
-msgstr ""
+msgstr "نوع النوتة"
 
 #: src/gui/widgets/track_properties_expander.c:92
 msgid "Track Name"
-msgstr ""
+msgstr "اسم المقطوعة"
 
 #: src/gui/widgets/track_properties_expander.c:104
 msgid "Direct Out"
