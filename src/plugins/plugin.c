@@ -133,7 +133,8 @@ plugin_new_from_descr (
 
   if (plugin->descr->protocol == PROT_LV2)
     {
-      lv2_create_from_uri (plugin, descr->uri);
+      lv2_plugin_new_from_uri (
+        plugin, descr->uri);
     }
 
   return plugin;
@@ -283,23 +284,6 @@ plugin_update_latency (
                  pl->latency);
     }
 }
-
-/**
- * Loads the plugin from its state file.
- */
-/*void*/
-/*plugin_load (Plugin * plugin)*/
-/*{*/
-  /*switch (plugin->descr->protocol)*/
-    /*{*/
-    /*case PROT_LV2:*/
-
-      /*lv2_load_from_state (plugin, descr->uri);*/
-      /*break;*/
-    /*}*/
-  /*return plugin;*/
-
-/*}*/
 
 /**
  * Adds a port of the given type to the Plugin.

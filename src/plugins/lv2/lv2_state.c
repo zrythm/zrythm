@@ -26,6 +26,8 @@
 
 #include "audio/transport.h"
 #include "plugins/lv2_plugin.h"
+#include "plugins/lv2/lv2_state.h"
+#include "plugins/lv2/lv2_ui.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 
@@ -40,10 +42,10 @@
 #define NS_RDFS "http://www.w3.org/2000/01/rdf-schema#"
 #define NS_XSD  "http://www.w3.org/2001/XMLSchema#"
 
-
-char*
-lv2_make_path(LV2_State_Make_Path_Handle handle,
-               const char*                path)
+char *
+lv2_state_make_path (
+  LV2_State_Make_Path_Handle handle,
+  const char*                path)
 {
 	Lv2Plugin* plugin = (Lv2Plugin*)handle;
 
@@ -65,7 +67,7 @@ get_port_value(const char* port_symbol,
 {
 	Lv2Plugin*        plugin = (Lv2Plugin*)user_data;
 	Lv2Port* port =
-    lv2_plugin_get_lv2_port_by_symbol (
+    lv2_port_get_by_symbol (
       plugin, port_symbol);
 	if (port &&
       port->port->identifier.flow == FLOW_INPUT &&
@@ -80,7 +82,9 @@ get_port_value(const char* port_symbol,
 }
 
 void
-lv2_save(Lv2Plugin* plugin, const char* dir)
+lv2_state_save (
+  Lv2Plugin*  plugin,
+  const char* dir)
 {
 	plugin->save_dir =
     g_strjoin (NULL, dir, "/", NULL);
@@ -105,7 +109,10 @@ lv2_save(Lv2Plugin* plugin, const char* dir)
 }
 
 int
-lv2_load_presets(Lv2Plugin* plugin, PresetSink sink, void* data)
+lv2_state_load_presets (
+  Lv2Plugin* plugin,
+  PresetSink sink,
+  void* data)
 {
 	LilvNodes* presets =
     lilv_plugin_get_related (
@@ -137,7 +144,8 @@ lv2_load_presets(Lv2Plugin* plugin, PresetSink sink, void* data)
 }
 
 int
-lv2_unload_presets(Lv2Plugin* plugin)
+lv2_state_unload_presets (
+  Lv2Plugin* plugin)
 {
 	LilvNodes* presets =
     lilv_plugin_get_related (
@@ -161,7 +169,7 @@ set_port_value(const char* port_symbol,
 {
   Lv2Plugin*        plugin = (Lv2Plugin*)user_data;
   Lv2Port* port =
-    lv2_plugin_get_lv2_port_by_symbol (
+    lv2_port_get_by_symbol (
       plugin, port_symbol);
   if (!port) {
           fprintf(stderr, "error: Preset port `%s' is missing\n", port_symbol);
@@ -193,8 +201,9 @@ set_port_value(const char* port_symbol,
       port->control = fvalue;
     } else {
       // Send value to running plugin
-      lv2_ui_write(plugin, port->index,
-                   sizeof(fvalue), 0, &fvalue);
+      lv2_ui_write_events_from_ui_to_plugin (
+        plugin, port->index,
+        sizeof(fvalue), 0, &fvalue);
     }
 
   if (plugin->has_ui)
@@ -213,7 +222,9 @@ set_port_value(const char* port_symbol,
 }
 
 void
-lv2_apply_state(Lv2Plugin* plugin, LilvState* state)
+lv2_state_apply_state (
+  Lv2Plugin* plugin,
+  LilvState* state)
 {
   bool must_pause = !plugin->safe_restore && TRANSPORT->play_state == PLAYSTATE_ROLLING;
   if (state)
@@ -241,22 +252,28 @@ lv2_apply_state(Lv2Plugin* plugin, LilvState* state)
 }
 
 int
-lv2_apply_preset(Lv2Plugin* plugin, const LilvNode* preset)
+lv2_state_apply_preset (
+  Lv2Plugin* plugin,
+  const LilvNode* preset)
 {
   lilv_state_free (plugin->preset);
-  plugin->preset = lilv_state_new_from_world (LILV_WORLD,
-                                              &plugin->map,
-                                              preset);
-  lv2_apply_state (plugin, plugin->preset);
+  plugin->preset =
+    lilv_state_new_from_world (
+      LILV_WORLD, &plugin->map, preset);
+  lv2_state_apply_state (plugin, plugin->preset);
   return 0;
 }
 
+/**
+ * Saves the preset.
+ */
 int
-lv2_save_preset(Lv2Plugin*       plugin,
-                const char* dir,
-                const char* uri,
-                const char* label,
-                const char* filename)
+lv2_state_save_preset (
+  Lv2Plugin *  plugin,
+  const char * dir,
+  const char * uri,
+  const char * label,
+  const char * filename)
 {
   LilvState* const state = lilv_state_new_from_instance(
           plugin->lilv_plugin, plugin->instance, &plugin->map,
@@ -278,8 +295,12 @@ lv2_save_preset(Lv2Plugin*       plugin,
   return ret;
 }
 
+/**
+ * Deletes the current preset.
+ */
 int
-lv2_delete_current_preset(Lv2Plugin* plugin)
+lv2_state_delete_current_preset (
+  Lv2Plugin* plugin)
 {
 	if (!plugin->preset) {
 		return 1;

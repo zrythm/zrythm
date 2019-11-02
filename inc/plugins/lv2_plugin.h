@@ -244,131 +244,14 @@ void
 lv2_plugin_init_loaded (
   Lv2Plugin * lv2_plgn);
 
-char*
-lv2_make_path (
-  LV2_State_Make_Path_Handle handle,
-  const char*                path);
-
-void
-lv2_save (
-  Lv2Plugin* plugin,
-  const char* dir);
-
-typedef int (*PresetSink)
-  (Lv2Plugin*           plugin,
-  const LilvNode* node,
-  const LilvNode* title,
-  void*           data);
-
-int
-lv2_load_presets (
-  Lv2Plugin* plugin,
-  PresetSink sink,
-  void* data);
-
-int
-lv2_unload_presets (
-  Lv2Plugin* plugin);
-
-void
-lv2_apply_state (
-  Lv2Plugin* plugin,
-  LilvState* state);
-
-int
-lv2_apply_preset (
-  Lv2Plugin* plugin,
-  const LilvNode* preset);
-
-int
-lv2_save_preset (
-  Lv2Plugin *  plugin,
-  const char * dir,
-  const char * uri,
-  const char * label,
-  const char * filename);
-
-int
-lv2_delete_current_preset (
-  Lv2Plugin* plugin);
-
 /**
- * Returns the Lv2Port corresponding to the given
- * symbol.
- */
-Lv2Port*
-lv2_plugin_get_lv2_port_by_symbol (
-  Lv2Plugin* plugin,
-  const char* sym);
-
-void
-lv2_ui_write (
-  SuilController  controller,
-  uint32_t      port_index,
-  uint32_t      buffer_size,
-  uint32_t       protocol,
-  const void*    buffer);
-
-/**
- * Returns the index of the Lv2Port corresponding to
- * the given symbol.
- *
- * For LV2 UIs.
- */
-uint32_t
-lv2_ui_port_index (
-  SuilController controller,
-  const char* symbol);
-
-bool
-lv2_discover_ui(Lv2Plugin* plugin);
-
-void
-lv2_init_ui(Lv2Plugin* plugin);
-
-void
-lv2_ui_instantiate(Lv2Plugin*       plugin,
-                    const char* native_ui_type,
-                    void*       parent);
-
-bool
-lv2_ui_is_resizable (
-  Lv2Plugin* plugin);
-
-/**
- * Runs the plugin for this cycle.
- */
-bool
-lv2_plugin_run(
-  Lv2Plugin* plugin,
-  const nframes_t  nframes);
-
-int
-lv2_plugin_update (
-  gpointer data);
-
-int
-lv2_ui_resize (
-  Lv2Plugin* plugin,
-  int width,
-  int height);
-
-/**
-   Allocate port buffers (only necessary for MIDI).
-*/
-void
-lv2_allocate_port_buffers(Lv2Plugin* plugin);
-
-/** Expose a port to the system (if applicable) and connect it to its buffer. */
-void
-lv2_backend_activate_port(Lv2Plugin* plugin, uint32_t port_index);
-
-/**
- * Returns a newly allocated plugin descriptor for the given LilvPlugin
+ * Returns a newly allocated plugin descriptor for
+ * the given LilvPlugin
  * if it can be hosted, otherwise NULL.
  */
 PluginDescriptor *
-lv2_create_descriptor_from_lilv (const LilvPlugin * lp);
+lv2_plugin_create_descriptor_from_lilv (
+  const LilvPlugin * lp);
 
 /**
  * Creates an LV2 plugin from given uri.
@@ -380,31 +263,9 @@ lv2_create_descriptor_from_lilv (const LilvPlugin * lp);
  * @param uri The URI.
  */
 Lv2Plugin *
-lv2_create_from_uri (
+lv2_plugin_new_from_uri (
   Plugin    *  plugin,
   const char * uri);
-
-/**
- * Creates an LV2 plugin from a state file.
- *
- * @param plugin A newly created plugin.
- * @param _path Path for state to load.
- */
-Lv2Plugin *
-lv2_create_from_state (
-  Plugin    *  plugin,
-  const char * _path);
-
-/**
- * Loads an LV2 plugin from its state file.
- *
- * Used when loading project files.
- *
- * @param plugin A newly created plugin.
- */
-Lv2Plugin *
-lv2_load_from_state (
-  Plugin * plugin);
 
 /**
  * Instantiate the plugin.
@@ -423,17 +284,17 @@ lv2_plugin_instantiate (
   char * preset_uri);
 
 /**
- * Creates a new LV2 plugin using the given Plugin instance.
+ * Creates a new LV2 plugin using the given Plugin
+ * instance.
  *
- * The given plugin instance must be a newly allocated one.
+ * The given plugin instance must be a newly
+ * allocated one.
+ *
+ * @param plugin A newly allocated Plugin instance.
  */
 Lv2Plugin *
-lv2_new (Plugin *plugin ///< a newly allocated plugin instance
-         );
-
-/** TODO */
-void
-lv2_cleanup (Lv2Plugin *plugin);
+lv2_plugin_new (
+  Plugin *plugin);
 
 /**
  * Processes the plugin for this cycle.
@@ -484,10 +345,17 @@ lv2_plugin_update_port_identifiers (
   Lv2Plugin * self);
 
 /**
- * Frees the Lv2Plugin.
+ * Allocate port buffers (only necessary for MIDI).
  */
 void
-lv2_free (
+lv2_plugin_allocate_port_buffers (
+  Lv2Plugin* plugin);
+
+/**
+ * Frees the Lv2Plugin and all its components.
+ */
+void
+lv2_plugin_free (
   Lv2Plugin * plugin);
 
 /**

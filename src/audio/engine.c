@@ -447,8 +447,8 @@ engine_realloc_port_buffers (
               pl = ch->plugins[j];
               if (pl->descr->protocol == PROT_LV2)
                 {
-                  lv2_allocate_port_buffers (
-                    (Lv2Plugin *)pl->lv2);
+                  lv2_plugin_allocate_port_buffers (
+                    pl->lv2);
                 }
             }
         }

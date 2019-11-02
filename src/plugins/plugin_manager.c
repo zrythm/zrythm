@@ -522,7 +522,7 @@ plugin_manager_scan_plugins (
         lilv_plugins_get (plugins, i);
 
       PluginDescriptor * descriptor =
-        lv2_create_descriptor_from_lilv (p);
+        lv2_plugin_create_descriptor_from_lilv (p);
 
       if (descriptor)
         {

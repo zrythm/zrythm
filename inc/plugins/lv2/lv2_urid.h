@@ -71,7 +71,7 @@ typedef struct Lv2URIDs
  * given uri.
  */
 LV2_URID
-urid_map_uri (
+lv2_urid_map_uri (
   LV2_URID_Map_Handle handle,
   const char*         uri);
 
@@ -79,7 +79,7 @@ urid_map_uri (
  * URID feature unmap implementation.
  */
 const char *
-urid_unmap_uri (
+lv2_urid_unmap_uri (
   LV2_URID_Unmap_Handle handle,
   LV2_URID              urid);
 

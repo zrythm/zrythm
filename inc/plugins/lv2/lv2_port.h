@@ -120,4 +120,26 @@ lv2_port_get_value_from_symbol (
   uint32_t   * size,
   uint32_t   * type);
 
+/**
+ * Returns the Lv2Port corresponding to the given
+ * symbol.
+ *
+ * TODO: Build an index to make this faster,
+ * currently O(n) which may be
+ * a problem when restoring the state of plugins
+ * with many ports.
+ */
+Lv2Port*
+lv2_port_get_by_symbol (
+  Lv2Plugin* plugin,
+  const char* sym);
+
+/**
+ * Gets the symbol as a string.
+ */
+const char *
+lv2_port_get_symbol_as_string (
+  Lv2Plugin * plugin,
+  Lv2Port *   port);
+
 #endif

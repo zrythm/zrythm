@@ -18,6 +18,7 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2/lv2_control.h"
+#include "plugins/lv2/lv2_ui.h"
 #include "project.h"
 
 #include <lilv/lilv.h>
@@ -260,10 +261,11 @@ lv2_get_property_control(const Lv2Controls* controls, LV2_URID property)
  * Called when a generic UI control changes.
  */
 void
-lv2_control_set_control(const Lv2Control* control,
-                 uint32_t         size,
-                 LV2_URID         type,
-                 const void*      body)
+lv2_control_set_control (
+  const Lv2Control* control,
+  uint32_t          size,
+  LV2_URID          type,
+  const void*       body)
 {
   /*g_message ("lv2_control_set_control");*/
   Lv2Plugin* plugin = control->plugin;
@@ -291,12 +293,13 @@ lv2_control_set_control(const Lv2Control* control,
       lv2_atom_forge_atom(&forge, size, type);
       lv2_atom_forge_write(&forge, body, size);
 
-      const LV2_Atom* atom = lv2_atom_forge_deref(&forge, frame.ref);
-      lv2_ui_write(plugin,
-                    plugin->control_in,
-                    lv2_atom_total_size(atom),
-                    PM_URIDS.atom_eventTransfer,
-                    atom);
+      const LV2_Atom* atom =
+        lv2_atom_forge_deref (
+          &forge, frame.ref);
+      lv2_ui_write_events_from_ui_to_plugin (
+        plugin, plugin->control_in,
+        lv2_atom_total_size(atom),
+        PM_URIDS.atom_eventTransfer, atom);
     }
 }
 
@@ -304,7 +307,8 @@ lv2_control_set_control(const Lv2Control* control,
  * Returns the human readable control label.
  */
 const char *
-lv2_control_get_label (const Lv2Control * control)
+lv2_control_get_label (
+  const Lv2Control * control)
 {
   return lilv_node_as_string (
     control->label);

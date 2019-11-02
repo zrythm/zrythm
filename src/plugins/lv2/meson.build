@@ -20,12 +20,14 @@ lv2_srcs = [
   'lv2_log.c',
   'lv2_evbuf.c',
   'lv2_gtk.c',
-  'qt5_in_gtk3.cpp',
+  'lv2_port.c',
   'lv2_state.c',
-  'suil_host.c',
-  'suil_instance.c',
+  'lv2_ui.c',
   'lv2_urid.c',
   'lv2_worker.c',
+  'qt5_in_gtk3.cpp',
+  'suil_host.c',
+  'suil_instance.c',
   'x11_in_gtk3.c',
   ]
 

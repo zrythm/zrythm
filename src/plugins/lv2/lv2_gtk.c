@@ -43,6 +43,8 @@
 #include "gui/widgets/main_window.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_gtk.h"
+#include "plugins/lv2/lv2_state.h"
+#include "plugins/lv2/lv2_ui.h"
 #include "plugins/lv2/suil.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -65,6 +67,8 @@
 #endif
 
 bool no_menu = false;
+bool print_controls = 0;
+static const int dump = 0;
 
 /** Widget for a control. */
 typedef struct {
@@ -162,7 +166,7 @@ on_save_activate (
         GTK_FILE_CHOOSER(dialog));
 		char* base =
       g_build_filename (path, "/", NULL);
-		lv2_save(plugin, base);
+		lv2_state_save (plugin, base);
 		g_free(path);
 		g_free(base);
 	}
@@ -242,7 +246,7 @@ on_preset_activate (
   if (GTK_CHECK_MENU_ITEM(widget) !=
       record->plugin->active_preset_item)
     {
-      lv2_apply_preset (
+      lv2_state_apply_preset (
         record->plugin, record->preset);
       if (record->plugin->active_preset_item)
         {
@@ -447,7 +451,7 @@ rebuild_preset_menu (
       NULL, NULL, GTK_MENU(pset_menu),
       g_sequence_new((GDestroyNotify)pset_menu_free)
     };
-	lv2_load_presets (
+	lv2_state_load_presets (
     plugin, add_preset_to_menu, &menu);
 	finish_menu (&menu);
 	gtk_widget_show_all (GTK_WIDGET(pset_menu));
@@ -533,7 +537,7 @@ on_save_preset_activate (
       char* dir =
         g_build_filename (dirname, bundle, NULL);
 
-      lv2_save_preset (
+      lv2_state_save_preset (
         plugin, dir, (strlen(uri) ? uri : NULL),
         basename, file);
 
@@ -597,7 +601,7 @@ on_delete_preset_activate (
 	gtk_widget_show_all (dialog);
 	if (gtk_dialog_run (GTK_DIALOG(dialog)) ==
         GTK_RESPONSE_ACCEPT) {
-		lv2_delete_current_preset (plugin);
+		lv2_state_delete_current_preset (plugin);
 		rebuild_preset_menu (
       plugin,
       GTK_CONTAINER (
@@ -1499,22 +1503,26 @@ build_menu (
           NULL, NULL, GTK_MENU(pset_menu),
           g_sequence_new((GDestroyNotify)pset_menu_free)
   };
-  lv2_load_presets(plugin, add_preset_to_menu, &menu);
+  lv2_state_load_presets (
+    plugin, add_preset_to_menu, &menu);
   finish_menu(&menu);
 
-  g_signal_connect(G_OBJECT(quit), "activate",
-                   G_CALLBACK(on_quit_activate), window);
+  /* connect signals */
+  g_signal_connect (
+    G_OBJECT(quit), "activate",
+    G_CALLBACK(on_quit_activate), window);
+  g_signal_connect (
+    G_OBJECT(save), "activate",
+    G_CALLBACK(on_save_activate), plugin);
+  g_signal_connect (
+    G_OBJECT(save_preset), "activate",
+    G_CALLBACK(on_save_preset_activate), plugin);
+  g_signal_connect (
+    G_OBJECT(delete_preset), "activate",
+    G_CALLBACK(on_delete_preset_activate), plugin);
 
-  g_signal_connect(G_OBJECT(save), "activate",
-                   G_CALLBACK(on_save_activate), plugin);
-
-  g_signal_connect(G_OBJECT(save_preset), "activate",
-                   G_CALLBACK(on_save_preset_activate), plugin);
-
-  g_signal_connect(G_OBJECT(delete_preset), "activate",
-                   G_CALLBACK(on_delete_preset_activate), plugin);
-
-  gtk_box_pack_start(GTK_BOX(vbox), menu_bar, FALSE, FALSE, 0);
+  gtk_box_pack_start (
+    GTK_BOX(vbox), menu_bar, FALSE, FALSE, 0);
 }
 
 void
@@ -1522,12 +1530,6 @@ on_external_ui_closed(void* controller)
 {
   Lv2Plugin* jalv = (Lv2Plugin *) controller;
   lv2_gtk_close_ui (jalv);
-}
-
-bool
-lv2_discover_ui(Lv2Plugin* plugin)
-{
-  return TRUE;
 }
 
 gboolean
@@ -1541,6 +1543,98 @@ on_delete_event (GtkWidget *widget,
                plugin->plugin);
 
   return FALSE;
+}
+
+/**
+ * Called on each GUI frame to update the GTK UI.
+ *
+ * @note This is a GSourceFunc.
+ */
+static int
+update_plugin_ui (
+  Lv2Plugin * plugin)
+{
+  /* Check quit flag and close if set. */
+  if (zix_sem_try_wait(&plugin->exit_sem))
+    {
+      lv2_gtk_close_ui(plugin);
+      return G_SOURCE_REMOVE;
+    }
+
+  /* Emit UI events. */
+  if (plugin->window)
+    {
+      Lv2ControlChange ev;
+      const size_t  space =
+        zix_ring_read_space (
+          plugin->plugin_to_ui_events);
+      for (size_t i = 0;
+           i + sizeof(ev) < space;
+           i += sizeof(ev) + ev.size)
+        {
+          /* Read event header to get the size */
+          zix_ring_read (
+            plugin->plugin_to_ui_events,
+            (char*)&ev, sizeof(ev));
+
+          /* Resize read buffer if necessary */
+          plugin->ui_event_buf =
+            realloc (plugin->ui_event_buf, ev.size);
+          void* const buf = plugin->ui_event_buf;
+
+          /* Read event body */
+          zix_ring_read (
+            plugin->plugin_to_ui_events,
+            (char*)buf, ev.size);
+
+          if (dump && ev.protocol ==
+              PM_URIDS.atom_eventTransfer)
+            {
+              /* Dump event in Turtle to the
+               * console */
+              LV2_Atom * atom = (LV2_Atom *) buf;
+              char * str =
+                sratom_to_turtle (
+                  plugin->ui_sratom,
+                  &plugin->unmap,
+                  "plugin:", NULL, NULL,
+                  atom->type, atom->size,
+                  LV2_ATOM_BODY(atom));
+              g_message (
+                "Event from plugin to its UI "
+                "(%u bytes): %s",
+                atom->size, str);
+              free(str);
+            }
+
+          /*if (ev.index == 2)*/
+            /*g_message ("lv2_gtk_ui_port_event from "*/
+                       /*"lv2 update");*/
+          lv2_gtk_ui_port_event (
+            plugin, ev.index,
+            ev.size, ev.protocol,
+            ev.protocol == 0 ?
+            (void *) &plugin->ports[ev.index].control :
+            buf);
+
+          if (ev.protocol == 0 && print_controls)
+            {
+              float val = * (float *) buf;
+              g_message (
+                "%s = %f",
+                lv2_port_get_symbol_as_string (
+                  plugin,
+                  &plugin->ports[ev.index]),
+                (double) val);
+            }
+      }
+
+      if (plugin->externalui && plugin->extuiptr) {
+              LV2_EXTERNAL_UI_RUN(plugin->extuiptr);
+      }
+    }
+
+  return G_SOURCE_CONTINUE;
 }
 
 int
@@ -1619,11 +1713,16 @@ lv2_gtk_open_ui (
   else if (plugin->ui_instance)
     {
       g_message ("Creating window for UI...");
-      GtkWidget* widget = (GtkWidget*)suil_instance_get_widget(
-              plugin->ui_instance);
+      GtkWidget* widget =
+        (GtkWidget*)
+        suil_instance_get_widget (
+          plugin->ui_instance);
 
-      gtk_container_add(GTK_CONTAINER(alignment), widget);
-      gtk_window_set_resizable(GTK_WINDOW(window), lv2_ui_is_resizable(plugin));
+      gtk_container_add (
+        GTK_CONTAINER (alignment), widget);
+      gtk_window_set_resizable (
+        GTK_WINDOW(window),
+        lv2_ui_is_resizable(plugin));
       gtk_widget_show_all(vbox);
       gtk_widget_grab_focus(widget);
       gtk_window_present(GTK_WINDOW(window));
@@ -1652,13 +1751,13 @@ lv2_gtk_open_ui (
       gtk_window_present(GTK_WINDOW(window));
   }
 
-  lv2_init_ui (plugin);
+  lv2_ui_init (plugin);
 
   plugin->plugin->ui_instantiated = 1;
 
   g_timeout_add (
     1000 / plugin->ui_update_hz,
-    (GSourceFunc) lv2_plugin_update, plugin);
+    (GSourceFunc) update_plugin_ui, plugin);
 
   return 0;
 }
