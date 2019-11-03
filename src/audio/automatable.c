@@ -518,8 +518,8 @@ automatable_set_val_from_normalized (
               real_val =
                 a->minf + val * (a->maxf - a->minf);
             }
-          ctrl->plugin->
-            ports[ctrl->index].control = real_val;
+          port_set_control_value (
+            a->port, real_val, 0, 1);
           ctrl->plugin->
             ports[ctrl->index].automating =
               automating;

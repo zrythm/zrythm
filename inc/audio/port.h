@@ -820,13 +820,17 @@ port_set_expose_to_alsa (
  * corresponding underlying structure in the Port.
  *
  * @param is_normalized Whether the given value is
- * normalized between 0 and 1.
+ *   normalized between 0 and 1.
+ * @param forward_event Whether to forward a port
+ *   control change event to the plugin UI. Only
+ *   applicable for plugin control ports.
  */
 void
 port_set_control_value (
   Port *      self,
   const float val,
-  const int   is_normalized);
+  const int   is_normalized,
+  const int   forward_event);
 
 /**
  * Connets src to dest.

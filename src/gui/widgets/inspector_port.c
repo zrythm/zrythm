@@ -255,7 +255,7 @@ set_port_value (
   InspectorPortWidget * self,
   float                 val)
 {
-  port_set_control_value (self->port, val, 0);
+  port_set_control_value (self->port, val, 0, 1);
 }
 
 static gboolean

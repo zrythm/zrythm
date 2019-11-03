@@ -913,10 +913,6 @@ lv2_gtk_ui_port_event(Lv2Plugin*       plugin,
                    uint32_t    protocol,
                    const void* buffer)
 {
-  if (port_index == 2)
-    {
-      /*g_message ("ui port event");*/
-    }
 	if (plugin->ui_instance)
     {
       suil_instance_port_event (

@@ -79,7 +79,7 @@ midi_mappings_apply (
           g_return_if_fail (mapping->dest);
           port_set_control_value (
             mapping->dest,
-            (float) buf[2] / 127.f, 1);
+            (float) buf[2] / 127.f, 1, 1);
         }
     }
 }

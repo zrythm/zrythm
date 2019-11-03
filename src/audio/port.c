@@ -38,6 +38,7 @@
 #include "audio/passthrough_processor.h"
 #include "audio/port.h"
 #include "plugins/plugin.h"
+#include "plugins/lv2/lv2_ui.h"
 #include "utils/arrays.h"
 #include "utils/math.h"
 #include "utils/objects.h"
@@ -825,19 +826,28 @@ port_disconnect_all (Port * port)
  * corresponding underlying structure in the Port.
  *
  * @param is_normalized Whether the given value is
- * normalized between 0 and 1.
+ *   normalized between 0 and 1.
+ * @param forward_event Whether to forward a port
+ *   control change event to the plugin UI. Only
+ *   applicable for plugin control ports.
  */
 void
 port_set_control_value (
   Port *      self,
   const float val,
-  const int   is_normalized)
+  const int   is_normalized,
+  const int   forward_event)
 {
   g_return_if_fail (
     self->identifier.type == TYPE_CONTROL);
 
   if (self->lv2_port)
     {
+      Lv2Port * lv2_port = self->lv2_port;
+      g_return_if_fail (
+        self->plugin && self->plugin->lv2);
+      Lv2Plugin * lv2_plugin =
+        self->plugin->lv2;
       if (is_normalized)
         {
           float minf = port_get_minf (self);
@@ -851,6 +861,12 @@ port_set_control_value (
         }
       self->lv2_port->control =
         self->base_value;
+
+      if (forward_event)
+        {
+          lv2_ui_send_control_val_event_from_plugin_to_ui (
+            lv2_plugin, lv2_port);
+        }
     }
   else
     g_warn_if_reached ();

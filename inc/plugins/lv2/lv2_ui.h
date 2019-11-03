@@ -87,6 +87,8 @@ lv2_ui_send_event_from_ui_to_plugin (
 /**
  * Send event to UI, called during the real time
  * audio thread when processing the plugin.
+ *
+ * @param type Atom type.
  */
 int
 lv2_ui_send_event_from_plugin_to_ui (
@@ -95,6 +97,18 @@ lv2_ui_send_event_from_plugin_to_ui (
   uint32_t     type,
   uint32_t     size,
   const void * body);
+
+/**
+ * Similar to lv2_ui_send_event_from_plugin_to_ui
+ * except that it passes a float instead of an
+ * LV2 atom.
+ *
+ * @param lv2_port The port to pass the value of.
+ */
+void
+lv2_ui_send_control_val_event_from_plugin_to_ui (
+  Lv2Plugin *  lv2_plugin,
+  Lv2Port *    lv2_port);
 
 /**
  * @}

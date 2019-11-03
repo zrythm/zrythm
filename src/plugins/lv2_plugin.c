@@ -1972,30 +1972,8 @@ lv2_plugin_process (
                 continue;
               }
 
-            char buf[sizeof(Lv2ControlChange) +
-              sizeof(float)];
-            Lv2ControlChange* ev =
-              (Lv2ControlChange*)buf;
-            ev->index = (uint32_t) p;
-            ev->protocol = 0;
-            ev->size = sizeof(float);
-            *(float*)ev->body = lv2_port->control;
-            lv2_port->automating = 0;
-
-            if (zix_ring_write (
-                  lv2_plugin->plugin_to_ui_events,
-                  buf,
-                  sizeof(buf))
-                < sizeof(buf))
-              {
-                PluginDescriptor * descr =
-                  lv2_plugin->plugin->descr;
-                g_warning (
-                  "Buffer overflow when writing "
-                  "events from plugin %s (%s) to "
-                  "its UI",
-                  descr->name, descr->uri);
-              }
+            lv2_ui_send_control_val_event_from_plugin_to_ui (
+              lv2_plugin, lv2_port);
           }
     }
 

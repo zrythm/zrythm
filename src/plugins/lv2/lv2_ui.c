@@ -170,8 +170,50 @@ lv2_ui_read_and_apply_events (
 }
 
 /**
+ * Similar to lv2_ui_send_event_from_plugin_to_ui
+ * except that it passes a float instead of an
+ * LV2 atom.
+ *
+ * @param lv2_port The port to pass the value of.
+ */
+void
+lv2_ui_send_control_val_event_from_plugin_to_ui (
+  Lv2Plugin *  lv2_plugin,
+  Lv2Port *    lv2_port)
+{
+  if (!lv2_plugin->window)
+    return;
+
+  char buf[sizeof(Lv2ControlChange) +
+    sizeof(float)];
+  Lv2ControlChange* ev =
+    (Lv2ControlChange*)buf;
+  ev->index = (uint32_t) lv2_port->index;
+  ev->protocol = 0;
+  ev->size = sizeof(float);
+  *(float*)ev->body = lv2_port->control;
+  lv2_port->automating = 0;
+
+  if (zix_ring_write (
+        lv2_plugin->plugin_to_ui_events,
+        buf, sizeof(buf)) <
+      sizeof(buf))
+    {
+      PluginDescriptor * descr =
+        lv2_plugin->plugin->descr;
+      g_warning (
+        "Buffer overflow when writing "
+        "events from plugin %s (%s) to "
+        "its UI",
+        descr->name, descr->uri);
+    }
+}
+
+/**
  * Send event to UI, called during the real time
  * audio thread when processing the plugin.
+ *
+ * @param type Atom type.
  */
 int
 lv2_ui_send_event_from_plugin_to_ui (
