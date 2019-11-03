@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.7.091] - 2019-11-03
+## [0.7.093] - 2019-11-03
 - Add ability to pin and unpin tracks
 - Allow copy paste of MIDI notes and chords
 - Allow creating a new project while Zrythm is running
