@@ -23,6 +23,7 @@
 #include "audio/encoder.h"
 #include "audio/metronome.h"
 #include "utils/audio.h"
+#include "zrythm.h"
 
 #include <gtk/gtk.h>
 
@@ -44,51 +45,72 @@ metronome_init (
   if (self->normal)
     free (self->normal);
 
-  self->emphasis_path =
-    g_strdup (
-      METRONOME_SAMPLES_DIR "/square_emphasis.wav");
-  self->normal_path =
-    g_strdup (
-      METRONOME_SAMPLES_DIR "/square_normal.wav");
-
-  /* decode */
-  AudioEncoder * enc =
-    audio_encoder_new_from_file (
-      self->emphasis_path);
-  audio_encoder_decode (
-    enc, 0);
-  self->emphasis =
-    calloc (
-      (size_t)
-        (enc->num_out_frames * enc->channels),
-      sizeof (float));
-  self->emphasis_size = enc->num_out_frames;
-  self->emphasis_channels = enc->channels;
-  for (int i = 0;
-       i < enc->num_out_frames * enc->channels; i++)
+  if (ZRYTHM_TESTING)
     {
-      self->emphasis[i] = enc->out_frames[i];
+      const char * src_root =
+        getenv ("G_TEST_SRC_ROOT_DIR");
+      g_warn_if_fail (src_root);
+      self->emphasis_path =
+        g_build_filename (
+          src_root, "data", "samples", "klick",
+          "square_emphasis.wav", NULL);
+      self->normal_path =
+        g_build_filename (
+          src_root, "data", "samples", "klick",
+          "/square_normal.wav", NULL);
     }
-  audio_encoder_free (enc);
-
-  enc =
-    audio_encoder_new_from_file (
-      self->normal_path);
-  audio_encoder_decode (
-    enc, 0);
-  self->normal =
-    calloc (
-      (size_t)
-        (enc->num_out_frames * enc->channels),
-      sizeof (float));
-  self->normal_size = enc->num_out_frames;
-  self->normal_channels = enc->channels;
-  for (int i = 0;
-       i < enc->num_out_frames * enc->channels; i++)
+  else
     {
-      self->normal[i] = enc->out_frames[i];
+      self->emphasis_path =
+        g_strdup (
+          METRONOME_SAMPLES_DIR
+          "/square_emphasis.wav");
+      self->normal_path =
+        g_strdup (
+          METRONOME_SAMPLES_DIR
+          "/square_normal.wav");
+
+      /* decode */
+      AudioEncoder * enc =
+        audio_encoder_new_from_file (
+          self->emphasis_path);
+      audio_encoder_decode (
+        enc, 0);
+      self->emphasis =
+        calloc (
+          (size_t)
+            (enc->num_out_frames * enc->channels),
+          sizeof (float));
+      self->emphasis_size = enc->num_out_frames;
+      self->emphasis_channels = enc->channels;
+      for (int i = 0;
+           i < enc->num_out_frames * enc->channels;
+           i++)
+        {
+          self->emphasis[i] = enc->out_frames[i];
+        }
+      audio_encoder_free (enc);
+
+      enc =
+        audio_encoder_new_from_file (
+          self->normal_path);
+      audio_encoder_decode (
+        enc, 0);
+      self->normal =
+        calloc (
+          (size_t)
+            (enc->num_out_frames * enc->channels),
+          sizeof (float));
+      self->normal_size = enc->num_out_frames;
+      self->normal_channels = enc->channels;
+      for (int i = 0;
+           i < enc->num_out_frames * enc->channels;
+           i++)
+        {
+          self->normal[i] = enc->out_frames[i];
+        }
+      audio_encoder_free (enc);
     }
-  audio_encoder_free (enc);
 }
 
 /**
