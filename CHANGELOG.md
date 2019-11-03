@@ -1,6 +1,33 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.090] - 2019-11-03
+- Add ability to pin and unpin tracks
+- Allow copy paste of MIDI notes and chords
+- Allow creating a new project while Zrythm is running
+- Allow binding of MIDI CC messages to controls
+- Add some tests for arranger selection actions
+- Add meson option to run stoat
+- Change port buttons to sliders (editable for controls)
+- Add detailed tooltips for ports in the inspector
+- Make GUI tests optional when enabling tests
+- Make RMS calculations more accurate
+- Allow to set position from the editor
+- Show local position in the editor during playback
+- Huge code refactor of arranger objects
+- Automation curves are now merged into automation points
+- Pass control change events to LV2 plugin UIs when changing from inside Zrythm
+- Refactor of region drawing code
+- Refactor of lv2 plugin code
+- Fix generic UIs not getting updated when control values change during automation
+- Fix auto-connecting to MIDI devices
+- Fix crash when zooming in too much with regions visible (MIDI regions only for now)
+- Fix various bugs with chord objects
+- Fix crash when clicking in empty tracklist
+- Fix crash when saving a project after cloning a track
+- Fix curves not getting redrawn when moving automation points
+- Update Portuguese, French, Arabic, Polish, German translations
+
 ## [0.7.021] - 2019-10-18
 - Add fishbowl benchmark tests for widgets
 - Optimize and cache various widgets
