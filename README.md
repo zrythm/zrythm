@@ -21,7 +21,7 @@ Zrythm is currently in alpha. Most of the essential
 DAW features are implemented and we are working
 towards a stable release.
 
-![screenshot](https://www.zrythm.org/static/images/oct_1_2019.png)
+![screenshot](https://www.zrythm.org/static/images/nov_3_2019.png)
 
 ## Currently supported plugin protocols:
 - LV2
