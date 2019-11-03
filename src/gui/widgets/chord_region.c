@@ -51,6 +51,10 @@ chord_region_draw_cb (
   int i, j;
   REGION_WIDGET_GET_PRIVATE (self);
 
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (
+    cr, &rect);
+
   GtkStyleContext *context =
     gtk_widget_get_style_context (widget);
 
@@ -206,7 +210,7 @@ chord_region_draw_cb (
     }
 
   region_widget_draw_name (
-    Z_REGION_WIDGET (self), cr);
+    Z_REGION_WIDGET (self), cr, &rect);
 
   return FALSE;
 }

@@ -1310,8 +1310,10 @@ arranger_object_get_visible_counterpart (
   g_return_val_if_fail (self, NULL);
 
   self = arranger_object_get_main (self);
+  g_return_val_if_fail (self, NULL);
   if (!arranger_object_should_be_visible (self))
     self = arranger_object_get_main_trans (self);
+  g_return_val_if_fail (self, NULL);
   return self;
 }
 
@@ -2190,7 +2192,7 @@ clone_region (
                  i < mr_orig->num_midi_notes; i++)
               {
                 mr_orig->midi_notes[i]->region =
-                  mr;
+                  mr_orig;
                 MidiNote * mn =
                   (MidiNote *)
                   arranger_object_clone (

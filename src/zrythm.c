@@ -585,7 +585,8 @@ static void on_prompt_for_project (
       g_signal_connect (
         G_OBJECT (assistant), "cancel",
         G_CALLBACK (on_finish), (void *) 1);
-      gtk_window_present (GTK_WINDOW (assistant));
+      gtk_widget_set_visible (
+        GTK_WIDGET (assistant), 1);
 
 #ifdef __APPLE__
   /* possibly not necessary / working, forces app *

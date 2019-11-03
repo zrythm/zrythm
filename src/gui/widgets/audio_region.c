@@ -48,8 +48,13 @@ audio_region_draw_cb (
 {
   ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (
+    cr, &rect);
+
   /* not cached, redraw */
-  if (ao_prv->redraw)
+  if (arranger_object_widget_should_redraw (
+        (ArrangerObjectWidget *) self, &rect))
     {
       REGION_WIDGET_GET_PRIVATE (self);
       Region * r = rw_prv->region;
@@ -81,12 +86,12 @@ audio_region_draw_cb (
       /* draw background rectangle */
       region_widget_draw_background (
         (RegionWidget *) self, widget,
-        ao_prv->cached_cr);
+        ao_prv->cached_cr, &rect);
 
       /* draw loop dashes */
       region_widget_draw_loop_points (
         (RegionWidget *) self, widget,
-        ao_prv->cached_cr);
+        ao_prv->cached_cr, &rect);
 
       GdkRGBA * color =
         &main_region->lane->track->color;
@@ -154,11 +159,11 @@ audio_region_draw_cb (
 
       region_widget_draw_name (
         Z_REGION_WIDGET (self),
-        ao_prv->cached_cr);
+        ao_prv->cached_cr, &rect);
 
       arranger_object_widget_draw_cut_line (
         Z_ARRANGER_OBJECT_WIDGET (self),
-        ao_prv->cached_cr);
+        ao_prv->cached_cr, &rect);
 
       ao_prv->redraw = 0;
     }

@@ -60,13 +60,12 @@ void
 region_widget_draw_loop_points (
   RegionWidget * self,
   GtkWidget *    widget,
-  cairo_t *      cr)
+  cairo_t *      cr,
+  GdkRectangle * rect)
 {
   REGION_WIDGET_GET_PRIVATE (self);
   Region * r = rw_prv->region;
 
-  int width =
-    gtk_widget_get_allocated_width (widget);
   int height =
     gtk_widget_get_allocated_height (widget);
 
@@ -96,7 +95,8 @@ region_widget_draw_loop_points (
     &tmp, loop_start_ticks - clip_start_ticks);
   int px =
     ui_pos_to_px_timeline (&tmp, 0);
-  if (px != 0)
+  if (px != 0 &&
+      px >= rect->x && px < rect->x + rect->width)
     {
       cairo_set_source_rgba (
         cr, 0, 1, 0, 1.0);
@@ -119,7 +119,7 @@ region_widget_draw_loop_points (
 
       px = ui_pos_to_px_timeline (&tmp, 0);
 
-      if (px <= (int) width - 1)
+      if (px >= rect->x && px < rect->width)
         {
           cairo_set_source_rgba (
             cr, 0, 0, 0, 1.0);
@@ -143,15 +143,16 @@ void
 region_widget_draw_background (
   RegionWidget * self,
   GtkWidget *    widget,
-  cairo_t *      cr)
+  cairo_t *      cr,
+  GdkRectangle * rect)
 {
   REGION_WIDGET_GET_PRIVATE (self);
   Region * r = rw_prv->region;
 
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
+  /*int width =*/
+    /*gtk_widget_get_allocated_width (widget);*/
+  /*int height =*/
+    /*gtk_widget_get_allocated_height (widget);*/
 
   Track * track =
     arranger_object_get_track (
@@ -180,7 +181,8 @@ region_widget_draw_background (
 
   /* draw arc-rectangle */
   z_cairo_rounded_rectangle (
-    cr, 0, 0, width, height, 1.0, 4.0);
+    cr, 0, 0, rect->width, rect->height,
+    1.0, 4.0);
   cairo_fill (cr);
 }
 
@@ -192,9 +194,15 @@ region_widget_draw_background (
 void
 region_widget_draw_name (
   RegionWidget * self,
-  cairo_t *      cr)
+  cairo_t *      cr,
+  GdkRectangle * rect)
 {
   REGION_WIDGET_GET_PRIVATE (self);
+
+  /* no need to draw if the start of the region is
+   * not visible */
+  if (rect->x > 800)
+    return;
 
   Region * region = rw_prv->region;
   g_return_if_fail (

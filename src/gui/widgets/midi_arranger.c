@@ -86,12 +86,12 @@ midi_arranger_widget_set_allocation (
       Region * region =
         (midi_note_get_main (mn))->region;
       g_return_if_fail (region);
-      region =
+      Region * visible_region =
         (Region *)
         arranger_object_get_visible_counterpart (
           (ArrangerObject *) region);
       ArrangerObject * region_obj =
-        (ArrangerObject *) region;
+        (ArrangerObject *) visible_region;
 
       long region_start_ticks =
         region_obj->pos.total_ticks;

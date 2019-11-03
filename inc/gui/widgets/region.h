@@ -111,7 +111,8 @@ region_widget_is_resize_loop (
 void
 region_widget_draw_name (
   RegionWidget * self,
-  cairo_t *      cr);
+  cairo_t *      cr,
+  GdkRectangle * rect);
 
 /**
  * Destroys the widget completely.
@@ -138,7 +139,8 @@ void
 region_widget_draw_loop_points (
   RegionWidget * self,
   GtkWidget *    widget,
-  cairo_t *      cr);
+  cairo_t *      cr,
+  GdkRectangle * rect);
 
 /**
  * Draws the background rectangle.
@@ -147,7 +149,8 @@ void
 region_widget_draw_background (
   RegionWidget * self,
   GtkWidget *    widget,
-  cairo_t *      cr);
+  cairo_t *      cr,
+  GdkRectangle * rect);
 
 /**
  * Returns the private struct.

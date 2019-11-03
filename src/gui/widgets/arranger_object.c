@@ -43,7 +43,8 @@ G_DEFINE_TYPE_WITH_PRIVATE (
 void
 arranger_object_widget_draw_cut_line (
   ArrangerObjectWidget * self,
-  cairo_t *              cr)
+  cairo_t *              cr,
+  GdkRectangle *         rect)
 {
   ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
   ArrangerObject * obj = ao_prv->arranger_object;
@@ -119,13 +120,17 @@ arranger_object_widget_draw_cut_line (
       /* convert to local px */
       px -= start_pos_px;
 
-      double dashes[] = { 5 };
-      cairo_set_dash (cr, dashes, 1, 0);
-      cairo_set_source_rgba (
-        cr, 1, 1, 1, 1.0);
-      cairo_move_to (cr, px, 0);
-      cairo_line_to (cr, px, height);
-      cairo_stroke (cr);
+      if (px >= rect->x &&
+          px < rect->x + rect->width)
+        {
+          double dashes[] = { 5 };
+          cairo_set_dash (cr, dashes, 1, 0);
+          cairo_set_source_rgba (
+            cr, 1, 1, 1, 1.0);
+          cairo_move_to (cr, px, 0);
+          cairo_line_to (cr, px, height);
+          cairo_stroke (cr);
+        }
     }
 }
 
@@ -368,6 +373,27 @@ arranger_object_widget_get_private (
   return
     arranger_object_widget_get_instance_private (
       self);
+}
+
+/**
+ * Returns if the ArrangerObjectWidget should
+ * be redrawn.
+ *
+ * @param rect The rectangle for this draw cycle.
+ */
+int
+arranger_object_widget_should_redraw (
+  ArrangerObjectWidget * self,
+  GdkRectangle *         rect)
+{
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
+
+  return
+    ao_prv->redraw ||
+    ao_prv->last_rect.x != rect->x ||
+    ao_prv->last_rect.y != rect->y ||
+    ao_prv->last_rect.width != rect->width ||
+    ao_prv->last_rect.height != rect->height;
 }
 
 void

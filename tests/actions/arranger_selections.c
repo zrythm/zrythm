@@ -85,6 +85,7 @@ bootstrap_timeline ()
     midi_note_new (r, &p1, &p2, MN_VAL, MN_VEL, 1);
   midi_region_add_midi_note (
     r, mn);
+  g_assert_true (mn->region == r);
   arranger_selections_add_object (
     (ArrangerSelections *) MA_SELECTIONS,
     (ArrangerObject *) mn);
@@ -230,6 +231,7 @@ check_timeline_objects_vs_original_state (
   g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
   g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmppos (&obj->end_pos, &p2);
+  g_assert_true (mn->region == r);
 
   /* check automation region */
   AutomationTracklist * atl =
@@ -454,6 +456,7 @@ check_after_move_timeline ()
   g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
   g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmppos (&obj->end_pos, &p2);
+  g_assert_true (mn->region == r);
 
   /* check automation region */
   obj =

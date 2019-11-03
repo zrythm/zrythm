@@ -91,6 +91,14 @@ typedef struct _ArrangerObjectWidgetPrivate
   /** Set to 1 to redraw. */
   int                redraw;
 
+  /**
+   * Last rectangle used to draw in.
+   *
+   * If this is differentn from the current one,
+   * the widget should be redrawn.
+   */
+  GdkRectangle       last_rect;
+
   /** Cairo caches. */
   cairo_t *          cached_cr;
   cairo_surface_t *  cached_surface;
@@ -156,7 +164,19 @@ arranger_object_widget_force_redraw (
 void
 arranger_object_widget_draw_cut_line (
   ArrangerObjectWidget * self,
-  cairo_t *              cr);
+  cairo_t *              cr,
+  GdkRectangle *         rect);
+
+/**
+ * Returns if the ArrangerObjectWidget should
+ * be redrawn.
+ *
+ * @param rect The rectangle for this draw cycle.
+ */
+int
+arranger_object_widget_should_redraw (
+  ArrangerObjectWidget * self,
+  GdkRectangle *         rect);
 
 /**
  * Returns if arranger_object widgets should show

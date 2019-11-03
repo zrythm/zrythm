@@ -48,8 +48,13 @@ midi_region_draw_cb (
 {
   ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (
+    cr, &rect);
+
   /* not cached, redraw */
-  if (ao_prv->redraw)
+  if (arranger_object_widget_should_redraw (
+        (ArrangerObjectWidget *) self, &rect))
     {
       int i, j;
       REGION_WIDGET_GET_PRIVATE (self);
@@ -61,28 +66,29 @@ midi_region_draw_cb (
         gtk_widget_get_allocated_width (widget);
       int height =
         gtk_widget_get_allocated_height (widget);
+
       ao_prv->cached_surface =
         cairo_surface_create_similar (
           cairo_get_target (cr),
           CAIRO_CONTENT_COLOR_ALPHA,
-          width,
-          height);
+          rect.width,
+          rect.height);
       ao_prv->cached_cr =
         cairo_create (ao_prv->cached_surface);
 
       gtk_render_background (
         context, ao_prv->cached_cr, 0, 0,
-        width, height);
+        rect.width, rect.height);
 
       /* draw background rectangle */
       region_widget_draw_background (
         (RegionWidget *) self, widget,
-        ao_prv->cached_cr);
+        ao_prv->cached_cr, &rect);
 
       /* draw loop dashes */
       region_widget_draw_loop_points (
         (RegionWidget *) self, widget,
-        ao_prv->cached_cr);
+        ao_prv->cached_cr, &rect);
 
       cairo_set_source_rgba (
         ao_prv->cached_cr, 1, 1, 1, 1);
@@ -174,43 +180,72 @@ midi_region_draw_cb (
                   tmp_start_ticks -= clip_start_ticks;
                   tmp_end_ticks -= clip_start_ticks;
 
+                  /* get ratios (0.0 - 1.0) of
+                   * where midi note is */
                   x_start =
                     (float) tmp_start_ticks /
                     (float) ticks_in_region;
                   x_end =
                     (float) tmp_end_ticks /
                     (float) ticks_in_region;
-
-                  /* get ratio (0.0 - 1.0) on y where
-                   * midi note is */
                   y_start =
                     ((float) max_val - (float) mn->val) /
                     y_interval;
 
-                  /* draw */
-                  cairo_rectangle (
-                    ao_prv->cached_cr,
-                    x_start * (float) width,
-                    y_start * (float) height,
-                    (x_end - x_start) * (float) width,
-                    y_note_size * (float) height);
-                  cairo_fill (ao_prv->cached_cr);
+                  /* get actual values using the
+                   * ratios */
+                  x_start *= (float) width;
+                  x_end *= (float) width;
+                  y_start *= (float) height;
+
+                  /* skip if any part of the note is
+                   * not visible in the rect */
+                  if ((x_start >= rect.x &&
+                       x_start < rect.x + rect.width) ||
+                      (x_end >= rect.x &&
+                       x_end < rect.x + rect.width) ||
+                      (x_start < rect.x &&
+                       x_end > rect.x))
+                    {
+                      /* draw */
+                      cairo_rectangle (
+                        ao_prv->cached_cr,
+                        MAX (
+                          x_start -
+                            (float) rect.x, 0.f),
+                        MAX (
+                          y_start -
+                            (float) rect.y, 0.f),
+                        MIN (
+                          x_end -
+                            MAX (
+                              x_start,
+                              (float) rect.x),
+                          (float) rect.width),
+                        MIN (
+                          y_note_size *
+                            (float) height -
+                            (float) rect.y,
+                          (float) rect.height));
+                      cairo_fill (ao_prv->cached_cr);
+                    }
                 }
             }
         }
 
       region_widget_draw_name (
-        Z_REGION_WIDGET (self), ao_prv->cached_cr);
+        Z_REGION_WIDGET (self), ao_prv->cached_cr,
+        &rect);
 
       arranger_object_widget_draw_cut_line (
         Z_ARRANGER_OBJECT_WIDGET (self),
-        ao_prv->cached_cr);
+        ao_prv->cached_cr, &rect);
 
       ao_prv->redraw = 0;
     }
 
   cairo_set_source_surface (
-    cr, ao_prv->cached_surface, 0, 0);
+    cr, ao_prv->cached_surface, rect.x, rect.y);
   cairo_paint (cr);
 
  return FALSE;

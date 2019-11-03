@@ -77,11 +77,6 @@ arranger_bg_draw_cb (
       GtkStyleContext *context =
         gtk_widget_get_style_context (widget);
 
-      /*int width =*/
-        /*gtk_widget_get_allocated_width (widget);*/
-      /*int height =*/
-        /*gtk_widget_get_allocated_height (widget);*/
-
       ab_prv->cached_surface =
         cairo_surface_create_similar (
           cairo_get_target (cr),
