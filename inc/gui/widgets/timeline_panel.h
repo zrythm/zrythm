@@ -70,6 +70,9 @@ typedef struct _TimelineBotBoxWidget
 #define MW_TIMELINE_PANEL \
   MW_CENTER_DOCK->timeline_panel
 
+#define MW_TRACKLIST_SCROLL \
+  (MW_TIMELINE_PANEL->tracklist_scroll)
+
 typedef struct _TimelinePanelWidget
 {
   GtkBox                  parent_instance;

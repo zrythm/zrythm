@@ -89,6 +89,22 @@ typedef struct Lv2Port
    */
   int             received_ui_event;
 
+  /**
+   * Whether the port should send an event that
+   * it has changed.
+   *
+   * This should happen if it wwas changed through
+   * zrythm and not through its UI.
+   *
+   * This is used to avoid sending an event to
+   * the plugin unless the port changed via other
+   * means than from the plugin's UI.
+   *
+   * Whent he port is changed via other means,
+   * this should be set to 1.
+   */
+  //int             pending_send_event;
+
   /** The value in the previous cycle. */
   //float           prev_control;
 

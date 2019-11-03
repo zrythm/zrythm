@@ -100,20 +100,32 @@ timeline_bg_widget_draw (
         continue;
       tw_widget = (GtkWidget *) tw;
 
-      gtk_widget_translate_coordinates (
-        tw_widget, (GtkWidget *) self,
-        0, 0, &wx, &wy);
+      if (is_pinned_timeline)
+        {
+          gtk_widget_translate_coordinates (
+            tw_widget,
+            GTK_WIDGET (MW_PINNED_TRACKLIST),
+            0, 0, &wx, &wy);
+        }
+      else
+        {
+          gtk_widget_translate_coordinates (
+            tw_widget,
+            GTK_WIDGET (MW_TRACKLIST),
+            0, 0, &wx, &wy);
+        }
 
       line_y =
         wy +
         gtk_widget_get_allocated_height (
           tw_widget);
 
-      if (line_y > rect->y &&
-          line_y < (rect->y + rect->height))
+      if (line_y >= rect->y &&
+          line_y < rect->y + rect->height)
         {
           z_cairo_draw_horizontal_line (
-            cr, line_y, 0, rect->width, 1.0);
+            cr, line_y - rect->y, 0,
+            rect->width, 1.0);
         }
     }
 

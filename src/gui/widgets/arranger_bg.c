@@ -160,7 +160,7 @@ arranger_bg_draw_cb (
           cairo_fill (ab_prv->cached_cr);
         }
 
-      /* handle vertical drawing */
+      /* --- handle vertical drawing --- */
 
       /* get sixteenth interval */
       int sixteenth_interval =
