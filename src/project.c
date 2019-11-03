@@ -721,7 +721,8 @@ project_autosave_cb (
 {
   if (PROJECT && PROJECT->loaded &&
       PROJECT->dir &&
-      PROJECT->datetime_str)
+      PROJECT->datetime_str &&
+      !TRANSPORT_IS_ROLLING)
     {
       project_save (
         PROJECT, PROJECT->dir, 1, 1);

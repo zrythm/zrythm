@@ -121,11 +121,20 @@
                serialized); \
   }
 
+/**
+ * Custom logging function for libcyaml.
+ */
+void yaml_cyaml_log_func (
+  cyaml_log_t  level,
+  const char * format,
+  va_list      args);
+
 static const cyaml_config_t config = {
   /** log level: DEBUG, WARNING, INFO... */
 	.log_level = CYAML_LOG_WARNING,
   /* use the default loggin function */
-	.log_fn = cyaml_log,
+	//.log_fn = cyaml_log,
+  .log_fn = yaml_cyaml_log_func,
   /* use the default memory allocator */
 	.mem_fn = cyaml_mem,
 };

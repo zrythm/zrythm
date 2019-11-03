@@ -24,26 +24,30 @@
 #include <gtk/gtk.h>
 
 /**
- * Gets nth line from a string.
+ * Custom logging function for libcyaml.
  */
-/*static const char *sgets(char *s, int n, char **strp)*/
-/*{*/
-  /*if (**strp == '\0')*/
-    /*return NULL;*/
-  /*int i;*/
-  /*for (i=0;i<n-1;++i, ++(*strp))*/
-    /*{*/
-      /*s[i] = **strp;*/
-      /*if(**strp == '\0')*/
-        /*break;*/
-      /*if(**strp == '\n')*/
-        /*{*/
-          /*s[i+1]='\0';*/
-          /*++(*strp);*/
-          /*break;*/
-        /*}*/
-    /*}*/
-  /*if (i==n-1)*/
-    /*s[i] = '\0';*/
-  /*return s;*/
-/*}*/
+void yaml_cyaml_log_func (
+  cyaml_log_t  lvl,
+  const char * fmt,
+  va_list      ap)
+{
+  GLogLevelFlags level = G_LOG_LEVEL_MESSAGE;
+  switch (lvl)
+    {
+    case CYAML_LOG_WARNING:
+      level = G_LOG_LEVEL_WARNING;
+      break;
+    case CYAML_LOG_ERROR:
+      level = G_LOG_LEVEL_WARNING;
+      break;
+    default:
+      break;
+    }
+
+  char format[900];
+  strcpy (format, fmt);
+  format[strlen (format) - 1] = '\0';
+
+  g_logv (
+    "cyaml", level, format, ap);
+}

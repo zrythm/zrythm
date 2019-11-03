@@ -38,10 +38,12 @@ math_get_fader_val_from_amp (
     return 0.f;
   else
     {
-      double fader =
-        powf (6.f * logf (amp) +
-             192.f * logf (2.f), 8.f) /
-        (powf (logf (2.f), 8.f) * powf (198.f, 8.f));
+      static float val1 = 192.f * logf (2.f);
+      static float val2 =
+        powf (logf (2.f), 8.f) * powf (198.f, 8.f);
+      sample_t fader =
+        powf (
+          6.f * logf (amp) + val1, 8.f) / val2;
       return (sample_t) fader;
     }
 }
@@ -52,15 +54,14 @@ math_get_fader_val_from_amp (
  */
 sample_t
 math_get_amp_val_from_fader (
-  sample_t _fader)
+  sample_t fader)
 {
-  double fader = (double) _fader;
-  double amp =
-    pow (
-      2.0,
-      (1.0 / 6) *
-      (-192 + 198.0 * pow (fader, 1.0 / 8)));
-  return (sample_t) amp;
+  static float val1 = 1.f / 6.f;
+  return
+    powf (
+      2.f,
+      (val1) *
+      (-192.f + 198.f * powf (fader, 1.f / 8.f)));
 }
 
 /**
