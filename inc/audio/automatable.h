@@ -211,6 +211,8 @@ automatable_stringize_value_type (Automatable * a);
 /**
  * Converts real value (eg. -10.0 to 100.0) to
  * normalized value (0.0 to 1.0).
+ *
+ * FIXME cache
  */
 float
 automatable_real_val_to_normalized (

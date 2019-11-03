@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+	<key>CFBundleIdentifier</key>
+	<string>net.drobilla.pugl.@NAME@</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+	<key>MinimumOSVersion</key>
+	<string>10.6</string>
+	<key>CFBundleDisplayName</key>
+	<string>@NAME@</string>
+	<key>CFBundleName</key>
+	<string>@NAME@</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+  </dict>
+</plist>

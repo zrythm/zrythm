@@ -906,12 +906,19 @@ property_changed (
     }
 }
 
+/**
+ * Called to deliver a port event to the plugin
+ * UI.
+ *
+ * This applies to both generic and custom UIs.
+ */
 void
-lv2_gtk_ui_port_event(Lv2Plugin*       plugin,
-                   uint32_t    port_index,
-                   uint32_t    buffer_size,
-                   uint32_t    protocol,
-                   const void* buffer)
+lv2_gtk_ui_port_event (
+  Lv2Plugin *  plugin,
+  uint32_t     port_index,
+  uint32_t     buffer_size,
+  uint32_t     protocol,
+  const void * buffer)
 {
 	if (plugin->ui_instance)
     {

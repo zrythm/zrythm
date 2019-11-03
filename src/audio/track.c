@@ -626,6 +626,8 @@ track_is_selected (Track * self)
 
 /**
  * Returns the last region in the track, or NULL.
+ *
+ * FIXME cache.
  */
 Region *
 track_get_last_region (

@@ -1,0 +1,11 @@
+prefix=@PREFIX@
+exec_prefix=@EXEC_PREFIX@
+libdir=@LIBDIR@
+includedir=@INCLUDEDIR@
+
+Name: @NAME@
+Description: @DESCRIPTION@
+Version: @PUGL_VERSION@
+Requires: @REQUIRES@
+Libs: -L${libdir} @LIBS@
+Cflags: -I${includedir}/pugl-@PUGL_MAJOR_VERSION@

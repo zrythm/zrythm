@@ -32,6 +32,8 @@ gnome = import('gnome')
 prefix = get_option ('prefix')
 bindir = join_paths (prefix, get_option('bindir'))
 libdir = join_paths (prefix, get_option ('libdir'))
+lv2dir = join_paths (libdir, 'lv2')
+lv2zpluginsdir = join_paths (lv2dir, 'ZPlugins')
 libexecdir = join_paths (prefix, get_option ('libexecdir'))
 includedir = join_paths (prefix, get_option('includedir'))
 datadir = join_paths (prefix, get_option('datadir'))
@@ -342,6 +344,8 @@ qt5_dep = dependency('Qt5Widgets', required: false)
 yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.24')
 sndfile_dep = dependency('sndfile', version: '>=1.0.25')
+lv2_dep = dependency('lv2', version: '>=1.14.0')
+fftw3_dep = dependency('fftw3', version: '>=3.3.5')
 
 zrythm_deps = [
   jack_dep,
@@ -356,8 +360,8 @@ zrythm_deps = [
   dependency('threads'),
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),
-  dependency('lv2', version: '>=1.14.0'),
-  dependency('fftw3', version: '>=3.3.5'),
+  lv2_dep,
+  fftw3_dep,
   libm,
 ]
 
@@ -434,6 +438,7 @@ subdir ('po')
 subdir ('ext')
 subdir ('resources')
 subdir ('src')
+subdir ('plugins')
 subdir ('tests')
 subdir ('data')
 subdir ('doc')
@@ -449,6 +454,7 @@ summary = [
   '  Profiling: @0@'.format(
     get_option('enable_profiling')),
   '  Strict flags: @0@'.format(get_option('strict_flags')),
+  '  Build plugins: @0@'.format(get_option('enable_plugins')),
   '  Build tests: @0@'.format(get_option('enable_tests')),
   '  Build GUI tests: @0@'.format(get_option('enable_gui_tests')),
   '  Generate developer docs: @0@'.format(get_option('gen_dev_docs')),

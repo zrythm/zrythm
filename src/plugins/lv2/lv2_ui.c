@@ -263,6 +263,9 @@ lv2_ui_send_event_from_plugin_to_ui (
 
 /**
  * Write events from the plugin's UI to the plugin.
+ *
+ * @param protocol Format, 0 for control-port event,
+ *   > 0 for message.
  */
 void
 lv2_ui_send_event_from_ui_to_plugin (

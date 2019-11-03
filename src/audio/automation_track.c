@@ -259,6 +259,8 @@ automation_track_update_frames (
 
 /**
  * Gets the last Region in the AutomationTrack.
+ *
+ * FIXME cache.
  */
 Region *
 automation_track_get_last_region (

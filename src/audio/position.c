@@ -140,8 +140,9 @@ position_set_bar (Position * position,
 }
 
 void
-position_set_beat (Position * position,
-                  int      beat)
+position_set_beat (
+  Position * position,
+  int        beat)
 {
   while (beat < 1 || beat > TRANSPORT->beats_per_bar)
     {

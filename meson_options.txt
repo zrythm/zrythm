@@ -22,6 +22,12 @@ option (
   description: 'Enable profiling')
 
 option (
+  'enable_plugins',
+  type: 'boolean',
+  value: true,
+  description: 'Whether to build and install plugins')
+
+option (
   'enable_tests',
   type: 'boolean',
   value: false,
