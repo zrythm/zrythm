@@ -38,7 +38,7 @@ ztoolkit_lib = static_library (
     cairo_dep,
     ],
   include_directories: _ztoolkit_inc,
-  c_args: [ common_cflags, strict_cflags, ],
+  c_args: [ plugin_cflags ],
   link_with: [
     pugl,
     ],

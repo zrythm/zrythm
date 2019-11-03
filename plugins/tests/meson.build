@@ -15,30 +15,32 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-project_uri = 'https://lv2.zrythm.org/plugins'
+lv2lint = find_program ('lv2lint', required: false)
+lv2_validate = find_program ('lv2_validate', required: false)
+sord_validate = find_program ('sord_validate', required: false)
 
-plugins_root_inc = include_directories ('.')
-pugl_inc = include_directories ('pugl')
-plugins_common_inc = [
-  plugins_root_inc,
-  pugl_inc,
+plugin_tests = [
+  ['ZLFO', zlfo_ttl, zlfo_build_dir,
+    zlfo_cdata.get ('LFO_URI')],
   ]
 
-cairo_dep = dependency('cairo', version: '>=1.0.0')
-plugin_deps = [
-  lv2_dep,
-  fftw3_dep,
-  dependency('x11'),
-  cairo_dep,
-  libm,
-]
+foreach plugin_test : plugin_tests
+  suite = ['plugin:' + plugin_test[0]]
 
-plugin_cflags = [
-  common_cflags, strict_cflags,
-  '-fvisibility=hidden',
-  ]
+  if (lv2lint.found())
+    test (
+      'LV2 lint', lv2lint,
+      args: [
+        '-I', plugin_test[2] + '/',
+        plugin_test[3]],
+      suite: suite)
+  endif
 
-subdir ('pugl')
-subdir ('ztoolkit')
-subdir ('zlfo')
-subdir ('tests')
+  # FIXME this fails
+  #if (lv2_validate.found())
+    #test (
+      #'LV2 validate', lv2_validate,
+      #args: [plugin_test[1]],
+      #suite: suite)
+  #endif
+endforeach

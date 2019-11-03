@@ -20,20 +20,24 @@
 @prefix pset: <http://lv2plug.in/ns/ext/presets#> .
 @prefix ui:   <http://lv2plug.in/ns/extensions/ui#> .
 
-<@_LFO_URI@>
+<@LFO_URI@>
   a lv2:Plugin,
     lv2:OscillatorPlugin ;
-  lv2:binary <ZPlugins.so> ;
-  ui:ui <@_LFO_UI_URI@> ;
-  rdfs:seeAlso <ZLFO.ttl> .
+  lv2:binary <@LFO_DSP_BINARY@> ;
+  ui:ui <@LFO_UI_URI@> ;
+  lv2:minorVersion 0;
+  lv2:microVersion 1;
+  rdfs:seeAlso <@LFO_TTL@> .
 
-<@_LFO_UI_URI@>
+<@LFO_UI_URI@>
   a ui:X11UI ;
-  ui:binary <ZPlugins.so> ;
-  rdfs:seeAlso <ZLFO.ttl> .
+  ui:binary <@LFO_UI_BINARY@> ;
+  lv2:requiredFeature ui:idleInterface ;
+  lv2:extensionData ui:resize ;
+  rdfs:seeAlso <@LFO_TTL@> .
 
-#<@_LFO_URI@#preset001>
+#<@LFO_URI@#preset001>
   #a pset:Preset ;
-  #lv2:appliesTo <@_LFO_URI@> ;
+  #lv2:appliesTo <@LFO_URI@> ;
   #rdfs:label "Default" ;
   #rdfs:seeAlso <presets.ttl> .

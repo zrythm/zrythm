@@ -25,5 +25,6 @@ pugl = static_library (
     join_paths ('pugl', 'detail', 'x11.c'),
     join_paths ('pugl', 'detail', 'x11_cairo.c'),
     ],
+  c_args: [ '-fvisibility=hidden', ],
   include_directories: pugl_inc,
 )

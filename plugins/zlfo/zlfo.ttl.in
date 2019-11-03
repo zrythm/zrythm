@@ -1,0 +1,115 @@
+@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix midi: <http://lv2plug.in/ns/ext/midi#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix urid: <http://lv2plug.in/ns/ext/urid#> .
+@prefix ui:   <http://lv2plug.in/ns/extensions/ui#> .
+@prefix log:  <http://lv2plug.in/ns/ext/log#> .
+
+<@LFO_URI@>
+  a lv2:Plugin,
+    lv2:OscillatorPlugin ;
+  doap:name "ZLFO" ;
+  doap:maintainer [
+    foaf:name """Alexandros Theodotou""" ;
+    foaf:homepage <https://www.zrythm.org> ;
+  ] ;
+  doap:license <https://www.gnu.org/licenses/agpl-3.0.html> ;
+  lv2:project <@PROJECT_URI@> ;
+  lv2:requiredFeature urid:map ;
+  lv2:optionalFeature lv2:hardRTCapable ;
+  lv2:optionalFeature log:log ;
+  lv2:port [
+    a lv2:InputPort ,
+      atom:AtomPort ;
+    lv2:index 0 ;
+    lv2:designation lv2:control ;
+    lv2:symbol "control" ;
+    lv2:name "Control" ;
+    rdfs:comment "GUI to plugin communication" ;
+  ] , [
+    a lv2:OutputPort ,
+      atom:AtomPort ;
+    lv2:index 1 ;
+    lv2:designation lv2:control ;
+    lv2:symbol "notify" ;
+    lv2:name "Notify" ;
+    rdfs:comment "Plugin to GUI communication" ;
+  ] , [
+    a lv2:InputPort ,
+      lv2:ControlPort ;
+    lv2:index 2 ;
+    lv2:symbol "freq" ;
+    lv2:name "Frequency" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 20.0 ;
+  ] , [
+    a lv2:InputPort ,
+      lv2:ControlPort ;
+    lv2:index 3 ;
+    lv2:symbol "phase" ;
+    lv2:name "Phase" ;
+    lv2:default 0.1 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1.0 ;
+  ] , [
+    a lv2:InputPort ,
+      lv2:ControlPort ;
+    lv2:index 4 ;
+    lv2:symbol "follow_time" ;
+    lv2:name "Follow time" ;
+    lv2:default 0.1 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1.0 ;
+  ] , [
+    a lv2:OutputPort ,
+      lv2:CVPort ;
+    lv2:index 5 ;
+    lv2:symbol "sine" ;
+    lv2:name "Sine" ;
+  ] , [
+    a lv2:OutputPort ,
+      lv2:CVPort ;
+    lv2:index 6 ;
+    lv2:symbol "saw_up" ;
+    lv2:name "Saw Up" ;
+  ] , [
+    a lv2:OutputPort ,
+      lv2:CVPort ;
+    lv2:index 7 ;
+    lv2:symbol "saw_down" ;
+    lv2:name "Saw Down" ;
+  ] , [
+    a lv2:OutputPort ,
+      lv2:CVPort ;
+    lv2:index 8 ;
+    lv2:symbol "triangle" ;
+    lv2:name "Triangle" ;
+  ] , [
+    a lv2:OutputPort ,
+      lv2:CVPort ;
+    lv2:index 9 ;
+    lv2:symbol "square" ;
+    lv2:name "Square" ;
+  ] , [
+    a lv2:OutputPort ,
+      lv2:CVPort ;
+    lv2:index 10 ;
+    lv2:symbol "random" ;
+    lv2:name "Random" ;
+  ] .
+
+<@LFO_UI_URI@>
+	a ui:X11UI ;
+  lv2:requiredFeature urid:map ;
+  lv2:optionalFeature log:log ;
+  lv2:optionalFeature ui:noUserResize ;
+  lv2:extensionData ui:idleInterface ;
+  ui:portNotification [
+    ui:plugin "@LFO_URI@" ;
+    lv2:symbol "notify" ;
+    ui:notifyType atom:Blank ;
+  ] .

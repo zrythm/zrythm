@@ -8,7 +8,7 @@
 @prefix ui:   <http://lv2plug.in/ns/extensions/ui#> .
 @prefix log:  <http://lv2plug.in/ns/ext/log#> .
 
-<@_LFO_URI@>
+<@LFO_URI@>
   a lv2:Plugin,
     lv2:OscillatorPlugin ;
   doap:name "ZLFO" ;
@@ -17,7 +17,7 @@
     foaf:homepage <https://www.zrythm.org> ;
   ] ;
   doap:license <https://www.gnu.org/licenses/agpl-3.0.html> ;
-  lv2:project <@_PROJECT_URI@> ;
+  lv2:project <@PROJECT_URI@> ;
   lv2:requiredFeature urid:map ;
   lv2:optionalFeature lv2:hardRTCapable ;
   lv2:optionalFeature log:log ;
@@ -102,14 +102,14 @@
     lv2:name "Random" ;
   ] .
 
-<@_LFO_UI_URI@>
+<@LFO_UI_URI@>
 	a ui:X11UI ;
   lv2:requiredFeature urid:map ;
   lv2:optionalFeature log:log ;
   lv2:optionalFeature ui:noUserResize ;
   lv2:extensionData ui:idleInterface ;
   ui:portNotification [
-    ui:plugin @LFO_URI@ ;
+    ui:plugin "@LFO_URI@" ;
     lv2:symbol "notify" ;
     ui:notifyType atom:Blank ;
   ] .
