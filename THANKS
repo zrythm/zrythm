@@ -19,6 +19,8 @@ Thanks:
    * Help and advice
    * Routing algorithm
    * Latency compensation algorithm
+ David Robillard
+   * A lot of useful code we borrowed
  The GTK team
    * Assistance with GTK-related code
  LAD
