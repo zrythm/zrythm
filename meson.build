@@ -192,7 +192,7 @@ if (get_option ('buildtype') == 'release')
     '-mfpmath=sse',
     #'-fvisibility=hidden',
     ]
-  cdata.set('G_DISABLE_CHECKS', 1)
+  #cdata.set('G_DISABLE_CHECKS', 1)
 endif
 
 if get_option ('enable_profiling')

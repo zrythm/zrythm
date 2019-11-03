@@ -59,24 +59,26 @@ arranger_object_widget_draw_cut_line (
 
       /* get absolute position */
       Position pos;
-      if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
+      switch (obj->type)
         {
+        case ARRANGER_OBJECT_TYPE_REGION:
           start_pos_px =
             ui_pos_to_px_timeline (
               &obj->pos, F_PADDING);
           ui_px_to_pos_timeline (
             start_pos_px + ao_prv->hover_x,
             &pos, F_PADDING);
-        }
-      else if (obj->type ==
-              ARRANGER_OBJECT_TYPE_MIDI_NOTE)
-        {
+          break;
+        case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
           start_pos_px =
             ui_pos_to_px_editor (
               &obj->pos, F_PADDING);
           ui_px_to_pos_editor (
             start_pos_px + ao_prv->hover_x,
             &pos, F_PADDING);
+          break;
+        default:
+          g_return_if_reached ();
         }
 
       /* snap */
@@ -102,19 +104,20 @@ arranger_object_widget_draw_cut_line (
         }
 
       /* convert back to px */
-      if (obj->type ==
-            ARRANGER_OBJECT_TYPE_REGION)
+      switch (obj->type)
         {
+        case ARRANGER_OBJECT_TYPE_REGION:
           px =
             ui_pos_to_px_timeline (
               &pos, F_PADDING);
-        }
-      else if (obj->type ==
-                 ARRANGER_OBJECT_TYPE_MIDI_NOTE)
-        {
+          break;
+        case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
           px =
             ui_pos_to_px_editor (
               &pos, F_PADDING);
+          break;
+        default:
+          g_return_if_reached ();
         }
 
       /* convert to local px */

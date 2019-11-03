@@ -531,6 +531,8 @@ arranger_object_set_position (
   const int                  validate,
   ArrangerObjectUpdateFlag   update_flag)
 {
+  g_return_if_fail (self && pos);
+
   /* return if validate is on and position is
    * invalid */
   if (validate &&
@@ -538,39 +540,32 @@ arranger_object_set_position (
         self, pos, pos_type, cached))
     return;
 
+  Position * pos_ptr;
   switch (update_flag)
   {
+#define UPDATE(x) \
+  pos_ptr = \
+  get_position_ptr ( \
+    x, pos_type, cached); \
+  g_return_if_fail (pos_ptr); \
+  position_set_to_pos (pos_ptr, pos)
+
     case AO_UPDATE_THIS:
-      position_set_to_pos (
-        get_position_ptr (
-          self, pos_type, cached),
-        pos);
+      UPDATE (self);
       break;
     case AO_UPDATE_TRANS:
-      position_set_to_pos (
-        get_position_ptr (
-          arranger_object_get_main_trans (self),
-          pos_type, cached),
-        pos);
+      UPDATE (
+        arranger_object_get_main_trans (self));
       break;
     case AO_UPDATE_NON_TRANS:
-      position_set_to_pos (
-        get_position_ptr (
-          arranger_object_get_main (self),
-          pos_type, cached),
-        pos);
+      UPDATE (
+        arranger_object_get_main (self));
       break;
     case AO_UPDATE_ALL:
-      position_set_to_pos (
-        get_position_ptr (
-          arranger_object_get_main_trans (self),
-          pos_type, cached),
-        pos);
-      position_set_to_pos (
-        get_position_ptr (
-          arranger_object_get_main (self),
-          pos_type, cached),
-        pos);
+      UPDATE (
+        arranger_object_get_main_trans (self));
+      UPDATE (
+        arranger_object_get_main (self));
       break;
     }
 
@@ -579,39 +574,25 @@ arranger_object_set_position (
       switch (update_flag)
       {
         case AO_UPDATE_THIS:
-          position_set_to_pos (
-            get_position_ptr (
-              self, pos_type, cached),
-            pos);
+          UPDATE (self);
           break;
         case AO_UPDATE_TRANS:
-          position_set_to_pos (
-            get_position_ptr (
-              arranger_object_get_lane_trans (self),
-              pos_type, cached),
-            pos);
+          UPDATE (
+            arranger_object_get_lane_trans (self));
           break;
         case AO_UPDATE_NON_TRANS:
-          position_set_to_pos (
-            get_position_ptr (
-              arranger_object_get_lane (self),
-              pos_type, cached),
-            pos);
+          UPDATE (
+            arranger_object_get_lane(self));
           break;
         case AO_UPDATE_ALL:
-          position_set_to_pos (
-            get_position_ptr (
-              arranger_object_get_lane_trans (self),
-              pos_type, cached),
-            pos);
-          position_set_to_pos (
-            get_position_ptr (
-              arranger_object_get_lane (self),
-              pos_type, cached),
-            pos);
+          UPDATE (
+            arranger_object_get_lane_trans (self));
+          UPDATE (
+            arranger_object_get_lane(self));
           break;
         }
     }
+#undef UPDATE
 }
 
 /**
@@ -2429,6 +2410,8 @@ arranger_object_clone (
   ArrangerObject *        self,
   ArrangerObjectCloneFlag flag)
 {
+  g_return_val_if_fail (self, NULL);
+
   ArrangerObject * new_obj = NULL;
   switch (self->type)
     {
@@ -2474,6 +2457,7 @@ arranger_object_clone (
     default:
       g_return_val_if_reached (NULL);
     }
+  g_return_val_if_fail (new_obj, NULL);
 
   /* set positions */
   new_obj->pos = self->pos;
