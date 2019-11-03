@@ -1971,9 +1971,6 @@ lv2_plugin_process (
                 lv2_port->received_ui_event = 0;
                 continue;
               }
-
-            lv2_ui_send_control_val_event_from_plugin_to_ui (
-              lv2_plugin, lv2_port);
           }
     }
 

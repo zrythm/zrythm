@@ -35,7 +35,7 @@
 #include <gtk/gtkx.h>
 
 #include "lv2/lv2plug.in/ns/ext/options/options.h"
-#include "lv2/lv2plug.in/ns/ext/urid/lv2_urid.h"
+#include "lv2/lv2plug.in/ns/ext/urid/urid.h"
 
 #define SUIL_X11_WRAPPER_TYPE (suil_x11_wrapper_get_type())
 #define Z_SUIL_X11_WRAPPER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), SUIL_X11_WRAPPER_TYPE, SuilX11Wrapper))
