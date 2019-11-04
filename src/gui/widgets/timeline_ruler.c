@@ -148,45 +148,6 @@ timeline_ruler_widget_set_ruler_marker_position (
 
 }
 
-void
-timeline_ruler_widget_refresh (
-  TimelineRulerWidget * self)
-{
-  RULER_WIDGET_GET_PRIVATE (self);
-
-  /*adjust for zoom level*/
-  rw_prv->px_per_tick =
-    DEFAULT_PX_PER_TICK * rw_prv->zoom_level;
-  rw_prv->px_per_sixteenth =
-    rw_prv->px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
-  rw_prv->px_per_beat =
-    rw_prv->px_per_tick * TRANSPORT->ticks_per_beat;
-  rw_prv->px_per_bar =
-    rw_prv->px_per_beat * TRANSPORT->beats_per_bar;
-
-  Position pos;
-  position_set_to_bar (&pos,
-                       TRANSPORT->total_bars + 1);
-  rw_prv->total_px =
-    rw_prv->px_per_tick *
-    (double) position_to_ticks (&pos);
-
-  // set the size
-  gtk_widget_set_size_request (
-    GTK_WIDGET (MW_RULER),
-    (int) rw_prv->total_px,
-    -1);
-
-  gtk_widget_set_visible (
-    GTK_WIDGET (MW_RULER->range),
-    PROJECT->has_range);
-
-  gtk_widget_queue_allocate (
-    GTK_WIDGET (MW_RULER));
-  EVENTS_PUSH (ET_RULER_SIZE_CHANGED,
-               MW_RULER);
-}
-
 static void
 on_drag_begin_range_hit (
   TimelineRulerWidget * self,

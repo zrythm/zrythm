@@ -833,6 +833,18 @@ port_set_control_value (
   const int   forward_event);
 
 /**
+ * Gets the given control value from the
+ * corresponding underlying structure in the Port.
+ *
+ * @param normalized Whether to get the value
+ *   normalized or not.
+ */
+float
+port_get_control_value (
+  Port *      self,
+  const int   normalize);
+
+/**
  * Connets src to dest.
  *
  * @param locked Lock the connection or not.

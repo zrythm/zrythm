@@ -117,8 +117,8 @@ on_arranger_selections_in_transit (
     event_viewer_widget_refresh (
       MW_TIMELINE_EVENT_VIEWER);
     if (TL_SELECTIONS->num_regions > 0)
-      editor_ruler_widget_refresh (
-        EDITOR_RULER);
+      ruler_widget_refresh (
+        (RulerWidget *) EDITOR_RULER);
     break;
   default:
     break;
@@ -248,6 +248,10 @@ on_range_selection_changed ()
     PROJECT->has_range);
   gtk_widget_queue_allocate (
     GTK_WIDGET (MW_RULER));
+	ruler_widget_force_redraw (
+		(RulerWidget *) MW_RULER);
+	ruler_widget_force_redraw (
+		(RulerWidget *) EDITOR_RULER);
 }
 
 static void
@@ -299,8 +303,8 @@ refresh_editor_ruler_and_arranger ()
 
   /* ruler must be refreshed first to get the
    * correct px when calling ui_* functions */
-  editor_ruler_widget_refresh (
-    EDITOR_RULER);
+  ruler_widget_refresh (
+    (RulerWidget *) EDITOR_RULER);
 
   /* remove all previous children and add new */
   arranger_widget_refresh (
@@ -643,8 +647,8 @@ on_arranger_object_changed (
        * positions were changed */
       gtk_widget_queue_allocate (
         GTK_WIDGET (EDITOR_RULER));
-      gtk_widget_queue_draw (
-        GTK_WIDGET (EDITOR_RULER));
+			ruler_widget_force_redraw (
+				(RulerWidget *) EDITOR_RULER);
       break;
     case ARRANGER_OBJECT_TYPE_MARKER:
       {
@@ -954,13 +958,17 @@ events_process (void * data)
         case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
-          gtk_widget_queue_draw (
-            GTK_WIDGET (EDITOR_RULER));
+					ruler_widget_force_redraw (
+						(RulerWidget *) MW_RULER);
+					ruler_widget_force_redraw (
+						(RulerWidget *) EDITOR_RULER);
           redraw_all_arranger_bgs ();
           break;
         case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
+					ruler_widget_force_redraw (
+						(RulerWidget *) MW_RULER);
           break;
         case ET_PLUGIN_VISIBILITY_CHANGED:
           on_plugin_visibility_changed (
@@ -973,8 +981,8 @@ events_process (void * data)
           snap_grid_update_snap_points (
             SNAP_GRID_TIMELINE);
 
-          timeline_ruler_widget_refresh (
-            MW_RULER);
+          ruler_widget_refresh (
+            (RulerWidget *) MW_RULER);
           timeline_arranger_widget_set_size (
             MW_TIMELINE);
           timeline_minimap_widget_refresh (
@@ -1097,8 +1105,8 @@ events_process (void * data)
               MW_MIDI_EDITOR_SPACE, 0);
           break;
         case ET_RULER_STATE_CHANGED:
-          timeline_ruler_widget_refresh (
-            MW_RULER);
+          ruler_widget_refresh (
+            (RulerWidget *) MW_RULER);
           break;
         case ET_AUTOMATION_TRACK_ADDED:
         case ET_AUTOMATION_TRACK_REMOVED:
@@ -1174,10 +1182,10 @@ events_process (void * data)
           break;
         case ET_LOOP_TOGGLED:
           arranger_widget_refresh_all_backgrounds ();
-          gtk_widget_queue_draw (
-            GTK_WIDGET (MW_RULER));
-          gtk_widget_queue_draw (
-            GTK_WIDGET (EDITOR_RULER));
+					ruler_widget_force_redraw (
+						(RulerWidget *) EDITOR_RULER);
+					ruler_widget_force_redraw (
+						(RulerWidget *) MW_RULER);
           break;
         case ET_ARRANGER_SELECTIONS_IN_TRANSIT:
           on_arranger_selections_in_transit (

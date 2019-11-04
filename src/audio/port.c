@@ -873,6 +873,42 @@ port_set_control_value (
 }
 
 /**
+ * Gets the given control value from the
+ * corresponding underlying structure in the Port.
+ *
+ * @param normalized Whether to get the value
+ *   normalized or not.
+ */
+float
+port_get_control_value (
+  Port *      self,
+  const int   normalize)
+{
+  g_return_val_if_fail (
+    self->identifier.type == TYPE_CONTROL, 0.f);
+
+  if (self->lv2_port)
+    {
+      g_return_val_if_fail (
+        self->plugin && self->plugin->lv2, 0.f);
+      if (normalize)
+        {
+          float minf = port_get_minf (self);
+          float maxf = port_get_maxf (self);
+          return
+            (self->lv2_port->control - minf) /
+            (maxf - minf);
+        }
+      else
+        {
+          return self->lv2_port->control;
+        }
+    }
+  else
+    g_return_val_if_reached (0.f);
+}
+
+/**
  * Returns the minimum possible value for this
  * port.
  *

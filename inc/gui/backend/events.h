@@ -166,6 +166,8 @@ typedef struct ZEvent
 
 /**
  * Must be called from a GTK thread.
+ *
+ * FIXME use zix ring to make it real time safe.
  */
 GAsyncQueue *
 events_init (void);

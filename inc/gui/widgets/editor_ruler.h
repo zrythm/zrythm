@@ -63,10 +63,6 @@ typedef struct _EditorRulerWidget
   int                      range1_first; ///< range1 was before range2 at drag start
 } EditorRulerWidget;
 
-void
-editor_ruler_widget_refresh (
-  EditorRulerWidget * self);
-
 /**
  * Called when allocating the children of the
  * RulerWidget to allocate the RulerMarkerWidget.

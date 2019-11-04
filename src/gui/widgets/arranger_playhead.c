@@ -65,7 +65,8 @@ arranger_playhead_widget_new ()
  * GTK boilerplate.
  */
 static void
-arranger_playhead_widget_init (ArrangerPlayheadWidget * self)
+arranger_playhead_widget_init (
+  ArrangerPlayheadWidget * self)
 {
   /* connect signal */
   g_signal_connect (GTK_WIDGET (self),

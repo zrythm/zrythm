@@ -39,6 +39,7 @@
 #include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/math.h"
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (AutomationTrackWidget,
@@ -312,14 +313,17 @@ void
 automation_track_widget_update_current_val (
   AutomationTrackWidget * self)
 {
-  char * val =
-    g_strdup_printf (
-      "%.2f",
-      (double)
-      automatable_get_val (
-        self->at->automatable));
-  gtk_label_set_text (self->current_val, val);
-  g_free (val);
+  float val =
+    automatable_get_val (self->at->automatable);
+  if (!math_floats_equal (
+         val, self->last_val, 0.001f))
+    {
+      char str[30];
+      sprintf (
+        str, "%.2f", (double) val);
+      self->last_val = val;
+      gtk_label_set_text (self->current_val, str);
+    }
 }
 
 void

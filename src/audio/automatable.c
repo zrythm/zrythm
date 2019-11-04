@@ -518,6 +518,13 @@ automatable_set_val_from_normalized (
               real_val =
                 a->minf + val * (a->maxf - a->minf);
             }
+
+          if (!math_floats_equal (
+                port_get_control_value (
+                  a->port, 0), real_val, 0.001f))
+            EVENTS_PUSH (
+              ET_AUTOMATION_VALUE_CHANGED, a);
+
           port_set_control_value (
             a->port, real_val, 0, 1);
           ctrl->plugin->
@@ -528,27 +535,39 @@ automatable_set_val_from_normalized (
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
       plugin = a->port->plugin;
+      if (plugin->enabled != (val > 0.5f))
+        EVENTS_PUSH (
+          ET_AUTOMATION_VALUE_CHANGED, a);
       plugin->enabled = val > 0.5f;
       break;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
       ch = track_get_channel (a->track);
+      if (!math_floats_equal (
+            fader_get_fader_val (
+              &ch->fader), val, 0.001f))
+        EVENTS_PUSH (
+          ET_AUTOMATION_VALUE_CHANGED, a);
       fader_set_amp (
         &ch->fader,
         (float)
         math_get_amp_val_from_fader (val));
       break;
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:
-      track_set_muted (a->track,
-                      val > 0.5f,
-                      0);
+      if (a->track->mute != (val > 0.5f))
+        EVENTS_PUSH (
+          ET_AUTOMATION_VALUE_CHANGED, a);
+      track_set_muted (
+        a->track, val > 0.5f, 0);
       break;
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
       ch = track_get_channel (a->track);
+      if (!math_floats_equal (
+            channel_get_pan (ch), val, 0.001f))
+        EVENTS_PUSH (
+          ET_AUTOMATION_VALUE_CHANGED, a);
       channel_set_pan (ch, val);
       break;
     }
-  EVENTS_PUSH (ET_AUTOMATION_VALUE_CHANGED,
-               a);
 }
 
 /**

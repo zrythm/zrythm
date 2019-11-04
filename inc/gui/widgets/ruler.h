@@ -108,6 +108,16 @@ typedef struct
 
   /** FIXME move somewhere else */
   double                   zoom_level;
+
+  /** Set to 1 to redraw. */
+  int               redraw;
+
+  cairo_t *               cached_cr;
+
+  cairo_surface_t *       cached_surface;
+
+  /** Rectangle in the last call. */
+  GdkRectangle            last_rect;
 } RulerWidgetPrivate;
 
 typedef struct _RulerWidgetClass
@@ -143,6 +153,10 @@ ruler_widget_get_beat_interval (
  */
 int
 ruler_widget_get_sixteenth_interval (
+  RulerWidget * self);
+
+void
+ruler_widget_force_redraw (
   RulerWidget * self);
 
 void

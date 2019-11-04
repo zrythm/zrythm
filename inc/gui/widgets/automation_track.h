@@ -57,6 +57,9 @@ typedef struct _AutomationTrackWidget
    */
   char *                  path;
 
+  /** Cache for showing the value. */
+  float                   last_val;
+
   /**
    * For freezing callbacks.
    */
