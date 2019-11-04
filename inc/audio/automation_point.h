@@ -41,13 +41,12 @@ AutomationPointWidget;
  * @{
  */
 
-#define AP_MAX_CURVINESS 6.0
+#define AP_MAX_CURVINESS 1.0
 /*#define AP_MIN_CURVINESS \
   //(1.f / AP_MAX_CURVINESS)*/
-#define AP_MIN_CURVINESS 0.01
+#define AP_MIN_CURVINESS 0.18
 #define AP_CURVINESS_RANGE \
   (AP_MAX_CURVINESS - AP_MIN_CURVINESS)
-#define AP_MID_CURVINESS 1.0
 
 #define automation_point_is_main(c) \
   arranger_object_is_main ( \
@@ -68,21 +67,15 @@ AutomationPointWidget;
     (ArrangerObject *) r)
 
 /**
- * Returns the curviness from 0.0 (min curviness) to
- * 1.0 (max curviness).
+ * The curve algorithm to use for curves.
  */
-#define \
-automation_point_get_normalized_curviness(x) \
-  ((x->curviness - AP_MIN_CURVINESS) / \
-    AP_CURVINESS_RANGE)
-
-/**
- * Returns the curviness value from a normalized
- * curviness.
- */
-#define \
-automation_point_get_curviness_from_normalized(x) \
-  ((x) * AP_CURVINESS_RANGE + AP_MIN_CURVINESS)
+typedef enum AutomationPointCurveAlgorithm
+{
+	/** y = x^n */
+	AP_CURVE_ALGORITHM_EXPONENT,
+	/** y = 1 - (1 - x^n)^(1/n) */
+	AP_CURVE_ALGORITHM_SUPERELLIPSE,
+} AutomationPointCurveAlgorithm;
 
 /**
  * An automation point inside an AutomationTrack.
@@ -99,7 +92,11 @@ typedef struct AutomationPoint
   int             bvalue; ///< boolean value
   int             svalue; ///< step value
 
-  /** Curviness. */
+	/** Whether the curve tilts upwards. */
+	int             curve_up;
+
+  /** Curviness between 0 and 1, regardless of
+	 * whether it tilts up or down. */
   double          curviness;
 
   /**
@@ -136,9 +133,17 @@ automation_point_fields_schema[] =
   CYAML_FIELD_INT (
     "index", CYAML_FLAG_DEFAULT,
     AutomationPoint, index),
+  CYAML_FIELD_INT (
+    "curve_up", CYAML_FLAG_DEFAULT,
+    AutomationPoint, curve_up),
 	CYAML_FIELD_FLOAT (
     "curviness", CYAML_FLAG_DEFAULT,
     AutomationPoint, curviness),
+  CYAML_FIELD_STRING_PTR (
+    "region_name",
+    CYAML_FLAG_OPTIONAL | CYAML_FLAG_POINTER,
+    AutomationPoint, region_name,
+   	0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
 };
@@ -212,7 +217,8 @@ automation_point_get_normalized_value_in_curve (
 void
 automation_point_set_curviness (
   AutomationPoint * ap,
-  const curviness_t curviness);
+  const curviness_t curviness,
+	const int         curve_up);
 
 /**
  * Convenience function to return the Automatable

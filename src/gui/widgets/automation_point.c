@@ -105,8 +105,8 @@ draw_cb (
            AP_WIDGET_POINT_SIZE / 2),
         AP_WIDGET_POINT_SIZE / 2,
         0, 2 * G_PI);
-      cairo_stroke_preserve(ao_prv->cached_cr);
-      cairo_fill(ao_prv->cached_cr);
+      cairo_stroke_preserve (ao_prv->cached_cr);
+      cairo_stroke (ao_prv->cached_cr);
 
       if (next_ap)
         {
@@ -128,7 +128,7 @@ draw_cb (
             height - AP_WIDGET_POINT_SIZE;
 
           for (double l = 0.0;
-               l <= (double) width_for_curve;
+               l <= (double) width_for_curve + 0.01;
                l = l + 0.1)
             {
               /* in pixels, higher values are lower */
@@ -136,7 +136,8 @@ draw_cb (
                 1.0 -
                 automation_point_get_normalized_value_in_curve (
                   self->ap,
-                  l / width_for_curve);
+                  CLAMP (
+										l / width_for_curve, 0.0, 1.0));
               automation_point_y *= height_for_curve;
 
               new_x = l;

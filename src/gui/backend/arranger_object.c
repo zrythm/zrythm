@@ -2058,14 +2058,21 @@ static ArrangerObject *
 find_automation_point (
   AutomationPoint * src)
 {
-  g_warn_if_fail (src->region);
+	Region * region = src->region;
+	if (!region)
+		{
+			region =
+				region_find_by_name (
+					src->region_name);
+		}
+  g_return_val_if_fail (region, NULL);
 
   /* the src region might be an unused clone, find
    * the actual region. */
-  Region * region =
+  region =
     (Region *)
     arranger_object_find (
-      (ArrangerObject *) src->region);
+      (ArrangerObject *) region);
 
   int i;
   AutomationPoint * ap;

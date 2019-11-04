@@ -41,6 +41,9 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 
+static AutomationPointCurveAlgorithm CURVE_ALGO =
+  AP_CURVE_ALGORITHM_SUPERELLIPSE;
+
 static AutomationPoint *
 _create_new (
   const Position *        pos)
@@ -263,24 +266,40 @@ automation_point_update_fvalue (
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
  * @param x X-coordinate.
  * @param curviness Curviness variable.
- * @param start_at_1 Start at lower point.
+ * @param start_higher Start at higher point.
  */
 static double
 get_y_normalized (
   double x,
   double curviness,
-  int    start_at_1)
+  int    start_higher,
+	int    curve_up)
 {
-  if (start_at_1)
-    {
-      double val = pow (1.0 - pow (x, curviness), (1.0 / curviness));
-      return val;
-    }
-  else
-    {
-      double val = pow (1.0 - pow (x, 1.0 / curviness), (1.0 / (1.0 / curviness)));
-      return 1.0 - val;
-    }
+	if (!start_higher)
+		x = 1.0 - x;
+	if (curve_up)
+		x = 1.0 - x;
+
+	double val;
+	switch (CURVE_ALGO)
+		{
+		case AP_CURVE_ALGORITHM_EXPONENT:
+			val =
+				pow (x, curviness);
+			if (curve_up)
+				val = 1.0 - val;
+			return val;
+		case AP_CURVE_ALGORITHM_SUPERELLIPSE:
+			val =
+				pow (
+					1.0 - pow (x, curviness),
+					(1.0 / curviness));
+			if (curve_up)
+				val = 1.0 - val;
+			return val;
+		}
+
+	g_return_val_if_reached (-1.0);
 }
 
 /**
@@ -311,7 +330,7 @@ automation_point_get_normalized_value_in_curve (
       /* start higher */
       dy =
         get_y_normalized (
-          x, self->curviness, 1);
+          x, self->curviness, 1, self->curve_up);
       /*g_message ("dy %f", dy);*/
       return dy;
 
@@ -323,7 +342,7 @@ automation_point_get_normalized_value_in_curve (
     {
       dy =
         get_y_normalized (
-          x, self->curviness, 0);
+          x, self->curviness, 0, self->curve_up);
       /*g_message ("dy %f", dy);*/
       return dy;
 
@@ -337,14 +356,18 @@ automation_point_get_normalized_value_in_curve (
 void
 automation_point_set_curviness (
   AutomationPoint * self,
-  const curviness_t curviness)
+  const curviness_t curviness,
+	const int         curve_up)
 {
   if (math_doubles_equal (
-        self->curviness, curviness, 0.01))
+        self->curviness, curviness, 0.001))
     return;
 
   arranger_object_set_primitive (
     AutomationPoint, self, curviness, curviness,
+    AO_UPDATE_ALL);
+  arranger_object_set_primitive (
+    AutomationPoint, self, curve_up, curve_up,
     AO_UPDATE_ALL);
   ArrangerObject * obj = (ArrangerObject *) self;
   if (Z_IS_ARRANGER_OBJECT_WIDGET (obj->widget))

@@ -162,7 +162,7 @@ ports_expander_widget_setup_plugin (
 
   if (type == TYPE_CONTROL &&
       flow == FLOW_INPUT)
-    strcpy (fullstr, _("Control Ins"));
+    strcpy (fullstr, _("Controls"));
   else if (type == TYPE_CONTROL &&
       flow == FLOW_OUTPUT)
     strcpy (fullstr, _("Control Outs"));

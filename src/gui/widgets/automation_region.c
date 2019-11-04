@@ -240,17 +240,22 @@ automation_region_draw_cb (
                       double ac_width =
                         fabs (x_end - x_start);
                       ac_width *= width;
+                        cairo_set_line_width (
+                          ao_prv->cached_cr, 2.0);
                       for (double k = x_start_real;
-                           k < (x_start_real) + ac_width;
-                           k += 0.6)
+                           k < (x_start_real) +
+                             ac_width + 0.1;
+                           k += 0.1)
                         {
                           /* in pixels, higher values are lower */
                           ap_y =
                             1.0 -
                             automation_point_get_normalized_value_in_curve (
                               ap,
-                              (k - x_start_real) /
-                                ac_width);
+                              CLAMP (
+                                (k - x_start_real) /
+                                  ac_width,
+                                0.0, 1.0));
                           ap_y *= ac_height;
 
                           new_x = k;

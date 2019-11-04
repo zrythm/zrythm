@@ -587,16 +587,22 @@ automation_arranger_widget_resize_curves (
     {
       AutomationPoint * ap =
         AUTOMATION_SELECTIONS->automation_points[i];
-      double normalized_curviness =
-        automation_point_get_normalized_curviness (
-          ap);
+			if (ap->curve_up)
+				diff = - diff;
       double new_curve_val =
         CLAMP (
-          normalized_curviness + diff, 0.0, 1.0);
+          ap->curviness + diff,
+					AP_MIN_CURVINESS, 2.0);
+			int new_curve_up = ap->curve_up;
+			if (new_curve_val >= AP_MAX_CURVINESS)
+				{
+					new_curve_val -= AP_MAX_CURVINESS;
+					new_curve_val =
+						AP_MAX_CURVINESS - new_curve_val;
+					new_curve_up = !ap->curve_up;
+				}
       automation_point_set_curviness (
-        ap,
-        automation_point_get_curviness_from_normalized (
-          new_curve_val));
+        ap, new_curve_val, new_curve_up);
     }
 
   EVENTS_PUSH (

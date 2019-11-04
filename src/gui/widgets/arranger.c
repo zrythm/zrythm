@@ -710,8 +710,10 @@ arranger_widget_select_all (
 #define ARR_SELECT_ALL(sc) \
   if (sc##_arranger) \
     { \
-      arranger_selections_clear ( \
-        (ArrangerSelections *) sc##_arranger); \
+			ArrangerSelections * sel = \
+				arranger_widget_get_selections ( \
+					(ArrangerWidget *) sc##_arranger); \
+      arranger_selections_clear (sel); \
       select_all_##sc ( \
         sc##_arranger, select); \
     }

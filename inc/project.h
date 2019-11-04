@@ -263,6 +263,14 @@ static const cyaml_schema_field_t
     Project, midi_arranger_selections,
     midi_arranger_selections_fields_schema),
   CYAML_FIELD_MAPPING (
+    "chord_selections", CYAML_FLAG_DEFAULT,
+    Project, chord_selections,
+    chord_selections_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "automation_selections", CYAML_FLAG_DEFAULT,
+    Project, automation_selections,
+    automation_selections_fields_schema),
+  CYAML_FIELD_MAPPING (
     "tracklist_selections", CYAML_FLAG_DEFAULT,
     Project, tracklist_selections,
     tracklist_selections_fields_schema),

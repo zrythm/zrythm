@@ -69,6 +69,9 @@ get_actual_arranger_selections (
       return
         (ArrangerSelections *)
         CHORD_SELECTIONS;
+		default:
+			g_return_val_if_reached (NULL);
+			break;
     }
 
   g_return_val_if_reached (NULL);

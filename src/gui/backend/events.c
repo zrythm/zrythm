@@ -444,6 +444,8 @@ refresh_for_selections_type (
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
       break;
+		default:
+			g_return_if_reached ();
     }
 }
 
