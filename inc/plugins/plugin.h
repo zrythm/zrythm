@@ -106,12 +106,12 @@ typedef enum PluginArchitecture
  */
 typedef struct PluginDescriptor
 {
-  char                 * author;
-  char                 * name;
-  char                 * website;
+  char *           author;
+  char *           name;
+  char *           website;
   PluginCategory   category;
   /** Lv2 plugin subcategory. */
-  char                 * category_str;
+  char *           category_str;
   /** Number of audio input ports. */
   int              num_audio_ins;
   /** Number of MIDI input ports. */
@@ -277,7 +277,13 @@ descriptor_fields_schema[] =
 	  PluginDescriptor, num_ctrl_ins),
 	CYAML_FIELD_INT (
     "num_ctrl_outs", CYAML_FLAG_DEFAULT,
-	  PluginDescriptor, num_audio_outs),
+	  PluginDescriptor, num_ctrl_outs),
+	CYAML_FIELD_INT (
+    "num_cv_ins", CYAML_FLAG_DEFAULT,
+	  PluginDescriptor, num_cv_ins),
+	CYAML_FIELD_INT (
+    "num_cv_outs", CYAML_FLAG_DEFAULT,
+	  PluginDescriptor, num_cv_outs),
   CYAML_FIELD_ENUM (
     "arch", CYAML_FLAG_DEFAULT,
     PluginDescriptor, arch,
@@ -346,6 +352,24 @@ plugin_schema =
 
 void
 plugin_init_loaded (Plugin * plgn);
+
+static inline const char *
+plugin_protocol_to_str (
+  PluginProtocol prot)
+{
+  for (size_t i = 0;
+       i < G_N_ELEMENTS (plugin_protocol_strings);
+       i++)
+    {
+      if (plugin_protocol_strings[i].val ==
+            (int64_t) prot)
+        {
+          return
+            plugin_protocol_strings[i].str;
+        }
+    }
+  g_return_val_if_reached (NULL);
+}
 
 /**
  * Adds an AutomationTrack to the Plugin.

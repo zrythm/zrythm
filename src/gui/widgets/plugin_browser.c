@@ -322,19 +322,22 @@ on_selection_changed (
       PluginDescriptor * descr =
         g_value_get_pointer (&value);
       char * label = g_strdup_printf (
-        "%s\n%s, %d\nAudio: %d, %d\nMidi: %d, "
-        "%d\nControls: %d, %d",
+        "%s\n%s, %s\nAudio: %d, %d\nMidi: %d, "
+        "%d\nControls: %d, %d\nCV: %d, %d",
         descr->author,
         descr->category_str,
-        descr->protocol,
+        plugin_protocol_to_str (
+          descr->protocol),
         descr->num_audio_ins,
         descr->num_audio_outs,
         descr->num_midi_ins,
         descr->num_midi_outs,
         descr->num_ctrl_ins,
-        descr->num_ctrl_outs);
-      update_plugin_info_label (self,
-                                label);
+        descr->num_ctrl_outs,
+        descr->num_cv_ins,
+        descr->num_cv_outs);
+      update_plugin_info_label (
+        self, label);
     }
 
   g_list_free_full (
