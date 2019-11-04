@@ -19,6 +19,7 @@ ztoolkit_srcs = [
   'ztk_app.c',
   'ztk_color.c',
   'ztk_knob.c',
+  'ztk_knob_with_label.c',
   'ztk_label.c',
   'ztk_theme.c',
   'ztk_widget.c',

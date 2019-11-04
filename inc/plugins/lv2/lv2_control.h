@@ -115,7 +115,9 @@ lv2_new_property_control (
   Lv2Plugin* plugin, const LilvNode* property);
 
 void
-lv2_add_control(Lv2Controls* controls, Lv2Control* control);
+lv2_add_control (
+  Lv2Controls* controls,
+  Lv2Control* control);
 
 Lv2Control*
 lv2_get_property_control(const Lv2Controls* controls, LV2_URID property);
@@ -136,7 +138,8 @@ lv2_control_set_control (
  * Returns the human readable control label.
  */
 const char *
-lv2_control_get_label (const Lv2Control * control);
+lv2_control_get_label (
+  const Lv2Control * control);
 
 /**
  * Returns the Lv2Control from the port index.

@@ -39,10 +39,7 @@
 #include <stdlib.h>
 
 #include "zlfo_common.h"
-#include "ztoolkit/ztk_app.h"
-#include "ztoolkit/ztk_knob.h"
-#include "ztoolkit/ztk_label.h"
-#include "ztoolkit/ztk_widget.h"
+#include "ztoolkit/ztk.h"
 
 #include <cairo.h>
 #include <pugl/pugl.h>
@@ -89,8 +86,8 @@ typedef struct ZLfoUi
   ZLfoUris             uris;
 
   /**
-   * This is the window passed in the features from the
-   * host.
+   * This is the window passed in the features from
+	 * the host.
    *
    * The pugl window will be wrapped in here.
    */
@@ -115,8 +112,6 @@ set_freq (
   float    val)
 {
   ZLfoUi * self = (ZLfoUi *) obj;
-  printf ("setting freq to %f\n",
-          (double) val);
   self->freq = val;
   SEND_PORT_EVENT (self, LFO_FREQ, self->freq);
 }
@@ -144,26 +139,51 @@ create_ui (
     (PuglNativeWindow) self->parent_window,
     WIDTH, HEIGHT);
 
-  /* add frequency knob */
-  PuglRect rect = {
-    30, 30, 32, 32 };
-  ZtkKnob * knob =
-    ztk_knob_new (
-      &rect, get_freq, set_freq, self,
-      0.f, 20.f, 0.f);
-  ZtkWidget * w =
-    (ZtkWidget *) knob;
-  ztk_app_add_widget (
-    self->app, w, 2);
+  int num_controls = 1;
 
-  /* add label */
-  ZtkLabel * lbl =
-    ztk_label_new  (
-      24.0, 24.0, 14,
-      &self->app->theme.bright_orange,
-      "Frequency");
-  ztk_app_add_widget (
-    self->app, (ZtkWidget *) lbl, 2);
+#define PADDING 10.0
+#define BOX_DIM 32.0
+
+  /* get available space for each ctrl */
+  double available_space_for_ctrl =
+    WIDTH / num_controls;
+
+  /* add each ctrl */
+  for (int i = 0; i < num_controls; i++)
+    {
+      /* add frequency knob */
+      PuglRect rect = {
+        (i * available_space_for_ctrl +
+          available_space_for_ctrl / 2.0) -
+          BOX_DIM / 2.0,
+        HEIGHT / 2 - 30 / 2,
+        BOX_DIM,
+        BOX_DIM };
+      ZtkKnob * knob =
+        ztk_knob_new (
+          &rect, get_freq, set_freq, self,
+          0.f, 20.f, 0.f);
+      ZtkWidget * w =
+        (ZtkWidget *) knob;
+      ztk_app_add_widget (
+        self->app, w, 2);
+
+      /* add label */
+      char name[500];
+      sprintf (name, "Frequency");
+      ZtkLabel * lbl =
+        ztk_label_new  (
+          24.0, 24.0, 14,
+          &self->app->theme.bright_orange,
+          name);
+
+      ZtkKnobWithLabel * knob_with_label =
+        ztk_knob_with_label_new (
+          &rect, knob, lbl);
+      w = (ZtkWidget *) knob_with_label;
+      ztk_app_add_widget (
+        self->app, w, 2);
+    }
 }
 
 static LV2UI_Handle
@@ -210,8 +230,9 @@ instantiate (
 
   if (!self->map)
     {
-      fprintf (stderr, "Missing feature urid:map\n");
-      return NULL;
+			log_error (
+				self->log, &self->uris,
+				"Missing feature urid:map");
     }
 
   /* map uris */
@@ -235,7 +256,6 @@ cleanup (LV2UI_Handle handle)
 {
   ZLfoUi * self = (ZLfoUi *) handle;
 
-  printf ("cleaning up\n");
   ztk_app_free (self->app);
 
   free (self);
@@ -252,7 +272,6 @@ port_event (
   uint32_t     format,
   const void*  buffer)
 {
-  printf ("port event received\n");
   ZLfoUi * self = (ZLfoUi *) handle;
 
   /* check type of data received
@@ -263,11 +282,9 @@ port_event (
    */
   if (format == 0)
     {
-      printf ("control port event\n");
       switch (port_index)
         {
         case LFO_FREQ:
-          printf ("freq event\n");
           self->freq = * (const float *) buffer;
           break;
         default:
@@ -291,12 +308,16 @@ port_event (
         }
       else
         {
-          fprintf(stderr, "Unknown message type.\n");
+					log_error (
+						self->log, &self->uris,
+						"Unknown message type");
         }
     }
   else
     {
-      fprintf(stderr, "Unknown format.\n");
+			log_error (
+				self->log, &self->uris,
+				"Unknown format");
     }
 }
 
@@ -337,7 +358,6 @@ static int
 ui_resize (
   LV2UI_Feature_Handle handle, int w, int h)
 {
-  printf ("resize called\n");
   ZLfoUi * self = (ZLfoUi *) handle;
   self->resize->ui_resize (
     self->resize->handle, WIDTH, HEIGHT);

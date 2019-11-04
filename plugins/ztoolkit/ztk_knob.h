@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
- * This file is part of ZPlugins
+ * This file is part of Zrythm
  *
- * ZPlugins is free software: you can redistribute it and/or modify
+ * Zrythm is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- * ZPlugins is distributed in the hope that it will be useful,
+ * Zrythm is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
@@ -70,9 +70,5 @@ ztk_knob_new (
   float  min,
   float  max,
   float  zero);
-
-void
-ztk_knob_free (
-  ZtkWidget * widget);
 
 #endif

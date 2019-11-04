@@ -22,8 +22,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "ztoolkit/ztk_app.h"
-#include "ztoolkit/ztk_knob.h"
+#include "ztoolkit/ztk.h"
 
 #define ARC_CUT_ANGLE 60.f
 
@@ -52,9 +51,6 @@
  */
 #define SET_REAL_VAL(real) \
    ((*self->setter)(self->object, (float) real))
-
-#define MAX(x,y) (x > y ? x : y)
-#define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
 static void
 ztk_knob_draw_cb (
@@ -224,9 +220,18 @@ ztk_knob_update_cb (
         REAL_VAL_FROM_KNOB (
           CLAMP (
             KNOB_VAL_FROM_REAL (GET_REAL_VAL) +
-              0.004f * (float) delta,
+              0.007f * (float) delta,
              0.0f, 1.0f)));
     }
+}
+
+static void
+ztk_knob_free (
+  ZtkWidget * widget)
+{
+  ZtkKnob * self = (ZtkKnob *) widget;
+
+  free (self);
 }
 
 /**
@@ -267,13 +272,4 @@ ztk_knob_new (
   self->end_color.blue = 66.0 / 100.0;
 
   return self;
-}
-
-void
-ztk_knob_free (
-  ZtkWidget * widget)
-{
-  ZtkKnob * self = (ZtkKnob *) widget;
-
-  free (self);
 }

@@ -17,40 +17,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __Z_TOOLKIT_ZTK_LABEL_H__
-#define __Z_TOOLKIT_ZTK_LABEL_H__
+#ifndef __Z_TOOLKIT_ZTK_H__
+#define __Z_TOOLKIT_ZTK_H__
 
-#include "ztoolkit/ztk.h"
+#include "ztoolkit/ztk_app.h"
+#include "ztoolkit/ztk_color.h"
+#include "ztoolkit/ztk_knob.h"
+#include "ztoolkit/ztk_knob_with_label.h"
+#include "ztoolkit/ztk_label.h"
+#include "ztoolkit/ztk_widget.h"
 
-/**
- * Label widget.
- */
-typedef struct ZtkLabel
-{
-  /** Base widget. */
-  ZtkWidget         base;
+#ifndef MAX
+# define MAX(x,y) (x > y ? x : y)
+#endif
 
-  char *            label;
+#ifndef MIN
+# define MIN(x,y) (x < y ? x : y)
+#endif
 
-  double            font_size;
-
-  ZtkColor          color;
-
-} ZtkLabel;
-
-/**
- * Creates a new label.
- */
-ZtkLabel *
-ztk_label_new (
-  double       x,
-  double       y,
-  double       font_size,
-  ZtkColor *   color,
-  const char * lbl);
-
-void
-ztk_label_free (
-  ZtkWidget * self);
+#ifndef CLAMP
+# define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+#endif
 
 #endif
