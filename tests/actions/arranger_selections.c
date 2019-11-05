@@ -112,7 +112,7 @@ bootstrap_timeline ()
   /* add 2 automation points to the region */
   AutomationPoint * ap =
     automation_point_new_float (
-      AP_VAL1, &p1, 1);
+      AP_VAL1, AP_VAL1, &p1, 1);
   automation_region_add_ap (
     r, ap);
   arranger_selections_add_object (
@@ -120,7 +120,7 @@ bootstrap_timeline ()
     (ArrangerObject *) ap);
   ap =
     automation_point_new_float (
-      AP_VAL2, &p2, 1);
+      AP_VAL2, AP_VAL1, &p2, 1);
   automation_region_add_ap (
     r, ap);
   arranger_selections_add_object (

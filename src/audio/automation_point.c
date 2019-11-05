@@ -112,6 +112,7 @@ automation_point_is_equal (
 AutomationPoint *
 automation_point_new_float (
   const float         value,
+  const float         normalized_val,
   const Position *    pos,
   int                 is_main)
 {
@@ -119,6 +120,7 @@ automation_point_new_float (
     _create_new (pos);
 
   self->fvalue = value;
+  self->normalized_val = normalized_val;
 
   if (is_main)
     {
@@ -132,17 +134,17 @@ automation_point_new_float (
 /**
  * Returns the normalized value (0.0 to 1.0).
  */
-float
-automation_point_get_normalized_value (
-  AutomationPoint * self)
-{
-  g_warn_if_fail (self->region->at);
+/*float*/
+/*automation_point_get_normalized_value (*/
+  /*AutomationPoint * self)*/
+/*{*/
+  /*g_warn_if_fail (self->region->at);*/
 
-  /* TODO convert to macro */
-  return automatable_real_val_to_normalized (
-    self->region->at->automatable,
-    self->fvalue);
-}
+  /*[> TODO convert to macro <]*/
+  /*return automatable_real_val_to_normalized (*/
+    /*self->region->at->automatable,*/
+    /*self->fvalue);*/
+/*}*/
 
 /**
  * Moves the AutomationPoint by the given amount of
@@ -236,25 +238,29 @@ automation_point_get_normalized_value (
 /*}*/
 
 /**
- * Updates the value from given real value and
+ * Sets the value from given real value and
  * notifies interested parties.
  */
 void
-automation_point_update_fvalue (
+automation_point_set_fvalue (
   AutomationPoint * self,
   float             real_val,
   ArrangerObjectUpdateFlag update_flag)
 {
+  Automatable * a = self->region->at->automatable;
+	float normalized_val =
+    automatable_real_val_to_normalized (
+      a, real_val);
+  arranger_object_set_primitive (
+    AutomationPoint, self, normalized_val,
+		normalized_val, update_flag);
   arranger_object_set_primitive (
     AutomationPoint, self, fvalue, real_val,
     update_flag);
 
   g_return_if_fail (self->region);
-  Automatable * a = self->region->at->automatable;
   automatable_set_val_from_normalized (
-    a,
-    automatable_real_val_to_normalized (
-      a, real_val), 1);
+    a, normalized_val, 1);
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_CHANGED, self);
@@ -321,33 +327,13 @@ automation_point_get_normalized_value_in_curve (
 
   double dy;
 
-  /* if next point is lower */
-  if (automation_point_get_normalized_value (
-        next_ap) <
-      automation_point_get_normalized_value (
-        self))
-    {
-      /* start higher */
-      dy =
-        get_y_normalized (
-          x, self->curviness, 1, self->curve_up);
-      /*g_message ("dy %f", dy);*/
-      return dy;
-
-      /* reverse the value because in pixels
-       * higher y values are actually lower */
-      /*return 1.0 - dy;*/
-    }
-  else
-    {
-      dy =
-        get_y_normalized (
-          x, self->curviness, 0, self->curve_up);
-      /*g_message ("dy %f", dy);*/
-      return dy;
-
-      /*return - dy;*/
-    }
+  int start_higher =
+		next_ap->normalized_val < self->normalized_val;
+	dy =
+		get_y_normalized (
+			x, self->curviness, start_higher,
+			self->curve_up);
+	return dy;
 }
 
 /**

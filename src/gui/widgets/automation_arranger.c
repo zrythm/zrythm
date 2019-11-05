@@ -97,8 +97,7 @@ get_automation_point_y (
   AutomationPoint *          ap)
 {
   /* ratio of current value in the range */
-  float ap_ratio =
-    automation_point_get_normalized_value (ap);
+  float ap_ratio = ap->normalized_val;
 
   int allocated_h =
     gtk_widget_get_allocated_height (
@@ -326,10 +325,11 @@ automation_arranger_widget_create_ap (
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
   /* do height - because it's uside down */
+	float normalized_val =
+		(float) ((height - start_y) / height);
   float value =
     automatable_normalized_val_to_real (
-      at->automatable,
-      (float) ((height - start_y) / height));
+      at->automatable, normalized_val);
 
   ar_prv->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
@@ -337,7 +337,7 @@ automation_arranger_widget_create_ap (
   /* create a new ap */
   AutomationPoint * ap =
     automation_point_new_float (
-      value, &local_pos, F_MAIN);
+      value, normalized_val, &local_pos, F_MAIN);
   ArrangerObject * ap_obj =
     (ArrangerObject *) ap;
 
@@ -528,7 +528,7 @@ automation_arranger_widget_move_items_y (
             get_fvalue_at_y (
               self,
               ar_prv->start_y + offset_y);
-          automation_point_update_fvalue (
+          automation_point_set_fvalue (
             ap, fval, AO_UPDATE_NON_TRANS);
         }
       ArrangerObject * start_ap_obj =

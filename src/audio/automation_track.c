@@ -194,23 +194,17 @@ automation_track_get_normalized_val_at_pos (
   /*g_message ("prev fvalue %f next %f",*/
              /*prev_ap->fvalue,*/
              /*next_ap->fvalue);*/
-  float ap_normalized_val =
-    automation_point_get_normalized_value (
-      ap);
 
   /* return value at last ap */
   if (!next_ap)
-    return ap_normalized_val;
+    return ap->normalized_val;
 
-  float next_ap_normalized_val =
-    automation_point_get_normalized_value (
-      next_ap);
   int prev_ap_lower =
-    ap_normalized_val <= next_ap_normalized_val;
+    ap->normalized_val <= next_ap->normalized_val;
   float cur_next_diff =
     (float)
     fabsf (
-      ap_normalized_val - next_ap_normalized_val);
+      ap->normalized_val - next_ap->normalized_val);
 
   /* ratio of how far in we are in the curve */
   long ap_frames =
@@ -232,10 +226,10 @@ automation_track_get_normalized_val_at_pos (
              /*result, prev_ap_lower);*/
   if (prev_ap_lower)
     result +=
-      ap_normalized_val;
+      ap->normalized_val;
   else
     result +=
-      next_ap_normalized_val;
+      next_ap->normalized_val;
 
   /*g_message ("result of %s: %f",*/
              /*self->automatable->label, result);*/

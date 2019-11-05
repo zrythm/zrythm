@@ -85,10 +85,13 @@ typedef struct AutomationPoint
   /** Base struct. */
   ArrangerObject  base;
 
-  /** Float value. */
+  /** Float value (real). */
   float           fvalue;
 
-  /* note: these are not used at the moment. */
+	/** Normalized value (0 to 1) used as a cache. */
+	float           normalized_val;
+
+  /* @note These are not used at the moment. */
   int             bvalue; ///< boolean value
   int             svalue; ///< step value
 
@@ -130,6 +133,9 @@ automation_point_fields_schema[] =
 	CYAML_FIELD_FLOAT (
     "fvalue", CYAML_FLAG_DEFAULT,
     AutomationPoint, fvalue),
+	CYAML_FIELD_FLOAT (
+    "normalized_val", CYAML_FLAG_DEFAULT,
+    AutomationPoint, normalized_val),
   CYAML_FIELD_INT (
     "index", CYAML_FLAG_DEFAULT,
     AutomationPoint, index),
@@ -166,6 +172,7 @@ automation_point_schema = {
 AutomationPoint *
 automation_point_new_float (
   const float         value,
+  const float         normalized_val,
   const Position *    pos,
   int                 is_main);
 
@@ -175,7 +182,7 @@ automation_point_new_float (
  * @param trans_only Only do transients.
  */
 void
-automation_point_update_fvalue (
+automation_point_set_fvalue (
   AutomationPoint * ap,
   float             fval,
   ArrangerObjectUpdateFlag update_flag);
@@ -190,13 +197,6 @@ automation_point_set_region_and_index (
   AutomationPoint * _ap,
   Region *          region,
   int               index);
-
-/**
- * Returns the normalized value (0.0 to 1.0).
- */
-float
-automation_point_get_normalized_value (
-  AutomationPoint * ap);
 
 /**
  * The function to return a point on the curve.

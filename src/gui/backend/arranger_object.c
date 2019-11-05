@@ -2227,6 +2227,7 @@ clone_region (
             dest_ap =
               automation_point_new_float (
                 src_ap->fvalue,
+								src_ap->normalized_val,
                 &src_ap_obj->pos, F_MAIN);
             automation_region_add_ap (
               ar, dest_ap);
@@ -2401,7 +2402,8 @@ clone_automation_point (
     (ArrangerObject *) src;
   AutomationPoint * ap =
     automation_point_new_float (
-      src->fvalue, &src_obj->pos, is_main);
+      src->fvalue, src->normalized_val,
+			&src_obj->pos, is_main);
 
   return (ArrangerObject *) ap;
 }

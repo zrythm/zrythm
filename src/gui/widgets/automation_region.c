@@ -200,14 +200,12 @@ automation_region_draw_cb (
                   y_start =
                     1.0 -
                     (double)
-                    automation_point_get_normalized_value (
-                      ap);
+                    ap->normalized_val;
                   if (next_ap)
                     y_end =
                       1.0 -
                       (double)
-                      automation_point_get_normalized_value (
-                        next_ap);
+                      next_ap->normalized_val;
                   else
                     y_end = y_start;
 
