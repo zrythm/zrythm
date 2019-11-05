@@ -19,6 +19,7 @@
 
 #include "config.h"
 
+#include <sys/mman.h>
 #include <stdlib.h>
 
 #include "actions/actions.h"
@@ -851,6 +852,18 @@ zrythm_app_startup (
     "win.quantize-options::global");
 }
 
+static void
+lock_memory (void)
+{
+  /* lock down memory */
+  g_message ("Locking down memory...");
+  if (mlockall (MCL_CURRENT))
+    {
+      g_warning ("Cannot lock down memory: %s",
+                 strerror (errno));
+    }
+}
+
 ZrythmApp *
 zrythm_app_new (void)
 {
@@ -861,6 +874,7 @@ zrythm_app_new (void)
     "flags", G_APPLICATION_HANDLES_OPEN,
     NULL);
 
+  lock_memory ();
   self->zrythm = calloc (1, sizeof (Zrythm));
   ZRYTHM = self->zrythm;
   ZRYTHM->project = calloc (1, sizeof (Project));
