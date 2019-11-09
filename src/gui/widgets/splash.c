@@ -33,10 +33,12 @@ splash_tick_cb (
   GdkFrameClock *frame_clock,
   SplashWindowWidget * self)
 {
+  zix_sem_wait (&ZRYTHM->progress_status_lock);
   gtk_label_set_text (
     self->label, ZRYTHM->status);
   gtk_progress_bar_set_fraction (
     self->progress_bar, ZRYTHM->progress);
+  zix_sem_post (&ZRYTHM->progress_status_lock);
 
   return G_SOURCE_CONTINUE;
 }

@@ -66,12 +66,25 @@ static GApplication * app;
 static FirstRunAssistantWidget * first_run_assistant;
 static ProjectAssistantWidget * assistant;
 
-#define SET_PROG(txt,num) \
-  g_message (txt); \
-  strcpy ( \
-    ZRYTHM->status, \
-    txt); \
-  ZRYTHM->progress = num
+/**
+ * Sets the current status and progress percentage
+ * during loading.
+ *
+ * The splash screen then reads these values from
+ * the Zrythm struct.
+ */
+static void
+set_progress_status (
+  Zrythm *     self,
+  const char * text,
+  const double perc)
+{
+  zix_sem_wait (&self->progress_status_lock);
+  g_message ("%s", text);
+  strcpy (self->status, text);
+  self->progress = perc;
+  zix_sem_post (&self->progress_status_lock);
+}
 
 /**
  * Gets the zrythm directory (by default
@@ -261,7 +274,8 @@ on_setup_main_window (
   GVariant *parameter,
   gpointer  user_data)
 {
-  SET_PROG (
+  set_progress_status (
+    ZRYTHM,
     _("Setting up main window"),
     0.98);
 
@@ -298,7 +312,8 @@ static void on_load_project (GSimpleAction  *action,
                              GVariant *parameter,
                              gpointer  user_data)
 {
-  SET_PROG (
+  set_progress_status (
+    ZRYTHM,
     _("Loading project"),
     0.8);
 
@@ -326,7 +341,8 @@ static void on_init_main_window (
 {
   ZrythmApp * _app = (ZrythmApp *) user_data;
 
-  SET_PROG (
+  set_progress_status (
+    ZRYTHM,
     _("Initializing main window"),
     0.8);
 
@@ -343,38 +359,64 @@ static void *
 init_thread (
   gpointer data)
 {
-  SET_PROG (
+  set_progress_status (
+    ZRYTHM,
     _("Initializing symap"),
     0.0);
   ZRYTHM->symap = symap_new ();
-  SET_PROG (
+  set_progress_status (
+    ZRYTHM,
     _("Initializing caches"),
     0.05);
   CAIRO_CACHES = z_cairo_caches_new ();
   UI_CACHES = ui_caches_new ();
-  SET_PROG (
+  set_progress_status (
+    ZRYTHM,
     _("Initializing settings"),
     0.1);
   settings_init (&ZRYTHM->settings);
   ZRYTHM->debug =
     env_get_int ("ZRYTHM_DEBUG", 0);
-  SET_PROG (
+  set_progress_status (
+    ZRYTHM,
     _("Initializing plugin manager"),
     0.2);
   plugin_manager_init (&ZRYTHM->plugin_manager);
-  SET_PROG (
+  set_progress_status (
+    ZRYTHM,
     _("Scanning plugins"),
     0.4);
   plugin_manager_scan_plugins (
     &ZRYTHM->plugin_manager,
     0.7, &ZRYTHM->progress);
 
-  g_action_group_activate_action (
-    G_ACTION_GROUP (zrythm_app),
-    "prompt_for_project",
-    NULL);
+  ZRYTHM->init_finished = 1;
 
   return NULL;
+}
+
+/**
+ * Unlike the init thread, this will run in the
+ * main GTK thread. Do not put expensive logic here.
+ *
+ * This should be ran after the expensive
+ * initialization has finished.
+ */
+static int
+idle_func (
+  Zrythm * self)
+{
+  if (self->init_finished)
+    {
+      g_action_group_activate_action (
+        G_ACTION_GROUP (zrythm_app),
+        "prompt_for_project",
+        NULL);
+
+      return G_SOURCE_REMOVE;
+    }
+
+  return G_SOURCE_CONTINUE;
 }
 
 static void
@@ -559,7 +601,8 @@ static void on_prompt_for_project (
         }
 
       /* init zrythm folders ~/Zrythm */
-      SET_PROG (
+      set_progress_status (
+        ZRYTHM,
         _("Initializing Zrythm directories"),
         0.7);
       init_dirs_and_files ();
@@ -567,12 +610,14 @@ static void on_prompt_for_project (
       init_templates ();
 
       /* init log */
-      SET_PROG (
+      set_progress_status (
+        ZRYTHM,
         _("Initializing logging system"),
         0.75);
       log_init ();
 
-      SET_PROG (
+      set_progress_status (
+        ZRYTHM,
         _("Waiting for project"),
         0.8);
 
@@ -735,11 +780,16 @@ zrythm_app_startup (
   g_message ("presented splash widget");
 
   /* start initialization in another thread */
+  zix_sem_init (&ZRYTHM->progress_status_lock, 1);
   ZRYTHM->init_thread =
     g_thread_new (
       "init_thread",
       (GThreadFunc) init_thread,
       ZRYTHM);
+
+  /* set a source func in the main GTK thread to
+   * check when initialization finished */
+  g_idle_add ((GSourceFunc) idle_func, ZRYTHM);
 
   /* install accelerators for each action */
   accel_install_primary_action_accelerator (

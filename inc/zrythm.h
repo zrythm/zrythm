@@ -166,6 +166,14 @@ typedef struct Zrythm
   /** Status text to be used in the splash screen. */
   char                    status[200];
 
+  /** Semaphore for setting the progress in the
+   * splash screen from a non-gtk thread. */
+  ZixSem                  progress_status_lock;
+
+  /** Flag to set when initialization has
+   * finished. */
+  int                     init_finished;
+
   /**
    * Progress done (0.0 ~ 1.0).
    *
