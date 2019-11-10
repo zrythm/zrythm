@@ -460,6 +460,7 @@ summary = [
   '  Generate developer docs: @0@'.format(get_option('gen_dev_docs')),
   '  Build/install manpage: @0@'.format(get_option('manpage')),
   '  Build/install user manual: @0@'.format(get_option('user_manual')),
+  '  Install DSEG font: @0@'.format(should_install_dseg),
   '  Coverage reports: @0@'.format(get_option('b_coverage')),
   '  Optional libraries:',
   '    ffmpeg: @0@'.format(get_option('enable_ffmpeg')),

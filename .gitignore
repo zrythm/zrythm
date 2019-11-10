@@ -168,3 +168,6 @@ valog*
 
 # callgrind
 callgrind*
+
+# profiling
+results

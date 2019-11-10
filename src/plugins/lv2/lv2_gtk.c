@@ -1661,7 +1661,8 @@ lv2_gtk_open_ui (
     g_signal_connect (
       G_OBJECT (window), "delete-event",
       G_CALLBACK (on_delete_event), plugin);
-  LilvNode* name = lilv_plugin_get_name(plugin->lilv_plugin);
+  LilvNode* name =
+    lilv_plugin_get_name (plugin->lilv_plugin);
   lilv_node_free (name);
 
   /* connect destroy signal */
@@ -1672,19 +1673,24 @@ lv2_gtk_open_ui (
   set_window_title(plugin);
 
   GtkWidget* vbox = new_box(false, 0);
-  gtk_window_set_role(GTK_WINDOW(window), "plugin_ui");
-  gtk_container_add(GTK_CONTAINER(window), vbox);
+  gtk_window_set_role (
+    GTK_WINDOW(window), "plugin_ui");
+  gtk_container_add (
+    GTK_CONTAINER(window), vbox);
 
-  if (!no_menu) {
-          build_menu(plugin, window, vbox);
-  }
+  if (!no_menu)
+    build_menu (plugin, window, vbox);
 
-  /* Create/show alignment to contain UI (whether custom or generic) */
-  GtkWidget* alignment = gtk_alignment_new(0.5, 0.5, 1.0, 1.0);
-  gtk_box_pack_start(GTK_BOX(vbox), alignment, TRUE, TRUE, 0);
-  gtk_widget_show(alignment);
+  /* Create/show alignment to contain UI (whether
+   * custom or generic) */
+  GtkWidget* alignment =
+    gtk_alignment_new (0.5, 0.5, 1.0, 1.0);
+  gtk_box_pack_start (
+    GTK_BOX (vbox), alignment, TRUE, TRUE, 0);
+  gtk_widget_show (alignment);
 
-  /* Attempt to instantiate custom UI if necessary */
+  /* Attempt to instantiate custom UI if
+   * necessary */
   if (plugin->ui && !LV2_NODES.opts.generic_ui)
     {
       if (plugin->externalui)
@@ -1694,9 +1700,10 @@ lv2_gtk_open_ui (
           LV2_External_UI_Host extui;
           extui.ui_closed = on_external_ui_closed;
           extui.plugin_human_id =
-            lilv_node_as_string(name);
+            lilv_node_as_string (name);
           lv2_ui_instantiate (
-            plugin, lilv_node_as_uri(plugin->ui_type),
+            plugin,
+            lilv_node_as_uri (plugin->ui_type),
             &extui);
         }
       else
@@ -1733,30 +1740,40 @@ lv2_gtk_open_ui (
   else
     {
       g_message ("No UI found, building native..");
-      GtkWidget* controls   = build_control_widget(plugin, window);
-      GtkWidget* scroll_win = gtk_scrolled_window_new(NULL, NULL);
-      gtk_scrolled_window_add_with_viewport(
-              GTK_SCROLLED_WINDOW(scroll_win), controls);
-      gtk_scrolled_window_set_policy(
-              GTK_SCROLLED_WINDOW(scroll_win),
-              GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-      gtk_container_add(GTK_CONTAINER(alignment), scroll_win);
+      GtkWidget* controls =
+        build_control_widget (plugin, window);
+      GtkWidget* scroll_win =
+        gtk_scrolled_window_new (NULL, NULL);
+      gtk_scrolled_window_add_with_viewport (
+        GTK_SCROLLED_WINDOW (scroll_win), controls);
+      gtk_scrolled_window_set_policy (
+        GTK_SCROLLED_WINDOW (scroll_win),
+        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+      gtk_container_add (
+        GTK_CONTAINER (alignment), scroll_win);
       gtk_widget_show_all(vbox);
 
       GtkRequisition controls_size, box_size;
-      size_request(GTK_WIDGET(controls), &controls_size);
-      size_request(GTK_WIDGET(vbox), &box_size);
+      size_request (GTK_WIDGET(controls), &controls_size);
+      size_request (GTK_WIDGET(vbox), &box_size);
 
-      gtk_window_set_default_size(
-              GTK_WINDOW(window),
-              MAX(MAX(box_size.width, controls_size.width) + 24, 640),
-              box_size.height + controls_size.height);
-      gtk_window_present(GTK_WINDOW(window));
+      gtk_window_set_default_size (
+        GTK_WINDOW(window),
+        MAX (
+          MAX (
+            box_size.width,
+            controls_size.width) + 24,
+          640),
+        box_size.height + controls_size.height);
+      gtk_window_present (GTK_WINDOW(window));
   }
 
   lv2_ui_init (plugin);
 
   plugin->plugin->ui_instantiated = 1;
+
+  g_message (
+    "plugin window shown, adding idle timeout");
 
   g_timeout_add (
     1000 / plugin->ui_update_hz,

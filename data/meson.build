@@ -19,10 +19,13 @@ install_data (
   'org.zrythm.Zrythm.gschema.xml',
   install_dir: schemasdir)
 
-# install fonts
-install_subdir (
-  join_paths ('fonts', 'DSEG14-Classic-MINI'),
-  install_dir: join_paths (fontsdir))
+# install fonts if needed
+should_install_dseg = not run_command('fc-list').stdout().contains('DSEG14')
+if should_install_dseg
+  install_subdir (
+    join_paths ('fonts', 'DSEG14-Classic-MINI'),
+    install_dir: fontsdir)
+endif
 
 #install samples
 install_data (
