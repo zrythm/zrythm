@@ -20,8 +20,7 @@ install_data (
   install_dir: schemasdir)
 
 # install fonts if needed
-should_install_dseg = not run_command('fc-list').stdout().contains('DSEG14')
-if should_install_dseg
+if get_option('install_dseg_font')
   install_subdir (
     join_paths ('fonts', 'DSEG14-Classic-MINI'),
     install_dir: fontsdir)

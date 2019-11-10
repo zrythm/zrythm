@@ -63,11 +63,11 @@ metronome_init (
     {
       self->emphasis_path =
         g_strdup (
-          METRONOME_SAMPLES_DIR
+          SAMPLES_DIR
           "/square_emphasis.wav");
       self->normal_path =
         g_strdup (
-          METRONOME_SAMPLES_DIR
+          SAMPLES_DIR
           "/square_normal.wav");
 
       /* decode */

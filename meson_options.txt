@@ -74,3 +74,11 @@ option (
   type: 'boolean',
   value: false,
   description: 'Compile and link with strict flags (-Werror)')
+
+option (
+  'install_dseg_font',
+  type: 'boolean',
+  value: true,
+  description: '''Install the DSEG14 font used by the
+transport meters. Packagers should turn this off and
+set the font as a dependency instead''')

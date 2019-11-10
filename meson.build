@@ -69,6 +69,8 @@ cdata.set_quoted (
 cdata.set_quoted (
   'CONFIGURE_LIBDIR',
   libdir)
+cdata.set_quoted (
+  'SAMPLES_DIR', samplesdir)
 cdata.set (
   'MESON_SOURCE_ROOT',
   meson.source_root ())
@@ -460,7 +462,7 @@ summary = [
   '  Generate developer docs: @0@'.format(get_option('gen_dev_docs')),
   '  Build/install manpage: @0@'.format(get_option('manpage')),
   '  Build/install user manual: @0@'.format(get_option('user_manual')),
-  '  Install DSEG font: @0@'.format(should_install_dseg),
+  '  Install DSEG font: @0@'.format(get_option('install_dseg_font')),
   '  Coverage reports: @0@'.format(get_option('b_coverage')),
   '  Optional libraries:',
   '    ffmpeg: @0@'.format(get_option('enable_ffmpeg')),

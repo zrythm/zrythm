@@ -34,8 +34,6 @@
  * @{
  */
 
-#define METRONOME_SAMPLES_DIR \
-  CONFIGURE_DATADIR "/zrythm/samples"
 #define METRONOME (&ZRYTHM->metronome)
 
 /**
