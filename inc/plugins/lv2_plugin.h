@@ -184,7 +184,10 @@ typedef struct Lv2Plugin
 
   /** Latency reported by the Lv2Plugin, if any. */
 	uint32_t           plugin_latency;
-	float              ui_update_hz;   ///< Frequency of UI updates
+
+  /** Update frequencey of the UI, in Hz (times
+   * per second). */
+	float              ui_update_hz;
 
   /** Frames since last update sent to UI. */
 	uint32_t           event_delta_t;

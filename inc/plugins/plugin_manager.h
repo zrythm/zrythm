@@ -47,7 +47,9 @@ typedef struct
 	char*    uuid;              ///< Session UUID
 	char**   controls;          ///< Control values
 	uint32_t buffer_size;       ///< Plugin <= >UI communication buffer size
-	double   update_rate;       ///< UI update rate in Hz
+
+  /** UI update rate in Hz. */
+	float    update_rate;
 	int      dump;              ///< Dump communication iff true
 	int      trace;             ///< Print trace log iff true
 	int      generic_ui;        ///< Use generic UI iff true

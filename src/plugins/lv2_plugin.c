@@ -95,6 +95,12 @@
 */
 #define N_BUFFER_CYCLES 16
 
+/**
+ * Plugin UI refresh rate limits.
+ */
+#define MIN_REFRESH_RATE 30.f
+#define MAX_REFRESH_RATE 60.f
+
 static const bool show_hidden = 1;
 
 /**
@@ -1186,6 +1192,8 @@ lv2_plugin_free (
  *
  * @param self Plugin to instantiate.
  * @param preset_uri URI of preset to load.
+ *
+ * @return 0 if OK, non-zero if error.
  */
 int
 lv2_plugin_instantiate (
@@ -1513,11 +1521,24 @@ lv2_plugin_instantiate (
       /*self->ui_update_hz =*/
         /*MAX(25.0f, self->ui_update_hz);*/
 
+      GdkDisplay * display =
+        gdk_display_get_default ();
+      g_warn_if_fail (display);
+      GdkMonitor * monitor =
+        gdk_display_get_primary_monitor (display);
+      g_warn_if_fail (monitor);
       self->ui_update_hz =
         (float)
-        gdk_monitor_get_refresh_rate (
-          gdk_display_get_primary_monitor (
-            gdk_display_get_default ()));
+        /* divide by 1000 because gdk returns the
+         * value in milli-Hz */
+          gdk_monitor_get_refresh_rate (monitor) /
+        1000.f;
+      g_warn_if_fail (
+        !math_floats_equal (
+          self->ui_update_hz, 0.f, 0.001f));
+      g_message (
+        "refresh rate returned by GDK: %.01f",
+        (double) self->ui_update_hz);
     }
   else
     {
@@ -1525,13 +1546,23 @@ lv2_plugin_instantiate (
       self->ui_update_hz =
         (float)
         PM_LILV_NODES.opts.update_rate;
+    }
+
+  /* clamp the refresh rate to sensible limits */
+  if (self->ui_update_hz < MIN_REFRESH_RATE ||
+      self->ui_update_hz > MAX_REFRESH_RATE)
+    {
+      g_warning (
+        "Invalid refresh rate of %.01f received, "
+        "clamping to reasonable bounds",
+        (double) self->ui_update_hz);
       self->ui_update_hz =
-        MAX (1.0f, self->ui_update_hz);
+        CLAMP (
+          self->ui_update_hz, MIN_REFRESH_RATE,
+          MAX_REFRESH_RATE);
     }
 
   /* The UI can only go so fast, clamp to reasonable limits */
-  self->ui_update_hz =
-    MIN (60, self->ui_update_hz);
   PM_LILV_NODES.opts.buffer_size =
     MAX (4096, PM_LILV_NODES.opts.buffer_size);
   g_message ("Comm buffers: %d bytes",

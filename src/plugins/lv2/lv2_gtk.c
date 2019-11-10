@@ -1,7 +1,5 @@
 /*
- * plugins/lv2_gtk.h - The front end of LV2 UIs
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1773,10 +1771,12 @@ lv2_gtk_open_ui (
   plugin->plugin->ui_instantiated = 1;
 
   g_message (
-    "plugin window shown, adding idle timeout");
+    "plugin window shown, adding idle timeout. "
+    "Update frequency (Hz): %.01f",
+    (double) plugin->ui_update_hz);
 
   g_timeout_add (
-    1000 / plugin->ui_update_hz,
+    (int) (1000.f / plugin->ui_update_hz),
     (GSourceFunc) update_plugin_ui, plugin);
 
   return 0;
