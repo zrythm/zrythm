@@ -76,7 +76,7 @@ typedef struct _CenterDockWidget
   LeftDockEdgeWidget *     left_dock_edge;
   RightDockEdgeWidget *    right_dock_edge;
   BotDockEdgeWidget *      bot_dock_edge;
-  GtkPaned *               main_paned;
+  GtkPaned *               center_paned;
 } CenterDockWidget;
 
 void

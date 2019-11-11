@@ -57,7 +57,7 @@ center_dock_widget_setup (
   CenterDockWidget * self)
 {
   gtk_paned_set_position (
-    self->main_paned,
+    self->center_paned,
     2000);
 
   timeline_panel_widget_setup (
@@ -81,13 +81,13 @@ center_dock_widget_setup (
 
   /* remember divider position */
   gtk_paned_set_position (
-    self->main_paned,
+    self->center_paned,
     g_settings_get_int (
       S_UI, "bot-panel-divider-position"));
   g_signal_connect (
-    G_OBJECT (self->main_paned), "notify::position",
+    G_OBJECT (self->center_paned), "notify::position",
     G_CALLBACK (on_divider_pos_changed),
-    self->main_paned);
+    self->center_paned);
 }
 
 static void
@@ -135,7 +135,7 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
   gtk_widget_class_bind_template_child ( \
     klass, CenterDockWidget, x)
 
-  BIND_CHILD (main_paned);
+  BIND_CHILD (center_paned);
   BIND_CHILD (event_viewer);
   BIND_CHILD (timeline_panel);
   BIND_CHILD (left_dock_edge);
