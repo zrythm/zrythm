@@ -24,9 +24,9 @@
 #include "utils/gtk.h"
 #include "utils/arrays.h"
 
-G_DEFINE_TYPE (TrackLanelistWidget,
-               track_lanelist_widget,
-               DZL_TYPE_MULTI_PANED)
+G_DEFINE_TYPE (
+  TrackLanelistWidget, track_lanelist_widget,
+  GTK_TYPE_BOX)
 
 #define GET_TRACK(self) Track * track = \
   self->track_lanelist->track
@@ -149,9 +149,9 @@ track_lanelist_widget_init (
   gtk_widget_set_vexpand (
     GTK_WIDGET (self), 1);
 
-  g_signal_connect (
-    G_OBJECT (self), "resize-drag-end",
-    G_CALLBACK (on_resize_end), NULL);
+  /*g_signal_connect (*/
+    /*G_OBJECT (self), "resize-drag-end",*/
+    /*G_CALLBACK (on_resize_end), NULL);*/
 }
 
 static void

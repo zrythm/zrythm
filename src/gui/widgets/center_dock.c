@@ -30,7 +30,7 @@
 G_DEFINE_TYPE (
   CenterDockWidget,
   center_dock_widget,
-  DZL_TYPE_DOCK_BIN)
+  GTK_TYPE_BOX)
 
 static gboolean
 key_release_cb (
@@ -104,14 +104,14 @@ center_dock_widget_init (CenterDockWidget * self)
   GValue a = G_VALUE_INIT;
   g_value_init (&a, G_TYPE_BOOLEAN);
   g_value_set_boolean (&a, 1);
-  g_object_set_property (
-    G_OBJECT (self), "left-visible", &a);
-  g_object_set_property (
-    G_OBJECT (self), "right-visible", &a);
-  g_object_set_property (
-    G_OBJECT (self), "bottom-visible", &a);
-  g_object_set_property (
-    G_OBJECT (self), "top-visible", &a);
+  /*g_object_set_property (*/
+    /*G_OBJECT (self), "left-visible", &a);*/
+  /*g_object_set_property (*/
+    /*G_OBJECT (self), "right-visible", &a);*/
+  /*g_object_set_property (*/
+    /*G_OBJECT (self), "bottom-visible", &a);*/
+  /*g_object_set_property (*/
+    /*G_OBJECT (self), "top-visible", &a);*/
 
   /* set events */
   g_signal_connect (

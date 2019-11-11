@@ -46,13 +46,13 @@
 #include "utils/gtk.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (TracklistWidget,
-               tracklist_widget,
-               DZL_TYPE_MULTI_PANED)
+G_DEFINE_TYPE (
+  TracklistWidget, tracklist_widget, GTK_TYPE_BOX)
 
 static void
-on_resize_end (TracklistWidget * self,
-               GtkWidget *       child)
+on_resize_end (
+  TracklistWidget * self,
+  GtkWidget *       child)
 {
   if (!Z_IS_TRACK_WIDGET (child))
     return;
@@ -450,6 +450,9 @@ tracklist_widget_init (TracklistWidget * self)
   gtk_container_add (GTK_CONTAINER (self),
                    GTK_WIDGET (self->ddbox));
 
+  gtk_orientable_set_orientation (
+    GTK_ORIENTABLE (self), GTK_ORIENTATION_VERTICAL);
+
   /* make widget able to notify */
   gtk_widget_add_events (
     GTK_WIDGET (self),
@@ -489,9 +492,9 @@ tracklist_widget_init (TracklistWidget * self)
   g_signal_connect (
     G_OBJECT (self), "key-release-event",
     G_CALLBACK (on_key_action), self);
-  g_signal_connect (
-    G_OBJECT (self), "resize-drag-end",
-    G_CALLBACK (on_resize_end), self);
+  /*g_signal_connect (*/
+    /*G_OBJECT (self), "resize-drag-end",*/
+    /*G_CALLBACK (on_resize_end), self);*/
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
     G_CALLBACK (on_size_allocate), self);

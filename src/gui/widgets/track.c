@@ -998,15 +998,6 @@ track_widget_on_record_toggled (
                track);
 }
 
-GtkWidget *
-track_widget_get_bottom_paned (TrackWidget * self)
-{
-  TRACK_WIDGET_GET_PRIVATE (self);
-
-  return dzl_multi_paned_get_nth_child (
-    DZL_MULTI_PANED (tw_prv->paned), 1);
-}
-
 /**
  * Sets the Track name on the TrackWidget.
  */
@@ -1072,8 +1063,8 @@ track_widget_init (TrackWidget * self)
     GDK_BUTTON_SECONDARY);
 
   /* make widget able to notify */
-  gtk_widget_add_events (GTK_WIDGET (self),
-                         GDK_ALL_EVENTS_MASK);
+  gtk_widget_add_events (
+    GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
 
   char * entry_track = g_strdup (TARGET_ENTRY_TRACK);
   GtkTargetEntry entries[] = {

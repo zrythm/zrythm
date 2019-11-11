@@ -37,14 +37,14 @@ G_DECLARE_FINAL_TYPE (
   TrackLanelistWidget,
   track_lanelist_widget,
   Z, TRACK_LANELIST_WIDGET,
-  DzlMultiPaned)
+  GtkBox)
 
 /**
  * A DzlMultiPaned holding multiple TrackLaneWidgets.
  */
 typedef struct _TrackLanelistWidget
 {
-  DzlMultiPaned   parent_instance;
+  GtkBox   parent_instance;
 
   /** The Track this is for. */
   Track *         track;

@@ -36,11 +36,11 @@ static DzlDockRevealer *
 get_revealer (
   RightDockEdgeWidget * self)
 {
-  return
-    DZL_DOCK_REVEALER (
-      gtk_widget_get_parent (
-        gtk_widget_get_parent (
-          GTK_WIDGET (self))));
+  /*return*/
+    /*DZL_DOCK_REVEALER (*/
+      /*gtk_widget_get_parent (*/
+        /*gtk_widget_get_parent (*/
+          /*GTK_WIDGET (self))));*/
 }
 
 static void
@@ -58,25 +58,25 @@ void
 right_dock_edge_widget_setup (
   RightDockEdgeWidget * self)
 {
-  foldable_notebook_widget_setup (
-    self->right_notebook,
-    NULL,
-    DZL_DOCK_REVEALER (
-      gtk_widget_get_parent (
-        gtk_widget_get_parent (
-          GTK_WIDGET (self)))),
-    GTK_POS_RIGHT);
+  /*foldable_notebook_widget_setup (*/
+    /*self->right_notebook,*/
+    /*NULL,*/
+    /*DZL_DOCK_REVEALER (*/
+      /*gtk_widget_get_parent (*/
+        /*gtk_widget_get_parent (*/
+          /*GTK_WIDGET (self)))),*/
+    /*GTK_POS_RIGHT);*/
 
   /* remember divider pos */
-  DzlDockRevealer * revealer =
-    get_revealer (self);
-  dzl_dock_revealer_set_position (
-    revealer,
-    g_settings_get_int (
-      S_UI, "right-panel-divider-position"));
-  g_signal_connect (
-    G_OBJECT (revealer), "notify::position",
-    G_CALLBACK (on_divider_pos_changed), revealer);
+  /*DzlDockRevealer * revealer =*/
+    /*get_revealer (self);*/
+  /*dzl_dock_revealer_set_position (*/
+    /*revealer,*/
+    /*g_settings_get_int (*/
+      /*S_UI, "right-panel-divider-position"));*/
+  /*g_signal_connect (*/
+    /*G_OBJECT (revealer), "notify::position",*/
+    /*G_CALLBACK (on_divider_pos_changed), revealer);*/
 }
 
 static void

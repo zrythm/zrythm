@@ -95,7 +95,7 @@ typedef struct
    * track content, the track lanes, and the bottom
    * content (automation tracklist).
    */
-  DzlMultiPaned *           paned;
+  GtkBox *                 paned;
 
   /** The top part of the TrackWidget. */
   TrackTopGridWidget *      top_grid;
@@ -229,9 +229,6 @@ void
 track_widget_on_record_toggled (
   GtkWidget * widget,
   void *      data);
-
-GtkWidget *
-track_widget_get_bottom_paned (TrackWidget * self);
 
 /**
  * Returns if cursor is in top half of the track.

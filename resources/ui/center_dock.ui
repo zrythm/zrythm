@@ -22,7 +22,7 @@
 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="CenterDockWidget" parent="DzlDockBin">
+  <template class="CenterDockWidget" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <child>
@@ -69,12 +69,12 @@
         </child>
       </object>
     </child>
-    <child type="left">
+    <child>
       <object class="LeftDockEdgeWidget" id="left_dock_edge">
         <property name="visible">True</property>
       </object>
     </child>
-    <child type="right">
+    <child>
       <object class="RightDockEdgeWidget" id="right_dock_edge"/>
     </child>
   </template>

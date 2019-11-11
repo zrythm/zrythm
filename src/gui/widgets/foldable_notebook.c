@@ -87,55 +87,55 @@ foldable_notebook_widget_set_visibility (
 
   if (new_visibility)
     {
-      if (self->dock_revealer)
-        {
-          dzl_dock_revealer_set_position (
-            self->dock_revealer, self->prev_pos);
-        }
-      else if (self->paned)
-        {
-          gtk_paned_set_position (
-            self->paned, self->prev_pos);
-        }
+      /*if (self->dock_revealer)*/
+        /*{*/
+          /*dzl_dock_revealer_set_position (*/
+            /*self->dock_revealer, self->prev_pos);*/
+        /*}*/
+      /*else if (self->paned)*/
+        /*{*/
+          /*gtk_paned_set_position (*/
+            /*self->paned, self->prev_pos);*/
+        /*}*/
     }
   else
     {
-      if (self->dock_revealer)
-        {
-          /* remember position before hiding */
-          self->prev_pos =
-            dzl_dock_revealer_get_position (
-              self->dock_revealer);
+      /*if (self->dock_revealer)*/
+        /*{*/
+          /*[> remember position before hiding <]*/
+          /*self->prev_pos =*/
+            /*dzl_dock_revealer_get_position (*/
+              /*self->dock_revealer);*/
 
-          /* hide by setting position to 0 */
-          dzl_dock_revealer_set_position (
-            self->dock_revealer, 0);
-        }
-      else if (self->paned)
-        {
-          /* remember position before hiding */
-          self->prev_pos =
-            gtk_paned_get_position (
-              self->paned);
+          /*[> hide by setting position to 0 <]*/
+          /*dzl_dock_revealer_set_position (*/
+            /*self->dock_revealer, 0);*/
+        /*}*/
+      /*else if (self->paned)*/
+        /*{*/
+          /*[> remember position before hiding <]*/
+          /*self->prev_pos =*/
+            /*gtk_paned_get_position (*/
+              /*self->paned);*/
 
-          /* hide */
-          int position;
-          if (self->pos_in_paned ==
-                GTK_POS_RIGHT ||
-              self->pos_in_paned ==
-                GTK_POS_BOTTOM)
-            {
-              position =
-                gtk_widget_get_allocated_height (
-                  GTK_WIDGET (self->paned));
-            }
-          else
-            {
-              position = 0;
-            }
-          gtk_paned_set_position (
-            self->paned, position);
-        }
+          /*[> hide <]*/
+          /*int position;*/
+          /*if (self->pos_in_paned ==*/
+                /*GTK_POS_RIGHT ||*/
+              /*self->pos_in_paned ==*/
+                /*GTK_POS_BOTTOM)*/
+            /*{*/
+              /*position =*/
+                /*gtk_widget_get_allocated_height (*/
+                  /*GTK_WIDGET (self->paned));*/
+            /*}*/
+          /*else*/
+            /*{*/
+              /*position = 0;*/
+            /*}*/
+          /*gtk_paned_set_position (*/
+            /*self->paned, position);*/
+        /*}*/
     }
 }
 

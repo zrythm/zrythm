@@ -37,7 +37,7 @@ G_DECLARE_FINAL_TYPE (
   CenterDockWidget,
   center_dock_widget,
   Z, CENTER_DOCK_WIDGET,
-  DzlDockBin)
+  GtkBox)
 
 typedef struct _LeftDockEdgeWidget
   LeftDockEdgeWidget;
@@ -61,7 +61,7 @@ typedef struct _EventViewerWidget EventViewerWidget;
  */
 typedef struct _CenterDockWidget
 {
-  DzlDockBin               parent_instance;
+  GtkBox               parent_instance;
 
   /** Event viewr + timeline panel. */
   GtkPaned *
