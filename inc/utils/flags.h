@@ -94,4 +94,10 @@
 #define F_GLOBAL 1
 #define F_NOT_GLOBAL 0
 
+#define F_RESIZE 1
+#define F_NO_RESIZE 0
+
+#define F_SHRINK 1
+#define F_NO_SHRINK 0
+
 #endif

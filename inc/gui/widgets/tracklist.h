@@ -32,7 +32,7 @@ G_DECLARE_FINAL_TYPE (
   TracklistWidget,
   tracklist_widget,
   Z, TRACKLIST_WIDGET,
-  GtkBox)
+  GtkPaned)
 
 /**
  * @addtogroup widgets
@@ -49,12 +49,12 @@ typedef struct Track InstrumentTrack;
 typedef struct Tracklist Tracklist;
 
 /**
- * The TracklistWidget is a DzlMultiPaned holding
+ * The TracklistWidget is a paned holding
  * all the Track's in the Project.
  */
 typedef struct _TracklistWidget
 {
-  GtkBox                parent_instance;
+  GtkPaned              parent_instance;
 
   /**
    * Widget for drag and dropping plugins in to

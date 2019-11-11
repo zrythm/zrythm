@@ -34,7 +34,7 @@ G_DECLARE_DERIVABLE_TYPE (
   TrackWidget,
   track_widget,
   Z, TRACK_WIDGET,
-  GtkGrid)
+  GtkPaned)
 
 /**
  * @addtogroup widgets
@@ -83,6 +83,20 @@ typedef struct
    * but used by the ColorAreaWidget to get the
    * pixbuf. */
   GdkPixbuf *                icon;
+
+  /** This is the main grid of the track and is
+   * the top part of the paned. */
+  GtkGrid *                 main_grid;
+
+  /**
+   * This is the widget in the bottom half of the
+   * paned.
+   *
+   * It will either be another track, or the
+   * drag_dest_box, or nothing if this is the last
+   * track in the pinned tracklist.
+   */
+  GtkWidget *               bot_widget;
 
   GtkGestureDrag *          drag;
   GtkGestureMultiPress *    multipress;
@@ -143,7 +157,7 @@ typedef struct
 
 typedef struct _TrackWidgetClass
 {
-  GtkGridClass parent_class;
+  GtkPanedClass parent_class;
 } TrackWidgetClass;
 
 /**

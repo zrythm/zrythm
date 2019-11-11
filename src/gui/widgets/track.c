@@ -63,9 +63,8 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE_WITH_PRIVATE (TrackWidget,
-                            track_widget,
-                            GTK_TYPE_GRID)
+G_DEFINE_TYPE_WITH_PRIVATE (
+  TrackWidget, track_widget, GTK_TYPE_PANED)
 
 static gboolean
 on_motion (GtkWidget * widget,
@@ -1035,6 +1034,12 @@ track_widget_init (TrackWidget * self)
 
   TRACK_WIDGET_GET_PRIVATE (self);
 
+  gtk_paned_set_wide_handle (
+    (GtkPaned *) self, 1);
+  gtk_orientable_set_orientation (
+    GTK_ORIENTABLE (self),
+    GTK_ORIENTATION_VERTICAL);
+
   /* set font sizes */
   gtk_label_set_max_width_chars (
     tw_prv->top_grid->name->label, 14);
@@ -1135,6 +1140,7 @@ track_widget_class_init (TrackWidgetClass * _klass)
   gtk_widget_class_bind_template_child_private ( \
     klass, TrackWidget, x)
 
+  BIND_CHILD (main_grid);
   BIND_CHILD (color);
   BIND_CHILD (paned);
   BIND_CHILD (top_grid);

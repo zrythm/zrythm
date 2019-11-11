@@ -22,9 +22,14 @@ on our [CGit instance](https://git.zrythm.org/cgit/).
 
 Zrythm needs a fairly recent version of Meson to build.
 We don't know the exact version number but something around 45
-and above should be fine. The one in Debian Stretch
-will not work, but the one in stretch-backports will
-work.
+and above should be fine.
+
+# Included Programs
+
+For various reasons, Zrythm ships with some libraries/resources
+that could be packaged separately. If you wish to package
+them separately and make Zrythm use them, you can pass the
+flags found in `meson_options.txt`.
 
 # Docs
 
@@ -49,7 +54,7 @@ details.
 
 # Patches
 
-Please send a patch if something does not build
+Please send a patch at dev _at_ zrythm.org if something does not build
 in a particular scenario and you manged to fix it, or
 if you want to add compilation flags.
 
