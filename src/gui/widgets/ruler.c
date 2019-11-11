@@ -349,7 +349,9 @@ ruler_draw_cb (
         loop_start_local_x, 0,
         end_px - MAX (rect.x, start_px),
         rect.height);
+      cairo_set_source (rw_prv->cached_cr, pat);
       cairo_fill (rw_prv->cached_cr);
+      cairo_pattern_destroy (pat);
 
       PangoLayout * layout =
         pango_cairo_create_layout (

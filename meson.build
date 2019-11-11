@@ -158,7 +158,12 @@ check_functions = [
   ['mlock',libm],
   ]
 
-jack_dep = dependency ('jack', required: false)
+# prefer jack1
+jack_dep = dependency (
+  'jack', required: false, version: '<1.0')
+if (not jack_dep.found ())
+  jack_dep = dependency ('jack', required: false)
+endif
 if (jack_dep.found ())
   cdata.set('HAVE_JACK', 1)
   check_functions += [
