@@ -40,6 +40,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/cairo.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 
@@ -248,13 +249,10 @@ ruler_draw_cb (
         gtk_widget_get_style_context (
           GTK_WIDGET (self));
 
-      rw_prv->cached_surface =
-        cairo_surface_create_similar (
-          cairo_get_target (cr),
-          CAIRO_CONTENT_COLOR_ALPHA,
-          rect.width, rect.height);
-      rw_prv->cached_cr =
-        cairo_create (rw_prv->cached_surface);
+      z_cairo_reset_caches (
+        &rw_prv->cached_cr,
+        &rw_prv->cached_surface, rect.width,
+        rect.height, cr);
 
       int height =
         gtk_widget_get_allocated_height (

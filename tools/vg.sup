@@ -20,3 +20,28 @@
   fun:cairo_region_create_rectangle
   ...
 }
+
+{
+  <sord>
+  Memcheck:Leak
+  fun:malloc
+  fun:sord_*
+  ...
+}
+
+{
+  <sord_with_zix>
+  Memcheck:Leak
+  fun:malloc
+  fun:zix_*
+  fun:sord_*
+  ...
+}
+
+{
+  <lilv>
+  Memcheck:Leak
+  fun:malloc
+  fun:lilv_*
+  ...
+}

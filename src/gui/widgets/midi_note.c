@@ -63,6 +63,10 @@ midi_note_draw_cb (
 
   ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
+  /*GdkRectangle rect;*/
+  /*gdk_cairo_get_clip_rectangle (*/
+    /*cr, &rect);*/
+
   if (ao_prv->redraw)
     {
       GtkStyleContext *context =
@@ -73,13 +77,10 @@ midi_note_draw_cb (
       int height =
         gtk_widget_get_allocated_height (widget);
 
-      ao_prv->cached_surface =
-        cairo_surface_create_similar (
-          cairo_get_target (cr),
-          CAIRO_CONTENT_COLOR_ALPHA,
-          width, height);
-      ao_prv->cached_cr =
-        cairo_create (ao_prv->cached_surface);
+      z_cairo_reset_caches (
+        &ao_prv->cached_cr,
+        &ao_prv->cached_surface, width,
+        height, cr);
 
       gtk_render_background (
         context, ao_prv->cached_cr, 0, 0,

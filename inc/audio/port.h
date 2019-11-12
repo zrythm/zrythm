@@ -198,6 +198,12 @@ typedef struct Port
   PortIdentifier      identifier;
 
   /**
+   * Flag to indicate that this port is exposed
+   * to the backend.
+   */
+  int                 exposed_to_backend;
+
+  /**
    * Buffer to be reallocated every time the buffer
    * size changes.
    *
@@ -418,7 +424,11 @@ port_fields_schema[] =
 {
   CYAML_FIELD_MAPPING (
     "identifier", CYAML_FLAG_DEFAULT,
-    Port, identifier, port_identifier_fields_schema),
+    Port, identifier,
+    port_identifier_fields_schema),
+  CYAML_FIELD_INT (
+    "exposed_to_backend", CYAML_FLAG_DEFAULT,
+    Port, exposed_to_backend),
   CYAML_FIELD_SEQUENCE_COUNT (
     "src_ids", CYAML_FLAG_DEFAULT,
     Port, src_ids, num_srcs,

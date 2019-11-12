@@ -1327,7 +1327,11 @@ port_is_exposed_to_backend (
 {
   return
     self->internal_type == INTERNAL_JACK_PORT ||
-    self->internal_type == INTERNAL_ALSA_SEQ_PORT;
+    self->internal_type ==
+      INTERNAL_ALSA_SEQ_PORT ||
+    self->identifier.owner_type ==
+      PORT_OWNER_TYPE_BACKEND ||
+    self->exposed_to_backend;
 }
 
 /**
@@ -1591,10 +1595,13 @@ port_set_expose_to_jack (
   if (!type)
     g_return_if_reached ();
 
+  char * label =
+    port_get_full_designation (self);
   if (expose)
     {
-      char * label =
-        port_get_full_designation (self);
+      g_message (
+        "exposing port %s to JACK",
+        label);
       self->data =
         (void *) jack_port_register (
           AUDIO_ENGINE->client,
@@ -1606,6 +1613,9 @@ port_set_expose_to_jack (
     }
   else
     {
+      g_message (
+        "unexposing port %s from JACK",
+        label);
       int ret =
         jack_port_unregister (
           AUDIO_ENGINE->client,
@@ -1620,6 +1630,8 @@ port_set_expose_to_jack (
       self->internal_type = INTERNAL_NONE;
       self->data = NULL;
     }
+
+  self->exposed_to_backend = expose;
 }
 
 /**
@@ -1719,6 +1731,7 @@ port_set_expose_to_alsa (
           self->data = NULL;
         }
     }
+  self->exposed_to_backend = expose;
 }
 
 #endif

@@ -200,6 +200,22 @@ PangoLayout *
 z_cairo_create_default_pango_layout (
   GtkWidget *  widget);
 
+/**
+ * Resets a surface and cairo_t with a new surface
+ * and cairo_t based on the given rectangle and
+ * cairo_t.
+ *
+ * To be used inside draw calls of widgets that
+ * use caching.
+ */
+void
+z_cairo_reset_caches (
+  cairo_t **         cr_cache,
+  cairo_surface_t ** surface_cache,
+  int                width,
+  int                height,
+  cairo_t *          new_cr);
+
 CairoCaches *
 z_cairo_caches_new (void);
 

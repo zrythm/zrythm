@@ -34,6 +34,7 @@
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/localization.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 
 #include <glib/gi18n.h>
@@ -52,6 +53,22 @@ ui_set_cursor_from_icon_name (
     gtk_widget_get_parent_window (widget);
   if (!GDK_IS_WINDOW (win))
     return;
+
+  /* check the cache first */
+  for (int i = 0; i < UI_CACHES->num_cursors; i++)
+    {
+      UiCursor * cursor =
+        &UI_CACHES->cursors[i];
+      if (string_is_equal (name, cursor->name, 1) &&
+          cursor->offset_x == offset_x &&
+          cursor->offset_y == offset_y)
+        {
+          gdk_window_set_cursor (
+            win, cursor->cursor);
+          return;
+        }
+    }
+
   GdkPixbuf * pixbuf =
     gtk_icon_theme_load_icon (
       gtk_icon_theme_get_default (),
@@ -65,13 +82,23 @@ ui_set_cursor_from_icon_name (
                  name);
       return;
     }
-  GdkCursor * cursor =
+  GdkCursor * gdk_cursor =
     gdk_cursor_new_from_pixbuf (
       gdk_display_get_default (),
       pixbuf,
       offset_x,
       offset_y);
-  gdk_window_set_cursor (win, cursor);
+
+  /* add the cursor to the caches */
+  UiCursor * cursor =
+    &UI_CACHES->cursors[UI_CACHES->num_cursors++];
+  strcpy (cursor->name, name);
+  cursor->cursor = gdk_cursor;
+  cursor->pixbuf = pixbuf;
+  cursor->offset_x = offset_x;
+  cursor->offset_y = offset_y;
+
+  gdk_window_set_cursor (win, cursor->cursor);
 }
 
 /**

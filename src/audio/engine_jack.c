@@ -625,7 +625,9 @@ jack_setup (AudioEngine * self,
       if (!self->monitor_out->l->data ||
           !self->monitor_out->r->data)
         {
-          g_error ("no more JACK ports available");
+          g_error (
+            "Failed to exponse monitor out ports to "
+            "JACK");
         }
     }
 
@@ -765,11 +767,16 @@ engine_jack_activate (
     }
   g_message ("Jack activated");
 
-  /* Connect the ports.  You can't do this before the client is
-   * activated, because we can't make connections to clients
-   * that aren't running.  Note the confusing (but necessary)
-   * orientation of the driver backend ports: playback ports are
-   * "input" to the backend, and capture ports are "output" from
+  /* Connect the ports.  You can't do this before
+   * the client is
+   * activated, because we can't make connections
+   * to clients
+   * that aren't running.  Note the confusing (but
+   * necessary)
+   * orientation of the driver backend ports:
+   * playback ports are
+   * "input" to the backend, and capture ports are
+   * "output" from
    * it.
    */
 

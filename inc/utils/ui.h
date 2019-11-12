@@ -70,11 +70,27 @@ typedef struct UiColors
 } UiColors;
 
 /**
+ * Specification for a cursor.
+ *
+ * Used for caching.
+ */
+typedef struct UiCursor
+{
+  char        name[400];
+  GdkCursor * cursor;
+  GdkPixbuf * pixbuf;
+  int         offset_x;
+  int         offset_y;
+} UiCursor;
+
+/**
  * Caches.
  */
 typedef struct UiCaches
 {
   UiColors      colors;
+  UiCursor      cursors[400];
+  int           num_cursors;
 } UiCaches;
 
 /**

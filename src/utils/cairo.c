@@ -213,6 +213,37 @@ z_cairo_get_surface_from_icon_name (
   return surface;
 }
 
+/**
+ * Resets a surface and cairo_t with a new surface
+ * and cairo_t based on the given rectangle and
+ * cairo_t.
+ *
+ * To be used inside draw calls of widgets that
+ * use caching.
+ */
+void
+z_cairo_reset_caches (
+  cairo_t **         cr_cache,
+  cairo_surface_t ** surface_cache,
+  int                width,
+  int                height,
+  cairo_t *          new_cr)
+{
+  if (*surface_cache)
+    cairo_surface_destroy (
+      *surface_cache);
+  if (*cr_cache)
+    cairo_destroy (*cr_cache);
+
+  *surface_cache =
+    cairo_surface_create_similar (
+      cairo_get_target (new_cr),
+      CAIRO_CONTENT_COLOR_ALPHA,
+      width, height);
+  *cr_cache =
+    cairo_create (*surface_cache);
+}
+
 CairoCaches *
 z_cairo_caches_new (void)
 {

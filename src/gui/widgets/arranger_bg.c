@@ -77,13 +77,10 @@ arranger_bg_draw_cb (
       GtkStyleContext *context =
         gtk_widget_get_style_context (widget);
 
-      ab_prv->cached_surface =
-        cairo_surface_create_similar (
-          cairo_get_target (cr),
-          CAIRO_CONTENT_COLOR_ALPHA,
-          rect.width, rect.height);
-      ab_prv->cached_cr =
-        cairo_create (ab_prv->cached_surface);
+      z_cairo_reset_caches (
+        &ab_prv->cached_cr,
+        &ab_prv->cached_surface, rect.width,
+        rect.height, cr);
 
       gtk_render_background (
         context, ab_prv->cached_cr, 0, 0,

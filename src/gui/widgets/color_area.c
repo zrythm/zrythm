@@ -21,6 +21,7 @@
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_top_grid.h"
+#include "utils/cairo.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -48,17 +49,16 @@ color_area_draw_cb (
       int height =
         gtk_widget_get_allocated_height (widget);
 
-      self->cached_surface =
-        cairo_surface_create_similar (
-          cairo_get_target (cr),
-          CAIRO_CONTENT_COLOR_ALPHA,
-          width,
-          height);
       self->cached_cr =
         cairo_create (self->cached_surface);
+      z_cairo_reset_caches (
+        &self->cached_cr,
+        &self->cached_surface, width,
+        height, cr);
 
       gtk_render_background (
-        context, self->cached_cr, 0, 0, width, height);
+        context, self->cached_cr, 0, 0,
+        width, height);
 
       GdkRGBA * color;
       if (self->type == COLOR_AREA_TYPE_TRACK)
@@ -66,8 +66,10 @@ color_area_draw_cb (
       else
         color = self->color;
 
-      cairo_rectangle (self->cached_cr, 0, 0, width, height);
-      gdk_cairo_set_source_rgba (self->cached_cr, color);
+      cairo_rectangle (
+        self->cached_cr, 0, 0, width, height);
+      gdk_cairo_set_source_rgba (
+        self->cached_cr, color);
       cairo_fill (self->cached_cr);
 
       /* show track icon */

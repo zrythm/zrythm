@@ -698,8 +698,7 @@ project_load (
       if (!ch)
         continue;
 
-      channel_reconnect_ext_input_ports (
-        ch);
+      channel_reconnect_ext_input_ports (ch);
     }
 
   /* set the version */
