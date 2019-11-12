@@ -70,7 +70,7 @@ G_DEFINE_TYPE (KnobWidget,
  * Draws the knob.
  */
 static int
-draw_cb (
+knob_draw_cb (
   GtkWidget * widget,
   cairo_t * cr,
   KnobWidget * self)
@@ -479,7 +479,7 @@ _knob_widget_new (
   /* connect signals */
   g_signal_connect (
     G_OBJECT (self), "draw",
-    G_CALLBACK (draw_cb), self);
+    G_CALLBACK (knob_draw_cb), self);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
     G_CALLBACK (on_crossing),  self);

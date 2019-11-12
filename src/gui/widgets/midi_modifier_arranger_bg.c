@@ -47,7 +47,7 @@ G_DEFINE_TYPE (MidiModifierArrangerBgWidget,
                ARRANGER_BG_WIDGET_TYPE)
 
 static gboolean
-draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+midi_mod_arr_bg_draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
   GdkRectangle rect;
   gdk_cairo_get_clip_rectangle (cr,
@@ -81,7 +81,7 @@ static void
 midi_modifier_arranger_bg_widget_init (
   MidiModifierArrangerBgWidget *self )
 {
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
-
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (midi_mod_arr_bg_draw_cb), self);
 }

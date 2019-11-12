@@ -72,6 +72,9 @@ typedef struct _InspectorPortWidget
   float             maxf;
   float             zerof;
 
+  /** Port name cache. */
+  char              port_str[400];
+
   /** Port this is for. */
   Port *            port;
 

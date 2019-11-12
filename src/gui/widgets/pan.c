@@ -33,7 +33,7 @@ G_DEFINE_TYPE (PanWidget,
 #define SET_VAL(real) ((*self->setter)(self->object, real))
 
 static int
-draw_cb (
+pan_draw_cb (
   GtkWidget * widget,
   cairo_t * cr,
   PanWidget * self)
@@ -183,8 +183,9 @@ pan_widget_new (float (*get_val)(void *),    ///< getter function
   self->object = object;
 
   /* connect signals */
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), self);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (pan_draw_cb), self);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
     G_CALLBACK (on_motion),  self);

@@ -72,7 +72,8 @@ live_waveform_draw_cb (
   uint32_t nframes = AUDIO_ENGINE->nframes;
   float val;
   cairo_move_to (cr, 0, half_height);
-  for (unsigned int i = 0; i < nframes; i += 8)
+  unsigned int step = nframes / 128;
+  for (unsigned int i = 0; i < nframes; i += step)
     {
       val =
         MAX (

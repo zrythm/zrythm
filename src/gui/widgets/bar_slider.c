@@ -69,7 +69,7 @@ G_DEFINE_TYPE (
  * Draws the bar_slider.
  */
 static int
-draw_cb (
+bar_slider_draw_cb (
   GtkWidget * widget,
   cairo_t * cr,
   BarSliderWidget * self)
@@ -366,7 +366,7 @@ _bar_slider_widget_new (
   /* connect signals */
   g_signal_connect (
     G_OBJECT (self), "draw",
-    G_CALLBACK (draw_cb), self);
+    G_CALLBACK (bar_slider_draw_cb), self);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
     G_CALLBACK (on_crossing),  self);

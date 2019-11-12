@@ -31,7 +31,7 @@ G_DEFINE_TYPE (ArrangerPlayheadWidget,
                GTK_TYPE_DRAWING_AREA)
 
 static gboolean
-draw_cb (
+arranger_playhead_draw_cb (
   GtkWidget *widget,
   cairo_t *cr,
   gpointer data)
@@ -69,9 +69,9 @@ arranger_playhead_widget_init (
   ArrangerPlayheadWidget * self)
 {
   /* connect signal */
-  g_signal_connect (GTK_WIDGET (self),
-                    "draw",
-                    G_CALLBACK (draw_cb), NULL);
+  g_signal_connect (
+    GTK_WIDGET (self), "draw",
+    G_CALLBACK (arranger_playhead_draw_cb), NULL);
 
   /* show */
   gtk_widget_set_visible (GTK_WIDGET (self),

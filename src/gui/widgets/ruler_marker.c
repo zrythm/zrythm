@@ -43,8 +43,9 @@ G_DEFINE_TYPE (RulerMarkerWidget,
                GTK_TYPE_DRAWING_AREA)
 
 static gboolean
-draw_cb (GtkWidget *widget, cairo_t *cr,
-         RulerMarkerWidget * self)
+ruler_marker_draw_cb (
+  GtkWidget *widget, cairo_t *cr,
+  RulerMarkerWidget * self)
 {
   GtkStyleContext *context;
 
@@ -290,7 +291,7 @@ ruler_marker_widget_init (RulerMarkerWidget * self)
   /* connect signals */
   g_signal_connect (
     GTK_WIDGET (self), "draw",
-    G_CALLBACK (draw_cb), self);
+    G_CALLBACK (ruler_marker_draw_cb), self);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
     G_CALLBACK (on_motion),  self);

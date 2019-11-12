@@ -126,6 +126,8 @@ left_dock_edge_widget_init (
   gtk_widget_set_tooltip_text (
     img, _("Visibility"));
   self->visibility = visibility_widget_new ();
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->visibility), 1);
   GtkBox * visibility_box =
     GTK_BOX (
       gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));

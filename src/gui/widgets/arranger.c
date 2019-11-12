@@ -153,7 +153,8 @@ arranger_widget_get_private (
 }
 
 /**
- * Gets called to set the position/size of each overlayed widget.
+ * Gets called to set the position/size of each
+ * overlayed widget.
  */
 static gboolean
 arranger_get_child_position (

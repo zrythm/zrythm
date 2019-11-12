@@ -67,22 +67,23 @@ G_DEFINE_TYPE_WITH_PRIVATE (
   TrackWidget, track_widget, GTK_TYPE_PANED)
 
 static gboolean
-on_motion (GtkWidget * widget,
-           GdkEventMotion *event,
-           gpointer        user_data)
+on_motion (
+  GtkWidget *      widget,
+  GdkEventMotion * event,
+  TrackWidget *    self)
 {
-  TrackWidget * self = Z_TRACK_WIDGET (user_data);
+  TRACK_WIDGET_GET_PRIVATE (self);
 
   if (event->type == GDK_ENTER_NOTIFY)
     {
       gtk_widget_set_state_flags (
-        GTK_WIDGET (self),
+        GTK_WIDGET (tw_prv->main_grid),
         GTK_STATE_FLAG_PRELIGHT, 0);
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
       gtk_widget_unset_state_flags (
-        GTK_WIDGET (self),
+        GTK_WIDGET (tw_prv->main_grid),
         GTK_STATE_FLAG_PRELIGHT);
     }
 
@@ -1034,6 +1035,11 @@ track_widget_init (TrackWidget * self)
 
   TRACK_WIDGET_GET_PRIVATE (self);
 
+  GtkWidgetClass * main_grid_class =
+    GTK_WIDGET_GET_CLASS (tw_prv->main_grid);
+  gtk_widget_class_set_css_name (
+    main_grid_class, "track-grid");
+
   gtk_paned_set_wide_handle (
     (GtkPaned *) self, 1);
   gtk_orientable_set_orientation (
@@ -1059,10 +1065,11 @@ track_widget_init (TrackWidget * self)
   tw_prv->multipress =
     GTK_GESTURE_MULTI_PRESS (
       gtk_gesture_multi_press_new (
-        GTK_WIDGET (self)));
+        GTK_WIDGET (tw_prv->main_grid)));
   tw_prv->right_mouse_mp =
     GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (GTK_WIDGET (self)));
+      gtk_gesture_multi_press_new (
+        GTK_WIDGET (tw_prv->main_grid)));
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (tw_prv->right_mouse_mp),
     GDK_BUTTON_SECONDARY);
@@ -1129,12 +1136,10 @@ track_widget_init (TrackWidget * self)
 static void
 track_widget_class_init (TrackWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "track.ui");
-
-  gtk_widget_class_set_css_name (klass,
-                                 "track");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (
+    klass, "track.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child_private ( \

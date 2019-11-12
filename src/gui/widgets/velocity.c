@@ -48,7 +48,7 @@ G_DEFINE_TYPE (
 #define RESIZE_CURSOR_SPACE 9
 
 static gboolean
-draw_cb (
+velocity_draw_cb (
   GtkWidget * widget,
   cairo_t *cr,
   VelocityWidget * self)
@@ -201,5 +201,5 @@ velocity_widget_init (VelocityWidget * self)
   /* connect signals */
   g_signal_connect (
     G_OBJECT (ao_prv->drawing_area), "draw",
-    G_CALLBACK (draw_cb), self);
+    G_CALLBACK (velocity_draw_cb), self);
 }

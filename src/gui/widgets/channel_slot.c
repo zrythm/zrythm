@@ -48,7 +48,7 @@ G_DEFINE_TYPE (ChannelSlotWidget,
 #define ELLIPSIZE_PADDING 2
 
 static int
-draw_cb (
+channel_slot_draw_cb (
   GtkWidget * widget,
   cairo_t * cr,
   ChannelSlotWidget * self)
@@ -773,7 +773,7 @@ channel_slot_widget_init (
   /* connect signals */
   g_signal_connect (
     G_OBJECT (self), "draw",
-    G_CALLBACK (draw_cb), self);
+    G_CALLBACK (channel_slot_draw_cb), self);
   g_signal_connect (
     GTK_WIDGET (self), "drag-data-received",
     G_CALLBACK(on_drag_data_received), self);

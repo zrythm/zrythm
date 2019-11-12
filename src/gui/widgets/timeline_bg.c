@@ -99,6 +99,7 @@ timeline_bg_widget_draw (
       if (!GTK_IS_WIDGET (tw))
         continue;
       tw_widget = (GtkWidget *) tw;
+      TRACK_WIDGET_GET_PRIVATE (tw);
 
       if (is_pinned_timeline)
         {
@@ -118,7 +119,7 @@ timeline_bg_widget_draw (
       line_y =
         wy +
         gtk_widget_get_allocated_height (
-          tw_widget);
+          (GtkWidget *) tw_prv->main_grid);
 
       if (line_y >= rect->y &&
           line_y < rect->y + rect->height)

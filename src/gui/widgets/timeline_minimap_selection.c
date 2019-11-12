@@ -33,7 +33,10 @@ G_DEFINE_TYPE (TimelineMinimapSelectionWidget,
 #define PADDING 2
 
 static gboolean
-draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+tl_minimap_sel_draw_cb (
+  GtkWidget *widget,
+  cairo_t *cr,
+  gpointer data)
 {
   z_cairo_draw_selection (
     cr,
@@ -138,13 +141,13 @@ timeline_minimap_selection_widget_init (
   gtk_widget_set_visible (GTK_WIDGET (self),
                           1);
 
-  gtk_widget_add_events (GTK_WIDGET (self->drawing_area),
-                         GDK_ALL_EVENTS_MASK);
+  gtk_widget_add_events (
+    GTK_WIDGET (self->drawing_area),
+    GDK_ALL_EVENTS_MASK);
 
-  g_signal_connect (G_OBJECT (self->drawing_area),
-                    "draw",
-                    G_CALLBACK (draw_cb),
-                    self);
+  g_signal_connect (
+    G_OBJECT (self->drawing_area), "draw",
+    G_CALLBACK (tl_minimap_sel_draw_cb), self);
   /*g_signal_connect (G_OBJECT (self->drawing_area),*/
                     /*"enter-notify-event",*/
                     /*G_CALLBACK (on_motion),*/

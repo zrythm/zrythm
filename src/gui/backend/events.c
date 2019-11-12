@@ -744,24 +744,25 @@ on_track_changed (Track * track)
 {
   if (GTK_IS_WIDGET (track->widget))
     {
+      TRACK_WIDGET_GET_PRIVATE (track->widget);
       gtk_widget_set_visible (
-        GTK_WIDGET (track->widget),
+        GTK_WIDGET (tw_prv->main_grid),
         track->visible);
       if (track_is_selected (track))
         {
           gtk_widget_set_state_flags (
-            GTK_WIDGET (track->widget),
+            GTK_WIDGET (tw_prv->main_grid),
             GTK_STATE_FLAG_SELECTED,
             0);
         }
       else
         {
           gtk_widget_unset_state_flags (
-            GTK_WIDGET (track->widget),
+            GTK_WIDGET (tw_prv->main_grid),
             GTK_STATE_FLAG_SELECTED);
         }
       gtk_widget_queue_draw (
-        GTK_WIDGET (track->widget));
+        GTK_WIDGET (tw_prv->main_grid));
     }
 }
 

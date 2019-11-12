@@ -34,7 +34,7 @@ G_DEFINE_TYPE (TimelineMinimapBgWidget,
                GTK_TYPE_DRAWING_AREA)
 
 static gboolean
-draw_cb (
+timeline_minimap_bg_draw_cb (
   GtkWidget *widget,
   cairo_t *cr,
   gpointer data)
@@ -173,6 +173,7 @@ timeline_minimap_bg_widget_init (
   gtk_widget_set_visible (GTK_WIDGET (self),
                           1);
 
-  g_signal_connect (G_OBJECT (self), "draw",
-                    G_CALLBACK (draw_cb), NULL);
+  g_signal_connect (
+    G_OBJECT (self), "draw",
+    G_CALLBACK (timeline_minimap_bg_draw_cb), NULL);
 }

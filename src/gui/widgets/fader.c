@@ -35,7 +35,7 @@ G_DEFINE_TYPE (FaderWidget,
                GTK_TYPE_DRAWING_AREA)
 
 static int
-draw_cb (
+fader_draw_cb (
   GtkWidget * widget,
   cairo_t * cr,
   void* data)
@@ -372,7 +372,7 @@ fader_widget_init (FaderWidget * self)
   /* connect signals */
   g_signal_connect (
     G_OBJECT (self), "draw",
-    G_CALLBACK (draw_cb), self);
+    G_CALLBACK (fader_draw_cb), self);
   g_signal_connect (
     G_OBJECT (self), "enter-notify-event",
     G_CALLBACK (on_motion),  self);

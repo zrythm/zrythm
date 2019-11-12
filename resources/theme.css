@@ -355,7 +355,7 @@ timeline-minimap-bg
   background-color: @bg_darker_variant1;
 }
 
-track:selected,
+track-grid:selected,
 channel:selected,
 region:selected,
 chord:selected,
@@ -379,7 +379,7 @@ filechooser button:active
   border-color: @selection_color;
 }
 
-track:hover,
+track-grid:hover,
 region:hover,
 chord:hover,
 scale-object:hover,

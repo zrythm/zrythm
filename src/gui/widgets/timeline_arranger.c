@@ -548,9 +548,12 @@ timeline_arranger_widget_get_track_at_y (
 
       g_warn_if_fail (track->widget);
 
+      TRACK_WIDGET_GET_PRIVATE (
+        track->widget);
+
       if (ui_is_child_hit (
             GTK_WIDGET (self),
-            GTK_WIDGET (track->widget),
+            GTK_WIDGET (tw_prv->main_grid),
             0, 1, 0, y, 0, 1))
         return track;
     }

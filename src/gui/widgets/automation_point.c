@@ -38,7 +38,7 @@ G_DEFINE_TYPE (
   ARRANGER_OBJECT_WIDGET_TYPE)
 
 static gboolean
-draw_cb (
+automation_point_draw_cb (
   GtkWidget * widget,
   cairo_t *   cr,
   AutomationPointWidget * self)
@@ -215,5 +215,5 @@ automation_point_widget_init (
   /* connect signals */
   g_signal_connect (
     G_OBJECT (ao_prv->drawing_area), "draw",
-    G_CALLBACK (draw_cb), self);
+    G_CALLBACK (automation_point_draw_cb), self);
 }

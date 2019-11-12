@@ -265,9 +265,9 @@ bar_slider_tick_cb (
   InspectorPortWidget * self)
 {
   /* set bar slider label */
-  get_port_str (
-    self->port,
-    self->bar_slider->prefix);
+  /*get_port_str (*/
+    /*self->port,*/
+    /*self->bar_slider->prefix);*/
 
   /* if enough time passed, try to update the
    * tooltip */
@@ -365,6 +365,7 @@ inspector_port_widget_new (
       self->minf = minf;
       self->maxf = maxf;
       self->zerof = zerof;
+      strcpy (self->port_str, str);
 
       /* keep drawing the bar slider */
       gtk_widget_add_tick_callback (

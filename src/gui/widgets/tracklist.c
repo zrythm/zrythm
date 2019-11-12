@@ -378,13 +378,17 @@ tracklist_widget_hard_refresh (
     {
       Track * track = self->tracklist->tracks[i];
 
-      if (track->pinned ||
-          !track->visible)
+      if (track->pinned)
         continue;
 
       /* create widget */
       if (!GTK_IS_WIDGET (track->widget))
         track->widget = track_widget_new (track);
+
+      TRACK_WIDGET_GET_PRIVATE (track->widget);
+      gtk_widget_set_visible (
+        (GtkWidget *) tw_prv->main_grid,
+        track->visible);
 
       track_widget_refresh (track->widget);
 
@@ -469,8 +473,10 @@ tracklist_widget_soft_refresh (TracklistWidget *self)
       if (!GTK_IS_WIDGET (track->widget))
         track->widget = track_widget_new (track);
 
+      TRACK_WIDGET_GET_PRIVATE (track->widget);
       gtk_widget_set_visible (
-        GTK_WIDGET (track->widget), track->visible);
+        GTK_WIDGET (tw_prv->main_grid),
+        track->visible);
 
       if (track->visible)
         track_widget_refresh (
