@@ -361,19 +361,6 @@ on_automation_value_changed (
 {
   AutomationTrack * at =
     automatable_get_automation_track (a);
-  Region * r;
-  for (int i = 0; i < at->num_regions; i++)
-    {
-      r = at->regions[i];
-      ArrangerObject * r_obj =
-        (ArrangerObject *) r;
-      if (Z_IS_ARRANGER_OBJECT_WIDGET (
-            r_obj->widget))
-        {
-          arranger_object_widget_force_redraw (
-            (ArrangerObjectWidget *) r_obj->widget);
-        }
-    }
   if (at && at->widget)
     automation_track_widget_update_current_val (
       at->widget);
