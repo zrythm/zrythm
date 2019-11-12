@@ -43,11 +43,13 @@ fishbowl_creation_func ()
   g_return_val_if_fail (r, NULL);
 
   region_gen_name (r, "Test Region", NULL, NULL);
-  region_gen_widget (r);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) r;
+  arranger_object_gen_widget (r_obj);
   gtk_widget_set_size_request (
-    GTK_WIDGET (r->widget), 200, 20);
+    GTK_WIDGET (r_obj->widget), 200, 20);
 
-  return GTK_WIDGET (r->widget);
+  return GTK_WIDGET (r_obj->widget);
 }
 
 static void
