@@ -286,7 +286,8 @@ automation_region_draw_cb (
         Z_ARRANGER_OBJECT_WIDGET (self),
         ao_prv->cached_cr, &rect);
 
-      ao_prv->redraw = 0;
+      arranger_object_widget_post_redraw (
+        (ArrangerObjectWidget *) self, &rect);
     }
 
   cairo_set_source_surface (

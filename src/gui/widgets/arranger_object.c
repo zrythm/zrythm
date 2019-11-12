@@ -399,6 +399,19 @@ arranger_object_widget_should_redraw (
     ao_prv->last_rect.height != rect->height;
 }
 
+/**
+ * To be called after redrawing an arranger object.
+ */
+void
+arranger_object_widget_post_redraw (
+  ArrangerObjectWidget * self,
+  GdkRectangle *         rect)
+{
+  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
+  ao_prv->redraw = 0;
+  ao_prv->last_rect = *rect;
+}
+
 void
 arranger_object_widget_force_redraw (
   ArrangerObjectWidget * self)

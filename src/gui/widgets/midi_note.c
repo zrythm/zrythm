@@ -63,9 +63,9 @@ midi_note_draw_cb (
 
   ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
-  /*GdkRectangle rect;*/
-  /*gdk_cairo_get_clip_rectangle (*/
-    /*cr, &rect);*/
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (
+    cr, &rect);
 
   if (ao_prv->redraw)
     {
@@ -142,7 +142,8 @@ midi_note_draw_cb (
               GTK_WIDGET (self)) &
               GTK_STATE_FLAG_PRELIGHT,
             midi_note_is_selected (self->midi_note),
-            midi_note_is_transient (self->midi_note));
+            midi_note_is_transient (
+              self->midi_note));
           gdk_cairo_set_source_rgba (
             ao_prv->cached_cr, &color);
 
@@ -215,7 +216,8 @@ midi_note_draw_cb (
           g_object_unref (layout);
         }
 
-      ao_prv->redraw = 0;
+      arranger_object_widget_post_redraw (
+        (ArrangerObjectWidget *) self, &rect);
     }
 
   cairo_set_source_surface (

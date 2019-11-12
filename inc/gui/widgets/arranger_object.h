@@ -94,7 +94,7 @@ typedef struct _ArrangerObjectWidgetPrivate
   /**
    * Last rectangle used to draw in.
    *
-   * If this is differentn from the current one,
+   * If this is different from the current one,
    * the widget should be redrawn.
    */
   GdkRectangle       last_rect;
@@ -201,6 +201,14 @@ void
 arranger_object_widget_update_tooltip (
   ArrangerObjectWidget * self,
   int                    show);
+
+/**
+ * To be called after redrawing an arranger object.
+ */
+void
+arranger_object_widget_post_redraw (
+  ArrangerObjectWidget * self,
+  GdkRectangle *         rect);
 
 /**
  * Returns the private struct.
