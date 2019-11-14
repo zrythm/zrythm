@@ -24,6 +24,9 @@
 
 #include <gtk/gtk.h>
 
+static float fader_coefficient1 = 0.f;
+static float fader_coefficient2 = 0.f;
+
 /**
  * Returns fader value 0.0 to 1.0 from amp value
  * 0.0 to 2.0 (+6 dbFS).
@@ -38,12 +41,10 @@ math_get_fader_val_from_amp (
     return 0.f;
   else
     {
-      static float val1 = 192.f * logf (2.f);
-      static float val2 =
-        powf (logf (2.f), 8.f) * powf (198.f, 8.f);
       sample_t fader =
         powf (
-          6.f * logf (amp) + val1, 8.f) / val2;
+          6.f * logf (amp) + fader_coefficient1, 8.f) /
+        fader_coefficient2;
       return (sample_t) fader;
     }
 }
@@ -88,4 +89,15 @@ math_calculate_rms_db (
         sum /
         ((sample_t) nframes /
            (sample_t) MATH_RMS_FRAMES)));
+}
+
+/**
+ * Initializes coefficients to be used later.
+ */
+void
+math_init ()
+{
+  fader_coefficient1 = 192.f * logf (2.f);
+  fader_coefficient2 =
+    powf (logf (2.f), 8.f) * powf (198.f, 8.f);
 }

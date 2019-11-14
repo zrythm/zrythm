@@ -1,7 +1,5 @@
 /*
- * utils/math - math utils
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -109,5 +107,11 @@ math_doubles_equal (
 {
   return fabs (a - b) < epsilon;
 }
+
+/**
+ * Initializes coefficients to be used later.
+ */
+void
+math_init ();
 
 #endif

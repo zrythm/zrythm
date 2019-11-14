@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
+# plugins require X11
+if (x11_dep.found ())
 project_uri = 'https://lv2.zrythm.org/plugins'
 
 plugins_root_inc = include_directories ('.')
@@ -28,7 +30,7 @@ cairo_dep = dependency('cairo', version: '>=1.0.0')
 plugin_deps = [
   lv2_dep,
   fftw3_dep,
-  dependency('x11'),
+  x11_dep,
   cairo_dep,
   libm,
 ]
@@ -42,3 +44,4 @@ subdir ('pugl')
 subdir ('ztoolkit')
 subdir ('zlfo')
 subdir ('tests')
+endif

@@ -31,6 +31,7 @@
 #include "ext/audio_decoder/ad.h"
 #include "gui/widgets/main_window.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -266,6 +267,10 @@ main (int    argc,
   /* init object utils */
   g_message ("Initing object utils...");
   object_utils_init ();
+
+  /* init math coefficients */
+  g_message ("Initing math coefficients...");
+  math_init ();
 
   /* send activate signal */
   g_message ("Initing Zrythm app...");
