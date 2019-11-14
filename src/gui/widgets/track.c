@@ -64,7 +64,7 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE_WITH_PRIVATE (
-  TrackWidget, track_widget, GTK_TYPE_PANED)
+  TrackWidget, track_widget, GTK_TYPE_EVENT_BOX)
 
 static gboolean
 on_motion (
@@ -74,17 +74,44 @@ on_motion (
 {
   TRACK_WIDGET_GET_PRIVATE (self);
 
+  int height =
+    gtk_widget_get_allocated_height (widget);
+
+  /* show resize cursor */
+  g_message ("y %f height %d",
+             event->y, height);
+  if (tw_prv->bg_hovered)
+    {
+      if (height - event->y < 12)
+        {
+          tw_prv->resize = 1;
+          ui_set_cursor_from_name (widget, "s-resize");
+        }
+      else
+        {
+          tw_prv->resize = 0;
+          ui_set_pointer_cursor (widget);
+        }
+    }
+
   if (event->type == GDK_ENTER_NOTIFY)
     {
+      g_message ("enter");
       gtk_widget_set_state_flags (
         GTK_WIDGET (tw_prv->main_grid),
         GTK_STATE_FLAG_PRELIGHT, 0);
+      tw_prv->bg_hovered = 1;
+      tw_prv->resize = 0;
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
+      g_message ("leave");
+      ui_set_pointer_cursor (widget);
       gtk_widget_unset_state_flags (
         GTK_WIDGET (tw_prv->main_grid),
         GTK_STATE_FLAG_PRELIGHT);
+      tw_prv->bg_hovered = 0;
+      tw_prv->resize = 0;
     }
 
   return FALSE;
@@ -743,6 +770,7 @@ on_dnd_drag_begin (
   GdkDragContext *context,
   TrackWidget * self)
 {
+  g_message ("dnd drag begin");
   TRACK_WIDGET_GET_PRIVATE (self);
 
   Track * track = tw_prv->track;
@@ -774,6 +802,14 @@ on_dnd_drag_begin (
           TRACKLIST_SELECTIONS,
           track);
     }
+
+  if (tw_prv->resize)
+    {
+      tw_prv->selected_in_dnd = 0;
+      gdk_drag_abort (context, 0);
+      g_message ("aborting drag");
+    }
+      g_message ("aaaaaa");
 }
 
 /**
@@ -1040,11 +1076,13 @@ track_widget_init (TrackWidget * self)
   gtk_widget_class_set_css_name (
     main_grid_class, "track-grid");
 
-  gtk_paned_set_wide_handle (
-    (GtkPaned *) self, 1);
-  gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (self),
-    GTK_ORIENTATION_VERTICAL);
+  /*gtk_paned_set_wide_handle (*/
+    /*(GtkPaned *) self, 1);*/
+  /*gtk_orientable_set_orientation (*/
+    /*GTK_ORIENTABLE (self),*/
+    /*GTK_ORIENTATION_VERTICAL);*/
+  gtk_widget_set_vexpand_set (
+    (GtkWidget *) self, 1);
 
   /* set font sizes */
   gtk_label_set_max_width_chars (
@@ -1059,8 +1097,7 @@ track_widget_init (TrackWidget * self)
   tw_prv->drag =
     GTK_GESTURE_DRAG (
       gtk_gesture_drag_new (
-        GTK_WIDGET (
-          self)));
+        GTK_WIDGET (self)));
 
   tw_prv->multipress =
     GTK_GESTURE_MULTI_PRESS (
@@ -1105,11 +1142,11 @@ track_widget_init (TrackWidget * self)
     "enter-notify-event",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
-    G_OBJECT(tw_prv->event_box),
+    G_OBJECT (tw_prv->event_box),
     "leave-notify-event",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
-    G_OBJECT(tw_prv->event_box),
+    G_OBJECT (tw_prv->event_box),
     "motion-notify-event",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (

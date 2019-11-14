@@ -34,7 +34,7 @@ G_DECLARE_DERIVABLE_TYPE (
   TrackWidget,
   track_widget,
   Z, TRACK_WIDGET,
-  GtkPaned)
+  GtkEventBox)
 
 /**
  * @addtogroup widgets
@@ -128,6 +128,17 @@ typedef struct
   /** Number of clicks, used when selecting/moving/
    * dragging channels. */
   int                 n_press;
+
+  /**
+   * Set between enter-leave signals.
+   *
+   * This is because hover can continue to send signals when
+   * hovering over other overlayed widgets (buttons, etc.).
+   */
+  int                 bg_hovered;
+
+  /** Set when the drag should resize instead of dnd. */
+  int                 resize;
 
   /** Associated Track. */
   Track *                   track;

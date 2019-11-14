@@ -192,7 +192,7 @@ typedef struct Track
   /** Whole Track is visible or not. */
   int                 visible;
 
-  /** Position of multipane handle. */
+  /** Position of handle (height). */
   int                 handle_pos;
 
   /** Muted or not. */

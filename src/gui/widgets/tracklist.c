@@ -47,7 +47,7 @@
 #include "utils/ui.h"
 
 G_DEFINE_TYPE (
-  TracklistWidget, tracklist_widget, GTK_TYPE_PANED)
+  TracklistWidget, tracklist_widget, GTK_TYPE_BOX)
 
 static void
 on_resize_end (
@@ -336,49 +336,18 @@ void
 tracklist_widget_hard_refresh (
   TracklistWidget * self)
 {
-  /* remove the first child, which is a track
-   * containing all the other tracks recursively */
+  /* remove all children */
+  z_gtk_container_remove_all_children (
+    (GtkContainer *) self);
   GtkWidget * child1 = NULL;
-  child1 =
-    gtk_paned_get_child1 (
-      (GtkPaned *) self);
-  if (child1)
-    {
-      gtk_container_remove (
-        (GtkContainer *) self, child1);
-    }
 
-  /* remove all tracks set as the bottom half of
-   * each track */
+  /* readd all visible tracks */
   for (int i = 0; i < self->tracklist->num_tracks;
        i++)
     {
       Track * track = self->tracklist->tracks[i];
 
-      if (track->pinned ||
-          !GTK_IS_PANED (track->widget))
-        continue;
-
-      GtkWidget * child2 = NULL;
-      child2 =
-        gtk_paned_get_child2 (
-          (GtkPaned *) track->widget);
-      if (child2)
-        {
-          gtk_container_remove (
-            (GtkContainer *) track->widget,
-            child2);
-        }
-    }
-
-  /* add tracks recursively */
-  Track * prev_track = NULL;
-  for (int i = 0;
-       i < self->tracklist->num_tracks; i++)
-    {
-      Track * track = self->tracklist->tracks[i];
-
-      if (track->pinned)
+      if (track->pinned || !track->visible)
         continue;
 
       /* create widget */
@@ -392,30 +361,18 @@ tracklist_widget_hard_refresh (
 
       track_widget_refresh (track->widget);
 
-      if (prev_track)
-        {
-          /* add to the previous track's bottom
-           * half */
-          gtk_paned_pack2 (
-            (GtkPaned *) prev_track->widget,
-            GTK_WIDGET (track->widget),
-            F_RESIZE, F_NO_SHRINK);
-        }
-      else
-        {
-          /* add as the first child */
-          gtk_paned_pack1 (
-            (GtkPaned *) self,
-            GTK_WIDGET (track->widget),
-            F_RESIZE, F_NO_SHRINK);
-        }
+      gtk_widget_set_size_request (
+        (GtkWidget *) track->widget, -1, track->handle_pos);
 
-      prev_track = track;
+      gtk_container_add (
+        (GtkContainer *) self,
+        (GtkWidget *) track->widget);
     }
 
   /* re-add ddbox */
-  /*gtk_container_add (GTK_CONTAINER (self),*/
-                     /*GTK_WIDGET (self->ddbox));*/
+  gtk_container_add (
+    GTK_CONTAINER (self),
+    GTK_WIDGET (self->ddbox));
   /*g_object_unref (self->ddbox);*/
 
   /* set handle position.
@@ -497,10 +454,6 @@ tracklist_widget_init (TracklistWidget * self)
       0,
       DRAG_DEST_BOX_TYPE_TRACKLIST);
   g_object_ref (self->ddbox);
-  gtk_paned_pack2 (
-    GTK_PANED (self),
-    GTK_WIDGET (self->ddbox),
-    F_RESIZE, F_NO_SHRINK);
 
   gtk_paned_set_wide_handle (
     (GtkPaned *) self, 1);
