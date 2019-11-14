@@ -137,8 +137,16 @@ typedef struct
    */
   int                 bg_hovered;
 
-  /** Set when the drag should resize instead of dnd. */
+  /**
+   * Set when the drag should resize instead of dnd.
+   *
+   * This is used to determine if we should resize on drag
+   * begin.
+   */
   int                 resize;
+
+  /** Set during the whole resizing action. */
+  int                 resizing;
 
   /** Associated Track. */
   Track *                   track;
@@ -154,6 +162,10 @@ typedef struct
    * the dnd callbacks, so no need to do it in
    * drag_end. */
   int                 selected_in_dnd;
+
+  /** For drag actions. */
+  double              start_x;
+  double              start_y;
 
   /**
    * Signal handler IDs for tracks that have them.

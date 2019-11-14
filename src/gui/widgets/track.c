@@ -727,6 +727,47 @@ on_drag_begin (GtkGestureDrag *gesture,
 
   tw_prv->selected_in_dnd = 0;
   tw_prv->dragged = 0;
+
+  if (tw_prv->resize)
+    {
+      /* start resizing */
+      tw_prv->resizing = 1;
+    }
+  else
+    {
+      Track * track = tw_prv->track;
+      tw_prv->selected_in_dnd = 1;
+      MW_MIXER->start_drag_track = track;
+
+      if (tw_prv->n_press == 1)
+        {
+          int ctrl = 0, selected = 0;
+
+          ctrl = tw_prv->ctrl_held_at_start;
+
+          if (tracklist_selections_contains_track (
+                TRACKLIST_SELECTIONS,
+                track))
+            selected = 1;
+
+          /* no control & not selected */
+          if (!ctrl && !selected)
+            {
+              tracklist_selections_select_single (
+                TRACKLIST_SELECTIONS,
+                track);
+            }
+          else if (!ctrl && selected)
+            { }
+          else if (ctrl && !selected)
+            tracklist_selections_add_track (
+              TRACKLIST_SELECTIONS,
+              track);
+        }
+    }
+
+  tw_prv->start_x = start_x;
+  tw_prv->start_y = start_y;
 }
 
 static void
@@ -739,6 +780,53 @@ on_drag_update (GtkGestureDrag * gesture,
   TRACK_WIDGET_GET_PRIVATE (self);
 
   tw_prv->dragged = 1;
+
+  if (tw_prv->resizing)
+    {
+      /* resize */
+      Track * track = tw_prv->track;
+      track->handle_pos = tw_prv->start_y + offset_y;
+      g_message ("resizing");
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self), -1, track->handle_pos);
+    }
+  else
+    {
+      /* start dnd */
+      char * entry_track = g_strdup (TARGET_ENTRY_TRACK);
+      GtkTargetEntry entries[] = {
+        {
+          entry_track, GTK_TARGET_SAME_APP,
+          symap_map (ZSYMAP, TARGET_ENTRY_TRACK),
+        },
+      };
+      GtkTargetList * target_list =
+        gtk_target_list_new (
+          entries, G_N_ELEMENTS (entries));
+
+      gtk_drag_begin_with_coordinates (
+        (GtkWidget *) self, target_list,
+        GDK_ACTION_MOVE | GDK_ACTION_COPY,
+        gtk_gesture_single_get_button (
+          GTK_GESTURE_SINGLE (gesture)),
+        NULL,
+        tw_prv->start_x + offset_x,
+        tw_prv->start_y + offset_y);
+
+      g_free (entry_track);
+    }
+}
+
+static void
+on_drag_end (
+  GtkGestureDrag *gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  TrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+
+  tw_prv->resizing = 0;
 }
 
 static void
@@ -759,57 +847,6 @@ on_drag_data_get (
     32,
     (const guchar *) &P_MASTER_TRACK,
     sizeof (P_MASTER_TRACK));
-}
-
-/**
- * For drag n drop.
- */
-static void
-on_dnd_drag_begin (
-  GtkWidget      *widget,
-  GdkDragContext *context,
-  TrackWidget * self)
-{
-  g_message ("dnd drag begin");
-  TRACK_WIDGET_GET_PRIVATE (self);
-
-  Track * track = tw_prv->track;
-  tw_prv->selected_in_dnd = 1;
-  MW_MIXER->start_drag_track = track;
-
-  if (tw_prv->n_press == 1)
-    {
-      int ctrl = 0, selected = 0;
-
-      ctrl = tw_prv->ctrl_held_at_start;
-
-      if (tracklist_selections_contains_track (
-            TRACKLIST_SELECTIONS,
-            track))
-        selected = 1;
-
-      /* no control & not selected */
-      if (!ctrl && !selected)
-        {
-          tracklist_selections_select_single (
-            TRACKLIST_SELECTIONS,
-            track);
-        }
-      else if (!ctrl && selected)
-        { }
-      else if (ctrl && !selected)
-        tracklist_selections_add_track (
-          TRACKLIST_SELECTIONS,
-          track);
-    }
-
-  if (tw_prv->resize)
-    {
-      tw_prv->selected_in_dnd = 0;
-      gdk_drag_abort (context, 0);
-      g_message ("aborting drag");
-    }
-      g_message ("aaaaaa");
 }
 
 /**
@@ -1115,22 +1152,6 @@ track_widget_init (TrackWidget * self)
   gtk_widget_add_events (
     GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
 
-  char * entry_track = g_strdup (TARGET_ENTRY_TRACK);
-  GtkTargetEntry entries[] = {
-    {
-      entry_track, GTK_TARGET_SAME_APP,
-      symap_map (ZSYMAP, TARGET_ENTRY_TRACK),
-    },
-  };
-
-  /* set as drag source for track */
-  gtk_drag_source_set (
-    GTK_WIDGET (tw_prv->event_box),
-    GDK_BUTTON1_MASK,
-    entries, G_N_ELEMENTS (entries),
-    GDK_ACTION_MOVE | GDK_ACTION_COPY);
-  g_free (entry_track);
-
   g_signal_connect (
     G_OBJECT (tw_prv->multipress), "pressed",
     G_CALLBACK (multipress_pressed), self);
@@ -1155,10 +1176,9 @@ track_widget_init (TrackWidget * self)
   g_signal_connect (
     G_OBJECT (tw_prv->drag), "drag-update",
     G_CALLBACK (on_drag_update), self);
-  g_signal_connect_after (
-    GTK_WIDGET (tw_prv->event_box),
-    "drag-begin",
-    G_CALLBACK(on_dnd_drag_begin), self);
+  g_signal_connect (
+    G_OBJECT (tw_prv->drag), "drag-end",
+    G_CALLBACK (on_drag_end), self);
   g_signal_connect (
     GTK_WIDGET (tw_prv->event_box),
     "drag-data-get",
