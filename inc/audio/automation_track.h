@@ -76,10 +76,14 @@ typedef struct AutomationTrack
   int               height;
 
   /** Buttons used by the track widget */
-  CustomButtonWidget * top_buttons[8];
-  int                  num_top_buttons;
-  CustomButtonWidget * bot_buttons[8];
-  int                  num_bot_buttons;
+  CustomButtonWidget * top_right_buttons[8];
+  int                  num_top_right_buttons;
+  CustomButtonWidget * top_left_buttons[8];
+  int                  num_top_left_buttons;
+  CustomButtonWidget * bot_right_buttons[8];
+  int                  num_bot_right_buttons;
+  CustomButtonWidget * bot_left_buttons[8];
+  int                  num_bot_left_buttons;
 
   /** The widget. */
   AutomationTrackWidget * widget;

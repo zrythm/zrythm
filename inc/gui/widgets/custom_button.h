@@ -77,6 +77,10 @@ typedef struct CustomButtonWidget
    * to this). */
   int          size;
 
+  /** if non-zero, the button has "size" height and
+   * this width. */
+  int          width;
+
   /** Whether currently hovered. */
   //int         hovered;
 
@@ -112,6 +116,16 @@ typedef struct CustomButtonWidget
   /** Used during transitions. */
   GdkRGBA            last_color;
 
+  /**
+   * Text, if any, to show after the icon.
+   *
+   * This will be ellipsized.
+   */
+  char *             text;
+
+  /** Cache layout for drawing the text. */
+  PangoLayout *      layout;
+
   /** X/y relative to parent drawing area. */
   double             x;
   double             y;
@@ -145,6 +159,27 @@ custom_button_widget_draw (
   double               x,
   double               y,
   CustomButtonWidgetState    state);
+
+/**
+ * @param width Max width for the button to use.
+ */
+void
+custom_button_widget_draw_with_text (
+  CustomButtonWidget * self,
+  cairo_t *            cr,
+  double               x,
+  double               y,
+  double               width,
+  CustomButtonWidgetState    state);
+
+/**
+ * Sets the text and layout to draw the text width.
+ */
+void
+custom_button_widget_set_text (
+  CustomButtonWidget * self,
+  PangoLayout *        layout,
+  char *               text);
 
 void
 custom_button_widget_free (

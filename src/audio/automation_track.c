@@ -72,7 +72,7 @@ automation_track_new (Automatable *   a)
     malloc (self->regions_size *
             sizeof (Region *));
 
-  self->height = 24;
+  self->height = TRACK_DEF_HEIGHT;
 
   return self;
 }

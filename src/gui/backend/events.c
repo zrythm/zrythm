@@ -260,6 +260,15 @@ on_automation_track_added (
     /*automation_tracklist_widget_refresh (*/
       /*atl->widget);*/
 
+  g_return_if_fail (
+    at->track);
+  if (Z_IS_TRACK_WIDGET (at->track->widget))
+    {
+      TrackWidget * tw =
+        (TrackWidget *) at->track->widget;
+      track_widget_update_size (tw);
+    }
+
   timeline_arranger_widget_refresh_children (
     MW_TIMELINE);
   /*timeline_arranger_widget_refresh_children (*/
@@ -369,7 +378,8 @@ on_plugin_added (Plugin * plugin)
   Track * track = plugin->track;
   /*AutomationTracklist * automation_tracklist =*/
     /*track_get_automation_tracklist (track);*/
-  track_widget_force_redraw (track->widget);
+  if (track && track->widget)
+    track_widget_force_redraw (track->widget);
 }
 
 static void

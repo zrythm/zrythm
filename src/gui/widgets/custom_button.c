@@ -94,29 +94,34 @@ get_color_for_state (
     }
 }
 
-void
-custom_button_widget_draw (
+static void
+draw_bg (
   CustomButtonWidget * self,
   cairo_t *            cr,
   double               x,
   double               y,
+  double               width,
+  int                  draw_frame,
   CustomButtonWidgetState    state)
 {
-  /* draw border */
-  /*cairo_set_source_rgba (*/
-    /*cr, 1, 1, 1, 0.4);*/
-  /*cairo_set_line_width (cr, 0.5);*/
-  /*z_cairo_rounded_rectangle (*/
-    /*cr, x, y, self->size, self->size, self->aspect,*/
-    /*self->corner_radius);*/
-  /*cairo_stroke (cr);*/
+  if (draw_frame)
+    {
+      cairo_set_source_rgba (
+        cr, 1, 1, 1, 0.4);
+      cairo_set_line_width (cr, 0.5);
+      z_cairo_rounded_rectangle (
+        cr, x, y, self->size, self->size,
+        self->aspect, self->corner_radius);
+      cairo_stroke (cr);
+    }
 
   /* draw bg with fade from last state */
   GdkRGBA c;
   get_color_for_state (self, state, &c);
   if (self->last_state != state)
     {
-      self->transition_frames = CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
+      self->transition_frames =
+        CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
     }
 
   /* draw transition if transition frames exist */
@@ -138,10 +143,19 @@ custom_button_widget_draw (
   self->last_color = c;
 
   z_cairo_rounded_rectangle (
-    cr, x, y, self->size, self->size, self->aspect,
+    cr, x, y, width, self->size, self->aspect,
     self->corner_radius);
   cairo_fill (cr);
+}
 
+static void
+draw_icon_with_shadow (
+  CustomButtonWidget * self,
+  cairo_t *            cr,
+  double               x,
+  double               y,
+  CustomButtonWidgetState    state)
+{
   /* show icon with shadow */
   cairo_set_source_rgba (
     cr, 0, 0, 0, 0.4);
@@ -155,12 +169,74 @@ custom_button_widget_draw (
   cairo_set_source_surface (
     cr, self->icon_surface, x + 1, y + 1);
   cairo_paint (cr);
+}
+
+void
+custom_button_widget_draw (
+  CustomButtonWidget * self,
+  cairo_t *            cr,
+  double               x,
+  double               y,
+  CustomButtonWidgetState    state)
+{
+  draw_bg (self, cr, x, y, self->size, 0, state);
+
+  draw_icon_with_shadow (self, cr, x, y, state);
 
   self->last_state = state;
+}
+
+/**
+ * @param width Max width for the button to use.
+ */
+void
+custom_button_widget_draw_with_text (
+  CustomButtonWidget * self,
+  cairo_t *            cr,
+  double               x,
+  double               y,
+  double               width,
+  CustomButtonWidgetState    state)
+{
+  draw_bg (self, cr, x, y, width, 0, state);
+
+  draw_icon_with_shadow (self, cr, x, y, state);
+
+  /* draw text */
+  cairo_set_source_rgba (
+    cr, 1, 1, 1, 1);
+  cairo_move_to (
+    cr, x + self->size + 2, y);
+  PangoLayout * layout = self->layout;
+  pango_layout_set_text (
+    layout, self->text, -1);
+  pango_cairo_show_layout (cr, layout);
+
+  self->width = (int) width;
+  self->last_state = state;
+}
+
+void
+custom_button_widget_set_text (
+  CustomButtonWidget * self,
+  PangoLayout *        layout,
+  char *               text)
+{
+  g_return_if_fail (text && layout);
+
+  self->text = g_strdup (text);
+  self->layout =
+    pango_layout_copy (layout);
 }
 
 void
 custom_button_widget_free (
   CustomButtonWidget * self)
 {
+  if (self->text)
+    g_free (self->text);
+  if (self->layout)
+    g_object_unref (self->layout);
+
+  free (self);
 }

@@ -114,7 +114,7 @@ typedef struct _TrackWidget
   int                 selected_in_dnd;
 
   /** Cache layout for drawing the name. */
-  PangoLayout *      layout;
+  PangoLayout *       layout;
 
   /** For drag actions. */
   double              start_x;
@@ -246,6 +246,14 @@ int
 track_widget_is_cursor_in_top_half (
   TrackWidget * self,
   double        y);
+
+/**
+ * Updates the full track size and redraws the
+ * track.
+ */
+void
+track_widget_update_size (
+  TrackWidget * self);
 
 /**
  * Highlights/unhighlights the Tracks

@@ -339,11 +339,14 @@ automatable_is_float (Automatable * a)
 float
 automatable_get_val (Automatable * a)
 {
+  g_return_val_if_fail (a, 0.f);
   Plugin * plugin;
   Channel * ch;
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      g_return_val_if_fail (
+        a->port && a->port->plugin, 0.f);
       plugin = a->port->plugin;
       if (plugin->descr->protocol == PROT_LV2)
         {
@@ -353,8 +356,9 @@ automatable_get_val (Automatable * a)
         }
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
-      plugin = a->port->plugin;
-      return (float) plugin->enabled;
+      g_return_val_if_fail (
+        a->plugin, 0.f);
+      return (float) a->plugin->enabled;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
       ch = track_get_channel (a->track);
       return ch->fader.amp;

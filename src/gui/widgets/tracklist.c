@@ -342,9 +342,7 @@ tracklist_widget_hard_refresh (
 
       /*track_widget_refresh (track->widget);*/
 
-      gtk_widget_set_size_request (
-        (GtkWidget *) track->widget, -1,
-        track->main_height);
+      track_widget_update_size (track->widget);
 
       gtk_container_add (
         (GtkContainer *) self,
@@ -379,9 +377,7 @@ tracklist_widget_hard_refresh (
 
       /*track_widget_refresh (track->widget);*/
 
-      gtk_widget_set_size_request (
-        (GtkWidget *) track->widget, -1,
-        track->main_height);
+      track_widget_update_size (track->widget);
 
       gtk_container_add (
         (GtkContainer *) self->unpinned_box,
@@ -444,12 +440,8 @@ tracklist_widget_update_track_visibility (
         GTK_WIDGET (track->widget),
         track->visible);
 
-      int w, h;
-      gtk_widget_get_size_request (
-        (GtkWidget *) track->widget, &w, &h);
-      gtk_widget_set_size_request (
-        (GtkWidget *) track->widget, w,
-        track_get_full_visible_height (track));
+      track_widget_update_size (
+        track->widget);
     }
 }
 
