@@ -195,7 +195,7 @@ timeline_arranger_widget_set_allocation (
               AutomationTrack * at =
                 region->at;
               if (!at->created ||
-                  !track->bot_paned_visible)
+                  !track->automation_visible)
                 return;
 
               gtk_widget_translate_coordinates (
@@ -569,7 +569,7 @@ timeline_arranger_widget_get_automation_track_at_y (
       AutomationTracklist * atl =
         track_get_automation_tracklist (track);
       if (!atl ||
-          !track->bot_paned_visible ||
+          !track->automation_visible ||
           (track->pinned && (
              self == MW_TIMELINE)) ||
           (!track->pinned && (
@@ -1938,7 +1938,7 @@ add_children_from_channel_track (
   TimelineArrangerWidget * self,
   ChannelTrack * ct)
 {
-  if (!((Track *)ct)->bot_paned_visible)
+  if (!((Track *)ct)->automation_visible)
     return;
 
   int i,j,k;

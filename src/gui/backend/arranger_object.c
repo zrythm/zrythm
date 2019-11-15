@@ -1824,7 +1824,7 @@ arranger_object_should_be_visible (
       ArrangerObject * ap =
         arranger_object_get_object (self);
       if (!(arranger_object_get_track (ap)->
-              bot_paned_visible))
+              automation_visible))
         {
           non_trans_visible = 0;
           trans_visible = 0;

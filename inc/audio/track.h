@@ -68,6 +68,7 @@ typedef void MIDI_FILE;
  */
 
 #define TRACK_MIN_HEIGHT 24
+#define TRACK_DEF_HEIGHT 48
 
 typedef enum TrackType
 {
@@ -186,7 +187,7 @@ typedef struct Track
   int                 pinned;
 
   /** Flag to set automations visible or not. */
-  int                 bot_paned_visible;
+  int                 automation_visible;
 
   /** Flag to set track lanes visible or not. */
   int                 lanes_visible;
@@ -344,8 +345,8 @@ track_fields_schema[] =
     "lanes_visible", CYAML_FLAG_DEFAULT,
     Track, lanes_visible),
 	CYAML_FIELD_INT (
-    "bot_paned_visible", CYAML_FLAG_DEFAULT,
-    Track, bot_paned_visible),
+    "automation_visible", CYAML_FLAG_DEFAULT,
+    Track, automation_visible),
 	CYAML_FIELD_INT (
     "visible", CYAML_FLAG_DEFAULT,
     Track, visible),
@@ -585,6 +586,22 @@ track_get_region_at_pos (
 Region *
 track_get_last_region (
   Track *    track);
+
+/**
+ * Set track lanes visible and fire events.
+ */
+void
+track_set_lanes_visible (
+  Track *   track,
+  const int visible);
+
+/**
+ * Set automation visible and fire events.
+ */
+void
+track_set_automation_visible (
+  Track *   track,
+  const int visible);
 
 /**
  * Returns if the given TrackType can host the

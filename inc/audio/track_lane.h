@@ -30,6 +30,8 @@
 #include "utils/yaml.h"
 
 typedef struct _TrackLaneWidget TrackLaneWidget;
+typedef struct CustomButtonWidget
+  CustomButtonWidget;
 typedef void MIDI_FILE;
 
 /**
@@ -84,6 +86,10 @@ typedef struct TrackLane
    * inherited from the Track.
    */
   uint8_t             midi_ch;
+
+  /** Buttons used by the track widget. */
+  CustomButtonWidget * buttons[8];
+  int                  num_buttons;
 
 } TrackLane;
 

@@ -75,6 +75,8 @@ track_lane_new (
     malloc (self->regions_size *
             sizeof (Region *));
 
+  self->height = TRACK_DEF_HEIGHT;
+
   return self;
 }
 

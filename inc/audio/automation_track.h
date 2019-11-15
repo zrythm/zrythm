@@ -33,6 +33,8 @@ typedef struct _AutomationTrackWidget
 typedef struct Track Track;
 typedef struct Automatable Automatable;
 typedef struct AutomationLane AutomationLane;
+typedef struct CustomButtonWidget
+  CustomButtonWidget;
 
 typedef struct AutomationTrack
 {
@@ -72,6 +74,12 @@ typedef struct AutomationTrack
    * Position of multipane handle.
    */
   int               height;
+
+  /** Buttons used by the track widget */
+  CustomButtonWidget * top_buttons[8];
+  int                  num_top_buttons;
+  CustomButtonWidget * bot_buttons[8];
+  int                  num_bot_buttons;
 
   /** The widget. */
   AutomationTrackWidget * widget;

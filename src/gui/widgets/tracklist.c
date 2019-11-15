@@ -443,6 +443,13 @@ tracklist_widget_update_track_visibility (
       gtk_widget_set_visible (
         GTK_WIDGET (track->widget),
         track->visible);
+
+      int w, h;
+      gtk_widget_get_size_request (
+        (GtkWidget *) track->widget, &w, &h);
+      gtk_widget_set_size_request (
+        (GtkWidget *) track->widget, w,
+        track_get_full_visible_height (track));
     }
 }
 

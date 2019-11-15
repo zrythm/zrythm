@@ -780,11 +780,6 @@ ui_get_mid_color (
   dest->red =
     c1->red * transition +
     c2->red * (1.0 - transition);
-  /*g_message (*/
-    /*"c1 red %f (from %f) c2 red %f (from %f) = dest red %f",*/
-    /*c1->red * (1.0 - transition), c1->red,*/
-    /*c2->red * transition, c2->red,*/
-    /*dest->red);*/
   dest->green =
     c1->green * transition +
     c2->green * (1.0 - transition);

@@ -42,13 +42,9 @@ fishbowl_creation_func ()
   TrackWidget * itw =
     track_widget_new (track);
   gtk_widget_set_size_request (
-    GTK_WIDGET (itw), 200, -1);
+    GTK_WIDGET (itw), 300, 120);
   track_widget_force_redraw (
     Z_TRACK_WIDGET (itw));
-  /*TRACK_WIDGET_GET_PRIVATE (itw);*/
-  /* problem is somewhere inside top grid - upper controls*/
-  /*gtk_widget_unparent (*/
-    /*GTK_WIDGET (tw_prv->top_grid->bot_controls));*/
 
   return GTK_WIDGET (itw);
 }

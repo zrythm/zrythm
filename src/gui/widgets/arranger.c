@@ -577,7 +577,7 @@ select_all_timeline (
             }
         }
 
-      if (!track->bot_paned_visible)
+      if (!track->automation_visible)
         continue;
 
       for (j = 0; j < atl->num_ats; j++)

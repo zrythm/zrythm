@@ -138,7 +138,7 @@ track_init (
   const int add_lane)
 {
   self->visible = 1;
-  self->main_height = 48;
+  self->main_height = TRACK_DEF_HEIGHT;
   self->midi_ch = 1;
   track_add_lane (self);
 }
@@ -288,7 +288,7 @@ track_clone (Track * track)
   new_track->a = track->a
 
   COPY_MEMBER (type);
-  COPY_MEMBER (bot_paned_visible);
+  COPY_MEMBER (automation_visible);
   COPY_MEMBER (visible);
   COPY_MEMBER (main_height);
   COPY_MEMBER (mute);
@@ -565,8 +565,31 @@ int
 track_get_full_visible_height (
   Track * self)
 {
-  /* TODO */
-  return self->main_height;
+  int height = self->main_height;
+
+  if (self->lanes_visible)
+    {
+      for (int i = 0; i < self->num_lanes; i++)
+        {
+          TrackLane * lane = self->lanes[i];
+          height += lane->height;
+        }
+    }
+  if (self->automation_visible)
+    {
+      AutomationTracklist * atl =
+        track_get_automation_tracklist (self);
+      if (atl)
+        {
+          for (int i = 0; i < atl->num_ats; i++)
+            {
+              AutomationTrack * at = atl->ats[i];
+              if (at->visible)
+                height += at->height;
+            }
+        }
+    }
+  return height;
 }
 
 /**
@@ -913,6 +936,34 @@ track_set_pos (
           ports[i]->identifier.track_pos = pos;
         }
     }
+}
+
+/**
+ * Set track lanes visible and fire events.
+ */
+void
+track_set_lanes_visible (
+  Track *   track,
+  const int visible)
+{
+  track->lanes_visible = visible;
+
+  EVENTS_PUSH (
+    ET_TRACK_LANES_VISIBILITY_CHANGED, track);
+}
+
+/**
+ * Set automation visible and fire events.
+ */
+void
+track_set_automation_visible (
+  Track *   track,
+  const int visible)
+{
+  track->automation_visible = visible;
+
+  EVENTS_PUSH (
+    ET_TRACK_AUTOMATION_VISIBILITY_CHANGED, track);
 }
 
 /**

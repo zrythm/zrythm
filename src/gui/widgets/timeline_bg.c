@@ -149,7 +149,7 @@ timeline_bg_widget_draw (
               at = atl->ats[j];
 
               if (!at->created || !at->visible ||
-                  !track->bot_paned_visible ||
+                  !track->automation_visible ||
                   !at->widget)
                 continue;
 

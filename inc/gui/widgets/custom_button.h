@@ -30,13 +30,20 @@
 
 #define CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES 9
 
-typedef enum CustomButtonWidgetstate
+typedef enum CustomButtonWidgetState
 {
   CUSTOM_BUTTON_WIDGET_STATE_NORMAL,
   CUSTOM_BUTTON_WIDGET_STATE_HOVERED,
   CUSTOM_BUTTON_WIDGET_STATE_ACTIVE,
   CUSTOM_BUTTON_WIDGET_STATE_TOGGLED,
 } CustomButtonWidgetState;
+
+typedef enum CustomButtonWidgetOwner
+{
+  CUSTOM_BUTTON_WIDGET_OWNER_TRACK,
+  CUSTOM_BUTTON_WIDGET_OWNER_LANE,
+  CUSTOM_BUTTON_WIDGET_OWNER_AT,
+} CustomButtonWidgetOwner;
 
 /**
  * Custom button to be drawn inside drawing areas.
@@ -95,6 +102,12 @@ typedef struct CustomButtonWidget
 
   /** Used to update caches if state changed. */
   CustomButtonWidgetState last_state;
+
+  /** Owner type. */
+  CustomButtonWidgetOwner owner_type;
+
+  /** Owner. */
+  void *                  owner;
 
   /** Used during transitions. */
   GdkRGBA            last_color;

@@ -68,7 +68,7 @@ automation_tracklist_widget_refresh (
 
   g_return_if_fail (track);
 
-  if (!track->bot_paned_visible)
+  if (!track->automation_visible)
     {
       gtk_widget_set_visible (GTK_WIDGET (self),
                               0);
@@ -114,14 +114,14 @@ automation_tracklist_widget_refresh (
           /*AutomationPoint * ap = at->automation_points[j];*/
           /*gtk_widget_set_visible (*/
             /*GTK_WIDGET (ap->widget),*/
-            /*at->visible && track->bot_paned_visible);*/
+            /*at->visible && track->automation_visible);*/
         /*}*/
       /*for (int j = 0; j < at->num_automation_curves; j++)*/
         /*{*/
           /*AutomationCurve * ac = at->automation_curves[j];*/
           /*gtk_widget_set_visible (*/
             /*GTK_WIDGET (ac->widget),*/
-            /*at->visible && track->bot_paned_visible);*/
+            /*at->visible && track->automation_visible);*/
         /*}*/
     }
 
