@@ -96,6 +96,10 @@ G_DEFINE_TYPE (
  * value. */
 #define AUTOMATION_VALUE_WIDTH 32
 
+/** Pixels from the bottom edge to start resizing
+ * at. */
+#define RESIZE_PX 12
+
 #define BOT_BUTTONS_SHOULD_BE_VISIBLE(height) \
   (height >= \
      (BUTTON_SIZE + \
@@ -364,19 +368,18 @@ draw_lanes (
   if (!track->lanes_visible)
     return;
 
+  int total_height = track->main_height;
   for (int i = 0; i < track->num_lanes; i++)
     {
       TrackLane * lane = track->lanes[i];
-
-      int top =
-        track->main_height + i * lane->height;
 
       /* draw separator */
       cairo_set_source_rgba (
         cr, 1, 1, 1, 0.3);
       cairo_set_line_width (cr, 0.5);
-      cairo_move_to (cr, COLOR_AREA_WIDTH, top);
-      cairo_line_to (cr, width, top);
+      cairo_move_to (
+        cr, COLOR_AREA_WIDTH, total_height);
+      cairo_line_to (cr, width, total_height);
       cairo_stroke (cr);
 
       /* draw text */
@@ -386,7 +389,7 @@ draw_lanes (
         cr,
         COLOR_AREA_WIDTH +
           BUTTON_PADDING_FROM_EDGE,
-        top + BUTTON_PADDING_FROM_EDGE);
+        total_height + BUTTON_PADDING_FROM_EDGE);
       PangoLayout * layout = self->layout;
       char str[50];
       sprintf (str, _("Lane %d"), i + 1);
@@ -433,7 +436,8 @@ draw_lanes (
           cb->x =
             width - (BUTTON_SIZE + BUTTON_PADDING) *
             (lane->num_buttons - j);
-          cb->y = top + BUTTON_PADDING_FROM_EDGE;
+          cb->y =
+            total_height + BUTTON_PADDING_FROM_EDGE;
 
           CustomButtonWidgetState state =
             CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
@@ -477,6 +481,8 @@ draw_lanes (
           custom_button_widget_draw (
             cb, cr, cb->x, cb->y, state);
         }
+
+      total_height += lane->height;
     }
 }
 
@@ -495,19 +501,20 @@ draw_automation (
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   g_return_if_fail (atl);
+  int total_height = track->main_height;
   for (int i = 0; i < atl->num_ats; i++)
     {
       AutomationTrack * at = atl->ats[i];
 
-      int top =
-        track->main_height + i * at->height;
+      if (!(at->created && at->visible))
+        continue;
 
       if (track->lanes_visible)
         {
           for (int j = 0; j < track->num_lanes; j++)
             {
               TrackLane * lane = track->lanes[j];
-              top += lane->height;
+              total_height += lane->height;
             }
         }
 
@@ -515,8 +522,9 @@ draw_automation (
       cairo_set_source_rgba (
         cr, 1, 1, 1, 0.3);
       cairo_set_line_width (cr, 0.5);
-      cairo_move_to (cr, COLOR_AREA_WIDTH, top);
-      cairo_line_to (cr, width, top);
+      cairo_move_to (
+        cr, COLOR_AREA_WIDTH, total_height);
+      cairo_line_to (cr, width, total_height);
       cairo_stroke (cr);
 
       /* create buttons if necessary */
@@ -605,7 +613,8 @@ draw_automation (
           cb->x =
             BUTTON_PADDING_FROM_EDGE +
             COLOR_AREA_WIDTH;
-          cb->y = top + BUTTON_PADDING_FROM_EDGE;
+          cb->y =
+            total_height + BUTTON_PADDING_FROM_EDGE;
 
           CustomButtonWidgetState state =
             CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
@@ -653,7 +662,7 @@ draw_automation (
       cairo_move_to (
         cr,
         cb->x + cb->width + BUTTON_PADDING,
-        top + BUTTON_PADDING_FROM_EDGE);
+        total_height + BUTTON_PADDING_FROM_EDGE);
       pango_layout_set_text (
         layout, str, -1);
       pango_cairo_show_layout (cr, layout);
@@ -666,49 +675,8 @@ draw_automation (
           cb->x =
             width - (BUTTON_SIZE + BUTTON_PADDING) *
             (at->num_top_right_buttons - j);
-          cb->y = top + BUTTON_PADDING_FROM_EDGE;
-
-          CustomButtonWidgetState state =
-            CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
-
-          if (cb == self->clicked_button)
-            {
-              /* currently clicked button */
-              state =
-                CUSTOM_BUTTON_WIDGET_STATE_ACTIVE;
-            }
-          else if (hovered_cb == cb)
-            {
-              state =
-                CUSTOM_BUTTON_WIDGET_STATE_HOVERED;
-            }
-
-          if (state != cb->last_state)
-            {
-              /* add another cycle to draw
-               * transition */
-              self->redraw =
-                CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
-              track_widget_force_redraw (self);
-            }
-          custom_button_widget_draw (
-            cb, cr, cb->x, cb->y, state);
-        }
-
-      for (int j = 0; j < at->num_bot_left_buttons;
-           j++)
-        {
-          cb =
-            at->bot_left_buttons[j];
-
-          cb->x =
-            BUTTON_PADDING_FROM_EDGE +
-            COLOR_AREA_WIDTH +
-            j * (BUTTON_SIZE + BUTTON_PADDING);
           cb->y =
-            (top + at->height) -
-              (BUTTON_PADDING_FROM_EDGE +
-               BUTTON_SIZE);
+            total_height + BUTTON_PADDING_FROM_EDGE;
 
           CustomButtonWidgetState state =
             CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
@@ -737,47 +705,95 @@ draw_automation (
             cb, cr, cb->x, cb->y, state);
         }
 
-      for (int j = 0; j < at->num_bot_right_buttons;
-           j++)
+      if (BOT_BUTTONS_SHOULD_BE_VISIBLE (
+            at->height))
         {
-          cb =
-            at->bot_right_buttons[j];
-
-          cb->x =
-            width -
-              (BUTTON_SIZE + BUTTON_PADDING) *
-              (at->num_bot_right_buttons - j);
-          cb->y =
-            (top + at->height) -
-              (BUTTON_PADDING_FROM_EDGE +
-               BUTTON_SIZE);
-
-          CustomButtonWidgetState state =
-            CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
-
-          if (cb == self->clicked_button)
+          for (int j = 0; j < at->num_bot_left_buttons;
+               j++)
             {
-              /* currently clicked button */
-              state =
-                CUSTOM_BUTTON_WIDGET_STATE_ACTIVE;
-            }
-          else if (hovered_cb == cb)
-            {
-              state =
-                CUSTOM_BUTTON_WIDGET_STATE_HOVERED;
+              cb =
+                at->bot_left_buttons[j];
+
+              cb->x =
+                BUTTON_PADDING_FROM_EDGE +
+                COLOR_AREA_WIDTH +
+                j * (BUTTON_SIZE + BUTTON_PADDING);
+              cb->y =
+                (total_height + at->height) -
+                  (BUTTON_PADDING_FROM_EDGE +
+                   BUTTON_SIZE);
+
+              CustomButtonWidgetState state =
+                CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
+
+              if (cb == self->clicked_button)
+                {
+                  /* currently clicked button */
+                  state =
+                    CUSTOM_BUTTON_WIDGET_STATE_ACTIVE;
+                }
+              else if (hovered_cb == cb)
+                {
+                  state =
+                    CUSTOM_BUTTON_WIDGET_STATE_HOVERED;
+                }
+
+              if (state != cb->last_state)
+                {
+                  /* add another cycle to draw
+                   * transition */
+                  self->redraw =
+                    CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
+                  track_widget_force_redraw (self);
+                }
+              custom_button_widget_draw (
+                cb, cr, cb->x, cb->y, state);
             }
 
-          if (state != cb->last_state)
+          for (int j = 0;
+               j < at->num_bot_right_buttons;
+               j++)
             {
-              /* add another cycle to draw
-               * transition */
-              self->redraw =
-                CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
-              track_widget_force_redraw (self);
+              cb =
+                at->bot_right_buttons[j];
+
+              cb->x =
+                width -
+                  (BUTTON_SIZE + BUTTON_PADDING) *
+                  (at->num_bot_right_buttons - j);
+              cb->y =
+                (total_height + at->height) -
+                  (BUTTON_PADDING_FROM_EDGE +
+                   BUTTON_SIZE);
+
+              CustomButtonWidgetState state =
+                CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
+
+              if (cb == self->clicked_button)
+                {
+                  /* currently clicked button */
+                  state =
+                    CUSTOM_BUTTON_WIDGET_STATE_ACTIVE;
+                }
+              else if (hovered_cb == cb)
+                {
+                  state =
+                    CUSTOM_BUTTON_WIDGET_STATE_HOVERED;
+                }
+
+              if (state != cb->last_state)
+                {
+                  /* add another cycle to draw
+                   * transition */
+                  self->redraw =
+                    CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
+                  track_widget_force_redraw (self);
+                }
+              custom_button_widget_draw (
+                cb, cr, cb->x, cb->y, state);
             }
-          custom_button_widget_draw (
-            cb, cr, cb->x, cb->y, state);
         }
+      total_height += at->height;
     }
 }
 
@@ -787,7 +803,9 @@ track_draw_cb (
   cairo_t *     cr,
   TrackWidget * self)
 {
-  g_message ("redrawing track (%d)", self->redraw);
+  g_message (
+    "redrawing track (frames left: %d)",
+    self->redraw);
   if (self->redraw)
     {
       GtkStyleContext *context =
@@ -847,7 +865,8 @@ track_draw_cb (
 
       self->redraw--;
 
-      /* finish redrawing the sequence */
+      /* if there are still frames left, draw
+       * again to finish drawing the sequence */
       if (self->redraw)
         gtk_widget_queue_draw (widget);
     }
@@ -859,14 +878,80 @@ track_draw_cb (
   return FALSE;
 }
 
+static AutomationTrack *
+get_at_to_resize (
+  TrackWidget * self,
+  int           y)
+{
+  Track * track = self->track;
+
+  if (!track->automation_visible)
+    return NULL;
+
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  g_return_val_if_fail (atl, NULL);
+  int total_height = track->main_height;
+  if (track->lanes_visible)
+    {
+      for (int i = 0; i < track->num_lanes; i++)
+        {
+          TrackLane * lane = track->lanes[i];
+          total_height += lane->height;
+        }
+    }
+
+  for (int i = 0; i < atl->num_ats; i++)
+    {
+      AutomationTrack * at = atl->ats[i];
+
+      if (at->created && at->visible)
+        total_height += at->height;
+
+      int val = total_height - y;
+      if (val >= 0 && val < RESIZE_PX)
+        {
+          return at;
+        }
+    }
+
+  return NULL;
+}
+
+static TrackLane *
+get_lane_to_resize (
+  TrackWidget * self,
+  int           y)
+{
+  Track * track = self->track;
+
+  if (!track->lanes_visible)
+    return NULL;
+
+  int total_height = track->main_height;
+  for (int i = 0; i < track->num_lanes; i++)
+    {
+      TrackLane * lane = track->lanes[i];
+      total_height += lane->height;
+
+      int val = total_height - y;
+      if (val >= 0 && val < RESIZE_PX)
+        {
+          return lane;
+        }
+    }
+
+  return NULL;
+}
+
 static gboolean
 on_motion (
   GtkWidget *      widget,
   GdkEventMotion * event,
   TrackWidget *    self)
 {
-  int height =
-    gtk_widget_get_allocated_height (widget);
+  /*int height =*/
+    /*gtk_widget_get_allocated_height (widget);*/
 
   /* show resize cursor or not */
   if (self->bg_hovered)
@@ -874,16 +959,53 @@ on_motion (
       CustomButtonWidget * cb =
         get_hovered_button (
           self, (int) event->x, (int) event->y);
-      if ((!cb && height - event->y < 12) ||
-          self->resizing)
+      int val =
+        self->track->main_height - (int) event->y;
+      int resizing_track =
+        val >= 0 && val < RESIZE_PX;
+      AutomationTrack * resizing_at =
+        get_at_to_resize (self, (int) event->y);
+      TrackLane * resizing_lane =
+        get_lane_to_resize (self, (int) event->y);
+      if (self->resizing)
+        self->resize = 1;
+      else if (!cb && resizing_track)
         {
           self->resize = 1;
+          self->resize_target_type =
+            TRACK_WIDGET_RESIZE_TARGET_TRACK;
+          self->resize_target = self->track;
+          g_message ("RESIZING TRACK");
+        }
+      else if (!cb && resizing_at)
+        {
+          self->resize = 1;
+          self->resize_target_type =
+            TRACK_WIDGET_RESIZE_TARGET_AT;
+          self->resize_target = resizing_at;
+          g_message ("RESIZING AT");
+        }
+      else if (!cb && resizing_lane)
+        {
+          self->resize = 1;
+          self->resize_target_type =
+            TRACK_WIDGET_RESIZE_TARGET_LANE;
+          self->resize_target = resizing_lane;
+          g_message ("RESIZING LANE %d",
+                     resizing_lane->pos);
+        }
+      else
+        {
+          self->resize = 0;
+        }
+
+      if (self->resize == 1)
+        {
           ui_set_cursor_from_name (
             widget, "s-resize");
         }
       else
         {
-          self->resize = 0;
           ui_set_pointer_cursor (widget);
         }
     }
@@ -1487,18 +1609,42 @@ on_drag_update (
     {
       /* resize */
       Track * track = self->track;
-      int prev_height =
-        track->main_height;
-      /*int new_full_height =*/
-        /*(int) (offset_y + self->start_y);*/
       int diff =
         (int) (offset_y - self->last_offset_y);
-      track->main_height =
-        MAX (
-          TRACK_MIN_HEIGHT,
-          prev_height + diff);
-      g_message ("resizing %f %f",
-                 offset_y, self->start_y);
+
+      switch (self->resize_target_type)
+        {
+        case TRACK_WIDGET_RESIZE_TARGET_TRACK:
+          track->main_height =
+            MAX (
+              TRACK_MIN_HEIGHT,
+              track->main_height + diff);
+          break;
+        case TRACK_WIDGET_RESIZE_TARGET_AT:
+          {
+            AutomationTrack * at =
+              (AutomationTrack *)
+              self->resize_target;
+            at->height =
+              MAX (
+                TRACK_MIN_HEIGHT,
+                at->height + diff);
+          }
+          break;
+        case TRACK_WIDGET_RESIZE_TARGET_LANE:
+          {
+            TrackLane * lane =
+              (TrackLane *)
+              self->resize_target;
+            lane->height =
+              MAX (
+                TRACK_MIN_HEIGHT,
+                lane->height + diff);
+            g_message ("lane %d height changed",
+                       lane->pos);
+          }
+          break;
+        }
       track_widget_update_size (self);
     }
   else

@@ -36,14 +36,21 @@ G_DECLARE_FINAL_TYPE (
   Z, TRACK_WIDGET,
   GtkBox)
 
+typedef struct Track Track;
+typedef struct CustomButtonWidget CustomButtonWidget;
+
 /**
  * @addtogroup widgets
  *
  * @{
  */
 
-typedef struct Track Track;
-typedef struct CustomButtonWidget CustomButtonWidget;
+typedef enum TrackWidgetResizeTarget
+{
+  TRACK_WIDGET_RESIZE_TARGET_TRACK,
+  TRACK_WIDGET_RESIZE_TARGET_AT,
+  TRACK_WIDGET_RESIZE_TARGET_LANE,
+} TrackWidgetResizeTarget;
 
 /**
  * The TrackWidget is split into 3 parts inside a
@@ -97,6 +104,12 @@ typedef struct _TrackWidget
 
   /** Set during the whole resizing action. */
   int                 resizing;
+
+  /** Resize target type (track/at/lane). */
+  TrackWidgetResizeTarget  resize_target_type;
+
+  /** The object to resize. */
+  void *                   resize_target;
 
   /** Associated Track. */
   Track *                   track;
