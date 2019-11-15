@@ -34,6 +34,7 @@
     <child>
       <object class="GtkDrawingArea" id="drawing_area">
         <property name="visible">True</property>
+        <property name="vexpand">True</property>
       </object>
     </child>
     <child>

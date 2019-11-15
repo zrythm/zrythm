@@ -113,9 +113,25 @@ typedef struct _TrackWidget
    * drag_end. */
   int                 selected_in_dnd;
 
+  /** Cache layout for drawing the name. */
+  PangoLayout *      layout;
+
   /** For drag actions. */
   double              start_x;
   double              start_y;
+  double              last_offset_y;
+
+  /** Used during hovering to remember the last
+   * known cursor position. */
+  double              last_x;
+  double              last_y;
+
+  /** Used when mouse button is held down to
+   * mark buttons as clicked. */
+  int                 button_pressed;
+
+  /** Currently clicked button. */
+  CustomButtonWidget * clicked_button;
 
   GtkDrawingArea *    drawing_area;
 

@@ -31,8 +31,10 @@
 #include "audio/marker_track.h"
 #include "audio/tracklist.h"
 #include "project.h"
+#include "utils/cairo.h"
 #include "utils/objects.h"
 #include "utils/flags.h"
+#include "utils/ui.h"
 #include "zrythm.h"
 
 #include <glib.h>
@@ -167,6 +169,9 @@ test_helper_zrythm_gui_init (
           800);
   g_object_unref (css_provider);
   g_message ("set default css provider");
+
+  CAIRO_CACHES = z_cairo_caches_new ();
+  UI_CACHES = ui_caches_new ();
 }
 
 /**

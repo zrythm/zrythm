@@ -606,6 +606,13 @@ drag_dest_box_widget_new (
         20,
         -1);
     }
+  else if (type == DRAG_DEST_BOX_TYPE_TRACKLIST)
+    {
+      gtk_widget_set_size_request (
+        GTK_WIDGET (self),
+        -1,
+        160);
+    }
 
   /* make expandable */
   gtk_widget_set_vexpand (

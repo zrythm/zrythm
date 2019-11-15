@@ -532,6 +532,19 @@ ui_get_contrast_color (
   GdkRGBA * dest);
 
 /**
+ * Returns the color in-between two colors.
+ *
+ * @param transition How far to transition (0.5 for
+ *   half).
+ */
+void
+ui_get_mid_color (
+  GdkRGBA * dest,
+  const GdkRGBA * c1,
+  const GdkRGBA * c2,
+  const double    transition);
+
+/**
  * Returns if the color is bright or not.
  */
 int

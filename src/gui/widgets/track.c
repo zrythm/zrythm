@@ -48,6 +48,7 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/string.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
@@ -67,6 +68,53 @@ G_DEFINE_TYPE (
   "z-format-justify-fill"
 #define ICON_NAME_LOCK "z-object-unlocked"
 #define ICON_NAME_FREEZE "snowflake-o"
+
+#define NAME_FONT "10"
+
+/**
+ * Width of each meter: total 8 for MIDI, total
+ * 16 for audio.
+ */
+#define METER_WIDTH 8
+
+#define BUTTON_SIZE 18
+
+/** Padding between each button. */
+#define BUTTON_PADDING 6
+
+/** Padding between the track edges and the
+ * buttons */
+#define BUTTON_PADDING_FROM_EDGE 3
+
+#define BOT_BUTTONS_SHOULD_BE_VISIBLE(height) \
+  (height >= \
+     (BUTTON_SIZE + \
+        BUTTON_PADDING_FROM_EDGE) * 2 + \
+     BUTTON_PADDING)
+
+static CustomButtonWidget *
+get_hovered_button (
+  TrackWidget * self,
+  int           x,
+  int           y)
+{
+  CustomButtonWidget * cb = NULL;
+  for (int i = 0; i < self->num_top_buttons; i++)
+    {
+      cb = self->top_buttons[i];
+      if (x >= cb->x && x <= cb->x + BUTTON_SIZE &&
+          y >= cb->y && y <= cb->y + BUTTON_SIZE)
+        return cb;
+    }
+  for (int i = 0; i < self->num_bot_buttons; i++)
+    {
+      cb = self->bot_buttons[i];
+      if (x >= cb->x && x <= cb->x + BUTTON_SIZE &&
+          y >= cb->y && y <= cb->y + BUTTON_SIZE)
+        return cb;
+    }
+  return NULL;
+}
 
 static void
 draw_color_area (
@@ -93,11 +141,10 @@ draw_color_area (
 
   /* add shadow in the back */
   cairo_set_source_rgba (
-    cr, c3.red,
-    c3.green, c3.blue, 0.4);
-  cairo_mask_surface(
+    cr, c3.red, c3.green, c3.blue, 0.4);
+  cairo_mask_surface (
     cr, surface, 2, 2);
-  cairo_fill(cr);
+  cairo_fill (cr);
 
   /* add main icon */
   cairo_set_source_rgba (
@@ -109,12 +156,115 @@ draw_color_area (
   cairo_fill (self->cached_cr);
 }
 
+static void
+draw_name (
+  TrackWidget * self,
+  cairo_t *     cr)
+{
+  /* draw text */
+  cairo_set_source_rgba (
+    cr, 1, 1, 1, 1);
+  cairo_move_to (cr, 22, 2);
+  PangoLayout * layout = self->layout;
+  pango_layout_set_text (
+    layout, self->track->name, -1);
+  pango_cairo_show_layout (cr, layout);
+}
+
+/**
+ * @param top 1 to draw top, 0 to draw bottom.
+ * @param width Track width.
+ */
+static void
+draw_buttons (
+  TrackWidget * self,
+  cairo_t *     cr,
+  int           top,
+  int           width)
+{
+  CustomButtonWidget * hovered_cb =
+    get_hovered_button (
+      self, (int) self->last_x, (int) self->last_y);
+  int num_buttons =
+    top? self->num_top_buttons :
+    self->num_bot_buttons;
+  CustomButtonWidget ** buttons =
+    top? self->top_buttons :
+    self->bot_buttons;
+  for (int i = 0; i < num_buttons; i++)
+    {
+      CustomButtonWidget * cb = buttons[i];
+
+      if (top)
+        {
+          cb->x =
+            width - (BUTTON_SIZE + BUTTON_PADDING) *
+            (num_buttons - i);
+          cb->y = BUTTON_PADDING_FROM_EDGE;
+        }
+      else
+        {
+          cb->x =
+            width -
+              (BUTTON_SIZE + BUTTON_PADDING) *
+              (self->num_bot_buttons - i);
+          cb->y =
+            self->track->main_height -
+              (BUTTON_PADDING_FROM_EDGE +
+               BUTTON_SIZE);
+        }
+
+      CustomButtonWidgetState state =
+        CUSTOM_BUTTON_WIDGET_STATE_NORMAL;
+
+      if (cb == self->clicked_button)
+        {
+          /* currently clicked button */
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_ACTIVE;
+        }
+      else if (string_is_equal (
+                cb->icon_name,
+                ICON_NAME_SOLO, 1) &&
+               self->track->solo)
+        {
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+        }
+      else if (string_is_equal (
+                cb->icon_name,
+                ICON_NAME_MUTE, 1) &&
+               self->track->mute)
+        {
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+        }
+      else if (hovered_cb == cb)
+        {
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_HOVERED;
+        }
+
+      if (state != cb->last_state)
+        {
+          /* add another cycle to draw transition of
+           * 1 frame */
+          self->redraw =
+            CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES;
+          track_widget_force_redraw (self);
+        }
+      custom_button_widget_draw (
+        cb, cr, cb->x, cb->y, state);
+    }
+}
+
 static int
 track_draw_cb (
   GtkWidget *   widget,
   cairo_t *     cr,
   TrackWidget * self)
 {
+  g_message ("redrawing");
   if (self->redraw)
     {
       GtkStyleContext *context =
@@ -134,9 +284,43 @@ track_draw_cb (
         context, self->cached_cr, 0, 0,
         width, height);
 
-      draw_color_area (self, cr, width, height);
+      if (self->bg_hovered)
+        {
+          cairo_set_source_rgba (
+            self->cached_cr, 1, 1, 1, 0.1);
+          cairo_rectangle (
+            self->cached_cr, 0, 0, width, height);
+          cairo_fill (self->cached_cr);
+        }
+      else if (track_is_selected (self->track))
+        {
+          cairo_set_source_rgba (
+            self->cached_cr, 1, 1, 1, 0.07);
+          cairo_rectangle (
+            self->cached_cr, 0, 0, width, height);
+          cairo_fill (self->cached_cr);
+        }
 
-      self->redraw = 0;
+      draw_color_area (
+        self, self->cached_cr, width, height);
+
+      draw_name (self, self->cached_cr);
+
+      draw_buttons (
+        self, self->cached_cr, 1, width);
+
+      /* only show bot buttons if enough space */
+      if (BOT_BUTTONS_SHOULD_BE_VISIBLE (height))
+        {
+          draw_buttons (
+            self, self->cached_cr, 0, width);
+        }
+
+      self->redraw--;
+
+      /* finish redrawing the sequence */
+      if (self->redraw)
+        gtk_widget_queue_draw (widget);
     }
 
   cairo_set_source_surface (
@@ -155,12 +339,14 @@ on_motion (
   int height =
     gtk_widget_get_allocated_height (widget);
 
-  /* show resize cursor */
-  g_message ("y %f height %d",
-             event->y, height);
+  /* show resize cursor or not */
   if (self->bg_hovered)
     {
-      if (height - event->y < 12)
+      CustomButtonWidget * cb =
+        get_hovered_button (
+          self, (int) event->x, (int) event->y);
+      if ((!cb && height - event->y < 12) ||
+          self->resizing)
         {
           self->resize = 1;
           ui_set_cursor_from_name (
@@ -183,13 +369,21 @@ on_motion (
     {
       g_message ("leave");
       ui_set_pointer_cursor (widget);
-      self->bg_hovered = 0;
-      self->resize = 0;
+      if (!self->resizing)
+        {
+          self->bg_hovered = 0;
+          self->resize = 0;
+          self->button_pressed = 0;
+        }
     }
   else
     {
       self->bg_hovered = 1;
     }
+  track_widget_force_redraw (self);
+
+  self->last_x = event->x;
+  self->last_y = event->y;
 
   return FALSE;
 }
@@ -202,9 +396,9 @@ track_widget_force_redraw (
   TrackWidget * self)
 {
   g_return_if_fail (self);
-  self->redraw = 1;
-  /*gtk_widget_queue_draw (*/
-    /*(GtkWidget *) self->drawing_area);*/
+  self->redraw++;
+  gtk_widget_queue_draw (
+    (GtkWidget *) self->drawing_area);
 }
 
 /**
@@ -561,11 +755,8 @@ multipress_pressed (
   gint                  n_press,
   gdouble               x,
   gdouble               y,
-  gpointer              user_data)
+  TrackWidget *         self)
 {
-  TrackWidget * self =
-    Z_TRACK_WIDGET (user_data);
-
   /* FIXME should do this via focus on click
    * property */
   /*if (!gtk_widget_has_focus (GTK_WIDGET (self)))*/
@@ -574,20 +765,61 @@ multipress_pressed (
   GdkModifierType state_mask =
     ui_get_state_mask (GTK_GESTURE (gesture));
 
-  Track * track = self->track;
+  CustomButtonWidget * cb =
+    get_hovered_button (self, (int) x, (int) y);
+  if (cb)
+    {
+      self->button_pressed = 1;
+      self->clicked_button = cb;
+    }
+  else
+    {
+      Track * track = self->track;
 
-  PROJECT->last_selection =
-    SELECTION_TYPE_TRACK;
+      PROJECT->last_selection =
+        SELECTION_TYPE_TRACK;
 
-  track_select (
-    track,
-    track_is_selected (track) &&
-    state_mask & GDK_CONTROL_MASK ?
-      F_NO_SELECT: F_SELECT,
-    (state_mask & GDK_SHIFT_MASK ||
-      state_mask & GDK_CONTROL_MASK) ?
-      0 : 1,
-    1);
+      track_select (
+        track,
+        track_is_selected (track) &&
+        state_mask & GDK_CONTROL_MASK ?
+          F_NO_SELECT: F_SELECT,
+        (state_mask & GDK_SHIFT_MASK ||
+          state_mask & GDK_CONTROL_MASK) ?
+          0 : 1,
+        1);
+    }
+
+  track_widget_force_redraw (self);
+}
+
+static void
+multipress_released (
+  GtkGestureMultiPress *gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  TrackWidget *         self)
+{
+  if (self->clicked_button)
+    {
+      CustomButtonWidget * cb =
+        self->clicked_button;
+      if (string_is_equal (
+            cb->icon_name, ICON_NAME_SOLO, 1))
+        {
+          track_widget_on_solo_toggled (self);
+        }
+      else if (string_is_equal (
+            cb->icon_name, ICON_NAME_MUTE, 1))
+        {
+          track_widget_on_mute_toggled (self);
+        }
+    }
+
+  self->button_pressed = 0;
+  self->clicked_button = NULL;
+  track_widget_force_redraw (self);
 }
 
 static void
@@ -603,6 +835,12 @@ on_drag_begin (GtkGestureDrag *gesture,
     {
       /* start resizing */
       self->resizing = 1;
+    }
+  else if (self->button_pressed)
+    {
+      gtk_event_controller_reset (
+        GTK_EVENT_CONTROLLER (gesture));
+      /* if one of the buttons is pressed, ignore */
     }
   else
     {
@@ -656,11 +894,16 @@ on_drag_update (
     {
       /* resize */
       Track * track = self->track;
-      track->main_height += (int) offset_y;
-      g_message ("resizing");
+      track->main_height =
+        MAX (
+          TRACK_MIN_HEIGHT,
+          (int) (offset_y + self->start_y));
+      g_message ("resizing %f %f",
+                 offset_y, self->start_y);
       gtk_widget_set_size_request (
         GTK_WIDGET (self), -1,
         track_get_full_visible_height (track));
+      track_widget_force_redraw (self);
     }
   else
     {
@@ -688,6 +931,8 @@ on_drag_update (
 
       g_free (entry_track);
     }
+
+  self->last_offset_y = offset_y;
 }
 
 static void
@@ -698,6 +943,7 @@ on_drag_end (
   TrackWidget * self)
 {
   self->resizing = 0;
+  self->last_offset_y = 0;
 }
 
 static void
@@ -869,6 +1115,57 @@ track_widget_on_record_toggled (
                track);
 }
 
+static void
+recreate_pango_layouts (
+  TrackWidget * self,
+  GdkRectangle * allocation)
+{
+  if (PANGO_IS_LAYOUT (self->layout))
+    g_object_unref (self->layout);
+
+  GtkWidget * widget =
+    GTK_WIDGET (self->drawing_area);
+
+  PangoFontDescription *desc;
+  self->layout =
+    gtk_widget_create_pango_layout (
+      widget, NULL);
+  desc =
+    pango_font_description_from_string (
+      NAME_FONT);
+  pango_layout_set_font_description (
+    self->layout, desc);
+  pango_font_description_free (desc);
+  pango_layout_set_ellipsize (
+    self->layout, PANGO_ELLIPSIZE_END);
+  if (allocation)
+    {
+      pango_layout_set_width (
+        self->layout,
+        pango_units_from_double (
+          allocation->width - 20));
+    }
+}
+
+static void
+on_size_allocate (
+  GtkWidget *    widget,
+  GdkRectangle * allocation,
+  TrackWidget * self)
+{
+  recreate_pango_layouts (self, allocation);
+  track_widget_force_redraw (self);
+}
+
+static void
+on_screen_changed (
+  GtkWidget *    widget,
+  GdkScreen *    previous_screen,
+  TrackWidget * self)
+{
+  recreate_pango_layouts (self, NULL);
+}
+
 /**
  * Add a button.
  *
@@ -878,9 +1175,21 @@ static void
 add_button (
   TrackWidget * self,
   int           top,
-  const char *  icon_name,
-  int           size)
+  const char *  icon_name)
 {
+  CustomButtonWidget * cb =
+    custom_button_widget_new (
+      icon_name, BUTTON_SIZE);
+  if (top)
+    {
+      self->top_buttons[
+        self->num_top_buttons++] = cb;
+    }
+  else
+    {
+      self->bot_buttons[
+        self->num_bot_buttons++] = cb;
+    }
 }
 
 /**
@@ -902,31 +1211,54 @@ track_widget_new (Track * track)
     case TRACK_TYPE_INSTRUMENT:
       strcpy (self->icon_name, "z-audio-midi");
       add_button (
-        self, 1, ICON_NAME_RECORD, 12);
+        self, 1, ICON_NAME_RECORD);
       add_button (
-        self, 1, ICON_NAME_SOLO, 12);
+        self, 1, ICON_NAME_SOLO);
       add_button (
-        self, 1, ICON_NAME_MUTE, 12);
+        self, 1, ICON_NAME_MUTE);
       add_button (
-        self, 1, ICON_NAME_SHOW_UI, 12);
+        self, 1, ICON_NAME_SHOW_UI);
       add_button (
-        self, 0, ICON_NAME_SHOW_AUTOMATION_LANES,
-        12);
+        self, 0, ICON_NAME_LOCK);
       add_button (
-        self, 0, ICON_NAME_SHOW_TRACK_LANES, 12);
+        self, 0, ICON_NAME_FREEZE);
       add_button (
-        self, 0, ICON_NAME_LOCK, 12);
+        self, 0, ICON_NAME_SHOW_TRACK_LANES);
       add_button (
-        self, 0, ICON_NAME_FREEZE, 12);
+        self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MIDI:
       strcpy (self->icon_name, "z-audio-midi");
+      add_button (
+        self, 1, ICON_NAME_RECORD);
+      add_button (
+        self, 1, ICON_NAME_SOLO);
+      add_button (
+        self, 1, ICON_NAME_MUTE);
+      add_button (
+        self, 0, ICON_NAME_LOCK);
+      add_button (
+        self, 0, ICON_NAME_SHOW_TRACK_LANES);
+      add_button (
+        self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_MASTER:
       strcpy (self->icon_name, "bus");
+      add_button (
+        self, 1, ICON_NAME_SOLO);
+      add_button (
+        self, 1, ICON_NAME_MUTE);
+      add_button (
+        self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     case TRACK_TYPE_CHORD:
       strcpy (self->icon_name, "z-minuet-chords");
+      add_button (
+        self, 1, ICON_NAME_RECORD);
+      add_button (
+        self, 1, ICON_NAME_SOLO);
+      add_button (
+        self, 1, ICON_NAME_MUTE);
       break;
     case TRACK_TYPE_MARKER:
       strcpy (
@@ -941,7 +1273,7 @@ track_widget_new (Track * track)
     track_get_full_visible_height (track);
   g_return_val_if_fail (height > 1, NULL);
   gtk_widget_set_size_request (
-    GTK_WIDGET (self->drawing_area),
+    GTK_WIDGET (self),
     -1, height);
 
   self->track = track;
@@ -1017,6 +1349,9 @@ track_widget_init (TrackWidget * self)
     G_OBJECT (self->multipress), "pressed",
     G_CALLBACK (multipress_pressed), self);
   g_signal_connect (
+    G_OBJECT (self->multipress), "released",
+    G_CALLBACK (multipress_released), self);
+  g_signal_connect (
     G_OBJECT (self->right_mouse_mp), "pressed",
     G_CALLBACK (on_right_click), self);
   g_signal_connect (
@@ -1050,6 +1385,12 @@ track_widget_init (TrackWidget * self)
   g_signal_connect (
     G_OBJECT(self), "destroy",
     G_CALLBACK (on_destroy),  NULL);
+  g_signal_connect (
+    G_OBJECT (self->drawing_area), "screen-changed",
+    G_CALLBACK (on_screen_changed),  self);
+  g_signal_connect (
+    G_OBJECT (self->drawing_area), "size-allocate",
+    G_CALLBACK (on_size_allocate),  self);
 
   g_object_ref (self);
 

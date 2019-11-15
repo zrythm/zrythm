@@ -464,6 +464,10 @@ tracklist_widget_init (TracklistWidget * self)
   self->unpinned_scroll =
     GTK_SCROLLED_WINDOW (
       gtk_scrolled_window_new (NULL, NULL));
+  gtk_scrolled_window_set_policy (
+    self->unpinned_scroll,
+    GTK_POLICY_NEVER,
+    GTK_POLICY_EXTERNAL);
   g_object_ref (self->unpinned_scroll);
   gtk_widget_set_visible (
     GTK_WIDGET (self->unpinned_scroll), 1);

@@ -158,6 +158,7 @@
     <child>
       <object class="TimelineBotBoxWidget" id="bot_box">
         <property name="visible">1</property>
+        <property name="vexpand_set">1</property>
       </object>
     </child>
   </template>

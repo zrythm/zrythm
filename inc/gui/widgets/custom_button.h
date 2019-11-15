@@ -28,6 +28,8 @@
 
 #include <gtk/gtk.h>
 
+#define CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES 9
+
 typedef enum CustomButtonWidgetstate
 {
   CUSTOM_BUTTON_WIDGET_STATE_NORMAL,
@@ -68,6 +70,12 @@ typedef struct CustomButtonWidget
    * to this). */
   int          size;
 
+  /** Whether currently hovered. */
+  //int         hovered;
+
+  /** Whether currently held down. */
+  //int         pressed;
+
   /** Aspect ratio for the rounded rectangle. */
   double       aspect;
 
@@ -88,6 +96,9 @@ typedef struct CustomButtonWidget
   /** Used to update caches if state changed. */
   CustomButtonWidgetState last_state;
 
+  /** Used during transitions. */
+  GdkRGBA            last_color;
+
   /** X/y relative to parent drawing area. */
   double             x;
   double             y;
@@ -100,6 +111,9 @@ typedef struct CustomButtonWidget
    * TODO
    */
   unsigned int       button_id;
+
+  /** Frames left for a transition in color. */
+  int                transition_frames;
 
 } CustomButtonWidget;
 

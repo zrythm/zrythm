@@ -67,6 +67,8 @@ typedef void MIDI_FILE;
  * @{
  */
 
+#define TRACK_MIN_HEIGHT 24
+
 typedef enum TrackType
 {
   /**

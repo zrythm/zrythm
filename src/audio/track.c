@@ -138,7 +138,7 @@ track_init (
   const int add_lane)
 {
   self->visible = 1;
-  self->main_height = 120;
+  self->main_height = 48;
   self->midi_ch = 1;
   track_add_lane (self);
 }
