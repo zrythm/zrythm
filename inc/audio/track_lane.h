@@ -57,8 +57,8 @@ typedef struct TrackLane
   /** TrackLaneWidget for this lane. */
   TrackLaneWidget *   widget;
 
-  /** Position of multipane handle. */
-  int                 handle_pos;
+  /** Position of handle. */
+  int                 height;
 
   /** Muted or not. */
   int                 mute;
@@ -98,8 +98,8 @@ track_lane_fields_schema[] =
     TrackLane, name,
    	0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
-    "handle_pos", CYAML_FLAG_DEFAULT,
-    TrackLane, handle_pos),
+    "height", CYAML_FLAG_DEFAULT,
+    TrackLane, height),
 	CYAML_FIELD_INT (
     "mute", CYAML_FLAG_DEFAULT,
     TrackLane, mute),

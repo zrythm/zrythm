@@ -112,6 +112,6 @@ math_doubles_equal (
  * Initializes coefficients to be used later.
  */
 void
-math_init ();
+math_init (void);
 
 #endif

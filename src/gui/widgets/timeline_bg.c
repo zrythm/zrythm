@@ -33,11 +33,9 @@
 #include "audio/tracklist.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
@@ -99,14 +97,13 @@ timeline_bg_widget_draw (
       if (!GTK_IS_WIDGET (tw))
         continue;
       tw_widget = (GtkWidget *) tw;
-      TRACK_WIDGET_GET_PRIVATE (tw);
 
       if (is_pinned_timeline)
         {
-          gtk_widget_translate_coordinates (
-            tw_widget,
-            GTK_WIDGET (MW_PINNED_TRACKLIST),
-            0, 0, &wx, &wy);
+          /*gtk_widget_translate_coordinates (*/
+            /*tw_widget,*/
+            /*GTK_WIDGET (MW_PINNED_TRACKLIST),*/
+            /*0, 0, &wx, &wy);*/
         }
       else
         {
@@ -117,9 +114,7 @@ timeline_bg_widget_draw (
         }
 
       line_y =
-        wy +
-        gtk_widget_get_allocated_height (
-          (GtkWidget *) tw_prv->main_grid);
+        wy + tw->track->main_height;
 
       if (line_y >= rect->y &&
           line_y < rect->y + rect->height)
@@ -181,8 +176,8 @@ timeline_bg_widget_draw (
                       at->automatable));
 
               int y_px =
-                automation_track_widget_get_y_px_from_normalized_val (
-                  at->widget,
+                automation_track_get_y_px_from_normalized_val (
+                  at,
                   normalized_val);
 
               /* show line at current val */

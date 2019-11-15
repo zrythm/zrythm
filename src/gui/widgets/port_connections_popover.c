@@ -24,7 +24,6 @@
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/port_connections_popover.h"
 #include "gui/widgets/port_selector_popover.h"
-#include "gui/widgets/automation_track.h"
 #include "plugins/plugin.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"

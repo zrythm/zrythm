@@ -32,27 +32,28 @@ G_DEFINE_TYPE (RightDockEdgeWidget,
                right_dock_edge_widget,
                GTK_TYPE_BOX)
 
-static DzlDockRevealer *
-get_revealer (
-  RightDockEdgeWidget * self)
-{
-  /*return*/
-    /*DZL_DOCK_REVEALER (*/
-      /*gtk_widget_get_parent (*/
-        /*gtk_widget_get_parent (*/
-          /*GTK_WIDGET (self))));*/
-}
+/*static DzlDockRevealer **/
+/*get_revealer (*/
+  /*RightDockEdgeWidget * self)*/
+/*{*/
+  /*[>return<]*/
+    /*[>DZL_DOCK_REVEALER (<]*/
+      /*[>gtk_widget_get_parent (<]*/
+        /*[>gtk_widget_get_parent (<]*/
+          /*[>GTK_WIDGET (self))));<]*/
+  /*return NULL;*/
+/*}*/
 
-static void
-on_divider_pos_changed (
-  GObject    *gobject,
-  GParamSpec *pspec,
-  DzlDockRevealer * revealer)
-{
-  g_settings_set_int (
-    S_UI, "right-panel-divider-position",
-    dzl_dock_revealer_get_position (revealer));
-}
+/*static void*/
+/*on_divider_pos_changed (*/
+  /*GObject    *gobject,*/
+  /*GParamSpec *pspec,*/
+  /*DzlDockRevealer * revealer)*/
+/*{*/
+  /*g_settings_set_int (*/
+    /*S_UI, "right-panel-divider-position",*/
+    /*dzl_dock_revealer_get_position (revealer));*/
+/*}*/
 
 void
 right_dock_edge_widget_setup (

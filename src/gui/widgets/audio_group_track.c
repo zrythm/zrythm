@@ -123,7 +123,8 @@ audio_group_track_widget_refresh_buttons (
 }
 
 void
-audio_group_track_widget_refresh (AudioGroupTrackWidget * self)
+audio_group_track_widget_refresh (
+  AudioGroupTrackWidget * self)
 {
   TRACK_WIDGET_GET_PRIVATE (self);
   Track * track = tw_prv->track;

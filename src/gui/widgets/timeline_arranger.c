@@ -46,7 +46,6 @@
 #include "audio/tracklist.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/automation_region.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -61,7 +60,6 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_arranger_bg.h"
 #include "gui/widgets/midi_region.h"
-#include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/scale_object.h"
@@ -138,8 +136,6 @@ timeline_arranger_widget_set_allocation (
       if (allocation->width < 1)
         allocation->width = 1;
 
-      TRACK_WIDGET_GET_PRIVATE (track->widget);
-
       gint wx, wy;
       if (arranger_object_is_lane (r_obj))
         {
@@ -188,7 +184,7 @@ timeline_arranger_widget_set_allocation (
                * padding */
               allocation->height =
                 gtk_widget_get_allocated_height (
-                  GTK_WIDGET (tw_prv->top_grid)) -
+                  GTK_WIDGET (track->widget)) -
                 (self->chord_obj_height +
                    Z_CAIRO_TEXT_PADDING * 4);
 
@@ -216,7 +212,7 @@ timeline_arranger_widget_set_allocation (
               allocation->y = wy;
               allocation->height =
                 gtk_widget_get_allocated_height (
-                  (GtkWidget *) (tw_prv->top_grid));
+                  (GtkWidget *) (track->widget));
             }
         }
     }
@@ -546,14 +542,11 @@ timeline_arranger_widget_get_track_at_y (
       if (!track->visible)
         continue;
 
-      g_warn_if_fail (track->widget);
-
-      TRACK_WIDGET_GET_PRIVATE (
-        track->widget);
+      g_return_val_if_fail (track->widget, NULL);
 
       if (ui_is_child_hit (
             GTK_WIDGET (self),
-            GTK_WIDGET (tw_prv->main_grid),
+            GTK_WIDGET (track->widget),
             0, 1, 0, y, 0, 1))
         return track;
     }
@@ -1368,10 +1361,14 @@ timeline_arranger_widget_set_size (
   // set the size
   int ww, hh;
   if (self->is_pinned)
-    gtk_widget_get_size_request (
-      GTK_WIDGET (MW_PINNED_TRACKLIST),
-      &ww,
-      &hh);
+    {
+    /*gtk_widget_get_size_request (*/
+      /*GTK_WIDGET (MW_PINNED_TRACKLIST),*/
+      /*&ww,*/
+      /*&hh);*/
+      ww = 80;
+      hh = 80;
+    }
   else
     gtk_widget_get_size_request (
       GTK_WIDGET (MW_TRACKLIST),

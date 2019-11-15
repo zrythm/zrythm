@@ -33,7 +33,6 @@
 #include "audio/track.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_point.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/center_dock.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin.h"

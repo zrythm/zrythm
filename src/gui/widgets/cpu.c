@@ -224,7 +224,7 @@ refresh_cpu_load (
   fclose(fp);
 
   loadavg = ((a[0]+a[1]+a[2]) - (b[0]+b[1]+b[2])) / ((a[0]+a[1]+a[2]+a[3]) - (b[0]+b[1]+b[2]+b[3]));
-  self->cpu = loadavg * 100;
+  self->cpu = (int) ((double) loadavg * (double) 100);
 
   b[0] = a[0];
   b[1] = a[1];

@@ -25,7 +25,6 @@
 #include "gui/backend/events.h"
 #include "gui/widgets/automatable_selector_button.h"
 #include "gui/widgets/automatable_selector_popover.h"
-#include "gui/widgets/automation_track.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"

@@ -216,7 +216,7 @@ foreach f : test_cflags
 endforeach
 
 test_strict_cflags = [
-  '-Werror=cast-qual',
+  #'-Werror=cast-qual',
   '-Werror=clobbered',
   '-Werror=conversion',
   '-Werror=disabled-optimization',
@@ -228,7 +228,7 @@ test_strict_cflags = [
   '-Werror=overlength-strings',
   '-Werror=stringop-truncation',
   '-Werror=missing-declarations',
-  '-Werror=redundant-decls',
+  #'-Werror=redundant-decls',
   '-Werror=shadow',
   '-Werror=undef',
   '-Werror=unused',

@@ -35,6 +35,9 @@
           <object class="LeftDockEdgeWidget" id="left_dock_edge">
             <property name="visible">True</property>
           </object>
+          <packing>
+            <property name="shrink">0</property>
+          </packing>
         </child>
         <child>
           <!-- This is the paned with the center

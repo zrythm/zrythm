@@ -138,7 +138,7 @@ track_init (
   const int add_lane)
 {
   self->visible = 1;
-  self->handle_pos = 1;
+  self->main_height = 120;
   self->midi_ch = 1;
   track_add_lane (self);
 }
@@ -290,16 +290,13 @@ track_clone (Track * track)
   COPY_MEMBER (type);
   COPY_MEMBER (bot_paned_visible);
   COPY_MEMBER (visible);
-  COPY_MEMBER (handle_pos);
+  COPY_MEMBER (main_height);
   COPY_MEMBER (mute);
   COPY_MEMBER (solo);
   COPY_MEMBER (recording);
   COPY_MEMBER (pinned);
   COPY_MEMBER (active);
-  COPY_MEMBER (color.red);
-  COPY_MEMBER (color.green);
-  COPY_MEMBER (color.blue);
-  COPY_MEMBER (color.alpha);
+  COPY_MEMBER (color);
   COPY_MEMBER (pos);
   COPY_MEMBER (midi_ch);
 
@@ -557,6 +554,19 @@ track_type_can_host_region_type (
         tt == TRACK_TYPE_CHORD;
     }
   g_return_val_if_reached (-1);
+}
+
+/**
+ * Returns the full visible height (main height +
+ * height of all visible automation tracks + height
+ * of all visible lanes).
+ */
+int
+track_get_full_visible_height (
+  Track * self)
+{
+  /* TODO */
+  return self->main_height;
 }
 
 /**

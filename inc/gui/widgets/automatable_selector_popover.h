@@ -53,7 +53,7 @@ typedef struct _AutomatableSelectorPopoverWidget
   GtkPopover              parent_instance;
 
   /** The owner button. */
-  AutomatableSelectorButtonWidget * owner;
+  AutomationTrack *       owner;
 
   GtkBox *                type_treeview_box;
   GtkTreeView *           type_treeview;
@@ -81,6 +81,6 @@ typedef struct _AutomatableSelectorPopoverWidget
  */
 AutomatableSelectorPopoverWidget *
 automatable_selector_popover_widget_new (
-  AutomatableSelectorButtonWidget * owner);
+  AutomationTrack * owner);
 
 #endif

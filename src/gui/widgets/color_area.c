@@ -75,38 +75,38 @@ color_area_draw_cb (
       /* show track icon */
       if (self->type == COLOR_AREA_TYPE_TRACK)
         {
-          TRACK_WIDGET_GET_PRIVATE (
-            self->track->widget);
+          /*TRACK_WIDGET_GET_PRIVATE (*/
+            /*self->track->widget);*/
 
-          if (tw_prv->icon)
-            {
-              cairo_surface_t * surface =
-                gdk_cairo_surface_create_from_pixbuf (
-                  tw_prv->icon, 0, NULL);
+          /*if (tw_prv->icon)*/
+            /*{*/
+              /*cairo_surface_t * surface =*/
+                /*gdk_cairo_surface_create_from_pixbuf (*/
+                  /*tw_prv->icon, 0, NULL);*/
 
-              GdkRGBA c2, c3;
-              ui_get_contrast_color (
-                color, &c2);
-              ui_get_contrast_color (
-                &c2, &c3);
+              /*GdkRGBA c2, c3;*/
+              /*ui_get_contrast_color (*/
+                /*color, &c2);*/
+              /*ui_get_contrast_color (*/
+                /*&c2, &c3);*/
 
-              /* add shadow in the back */
-              cairo_set_source_rgba (
-                self->cached_cr, c3.red,
-                c3.green, c3.blue, 0.4);
-              cairo_mask_surface(
-                self->cached_cr, surface, 2, 2);
-              cairo_fill(self->cached_cr);
+              /*[> add shadow in the back <]*/
+              /*cairo_set_source_rgba (*/
+                /*self->cached_cr, c3.red,*/
+                /*c3.green, c3.blue, 0.4);*/
+              /*cairo_mask_surface(*/
+                /*self->cached_cr, surface, 2, 2);*/
+              /*cairo_fill(self->cached_cr);*/
 
-              /* add main icon */
-              cairo_set_source_rgba (
-                self->cached_cr, c2.red, c2.green, c2.blue, 1);
-              /*cairo_set_source_surface (*/
+              /*[> add main icon <]*/
+              /*cairo_set_source_rgba (*/
+                /*self->cached_cr, c2.red, c2.green, c2.blue, 1);*/
+              /*[>cairo_set_source_surface (<]*/
+                /*[>self->cached_cr, surface, 1, 1);<]*/
+              /*cairo_mask_surface(*/
                 /*self->cached_cr, surface, 1, 1);*/
-              cairo_mask_surface(
-                self->cached_cr, surface, 1, 1);
-              cairo_fill (self->cached_cr);
-            }
+              /*cairo_fill (self->cached_cr);*/
+            /*}*/
         }
       self->redraw = 0;
     }

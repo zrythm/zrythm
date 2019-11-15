@@ -48,7 +48,6 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"

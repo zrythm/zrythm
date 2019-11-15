@@ -30,11 +30,11 @@
 
 #define TRACK_WIDGET_TYPE \
   (track_widget_get_type ())
-G_DECLARE_DERIVABLE_TYPE (
+G_DECLARE_FINAL_TYPE (
   TrackWidget,
   track_widget,
   Z, TRACK_WIDGET,
-  GtkEventBox)
+  GtkBox)
 
 /**
  * @addtogroup widgets
@@ -42,27 +42,8 @@ G_DECLARE_DERIVABLE_TYPE (
  * @{
  */
 
-#define TRACK_WIDGET_GET_PRIVATE(self) \
-  TrackWidgetPrivate * tw_prv = \
-    track_widget_get_private (Z_TRACK_WIDGET (self));
-
-#define SET_TRACK_ICON(icon_name) \
-  tw_prv->icon = \
-    gtk_icon_theme_load_icon ( \
-      gtk_icon_theme_get_default (), \
-      icon_name, \
-      16, \
-      GTK_ICON_LOOKUP_FORCE_SVG | \
-        GTK_ICON_LOOKUP_FORCE_SIZE, \
-      NULL)
-
-typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct Track Track;
-typedef struct _DzlMultiPaned DzlMultiPaned;
-typedef struct _TrackTopGridWidget
-  TrackTopGridWidget;
-typedef struct _TrackLanelistWidget
-  TrackLanelistWidget;
+typedef struct CustomButtonWidget CustomButtonWidget;
 
 /**
  * The TrackWidget is split into 3 parts inside a
@@ -74,53 +55,20 @@ typedef struct _TrackLanelistWidget
  * - 3. AutomationTracklistWidget contains the
  *   AutomationLaneWidgets.
  */
-typedef struct
+typedef struct _TrackWidget
 {
-  /** The color on the left. */
-  ColorAreaWidget *         color;
+  GtkBox                  parent_instance;
 
   /** Track icon, currently not placed anywhere
    * but used by the ColorAreaWidget to get the
    * pixbuf. */
-  GdkPixbuf *                icon;
-
-  /** This is the main grid of the track and is
-   * the top part of the paned. */
-  GtkGrid *                 main_grid;
-
-  /**
-   * This is the widget in the bottom half of the
-   * paned.
-   *
-   * It will either be another track, or the
-   * drag_dest_box, or nothing if this is the last
-   * track in the pinned tracklist.
-   */
-  GtkWidget *               bot_widget;
+  char                 icon_name[60];
 
   GtkGestureDrag *          drag;
   GtkGestureMultiPress *    multipress;
 
   /** Right-click gesture. */
   GtkGestureMultiPress *    right_mouse_mp;
-
-  /**
-   * The track multipane splitting the main
-   * track content, the track lanes, and the bottom
-   * content (automation tracklist).
-   */
-  GtkBox *                 paned;
-
-  /** The top part of the TrackWidget. */
-  TrackTopGridWidget *      top_grid;
-
-  /** Box holding the TrackLanes. */
-  //GtkBox *                  lanes_box;
-
-  /** The track lanes. */
-  TrackLanelistWidget *     lanelist;
-
-  GtkEventBox *             event_box;
 
   /** If drag update was called at least once. */
   int                 dragged;
@@ -132,16 +80,18 @@ typedef struct
   /**
    * Set between enter-leave signals.
    *
-   * This is because hover can continue to send signals when
-   * hovering over other overlayed widgets (buttons, etc.).
+   * This is because hover can continue to send
+   * signals when
+   * hovering over other overlayed widgets (buttons,
+   * etc.).
    */
   int                 bg_hovered;
 
   /**
    * Set when the drag should resize instead of dnd.
    *
-   * This is used to determine if we should resize on drag
-   * begin.
+   * This is used to determine if we should resize
+   * on drag begin.
    */
   int                 resize;
 
@@ -167,21 +117,31 @@ typedef struct
   double              start_x;
   double              start_y;
 
+  GtkDrawingArea *    drawing_area;
+
   /**
    * Signal handler IDs for tracks that have them.
    *
    * This is more convenient instead of having them
    * in each widget.
    */
-  gulong              record_toggle_handler_id;
-  gulong              solo_toggled_handler_id;
-  gulong              mute_toggled_handler_id;
-} TrackWidgetPrivate;
+  //gulong              record_toggle_handler_id;
+  //gulong              solo_toggled_handler_id;
+  //gulong              mute_toggled_handler_id;
 
-typedef struct _TrackWidgetClass
-{
-  GtkPanedClass parent_class;
-} TrackWidgetClass;
+  /** Buttons to be drawin in order. */
+  CustomButtonWidget * top_buttons[8];
+  int                  num_top_buttons;
+  CustomButtonWidget * bot_buttons[8];
+  int                  num_bot_buttons;
+
+  /** Set to 1 to redraw. */
+  int                redraw;
+
+  /** Cairo caches. */
+  cairo_t *          cached_cr;
+  cairo_surface_t *  cached_surface;
+} TrackWidget;
 
 /**
  * Sets up the track widget.
@@ -201,8 +161,7 @@ track_widget_set_name (
 
 void
 track_widget_on_solo_toggled (
-  GtkToggleButton * btn,
-  void *            data);
+  TrackWidget * self);
 
 /**
  * General handler for tracks that have mute
@@ -210,45 +169,41 @@ track_widget_on_solo_toggled (
  */
 void
 track_widget_on_mute_toggled (
-  GtkToggleButton * btn,
-  TrackWidget *     data);
+  TrackWidget * self);
 
 /**
  * Blocks all signal handlers.
  */
-void
-track_widget_block_all_signal_handlers (
-  TrackWidget * self);
+//void
+//track_widget_block_all_signal_handlers (
+  //TrackWidget * self);
 
 /**
  * Unblocks all signal handlers.
  */
-void
-track_widget_unblock_all_signal_handlers (
-  TrackWidget * self);
+//void
+//track_widget_unblock_all_signal_handlers (
+  //TrackWidget * self);
 
 /**
  * Wrapper.
  */
 void
-track_widget_refresh (TrackWidget * self);
+track_widget_force_redraw (
+  TrackWidget * self);
 
 /**
  * Wrapper to refresh mute button only.
  */
-void
-track_widget_refresh_buttons (
-  TrackWidget * self);
-
-TrackWidgetPrivate *
-track_widget_get_private (TrackWidget * self);
+//void
+//track_widget_refresh_buttons (
+  //TrackWidget * self);
 
 /**
  * Callback when automation button is toggled.
  */
 void
 track_widget_on_show_automation_toggled (
-  GtkWidget * widget,
   TrackWidget * self);
 
 /**
@@ -256,7 +211,6 @@ track_widget_on_show_automation_toggled (
  */
 void
 track_widget_on_show_lanes_toggled (
-  GtkWidget * widget,
   TrackWidget * self);
 
 /**
@@ -264,8 +218,7 @@ track_widget_on_show_lanes_toggled (
  */
 void
 track_widget_on_record_toggled (
-  GtkWidget * widget,
-  void *      data);
+  TrackWidget * self);
 
 /**
  * Returns if cursor is in top half of the track.

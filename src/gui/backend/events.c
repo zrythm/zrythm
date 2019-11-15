@@ -40,8 +40,6 @@
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_region.h"
-#include "gui/widgets/automation_track.h"
-#include "gui/widgets/automation_tracklist.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
@@ -55,7 +53,6 @@
 #include "gui/widgets/header_notebook.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/left_dock_edge.h"
-#include "gui/widgets/instrument_track.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/marker.h"
@@ -66,7 +63,6 @@
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/editor_selection_info.h"
-#include "gui/widgets/pinned_tracklist.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -101,8 +97,8 @@ redraw_all_arranger_bgs ()
     Z_ARRANGER_WIDGET (MW_MIDI_MODIFIER_ARRANGER));
   arranger_widget_redraw_bg (
     Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
-  arranger_widget_redraw_bg (
-    Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
+  /*arranger_widget_redraw_bg (*/
+    /*Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));*/
 }
 
 static void
@@ -221,11 +217,11 @@ on_track_state_changed (Track * track)
 {
   if (track->widget)
     {
-      track_widget_block_all_signal_handlers (
-        track->widget);
-      track_widget_refresh (track->widget);
-      track_widget_unblock_all_signal_handlers (
-        track->widget);
+      /*track_widget_block_all_signal_handlers (*/
+        /*track->widget);*/
+      track_widget_force_redraw (track->widget);
+      /*track_widget_unblock_all_signal_handlers (*/
+        /*track->widget);*/
     }
 
   Channel * chan = track_get_channel (track);
@@ -255,18 +251,19 @@ on_range_selection_changed ()
 }
 
 static void
-on_automation_track_added (AutomationTrack * at)
+on_automation_track_added (
+  AutomationTrack * at)
 {
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (at->track);
-  if (atl && atl->widget)
-    automation_tracklist_widget_refresh (
-      atl->widget);
+  /*AutomationTracklist * atl =*/
+    /*track_get_automation_tracklist (at->track);*/
+  /*if (atl && atl->widget)*/
+    /*automation_tracklist_widget_refresh (*/
+      /*atl->widget);*/
 
   timeline_arranger_widget_refresh_children (
     MW_TIMELINE);
-  timeline_arranger_widget_refresh_children (
-    MW_PINNED_TIMELINE);
+  /*timeline_arranger_widget_refresh_children (*/
+    /*MW_PINNED_TIMELINE);*/
 
   visibility_widget_refresh (MW_VISIBILITY);
 }
@@ -359,23 +356,20 @@ static void
 on_automation_value_changed (
   Automatable * a)
 {
-  AutomationTrack * at =
-    automatable_get_automation_track (a);
-  if (at && at->widget)
-    automation_track_widget_update_current_val (
-      at->widget);
+  /*AutomationTrack * at =*/
+    /*automatable_get_automation_track (a);*/
+  /*if (at && at->widget)*/
+    /*automation_track_widget_update_current_val (*/
+      /*at->widget);*/
 }
 
 static void
 on_plugin_added (Plugin * plugin)
 {
-  Channel * channel = plugin->track->channel;
-  AutomationTracklist * automation_tracklist =
-    track_get_automation_tracklist (channel->track);
-  if (automation_tracklist &&
-      automation_tracklist->widget)
-    automation_tracklist_widget_refresh (
-      automation_tracklist->widget);
+  Track * track = plugin->track;
+  /*AutomationTracklist * automation_tracklist =*/
+    /*track_get_automation_tracklist (track);*/
+  track_widget_force_redraw (track->widget);
 }
 
 static void
@@ -556,7 +550,7 @@ static void
 on_track_color_changed (Track * track)
 {
   channel_widget_refresh (track->channel->widget);
-  track_widget_refresh (track->widget);
+  track_widget_force_redraw (track->widget);
   inspector_widget_refresh (MW_INSPECTOR);
 }
 
@@ -566,7 +560,7 @@ on_track_name_changed (Track * track)
   /* refresh all because tracks routed to/from are
    * also affected */
   mixer_widget_soft_refresh (MW_MIXER);
-  track_widget_refresh (track->widget);
+  track_widget_force_redraw (track->widget);
   inspector_widget_refresh (MW_INSPECTOR);
   visibility_widget_refresh (MW_VISIBILITY);
 }
@@ -710,8 +704,8 @@ on_arranger_object_removed (
     case ARRANGER_OBJECT_TYPE_MARKER:
       timeline_arranger_widget_refresh_children (
         MW_TIMELINE);
-      timeline_arranger_widget_refresh_children (
-        MW_PINNED_TIMELINE);
+      /*timeline_arranger_widget_refresh_children (*/
+        /*MW_PINNED_TIMELINE);*/
       break;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
       chord_arranger_widget_refresh_children (
@@ -731,25 +725,10 @@ on_track_changed (Track * track)
 {
   if (GTK_IS_WIDGET (track->widget))
     {
-      TRACK_WIDGET_GET_PRIVATE (track->widget);
       gtk_widget_set_visible (
-        GTK_WIDGET (tw_prv->main_grid),
+        GTK_WIDGET (track->widget),
         track->visible);
-      if (track_is_selected (track))
-        {
-          gtk_widget_set_state_flags (
-            GTK_WIDGET (tw_prv->main_grid),
-            GTK_STATE_FLAG_SELECTED,
-            0);
-        }
-      else
-        {
-          gtk_widget_unset_state_flags (
-            GTK_WIDGET (tw_prv->main_grid),
-            GTK_STATE_FLAG_SELECTED);
-        }
-      gtk_widget_queue_draw (
-        GTK_WIDGET (tw_prv->main_grid));
+      track_widget_force_redraw (track->widget);
     }
 }
 
@@ -764,14 +743,13 @@ on_plugin_visibility_changed (Plugin * pl)
   if (pl->track->type ==
       TRACK_TYPE_INSTRUMENT &&
       pl->track->widget &&
-      Z_IS_INSTRUMENT_TRACK_WIDGET (
+      Z_IS_TRACK_WIDGET (
         pl->track->widget))
-    instrument_track_widget_refresh_buttons (
-      Z_INSTRUMENT_TRACK_WIDGET (
-        pl->track->widget));
+    track_widget_force_redraw (pl->track->widget);
 
   if (pl->track->channel->widget &&
-      Z_IS_CHANNEL_WIDGET (pl->track->channel->widget))
+      Z_IS_CHANNEL_WIDGET (
+        pl->track->channel->widget))
     gtk_widget_queue_draw (
       GTK_WIDGET (
         pl->track->channel->widget->inserts[
@@ -913,9 +891,9 @@ events_process (void * data)
               arranger_widget_refresh (
                 Z_ARRANGER_WIDGET (
                   MW_TIMELINE));
-              arranger_widget_refresh (
-                Z_ARRANGER_WIDGET (
-                  MW_PINNED_TIMELINE));
+              /*arranger_widget_refresh (*/
+                /*Z_ARRANGER_WIDGET (*/
+                  /*MW_PINNED_TIMELINE));*/
             }
           else if (ev->arg == EDITOR_RULER)
             {
@@ -1013,16 +991,16 @@ events_process (void * data)
           on_clip_editor_region_changed ();
           break;
         case ET_TRACK_BOT_PANED_VISIBILITY_CHANGED:
-          tracklist_widget_soft_refresh (
+          tracklist_widget_update_track_visibility (
             MW_TRACKLIST);
           break;
         case ET_TRACK_LANES_VISIBILITY_CHANGED:
-          tracklist_widget_soft_refresh (
+          tracklist_widget_update_track_visibility (
             MW_TRACKLIST);
           arranger_widget_update_visibility (
             (ArrangerWidget *) MW_TIMELINE);
-          arranger_widget_update_visibility (
-            (ArrangerWidget *) MW_PINNED_TIMELINE);
+          /*arranger_widget_update_visibility (*/
+            /*(ArrangerWidget *) MW_PINNED_TIMELINE);*/
           break;
         case ET_TRACK_ADDED:
           on_track_added ((Track *) ev->arg);
@@ -1050,16 +1028,16 @@ events_process (void * data)
            * timeline first because one of them
            * will be added to the unpinned
            * tracklist when unpinning */
-          timeline_arranger_widget_remove_children (
-            MW_PINNED_TIMELINE);
+          /*timeline_arranger_widget_remove_children (*/
+            /*MW_PINNED_TIMELINE);*/
 
           if (MW_TIMELINE)
             arranger_widget_refresh (
               Z_ARRANGER_WIDGET (MW_TIMELINE));
-          if (MW_PINNED_TIMELINE)
-            arranger_widget_refresh (
-              Z_ARRANGER_WIDGET (
-                MW_PINNED_TIMELINE));
+          /*if (MW_PINNED_TIMELINE)*/
+            /*arranger_widget_refresh (*/
+              /*Z_ARRANGER_WIDGET (*/
+                /*MW_PINNED_TIMELINE));*/
           break;
         case ET_TIMELINE_VIEWPORT_CHANGED:
           timeline_minimap_widget_refresh (
@@ -1074,12 +1052,12 @@ events_process (void * data)
             (Track *) ev->arg);
           break;
         case ET_TRACK_VISIBILITY_CHANGED:
-          tracklist_widget_soft_refresh (
+          tracklist_widget_update_track_visibility (
             MW_TRACKLIST);
           timeline_arranger_widget_refresh_children (
             MW_TIMELINE);
-          timeline_arranger_widget_refresh_children (
-            MW_PINNED_TIMELINE);
+          /*timeline_arranger_widget_refresh_children (*/
+            /*MW_PINNED_TIMELINE);*/
           track_visibility_tree_widget_refresh (
             MW_TRACK_VISIBILITY_TREE);
           break;
@@ -1124,15 +1102,15 @@ events_process (void * data)
            * tracklist first because one of them
            * will be added to the unpinned
            * tracklist when unpinning */
-          z_gtk_container_remove_all_children (
-            GTK_CONTAINER (MW_PINNED_TRACKLIST));
+          /*z_gtk_container_remove_all_children (*/
+            /*GTK_CONTAINER (MW_PINNED_TRACKLIST));*/
 
           if (MW_TRACKLIST)
             tracklist_widget_hard_refresh (
               MW_TRACKLIST);
-          if (MW_PINNED_TRACKLIST)
-            pinned_tracklist_widget_hard_refresh (
-              MW_PINNED_TRACKLIST);
+          /*if (MW_PINNED_TRACKLIST)*/
+            /*pinned_tracklist_widget_hard_refresh (*/
+              /*MW_PINNED_TRACKLIST);*/
 
           visibility_widget_refresh (
             MW_VISIBILITY);
@@ -1163,7 +1141,7 @@ events_process (void * data)
           break;
         case ET_TRACK_LANE_ADDED:
         case ET_TRACK_LANE_REMOVED:
-          tracklist_widget_soft_refresh (
+          tracklist_widget_update_track_visibility (
             MW_TRACKLIST);
           arranger_widget_update_visibility (
             (ArrangerWidget *) MW_TIMELINE);
@@ -1208,10 +1186,10 @@ events_process (void * data)
           if (Z_IS_TRACKLIST_WIDGET (ev->arg))
             arranger_widget_redraw_bg (
               Z_ARRANGER_WIDGET (MW_TIMELINE));
-          else if (Z_IS_PINNED_TRACKLIST_WIDGET (
-                     ev->arg))
-            arranger_widget_redraw_bg (
-              Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));
+          /*else if (Z_IS_PINNED_TRACKLIST_WIDGET (*/
+                     /*ev->arg))*/
+            /*arranger_widget_redraw_bg (*/
+              /*Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));*/
           break;
         case ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED:
           gtk_widget_set_visible (

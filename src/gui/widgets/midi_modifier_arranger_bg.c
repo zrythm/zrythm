@@ -28,7 +28,6 @@
 #include "audio/tracklist.h"
 #include "audio/transport.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"

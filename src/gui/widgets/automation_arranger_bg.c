@@ -28,7 +28,6 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_arranger_bg.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/tracklist.h"

@@ -27,7 +27,6 @@
 #include "audio/track.h"
 #include "gui/backend/events.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/automation_track.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -249,6 +248,19 @@ automation_track_update_frames (
       arranger_object_update_frames (
         (ArrangerObject *) self->regions[i]);
     }
+}
+
+/**
+ * Returns the y pixels from the value based on the
+ * allocation of the automation track.
+ */
+int
+automation_track_get_y_px_from_normalized_val (
+  AutomationTrack * self,
+  float             normalized_val)
+{
+  return self->height -
+    (int) (normalized_val * (float) self->height);
 }
 
 /**

@@ -50,27 +50,6 @@ G_DEFINE_TYPE (
   TracklistWidget, tracklist_widget, GTK_TYPE_BOX)
 
 static void
-on_resize_end (
-  TracklistWidget * self,
-  GtkWidget *       child)
-{
-  if (!Z_IS_TRACK_WIDGET (child))
-    return;
-
-  TrackWidget * tw = Z_TRACK_WIDGET (child);
-  TRACK_WIDGET_GET_PRIVATE (tw);
-  Track * track = tw_prv->track;
-  GValue a = G_VALUE_INIT;
-  g_value_init (&a, G_TYPE_INT);
-  gtk_container_child_get_property (
-    GTK_CONTAINER (self),
-    GTK_WIDGET (tw),
-    "position",
-    &a);
-  track->handle_pos = g_value_get_int (&a);
-}
-
-static void
 on_drag_leave (
   GtkWidget      *widget,
   GdkDragContext *context,
@@ -202,8 +181,7 @@ on_drag_data_received (
 
   g_return_if_fail (hit_tw);
 
-  TRACK_WIDGET_GET_PRIVATE (hit_tw);
-  Track * this = tw_prv->track;
+  Track * this = hit_tw->track;
 
   /* determine if moving or copying */
   GdkDragAction action =
@@ -338,10 +316,51 @@ tracklist_widget_hard_refresh (
 {
   /* remove all children */
   z_gtk_container_remove_all_children (
+    (GtkContainer *) self->unpinned_box);
+  z_gtk_container_remove_all_children (
+    (GtkContainer *) self->unpinned_scroll);
+  z_gtk_container_remove_all_children (
     (GtkContainer *) self);
-  GtkWidget * child1 = NULL;
+  /*GtkWidget * child1 = NULL;*/
 
-  /* readd all visible tracks */
+  /** add pinned tracks */
+  for (int i = 0; i < self->tracklist->num_tracks;
+       i++)
+    {
+      Track * track = self->tracklist->tracks[i];
+
+      if (!track->pinned || !track->visible)
+        continue;
+
+      /* create widget */
+      if (!GTK_IS_WIDGET (track->widget))
+        track->widget = track_widget_new (track);
+
+      gtk_widget_set_visible (
+        (GtkWidget *) track->widget,
+        track->visible);
+
+      /*track_widget_refresh (track->widget);*/
+
+      gtk_widget_set_size_request (
+        (GtkWidget *) track->widget, -1,
+        track->main_height);
+
+      gtk_container_add (
+        (GtkContainer *) self,
+        (GtkWidget *) track->widget);
+    }
+
+  /* add scrolled window */
+  gtk_container_add (
+    (GtkContainer *) self,
+    (GtkWidget *) self->unpinned_scroll);
+  gtk_container_add (
+    (GtkContainer *) self->unpinned_scroll,
+    (GtkWidget *) self->unpinned_box);
+
+  /* readd all visible unpinned tracks to
+   * scrolled window */
   for (int i = 0; i < self->tracklist->num_tracks;
        i++)
     {
@@ -354,25 +373,26 @@ tracklist_widget_hard_refresh (
       if (!GTK_IS_WIDGET (track->widget))
         track->widget = track_widget_new (track);
 
-      TRACK_WIDGET_GET_PRIVATE (track->widget);
       gtk_widget_set_visible (
-        (GtkWidget *) tw_prv->main_grid,
+        (GtkWidget *) track->widget,
         track->visible);
 
-      track_widget_refresh (track->widget);
+      /*track_widget_refresh (track->widget);*/
 
       gtk_widget_set_size_request (
-        (GtkWidget *) track->widget, -1, track->handle_pos);
+        (GtkWidget *) track->widget, -1,
+        track->main_height);
 
       gtk_container_add (
-        (GtkContainer *) self,
+        (GtkContainer *) self->unpinned_box,
         (GtkWidget *) track->widget);
     }
 
   /* re-add ddbox */
   gtk_container_add (
-    GTK_CONTAINER (self),
+    GTK_CONTAINER (self->unpinned_box),
     GTK_WIDGET (self->ddbox));
+
   /*g_object_unref (self->ddbox);*/
 
   /* set handle position.
@@ -403,23 +423,13 @@ tracklist_widget_hard_refresh (
   /*g_list_free(children);*/
 }
 
-void
-tracklist_widget_setup (TracklistWidget * self,
-                        Tracklist * tracklist)
-{
-  g_warn_if_fail (tracklist);
-  self->tracklist = tracklist;
-  tracklist->widget = self;
-
-  tracklist_widget_hard_refresh (self);
-}
-
 /**
  * Makes sure all the tracks for channels marked as
  * visible are visible.
  */
 void
-tracklist_widget_soft_refresh (TracklistWidget *self)
+tracklist_widget_update_track_visibility (
+  TracklistWidget *self)
 {
   gtk_widget_show (GTK_WIDGET (self));
   Track * track;
@@ -430,22 +440,41 @@ tracklist_widget_soft_refresh (TracklistWidget *self)
       if (!GTK_IS_WIDGET (track->widget))
         track->widget = track_widget_new (track);
 
-      TRACK_WIDGET_GET_PRIVATE (track->widget);
       gtk_widget_set_visible (
-        GTK_WIDGET (tw_prv->main_grid),
+        GTK_WIDGET (track->widget),
         track->visible);
-
-      if (track->visible)
-        track_widget_refresh (
-          track->widget);
     }
-  if (self->ddbox)
-    gtk_widget_show (GTK_WIDGET (self->ddbox));
+}
+
+void
+tracklist_widget_setup (
+  TracklistWidget * self,
+  Tracklist * tracklist)
+{
+  g_warn_if_fail (tracklist);
+  self->tracklist = tracklist;
+  tracklist->widget = self;
+
+  tracklist_widget_hard_refresh (self);
 }
 
 static void
 tracklist_widget_init (TracklistWidget * self)
 {
+  self->unpinned_scroll =
+    GTK_SCROLLED_WINDOW (
+      gtk_scrolled_window_new (NULL, NULL));
+  g_object_ref (self->unpinned_scroll);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->unpinned_scroll), 1);
+  self->unpinned_box =
+    GTK_BOX (
+      gtk_box_new (
+        GTK_ORIENTATION_VERTICAL, 0));
+  g_object_ref (self->unpinned_box);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->unpinned_box), 1);
+
   /* create the drag dest box and bump its reference
    * so it doesn't get deleted. */
   self->ddbox =
@@ -454,20 +483,20 @@ tracklist_widget_init (TracklistWidget * self)
       0,
       DRAG_DEST_BOX_TYPE_TRACKLIST);
   g_object_ref (self->ddbox);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->ddbox), 1);
 
-  gtk_paned_set_wide_handle (
-    (GtkPaned *) self, 1);
   gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (self), GTK_ORIENTATION_VERTICAL);
-  gtk_paned_set_position (
-    (GtkPaned *) self, 0);
+    GTK_ORIENTABLE (self),
+    GTK_ORIENTATION_VERTICAL);
 
   /* make widget able to notify */
   gtk_widget_add_events (
     GTK_WIDGET (self),
     GDK_ALL_EVENTS_MASK);
 
-  char * entry_track = g_strdup (TARGET_ENTRY_TRACK);
+  char * entry_track =
+    g_strdup (TARGET_ENTRY_TRACK);
   GtkTargetEntry entries[] = {
     {
       entry_track, GTK_TARGET_SAME_APP,
@@ -501,9 +530,6 @@ tracklist_widget_init (TracklistWidget * self)
   g_signal_connect (
     G_OBJECT (self), "key-release-event",
     G_CALLBACK (on_key_action), self);
-  /*g_signal_connect (*/
-    /*G_OBJECT (self), "resize-drag-end",*/
-    /*G_CALLBACK (on_resize_end), self);*/
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
     G_CALLBACK (on_size_allocate), self);
@@ -512,7 +538,8 @@ tracklist_widget_init (TracklistWidget * self)
 static void
 tracklist_widget_class_init (TracklistWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "tracklist");
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (
+    klass, "tracklist");
 }

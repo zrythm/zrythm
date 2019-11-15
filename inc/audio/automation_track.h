@@ -71,7 +71,7 @@ typedef struct AutomationTrack
   /**
    * Position of multipane handle.
    */
-  int               handle_pos;
+  int               height;
 
   /** The widget. */
   AutomationTrackWidget * widget;
@@ -99,8 +99,8 @@ static const cyaml_schema_field_t
     "visible", CYAML_FLAG_DEFAULT,
     AutomationTrack, visible),
 	CYAML_FIELD_INT (
-    "handle_pos", CYAML_FLAG_DEFAULT,
-    AutomationTrack, handle_pos),
+    "height", CYAML_FLAG_DEFAULT,
+    AutomationTrack, height),
 
 	CYAML_FIELD_END
 };
@@ -194,6 +194,15 @@ float
 automation_track_get_normalized_val_at_pos (
   AutomationTrack * at,
   Position *        pos);
+
+/**
+ * Returns the y pixels from the value based on the
+ * allocation of the automation track.
+ */
+int
+automation_track_get_y_px_from_normalized_val (
+  AutomationTrack * self,
+  float             normalized_val);
 
 /**
  * Updates automation track & its GUI

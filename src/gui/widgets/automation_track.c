@@ -295,7 +295,7 @@ on_remove_track_clicked (
  * allocation of the automation track.
  */
 int
-automation_track_widget_get_y_px_from_normalized_val (
+automation_track_get_y_px_from_normalized_val (
   AutomationTrackWidget * self,
   float                  normalized_val)
 {

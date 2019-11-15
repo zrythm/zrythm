@@ -59,7 +59,7 @@
       cyaml_save_data ( \
         &output, \
         &output_len, \
-        &config, \
+        &cyaml_config, \
         &lowercase##_schema, \
         x, \
         0); \
@@ -74,7 +74,7 @@
       calloc (output_len + 1, sizeof (char));\
     memcpy (new_str, output, output_len);\
     new_str[output_len] = '\0'; \
-    config.mem_fn(config.mem_ctx, output, 0); \
+    cyaml_config.mem_fn(cyaml_config.mem_ctx, output, 0); \
  \
     return new_str; \
   }
@@ -92,7 +92,7 @@
     cyaml_err_t err = \
       cyaml_load_data ((const unsigned char *) e, \
                        strlen (e), \
-                       &config, \
+                       &cyaml_config, \
                        &lowercase##_schema, \
                        (cyaml_data_t **) &self, \
                        NULL); \
@@ -129,7 +129,7 @@ void yaml_cyaml_log_func (
   const char * format,
   va_list      args);
 
-static const cyaml_config_t config = {
+static const cyaml_config_t cyaml_config = {
   /** log level: DEBUG, WARNING, INFO... */
 	.log_level = CYAML_LOG_WARNING,
   /* use the default loggin function */

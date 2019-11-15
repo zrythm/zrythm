@@ -46,6 +46,49 @@ G_DEFINE_TYPE (AudioBusTrackWidget,
                audio_bus_track_widget,
                TRACK_WIDGET_TYPE)
 
+void
+audio_bus_track_widget_refresh_buttons (
+  AudioBusTrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+
+  g_signal_handler_block (
+    self->solo, tw_prv->solo_toggled_handler_id);
+      gtk_toggle_button_set_active (
+        self->solo,
+        tw_prv->track->solo);
+  g_signal_handler_unblock (
+    self->solo, tw_prv->solo_toggled_handler_id);
+
+  g_signal_handler_block (
+    self->mute, tw_prv->mute_toggled_handler_id);
+      gtk_toggle_button_set_active (
+        self->mute,
+        tw_prv->track->mute);
+  g_signal_handler_unblock (
+    self->mute, tw_prv->mute_toggled_handler_id);
+}
+
+void
+audio_bus_track_widget_refresh (
+  AudioBusTrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+  Track * track = tw_prv->track;
+  /*ChannelTrack * ct = (ChannelTrack *) track;*/
+  /*Channel * chan = ct->channel;*/
+
+  audio_bus_track_widget_refresh_buttons (self);
+
+  track_widget_set_name (
+    Z_TRACK_WIDGET (self), track->name);
+
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (tw_prv->track);
+  automation_tracklist_widget_refresh (
+    automation_tracklist->widget);
+}
+
 /**
  * Creates a new track widget using the given track.
  *
@@ -56,9 +99,10 @@ G_DEFINE_TYPE (AudioBusTrackWidget,
 AudioBusTrackWidget *
 audio_bus_track_widget_new (Track * track)
 {
-  AudioBusTrackWidget * self = g_object_new (
-                            AUDIO_BUS_TRACK_WIDGET_TYPE,
-                            NULL);
+  AudioBusTrackWidget * self =
+    g_object_new (
+      AUDIO_BUS_TRACK_WIDGET_TYPE,
+      NULL);
 
   TRACK_WIDGET_GET_PRIVATE (self);
 
@@ -92,56 +136,16 @@ audio_bus_track_widget_new (Track * track)
     G_CALLBACK (track_widget_on_show_automation_toggled),
     self);
 
-  gtk_widget_set_visible (GTK_WIDGET (self),
-                          1);
+  /*gtk_widget_set_visible (GTK_WIDGET (self),*/
+                          /*1);*/
 
   return self;
 }
 
-void
-audio_bus_track_widget_refresh_buttons (
-  AudioBusTrackWidget * self)
-{
-  TRACK_WIDGET_GET_PRIVATE (self);
-
-  g_signal_handler_block (
-    self->solo, tw_prv->solo_toggled_handler_id);
-      gtk_toggle_button_set_active (
-        self->solo,
-        tw_prv->track->solo);
-  g_signal_handler_unblock (
-    self->solo, tw_prv->solo_toggled_handler_id);
-
-  g_signal_handler_block (
-    self->mute, tw_prv->mute_toggled_handler_id);
-      gtk_toggle_button_set_active (
-        self->mute,
-        tw_prv->track->mute);
-  g_signal_handler_unblock (
-    self->mute, tw_prv->mute_toggled_handler_id);
-}
-
-void
-audio_bus_track_widget_refresh (AudioBusTrackWidget * self)
-{
-  TRACK_WIDGET_GET_PRIVATE (self);
-  Track * track = tw_prv->track;
-  /*ChannelTrack * ct = (ChannelTrack *) track;*/
-  /*Channel * chan = ct->channel;*/
-
-  track_widget_set_name (
-    Z_TRACK_WIDGET (self), track->name);
-
-  audio_bus_track_widget_refresh_buttons (self);
-
-  AutomationTracklist * automation_tracklist =
-    track_get_automation_tracklist (tw_prv->track);
-  automation_tracklist_widget_refresh (
-    automation_tracklist->widget);
-}
 
 static void
-audio_bus_track_widget_init (AudioBusTrackWidget * self)
+audio_bus_track_widget_init (
+  AudioBusTrackWidget * self)
 {
   GtkStyleContext * context;
   TRACK_WIDGET_GET_PRIVATE (self);
@@ -187,9 +191,12 @@ audio_bus_track_widget_init (AudioBusTrackWidget * self)
 
   /* set icon */
   SET_TRACK_ICON ("bus");
+
+  gtk_widget_show_all (GTK_WIDGET (self));
 }
 
 static void
-audio_bus_track_widget_class_init (AudioBusTrackWidgetClass * klass)
+audio_bus_track_widget_class_init (
+  AudioBusTrackWidgetClass * klass)
 {
 }

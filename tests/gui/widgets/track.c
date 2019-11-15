@@ -18,9 +18,7 @@
  */
 
 #include "audio/track.h"
-#include "gui/widgets/instrument_track.h"
-#include "gui/widgets/dzl/dzl-multi-paned.h"
-#include "gui/widgets/track_top_grid.h"
+#include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"
@@ -41,11 +39,11 @@ fishbowl_creation_func ()
     track_new (
       TRACK_TYPE_INSTRUMENT, "track-label", 1);
   g_return_val_if_fail (track, NULL);
-  InstrumentTrackWidget * itw =
-    instrument_track_widget_new (track);
+  TrackWidget * itw =
+    track_widget_new (track);
   gtk_widget_set_size_request (
     GTK_WIDGET (itw), 200, -1);
-  track_widget_refresh (
+  track_widget_force_redraw (
     Z_TRACK_WIDGET (itw));
   /*TRACK_WIDGET_GET_PRIVATE (itw);*/
   /* problem is somewhere inside top grid - upper controls*/
@@ -58,7 +56,6 @@ fishbowl_creation_func ()
 static void
 test_instrument_track_fishbowl ()
 {
-  g_type_ensure (DZL_TYPE_MULTI_PANED);
   guint count =
     fishbowl_window_widget_run (
       fishbowl_creation_func,

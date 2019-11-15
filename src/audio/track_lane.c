@@ -165,8 +165,8 @@ track_lane_clone (
   new_lane->regions =
     malloc (new_lane->regions_size *
             sizeof (Region *));
-  new_lane->handle_pos =
-    lane->handle_pos;
+  new_lane->height =
+    lane->height;
   new_lane->pos = lane->pos;
   new_lane->mute = lane->mute;
   new_lane->solo = lane->solo;

@@ -22,7 +22,6 @@
 #include "audio/channel_track.h"
 #include "gui/widgets/automatable_selector_button.h"
 #include "gui/widgets/automatable_selector_popover.h"
-#include "gui/widgets/automation_track.h"
 #include "plugins/plugin.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -60,7 +59,7 @@ create_model_for_automatables (
                         G_TYPE_POINTER);
 
   Track * track =
-    self->owner->owner->at->track;
+    self->owner->track;
   AutomationTrack * at;
   if (type == AS_TYPE_CHANNEL)
     {
@@ -74,7 +73,7 @@ create_model_for_automatables (
            /*if this automation track is not already*/
            /*in a visible lane*/
           if (!at->created || !at->visible ||
-              at == self->owner->owner->at)
+              at == self->owner)
             {
               Automatable * a = at->automatable;
 
@@ -106,7 +105,7 @@ create_model_for_automatables (
                /*if this automation track is not already*/
                /*in a visible lane*/
               if (!at->created || !at->visible ||
-                  at == self->owner->owner->at)
+                  at == self->owner)
                 {
                   Automatable * a =
                     at->automatable;
@@ -151,7 +150,7 @@ create_model_for_types (
     -1);
 
   Track * track =
-    self->owner->owner->at->track;
+    self->owner->track;
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
@@ -326,13 +325,14 @@ tree_view_create (
 }
 
 static void
-on_closed (AutomatableSelectorPopoverWidget *self,
-               gpointer    user_data)
+on_closed (
+  AutomatableSelectorPopoverWidget *self,
+  gpointer    user_data)
 {
-  automatable_selector_button_set_automatable (
-    self->owner, self->selected_automatable);
-  automatable_selector_button_widget_refresh (
-    self->owner);
+  /*automatable_selector_button_set_automatable (*/
+    /*self->owner, self->selected_automatable);*/
+  /*automatable_selector_button_widget_refresh (*/
+    /*self->owner);*/
 }
 
 /**
@@ -340,7 +340,7 @@ on_closed (AutomatableSelectorPopoverWidget *self,
  */
 AutomatableSelectorPopoverWidget *
 automatable_selector_popover_widget_new (
-  AutomatableSelectorButtonWidget * owner)
+  AutomationTrack * owner)
 {
   AutomatableSelectorPopoverWidget * self =
     g_object_new (
@@ -360,7 +360,7 @@ automatable_selector_popover_widget_new (
   AutomatableSelectorType type =
     AS_TYPE_CHANNEL;
   Automatable * a =
-    self->owner->owner->at->automatable;
+    self->owner->automatable;
   if (a->type >= AUTOMATABLE_TYPE_CHANNEL_FADER)
     type = AS_TYPE_CHANNEL;
   else if (a->slot > -1)

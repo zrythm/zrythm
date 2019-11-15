@@ -24,8 +24,6 @@
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/track.h"
-#include "gui/widgets/automation_tracklist.h"
-#include "gui/widgets/automation_track.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/arrays.h"

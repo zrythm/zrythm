@@ -43,13 +43,16 @@ typedef struct _AutomationTrackWidget
 
 typedef struct _AutomatableSelectorButtonWidget
 {
-  GtkMenuButton           parent_instance;
-  GtkBox *                box; ///< the box
-  GtkImage *              img; ///< img to show next to the label
-  GtkLabel                * label; ///< label to show
+  GtkMenuButton       parent_instance;
+  GtkBox *            box;
+  /** Image to show next to the label. */
+  GtkImage *          img;
+
+  /** Label to show. */
+  GtkLabel *          label;
   AutomatableSelectorPopoverWidget   * popover; ///< the popover to show
-  GtkBox                  * content; ///< popover content holder
-  AutomationTrackWidget *   owner;
+  GtkBox *            content; ///< popover content holder
+  AutomationTrack *   owner;
 } AutomatableSelectorButtonWidget;
 
 void

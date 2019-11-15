@@ -52,6 +52,57 @@ G_DEFINE_TYPE (MidiTrackWidget,
                midi_track_widget,
                TRACK_WIDGET_TYPE)
 
+void
+midi_track_widget_refresh_buttons (
+  MidiTrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+  g_signal_handler_block (
+    self->record, tw_prv->record_toggle_handler_id);
+      gtk_toggle_button_set_active (
+        self->record,
+        tw_prv->track->recording);
+  g_signal_handler_unblock (
+    self->record, tw_prv->record_toggle_handler_id);
+
+  g_signal_handler_block (
+    self->solo, tw_prv->solo_toggled_handler_id);
+      gtk_toggle_button_set_active (
+        self->solo,
+        tw_prv->track->solo);
+  g_signal_handler_unblock (
+    self->solo, tw_prv->solo_toggled_handler_id);
+
+  g_signal_handler_block (
+    self->mute, tw_prv->mute_toggled_handler_id);
+      gtk_toggle_button_set_active (
+        self->mute,
+        tw_prv->track->mute);
+  g_signal_handler_unblock (
+    self->mute, tw_prv->mute_toggled_handler_id);
+
+}
+
+void
+midi_track_widget_refresh (
+  MidiTrackWidget * self)
+{
+  TRACK_WIDGET_GET_PRIVATE (self);
+  Track * track = tw_prv->track;
+
+  midi_track_widget_refresh_buttons (self);
+
+  track_widget_set_name (
+    Z_TRACK_WIDGET (self), track->name);
+
+  AutomationTracklist * automation_tracklist =
+    track_get_automation_tracklist (tw_prv->track);
+  automation_tracklist_widget_refresh (
+    automation_tracklist->widget);
+
+  track_lanelist_widget_refresh (tw_prv->lanelist);
+}
+
 /**
  * Creates a new track widget using the given track.
  *
@@ -121,57 +172,6 @@ midi_track_widget_new (Track * track)
   /*Plugin * plugin = chan->plugins[0];*/
 
   return self;
-}
-
-void
-midi_track_widget_refresh_buttons (
-  MidiTrackWidget * self)
-{
-  TRACK_WIDGET_GET_PRIVATE (self);
-  g_signal_handler_block (
-    self->record, tw_prv->record_toggle_handler_id);
-      gtk_toggle_button_set_active (
-        self->record,
-        tw_prv->track->recording);
-  g_signal_handler_unblock (
-    self->record, tw_prv->record_toggle_handler_id);
-
-  g_signal_handler_block (
-    self->solo, tw_prv->solo_toggled_handler_id);
-      gtk_toggle_button_set_active (
-        self->solo,
-        tw_prv->track->solo);
-  g_signal_handler_unblock (
-    self->solo, tw_prv->solo_toggled_handler_id);
-
-  g_signal_handler_block (
-    self->mute, tw_prv->mute_toggled_handler_id);
-      gtk_toggle_button_set_active (
-        self->mute,
-        tw_prv->track->mute);
-  g_signal_handler_unblock (
-    self->mute, tw_prv->mute_toggled_handler_id);
-
-}
-
-void
-midi_track_widget_refresh (
-  MidiTrackWidget * self)
-{
-  TRACK_WIDGET_GET_PRIVATE (self);
-  Track * track = tw_prv->track;
-
-  midi_track_widget_refresh_buttons (self);
-
-  track_widget_set_name (
-    Z_TRACK_WIDGET (self), track->name);
-
-  AutomationTracklist * automation_tracklist =
-    track_get_automation_tracklist (tw_prv->track);
-  automation_tracklist_widget_refresh (
-    automation_tracklist->widget);
-
-  track_lanelist_widget_refresh (tw_prv->lanelist);
 }
 
 static void

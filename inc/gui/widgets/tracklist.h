@@ -49,12 +49,22 @@ typedef struct Track InstrumentTrack;
 typedef struct Tracklist Tracklist;
 
 /**
- * The TracklistWidget is a paned holding
- * all the Track's in the Project.
+ * The TracklistWidget holds all the Track's
+ * in the Project.
+ *
+ * It is a box with all the pinned tracks, plus a
+ * scrolled window at the end containing unpinned
+ * tracks and the DragDestBoxWidget at the end.
  */
 typedef struct _TracklistWidget
 {
   GtkBox              parent_instance;
+
+  /** The scrolled window for unpinned tracks. */
+  GtkScrolledWindow * unpinned_scroll;
+
+  /** Box inside unpinned scroll. */
+  GtkBox *            unpinned_box;
 
   /**
    * Widget for drag and dropping plugins in to
@@ -81,7 +91,7 @@ tracklist_widget_setup (
  * visible are visible.
  */
 void
-tracklist_widget_soft_refresh (
+tracklist_widget_update_track_visibility (
   TracklistWidget *self);
 
 

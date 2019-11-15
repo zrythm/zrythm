@@ -51,48 +51,10 @@
               </object>
             </child>
             <child>
-              <object class="GtkPaned" id="tracklist_paned">
+              <object class="TracklistWidget" id="tracklist">
+                <property name="name">tracklist</property>
                 <property name="visible">1</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="PinnedTracklistWidget" id="pinned_tracklist">
-                    <property name="visible">1</property>
-                  </object>
-                  <packing>
-                    <property name="shrink">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkScrolledWindow" id="tracklist_scroll">
-                    <property name="visible">1</property>
-                    <property name="can-focus">1</property>
-                    <property name="expand">1</property>
-                    <property name="hscrollbar-policy">never</property>
-                    <property name="vscrollbar-policy">external</property>
-                    <property name="shadow-type">in</property>
-                    <property name="max-content-height">66000</property>
-                    <property name="propagate-natural-height">1</property>
-                    <child>
-                      <object class="GtkViewport" id="tracklist_viewport">
-                        <property name="name">gviewport_instruments</property>
-                        <property name="height-request">6030</property>
-                        <property name="visible">1</property>
-                        <property name="vexpand">1</property>
-                        <property name="vscroll-policy">natural</property>
-                        <child>
-                          <object class="TracklistWidget" id="tracklist">
-                            <property name="name">tracklist</property>
-                            <property name="visible">1</property>
-                            <property name="height-request">6000</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="shrink">0</property>
-                  </packing>
-                </child>
+                <!--<property name="height-request">6000</property>-->
               </object>
             </child>
           </object>
@@ -202,7 +164,6 @@
   <object class="GtkSizeGroup">
     <property name="mode">GTK_SIZE_GROUP_VERTICAL</property>
     <widgets>
-      <widget name="pinned_tracklist"/>
       <widget name="pinned_timeline_scroll"/>
     </widgets>
   </object>

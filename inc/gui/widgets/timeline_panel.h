@@ -54,8 +54,6 @@ typedef struct _TimelinePanelBotBoxWidget
   TimelinePanelBotBoxWidget;
 typedef struct _TracklistHeaderWidget
   TracklistHeaderWidget;
-typedef struct _PinnedTracklistWidget
-  PinnedTracklistWidget;
 typedef struct _TimelineToolbarWidget
   TimelineToolbarWidget;
 typedef struct _TimelineBotBoxWidget
@@ -77,16 +75,8 @@ typedef struct _TimelinePanelWidget
 {
   GtkBox                  parent_instance;
 
-  /** The paned containing the
-   * PinnedTracklistWidget and the
-   * TracklistWidget. */
-  GtkPaned *              tracklist_paned;
-
   GtkPaned *              tracklist_timeline;
   GtkBox *                tracklist_top;
-  GtkScrolledWindow *     tracklist_scroll;
-  GtkViewport *           tracklist_viewport;
-  PinnedTracklistWidget * pinned_tracklist;
   TracklistHeaderWidget * tracklist_header;
   TracklistWidget *       tracklist;
 

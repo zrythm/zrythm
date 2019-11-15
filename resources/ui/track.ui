@@ -22,73 +22,23 @@
 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <template class="TrackWidget" parent="GtkEventBox">
+  <template class="TrackWidget" parent="GtkBox">
     <property name="visible">1</property>
+    <property name="orientation">vertical</property>
     <child>
-      <object class="GtkGrid" id="main_grid">
+      <object class="GtkBox"
+        id="highlight_top_box">
         <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="hexpand">True</property>
-        <property name="margin-top">2</property>
-        <child>
-          <object class="GtkBox" id="highlight_top_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">horizontal</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
-            <property name="width">3</property>
-          </packing>
-        </child>
-        <child>
-          <object class="ColorAreaWidget" id="color">
-            <property name="visible">True</property>
-            <property name="width-request">18</property>
-            <property name="vexpand">1</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkEventBox" id="event_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <child>
-              <object class="GtkBox" id="paned">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="TrackTopGridWidget" id="top_grid">
-                    <property name="visible">1</property>
-                    <property name="valign">fill</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">1</property>
-            <property name="width">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="highlight_bot_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">horizontal</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">2</property>
-            <property name="width">3</property>
-          </packing>
-        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkDrawingArea" id="drawing_area">
+        <property name="visible">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="highlight_bot_box">
+        <property name="visible">True</property>
       </object>
     </child>
   </template>

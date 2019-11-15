@@ -192,8 +192,8 @@ typedef struct Track
   /** Whole Track is visible or not. */
   int                 visible;
 
-  /** Position of handle (height). */
-  int                 handle_pos;
+  /** Height of the main part (without lanes). */
+  int                 main_height;
 
   /** Muted or not. */
   int                 mute;
@@ -348,8 +348,8 @@ track_fields_schema[] =
     "visible", CYAML_FLAG_DEFAULT,
     Track, visible),
 	CYAML_FIELD_INT (
-    "handle_pos", CYAML_FLAG_DEFAULT,
-    Track, handle_pos),
+    "main_height", CYAML_FLAG_DEFAULT,
+    Track, main_height),
 	CYAML_FIELD_INT (
     "mute", CYAML_FLAG_DEFAULT,
     Track, mute),
@@ -476,6 +476,15 @@ void
 track_set_muted (Track * track,
                  int     mute,
                  int     trigger_undo);
+
+/**
+ * Returns the full visible height (main height +
+ * height of all visible automation tracks + height
+ * of all visible lanes).
+ */
+int
+track_get_full_visible_height (
+  Track * self);
 
 /**
  * Sets recording and connects/disconnects the
