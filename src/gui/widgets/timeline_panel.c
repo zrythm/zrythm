@@ -166,7 +166,7 @@ timeline_panel_widget_class_init (
   BIND_CHILD (timeline_viewport);
   BIND_CHILD (timeline);
   BIND_CHILD (ruler);
-  BIND_CHILD (timeline_divider_pane);
+  BIND_CHILD (timeline_divider_box);
   BIND_CHILD (pinned_timeline_scroll);
   BIND_CHILD (pinned_timeline_viewport);
   BIND_CHILD (pinned_timeline);

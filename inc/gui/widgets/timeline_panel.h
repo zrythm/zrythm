@@ -94,7 +94,7 @@ typedef struct _TimelinePanelWidget
 
   /** The paned dividing the pinned and unpinned
    * timelines. */
-  GtkPaned *              timeline_divider_pane;
+  GtkBox *                timeline_divider_box;
 
   GtkScrolledWindow *     timeline_scroll;
   GtkViewport *           timeline_viewport;

@@ -69,7 +69,7 @@ timeline_bg_widget_draw (
 
   /* handle horizontal drawing for tracks */
   GtkWidget * tw_widget;
-  gint wx, wy;
+  gint track_start_offset;
   Track * track;
   TrackWidget * tw;
   int line_y, i, j;
@@ -98,23 +98,19 @@ timeline_bg_widget_draw (
         continue;
       tw_widget = (GtkWidget *) tw;
 
-      if (is_pinned_timeline)
-        {
-          /*gtk_widget_translate_coordinates (*/
-            /*tw_widget,*/
-            /*GTK_WIDGET (MW_PINNED_TRACKLIST),*/
-            /*0, 0, &wx, &wy);*/
-        }
-      else
-        {
-          gtk_widget_translate_coordinates (
-            tw_widget,
-            GTK_WIDGET (MW_TRACKLIST),
-            0, 0, &wx, &wy);
-        }
+      int full_track_height =
+        track_get_full_visible_height (track);
+
+      gtk_widget_translate_coordinates (
+        tw_widget,
+        GTK_WIDGET (
+          is_pinned_timeline ?
+          MW_TRACKLIST->pinned_box :
+          MW_TRACKLIST->unpinned_box),
+        0, 0, NULL, &track_start_offset);
 
       line_y =
-        wy + tw->track->main_height;
+        track_start_offset + full_track_height;
 
       if (line_y >= rect->y &&
           line_y < rect->y + rect->height)
@@ -123,20 +119,42 @@ timeline_bg_widget_draw (
             cr, line_y - rect->y, 0,
             rect->width, 1.0);
         }
-    }
 
-  /* draw automation related stuff */
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
-    {
-      track = TRACKLIST->tracks[i];
+      int total_height = track->main_height;
 
-      /* skip tracks in the other timeline (pinned/
-       * non-pinned) */
-      if (!track->visible ||
-          (is_unpinned_timeline &&
-           track->pinned) ||
-          (is_pinned_timeline &&
-           !track->pinned))
+#define OFFSET_PLUS_TOTAL_HEIGHT \
+  (track_start_offset + total_height)
+
+      /* --- draw lanes --- */
+
+      if (!track->lanes_visible)
+        goto automation_drawing;
+
+      for (j = 0; j < track->num_lanes; j++)
+        {
+          TrackLane * lane = track->lanes[j];
+
+          /* horizontal line above lane */
+          if (OFFSET_PLUS_TOTAL_HEIGHT >
+                rect->y &&
+              OFFSET_PLUS_TOTAL_HEIGHT  <
+                rect->y + rect->height)
+            {
+              z_cairo_draw_horizontal_line (
+                cr,
+                OFFSET_PLUS_TOTAL_HEIGHT -
+                  rect->y,
+                0, rect->width, 0.4);
+            }
+
+          total_height += lane->height;
+        }
+
+      /* --- draw automation related stuff --- */
+automation_drawing:
+
+      /* skip tracks without visible automation */
+      if (!track->automation_visible)
         continue;
 
       AutomationTracklist * atl =
@@ -148,26 +166,26 @@ timeline_bg_widget_draw (
             {
               at = atl->ats[j];
 
-              if (!at->created || !at->visible ||
-                  !track->automation_visible ||
-                  !at->widget)
+              if (!at->created || !at->visible)
                 continue;
 
-              /* horizontal automation track lines */
-              gtk_widget_translate_coordinates(
-                GTK_WIDGET (at->widget),
-                GTK_WIDGET (MW_TRACKLIST),
-                0, 0, &wx, &wy);
-              if (wy > rect->y &&
-                  wy < (rect->y + rect->height))
-                z_cairo_draw_horizontal_line (
-                  cr, wy - rect->y, 0,
-                  rect->width, 0.2);
+              /* horizontal line above automation
+               * track */
+              if (OFFSET_PLUS_TOTAL_HEIGHT >
+                    rect->y &&
+                  OFFSET_PLUS_TOTAL_HEIGHT  <
+                    rect->y + rect->height)
+                {
+                  z_cairo_draw_horizontal_line (
+                    cr,
+                    OFFSET_PLUS_TOTAL_HEIGHT -
+                      rect->y,
+                    0, rect->width, 0.2);
+                }
 
               float normalized_val =
                 automation_track_get_normalized_val_at_pos (
-                  at,
-                  PLAYHEAD);
+                  at, PLAYHEAD);
               if (normalized_val < 0.f)
                 normalized_val =
                   automatable_real_val_to_normalized (
@@ -189,10 +207,13 @@ timeline_bg_widget_draw (
                 0.3);
               cairo_set_line_width (cr, 1);
               cairo_move_to (
-                cr, 0, (wy - rect->y) + y_px);
+                cr, 0,
+                (OFFSET_PLUS_TOTAL_HEIGHT + y_px) -
+                  rect->y);
               cairo_line_to (
                 cr, rect->width,
-                (wy - rect->y) + y_px);
+                (OFFSET_PLUS_TOTAL_HEIGHT + y_px) -
+                  rect->y);
               cairo_stroke (cr);
 
               /* show shade under the line */
@@ -210,6 +231,8 @@ timeline_bg_widget_draw (
                 /*rect.x, wy + y_px,*/
                 /*rect.width, allocated_h - y_px);*/
               /*cairo_fill (cr);*/
+
+              total_height += at->height;
             }
         }
     }

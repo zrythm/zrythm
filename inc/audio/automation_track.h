@@ -146,6 +146,14 @@ automation_track_add_region (
   Region *          region);
 
 /**
+ * Returns the visible y offset from the top of
+ * the track widget.
+ */
+//int
+//automation_track_get_visible_y_offset (
+  //AutomationTrack * self);
+
+/**
  * Updates the frames of each position in each child
  * of the automation track recursively.
  */

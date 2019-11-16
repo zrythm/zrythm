@@ -1358,27 +1358,10 @@ void
 timeline_arranger_widget_set_size (
   TimelineArrangerWidget * self)
 {
-  // set the size
-  int ww, hh;
-  if (self->is_pinned)
-    {
-    /*gtk_widget_get_size_request (*/
-      /*GTK_WIDGET (MW_PINNED_TRACKLIST),*/
-      /*&ww,*/
-      /*&hh);*/
-      ww = 80;
-      hh = 80;
-    }
-  else
-    gtk_widget_get_size_request (
-      GTK_WIDGET (MW_TRACKLIST),
-      &ww,
-      &hh);
   RULER_WIDGET_GET_PRIVATE (MW_RULER);
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
-    (int) rw_prv->total_px,
-    hh);
+    (int) rw_prv->total_px, -1);
 }
 
 #define COMPARE_AND_SET(pos) \

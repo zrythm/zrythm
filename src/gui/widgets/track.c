@@ -502,6 +502,16 @@ draw_automation (
     track_get_automation_tracklist (track);
   g_return_if_fail (atl);
   int total_height = track->main_height;
+
+  if (track->lanes_visible)
+    {
+      for (int j = 0; j < track->num_lanes; j++)
+        {
+          TrackLane * lane = track->lanes[j];
+          total_height += lane->height;
+        }
+    }
+
   for (int i = 0; i < atl->num_ats; i++)
     {
       AutomationTrack * at = atl->ats[i];
@@ -509,16 +519,7 @@ draw_automation (
       if (!(at->created && at->visible))
         continue;
 
-      if (track->lanes_visible)
-        {
-          for (int j = 0; j < track->num_lanes; j++)
-            {
-              TrackLane * lane = track->lanes[j];
-              total_height += lane->height;
-            }
-        }
-
-      /* draw separator */
+      /* draw separator above at */
       cairo_set_source_rgba (
         cr, 1, 1, 1, 0.3);
       cairo_set_line_width (cr, 0.5);
@@ -983,7 +984,8 @@ on_motion (
           self->resize_target_type =
             TRACK_WIDGET_RESIZE_TARGET_AT;
           self->resize_target = resizing_at;
-          g_message ("RESIZING AT");
+          g_message ("RESIZING AT %s",
+                     resizing_at->automatable->label);
         }
       else if (!cb && resizing_lane)
         {

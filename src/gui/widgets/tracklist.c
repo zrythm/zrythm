@@ -38,6 +38,7 @@
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
+#include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/track.h"
 #include "project.h"
@@ -318,10 +319,7 @@ tracklist_widget_hard_refresh (
   z_gtk_container_remove_all_children (
     (GtkContainer *) self->unpinned_box);
   z_gtk_container_remove_all_children (
-    (GtkContainer *) self->unpinned_scroll);
-  z_gtk_container_remove_all_children (
-    (GtkContainer *) self);
-  /*GtkWidget * child1 = NULL;*/
+    (GtkContainer *) self->pinned_box);
 
   /** add pinned tracks */
   for (int i = 0; i < self->tracklist->num_tracks;
@@ -345,17 +343,9 @@ tracklist_widget_hard_refresh (
       track_widget_update_size (track->widget);
 
       gtk_container_add (
-        (GtkContainer *) self,
+        (GtkContainer *) self->pinned_box,
         (GtkWidget *) track->widget);
     }
-
-  /* add scrolled window */
-  gtk_container_add (
-    (GtkContainer *) self,
-    (GtkWidget *) self->unpinned_scroll);
-  gtk_container_add (
-    (GtkContainer *) self->unpinned_scroll,
-    (GtkWidget *) self->unpinned_box);
 
   /* readd all visible unpinned tracks to
    * scrolled window */
@@ -455,11 +445,46 @@ tracklist_widget_setup (
   tracklist->widget = self;
 
   tracklist_widget_hard_refresh (self);
+
+  self->pinned_size_group =
+    gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
+  gtk_size_group_add_widget (
+    self->pinned_size_group,
+    GTK_WIDGET (self->pinned_box));
+  gtk_size_group_add_widget (
+    self->pinned_size_group,
+    GTK_WIDGET (
+      MW_TIMELINE_PANEL->pinned_timeline_scroll));
+
+  self->unpinned_size_group =
+    gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
+  gtk_size_group_add_widget (
+    self->unpinned_size_group,
+    GTK_WIDGET (self->unpinned_box));
+  gtk_size_group_add_widget (
+    self->unpinned_size_group,
+    GTK_WIDGET (
+      MW_TIMELINE_PANEL->timeline));
 }
 
 static void
 tracklist_widget_init (TracklistWidget * self)
 {
+  gtk_box_set_spacing (
+    GTK_BOX (self), 1);
+
+  self->pinned_box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 1));
+  g_object_ref (self->pinned_box);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->pinned_box), 1);
+
+  /** add pinned box */
+  gtk_container_add (
+    (GtkContainer *) self,
+    (GtkWidget *) self->pinned_box);
+
   self->unpinned_scroll =
     GTK_SCROLLED_WINDOW (
       gtk_scrolled_window_new (NULL, NULL));
@@ -473,10 +498,18 @@ tracklist_widget_init (TracklistWidget * self)
   self->unpinned_box =
     GTK_BOX (
       gtk_box_new (
-        GTK_ORIENTATION_VERTICAL, 0));
+        GTK_ORIENTATION_VERTICAL, 1));
   g_object_ref (self->unpinned_box);
   gtk_widget_set_visible (
     GTK_WIDGET (self->unpinned_box), 1);
+
+  /* add scrolled window */
+  gtk_container_add (
+    (GtkContainer *) self,
+    (GtkWidget *) self->unpinned_scroll);
+  gtk_container_add (
+    (GtkContainer *) self->unpinned_scroll,
+    (GtkWidget *) self->unpinned_box);
 
   /* create the drag dest box and bump its reference
    * so it doesn't get deleted. */

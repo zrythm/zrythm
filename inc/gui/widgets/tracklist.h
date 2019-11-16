@@ -63,6 +63,9 @@ typedef struct _TracklistWidget
   /** The scrolled window for unpinned tracks. */
   GtkScrolledWindow * unpinned_scroll;
 
+  /** Box to hold pinned tracks. */
+  GtkBox *            pinned_box;
+
   /** Box inside unpinned scroll. */
   GtkBox *            unpinned_box;
 
@@ -76,6 +79,11 @@ typedef struct _TracklistWidget
    * Internal tracklist.
    */
   Tracklist *           tracklist;
+
+  /** Size group to set the pinned track box and
+   * the pinned timeline to the same height. */
+  GtkSizeGroup *       pinned_size_group;
+  GtkSizeGroup *       unpinned_size_group;
 } TracklistWidget;
 
 /**
