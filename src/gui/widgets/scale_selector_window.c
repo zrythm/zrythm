@@ -21,7 +21,6 @@
 #include "audio/scale.h"
 #include "audio/scale_object.h"
 #include "gui/widgets/center_dock.h"
-#include "gui/widgets/scale_object.h"
 #include "gui/widgets/scale_selector_window.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "project.h"
@@ -43,11 +42,9 @@ on_delete_event (
 {
   arranger_selections_clear (
     (ArrangerSelections *) TL_SELECTIONS);
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (
-    self->scale);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
-    ao_prv->arranger_object);
+    (ArrangerObject *) self->scale);
 
   ArrangerSelections * before =
     arranger_selections_clone (
@@ -143,7 +140,7 @@ setup_creator_tab (
   ScaleSelectorWindowWidget * self)
 {
   MusicalScale * descr =
-    self->scale->scale_object->scale;
+    self->scale->scale;
 
 #define SELECT_CHILD(flowbox, child) \
   gtk_flow_box_select_child ( \
@@ -198,18 +195,14 @@ setup_creator_tab (
  */
 ScaleSelectorWindowWidget *
 scale_selector_window_widget_new (
-  ScaleObjectWidget * owner)
+  ScaleObject * owner)
 {
   ScaleSelectorWindowWidget * self =
     g_object_new (
       SCALE_SELECTOR_WINDOW_WIDGET_TYPE,
       NULL);
 
-  self->scale =
-    (ScaleObjectWidget *)
-    ((ArrangerObject *)
-    scale_object_get_main (
-      owner->scale_object))->widget;
+  self->scale = owner;
 
   gtk_window_set_transient_for (
     GTK_WINDOW (self),
@@ -219,7 +212,7 @@ scale_selector_window_widget_new (
 
   self->descr =
     musical_scale_clone (
-      owner->scale_object->scale);
+      owner->scale);
 
   return self;
 }

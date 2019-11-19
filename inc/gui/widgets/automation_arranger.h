@@ -34,24 +34,6 @@
 
 #include <gtk/gtk.h>
 
-#define AUTOMATION_ARRANGER_WIDGET_TYPE \
-  (automation_arranger_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  AutomationArrangerWidget,
-  automation_arranger_widget,
-  Z, AUTOMATION_ARRANGER_WIDGET,
-  ArrangerWidget)
-
-/**
- * @addtogroup widgets
- *
- * @{
- */
-
-#define MW_AUTOMATION_ARRANGER \
-  MW_AUTOMATION_EDITOR_SPACE->arranger
-
-typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct AutomationPoint AutomationPoint;
 typedef struct AutomationCurve AutomationCurve;
 typedef struct _AutomationPointWidget
@@ -62,21 +44,14 @@ typedef struct SnapGrid SnapGrid;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct _RegionWidget RegionWidget;
 
-typedef struct _AutomationArrangerWidget
-{
-  ArrangerWidget       parent_instance;
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
-  /**
-   * Start AutomationPoint acting on. This is the
-   * AutomationPoint that was clicked, even though
-   * there could be more selected.
-   */
-  AutomationPoint *    start_ap;
-  AutomationCurve *    start_ac;
-} AutomationArrangerWidget;
-
-ARRANGER_W_DECLARE_FUNCS (
-  Automation, automation);
+#define MW_AUTOMATION_ARRANGER \
+  MW_AUTOMATION_EDITOR_SPACE->arranger
 
 /**
  * Create an AutomationPointat the given Position
@@ -86,7 +61,7 @@ ARRANGER_W_DECLARE_FUNCS (
  */
 void
 automation_arranger_widget_create_ap (
-  AutomationArrangerWidget * self,
+  ArrangerWidget * self,
   const Position *           pos,
   const double               start_y,
   Region *                   region);
@@ -96,7 +71,7 @@ automation_arranger_widget_create_ap (
  */
 void
 automation_arranger_widget_resize_curves (
-  AutomationArrangerWidget * self,
+  ArrangerWidget * self,
   double                     offset_y);
 
 /**

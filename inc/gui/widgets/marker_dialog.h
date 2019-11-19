@@ -56,7 +56,7 @@ typedef struct _MarkerDialogWidget
   GtkButton * ok;
   GtkButton * cancel;
 
-  MarkerWidget * marker;
+  Marker *    marker;
 
 } MarkerDialogWidget;
 
@@ -65,7 +65,7 @@ typedef struct _MarkerDialogWidget
  */
 MarkerDialogWidget *
 marker_dialog_widget_new (
-  MarkerWidget * owner);
+  Marker * owner);
 
 /**
  * @}

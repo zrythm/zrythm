@@ -151,7 +151,7 @@ create (
           Position start_pos;
           position_set_to_pos (
             &start_pos, PLAYHEAD);
-          AudioRegion * ar =
+          Region * ar =
             audio_region_new (
               add_to_project ? self->pool_id : -1,
               add_to_project ?

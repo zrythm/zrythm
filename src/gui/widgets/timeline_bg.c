@@ -127,31 +127,30 @@ timeline_bg_widget_draw (
 
       /* --- draw lanes --- */
 
-      if (!track->lanes_visible)
-        goto automation_drawing;
-
-      for (j = 0; j < track->num_lanes; j++)
+      if (track->lanes_visible)
         {
-          TrackLane * lane = track->lanes[j];
-
-          /* horizontal line above lane */
-          if (OFFSET_PLUS_TOTAL_HEIGHT >
-                rect->y &&
-              OFFSET_PLUS_TOTAL_HEIGHT  <
-                rect->y + rect->height)
+          for (j = 0; j < track->num_lanes; j++)
             {
-              z_cairo_draw_horizontal_line (
-                cr,
-                OFFSET_PLUS_TOTAL_HEIGHT -
-                  rect->y,
-                0, rect->width, 0.4);
-            }
+              TrackLane * lane = track->lanes[j];
 
-          total_height += lane->height;
+              /* horizontal line above lane */
+              if (OFFSET_PLUS_TOTAL_HEIGHT >
+                    rect->y &&
+                  OFFSET_PLUS_TOTAL_HEIGHT  <
+                    rect->y + rect->height)
+                {
+                  z_cairo_draw_horizontal_line (
+                    cr,
+                    OFFSET_PLUS_TOTAL_HEIGHT -
+                      rect->y,
+                    0, rect->width, 0.4);
+                }
+
+              total_height += lane->height;
+            }
         }
 
       /* --- draw automation related stuff --- */
-automation_drawing:
 
       /* skip tracks without visible automation */
       if (!track->automation_visible)
@@ -198,7 +197,7 @@ automation_drawing:
                   at,
                   normalized_val);
 
-              /* show line at current val */
+              /* line at current val */
               cairo_set_source_rgba (
                 cr,
                 track->color.red,
@@ -223,13 +222,13 @@ automation_drawing:
                 /*track->color.green,*/
                 /*track->color.blue,*/
                 /*0.06);*/
-              /*int allocated_h =*/
-                /*gtk_widget_get_allocated_height (*/
-                  /*GTK_WIDGET (al->widget));*/
               /*cairo_rectangle (*/
                 /*cr,*/
-                /*rect.x, wy + y_px,*/
-                /*rect.width, allocated_h - y_px);*/
+                /*0,*/
+                /*(OFFSET_PLUS_TOTAL_HEIGHT + y_px) -*/
+                  /*rect->y,*/
+                /*rect->width,*/
+                /*at->height - y_px);*/
               /*cairo_fill (cr);*/
 
               total_height += at->height;

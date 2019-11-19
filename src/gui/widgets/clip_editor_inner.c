@@ -150,10 +150,11 @@ clip_editor_inner_widget_setup (
 }
 
 static void
-clip_editor_inner_widget_init (ClipEditorInnerWidget * self)
+clip_editor_inner_widget_init (
+  ClipEditorInnerWidget * self)
 {
   g_type_ensure (COLOR_AREA_WIDGET_TYPE);
-  g_type_ensure (EDITOR_RULER_WIDGET_TYPE);
+  g_type_ensure (RULER_WIDGET_TYPE);
   g_type_ensure (AUDIO_EDITOR_SPACE_WIDGET_TYPE);
   g_type_ensure (MIDI_EDITOR_SPACE_WIDGET_TYPE);
   g_type_ensure (CHORD_EDITOR_SPACE_WIDGET_TYPE);
@@ -161,6 +162,9 @@ clip_editor_inner_widget_init (ClipEditorInnerWidget * self)
     AUTOMATION_EDITOR_SPACE_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->ruler->type =
+    RULER_WIDGET_TYPE_EDITOR;
 
   gtk_label_set_text (
     self->track_name_label,

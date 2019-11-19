@@ -123,10 +123,10 @@ get_event_type_as_string (
 }
 
 static void
-add_from_widget (
-  GtkListStore * store,
-  GtkTreeIter *  iter,
-  GtkWidget *    widget)
+add_from_object (
+  GtkListStore *   store,
+  GtkTreeIter *    iter,
+  ArrangerObject * obj)
 {
   char name[200];
   char type[200];
@@ -135,189 +135,175 @@ add_from_widget (
   char loop_start[50];
   char loop_end[50];
   char end_pos[50];
-  ArrangerObject * obj = NULL;
-  if (Z_IS_REGION_WIDGET (widget))
+  switch (obj->type)
     {
-      REGION_WIDGET_GET_PRIVATE (widget);
-      g_return_if_fail (rw_prv->region);
-      Region * r = rw_prv->region;
-      obj = (ArrangerObject *) r;
+    case ARRANGER_OBJECT_TYPE_REGION:
+      {
+        Region * r = (Region *) obj;
 
-      /* skip non-mains */
-      if (!region_is_main (r) ||
-          region_is_transient (r))
-        return;
+        /* skip non-mains */
+        if (!region_is_main (r) ||
+            region_is_transient (r))
+          return;
 
-      region_get_type_as_string (
-        r->type, type);
-      position_stringize (
-        &obj->pos, start_pos);
-      position_stringize (
-        &obj->end_pos, end_pos);
-      position_stringize (
-        &obj->clip_start_pos, clip_start);
-      position_stringize (
-        &obj->loop_start_pos, loop_start);
-      position_stringize (
-        &obj->loop_end_pos, loop_end);
-      gtk_list_store_append (store, iter);
-      gtk_list_store_set (
-        store, iter,
-        TIMELINE_COLUMN_NAME, r->name,
-        TIMELINE_COLUMN_TYPE, type,
-        TIMELINE_COLUMN_START_POS, start_pos,
-        TIMELINE_COLUMN_CLIP_START_POS, clip_start,
-        TIMELINE_COLUMN_LOOP_START_POS, loop_start,
-        TIMELINE_COLUMN_LOOP_END_POS, loop_end,
-        TIMELINE_COLUMN_END_POS, end_pos,
-        TIMELINE_COLUMN_OBJ, r,
-        -1);
-    }
-  else if (Z_IS_MARKER_WIDGET (widget))
-    {
-      MarkerWidget * mw =
-        Z_MARKER_WIDGET (widget);
-      g_return_if_fail (mw->marker);
-      Marker * m = mw->marker;
-      obj = (ArrangerObject *) m;
+        region_get_type_as_string (
+          r->type, type);
+        position_stringize (
+          &obj->pos, start_pos);
+        position_stringize (
+          &obj->end_pos, end_pos);
+        position_stringize (
+          &obj->clip_start_pos, clip_start);
+        position_stringize (
+          &obj->loop_start_pos, loop_start);
+        position_stringize (
+          &obj->loop_end_pos, loop_end);
+        gtk_list_store_append (store, iter);
+        gtk_list_store_set (
+          store, iter,
+          TIMELINE_COLUMN_NAME, r->name,
+          TIMELINE_COLUMN_TYPE, type,
+          TIMELINE_COLUMN_START_POS, start_pos,
+          TIMELINE_COLUMN_CLIP_START_POS, clip_start,
+          TIMELINE_COLUMN_LOOP_START_POS, loop_start,
+          TIMELINE_COLUMN_LOOP_END_POS, loop_end,
+          TIMELINE_COLUMN_END_POS, end_pos,
+          TIMELINE_COLUMN_OBJ, r,
+          -1);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MARKER:
+      {
+        Marker * m = (Marker *) obj;
 
-      /* skip non-mains */
-      if (!marker_is_main (m) ||
-          marker_is_transient (m))
-        return;
+        /* skip non-mains */
+        if (!marker_is_main (m) ||
+            marker_is_transient (m))
+          return;
 
-      get_event_type_as_string (
-        EVENT_VIEWER_ET_MARKER, type);
-      position_stringize (
-        &obj->pos, start_pos);
-      gtk_list_store_append (store, iter);
-      gtk_list_store_set (
-        store, iter,
-        TIMELINE_COLUMN_NAME, m->name,
-        TIMELINE_COLUMN_TYPE, type,
-        TIMELINE_COLUMN_START_POS, start_pos,
-        TIMELINE_COLUMN_CLIP_START_POS, "",
-        TIMELINE_COLUMN_LOOP_START_POS, "",
-        TIMELINE_COLUMN_LOOP_END_POS, "",
-        TIMELINE_COLUMN_END_POS, "",
-        TIMELINE_COLUMN_OBJ, m,
-        -1);
-    }
-  else if (Z_IS_MIDI_NOTE_WIDGET (widget))
-    {
-      MidiNoteWidget * mnw =
-        Z_MIDI_NOTE_WIDGET (widget);
-      g_return_if_fail (mnw->midi_note);
-      MidiNote * mn = mnw->midi_note;
-      obj = (ArrangerObject *) mn;
+        get_event_type_as_string (
+          EVENT_VIEWER_ET_MARKER, type);
+        position_stringize (
+          &obj->pos, start_pos);
+        gtk_list_store_append (store, iter);
+        gtk_list_store_set (
+          store, iter,
+          TIMELINE_COLUMN_NAME, m->name,
+          TIMELINE_COLUMN_TYPE, type,
+          TIMELINE_COLUMN_START_POS, start_pos,
+          TIMELINE_COLUMN_CLIP_START_POS, "",
+          TIMELINE_COLUMN_LOOP_START_POS, "",
+          TIMELINE_COLUMN_LOOP_END_POS, "",
+          TIMELINE_COLUMN_END_POS, "",
+          TIMELINE_COLUMN_OBJ, m,
+          -1);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+      {
+        MidiNote * mn = (MidiNote *) obj;
 
-      /* skip non-mains */
-      if (!midi_note_is_main (mn) ||
-          midi_note_is_transient (mn))
-        return;
+        /* skip non-mains */
+        if (!midi_note_is_main (mn) ||
+            midi_note_is_transient (mn))
+          return;
 
-      midi_note_get_val_as_string (
-        mn, name, 0);
-      get_event_type_as_string (
-        EVENT_VIEWER_ET_MIDI_NOTE, type);
-      position_stringize (
-        &obj->pos, start_pos);
-      position_stringize (
-        &obj->end_pos, end_pos);
-      char pitch[10];
-      char vel[10];
-      sprintf (pitch, "%d", mn->val);
-      sprintf (vel, "%d", mn->vel->vel);
-      gtk_list_store_append (store, iter);
-      gtk_list_store_set (
-        store, iter,
-        MIDI_COLUMN_NAME, name,
-        MIDI_COLUMN_PITCH, pitch,
-        MIDI_COLUMN_VELOCITY, vel,
-        MIDI_COLUMN_START_POS, start_pos,
-        MIDI_COLUMN_END_POS, end_pos,
-        MIDI_COLUMN_OBJ, mn,
-        -1);
-    }
-  else if (Z_IS_CHORD_OBJECT_WIDGET (widget))
-    {
-      ChordObjectWidget * cw =
-        Z_CHORD_OBJECT_WIDGET (widget);
-      g_return_if_fail (cw->chord_object);
-      ChordObject * c = cw->chord_object;
-      obj = (ArrangerObject *) c;
+        midi_note_get_val_as_string (
+          mn, name, 0);
+        get_event_type_as_string (
+          EVENT_VIEWER_ET_MIDI_NOTE, type);
+        position_stringize (
+          &obj->pos, start_pos);
+        position_stringize (
+          &obj->end_pos, end_pos);
+        char pitch[10];
+        char vel[10];
+        sprintf (pitch, "%d", mn->val);
+        sprintf (vel, "%d", mn->vel->vel);
+        gtk_list_store_append (store, iter);
+        gtk_list_store_set (
+          store, iter,
+          MIDI_COLUMN_NAME, name,
+          MIDI_COLUMN_PITCH, pitch,
+          MIDI_COLUMN_VELOCITY, vel,
+          MIDI_COLUMN_START_POS, start_pos,
+          MIDI_COLUMN_END_POS, end_pos,
+          MIDI_COLUMN_OBJ, mn,
+          -1);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
+      {
+        ChordObject * c = (ChordObject *) obj;
 
-      /* skip non-mains */
-      if (!chord_object_is_main (c) ||
-          chord_object_is_transient (c))
-        return;
+        /* skip non-mains */
+        if (!chord_object_is_main (c) ||
+            chord_object_is_transient (c))
+          return;
 
-      ChordDescriptor * descr =
-        chord_object_get_chord_descriptor (c);
-      chord_descriptor_to_string (
-        descr, name);
-      get_event_type_as_string (
-        EVENT_VIEWER_ET_CHORD_OBJECT, type);
-      position_stringize (
-        &obj->pos, start_pos);
-      gtk_list_store_append (store, iter);
-      gtk_list_store_set (
-        store, iter,
-        CHORD_COLUMN_NAME, name,
-        CHORD_COLUMN_START_POS, start_pos,
-        CHORD_COLUMN_OBJ, c,
-        -1);
-    }
-  else if (Z_IS_AUTOMATION_POINT_WIDGET (widget))
-    {
-      AutomationPointWidget * apw =
-        Z_AUTOMATION_POINT_WIDGET (widget);
-      g_return_if_fail (apw->ap);
-      AutomationPoint * ap = apw->ap;
-      obj = (ArrangerObject *) ap;
+        ChordDescriptor * descr =
+          chord_object_get_chord_descriptor (c);
+        chord_descriptor_to_string (
+          descr, name);
+        get_event_type_as_string (
+          EVENT_VIEWER_ET_CHORD_OBJECT, type);
+        position_stringize (
+          &obj->pos, start_pos);
+        gtk_list_store_append (store, iter);
+        gtk_list_store_set (
+          store, iter,
+          CHORD_COLUMN_NAME, name,
+          CHORD_COLUMN_START_POS, start_pos,
+          CHORD_COLUMN_OBJ, c,
+          -1);
+      }
+      break;
+    case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
+      {
+        AutomationPoint * ap =
+          (AutomationPoint*) obj;
 
-      /* skip non-mains */
-      if (!automation_point_is_main (ap) ||
-          automation_point_is_transient (ap))
-        return;
+        /* skip non-mains */
+        if (!automation_point_is_main (ap) ||
+            automation_point_is_transient (ap))
+          return;
 
-      get_event_type_as_string (
-        EVENT_VIEWER_ET_AUTOMATION_POINT,
-        type);
-      position_stringize (
-        &obj->pos, start_pos);
-      char index[50];
-      sprintf (index, "%d", ap->index);
-      char value[50];
-      sprintf (value, "%f", (double) ap->fvalue);
-      char curviness[50];
-      sprintf (curviness, "%f", ap->curviness);
-      gtk_list_store_append (store, iter);
-      gtk_list_store_set (
-        store, iter,
-        AUTOMATION_COLUMN_INDEX, index,
-        AUTOMATION_COLUMN_POS, start_pos,
-        AUTOMATION_COLUMN_VALUE, value,
-        AUTOMATION_COLUMN_CURVINESS, curviness,
-        AUTOMATION_COLUMN_OBJ, ap,
-        -1);
+        get_event_type_as_string (
+          EVENT_VIEWER_ET_AUTOMATION_POINT,
+          type);
+        position_stringize (
+          &obj->pos, start_pos);
+        char index[50];
+        sprintf (index, "%d", ap->index);
+        char value[50];
+        sprintf (value, "%f", (double) ap->fvalue);
+        char curviness[50];
+        sprintf (curviness, "%f", ap->curviness);
+        gtk_list_store_append (store, iter);
+        gtk_list_store_set (
+          store, iter,
+          AUTOMATION_COLUMN_INDEX, index,
+          AUTOMATION_COLUMN_POS, start_pos,
+          AUTOMATION_COLUMN_VALUE, value,
+          AUTOMATION_COLUMN_CURVINESS, curviness,
+          AUTOMATION_COLUMN_OBJ, ap,
+          -1);
+      }
+      break;
+    default:
+      break;
     }
 }
 
 #define ADD_FOREACH_IN_ARRANGER(arranger) \
-  children = \
-    gtk_container_get_children ( \
-      GTK_CONTAINER (arranger)); \
-  for (children_iter = children; \
-       children_iter != NULL; \
-       children_iter = g_list_next (children_iter)) \
+  arranger_widget_get_all_objects ( \
+    arranger, objs, &num_objs); \
+  for (int i = 0; i < num_objs; i++) \
     { \
-      GtkWidget * widget = \
-        GTK_WIDGET (children_iter->data); \
-      add_from_widget ( \
-        store, &iter, widget); \
+      ArrangerObject * obj = objs[i]; \
+      add_from_object ( \
+        store, &iter, obj); \
     } \
-  g_list_free (children)
 
 static GtkTreeModel *
 create_timeline_model (
@@ -341,7 +327,8 @@ create_timeline_model (
 
   /* add data to the list store (cheat by using
    * the timeline arranger children) */
-  GList *children, * children_iter;
+  ArrangerObject * objs[2000];
+  int              num_objs;
   ADD_FOREACH_IN_ARRANGER (MW_TIMELINE);
   ADD_FOREACH_IN_ARRANGER (MW_PINNED_TIMELINE);
 
@@ -367,7 +354,8 @@ create_midi_model (
       G_TYPE_POINTER);
 
   /* add data to the list */
-  GList *children, * children_iter;
+  ArrangerObject * objs[2000];
+  int              num_objs;
   ADD_FOREACH_IN_ARRANGER (
     MW_MIDI_ARRANGER);
 
@@ -390,7 +378,8 @@ create_chord_model (
       G_TYPE_POINTER);
 
   /* add data to the list */
-  GList *children, * children_iter;
+  ArrangerObject * objs[2000];
+  int              num_objs;
   ADD_FOREACH_IN_ARRANGER (
     MW_CHORD_ARRANGER);
 
@@ -415,7 +404,8 @@ create_automation_model (
       G_TYPE_POINTER);
 
   /* add data to the list */
-  GList *children, * children_iter;
+  ArrangerObject * objs[2000];
+  int              num_objs;
   ADD_FOREACH_IN_ARRANGER (
     MW_AUTOMATION_ARRANGER);
 
@@ -774,35 +764,33 @@ event_viewer_widget_refresh (
 
 void
 event_viewer_widget_refresh_for_arranger (
-  ArrangerWidget *    arranger)
+  ArrangerWidget * arranger)
 {
-  if (Z_IS_TIMELINE_ARRANGER_WIDGET (arranger))
+  switch (arranger->type)
     {
+    case ARRANGER_WIDGET_TYPE_TIMELINE:
       event_viewer_widget_refresh (
         MW_TIMELINE_EVENT_VIEWER);
-    }
-  else if (Z_IS_MIDI_ARRANGER_WIDGET (arranger))
-    {
+      break;
+    case ARRANGER_WIDGET_TYPE_MIDI:
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
-    }
-  else if (Z_IS_MIDI_MODIFIER_ARRANGER_WIDGET (
-             arranger))
-    {
+      break;
+    case ARRANGER_WIDGET_TYPE_MIDI_MODIFIER:
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
-    }
-  else if (Z_IS_CHORD_ARRANGER_WIDGET (
-             arranger))
-    {
+      break;
+    case ARRANGER_WIDGET_TYPE_CHORD:
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
-    }
-  else if (Z_IS_AUTOMATION_ARRANGER_WIDGET (
-             arranger))
-    {
+      break;
+    case ARRANGER_WIDGET_TYPE_AUTOMATION:
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
     }
 }
 

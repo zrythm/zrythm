@@ -19,6 +19,8 @@
 
 /** \file */
 
+#if 0
+
 #ifndef __GUI_WIDGETS_AUDIO_REGION_H__
 #define __GUI_WIDGETS_AUDIO_REGION_H__
 
@@ -49,4 +51,5 @@ AudioRegionWidget *
 audio_region_widget_new (
   AudioRegion * audio_region);
 
+#endif
 #endif

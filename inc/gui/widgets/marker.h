@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if 0
+
 /**
  * \file
  *
@@ -82,4 +84,5 @@ marker_widget_recreate_pango_layouts (
  * @}
  */
 
+#endif
 #endif

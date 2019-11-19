@@ -846,10 +846,10 @@ region_disconnect (
     }
   if (ZRYTHM_HAVE_UI)
     {
-      ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);
-      if (ar_prv->start_object ==
-            (ArrangerObject *) self)
-        ar_prv->start_object = NULL;
+      /*ARRANGER_WIDGET_GET_PRIVATE (MW_TIMELINE);*/
+      /*if (ar_prv->start_object ==*/
+            /*(ArrangerObject *) self)*/
+        /*ar_prv->start_object = NULL;*/
     }
 }
 

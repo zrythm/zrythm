@@ -27,35 +27,21 @@
 
 #include <gtk/gtk.h>
 
-#define MIDI_ARRANGER_WIDGET_TYPE \
-  (midi_arranger_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  MidiArrangerWidget,
-  midi_arranger_widget,
-  Z, MIDI_ARRANGER_WIDGET,
-  ArrangerWidget)
-
-#define MW_MIDI_ARRANGER \
-  MW_MIDI_EDITOR_SPACE->arranger
-
-typedef struct _ArrangerBgWidget ArrangerBgWidget;
+typedef struct _ArrangerWidget ArrangerWidget;
 typedef struct MidiNote MidiNote;
-typedef struct _MidiNoteWidget MidiNoteWidget;
 typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
 typedef struct Region MidiRegion;
 typedef struct Channel Channel;
 
-typedef struct _MidiArrangerWidget
-{
-  ArrangerWidget           parent_instance;
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
-  /** The note currently hovering over */
-  int                      hovered_note;
-} MidiArrangerWidget;
-
-ARRANGER_W_DECLARE_FUNCS (
-  Midi, midi);
+#define MW_MIDI_ARRANGER \
+  MW_MIDI_EDITOR_SPACE->arranger
 
 /**
  * Returns the note value (0-127) at y.
@@ -69,7 +55,7 @@ midi_arranger_widget_get_note_at_y (double y);
  */
 void
 midi_arranger_widget_create_note (
-  MidiArrangerWidget * self,
+  ArrangerWidget * self,
   Position * pos,
   int                  note,
   MidiRegion * region);
@@ -89,7 +75,7 @@ midi_arranger_widget_create_note (
  */
 int
 midi_arranger_widget_snap_midi_notes_l (
-  MidiArrangerWidget *self,
+  ArrangerWidget *self,
   Position *          pos,
   int                 dry_run);
 
@@ -108,7 +94,7 @@ midi_arranger_widget_snap_midi_notes_l (
  */
 int
 midi_arranger_widget_snap_midi_notes_r (
-  MidiArrangerWidget *self,
+  ArrangerWidget *self,
   Position *          pos,
   int                 dry_run);
 
@@ -118,6 +104,19 @@ midi_arranger_widget_snap_midi_notes_r (
  */
 void
 midi_arranger_widget_reset_transients (
-  MidiArrangerWidget * self);
+  ArrangerWidget * self);
+
+/**
+ * Called on move items_y setup.
+ *
+ * calculates the max possible y movement
+ */
+int
+midi_arranger_calc_deltamax_for_note_movement (
+  int y_delta);
+
+/**
+ * @}
+ */
 
 #endif

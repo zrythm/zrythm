@@ -235,15 +235,15 @@ midi_editor_space_widget_get_key_for_label (
 /*{*/
 /*}*/
 
-static void
-on_keys_box_size_allocate (
-  GtkWidget * widget,
-  GdkRectangle * allocation,
-  MidiEditorSpaceWidget * self)
-{
-  midi_arranger_widget_set_size (
-    MW_MIDI_ARRANGER);
-}
+/*static void*/
+/*on_keys_box_size_allocate (*/
+  /*GtkWidget * widget,*/
+  /*GdkRectangle * allocation,*/
+  /*MidiEditorSpaceWidget * self)*/
+/*{*/
+  /*midi_arranger_widget_set_size (*/
+    /*MW_MIDI_ARRANGER);*/
+/*}*/
 
 void
 midi_editor_space_widget_refresh (
@@ -344,6 +344,7 @@ midi_editor_space_widget_setup (
     {
       arranger_widget_setup (
         Z_ARRANGER_WIDGET (self->arranger),
+        ARRANGER_WIDGET_TYPE_MIDI,
         &PROJECT->snap_grid_midi);
       gtk_widget_show_all (
         GTK_WIDGET (self->arranger));
@@ -352,6 +353,7 @@ midi_editor_space_widget_setup (
     {
       arranger_widget_setup (
         Z_ARRANGER_WIDGET (self->modifier_arranger),
+        ARRANGER_WIDGET_TYPE_MIDI_MODIFIER,
         &PROJECT->snap_grid_midi);
       gtk_widget_show_all (
         GTK_WIDGET (self->modifier_arranger));
@@ -376,10 +378,12 @@ static void
 midi_editor_space_widget_init (
   MidiEditorSpaceWidget * self)
 {
-  g_type_ensure (MIDI_ARRANGER_WIDGET_TYPE);
-  g_type_ensure (MIDI_MODIFIER_ARRANGER_WIDGET_TYPE);
-
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->arranger->type =
+    ARRANGER_WIDGET_TYPE_MIDI;
+  self->modifier_arranger->type =
+    ARRANGER_WIDGET_TYPE_MIDI_MODIFIER;
 
   self->last_mid_note = 63;
 
@@ -405,10 +409,10 @@ midi_editor_space_widget_init (
     G_OBJECT (self->piano_roll_keys_box),
     "motion-notify-event",
     G_CALLBACK (on_motion), self);
-  g_signal_connect (
-    G_OBJECT (self->piano_roll_keys_box),
-    "size-allocate",
-    G_CALLBACK (on_keys_box_size_allocate), self);
+  /*g_signal_connect (*/
+    /*G_OBJECT (self->piano_roll_keys_box),*/
+    /*"size-allocate",*/
+    /*G_CALLBACK (on_keys_box_size_allocate), self);*/
   g_signal_connect (
     G_OBJECT(self->multipress), "released",
     G_CALLBACK (on_released),  self);

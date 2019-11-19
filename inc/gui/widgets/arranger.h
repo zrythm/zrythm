@@ -28,25 +28,21 @@
 
 #define ARRANGER_WIDGET_TYPE ( \
   arranger_widget_get_type ())
-G_DECLARE_DERIVABLE_TYPE (
+G_DECLARE_FINAL_TYPE (
   ArrangerWidget,
   arranger_widget,
   Z, ARRANGER_WIDGET,
-  GtkOverlay)
-
-#define ARRANGER_WIDGET_GET_PRIVATE(self) \
-  ArrangerWidgetPrivate * ar_prv = \
-    arranger_widget_get_private ( \
-      (ArrangerWidget *) (self));
+  GtkDrawingArea)
 
 #define ARRANGER_WIDGET_GET_ACTION(arr,actn) \
-  (arranger_widget_get_private (arr)->action == UI_OVERLAY_ACTION_##actn)
+  (arr->action == UI_OVERLAY_ACTION_##actn)
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote MidiNote;
 typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
-typedef struct _ArrangerPlayheadWidget ArrangerPlayheadWidget;
+typedef struct _ArrangerPlayheadWidget
+  ArrangerPlayheadWidget;
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct _GtkEventControllerMotion
@@ -74,21 +70,39 @@ typedef enum ArrangerCursor
   ARRANGER_CURSOR_RANGE,
 } ArrangerCursor;
 
-typedef struct
+/**
+ * Type of arranger.
+ */
+typedef enum ArrangerWidgetType
 {
-  ArrangerBgWidget *       bg;
-  ArrangerPlayheadWidget * playhead;
-  GtkGestureDrag *         drag;
-  GtkGestureMultiPress *   multipress;
-  GtkGestureMultiPress *   right_mouse_mp;
+  ARRANGER_WIDGET_TYPE_TIMELINE,
+  ARRANGER_WIDGET_TYPE_MIDI,
+  ARRANGER_WIDGET_TYPE_MIDI_MODIFIER,
+  ARRANGER_WIDGET_TYPE_AUDIO,
+  ARRANGER_WIDGET_TYPE_CHORD,
+  ARRANGER_WIDGET_TYPE_AUTOMATION,
+} ArrangerWidgetType;
+
+/**
+ * The arranger widget is a canvas that draws all
+ * the arranger objects it contains.
+ */
+typedef struct _ArrangerWidget
+{
+  GtkDrawingArea       parent_instance;
+
+  /** Type of arranger this is. */
+  ArrangerWidgetType   type;
+
+  GtkGestureDrag *     drag;
+  GtkGestureMultiPress * multipress;
+  GtkGestureMultiPress * right_mouse_mp;
   GtkEventControllerMotion * motion_controller;
 
-  /** FIXME broken in GTK3, but should be used in
-   * the future. */
-  //GtkEventControllerKey *  key_controller;
+  /** Used when dragging. */
+  double               last_offset_x;
+  double               last_offset_y;
 
-  double               last_offset_x;  ///< for dragging regions, selections
-  double               last_offset_y;  ///< for selections
   UiOverlayAction      action;
 
   /** X-axis coordinate at start of drag. */
@@ -97,7 +111,9 @@ typedef struct
   /** Y-axis coordinate at start of drag. */
   double               start_y;
 
-  double               start_pos_px; ///< for moving regions
+  /** X-axis coordinate at the start of the drag,
+   * in pixels. */
+  double               start_pos_px;
 
   /** Whether an object exists, so we can use the
    * earliest_obj_start_pos. */
@@ -107,8 +123,13 @@ typedef struct
    * at the start of the drag. */
   Position             earliest_obj_start_pos;
 
-  /** The object that was clicked in this drag
-   * cycle, if any. */
+  /**
+   * The object that was clicked in this drag
+   * cycle, if any.
+   *
+   * This is the ArrangerObject that was clicked,
+   * even though there could be more selected.
+   */
   ArrangerObject *       start_object;
 
   /** Whether the start object was selected before
@@ -126,12 +147,6 @@ typedef struct
   /** The absolute (not snapped) Position at the
    * start of a drag, translated from start_x. */
   Position             start_pos;
-
-  /** The widget first clicked on. */
-  //GtkWidget *          start_widget;
-
-  /** Type of the widget first clicked on. */
-  //GType                start_widget_type;
 
   /** The absolute (not snapped) current diff in
    * ticks from the curr_pos to the start_pos. */
@@ -169,21 +184,84 @@ typedef struct
   int                  alt_held;
 
   gint64               last_frame_time;
-} ArrangerWidgetPrivate;
 
-typedef struct _ArrangerWidgetClass
-{
-  GtkOverlayClass       parent_class;
-} ArrangerWidgetClass;
+  /* ----- TIMELINE ------ */
 
-/** Called from get_child_position to allocate
- * the overlay children */
-#define ARRANGER_W_DECLARE_SET_ALLOCATION(cc,sc) \
-  void \
-  sc##_arranger_widget_set_allocation ( \
-    cc##ArrangerWidget * self, \
-    GtkWidget *          widget, \
-    GdkRectangle *       allocation)
+  /** The number of visible tracks moved during a
+   * moving operation between tracks up to the last
+   * cycle. */
+  int                  visible_track_diff;
+
+  /** The number of lanes moved during a
+   * moving operation between lanes, up to the last
+   * cycle. */
+  int                  lane_diff;
+
+  int                  last_timeline_obj_bars;
+
+  /** Whether this TimelineArrangerWidget is for
+   * the PinnedTracklist or not. */
+  int                  is_pinned;
+
+  /**
+   * 1 if resizing range.
+   */
+  int                  resizing_range;
+
+  /**
+   * 1 if this is the first call to resize the range,
+   * so range1 can be set.
+   */
+  int                  resizing_range_start;
+
+  /** Cache for chord object height, used during
+   * child size allocation. */
+  int                  chord_obj_height;
+
+  /* ----- END TIMELINE ----- */
+
+  /* ------ MIDI (PIANO ROLL) ---- */
+
+  /** The note currently hovering over */
+  int                      hovered_note;
+
+  /* ------ END MIDI (PIANO ROLL) ---- */
+
+  /* ------ MIDI MODIFIER ---- */
+
+  /** 1-127. */
+  int            start_vel_val;
+
+  /**
+   * Maximum Velocity diff applied in this action.
+   *
+   * Used in drag_end to create an UndableAction.
+   * This can have any value, even greater than 127
+   * and it will be clamped when applying it to
+   * a Velocity.
+   */
+  int            vel_diff;
+
+  /* ------ END MIDI MODIFIER ---- */
+
+  /* ------- CHORD ------- */
+
+  /** Index of the chord being hovered on. */
+  int             hovered_chord_index;
+
+  /* ------- END CHORD ------- */
+
+  /** Set to 1 to redraw. */
+  int               redraw;
+
+  cairo_t *         cached_cr;
+
+  cairo_surface_t * cached_surface;
+
+  /** Rectangle in the last call. */
+  GdkRectangle      last_rect;
+
+} ArrangerWidget;
 
 /**
  * Returns the appropriate cursor based on the
@@ -206,14 +284,6 @@ typedef struct _ArrangerWidgetClass
   sc##_arranger_widget_move_items_y ( \
     cc##ArrangerWidget *self, \
     double              offset_y)
-
-/**
- * Readd children.
- */
-#define ARRANGER_W_DECLARE_REFRESH_CHILDREN(cc,sc) \
-  void \
-  sc##_arranger_widget_refresh_children ( \
-    cc##ArrangerWidget * self)
 
 /**
  * To be called once at init time to set up the
@@ -281,11 +351,8 @@ typedef struct _ArrangerWidgetClass
 void
 arranger_widget_setup (
   ArrangerWidget *   self,
+  ArrangerWidgetType type,
   SnapGrid *         snap_grid);
-
-ArrangerWidgetPrivate *
-arranger_widget_get_private (
-  ArrangerWidget * self);
 
 /**
  * Sets the cursor on the arranger and all of its
@@ -320,9 +387,9 @@ arranger_widget_add_overlay_child (
  * visibility for every ArrangerObject in the
  * ArrangerWidget based on the current action.
  */
-void
-arranger_widget_update_visibility (
-  ArrangerWidget * self);
+//void
+//arranger_widget_update_visibility (
+  //ArrangerWidget * self);
 
 /**
  * Gets the corresponding scrolled window.
@@ -330,6 +397,18 @@ arranger_widget_update_visibility (
 GtkScrolledWindow *
 arranger_widget_get_scrolled_window (
   ArrangerWidget * self);
+
+/**
+ * Get all objects currently present in the arranger.
+ *
+ * @param objs Array to fill in.
+ * @param size Array size to fill in.
+ */
+void
+arranger_widget_get_all_objects (
+  ArrangerWidget *  self,
+  ArrangerObject ** objs,
+  int *             size);
 
 /**
  * Wrapper for ui_px_to_pos depending on the arranger
@@ -348,16 +427,22 @@ arranger_widget_px_to_pos (
 void
 arranger_widget_refresh_all_backgrounds (void);
 
+/**
+ * Fills in the given array with the ArrangerObject's
+ * of the given type that appear in the given
+ * ranger.
+ *
+ * @param rect The rectangle to search in.
+ * @param array The array to fill.
+ * @param array_size The size of the array to fill.
+ */
 void
-arranger_widget_get_hit_widgets_in_range (
-  ArrangerWidget *  self,
-  GType             type,
-  double            start_x,
-  double            start_y,
-  double            offset_x,
-  double            offset_y,
-  GtkWidget **      array, ///< array to fill
-  int *             array_size); ///< array_size to fill
+arranger_widget_get_hit_objects_in_rect (
+  ArrangerWidget *   self,
+  ArrangerObjectType type,
+  GdkRectangle *     rect,
+  ArrangerObject **  array,
+  int *              array_size);
 
 /**
  * Returns the ArrangerObject of the given type
@@ -412,13 +497,6 @@ arranger_widget_select (
  */
 int
 arranger_widget_refresh (
-  ArrangerWidget * self);
-
-/**
- * Causes a redraw of the background.
- */
-void
-arranger_widget_redraw_bg (
   ArrangerWidget * self);
 
 #endif

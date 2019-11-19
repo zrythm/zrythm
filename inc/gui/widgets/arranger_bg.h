@@ -23,6 +23,8 @@
  * Arranger background.
  */
 
+#if 0
+
 #ifndef __GUI_WIDGETS_ARRANGER_BG_H__
 #define __GUI_WIDGETS_ARRANGER_BG_H__
 
@@ -106,4 +108,5 @@ arranger_bg_widget_draw_selections (
  * @}
  */
 
+#endif
 #endif

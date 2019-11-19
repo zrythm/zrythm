@@ -116,16 +116,16 @@ void
 clip_editor_redraw_region (
   ClipEditor * self)
 {
-  Region * r =
-    self->region;
-  ArrangerObject * r_obj =
-    (ArrangerObject *) r;
-  if (r_obj &&
-      Z_IS_ARRANGER_OBJECT_WIDGET (r_obj->widget))
-    {
-      arranger_object_widget_force_redraw (
-        (ArrangerObjectWidget *) r_obj->widget);
-    }
+  /*Region * r =*/
+    /*self->region;*/
+  /*ArrangerObject * r_obj =*/
+    /*(ArrangerObject *) r;*/
+  /*if (r_obj &&*/
+      /*Z_IS_ARRANGER_OBJECT_WIDGET (r_obj->widget))*/
+    /*{*/
+      /*arranger_object_widget_force_redraw (*/
+        /*(ArrangerObjectWidget *) r_obj->widget);*/
+    /*}*/
 }
 
 /**

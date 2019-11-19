@@ -24,6 +24,8 @@
  * RegionWidget.
  */
 
+#if 0
+
 #ifndef __GUI_WIDGETS_CHORD_REGION_H__
 #define __GUI_WIDGETS_CHORD_REGION_H__
 
@@ -62,4 +64,5 @@ ChordRegionWidget *
 chord_region_widget_new (
   Region * chord_region);
 
+#endif
 #endif

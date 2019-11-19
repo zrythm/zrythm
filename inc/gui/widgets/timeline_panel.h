@@ -42,10 +42,6 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _RulerWidget RulerWidget;
 typedef struct _TracklistWidget TracklistWidget;
 typedef struct _SnapGridWidget SnapGridWidget;
-typedef struct _TimelineArrangerWidget
-  TimelineArrangerWidget;
-typedef struct _TimelineRulerWidget
-  TimelineRulerWidget;
 typedef struct _LeftDockEdgeWidget LeftDockEdgeWidget;
 typedef struct _RightDockEdgeWidget
   RightDockEdgeWidget;
@@ -90,7 +86,7 @@ typedef struct _TimelinePanelWidget
   GtkViewport *           ruler_viewport;
 
   /** Ruler. */
-  TimelineRulerWidget *   ruler;
+  RulerWidget *           ruler;
 
   /** The paned dividing the pinned and unpinned
    * timelines. */
@@ -100,7 +96,7 @@ typedef struct _TimelinePanelWidget
   GtkViewport *           timeline_viewport;
 
   /** The main timeline. */
-  TimelineArrangerWidget * timeline;
+  ArrangerWidget *        timeline;
 
   TimelineToolbarWidget * timeline_toolbar;
 
@@ -108,7 +104,7 @@ typedef struct _TimelinePanelWidget
   GtkViewport *           pinned_timeline_viewport;
 
   /** The pinned timeline above the main one. */
-  TimelineArrangerWidget * pinned_timeline;
+  ArrangerWidget *        pinned_timeline;
 
   TimelineBotBoxWidget *  bot_box;
 } TimelinePanelWidget;

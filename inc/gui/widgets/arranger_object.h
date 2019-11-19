@@ -23,6 +23,7 @@
  * Base widget for ArrangerObject's.
  */
 
+#if 0
 #ifndef __GUI_WIDGETS_ARRANGER_OBJECT_H__
 #define __GUI_WIDGETS_ARRANGER_OBJECT_H__
 
@@ -99,9 +100,6 @@ typedef struct _ArrangerObjectWidgetPrivate
    */
   GdkRectangle       last_rect;
 
-  /** Cairo caches. */
-  cairo_t *          cached_cr;
-  cairo_surface_t *  cached_surface;
 } ArrangerObjectWidgetPrivate;
 
 typedef struct _ArrangerObjectWidgetClass
@@ -221,4 +219,5 @@ arranger_object_widget_get_private (
  * @}
  */
 
+#endif
 #endif

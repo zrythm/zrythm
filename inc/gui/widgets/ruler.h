@@ -28,20 +28,34 @@
 
 #include <gtk/gtk.h>
 
-#define DEFAULT_ZOOM_LEVEL 1.0f
+#define RW_DEFAULT_ZOOM_LEVEL 1.0f
+
+#define RW_RULER_MARKER_SIZE 8
+#define RW_CUE_MARKER_HEIGHT 12
+#define RW_CUE_MARKER_WIDTH 7
+#define RW_PLAYHEAD_TRIANGLE_WIDTH 12
+#define RW_PLAYHEAD_TRIANGLE_HEIGHT 8
+
+/**
+ * Minimum number of pixels between beat lines.
+ */
+#define RW_PX_TO_HIDE_BEATS 40.0
 
 #define RULER_WIDGET_TYPE \
   (ruler_widget_get_type ())
-G_DECLARE_DERIVABLE_TYPE (
+G_DECLARE_FINAL_TYPE (
   RulerWidget,
   ruler_widget,
   Z, RULER_WIDGET,
-  GtkOverlay)
+  GtkDrawingArea)
 
-#define RULER_WIDGET_GET_PRIVATE(self) \
-  RulerWidgetPrivate * rw_prv = \
-    ruler_widget_get_private ( \
-      (RulerWidget *) (self));
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+typedef struct Position Position;
 
 /**
  * Pixels to draw between each beat, before being
@@ -61,9 +75,6 @@ G_DECLARE_DERIVABLE_TYPE (
 #define MIN_ZOOM_LEVEL 0.05
 #define MAX_ZOOM_LEVEL 400.
 
-typedef struct Position Position;
-typedef struct _RulerMarkerWidget RulerMarkerWidget;
-
 /**
  * The ruler widget target acting upon.
  */
@@ -76,57 +87,69 @@ typedef enum RWTarget
   RW_TARGET_RANGE, ///< for timeline only
 } RWTarget;
 
-typedef struct
+typedef enum RulerWidgetType
 {
-  RulerMarkerWidget *      playhead;
-  GtkDrawingArea *         bg;
-  double                   px_per_beat;
-  double                   px_per_bar;
-  double                   px_per_sixteenth;
-  double                   px_per_tick;
-  double                   total_px;
+  RULER_WIDGET_TYPE_TIMELINE,
+  RULER_WIDGET_TYPE_EDITOR,
+} RulerWidgetType;
+
+typedef struct _RulerWidget
+{
+  GtkDrawingArea    parent_instance;
+
+  RulerWidgetType   type;
+
+  double            px_per_beat;
+  double            px_per_bar;
+  double            px_per_sixteenth;
+  double            px_per_tick;
+  double            total_px;
 
   /**
    * Dragging playhead or creating range, etc.
    */
-  UiOverlayAction          action;
+  UiOverlayAction   action;
 
   /** For dragging. */
-  double                   start_x;
-  double                   last_offset_x;
+  double            start_x;
+  double            last_offset_x;
 
-  GtkGestureDrag *         drag;
-  GtkGestureMultiPress *   multipress;
+  GtkGestureDrag *  drag;
+  GtkGestureMultiPress * multipress;
 
   /** Target acting upon. */
-  RWTarget                 target;
+  RWTarget          target;
 
   /**
    * If shift was held down during the press.
    */
-  int                      shift_held;
+  int               shift_held;
 
   /** FIXME move somewhere else */
-  double                   zoom_level;
+  double            zoom_level;
 
   /** Set to 1 to redraw. */
   int               redraw;
 
-  cairo_t *               cached_cr;
+  /** Whether range1 was before range2 at drag
+   * start. */
+  int               range1_first;
 
-  cairo_surface_t *       cached_surface;
+  /**
+   * Set on drag begin.
+   *
+   * Useful for moving range.
+   */
+  Position                 range1_start_pos;
+  Position                 range2_start_pos;
+
+  cairo_t *         cached_cr;
+
+  cairo_surface_t * cached_surface;
 
   /** Rectangle in the last call. */
-  GdkRectangle            last_rect;
-} RulerWidgetPrivate;
-
-typedef struct _RulerWidgetClass
-{
-  GtkOverlayClass    parent_class;
-} RulerWidgetClass;
-
-RulerWidgetPrivate *
-ruler_widget_get_private (RulerWidget * self);
+  GdkRectangle      last_rect;
+} RulerWidget;
 
 /**
  * Sets zoom level and disables/enables buttons
@@ -160,6 +183,11 @@ ruler_widget_force_redraw (
   RulerWidget * self);
 
 void
-ruler_widget_refresh (RulerWidget * self);
+ruler_widget_refresh (
+  RulerWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

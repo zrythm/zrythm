@@ -36,9 +36,7 @@ G_DECLARE_FINAL_TYPE (
   Z, MIDI_EDITOR_SPACE_WIDGET,
   GtkBox)
 
-typedef struct _MidiArrangerWidget MidiArrangerWidget;
-typedef struct _MidiModifierArrangerWidget
-  MidiModifierArrangerWidget;
+typedef struct _ArrangerWidget ArrangerWidget;
 typedef struct _PianoRollKeyLabelWidget
   PianoRollKeyLabelWidget;
 typedef struct _PianoRollKeyWidget
@@ -94,10 +92,10 @@ typedef struct _MidiEditorSpaceWidget
   GtkBox *             midi_arranger_box;
   GtkScrolledWindow *  arranger_scroll;
   GtkViewport *        arranger_viewport;
-  MidiArrangerWidget * arranger;
+  ArrangerWidget *     arranger;
   GtkScrolledWindow *  modifier_arranger_scroll;
   GtkViewport *        modifier_arranger_viewport;
-  MidiModifierArrangerWidget * modifier_arranger;
+  ArrangerWidget *     modifier_arranger;
 
   /**
    * Note in the middle of the arranger (0-127).

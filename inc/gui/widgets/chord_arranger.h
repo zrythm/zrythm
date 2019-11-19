@@ -27,18 +27,9 @@
 
 #include <gtk/gtk.h>
 
-#define CHORD_ARRANGER_WIDGET_TYPE \
-  (chord_arranger_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  ChordArrangerWidget,
-  chord_arranger_widget,
-  Z, CHORD_ARRANGER_WIDGET,
-  ArrangerWidget)
-
 #define MW_CHORD_ARRANGER \
   MW_CHORD_EDITOR_SPACE->arranger
 
-typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct ChordObject ChordObject;
 typedef struct _ChordObjectWidget ChordObjectWidget;
 typedef struct SnapGrid SnapGrid;
@@ -46,22 +37,18 @@ typedef struct AutomationPoint AutomationPoint;
 typedef struct Region ChordRegion;
 typedef struct Channel Channel;
 
-typedef struct _ChordArrangerWidget
-{
-  ArrangerWidget  parent_instance;
-
-  /** Index of the chord being hovered on. */
-  int             hovered_index;
-} ChordArrangerWidget;
-
-ARRANGER_W_DECLARE_FUNCS (
-  Chord, chord);
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 /**
  * Returns the chord index at y.
  */
 int
-chord_arranger_widget_get_chord_at_y (double y);
+chord_arranger_widget_get_chord_at_y (
+  double y);
 
 /**
  * Called on drag begin in parent when background is double
@@ -69,9 +56,13 @@ chord_arranger_widget_get_chord_at_y (double y);
  */
 void
 chord_arranger_widget_create_chord (
-  ChordArrangerWidget * self,
+  ArrangerWidget * self,
   const Position *      pos,
   int                   chord_index,
   Region *              region);
+
+/**
+ * @}
+ */
 
 #endif

@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if 0
+
 /**
  * \file
  *
@@ -62,4 +64,5 @@ MidiRegionWidget *
 midi_region_widget_new (
   Region * midi_region);
 
+#endif
 #endif

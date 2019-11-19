@@ -38,6 +38,8 @@
  * @{
  */
 
+#define MARKER_WIDGET_TRIANGLE_W 10
+
 #define marker_is_main(c) \
   arranger_object_is_main ( \
     (ArrangerObject *) c)

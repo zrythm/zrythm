@@ -98,17 +98,14 @@ on_entry_activate (
  */
 MarkerDialogWidget *
 marker_dialog_widget_new (
-  MarkerWidget * owner)
+  Marker * owner)
 {
   MarkerDialogWidget * self =
     g_object_new (
       MARKER_DIALOG_WIDGET_TYPE,
       NULL);
 
-  self->marker =
-    Z_MARKER_WIDGET (
-      arranger_object_get_main (
-        (ArrangerObject *) owner->marker)->widget);
+  self->marker = owner;
 
   gtk_window_set_transient_for (
     GTK_WINDOW (self),
@@ -117,7 +114,7 @@ marker_dialog_widget_new (
   /* setup text */
   gtk_entry_set_text (
     self->entry,
-    self->marker->marker->name);
+    self->marker->name);
 
   return self;
 }

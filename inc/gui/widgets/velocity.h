@@ -23,6 +23,7 @@
  * Velocity widget.
  */
 
+#if 0
 #ifndef __GUI_WIDGETS_VELOCITY_H__
 #define __GUI_WIDGETS_VELOCITY_H__
 
@@ -55,4 +56,5 @@ VelocityWidget *
 velocity_widget_new (
   Velocity * velocity);
 
+#endif
 #endif

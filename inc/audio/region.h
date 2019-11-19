@@ -446,6 +446,8 @@ region_copy (
  * Returns if the position is inside the region
  * or not.
  *
+ * FIXME move to arranger object
+ *
  * @param gframes Global position in frames.
  * @param inclusive Whether the last frame should
  *   be counted as part of the region.
@@ -459,6 +461,8 @@ region_is_hit (
 /**
  * Returns if any part of the Region is inside the
  * given range, inclusive.
+ *
+ * FIXME move to arranger object
  */
 int
 region_is_hit_by_range (

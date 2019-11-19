@@ -36,269 +36,35 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  EditorRulerWidget,
-  editor_ruler_widget,
-  RULER_WIDGET_TYPE)
-
 #define ACTION_IS(x) \
-  (rw_prv->action == UI_OVERLAY_ACTION_##x)
+  (self->action == UI_OVERLAY_ACTION_##x)
 #define TARGET_IS(x) \
-  (rw_prv->target == RW_TARGET_##x)
-
-static gboolean
-editor_ruler_draw_cb (
-  GtkWidget * widget,
-  cairo_t *cr,
-  EditorRulerWidget * self)
-{
-  /* engine is run only set after everything is
-   * set up so this is a good way to decide if we
-   * should draw or not */
-  if (!g_atomic_int_get (&AUDIO_ENGINE->run) ||
-      !CLIP_EDITOR->region)
-    return FALSE;
-
-  GdkRectangle rect;
-  gdk_cairo_get_clip_rectangle (
-    cr, &rect);
-
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  /* get a visible region */
-  Region * region = CLIP_EDITOR->region;
-  region =
-    region_get_main (region);
-  ArrangerObject * region_obj =
-    (ArrangerObject *) region;
-
-  Track * track =
-    arranger_object_get_track (region_obj);
-
-  int px_start, px_end;
-
-  /* draw the main region */
-  cairo_set_source_rgba (
-    cr, 1, track->color.green + 0.2,
-    track->color.blue + 0.2, 1.0);
-  if (arranger_object_should_be_visible (
-        region_obj))
-    {
-      px_start =
-        ui_pos_to_px_editor (
-          &region_obj->pos, 1);
-      px_end =
-        ui_pos_to_px_editor (
-          &region_obj->end_pos, 1);
-      cairo_rectangle (
-        cr, px_start, 0,
-        px_end - px_start, height / 4.0);
-      cairo_fill (cr);
-    }
-
-  /* draw its transient if copy-moving */
-  region =
-    region_get_main_trans (region);
-  region_obj =
-    (ArrangerObject *) region;
-  if (arranger_object_should_be_visible (
-        region_obj))
-    {
-      px_start =
-        ui_pos_to_px_editor (
-          &region_obj->pos, 1);
-      px_end =
-        ui_pos_to_px_editor (
-          &region_obj->end_pos, 1);
-      cairo_rectangle (
-        cr, px_start, 0,
-        px_end - px_start, height / 4.0);
-      cairo_fill (cr);
-    }
-
-  /* draw the other regions */
-  cairo_set_source_rgba (
-    cr,
-    track->color.red,
-    track->color.green,
-    track->color.blue,
-    0.5);
-  Region * other_region;
-  TrackLane * lane;
-  for (int j = 0; j < track->num_lanes; j++)
-    {
-      lane = track->lanes[j];
-
-      for (int i = 0; i < lane->num_regions; i++)
-        {
-          other_region = lane->regions[i];
-          ArrangerObject * other_region_obj =
-            (ArrangerObject *) other_region;
-          if (!g_strcmp0 (region->name,
-                         other_region->name))
-            continue;
-
-          px_start =
-            ui_pos_to_px_editor (
-              &other_region_obj->pos, 1);
-          px_end =
-            ui_pos_to_px_editor (
-              &other_region_obj->end_pos, 1);
-          cairo_rectangle (
-            cr, px_start, 0,
-            px_end - px_start, height / 4.0);
-          cairo_fill (cr);
-        }
-    }
-
- return FALSE;
-}
-
-/**
- * Called when allocating the children of the
- * RulerWidget to allocate the RulerMarkerWidget.
- */
-void
-editor_ruler_widget_set_ruler_marker_position (
-  EditorRulerWidget * self,
-  RulerMarkerWidget *    rm,
-  GtkAllocation *       allocation)
-{
-  Position tmp;
-  switch (rm->type)
-    {
-    case RULER_MARKER_TYPE_LOOP_START:
-      if (CLIP_EDITOR->region)
-        {
-          ArrangerObject * region_obj =
-            (ArrangerObject *) CLIP_EDITOR->region;
-          long start_ticks =
-            position_to_ticks (
-              &region_obj->pos);
-          long loop_start_ticks =
-            position_to_ticks (
-              &region_obj->loop_start_pos) +
-            start_ticks;
-          position_from_ticks (
-            &tmp, loop_start_ticks);
-          allocation->x =
-            ui_pos_to_px_editor (
-              &tmp,
-              1);
-        }
-      else
-        allocation->x = 0;
-      allocation->y = 0;
-      allocation->width = RULER_MARKER_SIZE;
-      allocation->height = RULER_MARKER_SIZE;
-      break;
-    case RULER_MARKER_TYPE_LOOP_END:
-      if (CLIP_EDITOR->region)
-        {
-          ArrangerObject * region_obj =
-            (ArrangerObject *) CLIP_EDITOR->region;
-          long start_ticks =
-            position_to_ticks (
-              &region_obj->pos);
-          long loop_end_ticks =
-            position_to_ticks (
-              &region_obj->loop_end_pos) +
-            start_ticks;
-          position_from_ticks (
-            &tmp, loop_end_ticks);
-          allocation->x =
-            ui_pos_to_px_editor (
-              &tmp,
-              1) - RULER_MARKER_SIZE;
-        }
-      else
-        allocation->x = 0;
-      allocation->y = 0;
-      allocation->width = RULER_MARKER_SIZE;
-      allocation->height = RULER_MARKER_SIZE;
-      break;
-    case RULER_MARKER_TYPE_CLIP_START:
-      if (CLIP_EDITOR->region)
-        {
-          ArrangerObject * region_obj =
-            (ArrangerObject *) CLIP_EDITOR->region;
-          long start_ticks =
-            position_to_ticks (
-              &region_obj->pos);
-          long clip_start_ticks =
-            position_to_ticks (
-              &region_obj->clip_start_pos) +
-            start_ticks;
-          position_from_ticks (
-            &tmp, clip_start_ticks);
-          allocation->x =
-            ui_pos_to_px_editor (
-              &tmp,
-              1);
-        }
-      else
-        allocation->x = 0;
-      if (MAIN_WINDOW && EDITOR_RULER)
-        {
-      allocation->y =
-        ((gtk_widget_get_allocated_height (
-          GTK_WIDGET (EDITOR_RULER)) -
-            RULER_MARKER_SIZE) - CUE_MARKER_HEIGHT) -
-            1;
-        }
-      else
-        allocation->y = RULER_MARKER_SIZE *2;
-      allocation->width = CUE_MARKER_WIDTH;
-      allocation->height = CUE_MARKER_HEIGHT;
-      break;
-    case RULER_MARKER_TYPE_PLAYHEAD:
-      allocation->x =
-        ui_pos_to_px_editor (
-          &TRANSPORT->playhead_pos,
-          1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);
-      allocation->y =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (self)) -
-          PLAYHEAD_TRIANGLE_HEIGHT;
-      allocation->width = PLAYHEAD_TRIANGLE_WIDTH;
-      allocation->height =
-        PLAYHEAD_TRIANGLE_HEIGHT;
-      break;
-    default:
-      break;
-    }
-
-}
+  (self->target == RW_TARGET_##x)
 
 void
 editor_ruler_on_drag_begin_no_marker_hit (
-  EditorRulerWidget * self,
+  RulerWidget * self,
   gdouble             start_x,
   gdouble             start_y)
 {
-  RULER_WIDGET_GET_PRIVATE (self);
-
   Position pos;
   ui_px_to_pos_editor (
     start_x, &pos, 1);
-  if (!rw_prv->shift_held)
+  if (!self->shift_held)
     position_snap_simple (
       &pos, SNAP_GRID_MIDI);
   transport_move_playhead (&pos, 1);
-  rw_prv->action =
+  self->action =
     UI_OVERLAY_ACTION_STARTING_MOVING;
-  rw_prv->target = RW_TARGET_PLAYHEAD;
+  self->target = RW_TARGET_PLAYHEAD;
 }
 
 void
 editor_ruler_on_drag_update (
-  EditorRulerWidget * self,
+  RulerWidget * self,
   gdouble             offset_x,
   gdouble             offset_y)
 {
-  RULER_WIDGET_GET_PRIVATE (self);
-
   if (ACTION_IS (MOVING))
     {
       Position editor_pos;
@@ -310,11 +76,11 @@ editor_ruler_on_drag_update (
       /* convert px to position */
       if (self)
         ui_px_to_pos_editor (
-          rw_prv->start_x + offset_x,
+          self->start_x + offset_x,
           &editor_pos, 1);
 
       /* snap if not shift held */
-      if (!rw_prv->shift_held)
+      if (!self->shift_held)
         position_snap_simple (
           &editor_pos, SNAP_GRID_MIDI);
 
@@ -410,61 +176,20 @@ editor_ruler_on_drag_update (
                 ET_PLAYHEAD_POS_CHANGED, NULL);
             }
 
-          ruler_marker_widget_update_tooltip (
-            rw_prv->playhead, 1);
+          /*ruler_marker_widget_update_tooltip (*/
+            /*self->playhead, 1);*/
         }
     }
 }
 
 void
 editor_ruler_on_drag_end (
-  EditorRulerWidget * self)
+  RulerWidget * self)
 {
-  RULER_WIDGET_GET_PRIVATE (self);
-
   /* hide tooltips */
-  if (TARGET_IS (PLAYHEAD))
-    {
-      ruler_marker_widget_update_tooltip (
-        rw_prv->playhead, 0);
-    }
-}
-
-static void
-editor_ruler_widget_class_init (
-  EditorRulerWidgetClass * klass)
-{
-}
-
-static void
-editor_ruler_widget_init (
-  EditorRulerWidget * self)
-{
-  RULER_WIDGET_GET_PRIVATE (self);
-
-  g_signal_connect (
-    G_OBJECT (rw_prv->bg), "draw",
-    G_CALLBACK (editor_ruler_draw_cb), self);
-
-  /* add all the markers */
-  RulerWidget * ruler =
-    Z_RULER_WIDGET (self);
-  self->loop_start =
-    ruler_marker_widget_new (
-      ruler, RULER_MARKER_TYPE_LOOP_START);
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (self->loop_start));
-  self->loop_end =
-    ruler_marker_widget_new (
-      ruler, RULER_MARKER_TYPE_LOOP_END);
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (self->loop_end));
-  self->clip_start =
-    ruler_marker_widget_new (
-      ruler, RULER_MARKER_TYPE_CLIP_START);
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (self->clip_start));
+  /*if (TARGET_IS (PLAYHEAD))*/
+    /*{*/
+      /*ruler_marker_widget_update_tooltip (*/
+        /*self->playhead, 0);*/
+    /*}*/
 }

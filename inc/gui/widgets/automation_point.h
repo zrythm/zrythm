@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if 0
+
 /**
  * \file
  *
@@ -68,4 +70,5 @@ automation_point_widget_new (
  * @}
  */
 
+#endif
 #endif

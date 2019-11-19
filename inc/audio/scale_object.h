@@ -42,6 +42,8 @@ typedef struct MusicalScale MusicalScale;
  * @{
  */
 
+#define SCALE_OBJECT_WIDGET_TRIANGLE_W 10
+
 #define scale_object_is_main(c) \
   arranger_object_is_main ( \
     (ArrangerObject *) c)

@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if 0
+
 /**
  * \file
  *
@@ -68,4 +70,5 @@ automation_arranger_bg_widget_new (
  * @}
  */
 
+#endif
 #endif

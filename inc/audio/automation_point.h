@@ -41,6 +41,8 @@ AutomationPointWidget;
  * @{
  */
 
+#define AP_WIDGET_POINT_SIZE 6
+
 #define AP_MAX_CURVINESS 1.0
 /*#define AP_MIN_CURVINESS \
   //(1.f / AP_MAX_CURVINESS)*/
@@ -240,6 +242,15 @@ int
 automation_point_is_equal (
   AutomationPoint * a,
   AutomationPoint * b);
+
+/**
+ * Returns Y in pixels from the value based on
+ * the given height of the parent.
+ */
+int
+automation_point_get_y (
+  AutomationPoint * self,
+  int               height);
 
 /**
  * @}

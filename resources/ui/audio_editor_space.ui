@@ -42,7 +42,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="AudioArrangerWidget" id="arranger">
+                  <object class="ArrangerWidget"
+                    id="arranger">
                     <property name="visible">1</property>
                   </object>
                 </child>

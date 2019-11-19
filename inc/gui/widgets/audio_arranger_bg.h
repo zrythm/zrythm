@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if 0
+
 #ifndef __GUI_WIDGETS_AUDIO_ARRANGER_BG_H__
 #define __GUI_WIDGETS_AUDIO_ARRANGER_BG_H__
 
@@ -46,4 +48,4 @@ audio_arranger_bg_widget_new (
   ArrangerWidget * arranger);
 
 #endif
-
+#endif

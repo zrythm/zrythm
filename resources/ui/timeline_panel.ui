@@ -82,7 +82,7 @@
                     <property name="visible">1</property>
                     <property name="hexpand">1</property>
                     <child>
-                      <object class="TimelineRulerWidget" id="ruler">
+                      <object class="RulerWidget" id="ruler">
                         <property name="visible">1</property>
                       </object>
                     </child>
@@ -109,7 +109,7 @@
                         <property name="hscroll-policy">natural</property>
                         <property name="vscroll-policy">natural</property>
                         <child>
-                          <object class="TimelineArrangerWidget" id="pinned_timeline">
+                          <object class="ArrangerWidget" id="pinned_timeline">
                             <property name="visible">1</property>
                           </object>
                         </child>
@@ -135,7 +135,7 @@
                         <property name="hscroll-policy">natural</property>
                         <property name="vscroll-policy">natural</property>
                         <child>
-                          <object class="TimelineArrangerWidget" id="timeline">
+                          <object class="ArrangerWidget" id="timeline">
                             <property name="visible">1</property>
                           </object>
                         </child>

@@ -27,26 +27,17 @@
 
 #include <gtk/gtk.h>
 
-#define AUDIO_ARRANGER_WIDGET_TYPE \
-  (audio_arranger_widget_get_type ())
-G_DECLARE_FINAL_TYPE (AudioArrangerWidget,
-                      audio_arranger_widget,
-                      Z,
-                      AUDIO_ARRANGER_WIDGET,
-                      ArrangerWidget)
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 #define MW_AUDIO_ARRANGER \
   MW_AUDIO_EDITOR_SPACE->arranger
 
-typedef struct _ArrangerBgWidget ArrangerBgWidget;
-
-typedef struct _AudioArrangerWidget
-{
-  ArrangerWidget           parent_instance;
-
-} AudioArrangerWidget;
-
-ARRANGER_W_DECLARE_FUNCS (
-  Audio, audio);
+/**
+ * @}
+ */
 
 #endif

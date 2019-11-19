@@ -23,6 +23,7 @@
  * Widget for MIDI regions, inheriting from
  * RegionWidget.
  */
+#if 0
 
 #ifndef __GUI_WIDGETS_AUTOMATION_REGION_H__
 #define __GUI_WIDGETS_AUTOMATION_REGION_H__
@@ -62,4 +63,5 @@ AutomationRegionWidget *
 automation_region_widget_new (
   Region * automation_region);
 
+#endif
 #endif

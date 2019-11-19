@@ -218,7 +218,7 @@ endforeach
 test_strict_cflags = [
   #'-Werror=cast-qual',
   '-Werror=clobbered',
-  '-Werror=conversion',
+  #'-Werror=conversion',
   '-Werror=disabled-optimization',
   '-Werror=double-promotion',
   '-Werror=float-equal',

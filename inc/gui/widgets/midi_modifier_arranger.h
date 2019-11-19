@@ -25,45 +25,23 @@
 
 #include <gtk/gtk.h>
 
-#define MIDI_MODIFIER_ARRANGER_WIDGET_TYPE \
-  (midi_modifier_arranger_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  MidiModifierArrangerWidget,
-  midi_modifier_arranger_widget,
-  Z, MIDI_MODIFIER_ARRANGER_WIDGET,
-  ArrangerWidget)
-
 #define MW_MIDI_MODIFIER_ARRANGER \
   MW_MIDI_EDITOR_SPACE->modifier_arranger
 
 typedef struct Velocity Velocity;
 typedef struct _VelocityWidget VelocityWidget;
+typedef struct _ArrangerWidget ArrangerWidget;
 
-typedef struct _MidiModifierArrangerWidget
-{
-  ArrangerWidget parent_instance;
-
-  /** 1-127. */
-  int            start_vel_val;
-
-  /**
-   * Maximum Velocity diff applied in this action.
-   *
-   * Used in drag_end to create an UndableAction.
-   * This can have any value, even greater than 127
-   * and it will be clamped when applying it to
-   * a Velocity.
-   */
-  int            vel_diff;
-} MidiModifierArrangerWidget;
-
-ARRANGER_W_DECLARE_FUNCS (
-  MidiModifier, midi_modifier);
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
 void
 midi_modifier_arranger_widget_resize_velocities (
-  MidiModifierArrangerWidget * self,
-  double                       offset_y);
+  ArrangerWidget * self,
+  double           offset_y);
 
 /**
  * Draws a ramp from the start coordinates to the
@@ -71,8 +49,12 @@ midi_modifier_arranger_widget_resize_velocities (
  */
 void
 midi_modifier_arranger_widget_ramp (
-  MidiModifierArrangerWidget * self,
-  double                       offset_x,
-  double                       offset_y);
+  ArrangerWidget * self,
+  double           offset_x,
+  double           offset_y);
+
+/**
+ * @}
+ */
 
 #endif

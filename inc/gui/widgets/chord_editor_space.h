@@ -36,8 +36,7 @@ G_DECLARE_FINAL_TYPE (
   Z, CHORD_EDITOR_SPACE_WIDGET,
   GtkBox)
 
-typedef struct _ChordArrangerWidget
-  ChordArrangerWidget;
+typedef struct _ArrangerWidget ArrangerWidget;
 typedef struct _ChordKeyWidget ChordKeyWidget;
 
 /**
@@ -79,7 +78,7 @@ typedef struct _ChordEditorSpaceWidget
   GtkBox *              chord_key_boxes[128];
 
   /** The arranger. */
-  ChordArrangerWidget * arranger;
+  ArrangerWidget *      arranger;
   GtkScrolledWindow *   arranger_scroll;
   GtkViewport *         arranger_viewport;
 

@@ -371,11 +371,8 @@ activate_zoom_in (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  RULER_WIDGET_GET_PRIVATE (
-    Z_RULER_WIDGET (MW_RULER));
   ruler_widget_set_zoom_level (
-    Z_RULER_WIDGET (MW_RULER),
-    rw_prv->zoom_level * 1.3);
+    MW_RULER, MW_RULER->zoom_level * 1.3);
 
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
                NULL);
@@ -386,12 +383,9 @@ activate_zoom_out (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  RULER_WIDGET_GET_PRIVATE (
-    Z_RULER_WIDGET (MW_RULER));
-  double zoom_level = rw_prv->zoom_level / 1.3;
+  double zoom_level = MW_RULER->zoom_level / 1.3;
   ruler_widget_set_zoom_level (
-    Z_RULER_WIDGET (MW_RULER),
-    zoom_level);
+    MW_RULER, zoom_level);
 
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
                NULL);
@@ -414,9 +408,8 @@ activate_original_size (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  RULER_WIDGET_GET_PRIVATE (
-    Z_RULER_WIDGET (MW_RULER));
-  rw_prv->zoom_level = (double) DEFAULT_ZOOM_LEVEL;
+  MW_RULER->zoom_level =
+    (double) RW_DEFAULT_ZOOM_LEVEL;
 
   EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
                NULL);

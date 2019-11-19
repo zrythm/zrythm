@@ -563,6 +563,14 @@ ui_is_color_very_bright (
   GdkRGBA * src);
 
 /**
+ * Returns if the 2 rectangles overlay.
+ */
+int
+ui_rectangle_overlap (
+  GdkRectangle * rect1,
+  GdkRectangle * rect2);
+
+/**
  * Gets the color the widget should be.
  *
  * @param color The original color.

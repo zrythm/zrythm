@@ -56,12 +56,9 @@ timeline_minimap_widget_px_to_pos (
   double width =
     gtk_widget_get_allocated_width (GTK_WIDGET (self));
   double ratio = (double) px / width;
-  RULER_WIDGET_GET_PRIVATE (MW_RULER);
   int px_in_ruler =
-    (int) (rw_prv->total_px * ratio);
-  ui_px_to_pos_timeline (px_in_ruler,
-                pos,
-                1);
+    (int) (MW_RULER->total_px * ratio);
+  ui_px_to_pos_timeline (px_in_ruler, pos, 1);
 }
 
 static void
@@ -76,14 +73,12 @@ move_selection_x (
     self->selection_start_pos + offset_x;
 
   double ratio = new_wx / width;
-  RULER_WIDGET_GET_PRIVATE (MW_RULER);
-  double ruler_px = rw_prv->total_px * ratio;
+  double ruler_px = MW_RULER->total_px * ratio;
   GtkAdjustment * adj =
     gtk_scrollable_get_hadjustment (
       GTK_SCROLLABLE (
         MW_TIMELINE_PANEL->ruler_viewport));
-  gtk_adjustment_set_value (adj,
-                            ruler_px);
+  gtk_adjustment_set_value (adj, ruler_px);
 }
 
 static void
@@ -118,16 +113,14 @@ resize_selection_l (
   if (zoom_level_set)
     {
       /* set alignment */
-      RULER_WIDGET_GET_PRIVATE (MW_RULER);
       ratio =
         new_l / width;
-      double ruler_px = rw_prv->total_px * ratio;
+      double ruler_px = MW_RULER->total_px * ratio;
       GtkAdjustment * adj =
         gtk_scrollable_get_hadjustment (
           GTK_SCROLLABLE (
             MW_TIMELINE_PANEL->ruler_viewport));
-      gtk_adjustment_set_value (adj,
-                                ruler_px);
+      gtk_adjustment_set_value (adj, ruler_px);
 
       EVENTS_PUSH (ET_TIMELINE_VIEWPORT_CHANGED,
                    NULL);
@@ -166,10 +159,9 @@ resize_selection_r (
   if (zoom_level_set)
     {
       /* set alignment */
-      RULER_WIDGET_GET_PRIVATE (MW_RULER);
       ratio =
         self->selection_start_pos / width;
-      double ruler_px = rw_prv->total_px * ratio;
+      double ruler_px = MW_RULER->total_px * ratio;
       GtkAdjustment * adj =
         gtk_scrollable_get_hadjustment (
           GTK_SCROLLABLE (
@@ -218,7 +210,6 @@ get_child_position (GtkOverlay   *overlay,
               GTK_WIDGET (self));
 
           /* get pixels at start of visible ruler */
-          RULER_WIDGET_GET_PRIVATE (MW_RULER);
           GtkAdjustment * adj =
             gtk_scrollable_get_hadjustment (
               GTK_SCROLLABLE (
@@ -231,9 +222,9 @@ get_child_position (GtkOverlay   *overlay,
                 MW_TIMELINE_PANEL->ruler_viewport));
 
           double start_ratio =
-            px_start / (double) rw_prv->total_px;
+            px_start / (double) MW_RULER->total_px;
           double width_ratio =
-            px_width / (double) rw_prv->total_px;
+            px_width / (double) MW_RULER->total_px;
 
           allocation->x =
             (int) ((double) width * start_ratio);
@@ -350,10 +341,8 @@ drag_begin (GtkGestureDrag * gesture,
           gtk_widget_get_allocated_width (
             GTK_WIDGET (self->selection));
 
-      RULER_WIDGET_GET_PRIVATE (
-        Z_RULER_WIDGET (MW_RULER));
       self->start_zoom_level =
-        rw_prv->zoom_level;
+        MW_RULER->zoom_level;
 
       /* motion handler was causing drag update
        * to not get called */

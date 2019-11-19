@@ -27,6 +27,8 @@
  * identifiable by the type member.
  */
 
+#if 0
+
 #ifndef __GUI_WIDGETS_RULER_MARKER_H__
 #define __GUI_WIDGETS_RULER_MARKER_H__
 
@@ -59,12 +61,6 @@ typedef struct _RulerWidget RulerWidget;
 #define AUDIO_RULER_PLAYHEAD \
   (ruler_widget_get_private ( \
     Z_RULER_WIDGET (AUDIO_RULER))->playhead)
-
-#define RULER_MARKER_SIZE 8
-#define CUE_MARKER_HEIGHT 12
-#define CUE_MARKER_WIDTH 7
-#define PLAYHEAD_TRIANGLE_WIDTH 12
-#define PLAYHEAD_TRIANGLE_HEIGHT 8
 
 typedef enum RulerMarkerType
 {
@@ -102,4 +98,5 @@ ruler_marker_widget_update_tooltip (
  * @}
  */
 
+#endif
 #endif

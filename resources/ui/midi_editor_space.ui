@@ -101,7 +101,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="MidiArrangerWidget" id="arranger">
+                          <object class="ArrangerWidget" id="arranger">
                             <property name="visible">1</property>
                           </object>
                         </child>
@@ -172,7 +172,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="MidiModifierArrangerWidget" id="modifier_arranger">
+                      <object class="ArrangerWidget" id="modifier_arranger">
                         <property name="visible">True</property>
                         <property name="can_focus">1</property>
                       </object>

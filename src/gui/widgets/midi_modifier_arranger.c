@@ -37,57 +37,52 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 
-G_DEFINE_TYPE (
-  MidiModifierArrangerWidget,
-  midi_modifier_arranger_widget,
-  ARRANGER_WIDGET_TYPE)
-
 /**
  * To be called from get_child_position in parent
  * widget.
  *
  * Used to allocate the overlay children.
  */
-void
-midi_modifier_arranger_widget_set_allocation (
-  MidiModifierArrangerWidget * self,
-  GtkWidget *          widget,
-  GdkRectangle *       allocation)
-{
-  if (Z_IS_VELOCITY_WIDGET (widget))
-    {
-      VelocityWidget * vw =
-        Z_VELOCITY_WIDGET (widget);
+/*void*/
+/*midi_modifier_arranger_widget_set_allocation (*/
+  /*ArrangerWidget * self,*/
+  /*GtkWidget *          widget,*/
+  /*GdkRectangle *       allocation)*/
+/*{*/
+  /*if (Z_IS_VELOCITY_WIDGET (widget))*/
+    /*{*/
+      /*VelocityWidget * vw =*/
+        /*Z_VELOCITY_WIDGET (widget);*/
 
       /* use transient or non transient note
        * depending on which is visible */
-      MidiNote * mn = vw->velocity->midi_note;
-      ArrangerObject * mn_obj =
-        arranger_object_get_visible_counterpart (
-          (ArrangerObject *) mn);
+      /*MidiNote * mn = vw->velocity->midi_note;*/
+      /*ArrangerObject * mn_obj =*/
+        /*arranger_object_get_visible_counterpart (*/
+          /*(ArrangerObject *) mn);*/
 
-      gint wx, wy;
-      gtk_widget_translate_coordinates(
-                GTK_WIDGET (mn_obj->widget),
-                GTK_WIDGET (self),
-                0,
-                0,
-                &wx,
-                &wy);
-      int height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (self));
+      /*gint wx, wy;*/
+      /*gtk_widget_translate_coordinates(*/
+                /*GTK_WIDGET (mn_obj->widget),*/
+                /*GTK_WIDGET (self),*/
+                /*0,*/
+                /*0,*/
+                /*&wx,*/
+                /*&wy);*/
+      /*int height =*/
+        /*gtk_widget_get_allocated_height (*/
+          /*GTK_WIDGET (self));*/
 
-      int vel_px =
-        (int)
-        ((float) height *
-          ((float) vw->velocity->vel / 127.f));
-      allocation->x = wx;
-      allocation->y = height - vel_px;
-      allocation->width = 12;
-      allocation->height = vel_px;
-    }
-}
+      /*int vel_px =*/
+        /*(int)*/
+        /*((float) height **/
+          /*((float) vw->velocity->vel / 127.f));*/
+      /*allocation->x = wx;*/
+      /*allocation->y = height - vel_px;*/
+      /*allocation->width = 12;*/
+      /*allocation->height = vel_px;*/
+    /*}*/
+/*}*/
 
 /**
  * Called when in selection mode.
@@ -98,44 +93,43 @@ midi_modifier_arranger_widget_set_allocation (
  * @param[in] delete If this is a select-delete
  *   operation
  */
-void
-midi_modifier_arranger_widget_select (
-  MidiModifierArrangerWidget * self,
-  double               offset_x,
-  double               offset_y,
-  int                  delete)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
+/*void*/
+/*midi_modifier_arranger_widget_select (*/
+  /*ArrangerWidget * self,*/
+  /*double               offset_x,*/
+  /*double               offset_y,*/
+  /*int                  delete)*/
+/*{*/
 
-  /* deselect all */
-  arranger_widget_select_all (
-    Z_ARRANGER_WIDGET (self), 0);
+  /*[> deselect all <]*/
+  /*arranger_widget_select_all (*/
+    /*Z_ARRANGER_WIDGET (self), 0);*/
 
-  /* find enclosed velocities */
-  GtkWidget *    velocities[800];
-  int            num_velocities = 0;
-  arranger_widget_get_hit_widgets_in_range (
-    Z_ARRANGER_WIDGET (self),
-    VELOCITY_WIDGET_TYPE,
-    ar_prv->start_x,
-    ar_prv->start_y,
-    offset_x,
-    offset_y,
-    velocities,
-    &num_velocities);
+  /*[> find enclosed velocities <]*/
+  /*GtkWidget *    velocities[800];*/
+  /*int            num_velocities = 0;*/
+  /*arranger_widget_get_hit_widgets_in_range (*/
+    /*Z_ARRANGER_WIDGET (self),*/
+    /*VELOCITY_WIDGET_TYPE,*/
+    /*self->start_x,*/
+    /*self->start_y,*/
+    /*offset_x,*/
+    /*offset_y,*/
+    /*velocities,*/
+    /*&num_velocities);*/
 
-  /* select the enclosed midi_notes */
-  for (int i = 0; i < num_velocities; i++)
-    {
-      VelocityWidget * vel_w =
-        Z_VELOCITY_WIDGET (velocities[i]);
-      Velocity * vel =
-        vel_w->velocity;
-      arranger_object_select (
-        (ArrangerObject *) vel->midi_note,
-        F_SELECT, F_APPEND);
-    }
-}
+  /*[> select the enclosed midi_notes <]*/
+  /*for (int i = 0; i < num_velocities; i++)*/
+    /*{*/
+      /*VelocityWidget * vel_w =*/
+        /*Z_VELOCITY_WIDGET (velocities[i]);*/
+      /*Velocity * vel =*/
+        /*vel_w->velocity;*/
+      /*arranger_object_select (*/
+        /*(ArrangerObject *) vel->midi_note,*/
+        /*F_SELECT, F_APPEND);*/
+    /*}*/
+/*}*/
 
 /**
  * Draws a ramp from the start coordinates to the
@@ -143,21 +137,19 @@ midi_modifier_arranger_widget_select (
  */
 void
 midi_modifier_arranger_widget_ramp (
-  MidiModifierArrangerWidget * self,
+  ArrangerWidget * self,
   double                       offset_x,
   double                       offset_y)
 {
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
   Position selection_start_pos, selection_end_pos;
   ui_px_to_pos_editor (
-    ar_prv->start_x,
+    self->start_x,
     offset_x >= 0 ?
       &selection_start_pos :
       &selection_end_pos,
     F_PADDING);
   ui_px_to_pos_editor (
-    ar_prv->start_x + offset_x,
+    self->start_x + offset_x,
     offset_x >= 0 ?
       &selection_end_pos :
       &selection_start_pos,
@@ -200,10 +192,10 @@ midi_modifier_arranger_widget_ramp (
         ui_pos_to_px_editor (
           &start_pos, F_PADDING);
 
-      x1 = ar_prv->start_x;
-      x2 = ar_prv->start_x + offset_x;
-      y1 = height - ar_prv->start_y;
-      y2 = height - (ar_prv->start_y + offset_y);
+      x1 = self->start_x;
+      x2 = self->start_x + offset_x;
+      y1 = height - self->start_y;
+      y2 = height - (self->start_y + offset_y);
       /*g_message ("x1 %f.0 x2 %f.0 y1 %f.0 y2 %f.0",*/
                  /*x1, x2, y1, y2);*/
 
@@ -251,20 +243,18 @@ midi_modifier_arranger_widget_ramp (
 
 void
 midi_modifier_arranger_widget_resize_velocities (
-  MidiModifierArrangerWidget * self,
+  ArrangerWidget * self,
   double                       offset_y)
 {
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
   int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
   double start_ratio =
-    1.0 - ar_prv->start_y / (double) height;
+    1.0 - self->start_y / (double) height;
   double ratio =
     1.0 -
-    (ar_prv->start_y + offset_y) /
+    (self->start_y + offset_y) /
       (double) height;
   int start_val = (int) (start_ratio * 127.0);
   int val = (int) (ratio * 127.0);
@@ -298,6 +288,7 @@ midi_modifier_arranger_widget_resize_velocities (
           1, 127),
         AO_UPDATE_ALL);
 
+#if 0
       ArrangerObject * vel_obj =
         (ArrangerObject *) vel;
       if (GTK_IS_WIDGET (vel_obj->widget))
@@ -306,6 +297,7 @@ midi_modifier_arranger_widget_resize_velocities (
             Z_ARRANGER_OBJECT_WIDGET (
               vel_obj->widget), 1);
         }
+#endif
     }
 }
 
@@ -315,305 +307,192 @@ midi_modifier_arranger_widget_resize_velocities (
  * Sets default cursors back and sets the start midi note
  * to NULL if necessary.
  */
-void
-midi_modifier_arranger_widget_on_drag_end (
-  MidiModifierArrangerWidget * self)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
+/*void*/
+/*midi_modifier_arranger_widget_on_drag_end (*/
+  /*ArrangerWidget * self)*/
+/*{*/
 
-  MidiNote * midi_note;
-  Velocity * vel;
-  for (int i = 0;
-       i < MA_SELECTIONS->num_midi_notes;
-       i++)
-    {
-      midi_note =
-        MA_SELECTIONS->midi_notes[i];
-      vel = midi_note->vel;
+  /*MidiNote * midi_note;*/
+  /*Velocity * vel;*/
+  /*for (int i = 0;*/
+       /*i < MA_SELECTIONS->num_midi_notes;*/
+       /*i++)*/
+    /*{*/
+      /*midi_note =*/
+        /*MA_SELECTIONS->midi_notes[i];*/
+      /*vel = midi_note->vel;*/
 
-      ArrangerObject * vel_obj =
-        (ArrangerObject *) vel;
-      if (Z_IS_ARRANGER_OBJECT_WIDGET (
-            vel_obj->widget))
-        {
-          arranger_object_widget_update_tooltip (
-            (ArrangerObjectWidget *)
-            vel_obj->widget, 0);
-        }
+      /*ArrangerObject * vel_obj =*/
+        /*(ArrangerObject *) vel;*/
+      /*if (Z_IS_ARRANGER_OBJECT_WIDGET (*/
+            /*vel_obj->widget))*/
+        /*{*/
+          /*arranger_object_widget_update_tooltip (*/
+            /*(ArrangerObjectWidget *)*/
+            /*vel_obj->widget, 0);*/
+        /*}*/
 
-      EVENTS_PUSH (
-        ET_ARRANGER_OBJECT_CHANGED, midi_note);
-    }
+      /*EVENTS_PUSH (*/
+        /*ET_ARRANGER_OBJECT_CHANGED, midi_note);*/
+    /*}*/
 
-  arranger_widget_update_visibility (
-    (ArrangerWidget *) self);
+  /*arranger_widget_update_visibility (*/
+    /*(ArrangerWidget *) self);*/
 
-  switch (ar_prv->action)
-    {
-    case UI_OVERLAY_ACTION_RESIZING_UP:
-      {
-        /* FIXME */
-        UndoableAction * ua =
-          arranger_selections_action_new_edit (
-            (ArrangerSelections *) MA_SELECTIONS,
-            (ArrangerSelections *) MA_SELECTIONS,
-            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
-      }
-      break;
-    case UI_OVERLAY_ACTION_RAMPING:
-      {
-        Position selection_start_pos,
-                 selection_end_pos;
-        ui_px_to_pos_editor (
-          ar_prv->start_x,
-          ar_prv->last_offset_x >= 0 ?
-            &selection_start_pos :
-            &selection_end_pos,
-          F_PADDING);
-        ui_px_to_pos_editor (
-          ar_prv->start_x + ar_prv->last_offset_x,
-          ar_prv->last_offset_x >= 0 ?
-            &selection_end_pos :
-            &selection_start_pos,
-          F_PADDING);
-        UndoableAction * ua =
-          arranger_selections_action_new_edit (
-            (ArrangerSelections *) MA_SELECTIONS,
-            (ArrangerSelections *) MA_SELECTIONS,
-            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
-        if (ua)
-          undo_manager_perform (
-            UNDO_MANAGER, ua);
-      }
-      break;
-    default:
-      break;
-    }
-}
+  /*switch (self->action)*/
+    /*{*/
+    /*case UI_OVERLAY_ACTION_RESIZING_UP:*/
+      /*{*/
+        /*[> FIXME <]*/
+        /*UndoableAction * ua =*/
+          /*arranger_selections_action_new_edit (*/
+            /*(ArrangerSelections *) MA_SELECTIONS,*/
+            /*(ArrangerSelections *) MA_SELECTIONS,*/
+            /*ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);*/
+        /*undo_manager_perform (*/
+          /*UNDO_MANAGER, ua);*/
+      /*}*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_RAMPING:*/
+      /*{*/
+        /*Position selection_start_pos,*/
+                 /*selection_end_pos;*/
+        /*ui_px_to_pos_editor (*/
+          /*self->start_x,*/
+          /*self->last_offset_x >= 0 ?*/
+            /*&selection_start_pos :*/
+            /*&selection_end_pos,*/
+          /*F_PADDING);*/
+        /*ui_px_to_pos_editor (*/
+          /*self->start_x + self->last_offset_x,*/
+          /*self->last_offset_x >= 0 ?*/
+            /*&selection_end_pos :*/
+            /*&selection_start_pos,*/
+          /*F_PADDING);*/
+        /*UndoableAction * ua =*/
+          /*arranger_selections_action_new_edit (*/
+            /*(ArrangerSelections *) MA_SELECTIONS,*/
+            /*(ArrangerSelections *) MA_SELECTIONS,*/
+            /*ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);*/
+        /*if (ua)*/
+          /*undo_manager_perform (*/
+            /*UNDO_MANAGER, ua);*/
+      /*}*/
+      /*break;*/
+    /*default:*/
+      /*break;*/
+    /*}*/
+/*}*/
 
-void
-midi_modifier_arranger_widget_setup (
-  MidiModifierArrangerWidget * self)
-{
-  /* set arranger size */
-  RULER_WIDGET_GET_PRIVATE (MW_RULER);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self),
-    (int) rw_prv->total_px,
-    -1);
-}
+/*void*/
+/*midi_modifier_arranger_widget_setup (*/
+  /*ArrangerWidget * self)*/
+/*{*/
+  /*[> set arranger size <]*/
+  /*gtk_widget_set_size_request (*/
+    /*GTK_WIDGET (self),*/
+    /*(int) rw_prv->total_px,*/
+    /*-1);*/
+/*}*/
 
 /**
  * Returns the appropriate cursor based on the
  * current hover_x and y.
  */
-ArrangerCursor
-midi_modifier_arranger_widget_get_cursor (
-  MidiModifierArrangerWidget * self,
-  UiOverlayAction              action,
-  Tool                         tool)
-{
-  ArrangerCursor ac = ARRANGER_CURSOR_SELECT;
-  ARRANGER_WIDGET_GET_PRIVATE (self);
+/*ArrangerCursor*/
+/*midi_modifier_arranger_widget_get_cursor (*/
+  /*ArrangerWidget * self,*/
+  /*UiOverlayAction              action,*/
+  /*Tool                         tool)*/
+/*{*/
+  /*ArrangerCursor ac = ARRANGER_CURSOR_SELECT;*/
 
-  switch (action)
-    {
-    case UI_OVERLAY_ACTION_NONE:
-      if (tool == TOOL_SELECT_NORMAL ||
-          tool == TOOL_SELECT_STRETCH ||
-          tool == TOOL_EDIT)
-        {
-          ArrangerObject * vel_obj =
-            arranger_widget_get_hit_arranger_object (
-              (ArrangerWidget *) self,
-              ARRANGER_OBJECT_TYPE_VELOCITY,
-              ar_prv->hover_x, ar_prv->hover_y);
-          int is_hit = vel_obj != NULL;
-          int is_resize = 0;
+  /*switch (action)*/
+    /*{*/
+    /*case UI_OVERLAY_ACTION_NONE:*/
+      /*if (tool == TOOL_SELECT_NORMAL ||*/
+          /*tool == TOOL_SELECT_STRETCH ||*/
+          /*tool == TOOL_EDIT)*/
+        /*{*/
+          /*ArrangerObject * vel_obj =*/
+            /*arranger_widget_get_hit_arranger_object (*/
+              /*(ArrangerWidget *) self,*/
+              /*ARRANGER_OBJECT_TYPE_VELOCITY,*/
+              /*self->hover_x, self->hover_y);*/
+          /*int is_hit = vel_obj != NULL;*/
+          /*int is_resize = 0;*/
 
-          if (is_hit)
-            {
-              ARRANGER_OBJECT_WIDGET_GET_PRIVATE (
-                vel_obj->widget);
-              is_resize = ao_prv->resize_up;
-            }
+          /*if (is_hit)*/
+            /*{*/
+                /*vel_obj->widget);*/
+              /*is_resize = ao_prv->resize_up;*/
+            /*}*/
 
-          /*g_message ("hit resize %d %d",*/
-                     /*is_hit, is_resize);*/
-          if (is_hit && is_resize)
-            {
-              return ARRANGER_CURSOR_RESIZING_UP;
-            }
-          else
-            {
-              /* set cursor to whatever it is */
-              if (tool == TOOL_EDIT)
-                return ARRANGER_CURSOR_EDIT;
-              else
-                return ARRANGER_CURSOR_SELECT;
-            }
-        }
-      else if (P_TOOL == TOOL_EDIT)
-        ac = ARRANGER_CURSOR_EDIT;
-      else if (P_TOOL == TOOL_ERASER)
-        ac = ARRANGER_CURSOR_ERASER;
-      else if (P_TOOL == TOOL_RAMP)
-        ac = ARRANGER_CURSOR_RAMP;
-      else if (P_TOOL == TOOL_AUDITION)
-        ac = ARRANGER_CURSOR_AUDITION;
-      break;
-    case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
-    case UI_OVERLAY_ACTION_DELETE_SELECTING:
-    case UI_OVERLAY_ACTION_ERASING:
-      ac = ARRANGER_CURSOR_ERASER;
-      break;
-    case UI_OVERLAY_ACTION_STARTING_MOVING_COPY:
-    case UI_OVERLAY_ACTION_MOVING_COPY:
-      ac = ARRANGER_CURSOR_GRABBING_COPY;
-      break;
-    case UI_OVERLAY_ACTION_STARTING_MOVING:
-    case UI_OVERLAY_ACTION_MOVING:
-      ac = ARRANGER_CURSOR_GRABBING;
-      break;
-    case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:
-    case UI_OVERLAY_ACTION_MOVING_LINK:
-      ac = ARRANGER_CURSOR_GRABBING_LINK;
-      break;
-    case UI_OVERLAY_ACTION_RESIZING_L:
-      ac = ARRANGER_CURSOR_RESIZING_L;
-      break;
-    case UI_OVERLAY_ACTION_RESIZING_R:
-      ac = ARRANGER_CURSOR_RESIZING_R;
-      break;
-    case UI_OVERLAY_ACTION_RESIZING_UP:
-      ac = ARRANGER_CURSOR_RESIZING_UP;
-      break;
-    case UI_OVERLAY_ACTION_STARTING_SELECTION:
-    case UI_OVERLAY_ACTION_SELECTING:
-      ac = ARRANGER_CURSOR_SELECT;
-      /* TODO depends on tool */
-      break;
-    case UI_OVERLAY_ACTION_STARTING_RAMP:
-    case UI_OVERLAY_ACTION_RAMPING:
-      ac = ARRANGER_CURSOR_RAMP;
-      break;
-    default:
-      g_warn_if_reached ();
-      ac = ARRANGER_CURSOR_SELECT;
-      break;
-    }
+          /*[>g_message ("hit resize %d %d",<]*/
+                     /*[>is_hit, is_resize);<]*/
+          /*if (is_hit && is_resize)*/
+            /*{*/
+              /*return ARRANGER_CURSOR_RESIZING_UP;*/
+            /*}*/
+          /*else*/
+            /*{*/
+              /*[> set cursor to whatever it is <]*/
+              /*if (tool == TOOL_EDIT)*/
+                /*return ARRANGER_CURSOR_EDIT;*/
+              /*else*/
+                /*return ARRANGER_CURSOR_SELECT;*/
+            /*}*/
+        /*}*/
+      /*else if (P_TOOL == TOOL_EDIT)*/
+        /*ac = ARRANGER_CURSOR_EDIT;*/
+      /*else if (P_TOOL == TOOL_ERASER)*/
+        /*ac = ARRANGER_CURSOR_ERASER;*/
+      /*else if (P_TOOL == TOOL_RAMP)*/
+        /*ac = ARRANGER_CURSOR_RAMP;*/
+      /*else if (P_TOOL == TOOL_AUDITION)*/
+        /*ac = ARRANGER_CURSOR_AUDITION;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:*/
+    /*case UI_OVERLAY_ACTION_DELETE_SELECTING:*/
+    /*case UI_OVERLAY_ACTION_ERASING:*/
+      /*ac = ARRANGER_CURSOR_ERASER;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_STARTING_MOVING_COPY:*/
+    /*case UI_OVERLAY_ACTION_MOVING_COPY:*/
+      /*ac = ARRANGER_CURSOR_GRABBING_COPY;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_STARTING_MOVING:*/
+    /*case UI_OVERLAY_ACTION_MOVING:*/
+      /*ac = ARRANGER_CURSOR_GRABBING;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:*/
+    /*case UI_OVERLAY_ACTION_MOVING_LINK:*/
+      /*ac = ARRANGER_CURSOR_GRABBING_LINK;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_RESIZING_L:*/
+      /*ac = ARRANGER_CURSOR_RESIZING_L;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_RESIZING_R:*/
+      /*ac = ARRANGER_CURSOR_RESIZING_R;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_RESIZING_UP:*/
+      /*ac = ARRANGER_CURSOR_RESIZING_UP;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_STARTING_SELECTION:*/
+    /*case UI_OVERLAY_ACTION_SELECTING:*/
+      /*ac = ARRANGER_CURSOR_SELECT;*/
+      /*[> TODO depends on tool <]*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_STARTING_RAMP:*/
+    /*case UI_OVERLAY_ACTION_RAMPING:*/
+      /*ac = ARRANGER_CURSOR_RAMP;*/
+      /*break;*/
+    /*default:*/
+      /*g_warn_if_reached ();*/
+      /*ac = ARRANGER_CURSOR_SELECT;*/
+      /*break;*/
+    /*}*/
 
-  return ac;
+  /*return ac;*/
 
-}
-
-static inline void
-add_children_from_region (
-  MidiModifierArrangerWidget * self,
-  Region *             region)
-{
-  int i, j;
-  MidiNote * mn;
-  Velocity * vel;
-  for (i = 0; i < region->num_midi_notes; i++)
-    {
-      mn = region->midi_notes[i];
-
-      for (j = 0; j < 2; j++)
-        {
-          if (j == 0)
-            vel =
-              velocity_get_main (
-                mn->vel);
-          else if (j == 1)
-            vel =
-              velocity_get_main_trans (
-                mn->vel);
-
-          g_return_if_fail (vel);
-
-          ArrangerObject * vel_obj =
-            (ArrangerObject *) vel;
-
-          if (!Z_IS_ARRANGER_OBJECT_WIDGET (
-                vel_obj->widget))
-            {
-              arranger_object_gen_widget (
-                vel_obj);
-            }
-
-          arranger_widget_add_overlay_child (
-            (ArrangerWidget *) self, vel_obj);
-        }
-    }
-}
-
-/**
- * Readd children.
- */
-void
-midi_modifier_arranger_widget_refresh_children (
-  MidiModifierArrangerWidget * self)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-  int i, k;
-
-  /* remove all children except bg */
-  GList *children, *iter;
-
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self));
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      GtkWidget * widget = GTK_WIDGET (iter->data);
-      if (widget != (GtkWidget *) ar_prv->bg &&
-          widget != (GtkWidget *) ar_prv->playhead)
-        {
-          g_object_ref (widget);
-          gtk_container_remove (
-            GTK_CONTAINER (self),
-            widget);
-        }
-    }
-  g_list_free (children);
-
-  if (CLIP_EDITOR->region &&
-      CLIP_EDITOR->region->type == REGION_TYPE_MIDI)
-    {
-      /* add notes of all regions in the track */
-      TrackLane * lane;
-      Track * track =
-        CLIP_EDITOR->region->lane->track;
-      for (k = 0; k < track->num_lanes; k++)
-        {
-          lane = track->lanes[k];
-
-          for (i = 0; i < lane->num_regions; i++)
-            {
-              add_children_from_region (
-                self, lane->regions[i]);
-            }
-        }
-    }
-
-  gtk_overlay_reorder_overlay (
-    GTK_OVERLAY (self),
-    (GtkWidget *) ar_prv->playhead, -1);
-}
-
-static void
-midi_modifier_arranger_widget_class_init (
-  MidiModifierArrangerWidgetClass * klass)
-{
-}
-
-static void
-midi_modifier_arranger_widget_init (
-  MidiModifierArrangerWidget * self)
-{
-}
+/*}*/

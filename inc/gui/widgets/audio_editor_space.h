@@ -36,8 +36,7 @@ G_DECLARE_FINAL_TYPE (
   Z, AUDIO_EDITOR_SPACE_WIDGET,
   GtkBox)
 
-typedef struct _AudioArrangerWidget
-  AudioArrangerWidget;
+typedef struct _ArrangerWidget ArrangerWidget;
 
 /**
  * @addtogroup widgets
@@ -54,11 +53,11 @@ typedef struct _AudioArrangerWidget
  */
 typedef struct _AudioEditorSpaceWidget
 {
-  GtkBox               parent_instance;
+  GtkBox             parent_instance;
 
-  GtkScrolledWindow *     arranger_scroll;
-  GtkViewport *           arranger_viewport;
-  AudioArrangerWidget *   arranger;
+  GtkScrolledWindow * arranger_scroll;
+  GtkViewport *      arranger_viewport;
+  ArrangerWidget *   arranger;
 } AudioEditorSpaceWidget;
 
 void

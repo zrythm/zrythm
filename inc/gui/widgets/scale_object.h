@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if 0
+
 /**
  * \file
  *
@@ -80,4 +82,5 @@ scale_object_widget_new (
  * @}
  */
 
+#endif
 #endif

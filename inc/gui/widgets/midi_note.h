@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if 0
 /**
  * \file
  *
@@ -68,4 +69,5 @@ midi_note_widget_new (MidiNote * midi_note);
  * @}
  */
 
+#endif
 #endif

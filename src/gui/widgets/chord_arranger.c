@@ -79,163 +79,159 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (ChordArrangerWidget,
-               chord_arranger_widget,
-               ARRANGER_WIDGET_TYPE)
-
 /**
  * To be called from get_child_position in parent widget.
  *
  * Used to allocate the overlay children.
  */
-void
-chord_arranger_widget_set_allocation (
-  ChordArrangerWidget * self,
-  GtkWidget *          widget,
-  GdkRectangle *       allocation)
-{
-  if (Z_IS_CHORD_OBJECT_WIDGET (widget))
-    {
-      ChordObjectWidget * cw =
-        Z_CHORD_OBJECT_WIDGET (widget);
-      ChordObject * co =
-        cw->chord_object;
-      ChordDescriptor * descr =
-        CHORD_EDITOR->chords[co->index];
+/*void*/
+/*chord_arranger_widget_set_allocation (*/
+  /*ArrangerWidget * self,*/
+  /*GtkWidget *          widget,*/
+  /*GdkRectangle *       allocation)*/
+/*{*/
+  /*if (Z_IS_CHORD_OBJECT_WIDGET (widget))*/
+    /*{*/
+      /*ChordObjectWidget * cw =*/
+        /*Z_CHORD_OBJECT_WIDGET (widget);*/
+      /*ChordObject * co =*/
+        /*cw->chord_object;*/
+      /*ChordDescriptor * descr =*/
+        /*CHORD_EDITOR->chords[co->index];*/
 
       /* use transient or non transient region
        * depending on which is visible */
-      Region * region = co->region;
-      region =
-        region_get_visible_counterpart (region);
-      ArrangerObject * region_obj =
-        (ArrangerObject *) region;
+      /*Region * region = co->region;*/
+      /*region =*/
+        /*region_get_visible_counterpart (region);*/
+      /*ArrangerObject * region_obj =*/
+        /*(ArrangerObject *) region;*/
 
-      long region_start_ticks =
-        region_obj->pos.total_ticks;
-      Position tmp;
-      int adj_px_per_key =
-        MW_CHORD_EDITOR_SPACE->px_per_key + 1;
+      /*long region_start_ticks =*/
+        /*region_obj->pos.total_ticks;*/
+      /*Position tmp;*/
+      /*int adj_px_per_key =*/
+        /*MW_CHORD_EDITOR_SPACE->px_per_key + 1;*/
 
-      /* use absolute position */
-      ArrangerObject * co_obj =
-        (ArrangerObject *) co;
-      position_from_ticks (
-        &tmp,
-        region_start_ticks +
-        co_obj->pos.total_ticks);
-      allocation->x =
-        ui_pos_to_px_editor (
-          &tmp, 1);
-      allocation->y =
-        adj_px_per_key *
-        co->index;
+      /*[> use absolute position <]*/
+      /*ArrangerObject * co_obj =*/
+        /*(ArrangerObject *) co;*/
+      /*position_from_ticks (*/
+        /*&tmp,*/
+        /*region_start_ticks +*/
+        /*co_obj->pos.total_ticks);*/
+      /*allocation->x =*/
+        /*ui_pos_to_px_editor (*/
+          /*&tmp, 1);*/
+      /*allocation->y =*/
+        /*adj_px_per_key **/
+        /*co->index;*/
 
-      char chord_str[100];
-      chord_descriptor_to_string (descr, chord_str);
-      int textw, texth;
-      PangoLayout * layout =
-        z_cairo_create_default_pango_layout (
-          widget);
-      z_cairo_get_text_extents_for_widget (
-        widget, layout,
-        chord_str, &textw, &texth);
-      g_object_unref (layout);
-      allocation->width =
-        textw + CHORD_OBJECT_WIDGET_TRIANGLE_W +
-        Z_CAIRO_TEXT_PADDING * 2;
+      /*char chord_str[100];*/
+      /*chord_descriptor_to_string (descr, chord_str);*/
+      /*int textw, texth;*/
+      /*PangoLayout * layout =*/
+        /*z_cairo_create_default_pango_layout (*/
+          /*widget);*/
+      /*z_cairo_get_text_extents_for_widget (*/
+        /*widget, layout,*/
+        /*chord_str, &textw, &texth);*/
+      /*g_object_unref (layout);*/
+      /*allocation->width =*/
+        /*textw + CHORD_OBJECT_WIDGET_TRIANGLE_W +*/
+        /*Z_CAIRO_TEXT_PADDING * 2;*/
 
-      allocation->height = adj_px_per_key;
-    }
-}
+      /*allocation->height = adj_px_per_key;*/
+    /*}*/
+/*}*/
 
 /**
  * Returns the appropriate cursor based on the
  * current hover_x and y.
  */
-ArrangerCursor
-chord_arranger_widget_get_cursor (
-  ChordArrangerWidget * self,
-  UiOverlayAction action,
-  Tool            tool)
-{
-  ArrangerCursor ac = ARRANGER_CURSOR_SELECT;
+/*ArrangerCursor*/
+/*chord_arranger_widget_get_cursor (*/
+  /*ArrangerWidget * self,*/
+  /*UiOverlayAction action,*/
+  /*Tool            tool)*/
+/*{*/
+  /*ArrangerCursor ac = ARRANGER_CURSOR_SELECT;*/
 
-  ARRANGER_WIDGET_GET_PRIVATE (self);
+  /*ARRANGER_WIDGET_GET_PRIVATE (self);*/
 
-  int is_hit =
-    arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self,
-      ARRANGER_OBJECT_TYPE_CHORD_OBJECT,
-      ar_prv->hover_x, ar_prv->hover_y) != NULL;
+  /*int is_hit =*/
+    /*arranger_widget_get_hit_arranger_object (*/
+      /*(ArrangerWidget *) self,*/
+      /*ARRANGER_OBJECT_TYPE_CHORD_OBJECT,*/
+      /*ar_prv->hover_x, ar_prv->hover_y) != NULL;*/
 
-  switch (action)
-    {
-    case UI_OVERLAY_ACTION_NONE:
-      switch (P_TOOL)
-        {
-        case TOOL_SELECT_NORMAL:
-        {
-          if (is_hit)
-            {
-              return ARRANGER_CURSOR_GRAB;
-            }
-          else
-            {
-              /* set cursor to normal */
-              return ARRANGER_CURSOR_SELECT;
-            }
-        }
-          break;
-        case TOOL_SELECT_STRETCH:
-          break;
-        case TOOL_EDIT:
-          ac = ARRANGER_CURSOR_EDIT;
-          break;
-        case TOOL_CUT:
-          ac = ARRANGER_CURSOR_CUT;
-          break;
-        case TOOL_ERASER:
-          ac = ARRANGER_CURSOR_ERASER;
-          break;
-        case TOOL_RAMP:
-          ac = ARRANGER_CURSOR_RAMP;
-          break;
-        case TOOL_AUDITION:
-          ac = ARRANGER_CURSOR_AUDITION;
-          break;
-        }
-      break;
-    case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
-    case UI_OVERLAY_ACTION_DELETE_SELECTING:
-    case UI_OVERLAY_ACTION_ERASING:
-      ac = ARRANGER_CURSOR_ERASER;
-      break;
-    case UI_OVERLAY_ACTION_STARTING_MOVING_COPY:
-    case UI_OVERLAY_ACTION_MOVING_COPY:
-      ac = ARRANGER_CURSOR_GRABBING_COPY;
-      break;
-    case UI_OVERLAY_ACTION_STARTING_MOVING:
-    case UI_OVERLAY_ACTION_MOVING:
-      ac = ARRANGER_CURSOR_GRABBING;
-      break;
-    case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:
-    case UI_OVERLAY_ACTION_MOVING_LINK:
-      ac = ARRANGER_CURSOR_GRABBING_LINK;
-      break;
-    case UI_OVERLAY_ACTION_RESIZING_L:
-      ac = ARRANGER_CURSOR_RESIZING_L;
-      break;
-    case UI_OVERLAY_ACTION_RESIZING_R:
-      ac = ARRANGER_CURSOR_RESIZING_R;
-      break;
-    default:
-      ac = ARRANGER_CURSOR_SELECT;
-      break;
-    }
+  /*switch (action)*/
+    /*{*/
+    /*case UI_OVERLAY_ACTION_NONE:*/
+      /*switch (P_TOOL)*/
+        /*{*/
+        /*case TOOL_SELECT_NORMAL:*/
+        /*{*/
+          /*if (is_hit)*/
+            /*{*/
+              /*return ARRANGER_CURSOR_GRAB;*/
+            /*}*/
+          /*else*/
+            /*{*/
+              /*[> set cursor to normal <]*/
+              /*return ARRANGER_CURSOR_SELECT;*/
+            /*}*/
+        /*}*/
+          /*break;*/
+        /*case TOOL_SELECT_STRETCH:*/
+          /*break;*/
+        /*case TOOL_EDIT:*/
+          /*ac = ARRANGER_CURSOR_EDIT;*/
+          /*break;*/
+        /*case TOOL_CUT:*/
+          /*ac = ARRANGER_CURSOR_CUT;*/
+          /*break;*/
+        /*case TOOL_ERASER:*/
+          /*ac = ARRANGER_CURSOR_ERASER;*/
+          /*break;*/
+        /*case TOOL_RAMP:*/
+          /*ac = ARRANGER_CURSOR_RAMP;*/
+          /*break;*/
+        /*case TOOL_AUDITION:*/
+          /*ac = ARRANGER_CURSOR_AUDITION;*/
+          /*break;*/
+        /*}*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:*/
+    /*case UI_OVERLAY_ACTION_DELETE_SELECTING:*/
+    /*case UI_OVERLAY_ACTION_ERASING:*/
+      /*ac = ARRANGER_CURSOR_ERASER;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_STARTING_MOVING_COPY:*/
+    /*case UI_OVERLAY_ACTION_MOVING_COPY:*/
+      /*ac = ARRANGER_CURSOR_GRABBING_COPY;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_STARTING_MOVING:*/
+    /*case UI_OVERLAY_ACTION_MOVING:*/
+      /*ac = ARRANGER_CURSOR_GRABBING;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:*/
+    /*case UI_OVERLAY_ACTION_MOVING_LINK:*/
+      /*ac = ARRANGER_CURSOR_GRABBING_LINK;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_RESIZING_L:*/
+      /*ac = ARRANGER_CURSOR_RESIZING_L;*/
+      /*break;*/
+    /*case UI_OVERLAY_ACTION_RESIZING_R:*/
+      /*ac = ARRANGER_CURSOR_RESIZING_R;*/
+      /*break;*/
+    /*default:*/
+      /*ac = ARRANGER_CURSOR_SELECT;*/
+      /*break;*/
+    /*}*/
 
-  return ac;
-}
+  /*return ac;*/
+/*}*/
 
 /**
  * Create a ChordObject at the given Position in the
@@ -245,14 +241,12 @@ chord_arranger_widget_get_cursor (
  */
 void
 chord_arranger_widget_create_chord (
-  ChordArrangerWidget * self,
+  ArrangerWidget * self,
   const Position *      pos,
   int                   chord_index,
   Region *              region)
 {
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  ar_prv->action =
+  self->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
 
   ArrangerObject * region_obj =
@@ -276,11 +270,11 @@ chord_arranger_widget_create_chord (
   chord_region_add_chord_object (
     region, chord);
 
-  arranger_object_gen_widget (chord_obj);
+  /*arranger_object_gen_widget (chord_obj);*/
 
   /* set visibility */
-  arranger_object_set_widget_visibility_and_state (
-    chord_obj, 1);
+  /*arranger_object_set_widget_visibility_and_state (*/
+    /*chord_obj, 1);*/
 
   arranger_object_set_position (
     chord_obj, &local_pos,
@@ -306,134 +300,29 @@ chord_arranger_widget_get_chord_at_y (
   return (int) (adj_y / adj_px_per_key);
 }
 
-/**
- * Finds and selects items.
- *
- * @param[in] delete If this is a select-delete
- *   operation
- */
-void
-chord_arranger_widget_select (
-  ChordArrangerWidget * self,
-  double                   offset_x,
-  double                   offset_y,
-  int                      delete)
-{
-  int i;
 
-  ARRANGER_WIDGET_GET_PRIVATE (self);
+/*static int*/
+/*on_motion (*/
+  /*GtkWidget *      widget,*/
+  /*GdkEventMotion * event,*/
+  /*ArrangerWidget * self)*/
+/*{*/
+  /*if (event->type == GDK_LEAVE_NOTIFY)*/
+    /*self->hovered_index = -1;*/
+  /*else*/
+    /*self->hovered_index =*/
+      /*chord_arranger_widget_get_chord_at_y (*/
+        /*event->y);*/
+  /*[>g_message ("hovered index: %d",<]*/
+             /*[>self->hovered_index);<]*/
 
-  if (!delete)
-    /* deselect all */
-    arranger_widget_select_all (
-      Z_ARRANGER_WIDGET (self), 0);
+  /*ARRANGER_WIDGET_GET_PRIVATE (self);*/
+  /*gtk_widget_queue_draw (*/
+    /*GTK_WIDGET (self->bg));*/
 
-#define FIND_ENCLOSED_WIDGETS_OF_TYPE( \
-  caps,cc,sc) \
-  cc * sc; \
-  cc##Widget * sc##_widget; \
-  GtkWidget *  sc##_widgets[800]; \
-  int          num_##sc##_widgets = 0; \
-  arranger_widget_get_hit_widgets_in_range ( \
-    Z_ARRANGER_WIDGET (self), \
-    caps##_WIDGET_TYPE, \
-    ar_prv->start_x, \
-    ar_prv->start_y, \
-    offset_x, \
-    offset_y, \
-    sc##_widgets, \
-    &num_##sc##_widgets)
+  /*return FALSE;*/
+/*}*/
 
-  FIND_ENCLOSED_WIDGETS_OF_TYPE (
-    CHORD_OBJECT, ChordObject, chord_object);
-  for (i = 0; i < num_chord_object_widgets; i++)
-    {
-      chord_object_widget =
-        Z_CHORD_OBJECT_WIDGET (
-          chord_object_widgets[i]);
-
-      chord_object =
-        chord_object_get_main (
-          chord_object_widget->chord_object);
-
-      if (delete)
-        {
-          chord_region_remove_chord_object (
-            chord_object->region,
-            chord_object, F_FREE);
-        }
-      else
-        {
-          arranger_object_select (
-            (ArrangerObject *) chord_object,
-            F_SELECT, F_APPEND);
-        }
-    }
-
-#undef FIND_ENCLOSED_WIDGETS_OF_TYPE
-}
-
-static int
-on_motion (
-  GtkWidget *      widget,
-  GdkEventMotion * event,
-  ChordArrangerWidget * self)
-{
-  if (event->type == GDK_LEAVE_NOTIFY)
-    self->hovered_index = -1;
-  else
-    self->hovered_index =
-      chord_arranger_widget_get_chord_at_y (
-        event->y);
-  /*g_message ("hovered index: %d",*/
-             /*self->hovered_index);*/
-
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-  gtk_widget_queue_draw (
-    GTK_WIDGET (ar_prv->bg));
-
-  return FALSE;
-}
-
-/**
- * Sets width to ruler width and height to
- * tracklist height.
- */
-void
-chord_arranger_widget_set_size (
-  ChordArrangerWidget * self)
-{
-  // set the size
-  RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self),
-    (int) rw_prv->total_px,
-    MW_CHORD_EDITOR_SPACE->total_key_px);
-}
-
-/**
- * To be called once at init time.
- */
-void
-chord_arranger_widget_setup (
-  ChordArrangerWidget * self)
-{
-  chord_arranger_widget_set_size (
-    self);
-
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-  g_signal_connect (
-    G_OBJECT(ar_prv->bg),
-    "motion-notify-event",
-    G_CALLBACK (on_motion),  self);
-}
-
-void
-chord_arranger_widget_move_items_y (
-  ChordArrangerWidget * self,
-  double                   offset_y)
-{
-}
 
 /**
  * Returns the ticks objects were moved by since
@@ -445,7 +334,7 @@ chord_arranger_widget_move_items_y (
  */
 /*static long*/
 /*get_moved_diff (*/
-  /*ChordArrangerWidget * self)*/
+  /*ArrangerWidget * self)*/
 /*{*/
 /*#define GET_DIFF(sc,pos_name) \*/
   /*if (CHORD_SELECTIONS->num_##sc##s) \*/
@@ -465,224 +354,97 @@ chord_arranger_widget_move_items_y (
 /*}*/
 
 /**
- * Sets the default cursor in all selected regions and
- * intializes start positions.
+ * Sets the default cursor in all selected regions
+ * and intializes start positions.
  */
-void
-chord_arranger_widget_on_drag_end (
-  ChordArrangerWidget * self)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
+/*void*/
+/*chord_arranger_widget_on_drag_end (*/
+  /*ArrangerWidget * self)*/
+/*{*/
+  /*ARRANGER_WIDGET_GET_PRIVATE (self);*/
 
-  switch (ar_prv->action)
-    {
-    case UI_OVERLAY_ACTION_STARTING_MOVING:
-      {
-        /* if something was clicked with ctrl without
-         * moving*/
-        if (ar_prv->ctrl_held)
-          {
-            if (ar_prv->start_object &&
-                arranger_object_is_selected (
-                  ar_prv->start_object))
-              {
-                /*[> deselect it <]*/
-                arranger_object_select (
-                  ar_prv->start_object,
-                  F_NO_SELECT, F_APPEND);
-              }
-          }
-      }
-      break;
-    case UI_OVERLAY_ACTION_MOVING:
-      {
-        ChordObject * co =
-          chord_object_get_main (
-            CHORD_SELECTIONS->chord_objects[0]);
-        ArrangerObject * co_obj =
-          (ArrangerObject *) co;
-        long ticks_diff =
-          co_obj->pos.total_ticks -
-            co_obj->cache_pos.total_ticks;
-        UndoableAction * ua =
-          (UndoableAction *)
-          arranger_selections_action_new_move_chord (
-            CHORD_SELECTIONS,
-            ticks_diff,
-            0);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
-        arranger_selections_reset_counterparts (
-          (ArrangerSelections *)
-          CHORD_SELECTIONS, 1);
-      }
-      break;
-    case UI_OVERLAY_ACTION_MOVING_COPY:
-    case UI_OVERLAY_ACTION_MOVING_LINK:
-      {
-        ChordObject * co =
-          chord_object_get_main (
-            CHORD_SELECTIONS->chord_objects[0]);
-        ArrangerObject * co_obj =
-          (ArrangerObject *) co;
-        long ticks_diff =
-          co_obj->pos.total_ticks -
-            co_obj->cache_pos.total_ticks;
-        arranger_selections_reset_counterparts (
-          (ArrangerSelections *)
-          CHORD_SELECTIONS, 0);
-        UndoableAction * ua =
-          (UndoableAction *)
-          arranger_selections_action_new_duplicate_chord (
-            CHORD_SELECTIONS,
-            ticks_diff, 0);
-        arranger_selections_reset_counterparts (
-          (ArrangerSelections *)
-          CHORD_SELECTIONS, 0);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
-      }
-      break;
-    case UI_OVERLAY_ACTION_NONE:
-    case UI_OVERLAY_ACTION_STARTING_SELECTION:
-      {
-        arranger_selections_clear (
-          (ArrangerSelections *)
-          CHORD_SELECTIONS);
-      }
-      break;
-    case UI_OVERLAY_ACTION_CREATING_MOVING:
-      {
-        UndoableAction * ua =
-          arranger_selections_action_new_create (
-            (ArrangerSelections *) CHORD_SELECTIONS);
-        undo_manager_perform (
-          UNDO_MANAGER, ua);
-      }
-      break;
-    /* if didn't click on something */
-    default:
-      {
-      }
-      break;
-    }
-}
+/*}*/
 
-static void
-add_children_from_chord_track (
-  ChordArrangerWidget * self,
-  ChordTrack *          ct)
-{
-  int i, j, k;
-  Region * r;
-  ChordObject * c;
-  for (i = 0; i < ct->num_chord_regions; i++)
-    {
-      r = ct->chord_regions[i];
+/*static void*/
+/*add_children_from_chord_track (*/
+  /*ArrangerWidget * self,*/
+  /*ChordTrack *          ct)*/
+/*{*/
+  /*int i, j, k;*/
+  /*Region * r;*/
+  /*ChordObject * c;*/
+  /*for (i = 0; i < ct->num_chord_regions; i++)*/
+    /*{*/
+      /*r = ct->chord_regions[i];*/
 
-      for (j = 0; j < r->num_chord_objects; j++)
-        {
-          c = r->chord_objects[j];
+      /*for (j = 0; j < r->num_chord_objects; j++)*/
+        /*{*/
+          /*c = r->chord_objects[j];*/
 
-          for (k = 0 ;
-               k <= AOI_COUNTERPART_MAIN_TRANSIENT;
-               k++)
-            {
-              if (k == AOI_COUNTERPART_MAIN)
-                c =
-                  chord_object_get_main (c);
-              else if (
-                k == AOI_COUNTERPART_MAIN_TRANSIENT)
-                c =
-                  chord_object_get_main_trans (c);
+          /*for (k = 0 ;*/
+               /*k <= AOI_COUNTERPART_MAIN_TRANSIENT;*/
+               /*k++)*/
+            /*{*/
+              /*if (k == AOI_COUNTERPART_MAIN)*/
+                /*c =*/
+                  /*chord_object_get_main (c);*/
+              /*else if (*/
+                /*k == AOI_COUNTERPART_MAIN_TRANSIENT)*/
+                /*c =*/
+                  /*chord_object_get_main_trans (c);*/
 
-              g_return_if_fail (c);
-              ArrangerObject * obj =
-                (ArrangerObject *) c;
+              /*g_return_if_fail (c);*/
+              /*ArrangerObject * obj =*/
+                /*(ArrangerObject *) c;*/
 
-              if (!obj->widget)
-                arranger_object_gen_widget (obj);
+              /*if (!obj->widget)*/
+                /*arranger_object_gen_widget (obj);*/
 
-              arranger_widget_add_overlay_child (
-                (ArrangerWidget *) self, obj);
-            }
-        }
-    }
-}
+              /*arranger_widget_add_overlay_child (*/
+                /*(ArrangerWidget *) self, obj);*/
+            /*}*/
+        /*}*/
+    /*}*/
+/*}*/
 
 /**
  * Readd children.
  */
-void
-chord_arranger_widget_refresh_children (
-  ChordArrangerWidget * self)
-{
-  ARRANGER_WIDGET_GET_PRIVATE (self);
-
-  /* remove all children except bg && playhead */
-  GList *children, *iter;
-
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self));
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      GtkWidget * widget = GTK_WIDGET (iter->data);
-      if (widget != (GtkWidget *) ar_prv->bg &&
-          widget != (GtkWidget *) ar_prv->playhead)
-        {
-          /*g_object_ref (widget);*/
-          gtk_container_remove (
-            GTK_CONTAINER (self),
-            widget);
-        }
-    }
-  g_list_free (children);
-
-  add_children_from_chord_track (
-    self, P_CHORD_TRACK);
-
-  gtk_overlay_reorder_overlay (
-    GTK_OVERLAY (self),
-    (GtkWidget *) ar_prv->playhead, -1);
-}
 
 /**
  * Scroll to the given position.
  */
 /*void*/
 /*chord_arranger_widget_scroll_to (*/
-  /*ChordArrangerWidget * self,*/
+  /*ArrangerWidget * self,*/
   /*Position *               pos)*/
 /*{*/
   /*[> TODO <]*/
 
 /*}*/
 
-static gboolean
-on_focus (
-  GtkWidget * widget,
-  gpointer    user_data)
-{
-  /*g_message ("chord focused");*/
-  MAIN_WINDOW->last_focused = widget;
+/*static gboolean*/
+/*on_focus (*/
+  /*GtkWidget * widget,*/
+  /*gpointer    user_data)*/
+/*{*/
+  /*[>g_message ("chord focused");<]*/
+  /*MAIN_WINDOW->last_focused = widget;*/
 
-  return FALSE;
-}
+  /*return FALSE;*/
+/*}*/
 
-static void
-chord_arranger_widget_class_init (
-  ChordArrangerWidgetClass * klass)
-{
-}
+/*static void*/
+/*chord_arranger_widget_class_init (*/
+  /*ArrangerWidgetClass * klass)*/
+/*{*/
+/*}*/
 
-static void
-chord_arranger_widget_init (
-  ChordArrangerWidget *self )
-{
-  g_signal_connect (
-    self, "grab-focus",
-    G_CALLBACK (on_focus), self);
-}
+/*static void*/
+/*chord_arranger_widget_init (*/
+  /*ArrangerWidget *self )*/
+/*{*/
+  /*g_signal_connect (*/
+    /*self, "grab-focus",*/
+    /*G_CALLBACK (on_focus), self);*/
+/*}*/

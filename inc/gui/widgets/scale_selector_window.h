@@ -80,7 +80,7 @@ typedef struct _ScaleSelectorWindowWidget
   GtkFlowBoxChild * creator_types[4];
 
   /** The owner ScaleObjectWidget. */
-  ScaleObjectWidget * scale;
+  ScaleObject * scale;
 
   /** The descriptor of the edited scale, so
    * it can be used to save into the ScaleObject. */
@@ -93,7 +93,7 @@ typedef struct _ScaleSelectorWindowWidget
  */
 ScaleSelectorWindowWidget *
 scale_selector_window_widget_new (
-  ScaleObjectWidget * owner);
+  ScaleObject * owner);
 
 /**
  * @}

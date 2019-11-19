@@ -46,10 +46,10 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE_WITH_PRIVATE (
+G_DEFINE_TYPE (
   RulerWidget,
   ruler_widget,
-  GTK_TYPE_OVERLAY)
+  GTK_TYPE_DRAWING_AREA)
 
 #define Y_SPACING 5
 #define FONT "Monospace"
@@ -61,86 +61,15 @@ G_DEFINE_TYPE_WITH_PRIVATE (
 #define Q_HEIGHT 12
 #define Q_WIDTH 7
 
-/**
- * Minimum number of pixels between beat lines.
- */
-#define PX_TO_HIDE_BEATS 40.0
-
-#define GET_PRIVATE RULER_WIDGET_GET_PRIVATE (self)
-
-/**
- * Gets each specific ruler.
- *
- * Useful boilerplate
- */
-#define GET_RULER_ALIASES(self) \
-  TimelineRulerWidget * timeline_ruler = NULL; \
-  EditorRulerWidget *     editor_ruler = NULL; \
-  if (Z_IS_TIMELINE_RULER_WIDGET (self)) \
-    { \
-      timeline_ruler = \
-        Z_TIMELINE_RULER_WIDGET (self); \
-    } \
-  else if (Z_IS_EDITOR_RULER_WIDGET (self)) \
-    { \
-      editor_ruler = Z_EDITOR_RULER_WIDGET (self); \
-    }
+#define TYPE(x) RULER_WIDGET_TYPE_##x
 
 #define ACTION_IS(x) \
-  (rw_prv->action == UI_OVERLAY_ACTION_##x)
-
-/**
- * Gets called to set the position/size of each overlayed widget.
- */
-static gboolean
-get_child_position (GtkOverlay   *overlay,
-                    GtkWidget    *widget,
-                    GdkRectangle *allocation,
-                    gpointer      user_data)
-{
-  if (TRANSPORT->lticks_per_bar < 1)
-    return FALSE;
-
-  RulerWidget * self =
-    Z_RULER_WIDGET (overlay);
-  GET_RULER_ALIASES (self);
-
-  if (Z_IS_RULER_RANGE_WIDGET (widget))
-    {
-      timeline_ruler_widget_set_ruler_range_position (
-        Z_TIMELINE_RULER_WIDGET (self),
-        Z_RULER_RANGE_WIDGET (widget),
-        allocation);
-    }
-  else if (Z_IS_RULER_MARKER_WIDGET (widget))
-    {
-      if (timeline_ruler)
-        timeline_ruler_widget_set_ruler_marker_position (
-          Z_TIMELINE_RULER_WIDGET (self),
-          Z_RULER_MARKER_WIDGET (widget),
-          allocation);
-      else if (editor_ruler)
-        editor_ruler_widget_set_ruler_marker_position (
-          Z_EDITOR_RULER_WIDGET (self),
-          Z_RULER_MARKER_WIDGET (widget),
-          allocation);
-    }
-
-  return TRUE;
-}
-
-RulerWidgetPrivate *
-ruler_widget_get_private (RulerWidget * self)
-{
-  return ruler_widget_get_instance_private (self);
-}
+  (self->action == UI_OVERLAY_ACTION_##x)
 
 int
 ruler_widget_get_beat_interval (
   RulerWidget * self)
 {
-  GET_PRIVATE;
-
   int i;
 
   /* gather divisors of the number of beats per
@@ -158,7 +87,7 @@ ruler_widget_get_beat_interval (
   int _beat_interval =
     MAX (
       (int)
-      (PX_TO_HIDE_BEATS / rw_prv->px_per_beat),
+      (RW_PX_TO_HIDE_BEATS / self->px_per_beat),
       1);
 
   /* round the interval to the divisors */
@@ -180,8 +109,6 @@ int
 ruler_widget_get_sixteenth_interval (
   RulerWidget * self)
 {
-  GET_PRIVATE;
-
   int i;
 
   /* gather divisors of the number of sixteenths per
@@ -200,8 +127,8 @@ ruler_widget_get_sixteenth_interval (
   int _sixteenth_interval =
     MAX (
       (int)
-      (PX_TO_HIDE_BEATS /
-      rw_prv->px_per_sixteenth), 1);
+      (RW_PX_TO_HIDE_BEATS /
+      self->px_per_sixteenth), 1);
 
   /* round the interval to the divisors */
   int sixteenth_interval = -1;
@@ -218,55 +145,372 @@ ruler_widget_get_sixteenth_interval (
   return sixteenth_interval;
 }
 
+static void
+draw_regions (
+  RulerWidget * self)
+{
+  cairo_t * cr = self->cached_cr;
+
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+
+  /* get a visible region */
+  Region * region = CLIP_EDITOR->region;
+  region =
+    region_get_main (region);
+  ArrangerObject * region_obj =
+    (ArrangerObject *) region;
+
+  Track * track =
+    arranger_object_get_track (region_obj);
+
+  int px_start, px_end;
+
+  /* draw the main region */
+  cairo_set_source_rgba (
+    cr, 1, track->color.green + 0.2,
+    track->color.blue + 0.2, 1.0);
+  if (arranger_object_should_be_visible (
+        region_obj))
+    {
+      px_start =
+        ui_pos_to_px_editor (
+          &region_obj->pos, 1);
+      px_end =
+        ui_pos_to_px_editor (
+          &region_obj->end_pos, 1);
+      cairo_rectangle (
+        cr, px_start, 0,
+        px_end - px_start, height / 4.0);
+      cairo_fill (cr);
+    }
+
+  /* draw its transient if copy-moving */
+  region =
+    region_get_main_trans (region);
+  region_obj =
+    (ArrangerObject *) region;
+  if (arranger_object_should_be_visible (
+        region_obj))
+    {
+      px_start =
+        ui_pos_to_px_editor (
+          &region_obj->pos, 1);
+      px_end =
+        ui_pos_to_px_editor (
+          &region_obj->end_pos, 1);
+      cairo_rectangle (
+        cr, px_start, 0,
+        px_end - px_start, height / 4.0);
+      cairo_fill (cr);
+    }
+
+  /* draw the other regions */
+  cairo_set_source_rgba (
+    cr,
+    track->color.red,
+    track->color.green,
+    track->color.blue,
+    0.5);
+  Region * other_region;
+  TrackLane * lane;
+  for (int j = 0; j < track->num_lanes; j++)
+    {
+      lane = track->lanes[j];
+
+      for (int i = 0; i < lane->num_regions; i++)
+        {
+          other_region = lane->regions[i];
+          ArrangerObject * other_region_obj =
+            (ArrangerObject *) other_region;
+          if (!g_strcmp0 (region->name,
+                         other_region->name))
+            continue;
+
+          px_start =
+            ui_pos_to_px_editor (
+              &other_region_obj->pos, 1);
+          px_end =
+            ui_pos_to_px_editor (
+              &other_region_obj->end_pos, 1);
+          cairo_rectangle (
+            cr, px_start, 0,
+            px_end - px_start, height / 4.0);
+          cairo_fill (cr);
+        }
+    }
+}
+
+static void
+draw_loop_start (
+  RulerWidget * self)
+{
+  cairo_t * cr = self->cached_cr;
+
+  /* draw rect */
+  GdkRectangle dr = { 0, 0, 0, 0 };
+  if (self->type == TYPE (EDITOR))
+    {
+      if (CLIP_EDITOR->region)
+        {
+          ArrangerObject * region_obj =
+            (ArrangerObject *) CLIP_EDITOR->region;
+          long start_ticks =
+            position_to_ticks (
+              &region_obj->pos);
+          long loop_start_ticks =
+            position_to_ticks (
+              &region_obj->loop_start_pos) +
+            start_ticks;
+          Position tmp;
+          position_from_ticks (
+            &tmp, loop_start_ticks);
+          dr.x =
+            ui_pos_to_px_editor (&tmp, 1);
+        }
+      else
+        {
+          dr.x = 0;
+        }
+    }
+  else if (self->type == TYPE (TIMELINE))
+    {
+      dr.x =
+        ui_pos_to_px_timeline (
+          &TRANSPORT->loop_start_pos, 1);
+    }
+  dr.y = 0;
+  dr.width = RW_RULER_MARKER_SIZE;
+  dr.height = RW_RULER_MARKER_SIZE;
+
+  cairo_set_source_rgb (cr, 0, 0.9, 0.7);
+  cairo_set_line_width (cr, 2);
+  cairo_move_to (cr, dr.x, dr.y);
+  cairo_line_to (cr, dr.x, dr.y + dr.height);
+  cairo_line_to (cr, dr.x + dr.width, dr.y);
+  cairo_fill (cr);
+}
+
+static void
+draw_loop_end (
+  RulerWidget * self)
+{
+  cairo_t * cr = self->cached_cr;
+
+  /* draw rect */
+  GdkRectangle dr = { 0, 0, 0, 0 };
+  if (self->type == TYPE (EDITOR))
+    {
+      if (CLIP_EDITOR->region)
+        {
+          ArrangerObject * region_obj =
+            (ArrangerObject *) CLIP_EDITOR->region;
+          long start_ticks =
+            position_to_ticks (
+              &region_obj->pos);
+          long loop_end_ticks =
+            position_to_ticks (
+              &region_obj->loop_end_pos) +
+            start_ticks;
+          Position tmp;
+          position_from_ticks (
+            &tmp, loop_end_ticks);
+          dr.x =
+            ui_pos_to_px_editor (
+              &tmp, 1) - RW_RULER_MARKER_SIZE;
+        }
+      else
+        {
+          dr.x = 0;
+        }
+    }
+  else if (self->type == TYPE (TIMELINE))
+    {
+      dr.x =
+        ui_pos_to_px_timeline (
+          &TRANSPORT->loop_end_pos, 1) -
+        RW_RULER_MARKER_SIZE;
+    }
+  dr.y = 0;
+  dr.width = RW_RULER_MARKER_SIZE;
+  dr.height = RW_RULER_MARKER_SIZE;
+
+  cairo_set_source_rgb (cr, 0, 0.9, 0.7);
+  cairo_set_line_width (cr, 2);
+  cairo_move_to (cr, dr.x, dr.y);
+  cairo_line_to (cr, dr.x + dr.width, dr.y);
+  cairo_line_to (
+    cr, dr.x + dr.width, dr.y + dr.height);
+  cairo_fill (cr);
+}
+
+/**
+ * Draws the cue point (or clip start if this is
+ * the editor ruler.
+ */
+static void
+draw_cue_point (
+  RulerWidget * self)
+{
+  cairo_t * cr = self->cached_cr;
+
+  /* draw rect */
+  GdkRectangle dr = { 0, 0, 0, 0 };
+  if (self->type == TYPE (EDITOR))
+    {
+      if (CLIP_EDITOR->region)
+        {
+          ArrangerObject * region_obj =
+            (ArrangerObject *) CLIP_EDITOR->region;
+          long start_ticks =
+            position_to_ticks (
+              &region_obj->pos);
+          long clip_start_ticks =
+            position_to_ticks (
+              &region_obj->clip_start_pos) +
+            start_ticks;
+          Position tmp;
+          position_from_ticks (
+            &tmp, clip_start_ticks);
+          dr.x =
+            ui_pos_to_px_editor (&tmp, 1);
+        }
+      else
+        {
+          dr.x = 0;
+        }
+      if (MAIN_WINDOW && EDITOR_RULER)
+        {
+          dr.y =
+            ((gtk_widget_get_allocated_height (
+              GTK_WIDGET (EDITOR_RULER)) -
+                RW_RULER_MARKER_SIZE) -
+             RW_CUE_MARKER_HEIGHT) - 1;
+        }
+      else
+        dr.y = RW_RULER_MARKER_SIZE *2;
+    }
+  else if (self->type == TYPE (TIMELINE))
+    {
+      dr.x =
+        ui_pos_to_px_timeline (
+          &TRANSPORT->cue_pos,
+          1);
+      if (MAIN_WINDOW && MW_RULER)
+        {
+          dr.y =
+            RW_RULER_MARKER_SIZE;
+        }
+      else
+        dr.y = RW_RULER_MARKER_SIZE *2;
+    }
+  dr.width = RW_CUE_MARKER_WIDTH;
+  dr.height = RW_CUE_MARKER_HEIGHT;
+
+  if (self->type == TYPE (EDITOR))
+    {
+      cairo_set_source_rgb (cr, 0.2, 0.6, 0.9);
+    }
+  else if (self->type == TYPE (TIMELINE))
+    {
+      cairo_set_source_rgb (cr, 0, 0.6, 0.9);
+    }
+  cairo_set_line_width (cr, 2);
+  cairo_move_to (cr, dr.x, dr.y);
+  cairo_line_to (
+    cr, dr.x + dr.width, dr.y + dr.height / 2);
+  cairo_line_to (cr, dr.x, dr.y + dr.height);
+  cairo_fill (cr);
+}
+
+static void
+draw_playhead (
+  RulerWidget * self)
+{
+  cairo_t * cr = self->cached_cr;
+
+  /* draw rect */
+  GdkRectangle dr = { 0, 0, 0, 0 };
+  if (self->type == TYPE (EDITOR))
+    {
+      dr.x =
+        ui_pos_to_px_editor (
+          &TRANSPORT->playhead_pos,
+          1) - (RW_PLAYHEAD_TRIANGLE_WIDTH / 2);
+    }
+  else if (self->type == TYPE (TIMELINE))
+    {
+      dr.x =
+        ui_pos_to_px_timeline (
+          &TRANSPORT->playhead_pos,
+          1) - (RW_PLAYHEAD_TRIANGLE_WIDTH / 2);
+    }
+  dr.y =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self)) -
+      RW_PLAYHEAD_TRIANGLE_HEIGHT;
+  dr.width = RW_PLAYHEAD_TRIANGLE_WIDTH;
+  dr.height = RW_PLAYHEAD_TRIANGLE_HEIGHT;
+
+  cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
+  cairo_set_line_width (cr, 2);
+  cairo_move_to (cr, dr.x, dr.y);
+  cairo_line_to (
+    cr, dr.x + dr.width / 2, dr.y + dr.height);
+  cairo_line_to (cr, dr.x + dr.width, dr.y);
+  cairo_fill (cr);
+}
+
 static gboolean
 ruler_draw_cb (
   GtkWidget *   widget,
   cairo_t *     cr,
   RulerWidget * self)
 {
+  /*g_message ("drawing ruler %p", self);*/
   /* engine is run only set after everything is set
    * up so this is a good way to decide if we
    * should  draw or not */
   if (!g_atomic_int_get (&AUDIO_ENGINE->run))
     return FALSE;
 
-  GET_PRIVATE;
-
   GdkRectangle rect;
   gdk_cairo_get_clip_rectangle (
     cr, &rect);
 
-  if (rw_prv->px_per_bar < 2.0)
+  if (self->px_per_bar < 2.0)
     return FALSE;
 
-  if (rw_prv->redraw ||
+  if (self->redraw ||
       !gdk_rectangle_equal (
-         &rect, &rw_prv->last_rect))
+         &rect, &self->last_rect))
     {
-      rw_prv->last_rect = rect;
+      self->last_rect = rect;
 
       GtkStyleContext *context =
         gtk_widget_get_style_context (
           GTK_WIDGET (self));
 
       z_cairo_reset_caches (
-        &rw_prv->cached_cr,
-        &rw_prv->cached_surface, rect.width,
+        &self->cached_cr,
+        &self->cached_surface, rect.width,
         rect.height, cr);
+
+      /* ----- ruler background ------- */
 
       int height =
         gtk_widget_get_allocated_height (
           GTK_WIDGET (self));
 
       gtk_render_background (
-        context, rw_prv->cached_cr,
+        context, self->cached_cr,
         0, 0, rect.width, rect.height);
 
       /* if timeline, draw loop background */
       /* FIXME use rect */
-      GET_RULER_ALIASES (self);
       double start_px = 0, end_px = 0;
-      if (timeline_ruler)
+      if (self->type == TYPE (TIMELINE))
         {
           start_px =
             ui_pos_to_px_timeline (
@@ -275,7 +519,7 @@ ruler_draw_cb (
             ui_pos_to_px_timeline (
               &TRANSPORT->loop_end_pos, 1);
         }
-      else if (editor_ruler)
+      else if (self->type == TYPE (EDITOR))
         {
           start_px =
             ui_pos_to_px_editor (
@@ -287,11 +531,11 @@ ruler_draw_cb (
 
       if (TRANSPORT->loop)
         cairo_set_source_rgba (
-          rw_prv->cached_cr, 0, 0.9, 0.7, 0.25);
+          self->cached_cr, 0, 0.9, 0.7, 0.25);
       else
         cairo_set_source_rgba (
-          rw_prv->cached_cr, 0.5, 0.5, 0.5, 0.25);
-      cairo_set_line_width (rw_prv->cached_cr, 2);
+          self->cached_cr, 0.5, 0.5, 0.5, 0.25);
+      cairo_set_line_width (self->cached_cr, 2);
 
       /* if transport loop start is within the
        * screen */
@@ -302,10 +546,10 @@ ruler_draw_cb (
           double x =
             (start_px - rect.x) + 1.0;
           cairo_move_to (
-            rw_prv->cached_cr, x, 0);
+            self->cached_cr, x, 0);
           cairo_line_to (
-            rw_prv->cached_cr, x, rect.height);
-          cairo_stroke (rw_prv->cached_cr);
+            self->cached_cr, x, rect.height);
+          cairo_stroke (self->cached_cr);
         }
       /* if transport loop end is within the
        * screen */
@@ -315,10 +559,10 @@ ruler_draw_cb (
           double x =
             (end_px - rect.x) - 1.0;
           cairo_move_to (
-            rw_prv->cached_cr, x, 0);
+            self->cached_cr, x, 0);
           cairo_line_to (
-            rw_prv->cached_cr, x, rect.height);
-          cairo_stroke (rw_prv->cached_cr);
+            self->cached_cr, x, rect.height);
+          cairo_stroke (self->cached_cr);
         }
 
       /* create gradient for loop area */
@@ -343,17 +587,17 @@ ruler_draw_cb (
       double loop_start_local_x =
         MAX (0, start_px - rect.x);
       cairo_rectangle (
-        rw_prv->cached_cr,
+        self->cached_cr,
         loop_start_local_x, 0,
         end_px - MAX (rect.x, start_px),
         rect.height);
-      cairo_set_source (rw_prv->cached_cr, pat);
-      cairo_fill (rw_prv->cached_cr);
+      cairo_set_source (self->cached_cr, pat);
+      cairo_fill (self->cached_cr);
       cairo_pattern_destroy (pat);
 
       PangoLayout * layout =
         pango_cairo_create_layout (
-          rw_prv->cached_cr);
+          self->cached_cr);
       PangoFontDescription *desc =
         pango_font_description_from_string (
           "Monospace 11");
@@ -378,14 +622,14 @@ ruler_draw_cb (
       /* get the interval for bars */
       int bar_interval =
         (int)
-        MAX ((PX_TO_HIDE_BEATS) /
-             (double) rw_prv->px_per_bar, 1.0);
+        MAX ((RW_PX_TO_HIDE_BEATS) /
+             (double) self->px_per_bar, 1.0);
 
       /* draw bars */
       i = - bar_interval;
       while (
         (curr_px =
-           rw_prv->px_per_bar * (i += bar_interval) +
+           self->px_per_bar * (i += bar_interval) +
              SPACE_BEFORE_START) <
          rect.x + rect.width)
         {
@@ -393,28 +637,28 @@ ruler_draw_cb (
             continue;
 
           cairo_set_source_rgb (
-            rw_prv->cached_cr, 1, 1, 1);
+            self->cached_cr, 1, 1, 1);
           cairo_set_line_width (
-            rw_prv->cached_cr, 1);
+            self->cached_cr, 1);
           double x = curr_px - rect.x;
           cairo_move_to (
-            rw_prv->cached_cr, x, 0);
+            self->cached_cr, x, 0);
           cairo_line_to (
-            rw_prv->cached_cr, x, height / 3);
-          cairo_stroke (rw_prv->cached_cr);
+            self->cached_cr, x, height / 3);
+          cairo_stroke (self->cached_cr);
           cairo_set_source_rgb (
-            rw_prv->cached_cr, 0.8, 0.8, 0.8);
+            self->cached_cr, 0.8, 0.8, 0.8);
           sprintf (text, "%d", i + 1);
           pango_layout_set_markup (layout, text, -1);
           pango_layout_get_pixel_size (
             layout, &textw, &texth);
           cairo_move_to (
-            rw_prv->cached_cr,
+            self->cached_cr,
             x - textw / 2, height / 3 + 2);
           pango_cairo_update_layout (
-            rw_prv->cached_cr, layout);
+            self->cached_cr, layout);
           pango_cairo_show_layout (
-            rw_prv->cached_cr, layout);
+            self->cached_cr, layout);
         }
       /* draw beats */
       desc =
@@ -427,7 +671,7 @@ ruler_draw_cb (
       if (beat_interval > 0)
         {
           while ((curr_px =
-                  rw_prv->px_per_beat *
+                  self->px_per_beat *
                     (i += beat_interval) +
                   SPACE_BEFORE_START) <
                  rect.x + rect.width)
@@ -436,21 +680,21 @@ ruler_draw_cb (
                 continue;
 
               cairo_set_source_rgb (
-                rw_prv->cached_cr, 0.7, 0.7, 0.7);
+                self->cached_cr, 0.7, 0.7, 0.7);
               cairo_set_line_width (
-                rw_prv->cached_cr, 0.5);
+                self->cached_cr, 0.5);
               double x = curr_px - rect.x;
               cairo_move_to (
-                rw_prv->cached_cr, x, 0);
+                self->cached_cr, x, 0);
               cairo_line_to (
-                rw_prv->cached_cr, x, height / 4);
-              cairo_stroke (rw_prv->cached_cr);
-              if ((rw_prv->px_per_beat >
-                     PX_TO_HIDE_BEATS * 2) &&
+                self->cached_cr, x, height / 4);
+              cairo_stroke (self->cached_cr);
+              if ((self->px_per_beat >
+                     RW_PX_TO_HIDE_BEATS * 2) &&
                   i % beats_per_bar != 0)
                 {
                   cairo_set_source_rgb (
-                    rw_prv->cached_cr,
+                    self->cached_cr,
                     0.5, 0.5, 0.5);
                   sprintf (
                     text, "%d.%d",
@@ -461,12 +705,12 @@ ruler_draw_cb (
                   pango_layout_get_pixel_size (
                     layout, &textw, &texth);
                   cairo_move_to (
-                    rw_prv->cached_cr, x - textw / 2,
+                    self->cached_cr, x - textw / 2,
                     height / 4 + 2);
                   pango_cairo_update_layout (
-                    rw_prv->cached_cr, layout);
+                    self->cached_cr, layout);
                   pango_cairo_show_layout (
-                    rw_prv->cached_cr, layout);
+                    self->cached_cr, layout);
                 }
             }
         }
@@ -475,7 +719,7 @@ ruler_draw_cb (
       if (sixteenth_interval > 0)
         {
           while ((curr_px =
-                  rw_prv->px_per_sixteenth *
+                  self->px_per_sixteenth *
                     (i += sixteenth_interval) +
                   SPACE_BEFORE_START) <
                  rect.x + rect.width)
@@ -484,22 +728,22 @@ ruler_draw_cb (
                 continue;
 
               cairo_set_source_rgb (
-                rw_prv->cached_cr, 0.6, 0.6, 0.6);
+                self->cached_cr, 0.6, 0.6, 0.6);
               cairo_set_line_width (
-                rw_prv->cached_cr, 0.3);
+                self->cached_cr, 0.3);
               double x = curr_px - rect.x;
               cairo_move_to (
-                rw_prv->cached_cr, x, 0);
+                self->cached_cr, x, 0);
               cairo_line_to (
-                rw_prv->cached_cr, x, height / 6);
-              cairo_stroke (rw_prv->cached_cr);
+                self->cached_cr, x, height / 6);
+              cairo_stroke (self->cached_cr);
 
-              if ((rw_prv->px_per_sixteenth >
-                     PX_TO_HIDE_BEATS * 2) &&
+              if ((self->px_per_sixteenth >
+                     RW_PX_TO_HIDE_BEATS * 2) &&
                   i % sixteenths_per_beat != 0)
                 {
                   cairo_set_source_rgb (
-                    rw_prv->cached_cr, 0.5, 0.5, 0.5);
+                    self->cached_cr, 0.5, 0.5, 0.5);
                   sprintf (
                     text, "%d.%d.%d",
                     i / TRANSPORT->
@@ -512,22 +756,73 @@ ruler_draw_cb (
                   pango_layout_get_pixel_size (
                     layout, &textw, &texth);
                   cairo_move_to (
-                    rw_prv->cached_cr, x - textw / 2,
+                    self->cached_cr, x - textw / 2,
                     height / 4 + 2);
                   pango_cairo_update_layout (
-                    rw_prv->cached_cr, layout);
+                    self->cached_cr, layout);
                   pango_cairo_show_layout (
-                    rw_prv->cached_cr, layout);
+                    self->cached_cr, layout);
                 }
             }
         }
       g_object_unref (layout);
 
-      rw_prv->redraw = 0;
+      /* ----- draw range --------- */
+
+      int range1_first =
+        position_is_before_or_equal (
+          &PROJECT->range_1, &PROJECT->range_2);
+
+      GdkRectangle dr;
+      if (range1_first)
+        {
+          dr.x =
+            ui_pos_to_px_timeline (
+              &PROJECT->range_1,
+              1);
+          dr.width =
+            ui_pos_to_px_timeline (
+              &PROJECT->range_2,
+              1) - dr.x;
+        }
+      else
+        {
+          dr.x =
+            ui_pos_to_px_timeline (
+              &PROJECT->range_2,
+              1);
+          dr.width =
+            ui_pos_to_px_timeline (
+              &PROJECT->range_1,
+              1) - dr.x;
+        }
+      dr.y = 0;
+      dr.height =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (self)) / 4;
+
+      /* ----- draw regions --------- */
+
+      if (self->type == TYPE (EDITOR))
+        {
+          draw_regions (self);
+        }
+
+      /* ------ draw markers ------- */
+
+      draw_cue_point (self);
+      draw_loop_start (self);
+      draw_loop_end (self);
+
+      /* --------- draw playhead ---------- */
+
+      draw_playhead (self);
+
+      self->redraw = 0;
     }
 
   cairo_set_source_surface (
-    cr, rw_prv->cached_surface, rect.x, rect.y);
+    cr, self->cached_surface, rect.x, rect.y);
   cairo_paint (cr);
 
  return FALSE;
@@ -544,30 +839,27 @@ multipress_pressed (
   gdouble               y,
   RulerWidget *         self)
 {
-  RULER_WIDGET_GET_PRIVATE (self);
-  GET_RULER_ALIASES (self);
-
   GdkModifierType state_mask;
   ui_get_modifier_type_from_gesture (
     GTK_GESTURE_SINGLE (gesture),
     &state_mask);
   if (state_mask & GDK_SHIFT_MASK)
-    rw_prv->shift_held = 1;
+    self->shift_held = 1;
 
   if (n_press == 2)
     {
-      if (timeline_ruler)
+      if (self->type == TYPE (TIMELINE))
         {
           Position pos;
           ui_px_to_pos_timeline (
             x, &pos, 1);
-          if (!rw_prv->shift_held)
+          if (!self->shift_held)
             position_snap_simple (
               &pos, SNAP_GRID_TIMELINE);
           position_set_to_pos (&TRANSPORT->cue_pos,
                                &pos);
         }
-      if (editor_ruler)
+      if (self->type == TYPE (EDITOR))
         {
         }
     }
@@ -576,16 +868,15 @@ multipress_pressed (
 }
 
 static void
-drag_begin (GtkGestureDrag *      gesture,
-            gdouble               start_x,
-            gdouble               start_y,
-            RulerWidget *         self)
+drag_begin (
+  GtkGestureDrag * gesture,
+  gdouble          start_x,
+  gdouble          start_y,
+  RulerWidget *    self)
 {
-  RULER_WIDGET_GET_PRIVATE (self);
-  GET_RULER_ALIASES (self);
+  self->start_x = start_x;
 
-  rw_prv->start_x = start_x;
-
+#if 0
   if (timeline_ruler)
     {
       timeline_ruler->range1_first =
@@ -613,17 +904,17 @@ drag_begin (GtkGestureDrag *      gesture,
           if (hit_marker ==
                 timeline_ruler->loop_start)
             {
-              rw_prv->action =
+              self->action =
                 UI_OVERLAY_ACTION_STARTING_MOVING;
-              rw_prv->target =
+              self->target =
                 RW_TARGET_LOOP_START;
             }
           else if (hit_marker ==
                    timeline_ruler->loop_end)
             {
-              rw_prv->action =
+              self->action =
                 UI_OVERLAY_ACTION_STARTING_MOVING;
-              rw_prv->target =
+              self->target =
                 RW_TARGET_LOOP_END;
             }
 
@@ -632,25 +923,25 @@ drag_begin (GtkGestureDrag *      gesture,
         {
           if (hit_marker == editor_ruler->loop_start)
             {
-              rw_prv->action =
+              self->action =
                 UI_OVERLAY_ACTION_STARTING_MOVING;
-              rw_prv->target =
+              self->target =
                 RW_TARGET_LOOP_START;
             }
           else if (hit_marker ==
                    editor_ruler->loop_end)
             {
-              rw_prv->action =
+              self->action =
                 UI_OVERLAY_ACTION_STARTING_MOVING;
-              rw_prv->target =
+              self->target =
                 RW_TARGET_LOOP_END;
             }
           else if (hit_marker ==
                    editor_ruler->clip_start)
             {
-              rw_prv->action =
+              self->action =
                 UI_OVERLAY_ACTION_STARTING_MOVING;
-              rw_prv->target =
+              self->target =
                 RW_TARGET_CLIP_START;
             }
         }
@@ -665,7 +956,8 @@ drag_begin (GtkGestureDrag *      gesture,
         editor_ruler_on_drag_begin_no_marker_hit (
           editor_ruler, start_x, start_y);
     }
-  rw_prv->last_offset_x = 0;
+#endif
+  self->last_offset_x = 0;
 }
 
 static void
@@ -675,36 +967,33 @@ drag_update (
   gdouble          offset_y,
   RulerWidget *    self)
 {
-  RULER_WIDGET_GET_PRIVATE (self);
-  GET_RULER_ALIASES (self);
-
   GdkModifierType state_mask;
   ui_get_modifier_type_from_gesture (
     GTK_GESTURE_SINGLE (gesture),
     &state_mask);
 
   if (state_mask & GDK_SHIFT_MASK)
-    rw_prv->shift_held = 1;
+    self->shift_held = 1;
   else
-    rw_prv->shift_held = 0;
+    self->shift_held = 0;
 
   if (ACTION_IS (STARTING_MOVING))
     {
-      rw_prv->action = UI_OVERLAY_ACTION_MOVING;
+      self->action = UI_OVERLAY_ACTION_MOVING;
     }
 
-  if (timeline_ruler)
+  if (self->type == TYPE (TIMELINE))
     {
       timeline_ruler_on_drag_update (
-        timeline_ruler, offset_x, offset_y);
+        self, offset_x, offset_y);
     }
-  else if (editor_ruler)
+  else if (self->type == TYPE (EDITOR))
     {
       editor_ruler_on_drag_update (
-        editor_ruler, offset_x, offset_y);
+        self, offset_x, offset_y);
     }
 
-  rw_prv->last_offset_x = offset_x;
+  self->last_offset_x = offset_x;
 
   /* TODO update inspector */
 }
@@ -715,18 +1004,15 @@ drag_end (GtkGestureDrag *gesture,
           gdouble         offset_y,
           RulerWidget *   self)
 {
-  RULER_WIDGET_GET_PRIVATE (self);
-  GET_RULER_ALIASES (self);
+  self->start_x = 0;
+  self->shift_held = 0;
 
-  rw_prv->start_x = 0;
-  rw_prv->shift_held = 0;
+  self->action = UI_OVERLAY_ACTION_NONE;
 
-  rw_prv->action = UI_OVERLAY_ACTION_NONE;
-
-  if (timeline_ruler)
-    timeline_ruler_on_drag_end (timeline_ruler);
-  else if (editor_ruler)
-    editor_ruler_on_drag_end (editor_ruler);
+  if (self->type == TYPE (TIMELINE))
+    timeline_ruler_on_drag_end (self);
+  else if (self->type == TYPE (EDITOR))
+    editor_ruler_on_drag_end (self);
 }
 
 static gboolean
@@ -740,29 +1026,31 @@ on_grab_broken (
 }
 
 static void
-on_motion (GtkDrawingArea * da,
-           GdkEventMotion *event,
-           RulerWidget *    self)
+on_motion (
+  GtkDrawingArea * da,
+  GdkEventMotion *event,
+  RulerWidget *    self)
 {
   if (self != (RulerWidget *) MW_RULER)
     return;
 
-  int height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (da));
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
   if (event->type == GDK_MOTION_NOTIFY)
     {
       /* if lower 3/4ths */
       if (event->y > (height * 1) / 4)
         {
           /* set cursor to normal */
-          ui_set_cursor_from_name (GTK_WIDGET (self),
-                         "default");
+          ui_set_cursor_from_name (
+            GTK_WIDGET (self), "default");
         }
       else /* upper 1/4th */
         {
           /* set cursor to range selection */
-          ui_set_cursor_from_name (GTK_WIDGET (self),
-                         "text");
+          ui_set_cursor_from_name (
+            GTK_WIDGET (self), "text");
         }
     }
 }
@@ -771,53 +1059,47 @@ void
 ruler_widget_force_redraw (
   RulerWidget * self)
 {
-  GET_PRIVATE;
-
-  rw_prv->redraw = 1;
+  self->redraw = 1;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
 void
 ruler_widget_refresh (RulerWidget * self)
 {
-  GET_PRIVATE;
-
   /*adjust for zoom level*/
-  rw_prv->px_per_tick =
-    DEFAULT_PX_PER_TICK * rw_prv->zoom_level;
-  rw_prv->px_per_sixteenth =
-    rw_prv->px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
-  rw_prv->px_per_beat =
-    rw_prv->px_per_tick * TRANSPORT->ticks_per_beat;
-  rw_prv->px_per_bar =
-    rw_prv->px_per_beat * TRANSPORT->beats_per_bar;
+  self->px_per_tick =
+    DEFAULT_PX_PER_TICK * self->zoom_level;
+  self->px_per_sixteenth =
+    self->px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
+  self->px_per_beat =
+    self->px_per_tick * TRANSPORT->ticks_per_beat;
+  self->px_per_bar =
+    self->px_per_beat * TRANSPORT->beats_per_bar;
 
   Position pos;
   position_set_to_bar (
     &pos, TRANSPORT->total_bars + 1);
-  rw_prv->total_px =
-    rw_prv->px_per_tick *
+  self->total_px =
+    self->px_per_tick *
     (double) position_to_ticks (&pos);
 
   // set the size
   gtk_widget_set_size_request (
     GTK_WIDGET (self),
-    (int) rw_prv->total_px,
+    (int) self->total_px,
     -1);
 
-  if (Z_IS_TIMELINE_RULER_WIDGET (self))
+  if (self->type == TYPE (TIMELINE))
     {
-      TimelineRulerWidget * timeline_ruler =
-        Z_TIMELINE_RULER_WIDGET (self);
-      gtk_widget_set_visible (
-        GTK_WIDGET (timeline_ruler->range),
-        PROJECT->has_range);
+      /*gtk_widget_set_visible (*/
+        /*GTK_WIDGET (timeline_ruler->range),*/
+        /*PROJECT->has_range);*/
     }
 
   gtk_widget_queue_allocate (
     GTK_WIDGET (self));
-  EVENTS_PUSH (ET_RULER_SIZE_CHANGED,
-               self);
+  EVENTS_PUSH (
+    ET_RULER_SIZE_CHANGED, self);
 
   ruler_widget_force_redraw (self);
 }
@@ -856,8 +1138,7 @@ ruler_widget_set_zoom_level (
 
   if (update)
     {
-      RULER_WIDGET_GET_PRIVATE (self);
-      rw_prv->zoom_level = zoom_level;
+      self->zoom_level = zoom_level;
       ruler_widget_refresh (self);
       return 1;
     }
@@ -870,67 +1151,49 @@ ruler_widget_set_zoom_level (
 static void
 ruler_widget_init (RulerWidget * self)
 {
-  GET_PRIVATE;
+  self->zoom_level = RW_DEFAULT_ZOOM_LEVEL;
 
-  rw_prv->zoom_level = DEFAULT_ZOOM_LEVEL;
-
-  rw_prv->bg =
-    GTK_DRAWING_AREA (gtk_drawing_area_new ());
-  gtk_widget_set_visible (
-    GTK_WIDGET (rw_prv->bg), 1);
-  gtk_container_add (
-    GTK_CONTAINER (self), GTK_WIDGET (rw_prv->bg));
-
-  rw_prv->playhead =
-    ruler_marker_widget_new (
-      self, RULER_MARKER_TYPE_PLAYHEAD);
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (rw_prv->playhead));
-
-  /* make it able to notify */
+  /* make the widget able to notify */
   gtk_widget_add_events (
-    GTK_WIDGET (rw_prv->bg), GDK_ALL_EVENTS_MASK);
+    GTK_WIDGET (self), GDK_ALL_EVENTS_MASK);
 
-  rw_prv->drag = GTK_GESTURE_DRAG (
+  self->drag = GTK_GESTURE_DRAG (
     gtk_gesture_drag_new (GTK_WIDGET (self)));
-  rw_prv->multipress = GTK_GESTURE_MULTI_PRESS (
+  self->multipress = GTK_GESTURE_MULTI_PRESS (
     gtk_gesture_multi_press_new (
       GTK_WIDGET (self)));
 
   g_signal_connect (
-    G_OBJECT (rw_prv->bg), "draw",
+    G_OBJECT (self), "draw",
     G_CALLBACK (ruler_draw_cb), self);
   g_signal_connect (
-    G_OBJECT (rw_prv->bg), "motion-notify-event",
+    G_OBJECT (self), "motion-notify-event",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
-    G_OBJECT (rw_prv->bg), "leave-notify-event",
+    G_OBJECT (self), "leave-notify-event",
     G_CALLBACK (on_motion),  self);
   g_signal_connect (
-    G_OBJECT (self), "get-child-position",
-    G_CALLBACK (get_child_position), NULL);
-  g_signal_connect (
-    G_OBJECT(rw_prv->drag), "drag-begin",
+    G_OBJECT(self->drag), "drag-begin",
     G_CALLBACK (drag_begin),  self);
   g_signal_connect (
-    G_OBJECT(rw_prv->drag), "drag-update",
+    G_OBJECT(self->drag), "drag-update",
     G_CALLBACK (drag_update),  self);
   g_signal_connect (
-    G_OBJECT(rw_prv->drag), "drag-end",
+    G_OBJECT(self->drag), "drag-end",
     G_CALLBACK (drag_end),  self);
   g_signal_connect (
     G_OBJECT (self), "grab-broken-event",
     G_CALLBACK (on_grab_broken), self);
   g_signal_connect (
-    G_OBJECT (rw_prv->multipress), "pressed",
+    G_OBJECT (self->multipress), "pressed",
     G_CALLBACK (multipress_pressed), self);
 }
 
 static void
 ruler_widget_class_init (RulerWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "ruler");
 }

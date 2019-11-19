@@ -40,129 +40,25 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (TimelineRulerWidget,
-               timeline_ruler_widget,
-               RULER_WIDGET_TYPE)
-
 #define ACTION_IS(x) \
-  (rw_prv->action == UI_OVERLAY_ACTION_##x)
+  (self->action == UI_OVERLAY_ACTION_##x)
 #define TARGET_IS(x) \
-  (rw_prv->target == RW_TARGET_##x)
+  (self->target == RW_TARGET_##x)
 
-void
-timeline_ruler_widget_set_ruler_range_position (
-  TimelineRulerWidget * self,
-  RulerRangeWidget *    rr,
-  GtkAllocation *       allocation)
-{
-  int range1_first =
-    position_is_before_or_equal (
-      &PROJECT->range_1, &PROJECT->range_2);
-
-  if (range1_first)
-    {
-      allocation->x =
-        ui_pos_to_px_timeline (
-          &PROJECT->range_1,
-          1);
-      allocation->width =
-        ui_pos_to_px_timeline (
-          &PROJECT->range_2,
-          1) - allocation->x;
-    }
-  else
-    {
-      allocation->x =
-        ui_pos_to_px_timeline (
-          &PROJECT->range_2,
-          1);
-      allocation->width =
-        ui_pos_to_px_timeline (
-          &PROJECT->range_1,
-          1) - allocation->x;
-    }
-  allocation->y = 0;
-  allocation->height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self)) / 4;
-}
-
-void
-timeline_ruler_widget_set_ruler_marker_position (
-  TimelineRulerWidget * self,
-  RulerMarkerWidget *    rm,
-  GtkAllocation *       allocation)
-{
-  switch (rm->type)
-    {
-    case RULER_MARKER_TYPE_LOOP_START:
-      allocation->x =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->loop_start_pos,
-          1);
-      allocation->y = 0;
-      allocation->width = RULER_MARKER_SIZE;
-      allocation->height = RULER_MARKER_SIZE;
-      break;
-    case RULER_MARKER_TYPE_LOOP_END:
-      allocation->x =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->loop_end_pos,
-          1) - RULER_MARKER_SIZE;
-      allocation->y = 0;
-      allocation->width = RULER_MARKER_SIZE;
-      allocation->height = RULER_MARKER_SIZE;
-      break;
-    case RULER_MARKER_TYPE_CUE_POINT:
-      allocation->x =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->cue_pos,
-          1);
-      if (MAIN_WINDOW && MW_RULER)
-        {
-          allocation->y =
-            RULER_MARKER_SIZE;
-        }
-      else
-        allocation->y = RULER_MARKER_SIZE *2;
-      allocation->width = CUE_MARKER_WIDTH;
-      allocation->height = CUE_MARKER_HEIGHT;
-      break;
-    case RULER_MARKER_TYPE_PLAYHEAD:
-      allocation->x =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->playhead_pos,
-          1) - (PLAYHEAD_TRIANGLE_WIDTH / 2);
-      allocation->y =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (self)) -
-          PLAYHEAD_TRIANGLE_HEIGHT;
-      allocation->width = PLAYHEAD_TRIANGLE_WIDTH;
-      allocation->height =
-        PLAYHEAD_TRIANGLE_HEIGHT;
-      break;
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-
-}
-
+#if 0
 static void
 on_drag_begin_range_hit (
-  TimelineRulerWidget * self,
+  RulerWidget * self,
   RulerRangeWidget *    rr)
 {
-  RULER_WIDGET_GET_PRIVATE (self);
-
   /* update arranger action */
   if (rr->cursor_state == UI_CURSOR_STATE_RESIZE_L)
-    rw_prv->action = UI_OVERLAY_ACTION_RESIZING_L;
+    self->action = UI_OVERLAY_ACTION_RESIZING_L;
   else if (rr->cursor_state == UI_CURSOR_STATE_RESIZE_R)
-    rw_prv->action = UI_OVERLAY_ACTION_RESIZING_R;
+    self->action = UI_OVERLAY_ACTION_RESIZING_R;
   else
     {
-      rw_prv->action = UI_OVERLAY_ACTION_STARTING_MOVING;
+      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
       ui_set_cursor_from_name (GTK_WIDGET (rr), "grabbing");
     }
 
@@ -173,28 +69,25 @@ on_drag_begin_range_hit (
     &self->range2_start_pos,
     &PROJECT->range_2);
 }
+#endif
 
 void
 timeline_ruler_on_drag_end (
-  TimelineRulerWidget * self)
+  RulerWidget * self)
 {
-  RULER_WIDGET_GET_PRIVATE (self);
-
   /* hide tooltips */
-  if (rw_prv->target == RW_TARGET_PLAYHEAD)
-    ruler_marker_widget_update_tooltip (
-      rw_prv->playhead, 0);
+  /*if (self->target == RW_TARGET_PLAYHEAD)*/
+    /*ruler_marker_widget_update_tooltip (*/
+      /*self->playhead, 0);*/
 }
 
 void
 timeline_ruler_on_drag_begin_no_marker_hit (
-  TimelineRulerWidget * self,
+  RulerWidget * self,
   gdouble               start_x,
   gdouble               start_y,
   int                  height)
 {
-  RULER_WIDGET_GET_PRIVATE (self);
-
   /* if lower 3/4ths */
   if (start_y > (height * 1) / 4)
     {
@@ -203,24 +96,24 @@ timeline_ruler_on_drag_begin_no_marker_hit (
         start_x,
         &pos,
         1);
-      if (!rw_prv->shift_held)
+      if (!self->shift_held)
         position_snap_simple (
           &pos,
           SNAP_GRID_TIMELINE);
       transport_move_playhead (&pos, 1);
-      rw_prv->action =
+      self->action =
         UI_OVERLAY_ACTION_STARTING_MOVING;
-      rw_prv->target = RW_TARGET_PLAYHEAD;
+      self->target = RW_TARGET_PLAYHEAD;
     }
   else /* if upper 1/4th */
     {
+#if 0
       /* check if range is hit */
       int range_hit =
-        ui_is_child_hit (GTK_WIDGET (self),
-                         GTK_WIDGET (self->range),
-                         1, 1,
-                         start_x,
-                         start_y, 0, 0) &&
+        ui_is_child_hit (
+          GTK_WIDGET (self),
+          GTK_WIDGET (self->range),
+          1, 1, start_x, start_y, 0, 0) &&
         gtk_widget_get_visible (
           GTK_WIDGET (self->range));
 
@@ -235,13 +128,13 @@ timeline_ruler_on_drag_begin_no_marker_hit (
           /* set range if project doesn't have range or range
            * is not hit*/
           PROJECT->has_range = 1;
-          rw_prv->action =
+          self->action =
             UI_OVERLAY_ACTION_RESIZING_R;
           ui_px_to_pos_timeline (
             start_x,
             &PROJECT->range_1,
             1);
-          if (!rw_prv->shift_held)
+          if (!self->shift_held)
             position_snap_simple (
               &PROJECT->range_1,
               SNAP_GRID_TIMELINE);
@@ -251,30 +144,29 @@ timeline_ruler_on_drag_begin_no_marker_hit (
           gtk_widget_set_visible (
             GTK_WIDGET (self->range), 1);
         }
-      rw_prv->target = RW_TARGET_RANGE;
+      self->target = RW_TARGET_RANGE;
+#endif
     }
 }
 
 void
 timeline_ruler_on_drag_update (
-  TimelineRulerWidget * self,
+  RulerWidget * self,
   gdouble               offset_x,
   gdouble               offset_y)
 {
-  RULER_WIDGET_GET_PRIVATE (self);
-
   /* handle x */
   if (ACTION_IS (RESIZING_L))
     {
-      if (rw_prv->target == RW_TARGET_RANGE)
+      if (self->target == RW_TARGET_RANGE)
         {
           if (self->range1_first)
             {
               ui_px_to_pos_timeline (
-                rw_prv->start_x + offset_x,
+                self->start_x + offset_x,
                 &PROJECT->range_1,
                 1);
-              if (!rw_prv->shift_held)
+              if (!self->shift_held)
                 position_snap_simple (
                   &PROJECT->range_1,
                   SNAP_GRID_TIMELINE);
@@ -282,10 +174,10 @@ timeline_ruler_on_drag_update (
           else
             {
               ui_px_to_pos_timeline (
-                rw_prv->start_x + offset_x,
+                self->start_x + offset_x,
                 &PROJECT->range_2,
                 1);
-              if (!rw_prv->shift_held)
+              if (!self->shift_held)
                 position_snap_simple (
                   &PROJECT->range_2,
                   SNAP_GRID_TIMELINE);
@@ -297,16 +189,16 @@ timeline_ruler_on_drag_update (
 
   else if (ACTION_IS (RESIZING_R))
     {
-      if (rw_prv->target ==
+      if (self->target ==
             RW_TARGET_RANGE)
         {
           if (self->range1_first)
             {
               ui_px_to_pos_timeline (
-                rw_prv->start_x + offset_x,
+                self->start_x + offset_x,
                 &PROJECT->range_2,
                 1);
-              if (!rw_prv->shift_held)
+              if (!self->shift_held)
                 position_snap_simple (
                   &PROJECT->range_2,
                   SNAP_GRID_TIMELINE);
@@ -314,10 +206,10 @@ timeline_ruler_on_drag_update (
           else
             {
               ui_px_to_pos_timeline (
-                rw_prv->start_x + offset_x,
+                self->start_x + offset_x,
                 &PROJECT->range_1,
                 1);
-              if (!rw_prv->shift_held)
+              if (!self->shift_held)
                 position_snap_simple (
                   &PROJECT->range_1,
                   SNAP_GRID_TIMELINE);
@@ -330,7 +222,7 @@ timeline_ruler_on_drag_update (
   /* if moving the selection */
   else if (ACTION_IS (MOVING))
     {
-      if (rw_prv->target == RW_TARGET_RANGE)
+      if (self->target == RW_TARGET_RANGE)
         {
           Position diff_pos;
           ui_px_to_pos_timeline (
@@ -360,7 +252,7 @@ timeline_ruler_on_drag_update (
                   position_add_ticks (
                     &PROJECT->range_1,
                     ticks_diff);
-                  if (!rw_prv->shift_held)
+                  if (!self->shift_held)
                     position_snap_simple (
                       &PROJECT->range_1,
                       SNAP_GRID_TIMELINE);
@@ -379,7 +271,7 @@ timeline_ruler_on_drag_update (
                   position_add_ticks (
                     &PROJECT->range_2,
                     ticks_diff);
-                  if (!rw_prv->shift_held)
+                  if (!self->shift_held)
                     position_snap_simple (
                       &PROJECT->range_2,
                       SNAP_GRID_TIMELINE);
@@ -401,7 +293,7 @@ timeline_ruler_on_drag_update (
                   position_add_ticks (
                     &PROJECT->range_1,
                     -ticks_diff);
-                  if (!rw_prv->shift_held)
+                  if (!self->shift_held)
                     position_snap_simple (
                       &PROJECT->range_1,
                       SNAP_GRID_TIMELINE);
@@ -420,7 +312,7 @@ timeline_ruler_on_drag_update (
                   position_add_ticks (
                     &PROJECT->range_2,
                     -ticks_diff);
-                  if (!rw_prv->shift_held)
+                  if (!self->shift_held)
                     position_snap_simple (
                       &PROJECT->range_2,
                       SNAP_GRID_TIMELINE);
@@ -449,16 +341,16 @@ timeline_ruler_on_drag_update (
 
           /* convert px to position */
           ui_px_to_pos_timeline (
-            rw_prv->start_x + offset_x,
+            self->start_x + offset_x,
             &tmp,
             1);
 
           /* snap if not shift held */
-          if (!rw_prv->shift_held)
+          if (!self->shift_held)
             position_snap_simple (
               &tmp, SNAP_GRID_TIMELINE);
 
-          if (rw_prv->target == RW_TARGET_PLAYHEAD)
+          if (self->target == RW_TARGET_PLAYHEAD)
             {
               /* if position is acceptable */
               if (position_compare (
@@ -472,10 +364,10 @@ timeline_ruler_on_drag_update (
                     NULL);
                 }
 
-              ruler_marker_widget_update_tooltip (
-                rw_prv->playhead, 1);
+              /*ruler_marker_widget_update_tooltip (*/
+                /*self->playhead, 1);*/
             }
-          else if (rw_prv->target ==
+          else if (self->target ==
                      RW_TARGET_LOOP_START)
             {
               /* if position is acceptable */
@@ -493,7 +385,7 @@ timeline_ruler_on_drag_update (
                     NULL);
                 }
             }
-          else if (rw_prv->target ==
+          else if (self->target ==
                      RW_TARGET_LOOP_END)
             {
               /* if position is acceptable */
@@ -514,44 +406,4 @@ timeline_ruler_on_drag_update (
             }
         }
     } /* endif MOVING */
-}
-
-static void
-timeline_ruler_widget_class_init (
-  TimelineRulerWidgetClass * klass)
-{
-}
-
-static void
-timeline_ruler_widget_init (
-  TimelineRulerWidget * self)
-{
-  /* add invisible range */
-  self->range =
-    ruler_range_widget_new ();
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (self->range));
-
-  /* add all the markers */
-  RulerWidget * ruler =
-    Z_RULER_WIDGET (self);
-  self->loop_start =
-    ruler_marker_widget_new (
-      ruler, RULER_MARKER_TYPE_LOOP_START);
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (self->loop_start));
-  self->loop_end =
-    ruler_marker_widget_new (
-      ruler, RULER_MARKER_TYPE_LOOP_END);
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (self->loop_end));
-  self->cue_point =
-    ruler_marker_widget_new (
-      ruler, RULER_MARKER_TYPE_CUE_POINT);
-  gtk_overlay_add_overlay (
-    GTK_OVERLAY (self),
-    GTK_WIDGET (self->cue_point));
 }

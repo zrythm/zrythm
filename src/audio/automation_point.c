@@ -354,12 +354,12 @@ automation_point_set_curviness (
   arranger_object_set_primitive (
     AutomationPoint, self, curve_up, curve_up,
     AO_UPDATE_ALL);
-  ArrangerObject * obj = (ArrangerObject *) self;
-  if (Z_IS_ARRANGER_OBJECT_WIDGET (obj->widget))
-    {
-      arranger_object_widget_force_redraw (
-        Z_ARRANGER_OBJECT_WIDGET (obj->widget));
-    }
+  /*ArrangerObject * obj = (ArrangerObject *) self;*/
+  /*if (Z_IS_ARRANGER_OBJECT_WIDGET (obj->widget))*/
+    /*{*/
+      /*arranger_object_widget_force_redraw (*/
+        /*Z_ARRANGER_OBJECT_WIDGET (obj->widget));*/
+    /*}*/
 }
 
 /**
@@ -375,6 +375,27 @@ automation_point_get_automatable (
   g_return_val_if_fail (at, NULL);
 
   return at->automatable;
+}
+
+/**
+ * Returns Y in pixels from the value based on
+ * the given height of the parent.
+ */
+int
+automation_point_get_y (
+  AutomationPoint * self,
+  int               height)
+{
+  /* ratio of current value in the range */
+  float ap_ratio = self->normalized_val;
+
+  int allocated_h =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+  int point =
+    allocated_h -
+    (int) (ap_ratio * (float) allocated_h);
+  return point;
 }
 
 /**

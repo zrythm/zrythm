@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#if 0
 
 /**
  * \file
@@ -67,4 +68,5 @@ midi_arranger_bg_widget_draw (
  * @}
  */
 
+#endif
 #endif

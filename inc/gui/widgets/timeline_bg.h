@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if 0
+
 /**
  * \file
  *
@@ -75,4 +77,5 @@ timeline_bg_widget_draw (
  * @}
  */
 
+#endif
 #endif

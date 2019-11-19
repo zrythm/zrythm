@@ -210,8 +210,6 @@ px_to_pos (
   int           use_padding,
   RulerWidget * ruler)
 {
-  RULER_WIDGET_GET_PRIVATE (ruler);
-
   if (use_padding)
     {
       px -= SPACE_BEFORE_START_D;
@@ -223,19 +221,19 @@ px_to_pos (
 
   pos->bars =
     (int)
-    (px / rw_prv->px_per_bar + 1.0);
-  px = fmod (px, rw_prv->px_per_bar);
+    (px / ruler->px_per_bar + 1.0);
+  px = fmod (px, ruler->px_per_bar);
   pos->beats =
     (int)
-    (px / rw_prv->px_per_beat + 1.0);
-  px = fmod (px, rw_prv->px_per_beat);
+    (px / ruler->px_per_beat + 1.0);
+  px = fmod (px, ruler->px_per_beat);
   pos->sixteenths =
     (int)
-    (px / rw_prv->px_per_sixteenth + 1.0);
-  px = fmod (px, rw_prv->px_per_sixteenth);
+    (px / ruler->px_per_sixteenth + 1.0);
+  px = fmod (px, ruler->px_per_sixteenth);
   pos->ticks =
     (int)
-    (px / rw_prv->px_per_tick);
+    (px / ruler->px_per_tick);
   pos->total_ticks = position_to_ticks (pos);
   pos->frames = position_to_frames (pos);
 }
@@ -286,15 +284,13 @@ pos_to_px (
   int              use_padding,
   RulerWidget *    ruler)
 {
-  RULER_WIDGET_GET_PRIVATE (ruler)
-
   int px =
     (int)
-    ((double) (pos->bars - 1) * rw_prv->px_per_bar +
-    (double) (pos->beats - 1) * rw_prv->px_per_beat +
+    ((double) (pos->bars - 1) * ruler->px_per_bar +
+    (double) (pos->beats - 1) * ruler->px_per_beat +
     (double) (pos->sixteenths - 1) *
-      rw_prv->px_per_sixteenth +
-    (double) pos->ticks * rw_prv->px_per_tick);
+      ruler->px_per_sixteenth +
+    (double) pos->ticks * ruler->px_per_tick);
 
   if (use_padding)
     px += SPACE_BEFORE_START;
@@ -336,14 +332,16 @@ ui_pos_to_px_editor (
       Z_RULER_WIDGET (EDITOR_RULER));
 }
 
+/**
+ * @param has_padding Whether the given px contains
+ *   padding.
+ */
 static long
 px_to_frames (
   double        px,
-  int           has_padding, ///< whether the given px contain padding
+  int           has_padding,
   RulerWidget * ruler)
 {
-  RULER_WIDGET_GET_PRIVATE (ruler)
-
   if (has_padding)
     {
       px -= SPACE_BEFORE_START;
@@ -356,7 +354,7 @@ px_to_frames (
   return
     (long)
     (((double) AUDIO_ENGINE->frames_per_tick * px) /
-    rw_prv->px_per_tick);
+    ruler->px_per_tick);
 }
 
 /**
@@ -827,6 +825,27 @@ ui_get_state_mask (
   GdkModifierType state_mask;
   gdk_event_get_state (_event, &state_mask);
   return state_mask;
+}
+
+/**
+ * Returns if the 2 rectangles overlay.
+ */
+int
+ui_rectangle_overlap (
+  GdkRectangle * rect1,
+  GdkRectangle * rect2)
+{
+  /* if one rect is on the side of the other */
+  if (rect1->x > rect2->x + rect2->width ||
+      rect2->x > rect1->x + rect1->width)
+    return 0;
+
+  /* if one rect is above the other */
+  if (rect1->y < rect2->y + rect2->height ||
+      rect2->y < rect1->y + rect1->height)
+    return 0;
+
+  return 1;
 }
 
 /**

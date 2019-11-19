@@ -96,10 +96,12 @@ timeline_panel_widget_setup (
   /* setup timeline */
   arranger_widget_setup (
     Z_ARRANGER_WIDGET (self->timeline),
+    ARRANGER_WIDGET_TYPE_TIMELINE,
     SNAP_GRID_TIMELINE);
   self->pinned_timeline->is_pinned = 1;
   arranger_widget_setup (
     Z_ARRANGER_WIDGET (self->pinned_timeline),
+    ARRANGER_WIDGET_TYPE_TIMELINE,
     SNAP_GRID_TIMELINE);
 
   /* link vertical scroll of timeline to
@@ -127,9 +129,7 @@ static void
 timeline_panel_widget_init (
   TimelinePanelWidget * self)
 {
-  g_type_ensure (TIMELINE_ARRANGER_WIDGET_TYPE);
   g_type_ensure (TIMELINE_BOT_BOX_WIDGET_TYPE);
-  g_type_ensure (TIMELINE_RULER_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_HEADER_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_WIDGET_TYPE);
   /*g_type_ensure (*/
@@ -137,6 +137,11 @@ timeline_panel_widget_init (
   g_type_ensure (TIMELINE_TOOLBAR_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->ruler->type =
+    RULER_WIDGET_TYPE_TIMELINE;
+  self->timeline->type =
+    ARRANGER_WIDGET_TYPE_TIMELINE;
 }
 
 

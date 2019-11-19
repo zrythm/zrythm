@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if 0
+
 /**
  * \file
  *
@@ -162,4 +164,5 @@ region_widget_get_private (RegionWidget * self);
  * @}
  */
 
+#endif
 #endif

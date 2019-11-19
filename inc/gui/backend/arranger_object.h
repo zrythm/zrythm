@@ -77,21 +77,21 @@ typedef enum ArrangerObjectType
 static const cyaml_strval_t
 arranger_object_type_strings[] =
 {
-	{ "None",
+  { "None",
     ARRANGER_OBJECT_TYPE_NONE },
-	{ "Region",
+  { "Region",
     ARRANGER_OBJECT_TYPE_REGION },
-	{ "MidiNote",
+  { "MidiNote",
     ARRANGER_OBJECT_TYPE_MIDI_NOTE },
-	{ "ChordObject",
+  { "ChordObject",
     ARRANGER_OBJECT_TYPE_CHORD_OBJECT },
-	{ "ScaleObject",
+  { "ScaleObject",
     ARRANGER_OBJECT_TYPE_SCALE_OBJECT },
-	{ "Marker",
+  { "Marker",
     ARRANGER_OBJECT_TYPE_MARKER },
-	{ "AutomationPoint",
+  { "AutomationPoint",
     ARRANGER_OBJECT_TYPE_AUTOMATION_POINT },
-	{ "Velocity",
+  { "Velocity",
     ARRANGER_OBJECT_TYPE_VELOCITY },
 };
 
@@ -167,25 +167,25 @@ typedef struct ArrangerObjectInfo
 typedef struct ArrangerObject
 {
   /** Object info. */
-  ArrangerObjectInfo   info;
+  ArrangerObjectInfo info;
 
-  ArrangerObjectType   type;
+  ArrangerObjectType type;
 
   /** 1 if the object is allowed to have lanes. */
-  int                  can_have_lanes;
+  int                can_have_lanes;
 
   /** 1 if the object has a start and end pos */
-  int                  has_length;
+  int                has_length;
 
   /** 1 if the object can loop. */
-  int                  can_loop;
+  int                can_loop;
 
   /** 1 if the object can fade in/out. */
-  int                  can_fade;
+  int                can_fade;
 
   /** 1 if the start Position is a global (timeline)
    * Position. */
-  int                  is_pos_global;
+  int                is_pos_global;
 
   /**
    * Position (or start Position if the object
@@ -194,16 +194,16 @@ typedef struct ArrangerObject
    * Midway Position between previous and next
    * AutomationPoint's, if AutomationCurve.
    */
-  Position             pos;
+  Position           pos;
 
   /** Cache, used in runtime operations. */
-  Position             cache_pos;
+  Position           cache_pos;
 
   /** End Position, if the object has one. */
-  Position             end_pos;
+  Position           end_pos;
 
   /** Cache, used in runtime operations. */
-  Position             cache_end_pos;
+  Position           cache_end_pos;
 
   /**
    * Start position of the clip loop.
@@ -212,16 +212,16 @@ typedef struct ArrangerObject
    * playing from the clip_start_pos and then loop
    * to this position.
    */
-  Position             clip_start_pos;
+  Position           clip_start_pos;
 
   /** Cache, used in runtime operations. */
-  Position             cache_clip_start_pos;
+  Position           cache_clip_start_pos;
 
   /** Loop start Position, if the object has one. */
-  Position             loop_start_pos;
+  Position           loop_start_pos;
 
   /** Cache, used in runtime operations. */
-  Position             cache_loop_start_pos;
+  Position           cache_loop_start_pos;
 
   /**
    * End position of the clip loop.
@@ -229,25 +229,47 @@ typedef struct ArrangerObject
    * Once this is reached, the clip will go back to
    * the clip  loop start position.
    */
-  Position             loop_end_pos;
+  Position           loop_end_pos;
 
   /** Cache, used in runtime operations. */
-  Position             cache_loop_end_pos;
+  Position           cache_loop_end_pos;
 
   /** Fade in position. */
-  Position             fade_in_pos;
+  Position           fade_in_pos;
 
   /** Cache. */
-  Position             cache_fade_in_pos;
+  Position           cache_fade_in_pos;
 
   /** Fade in position. */
-  Position             fade_out_pos;
+  Position           fade_out_pos;
 
   /** Cache. */
-  Position             cache_fade_out_pos;
+  Position           cache_fade_out_pos;
 
-  /** The widget for this object. */
-  GtkWidget *          widget;
+  /** The full rectangle this object was
+   * supposed to be drawn in, in absolute
+   * coordinates. */
+  GdkRectangle       full_rect;
+
+  /** The rectangle this object was last drawn in
+   * (ie, after any necessary clipping),
+   * in absolute coordinates. */
+  GdkRectangle       draw_rect;
+
+  /** Cache text H extents and W extents for
+   * the text, if the object has any. */
+  int                textw;
+  int                texth;
+
+  /** 1 when hovering over the object. */
+  int                hover;
+
+  /** Set to 1 to redraw. */
+  int                redraw;
+
+  /** Cached drawing. */
+  cairo_t *          cached_cr;
+  cairo_surface_t *  cached_surface;
 } ArrangerObject;
 
 static const cyaml_schema_field_t
@@ -743,9 +765,9 @@ arranger_object_update_frames (
  * Generates a widget for each of the object's
  * counterparts.
  */
-void
-arranger_object_gen_widget (
-  ArrangerObject * self);
+//void
+//arranger_object_gen_widget (
+  //ArrangerObject * self);
 
 /**
  * Frees each object stored in obj_info.
@@ -960,9 +982,9 @@ arranger_object_get_track (
  * Returns the widget type for the given
  * ArrangerObjectType.
  */
-GType
-arranger_object_get_widget_type_for_type (
-  ArrangerObjectType type);
+//GType
+//arranger_object_get_widget_type_for_type (
+  //ArrangerObjectType type);
 
 void
 arranger_object_post_deserialize (
@@ -1047,12 +1069,25 @@ arranger_object_set_name (
   const char *             name,
   ArrangerObjectUpdateFlag flag);
 
+void
+arranger_object_set_full_rectangle (
+  ArrangerObject * self,
+  ArrangerWidget * arranger);
+
+void
+arranger_object_set_draw_rectangle (
+  ArrangerObject * self,
+  GdkRectangle *   parent_rect);
+
 /**
- * Returns the widget for the object.
+ * Draws the given object.
+ *
+ * To be called from the arranger's draw callback.
  */
-ArrangerObjectWidget *
-arranger_object_get_widget (
-  ArrangerObject * self);
+void
+arranger_object_draw (
+  ArrangerObject * self,
+  ArrangerWidget * arranger);
 
 /**
  * @}

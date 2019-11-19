@@ -36,7 +36,7 @@ G_DECLARE_FINAL_TYPE (ClipEditorInnerWidget,
                       CLIP_EDITOR_INNER_WIDGET,
                       GtkBox)
 
-typedef struct _EditorRulerWidget EditorRulerWidget;
+typedef struct _RulerWidget RulerWidget;
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct _MidiEditorSpaceWidget
   MidiEditorSpaceWidget;
@@ -95,7 +95,7 @@ typedef struct _ClipEditorInnerWidget
   GtkBox *             left_of_ruler_box;
   GtkScrolledWindow *  ruler_scroll;
   GtkViewport *        ruler_viewport;
-  EditorRulerWidget *  ruler;
+  RulerWidget *  ruler;
   GtkStack *           editor_stack;
   GtkSizeGroup *       left_of_ruler_size_group;
 

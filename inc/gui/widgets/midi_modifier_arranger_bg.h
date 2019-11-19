@@ -20,6 +20,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if 0
 #ifndef __GUI_WIDGETS_MIDI_MODIFIER_ARRANGER_BG_H__
 #define __GUI_WIDGETS_MIDI_MODIFIER_ARRANGER_BG_H__
 
@@ -48,4 +49,5 @@ midi_modifier_arranger_bg_widget_new (
   RulerWidget *    ruler,
   ArrangerWidget * arranger);
 
+#endif
 #endif

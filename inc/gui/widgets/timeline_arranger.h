@@ -34,13 +34,15 @@
 
 #include <gtk/gtk.h>
 
-#define TIMELINE_ARRANGER_WIDGET_TYPE \
-  (timeline_arranger_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  TimelineArrangerWidget,
-  timeline_arranger_widget,
-  Z, TIMELINE_ARRANGER_WIDGET,
-  ArrangerWidget)
+typedef struct _ArrangerWidget ArrangerWidget;
+typedef struct MidiNote MidiNote;
+typedef struct SnapGrid SnapGrid;
+typedef struct AutomationPoint AutomationPoint;
+typedef struct _AutomationPointWidget
+  AutomationPointWidget;
+typedef struct AutomationCurve AutomationCurve;
+typedef struct ChordObject ChordObject;
+typedef struct ScaleObject ScaleObject;
 
 /**
  * @addtogroup widgets
@@ -52,69 +54,17 @@ G_DECLARE_FINAL_TYPE (
 #define MW_PINNED_TIMELINE \
   MW_TIMELINE_PANEL->pinned_timeline
 
-typedef struct _ArrangerBgWidget ArrangerBgWidget;
-typedef struct MidiNote MidiNote;
-typedef struct SnapGrid SnapGrid;
-typedef struct AutomationPoint AutomationPoint;
-typedef struct _AutomationPointWidget AutomationPointWidget;
-typedef struct _AutomationCurveWidget AutomationCurveWidget;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct AutomationCurve AutomationCurve;
-typedef struct _RegionWidget RegionWidget;
-typedef struct ChordObject ChordObject;
-typedef struct ScaleObject ScaleObject;
-typedef struct _ScaleObjectWidget ScaleObjectWidget;
-typedef struct _MarkerWidget MarkerWidget;
-
-typedef struct _TimelineArrangerWidget
-{
-  ArrangerWidget       parent_instance;
-
-  /** The number of visible tracks moved during a
-   * moving operation between tracks up to the last
-   * cycle. */
-  int                  visible_track_diff;
-
-  /** The number of lanes moved during a
-   * moving operation between lanes, up to the last
-   * cycle. */
-  int                  lane_diff;
-
-  int                  last_timeline_obj_bars;
-
-  /** Whether this TimelineArrangerWidget is for
-   * the PinnedTracklist or not. */
-  int                  is_pinned;
-
-  /**
-   * 1 if resizing range.
-   */
-  int                  resizing_range;
-
-  /**
-   * 1 if this is the first call to resize the range,
-   * so range1 can be set.
-   */
-  int                  resizing_range_start;
-
-  /** Cache for chord object height, used during
-   * child size allocation. */
-  int                  chord_obj_height;
-} TimelineArrangerWidget;
-
-ARRANGER_W_DECLARE_FUNCS (
-  Timeline, timeline);
-
 void
 timeline_arranger_widget_snap_range_r (
-  Position *               pos);
+  ArrangerWidget * self,
+  Position *       pos);
 
 /**
  * Gets hit TrackLane at y.
  */
 TrackLane *
 timeline_arranger_widget_get_track_lane_at_y (
-  TimelineArrangerWidget * self,
+  ArrangerWidget * self,
   double y);
 
 /**
@@ -122,7 +72,7 @@ timeline_arranger_widget_get_track_lane_at_y (
  */
 Track *
 timeline_arranger_widget_get_track_at_y (
-  TimelineArrangerWidget * self,
+  ArrangerWidget * self,
   double y);
 
 void
@@ -134,8 +84,8 @@ timeline_arranger_on_export_as_midi_file_clicked (
  * Returns the hit AutomationTrack at y.
  */
 AutomationTrack *
-timeline_arranger_widget_get_automation_track_at_y (
-  TimelineArrangerWidget * self,
+timeline_arranger_widget_get_at_at_y (
+  ArrangerWidget * self,
   double                   y);
 
 /**
@@ -144,8 +94,8 @@ timeline_arranger_widget_get_automation_track_at_y (
  */
 void
 timeline_arranger_widget_set_select_type (
-  TimelineArrangerWidget * self,
-  double                   y);
+  ArrangerWidget * self,
+  double           y);
 
 /**
  * Create a Region at the given Position in the
@@ -159,7 +109,7 @@ timeline_arranger_widget_set_select_type (
  */
 void
 timeline_arranger_widget_create_region (
-  TimelineArrangerWidget * self,
+  ArrangerWidget * self,
   const RegionType         type,
   Track *                  track,
   TrackLane *              lane,
@@ -172,11 +122,11 @@ timeline_arranger_widget_create_region (
  * timeline_arranger_widget_create_scale().
  *
  * @param y the y relative to the
- *   TimelineArrangerWidget.
+ *   ArrangerWidget.
  */
 void
 timeline_arranger_widget_create_chord_or_scale (
-  TimelineArrangerWidget * self,
+  ArrangerWidget * self,
   Track *                  track,
   double                   y,
   const Position *         pos);
@@ -189,7 +139,7 @@ timeline_arranger_widget_create_chord_or_scale (
  */
 void
 timeline_arranger_widget_create_scale (
-  TimelineArrangerWidget * self,
+  ArrangerWidget * self,
   Track *            track,
   const Position *         pos);
 
@@ -201,7 +151,7 @@ timeline_arranger_widget_create_scale (
  */
 void
 timeline_arranger_widget_create_marker (
-  TimelineArrangerWidget * self,
+  ArrangerWidget * self,
   Track *            track,
   const Position *         pos);
 
@@ -219,9 +169,9 @@ timeline_arranger_widget_create_marker (
  */
 int
 timeline_arranger_widget_snap_regions_l (
-  TimelineArrangerWidget * self,
-  Position *               pos,
-  int                      dry_run);
+  ArrangerWidget * self,
+  Position *       pos,
+  int              dry_run);
 
 /**
  * Snaps both the transients (to show in the GUI)
@@ -237,7 +187,7 @@ timeline_arranger_widget_snap_regions_l (
  */
 int
 timeline_arranger_widget_snap_regions_r (
-  TimelineArrangerWidget * self,
+  ArrangerWidget * self,
   Position *               pos,
   int                      dry_run);
 
@@ -247,8 +197,35 @@ timeline_arranger_widget_snap_regions_r (
  */
 void
 timeline_arranger_widget_scroll_to (
-  TimelineArrangerWidget * self,
+  ArrangerWidget * self,
   Position *               pos);
+
+/**
+ * Move the selected Regions to the new Track.
+ *
+ * @param new_track_is_before 1 if the Region's
+ *   should move to their previous tracks, 0 for
+ *   their next tracks.
+ *
+ * @return 1 if moved.
+ */
+int
+timeline_arranger_move_regions_to_new_tracks (
+  ArrangerWidget * self,
+  const int        vis_track_diff);
+
+/**
+ * Move the selected Regions to new Lanes.
+ *
+ * @param diff The delta to move the
+ *   Tracks.
+ *
+ * @return 1 if moved.
+ */
+int
+timeline_arranger_move_regions_to_new_lanes (
+  ArrangerWidget * self,
+  const int        diff);
 
 /**
  * Hides the cut dashed line from hovered regions
@@ -258,14 +235,14 @@ timeline_arranger_widget_scroll_to (
  */
 void
 timeline_arranger_widget_set_cut_lines_visible (
-  TimelineArrangerWidget * self);
+  ArrangerWidget * self);
 
 /**
  * To be called when pinning/unpinning.
  */
 void
 timeline_arranger_widget_remove_children (
-  TimelineArrangerWidget * self);
+  ArrangerWidget * self);
 
 /**
  * @}

@@ -57,8 +57,6 @@ arranger_bg_draw_cb (
   cairo_t *cr,
   ArrangerBgWidget * self)
 {
-  ARRANGER_BG_WIDGET_GET_PRIVATE (self);
-
   RULER_WIDGET_GET_PRIVATE (ab_prv->ruler);
   if (rw_prv->px_per_bar < 2.0)
     return FALSE;
