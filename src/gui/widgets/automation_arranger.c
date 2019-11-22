@@ -367,35 +367,6 @@ automation_arranger_widget_create_ap (
     F_NO_APPEND);
 }
 
-
-/**
- * Sets width to ruler width and height to
- * tracklist height.
- */
-/*void*/
-/*automation_arranger_widget_set_size (*/
-  /*ArrangerWidget * self)*/
-/*{*/
-  // set the size
-  /*RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);*/
-  /*gtk_widget_set_size_request (*/
-    /*GTK_WIDGET (self),*/
-    /*rw_prv->total_px,*/
-    /*MW_AUTOMATION_EDITOR_SPACE->total_key_px);*/
-/*}*/
-
-/**
- * To be called once at init time.
- */
-/*void*/
-/*automation_arranger_widget_setup (*/
-  /*ArrangerWidget * self)*/
-/*{*/
-  /*automation_arranger_widget_set_size (*/
-    /*self);*/
-/*}*/
-
-
 /*void*/
 /*automation_arranger_widget_move_items_y (*/
   /*ArrangerWidget * self,*/

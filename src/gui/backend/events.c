@@ -298,15 +298,15 @@ refresh_editor_ruler_and_arranger ()
     (RulerWidget *) EDITOR_RULER);
 
   /* remove all previous children and add new */
-  arranger_widget_refresh (
+  arranger_widget_redraw_whole (
     Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
-  arranger_widget_refresh (
+  arranger_widget_redraw_whole (
     Z_ARRANGER_WIDGET (
       MW_MIDI_MODIFIER_ARRANGER));
-  arranger_widget_refresh (
+  arranger_widget_redraw_whole (
     Z_ARRANGER_WIDGET (
       MW_AUTOMATION_ARRANGER));
-  arranger_widget_refresh (
+  arranger_widget_redraw_whole (
     Z_ARRANGER_WIDGET (
       MW_CHORD_ARRANGER));
 
@@ -659,7 +659,7 @@ on_arranger_object_changed (
   /* refresh arranger */
   ArrangerWidget * arranger =
     arranger_object_get_arranger (obj);
-  arranger_widget_refresh (arranger);
+  arranger_widget_redraw_whole (arranger);
 }
 
 static void
@@ -669,11 +669,11 @@ on_arranger_object_created (
   /* refresh arranger */
   ArrangerWidget * arranger =
     arranger_object_get_arranger (obj);
-  arranger_widget_refresh (arranger);
+  arranger_widget_redraw_whole (arranger);
 
   if (obj->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
     {
-      arranger_widget_refresh (
+      arranger_widget_redraw_whole (
         (ArrangerWidget *)
         MW_MIDI_MODIFIER_ARRANGER);
     }
@@ -881,10 +881,10 @@ events_process (void * data)
             GTK_WIDGET (ev->arg)); // ruler widget
           if (ev->arg == MW_RULER)
             {
-              arranger_widget_refresh (
+              arranger_widget_redraw_whole (
                 Z_ARRANGER_WIDGET (
                   MW_TIMELINE));
-              /*arranger_widget_refresh (*/
+              /*arranger_widget_redraw_whole (*/
                 /*Z_ARRANGER_WIDGET (*/
                   /*MW_PINNED_TIMELINE));*/
             }
@@ -893,17 +893,17 @@ events_process (void * data)
               if (gtk_widget_get_visible (
                     GTK_WIDGET (MW_MIDI_ARRANGER)))
                 {
-                  arranger_widget_refresh (
+                  arranger_widget_redraw_whole (
                     Z_ARRANGER_WIDGET (
                       MW_MIDI_ARRANGER));
-                  arranger_widget_refresh (
+                  arranger_widget_redraw_whole (
                     Z_ARRANGER_WIDGET (
                       MW_MIDI_MODIFIER_ARRANGER));
                 }
               if (gtk_widget_get_visible (
                     GTK_WIDGET (MW_AUDIO_ARRANGER)))
                 {
-                  arranger_widget_refresh (
+                  arranger_widget_redraw_whole (
                     Z_ARRANGER_WIDGET (
                       MW_AUDIO_ARRANGER));
                 }
@@ -1025,10 +1025,10 @@ events_process (void * data)
             /*MW_PINNED_TIMELINE);*/
 
           if (MW_TIMELINE)
-            arranger_widget_refresh (
+            arranger_widget_redraw_whole (
               Z_ARRANGER_WIDGET (MW_TIMELINE));
           /*if (MW_PINNED_TIMELINE)*/
-            /*arranger_widget_refresh (*/
+            /*arranger_widget_redraw_whole (*/
               /*Z_ARRANGER_WIDGET (*/
                 /*MW_PINNED_TIMELINE));*/
           break;
@@ -1191,7 +1191,7 @@ events_process (void * data)
               S_UI, "editor-event-viewer-visible"));
           break;
         case ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED:
-          arranger_widget_refresh (
+          arranger_widget_redraw_whole (
             (ArrangerWidget *)
             MW_MIDI_MODIFIER_ARRANGER);
           break;

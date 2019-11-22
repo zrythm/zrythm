@@ -107,6 +107,10 @@ typedef struct _TimelinePanelWidget
   ArrangerWidget *        pinned_timeline;
 
   TimelineBotBoxWidget *  bot_box;
+
+  /** Size group for keeping the whole ruler and
+   * each timeline the same width. */
+  GtkSizeGroup *          timeline_ruler_h_size_group;
 } TimelinePanelWidget;
 
 void

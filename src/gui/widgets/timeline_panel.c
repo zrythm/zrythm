@@ -132,8 +132,6 @@ timeline_panel_widget_init (
   g_type_ensure (TIMELINE_BOT_BOX_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_HEADER_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_WIDGET_TYPE);
-  /*g_type_ensure (*/
-    /*TIMELINE_SELECTION_INFO_WIDGET_TYPE);*/
   g_type_ensure (TIMELINE_TOOLBAR_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
@@ -142,6 +140,21 @@ timeline_panel_widget_init (
     RULER_WIDGET_TYPE_TIMELINE;
   self->timeline->type =
     ARRANGER_WIDGET_TYPE_TIMELINE;
+  self->pinned_timeline->type =
+    ARRANGER_WIDGET_TYPE_TIMELINE;
+  self->pinned_timeline->is_pinned = 1;
+
+  self->timeline_ruler_h_size_group =
+    gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  gtk_size_group_add_widget (
+    self->timeline_ruler_h_size_group,
+    GTK_WIDGET (self->ruler));
+  gtk_size_group_add_widget (
+    self->timeline_ruler_h_size_group,
+    GTK_WIDGET (self->timeline));
+  gtk_size_group_add_widget (
+    self->timeline_ruler_h_size_group,
+    GTK_WIDGET (self->pinned_timeline));
 }
 
 

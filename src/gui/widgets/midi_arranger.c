@@ -75,34 +75,6 @@ midi_arranger_widget_get_note_at_y (double y)
         (int)(adj_y / adj_px_per_key)].value;
 }
 
-/*void*/
-/*midi_arranger_widget_set_size (*/
-  /*ArrangerWidget * self)*/
-/*{*/
-  /*// set the size*/
-  /*RULER_WIDGET_GET_PRIVATE (EDITOR_RULER);*/
-  /*gtk_widget_set_size_request (*/
-    /*GTK_WIDGET (self),*/
-    /*(int) rw_prv->total_px,*/
-    /*gtk_widget_get_allocated_height (*/
-      /*GTK_WIDGET (*/
-        /*MW_MIDI_EDITOR_SPACE->*/
-          /*piano_roll_keys_box)));*/
-/*}*/
-
-/*void*/
-/*midi_arranger_widget_setup (*/
-  /*ArrangerWidget * self)*/
-/*{*/
-  /*midi_arranger_widget_set_size (self);*/
-
-  /*ARRANGER_WIDGET_GET_PRIVATE (self);*/
-  /*g_signal_connect (*/
-    /*G_OBJECT(ar_prv->bg),*/
-    /*"motion-notify-event",*/
-    /*G_CALLBACK (on_motion),  self);*/
-/*}*/
-
 /**
  * Returns the appropriate cursor based on the
  * current hover_x and y.

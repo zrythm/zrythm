@@ -384,17 +384,6 @@ midi_modifier_arranger_widget_resize_velocities (
     /*}*/
 /*}*/
 
-/*void*/
-/*midi_modifier_arranger_widget_setup (*/
-  /*ArrangerWidget * self)*/
-/*{*/
-  /*[> set arranger size <]*/
-  /*gtk_widget_set_size_request (*/
-    /*GTK_WIDGET (self),*/
-    /*(int) rw_prv->total_px,*/
-    /*-1);*/
-/*}*/
-
 /**
  * Returns the appropriate cursor based on the
  * current hover_x and y.

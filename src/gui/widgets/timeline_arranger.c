@@ -890,19 +890,6 @@ timeline_arranger_widget_snap_range_r (
   /*arranger_widget_refresh_all_backgrounds ();*/
 }
 
-/**
- * Sets width to ruler width and height to
- * tracklist height.
- */
-/*void*/
-/*timeline_arranger_widget_set_size (*/
-  /*ArrangerWidget * self)*/
-/*{*/
-  /*gtk_widget_set_size_request (*/
-    /*GTK_WIDGET (self),*/
-    /*(int) rw_prv->total_px, -1);*/
-/*}*/
-
 #define COMPARE_AND_SET(pos) \
   if ((pos)->bars > self->last_timeline_obj_bars) \
     self->last_timeline_obj_bars = (pos)->bars;
@@ -962,8 +949,6 @@ timeline_arranger_widget_snap_range_r (
 /*timeline_arranger_widget_setup (*/
   /*ArrangerWidget * self)*/
 /*{*/
-  /*timeline_arranger_widget_set_size (*/
-    /*self);*/
 
   /*g_timeout_add (*/
     /*1000,*/

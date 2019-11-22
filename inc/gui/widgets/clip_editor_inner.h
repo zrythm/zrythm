@@ -128,6 +128,10 @@ typedef struct _ClipEditorInnerWidget
 
   /* ==== End Audio Editor ==== */
 
+  /** Size group for keeping the whole ruler and
+   * each timeline the same width. */
+  GtkSizeGroup *       ruler_arranger_hsize_group;
+
 } ClipEditorInnerWidget;
 
 void

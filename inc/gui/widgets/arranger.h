@@ -264,87 +264,6 @@ typedef struct _ArrangerWidget
 } ArrangerWidget;
 
 /**
- * Returns the appropriate cursor based on the
- * current hover_x and y.
- */
-#define ARRANGER_W_DECLARE_GET_CURSOR(cc,sc) \
-  ArrangerCursor \
-  sc##_arranger_widget_get_cursor ( \
-    cc##ArrangerWidget * self, \
-    UiOverlayAction action, \
-    Tool            tool)
-
-/**
- * Called when moving selected items in
- * drag update for moving up/down (changing Track
- * of a Region, changing MidiNote pitch, etc.).
- */
-#define ARRANGER_W_DECLARE_MOVE_ITEMS_Y(cc,sc) \
-  void \
-  sc##_arranger_widget_move_items_y ( \
-    cc##ArrangerWidget *self, \
-    double              offset_y)
-
-/**
- * To be called once at init time to set up the
- * arranger.
- */
-#define ARRANGER_W_DECLARE_SETUP(cc,sc) \
-  void \
-  sc##_arranger_widget_setup ( \
-    cc##ArrangerWidget * self)
-
-/**
- * Called by an arranger widget during drag_update
- * to find and select (or delete) child objects
- * enclosed in the selection area.
- *
- * @param delete If this is a select-delete
- *   operation
- */
-#define ARRANGER_W_DECLARE_SELECT(cc,sc) \
-  void \
-  sc##_arranger_widget_select ( \
-    cc##ArrangerWidget * self, \
-    const double             offset_x, \
-    const double             offset_y, \
-    const int                delete)
-
-/**
- * Called on drag end to set default cursors back,
- * clear any start* variables, call actions, etc.
- */
-#define ARRANGER_W_DECLARE_ON_DRAG_END(cc,sc) \
-  void \
-  sc##_arranger_widget_on_drag_end ( \
-    cc##ArrangerWidget * self)
-
-/**
- * Sets width to ruler width and height to the
- * corresponding height, if any (eg Tracklist
- * height for TimelineArrangerWidget).
- */
-#define ARRANGER_W_DECLARE_SET_SIZE(cc,sc) \
-  void \
-  sc##_arranger_widget_set_size ( \
-    cc##ArrangerWidget * self)
-
-/**
- * Declares all functions that an arranger must
- * have.
- */
-#define ARRANGER_W_DECLARE_FUNCS( \
-  cc,sc) \
-  ARRANGER_W_DECLARE_SET_ALLOCATION (cc, sc); \
-  ARRANGER_W_DECLARE_GET_CURSOR (cc, sc); \
-  ARRANGER_W_DECLARE_MOVE_ITEMS_Y (cc, sc); \
-  ARRANGER_W_DECLARE_REFRESH_CHILDREN (cc, sc); \
-  ARRANGER_W_DECLARE_SETUP (cc, sc); \
-  ARRANGER_W_DECLARE_SELECT (cc, sc); \
-  ARRANGER_W_DECLARE_ON_DRAG_END (cc, sc); \
-  ARRANGER_W_DECLARE_SET_SIZE (cc, sc)
-
-/**
  * Creates a timeline widget using the given
  * timeline data.
  */
@@ -363,24 +282,23 @@ arranger_widget_set_cursor (
   ArrangerWidget * self,
   ArrangerCursor   cursor);
 
+/**
+ * Wrapper of the UI functions based on the arranger
+ * type.
+ */
 int
 arranger_widget_pos_to_px (
   ArrangerWidget * self,
   Position * pos,
   int        use_padding);
 
+/**
+ * Figures out which cursor should be used based
+ * on the current state and then sets it.
+ */
 void
 arranger_widget_refresh_cursor (
   ArrangerWidget * self);
-
-/**
- * Used for pushing transients to the bottom on
- * the z axis.
- */
-void
-arranger_widget_add_overlay_child (
-  ArrangerWidget * self,
-  ArrangerObject * obj);
 
 /**
  * Sets transient object and actual object
@@ -420,12 +338,6 @@ arranger_widget_px_to_pos (
   double           px,
   Position *       pos,
   int              has_padding);
-
-/**
- * Refreshes all arranger backgrounds.
- */
-void
-arranger_widget_refresh_all_backgrounds (void);
 
 /**
  * Fills in the given array with the ArrangerObject's
@@ -480,23 +392,10 @@ arranger_widget_get_selections (
   ArrangerWidget * self);
 
 /**
- * Selects the object, optionally appending it to
- * the selected items or making it the only
- * selected item.
+ * Queues a redraw of the whole visible arranger.
  */
 void
-arranger_widget_select (
-  ArrangerWidget * self,
-  GType            type,
-  void *           child,
-  int              select,
-  int              append);
-
-/**
- * Readd children.
- */
-int
-arranger_widget_refresh (
+arranger_widget_redraw_whole (
   ArrangerWidget * self);
 
 #endif

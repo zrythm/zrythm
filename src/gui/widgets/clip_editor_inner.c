@@ -161,10 +161,35 @@ clip_editor_inner_widget_init (
   g_type_ensure (
     AUTOMATION_EDITOR_SPACE_WIDGET_TYPE);
 
+  self->ruler_arranger_hsize_group =
+    gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  /* add all arrangers and the ruler to the same
+   * size group */
   self->ruler->type =
     RULER_WIDGET_TYPE_EDITOR;
+  gtk_size_group_add_widget (
+    self->ruler_arranger_hsize_group,
+    GTK_WIDGET (self->ruler));
+  gtk_size_group_add_widget (
+    self->ruler_arranger_hsize_group,
+    GTK_WIDGET (self->midi_editor_space->arranger));
+  gtk_size_group_add_widget (
+    self->ruler_arranger_hsize_group,
+    GTK_WIDGET (
+      self->midi_editor_space->modifier_arranger));
+  gtk_size_group_add_widget (
+    self->ruler_arranger_hsize_group,
+    GTK_WIDGET (self->audio_editor_space->arranger));
+  gtk_size_group_add_widget (
+    self->ruler_arranger_hsize_group,
+    GTK_WIDGET (self->chord_editor_space->arranger));
+  gtk_size_group_add_widget (
+    self->ruler_arranger_hsize_group,
+    GTK_WIDGET (
+      self->automation_editor_space->arranger));
 
   gtk_label_set_text (
     self->track_name_label,

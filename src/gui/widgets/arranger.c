@@ -3698,6 +3698,10 @@ arranger_widget_get_hit_arranger_object (
   return NULL;
 }
 
+/**
+ * Wrapper of the UI functions based on the arranger
+ * type.
+ */
 int
 arranger_widget_pos_to_px (
   ArrangerWidget * self,
@@ -3830,7 +3834,8 @@ arranger_widget_get_scrolled_window (
 }
 
 /**
- * Get all objects currently present in the arranger.
+ * Get all objects currently present in the
+ * arranger.
  *
  * @param objs Array to fill in.
  * @param size Array size to fill in.
@@ -3853,6 +3858,7 @@ arranger_widget_get_all_objects (
     }
 }
 
+#if 0
 static gboolean
 arranger_tick_cb (
   GtkWidget *      widget,
@@ -3894,6 +3900,40 @@ arranger_tick_cb (
     }
 
   return G_SOURCE_CONTINUE;
+}
+#endif
+
+/**
+ * Queues a redraw of the whole visible arranger.
+ */
+void
+arranger_widget_redraw_whole (
+  ArrangerWidget * self)
+{
+  /* figure out the area to draw */
+  GtkScrolledWindow * scroll =
+    arranger_widget_get_scrolled_window (self);
+  GtkAdjustment * xadj =
+    gtk_scrolled_window_get_hadjustment (
+      scroll);
+  double x =
+    gtk_adjustment_get_value (xadj);
+  GtkAdjustment * yadj =
+    gtk_scrolled_window_get_vadjustment (
+      scroll);
+  double y =
+    gtk_adjustment_get_value (yadj);
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (scroll));
+  int width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (scroll));
+
+  /* redraw visible area */
+  gtk_widget_queue_draw_area (
+    GTK_WIDGET (self), (int) x, (int) y,
+    width, height);
 }
 
 static gboolean
@@ -4067,45 +4107,6 @@ arranger_widget_setup (
   self->type = type;
   self->snap_grid = snap_grid;
 
-  /* setup */
-  /* FIXME use size groups instead of updating the
-   * sizes every time from the rulers */
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        (int) MW_RULER->total_px, -1);
-      break;
-    case TYPE (MIDI):
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        (int) EDITOR_RULER->total_px,
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (
-            MW_MIDI_EDITOR_SPACE->
-              piano_roll_keys_box)));
-      break;
-    case TYPE (MIDI_MODIFIER):
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        (int) EDITOR_RULER->total_px,
-        -1);
-      break;
-    case TYPE (AUDIO):
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        (int) EDITOR_RULER->total_px, -1);
-      break;
-    case TYPE (CHORD):
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        (int) EDITOR_RULER->total_px,
-        MW_CHORD_EDITOR_SPACE->total_key_px);
-    default:
-      break;
-    }
-
   /* connect signals */
   g_signal_connect (
     G_OBJECT(self->drag), "drag-begin",
@@ -4156,10 +4157,10 @@ arranger_widget_setup (
     G_OBJECT (self), "draw",
     G_CALLBACK (arranger_draw_cb), self);
 
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self),
-    (GtkTickCallback) arranger_tick_cb,
-    self, NULL);
+  /*gtk_widget_add_tick_callback (*/
+    /*GTK_WIDGET (self),*/
+    /*(GtkTickCallback) arranger_tick_cb,*/
+    /*self, NULL);*/
 }
 
 /**
@@ -4806,6 +4807,10 @@ get_midi_arranger_cursor (
   return ac;
 }
 
+/**
+ * Figures out which cursor should be used based
+ * on the current state and then sets it.
+ */
 void
 arranger_widget_refresh_cursor (
   ArrangerWidget * self)
@@ -4848,76 +4853,6 @@ arranger_widget_refresh_cursor (
     }
 
   arranger_widget_set_cursor (self, ac);
-}
-
-/**
- * Readd children.
- */
-int
-arranger_widget_refresh (
-  ArrangerWidget * self)
-{
-  arranger_widget_set_cursor (
-    self, ARRANGER_CURSOR_SELECT);
-
-#if 0
-  GET_ARRANGER_ALIASES (self);
-
-  if (midi_arranger)
-    {
-      midi_arranger_widget_set_size (
-        midi_arranger);
-      midi_arranger_widget_refresh_children (
-        midi_arranger);
-    }
-  else if (timeline_arranger)
-    {
-      timeline_arranger_widget_set_size (
-        self);
-      timeline_arranger_widget_refresh_children (
-        self);
-    }
-  else if (midi_modifier_arranger)
-    {
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        (int) EDITOR_RULER->total_px, -1);
-      midi_modifier_arranger_widget_refresh_children (
-        midi_modifier_arranger);
-    }
-  else if (audio_arranger)
-    {
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        (int) EDITOR_RULER->total_px, -1);
-      audio_arranger_widget_refresh_children (
-        audio_arranger);
-    }
-  else if (chord_arranger)
-    {
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        (int) EDITOR_RULER->total_px, -1);
-      chord_arranger_widget_refresh_children (
-        chord_arranger);
-    }
-  else if (automation_arranger)
-    {
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self),
-        (int) EDITOR_RULER->total_px, -1);
-      automation_arranger_widget_refresh_children (
-        automation_arranger);
-    }
-
-  /*if (self->bg)*/
-  /*{*/
-    /*arranger_bg_widget_refresh (self->bg);*/
-    /*arranger_widget_refresh_cursor (self);*/
-  /*}*/
-#endif
-
-  return FALSE;
 }
 
 static void
