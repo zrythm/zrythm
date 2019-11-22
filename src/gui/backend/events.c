@@ -86,14 +86,15 @@
 static void
 redraw_all_arranger_bgs ()
 {
-  /*arranger_widget_redraw_bg (*/
-    /*Z_ARRANGER_WIDGET (MW_TIMELINE));*/
-  /*arranger_widget_redraw_bg (*/
-    /*Z_ARRANGER_WIDGET (MW_MIDI_MODIFIER_ARRANGER));*/
-  /*arranger_widget_redraw_bg (*/
-    /*Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));*/
-  /*arranger_widget_redraw_bg (*/
-    /*Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));*/
+  arranger_widget_redraw_whole (MW_TIMELINE);
+  arranger_widget_redraw_whole (MW_PINNED_TIMELINE);
+  arranger_widget_redraw_whole (MW_MIDI_ARRANGER);
+  arranger_widget_redraw_whole (
+    MW_MIDI_MODIFIER_ARRANGER);
+  arranger_widget_redraw_whole (
+    MW_AUTOMATION_ARRANGER);
+  arranger_widget_redraw_whole (MW_CHORD_ARRANGER);
+  arranger_widget_redraw_whole (MW_AUDIO_ARRANGER);
 }
 
 static void
@@ -254,10 +255,10 @@ on_automation_track_added (
       track_widget_update_size (tw);
     }
 
-  /*timeline_arranger_widget_refresh_children (*/
-    /*MW_TIMELINE);*/
-  /*timeline_arranger_widget_refresh_children (*/
-    /*MW_PINNED_TIMELINE);*/
+  arranger_widget_redraw_whole (
+    MW_TIMELINE);
+  arranger_widget_redraw_whole (
+    MW_PINNED_TIMELINE);
 
   visibility_widget_refresh (MW_VISIBILITY);
 }
@@ -687,26 +688,26 @@ on_arranger_object_removed (
     {
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
     case ARRANGER_OBJECT_TYPE_VELOCITY:
-      /*midi_arranger_widget_refresh_children (*/
-        /*MW_MIDI_ARRANGER);*/
-      /*midi_modifier_arranger_widget_refresh_children (*/
-        /*MW_MIDI_MODIFIER_ARRANGER);*/
+      arranger_widget_redraw_whole (
+        MW_MIDI_ARRANGER);
+      arranger_widget_redraw_whole (
+        MW_MIDI_MODIFIER_ARRANGER);
       break;
     case ARRANGER_OBJECT_TYPE_REGION:
     case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
     case ARRANGER_OBJECT_TYPE_MARKER:
-      /*timeline_arranger_widget_refresh_children (*/
-        /*MW_TIMELINE);*/
-      /*timeline_arranger_widget_refresh_children (*/
-        /*MW_PINNED_TIMELINE);*/
+      arranger_widget_redraw_whole (
+        MW_TIMELINE);
+      arranger_widget_redraw_whole (
+        MW_PINNED_TIMELINE);
       break;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
-      /*chord_arranger_widget_refresh_children (*/
-        /*MW_CHORD_ARRANGER);*/
+      arranger_widget_redraw_whole (
+        MW_CHORD_ARRANGER);
       break;
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-      /*automation_arranger_widget_refresh_children (*/
-        /*MW_AUTOMATION_ARRANGER);*/
+      arranger_widget_redraw_whole (
+        MW_AUTOMATION_ARRANGER);
       break;
     default:
       g_return_if_reached ();
@@ -884,9 +885,9 @@ events_process (void * data)
               arranger_widget_redraw_whole (
                 Z_ARRANGER_WIDGET (
                   MW_TIMELINE));
-              /*arranger_widget_redraw_whole (*/
-                /*Z_ARRANGER_WIDGET (*/
-                  /*MW_PINNED_TIMELINE));*/
+              arranger_widget_redraw_whole (
+                Z_ARRANGER_WIDGET (
+                  MW_PINNED_TIMELINE));
             }
           else if (ev->arg == EDITOR_RULER)
             {
@@ -917,17 +918,17 @@ events_process (void * data)
         case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
-					ruler_widget_force_redraw (
-						(RulerWidget *) MW_RULER);
-					ruler_widget_force_redraw (
-						(RulerWidget *) EDITOR_RULER);
+          ruler_widget_force_redraw (
+            (RulerWidget *) MW_RULER);
+          ruler_widget_force_redraw (
+            (RulerWidget *) EDITOR_RULER);
           redraw_all_arranger_bgs ();
           break;
         case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
-					ruler_widget_force_redraw (
-						(RulerWidget *) MW_RULER);
+          ruler_widget_force_redraw (
+            (RulerWidget *) MW_RULER);
           break;
         case ET_PLUGIN_VISIBILITY_CHANGED:
           on_plugin_visibility_changed (
@@ -1021,16 +1022,12 @@ events_process (void * data)
            * timeline first because one of them
            * will be added to the unpinned
            * tracklist when unpinning */
-          /*timeline_arranger_widget_remove_children (*/
-            /*MW_PINNED_TIMELINE);*/
+          arranger_widget_redraw_whole (
+            MW_PINNED_TIMELINE);
 
           if (MW_TIMELINE)
             arranger_widget_redraw_whole (
-              Z_ARRANGER_WIDGET (MW_TIMELINE));
-          /*if (MW_PINNED_TIMELINE)*/
-            /*arranger_widget_redraw_whole (*/
-              /*Z_ARRANGER_WIDGET (*/
-                /*MW_PINNED_TIMELINE));*/
+              MW_TIMELINE);
           break;
         case ET_TIMELINE_VIEWPORT_CHANGED:
           timeline_minimap_widget_refresh (
@@ -1047,10 +1044,10 @@ events_process (void * data)
         case ET_TRACK_VISIBILITY_CHANGED:
           tracklist_widget_update_track_visibility (
             MW_TRACKLIST);
-          /*timeline_arranger_widget_refresh_children (*/
-            /*MW_TIMELINE);*/
-          /*timeline_arranger_widget_refresh_children (*/
-            /*MW_PINNED_TIMELINE);*/
+          arranger_widget_redraw_whole (
+            MW_TIMELINE);
+          arranger_widget_redraw_whole (
+            MW_PINNED_TIMELINE);
           track_visibility_tree_widget_refresh (
             MW_TRACK_VISIBILITY_TREE);
           break;
@@ -1140,11 +1137,11 @@ events_process (void * data)
             /*(ArrangerWidget *) MW_TIMELINE);*/
           break;
         case ET_LOOP_TOGGLED:
-          /*arranger_widget_refresh_all_backgrounds ();*/
-          /*ruler_widget_force_redraw (*/
-            /*(RulerWidget *) EDITOR_RULER);*/
-          /*ruler_widget_force_redraw (*/
-            /*(RulerWidget *) MW_RULER);*/
+          redraw_all_arranger_bgs ();
+          ruler_widget_force_redraw (
+            (RulerWidget *) EDITOR_RULER);
+          ruler_widget_force_redraw (
+            (RulerWidget *) MW_RULER);
           break;
         case ET_ARRANGER_SELECTIONS_IN_TRANSIT:
           on_arranger_selections_in_transit (
@@ -1171,18 +1168,15 @@ events_process (void * data)
             TOP_BAR);
           break;
         case ET_SELECTING_IN_ARRANGER:
-          /*arranger_widget_redraw_bg (*/
-            /*Z_ARRANGER_WIDGET (ev->arg));*/
+          arranger_widget_redraw_whole (
+            Z_ARRANGER_WIDGET (ev->arg));
           break;
         case ET_TRACKS_RESIZED:
           g_warn_if_fail (ev->arg);
-          /*if (Z_IS_TRACKLIST_WIDGET (ev->arg))*/
-            /*arranger_widget_redraw_bg (*/
-              /*Z_ARRANGER_WIDGET (MW_TIMELINE));*/
-          /*else if (Z_IS_PINNED_TRACKLIST_WIDGET (*/
-                     /*ev->arg))*/
-            /*arranger_widget_redraw_bg (*/
-              /*Z_ARRANGER_WIDGET (MW_PINNED_TIMELINE));*/
+          arranger_widget_redraw_whole (
+            MW_TIMELINE);
+          arranger_widget_redraw_whole (
+            MW_PINNED_TIMELINE);
           break;
         case ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED:
           gtk_widget_set_visible (

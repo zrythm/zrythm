@@ -345,6 +345,8 @@ arranger_widget_px_to_pos (
  * ranger.
  *
  * @param rect The rectangle to search in.
+ * @param type The type of arranger objects to find,
+ *   or -1 to look for all objects.
  * @param array The array to fill.
  * @param array_size The size of the array to fill.
  */
@@ -359,6 +361,9 @@ arranger_widget_get_hit_objects_in_rect (
 /**
  * Returns the ArrangerObject of the given type
  * at (x,y).
+ *
+ * @param type The arranger object type, or -1 to
+ *   search for all types.
  */
 ArrangerObject *
 arranger_widget_get_hit_arranger_object (

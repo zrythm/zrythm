@@ -44,10 +44,10 @@ G_DEFINE_TYPE_WITH_PRIVATE (
   region_widget,
   ARRANGER_OBJECT_WIDGET_TYPE)
 
-#define NAME_FONT "Sans SemiBold 9"
-#define NAME_PADDING_R 5
-#define NAME_BOX_HEIGHT 19
-#define NAME_BOX_CURVINESS 4.0
+#define REGION_NAME_FONT "Sans SemiBold 9"
+#define REGION_NAME_PADDING_R 5
+#define REGION_NAME_BOX_HEIGHT 19
+#define REGION_NAME_BOX_CURVINESS 4.0
 
 
 /** Background color for the name. */

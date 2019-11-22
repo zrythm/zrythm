@@ -185,6 +185,7 @@ test_cflags = [
   '-Wno-missing-field-initializers',
   '-Wno-unused-parameter',
   '-Wno-sequence-point',
+  '-Wno-old-style-declaration',
   '-Wignored-qualifiers',
   '-Wno-cast-function-type',
   ]

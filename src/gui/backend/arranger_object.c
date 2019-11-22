@@ -645,6 +645,154 @@ arranger_object_print (
 }
 
 /**
+ * Returns if the current position is for resizing
+ * L.
+ */
+int
+arranger_object_is_resize_l (
+  ArrangerObject * self,
+  const int        x)
+{
+  if (!self->has_length)
+    return 0;
+
+  if (x < UI_RESIZE_CURSOR_SPACE)
+    {
+      return 1;
+    }
+  return 0;
+}
+
+/**
+ * Returns if the current position is for resizing
+ * R.
+ */
+int
+arranger_object_is_resize_r (
+  ArrangerObject * self,
+  const int        x)
+{
+  if (!self->has_length)
+    return 0;
+
+  long size_frames =
+    self->end_pos.frames - self->pos.frames;
+  Position pos;
+  position_from_frames (
+    &pos, size_frames);
+  int width_px =
+    arranger_widget_pos_to_px (
+      arranger_object_get_arranger (self),
+      &pos, 0);
+
+  if (x > width_px - UI_RESIZE_CURSOR_SPACE)
+    {
+      return 1;
+    }
+  return 0;
+}
+
+/**
+ * Returns if the current position is for resizing
+ * up (eg, Velocity).
+ */
+int
+arranger_object_is_resize_up (
+  ArrangerObject * self,
+  const int        x,
+  const int        y)
+{
+  if ((self->type ==
+         ARRANGER_OBJECT_TYPE_VELOCITY &&
+       y < UI_RESIZE_CURSOR_SPACE) ||
+      (self->type ==
+         ARRANGER_OBJECT_TYPE_AUTOMATION_POINT &&
+       (x > AP_WIDGET_POINT_SIZE ||
+        y > AP_WIDGET_POINT_SIZE)))
+    {
+      return 1;
+    }
+  return 0;
+}
+
+/**
+ * Returns if the current position is for resizing
+ * loop.
+ */
+int
+arranger_object_is_resize_loop (
+  ArrangerObject * self,
+  const int        y)
+{
+  if (!self->has_length || !self->can_loop)
+    return 0;
+
+  if (self->type == ARRANGER_OBJECT_TYPE_REGION)
+    {
+      Region * r = (Region *) self;
+      if (r->type == REGION_TYPE_AUDIO)
+        return 1;
+
+      if ((position_to_ticks (&self->end_pos) -
+           position_to_ticks (&self->pos)) >
+          position_to_ticks (&self->loop_end_pos))
+        {
+          return 1;
+        }
+
+      /* TODO */
+      int height_px = 60;
+        /*gtk_widget_get_allocated_height (*/
+          /*GTK_WIDGET (self));*/
+
+      if (y > height_px / 2)
+        {
+          return 1;
+        }
+      return 0;
+    }
+
+  return 0;
+}
+
+/**
+ * Returns if arranger_object widgets should show
+ * cut lines.
+ *
+ * To be used to set the arranger_object's
+ * "show_cut".
+ *
+ * @param alt_pressed Whether alt is currently
+ *   pressed.
+ */
+int
+arranger_object_should_show_cut_lines (
+  ArrangerObject * self,
+  int              alt_pressed)
+{
+  if (!self->has_length)
+    return 0;
+
+  switch (P_TOOL)
+    {
+    case TOOL_SELECT_NORMAL:
+    case TOOL_SELECT_STRETCH:
+      if (alt_pressed)
+        return 1;
+      else
+        return 0;
+      break;
+    case TOOL_CUT:
+      return 1;
+      break;
+    default:
+      return 0;
+      break;
+    }
+  g_return_val_if_reached (-1);
+}
+
+/**
  * Moves the object by the given amount of
  * ticks.
  *
@@ -3002,21 +3150,20 @@ arranger_object_set_full_rectangle (
 
             gtk_widget_translate_coordinates(
               (GtkWidget *) (track->widget),
-              (GtkWidget *) (self),
+              (GtkWidget *) (arranger),
               0, 0,
               &wx, &wy);
 
             self->full_rect.y = wy;
 
             self->full_rect.height =
-              gtk_widget_get_allocated_height (
-                GTK_WIDGET (lane->widget));
+              lane->height;
           }
         else
           {
             gtk_widget_translate_coordinates(
               (GtkWidget *) (track->widget),
-              (GtkWidget *) (self),
+              (GtkWidget *) (arranger),
               0, 0,
               &wx, &wy);
 
@@ -3069,8 +3216,7 @@ arranger_object_set_full_rectangle (
               {
                 self->full_rect.y = wy;
                 self->full_rect.height =
-                  gtk_widget_get_allocated_height (
-                    (GtkWidget *) (track->widget));
+                  track->main_height;
               }
           }
       }
@@ -3238,6 +3384,329 @@ arranger_object_set_draw_rectangle (
   self->draw_rect = self->full_rect;
 }
 
+static void
+draw_region_background (
+  Region *  self,
+  cairo_t * cr)
+{
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+
+  Track * track =
+    arranger_object_get_track (obj);
+
+  /* set color */
+  GdkRGBA color;
+  if (track)
+    color = track->color;
+  else
+    {
+      color.red = 1;
+      color.green = 0;
+      color.blue = 0;
+      color.alpha = 1;
+    }
+  ui_get_arranger_object_color (
+    &color,
+    obj->hover,
+    region_is_selected (self),
+    region_is_transient (self));
+  gdk_cairo_set_source_rgba (
+    cr, &color);
+
+  /* draw arc-rectangle */
+  g_message ("drawing");
+  z_cairo_rounded_rectangle (
+    cr, 0, 0, obj->draw_rect.width,
+    obj->draw_rect.height,
+    1.0, 4.0);
+  cairo_fill (cr);
+}
+
+static void
+draw_region_loop_points (
+  Region *  self,
+  cairo_t * cr)
+{
+  double dashes[] = { 5 };
+  cairo_set_dash (
+    cr, dashes, 1, 0);
+  cairo_set_line_width (cr, 1);
+  cairo_set_source_rgba (
+    cr, 0, 0, 0, 1.0);
+
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+  Position tmp;
+  long loop_start_ticks =
+    obj->loop_start_pos.total_ticks;
+  long loop_end_ticks =
+    obj->loop_end_pos.total_ticks;
+  g_warn_if_fail (
+    loop_end_ticks > loop_start_ticks);
+  long loop_ticks =
+    arranger_object_get_loop_length_in_ticks (
+      obj);
+  long clip_start_ticks =
+    obj->clip_start_pos.total_ticks;
+
+  position_from_ticks (
+    &tmp, loop_start_ticks - clip_start_ticks);
+  int px =
+    ui_pos_to_px_timeline (&tmp, 0);
+  if (px != 0 &&
+      /* if loop px is visible */
+      px >= obj->draw_rect.x &&
+      px < obj->draw_rect.x +
+        obj->draw_rect.width)
+    {
+      cairo_set_source_rgba (
+        cr, 0, 1, 0, 1.0);
+      cairo_move_to (cr, px, 0);
+      cairo_line_to (
+        cr, px, obj->draw_rect.height);
+      cairo_stroke (cr);
+    }
+
+  int num_loops =
+    arranger_object_get_num_loops (obj, 1);
+  for (int i = 0; i < num_loops; i++)
+    {
+      position_from_ticks (
+        &tmp, loop_end_ticks + loop_ticks * i);
+
+      /* adjust for clip_start */
+      position_add_ticks (
+        &tmp, - clip_start_ticks);
+
+      px = ui_pos_to_px_timeline (&tmp, 0);
+
+      if (px >= obj->draw_rect.x &&
+          px < obj->draw_rect.width)
+        {
+          cairo_set_source_rgba (
+            cr, 0, 0, 0, 1.0);
+          cairo_move_to (
+            cr, px, 0);
+          cairo_line_to (
+            cr, px, obj->draw_rect.height);
+          cairo_stroke (
+            cr);
+        }
+    }
+
+  cairo_set_dash (
+    cr, NULL, 0, 0);
+}
+
+static void
+draw_midi_region (
+  Region *  self,
+  cairo_t * cr)
+{
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+
+  cairo_set_source_rgba (
+    cr, 1, 1, 1, 1);
+  int num_loops =
+    arranger_object_get_num_loops (obj, 1);
+  long ticks_in_region =
+    arranger_object_get_length_in_ticks (obj);
+  float x_start, y_start, x_end;
+
+  int width = obj->full_rect.width;
+  int height = obj->full_rect.height;
+
+  int min_val = 127, max_val = 0;
+  for (int i = 0; i < self->num_midi_notes; i++)
+    {
+      MidiNote * mn = self->midi_notes[i];
+
+      if (mn->val < min_val)
+        min_val = mn->val;
+      if (mn->val > max_val)
+        max_val = mn->val;
+    }
+  float y_interval =
+    MAX (
+      (float) (max_val - min_val) + 1.f, 7.f);
+  float y_note_size = 1.f / y_interval;
+
+  /* draw midi notes */
+  long loop_end_ticks =
+    obj->loop_end_pos.total_ticks;
+  long loop_ticks =
+    arranger_object_get_loop_length_in_ticks (
+      obj);
+  long clip_start_ticks =
+    obj->clip_start_pos.total_ticks;
+
+  for (int i = 0; i < self->num_midi_notes; i++)
+    {
+      MidiNote * mn = self->midi_notes[i];
+      ArrangerObject * mn_obj =
+        (ArrangerObject *) mn;
+
+      /* get ratio (0.0 - 1.0) on x where midi note
+       * starts & ends */
+      long mn_start_ticks =
+        position_to_ticks (&mn_obj->pos);
+      long mn_end_ticks =
+        position_to_ticks (&mn_obj->end_pos);
+      long tmp_start_ticks, tmp_end_ticks;
+
+      /* if before loop end */
+      if (position_is_before (
+            &mn_obj->pos,
+            &obj->loop_end_pos))
+        {
+          for (int j = 0; j < num_loops; j++)
+            {
+              /* if note started before loop start
+               * only draw it once */
+              if (position_is_before (
+                    &mn_obj->pos,
+                    &obj->loop_start_pos) &&
+                  j != 0)
+                break;
+
+              /* calculate draw endpoints */
+              tmp_start_ticks =
+                mn_start_ticks + loop_ticks * j;
+              /* if should be clipped */
+              if (position_is_after_or_equal (
+                    &mn_obj->end_pos,
+                    &obj->loop_end_pos))
+                tmp_end_ticks =
+                  loop_end_ticks + loop_ticks * j;
+              else
+                tmp_end_ticks =
+                  mn_end_ticks + loop_ticks * j;
+
+              /* adjust for clip start */
+              tmp_start_ticks -= clip_start_ticks;
+              tmp_end_ticks -= clip_start_ticks;
+
+              /* get ratios (0.0 - 1.0) of
+               * where midi note is */
+              x_start =
+                (float) tmp_start_ticks /
+                (float) ticks_in_region;
+              x_end =
+                (float) tmp_end_ticks /
+                (float) ticks_in_region;
+              y_start =
+                ((float) max_val - (float) mn->val) /
+                y_interval;
+
+              /* get actual values using the
+               * ratios */
+              x_start *= (float) width;
+              x_end *= (float) width;
+              y_start *= (float) height;
+
+              /* skip if any part of the note is
+               * not visible in the rect */
+              if ((x_start >= obj->draw_rect.x &&
+                   x_start < obj->draw_rect.x + obj->draw_rect.width) ||
+                  (x_end >= obj->draw_rect.x &&
+                   x_end < obj->draw_rect.x + obj->draw_rect.width) ||
+                  (x_start < obj->draw_rect.x &&
+                   x_end > obj->draw_rect.x))
+                {
+                  /* draw */
+                  cairo_rectangle (
+                    cr,
+                    MAX (
+                      x_start -
+                        (float) obj->draw_rect.x, 0.f),
+                    MAX (
+                      y_start -
+                        (float) obj->draw_rect.y, 0.f),
+                    MIN (
+                      x_end -
+                        MAX (
+                          x_start,
+                          (float) obj->draw_rect.x),
+                      (float) obj->draw_rect.width),
+                    MIN (
+                      y_note_size *
+                        (float) height -
+                        (float) obj->draw_rect.y,
+                      (float) obj->draw_rect.height));
+                  cairo_fill (cr);
+                }
+            }
+        }
+    }
+}
+
+static void
+draw_region_name (
+  Region *  self,
+  cairo_t * cr)
+{
+  /* no need to draw if the start of the region is
+   * not visible */
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+  if (obj->draw_rect.x - obj->full_rect.x >
+      800)
+    return;
+
+  g_return_if_fail (
+    self && self->name);
+
+  char str[200];
+  strcpy (str, self->name);
+  if (DEBUGGING)
+    {
+      if (region_is_transient (self))
+        {
+          strcat (str, " [t]");
+        }
+      if (region_is_lane (self))
+        {
+          strcat (str, " [l]");
+        }
+    }
+
+  /* draw dark bg behind text */
+  region_recreate_pango_layouts (self);
+  PangoLayout * layout = self->layout;
+  pango_layout_set_text (
+    layout, str, -1);
+  PangoRectangle pangorect;
+  /* get extents */
+  pango_layout_get_pixel_extents (
+    layout, NULL, &pangorect);
+  GdkRGBA name_bg_color;
+  gdk_rgba_parse (&name_bg_color, "#323232");
+  name_bg_color.alpha = 0.8;
+  gdk_cairo_set_source_rgba (
+    cr, &name_bg_color);
+  double radius = REGION_NAME_BOX_CURVINESS / 1.0;
+  double degrees = G_PI / 180.0;
+  cairo_new_sub_path (cr);
+  cairo_move_to (
+    cr, pangorect.width + REGION_NAME_PADDING_R, 0);
+  cairo_arc (
+    cr, (pangorect.width + REGION_NAME_PADDING_R) - radius,
+    REGION_NAME_BOX_HEIGHT - radius, radius,
+    0 * degrees, 90 * degrees);
+  cairo_line_to (cr, 0, REGION_NAME_BOX_HEIGHT);
+  cairo_line_to (cr, 0, 0);
+  cairo_close_path (cr);
+  cairo_fill (cr);
+
+  /* draw text */
+  cairo_set_source_rgba (
+    cr, 1, 1, 1, 1);
+  cairo_translate (cr, 2, 2);
+  pango_cairo_show_layout (cr, layout);
+}
+
 /**
  * Draws the given object.
  *
@@ -3353,6 +3822,29 @@ arranger_object_draw (
           {
           }
         }
+      break;
+    case TYPE (REGION):
+      {
+        Region * r = (Region *) self;
+        draw_region_background (
+          r, self->cached_cr);
+        draw_region_loop_points (
+          r, self->cached_cr);
+
+        switch (r->type)
+          {
+          case REGION_TYPE_MIDI:
+            {
+              draw_midi_region (
+                r, self->cached_cr);
+            }
+            break;
+          default:
+            break;
+          }
+        draw_region_name (
+          r, self->cached_cr);
+      }
       break;
     default:
       g_warn_if_reached ();

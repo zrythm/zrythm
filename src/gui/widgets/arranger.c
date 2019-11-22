@@ -149,8 +149,9 @@ draw_arranger_object (
   cairo_t *        cr,
   GdkRectangle *   rect)
 {
-  if (obj->redraw)
-    {
+  g_message ("drawing arranger obj %p", obj);
+  /*if (obj->redraw)*/
+    /*{*/
       /* ----- get object's full rectangle ---*/
 
       arranger_object_set_full_rectangle (
@@ -177,7 +178,7 @@ draw_arranger_object (
         }
 
       obj->redraw = 0;
-    }
+    /*}*/
 
   cairo_set_source_surface (
     cr, obj->cached_surface,
@@ -739,7 +740,21 @@ arranger_draw_cb (
             self, self->cached_cr, &rect);
         }
 
-      (void) draw_arranger_object;
+      /* draw each arranger object */
+      ArrangerObject * objs[2000];
+      int num_objs;
+      arranger_widget_get_hit_objects_in_rect (
+        self, ARRANGER_OBJECT_TYPE_ALL, &rect,
+        objs, &num_objs);
+
+      g_message ("objects found: %d", num_objs);
+      for (int j = 0; j < num_objs; j++)
+        {
+          draw_arranger_object (
+            self, objs[j], self->cached_cr,
+            &rect);
+        }
+
       draw_playhead (self);
 
       self->redraw = 0;
@@ -830,6 +845,8 @@ arranger_widget_set_cursor (
  * ranger.
  *
  * @param rect The rectangle to search in.
+ * @param type The type of arranger objects to find,
+ *   or -1 to look for all objects.
  * @param array The array to fill.
  * @param array_size The size of the array to fill.
  */
@@ -845,6 +862,8 @@ arranger_widget_get_hit_objects_in_rect (
   ArrangerObject * obj = NULL;
 
 #define ADD_OBJ_IF_OVERLAP \
+  arranger_object_set_full_rectangle ( \
+    obj, self); \
   if (ui_rectangle_overlap ( \
         &obj->full_rect, rect)) \
     { \
@@ -856,12 +875,15 @@ arranger_widget_get_hit_objects_in_rect (
     {
     case TYPE (TIMELINE):
       {
-        if (type != ARRANGER_OBJECT_TYPE_REGION &&
+        if (type != ARRANGER_OBJECT_TYPE_ALL &&
+            type != ARRANGER_OBJECT_TYPE_REGION &&
             type != ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
           return;
 
         /* add overlapping scales */
-        if (type == ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
+        if (type == ARRANGER_OBJECT_TYPE_ALL ||
+            type ==
+              ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
           {
             for (int i = 0;
                  i < P_CHORD_TRACK->num_scales; i++)
@@ -874,22 +896,28 @@ arranger_widget_get_hit_objects_in_rect (
           }
 
         /* add overlapping regions */
-        for (int i = 0; i < TRACKLIST->num_tracks;
-             i++)
+        if (type == ARRANGER_OBJECT_TYPE_ALL ||
+            type == ARRANGER_OBJECT_TYPE_REGION)
           {
-            Track * track = TRACKLIST->tracks[i];
-
-            for (int j = 0; j < track->num_lanes; j++)
+            for (int i = 0;
+                 i < TRACKLIST->num_tracks;
+                 i++)
               {
-                TrackLane * lane =
-                  track->lanes[j];
-                for (int k = 0; k < lane->num_regions;
-                     k++)
+                Track * track = TRACKLIST->tracks[i];
+
+                for (int j = 0; j < track->num_lanes; j++)
                   {
-                    obj =
-                      (ArrangerObject *)
-                      lane->regions[k];
-                    ADD_OBJ_IF_OVERLAP;
+                    TrackLane * lane =
+                      track->lanes[j];
+                    for (int k = 0;
+                         k < lane->num_regions;
+                         k++)
+                      {
+                        obj =
+                          (ArrangerObject *)
+                          lane->regions[k];
+                        ADD_OBJ_IF_OVERLAP;
+                      }
                   }
               }
           }
@@ -2039,29 +2067,20 @@ on_drag_begin_handle_hit_object (
   const double     x,
   const double     y)
 {
-#if 0
-  ArrangerObjectWidget * obj_w =
-    Z_ARRANGER_OBJECT_WIDGET (
-      ui_get_hit_child (
-        GTK_CONTAINER (self), x, y,
-        ARRANGER_OBJECT_WIDGET_TYPE));
+  ArrangerObject * obj =
+    arranger_widget_get_hit_arranger_object (
+      self, ARRANGER_OBJECT_TYPE_ALL, x, y);
 
-  if (!obj_w)
+  if (!obj)
     return 0;
 
-  /* get main object */
-  ArrangerObject * obj =
-    arranger_object_get_main (
-      ao_prv->arranger_object);
-  obj_w =
-    Z_ARRANGER_OBJECT_WIDGET (obj->widget);
-
   /* get x as local to the object */
-  gint wx, wy;
-  gtk_widget_translate_coordinates (
-    GTK_WIDGET (self),
-    GTK_WIDGET (obj_w),
-    (int) x, 0, &wx, &wy);
+  int wx =
+    (int) x -
+    arranger_widget_pos_to_px (self, &obj->pos, 1);
+
+  /* TODO get y as local to the object */
+  int wy = 50;
 
   /* remember object and pos */
   self->start_object = obj;
@@ -2069,20 +2088,20 @@ on_drag_begin_handle_hit_object (
 
   /* get flags */
   int is_resize_l =
-    arranger_object_widget_is_resize_l (
-      obj_w, wx);
+    arranger_object_is_resize_l (
+      obj, wx);
   int is_resize_r =
-    arranger_object_widget_is_resize_r (
-      obj_w, wx);
+    arranger_object_is_resize_r (
+      obj, wx);
   int is_resize_up =
-    arranger_object_widget_is_resize_up (
-      obj_w, wx, wy);
+    arranger_object_is_resize_up (
+      obj, wx, wy);
   int is_resize_loop =
-    arranger_object_widget_is_resize_loop (
-      obj_w, wy);
+    arranger_object_is_resize_loop (
+      obj, wy);
   int show_cut_lines =
-    arranger_object_widget_should_show_cut_lines (
-      obj_w, self->alt_held);
+    arranger_object_should_show_cut_lines (
+      obj, self->alt_held);
   int is_selected =
     arranger_object_is_selected (obj);
   self->start_object_was_selected = is_selected;
@@ -2254,7 +2273,6 @@ on_drag_begin_handle_hit_object (
     }
 
 #undef SET_ACTION
-#endif
 
   return 1;
 }
@@ -2290,6 +2308,7 @@ drag_begin (
   int objects_hit =
     on_drag_begin_handle_hit_object (
       self, start_x, start_y);
+  g_message ("objects hit %d", objects_hit);
 
   /* if nothing hit */
   if (!objects_hit)
@@ -2832,6 +2851,8 @@ drag_update (
   self->last_offset_x = offset_x;
   self->last_offset_y = offset_y;
 
+  g_message ("drag update");
+  arranger_widget_redraw_whole (self);
   arranger_widget_refresh_cursor (self);
 }
 
@@ -3592,9 +3613,14 @@ drag_end (
   /* queue redraw to hide the selection */
   /*gtk_widget_queue_draw (GTK_WIDGET (self->bg));*/
 
+  arranger_widget_redraw_whole (self);
   arranger_widget_refresh_cursor (self);
 }
 
+/**
+ * @param type The arranger object type, or -1 to
+ *   search for all types.
+ */
 static ArrangerObject *
 get_hit_timeline_object (
   ArrangerWidget *   self,
@@ -3620,7 +3646,8 @@ get_hit_timeline_object (
   /* check for hit automation regions */
   if (at)
     {
-      if (type != ARRANGER_OBJECT_TYPE_REGION)
+      if (type != ARRANGER_OBJECT_TYPE_ALL &&
+          type != ARRANGER_OBJECT_TYPE_REGION)
         return NULL;
 
       /* return if any region matches the
@@ -3637,7 +3664,8 @@ get_hit_timeline_object (
   /* check for hit regions in lane */
   else if (lane)
     {
-      if (type != ARRANGER_OBJECT_TYPE_REGION)
+      if (type >= ARRANGER_OBJECT_TYPE_ALL &&
+          type != ARRANGER_OBJECT_TYPE_REGION)
         return NULL;
 
       /* return if any region matches the
@@ -3657,16 +3685,21 @@ get_hit_timeline_object (
       track =
         timeline_arranger_widget_get_track_at_y (
           self, y);
-      for (int i = 0; i < track->num_lanes; i++)
+
+      if (track)
         {
-          lane = track->lanes[i];
-          for (int j = 0; j < lane->num_regions;
-               j++)
+          for (int i = 0; i < track->num_lanes; i++)
             {
-              Region * r = lane->regions[j];
-              if (region_is_hit (r, pos.frames, 1))
+              lane = track->lanes[i];
+              for (int j = 0; j < lane->num_regions;
+                   j++)
                 {
-                  return (ArrangerObject *) r;
+                  Region * r = lane->regions[j];
+                  if (region_is_hit (
+                        r, pos.frames, 1))
+                    {
+                      return (ArrangerObject *) r;
+                    }
                 }
             }
         }
@@ -3678,6 +3711,9 @@ get_hit_timeline_object (
 /**
  * Returns the ArrangerObject of the given type
  * at (x,y).
+ *
+ * @param type The arranger object type, or -1 to
+ *   search for all types.
  */
 ArrangerObject *
 arranger_widget_get_hit_arranger_object (
@@ -3931,6 +3967,7 @@ arranger_widget_redraw_whole (
       GTK_WIDGET (scroll));
 
   /* redraw visible area */
+  self->redraw = 1;
   gtk_widget_queue_draw_area (
     GTK_WIDGET (self), (int) x, (int) y,
     width, height);
@@ -4815,7 +4852,6 @@ void
 arranger_widget_refresh_cursor (
   ArrangerWidget * self)
 {
-  return;
   if (!gtk_widget_get_realized (
         GTK_WIDGET (self)))
     return;
@@ -4825,28 +4861,27 @@ arranger_widget_refresh_cursor (
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      get_timeline_cursor (
-        self, P_TOOL);
+      ac =
+        get_timeline_cursor (self, P_TOOL);
       break;
     case TYPE (AUDIO):
-      get_audio_arranger_cursor (
-        self, P_TOOL);
+      ac = get_audio_arranger_cursor (self, P_TOOL);
       break;
     case TYPE (CHORD):
-      get_chord_arranger_cursor (
-        self, P_TOOL);
+      ac = get_chord_arranger_cursor (self, P_TOOL);
       break;
     case TYPE (MIDI):
-      get_midi_arranger_cursor (
-        self, P_TOOL);
+      ac = get_midi_arranger_cursor (self, P_TOOL);
       break;
     case TYPE (MIDI_MODIFIER):
-      get_midi_modifier_arranger_cursor (
-        self, P_TOOL);
+      ac =
+        get_midi_modifier_arranger_cursor (
+          self, P_TOOL);
       break;
     case TYPE (AUTOMATION):
-      get_automation_arranger_cursor (
-        self, P_TOOL);
+      ac =
+        get_automation_arranger_cursor (
+          self, P_TOOL);
       break;
     default:
       break;

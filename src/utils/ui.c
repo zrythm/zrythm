@@ -841,8 +841,8 @@ ui_rectangle_overlap (
     return 0;
 
   /* if one rect is above the other */
-  if (rect1->y < rect2->y + rect2->height ||
-      rect2->y < rect1->y + rect1->height)
+  if (rect1->y > rect2->y + rect2->height ||
+      rect2->y > rect1->y + rect1->height)
     return 0;
 
   return 1;

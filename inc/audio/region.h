@@ -50,6 +50,11 @@ typedef struct _AudioClipWidget AudioClipWidget;
 
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
 
+#define REGION_NAME_FONT "Sans SemiBold 9"
+#define REGION_NAME_PADDING_R 5
+#define REGION_NAME_BOX_HEIGHT 19
+#define REGION_NAME_BOX_CURVINESS 4.0
+
 #define region_is_transient(r) \
   arranger_object_is_transient ( \
     (ArrangerObject *) r)
@@ -228,6 +233,9 @@ typedef struct Region
    * the widgets for positioning if it's non-NULL.
    */
   TrackLane *        tmp_lane;
+
+  /** Cache layout for drawing the name. */
+  PangoLayout *      layout;
 } Region;
 
 static const cyaml_schema_field_t
@@ -296,6 +304,13 @@ region_init (
   const Position * start_pos,
   const Position * end_pos,
   const int        is_main);
+
+/**
+ * Recreates the pango layouts for drawing.
+ */
+void
+region_recreate_pango_layouts (
+  Region * self);
 
 /**
  * Looks for the Region under the given name.
