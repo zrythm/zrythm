@@ -187,8 +187,12 @@ draw_arranger_object (
   cairo_paint (cr);
 }
 
-static void
-draw_playhead (
+/**
+ * Returns the playhead's x coordinate in absolute
+ * coordinates.
+ */
+static int
+get_playhead_px (
   ArrangerWidget * self)
 {
   /* get frames */
@@ -236,8 +240,34 @@ draw_playhead (
         }
     }
 
-  /* TODO draw */
-  (void) frames;
+  Position pos;
+  position_from_frames (&pos, frames);
+  return
+    arranger_widget_pos_to_px (self, &pos, 1);
+}
+
+/**
+ * @param rect Arranger draw rectangle.
+ */
+static void
+draw_playhead (
+  ArrangerWidget * self,
+  cairo_t *        cr,
+  GdkRectangle *   rect)
+{
+  int px = get_playhead_px (self);
+
+  if (px >= rect->x && px <= rect->x + rect->width)
+    {
+      cairo_set_source_rgba (
+        cr, 1, 0, 0, 1);
+      cairo_set_line_width (cr, 2);
+      cairo_move_to (cr, px - rect->x, rect->y);
+      cairo_line_to (
+        cr, px - rect->x, rect->y + rect->height);
+      cairo_stroke (cr);
+      self->last_playhead_px = px;
+    }
 }
 
 static void
@@ -489,7 +519,10 @@ arranger_draw_cb (
       !gdk_rectangle_equal (
          &rect, &self->last_rect))
     {
-      g_message ("re");
+      /*g_message (*/
+        /*"redrawing arranger in rect: "*/
+        /*"(%d, %d) width: %d height %d)",*/
+        /*rect.x, rect.y, rect.width, rect.height);*/
       self->last_rect = rect;
       int i = 0;
 
@@ -755,9 +788,9 @@ arranger_draw_cb (
             &rect);
         }
 
-      draw_playhead (self);
+      draw_playhead (self, self->cached_cr, &rect);
 
-      self->redraw = 0;
+      self->redraw--;
     }
 
   cairo_set_source_surface (
@@ -3929,37 +3962,72 @@ arranger_tick_cb (
 #endif
 
 /**
+ * Returns the current rectangle to draw in.
+ *
+ * @param rect The rectangle to fill in.
+ */
+static void
+get_current_rect (
+  ArrangerWidget * self,
+  GdkRectangle *   rect)
+{
+  GtkScrolledWindow * scroll =
+    arranger_widget_get_scrolled_window (self);
+  GtkAdjustment * xadj =
+    gtk_scrolled_window_get_hadjustment (
+      scroll);
+  rect->x =
+    (int) gtk_adjustment_get_value (xadj);
+  GtkAdjustment * yadj =
+    gtk_scrolled_window_get_vadjustment (scroll);
+  rect->y =
+    (int) gtk_adjustment_get_value (yadj);
+  rect->height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (scroll));
+  rect->width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (scroll));
+}
+
+/**
  * Queues a redraw of the whole visible arranger.
  */
 void
 arranger_widget_redraw_whole (
   ArrangerWidget * self)
 {
-  /* figure out the area to draw */
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-  GtkAdjustment * xadj =
-    gtk_scrolled_window_get_hadjustment (
-      scroll);
-  double x =
-    gtk_adjustment_get_value (xadj);
-  GtkAdjustment * yadj =
-    gtk_scrolled_window_get_vadjustment (
-      scroll);
-  double y =
-    gtk_adjustment_get_value (yadj);
-  int height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (scroll));
-  int width =
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (scroll));
+  GdkRectangle rect;
+  get_current_rect (self, &rect);
 
   /* redraw visible area */
   self->redraw = 1;
   gtk_widget_queue_draw_area (
-    GTK_WIDGET (self), (int) x, (int) y,
-    width, height);
+    GTK_WIDGET (self), rect.x, rect.y,
+    rect.width, rect.height);
+}
+
+/**
+ * Only redraws the playhead part.
+ */
+void
+arranger_widget_redraw_playhead (
+  ArrangerWidget * self)
+{
+  GdkRectangle rect;
+  get_current_rect (self, &rect);
+
+  int playhead_x = get_playhead_px (self);
+  int min_x =
+    MIN (self->last_playhead_px, playhead_x);
+  min_x = MAX (min_x - 2, rect.x);
+  int max_x =
+    MAX (self->last_playhead_px, playhead_x);
+  max_x = MIN (max_x + 2, rect.x + rect.width);
+
+  gtk_widget_queue_draw_area (
+    GTK_WIDGET (self), min_x, rect.y,
+    (max_x - min_x), rect.height);
 }
 
 static gboolean

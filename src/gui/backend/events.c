@@ -137,13 +137,23 @@ on_playhead_changed ()
         {
           if (MW_MIDI_ARRANGER)
             {
-              /*gtk_widget_queue_allocate (*/
-                /*GTK_WIDGET (MIDI_ARRANGER));*/
+              arranger_widget_redraw_playhead (
+                MW_MIDI_ARRANGER);
             }
           if (MW_MIDI_MODIFIER_ARRANGER)
             {
-              /*gtk_widget_queue_allocate (*/
-                /*GTK_WIDGET (MIDI_MODIFIER_ARRANGER));*/
+              arranger_widget_redraw_playhead (
+                MW_MIDI_MODIFIER_ARRANGER);
+            }
+          if (MW_TIMELINE)
+            {
+              arranger_widget_redraw_playhead (
+                MW_TIMELINE);
+            }
+          if (MW_PINNED_TIMELINE)
+            {
+              arranger_widget_redraw_playhead (
+                MW_PINNED_TIMELINE);
             }
           midi_editor_space_widget_refresh_labels (
             MW_MIDI_EDITOR_SPACE, 0);
@@ -1245,5 +1255,5 @@ events_init (
   zrythm->event_queue = queue;
   ZRYTHM->event_obj_pool = obj_pool;
 
-  g_timeout_add (36, events_process, queue);
+  g_timeout_add (12, events_process, queue);
 }

@@ -170,11 +170,6 @@ automation-curve:hover
   /*box-shadow: 2px 2px 10px @hover_color;*/
 }
 
-arranger-playhead
-{
-  background-color: red;
-}
-
 treeview.view:selected
 {
   background-color: @z_purple;

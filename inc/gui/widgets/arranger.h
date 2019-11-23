@@ -251,6 +251,11 @@ typedef struct _ArrangerWidget
 
   /* ------- END CHORD ------- */
 
+  /** Px the playhead was last drawn at, so we can
+   * redraw this and the new px only when the
+   * playhead changes position. */
+  int               last_playhead_px;
+
   /** Set to 1 to redraw. */
   int               redraw;
 
@@ -401,6 +406,13 @@ arranger_widget_get_selections (
  */
 void
 arranger_widget_redraw_whole (
+  ArrangerWidget * self);
+
+/**
+ * Only redraws the playhead part.
+ */
+void
+arranger_widget_redraw_playhead (
   ArrangerWidget * self);
 
 #endif
