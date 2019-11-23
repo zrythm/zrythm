@@ -48,8 +48,6 @@ typedef struct Zrythm Zrythm;
 
 /**
  * Push events.
- *
- * Note: not real-time safe.
  */
 #define EVENTS_PUSH(et,_arg) \
   if (EVENTS && \

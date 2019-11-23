@@ -18,6 +18,7 @@
  */
 
 #include "audio/channel.h"
+#include "audio/chord_track.h"
 #include "audio/region.h"
 #include "audio/track.h"
 #include "gui/backend/piano_roll.h"
@@ -199,8 +200,22 @@ on_released (
 void
 midi_editor_space_widget_refresh_labels (
   MidiEditorSpaceWidget * self,
-  int               hard_refresh)
+  int                     hard_refresh)
 {
+  /* caches to avoid unnecessary refreshing */
+  static ChordObject * last_chord = NULL;
+  static ScaleObject * last_scale = NULL;
+
+  ChordObject * co =
+    chord_track_get_chord_at_playhead (
+      P_CHORD_TRACK);
+  ScaleObject * so =
+    chord_track_get_scale_at_playhead (
+      P_CHORD_TRACK);
+  if (last_chord == co &&
+      last_scale == so)
+    return;
+
   for (int i = 0; i < 128; i++)
     {
       if (GTK_IS_WIDGET (
@@ -208,6 +223,9 @@ midi_editor_space_widget_refresh_labels (
         piano_roll_key_label_widget_refresh (
           self->piano_roll_key_labels[i]);
     }
+
+  last_chord = co;
+  last_scale = so;
 }
 
 /**
