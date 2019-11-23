@@ -74,6 +74,9 @@ typedef struct MidiNote
 
   /** Muted or not */
   int             muted;
+
+  /** Cache layout for drawing the name. */
+  PangoLayout *   layout;
 } MidiNote;
 
 static const cyaml_schema_field_t

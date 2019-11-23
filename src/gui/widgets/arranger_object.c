@@ -32,6 +32,7 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/midi_note.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_panel.h"
@@ -1179,6 +1180,10 @@ arranger_object_draw (
     case TYPE (REGION):
       region_draw (
         (Region *) self, self->cached_cr);
+      break;
+    case TYPE (MIDI_NOTE):
+      midi_note_draw (
+        (MidiNote *) self, self->cached_cr);
       break;
     default:
       g_warn_if_reached ();

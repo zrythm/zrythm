@@ -88,7 +88,7 @@ widget_srcs = [
   'midi_controller_popover.c',
   'midi_editor_space.c',
   'midi_modifier_arranger.c',
-  #'midi_note.c',
+  'midi_note.c',
   #'midi_region.c',
   'editor_ruler.c',
   'mixer.c',

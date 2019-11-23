@@ -17,7 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if 0
 /**
  * \file
  *
@@ -33,41 +32,19 @@
 
 #include <gtk/gtk.h>
 
-#define MIDI_NOTE_WIDGET_TYPE \
-  (midi_note_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  MidiNoteWidget,
-  midi_note_widget,
-  Z, MIDI_NOTE_WIDGET,
-  ArrangerObjectWidget)
-
 /**
  * @addtogroup widgets
  *
  * @{
  */
 
-/**
- * GUI widget for a MidiNote.
- */
-typedef struct _MidiNoteWidget
-{
-  ArrangerObjectWidget parent_instance;
-
-  /** The MidiNote associated with this widget. */
-  MidiNote *         midi_note;
-
-} MidiNoteWidget;
-
-/**
- * Creates a midi_note.
- */
-MidiNoteWidget *
-midi_note_widget_new (MidiNote * midi_note);
+void
+midi_note_draw (
+  MidiNote * self,
+  cairo_t *  cr);
 
 /**
  * @}
  */
 
-#endif
 #endif

@@ -1140,7 +1140,7 @@ arranger_selections_free_full (
   for (i = 0; i < sel->num_##sc##s; i++) \
     { \
       arranger_object_free ( \
-        (ArrangerObject *) sel->sc##s); \
+        (ArrangerObject *) sel->sc##s[i]); \
     } \
     free (sel->sc##s)
 

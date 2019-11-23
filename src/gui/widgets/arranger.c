@@ -262,9 +262,9 @@ draw_playhead (
       cairo_set_source_rgba (
         cr, 1, 0, 0, 1);
       cairo_set_line_width (cr, 2);
-      cairo_move_to (cr, px - rect->x, rect->y);
+      cairo_move_to (cr, px - rect->x, 0);
       cairo_line_to (
-        cr, px - rect->x, rect->y + rect->height);
+        cr, px - rect->x, rect->height);
       cairo_stroke (cr);
       self->last_playhead_px = px;
     }
@@ -900,6 +900,13 @@ arranger_widget_get_hit_objects_in_rect (
   if (ui_rectangle_overlap ( \
         &obj->full_rect, rect)) \
     { \
+      if (obj->type == \
+        ARRANGER_OBJECT_TYPE_VELOCITY) \
+        { \
+          obj = \
+            (ArrangerObject *) \
+            ((Velocity *) obj)->midi_note; \
+        } \
       array[*array_size] = obj; \
       (*array_size)++; \
     }
@@ -911,7 +918,7 @@ arranger_widget_get_hit_objects_in_rect (
         if (type != ARRANGER_OBJECT_TYPE_ALL &&
             type != ARRANGER_OBJECT_TYPE_REGION &&
             type != ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
-          return;
+          break;
 
         /* add overlapping scales */
         if (type == ARRANGER_OBJECT_TYPE_ALL ||
@@ -952,6 +959,50 @@ arranger_widget_get_hit_objects_in_rect (
                         ADD_OBJ_IF_OVERLAP;
                       }
                   }
+              }
+          }
+      }
+      break;
+    case TYPE (MIDI):
+      {
+        /* add overlapping midi notes */
+        if (type == ARRANGER_OBJECT_TYPE_ALL ||
+            type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+          {
+            Region * r = CLIP_EDITOR->region;
+            if (!r)
+              break;
+
+            for (int i = 0; i < r->num_midi_notes;
+                 i++)
+              {
+                MidiNote * mn = r->midi_notes[i];
+                obj =
+                  (ArrangerObject *)
+                  mn;
+                ADD_OBJ_IF_OVERLAP;
+              }
+          }
+      }
+      break;
+    case TYPE (MIDI_MODIFIER):
+      {
+        /* add overlapping midi notes */
+        if (type == ARRANGER_OBJECT_TYPE_ALL ||
+            type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+          {
+            Region * r = CLIP_EDITOR->region;
+            if (!r)
+              break;
+
+            for (int i = 0; i < r->num_midi_notes;
+                 i++)
+              {
+                MidiNote * mn = r->midi_notes[i];
+                Velocity * vel = mn->vel;
+                obj =
+                  (ArrangerObject *) vel;
+                ADD_OBJ_IF_OVERLAP;
               }
           }
       }
@@ -3904,16 +3955,17 @@ arranger_widget_get_all_objects (
   ArrangerObject ** objs,
   int *             size)
 {
-  *size = 0;
-  /* TODO */
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      break;
-    default:
-      g_warn_if_reached ();
-      break;
-    }
+  GdkRectangle rect = {
+    0, 0,
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self)),
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self)),
+  };
+
+  arranger_widget_get_hit_objects_in_rect (
+    self, ARRANGER_OBJECT_TYPE_ALL, &rect,
+    objs, size);
 }
 
 #if 0
