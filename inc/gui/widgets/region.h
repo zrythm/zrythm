@@ -53,11 +53,14 @@ region_recreate_pango_layouts (
 /**
  * Draws the Region in the given cairo context in
  * absolute coordinates.
+ *
+ * @param rect Arranger rectangle.
  */
 void
 region_draw (
-  Region *  self,
-  cairo_t * cr);
+  Region *       self,
+  cairo_t *      cr,
+  GdkRectangle * rect);
 
 #if 0
 

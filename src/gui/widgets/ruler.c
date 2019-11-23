@@ -233,13 +233,10 @@ draw_regions (
 }
 
 static void
-draw_loop_start (
+get_loop_start_rect (
   RulerWidget *  self,
-  cairo_t *      cr,
   GdkRectangle * rect)
 {
-  /* draw rect */
-  GdkRectangle dr = { 0, 0, 0, 0 };
   if (self->type == TYPE (EDITOR))
     {
       if (CLIP_EDITOR->region)
@@ -256,23 +253,34 @@ draw_loop_start (
           Position tmp;
           position_from_ticks (
             &tmp, loop_start_ticks);
-          dr.x =
+          rect->x =
             ui_pos_to_px_editor (&tmp, 1);
         }
       else
         {
-          dr.x = 0;
+          rect->x = 0;
         }
     }
   else if (self->type == TYPE (TIMELINE))
     {
-      dr.x =
+      rect->x =
         ui_pos_to_px_timeline (
           &TRANSPORT->loop_start_pos, 1);
     }
-  dr.y = 0;
-  dr.width = RW_RULER_MARKER_SIZE;
-  dr.height = RW_RULER_MARKER_SIZE;
+  rect->y = 0;
+  rect->width = RW_RULER_MARKER_SIZE;
+  rect->height = RW_RULER_MARKER_SIZE;
+}
+
+static void
+draw_loop_start (
+  RulerWidget *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
+{
+  /* draw rect */
+  GdkRectangle dr;
+  get_loop_start_rect (self, &dr);
 
   if (dr.x >=
         rect->x - dr.width &&
@@ -292,13 +300,10 @@ draw_loop_start (
 }
 
 static void
-draw_loop_end (
+get_loop_end_rect (
   RulerWidget *  self,
-  cairo_t *      cr,
   GdkRectangle * rect)
 {
-  /* draw rect */
-  GdkRectangle dr = { 0, 0, 0, 0 };
   if (self->type == TYPE (EDITOR))
     {
       if (CLIP_EDITOR->region)
@@ -315,25 +320,36 @@ draw_loop_end (
           Position tmp;
           position_from_ticks (
             &tmp, loop_end_ticks);
-          dr.x =
+          rect->x =
             ui_pos_to_px_editor (
               &tmp, 1) - RW_RULER_MARKER_SIZE;
         }
       else
         {
-          dr.x = 0;
+          rect->x = 0;
         }
     }
   else if (self->type == TYPE (TIMELINE))
     {
-      dr.x =
+      rect->x =
         ui_pos_to_px_timeline (
           &TRANSPORT->loop_end_pos, 1) -
         RW_RULER_MARKER_SIZE;
     }
-  dr.y = 0;
-  dr.width = RW_RULER_MARKER_SIZE;
-  dr.height = RW_RULER_MARKER_SIZE;
+  rect->y = 0;
+  rect->width = RW_RULER_MARKER_SIZE;
+  rect->height = RW_RULER_MARKER_SIZE;
+}
+
+static void
+draw_loop_end (
+  RulerWidget *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
+{
+  /* draw rect */
+  GdkRectangle dr;
+  get_loop_end_rect (self, &dr);
 
   if (dr.x >=
         rect->x - dr.width &&
@@ -352,18 +368,11 @@ draw_loop_end (
     }
 }
 
-/**
- * Draws the cue point (or clip start if this is
- * the editor ruler.
- */
 static void
-draw_cue_point (
+get_clip_start_rect (
   RulerWidget *  self,
-  cairo_t *      cr,
   GdkRectangle * rect)
 {
-  /* draw rect */
-  GdkRectangle dr = { 0, 0, 0, 0 };
   if (self->type == TYPE (EDITOR))
     {
       if (CLIP_EDITOR->region)
@@ -380,40 +389,46 @@ draw_cue_point (
           Position tmp;
           position_from_ticks (
             &tmp, clip_start_ticks);
-          dr.x =
+          rect->x =
             ui_pos_to_px_editor (&tmp, 1);
         }
       else
         {
-          dr.x = 0;
+          rect->x = 0;
         }
-      if (MAIN_WINDOW && EDITOR_RULER)
-        {
-          dr.y =
-            ((gtk_widget_get_allocated_height (
-              GTK_WIDGET (EDITOR_RULER)) -
-                RW_RULER_MARKER_SIZE) -
-             RW_CUE_MARKER_HEIGHT) - 1;
-        }
-      else
-        dr.y = RW_RULER_MARKER_SIZE *2;
+      rect->y =
+        ((gtk_widget_get_allocated_height (
+          GTK_WIDGET (self)) -
+            RW_RULER_MARKER_SIZE) -
+         RW_CUE_MARKER_HEIGHT) - 1;
     }
-  else if (self->type == TYPE (TIMELINE))
+  rect->width = RW_CUE_MARKER_WIDTH;
+  rect->height = RW_CUE_MARKER_HEIGHT;
+}
+
+/**
+ * Draws the cue point (or clip start if this is
+ * the editor ruler.
+ */
+static void
+draw_cue_point (
+  RulerWidget *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
+{
+  /* draw rect */
+  GdkRectangle dr;
+  get_clip_start_rect (self, &dr);
+
+  if (self->type == TYPE (TIMELINE))
     {
       dr.x =
         ui_pos_to_px_timeline (
           &TRANSPORT->cue_pos,
           1);
-      if (MAIN_WINDOW && MW_RULER)
-        {
-          dr.y =
-            RW_RULER_MARKER_SIZE;
-        }
-      else
-        dr.y = RW_RULER_MARKER_SIZE *2;
+      dr.y =
+        RW_RULER_MARKER_SIZE;
     }
-  dr.width = RW_CUE_MARKER_WIDTH;
-  dr.height = RW_CUE_MARKER_HEIGHT;
 
   if (dr.x >=
         rect->x - dr.width &&
@@ -874,6 +889,53 @@ ruler_draw_cb (
 #undef beats_per_bar
 #undef sixteenths_per_beat
 
+static int
+is_loop_start_hit (
+  RulerWidget * self,
+  double        x,
+  double        y)
+{
+  GdkRectangle rect;
+  get_loop_start_rect (self, &rect);
+
+  return
+    x >= rect.x && x <= rect.x + rect.width &&
+    y >= rect.y && y <= rect.y + rect.height;
+}
+
+static int
+is_loop_end_hit (
+  RulerWidget * self,
+  double        x,
+  double        y)
+{
+  GdkRectangle rect;
+  get_loop_end_rect (self, &rect);
+
+  return
+    x >= rect.x && x <= rect.x + rect.width &&
+    y >= rect.y && y <= rect.y + rect.height;
+}
+
+static int
+is_clip_start_hit (
+  RulerWidget * self,
+  double        x,
+  double        y)
+{
+  if (self->type == TYPE (EDITOR))
+    {
+      GdkRectangle rect;
+      get_clip_start_rect (self, &rect);
+
+      return
+        x >= rect.x && x <= rect.x + rect.width &&
+        y >= rect.y && y <= rect.y + rect.height;
+    }
+  else
+    return 0;
+}
+
 static gboolean
 multipress_pressed (
   GtkGestureMultiPress *gesture,
@@ -918,11 +980,11 @@ drag_begin (
   RulerWidget *    self)
 {
   self->start_x = start_x;
+  self->start_y = start_y;
 
-#if 0
-  if (timeline_ruler)
+  if (self->type == TYPE (TIMELINE))
     {
-      timeline_ruler->range1_first =
+      self->range1_first =
         position_is_before_or_equal (
           &PROJECT->range_1, &PROJECT->range_2);
     }
@@ -931,114 +993,47 @@ drag_begin (
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
-  RulerMarkerWidget * hit_marker =
-    Z_RULER_MARKER_WIDGET (
-      ui_get_hit_child (
-        GTK_CONTAINER (self),
-        start_x,
-        start_y,
-        RULER_MARKER_WIDGET_TYPE));
+  int loop_start_hit =
+    is_loop_start_hit (self, start_x, start_y);
+  int loop_end_hit =
+    is_loop_end_hit (self, start_x, start_y);
+  int clip_start_hit =
+    is_clip_start_hit (self, start_x, start_y);
 
   /* if one of the markers hit */
-  if (hit_marker)
+  if (loop_start_hit)
     {
-      if (timeline_ruler)
-        {
-          if (hit_marker ==
-                timeline_ruler->loop_start)
-            {
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_MOVING;
-              self->target =
-                RW_TARGET_LOOP_START;
-            }
-          else if (hit_marker ==
-                   timeline_ruler->loop_end)
-            {
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_MOVING;
-              self->target =
-                RW_TARGET_LOOP_END;
-            }
-
-        }
-      else if (editor_ruler)
-        {
-          if (hit_marker == editor_ruler->loop_start)
-            {
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_MOVING;
-              self->target =
-                RW_TARGET_LOOP_START;
-            }
-          else if (hit_marker ==
-                   editor_ruler->loop_end)
-            {
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_MOVING;
-              self->target =
-                RW_TARGET_LOOP_END;
-            }
-          else if (hit_marker ==
-                   editor_ruler->clip_start)
-            {
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_MOVING;
-              self->target =
-                RW_TARGET_CLIP_START;
-            }
-        }
+      self->action =
+        UI_OVERLAY_ACTION_STARTING_MOVING;
+      self->target =
+        RW_TARGET_LOOP_START;
+    }
+  else if (loop_end_hit)
+    {
+      self->action =
+        UI_OVERLAY_ACTION_STARTING_MOVING;
+      self->target =
+        RW_TARGET_LOOP_END;
+    }
+  else if (clip_start_hit)
+    {
+      self->action =
+        UI_OVERLAY_ACTION_STARTING_MOVING;
+      self->target =
+        RW_TARGET_CLIP_START;
     }
   else
     {
-      if (timeline_ruler)
+      if (self->type == TYPE (TIMELINE))
         timeline_ruler_on_drag_begin_no_marker_hit (
-          timeline_ruler, start_x, start_y,
-          height);
-      else if (editor_ruler)
+          self, start_x, start_y, height);
+      else if (self->type == TYPE (EDITOR))
         editor_ruler_on_drag_begin_no_marker_hit (
-          editor_ruler, start_x, start_y);
+          self, start_x, start_y);
     }
-#endif
+
   self->last_offset_x = 0;
-}
-
-static void
-drag_update (
-  GtkGestureDrag * gesture,
-  gdouble          offset_x,
-  gdouble          offset_y,
-  RulerWidget *    self)
-{
-  GdkModifierType state_mask;
-  ui_get_modifier_type_from_gesture (
-    GTK_GESTURE_SINGLE (gesture),
-    &state_mask);
-
-  if (state_mask & GDK_SHIFT_MASK)
-    self->shift_held = 1;
-  else
-    self->shift_held = 0;
-
-  if (ACTION_IS (STARTING_MOVING))
-    {
-      self->action = UI_OVERLAY_ACTION_MOVING;
-    }
-
-  if (self->type == TYPE (TIMELINE))
-    {
-      timeline_ruler_on_drag_update (
-        self, offset_x, offset_y);
-    }
-  else if (self->type == TYPE (EDITOR))
-    {
-      editor_ruler_on_drag_update (
-        self, offset_x, offset_y);
-    }
-
-  self->last_offset_x = offset_x;
-
-  /* TODO update inspector */
+  self->dragging = 1;
 }
 
 static void
@@ -1048,7 +1043,9 @@ drag_end (GtkGestureDrag *gesture,
           RulerWidget *   self)
 {
   self->start_x = 0;
+  self->start_y = 0;
   self->shift_held = 0;
+  self->dragging = 0;
 
   self->action = UI_OVERLAY_ACTION_NONE;
 
@@ -1074,16 +1071,73 @@ on_motion (
   GdkEventMotion *event,
   RulerWidget *    self)
 {
-  if (self != (RulerWidget *) MW_RULER)
-    return;
+  /* drag-update didn't work so do the drag-update
+   * stuff here */
+  if (self->dragging)
+    {
+      GdkModifierType state_mask =
+        event->state;
+
+      if (state_mask & GDK_SHIFT_MASK)
+        self->shift_held = 1;
+      else
+        self->shift_held = 0;
+
+      if (ACTION_IS (STARTING_MOVING))
+        {
+          self->action = UI_OVERLAY_ACTION_MOVING;
+        }
+
+      if (self->type == TYPE (TIMELINE))
+        {
+          timeline_ruler_on_drag_update (
+            self, event->x - self->start_x,
+            event->y - self->start_y);
+        }
+      else if (self->type == TYPE (EDITOR))
+        {
+          editor_ruler_on_drag_update (
+            self, event->x - self->start_x,
+            event->y - self->start_y);
+        }
+
+      self->last_offset_x =
+        event->x - self->start_x;
+
+      return;
+    }
 
   int height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
   if (event->type == GDK_MOTION_NOTIFY)
     {
+      int loop_start_hit =
+        is_loop_start_hit (
+          self, event->x, event->y);
+      int loop_end_hit =
+        is_loop_end_hit (
+          self, event->x, event->y);
+      int clip_start_hit =
+        is_clip_start_hit (
+          self, event->x, event->y);
+      g_message (
+        "loop start %d loop end %d clip start %d",
+        loop_start_hit, loop_end_hit,
+        clip_start_hit);
+
+      if (loop_start_hit || clip_start_hit)
+        {
+          ui_set_cursor_from_name (
+            GTK_WIDGET (self), "w-resize");
+        }
+      else if (loop_end_hit)
+        {
+          ui_set_cursor_from_name (
+            GTK_WIDGET (self), "e-resize");
+        }
       /* if lower 3/4ths */
-      if (event->y > (height * 1) / 4)
+      else if (event->y > (height * 1) / 4)
         {
           /* set cursor to normal */
           ui_set_cursor_from_name (
@@ -1095,6 +1149,11 @@ on_motion (
           ui_set_cursor_from_name (
             GTK_WIDGET (self), "text");
         }
+    }
+  else if (event->type == GDK_LEAVE_NOTIFY)
+    {
+      ui_set_cursor_from_name (
+        GTK_WIDGET (self), "default");
     }
 }
 
@@ -1300,9 +1359,9 @@ ruler_widget_init (RulerWidget * self)
   g_signal_connect (
     G_OBJECT(self->drag), "drag-begin",
     G_CALLBACK (drag_begin),  self);
-  g_signal_connect (
-    G_OBJECT(self->drag), "drag-update",
-    G_CALLBACK (drag_update),  self);
+  /*g_signal_connect (*/
+    /*G_OBJECT(self->drag), "drag-update",*/
+    /*G_CALLBACK (drag_update),  self);*/
   g_signal_connect (
     G_OBJECT(self->drag), "drag-end",
     G_CALLBACK (drag_end),  self);

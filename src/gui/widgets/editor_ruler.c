@@ -169,8 +169,10 @@ editor_ruler_on_drag_update (
             {
               transport_move_playhead (
                 &editor_pos, 1);
+              ruler_widget_redraw_whole (self);
               EVENTS_PUSH (
-                ET_PLAYHEAD_POS_CHANGED, NULL);
+                ET_PLAYHEAD_POS_CHANGED_MANUALLY,
+                NULL);
             }
 
           /*ruler_marker_widget_update_tooltip (*/

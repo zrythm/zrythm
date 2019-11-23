@@ -114,8 +114,13 @@ on_arranger_selections_in_transit (
   }
 }
 
-static int
-on_playhead_changed ()
+/**
+ * @param manually Whether the position was changed
+ *   by the user.
+ */
+static void
+on_playhead_changed (
+  int manually)
 {
   /*if (automatic && (aa++ % 2 != 0))*/
     /*{*/
@@ -130,33 +135,57 @@ on_playhead_changed ()
         }
       if (MW_RULER)
         {
-          ruler_widget_redraw_playhead (MW_RULER);
+          if (manually)
+            ruler_widget_redraw_whole (MW_RULER);
+          else
+            ruler_widget_redraw_playhead (MW_RULER);
         }
       if (EDITOR_RULER)
         {
-          ruler_widget_redraw_playhead (EDITOR_RULER);
+          if (manually)
+            ruler_widget_redraw_whole (
+              EDITOR_RULER);
+          else
+            ruler_widget_redraw_playhead (
+              EDITOR_RULER);
         }
       if (MW_MIDI_EDITOR_SPACE)
         {
           if (MW_MIDI_ARRANGER)
             {
-              arranger_widget_redraw_playhead (
-                MW_MIDI_ARRANGER);
+              if (manually)
+                arranger_widget_redraw_whole (
+                  MW_MIDI_ARRANGER);
+              else
+                arranger_widget_redraw_playhead (
+                  MW_MIDI_ARRANGER);
             }
           if (MW_MIDI_MODIFIER_ARRANGER)
             {
-              arranger_widget_redraw_playhead (
-                MW_MIDI_MODIFIER_ARRANGER);
+              if (manually)
+                arranger_widget_redraw_whole (
+                  MW_MIDI_MODIFIER_ARRANGER);
+              else
+                arranger_widget_redraw_playhead (
+                  MW_MIDI_MODIFIER_ARRANGER);
             }
           if (MW_TIMELINE)
             {
-              arranger_widget_redraw_playhead (
-                MW_TIMELINE);
+              if (manually)
+                arranger_widget_redraw_whole (
+                  MW_TIMELINE);
+              else
+                arranger_widget_redraw_playhead (
+                  MW_TIMELINE);
             }
           if (MW_PINNED_TIMELINE)
             {
-              arranger_widget_redraw_playhead (
-                MW_PINNED_TIMELINE);
+              if (manually)
+                arranger_widget_redraw_whole (
+                  MW_PINNED_TIMELINE);
+              else
+                arranger_widget_redraw_playhead (
+                  MW_PINNED_TIMELINE);
             }
           midi_editor_space_widget_refresh_labels (
             MW_MIDI_EDITOR_SPACE, 0);
@@ -194,7 +223,6 @@ on_playhead_changed ()
         /*}*/
     }
   /*aa = 1;*/
-  return FALSE;
 }
 
 static void
@@ -920,8 +948,8 @@ events_process (void * data)
             }
           break;
         case ET_CLIP_MARKER_POS_CHANGED:
-          gtk_widget_queue_allocate (
-            GTK_WIDGET (ev->arg)); // ruler widget
+          ruler_widget_redraw_whole (
+            EDITOR_RULER);
           clip_editor_redraw_region (CLIP_EDITOR);
           break;
         case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
@@ -987,8 +1015,10 @@ events_process (void * data)
             Z_RULER_WIDGET (EDITOR_RULER));
           break;
         case ET_PLAYHEAD_POS_CHANGED:
-          g_idle_add (on_playhead_changed,
-                      NULL);
+          on_playhead_changed (0);
+          break;
+        case ET_PLAYHEAD_POS_CHANGED_MANUALLY:
+          on_playhead_changed (1);
           break;
         case ET_CLIP_EDITOR_REGION_CHANGED:
           on_clip_editor_region_changed ();

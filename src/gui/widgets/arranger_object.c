@@ -1179,7 +1179,8 @@ arranger_object_draw (
       break;
     case TYPE (REGION):
       region_draw (
-        (Region *) self, self->cached_cr);
+        (Region *) self, self->cached_cr,
+        &arranger->last_rect);
       break;
     case TYPE (MIDI_NOTE):
       midi_note_draw (

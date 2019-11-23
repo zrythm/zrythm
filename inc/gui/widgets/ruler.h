@@ -112,6 +112,7 @@ typedef struct _RulerWidget
 
   /** For dragging. */
   double            start_x;
+  double            start_y;
   double            last_offset_x;
 
   GtkGestureDrag *  drag;
@@ -139,6 +140,9 @@ typedef struct _RulerWidget
   /** Whether range1 was before range2 at drag
    * start. */
   int               range1_first;
+
+  /** Set to 1 between drag begin and drag end. */
+  int               dragging;
 
   /**
    * Set on drag begin.

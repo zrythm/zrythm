@@ -360,7 +360,7 @@ timeline_ruler_on_drag_update (
                 {
                   transport_move_playhead (&tmp, 1);
                   EVENTS_PUSH (
-                    ET_PLAYHEAD_POS_CHANGED,
+                    ET_PLAYHEAD_POS_CHANGED_MANUALLY,
                     NULL);
                 }
 
@@ -370,6 +370,7 @@ timeline_ruler_on_drag_update (
           else if (self->target ==
                      RW_TARGET_LOOP_START)
             {
+              g_message ("moving loop start");
               /* if position is acceptable */
               if (position_compare (
                     &tmp, &timeline_start) >= 0 &&
