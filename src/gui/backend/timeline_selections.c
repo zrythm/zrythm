@@ -40,14 +40,10 @@
 
 /**
  * Gets highest track in the selections.
- *
- * If transient is 1, transient objects rae checked
- * instead.
  */
 Track *
 timeline_selections_get_last_track (
-  TimelineSelections * ts,
-  int                  transient)
+  TimelineSelections * ts)
 {
   int track_pos = -1;
   Track * track = NULL;
@@ -69,10 +65,6 @@ timeline_selections_get_last_track (
   for (int i = 0; i < ts->num_regions; i++)
     {
       region = ts->regions[i];
-      if (transient)
-        region = region_get_main_trans (region);
-      else
-        region = region_get_main (region);
       ArrangerObject * r_obj =
         (ArrangerObject *) region;
       Track * _track =
@@ -87,14 +79,10 @@ timeline_selections_get_last_track (
 
 /**
  * Gets lowest track in the selections.
- *
- * If transient is 1, transient objects rae checked
- * instead.
  */
 Track *
 timeline_selections_get_first_track (
-  TimelineSelections * ts,
-  int                  transient)
+  TimelineSelections * ts)
 {
   int track_pos = INT_MAX;
   Track * track = NULL;
@@ -116,10 +104,6 @@ timeline_selections_get_first_track (
   for (int i = 0; i < ts->num_regions; i++)
     {
       region = ts->regions[i];
-      if (transient)
-        region = region_get_main_trans (region);
-      else
-        region = region_get_main (region);
       ArrangerObject * r_obj =
         (ArrangerObject *) region;
       Track * _track =
@@ -190,7 +174,7 @@ timeline_selections_set_vis_track_indices (
 {
   int i;
   Track * highest_tr =
-    timeline_selections_get_first_track (ts, 0);
+    timeline_selections_get_first_track (ts);
 
   Region * region;
   for (i = 0; i < ts->num_regions; i++)
@@ -353,7 +337,7 @@ timeline_selections_paste_to_pos (
   Position start_pos;
   arranger_selections_get_start_pos (
     (ArrangerSelections *) ts, &start_pos,
-    F_NO_TRANSIENTS, F_GLOBAL);
+    F_GLOBAL);
   long start_pos_ticks =
     position_to_ticks (&start_pos);
 

@@ -43,11 +43,6 @@ scale_object_new (
 
   self->scale = descr;
 
-  if (is_main)
-    {
-      arranger_object_set_as_main (obj);
-    }
-
   return self;
 }
 

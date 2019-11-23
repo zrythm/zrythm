@@ -110,25 +110,17 @@ timeline_selections_schema = {
 
 /**
  * Gets highest track in the selections.
- *
- * If transient is 1, transient objects rae checked
- * instead.
  */
 Track *
 timeline_selections_get_first_track (
-  TimelineSelections * ts,
-  int                  transient);
+  TimelineSelections * ts);
 
 /**
  * Gets lowest track in the selections.
- *
- * If transient is 1, transient objects rae checked
- * instead.
  */
 Track *
 timeline_selections_get_last_track (
-  TimelineSelections * ts,
-  int                  transient);
+  TimelineSelections * ts);
 
 /**
  * Replaces the track positions in each object with

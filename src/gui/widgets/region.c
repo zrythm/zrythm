@@ -97,7 +97,8 @@ draw_region_background (
     &color,
     obj->hover,
     region_is_selected (self),
-    region_is_transient (self));
+    /* FIXME */
+    0);
   gdk_cairo_set_source_rgba (
     cr, &color);
 
@@ -347,17 +348,6 @@ draw_region_name (
 
   char str[200];
   strcpy (str, self->name);
-  if (DEBUGGING)
-    {
-      if (region_is_transient (self))
-        {
-          strcat (str, " [t]");
-        }
-      if (region_is_lane (self))
-        {
-          strcat (str, " [l]");
-        }
-    }
 
   /* draw dark bg behind text */
   region_recreate_pango_layouts (self);
@@ -403,8 +393,6 @@ region_draw (
   Region *  self,
   cairo_t * cr)
 {
-  ArrangerObject * obj =
-    (ArrangerObject *) self;
   draw_region_background (self, cr);
   draw_region_loop_points (self, cr);
 
@@ -545,7 +533,7 @@ region_widget_draw_background (
       GTK_WIDGET (self)) &
       GTK_STATE_FLAG_PRELIGHT,
     region_is_selected (r),
-    region_is_transient (r));
+    0);
   gdk_cairo_set_source_rgba (
     cr, &color);
 
@@ -581,17 +569,6 @@ region_widget_draw_name (
 
   char str[200];
   strcpy (str, region->name);
-  if (DEBUGGING)
-    {
-      if (region_is_transient (region))
-        {
-          strcat (str, " [t]");
-        }
-      if (region_is_lane (region))
-        {
-          strcat (str, " [l]");
-        }
-    }
 
   /* draw dark bg behind text */
   PangoLayout * layout = rw_prv->layout;

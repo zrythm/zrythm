@@ -50,38 +50,9 @@ typedef struct _AudioClipWidget AudioClipWidget;
 
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
 
-#define region_is_transient(r) \
-  arranger_object_is_transient ( \
-    (ArrangerObject *) r)
-#define region_is_lane(r) \
-  arranger_object_is_lane ( \
-    (ArrangerObject *) r)
-#define region_is_main(r) \
-  arranger_object_is_main ( \
-    (ArrangerObject *) r)
-#define region_get_lane(r) \
-  ((Region *) \
-   arranger_object_get_lane ( \
-     (ArrangerObject *) r))
-#define region_get_main(r) \
-  ((Region *) \
-   arranger_object_get_main ( \
-     (ArrangerObject *) r))
-#define region_get_lane_trans(r) \
-  ((Region *) \
-   arranger_object_get_lane_trans ( \
-     (ArrangerObject *) r))
-#define region_get_main_trans(r) \
-  ((Region *) \
-   arranger_object_get_main_trans ( \
-     (ArrangerObject *) r))
 #define region_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
-#define region_get_visible_counterpart(r) \
-  ((Region *) \
-   arranger_object_get_visible_counterpart ( \
-     (ArrangerObject *) r))
 
 /**
  * Type of Region.
@@ -310,8 +281,7 @@ region_find_by_name (
   const char * name);
 
 #define region_set_track_pos(_r,_pos) \
-  arranger_object_set_primitive ( \
-    Region, _r, track_pos, _pos, AO_UPDATE_ALL)
+  _r->track_pos = _pos
 
 /**
  * Print region info for debugging.

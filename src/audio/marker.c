@@ -42,11 +42,6 @@ marker_new (
   self->type = MARKER_TYPE_CUSTOM;
   position_set_bar (&obj->pos, 1);
 
-  if (is_main)
-    {
-      arranger_object_set_as_main (obj);
-    }
-
   return self;
 }
 

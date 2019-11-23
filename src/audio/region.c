@@ -91,11 +91,6 @@ region_init (
   position_init (&obj->loop_start_pos);
   obj->loop_end_pos.frames = length;
   self->linked_region_name = NULL;
-
-  if (is_main)
-    {
-      arranger_object_set_as_main (obj);
-    }
 }
 
 /**
@@ -145,27 +140,13 @@ region_gen_name (
  */
 void
 region_set_lane (
-  Region * region,
+  Region *    self,
   TrackLane * lane)
 {
   g_return_if_fail (lane);
-
-  Region * r;
-  for (int i = 0; i < 4; i++)
-    {
-      if (i == AOI_COUNTERPART_MAIN)
-        r = region_get_main (region);
-      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
-        r = region_get_main_trans (region);
-      else if (i == AOI_COUNTERPART_LANE)
-        r = region_get_lane (region);
-      else if (i == AOI_COUNTERPART_LANE_TRANSIENT)
-        r = region_get_lane_trans (region);
-
-      r->lane = lane;
-      r->lane_pos = lane->pos;
-      r->track_pos = lane->track_pos;
-    }
+  self->lane = lane;
+  self->lane_pos = lane->pos;
+  self->track_pos = lane->track_pos;
 }
 
 /**
@@ -175,28 +156,15 @@ region_set_lane (
  *   track is used.
  */
 static void
-set_tmp_lane_to_visible_counterparts (
+set_tmp_lane (
   Region *    region,
   Track *     track,
   TrackLane * lane)
 {
-#define SET_IF_VISIBLE(x) \
-  region = \
-    region_get_##x (region); \
-  if ( \
-    arranger_object_should_be_visible ( \
-      (ArrangerObject *) region)) \
-    { \
-      region->tmp_lane = \
-        track ? \
-          track->lanes[region->lane_pos] : \
-          lane; \
-    }
-
-  SET_IF_VISIBLE (main);
-  SET_IF_VISIBLE (lane);
-
-#undef SET_IF_VISIBLE
+  region->tmp_lane =
+    track ?
+      track->lanes[region->lane_pos] :
+      lane;
 }
 
 /**
@@ -230,7 +198,7 @@ region_move_to_track (
       track_create_missing_lanes (
         track, region->lane_pos);
 
-      set_tmp_lane_to_visible_counterparts (
+      set_tmp_lane (
         region, track, NULL);
     }
   else
@@ -302,7 +270,7 @@ region_move_to_lane (
   if (tmp)
     {
       g_warn_if_fail (lane->pos >= 0);
-      set_tmp_lane_to_visible_counterparts (
+      set_tmp_lane (
         region, NULL, lane);
     }
   else
@@ -335,23 +303,13 @@ region_move_to_lane (
  */
 void
 region_set_automation_track (
-  Region * region,
+  Region *          self,
   AutomationTrack * at)
 {
   g_return_if_fail (at);
-
-  Region * r;
-  for (int i = 0; i < 2; i++)
-    {
-      if (i == AOI_COUNTERPART_MAIN)
-        r = region_get_main (region);
-      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
-        r = region_get_main_trans (region);
-
-      r->at = at;
-      r->at_index = at->index;
-      r->track_pos = at->track->pos;
-    }
+  self->at = at;
+  self->at_index = at->index;
+  self->track_pos = at->track->pos;
 }
 
 void
@@ -519,41 +477,26 @@ region_print (
  */
 void
 region_set_name (
-  Region * region,
+  Region * self,
   char *   name)
 {
-  for (int i = 0; i < 4; i++)
-    {
-      Region * r;
-      if (i == AOI_COUNTERPART_MAIN)
-        r = region_get_main (region);
-      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
-        r = region_get_main_trans (region);
-      else if (i == AOI_COUNTERPART_LANE)
-        r = region_get_lane (region);
-      else if (i == AOI_COUNTERPART_LANE_TRANSIENT)
-        r = region_get_lane_trans (region);
+  arranger_object_set_name ((ArrangerObject *) self, name);
 
-      if (r->name)
-        g_free (r->name);
-      r->name = g_strdup (name);
-    }
-
-  for (int i = 0; i < region->num_midi_notes; i++)
+  for (int i = 0; i < self->num_midi_notes; i++)
     {
       midi_note_set_region (
-        region->midi_notes[i], region);
+        self->midi_notes[i], self);
     }
-  for (int i = 0; i < region->num_chord_objects; i++)
+  for (int i = 0; i < self->num_chord_objects; i++)
     {
       chord_object_set_region (
-        region->chord_objects[i], region);
+        self->chord_objects[i], self);
     }
-  for (int i = 0; i < region->num_aps; i++)
+  for (int i = 0; i < self->num_aps; i++)
     {
       automation_point_set_region_and_index (
-        region->aps[i], region,
-        region->aps[i]->index);
+        self->aps[i], self,
+        self->aps[i]->index);
     }
 }
 

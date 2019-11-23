@@ -400,7 +400,7 @@ timeline_arranger_widget_create_region (
   arranger_object_set_position (
     r_obj, &r_obj->end_pos,
     ARRANGER_OBJECT_POSITION_TYPE_END,
-    F_CACHED, F_NO_VALIDATE, AO_UPDATE_ALL);
+    F_CACHED, F_NO_VALIDATE);
   arranger_object_select (
     r_obj, F_SELECT, F_NO_APPEND);
 }
@@ -616,7 +616,7 @@ snap_region_l (
             r_obj, 1,
             self->action ==
               UI_OVERLAY_ACTION_RESIZING_L_LOOP,
-            diff, AO_UPDATE_ALL);
+            diff);
         }
     }
 
@@ -666,8 +666,7 @@ timeline_arranger_widget_snap_regions_l (
     {
       /* main trans region */
       region =
-        region_get_main (
-          TL_SELECTIONS->regions[i]);
+        TL_SELECTIONS->regions[i];
       r_obj = (ArrangerObject *) region;
 
       /* caclulate new start position */
@@ -754,7 +753,7 @@ snap_region_r (
             r_obj, 0,
             self->action ==
               UI_OVERLAY_ACTION_RESIZING_R_LOOP,
-            diff, AO_UPDATE_ALL);
+            diff);
 
           /* if creating also set the loop points
            * appropriately */
@@ -822,10 +821,6 @@ timeline_arranger_widget_snap_regions_r (
     {
       region =
         TL_SELECTIONS->regions[i];
-
-      /* main region */
-      region =
-        region_get_main (region);
       r_obj = (ArrangerObject *) region;
 
       position_set_to_pos (
@@ -990,8 +985,6 @@ timeline_arranger_move_regions_to_new_lanes (
   for (i = 0; i < num_regions; i++)
     {
       region = regions[i];
-      region =
-        region_get_lane (region);
       TrackLane * lane = region->lane;
       if (region->tmp_lane)
         lane = region->tmp_lane;
@@ -1012,8 +1005,6 @@ timeline_arranger_move_regions_to_new_lanes (
   for (i = 0; i < num_regions; i++)
     {
       region = regions[i];
-      region =
-        region_get_lane (region);
       TrackLane * lane = region->lane;
       if (region->tmp_lane)
         lane = region->tmp_lane;
@@ -1070,10 +1061,6 @@ timeline_arranger_move_regions_to_new_tracks (
   for (i = 0; i < num_regions; i++)
     {
       region = regions[i];
-      region =
-        (Region *)
-        arranger_object_get_visible_counterpart (
-          (ArrangerObject *) region);
       r_obj = (ArrangerObject *) region;
       Track * region_track =
         arranger_object_get_track (r_obj);
@@ -1102,10 +1089,7 @@ timeline_arranger_move_regions_to_new_tracks (
   for (i = 0; i < num_regions; i++)
     {
       region = regions[i];
-      r_obj =
-        arranger_object_get_visible_counterpart (
-          (ArrangerObject *) region);
-      region = (Region *) r_obj;
+      r_obj = (ArrangerObject *) region;
       Track * region_track =
         arranger_object_get_track (r_obj);
       if (region->tmp_lane)

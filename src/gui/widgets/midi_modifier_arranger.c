@@ -217,7 +217,7 @@ midi_modifier_arranger_widget_ramp (
       /*g_message ("val %d", val);*/
 
       velocity_set_val (
-        vel, val, AO_UPDATE_ALL);
+        vel, val);
     }
 
   /* find velocities not hit */
@@ -235,7 +235,7 @@ midi_modifier_arranger_widget_ramp (
     {
       vel = velocities[i];
       velocity_set_val (
-        vel, vel->cache_vel, AO_UPDATE_ALL);
+        vel, vel->cache_vel);
     }
 
   free (velocities);
@@ -279,14 +279,11 @@ midi_modifier_arranger_widget_resize_velocities (
       vel =
         MA_SELECTIONS->midi_notes[i]->vel;
 
-      vel =
-        velocity_get_main_trans (vel);
       velocity_set_val (
         vel,
         CLAMP (
           vel->cache_vel + self->vel_diff,
-          1, 127),
-        AO_UPDATE_ALL);
+          1, 127));
 
 #if 0
       ArrangerObject * vel_obj =

@@ -972,7 +972,7 @@ move_items_x (
   ArrangerSelections * sel =
     arranger_widget_get_selections (self);
   arranger_selections_add_ticks (
-    sel, ticks_diff, F_CACHED, AO_UPDATE_NON_TRANS);
+    sel, ticks_diff, F_CACHED);
 
   EVENTS_PUSH (
     ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
@@ -1032,15 +1032,12 @@ move_items_y (
                 AUTOMATION_SELECTIONS->
                   automation_points[i];
 
-              ap =
-                automation_point_get_main (ap);
-
               float fval =
                 get_fvalue_at_y (
                   self,
                   self->start_y + offset_y);
               automation_point_set_fvalue (
-                ap, fval, AO_UPDATE_NON_TRANS);
+                ap, fval);
             }
           ArrangerObject * start_ap_obj =
             self->start_object;
@@ -1130,8 +1127,7 @@ move_items_y (
         int y_delta;
         /* first note selected */
         int first_note_selected =
-          midi_note_get_main (
-            self->start_object)->val;
+           ((MidiNote *) self->start_object)->val;
         /* note at cursor */
         int note_at_cursor =
           midi_arranger_widget_get_note_at_y (
@@ -1140,24 +1136,19 @@ move_items_y (
         y_delta = note_at_cursor - first_note_selected;
         y_delta =
           midi_arranger_calc_deltamax_for_note_movement (y_delta);
-        MidiNote * midi_note;
-        ArrangerObjectUpdateFlag flag =
-          AO_UPDATE_NON_TRANS;
 
         g_message ("midi notes %d", MA_SELECTIONS->num_midi_notes);
         int i;
         for (i = 0; i < MA_SELECTIONS->num_midi_notes; i++)
           {
-            midi_note =
-              midi_note_get_main (
-                MA_SELECTIONS->midi_notes[i]);
+            MidiNote * midi_note =
+              MA_SELECTIONS->midi_notes[i];
             /*ArrangerObject * mn_obj =*/
               /*(ArrangerObject *) midi_note;*/
             midi_note_set_val (
               midi_note,
               (midi_byte_t)
-                ((int) midi_note->val + y_delta),
-              flag);
+                ((int) midi_note->val + y_delta));
             /*if (Z_IS_ARRANGER_OBJECT_WIDGET (*/
                   /*mn_obj->widget))*/
               /*{*/
@@ -2045,7 +2036,7 @@ set_earliest_obj (
     {
       arranger_selections_get_start_pos (
         sel, &self->earliest_obj_start_pos,
-        F_NO_TRANSIENTS, F_GLOBAL);
+        F_GLOBAL);
       arranger_selections_set_cache_poses (sel);
       self->earliest_obj_exists = 1;
     }
@@ -2310,9 +2301,18 @@ drag_begin (
       self, start_x, start_y);
   g_message ("objects hit %d", objects_hit);
 
-  /* if nothing hit */
-  if (!objects_hit)
+  if (objects_hit)
     {
+      ArrangerSelections * sel =
+        arranger_widget_get_selections (self);
+      self->sel_at_start =
+        arranger_selections_clone (sel);
+    }
+  /* if nothing hit */
+  else
+    {
+      self->sel_at_start = NULL;
+
       /* single click */
       if (self->n_press == 1)
         {
@@ -3093,6 +3093,9 @@ on_drag_end_midi (
     {
     case UI_OVERLAY_ACTION_RESIZING_L:
     {
+      /* FIXME cache the selections on drag start and use
+       * those */
+#if 0
       ArrangerObject * trans_note =
         arranger_object_get_main_trans (
           MA_SELECTIONS->midi_notes[0]);
@@ -3104,12 +3107,12 @@ on_drag_end_midi (
           trans_note->cache_pos.total_ticks);
       undo_manager_perform (
         UNDO_MANAGER, ua);
-      arranger_selections_reset_counterparts (
-        (ArrangerSelections *) MA_SELECTIONS, 1);
+#endif
     }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
     {
+#if 0
       ArrangerObject * trans_note =
         arranger_object_get_main_trans (
           MA_SELECTIONS->midi_notes[0]);
@@ -3121,8 +3124,7 @@ on_drag_end_midi (
           trans_note->cache_end_pos.total_ticks);
       undo_manager_perform (
         UNDO_MANAGER, ua);
-      arranger_selections_reset_counterparts (
-        (ArrangerSelections *) MA_SELECTIONS, 1);
+#endif
     }
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
@@ -3143,6 +3145,7 @@ on_drag_end_midi (
       break;
     case UI_OVERLAY_ACTION_MOVING:
     {
+#if 0
       ArrangerObject * note_obj =
         arranger_object_get_main (
           MA_SELECTIONS->midi_notes[0]);
@@ -3158,14 +3161,14 @@ on_drag_end_midi (
           MA_SELECTIONS, ticks_diff, pitch_diff);
       undo_manager_perform (
         UNDO_MANAGER, ua);
-      arranger_selections_reset_counterparts (
-        (ArrangerSelections *) MA_SELECTIONS, 1);
+#endif
     }
       break;
     /* if copy/link-moved */
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
     {
+#if 0
       ArrangerObject * note_obj =
         arranger_object_get_main (
           MA_SELECTIONS->midi_notes[0]);
@@ -3176,8 +3179,6 @@ on_drag_end_midi (
           note_obj->cache_pos.total_ticks;
       int pitch_diff =
         mn->val - mn->cache_val;
-      arranger_selections_reset_counterparts (
-        (ArrangerSelections *) MA_SELECTIONS, 0);
       UndoableAction * ua =
         (UndoableAction *)
         arranger_selections_action_new_duplicate_midi (
@@ -3186,6 +3187,7 @@ on_drag_end_midi (
           pitch_diff);
       undo_manager_perform (
         UNDO_MANAGER, ua);
+#endif
     }
       break;
     case UI_OVERLAY_ACTION_NONE:
@@ -3248,6 +3250,7 @@ on_drag_end_chord (
       break;
     case UI_OVERLAY_ACTION_MOVING:
       {
+#if 0
         ChordObject * co =
           chord_object_get_main (
             CHORD_SELECTIONS->chord_objects[0]);
@@ -3264,14 +3267,13 @@ on_drag_end_chord (
             0);
         undo_manager_perform (
           UNDO_MANAGER, ua);
-        arranger_selections_reset_counterparts (
-          (ArrangerSelections *)
-          CHORD_SELECTIONS, 1);
+#endif
       }
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
       {
+#if 0
         ChordObject * co =
           chord_object_get_main (
             CHORD_SELECTIONS->chord_objects[0]);
@@ -3280,19 +3282,14 @@ on_drag_end_chord (
         long ticks_diff =
           co_obj->pos.total_ticks -
             co_obj->cache_pos.total_ticks;
-        arranger_selections_reset_counterparts (
-          (ArrangerSelections *)
-          CHORD_SELECTIONS, 0);
         UndoableAction * ua =
           (UndoableAction *)
           arranger_selections_action_new_duplicate_chord (
             CHORD_SELECTIONS,
             ticks_diff, 0);
-        arranger_selections_reset_counterparts (
-          (ArrangerSelections *)
-          CHORD_SELECTIONS, 0);
         undo_manager_perform (
           UNDO_MANAGER, ua);
+#endif
       }
       break;
     case UI_OVERLAY_ACTION_NONE:
@@ -3329,9 +3326,7 @@ on_drag_end_timeline (
        i++)
     {
       Region * region = TL_SELECTIONS->regions[i];
-      arranger_object_set_primitive (
-        Region, region, tmp_lane,
-        NULL, AO_UPDATE_ALL);
+      region->tmp_lane = NULL;
     }
 
   switch (self->action)
@@ -3339,6 +3334,7 @@ on_drag_end_timeline (
     case UI_OVERLAY_ACTION_RESIZING_L:
       if (!self->resizing_range)
         {
+#if 0
           ArrangerObject * main_trans_region =
             arranger_object_get_main_trans (
             TL_SELECTIONS->regions[0]);
@@ -3352,14 +3348,13 @@ on_drag_end_timeline (
                 &main_trans_region->cache_pos));
           undo_manager_perform (
             UNDO_MANAGER, ua);
-          arranger_selections_reset_counterparts (
-            (ArrangerSelections *) TL_SELECTIONS,
-            1);
+#endif
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
       if (!self->resizing_range)
         {
+#if 0
           ArrangerObject * main_trans_region =
             arranger_object_get_main_trans (
               TL_SELECTIONS->regions[0]);
@@ -3373,14 +3368,13 @@ on_drag_end_timeline (
                 &main_trans_region->cache_pos));
           undo_manager_perform (
             UNDO_MANAGER, ua);
-          arranger_selections_reset_counterparts (
-            (ArrangerSelections *) TL_SELECTIONS,
-            1);
+#endif
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
       if (!self->resizing_range)
         {
+#if 0
           ArrangerObject * main_trans_region =
             arranger_object_get_main_trans (
               TL_SELECTIONS->regions[0]);
@@ -3394,14 +3388,13 @@ on_drag_end_timeline (
                 &main_trans_region->cache_end_pos));
           undo_manager_perform (
             UNDO_MANAGER, ua);
-          arranger_selections_reset_counterparts (
-            (ArrangerSelections *) TL_SELECTIONS,
-            1);
+#endif
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
       if (!self->resizing_range)
         {
+#if 0
           ArrangerObject * main_trans_region =
             arranger_object_get_main_trans (
               TL_SELECTIONS->regions[0]);
@@ -3415,9 +3408,7 @@ on_drag_end_timeline (
                 &main_trans_region->cache_end_pos));
           undo_manager_perform (
             UNDO_MANAGER, ua);
-          arranger_selections_reset_counterparts (
-            (ArrangerSelections *) TL_SELECTIONS,
-            1);
+#endif
         }
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
@@ -3446,11 +3437,11 @@ on_drag_end_timeline (
                  earliest_trans_pos;
         arranger_selections_get_start_pos (
           (ArrangerSelections *) TL_SELECTIONS,
-          &earliest_main_pos, F_NO_TRANSIENTS,
+          &earliest_main_pos,
           F_GLOBAL);
         arranger_selections_get_start_pos (
           (ArrangerSelections *) TL_SELECTIONS,
-          &earliest_trans_pos, F_TRANSIENTS,
+          &earliest_trans_pos,
           F_GLOBAL);
         long ticks_diff =
           earliest_main_pos.total_ticks -
@@ -3463,8 +3454,6 @@ on_drag_end_timeline (
             self->lane_diff);
         undo_manager_perform (
           UNDO_MANAGER, ua);
-        arranger_selections_reset_counterparts (
-          (ArrangerSelections *) TL_SELECTIONS, 1);
       }
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
@@ -3474,17 +3463,15 @@ on_drag_end_timeline (
                  earliest_trans_pos;
         arranger_selections_get_start_pos (
           (ArrangerSelections *) TL_SELECTIONS,
-          &earliest_main_pos, F_NO_TRANSIENTS,
+          &earliest_main_pos,
           F_GLOBAL);
         arranger_selections_get_start_pos (
           (ArrangerSelections *) TL_SELECTIONS,
-          &earliest_trans_pos, F_TRANSIENTS,
+          &earliest_trans_pos,
           F_GLOBAL);
         long ticks_diff =
           earliest_main_pos.total_ticks -
             earliest_trans_pos.total_ticks;
-        arranger_selections_reset_counterparts (
-          (ArrangerSelections *) TL_SELECTIONS, 0);
         UndoableAction * ua =
           (UndoableAction *)
           arranger_selections_action_new_duplicate_timeline (
@@ -3492,8 +3479,6 @@ on_drag_end_timeline (
             ticks_diff,
             self->visible_track_diff,
             self->lane_diff);
-        arranger_selections_reset_counterparts (
-          (ArrangerSelections *) TL_SELECTIONS, 1);
         arranger_selections_clear (
           (ArrangerSelections *) TL_SELECTIONS);
         undo_manager_perform (
@@ -3509,9 +3494,6 @@ on_drag_end_timeline (
     case UI_OVERLAY_ACTION_CREATING_MOVING:
     case UI_OVERLAY_ACTION_CREATING_RESIZING_R:
       {
-        arranger_selections_reset_counterparts (
-          (ArrangerSelections *) TL_SELECTIONS, 0);
-
         UndoableAction * ua =
           arranger_selections_action_new_create (
             (ArrangerSelections *) TL_SELECTIONS);
@@ -3606,6 +3588,13 @@ drag_end (
 
   self->shift_held = 0;
   self->ctrl_held = 0;
+
+  if (self->sel_at_start)
+    {
+      arranger_selections_free_full (
+        self->sel_at_start);
+      self->sel_at_start = NULL;
+    }
 
   /* reset action */
   self->action = UI_OVERLAY_ACTION_NONE;

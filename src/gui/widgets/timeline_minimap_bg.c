@@ -116,8 +116,6 @@ timeline_minimap_bg_draw_cb (
             {
               r_obj =
                 (ArrangerObject *) lane->regions[k];
-              r_obj =
-                arranger_object_get_visible_counterpart (r_obj);
 
               int px_start =
                 ui_pos_to_px_timeline (

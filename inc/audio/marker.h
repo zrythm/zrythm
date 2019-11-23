@@ -40,20 +40,6 @@
 
 #define MARKER_WIDGET_TRIANGLE_W 10
 
-#define marker_is_main(c) \
-  arranger_object_is_main ( \
-    (ArrangerObject *) c)
-#define marker_is_transient(r) \
-  arranger_object_is_transient ( \
-    (ArrangerObject *) r)
-#define marker_get_main(r) \
-  ((Marker *) \
-   arranger_object_get_main ( \
-     (ArrangerObject *) r))
-#define marker_get_main_trans(r) \
-  ((Marker *) \
-   arranger_object_get_main_trans ( \
-     (ArrangerObject *) r))
 #define marker_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
@@ -155,7 +141,7 @@ marker_set_track (
  */
 #define marker_set_name(_self,_name) \
   arranger_object_set_string ( \
-    Marker, _self, name, _name, AO_UPDATE_ALL)
+    Marker, _self, name, _name)
 
 /**
  * @}

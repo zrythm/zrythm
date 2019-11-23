@@ -75,11 +75,6 @@ midi_note_new (
   self->vel =
     velocity_new (self, vel, is_main);
 
-  if (is_main)
-    {
-      arranger_object_set_as_main (obj);
-    }
-
   return self;
 }
 
@@ -88,22 +83,13 @@ midi_note_new (
  */
 void
 midi_note_set_region (
-  MidiNote * midi_note,
+  MidiNote * self,
   Region *   region)
 {
-  MidiNote * mn;
-  for (int i = 0; i < 2; i++)
-    {
-      if (i == AOI_COUNTERPART_MAIN)
-        mn = midi_note_get_main (midi_note);
-      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
-        mn = midi_note_get_main_trans (midi_note);
-
-      mn->region = region;
-      if (mn->region_name)
-        g_free (mn->region_name);
-      mn->region_name = g_strdup (region->name);
-    }
+  self->region = region;
+  if (self->region_name)
+    g_free (self->region_name);
+  self->region_name = g_strdup (region->name);
 }
 
 /**
@@ -210,8 +196,7 @@ midi_note_set_cache_val (
   MidiNote *    self,
   const uint8_t val)
 {
-  arranger_object_set_primitive (
-    MidiNote, self, cache_val, val, AO_UPDATE_ALL);
+  self->cache_val = val;
 }
 
 /**
@@ -221,8 +206,7 @@ midi_note_set_cache_val (
 void
 midi_note_set_val (
   MidiNote *    midi_note,
-  const uint8_t val,
-  ArrangerObjectUpdateFlag update_flag)
+  const uint8_t val)
 {
   g_return_if_fail (val < 128);
 
@@ -250,8 +234,7 @@ midi_note_set_val (
       zix_sem_post (&midi_events->access_sem);
     }
 
-  arranger_object_set_primitive (
-    MidiNote, midi_note, val, val, update_flag);
+  midi_note->val = val;
 }
 
 /**
@@ -262,12 +245,11 @@ midi_note_set_val (
 void
 midi_note_shift_pitch (
   MidiNote *    self,
-  const int     delta,
-  ArrangerObjectUpdateFlag update_flag)
+  const int     delta)
 {
   self->val = (uint8_t) ((int) self->val + delta);
   midi_note_set_val (
-    self, self->val, update_flag);
+    self, self->val);
 }
 
 /**

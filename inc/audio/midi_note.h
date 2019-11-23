@@ -46,27 +46,9 @@ typedef struct Velocity Velocity;
  * @{
  */
 
-#define midi_note_is_main(r) \
-  arranger_object_is_main ( \
-    (ArrangerObject *) r)
-#define midi_note_is_transient(r) \
-  arranger_object_is_transient ( \
-    (ArrangerObject *) r)
-#define midi_note_get_main(r) \
-  ((MidiNote *) \
-   arranger_object_get_main ( \
-     (ArrangerObject *) r))
-#define midi_note_get_main_trans(r) \
-  ((MidiNote *) \
-   arranger_object_get_main_trans ( \
-     (ArrangerObject *) r))
 #define midi_note_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
-#define midi_note_get_visible_counterpart(r) \
-  ((MidiNote *) \
-   arranger_object_get_visible_counterpart ( \
-     (ArrangerObject *) r))
 
 /**
  * A MIDI note inside a Region shown in the
@@ -200,8 +182,7 @@ midi_note_print (
 void
 midi_note_shift_pitch (
   MidiNote * self,
-  const int  delta,
-  ArrangerObjectUpdateFlag update_flag);
+  const int  delta);
 
 /**
  * Returns if the MIDI note is hit at given pos (in
@@ -234,8 +215,7 @@ midi_note_notes_to_events (
 void
 midi_note_set_val (
   MidiNote *    midi_note,
-  const uint8_t val,
-  ArrangerObjectUpdateFlag update_flag);
+  const uint8_t val);
 
 /**
  * @}

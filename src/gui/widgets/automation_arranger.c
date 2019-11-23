@@ -352,13 +352,11 @@ automation_arranger_widget_create_ap (
   arranger_object_set_position (
     ap_obj, &local_pos,
     ARRANGER_OBJECT_POSITION_TYPE_START,
-    F_NO_CACHED, F_NO_VALIDATE,
-    AO_UPDATE_ALL);
+    F_NO_CACHED, F_NO_VALIDATE);
   arranger_object_set_position (
     ap_obj, &local_pos,
     ARRANGER_OBJECT_POSITION_TYPE_START,
-    F_CACHED, F_NO_VALIDATE,
-    AO_UPDATE_ALL);
+    F_CACHED, F_NO_VALIDATE);
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_CREATED, ap);

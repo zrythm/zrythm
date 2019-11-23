@@ -259,16 +259,13 @@ arranger_selections_add_object (
 }
 
 /**
- * Resets the given counterparts from the other
- * counterparts.
- *
- * @param reset_trans 1 to reset the transient
- *   from main, 0 to reset main from transient.
+ * Sets the values of each object in the dest selections
+ * to the values in the src selections.
  */
 void
-arranger_selections_reset_counterparts (
-  ArrangerSelections * self,
-  const int            reset_trans)
+arranger_selections_set_from_selections (
+  ArrangerSelections * dest,
+  ArrangerSelections * src)
 {
   int i;
   TimelineSelections * ts;
@@ -276,32 +273,31 @@ arranger_selections_reset_counterparts (
   MidiArrangerSelections * mas;
   AutomationSelections * as;
 
+  /* TODO */
 #define RESET_COUNTERPART(sel,cc,sc) \
   for (i = 0; i < sel->num_##sc##s; i++) \
-    arranger_object_reset_counterparts ( \
-      (ArrangerObject *) sel->sc##s[i], \
-      reset_trans)
+    break;
 
-  switch (self->type)
+  switch (dest->type)
     {
     case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
+      ts = (TimelineSelections *) dest;
       RESET_COUNTERPART (ts, Region, region);
       RESET_COUNTERPART (
         ts, ScaleObject, scale_object);
       RESET_COUNTERPART (ts, Marker, marker);
       break;
     case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
+      mas = (MidiArrangerSelections *) dest;
       RESET_COUNTERPART (mas, MidiNote, midi_note);
       break;
     case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
+      as = (AutomationSelections *) dest;
       RESET_COUNTERPART (
         as, AutomationPoint, automation_point);
       break;
     case TYPE (CHORD):
-      cs = (ChordSelections *) self;
+      cs = (ChordSelections *) dest;
       RESET_COUNTERPART (
         cs, ChordObject, chord_object);
       break;
@@ -439,66 +435,6 @@ arranger_selections_has_any (
   g_return_val_if_reached (-1);
 }
 
-/**
- * Updates the visibility and selection state for
- * all objects in the selections.
- *
- * Eg, when moving or resizing, it hides the
- * original objects and only shows the transients.
- * When copy- moving, it shows both.
- */
-void
-arranger_selections_update_widget_visibility (
-  ArrangerSelections * self)
-{
-  int i;
-  TimelineSelections * ts;
-  ChordSelections * cs;
-  MidiArrangerSelections * mas;
-  AutomationSelections * as;
-
-#define UPDATE_VISIBILITY(sel,cc,sc) \
-  for (i = 0; i < (sel)->num_##sc##s; i++) \
-    { \
-      ArrangerObject * sc = \
-        (ArrangerObject *) \
-        (sel)->sc##s[i]; \
-      arranger_object_set_widget_visibility_and_state ( \
-        sc, 1); \
-    }
-
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      ts = (TimelineSelections *) self;
-      UPDATE_VISIBILITY (
-        ts, Region, region);
-      UPDATE_VISIBILITY (
-        ts, ScaleObject, scale_object);
-      UPDATE_VISIBILITY (
-        ts, Marker, marker);
-      break;
-    case TYPE (MIDI):
-      mas = (MidiArrangerSelections *) self;
-      UPDATE_VISIBILITY (
-        mas, MidiNote, midi_note);
-      break;
-    case TYPE (AUTOMATION):
-      as = (AutomationSelections *) self;
-      UPDATE_VISIBILITY (
-        as, AutomationPoint, automation_point);
-      break;
-    case TYPE (CHORD):
-      cs = (ChordSelections *) self;
-      UPDATE_VISIBILITY (
-        cs, ChordObject, chord_object);
-      break;
-		default:
-			g_return_if_reached ();
-    }
-#undef UPDATE_VISIBILITY
-}
-
 static void
 add_ticks_if_global (
   ArrangerSelections * self,
@@ -506,7 +442,7 @@ add_ticks_if_global (
   Position *           pos)
 {
   ArrangerObject * obj =
-    arranger_selections_get_first_object (self, 0);
+    arranger_selections_get_first_object (self);
   ArrangerObject * region =
     (ArrangerObject *)
     arranger_object_get_region (obj);
@@ -519,8 +455,6 @@ add_ticks_if_global (
 /**
  * Returns the position of the leftmost object.
  *
- * @param transient If 1, the transient objects are
- *   checked instead.
  * @param pos The return value will be stored here.
  * @param global Return global (timeline) Position,
  *   otherwise returns the local (from the start
@@ -530,7 +464,6 @@ void
 arranger_selections_get_start_pos (
   ArrangerSelections * self,
   Position *           pos,
-  int                  transient,
   int                  global)
 {
   int i;
@@ -547,12 +480,6 @@ arranger_selections_get_start_pos (
     { \
       cc * sc = (sel)->sc##s[i]; \
       ArrangerObject * obj = (ArrangerObject *) sc; \
-      if (transient) \
-        obj = \
-          arranger_object_get_main_trans (obj); \
-      else \
-        obj = \
-          arranger_object_get_main (obj); \
       g_warn_if_fail (obj); \
       if (position_is_before ( \
             &obj->pos, pos)) \
@@ -605,8 +532,6 @@ arranger_selections_get_start_pos (
  * Returns the end position of the rightmost object.
  *
  * @param pos The return value will be stored here.
- * @param transient If 1, the transient objects are
- * checked instead.
  * @param global Return global (timeline) Position,
  *   otherwise returns the local (from the start
  *   of the Region) Position.
@@ -615,7 +540,6 @@ void
 arranger_selections_get_end_pos (
   ArrangerSelections * self,
   Position *           pos,
-  int                  transient,
   int                  global)
 {
   int i;
@@ -631,12 +555,6 @@ arranger_selections_get_end_pos (
     { \
       cc * sc = (sel)->sc##s[i]; \
       ArrangerObject * obj = (ArrangerObject *) sc; \
-      if (transient) \
-        obj =  \
-          arranger_object_get_main_trans (obj); \
-      else \
-        obj =  \
-          arranger_object_get_main (obj); \
       g_warn_if_fail (obj); \
       if (obj->has_length) \
         { \
@@ -699,14 +617,10 @@ arranger_selections_get_end_pos (
 
 /**
  * Gets first object.
- *
- * @param transient If 1, transient objects are
- *   checked instead.
  */
 ArrangerObject *
 arranger_selections_get_first_object (
-  ArrangerSelections * self,
-  const int            transient)
+  ArrangerSelections * self)
 {
   int i;
   TimelineSelections * ts;
@@ -724,10 +638,6 @@ arranger_selections_get_first_object (
     { \
       cc * sc = (sel)->sc##s[i]; \
       ArrangerObject * obj = (ArrangerObject *) sc; \
-      if (transient) \
-        obj = arranger_object_get_main_trans (obj); \
-      else \
-        obj = arranger_object_get_main (obj); \
       g_warn_if_fail (obj); \
       if (position_is_before ( \
             &obj->pos, &pos)) \
@@ -775,14 +685,10 @@ arranger_selections_get_first_object (
 
 /**
  * Gets last object.
- *
- * @param transient If 1, transient objects are
- *   checked instead.
  */
 ArrangerObject *
 arranger_selections_get_last_object (
-  ArrangerSelections * self,
-  const int            transient)
+  ArrangerSelections * self)
 {
   int i;
   TimelineSelections * ts;
@@ -798,10 +704,6 @@ arranger_selections_get_last_object (
     { \
       cc * sc = (sel)->sc##s[i]; \
       ArrangerObject * obj = (ArrangerObject *) sc; \
-      if (transient) \
-        obj = arranger_object_get_main_trans (obj); \
-      else \
-        obj = arranger_object_get_main (obj); \
       g_warn_if_fail (obj); \
       if (obj->has_length) \
         { \
@@ -945,14 +847,12 @@ arranger_selections_set_cache_poses (
  * @param use_cached_pos Add the ticks to the cached
  *   Position's instead of the current Position's.
  * @param ticks Ticks to add.
- * @param update_flag ArrangerObjectUpdateFlag.
  */
 void
 arranger_selections_add_ticks (
   ArrangerSelections *     self,
   const long               ticks,
-  const int                use_cached_pos,
-  ArrangerObjectUpdateFlag update_flag)
+  const int                use_cached_pos)
 {
   int i;
   TimelineSelections * ts;
@@ -966,8 +866,7 @@ arranger_selections_add_ticks (
       ArrangerObject * sc = \
         (ArrangerObject *) sel->sc##s[i]; \
       arranger_object_move ( \
-        sc, ticks, use_cached_pos, \
-        update_flag); \
+        sc, ticks, use_cached_pos); \
     }
 
   switch (self->type)

@@ -41,27 +41,9 @@
 
 #define CHORD_OBJECT_WIDGET_TRIANGLE_W 10
 
-#define chord_object_is_main(c) \
-  arranger_object_is_main ( \
-    (ArrangerObject *) c)
-#define chord_object_is_transient(r) \
-  arranger_object_is_transient ( \
-    (ArrangerObject *) r)
-#define chord_object_get_main(r) \
-  ((ChordObject *) \
-   arranger_object_get_main ( \
-     (ArrangerObject *) r))
-#define chord_object_get_main_trans(r) \
-  ((ChordObject *) \
-   arranger_object_get_main_trans ( \
-     (ArrangerObject *) r))
 #define chord_object_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
-#define chord_object_get_visible_counterpart(r) \
-  ((ChordObject *) \
-   arranger_object_get_visible_counterpart ( \
-     (ArrangerObject *) r))
 
 typedef struct ChordDescriptor ChordDescriptor;
 

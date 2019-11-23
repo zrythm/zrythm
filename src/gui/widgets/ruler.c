@@ -157,8 +157,6 @@ draw_regions (
 
   /* get a visible region */
   Region * region = CLIP_EDITOR->region;
-  region =
-    region_get_main (region);
   ArrangerObject * region_obj =
     (ArrangerObject *) region;
 
@@ -171,27 +169,19 @@ draw_regions (
   cairo_set_source_rgba (
     cr, 1, track->color.green + 0.2,
     track->color.blue + 0.2, 1.0);
-  if (arranger_object_should_be_visible (
-        region_obj))
-    {
-      px_start =
-        ui_pos_to_px_editor (
-          &region_obj->pos, 1);
-      px_end =
-        ui_pos_to_px_editor (
-          &region_obj->end_pos, 1);
-      cairo_rectangle (
-        cr, px_start, 0,
-        px_end - px_start, height / 4.0);
-      cairo_fill (cr);
-    }
+  px_start =
+    ui_pos_to_px_editor (
+      &region_obj->pos, 1);
+  px_end =
+    ui_pos_to_px_editor (
+      &region_obj->end_pos, 1);
+  cairo_rectangle (
+    cr, px_start, 0,
+    px_end - px_start, height / 4.0);
+  cairo_fill (cr);
 
-  /* draw its transient if copy-moving */
-  region =
-    region_get_main_trans (region);
-  region_obj =
-    (ArrangerObject *) region;
-  if (arranger_object_should_be_visible (
+  /* draw its transient if copy-moving TODO */
+  if (arranger_object_should_orig_be_visible (
         region_obj))
     {
       px_start =

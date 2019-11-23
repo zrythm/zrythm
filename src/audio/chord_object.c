@@ -47,11 +47,6 @@ chord_object_new (
   self->region_name =
     g_strdup (region->name);
 
-  if (is_main)
-    {
-      arranger_object_set_as_main (obj);
-    }
-
   return self;
 }
 
@@ -122,15 +117,7 @@ chord_object_set_region (
   ChordObject * self,
   Region *      region)
 {
-  ChordObject * co;
-  for (int i = 0; i < 2; i++)
-    {
-      if (i == AOI_COUNTERPART_MAIN)
-        co = chord_object_get_main (self);
-      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
-        co = chord_object_get_main_trans (self);
-
-      co->region = region;
-      co->region_name = g_strdup (region->name);
-    }
+  g_return_if_fail (self && region);
+  self->region = region;
+  self->region_name = g_strdup (region->name);
 }

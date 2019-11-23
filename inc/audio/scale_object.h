@@ -44,27 +44,9 @@ typedef struct MusicalScale MusicalScale;
 
 #define SCALE_OBJECT_WIDGET_TRIANGLE_W 10
 
-#define scale_object_is_main(c) \
-  arranger_object_is_main ( \
-    (ArrangerObject *) c)
-#define scale_object_is_transient(r) \
-  arranger_object_is_transient ( \
-    (ArrangerObject *) r)
-#define scale_object_get_main(r) \
-  ((ScaleObject *) \
-   arranger_object_get_main ( \
-     (ArrangerObject *) r))
-#define scale_object_get_main_trans(r) \
-  ((ScaleObject *) \
-   arranger_object_get_main_trans ( \
-     (ArrangerObject *) r))
 #define scale_object_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
-#define scale_object_get_visible_counterpart(r) \
-  ((ScaleObject *) \
-   arranger_object_get_visible_counterpart ( \
-     (ArrangerObject *) r))
 
 /**
  * A ScaleObject to be shown in the

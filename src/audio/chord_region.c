@@ -98,7 +98,7 @@ chord_region_remove_chord_object (
 
 
   if (free)
-    free_later (chord, arranger_object_free_all);
+    free_later (chord, arranger_object_free);
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_REMOVED,

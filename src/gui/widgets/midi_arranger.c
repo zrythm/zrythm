@@ -242,11 +242,11 @@ midi_arranger_widget_create_note (
   arranger_object_set_position (
     midi_note_obj, &tmp,
     ARRANGER_OBJECT_POSITION_TYPE_END,
-    F_NO_CACHED, F_NO_VALIDATE, AO_UPDATE_ALL);
+    F_NO_CACHED, F_NO_VALIDATE);
   arranger_object_set_position (
     midi_note_obj, &tmp,
     ARRANGER_OBJECT_POSITION_TYPE_END,
-    F_CACHED, F_NO_VALIDATE, AO_UPDATE_ALL);
+    F_CACHED, F_NO_VALIDATE);
 
   /* set as start object */
   self->start_object = midi_note_obj;
@@ -376,9 +376,7 @@ midi_arranger_widget_snap_midi_notes_l (
        i < MA_SELECTIONS->num_midi_notes;
        i++)
     {
-      midi_note =
-        midi_note_get_main (
-          MA_SELECTIONS->midi_notes[i]);
+      midi_note = MA_SELECTIONS->midi_notes[i];
       mn_obj =
         (ArrangerObject *) midi_note;
 
@@ -474,8 +472,7 @@ midi_arranger_widget_snap_midi_notes_r (
        i++)
     {
       midi_note =
-        midi_note_get_main (
-          MA_SELECTIONS->midi_notes[i]);
+        MA_SELECTIONS->midi_notes[i];
       ArrangerObject * mn_obj =
         (ArrangerObject *) midi_note;
 
@@ -547,8 +544,7 @@ midi_arranger_calc_deltamax_for_note_movement (
        i++)
     {
       midi_note =
-        midi_note_get_main (
-          MA_SELECTIONS->midi_notes[i]);
+        MA_SELECTIONS->midi_notes[i];
       /*g_message ("midi note val %d, y delta %d",*/
                  /*midi_note->val, y_delta);*/
       if (midi_note->val + y_delta < 0)

@@ -81,13 +81,11 @@ midi_arranger_selections_schema = {
 
 MidiNote *
 midi_arranger_selections_get_highest_note (
-  MidiArrangerSelections * mas,
-  int                      transient);
+  MidiArrangerSelections * mas);
 
 MidiNote *
 midi_arranger_selections_get_lowest_note (
-  MidiArrangerSelections * mas,
-  int                      transient);
+  MidiArrangerSelections * mas);
 
 /**
  * Returns if the selections can be pasted.

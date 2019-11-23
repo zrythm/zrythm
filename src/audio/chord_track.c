@@ -70,11 +70,6 @@ chord_track_add_scale (
 {
   g_warn_if_fail (
     track->type == TRACK_TYPE_CHORD && scale);
-  g_warn_if_fail (
-    scale_object_is_main (scale));
-  g_warn_if_fail (
-    scale_object_get_main (scale) &&
-    scale_object_get_main_trans (scale));
 
   scale_object_set_track (scale, track);
   array_double_size_if_full (
@@ -156,7 +151,7 @@ chord_track_remove_scale (
   array_delete (
     self->scales, self->num_scales, scale);
   if (free)
-    free_later (scale, arranger_object_free_all);
+    free_later (scale, arranger_object_free);
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_REMOVED,
@@ -168,6 +163,6 @@ chord_track_free (ChordTrack * self)
 {
   /* remove chords */
   for (int i = 0; i < self->num_chord_regions; i++)
-    arranger_object_free_all (
+    arranger_object_free (
       (ArrangerObject *) self->chord_regions[i]);
 }

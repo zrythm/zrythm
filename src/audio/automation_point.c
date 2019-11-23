@@ -73,20 +73,9 @@ automation_point_set_region_and_index (
   int               index)
 {
   g_return_if_fail (ap && region);
-
-  for (int i = 0; i < 2; i++)
-    {
-      if (i == AOI_COUNTERPART_MAIN)
-        ap =
-          automation_point_get_main (ap);
-      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
-        ap =
-          automation_point_get_main_trans (ap);
-
-      ap->region = region;
-      ap->region_name = g_strdup (region->name);
-      ap->index = index;
-    }
+  ap->region = region;
+  ap->region_name = g_strdup (region->name);
+  ap->index = index;
 }
 
 int
@@ -120,12 +109,6 @@ automation_point_new_float (
 
   self->fvalue = value;
   self->normalized_val = normalized_val;
-
-  if (is_main)
-    {
-      arranger_object_set_as_main (
-        (ArrangerObject *) self);
-    }
 
   return self;
 }
@@ -243,19 +226,14 @@ automation_point_new_float (
 void
 automation_point_set_fvalue (
   AutomationPoint * self,
-  float             real_val,
-  ArrangerObjectUpdateFlag update_flag)
+  float             real_val)
 {
   Automatable * a = self->region->at->automatable;
 	float normalized_val =
     automatable_real_val_to_normalized (
       a, real_val);
-  arranger_object_set_primitive (
-    AutomationPoint, self, normalized_val,
-		normalized_val, update_flag);
-  arranger_object_set_primitive (
-    AutomationPoint, self, fvalue, real_val,
-    update_flag);
+  self->normalized_val = normalized_val;
+  self->fvalue = real_val;
 
   g_return_if_fail (self->region);
   automatable_set_val_from_normalized (
@@ -348,12 +326,8 @@ automation_point_set_curviness (
         self->curviness, curviness, 0.001))
     return;
 
-  arranger_object_set_primitive (
-    AutomationPoint, self, curviness, curviness,
-    AO_UPDATE_ALL);
-  arranger_object_set_primitive (
-    AutomationPoint, self, curve_up, curve_up,
-    AO_UPDATE_ALL);
+  self->curviness = curviness;
+  self->curve_up = curve_up;;
   /*ArrangerObject * obj = (ArrangerObject *) self;*/
   /*if (Z_IS_ARRANGER_OBJECT_WIDGET (obj->widget))*/
     /*{*/

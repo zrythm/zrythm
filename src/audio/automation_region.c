@@ -123,9 +123,6 @@ automation_region_add_ap (
   Region *          self,
   AutomationPoint * ap)
 {
-  g_return_if_fail (
-    automation_point_is_main (ap));
-
   /* add point */
   array_double_size_if_full (
     self->aps, self->num_aps, self->aps_size,
@@ -205,7 +202,7 @@ automation_region_remove_ap (
     self->aps, self->num_aps, ap);
 
   if (free)
-    free_later (ap, arranger_object_free_all);
+    free_later (ap, arranger_object_free);
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_REMOVED,

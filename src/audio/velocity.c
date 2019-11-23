@@ -45,11 +45,6 @@ velocity_new (
   self->vel = vel;
   self->midi_note = midi_note;
 
-  if (is_main)
-    {
-      arranger_object_set_as_main (obj);
-    }
-
   return self;
 }
 
@@ -58,21 +53,10 @@ velocity_new (
  */
 void
 velocity_set_midi_note (
-  Velocity * velocity,
+  Velocity * self,
   MidiNote * midi_note)
 {
-  Velocity * vel;
-  for (int i = 0; i < 2; i++)
-    {
-      if (i == AOI_COUNTERPART_MAIN)
-        vel =
-          velocity_get_main (velocity);
-      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
-        vel =
-          velocity_get_main_trans (velocity);
-
-      vel->midi_note = midi_note;
-    }
+  self->midi_note = midi_note;
 }
 
 /**
@@ -94,14 +78,11 @@ velocity_is_equal (
  */
 void
 velocity_set_cache_vel (
-  Velocity *    velocity,
+  Velocity *    self,
   const uint8_t vel)
 {
   /* see ARRANGER_OBJ_SET_POS */
-  velocity_get_main (velocity)->
-    cache_vel = vel;
-  velocity_get_main_trans (velocity)->
-    cache_vel = vel;
+  self->cache_vel = vel;
 }
 
 /**
@@ -113,20 +94,16 @@ velocity_set_cache_vel (
 void
 velocity_set_val (
   Velocity *    self,
-  const int     val,
-  ArrangerObjectUpdateFlag update_flag)
+  const int     val)
 {
-  arranger_object_set_primitive (
-    Velocity, self, vel,
-    (uint8_t) CLAMP (val, 0, 127),
-    update_flag);
+  self->vel =
+    (uint8_t) CLAMP (val, 0, 127);
 
   /* re-set the midi note value to set a note off
    * event */
   midi_note_set_val (
     self->midi_note,
-    self->midi_note->val,
-    update_flag);
+    self->midi_note->val);
 }
 
 /**

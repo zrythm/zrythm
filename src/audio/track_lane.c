@@ -251,7 +251,7 @@ track_lane_free (
     g_free (self->name);
 
   for (int i = 0; i < self->num_regions; i++)
-    arranger_object_free_all (
+    arranger_object_free (
       (ArrangerObject *) self->regions[i]);
 
   free (self);

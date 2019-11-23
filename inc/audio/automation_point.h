@@ -50,20 +50,6 @@ AutomationPointWidget;
 #define AP_CURVINESS_RANGE \
   (AP_MAX_CURVINESS - AP_MIN_CURVINESS)
 
-#define automation_point_is_main(c) \
-  arranger_object_is_main ( \
-    (ArrangerObject *) c)
-#define automation_point_is_transient(r) \
-  arranger_object_is_transient ( \
-    (ArrangerObject *) r)
-#define automation_point_get_main(r) \
-  ((AutomationPoint *) \
-   arranger_object_get_main ( \
-     (ArrangerObject *) r))
-#define automation_point_get_main_trans(r) \
-  ((AutomationPoint *) \
-   arranger_object_get_main_trans ( \
-     (ArrangerObject *) r))
 #define automation_point_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
@@ -186,8 +172,7 @@ automation_point_new_float (
 void
 automation_point_set_fvalue (
   AutomationPoint * ap,
-  float             fval,
-  ArrangerObjectUpdateFlag update_flag);
+  float             fval);
 
 /**
  * Sets the Region and the index in the

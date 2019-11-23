@@ -85,9 +85,6 @@ midi_region_add_midi_note (
   MidiRegion * region,
   MidiNote * midi_note)
 {
-  g_return_if_fail (
-    midi_note_is_main (midi_note));
-
   midi_note_set_region (midi_note, region);
 
   array_double_size_if_full (
@@ -266,7 +263,7 @@ midi_region_remove_midi_note (
                 region->num_midi_notes,
                 midi_note);
   if (free)
-    free_later (midi_note, arranger_object_free_all);
+    free_later (midi_note, arranger_object_free);
 
   if (pub_event)
     {
@@ -459,12 +456,12 @@ midi_region_free_members (MidiRegion * self)
 {
   for (int i = 0; i < self->num_midi_notes; i++)
     {
-      arranger_object_free_all (
+      arranger_object_free (
         (ArrangerObject *) self->midi_notes[i]);
     }
   for (int i = 0; i < self->num_unended_notes; i++)
     {
-      arranger_object_free_all (
+      arranger_object_free (
         (ArrangerObject *) self->unended_notes[i]);
     }
 }

@@ -131,11 +131,6 @@ marker_track_add_marker (
 {
   g_warn_if_fail (
     track->type == TRACK_TYPE_MARKER && marker);
-  g_warn_if_fail (
-    marker_is_main (marker));
-  g_warn_if_fail (
-    marker_get_main (marker) &&
-    marker_get_main_trans (marker));
 
   marker_set_track (marker, track);
   array_double_size_if_full (
@@ -167,7 +162,7 @@ marker_track_remove_marker (
     self->markers, self->num_markers, marker);
 
   if (free)
-    free_later (marker, arranger_object_free_all);
+    free_later (marker, arranger_object_free);
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_REMOVED,

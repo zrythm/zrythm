@@ -669,11 +669,7 @@ arranger_object_set_full_rectangle (
         ChordDescriptor * descr =
           CHORD_EDITOR->chords[co->index];
 
-        /* use transient or non transient region
-         * depending on which is visible */
         Region * region = co->region;
-        region =
-          region_get_visible_counterpart (region);
         ArrangerObject * region_obj =
           (ArrangerObject *) region;
 
@@ -715,13 +711,9 @@ arranger_object_set_full_rectangle (
       break;
     case TYPE (AUTOMATION_POINT):
       {
-        /* use transient or non transient region
-         * depending on which is visible */
         AutomationPoint * ap =
           (AutomationPoint *) self;
         Region * region = ap->region;
-        region =
-          region_get_visible_counterpart (region);
         ArrangerObject * region_obj =
           (ArrangerObject *) region;
 
@@ -830,6 +822,7 @@ arranger_object_set_full_rectangle (
           self->full_rect.width = 1;
 
         gint wx, wy;
+#if 0
         if (arranger_object_is_lane (self))
           {
             if (!track->lanes_visible)
@@ -848,6 +841,7 @@ arranger_object_set_full_rectangle (
           }
         else
           {
+#endif
             gtk_widget_translate_coordinates(
               (GtkWidget *) (track->widget),
               (GtkWidget *) (arranger),
@@ -905,23 +899,19 @@ arranger_object_set_full_rectangle (
                 self->full_rect.height =
                   track->main_height;
               }
+#if 0
           }
+#endif
       }
       break;
     case TYPE (MIDI_NOTE):
       {
-        /* use transient or non transient region
-         * depending on which is visible */
         MidiNote * mn = (MidiNote *) self;
         Region * region =
-          (midi_note_get_main (mn))->region;
+          mn->region;
         g_return_if_fail (region);
-        Region * visible_region =
-          (Region *)
-          arranger_object_get_visible_counterpart (
-            (ArrangerObject *) region);
         ArrangerObject * region_obj =
-          (ArrangerObject *) visible_region;
+          (ArrangerObject *) region;
 
         long region_start_ticks =
           region_obj->pos.total_ticks;
@@ -1106,8 +1096,7 @@ arranger_object_draw (
         GdkRGBA color = track->color;
         ui_get_arranger_object_color (
           &color, self->hover,
-          automation_point_is_selected (ap),
-          automation_point_is_transient (ap));
+          automation_point_is_selected (ap), 0);
         gdk_cairo_set_source_rgba (
           self->cached_cr, &color);
 

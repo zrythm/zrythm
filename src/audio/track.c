@@ -769,13 +769,6 @@ track_add_region (
   int      gen_name,
   int      fire_events)
 {
-  g_warn_if_fail (region_is_main (region));
-  g_warn_if_fail (
-    region_get_main (region) &&
-    region_get_lane (region) &&
-    region_get_main_trans (region) &&
-    region_get_lane_trans (region));
-
   if (region->type == REGION_TYPE_AUTOMATION)
     {
       track = at->track;
@@ -1007,7 +1000,7 @@ track_remove_region (
     }
 
   if (free)
-    free_later (region, arranger_object_free_all);
+    free_later (region, arranger_object_free);
 
   if (fire_events)
     {

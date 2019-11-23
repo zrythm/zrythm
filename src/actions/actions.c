@@ -430,10 +430,10 @@ activate_loop_selection (GSimpleAction *action,
       Position start, end;
       arranger_selections_get_start_pos (
         (ArrangerSelections *) TL_SELECTIONS,
-        &start, F_NO_TRANSIENTS, F_GLOBAL);
+        &start, F_GLOBAL);
       arranger_selections_get_end_pos (
         (ArrangerSelections *) TL_SELECTIONS,
-        &end, F_NO_TRANSIENTS, F_GLOBAL);
+        &end, F_GLOBAL);
 
       position_set_to_pos (
         &TRANSPORT->loop_start_pos,

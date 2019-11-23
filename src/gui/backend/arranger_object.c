@@ -138,36 +138,6 @@ arranger_object_select (
 }
 
 /**
- * Returns the widget type for the given
- * ArrangerObjectType.
- */
-/*GType*/
-/*arranger_object_get_widget_type_for_type (*/
-  /*ArrangerObjectType type)*/
-/*{*/
-  /*switch (type)*/
-    /*{*/
-    /*case ARRANGER_OBJECT_TYPE_REGION:*/
-      /*return REGION_WIDGET_TYPE;*/
-    /*case ARRANGER_OBJECT_TYPE_MIDI_NOTE:*/
-      /*return MIDI_NOTE_WIDGET_TYPE;*/
-    /*case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:*/
-      /*return AUTOMATION_POINT_WIDGET_TYPE;*/
-    /*case ARRANGER_OBJECT_TYPE_VELOCITY:*/
-      /*return VELOCITY_WIDGET_TYPE;*/
-    /*case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:*/
-      /*return CHORD_OBJECT_WIDGET_TYPE;*/
-    /*case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:*/
-      /*return SCALE_OBJECT_WIDGET_TYPE;*/
-    /*case ARRANGER_OBJECT_TYPE_MARKER:*/
-      /*return MARKER_WIDGET_TYPE;*/
-    /*default:*/
-      /*g_return_val_if_reached (0);*/
-    /*}*/
-  /*g_return_val_if_reached (0);*/
-/*}*/
-
-/**
  * Returns the number of loops in the ArrangerObject,
  * optionally including incomplete ones.
  */
@@ -201,7 +171,7 @@ arranger_object_get_num_loops (
 }
 
 static void
-reset_region_counterparts (
+set_to_region_object (
   Region * src,
   Region * dest)
 {
@@ -210,7 +180,7 @@ reset_region_counterparts (
 }
 
 static void
-reset_midi_note_counterparts (
+set_to_midi_note_object (
   MidiNote * src,
   MidiNote * dest)
 {
@@ -220,10 +190,14 @@ reset_midi_note_counterparts (
   dest->val = src->val;
 }
 
-static void
-reset_counterparts (
-  ArrangerObject * src,
-  ArrangerObject * dest)
+/**
+ * Sets the dest object's values to the main
+ * src object's values.
+ */
+void
+arranger_object_set_to_object (
+  ArrangerObject * dest,
+  ArrangerObject * src)
 {
   g_return_if_fail (src && dest);
 
@@ -249,11 +223,11 @@ reset_counterparts (
   switch (src->type)
     {
     case TYPE (REGION):
-      reset_region_counterparts (
+      set_to_region_object (
         (Region *) src, (Region *) dest);
       break;
     case TYPE (MIDI_NOTE):
-      reset_midi_note_counterparts (
+      set_to_midi_note_object (
         (MidiNote *) src, (MidiNote *) dest);
       break;
     case TYPE (CHORD_OBJECT):
@@ -276,44 +250,6 @@ reset_counterparts (
       break;
     default:
       break;
-    }
-}
-
-/**
- * Sets the transient's values to the main
- * object's values.
- *
- * @param reset_trans 1 to reset the transient from
- *   main, 0 to reset main from transient.
- */
-void
-arranger_object_reset_counterparts (
-  ArrangerObject * self,
-  const int        reset_trans)
-{
-  ArrangerObject * src =
-    reset_trans ?
-      arranger_object_get_main (self) :
-      arranger_object_get_main_trans (self);
-  ArrangerObject * dest =
-    reset_trans ?
-      arranger_object_get_main_trans (self) :
-      arranger_object_get_main (self);
-
-  reset_counterparts (src, dest);
-
-  if (self->can_have_lanes)
-    {
-      src =
-        reset_trans ?
-          arranger_object_get_lane (self) :
-          arranger_object_get_lane_trans (self);
-      dest =
-        reset_trans ?
-          arranger_object_get_lane_trans (self) :
-          arranger_object_get_lane (self);
-
-      reset_counterparts (src, dest);
     }
 }
 
@@ -522,8 +458,6 @@ arranger_object_is_position_valid (
  *   instead of the main ones.
  * @param validate Validate the Position before
  *   setting it.
- * @param update_flag Flag to indicate which
- *   counterparts to move.
  */
 void
 arranger_object_set_position (
@@ -531,8 +465,7 @@ arranger_object_set_position (
   const Position *           pos,
   ArrangerObjectPositionType pos_type,
   const int                  cached,
-  const int                  validate,
-  ArrangerObjectUpdateFlag   update_flag)
+  const int                  validate)
 {
   g_return_if_fail (self && pos);
 
@@ -544,58 +477,11 @@ arranger_object_set_position (
     return;
 
   Position * pos_ptr;
-  switch (update_flag)
-  {
-#define UPDATE(x) \
-  pos_ptr = \
-  get_position_ptr ( \
-    x, pos_type, cached); \
-  g_return_if_fail (pos_ptr); \
-  position_set_to_pos (pos_ptr, pos)
-
-    case AO_UPDATE_THIS:
-      UPDATE (self);
-      break;
-    case AO_UPDATE_TRANS:
-      UPDATE (
-        arranger_object_get_main_trans (self));
-      break;
-    case AO_UPDATE_NON_TRANS:
-      UPDATE (
-        arranger_object_get_main (self));
-      break;
-    case AO_UPDATE_ALL:
-      UPDATE (
-        arranger_object_get_main_trans (self));
-      UPDATE (
-        arranger_object_get_main (self));
-      break;
-    }
-
-  if (self->can_have_lanes)
-    {
-      switch (update_flag)
-      {
-        case AO_UPDATE_THIS:
-          UPDATE (self);
-          break;
-        case AO_UPDATE_TRANS:
-          UPDATE (
-            arranger_object_get_lane_trans (self));
-          break;
-        case AO_UPDATE_NON_TRANS:
-          UPDATE (
-            arranger_object_get_lane(self));
-          break;
-        case AO_UPDATE_ALL:
-          UPDATE (
-            arranger_object_get_lane_trans (self));
-          UPDATE (
-            arranger_object_get_lane(self));
-          break;
-        }
-    }
-#undef UPDATE
+  pos_ptr =
+    get_position_ptr (
+      self, pos_type, cached);
+  g_return_if_fail (pos_ptr);
+  position_set_to_pos (pos_ptr, pos);
 }
 
 /**
@@ -650,15 +536,12 @@ arranger_object_print (
  *
  * @param use_cached_pos Add the ticks to the cached
  *   Position instead of its current Position.
- * @param update_flag Flag to indicate which
- *   counterparts to move.
  */
 void
 arranger_object_move (
   ArrangerObject *         self,
   const long               ticks,
-  const int                use_cached_pos,
-  ArrangerObjectUpdateFlag update_flag)
+  const int                use_cached_pos)
 {
   if (arranger_object_type_has_length (self->type))
     {
@@ -675,7 +558,7 @@ arranger_object_move (
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_START,
-        F_NO_CACHED, F_NO_VALIDATE, update_flag);
+        F_NO_CACHED, F_NO_VALIDATE);
 
       /* end pos */
       if (use_cached_pos)
@@ -689,7 +572,7 @@ arranger_object_move (
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_END,
-        F_NO_CACHED, F_NO_VALIDATE, update_flag);
+        F_NO_CACHED, F_NO_VALIDATE);
     }
   else
     {
@@ -705,7 +588,7 @@ arranger_object_move (
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_START,
-        F_NO_CACHED, F_NO_VALIDATE, update_flag);
+        F_NO_CACHED, F_NO_VALIDATE);
     }
 }
 
@@ -771,30 +654,6 @@ arranger_object_get_loop_end_pos (
 {
   position_set_to_pos (
     pos, &self->loop_end_pos);
-}
-
-/**
- * Sets the given object as the main object and
- * clones it into its other counterparts.
- *
- * The type must be set before calling this function.
- */
-void
-arranger_object_set_as_main (
-  ArrangerObject *   self)
-{
-  g_return_if_fail (self->type > TYPE (NONE));
-  ArrangerObject * main_trans =
-    arranger_object_clone (
-      self, ARRANGER_OBJECT_CLONE_COPY);
-  ArrangerObject * lane =
-    arranger_object_clone (
-      self, ARRANGER_OBJECT_CLONE_COPY);
-  ArrangerObject * lane_trans =
-    arranger_object_clone (
-      self, ARRANGER_OBJECT_CLONE_COPY);
-  arranger_object_info_init_main (
-    self, main_trans, lane, lane_trans);
 }
 
 static void
@@ -886,8 +745,6 @@ arranger_object_init_loaded (
   ArrangerObject * self)
 {
   g_return_if_fail (self->type > TYPE (NONE));
-
-  arranger_object_set_as_main (self);
 
   /* init positions */
   self->cache_pos = self->pos;
@@ -1048,134 +905,6 @@ arranger_object_update_frames (
     }
 }
 
-#if 0
-static GtkWidget *
-create_widget (
-  ArrangerObject * self)
-{
-  Region * r;
-  switch (self->type)
-    {
-    case TYPE (REGION):
-      r = (Region *) self;
-      switch (r->type)
-        {
-        case REGION_TYPE_MIDI:
-          return
-            (GtkWidget *)
-            midi_region_widget_new (r);
-        case REGION_TYPE_AUDIO:
-          return
-            (GtkWidget *)
-            audio_region_widget_new (r);
-        case REGION_TYPE_AUTOMATION:
-          return
-            (GtkWidget *)
-            automation_region_widget_new (r);
-        case REGION_TYPE_CHORD:
-          return
-            (GtkWidget *)
-            chord_region_widget_new (r);
-        }
-      break;
-    case TYPE (MIDI_NOTE):
-      return
-        (GtkWidget *)
-        midi_note_widget_new ((MidiNote *) self);
-    case TYPE (AUTOMATION_POINT):
-      return
-        (GtkWidget *)
-        automation_point_widget_new (
-          (AutomationPoint *) self);
-    case TYPE (MARKER):
-      return
-        (GtkWidget *)
-        marker_widget_new ((Marker *) self);
-    case TYPE (CHORD_OBJECT):
-      return
-        (GtkWidget *)
-        chord_object_widget_new (
-          (ChordObject *) self);
-    case TYPE (SCALE_OBJECT):
-      return
-        (GtkWidget *)
-        scale_object_widget_new (
-          (ScaleObject *) self);
-    case TYPE (VELOCITY):
-      return
-        (GtkWidget *)
-        velocity_widget_new (
-          (Velocity *) self);
-    default:
-      g_return_val_if_reached (NULL);
-      break;
-    }
-  g_return_val_if_reached (NULL);
-}
-
-/**
- * Generates a widget for each of the object's
- * counterparts.
- */
-void
-arranger_object_gen_widget (
-  ArrangerObject * self)
-{
-  ArrangerObject * tmp;
-  for (int i = AOI_COUNTERPART_MAIN;
-       i <= AOI_COUNTERPART_MAIN_TRANSIENT; i++)
-    {
-      if (i == AOI_COUNTERPART_MAIN)
-        tmp = arranger_object_get_main (self);
-      else if (i == AOI_COUNTERPART_MAIN_TRANSIENT)
-        tmp = arranger_object_get_main_trans (self);
-
-      g_return_if_fail (tmp);
-      tmp->widget = create_widget (tmp);
-    }
-  if (self->can_have_lanes)
-    {
-      for (int i = AOI_COUNTERPART_LANE;
-           i <= AOI_COUNTERPART_LANE_TRANSIENT; i++)
-        {
-          if (i == AOI_COUNTERPART_LANE)
-            tmp = arranger_object_get_lane (self);
-          else if (i == AOI_COUNTERPART_LANE_TRANSIENT)
-            tmp =
-              arranger_object_get_lane_trans (self);
-
-          g_return_if_fail (tmp);
-          tmp->widget = create_widget (tmp);
-        }
-    }
-}
-#endif
-
-/**
- * Frees each object stored in info.
- */
-void
-arranger_object_free_all (
-  ArrangerObject * self)
-{
-  ArrangerObject * _main =
-    self->info.main;
-  ArrangerObject * _main_trans =
-    self->info.main_trans;
-  ArrangerObject * _lane =
-    self->info.lane;
-  ArrangerObject * _lane_trans =
-    self->info.lane_trans;
-  if (_main)
-    arranger_object_free (_main);
-  if (_main_trans)
-    arranger_object_free (_main_trans);
-  if (_lane)
-    arranger_object_free (_lane);
-  if (_lane_trans)
-    arranger_object_free (_lane_trans);
-}
-
 static void
 free_region (
   Region * self)
@@ -1206,7 +935,7 @@ free_midi_note (
   MidiNote * self)
 {
   g_return_if_fail (self->vel);
-  arranger_object_free_all (
+  arranger_object_free (
     (ArrangerObject *) self->vel);
 
   if (self->region_name)
@@ -1222,11 +951,6 @@ void
 arranger_object_free (
   ArrangerObject * self)
 {
-  /*if (GTK_IS_WIDGET (self->widget))*/
-    /*{*/
-      /*g_object_unref (self->widget);*/
-    /*}*/
-
   switch (self->type)
     {
     case TYPE (REGION):
@@ -1279,30 +1003,6 @@ arranger_object_free (
   g_return_if_reached ();
 }
 
-/**
- * Returns the visible counterpart (ie, the
- * transient or the non transient) of the object.
- *
- * Used for example when moving a Region to
- * allocate the MidiNote's based on the transient
- * Region's position instead of the main Region.
- *
- * Only checks the main/main-trans.
- */
-ArrangerObject *
-arranger_object_get_visible_counterpart (
-  ArrangerObject * self)
-{
-  g_return_val_if_fail (self, NULL);
-
-  self = arranger_object_get_main (self);
-  g_return_val_if_fail (self, NULL);
-  if (!arranger_object_should_be_visible (self))
-    self = arranger_object_get_main_trans (self);
-  g_return_val_if_fail (self, NULL);
-  return self;
-}
-
 static void
 add_ticks_to_region_children (
   Region *   self,
@@ -1315,7 +1015,7 @@ add_ticks_to_region_children (
         {
           arranger_object_move (
             (ArrangerObject *) self->midi_notes[i],
-            ticks, F_NO_CACHED, AO_UPDATE_ALL);
+            ticks, F_NO_CACHED);
         }
       break;
     case REGION_TYPE_AUDIO:
@@ -1354,15 +1054,13 @@ arranger_object_add_ticks_to_children (
  * @param loop Whether this is a loop-resize (1) or
  *   a normal resize (0). Only used if the object
  *   can have loops.
- * @param update_flag ArrangerObjectUpdateFlag.
  */
 void
 arranger_object_resize (
   ArrangerObject * self,
   const int        left,
   const int        loop,
-  const long       ticks,
-  ArrangerObjectUpdateFlag update_flag)
+  const long       ticks)
 {
   Position tmp;
   if (left)
@@ -1373,7 +1071,7 @@ arranger_object_resize (
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_START,
-        F_NO_CACHED, F_NO_VALIDATE, update_flag);
+        F_NO_CACHED, F_NO_VALIDATE);
 
       if (self->can_loop)
         {
@@ -1383,13 +1081,12 @@ arranger_object_resize (
           arranger_object_set_position (
             self, &tmp,
             ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
-            F_NO_CACHED, F_NO_VALIDATE, update_flag);
+            F_NO_CACHED, F_NO_VALIDATE);
         }
 
       /* move containing items */
       arranger_object_add_ticks_to_children (
-        arranger_object_get_main (self),
-        - ticks);
+        self, - ticks);
       if (loop && self->can_loop)
         {
           tmp = self->loop_start_pos;
@@ -1398,7 +1095,7 @@ arranger_object_resize (
           arranger_object_set_position (
             self, &tmp,
             ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
-            F_NO_CACHED, F_NO_VALIDATE, update_flag);
+            F_NO_CACHED, F_NO_VALIDATE);
         }
     }
   else
@@ -1409,7 +1106,7 @@ arranger_object_resize (
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_END,
-        F_NO_CACHED, F_NO_VALIDATE, update_flag);
+        F_NO_CACHED, F_NO_VALIDATE);
 
       if (!loop && self->can_loop)
         {
@@ -1419,7 +1116,7 @@ arranger_object_resize (
           arranger_object_set_position (
             self, &tmp,
             ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
-            F_NO_CACHED, F_NO_VALIDATE, update_flag);
+            F_NO_CACHED, F_NO_VALIDATE);
         }
     }
 }
@@ -1447,7 +1144,6 @@ arranger_object_post_deserialize (
   ArrangerObject * self)
 {
   g_return_if_fail (self);
-  self->info.main = self;
 
   post_deserialize_children (self);
 }
@@ -1465,7 +1161,7 @@ arranger_object_pos_setter (
   arranger_object_set_position (
     self, pos,
     ARRANGER_OBJECT_POSITION_TYPE_START,
-    F_NO_CACHED, F_VALIDATE, AO_UPDATE_ALL);
+    F_NO_CACHED, F_VALIDATE);
 }
 
 /**
@@ -1481,7 +1177,7 @@ arranger_object_end_pos_setter (
   arranger_object_set_position (
     self, pos,
     ARRANGER_OBJECT_POSITION_TYPE_END,
-    F_NO_CACHED, F_VALIDATE, AO_UPDATE_ALL);
+    F_NO_CACHED, F_VALIDATE);
 }
 
 /**
@@ -1497,7 +1193,7 @@ arranger_object_clip_start_pos_setter (
   arranger_object_set_position (
     self, pos,
     ARRANGER_OBJECT_POSITION_TYPE_CLIP_START,
-    F_NO_CACHED, F_VALIDATE, AO_UPDATE_ALL);
+    F_NO_CACHED, F_VALIDATE);
 }
 
 /**
@@ -1513,7 +1209,7 @@ arranger_object_loop_start_pos_setter (
   arranger_object_set_position (
     self, pos,
     ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
-    F_NO_CACHED, F_VALIDATE, AO_UPDATE_ALL);
+    F_NO_CACHED, F_VALIDATE);
 }
 
 /**
@@ -1529,7 +1225,7 @@ arranger_object_loop_end_pos_setter (
   arranger_object_set_position (
     self, pos,
     ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
-    F_NO_CACHED, F_VALIDATE, AO_UPDATE_ALL);
+    F_NO_CACHED, F_VALIDATE);
 }
 
 /**
@@ -1564,53 +1260,6 @@ arranger_object_validate_pos (
     }
 
   return 1;
-}
-
-/**
- * Returns whether the object is transient or not.
- *
- * Transient objects are objects that are used
- * during moving operations.
- */
-int
-arranger_object_is_transient (
-  ArrangerObject * self)
-{
-  return (
-    self->info.counterpart ==
-      AOI_COUNTERPART_MAIN_TRANSIENT ||
-    self->info.counterpart ==
-      AOI_COUNTERPART_LANE_TRANSIENT);
-}
-
-/**
- * Returns whether the object is a lane object or not
- * (only applies to TimelineArrangerWidget objects.
- */
-int
-arranger_object_is_lane (
-  ArrangerObject * self)
-{
-  return (
-    self->info.counterpart ==
-      AOI_COUNTERPART_LANE ||
-    self->info.counterpart ==
-      AOI_COUNTERPART_LANE_TRANSIENT);
-}
-
-/**
- * Returns whether the object is a main object or not
- * (only applies to TimelineArrangerWidget objects.
- */
-int
-arranger_object_is_main (
-  ArrangerObject * self)
-{
-  return (
-    self->info.counterpart ==
-      AOI_COUNTERPART_MAIN ||
-    self->info.counterpart ==
-      AOI_COUNTERPART_MAIN_TRANSIENT);
 }
 
 /**
@@ -1778,16 +1427,34 @@ arranger_object_get_arranger (
 }
 
 /**
- * Returns if the object represented by the
- * ArrrangerObjectInfo should be visible.
- *
- * This is counterpart-specific, ie. it checks
- * if the transient should be visible or lane
- * counterpart should be visible, etc., based on
- * what is given.
+ * Returns if the lane counterpart should be visible.
  */
 int
-arranger_object_should_be_visible (
+arranger_object_should_lane_be_visible (
+  ArrangerObject * self)
+{
+  if (self->type == TYPE (REGION))
+    {
+      return
+        arranger_object_get_track (self)->
+          lanes_visible;
+    }
+  else
+    {
+      return 0;
+    }
+}
+
+/**
+ * Returns if the cached object should be visible, ie,
+ * while copy- moving (ctrl+drag) we want to show both
+ * the object at its original position and the current
+ * object.
+ *
+ * This refers to the object at its original position.
+ */
+int
+arranger_object_should_orig_be_visible (
   ArrangerObject * self)
 {
   g_return_val_if_fail (self, 0);
@@ -1795,18 +1462,13 @@ arranger_object_should_be_visible (
   ArrangerWidget * arranger =
     arranger_object_get_arranger (self);
 
-  int trans_visible = 0;
-  int non_trans_visible = 0;
-  int lane_visible;
-
   /* check trans/non-trans visiblity */
   if (ARRANGER_WIDGET_GET_ACTION (
         arranger, MOVING) ||
       ARRANGER_WIDGET_GET_ACTION (
         arranger, CREATING_MOVING))
     {
-      trans_visible = 0;
-      non_trans_visible = 1;
+      return 0;
     }
   else if (
     ARRANGER_WIDGET_GET_ACTION (
@@ -1814,176 +1476,11 @@ arranger_object_should_be_visible (
     ARRANGER_WIDGET_GET_ACTION (
       arranger, MOVING_LINK))
     {
-      trans_visible = 1;
-      non_trans_visible = 1;
+      return 1;
     }
   else
     {
-      trans_visible = 0;
-      non_trans_visible = 1;
-    }
-
-  /* check visibility at all */
-  if (self->type == TYPE (AUTOMATION_POINT))
-    {
-      ArrangerObject * ap =
-        arranger_object_get_object (self);
-      if (!(arranger_object_get_track (ap)->
-              automation_visible))
-        {
-          non_trans_visible = 0;
-          trans_visible = 0;
-        }
-    }
-
-  /* check lane visibility */
-  if (self->type == TYPE (REGION))
-    {
-      lane_visible =
-        arranger_object_get_track (self)->
-          lanes_visible;
-    }
-  else
-    {
-      lane_visible = 0;
-    }
-
-
-  /* return visibility */
-  switch (self->info.counterpart)
-    {
-    case AOI_COUNTERPART_MAIN:
-      return non_trans_visible;
-    case AOI_COUNTERPART_MAIN_TRANSIENT:
-      return trans_visible;
-    case AOI_COUNTERPART_LANE:
-      return lane_visible && non_trans_visible;
-    case AOI_COUNTERPART_LANE_TRANSIENT:
-      return lane_visible && trans_visible;
-    }
-
-  g_return_val_if_reached (-1);
-}
-
-/**
- * Gets the object the ArrangerObjectInfo
- * represents.
- */
-ArrangerObject *
-arranger_object_get_object (
-  ArrangerObject * self)
-{
-  switch (self->info.counterpart)
-    {
-    case AOI_COUNTERPART_MAIN:
-      return self->info.main;
-    case AOI_COUNTERPART_MAIN_TRANSIENT:
-      return self->info.main_trans;
-    case AOI_COUNTERPART_LANE:
-      return self->info.lane;
-    case AOI_COUNTERPART_LANE_TRANSIENT:
-      return self->info.lane_trans;
-    }
-
-  g_return_val_if_reached (NULL);
-}
-
-/**
- * Gets the given counterpart.
- */
-ArrangerObject *
-arranger_object_get_counterpart (
-  ArrangerObject *              self,
-  ArrangerObjectInfoCounterpart counterpart)
-{
-  switch (counterpart)
-    {
-    case AOI_COUNTERPART_MAIN:
-      return self->info.main;
-    case AOI_COUNTERPART_MAIN_TRANSIENT:
-      return self->info.main_trans;
-    case AOI_COUNTERPART_LANE:
-      return self->info.lane;
-    case AOI_COUNTERPART_LANE_TRANSIENT:
-      return self->info.lane_trans;
-    }
-  g_return_val_if_reached (NULL);
-}
-
-#if 0
-static void
-set_widget_selection_state_flags (
-  ArrangerObject * self)
-{
-  if (arranger_object_is_selected (self))
-    {
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self->widget),
-        GTK_STATE_FLAG_SELECTED, 0);
-    }
-  else
-    {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self->widget),
-        GTK_STATE_FLAG_SELECTED);
-    }
-  arranger_object_widget_force_redraw (
-    Z_ARRANGER_OBJECT_WIDGET (self->widget));
-}
-#endif
-
-static void
-set_counterpart_widget_visible (
-  ArrangerObject *              self,
-  ArrangerObjectInfoCounterpart counterpart)
-{
-#if 0
-  g_return_if_fail (
-    self->can_have_lanes ||
-    (counterpart != AOI_COUNTERPART_LANE &&
-     counterpart != AOI_COUNTERPART_LANE_TRANSIENT));
-
-  self =
-    arranger_object_get_counterpart (
-      self, counterpart);
-  if (!self->widget)
-    arranger_object_gen_widget (self);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->widget),
-    arranger_object_should_be_visible (
-      self));
-  set_widget_selection_state_flags (self);
-#endif
-}
-
-/**
- * Sets the widget visibility and selection state
- * to this counterpart
- * only, or to all counterparts if all is 1.
- */
-void
-arranger_object_set_widget_visibility_and_state (
-  ArrangerObject * self,
-  int              all)
-{
-  if (all)
-    {
-      set_counterpart_widget_visible (
-        self, AOI_COUNTERPART_MAIN);
-      set_counterpart_widget_visible (
-        self, AOI_COUNTERPART_MAIN_TRANSIENT);
-      if (self->can_have_lanes)
-        {
-          set_counterpart_widget_visible (
-            self, AOI_COUNTERPART_LANE);
-          set_counterpart_widget_visible (
-            self, AOI_COUNTERPART_LANE_TRANSIENT);
-        }
-    }
-  else
-    {
-      set_counterpart_widget_visible (
-        self, self->info.counterpart);
+      return 0;
     }
 }
 
@@ -2777,21 +2274,20 @@ arranger_object_unsplit (
 void
 arranger_object_set_name (
   ArrangerObject *         self,
-  const char *             name,
-  ArrangerObjectUpdateFlag flag)
+  const char *             name)
 {
   switch (self->type)
     {
     case ARRANGER_OBJECT_TYPE_MARKER:
       {
         arranger_object_set_string (
-          Marker, self, name, name, flag);
+          Marker, self, name, name);
       }
       break;
     case ARRANGER_OBJECT_TYPE_REGION:
       {
         arranger_object_set_string (
-          Region, self, name, name, flag);
+          Region, self, name, name);
       }
       break;
     default:

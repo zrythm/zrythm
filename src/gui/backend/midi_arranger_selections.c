@@ -32,30 +32,15 @@
 
 MidiNote *
 midi_arranger_selections_get_highest_note (
-  MidiArrangerSelections * mas,
-  int                      transient)
+  MidiArrangerSelections * mas)
 {
-  MidiNote * top_mn;
-  if (transient)
-    top_mn =
-      midi_note_get_main_trans (
-        mas->midi_notes[0]);
-  else
-    top_mn =
-      midi_note_get_main (mas->midi_notes[0]);
+  MidiNote * top_mn = mas->midi_notes[0];
   MidiNote * tmp;
   for (int i = 0;
        i < mas->num_midi_notes;
        i++)
     {
-      if (transient)
-        tmp =
-          midi_note_get_main_trans (
-            mas->midi_notes[i]);
-      else
-        tmp =
-          midi_note_get_main (
-            mas->midi_notes[i]);
+        tmp = mas->midi_notes[i];
       if (tmp->val >
             top_mn->val)
         {
@@ -67,30 +52,17 @@ midi_arranger_selections_get_highest_note (
 
 MidiNote *
 midi_arranger_selections_get_lowest_note (
-  MidiArrangerSelections * mas,
-  int                      transient)
+  MidiArrangerSelections * mas)
 {
 
   MidiNote * bot_mn =
     mas->midi_notes[0];
-  if (transient)
-    bot_mn =
-      midi_note_get_main_trans (bot_mn);
-  else
-    bot_mn =
-      midi_note_get_main (bot_mn);
   MidiNote * tmp;
   for (int i = 0;
        i < mas->num_midi_notes;
        i++)
     {
       tmp = mas->midi_notes[i];
-      if (transient)
-        tmp =
-          midi_note_get_main_trans (tmp);
-      else
-        tmp =
-          midi_note_get_main (tmp);
       if (tmp->val <
             bot_mn->val)
         {
@@ -143,8 +115,7 @@ midi_arranger_selections_paste_to_pos (
   /* get pos of earliest object */
   Position start_pos;
   arranger_selections_get_start_pos (
-    (ArrangerSelections *) ts, &start_pos,
-    F_NO_TRANSIENTS, 0);
+    (ArrangerSelections *) ts, &start_pos, 0);
   long start_pos_ticks =
     position_to_ticks (&start_pos);
 

@@ -42,24 +42,6 @@ typedef struct _ArrangerObjectWidget
  */
 
 /**
- * Flag used when updating parameters of objects.
- */
-typedef enum ArrangerObjectUpdateFlag
-{
-  /** Update only this object. */
-  AO_UPDATE_THIS,
-
-  /** Update the transients of this object. */
-  AO_UPDATE_TRANS,
-
-  /** Update the non-transients of this object. */
-  AO_UPDATE_NON_TRANS,
-
-  /** Update all counterparts of this object. */
-  AO_UPDATE_ALL,
-} ArrangerObjectUpdateFlag;
-
-/**
  * The type of the object.
  */
 typedef enum ArrangerObjectType
@@ -107,18 +89,6 @@ typedef enum ArrangerObjectPositionType
   ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
 } ArrangerObjectPositionType;
 
-typedef enum ArrangerObjectInfoCounterpart
-{
-  /** This is the main (non-lane) object. */
-  AOI_COUNTERPART_MAIN,
-  /** This is the transient of the main object. */
-  AOI_COUNTERPART_MAIN_TRANSIENT,
-  /** This is the lane object. */
-  AOI_COUNTERPART_LANE,
-  /** This is the lane transient object. */
-  AOI_COUNTERPART_LANE_TRANSIENT,
-} ArrangerObjectInfoCounterpart;
-
 /**
  * Flag do indicate how to clone the object.
  */
@@ -137,55 +107,21 @@ typedef enum ArrangerObjectCloneFlag
 } ArrangerObjectCloneFlag;
 
 /**
- * Provides info on whether this object is
- * transient/lane and pointers to transient/lane
- * equivalents.
- *
- * Each arranger object (Region's, MidiNote's, etc.)
- * should have a copy of this struct and indicate
- * all associated objects here. The type is used to
- * determine which object the current one is.
- */
-typedef struct ArrangerObjectInfo
-{
-  /** Main (non-lane) object. */
-  ArrangerObject *       main;
-
-  /** Transient of the main object. */
-  ArrangerObject *       main_trans;
-
-  /** Lane object. */
-  ArrangerObject *       lane;
-
-  /** Lane transient object. */
-  ArrangerObject *       lane_trans;
-
-  /** Type of object this is. */
-  ArrangerObjectInfoCounterpart counterpart;
-} ArrangerObjectInfo;
-
-/**
  * Base struct for arranger objects.
  */
 typedef struct ArrangerObject
 {
-  /** Object info. */
-  ArrangerObjectInfo info;
-
   ArrangerObjectType type;
 
-  /** 1 if the object is allowed to have lanes. */
+  /** FIXME move these to a function/macro .
+   * 1 if the object is allowed to have lanes. */
   int                can_have_lanes;
-
   /** 1 if the object has a start and end pos */
   int                has_length;
-
   /** 1 if the object can loop. */
   int                can_loop;
-
   /** 1 if the object can fade in/out. */
   int                can_fade;
-
   /** 1 if the start Position is a global (timeline)
    * Position. */
   int                is_pos_global;
@@ -331,100 +267,11 @@ arranger_object_schema = {
 };
 
 /**
- * Returns the main ArrangerObject.
- */
-#define arranger_object_get_main(self) \
-  (((ArrangerObject *) self)->info.main)
-#define arranger_object_get_main_trans(self) \
-  (((ArrangerObject *) self)->info.main_trans)
-#define arranger_object_get_lane(self) \
-  (((ArrangerObject *) self)->info.lane)
-#define arranger_object_get_lane_trans(self) \
-  (((ArrangerObject *) self)->info.lane_trans)
-
-/**
  * Returns if the object type has a length.
  */
 #define arranger_object_type_has_length(type) \
   (type == ARRANGER_OBJECT_TYPE_REGION || \
    type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
-
-#define arranger_object_info_init( \
-  _self, _main, _main_trans, _lane, _lane_trans, \
-  _type, _counterpart) \
-  _arranger_object_info_init ( \
-    _self, (ArrangerObject *) _main, \
-    (ArrangerObject *) _main_trans, \
-    (ArrangerObject *) _lane, \
-    (ArrangerObject *) _lane_trans, _type, \
-    _counterpart)
-
-/** Initializes each object starting from the
- * main. */
-#define arranger_object_info_init_main( \
-  _main, _main_trans, _lane, _lane_trans) \
-  _arranger_object_info_init ( \
-    &_main->info, \
-    _main, _main_trans, _lane, _lane_trans, \
-    AOI_COUNTERPART_MAIN); \
-  _arranger_object_info_init ( \
-    &_main_trans->info, \
-    _main, _main_trans, _lane, _lane_trans, \
-    AOI_COUNTERPART_MAIN_TRANSIENT); \
-  _arranger_object_info_init ( \
-    &_lane->info, \
-    _main, _main_trans, _lane, _lane_trans, \
-    AOI_COUNTERPART_LANE); \
-  _arranger_object_info_init ( \
-    &_lane_trans->info, \
-    _main, _main_trans, _lane, _lane_trans, \
-    AOI_COUNTERPART_LANE_TRANSIENT)
-
-/**
- * Inits the ArrangerObjectInfo with the given
- * values.
- */
-static inline void
-_arranger_object_info_init (
-  ArrangerObjectInfo * self,
-  void * main,
-  void * main_trans,
-  void * lane,
-  void * lane_trans,
-  ArrangerObjectInfoCounterpart counterpart)
-{
-  self->main = main;
-  self->main_trans = main_trans;
-  self->lane = lane;
-  self->lane_trans = lane_trans;
-  self->counterpart = counterpart;
-}
-
-/**
- * Returns whether the object is transient or not.
- *
- * Transient objects are objects that are used
- * during moving operations.
- */
-int
-arranger_object_is_transient (
-  ArrangerObject * self);
-
-/**
- * Returns whether the object is a lane object or not
- * (only applies to TimelineArrangerWidget objects.
- */
-int
-arranger_object_is_lane (
-  ArrangerObject * self);
-
-/**
- * Returns whether the object is a main object or not
- * (only applies to TimelineArrangerWidget objects.
- */
-int
-arranger_object_is_main (
-  ArrangerObject * self);
 
 /**
  * Gets the arranger for this arranger object.
@@ -450,16 +297,31 @@ arranger_object_get_name (
   ArrangerObject * self);
 
 /**
- * Returns if the object represented by the
- * ArrrangerObjectInfo should be visible.
- *
- * This is counterpart-specific, ie. it checks
- * if the transient should be visible or lane
- * counterpart should be visible, etc., based on
- * what is given.
+ * Sets the dest object's values to the main
+ * src object's values.
+ */
+void
+arranger_object_set_to_object (
+  ArrangerObject * dest,
+  ArrangerObject * src);
+
+/**
+ * Returns if the lane counterpart should be visible.
  */
 int
-arranger_object_should_be_visible (
+arranger_object_should_lane_be_visible (
+  ArrangerObject * self);
+
+/**
+ * Returns if the cached object should be visible, ie,
+ * while copy- moving (ctrl+drag) we want to show both
+ * the object at its original position and the current
+ * object.
+ *
+ * This refers to the object at its original position.
+ */
+int
+arranger_object_should_orig_be_visible (
   ArrangerObject * self);
 
 /**
@@ -471,29 +333,11 @@ arranger_object_get_object (
   ArrangerObject * self);
 
 /**
- * Gets the given counterpart.
- */
-ArrangerObject *
-arranger_object_get_counterpart (
-  ArrangerObject *              self,
-  ArrangerObjectInfoCounterpart counterpart);
-
-/**
  * Initializes the object after loading a Project.
  */
 void
 arranger_object_init_loaded (
   ArrangerObject * self);
-
-/**
- * Sets the widget visibility and selection state
- * to this counterpart
- * only, or to all counterparts if all is 1.
- */
-void
-arranger_object_set_widget_visibility_and_state (
-  ArrangerObject * self,
-  int              all);
 
 /**
  * Returns the ArrangerSelections corresponding
@@ -518,10 +362,6 @@ arranger_object_select (
   const int        select,
   const int        append);
 
-#define arranger_object_reset_transient(obj) \
-  arranger_object_reset_counterparts ( \
-    (ArrangerObject *) obj, 1)
-
 /**
  * Returns the number of loops in the ArrangerObject,
  * optionally including incomplete ones.
@@ -530,18 +370,6 @@ int
 arranger_object_get_num_loops (
   ArrangerObject * self,
   const int        count_incomplete);
-
-/**
- * Sets the transient's values to the main
- * object's values.
- *
- * @param reset_trans 1 to reset the transient from
- *   main, 0 to reset main from transient.
- */
-void
-arranger_object_reset_counterparts (
-  ArrangerObject * self,
-  const int        reset_trans);
 
 /**
  * Returns if the object is in the selections.
@@ -677,8 +505,6 @@ arranger_object_is_position_valid (
  *   instead of the main ones.
  * @param validate Validate the Position before
  *   setting it.
- * @param update_flag Flag to indicate which
- *   counterparts to move.
  */
 void
 arranger_object_set_position (
@@ -686,8 +512,7 @@ arranger_object_set_position (
   const Position *           pos,
   ArrangerObjectPositionType pos_type,
   const int                  cached,
-  const int                  validate,
-  ArrangerObjectUpdateFlag   update_flag);
+  const int                  validate);
 
 /**
  * Returns the type as a string.
@@ -709,18 +534,7 @@ void
 arranger_object_move (
   ArrangerObject *         self,
   const long               ticks,
-  const int                use_cached_pos,
-  ArrangerObjectUpdateFlag update_flag);
-
-/**
- * Sets the given object as the main object and
- * clones it into its other counterparts.
- *
- * The type must be set before calling this function.
- */
-void
-arranger_object_set_as_main (
-  ArrangerObject *   self);
+  const int                use_cached_pos);
 
 /**
  * Returns the length of the ArrangerObject (if
@@ -765,39 +579,10 @@ arranger_object_update_frames (
   ArrangerObject * self);
 
 /**
- * Generates a widget for each of the object's
- * counterparts.
- */
-//void
-//arranger_object_gen_widget (
-  //ArrangerObject * self);
-
-/**
- * Frees each object stored in obj_info.
- */
-void
-arranger_object_free_all (
-  ArrangerObject * self);
-
-/**
  * Frees only this object.
  */
 void
 arranger_object_free (
-  ArrangerObject * self);
-
-/**
- * Returns the visible counterpart (ie, the
- * transient or the non transient) of the object.
- *
- * Used for example when moving a Region to
- * allocate the MidiNote's based on the transient
- * Region's position instead of the main Region.
- *
- * Only checks the main/main-trans.
- */
-ArrangerObject *
-arranger_object_get_visible_counterpart (
   ArrangerObject * self);
 
 /**
@@ -812,15 +597,13 @@ arranger_object_get_visible_counterpart (
  * @param loop Whether this is a loop-resize (1) or
  *   a normal resize (0). Only used if the object
  *   can have loops.
- * @param update_flag ArrangerObjectUpdateFlag.
  */
 void
 arranger_object_resize (
   ArrangerObject * self,
   const int        left,
   const int        loop,
-  const long       ticks,
-  ArrangerObjectUpdateFlag update_flag);
+  const long       ticks);
 
 /**
  * Adds the given ticks to each included object.
@@ -831,70 +614,7 @@ arranger_object_add_ticks_to_children (
   const long       ticks);
 
 /**
- * Updates an arranger object's value in all
- * counterparts specified by the update_flag.
- *
- * @param cc CamelCase (eg, Region).
- * @param obj The object.
- * @param val_name The struct member name to set
- *   the primitive value to.
- * @param val_value The value to store.
- * @param update_flag The ArrangerObjectUpdateFlag.
- */
-#define arranger_object_set_primitive( \
-  cc,obj,val_name,val_value,update_flag) \
-  { \
-    cc * _obj = (cc *) obj; \
-    ArrangerObject * ar_obj = \
-      (ArrangerObject *) obj; \
-    switch (update_flag) \
-      { \
-      case AO_UPDATE_THIS: \
-        _obj->val_name = val_value; \
-        break; \
-      case AO_UPDATE_TRANS: \
-        _obj = \
-          (cc *) \
-          arranger_object_get_main_trans (ar_obj); \
-        _obj->val_name = val_value; \
-        _obj = \
-          (cc *) \
-          arranger_object_get_lane_trans (ar_obj); \
-        _obj->val_name = val_value; \
-        break; \
-      case AO_UPDATE_NON_TRANS: \
-        _obj = \
-          (cc *) \
-          arranger_object_get_main (ar_obj); \
-        _obj->val_name = val_value; \
-        _obj = \
-          (cc *) \
-          arranger_object_get_lane (ar_obj); \
-        _obj->val_name = val_value; \
-        break; \
-      case AO_UPDATE_ALL: \
-        _obj = \
-          (cc *) \
-          arranger_object_get_main (ar_obj); \
-        _obj->val_name = val_value; \
-        _obj = \
-          (cc *) \
-          arranger_object_get_lane (ar_obj); \
-        _obj->val_name = val_value; \
-        _obj = \
-          (cc *) \
-          arranger_object_get_main_trans (ar_obj); \
-        _obj->val_name = val_value; \
-        _obj = \
-          (cc *) \
-          arranger_object_get_lane_trans (ar_obj); \
-        _obj->val_name = val_value; \
-        break; \
-      } \
-  }
-
-/**
- * Not to be used anywhere else.
+ * Not to be used anywhere besides below.
  */
 #define _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
   _obj,_val_name,_val_value) \
@@ -903,75 +623,20 @@ arranger_object_add_ticks_to_children (
   _obj->_val_name = g_strdup (_val_value)
 
 /**
- * Updates an arranger object's value in all
- * counterparts specified by the update_flag.
+ * Updates an arranger object's string value.
  *
  * @param cc CamelCase (eg, Region).
  * @param obj The object.
  * @param val_name The struct member name to set
  *   the primitive value to.
  * @param val_value The value to store.
- * @param update_flag The ArrangerObjectUpdateFlag.
  */
 #define arranger_object_set_string( \
-  cc,obj,val_name,val_value, update_flag) \
+  cc,obj,val_name,val_value) \
   { \
     cc * _obj = (cc *) obj; \
-    ArrangerObject * ar_obj = \
-      (ArrangerObject *) obj; \
-    switch (update_flag) \
-      { \
-      case AO_UPDATE_THIS: \
-        _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
-          _obj,val_name,val_value); \
-        break; \
-      case AO_UPDATE_TRANS: \
-        _obj = \
-          (cc *) \
-          arranger_object_get_main_trans (ar_obj); \
-        _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
-          _obj,val_name,val_value); \
-        _obj = \
-          (cc *) \
-          arranger_object_get_lane_trans (ar_obj); \
-        _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
-          _obj,val_name,val_value); \
-        break; \
-      case AO_UPDATE_NON_TRANS: \
-        _obj = \
-          (cc *) \
-          arranger_object_get_main (ar_obj); \
-        _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
-          _obj,val_name,val_value); \
-        _obj = \
-          (cc *) \
-          arranger_object_get_lane (ar_obj); \
-        _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
-          _obj,val_name,val_value); \
-        break; \
-      case AO_UPDATE_ALL: \
-        _obj = \
-          (cc *) \
-          arranger_object_get_main (ar_obj); \
-        _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
-          _obj,val_name,val_value); \
-        _obj = \
-          (cc *) \
-          arranger_object_get_lane (ar_obj); \
-        _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
-          _obj,val_name,val_value); \
-        _obj = \
-          (cc *) \
-          arranger_object_get_main_trans (ar_obj); \
-        _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
-          _obj,val_name,val_value); \
-        _obj = \
-          (cc *) \
-          arranger_object_get_lane_trans (ar_obj); \
-        _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
-          _obj,val_name,val_value); \
-        break; \
-      } \
+    _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
+      _obj,val_name,val_value); \
   }
 
 /**
@@ -1069,8 +734,7 @@ arranger_object_unsplit (
 void
 arranger_object_set_name (
   ArrangerObject *         self,
-  const char *             name,
-  ArrangerObjectUpdateFlag flag);
+  const char *             name);
 
 /**
  * @}

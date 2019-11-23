@@ -455,13 +455,11 @@ do_or_undo_move (
             {
               /* shift the actual object */
               arranger_object_move (
-                obj, ticks, F_NO_CACHED,
-                AO_UPDATE_ALL);
+                obj, ticks, F_NO_CACHED);
 
               /* also shift the copy */
               arranger_object_move (
-                objs[i], ticks, F_NO_CACHED,
-                AO_UPDATE_THIS);
+                objs[i], ticks, F_NO_CACHED);
             }
 
           if (delta_tracks != 0)
@@ -497,13 +495,13 @@ do_or_undo_move (
 
               /* shift the actual object */
               midi_note_shift_pitch (
-                mn, delta_pitch, AO_UPDATE_ALL);
+                mn, delta_pitch);
 
               /* also shift the copy so they can
                * match */
               midi_note_shift_pitch (
                 (MidiNote *) objs[i],
-                delta_pitch, AO_UPDATE_THIS);
+                delta_pitch);
             }
 
           if (delta_lanes != 0)
@@ -602,8 +600,7 @@ do_or_undo_duplicate (
             {
               arranger_object_set_name (
                 objs[i],
-                arranger_object_get_name (obj),
-                AO_UPDATE_THIS);
+                arranger_object_get_name (obj));
             }
         }
       else
@@ -623,14 +620,12 @@ do_or_undo_duplicate (
             {
               /* shift it */
               arranger_object_move (
-                obj, ticks, F_NO_CACHED,
-                AO_UPDATE_ALL);
+                obj, ticks, F_NO_CACHED);
             }
 
           /* also shift the copy */
           arranger_object_move (
-            objs[i], ticks, F_NO_CACHED,
-            AO_UPDATE_THIS);
+            objs[i], ticks, F_NO_CACHED);
         }
 
       if (delta_tracks != 0)
@@ -667,14 +662,14 @@ do_or_undo_duplicate (
 
               /* shift the actual object */
               midi_note_shift_pitch (
-                mn, delta_pitch, AO_UPDATE_ALL);
+                mn, delta_pitch);
             }
 
           /* also shift the copy so they can
            * match */
           midi_note_shift_pitch (
             (MidiNote *) objs[i],
-            delta_pitch, AO_UPDATE_THIS);
+            delta_pitch);
         }
 
       if (delta_lanes != 0)
@@ -920,10 +915,7 @@ do_or_undo_edit (
               break;
             case ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE:
 #define SET_PRIMITIVE(cc,member) \
-  arranger_object_set_primitive ( \
-    cc, obj, member, \
-    ((cc *) dest_objs[i])->member, \
-    AO_UPDATE_ALL)
+    ((cc *) obj)->member = ((cc *) dest_objs[i])->member
 
               switch (obj->type)
                 {
@@ -943,12 +935,9 @@ do_or_undo_edit (
                     MidiNote * dest_mn =
                       (MidiNote *) dest_objs[i];
                     velocity_set_val (
-                      mn->vel, dest_mn->vel->vel,
-                      AO_UPDATE_ALL);
-                    arranger_object_set_primitive (
-                      Velocity, mn->vel, cache_vel,
-                      dest_mn->vel->vel,
-                      AO_UPDATE_ALL);
+                      mn->vel, dest_mn->vel->vel);
+                    mn->vel->cache_vel =
+                      dest_mn->vel->vel;
                   }
                   break;
                 default:
@@ -1109,7 +1098,7 @@ do_or_undo_resize (
             self->resize_type ==
               ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP ?
               F_LOOP : F_NO_LOOP,
-            ticks, AO_UPDATE_ALL);
+            ticks);
 
           /* also resize the clone so we can find the
            * actual object next time */
@@ -1125,7 +1114,7 @@ do_or_undo_resize (
             self->resize_type ==
               ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP ?
               F_LOOP : F_NO_LOOP,
-            ticks, AO_UPDATE_THIS);
+            ticks);
         }
     }
   free (objs);

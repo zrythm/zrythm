@@ -141,11 +141,6 @@ add_from_object (
       {
         Region * r = (Region *) obj;
 
-        /* skip non-mains */
-        if (!region_is_main (r) ||
-            region_is_transient (r))
-          return;
-
         region_get_type_as_string (
           r->type, type);
         position_stringize (
@@ -176,11 +171,6 @@ add_from_object (
       {
         Marker * m = (Marker *) obj;
 
-        /* skip non-mains */
-        if (!marker_is_main (m) ||
-            marker_is_transient (m))
-          return;
-
         get_event_type_as_string (
           EVENT_VIEWER_ET_MARKER, type);
         position_stringize (
@@ -202,11 +192,6 @@ add_from_object (
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
       {
         MidiNote * mn = (MidiNote *) obj;
-
-        /* skip non-mains */
-        if (!midi_note_is_main (mn) ||
-            midi_note_is_transient (mn))
-          return;
 
         midi_note_get_val_as_string (
           mn, name, 0);
@@ -236,11 +221,6 @@ add_from_object (
       {
         ChordObject * c = (ChordObject *) obj;
 
-        /* skip non-mains */
-        if (!chord_object_is_main (c) ||
-            chord_object_is_transient (c))
-          return;
-
         ChordDescriptor * descr =
           chord_object_get_chord_descriptor (c);
         chord_descriptor_to_string (
@@ -262,11 +242,6 @@ add_from_object (
       {
         AutomationPoint * ap =
           (AutomationPoint*) obj;
-
-        /* skip non-mains */
-        if (!automation_point_is_main (ap) ||
-            automation_point_is_transient (ap))
-          return;
 
         get_event_type_as_string (
           EVENT_VIEWER_ET_AUTOMATION_POINT,

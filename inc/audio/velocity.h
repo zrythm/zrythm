@@ -41,20 +41,6 @@ typedef struct _VelocityWidget VelocityWidget;
  * @{
  */
 
-#define velocity_is_main(r) \
-  arranger_object_is_main ( \
-    (ArrangerObject *) r)
-#define velocity_is_transient(r) \
-  arranger_object_is_transient ( \
-    (ArrangerObject *) r)
-#define velocity_get_main(r) \
-  ((Velocity *) \
-   arranger_object_get_main ( \
-     (ArrangerObject *) r))
-#define velocity_get_main_trans(r) \
-  ((Velocity *) \
-   arranger_object_get_main_trans ( \
-     (ArrangerObject *) r))
 #define velocity_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
@@ -159,8 +145,7 @@ velocity_shift (
 void
 velocity_set_val (
   Velocity *    self,
-  const int     val,
-  ArrangerObjectUpdateFlag update_flag);
+  const int     val);
 
 /**
  * @}

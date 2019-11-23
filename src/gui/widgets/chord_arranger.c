@@ -279,8 +279,7 @@ chord_arranger_widget_create_chord (
   arranger_object_set_position (
     chord_obj, &local_pos,
     ARRANGER_OBJECT_POSITION_TYPE_START,
-    F_NO_CACHED, F_NO_VALIDATE,
-    AO_UPDATE_ALL);
+    F_NO_CACHED, F_NO_VALIDATE);
 
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, chord);
   arranger_object_select (

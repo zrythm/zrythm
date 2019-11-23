@@ -79,8 +79,7 @@ chord_selections_paste_to_pos (
   /* get pos of earliest object */
   Position start_pos;
   arranger_selections_get_start_pos (
-    (ArrangerSelections *) ts, &start_pos,
-    F_NO_TRANSIENTS, 0);
+    (ArrangerSelections *) ts, &start_pos, 0);
   long start_pos_ticks =
     position_to_ticks (&start_pos);
 
