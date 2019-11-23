@@ -40,7 +40,7 @@
 #include <glib/gi18n-lib.h>
 
 /** Background color for the name. */
-static GdkRGBA name_bg_color;
+/*static GdkRGBA name_bg_color;*/
 
 void
 region_recreate_pango_layouts (

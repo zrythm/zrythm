@@ -44,6 +44,8 @@ typedef struct Project Project;
 typedef struct Symap Symap;
 typedef struct CairoCaches CairoCaches;
 typedef struct UiCaches UiCaches;
+typedef struct MPMCQueue MPMCQueue;
+typedef struct ObjectPool ObjectPool;
 
 /**
  * @addtogroup general
@@ -137,7 +139,13 @@ typedef struct Zrythm
   /**
    * Event queue, mainly for GUI events.
    */
-  GAsyncQueue *           event_queue;
+  MPMCQueue *             event_queue;
+
+  /**
+   * Object pool of event structs to avoid real time
+   * allocation.
+   */
+  ObjectPool *            event_obj_pool;
 
   /**
    * String interner for internal things.

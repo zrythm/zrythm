@@ -78,25 +78,6 @@ test_new_midi_note ()
   g_assert_cmpint (mn->val, ==, val);
   g_assert_false (mn->muted);
 
-  MidiNote * main_midi_note =
-    midi_note_get_main (mn);
-  MidiNote * main_trans_midi_note =
-    midi_note_get_main_trans (mn);
-
-  g_assert_true (mn == main_midi_note);
-  g_assert_nonnull (main_midi_note);
-  g_assert_nonnull (main_trans_midi_note);
-
-  g_assert_true (
-    midi_note_is_transient (main_trans_midi_note));
-  g_assert_false (
-    midi_note_is_transient (main_midi_note));
-
-  g_assert_true (
-    midi_note_is_main (main_trans_midi_note));
-  g_assert_true (
-    midi_note_is_main (main_midi_note));
-
   Region * r_clone =
     (Region *)
     arranger_object_clone (
@@ -105,15 +86,10 @@ test_new_midi_note ()
   midi_note_set_region (mn, r_clone);
 
   g_assert_true (
-    main_midi_note->region == r_clone);
-  g_assert_true (
-    main_trans_midi_note->region == r_clone);
+    mn->region == r_clone);
   g_assert_cmpstr (
     r_clone->name, ==,
-    main_midi_note->region_name);
-  g_assert_cmpstr (
-    r_clone->name, ==,
-    main_trans_midi_note->region_name);
+    mn->region_name);
 
   MidiNote * mn_clone =
     (MidiNote *)

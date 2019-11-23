@@ -30,6 +30,7 @@ util_srcs = [
   'math.c',
   'mpmc_queue.c',
   'objects.c',
+  'object_pool.c',
   'resources.c',
   'smf.c',
   'stack.c',

@@ -46,6 +46,7 @@
 #include "utils/gtk.h"
 #include "utils/localization.h"
 #include "utils/log.h"
+#include "utils/object_pool.h"
 #include "utils/io.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
@@ -279,8 +280,7 @@ on_setup_main_window (
     _("Setting up main window"),
     0.98);
 
-  ZRYTHM->event_queue =
-    events_init ();
+  events_init (ZRYTHM);
   main_window_widget_refresh (MAIN_WINDOW);
 
   mixer_recalc_graph (MIXER);

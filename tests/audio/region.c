@@ -188,56 +188,6 @@ test_new_region ()
   g_assert_false (region->muted);
   g_assert_cmpint (region->num_midi_notes, ==, 0);
 
-  Region * main_region =
-    region_get_main (region);
-  ArrangerObject * r_main =
-    (ArrangerObject *) main_region;
-  Region * main_trans_region =
-    region_get_main_trans (region);
-  ArrangerObject * r_main_trans =
-    (ArrangerObject *) main_trans_region;
-  Region * lane_region =
-    region_get_lane (region);
-  ArrangerObject * r_lane =
-    (ArrangerObject *) lane_region;
-  Region * lane_trans_region =
-    region_get_lane_trans (region);
-  ArrangerObject * r_lane_trans =
-    (ArrangerObject *) lane_trans_region;
-
-  g_assert_true (region == main_region);
-  g_assert_nonnull (main_region);
-  g_assert_nonnull (lane_region);
-  g_assert_nonnull (main_trans_region);
-  g_assert_nonnull (lane_trans_region);
-
-  g_assert_true (
-    region_is_transient (main_trans_region));
-  g_assert_true (
-    region_is_transient (lane_trans_region));
-  g_assert_false (
-    region_is_transient (main_region));
-  g_assert_false (
-    region_is_transient (lane_region));
-
-  g_assert_false (
-    region_is_lane (main_trans_region));
-  g_assert_true (
-    region_is_lane (lane_trans_region));
-  g_assert_false (
-    region_is_lane (main_region));
-  g_assert_true (
-    region_is_lane (lane_region));
-
-  g_assert_true (
-    region_is_main (main_trans_region));
-  g_assert_false (
-    region_is_main (lane_trans_region));
-  g_assert_true (
-    region_is_main (main_region));
-  g_assert_false (
-    region_is_main (lane_region));
-
   position_set_to_pos (&tmp, &r_obj->pos);
   position_add_ticks (&tmp, 12);
   if (arranger_object_validate_pos (
@@ -247,21 +197,8 @@ test_new_region ()
       arranger_object_set_position (
         r_obj, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_START,
-        F_NO_CACHED, F_NO_VALIDATE,
-        AO_UPDATE_TRANS);
+        F_NO_CACHED, F_NO_VALIDATE);
     }
-  g_assert_true (
-    position_is_equal (
-      &tmp, &r_main_trans->pos));
-  g_assert_true (
-    position_is_equal (
-      &tmp, &r_lane_trans->pos));
-  g_assert_false (
-    position_is_equal (
-      &tmp, &r_main->pos));
-  g_assert_false (
-    position_is_equal (
-      &tmp, &r_lane->pos));
 }
 
 int

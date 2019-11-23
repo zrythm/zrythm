@@ -29,14 +29,22 @@
 #ifndef __GUI_BACKEND_EVENTS_H__
 #define __GUI_BACKEND_EVENTS_H__
 
-#include "zix/sem.h"
-#include "utils/stack.h"
+#include "utils/mpmc_queue.h"
+#include "utils/object_pool.h"
+
+typedef struct Zrythm Zrythm;
 
 /**
  * @addtogroup events
  *
  * @{
  */
+
+#define event_queue_push_back_event(q,x) \
+  mpmc_queue_push_back (q, (void *) x)
+
+#define event_queue_dequeue_event(q,x) \
+  mpmc_queue_dequeue (q, (void *) x)
 
 /**
  * Push events.
@@ -48,10 +56,12 @@
       (!AUDIO_ENGINE || \
        !AUDIO_ENGINE->exporting)) \
     { \
-      ZEvent * _ev = calloc (1, sizeof (ZEvent)); \
+      ZEvent * _ev = \
+        (ZEvent *) \
+        object_pool_get (ZRYTHM->event_obj_pool); \
       _ev->type = et; \
       _ev->arg = (void *) _arg; \
-      g_async_queue_push (EVENTS, _ev); \
+      event_queue_push_back_event (EVENTS, _ev); \
     }
 
 /** The event queue. */
@@ -165,12 +175,13 @@ typedef struct ZEvent
 } ZEvent;
 
 /**
- * Must be called from a GTK thread.
+ * Creates the event queue and starts the event loop.
  *
- * FIXME use zix ring to make it real time safe.
+ * Must be called from a GTK thread.
  */
-GAsyncQueue *
-events_init (void);
+void
+events_init (
+  Zrythm * zrythm);
 
 /**
  * @}

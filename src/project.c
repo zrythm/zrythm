@@ -416,10 +416,7 @@ create_default (Project * self)
   /* mimic behavior when starting the app */
   if (loading_while_running)
     {
-      if (ZRYTHM->event_queue)
-        g_async_queue_unref (ZRYTHM->event_queue);
-      ZRYTHM->event_queue =
-        events_init ();
+      events_init (ZRYTHM);
       main_window_widget_refresh (MAIN_WINDOW);
 
       g_atomic_int_set (&AUDIO_ENGINE->run, 1);
@@ -649,10 +646,7 @@ load (
   /* mimic behavior when starting the app */
   if (loading_while_running)
     {
-      if (ZRYTHM->event_queue)
-        g_async_queue_unref (ZRYTHM->event_queue);
-      ZRYTHM->event_queue =
-        events_init ();
+      events_init (ZRYTHM);
       main_window_widget_refresh (MAIN_WINDOW);
 
       g_atomic_int_set (&AUDIO_ENGINE->run, 1);

@@ -75,13 +75,10 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/gtk.h"
+#include "utils/mpmc_queue.h"
+#include "utils/object_pool.h"
 #include "utils/stack.h"
 #include "zrythm.h"
-
-#define ET_POP(ev) \
-  ((EventType) stack_pop (ev->et_stack))
-#define ARG_POP(ev) \
-  ((void *) stack_pop (ev->arg_stack))
 
 static void
 redraw_all_arranger_bgs ()
@@ -769,17 +766,18 @@ on_plugin_visibility_changed (Plugin * pl)
 
 static inline void
 clean_duplicates_and_copy (
-  GAsyncQueue * q,
-  ZEvent **     events,
-  int *         num_events)
+  MPMCQueue * q,
+  ZEvent **   events,
+  int *       num_events)
 {
   ZEvent * event;
   *num_events = 0;
   int i, already_exists = 0;;
 
-  /* only add events once to new array while popping */
-  while ((event =
-            g_async_queue_try_pop_unlocked (q)))
+  /* only add events once to new array while
+   * popping */
+  while (event_queue_dequeue_event (
+           q, &event))
     {
       already_exists = 0;
 
@@ -789,7 +787,8 @@ clean_duplicates_and_copy (
           already_exists = 1;
 
       if (already_exists)
-        free (event);
+        object_pool_return (
+          ZRYTHM->event_obj_pool, event);
       else
         array_append (events, (*num_events), event);
     }
@@ -803,21 +802,18 @@ clean_duplicates_and_copy (
 static int
 events_process (void * data)
 {
-  GAsyncQueue * q = (GAsyncQueue *) data;
+  MPMCQueue * q = (MPMCQueue *) data;
   /*gint64 curr_time = g_get_monotonic_time ();*/
   if (q != ZRYTHM->event_queue)
     {
-      g_async_queue_unref (q);
       return G_SOURCE_REMOVE;
     }
 
-  g_async_queue_lock (q);
   ZEvent * events[60];
   ZEvent * ev;
   int num_events = 0, i;
   clean_duplicates_and_copy (
     q, events, &num_events);
-  g_async_queue_unlock (q);
 
   /*g_message ("starting processing");*/
   for (i = 0; i < num_events; i++)
@@ -1196,7 +1192,8 @@ events_process (void * data)
           break;
         }
 
-      free (ev);
+      object_pool_return (
+        ZRYTHM->event_obj_pool, ev);
     }
   /*g_message ("processed %d events", i);*/
 
@@ -1205,21 +1202,48 @@ events_process (void * data)
                "Optimization needed.");
 
   /*g_usleep (8000);*/
-  project_sanity_check (PROJECT);
+  /*project_sanity_check (PROJECT);*/
 
   return G_SOURCE_CONTINUE;
 }
 
+static void *
+create_event_obj (void)
+{
+  return calloc (1, sizeof (ZEvent));
+}
+
 /**
+ * Creates the event queue and starts the event loop.
+ *
  * Must be called from a GTK thread.
  */
-GAsyncQueue *
-events_init ()
+void
+events_init (
+  Zrythm * _zrythm)
 {
-  GAsyncQueue * queue =
-    g_async_queue_new ();
+  ObjectPool * obj_pool;
+  MPMCQueue * queue;
+  if (zrythm->event_queue &&
+      zrythm->event_obj_pool)
+    {
+      obj_pool = zrythm->event_obj_pool;
+      queue = zrythm->event_queue;
+      zrythm->event_obj_pool = NULL;
+      zrythm->event_queue = NULL;
+      object_pool_free (obj_pool);
+      mpmc_queue_free (queue);
+    }
 
-  g_timeout_add (32, events_process, queue);
+  obj_pool =
+    object_pool_new (
+      create_event_obj, 200);
+  queue = mpmc_queue_new ();
+  mpmc_queue_reserve (
+    queue, (size_t) 200);
 
-  return queue;
+  zrythm->event_queue = queue;
+  ZRYTHM->event_obj_pool = obj_pool;
+
+  g_timeout_add (36, events_process, queue);
 }

@@ -508,7 +508,7 @@ test_move_timeline ()
   /* do move ticks */
   arranger_selections_add_ticks (
     (ArrangerSelections *) TL_SELECTIONS, MOVE_TICKS,
-    0, AO_UPDATE_ALL);
+    0);
   UndoableAction * ua =
     arranger_selections_action_new_move_timeline (
       TL_SELECTIONS, MOVE_TICKS, 0, 0);
