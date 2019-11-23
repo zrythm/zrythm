@@ -450,58 +450,6 @@ arranger_object_get_name (
   ArrangerObject * self);
 
 /**
- * Returns if the current position is for resizing
- * L.
- */
-int
-arranger_object_is_resize_l (
-  ArrangerObject * self,
-  const int        x);
-
-/**
- * Returns if the current position is for resizing
- * R.
- */
-int
-arranger_object_is_resize_r (
-  ArrangerObject * self,
-  const int        x);
-
-/**
- * Returns if the current position is for resizing
- * up (eg, Velocity).
- */
-int
-arranger_object_is_resize_up (
-  ArrangerObject * self,
-  const int        x,
-  const int        y);
-
-/**
- * Returns if the current position is for resizing
- * loop.
- */
-int
-arranger_object_is_resize_loop (
-  ArrangerObject * self,
-  const int        y);
-
-/**
- * Returns if arranger_object widgets should show
- * cut lines.
- *
- * To be used to set the arranger_object's
- * "show_cut".
- *
- * @param alt_pressed Whether alt is currently
- *   pressed.
- */
-int
-arranger_object_should_show_cut_lines (
-  ArrangerObject * self,
-  int              alt_pressed);
-
-/**
  * Returns if the object represented by the
  * ArrrangerObjectInfo should be visible.
  *
@@ -1123,26 +1071,6 @@ arranger_object_set_name (
   ArrangerObject *         self,
   const char *             name,
   ArrangerObjectUpdateFlag flag);
-
-void
-arranger_object_set_full_rectangle (
-  ArrangerObject * self,
-  ArrangerWidget * arranger);
-
-void
-arranger_object_set_draw_rectangle (
-  ArrangerObject * self,
-  GdkRectangle *   parent_rect);
-
-/**
- * Draws the given object.
- *
- * To be called from the arranger's draw callback.
- */
-void
-arranger_object_draw (
-  ArrangerObject * self,
-  ArrangerWidget * arranger);
 
 /**
  * @}

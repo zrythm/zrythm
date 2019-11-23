@@ -52,34 +52,6 @@
 #include <sndfile.h>
 #include <samplerate.h>
 
-void
-region_recreate_pango_layouts (
-  Region * self)
-{
-  ArrangerObject * obj = (ArrangerObject *) self;
-
-  if (!PANGO_IS_LAYOUT (self->layout))
-    {
-      PangoFontDescription *desc;
-      self->layout =
-        gtk_widget_create_pango_layout (
-          GTK_WIDGET (
-            arranger_object_get_arranger (obj)),
-          NULL);
-      desc =
-        pango_font_description_from_string (
-          REGION_NAME_FONT);
-      pango_layout_set_font_description (
-        self->layout, desc);
-      pango_font_description_free (desc);
-      pango_layout_set_ellipsize (
-        self->layout, PANGO_ELLIPSIZE_END);
-    }
-  pango_layout_set_width (
-    self->layout,
-    pango_units_from_double (
-      obj->draw_rect.width - REGION_NAME_PADDING_R));
-}
 
 /**
  * Only to be used by implementing structs.

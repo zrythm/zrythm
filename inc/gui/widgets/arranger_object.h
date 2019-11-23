@@ -20,10 +20,9 @@
 /**
  * \file
  *
- * Base widget for ArrangerObject's.
+ * ArrangerObject related functions for the GUI.
  */
 
-#if 0
 #ifndef __GUI_WIDGETS_ARRANGER_OBJECT_H__
 #define __GUI_WIDGETS_ARRANGER_OBJECT_H__
 
@@ -32,25 +31,85 @@
 
 #include <gtk/gtk.h>
 
-#define ARRANGER_OBJECT_WIDGET_TYPE \
-  (arranger_object_widget_get_type ())
-G_DECLARE_DERIVABLE_TYPE (
-  ArrangerObjectWidget,
-  arranger_object_widget,
-  Z, ARRANGER_OBJECT_WIDGET,
-  GtkBox)
-
 /**
  * @addtogroup widgets
  *
  * @{
  */
 
-#define ARRANGER_OBJECT_WIDGET_GET_PRIVATE(self) \
-  ArrangerObjectWidgetPrivate * ao_prv = \
-    arranger_object_widget_get_private ( \
-      Z_ARRANGER_OBJECT_WIDGET (self));
+/**
+ * Returns if the current position is for resizing
+ * L.
+ */
+int
+arranger_object_is_resize_l (
+  ArrangerObject * self,
+  const int        x);
 
+/**
+ * Returns if the current position is for resizing
+ * R.
+ */
+int
+arranger_object_is_resize_r (
+  ArrangerObject * self,
+  const int        x);
+
+/**
+ * Returns if the current position is for resizing
+ * up (eg, Velocity).
+ */
+int
+arranger_object_is_resize_up (
+  ArrangerObject * self,
+  const int        x,
+  const int        y);
+
+/**
+ * Returns if the current position is for resizing
+ * loop.
+ */
+int
+arranger_object_is_resize_loop (
+  ArrangerObject * self,
+  const int        y);
+
+/**
+ * Returns if arranger_object widgets should show
+ * cut lines.
+ *
+ * To be used to set the arranger_object's
+ * "show_cut".
+ *
+ * @param alt_pressed Whether alt is currently
+ *   pressed.
+ */
+int
+arranger_object_should_show_cut_lines (
+  ArrangerObject * self,
+  int              alt_pressed);
+
+void
+arranger_object_set_full_rectangle (
+  ArrangerObject * self,
+  ArrangerWidget * arranger);
+
+void
+arranger_object_set_draw_rectangle (
+  ArrangerObject * self,
+  GdkRectangle *   parent_rect);
+
+/**
+ * Draws the given object.
+ *
+ * To be called from the arranger's draw callback.
+ */
+void
+arranger_object_draw (
+  ArrangerObject * self,
+  ArrangerWidget * arranger);
+
+#if 0
 /**
 * ArrangerObject widget base private.
 */
@@ -102,56 +161,6 @@ typedef struct _ArrangerObjectWidgetPrivate
 
 } ArrangerObjectWidgetPrivate;
 
-typedef struct _ArrangerObjectWidgetClass
-{
-  GtkBoxClass parent_class;
-} ArrangerObjectWidgetClass;
-
-/**
- * Sets up the ArrangerObjectWidget.
- */
-void
-arranger_object_widget_setup (
-  ArrangerObjectWidget * self,
-  ArrangerObject *       arranger_object);
-
-/**
- * Returns if the current position is for resizing
- * L.
- */
-int
-arranger_object_widget_is_resize_l (
-  ArrangerObjectWidget * self,
-  const int              x);
-
-/**
- * Returns if the current position is for resizing
- * up (eg, Velocity).
- */
-int
-arranger_object_widget_is_resize_up (
-  ArrangerObjectWidget * self,
-  const int              x,
-  const int              y);
-
-/**
- * Returns if the current position is for resizing
- * R.
- */
-int
-arranger_object_widget_is_resize_r (
-  ArrangerObjectWidget * self,
-  const int              x);
-
-/**
- * Returns if the current position is for resizing
- * loop.
- */
-int
-arranger_object_widget_is_resize_loop (
-  ArrangerObjectWidget * self,
-  const int              y);
-
 void
 arranger_object_widget_force_redraw (
   ArrangerObjectWidget * self);
@@ -177,21 +186,6 @@ arranger_object_widget_should_redraw (
   GdkRectangle *         rect);
 
 /**
- * Returns if arranger_object widgets should show
- * cut lines.
- *
- * To be used to set the arranger_object's
- * "show_cut".
- *
- * @param alt_pressed Whether alt is currently
- *   pressed.
- */
-int
-arranger_object_widget_should_show_cut_lines (
-  ArrangerObjectWidget * self,
-  int alt_pressed);
-
-/**
  * Updates the normal tooltip of the widget, and
  * shows the custom tooltip window if show is 1.
  */
@@ -207,17 +201,10 @@ void
 arranger_object_widget_post_redraw (
   ArrangerObjectWidget * self,
   GdkRectangle *         rect);
-
-/**
- * Returns the private struct.
- */
-ArrangerObjectWidgetPrivate *
-arranger_object_widget_get_private (
-  ArrangerObjectWidget * self);
+#endif
 
 /**
  * @}
  */
 
-#endif
 #endif

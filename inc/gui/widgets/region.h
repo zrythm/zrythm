@@ -17,8 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if 0
-
 /**
  * \file
  *
@@ -34,49 +32,34 @@
 
 #include <gtk/gtk.h>
 
-#define REGION_WIDGET_TYPE \
-  (region_widget_get_type ())
-G_DECLARE_DERIVABLE_TYPE (
-  RegionWidget,
-  region_widget,
-  Z, REGION_WIDGET,
-  ArrangerObjectWidget)
-
 /**
  * @addtogroup widgets
  *
  * @{
  */
 
-#define REGION_WIDGET_GET_PRIVATE(self) \
-  RegionWidgetPrivate * rw_prv = \
-    region_widget_get_private (Z_REGION_WIDGET (self));
+#define REGION_NAME_FONT "Sans SemiBold 9"
+#define REGION_NAME_PADDING_R 5
+#define REGION_NAME_BOX_HEIGHT 19
+#define REGION_NAME_BOX_CURVINESS 4.0
 
 /**
-* Region widget base private.
-*/
-typedef struct _RegionWidgetPrivate
-{
-  /** Region associated with this widget. */
-  Region *           region;
-
-  /** Cache layout for drawing the name. */
-  PangoLayout *      layout;
-
-} RegionWidgetPrivate;
-
-typedef struct _RegionWidgetClass
-{
-  ArrangerObjectWidgetClass parent_class;
-} RegionWidgetClass;
-
-/**
- * Sets up the RegionWidget.
+ * Recreates the pango layouts for drawing.
  */
 void
-region_widget_setup (
-  RegionWidget * self,
-  Region *       region);
+region_recreate_pango_layouts (
+  Region * self);
+
+/**
+ * Draws the Region in the given cairo context in
+ * absolute coordinates.
+ */
+void
+region_draw (
+  Region *  self,
+  cairo_t * cr);
+
+#if 0
 
 /**
  * Returns if the current position is for resizing

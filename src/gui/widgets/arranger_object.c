@@ -17,26 +17,37 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/automation_region.h"
+#include "audio/chord_track.h"
+#include "audio/marker_track.h"
+#include "gui/backend/arranger_object.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_point.h"
+#include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_panel.h"
+#include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 #include "utils/ui.h"
 
 #include <glib/gi18n-lib.h>
 
-G_DEFINE_TYPE_WITH_PRIVATE (
-  ArrangerObjectWidget,
-  arranger_object_widget,
-  GTK_TYPE_BOX)
+#define TYPE(x) \
+  ARRANGER_OBJECT_TYPE_##x
 
+#if 0
 /**
  * Draws the cut line if in cut mode.
  */
@@ -251,131 +262,6 @@ arranger_object_widget_setup (
   ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
 
   ao_prv->arranger_object = arranger_object;
-}
-
-/**
- * Returns if the current position is for resizing
- * L.
- */
-int
-arranger_object_widget_is_resize_l (
-  ArrangerObjectWidget * self,
-  const int              x)
-{
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
-  ArrangerObject * obj = ao_prv->arranger_object;
-
-  if (!obj->has_length)
-    return 0;
-
-  if (x < UI_RESIZE_CURSOR_SPACE)
-    {
-      return 1;
-    }
-  return 0;
-}
-
-/**
- * Returns if the current position is for resizing
- * L.
- */
-int
-arranger_object_widget_is_resize_r (
-  ArrangerObjectWidget * self,
-  const int              x)
-{
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
-  ArrangerObject * obj = ao_prv->arranger_object;
-
-  if (!obj->has_length)
-    return 0;
-
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (
-    GTK_WIDGET (self),
-    &allocation);
-
-  if (x > allocation.width - UI_RESIZE_CURSOR_SPACE)
-    {
-      return 1;
-    }
-  return 0;
-}
-
-/**
- * Returns if the current position is for resizing
- * up (eg, Velocity).
- */
-int
-arranger_object_widget_is_resize_up (
-  ArrangerObjectWidget * self,
-  const int              x,
-  const int              y)
-{
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
-
-  if ((ao_prv->arranger_object->type ==
-         ARRANGER_OBJECT_TYPE_VELOCITY &&
-       y < UI_RESIZE_CURSOR_SPACE) ||
-      (ao_prv->arranger_object->type ==
-         ARRANGER_OBJECT_TYPE_AUTOMATION_POINT &&
-       (x > AP_WIDGET_POINT_SIZE ||
-        y > AP_WIDGET_POINT_SIZE)))
-    {
-      return 1;
-    }
-  return 0;
-}
-
-/**
- * Returns if the current position is for resizing
- * loop.
- */
-int
-arranger_object_widget_is_resize_loop (
-  ArrangerObjectWidget * self,
-  const int              y)
-{
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
-  ArrangerObject * obj = ao_prv->arranger_object;
-
-  if (!obj->has_length || !obj->can_loop)
-    return 0;
-
-  if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
-    {
-      Region * r = (Region *) obj;
-      if (r->type == REGION_TYPE_AUDIO)
-        return 1;
-
-      if ((position_to_ticks (&obj->end_pos) -
-           position_to_ticks (&obj->pos)) >
-          position_to_ticks (&obj->loop_end_pos))
-        {
-          return 1;
-        }
-
-      int height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (self));
-
-      if (y > height / 2)
-        {
-          return 1;
-        }
-      return 0;
-    }
-
-  return 0;
-}
-
-ArrangerObjectWidgetPrivate *
-arranger_object_widget_get_private (
-  ArrangerObjectWidget * self)
-{
-  return
-    arranger_object_widget_get_instance_private (
-      self);
 }
 
 /**
@@ -598,4 +484,715 @@ arranger_object_widget_init (
   ao_prv->redraw = 1;
 
   g_object_ref (self);
+}
+#endif
+
+/**
+ * Returns if the current position is for resizing
+ * L.
+ */
+int
+arranger_object_is_resize_l (
+  ArrangerObject * self,
+  const int        x)
+{
+  if (!self->has_length)
+    return 0;
+
+  if (x < UI_RESIZE_CURSOR_SPACE)
+    {
+      return 1;
+    }
+  return 0;
+}
+
+/**
+ * Returns if the current position is for resizing
+ * R.
+ */
+int
+arranger_object_is_resize_r (
+  ArrangerObject * self,
+  const int        x)
+{
+  if (!self->has_length)
+    return 0;
+
+  long size_frames =
+    self->end_pos.frames - self->pos.frames;
+  Position pos;
+  position_from_frames (
+    &pos, size_frames);
+  int width_px =
+    arranger_widget_pos_to_px (
+      arranger_object_get_arranger (self),
+      &pos, 0);
+
+  if (x > width_px - UI_RESIZE_CURSOR_SPACE)
+    {
+      return 1;
+    }
+  return 0;
+}
+
+/**
+ * Returns if the current position is for resizing
+ * up (eg, Velocity).
+ */
+int
+arranger_object_is_resize_up (
+  ArrangerObject * self,
+  const int        x,
+  const int        y)
+{
+  if ((self->type ==
+         ARRANGER_OBJECT_TYPE_VELOCITY &&
+       y < UI_RESIZE_CURSOR_SPACE) ||
+      (self->type ==
+         ARRANGER_OBJECT_TYPE_AUTOMATION_POINT &&
+       (x > AP_WIDGET_POINT_SIZE ||
+        y > AP_WIDGET_POINT_SIZE)))
+    {
+      return 1;
+    }
+  return 0;
+}
+
+/**
+ * Returns if the current position is for resizing
+ * loop.
+ */
+int
+arranger_object_is_resize_loop (
+  ArrangerObject * self,
+  const int        y)
+{
+  if (!self->has_length || !self->can_loop)
+    return 0;
+
+  if (self->type == ARRANGER_OBJECT_TYPE_REGION)
+    {
+      Region * r = (Region *) self;
+      if (r->type == REGION_TYPE_AUDIO)
+        return 1;
+
+      if ((position_to_ticks (&self->end_pos) -
+           position_to_ticks (&self->pos)) >
+          position_to_ticks (&self->loop_end_pos))
+        {
+          return 1;
+        }
+
+      /* TODO */
+      int height_px = 60;
+        /*gtk_widget_get_allocated_height (*/
+          /*GTK_WIDGET (self));*/
+
+      if (y > height_px / 2)
+        {
+          return 1;
+        }
+      return 0;
+    }
+
+  return 0;
+}
+
+/**
+ * Returns if arranger_object widgets should show
+ * cut lines.
+ *
+ * To be used to set the arranger_object's
+ * "show_cut".
+ *
+ * @param alt_pressed Whether alt is currently
+ *   pressed.
+ */
+int
+arranger_object_should_show_cut_lines (
+  ArrangerObject * self,
+  int              alt_pressed)
+{
+  if (!self->has_length)
+    return 0;
+
+  switch (P_TOOL)
+    {
+    case TOOL_SELECT_NORMAL:
+    case TOOL_SELECT_STRETCH:
+      if (alt_pressed)
+        return 1;
+      else
+        return 0;
+      break;
+    case TOOL_CUT:
+      return 1;
+      break;
+    default:
+      return 0;
+      break;
+    }
+  g_return_val_if_reached (-1);
+}
+
+/**
+ * Returns Y in pixels from the value based on the
+ * allocation of the arranger.
+ */
+static int
+get_automation_point_y (
+  AutomationPoint * ap,
+  ArrangerWidget *  arranger)
+{
+  /* ratio of current value in the range */
+  float ap_ratio = ap->normalized_val;
+
+  int allocated_h =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (arranger));
+  int point =
+    allocated_h -
+    (int) (ap_ratio * (float) allocated_h);
+  return point;
+}
+
+void
+arranger_object_set_full_rectangle (
+  ArrangerObject * self,
+  ArrangerWidget * arranger)
+{
+  switch (self->type)
+    {
+    case TYPE (CHORD_OBJECT):
+      {
+        ChordObject * co = (ChordObject *) self;
+        ChordDescriptor * descr =
+          CHORD_EDITOR->chords[co->index];
+
+        /* use transient or non transient region
+         * depending on which is visible */
+        Region * region = co->region;
+        region =
+          region_get_visible_counterpart (region);
+        ArrangerObject * region_obj =
+          (ArrangerObject *) region;
+
+        long region_start_ticks =
+          region_obj->pos.total_ticks;
+        Position tmp;
+        int adj_px_per_key =
+          MW_CHORD_EDITOR_SPACE->px_per_key + 1;
+
+        /* use absolute position */
+        position_from_ticks (
+          &tmp,
+          region_start_ticks +
+          self->pos.total_ticks);
+        self->full_rect.x =
+          ui_pos_to_px_editor (
+            &tmp, 1);
+        self->full_rect.y =
+          adj_px_per_key *
+          co->index;
+
+        char chord_str[100];
+        chord_descriptor_to_string (
+          descr, chord_str);
+        int textw, texth;
+        PangoLayout * layout =
+          z_cairo_create_default_pango_layout (
+            GTK_WIDGET (arranger));
+        z_cairo_get_text_extents_for_widget (
+          GTK_WIDGET (arranger), layout,
+          chord_str, &textw, &texth);
+        g_object_unref (layout);
+        self->full_rect.width =
+          textw + CHORD_OBJECT_WIDGET_TRIANGLE_W +
+          Z_CAIRO_TEXT_PADDING * 2;
+
+        self->full_rect.height = adj_px_per_key;
+      }
+      break;
+    case TYPE (AUTOMATION_POINT):
+      {
+        /* use transient or non transient region
+         * depending on which is visible */
+        AutomationPoint * ap =
+          (AutomationPoint *) self;
+        Region * region = ap->region;
+        region =
+          region_get_visible_counterpart (region);
+        ArrangerObject * region_obj =
+          (ArrangerObject *) region;
+
+        /* use absolute position */
+        long region_start_ticks =
+          region_obj->pos.total_ticks;
+        Position tmp;
+        position_from_ticks (
+          &tmp,
+          region_start_ticks +
+          self->pos.total_ticks);
+        self->full_rect.x =
+          ui_pos_to_px_editor (
+            &tmp, 1) -
+            AP_WIDGET_POINT_SIZE / 2;
+        g_warn_if_fail (self->full_rect.x >= 0);
+
+        AutomationPoint * next_ap =
+          automation_region_get_next_ap (
+            ap->region, ap);
+
+        if (next_ap)
+          {
+            ArrangerObject * next_obj =
+              (ArrangerObject *) next_ap;
+
+            /* get relative position from the
+             * start AP to the next ap. */
+            position_from_ticks (
+              &tmp,
+              next_obj->pos.total_ticks -
+                self->pos.total_ticks);
+
+            /* width is the relative position in px
+             * plus half an AP_WIDGET_POINT_SIZE for
+             * each side */
+            self->full_rect.width =
+              AP_WIDGET_POINT_SIZE +
+              ui_pos_to_px_editor (&tmp, 0);
+
+            int cur_y =
+              get_automation_point_y (ap, arranger);
+            int next_y =
+              get_automation_point_y (
+                next_ap, arranger);
+
+            self->full_rect.y =
+              (cur_y > next_y ?
+               next_y : cur_y) -
+              AP_WIDGET_POINT_SIZE / 2;
+
+            /* height is the relative relative diff in
+             * px between the two points plus half an
+             * AP_WIDGET_POINT_SIZE for each side */
+            self->full_rect.height =
+              (cur_y > next_y ?
+               cur_y - next_y :
+               next_y - cur_y) + AP_WIDGET_POINT_SIZE;
+          }
+        else
+          {
+            self->full_rect.y =
+              get_automation_point_y (
+                 ap, arranger) -
+              AP_WIDGET_POINT_SIZE / 2;
+
+            self->full_rect.width =
+              AP_WIDGET_POINT_SIZE;
+            self->full_rect.height =
+              AP_WIDGET_POINT_SIZE;
+          }
+        }
+      break;
+    case TYPE (REGION):
+      {
+        Region * region =
+          (Region *) self;
+        TrackLane * lane = region->lane;
+        Track * track =
+          arranger_object_get_track (self);
+
+        /* if region has a tmp_lane then it means
+         * that we are in an operation we should
+         * display it there instead of its original
+         * lane */
+        if (arranger->action !=
+              UI_OVERLAY_ACTION_NONE &&
+            region->tmp_lane)
+          {
+            lane = region->tmp_lane;
+            track = lane->track;
+          }
+
+        if (!track->widget)
+          track->widget = track_widget_new (track);
+
+        self->full_rect.x =
+          ui_pos_to_px_timeline (
+            &self->pos,
+            1);
+        self->full_rect.width =
+          (ui_pos_to_px_timeline (
+            &self->end_pos,
+            1) - self->full_rect.x) - 1;
+        if (self->full_rect.width < 1)
+          self->full_rect.width = 1;
+
+        gint wx, wy;
+        if (arranger_object_is_lane (self))
+          {
+            if (!track->lanes_visible)
+              return;
+
+            gtk_widget_translate_coordinates(
+              (GtkWidget *) (track->widget),
+              (GtkWidget *) (arranger),
+              0, 0,
+              &wx, &wy);
+
+            self->full_rect.y = wy;
+
+            self->full_rect.height =
+              lane->height;
+          }
+        else
+          {
+            gtk_widget_translate_coordinates(
+              (GtkWidget *) (track->widget),
+              (GtkWidget *) (arranger),
+              0, 0,
+              &wx, &wy);
+
+            if (region->type == REGION_TYPE_CHORD)
+              {
+                if (!arranger->chord_obj_height)
+                  {
+                    int textw, texth;
+                    PangoLayout * layout =
+                      z_cairo_create_default_pango_layout (
+                        GTK_WIDGET (arranger));
+                    z_cairo_get_text_extents_for_widget (
+                      GTK_WIDGET (arranger), layout,
+                      "Aa", &textw, &texth);
+                    g_object_unref (layout);
+                    arranger->chord_obj_height =
+                      texth;
+                  }
+
+                self->full_rect.y = wy;
+                /* full height minus the space the
+                 * scales would require, plus some
+                 * padding */
+                self->full_rect.height =
+                  gtk_widget_get_allocated_height (
+                    GTK_WIDGET (track->widget)) -
+                  (arranger->chord_obj_height +
+                     Z_CAIRO_TEXT_PADDING * 4);
+
+              }
+            else if (region->type ==
+                       REGION_TYPE_AUTOMATION)
+              {
+                AutomationTrack * at =
+                  region->at;
+                if (!at->created ||
+                    !track->automation_visible)
+                  return;
+
+                gtk_widget_translate_coordinates (
+                  (GtkWidget *) (at->widget),
+                  (GtkWidget *) (self),
+                  0, 0, &wx, &wy);
+                self->full_rect.y = wy;
+                self->full_rect.height =
+                  gtk_widget_get_allocated_height (
+                    (GtkWidget *) (at->widget));
+              }
+            else
+              {
+                self->full_rect.y = wy;
+                self->full_rect.height =
+                  track->main_height;
+              }
+          }
+      }
+      break;
+    case TYPE (MIDI_NOTE):
+      {
+        /* use transient or non transient region
+         * depending on which is visible */
+        MidiNote * mn = (MidiNote *) self;
+        Region * region =
+          (midi_note_get_main (mn))->region;
+        g_return_if_fail (region);
+        Region * visible_region =
+          (Region *)
+          arranger_object_get_visible_counterpart (
+            (ArrangerObject *) region);
+        ArrangerObject * region_obj =
+          (ArrangerObject *) visible_region;
+
+        long region_start_ticks =
+          region_obj->pos.total_ticks;
+        Position tmp;
+        int adj_px_per_key =
+          (int)
+          MW_MIDI_EDITOR_SPACE->px_per_key + 1;
+
+        /* use absolute position */
+        position_from_ticks (
+          &tmp,
+          region_start_ticks +
+          self->pos.total_ticks);
+        self->full_rect.x =
+          ui_pos_to_px_editor (
+            &tmp, 1);
+        self->full_rect.y =
+          adj_px_per_key *
+          piano_roll_find_midi_note_descriptor_by_val (
+            PIANO_ROLL, mn->val)->index;
+
+        self->full_rect.height = adj_px_per_key;
+        if (PIANO_ROLL->drum_mode)
+          {
+            self->full_rect.width =
+              self->full_rect.height;
+            self->full_rect.x -=
+              self->full_rect.width / 2;
+          }
+        else
+          {
+            /* use absolute position */
+            position_from_ticks (
+              &tmp,
+              region_start_ticks +
+              self->end_pos.total_ticks);
+            self->full_rect.width =
+              ui_pos_to_px_editor (
+                &tmp, 1) - self->full_rect.x;
+          }
+      }
+      break;
+    case TYPE (SCALE_OBJECT):
+      {
+        /*ScaleObject * so =*/
+          /*(ScaleObject *) self;*/
+        Track * track = P_CHORD_TRACK;
+
+        gint wx, wy;
+        gtk_widget_translate_coordinates (
+          (GtkWidget *) (track->widget),
+          (GtkWidget *) (self),
+          0, 0, &wx, &wy);
+
+        self->full_rect.x =
+          ui_pos_to_px_timeline (
+            &self->pos, 1);
+        self->full_rect.width =
+          self->textw +
+          SCALE_OBJECT_WIDGET_TRIANGLE_W +
+          Z_CAIRO_TEXT_PADDING * 2;
+
+        int track_height =
+          gtk_widget_get_allocated_height (
+            (GtkWidget *) (track->widget));
+        int obj_height =
+          self->texth + Z_CAIRO_TEXT_PADDING * 2;
+        self->full_rect.y =
+          (wy + track_height) - obj_height;
+        self->full_rect.height = obj_height;
+      }
+      break;
+    case TYPE (MARKER):
+      {
+        /*Marker * marker =*/
+          /*(Marker *) self;*/
+        Track * track = P_MARKER_TRACK;
+
+        gint wx, wy;
+        gtk_widget_translate_coordinates (
+          (GtkWidget *) (track->widget),
+          (GtkWidget *) (self),
+          0, 0, &wx, &wy);
+
+        self->full_rect.x =
+          ui_pos_to_px_timeline (
+            &self->pos, 1);
+        self->full_rect.width =
+          self->textw + MARKER_WIDGET_TRIANGLE_W +
+          Z_CAIRO_TEXT_PADDING * 2;
+
+        int track_height =
+          gtk_widget_get_allocated_height (
+            GTK_WIDGET (track->widget));
+        int obj_height =
+          self->texth + Z_CAIRO_TEXT_PADDING * 2;
+        self->full_rect.y =
+          (wy + track_height) - obj_height;
+        self->full_rect.height = obj_height;
+      }
+      break;
+    case TYPE (VELOCITY):
+      {
+        /* use transient or non transient note
+         * depending on which is visible */
+        Velocity * vel = (Velocity *) self;
+        /*MidiNote * mn = vel->midi_note;*/
+        /*ArrangerObject * mn_obj =*/
+          /*arranger_object_get_visible_counterpart (*/
+            /*(ArrangerObject *) mn);*/
+
+        /*gint wx, wy;*/
+        /*gtk_widget_translate_coordinates (*/
+          /*GTK_WIDGET (mn_obj->widget),*/
+          /*GTK_WIDGET (self), 0, 0, &wx, &wy);*/
+        gint wx = 0;
+        int height =
+          gtk_widget_get_allocated_height (
+            GTK_WIDGET (arranger));
+
+        int vel_px =
+          (int)
+          ((float) height *
+            ((float) vel->vel / 127.f));
+        self->full_rect.x = wx;
+        self->full_rect.y = height - vel_px;
+        self->full_rect.width = 12;
+        self->full_rect.height = vel_px;
+      }
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+}
+
+void
+arranger_object_set_draw_rectangle (
+  ArrangerObject * self,
+  GdkRectangle *   parent_rect)
+{
+  /* TODO */
+  /*obj->draw_rect.x =*/
+    /*MAX (obj->full_rect.x, rect->x);*/
+  /*obj->draw_rect.y =*/
+    /*MAX (obj->full_rect.y, rect->y);*/
+  self->draw_rect = self->full_rect;
+}
+
+/**
+ * Draws the given object.
+ *
+ * To be called from the arranger's draw callback.
+ */
+void
+arranger_object_draw (
+  ArrangerObject * self,
+  ArrangerWidget * arranger)
+{
+  int arr_height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (arranger));
+  int arr_width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (arranger));
+  switch (self->type)
+    {
+    case TYPE (AUTOMATION_POINT):
+      {
+        AutomationPoint * ap =
+          (AutomationPoint *) self;
+        AutomationPoint * next_ap =
+          automation_region_get_next_ap (
+            ap->region, ap);
+
+        Track * track =
+          arranger_object_get_track (
+            (ArrangerObject *) ap);
+        g_return_if_fail (track);
+
+        /* get color */
+        GdkRGBA color = track->color;
+        ui_get_arranger_object_color (
+          &color, self->hover,
+          automation_point_is_selected (ap),
+          automation_point_is_transient (ap));
+        gdk_cairo_set_source_rgba (
+          self->cached_cr, &color);
+
+        int upslope =
+          next_ap && ap->fvalue < next_ap->fvalue;
+
+        /* draw circle */
+        cairo_arc (
+          self->cached_cr,
+          AP_WIDGET_POINT_SIZE / 2,
+          (upslope ?
+             arr_height -
+             AP_WIDGET_POINT_SIZE / 2 :
+             AP_WIDGET_POINT_SIZE / 2),
+          AP_WIDGET_POINT_SIZE / 2,
+          0, 2 * G_PI);
+        cairo_stroke_preserve (self->cached_cr);
+        cairo_stroke (self->cached_cr);
+
+        if (next_ap)
+          {
+            /* draw the curve */
+            double automation_point_y;
+            double new_x = 0;
+
+            /* TODO use cairo translate to add padding */
+
+            /* set starting point */
+            double new_y;
+
+            /* ignore the space between the center
+             * of each point and the edges (2 of them
+             * so a full AP_WIDGET_POINT_SIZE) */
+            double width_for_curve =
+              arr_width - AP_WIDGET_POINT_SIZE;
+            double height_for_curve =
+              arr_height - AP_WIDGET_POINT_SIZE;
+
+            for (double l = 0.0;
+                 l <= (double) width_for_curve + 0.01;
+                 l = l + 0.1)
+              {
+                /* in pixels, higher values are lower */
+                automation_point_y =
+                  1.0 -
+                  automation_point_get_normalized_value_in_curve (
+                    ap,
+                    CLAMP (
+                      l / width_for_curve, 0.0, 1.0));
+                automation_point_y *= height_for_curve;
+
+                new_x = l;
+                new_y = automation_point_y;
+
+                if (math_doubles_equal (l, 0.0, 0.01))
+                  {
+                    cairo_move_to (
+                      self->cached_cr,
+                      new_x +
+                        AP_WIDGET_POINT_SIZE / 2,
+                      new_y +
+                        AP_WIDGET_POINT_SIZE / 2);
+                  }
+
+                cairo_line_to (
+                  self->cached_cr,
+                  new_x +
+                    AP_WIDGET_POINT_SIZE / 2,
+                  new_y +
+                    AP_WIDGET_POINT_SIZE / 2);
+              }
+
+            cairo_stroke (self->cached_cr);
+          }
+        else /* no next ap */
+          {
+          }
+        }
+      break;
+    case TYPE (REGION):
+      region_draw (
+        (Region *) self, self->cached_cr);
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
 }
