@@ -4020,10 +4020,10 @@ arranger_widget_redraw_playhead (
   int playhead_x = get_playhead_px (self);
   int min_x =
     MIN (self->last_playhead_px, playhead_x);
-  min_x = MAX (min_x - 2, rect.x);
+  min_x = MAX (min_x - 4, rect.x);
   int max_x =
     MAX (self->last_playhead_px, playhead_x);
-  max_x = MIN (max_x + 2, rect.x + rect.width);
+  max_x = MIN (max_x + 4, rect.x + rect.width);
 
   gtk_widget_queue_draw_area (
     GTK_WIDGET (self), min_x, rect.y,

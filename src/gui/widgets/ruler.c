@@ -234,10 +234,10 @@ draw_regions (
 
 static void
 draw_loop_start (
-  RulerWidget * self)
+  RulerWidget *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
 {
-  cairo_t * cr = self->cached_cr;
-
   /* draw rect */
   GdkRectangle dr = { 0, 0, 0, 0 };
   if (self->type == TYPE (EDITOR))
@@ -274,20 +274,29 @@ draw_loop_start (
   dr.width = RW_RULER_MARKER_SIZE;
   dr.height = RW_RULER_MARKER_SIZE;
 
-  cairo_set_source_rgb (cr, 0, 0.9, 0.7);
-  cairo_set_line_width (cr, 2);
-  cairo_move_to (cr, dr.x, dr.y);
-  cairo_line_to (cr, dr.x, dr.y + dr.height);
-  cairo_line_to (cr, dr.x + dr.width, dr.y);
-  cairo_fill (cr);
+  if (dr.x >=
+        rect->x - dr.width &&
+      dr.x <=
+        rect->x + rect->width)
+    {
+      cairo_set_source_rgb (cr, 0, 0.9, 0.7);
+      cairo_set_line_width (cr, 2);
+      cairo_move_to (
+        cr, dr.x - rect->x, dr.y);
+      cairo_line_to (
+        cr, dr.x - rect->x, dr.y + dr.height);
+      cairo_line_to (
+        cr, (dr.x + dr.width) - rect->x, dr.y);
+      cairo_fill (cr);
+    }
 }
 
 static void
 draw_loop_end (
-  RulerWidget * self)
+  RulerWidget *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
 {
-  cairo_t * cr = self->cached_cr;
-
   /* draw rect */
   GdkRectangle dr = { 0, 0, 0, 0 };
   if (self->type == TYPE (EDITOR))
@@ -326,13 +335,21 @@ draw_loop_end (
   dr.width = RW_RULER_MARKER_SIZE;
   dr.height = RW_RULER_MARKER_SIZE;
 
-  cairo_set_source_rgb (cr, 0, 0.9, 0.7);
-  cairo_set_line_width (cr, 2);
-  cairo_move_to (cr, dr.x, dr.y);
-  cairo_line_to (cr, dr.x + dr.width, dr.y);
-  cairo_line_to (
-    cr, dr.x + dr.width, dr.y + dr.height);
-  cairo_fill (cr);
+  if (dr.x >=
+        rect->x - dr.width &&
+      dr.x <=
+        rect->x + rect->width)
+    {
+      cairo_set_source_rgb (cr, 0, 0.9, 0.7);
+      cairo_set_line_width (cr, 2);
+      cairo_move_to (cr, dr.x - rect->x, dr.y);
+      cairo_line_to (
+        cr, (dr.x + dr.width) - rect->x, dr.y);
+      cairo_line_to (
+        cr, (dr.x + dr.width) - rect->x,
+        dr.y + dr.height);
+      cairo_fill (cr);
+    }
 }
 
 /**
@@ -341,10 +358,10 @@ draw_loop_end (
  */
 static void
 draw_cue_point (
-  RulerWidget * self)
+  RulerWidget *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
 {
-  cairo_t * cr = self->cached_cr;
-
   /* draw rect */
   GdkRectangle dr = { 0, 0, 0, 0 };
   if (self->type == TYPE (EDITOR))
@@ -398,58 +415,90 @@ draw_cue_point (
   dr.width = RW_CUE_MARKER_WIDTH;
   dr.height = RW_CUE_MARKER_HEIGHT;
 
+  if (dr.x >=
+        rect->x - dr.width &&
+      dr.x <=
+        rect->x + rect->width)
+    {
+      if (self->type == TYPE (EDITOR))
+        {
+          cairo_set_source_rgb (cr, 0.2, 0.6, 0.9);
+        }
+      else if (self->type == TYPE (TIMELINE))
+        {
+          cairo_set_source_rgb (cr, 0, 0.6, 0.9);
+        }
+      cairo_set_line_width (cr, 2);
+      cairo_move_to (
+        cr, dr.x - rect->x, dr.y);
+      cairo_line_to (
+        cr, (dr.x + dr.width) - rect->x,
+        dr.y + dr.height / 2);
+      cairo_line_to (
+        cr, dr.x - rect->x, dr.y + dr.height);
+      cairo_fill (cr);
+    }
+}
+
+/**
+ * Returns the playhead's x coordinate in absolute
+ * coordinates.
+ */
+static int
+get_playhead_px (
+  RulerWidget * self)
+{
   if (self->type == TYPE (EDITOR))
     {
-      cairo_set_source_rgb (cr, 0.2, 0.6, 0.9);
+      return
+        ui_pos_to_px_editor (PLAYHEAD, 1);
     }
   else if (self->type == TYPE (TIMELINE))
     {
-      cairo_set_source_rgb (cr, 0, 0.6, 0.9);
+      return
+        ui_pos_to_px_timeline (PLAYHEAD, 1);
     }
-  cairo_set_line_width (cr, 2);
-  cairo_move_to (cr, dr.x, dr.y);
-  cairo_line_to (
-    cr, dr.x + dr.width, dr.y + dr.height / 2);
-  cairo_line_to (cr, dr.x, dr.y + dr.height);
-  cairo_fill (cr);
+  g_return_val_if_reached (-1);
 }
 
 static void
 draw_playhead (
-  RulerWidget * self)
+  RulerWidget *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
 {
-  cairo_t * cr = self->cached_cr;
+  int px = get_playhead_px (self);
 
-  /* draw rect */
-  GdkRectangle dr = { 0, 0, 0, 0 };
-  if (self->type == TYPE (EDITOR))
+  if (px >=
+        rect->x - RW_PLAYHEAD_TRIANGLE_WIDTH / 2 &&
+      px <=
+        (rect->x + rect->width) -
+        RW_PLAYHEAD_TRIANGLE_WIDTH / 2)
     {
-      dr.x =
-        ui_pos_to_px_editor (
-          &TRANSPORT->playhead_pos,
-          1) - (RW_PLAYHEAD_TRIANGLE_WIDTH / 2);
-    }
-  else if (self->type == TYPE (TIMELINE))
-    {
-      dr.x =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->playhead_pos,
-          1) - (RW_PLAYHEAD_TRIANGLE_WIDTH / 2);
-    }
-  dr.y =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self)) -
-      RW_PLAYHEAD_TRIANGLE_HEIGHT;
-  dr.width = RW_PLAYHEAD_TRIANGLE_WIDTH;
-  dr.height = RW_PLAYHEAD_TRIANGLE_HEIGHT;
+      self->last_playhead_px = px;
 
-  cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
-  cairo_set_line_width (cr, 2);
-  cairo_move_to (cr, dr.x, dr.y);
-  cairo_line_to (
-    cr, dr.x + dr.width / 2, dr.y + dr.height);
-  cairo_line_to (cr, dr.x + dr.width, dr.y);
-  cairo_fill (cr);
+      /* draw rect */
+      GdkRectangle dr = { 0, 0, 0, 0 };
+      dr.x =
+        px -
+        (RW_PLAYHEAD_TRIANGLE_WIDTH / 2);
+      dr.y =
+        gtk_widget_get_allocated_height (
+          GTK_WIDGET (self)) -
+          RW_PLAYHEAD_TRIANGLE_HEIGHT;
+      dr.width = RW_PLAYHEAD_TRIANGLE_WIDTH;
+      dr.height = RW_PLAYHEAD_TRIANGLE_HEIGHT;
+
+      cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
+      cairo_set_line_width (cr, 2);
+      cairo_move_to (cr, dr.x - rect->x, dr.y);
+      cairo_line_to (
+        cr, (dr.x + dr.width / 2) - rect->x,
+        dr.y + dr.height);
+      cairo_line_to (
+        cr, (dr.x + dr.width) - rect->x, dr.y);
+      cairo_fill (cr);
+    }
 }
 
 static gboolean
@@ -529,12 +578,12 @@ ruler_draw_cb (
 
       /* if transport loop start is within the
        * screen */
-      if (start_px > rect.x &&
+      if (start_px + 2.0 > rect.x &&
           start_px <= rect.x + rect.width)
         {
           /* draw the loop start line */
           double x =
-            (start_px - rect.x) + 1.0;
+            (start_px - rect.x);
           cairo_move_to (
             self->cached_cr, x, 0);
           cairo_line_to (
@@ -543,11 +592,12 @@ ruler_draw_cb (
         }
       /* if transport loop end is within the
        * screen */
-      if (end_px > rect.x &&
-          end_px < rect.x + rect.width)
+      if (end_px + 2.0 > rect.x &&
+          end_px <= rect.x + rect.width)
         {
+          /* draw the loop end line */
           double x =
-            (end_px - rect.x) - 1.0;
+            (end_px - rect.x);
           cairo_move_to (
             self->cached_cr, x, 0);
           cairo_line_to (
@@ -621,9 +671,9 @@ ruler_draw_cb (
         (curr_px =
            self->px_per_bar * (i += bar_interval) +
              SPACE_BEFORE_START) <
-         rect.x + rect.width)
+         rect.x + rect.width + 20.0)
         {
-          if (curr_px < rect.x)
+          if (curr_px + 20.0 < rect.x)
             continue;
 
           cairo_set_source_rgb (
@@ -800,13 +850,16 @@ ruler_draw_cb (
 
       /* ------ draw markers ------- */
 
-      draw_cue_point (self);
-      draw_loop_start (self);
-      draw_loop_end (self);
+      draw_cue_point (
+        self, self->cached_cr, &rect);
+      draw_loop_start (
+        self, self->cached_cr, &rect);
+      draw_loop_end (
+        self, self->cached_cr, &rect);
 
       /* --------- draw playhead ---------- */
 
-      draw_playhead (self);
+      draw_playhead (self, self->cached_cr, &rect);
 
       self->redraw = 0;
     }
@@ -1045,12 +1098,94 @@ on_motion (
     }
 }
 
-void
-ruler_widget_force_redraw (
+static GtkScrolledWindow *
+get_scrolled_window (
   RulerWidget * self)
 {
+  switch (self->type)
+    {
+    case TYPE (TIMELINE):
+      return MW_TIMELINE_PANEL->ruler_scroll;
+    case TYPE (EDITOR):
+      return MW_CLIP_EDITOR_INNER->ruler_scroll;
+    }
+
+  return NULL;
+}
+
+/**
+ * Returns the current rectangle to draw in.
+ *
+ * @param rect The rectangle to fill in.
+ */
+static void
+get_current_rect (
+  RulerWidget * self,
+  GdkRectangle *   rect)
+{
+  GtkScrolledWindow * scroll =
+    get_scrolled_window (self);
+  GtkAdjustment * xadj =
+    gtk_scrolled_window_get_hadjustment (
+      scroll);
+  rect->x =
+    (int) gtk_adjustment_get_value (xadj);
+  GtkAdjustment * yadj =
+    gtk_scrolled_window_get_vadjustment (scroll);
+  rect->y =
+    (int) gtk_adjustment_get_value (yadj);
+  rect->height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (scroll));
+  rect->width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (scroll));
+}
+
+/**
+ * Queues a redraw of the whole visible ruler.
+ */
+void
+ruler_widget_redraw_whole (
+  RulerWidget * self)
+{
+  GdkRectangle rect;
+  get_current_rect (self, &rect);
+
+  /* redraw visible area */
   self->redraw = 1;
-  gtk_widget_queue_draw (GTK_WIDGET (self));
+  gtk_widget_queue_draw_area (
+    GTK_WIDGET (self), rect.x, rect.y,
+    rect.width, rect.height);
+}
+
+/**
+ * Only redraws the playhead part.
+ */
+void
+ruler_widget_redraw_playhead (
+  RulerWidget * self)
+{
+  GdkRectangle rect;
+  get_current_rect (self, &rect);
+
+  int playhead_x = get_playhead_px (self);
+  int min_x =
+    MIN (self->last_playhead_px, playhead_x);
+  min_x =
+    MAX (
+      min_x - (RW_PLAYHEAD_TRIANGLE_WIDTH + 40),
+      rect.x);
+  int max_x =
+    MAX (self->last_playhead_px, playhead_x);
+  max_x =
+    MIN (
+      max_x + RW_PLAYHEAD_TRIANGLE_WIDTH,
+      rect.x + rect.width);
+
+  gtk_widget_queue_draw_area (
+    GTK_WIDGET (self), min_x, rect.y,
+    (max_x - min_x), rect.height);
 }
 
 void
@@ -1091,7 +1226,7 @@ ruler_widget_refresh (RulerWidget * self)
   EVENTS_PUSH (
     ET_RULER_SIZE_CHANGED, self);
 
-  ruler_widget_force_redraw (self);
+  ruler_widget_redraw_whole (self);
 }
 
 /**

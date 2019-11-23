@@ -128,10 +128,13 @@ on_playhead_changed ()
           gtk_widget_queue_draw (
             GTK_WIDGET (TOP_BAR->digital_transport));
         }
+      if (MW_RULER)
+        {
+          ruler_widget_redraw_playhead (MW_RULER);
+        }
       if (EDITOR_RULER)
         {
-          gtk_widget_queue_allocate (
-            GTK_WIDGET (EDITOR_RULER));
+          ruler_widget_redraw_playhead (EDITOR_RULER);
         }
       if (MW_MIDI_EDITOR_SPACE)
         {
@@ -237,9 +240,9 @@ on_range_selection_changed ()
     /*PROJECT->has_range);*/
   gtk_widget_queue_allocate (
     GTK_WIDGET (MW_RULER));
-	ruler_widget_force_redraw (
+	ruler_widget_redraw_whole (
 		(RulerWidget *) MW_RULER);
-	ruler_widget_force_redraw (
+	ruler_widget_redraw_whole (
 		(RulerWidget *) EDITOR_RULER);
 }
 
@@ -629,7 +632,7 @@ on_arranger_object_changed (
     case ARRANGER_OBJECT_TYPE_REGION:
       /* redraw editor ruler if region
        * positions were changed */
-      ruler_widget_force_redraw (
+      ruler_widget_redraw_whole (
         EDITOR_RULER);
       break;
     case ARRANGER_OBJECT_TYPE_MARKER:
@@ -924,16 +927,16 @@ events_process (void * data)
         case ET_TIMELINE_LOOP_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
-          ruler_widget_force_redraw (
+          ruler_widget_redraw_whole (
             (RulerWidget *) MW_RULER);
-          ruler_widget_force_redraw (
+          ruler_widget_redraw_whole (
             (RulerWidget *) EDITOR_RULER);
           redraw_all_arranger_bgs ();
           break;
         case ET_TIMELINE_SONG_MARKER_POS_CHANGED:
           gtk_widget_queue_allocate (
             GTK_WIDGET (MW_RULER));
-          ruler_widget_force_redraw (
+          ruler_widget_redraw_whole (
             (RulerWidget *) MW_RULER);
           break;
         case ET_PLUGIN_VISIBILITY_CHANGED:
@@ -1144,9 +1147,9 @@ events_process (void * data)
           break;
         case ET_LOOP_TOGGLED:
           redraw_all_arranger_bgs ();
-          ruler_widget_force_redraw (
+          ruler_widget_redraw_whole (
             (RulerWidget *) EDITOR_RULER);
-          ruler_widget_force_redraw (
+          ruler_widget_redraw_whole (
             (RulerWidget *) MW_RULER);
           break;
         case ET_ARRANGER_SELECTIONS_IN_TRANSIT:

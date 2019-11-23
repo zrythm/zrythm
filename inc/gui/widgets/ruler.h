@@ -128,6 +128,11 @@ typedef struct _RulerWidget
   /** FIXME move somewhere else */
   double            zoom_level;
 
+  /** Px the playhead was last drawn at, so we can
+   * redraw this and the new px only when the
+   * playhead changes position. */
+  int               last_playhead_px;
+
   /** Set to 1 to redraw. */
   int               redraw;
 
@@ -178,8 +183,18 @@ int
 ruler_widget_get_sixteenth_interval (
   RulerWidget * self);
 
+/**
+ * Queues a redraw of the whole visible ruler.
+ */
 void
-ruler_widget_force_redraw (
+ruler_widget_redraw_whole (
+  RulerWidget * self);
+
+/**
+ * Only redraws the playhead part.
+ */
+void
+ruler_widget_redraw_playhead (
   RulerWidget * self);
 
 void
