@@ -1054,12 +1054,35 @@ arranger_object_set_draw_rectangle (
   ArrangerObject * self,
   GdkRectangle *   parent_rect)
 {
-  /* TODO */
-  /*obj->draw_rect.x =*/
-    /*MAX (obj->full_rect.x, rect->x);*/
-  /*obj->draw_rect.y =*/
-    /*MAX (obj->full_rect.y, rect->y);*/
-  self->draw_rect = self->full_rect;
+  /* FIXME TODO don't use rectangles, use arranger's
+   * cairo context. figure out a different way
+   * to cache directly in the arranger, like
+   * having a cache for the background, a cache
+   * for all the objects, etc. This leaves more
+   * freedom to draw whatever we want for the
+   * arranger objects */
+  self->draw_rect.x =
+    MAX (self->full_rect.x, parent_rect->x);
+  self->draw_rect.width =
+    MIN (
+      (parent_rect->x + parent_rect->width) -
+        self->draw_rect.x,
+      (self->full_rect.x + self->full_rect.width) -
+      self->draw_rect.x);
+  self->draw_rect.y =
+    MAX (self->full_rect.y, parent_rect->y);
+  self->draw_rect.height =
+    MIN (
+      (parent_rect->y + parent_rect->height) -
+        self->draw_rect.y,
+      (self->full_rect.y + self->full_rect.height) -
+      self->draw_rect.y);
+  /*g_message ("full rect: (%d, %d) w: %d h: %d",*/
+    /*self->full_rect.x, self->full_rect.y,*/
+    /*self->full_rect.width, self->full_rect.height);*/
+  /*g_message ("draw rect: (%d, %d) w: %d h: %d",*/
+    /*self->draw_rect.x, self->draw_rect.y,*/
+    /*self->draw_rect.width, self->draw_rect.height);*/
 }
 
 /**

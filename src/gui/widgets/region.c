@@ -107,7 +107,6 @@ draw_background (
     cr, &color);
 
   /* draw arc-rectangle */
-  g_message ("drawing");
   z_cairo_rounded_rectangle (
     cr, 0, 0, obj->draw_rect.width,
     obj->draw_rect.height,
@@ -152,9 +151,9 @@ draw_loop_points (
     ui_pos_to_px_timeline (&tmp, 0);
   if (px != 0 &&
       /* if loop px is visible */
-      px + obj->full_rect.x >=
+      px + obj->draw_rect.x >=
         rect->x &&
-      px + obj->full_rect.x <=
+      px + obj->draw_rect.x <=
         rect->x + rect->width)
     {
       cairo_set_source_rgba (
@@ -182,9 +181,9 @@ draw_loop_points (
 
       g_message ("draw rect x %d rect x %d px %d", obj->draw_rect.x, rect->x, px);
       if (
-        px + obj->full_rect.x >=
+        px + obj->draw_rect.x >=
           rect->x &&
-        px + obj->full_rect.x <=
+        px + obj->draw_rect.x <=
           rect->x + rect->width)
         {
           cairo_set_source_rgba (
@@ -388,27 +387,45 @@ draw_name (
   double degrees = G_PI / 180.0;
   cairo_new_sub_path (cr);
   cairo_move_to (
-    cr, pangorect.width + REGION_NAME_PADDING_R, 0);
+    cr,
+    (pangorect.width + REGION_NAME_PADDING_R) +
+      (obj->full_rect.x - obj->draw_rect.x),
+    obj->full_rect.y - obj->draw_rect.y);
   cairo_arc (
-    cr, (pangorect.width + REGION_NAME_PADDING_R) - radius,
-    REGION_NAME_BOX_HEIGHT - radius, radius,
+    cr,
+    ((pangorect.width + REGION_NAME_PADDING_R) -
+      radius) +
+      (obj->full_rect.x - obj->draw_rect.x),
+    (REGION_NAME_BOX_HEIGHT - radius) +
+     (obj->full_rect.y - obj->draw_rect.y),
+    radius,
     0 * degrees, 90 * degrees);
-  cairo_line_to (cr, 0, REGION_NAME_BOX_HEIGHT);
-  cairo_line_to (cr, 0, 0);
+  cairo_line_to (
+    cr, obj->full_rect.x - obj->draw_rect.x,
+    REGION_NAME_BOX_HEIGHT +
+      (obj->full_rect.y - obj->draw_rect.y));
+  cairo_line_to (
+    cr, obj->full_rect.x - obj->draw_rect.x,
+    obj->full_rect.y - obj->draw_rect.y);
   cairo_close_path (cr);
   cairo_fill (cr);
 
   /* draw text */
   cairo_set_source_rgba (
     cr, 1, 1, 1, 1);
-  cairo_translate (cr, 2, 2);
+  cairo_translate (
+    cr,
+    2 + (obj->full_rect.x - obj->draw_rect.x),
+    2 + (obj->full_rect.y - obj->draw_rect.y));
   pango_cairo_show_layout (cr, layout);
 }
 
 /**
  * Draws the Region in the given cairo context in
- * absolute coordinates.
+ * relative coordinates.
  *
+ * @param cr The cairo context in the region's
+ *   drawable coordinates.
  * @param rect Arranger rectangle.
  */
 void

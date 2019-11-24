@@ -52,8 +52,10 @@ region_recreate_pango_layouts (
 
 /**
  * Draws the Region in the given cairo context in
- * absolute coordinates.
+ * relative coordinates.
  *
+ * @param cr The cairo context in the region's
+ *   drawable coordinates.
  * @param rect Arranger rectangle.
  */
 void
