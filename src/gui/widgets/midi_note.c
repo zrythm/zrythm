@@ -74,6 +74,8 @@ midi_note_draw (
   GdkRectangle * rect)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
   Region * region = self->region;
   Position global_start_pos;
   midi_note_get_global_start_pos (
@@ -127,7 +129,8 @@ midi_note_draw (
     {
       /* get color */
       ui_get_arranger_object_color (
-        &color, obj->hover,
+        &color,
+        arranger->hovered_object == obj,
         midi_note_is_selected (self),
         0);
       gdk_cairo_set_source_rgba (
@@ -155,7 +158,7 @@ midi_note_draw (
       /* get color */
       ui_get_arranger_object_color (
         &color,
-        obj->hover,
+        arranger->hovered_object == obj,
         midi_note_is_selected (self),
         /* FIXME */
         0);

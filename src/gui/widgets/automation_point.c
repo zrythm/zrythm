@@ -33,62 +33,128 @@
 #include "utils/math.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (
-  AutomationPointWidget,
-  automation_point_widget,
-  ARRANGER_OBJECT_WIDGET_TYPE)
-
 /**
- * Called from the arranger to draw an
- * AutomationPoint.
+ * Draws the AutomationPoint in the given cairo
+ * context in absolute coordinates.
+ *
+ * @param cr The cairo context of the arranger.
+ * @param rect Arranger rectangle.
  */
 void
 automation_point_draw (
-  AutomationPoint *       ap,
-  cairo_t *               cr,
-  GdkRectangle *          rect)
+  AutomationPoint * ap,
+  cairo_t *         cr,
+  GdkRectangle *    rect)
 {
+  ArrangerObject * obj =
+    (ArrangerObject *) ap;
+  AutomationPoint * next_ap =
+    automation_region_get_next_ap (
+      ap->region, ap);
+  ArrangerObject * next_obj =
+    (ArrangerObject *) next_ap;
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
 
- return FALSE;
-}
+  Track * track =
+    arranger_object_get_track (
+      (ArrangerObject *) ap);
+  g_return_if_fail (track);
 
-AutomationPointWidget *
-automation_point_widget_new (
-  AutomationPoint * ap)
-{
-  AutomationPointWidget * self =
-    g_object_new (
-      AUTOMATION_POINT_WIDGET_TYPE,
-      "visible", 1,
-      NULL);
+  /* get color */
+  GdkRGBA color = track->color;
+  ui_get_arranger_object_color (
+    &color,
+    arranger->hovered_object == obj,
+    automation_point_is_selected (ap), 0);
+  gdk_cairo_set_source_rgba (
+    cr, &color);
 
-  arranger_object_widget_setup (
-    Z_ARRANGER_OBJECT_WIDGET (self),
-    (ArrangerObject *) ap);
+  cairo_set_line_width (cr, 2);
 
-  self->ap = ap;
+  int upslope =
+    next_ap && ap->fvalue < next_ap->fvalue;
+  (void) upslope;
+  (void) next_obj;
 
-  return self;
-}
+  if (next_ap)
+    {
+      /* draw the curve */
+      double automation_point_y;
+      double new_x = 0;
 
-static void
-automation_point_widget_class_init (
-  AutomationPointWidgetClass * _klass)
-{
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "automation-point");
-}
+      /* TODO use cairo translate to add padding */
 
-static void
-automation_point_widget_init (
-  AutomationPointWidget * self)
-{
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
+      /* set starting point */
+      double new_y;
 
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT (ao_prv->drawing_area), "draw",
-    G_CALLBACK (automation_point_draw_cb), self);
+      /* ignore the space between the center
+       * of each point and the edges (2 of them
+       * so a full AP_WIDGET_POINT_SIZE) */
+      double width_for_curve =
+        obj->full_rect.width - AP_WIDGET_POINT_SIZE;
+      double height_for_curve =
+        obj->full_rect.height -
+          AP_WIDGET_POINT_SIZE;
+
+      for (double l = 0.0;
+           l <= (double) width_for_curve + 0.01;
+           l = l + 0.1)
+        {
+          /* in pixels, higher values are lower */
+          automation_point_y =
+            1.0 -
+            automation_point_get_normalized_value_in_curve (
+              ap,
+              CLAMP (
+                l / width_for_curve, 0.0, 1.0));
+          automation_point_y *= height_for_curve;
+
+          new_x = (l + obj->full_rect.x) - rect->x;
+          new_y =
+            (obj->full_rect.y +
+              automation_point_y) -
+            rect->y;
+
+          if (math_doubles_equal (l, 0.0, 0.01))
+            {
+              cairo_move_to (
+                cr,
+                new_x +
+                  AP_WIDGET_POINT_SIZE / 2,
+                new_y +
+                  AP_WIDGET_POINT_SIZE / 2);
+            }
+
+          cairo_line_to (
+            cr,
+            new_x +
+              AP_WIDGET_POINT_SIZE / 2,
+            new_y +
+              AP_WIDGET_POINT_SIZE / 2);
+        }
+
+      cairo_stroke (cr);
+    }
+  else /* no next ap */
+    {
+    }
+
+  /* draw circle */
+  cairo_arc (
+    cr,
+    (obj->full_rect.x + AP_WIDGET_POINT_SIZE / 2) -
+      rect->x,
+    upslope ?
+      ((obj->full_rect.y + obj->full_rect.height) -
+       AP_WIDGET_POINT_SIZE / 2) -
+        rect->y :
+      (obj->full_rect.y + AP_WIDGET_POINT_SIZE / 2) -
+        rect->y,
+    AP_WIDGET_POINT_SIZE / 2,
+    0, 2 * G_PI);
+  cairo_set_source_rgba (cr, 0, 0, 0, 1);
+  cairo_fill_preserve (cr);
+  gdk_cairo_set_source_rgba (cr, &color);
+  cairo_stroke (cr);
 }

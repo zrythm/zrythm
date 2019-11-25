@@ -388,7 +388,7 @@ track_set_recording (
 
   if (!channel)
     {
-      ui_show_notification_idle (
+      g_message (
         "Recording not implemented yet for this "
         "track.");
       return;

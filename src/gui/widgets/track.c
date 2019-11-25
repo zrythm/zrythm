@@ -1864,8 +1864,10 @@ track_widget_on_record_toggled (
   TrackWidget * self)
 {
   Track * track = self->track;
+  g_return_if_fail (track);
   ChannelTrack * ct = (ChannelTrack *) track;
   Channel * chan = ct->channel;
+  g_return_if_fail (chan);
 
   /* toggle record flag */
   track_set_recording (track, !track->recording);

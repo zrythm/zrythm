@@ -99,6 +99,9 @@ draw_background (
   ArrangerObject * obj =
     (ArrangerObject *) self;
 
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
+
   Track * track =
     arranger_object_get_track (obj);
 
@@ -115,7 +118,7 @@ draw_background (
     }
   ui_get_arranger_object_color (
     &color,
-    obj->hover,
+    arranger->hovered_object == obj,
     region_is_selected (self),
     /* FIXME */
     0);
@@ -282,7 +285,7 @@ draw_midi_region (
     arranger_object_get_num_loops (obj, 1);
   long ticks_in_region =
     arranger_object_get_length_in_ticks (obj);
-  float x_start, y_start, x_end;
+  double x_start, y_start, x_end;
 
   int min_val = 127, max_val = 0;
   for (int i = 0; i < self->num_midi_notes; i++)
@@ -294,10 +297,10 @@ draw_midi_region (
       if (mn->val > max_val)
         max_val = mn->val;
     }
-  float y_interval =
+  double y_interval =
     MAX (
-      (float) (max_val - min_val) + 1.f, 7.f);
-  float y_note_size = 1.f / y_interval;
+      (double) (max_val - min_val) + 1.0, 7.0);
+  double y_note_size = 1.0 / y_interval;
 
   /* draw midi notes */
   long loop_end_ticks =
@@ -357,23 +360,24 @@ draw_midi_region (
               /* get ratios (0.0 - 1.0) of
                * where midi note is */
               x_start =
-                (float) tmp_start_ticks /
-                (float) ticks_in_region;
+                (double) tmp_start_ticks /
+                (double) ticks_in_region;
               x_end =
-                (float) tmp_end_ticks /
-                (float) ticks_in_region;
+                (double) tmp_end_ticks /
+                (double) ticks_in_region;
               y_start =
-                ((float) max_val - (float) mn->val) /
+                ((double) max_val -
+                 (double) mn->val) /
                 y_interval;
 
               /* get actual values using the
                * ratios */
               x_start *=
-                (float) full_rect->width;
+                (double) full_rect->width;
               x_end *=
-                (float) full_rect->width;
+                (double) full_rect->width;
               y_start *=
-                (float) full_rect->height;
+                (double) full_rect->height;
 
               /* the above values are local to the
                * region, convert to global */
@@ -395,22 +399,28 @@ draw_midi_region (
                    x_end > draw_rect->x))
                 {
                   double draw_x =
-                    MAX (x_start, rect->x);
+                    MAX (x_start, draw_rect->x);
                   double draw_width =
                     MIN (
-                      (double) x_end - draw_x,
-                      rect->width);
+                      (x_end - x_start) -
+                        (draw_x - x_start),
+                      (draw_rect->x +
+                        draw_rect->width) - draw_x);
+                  double draw_y =
+                    MAX (y_start, draw_rect->y);
+                  double draw_height =
+                    MIN (
+                      (y_note_size *
+                        (double) full_rect->height) -
+                          (draw_y - y_start),
+                      (draw_rect->y +
+                        draw_rect->height) - draw_y);
                   cairo_rectangle (
                     cr,
-                    draw_x,
-                    /* don't bother clamping the
-                     * y */
-                    y_start - rect->y,
+                    draw_x - rect->x,
+                    draw_y - rect->y,
                     draw_width,
-                    y_note_size *
-                      (float)
-                      full_rect->height -
-                      (float) rect->y);
+                    draw_height);
                   cairo_fill (cr);
                 }
             }
@@ -465,18 +475,20 @@ draw_name (
     (pangorect.width + REGION_NAME_PADDING_R) +
       (full_rect->x - rect->x),
     full_rect->y - rect->y);
+  int black_box_height =
+    pangorect.height + 2 * REGION_NAME_BOX_PADDING;
   cairo_arc (
     cr,
     ((pangorect.width + REGION_NAME_PADDING_R) -
       radius) +
       (full_rect->x - rect->x),
-    (REGION_NAME_BOX_HEIGHT - radius) +
+    (black_box_height - radius) +
      (full_rect->y - rect->y),
     radius,
     0 * degrees, 90 * degrees);
   cairo_line_to (
     cr, full_rect->x - rect->x,
-    REGION_NAME_BOX_HEIGHT +
+    black_box_height +
       (full_rect->y - rect->y));
   cairo_line_to (
     cr, full_rect->x - rect->x,
@@ -489,8 +501,10 @@ draw_name (
     cr, 1, 1, 1, 1);
   cairo_move_to (
     cr,
-    2 + (full_rect->x - rect->x),
-    2 + (full_rect->y - rect->y));
+    REGION_NAME_BOX_PADDING +
+      (full_rect->x - rect->x),
+    REGION_NAME_BOX_PADDING +
+      (full_rect->y - rect->y));
   pango_cairo_show_layout (cr, layout);
 }
 
@@ -529,9 +543,8 @@ region_draw (
           g_return_if_fail (lane);
 
           /* set full rectangle */
-          full_rect = obj->full_rect;
-          full_rect.y += lane->y;
-          full_rect.height = lane->height - 1;
+          region_get_lane_full_rect (
+            self, &full_rect);
         }
       else if (i == REGION_COUNTERPART_MAIN)
         {
@@ -544,8 +557,6 @@ region_draw (
         obj, rect, &full_rect, &draw_rect);
 
       draw_background (
-        self, cr, rect, &full_rect, &draw_rect, i);
-      draw_loop_points (
         self, cr, rect, &full_rect, &draw_rect, i);
 
       switch (self->type)
@@ -560,9 +571,34 @@ region_draw (
         default:
           break;
         }
+
+      draw_loop_points (
+        self, cr, rect, &full_rect, &draw_rect, i);
       draw_name (
         self, cr, rect, &full_rect, &draw_rect, i);
     }
+}
+
+/**
+ * Returns the lane rectangle for the region.
+ */
+void
+region_get_lane_full_rect (
+  Region *       self,
+  GdkRectangle * rect)
+{
+  ArrangerObject * obj = (ArrangerObject *) self;
+
+  Track * track =
+    arranger_object_get_track (obj);
+  g_return_if_fail (track && track->lanes_visible);
+
+  TrackLane * lane = self->lane;
+  g_return_if_fail (lane);
+
+  *rect = obj->full_rect;
+  rect->y += lane->y;
+  rect->height = lane->height - 1;
 }
 
 #if 0

@@ -17,8 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if 0
-
 /**
  * \file
  *
@@ -29,18 +27,9 @@
 #define __GUI_WIDGETS_AUTOMATION_POINT_H__
 
 #include "audio/automation_point.h"
-#include "gui/widgets/arranger_object.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
-
-#define AUTOMATION_POINT_WIDGET_TYPE \
-  (automation_point_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  AutomationPointWidget,
-  automation_point_widget,
-  Z, AUTOMATION_POINT_WIDGET,
-  ArrangerObjectWidget)
 
 /**
  * @addtogroup widgets
@@ -50,25 +39,21 @@ G_DECLARE_FINAL_TYPE (
 
 #define AP_WIDGET_POINT_SIZE 6
 
-typedef struct _AutomationPointWidget
-{
-  ArrangerObjectWidget   parent_instance;
-
-  /** The AutomationPoint associated with the
-   * widget. */
-  AutomationPoint *      ap;
-} AutomationPointWidget;
-
 /**
- * Creates a automation_point.
+ * Draws the AutomationPoint in the given cairo
+ * context in absolute coordinates.
+ *
+ * @param cr The cairo context of the arranger.
+ * @param rect Arranger rectangle.
  */
-AutomationPointWidget *
-automation_point_widget_new (
-  AutomationPoint * automation_point);
+void
+automation_point_draw (
+  AutomationPoint * self,
+  cairo_t *         cr,
+  GdkRectangle *    rect);
 
 /**
  * @}
  */
 
-#endif
 #endif

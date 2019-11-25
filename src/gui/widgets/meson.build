@@ -25,7 +25,7 @@ widget_srcs = [
   'automatable_selector_popover.c',
   'automation_arranger.c',
   'automation_editor_space.c',
-  #'automation_point.c',
+  'automation_point.c',
   #'automation_region.c',
   'bar_slider.c',
   'bind_cc_dialog.c',

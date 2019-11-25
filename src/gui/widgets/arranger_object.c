@@ -48,6 +48,60 @@
 #define TYPE(x) \
   ARRANGER_OBJECT_TYPE_##x
 
+/**
+ * Queues a redraw in the area covered by this
+ * object.
+ */
+void
+arranger_object_queue_redraw (
+  ArrangerObject * self)
+{
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (self);
+  GdkRectangle arranger_rect;
+  arranger_widget_get_visible_rect (
+    arranger, &arranger_rect);
+  GdkRectangle full_rect = self->full_rect;
+
+  /* add some padding to the full rect for any
+   * effects or things like automation points */
+  static const int padding = 6;
+  if (self->type == TYPE (AUTOMATION_POINT))
+    {
+      full_rect.x = MAX (full_rect.x - padding, 0);
+      full_rect.y = MAX (full_rect.y - padding, 0);
+      full_rect.width += padding * 2;
+      full_rect.height += padding * 2;
+    }
+
+  GdkRectangle draw_rect;
+  arranger_object_get_draw_rectangle (
+    self, &arranger_rect, &full_rect,
+    &draw_rect);
+  arranger_widget_redraw_rectangle (
+    arranger, &draw_rect);
+
+  /* if region and lanes are visible, redraw
+   * lane too */
+  if (self->type == TYPE (REGION))
+    {
+      Track * track =
+        arranger_object_get_track (self);
+      if (track->lanes_visible &&
+          self->can_have_lanes)
+        {
+          Region * r = (Region *) self;
+          region_get_lane_full_rect (
+            r, &full_rect);
+          arranger_object_get_draw_rectangle (
+            self, &arranger_rect, &full_rect,
+            &draw_rect);
+          arranger_widget_redraw_rectangle (
+            arranger, &draw_rect);
+        }
+    }
+}
+
 #if 0
 /**
  * Draws the cut line if in cut mode.
@@ -736,8 +790,7 @@ arranger_object_set_full_rectangle (
           region_start_ticks +
           self->pos.total_ticks);
         self->full_rect.x =
-          ui_pos_to_px_editor (
-            &tmp, 1) -
+          ui_pos_to_px_editor (&tmp, 1) -
             AP_WIDGET_POINT_SIZE / 2;
         g_warn_if_fail (self->full_rect.x >= 0);
 
@@ -832,20 +885,6 @@ arranger_object_set_full_rectangle (
           self->full_rect.width = 1;
 
         gint wx, wy;
-
-        /* set lane rect if lanes visible */
-        if (lane && track->lanes_visible)
-          {
-            gtk_widget_translate_coordinates(
-              (GtkWidget *) (track->widget),
-              (GtkWidget *) (arranger),
-              0, 0,
-              &wx, &wy);
-
-            region->lane_y =
-              wy + track->main_height;
-            region->lane_height = lane->height;
-          }
 
         gtk_widget_translate_coordinates(
           (GtkWidget *) (track->widget),
@@ -1111,110 +1150,11 @@ arranger_object_draw (
   cairo_t *        cr,
   GdkRectangle *   rect)
 {
-  int arr_height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (arranger));
-  int arr_width =
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (arranger));
   switch (self->type)
     {
     case TYPE (AUTOMATION_POINT):
-      {
-        AutomationPoint * ap =
-          (AutomationPoint *) self;
-        AutomationPoint * next_ap =
-          automation_region_get_next_ap (
-            ap->region, ap);
-
-        Track * track =
-          arranger_object_get_track (
-            (ArrangerObject *) ap);
-        g_return_if_fail (track);
-
-        /* get color */
-        GdkRGBA color = track->color;
-        ui_get_arranger_object_color (
-          &color, self->hover,
-          automation_point_is_selected (ap), 0);
-        gdk_cairo_set_source_rgba (
-          cr, &color);
-
-        int upslope =
-          next_ap && ap->fvalue < next_ap->fvalue;
-
-        /* draw circle */
-        cairo_arc (
-          cr,
-          AP_WIDGET_POINT_SIZE / 2,
-          (upslope ?
-             arr_height -
-             AP_WIDGET_POINT_SIZE / 2 :
-             AP_WIDGET_POINT_SIZE / 2),
-          AP_WIDGET_POINT_SIZE / 2,
-          0, 2 * G_PI);
-        cairo_stroke_preserve (cr);
-        cairo_stroke (cr);
-
-        if (next_ap)
-          {
-            /* draw the curve */
-            double automation_point_y;
-            double new_x = 0;
-
-            /* TODO use cairo translate to add padding */
-
-            /* set starting point */
-            double new_y;
-
-            /* ignore the space between the center
-             * of each point and the edges (2 of them
-             * so a full AP_WIDGET_POINT_SIZE) */
-            double width_for_curve =
-              arr_width - AP_WIDGET_POINT_SIZE;
-            double height_for_curve =
-              arr_height - AP_WIDGET_POINT_SIZE;
-
-            for (double l = 0.0;
-                 l <= (double) width_for_curve + 0.01;
-                 l = l + 0.1)
-              {
-                /* in pixels, higher values are lower */
-                automation_point_y =
-                  1.0 -
-                  automation_point_get_normalized_value_in_curve (
-                    ap,
-                    CLAMP (
-                      l / width_for_curve, 0.0, 1.0));
-                automation_point_y *= height_for_curve;
-
-                new_x = l;
-                new_y = automation_point_y;
-
-                if (math_doubles_equal (l, 0.0, 0.01))
-                  {
-                    cairo_move_to (
-                      cr,
-                      new_x +
-                        AP_WIDGET_POINT_SIZE / 2,
-                      new_y +
-                        AP_WIDGET_POINT_SIZE / 2);
-                  }
-
-                cairo_line_to (
-                  cr,
-                  new_x +
-                    AP_WIDGET_POINT_SIZE / 2,
-                  new_y +
-                    AP_WIDGET_POINT_SIZE / 2);
-              }
-
-            cairo_stroke (cr);
-          }
-        else /* no next ap */
-          {
-          }
-        }
+      automation_point_draw (
+        (AutomationPoint *) self, cr, rect);
       break;
     case TYPE (REGION):
       region_draw (

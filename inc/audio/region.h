@@ -202,10 +202,6 @@ typedef struct Region
 
   /** Cache layout for drawing the name. */
   PangoLayout *      layout;
-
-  /** See full_rect in ArrangerObject. */
-  int                lane_y;
-  int                lane_height;
 } Region;
 
 static const cyaml_schema_field_t

@@ -913,124 +913,155 @@ arranger_widget_get_hit_objects_in_rect (
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      {
-        if (type != ARRANGER_OBJECT_TYPE_ALL &&
-            type != ARRANGER_OBJECT_TYPE_REGION &&
-            type != ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
-          break;
+      if (type != ARRANGER_OBJECT_TYPE_ALL &&
+          type != ARRANGER_OBJECT_TYPE_REGION &&
+          type != ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
+        break;
 
-        /* add overlapping scales */
-        if (type == ARRANGER_OBJECT_TYPE_ALL ||
-            type ==
-              ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
-          {
-            for (int i = 0;
-                 i < P_CHORD_TRACK->num_scales; i++)
-              {
-                obj =
-                  (ArrangerObject *)
-                  P_CHORD_TRACK->scales[i];
-                ADD_OBJ_IF_OVERLAP;
-              }
-          }
+      /* add overlapping scales */
+      if (type == ARRANGER_OBJECT_TYPE_ALL ||
+          type ==
+            ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
+        {
+          for (int i = 0;
+               i < P_CHORD_TRACK->num_scales; i++)
+            {
+              obj =
+                (ArrangerObject *)
+                P_CHORD_TRACK->scales[i];
+              ADD_OBJ_IF_OVERLAP;
+            }
+        }
 
-        /* add overlapping regions */
-        if (type == ARRANGER_OBJECT_TYPE_ALL ||
-            type == ARRANGER_OBJECT_TYPE_REGION)
-          {
-            for (int i = 0;
-                 i < TRACKLIST->num_tracks;
-                 i++)
-              {
-                Track * track =
-                  TRACKLIST->tracks[i];
+      /* add overlapping regions */
+      if (type == ARRANGER_OBJECT_TYPE_ALL ||
+          type == ARRANGER_OBJECT_TYPE_REGION)
+        {
+          for (int i = 0;
+               i < TRACKLIST->num_tracks;
+               i++)
+            {
+              Track * track =
+                TRACKLIST->tracks[i];
 
-                for (int j = 0;
-                     j < track->num_lanes; j++)
-                  {
-                    TrackLane * lane =
-                      track->lanes[j];
-                    for (int k = 0;
-                         k < lane->num_regions;
-                         k++)
-                      {
-                        obj =
-                          (ArrangerObject *)
-                          lane->regions[k];
-                        ADD_OBJ_IF_OVERLAP;
-                      }
-                  }
+              for (int j = 0;
+                   j < track->num_lanes; j++)
+                {
+                  TrackLane * lane =
+                    track->lanes[j];
+                  for (int k = 0;
+                       k < lane->num_regions;
+                       k++)
+                    {
+                      Region *r =
+                        lane->regions[k];
+                      obj =
+                        (ArrangerObject *) r;
+                      ADD_OBJ_IF_OVERLAP
+                      else
+                        {
+                          if (!track->
+                                lanes_visible)
+                            continue;
+                          GdkRectangle lane_rect;
+                          region_get_lane_full_rect (
+                            lane->regions[k],
+                            &lane_rect);
+                          if (ui_rectangle_overlap (
+                                &lane_rect,
+                                rect) &&
+                              arranger_object_get_arranger (obj) ==  self)
+                            {
+                              array[*array_size] =
+                                obj;
+                              (*array_size)++;
+                            }
+                        }
+                    }
+                }
 
-                AutomationTracklist * atl =
-                  track_get_automation_tracklist (
-                    track);
-                if (atl &&
-                    track->automation_visible)
-                  {
-                    for (int j = 0;
-                         j < atl->num_ats;
-                         j++)
-                      {
-                        AutomationTrack * at =
-                          atl->ats[j];
-                        for (int k = 0;
-                             k < at->num_regions;
-                             k++)
-                          {
-                            obj =
-                              (ArrangerObject *)
-                              at->regions[k];
-                            ADD_OBJ_IF_OVERLAP;
-                          }
-                      }
-                  }
-              }
-          }
-      }
+              AutomationTracklist * atl =
+                track_get_automation_tracklist (
+                  track);
+              if (atl &&
+                  track->automation_visible)
+                {
+                  for (int j = 0;
+                       j < atl->num_ats;
+                       j++)
+                    {
+                      AutomationTrack * at =
+                        atl->ats[j];
+                      for (int k = 0;
+                           k < at->num_regions;
+                           k++)
+                        {
+                          obj =
+                            (ArrangerObject *)
+                            at->regions[k];
+                          ADD_OBJ_IF_OVERLAP;
+                        }
+                    }
+                }
+            }
+        }
       break;
     case TYPE (MIDI):
-      {
-        /* add overlapping midi notes */
-        if (type == ARRANGER_OBJECT_TYPE_ALL ||
-            type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
-          {
-            Region * r = CLIP_EDITOR->region;
-            if (!r)
-              break;
+      /* add overlapping midi notes */
+      if (type == ARRANGER_OBJECT_TYPE_ALL ||
+          type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+        {
+          Region * r = CLIP_EDITOR->region;
+          if (!r)
+            break;
 
-            for (int i = 0; i < r->num_midi_notes;
-                 i++)
-              {
-                MidiNote * mn = r->midi_notes[i];
-                obj =
-                  (ArrangerObject *)
-                  mn;
-                ADD_OBJ_IF_OVERLAP;
-              }
-          }
-      }
+          for (int i = 0; i < r->num_midi_notes;
+               i++)
+            {
+              MidiNote * mn = r->midi_notes[i];
+              obj =
+                (ArrangerObject *)
+                mn;
+              ADD_OBJ_IF_OVERLAP;
+            }
+        }
       break;
     case TYPE (MIDI_MODIFIER):
-      {
-        /* add overlapping midi notes */
-        if (type == ARRANGER_OBJECT_TYPE_ALL ||
-            type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
-          {
-            Region * r = CLIP_EDITOR->region;
-            if (!r)
-              break;
+      /* add overlapping midi notes */
+      if (type == ARRANGER_OBJECT_TYPE_ALL ||
+          type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+        {
+          Region * r = CLIP_EDITOR->region;
+          if (!r)
+            break;
 
-            for (int i = 0; i < r->num_midi_notes;
-                 i++)
-              {
-                MidiNote * mn = r->midi_notes[i];
-                Velocity * vel = mn->vel;
-                obj =
-                  (ArrangerObject *) vel;
-                ADD_OBJ_IF_OVERLAP;
-              }
-          }
-      }
+          for (int i = 0; i < r->num_midi_notes;
+               i++)
+            {
+              MidiNote * mn = r->midi_notes[i];
+              Velocity * vel = mn->vel;
+              obj =
+                (ArrangerObject *) vel;
+              ADD_OBJ_IF_OVERLAP;
+            }
+        }
+      break;
+    case TYPE (AUTOMATION):
+      /* add overlapping midi notes */
+      if (type == ARRANGER_OBJECT_TYPE_ALL ||
+          type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+        {
+          Region * r = CLIP_EDITOR->region;
+          if (!r)
+            break;
+
+          for (int i = 0; i < r->num_aps; i++)
+            {
+              AutomationPoint * ap =  r->aps[i];
+              obj = (ArrangerObject *) ap;
+              ADD_OBJ_IF_OVERLAP;
+            }
+        }
       break;
     default:
       g_warn_if_reached ();
@@ -2533,9 +2564,6 @@ select_in_range (
   switch (self->type)
     {
     case TYPE (CHORD):
-      arranger_widget_get_hit_objects_in_rect (
-        self, ARRANGER_OBJECT_TYPE_CHORD_OBJECT,
-        &rect, objs, &num_objs);
       for (i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
@@ -3715,6 +3743,7 @@ drag_end (
   arranger_widget_refresh_cursor (self);
 }
 
+#if 0
 /**
  * @param type The arranger object type, or -1 to
  *   search for all types.
@@ -3805,6 +3834,7 @@ get_hit_timeline_object (
 
   return NULL;
 }
+#endif
 
 /**
  * Returns the ArrangerObject of the given type
@@ -3820,16 +3850,26 @@ arranger_widget_get_hit_arranger_object (
   double             x,
   double             y)
 {
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      return
-        get_hit_timeline_object (self, type, x, y);
-      break;
-    default:
-      break;
-    }
-  return NULL;
+  ArrangerObject * objs[800];
+  int              num_objs;
+  GdkRectangle rect = { (int) x, (int) y, 1, 1 };
+  arranger_widget_get_hit_objects_in_rect (
+    self, type, &rect, objs, &num_objs);
+  if (num_objs > 0)
+    return objs[0];
+  else
+    return NULL;
+
+  /*switch (self->type)*/
+    /*{*/
+    /*case TYPE (TIMELINE):*/
+      /*return*/
+        /*get_hit_timeline_object (self, type, x, y);*/
+      /*break;*/
+    /*default:*/
+      /*break;*/
+    /*}*/
+  /*return NULL;*/
 }
 
 /**
@@ -4117,6 +4157,19 @@ arranger_widget_redraw_playhead (
     (max_x - min_x), rect.height);
 }
 
+/**
+ * Only redraws the given rectangle.
+ */
+void
+arranger_widget_redraw_rectangle (
+  ArrangerWidget * self,
+  GdkRectangle *   rect)
+{
+  gtk_widget_queue_draw_area (
+    GTK_WIDGET (self), rect->x, rect->y,
+    rect->width, rect->height);
+}
+
 static gboolean
 on_scroll (
   GtkWidget *widget,
@@ -4207,6 +4260,27 @@ on_motion (
         state & GDK_CONTROL_MASK;
       self->shift_held =
         state & GDK_SHIFT_MASK;
+    }
+
+  /* highlight hovered object */
+  ArrangerObject * obj =
+    arranger_widget_get_hit_arranger_object (
+      self, ARRANGER_OBJECT_TYPE_ALL,
+      self->hover_x, self->hover_y);
+  if (self->hovered_object != obj)
+    {
+      ArrangerObject * prev_obj =
+        self->hovered_object;
+      self->hovered_object = obj;
+
+      /* redraw previous hovered object to
+       * unhover it */
+      if (prev_obj)
+        arranger_object_queue_redraw (prev_obj);
+
+      /* redraw new hovered object */
+      if (obj)
+        arranger_object_queue_redraw (obj);
     }
 
   arranger_widget_refresh_cursor (self);

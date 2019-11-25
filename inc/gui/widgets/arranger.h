@@ -132,6 +132,9 @@ typedef struct _ArrangerWidget
    */
   ArrangerObject *       start_object;
 
+  /** Object currently hovered. */
+  ArrangerObject *       hovered_object;
+
   /** Whether the start object was selected before
    * drag_begin. */
   int                    start_object_was_selected;
@@ -424,5 +427,13 @@ arranger_widget_redraw_whole (
 void
 arranger_widget_redraw_playhead (
   ArrangerWidget * self);
+
+/**
+ * Only redraws the given rectangle.
+ */
+void
+arranger_widget_redraw_rectangle (
+  ArrangerWidget * self,
+  GdkRectangle *   rect);
 
 #endif

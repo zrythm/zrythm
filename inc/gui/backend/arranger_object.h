@@ -201,7 +201,7 @@ typedef struct ArrangerObject
   int                texth;
 
   /** 1 when hovering over the object. */
-  int                hover;
+  //int                hover;
 
   /** Set to 1 to redraw. */
   //int                redraw;

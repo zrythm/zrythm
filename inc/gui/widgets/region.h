@@ -38,10 +38,18 @@
  * @{
  */
 
-#define REGION_NAME_FONT "Sans SemiBold 9"
+#define REGION_NAME_FONT "Sans SemiBold 8"
 #define REGION_NAME_PADDING_R 5
-#define REGION_NAME_BOX_HEIGHT 19
+#define REGION_NAME_BOX_PADDING 2
 #define REGION_NAME_BOX_CURVINESS 4.0
+
+/**
+ * Returns the lane rectangle for the region.
+ */
+void
+region_get_lane_full_rect (
+  Region *       self,
+  GdkRectangle * rect);
 
 /**
  * Draws the Region in the given cairo context in
@@ -134,12 +142,6 @@ region_widget_draw_background (
   GtkWidget *    widget,
   cairo_t *      cr,
   GdkRectangle * rect);
-
-/**
- * Returns the private struct.
- */
-RegionWidgetPrivate *
-region_widget_get_private (RegionWidget * self);
 
 /**
  * @}

@@ -137,6 +137,14 @@ arranger_object_draw (
   cairo_t *        cr,
   GdkRectangle *   rect);
 
+/**
+ * Queues a redraw in the area covered by this
+ * object.
+ */
+void
+arranger_object_queue_redraw (
+  ArrangerObject * self);
+
 #if 0
 /**
 * ArrangerObject widget base private.
