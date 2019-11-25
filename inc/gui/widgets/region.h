@@ -44,13 +44,6 @@
 #define REGION_NAME_BOX_CURVINESS 4.0
 
 /**
- * Recreates the pango layouts for drawing.
- */
-void
-region_recreate_pango_layouts (
-  Region * self);
-
-/**
  * Draws the Region in the given cairo context in
  * relative coordinates.
  *

@@ -159,32 +159,27 @@ draw_arranger_object (
 
       /* ----- get drawing rectangle ---- */
 
-      arranger_object_set_draw_rectangle (
-        obj, rect);
+      /*arranger_object_set_draw_rectangle (*/
+        /*obj, rect);*/
 
       /* ----- draw ------ */
 
-      z_cairo_reset_caches (
-        &obj->cached_cr,
-        &obj->cached_surface, obj->draw_rect.width,
-        obj->draw_rect.height, cr);
+      /*z_cairo_reset_caches (*/
+        /*&obj->cached_cr,*/
+        /*&obj->cached_surface, obj->draw_rect.width,*/
+        /*obj->draw_rect.height, cr);*/
 
-      arranger_object_draw (obj, self);
+      arranger_object_draw (
+        obj, self, cr, rect);
 
-      switch (obj->type)
-        {
-        default:
-          break;
-        }
-
-      obj->redraw = 0;
+      /*obj->redraw = 0;*/
     /*}*/
 
-  cairo_set_source_surface (
-    cr, obj->cached_surface,
-    obj->draw_rect.x - rect->x,
-    obj->draw_rect.y - rect->y);
-  cairo_paint (cr);
+  /*cairo_set_source_surface (*/
+    /*cr, obj->cached_surface,*/
+    /*obj->draw_rect.x - rect->x,*/
+    /*obj->draw_rect.y - rect->y);*/
+  /*cairo_paint (cr);*/
 }
 
 /**

@@ -94,20 +94,39 @@ arranger_object_set_full_rectangle (
   ArrangerObject * self,
   ArrangerWidget * arranger);
 
+/**
+ * Gets the draw rectangle based on the given
+ * full rectangle of the arranger object.
+ *
+ * @param parent_rect The current arranger
+ *   rectangle.
+ * @param full_rect The object's full rectangle.
+ *   This will usually be ArrangerObject->full_rect,
+ *   unless drawing in a lane (for Region's).
+ * @param draw_rect The rectangle will be set
+ *   here.
+ */
 void
-arranger_object_set_draw_rectangle (
+arranger_object_get_draw_rectangle (
   ArrangerObject * self,
-  GdkRectangle *   parent_rect);
+  GdkRectangle *   parent_rect,
+  GdkRectangle *   full_rect,
+  GdkRectangle *   draw_rect);
 
 /**
  * Draws the given object.
  *
  * To be called from the arranger's draw callback.
+ *
+ * @param cr Cairo context of the arranger.
+ * @param rect Rectangle in the arranger.
  */
 void
 arranger_object_draw (
   ArrangerObject * self,
-  ArrangerWidget * arranger);
+  ArrangerWidget * arranger,
+  cairo_t *        cr,
+  GdkRectangle *   rect);
 
 #if 0
 /**

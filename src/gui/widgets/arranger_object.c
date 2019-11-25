@@ -823,86 +823,78 @@ arranger_object_set_full_rectangle (
           self->full_rect.width = 1;
 
         gint wx, wy;
-#if 0
-        if (arranger_object_is_lane (self))
-          {
-            if (!track->lanes_visible)
-              return;
 
+        /* set lane rect if lanes visible */
+        if (track->lanes_visible)
+          {
             gtk_widget_translate_coordinates(
               (GtkWidget *) (track->widget),
               (GtkWidget *) (arranger),
               0, 0,
               &wx, &wy);
 
-            self->full_rect.y = wy;
+            region->lane_y =
+              wy + track->main_height;
+            region->lane_height = lane->height;
+          }
 
+        gtk_widget_translate_coordinates(
+          (GtkWidget *) (track->widget),
+          (GtkWidget *) (arranger),
+          0, 0,
+          &wx, &wy);
+
+        if (region->type == REGION_TYPE_CHORD)
+          {
+            if (!arranger->chord_obj_height)
+              {
+                int textw, texth;
+                PangoLayout * layout =
+                  z_cairo_create_default_pango_layout (
+                    GTK_WIDGET (arranger));
+                z_cairo_get_text_extents_for_widget (
+                  GTK_WIDGET (arranger), layout,
+                  "Aa", &textw, &texth);
+                g_object_unref (layout);
+                arranger->chord_obj_height =
+                  texth;
+              }
+
+            self->full_rect.y = wy;
+            /* full height minus the space the
+             * scales would require, plus some
+             * padding */
             self->full_rect.height =
-              lane->height;
+              gtk_widget_get_allocated_height (
+                GTK_WIDGET (track->widget)) -
+              (arranger->chord_obj_height +
+                 Z_CAIRO_TEXT_PADDING * 4);
+
+          }
+        else if (region->type ==
+                   REGION_TYPE_AUTOMATION)
+          {
+            AutomationTrack * at =
+              region->at;
+            if (!at->created ||
+                !track->automation_visible)
+              return;
+
+            gtk_widget_translate_coordinates (
+              (GtkWidget *) (at->widget),
+              (GtkWidget *) (self),
+              0, 0, &wx, &wy);
+            self->full_rect.y = wy;
+            self->full_rect.height =
+              gtk_widget_get_allocated_height (
+                (GtkWidget *) (at->widget));
           }
         else
           {
-#endif
-            gtk_widget_translate_coordinates(
-              (GtkWidget *) (track->widget),
-              (GtkWidget *) (arranger),
-              0, 0,
-              &wx, &wy);
-
-            if (region->type == REGION_TYPE_CHORD)
-              {
-                if (!arranger->chord_obj_height)
-                  {
-                    int textw, texth;
-                    PangoLayout * layout =
-                      z_cairo_create_default_pango_layout (
-                        GTK_WIDGET (arranger));
-                    z_cairo_get_text_extents_for_widget (
-                      GTK_WIDGET (arranger), layout,
-                      "Aa", &textw, &texth);
-                    g_object_unref (layout);
-                    arranger->chord_obj_height =
-                      texth;
-                  }
-
-                self->full_rect.y = wy;
-                /* full height minus the space the
-                 * scales would require, plus some
-                 * padding */
-                self->full_rect.height =
-                  gtk_widget_get_allocated_height (
-                    GTK_WIDGET (track->widget)) -
-                  (arranger->chord_obj_height +
-                     Z_CAIRO_TEXT_PADDING * 4);
-
-              }
-            else if (region->type ==
-                       REGION_TYPE_AUTOMATION)
-              {
-                AutomationTrack * at =
-                  region->at;
-                if (!at->created ||
-                    !track->automation_visible)
-                  return;
-
-                gtk_widget_translate_coordinates (
-                  (GtkWidget *) (at->widget),
-                  (GtkWidget *) (self),
-                  0, 0, &wx, &wy);
-                self->full_rect.y = wy;
-                self->full_rect.height =
-                  gtk_widget_get_allocated_height (
-                    (GtkWidget *) (at->widget));
-              }
-            else
-              {
-                self->full_rect.y = wy;
-                self->full_rect.height =
-                  track->main_height;
-              }
-#if 0
+            self->full_rect.y = wy;
+            self->full_rect.height =
+              track->main_height;
           }
-#endif
       }
       break;
     case TYPE (MIDI_NOTE):
@@ -1049,34 +1041,41 @@ arranger_object_set_full_rectangle (
     }
 }
 
+/**
+ * Gets the draw rectangle based on the given
+ * full rectangle of the arranger object.
+ *
+ * @param parent_rect The current arranger
+ *   rectangle.
+ * @param full_rect The object's full rectangle.
+ *   This will usually be ArrangerObject->full_rect,
+ *   unless drawing in a lane (for Region's).
+ * @param draw_rect The rectangle will be set
+ *   here.
+ */
 void
-arranger_object_set_draw_rectangle (
+arranger_object_get_draw_rectangle (
   ArrangerObject * self,
-  GdkRectangle *   parent_rect)
+  GdkRectangle *   parent_rect,
+  GdkRectangle *   full_rect,
+  GdkRectangle *   draw_rect)
 {
-  /* FIXME TODO don't use rectangles, use arranger's
-   * cairo context. figure out a different way
-   * to cache directly in the arranger, like
-   * having a cache for the background, a cache
-   * for all the objects, etc. This leaves more
-   * freedom to draw whatever we want for the
-   * arranger objects */
-  self->draw_rect.x =
+  draw_rect->x =
     MAX (self->full_rect.x, parent_rect->x);
-  self->draw_rect.width =
+  draw_rect->width =
     MIN (
       (parent_rect->x + parent_rect->width) -
-        self->draw_rect.x,
+        draw_rect->x,
       (self->full_rect.x + self->full_rect.width) -
-      self->draw_rect.x);
-  self->draw_rect.y =
+      draw_rect->x);
+  draw_rect->y =
     MAX (self->full_rect.y, parent_rect->y);
-  self->draw_rect.height =
+  draw_rect->height =
     MIN (
       (parent_rect->y + parent_rect->height) -
-        self->draw_rect.y,
+        draw_rect->y,
       (self->full_rect.y + self->full_rect.height) -
-      self->draw_rect.y);
+      draw_rect->y);
   /*g_message ("full rect: (%d, %d) w: %d h: %d",*/
     /*self->full_rect.x, self->full_rect.y,*/
     /*self->full_rect.width, self->full_rect.height);*/
@@ -1089,11 +1088,16 @@ arranger_object_set_draw_rectangle (
  * Draws the given object.
  *
  * To be called from the arranger's draw callback.
+ *
+ * @param cr Cairo context of the arranger.
+ * @param rect Rectangle in the arranger.
  */
 void
 arranger_object_draw (
   ArrangerObject * self,
-  ArrangerWidget * arranger)
+  ArrangerWidget * arranger,
+  cairo_t *        cr,
+  GdkRectangle *   rect)
 {
   int arr_height =
     gtk_widget_get_allocated_height (
@@ -1122,14 +1126,14 @@ arranger_object_draw (
           &color, self->hover,
           automation_point_is_selected (ap), 0);
         gdk_cairo_set_source_rgba (
-          self->cached_cr, &color);
+          cr, &color);
 
         int upslope =
           next_ap && ap->fvalue < next_ap->fvalue;
 
         /* draw circle */
         cairo_arc (
-          self->cached_cr,
+          cr,
           AP_WIDGET_POINT_SIZE / 2,
           (upslope ?
              arr_height -
@@ -1137,8 +1141,8 @@ arranger_object_draw (
              AP_WIDGET_POINT_SIZE / 2),
           AP_WIDGET_POINT_SIZE / 2,
           0, 2 * G_PI);
-        cairo_stroke_preserve (self->cached_cr);
-        cairo_stroke (self->cached_cr);
+        cairo_stroke_preserve (cr);
+        cairo_stroke (cr);
 
         if (next_ap)
           {
@@ -1178,7 +1182,7 @@ arranger_object_draw (
                 if (math_doubles_equal (l, 0.0, 0.01))
                   {
                     cairo_move_to (
-                      self->cached_cr,
+                      cr,
                       new_x +
                         AP_WIDGET_POINT_SIZE / 2,
                       new_y +
@@ -1186,14 +1190,14 @@ arranger_object_draw (
                   }
 
                 cairo_line_to (
-                  self->cached_cr,
+                  cr,
                   new_x +
                     AP_WIDGET_POINT_SIZE / 2,
                   new_y +
                     AP_WIDGET_POINT_SIZE / 2);
               }
 
-            cairo_stroke (self->cached_cr);
+            cairo_stroke (cr);
           }
         else /* no next ap */
           {
@@ -1202,12 +1206,11 @@ arranger_object_draw (
       break;
     case TYPE (REGION):
       region_draw (
-        (Region *) self, self->cached_cr,
-        &arranger->last_rect);
+        (Region *) self, cr, rect);
       break;
     case TYPE (MIDI_NOTE):
       midi_note_draw (
-        (MidiNote *) self, self->cached_cr);
+        (MidiNote *) self, cr, rect);
       break;
     default:
       g_warn_if_reached ();

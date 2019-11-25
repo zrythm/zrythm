@@ -45,7 +45,8 @@
 
 static void
 recreate_pango_layouts (
-  MidiNote * self)
+  MidiNote * self,
+  int        width)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
@@ -59,13 +60,18 @@ recreate_pango_layouts (
   pango_layout_set_width (
     self->layout,
     pango_units_from_double (
-      obj->draw_rect.width - 2));
+      width - 2));
 }
 
+/**
+ * @param cr Arranger's cairo context.
+ * @param rect Arranger's rectangle.
+ */
 void
 midi_note_draw (
-  MidiNote * self,
-  cairo_t *  cr)
+  MidiNote *     self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   Region * region = self->region;
@@ -85,6 +91,10 @@ midi_note_draw (
     co && chord_descriptor_is_key_in_chord (
       chord_object_get_chord_descriptor (co),
       self->val % 12);
+
+  GdkRectangle draw_rect;
+  arranger_object_get_draw_rectangle (
+    obj, rect, &obj->full_rect, &draw_rect);
 
   GdkRGBA color;
   if (PIANO_ROLL->highlighting ==
@@ -126,14 +136,16 @@ midi_note_draw (
       if (PIANO_ROLL->drum_mode)
         {
           z_cairo_diamond (
-            cr, 0, 0, obj->draw_rect.width,
-            obj->draw_rect.height);
+            cr, draw_rect.x - rect->x,
+            draw_rect.y - rect->y, draw_rect.width,
+            draw_rect.height);
         }
       else
         {
           z_cairo_rounded_rectangle (
-            cr, 0, 0, obj->draw_rect.width,
-            obj->draw_rect.height, 1.0, 4.0);
+            cr, draw_rect.x - rect->x,
+            draw_rect.y - rect->y, draw_rect.width,
+            draw_rect.height, 1.0, 4.0);
         }
       cairo_fill (cr);
     }
@@ -154,14 +166,16 @@ midi_note_draw (
       if (PIANO_ROLL->drum_mode)
         {
           z_cairo_diamond (
-            cr, 0, 0, obj->draw_rect.width,
-            obj->draw_rect.height);
+            cr, draw_rect.x - rect->x,
+            draw_rect.y - rect->y,
+            draw_rect.width, draw_rect.height);
         }
       else
         {
           z_cairo_rounded_rectangle (
-            cr, 0, 0, obj->draw_rect.width,
-            obj->draw_rect.height, 1.0, 4.0);
+            cr, draw_rect.x - rect->x,
+            draw_rect.y - rect->y, draw_rect.width,
+            draw_rect.height, 1.0, 4.0);
         }
       cairo_fill (cr);
     }
@@ -176,7 +190,9 @@ midi_note_draw (
     cr, &c2);
   if (DEBUGGING || !PIANO_ROLL->drum_mode)
     {
-      recreate_pango_layouts (self);
+      recreate_pango_layouts (
+        self,
+        MAX (obj->full_rect.width, rect->width));
       PangoLayout * layout = self->layout;
       z_cairo_draw_text (
         cr,

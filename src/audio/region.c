@@ -81,7 +81,6 @@ region_init (
   position_set_to_pos (
     &obj->end_pos, end_pos);
   obj->end_pos.frames = end_pos->frames;
-  obj->redraw = 1;
   position_init (&obj->clip_start_pos);
   long length =
     arranger_object_get_length_in_frames (obj);

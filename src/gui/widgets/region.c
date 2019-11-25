@@ -42,9 +42,21 @@
 /** Background color for the name. */
 /*static GdkRGBA name_bg_color;*/
 
-void
-region_recreate_pango_layouts (
-  Region * self)
+typedef enum RegionCounterpart
+{
+  REGION_COUNTERPART_MAIN,
+  REGION_COUNTERPART_LANE,
+} RegionCounterpart;
+
+/**
+ * Recreates the pango layouts for drawing.
+ *
+ * @param width Full width of the region.
+ */
+static void
+recreate_pango_layouts (
+  Region * self,
+  int      width)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
@@ -68,7 +80,7 @@ region_recreate_pango_layouts (
   pango_layout_set_width (
     self->layout,
     pango_units_from_double (
-      obj->draw_rect.width - REGION_NAME_PADDING_R));
+      width - REGION_NAME_PADDING_R));
 }
 
 /**
@@ -78,7 +90,9 @@ static void
 draw_background (
   Region *       self,
   cairo_t *      cr,
-  GdkRectangle * rect)
+  GdkRectangle * rect,
+  GdkRectangle * draw_rect,
+  RegionCounterpart counterpart)
 {
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -108,8 +122,11 @@ draw_background (
 
   /* draw arc-rectangle */
   z_cairo_rounded_rectangle (
-    cr, 0, 0, obj->draw_rect.width,
-    obj->draw_rect.height,
+    cr,
+    MAX (0, draw_rect->x - rect->x),
+    MAX (0, draw_rect->y - rect->y),
+    draw_rect->width,
+    draw_rect->height,
     1.0, 4.0);
   cairo_fill (cr);
 }
@@ -121,7 +138,9 @@ static void
 draw_loop_points (
   Region *       self,
   cairo_t *      cr,
-  GdkRectangle * rect)
+  GdkRectangle * rect,
+  GdkRectangle * draw_rect,
+  RegionCounterpart counterpart)
 {
   double dashes[] = { 5 };
   cairo_set_dash (
@@ -145,23 +164,28 @@ draw_loop_points (
   long clip_start_ticks =
     obj->clip_start_pos.total_ticks;
 
+  /* get x px for loop point */
   position_from_ticks (
     &tmp, loop_start_ticks - clip_start_ticks);
-  int px =
+  int x_px =
     ui_pos_to_px_timeline (&tmp, 0);
-  if (px != 0 &&
+
+  /* convert x_px to global */
+  x_px += obj->full_rect.x;
+
+  if (x_px != obj->full_rect.x &&
       /* if loop px is visible */
-      px + obj->draw_rect.x >=
-        rect->x &&
-      px + obj->draw_rect.x <=
-        rect->x + rect->width)
+      x_px >= rect->x &&
+      x_px <= rect->x + rect->width)
     {
       cairo_set_source_rgba (
         cr, 0, 1, 0, 1.0);
-      cairo_move_to (cr, px, 0);
+      cairo_move_to (
+        cr, x_px - rect->x,
+        draw_rect->y - rect->y);
       cairo_line_to (
-        cr, px,
-        obj->draw_rect.height);
+        cr, x_px - rect->x,
+        draw_rect->height);
       cairo_stroke (cr);
     }
 
@@ -177,20 +201,21 @@ draw_loop_points (
         &tmp, - clip_start_ticks);
 
       /* note: this is relative to the region */
-      px = ui_pos_to_px_timeline (&tmp, 0);
+      x_px = ui_pos_to_px_timeline (&tmp, 0);
 
-      g_message ("draw rect x %d rect x %d px %d", obj->draw_rect.x, rect->x, px);
-      if (
-        px + obj->draw_rect.x >=
-          rect->x &&
-        px + obj->draw_rect.x <=
-          rect->x + rect->width)
+      /* make px global */
+      x_px += obj->full_rect.x;
+
+      if (x_px >= rect->x &&
+          x_px <= rect->x + rect->width)
         {
           cairo_set_source_rgba (
             cr, 0, 0, 0, 1.0);
-          cairo_move_to (cr, px, 0);
+          cairo_move_to (
+            cr, x_px - rect->x,
+            draw_rect->y - rect->y);
           cairo_line_to (
-            cr, px, obj->draw_rect.height);
+            cr, x_px - rect->x, draw_rect->height);
           cairo_stroke (cr);
         }
     }
@@ -206,7 +231,9 @@ static void
 draw_midi_region (
   Region *       self,
   cairo_t *      cr,
-  GdkRectangle * rect)
+  GdkRectangle * rect,
+  GdkRectangle * draw_rect,
+  RegionCounterpart counterpart)
 {
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -218,9 +245,6 @@ draw_midi_region (
   long ticks_in_region =
     arranger_object_get_length_in_ticks (obj);
   float x_start, y_start, x_end;
-
-  int width = obj->full_rect.width;
-  int height = obj->full_rect.height;
 
   int min_val = 127, max_val = 0;
   for (int i = 0; i < self->num_midi_notes; i++)
@@ -306,39 +330,49 @@ draw_midi_region (
 
               /* get actual values using the
                * ratios */
-              x_start *= (float) width;
-              x_end *= (float) width;
-              y_start *= (float) height;
+              x_start *=
+                (float) obj->full_rect.width;
+              x_end *=
+                (float) obj->full_rect.width;
+              y_start *=
+                (float) obj->full_rect.height;
+
+              /* the above values are local to the
+               * region, convert to global */
+              x_start += obj->full_rect.x;
+              x_end += obj->full_rect.x;
+              y_start += obj->full_rect.y;
 
               /* skip if any part of the note is
-               * not visible in the rect */
-              if ((x_start >= obj->draw_rect.x &&
-                   x_start < obj->draw_rect.x + obj->draw_rect.width) ||
-                  (x_end >= obj->draw_rect.x &&
-                   x_end < obj->draw_rect.x + obj->draw_rect.width) ||
-                  (x_start < obj->draw_rect.x &&
-                   x_end > obj->draw_rect.x))
+               * not visible in the region's rect */
+              if ((x_start >= draw_rect->x &&
+                   x_start <
+                     draw_rect->x +
+                     draw_rect->width) ||
+                  (x_end >= draw_rect->x &&
+                   x_end <
+                     draw_rect->x +
+                     draw_rect->width) ||
+                  (x_start < draw_rect->x &&
+                   x_end > draw_rect->x))
                 {
-                  /* draw */
+                  double draw_x =
+                    MAX (x_start, rect->x);
+                  double draw_width =
+                    MIN (
+                      (double) x_end - draw_x,
+                      rect->width);
                   cairo_rectangle (
                     cr,
-                    MAX (
-                      x_start -
-                        (float) obj->draw_rect.x, 0.f),
-                    MAX (
-                      y_start -
-                        (float) obj->draw_rect.y, 0.f),
-                    MIN (
-                      x_end -
-                        MAX (
-                          x_start,
-                          (float) obj->draw_rect.x),
-                      (float) obj->draw_rect.width),
-                    MIN (
-                      y_note_size *
-                        (float) height -
-                        (float) obj->draw_rect.y,
-                      (float) obj->draw_rect.height));
+                    draw_x,
+                    /* don't bother clamping the
+                     * y */
+                    y_start - rect->y,
+                    draw_width,
+                    y_note_size *
+                      (float)
+                      obj->full_rect.height -
+                      (float) rect->y);
                   cairo_fill (cr);
                 }
             }
@@ -351,16 +385,17 @@ draw_midi_region (
  */
 static void
 draw_name (
-  Region *       self,
-  cairo_t *      cr,
-  GdkRectangle * rect)
+  Region *          self,
+  cairo_t *         cr,
+  GdkRectangle *    rect,
+  GdkRectangle *    draw_rect,
+  RegionCounterpart counterpart)
 {
   /* no need to draw if the start of the region is
    * not visible */
   ArrangerObject * obj =
     (ArrangerObject *) self;
-  if (obj->draw_rect.x - obj->full_rect.x >
-      800)
+  if (rect->x - obj->full_rect.x > 800)
     return;
 
   g_return_if_fail (
@@ -370,7 +405,9 @@ draw_name (
   strcpy (str, self->name);
 
   /* draw dark bg behind text */
-  region_recreate_pango_layouts (self);
+  recreate_pango_layouts (
+    self,
+    MAX (obj->full_rect.width, rect->width));
   PangoLayout * layout = self->layout;
   pango_layout_set_text (
     layout, str, -1);
@@ -389,24 +426,24 @@ draw_name (
   cairo_move_to (
     cr,
     (pangorect.width + REGION_NAME_PADDING_R) +
-      (obj->full_rect.x - obj->draw_rect.x),
-    obj->full_rect.y - obj->draw_rect.y);
+      (obj->full_rect.x - rect->x),
+    obj->full_rect.y - rect->y);
   cairo_arc (
     cr,
     ((pangorect.width + REGION_NAME_PADDING_R) -
       radius) +
-      (obj->full_rect.x - obj->draw_rect.x),
+      (obj->full_rect.x - rect->x),
     (REGION_NAME_BOX_HEIGHT - radius) +
-     (obj->full_rect.y - obj->draw_rect.y),
+     (obj->full_rect.y - rect->y),
     radius,
     0 * degrees, 90 * degrees);
   cairo_line_to (
-    cr, obj->full_rect.x - obj->draw_rect.x,
+    cr, obj->full_rect.x - rect->x,
     REGION_NAME_BOX_HEIGHT +
-      (obj->full_rect.y - obj->draw_rect.y));
+      (obj->full_rect.y - rect->y));
   cairo_line_to (
-    cr, obj->full_rect.x - obj->draw_rect.x,
-    obj->full_rect.y - obj->draw_rect.y);
+    cr, obj->full_rect.x - rect->x,
+    obj->full_rect.y - rect->y);
   cairo_close_path (cr);
   cairo_fill (cr);
 
@@ -415,8 +452,8 @@ draw_name (
     cr, 1, 1, 1, 1);
   cairo_translate (
     cr,
-    2 + (obj->full_rect.x - obj->draw_rect.x),
-    2 + (obj->full_rect.y - obj->draw_rect.y));
+    2 + (obj->full_rect.x - rect->x),
+    2 + (obj->full_rect.y - rect->y));
   pango_cairo_show_layout (cr, layout);
 }
 
@@ -434,20 +471,51 @@ region_draw (
   cairo_t *      cr,
   GdkRectangle * rect)
 {
-  draw_background (self, cr, rect);
-  draw_loop_points (self, cr, rect);
+  ArrangerObject * obj = (ArrangerObject *) self;
 
-  switch (self->type)
+  GdkRectangle draw_rect;
+  for (int i = REGION_COUNTERPART_MAIN;
+       i < REGION_COUNTERPART_LANE; i++)
     {
-    case REGION_TYPE_MIDI:
-      {
-        draw_midi_region (self, cr, rect);
-      }
-      break;
-    default:
-      break;
+      if (i == REGION_COUNTERPART_LANE)
+        {
+          Track * track =
+            arranger_object_get_track (obj);
+          if (!track->lanes_visible)
+            break;
+
+          /* get draw (visible only) rectangle */
+          GdkRectangle full_rect = obj->full_rect;
+          full_rect.y = self->lane_y;
+          full_rect.height = self->lane_height;
+          arranger_object_get_draw_rectangle (
+            obj, rect, &full_rect, &draw_rect);
+        }
+      else if (i == REGION_COUNTERPART_MAIN)
+        {
+          /* get draw (visible only) rectangle */
+          arranger_object_get_draw_rectangle (
+            obj, rect, &obj->full_rect, &draw_rect);
+        }
+
+      draw_background (
+        self, cr, rect, &draw_rect, i);
+      draw_loop_points (
+        self, cr, rect, &draw_rect, i);
+
+      switch (self->type)
+        {
+        case REGION_TYPE_MIDI:
+          {
+            draw_midi_region (
+              self, cr, rect, &draw_rect, i);
+          }
+          break;
+        default:
+          break;
+        }
+      draw_name (self, cr, rect, &draw_rect, i);
     }
-  draw_name (self, cr, rect);
 }
 
 #if 0
@@ -594,7 +662,9 @@ void
 region_widget_draw_name (
   RegionWidget * self,
   cairo_t *      cr,
-  GdkRectangle * rect)
+  GdkRectangle * rect,
+  GdkRectangle * draw_rect,
+  RegionCounterpart counter)
 {
   REGION_WIDGET_GET_PRIVATE (self);
 

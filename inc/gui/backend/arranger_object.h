@@ -185,15 +185,15 @@ typedef struct ArrangerObject
   /** Cache. */
   Position           cache_fade_out_pos;
 
-  /** The full rectangle this object was
-   * supposed to be drawn in, in absolute
+  /** The full rectangle this object covers
+   * including off-screen parts, in absolute
    * coordinates. */
   GdkRectangle       full_rect;
 
   /** The rectangle this object was last drawn in
    * (ie, after any necessary clipping),
    * in absolute coordinates. */
-  GdkRectangle       draw_rect;
+  //GdkRectangle       draw_rect;
 
   /** Cache text H extents and W extents for
    * the text, if the object has any. */
@@ -204,11 +204,11 @@ typedef struct ArrangerObject
   int                hover;
 
   /** Set to 1 to redraw. */
-  int                redraw;
+  //int                redraw;
 
   /** Cached drawing. */
-  cairo_t *          cached_cr;
-  cairo_surface_t *  cached_surface;
+  //cairo_t *          cached_cr;
+  //cairo_surface_t *  cached_surface;
 } ArrangerObject;
 
 static const cyaml_schema_field_t
