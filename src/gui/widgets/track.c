@@ -373,6 +373,9 @@ draw_lanes (
     {
       TrackLane * lane = track->lanes[i];
 
+      /* remember y */
+      lane->y = total_height;
+
       /* draw separator */
       cairo_set_source_rgba (
         cr, 1, 1, 1, 0.3);
@@ -518,6 +521,9 @@ draw_automation (
 
       if (!(at->created && at->visible))
         continue;
+
+      /* remember y */
+      at->y = total_height;
 
       /* draw separator above at */
       cairo_set_source_rgba (
@@ -1787,6 +1793,25 @@ track_widget_do_highlight (
         GTK_WIDGET (self->highlight_bot_box),
         -1, -1);
     }
+}
+
+/**
+ * Converts Y from the arranger coordinates to
+ * the track coordinates.
+ */
+int
+track_widget_get_local_y (
+  TrackWidget *    self,
+  ArrangerWidget * arranger,
+  int              arranger_y)
+{
+  gint y_local;
+  gtk_widget_translate_coordinates (
+    GTK_WIDGET (arranger),
+    GTK_WIDGET (self),
+    0, (int) arranger_y, NULL, &y_local);
+
+  return y_local;
 }
 
 /**

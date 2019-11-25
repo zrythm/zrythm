@@ -80,17 +80,19 @@ recreate_pango_layouts (
   pango_layout_set_width (
     self->layout,
     pango_units_from_double (
-      width - REGION_NAME_PADDING_R));
+      MAX (width - REGION_NAME_PADDING_R, 0)));
 }
 
 /**
  * @param rect Arranger rectangle.
+ * @param full_rect Object full rectangle.
  */
 static void
 draw_background (
   Region *       self,
   cairo_t *      cr,
   GdkRectangle * rect,
+  GdkRectangle * full_rect,
   GdkRectangle * draw_rect,
   RegionCounterpart counterpart)
 {
@@ -125,21 +127,20 @@ draw_background (
    * doesn't curve when it's not its edge */
   int draw_x = draw_rect->x - rect->x;
   int draw_x_has_padding = 0;
-  if (draw_rect->x > obj->full_rect.x)
+  if (draw_rect->x > full_rect->x)
     {
       draw_x -=
-        MIN (draw_rect->x - obj->full_rect.x, 4);
+        MIN (draw_rect->x - full_rect->x, 4);
       draw_x_has_padding = 1;
     }
   int draw_width = draw_rect->width;
   if (draw_rect->x + draw_rect->width <
-      obj->full_rect.x + obj->full_rect.width)
+      full_rect->x + full_rect->width)
     {
       draw_width +=
         MAX (
           (draw_rect->x + draw_rect->width) -
-            (obj->full_rect.x +
-             obj->full_rect.width), 4);
+            (full_rect->x + full_rect->width), 4);
     }
   if (draw_x_has_padding)
     {
@@ -149,21 +150,23 @@ draw_background (
   z_cairo_rounded_rectangle (
     cr,
     draw_x,
-    obj->full_rect.y - rect->y,
+    full_rect->y - rect->y,
     draw_width,
-    obj->full_rect.height,
+    full_rect->height,
     1.0, 4.0);
   cairo_fill (cr);
 }
 
 /**
  * @param rect Arranger rectangle.
+ * @param full_rect Object full rectangle.
  */
 static void
 draw_loop_points (
   Region *       self,
   cairo_t *      cr,
   GdkRectangle * rect,
+  GdkRectangle * full_rect,
   GdkRectangle * draw_rect,
   RegionCounterpart counterpart)
 {
@@ -171,8 +174,6 @@ draw_loop_points (
   cairo_set_dash (
     cr, dashes, 1, 0);
   cairo_set_line_width (cr, 1);
-  cairo_set_source_rgba (
-    cr, 0, 0, 0, 1.0);
 
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -196,21 +197,25 @@ draw_loop_points (
     ui_pos_to_px_timeline (&tmp, 0);
 
   /* convert x_px to global */
-  x_px += obj->full_rect.x;
+  x_px += full_rect->x;
 
-  if (x_px != obj->full_rect.x &&
+  if (x_px != full_rect->x &&
+      /* if px is inside region */
+      x_px >= full_rect->x &&
+      x_px < full_rect->x + full_rect->width &&
       /* if loop px is visible */
       x_px >= rect->x &&
-      x_px <= rect->x + rect->width)
+      x_px < rect->x + rect->width)
     {
-      cairo_set_source_rgba (
-        cr, 0, 1, 0, 1.0);
+      gdk_cairo_set_source_rgba (
+        cr, &UI_COLORS->bright_green);
       cairo_move_to (
         cr, x_px - rect->x,
         draw_rect->y - rect->y);
       cairo_line_to (
         cr, x_px - rect->x,
-        draw_rect->height);
+        (draw_rect->y + draw_rect->height) -
+        rect->y);
       cairo_stroke (cr);
     }
 
@@ -229,10 +234,15 @@ draw_loop_points (
       x_px = ui_pos_to_px_timeline (&tmp, 0);
 
       /* make px global */
-      x_px += obj->full_rect.x;
+      x_px += full_rect->x;
 
-      if (x_px >= rect->x &&
-          x_px <= rect->x + rect->width)
+      if (
+          /* if px is vixible */
+          x_px >= rect->x &&
+          x_px <= rect->x + rect->width &&
+          /* if px is inside region */
+          x_px >= full_rect->x &&
+          x_px < full_rect->x + full_rect->width)
         {
           cairo_set_source_rgba (
             cr, 0, 0, 0, 1.0);
@@ -240,7 +250,9 @@ draw_loop_points (
             cr, x_px - rect->x,
             draw_rect->y - rect->y);
           cairo_line_to (
-            cr, x_px - rect->x, draw_rect->height);
+            cr, x_px - rect->x,
+            (draw_rect->y + draw_rect->height) -
+              rect->y);
           cairo_stroke (cr);
         }
     }
@@ -257,6 +269,7 @@ draw_midi_region (
   Region *       self,
   cairo_t *      cr,
   GdkRectangle * rect,
+  GdkRectangle * full_rect,
   GdkRectangle * draw_rect,
   RegionCounterpart counterpart)
 {
@@ -356,17 +369,17 @@ draw_midi_region (
               /* get actual values using the
                * ratios */
               x_start *=
-                (float) obj->full_rect.width;
+                (float) full_rect->width;
               x_end *=
-                (float) obj->full_rect.width;
+                (float) full_rect->width;
               y_start *=
-                (float) obj->full_rect.height;
+                (float) full_rect->height;
 
               /* the above values are local to the
                * region, convert to global */
-              x_start += obj->full_rect.x;
-              x_end += obj->full_rect.x;
-              y_start += obj->full_rect.y;
+              x_start += full_rect->x;
+              x_end += full_rect->x;
+              y_start += full_rect->y;
 
               /* skip if any part of the note is
                * not visible in the region's rect */
@@ -396,7 +409,7 @@ draw_midi_region (
                     draw_width,
                     y_note_size *
                       (float)
-                      obj->full_rect.height -
+                      full_rect->height -
                       (float) rect->y);
                   cairo_fill (cr);
                 }
@@ -413,14 +426,13 @@ draw_name (
   Region *          self,
   cairo_t *         cr,
   GdkRectangle *    rect,
+  GdkRectangle *    full_rect,
   GdkRectangle *    draw_rect,
   RegionCounterpart counterpart)
 {
   /* no need to draw if the start of the region is
    * not visible */
-  ArrangerObject * obj =
-    (ArrangerObject *) self;
-  if (rect->x - obj->full_rect.x > 800)
+  if (rect->x - full_rect->x > 800)
     return;
 
   g_return_if_fail (
@@ -432,7 +444,7 @@ draw_name (
   /* draw dark bg behind text */
   recreate_pango_layouts (
     self,
-    MAX (obj->full_rect.width, rect->width));
+    MIN (full_rect->width, 800));
   PangoLayout * layout = self->layout;
   pango_layout_set_text (
     layout, str, -1);
@@ -451,24 +463,24 @@ draw_name (
   cairo_move_to (
     cr,
     (pangorect.width + REGION_NAME_PADDING_R) +
-      (obj->full_rect.x - rect->x),
-    obj->full_rect.y - rect->y);
+      (full_rect->x - rect->x),
+    full_rect->y - rect->y);
   cairo_arc (
     cr,
     ((pangorect.width + REGION_NAME_PADDING_R) -
       radius) +
-      (obj->full_rect.x - rect->x),
+      (full_rect->x - rect->x),
     (REGION_NAME_BOX_HEIGHT - radius) +
-     (obj->full_rect.y - rect->y),
+     (full_rect->y - rect->y),
     radius,
     0 * degrees, 90 * degrees);
   cairo_line_to (
-    cr, obj->full_rect.x - rect->x,
+    cr, full_rect->x - rect->x,
     REGION_NAME_BOX_HEIGHT +
-      (obj->full_rect.y - rect->y));
+      (full_rect->y - rect->y));
   cairo_line_to (
-    cr, obj->full_rect.x - rect->x,
-    obj->full_rect.y - rect->y);
+    cr, full_rect->x - rect->x,
+    full_rect->y - rect->y);
   cairo_close_path (cr);
   cairo_fill (cr);
 
@@ -477,8 +489,8 @@ draw_name (
     cr, 1, 1, 1, 1);
   cairo_move_to (
     cr,
-    2 + (obj->full_rect.x - rect->x),
-    2 + (obj->full_rect.y - rect->y));
+    2 + (full_rect->x - rect->x),
+    2 + (full_rect->y - rect->y));
   pango_cairo_show_layout (cr, layout);
 }
 
@@ -499,8 +511,9 @@ region_draw (
   ArrangerObject * obj = (ArrangerObject *) self;
 
   GdkRectangle draw_rect;
+  GdkRectangle full_rect = obj->full_rect;
   for (int i = REGION_COUNTERPART_MAIN;
-       i < REGION_COUNTERPART_LANE; i++)
+       i <= REGION_COUNTERPART_LANE; i++)
     {
       if (i == REGION_COUNTERPART_LANE)
         {
@@ -509,37 +522,40 @@ region_draw (
           if (!track->lanes_visible)
             break;
 
-          /* get draw (visible only) rectangle */
-          GdkRectangle full_rect = obj->full_rect;
+          /* set full rectangle */
+          full_rect = obj->full_rect;
           full_rect.y = self->lane_y;
-          full_rect.height = self->lane_height;
-          arranger_object_get_draw_rectangle (
-            obj, rect, &full_rect, &draw_rect);
+          full_rect.height = self->lane_height - 1;
         }
       else if (i == REGION_COUNTERPART_MAIN)
         {
-          /* get draw (visible only) rectangle */
-          arranger_object_get_draw_rectangle (
-            obj, rect, &obj->full_rect, &draw_rect);
+          /* set full rectangle */
+          full_rect = obj->full_rect;
         }
 
+      /* get draw (visible only) rectangle */
+      arranger_object_get_draw_rectangle (
+        obj, rect, &full_rect, &draw_rect);
+
       draw_background (
-        self, cr, rect, &draw_rect, i);
+        self, cr, rect, &full_rect, &draw_rect, i);
       draw_loop_points (
-        self, cr, rect, &draw_rect, i);
+        self, cr, rect, &full_rect, &draw_rect, i);
 
       switch (self->type)
         {
         case REGION_TYPE_MIDI:
           {
             draw_midi_region (
-              self, cr, rect, &draw_rect, i);
+              self, cr, rect, &full_rect,
+              &draw_rect, i);
           }
           break;
         default:
           break;
         }
-      draw_name (self, cr, rect, &draw_rect, i);
+      draw_name (
+        self, cr, rect, &full_rect, &draw_rect, i);
     }
 }
 
@@ -638,6 +654,7 @@ region_widget_draw_name (
   RegionWidget * self,
   cairo_t *      cr,
   GdkRectangle * rect,
+  GdkRectangle * full_rect,
   GdkRectangle * draw_rect,
   RegionCounterpart counter)
 {
@@ -685,120 +702,6 @@ region_widget_draw_name (
     cr, 1, 1, 1, 1);
   cairo_move_to (cr, 2, 2);
   pango_cairo_show_layout (cr, layout);
-}
-
-/**
- * Sets up the RegionWidget.
- */
-void
-region_widget_setup (
-  RegionWidget * self,
-  Region *       region)
-{
-  REGION_WIDGET_GET_PRIVATE (self);
-
-  arranger_object_widget_setup (
-    Z_ARRANGER_OBJECT_WIDGET (self),
-    (ArrangerObject *) region);
-
-  rw_prv->region = region;
-}
-
-static void
-recreate_pango_layouts (
-  RegionWidget * self,
-  GdkRectangle * allocation)
-{
-  REGION_WIDGET_GET_PRIVATE (self);
-
-  if (PANGO_IS_LAYOUT (rw_prv->layout))
-    g_object_unref (rw_prv->layout);
-
-  GtkWidget * widget = (GtkWidget *) self;
-
-  PangoFontDescription *desc;
-  rw_prv->layout =
-    gtk_widget_create_pango_layout (
-      widget, NULL);
-  desc =
-    pango_font_description_from_string (
-      NAME_FONT);
-  pango_layout_set_font_description (
-    rw_prv->layout, desc);
-  pango_font_description_free (desc);
-  pango_layout_set_ellipsize (
-    rw_prv->layout, PANGO_ELLIPSIZE_END);
-  if (allocation)
-    {
-      pango_layout_set_width (
-        rw_prv->layout,
-        pango_units_from_double (
-          allocation->width - NAME_PADDING_R));
-    }
-}
-
-static void
-on_size_allocate (
-  GtkWidget *    widget,
-  GdkRectangle * allocation,
-  RegionWidget * self)
-{
-  recreate_pango_layouts (self, allocation);
-  arranger_object_widget_force_redraw (
-    Z_ARRANGER_OBJECT_WIDGET (self));
-}
-
-static void
-on_screen_changed (
-  GtkWidget *    widget,
-  GdkScreen *    previous_screen,
-  RegionWidget * self)
-{
-  recreate_pango_layouts (self, NULL);
-}
-
-/**
- * Destroys the widget completely.
- */
-void
-region_widget_delete (RegionWidget *self)
-{
-  gtk_widget_set_sensitive (
-    GTK_WIDGET (self), 0);
-
-  if (gtk_widget_is_ancestor (
-        GTK_WIDGET (self),
-        GTK_WIDGET (MW_TIMELINE)))
-    gtk_container_remove (
-      GTK_CONTAINER (MW_TIMELINE),
-      GTK_WIDGET (self));
-
-  g_object_unref (self);
-}
-
-static void
-finalize (
-  RegionWidget * self)
-{
-  REGION_WIDGET_GET_PRIVATE (self);
-
-  if (PANGO_IS_LAYOUT (rw_prv->layout))
-    g_object_unref (rw_prv->layout);
-
-  G_OBJECT_CLASS (
-    region_widget_parent_class)->
-      finalize (G_OBJECT (self));
-}
-
-static void
-region_widget_class_init (
-  RegionWidgetClass * _klass)
-{
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-
-  GObjectClass * oklass = G_OBJECT_CLASS (klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc) finalize;
 }
 
 static void

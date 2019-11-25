@@ -70,9 +70,10 @@ typedef struct AutomationTrack
    */
   int               visible;
 
-  /**
-   * Position of multipane handle.
-   */
+  /** Y local to track. */
+  int               y;
+
+  /** Position of multipane handle. */
   int               height;
 
   /** Buttons used by the track widget */

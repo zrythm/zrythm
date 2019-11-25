@@ -59,6 +59,9 @@ typedef struct TrackLane
   /** TrackLaneWidget for this lane. */
   TrackLaneWidget *   widget;
 
+  /** Y local to track. */
+  int                 y;
+
   /** Position of handle. */
   int                 height;
 

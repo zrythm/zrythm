@@ -491,6 +491,8 @@ arranger_object_widget_init (
 /**
  * Returns if the current position is for resizing
  * L.
+ *
+ * @param x X in local coordinates.
  */
 int
 arranger_object_is_resize_l (
@@ -510,6 +512,8 @@ arranger_object_is_resize_l (
 /**
  * Returns if the current position is for resizing
  * R.
+ *
+ * @param x X in local coordinates.
  */
 int
 arranger_object_is_resize_r (
@@ -539,6 +543,9 @@ arranger_object_is_resize_r (
 /**
  * Returns if the current position is for resizing
  * up (eg, Velocity).
+ *
+ * @param x X in local coordinates.
+ * @param y Y in local coordinates.
  */
 int
 arranger_object_is_resize_up (
@@ -562,6 +569,8 @@ arranger_object_is_resize_up (
 /**
  * Returns if the current position is for resizing
  * loop.
+ *
+ * @param y Y in local coordinates.
  */
 int
 arranger_object_is_resize_loop (
@@ -895,6 +904,9 @@ arranger_object_set_full_rectangle (
             self->full_rect.height =
               track->main_height;
           }
+        /* leave some space for the line below
+         * the region */
+        self->full_rect.height--;
       }
       break;
     case TYPE (MIDI_NOTE):
@@ -1061,27 +1073,27 @@ arranger_object_get_draw_rectangle (
   GdkRectangle *   draw_rect)
 {
   draw_rect->x =
-    MAX (self->full_rect.x, parent_rect->x);
+    MAX (full_rect->x, parent_rect->x);
   draw_rect->width =
     MIN (
       (parent_rect->x + parent_rect->width) -
         draw_rect->x,
-      (self->full_rect.x + self->full_rect.width) -
+      (full_rect->x + full_rect->width) -
       draw_rect->x);
   draw_rect->y =
-    MAX (self->full_rect.y, parent_rect->y);
+    MAX (full_rect->y, parent_rect->y);
   draw_rect->height =
     MIN (
       (parent_rect->y + parent_rect->height) -
         draw_rect->y,
-      (self->full_rect.y + self->full_rect.height) -
+      (full_rect->y + full_rect->height) -
       draw_rect->y);
   /*g_message ("full rect: (%d, %d) w: %d h: %d",*/
-    /*self->full_rect.x, self->full_rect.y,*/
-    /*self->full_rect.width, self->full_rect.height);*/
+    /*full_rect->x, full_rect->y,*/
+    /*full_rect->width, full_rect->height);*/
   /*g_message ("draw rect: (%d, %d) w: %d h: %d",*/
-    /*self->draw_rect.x, self->draw_rect.y,*/
-    /*self->draw_rect.width, self->draw_rect.height);*/
+    /*draw_rect->x, draw_rect->y,*/
+    /*draw_rect->width, draw_rect->height);*/
 }
 
 /**

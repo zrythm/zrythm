@@ -775,7 +775,9 @@ arranger_draw_cb (
         self, ARRANGER_OBJECT_TYPE_ALL, &rect,
         objs, &num_objs);
 
-      g_message ("objects found: %d", num_objs);
+      g_message (
+        "objects found: %d (is pinned %d)",
+        num_objs, self->is_pinned);
       for (int j = 0; j < num_objs; j++)
         {
           draw_arranger_object (
@@ -890,6 +892,8 @@ arranger_widget_get_hit_objects_in_rect (
   ArrangerObject * obj = NULL;
 
 #define ADD_OBJ_IF_OVERLAP \
+  if (arranger_object_get_arranger (obj) != self) \
+    continue; \
   arranger_object_set_full_rectangle ( \
     obj, self); \
   if (ui_rectangle_overlap ( \
@@ -3919,7 +3923,17 @@ arranger_widget_get_scrolled_window (
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      return MW_TIMELINE_PANEL->timeline_scroll;
+      if (self->is_pinned)
+        {
+          return
+            MW_TIMELINE_PANEL->
+              pinned_timeline_scroll;
+        }
+      else
+        {
+          return
+            MW_TIMELINE_PANEL->timeline_scroll;
+        }
     case TYPE (MIDI):
       return MW_MIDI_EDITOR_SPACE->arranger_scroll;
     case TYPE (MIDI_MODIFIER):
@@ -4717,18 +4731,21 @@ get_timeline_cursor (
                 {
                   if (self->alt_held)
                     return ARRANGER_CURSOR_CUT;
-
-#if 0
-                  ArrangerObjectWidget * obj_w =
-                    Z_ARRANGER_OBJECT_WIDGET (
-                      r_obj->widget);
-                  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (obj_w);
                   int is_resize_l =
-                    ao_prv->resize_l;
+                    arranger_object_is_resize_l (
+                      r_obj,
+                      (int) self->hover_x -
+                        r_obj->full_rect.x);
                   int is_resize_r =
-                    ao_prv->resize_r;
+                    arranger_object_is_resize_r (
+                      r_obj,
+                      (int) self->hover_x -
+                        r_obj->full_rect.x);
                   int is_resize_loop =
-                    ao_prv->resize_loop;
+                    arranger_object_is_resize_loop (
+                      r_obj,
+                      (int) self->hover_y -
+                        r_obj->full_rect.y);
                   if (is_resize_l &&
                       is_resize_loop)
                     return
@@ -4743,7 +4760,6 @@ get_timeline_cursor (
                   else if (is_resize_r)
                     return
                       ARRANGER_CURSOR_RESIZING_R;
-#endif
                 }
               return ARRANGER_CURSOR_GRAB;
             }
@@ -4872,10 +4888,16 @@ get_midi_arranger_cursor (
 
           if (is_hit)
             {
-              /*ARRANGER_OBJECT_WIDGET_GET_PRIVATE (*/
-                /*obj->widget);*/
-              /*is_resize_l = ao_prv->resize_l;*/
-              /*is_resize_r = ao_prv->resize_r;*/
+              is_resize_l =
+                arranger_object_is_resize_l (
+                  obj,
+                  (int) self->hover_x -
+                    obj->full_rect.x);
+              is_resize_r =
+                arranger_object_is_resize_r (
+                  obj,
+                  (int) self->hover_x -
+                    obj->full_rect.x);
             }
 
           if (is_hit && is_resize_l &&

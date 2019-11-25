@@ -172,27 +172,25 @@ timeline_arranger_widget_get_track_lane_at_y (
   ArrangerWidget * self,
   double y)
 {
-  int i, j;
-  Track * track;
+  Track * track =
+    timeline_arranger_widget_get_track_at_y (
+      self, y);
+  if (!track || !track->lanes_visible)
+    return NULL;
+
+  /* y local to track */
+  int y_local =
+    track_widget_get_local_y (
+      track->widget, self, (int) y);
+
   TrackLane * lane;
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
+  for (int j = 0; j < track->num_lanes; j++)
     {
-      track = TRACKLIST->tracks[i];
+      lane = track->lanes[j];
 
-      for (j = 0; j < track->num_lanes; j++)
-        {
-          lane = track->lanes[j];
-
-          if (!lane->widget ||
-              !GTK_IS_WIDGET (lane->widget))
-            continue;
-
-          if (ui_is_child_hit (
-                GTK_WIDGET (self),
-                GTK_WIDGET (lane->widget),
-                0, 1, 0, y, 0, 0))
-            return lane;
-        }
+      if (y_local >= lane->y &&
+          y_local < lane->y + lane->height)
+        return lane;
     }
 
   return NULL;
@@ -208,12 +206,11 @@ timeline_arranger_widget_get_track_at_y (
     {
       track = TRACKLIST->tracks[i];
 
-      /* ignore invisible tracks */
-      if (!track->visible)
-        continue;
-
-      /* ignore tracks in the other timeline */
-      if (self->is_pinned != track->pinned)
+      if (
+        /* ignore invisible tracks */
+        !track->visible ||
+        /* ignore tracks in the other timeline */
+        self->is_pinned != track->pinned)
         continue;
 
       g_return_val_if_fail (track->widget, NULL);
@@ -234,35 +231,34 @@ timeline_arranger_widget_get_track_at_y (
 AutomationTrack *
 timeline_arranger_widget_get_at_at_y (
   ArrangerWidget * self,
-  double                   y)
+  double           y)
 {
-  int i, j;
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
+  Track * track =
+    timeline_arranger_widget_get_track_at_y (
+      self, y);
+  if (!track)
+    return NULL;
+
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  if (!atl || !track->automation_visible)
+    return NULL;
+
+  /* y local to track */
+  int y_local =
+    track_widget_get_local_y (
+      track->widget, self, (int) y);
+
+  for (int j = 0; j < atl->num_ats; j++)
     {
-      Track * track = TRACKLIST->tracks[i];
-      AutomationTracklist * atl =
-        track_get_automation_tracklist (track);
-      if (!atl ||
-          !track->automation_visible ||
-          (track->pinned != self->is_pinned))
+      AutomationTrack * at = atl->ats[j];
+
+      if (!at->created || !at->visible)
         continue;
 
-      AutomationTrack * at;
-      for (j = 0; j < atl->num_ats; j++)
-        {
-          at = atl->ats[j];
-
-          if (!at->created)
-            continue;
-
-          /* TODO check the rest */
-          if (at->visible && at->widget &&
-              ui_is_child_hit (
-                GTK_WIDGET (MW_TIMELINE),
-                GTK_WIDGET (at->widget),
-                0, 1, 0, y, 0, 0))
-            return at;
-        }
+      if (y_local >= at->y &&
+          y_local < at->y + at->height)
+        return at;
     }
 
   return NULL;

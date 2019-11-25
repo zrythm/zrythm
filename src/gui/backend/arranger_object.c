@@ -906,104 +906,6 @@ arranger_object_update_frames (
 }
 
 static void
-free_region (
-  Region * self)
-{
-  if (self->name)
-    g_free (self->name);
-
-#define FREE_R(type,sc) \
-  case REGION_TYPE_##type: \
-    sc##_region_free_members (self); \
-  break
-
-  switch (self->type)
-    {
-      FREE_R (MIDI, midi);
-      FREE_R (AUDIO, audio);
-      FREE_R (CHORD, chord);
-      FREE_R (AUTOMATION, automation);
-    }
-
-#undef FREE_R
-
-  free (self);
-}
-
-static void
-free_midi_note (
-  MidiNote * self)
-{
-  g_return_if_fail (self->vel);
-  arranger_object_free (
-    (ArrangerObject *) self->vel);
-
-  if (self->region_name)
-    g_free (self->region_name);
-
-  free (self);
-}
-
-/**
- * Frees only this object.
- */
-void
-arranger_object_free (
-  ArrangerObject * self)
-{
-  switch (self->type)
-    {
-    case TYPE (REGION):
-      free_region ((Region *) self);
-      return;
-    case TYPE (MIDI_NOTE):
-      free_midi_note ((MidiNote *) self);
-      return;
-    case TYPE (MARKER):
-      {
-        Marker * marker = (Marker *) self;
-        g_free (marker->name);
-        free (marker);
-      }
-      return;
-    case TYPE (CHORD_OBJECT):
-      {
-        ChordObject * co = (ChordObject *) self;
-        if (co->region_name)
-          g_free (co->region_name);
-        free (co);
-      }
-      return;
-    case TYPE (SCALE_OBJECT):
-      {
-        ScaleObject * scale = (ScaleObject *) self;
-        musical_scale_free (scale->scale);
-        free (scale);
-      }
-      return;
-    case TYPE (AUTOMATION_POINT):
-      {
-        AutomationPoint * ap =
-          (AutomationPoint *) self;
-        if (ap->region_name)
-          g_free (ap->region_name);
-        free (ap);
-      }
-      return;
-    case TYPE (VELOCITY):
-      {
-        Velocity * vel =
-          (Velocity *) self;
-        free (vel);
-      }
-      return;
-    default:
-      g_return_if_reached ();
-    }
-  g_return_if_reached ();
-}
-
-static void
 add_ticks_to_region_children (
   Region *   self,
   const long ticks)
@@ -2294,4 +2196,107 @@ arranger_object_set_name (
       break;
     }
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CHANGED, self);
+}
+
+static void
+free_region (
+  Region * self)
+{
+  if (self->name)
+    g_free (self->name);
+  if (G_IS_OBJECT (self->layout))
+    g_object_unref (self->layout);
+
+#define FREE_R(type,sc) \
+  case REGION_TYPE_##type: \
+    sc##_region_free_members (self); \
+  break
+
+  switch (self->type)
+    {
+      FREE_R (MIDI, midi);
+      FREE_R (AUDIO, audio);
+      FREE_R (CHORD, chord);
+      FREE_R (AUTOMATION, automation);
+    }
+
+#undef FREE_R
+
+  free (self);
+}
+
+static void
+free_midi_note (
+  MidiNote * self)
+{
+  g_return_if_fail (self->vel);
+  arranger_object_free (
+    (ArrangerObject *) self->vel);
+
+  if (self->region_name)
+    g_free (self->region_name);
+
+  if (G_IS_OBJECT (self->layout))
+    g_object_unref (self->layout);
+
+  free (self);
+}
+
+/**
+ * Frees only this object.
+ */
+void
+arranger_object_free (
+  ArrangerObject * self)
+{
+  switch (self->type)
+    {
+    case TYPE (REGION):
+      free_region ((Region *) self);
+      return;
+    case TYPE (MIDI_NOTE):
+      free_midi_note ((MidiNote *) self);
+      return;
+    case TYPE (MARKER):
+      {
+        Marker * marker = (Marker *) self;
+        g_free (marker->name);
+        free (marker);
+      }
+      return;
+    case TYPE (CHORD_OBJECT):
+      {
+        ChordObject * co = (ChordObject *) self;
+        if (co->region_name)
+          g_free (co->region_name);
+        free (co);
+      }
+      return;
+    case TYPE (SCALE_OBJECT):
+      {
+        ScaleObject * scale = (ScaleObject *) self;
+        musical_scale_free (scale->scale);
+        free (scale);
+      }
+      return;
+    case TYPE (AUTOMATION_POINT):
+      {
+        AutomationPoint * ap =
+          (AutomationPoint *) self;
+        if (ap->region_name)
+          g_free (ap->region_name);
+        free (ap);
+      }
+      return;
+    case TYPE (VELOCITY):
+      {
+        Velocity * vel =
+          (Velocity *) self;
+        free (vel);
+      }
+      return;
+    default:
+      g_return_if_reached ();
+    }
+  g_return_if_reached ();
 }

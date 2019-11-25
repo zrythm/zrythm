@@ -40,6 +40,8 @@
 /**
  * Returns if the current position is for resizing
  * L.
+ *
+ * @param x X in local coordinates.
  */
 int
 arranger_object_is_resize_l (
@@ -49,6 +51,8 @@ arranger_object_is_resize_l (
 /**
  * Returns if the current position is for resizing
  * R.
+ *
+ * @param x X in local coordinates.
  */
 int
 arranger_object_is_resize_r (
@@ -58,6 +62,9 @@ arranger_object_is_resize_r (
 /**
  * Returns if the current position is for resizing
  * up (eg, Velocity).
+ *
+ * @param x X in local coordinates.
+ * @param y Y in local coordinates.
  */
 int
 arranger_object_is_resize_up (
@@ -68,6 +75,8 @@ arranger_object_is_resize_up (
 /**
  * Returns if the current position is for resizing
  * loop.
+ *
+ * @param y Y in local coordinates.
  */
 int
 arranger_object_is_resize_loop (

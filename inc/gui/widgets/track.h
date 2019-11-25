@@ -38,6 +38,7 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct Track Track;
 typedef struct CustomButtonWidget CustomButtonWidget;
+typedef struct _ArrangerWidget ArrangerWidget;
 
 /**
  * @addtogroup widgets
@@ -281,6 +282,16 @@ track_widget_do_highlight (
   gint          x,
   gint          y,
   const int     highlight);
+
+/**
+ * Converts Y from the arranger coordinates to
+ * the track coordinates.
+ */
+int
+track_widget_get_local_y (
+  TrackWidget *    self,
+  ArrangerWidget * arranger,
+  int              arranger_y);
 
 /**
  * @}
