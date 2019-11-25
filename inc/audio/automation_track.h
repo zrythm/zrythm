@@ -87,7 +87,7 @@ typedef struct AutomationTrack
   int                  num_bot_left_buttons;
 
   /** The widget. */
-  AutomationTrackWidget * widget;
+  //AutomationTrackWidget * widget;
 } AutomationTrack;
 
 static const cyaml_schema_field_t

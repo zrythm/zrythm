@@ -892,11 +892,11 @@ arranger_widget_get_hit_objects_in_rect (
   ArrangerObject * obj = NULL;
 
 #define ADD_OBJ_IF_OVERLAP \
-  if (arranger_object_get_arranger (obj) != self) \
-    continue; \
   arranger_object_set_full_rectangle ( \
     obj, self); \
-  if (ui_rectangle_overlap ( \
+  if (arranger_object_get_arranger (obj) == \
+        self && \
+      ui_rectangle_overlap ( \
         &obj->full_rect, rect)) \
     { \
       if (obj->type == \
@@ -942,9 +942,11 @@ arranger_widget_get_hit_objects_in_rect (
                  i < TRACKLIST->num_tracks;
                  i++)
               {
-                Track * track = TRACKLIST->tracks[i];
+                Track * track =
+                  TRACKLIST->tracks[i];
 
-                for (int j = 0; j < track->num_lanes; j++)
+                for (int j = 0;
+                     j < track->num_lanes; j++)
                   {
                     TrackLane * lane =
                       track->lanes[j];
@@ -956,6 +958,30 @@ arranger_widget_get_hit_objects_in_rect (
                           (ArrangerObject *)
                           lane->regions[k];
                         ADD_OBJ_IF_OVERLAP;
+                      }
+                  }
+
+                AutomationTracklist * atl =
+                  track_get_automation_tracklist (
+                    track);
+                if (atl &&
+                    track->automation_visible)
+                  {
+                    for (int j = 0;
+                         j < atl->num_ats;
+                         j++)
+                      {
+                        AutomationTrack * at =
+                          atl->ats[j];
+                        for (int k = 0;
+                             k < at->num_regions;
+                             k++)
+                          {
+                            obj =
+                              (ArrangerObject *)
+                              at->regions[k];
+                            ADD_OBJ_IF_OVERLAP;
+                          }
                       }
                   }
               }

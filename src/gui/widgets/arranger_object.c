@@ -834,7 +834,7 @@ arranger_object_set_full_rectangle (
         gint wx, wy;
 
         /* set lane rect if lanes visible */
-        if (track->lanes_visible)
+        if (lane && track->lanes_visible)
           {
             gtk_widget_translate_coordinates(
               (GtkWidget *) (track->widget),
@@ -889,14 +889,14 @@ arranger_object_set_full_rectangle (
                 !track->automation_visible)
               return;
 
-            gtk_widget_translate_coordinates (
-              (GtkWidget *) (at->widget),
-              (GtkWidget *) (self),
+            gtk_widget_translate_coordinates(
+              (GtkWidget *) (track->widget),
+              (GtkWidget *) (arranger),
               0, 0, &wx, &wy);
-            self->full_rect.y = wy;
-            self->full_rect.height =
-              gtk_widget_get_allocated_height (
-                (GtkWidget *) (at->widget));
+
+            self->full_rect.y =
+              wy + at->y;
+            self->full_rect.height = at->height;
           }
         else
           {

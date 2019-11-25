@@ -517,15 +517,21 @@ region_draw (
     {
       if (i == REGION_COUNTERPART_LANE)
         {
+          if (!region_type_has_lane (self->type))
+            break;
+
           Track * track =
             arranger_object_get_track (obj);
           if (!track->lanes_visible)
             break;
 
+          TrackLane * lane = self->lane;
+          g_return_if_fail (lane);
+
           /* set full rectangle */
           full_rect = obj->full_rect;
-          full_rect.y = self->lane_y;
-          full_rect.height = self->lane_height - 1;
+          full_rect.y += lane->y;
+          full_rect.height = lane->height - 1;
         }
       else if (i == REGION_COUNTERPART_MAIN)
         {

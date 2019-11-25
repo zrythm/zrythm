@@ -31,9 +31,7 @@
 #define TRACK_WIDGET_TYPE \
   (track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
-  TrackWidget,
-  track_widget,
-  Z, TRACK_WIDGET,
+  TrackWidget, track_widget, Z, TRACK_WIDGET,
   GtkBox)
 
 typedef struct Track Track;
@@ -46,6 +44,9 @@ typedef struct _ArrangerWidget ArrangerWidget;
  * @{
  */
 
+/**
+ * Resize target.
+ */
 typedef enum TrackWidgetResizeTarget
 {
   TRACK_WIDGET_RESIZE_TARGET_TRACK,
@@ -54,14 +55,12 @@ typedef enum TrackWidgetResizeTarget
 } TrackWidgetResizeTarget;
 
 /**
- * The TrackWidget is split into 3 parts inside a
- * DzlMultiPaned.
+ * The TrackWidget is split into 3 parts.
  *
- * - 1. TrackTopGridWidget contains the "main" view.
- * - 2. TrackLanelistWidget contains the
- *   TrackLaneWidgets.
- * - 3. AutomationTracklistWidget contains the
- *   AutomationLaneWidgets.
+ * - 1. Top part contains the "main" view.
+ * - 2. Lane part contains each lane.
+ * - 3. Automation tracklist part contains each
+ *      automation track.
  */
 typedef struct _TrackWidget
 {

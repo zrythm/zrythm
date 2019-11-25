@@ -329,8 +329,5 @@ automation_track_clone (
 void
 automation_track_free (AutomationTrack * self)
 {
-  if (self->widget && GTK_IS_WIDGET (self->widget))
-    gtk_widget_destroy (GTK_WIDGET (self->widget));
-
   free (self);
 }
