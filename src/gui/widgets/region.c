@@ -120,13 +120,38 @@ draw_background (
   gdk_cairo_set_source_rgba (
     cr, &color);
 
-  /* draw arc-rectangle */
+  /* if there are still region parts outside the
+   * rect, add some padding so that the region
+   * doesn't curve when it's not its edge */
+  int draw_x = draw_rect->x - rect->x;
+  int draw_x_has_padding = 0;
+  if (draw_rect->x > obj->full_rect.x)
+    {
+      draw_x -=
+        MIN (draw_rect->x - obj->full_rect.x, 4);
+      draw_x_has_padding = 1;
+    }
+  int draw_width = draw_rect->width;
+  if (draw_rect->x + draw_rect->width <
+      obj->full_rect.x + obj->full_rect.width)
+    {
+      draw_width +=
+        MAX (
+          (draw_rect->x + draw_rect->width) -
+            (obj->full_rect.x +
+             obj->full_rect.width), 4);
+    }
+  if (draw_x_has_padding)
+    {
+      draw_width += 4;
+    }
+
   z_cairo_rounded_rectangle (
     cr,
-    MAX (0, draw_rect->x - rect->x),
-    MAX (0, draw_rect->y - rect->y),
-    draw_rect->width,
-    draw_rect->height,
+    draw_x,
+    obj->full_rect.y - rect->y,
+    draw_width,
+    obj->full_rect.height,
     1.0, 4.0);
   cairo_fill (cr);
 }
@@ -450,7 +475,7 @@ draw_name (
   /* draw text */
   cairo_set_source_rgba (
     cr, 1, 1, 1, 1);
-  cairo_translate (
+  cairo_move_to (
     cr,
     2 + (obj->full_rect.x - rect->x),
     2 + (obj->full_rect.y - rect->y));
@@ -604,56 +629,6 @@ region_widget_draw_loop_points (
 }
 
 /**
- * Draws the background rectangle.
- */
-void
-region_widget_draw_background (
-  RegionWidget * self,
-  GtkWidget *    widget,
-  cairo_t *      cr,
-  GdkRectangle * rect)
-{
-  REGION_WIDGET_GET_PRIVATE (self);
-  Region * r = rw_prv->region;
-
-  /*int width =*/
-    /*gtk_widget_get_allocated_width (widget);*/
-  /*int height =*/
-    /*gtk_widget_get_allocated_height (widget);*/
-
-  Track * track =
-    arranger_object_get_track (
-      (ArrangerObject *) r);
-
-  /* set color */
-  GdkRGBA color;
-  if (track)
-    color = track->color;
-  else
-    {
-      color.red = 1;
-      color.green = 0;
-      color.blue = 0;
-      color.alpha = 1;
-    }
-  ui_get_arranger_object_color (
-    &color,
-    gtk_widget_get_state_flags (
-      GTK_WIDGET (self)) &
-      GTK_STATE_FLAG_PRELIGHT,
-    region_is_selected (r),
-    0);
-  gdk_cairo_set_source_rgba (
-    cr, &color);
-
-  /* draw arc-rectangle */
-  z_cairo_rounded_rectangle (
-    cr, 0, 0, rect->width, rect->height,
-    1.0, 4.0);
-  cairo_fill (cr);
-}
-
-/**
  * Draws the name of the Region.
  *
  * To be called during a cairo draw callback.
@@ -708,7 +683,7 @@ region_widget_draw_name (
   /* draw text */
   cairo_set_source_rgba (
     cr, 1, 1, 1, 1);
-  cairo_translate (cr, 2, 2);
+  cairo_move_to (cr, 2, 2);
   pango_cairo_show_layout (cr, layout);
 }
 

@@ -4009,12 +4009,12 @@ arranger_tick_cb (
 #endif
 
 /**
- * Returns the current rectangle to draw in.
+ * Returns the current visible rectangle.
  *
  * @param rect The rectangle to fill in.
  */
-static void
-get_current_rect (
+void
+arranger_widget_get_visible_rect (
   ArrangerWidget * self,
   GdkRectangle *   rect)
 {
@@ -4045,7 +4045,7 @@ arranger_widget_redraw_whole (
   ArrangerWidget * self)
 {
   GdkRectangle rect;
-  get_current_rect (self, &rect);
+  arranger_widget_get_visible_rect (self, &rect);
 
   /* redraw visible area */
   self->redraw = 1;
@@ -4062,7 +4062,7 @@ arranger_widget_redraw_playhead (
   ArrangerWidget * self)
 {
   GdkRectangle rect;
-  get_current_rect (self, &rect);
+  arranger_widget_get_visible_rect (self, &rect);
 
   int playhead_x = get_playhead_px (self);
   int min_x =

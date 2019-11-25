@@ -345,6 +345,16 @@ arranger_widget_px_to_pos (
   int              has_padding);
 
 /**
+ * Returns the current visible rectangle.
+ *
+ * @param rect The rectangle to fill in.
+ */
+void
+arranger_widget_get_visible_rect (
+  ArrangerWidget * self,
+  GdkRectangle *   rect);
+
+/**
  * Fills in the given array with the ArrangerObject's
  * of the given type that appear in the given
  * ranger.
