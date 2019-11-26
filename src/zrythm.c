@@ -722,10 +722,15 @@ zrythm_app_startup (
   app = _app;
 
   /* set theme */
-  g_object_set (gtk_settings_get_default (),
-                "gtk-theme-name",
-                "Matcha-dark-sea",
-                NULL);
+  g_object_set (
+    gtk_settings_get_default (),
+    "gtk-theme-name", "Matcha-dark-sea", NULL);
+  g_object_set (
+    gtk_settings_get_default (),
+    "gtk-application-prefer-dark-theme", 1, NULL);
+  g_object_set (
+    gtk_settings_get_default (),
+    "gtk-font-name", "Cantarell Regular 11", NULL);
   g_message ("set theme");
 
   /*g_object_set (gtk_settings_get_default (),*/

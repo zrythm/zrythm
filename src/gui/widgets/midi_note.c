@@ -195,7 +195,13 @@ midi_note_draw (
     {
       recreate_pango_layouts (
         self,
-        MAX (obj->full_rect.width, rect->width));
+        MIN (obj->full_rect.width, 400));
+      cairo_move_to (
+        cr,
+        REGION_NAME_BOX_PADDING +
+          (obj->full_rect.x - rect->x),
+        REGION_NAME_BOX_PADDING +
+          (obj->full_rect.y - rect->y));
       PangoLayout * layout = self->layout;
       z_cairo_draw_text (
         cr,

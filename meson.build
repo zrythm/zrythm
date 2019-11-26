@@ -209,12 +209,8 @@ if get_option ('enable_profiling')
   test_cflags += [ '-g', '-pg', 'no-pie' ]
 endif
 
-common_cflags = []
-foreach f : test_cflags
-  if cc.has_argument (f)
-    common_cflags += f
-  endif
-endforeach
+common_cflags = cc.get_supported_arguments (
+  test_cflags)
 
 test_strict_cflags = [
   #'-Werror=cast-qual',
@@ -278,11 +274,8 @@ endif
 
 strict_cflags = []
 if get_option ('strict_flags')
-  foreach f : test_strict_cflags
-    if cc.has_argument (f)
-      strict_cflags += f
-    endif
-  endforeach
+  strict_cflags = cc.get_supported_arguments (
+    test_strict_cflags)
 endif
 
 # add -Wformat -Werror=format-security
@@ -355,6 +348,8 @@ sndfile_dep = dependency('sndfile', version: '>=1.0.25')
 lv2_dep = dependency('lv2', version: '>=1.14.0')
 fftw3_dep = dependency('fftw3', version: '>=3.3.5')
 
+# TODO add Cantarell font as dependency
+
 zrythm_deps = [
   jack_dep,
   port_audio_dep,
@@ -370,6 +365,11 @@ zrythm_deps = [
   dependency('samplerate', version: '>=0.1.8'),
   lv2_dep,
   fftw3_dep,
+
+  # these are needed for gentoo
+  dependency('fftw3_threads', required: false),
+  dependency('fftw3f_threads', required: false),
+
   libm,
 ]
 
@@ -416,12 +416,8 @@ test_cflags_c_only = [
   '-Werror=parentheses-equality',
   ]
 
-common_cflags_c_only = []
-foreach f : test_cflags_c_only
-  if cc.has_argument (f)
-    common_cflags_c_only += f
-  endif
-endforeach
+common_cflags_c_only = cc.get_supported_arguments (
+  test_cflags_c_only)
 
 add_project_arguments (
   common_cflags_c_only,
