@@ -17,7 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
+
 #include "audio/audio_bus_track.h"
+#include "audio/automation_region.h"
 #include "audio/channel.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -35,6 +38,7 @@
 #include "settings/settings.h"
 #include "utils/cairo.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 #include "utils/ui.h"
 
 #include <glib/gi18n-lib.h>
@@ -432,6 +436,188 @@ draw_midi_region (
  * @param rect Arranger rectangle.
  */
 static void
+draw_automation_region (
+  Region *       self,
+  cairo_t *      cr,
+  GdkRectangle * rect,
+  GdkRectangle * full_rect,
+  GdkRectangle * draw_rect,
+  RegionCounterpart counterpart)
+{
+  ArrangerObject * obj = (ArrangerObject *) self;
+  cairo_set_source_rgba (cr, 1, 1, 1, 1);
+
+  int num_loops =
+    arranger_object_get_num_loops (
+      obj, 1);
+  long ticks_in_region =
+    arranger_object_get_length_in_ticks (obj);
+  double x_start, y_start, x_end, y_end;
+
+  /* draw automation */
+  long loop_end_ticks =
+    obj->loop_end_pos.total_ticks;
+  long loop_ticks =
+    arranger_object_get_loop_length_in_ticks (obj);
+  long clip_start_ticks =
+    obj->clip_start_pos.total_ticks;
+  AutomationPoint * ap, * next_ap;
+  for (int i = 0; i < self->num_aps; i++)
+    {
+      ap = self->aps[i];
+      next_ap =
+        automation_region_get_next_ap (self, ap);
+      ArrangerObject * ap_obj =
+        (ArrangerObject *) ap;
+      ArrangerObject * next_ap_obj =
+        (ArrangerObject *) next_ap;
+
+      long ap_start_ticks =
+        ap_obj->pos.total_ticks;
+      long ap_end_ticks = ap_start_ticks;
+      if (next_ap)
+        {
+          ap_end_ticks =
+            next_ap_obj->pos.total_ticks;
+        }
+      long tmp_start_ticks, tmp_end_ticks;
+
+      /* if before loop end */
+      if (position_is_before (
+            &ap_obj->pos, &obj->loop_end_pos))
+        {
+          for (int j = 0; j < num_loops; j++)
+            {
+              /* if ap started before loop start
+               * only draw it once */
+              if (position_is_before (
+                    &ap_obj->pos,
+                    &obj->loop_start_pos) &&
+                  j != 0)
+                break;
+
+              /* calculate draw endpoints */
+              tmp_start_ticks =
+                ap_start_ticks +
+                loop_ticks * (long) j;
+
+              /* if should be clipped */
+              if (next_ap &&
+                  position_is_after_or_equal (
+                    &next_ap_obj->pos,
+                    &obj->loop_end_pos))
+                tmp_end_ticks =
+                  loop_end_ticks +
+                  loop_ticks *  (long) j;
+              else
+                tmp_end_ticks =
+                  ap_end_ticks +
+                  loop_ticks *  (long) j;
+
+              /* adjust for clip start */
+              tmp_start_ticks -=
+                clip_start_ticks;
+              tmp_end_ticks -=
+                clip_start_ticks;
+
+              /* note: these are local to the
+               * region */
+              x_start =
+                (double) tmp_start_ticks /
+                (double) ticks_in_region;
+              x_end =
+                (double) tmp_end_ticks /
+                (double) ticks_in_region;
+
+              /* get ratio (0.0 - 1.0) on y where
+               * ap is
+               * note: these are local to the region */
+              y_start =
+                1.0 - (double) ap->normalized_val;
+              if (next_ap)
+                {
+                  y_end =
+                    1.0 - (double) next_ap->normalized_val;
+                }
+              else
+                {
+                  y_end = y_start;
+                }
+
+              double x_start_real =
+                x_start * full_rect->width;
+              /*double x_end_real =*/
+                /*x_end * width;*/
+              double y_start_real =
+                y_start * full_rect->height;
+              double y_end_real =
+                y_end * full_rect->height;
+
+              /* draw ap */
+              int padding = 1;
+              cairo_rectangle (
+                cr,
+                x_start_real - padding,
+                y_start_real - padding,
+                2 * padding,
+                2 * padding);
+              cairo_fill (cr);
+
+              /* draw curve */
+              if (next_ap)
+                {
+                  double new_x, ap_y, new_y;
+                  double ac_height =
+                    fabs (y_end - y_start);
+                  ac_height *= full_rect->height;
+                  double ac_width =
+                    fabs (x_end - x_start);
+                  ac_width *= full_rect->width;
+                    cairo_set_line_width (
+                      cr, 2.0);
+                  for (double k = x_start_real;
+                       k < (x_start_real) +
+                         ac_width + 0.1;
+                       k += 0.1)
+                    {
+                      /* in pixels, higher values are lower */
+                      ap_y =
+                        1.0 -
+                        automation_point_get_normalized_value_in_curve (
+                          ap,
+                          CLAMP (
+                            (k - x_start_real) /
+                              ac_width,
+                            0.0, 1.0));
+                      ap_y *= ac_height;
+
+                      new_x = k;
+                      if (y_start > y_end)
+                        new_y = ap_y + y_end_real;
+                      else
+                        new_y = ap_y + y_start_real;
+
+                      if (math_doubles_equal (
+                            k, 0.0, 0.001))
+                        {
+                          cairo_move_to (
+                            cr, new_x, new_y);
+                        }
+
+                      cairo_line_to (
+                        cr, new_x, new_y);
+                    }
+                  cairo_stroke (cr);
+                }
+            }
+        }
+    }
+}
+
+/**
+ * @param rect Arranger rectangle.
+ */
+static void
 draw_name (
   Region *          self,
   cairo_t *         cr,
@@ -562,11 +748,14 @@ region_draw (
       switch (self->type)
         {
         case REGION_TYPE_MIDI:
-          {
-            draw_midi_region (
-              self, cr, rect, &full_rect,
-              &draw_rect, i);
-          }
+          draw_midi_region (
+            self, cr, rect, &full_rect,
+            &draw_rect, i);
+          break;
+        case REGION_TYPE_AUTOMATION:
+          draw_automation_region (
+            self, cr, rect, &full_rect,
+            &draw_rect, i);
           break;
         default:
           break;
@@ -576,6 +765,8 @@ region_draw (
         self, cr, rect, &full_rect, &draw_rect, i);
       draw_name (
         self, cr, rect, &full_rect, &draw_rect, i);
+
+      /* TODO draw cut line? */
     }
 }
 

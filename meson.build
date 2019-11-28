@@ -185,7 +185,6 @@ test_cflags = [
   '-Wno-missing-field-initializers',
   '-Wno-unused-parameter',
   '-Wno-sequence-point',
-  '-Wno-old-style-declaration',
   '-Wignored-qualifiers',
   '-Wno-cast-function-type',
   ]
@@ -412,6 +411,7 @@ zrythm_deps += config_h_dep
 
 test_cflags_c_only = [
   '-Wno-bad-function-cast',
+  '-Wno-old-style-declaration',
   '-Werror=absolute-value',
   '-Werror=parentheses-equality',
   ]
