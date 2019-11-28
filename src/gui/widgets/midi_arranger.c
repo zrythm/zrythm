@@ -436,6 +436,49 @@ midi_arranger_widget_snap_midi_notes_l (
 }
 
 /**
+ * Sets the currently hovered note and queues a
+ * redraw if it changed.
+ *
+ * @param pitch The note pitch, or -1 for no note.
+ */
+void
+midi_arranger_widget_set_hovered_note (
+  ArrangerWidget * self,
+  int              pitch)
+{
+  if (self->hovered_note != pitch)
+    {
+      GdkRectangle rect;
+      arranger_widget_get_visible_rect (self, &rect);
+      int adj_px_per_key =
+        MW_MIDI_EDITOR_SPACE->px_per_key + 1;
+      if (self->hovered_note != -1)
+        {
+          /* redraw the previous note area to
+           * unhover it */
+          rect.y =
+            adj_px_per_key * (127 - self->hovered_note) - 1;
+          rect.height = adj_px_per_key;
+          arranger_widget_redraw_rectangle (
+            self, &rect);
+          g_message ("redrawing rect at %d", rect.y);
+        }
+      self->hovered_note = pitch;
+
+      if (pitch != -1)
+        {
+          /* redraw newly hovered note area */
+          rect.y =
+            adj_px_per_key * (127 - pitch) - 1;
+          rect.height = adj_px_per_key;
+          arranger_widget_redraw_rectangle (
+            self, &rect);
+          g_message ("redrawing rect at %d", rect.y);
+        }
+    }
+}
+
+/**
  * Called during drag_update in parent when
  * resizing the selection. It sets the end
  * Position of the selected MIDI notes.

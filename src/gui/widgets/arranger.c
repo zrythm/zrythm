@@ -4301,11 +4301,17 @@ on_motion (
       break;
     case TYPE (MIDI):
       if (event->type == GDK_LEAVE_NOTIFY)
-        self->hovered_note = -1;
+        {
+          midi_arranger_widget_set_hovered_note (
+            self, -1);
+        }
       else
-        self->hovered_note =
-          midi_arranger_widget_get_note_at_y (
-            event->y);
+        {
+          midi_arranger_widget_set_hovered_note (
+            self,
+            midi_arranger_widget_get_note_at_y (
+              event->y));
+        }
       break;
     default:
       break;

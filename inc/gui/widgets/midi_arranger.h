@@ -99,6 +99,17 @@ midi_arranger_widget_snap_midi_notes_r (
   int                 dry_run);
 
 /**
+ * Sets the currently hovered note and queues a
+ * redraw if it changed.
+ *
+ * @param pitch The note pitch, or -1 for no note.
+ */
+void
+midi_arranger_widget_set_hovered_note (
+  ArrangerWidget * self,
+  int              pitch);
+
+/**
  * Resets the transient of each note in the
  * arranger.
  */
