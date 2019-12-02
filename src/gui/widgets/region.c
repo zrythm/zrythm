@@ -537,7 +537,8 @@ draw_automation_region (
               if (next_ap)
                 {
                   y_end =
-                    1.0 - (double) next_ap->normalized_val;
+                    1.0 -
+                    (double) next_ap->normalized_val;
                 }
               else
                 {
@@ -554,14 +555,21 @@ draw_automation_region (
                 y_end * full_rect->height;
 
               /* draw ap */
-              int padding = 1;
-              cairo_rectangle (
-                cr,
-                x_start_real - padding,
-                y_start_real - padding,
-                2 * padding,
-                2 * padding);
-              cairo_fill (cr);
+              if (x_start_real >= 0.0)
+                {
+                  int padding = 1;
+                  cairo_rectangle (
+                    cr,
+                    (x_start_real +
+                       obj->full_rect.x) -
+                      (padding + rect->x),
+                    (y_start_real +
+                       obj->full_rect.y) -
+                      (padding + rect->y),
+                    2 * padding,
+                    2 * padding);
+                  cairo_fill (cr);
+                }
 
               /* draw curve */
               if (next_ap)
@@ -575,7 +583,8 @@ draw_automation_region (
                   ac_width *= full_rect->width;
                     cairo_set_line_width (
                       cr, 2.0);
-                  for (double k = x_start_real;
+                  for (double k =
+                         MAX (x_start_real, 0.0);
                        k < (x_start_real) +
                          ac_width + 0.1;
                        k += 0.1)
@@ -601,11 +610,23 @@ draw_automation_region (
                             k, 0.0, 0.001))
                         {
                           cairo_move_to (
-                            cr, new_x, new_y);
+                            cr,
+                            (new_x +
+                              obj->full_rect.x) -
+                              rect->x,
+                            (new_y +
+                              obj->full_rect.y) -
+                              rect->y);
                         }
 
                       cairo_line_to (
-                        cr, new_x, new_y);
+                        cr,
+                        (new_x +
+                          obj->full_rect.x) -
+                          rect->x,
+                        (new_y +
+                          obj->full_rect.y) -
+                          rect->y);
                     }
                   cairo_stroke (cr);
                 }

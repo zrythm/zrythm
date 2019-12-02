@@ -451,7 +451,7 @@ midi_arranger_widget_set_hovered_note (
       GdkRectangle rect;
       arranger_widget_get_visible_rect (self, &rect);
       int adj_px_per_key =
-        MW_MIDI_EDITOR_SPACE->px_per_key + 1;
+        (int) MW_MIDI_EDITOR_SPACE->px_per_key + 1;
       if (self->hovered_note != -1)
         {
           /* redraw the previous note area to
