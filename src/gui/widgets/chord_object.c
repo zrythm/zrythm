@@ -19,6 +19,7 @@
 
 #include "audio/chord_object.h"
 #include "audio/chord_track.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/chord_object.h"
@@ -29,107 +30,112 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  ChordObjectWidget,
-  chord_object_widget,
-  ARRANGER_OBJECT_WIDGET_TYPE)
-
-static gboolean
-chord_draw_cb (
-  GtkWidget * widget,
-  cairo_t *   cr,
-  ChordObjectWidget * self)
+/**
+ * Recreates the pango layouts for drawing.
+ *
+ * @param width Full width of the marker.
+ */
+void
+chord_object_recreate_pango_layouts (
+  ChordObject * self)
 {
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
+  ArrangerObject * obj = (ArrangerObject *) self;
 
-  if (ao_prv->redraw)
+  if (!PANGO_IS_LAYOUT (self->layout))
     {
-      GtkStyleContext *context =
-        gtk_widget_get_style_context (widget);
-
-      int width =
-        gtk_widget_get_allocated_width (widget);
-      int height =
-        gtk_widget_get_allocated_height (widget);
-
-      z_cairo_reset_caches (
-        &ao_prv->cached_cr,
-        &ao_prv->cached_surface, width,
-        height, cr);
-
-      gtk_render_background (
-        context, ao_prv->cached_cr,
-        0, 0, width, height);
-
-      /* get color */
-      GdkRGBA color = P_CHORD_TRACK->color;
-      ChordObject * chord_object =
-        self->chord_object;
-      ui_get_arranger_object_color (
-        &color,
-        gtk_widget_get_state_flags (
-          GTK_WIDGET (self)) &
-          GTK_STATE_FLAG_PRELIGHT,
-        chord_object_is_selected (
-          self->chord_object),
-        chord_object_is_transient (
-          self->chord_object));
-      ChordDescriptor * descr =
-        CHORD_EDITOR->chords[chord_object->index];
-      gdk_cairo_set_source_rgba (
-        ao_prv->cached_cr, &color);
-      cairo_rectangle (
-        ao_prv->cached_cr, 0, 0,
-        width - CHORD_OBJECT_WIDGET_TRIANGLE_W,
-        height);
-      cairo_fill (ao_prv->cached_cr);
-
-      cairo_move_to (
-        ao_prv->cached_cr,
-        width - CHORD_OBJECT_WIDGET_TRIANGLE_W, 0);
-      cairo_line_to (
-        ao_prv->cached_cr, width, height);
-      cairo_line_to (
-        ao_prv->cached_cr,
-        width - CHORD_OBJECT_WIDGET_TRIANGLE_W,
-        height);
-      cairo_line_to (
-        ao_prv->cached_cr,
-        width - CHORD_OBJECT_WIDGET_TRIANGLE_W, 0);
-      cairo_close_path (ao_prv->cached_cr);
-      cairo_fill (ao_prv->cached_cr);
-
-      char str[100];
-      chord_descriptor_to_string (descr, str);
-      if (DEBUGGING &&
-          chord_object_is_transient (
-            chord_object))
-        {
-          strcat (str, " [t]");
-        }
-
-      GdkRGBA c2;
-      ui_get_contrast_color (
-        &color, &c2);
-      gdk_cairo_set_source_rgba (
-        ao_prv->cached_cr, &c2);
-      PangoLayout * layout =
-        z_cairo_create_default_pango_layout (
-          widget);
-      z_cairo_draw_text (
-        ao_prv->cached_cr, widget, layout, str);
-      g_object_unref (layout);
-
-      ao_prv->redraw = 0;
+      PangoFontDescription *desc;
+      self->layout =
+        gtk_widget_create_pango_layout (
+          GTK_WIDGET (
+            arranger_object_get_arranger (obj)),
+          NULL);
+      desc =
+        pango_font_description_from_string (
+          CHORD_OBJECT_NAME_FONT);
+      pango_layout_set_font_description (
+        self->layout, desc);
+      pango_font_description_free (desc);
     }
-
-  cairo_set_source_surface (
-    cr, ao_prv->cached_surface, 0, 0);
-  cairo_paint (cr);
-
- return FALSE;
+  pango_layout_get_pixel_size (
+    self->layout, &obj->textw, &obj->texth);
 }
 
+/**
+ *
+ * @param cr Cairo context of the arranger.
+ * @param rect Rectangle in the arranger.
+ */
+void
+chord_object_draw (
+  ChordObject *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
+{
+  ArrangerObject * obj = (ArrangerObject *) self;
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
+
+  /* get color */
+  GdkRGBA color = P_CHORD_TRACK->color;
+  ui_get_arranger_object_color (
+    &color,
+    arranger->hovered_object == obj,
+    chord_object_is_selected (self), 0);
+  ChordDescriptor * descr =
+    CHORD_EDITOR->chords[self->index];
+  gdk_cairo_set_source_rgba (cr, &color);
+
+  cairo_rectangle (
+    cr, obj->full_rect.x - rect->x,
+    obj->full_rect.y - rect->y,
+    obj->full_rect.width -
+      CHORD_OBJECT_WIDGET_TRIANGLE_W,
+    obj->full_rect.height);
+  cairo_fill (cr);
+
+  cairo_move_to (
+    cr,
+    (obj->full_rect.x + obj->full_rect.width) -
+      (CHORD_OBJECT_WIDGET_TRIANGLE_W + rect->x),
+    obj->full_rect.y - rect->y);
+  cairo_line_to (
+    cr,
+    (obj->full_rect.x + obj->full_rect.width) -
+      rect->x,
+    (obj->full_rect.y + obj->full_rect.height) -
+      rect->y);
+  cairo_line_to (
+    cr,
+    (obj->full_rect.x + obj->full_rect.width) -
+      (CHORD_OBJECT_WIDGET_TRIANGLE_W + rect->x),
+    (obj->full_rect.y + obj->full_rect.height) -
+      rect->y);
+  cairo_line_to (
+    cr,
+    (obj->full_rect.x + obj->full_rect.width) -
+      (CHORD_OBJECT_WIDGET_TRIANGLE_W + rect->x),
+    obj->full_rect.y - rect->y);
+  cairo_close_path (cr);
+  cairo_fill (cr);
+
+  char str[100];
+  chord_descriptor_to_string (descr, str);
+
+  GdkRGBA c2;
+  ui_get_contrast_color (&color, &c2);
+  gdk_cairo_set_source_rgba (cr, &c2);
+  cairo_move_to (
+    cr,
+    (obj->full_rect.x + CHORD_OBJECT_NAME_PADDING) -
+      rect->x,
+    (obj->full_rect.y + CHORD_OBJECT_NAME_PADDING) -
+      rect->y);
+  z_cairo_draw_text (
+    cr, GTK_WIDGET (arranger), self->layout, str);
+  g_free (str);
+}
+
+#if 0
 static void
 on_press (
   GtkGestureMultiPress *gesture,
@@ -206,3 +212,4 @@ chord_object_widget_init (
     G_OBJECT (self->mp), "pressed",
     G_CALLBACK (on_press), self);
 }
+#endif

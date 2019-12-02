@@ -19,6 +19,7 @@
 
 #include "audio/scale_object.h"
 #include "audio/chord_track.h"
+#include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/scale_object.h"
 #include "gui/widgets/scale_selector_window.h"
@@ -26,109 +27,110 @@
 #include "utils/cairo.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (
-  ScaleObjectWidget,
-  scale_object_widget,
-  ARRANGER_OBJECT_WIDGET_TYPE)
-
-static gboolean
-scale_draw_cb (
-  GtkWidget * widget,
-  cairo_t *   cr,
-  ScaleObjectWidget * self)
+/**
+ * Recreates the pango layouts for drawing.
+ *
+ * @param width Full width of the marker.
+ */
+void
+scale_object_recreate_pango_layouts (
+  ScaleObject * self)
 {
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
+  ArrangerObject * obj = (ArrangerObject *) self;
 
-  if (ao_prv->redraw)
+  if (!PANGO_IS_LAYOUT (self->layout))
     {
-      GtkStyleContext *context =
-        gtk_widget_get_style_context (widget);
-
-      int width =
-        gtk_widget_get_allocated_width (widget);
-      int height =
-        gtk_widget_get_allocated_height (widget);
-
-      z_cairo_reset_caches (
-        &ao_prv->cached_cr,
-        &ao_prv->cached_surface, width,
-        height, cr);
-
-      gtk_render_background (
-        context, ao_prv->cached_cr,
-        0, 0, width, height);
-
-      /* set color */
-      GdkRGBA color = P_CHORD_TRACK->color;
-      ui_get_arranger_object_color (
-        &color,
-        gtk_widget_get_state_flags (
-          GTK_WIDGET (self)) &
-          GTK_STATE_FLAG_PRELIGHT,
-        scale_object_is_selected (
-          self->scale_object),
-        scale_object_is_transient (
-          self->scale_object));
-      gdk_cairo_set_source_rgba (
-        ao_prv->cached_cr, &color);
-
-      cairo_rectangle (
-        ao_prv->cached_cr, 0, 0,
-        width - SCALE_OBJECT_WIDGET_TRIANGLE_W,
-        height);
-      cairo_fill (ao_prv->cached_cr);
-
-      cairo_move_to (
-        ao_prv->cached_cr,
-        width - SCALE_OBJECT_WIDGET_TRIANGLE_W, 0);
-      cairo_line_to (
-        ao_prv->cached_cr, width, height);
-      cairo_line_to (
-        ao_prv->cached_cr,
-        width - SCALE_OBJECT_WIDGET_TRIANGLE_W,
-        height);
-      cairo_line_to (
-        ao_prv->cached_cr,
-        width - SCALE_OBJECT_WIDGET_TRIANGLE_W, 0);
-      cairo_close_path (ao_prv->cached_cr);
-      cairo_fill (ao_prv->cached_cr);
-
-      char * str =
-        musical_scale_to_string (
-          self->scale_object->scale);
-      if (DEBUGGING &&
-          scale_object_is_transient (
-            self->scale_object))
-        {
-          char * tmp =
-            g_strdup_printf (
-              "%s [t]", str);
-          g_free (str);
-          str = tmp;
-        }
-
-      GdkRGBA c2;
-      ui_get_contrast_color (
-        &color, &c2);
-      gdk_cairo_set_source_rgba (
-        ao_prv->cached_cr, &c2);
-      PangoLayout * layout =
-        z_cairo_create_default_pango_layout (
-          widget);
-      z_cairo_draw_text (
-        ao_prv->cached_cr, widget, layout, str);
-      g_object_unref (layout);
-      g_free (str);
-      ao_prv->redraw = 0;
+      PangoFontDescription *desc;
+      self->layout =
+        gtk_widget_create_pango_layout (
+          GTK_WIDGET (
+            arranger_object_get_arranger (obj)),
+          NULL);
+      desc =
+        pango_font_description_from_string (
+          SCALE_OBJECT_NAME_FONT);
+      pango_layout_set_font_description (
+        self->layout, desc);
+      pango_font_description_free (desc);
     }
-
-  cairo_set_source_surface (
-    cr, ao_prv->cached_surface, 0, 0);
-  cairo_paint (cr);
-
- return FALSE;
+  pango_layout_get_pixel_size (
+    self->layout, &obj->textw, &obj->texth);
 }
 
+/**
+ *
+ * @param cr Cairo context of the arranger.
+ * @param rect Rectangle in the arranger.
+ */
+void
+scale_object_draw (
+  ScaleObject *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
+{
+  ArrangerObject * obj = (ArrangerObject *) self;
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
+
+  /* set color */
+  GdkRGBA color = P_CHORD_TRACK->color;
+  ui_get_arranger_object_color (
+    &color,
+    arranger->hovered_object == obj,
+    scale_object_is_selected (self), 0);
+  gdk_cairo_set_source_rgba (cr, &color);
+
+  cairo_rectangle (
+    cr, obj->full_rect.x - rect->x,
+    obj->full_rect.y - rect->y,
+    obj->full_rect.width -
+      SCALE_OBJECT_WIDGET_TRIANGLE_W,
+    obj->full_rect.height);
+  cairo_fill (cr);
+
+  cairo_move_to (
+    cr,
+    (obj->full_rect.x + obj->full_rect.width) -
+      (SCALE_OBJECT_WIDGET_TRIANGLE_W + rect->x),
+    obj->full_rect.y - rect->y);
+  cairo_line_to (
+    cr,
+    (obj->full_rect.x + obj->full_rect.width) -
+      rect->x,
+    (obj->full_rect.y + obj->full_rect.height) -
+      rect->y);
+  cairo_line_to (
+    cr,
+    (obj->full_rect.x + obj->full_rect.width) -
+      (SCALE_OBJECT_WIDGET_TRIANGLE_W + rect->x),
+    (obj->full_rect.y + obj->full_rect.height) -
+      rect->y);
+  cairo_line_to (
+    cr,
+    (obj->full_rect.x + obj->full_rect.width) -
+      (SCALE_OBJECT_WIDGET_TRIANGLE_W + rect->x),
+    obj->full_rect.y - rect->y);
+  cairo_close_path (cr);
+  cairo_fill (cr);
+
+  char * str =
+    musical_scale_to_string (self->scale);
+
+  GdkRGBA c2;
+  ui_get_contrast_color (&color, &c2);
+  gdk_cairo_set_source_rgba (cr, &c2);
+  cairo_move_to (
+    cr,
+    (obj->full_rect.x + SCALE_OBJECT_NAME_PADDING) -
+      rect->x,
+    (obj->full_rect.y + SCALE_OBJECT_NAME_PADDING) -
+      rect->y);
+  z_cairo_draw_text (
+    cr, GTK_WIDGET (arranger), self->layout, str);
+  g_free (str);
+}
+
+#if 0
 static void
 on_press (
   GtkGestureMultiPress *gesture,
@@ -175,14 +177,6 @@ scale_object_widget_new (ScaleObject * scale)
 }
 
 static void
-scale_object_widget_class_init (
-  ScaleObjectWidgetClass * _klass)
-{
-  /*GtkWidgetClass * klass =*/
-    /*GTK_WIDGET_CLASS (_klass);*/
-}
-
-static void
 scale_object_widget_init (
   ScaleObjectWidget * self)
 {
@@ -200,3 +194,4 @@ scale_object_widget_init (
     G_OBJECT (self->mp), "pressed",
     G_CALLBACK (on_press), self);
 }
+#endif

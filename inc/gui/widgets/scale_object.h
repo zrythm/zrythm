@@ -17,8 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if 0
-
 /**
  * \file
  *
@@ -32,21 +30,37 @@
 
 #include <gtk/gtk.h>
 
-#define SCALE_OBJECT_WIDGET_TYPE \
-  (scale_object_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  ScaleObjectWidget,
-  scale_object_widget,
-  Z, SCALE_OBJECT_WIDGET,
-  ArrangerObjectWidget);
-
-typedef struct ScaleObjectObject ScaleObjectObject;
-
 /**
  * @addtogroup widgets
  *
  * @{
  */
+
+#define SCALE_OBJECT_WIDGET_TRIANGLE_W 10
+#define SCALE_OBJECT_NAME_FONT "Sans SemiBold 8"
+#define SCALE_OBJECT_NAME_PADDING 2
+
+/**
+ * Recreates the pango layouts for drawing.
+ *
+ * @param width Full width of the marker.
+ */
+void
+scale_object_recreate_pango_layouts (
+  ScaleObject * self);
+
+/**
+ *
+ * @param cr Cairo context of the arranger.
+ * @param rect Rectangle in the arranger.
+ */
+void
+scale_object_draw (
+  ScaleObject *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect);
+
+#if 0
 
 #define SCALE_OBJECT_WIDGET_TRIANGLE_W 10
 
@@ -77,10 +91,10 @@ typedef struct _ScaleObjectWidget
 ScaleObjectWidget *
 scale_object_widget_new (
   ScaleObject * scale);
+#endif
 
 /**
  * @}
  */
 
-#endif
 #endif

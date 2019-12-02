@@ -202,6 +202,10 @@ typedef struct Region
 
   /** Cache layout for drawing the name. */
   PangoLayout *      layout;
+
+  /** Cache layout for drawing the chord names
+   * inside the region. */
+  PangoLayout *      chords_layout;
 } Region;
 
 static const cyaml_schema_field_t

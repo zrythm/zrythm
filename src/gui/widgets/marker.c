@@ -34,95 +34,110 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  MarkerWidget,
-  marker_widget,
-  ARRANGER_OBJECT_WIDGET_TYPE)
-
-static gboolean
-marker_draw_cb (
-  GtkWidget * widget,
-  cairo_t *   cr,
-  MarkerWidget * self)
+/**
+ * Recreates the pango layouts for drawing.
+ *
+ * @param width Full width of the marker.
+ */
+void
+marker_recreate_pango_layouts (
+  Marker * self)
 {
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
-  if (ao_prv->redraw)
+  ArrangerObject * obj = (ArrangerObject *) self;
+
+  if (!PANGO_IS_LAYOUT (self->layout))
     {
-      GtkStyleContext * context =
-        gtk_widget_get_style_context (widget);
-
-      int width =
-        gtk_widget_get_allocated_width (widget);
-      int height =
-        gtk_widget_get_allocated_height (widget);
-
-      z_cairo_reset_caches (
-        &ao_prv->cached_cr,
-        &ao_prv->cached_surface, width,
-        height, cr);
-
-      gtk_render_background (
-        context, ao_prv->cached_cr,
-        0, 0, width, height);
-
-      /* set color */
-      GdkRGBA color = P_MARKER_TRACK->color;
-      ui_get_arranger_object_color (
-        &color,
-        gtk_widget_get_state_flags (
-          GTK_WIDGET (self)) &
-          GTK_STATE_FLAG_PRELIGHT,
-        marker_is_selected (self->marker),
-        marker_is_transient (self->marker));
-      gdk_cairo_set_source_rgba (
-        ao_prv->cached_cr, &color);
-
-      cairo_rectangle (
-        ao_prv->cached_cr, 0, 0,
-        width - MARKER_WIDGET_TRIANGLE_W, height);
-      cairo_fill (ao_prv->cached_cr);
-
-      cairo_move_to (
-        ao_prv->cached_cr,
-        width - MARKER_WIDGET_TRIANGLE_W, 0);
-      cairo_line_to (
-        ao_prv->cached_cr, width, height);
-      cairo_line_to (
-        ao_prv->cached_cr,
-        width - MARKER_WIDGET_TRIANGLE_W, height);
-      cairo_line_to (
-        ao_prv->cached_cr,
-        width - MARKER_WIDGET_TRIANGLE_W, 0);
-      cairo_close_path (ao_prv->cached_cr);
-      cairo_fill (ao_prv->cached_cr);
-
-      char str[100];
-      sprintf (str, "%s", self->marker->name);
-      if (DEBUGGING &&
-          marker_is_transient (self->marker))
-        {
-          strcat (str, " [t]");
-        }
-
-      GdkRGBA c2;
-      ui_get_contrast_color (
-        &color, &c2);
-      gdk_cairo_set_source_rgba (
-        ao_prv->cached_cr, &c2);
-      z_cairo_draw_text (
-        ao_prv->cached_cr, widget,
-        self->layout, str);
-
-      ao_prv->redraw = 0;
+      PangoFontDescription *desc;
+      self->layout =
+        gtk_widget_create_pango_layout (
+          GTK_WIDGET (
+            arranger_object_get_arranger (obj)),
+          NULL);
+      desc =
+        pango_font_description_from_string (
+          MARKER_NAME_FONT);
+      pango_layout_set_font_description (
+        self->layout, desc);
+      pango_font_description_free (desc);
     }
-
-  cairo_set_source_surface (
-    cr, ao_prv->cached_surface, 0, 0);
-  cairo_paint (cr);
-
- return FALSE;
+  pango_layout_get_pixel_size (
+    self->layout, &obj->textw, &obj->texth);
 }
 
+/**
+ *
+ * @param cr Cairo context of the arranger.
+ * @param rect Rectangle in the arranger.
+ */
+void
+marker_draw (
+  Marker *       self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
+{
+  ArrangerObject * obj = (ArrangerObject *) self;
+  ArrangerWidget * arranger =
+    arranger_object_get_arranger (obj);
+
+  /* set color */
+  GdkRGBA color = P_MARKER_TRACK->color;
+  ui_get_arranger_object_color (
+    &color,
+    arranger->hovered_object == obj,
+    marker_is_selected (self), 0);
+  gdk_cairo_set_source_rgba (
+    cr, &color);
+
+  cairo_rectangle (
+    cr, obj->full_rect.x - rect->x,
+    obj->full_rect.y - rect->y,
+    obj->full_rect.width -
+      MARKER_WIDGET_TRIANGLE_W,
+    obj->full_rect.height);
+  cairo_fill (cr);
+
+  cairo_move_to (
+    cr,
+    (obj->full_rect.x + obj->full_rect.width) -
+      (MARKER_WIDGET_TRIANGLE_W + rect->x),
+    obj->full_rect.y - rect->y);
+  cairo_line_to (
+    cr,
+    (obj->full_rect.x + obj->full_rect.width) -
+      rect->x,
+    (obj->full_rect.y + obj->full_rect.height) -
+      rect->y);
+  cairo_line_to (
+    cr,
+    (obj->full_rect.x + obj->full_rect.width) -
+      (MARKER_WIDGET_TRIANGLE_W + rect->x),
+    (obj->full_rect.y + obj->full_rect.height) -
+      rect->y);
+  cairo_line_to (
+    cr,
+    (obj->full_rect.x + obj->full_rect.width) -
+      (MARKER_WIDGET_TRIANGLE_W + rect->x),
+    obj->full_rect.y - rect->y);
+  cairo_close_path (cr);
+  cairo_fill (cr);
+
+  char str[100];
+  sprintf (str, "%s", self->name);
+
+  GdkRGBA c2;
+  ui_get_contrast_color (&color, &c2);
+  gdk_cairo_set_source_rgba (cr, &c2);
+  cairo_move_to (
+    cr,
+    (obj->full_rect.x + MARKER_NAME_PADDING) -
+      rect->x,
+    (obj->full_rect.y + MARKER_NAME_PADDING) -
+      rect->y);
+  z_cairo_draw_text (
+    cr, GTK_WIDGET (arranger), self->layout, str);
+}
+
+#if 0
 static void
 on_press (
   GtkGestureMultiPress *gesture,
@@ -233,3 +248,4 @@ marker_widget_init (MarkerWidget * self)
     G_OBJECT (self), "screen-changed",
     G_CALLBACK (on_screen_changed),  self);
 }
+#endif

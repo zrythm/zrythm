@@ -27,13 +27,17 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_editor_space.h"
+#include "gui/widgets/chord_object.h"
+#include "gui/widgets/chord_region.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
+#include "gui/widgets/marker.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/region.h"
+#include "gui/widgets/scale_object.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/track.h"
@@ -758,16 +762,17 @@ arranger_object_set_full_rectangle (
         char chord_str[100];
         chord_descriptor_to_string (
           descr, chord_str);
-        int textw, texth;
-        PangoLayout * layout =
-          z_cairo_create_default_pango_layout (
-            GTK_WIDGET (arranger));
-        z_cairo_get_text_extents_for_widget (
-          GTK_WIDGET (arranger), layout,
-          chord_str, &textw, &texth);
-        g_object_unref (layout);
+
+        chord_object_recreate_pango_layouts (
+          (ChordObject *) self);
         self->full_rect.width =
-          textw + CHORD_OBJECT_WIDGET_TRIANGLE_W +
+          self->textw +
+          CHORD_OBJECT_WIDGET_TRIANGLE_W +
+          Z_CAIRO_TEXT_PADDING * 2;
+
+        self->full_rect.width =
+          self->textw +
+          CHORD_OBJECT_WIDGET_TRIANGLE_W +
           Z_CAIRO_TEXT_PADDING * 2;
 
         self->full_rect.height = adj_px_per_key;
@@ -894,30 +899,17 @@ arranger_object_set_full_rectangle (
 
         if (region->type == REGION_TYPE_CHORD)
           {
-            if (!arranger->chord_obj_height)
-              {
-                int textw, texth;
-                PangoLayout * layout =
-                  z_cairo_create_default_pango_layout (
-                    GTK_WIDGET (arranger));
-                z_cairo_get_text_extents_for_widget (
-                  GTK_WIDGET (arranger), layout,
-                  "Aa", &textw, &texth);
-                g_object_unref (layout);
-                arranger->chord_obj_height =
-                  texth;
-              }
+            chord_region_recreate_pango_layouts (
+              region);
 
             self->full_rect.y = wy;
             /* full height minus the space the
              * scales would require, plus some
              * padding */
             self->full_rect.height =
-              gtk_widget_get_allocated_height (
-                GTK_WIDGET (track->widget)) -
-              (arranger->chord_obj_height +
+              track->main_height -
+                (self->texth +
                  Z_CAIRO_TEXT_PADDING * 4);
-
           }
         else if (region->type ==
                    REGION_TYPE_AUTOMATION)
@@ -1000,60 +992,56 @@ arranger_object_set_full_rectangle (
       break;
     case TYPE (SCALE_OBJECT):
       {
-        /*ScaleObject * so =*/
-          /*(ScaleObject *) self;*/
         Track * track = P_CHORD_TRACK;
 
         gint wx, wy;
-        gtk_widget_translate_coordinates (
+        gtk_widget_translate_coordinates(
           (GtkWidget *) (track->widget),
-          (GtkWidget *) (self),
-          0, 0, &wx, &wy);
+          (GtkWidget *) (arranger),
+          0, 0,
+          &wx, &wy);
 
         self->full_rect.x =
           ui_pos_to_px_timeline (
             &self->pos, 1);
+        scale_object_recreate_pango_layouts (
+          (ScaleObject *) self);
         self->full_rect.width =
           self->textw +
           SCALE_OBJECT_WIDGET_TRIANGLE_W +
           Z_CAIRO_TEXT_PADDING * 2;
 
-        int track_height =
-          gtk_widget_get_allocated_height (
-            (GtkWidget *) (track->widget));
         int obj_height =
           self->texth + Z_CAIRO_TEXT_PADDING * 2;
         self->full_rect.y =
-          (wy + track_height) - obj_height;
+          (wy + track->main_height) - obj_height;
         self->full_rect.height = obj_height;
       }
       break;
     case TYPE (MARKER):
       {
-        /*Marker * marker =*/
-          /*(Marker *) self;*/
         Track * track = P_MARKER_TRACK;
 
         gint wx, wy;
-        gtk_widget_translate_coordinates (
+        gtk_widget_translate_coordinates(
           (GtkWidget *) (track->widget),
-          (GtkWidget *) (self),
-          0, 0, &wx, &wy);
+          (GtkWidget *) (arranger),
+          0, 0,
+          &wx, &wy);
 
         self->full_rect.x =
           ui_pos_to_px_timeline (
             &self->pos, 1);
+        marker_recreate_pango_layouts (
+          (Marker *) self);
         self->full_rect.width =
           self->textw + MARKER_WIDGET_TRIANGLE_W +
           Z_CAIRO_TEXT_PADDING * 2;
 
-        int track_height =
-          gtk_widget_get_allocated_height (
-            GTK_WIDGET (track->widget));
         int obj_height =
           self->texth + Z_CAIRO_TEXT_PADDING * 2;
         self->full_rect.y =
-          (wy + track_height) - obj_height;
+          (wy + track->main_height) - obj_height;
         self->full_rect.height = obj_height;
       }
       break;
@@ -1163,6 +1151,18 @@ arranger_object_draw (
     case TYPE (MIDI_NOTE):
       midi_note_draw (
         (MidiNote *) self, cr, rect);
+      break;
+    case TYPE (MARKER):
+      marker_draw (
+        (Marker *) self, cr, rect);
+      break;
+    case TYPE (SCALE_OBJECT):
+      scale_object_draw (
+        (ScaleObject *) self, cr, rect);
+      break;
+    case TYPE (CHORD_OBJECT):
+      chord_object_draw (
+        (ChordObject *) self, cr, rect);
       break;
     default:
       g_warn_if_reached ();

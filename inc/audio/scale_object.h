@@ -42,8 +42,6 @@ typedef struct MusicalScale MusicalScale;
  * @{
  */
 
-#define SCALE_OBJECT_WIDGET_TRIANGLE_W 10
-
 #define scale_object_is_selected(r) \
   arranger_object_is_selected ( \
     (ArrangerObject *) r)
@@ -64,6 +62,9 @@ typedef struct ScaleObject
 
   /** Cache. */
   Track *         track;
+
+  /** Cache layout for drawing the name. */
+  PangoLayout *      layout;
 } ScaleObject;
 
 static const cyaml_schema_field_t

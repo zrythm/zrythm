@@ -24,8 +24,6 @@
  * RegionWidget.
  */
 
-#if 0
-
 #ifndef __GUI_WIDGETS_CHORD_REGION_H__
 #define __GUI_WIDGETS_CHORD_REGION_H__
 
@@ -35,15 +33,21 @@
 
 #include <gtk/gtk.h>
 
-#define CHORD_REGION_WIDGET_TYPE \
-  (chord_region_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  ChordRegionWidget,
-  chord_region_widget,
-  Z, CHORD_REGION_WIDGET,
-  RegionWidget);
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
-typedef struct Region ChordRegion;
+/**
+ * Recreates the pango layout for drawing chord
+ * names inside the region.
+ */
+void
+chord_region_recreate_pango_layouts (
+  Region * self);
+
+#if 0
 
 /**
  * A widget that represents a ChordRegion in the
@@ -65,4 +69,9 @@ chord_region_widget_new (
   Region * chord_region);
 
 #endif
+
+/**
+ * @}
+ */
+
 #endif

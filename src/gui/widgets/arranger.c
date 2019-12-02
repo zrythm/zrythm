@@ -915,6 +915,7 @@ arranger_widget_get_hit_objects_in_rect (
     case TYPE (TIMELINE):
       if (type != ARRANGER_OBJECT_TYPE_ALL &&
           type != ARRANGER_OBJECT_TYPE_REGION &&
+          type != ARRANGER_OBJECT_TYPE_MARKER &&
           type != ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
         break;
 
@@ -937,6 +938,7 @@ arranger_widget_get_hit_objects_in_rect (
       if (type == ARRANGER_OBJECT_TYPE_ALL ||
           type == ARRANGER_OBJECT_TYPE_REGION)
         {
+          /* midi and audio regions */
           for (int i = 0;
                i < TRACKLIST->num_tracks;
                i++)
@@ -980,6 +982,19 @@ arranger_widget_get_hit_objects_in_rect (
                     }
                 }
 
+              /* chord regions */
+              for (int j = 0;
+                   j < P_CHORD_TRACK->num_chord_regions;
+                   j++)
+                {
+                  ChordRegion * cr =
+                    P_CHORD_TRACK->chord_regions[j];
+                  obj =
+                    (ArrangerObject *) cr;
+                  ADD_OBJ_IF_OVERLAP;
+                }
+
+              /* automation regions */
               AutomationTracklist * atl =
                 track_get_automation_tracklist (
                   track);
@@ -1003,6 +1018,38 @@ arranger_widget_get_hit_objects_in_rect (
                         }
                     }
                 }
+            }
+        }
+
+      /* add overlapping scales */
+      if (type == ARRANGER_OBJECT_TYPE_ALL ||
+          type == ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
+        {
+          for (int j = 0;
+               j < P_CHORD_TRACK->num_scales;
+               j++)
+            {
+              ScaleObject * scale =
+                P_CHORD_TRACK->scales[j];
+              obj =
+                (ArrangerObject *) scale;
+              ADD_OBJ_IF_OVERLAP;
+            }
+        }
+
+      /* add overlapping markers */
+      if (type == ARRANGER_OBJECT_TYPE_ALL ||
+          type == ARRANGER_OBJECT_TYPE_MARKER)
+        {
+          for (int j = 0;
+               j < P_MARKER_TRACK->num_markers;
+               j++)
+            {
+              Marker * marker =
+                P_MARKER_TRACK->markers[j];
+              obj =
+                (ArrangerObject *) marker;
+              ADD_OBJ_IF_OVERLAP;
             }
         }
       break;

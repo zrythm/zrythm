@@ -17,8 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if 0
-
 /**
  * \file
  *
@@ -32,16 +30,6 @@
 
 #include <gtk/gtk.h>
 
-#define CHORD_OBJECT_WIDGET_TYPE \
-  (chord_object_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  ChordObjectWidget,
-  chord_object_widget,
-  Z, CHORD_OBJECT_WIDGET,
-  ArrangerObjectWidget);
-
-typedef struct ChordObjectObject ChordObjectObject;
-
 /**
  * @addtogroup widgets
  *
@@ -49,6 +37,30 @@ typedef struct ChordObjectObject ChordObjectObject;
  */
 
 #define CHORD_OBJECT_WIDGET_TRIANGLE_W 10
+#define CHORD_OBJECT_NAME_FONT "Sans SemiBold 8"
+#define CHORD_OBJECT_NAME_PADDING 2
+
+/**
+ * Recreates the pango layouts for drawing.
+ *
+ * @param width Full width of the marker.
+ */
+void
+chord_object_recreate_pango_layouts (
+  ChordObject * self);
+
+/**
+ *
+ * @param cr Cairo context of the arranger.
+ * @param rect Rectangle in the arranger.
+ */
+void
+chord_object_draw (
+  ChordObject *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect);
+
+#if 0
 
 /**
  * Widget for chords inside the ChordObjectTrack.
@@ -68,10 +80,10 @@ typedef struct _ChordObjectWidget
 ChordObjectWidget *
 chord_object_widget_new (
   ChordObject * chord);
+#endif
 
 /**
  * @}
  */
 
-#endif
 #endif

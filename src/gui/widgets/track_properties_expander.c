@@ -40,11 +40,15 @@ track_properties_expander_widget_refresh (
   TrackPropertiesExpanderWidget * self,
   Track *                         track)
 {
-  g_warn_if_fail (track);
+  g_return_if_fail (self && track);
   self->track = track;
 
-  route_target_selector_widget_refresh (
-    self->direct_out, track->channel);
+  if (track_type_has_channel (track->type))
+    {
+      g_return_if_fail (self->direct_out);
+      route_target_selector_widget_refresh (
+        self->direct_out, track->channel);
+    }
 
   editable_label_widget_setup (
     self->name,

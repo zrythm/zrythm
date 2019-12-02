@@ -17,8 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if 0
-
 /**
  * \file
  *
@@ -32,21 +30,36 @@
 
 #include <gtk/gtk.h>
 
-#define MARKER_WIDGET_TYPE \
-  (marker_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  MarkerWidget,
-  marker_widget,
-  Z, MARKER_WIDGET,
-  ArrangerObjectWidget);
-
-typedef struct Marker Marker;
-
 /**
  * @addtogroup widgets
  *
  * @{
  */
+
+#define MARKER_NAME_FONT "Sans SemiBold 8"
+#define MARKER_NAME_PADDING 2
+
+/**
+ * Recreates the pango layouts for drawing.
+ *
+ * @param width Full width of the marker.
+ */
+void
+marker_recreate_pango_layouts (
+  Marker * self);
+
+/**
+ *
+ * @param cr Cairo context of the arranger.
+ * @param rect Rectangle in the arranger.
+ */
+void
+marker_draw (
+  Marker *       self,
+  cairo_t *      cr,
+  GdkRectangle * rect);
+
+#if 0
 
 #define MARKER_WIDGET_TRIANGLE_W 10
 
@@ -80,9 +93,10 @@ void
 marker_widget_recreate_pango_layouts (
   MarkerWidget * self);
 
+#endif
+
 /**
  * @}
  */
 
-#endif
 #endif

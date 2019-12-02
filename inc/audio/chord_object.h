@@ -66,6 +66,9 @@ typedef struct ChordObject
   /** Used in clones to identify a region instead of
    * cloning the whole Region. */
   char *              region_name;
+
+  /** Cache layout for drawing the name. */
+  PangoLayout *      layout;
 } ChordObject;
 
 static const cyaml_schema_field_t

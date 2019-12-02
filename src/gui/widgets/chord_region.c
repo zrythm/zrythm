@@ -34,11 +34,36 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "utils/cairo.h"
 
-G_DEFINE_TYPE (
-  ChordRegionWidget,
-  chord_region_widget,
-  REGION_WIDGET_TYPE)
+/**
+ * Recreates the pango layout for drawing chord
+ * names inside the region.
+ */
+void
+chord_region_recreate_pango_layouts (
+  Region * self)
+{
+  ArrangerObject * obj = (ArrangerObject *) self;
 
+  if (!PANGO_IS_LAYOUT (self->chords_layout))
+    {
+      PangoFontDescription *desc;
+      self->chords_layout =
+        gtk_widget_create_pango_layout (
+          GTK_WIDGET (
+            arranger_object_get_arranger (obj)),
+          NULL);
+      desc =
+        pango_font_description_from_string (
+          REGION_NAME_FONT);
+      pango_layout_set_font_description (
+        self->chords_layout, desc);
+      pango_font_description_free (desc);
+    }
+  pango_layout_get_pixel_size (
+    self->chords_layout, &obj->textw, &obj->texth);
+}
+
+#if 0
 #define Y_PADDING 6.f
 #define Y_HALF_PADDING 3.f
 
@@ -235,15 +260,4 @@ chord_region_widget_new (
 
   return self;
 }
-
-static void
-chord_region_widget_class_init (
-  ChordRegionWidgetClass * klass)
-{
-}
-
-static void
-chord_region_widget_init (
-  ChordRegionWidget * self)
-{
-}
+#endif

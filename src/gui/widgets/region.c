@@ -436,6 +436,154 @@ draw_midi_region (
  * @param rect Arranger rectangle.
  */
 static void
+draw_chord_region (
+  Region *       self,
+  cairo_t *      cr,
+  GdkRectangle * rect,
+  GdkRectangle * full_rect,
+  GdkRectangle * draw_rect,
+  RegionCounterpart counterpart)
+{
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+
+  int num_loops =
+    arranger_object_get_num_loops (obj, 1);
+  long ticks_in_region =
+    arranger_object_get_length_in_ticks (obj);
+  float x_start, x_end;
+
+  /* draw chords notes */
+  long loop_end_ticks =
+    obj->loop_end_pos.total_ticks;
+  long loop_ticks =
+    arranger_object_get_loop_length_in_ticks (obj);
+  long clip_start_ticks =
+    obj->clip_start_pos.total_ticks;
+  ChordObject * co;
+  ChordObject * next_co = NULL;
+  ArrangerObject * next_co_obj = NULL;
+  for (int i = 0; i < self->num_chord_objects; i++)
+    {
+      co = self->chord_objects[i];
+      ArrangerObject * co_obj =
+        (ArrangerObject *) co;
+      const ChordDescriptor * descr =
+        chord_object_get_chord_descriptor (co);
+
+      /* get ratio (0.0 - 1.0) on x where chord
+       * starts & ends */
+      long co_start_ticks =
+        co_obj->pos.total_ticks;
+      long co_end_ticks;
+      if (i < self->num_chord_objects - 1)
+        {
+          next_co =
+            self->chord_objects[i + 1];
+          next_co_obj =
+            (ArrangerObject *) next_co;
+          co_end_ticks =
+            next_co_obj->pos.total_ticks;
+        }
+      else
+        co_end_ticks =
+          obj->end_pos.total_ticks;
+      long tmp_start_ticks, tmp_end_ticks;
+
+      /* adjust for clip start */
+      /*int adjusted_mn_start_ticks =*/
+        /*mn_start_ticks - clip_start_ticks;*/
+      /*int adjusted_mn_end_ticks =*/
+        /*mn_end_ticks - clip_end_ticks;*/
+
+      /* if before loop start & after clip start */
+      /*if (position_compare (*/
+            /*&mn->start_pos, &r->loop_start_pos) < 0 &&*/
+          /*position_compare (*/
+            /*&mn->start_pos, &r->clip_start_pos) >= 0)*/
+        /*{*/
+
+        /*}*/
+      /* if before loop end */
+      if (position_is_before (
+            &co_obj->pos, &obj->loop_end_pos))
+        {
+          for (int j = 0; j < num_loops; j++)
+            {
+              /* if note started before loop start
+               * only draw it once */
+              if (position_is_before (
+                    &co_obj->pos,
+                    &obj->loop_start_pos) &&
+                  j != 0)
+                break;
+
+              /* calculate draw endpoints */
+              tmp_start_ticks =
+                co_start_ticks + loop_ticks * j;
+              /* if should be clipped */
+              if (next_co &&
+                  position_is_after_or_equal (
+                    &next_co_obj->pos,
+                    &obj->loop_end_pos))
+                tmp_end_ticks =
+                  loop_end_ticks + loop_ticks * j;
+              else
+                tmp_end_ticks =
+                  co_end_ticks + loop_ticks * j;
+
+              /* adjust for clip start */
+              tmp_start_ticks -= clip_start_ticks;
+              tmp_end_ticks -= clip_start_ticks;
+
+              x_start =
+                (float) tmp_start_ticks /
+                (float) ticks_in_region;
+              x_end =
+                (float) tmp_end_ticks /
+                (float) ticks_in_region;
+
+              cairo_set_source_rgba (
+                cr, 1, 1, 1, 0.3);
+
+              /* draw */
+              cairo_rectangle (
+                cr,
+                (double) x_start *
+                  (double) obj->full_rect.width,
+                0,
+                (double)
+                  (x_end - x_start) *
+                  (double) obj->full_rect.width,
+                obj->full_rect.height);
+              cairo_fill (cr);
+
+              cairo_set_source_rgba (
+                cr, 0, 0, 0, 1);
+
+              /* draw name */
+              char descr_str[100];
+              chord_descriptor_to_string (
+                descr, descr_str);
+              ArrangerWidget * arranger =
+                arranger_object_get_arranger (obj);
+              z_cairo_draw_text_full (
+                cr, GTK_WIDGET (arranger),
+                self->chords_layout,
+                descr_str,
+                (int)
+                ((double) x_start *
+                  (double) obj->full_rect.width + 2.0),
+                2);
+            }
+        }
+    }
+}
+
+/**
+ * @param rect Arranger rectangle.
+ */
+static void
 draw_automation_region (
   Region *       self,
   cairo_t *      cr,
@@ -778,6 +926,11 @@ region_draw (
             self, cr, rect, &full_rect,
             &draw_rect, i);
           break;
+        case REGION_TYPE_CHORD:
+          draw_chord_region (
+            self, cr, rect, &full_rect,
+            &draw_rect, i);
+          break;
         default:
           break;
         }
@@ -812,169 +965,3 @@ region_get_lane_full_rect (
   rect->y += lane->y;
   rect->height = lane->height - 1;
 }
-
-#if 0
-
-/**
- * Draws the loop points (dashes).
- */
-void
-region_widget_draw_loop_points (
-  RegionWidget * self,
-  GtkWidget *    widget,
-  cairo_t *      cr,
-  GdkRectangle * rect)
-{
-  REGION_WIDGET_GET_PRIVATE (self);
-  Region * r = rw_prv->region;
-
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  double dashes[] = { 5 };
-  cairo_set_dash (
-    cr, dashes, 1, 0);
-  cairo_set_line_width (cr, 1);
-  cairo_set_source_rgba (
-    cr, 0, 0, 0, 1.0);
-
-  ArrangerObject * r_obj =
-    (ArrangerObject *) r;
-  Position tmp;
-  long loop_start_ticks =
-    r_obj->loop_start_pos.total_ticks;
-  long loop_end_ticks =
-    r_obj->loop_end_pos.total_ticks;
-  g_warn_if_fail (
-    loop_end_ticks > loop_start_ticks);
-  long loop_ticks =
-    arranger_object_get_loop_length_in_ticks (
-      r_obj);
-  long clip_start_ticks =
-    r_obj->clip_start_pos.total_ticks;
-
-  position_from_ticks (
-    &tmp, loop_start_ticks - clip_start_ticks);
-  int px =
-    ui_pos_to_px_timeline (&tmp, 0);
-  if (px != 0 &&
-      px >= rect->x && px < rect->x + rect->width)
-    {
-      cairo_set_source_rgba (
-        cr, 0, 1, 0, 1.0);
-      cairo_move_to (cr, px, 0);
-      cairo_line_to (
-        cr, px, height);
-      cairo_stroke (cr);
-    }
-
-  int num_loops =
-    arranger_object_get_num_loops (r_obj, 1);
-  for (int i = 0; i < num_loops; i++)
-    {
-      position_from_ticks (
-        &tmp, loop_end_ticks + loop_ticks * i);
-
-      /* adjust for clip_start */
-      position_add_ticks (
-        &tmp, - clip_start_ticks);
-
-      px = ui_pos_to_px_timeline (&tmp, 0);
-
-      if (px >= rect->x && px < rect->width)
-        {
-          cairo_set_source_rgba (
-            cr, 0, 0, 0, 1.0);
-          cairo_move_to (
-            cr, px, 0);
-          cairo_line_to (
-            cr, px, height);
-          cairo_stroke (
-            cr);
-        }
-    }
-
-  cairo_set_dash (
-    cr, NULL, 0, 0);
-}
-
-/**
- * Draws the name of the Region.
- *
- * To be called during a cairo draw callback.
- */
-void
-region_widget_draw_name (
-  RegionWidget * self,
-  cairo_t *      cr,
-  GdkRectangle * rect,
-  GdkRectangle * full_rect,
-  GdkRectangle * draw_rect,
-  RegionCounterpart counter)
-{
-  REGION_WIDGET_GET_PRIVATE (self);
-
-  /* no need to draw if the start of the region is
-   * not visible */
-  if (rect->x > 800)
-    return;
-
-  Region * region = rw_prv->region;
-  g_return_if_fail (
-    region &&
-    region->name);
-
-  char str[200];
-  strcpy (str, region->name);
-
-  /* draw dark bg behind text */
-  PangoLayout * layout = rw_prv->layout;
-  pango_layout_set_text (
-    layout, str, -1);
-  PangoRectangle pangorect;
-  /* get extents */
-  pango_layout_get_pixel_extents (
-    layout, NULL, &pangorect);
-  gdk_cairo_set_source_rgba (
-    cr, &name_bg_color);
-  double radius = NAME_BOX_CURVINESS / 1.0;
-  double degrees = G_PI / 180.0;
-  cairo_new_sub_path (cr);
-  cairo_move_to (
-    cr, pangorect.width + NAME_PADDING_R, 0);
-  cairo_arc (
-    cr, (pangorect.width + NAME_PADDING_R) - radius,
-    NAME_BOX_HEIGHT - radius, radius,
-    0 * degrees, 90 * degrees);
-  cairo_line_to (cr, 0, NAME_BOX_HEIGHT);
-  cairo_line_to (cr, 0, 0);
-  cairo_close_path (cr);
-  cairo_fill (cr);
-
-  /* draw text */
-  cairo_set_source_rgba (
-    cr, 1, 1, 1, 1);
-  cairo_move_to (cr, 2, 2);
-  pango_cairo_show_layout (cr, layout);
-}
-
-static void
-region_widget_init (
-  RegionWidget * self)
-{
-  gtk_widget_set_visible (GTK_WIDGET (self), 1);
-  g_object_ref (self);
-
-  /* this should really be a singleton but ok for
-   * now */
-  gdk_rgba_parse (&name_bg_color, "#323232");
-  name_bg_color.alpha = 0.8;
-
-  g_signal_connect (
-    G_OBJECT (self), "screen-changed",
-    G_CALLBACK (on_screen_changed),  self);
-  g_signal_connect (
-    G_OBJECT (self), "size-allocate",
-    G_CALLBACK (on_size_allocate),  self);
-}
-#endif

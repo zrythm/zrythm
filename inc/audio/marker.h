@@ -84,6 +84,9 @@ typedef struct Marker
 
   /** Cache. */
   Track *        track;
+
+  /** Cache layout for drawing the name. */
+  PangoLayout *      layout;
 } Marker;
 
 static const cyaml_schema_field_t
