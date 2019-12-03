@@ -23,7 +23,6 @@
  * Velocity widget.
  */
 
-#if 0
 #ifndef __GUI_WIDGETS_VELOCITY_H__
 #define __GUI_WIDGETS_VELOCITY_H__
 
@@ -33,14 +32,26 @@
 
 #include <gtk/gtk.h>
 
-#define VELOCITY_WIDGET_TYPE \
-  (velocity_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  VelocityWidget,
-  velocity_widget,
-  Z, VELOCITY_WIDGET,
-  ArrangerObjectWidget)
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
 
+/**
+ * Draws the Velocity in the given cairo context in
+ * relative coordinates.
+ *
+ * @param cr The arranger cairo context.
+ * @param rect Arranger rectangle.
+ */
+void
+velocity_draw (
+  Velocity *     self,
+  cairo_t *      cr,
+  GdkRectangle * rect);
+
+#if 0
 typedef struct _VelocityWidget
 {
   ArrangerObjectWidget parent_instance;
@@ -57,4 +68,9 @@ velocity_widget_new (
   Velocity * velocity);
 
 #endif
+
+/**
+ * @}
+ */
+
 #endif

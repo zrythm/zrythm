@@ -143,7 +143,7 @@ widget_srcs = [
   'track_top_grid.c',
   'transport_controls.c',
   'two_col_expander_box.c',
-  #'velocity.c',
+  'velocity.c',
   'view_toolbar.c',
   'visibility.c',
   ]

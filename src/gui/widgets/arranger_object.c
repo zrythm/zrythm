@@ -41,6 +41,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/velocity.h"
 #include "project.h"
 #include "utils/cairo.h"
 #include "utils/flags.h"
@@ -1050,16 +1051,24 @@ arranger_object_set_full_rectangle (
         /* use transient or non transient note
          * depending on which is visible */
         Velocity * vel = (Velocity *) self;
-        /*MidiNote * mn = vel->midi_note;*/
-        /*ArrangerObject * mn_obj =*/
-          /*arranger_object_get_visible_counterpart (*/
-            /*(ArrangerObject *) mn);*/
+        MidiNote * mn = vel->midi_note;
+        ArrangerObject * mn_obj =
+          (ArrangerObject *) mn;
+        Region * region = mn->region;
+        g_return_if_fail (region);
+        ArrangerObject * region_obj =
+          (ArrangerObject *) region;
 
-        /*gint wx, wy;*/
-        /*gtk_widget_translate_coordinates (*/
-          /*GTK_WIDGET (mn_obj->widget),*/
-          /*GTK_WIDGET (self), 0, 0, &wx, &wy);*/
-        gint wx = 0;
+        /* use absolute position */
+        long region_start_ticks =
+          region_obj->pos.total_ticks;
+        Position tmp;
+        position_from_ticks (
+          &tmp,
+          region_start_ticks +
+          mn_obj->pos.total_ticks);
+        self->full_rect.x =
+          ui_pos_to_px_editor (&tmp, 1);
         int height =
           gtk_widget_get_allocated_height (
             GTK_WIDGET (arranger));
@@ -1068,7 +1077,6 @@ arranger_object_set_full_rectangle (
           (int)
           ((float) height *
             ((float) vel->vel / 127.f));
-        self->full_rect.x = wx;
         self->full_rect.y = height - vel_px;
         self->full_rect.width = 12;
         self->full_rect.height = vel_px;
@@ -1163,6 +1171,10 @@ arranger_object_draw (
     case TYPE (CHORD_OBJECT):
       chord_object_draw (
         (ChordObject *) self, cr, rect);
+      break;
+    case TYPE (VELOCITY):
+      velocity_draw (
+        (Velocity *) self, cr, rect);
       break;
     default:
       g_warn_if_reached ();

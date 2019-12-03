@@ -132,7 +132,6 @@ chord_object_draw (
       rect->y);
   z_cairo_draw_text (
     cr, GTK_WIDGET (arranger), self->layout, str);
-  g_free (str);
 }
 
 #if 0

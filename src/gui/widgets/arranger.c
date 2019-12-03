@@ -899,13 +899,6 @@ arranger_widget_get_hit_objects_in_rect (
       ui_rectangle_overlap ( \
         &obj->full_rect, rect)) \
     { \
-      if (obj->type == \
-        ARRANGER_OBJECT_TYPE_VELOCITY) \
-        { \
-          obj = \
-            (ArrangerObject *) \
-            ((Velocity *) obj)->midi_note; \
-        } \
       array[*array_size] = obj; \
       (*array_size)++; \
     }
@@ -1076,7 +1069,7 @@ arranger_widget_get_hit_objects_in_rect (
     case TYPE (MIDI_MODIFIER):
       /* add overlapping midi notes */
       if (type == ARRANGER_OBJECT_TYPE_ALL ||
-          type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+          type == ARRANGER_OBJECT_TYPE_VELOCITY)
         {
           Region * r = CLIP_EDITOR->region;
           if (!r)
@@ -1089,6 +1082,26 @@ arranger_widget_get_hit_objects_in_rect (
               Velocity * vel = mn->vel;
               obj =
                 (ArrangerObject *) vel;
+              ADD_OBJ_IF_OVERLAP;
+            }
+        }
+      break;
+    case TYPE (CHORD):
+      /* add overlapping midi notes */
+      if (type == ARRANGER_OBJECT_TYPE_ALL ||
+          type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT)
+        {
+          Region * r = CLIP_EDITOR->region;
+          if (!r)
+            break;
+
+          for (int i = 0; i < r->num_chord_objects;
+               i++)
+            {
+              ChordObject * co =
+                r->chord_objects[i];
+              obj =
+                (ArrangerObject *) co;
               ADD_OBJ_IF_OVERLAP;
             }
         }

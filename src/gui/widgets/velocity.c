@@ -37,34 +37,21 @@
 #include "utils/flags.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (
-  VelocityWidget,
-  velocity_widget,
-  ARRANGER_OBJECT_WIDGET_TYPE)
-
 /**
- * Space on the edge to show resize cursor
+ * Draws the Velocity in the given cairo context in
+ * relative coordinates.
+ *
+ * @param cr The arranger cairo context.
+ * @param rect Arranger rectangle.
  */
-#define RESIZE_CURSOR_SPACE 9
-
-static gboolean
-velocity_draw_cb (
-  GtkWidget * widget,
-  cairo_t *cr,
-  VelocityWidget * self)
+void
+velocity_draw (
+  Velocity *     self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
 {
-  GtkStyleContext *context =
-    gtk_widget_get_style_context (widget);
-
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
-
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
-
-  MidiNote * mn = self->velocity->midi_note;
+  ArrangerObject * obj = (ArrangerObject *) self;
+  MidiNote * mn = self->midi_note;
   Region * region = mn->region;
   Position global_start_pos;
   midi_note_get_global_start_pos (
@@ -113,21 +100,20 @@ velocity_draw_cb (
   /* draw velocities of main region */
   if (region == CLIP_EDITOR->region)
     {
-      cairo_set_source_rgba (
-        cr,
-        color.red,
-        color.green,
-        color.blue,
-        velocity_is_transient (
-          self->velocity) ? 0.7 : 1);
-      if (velocity_is_selected (self->velocity))
+      gdk_cairo_set_source_rgba (cr, &color);
+      if (velocity_is_selected (self))
         {
           cairo_set_source_rgba (
             cr, color.red + 0.4,
             color.green + 0.2,
             color.blue + 0.2, 1);
         }
-      cairo_rectangle(cr, 0, 0, width, height);
+      cairo_rectangle (
+        cr,
+        obj->full_rect.x - rect->x,
+        obj->full_rect.y - rect->y,
+        obj->full_rect.width,
+        obj->full_rect.height);
       cairo_fill(cr);
     }
   /* draw other notes */
@@ -136,34 +122,18 @@ velocity_draw_cb (
       cairo_set_source_rgba (
         cr, color.red, color.green,
         color.blue, 0.5);
-      cairo_rectangle(cr, 0, 0, width, height);
+      cairo_rectangle (
+        cr,
+        obj->full_rect.x - rect->x,
+        obj->full_rect.y - rect->y,
+        obj->full_rect.width,
+        obj->full_rect.height);
       cairo_fill(cr);
     }
-
-  if (DEBUGGING &&
-      velocity_is_transient (self->velocity))
-    {
-      GdkRGBA c2;
-      ArrangerObject * r_obj =
-        (ArrangerObject *)
-        self->velocity->midi_note->region;
-      Track * track =
-        arranger_object_get_track (r_obj);
-      ui_get_contrast_color (
-        &track->color, &c2);
-      gdk_cairo_set_source_rgba (cr, &c2);
-      PangoLayout * layout =
-        z_cairo_create_default_pango_layout (
-          widget);
-      z_cairo_draw_text (
-        cr, widget,
-        layout, "[t]");
-      g_object_unref (layout);
-    }
-
- return FALSE;
 }
 
+
+#if 0
 /**
  * Creates a velocity.
  */
@@ -182,24 +152,4 @@ velocity_widget_new (Velocity * velocity)
 
   return self;
 }
-
-static void
-velocity_widget_class_init (
-  VelocityWidgetClass * _klass)
-{
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "velocity");
-}
-
-static void
-velocity_widget_init (VelocityWidget * self)
-{
-  ARRANGER_OBJECT_WIDGET_GET_PRIVATE (self);
-
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT (ao_prv->drawing_area), "draw",
-    G_CALLBACK (velocity_draw_cb), self);
-}
+#endif
