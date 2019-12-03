@@ -63,6 +63,47 @@ recreate_pango_layouts (
       width - 2));
 }
 
+static void
+draw_midi_note_bg (
+  MidiNote *     self,
+  cairo_t *      cr,
+  GdkRectangle * rect,
+  GdkRectangle * draw_rect)
+{
+  ArrangerObject * obj = (ArrangerObject *) self;
+
+  /* if there are still midi note parts
+   * outside the
+   * rect, add some padding so that the
+   * midi note
+   * doesn't curve when it's not its edge */
+  int draw_x = draw_rect->x - rect->x;
+  int draw_x_has_padding = 0;
+  if (draw_rect->x > obj->full_rect.x)
+    {
+      draw_x -=
+        MIN (draw_rect->x - obj->full_rect.x, 4);
+      draw_x_has_padding = 1;
+    }
+  int draw_width = draw_rect->width;
+  if (draw_rect->x + draw_rect->width <
+      obj->full_rect.x + obj->full_rect.width)
+    {
+      draw_width +=
+        MAX (
+          (draw_rect->x + draw_rect->width) -
+            (obj->full_rect.x + obj->full_rect.width), 4);
+    }
+  if (draw_x_has_padding)
+    {
+      draw_width += 4;
+    }
+
+  z_cairo_rounded_rectangle (
+    cr, draw_x, obj->full_rect.y - rect->y,
+    draw_width, obj->full_rect.height, 1.0, 4.0);
+}
+
 /**
  * @param cr Arranger's cairo context.
  * @param rect Arranger's rectangle.
@@ -145,10 +186,8 @@ midi_note_draw (
         }
       else
         {
-          z_cairo_rounded_rectangle (
-            cr, draw_rect.x - rect->x,
-            draw_rect.y - rect->y, draw_rect.width,
-            draw_rect.height, 1.0, 4.0);
+          draw_midi_note_bg (
+            self, cr, rect, &draw_rect);
         }
       cairo_fill (cr);
     }
@@ -175,10 +214,8 @@ midi_note_draw (
         }
       else
         {
-          z_cairo_rounded_rectangle (
-            cr, draw_rect.x - rect->x,
-            draw_rect.y - rect->y, draw_rect.width,
-            draw_rect.height, 1.0, 4.0);
+          draw_midi_note_bg (
+            self, cr, rect, &draw_rect);
         }
       cairo_fill (cr);
     }
