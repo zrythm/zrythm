@@ -546,6 +546,51 @@ do_or_undo_move (
   return 0;
 }
 
+static void
+move_obj_by_tracks_and_lanes (
+  ArrangerObject * obj,
+  const int        tracks_diff,
+  const int        lanes_diff)
+{
+  if (tracks_diff)
+    {
+      g_return_if_fail (
+        obj->type ==
+        ARRANGER_OBJECT_TYPE_REGION);
+
+      Region * r = (Region *) obj;
+
+      Track * track_to_move_to =
+        tracklist_get_visible_track_after_delta (
+          TRACKLIST,
+          arranger_object_get_track (obj),
+          tracks_diff);
+
+      /* shift the actual object by tracks */
+      region_move_to_track (
+        r, track_to_move_to, 0);
+    }
+  if (lanes_diff)
+    {
+      Region * r = (Region *) obj;
+
+      Track * region_track =
+        arranger_object_get_track (obj);
+      int new_lane_pos =
+        r->lane->pos + lanes_diff;
+      g_return_if_fail (
+        new_lane_pos >= 0);
+      track_create_missing_lanes (
+        region_track, new_lane_pos);
+      TrackLane * lane_to_move_to =
+        region_track->lanes[new_lane_pos];
+
+      /* shift the actual object by lanes */
+      region_move_to_lane (
+        r, lane_to_move_to, 0);
+    }
+}
+
 /**
  * Does or undoes the action.
  *
@@ -582,6 +627,39 @@ do_or_undo_duplicate (
       ArrangerObject * obj;
       if (_do)
         {
+          /* on first run, we need to first move
+           * the original object backwards (the
+           * project object too) */
+          if (self->first_run)
+            {
+              obj =
+                arranger_object_find (objs[i]);
+              g_return_val_if_fail (obj, -1);
+
+              /* ticks */
+              arranger_object_move (
+                obj, - self->ticks, 0);
+              arranger_object_move (
+                objs[i], - self->ticks, 0);
+
+              /* tracks & lanes */
+              move_obj_by_tracks_and_lanes (
+                obj, - delta_tracks, - delta_lanes);
+              move_obj_by_tracks_and_lanes (
+                objs[i], - delta_tracks,
+                - delta_lanes);
+
+              /* chords */
+              /* TODO */
+
+              /* pitch */
+              midi_note_shift_pitch (
+                (MidiNote *) obj, - delta_pitch);
+              midi_note_shift_pitch (
+                (MidiNote *) objs[i],
+                - delta_pitch);
+            }
+
           /* clone the clone */
           obj =
             arranger_object_clone (
@@ -632,21 +710,8 @@ do_or_undo_duplicate (
         {
           if (_do)
             {
-              g_return_val_if_fail (
-                obj->type ==
-                ARRANGER_OBJECT_TYPE_REGION, -1);
-
-              Region * r = (Region *) obj;
-
-              Track * track_to_move_to =
-                tracklist_get_visible_track_after_delta (
-                  TRACKLIST,
-                  arranger_object_get_track (obj),
-                  delta_tracks);
-
-              /* shift the actual object by tracks */
-              region_move_to_track (
-                r, track_to_move_to, 0);
+              move_obj_by_tracks_and_lanes (
+                obj, delta_tracks, 0);
             }
 
           /* FIXME check is it okay to not shift
@@ -676,22 +741,8 @@ do_or_undo_duplicate (
         {
           if (_do)
             {
-              Region * r = (Region *) obj;
-
-              Track * region_track =
-                arranger_object_get_track (obj);
-              int new_lane_pos =
-                r->lane->pos + delta_lanes;
-              g_return_val_if_fail (
-                new_lane_pos >= 0, -1);
-              track_create_missing_lanes (
-                region_track, new_lane_pos);
-              TrackLane * lane_to_move_to =
-                region_track->lanes[new_lane_pos];
-
-              /* shift the actual object by lanes */
-              region_move_to_lane (
-                r, lane_to_move_to, 0);
+              move_obj_by_tracks_and_lanes (
+                obj, 0, delta_lanes);
             }
 
           /* FIXME ok to not shift clone too? */

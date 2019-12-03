@@ -149,37 +149,25 @@ draw_arranger_object (
   cairo_t *        cr,
   GdkRectangle *   rect)
 {
-  g_message ("drawing arranger obj %p", obj);
-  /*if (obj->redraw)*/
-    /*{*/
-      /* ----- get object's full rectangle ---*/
+  /* loop once or twice (2nd time for transient) */
+  for (int i = 0;
+       i < 1 +
+         arranger_object_should_orig_be_visible (
+           obj);
+       i++)
+    {
+      /* if looping 2nd time (transient) */
+      if (i == 1)
+        {
+          g_return_if_fail (obj->transient);
+          obj = obj->transient;
+        }
 
       arranger_object_set_full_rectangle (
         obj, self);
-
-      /* ----- get drawing rectangle ---- */
-
-      /*arranger_object_set_draw_rectangle (*/
-        /*obj, rect);*/
-
-      /* ----- draw ------ */
-
-      /*z_cairo_reset_caches (*/
-        /*&obj->cached_cr,*/
-        /*&obj->cached_surface, obj->draw_rect.width,*/
-        /*obj->draw_rect.height, cr);*/
-
       arranger_object_draw (
         obj, self, cr, rect);
-
-      /*obj->redraw = 0;*/
-    /*}*/
-
-  /*cairo_set_source_surface (*/
-    /*cr, obj->cached_surface,*/
-    /*obj->draw_rect.x - rect->x,*/
-    /*obj->draw_rect.y - rect->y);*/
-  /*cairo_paint (cr);*/
+    }
 }
 
 /**
@@ -2465,6 +2453,11 @@ on_drag_begin_handle_hit_object (
 
 #undef SET_ACTION
 
+  /* clone the arranger selections at this point */
+  self->sel_at_start =
+    arranger_selections_clone (
+      arranger_widget_get_selections (self));
+
   return 1;
 }
 
@@ -3290,38 +3283,36 @@ on_drag_end_midi (
     {
     case UI_OVERLAY_ACTION_RESIZING_L:
     {
-      /* FIXME cache the selections on drag start and use
-       * those */
-#if 0
-      ArrangerObject * trans_note =
-        arranger_object_get_main_trans (
-          MA_SELECTIONS->midi_notes[0]);
+      ArrangerObject * obj =
+        (ArrangerObject *)
+        MA_SELECTIONS->midi_notes[0];
+      long ticks_diff =
+        obj->pos.total_ticks -
+        obj->transient->pos.total_ticks;
       UndoableAction * ua =
         arranger_selections_action_new_resize (
           (ArrangerSelections *) MA_SELECTIONS,
           ARRANGER_SELECTIONS_ACTION_RESIZE_L,
-          trans_note->pos.total_ticks -
-          trans_note->cache_pos.total_ticks);
+          ticks_diff);
       undo_manager_perform (
         UNDO_MANAGER, ua);
-#endif
     }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
     {
-#if 0
-      ArrangerObject * trans_note =
-        arranger_object_get_main_trans (
-          MA_SELECTIONS->midi_notes[0]);
+      ArrangerObject * obj =
+        (ArrangerObject *)
+        MA_SELECTIONS->midi_notes[0];
+      long ticks_diff =
+        obj->end_pos.total_ticks -
+        obj->transient->end_pos.total_ticks;
       UndoableAction * ua =
         arranger_selections_action_new_resize (
           (ArrangerSelections *) MA_SELECTIONS,
           ARRANGER_SELECTIONS_ACTION_RESIZE_R,
-          trans_note->end_pos.total_ticks -
-          trans_note->cache_end_pos.total_ticks);
+          ticks_diff);
       undo_manager_perform (
         UNDO_MANAGER, ua);
-#endif
     }
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
@@ -3342,40 +3333,35 @@ on_drag_end_midi (
       break;
     case UI_OVERLAY_ACTION_MOVING:
     {
-#if 0
-      ArrangerObject * note_obj =
-        arranger_object_get_main (
-          MA_SELECTIONS->midi_notes[0]);
-      MidiNote * mn =
-        (MidiNote *) note_obj;
+      ArrangerObject * obj =
+        (ArrangerObject *)
+        MA_SELECTIONS->midi_notes[0];
       long ticks_diff =
-        note_obj->pos.total_ticks -
-          note_obj->cache_pos.total_ticks;
+        obj->pos.total_ticks -
+        obj->transient->pos.total_ticks;
       int pitch_diff =
-        mn->val - mn->cache_val;
+        ((MidiNote *) obj)->val -
+        ((MidiNote *) obj->transient)->val;
       UndoableAction * ua =
         arranger_selections_action_new_move_midi (
           MA_SELECTIONS, ticks_diff, pitch_diff);
       undo_manager_perform (
         UNDO_MANAGER, ua);
-#endif
     }
       break;
     /* if copy/link-moved */
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
     {
-#if 0
-      ArrangerObject * note_obj =
-        arranger_object_get_main (
-          MA_SELECTIONS->midi_notes[0]);
-      MidiNote * mn =
-        (MidiNote *) note_obj;
+      ArrangerObject * obj =
+        (ArrangerObject *)
+        MA_SELECTIONS->midi_notes[0];
       long ticks_diff =
-        note_obj->pos.total_ticks -
-          note_obj->cache_pos.total_ticks;
+        obj->pos.total_ticks -
+        obj->transient->pos.total_ticks;
       int pitch_diff =
-        mn->val - mn->cache_val;
+        ((MidiNote *) obj)->val -
+        ((MidiNote *) obj->transient)->val;
       UndoableAction * ua =
         (UndoableAction *)
         arranger_selections_action_new_duplicate_midi (
@@ -3384,7 +3370,6 @@ on_drag_end_midi (
           pitch_diff);
       undo_manager_perform (
         UNDO_MANAGER, ua);
-#endif
     }
       break;
     case UI_OVERLAY_ACTION_NONE:
@@ -3447,15 +3432,12 @@ on_drag_end_chord (
       break;
     case UI_OVERLAY_ACTION_MOVING:
       {
-#if 0
-        ChordObject * co =
-          chord_object_get_main (
-            CHORD_SELECTIONS->chord_objects[0]);
-        ArrangerObject * co_obj =
-          (ArrangerObject *) co;
+        ArrangerObject * obj =
+          (ArrangerObject *)
+          CHORD_SELECTIONS->chord_objects[0];
         long ticks_diff =
-          co_obj->pos.total_ticks -
-            co_obj->cache_pos.total_ticks;
+          obj->pos.total_ticks -
+          obj->transient->pos.total_ticks;
         UndoableAction * ua =
           (UndoableAction *)
           arranger_selections_action_new_move_chord (
@@ -3464,21 +3446,17 @@ on_drag_end_chord (
             0);
         undo_manager_perform (
           UNDO_MANAGER, ua);
-#endif
       }
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
       {
-#if 0
-        ChordObject * co =
-          chord_object_get_main (
-            CHORD_SELECTIONS->chord_objects[0]);
-        ArrangerObject * co_obj =
-          (ArrangerObject *) co;
+        ArrangerObject * obj =
+          (ArrangerObject *)
+          CHORD_SELECTIONS->chord_objects[0];
         long ticks_diff =
-          co_obj->pos.total_ticks -
-            co_obj->cache_pos.total_ticks;
+          obj->pos.total_ticks -
+          obj->transient->pos.total_ticks;
         UndoableAction * ua =
           (UndoableAction *)
           arranger_selections_action_new_duplicate_chord (
@@ -3486,7 +3464,6 @@ on_drag_end_chord (
             ticks_diff, 0);
         undo_manager_perform (
           UNDO_MANAGER, ua);
-#endif
       }
       break;
     case UI_OVERLAY_ACTION_NONE:
@@ -3531,81 +3508,73 @@ on_drag_end_timeline (
     case UI_OVERLAY_ACTION_RESIZING_L:
       if (!self->resizing_range)
         {
-#if 0
-          ArrangerObject * main_trans_region =
-            arranger_object_get_main_trans (
-            TL_SELECTIONS->regions[0]);
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            TL_SELECTIONS->regions[0];
+          long ticks_diff =
+            obj->pos.total_ticks -
+            obj->transient->pos.total_ticks;
           UndoableAction * ua =
             arranger_selections_action_new_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_L,
-              position_to_ticks (
-                &main_trans_region->pos) -
-              position_to_ticks (
-                &main_trans_region->cache_pos));
+              ticks_diff);
           undo_manager_perform (
             UNDO_MANAGER, ua);
-#endif
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
       if (!self->resizing_range)
         {
-#if 0
-          ArrangerObject * main_trans_region =
-            arranger_object_get_main_trans (
-              TL_SELECTIONS->regions[0]);
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            TL_SELECTIONS->regions[0];
+          long ticks_diff =
+            obj->pos.total_ticks -
+            obj->transient->pos.total_ticks;
           UndoableAction * ua =
             arranger_selections_action_new_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP,
-              position_to_ticks (
-                &main_trans_region->pos) -
-              position_to_ticks (
-                &main_trans_region->cache_pos));
+              ticks_diff);
           undo_manager_perform (
             UNDO_MANAGER, ua);
-#endif
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
       if (!self->resizing_range)
         {
-#if 0
-          ArrangerObject * main_trans_region =
-            arranger_object_get_main_trans (
-              TL_SELECTIONS->regions[0]);
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            TL_SELECTIONS->regions[0];
+          long ticks_diff =
+            obj->end_pos.total_ticks -
+            obj->transient->end_pos.total_ticks;
           UndoableAction * ua =
             arranger_selections_action_new_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_R,
-              position_to_ticks (
-                &main_trans_region->end_pos) -
-              position_to_ticks (
-                &main_trans_region->cache_end_pos));
+              ticks_diff);
           undo_manager_perform (
             UNDO_MANAGER, ua);
-#endif
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
       if (!self->resizing_range)
         {
-#if 0
-          ArrangerObject * main_trans_region =
-            arranger_object_get_main_trans (
-              TL_SELECTIONS->regions[0]);
+          ArrangerObject * obj =
+            (ArrangerObject *)
+            TL_SELECTIONS->regions[0];
+          long ticks_diff =
+            obj->end_pos.total_ticks -
+            obj->transient->end_pos.total_ticks;
           UndoableAction * ua =
             arranger_selections_action_new_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
-              position_to_ticks (
-                &main_trans_region->end_pos) -
-              position_to_ticks (
-                &main_trans_region->cache_end_pos));
+              ticks_diff);
           undo_manager_perform (
             UNDO_MANAGER, ua);
-#endif
         }
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
@@ -3630,19 +3599,12 @@ on_drag_end_timeline (
       break;
     case UI_OVERLAY_ACTION_MOVING:
       {
-        Position earliest_main_pos,
-                 earliest_trans_pos;
-        arranger_selections_get_start_pos (
-          (ArrangerSelections *) TL_SELECTIONS,
-          &earliest_main_pos,
-          F_GLOBAL);
-        arranger_selections_get_start_pos (
-          (ArrangerSelections *) TL_SELECTIONS,
-          &earliest_trans_pos,
-          F_GLOBAL);
+        ArrangerObject * obj =
+          (ArrangerObject *)
+          TL_SELECTIONS->regions[0];
         long ticks_diff =
-          earliest_main_pos.total_ticks -
-            earliest_trans_pos.total_ticks;
+          obj->pos.total_ticks -
+          obj->transient->pos.total_ticks;
         UndoableAction * ua =
           arranger_selections_action_new_move_timeline (
             TL_SELECTIONS,
@@ -3656,19 +3618,12 @@ on_drag_end_timeline (
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
       {
-        Position earliest_main_pos,
-                 earliest_trans_pos;
-        arranger_selections_get_start_pos (
-          (ArrangerSelections *) TL_SELECTIONS,
-          &earliest_main_pos,
-          F_GLOBAL);
-        arranger_selections_get_start_pos (
-          (ArrangerSelections *) TL_SELECTIONS,
-          &earliest_trans_pos,
-          F_GLOBAL);
+        ArrangerObject * obj =
+          (ArrangerObject *)
+          TL_SELECTIONS->regions[0];
         long ticks_diff =
-          earliest_main_pos.total_ticks -
-            earliest_trans_pos.total_ticks;
+          obj->pos.total_ticks -
+          obj->transient->pos.total_ticks;
         UndoableAction * ua =
           (UndoableAction *)
           arranger_selections_action_new_duplicate_timeline (
@@ -3676,8 +3631,6 @@ on_drag_end_timeline (
             ticks_diff,
             self->visible_track_diff,
             self->lane_diff);
-        arranger_selections_clear (
-          (ArrangerSelections *) TL_SELECTIONS);
         undo_manager_perform (
           UNDO_MANAGER, ua);
       }

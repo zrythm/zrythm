@@ -451,7 +451,7 @@ draw_chord_region (
     arranger_object_get_num_loops (obj, 1);
   long ticks_in_region =
     arranger_object_get_length_in_ticks (obj);
-  float x_start, x_end;
+  double x_start, x_end;
 
   /* draw chords notes */
   long loop_end_ticks =
@@ -537,24 +537,33 @@ draw_chord_region (
               tmp_end_ticks -= clip_start_ticks;
 
               x_start =
-                (float) tmp_start_ticks /
-                (float) ticks_in_region;
+                (double) tmp_start_ticks /
+                (double) ticks_in_region;
               x_end =
-                (float) tmp_end_ticks /
-                (float) ticks_in_region;
+                (double) tmp_end_ticks /
+                (double) ticks_in_region;
 
               cairo_set_source_rgba (
                 cr, 1, 1, 1, 0.3);
 
+              /* get actual values using the
+               * ratios */
+              x_start *=
+                (double) obj->full_rect.width;
+              x_end *=
+                (double) obj->full_rect.width;
+
+              /* the above values are local to the
+               * region, convert to global */
+              x_start += obj->full_rect.x;
+              x_end += obj->full_rect.x;
+
               /* draw */
               cairo_rectangle (
                 cr,
-                (double) x_start *
-                  (double) obj->full_rect.width,
-                0,
-                (double)
-                  (x_end - x_start) *
-                  (double) obj->full_rect.width,
+                x_start - rect->x,
+                obj->full_rect.y - rect->y,
+                12.0,
                 obj->full_rect.height);
               cairo_fill (cr);
 

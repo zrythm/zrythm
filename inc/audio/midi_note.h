@@ -89,19 +89,19 @@ static const cyaml_schema_field_t
   CYAML_FIELD_MAPPING_PTR (
     "vel", CYAML_FLAG_POINTER,
     MidiNote, vel, velocity_fields_schema),
-	CYAML_FIELD_UINT (
+  CYAML_FIELD_UINT (
     "val", CYAML_FLAG_DEFAULT,
     MidiNote, val),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "muted", CYAML_FLAG_DEFAULT,
     MidiNote, muted),
   CYAML_FIELD_STRING_PTR (
     "region_name",
     CYAML_FLAG_OPTIONAL | CYAML_FLAG_POINTER,
     MidiNote, region_name,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t

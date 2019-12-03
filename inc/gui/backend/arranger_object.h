@@ -200,6 +200,22 @@ typedef struct ArrangerObject
   int                textw;
   int                texth;
 
+  /**
+   * A copy ArrangerObject corresponding to this,
+   * such as when ctrl+dragging.
+   *
+   * This will be the clone object saved in the
+   * cloned arranger selections in each arranger
+   * during actions, and would get drawn separately.
+   */
+  ArrangerObject *   transient;
+
+  /**
+   * The opposite of the above. This will be set on
+   * the transient objects.
+   */
+  ArrangerObject *   main;
+
   /** 1 when hovering over the object. */
   //int                hover;
 

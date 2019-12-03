@@ -776,6 +776,13 @@ arranger_object_init_loaded (
           vel, vel->midi_note);
       }
       break;
+    case TYPE (CHORD_OBJECT):
+      {
+        ChordObject * co = (ChordObject *) self;
+        co->region =
+          region_find_by_name (
+            co->region_name);
+      }
     default:
       break;
     }
@@ -1348,12 +1355,13 @@ arranger_object_should_lane_be_visible (
 }
 
 /**
- * Returns if the cached object should be visible, ie,
- * while copy- moving (ctrl+drag) we want to show both
- * the object at its original position and the current
- * object.
+ * Returns if the cached object should be visible,
+ * ie, while copy- moving (ctrl+drag) we want to
+ * show both the object at its original position
+ * and the current object.
  *
- * This refers to the object at its original position.
+ * This refers to the object at its original
+ * position.
  */
 int
 arranger_object_should_orig_be_visible (
@@ -1410,10 +1418,9 @@ find_chord_object (
 {
   /* get actual region - clone's region might be
    * an unused clone */
-  Region *r =
-    (Region *)
-    arranger_object_find (
-      (ArrangerObject *) clone->region);
+  Region * r =
+    region_find_by_name (clone->region_name);
+  g_return_val_if_fail (r, NULL);
 
   ChordObject * chord;
   for (int i = 0; i < r->num_chord_objects; i++)

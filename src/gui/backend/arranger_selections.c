@@ -326,14 +326,19 @@ arranger_selections_clone (
     for (i = 0; i < src_sel->num_##sc##s; i++) \
     { \
       sc = src_sel->sc##s[i]; \
+      ArrangerObject * sc_obj = \
+        (ArrangerObject *) sc; \
       new_##sc = \
         (cc *) \
         arranger_object_clone ( \
           (ArrangerObject *) sc, \
           ARRANGER_OBJECT_CLONE_COPY); \
+      ArrangerObject * new_sc_obj = \
+        (ArrangerObject *) new_##sc; \
+      sc_obj->transient = new_sc_obj; \
       arranger_selections_add_object ( \
         (ArrangerSelections *) new_sel, \
-        (ArrangerObject *) new_##sc); \
+        new_sc_obj); \
     }
 
   switch (self->type)
@@ -1139,8 +1144,9 @@ arranger_selections_free_full (
 #define FREE_OBJS(sel,sc) \
   for (i = 0; i < sel->num_##sc##s; i++) \
     { \
-      arranger_object_free ( \
-        (ArrangerObject *) sel->sc##s[i]); \
+      ArrangerObject * obj = \
+        (ArrangerObject *) sel->sc##s[i]; \
+      arranger_object_free (obj); \
     } \
     free (sel->sc##s)
 
@@ -1174,8 +1180,8 @@ arranger_selections_free_full (
         cs, chord_object);
       free (cs);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 
 #undef FREE_OBJS

@@ -78,11 +78,16 @@ static const cyaml_schema_field_t
     "base", CYAML_FLAG_DEFAULT,
     ChordObject, base,
     arranger_object_fields_schema),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "index", CYAML_FLAG_DEFAULT,
     ChordObject, index),
+  CYAML_FIELD_STRING_PTR (
+    "region_name",
+    CYAML_FLAG_OPTIONAL | CYAML_FLAG_POINTER,
+    ChordObject, region_name,
+     0, CYAML_UNLIMITED),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
