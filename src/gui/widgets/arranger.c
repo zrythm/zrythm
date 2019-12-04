@@ -3285,8 +3285,7 @@ on_drag_end_midi (
     case UI_OVERLAY_ACTION_RESIZING_L:
     {
       ArrangerObject * obj =
-        (ArrangerObject *)
-        MA_SELECTIONS->midi_notes[0];
+        (ArrangerObject *) self->start_object;
       long ticks_diff =
         obj->pos.total_ticks -
         obj->transient->pos.total_ticks;
@@ -3302,8 +3301,7 @@ on_drag_end_midi (
     case UI_OVERLAY_ACTION_RESIZING_R:
     {
       ArrangerObject * obj =
-        (ArrangerObject *)
-        MA_SELECTIONS->midi_notes[0];
+        (ArrangerObject *) self->start_object;
       long ticks_diff =
         obj->end_pos.total_ticks -
         obj->transient->end_pos.total_ticks;
@@ -3335,8 +3333,7 @@ on_drag_end_midi (
     case UI_OVERLAY_ACTION_MOVING:
     {
       ArrangerObject * obj =
-        (ArrangerObject *)
-        MA_SELECTIONS->midi_notes[0];
+        (ArrangerObject *) self->start_object;
       long ticks_diff =
         obj->pos.total_ticks -
         obj->transient->pos.total_ticks;
@@ -3355,8 +3352,7 @@ on_drag_end_midi (
     case UI_OVERLAY_ACTION_MOVING_LINK:
     {
       ArrangerObject * obj =
-        (ArrangerObject *)
-        MA_SELECTIONS->midi_notes[0];
+        (ArrangerObject *) self->start_object;
       long ticks_diff =
         obj->pos.total_ticks -
         obj->transient->pos.total_ticks;
@@ -3434,8 +3430,7 @@ on_drag_end_chord (
     case UI_OVERLAY_ACTION_MOVING:
       {
         ArrangerObject * obj =
-          (ArrangerObject *)
-          CHORD_SELECTIONS->chord_objects[0];
+          (ArrangerObject *) self->start_object;
         long ticks_diff =
           obj->pos.total_ticks -
           obj->transient->pos.total_ticks;
@@ -3453,8 +3448,7 @@ on_drag_end_chord (
     case UI_OVERLAY_ACTION_MOVING_LINK:
       {
         ArrangerObject * obj =
-          (ArrangerObject *)
-          CHORD_SELECTIONS->chord_objects[0];
+          (ArrangerObject *) self->start_object;
         long ticks_diff =
           obj->pos.total_ticks -
           obj->transient->pos.total_ticks;
@@ -3510,8 +3504,7 @@ on_drag_end_timeline (
       if (!self->resizing_range)
         {
           ArrangerObject * obj =
-            (ArrangerObject *)
-            TL_SELECTIONS->regions[0];
+            (ArrangerObject *) self->start_object;
           long ticks_diff =
             obj->pos.total_ticks -
             obj->transient->pos.total_ticks;
@@ -3528,8 +3521,7 @@ on_drag_end_timeline (
       if (!self->resizing_range)
         {
           ArrangerObject * obj =
-            (ArrangerObject *)
-            TL_SELECTIONS->regions[0];
+            (ArrangerObject *) self->start_object;
           long ticks_diff =
             obj->pos.total_ticks -
             obj->transient->pos.total_ticks;
@@ -3546,8 +3538,7 @@ on_drag_end_timeline (
       if (!self->resizing_range)
         {
           ArrangerObject * obj =
-            (ArrangerObject *)
-            TL_SELECTIONS->regions[0];
+            (ArrangerObject *) self->start_object;
           long ticks_diff =
             obj->end_pos.total_ticks -
             obj->transient->end_pos.total_ticks;
@@ -3564,8 +3555,7 @@ on_drag_end_timeline (
       if (!self->resizing_range)
         {
           ArrangerObject * obj =
-            (ArrangerObject *)
-            TL_SELECTIONS->regions[0];
+            (ArrangerObject *) self->start_object;
           long ticks_diff =
             obj->end_pos.total_ticks -
             obj->transient->end_pos.total_ticks;
@@ -3601,8 +3591,7 @@ on_drag_end_timeline (
     case UI_OVERLAY_ACTION_MOVING:
       {
         ArrangerObject * obj =
-          (ArrangerObject *)
-          TL_SELECTIONS->regions[0];
+          (ArrangerObject *) self->start_object;
         long ticks_diff =
           obj->pos.total_ticks -
           obj->transient->pos.total_ticks;
@@ -3620,8 +3609,7 @@ on_drag_end_timeline (
     case UI_OVERLAY_ACTION_MOVING_LINK:
       {
         ArrangerObject * obj =
-          (ArrangerObject *)
-          TL_SELECTIONS->regions[0];
+          (ArrangerObject *) self->start_object;
         long ticks_diff =
           obj->pos.total_ticks -
           obj->transient->pos.total_ticks;

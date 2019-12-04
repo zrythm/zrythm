@@ -70,7 +70,7 @@
  *
  * @param array The array.
  * @param count The current number of elements.
- * @param size The max array size.
+ * @param size The current max array size.
  * @param type The type of elements the array holds.
  */
 #define array_double_size_if_full( \
