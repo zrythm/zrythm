@@ -149,40 +149,17 @@ region_set_lane (
 }
 
 /**
- * @param track Track to use for getting the lane.
- *   If this is NULL, lane is used.
- * @param lane Lane to use. If this is NULL,
- *   track is used.
- */
-static void
-set_tmp_lane (
-  Region *    region,
-  Track *     track,
-  TrackLane * lane)
-{
-  region->tmp_lane =
-    track ?
-      track->lanes[region->lane_pos] :
-      lane;
-}
-
-/**
  * Moves the Region to the given Track, maintaining
  * the selection status of the Region and the
  * TrackLane position.
  *
  * Assumes that the Region is already in a
  * TrackLane.
- *
- * @param tmp If the Region should be moved
- *   temporarily (the tmp_lane member will be used
- *   instead of actually moving).
  */
 void
 region_move_to_track (
   Region *  region,
-  Track *   track,
-  const int tmp)
+  Track *   track)
 {
   g_return_if_fail (region && track);
 
@@ -191,51 +168,37 @@ region_move_to_track (
       (ArrangerObject *) region);
   g_return_if_fail (region_track);
 
-  if (tmp)
-    {
-      /* create lanes if they don't exist */
-      track_create_missing_lanes (
-        track, region->lane_pos);
+  if (region_track == track)
+    return;
 
-      set_tmp_lane (
-        region, track, NULL);
-    }
-  else
-    {
-      if (region_track == track)
-        return;
+  int selected = region_is_selected (region);
 
-      int selected = region_is_selected (region);
+  /* create lanes if they don't exist */
+  track_create_missing_lanes (
+    track, region->lane_pos);
 
-      /* create lanes if they don't exist */
-      track_create_missing_lanes (
-        track, region->lane_pos);
+  /* remove the region from its old track */
+  track_remove_region (
+    region_track,
+    region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
 
-      /* remove the region from its old track */
-      track_remove_region (
-        region_track,
-        region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
+  /* add the region to its new track */
+  track_add_region (
+    track, region, NULL,
+    region->lane_pos, F_NO_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
+  region_set_lane (
+    region, track->lanes[region->lane_pos]);
 
-      /* add the region to its new track */
-      track_add_region (
-        track, region, NULL,
-        region->lane_pos, F_NO_GEN_NAME,
-        F_NO_PUBLISH_EVENTS);
-      region_set_lane (
-        region, track->lanes[region->lane_pos]);
+  /* reselect if necessary */
+  arranger_object_select (
+    (ArrangerObject *) region, selected,
+    F_APPEND);
 
-      /* reselect if necessary */
-      arranger_object_select (
-        (ArrangerObject *) region, selected,
-        F_APPEND);
-
-      /* remove empty lanes if the region was the
-       * last on its track lane */
-      track_remove_empty_last_lanes (
-        region_track);
-
-      region->tmp_lane = NULL;
-    }
+  /* remove empty lanes if the region was the
+   * last on its track lane */
+  track_remove_empty_last_lanes (
+    region_track);
 }
 
 /**
@@ -248,16 +211,11 @@ region_move_to_track (
  *
  * Assumes that the Region is already in a
  * TrackLane.
- *
- * @param tmp If the Region should be moved
- *   temporarily (the tmp_lane member will be used
- *   instead of actually moving).
  */
 void
 region_move_to_lane (
   Region *    region,
-  TrackLane * lane,
-  const int   tmp)
+  TrackLane * lane)
 {
   g_return_if_fail (region && lane);
 
@@ -266,35 +224,35 @@ region_move_to_lane (
       (ArrangerObject *) region);
   g_return_if_fail (region_track);
 
-  if (tmp)
-    {
-      g_warn_if_fail (lane->pos >= 0);
-      set_tmp_lane (
-        region, NULL, lane);
-    }
-  else
-    {
-      int selected = region_is_selected (region);
+  int selected = region_is_selected (region);
+  int is_clip_editor_region =
+    region == CLIP_EDITOR->region;
 
-      track_remove_region (
-        region_track,
-        region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
-      track_add_region (
-        lane->track, region, NULL,
-        lane->pos,
-        F_NO_GEN_NAME,
-        F_NO_PUBLISH_EVENTS);
-      arranger_object_select (
-        (ArrangerObject *) region, selected,
-        F_APPEND);
-      region_set_lane (region, lane);
-      g_warn_if_fail (
-        lane->pos == region->lane_pos);
+  track_remove_region (
+    region_track,
+    region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
+  track_add_region (
+    lane->track, region, NULL,
+    lane->pos,
+    F_NO_GEN_NAME,
+    F_NO_PUBLISH_EVENTS);
 
-      track_create_missing_lanes (
-        region_track, lane->pos);
-      track_remove_empty_last_lanes (region_track);
-    }
+  /* reset the clip editor region because
+   * track_remove clears it */
+  if (is_clip_editor_region)
+    clip_editor_set_region (
+      CLIP_EDITOR, region);
+
+  arranger_object_select (
+    (ArrangerObject *) region, selected,
+    F_APPEND);
+  region_set_lane (region, lane);
+  g_warn_if_fail (
+    lane->pos == region->lane_pos);
+
+  track_create_missing_lanes (
+    region_track, lane->pos);
+  track_remove_empty_last_lanes (region_track);
 }
 
 /**

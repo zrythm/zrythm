@@ -860,21 +860,8 @@ arranger_object_set_full_rectangle (
       {
         Region * region =
           (Region *) self;
-        TrackLane * lane = region->lane;
         Track * track =
           arranger_object_get_track (self);
-
-        /* if region has a tmp_lane then it means
-         * that we are in an operation we should
-         * display it there instead of its original
-         * lane */
-        if (arranger->action !=
-              UI_OVERLAY_ACTION_NONE &&
-            region->tmp_lane)
-          {
-            lane = region->tmp_lane;
-            track = lane->track;
-          }
 
         if (!track->widget)
           track->widget = track_widget_new (track);

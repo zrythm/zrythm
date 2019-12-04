@@ -478,7 +478,7 @@ do_or_undo_move (
 
               /* shift the actual object by tracks */
               region_move_to_track (
-                r, track_to_move_to, 0);
+                r, track_to_move_to);
 
               /* FIXME check is it okay to not shift
                * the clone too? */
@@ -525,7 +525,7 @@ do_or_undo_move (
 
               /* shift the actual object by lanes */
               region_move_to_lane (
-                r, lane_to_move_to, 0);
+                r, lane_to_move_to);
             }
 
           if (delta_chords != 0)
@@ -568,7 +568,7 @@ move_obj_by_tracks_and_lanes (
 
       /* shift the actual object by tracks */
       region_move_to_track (
-        r, track_to_move_to, 0);
+        r, track_to_move_to);
     }
   if (lanes_diff)
     {
@@ -577,7 +577,7 @@ move_obj_by_tracks_and_lanes (
       Track * region_track =
         arranger_object_get_track (obj);
       int new_lane_pos =
-        r->lane->pos + lanes_diff;
+        r->lane_pos + lanes_diff;
       g_return_if_fail (
         new_lane_pos >= 0);
       track_create_missing_lanes (
@@ -587,7 +587,7 @@ move_obj_by_tracks_and_lanes (
 
       /* shift the actual object by lanes */
       region_move_to_lane (
-        r, lane_to_move_to, 0);
+        r, lane_to_move_to);
     }
 }
 

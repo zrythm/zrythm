@@ -982,8 +982,6 @@ timeline_arranger_move_regions_to_new_lanes (
     {
       region = regions[i];
       TrackLane * lane = region->lane;
-      if (region->tmp_lane)
-        lane = region->tmp_lane;
       if (lane->pos + diff < 0)
         {
           compatible = 0;
@@ -1002,8 +1000,6 @@ timeline_arranger_move_regions_to_new_lanes (
     {
       region = regions[i];
       TrackLane * lane = region->lane;
-      if (region->tmp_lane)
-        lane = region->tmp_lane;
       g_return_val_if_fail (region && lane, -1);
 
       TrackLane * lane_to_move_to = NULL;
@@ -1018,7 +1014,7 @@ timeline_arranger_move_regions_to_new_lanes (
       g_warn_if_fail (lane_to_move_to);
 
       region_move_to_lane (
-        region, lane_to_move_to, 1);
+        region, lane_to_move_to);
     }
   return 1;
 }
@@ -1060,8 +1056,6 @@ timeline_arranger_move_regions_to_new_tracks (
       r_obj = (ArrangerObject *) region;
       Track * region_track =
         arranger_object_get_track (r_obj);
-      if (region->tmp_lane)
-        region_track = region->tmp_lane->track;
       Track * visible =
         tracklist_get_visible_track_after_delta (
           TRACKLIST,
@@ -1088,8 +1082,6 @@ timeline_arranger_move_regions_to_new_tracks (
       r_obj = (ArrangerObject *) region;
       Track * region_track =
         arranger_object_get_track (r_obj);
-      if (region->tmp_lane)
-        region_track = region->tmp_lane->track;
       g_warn_if_fail (region && region_track);
       Track * track_to_move_to =
         tracklist_get_visible_track_after_delta (
@@ -1099,7 +1091,7 @@ timeline_arranger_move_regions_to_new_tracks (
       g_warn_if_fail (track_to_move_to);
 
       region_move_to_track (
-        region, track_to_move_to, 1);
+        region, track_to_move_to);
     }
 
   return 1;

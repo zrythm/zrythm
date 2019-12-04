@@ -903,12 +903,16 @@ region_draw (
           if (!track->lanes_visible)
             break;
 
-          TrackLane * lane = self->lane;
+          TrackLane * lane =
+            track->lanes[self->lane_pos];
           g_return_if_fail (lane);
 
           /* set full rectangle */
           region_get_lane_full_rect (
             self, &full_rect);
+
+          g_message ("drawing lane %s",
+            self->name);
         }
       else if (i == REGION_COUNTERPART_MAIN)
         {
@@ -967,7 +971,8 @@ region_get_lane_full_rect (
     arranger_object_get_track (obj);
   g_return_if_fail (track && track->lanes_visible);
 
-  TrackLane * lane = self->lane;
+  TrackLane * lane =
+    track->lanes[self->lane_pos];
   g_return_if_fail (lane);
 
   *rect = obj->full_rect;

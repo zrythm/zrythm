@@ -79,7 +79,7 @@ static const cyaml_schema_field_t
     ScaleObject, scale,
     musical_scale_fields_schema),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t

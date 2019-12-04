@@ -152,8 +152,9 @@ draw_arranger_object (
   /* loop once or twice (2nd time for transient) */
   for (int i = 0;
        i < 1 +
-         arranger_object_should_orig_be_visible (
-           obj);
+         (arranger_object_should_orig_be_visible (
+           obj) &&
+          arranger_object_is_selected (obj));
        i++)
     {
       /* if looping 2nd time (transient) */
@@ -3496,12 +3497,12 @@ on_drag_end_timeline (
   ArrangerWidget * self)
 {
   /* clear tmp_lane from selected regions */
-  for (int i = 0; i < TL_SELECTIONS->num_regions;
-       i++)
-    {
-      Region * region = TL_SELECTIONS->regions[i];
-      region->tmp_lane = NULL;
-    }
+  /*for (int i = 0; i < TL_SELECTIONS->num_regions;*/
+       /*i++)*/
+    /*{*/
+      /*Region * region = TL_SELECTIONS->regions[i];*/
+      /*region->tmp_lane = NULL;*/
+    /*}*/
 
   switch (self->action)
     {

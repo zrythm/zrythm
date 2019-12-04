@@ -157,6 +157,7 @@ draw_regions (
 
   /* get a visible region */
   Region * region = CLIP_EDITOR->region;
+  g_return_if_fail (region);
   ArrangerObject * region_obj =
     (ArrangerObject *) region;
 

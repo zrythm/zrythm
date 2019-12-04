@@ -296,19 +296,22 @@ if not os_darwin
     ]
 endif
 
-if os_freebsd
-  test_ldflags += [
-    '-lexecinfo'
-    ]
-endif
-
 test_ldflags += [
   '-lfftw3_threads',
-  '-lfftw3f_threads'
+  '-lfftw3f_threads',
   ]
 
 common_ldflags = cc.get_supported_link_arguments (
   test_ldflags)
+
+if os_freebsd
+  common_ldflags += [
+    '-L' + prefix + '/lib',
+    '-lexecinfo',
+    '-lfftw3_threads',
+    '-lfftw3f_threads',
+    ]
+endif
 
 # set config defines
 libgtop_dep = dependency('libgtop-2.0', required: false)

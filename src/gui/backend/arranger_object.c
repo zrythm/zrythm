@@ -176,7 +176,6 @@ set_to_region_object (
   Region * dest)
 {
   g_return_if_fail (src && dest);
-  dest->tmp_lane = src->tmp_lane;
 }
 
 static void
@@ -783,6 +782,9 @@ arranger_object_init_loaded (
           region_find_by_name (
             co->region_name);
       }
+      break;
+    case TYPE (SCALE_OBJECT):
+      break;
     default:
       break;
     }

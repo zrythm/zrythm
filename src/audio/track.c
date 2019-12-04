@@ -114,9 +114,12 @@ static void
 track_add_lane (
   Track * self)
 {
+  g_return_if_fail (self);
   array_double_size_if_full (
     self->lanes, self->num_lanes,
     self->lanes_size, TrackLane *);
+  g_message ("-----num lanes %d, lanes size %d",
+    self->num_lanes, self->lanes_size);
   self->lanes[self->num_lanes++] =
     track_lane_new (self, self->num_lanes);
 
