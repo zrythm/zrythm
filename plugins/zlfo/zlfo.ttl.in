@@ -24,6 +24,7 @@
   lv2:port [
     a lv2:InputPort ,
       atom:AtomPort ;
+    atom:bufferType atom:Sequence ;
     lv2:index 0 ;
     lv2:designation lv2:control ;
     lv2:symbol "control" ;
@@ -32,6 +33,7 @@
   ] , [
     a lv2:OutputPort ,
       atom:AtomPort ;
+    atom:bufferType atom:Sequence ;
     lv2:index 1 ;
     lv2:designation lv2:control ;
     lv2:symbol "notify" ;
