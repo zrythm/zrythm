@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
+if not audec_dep.found()
 audio_decoder_srcs = [
   'ad_soundfile.c',
   'ad_ffmpeg.c',
@@ -34,3 +35,4 @@ audio_decoder = static_library (
     ],
   include_directories: audio_decoder_inc,
 )
+endif

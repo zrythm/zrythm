@@ -337,6 +337,11 @@ cyaml_dep = dependency(
 if (cyaml_dep.found ())
   cdata.set('HAVE_CYAML', 1)
 endif
+audec_dep = dependency(
+  'audec', required: false)
+if (audec_dep.found ())
+  cdata.set('HAVE_AUDEC', 1)
+endif
 
 yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.24')
@@ -355,6 +360,7 @@ zrythm_deps = [
   alsa_dep,
   suil_dep,
   cyaml_dep,
+  audec_dep,
   dependency('threads'),
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),

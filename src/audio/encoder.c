@@ -20,14 +20,20 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "config.h"
 #include "audio/encoder.h"
 #include "audio/engine.h"
-#include "ext/audio_decoder/ad.h"
 #include "project.h"
 
 #include <gtk/gtk.h>
 
 #include <samplerate.h>
+
+#ifdef HAVE_AUDEC
+#include <audec/ad.h>
+#else
+#include "ext/audio_decoder/ad.h"
+#endif
 
 typedef struct adinfo adinfo;
 
@@ -36,7 +42,7 @@ src_cb (
   AudioEncoder * self,
   float **       audio)
 {
-	*audio = &(self->in_frames[0]);
+  *audio = &(self->in_frames[0]);
 
   return self->num_in_frames;
 }

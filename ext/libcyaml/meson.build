@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
+if not cyaml_dep.found()
 cyaml_inc = [
   include_directories ('include'),
   ]
@@ -31,3 +32,4 @@ cyaml = static_library (
   dependencies: yaml_dep,
   include_directories: cyaml_inc,
 )
+endif

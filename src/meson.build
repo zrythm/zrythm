@@ -32,6 +32,23 @@ subdir('plugins')
 subdir('settings')
 subdir('utils')
 
+zrythm_link_libs = [
+  lv2_lib,
+  widgets_lib,
+  midilib,
+  ]
+
+if not cyaml_dep.found()
+  zrythm_link_libs += [
+    cyaml,
+    ]
+endif
+if not audec_dep.found()
+  zrythm_link_libs += [
+    audio_decoder,
+    ]
+endif
+
 zrythm_lib = static_library (
   'zrythm-lib',
   sources: [
@@ -42,13 +59,7 @@ zrythm_lib = static_library (
   include_directories: all_inc,
   c_args: [ common_cflags, strict_cflags ],
   pic: true,
-  link_with: [
-    cyaml,
-    lv2_lib,
-    widgets_lib,
-    audio_decoder,
-    midilib,
-    ]
+  link_with: zrythm_link_libs,
   )
 
 objects = []
