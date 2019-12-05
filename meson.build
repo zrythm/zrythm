@@ -323,11 +323,6 @@ x11_dep = dependency('x11', required: false)
 if (x11_dep.found ())
   cdata.set('HAVE_X11', 1)
 endif
-port_audio_dep = dependency (
-  'portaudio-2.0', required: false)
-if (port_audio_dep.found ())
-  cdata.set('HAVE_PORT_AUDIO', 1)
-endif
 suil_dep = dependency (
   'suil-0', required: false, version: '>=0.10.4')
 if (suil_dep.found ())
@@ -343,7 +338,6 @@ if (cyaml_dep.found ())
   cdata.set('HAVE_CYAML', 1)
 endif
 
-qt5_dep = dependency('Qt5Widgets', required: false)
 yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.24')
 sndfile_dep = dependency('sndfile', version: '>=1.0.25')
@@ -354,7 +348,6 @@ fftw3_dep = dependency('fftw3', version: '>=3.3.5')
 
 zrythm_deps = [
   jack_dep,
-  port_audio_dep,
   yaml_dep,
   gtk_dep,
   sndfile_dep,
@@ -375,9 +368,21 @@ zrythm_deps = [
   libm,
 ]
 
-if (qt5_dep.found() and get_option('enable_qt5'))
+if (get_option('enable_qt5'))
+  zrythm_deps += dependency('Qt5Widgets')
   cdata.set('HAVE_QT5', 1)
-  zrythm_deps += qt5_dep
+endif
+
+if (get_option('enable_ffmpeg'))
+  zrythm_deps += dependency('libavcodec')
+  zrythm_deps += dependency('libavformat')
+  zrythm_deps += dependency('libavutil')
+  cdata.set('HAVE_FFMPEG', 1)
+endif
+
+if (get_option('enable_portaudio'))
+  zrythm_deps += dependency ('portaudio-2.0')
+  cdata.set('HAVE_PORT_AUDIO', 1)
 endif
 
 if os_linux
@@ -473,7 +478,7 @@ summary = [
   '    ffmpeg: @0@'.format(get_option('enable_ffmpeg')),
   '    Qt5: @0@'.format(get_option('enable_qt5') and qt5_dep.found()),
   '    Jack: @0@'.format(jack_dep.found()),
-  '    PortAudio: @0@'.format(port_audio_dep.found()),
+  '    PortAudio: @0@'.format(get_option('enable_portaudio')),
   '    Gtop: @0@'.format(libgtop_dep.found()),
   '  Directories:',
   '            prefix: @0@'.format(prefix),

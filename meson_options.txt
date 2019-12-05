@@ -52,6 +52,12 @@ option (
   description: 'Compile with ffmpeg (for MP3 support)')
 
 option (
+  'enable_portaudio',
+  type: 'boolean',
+  value: false,
+  description: 'Compile with portaudio support')
+
+option (
   'gen_dev_docs',
   type: 'boolean',
   value: false,

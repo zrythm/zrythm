@@ -94,10 +94,10 @@ static int ad_info_ffmpeg(void *sf, struct adinfo *nfo) {
 
 static void *ad_open_ffmpeg(const char *fn, struct adinfo *nfo) {
   ffmpeg_audio_decoder *priv = (ffmpeg_audio_decoder*) calloc(1, sizeof(ffmpeg_audio_decoder));
-  
+
   priv->m_tmpBufferStart=NULL;
   priv->m_tmpBufferLen=0;
-  priv->decoder_clock=priv->output_clock=priv->seek_frame=0; 
+  priv->decoder_clock=priv->output_clock=priv->seek_frame=0;
   priv->packet.size=0; priv->packet.data=NULL;
 
   if (avformat_open_input(&priv->formatContext, fn, NULL, NULL) <0) {
@@ -155,7 +155,7 @@ static void *ad_open_ffmpeg(const char *fn, struct adinfo *nfo) {
   }
 
   dbg(1, "ffmpeg - %s", fn);
-  if (nfo) 
+  if (nfo)
     dbg(1, "ffmpeg - sr:%i c:%i d:%"PRIi64" f:%"PRIi64, nfo->sample_rate, nfo->channels, nfo->length, nfo->frames);
 
   return (void*) priv;
@@ -276,9 +276,9 @@ static ssize_t ad_read_ffmpeg(void *sf, float* d, size_t len) {
       }
 
       /* align buffer after seek. */
-      if (priv->seek_frame > 0) { 
+      if (priv->seek_frame > 0) {
         const int diff = priv->output_clock-priv->decoder_clock;
-        if (diff<0) { 
+        if (diff<0) {
           /* seek ended up past the wanted sample */
           dbg(0, " !!! Audio seek failed.");
           return -1;
@@ -336,16 +336,16 @@ static int64_t ad_seek_ffmpeg(void *sf, int64_t pos) {
 
   const int64_t timestamp = pos / av_q2d(priv->formatContext->streams[priv->audioStream]->time_base) / priv->samplerate;
   dbg(2, "seek frame:%"PRIi64" - idx:%"PRIi64, pos, timestamp);
-  
+
   av_seek_frame(priv->formatContext, priv->audioStream, timestamp, AVSEEK_FLAG_ANY | AVSEEK_FLAG_BACKWARD);
   avcodec_flush_buffers(priv->codecContext);
   return pos;
 }
 
-static int ad_eval_ffmpeg(const char *f) { 
+static int ad_eval_ffmpeg(const char *f) {
   char *ext = strrchr(f, '.');
   if (!ext) return 10;
-  // libavformat.. guess_format.. 
+  // libavformat.. guess_format..
   return 40;
 }
 #endif
@@ -381,7 +381,7 @@ const ad_plugin * adp_get_ffmpeg() {
     avcodec_register_all();
     if(ad_debug_level <= 1)
       av_log_set_level(AV_LOG_QUIET);
-    else 
+    else
       av_log_set_level(AV_LOG_VERBOSE);
   }
 #endif
