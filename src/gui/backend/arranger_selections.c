@@ -30,6 +30,7 @@
 #include "gui/backend/chord_selections.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/backend/timeline_selections.h"
+#include "gui/widgets/arranger_object.h"
 #include "project.h"
 #include "utils/arrays.h"
 
@@ -1422,4 +1423,45 @@ arranger_selections_get_all_objects (
 #undef ADD_OBJ
 
   return objs;
+}
+
+ArrangerSelections *
+arranger_selections_get_for_type (
+  ArrangerSelectionsType type)
+{
+  switch (type)
+    {
+    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+      return (ArrangerSelections *) TL_SELECTIONS;
+    case ARRANGER_SELECTIONS_TYPE_MIDI:
+      return (ArrangerSelections *) MA_SELECTIONS;
+    case ARRANGER_SELECTIONS_TYPE_CHORD:
+      return (ArrangerSelections *) CHORD_SELECTIONS;
+    case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+      return (ArrangerSelections *) AUTOMATION_SELECTIONS;
+    default:
+      g_return_val_if_reached (NULL);
+    }
+  g_return_val_if_reached (NULL);
+}
+
+/**
+ * Redraws each object in the arranger selections.
+ */
+void
+arranger_selections_redraw (
+  ArrangerSelections * self)
+{
+  int size;
+  ArrangerObject ** objs =
+    arranger_selections_get_all_objects (
+      self, &size);
+
+  for (int i = 0; i < size; i++)
+    {
+      ArrangerObject * obj = objs[i];
+      arranger_object_queue_redraw (obj);
+    }
+
+  free (objs);
 }

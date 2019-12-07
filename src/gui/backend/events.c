@@ -273,10 +273,10 @@ on_range_selection_changed ()
     /*PROJECT->has_range);*/
   gtk_widget_queue_allocate (
     GTK_WIDGET (MW_RULER));
-	ruler_widget_redraw_whole (
-		(RulerWidget *) MW_RULER);
-	ruler_widget_redraw_whole (
-		(RulerWidget *) EDITOR_RULER);
+  ruler_widget_redraw_whole (
+    (RulerWidget *) MW_RULER);
+  ruler_widget_redraw_whole (
+    (RulerWidget *) EDITOR_RULER);
 }
 
 static void
@@ -468,8 +468,8 @@ refresh_for_selections_type (
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 }
 
@@ -502,14 +502,73 @@ static void
 on_arranger_selections_created (
   ArrangerSelections * sel)
 {
-  on_arranger_selections_changed (sel);
+  arranger_selections_redraw (sel);
+  switch (sel->type)
+    {
+    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+      event_viewer_widget_refresh (
+        MW_TIMELINE_EVENT_VIEWER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_MIDI:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_CHORD:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
+    default:
+      g_return_if_reached ();
+    }
 }
 
 static void
 on_arranger_selections_removed (
   ArrangerSelectionsType type)
 {
-  refresh_for_selections_type (type);
+  switch (type)
+    {
+    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+      arranger_widget_redraw_whole (
+        MW_TIMELINE);
+      arranger_widget_redraw_whole (
+        MW_PINNED_TIMELINE);
+      event_viewer_widget_refresh (
+        MW_TIMELINE_EVENT_VIEWER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_MIDI:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      arranger_widget_redraw_whole (
+        MW_MIDI_ARRANGER);
+      arranger_widget_redraw_whole (
+        MW_MIDI_MODIFIER_ARRANGER);
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_CHORD:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      arranger_widget_redraw_whole (
+        MW_CHORD_ARRANGER);
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      arranger_widget_redraw_whole (
+        MW_AUTOMATION_ARRANGER);
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
+    default:
+      g_return_if_reached ();
+    }
 }
 
 static void

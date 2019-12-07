@@ -211,6 +211,13 @@ arranger_selections_get_all_objects (
   int *                size);
 
 /**
+ * Redraws each object in the arranger selections.
+ */
+void
+arranger_selections_redraw (
+  ArrangerSelections * self);
+
+/**
  * Moves the selections by the given
  * amount of ticks.
  *
@@ -274,6 +281,10 @@ void
 arranger_selections_remove_object (
   ArrangerSelections * self,
   ArrangerObject *     obj);
+
+ArrangerSelections *
+arranger_selections_get_for_type (
+  ArrangerSelectionsType type);
 
 /**
 * @}

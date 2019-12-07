@@ -114,8 +114,10 @@ arranger_object_set_full_rectangle (
  *   unless drawing in a lane (for Region's).
  * @param draw_rect The rectangle will be set
  *   here.
+ *
+ * @return Whether the draw rect is visible.
  */
-void
+int
 arranger_object_get_draw_rectangle (
   ArrangerObject * self,
   GdkRectangle *   parent_rect,

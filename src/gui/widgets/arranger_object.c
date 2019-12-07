@@ -66,6 +66,18 @@ arranger_object_queue_redraw (
   GdkRectangle arranger_rect;
   arranger_widget_get_visible_rect (
     arranger, &arranger_rect);
+
+  /* if arranger is not visible ignore */
+  if (arranger_rect.width < 2 &&
+      arranger_rect.height < 2)
+    return;
+
+  /* set rectangle if not initialized yet */
+  if (self->full_rect.width == 0 &&
+      self->full_rect.height == 0)
+    arranger_object_set_full_rectangle (
+      self, arranger);
+
   GdkRectangle full_rect = self->full_rect;
 
   /* add some padding to the full rect for any
@@ -80,9 +92,15 @@ arranger_object_queue_redraw (
     }
 
   GdkRectangle draw_rect;
-  arranger_object_get_draw_rectangle (
-    self, &arranger_rect, &full_rect,
-    &draw_rect);
+  int draw_rect_visible =
+    arranger_object_get_draw_rectangle (
+      self, &arranger_rect, &full_rect,
+      &draw_rect);
+
+  /* if draw rect is not visible ignore */
+  if (!draw_rect_visible)
+    return;
+
   arranger_widget_redraw_rectangle (
     arranger, &draw_rect);
 
@@ -1086,14 +1104,20 @@ arranger_object_set_full_rectangle (
  *   unless drawing in a lane (for Region's).
  * @param draw_rect The rectangle will be set
  *   here.
+ *
+ * @return Whether the draw rect is visible.
  */
-void
+int
 arranger_object_get_draw_rectangle (
   ArrangerObject * self,
   GdkRectangle *   parent_rect,
   GdkRectangle *   full_rect,
   GdkRectangle *   draw_rect)
 {
+  if (!ui_rectangle_overlap (
+        parent_rect, full_rect))
+    return 0;
+
   draw_rect->x =
     MAX (full_rect->x, parent_rect->x);
   draw_rect->width =
@@ -1102,6 +1126,7 @@ arranger_object_get_draw_rectangle (
         draw_rect->x,
       (full_rect->x + full_rect->width) -
       draw_rect->x);
+  g_warn_if_fail (draw_rect->width >= 0);
   draw_rect->y =
     MAX (full_rect->y, parent_rect->y);
   draw_rect->height =
@@ -1110,6 +1135,8 @@ arranger_object_get_draw_rectangle (
         draw_rect->y,
       (full_rect->y + full_rect->height) -
       draw_rect->y);
+  g_warn_if_fail (draw_rect->height >= 0);
+  return 1;
   /*g_message ("full rect: (%d, %d) w: %d h: %d",*/
     /*full_rect->x, full_rect->y,*/
     /*full_rect->width, full_rect->height);*/
