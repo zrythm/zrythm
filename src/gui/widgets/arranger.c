@@ -764,9 +764,9 @@ arranger_draw_cb (
         self, ARRANGER_OBJECT_TYPE_ALL, &rect,
         objs, &num_objs);
 
-      g_message (
-        "objects found: %d (is pinned %d)",
-        num_objs, self->is_pinned);
+      /*g_message (*/
+        /*"objects found: %d (is pinned %d)",*/
+        /*num_objs, self->is_pinned);*/
       for (int j = 0; j < num_objs; j++)
         {
           draw_arranger_object (
@@ -2276,6 +2276,8 @@ on_drag_begin_handle_hit_object (
   int is_resize_up =
     arranger_object_is_resize_up (
       obj, wx, wy);
+  g_message ("resize up %d (%d, %d)",
+    is_resize_up, wx, wy);
   int is_resize_loop =
     arranger_object_is_resize_loop (
       obj, wy);
@@ -3042,7 +3044,6 @@ drag_update (
   self->last_offset_x = offset_x;
   self->last_offset_y = offset_y;
 
-  g_message ("drag update");
   arranger_widget_redraw_whole (self);
   arranger_widget_refresh_cursor (self);
 }
@@ -3858,7 +3859,7 @@ arranger_widget_get_hit_arranger_object (
   arranger_widget_get_hit_objects_in_rect (
     self, type, &rect, objs, &num_objs);
   if (num_objs > 0)
-    return objs[0];
+    return objs[num_objs - 1];
   else
     return NULL;
 

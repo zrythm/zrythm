@@ -59,10 +59,10 @@ AutomationPointWidget;
  */
 typedef enum AutomationPointCurveAlgorithm
 {
-	/** y = x^n */
-	AP_CURVE_ALGORITHM_EXPONENT,
-	/** y = 1 - (1 - x^n)^(1/n) */
-	AP_CURVE_ALGORITHM_SUPERELLIPSE,
+  /** y = x^n */
+  AP_CURVE_ALGORITHM_EXPONENT,
+  /** y = 1 - (1 - x^n)^(1/n) */
+  AP_CURVE_ALGORITHM_SUPERELLIPSE,
 } AutomationPointCurveAlgorithm;
 
 /**
@@ -76,18 +76,19 @@ typedef struct AutomationPoint
   /** Float value (real). */
   float           fvalue;
 
-	/** Normalized value (0 to 1) used as a cache. */
-	float           normalized_val;
+  /** Normalized value (0 to 1) used as a cache. */
+  float           normalized_val;
 
   /* @note These are not used at the moment. */
   int             bvalue; ///< boolean value
   int             svalue; ///< step value
 
-	/** Whether the curve tilts upwards. */
-	int             curve_up;
+  /** Whether the curve tilts upwards FIXME does
+   * not work at the  moment. */
+  int             curve_up;
 
   /** Curviness between 0 and 1, regardless of
-	 * whether it tilts up or down. */
+   * whether it tilts up or down. */
   double          curviness;
 
   /**
@@ -112,16 +113,16 @@ automation_point_fields_schema[] =
     "base", CYAML_FLAG_DEFAULT,
     AutomationPoint, base,
     arranger_object_fields_schema),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "svalue", CYAML_FLAG_DEFAULT,
     AutomationPoint, svalue),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "bvalue", CYAML_FLAG_DEFAULT,
     AutomationPoint, bvalue),
-	CYAML_FIELD_FLOAT (
+  CYAML_FIELD_FLOAT (
     "fvalue", CYAML_FLAG_DEFAULT,
     AutomationPoint, fvalue),
-	CYAML_FIELD_FLOAT (
+  CYAML_FIELD_FLOAT (
     "normalized_val", CYAML_FLAG_DEFAULT,
     AutomationPoint, normalized_val),
   CYAML_FIELD_INT (
@@ -130,21 +131,21 @@ automation_point_fields_schema[] =
   CYAML_FIELD_INT (
     "curve_up", CYAML_FLAG_DEFAULT,
     AutomationPoint, curve_up),
-	CYAML_FIELD_FLOAT (
+  CYAML_FIELD_FLOAT (
     "curviness", CYAML_FLAG_DEFAULT,
     AutomationPoint, curviness),
   CYAML_FIELD_STRING_PTR (
     "region_name",
     CYAML_FLAG_OPTIONAL | CYAML_FLAG_POINTER,
     AutomationPoint, region_name,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 automation_point_schema = {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
     AutomationPoint, automation_point_fields_schema),
 };
@@ -236,6 +237,14 @@ int
 automation_point_get_y (
   AutomationPoint * self,
   int               height);
+
+/**
+ * Returns if the curve of the AutomationPoint
+ * curves upwards as you move right on the x axis.
+ */
+int
+automation_point_curves_up (
+  AutomationPoint * self);
 
 /**
  * @}

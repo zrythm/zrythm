@@ -220,6 +220,29 @@ automation_point_new_float (
 /*}*/
 
 /**
+ * Returns if the curve of the AutomationPoint
+ * curves upwards as you move right on the x axis.
+ */
+int
+automation_point_curves_up (
+  AutomationPoint * self)
+{
+  g_return_val_if_fail (self, -1);
+
+  AutomationPoint * next_ap =
+    automation_region_get_next_ap (
+      self->region, self);
+
+  if (!next_ap)
+    return 0;
+
+  if (next_ap->fvalue > self->fvalue)
+    return 1;
+  else
+    return 0;
+}
+
+/**
  * Sets the value from given real value and
  * notifies interested parties.
  */
@@ -229,7 +252,7 @@ automation_point_set_fvalue (
   float             real_val)
 {
   Automatable * a = self->region->at->automatable;
-	float normalized_val =
+  float normalized_val =
     automatable_real_val_to_normalized (
       a, real_val);
   self->normalized_val = normalized_val;
@@ -256,33 +279,33 @@ get_y_normalized (
   double x,
   double curviness,
   int    start_higher,
-	int    curve_up)
+  int    curve_up)
 {
-	if (!start_higher)
-		x = 1.0 - x;
-	if (curve_up)
-		x = 1.0 - x;
+  if (!start_higher)
+    x = 1.0 - x;
+  if (curve_up)
+    x = 1.0 - x;
 
-	double val;
-	switch (CURVE_ALGO)
-		{
-		case AP_CURVE_ALGORITHM_EXPONENT:
-			val =
-				pow (x, curviness);
-			if (curve_up)
-				val = 1.0 - val;
-			return val;
-		case AP_CURVE_ALGORITHM_SUPERELLIPSE:
-			val =
-				pow (
-					1.0 - pow (x, curviness),
-					(1.0 / curviness));
-			if (curve_up)
-				val = 1.0 - val;
-			return val;
-		}
+  double val;
+  switch (CURVE_ALGO)
+    {
+    case AP_CURVE_ALGORITHM_EXPONENT:
+      val =
+        pow (x, curviness);
+      if (curve_up)
+        val = 1.0 - val;
+      return val;
+    case AP_CURVE_ALGORITHM_SUPERELLIPSE:
+      val =
+        pow (
+          1.0 - pow (x, curviness),
+          (1.0 / curviness));
+      if (curve_up)
+        val = 1.0 - val;
+      return val;
+    }
 
-	g_return_val_if_reached (-1.0);
+  g_return_val_if_reached (-1.0);
 }
 
 /**
@@ -305,12 +328,12 @@ automation_point_get_normalized_value_in_curve (
   double dy;
 
   int start_higher =
-		next_ap->normalized_val < self->normalized_val;
-	dy =
-		get_y_normalized (
-			x, self->curviness, start_higher,
-			self->curve_up);
-	return dy;
+    next_ap->normalized_val < self->normalized_val;
+  dy =
+    get_y_normalized (
+      x, self->curviness, start_higher,
+      self->curve_up);
+  return dy;
 }
 
 /**
@@ -320,7 +343,7 @@ void
 automation_point_set_curviness (
   AutomationPoint * self,
   const curviness_t curviness,
-	const int         curve_up)
+  const int         curve_up)
 {
   if (math_doubles_equal (
         self->curviness, curviness, 0.001))

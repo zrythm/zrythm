@@ -630,15 +630,32 @@ arranger_object_is_resize_up (
   const int        x,
   const int        y)
 {
-  if ((self->type ==
-         ARRANGER_OBJECT_TYPE_VELOCITY &&
-       y < UI_RESIZE_CURSOR_SPACE) ||
-      (self->type ==
-         ARRANGER_OBJECT_TYPE_AUTOMATION_POINT &&
-       (x > AP_WIDGET_POINT_SIZE ||
-        y > AP_WIDGET_POINT_SIZE)))
+  if (self->type ==
+         ARRANGER_OBJECT_TYPE_VELOCITY)
     {
-      return 1;
+      if (y < UI_RESIZE_CURSOR_SPACE)
+        return 1;
+    }
+  else if (self->type ==
+             ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+    {
+      AutomationPoint * ap =
+        (AutomationPoint*) self;
+      int curve_up =
+        automation_point_curves_up (ap);
+      if (curve_up)
+        {
+          if (x > AP_WIDGET_POINT_SIZE ||
+              self->full_rect.height - y >
+                AP_WIDGET_POINT_SIZE)
+            return 1;
+        }
+      else
+        {
+          if (x > AP_WIDGET_POINT_SIZE ||
+              y > AP_WIDGET_POINT_SIZE)
+            return 1;
+        }
     }
   return 0;
 }

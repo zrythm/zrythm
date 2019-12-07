@@ -114,6 +114,9 @@ on_arranger_selections_in_transit (
         ruler_widget_redraw_whole (EDITOR_RULER);
       }
     break;
+  case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+    clip_editor_redraw_region (CLIP_EDITOR);
+    break;
   default:
     break;
   }
