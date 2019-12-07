@@ -106,8 +106,7 @@ on_arranger_selections_in_transit (
     event_viewer_widget_refresh (
       MW_TIMELINE_EVENT_VIEWER);
     if (TL_SELECTIONS->num_regions > 0)
-      ruler_widget_refresh (
-        (RulerWidget *) EDITOR_RULER);
+      ruler_widget_redraw_whole (EDITOR_RULER);
     break;
   default:
     break;
@@ -696,9 +695,10 @@ on_arranger_object_changed (
     /*arranger_object_widget_force_redraw (obj_w);*/
 
   /* refresh arranger */
-  ArrangerWidget * arranger =
-    arranger_object_get_arranger (obj);
-  arranger_widget_redraw_whole (arranger);
+  arranger_object_queue_redraw (obj);
+  /*ArrangerWidget * arranger =*/
+    /*arranger_object_get_arranger (obj);*/
+  /*arranger_widget_redraw_whole (arranger);*/
 }
 
 static void
@@ -706,9 +706,10 @@ on_arranger_object_created (
   ArrangerObject * obj)
 {
   /* refresh arranger */
-  ArrangerWidget * arranger =
-    arranger_object_get_arranger (obj);
-  arranger_widget_redraw_whole (arranger);
+  /*ArrangerWidget * arranger =*/
+    /*arranger_object_get_arranger (obj);*/
+  /*arranger_widget_redraw_whole (arranger);*/
+  arranger_object_queue_redraw (obj);
 
   if (obj->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
     {
@@ -865,6 +866,8 @@ events_process (void * data)
           g_warn_if_reached ();
           continue;
         }
+
+      /*g_message ("event type %d", ev->type);*/
 
       switch (ev->type)
         {

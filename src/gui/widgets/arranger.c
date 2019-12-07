@@ -2256,11 +2256,11 @@ on_drag_begin_handle_hit_object (
 
   /* get x as local to the object */
   int wx =
-    (int) x -
-    arranger_widget_pos_to_px (self, &obj->pos, 1);
+    (int) x - obj->full_rect.x;
 
   /* TODO get y as local to the object */
-  int wy = 50;
+  int wy =
+    (int) y - obj->full_rect.y;
 
   /* remember object and pos */
   self->start_object = obj;
@@ -4555,29 +4555,28 @@ get_midi_modifier_arranger_cursor (
               ARRANGER_OBJECT_TYPE_VELOCITY,
               self->hover_x, self->hover_y);
           int is_hit = vel_obj != NULL;
-          int is_resize = 0;
 
           if (is_hit)
             {
-              /*ARRANGER_OBJECT_WIDGET_GET_PRIVATE (*/
-                /*vel_obj->widget);*/
-              /*is_resize = ao_prv->resize_up;*/
+              int is_resize =
+                arranger_object_is_resize_up (
+                  vel_obj,
+                  (int) self->hover_x -
+                    vel_obj->full_rect.x,
+                  (int) self->hover_y -
+                    vel_obj->full_rect.y);
+              if (is_resize)
+                {
+                  return
+                    ARRANGER_CURSOR_RESIZING_UP;
+                }
             }
 
-          /*g_message ("hit resize %d %d",*/
-                     /*is_hit, is_resize);*/
-          if (is_hit && is_resize)
-            {
-              return ARRANGER_CURSOR_RESIZING_UP;
-            }
+          /* set cursor to whatever it is */
+          if (tool == TOOL_EDIT)
+            return ARRANGER_CURSOR_EDIT;
           else
-            {
-              /* set cursor to whatever it is */
-              if (tool == TOOL_EDIT)
-                return ARRANGER_CURSOR_EDIT;
-              else
-                return ARRANGER_CURSOR_SELECT;
-            }
+            return ARRANGER_CURSOR_SELECT;
         }
       else if (P_TOOL == TOOL_EDIT)
         ac = ARRANGER_CURSOR_EDIT;
