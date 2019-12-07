@@ -286,11 +286,7 @@ pos_to_px (
 {
   int px =
     (int)
-    ((double) (pos->bars - 1) * ruler->px_per_bar +
-    (double) (pos->beats - 1) * ruler->px_per_beat +
-    (double) (pos->sixteenths - 1) *
-      ruler->px_per_sixteenth +
-    (double) pos->ticks * ruler->px_per_tick);
+    ((double) pos->total_ticks * ruler->px_per_tick);
 
   if (use_padding)
     px += SPACE_BEFORE_START;
