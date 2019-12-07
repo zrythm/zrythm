@@ -48,26 +48,6 @@
       </packing>
     </child>
     <child>
-      <object class="GtkButton" id="maximize">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="receives_default">False</property>
-        <property name="action_name">app.fullscreen</property>
-        <property name="relief">none</property>
-        <child>
-          <object class="GtkImage">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="icon-name">z-gtk-add</property>
-          </object>
-        </child>
-      </object>
-      <packing>
-        <property name="left_attach">2</property>
-        <property name="top_attach">0</property>
-      </packing>
-    </child>
-    <child>
       <object class="GtkSearchEntry">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
