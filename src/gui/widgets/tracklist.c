@@ -88,36 +88,27 @@ on_drag_motion (
   else
     gdk_drag_status (context, GDK_ACTION_MOVE, time);
 
-  /* get track widget at the x,y point */
-  GList *children, *iter;
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self));
   TrackWidget * hit_tw = NULL;
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      if (Z_IS_TRACK_WIDGET (iter->data))
-        {
-          TrackWidget * tw =
-            Z_TRACK_WIDGET (iter->data);
+      Track * track = TRACKLIST->tracks[i];
 
-          if (ui_is_child_hit (
-                GTK_WIDGET (self),
-                GTK_WIDGET (tw),
-                1, 1, x, y, 0, 1))
-            {
-              hit_tw = tw;
-            }
-          else
-            {
-              track_widget_do_highlight (
-                tw, x, y, 0);
-            }
+      if (!track->visible)
+        continue;
+
+      if (ui_is_child_hit (
+            GTK_WIDGET (self),
+            GTK_WIDGET (track->widget),
+            1, 1, x, y, 0, 1))
+        {
+          hit_tw = track->widget;
+        }
+      else
+        {
+          track_widget_do_highlight (
+            track->widget, x, y, 0);
         }
     }
-  g_list_free(children);
 
   if (hit_tw)
     {
@@ -150,35 +141,27 @@ on_drag_data_received (
   g_message ("drag data received on tracklist");
 
   /* get track widget at the x,y point */
-  GList *children, *iter;
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (self));
   TrackWidget * hit_tw = NULL;
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      if (Z_IS_TRACK_WIDGET (iter->data))
-        {
-          TrackWidget * tw =
-            Z_TRACK_WIDGET (iter->data);
+      Track * track = TRACKLIST->tracks[i];
 
-          if (ui_is_child_hit (
-                GTK_WIDGET (self),
-                GTK_WIDGET (tw),
-                1, 1, x, y, 0, 1))
-            {
-              hit_tw = tw;
-            }
-          else
-            {
-              track_widget_do_highlight (
-                tw, x, y, 0);
-            }
+      if (!track->visible)
+        continue;
+
+      if (ui_is_child_hit (
+            GTK_WIDGET (self),
+            GTK_WIDGET (track->widget),
+            1, 1, x, y, 0, 1))
+        {
+          hit_tw = track->widget;
+        }
+      else
+        {
+          track_widget_do_highlight (
+            track->widget, x, y, 0);
         }
     }
-  g_list_free(children);
 
   g_return_if_fail (hit_tw);
 

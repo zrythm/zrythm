@@ -1747,6 +1747,8 @@ track_widget_do_highlight (
   gint          y,
   const int     highlight)
 {
+  g_message ("DOING H IGHLIGHT ON %s",
+    self->track->name);
   if (highlight)
     {
       /* if we are closer to the start of selection
