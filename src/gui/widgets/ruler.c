@@ -145,9 +145,13 @@ ruler_widget_get_sixteenth_interval (
   return sixteenth_interval;
 }
 
+/**
+ * Draws the regions in the editor ruler.
+ */
 static void
 draw_regions (
-  RulerWidget * self)
+  RulerWidget *  self,
+  GdkRectangle * rect)
 {
   cairo_t * cr = self->cached_cr;
 
@@ -177,7 +181,7 @@ draw_regions (
     ui_pos_to_px_editor (
       &region_obj->end_pos, 1);
   cairo_rectangle (
-    cr, px_start, 0,
+    cr, px_start - rect->x, - rect->y,
     px_end - px_start, height / 4.0);
   cairo_fill (cr);
 
@@ -192,7 +196,7 @@ draw_regions (
         ui_pos_to_px_editor (
           &region_obj->end_pos, 1);
       cairo_rectangle (
-        cr, px_start, 0,
+        cr, px_start - rect->x, - rect->y,
         px_end - px_start, height / 4.0);
       cairo_fill (cr);
     }
@@ -226,7 +230,7 @@ draw_regions (
             ui_pos_to_px_editor (
               &other_region_obj->end_pos, 1);
           cairo_rectangle (
-            cr, px_start, 0,
+            cr, px_start - rect->x, - rect->y,
             px_end - px_start, height / 4.0);
           cairo_fill (cr);
         }
@@ -861,7 +865,7 @@ ruler_draw_cb (
 
       if (self->type == TYPE (EDITOR))
         {
-          draw_regions (self);
+          draw_regions (self, &rect);
         }
 
       /* ------ draw markers ------- */

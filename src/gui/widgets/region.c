@@ -543,6 +543,10 @@ draw_chord_region (
                 (double) tmp_end_ticks /
                 (double) ticks_in_region;
 
+              /* skip if before the region */
+              if (x_start < 0.0)
+                continue;
+
               cairo_set_source_rgba (
                 cr, 1, 1, 1, 0.3);
 

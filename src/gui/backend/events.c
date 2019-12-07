@@ -106,7 +106,13 @@ on_arranger_selections_in_transit (
     event_viewer_widget_refresh (
       MW_TIMELINE_EVENT_VIEWER);
     if (TL_SELECTIONS->num_regions > 0)
-      ruler_widget_redraw_whole (EDITOR_RULER);
+      {
+        arranger_widget_redraw_whole (
+          MW_MIDI_ARRANGER);
+        arranger_widget_redraw_whole (
+          MW_MIDI_MODIFIER_ARRANGER);
+        ruler_widget_redraw_whole (EDITOR_RULER);
+      }
     break;
   default:
     break;
