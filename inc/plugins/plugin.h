@@ -227,18 +227,18 @@ typedef struct Plugin
 static const cyaml_strval_t
 plugin_protocol_strings[] =
 {
-	{ "LV2",          PROT_LV2    },
-	{ "DSSI",         PROT_DSSI   },
-	{ "LADSPA",       PROT_LADSPA },
-	{ "VST",          PROT_VST    },
-	{ "VST3",         PROT_VST3   },
+  { "LV2",          PROT_LV2    },
+  { "DSSI",         PROT_DSSI   },
+  { "LADSPA",       PROT_LADSPA },
+  { "VST",          PROT_VST    },
+  { "VST3",         PROT_VST3   },
 };
 
 static const cyaml_strval_t
 plugin_architecture_strings[] =
 {
-	{ "32-bit",       ARCH_32     },
-	{ "64-bit",       ARCH_64     },
+  { "32-bit",       ARCH_32     },
+  { "64-bit",       ARCH_64     },
 };
 
 static const cyaml_schema_field_t
@@ -247,43 +247,43 @@ descriptor_fields_schema[] =
   CYAML_FIELD_STRING_PTR (
     "author", CYAML_FLAG_POINTER,
     PluginDescriptor, author,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
     "name", CYAML_FLAG_POINTER,
     PluginDescriptor, name,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
     "website", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     PluginDescriptor, website,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
     "category_str", CYAML_FLAG_POINTER,
     PluginDescriptor, category_str,
-   	0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
+     0, CYAML_UNLIMITED),
+  CYAML_FIELD_INT (
     "num_audio_ins", CYAML_FLAG_DEFAULT,
-	  PluginDescriptor, num_audio_ins),
-	CYAML_FIELD_INT (
+    PluginDescriptor, num_audio_ins),
+  CYAML_FIELD_INT (
     "num_audio_outs", CYAML_FLAG_DEFAULT,
-	  PluginDescriptor, num_audio_outs),
-	CYAML_FIELD_INT (
+    PluginDescriptor, num_audio_outs),
+  CYAML_FIELD_INT (
     "num_midi_ins", CYAML_FLAG_DEFAULT,
-	  PluginDescriptor, num_midi_ins),
-	CYAML_FIELD_INT (
+    PluginDescriptor, num_midi_ins),
+  CYAML_FIELD_INT (
     "num_midi_outs", CYAML_FLAG_DEFAULT,
-	  PluginDescriptor, num_midi_outs),
-	CYAML_FIELD_INT (
+    PluginDescriptor, num_midi_outs),
+  CYAML_FIELD_INT (
     "num_ctrl_ins", CYAML_FLAG_DEFAULT,
-	  PluginDescriptor, num_ctrl_ins),
-	CYAML_FIELD_INT (
+    PluginDescriptor, num_ctrl_ins),
+  CYAML_FIELD_INT (
     "num_ctrl_outs", CYAML_FLAG_DEFAULT,
-	  PluginDescriptor, num_ctrl_outs),
-	CYAML_FIELD_INT (
+    PluginDescriptor, num_ctrl_outs),
+  CYAML_FIELD_INT (
     "num_cv_ins", CYAML_FLAG_DEFAULT,
-	  PluginDescriptor, num_cv_ins),
-	CYAML_FIELD_INT (
+    PluginDescriptor, num_cv_ins),
+  CYAML_FIELD_INT (
     "num_cv_outs", CYAML_FLAG_DEFAULT,
-	  PluginDescriptor, num_cv_outs),
+    PluginDescriptor, num_cv_outs),
   CYAML_FIELD_ENUM (
     "arch", CYAML_FLAG_DEFAULT,
     PluginDescriptor, arch,
@@ -296,13 +296,13 @@ descriptor_fields_schema[] =
   CYAML_FIELD_STRING_PTR (
     "path", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     PluginDescriptor, path,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
     "uri", CYAML_FLAG_POINTER,
     PluginDescriptor, uri,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_field_t
@@ -331,23 +331,23 @@ plugin_fields_schema[] =
   CYAML_FIELD_INT (
     "enabled", CYAML_FLAG_DEFAULT,
     Plugin, enabled),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "visible", CYAML_FLAG_DEFAULT,
     Plugin, visible),
   CYAML_FIELD_INT (
     "track_pos", CYAML_FLAG_DEFAULT,
     Plugin, track_pos),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 plugin_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL |
     CYAML_FLAG_ALLOW_NULL_PTR,
-	  Plugin, plugin_fields_schema),
+    Plugin, plugin_fields_schema),
 };
 
 void

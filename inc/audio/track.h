@@ -315,13 +315,13 @@ typedef struct Track
 static const cyaml_strval_t
 track_type_strings[] =
 {
-	{ "Instrument",     TRACK_TYPE_INSTRUMENT    },
-	{ "Audio",          TRACK_TYPE_AUDIO   },
-	{ "MIDI",           TRACK_TYPE_MIDI   },
-	{ "Master",         TRACK_TYPE_MASTER   },
-	{ "Chord",          TRACK_TYPE_CHORD   },
-	{ "Audio Bus",      TRACK_TYPE_AUDIO_BUS   },
-	{ "MIDI Bus",       TRACK_TYPE_MIDI_BUS   },
+  { "Instrument",     TRACK_TYPE_INSTRUMENT    },
+  { "Audio",          TRACK_TYPE_AUDIO   },
+  { "MIDI",           TRACK_TYPE_MIDI   },
+  { "Master",         TRACK_TYPE_MASTER   },
+  { "Chord",          TRACK_TYPE_CHORD   },
+  { "Audio Bus",      TRACK_TYPE_AUDIO_BUS   },
+  { "MIDI Bus",       TRACK_TYPE_MIDI_BUS   },
 };
 
 static const cyaml_schema_field_t
@@ -330,39 +330,39 @@ track_fields_schema[] =
   CYAML_FIELD_STRING_PTR (
     "name", CYAML_FLAG_POINTER,
     Track, name,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
     "type", CYAML_FLAG_DEFAULT,
     Track, type, track_type_strings,
     CYAML_ARRAY_LEN (track_type_strings)),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "pos", CYAML_FLAG_DEFAULT,
     Track, pos),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "pos_before_pinned", CYAML_FLAG_DEFAULT,
     Track, pos_before_pinned),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "lanes_visible", CYAML_FLAG_DEFAULT,
     Track, lanes_visible),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "automation_visible", CYAML_FLAG_DEFAULT,
     Track, automation_visible),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "visible", CYAML_FLAG_DEFAULT,
     Track, visible),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "main_height", CYAML_FLAG_DEFAULT,
     Track, main_height),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "mute", CYAML_FLAG_DEFAULT,
     Track, mute),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "solo", CYAML_FLAG_DEFAULT,
     Track, solo),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "recording", CYAML_FLAG_DEFAULT,
     Track, recording),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "pinned", CYAML_FLAG_DEFAULT,
     Track, pinned),
   CYAML_FIELD_MAPPING (
@@ -405,16 +405,16 @@ track_fields_schema[] =
     "out_signal_type", CYAML_FLAG_DEFAULT,
     Track, out_signal_type, port_type_strings,
     CYAML_ARRAY_LEN (port_type_strings)),
-	CYAML_FIELD_UINT (
+  CYAML_FIELD_UINT (
     "midi_ch", CYAML_FLAG_DEFAULT,
     Track, midi_ch),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 track_schema = {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
     Track, track_fields_schema),
 };

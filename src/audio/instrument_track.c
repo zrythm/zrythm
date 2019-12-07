@@ -57,6 +57,47 @@ instrument_track_setup (InstrumentTrack * self)
 }
 
 /**
+ * Returns if the first plugin's UI in the
+ * instrument track is visible.
+ */
+int
+instrument_track_is_plugin_visible (
+  Track * self)
+{
+  g_return_val_if_fail (
+    self &&
+    self->type == TRACK_TYPE_INSTRUMENT &&
+    self->channel, 0);
+
+  Plugin * plugin = self->channel->plugins[0];
+  g_return_val_if_fail (plugin, 0);
+
+  return plugin->visible;
+}
+
+/**
+ * Toggles whether the first plugin's UI in the
+ * instrument Track is visible.
+ */
+void
+instrument_track_toggle_plugin_visible (
+  Track * self)
+{
+  g_return_if_fail (
+    self &&
+    self->type == TRACK_TYPE_INSTRUMENT &&
+    self->channel);
+
+  Plugin * plugin = self->channel->plugins[0];
+  g_return_if_fail (plugin);
+
+  plugin->visible = !plugin->visible;
+
+  EVENTS_PUSH (
+    ET_PLUGIN_VISIBILITY_CHANGED, plugin);
+}
+
+/**
  * Frees the track.
  *
  * TODO

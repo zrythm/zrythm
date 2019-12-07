@@ -218,17 +218,17 @@ channel_fields_schema[] =
   CYAML_FIELD_MAPPING (
     "fader", CYAML_FLAG_DEFAULT,
     Channel, fader, fader_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "midi_out",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Channel, midi_out,
     port_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "stereo_out",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Channel, stereo_out,
     stereo_ports_fields_schema),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "output_pos", CYAML_FLAG_DEFAULT,
     Channel, output_pos),
   CYAML_FIELD_SEQUENCE_COUNT (
@@ -260,15 +260,15 @@ channel_fields_schema[] =
     "all_midi_channels", CYAML_FLAG_DEFAULT,
     Channel, all_midi_channels),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 channel_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-	  Channel, channel_fields_schema),
+    Channel, channel_fields_schema),
 };
 
 void

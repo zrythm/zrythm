@@ -306,6 +306,15 @@ draw_buttons (
         }
       else if (string_is_equal (
                 cb->icon_name,
+                ICON_NAME_SHOW_UI, 1) &&
+               instrument_track_is_plugin_visible (
+                 self->track))
+        {
+          state =
+            CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+        }
+      else if (string_is_equal (
+                cb->icon_name,
                 ICON_NAME_MUTE, 1) &&
                self->track->mute)
         {
@@ -1474,7 +1483,7 @@ multipress_released (
             {
               track_widget_on_record_toggled (self);
             }
-          if (string_is_equal (
+          else if (string_is_equal (
                 cb->icon_name, ICON_NAME_SOLO, 1))
             {
               track_widget_on_solo_toggled (self);
@@ -1489,6 +1498,14 @@ multipress_released (
                 ICON_NAME_SHOW_TRACK_LANES, 1))
             {
               track_widget_on_show_lanes_toggled (self);
+            }
+          else if (
+            string_is_equal (
+              cb->icon_name,
+              ICON_NAME_SHOW_UI, 1))
+            {
+              instrument_track_toggle_plugin_visible (
+                self->track);
             }
           else if (string_is_equal (
                 cb->icon_name,

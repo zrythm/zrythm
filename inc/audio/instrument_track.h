@@ -55,6 +55,22 @@ void
 instrument_track_setup (Track * self);
 
 /**
+ * Returns if the first plugin's UI in the
+ * instrument track is visible.
+ */
+int
+instrument_track_is_plugin_visible (
+  Track * self);
+
+/**
+ * Toggles whether the first plugin's UI in the
+ * instrument Track is visible.
+ */
+void
+instrument_track_toggle_plugin_visible (
+  Track * self);
+
+/**
  * Frees the track.
  *
  * TODO

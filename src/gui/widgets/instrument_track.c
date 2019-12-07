@@ -52,7 +52,8 @@ G_DEFINE_TYPE (InstrumentTrackWidget,
                instrument_track_widget,
                TRACK_WIDGET_TYPE)
  void
-instument_track_ui_toggle (GtkWidget * self, InstrumentTrackWidget * data)
+instument_track_ui_toggle (
+  GtkWidget * self, InstrumentTrackWidget * data)
 {
   Channel * channel = GET_CHANNEL(data);
   Plugin * plugin = channel->plugins[0];
