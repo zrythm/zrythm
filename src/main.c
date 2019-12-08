@@ -28,7 +28,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "ext/audio_decoder/ad.h"
 #include "gui/widgets/main_window.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
@@ -49,6 +48,7 @@
 #include "plugins/lv2/suil.h"
 #endif
 
+#include <audec/audec.h>
 #include <fftw3.h>
 
 #define BACKTRACE_SIZE 30
@@ -252,7 +252,7 @@ main (int    argc,
 
   /* init audio decoder */
   g_message ("Initing audio decoder...");
-  ad_init ();
+  audec_init ();
 
   /* init glibtop */
 #ifdef HAVE_LIBGTOP

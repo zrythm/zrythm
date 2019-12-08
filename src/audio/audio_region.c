@@ -29,8 +29,6 @@
 #include "utils/audio.h"
 #include "utils/io.h"
 
-#include "ext/audio_decoder/ad.h"
-
 /**
  * Creates a Region for audio data.
  *

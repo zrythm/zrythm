@@ -28,7 +28,6 @@
 #include "audio/pool.h"
 #include "audio/region.h"
 #include "audio/track.h"
-#include "ext/audio_decoder/ad.h"
 #include "gui/widgets/audio_region.h"
 #include "gui/widgets/automation_region.h"
 #include "gui/widgets/bot_dock_edge.h"

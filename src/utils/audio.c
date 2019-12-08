@@ -21,7 +21,6 @@
 #include <unistd.h>
 
 #include "audio/engine.h"
-#include "ext/audio_decoder/ad.h"
 #include "project.h"
 #include "utils/audio.h"
 

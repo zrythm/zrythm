@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-subdir ('audio_decoder')
 subdir ('libcyaml')
 subdir ('midilib')
 subdir ('zix')
