@@ -38,19 +38,17 @@ audio_clip_init_from_file (
     audio_encoder_new_from_file (full_path);
   audio_encoder_decode (enc, 1);
 
+  size_t arr_size =
+    (size_t) enc->num_out_frames *
+    (size_t) enc->nfo.channels;
   self->frames =
-    calloc (
-      (size_t) enc->num_out_frames * enc->channels,
-      sizeof (float));
+    calloc (arr_size, sizeof (float));
   self->num_frames = enc->num_out_frames;
-  for (long i = 0;
-       i < self->num_frames * enc->channels; i++)
-    {
-      self->frames[i] =
-        enc->out_frames[i];
-    }
-  self->channels = enc->channels;
+  memcpy (
+    self->frames, enc->out_frames,
+    arr_size * sizeof (float));
   self->name = io_path_get_basename (full_path);
+  self->channels = enc->nfo.channels;
 
   audio_encoder_free (enc);
 }

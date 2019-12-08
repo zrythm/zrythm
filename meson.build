@@ -338,10 +338,8 @@ if (cyaml_dep.found ())
   cdata.set('HAVE_CYAML', 1)
 endif
 audec_dep = dependency(
-  'audec', required: false)
-if (audec_dep.found ())
-  cdata.set('HAVE_AUDEC', 1)
-endif
+  'audec', version: '>=0.1',
+  fallback: ['libaudec', 'libaudec_dep'])
 
 yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.24')

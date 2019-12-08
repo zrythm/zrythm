@@ -2133,7 +2133,17 @@ track_widget_new (Track * track)
       add_button (
         self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
-    default:
+    case TRACK_TYPE_AUDIO:
+      strcpy (self->icon_name, "audio");
+      add_solo_button (self, 1);
+      add_button (
+        self, 1, ICON_NAME_MUTE);
+      add_button (
+        self, 0, ICON_NAME_LOCK);
+      add_button (
+        self, 0, ICON_NAME_SHOW_TRACK_LANES);
+      add_button (
+        self, 0, ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
     }
 

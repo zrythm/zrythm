@@ -171,3 +171,6 @@ callgrind*
 
 # profiling
 results*
+
+# subprojects
+subprojects/**/*

@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include "actions/create_tracks_action.h"
 #include "audio/supported_file.h"
 #include "gui/widgets/arranger.h"
@@ -36,7 +38,7 @@
 #include "utils/resources.h"
 #include "zrythm.h"
 
-#include "ext/audio_decoder/ad.h"
+#include <audec/audec.h>
 
 #include <gtk/gtk.h>
 
@@ -133,9 +135,9 @@ on_file_chooser_selection_changed (
       file->type == FILE_TYPE_WAV)
     {
       /* open with sndfile */
-      struct adinfo nfo;
-      ad_finfo (abs_path, &nfo);
-      ad_dump_nfo (3, &nfo);
+      AudecInfo nfo;
+      audec_finfo (abs_path, &nfo);
+      audec_dump_info (3, &nfo);
       label =
         g_strdup_printf (
         "%s\nFormat: TODO\nSample rate: %d\n"

@@ -26,6 +26,9 @@
 #ifndef __AUDIO_ENCODER_H__
 #define __AUDIO_ENCODER_H__
 
+#include "config.h"
+#include <audec/audec.h>
+
 /**
  * @addtogroup audio
  *
@@ -44,20 +47,14 @@ typedef struct AudioEncoder
   /** Number of channels. */
   unsigned int  channels;
 
-  /** The input frames. */
-  float *       in_frames;
-
-  /** Input number of frames per channel. */
-  long          num_in_frames;
-
   /** The output frames interleaved. */
   float *       out_frames;
 
   /** Output number of frames per channel. */
-  long          num_out_frames;
+  ssize_t       num_out_frames;
 
-  /** Resampling ratio from input to output. */
-  double        resample_ratio;
+  AudecInfo     nfo;
+  AudecHandle * audec_handle;
 } AudioEncoder;
 
 /**
