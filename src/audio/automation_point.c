@@ -404,6 +404,6 @@ automation_point_get_automation_track (
   AutomationPoint * self)
 {
   g_return_val_if_fail (
-    self && self->region && self->region->at, NULL);
-  return self->region->at;
+    self && self->region, NULL);
+  return region_get_automation_track (self->region);
 }

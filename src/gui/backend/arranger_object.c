@@ -1220,10 +1220,12 @@ arranger_object_get_track (
       {
         AutomationPoint * ap =
           (AutomationPoint *) self;
+        AutomationTrack * at =
+          automation_point_get_automation_track (
+            ap);
         g_return_val_if_fail (
-          ap->region && ap->region->at &&
-          ap->region->at->track, NULL);
-        track = ap->region->at->track;
+          at && at->track, NULL);
+        track = at->track;
       }
       break;
     case TYPE (MIDI_NOTE):
@@ -1475,13 +1477,13 @@ static ArrangerObject *
 find_automation_point (
   AutomationPoint * src)
 {
-	Region * region = src->region;
-	if (!region)
-		{
-			region =
-				region_find_by_name (
-					src->region_name);
-		}
+  Region * region = src->region;
+  if (!region)
+    {
+      region =
+        region_find_by_name (
+          src->region_name);
+    }
   g_return_val_if_fail (region, NULL);
 
   /* the src region might be an unused clone, find
@@ -1644,7 +1646,7 @@ clone_region (
             dest_ap =
               automation_point_new_float (
                 src_ap->fvalue,
-								src_ap->normalized_val,
+                src_ap->normalized_val,
                 &src_ap_obj->pos, F_MAIN);
             automation_region_add_ap (
               ar, dest_ap);

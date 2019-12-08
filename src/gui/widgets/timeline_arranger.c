@@ -1065,7 +1065,10 @@ timeline_arranger_move_regions_to_new_tracks (
         !visible ||
         !track_type_is_compatible_for_moving (
            region_track->type,
-           visible->type))
+           visible->type) ||
+        /* do not allow moving automation tracks
+         * to other tracks for now */
+        region->type == REGION_TYPE_AUTOMATION)
         {
           compatible = 0;
           break;

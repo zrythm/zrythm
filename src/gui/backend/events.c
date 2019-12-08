@@ -107,10 +107,28 @@ on_arranger_selections_in_transit (
       MW_TIMELINE_EVENT_VIEWER);
     if (TL_SELECTIONS->num_regions > 0)
       {
-        arranger_widget_redraw_whole (
-          MW_MIDI_ARRANGER);
-        arranger_widget_redraw_whole (
-          MW_MIDI_MODIFIER_ARRANGER);
+        Region * r = TL_SELECTIONS->regions[0];
+        switch (r->type)
+          {
+          case REGION_TYPE_MIDI:
+            arranger_widget_redraw_whole (
+              MW_MIDI_ARRANGER);
+            arranger_widget_redraw_whole (
+              MW_MIDI_MODIFIER_ARRANGER);
+            break;
+          case REGION_TYPE_AUTOMATION:
+            arranger_widget_redraw_whole (
+              MW_AUTOMATION_ARRANGER);
+            break;
+          case REGION_TYPE_CHORD:
+            arranger_widget_redraw_whole (
+              MW_CHORD_ARRANGER);
+            break;
+          case REGION_TYPE_AUDIO:
+            arranger_widget_redraw_whole (
+              MW_AUDIO_ARRANGER);
+            break;
+          }
         ruler_widget_redraw_whole (EDITOR_RULER);
       }
     break;
