@@ -43,6 +43,7 @@
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+#include "zix/ring.h"
 
 #include <gtk/gtk.h>
 
@@ -107,6 +108,24 @@ port_init_loaded (Port * this)
 
   this->buf =
     calloc (80000, sizeof (float));
+
+  g_return_if_fail (AUDIO_ENGINE->block_length > 0);
+  switch (this->identifier.type)
+    {
+    case TYPE_EVENT:
+      this->midi_ring =
+        zix_ring_new (
+          sizeof (MidiEvent) * (size_t) 11);
+      break;
+    case TYPE_AUDIO:
+    case TYPE_CV:
+      this->audio_ring =
+        zix_ring_new (
+          sizeof (float) *
+          (size_t) AUDIO_ENGINE->block_length * 36);
+    default:
+      break;
+    }
 }
 
 /**
@@ -402,8 +421,8 @@ port_identifier_is_equal (
  *
  * Sets id and updates appropriate counters.
  */
-Port *
-port_new (
+static Port *
+_port_new (
   const char * label)
 {
   Port * port = calloc (1, sizeof (Port));
@@ -434,17 +453,30 @@ port_new_with_type (
   PortFlow     flow,
   const char * label)
 {
-  Port * self = port_new (label);
+  Port * self = _port_new (label);
 
   self->identifier.type = type;
   if (self->identifier.type == TYPE_EVENT)
     self->midi_events = midi_events_new (self);
   self->identifier.flow = flow;
 
-  if (type == TYPE_EVENT)
+  switch (type)
     {
+    case TYPE_EVENT:
       self->midi_events =
         midi_events_new (self);
+      self->midi_ring =
+        zix_ring_new (
+          sizeof (MidiEvent) * (size_t) 11);
+      break;
+    case TYPE_AUDIO:
+    case TYPE_CV:
+      self->audio_ring =
+        zix_ring_new (
+          sizeof (float) *
+          (size_t) AUDIO_ENGINE->block_length * 11);
+    default:
+      break;
     }
 
   return self;
@@ -909,6 +941,57 @@ port_get_control_value (
 }
 
 /**
+ * Returns the RMS of the last n cycles for
+ * audio ports.
+ *
+ * @param num_cycles Number of cycles to take into
+ *   account, normally 1. If this is more than 1,
+ *   the minimum of available cycles or given
+ *   cycles is chosen.
+ */
+float
+port_get_rms_db (
+  Port * port,
+  int    n_cycles)
+{
+  g_return_val_if_fail (
+    port && n_cycles > 0 &&
+    port->identifier.type == TYPE_AUDIO, 0.f);
+
+  size_t read_space_avail =
+    zix_ring_read_space (port->audio_ring);
+  size_t size =
+    sizeof (float) *
+    (size_t) AUDIO_ENGINE->block_length;
+  size_t blocks_to_read =
+    read_space_avail / size;
+  if (blocks_to_read == 0)
+    return 0.f;
+
+  float buf[
+    AUDIO_ENGINE->block_length *
+      blocks_to_read];
+  size_t blocks_read =
+    zix_ring_peek (
+      port->audio_ring, &buf[0],
+      read_space_avail);
+  blocks_read /= size;
+  n_cycles = MIN (n_cycles, (int) blocks_read);
+  size_t start_index =
+    (blocks_read - (size_t) n_cycles) *
+      AUDIO_ENGINE->block_length;
+  if (blocks_read == 0)
+    g_return_val_if_reached (0.f);
+
+  float rms =
+    math_calculate_rms_db (
+      &buf[start_index],
+      (size_t) n_cycles *
+        AUDIO_ENGINE->block_length);
+  return rms;
+}
+
+/**
  * Returns the minimum possible value for this
  * port.
  *
@@ -1190,6 +1273,21 @@ port_sum_signal_from_inputs (
               port->track->trigger_midi_activity = 1;
             }
         }
+
+      if (start_frame + nframes ==
+            AUDIO_ENGINE->block_length)
+        {
+          int i = port->midi_events->num_events - 1;
+          while (
+            i >= 0 && zix_ring_write_space (
+              port->midi_ring) > sizeof (MidiEvent))
+            {
+              zix_ring_write (
+                port->midi_ring,
+                &port->midi_events->events[i--],
+                sizeof (MidiEvent));
+            }
+        }
       break;
     case TYPE_AUDIO:
       if (noroll)
@@ -1216,6 +1314,28 @@ port_sum_signal_from_inputs (
 
       port_send_data_to_jack (
         port, start_frame, nframes);
+
+      if (start_frame + nframes ==
+            AUDIO_ENGINE->block_length)
+        {
+          size_t size =
+            sizeof (float) *
+            (size_t) AUDIO_ENGINE->block_length;
+          size_t write_space_avail =
+            zix_ring_write_space (port->audio_ring);
+
+          /* move the read head 1 block to make
+           * space if no space avail to write */
+          if (write_space_avail / size < 1)
+            {
+              zix_ring_skip (
+                port->audio_ring, size);
+            }
+
+          zix_ring_write (
+            port->audio_ring, &port->buf[0],
+            size);
+        }
       break;
     case TYPE_CONTROL:
       {
@@ -1921,6 +2041,10 @@ port_free (Port * port)
     g_free (port->identifier.label);
   if (port->buf)
     free (port->buf);
+  if (port->audio_ring)
+    zix_ring_free (port->audio_ring);
+  if (port->midi_ring)
+    zix_ring_free (port->midi_ring);
 
   free (port);
 }

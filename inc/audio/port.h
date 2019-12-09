@@ -40,6 +40,7 @@ typedef struct Fader Fader;
 typedef struct SampleProcessor SampleProcessor;
 typedef struct PassthroughProcessor
   PassthroughProcessor;
+typedef struct ZixRingImpl ZixRing;
 
 /**
  * @addtogroup audio
@@ -63,20 +64,20 @@ typedef struct PassthroughProcessor
  * Direction of the signal.
  */
 typedef enum PortFlow {
-	FLOW_UNKNOWN,
-	FLOW_INPUT,
-	FLOW_OUTPUT
+  FLOW_UNKNOWN,
+  FLOW_INPUT,
+  FLOW_OUTPUT
 } PortFlow;
 
 /**
  * Type of signals the Port handles.
  */
 typedef enum PortType {
-	TYPE_UNKNOWN,
-	TYPE_CONTROL,
-	TYPE_AUDIO,
-	TYPE_EVENT,
-	TYPE_CV
+  TYPE_UNKNOWN,
+  TYPE_CONTROL,
+  TYPE_AUDIO,
+  TYPE_EVENT,
+  TYPE_CV
 } PortType;
 
 /**
@@ -175,9 +176,9 @@ typedef struct PortIdentifier
   /** Owner type. */
   PortOwnerType       owner_type;
   /** Data type (e.g. AUDIO). */
-	PortType            type;
+  PortType            type;
   /** Flow (IN/OUT). */
-	PortFlow            flow;
+  PortFlow            flow;
   /** Flags (e.g. is side chain). */
   PortFlags           flags;
 
@@ -325,47 +326,73 @@ typedef struct Port
 
   /** Port undergoing deletion. */
   int                 deleting;
+
+  /**
+   * Ring buffer for saving the contents of the
+   * audio buffer to be used in the UI instead of
+   * directly accessing the buffer.
+   *
+   * This should contain blocks of block_length
+   * samples and should maintain at least 10
+   * cycles' worth of buffers.
+   */
+  ZixRing *           audio_ring;
+
+  /**
+   * Ring buffer for saving MIDI events to be
+   * used in the UI instead of directly accessing
+   * the events.
+   *
+   * This should keep pushing MidiEvent's whenever
+   * they occur and the reader should empty it
+   * after cheking if there are any events.
+   *
+   * Currently there is only 1 reader for each port
+   * so this wont be a problem for now, but we
+   * should have one ring for each reader.
+   */
+  ZixRing *           midi_ring;
 } Port;
 
 static const cyaml_strval_t
 port_flow_strings[] =
 {
-	{ "unknown",       FLOW_UNKNOWN    },
-	{ "input",         FLOW_INPUT   },
-	{ "output",        FLOW_OUTPUT   },
+  { "unknown",       FLOW_UNKNOWN    },
+  { "input",         FLOW_INPUT   },
+  { "output",        FLOW_OUTPUT   },
 };
 
 static const cyaml_strval_t
 port_owner_type_strings[] =
 {
-	{ "backend",   PORT_OWNER_TYPE_BACKEND    },
-	{ "plugin",    PORT_OWNER_TYPE_PLUGIN   },
-	{ "track",     PORT_OWNER_TYPE_TRACK   },
-	{ "pre-fader", PORT_OWNER_TYPE_PREFADER   },
-	{ "fader",     PORT_OWNER_TYPE_FADER   },
-	{ "track processor",
+  { "backend",   PORT_OWNER_TYPE_BACKEND    },
+  { "plugin",    PORT_OWNER_TYPE_PLUGIN   },
+  { "track",     PORT_OWNER_TYPE_TRACK   },
+  { "pre-fader", PORT_OWNER_TYPE_PREFADER   },
+  { "fader",     PORT_OWNER_TYPE_FADER   },
+  { "track processor",
     PORT_OWNER_TYPE_TRACK_PROCESSOR   },
-	{ "monitor fader",
+  { "monitor fader",
     PORT_OWNER_TYPE_MONITOR_FADER },
-	{ "sample processor",
+  { "sample processor",
     PORT_OWNER_TYPE_SAMPLE_PROCESSOR },
 };
 
 static const cyaml_strval_t
 port_type_strings[] =
 {
-	{ "unknown",       TYPE_UNKNOWN    },
-	{ "control",       TYPE_CONTROL   },
-	{ "audio",         TYPE_AUDIO   },
-	{ "event",         TYPE_EVENT   },
-	{ "cv",            TYPE_CV   },
+  { "unknown",       TYPE_UNKNOWN    },
+  { "control",       TYPE_CONTROL   },
+  { "audio",         TYPE_AUDIO   },
+  { "event",         TYPE_EVENT   },
+  { "cv",            TYPE_CV   },
 };
 
 static const cyaml_strval_t
 port_internal_type_strings[] =
 {
-	{ "LV2 port",       INTERNAL_LV2_PORT    },
-	{ "JACK port",      INTERNAL_JACK_PORT   },
+  { "LV2 port",       INTERNAL_LV2_PORT    },
+  { "JACK port",      INTERNAL_JACK_PORT   },
 };
 
 static const cyaml_schema_field_t
@@ -374,7 +401,7 @@ port_identifier_fields_schema[] =
   CYAML_FIELD_STRING_PTR (
     "label", CYAML_FLAG_POINTER,
     PortIdentifier, label,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
     "owner_type", CYAML_FLAG_DEFAULT,
     PortIdentifier, owner_type,
@@ -402,19 +429,19 @@ port_identifier_fields_schema[] =
     "port_index", CYAML_FLAG_DEFAULT,
     PortIdentifier, port_index),
 
-	CYAML_FIELD_END,
+  CYAML_FIELD_END,
 };
 
 static const cyaml_schema_value_t
 port_identifier_schema = {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
     PortIdentifier, port_identifier_fields_schema),
 };
 
 static const cyaml_schema_value_t
 port_identifier_schema_default = {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_DEFAULT,
     PortIdentifier, port_identifier_fields_schema),
 };
@@ -456,12 +483,12 @@ port_fields_schema[] =
     Port, internal_type, port_internal_type_strings,
     CYAML_ARRAY_LEN (port_internal_type_strings)),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 port_schema = {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
     Port, port_fields_schema),
 };
@@ -540,13 +567,6 @@ port_identifier_is_equal (
 
 void
 stereo_ports_init_loaded (StereoPorts * sp);
-
-/**
- * Creates port.
- */
-Port *
-port_new (
-  const char * label);
 
 /**
  * Creates port.
@@ -855,6 +875,20 @@ port_get_control_value (
   const int   normalize);
 
 /**
+ * Returns the RMS of the last n cycles for
+ * audio ports.
+ *
+ * @param num_cycles Number of cycles to take into
+ *   account, normally 1. If this is more than 1,
+ *   the minimum of available cycles or given
+ *   cycles is chosen.
+ */
+float
+port_get_rms_db (
+  Port * port,
+  int    num_cycles);
+
+/**
  * Connets src to dest.
  *
  * @param locked Lock the connection or not.
@@ -885,6 +919,7 @@ port_disconnect_dests (Port * src)
     }
   return 0;
 }
+
 
 /**
  * Apply given fader value to port.

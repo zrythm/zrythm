@@ -30,9 +30,9 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (LiveWaveformWidget,
-               live_waveform_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  LiveWaveformWidget, live_waveform_widget,
+  GTK_TYPE_DRAWING_AREA)
 
 /**
  * Draws the color picker.
@@ -69,18 +69,72 @@ live_waveform_draw_cb (
   gdk_cairo_set_source_rgba (
     cr, &self->color_green);
   float half_height = (float) height / 2.0f;
-  uint32_t nframes = AUDIO_ENGINE->nframes;
+  uint32_t nframes = AUDIO_ENGINE->block_length;
   float val;
   cairo_move_to (cr, 0, half_height);
-  unsigned int step = nframes / 128;
+  unsigned int step =
+    MAX (1, (nframes / (unsigned int) width));
+
+  size_t size =
+    sizeof (float) *
+    (size_t) AUDIO_ENGINE->block_length;
+
+  /* get the L buffer */
+  Port * port =
+    P_MASTER_TRACK->channel->stereo_out->l;
+  size_t read_space_avail =
+    zix_ring_read_space (port->audio_ring);
+  size_t blocks_to_read =
+    read_space_avail / size;
+  g_return_val_if_fail (
+    blocks_to_read > 0, FALSE);
+  float lbuf[
+    AUDIO_ENGINE->block_length *
+      blocks_to_read];
+  size_t lblocks_read =
+    zix_ring_peek (
+      port->audio_ring, &lbuf[0],
+      read_space_avail);
+  lblocks_read /= size;
+  size_t lstart_index =
+    (lblocks_read - 1) *
+      AUDIO_ENGINE->block_length;
+  if (lblocks_read == 0)
+    {
+      g_return_val_if_reached (FALSE);
+    }
+
+  /* get the R buffer */
+  port =
+    P_MASTER_TRACK->channel->stereo_out->r;
+  read_space_avail =
+    zix_ring_read_space (port->audio_ring);
+  blocks_to_read =
+    read_space_avail / size;
+  g_return_val_if_fail (
+    blocks_to_read > 0, FALSE);
+  float rbuf[
+    AUDIO_ENGINE->block_length *
+      blocks_to_read];
+  size_t rblocks_read =
+    zix_ring_peek (
+      port->audio_ring, &rbuf[0],
+      read_space_avail);
+  rblocks_read /= size;
+  size_t rstart_index =
+    (rblocks_read - 1) *
+      AUDIO_ENGINE->block_length;
+  if (rblocks_read == 0)
+    {
+      g_return_val_if_reached (FALSE);
+    }
+
   for (unsigned int i = 0; i < nframes; i += step)
     {
       val =
         MAX (
-          P_MASTER_TRACK->channel->stereo_out->
-            l->buf[i],
-          P_MASTER_TRACK->channel->stereo_out->
-            r->buf[i]);
+          lbuf[lstart_index + i],
+          rbuf[rstart_index + i]);
 
       cairo_line_to (
         cr, width * ((double) i / nframes),

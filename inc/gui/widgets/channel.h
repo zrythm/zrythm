@@ -116,6 +116,10 @@ typedef struct _ChannelWidget
   gulong              solo_toggled_handler_id;
   gulong              mute_toggled_handler_id;
 
+  /** Last MIDI event trigger time, for MIDI
+   * output. */
+  gint64              last_midi_trigger_time;
+
   /** Whole channel press. */
   GtkGestureMultiPress * mp;
 

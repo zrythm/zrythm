@@ -207,9 +207,12 @@ get_port_value (
     case TYPE_AUDIO:
       {
         float rms =
-          math_calculate_rms_db (
-            port->buf, AUDIO_ENGINE->block_length);
-        return math_dbfs_to_amp (rms);
+          port_get_rms_db (port, 2);
+        sample_t amp =
+          math_dbfs_to_amp (rms);
+        sample_t fader_val =
+          math_get_fader_val_from_amp (amp);
+        return fader_val;
       }
       break;
     case TYPE_CV:
@@ -219,8 +222,17 @@ get_port_value (
       break;
     case TYPE_EVENT:
       {
-        if (port->midi_events->num_events > 0 ||
-            port->midi_events->num_queued_events > 0)
+        int has_midi_events = 0;
+        MidiEvent event;
+        while (
+          zix_ring_read (
+            port->midi_ring, &event,
+            sizeof (MidiEvent)) > 0)
+          {
+            has_midi_events = 1;
+          }
+
+        if (has_midi_events)
           {
             self->last_midi_trigger_time =
               g_get_real_time ();
@@ -345,6 +357,11 @@ inspector_port_widget_new (
     {
       float minf = port_get_minf (port);
       float maxf = port_get_maxf (port);
+      if (port->identifier.type == TYPE_AUDIO)
+        {
+          /* use fader val for audio */
+          maxf = 1.f;
+        }
       float zerof = port_get_zerof (port);
       int editable = 0;
       if (port->identifier.type == TYPE_CONTROL)

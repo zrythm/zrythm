@@ -529,16 +529,13 @@ setup_phase_panel (ChannelWidget * self)
 static void
 setup_meter (ChannelWidget * self)
 {
-  meter_widget_setup (self->meter_l,
-               channel_get_current_l_db,
-               self->channel,
-               METER_TYPE_DB,
-               12);
-  meter_widget_setup (self->meter_r,
-               channel_get_current_r_db,
-               self->channel,
-               METER_TYPE_DB,
-               12);
+  meter_widget_setup (
+    self->meter_l,
+    channel_get_current_l_db, self->channel,
+    METER_TYPE_DB, 12);
+  meter_widget_setup (
+    self->meter_r, channel_get_current_r_db,
+    self->channel, METER_TYPE_DB, 12);
 }
 
 /**

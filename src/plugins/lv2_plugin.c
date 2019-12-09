@@ -183,7 +183,64 @@ create_port (
     {
       char * port_name =
         g_strdup (lilv_node_as_string (sym));
-      lv2_port->port = port_new (port_name);
+      PortType type = 0;
+      PortFlow flow = 0;
+
+      /* Set the lv2_port flow (input or output) */
+      if (lilv_port_is_a (
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
+            PM_LILV_NODES.core_InputPort))
+        {
+          flow = FLOW_INPUT;
+        }
+      else if (lilv_port_is_a (
+                 lv2_plugin->lilv_plugin,
+                 lv2_port->lilv_port,
+                 PM_LILV_NODES.core_OutputPort))
+        {
+          flow = FLOW_OUTPUT;
+        }
+
+      /* Set type */
+      if (lilv_port_is_a (
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
+            PM_LILV_NODES.core_ControlPort))
+        {
+          type = TYPE_CONTROL;
+        }
+      else if (lilv_port_is_a (
+                 lv2_plugin->lilv_plugin,
+                 lv2_port->lilv_port,
+                 PM_LILV_NODES.core_AudioPort))
+        {
+          type = TYPE_AUDIO;
+        }
+      else if (lilv_port_is_a (
+                 lv2_plugin->lilv_plugin,
+                 lv2_port->lilv_port,
+                 PM_LILV_NODES.core_CVPort))
+        {
+          type = TYPE_CV;
+        }
+      else if (lilv_port_is_a (
+                lv2_plugin->lilv_plugin,
+                lv2_port->lilv_port,
+                PM_LILV_NODES.ev_EventPort))
+        {
+          type = TYPE_EVENT;
+        }
+      else if (lilv_port_is_a (
+                lv2_plugin->lilv_plugin,
+                lv2_port->lilv_port,
+                PM_LILV_NODES.atom_AtomPort))
+        {
+          type = TYPE_EVENT;
+        }
+
+      lv2_port->port =
+        port_new_with_type (type, flow, port_name);
       g_free (port_name);
       lv2_port->port->plugin = lv2_plugin->plugin;
 

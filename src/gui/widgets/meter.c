@@ -1,7 +1,5 @@
 /*
- * gui/widgets/meter.c - meter widget
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,15 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- */
-
 #include "audio/channel.h"
 #include "gui/widgets/meter.h"
 #include "gui/widgets/fader.h"
 #include "utils/math.h"
 
-G_DEFINE_TYPE (MeterWidget, meter_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  MeterWidget, meter_widget, GTK_TYPE_DRAWING_AREA)
 
 #define GET_REAL_VAL ((*self->getter) (self->object))
 
@@ -176,6 +172,6 @@ static void
 meter_widget_class_init (MeterWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (klass,
-                                 "meter");
+  gtk_widget_class_set_css_name (
+    klass, "meter");
 }

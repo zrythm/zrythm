@@ -1197,18 +1197,72 @@ channel_get_pan (void * _channel)
   return channel->fader.pan;
 }
 
+static float
+get_current_rms (
+  Channel * channel,
+  int       left)
+{
+  float rms = 0.f;
+  if (channel->track->out_signal_type ==
+        TYPE_EVENT)
+    {
+      int has_midi_events = 0;
+      MidiEvent event;
+      while (
+        zix_ring_read (
+          channel->midi_out->midi_ring, &event,
+          sizeof (MidiEvent)) > 0)
+        {
+          has_midi_events = 1;
+        }
+
+      if (has_midi_events)
+        {
+          channel->widget->last_midi_trigger_time =
+            g_get_real_time ();
+          return 1.f;
+        }
+      else
+        {
+          /** 250 ms */
+          static const float MAX_TIME = 250000.f;
+          gint64 time_diff =
+            g_get_real_time () -
+            channel->widget->last_midi_trigger_time;
+          if ((float) time_diff < MAX_TIME)
+            {
+              return
+                1.f - (float) time_diff / MAX_TIME;
+            }
+          else
+            return 0.f;
+        }
+    }
+  else if (channel->track->out_signal_type ==
+             TYPE_AUDIO)
+    {
+      rms =
+        port_get_rms_db (
+          left ?
+            channel->stereo_out->l :
+            channel->stereo_out->r,
+          4);
+    }
+  return rms;
+}
+
 float
 channel_get_current_l_db (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
-  return channel->fader.l_port_db;
+  return get_current_rms (channel, 1);
 }
 
 float
 channel_get_current_r_db (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
-  return channel->fader.r_port_db;
+  return get_current_rms (channel, 0);
 }
 
 void
