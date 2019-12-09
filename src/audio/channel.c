@@ -1224,8 +1224,8 @@ get_current_rms (
         }
       else
         {
-          /** 250 ms */
-          static const float MAX_TIME = 250000.f;
+          /** 350 ms */
+          static const float MAX_TIME = 350000.f;
           gint64 time_diff =
             g_get_real_time () -
             channel->widget->last_midi_trigger_time;
@@ -1235,7 +1235,9 @@ get_current_rms (
                 1.f - (float) time_diff / MAX_TIME;
             }
           else
-            return 0.f;
+            {
+              return 0.f;
+            }
         }
     }
   else if (channel->track->out_signal_type ==
@@ -1246,7 +1248,7 @@ get_current_rms (
           left ?
             channel->stereo_out->l :
             channel->stereo_out->r,
-          4);
+          1);
     }
   return rms;
 }
@@ -1255,14 +1257,16 @@ float
 channel_get_current_l_db (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
-  return get_current_rms (channel, 1);
+  float rms = get_current_rms (channel, 1);
+  return rms;
 }
 
 float
 channel_get_current_r_db (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
-  return get_current_rms (channel, 0);
+  float rms = get_current_rms (channel, 0);
+  return rms;
 }
 
 void

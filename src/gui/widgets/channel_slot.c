@@ -17,7 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
+/**
+ * \file
  */
 
 #include "actions/copy_plugins_action.h"
@@ -41,9 +42,9 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (ChannelSlotWidget,
-               channel_slot_widget,
-               GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (
+  ChannelSlotWidget, channel_slot_widget,
+  GTK_TYPE_DRAWING_AREA)
 
 #define ELLIPSIZE_PADDING 2
 
@@ -639,11 +640,11 @@ recreate_pango_layouts (
 
   self->empty_slot_layout =
     z_cairo_create_pango_layout (
-      (GtkWidget *) self, "Arial Italic 9",
+      (GtkWidget *) self, "Arial Italic 8",
       PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
   self->pl_name_layout =
     z_cairo_create_pango_layout (
-      (GtkWidget *) self, "Arial Bold 9",
+      (GtkWidget *) self, "Arial Bold 8",
       PANGO_ELLIPSIZE_END, ELLIPSIZE_PADDING);
 }
 

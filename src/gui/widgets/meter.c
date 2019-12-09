@@ -59,8 +59,7 @@ meter_draw_cb (
       meter_val = meter_val_from_real (self);
       break;
     case METER_TYPE_MIDI:
-      /* TODO */
-      g_warn_if_reached ();
+      meter_val = GET_REAL_VAL;
       break;
     }
   float value_px = (float) height * meter_val;
@@ -72,16 +71,28 @@ meter_draw_cb (
     (float) (width - 4);
 
   double intensity = (double) meter_val;
-  const double intensity_inv = 1.0 - intensity;
-  double r = intensity_inv * self->end_color.red   +
-            intensity * self->start_color.red;
-  double g = intensity_inv * self->end_color.green +
-            intensity * self->start_color.green;
-  double b = intensity_inv * self->end_color.blue  +
-            intensity * self->start_color.blue;
-  /*float a = intensity_inv * self->end_color.alpha  +*/
-            /*intensity * self->start_color.alpha;*/
-  cairo_set_source_rgba (cr, r,g,b, 1.0);
+  if (self->type == METER_TYPE_DB)
+    {
+      const double intensity_inv = 1.0 - intensity;
+      double r =
+        intensity_inv * self->end_color.red +
+        intensity * self->start_color.red;
+      double g =
+        intensity_inv * self->end_color.green +
+        intensity * self->start_color.green;
+      double b =
+        intensity_inv * self->end_color.blue  +
+        intensity * self->start_color.blue;
+      /*float a = intensity_inv * self->end_color.alpha  +*/
+                /*intensity * self->start_color.alpha;*/
+      cairo_set_source_rgba (cr, r,g,b, 1.0);
+    }
+  else if (self->type == METER_TYPE_MIDI)
+    {
+      gdk_cairo_set_source_rgba (
+        cr, &self->end_color);
+    }
+
   float x = 2;
   cairo_rectangle (
     cr, x,

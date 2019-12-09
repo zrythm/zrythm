@@ -79,6 +79,9 @@ live_waveform_draw_cb (
     sizeof (float) *
     (size_t) AUDIO_ENGINE->block_length;
 
+  if (!P_MASTER_TRACK)
+    return FALSE;
+
   /* get the L buffer */
   Port * port =
     P_MASTER_TRACK->channel->stereo_out->l;
