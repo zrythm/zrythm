@@ -1772,7 +1772,7 @@ port_get_internal_jack_port (
 
 #endif
 
-#ifdef __linux__
+#ifdef HAVE_ALSA
 
 /**
  * Returns the Port matching the given ALSA

@@ -46,7 +46,7 @@
 #include <portaudio.h>
 #endif
 
-#ifdef __linux__
+#ifdef HAVE_ALSA
 #include <alsa/asoundlib.h>
 #endif
 
@@ -261,7 +261,7 @@ typedef struct AudioEngine
   //ZixSem             alsa_callback_start;
 
   /* ----------- ALSA --------------- */
-#ifdef __linux__
+#ifdef HAVE_ALSA
   /** Alsa playback handle. */
   snd_pcm_t *       playback_handle;
   snd_seq_t *       seq_handle;

@@ -201,7 +201,7 @@ engine_init (
       self->audio_backend = AUDIO_BACKEND_JACK;
       break;
 #endif
-#ifdef __linux__
+#ifdef HAVE_ALSA
     case AUDIO_BACKEND_ALSA:
       self->audio_backend = AUDIO_BACKEND_ALSA;
       break;
@@ -230,7 +230,7 @@ engine_init (
     case MIDI_BACKEND_DUMMY:
       self->midi_backend = MIDI_BACKEND_DUMMY;
       break;
-#ifdef __linux__
+#ifdef HAVE_ALSA
     case MIDI_BACKEND_ALSA:
       self->midi_backend = MIDI_BACKEND_ALSA;
       break;
@@ -268,7 +268,7 @@ engine_init (
       ret =
         engine_dummy_setup (self, loading);
       break;
-#ifdef __linux__
+#ifdef HAVE_ALSA
     case AUDIO_BACKEND_ALSA:
       ret =
         alsa_setup(self, loading);
@@ -343,7 +343,7 @@ engine_init (
       mret =
         engine_dummy_midi_setup (self, loading);
       break;
-#ifdef __linux__
+#ifdef HAVE_ALSA
     case MIDI_BACKEND_ALSA:
       mret =
         alsa_midi_setup (self, loading);
@@ -659,7 +659,7 @@ receive_midi_events (
         self->midi_in, 0, nframes);
       break;
 #endif
-#ifdef __linux__
+#ifdef HAVE_ALSA
     case MIDI_BACKEND_ALSA:
       /*engine_alsa_receive_midi_events (*/
         /*self, print);*/

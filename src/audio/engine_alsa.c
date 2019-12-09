@@ -17,7 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifdef __linux__
+#include "config.h"
+
+#ifdef HAVE_ALSA
 
 #include <math.h>
 #include <stdio.h>
