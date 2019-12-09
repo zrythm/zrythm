@@ -637,27 +637,38 @@ do_or_undo_duplicate (
               g_return_val_if_fail (obj, -1);
 
               /* ticks */
-              arranger_object_move (
-                obj, - self->ticks, 0);
-              arranger_object_move (
-                objs[i], - self->ticks, 0);
+              if (self->ticks)
+                {
+                  arranger_object_move (
+                    obj, - self->ticks, 0);
+                  arranger_object_move (
+                    objs[i], - self->ticks, 0);
+                }
 
               /* tracks & lanes */
-              move_obj_by_tracks_and_lanes (
-                obj, - delta_tracks, - delta_lanes);
-              move_obj_by_tracks_and_lanes (
-                objs[i], - delta_tracks,
-                - delta_lanes);
+              if (delta_tracks || delta_lanes)
+                {
+                  move_obj_by_tracks_and_lanes (
+                    obj, - delta_tracks,
+                    - delta_lanes);
+                  move_obj_by_tracks_and_lanes (
+                    objs[i], - delta_tracks,
+                    - delta_lanes);
+                }
 
               /* chords */
               /* TODO */
 
               /* pitch */
-              midi_note_shift_pitch (
-                (MidiNote *) obj, - delta_pitch);
-              midi_note_shift_pitch (
-                (MidiNote *) objs[i],
-                - delta_pitch);
+              if (delta_pitch)
+                {
+                  midi_note_shift_pitch (
+                    (MidiNote *) obj,
+                    - delta_pitch);
+                  midi_note_shift_pitch (
+                    (MidiNote *) objs[i],
+                    - delta_pitch);
+                }
             }
 
           /* clone the clone */

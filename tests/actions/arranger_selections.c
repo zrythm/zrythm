@@ -194,7 +194,8 @@ bootstrap_timeline ()
  */
 static void
 check_timeline_objects_vs_original_state (
-  const int check_selections)
+  const int check_selections,
+  const int is_duplicate_action)
 {
   if (check_selections)
     {
@@ -211,6 +212,12 @@ check_timeline_objects_vs_original_state (
       TRACKLIST, MIDI_TRACK_NAME);
   g_assert_nonnull (midi_track);
 
+  Position p1_before_move, p2_before_move;
+  p1_before_move = p1;
+  p2_before_move = p2;
+  position_add_ticks (&p1_before_move, - MOVE_TICKS);
+  position_add_ticks (&p2_before_move, - MOVE_TICKS);
+
   /* check midi region */
   g_assert_cmpint (
     midi_track->lanes[MIDI_REGION_LANE]->
@@ -218,8 +225,17 @@ check_timeline_objects_vs_original_state (
   ArrangerObject * obj =
     (ArrangerObject *)
     midi_track->lanes[MIDI_REGION_LANE]->regions[0];
-  g_assert_cmppos (&obj->pos, &p1);
-  g_assert_cmppos (&obj->end_pos, &p2);
+  if (is_duplicate_action)
+    {
+      g_assert_cmppos (&obj->pos, &p1_before_move);
+      g_assert_cmppos (
+        &obj->end_pos, &p2_before_move);
+    }
+  else
+    {
+      g_assert_cmppos (&obj->pos, &p1);
+      g_assert_cmppos (&obj->end_pos, &p2);
+    }
   Region * r =
     (Region *) obj;
   g_assert_cmpint (r->num_midi_notes, ==, 1);
@@ -249,8 +265,17 @@ check_timeline_objects_vs_original_state (
   g_assert_cmpint (at->num_regions, ==, 1);
   obj =
     (ArrangerObject *) at->regions[0];
-  g_assert_cmppos (&obj->pos, &p1);
-  g_assert_cmppos (&obj->end_pos, &p2);
+  if (is_duplicate_action)
+    {
+      g_assert_cmppos (&obj->pos, &p1_before_move);
+      g_assert_cmppos (
+        &obj->end_pos, &p2_before_move);
+    }
+  else
+    {
+      g_assert_cmppos (&obj->pos, &p1);
+      g_assert_cmppos (&obj->end_pos, &p2);
+    }
   r =
     (Region *) obj;
   g_assert_cmpint (r->num_aps, ==, 2);
@@ -273,7 +298,14 @@ check_timeline_objects_vs_original_state (
   obj =
     (ArrangerObject *) P_MARKER_TRACK->markers[2];
   Marker * m = (Marker *) obj;
-  g_assert_cmppos (&obj->pos, &p1);
+  if (is_duplicate_action)
+    {
+      g_assert_cmppos (&obj->pos, &p1_before_move);
+    }
+  else
+    {
+      g_assert_cmppos (&obj->pos, &p1);
+    }
   g_assert_cmpstr (m->name, ==, MARKER_NAME);
 
   /* check scale object */
@@ -283,7 +315,14 @@ check_timeline_objects_vs_original_state (
     (ArrangerObject *)
     P_CHORD_TRACK->scales[0];
   ScaleObject * s = (ScaleObject *) obj;
-  g_assert_cmppos (&obj->pos, &p1);
+  if (is_duplicate_action)
+    {
+      g_assert_cmppos (&obj->pos, &p1_before_move);
+    }
+  else
+    {
+      g_assert_cmppos (&obj->pos, &p1);
+    }
   g_assert_cmpint (
     s->scale->type, ==, MUSICAL_SCALE_TYPE);
   g_assert_cmpint (
@@ -350,7 +389,7 @@ test_create_timeline ()
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) MA_SELECTIONS), ==, 1);
-  check_timeline_objects_vs_original_state (1);
+  check_timeline_objects_vs_original_state (1, 0);
 
   /* undo and check that the objects are deleted */
   undo_manager_undo (UNDO_MANAGER);
@@ -365,7 +404,7 @@ test_create_timeline ()
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1);
+  check_timeline_objects_vs_original_state (1, 0);
 }
 
 static void
@@ -397,7 +436,7 @@ test_delete_timeline ()
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1);
+  check_timeline_objects_vs_original_state (1, 0);
 
   /* redo and check that the objects are gone */
   undo_manager_redo (UNDO_MANAGER);
@@ -423,7 +462,7 @@ test_delete_timeline ()
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1);
+  check_timeline_objects_vs_original_state (1, 0);
 }
 
 static void
@@ -524,7 +563,7 @@ test_move_timeline ()
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1);
+  check_timeline_objects_vs_original_state (1, 0);
 
   /* redo and check that the objects are moved
    * again */
@@ -537,7 +576,7 @@ test_move_timeline ()
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1);
+  check_timeline_objects_vs_original_state (1, 0);
 }
 
 static void
@@ -561,8 +600,13 @@ check_after_duplicate_timeline ()
   ArrangerObject * obj =
     (ArrangerObject *)
     midi_track->lanes[MIDI_REGION_LANE]->regions[0];
-  g_assert_cmppos (&obj->pos, &p1);
-  g_assert_cmppos (&obj->end_pos, &p2);
+  Position p1_before_move, p2_before_move;
+  p1_before_move = p1;
+  p2_before_move = p2;
+  position_add_ticks (&p1_before_move, - MOVE_TICKS);
+  position_add_ticks (&p2_before_move, - MOVE_TICKS);
+  g_assert_cmppos (&obj->pos, &p1_before_move);
+  g_assert_cmppos (&obj->end_pos, &p2_before_move);
   Region * r =
     (Region *) obj;
   g_assert_cmpint (r->num_midi_notes, ==, 1);
@@ -577,13 +621,8 @@ check_after_duplicate_timeline ()
   obj =
     (ArrangerObject *)
     midi_track->lanes[MIDI_REGION_LANE]->regions[1];
-  Position p1_after_move, p2_after_move;
-  p1_after_move = p1;
-  p2_after_move = p2;
-  position_add_ticks (&p1_after_move, MOVE_TICKS);
-  position_add_ticks (&p2_after_move, MOVE_TICKS);
-  g_assert_cmppos (&obj->pos, &p1_after_move);
-  g_assert_cmppos (&obj->end_pos, &p2_after_move);
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->end_pos, &p2);
   r =
     (Region *) obj;
   g_assert_cmpint (r->num_midi_notes, ==, 1);
@@ -612,8 +651,8 @@ check_after_duplicate_timeline ()
   g_assert_cmpint (at->num_regions, ==, 2);
   obj =
     (ArrangerObject *) at->regions[0];
-  g_assert_cmppos (&obj->pos, &p1);
-  g_assert_cmppos (&obj->end_pos, &p2);
+  g_assert_cmppos (&obj->pos, &p1_before_move);
+  g_assert_cmppos (&obj->end_pos, &p2_before_move);
   r =
     (Region *) obj;
   g_assert_cmpint (r->num_aps, ==, 2);
@@ -631,8 +670,8 @@ check_after_duplicate_timeline ()
     ap->fvalue, AP_VAL2, 0.000001f);
   obj =
     (ArrangerObject *) at->regions[1];
-  g_assert_cmppos (&obj->pos, &p1_after_move);
-  g_assert_cmppos (&obj->end_pos, &p2_after_move);
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->end_pos, &p2);
   r =
     (Region *) obj;
   g_assert_cmpint (r->num_aps, ==, 2);
@@ -653,12 +692,12 @@ check_after_duplicate_timeline ()
   obj =
     (ArrangerObject *) P_MARKER_TRACK->markers[2];
   Marker * m = (Marker *) obj;
-  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->pos, &p1_before_move);
   g_assert_cmpstr (m->name, ==, MARKER_NAME);
   obj =
     (ArrangerObject *) P_MARKER_TRACK->markers[3];
   m = (Marker *) obj;
-  g_assert_cmppos (&obj->pos, &p1_after_move);
+  g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmpstr (m->name, ==, MARKER_NAME);
 
   /* check scale object */
@@ -668,7 +707,7 @@ check_after_duplicate_timeline ()
     (ArrangerObject *)
     P_CHORD_TRACK->scales[0];
   ScaleObject * s = (ScaleObject *) obj;
-  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->pos, &p1_before_move);
   g_assert_cmpint (
     s->scale->type, ==, MUSICAL_SCALE_TYPE);
   g_assert_cmpint (
@@ -677,7 +716,7 @@ check_after_duplicate_timeline ()
     (ArrangerObject *)
     P_CHORD_TRACK->scales[1];
   s = (ScaleObject *) obj;
-  g_assert_cmppos (&obj->pos, &p1_after_move);
+  g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmpint (
     s->scale->type, ==, MUSICAL_SCALE_TYPE);
   g_assert_cmpint (
@@ -699,7 +738,7 @@ test_duplicate_timeline ()
   /* undo and check that the objects are at their
    * original state*/
   undo_manager_undo (UNDO_MANAGER);
-  check_timeline_objects_vs_original_state (0);
+  check_timeline_objects_vs_original_state (0, 1);
 
   /* redo and check that the objects are moved
    * again */
@@ -708,7 +747,7 @@ test_duplicate_timeline ()
 
   /* undo again to prepare for next test */
   undo_manager_undo (UNDO_MANAGER);
-  check_timeline_objects_vs_original_state (0);
+  check_timeline_objects_vs_original_state (0, 1);
 }
 
 int
