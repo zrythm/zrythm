@@ -1,0 +1,32 @@
+image: debian/buster
+packages:
+  - libgtk-3-dev
+  - libjack-dev
+  - liblilv-dev
+  - libsndfile1-dev
+  - meson
+  - ninja-build
+  - gettext
+  - sed
+  - help2man
+  - python3-sphinx
+  - ladspa-sdk
+  - libfftw3-dev
+  - libasound2-dev
+  - libavcodec-dev
+  - libavutil-dev
+  - libavformat-dev
+  - lv2-dev
+  - libsamplerate0-dev
+  - libyaml-dev
+  - python3
+sources:
+  - https://git.sr.ht/~alextee/zrythm
+  - https://github.com/mesonbuild/meson
+tasks:
+  - setup: |
+      cd zrythm
+      ../meson/meson.py build
+  - build: |
+      cd zrythm
+      ninja -C build
