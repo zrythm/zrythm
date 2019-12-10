@@ -1,4 +1,4 @@
-image: debian/buster
+image: ubuntu/latest
 packages:
   - libgtk-3-dev
   - libjack-dev
@@ -33,3 +33,4 @@ tasks:
   - test: |
       cd zrythm
       ninja -C build test
+

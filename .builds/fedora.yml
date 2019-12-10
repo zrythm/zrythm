@@ -25,7 +25,10 @@ sources:
 tasks:
   - setup: |
       cd zrythm
-      meson build
+      meson build -Denable_tests=true -Dmanpage=true
   - build: |
       cd zrythm
       ninja -C build
+  - test: |
+      cd zrythm
+      ninja -C build test
