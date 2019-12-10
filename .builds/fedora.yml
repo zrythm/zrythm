@@ -1,0 +1,31 @@
+image: fedora/latest
+packages:
+  - gcc-c++
+  - gcc
+  - pkgconfig
+  - gtk3-devel
+  - python3
+  - lilv-devel
+  - lv2-devel
+  - libsndfile-devel
+  - libyaml-devel
+  - libsamplerate-devel
+  - gettext
+  - sed
+  - help2man
+  - alsa-lib-devel
+  - ladspa-devel
+  - fftw-devel
+  - meson
+  - help2man
+  - jack-audio-connection-kit-devel
+  - libX11-devel
+sources:
+  - https://git.sr.ht/~alextee/zrythm
+tasks:
+  - setup: |
+      cd zrythm
+      meson build
+  - build: |
+      cd zrythm
+      ninja -C build
