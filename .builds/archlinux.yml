@@ -1,0 +1,30 @@
+image: archlinux
+packages:
+  - meson
+  - gtk3
+  - lilv
+  - libx11
+  - jack
+  - libsndfile
+  - libyaml
+  - libsamplerate
+  - alsa-lib
+  - fftw
+  - suil
+  - python
+  - gettext
+  - sed
+  - ninja
+  - help2man
+  - python-sphinx
+  - ladspa
+  - lv2
+sources:
+  - https://git.sr.ht/~alextee/zrythm
+tasks:
+  - setup: |
+      cd zrythm
+      meson build
+  - build: |
+      cd zrythm
+      ninja -C build
