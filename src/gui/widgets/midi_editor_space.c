@@ -253,16 +253,6 @@ midi_editor_space_widget_get_key_for_label (
 /*{*/
 /*}*/
 
-/*static void*/
-/*on_keys_box_size_allocate (*/
-  /*GtkWidget * widget,*/
-  /*GdkRectangle * allocation,*/
-  /*MidiEditorSpaceWidget * self)*/
-/*{*/
-  /*midi_arranger_widget_set_size (*/
-    /*MW_MIDI_ARRANGER);*/
-/*}*/
-
 void
 midi_editor_space_widget_refresh (
   MidiEditorSpaceWidget * self)
@@ -404,6 +394,15 @@ midi_editor_space_widget_init (
     ARRANGER_WIDGET_TYPE_MIDI_MODIFIER;
 
   self->last_mid_note = 63;
+
+  self->arranger_and_keys_vsize_group =
+    gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
+  gtk_size_group_add_widget (
+    self->arranger_and_keys_vsize_group,
+    GTK_WIDGET (self->arranger));
+  gtk_size_group_add_widget (
+    self->arranger_and_keys_vsize_group,
+    GTK_WIDGET (self->piano_roll_keys_box));
 
   /*gtk_widget_set_has_window (*/
     /*GTK_WIDGET (self->piano_roll_keys_box), TRUE);*/

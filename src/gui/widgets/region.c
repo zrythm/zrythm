@@ -716,7 +716,8 @@ draw_automation_region (
                 y_end * full_rect->height;
 
               /* draw ap */
-              if (x_start_real >= 0.0)
+              if (x_start_real > 0.0 &&
+                  x_start_real < full_rect->width)
                 {
                   int padding = 1;
                   cairo_rectangle (
@@ -766,6 +767,10 @@ draw_automation_region (
                         new_y = ap_y + y_end_real;
                       else
                         new_y = ap_y + y_start_real;
+
+                      if (new_x >=
+                            obj->full_rect.width)
+                        break;
 
                       if (math_doubles_equal (
                             k, 0.0, 0.001))

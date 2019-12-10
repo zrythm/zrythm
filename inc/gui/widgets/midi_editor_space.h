@@ -131,6 +131,10 @@ typedef struct _MidiEditorSpaceWidget
   double               total_key_px;
 
   GtkGestureMultiPress * multipress;
+
+  /** Vertical size goup for the keys and the
+   * arranger. */
+  GtkSizeGroup *    arranger_and_keys_vsize_group;
 } MidiEditorSpaceWidget;
 
 void

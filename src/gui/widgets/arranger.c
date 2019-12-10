@@ -4147,6 +4147,9 @@ arranger_widget_redraw_playhead (
   GdkRectangle rect;
   arranger_widget_get_visible_rect (self, &rect);
 
+  if (self->type == ARRANGER_WIDGET_TYPE_AUTOMATION)
+    g_message ("redraw playhead");
+
   int playhead_x = get_playhead_px (self);
   int min_x =
     MIN (self->last_playhead_px, playhead_x);

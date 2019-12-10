@@ -195,26 +195,35 @@ on_playhead_changed (
                 arranger_widget_redraw_playhead (
                   MW_MIDI_MODIFIER_ARRANGER);
             }
-          if (MW_TIMELINE)
-            {
-              if (manually)
-                arranger_widget_redraw_whole (
-                  MW_TIMELINE);
-              else
-                arranger_widget_redraw_playhead (
-                  MW_TIMELINE);
-            }
-          if (MW_PINNED_TIMELINE)
-            {
-              if (manually)
-                arranger_widget_redraw_whole (
-                  MW_PINNED_TIMELINE);
-              else
-                arranger_widget_redraw_playhead (
-                  MW_PINNED_TIMELINE);
-            }
           midi_editor_space_widget_refresh_labels (
             MW_MIDI_EDITOR_SPACE, 0);
+        }
+      if (MW_TIMELINE)
+        {
+          if (manually)
+            arranger_widget_redraw_whole (
+              MW_TIMELINE);
+          else
+            arranger_widget_redraw_playhead (
+              MW_TIMELINE);
+        }
+      if (MW_PINNED_TIMELINE)
+        {
+          if (manually)
+            arranger_widget_redraw_whole (
+              MW_PINNED_TIMELINE);
+          else
+            arranger_widget_redraw_playhead (
+              MW_PINNED_TIMELINE);
+        }
+      if (MW_AUTOMATION_ARRANGER)
+        {
+          if (manually)
+            arranger_widget_redraw_whole (
+              MW_AUTOMATION_ARRANGER);
+          else
+            arranger_widget_redraw_playhead (
+              MW_AUTOMATION_ARRANGER);
         }
       /*if (MW_AUDIO_CLIP_EDITOR)*/
         /*{*/

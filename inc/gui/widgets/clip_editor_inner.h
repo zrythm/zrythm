@@ -30,11 +30,11 @@
 
 #define CLIP_EDITOR_INNER_WIDGET_TYPE \
   (clip_editor_inner_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ClipEditorInnerWidget,
-                      clip_editor_inner_widget,
-                      Z,
-                      CLIP_EDITOR_INNER_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  ClipEditorInnerWidget,
+  clip_editor_inner_widget,
+  Z, CLIP_EDITOR_INNER_WIDGET,
+  GtkBox)
 
 typedef struct _RulerWidget RulerWidget;
 typedef struct _ColorAreaWidget ColorAreaWidget;
