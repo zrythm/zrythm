@@ -211,6 +211,12 @@ endif
 common_cflags = cc.get_supported_arguments (
   test_cflags)
 
+if os_freebsd
+  common_cflags += [
+    '-I' + includedir,
+    ]
+endif
+
 test_strict_cflags = [
   #'-Werror=cast-qual',
   '-Werror=clobbered',
@@ -296,20 +302,13 @@ if not os_darwin
     ]
 endif
 
-test_ldflags += [
-  '-lfftw3_threads',
-  '-lfftw3f_threads',
-  ]
-
 common_ldflags = cc.get_supported_link_arguments (
   test_ldflags)
 
 if os_freebsd
   common_ldflags += [
-    '-L' + prefix + '/lib',
+    '-L' + libdir,
     '-lexecinfo',
-    '-lfftw3_threads',
-    '-lfftw3f_threads',
     ]
 endif
 
@@ -395,6 +394,8 @@ endif
 
 if os_linux or os_freebsd
   zrythm_deps += x11_dep
+  zrythm_deps += cc.find_library('fftw3_threads')
+  zrythm_deps += cc.find_library('fftw3f_threads')
 endif
 
 if (os_darwin)

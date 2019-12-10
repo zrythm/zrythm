@@ -1,0 +1,42 @@
+image: freebsd/latest
+packages:
+  - gettext-tools
+  - meson
+  - ninja
+  - python36
+  - gtk-update-icon-cache
+  - pkgconf
+  - libX11
+  - gsettings-desktop-schemas
+  - ffmpeg
+  - libgtop
+  - jackit
+  - lilv
+  - libsamplerate
+  - serd
+  - libsndfile
+  - sord
+  - alsa-lib
+  - sratom
+  - suil
+  - libyaml
+  - gettext-runtime
+  - cairo
+  - glib
+  - gdk-pixbuf2
+  - gettext-runtime
+  - gtk3
+  - pango
+  - fftw3
+  - fftw3-float
+sources:
+  - https://git.sr.ht/~alextee/zrythm
+tasks:
+  - setup: |
+      cd zrythm
+      sed -i -e 's/python3/python3.6/g' resources/gen-gtk-gresources-xml.py
+      CFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib meson build
+  - build: |
+      cd zrythm
+      ninja -C build
+
