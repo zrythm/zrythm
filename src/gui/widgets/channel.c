@@ -75,6 +75,12 @@ channel_widget_update_meter_reading (
   double prev = widget->meter_reading_val;
   Channel * channel = widget->channel;
 
+  if (!gtk_widget_get_mapped (
+        GTK_WIDGET (widget)))
+    {
+      return G_SOURCE_CONTINUE;
+    }
+
   /* TODO */
   if (channel->track->out_signal_type ==
         TYPE_EVENT)
@@ -85,7 +91,7 @@ channel_widget_update_meter_reading (
         GTK_WIDGET (widget->meter_l));
       gtk_widget_queue_draw (
         GTK_WIDGET (widget->meter_r));
-      return FALSE;
+      return G_SOURCE_CONTINUE;
     }
 
   /* calc decibels */

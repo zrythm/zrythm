@@ -153,19 +153,19 @@ typedef struct AudioEngine
   MidiBackend       midi_backend;
 
   /** Audio buffer size (block length). */
-	nframes_t         block_length;
+  nframes_t         block_length;
 
   /** Size of MIDI port buffers. */
-	size_t            midi_buf_size;
+  size_t            midi_buf_size;
 
   /** Sample rate. */
-	sample_rate_t     sample_rate;
+  sample_rate_t     sample_rate;
 
   /** Number of frames/samples per tick. */
   int               frames_per_tick;
 
   /** True iff buffer size callback fired. */
-	int               buf_size_set;
+  int               buf_size_set;
 
   /** The mixer. */
   Mixer             mixer;
@@ -351,11 +351,11 @@ engine_fields_schema[] =
     "monitor_out", CYAML_FLAG_POINTER,
     AudioEngine, monitor_out,
     stereo_ports_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "midi_editor_manual_press", CYAML_FLAG_POINTER,
     AudioEngine, midi_editor_manual_press,
     port_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "midi_in", CYAML_FLAG_POINTER,
     AudioEngine, midi_in,
     port_fields_schema),
@@ -367,20 +367,20 @@ engine_fields_schema[] =
     "control_room", CYAML_FLAG_DEFAULT,
     AudioEngine, control_room,
     control_room_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "pool", CYAML_FLAG_POINTER,
     AudioEngine, pool,
     audio_pool_fields_schema),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 engine_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-	  AudioEngine, engine_fields_schema),
+    AudioEngine, engine_fields_schema),
 };
 
 void

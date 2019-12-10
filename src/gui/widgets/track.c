@@ -35,6 +35,7 @@
 #include "gui/widgets/custom_button.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/meter.h"
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -47,6 +48,7 @@
 #include "utils/cairo.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -189,12 +191,14 @@ get_hovered_button (
   return NULL;
 }
 
+/** 250 ms */
+/*static const float MAX_TIME = 250000.f;*/
+
 static void
 draw_color_area (
-  TrackWidget * self,
-  cairo_t *     cr,
-  int           width,
-  int           height)
+  TrackWidget *  self,
+  cairo_t *      cr,
+  GdkRectangle * rect)
 {
   cairo_surface_t * surface =
     z_cairo_get_surface_from_icon_name (
@@ -203,7 +207,7 @@ draw_color_area (
   gdk_cairo_set_source_rgba (
     cr, &self->track->color);
   cairo_rectangle (
-    cr, 0, 0, COLOR_AREA_WIDTH, height);
+    cr, 0, 0, COLOR_AREA_WIDTH, rect->height);
   cairo_fill (cr);
 
   GdkRGBA c2, c3;
@@ -225,8 +229,94 @@ draw_color_area (
   /*cairo_set_source_surface (*/
     /*self->cached_cr, surface, 1, 1);*/
   cairo_mask_surface(
-    self->cached_cr, surface, 1, 1);
-  cairo_fill (self->cached_cr);
+    cr, surface, 1, 1);
+  cairo_fill (cr);
+
+#if 0
+  /* draw meters */
+  cairo_set_source_rgba (cr, 0, 1, 0.2, 1.0);
+  int height = rect->height;
+  switch (self->track->in_signal_type)
+    {
+    case TYPE_AUDIO:
+      {
+      float rms =
+        port_get_rms_db (
+          self->track->processor.stereo_in->l, 1);
+      sample_t amp =
+        math_dbfs_to_amp (rms);
+      sample_t fader_val =
+        math_get_fader_val_from_amp (amp);
+      fader_val *= (sample_t) height;
+      cairo_rectangle (
+        cr, (COLOR_AREA_WIDTH - 4),
+        (height - (int) fader_val),
+        2, fader_val);
+      cairo_fill (cr);
+
+      rms =
+        port_get_rms_db (
+          self->track->processor.stereo_in->r, 1);
+      amp =
+        math_dbfs_to_amp (rms);
+      fader_val =
+        math_get_fader_val_from_amp (amp);
+      fader_val *= (sample_t) height;
+      cairo_rectangle (
+        cr, (COLOR_AREA_WIDTH - 2),
+        (height - (int) fader_val),
+        2, fader_val);
+      cairo_fill (cr);
+      }
+      break;
+    case TYPE_EVENT:
+      {
+        int has_midi_events = 0;
+        MidiEvent event;
+        float val = 0.f;
+        if (!self->track->processor.midi_out)
+          break;
+        Port * port =
+          self->track->processor.midi_out;
+        while (
+          zix_ring_read (
+            port->midi_ring, &event,
+            sizeof (MidiEvent)) > 0)
+          {
+            has_midi_events = 1;
+          }
+
+        if (has_midi_events)
+          {
+            self->last_midi_in_trigger_time =
+              g_get_real_time ();
+            val = 1.f;
+          }
+        else
+          {
+            gint64 time_diff =
+              g_get_real_time () -
+              self->last_midi_in_trigger_time;
+            if ((float) time_diff < MAX_TIME)
+              {
+                val =
+                  1.f - (float) time_diff / MAX_TIME;
+              }
+            else
+              val = 0.f;
+          }
+        val *= height;
+        cairo_rectangle (
+          cr, (COLOR_AREA_WIDTH - 4),
+          (height - (int) val),
+          4, val);
+        cairo_fill (cr);
+      }
+      break;
+    default:
+      break;
+    }
+#endif
 }
 
 static void
@@ -819,9 +909,16 @@ track_draw_cb (
   cairo_t *     cr,
   TrackWidget * self)
 {
-  g_message (
-    "redrawing track (frames left: %d)",
-    self->redraw);
+  GdkRectangle rect;
+  gdk_cairo_get_clip_rectangle (cr, &rect);
+
+  /*g_message (*/
+    /*"track %s rect x %d %d redraw %d",*/
+    /*self->track->name, rect.x, rect.y,*/
+    /*self->redraw);*/
+  /*g_message (*/
+    /*"redrawing track (frames left: %d)",*/
+    /*self->redraw);*/
   if (self->redraw)
     {
       GtkStyleContext *context =
@@ -859,7 +956,7 @@ track_draw_cb (
         }
 
       draw_color_area (
-        self, self->cached_cr, width, height);
+        self, self->cached_cr, &rect);
 
       draw_name (self, self->cached_cr);
 
@@ -884,7 +981,9 @@ track_draw_cb (
       /* if there are still frames left, draw
        * again to finish drawing the sequence */
       if (self->redraw)
-        gtk_widget_queue_draw (widget);
+        gtk_widget_queue_draw_area (
+          widget, rect.x, rect.y, rect.width,
+          rect.height);
     }
 
   cairo_set_source_surface (
@@ -1068,6 +1167,78 @@ track_widget_force_redraw (
     MIN (self->redraw + 1, 10);
   gtk_widget_queue_draw (
     (GtkWidget *) self->drawing_area);
+}
+
+static void
+get_visible_rect (
+  TrackWidget *  self,
+  GdkRectangle * rect)
+{
+  rect->x = 0;
+  rect->y = 0;
+  rect->height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+  rect->width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (self));
+}
+
+/**
+ * Causes a redraw of the meters only.
+ */
+void
+track_widget_redraw_meters (
+  TrackWidget * self)
+{
+  GdkRectangle rect;
+  get_visible_rect (self, &rect);
+
+#if 0
+  int draw_count = 0;
+  switch (self->track->in_signal_type)
+    {
+    case TYPE_AUDIO:
+      draw_count++;
+      if (self->redraw < draw_count)
+        self->redraw = draw_count;
+      gtk_widget_queue_draw_area (
+        GTK_WIDGET (self->drawing_area),
+        COLOR_AREA_WIDTH - 4,
+        0, 4, self->track->main_height);
+      break;
+    case TYPE_EVENT:
+      draw_count++;
+      if (self->redraw < draw_count)
+        self->redraw = draw_count;
+      gtk_widget_queue_draw_area (
+        GTK_WIDGET (self->drawing_area),
+        COLOR_AREA_WIDTH - 4,
+        0, 4, self->track->main_height);
+      break;
+    default:
+      break;
+    }
+
+  switch (self->track->out_signal_type)
+    {
+    case TYPE_AUDIO:
+      break;
+    case TYPE_EVENT:
+      break;
+    default:
+      break;
+    }
+#endif
+
+  if (gtk_widget_get_visible (
+        GTK_WIDGET (self->meter_l)))
+    gtk_widget_queue_draw (
+      GTK_WIDGET (self->meter_l));
+  if (gtk_widget_get_visible (
+        GTK_WIDGET (self->meter_r)))
+    gtk_widget_queue_draw (
+      GTK_WIDGET (self->meter_r));
 }
 
 /**
@@ -2033,6 +2204,22 @@ track_widget_update_size (
   track_widget_force_redraw (self);
 }
 
+static gboolean
+track_tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  TrackWidget *   self)
+{
+  if (!gtk_widget_get_mapped (
+        GTK_WIDGET (self->drawing_area)))
+    {
+      return G_SOURCE_CONTINUE;
+    }
+
+  track_widget_redraw_meters (self);
+  return G_SOURCE_CONTINUE;
+}
+
 /**
  * Wrapper for child track widget.
  *
@@ -2147,7 +2334,53 @@ track_widget_new (Track * track)
       break;
     }
 
+  if (track_type_has_channel (self->track->type))
+    {
+      MeterType type = METER_TYPE_DB;
+      switch (self->track->out_signal_type)
+        {
+        case TYPE_EVENT:
+          type = METER_TYPE_MIDI;
+          meter_widget_setup (
+            self->meter_l, channel_get_current_l_db,
+            self->track->channel, type, 8);
+          gtk_widget_set_margin_start (
+            GTK_WIDGET (self->meter_l), 2);
+          gtk_widget_set_margin_end (
+            GTK_WIDGET (self->meter_l), 2);
+          self->meter_l->padding = 0;
+          gtk_widget_set_visible (
+            GTK_WIDGET (self->meter_r), 0);
+          break;
+        case TYPE_AUDIO:
+          type = METER_TYPE_DB;
+          meter_widget_setup (
+            self->meter_l, channel_get_current_l_db,
+            self->track->channel, type, 6);
+          self->meter_l->padding = 0;
+          meter_widget_setup (
+            self->meter_r, channel_get_current_r_db,
+            self->track->channel, type, 6);
+          self->meter_r->padding = 0;
+          break;
+        default:
+          break;
+        }
+    }
+  else
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->meter_l), 0);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->meter_r), 0);
+    }
+
   track_widget_update_size (self);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self),
+    (GtkTickCallback) track_tick_cb,
+    self, NULL);
 
   return self;
 }
@@ -2179,6 +2412,8 @@ on_destroy (
 static void
 track_widget_init (TrackWidget * self)
 {
+  g_type_ensure (METER_WIDGET_TYPE);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_widget_set_vexpand_set (
@@ -2285,6 +2520,9 @@ track_widget_class_init (TrackWidgetClass * _klass)
   /*BIND_CHILD (paned);*/
   /*BIND_CHILD (top_grid);*/
   /*BIND_CHILD (event_box);*/
+  BIND_CHILD (main_box);
+  BIND_CHILD (meter_l);
+  BIND_CHILD (meter_r);
   BIND_CHILD (highlight_top_box);
   BIND_CHILD (highlight_bot_box);
 }

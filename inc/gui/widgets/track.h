@@ -37,6 +37,7 @@ G_DECLARE_FINAL_TYPE (
 typedef struct Track Track;
 typedef struct CustomButtonWidget CustomButtonWidget;
 typedef struct _ArrangerWidget ArrangerWidget;
+typedef struct _MeterWidget MeterWidget;
 
 /**
  * @addtogroup widgets
@@ -64,7 +65,11 @@ typedef enum TrackWidgetResizeTarget
  */
 typedef struct _TrackWidget
 {
-  GtkBox                  parent_instance;
+  GtkBox               parent_instance;
+
+  /** Main box containing the drawing area and the
+   * meters on the right. */
+  GtkBox *             main_box;
 
   /** Track icon, currently not placed anywhere
    * but used by the ColorAreaWidget to get the
@@ -163,6 +168,13 @@ typedef struct _TrackWidget
   int                  num_top_buttons;
   CustomButtonWidget * bot_buttons[8];
   int                  num_bot_buttons;
+
+  MeterWidget *        meter_l;
+  MeterWidget *        meter_r;
+
+  /** Last MIDI event trigger time, for MIDI
+   * ports. */
+  gint64            last_midi_out_trigger_time;
 
   /** Set to 1 to redraw. */
   int                redraw;
@@ -291,6 +303,13 @@ track_widget_get_local_y (
   TrackWidget *    self,
   ArrangerWidget * arranger,
   int              arranger_y);
+
+/**
+ * Causes a redraw of the meters only.
+ */
+void
+track_widget_redraw_meters (
+  TrackWidget * self);
 
 /**
  * @}

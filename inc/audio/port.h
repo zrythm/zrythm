@@ -328,6 +328,21 @@ typedef struct Port
   int                 deleting;
 
   /**
+   * Flag to indicate if the ring buffers below
+   * should be filled or not.
+   *
+   * If a UI element that needs them becomes
+   * mapped (visible), this should be set to
+   * 1, and when unmapped (invisible) it should
+   * be set to 0.
+   */
+  int                 write_ring_buffers;
+
+  /** Whether the port has midi events not yet
+   * processed by the UI. */
+  volatile int        has_midi_events;
+
+  /**
    * Ring buffer for saving the contents of the
    * audio buffer to be used in the UI instead of
    * directly accessing the buffer.

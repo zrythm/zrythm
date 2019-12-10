@@ -89,7 +89,7 @@ automation_point_is_equal (
     (ArrangerObject *) b;
   return
     position_is_equal (&a_obj->pos, &b_obj->pos) &&
-    MATH_FLOATS_EQUAL (
+    math_floats_equal (
       a->fvalue, b->fvalue, 0.001f);
 }
 

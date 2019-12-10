@@ -242,6 +242,7 @@ get_loop_start_rect (
   RulerWidget *  self,
   GdkRectangle * rect)
 {
+  rect->x = 0;
   if (self->type == TYPE (EDITOR))
     {
       if (CLIP_EDITOR->region)
@@ -309,6 +310,7 @@ get_loop_end_rect (
   RulerWidget *  self,
   GdkRectangle * rect)
 {
+  rect->x = 0;
   if (self->type == TYPE (EDITOR))
     {
       if (CLIP_EDITOR->region)

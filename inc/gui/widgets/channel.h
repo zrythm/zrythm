@@ -38,7 +38,6 @@ G_DECLARE_FINAL_TYPE (ChannelWidget,
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct _KnobWidget KnobWidget;
 typedef struct _FaderWidget FaderWidget;
-typedef struct _ChannelMeterWidget ChannelMeterWidget;
 typedef struct Channel Channel;
 typedef struct _ChannelSlotWidget ChannelSlotWidget;
 typedef struct _RouteTargetSelectorWidget

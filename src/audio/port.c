@@ -983,12 +983,11 @@ port_get_rms_db (
   if (blocks_read == 0)
     g_return_val_if_reached (0.f);
 
-  float rms =
+  return
     math_calculate_rms_db (
       &buf[start_index],
       (size_t) n_cycles *
         AUDIO_ENGINE->block_length);
-  return rms;
 }
 
 /**
@@ -1277,15 +1276,25 @@ port_sum_signal_from_inputs (
       if (start_frame + nframes ==
             AUDIO_ENGINE->block_length)
         {
-          int i = port->midi_events->num_events - 1;
-          while (
-            i >= 0 && zix_ring_write_space (
-              port->midi_ring) > sizeof (MidiEvent))
+          if (port->write_ring_buffers)
             {
-              zix_ring_write (
-                port->midi_ring,
-                &port->midi_events->events[i--],
-                sizeof (MidiEvent));
+              int i = port->midi_events->num_events - 1;
+              while (
+                i >= 0 && zix_ring_write_space (
+                  port->midi_ring) > sizeof (MidiEvent))
+                {
+                  zix_ring_write (
+                    port->midi_ring,
+                    &port->midi_events->events[i--],
+                    sizeof (MidiEvent));
+                }
+            }
+          else
+            {
+              if (port->midi_events->num_events >
+                    0)
+                g_atomic_int_set (
+                  &port->has_midi_events, 1);
             }
         }
       break;
@@ -1318,23 +1327,33 @@ port_sum_signal_from_inputs (
       if (start_frame + nframes ==
             AUDIO_ENGINE->block_length)
         {
-          size_t size =
-            sizeof (float) *
-            (size_t) AUDIO_ENGINE->block_length;
-          size_t write_space_avail =
-            zix_ring_write_space (port->audio_ring);
+          /*if (port->write_ring_buffers)*/
+            /*{*/
+              size_t size =
+                sizeof (float) *
+                (size_t) AUDIO_ENGINE->block_length;
+              size_t write_space_avail =
+                zix_ring_write_space (port->audio_ring);
 
-          /* move the read head 1 block to make
-           * space if no space avail to write */
-          if (write_space_avail / size < 1)
-            {
-              zix_ring_skip (
-                port->audio_ring, size);
-            }
+              /* move the read head 8 blocks to make
+               * space if no space avail to write */
+              if (write_space_avail / size < 1)
+                {
+                  zix_ring_skip (
+                    port->audio_ring, size * 8);
+                }
 
-          zix_ring_write (
-            port->audio_ring, &port->buf[0],
-            size);
+              zix_ring_write (
+                port->audio_ring, &port->buf[0],
+                size);
+            /*}*/
+          /*else*/
+            /*{*/
+              /*port->rms =*/
+                /*math_calculate_rms_db (*/
+                  /*&port->buf[0],*/
+                  /*AUDIO_ENGINE->block_length);*/
+            /*}*/
         }
       break;
     case TYPE_CONTROL:

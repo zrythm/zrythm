@@ -1206,14 +1206,24 @@ get_current_rms (
   if (channel->track->out_signal_type ==
         TYPE_EVENT)
     {
+      Port * port = channel->midi_out;
       int has_midi_events = 0;
-      MidiEvent event;
-      while (
-        zix_ring_read (
-          channel->midi_out->midi_ring, &event,
-          sizeof (MidiEvent)) > 0)
+      if (port->write_ring_buffers)
         {
-          has_midi_events = 1;
+          MidiEvent event;
+          while (
+            zix_ring_read (
+              port->midi_ring, &event,
+              sizeof (MidiEvent)) > 0)
+            {
+              has_midi_events = 1;
+            }
+        }
+      else
+        {
+          has_midi_events =
+            g_atomic_int_compare_and_exchange (
+              &port->has_midi_events, 1, 0);
         }
 
       if (has_midi_events)

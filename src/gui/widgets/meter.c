@@ -53,6 +53,8 @@ meter_draw_cb (
     context, cr, 0, 0, width, height);
 
   float meter_val = -1.0;
+  g_return_val_if_fail (
+    self->getter && self->object, FALSE);
   switch (self->type)
     {
     case METER_TYPE_DB:
@@ -68,7 +70,7 @@ meter_draw_cb (
 
   /* draw filled in bar */
   float width_without_padding =
-    (float) (width - 4);
+    (float) (width - self->padding * 2);
 
   double intensity = (double) meter_val;
   if (self->type == METER_TYPE_DB)
@@ -93,7 +95,7 @@ meter_draw_cb (
         cr, &self->end_color);
     }
 
-  float x = 2;
+  float x = self->padding;
   cairo_rectangle (
     cr, x,
     (float) height - value_px,
@@ -154,6 +156,7 @@ meter_widget_setup (
   self->getter = getter;
   self->object = object;
   self->type = type;
+  self->padding = 2;
 
   /* set size */
   gtk_widget_set_size_request (GTK_WIDGET (self), width, -1);

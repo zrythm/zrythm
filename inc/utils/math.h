@@ -29,11 +29,9 @@
 /**
  * Frames to skip when calculating the RMS.
  *
- * The higher the more CPU intensive.
+ * The lower the more CPU intensive.
  */
 #define MATH_RMS_FRAMES 1
-#define MATH_FLOATS_EQUAL(a,b,epsilon) \
-  (fabsf (a - b) < epsilon)
 
 /**
  * Returns fader value 0.0 to 1.0 from amp value 0.0 to 2.0 (+6 dbFS).
@@ -81,32 +79,14 @@ math_dbfs_to_amp (
 }
 
 /**
- * Checks if 2 floating points are equal.
- *
- * @param epsilon The allowed differene.
- */
-static inline int
-math_floats_equal (
-  const float a,
-  const float b,
-  const float epsilon)
-{
-  return fabsf (a - b) < epsilon;
-}
-
-/**
  * Checks if 2 doubles are equal.
  *
  * @param epsilon The allowed differene.
  */
-static inline int
-math_doubles_equal (
-  const double a,
-  const double b,
-  const double epsilon)
-{
-  return fabs (a - b) < epsilon;
-}
+#define math_floats_equal(a,b,e) \
+  ((a) > (b) ? (a) - (b) < e : (b) - (a) < e)
+
+#define math_doubles_equal math_floats_equal
 
 /**
  * Initializes coefficients to be used later.

@@ -1570,7 +1570,7 @@ lv2_plugin_instantiate (
 
   if (math_doubles_equal (
         PM_LILV_NODES.opts.update_rate,
-        0.0, 0.001))
+        0.f, 0.001f))
     {
       /* Calculate a reasonable UI update frequency. */
       /*self->ui_update_hz =*/

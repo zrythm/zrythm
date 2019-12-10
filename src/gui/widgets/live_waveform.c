@@ -82,6 +82,16 @@ live_waveform_draw_cb (
   if (!P_MASTER_TRACK)
     return FALSE;
 
+  if (!P_MASTER_TRACK->channel->stereo_out->l->
+        write_ring_buffers)
+    {
+      P_MASTER_TRACK->channel->stereo_out->l->
+        write_ring_buffers = 1;
+      P_MASTER_TRACK->channel->stereo_out->r->
+        write_ring_buffers = 1;
+      return FALSE;
+    }
+
   /* get the L buffer */
   Port * port =
     P_MASTER_TRACK->channel->stereo_out->l;

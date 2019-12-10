@@ -48,6 +48,10 @@ typedef struct _MeterWidget
   void *                 object;
   MeterType              type;
   int                    hover; ///< hovered or not
+
+  /** Padding size for the border. */
+  int                    padding;
+
   GdkRGBA                start_color;
   GdkRGBA                end_color;
 } MeterWidget;
