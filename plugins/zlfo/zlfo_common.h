@@ -36,14 +36,14 @@ typedef struct ZLfoUris
 {
   LV2_URID atom_eventTransfer;
   LV2_URID atom_Blank;
-	LV2_URID atom_Object;
-	LV2_URID atom_Float;
+  LV2_URID atom_Object;
+  LV2_URID atom_Float;
   LV2_URID atom_Int;
-	LV2_URID log_Entry;
-	LV2_URID log_Error;
-	LV2_URID log_Note;
-	LV2_URID log_Trace;
-	LV2_URID log_Warning;
+  LV2_URID log_Entry;
+  LV2_URID log_Error;
+  LV2_URID log_Note;
+  LV2_URID log_Trace;
+  LV2_URID log_Warning;
 } ZLfoUris;
 
 typedef enum PortIndex
@@ -69,18 +69,18 @@ map_uris (
   ZLfoUris* uris)
 {
 #define MAP(x,uri) \
-	uris->x = map->map (map->handle, uri)
+  uris->x = map->map (map->handle, uri)
 
-	MAP (atom_Blank, LV2_ATOM__Blank);
-	MAP (atom_Object, LV2_ATOM__Object);
-	MAP (atom_Float, LV2_ATOM__Float);
-	MAP (atom_Int, LV2_ATOM__Int);
-	MAP (atom_eventTransfer, LV2_ATOM__eventTransfer);
-	MAP (log_Entry, LV2_LOG__Entry);
-	MAP (log_Error, LV2_LOG__Error);
-	MAP (log_Note, LV2_LOG__Note);
-	MAP (log_Trace, LV2_LOG__Trace);
-	MAP (log_Warning, LV2_LOG__Warning);
+  MAP (atom_Blank, LV2_ATOM__Blank);
+  MAP (atom_Object, LV2_ATOM__Object);
+  MAP (atom_Float, LV2_ATOM__Float);
+  MAP (atom_Int, LV2_ATOM__Int);
+  MAP (atom_eventTransfer, LV2_ATOM__eventTransfer);
+  MAP (log_Entry, LV2_LOG__Entry);
+  MAP (log_Error, LV2_LOG__Error);
+  MAP (log_Note, LV2_LOG__Note);
+  MAP (log_Trace, LV2_LOG__Trace);
+  MAP (log_Warning, LV2_LOG__Warning);
 }
 
 /**
@@ -89,27 +89,28 @@ map_uris (
 static inline void
 log_error (
   LV2_Log_Log * log,
-	ZLfoUris *    uris,
-	const char *  _fmt,
-	...)
+  ZLfoUris *    uris,
+  const char *  _fmt,
+  ...)
 {
-	char fmt[900];
-	strcpy (fmt, _fmt);
-	strcat (fmt, "\n");
+  va_list args;
+  va_start (args, _fmt);
 
-	va_list args;
-	va_start (args, fmt);
-	if (log)
-		{
-			log->vprintf (
-				log->handle, uris->log_Error,
-				fmt, args);
-		}
-	else
-		{
-			vfprintf (stderr, fmt, args);
-		}
-	va_end (args);
+  char fmt[900];
+  strcpy (fmt, _fmt);
+  strcat (fmt, "\n");
+
+  if (log)
+    {
+      log->vprintf (
+        log->handle, uris->log_Error,
+        fmt, args);
+    }
+  else
+    {
+      vfprintf (stderr, fmt, args);
+    }
+  va_end (args);
 }
 
 #endif
