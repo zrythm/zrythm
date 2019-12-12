@@ -1,6 +1,31 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.186] - 2019-12-12
+- Major rework of arrangers (arrangers are now canvases)
+- Major rework of how tracks are drawn (single canvases)
+- Drawing optimizations for arrangers and other widgets
+- Refactor of arranger object widget code
+- Refactor arranger objects to make operations simpler
+- Use an MPMC queue with an object pool for UI events to make it RT-safe
+- Make automation points prettier
+- Use libaudec for reading and resampling audio files
+- Add ability to resize individual track lanes
+- Add bundled plugin ZLFO
+- Add option to use system fonts or bundled
+- Use RT-safe ring buffer for remembering audio and MIDI data from the RT thread
+- Add output meters to tracks
+- Optimize some math calculations
+- Add sr.ht builds
+- Remove libdazzle docks
+- Fix build issues with Gentoo and FreeBSD
+- Fix lag during playback when many objects are on the screen
+- Fix random crash and glib warnings on startup
+- Fix plugins with CV ports not getting serialized properly
+- Fix license headers on some files incorporating work from other projects
+- Fix mixer meters occasionally blinking to -inf
+- Various other bugfixes
+
 ## [0.7.093] - 2019-11-03
 - Add ability to pin and unpin tracks
 - Allow copy paste of MIDI notes and chords
