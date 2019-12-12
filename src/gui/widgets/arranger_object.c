@@ -938,7 +938,8 @@ arranger_object_set_full_rectangle (
                    REGION_TYPE_AUTOMATION)
           {
             AutomationTrack * at =
-              region->at;
+              region_get_automation_track (region);
+            g_return_if_fail (at);
             if (!at->created ||
                 !track->automation_visible)
               return;

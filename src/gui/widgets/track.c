@@ -194,11 +194,15 @@ get_hovered_button (
 /** 250 ms */
 /*static const float MAX_TIME = 250000.f;*/
 
+/**
+ * @param height Total track widget height.
+ */
 static void
 draw_color_area (
   TrackWidget *  self,
   cairo_t *      cr,
-  GdkRectangle * rect)
+  GdkRectangle * rect,
+  int            height)
 {
   cairo_surface_t * surface =
     z_cairo_get_surface_from_icon_name (
@@ -207,7 +211,7 @@ draw_color_area (
   gdk_cairo_set_source_rgba (
     cr, &self->track->color);
   cairo_rectangle (
-    cr, 0, 0, COLOR_AREA_WIDTH, rect->height);
+    cr, 0, 0, COLOR_AREA_WIDTH, height);
   cairo_fill (cr);
 
   GdkRGBA c2, c3;
@@ -956,7 +960,7 @@ track_draw_cb (
         }
 
       draw_color_area (
-        self, self->cached_cr, &rect);
+        self, self->cached_cr, &rect, height);
 
       draw_name (self, self->cached_cr);
 
@@ -1724,6 +1728,14 @@ multipress_released (
                     ET_AUTOMATION_TRACK_ADDED,
                     new_at);
                 }
+            }
+          else if (
+            string_is_equal (
+              cb->icon_name, ICON_NAME_MINUS, 1))
+            {
+              at->visible = 0;
+              EVENTS_PUSH (
+                ET_AUTOMATION_TRACK_REMOVED, at);
             }
         }
     }
