@@ -20,7 +20,6 @@ Contributing Guidelines
     │   ├── man                      # Manpage
     │   └── user                     # User manual
     ├── ext                          # External libs
-    │   ├── audio_decoder            # Audio decoder by rgareus
     │   ├── libcyaml                 # Yaml serialization
     │   ├── midilib                  # MIDI file serialization
     │   └── zix                      # Data struct utils
@@ -80,13 +79,6 @@ and it will automatically break there for you.
 For more information on warnings and assertions see
 https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html
 
-Additional options can be added to `G_DEBUG`, like
-`G_DEBUG=fatal_warnings,signals,actions`.
-
-There is also `G_ENABLE_DIAGNOSTIC=1` to break
-at deprecation warnings for GTK+3 (must all be fixed
-before porting to GTK+4).
-
 ## Environment Variables
 In addition to GTK/GLib variables, Zrythm
 understands the following environment variables.
@@ -97,12 +89,11 @@ understands the following environment variables.
   objects
 
 ## UI Debugging
-GTK comes with a very powerful tool called
-GTK inspector that can be used to inspect UI widgets
-and change their properties live (while the
-application is running).
+[GTK inspector](https://wiki.gnome.org/action/show/Projects/GTK/Inspector)
+can be used to inspect UI widgets and change their properties
+live (while the application is running).
 
-This is very useful when looking to try out different
+This is useful when looking to try out different
 widget properties to see what works before
 implementing them. Adding custom CSS is also possible.
 For example, the following CSS can be entered live
@@ -112,14 +103,10 @@ to color all the track backgrounds red.
       background-color: red;
     }
 
-More info on how to enable and use the inspector can be
-found here:
-https://wiki.gnome.org/action/show/Projects/GTK/Inspector
-
 # Tests and Coverage
 To run the test suite, use
 
-    meson build -Denable_tests
+    meson build -Denable_tests=true
 
 followed by
 
@@ -151,7 +138,7 @@ When you are finished, close Zrythm and run
 `kcachegrind` in the same directory to display the
 profiling info in the kcachegrind GUI.
 For more information, see
-https://docs.kde.org/stable5/en/kdesdk/kcachegrind/using-kcachegrind.html and
+https://docs.kde.org/stable5/en/kdesdk/kcachegrind/using-kcachegrind.html.
 
 # Real-time safety
 Use the following to get a stoat report.
@@ -173,20 +160,20 @@ the PO files, use
 Binary packages are created on [OBS (Open Build System)](https://build.opensuse.org/package/show/home:alextee/zrythm#) using git hooks.
 See the [README](git-packaging-hooks/README.md) in git-packaging-hooks and the `packaging` branch.
 
-# Coding
-These are some guidelines for contributing code.
-They are not strict rules.
-
+# Coding Guidelines
 ## Commenting
-- Document how to use the function in the header file
-- Document how the function works (if it's not
-obvious from the code) in the source file
-- Document each logical block within a function (what
-it does so one can understand what the function does
-at each step by only reading the comments)
+Please document everything specified in header files using
+Doxygen tags. At a bare minimum, every function
+declaration should have a brief description.
+
+It is extremely helpful if you document each logical block
+within a function using plain comments, in a way that
+one can understand what is happening in each step by
+only reading the comments.
 
 ## Coding Style
-GNU style is preferable.
+Generally, try to follow the
+[GNU coding standards](https://www.gnu.org/prep/standards/html_node/Writing-C.html).
 
 ## Include Order
 In alphabetic order:
@@ -197,47 +184,20 @@ In alphabetic order:
 
 ## Line Length
 Please keep lines within 60 characters. This works
-nicely with 8 files open simultaneously in a tiled
-editor like vim.
-
-## Tips
-- Generally, backend files should have a `*_new()`
-function to create a new instance or an `*_init()`
-function to initialize an existing instance,
-depending on if they are to be created dynamically
-or not.
-- Widgets should have a `*_new()` function if they
-should be created dynamically. They should have a
-`*_setup()` function to initialize them or "set them
-up" and a `*_refresh()` function to refresh their
-internal state. `*_setup()` is to be called only once
-after the instance is created and `*_refresh()` to be
-called multiple times as needed.
-- Zrythm has a UI event system that redraws only the
-relevant widgets based on the type of event.
+nicely with 4 columns of files open simultaneously
+in a tiled editor like vim.
 
 ## Licensing
 If you contributed significant (for copyright
-purposes) amounts of code, you may add your
+purposes) amounts of code in a file, you should append your
 copyright notice (name, year and optionally
-email/website) at the top of the file, otherwise
-you agree to assign all copyrights to Alexandros
-Theodotou, the main author.
-
-All your changes should be licensed
-under the AGPLv3+ like the rest of the project, or
-at least a compatible Free Software license of
-your choice.
-
-## Common Problems
-### Getting random GUI related errors with no trace in valgrind or GTK warnings
-This might happen when calling GTK code or
-`g_idle_add()` from non-GUI threads. GTK runs in a single
-GUI thread. Any GTK-related code must be run from
-the GUI thread only.
+email/website) at the top.
 
 ## Submitting Patches
-Please use [Redmine](https://redmine.zrythm.org/projects/zrythm/issues)
+Use `git format-patch` to generate patch files and
+post them in a new issue on
+[Redmine](https://redmine.zrythm.org/projects/zrythm/issues) or
+send them to the dev mailing list at dev@zrythm.org.
 
 # Translating Zrythm
 Zrythm is translated on Weblate:
@@ -248,10 +208,14 @@ and submit a patch.
 
 # Testing and Feedback
 Test Zrythm and report bugs, ideas, feedback and
-suggestions on the issue tracker.
+suggestions on Redmine.
 
 # Troubleshooting
-TODO
+## Getting random GUI related errors with no trace in valgrind or GTK warnings
+This might happen when calling GTK code or
+`g_idle_add()` from non-GUI threads. GTK runs in a single
+GUI thread. Any GTK-related code must be run from
+the GUI thread only.
 
 ----
 

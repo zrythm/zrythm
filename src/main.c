@@ -51,7 +51,7 @@
 #include <audec/audec.h>
 #include <fftw3.h>
 
-#define BACKTRACE_SIZE 30
+#define BACKTRACE_SIZE 24
 
 /** SIGSEGV handler. */
 static void
