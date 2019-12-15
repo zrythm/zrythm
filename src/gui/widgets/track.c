@@ -28,6 +28,7 @@
 #include "audio/region.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/automatable_selector_popover.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
@@ -1649,8 +1650,6 @@ multipress_released (
     {
       CustomButtonWidget * cb =
         self->clicked_button;
-      g_message ("owner %p ",
-                 cb->owner);
       if ((Track *) cb->owner == self->track)
         {
           if (string_is_equal (
@@ -1672,7 +1671,8 @@ multipress_released (
                 cb->icon_name,
                 ICON_NAME_SHOW_TRACK_LANES, 1))
             {
-              track_widget_on_show_lanes_toggled (self);
+              track_widget_on_show_lanes_toggled (
+                self);
             }
           else if (
             string_is_equal (
@@ -1736,6 +1736,31 @@ multipress_released (
               at->visible = 0;
               EVENTS_PUSH (
                 ET_AUTOMATION_TRACK_REMOVED, at);
+            }
+          else if (
+            string_is_equal (
+              cb->icon_name,
+              ICON_NAME_SHOW_AUTOMATION_LANES, 1))
+            {
+              AutomatableSelectorPopoverWidget * popover =
+                automatable_selector_popover_widget_new (at);
+              gtk_popover_set_relative_to (
+                GTK_POPOVER (popover),
+                GTK_WIDGET (self));
+              GdkRectangle rect = {
+                .x =
+                  (int) cb->x +
+                  (int) cb->width / 2,
+                .y = (int) cb->y,
+                .height = cb->size,
+                .width = 0,
+              };
+              gtk_popover_set_pointing_to (
+                GTK_POPOVER (popover), &rect);
+              gtk_popover_set_modal (
+                GTK_POPOVER (popover), 1);
+              gtk_widget_show_all (
+                GTK_WIDGET (popover));
             }
         }
     }

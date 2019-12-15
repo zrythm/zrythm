@@ -20,27 +20,106 @@
 #include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/channel_track.h"
-#include "gui/widgets/automatable_selector_button.h"
+#include "audio/engine.h"
+#include "gui/backend/events.h"
 #include "gui/widgets/automatable_selector_popover.h"
 #include "plugins/plugin.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (AutomatableSelectorPopoverWidget,
-               automatable_selector_popover_widget,
-               GTK_TYPE_POPOVER)
+G_DEFINE_TYPE (
+  AutomatableSelectorPopoverWidget,
+  automatable_selector_popover_widget,
+  GTK_TYPE_POPOVER)
 
+/**
+ * Updates the info label based on the currently
+ * selected Automatable.
+ */
 static int
 update_info_label (
-  AutomatableSelectorPopoverWidget * self,
-  const char * label)
+  AutomatableSelectorPopoverWidget * self)
 {
-  gtk_label_set_text (self->info, label);
+  if (self->selected_automatable)
+    {
+      Automatable * a = self->selected_automatable;
+      char * val_type =
+        automatable_stringize_value_type (a);
+
+      char * label =
+        g_strdup_printf (
+        "%s\nType: %s\nMin: %f\n"
+        "Max: %f",
+        a->label,
+        val_type ? val_type : "Unknown",
+        (double) a->minf,
+        (double) a->maxf);
+
+      gtk_label_set_text (
+        self->info, label);
+    }
+  else
+    {
+      gtk_label_set_text (
+        self->info, _("No control selected"));
+    }
 
   return G_SOURCE_REMOVE;
+}
+
+/**
+ * Selects the selected automatable on the UI.
+ */
+static void
+select_automatable (
+  AutomatableSelectorPopoverWidget * self)
+{
+  /* select current type */
+  GtkTreeSelection * sel =
+    gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (self->type_treeview));
+  GtkTreeIter iter;
+  gtk_tree_model_iter_nth_child (
+    self->type_model, &iter, NULL,
+    self->selected_type);
+  gtk_tree_selection_select_iter (sel, &iter);
+
+  /* select current automatable */
+  if (self->selected_automatable)
+    {
+      sel =
+        gtk_tree_view_get_selection (
+          GTK_TREE_VIEW (
+            self->automatable_treeview));
+
+      /* find the iter corresponding to the
+       * automatable */
+      int valid =
+        gtk_tree_model_get_iter_first (
+          self->automatable_model, &iter);
+      while (valid)
+        {
+          Automatable * a;
+          gtk_tree_model_get (
+            self->automatable_model, &iter, 2,
+            &a, -1);
+          if (a == self->selected_automatable)
+            {
+              gtk_tree_selection_select_iter (
+                sel, &iter);
+              break;
+            }
+          valid =
+            gtk_tree_model_iter_next (
+              self->automatable_model, &iter);
+        }
+    }
+
+  update_info_label (self);
 }
 
 static GtkTreeModel *
@@ -53,10 +132,9 @@ create_model_for_automatables (
 
   /* file name, index */
   list_store =
-    gtk_list_store_new (3,
-                        G_TYPE_STRING,
-                        G_TYPE_STRING,
-                        G_TYPE_POINTER);
+    gtk_list_store_new (
+      3, G_TYPE_STRING, G_TYPE_STRING,
+      G_TYPE_POINTER);
 
   Track * track =
     self->owner->track;
@@ -136,10 +214,10 @@ create_model_for_types (
   GtkTreeIter iter;
 
   /* icon, type name, type enum */
-  list_store = gtk_list_store_new (3,
-                                   G_TYPE_STRING,
-                                   G_TYPE_STRING,
-                                   G_TYPE_INT);
+  list_store =
+    gtk_list_store_new (
+      3, G_TYPE_STRING, G_TYPE_STRING,
+      G_TYPE_INT);
 
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
@@ -160,9 +238,7 @@ create_model_for_types (
         {
           char * label =
             g_strdup_printf (
-              "[%d] %s",
-              i,
-              plugin->descr->name);
+              "[%d] %s", i, plugin->descr->name);
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
@@ -173,7 +249,6 @@ create_model_for_types (
           g_free (label);
         }
     }
-
 
   return GTK_TREE_MODEL (list_store);
 }
@@ -193,8 +268,8 @@ on_selection_changed (
   GtkTreeModel * model =
     gtk_tree_view_get_model (tv);
   GList * selected_rows =
-    gtk_tree_selection_get_selected_rows (ts,
-                                          NULL);
+    gtk_tree_selection_get_selected_rows (
+      ts, NULL);
   if (selected_rows)
     {
       GtkTreePath * tp =
@@ -231,9 +306,7 @@ on_selection_changed (
               self->automatable_treeview));
 
           self->selected_automatable = NULL;
-          update_info_label (
-            self,
-            _("No control selected"));
+          update_info_label (self);
         }
       else if (model ==
                  self->automatable_model)
@@ -245,21 +318,8 @@ on_selection_changed (
           Automatable * a =
             g_value_get_pointer (&value);
 
-          char * val_type =
-            automatable_stringize_value_type (a);
-
-          char * label =
-            g_strdup_printf (
-            "%s\nType: %s\nMin: %f\n"
-            "Max: %f",
-            a->label,
-            val_type ? val_type : "Unknown",
-            (double) a->minf,
-            (double) a->maxf);
-
           self->selected_automatable = a;
-          update_info_label (self,
-                             label);
+          update_info_label (self);
         }
     }
 }
@@ -279,45 +339,28 @@ tree_view_create (
   GtkTreeViewColumn * column;
 
   /* column for icon */
-  renderer =
-    gtk_cell_renderer_pixbuf_new ();
+  renderer = gtk_cell_renderer_pixbuf_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      "icon", renderer,
-      "icon-name", 0,
-      NULL);
+      "icon", renderer, "icon-name", 0, NULL);
   gtk_tree_view_append_column (
-    GTK_TREE_VIEW (tree_view),
-    column);
+    GTK_TREE_VIEW (tree_view), column);
 
   /* column for name */
-  renderer =
-    gtk_cell_renderer_text_new ();
+  renderer = gtk_cell_renderer_text_new ();
   column =
     gtk_tree_view_column_new_with_attributes (
-      "name", renderer,
-      "text", 1,
-      NULL);
+      "name", renderer, "text", 1, NULL);
   gtk_tree_view_append_column (
-    GTK_TREE_VIEW (tree_view),
-    column);
+    GTK_TREE_VIEW (tree_view), column);
 
   /* set search column */
   gtk_tree_view_set_search_column (
-    GTK_TREE_VIEW (tree_view),
-    1);
+    GTK_TREE_VIEW (tree_view), 1);
 
   /* set headers invisible */
   gtk_tree_view_set_headers_visible (
-            GTK_TREE_VIEW (tree_view),
-            0);
-
-  g_signal_connect (
-    G_OBJECT (gtk_tree_view_get_selection (
-                GTK_TREE_VIEW (tree_view))),
-    "changed",
-     G_CALLBACK (on_selection_changed),
-     self);
+    GTK_TREE_VIEW (tree_view), 0);
 
   gtk_widget_set_visible (tree_view, 1);
 
@@ -327,12 +370,33 @@ tree_view_create (
 static void
 on_closed (
   AutomatableSelectorPopoverWidget *self,
-  gpointer    user_data)
+  gpointer                          user_data)
 {
-  /*automatable_selector_button_set_automatable (*/
-    /*self->owner, self->selected_automatable);*/
-  /*automatable_selector_button_widget_refresh (*/
-    /*self->owner);*/
+  /* if the selected automatable changed */
+  if (self->selected_automatable &&
+      self->owner->automatable !=
+        self->selected_automatable)
+    {
+      /* set the previous automation track
+       * invisible */
+      self->owner->visible = 0;
+
+      /* swap indices */
+      AutomationTracklist * atl =
+        automation_track_get_automation_tracklist (
+          self->owner);
+      AutomationTrack * selected_at =
+        automation_tracklist_get_at_from_automatable (
+          atl, self->selected_automatable);
+      g_return_if_fail (selected_at);
+      automation_tracklist_set_at_index (
+        atl, self->owner, selected_at->index);
+
+      selected_at->created = 1;
+      selected_at->visible = 1;
+      EVENTS_PUSH (
+        ET_AUTOMATION_TRACK_ADDED, selected_at);
+    }
 }
 
 /**
@@ -347,6 +411,21 @@ automatable_selector_popover_widget_new (
       AUTOMATABLE_SELECTOR_POPOVER_WIDGET_TYPE, NULL);
 
   self->owner = owner;
+
+  /* set selected type */
+  self->selected_type = AS_TYPE_CHANNEL;
+  Automatable * a = self->owner->automatable;
+  if (a->type >=
+        AUTOMATABLE_TYPE_CHANNEL_FADER)
+    self->selected_type = AS_TYPE_CHANNEL;
+  else if (a->slot > -1)
+    self->selected_type =
+      AS_TYPE_PLUGIN_0 + a->slot;
+
+  /* set selected automatable */
+  self->selected_automatable = a;
+
+  /* create model/treeview for types */
   self->type_model =
     create_model_for_types (self);
   self->type_treeview =
@@ -357,17 +436,10 @@ automatable_selector_popover_widget_new (
     GTK_CONTAINER (self->type_treeview_box),
     GTK_WIDGET (self->type_treeview));
 
-  AutomatableSelectorType type =
-    AS_TYPE_CHANNEL;
-  Automatable * a =
-    self->owner->automatable;
-  if (a->type >= AUTOMATABLE_TYPE_CHANNEL_FADER)
-    type = AS_TYPE_CHANNEL;
-  else if (a->slot > -1)
-    type = AS_TYPE_PLUGIN_0 + a->slot;
-
+  /* create model/treeview for automatables */
   self->automatable_model =
-    create_model_for_automatables (self, type);
+    create_model_for_automatables (
+      self, self->selected_type);
   self->automatable_treeview =
     tree_view_create (
       self,
@@ -376,8 +448,23 @@ automatable_selector_popover_widget_new (
     GTK_CONTAINER (self->automatable_treeview_box),
     GTK_WIDGET (self->automatable_treeview));
 
-  update_info_label (
-    self, _("No control selected"));
+  /* select the automatable */
+  select_automatable (self);
+
+  /* add selection changed signals */
+  g_signal_connect (
+    G_OBJECT (
+      gtk_tree_view_get_selection (
+        GTK_TREE_VIEW (self->type_treeview))),
+    "changed",
+    G_CALLBACK (on_selection_changed), self);
+  g_signal_connect (
+    G_OBJECT (
+      gtk_tree_view_get_selection (
+        GTK_TREE_VIEW (
+          self->automatable_treeview))),
+    "changed",
+    G_CALLBACK (on_selection_changed), self);
 
   return self;
 }

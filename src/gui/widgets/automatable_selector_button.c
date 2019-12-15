@@ -67,20 +67,6 @@ automatable_selector_button_set_automatable (
   AutomatableSelectorButtonWidget * self,
   Automatable *                     a)
 {
-  AutomationTrack * at = self->owner->at;
-  if (a && at->automatable != a)
-    {
-      at->visible = 0;
-      /* TODO swap indices */
-      at =
-        automation_tracklist_get_at_from_automatable (
-          track_get_automation_tracklist (at->track),
-          a);
-      at->created = 1;
-      at->visible = 1;
-      EVENTS_PUSH (ET_AUTOMATION_TRACK_ADDED,
-                   at);
-    }
 }
 
 void

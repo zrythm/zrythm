@@ -99,6 +99,14 @@ automation_track_add_region (
   region_set_automation_track (region, self);
 }
 
+AutomationTracklist *
+automation_track_get_automation_tracklist (
+  AutomationTrack * self)
+{
+  return
+    track_get_automation_tracklist (self->track);
+}
+
 /**
  * Returns the Region that surrounds the
  * given Position, if any.

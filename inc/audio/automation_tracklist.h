@@ -61,8 +61,8 @@ typedef struct AutomationTracklist
    *
    * Active automation lanes that are
    * shown in the UI, including hidden ones, can
-   * be found using the struct member created
-   * and visible.
+   * be found using \ref AutomationTrack.created
+   * and \ref AutomationTrack.visible.
    *
    * Automation tracks become active automation
    * lanes when they have automation or are
@@ -128,12 +128,6 @@ void
 automation_tracklist_delete_at (
   AutomationTracklist * self,
   AutomationTrack *     at,
-  int                   free);
-
-void
-automation_tracklist_delete_al (
-  AutomationTracklist * self,
-  AutomationLane *      al,
   int                   free);
 
 /**
@@ -205,8 +199,6 @@ automation_tracklist_get_at_from_automatable (
 /**
  * Sets the index of the AutomationTrack and swaps
  * it with the AutomationTrack at that index.
- *
- * TODO implement
  */
 void
 automation_tracklist_set_at_index (

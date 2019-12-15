@@ -32,7 +32,8 @@ typedef struct _AutomationTrackWidget
   AutomationTrackWidget;
 typedef struct Track Track;
 typedef struct Automatable Automatable;
-typedef struct AutomationLane AutomationLane;
+typedef struct AutomationTracklist
+  AutomationTracklist;
 typedef struct CustomButtonWidget
   CustomButtonWidget;
 
@@ -137,6 +138,10 @@ automation_track_init_loaded (
  */
 AutomationTrack *
 automation_track_new (Automatable *  automatable);
+
+AutomationTracklist *
+automation_track_get_automation_tracklist (
+  AutomationTrack * self);
 
 /**
  * Adds an automation Region to the AutomationTrack.

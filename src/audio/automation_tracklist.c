@@ -251,6 +251,27 @@ automation_tracklist_init (
 /*}*/
 
 /**
+ * Sets the index of the AutomationTrack and swaps
+ * it with the AutomationTrack at that index.
+ */
+void
+automation_tracklist_set_at_index (
+  AutomationTracklist * self,
+  AutomationTrack *     at,
+  int                   index)
+{
+  g_return_if_fail (
+    index < self->num_ats && self->ats[index]);
+
+  int prev_index = at->index;
+  AutomationTrack * new_at = self->ats[index];
+  self->ats[index] = at;
+  at->index = index;
+  self->ats[prev_index] = new_at;
+  new_at->index = prev_index;
+}
+
+/**
  * Updates the Track position of the Automatable's
  * and AutomationTrack's.
  *
