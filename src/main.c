@@ -276,8 +276,8 @@ main (int    argc,
   g_message ("Initing Zrythm app...");
   zrythm_app = zrythm_app_new ();
   g_message ("running Zrythm...");
-  return g_application_run (
-    G_APPLICATION (zrythm_app),
-    argc,
-    argv);
+
+  return
+    g_application_run (
+      G_APPLICATION (zrythm_app), argc, argv);
 }
