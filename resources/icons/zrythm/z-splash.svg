@@ -14,7 +14,7 @@
    viewBox="0 0 153.45834 79.375001"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.2 2405546, 2018-03-11"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="z-splash.svg"
    style="enable-background:new">
   <defs
@@ -38,15 +38,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="346.93031"
+     inkscape:cx="-28.846434"
      inkscape:cy="99.094317"
      inkscape:document-units="mm"
      inkscape:current-layer="layer2"
      showgrid="false"
-     inkscape:window-width="1400"
-     inkscape:window-height="845"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="27"
      inkscape:window-maximized="1"
      units="px"
      width="128px" />
@@ -69,23 +69,22 @@
      style="filter:url(#filter939)"
      transform="translate(0,45.508334)">
     <rect
-       style="opacity:1;fill:#280b0b;fill-opacity:1;stroke:none;stroke-width:87.06242371;stroke-miterlimit:4;stroke-dasharray:none"
+       style="opacity:1;fill:#280b0b;fill-opacity:1;stroke:none;stroke-width:66.4262085;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect855"
-       width="158.45979"
-       height="132.04982"
-       x="-2.5007262"
-       y="-71.845749" />
+       width="153.45833"
+       height="79.375"
+       x="0"
+       y="-45.508335" />
+    <path
+       style="fill:none;stroke:#ff6600;stroke-width:7.34211969;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
+       d="m 50.715236,-19.134285 c 0,0 21.698252,-17.617892 42.531314,-11.390435 11.87663,5.623379 -44.898775,42.21613 -33.26462,49.246371 19.623294,6.845868 42.78563,-11.6342608 42.78563,-11.6342608"
+       id="path815-1"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
   </g>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-217.62499)">
-    <path
-       style="fill:none;stroke:#ff6600;stroke-width:7.85568285;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 48.418298,242.668 c 0,0 27.508684,-17.05777 41.854506,-12.05275 20.717336,0 -43.838829,45.2338 -31.390888,52.75579 20.99589,7.32472 45.778384,-12.44807 45.778384,-12.44807"
-       id="path815"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccc" />
-  </g>
+     transform="translate(0,-217.62499)" />
 </svg>
