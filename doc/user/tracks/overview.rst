@@ -73,3 +73,15 @@ purpose. These are generally useful for side-chaining.
 The pre-fader port(s) hold the signal up to before
 the fader is processed, and the post-fader port(s)
 hold the signal after the fader is applied.
+
+Context Menu
+------------
+
+Each tracks has a context menu, with additional options
+depending on its type.
+
+.. image:: /_static/img/track-context-menu-duplicate-track.png
+   :align: center
+
+The section :ref:`track-operations` explains the
+various track operations available.

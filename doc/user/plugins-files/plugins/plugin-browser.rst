@@ -57,6 +57,8 @@ MIDI Effects
   number of audio, MIDI, control and CV input and
   output ports a Plugin has.
 
+.. _instantiating-plugins:
+
 Instantiating Plugins
 ---------------------
 There are a couple of ways to instantiate plugins:

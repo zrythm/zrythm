@@ -6,7 +6,15 @@ Overview
 ========
 
 Editing refers to any work done in the arrangers:
-the Timeline and the Piano Roll.
+
+- Timeline
+- Piano Roll
+- Chord Editor
+
+Tools
+-----
+In addition to their own unique features, each
+arranger shares the following global tools.
 
 The Timeline is the arranger shown in the
 top part of the screen by default, and the

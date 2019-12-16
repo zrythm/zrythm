@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-15 09:08+0000\n"
+"POT-Creation-Date: 2019-12-16 15:30+0000\n"
 "PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language: nb_NO\n"
@@ -19,196 +19,156 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../../contributing/designing.rst:6
-msgid "Designing"
-msgstr "Design"
-
-#: ../../contributing/designing.rst:8
-#, fuzzy
-msgid ""
-"If you want to help improve the appearance Zrythm itself and its website,"
-" forum, manual, etc., please come join the `chat "
-"<https://riot.im/app/#/room/#freenode_#zrythm:matrix.org?action=chat>`_."
-msgstr ""
-"Hvis du vil hjelpe til å forbedre Zrythms utseende og dets nettside, "
-"forum, manual, osv, ta del i `sludringen "
-"<https://riot.im/app/#/room/#freenode_#zrythm:matrix.org?action=chat>`_."
-
-#: ../../contributing/designing.rst:12
-msgid ""
-"Zrythm itself is fully CSS-themable, and the overall UI structure can "
-"easily be edited in Glade without touching any code."
-msgstr ""
-"Selve Zrythm kan formgis helt og holdent i CSS, og den helhetlige "
-"grensesnittsstrukturen kan redigeres i Glade, uten å røre noe av koden."
-
-#: ../../contributing/donating.rst:6
-msgid "Donating"
-msgstr "Donering"
-
-#: ../../contributing/donating.rst:8
-#, fuzzy
-msgid ""
-"Donations are vital to keep the project running smoothly. If you can "
-"afford to do so please consider becoming a patron or supporting us below."
-msgstr ""
-"Donasjoner er viktige for å holde hjulene igang. Hvis du kan avse noen "
-"kroner, overvei å bli en vedvarende sponsor, eller å støtte opp nedenfor."
-
-#: ../../contributing/donating.rst:12
-msgid ""
-"`PayPal <https://www.paypal.com/cgi-bin/webscr?cmd=_s-"
-"xclick&hosted_button_id=LZWVK6228PQGE&source=url>`_"
-msgstr ""
-"`PayPal <https://www.paypal.com/cgi-bin/webscr?cmd=_s-"
-"xclick&hosted_button_id=LZWVK6228PQGE&source=url>`_"
-
-#: ../../contributing/donating.rst:13
-#, fuzzy
-msgid "PayPal recurring or non-recurring donation."
-msgstr "PayPal, vedvarende eller éngangsdonasjon."
-
-#: ../../contributing/donating.rst:14
-msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
-msgstr "`Liberapay <https://liberapay.com/Zrythm>`_"
-
-#: ../../contributing/donating.rst:15
-msgid ""
-"LiberaPay is a recurring donations platform for funding developers and "
-"creators, ran by a French non-profit."
-msgstr ""
-"Liberapay er en plattform for vedvarende donasjoner der man kan bidra til"
-" utviklere og skapere, i kraft av en veldedig Fransk bedrift."
-
-#: ../../contributing/donating.rst:16
-msgid "Bitcoin"
-msgstr "bitcoin"
-
-#: ../../contributing/donating.rst:17
-msgid ""
-"Anonymous cryptocurrency donation. Please use: "
-"bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j"
-msgstr "Kryptovalutadonasjon. Bruk: bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j"
-
-#: ../../contributing/editing-documentation.rst:6
-msgid "Editing Documentation"
-msgstr "Redigering av dokumentasjon"
-
-#: ../../contributing/editing-documentation.rst:8
-msgid ""
-"This documentation can be edited via https://git.zrythm.org/zrythm"
-"/zrythm-docs"
-msgstr ""
-"Dette dokumentet kan redigeres direkte via https://git.zrythm.org/zrythm"
-"/zrythm-docs"
-
 #: ../../contributing/intro.rst:6
 msgid "Contributing"
 msgstr "Bidrag"
 
-#: ../../contributing/testing.rst:6
+#: ../../contributing/intro.rst:9
+#, fuzzy
+msgid "Coding"
+msgstr "bitcoin"
+
+#: ../../contributing/intro.rst:11
+msgid ""
+"Please see the `Contributing Guide "
+"<https://docs.zrythm.org/md_CONTRIBUTING.html>`_ and check out the "
+"`Developer Docs <https://docs.zrythm.org/>`_. These have a lot of "
+"information about how to contribute code and various guidelines to "
+"follow."
+msgstr ""
+
+#: ../../contributing/intro.rst:18
+msgid "Artwork and Themes"
+msgstr ""
+
+#: ../../contributing/intro.rst:20
+msgid ""
+"Zrythm is mostly CSS themable and also makes use of many icons, some "
+"customized and some borrowed from other themes. If you would like to "
+"contribute artwork such as icons, please discuss with us first as icon "
+"preferences are very subjective."
+msgstr ""
+
+#: ../../contributing/intro.rst:26
+msgid ""
+"For making themes, you can take a look in "
+"https://git.zrythm.org/cgit/zrythm/tree/resources/theme.css to get an "
+"idea of how CSS in GTK+3 works. We also recommend looking at the `CSS "
+"Overview <https://developer.gnome.org/gtk3/stable/chap-css-"
+"overview.html>`_ section in the GTK+3 docs."
+msgstr ""
+
+#: ../../contributing/intro.rst:34
 msgid "Testing"
 msgstr "Testing"
 
-#: ../../contributing/testing.rst:8
-#, fuzzy
+#: ../../contributing/intro.rst:36
 msgid ""
-"You can fetch the latest master branch from "
-"https://git.zrythm.org/cgit/zrythm/snapshot/zrythm-master.tar.gz and "
-"start testing the latest features. You can report any bugs, ideas and "
-"impressions by creating an issue on `Redmine "
+"We currently have a shortage of testers and you are very welcome to join "
+"us in testing the latest features in Zrythm and reporting bugs and "
+"feedback on `Redmine "
 "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
 msgstr ""
-"Du kan hente siste hovedforgrening fra  "
-"https://git.zrythm.org/cgit/zrythm/snapshot/zrythm-master.tar.gz og "
-"starte testingen av de nyeste funksjonene. Innrapporter feil, idéer og "
-"inntrykk ved å opprette en problemrapport på `Savannah "
-"<https://savannah.nongnu.org/support/?group=zrythm>`_."
 
-#: ../../contributing/testing.rst:13
+#: ../../contributing/intro.rst:42
 msgid ""
-"If you are on Arch Linux or derivatives such as Parabola, the latest "
-"master branch can be installed via the ``zrythm-git`` package in AUR."
+"The latest development branch for new features is ``development`` in our "
+"`git repository <https://git.zrythm.org/cgit/zrythm>`_."
 msgstr ""
-"Hvis du bruker Arch Linux, eller en avart derav, som Parabola, kan siste "
-"hovedforgrening installeres via ``zrythm-git``-pakken i AUR."
 
-#: ../../contributing/testing.rst:17
-msgid ""
-"See the ``README.md`` file in the distribution for installation "
-"instructions."
-msgstr "Sjekk ``README.md``-filen i distribusjonen for installasjonsinstruks."
-
-#: ../../contributing/translating.rst:6
-msgid "Translating"
+#: ../../contributing/intro.rst:47
+#, fuzzy
+msgid "Translation"
 msgstr "Oversetting"
 
-#: ../../contributing/translating.rst:8
+#: ../../contributing/intro.rst:49
+#, fuzzy
 msgid ""
 "Zrythm is available for translation at Hosted Weblate. Visit the `Zrythm "
 "project page "
-"<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ to start "
-"translating."
+"<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ to get "
+"started."
 msgstr ""
 "Zrythm er tilgjengelig for oversettelse på Hosted Weblate. Besøk `Zrythm-"
 "prosjektsiden "
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ for å "
 "bistå i oversettelsen."
 
-#: ../../contributing/translating.rst:10
+#: ../../contributing/intro.rst:52
 msgid "The Zrythm translation project contains the following components:"
 msgstr "Zrythm-oversettelsesprosjektet inneholder følgende komponenter:"
 
-#: ../../contributing/translating.rst:13
+#: ../../contributing/intro.rst:55
 msgid "Zrythm"
 msgstr "Zrythm"
 
-#: ../../contributing/translating.rst:13
+#: ../../contributing/intro.rst:56
 msgid "The actual Zrythm program"
 msgstr "Selve Zrythm-programmet"
 
-#: ../../contributing/translating.rst:16
+#: ../../contributing/intro.rst:57
 #, fuzzy
 msgid "website"
 msgstr "Nettsiden"
 
-#: ../../contributing/translating.rst:16
+#: ../../contributing/intro.rst:58
 #, fuzzy
 msgid "The Zrythm website (https://www.zrythm.org)"
 msgstr "Zrythm-nettsiden (https://www.zrythm.org/nb_NO/index.html)"
 
-#: ../../contributing/translating.rst:19
+#: ../../contributing/intro.rst:60
 msgid "Manual - *"
 msgstr "Manual - *"
 
-#: ../../contributing/translating.rst:19
+#: ../../contributing/intro.rst:60
 msgid "Sections of this manual"
 msgstr "Avsnitt i denne manualen"
 
-#: ../../contributing/translating.rst:21
+#: ../../contributing/intro.rst:62
+#, fuzzy
 msgid ""
 "Click on the project you wish to work on, and then select a language in "
 "the screen that follows. For more information on using Weblate, please "
 "see the `official documentation "
-"<https://docs.weblate.org/en/latest/user/translating.html>`_ of Weblate."
+"<https://docs.weblate.org/en/latest/user/translating.html>`_."
 msgstr ""
 "Klikk på prosjektet du ønsker å arbeide på, og velg så påfølgende et "
 "språk. For mer info om Weblate, sjekk deres `offisielle dokumentasjon "
 "<https://docs.weblate.org/en/latest/user/translating.html>`_"
 
-#: ../../contributing/writing-code.rst:6
-msgid "Writing Code"
-msgstr "Kodeskriving"
+#: ../../contributing/intro.rst:70
+#, fuzzy
+msgid "Editing this Manual"
+msgstr "Avsnitt i denne manualen"
 
-#: ../../contributing/writing-code.rst:8
+#: ../../contributing/intro.rst:72
 msgid ""
-"Please see the `Contribution Guide "
-"<https://docs.zrythm.org/md_CONTRIBUTING.html>`_ and check out the "
-"`Developer Docs <https://docs.zrythm.org/>`_."
+"Click on the ``View Source`` button at the top of the page to find which "
+"file the page exists in."
 msgstr ""
-"Sjekk ut `bidragsveiledningen "
-"<https://docs.zrythm.org/md_CONTRIBUTING.html>`_ og også "
-"`utviklerdokumentasjonen <https://docs.zrythm.org/>`_."
+
+#: ../../contributing/intro.rst:75
+msgid ""
+"You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
+"installed to compile this manual."
+msgstr ""
+
+#: ../../contributing/intro.rst:79
+msgid "TODO: add build instructions"
+msgstr ""
+
+#: ../../contributing/intro.rst:82
+#, fuzzy
+msgid "Donations"
+msgstr "Donering"
+
+#: ../../contributing/intro.rst:84
+msgid ""
+"We have a `Patreon <https://www.patreon.com/alex_tee>`_ and `LiberaPay "
+"<https://liberapay.com/Zrythm>`_ account for recurrent donations. "
+"Alternatively, you can purchase Zrythm binaries at "
+"https://www.zrythm.org/en/download.html"
+msgstr ""
 
 #~ msgid ""
 #~ "If you would like to help design"
@@ -290,4 +250,132 @@ msgstr ""
 #~ "found `here "
 #~ "<https://git.zrythm.org/zrythm/zrythm/blob/master/INSTALL.md>`_."
 #~ msgstr ""
+
+#~ msgid "Designing"
+#~ msgstr "Design"
+
+#~ msgid ""
+#~ "If you want to help improve the"
+#~ " appearance Zrythm itself and its "
+#~ "website, forum, manual, etc., please "
+#~ "come join the `chat "
+#~ "<https://riot.im/app/#/room/#freenode_#zrythm:matrix.org?action=chat>`_."
+#~ msgstr ""
+#~ "Hvis du vil hjelpe til å forbedre"
+#~ " Zrythms utseende og dets nettside, "
+#~ "forum, manual, osv, ta del i "
+#~ "`sludringen "
+#~ "<https://riot.im/app/#/room/#freenode_#zrythm:matrix.org?action=chat>`_."
+
+#~ msgid ""
+#~ "Zrythm itself is fully CSS-themable, "
+#~ "and the overall UI structure can "
+#~ "easily be edited in Glade without "
+#~ "touching any code."
+#~ msgstr ""
+#~ "Selve Zrythm kan formgis helt og "
+#~ "holdent i CSS, og den helhetlige "
+#~ "grensesnittsstrukturen kan redigeres i Glade,"
+#~ " uten å røre noe av koden."
+
+#~ msgid ""
+#~ "Donations are vital to keep the "
+#~ "project running smoothly. If you can "
+#~ "afford to do so please consider "
+#~ "becoming a patron or supporting us "
+#~ "below."
+#~ msgstr ""
+#~ "Donasjoner er viktige for å holde "
+#~ "hjulene igang. Hvis du kan avse "
+#~ "noen kroner, overvei å bli en "
+#~ "vedvarende sponsor, eller å støtte opp"
+#~ " nedenfor."
+
+#~ msgid ""
+#~ "`PayPal <https://www.paypal.com/cgi-bin/webscr?cmd=_s-"
+#~ "xclick&hosted_button_id=LZWVK6228PQGE&source=url>`_"
+#~ msgstr ""
+#~ "`PayPal <https://www.paypal.com/cgi-bin/webscr?cmd=_s-"
+#~ "xclick&hosted_button_id=LZWVK6228PQGE&source=url>`_"
+
+#~ msgid "PayPal recurring or non-recurring donation."
+#~ msgstr "PayPal, vedvarende eller éngangsdonasjon."
+
+#~ msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
+#~ msgstr "`Liberapay <https://liberapay.com/Zrythm>`_"
+
+#~ msgid ""
+#~ "LiberaPay is a recurring donations "
+#~ "platform for funding developers and "
+#~ "creators, ran by a French non-"
+#~ "profit."
+#~ msgstr ""
+#~ "Liberapay er en plattform for vedvarende"
+#~ " donasjoner der man kan bidra til "
+#~ "utviklere og skapere, i kraft av "
+#~ "en veldedig Fransk bedrift."
+
+#~ msgid ""
+#~ "Anonymous cryptocurrency donation. Please use:"
+#~ " bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j"
+#~ msgstr "Kryptovalutadonasjon. Bruk: bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j"
+
+#~ msgid "Editing Documentation"
+#~ msgstr "Redigering av dokumentasjon"
+
+#~ msgid ""
+#~ "This documentation can be edited via "
+#~ "https://git.zrythm.org/zrythm/zrythm-docs"
+#~ msgstr ""
+#~ "Dette dokumentet kan redigeres direkte "
+#~ "via https://git.zrythm.org/zrythm/zrythm-docs"
+
+#~ msgid ""
+#~ "You can fetch the latest master "
+#~ "branch from https://git.zrythm.org/cgit/zrythm/snapshot"
+#~ "/zrythm-master.tar.gz and start testing the"
+#~ " latest features. You can report any"
+#~ " bugs, ideas and impressions by "
+#~ "creating an issue on `Redmine "
+#~ "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
+#~ msgstr ""
+#~ "Du kan hente siste hovedforgrening fra"
+#~ "  https://git.zrythm.org/cgit/zrythm/snapshot/zrythm-"
+#~ "master.tar.gz og starte testingen av de"
+#~ " nyeste funksjonene. Innrapporter feil, "
+#~ "idéer og inntrykk ved å opprette "
+#~ "en problemrapport på `Savannah "
+#~ "<https://savannah.nongnu.org/support/?group=zrythm>`_."
+
+#~ msgid ""
+#~ "If you are on Arch Linux or "
+#~ "derivatives such as Parabola, the latest"
+#~ " master branch can be installed via"
+#~ " the ``zrythm-git`` package in AUR."
+#~ msgstr ""
+#~ "Hvis du bruker Arch Linux, eller "
+#~ "en avart derav, som Parabola, kan "
+#~ "siste hovedforgrening installeres via "
+#~ "``zrythm-git``-pakken i AUR."
+
+#~ msgid ""
+#~ "See the ``README.md`` file in the "
+#~ "distribution for installation instructions."
+#~ msgstr "Sjekk ``README.md``-filen i distribusjonen for installasjonsinstruks."
+
+#~ msgid "Writing Code"
+#~ msgstr "Kodeskriving"
+
+#~ msgid ""
+#~ "Please see the `Contribution Guide "
+#~ "<https://docs.zrythm.org/md_CONTRIBUTING.html>`_ and check"
+#~ " out the `Developer Docs "
+#~ "<https://docs.zrythm.org/>`_."
+#~ msgstr ""
+#~ "Sjekk ut `bidragsveiledningen "
+#~ "<https://docs.zrythm.org/md_CONTRIBUTING.html>`_ og også"
+#~ " `utviklerdokumentasjonen <https://docs.zrythm.org/>`_."
+
+#~ msgid "Contributing Overview"
+#~ msgstr "Bidrag"
 

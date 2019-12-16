@@ -7,173 +7,175 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-12 12:26+0100\n"
+"POT-Creation-Date: 2019-12-16 15:23+0000\n"
 "PO-Revision-Date: 2019-10-28 15:53+0000\n"
 "Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualediting/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/zrythm/manualediting/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9.1\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../../editing/common-operations.rst:2
-#: ../../editing/common-operations/intro.rst:2
+#: ../../editing/common-operations.rst:6
+#: ../../editing/common-operations/intro.rst:6
 msgid "Common Operations"
 msgstr "Operações Comuns"
 
-#: ../../editing/common-operations/operations-on-current-selection.rst:2
+#: ../../editing/common-operations/operations-on-current-selection.rst:6
 msgid "Operations on the Current Selection"
 msgstr "Operações na Seleção Atual"
 
-#: ../../editing/common-operations/operations-on-current-selection.rst:5
+#: ../../editing/common-operations/operations-on-current-selection.rst:9
 msgid "Looping"
 msgstr "Looping"
 
-#: ../../editing/common-operations/operations-on-current-selection.rst:7
+#: ../../editing/common-operations/operations-on-current-selection.rst:11
 msgid ""
 "Clicking the :zbutton:`Loop Selection` button or pressing :zbutton:`Ctrl "
 "+ L` will place the loop points around the currently selected objects."
 msgstr ""
-"Clicando no botão :zbutton:`Seleção de loop` ou pressionando :zbutton:`Ctrl +"
-" L` irá por os pontos de loop á volta dos objetos atualmente selecionados."
+"Clicando no botão :zbutton:`Seleção de loop` ou pressionando "
+":zbutton:`Ctrl + L` irá por os pontos de loop á volta dos objetos "
+"atualmente selecionados."
 
-#: ../../editing/common-operations/other-operations.rst:2
+#: ../../editing/common-operations/other-operations.rst:6
 msgid "Other Operations"
 msgstr "Outras Operações"
 
-#: ../../editing/common-operations/other-operations.rst:4
+#: ../../editing/common-operations/other-operations.rst:8
 msgid ""
 "Zrythm also has the usual undo/redo/copy/paste functionalities which are "
 "found in the Home view of the main toolbar at the top of Zrythm. They can"
 " be triggered using shortcuts as well as through context menus and behave"
 " as you would expect."
 msgstr ""
-"O Zrythm também tem as funcionalidades habituais de desfazer/refazer/copiar/"
-"colar que são encontradas na Vista Principal da barra de ferramentas "
-"principal no topo do Zrythm. Eles podem ser acionados a usar atalhos, bem "
-"como através de menus de contexto e comportar-se como esperaria."
+"O Zrythm também tem as funcionalidades habituais de "
+"desfazer/refazer/copiar/colar que são encontradas na Vista Principal da "
+"barra de ferramentas principal no topo do Zrythm. Eles podem ser "
+"acionados a usar atalhos, bem como através de menus de contexto e "
+"comportar-se como esperaria."
 
-#: ../../editing/common-operations/quantization.rst:2
+#: ../../editing/common-operations/quantization.rst:6
 msgid "Quantization"
 msgstr "Quantização"
 
-#: ../../editing/common-operations/quantization.rst:4
-#: ../../editing/common-operations/snapping-and-grid-options.rst:4
-#: ../../editing/common-operations/tools.rst:55
-#: ../../editing/piano-roll-editing/arranger.rst:5
-#: ../../editing/piano-roll-editing/drum-view.rst:7
-#: ../../editing/piano-roll-editing/highlighting.rst:7
-#: ../../editing/piano-roll-editing/overview.rst:4
-#: ../../editing/piano-roll-editing/ruler.rst:4
-#: ../../editing/piano-roll-editing/toolbar.rst:4
-#: ../../editing/timeline-editing/arranger.rst:4
-#: ../../editing/timeline-editing/overview.rst:4
-#: ../../editing/timeline-editing/ruler.rst:4
-#: ../../editing/timeline-editing/toolbar.rst:4
+#: ../../editing/common-operations/quantization.rst:8
+#: ../../editing/common-operations/snapping-and-grid-options.rst:8
+#: ../../editing/common-operations/tools.rst:59
+#: ../../editing/piano-roll-editing/arranger.rst:9
+#: ../../editing/piano-roll-editing/drum-view.rst:11
+#: ../../editing/piano-roll-editing/highlighting.rst:11
+#: ../../editing/piano-roll-editing/overview.rst:8
+#: ../../editing/piano-roll-editing/ruler.rst:8
+#: ../../editing/piano-roll-editing/toolbar.rst:8
+#: ../../editing/timeline-editing/arranger.rst:8
+#: ../../editing/timeline-editing/overview.rst:8
+#: ../../editing/timeline-editing/ruler.rst:8
+#: ../../editing/timeline-editing/toolbar.rst:8
 msgid "TODO"
 msgstr "A FAZER"
 
-#: ../../editing/common-operations/snapping-and-grid-options.rst:2
+#: ../../editing/common-operations/snapping-and-grid-options.rst:6
 msgid "Snapping and Grid Options"
 msgstr "Opções de Snapping e Grade"
 
-#: ../../editing/common-operations/tools.rst:2
+#: ../../editing/common-operations/tools.rst:6 ../../editing/overview.rst:15
 msgid "Tools"
 msgstr "Ferramentas"
 
-#: ../../editing/common-operations/tools.rst:5
+#: ../../editing/common-operations/tools.rst:9
 msgid "Toolbox"
 msgstr "Caixa de Ferramentas"
 
-#: ../../editing/common-operations/tools.rst:6
+#: ../../editing/common-operations/tools.rst:10
 msgid ""
 "The Toolbox contains the following Tools that are used to trigger modes "
 "for specific operations."
 msgstr ""
-"A Caixa de ferramentas contém as seguintes Ferramentas que são usadas para "
-"acionar modos para operações específicas."
+"A Caixa de ferramentas contém as seguintes Ferramentas que são usadas "
+"para acionar modos para operações específicas."
 
-#: ../../editing/common-operations/tools.rst:13
+#: ../../editing/common-operations/tools.rst:17
 msgid "Selection Tool"
 msgstr "Ferramenta de Seleção"
 
-#: ../../editing/common-operations/tools.rst:11
+#: ../../editing/common-operations/tools.rst:15
 msgid ""
 "The Selection Tool is the smartest Tool and while its main functionality "
 "is to select and move objects, it can also create or edit objects in "
 "various ways."
 msgstr ""
 "A Ferramenta de Seleção é a ferramenta mais inteligente e embora a sua "
-"principal funcionalidade seja selecionar e mover objetos, ela também pode "
-"criar ou editar objetos de várias maneiras."
+"principal funcionalidade seja selecionar e mover objetos, ela também pode"
+" criar ou editar objetos de várias maneiras."
 
-#: ../../editing/common-operations/tools.rst:19
+#: ../../editing/common-operations/tools.rst:23
 msgid "Edit Tool"
 msgstr "Ferramenta de Edição"
 
-#: ../../editing/common-operations/tools.rst:16
+#: ../../editing/common-operations/tools.rst:20
 msgid ""
 "Also known as the Pencil Tool, this Tool is used to create objects by "
 "single-clicking and dragging. In the drum view of the Piano Roll, it can "
 "be used to quickly generate multiple hits."
 msgstr ""
-"Também conhecida como a Ferramenta Lápis, esta Ferramenta é usada para criar "
-"objetos clicando e arrastando uma única vez. Na visualização de bateria dos "
-"Cílindros de Piano, ele pode ser usado para gerar rapidamente várias batidas."
+"Também conhecida como a Ferramenta Lápis, esta Ferramenta é usada para "
+"criar objetos clicando e arrastando uma única vez. Na visualização de "
+"bateria dos Cílindros de Piano, ele pode ser usado para gerar rapidamente"
+" várias batidas."
 
-#: ../../editing/common-operations/tools.rst:23
+#: ../../editing/common-operations/tools.rst:27
 msgid "Erase Tool"
 msgstr "Ferramenta de Apagar"
 
-#: ../../editing/common-operations/tools.rst:22
+#: ../../editing/common-operations/tools.rst:26
 msgid "The Erase Tool is used to delete all objects that are selected by it."
 msgstr ""
-"A ferramenta de Apagar é usada para apagar todos os objetos selecionados por "
-"ela."
+"A ferramenta de Apagar é usada para apagar todos os objetos selecionados "
+"por ela."
 
-#: ../../editing/common-operations/tools.rst:25
+#: ../../editing/common-operations/tools.rst:29
 msgid ""
 "Each tool can be selected by simply pressing its corresponding button "
 "from 1 to 5 on the keyboard. Each Mode triggered by each tool is further "
 "described below."
 msgstr ""
 "Cada ferramenta pode ser selecionada simplesmente pressionando o botão "
-"correspondente de 1 a 5 no teclado. Cada Modo acionado por cada ferramenta é "
-"descrito mais adiante."
+"correspondente de 1 a 5 no teclado. Cada Modo acionado por cada "
+"ferramenta é descrito mais adiante."
 
-#: ../../editing/common-operations/tools.rst:32
+#: ../../editing/common-operations/tools.rst:36
 msgid "Select Mode"
 msgstr "Selecionar o Modo"
 
-#: ../../editing/common-operations/tools.rst:34
+#: ../../editing/common-operations/tools.rst:38
 msgid ""
 "To select objects in Select Mode, click and drag to create a selection "
 "rectangle."
 msgstr ""
-"Para selecionar objetos no Modo Selecionar, clique e arraste para criar um "
-"retângulo de seleção."
+"Para selecionar objetos no Modo Selecionar, clique e arraste para criar "
+"um retângulo de seleção."
 
-#: ../../editing/common-operations/tools.rst:37
+#: ../../editing/common-operations/tools.rst:41
 msgid ""
 "To create objects in Select Mode, double click and drag within a track or"
 " lane."
 msgstr ""
-"Para criar objetos no modo Selecionar, clique duas vezes e arraste dentro de "
-"uma faixa ou pista."
+"Para criar objetos no modo Selecionar, clique duas vezes e arraste dentro"
+" de uma faixa ou pista."
 
-#: ../../editing/common-operations/tools.rst:40
+#: ../../editing/common-operations/tools.rst:44
 msgid ""
 "To move selected objects, click on one of them and hold while moving your"
 " cursor. If the object is not selected, it will become selected."
 msgstr ""
-"Para mover objetos selecionados, clique num deles e segure enquanto move o "
-"cursor. Se o objeto não estiver selecionado, ele será-o."
+"Para mover objetos selecionados, clique num deles e segure enquanto move "
+"o cursor. Se o objeto não estiver selecionado, ele será-o."
 
-#: ../../editing/common-operations/tools.rst:44
+#: ../../editing/common-operations/tools.rst:48
 msgid ""
 "To copy-move (duplicate and move) objects, click and drag like when "
 "moving, while holding the :zbutton:`Ctrl` button on the keyboard."
@@ -181,151 +183,169 @@ msgstr ""
 "Para copiar-mover (duplicar e mover) objetos, clique e arraste como ao "
 "mover, enquanto segura o botão :zbutton:`Ctrl` no teclado."
 
-#: ../../editing/common-operations/tools.rst:48
+#: ../../editing/common-operations/tools.rst:52
 msgid ""
 "To split/cut objects in parts, hold :zbutton:`Ctrl` while clicking "
 "somewhere inside the object to cut at that position."
 msgstr ""
 "Para dividir/cortar objetos em partes, segure o botão :zbutton:`Ctrl` "
-"enquanto clica em algum lugar dentro do objeto para cortar naquela posição."
+"enquanto clica em algum lugar dentro do objeto para cortar naquela "
+"posição."
 
-#: ../../editing/common-operations/tools.rst:53
+#: ../../editing/common-operations/tools.rst:57
 msgid "Edit Mode"
 msgstr "Modo de Edição"
 
-#: ../../editing/editing-basics/creating-midi-notes.rst:2
+#: ../../editing/editing-basics/creating-midi-notes.rst:6
 msgid "Creating MIDI Notes"
 msgstr "Criar notas MIDI"
 
-#: ../../editing/editing-basics/creating-midi-notes.rst:4
+#: ../../editing/editing-basics/creating-midi-notes.rst:8
 msgid "MIDI notes are created by double-clicking and dragging."
 msgstr "As notas MIDI são criadas a clicar duas vezes e arrastando."
 
-#: ../../editing/editing-basics/creating-regions.rst:2
+#: ../../editing/editing-basics/creating-regions.rst:6
 msgid "Creating Regions"
 msgstr "Criar Regiões"
 
-#: ../../editing/editing-basics/creating-regions.rst:4
+#: ../../editing/editing-basics/creating-regions.rst:8
 msgid "Regions are created by double clicking and dragging."
 msgstr "As regiões são criadas clicando e arrastando duas vezes."
 
-#: ../../editing/editing-basics/intro.rst:2
+#: ../../editing/editing-basics/intro.rst:6
 msgid "Editing Basics"
 msgstr "Noções Básicas de Edição"
 
-#: ../../editing/editing-basics/midi-modifiers.rst:2
+#: ../../editing/editing-basics/midi-modifiers.rst:6
 msgid "MIDI Modifiers"
 msgstr "Modificadores MIDI"
 
-#: ../../editing/editing-basics/midi-note-context-menu.rst:2
+#: ../../editing/editing-basics/midi-note-context-menu.rst:6
 msgid "MIDI Note Context Menu"
 msgstr "Menu de Contexto de Notas MIDI"
 
-#: ../../editing/editing-basics/midi-note-editing-operations.rst:2
+#: ../../editing/editing-basics/midi-note-editing-operations.rst:6
 msgid "MIDI Note Editing Operations"
 msgstr "Operações de Edição de Notas MIDI"
 
-#: ../../editing/editing-basics/moving-midi-notes.rst:2
+#: ../../editing/editing-basics/moving-midi-notes.rst:6
 msgid "Moving MIDI Notes"
 msgstr "Mover Notas MIDI"
 
-#: ../../editing/editing-basics/moving-regions.rst:2
+#: ../../editing/editing-basics/moving-regions.rst:6
 msgid "Moving Regions"
 msgstr "Mover regiões"
 
-#: ../../editing/editing-basics/moving-regions.rst:4
+#: ../../editing/editing-basics/moving-regions.rst:8
 msgid "Selected regions can be moved by clicking and dragging."
 msgstr "As regiões selecionadas podem ser movidas clicando e arrastando."
 
-#: ../../editing/editing-basics/region-context-menu.rst:2
+#: ../../editing/editing-basics/region-context-menu.rst:6
 msgid "Region Context Menu"
 msgstr "Menu de Contexto da Região"
 
-#: ../../editing/editing-basics/region-editing-operations.rst:2
+#: ../../editing/editing-basics/region-editing-operations.rst:6
 msgid "Region Editing Operations"
 msgstr "Operações de Edição de Região"
 
-#: ../../editing/editing-selections/editing-automation.rst:2
+#: ../../editing/editing-selections/editing-automation.rst:6
 msgid "Editing Automation"
 msgstr "Automatizar a Edição"
 
-#: ../../editing/editing-selections/editing-midi-notes.rst:2
+#: ../../editing/editing-selections/editing-midi-notes.rst:6
 msgid "Editing MIDI Notes"
 msgstr "Editar Notas MIDI"
 
-#: ../../editing/editing-selections/editing-regions.rst:2
+#: ../../editing/editing-selections/editing-regions.rst:6
 msgid "Editing Regions"
 msgstr "Editar Regiões"
 
-#: ../../editing/editing-selections/editing-tracks.rst:2
+#: ../../editing/editing-selections/editing-tracks.rst:6
 msgid "Editing Tracks"
 msgstr "Editar Faixas"
 
-#: ../../editing/editing-selections/intro.rst:2
+#: ../../editing/editing-selections/intro.rst:6
 msgid "Editing Selections"
 msgstr "Editar Seleções"
 
-#: ../../editing/fades-and-crossfades.rst:2
+#: ../../editing/fades-and-crossfades.rst:6
 msgid "Fades and Cross-Fades"
 msgstr "Fades e Cross-Fades"
 
-#: ../../editing/intro.rst:2
+#: ../../editing/intro.rst:6
 msgid "Editing"
 msgstr "Edição"
 
-#: ../../editing/making-selections/intro.rst:2
+#: ../../editing/making-selections/intro.rst:6
 msgid "Making Selections"
 msgstr "Fazer Seleções"
 
-#: ../../editing/making-selections/selecting-automation.rst:2
+#: ../../editing/making-selections/selecting-automation.rst:6
 msgid "Selecting Automation"
 msgstr "Selecionar Automação"
 
-#: ../../editing/making-selections/selecting-midi-notes.rst:2
+#: ../../editing/making-selections/selecting-midi-notes.rst:6
 msgid "Selecting MIDI Notes"
 msgstr "Selecionar Notas MIDI"
 
-#: ../../editing/making-selections/selecting-regions.rst:2
+#: ../../editing/making-selections/selecting-regions.rst:6
 msgid "Selecting Regions"
 msgstr "Selecionar Regiões"
 
-#: ../../editing/making-selections/selecting-tracks.rst:2
+#: ../../editing/making-selections/selecting-tracks.rst:6
 msgid "Selecting Tracks"
 msgstr "Selecionar Faixas"
 
-#: ../../editing/overview.rst:2 ../../editing/piano-roll-editing/overview.rst:2
-#: ../../editing/timeline-editing/overview.rst:2
+#: ../../editing/overview.rst:6 ../../editing/piano-roll-editing/overview.rst:6
+#: ../../editing/timeline-editing/overview.rst:6
 msgid "Overview"
 msgstr "Sinopse"
 
-#: ../../editing/overview.rst:4
-msgid ""
-"Editing refers to any work done in the arrangers: the Timeline and the "
-"Piano Roll."
+#: ../../editing/overview.rst:8
+#, fuzzy
+msgid "Editing refers to any work done in the arrangers:"
 msgstr ""
-"A edição refere-se a qualquer trabalho feito nos arranjadores: a Cronologia "
-"e o Cílindros de Piano."
+"A edição refere-se a qualquer trabalho feito nos arranjadores: a "
+"Cronologia e o Cílindros de Piano."
 
-#: ../../editing/overview.rst:7
+#: ../../editing/overview.rst:10 ../../editing/timeline-editing/intro.rst:6
+msgid "Timeline"
+msgstr ""
+
+#: ../../editing/overview.rst:11 ../../editing/piano-roll-editing/intro.rst:6
+msgid "Piano Roll"
+msgstr ""
+
+#: ../../editing/overview.rst:12
+msgid "Chord Editor"
+msgstr ""
+
+#: ../../editing/overview.rst:16
+msgid ""
+"In addition to their own unique features, each arranger shares the "
+"following global tools."
+msgstr ""
+
+#: ../../editing/overview.rst:19
 msgid ""
 "The Timeline is the arranger shown in the top part of the screen by "
 "default, and the Piano Roll is brought up by clicking on the Editor tab "
 "on the bottom of the screen or by double-clicking a region."
 msgstr ""
-"A Cronologia é o organizador mostrado na parte superior do ecrã por padrão, "
-"e os Cílindros de Piano são exibidos a clicar no separador Editor na parte "
-"inferior do ecrã ou clicando duas vezes numa região."
+"A Cronologia é o organizador mostrado na parte superior do ecrã por "
+"padrão, e os Cílindros de Piano são exibidos a clicar no separador Editor"
+" na parte inferior do ecrã ou clicando duas vezes numa região."
 
-#: ../../editing/piano-roll-editing/arranger.rst:2
-#: ../../editing/timeline-editing/arranger.rst:2
+#: ../../editing/piano-roll-editing/arranger.rst:6
+#: ../../editing/timeline-editing/arranger.rst:6
 msgid "Arranger"
 msgstr "Arranjador"
 
-#: ../../editing/piano-roll-editing/drum-view.rst:2
+#: ../../editing/piano-roll-editing/drum-view.rst:6
 msgid "Drum View"
 msgstr "Vista do Tambor"
 
-#: ../../editing/piano-roll-editing/drum-view.rst:4
+#: ../../editing/piano-roll-editing/drum-view.rst:8
 msgid ""
 "The Piano Roll can be switched to Drum View which is suitable for editing"
 " drums."
@@ -333,37 +353,36 @@ msgstr ""
 "Os Cílindros de Piano podem ser mudados para a Vista do Tambor, que é "
 "adequada para editar tambores."
 
-#: ../../editing/piano-roll-editing/highlighting.rst:2
+#: ../../editing/piano-roll-editing/highlighting.rst:6
 msgid "Highlighting"
 msgstr "Destaque"
 
-#: ../../editing/piano-roll-editing/highlighting.rst:4
+#: ../../editing/piano-roll-editing/highlighting.rst:8
 msgid ""
 "Zrythm can highlight notes in the Piano Roll based on the current Chord "
 "or Scale."
 msgstr ""
-"Zrythm pode destacar notas nos Cílindros de Piano com base no acorde atual "
-"ou escala."
+"Zrythm pode destacar notas nos Cílindros de Piano com base no acorde "
+"atual ou escala."
 
-#: ../../editing/piano-roll-editing/intro.rst:2
-msgid "Piano Roll Editing"
-msgstr "Edição de Cílindros de Piano"
-
-#: ../../editing/piano-roll-editing/ruler.rst:2
-#: ../../editing/timeline-editing/ruler.rst:2
+#: ../../editing/piano-roll-editing/ruler.rst:6
+#: ../../editing/timeline-editing/ruler.rst:6
 msgid "Ruler"
 msgstr "Régua"
 
-#: ../../editing/piano-roll-editing/selection-info-bar.rst:2
-#: ../../editing/timeline-editing/selection-info-bar.rst:2
+#: ../../editing/piano-roll-editing/selection-info-bar.rst:6
+#: ../../editing/timeline-editing/selection-info-bar.rst:6
 msgid "Selection Info Bar"
 msgstr "Barra de Informações de Seleção"
 
-#: ../../editing/piano-roll-editing/toolbar.rst:2
-#: ../../editing/timeline-editing/toolbar.rst:2
+#: ../../editing/piano-roll-editing/toolbar.rst:6
+#: ../../editing/timeline-editing/toolbar.rst:6
 msgid "Toolbar"
 msgstr "Barra de Ferramentas"
 
-#: ../../editing/timeline-editing/intro.rst:2
-msgid "Timeline Editing"
-msgstr "Edição de cronologia"
+#~ msgid "Piano Roll Editing"
+#~ msgstr "Edição de Cílindros de Piano"
+
+#~ msgid "Timeline Editing"
+#~ msgstr "Edição de cronologia"
+

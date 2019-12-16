@@ -7,23 +7,26 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-12 12:26+0100\n"
+"POT-Creation-Date: 2019-12-16 08:22+0000\n"
 "PO-Revision-Date: 2019-09-03 13:44+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualpublishing/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/zrythm/manualpublishing/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../../publishing/intro.rst:2
+#: ../../publishing/intro.rst:6
 msgid "Publishing"
 msgstr "Publicação"
 
-#: ../../publishing/intro.rst:4
-msgid "TODO funkwhale"
-msgstr "TODO funkwhale"
+#: ../../publishing/intro.rst:8
+msgid "TODO"
+msgstr ""
+
+#~ msgid "TODO funkwhale"
+#~ msgstr "TODO funkwhale"
+

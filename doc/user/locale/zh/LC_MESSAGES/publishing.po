@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-12 12:26+0100\n"
+"POT-Creation-Date: 2019-12-16 08:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../../publishing/intro.rst:2
+#: ../../publishing/intro.rst:6
 msgid "Publishing"
 msgstr ""
 
-#: ../../publishing/intro.rst:4
-msgid "TODO funkwhale"
+#: ../../publishing/intro.rst:8
+msgid "TODO"
 msgstr ""
+
+#~ msgid "TODO funkwhale"
+#~ msgstr ""
 

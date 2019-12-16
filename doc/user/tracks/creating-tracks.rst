@@ -11,14 +11,20 @@ Blank Tracks
 To add an empty track, right click on empty space in the
 Tracklist and select the type of track you want to add.
 
+.. image:: /_static/img/tracklist-context-menu.png
+   :align: center
+
 Creating Tracks From Plugins
 ----------------------------
 
 Plugins can be clicked and dragged from the Plugin Browser
 and dropped into empty space in the Tracklist or Mixer to
-instantiate them. If the plugin is an Instrument plugin,
-an Instrument Track will be created. If the plugin is
-an effect, a Bus Track will be created.
+instantiate them. If the plugin is an instrument plugin,
+an instrument Track will be created. If the plugin is
+an effect, a bus Track will be created.
+
+See :ref:`instantiating-plugins` for how to instantiate
+plugins.
 
 Creating Audio Tracks From Audio Files
 --------------------------------------
@@ -34,3 +40,6 @@ Creating Tracks by Duplicating
 
 Most Tracks can be duplicated by right clicking
 inside the Track and selecting :zbutton:`Duplicate`.
+
+.. image:: /_static/img/track-context-menu-duplicate-track.png
+   :align: center

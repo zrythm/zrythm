@@ -6,7 +6,7 @@ Tracks
 ======
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
    overview
    track-types
@@ -22,4 +22,3 @@ Tracks
    marker-track
    creating-tracks
    track-operations
-   track-context-menu

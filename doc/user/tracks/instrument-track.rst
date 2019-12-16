@@ -12,6 +12,33 @@ be an instrument plugin. This is done
 automatically when instrument tracks are
 created from instrument plugins.
 
+.. image:: /_static/img/instrument-track.png
+   :align: center
+
+Top Buttons
+-----------
+
+Record
+  Arms the track for recording.
+Solo
+  Soloes the track.
+Mute
+  Mutes the track.
+Show UI
+  Displays the UI of the main plugin.
+
+Bottom Buttons
+--------------
+
+Lock
+  Not used at the moment.
+Freeze
+  Freezes the track (not operational at the moment).
+Show Lanes
+  Toggles the visibility of lanes.
+Show Automation
+  Toggles the visibility of automation tracks.
+
 Inspector
 ---------
 
@@ -28,6 +55,8 @@ Inputs
 ~~~~~~
 
 These are similar to :ref:`midi-track-inputs`.
+
+.. _instrument-track-sends:
 
 Sends
 ~~~~~

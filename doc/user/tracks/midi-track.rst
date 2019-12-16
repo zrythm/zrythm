@@ -13,6 +13,29 @@ MIDI tracks, unlike instrument tracks, produce MIDI
 output and so their channel strips will only have
 MIDI effects (plugins that change MIDI signals).
 
+.. image:: /_static/img/midi-track.png
+   :align: center
+
+Top Buttons
+-----------
+
+Record
+  Arms the track for recording.
+Solo
+  Soloes the track.
+Mute
+  Mutes the track.
+
+Bottom Buttons
+--------------
+
+Lock
+  Not used at the moment.
+Show Lanes
+  Toggles the visibility of lanes.
+Show Automation
+  Toggles the visibility of automation tracks.
+
 Inspector
 ---------
 
@@ -22,6 +45,9 @@ Inspector
 Properties
 ~~~~~~~~~~
 
+Track Name
+  The name of the track. You can double click to
+  change it.
 Direct Out
   The track to route the output of the MIDI track to.
 
@@ -38,6 +64,8 @@ Input Channel
   The MIDI channel(s) to listen to for recording
   MIDI events. This acts as a filter so MIDI events
   on channels not selected will be ignored.
+
+.. _midi-track-sends:
 
 Sends
 ~~~~~
@@ -60,11 +88,16 @@ Lanes
 
 The MIDI track can have multiple lanes for saving
 regions. By default, all regions you create will be
-created in lane 1. Lanes are useful when recording,
+created in lane 1. Additional lanes will be auto-created
+and deleted as you add regions to each lane.
+
+.. image:: /_static/img/track_lanes.png
+   :align: center
+
+Lanes are useful when recording,
 as each time the playback loops it will start
 recording in a new lane and mute the region in the
 previous lane.
-
 Lanes are also useful for generally organizing your
 regions. For example you can keep high notes in
 lane 1 and bass notes in lane 2.
@@ -83,8 +116,16 @@ plugins in the MIDI track's channel. To show the
 automation tracks, click on the cusp icon in the MIDI
 track.
 
+.. image:: /_static/img/automation_tracks.png
+   :align: center
+
 More information about automation tracks can be found
 in the :ref:`automation` chapter.
+
+Context Menu
+------------
+
+TODO
 
 MIDI Transformations
 --------------------

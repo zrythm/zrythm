@@ -5,3 +5,9 @@
 Group Track (MIDI)
 ==================
 
+These are similar to :ref:`audio-group-track`,
+except that they act on MIDI signals instead
+of audio signals.
+
+.. image:: /_static/img/midi-group-track.png
+   :align: center
