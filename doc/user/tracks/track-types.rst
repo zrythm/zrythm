@@ -9,7 +9,7 @@ Zrythm has the following types of Tracks, and
 they are explained further in their own sections.
 
 MIDI Track
-  A Track that contains regions holding MIDI
+  A Track that contains regions containing MIDI
   notes. It also has automation lanes for
   automating its components.
 
@@ -18,7 +18,8 @@ MIDI Track
   *Can record:* **Yes**
 Instrument Track
   Similar to a MIDI track, except that an Instrument
-  Track is bound to an instrument plugin.
+  Track is bound to an instrument plugin that produces
+  audio.
 
   *Input:* **MIDI**, *Output:* **Audio**
 
@@ -37,20 +38,20 @@ Bus Track (Audio)
 
   *Can record:* **No**
 Bus Track (MIDI)
-  Similar to an audio Bus Track, except that it
+  Similar to an audio bus track, except that it
   handles MIDI instead of audio.
 
   *Input:* **MIDI**, *Output:* **MIDI**
 
   *Can record:* **No**
 Group Track (Audio)
-  A Group Track is used to route signals from
-  multiple Tracks into one Track (or "group" them).
+  A group track is used to route signals from
+  multiple tracks into one track (or "group" them).
   It behaves like
-  a Bus Track with the exception that other Tracks
+  a bus Track with the exception that other tracks
   can
-  route their output signal directly into Group
-  Track.
+  route their output signal directly into group
+  track.
   *Input:* **Audio**, *Output:* **Audio**
 
   *Can record:* **No**
@@ -78,7 +79,7 @@ Chord Track
 
   *Can record:* **No**
 Marker Track
-  A Marker Track is a special kind of Track that
+  A Marker Track is a special kind of track that
   contains song markers - either custom or
   pre-defined ones like the song start and
   end markers.

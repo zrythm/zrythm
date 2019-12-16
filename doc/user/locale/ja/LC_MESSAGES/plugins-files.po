@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-18 01:11+0100\n"
+"POT-Creation-Date: 2019-12-16 07:46+0000\n"
 "PO-Revision-Date: 2019-07-07 03:09+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language: ja\n"
@@ -29,24 +29,28 @@ msgid ""
 " or through your custom collections."
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:13
-msgid "Filtering"
+#: ../../plugins-files/audio-midi-files/file-browser.rst:12
+msgid "This is a work in progress."
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:15
-#: ../../plugins-files/audio-midi-files/file-browser.rst:20
+msgid "Filtering"
+msgstr ""
+
+#: ../../plugins-files/audio-midi-files/file-browser.rst:17
+#: ../../plugins-files/audio-midi-files/file-browser.rst:22
 msgid "TODO"
 msgstr "TODO"
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:18
+#: ../../plugins-files/audio-midi-files/file-browser.rst:20
 msgid "Collections"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:23
+#: ../../plugins-files/audio-midi-files/file-browser.rst:25
 msgid "Importing Files"
 msgstr ""
 
-#: ../../plugins-files/audio-midi-files/file-browser.rst:25
+#: ../../plugins-files/audio-midi-files/file-browser.rst:27
 msgid ""
 "Files are imported by either double clicking them in the browser or "
 "dragging and dropping them into a track."
@@ -91,9 +95,45 @@ msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:14
 msgid ""
-"This page will display information about the Plugin and allow you to "
-"route inputs and outputs to each port of the Plugin, for example to route"
-" an LFO output to a Filter Plugin's filter cutoff parameter."
+"This page will display information about the Plugin and its ports and "
+"allow you to make changes."
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:19
+msgid "Changing Values"
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:21
+msgid ""
+"The values of control ports can be changed by clicking and dragging "
+"inside the bar."
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:25
+msgid "Connections"
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:27
+msgid ""
+"Compatible ports can be connected to one another. This allows you to "
+"route anything-to-anything. For example, you can route an LFO's CV output"
+" to a filter plugin's cutoff parameter."
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:32
+msgid ""
+"The number in orange indicates how many ports are currently connected to "
+"each port."
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:35
+msgid ""
+"By double clicking the port, you can select a port to connect it to, or "
+"edit existing connections."
+msgstr ""
+
+#: ../../plugins-files/plugins/inspector-page.rst:40
+msgid "For more information about ports, see the next section."
 msgstr ""
 
 #: ../../plugins-files/plugins/intro.rst:6
@@ -145,60 +185,62 @@ msgid "Protocol"
 msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:27
-msgid ""
-"Allows you to filter plugins based their protocol (LV2 or VST). Not "
-"operational at the moment."
+msgid "Allows you to filter plugins based their protocol (LV2 or VST)."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:31
+#: ../../plugins-files/plugins/plugin-browser.rst:30
+msgid "Collections and Protocols are not operational at the moment."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Filter Buttons"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:32
+#: ../../plugins-files/plugins/plugin-browser.rst:34
 msgid ""
 "Additionally to the above, you can filter plugins based on their type. "
 "The following types exist:"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:36
+#: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "Instrument"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:36
+#: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "These plugins will create an instrument track when added to the project."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:40
+#: ../../plugins-files/plugins/plugin-browser.rst:42
 msgid "Effects"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:39
+#: ../../plugins-files/plugins/plugin-browser.rst:41
 msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
 "in the mixer or can be instantiated to create new bus tracks."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:43
+#: ../../plugins-files/plugins/plugin-browser.rst:45
 msgid "Modulators"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:43
+#: ../../plugins-files/plugins/plugin-browser.rst:45
 msgid ""
 "These plugins output CV signals and can be used to modulate other plugin "
 "or track parameters."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:49
+#: ../../plugins-files/plugins/plugin-browser.rst:51
 msgid "MIDI Effects"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:46
+#: ../../plugins-files/plugins/plugin-browser.rst:48
 msgid ""
 "These plugins modify incoming MIDI signals and can be used in the MIDI "
 "signal chain of an Instrument or MIDI track (coming soon)."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:51
+#: ../../plugins-files/plugins/plugin-browser.rst:54
 msgid ""
 "Zrythm looks inside the Plugin's metadata to determine what type the "
 "Plugin is. If that is not enough, Zrythm makes a decision based on the "
@@ -206,30 +248,46 @@ msgid ""
 "has."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:58
+#: ../../plugins-files/plugins/plugin-browser.rst:61
 msgid "Instantiating Plugins"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:59
+#: ../../plugins-files/plugins/plugin-browser.rst:62
 msgid "There are a couple of ways to instantiate plugins:"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:64
+#: ../../plugins-files/plugins/plugin-browser.rst:65
 msgid "Drag-n-Drop"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:62
+#: ../../plugins-files/plugins/plugin-browser.rst:67
 msgid ""
-"Drag and drop the selected plugin into empty space in the Tracklist or "
-"into empty space in the Mixer to create a new track using that plugin. If"
-" the plugin is a modulator, you can drop it into the Modulators Tab."
+"You can drag and drop the selected plugin into empty space in the "
+"Tracklist or into empty space in the Mixer to create a new track using "
+"that plugin."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:68
+#: ../../plugins-files/plugins/plugin-browser.rst:75
+msgid ""
+"Alternatively, you can drag the plugin on a mixer slot to add it there or"
+" replace the previous plugin."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:80
+msgid "If the plugin is a modulator, you can drop it into the Modulators Tab."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:84
+msgid ""
+"The Modulators tab is a work-in-progress. For the time being, you can use"
+" them as regular effects."
+msgstr ""
+
+#: ../../plugins-files/plugins/plugin-browser.rst:88
 msgid "Double Click/Enter"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-browser.rst:67
+#: ../../plugins-files/plugins/plugin-browser.rst:90
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
@@ -323,8 +381,8 @@ msgstr ""
 
 #: ../../plugins-files/plugins/ports.rst:45
 msgid ""
-"Channels also have their own Ports, for example for the Fader, Pan, and "
-"Enabled (On/Off)."
+"Tracks/channels also have their own ports, for example for the fader, "
+"pan, and enabled status (on/off)."
 msgstr ""
 
 #~ msgid ""
@@ -373,5 +431,36 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Zrythm supports LV2 Plugins at the moment."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This page will display information about"
+#~ " the Plugin and allow you to "
+#~ "route inputs and outputs to each "
+#~ "port of the Plugin, for example to"
+#~ " route an LFO output to a "
+#~ "Filter Plugin's filter cutoff parameter."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Allows you to filter plugins based "
+#~ "their protocol (LV2 or VST). Not "
+#~ "operational at the moment."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Drag and drop the selected plugin "
+#~ "into empty space in the Tracklist "
+#~ "or into empty space in the Mixer"
+#~ " to create a new track using "
+#~ "that plugin. If the plugin is a"
+#~ " modulator, you can drop it into "
+#~ "the Modulators Tab."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Channels also have their own Ports, "
+#~ "for example for the Fader, Pan, "
+#~ "and Enabled (On/Off)."
 #~ msgstr ""
 

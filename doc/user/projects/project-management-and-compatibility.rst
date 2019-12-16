@@ -25,5 +25,5 @@ previous version
 please install that version of Zrythm.
 
 .. hint::
-  Each project file will contain the version of Zrythm it was made with
-  and a date
+  Each project file will mention the version of Zrythm it was made with
+  and the date it was saved

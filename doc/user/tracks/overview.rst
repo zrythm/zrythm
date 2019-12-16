@@ -6,16 +6,70 @@ Overview
 ========
 
 Tracks are the main building blocks of projects.
-Tracks appear in the Tracklists (one pinned at
-the top and one non-pinned) and contain various
-information such as regions and automation
-points.
+Tracks appear in the tracklist and contain various
+events such as regions.
 
-Most types of Tracks have a Channel that
-appears in the mixer. Each Track has its
-own page in the Inspector section, which is
+.. image:: /_static/img/track.png
+   :align: center
+
+Most types of tracks have a corresponding channel that
+appears in the mixer.
+
+.. image:: /_static/img/channel.png
+   :align: center
+
+Each track has its own page in the inspector section, which is
 shown when selecting a Track.
+
+.. image:: /_static/img/track_inputs.png
+   :align: center
 
 There are various kinds of Tracks suited for
 different purposes, explained in the following
 sections.
+
+Track Interface
+---------------
+
+.. image:: /_static/img/track-interface.png
+   :align: center
+
+Each track has a color, an icon (corresponding to its type)
+a name and various buttons. Tracks that can have
+lanes, like instrument tracks, will also have an option to
+display each lane as above. Tracks that can have automation
+will have an option to display automation tracks as above.
+
+If the track produces output, it will have a meter on its
+right-hand side showing the current level.
+
+Track Inspector
+----------------
+
+.. image:: /_static/img/midi-track-inspector.png
+   :align: center
+
+Each track will display its page in the inspector when
+selected. Depending on the track, the properties shown
+will be differ.
+
+Properties
+~~~~~~~~~~
+
+Track properties are basic properties that the track
+has, like its name, color, and direct output.
+
+Inputs
+~~~~~~
+
+If the track takes input, there will be an input
+selection section.
+
+Sends
+~~~~~
+
+These are ports that can be connected to for any
+purpose. These are generally useful for side-chaining.
+The pre-fader port(s) hold the signal up to before
+the fader is processed, and the post-fader port(s)
+hold the signal after the fader is applied.

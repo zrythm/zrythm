@@ -31,11 +31,9 @@ Region is selected.
 .. image:: /_static/img/automation_editor.png
    :align: center
 
-.. note:: This is a work in progress
-
 Chord Editor
 ------------
 
 The Chord Editor is used for editing Chord Regions.
 
-WIP
+.. note:: This is a work in progress

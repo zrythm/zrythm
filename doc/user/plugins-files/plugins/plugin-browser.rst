@@ -25,7 +25,9 @@ Category
   such as "Delay", "Distortion", etc.
 Protocol
   Allows you to filter plugins based their protocol (LV2 or
-  VST). Not operational at the moment.
+  VST).
+
+.. note:: Collections and Protocols are not operational at the moment.
 
 Filter Buttons
 --------------
@@ -60,11 +62,34 @@ Instantiating Plugins
 There are a couple of ways to instantiate plugins:
 
 Drag-n-Drop
-  Drag and drop the selected plugin into empty space in the
-  Tracklist or into empty space in the Mixer to
-  create a new track using that plugin. If the plugin is a
-  modulator, you can drop it into the Modulators Tab.
+~~~~~~~~~~~
+
+You can drag and drop the selected plugin into empty space in the
+Tracklist or into empty space in the Mixer to
+create a new track using that plugin.
+
+.. image:: /_static/img/drop-plugin-to-mixer.png
+   :align: center
+
+.. image:: /_static/img/drop-plugin-to-tracklist.png
+   :align: center
+
+Alternatively, you can drag the plugin on a mixer slot
+to add it there or replace the previous plugin.
+
+.. image:: /_static/img/drop-plugin-to-slot.png
+   :align: center
+
+If the plugin is a
+modulator, you can drop it into the Modulators Tab.
+
+.. note::
+  The Modulators tab is a work-in-progress. For the time being,
+  you can use them as regular effects.
+
 Double Click/Enter
-  Double click on the plugin or select it and press the
-  return key on your keyboard to create a new track using
-  that plugin.
+~~~~~~~~~~~~~~~~~~
+
+Double click on the plugin or select it and press the
+return key on your keyboard to create a new track using
+that plugin.

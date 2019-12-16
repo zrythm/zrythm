@@ -28,4 +28,5 @@ Title Bar (6)
   The Title Bar contains menus with options for various operations.
 
 Status Bar (7)
-  The Status Bar is a helpful bar in the bottom of the program that shows tips based on the currently hovered-over item.
+  The status bar is a helpful bar in the bottom of the window
+  that displays information about the current project.

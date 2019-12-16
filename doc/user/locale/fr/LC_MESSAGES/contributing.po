@@ -7,24 +7,23 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-12 12:58+0100\n"
+"POT-Creation-Date: 2019-12-15 09:08+0000\n"
 "PO-Revision-Date: 2019-08-16 05:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
-"manualcontributing/fr/>\n"
 "Language: fr\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/zrythm/manualcontributing/fr/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.8\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../../contributing/designing.rst:19
+#: ../../contributing/designing.rst:6
 msgid "Designing"
 msgstr "Conception"
 
-#: ../../contributing/designing.rst:21
+#: ../../contributing/designing.rst:8
 msgid ""
 "If you want to help improve the appearance Zrythm itself and its website,"
 " forum, manual, etc., please come join the `chat "
@@ -35,7 +34,7 @@ msgstr ""
 "`chat "
 "<https://riot.im/app/#/room/#freenode_#zrythm:matrix.org?action=chat>`_."
 
-#: ../../contributing/designing.rst:25
+#: ../../contributing/designing.rst:12
 msgid ""
 "Zrythm itself is fully CSS-themable, and the overall UI structure can "
 "easily be edited in Glade without touching any code."
@@ -44,11 +43,11 @@ msgstr ""
 " l'interface utilisateur peut facilement être modifiée dans Glade sans "
 "toucher au code."
 
-#: ../../contributing/donating.rst:19
+#: ../../contributing/donating.rst:6
 msgid "Donating"
 msgstr "Faire un don"
 
-#: ../../contributing/donating.rst:21
+#: ../../contributing/donating.rst:8
 msgid ""
 "Donations are vital to keep the project running smoothly. If you can "
 "afford to do so please consider becoming a patron or supporting us below."
@@ -57,7 +56,7 @@ msgstr ""
 "vous le permettre, nous vous invitons à devenir mécène ou à nous soutenir"
 " ci-dessous."
 
-#: ../../contributing/donating.rst:25
+#: ../../contributing/donating.rst:12
 msgid ""
 "`PayPal <https://www.paypal.com/cgi-bin/webscr?cmd=_s-"
 "xclick&hosted_button_id=LZWVK6228PQGE&source=url>`_"
@@ -65,15 +64,15 @@ msgstr ""
 "`PayPal <https://www.paypal.com/cgi-bin/webscr?cmd=_s-"
 "xclick&hosted_button_id=LZWVK6228PQGE&source=url>`_"
 
-#: ../../contributing/donating.rst:26
+#: ../../contributing/donating.rst:13
 msgid "PayPal recurring or non-recurring donation."
 msgstr "Don PayPal récurrent ou non-récurrent."
 
-#: ../../contributing/donating.rst:27
+#: ../../contributing/donating.rst:14
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr "`LiberaPay <https://liberapay.com/Zrythm>`_"
 
-#: ../../contributing/donating.rst:28
+#: ../../contributing/donating.rst:15
 msgid ""
 "LiberaPay is a recurring donations platform for funding developers and "
 "creators, ran by a French non-profit."
@@ -81,11 +80,11 @@ msgstr ""
 "LiberaPay est une plateforme de dons récurrents pour le financement des "
 "développeurs et des créateurs, gérée par une association française."
 
-#: ../../contributing/donating.rst:29
+#: ../../contributing/donating.rst:16
 msgid "Bitcoin"
 msgstr "Bitcoin"
 
-#: ../../contributing/donating.rst:30
+#: ../../contributing/donating.rst:17
 msgid ""
 "Anonymous cryptocurrency donation. Please use: "
 "bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j"
@@ -93,11 +92,11 @@ msgstr ""
 "Don anonyme en cryptomonnaie. Veuillez utiliser : "
 "bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j"
 
-#: ../../contributing/editing-documentation.rst:19
+#: ../../contributing/editing-documentation.rst:6
 msgid "Editing Documentation"
 msgstr "Révision/Correction de la documentation"
 
-#: ../../contributing/editing-documentation.rst:21
+#: ../../contributing/editing-documentation.rst:8
 msgid ""
 "This documentation can be edited via https://git.zrythm.org/zrythm"
 "/zrythm-docs"
@@ -105,29 +104,30 @@ msgstr ""
 "Cette documentation peut être modifiée via https://git.zrythm.org/zrythm"
 "/zrythm-docs"
 
-#: ../../contributing/intro.rst:19
+#: ../../contributing/intro.rst:6
 msgid "Contributing"
 msgstr "En contribuant au code"
 
-#: ../../contributing/testing.rst:19
+#: ../../contributing/testing.rst:6
 msgid "Testing"
 msgstr "En réalisant des tests"
 
-#: ../../contributing/testing.rst:21
+#: ../../contributing/testing.rst:8
+#, fuzzy
 msgid ""
 "You can fetch the latest master branch from "
 "https://git.zrythm.org/cgit/zrythm/snapshot/zrythm-master.tar.gz and "
 "start testing the latest features. You can report any bugs, ideas and "
-"impressions by creating an issue on `Savannah "
-"<https://savannah.nongnu.org/support/?group=zrythm>`_."
+"impressions by creating an issue on `Redmine "
+"<https://redmine.zrythm.org/projects/zrythm/issues>`_."
 msgstr ""
 "Vous pouvez récupérer la dernière branche principale à l’adresse "
 "https://git.zrythm.org/cgit/zrythm/snapshot/zrythm-master.tar.gz et "
-"commencer à tester les dernières fonctionnalités. Vous pouvez rapporter les "
-"bogues, idées et impressions en créant une tâche à `Savannah "
+"commencer à tester les dernières fonctionnalités. Vous pouvez rapporter "
+"les bogues, idées et impressions en créant une tâche à `Savannah "
 "<https://savannah.nongnu.org/support/?group=zrythm>`_."
 
-#: ../../contributing/testing.rst:25
+#: ../../contributing/testing.rst:13
 msgid ""
 "If you are on Arch Linux or derivatives such as Parabola, the latest "
 "master branch can be installed via the ``zrythm-git`` package in AUR."
@@ -135,19 +135,19 @@ msgstr ""
 "Si vous êtes sous Arch Linux ou dérivés tels que Parabola, la dernière "
 "branche maître peut être installée via le paquet ``zrythm-git'' dans AUR."
 
-#: ../../contributing/testing.rst:29
+#: ../../contributing/testing.rst:17
 msgid ""
 "See the ``README.md`` file in the distribution for installation "
 "instructions."
 msgstr ""
-"Consultez le fichier ``README.md``dans la distribution pour les instructions "
-"d'installation."
+"Consultez le fichier ``README.md``dans la distribution pour les "
+"instructions d'installation."
 
-#: ../../contributing/translating.rst:19
+#: ../../contributing/translating.rst:6
 msgid "Translating"
 msgstr "Traduire"
 
-#: ../../contributing/translating.rst:21
+#: ../../contributing/translating.rst:8
 msgid ""
 "Zrythm is available for translation at Hosted Weblate. Visit the `Zrythm "
 "project page "
@@ -159,35 +159,35 @@ msgstr ""
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ pour "
 "commencer la traduction."
 
-#: ../../contributing/translating.rst:23
+#: ../../contributing/translating.rst:10
 msgid "The Zrythm translation project contains the following components:"
 msgstr "Le projet de traduction de Zrythm comprend les éléments suivants :"
 
-#: ../../contributing/translating.rst:26
+#: ../../contributing/translating.rst:13
 msgid "Zrythm"
 msgstr "Zrythm"
 
-#: ../../contributing/translating.rst:26
+#: ../../contributing/translating.rst:13
 msgid "The actual Zrythm program"
 msgstr "Le programme Zrythm actuel"
 
-#: ../../contributing/translating.rst:29
+#: ../../contributing/translating.rst:16
 msgid "website"
 msgstr "site ouèbe"
 
-#: ../../contributing/translating.rst:29
+#: ../../contributing/translating.rst:16
 msgid "The Zrythm website (https://www.zrythm.org)"
 msgstr "Le site ouèbe de Zrythm (https://www.zrythm.org)"
 
-#: ../../contributing/translating.rst:32
+#: ../../contributing/translating.rst:19
 msgid "Manual - *"
 msgstr "Manuel - *"
 
-#: ../../contributing/translating.rst:32
+#: ../../contributing/translating.rst:19
 msgid "Sections of this manual"
 msgstr "Sections de ce manuel"
 
-#: ../../contributing/translating.rst:34
+#: ../../contributing/translating.rst:21
 msgid ""
 "Click on the project you wish to work on, and then select a language in "
 "the screen that follows. For more information on using Weblate, please "
@@ -200,11 +200,11 @@ msgstr ""
 "officielle <https://docs.weblate.org/en/latest/user/translating.html>`_ "
 "de Weblate."
 
-#: ../../contributing/writing-code.rst:19
+#: ../../contributing/writing-code.rst:6
 msgid "Writing Code"
 msgstr "Écrire du code"
 
-#: ../../contributing/writing-code.rst:21
+#: ../../contributing/writing-code.rst:8
 msgid ""
 "Please see the `Contribution Guide "
 "<https://docs.zrythm.org/md_CONTRIBUTING.html>`_ and check out the "
@@ -280,3 +280,4 @@ msgstr ""
 #~ " manuelle `ici "
 #~ "<https://git.zrythm.org/zrythm/zrythm/blob/master/INSTALL.md> "
 #~ "`_."
+

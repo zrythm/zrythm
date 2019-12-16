@@ -5,22 +5,21 @@
 Getting Plugins
 ===============
 
-Until Zrythm ships with its own bundled plugins, you must
+Zrythm ships with a few bundled plugins to help you get
+started (currently only ZLFO), but you should
 install some plugins like synthesizers and effects before
 you can make music.
 
 Fortunately, there are many plugins to choose from. This guide
 will show you a few ways you can install plugins.
 
-If you are on Debian/Ubuntu, we highly recommend checking out
+If you are on Debian/Ubuntu, we highly recommend using
 the `KXstudio repositories <https://kx.studio/>`_, since
 there are many plugins that can easily be installed via apt.
 
-If you are on Arch GNU/Linux you're in luck, because you can
-just download the entire
-`pro-audio <https://www.archlinux.org/groups/x86_64/pro-audio/>`_
-or `lv2-plugins <https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_
-groups, or you can hand-pick the plugins you want from
+If you are on Arch GNU/Linux, we recommend installing the
+`lv2-plugins <https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_
+group, or you can hand-pick the plugins you want from
 there.
 
 If you are not sure where to start, please read on.
@@ -29,36 +28,36 @@ Recommended Plugin Bundles
 --------------------------
 
 `DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_
-provides a good variety of synths and a few effects that can
-get you started for music making right away.
+provides a good variety of synths and effects that can
+help you get you started making music right away.
 
-`ZAM Plugins <http://www.zamaudio.com/?p=976>`_ is an effects pack that contains all the
+`ZAM Plugins <http://www.zamaudio.com/?p=976>`_
+is an effects pack that contains all the
 basic effects like Delay, Reverb, Compression, EQ, Saturation, etc.
 
 `LSP <https://lsp-plug.in/>`_ has a lot of useful effects.
 
-`OpenAV <http://openavproductions.com>`_ has some nice plugins worth checking out.
+`OpenAV <http://openavproductions.com>`_
+has effects and instruments worth checking out.
 
-You might also want to check out
-`X42 Plugins <http://x42-plugins.com/x42/>`_, which has
-**A LOT** of MIDI effect and meter plugins.
+`X42 Plugins <http://x42-plugins.com/x42/>`_ has many
+MIDI effect and meter plugins.
 
 Synths
 ------
 
-`Helm <https://tytel.org/helm/>`_ is an excellent subtractive synth that should be on
-everyone's toolbox.
+`Helm <https://tytel.org/helm/>`_ is an excellent subtractive synth.
 
 `Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synth
 that is closely modeled on the Yamaha DX7.
 
-`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_, the alternative
-front-end to ZynAddSubFX is one of the most
-powerful synths in existance.
+`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_
+is a powerful additive/subtractive synth that can synthesize
+a wide variety of sounds.
 
 Percussion Generators
 ---------------------
 
-`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a great
+`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a
 kick drum synthesizer that can also synthesize other types of
 percussion.

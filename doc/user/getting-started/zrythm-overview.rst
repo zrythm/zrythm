@@ -6,11 +6,10 @@ Overview
 ========
 
 Zrythm is a digital audio workstation designed to be
-featureful and easy to use. It has the following
-features.
+featureful and easy to use.
 
 Limitless automation
-  Allows you to automate almost anything with automation
+  You can automate almost anything with automation
   events using straight lines, ramps and curves,
   or with CV signals from LFO and envelope plugins.
 LV2 plugins

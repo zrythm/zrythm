@@ -8,8 +8,8 @@ Device Setup
 Connecting MIDI and Audio Devices
 ---------------------------------
 
-On Linux machines, Zrythm works with both ALSA and JACK as
-available backends. Depending on the backend selected, the
+On Linux-based platforms, Zrythm works with both ALSA and JACK as
+available backends. Depending on the selected backend, the
 configuration differs.
 
 Zrythm will auto-scan and allow you
@@ -43,6 +43,7 @@ bridged to JACK using ``a2jmidid``.
 An example configuration looks like this (in Catia inside Cadence)
 
 .. image:: /_static/img/midi_devices.png
+   :align: center
 
 ALSA
 ----

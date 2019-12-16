@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-18 01:11+0100\n"
+"POT-Creation-Date: 2019-12-16 07:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,8 +108,8 @@ msgstr ""
 
 #: ../../projects/project-management-and-compatibility.rst:28
 msgid ""
-"Each project file will contain the version of Zrythm it was made with and"
-" a date"
+"Each project file will mention the version of Zrythm it was made with and"
+" the date it was saved"
 msgstr ""
 
 #: ../../projects/saving-loading.rst:6
@@ -318,5 +318,11 @@ msgstr ""
 #~ " or create a new one. By "
 #~ "default, Zrythm will use ~/username/Zrythm "
 #~ "to create new Projects."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Each project file will contain the "
+#~ "version of Zrythm it was made with"
+#~ " and a date"
 #~ msgstr ""
 

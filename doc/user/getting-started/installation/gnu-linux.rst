@@ -2,48 +2,45 @@
    Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
-GNU/Linux
-=========
+GNU with Linux
+==============
 
-Official Builds
----------------
-You can install the latest version of Zrythm for your distro `here <https://software.opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_
+.. _gnu-with-linux-installer:
 
-This is the recommended way to install the latest version for
-most users.
+Installer
+---------
+You can install the latest version of
+Zrythm for your distro using an installer
+from the
+`Download <https://www.zrythm.org/en/download.html>`_ page
+on our website.
 
-Flatpak
--------
-Flatpak builds are coming soon.
+The installer supports the following
+distros (and derivatives):
 
-AppImage
---------
-AppImage builds are coming soon.
+- **Ubuntu 18.10, 19.04, 19.10** - amd64
+- **Debian 10** - amd64
+- **Arch Linux** - x86_64
+- **Fedora 31** - x86_64
 
-Fedora
-------
-For Fedora users, ycollet maintains a Zrythm package in
-`copr <https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/>`_
+This is the easiest and recommended way to install
+the latest version for most users, and we provide
+support for it.
 
-..
-  KX Studio
-  ----------
-  Thanks to falktx, Zrythm will also be available in the `KX Studio repos <http://kxstudio.linuxaudio.org/>`_ for Debian users
+Distro Package
+--------------
+If your distribution provides a Zrythm package you
+can install it from there, but it will likely be an older
+version than the one we provide and it may be missing
+optimizations or features that we include with the
+installer.
 
-LibraZik
---------
-Zrythm is available in `LibraZik 2 <https://librazik.tuxfamily.org/>`_
-for testing.
-
-AUR
----
-For Arch GNU/Linux users, Zrythm is available in the AUR
-under `zrythm <https://aur.archlinux.org/packages/zrythm/>`_
-and `zrythm-git <https://aur.archlinux.org/packages/zrythm-git/>`_.
+.. _gnu-with-linux-manual-installation:
 
 Manual Installation
 -------------------
-Zrythm uses the Meson build system, so the
+If you are an advanced user and prefer to build Zrythm
+yourself, Zrythm uses the Meson build system, so the
 procedure to build and install is as follows:
 
 ::
@@ -52,4 +49,4 @@ procedure to build and install is as follows:
   ninja -C build
   ninja -C build install
 
-See the ``meson.options`` file for installation options.
+See the ``INSTALL.md`` file for more information.

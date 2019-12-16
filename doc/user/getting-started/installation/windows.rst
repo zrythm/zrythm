@@ -5,4 +5,4 @@
 Windows
 =======
 
-http://www.upgradefromwindows.com
+Windows is not supported at the moment.

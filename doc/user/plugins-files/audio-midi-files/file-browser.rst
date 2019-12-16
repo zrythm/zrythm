@@ -9,6 +9,8 @@ The File Browser makes it easy to navigate
 through files on your computer or through
 your custom collections.
 
+.. note:: This is a work in progress.
+
 Filtering
 ---------
 

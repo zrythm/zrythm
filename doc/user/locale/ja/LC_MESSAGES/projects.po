@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-18 01:11+0100\n"
+"POT-Creation-Date: 2019-12-16 07:46+0000\n"
 "PO-Revision-Date: 2019-09-09 17:25+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language: ja\n"
@@ -112,9 +112,10 @@ msgid ""
 msgstr "プロジェクトファイル構造に変更がない場合は、以前のバージョンからのプロジェクトを開く可能性がありますが、これは保証されませんので、以前のバージョンを使用して作成されたプロジェクトを開きたい場合は、Zrythmのそのバージョンをインストールしてください。"
 
 #: ../../projects/project-management-and-compatibility.rst:28
+#, fuzzy
 msgid ""
-"Each project file will contain the version of Zrythm it was made with and"
-" a date"
+"Each project file will mention the version of Zrythm it was made with and"
+" the date it was saved"
 msgstr "各プロジェクト ファイルには、作成された Zrythm のバージョンと日付が記載されます。"
 
 #: ../../projects/saving-loading.rst:6

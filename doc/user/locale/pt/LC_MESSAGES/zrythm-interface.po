@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-18 01:11+0100\n"
+"POT-Creation-Date: 2019-12-16 07:46+0000\n"
 "PO-Revision-Date: 2019-09-24 07:14+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualzrythm-interface/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
+"/manualzrythm-interface/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -41,8 +40,8 @@ msgid ""
 "A Region (Clip) is a container for MIDI Notes, audio or other events. "
 "Regions can be repeated, like below."
 msgstr ""
-"Uma Região (Clipe) é um contentor para notas MIDI, áudio ou outros eventos. "
-"As regiões podem ser repetidas, como abaixo."
+"Uma Região (Clipe) é um contentor para notas MIDI, áudio ou outros "
+"eventos. As regiões podem ser repetidas, como abaixo."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:19
 msgid ""
@@ -78,9 +77,9 @@ msgid ""
 "corresponding Channel, which is used for adjusting the Track's volume, "
 "pan and other settings."
 msgstr ""
-"Um Canal é um único slot no Misturador. A maioria das categorias de Faixas "
-"têm um Canal correspondente, que é usado para ajustar o volume, a pan e "
-"outras definições da Faixa."
+"Um Canal é um único slot no Misturador. A maioria das categorias de "
+"Faixas têm um Canal correspondente, que é usado para ajustar o volume, a "
+"pan e outras definições da Faixa."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
 msgid "Range"
@@ -145,21 +144,17 @@ msgstr ""
 "regiões MIDI. O Editor de Automação aparecerá no separador Editor quando "
 "uma Região de Automação for selecionada."
 
-#: ../../zrythm-interface/editors.rst:34
-msgid "This is a work in progress"
-msgstr "Este é um trabalho em andamento"
-
-#: ../../zrythm-interface/editors.rst:37
+#: ../../zrythm-interface/editors.rst:35
 msgid "Chord Editor"
 msgstr "Editor de Acordes"
 
-#: ../../zrythm-interface/editors.rst:39
+#: ../../zrythm-interface/editors.rst:37
 msgid "The Chord Editor is used for editing Chord Regions."
 msgstr "O Editor de Acordes é usado para editar Regiões de Acordes."
 
-#: ../../zrythm-interface/editors.rst:41
-msgid "WIP"
-msgstr "WIP"
+#: ../../zrythm-interface/editors.rst:39
+msgid "This is a work in progress"
+msgstr "Este é um trabalho em andamento"
 
 #: ../../zrythm-interface/global-menus.rst:6
 msgid "Global Menus"
@@ -250,8 +245,8 @@ msgid ""
 "Channel."
 msgstr ""
 "O separador Misturador contém o Misturador, mostrando todos os Canais "
-"visíveis do projeto. O Misturador é usado para misturar os sinais de áudio "
-"de cada Canal."
+"visíveis do projeto. O Misturador é usado para misturar os sinais de "
+"áudio de cada Canal."
 
 #: ../../zrythm-interface/ruler.rst:6
 msgid "Ruler"
@@ -410,7 +405,8 @@ msgid "Song tempo (beats per minute)"
 msgstr "Ritmo da canção (batidas por minuto)"
 
 #: ../../zrythm-interface/transport-bar.rst:18
-msgid "Playhed"
+#, fuzzy
+msgid "Playhead"
 msgstr "Cabeça de reprodução"
 
 #: ../../zrythm-interface/transport-bar.rst:19
@@ -511,14 +507,15 @@ msgstr "Barra de Título (6)"
 msgid "The Title Bar contains menus with options for various operations."
 msgstr "A barra de título contém menus com opções para várias operações."
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:30
+#: ../../zrythm-interface/zrythm-interface-overview.rst:31
 msgid "Status Bar (7)"
 msgstr "Barra de Estado (7)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:31
+#, fuzzy
 msgid ""
-"The Status Bar is a helpful bar in the bottom of the program that shows "
-"tips based on the currently hovered-over item."
+"The status bar is a helpful bar in the bottom of the window that displays"
+" information about the current project."
 msgstr ""
 "A barra de estado é uma barra útil na parte inferior do programa que "
 "mostra dicas baseadas no item que está pairando no momento."
@@ -598,3 +595,7 @@ msgstr ""
 #~ "O separador Misturador contém o "
 #~ "Misturador, onde todos os canais "
 #~ "visíveis no projeto são exibidos."
+
+#~ msgid "WIP"
+#~ msgstr "WIP"
+

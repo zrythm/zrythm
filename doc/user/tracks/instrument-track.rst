@@ -5,14 +5,58 @@
 Instrument Track
 ================
 
-The Instrument Track is used for synths and
+The instrument track is used for synths and
 other instruments. The first plugin in the
-strip of the Instrument Track's channel must
+strip of the instrument track's channel must
 be an instrument plugin. This is done
-automatically when Instrument Tracks are
+automatically when instrument tracks are
 created from instrument plugins.
 
-Track View
-----------
+Inspector
+---------
 
-TODO
+.. image:: /_static/img/instrument-track-inspector.png
+   :align: center
+
+Properties
+~~~~~~~~~~
+
+Direct Out
+  The track to route the audio output of the instrument track to.
+
+Inputs
+~~~~~~
+
+These are similar to :ref:`midi-track-inputs`.
+
+Sends
+~~~~~
+
+Pre-Fader Out L/R
+  The stereo audio signal before the fader is applied.
+
+Fader Out L/R
+  The stereo audio signal after the fader is applied.
+
+.. tip:: You can use these for side-chaining.
+
+Lanes
+-----
+
+These are similar to :ref:`midi-track-lanes`.
+
+Automation Tracks
+-----------------
+
+These are similar to :ref:`midi-track-automation-tracks`.
+
+Freezing
+--------
+
+If DSP usage is high and you have performance issues, or
+if you just want to save CPU power, instrument tracks can
+be frozen (temporarily converted to audio), which
+dramatically lowers their CPU usage.
+
+Instruments can be frozen by clicking the
+Freeze button in the track interface.

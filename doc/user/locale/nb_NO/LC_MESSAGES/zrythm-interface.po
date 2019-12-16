@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-18 01:11+0100\n"
+"POT-Creation-Date: 2019-12-16 07:46+0000\n"
 "PO-Revision-Date: 2019-09-06 16:21+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language: nb_NO\n"
@@ -120,20 +120,16 @@ msgid ""
 "Region is selected."
 msgstr ""
 
-#: ../../zrythm-interface/editors.rst:34
-msgid "This is a work in progress"
-msgstr ""
-
-#: ../../zrythm-interface/editors.rst:37
+#: ../../zrythm-interface/editors.rst:35
 msgid "Chord Editor"
 msgstr ""
 
-#: ../../zrythm-interface/editors.rst:39
+#: ../../zrythm-interface/editors.rst:37
 msgid "The Chord Editor is used for editing Chord Regions."
 msgstr ""
 
-#: ../../zrythm-interface/editors.rst:41
-msgid "WIP"
+#: ../../zrythm-interface/editors.rst:39
+msgid "This is a work in progress"
 msgstr ""
 
 #: ../../zrythm-interface/global-menus.rst:6
@@ -345,7 +341,7 @@ msgid "Song tempo (beats per minute)"
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:18
-msgid "Playhed"
+msgid "Playhead"
 msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:19
@@ -433,14 +429,14 @@ msgstr ""
 msgid "The Title Bar contains menus with options for various operations."
 msgstr ""
 
-#: ../../zrythm-interface/zrythm-interface-overview.rst:30
+#: ../../zrythm-interface/zrythm-interface-overview.rst:31
 msgid "Status Bar (7)"
 msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:31
 msgid ""
-"The Status Bar is a helpful bar in the bottom of the program that shows "
-"tips based on the currently hovered-over item."
+"The status bar is a helpful bar in the bottom of the window that displays"
+" information about the current project."
 msgstr ""
 
 #~ msgid "Channel Overview"
@@ -521,5 +517,18 @@ msgstr ""
 #~ "The Mixer tab contains the Mixer, "
 #~ "where all the visible Channels in "
 #~ "the project are shown."
+#~ msgstr ""
+
+#~ msgid "WIP"
+#~ msgstr ""
+
+#~ msgid "Playhed"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The Status Bar is a helpful bar"
+#~ " in the bottom of the program "
+#~ "that shows tips based on the "
+#~ "currently hovered-over item."
 #~ msgstr ""
 

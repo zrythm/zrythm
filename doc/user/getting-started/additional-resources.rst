@@ -12,11 +12,14 @@ users can use ``#zrythmdaw:matrix.org``.
 
 Issue Tracker
 -------------
-The issue tracker can be found on our `Redmine instance <https://redmine.zrythm.org/projects/zrythm/issues>`_.
+The issue tracker can be found on our
+`Redmine instance <https://redmine.zrythm.org/projects/zrythm/issues>`_.
+You can use this to report bugs or give feedback.
 
 Source Code
 -----------
-Zrythm's source code can be found on our `CGit instance <https://git.zrythm.org/cgit/zrythm/>`_.
+Zrythm's source code can be found on our
+`CGit instance <https://git.zrythm.org/cgit/zrythm/>`_.
 
 Older Versions
 --------------

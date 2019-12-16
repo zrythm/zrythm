@@ -5,5 +5,6 @@
 MacOS
 =====
 
-Install from source in the same way as for GNU/Linux. No
-support is offered.
+Install from source manually as mentioned in
+:ref:`gnu-with-linux-manual-installation`.
+No support is offered at the moment.

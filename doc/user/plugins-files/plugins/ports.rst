@@ -41,7 +41,7 @@ input Ports and Control input Ports.
 Output Ports may only be routed to Input Ports
 and vice versa.
 
-.. note::
-  Channels also have their own Ports, for
-  example for the Fader, Pan, and Enabled
-  (On/Off).
+.. tip::
+  Tracks/channels also have their own ports, for
+  example for the fader, pan, and enabled status
+  (on/off).
