@@ -6,7 +6,7 @@ Tracks
 ======
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    overview
    track-types
@@ -22,3 +22,4 @@ Tracks
    marker-track
    creating-tracks
    track-operations
+   track-visibility

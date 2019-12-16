@@ -28,8 +28,10 @@
 #include "gui/backend/events.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/custom_button.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/track.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
@@ -165,6 +167,41 @@ automation_track_get_ap_before_pos (
     }
 
   return NULL;
+}
+
+/**
+ * Sets the index of the AutomationTrack in the
+ * AutomationTracklist.
+ */
+void
+automation_track_set_index (
+  AutomationTrack * self,
+  int               index)
+{
+  self->index = index;
+
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      g_return_if_fail (self->regions[i]);
+      self->regions[i]->at_index = index;
+    }
+
+  Track * track = self->track;
+  if (self->top_left_buttons[0] &&
+      track && track->widget &&
+      track->widget->layout)
+    {
+      char * text =
+        g_strdup_printf (
+          /*"%d - %s",*/
+          "%s",
+          /*self->index, */
+          self->automatable->label);
+      custom_button_widget_set_text (
+        self->top_left_buttons[0],
+        track->widget->layout, text);
+      g_free (text);
+    }
 }
 
 /**

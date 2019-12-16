@@ -198,13 +198,19 @@ automation_tracklist_get_at_from_automatable (
 
 /**
  * Sets the index of the AutomationTrack and swaps
- * it with the AutomationTrack at that index.
+ * it with the AutomationTrack at that index or
+ * pushes the other AutomationTrack's down.
+ *
+ * @param push_down 0 to swap positions with the
+ *   current AutomationTrack, or 1 to push down
+ *   all the tracks below.
  */
 void
 automation_tracklist_set_at_index (
   AutomationTracklist * self,
   AutomationTrack *     at,
-  int                   index);
+  int                   index,
+  int                   push_down);
 
 AutomationTrack *
 automation_tracklist_get_first_invisible_at (

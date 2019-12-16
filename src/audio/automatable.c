@@ -230,6 +230,7 @@ automatable_create_plugin_enabled (
   Automatable * a = _create_blank ();
 
   a->type = AUTOMATABLE_TYPE_PLUGIN_ENABLED;
+  a->plugin = plugin;
   a->track = plugin->track;
   a->slot = plugin->slot;
   a->label = g_strdup ("Enable/disable");

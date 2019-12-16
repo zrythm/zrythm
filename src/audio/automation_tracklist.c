@@ -252,23 +252,80 @@ automation_tracklist_init (
 
 /**
  * Sets the index of the AutomationTrack and swaps
- * it with the AutomationTrack at that index.
+ * it with the AutomationTrack at that index or
+ * pushes the other AutomationTrack's down.
+ *
+ * @param push_down 0 to swap positions with the
+ *   current AutomationTrack, or 1 to push down
+ *   all the tracks below.
  */
 void
 automation_tracklist_set_at_index (
   AutomationTracklist * self,
   AutomationTrack *     at,
-  int                   index)
+  int                   index,
+  int                   push_down)
 {
   g_return_if_fail (
     index < self->num_ats && self->ats[index]);
 
-  int prev_index = at->index;
-  AutomationTrack * new_at = self->ats[index];
-  self->ats[index] = at;
-  at->index = index;
-  self->ats[prev_index] = new_at;
-  new_at->index = prev_index;
+  /*g_message ("setting %s (%d) to %d",*/
+    /*at->automatable->label, at->index,*/
+    /*index);*/
+
+  if (at->index == index)
+    return;
+
+  if (push_down)
+    {
+      /* whether the new index is before the current
+       * index (the index of automation tracks in
+       * between needs to increase) */
+      int increase = at->index > index;
+      if (increase)
+        {
+          for (int i = at->index - 1;
+               i >= index; i--)
+            {
+              self->ats[i + 1] = self->ats[i];
+              automation_track_set_index (
+                self->ats[i], i + 1);
+              /*g_message ("new pos %s (%d)",*/
+                /*self->ats[i]->automatable->label,*/
+                /*self->ats[i]->index);*/
+            }
+          self->ats[index] = at;
+          automation_track_set_index (at, index);
+        }
+      else
+        {
+          for (int i = at->index + 1;
+               i <= index; i++)
+            {
+              self->ats[i - 1] = self->ats[i];
+              automation_track_set_index (
+                self->ats[i], i - 1);
+              /*g_message ("new pos %s (%d)",*/
+                /*self->ats[i]->automatable->label,*/
+                /*self->ats[i]->index);*/
+            }
+          self->ats[index] = at;
+          automation_track_set_index (at, index);
+        }
+    }
+  else
+    {
+      int prev_index = at->index;
+      AutomationTrack * new_at = self->ats[index];
+      self->ats[index] = at;
+      automation_track_set_index (at, index);
+      self->ats[prev_index] = new_at;
+      automation_track_set_index (
+        new_at, prev_index);
+
+      g_message ("new pos %s (%d)",
+        new_at->automatable->label, new_at->index);
+    }
 }
 
 /**

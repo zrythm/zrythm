@@ -989,8 +989,10 @@ arranger_widget_get_hit_objects_in_rect (
                     {
                       AutomationTrack * at =
                         atl->ats[j];
+
                       if (!at->visible)
                         continue;
+
                       for (int k = 0;
                            k < at->num_regions;
                            k++)

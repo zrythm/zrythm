@@ -129,10 +129,15 @@ get_hovered_button (
       cb = self->top_buttons[i];
       RETURN_IF_HOVERED;
     }
-  for (int i = 0; i < self->num_bot_buttons; i++)
+  if (BOT_BUTTONS_SHOULD_BE_VISIBLE (
+        self->track->main_height))
     {
-      cb = self->bot_buttons[i];
-      RETURN_IF_HOVERED;
+      for (int i = 0; i < self->num_bot_buttons;
+           i++)
+        {
+          cb = self->bot_buttons[i];
+          RETURN_IF_HOVERED;
+        }
     }
 
   Track * track = self->track;
@@ -159,6 +164,10 @@ get_hovered_button (
         {
           AutomationTrack * at = atl->ats[i];
 
+          /* skip invisible automation tracks */
+          if (!at->visible)
+            continue;
+
           for (int j = 0;
                j < at->num_top_left_buttons;
                j++)
@@ -173,19 +182,23 @@ get_hovered_button (
               cb = at->top_right_buttons[j];
               RETURN_IF_HOVERED;
             }
-          for (int j = 0;
-               j < at->num_bot_left_buttons;
-               j++)
+          if (BOT_BUTTONS_SHOULD_BE_VISIBLE (
+                at->height))
             {
-              cb = at->bot_left_buttons[j];
-              RETURN_IF_HOVERED;
-            }
-          for (int j = 0;
-               j < at->num_bot_right_buttons;
-               j++)
-            {
-              cb = at->bot_right_buttons[j];
-              RETURN_IF_HOVERED;
+              for (int j = 0;
+                   j < at->num_bot_left_buttons;
+                   j++)
+                {
+                  cb = at->bot_left_buttons[j];
+                  RETURN_IF_HOVERED;
+                }
+              for (int j = 0;
+                   j < at->num_bot_right_buttons;
+                   j++)
+                {
+                  cb = at->bot_right_buttons[j];
+                  RETURN_IF_HOVERED;
+                }
             }
         }
     }
@@ -650,6 +663,10 @@ draw_automation (
           cb->owner_type =
             CUSTOM_BUTTON_WIDGET_OWNER_AT;
           cb->owner = at;
+          /*char text[500];*/
+          /*sprintf (*/
+            /*text, "%d - %s",*/
+            /*at->index, at->automatable->label);*/
           custom_button_widget_set_text (
             cb, self->layout,
             at->automatable->label);
@@ -715,6 +732,9 @@ draw_automation (
         get_hovered_button (
           self, (int) self->last_x,
           (int) self->last_y);
+      /*if (hovered_cb)*/
+        /*g_message ("hovered button %s",*/
+          /*hovered_cb->text);*/
       for (int j = 0; j < at->num_top_left_buttons;
            j++)
         {
@@ -1095,7 +1115,7 @@ on_motion (
           self->resize_target_type =
             TRACK_WIDGET_RESIZE_TARGET_TRACK;
           self->resize_target = self->track;
-          g_message ("RESIZING TRACK");
+          /*g_message ("RESIZING TRACK");*/
         }
       else if (!cb && resizing_at)
         {
@@ -1103,8 +1123,9 @@ on_motion (
           self->resize_target_type =
             TRACK_WIDGET_RESIZE_TARGET_AT;
           self->resize_target = resizing_at;
-          g_message ("RESIZING AT %s",
-                     resizing_at->automatable->label);
+          /*g_message (*/
+            /*"RESIZING AT %s",*/
+            /*resizing_at->automatable->label);*/
         }
       else if (!cb && resizing_lane)
         {
@@ -1112,8 +1133,9 @@ on_motion (
           self->resize_target_type =
             TRACK_WIDGET_RESIZE_TARGET_LANE;
           self->resize_target = resizing_lane;
-          g_message ("RESIZING LANE %d",
-                     resizing_lane->pos);
+          /*g_message (*/
+            /*"RESIZING LANE %d",*/
+            /*resizing_lane->pos);*/
         }
       else
         {
@@ -1133,13 +1155,11 @@ on_motion (
 
   if (event->type == GDK_ENTER_NOTIFY)
     {
-      g_message ("enter");
       self->bg_hovered = 1;
       self->resize = 0;
     }
   else if (event->type == GDK_LEAVE_NOTIFY)
     {
-      g_message ("leave");
       ui_set_pointer_cursor (widget);
       if (!self->resizing)
         {
@@ -1723,6 +1743,12 @@ multipress_released (
                   if (!new_at->created)
                     new_at->created = 1;
                   new_at->visible = 1;
+
+                  /* move it after the clicked
+                   * automation track */
+                  automation_tracklist_set_at_index (
+                    atl, new_at,
+                    at->index + 1, 1);
 
                   EVENTS_PUSH (
                     ET_AUTOMATION_TRACK_ADDED,

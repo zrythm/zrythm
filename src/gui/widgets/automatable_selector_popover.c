@@ -381,6 +381,9 @@ on_closed (
        * invisible */
       self->owner->visible = 0;
 
+      g_message ("selected at: %s",
+        self->selected_automatable->label);
+
       /* swap indices */
       AutomationTracklist * atl =
         automation_track_get_automation_tracklist (
@@ -390,12 +393,17 @@ on_closed (
           atl, self->selected_automatable);
       g_return_if_fail (selected_at);
       automation_tracklist_set_at_index (
-        atl, self->owner, selected_at->index);
+        atl, self->owner, selected_at->index, 0);
 
       selected_at->created = 1;
       selected_at->visible = 1;
       EVENTS_PUSH (
         ET_AUTOMATION_TRACK_ADDED, selected_at);
+    }
+  else
+    {
+      g_message (
+        "same automatable selected, doing nothing");
     }
 }
 

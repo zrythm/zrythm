@@ -168,6 +168,15 @@ automation_track_update_frames (
   AutomationTrack * self);
 
 /**
+ * Sets the index of the AutomationTrack in the
+ * AutomationTracklist.
+ */
+void
+automation_track_set_index (
+  AutomationTrack * self,
+  int               index);
+
+/**
  * Sets the automatable to the automation track and
  * updates the GUI
  *
