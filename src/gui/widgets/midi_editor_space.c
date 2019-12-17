@@ -444,56 +444,23 @@ midi_editor_space_widget_class_init (
     klass,
     "midi_editor_space.ui");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    midi_modifier_chooser);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    piano_roll_keys_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    piano_roll_keys_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    piano_roll_keys_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    midi_arranger_velocity_paned);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    arranger_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    arranger_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    arranger);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    modifier_arranger_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    modifier_arranger_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    modifier_arranger);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    midi_notes_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    MidiEditorSpaceWidget,
-    midi_vel_chooser_box);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, \
+    MidiEditorSpaceWidget, \
+    x)
+
+  BIND_CHILD (midi_modifier_chooser);
+  BIND_CHILD (piano_roll_keys_scroll);
+  BIND_CHILD (piano_roll_keys_viewport);
+  BIND_CHILD (piano_roll_keys_box);
+  BIND_CHILD (midi_arranger_velocity_paned);
+  BIND_CHILD (arranger_scroll);
+  BIND_CHILD (arranger_viewport);
+  BIND_CHILD (arranger);
+  BIND_CHILD (modifier_arranger_scroll);
+  BIND_CHILD (modifier_arranger_viewport);
+  BIND_CHILD (modifier_arranger);
+  BIND_CHILD (midi_notes_box);
+  BIND_CHILD (midi_vel_chooser_box);
 }

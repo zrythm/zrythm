@@ -482,6 +482,88 @@ draw_midi_bg (
     }
 }
 
+static void
+draw_audio_bg (
+  ArrangerWidget * self,
+  cairo_t *        cr,
+  GdkRectangle *   rect)
+{
+  Region * ar = CLIP_EDITOR->region;
+  ArrangerObject * obj = (ArrangerObject *) ar;
+  GdkRGBA * color = &ar->lane->track->color;
+  cairo_set_source_rgba (
+    cr, color->red + 0.3, color->green + 0.3,
+    color->blue + 0.3, 0.9);
+  cairo_set_line_width (cr, 1);
+
+  int height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (self));
+
+  AudioClip * clip =
+    AUDIO_POOL->clips[ar->pool_id];
+
+  double local_start_x =
+    (double) rect->x;
+  double local_end_x =
+    local_start_x +
+    (double) rect->width;
+  long prev_frames =
+    ui_px_to_frames_editor (local_start_x, 1) -
+      obj->pos.frames;
+  for (double i = local_start_x;
+       i < local_end_x; i+= 0.6)
+    {
+      long curr_frames =
+        ui_px_to_frames_editor (i, 1) -
+          obj->pos.frames;
+      if (curr_frames < 0)
+        continue;
+
+      float min = 0.f, max = 0.f;
+      for (long j = prev_frames;
+           j < curr_frames; j++)
+        {
+          if (j >= clip->num_frames)
+            break;
+          for (unsigned int k = 0;
+               k < clip->channels; k++)
+            {
+              long index =
+                j * clip->channels + k;
+              g_warn_if_fail (
+                index <
+                  clip->num_frames * clip->channels);
+              float val =
+                clip->frames[index];
+              if (val > max)
+                max = val;
+              if (val < min)
+                min = val;
+            }
+        }
+
+      min = (min + 1.f) / 2.f; /* normallize */
+      max = (max + 1.f) / 2.f; /* normalize */
+      z_cairo_draw_vertical_line (
+        cr,
+        /* x */
+        i - rect->x,
+        /* from y */
+        MAX (
+          (double) min * (double) height, 0.0) - rect->y,
+        /* to y */
+        MIN (
+          (double) max * (double) height,
+          (double) height) - rect->y);
+
+      if (curr_frames >= clip->num_frames)
+        break;
+
+      prev_frames = curr_frames;
+    }
+}
+
 static gboolean
 arranger_draw_cb (
   GtkWidget *widget,
@@ -754,6 +836,11 @@ arranger_draw_cb (
       else if (self->type == TYPE (MIDI))
         {
           draw_midi_bg (
+            self, self->cached_cr, &rect);
+        }
+      else if (self->type == TYPE (AUDIO))
+        {
+          draw_audio_bg (
             self, self->cached_cr, &rect);
         }
 
@@ -1115,6 +1202,9 @@ arranger_widget_get_hit_objects_in_rect (
               ADD_OBJ_IF_OVERLAP;
             }
         }
+      break;
+    case TYPE (AUDIO):
+      /* no objects in audio arranger yet */
       break;
     default:
       g_warn_if_reached ();

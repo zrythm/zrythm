@@ -148,10 +148,6 @@ static void
 on_playhead_changed (
   int manually)
 {
-  /*if (automatic && (aa++ % 2 != 0))*/
-    /*{*/
-      /*return 0;*/
-    /*}*/
   if (MAIN_WINDOW)
     {
       if (TOP_BAR->digital_transport)
@@ -225,39 +221,16 @@ on_playhead_changed (
             arranger_widget_redraw_playhead (
               MW_AUTOMATION_ARRANGER);
         }
-      /*if (MW_AUDIO_CLIP_EDITOR)*/
-        /*{*/
-          /*if (AUDIO_RULER)*/
-            /*gtk_widget_queue_allocate (*/
-              /*GTK_WIDGET (AUDIO_RULER));*/
-          /*if (AUDIO_ARRANGER)*/
-            /*{*/
-              /*[>ARRANGER_WIDGET_GET_PRIVATE (<]*/
-                /*[>AUDIO_ARRANGER);<]*/
-              /*[>g_object_ref (ar_prv->playhead);<]*/
-              /*[>gtk_container_remove (<]*/
-                /*[>AUDIO_ARRANGER,<]*/
-                /*[>ar_prv->playhead);<]*/
-              /*[>gtk_overlay_add_overlay (<]*/
-                /*[>AUDIO_ARRANGER,<]*/
-                /*[>ar_prv->playhead);<]*/
-              /*[>g_object_unref (ar_prv->playhead);<]*/
-              /*[>gtk_widget_queue_draw (<]*/
-                /*[>GTK_WIDGET (ar_prv->playhead));<]*/
-              /*[>gtk_widget_queue_allocate (<]*/
-                /*[>GTK_WIDGET (ar_prv->playhead));<]*/
-            /*[>gtk_widget_queue_allocate (<]*/
-              /*[>GTK_WIDGET (AUDIO_ARRANGER));<]*/
-            /*[>arranger_widget_refresh (<]*/
-              /*[>Z_ARRANGER_WIDGET (AUDIO_ARRANGER));<]*/
-            /*[>gtk_widget_queue_resize (AUDIO_ARRANGER);<]*/
-            /*[>gtk_widget_queue_draw (AUDIO_ARRANGER);<]*/
-              /*gtk_widget_queue_allocate (*/
-                /*GTK_WIDGET (AUDIO_ARRANGER));*/
-            /*}*/
-        /*}*/
+      if (MW_AUDIO_ARRANGER)
+        {
+          if (manually)
+            arranger_widget_redraw_whole (
+              MW_AUDIO_ARRANGER);
+          else
+            arranger_widget_redraw_playhead (
+              MW_AUDIO_ARRANGER);
+        }
     }
-  /*aa = 1;*/
 }
 
 static void

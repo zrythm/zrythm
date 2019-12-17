@@ -69,7 +69,8 @@ audio_editor_space_widget_update_size_group (
   AudioEditorSpaceWidget * self,
   int                     visible)
 {
-  /* TODO */
+  CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP (
+    left_box);
 }
 
 void
@@ -119,6 +120,10 @@ audio_editor_space_widget_class_init (
     klass,
     AudioEditorSpaceWidget,
     arranger_scroll);
+  gtk_widget_class_bind_template_child (
+    klass,
+    AudioEditorSpaceWidget,
+    left_box);
   gtk_widget_class_bind_template_child (
     klass,
     AudioEditorSpaceWidget,
