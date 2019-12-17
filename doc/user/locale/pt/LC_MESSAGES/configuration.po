@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 08:11+0000\n"
-"PO-Revision-Date: 2019-10-28 15:53+0000\n"
-"Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
+"PO-Revision-Date: 2019-12-18 19:21+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.10-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -93,7 +94,6 @@ msgid "Connecting MIDI and Audio Devices"
 msgstr "Conectando Aparelhos de MIDI e Áudio"
 
 #: ../../configuration/device-setup/intro.rst:11
-#, fuzzy
 msgid ""
 "On Linux-based platforms, Zrythm works with both ALSA and JACK as "
 "available backends. Depending on the selected backend, the configuration "
@@ -310,11 +310,11 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:18
 #: ../../configuration/preferences/intro.rst:25
 msgid "General"
-msgstr ""
+msgstr "Geral"
 
 #: ../../configuration/preferences/intro.rst:19
 msgid "Audio"
-msgstr ""
+msgstr "Áudio"
 
 #: ../../configuration/preferences/intro.rst:20
 #: ../../configuration/preferences/intro.rst:58
@@ -324,26 +324,24 @@ msgstr "GUI"
 #: ../../configuration/preferences/intro.rst:21
 #: ../../configuration/preferences/intro.rst:49
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: ../../configuration/preferences/intro.rst:22
 #: ../../configuration/preferences/intro.rst:64
 msgid "Projects"
-msgstr ""
+msgstr "Projetos"
 
 #: ../../configuration/preferences/intro.rst:28
-#, fuzzy
 msgid "Audio Backend"
-msgstr "Backends de Áudio/MIDI"
+msgstr "Backend Áudio"
 
 #: ../../configuration/preferences/intro.rst:28
 msgid "The backend to use for the audio engine."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:31
-#, fuzzy
 msgid "MIDI Backend"
-msgstr "Backend"
+msgstr "Backend MIDI"
 
 #: ../../configuration/preferences/intro.rst:31
 msgid "The MIDI backend to use for the audio engine."
@@ -351,7 +349,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:34
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "Controladores MIDI"
 
 #: ../../configuration/preferences/intro.rst:34
 msgid "MIDI devices to auto-connect to when Zrythm starts."
@@ -359,7 +357,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:39
 msgid "Pan Algorithm"
-msgstr ""
+msgstr "Algoritmo de Pan"
 
 #: ../../configuration/preferences/intro.rst:37
 msgid ""
@@ -370,7 +368,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:42
 msgid "Pan Law"
-msgstr ""
+msgstr "Lei Pan"
 
 #: ../../configuration/preferences/intro.rst:42
 msgid "See https://en.wikipedia.org/wiki/Pan_law."
@@ -388,7 +386,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "Always open plugin UIs"
-msgstr ""
+msgstr "Sempre abrir UIs de plugins"
 
 #: ../../configuration/preferences/intro.rst:52
 msgid "Always show the plugin UI when instantiating plugins."
@@ -396,7 +394,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:55
 msgid "Keep plugin UIs on top"
-msgstr ""
+msgstr "Manter os UIs de plugins no topo"
 
 #: ../../configuration/preferences/intro.rst:55
 msgid "Whether to always keep plugin UIs above other Zrythm windows or not."
@@ -404,7 +402,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:61
 msgid "Language"
-msgstr ""
+msgstr "Idioma"
 
 #: ../../configuration/preferences/intro.rst:61
 msgid "The language that the Zrythm interface uses."
@@ -658,4 +656,3 @@ msgstr ""
 
 #~ msgid "Audio"
 #~ msgstr "Áudio"
-
