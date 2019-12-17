@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:23+0000\n"
-"PO-Revision-Date: 2019-08-26 23:02+0000\n"
+"PO-Revision-Date: 2019-12-18 19:21+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualchords-and-scales/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualchords-and-scales/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.10-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../chords-and-scales/intro.rst:6
@@ -25,17 +26,19 @@ msgstr "Acordes e escalas"
 
 #: ../../chords-and-scales/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Sinopse"
 
 #: ../../chords-and-scales/overview.rst:8
 msgid ""
 "Chords and scales can be used to easily try out various chords and to "
 "make it easier to follow chord progressions."
 msgstr ""
+"Acordes e escalas podem ser usados para experimentar facilmente vários "
+"acordes e para facilitar seguir progressões de acordes."
 
 #: ../../chords-and-scales/overview.rst:12
 msgid "Chord Pad"
-msgstr ""
+msgstr "Pad de Acordes"
 
 #: ../../chords-and-scales/overview.rst:14
 msgid ""
@@ -43,15 +46,18 @@ msgid ""
 "can be used to trigger chords. The chord pad can be found in the bottom "
 "panel."
 msgstr ""
+"O pad de acordes contém 12 pads (1 para cada tecla de um teclado de piano) "
+"que podem ser usados para acionar acordes. O pad de acordes encontra-se no "
+"painel inferior."
 
 #: ../../chords-and-scales/overview.rst:18
 #: ../../chords-and-scales/overview.rst:74
 msgid "This is a TODO feature."
-msgstr ""
+msgstr "Esta é uma função TODO."
 
 #: ../../chords-and-scales/overview.rst:21
 msgid "Chord Track"
-msgstr ""
+msgstr "Faixa de Acordes"
 
 #: ../../chords-and-scales/overview.rst:23
 msgid ""
@@ -59,18 +65,22 @@ msgid ""
 "and these can then be used to dictate what chord and scale is active "
 "when. For example, you can specify a chord progression as follows."
 msgstr ""
+"Regiões de acordes e objetos de escala podem ser criados dentro da faixa de "
+"acordes e estes podem depois ser usados para ditar qual acorde e escala está "
+"ativado e quando. Por exemplo, pode especificar uma progressão de acordes da "
+"maneira seguinte."
 
 #: ../../chords-and-scales/overview.rst:33
 msgid "Chord region and scale inside the chord track in the timeline."
-msgstr ""
+msgstr "Região e escala de acordes dentro da faixa de acordes na cronologia."
 
 #: ../../chords-and-scales/overview.rst:40
 msgid "Chord objects inside the chord region above."
-msgstr ""
+msgstr "Objetos de acordes dentro da região de acordes acima."
 
 #: ../../chords-and-scales/overview.rst:43
 msgid "Highlighting"
-msgstr ""
+msgstr "Destaque"
 
 #: ../../chords-and-scales/overview.rst:45
 msgid ""
@@ -78,29 +88,32 @@ msgid ""
 "corresponding to the scale, chord, or both at the position of the "
 "playhead."
 msgstr ""
+"Pode então usar o realce dentro das regiões MIDI para destacar as notas "
+"correspondentes à escala, acorde ou ambos na posição da cabeça de reprodução."
 
 #: ../../chords-and-scales/overview.rst:53
 msgid "Chord highlighting."
-msgstr ""
+msgstr "Destaque de acordes."
 
 #: ../../chords-and-scales/overview.rst:59
 msgid "Scale highlighting."
-msgstr ""
+msgstr "Destaques de escala."
 
 #: ../../chords-and-scales/overview.rst:65
 msgid "Scale and chord highlighting."
-msgstr ""
+msgstr "Destaques de escala e acordes."
 
 #: ../../chords-and-scales/overview.rst:68
 msgid "Live Audition"
-msgstr ""
+msgstr "Audição ao Vivo"
 
 #: ../../chords-and-scales/overview.rst:70
 msgid ""
 "You can route the output of the chord track to a MIDI or Instrument track"
 " for live auditioning of the chord track's events."
 msgstr ""
+"Pode encaminhar a saída da faixa de acordes para uma faixa de MIDI ou "
+"Instrumento para audição do acorde da pista de eventos ao vivo."
 
 #~ msgid "TODO"
 #~ msgstr "A FAZER"
-
