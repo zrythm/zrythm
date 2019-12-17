@@ -805,6 +805,93 @@ draw_automation_region (
  * @param rect Arranger rectangle.
  */
 static void
+draw_audio_region (
+  Region *       self,
+  cairo_t *      cr,
+  GdkRectangle * rect,
+  GdkRectangle * full_rect,
+  GdkRectangle * draw_rect,
+  RegionCounterpart counterpart)
+{
+  ArrangerObject * obj = (ArrangerObject *) self;
+  cairo_set_source_rgba (cr, 1, 1, 1, 1);
+
+  AudioClip * clip =
+    AUDIO_POOL->clips[self->pool_id];
+
+  long loop_end_frames =
+    obj->loop_end_pos.frames;
+  long loop_frames =
+    arranger_object_get_loop_length_in_frames (
+      obj);
+  long clip_start_frames =
+    obj->clip_start_pos.frames;
+
+  double local_start_x =
+    (double) draw_rect->x - (double) full_rect->x;
+  double local_end_x =
+    local_start_x +
+    (double) draw_rect->width;
+  long prev_frames =
+    ui_px_to_frames_timeline (local_start_x, 0);
+  for (double i = local_start_x;
+       i < (double) local_end_x; i += 0.4)
+    {
+      /* current single channel frames */
+      long curr_frames =
+        ui_px_to_frames_timeline (i, 0);
+      curr_frames += clip_start_frames;
+      while (curr_frames >= loop_end_frames)
+        {
+          curr_frames -= loop_frames;
+        }
+      float min = 0.f, max = 0.f;
+      for (long j = prev_frames;
+           j < curr_frames; j++)
+        {
+          for (unsigned int k = 0;
+               k < clip->channels; k++)
+            {
+              long index =
+                j * clip->channels + k;
+              g_warn_if_fail (
+                index <
+                  clip->num_frames * clip->channels);
+              float val =
+                clip->frames[index];
+              if (val > max)
+                max = val;
+              if (val < min)
+                min = val;
+            }
+        }
+      /* normalize */
+      min = (min + 1.f) / 2.f;
+      max = (max + 1.f) / 2.f;
+      z_cairo_draw_vertical_line (
+        cr,
+        /* x */
+        (i + full_rect->x) - rect->x,
+        /* from y */
+        (full_rect->y +
+          MAX (
+            (double) min *
+              (double) full_rect->height, 0.0)) - rect->y,
+        /* to y */
+        (full_rect->y +
+          MIN (
+            (double) max *
+              (double) full_rect->height,
+            (double) full_rect->height)) - rect->y);
+
+      prev_frames = curr_frames;
+    }
+}
+
+/**
+ * @param rect Arranger rectangle.
+ */
+static void
 draw_name (
   Region *          self,
   cairo_t *         cr,
@@ -950,6 +1037,11 @@ region_draw (
           break;
         case REGION_TYPE_CHORD:
           draw_chord_region (
+            self, cr, rect, &full_rect,
+            &draw_rect, i);
+          break;
+        case REGION_TYPE_AUDIO:
+          draw_audio_region (
             self, cr, rect, &full_rect,
             &draw_rect, i);
           break;

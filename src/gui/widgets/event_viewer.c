@@ -403,6 +403,8 @@ create_editor_model (
       return create_midi_model (self);
       break;
     case REGION_TYPE_AUDIO:
+      return NULL;
+      /* TODO */
       break;
     case REGION_TYPE_AUTOMATION:
       return create_automation_model (self);
