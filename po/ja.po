@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-28 15:59+0000\n"
-"PO-Revision-Date: 2019-10-18 13:53+0000\n"
+"PO-Revision-Date: 2019-12-17 16:21+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.9.1-dev\n"
+"X-Generator: Weblate 3.10-dev\n"
 
 #: src/zrythm.c:264
 msgid "Setting up main window"
@@ -1623,8 +1623,9 @@ msgid "Modulators"
 msgstr "モジュレーター"
 
 #: resources/ui/bot_dock_edge.ui:193
+#, fuzzy
 msgid "Chord Pad"
-msgstr "和音パッド"
+msgstr "コードパッド"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
