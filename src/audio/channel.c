@@ -404,10 +404,27 @@ channel_prepare_process (Channel * self)
 void
 channel_init_loaded (Channel * ch)
 {
-  int i;
-
   g_message ("initing channel");
   g_warn_if_fail (ch->track);
+
+  ch->ats_size = 1;
+  ch->ats =
+    calloc (1, sizeof (AutomationTrack *));
+
+  for (unsigned int i =
+         AUTOMATABLE_TYPE_CHANNEL_FADER;
+       i <= AUTOMATABLE_TYPE_CHANNEL_PAN; i++)
+    {
+      AutomationTrack * at =
+        channel_get_automation_track (ch, i);
+      g_return_if_fail (at);
+
+      array_double_size_if_full (
+        ch->ats, ch->num_ats, ch->ats_size,
+        AutomationTrack *);
+      array_append (
+        ch->ats, ch->num_ats, at);
+    }
 
   /* fader */
   ch->track->processor.track = ch->track;
@@ -445,7 +462,7 @@ channel_init_loaded (Channel * ch)
 
   /* init plugins */
   Plugin * pl;
-  for (i = 0; i < STRIP_SIZE; i++)
+  for (unsigned int i = 0; i < STRIP_SIZE; i++)
     {
       pl = ch->plugins[i];
       if (!pl)
@@ -1650,6 +1667,32 @@ channel_get_plugin_index (Channel * channel,
     }
   g_warning ("channel_get_plugin_index: plugin not found");
   return -1;
+}
+
+/**
+ * Convenience function to get the automation track
+ * of the given type for the channel.
+ */
+AutomationTrack *
+channel_get_automation_track (
+  Channel *       channel,
+  AutomatableType type)
+{
+  AutomationTrack * at;
+  Automatable * a;
+  for (int i = 0;
+       i < channel->track->
+         automation_tracklist.num_ats; i++)
+    {
+      at =
+        channel->track->
+          automation_tracklist.ats[i];
+      a = at->automatable;
+
+      if (type == a->type)
+        return at;
+    }
+  return NULL;
 }
 
 /**

@@ -136,17 +136,23 @@ create_model_for_automatables (
       3, G_TYPE_STRING, G_TYPE_STRING,
       G_TYPE_POINTER);
 
+  g_message ("creating model for automatables");
+
   Track * track =
     self->owner->track;
   AutomationTrack * at;
   if (type == AS_TYPE_CHANNEL)
     {
+  g_message ("creating model for automatables CHANNEL: num ats %d", track->channel->num_ats);
       for (int i = 0;
            i < track->channel->num_ats; i++)
         {
           /* get selected automation track */
           at =
             track->channel->ats[i];
+
+          g_message ("checking %s",
+            at->automatable->label);
 
            /*if this automation track is not already*/
            /*in a visible lane*/
@@ -263,6 +269,12 @@ on_selection_changed (
   GtkTreeSelection * ts,
   AutomatableSelectorPopoverWidget * self)
 {
+  if (self->selecting_manually)
+    {
+      self->selecting_manually = 0;
+      return;
+    }
+
   GtkTreeView * tv =
     gtk_tree_selection_get_tree_view (ts);
   GtkTreeModel * model =
@@ -364,6 +376,13 @@ tree_view_create (
 
   gtk_widget_set_visible (tree_view, 1);
 
+  g_signal_connect (
+    G_OBJECT (
+      gtk_tree_view_get_selection (
+        GTK_TREE_VIEW (tree_view))),
+    "changed",
+    G_CALLBACK (on_selection_changed), self);
+
   return GTK_TREE_VIEW (tree_view);
 }
 
@@ -457,22 +476,8 @@ automatable_selector_popover_widget_new (
     GTK_WIDGET (self->automatable_treeview));
 
   /* select the automatable */
+  self->selecting_manually = 1;
   select_automatable (self);
-
-  /* add selection changed signals */
-  g_signal_connect (
-    G_OBJECT (
-      gtk_tree_view_get_selection (
-        GTK_TREE_VIEW (self->type_treeview))),
-    "changed",
-    G_CALLBACK (on_selection_changed), self);
-  g_signal_connect (
-    G_OBJECT (
-      gtk_tree_view_get_selection (
-        GTK_TREE_VIEW (
-          self->automatable_treeview))),
-    "changed",
-    G_CALLBACK (on_selection_changed), self);
 
   return self;
 }

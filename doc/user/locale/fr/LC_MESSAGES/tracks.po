@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-16 14:42+0000\n"
+"POT-Creation-Date: 2019-12-17 17:08+0000\n"
 "PO-Revision-Date: 2019-09-14 11:24+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -600,6 +600,7 @@ msgid "Context Menu"
 msgstr "Menu contextuel de la piste"
 
 #: ../../tracks/midi-track.rst:128 ../../tracks/midi-track.rst:136
+#: ../../tracks/track-visibility.rst:8
 msgid "TODO"
 msgstr "ÀFAIRE"
 
@@ -873,6 +874,10 @@ msgstr ""
 #: ../../tracks/track-types.rst:87
 msgid "*Input:* **None**, *Output:* **None**"
 msgstr "*Entrée :* **aucune**, *Sortie:* **aucune**"
+
+#: ../../tracks/track-visibility.rst:6
+msgid "Track Visibility"
+msgstr ""
 
 #~ msgid "Duplicating Tracks"
 #~ msgstr "Dupliquer des pistes"

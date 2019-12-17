@@ -64,6 +64,10 @@ typedef struct _AutomatableSelectorPopoverWidget
 
   GtkLabel *              info;
 
+  /** Flag to set to ignore the selection change
+   * callbacks when setting a selection manually */
+  int                     selecting_manually;
+
   AutomatableSelectorType selected_type;
 
   /**

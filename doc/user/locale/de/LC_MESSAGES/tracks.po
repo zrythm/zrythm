@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-16 14:42+0000\n"
+"POT-Creation-Date: 2019-12-17 17:08+0000\n"
 "PO-Revision-Date: 2019-09-22 21:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: de\n"
@@ -599,6 +599,7 @@ msgid "Context Menu"
 msgstr "Spurkontextmenü"
 
 #: ../../tracks/midi-track.rst:128 ../../tracks/midi-track.rst:136
+#: ../../tracks/track-visibility.rst:8
 msgid "TODO"
 msgstr "ZU ERLEDIGEN"
 
@@ -869,6 +870,10 @@ msgstr ""
 #: ../../tracks/track-types.rst:87
 msgid "*Input:* **None**, *Output:* **None**"
 msgstr "*Eingang:* **Keine**, *Ausgang:* **Keine**"
+
+#: ../../tracks/track-visibility.rst:6
+msgid "Track Visibility"
+msgstr ""
 
 #~ msgid "Duplicating Tracks"
 #~ msgstr "Spuren duplizieren"

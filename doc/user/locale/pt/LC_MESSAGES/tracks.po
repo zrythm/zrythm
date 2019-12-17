@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-16 14:42+0000\n"
+"POT-Creation-Date: 2019-12-17 17:08+0000\n"
 "PO-Revision-Date: 2019-10-28 15:53+0000\n"
 "Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
 "Language: pt\n"
@@ -596,6 +596,7 @@ msgid "Context Menu"
 msgstr "Menu de Contexto da Faixa"
 
 #: ../../tracks/midi-track.rst:128 ../../tracks/midi-track.rst:136
+#: ../../tracks/track-visibility.rst:8
 msgid "TODO"
 msgstr "A FAZER"
 
@@ -861,6 +862,10 @@ msgstr ""
 #: ../../tracks/track-types.rst:87
 msgid "*Input:* **None**, *Output:* **None**"
 msgstr "*Entrada:* **Nada**, *Saída:* **Nada**"
+
+#: ../../tracks/track-visibility.rst:6
+msgid "Track Visibility"
+msgstr ""
 
 #~ msgid "Duplicating Tracks"
 #~ msgstr "Duplicar Faixas"

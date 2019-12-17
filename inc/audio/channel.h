@@ -497,6 +497,15 @@ channel_get_automatable (
   AutomatableType type);
 
 /**
+ * Convenience function to get the automation track
+ * of the given type for the channel.
+ */
+AutomationTrack *
+channel_get_automation_track (
+  Channel *       channel,
+  AutomatableType type);
+
+/**
  * Generates automatables for the channel.
  *
  * Should be called as soon as the track is

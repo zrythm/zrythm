@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-16 14:42+0000\n"
+"POT-Creation-Date: 2019-12-17 17:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -560,6 +560,7 @@ msgid "Context Menu"
 msgstr ""
 
 #: ../../tracks/midi-track.rst:128 ../../tracks/midi-track.rst:136
+#: ../../tracks/track-visibility.rst:8
 msgid "TODO"
 msgstr ""
 
@@ -782,6 +783,10 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:87
 msgid "*Input:* **None**, *Output:* **None**"
+msgstr ""
+
+#: ../../tracks/track-visibility.rst:6
+msgid "Track Visibility"
 msgstr ""
 
 #~ msgid "Duplicating Tracks"

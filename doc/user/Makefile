@@ -24,7 +24,7 @@ LANGUAGES = en de fr it es ja pt pt_BR ru zh nb_NO
 
 # Skip chinese latexpdf because it doesn't support Chinese yet
 # bundle: html epub
-bundle: html latexpdf epub
+bundle: html latexpdf #epub
 	for lang in $(LANGUAGES) ; do \
 		mkdir -p $(RENDERDIR)/$$lang && \
 		cp -R $(BUILDDIR)/$$lang/html/* $(RENDERDIR)/$$lang/ ; \
