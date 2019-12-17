@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-28 15:59+0000\n"
-"PO-Revision-Date: 2019-10-29 19:53+0000\n"
+"PO-Revision-Date: 2019-12-18 19:21+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9.1\n"
+"X-Generator: Weblate 3.10-dev\n"
 
 #: src/zrythm.c:264
 msgid "Setting up main window"
@@ -1632,7 +1632,7 @@ msgstr "Moduladores"
 
 #: resources/ui/bot_dock_edge.ui:193
 msgid "Chord Pad"
-msgstr "Pad Acordes"
+msgstr "Pad de Acordes"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
