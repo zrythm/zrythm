@@ -707,6 +707,12 @@ project_load (
 
 /**
  * Autosave callback.
+ *
+ * This will keep getting called at regular short
+ * intervals, and if enough time has passed and
+ * it's okay to save it will autosave, otherwise it
+ * will wait until the next interval and check
+ * again.
  */
 int
 project_autosave_cb (
@@ -714,11 +720,31 @@ project_autosave_cb (
 {
   if (PROJECT && PROJECT->loaded &&
       PROJECT->dir &&
-      PROJECT->datetime_str &&
-      !TRANSPORT_IS_ROLLING)
+      PROJECT->datetime_str)
     {
-      project_save (
-        PROJECT, PROJECT->dir, 1, 1);
+      gint cur_time = g_get_monotonic_time ();
+      unsigned int microsec_to_autosave =
+        g_settings_get_uint (
+          S_PREFERENCES, "autosave-interval") * 60 *
+          1000000 -
+          /* subtract 4 seconds because the time
+           * this gets called is not exact */
+          4 * 1000000;
+
+      /* bad time to save */
+      if (cur_time - PROJECT->last_autosave_time <
+            microsec_to_autosave ||
+          TRANSPORT_IS_ROLLING)
+        {
+          return G_SOURCE_CONTINUE;
+        }
+      /* ok to save */
+      else
+        {
+          project_save (
+            PROJECT, PROJECT->dir, 1, 1);
+          PROJECT->last_autosave_time = cur_time;
+        }
     }
 
   return G_SOURCE_CONTINUE;

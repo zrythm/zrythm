@@ -289,13 +289,13 @@ on_setup_main_window (
   /* add timeout for auto-saving projects */
   unsigned int autosave_interval =
     g_settings_get_uint (
-      S_PREFERENCES, "autosave-interval") * 60;
+      S_PREFERENCES, "autosave-interval");
   if (autosave_interval > 0)
     {
+      PROJECT->last_autosave_time =
+        g_get_monotonic_time ();
       g_timeout_add_seconds (
-        autosave_interval,
-        project_autosave_cb,
-        NULL);
+        5, project_autosave_cb, NULL);
     }
 
   splash_window_widget_close (splash);

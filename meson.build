@@ -366,11 +366,6 @@ zrythm_deps = [
   libm,
 ]
 
-if (get_option('enable_qt5'))
-  zrythm_deps += dependency('Qt5Widgets')
-  cdata.set('HAVE_QT5', 1)
-endif
-
 if (get_option('enable_ffmpeg'))
   zrythm_deps += dependency('libavcodec')
   zrythm_deps += dependency('libavformat')
@@ -476,9 +471,8 @@ summary = [
   '  Coverage reports: @0@'.format(get_option('b_coverage')),
   '  Optional libraries:',
   '    ffmpeg: @0@'.format(get_option('enable_ffmpeg')),
-  '    Qt5: @0@'.format(get_option('enable_qt5') and qt5_dep.found()),
-  '    Jack: @0@'.format(jack_dep.found()),
-  '    PortAudio: @0@'.format(get_option('enable_portaudio')),
+  '    Jack (not really optional at the moment): @0@'.format(jack_dep.found()),
+  '    PortAudio (not functional at the moment): @0@'.format(get_option('enable_portaudio')),
   '    Gtop: @0@'.format(libgtop_dep.found()),
   '  Directories:',
   '            prefix: @0@'.format(prefix),

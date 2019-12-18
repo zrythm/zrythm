@@ -210,6 +210,8 @@ typedef struct Project
 
   /** Zrythm version, for zerialization */
   char *            version;
+
+  gint64            last_autosave_time;
 } Project;
 
 static const cyaml_schema_field_t
@@ -336,6 +338,12 @@ project_save (
 
 /**
  * Autosave callback.
+ *
+ * This will keep getting called at regular short
+ * intervals, and if enough time has passed and
+ * it's okay to save it will autosave, otherwise it
+ * will wait until the next interval and check
+ * again.
  */
 int
 project_autosave_cb (
