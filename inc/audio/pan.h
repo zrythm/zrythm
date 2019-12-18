@@ -20,6 +20,12 @@
 #ifndef __AUDIO_PAN_H__
 #define __AUDIO_PAN_H__
 
+/** The amplitude of -3dBfs (0.707945784f). */
+#define PAN_MINUS_3DB_AMP (- 0.292054216f)
+
+/** The amplitude of -6dBfs (0.501187234f). */
+#define PAN_MINUS_6DB_AMP (- 0.498812766f)
+
 /** \file
  */
 

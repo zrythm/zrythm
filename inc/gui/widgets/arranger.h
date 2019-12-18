@@ -47,6 +47,9 @@ typedef struct _ArrangerPlayheadWidget
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct _GtkEventControllerMotion
   GtkEventControllerMotion;
+typedef struct ArrangerObject ArrangerObject;
+typedef struct ArrangerSelections ArrangerSelections;
+typedef enum ArrangerObjectType ArrangerObjectType;
 
 typedef enum ArrangerCursor
 {

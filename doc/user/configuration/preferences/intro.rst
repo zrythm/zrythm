@@ -34,12 +34,28 @@ MIDI Controllers
   MIDI devices to auto-connect to when Zrythm starts.
 
 Pan Algorithm
-  The panning algorithm to use. We recommend leaving it as the default (Sine).
+  The panning algorithm to use. See the graph below
+  for the different curves as you move the pan
+  from left to right. We recommend leaving it as the
+  default (Sine).
   See https://www.cs.cmu.edu/~music/icm-online/readings/panlaws/index.html
   for more information.
 
+  .. figure:: /_static/img/pan_algorithms.png
+     :figwidth: image
+     :align: center
+
+     Pan algorithms (:blue:`sine`,
+     :red:`square root`, :green:`linear`).
+
 Pan Law
-  See https://en.wikipedia.org/wiki/Pan_law.
+  This is how much to attennuate the signal when
+  the pan is in the center. Without this, the signal
+  would be louder when pan is in the center and more
+  silent on the sides, which you likely want to
+  avoid. We recommend leaving this to -3dB. See
+  https://en.wikipedia.org/wiki/Pan_law for more
+  details.
 
 Zrythm Path
   The path to save projects, temporary files, and other

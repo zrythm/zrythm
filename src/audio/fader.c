@@ -309,6 +309,37 @@ fader_process (
         AUDIO_ENGINE->pan_algo,
         self->pan,
         &calc_l, &calc_r);
+
+      /* to adjust for the pan law */
+      /* FIXME this calculates how much to subtract
+       * linearly. it should probably use a
+       * calculation similar to the pan algorithm (
+       * ie, if square root, use square root to
+       * calculate how much to attennuate) */
+      float amp;
+      switch (AUDIO_ENGINE->pan_law)
+        {
+        case PAN_LAW_0DB:
+          amp = self->amp;
+          break;
+        case PAN_LAW_MINUS_3DB:
+          amp =
+            self->amp +
+            /* this is how much to subtract */
+            (1.f -
+              (fabsf (self->pan - 0.5f) / 0.5f)) *
+            PAN_MINUS_3DB_AMP;
+          break;
+        case PAN_LAW_MINUS_6DB:
+          amp =
+            self->amp +
+            /* this is how much to subtract */
+            (1.f -
+              (fabsf (self->pan - 0.5f) / 0.5f)) *
+            PAN_MINUS_6DB_AMP;
+          break;
+        }
+
       while (start_frame < end)
         {
           /* 1. get input
@@ -316,10 +347,10 @@ fader_process (
            * 3. apply pan */
           self->stereo_out->l->buf[start_frame] =
             self->stereo_in->l->buf[start_frame] *
-              self->amp * calc_l;
+              amp * calc_l;
           self->stereo_out->r->buf[start_frame] =
             self->stereo_in->r->buf[start_frame] *
-              self->amp * calc_r;
+              amp * calc_r;
           start_frame++;
         }
     }

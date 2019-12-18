@@ -15,6 +15,18 @@
 	border-radius: 3px;
 }
 
+.red {
+  color: red;
+}
+
+.green {
+  color: green;
+}
+
+.blue {
+  color: blue;
+}
+
 article, aside, details, figcaption, figure, footer, header, hgroup, nav, section {
   display: block;
 }

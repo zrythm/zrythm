@@ -92,6 +92,9 @@ def setup(app):
 
 rst_prolog = """
 .. role:: zbutton
+.. role:: red
+.. role:: green
+.. role:: blue
 """
 
 # Theme options are theme-specific and customize the look and feel of a theme
