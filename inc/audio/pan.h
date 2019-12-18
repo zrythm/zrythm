@@ -26,7 +26,10 @@
 /** The amplitude of -6dBfs (0.501187234f). */
 #define PAN_MINUS_6DB_AMP (- 0.498812766f)
 
-/** \file
+/**
+ * \file
+ *
+ * Panning mono sources.
  */
 
 /**

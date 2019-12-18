@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "audio/balance_control.h"
 #include "audio/channel.h"
 #include "audio/control_room.h"
 #include "audio/engine.h"
@@ -304,9 +305,8 @@ fader_process (
     {
       nframes_t end = start_frame + nframes;
       float calc_l, calc_r;
-      pan_get_calc_lr (
-        AUDIO_ENGINE->pan_law,
-        AUDIO_ENGINE->pan_algo,
+      balance_control_get_calc_lr (
+        BALANCE_CONTROL_ALGORITHM_LINEAR,
         self->pan,
         &calc_l, &calc_r);
 

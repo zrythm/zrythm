@@ -309,6 +309,7 @@ typedef struct AudioEngine
    */
   Transport         transport;
 
+  /* note: these 2 are ignored at the moment */
   /** Pan law. */
   PanLaw            pan_law;
   /** Pan algorithm */

@@ -24,6 +24,7 @@ audio_srcs = [
   'automation_track.c',
   'automation_tracklist.c',
   'audio_bus_track.c',
+  'balance_control.c',
   'channel.c',
   'channel_track.c',
   'chord_descriptor.c',
