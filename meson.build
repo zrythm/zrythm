@@ -353,7 +353,7 @@ zrythm_deps = [
   cyaml_dep,
   audec_dep,
   dependency('threads'),
-  dependency('suil-0', version: '>=0.10.4'),
+  dependency('suil-0', version: '>=0.10.0'),
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),
   lv2_dep,

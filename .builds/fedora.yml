@@ -12,6 +12,7 @@ packages:
   - libsamplerate-devel
   - gettext
   - sed
+  - suil-devel
   - help2man
   - alsa-lib-devel
   - ladspa-devel
