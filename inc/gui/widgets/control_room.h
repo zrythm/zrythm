@@ -78,6 +78,10 @@ typedef struct _ControlRoomWidget
 
 } ControlRoomWidget;
 
+void
+control_room_widget_setup (
+  ControlRoomWidget * self);
+
 /**
  * Creates a ControlRoomWidget.
  */

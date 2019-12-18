@@ -84,10 +84,14 @@ different licenses.
 
 ## Support
 If you would like to support this project please
-donate below - donations enable us to spend more
-time working on the project.
+donate below or purchase a binary installer from
+https://www.zrythm.org/en/download - creating a DAW
+takes thousands of hours of work and contributions
+enable us to spend more time working on the project.
 
-https://liberapay.com/Zrythm/
+- [liberapay.com/Zrythm](https://liberapay.com/Zrythm)
+- [patreon.com/alex_tee](https://www.patreon.com/alex_tee)
+- [paypal.me/zrythm](https://paypal.me/zrythm)
 
 ----
 

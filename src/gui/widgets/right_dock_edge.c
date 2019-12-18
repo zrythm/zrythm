@@ -78,6 +78,7 @@ right_dock_edge_widget_setup (
   /*g_signal_connect (*/
     /*G_OBJECT (revealer), "notify::position",*/
     /*G_CALLBACK (on_divider_pos_changed), revealer);*/
+  control_room_widget_setup (self->control_room);
 }
 
 static void

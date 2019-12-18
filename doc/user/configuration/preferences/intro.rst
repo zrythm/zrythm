@@ -49,13 +49,7 @@ Pan Algorithm
      :red:`square root`, :green:`linear`).
 
 Pan Law
-  This is how much to attennuate the signal when
-  the pan is in the center. Without this, the signal
-  would be louder when pan is in the center and more
-  silent on the sides, which you likely want to
-  avoid. We recommend leaving this to -3dB. See
-  https://en.wikipedia.org/wiki/Pan_law for more
-  details.
+  This is not used at the moment.
 
 Zrythm Path
   The path to save projects, temporary files, and other

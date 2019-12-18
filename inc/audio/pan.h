@@ -30,6 +30,10 @@
  */
 
 /**
+ * These are only useful when changing mono to
+ * stereo.
+ *
+ * No compensation is needed for stereo to stereo.
  * See https://www.hackaudio.com/digital-signal-processing/stereo-audio/square-law-panning/
  */
 typedef enum PanLaw

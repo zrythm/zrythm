@@ -18,6 +18,10 @@
  */
 
 #include "audio/control_room.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/control_room.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/right_dock_edge.h"
 #include "settings/settings.h"
 #include "zrythm.h"
 

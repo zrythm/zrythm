@@ -17,11 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- * Implementation of Port API.
- * Ports are passed when processing audio signals. They carry buffers
- * with data */
-
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>

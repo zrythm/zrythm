@@ -33,17 +33,10 @@ G_DEFINE_TYPE (ControlRoomWidget,
                control_room_widget,
                GTK_TYPE_GRID)
 
-/**
- * Creates a ControlRoomWidget.
- */
-ControlRoomWidget *
-control_room_widget_new (
-  ControlRoom *       control_room)
+void
+control_room_widget_setup (
+  ControlRoomWidget * self)
 {
-  ControlRoomWidget * self =
-    g_object_new (CONTROL_ROOM_WIDGET_TYPE, NULL);
-  self->control_room = control_room;
-
   KnobWidget * knob =
     knob_widget_new_simple (
       fader_get_fader_val,
@@ -57,6 +50,18 @@ control_room_widget_new (
   gtk_container_add (
     GTK_CONTAINER (self->main_knob_placeholder),
     GTK_WIDGET (self->volume));
+}
+
+/**
+ * Creates a ControlRoomWidget.
+ */
+ControlRoomWidget *
+control_room_widget_new (
+  ControlRoom *       control_room)
+{
+  ControlRoomWidget * self =
+    g_object_new (CONTROL_ROOM_WIDGET_TYPE, NULL);
+  self->control_room = control_room;
 
   self->listen_dim_slider =
     slider_bar_widget_new_simple (

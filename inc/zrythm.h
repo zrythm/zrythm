@@ -20,7 +20,7 @@
 /**
  * \file
  *
- * The GTK application.
+ * The Zrythm GTK application.
  */
 
 #ifndef __ZRYTHM_H__
