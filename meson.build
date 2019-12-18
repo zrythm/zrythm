@@ -322,11 +322,6 @@ x11_dep = dependency('x11', required: false)
 if (x11_dep.found ())
   cdata.set('HAVE_X11', 1)
 endif
-suil_dep = dependency (
-  'suil-0', required: false, version: '>=0.10.4')
-if (suil_dep.found ())
-  cdata.set('HAVE_SUIL', 1)
-endif
 alsa_dep = dependency('alsa', required: false)
 if (alsa_dep.found ())
   cdata.set('HAVE_ALSA', 1)
@@ -355,10 +350,10 @@ zrythm_deps = [
   sndfile_dep,
   libgtop_dep,
   alsa_dep,
-  suil_dep,
   cyaml_dep,
   audec_dep,
   dependency('threads'),
+  dependency('suil-0', version: '>=0.10.4'),
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),
   lv2_dep,

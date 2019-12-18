@@ -25,10 +25,6 @@ lv2_srcs = [
   'lv2_ui.c',
   'lv2_urid.c',
   'lv2_worker.c',
-  'qt5_in_gtk3.cpp',
-  'suil_host.c',
-  'suil_instance.c',
-  'x11_in_gtk3.c',
   ]
 
 lv2_lib = static_library (

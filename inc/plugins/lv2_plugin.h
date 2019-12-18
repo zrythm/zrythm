@@ -74,11 +74,7 @@
 
 #include <sratom/sratom.h>
 
-#ifdef HAVE_SUIL
 #include <suil/suil.h>
-#else
-#include "plugins/lv2/suil.h"
-#endif
 
 #ifdef __clang__
 #    define REALTIME __attribute__((annotate("realtime")))

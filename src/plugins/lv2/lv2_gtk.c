@@ -43,7 +43,6 @@
 #include "plugins/lv2/lv2_gtk.h"
 #include "plugins/lv2/lv2_state.h"
 #include "plugins/lv2/lv2_ui.h"
-#include "plugins/lv2/suil.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "zrythm.h"
@@ -53,6 +52,7 @@
 #include <glib/gi18n.h>
 #include <lv2/lv2plug.in/ns/ext/patch/patch.h>
 #include <lv2/lv2plug.in/ns/ext/port-props/port-props.h>
+#include <suil/suil.h>
 
 #if GTK_MAJOR_VERSION == 3
 #if defined(__clang__)

@@ -62,7 +62,6 @@
 #include "plugins/lv2/lv2_state.h"
 #include "plugins/lv2/lv2_ui.h"
 #include "plugins/lv2/lv2_worker.h"
-#include "plugins/lv2/suil.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -79,6 +78,7 @@
 
 #include <lilv/lilv.h>
 #include <sratom/sratom.h>
+#include <suil/suil.h>
 
 #define NS_RDF "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define NS_XSD "http://www.w3.org/2001/XMLSchema#"

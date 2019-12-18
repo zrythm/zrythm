@@ -26,7 +26,7 @@
 #ifndef __PLUGINS_LV2_LV2_UI_H__
 #define __PLUGINS_LV2_LV2_UI_H__
 
-#include "plugins/lv2/suil.h"
+#include <suil/suil.h>
 
 typedef struct Lv2Plugin Lv2Plugin;
 

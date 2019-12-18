@@ -42,11 +42,7 @@
 #include <glibtop.h>
 #endif
 
-#ifdef HAVE_SUIL
 #include <suil/suil.h>
-#else
-#include "plugins/lv2/suil.h"
-#endif
 
 #include <audec/audec.h>
 #include <fftw3.h>
