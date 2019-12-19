@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-28 15:59+0000\n"
-"PO-Revision-Date: 2019-12-18 19:21+0000\n"
+"PO-Revision-Date: 2019-12-19 16:46+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -405,7 +405,7 @@ msgstr "Visibilidade"
 
 #: src/gui/widgets/top_bar.c:43 src/gui/widgets/ruler_marker.c:256
 msgid "Playhead"
-msgstr "Cabeça de Reprodução"
+msgstr "Cabeça de reprodução"
 
 #: src/gui/widgets/top_bar.c:45
 msgid "Playhead [Jack Timebase Master]"
