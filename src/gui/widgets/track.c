@@ -2385,6 +2385,7 @@ track_widget_new (Track * track)
       break;
     case TRACK_TYPE_AUDIO:
       strcpy (self->icon_name, "audio");
+      add_record_button (self, 1);
       add_solo_button (self, 1);
       add_button (
         self, 1, ICON_NAME_MUTE);

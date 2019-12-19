@@ -24,11 +24,11 @@ inside `meson_options.txt`.
 - libyaml (MIT): https://pyyaml.org/wiki/LibYAML
 - libsamplerate (2-clause BSD): http://www.mega-nerd.com/libsamplerate
 - fftw (GPLv2): http://www.fftw.org/
+- suil (ISC): http://drobilla.net/software/suil/
 
 ### Optional
 - portaudio (MIT): www.portaudio.com/
 - ffmpeg (LGPL 2.1+, GPLv2+): https://ffmpeg.org/
-- Qt5 (GPLv3): https://www.qt.io/
 
 ## Installation
 Once the program is built, it will need to be

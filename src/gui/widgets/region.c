@@ -835,7 +835,7 @@ draw_audio_region (
   long prev_frames =
     ui_px_to_frames_timeline (local_start_x, 0);
   for (double i = local_start_x;
-       i < (double) local_end_x; i += 0.4)
+       i < (double) local_end_x; i += 1.0)
     {
       /* current single channel frames */
       long curr_frames =
@@ -855,6 +855,7 @@ draw_audio_region (
               long index =
                 j * clip->channels + k;
               g_warn_if_fail (
+                index >= 0 &&
                 index <
                   clip->num_frames * clip->channels);
               float val =
@@ -871,7 +872,7 @@ draw_audio_region (
       z_cairo_draw_vertical_line (
         cr,
         /* x */
-        (i + full_rect->x) - rect->x,
+        (i - 0.5 + full_rect->x) - rect->x,
         /* from y */
         (full_rect->y +
           MAX (

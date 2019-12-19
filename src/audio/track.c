@@ -49,6 +49,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 
 #include <glib/gi18n.h>
 
@@ -460,6 +461,30 @@ track_set_muted (
       EVENTS_PUSH (
         ET_TRACK_STATE_CHANGED, track);
     }
+}
+
+/**
+ * Returns the Track from the Project matching
+ * \p name.
+ *
+ * @param name Name to search for.
+ */
+Track *
+track_get_from_name (
+  const char * name)
+{
+  g_return_val_if_fail (name, NULL);
+
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * track = TRACKLIST->tracks[i];
+      if (string_is_equal (track->name, name, 1))
+        {
+          return track;
+        }
+    }
+
+  g_return_val_if_reached (NULL);
 }
 
 /**

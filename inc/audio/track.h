@@ -231,7 +231,12 @@ typedef struct Track
   /** MIDI channel (MIDI/Instrument track only). */
   uint8_t             midi_ch;
 
-  /** Region currently recording on. */
+  /**
+   * Region currently recording on.
+   *
+   * This must only be set by the RecordingManager
+   * and should not be touched by anything else.
+   */
   Region *            recording_region;
 
   /* ==== INSTRUMENT/MIDI/AUDIO TRACK END ==== */
@@ -719,6 +724,16 @@ void
 track_set_name (
   Track * track,
   const char *  name);
+
+/**
+ * Returns the Track from the Project matching
+ * \p name.
+ *
+ * @param name Name to search for.
+ */
+Track *
+track_get_from_name (
+  const char * name);
 
 char *
 track_stringize_type (

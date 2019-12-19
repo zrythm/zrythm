@@ -46,6 +46,7 @@ typedef struct CairoCaches CairoCaches;
 typedef struct UiCaches UiCaches;
 typedef struct MPMCQueue MPMCQueue;
 typedef struct ObjectPool ObjectPool;
+typedef struct RecordingManager RecordingManager;
 
 /**
  * @addtogroup general
@@ -146,6 +147,9 @@ typedef struct Zrythm
    * allocation.
    */
   ObjectPool *            event_obj_pool;
+
+  /** Recording manager. */
+  RecordingManager *      recording_manager;
 
   /**
    * String interner for internal things.

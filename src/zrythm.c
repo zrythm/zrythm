@@ -27,6 +27,7 @@
 #include "audio/engine.h"
 #include "audio/mixer.h"
 #include "audio/quantize_options.h"
+#include "audio/recording_manager.h"
 #include "audio/track.h"
 #include "audio/tracklist.h"
 #include "gui/accel.h"
@@ -281,6 +282,8 @@ on_setup_main_window (
     0.98);
 
   events_init (ZRYTHM);
+  ZRYTHM->recording_manager =
+    recording_manager_new ();
   main_window_widget_refresh (MAIN_WINDOW);
 
   mixer_recalc_graph (MIXER);

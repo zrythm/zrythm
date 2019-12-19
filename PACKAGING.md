@@ -1,15 +1,6 @@
 Information for Packagers
 =========================
 
-We are already providing homemade packages for
-various distros on
-[OBS (Open Build System)](https://build.opensuse.org/package/show/home:alextee/zrythm#),
-so feel free to use these as a base.
-
-If you package Zrythm in a public repository,
-please let us know - we may add a link on
-on our website.
-
 # Upstream URLs
 
 You can use
@@ -20,9 +11,8 @@ on our [CGit instance](https://git.zrythm.org/cgit/).
 
 # Meson
 
-Zrythm needs a fairly recent version of Meson to build.
-We don't know the exact version number but something around 45
-and above should be fine.
+Zrythm needs a fairly recent version of Meson to build 
+(around 0.50 and above).
 
 # Included Programs
 
@@ -56,7 +46,9 @@ details.
 
 Please send a patch at dev _at_ zrythm.org if something does not build
 in a particular scenario and you manged to fix it, or
-if you want to add compilation flags.
+if you want to add compilation flags. Alternatively,
+attach patches as new issues on our
+[Redmine instance](https://redmine.zrythm.org/projects/zrythm/issues).
 
 ----
 

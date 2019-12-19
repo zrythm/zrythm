@@ -95,7 +95,7 @@ node_trigger (
   GraphNode * self)
 {
   /* check if we can run */
-	if (g_atomic_int_dec_and_test (&self->refcount))
+  if (g_atomic_int_dec_and_test (&self->refcount))
     {
       /* reset reference count for next cycle */
       g_atomic_int_set (
@@ -115,9 +115,9 @@ node_finish (
 {
   int feeds = 0;
 
-	/* notify downstream nodes that depend on this
+  /* notify downstream nodes that depend on this
    * node */
-	for (int i = 0; i < self->n_childnodes; ++i)
+  for (int i = 0; i < self->n_childnodes; ++i)
     {
       /* set the largest playback latency of this
        * route to the child as well */
@@ -131,9 +131,9 @@ node_finish (
       feeds = 1;
     }
 
-	/* if there are no outgoing edges, this is a
+  /* if there are no outgoing edges, this is a
    * terminal node */
-	if (!feeds)
+  if (!feeds)
     {
       /* notify parent graph */
       graph_reached_terminal_node (self->graph);
@@ -537,7 +537,7 @@ graph_worker_thread (void * arg)
       node_run (to_run);
 
     }
-	return 0;
+  return 0;
 }
 
 REALTIME
@@ -548,10 +548,10 @@ graph_main_thread (void * arg)
   Graph * self = thread->graph;
 
   /* Wait until all worker threads are active */
-	while (
+  while (
     g_atomic_int_get (&self->idle_thread_cnt) !=
       self->num_threads)
-		sched_yield ();
+    sched_yield ();
 
   /* wait for initial process callback */
   zix_sem_wait (&self->callback_start);
@@ -566,10 +566,10 @@ graph_main_thread (void * arg)
       g_warn_if_fail (self->n_terminal_nodes > 0);
     }
 
-	/* bootstrap trigger-list.
-	 * (later this is done by
+  /* bootstrap trigger-list.
+   * (later this is done by
    * Graph_reached_terminal_node)*/
-	for (size_t i = 0;
+  for (size_t i = 0;
        i < self->n_init_triggers; ++i)
     {
       g_atomic_int_inc (&self->trigger_queue_size);
@@ -579,7 +579,7 @@ graph_main_thread (void * arg)
         self->init_trigger_list[i]);
     }
 
-	/* after setup, the main-thread just becomes
+  /* after setup, the main-thread just becomes
    * a normal worker */
   return graph_worker_thread (thread);
 }
@@ -594,17 +594,17 @@ graph_terminate (
   /* Flag threads to terminate */
   g_atomic_int_set (&self->terminate, 1);
 
-	/* wake-up sleeping threads */
-	int tc =
+  /* wake-up sleeping threads */
+  int tc =
     g_atomic_int_get (&self->idle_thread_cnt);
   g_warn_if_fail (tc == self->num_threads);
-	for (int i = 0; i < tc; ++i)
+  for (int i = 0; i < tc; ++i)
     {
       zix_sem_post (&self->trigger);
     }
 
-	/* and the main thread */
-	zix_sem_post (&self->callback_start);
+  /* and the main thread */
+  zix_sem_post (&self->callback_start);
 
   /* join threads */
 #ifdef HAVE_JACK
@@ -636,9 +636,9 @@ graph_terminate (
   pthread_join (self->main_thread.pthread, NULL);
 #endif
 
-	/*self->init_trigger_list = NULL;*/
-	/*self->n_init_triggers   = 0;*/
-	/*self->trigger_queue     = NULL;*/
+  /*self->init_trigger_list = NULL;*/
+  /*self->n_init_triggers   = 0;*/
+  /*self->trigger_queue     = NULL;*/
   /*free (self->init_trigger_list);*/
   /*free (self->trigger_queue);*/
 }
@@ -1053,7 +1053,7 @@ graph_free (
     {
       node_free (self->graph_nodes[i]);
     }
-	free (self->graph_nodes);
+  free (self->graph_nodes);
   free (self->init_trigger_list);
   free (self->setup_graph_nodes);
   free (self->setup_init_trigger_list);
@@ -1080,7 +1080,7 @@ graph_destroy (
   g_usleep (1000);
 
   for (i = 0; i < self->num_threads; ++i) {
-		/*pthread_join (workers[i], NULL);*/
+    /*pthread_join (workers[i], NULL);*/
   }
 
   graph_free (self);
@@ -1097,7 +1097,7 @@ static inline void
 graph_reached_terminal_node (
   Graph *  self)
 {
-	if (g_atomic_int_dec_and_test (
+  if (g_atomic_int_dec_and_test (
         &self->terminal_refcnt))
     {
       /* all terminal nodes have completed,
