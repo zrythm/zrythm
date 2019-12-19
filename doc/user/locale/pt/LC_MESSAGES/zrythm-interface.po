@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 07:46+0000\n"
-"PO-Revision-Date: 2019-09-24 07:14+0000\n"
+"PO-Revision-Date: 2019-12-19 16:46+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.10-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -405,7 +406,6 @@ msgid "Song tempo (beats per minute)"
 msgstr "Ritmo da canção (batidas por minuto)"
 
 #: ../../zrythm-interface/transport-bar.rst:18
-#, fuzzy
 msgid "Playhead"
 msgstr "Cabeça de reprodução"
 
@@ -512,13 +512,12 @@ msgid "Status Bar (7)"
 msgstr "Barra de Estado (7)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:31
-#, fuzzy
 msgid ""
 "The status bar is a helpful bar in the bottom of the window that displays"
 " information about the current project."
 msgstr ""
-"A barra de estado é uma barra útil na parte inferior do programa que "
-"mostra dicas baseadas no item que está pairando no momento."
+"A barra de estado é uma barra útil na parte inferior da janela que exibe "
+"informações sobre o projeto atual."
 
 #~ msgid "Channel Overview"
 #~ msgstr "Visão Geral Do Canal"
@@ -598,4 +597,3 @@ msgstr ""
 
 #~ msgid "WIP"
 #~ msgstr "WIP"
-
