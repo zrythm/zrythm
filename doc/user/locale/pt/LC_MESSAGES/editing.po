@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:23+0000\n"
-"PO-Revision-Date: 2019-12-18 19:21+0000\n"
+"PO-Revision-Date: 2019-12-19 16:46+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/pt/>\n"
@@ -303,15 +303,12 @@ msgid "Overview"
 msgstr "Sinopse"
 
 #: ../../editing/overview.rst:8
-#, fuzzy
 msgid "Editing refers to any work done in the arrangers:"
-msgstr ""
-"A edição refere-se a qualquer trabalho feito nos arranjadores: a "
-"Cronologia e o Cílindros de Piano."
+msgstr "A edição refere-se a qualquer trabalho feito nos arranjadores:"
 
 #: ../../editing/overview.rst:10 ../../editing/timeline-editing/intro.rst:6
 msgid "Timeline"
-msgstr ""
+msgstr "Cronologia"
 
 #: ../../editing/overview.rst:11 ../../editing/piano-roll-editing/intro.rst:6
 msgid "Piano Roll"
@@ -319,13 +316,15 @@ msgstr "Cílindros de Piano"
 
 #: ../../editing/overview.rst:12
 msgid "Chord Editor"
-msgstr ""
+msgstr "Editor de Acordes"
 
 #: ../../editing/overview.rst:16
 msgid ""
 "In addition to their own unique features, each arranger shares the "
 "following global tools."
 msgstr ""
+"Além dos seus próprios recursos únicos, cada arranjador compartilha as "
+"seguintes ferramentas globais."
 
 #: ../../editing/overview.rst:19
 msgid ""
