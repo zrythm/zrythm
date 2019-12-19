@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-28 15:59+0000\n"
-"PO-Revision-Date: 2019-12-19 16:46+0000\n"
+"PO-Revision-Date: 2019-12-19 17:00+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -2447,7 +2447,7 @@ msgstr ""
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:26
 msgid "zrythm"
-msgstr "zrythm"
+msgstr "Zrythm"
 
 #~ msgid "Duplicate Chord(s)"
 #~ msgstr "Acorde(s) Duplicado(s)"
