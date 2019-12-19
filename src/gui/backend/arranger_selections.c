@@ -1380,12 +1380,14 @@ arranger_selections_get_all_objects (
 #define ADD_OBJ(sel,sc) \
   for (int i = 0; i < sel->num_##sc##s; i++) \
     { \
-      objs = \
+      ArrangerObject ** new_objs = \
         (ArrangerObject **) \
         realloc ( \
           objs, \
           (size_t) (*size + 1) * \
             sizeof (ArrangerObject *)); \
+      g_return_val_if_fail (new_objs, NULL); \
+      objs = new_objs; \
       objs[*size] = \
         (ArrangerObject *) sel->sc##s[i]; \
       (*size)++; \

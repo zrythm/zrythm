@@ -65,6 +65,8 @@ editor_ruler_on_drag_update (
   gdouble             offset_x,
   gdouble             offset_y)
 {
+  g_return_if_fail (self);
+
   if (ACTION_IS (MOVING))
     {
       Position editor_pos;

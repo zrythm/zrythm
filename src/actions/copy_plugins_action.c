@@ -33,12 +33,12 @@ copy_plugins_action_new (
   Track *           tr,
   int               slot)
 {
-	CopyPluginsAction * self =
+  CopyPluginsAction * self =
     calloc (1, sizeof (
-    	CopyPluginsAction));
+      CopyPluginsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UA_COPY_PLUGINS;
+    UA_COPY_PLUGINS;
 
   self->ms = mixer_selections_clone (ms);
   self->slot = slot;
@@ -53,7 +53,7 @@ copy_plugins_action_new (
 
 int
 copy_plugins_action_do (
-	CopyPluginsAction * self)
+  CopyPluginsAction * self)
 {
   Plugin * orig_pl, * pl;
   Channel * ch;
@@ -137,7 +137,7 @@ copy_plugins_action_do (
  */
 int
 copy_plugins_action_undo (
-	CopyPluginsAction * self)
+  CopyPluginsAction * self)
 {
   Track * tr =
     TRACKLIST->tracks[self->track_pos];
@@ -180,7 +180,7 @@ copy_plugins_action_undo (
 
 char *
 copy_plugins_action_stringize (
-	CopyPluginsAction * self)
+  CopyPluginsAction * self)
 {
   if (self->ms->num_slots == 1)
     return g_strdup_printf (
@@ -194,7 +194,7 @@ copy_plugins_action_stringize (
 
 void
 copy_plugins_action_free (
-	CopyPluginsAction * self)
+  CopyPluginsAction * self)
 {
   mixer_selections_free (self->ms);
 

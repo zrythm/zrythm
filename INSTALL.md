@@ -16,19 +16,19 @@ inside `meson_options.txt`.
 
 ## Dependencies
 ### Required
-  - GTK+3 (library GPLv2+): <https://gitlab.gnome.org/GNOME/gtk>
-  - jack (LGPLv2.1+): <https://jackaudio.org/>
-  - lv2 (ISC): <https://lv2plug.in/>
-  - lilv (ISC): <https://drobilla.net/software/lilv>
-  - libsndfile (LGPLv3): <https://www.mega-nerd.com/libsndfile>
-  - libyaml (MIT): <https://pyyaml.org/wiki/LibYAML>
-  - libsamplerate (2-clause BSD): <http://www.mega-nerd.com/libsamplerate>
-  - fftw (GPLv2): <http://www.fftw.org/>
-  - suil (ISC): <http://drobilla.net/software/suil/>
+- GTK+3 (library GPLv2+): <https://gitlab.gnome.org/GNOME/gtk>
+- jack (LGPLv2.1+): <https://jackaudio.org/>
+- lv2 (ISC): <https://lv2plug.in/>
+- lilv (ISC): <https://drobilla.net/software/lilv>
+- libsndfile (LGPLv3): <https://www.mega-nerd.com/libsndfile>
+- libyaml (MIT): <https://pyyaml.org/wiki/LibYAML>
+- libsamplerate (2-clause BSD): <http://www.mega-nerd.com/libsamplerate>
+- fftw (GPLv2): <http://www.fftw.org/>
+- suil (ISC): <http://drobilla.net/software/suil/>
 
 ### Optional
-  - portaudio (MIT): <http://www.portaudio.com/>
-  - ffmpeg (LGPL 2.1+, GPLv2+): <https://ffmpeg.org/>
+- portaudio (MIT): <http://www.portaudio.com/>
+- ffmpeg (LGPL 2.1+, GPLv2+): <https://ffmpeg.org/>
 
 ## Installation
 Once the program is built, it will need to be
