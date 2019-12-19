@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 07:46+0000\n"
-"PO-Revision-Date: 2019-09-24 07:14+0000\n"
+"PO-Revision-Date: 2019-12-19 16:46+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/de/>\n"
 "Language: de\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm"
-"/manualzrythm-interface/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.10-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -343,7 +344,7 @@ msgstr ""
 
 #: ../../zrythm-interface/timeline.rst:6
 msgid "Timeline"
-msgstr "Zeitleiste"
+msgstr "Zeitachse"
 
 #: ../../zrythm-interface/timeline.rst:8
 msgid ""
@@ -408,7 +409,6 @@ msgid "Song tempo (beats per minute)"
 msgstr "Liedtempo (Beats pro Minute)"
 
 #: ../../zrythm-interface/transport-bar.rst:18
-#, fuzzy
 msgid "Playhead"
 msgstr "Abspielkopf"
 
@@ -515,13 +515,12 @@ msgid "Status Bar (7)"
 msgstr "Statusleiste (7)"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:31
-#, fuzzy
 msgid ""
 "The status bar is a helpful bar in the bottom of the window that displays"
 " information about the current project."
 msgstr ""
-"Die Statusbar ist eine hilfreiche Leiste am unteren Rand des Programmes, "
-"die Tipps basierend auf dem Element über dem die Maus schwebt anzeigt."
+"Die Statusleiste ist eine hilfreiche Leiste im unteren Teil des Fensters, "
+"die Informationen über das aktuelle Projekt anzeigt."
 
 #~ msgid "Channel Overview"
 #~ msgstr "Kanalübersicht"
@@ -605,4 +604,3 @@ msgstr ""
 
 #~ msgid "WIP"
 #~ msgstr "WIP"
-

@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-17 23:53+0000\n"
-"PO-Revision-Date: 2019-10-28 15:53+0000\n"
-"Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
+"POT-Creation-Date: 2019-12-19 17:07+0000\n"
+"PO-Revision-Date: 2019-12-18 19:21+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: pt\n"
 "Language-Team: Portuguese "
 "<https://hosted.weblate.org/projects/zrythm/manualconfiguration/pt/>\n"
@@ -93,7 +93,6 @@ msgid "Connecting MIDI and Audio Devices"
 msgstr "Conectando Aparelhos de MIDI e Áudio"
 
 #: ../../configuration/device-setup/intro.rst:11
-#, fuzzy
 msgid ""
 "On Linux-based platforms, Zrythm works with both ALSA and JACK as "
 "available backends. Depending on the selected backend, the configuration "
@@ -310,40 +309,38 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:18
 #: ../../configuration/preferences/intro.rst:25
 msgid "General"
-msgstr ""
+msgstr "Geral"
 
 #: ../../configuration/preferences/intro.rst:19
 msgid "Audio"
-msgstr ""
+msgstr "Áudio"
 
 #: ../../configuration/preferences/intro.rst:20
-#: ../../configuration/preferences/intro.rst:74
+#: ../../configuration/preferences/intro.rst:68
 msgid "GUI"
 msgstr "GUI"
 
 #: ../../configuration/preferences/intro.rst:21
-#: ../../configuration/preferences/intro.rst:65
+#: ../../configuration/preferences/intro.rst:59
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: ../../configuration/preferences/intro.rst:22
-#: ../../configuration/preferences/intro.rst:80
+#: ../../configuration/preferences/intro.rst:74
 msgid "Projects"
-msgstr ""
+msgstr "Projetos"
 
 #: ../../configuration/preferences/intro.rst:28
-#, fuzzy
 msgid "Audio Backend"
-msgstr "Backends de Áudio/MIDI"
+msgstr "Backend Áudio"
 
 #: ../../configuration/preferences/intro.rst:28
 msgid "The backend to use for the audio engine."
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:31
-#, fuzzy
 msgid "MIDI Backend"
-msgstr "Backend"
+msgstr "Backend MIDI"
 
 #: ../../configuration/preferences/intro.rst:31
 msgid "The MIDI backend to use for the audio engine."
@@ -351,7 +348,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:34
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "Controladores MIDI"
 
 #: ../../configuration/preferences/intro.rst:34
 msgid "MIDI devices to auto-connect to when Zrythm starts."
@@ -359,7 +356,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "Pan Algorithm"
-msgstr ""
+msgstr "Algoritmo de Pan"
 
 #: ../../configuration/preferences/intro.rst:37
 msgid ""
@@ -373,64 +370,59 @@ msgstr ""
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:58
+#: ../../configuration/preferences/intro.rst:52
 msgid "Pan Law"
-msgstr ""
+msgstr "Lei Pan"
 
 #: ../../configuration/preferences/intro.rst:52
-msgid ""
-"This is how much to attennuate the signal when the pan is in the center. "
-"Without this, the signal would be louder when pan is in the center and "
-"more silent on the sides, which you likely want to avoid. We recommend "
-"leaving this to -3dB. See https://en.wikipedia.org/wiki/Pan_law for more "
-"details."
+msgid "This is not used at the moment."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:62
+#: ../../configuration/preferences/intro.rst:56
 msgid "Zrythm Path"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:61
+#: ../../configuration/preferences/intro.rst:55
 msgid ""
 "The path to save projects, temporary files, and other non-project "
 "specific files."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:68
+#: ../../configuration/preferences/intro.rst:62
 msgid "Always open plugin UIs"
-msgstr ""
+msgstr "Sempre abrir UIs de plugins"
 
-#: ../../configuration/preferences/intro.rst:68
+#: ../../configuration/preferences/intro.rst:62
 msgid "Always show the plugin UI when instantiating plugins."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:71
+#: ../../configuration/preferences/intro.rst:65
 msgid "Keep plugin UIs on top"
-msgstr ""
+msgstr "Manter os UIs de plugins no topo"
 
-#: ../../configuration/preferences/intro.rst:71
+#: ../../configuration/preferences/intro.rst:65
 msgid "Whether to always keep plugin UIs above other Zrythm windows or not."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:77
+#: ../../configuration/preferences/intro.rst:71
 msgid "Language"
-msgstr ""
+msgstr "Idioma"
 
-#: ../../configuration/preferences/intro.rst:77
+#: ../../configuration/preferences/intro.rst:71
 msgid "The language that the Zrythm interface uses."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:84
+#: ../../configuration/preferences/intro.rst:78
 msgid "Autosave Interval"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:83
+#: ../../configuration/preferences/intro.rst:77
 msgid ""
 "The amount of time to wait before auto-saving a backup of the current "
 "project, in minutes. Setting this to 0 will turn it off."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:86
+#: ../../configuration/preferences/intro.rst:80
 msgid "Changing some of these settings requires a restart of Zrythm."
 msgstr ""
 
@@ -684,5 +676,17 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "See https://en.wikipedia.org/wiki/Pan_law."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This is how much to attennuate the"
+#~ " signal when the pan is in the"
+#~ " center. Without this, the signal "
+#~ "would be louder when pan is in "
+#~ "the center and more silent on the"
+#~ " sides, which you likely want to "
+#~ "avoid. We recommend leaving this to "
+#~ "-3dB. See https://en.wikipedia.org/wiki/Pan_law for"
+#~ " more details."
 #~ msgstr ""
 

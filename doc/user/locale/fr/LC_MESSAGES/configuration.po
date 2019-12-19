@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-17 23:53+0000\n"
+"POT-Creation-Date: 2019-12-19 17:07+0000\n"
 "PO-Revision-Date: 2019-09-24 07:14+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -324,17 +324,17 @@ msgid "Audio"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:20
-#: ../../configuration/preferences/intro.rst:74
+#: ../../configuration/preferences/intro.rst:68
 msgid "GUI"
 msgstr "IGU"
 
 #: ../../configuration/preferences/intro.rst:21
-#: ../../configuration/preferences/intro.rst:65
+#: ../../configuration/preferences/intro.rst:59
 msgid "Plugins"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:22
-#: ../../configuration/preferences/intro.rst:80
+#: ../../configuration/preferences/intro.rst:74
 msgid "Projects"
 msgstr ""
 
@@ -380,64 +380,59 @@ msgstr ""
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:58
+#: ../../configuration/preferences/intro.rst:52
 msgid "Pan Law"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:52
-msgid ""
-"This is how much to attennuate the signal when the pan is in the center. "
-"Without this, the signal would be louder when pan is in the center and "
-"more silent on the sides, which you likely want to avoid. We recommend "
-"leaving this to -3dB. See https://en.wikipedia.org/wiki/Pan_law for more "
-"details."
+msgid "This is not used at the moment."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:62
+#: ../../configuration/preferences/intro.rst:56
 msgid "Zrythm Path"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:61
+#: ../../configuration/preferences/intro.rst:55
 msgid ""
 "The path to save projects, temporary files, and other non-project "
 "specific files."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:68
+#: ../../configuration/preferences/intro.rst:62
 msgid "Always open plugin UIs"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:68
+#: ../../configuration/preferences/intro.rst:62
 msgid "Always show the plugin UI when instantiating plugins."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:71
+#: ../../configuration/preferences/intro.rst:65
 msgid "Keep plugin UIs on top"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:71
+#: ../../configuration/preferences/intro.rst:65
 msgid "Whether to always keep plugin UIs above other Zrythm windows or not."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:77
+#: ../../configuration/preferences/intro.rst:71
 msgid "Language"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:77
+#: ../../configuration/preferences/intro.rst:71
 msgid "The language that the Zrythm interface uses."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:84
+#: ../../configuration/preferences/intro.rst:78
 msgid "Autosave Interval"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:83
+#: ../../configuration/preferences/intro.rst:77
 msgid ""
 "The amount of time to wait before auto-saving a backup of the current "
 "project, in minutes. Setting this to 0 will turn it off."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:86
+#: ../../configuration/preferences/intro.rst:80
 msgid "Changing some of these settings requires a restart of Zrythm."
 msgstr ""
 
@@ -744,5 +739,17 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "See https://en.wikipedia.org/wiki/Pan_law."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This is how much to attennuate the"
+#~ " signal when the pan is in the"
+#~ " center. Without this, the signal "
+#~ "would be louder when pan is in "
+#~ "the center and more silent on the"
+#~ " sides, which you likely want to "
+#~ "avoid. We recommend leaving this to "
+#~ "-3dB. See https://en.wikipedia.org/wiki/Pan_law for"
+#~ " more details."
 #~ msgstr ""
 
