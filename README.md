@@ -3,6 +3,7 @@ Zrythm
 
 [![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
 [![builds.sr.ht status](https://builds.sr.ht/~alextee/zrythm.svg)](https://builds.sr.ht/~alextee/zrythm?)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c16bdc22f6ae4e539aa6417274e71d17)](https://www.codacy.com/manual/alex-tee/zrythm)
 
 Zrythm is a digital audio workstation designed to be
 featureful and easy to use. It allows limitless
@@ -34,7 +35,7 @@ See [INSTALL.md](INSTALL.md).
 At the moment, Zrythm works with JACK (recommended)
 ~~and ALSA~~.
 For Jack setup instructions see
-https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack
+[Demistifying JACK - A Beginners Guide to Getting Started With JACK](https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack).
 
 For more information on using Zrythm see the
 [user manual](http://manual.zrythm.org/), which is
@@ -55,10 +56,10 @@ Please submit patches and bug reports below.
 user@zrythm.org, dev@zrythm.org
 
 ## Bug Tracker
-https://redmine.zrythm.org/projects/zrythm/issues
+<https://redmine.zrythm.org/projects/zrythm/issues>
 
 ## Releases
-https://www.zrythm.org/releases
+<https://www.zrythm.org/releases>
 
 ## License
 Zrythm is free software: you can redistribute it and/or modify
@@ -85,7 +86,7 @@ different licenses.
 ## Support
 If you would like to support this project please
 donate below or purchase a binary installer from
-https://www.zrythm.org/en/download - creating a DAW
+<https://www.zrythm.org/en/download> - creating a DAW
 takes thousands of hours of work and contributions
 enable us to spend more time working on the project.
 

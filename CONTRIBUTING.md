@@ -77,7 +77,7 @@ An easy way to test something is to add a
 and it will automatically break there for you.
 
 For more information on warnings and assertions see
-https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html
+<https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html>.
 
 ## Environment Variables
 In addition to GTK/GLib variables, Zrythm
@@ -113,7 +113,7 @@ followed by
     ninja -C build test
 
 To get a coverage report see
-https://mesonbuild.com/howtox.html#producing-a-coverage-report
+<https://mesonbuild.com/howtox.html#producing-a-coverage-report>.
 
 # Profiling
 ## gprof
@@ -138,7 +138,7 @@ When you are finished, close Zrythm and run
 `kcachegrind` in the same directory to display the
 profiling info in the kcachegrind GUI.
 For more information, see
-https://docs.kde.org/stable5/en/kdesdk/kcachegrind/using-kcachegrind.html.
+<https://docs.kde.org/stable5/en/kdesdk/kcachegrind/using-kcachegrind.html>.
 
 # Real-time safety
 Use the following to get a stoat report.
@@ -147,7 +147,7 @@ Use the following to get a stoat report.
     ninja -C build run_stoat
 
 For more info see
-https://github.com/fundamental/stoat
+<https://github.com/fundamental/stoat>.
 
 # Collecting Translations
 To collect all translatable filenames into

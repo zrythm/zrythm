@@ -378,7 +378,7 @@ handle_audio_event (
         i * clip->channels] =
           ev->lbuf[cur_local_offset];
       clip->frames[
-        i * clip->channels] =
+        i * clip->channels + 1] =
           ev->rbuf[cur_local_offset++];
     }
 }
@@ -544,11 +544,9 @@ handle_start_recording (
     ev->g_start_frames + (long) ev->nframes;
 
   /* adjust for transport loop end */
-  nframes_t frames_till_loop = 0;
-  if ((frames_till_loop =
-         transport_is_loop_point_met (
-           TRANSPORT, ev->g_start_frames,
-           ev->nframes)))
+  if (transport_is_loop_point_met (
+        TRANSPORT, ev->g_start_frames,
+        ev->nframes))
     {
       start_frames =
         TRANSPORT->loop_start_pos.frames;
