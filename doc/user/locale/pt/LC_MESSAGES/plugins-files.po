@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 07:46+0000\n"
-"PO-Revision-Date: 2019-10-28 15:53+0000\n"
-"Last-Translator: Manuela Silva <mmsrs@sky.com>\n"
+"PO-Revision-Date: 2019-12-20 21:21+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
-"/manualplugins-files/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.10\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:6
@@ -33,7 +34,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:12
 msgid "This is a work in progress."
-msgstr ""
+msgstr "Este é um trabalho em progresso."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:15
 msgid "Filtering"
@@ -107,21 +108,24 @@ msgid ""
 "This page will display information about the Plugin and its ports and "
 "allow you to make changes."
 msgstr ""
+"Esta página irá exibir informações sobre o Plugin e as portas deles e "
+"permitir que você faça alterações."
 
 #: ../../plugins-files/plugins/inspector-page.rst:19
 msgid "Changing Values"
-msgstr ""
+msgstr "Alterar Valores"
 
 #: ../../plugins-files/plugins/inspector-page.rst:21
 msgid ""
 "The values of control ports can be changed by clicking and dragging "
 "inside the bar."
 msgstr ""
+"Os valores das portas de controle podem ser alterados clicando e arrastando "
+"dentro da barra."
 
 #: ../../plugins-files/plugins/inspector-page.rst:25
-#, fuzzy
 msgid "Connections"
-msgstr "Coleções"
+msgstr "Ligações"
 
 #: ../../plugins-files/plugins/inspector-page.rst:27
 msgid ""
@@ -129,22 +133,28 @@ msgid ""
 "route anything-to-anything. For example, you can route an LFO's CV output"
 " to a filter plugin's cutoff parameter."
 msgstr ""
+"As portas compatíveis podem ser conectadas umas às outras. Isto permite-lhe "
+"encaminhar tudo-a-tudo. Por exemplo, pode encaminhar a saída do CV de um LFO "
+"para o parâmetro de corte de um plugin de filtro."
 
 #: ../../plugins-files/plugins/inspector-page.rst:32
 msgid ""
 "The number in orange indicates how many ports are currently connected to "
 "each port."
 msgstr ""
+"O número em laranja indica quantas portas estão agora ligadas a cada porta."
 
 #: ../../plugins-files/plugins/inspector-page.rst:35
 msgid ""
 "By double clicking the port, you can select a port to connect it to, or "
 "edit existing connections."
 msgstr ""
+"Ao clicar duas vezes na porta, pode selecionar uma porta para conectá-la ou "
+"editar as conexões existentes."
 
 #: ../../plugins-files/plugins/inspector-page.rst:40
 msgid "For more information about ports, see the next section."
-msgstr ""
+msgstr "Para mais informações sobre portas, consulte a secção seguinte."
 
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
@@ -203,18 +213,12 @@ msgid "Protocol"
 msgstr "Protocolo"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:27
-#, fuzzy
 msgid "Allows you to filter plugins based their protocol (LV2 or VST)."
-msgstr ""
-"Permite-lhe filtrar plugins com base no seu protocolo (LV2 ou VST). Não "
-"está operacional neste momento."
+msgstr "Permite-lhe filtrar plugins com base no seu protocolo (LV2 ou VST)."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:30
-#, fuzzy
 msgid "Collections and Protocols are not operational at the moment."
-msgstr ""
-"Permite-lhe filtrar plugins com base no seu protocolo (LV2 ou VST). Não "
-"está operacional neste momento."
+msgstr "As Coleções e Protocolos não estão operacionais no momento."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Filter Buttons"
@@ -297,31 +301,34 @@ msgid "Drag-n-Drop"
 msgstr "Arrastar-e-soltar"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:67
-#, fuzzy
 msgid ""
 "You can drag and drop the selected plugin into empty space in the "
 "Tracklist or into empty space in the Mixer to create a new track using "
 "that plugin."
 msgstr ""
-"Arraste e solte o plugin selecionado no espaço vazio na Tracklist ou no "
-"espaço vazio no Misturador para criar uma nova faixa usando esse plugin. "
-"Se o plugin for um modulador, você pode por-lo no separador Moduladores."
+"Pode arrastar e soltar o plugin selecionado em espaço vazio na Lista de "
+"Faixas ou em espaço vazio no Misturador para criar uma faixa usando esse "
+"plugin."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:75
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or"
 " replace the previous plugin."
 msgstr ""
+"Alternativamente, pode arrastar o plugin num slot de misturador para "
+"adicioná-lo lá ou substituir o plugin anterior."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:80
 msgid "If the plugin is a modulator, you can drop it into the Modulators Tab."
-msgstr ""
+msgstr "Se o plugin é um modulador, pode colocá-lo no separador Moduladores."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:84
 msgid ""
 "The Modulators tab is a work-in-progress. For the time being, you can use"
 " them as regular effects."
 msgstr ""
+"O separador Moduladores é um trabalho em progresso. Por enquanto, pode usá-"
+"los como efeitos regulares."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:88
 msgid "Double Click/Enter"
@@ -447,13 +454,12 @@ msgstr ""
 "vice-versa."
 
 #: ../../plugins-files/plugins/ports.rst:45
-#, fuzzy
 msgid ""
 "Tracks/channels also have their own ports, for example for the fader, "
 "pan, and enabled status (on/off)."
 msgstr ""
-"Os Canais também têm suas próprias Portas, por exemplo, para o Fader, "
-"Pan, e Enabled (Ligado/Desligado)."
+"Faixas/canais também têm as suas próprias portas, por exemplo, para os "
+"estados fader, pan, e enabled (ligado/desligado)."
 
 #~ msgid ""
 #~ "When a Plugin is selected in the"
@@ -533,4 +539,3 @@ msgstr ""
 #~ "saída LFO para um parâmetro de "
 #~ "corte de filtro do Plugin de "
 #~ "Filtro."
-
