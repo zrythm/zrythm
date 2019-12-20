@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 07:46+0000\n"
-"PO-Revision-Date: 2019-09-24 07:14+0000\n"
+"PO-Revision-Date: 2019-12-21 23:21+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/fr/>\n"
 "Language: fr\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm"
-"/manualplugins-files/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.10\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:6
@@ -119,7 +120,6 @@ msgid ""
 msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:25
-#, fuzzy
 msgid "Connections"
 msgstr "Collections"
 
@@ -203,18 +203,15 @@ msgid "Protocol"
 msgstr "Protocole"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:27
-#, fuzzy
 msgid "Allows you to filter plugins based their protocol (LV2 or VST)."
 msgstr ""
-"Permet de filtrer les greffons en fonction de leur protocole (LV2 ou "
-"VST). Non fonctionnel pour le moment."
+"Vous permet de filtrer les greffons en fonction de leur protocole (LV2 ou "
+"VST)."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:30
-#, fuzzy
 msgid "Collections and Protocols are not operational at the moment."
 msgstr ""
-"Permet de filtrer les greffons en fonction de leur protocole (LV2 ou "
-"VST). Non fonctionnel pour le moment."
+"Les collections et les protocoles ne sont pas opérationnels pour le moment."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Filter Buttons"
@@ -301,16 +298,14 @@ msgid "Drag-n-Drop"
 msgstr "Glisser-déposer"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:67
-#, fuzzy
 msgid ""
 "You can drag and drop the selected plugin into empty space in the "
 "Tracklist or into empty space in the Mixer to create a new track using "
 "that plugin."
 msgstr ""
-"Glissez-déposez le greffon sélectionné dans un espace vide de la liste "
-"des pistes ou dans un espace vide du mixeur pour créer une nouvelle piste"
-" utilisant ce greffon. Si le greffon est un modulateur, vous pouvez le "
-"déposer dans l'onglet des modulateurs."
+"Vous pouvez glisser-déposer le greffon sélectionné dans un espace vide de la "
+"liste des pistes ou dans un espace vide du mixeur pour créer une nouvelle "
+"piste utilisant ce greffon."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:75
 msgid ""
@@ -456,13 +451,12 @@ msgstr ""
 " et vice versa."
 
 #: ../../plugins-files/plugins/ports.rst:45
-#, fuzzy
 msgid ""
 "Tracks/channels also have their own ports, for example for the fader, "
 "pan, and enabled status (on/off)."
 msgstr ""
-"Les canaux ont également leurs propres ports, par exemple pour le Fader, "
-"Pan, et Activé (On/Off)."
+"Les pistes/canaux ont également leurs propres ports, par exemple pour le "
+"Fader, Pan, et statut d'activation (On/Off)."
 
 #~ msgid ""
 #~ "Zrythm allows you to drag-n-drop LV2 "
@@ -539,4 +533,3 @@ msgstr ""
 #~ "exemple pour router une sortie LFO "
 #~ "vers le paramètre de coupure du "
 #~ "filtre d'un greffon de filtre."
-
