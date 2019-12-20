@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-10-28 15:59+0000\n"
-"PO-Revision-Date: 2019-12-15 22:09+0000\n"
+"PO-Revision-Date: 2019-12-21 23:21+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.10\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -1447,7 +1447,7 @@ msgstr "sortie"
 
 #: resources/ui/rack_row.ui:60
 msgid "expander"
-msgstr "expander"
+msgstr "expandeur"
 
 #: resources/ui/first_run_assistant.ui:27
 msgid "Setup Zrythm"
@@ -2368,7 +2368,7 @@ msgstr "Algorithme de panoramique"
 
 #: resources/ui/preferences.ui:204
 msgid "Pan Law"
-msgstr "Loi de la panoramique"
+msgstr "Loi de panoramique"
 
 #: resources/ui/preferences.ui:215
 msgid "The pan algorithm to use"
@@ -2393,7 +2393,7 @@ msgstr "Greffons"
 
 #: resources/ui/preferences.ui:290
 msgid "Always open plugin UIs"
-msgstr "Toujours ouvrir la fenêtre des greffons"
+msgstr "Toujours ouvrir les interfaces graphiques de greffon"
 
 #: resources/ui/preferences.ui:294
 msgid "Always show the plugin UI when instantiating a plugin"
@@ -2402,7 +2402,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:306
 msgid "Keep plugin UIs on top"
-msgstr "Garder les interfaces des greffons au dessus"
+msgstr "Garder les interfaces graphiques des greffons au dessus"
 
 #: resources/ui/preferences.ui:310
 msgid "Keep plugin UI windows on top of the main window"
