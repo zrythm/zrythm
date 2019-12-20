@@ -268,4 +268,8 @@ automatable_get_automation_track (
 void
 automatable_free (Automatable * automatable);
 
+/**
+ * @}
+ */
+
 #endif /* __AUDIO_AUTOMATABLE_H__ */

@@ -83,12 +83,8 @@ region_type_bitvals[] =
  * A region (clip) is an object on the timeline that
  * contains either MidiNote's or AudioClip's.
  *
- * It is uniquely identified using its name (and
- * ArrangerObjectInfo type), so name
+ * It is uniquely identified using its name, so it
  * must be unique throughout the Project.
- *
- * Each main Region must have its obj_info member
- * filled in with clones.
  */
 typedef struct Region
 {

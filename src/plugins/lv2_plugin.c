@@ -1574,7 +1574,7 @@ lv2_plugin_instantiate (
     {
       /* Calculate a reasonable UI update frequency. */
       /*self->ui_update_hz =*/
-        /*(float)AUDIO_ENGINE->sample_rate /*/
+        /*(float)AUDIO_ENGINE->sample_rate / */
         /*AUDIO_ENGINE->midi_buf_size * 2.0f;*/
       /*self->ui_update_hz =*/
         /*MAX(25.0f, self->ui_update_hz);*/

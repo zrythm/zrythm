@@ -46,7 +46,7 @@ typedef struct AudioClip
   /** Name of the clip. */
   char *        name;
 
-  /** The audio frames. */
+  /** The audio frames, interleaved. */
   sample_t *    frames;
 
   /** Number of frames per channel. */
@@ -65,12 +65,12 @@ audio_clip_fields_schema[] =
   CYAML_FIELD_STRING_PTR (
     "name", CYAML_FLAG_POINTER,
     AudioClip, name,
-   	0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
+    0, CYAML_UNLIMITED),
+  CYAML_FIELD_INT (
     "pool_id", CYAML_FLAG_DEFAULT,
     AudioClip, pool_id),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
@@ -99,6 +99,7 @@ audio_clip_new_from_file (
  * Creates an audio clip by copying the given float
  * array.
  *
+ * @param arr Interleaved array.
  * @param name A name for this clip.
  */
 AudioClip *
@@ -138,6 +139,13 @@ audio_clip_write_to_file (
 void
 audio_clip_write_to_pool (
   const AudioClip * self);
+
+/**
+ * Frees the audio clip.
+ */
+void
+audio_clip_free (
+  AudioClip * self);
 
 /**
  * @}

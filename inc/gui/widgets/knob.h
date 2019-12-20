@@ -123,4 +123,8 @@ _knob_widget_new (
     KNOB_TYPE_PORT_MULTIPLIER, \
     _dest, 0.f, 1.f, size, 0.f)
 
+/**
+ * @}
+ */
+
 #endif

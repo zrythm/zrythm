@@ -219,3 +219,18 @@ audio_clip_write_to_file (
     AUDIO_ENGINE->sample_rate,
     self->channels, filepath);
 }
+
+/**
+ * Frees the audio clip.
+ */
+void
+audio_clip_free (
+  AudioClip * self)
+{
+  if (self->frames)
+    free (self->frames);
+  if (self->name)
+    free (self->name);
+
+  free (self);
+}

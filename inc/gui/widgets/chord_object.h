@@ -42,8 +42,6 @@
 
 /**
  * Recreates the pango layouts for drawing.
- *
- * @param width Full width of the marker.
  */
 void
 chord_object_recreate_pango_layouts (

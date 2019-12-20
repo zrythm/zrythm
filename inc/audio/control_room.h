@@ -28,7 +28,7 @@
 #include "audio/fader.h"
 
 /**
- * @addtogroup
+ * @addtogroup audio
  *
  * @{
  */

@@ -141,6 +141,9 @@ typedef struct Transport
   /** Transport tempo in beats per minute. */
 	bpm_t              bpm;
 
+  /** Used when changing the BPM. */
+	bpm_t              prev_bpm;
+
   /** Transport speed (0=stop, 1=play). */
 	int               rolling;
 

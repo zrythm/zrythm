@@ -356,6 +356,7 @@ zrythm_deps = [
   dependency('suil-0', version: '>=0.10.0'),
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),
+  dependency('rubberband'),
   lv2_dep,
   fftw3_dep,
 

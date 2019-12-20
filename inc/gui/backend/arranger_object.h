@@ -500,8 +500,6 @@ arranger_object_loop_end_pos_setter (
  *   ArrangerObject.
  * @param cached Set to 1 to validate based on the
  *   cached positions instead of the main ones.
- * @param validate Validate the Position before
- *   setting it.
  */
 int
 arranger_object_is_position_valid (
@@ -543,8 +541,6 @@ arranger_object_stringize_type (
  *
  * @param use_cached_pos Add the ticks to the cached
  *   Position instead of its current Position.
- * @param update_flag Flag to indicate which
- *   counterparts to move.
  */
 void
 arranger_object_move (

@@ -23,11 +23,17 @@
  * Events for calling refresh on widgets.
  */
 
+#include <math.h>
+
+#include "audio/audio_region.h"
 #include "audio/automation_region.h"
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
+#include "audio/clip.h"
 #include "audio/modulator.h"
+#include "audio/pool.h"
+#include "audio/stretcher.h"
 #include "audio/track.h"
 #include "gui/backend/events.h"
 #include "gui/backend/clip_editor.h"
@@ -77,6 +83,7 @@
 #include "utils/gtk.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
+#include "utils/objects.h"
 #include "utils/stack.h"
 #include "zrythm.h"
 
@@ -874,6 +881,76 @@ on_plugin_visibility_changed (Plugin * pl)
   /*return FALSE;*/
 /*}*/
 
+static void
+stretch_audio_region (
+  Region * region)
+{
+  g_return_if_fail (region);
+
+  if (PROJECT->musical_mode)
+    {
+      AudioClip * clip =
+        audio_region_get_clip (region);
+      double time_ratio =
+        (double) TRANSPORT->prev_bpm /
+        (double) TRANSPORT->bpm;
+      Stretcher * stretcher =
+        stretcher_new_rubberband (
+          AUDIO_ENGINE->sample_rate,
+          clip->channels, time_ratio, 1.0);
+      /*ArrangerObject * obj =*/
+        /*(ArrangerObject *) region;*/
+      size_t new_frames_size =
+        (size_t)
+        ceil (time_ratio * clip->num_frames);
+      float new_frames[new_frames_size];
+      ssize_t returned_frames =
+        stretcher_stretch_interleaved (
+          stretcher, clip->frames,
+          (size_t) clip->num_frames,
+          &new_frames[0]);
+      g_warn_if_fail (
+        returned_frames !=
+          (ssize_t) new_frames_size);
+
+      AudioClip * new_clip =
+        audio_clip_new_from_float_array (
+          new_frames, returned_frames,
+          clip->channels, "clip_name");
+      int pool_id =
+        audio_pool_add_clip (
+          AUDIO_POOL, new_clip);
+      region->pool_id = pool_id;
+
+      free_later (clip, audio_clip_free);
+    }
+
+}
+
+static void
+on_bpm_changed (void)
+{
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * track = TRACKLIST->tracks[i];
+
+      if (track->type != TRACK_TYPE_AUDIO)
+        continue;
+
+      for (int j = 0; j < track->num_lanes; j++)
+        {
+          TrackLane * lane = track->lanes[j];
+
+          for (int k = 0; k < lane->num_regions;
+               k++)
+            {
+              stretch_audio_region (
+                lane->regions[k]);
+            }
+        }
+    }
+}
+
 static inline void
 clean_duplicates_and_copy (
   MPMCQueue * q,
@@ -1298,6 +1375,9 @@ events_process (void * data)
           arranger_widget_redraw_whole (
             (ArrangerWidget *)
             MW_MIDI_MODIFIER_ARRANGER);
+          break;
+        case ET_BPM_CHANGED:
+          on_bpm_changed ();
           break;
         default:
           g_warning (

@@ -160,7 +160,7 @@ midi_mappings_get_for_port (
   Port *         dest_port,
   int *          size);
 
-/*
+/**
  * @}
  */
 

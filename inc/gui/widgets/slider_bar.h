@@ -105,4 +105,8 @@ _slider_bar_widget_new (
     (void *) obj, \
     min, max, w, h, zero, text)
 
+/**
+ * @}
+ */
+
 #endif

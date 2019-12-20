@@ -53,12 +53,16 @@ transport_set_bpm (
     bpm = TRANSPORT_MIN_BPM;
   else if (bpm > TRANSPORT_MAX_BPM)
     bpm = TRANSPORT_MAX_BPM;
+  self->prev_bpm = self->bpm;
   self->bpm = bpm;
   engine_update_frames_per_tick (
     AUDIO_ENGINE,
     self->beats_per_bar,
     bpm,
     AUDIO_ENGINE->sample_rate);
+
+  /* kick off offline resampling */
+  EVENTS_PUSH (ET_BPM_CHANGED, NULL);
 }
 
 /**

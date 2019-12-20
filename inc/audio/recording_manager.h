@@ -63,7 +63,7 @@ typedef struct RecordingManager
  * The MidiEvents are already dequeued at this
  * point.
  *
- * @param g_frames_start Global start frames.
+ * @param g_start_frames Global start frames.
  * @param nframes Number of frames to process.
  */
 void

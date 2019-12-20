@@ -702,6 +702,10 @@ project_load (
   if (is_template || !filename)
     project_save (PROJECT, PROJECT->dir, 0, 0);
 
+  PROJECT->musical_mode =
+    g_settings_get_int (
+      S_PREFERENCES, "musical-mode");
+
   return 0;
 }
 

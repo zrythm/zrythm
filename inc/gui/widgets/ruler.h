@@ -18,7 +18,9 @@
  */
 
 /**
- * \file Ruler parent class.
+ * \file
+ *
+ * Ruler parent class.
  */
 
 #ifndef __GUI_WIDGETS_RULER_H__

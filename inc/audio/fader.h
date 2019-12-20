@@ -260,7 +260,6 @@ fader_copy (
 /**
  * Process the Fader.
  *
- * @param g_frames The local start frames.
  * @param nframes The number of frames to process.
  */
 void

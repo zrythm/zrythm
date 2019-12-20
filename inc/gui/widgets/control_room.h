@@ -89,4 +89,8 @@ ControlRoomWidget *
 control_room_widget_new (
   ControlRoom *       control_room);
 
+/**
+ * @}
+ */
+
 #endif

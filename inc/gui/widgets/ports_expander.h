@@ -109,4 +109,8 @@ ports_expander_widget_setup_track (
   Track *                    tr,
   PortsExpanderTrackPortType type);
 
+/**
+ * @}
+ */
+
 #endif

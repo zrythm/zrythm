@@ -881,7 +881,7 @@ port_set_control_value (
  * Gets the given control value from the
  * corresponding underlying structure in the Port.
  *
- * @param normalized Whether to get the value
+ * @param normalize Whether to get the value
  *   normalized or not.
  */
 float

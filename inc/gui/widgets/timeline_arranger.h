@@ -203,10 +203,6 @@ timeline_arranger_widget_scroll_to (
 /**
  * Move the selected Regions to the new Track.
  *
- * @param new_track_is_before 1 if the Region's
- *   should move to their previous tracks, 0 for
- *   their next tracks.
- *
  * @return 1 if moved.
  */
 int

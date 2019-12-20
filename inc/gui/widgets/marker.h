@@ -41,8 +41,6 @@
 
 /**
  * Recreates the pango layouts for drawing.
- *
- * @param width Full width of the marker.
  */
 void
 marker_recreate_pango_layouts (

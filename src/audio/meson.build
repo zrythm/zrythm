@@ -71,6 +71,7 @@ audio_srcs = [
   'scale.c',
   'scale_object.c',
   'snap_grid.c',
+  'stretcher.c',
   'supported_file.c',
   'track.c',
   'track_lane.c',

@@ -106,7 +106,8 @@ typedef struct Project
    * Backup dir to save the project during
    * the current save call.
    *
-   * For example, <dir>/backups/myproject.bak3.
+   * For example, \ref Project.dir
+   * /backups/myproject.bak3.
    */
   char *             backup_dir;
 
@@ -200,6 +201,14 @@ typedef struct Project
    * another one is loaded.
    */
   int               loaded;
+
+  /**
+   * If this is on, time-stretching will be applied
+   * to events so that they match the project tempo.
+   *
+   * This mostly applies to audio Region's.
+   */
+  int               musical_mode;
 
   /**
    * The last thing selected in the GUI.

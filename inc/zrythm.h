@@ -96,11 +96,11 @@ typedef struct Zrythm
 
   /** /home/user/zrythm */
   char *                  zrythm_dir;
-  /** <zrythm_dir>/Projects */
+  /** \ref Zrythm.zrythm_dir /zrythm_dir/Projects */
   char *                  projects_dir;
-  /** <zrythm_dir>/Templates TODO */
+  /** \ref Zrythm.zrythm_dir /Templates TODO */
   char *                  templates_dir;
-  /** <zrythm_dir>/log */
+  /** \ref Zrythm.zrythm_dir /log */
   char *                  log_dir;
 
   /** +1 to ensure last element is NULL in case

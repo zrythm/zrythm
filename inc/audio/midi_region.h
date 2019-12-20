@@ -200,10 +200,6 @@ midi_region_get_midi_ch (
  *
  * @param add_region_start Add the region start
  *   offset to the positions.
- * @param export_full Traverse loops and export the
- *   MIDI file as it would be played inside Zrythm.
- *   If this is 0, only the original region (from
- *   true start to true end) is exported.
  */
 MidiEvents *
 midi_region_get_as_events (

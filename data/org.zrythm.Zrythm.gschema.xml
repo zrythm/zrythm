@@ -238,6 +238,16 @@
       </description>
     </key>
 
+    <!-- KEY: musical-mode -->
+    <key name="musical-mode" type="i">
+      <default>1</default>
+      <summary>Musical mode on/off</summary>
+      <description>
+        Whether to use musical mode (auto stretch
+        audio regions when BPM changes).
+      </description>
+    </key>
+
     <!-- KEY: export artist -->
     <key name="export-artist" type="s">
       <default>"Zrythm"</default>

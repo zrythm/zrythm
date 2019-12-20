@@ -61,8 +61,6 @@ chord_track_init (
 
 /**
  * Adds a ChordObject to the Track.
- *
- * @param gen_widget Create a widget for the chord.
  */
 void
 chord_track_add_scale (

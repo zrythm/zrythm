@@ -219,4 +219,8 @@ z_cairo_reset_caches (
 CairoCaches *
 z_cairo_caches_new (void);
 
+/**
+ * @}
+ */
+
 #endif
