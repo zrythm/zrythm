@@ -49,6 +49,7 @@ audio_clip_init_from_file (
     arr_size * sizeof (float));
   self->name = io_path_get_basename (full_path);
   self->channels = enc->nfo.channels;
+  self->bpm = TRANSPORT->bpm;
 
   audio_encoder_free (enc);
 }
@@ -88,6 +89,7 @@ audio_clip_new_from_file (
   audio_clip_init_from_file (self, full_path);
 
   self->pool_id = -1;
+  self->bpm = TRANSPORT->bpm;
 
   return self;
 }
@@ -120,6 +122,7 @@ audio_clip_new_from_float_array (
     {
       self->frames[i] = (sample_t) arr[i];
     }
+  self->bpm = TRANSPORT->bpm;
 
   return self;
 }
@@ -151,6 +154,7 @@ audio_clip_new_recording (
   self->num_frames = nframes;
   self->name = g_strdup (name);
   self->pool_id = -1;
+  self->bpm = TRANSPORT->bpm;
   for (long i = 0; i < nframes * channels; i++)
     {
       self->frames[i] = 0.f;

@@ -857,9 +857,10 @@ draw_audio_region (
               g_warn_if_fail (
                 index >= 0 &&
                 index <
+                (long)
                   clip->num_frames * clip->channels);
               float val =
-                clip->frames[index];
+                self->frames[index];
               if (val > max)
                 max = val;
               if (val < min)

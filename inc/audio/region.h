@@ -147,8 +147,18 @@ typedef struct Region
 
   /* ==== AUDIO REGION ==== */
 
-  /** Audio pool ID of the associated audio file. */
-  int                 pool_id;
+  /** Audio pool ID of the associated audio file,
+   * mostly use during serialization. */
+  int               pool_id;
+
+  /**
+   * Frames to actually use.
+   *
+   * Properties such as \ref AudioClip.channels can
+   * be fetched from the AudioClip.
+   */
+  sample_t *        frames;
+  size_t            num_frames;
 
   /* ==== AUDIO REGION END ==== */
 

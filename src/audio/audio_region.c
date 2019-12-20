@@ -105,6 +105,16 @@ audio_region_new (
   position_add_frames (
     &obj->end_pos, clip->num_frames);
 
+  /* copy the clip frames to the cache. */
+  self->frames =
+    malloc (
+      sizeof (float) *
+        (size_t) clip->num_frames);
+  self->num_frames = (size_t) clip->num_frames;
+  memcpy (
+    &self->frames[0], &clip->frames[0],
+    sizeof (float) * (size_t) clip->num_frames);
+
   /* init */
   region_init (
     self, start_pos, &obj->end_pos, is_main);

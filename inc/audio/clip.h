@@ -55,6 +55,11 @@ typedef struct AudioClip
   /** Number of channels. */
   channels_t    channels;
 
+  /**
+   * BPM of the project when this clip was loaded.
+   */
+  bpm_t         bpm;
+
   /** ID (index) in the audio pool. */
   int           pool_id;
 } AudioClip;
@@ -66,6 +71,9 @@ audio_clip_fields_schema[] =
     "name", CYAML_FLAG_POINTER,
     AudioClip, name,
     0, CYAML_UNLIMITED),
+  CYAML_FIELD_FLOAT (
+    "bpm", CYAML_FLAG_DEFAULT,
+    AudioClip, bpm),
   CYAML_FIELD_INT (
     "pool_id", CYAML_FLAG_DEFAULT,
     AudioClip, pool_id),

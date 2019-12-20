@@ -65,7 +65,7 @@ audio_track_fill_stereo_ports_from_clip (
        loop_frames,
        clip_start_frames;
   int i, k;
-  long buff_index;
+  ssize_t buff_index;
   unsigned int j;
   long cycle_start_frames =
     g_start_frames;
@@ -177,13 +177,14 @@ audio_track_fill_stereo_ports_from_clip (
                     buff_index >= 0 &&
                     buff_index +
                       (clip->channels - 1) <
-                      clip->channels *
-                        clip->num_frames);
+                        (ssize_t)
+                        (clip->channels *
+                           r->num_frames));
 
                   stereo_ports->l->buf[j] =
-                    clip->frames[buff_index];
+                    r->frames[buff_index];
                   stereo_ports->r->buf[j] =
-                    clip->frames[
+                    r->frames[
                       buff_index +
                         (clip->channels - 1)];
                 }

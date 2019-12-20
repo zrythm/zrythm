@@ -892,7 +892,7 @@ stretch_audio_region (
       AudioClip * clip =
         audio_region_get_clip (region);
       double time_ratio =
-        (double) TRANSPORT->prev_bpm /
+        (double) clip->bpm /
         (double) TRANSPORT->bpm;
       Stretcher * stretcher =
         stretcher_new_rubberband (
@@ -903,26 +903,18 @@ stretch_audio_region (
       size_t new_frames_size =
         (size_t)
         ceil (time_ratio * clip->num_frames);
-      float new_frames[new_frames_size];
+      region->frames =
+        realloc (
+          region->frames,
+          new_frames_size * sizeof (float));
       ssize_t returned_frames =
         stretcher_stretch_interleaved (
           stretcher, clip->frames,
           (size_t) clip->num_frames,
-          &new_frames[0]);
+          &region->frames[0]);
       g_warn_if_fail (
         returned_frames !=
           (ssize_t) new_frames_size);
-
-      AudioClip * new_clip =
-        audio_clip_new_from_float_array (
-          new_frames, returned_frames,
-          clip->channels, "clip_name");
-      int pool_id =
-        audio_pool_add_clip (
-          AUDIO_POOL, new_clip);
-      region->pool_id = pool_id;
-
-      free_later (clip, audio_clip_free);
     }
 
 }

@@ -63,6 +63,14 @@ typedef struct Stretcher
 
   unsigned int      samplerate;
   unsigned int      channels;
+
+  /**
+   * Size of the block to process in each
+   * iteration.
+   *
+   * Somewhere around 6k should be fine.
+   */
+  unsigned int      block_size;
 } Stretcher;
 
 /**
