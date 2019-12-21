@@ -21,6 +21,7 @@ packages:
   - libsamplerate0-dev
   - libyaml-dev
   - python3
+  - librubberband-dev
 sources:
   - https://git.sr.ht/~alextee/zrythm
   - https://github.com/mesonbuild/meson

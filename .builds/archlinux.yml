@@ -19,6 +19,7 @@ packages:
   - python-sphinx
   - ladspa
   - lv2
+  - rubberband
 sources:
   - https://git.sr.ht/~alextee/zrythm
 tasks:

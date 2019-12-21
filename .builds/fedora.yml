@@ -21,6 +21,7 @@ packages:
   - help2man
   - jack-audio-connection-kit-devel
   - libX11-devel
+  - rubberband-devel
 sources:
   - https://git.sr.ht/~alextee/zrythm
 tasks:

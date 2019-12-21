@@ -30,6 +30,7 @@ packages:
   - pango
   - fftw3
   - fftw3-float
+  - rubberband
 sources:
   - https://git.sr.ht/~alextee/zrythm
 tasks:

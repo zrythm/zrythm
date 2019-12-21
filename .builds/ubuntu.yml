@@ -20,6 +20,7 @@ packages:
   - lv2-dev
   - libsamplerate0-dev
   - libyaml-dev
+  - librubberband-dev
   - python3
 sources:
   - https://git.sr.ht/~alextee/zrythm
