@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.252] - 2019-12-21
+- Make Zrythm icon more symmetric
+- Auto-stretch audio regions when changing BPM
+- Make position calculations more accurate
+- Handle recording in the GUI thread instead of the RT thread
+- Don't autosave during playback
+- Fix automatable selectors not working in automation tracks
+- Fix automation track add and remove buttons
+- Fix audio regions not being drawn
+- Fix audio arranger not getting its full size
+- Fix balance controls in the mixer incorrectly attennuating stereo signals
+- Fix monitor out knob not working
+- Update user manual
+- Update French, Japanese, German and Portuguese translations
+- Remove unnecessary qt5 dependency
+- Remove unused source files
+
 ## [0.7.186] - 2019-12-12
 - Major rework of arrangers (arrangers are now canvases)
 - Major rework of how tracks are drawn (single canvases)
