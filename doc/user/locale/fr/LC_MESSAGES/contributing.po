@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:30+0000\n"
-"PO-Revision-Date: 2019-08-16 05:24+0000\n"
+"PO-Revision-Date: 2019-12-20 21:21+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualcontributing/fr/>\n"
 "Language: fr\n"
-"Language-Team: French "
-"<https://hosted.weblate.org/projects/zrythm/manualcontributing/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.10\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../contributing/intro.rst:6
@@ -24,9 +25,8 @@ msgid "Contributing"
 msgstr "En contribuant au code"
 
 #: ../../contributing/intro.rst:9
-#, fuzzy
 msgid "Coding"
-msgstr "Bitcoin"
+msgstr "Programmation"
 
 #: ../../contributing/intro.rst:11
 msgid ""
@@ -36,10 +36,14 @@ msgid ""
 "information about how to contribute code and various guidelines to "
 "follow."
 msgstr ""
+"Veuillez lire `Contributing Guide <https://docs.zrythm.org/"
+"md_CONTRIBUTING.html>`_ ainsi que les `docs de développeur "
+"<https://docs.zrythm.org/>`_. Ils contiennent un tas d'informations à propos "
+"de la manière de contribuer du code et diverses directives à suivre."
 
 #: ../../contributing/intro.rst:18
 msgid "Artwork and Themes"
-msgstr ""
+msgstr "Illustrations et thèmes"
 
 #: ../../contributing/intro.rst:20
 msgid ""
@@ -374,4 +378,3 @@ msgstr ""
 
 #~ msgid "Contributing Overview"
 #~ msgstr "En contribuant au code"
-

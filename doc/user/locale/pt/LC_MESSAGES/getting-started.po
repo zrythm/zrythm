@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 08:08+0000\n"
-"PO-Revision-Date: 2019-12-18 19:21+0000\n"
+"PO-Revision-Date: 2019-12-20 21:21+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualgetting-started/pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.10\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../getting-started/additional-resources.rst:6
@@ -46,32 +46,32 @@ msgid ""
 "<https://redmine.zrythm.org/projects/zrythm/issues>`_. You can use this "
 "to report bugs or give feedback."
 msgstr ""
+"O rastreador de problemas encontra-se na nossa `instância Redmine "
+"<https://redmine.zrythm.org/projects/zrythm/issues>`_. Pode usá-lo para "
+"relatar bugs ou dar feedback."
 
 #: ../../getting-started/additional-resources.rst:20
 msgid "Source Code"
 msgstr "Código- Fonte"
 
 #: ../../getting-started/additional-resources.rst:21
-#, fuzzy
 msgid ""
 "Zrythm's source code can be found on our `CGit instance "
 "<https://git.zrythm.org/cgit/zrythm/>`_."
 msgstr ""
 "O código-fonte do Zrythm encontra-se na nossa `instância "
-"CGit<https://git.zrythm.org/cgit/zrythm/>`_ ou no repositório espelho em "
-"`GNU Savannah <http://git.savannah.nongnu.org/cgit/zrythm.git>`_."
+"CGit<https://git.zrythm.org/cgit/zrythm/>`_."
 
 #: ../../getting-started/additional-resources.rst:25
 msgid "Older Versions"
 msgstr "Versões Mais Antigas"
 
 #: ../../getting-started/additional-resources.rst:26
-#, fuzzy
 msgid ""
 "Older releases of Zrythm can be found on the `Releases page "
 "<https://www.zrythm.org/releases>`_"
 msgstr ""
-"Versões mais antigas do Zrythm  encontram-se em `downloads Savannah "
+"Versões mais antigas do Zrythm encontram-se na`Página de lançamentos "
 "<https://download.savannah.nongnu.org/releases/zrythm/>`_"
 
 #: ../../getting-started/getting-plugins.rst:6
@@ -79,15 +79,14 @@ msgid "Getting Plugins"
 msgstr "Obtendo Plugins"
 
 #: ../../getting-started/getting-plugins.rst:8
-#, fuzzy
 msgid ""
 "Zrythm ships with a few bundled plugins to help you get started "
 "(currently only ZLFO), but you should install some plugins like "
 "synthesizers and effects before you can make music."
 msgstr ""
-"Até que o Zrythm seja lançado com seus próprios plugins, você deve "
-"instalar alguns plugins como sintetizadores e efeitos antes de poder "
-"fazer música."
+"O Zrythm vem com alguns plugins empacotados para ajudá-lo a começar ("
+"atualmente apenas ZLFO), mas devia instalar alguns plugins como "
+"sintetizadores e efeitos antes de poder fazer música."
 
 #: ../../getting-started/getting-plugins.rst:13
 msgid ""
@@ -98,27 +97,24 @@ msgstr ""
 "lhe algumas formas de instalar plugins."
 
 #: ../../getting-started/getting-plugins.rst:16
-#, fuzzy
 msgid ""
 "If you are on Debian/Ubuntu, we highly recommend using the `KXstudio "
 "repositories <https://kx.studio/>`_, since there are many plugins that "
 "can easily be installed via apt."
 msgstr ""
-"Se você está no Debian/Ubuntu, nós recomendamos verificar os repositórios"
-" do `KXstudio <https://kx.studio/>`_, já que existem muitos plugins que "
-"podem ser facilmente instalados via apt."
+"Se está no Debian/Ubuntu, recomendamos verificar os repositórios do `"
+"KXstudio <https://kx.studio/>`_, já que existem muitos plugins que podem ser "
+"facilmente instalados via apt."
 
 #: ../../getting-started/getting-plugins.rst:20
-#, fuzzy
 msgid ""
 "If you are on Arch GNU/Linux, we recommend installing the `lv2-plugins "
 "<https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ group, or you "
 "can hand-pick the plugins you want from there."
 msgstr ""
-"Se você usa Arch GNU/Linux já está com sorte, porque pode descarregar "
-"todos os grupos `pro-audio <https://www.archlinux.org/groups/x86>`_ ou "
-"`lv2-plugins <https://www.archlinux.org/groups/x86>`_ ou pode escolher os"
-" plugins que quiser de lá manualmente."
+"Se está no Arch GNU/Linux, recomendamos instalar o grupo `lv2-plugins "
+"<https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_, ou pode escolher "
+"manualmente os plugins que quiser daí."
 
 #: ../../getting-started/getting-plugins.rst:25
 msgid "If you are not sure where to start, please read on."
@@ -129,15 +125,14 @@ msgid "Recommended Plugin Bundles"
 msgstr "Pacotes de plugins recomendados"
 
 #: ../../getting-started/getting-plugins.rst:30
-#, fuzzy
 msgid ""
 "`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ provides a "
 "good variety of synths and effects that can help you get you started "
 "making music right away."
 msgstr ""
-"`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ fornece uma "
-"boa variedade de sintetizadores e alguns efeitos que podem ajudá-lo a "
-"começar a fazer música imediatamente."
+"`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ fornece uma boa "
+"variedade de sintetizadores e alguns efeitos que podem ajudá-lo a começar a "
+"fazer música imediatamente."
 
 #: ../../getting-started/getting-plugins.rst:34
 msgid ""
@@ -154,33 +149,29 @@ msgid "`LSP <https://lsp-plug.in/>`_ has a lot of useful effects."
 msgstr "`LSP <https://lsp-plug.in/>`_ tem muitos efeitos úteis."
 
 #: ../../getting-started/getting-plugins.rst:40
-#, fuzzy
 msgid ""
 "`OpenAV <http://openavproductions.com>`_ has effects and instruments "
 "worth checking out."
 msgstr ""
-"' OpenAV < http://openavproductions.com > ' _ tem alguns plugins "
-"agradáveis que valem a pena conferir."
+"' OpenAV < http://openavproductions.com > '_ tem alguns plugins agradáveis "
+"que valem a pena conferir."
 
 #: ../../getting-started/getting-plugins.rst:43
-#, fuzzy
 msgid ""
 "`X42 Plugins <http://x42-plugins.com/x42/>`_ has many MIDI effect and "
 "meter plugins."
 msgstr ""
-"Você pôde também verificar `X42 plugins <http://x42-plugins.com/x42/>`_, "
-"que tem **MUITOS** plugins de efeitos e medidores de MIDI."
+"`X42 plugins <http://x42-plugins.com/x42/>`_, tem muitos plugins de efeitos "
+"e medidores de MIDI."
 
 #: ../../getting-started/getting-plugins.rst:47
 msgid "Synths"
 msgstr "Sintetizadores"
 
 #: ../../getting-started/getting-plugins.rst:49
-#, fuzzy
 msgid "`Helm <https://tytel.org/helm/>`_ is an excellent subtractive synth."
 msgstr ""
-"`Helm < https://tytel.org/helm/>` _ é um sintetizador subtrativo "
-"excelente que deve estar na caixa de ferramentas de todos."
+"`Helm < https://tytel.org/helm/>` _ é um sintetizador subtrativo excelente."
 
 #: ../../getting-started/getting-plugins.rst:51
 msgid ""
@@ -196,13 +187,15 @@ msgid ""
 "powerful additive/subtractive synth that can synthesize a wide variety of"
 " sounds."
 msgstr ""
+"ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_ é um "
+"poderoso sintetizador aditivo/subtrativo que pode sintetizar uma grande "
+"variedade de sons."
 
 #: ../../getting-started/getting-plugins.rst:59
 msgid "Percussion Generators"
 msgstr "Geradores de Percussão"
 
 #: ../../getting-started/getting-plugins.rst:61
-#, fuzzy
 msgid ""
 "`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a kick drum "
 "synthesizer that can also synthesize other types of percussion."
@@ -217,23 +210,24 @@ msgstr "FreeBSD"
 #: ../../getting-started/installation/freebsd.rst:9
 #: ../../getting-started/installation/gnu-linux.rst:11
 msgid "Installer"
-msgstr ""
+msgstr "Instalador"
 
 #: ../../getting-started/installation/freebsd.rst:10
 msgid ""
 "We plan to add FreeBSD support to the installer mentioned in :ref:`gnu-"
 "with-linux-installer`."
 msgstr ""
+"Pretendemos adicionar suporte de FreeBSD ao instalador mencionado em :ref"
+":'gnu-with-linux-installer'."
 
 #: ../../getting-started/installation/freebsd.rst:13
 #: ../../getting-started/installation/gnu-linux.rst:26
-#, fuzzy
 msgid ""
 "This is the easiest and recommended way to install the latest version for"
 " most users, and we provide support for it."
 msgstr ""
-"Esta é a forma recomendada de instalar a última versão para a maioria dos"
-" usuários."
+"Esta é a maneira mais fácil e recomendada de instalar a última versão para a "
+"maioria dos utilizadores e fornecemos suporte para ela."
 
 #: ../../getting-started/installation/freebsd.rst:18
 msgid "Port"
@@ -245,6 +239,8 @@ msgid ""
 "<https://www.freshports.org/audio/zrythm/>`_ but it may be old and "
 "missing features and optimizations."
 msgstr ""
+"Pode instalar o `port zrythm <https://www.freshports.org/audio/zrythm/>`_ "
+"mas pode ser antigo e recursos e otimizações podem faltar."
 
 #: ../../getting-started/installation/freebsd.rst:23
 #: ../../getting-started/installation/gnu-linux.rst:41
@@ -253,46 +249,45 @@ msgstr "Instalação Manual"
 
 #: ../../getting-started/installation/freebsd.rst:24
 msgid "See :ref:`gnu-with-linux-manual-installation`."
-msgstr ""
+msgstr "Veja :ref:`gnu-with-linux-manual-installation'."
 
 #: ../../getting-started/installation/gnu-linux.rst:6
 msgid "GNU with Linux"
-msgstr ""
+msgstr "GNU com Linux"
 
 #: ../../getting-started/installation/gnu-linux.rst:12
-#, fuzzy
 msgid ""
 "You can install the latest version of Zrythm for your distro using an "
 "installer from the `Download <https://www.zrythm.org/en/download.html>`_ "
 "page on our website."
 msgstr ""
-"Você pode instalar a versão mais recente do Zrythm para sua distro `aqui "
-"<https://software.opensuse.org//download.html? project = home% 3Aalextee "
-"& package = zrythm>`_"
+"Pode instalar a versão mais recente do Zrythm para a sua distro `da página "
+"de descarragemento <https://software.opensuse.org//download.html? project = "
+"home% 3Aalextee & package = zrythm>`_ na nossa website."
 
 #: ../../getting-started/installation/gnu-linux.rst:18
 msgid "The installer supports the following distros (and derivatives):"
-msgstr ""
+msgstr "O instalador suporta as distros seguintes (e derivados):"
 
 #: ../../getting-started/installation/gnu-linux.rst:21
 msgid "**Ubuntu 18.10, 19.04, 19.10** - amd64"
-msgstr ""
+msgstr "**Ubuntu 18.10, 19.04, 19.10** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:22
 msgid "**Debian 10** - amd64"
-msgstr ""
+msgstr "**Debian 10** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:23
 msgid "**Arch Linux** - x86_64"
-msgstr ""
+msgstr "**Arch Linux** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:24
 msgid "**Fedora 31** - x86_64"
-msgstr ""
+msgstr "**Fedora 31** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:31
 msgid "Distro Package"
-msgstr ""
+msgstr "Pacote Distro"
 
 #: ../../getting-started/installation/gnu-linux.rst:32
 msgid ""
@@ -301,21 +296,24 @@ msgid ""
 " it may be missing optimizations or features that we include with the "
 "installer."
 msgstr ""
+"Se a sua distribuição fornecer um pacote do Zrythm, poderá instalá-lo a "
+"partir daí, mas provavelmente será uma versão mais antiga que a que "
+"fornecemos e poderá haver otimizações ou recursos ausentes incluídos no "
+"instalador."
 
 #: ../../getting-started/installation/gnu-linux.rst:42
-#, fuzzy
 msgid ""
 "If you are an advanced user and prefer to build Zrythm yourself, Zrythm "
 "uses the Meson build system, so the procedure to build and install is as "
 "follows:"
 msgstr ""
-"O Zrythm usa o sistema de construção Meson, então o procedimento para "
-"copilar e instalar é o seguinte:"
+"Se é um utilizador avançado e prefere compilar Zrythm você mesmo, Zrythm usa "
+"o sistema de construção Meson, então o procedimento para construir e "
+"instalar é o seguinte:"
 
 #: ../../getting-started/installation/gnu-linux.rst:52
-#, fuzzy
 msgid "See the ``INSTALL.md`` file for more information."
-msgstr "Veja no ficheiro ``meson.options`` para opções de instalação."
+msgstr "Veja o ficheiro ``INSTALL.md`` para mais informações."
 
 #: ../../getting-started/installation/intro.rst:6
 msgid "Installation"
@@ -326,13 +324,12 @@ msgid "MacOS"
 msgstr "MacOS"
 
 #: ../../getting-started/installation/macos.rst:8
-#, fuzzy
 msgid ""
 "Install from source manually as mentioned in :ref:`gnu-with-linux-manual-"
 "installation`. No support is offered at the moment."
 msgstr ""
-"Instale do código-fonte da mesma forma como para GNU/Linux. Nenhum apoio "
-"é oferecido."
+"Instale da fonte manualmente como mencionado em :ref:`gnu-with-linux-manual-"
+"installation'. Agora, não é oferecido qualquer apoio."
 
 #: ../../getting-started/installation/windows.rst:6
 msgid "Windows"
@@ -340,7 +337,7 @@ msgstr "Windows"
 
 #: ../../getting-started/installation/windows.rst:8
 msgid "Windows is not supported at the moment."
-msgstr ""
+msgstr "O Windows não é suportado no momento."
 
 #: ../../getting-started/intro.rst:6
 msgid "Getting Started"
@@ -365,10 +362,9 @@ msgstr "processador x86_64, i686 ou ARM"
 
 #: ../../getting-started/system-requirements/intro.rst:16
 msgid "Operating System"
-msgstr ""
+msgstr "Sistema Operacional"
 
 #: ../../getting-started/system-requirements/intro.rst:17
-#, fuzzy
 msgid "Unix-compatible OS"
 msgstr "SO compatível com Unix"
 
@@ -379,7 +375,7 @@ msgstr "Software"
 
 #: ../../getting-started/system-requirements/intro.rst:21
 msgid "GTK 3.24 or higher"
-msgstr ""
+msgstr "GTK 3.24 ou superior"
 
 #: ../../getting-started/system-requirements/intro.rst:22
 msgid "A working JACK setup"
@@ -419,6 +415,9 @@ msgid ""
 "`Catia <https://kx.studio/Applications:Catia>`_ and `Ingen "
 "<https://drobilla.net/software/ingen>`_"
 msgstr ""
+"Um patchbay JACK como `QjackCtl <https://qjackctl.sourceforge.io/>`_, `Catia "
+"<https://kx.studio/Applications:Catia>`_ e `Ingen <https://drobilla.net/"
+"software/ingen>`_"
 
 #: ../../getting-started/system-requirements/intro.rst:45
 msgid "Audio Interface"
@@ -461,27 +460,25 @@ msgid "Overview"
 msgstr "Sinopse"
 
 #: ../../getting-started/zrythm-overview.rst:8
-#, fuzzy
 msgid ""
 "Zrythm is a digital audio workstation designed to be featureful and easy "
 "to use."
 msgstr ""
-"Zrythm é uma estação de trabalho de áudio digital projetada para ser "
-"cheia de recursos e fácil de usar. Tem as seguintes características."
+"Zrythm é uma estação de trabalho de áudio digital projetada para ser cheia "
+"de funcionalidades e fácil de utilizar."
 
 #: ../../getting-started/zrythm-overview.rst:13
 msgid "Limitless automation"
 msgstr "Automação ilimitada"
 
 #: ../../getting-started/zrythm-overview.rst:12
-#, fuzzy
 msgid ""
 "You can automate almost anything with automation events using straight "
 "lines, ramps and curves, or with CV signals from LFO and envelope "
 "plugins."
 msgstr ""
-"Permite automatizar quase tudo com eventos de automação usando linhas "
-"retas, rampas e curvas, ou com sinais CV de LFO e plugins de envelope."
+"Pode automatizar quase tudo com eventos de automação usando linhas retas, "
+"rampas e curvas ou com sinais CV de LFO e plugins de envelope."
 
 #: ../../getting-started/zrythm-overview.rst:15
 msgid "LV2 plugins"
