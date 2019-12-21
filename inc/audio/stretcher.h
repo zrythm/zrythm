@@ -125,7 +125,7 @@ stretcher_stretch_interleaved (
   Stretcher * self,
   float *     in_samples,
   size_t      in_samples_size,
-  float *     out_samples);
+  float **    _out_samples);
 
 /**
  * Frees the resampler.

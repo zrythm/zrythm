@@ -1128,10 +1128,10 @@ on_motion (
       int clip_start_hit =
         is_clip_start_hit (
           self, event->x, event->y);
-      g_message (
-        "loop start %d loop end %d clip start %d",
-        loop_start_hit, loop_end_hit,
-        clip_start_hit);
+      /*g_message (*/
+        /*"loop start %d loop end %d clip start %d",*/
+        /*loop_start_hit, loop_end_hit,*/
+        /*clip_start_hit);*/
 
       if (loop_start_hit || clip_start_hit)
         {

@@ -489,6 +489,11 @@ draw_audio_bg (
   GdkRectangle *   rect)
 {
   Region * ar = CLIP_EDITOR->region;
+  if (ar->stretching)
+    {
+      arranger_widget_redraw_whole (self);
+      return;
+    }
   ArrangerObject * obj = (ArrangerObject *) ar;
   GdkRGBA * color = &ar->lane->track->color;
   cairo_set_source_rgba (
@@ -524,7 +529,7 @@ draw_audio_bg (
       for (long j = prev_frames;
            j < curr_frames; j++)
         {
-          if (j >= clip->num_frames)
+          if (j >= (long) ar->num_frames)
             break;
           for (unsigned int k = 0;
                k < clip->channels; k++)
@@ -533,9 +538,11 @@ draw_audio_bg (
                 j * clip->channels + k;
               g_warn_if_fail (
                 index <
-                  clip->num_frames * clip->channels);
+                  (long)
+                  (ar->num_frames *
+                     clip->channels));
               float val =
-                clip->frames[index];
+                ar->frames[index];
               if (val > max)
                 max = val;
               if (val < min)

@@ -162,7 +162,7 @@ typedef struct AudioEngine
   sample_rate_t     sample_rate;
 
   /** Number of frames/samples per tick. */
-  int               frames_per_tick;
+  float             frames_per_tick;
 
   /** True iff buffer size callback fired. */
   int               buf_size_set;

@@ -89,7 +89,6 @@ engine_update_frames_per_tick (
   const sample_rate_t sample_rate)
 {
   self->frames_per_tick =
-    (int)
     (((float) sample_rate * 60.f *
        (float) beats_per_bar) /
     (bpm * (float) TRANSPORT->ticks_per_bar));

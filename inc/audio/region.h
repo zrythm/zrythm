@@ -152,6 +152,14 @@ typedef struct Region
   int               pool_id;
 
   /**
+   * Whether currently stretching.
+   *
+   * If this is true, region drawing will be
+   * deferred.
+   */
+  int               stretching;
+
+  /**
    * Frames to actually use.
    *
    * Properties such as \ref AudioClip.channels can

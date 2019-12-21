@@ -886,9 +886,12 @@ stretch_audio_region (
   Region * region)
 {
   g_return_if_fail (region);
+  ArrangerObject * obj = (ArrangerObject *) region;
 
   if (PROJECT->musical_mode)
     {
+      region->stretching = 1;
+
       AudioClip * clip =
         audio_region_get_clip (region);
       double time_ratio =
@@ -898,23 +901,33 @@ stretch_audio_region (
         stretcher_new_rubberband (
           AUDIO_ENGINE->sample_rate,
           clip->channels, time_ratio, 1.0);
-      /*ArrangerObject * obj =*/
-        /*(ArrangerObject *) region;*/
-      size_t new_frames_size =
-        (size_t)
-        ceil (time_ratio * clip->num_frames);
-      region->frames =
-        realloc (
-          region->frames,
-          new_frames_size * sizeof (float));
+
+      g_message ("BEFORE STRETCHING: clip num frames: %ld, position end: %ld",
+        clip->num_frames,
+        obj->end_pos.frames);
+      position_print (&obj->end_pos);
+
       ssize_t returned_frames =
         stretcher_stretch_interleaved (
           stretcher, clip->frames,
           (size_t) clip->num_frames,
-          &region->frames[0]);
+          &region->frames);
+      g_warn_if_fail (returned_frames > 0);
+      region->num_frames =
+        (size_t) returned_frames;
+      /*g_warn_if_fail (*/
+        /*returned_frames !=*/
+          /*(ssize_t) new_frames_size);*/
+
+      position_update_frames (
+        &obj->end_pos);
+      g_message ("AFTER: position end frames %ld",
+        obj->end_pos.frames);
+      position_print (&obj->end_pos);
       g_warn_if_fail (
-        returned_frames !=
-          (ssize_t) new_frames_size);
+        obj->end_pos.frames <= returned_frames);
+
+      region->stretching = 0;
     }
 
 }

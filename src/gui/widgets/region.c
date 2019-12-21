@@ -814,6 +814,12 @@ draw_audio_region (
   RegionCounterpart counterpart)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
+  if (self->stretching)
+    {
+      arranger_object_queue_redraw (obj);
+      return;
+    }
+
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
 
   AudioClip * clip =
@@ -858,7 +864,7 @@ draw_audio_region (
                 index >= 0 &&
                 index <
                 (long)
-                  clip->num_frames * clip->channels);
+                  self->num_frames * clip->channels);
               float val =
                 self->frames[index];
               if (val > max)

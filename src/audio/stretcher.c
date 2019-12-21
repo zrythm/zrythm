@@ -15,6 +15,24 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Copyright (C) 2018 Robin Gareus <robin@gareus.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <math.h>
@@ -149,9 +167,11 @@ stretcher_stretch_interleaved (
   Stretcher * self,
   float *     in_samples,
   size_t      in_samples_size,
-  float *     _out_samples)
+  float **    _out_samples)
 {
   g_return_val_if_fail (in_samples, -1);
+
+  g_message ("input samples: %lu", in_samples_size);
 
   /* create the de-interleaved array */
   unsigned int channels = self->channels;
@@ -159,9 +179,10 @@ stretcher_stretch_interleaved (
   float in_buffers_r[in_samples_size];
   for (size_t i = 0; i < in_samples_size; i++)
     {
-      in_buffers_l[i] = in_samples[i * 2];
+      in_buffers_l[i] = in_samples[i * channels];
       if (channels == 2)
-        in_buffers_r[i] = in_samples[i * 2 + 1];
+        in_buffers_r[i] =
+          in_samples[i * channels + 1];
     }
   const float * in_buffers[2] = {
     in_buffers_l, in_buffers_r };
@@ -192,7 +213,7 @@ stretcher_stretch_interleaved (
     }
   g_warn_if_fail (samples_to_read == 0);
 
-  /* process */
+  /* create the out sample arrays */
   float * out_samples[channels];
   size_t out_samples_size =
     (size_t)
@@ -204,63 +225,94 @@ stretcher_stretch_interleaved (
       out_samples[i] =
         malloc (sizeof (float) * out_samples_size);
     }
-  samples_to_read = out_samples_size;
-  while (samples_to_read > 0)
+
+  /* process */
+  size_t processed = 0;
+  size_t total_out_frames = 0;
+  while (processed < in_samples_size)
     {
-      /* samples to read now */
-      unsigned int read_now =
-        (unsigned int)
-        MIN (
-          (ssize_t) self->block_size,
-          samples_to_read);
+      size_t in_chunk_size =
+        rubberband_get_samples_required (
+          self->rubberband_state);
+      size_t samples_left =
+        in_samples_size - processed;
+
+      if (samples_left < in_chunk_size)
+        {
+          in_chunk_size = samples_left;
+        }
+
+      /* move the in buffers */
+      const float * tmp_in_arrays[2] = {
+        in_buffers[0] + processed,
+        in_buffers[1] + processed };
 
       /* process */
       rubberband_process (
-        self->rubberband_state, in_buffers,
-        read_now, samples_to_read == read_now);
+        self->rubberband_state, tmp_in_arrays,
+        in_chunk_size,
+        samples_left == in_chunk_size);
 
-      samples_to_read -= read_now;
+      processed += in_chunk_size;
+
+      g_message ("processed %lu, in samples %lu",
+        processed, in_samples_size);
+
+      size_t avail =
+        (size_t)
+        rubberband_available (
+          self->rubberband_state);
+
+      /* retrieve the output data in temporary
+       * arrays */
+      float tmp_out_l[avail];
+      float tmp_out_r[avail];
+      float * tmp_out_arrays[2] = {
+        tmp_out_l, tmp_out_r };
+      size_t out_chunk_size =
+        rubberband_retrieve (
+          self->rubberband_state,
+          tmp_out_arrays, avail);
+
+      /* save the result */
+      for (size_t i = 0; i < channels; i++)
+        {
+          for (size_t j = 0; j < out_chunk_size;
+               j++)
+            {
+              out_samples[i][j + total_out_frames] =
+                tmp_out_arrays[i][j];
+            }
+        }
+
+      total_out_frames += out_chunk_size;
     }
 
-  /* retrieve */
-  int available_samples = 0;
-  size_t total_read = 0;
-  while ((available_samples =
-           rubberband_available (
-             self->rubberband_state)) > 0)
-    {
-      unsigned int read_now =
-        (unsigned int)
-        MIN (
-          (size_t) self->block_size,
-          (size_t) available_samples);
-
-      rubberband_retrieve (
-        self->rubberband_state, out_samples,
-        read_now);
-
-      g_usleep (500);
-
-      total_read += read_now;
-    }
-  g_warn_if_fail (available_samples == 0);
   g_message (
     "retrieved %lu samples (expected %lu)",
-    total_read, out_samples_size);
-  g_warn_if_fail (total_read == out_samples_size);
+    total_out_frames, out_samples_size);
+  g_warn_if_fail (
+    /* allow 1 sample earlier */
+    total_out_frames <= out_samples_size &&
+    total_out_frames >= out_samples_size - 1);
 
   /* store the output data in the given arrays */
-  for (size_t i = 0; i < total_read; i++)
+  * _out_samples =
+    realloc (
+      * _out_samples,
+      (size_t) channels * total_out_frames *
+        sizeof (float));
+  for (unsigned int ch = 0; ch < channels; ch++)
     {
-      _out_samples[i * (size_t) channels] =
-        out_samples[0][i];
-      if (channels == 2)
-        _out_samples[i * channels + 1] =
-          out_samples[1][i];
+      for (size_t i = 0; i < total_out_frames; i++)
+        {
+          (*_out_samples)[
+            i * (size_t) channels + ch] =
+              out_samples[ch][i];
+        }
     }
-  (void) _out_samples;
 
-  return (ssize_t) total_read;
+  return (ssize_t) total_out_frames;
 }
 
 /**

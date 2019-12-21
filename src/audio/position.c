@@ -46,31 +46,37 @@ long
 position_to_frames (
   const Position * position)
 {
+  /*g_message ("frames per tick %f",*/
+    /*(double) AUDIO_ENGINE->frames_per_tick);*/
   long frames =
-    AUDIO_ENGINE->frames_per_tick *
-    (position->bars > 0 ?
-     position->bars - 1 :
-     position->bars + 1) *
-    TRANSPORT->beats_per_bar *
-    TRANSPORT->ticks_per_beat;
+    (long)
+    (AUDIO_ENGINE->frames_per_tick *
+      (position->bars > 0 ?
+       (float) position->bars - 1.f :
+       (float) position->bars + 1.f) *
+      (float) TRANSPORT->beats_per_bar *
+      (float) TRANSPORT->ticks_per_beat);
   if (position->beats)
     frames +=
-      AUDIO_ENGINE->frames_per_tick *
-      (position->beats > 0 ?
-       position->beats - 1 :
-       position->beats + 1) *
-      TRANSPORT->ticks_per_beat;
+      (long)
+      (AUDIO_ENGINE->frames_per_tick *
+        (position->beats > 0 ?
+         (float) position->beats - 1.f :
+         (float) position->beats + 1.f) *
+        (float) TRANSPORT->ticks_per_beat);
   if (position->sixteenths)
     frames +=
-      AUDIO_ENGINE->frames_per_tick *
-      (position->sixteenths > 0 ?
-       position->sixteenths - 1 :
-       position->sixteenths + 1) *
-      TICKS_PER_SIXTEENTH_NOTE;
+      (long)
+      (AUDIO_ENGINE->frames_per_tick *
+        (position->sixteenths > 0 ?
+         (float) position->sixteenths - 1.f :
+         (float) position->sixteenths + 1.f) *
+        (float) TICKS_PER_SIXTEENTH_NOTE);
   if (position->ticks)
     frames +=
-      AUDIO_ENGINE->frames_per_tick *
-      position->ticks;
+      (long)
+      (AUDIO_ENGINE->frames_per_tick *
+        (float) position->ticks);
   return frames;
 }
 
@@ -254,7 +260,9 @@ position_add_frames (
   position_set_tick (
     pos,
     pos->ticks +
-      frames / AUDIO_ENGINE->frames_per_tick);
+      (long)
+      ((float) frames /
+        (float) AUDIO_ENGINE->frames_per_tick));
   pos->frames = new_frames;
 }
 
@@ -545,7 +553,9 @@ position_from_ticks (
       pos->ticks = (int) ticks;
     }
   pos->frames =
-    AUDIO_ENGINE->frames_per_tick * pos->total_ticks;
+    (long)
+    ((float) AUDIO_ENGINE->frames_per_tick *
+      (float) pos->total_ticks);
 }
 
 /**
