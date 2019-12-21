@@ -76,8 +76,8 @@ prepare_region_with_note_at_start_to_end (
     .sixteenths = 1,
     .ticks = 3,
   };
-  position_update_frames (&start_pos);
-  position_update_frames (&end_pos);
+  position_update_ticks_and_frames (&start_pos);
+  position_update_ticks_and_frames (&end_pos);
   Region * r =
     midi_region_new (
       &start_pos, &end_pos, 1);
@@ -106,7 +106,7 @@ test_fill_midi_events ()
     .sixteenths = 1,
     .ticks = 0,
   };
-  position_update_frames (&pos);
+  position_update_ticks_and_frames (&pos);
 
   midi_byte_t pitch1 = 35;
   midi_byte_t vel1= 91;
@@ -235,7 +235,7 @@ test_fill_midi_events ()
    */
   position_add_ticks (
     &mn_obj->end_pos, -5);
-  position_update_frames (&mn_obj->end_pos);
+  position_update_ticks_and_frames (&mn_obj->end_pos);
   position_set_to_pos (
     &pos, &mn_obj->end_pos);
   pos.frames = mn_obj->end_pos.frames;
@@ -262,7 +262,7 @@ test_fill_midi_events ()
    */
   position_add_ticks (
     &mn_obj->end_pos, -5);
-  position_update_frames (&mn_obj->end_pos);
+  position_update_ticks_and_frames (&mn_obj->end_pos);
   position_set_to_pos (
     &pos, &mn_obj->end_pos);
   pos.frames = mn_obj->end_pos.frames;
@@ -315,19 +315,19 @@ test_fill_midi_events ()
     &r_obj->end_pos, 4);
   position_set_to_bar (
     &r_obj->loop_end_pos, 2);
-  position_update_frames (&r_obj->pos);
-  position_update_frames (&r_obj->end_pos);
-  position_update_frames (&r_obj->loop_end_pos);
+  position_update_ticks_and_frames (&r_obj->pos);
+  position_update_ticks_and_frames (&r_obj->end_pos);
+  position_update_ticks_and_frames (&r_obj->loop_end_pos);
   position_set_to_bar (
     &mn_obj->pos, 1);
   position_add_ticks (
     &mn_obj->pos, -1);
-  position_update_frames (&mn_obj->pos);
+  position_update_ticks_and_frames (&mn_obj->pos);
   position_set_to_pos (
     &mn_obj->end_pos, &mn_obj->pos);
   position_add_ticks (
     &mn_obj->end_pos, 2000);
-  position_update_frames (&mn_obj->end_pos);
+  position_update_ticks_and_frames (&mn_obj->end_pos);
 
   /*
    * Premise: note starts 1 tick before region.
@@ -362,10 +362,10 @@ test_fill_midi_events ()
     &r_obj->loop_end_pos, 2);
   position_add_ticks (
     &r_obj->loop_start_pos, 7);
-  position_update_frames (&r_obj->pos);
-  position_update_frames (&r_obj->end_pos);
-  position_update_frames (&r_obj->loop_start_pos);
-  position_update_frames (&r_obj->loop_end_pos);
+  position_update_ticks_and_frames (&r_obj->pos);
+  position_update_ticks_and_frames (&r_obj->end_pos);
+  position_update_ticks_and_frames (&r_obj->loop_start_pos);
+  position_update_ticks_and_frames (&r_obj->loop_end_pos);
   position_set_to_bar (
     &mn_obj->pos, 1);
   position_add_ticks (
@@ -374,8 +374,8 @@ test_fill_midi_events ()
     &mn_obj->end_pos, 2);
   position_add_ticks (
     &mn_obj->end_pos, 7);
-  position_update_frames (&mn_obj->pos);
-  position_update_frames (&mn_obj->end_pos);
+  position_update_ticks_and_frames (&mn_obj->pos);
+  position_update_ticks_and_frames (&mn_obj->end_pos);
 
   /*
    * Premise: note starts at the loop_start point
@@ -420,16 +420,16 @@ test_fill_midi_events ()
     &r_obj->pos, 2);
   position_set_to_bar (
     &r_obj->end_pos, 3);
-  position_update_frames (&r_obj->pos);
-  position_update_frames (&r_obj->end_pos);
+  position_update_ticks_and_frames (&r_obj->pos);
+  position_update_ticks_and_frames (&r_obj->end_pos);
   position_set_to_bar (
     &mn_obj->pos, 1);
-  position_update_frames (&mn_obj->pos);
+  position_update_ticks_and_frames (&mn_obj->pos);
   position_set_to_pos (
     &mn_obj->end_pos, &mn_obj->pos);
   position_add_ticks (
     &mn_obj->end_pos, 2000);
-  position_update_frames (&mn_obj->end_pos);
+  position_update_ticks_and_frames (&mn_obj->end_pos);
   position_set_to_pos (
     &r_obj->loop_end_pos, &mn_obj->end_pos);
 
@@ -443,7 +443,7 @@ test_fill_midi_events ()
    */
   position_add_ticks (
     &mn_obj->pos, -1);
-  position_update_frames (&mn_obj->pos);
+  position_update_ticks_and_frames (&mn_obj->pos);
   position_set_to_pos (
     &pos, &r_obj->pos);
   position_add_frames (&pos, -6);
@@ -454,7 +454,7 @@ test_fill_midi_events ()
     events->num_queued_events, ==, 0);
   position_add_ticks (
     &mn_obj->pos, 1);
-  position_update_frames (&mn_obj->pos);
+  position_update_ticks_and_frames (&mn_obj->pos);
 
   /*
    * Start: way before region start
@@ -465,7 +465,7 @@ test_fill_midi_events ()
    */
   position_set_to_bar (
     &pos, 1);
-  position_update_frames (&pos);
+  position_update_ticks_and_frames (&pos);
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
     events);
@@ -482,7 +482,7 @@ test_fill_midi_events ()
    */
   position_set_to_bar (
     &pos, 3);
-  position_update_frames (&pos);
+  position_update_ticks_and_frames (&pos);
   midi_track_fill_midi_events (
     track, pos.frames, 0, BUFFER_SIZE,
     events);
@@ -543,16 +543,16 @@ test_fill_midi_events ()
     &r_obj->end_pos, 3);
   position_set_to_bar (
     &r_obj->loop_start_pos, 1);
-  position_update_frames (&r_obj->pos);
-  position_update_frames (&r_obj->end_pos);
+  position_update_ticks_and_frames (&r_obj->pos);
+  position_update_ticks_and_frames (&r_obj->end_pos);
   position_set_to_bar (
     &mn_obj->pos, 1);
-  position_update_frames (&mn_obj->pos);
+  position_update_ticks_and_frames (&mn_obj->pos);
   position_set_to_pos (
     &mn_obj->end_pos, &mn_obj->pos);
   position_add_ticks (
     &mn_obj->end_pos, 2000);
-  position_update_frames (&mn_obj->end_pos);
+  position_update_ticks_and_frames (&mn_obj->end_pos);
   position_set_to_pos (
     &r_obj->loop_end_pos, &mn_obj->end_pos);
 

@@ -48,17 +48,15 @@ position_to_frames (
 {
   /*g_message ("frames per tick %f",*/
     /*(double) AUDIO_ENGINE->frames_per_tick);*/
-  long frames =
-    (long)
-    (AUDIO_ENGINE->frames_per_tick *
+  float frames =
+    AUDIO_ENGINE->frames_per_tick *
       (position->bars > 0 ?
        (float) position->bars - 1.f :
        (float) position->bars + 1.f) *
       (float) TRANSPORT->beats_per_bar *
-      (float) TRANSPORT->ticks_per_beat);
+      (float) TRANSPORT->ticks_per_beat;
   if (position->beats)
     frames +=
-      (long)
       (AUDIO_ENGINE->frames_per_tick *
         (position->beats > 0 ?
          (float) position->beats - 1.f :
@@ -66,7 +64,6 @@ position_to_frames (
         (float) TRANSPORT->ticks_per_beat);
   if (position->sixteenths)
     frames +=
-      (long)
       (AUDIO_ENGINE->frames_per_tick *
         (position->sixteenths > 0 ?
          (float) position->sixteenths - 1.f :
@@ -74,10 +71,9 @@ position_to_frames (
         (float) TICKS_PER_SIXTEENTH_NOTE);
   if (position->ticks)
     frames +=
-      (long)
       (AUDIO_ENGINE->frames_per_tick *
         (float) position->ticks);
-  return frames;
+  return (long) ceil (frames);
 }
 
 static int
@@ -108,7 +104,8 @@ position_sort_array (
  * Updates frames
  */
 void
-position_update_frames (Position * position)
+position_update_ticks_and_frames (
+  Position * position)
 {
   position->total_ticks =
     position_to_ticks (position);
@@ -128,9 +125,7 @@ position_set_to_bar (Position * position,
   position->beats = 1;
   position->sixteenths = 1;
   position->ticks = 0;
-  position->total_ticks =
-    position_to_ticks (position);
-  position->frames = position_to_frames (position);
+  position_update_ticks_and_frames (position);
 }
 
 void
@@ -140,9 +135,7 @@ position_set_bar (Position * position,
   if (bar < 1)
     bar = 1;
   position->bars = bar;
-  position->total_ticks =
-    position_to_ticks (position);
-  position->frames = position_to_frames (position);
+  position_update_ticks_and_frames (position);
 }
 
 void
@@ -171,9 +164,7 @@ position_set_beat (
         }
     }
   position->beats = beat;
-  position->total_ticks =
-    position_to_ticks (position);
-  position->frames = position_to_frames (position);
+  position_update_ticks_and_frames (position);
 }
 
 void
@@ -202,9 +193,7 @@ position_set_sixteenth (Position * position,
         }
     }
   position->sixteenths = sixteenth;
-  position->total_ticks =
-    position_to_ticks (position);
-  position->frames = position_to_frames (position);
+  position_update_ticks_and_frames (position);
 }
 
 
@@ -241,9 +230,7 @@ position_set_tick (
         }
     }
   position->ticks = (int) tick;
-  position->total_ticks =
-    position_to_ticks (position);
-  position->frames = position_to_frames (position);
+  position_update_ticks_and_frames (position);
 }
 
 /**
@@ -402,7 +389,6 @@ position_set_min_size (
     end_pos,
     snap_grid_get_note_ticks (snap->note_length,
                               snap->note_type));
-  position_update_frames (end_pos);
 }
 
 /**
@@ -451,7 +437,8 @@ position_snap (
 }
 
 /**
- * Converts seconds to position and puts the result in the given Position.
+ * Converts seconds to position and puts the result
+ * in the given Position.
  * TODO
  */
 void
@@ -552,10 +539,7 @@ position_from_ticks (
       ticks = ticks % TICKS_PER_SIXTEENTH_NOTE;
       pos->ticks = (int) ticks;
     }
-  pos->frames =
-    (long)
-    ((float) AUDIO_ENGINE->frames_per_tick *
-      (float) pos->total_ticks);
+  position_update_ticks_and_frames (pos);
 }
 
 /**

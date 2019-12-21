@@ -368,17 +368,17 @@ void
 transport_update_position_frames (
   Transport * self)
 {
-  position_update_frames (
+  position_update_ticks_and_frames (
     &self->playhead_pos);
-  position_update_frames (
+  position_update_ticks_and_frames (
     &self->cue_pos);
-  /*position_update_frames (*/
+  /*position_update_ticks_and_frames (*/
     /*&TRANSPORT->start_marker_pos);*/
-  /*position_update_frames (*/
+  /*position_update_ticks_and_frames (*/
     /*&TRANSPORT->end_marker_pos);*/
-  position_update_frames (
+  position_update_ticks_and_frames (
     &self->loop_start_pos);
-  position_update_frames (
+  position_update_ticks_and_frames (
     &self->loop_end_pos);
 }
 

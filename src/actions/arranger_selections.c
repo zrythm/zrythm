@@ -176,7 +176,7 @@ arranger_selections_action_new_split (
   ua->type = UA_SPLIT_ARRANGER_SELECTIONS;
 
   self->pos = *pos;
-  position_update_frames (&self->pos);
+  position_update_ticks_and_frames (&self->pos);
 
   return ua;
 }

@@ -72,9 +72,9 @@ arranger_selections_init_loaded (
           MidiNote * mn = mas->midi_notes[i];
           ArrangerObject * mn_obj =
             (ArrangerObject *) mn;
-          position_update_frames (
+          position_update_ticks_and_frames (
             &mn_obj->pos);
-          position_update_frames (
+          position_update_ticks_and_frames (
             &mn_obj->end_pos);
           mn->region =
             region_find_by_name (mn->region_name);

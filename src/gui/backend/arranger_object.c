@@ -856,27 +856,27 @@ void
 arranger_object_update_frames (
   ArrangerObject * self)
 {
-  position_update_frames (
+  position_update_ticks_and_frames (
     &self->pos);
   if (self->has_length)
     {
-      position_update_frames (
+      position_update_ticks_and_frames (
         &self->end_pos);
     }
   if (self->can_loop)
     {
-      position_update_frames (
+      position_update_ticks_and_frames (
         &self->clip_start_pos);
-      position_update_frames (
+      position_update_ticks_and_frames (
         &self->loop_start_pos);
-      position_update_frames (
+      position_update_ticks_and_frames (
         &self->loop_end_pos);
     }
   if (self->can_fade)
     {
-      position_update_frames (
+      position_update_ticks_and_frames (
         &self->fade_in_pos);
-      position_update_frames (
+      position_update_ticks_and_frames (
         &self->fade_out_pos);
     }
 

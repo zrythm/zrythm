@@ -334,7 +334,8 @@ position_set_min_size (
  * Updates frames
  */
 void
-position_update_frames (Position * position);
+position_update_ticks_and_frames (
+  Position * position);
 
 /**
  * Calculates the midway point between the two
