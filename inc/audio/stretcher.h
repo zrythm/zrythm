@@ -27,6 +27,7 @@
 #define __AUDIO_STRETCHER_H__
 
 #include <stddef.h>
+#include <sys/types.h>
 
 #include "utils/types.h"
 
