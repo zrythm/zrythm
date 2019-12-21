@@ -902,10 +902,10 @@ stretch_audio_region (
           AUDIO_ENGINE->sample_rate,
           clip->channels, time_ratio, 1.0);
 
-      g_message ("BEFORE STRETCHING: clip num frames: %ld, position end: %ld",
-        clip->num_frames,
-        obj->end_pos.frames);
-      position_print (&obj->end_pos);
+      /*g_message ("BEFORE STRETCHING: clip num frames: %ld, position end: %ld",*/
+        /*clip->num_frames,*/
+        /*obj->end_pos.frames);*/
+      /*position_print (&obj->end_pos);*/
 
       ssize_t returned_frames =
         stretcher_stretch_interleaved (
@@ -919,11 +919,9 @@ stretch_audio_region (
         /*returned_frames !=*/
           /*(ssize_t) new_frames_size);*/
 
-      position_update_frames (
-        &obj->end_pos);
-      g_message ("AFTER: position end frames %ld",
-        obj->end_pos.frames);
-      position_print (&obj->end_pos);
+      /*g_message ("AFTER: position end frames %ld",*/
+        /*obj->end_pos.frames);*/
+      /*position_print (&obj->end_pos);*/
       g_warn_if_fail (
         obj->end_pos.frames <= returned_frames);
 

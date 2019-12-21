@@ -57,18 +57,6 @@ transport_set_bpm (
   self->prev_bpm = self->bpm;
   self->bpm = bpm;
 
-  if (TRACKLIST->num_tracks == 4)
-    {
-      Region * r =
-        TRACKLIST->tracks[3]->lanes[0]->regions[0];
-      ArrangerObject * obj = (ArrangerObject *) r;
-      AudioClip * clip = audio_region_get_clip (r);
-      g_message ("BEFORE BPM CHANGE: clip num frames: %ld, position end: %ld",
-        clip->num_frames,
-        obj->end_pos.frames);
-      position_print (&obj->end_pos);
-    }
-
   engine_update_frames_per_tick (
     AUDIO_ENGINE,
     self->beats_per_bar,

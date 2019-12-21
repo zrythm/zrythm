@@ -80,7 +80,7 @@ stretcher_new_rubberband (
         RubberBandOptionPitchHighQuality |
         RubberBandOptionChannelsApart,
       time_ratio, pitch_ratio);
-  rubberband_set_default_debug_level (1);
+  rubberband_set_default_debug_level (0);
   rubberband_set_max_process_size (
     self->rubberband_state, self->block_size);
 
@@ -255,8 +255,8 @@ stretcher_stretch_interleaved (
 
       processed += in_chunk_size;
 
-      g_message ("processed %lu, in samples %lu",
-        processed, in_samples_size);
+      /*g_message ("processed %lu, in samples %lu",*/
+        /*processed, in_samples_size);*/
 
       size_t avail =
         (size_t)
