@@ -22,8 +22,6 @@
 
 #include <gtk/gtk.h>
 
-#include "gui/widgets/dzl/dzl-multi-paned.h"
-
 #define USE_WIDE_HANDLE 1
 
 #define TRACKLIST_WIDGET_TYPE \

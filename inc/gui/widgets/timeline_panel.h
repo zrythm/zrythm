@@ -26,7 +26,6 @@
 #ifndef __GUI_WIDGETS_TIMELINE_PANEL_H__
 #define __GUI_WIDGETS_TIMELINE_PANEL_H__
 
-#include "gui/widgets/dzl/dzl-dock-bin.h"
 #include "gui/widgets/timeline_selection_info.h"
 
 #include <gtk/gtk.h>

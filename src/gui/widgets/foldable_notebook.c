@@ -17,7 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/dzl/dzl-dock-revealer.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "utils/gtk.h"
 #include "utils/ui.h"

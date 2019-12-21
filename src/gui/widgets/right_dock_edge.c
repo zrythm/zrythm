@@ -19,7 +19,6 @@
 
 #include "audio/control_room.h"
 #include "gui/widgets/control_room.h"
-#include "gui/widgets/dzl/dzl-dock-revealer.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/right_dock_edge.h"
