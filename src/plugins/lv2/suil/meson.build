@@ -15,29 +15,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-lv2_srcs = [
-  'lv2_control.c',
-  'lv2_log.c',
-  'lv2_evbuf.c',
-  'lv2_gtk.c',
-  'lv2_port.c',
-  'lv2_state.c',
-  'lv2_ui.c',
-  'lv2_urid.c',
-  'lv2_worker.c',
-  ]
-
-subdir('suil')
-
-lv2_lib = static_library (
-  'lv2-lib',
-  sources: [
-    lv2_srcs,
-    ],
-  dependencies: zrythm_deps,
-  include_directories: all_inc,
-  c_args: [ common_cflags ],
-  link_with: [
-    cyaml,
-    ]
-  )
+lv2_srcs += files ([
+  'suil_host.c',
+  'suil_instance.c',
+  'qt5_in_gtk3.cpp',
+  'x11_in_gtk3.c',
+  'win_in_gtk3.cpp',
+  ])

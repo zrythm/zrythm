@@ -113,6 +113,8 @@ cyaml_inc = include_directories (
   join_paths ('ext', 'libcyaml', 'include'))
 zix_inc = include_directories (
   join_paths ('ext', 'zix'))
+suil_inc = include_directories (
+  join_paths ('inc', 'plugins', 'lv2'))
 all_inc = [
   root_inc,
   inc_inc,
@@ -120,6 +122,7 @@ all_inc = [
   midilib_inc,
   cyaml_inc,
   zix_inc,
+  suil_inc,
   ]
 
 resources_dir = join_paths (
@@ -335,6 +338,7 @@ audec_dep = dependency(
   'audec', version: '>=0.1',
   fallback: ['libaudec', 'libaudec_dep'])
 
+qt5_dep = dependency('Qt5Widgets', required: get_option('enable_qt5'))
 yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.24')
 sndfile_dep = dependency('sndfile', version: '>=1.0.25')
@@ -353,14 +357,12 @@ zrythm_deps = [
   cyaml_dep,
   audec_dep,
   dependency('threads'),
-  dependency('sord-0', static: true),
-  dependency('serd-0', static: true),
-  dependency('suil-0', version: '>=0.10.0', static: true),
-  dependency('lilv-0', version: '>=0.24.2', static: true),
+  dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),
   dependency('rubberband'),
   lv2_dep,
   fftw3_dep,
+  qt5_dep,
 
   # these are needed for gentoo
   dependency('fftw3_threads', required: false),
@@ -374,6 +376,11 @@ if (get_option('enable_ffmpeg'))
   zrythm_deps += dependency('libavformat')
   zrythm_deps += dependency('libavutil')
   cdata.set('HAVE_FFMPEG', 1)
+endif
+
+if (get_option('enable_qt5'))
+  cdata.set('HAVE_QT5', 1)
+  zrythm_deps += qt5_dep
 endif
 
 if (get_option('enable_portaudio'))
@@ -475,6 +482,7 @@ summary = [
   '  Optional libraries:',
   '    ffmpeg: @0@'.format(get_option('enable_ffmpeg')),
   '    Jack (not really optional at the moment): @0@'.format(jack_dep.found()),
+  '    Qt5: @0@'.format(get_option('enable_qt5')),
   '    PortAudio (not functional at the moment): @0@'.format(get_option('enable_portaudio')),
   '    Gtop: @0@'.format(libgtop_dep.found()),
   '  Directories:',
