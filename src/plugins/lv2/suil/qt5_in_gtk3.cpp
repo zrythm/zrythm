@@ -32,7 +32,7 @@
 #include "lv2/lv2plug.in/ns/ext/options/options.h"
 #include "lv2/lv2plug.in/ns/ext/urid/urid.h"
 
-#include "plugins/lv2/suil.h"
+#include <suil/suil.h>
 
 extern "C" {
 
