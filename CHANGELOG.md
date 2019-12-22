@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.7.252] - 2019-12-21
+## [0.7.253] - 2019-12-21
 - Make Zrythm icon more symmetric
 - Auto-stretch audio regions when changing BPM
 - Make position calculations more accurate
