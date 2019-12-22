@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:23+0000\n"
-"PO-Revision-Date: 2019-08-12 00:18+0000\n"
+"PO-Revision-Date: 2019-12-21 23:21+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualchords-and-scales/fr/>\n"
 "Language: fr\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm"
-"/manualchords-and-scales/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.10\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../chords-and-scales/intro.rst:6
@@ -25,17 +26,19 @@ msgstr "Accords et gammes"
 
 #: ../../chords-and-scales/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Vue générale"
 
 #: ../../chords-and-scales/overview.rst:8
 msgid ""
 "Chords and scales can be used to easily try out various chords and to "
 "make it easier to follow chord progressions."
 msgstr ""
+"Les accords et les gammes peuvent être utilisés pour essayer facilement "
+"divers accords et pour faciliter le suivi des progressions d'accords."
 
 #: ../../chords-and-scales/overview.rst:12
 msgid "Chord Pad"
-msgstr ""
+msgstr "Tablette d'accord"
 
 #: ../../chords-and-scales/overview.rst:14
 msgid ""
@@ -43,15 +46,18 @@ msgid ""
 "can be used to trigger chords. The chord pad can be found in the bottom "
 "panel."
 msgstr ""
+"Le pad d'accord contient 12 pads (1 pour chaque touche d'un clavier de piano)"
+" qui peuvent être utilisés pour déclencher des accords. Le pad d'accord se "
+"trouve dans le panneau inférieur."
 
 #: ../../chords-and-scales/overview.rst:18
 #: ../../chords-and-scales/overview.rst:74
 msgid "This is a TODO feature."
-msgstr ""
+msgstr "C'est une fonctionnalité ÀFAIRE."
 
 #: ../../chords-and-scales/overview.rst:21
 msgid "Chord Track"
-msgstr ""
+msgstr "Piste d'accord"
 
 #: ../../chords-and-scales/overview.rst:23
 msgid ""
@@ -59,18 +65,24 @@ msgid ""
 "and these can then be used to dictate what chord and scale is active "
 "when. For example, you can specify a chord progression as follows."
 msgstr ""
+"Les régions d'accord et les objets de gamme peuvent être créés à l'intérieur "
+"de la piste d'accord, et ceux-ci peuvent ensuite être utilisés pour dicter "
+"quel accord et quelle gamme sont actifs à quel moment. Par exemple, vous "
+"pouvez spécifier une progression d'accord comme suit."
 
 #: ../../chords-and-scales/overview.rst:33
 msgid "Chord region and scale inside the chord track in the timeline."
 msgstr ""
+"Région d'accord et gamme à l'intérieur de la piste d'accord dans la ligne "
+"temporelle."
 
 #: ../../chords-and-scales/overview.rst:40
 msgid "Chord objects inside the chord region above."
-msgstr ""
+msgstr "Objets d'accord à l'intérieur de la région d'accord ci-dessus."
 
 #: ../../chords-and-scales/overview.rst:43
 msgid "Highlighting"
-msgstr ""
+msgstr "Surbrillance"
 
 #: ../../chords-and-scales/overview.rst:45
 msgid ""
@@ -78,29 +90,33 @@ msgid ""
 "corresponding to the scale, chord, or both at the position of the "
 "playhead."
 msgstr ""
+"Vous pouvez alors utiliser le surlignage à l'intérieur des régions MIDI pour "
+"surligner les notes correspondantes à la gamme, à l'accord, ou aux deux à la "
+"position de la tête de lecture."
 
 #: ../../chords-and-scales/overview.rst:53
 msgid "Chord highlighting."
-msgstr ""
+msgstr "Surlignage des accords."
 
 #: ../../chords-and-scales/overview.rst:59
 msgid "Scale highlighting."
-msgstr ""
+msgstr "Surlignage des échelles."
 
 #: ../../chords-and-scales/overview.rst:65
 msgid "Scale and chord highlighting."
-msgstr ""
+msgstr "Surlignage des gammes et des accords."
 
 #: ../../chords-and-scales/overview.rst:68
 msgid "Live Audition"
-msgstr ""
+msgstr "Audition en direct"
 
 #: ../../chords-and-scales/overview.rst:70
 msgid ""
 "You can route the output of the chord track to a MIDI or Instrument track"
 " for live auditioning of the chord track's events."
 msgstr ""
+"Vous pouvez router la sortie de la piste d'accord vers une piste MIDI ou "
+"d'instrument pour écouter en direct des événements de la piste d'accord."
 
 #~ msgid "TODO"
 #~ msgstr "ÀFAIRE"
-

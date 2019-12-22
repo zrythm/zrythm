@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-19 17:07+0000\n"
-"PO-Revision-Date: 2019-12-20 21:21+0000\n"
+"PO-Revision-Date: 2019-12-21 23:21+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/pt/>\n"
@@ -368,7 +368,6 @@ msgstr ""
 "mais informações."
 
 #: ../../configuration/preferences/intro.rst:48
-#, fuzzy
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr ""
 "Algoritmos de pan (:azul:`seno`, :vermelho:`raiz quadrada`, :verde:`linear`)."
