@@ -17,31 +17,33 @@
 
 # plugins require X11
 if (x11_dep.found ())
-project_uri = 'https://lv2.zrythm.org/plugins'
+  project_uri = 'https://lv2.zrythm.org/plugins'
 
-plugins_root_inc = include_directories ('.')
-pugl_inc = include_directories ('pugl')
-plugins_common_inc = [
-  plugins_root_inc,
-  pugl_inc,
+  plugins_root_inc = include_directories ('.')
+  pugl_inc = include_directories ('pugl')
+  plugins_common_inc = [
+    plugins_root_inc,
+    pugl_inc,
+    ]
+
+  cairo_dep = dependency('cairo', version: '>=1.0.0')
+  plugin_deps = [
+    lv2_dep,
+    fftw3_dep,
+    x11_dep,
+    cairo_dep,
+    libm,
   ]
 
-cairo_dep = dependency('cairo', version: '>=1.0.0')
-plugin_deps = [
-  lv2_dep,
-  fftw3_dep,
-  x11_dep,
-  cairo_dep,
-  libm,
-]
+  plugin_cflags = [
+    common_cflags, strict_cflags,
+    '-fvisibility=hidden',
+    ]
 
-plugin_cflags = [
-  common_cflags, strict_cflags,
-  '-fvisibility=hidden',
-  ]
-
-subdir ('pugl')
-subdir ('ztoolkit')
-subdir ('zlfo')
-subdir ('tests')
+  subdir ('pugl')
+  subdir ('ztoolkit')
+  subdir ('zlfo')
+  subdir ('tests')
+elif get_option('enable_plugins')
+  error ('Plugins require X11. Install libx11 or set `enable_plugins` to `false` to skip them')
 endif
