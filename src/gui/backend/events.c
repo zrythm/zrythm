@@ -888,7 +888,7 @@ stretch_audio_region (
   g_return_if_fail (region);
   ArrangerObject * obj = (ArrangerObject *) region;
 
-  if (PROJECT->musical_mode)
+  if (g_settings_get_int (S_UI, "musical-mode"))
     {
       region->stretching = 1;
 

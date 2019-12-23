@@ -46,6 +46,14 @@
         </child>
       </object>
     </child>
+    <child>
+      <object class="GtkToolButton" id="event_viewer_toggle">
+        <property name="visible">True</property>
+        <property name="action-name">win.toggle-musical-mode</property>
+        <property name="icon-name">music-note-16th</property>
+        <property name="tooltip-text" translatable="yes">Toggle musical mode</property>
+      </object>
+    </child>
     <!-- extra space so we can add widgets at the
          end -->
     <child>

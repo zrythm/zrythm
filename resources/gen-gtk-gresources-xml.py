@@ -155,6 +155,7 @@ _breeze_icons = [
   'minuet-chords',
   'media-repeat-album-amarok',
   'mathmode',
+  'music-note-16th',
   'news-subscribe',
   'node-type-cusp',
   'none',

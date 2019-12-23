@@ -1449,6 +1449,20 @@ change_state_metronome (
 }
 
 void
+change_state_musical_mode (
+  GSimpleAction * action,
+  GVariant *      value,
+  gpointer        user_data)
+{
+  int enabled = g_variant_get_boolean (value);
+
+  g_simple_action_set_state (action, value);
+
+  g_settings_set_int (
+    S_UI, "musical-mode", enabled);
+}
+
+void
 activate_quick_quantize (
   GSimpleAction *action,
   GVariant      * _variant,

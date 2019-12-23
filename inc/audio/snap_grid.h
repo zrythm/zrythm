@@ -116,6 +116,18 @@ note_type_strings[] =
   { "triplet",      NOTE_TYPE_TRIPLET   },
 };
 
+/**
+ * These are not meant to be serialized, they are
+ * only used for convenience.
+ */
+static const cyaml_strval_t
+note_type_short_strings[] =
+{
+  { "",       NOTE_TYPE_NORMAL    },
+  { ".",       NOTE_TYPE_DOTTED   },
+  { "t",      NOTE_TYPE_TRIPLET   },
+};
+
 static const cyaml_schema_field_t
   snap_grid_fields_schema[] =
 {

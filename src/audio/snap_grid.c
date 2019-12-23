@@ -225,7 +225,7 @@ static const char *
 get_note_type_str (
   NoteType type)
 {
-  return note_type_strings[type].str;
+  return note_type_short_strings[type].str;
 }
 
 static const char *

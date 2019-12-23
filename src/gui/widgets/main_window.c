@@ -262,6 +262,13 @@ main_window_widget_init (MainWindowWidget * self)
     { "quantize-options", activate_quantize_options,
       "s" },
 
+    /* musical mode */
+    { "toggle-musical-mode", NULL, NULL,
+      g_settings_get_int (
+        S_UI, "musical-mode") ?
+        "true" : "false",
+      change_state_musical_mode },
+
     /* track actions */
     { "create-audio-track",
       activate_create_audio_track },
