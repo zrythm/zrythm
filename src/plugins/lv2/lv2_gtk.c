@@ -70,35 +70,35 @@ static const int dump = 0;
 
 /** Widget for a control. */
 typedef struct {
-	GtkSpinButton* spin;
-	GtkWidget*     control;
+  GtkSpinButton* spin;
+  GtkWidget*     control;
 } Controller;
 
 static float
 get_float (const LilvNode* node, float fallback)
 {
-	if (lilv_node_is_float(node) ||
+  if (lilv_node_is_float(node) ||
       lilv_node_is_int(node))
     return lilv_node_as_float(node);
 
-	return fallback;
+  return fallback;
 }
 
 static GtkWidget*
 new_box (gboolean horizontal, gint spacing)
 {
-	return gtk_box_new (
-		horizontal ?
+  return gtk_box_new (
+    horizontal ?
     GTK_ORIENTATION_HORIZONTAL :
     GTK_ORIENTATION_VERTICAL,
-		spacing);
+    spacing);
 }
 
 static GtkWidget*
 new_hscale (
   gdouble min, gdouble max, gdouble step)
 {
-	return gtk_scale_new_with_range (
+  return gtk_scale_new_with_range (
     GTK_ORIENTATION_HORIZONTAL, min, max, step);
 }
 
@@ -106,7 +106,7 @@ static void
 size_request (
   GtkWidget* widget, GtkRequisition* req)
 {
-	gtk_widget_get_preferred_size (widget, NULL, req);
+  gtk_widget_get_preferred_size (widget, NULL, req);
 }
 
 /**
@@ -148,56 +148,56 @@ static void
 on_save_activate (
   GtkWidget* widget, void* ptr)
 {
-	Lv2Plugin* plugin = (Lv2Plugin*)ptr;
-	GtkWidget* dialog = gtk_file_chooser_dialog_new(
-		_("Save State"),
-		(GtkWindow*)plugin->window,
-		GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER,
-		_("_Cancel"), GTK_RESPONSE_CANCEL,
-		_("_Save"), GTK_RESPONSE_ACCEPT,
-		NULL);
+  Lv2Plugin* plugin = (Lv2Plugin*)ptr;
+  GtkWidget* dialog = gtk_file_chooser_dialog_new(
+    _("Save State"),
+    (GtkWindow*)plugin->window,
+    GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER,
+    _("_Cancel"), GTK_RESPONSE_CANCEL,
+    _("_Save"), GTK_RESPONSE_ACCEPT,
+    NULL);
 
-	if (gtk_dialog_run (
+  if (gtk_dialog_run (
         GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
-		char* path =
+    char* path =
       gtk_file_chooser_get_filename (
         GTK_FILE_CHOOSER(dialog));
-		char* base =
+    char* base =
       g_build_filename (path, "/", NULL);
-		lv2_state_save (plugin, base);
-		g_free(path);
-		g_free(base);
-	}
+    lv2_state_save (plugin, base);
+    g_free(path);
+    g_free(base);
+  }
 
-	gtk_widget_destroy(dialog);
+  gtk_widget_destroy(dialog);
 }
 
 static void
 on_quit_activate (
   GtkWidget* widget, gpointer data)
 {
-	GtkWidget* window = (GtkWidget*)data;
-	gtk_widget_destroy(window);
+  GtkWidget* window = (GtkWidget*)data;
+  gtk_widget_destroy(window);
 }
 
 typedef struct {
-	Lv2Plugin*     plugin;
-	LilvNode* preset;
+  Lv2Plugin*     plugin;
+  LilvNode* preset;
 } PresetRecord;
 
 static char*
 symbolify (const char* in)
 {
-	const size_t len = strlen(in);
-	char*        out = (char*)calloc(len + 1, 1);
-	for (size_t i = 0; i < len; ++i) {
-		if (g_ascii_isalnum(in[i])) {
-			out[i] = in[i];
-		} else {
-			out[i] = '_';
-		}
-	}
-	return out;
+  const size_t len = strlen(in);
+  char*        out = (char*)calloc(len + 1, 1);
+  for (size_t i = 0; i < len; ++i) {
+    if (g_ascii_isalnum(in[i])) {
+      out[i] = in[i];
+    } else {
+      out[i] = '_';
+    }
+  }
+  return out;
 }
 
 static void
@@ -272,33 +272,33 @@ on_preset_destroy (
 }
 
 typedef struct {
-	GtkMenuItem* item;
-	char*        label;
-	GtkMenu*     menu;
-	GSequence*   banks;
+  GtkMenuItem* item;
+  char*        label;
+  GtkMenu*     menu;
+  GSequence*   banks;
 } PresetMenu;
 
 static PresetMenu*
 pset_menu_new(const char* label)
 {
-	PresetMenu* menu =
+  PresetMenu* menu =
     (PresetMenu*) calloc (1, sizeof(PresetMenu));
 
-	menu->label = g_strdup(label);
-	menu->item =
+  menu->label = g_strdup(label);
+  menu->item =
     GTK_MENU_ITEM (
       gtk_menu_item_new_with_label(menu->label));
-	menu->menu = GTK_MENU (gtk_menu_new());
-	menu->banks = NULL;
+  menu->menu = GTK_MENU (gtk_menu_new());
+  menu->banks = NULL;
 
-	return menu;
+  return menu;
 }
 
 static void
 pset_menu_free (
   PresetMenu* menu)
 {
-	if (menu->banks)
+  if (menu->banks)
     {
       for (GSequenceIter* i =
              g_sequence_get_begin_iter(menu->banks);
@@ -312,15 +312,15 @@ pset_menu_free (
       g_sequence_free(menu->banks);
     }
 
-	free(menu->label);
-	free(menu);
+  free(menu->label);
+  free(menu);
 }
 
 static gint
 menu_cmp (
   gconstpointer a, gconstpointer b, gpointer data)
 {
-	return strcmp(((PresetMenu*)a)->label,
+  return strcmp(((PresetMenu*)a)->label,
                 ((PresetMenu*)b)->label);
 }
 
@@ -330,19 +330,19 @@ get_bank_menu (
   PresetMenu* menu,
   const LilvNode* bank)
 {
-	LilvNode* label =
+  LilvNode* label =
     lilv_world_get (
       LILV_WORLD, bank,
       PM_LILV_NODES.rdfs_label, NULL);
 
-	const char* uri = lilv_node_as_string(bank);
-	const char* str =
+  const char* uri = lilv_node_as_string(bank);
+  const char* str =
     label ? lilv_node_as_string(label) : uri;
-	PresetMenu key = { NULL, (char*)str, NULL, NULL };
-	GSequenceIter* i =
+  PresetMenu key = { NULL, (char*)str, NULL, NULL };
+  GSequenceIter* i =
     g_sequence_lookup (
       menu->banks, &key, menu_cmp, NULL);
-	if (!i)
+  if (!i)
     {
       PresetMenu* bank_menu = pset_menu_new(str);
       gtk_menu_item_set_submenu(bank_menu->item, GTK_WIDGET(bank_menu->menu));
@@ -350,7 +350,7 @@ get_bank_menu (
       return bank_menu;
     }
 
-	return (PresetMenu*) g_sequence_get (i);
+  return (PresetMenu*) g_sequence_get (i);
 }
 
 static int
@@ -360,15 +360,15 @@ add_preset_to_menu (
   const LilvNode* title,
   void*           data)
 {
-	PresetMenu* menu  = (PresetMenu*)data;
-	const char* label =
+  PresetMenu* menu  = (PresetMenu*)data;
+  const char* label =
     lilv_node_as_string(title);
-	GtkWidget*  item  =
+  GtkWidget*  item  =
     gtk_check_menu_item_new_with_label(label);
-	gtk_check_menu_item_set_draw_as_radio (
+  gtk_check_menu_item_set_draw_as_radio (
     GTK_CHECK_MENU_ITEM(item), TRUE);
-	if (plugin->preset &&
-	    lilv_node_equals (
+  if (plugin->preset &&
+      lilv_node_equals (
         lilv_state_get_uri (
           plugin->preset), node))
     {
@@ -378,12 +378,12 @@ add_preset_to_menu (
         GTK_CHECK_MENU_ITEM(item);
     }
 
-	LilvNode* bank =
+  LilvNode* bank =
     lilv_world_get (
       LILV_WORLD, node,
       PM_LILV_NODES.pset_bank, NULL);
 
-	if (bank)
+  if (bank)
     {
       PresetMenu* bank_menu =
         get_bank_menu(plugin, menu, bank);
@@ -391,30 +391,30 @@ add_preset_to_menu (
         GTK_MENU_SHELL(bank_menu->menu), item);
     }
   else
-		gtk_menu_shell_append (
+    gtk_menu_shell_append (
       GTK_MENU_SHELL(menu->menu), item);
 
-	PresetRecord* record =
+  PresetRecord* record =
     (PresetRecord*)calloc(1, sizeof(PresetRecord));
-	record->plugin = plugin;
-	record->preset = lilv_node_duplicate(node);
+  record->plugin = plugin;
+  record->preset = lilv_node_duplicate(node);
 
-	g_signal_connect_data (
+  g_signal_connect_data (
     G_OBJECT(item), "activate",
-	  G_CALLBACK(on_preset_activate),
-	  record, on_preset_destroy,
-	  (GConnectFlags)0);
+    G_CALLBACK(on_preset_activate),
+    record, on_preset_destroy,
+    (GConnectFlags)0);
 
-	return 0;
+  return 0;
 }
 
 static void
 finish_menu (PresetMenu* menu)
 {
-	for (GSequenceIter* i =
+  for (GSequenceIter* i =
          g_sequence_get_begin_iter(menu->banks);
-	     !g_sequence_iter_is_end(i);
-	     i = g_sequence_iter_next(i))
+       !g_sequence_iter_is_end(i);
+       i = g_sequence_iter_next(i))
     {
       PresetMenu* bank_menu =
         (PresetMenu*)g_sequence_get(i);
@@ -423,88 +423,88 @@ finish_menu (PresetMenu* menu)
         GTK_WIDGET(bank_menu->item));
     }
 
-	g_sequence_free(menu->banks);
+  g_sequence_free(menu->banks);
 }
 
 static void
 rebuild_preset_menu (
   Lv2Plugin* plugin, GtkContainer* pset_menu)
 {
-	// Clear current menu
-	plugin->active_preset_item = NULL;
-	for (GList* items =
+  // Clear current menu
+  plugin->active_preset_item = NULL;
+  for (GList* items =
          g_list_nth (
            gtk_container_get_children (pset_menu),
            3);
-	     items;
-	     items = items->next)
+       items;
+       items = items->next)
     {
       gtk_container_remove (
         pset_menu, GTK_WIDGET(items->data));
     }
 
-	// Load presets and build new menu
-	PresetMenu menu =
+  // Load presets and build new menu
+  PresetMenu menu =
     {
       NULL, NULL, GTK_MENU(pset_menu),
       g_sequence_new((GDestroyNotify)pset_menu_free)
     };
-	lv2_state_load_presets (
+  lv2_state_load_presets (
     plugin, add_preset_to_menu, &menu);
-	finish_menu (&menu);
-	gtk_widget_show_all (GTK_WIDGET(pset_menu));
+  finish_menu (&menu);
+  gtk_widget_show_all (GTK_WIDGET(pset_menu));
 }
 
 static void
 on_save_preset_activate (
   GtkWidget* widget, void* ptr)
 {
-	Lv2Plugin* plugin = (Lv2Plugin*)ptr;
+  Lv2Plugin* plugin = (Lv2Plugin*)ptr;
 
-	GtkWidget* dialog = gtk_file_chooser_dialog_new(
-		"Save Preset",
-		(GtkWindow*)plugin->window,
-		GTK_FILE_CHOOSER_ACTION_SAVE,
-		"_Cancel", GTK_RESPONSE_REJECT,
-		"_Save", GTK_RESPONSE_ACCEPT,
-		NULL);
+  GtkWidget* dialog = gtk_file_chooser_dialog_new(
+    "Save Preset",
+    (GtkWindow*)plugin->window,
+    GTK_FILE_CHOOSER_ACTION_SAVE,
+    "_Cancel", GTK_RESPONSE_REJECT,
+    "_Save", GTK_RESPONSE_ACCEPT,
+    NULL);
 
-	char* dot_lv2 =
+  char* dot_lv2 =
     g_build_filename (
       g_get_home_dir(), ".lv2", NULL);
-	gtk_file_chooser_set_current_folder (
+  gtk_file_chooser_set_current_folder (
     GTK_FILE_CHOOSER(dialog), dot_lv2);
-	free(dot_lv2);
+  free(dot_lv2);
 
-	GtkWidget* content =
+  GtkWidget* content =
     gtk_dialog_get_content_area (
       GTK_DIALOG(dialog));
-	GtkBox* box = GTK_BOX(new_box(true, 8));
-	GtkWidget* uri_label =
+  GtkBox* box = GTK_BOX(new_box(true, 8));
+  GtkWidget* uri_label =
     gtk_label_new (_("URI (Optional):"));
-	GtkWidget* uri_entry = gtk_entry_new();
-	GtkWidget* add_prefix =
+  GtkWidget* uri_entry = gtk_entry_new();
+  GtkWidget* add_prefix =
     gtk_check_button_new_with_mnemonic (
       _("_Prefix plugin name"));
 
-	gtk_toggle_button_set_active (
+  gtk_toggle_button_set_active (
     GTK_TOGGLE_BUTTON(add_prefix), TRUE);
-	gtk_box_pack_start (
+  gtk_box_pack_start (
     box, uri_label, FALSE, TRUE, 2);
-	gtk_box_pack_start (
+  gtk_box_pack_start (
     box, uri_entry, TRUE, TRUE, 2);
-	gtk_box_pack_start (
+  gtk_box_pack_start (
     GTK_BOX(content), GTK_WIDGET(box),
     FALSE, FALSE, 6);
-	gtk_box_pack_start (
+  gtk_box_pack_start (
     GTK_BOX(content), add_prefix, FALSE, FALSE, 6);
 
-	gtk_widget_show_all (GTK_WIDGET(dialog));
-	gtk_entry_set_activates_default (
+  gtk_widget_show_all (GTK_WIDGET(dialog));
+  gtk_entry_set_activates_default (
     GTK_ENTRY(uri_entry), TRUE);
-	gtk_dialog_set_default_response (
+  gtk_dialog_set_default_response (
     GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
-	if (gtk_dialog_run (GTK_DIALOG(dialog)) ==
+  if (gtk_dialog_run (GTK_DIALOG(dialog)) ==
         GTK_RESPONSE_ACCEPT)
     {
       LilvNode* plug_name =
@@ -563,18 +563,18 @@ on_save_preset_activate (
       lilv_node_free(plug_name);
     }
 
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+  gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 static void
 on_delete_preset_activate (
   GtkWidget* widget, void* ptr)
 {
-	Lv2Plugin* plugin = (Lv2Plugin*)ptr;
-	if (!plugin->preset)
-		return;
+  Lv2Plugin* plugin = (Lv2Plugin*)ptr;
+  if (!plugin->preset)
+    return;
 
-	GtkWidget* dialog =
+  GtkWidget* dialog =
     gtk_dialog_new_with_buttons(
       _("Delete Preset?"),
       (GtkWindow*)plugin->window,
@@ -585,34 +585,34 @@ on_delete_preset_activate (
       _("_OK"), GTK_RESPONSE_ACCEPT,
       NULL);
 
-	char* msg =
+  char* msg =
     g_strdup_printf (
       "Delete preset \"%s\" from the file system?",
-	    lilv_state_get_label(plugin->preset));
+      lilv_state_get_label(plugin->preset));
 
-	GtkWidget* content =
+  GtkWidget* content =
     gtk_dialog_get_content_area(GTK_DIALOG(dialog));
-	GtkWidget* text = gtk_label_new(msg);
-	gtk_box_pack_start (
+  GtkWidget* text = gtk_label_new(msg);
+  gtk_box_pack_start (
     GTK_BOX(content), text, TRUE, TRUE, 4);
 
-	gtk_widget_show_all (dialog);
-	if (gtk_dialog_run (GTK_DIALOG(dialog)) ==
+  gtk_widget_show_all (dialog);
+  if (gtk_dialog_run (GTK_DIALOG(dialog)) ==
         GTK_RESPONSE_ACCEPT) {
-		lv2_state_delete_current_preset (plugin);
-		rebuild_preset_menu (
+    lv2_state_delete_current_preset (plugin);
+    rebuild_preset_menu (
       plugin,
       GTK_CONTAINER (
         gtk_widget_get_parent(widget)));
-	}
+  }
 
-	lilv_state_free (plugin->preset);
-	plugin->preset = NULL;
-	set_window_title (plugin);
+  lilv_state_free (plugin->preset);
+  plugin->preset = NULL;
+  set_window_title (plugin);
 
-	g_free (msg);
-	gtk_widget_destroy (text);
-	gtk_widget_destroy (dialog);
+  g_free (msg);
+  gtk_widget_destroy (text);
+  gtk_widget_destroy (dialog);
 }
 
 /**
@@ -641,7 +641,7 @@ set_control (
 static bool
 differ_enough (float a, float b)
 {
-	return fabsf(a - b) >= FLT_EPSILON;
+  return fabsf(a - b) >= FLT_EPSILON;
 }
 
 /**
@@ -724,17 +724,17 @@ get_atom_double (
   LV2_URID type,
   const void* body)
 {
-	if (type == plugin->forge.Int ||
+  if (type == plugin->forge.Int ||
       type == plugin->forge.Bool)
-		return *(const int32_t*)body;
-	else if (type == plugin->forge.Long)
-		return *(const int64_t*)body;
-	else if (type == plugin->forge.Float)
-		return *(const float*)body;
-	else if (type == plugin->forge.Double)
-		return *(const double*)body;
+    return *(const int32_t*)body;
+  else if (type == plugin->forge.Long)
+    return *(const int64_t*)body;
+  else if (type == plugin->forge.Float)
+    return *(const float*)body;
+  else if (type == plugin->forge.Double)
+    return *(const double*)body;
 
-	return NAN;
+  return NAN;
 }
 
 /**
@@ -749,11 +749,11 @@ control_changed (
   LV2_URID    type,
   const void* body)
 {
-	GtkWidget * widget = controller->control;
-	const double fvalue =
+  GtkWidget * widget = controller->control;
+  const double fvalue =
     get_atom_double (plugin, size, type, body);
 
-	if (!isnan(fvalue))
+  if (!isnan(fvalue))
     {
       if (GTK_IS_COMBO_BOX(widget))
         {
@@ -820,7 +820,7 @@ control_changed (
         (const char*)body);
     }
   else
-		g_warning (
+    g_warning (
       _("Unknown widget type for value\n"));
 }
 
@@ -831,13 +831,13 @@ patch_set_get (
   const LV2_Atom_URID**  property,
   const LV2_Atom**       value)
 {
-	lv2_atom_object_get (
+  lv2_atom_object_get (
     obj,
-	  PM_URIDS.patch_property,
+    PM_URIDS.patch_property,
     (const LV2_Atom*)property,
-	  PM_URIDS.patch_value,
+    PM_URIDS.patch_value,
     value, 0);
-	if (!*property)
+  if (!*property)
     {
       g_warning (
         "patch:Set message with no property");
@@ -851,7 +851,7 @@ patch_set_get (
       return 1;
     }
 
-	return 0;
+  return 0;
 }
 
 static int
@@ -860,12 +860,12 @@ patch_put_get(
   const LV2_Atom_Object*  obj,
   const LV2_Atom_Object** body)
 {
-	lv2_atom_object_get (
+  lv2_atom_object_get (
     obj,
-	  PM_URIDS.patch_body,
+    PM_URIDS.patch_body,
     (const LV2_Atom*)body,
-	  0);
-	if (!*body)
+    0);
+  if (!*body)
     {
       g_warning (
         "patch:Put message with no body");
@@ -880,7 +880,7 @@ patch_put_get(
       return 1;
     }
 
-	return 0;
+  return 0;
 }
 
 static void
@@ -918,7 +918,7 @@ lv2_gtk_ui_port_event (
   uint32_t     protocol,
   const void * buffer)
 {
-	if (plugin->ui_instance)
+  if (plugin->ui_instance)
     {
       suil_instance_port_event (
         plugin->ui_instance, port_index,
@@ -938,8 +938,8 @@ lv2_gtk_ui_port_event (
       return;
     }
   else if (protocol == 0)
-		return;  // No widget (probably notOnGUI)
-	else if (protocol !=
+    return;  // No widget (probably notOnGUI)
+  else if (protocol !=
            PM_URIDS.atom_eventTransfer)
     {
       g_warning (
@@ -947,8 +947,8 @@ lv2_gtk_ui_port_event (
       return;
     }
 
-	const LV2_Atom* atom = (const LV2_Atom*)buffer;
-	if (lv2_atom_forge_is_object_type (
+  const LV2_Atom* atom = (const LV2_Atom*)buffer;
+  if (lv2_atom_forge_is_object_type (
         &plugin->forge, atom->type))
     {
       plugin->updating = true;
@@ -988,70 +988,70 @@ scale_changed (
   GtkRange* range, gpointer data)
 {
   /*g_message ("scale changed");*/
-	lv2_gtk_set_float_control (
+  lv2_gtk_set_float_control (
     (const Lv2Control*)data,
     gtk_range_get_value(range));
-	return FALSE;
+  return FALSE;
 }
 
 static gboolean
 spin_changed (
   GtkSpinButton* spin, gpointer data)
 {
-	const Lv2Control* control =
+  const Lv2Control* control =
     (const Lv2Control*)data;
-	Controller* controller =
+  Controller* controller =
     (Controller*)control->widget;
-	GtkRange* range =
+  GtkRange* range =
     GTK_RANGE (controller->control);
-	const double value =
+  const double value =
     gtk_spin_button_get_value(spin);
-	if (differ_enough (
+  if (differ_enough (
         gtk_range_get_value (range), value))
-		gtk_range_set_value (range, value);
+    gtk_range_set_value (range, value);
 
-	return FALSE;
+  return FALSE;
 }
 
 static gboolean
 log_scale_changed (GtkRange* range, gpointer data)
 {
   /*g_message ("log scale changed");*/
-	lv2_gtk_set_float_control (
+  lv2_gtk_set_float_control (
     (const Lv2Control*)data,
     expf (gtk_range_get_value (range)));
 
-	return FALSE;
+  return FALSE;
 }
 
 static gboolean
 log_spin_changed (
   GtkSpinButton* spin, gpointer data)
 {
-	const Lv2Control* control =
+  const Lv2Control* control =
     (const Lv2Control*)data;
-	Controller* controller =
+  Controller* controller =
     (Controller*)control->widget;
-	GtkRange* range =
+  GtkRange* range =
     GTK_RANGE(controller->control);
-	const double value =
+  const double value =
     gtk_spin_button_get_value (spin);
-	if (differ_enough (
+  if (differ_enough (
         gtk_range_get_value (range),
         logf (value)))
-		gtk_range_set_value (range, logf(value));
+    gtk_range_set_value (range, logf(value));
 
-	return FALSE;
+  return FALSE;
 }
 
 static void
 combo_changed (GtkComboBox* box, gpointer data)
 {
-	const Lv2Control* control =
+  const Lv2Control* control =
     (const Lv2Control*)data;
 
-	GtkTreeIter iter;
-	if (gtk_combo_box_get_active_iter (box, &iter))
+  GtkTreeIter iter;
+  if (gtk_combo_box_get_active_iter (box, &iter))
     {
       GtkTreeModel* model =
         gtk_combo_box_get_model (box);
@@ -1071,22 +1071,22 @@ toggle_changed (
   GtkToggleButton* button, gpointer data)
 {
   /*g_message ("toggle_changed");*/
-	lv2_gtk_set_float_control (
+  lv2_gtk_set_float_control (
     (const Lv2Control*)data,
-	  gtk_toggle_button_get_active (
+    gtk_toggle_button_get_active (
       button) ? 1.0f : 0.0f);
-	return FALSE;
+  return FALSE;
 }
 
 static void
 string_changed (
   GtkEntry* widget, gpointer data)
 {
-	Lv2Control* control = (Lv2Control*)data;
-	const char* string =
+  Lv2Control* control = (Lv2Control*)data;
+  const char* string =
     gtk_entry_get_text(widget);
 
-	set_control (control,
+  set_control (control,
                strlen(string) + 1,
                control->plugin->forge.String,
                string);
@@ -1097,87 +1097,87 @@ file_changed (
   GtkFileChooserButton* widget,
   gpointer              data)
 {
-	Lv2Control* control = (Lv2Control*)data;
-	Lv2Plugin*       plugin     = control->plugin;
-	const char* filename = gtk_file_chooser_get_filename(
-		GTK_FILE_CHOOSER(widget));
+  Lv2Control* control = (Lv2Control*)data;
+  Lv2Plugin*       plugin     = control->plugin;
+  const char* filename = gtk_file_chooser_get_filename(
+    GTK_FILE_CHOOSER(widget));
 
-	set_control(control, strlen(filename), plugin->forge.Path, filename);
+  set_control(control, strlen(filename), plugin->forge.Path, filename);
 }
 
 static Controller*
 new_controller(GtkSpinButton* spin, GtkWidget* control)
 {
-	Controller* controller = (Controller*)calloc(1, sizeof(Controller));
-	controller->spin    = spin;
-	controller->control = control;
-	return controller;
+  Controller* controller = (Controller*)calloc(1, sizeof(Controller));
+  controller->spin    = spin;
+  controller->control = control;
+  return controller;
 }
 
 static Controller*
 make_combo(Lv2Control* record, float value)
 {
-	GtkListStore* list_store = gtk_list_store_new(
-		2, G_TYPE_FLOAT, G_TYPE_STRING);
-	int active = -1;
-	for (size_t i = 0; i < record->n_points; ++i) {
-		const Lv2ScalePoint* point = &record->points[i];
-		GtkTreeIter       iter;
-		gtk_list_store_append(list_store, &iter);
-		gtk_list_store_set(list_store, &iter,
-		                   0, point->value,
-		                   1, point->label,
-		                   -1);
-		if (fabs(value - point->value) < FLT_EPSILON) {
-			active = i;
-		}
-	}
+  GtkListStore* list_store = gtk_list_store_new(
+    2, G_TYPE_FLOAT, G_TYPE_STRING);
+  int active = -1;
+  for (size_t i = 0; i < record->n_points; ++i) {
+    const Lv2ScalePoint* point = &record->points[i];
+    GtkTreeIter       iter;
+    gtk_list_store_append(list_store, &iter);
+    gtk_list_store_set(list_store, &iter,
+                       0, point->value,
+                       1, point->label,
+                       -1);
+    if (fabs(value - point->value) < FLT_EPSILON) {
+      active = i;
+    }
+  }
 
-	GtkWidget* combo = gtk_combo_box_new_with_model(GTK_TREE_MODEL(list_store));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), active);
-	g_object_unref(list_store);
+  GtkWidget* combo = gtk_combo_box_new_with_model(GTK_TREE_MODEL(list_store));
+  gtk_combo_box_set_active(GTK_COMBO_BOX(combo), active);
+  g_object_unref(list_store);
 
-	gtk_widget_set_sensitive(combo, record->is_writable);
+  gtk_widget_set_sensitive(combo, record->is_writable);
 
-	GtkCellRenderer* cell = gtk_cell_renderer_text_new();
-	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo), cell, TRUE);
-	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), cell, "text", 1, NULL);
+  GtkCellRenderer* cell = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo), cell, TRUE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), cell, "text", 1, NULL);
 
-	if (record->is_writable) {
-		g_signal_connect (
+  if (record->is_writable) {
+    g_signal_connect (
       G_OBJECT (combo), "changed",
-		  G_CALLBACK (combo_changed), record);
-	}
+      G_CALLBACK (combo_changed), record);
+  }
 
-	return new_controller(NULL, combo);
+  return new_controller(NULL, combo);
 }
 
 static Controller*
 make_log_slider(Lv2Control* record, float value)
 {
-	const float min   = get_float(record->min, 0.0f);
-	const float max   = get_float(record->max, 1.0f);
-	const float lmin  = logf(min);
-	const float lmax  = logf(max);
-	const float ldft  = logf(value);
-	GtkWidget*  scale = new_hscale(lmin, lmax, 0.001);
-	GtkWidget*  spin  = gtk_spin_button_new_with_range(min, max, 0.000001);
+  const float min   = get_float(record->min, 0.0f);
+  const float max   = get_float(record->max, 1.0f);
+  const float lmin  = logf(min);
+  const float lmax  = logf(max);
+  const float ldft  = logf(value);
+  GtkWidget*  scale = new_hscale(lmin, lmax, 0.001);
+  GtkWidget*  spin  = gtk_spin_button_new_with_range(min, max, 0.000001);
 
-	gtk_widget_set_sensitive(scale, record->is_writable);
-	gtk_widget_set_sensitive(spin, record->is_writable);
+  gtk_widget_set_sensitive(scale, record->is_writable);
+  gtk_widget_set_sensitive(spin, record->is_writable);
 
-	gtk_scale_set_draw_value(GTK_SCALE(scale), FALSE);
-	gtk_range_set_value(GTK_RANGE(scale), ldft);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin), value);
+  gtk_scale_set_draw_value(GTK_SCALE(scale), FALSE);
+  gtk_range_set_value(GTK_RANGE(scale), ldft);
+  gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin), value);
 
-	if (record->is_writable) {
-		g_signal_connect(G_OBJECT(scale), "value-changed",
-		                 G_CALLBACK(log_scale_changed), record);
-		g_signal_connect(G_OBJECT(spin), "value-changed",
-		                 G_CALLBACK(log_spin_changed), record);
-	}
+  if (record->is_writable) {
+    g_signal_connect(G_OBJECT(scale), "value-changed",
+                     G_CALLBACK(log_scale_changed), record);
+    g_signal_connect(G_OBJECT(spin), "value-changed",
+                     G_CALLBACK(log_spin_changed), record);
+  }
 
-	return new_controller(GTK_SPIN_BUTTON(spin), scale);
+  return new_controller(GTK_SPIN_BUTTON(spin), scale);
 }
 
 static Controller*
@@ -1225,80 +1225,80 @@ make_slider(Lv2Control* record, float value)
 static Controller*
 make_toggle(Lv2Control* record, float value)
 {
-	GtkWidget* check = gtk_check_button_new();
+  GtkWidget* check = gtk_check_button_new();
 
-	gtk_widget_set_sensitive(check, record->is_writable);
+  gtk_widget_set_sensitive(check, record->is_writable);
 
-	if (value) {
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check), TRUE);
-	}
+  if (value) {
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check), TRUE);
+  }
 
-	if (record->is_writable) {
-		g_signal_connect(G_OBJECT(check), "toggled",
-		                 G_CALLBACK(toggle_changed), record);
-	}
+  if (record->is_writable) {
+    g_signal_connect(G_OBJECT(check), "toggled",
+                     G_CALLBACK(toggle_changed), record);
+  }
 
-	return new_controller(NULL, check);
+  return new_controller(NULL, check);
 }
 
 static Controller*
 make_entry(Lv2Control* control)
 {
-	GtkWidget* entry = gtk_entry_new();
+  GtkWidget* entry = gtk_entry_new();
 
-	gtk_widget_set_sensitive(entry, control->is_writable);
-	if (control->is_writable) {
-		g_signal_connect(G_OBJECT(entry), "activate",
-		                 G_CALLBACK(string_changed), control);
-	}
+  gtk_widget_set_sensitive(entry, control->is_writable);
+  if (control->is_writable) {
+    g_signal_connect(G_OBJECT(entry), "activate",
+                     G_CALLBACK(string_changed), control);
+  }
 
-	return new_controller(NULL, entry);
+  return new_controller(NULL, entry);
 }
 
 static Controller*
 make_file_chooser(Lv2Control* record)
 {
-	GtkWidget* button = gtk_file_chooser_button_new(
-		"Open File", GTK_FILE_CHOOSER_ACTION_OPEN);
+  GtkWidget* button = gtk_file_chooser_button_new(
+    "Open File", GTK_FILE_CHOOSER_ACTION_OPEN);
 
-	gtk_widget_set_sensitive(button, record->is_writable);
+  gtk_widget_set_sensitive(button, record->is_writable);
 
-	if (record->is_writable) {
-		g_signal_connect(G_OBJECT(button), "file-set",
-		                 G_CALLBACK(file_changed), record);
-	}
+  if (record->is_writable) {
+    g_signal_connect(G_OBJECT(button), "file-set",
+                     G_CALLBACK(file_changed), record);
+  }
 
-	return new_controller(NULL, button);
+  return new_controller(NULL, button);
 }
 
 static Controller*
 make_controller(Lv2Control* control, float value)
 {
-	Controller* controller = NULL;
+  Controller* controller = NULL;
 
-	if (control->is_toggle) {
-		controller = make_toggle(control, value);
-	} else if (control->is_enumeration) {
-		controller = make_combo(control, value);
-	} else if (control->is_logarithmic) {
-		controller = make_log_slider(control, value);
-	} else {
-		controller = make_slider(control, value);
-	}
+  if (control->is_toggle) {
+    controller = make_toggle(control, value);
+  } else if (control->is_enumeration) {
+    controller = make_combo(control, value);
+  } else if (control->is_logarithmic) {
+    controller = make_log_slider(control, value);
+  } else {
+    controller = make_slider(control, value);
+  }
 
-	return controller;
+  return controller;
 }
 
 static GtkWidget*
 new_label(const char* text, bool title, float xalign, float yalign)
 {
-	GtkWidget*  label = gtk_label_new(NULL);
-	const char* fmt   = title ? "<span font_weight=\"bold\">%s</span>" : "%s:";
-	gchar*      str   = g_markup_printf_escaped(fmt, text);
-	gtk_label_set_markup(GTK_LABEL(label), str);
-	g_free(str);
-	gtk_misc_set_alignment(GTK_MISC(label), xalign, yalign);
-	return label;
+  GtkWidget*  label = gtk_label_new(NULL);
+  const char* fmt   = title ? "<span font_weight=\"bold\">%s</span>" : "%s:";
+  gchar*      str   = g_markup_printf_escaped(fmt, text);
+  gtk_label_set_markup(GTK_LABEL(label), str);
+  g_free(str);
+  gtk_misc_set_alignment(GTK_MISC(label), xalign, yalign);
+  return label;
 }
 
 static void
@@ -1307,63 +1307,63 @@ add_control_row(GtkWidget*  table,
                 const char* name,
                 Controller* controller)
 {
-	GtkWidget* label = new_label(name, false, 1.0, 0.5);
-	gtk_table_attach(GTK_TABLE(table),
-	                 label,
-	                 0, 1, row, row + 1,
-	                 GTK_FILL, (GtkAttachOptions)(GTK_FILL|GTK_EXPAND), 8, 1);
-	int control_left_attach = 1;
-	if (controller->spin) {
-		control_left_attach = 2;
-		gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(controller->spin),
-		                 1, 2, row, row + 1,
-		                 GTK_FILL, GTK_FILL, 2, 1);
-	}
-	gtk_table_attach(GTK_TABLE(table), controller->control,
-	                 control_left_attach, 3, row, row + 1,
-	                 (GtkAttachOptions)(GTK_FILL|GTK_EXPAND), GTK_FILL, 2, 1);
+  GtkWidget* label = new_label(name, false, 1.0, 0.5);
+  gtk_table_attach(GTK_TABLE(table),
+                   label,
+                   0, 1, row, row + 1,
+                   GTK_FILL, (GtkAttachOptions)(GTK_FILL|GTK_EXPAND), 8, 1);
+  int control_left_attach = 1;
+  if (controller->spin) {
+    control_left_attach = 2;
+    gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(controller->spin),
+                     1, 2, row, row + 1,
+                     GTK_FILL, GTK_FILL, 2, 1);
+  }
+  gtk_table_attach(GTK_TABLE(table), controller->control,
+                   control_left_attach, 3, row, row + 1,
+                   (GtkAttachOptions)(GTK_FILL|GTK_EXPAND), GTK_FILL, 2, 1);
 }
 
 static int
 control_group_cmp(const void* p1, const void* p2, void* data)
 {
-	const Lv2Control* control1 = *(const Lv2Control**)p1;
-	const Lv2Control* control2 = *(const Lv2Control**)p2;
+  const Lv2Control* control1 = *(const Lv2Control**)p1;
+  const Lv2Control* control2 = *(const Lv2Control**)p2;
 
-	const int cmp = (control1->group && control2->group)
-		? strcmp(lilv_node_as_string(control1->group),
-		         lilv_node_as_string(control2->group))
-		: ((intptr_t)control1->group - (intptr_t)control2->group);
+  const int cmp = (control1->group && control2->group)
+    ? strcmp(lilv_node_as_string(control1->group),
+             lilv_node_as_string(control2->group))
+    : ((intptr_t)control1->group - (intptr_t)control2->group);
 
-	return cmp;
+  return cmp;
 }
 
 static GtkWidget*
 build_control_widget (
   Lv2Plugin* plugin, GtkWidget* window)
 {
-	GtkWidget* port_table =
+  GtkWidget* port_table =
     gtk_table_new (
       plugin->num_ports, 3, false);
 
-	/* Make an array of controls sorted by group */
-	GArray* controls =
+  /* Make an array of controls sorted by group */
+  GArray* controls =
     g_array_new (FALSE, TRUE, sizeof(Lv2Control*));
   int i;
-	for (i = 0;
+  for (i = 0;
        i < plugin->controls.n_controls; ++i)
     {
       g_array_append_vals (
         controls, &plugin->controls.controls[i], 1);
     }
-	g_array_sort_with_data (
+  g_array_sort_with_data (
     controls, control_group_cmp, plugin);
 
-	/* Add controls in group order */
-	LilvNode* last_group = NULL;
-	int n_rows = 0;
+  /* Add controls in group order */
+  LilvNode* last_group = NULL;
+  int n_rows = 0;
   int num_ctrls = controls->len;
-	for (i = 0; i < num_ctrls; ++i)
+  for (i = 0; i < num_ctrls; ++i)
     {
       Lv2Control* record =
         g_array_index(controls, Lv2Control*, i);
@@ -1433,7 +1433,7 @@ build_control_widget (
         }
     }
 
-	if (n_rows > 0)
+  if (n_rows > 0)
     {
       gtk_window_set_resizable (
         GTK_WINDOW(window), TRUE);

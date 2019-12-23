@@ -1392,7 +1392,7 @@ port_sum_signal_from_inputs (
                   val_to_use =
                     port->lv2_port->control;
 
-                port->lv2_port->control =
+                float result =
                   CLAMP (
                     val_to_use +
                       depth_range *
@@ -1401,6 +1401,8 @@ port_sum_signal_from_inputs (
                           port_get_dest_index (
                             src_port, port)],
                     minf, maxf);
+                port_set_control_value (
+                  port, result, 0, 1);
               }
           }
       }
