@@ -105,10 +105,10 @@ resize_selection_l (
     ruler_widget_set_zoom_level (
       Z_RULER_WIDGET (MW_RULER),
       self->start_zoom_level / ratio);
-  zoom_level_set =
-    ruler_widget_set_zoom_level (
-      Z_RULER_WIDGET (EDITOR_RULER),
-      self->start_zoom_level / ratio);
+  /*zoom_level_set =*/
+    /*ruler_widget_set_zoom_level (*/
+      /*Z_RULER_WIDGET (EDITOR_RULER),*/
+      /*self->start_zoom_level / ratio);*/
 
   if (zoom_level_set)
     {
@@ -151,10 +151,10 @@ resize_selection_r (
     ruler_widget_set_zoom_level (
       Z_RULER_WIDGET (MW_RULER),
       self->start_zoom_level / ratio);
-  zoom_level_set =
-    ruler_widget_set_zoom_level (
-      Z_RULER_WIDGET (EDITOR_RULER),
-      self->start_zoom_level / ratio);
+  /*zoom_level_set =*/
+    /*ruler_widget_set_zoom_level (*/
+      /*Z_RULER_WIDGET (EDITOR_RULER),*/
+      /*self->start_zoom_level / ratio);*/
 
   if (zoom_level_set)
     {
