@@ -20,6 +20,7 @@ packages:
   - ladspa
   - lv2
   - rubberband
+  - xdg-utils
 sources:
   - https://git.sr.ht/~alextee/zrythm
 tasks:

@@ -22,6 +22,7 @@ packages:
   - libyaml-dev
   - librubberband-dev
   - python3
+  - xdg-utils
 sources:
   - https://git.sr.ht/~alextee/zrythm
   - https://github.com/mesonbuild/meson

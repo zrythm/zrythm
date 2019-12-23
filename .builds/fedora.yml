@@ -22,6 +22,7 @@ packages:
   - jack-audio-connection-kit-devel
   - libX11-devel
   - rubberband-devel
+  - xdg-utils
 sources:
   - https://git.sr.ht/~alextee/zrythm
 tasks:
