@@ -52,10 +52,14 @@ arranger_selections_init_loaded (
 
 #define SET_OBJ(sel,cc,sc) \
   for (i = 0; i < sel->num_##sc##s; i++) \
-    sel->sc##s[i] = \
-      (cc *) \
-      arranger_object_find ( \
-        (ArrangerObject *) sel->sc##s[i])
+    { \
+      ArrangerObject * obj = \
+        (ArrangerObject *) sel->sc##s[i]; \
+      arranger_object_update_frames (obj); \
+      sel->sc##s[i] = \
+        (cc *) \
+        arranger_object_find (obj); \
+    }
 
   switch (self->type)
     {
@@ -72,10 +76,8 @@ arranger_selections_init_loaded (
           MidiNote * mn = mas->midi_notes[i];
           ArrangerObject * mn_obj =
             (ArrangerObject *) mn;
-          position_update_ticks_and_frames (
-            &mn_obj->pos);
-          position_update_ticks_and_frames (
-            &mn_obj->end_pos);
+          arranger_object_update_frames (
+            mn_obj);
           mn->region =
             region_find_by_name (mn->region_name);
           g_warn_if_fail (mn->region);
@@ -94,8 +96,8 @@ arranger_selections_init_loaded (
       cs = (ChordSelections *) self;
       SET_OBJ (cs, ChordObject, chord_object);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 
 #undef SET_OBJ

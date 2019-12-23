@@ -32,14 +32,10 @@ towards a stable release.
 See [INSTALL.md](INSTALL.md).
 
 ## Using
-At the moment, Zrythm works with JACK (recommended)
-~~and ALSA~~.
-For Jack setup instructions see
-[Demistifying JACK - A Beginners Guide to Getting Started With JACK](https://libremusicproduction.com/articles/demystifying-jack-%E2%80%93-beginners-guide-getting-started-jack).
-
-For more information on using Zrythm see the
+At the moment, Zrythm works with [JACK](https://jackaudio.org) (recommended)
+~~and ALSA~~. For more information on using Zrythm see the
 [user manual](http://manual.zrythm.org/), which is
-also available in PDF, epub and HTML.
+also available in PDF, epub and HTML-zip.
 
 ## Packaging
 See [PACKAGING.md](PACKAGING.md).

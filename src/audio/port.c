@@ -1736,11 +1736,14 @@ port_set_expose_to_jack (
       g_message (
         "exposing port %s to JACK",
         label);
-      self->data =
-        (void *) jack_port_register (
-          AUDIO_ENGINE->client,
-          label,
-          type, flags, 0);
+      if (!self->data)
+        {
+          self->data =
+            (void *) jack_port_register (
+              AUDIO_ENGINE->client,
+              label,
+              type, flags, 0);
+        }
       g_warn_if_fail (self->data);
       g_free (label);
       self->internal_type = INTERNAL_JACK_PORT;

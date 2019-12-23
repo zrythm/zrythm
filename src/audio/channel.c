@@ -643,6 +643,12 @@ channel_reconnect_ext_input_ports (
   if (ch->track->type == TRACK_TYPE_INSTRUMENT ||
       ch->track->type == TRACK_TYPE_MIDI)
     {
+      /* if the project was loaded with another
+       * backend, the port might not be exposed
+       * yet, so expose it */
+      port_set_expose_to_backend (
+        ch->track->processor.midi_in, 1);
+
       if (AUDIO_ENGINE->audio_backend ==
             AUDIO_BACKEND_JACK &&
           AUDIO_ENGINE->midi_backend ==
@@ -656,6 +662,14 @@ channel_reconnect_ext_input_ports (
     }
   else if (ch->track->type == TRACK_TYPE_AUDIO)
     {
+      /* if the project was loaded with another
+       * backend, the port might not be exposed
+       * yet, so expose it */
+      port_set_expose_to_backend (
+        ch->track->processor.stereo_in->l, 1);
+      port_set_expose_to_backend (
+        ch->track->processor.stereo_in->r, 1);
+
       if (AUDIO_ENGINE->audio_backend ==
             AUDIO_BACKEND_JACK &&
           AUDIO_ENGINE->midi_backend ==
