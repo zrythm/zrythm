@@ -391,6 +391,9 @@ node_process (
 static inline void
 node_run (GraphNode * self)
 {
+  g_return_if_fail (
+    self && self->graph && self->graph->router);
+
   /*graph_print (self->graph);*/
   node_process (
     self, self->graph->router->nsamples);
@@ -1374,44 +1377,30 @@ static int
 graph_is_valid (
   Graph * self)
 {
-  int i;
-
-  /* empty list to put sorted elements */
-  /*GraphNode * sorted_nodes[self->n_graph_nodes];*/
-  /*int num_sorted_nodes = 0;*/
-
-  /* set of all nodes without incoming edges */
-  /*GraphNode * trigger_nodes[self->n_init_triggers];*/
-  /*int num_trigger_nodes = 0;*/
-  /*for (i = 0; i < self->n_init_triggers; i++)*/
-    /*{*/
-      /*trigger_nodes[num_trigger_nodes++] =*/
-        /*self->init_trigger_list[i];*/
-    /*}*/
-
-  GraphNode * n, * m;
-  while (self->n_init_triggers > 0)
+  /* Fill up an array of trigger nodes, and make
+   * it large enough so that we can append more
+   * nodes to it */
+  GraphNode * triggers[self->num_setup_graph_nodes];
+  int num_triggers = self->num_setup_init_triggers;
+  for (int i = 0; i < num_triggers; i++)
     {
-      n =
-        self->init_trigger_list[
-          --self->n_init_triggers];
-      /*g_message ("init trigger %d %s",*/
-                 /*self->n_init_triggers,*/
-                 /*get_node_name (n));*/
-      /*sorted_nodes[num_sorted_nodes++] = n;*/
-      for (i = n->n_childnodes - 1;
+      triggers[i] =
+        self->setup_init_trigger_list[i];
+    }
+
+  while (num_triggers > 0)
+    {
+      GraphNode * n = triggers[--num_triggers];
+
+      for (int i = n->n_childnodes - 1;
            i >= 0; i--)
         {
-          m = n->childnodes[i];
-          /*g_message ("child node %d %s",*/
-                     /*i,*/
-                     /*get_node_name (m));*/
+          GraphNode * m = n->childnodes[i];
           n->n_childnodes--;
           m->init_refcount--;
           if (m->init_refcount == 0)
             {
-              self->init_trigger_list[
-                self->n_init_triggers++] = m;
+              triggers[num_triggers++] = m;
             }
         }
     }
@@ -1419,12 +1408,10 @@ graph_is_valid (
   for (size_t j = 0;
        j < self->num_setup_graph_nodes; j++)
     {
-      n = self->setup_graph_nodes[j];
+      GraphNode * n = self->setup_graph_nodes[j];
       if (n->n_childnodes > 0 ||
           n->init_refcount > 0)
         {
-          /*graph_print (self);*/
-          /*g_warning ("graph invalid");*/
           return 0;
         }
     }
@@ -1487,11 +1474,14 @@ graph_rechain (
  *
  * @param drop_unnecessary_ports Drops any ports
  *   that don't connect anywhere.
+ * @param rechain Whether to rechain or not. If
+ *   we are just validating this should be 0.
  */
 void
 graph_setup (
   Graph *   self,
-  const int drop_unnecessary_ports)
+  const int drop_unnecessary_ports,
+  const int rechain)
 {
   int i, j, k;
   GraphNode * node, * node2;
@@ -1821,7 +1811,8 @@ graph_setup (
 
   graph_print (self);
 
-  graph_rechain (self);
+  if (rechain)
+    graph_rechain (self);
 }
 
 /**
@@ -1839,16 +1830,7 @@ graph_validate (
   g_return_val_if_fail (src && dest, 0);
   Graph * self = graph_new (router);
 
-  graph_setup (self, 0);
-
-  /* swap because graph_setup() rechains and puts
-   * the setup nodes in the live nodes. */
-  GraphNode ** tmp =
-    self->setup_graph_nodes;
-  size_t prev_size = self->num_setup_graph_nodes;
-  self->setup_graph_nodes = self->graph_nodes;
-  self->num_setup_graph_nodes =
-    (size_t) self->n_graph_nodes;
+  graph_setup (self, 0, 0);
 
   /* connect the src/dest if not NULL */
   /* this code is only for creating graphs to test
@@ -1861,11 +1843,6 @@ graph_validate (
   node_connect (node, node2);
 
   int valid = graph_is_valid (self);
-
-  /* put setup graph nodes back so they can be
-   * freed properly */
-  self->setup_graph_nodes = tmp;
-  self->num_setup_graph_nodes = prev_size;
 
   graph_free (self);
 

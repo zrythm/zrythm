@@ -304,11 +304,14 @@ graph_destroy (
  *
  * @param drop_unnecessary_ports Drops any ports
  *   that don't connect anywhere.
+ * @param rechain Whether to rechain or not. If
+ *   we are just validating this should be 0.
  */
 void
 graph_setup (
   Graph *   self,
-  const int drop_unnecessary_ports);
+  const int drop_unnecessary_ports,
+  const int rechain);
 
 /**
  * Adds a new connection for the given

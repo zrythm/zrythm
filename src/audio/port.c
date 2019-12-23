@@ -976,7 +976,12 @@ port_get_rms_db (
     (blocks_read - (size_t) n_cycles) *
       AUDIO_ENGINE->block_length;
   if (blocks_read == 0)
-    g_return_val_if_reached (0.f);
+    {
+      g_message (
+        "No blocks read for port %s",
+        port->identifier.label);
+      return 0.f;
+    }
 
   return
     math_calculate_rms_db (

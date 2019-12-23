@@ -267,6 +267,8 @@ transport_get_playhead_pos (
   Transport * self,
   Position *  pos)
 {
+  g_return_if_fail (self && pos);
+
   position_set_to_pos (
     pos, &self->playhead_pos);
 }

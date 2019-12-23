@@ -911,7 +911,7 @@ nframes_t
 lv2_plugin_get_latency (
   Lv2Plugin * pl)
 {
-  lv2_plugin_process (pl, PLAYHEAD->frames, 0);
+  lv2_plugin_process (pl, PLAYHEAD->frames, 2);
 
   return pl->plugin_latency;
 }
@@ -1392,6 +1392,8 @@ lv2_plugin_instantiate (
       /* Find plugin */
       g_message ("Plugin: %s",
                  lilv_node_as_string (lv2_uri));
+      g_return_val_if_fail (
+        PM_LILV_NODES.lilv_plugins, -1);
       self->lilv_plugin =
         lilv_plugins_get_by_uri (
           PM_LILV_NODES.lilv_plugins,

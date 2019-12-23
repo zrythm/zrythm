@@ -67,13 +67,13 @@ mixer_recalc_graph (
       router_init (router);
       router->graph =
         graph_new (router);
-      graph_setup (router->graph, 1);
+      graph_setup (router->graph, 1, 1);
       graph_start (router->graph);
       return;
     }
 
   zix_sem_wait (&router->graph_access);
-  graph_setup (router->graph, 1);
+  graph_setup (router->graph, 1, 1);
   zix_sem_post (&router->graph_access);
 }
 

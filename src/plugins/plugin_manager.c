@@ -520,14 +520,14 @@ plugin_manager_scan_plugins (
   double start_progress =
     progress ? *progress : 0;
 
-  if (getenv ("NO_SCAN_PLUGINS"))
-    return;
-
   /* load all plugins with lilv */
   LilvWorld * world = LILV_WORLD;
   const LilvPlugins * plugins =
     lilv_world_get_all_plugins (world);
   LV2_NODES.lilv_plugins = plugins;
+
+  if (getenv ("NO_SCAN_PLUGINS"))
+    return;
 
   double size = (double) lilv_plugins_size (plugins);
 
