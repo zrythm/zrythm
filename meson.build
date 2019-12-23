@@ -19,7 +19,7 @@ project (
   'zrythm', ['c', 'cpp'],
   version: '0.7.270',
   license: 'AGPLv3+',
-  meson_version: '>= 0.46.0',
+  meson_version: '>= 0.50.0',
   default_options: [
     'warning_level=1',
     'buildtype=debug',
@@ -134,6 +134,7 @@ cc = meson.get_compiler ('c')
 
 # Check for programs
 find_program ('sed', required: true)
+find_program ('xdg-open')
 sphinx_build = find_program (
   ['sphinx-build', 'sphinx-build-3'],
   required: get_option ('user_manual'))
