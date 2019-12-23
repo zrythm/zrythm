@@ -585,9 +585,14 @@ snap_region_l (
 {
   if (SNAP_GRID_ANY_SNAP (self->snap_grid) &&
         !self->shift_held)
-    position_snap (
-      NULL, new_start_pos, region->lane->track,
-      NULL, self->snap_grid);
+    {
+      Track * track =
+        arranger_object_get_track (
+          (ArrangerObject *) region);
+      position_snap (
+        NULL, new_start_pos, track,
+        NULL, self->snap_grid);
+    }
 
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
@@ -708,25 +713,12 @@ snap_region_r (
   if (SNAP_GRID_ANY_SNAP (self->snap_grid) &&
         !self->shift_held)
     {
-      switch (region->type)
-        {
-        case REGION_TYPE_CHORD:
-          position_snap (
-            NULL, new_end_pos, P_CHORD_TRACK,
-            NULL, self->snap_grid);
-          break;
-        case REGION_TYPE_MIDI:
-        case REGION_TYPE_AUDIO:
-          position_snap (
-            NULL, new_end_pos, region->lane->track,
-            NULL, self->snap_grid);
-          break;
-        case REGION_TYPE_AUTOMATION:
-          position_snap (
-            NULL, new_end_pos, NULL,
-            NULL, self->snap_grid);
-          break;
-        }
+      Track * track =
+        arranger_object_get_track (
+          (ArrangerObject *) region);
+      position_snap (
+        NULL, new_end_pos, track,
+        NULL, self->snap_grid);
     }
 
   ArrangerObject * r_obj =

@@ -932,8 +932,22 @@ add_ticks_to_region_children (
     case REGION_TYPE_AUDIO:
       break;
     case REGION_TYPE_AUTOMATION:
+      for (int i = 0; i < self->num_aps; i++)
+        {
+          arranger_object_move (
+            (ArrangerObject *) self->aps[i],
+            ticks, F_NO_CACHED);
+        }
       break;
     case REGION_TYPE_CHORD:
+      for (int i = 0; i < self->num_chord_objects;
+           i++)
+        {
+          arranger_object_move (
+            (ArrangerObject *)
+              self->chord_objects[i],
+            ticks, F_NO_CACHED);
+        }
       break;
     }
 }
