@@ -225,53 +225,14 @@ static const char *
 get_note_type_str (
   NoteType type)
 {
-  switch (type)
-    {
-    case NOTE_TYPE_NORMAL:
-      return "";
-    case NOTE_TYPE_DOTTED:
-      return ".";
-    case NOTE_TYPE_TRIPLET:
-      return "t";
-    }
-  return NULL;
+  return note_type_strings[type].str;
 }
 
 static const char *
 get_note_length_str (
   NoteLength length)
 {
-  switch (length)
-    {
-    case NOTE_LENGTH_2_1:
-      return "2/1";
-      break;
-    case NOTE_LENGTH_1_1:
-      return "1/1";
-      break;
-    case NOTE_LENGTH_1_2:
-      return "1/2";
-      break;
-    case NOTE_LENGTH_1_4:
-      return "1/4";
-      break;
-    case NOTE_LENGTH_1_8:
-      return "1/8";
-      break;
-    case NOTE_LENGTH_1_16:
-      return "1/16";
-      break;
-    case NOTE_LENGTH_1_32:
-      return "1/32";
-      break;
-    case NOTE_LENGTH_1_64:
-      return "1/64";
-      break;
-    case NOTE_LENGTH_1_128:
-      return "1/128";
-      break;
-    }
-  return NULL;
+  return note_length_strings[length].str;
 }
 
 /**
