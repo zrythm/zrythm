@@ -839,6 +839,18 @@ lock_memory (void)
     }
 }
 
+/**
+ * Called immediately after the main GTK loop
+ * terminates.
+ */
+static void
+on_shutdown (
+  GApplication * application,
+  ZrythmApp *    self)
+{
+  /* TODO */
+}
+
 ZrythmApp *
 zrythm_app_new (void)
 {
@@ -854,6 +866,11 @@ zrythm_app_new (void)
   ZRYTHM = self->zrythm;
   ZRYTHM->project = calloc (1, sizeof (Project));
   ZRYTHM->have_ui = 1;
+
+  /* add shutdown handler */
+  g_signal_connect (
+    G_OBJECT (self), "shutdown",
+    G_CALLBACK (on_shutdown), self);
 
   return self;
 }

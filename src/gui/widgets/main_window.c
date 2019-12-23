@@ -64,7 +64,14 @@ on_main_window_destroy (MainWindowWidget * self,
                         gpointer user_data)
 {
   if (PROJECT->loaded)
-    g_application_quit (G_APPLICATION (zrythm_app));
+    {
+      /* set this to NULL to stop events from
+       * getting fired. this prevents some segfaults
+       * on shutdown */
+      ZRYTHM->event_queue = NULL;
+      g_application_quit (
+        G_APPLICATION (zrythm_app));
+    }
 }
 
 static void
