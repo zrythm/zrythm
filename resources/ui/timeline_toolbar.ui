@@ -36,6 +36,11 @@
       </object>
     </child>
     <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkToolItem">
         <property name="visible">True</property>
         <child>
@@ -47,11 +52,16 @@
       </object>
     </child>
     <child>
-      <object class="GtkToolButton" id="event_viewer_toggle">
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkToggleToolButton" id="musical_mode_toggle">
         <property name="visible">True</property>
         <property name="action-name">win.toggle-musical-mode</property>
         <property name="icon-name">music-note-16th</property>
-        <property name="tooltip-text" translatable="yes">Toggle musical mode</property>
+        <property name="tooltip-text" translatable="yes">Musical mode</property>
       </object>
     </child>
     <!-- extra space so we can add widgets at the

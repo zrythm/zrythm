@@ -59,6 +59,7 @@ typedef struct _TimelineToolbarWidget
   SnapGridWidget * snap_grid_timeline;
   QuantizeBoxWidget * quantize_box;
   GtkToolButton *  event_viewer_toggle;
+  GtkToggleToolButton *  musical_mode_toggle;
 } TimelineToolbarWidget;
 
 void

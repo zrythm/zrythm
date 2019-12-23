@@ -242,6 +242,12 @@ help-toolbar separator
   margin: 4px;
 }
 
+timeline-toolbar separator
+{
+  background-color: alpha (grey, 0.6);
+  margin: 4px;
+}
+
 piano-roll-label.highlight_scale
 {
   background-color: alpha (#662266, 0.2);

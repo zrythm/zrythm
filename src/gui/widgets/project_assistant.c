@@ -17,12 +17,13 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "zrythm.h"
+#include "gui/widgets/create_project_dialog.h"
 #include "gui/widgets/project_assistant.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/io.h"
 #include "utils/resources.h"
+#include "zrythm.h"
 
 #include <glib/gi18n.h>
 
@@ -387,6 +388,101 @@ on_project_remove_clicked (
     }
 }
 
+static int cancel = 1;
+
+static void
+on_finish (
+  GtkAssistant * assistant,
+  void * user_data)
+{
+  ProjectAssistantWidget * self =
+    Z_PROJECT_ASSISTANT_WIDGET (assistant);
+  ZRYTHM->creating_project = 1;
+  if (user_data == &cancel) /* if cancel */
+    {
+      gtk_widget_destroy (GTK_WIDGET (self));
+      ZRYTHM->open_filename = NULL;
+    }
+  /* if we are loading a template and template
+   * exists */
+  else if (self->load_template &&
+           self->template_selection &&
+           self->template_selection->
+             filename[0] != '-')
+    {
+      ZRYTHM->open_filename =
+        self->template_selection->filename;
+      g_message (
+        "Creating project from template: %s",
+        ZRYTHM->open_filename);
+      ZRYTHM->opening_template = 1;
+    }
+  /* if we are loading a project */
+  else if (!self->load_template &&
+           self->project_selection)
+    {
+      ZRYTHM->open_filename =
+        self->project_selection->filename;
+      g_message (
+        "Loading project: %s",
+        ZRYTHM->open_filename);
+      ZRYTHM->creating_project = 0;
+    }
+  /* no selection, load blank project */
+  else
+    {
+      ZRYTHM->open_filename = NULL;
+      g_message (
+        "Creating blank project");
+    }
+
+  /* if not loading a project, show dialog to
+   * select directory and name */
+  int quit = 0;
+  if (ZRYTHM->creating_project)
+    {
+      CreateProjectDialogWidget * dialog =
+        create_project_dialog_widget_new ();
+
+      int ret =
+        gtk_dialog_run (GTK_DIALOG (dialog));
+      if (ret != GTK_RESPONSE_OK)
+        quit = 1;
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+
+      g_message ("creating project %s",
+                 ZRYTHM->create_project_path);
+    }
+
+  if (quit)
+    {
+      g_application_quit (
+        G_APPLICATION (zrythm_app));
+    }
+  else
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (self), 0);
+      g_action_group_activate_action (
+        G_ACTION_GROUP (zrythm_app),
+        "init_main_window",
+        NULL);
+    }
+}
+
+static int
+on_key_release (
+  GtkWidget * widget,
+  GdkEventKey *  event,
+  ProjectAssistantWidget * self)
+{
+  if (event->keyval == GDK_KEY_Return ||
+      event->keyval == GDK_KEY_KP_Enter)
+    {
+      on_finish (GTK_ASSISTANT (self), NULL);
+    }
+  return FALSE;
+}
 
 ProjectAssistantWidget *
 project_assistant_widget_new (
@@ -498,6 +594,13 @@ project_assistant_widget_new (
   gtk_window_set_attached_to (
     GTK_WINDOW (self), GTK_WIDGET (parent));
 
+  g_signal_connect (
+    G_OBJECT (self), "apply",
+    G_CALLBACK (on_finish), self);
+  g_signal_connect (
+    G_OBJECT (self), "cancel",
+    G_CALLBACK (on_finish), &cancel);
+
   return self;
 }
 
@@ -573,5 +676,7 @@ project_assistant_widget_init (
   g_signal_connect(
     G_OBJECT (self->remove_btn), "clicked",
     G_CALLBACK (on_project_remove_clicked), self);
-
+  g_signal_connect(
+    G_OBJECT (self), "key-release-event",
+    G_CALLBACK (on_key_release), self);
 }

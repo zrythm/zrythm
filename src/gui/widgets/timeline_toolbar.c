@@ -76,4 +76,5 @@ timeline_toolbar_widget_class_init (
   BIND_CHILD (snap_grid_timeline);
   BIND_CHILD (quantize_box);
   BIND_CHILD (event_viewer_toggle);
+  BIND_CHILD (musical_mode_toggle);
 }
