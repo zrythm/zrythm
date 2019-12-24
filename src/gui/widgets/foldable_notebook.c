@@ -86,56 +86,77 @@ foldable_notebook_widget_set_visibility (
 
   if (new_visibility)
     {
-      /*if (self->dock_revealer)*/
-        /*{*/
-          /*dzl_dock_revealer_set_position (*/
-            /*self->dock_revealer, self->prev_pos);*/
-        /*}*/
-      /*else if (self->paned)*/
-        /*{*/
-          /*gtk_paned_set_position (*/
-            /*self->paned, self->prev_pos);*/
-        /*}*/
+      if (self->paned)
+        {
+          gtk_paned_set_position (
+            self->paned, self->prev_pos);
+        }
     }
   else
     {
-      /*if (self->dock_revealer)*/
-        /*{*/
+      if (self->paned)
+        {
           /*[> remember position before hiding <]*/
-          /*self->prev_pos =*/
-            /*dzl_dock_revealer_get_position (*/
-              /*self->dock_revealer);*/
-
-          /*[> hide by setting position to 0 <]*/
-          /*dzl_dock_revealer_set_position (*/
-            /*self->dock_revealer, 0);*/
-        /*}*/
-      /*else if (self->paned)*/
-        /*{*/
-          /*[> remember position before hiding <]*/
-          /*self->prev_pos =*/
-            /*gtk_paned_get_position (*/
-              /*self->paned);*/
+          self->prev_pos =
+            gtk_paned_get_position (
+              self->paned);
 
           /*[> hide <]*/
-          /*int position;*/
-          /*if (self->pos_in_paned ==*/
-                /*GTK_POS_RIGHT ||*/
-              /*self->pos_in_paned ==*/
-                /*GTK_POS_BOTTOM)*/
-            /*{*/
-              /*position =*/
-                /*gtk_widget_get_allocated_height (*/
-                  /*GTK_WIDGET (self->paned));*/
-            /*}*/
-          /*else*/
-            /*{*/
-              /*position = 0;*/
-            /*}*/
-          /*gtk_paned_set_position (*/
-            /*self->paned, position);*/
-        /*}*/
+          int position;
+          if (self->pos_in_paned == GTK_POS_BOTTOM)
+            {
+              position =
+                gtk_widget_get_allocated_height (
+                  GTK_WIDGET (self->paned));
+            }
+          else if (self->pos_in_paned ==
+                     GTK_POS_RIGHT)
+            {
+              position =
+                gtk_widget_get_allocated_width (
+                  GTK_WIDGET (self->paned));
+            }
+          else
+            {
+              position = 0;
+            }
+          gtk_paned_set_position (
+            self->paned, position);
+        }
     }
+}
+
+/**
+ * Returns if the content of the foldable notebook
+ * is visible.
+ */
+int
+foldable_notebook_widget_is_content_visible (
+  FoldableNotebookWidget * self)
+{
+  GtkBox * current_box =
+    GTK_BOX (
+      z_gtk_notebook_get_current_page_widget (
+        GTK_NOTEBOOK (self)));
+  GtkWidget * widget =
+    z_gtk_container_get_single_child (
+      GTK_CONTAINER (current_box));
+  return
+    gtk_widget_get_visible (widget);
+}
+
+/**
+ * Combines the above.
+ */
+void
+foldable_notebook_widget_toggle_visibility (
+  FoldableNotebookWidget * self)
+{
+  g_return_if_fail (self);
+  foldable_notebook_widget_set_visibility (
+    self,
+    !foldable_notebook_widget_is_content_visible (
+       self));
 }
 
 /**
@@ -149,10 +170,6 @@ on_multipress_pressed (
   gdouble               y,
   FoldableNotebookWidget * self)
 {
-  GtkBox * current_box =
-    GTK_BOX (
-      z_gtk_notebook_get_current_page_widget (
-        GTK_NOTEBOOK (self)));
   GtkWidget * current_tab =
     z_gtk_notebook_get_current_tab_label_widget (
       GTK_NOTEBOOK (self));
@@ -160,14 +177,13 @@ on_multipress_pressed (
     ui_is_child_hit (
       GTK_WIDGET (self),
       current_tab,
-      1, 1, x, y,  3, 3);
+      1, 1, x, y,  16, 3);
   if (hit)
     {
-      GtkWidget * widget =
-        z_gtk_container_get_single_child (
-          GTK_CONTAINER (current_box));
+
       int new_visibility =
-        !gtk_widget_get_visible (widget);
+        !foldable_notebook_widget_is_content_visible (
+           self);
 
       foldable_notebook_widget_set_visibility (
         self, new_visibility);
@@ -191,12 +207,12 @@ void
 foldable_notebook_widget_setup (
   FoldableNotebookWidget * self,
   GtkPaned *               paned,
-  DzlDockRevealer *        dock_revealer,
+  /*DzlDockRevealer *        dock_revealer,*/
   GtkPositionType          pos_in_paned)
 {
   self->paned = paned;
   self->pos_in_paned = pos_in_paned;
-  self->dock_revealer = dock_revealer;
+  /*self->dock_revealer = dock_revealer;*/
 
   /* add events */
   gtk_widget_add_events (

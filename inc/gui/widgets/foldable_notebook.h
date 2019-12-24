@@ -36,8 +36,6 @@ G_DECLARE_FINAL_TYPE (
   Z, FOLDABLE_NOTEBOOK_WIDGET,
   GtkNotebook);
 
-typedef struct _DzlDockRevealer DzlDockRevealer;
-
 /**
  * @addtogroup widgets
  *
@@ -68,7 +66,7 @@ typedef struct _FoldableNotebookWidget
   /** Notebook position in the paned. */
   GtkPositionType        pos_in_paned;
 
-  DzlDockRevealer *      dock_revealer;
+  //DzlDockRevealer *      dock_revealer;
 
   /** Previous paned position before setting it to
    * max/min. */
@@ -93,13 +91,28 @@ foldable_notebook_widget_set_visibility (
   int                      new_visibility);
 
 /**
+ * Returns if the content of the foldable notebook
+ * is visible.
+ */
+int
+foldable_notebook_widget_is_content_visible (
+  FoldableNotebookWidget * self);
+
+/**
+ * Combines the above.
+ */
+void
+foldable_notebook_widget_toggle_visibility (
+  FoldableNotebookWidget * self);
+
+/**
  * Sets up an existing FoldableNotebookWidget.
  */
 void
 foldable_notebook_widget_setup (
   FoldableNotebookWidget * self,
   GtkPaned *               paned,
-  DzlDockRevealer *        dock_revealer,
+  //DzlDockRevealer *        dock_revealer,
   GtkPositionType          pos_in_paned);
 
 /**

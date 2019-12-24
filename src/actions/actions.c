@@ -53,6 +53,8 @@
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/export_dialog.h"
 #include "gui/widgets/file_browser_window.h"
+#include "gui/widgets/foldable_notebook.h"
+#include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
@@ -62,6 +64,7 @@
 #include "gui/widgets/preferences.h"
 #include "gui/widgets/project_assistant.h"
 #include "gui/widgets/quantize_dialog.h"
+#include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bg.h"
@@ -1031,39 +1034,28 @@ activate_clear_selection (
 
 void
 activate_select_all (
-	GSimpleAction *action,
-	GVariant *variant,
-	gpointer user_data)
+  GSimpleAction *action,
+  GVariant *variant,
+  gpointer user_data)
 {
-	if (MAIN_WINDOW->last_focused
-		== GTK_WIDGET (MW_MIDI_ARRANGER))
-	{
-		arranger_widget_select_all (
-			Z_ARRANGER_WIDGET (
-				MAIN_WINDOW->last_focused),
-			1);
-	}
+  if (MAIN_WINDOW->last_focused
+    == GTK_WIDGET (MW_MIDI_ARRANGER))
+  {
+    arranger_widget_select_all (
+      Z_ARRANGER_WIDGET (
+        MAIN_WINDOW->last_focused),
+      1);
+  }
 }
 
 void
-activate_toggle_left_panel (GSimpleAction *action,
-                  GVariant      *variant,
-                  gpointer       user_data)
+activate_toggle_left_panel (
+  GSimpleAction * action,
+  GVariant      * variant,
+  gpointer        user_data)
 {
-  CenterDockWidget * self = MW_CENTER_DOCK;
-  GValue a = G_VALUE_INIT;
-  g_value_init (&a, G_TYPE_BOOLEAN);
-  g_object_get_property (G_OBJECT (self),
-                         "left-visible",
-                         &a);
-  int val = g_value_get_boolean (&a);
-  g_value_set_boolean (&a,
-                       val == 1 ? 0 : 1);
-  g_object_set_property (G_OBJECT (self),
-                         "left-visible",
-                         &a);
-
-  /* TODO update header bar buttons */
+  foldable_notebook_widget_toggle_visibility (
+    MW_LEFT_DOCK_EDGE->inspector_notebook);
 }
 
 void
@@ -1071,18 +1063,8 @@ activate_toggle_right_panel (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  CenterDockWidget * self = MW_CENTER_DOCK;
-  GValue a = G_VALUE_INIT;
-  g_value_init (&a, G_TYPE_BOOLEAN);
-  g_object_get_property (G_OBJECT (self),
-                         "right-visible",
-                         &a);
-  int val = g_value_get_boolean (&a);
-  g_value_set_boolean (&a,
-                       val == 1 ? 0 : 1);
-  g_object_set_property (G_OBJECT (self),
-                         "right-visible",
-                         &a);
+  foldable_notebook_widget_toggle_visibility (
+    MW_RIGHT_DOCK_EDGE->right_notebook);
 }
 
 void
@@ -1090,22 +1072,8 @@ activate_toggle_bot_panel (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  CenterDockWidget * self = MW_CENTER_DOCK;
-  GValue a = G_VALUE_INIT;
-  g_value_init (&a, G_TYPE_BOOLEAN);
-  g_object_get_property (G_OBJECT (self),
-                         "bottom-visible",
-                         &a);
-  int val = g_value_get_boolean (&a);
-  g_value_set_boolean (&a,
-                       val == 1 ? 0 : 1);
-  g_object_set_property (G_OBJECT (self),
-                         "bottom-visible",
-                         &a);
-  gtk_widget_set_visible (
-    GTK_WIDGET (MW_BOT_DOCK_EDGE),
-    !gtk_widget_get_visible (
-      GTK_WIDGET (MW_BOT_DOCK_EDGE)));
+  foldable_notebook_widget_toggle_visibility (
+    MW_BOT_DOCK_EDGE->bot_notebook);
 }
 
 /**

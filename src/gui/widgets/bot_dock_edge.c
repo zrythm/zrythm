@@ -41,7 +41,6 @@ bot_dock_edge_widget_setup (
   foldable_notebook_widget_setup (
     self->bot_notebook,
     MW_CENTER_DOCK->center_paned,
-    NULL,
     GTK_POS_BOTTOM);
 
   event_viewer_widget_setup (

@@ -67,15 +67,18 @@ typedef struct _CenterDockWidget
     timeline_plus_event_viewer_paned;
 
   /** Event viewer. */
-  EventViewerWidget *      event_viewer;
+  EventViewerWidget *   event_viewer;
 
   /** Timeline panel. */
-  TimelinePanelWidget *    timeline_panel;
+  TimelinePanelWidget * timeline_panel;
 
-  LeftDockEdgeWidget *     left_dock_edge;
-  RightDockEdgeWidget *    right_dock_edge;
-  BotDockEdgeWidget *      bot_dock_edge;
-  GtkPaned *               center_paned;
+  GtkPaned *            left_rest_paned;
+  GtkPaned *            center_right_paned;
+
+  LeftDockEdgeWidget *  left_dock_edge;
+  RightDockEdgeWidget * right_dock_edge;
+  BotDockEdgeWidget *   bot_dock_edge;
+  GtkPaned *            center_paned;
 } CenterDockWidget;
 
 void

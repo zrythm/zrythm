@@ -18,8 +18,10 @@
  */
 
 #include "audio/control_room.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/control_room.h"
 #include "gui/widgets/foldable_notebook.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "project.h"
@@ -58,14 +60,10 @@ void
 right_dock_edge_widget_setup (
   RightDockEdgeWidget * self)
 {
-  /*foldable_notebook_widget_setup (*/
-    /*self->right_notebook,*/
-    /*NULL,*/
-    /*DZL_DOCK_REVEALER (*/
-      /*gtk_widget_get_parent (*/
-        /*gtk_widget_get_parent (*/
-          /*GTK_WIDGET (self)))),*/
-    /*GTK_POS_RIGHT);*/
+  foldable_notebook_widget_setup (
+    self->right_notebook,
+    MW_CENTER_DOCK->center_right_paned,
+    GTK_POS_RIGHT);
 
   /* remember divider pos */
   /*DzlDockRevealer * revealer =*/

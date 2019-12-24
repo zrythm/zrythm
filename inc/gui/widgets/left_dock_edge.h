@@ -26,11 +26,11 @@
 
 #define LEFT_DOCK_EDGE_WIDGET_TYPE \
   (left_dock_edge_widget_get_type ())
-G_DECLARE_FINAL_TYPE (LeftDockEdgeWidget,
-                      left_dock_edge_widget,
-                      Z,
-                      LEFT_DOCK_EDGE_WIDGET,
-                      GtkBox)
+G_DECLARE_FINAL_TYPE (
+  LeftDockEdgeWidget,
+  left_dock_edge_widget,
+  Z, LEFT_DOCK_EDGE_WIDGET,
+  GtkBox)
 
 #define MW_LEFT_DOCK_EDGE \
   MW_CENTER_DOCK->left_dock_edge

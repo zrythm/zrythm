@@ -19,7 +19,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/foldable_notebook.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/visibility.h"
@@ -62,14 +64,10 @@ void
 left_dock_edge_widget_setup (
   LeftDockEdgeWidget * self)
 {
-  /*foldable_notebook_widget_setup (*/
-    /*self->inspector_notebook,*/
-    /*NULL,*/
-    /*DZL_DOCK_REVEALER (*/
-      /*gtk_widget_get_parent (*/
-        /*gtk_widget_get_parent (*/
-          /*GTK_WIDGET (self)))),*/
-    /*GTK_POS_LEFT);*/
+  foldable_notebook_widget_setup (
+    self->inspector_notebook,
+    MW_CENTER_DOCK->left_rest_paned,
+    GTK_POS_LEFT);
 
   inspector_widget_setup (
     self->inspector);

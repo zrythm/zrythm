@@ -136,6 +136,8 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
     klass, CenterDockWidget, x)
 
   BIND_CHILD (center_paned);
+  BIND_CHILD (left_rest_paned);
+  BIND_CHILD (center_right_paned);
   BIND_CHILD (event_viewer);
   BIND_CHILD (timeline_panel);
   BIND_CHILD (left_dock_edge);
