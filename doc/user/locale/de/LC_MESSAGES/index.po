@@ -8,20 +8,21 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 07:46+0000\n"
-"PO-Revision-Date: 2019-09-22 21:27+0000\n"
+"PO-Revision-Date: 2019-12-24 22:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"manual-index/de/>\n"
 "Language: de\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/manual-"
-"index/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.10\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../index.rst:6
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: ../../index.rst:8
 msgid "Welcome to the Zrythm manual."
@@ -29,7 +30,7 @@ msgstr "Willkommen zum Zrythm-Handbuch."
 
 #: ../../index.rst:31
 msgid "Copyright © Alexandros Theodotou 2019"
-msgstr ""
+msgstr "Copyright © Alexandros Theodotou 2019"
 
 #: ../../index.rst:33
 msgid ""
@@ -76,4 +77,3 @@ msgstr ""
 
 #~ msgid "Zrythm Manual"
 #~ msgstr "Zrythm-Handbuch"
-
