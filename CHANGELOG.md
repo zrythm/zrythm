@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.295] - 2019-12-24
+- Add toggle for musical mode
+- Add separators in timeline toolbar
+- Send control change events to plugin UIs when automating with CV (UIs now get refreshed properly)
+- Fix crash when opening a project created with a different backend
+- Fix a few functions returning invalid memory
+- Fix crash during graph validation when connecting ports
+- Fix UI events wrongly being fired after the Zrythm window closes (causing mini-crashes on exit)
+- Fix crash when resizing automation regions
+- Fix timeline minimap incorrectly changing the editor zoom level
+- Fix crashes during audio recording
+- Fix toggling visibility of panels not working
+- Fix broken randomization slider in the quantize dialog
+- Set minimum required meson version
+- Add xdg-utils dependency
+- Update French, Portuguese and German translations
+
 ## [0.7.270] - 2019-12-21
 - Make Zrythm icon more symmetric
 - Auto-stretch audio regions when changing BPM

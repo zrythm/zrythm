@@ -60,7 +60,7 @@
       <object class="GtkToggleToolButton" id="musical_mode_toggle">
         <property name="visible">True</property>
         <property name="action-name">win.toggle-musical-mode</property>
-        <property name="icon-name">music-note-16th</property>
+        <property name="icon-name">z-music-note-16th</property>
         <property name="tooltip-text" translatable="yes">Musical mode</property>
       </object>
     </child>
