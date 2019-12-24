@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
 #include <stdlib.h>
 
 #include "audio/engine.h"
@@ -98,11 +99,11 @@ quantize_options_get_amount (
   return self->amount;
 }
 
-unsigned int
+float
 quantize_options_get_randomization (
   QuantizeOptions * self)
 {
-  return self->rand_ticks;
+  return (float) self->rand_ticks;
 }
 
 void
@@ -124,9 +125,10 @@ quantize_options_set_amount (
 void
 quantize_options_set_randomization (
   QuantizeOptions * self,
-  unsigned int      randomization)
+  float             randomization)
 {
-  self->rand_ticks = randomization;
+  self->rand_ticks =
+    (unsigned int) round (randomization);
 }
 
 /**

@@ -141,7 +141,7 @@ float
 quantize_options_get_amount (
   QuantizeOptions * self);
 
-unsigned int
+float
 quantize_options_get_randomization (
   QuantizeOptions * self);
 
@@ -158,7 +158,7 @@ quantize_options_set_amount (
 void
 quantize_options_set_randomization (
   QuantizeOptions * self,
-  unsigned int      randomization);
+  float             randomization);
 
 /**
  * Returns the grid intensity as a human-readable string.
