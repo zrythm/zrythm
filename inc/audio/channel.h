@@ -259,6 +259,9 @@ channel_fields_schema[] =
   CYAML_FIELD_INT (
     "all_midi_channels", CYAML_FLAG_DEFAULT,
     Channel, all_midi_channels),
+  CYAML_FIELD_INT (
+    "record_set_automatically", CYAML_FLAG_DEFAULT,
+    Channel, record_set_automatically),
 
   CYAML_FIELD_END
 };

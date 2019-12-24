@@ -238,11 +238,23 @@ handle_audio_event (
         r_obj->pos.frames;
       clip->frames =
         (sample_t *) realloc (
-        clip->frames,
-        (size_t)
-        (clip->num_frames *
-           clip->channels) *
-        sizeof (sample_t));
+          clip->frames,
+          (size_t)
+          (clip->num_frames *
+             clip->channels) *
+          sizeof (sample_t));
+      region->frames =
+        (sample_t *) realloc (
+          region->frames,
+          (size_t)
+          (clip->num_frames *
+             clip->channels) *
+          sizeof (sample_t));
+      region->num_frames = (size_t) clip->num_frames;
+      memcpy (
+        &region->frames[0], &clip->frames[0],
+        sizeof (float) * (size_t) clip->num_frames *
+        clip->channels);
 
       arranger_object_loop_end_pos_setter (
         r_obj, &TRANSPORT->loop_end_pos);
@@ -283,6 +295,18 @@ handle_audio_event (
         (clip->num_frames *
            clip->channels) *
         sizeof (sample_t));
+      region->frames =
+        (sample_t *) realloc (
+          region->frames,
+          (size_t)
+          (clip->num_frames *
+             clip->channels) *
+          sizeof (sample_t));
+      region->num_frames = (size_t) clip->num_frames;
+      memcpy (
+        &region->frames[0], &clip->frames[0],
+        sizeof (float) * (size_t) clip->num_frames *
+        clip->channels);
 
       arranger_object_loop_end_pos_setter (
         r_obj, &end_pos);
@@ -536,7 +560,14 @@ handle_start_recording (
   RecordingEvent * ev)
 {
   Track * tr = track_get_from_name (ev->track_name);
-  g_return_if_fail (!tr->recording_region);
+
+  /* this could be called multiple times, ignore
+   * if already processed */
+  if (tr->recording_region)
+    {
+      g_message ("record start already processed");
+      return;
+    }
 
   /* get end position */
   long start_frames = ev->g_start_frames;

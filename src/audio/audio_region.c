@@ -109,11 +109,12 @@ audio_region_new (
   self->frames =
     malloc (
       sizeof (float) *
-        (size_t) clip->num_frames);
+        (size_t) clip->num_frames * clip->channels);
   self->num_frames = (size_t) clip->num_frames;
   memcpy (
     &self->frames[0], &clip->frames[0],
-    sizeof (float) * (size_t) clip->num_frames);
+    sizeof (float) * (size_t) clip->num_frames *
+    clip->channels);
 
   /* init */
   region_init (

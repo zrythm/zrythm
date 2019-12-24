@@ -1249,9 +1249,20 @@ ruler_widget_redraw_playhead (
       max_x + RW_PLAYHEAD_TRIANGLE_WIDTH,
       rect.x + rect.width);
 
+  /* skip if playhead is not in the visible
+   * rectangle */
+  int width = max_x - min_x;
+  if (width < 0)
+    {
+      g_message (
+        "playhead not currently visible in ruler, "
+        "skipping redraw");
+      return;
+    }
+
   gtk_widget_queue_draw_area (
     GTK_WIDGET (self), min_x, rect.y,
-    (max_x - min_x), rect.height);
+    width, rect.height);
 }
 
 void

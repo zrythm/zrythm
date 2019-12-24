@@ -513,9 +513,14 @@ draw_audio_bg (
   double local_end_x =
     local_start_x +
     (double) rect->width;
+
+  /* frames in the clip to start drawing from */
   long prev_frames =
-    ui_px_to_frames_editor (local_start_x, 1) -
-      obj->pos.frames;
+    MAX (
+      ui_px_to_frames_editor (local_start_x, 1) -
+        obj->pos.frames,
+      0);
+
   for (double i = local_start_x;
        i < local_end_x; i+= 0.6)
     {
@@ -536,7 +541,8 @@ draw_audio_bg (
             {
               long index =
                 j * clip->channels + k;
-              g_warn_if_fail (
+              g_return_if_fail (
+                index >= 0 &&
                 index <
                   (long)
                   (ar->num_frames *
@@ -4255,6 +4261,17 @@ arranger_widget_redraw_playhead (
   int max_x =
     MAX (self->last_playhead_px, playhead_x);
   max_x = MIN (max_x + 4, rect.x + rect.width);
+
+  /* skip if playhead is not in the visible
+   * rectangle */
+  int width = max_x - min_x;
+  if (width < 0)
+    {
+      g_message (
+        "playhead not currently visible in "
+        "arranger, skipping redraw");
+      return;
+    }
 
   gtk_widget_queue_draw_area (
     GTK_WIDGET (self), min_x, rect.y,
