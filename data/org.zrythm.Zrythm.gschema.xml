@@ -343,6 +343,16 @@
       </description>
     </key>
 
+    <!-- KEY: listen-notes -->
+    <key name="listen-notes" type="i">
+      <default>1</default>
+      <summary>Listen to notes on/off</summary>
+      <description>
+        Whether to listen to MIDI notes while
+        dragging them in the piano roll.
+      </description>
+    </key>
+
     <!-- KEY: piano roll highlighting -->
     <key name="piano-roll-highlight"
       enum="org.zrythm.Zrythm.ui.piano-roll-highlight-enum">

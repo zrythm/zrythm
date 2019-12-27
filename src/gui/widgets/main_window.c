@@ -341,6 +341,11 @@ main_window_widget_init (MainWindowWidget * self)
     /* piano roll */
     { "toggle-drum-mode",
       activate_toggle_drum_mode },
+    { "toggle-listen-notes", NULL, NULL,
+      g_settings_get_int (
+        S_UI, "listen-notes") ?
+        "true" : "false",
+      change_state_listen_notes },
 
     /* control room */
     { "toggle-dim-output", NULL, NULL,

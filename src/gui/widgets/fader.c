@@ -17,9 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- */
-
 #include <stdlib.h>
 
 #include "audio/channel.h"

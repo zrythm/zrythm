@@ -1694,14 +1694,6 @@ graph_setup (
           node2 =
             find_node_from_port (self, port);
           node_connect (node2, node);
-          port = fader->amp;
-          node2 =
-            find_node_from_port (self, port);
-          node_connect (node2, node);
-          port = fader->pan;
-          node2 =
-            find_node_from_port (self, port);
-          node_connect (node2, node);
 
           /* connect outs */
           port = fader->stereo_out->l;
@@ -1725,6 +1717,14 @@ graph_setup (
             find_node_from_port (self, port);
           node_connect (node, node2);
         }
+      port = fader->amp;
+      node2 =
+        find_node_from_port (self, port);
+      node_connect (node2, node);
+      port = fader->pan;
+      node2 =
+        find_node_from_port (self, port);
+      node_connect (node2, node);
 
       /* connect the prefader */
       node =

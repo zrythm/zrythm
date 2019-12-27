@@ -72,7 +72,7 @@
                       <object class="GtkBox" id="left_of_ruler_box">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="orientation">vertical</property>
+                        <property name="orientation">horizontal</property>
                         <child>
                           <object class="GtkButton" id="toggle_notation">
                             <property name="visible">True</property>
@@ -90,7 +90,25 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkToggleButton" id="toggle_listen_notes">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="action_name">win.toggle-listen_notes</property>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="icon_name">z-audio-headphones</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
                           </packing>
                         </child>
                       </object>
