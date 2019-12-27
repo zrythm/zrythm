@@ -195,62 +195,62 @@ has_range(Lv2Plugin* plugin, const LilvNode* subject, const char* range_uri)
 Lv2Control*
 lv2_new_property_control(Lv2Plugin* plugin, const LilvNode* property)
 {
-	Lv2Control* id =
+  Lv2Control* id =
     (Lv2Control*) calloc (1, sizeof(Lv2Control));
-	id->plugin = plugin;
-	id->type = PROPERTY;
-	id->node = lilv_node_duplicate (property);
-	id->symbol =
+  id->plugin = plugin;
+  id->type = PROPERTY;
+  id->node = lilv_node_duplicate (property);
+  id->symbol =
     lilv_world_get_symbol (LILV_WORLD, property);
-	id->label =
+  id->label =
     lilv_world_get (LILV_WORLD,
                     property,
                     PM_LILV_NODES.rdfs_label, NULL);
-	id->property =
+  id->property =
     plugin->map.map (
       plugin, lilv_node_as_uri(property));
 
-	id->min =
+  id->min =
     lilv_world_get (
       LILV_WORLD, property,
       PM_LILV_NODES.core_minimum, NULL);
-	id->max =
+  id->max =
     lilv_world_get (
       LILV_WORLD, property,
       PM_LILV_NODES.core_maximum, NULL);
-	id->def =
+  id->def =
     lilv_world_get (
       LILV_WORLD, property,
       PM_LILV_NODES.core_default, NULL);
 
-	const char* const types[] = {
-		LV2_ATOM__Int,
+  const char* const types[] = {
+    LV2_ATOM__Int,
     LV2_ATOM__Long,
     LV2_ATOM__Float,
     LV2_ATOM__Double,
-		LV2_ATOM__Bool,
+    LV2_ATOM__Bool,
     LV2_ATOM__String,
     LV2_ATOM__Path,
     NULL
-	};
+  };
 
-	for (const char*const* t = types; *t; ++t) {
-		if (has_range(plugin, property, *t)) {
-			id->value_type = plugin->map.map(plugin, *t);
-			break;
-		}
-	}
+  for (const char*const* t = types; *t; ++t) {
+    if (has_range(plugin, property, *t)) {
+      id->value_type = plugin->map.map(plugin, *t);
+      break;
+    }
+  }
 
-	id->is_toggle  = (id->value_type == plugin->forge.Bool);
-	id->is_integer = (id->value_type == plugin->forge.Int ||
-	                  id->value_type == plugin->forge.Long);
+  id->is_toggle  = (id->value_type == plugin->forge.Bool);
+  id->is_integer = (id->value_type == plugin->forge.Int ||
+                    id->value_type == plugin->forge.Long);
 
-	if (!id->value_type)
+  if (!id->value_type)
     g_warning (
       "Unknown value type for property <%s>\n",
       lilv_node_as_string(property));
 
-	return id;
+  return id;
 }
 
 void
@@ -266,15 +266,17 @@ lv2_add_control(Lv2Controls* controls, Lv2Control* control)
 }
 
 Lv2Control*
-lv2_get_property_control(const Lv2Controls* controls, LV2_URID property)
+lv2_get_property_control (
+  const Lv2Controls* controls,
+  LV2_URID property)
 {
-	for (int i = 0; i < controls->n_controls; ++i) {
-		if (controls->controls[i]->property == property) {
-			return controls->controls[i];
-		}
-	}
+  for (int i = 0; i < controls->n_controls; ++i) {
+    if (controls->controls[i]->property == property) {
+      return controls->controls[i];
+    }
+  }
 
-	return NULL;
+  return NULL;
 }
 
 /**
@@ -294,7 +296,8 @@ lv2_control_set_control (
     {
       Lv2Port* port =
         &control->plugin->ports[control->index];
-      port->control = *(float*)body;
+      g_return_if_fail (port->port);
+      port->port->control = *(float*)body;
       /*g_message ("set to %f",*/
                  /*port->control);*/
     }

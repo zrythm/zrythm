@@ -198,7 +198,7 @@ typedef struct Track
   /** Height of the main part (without lanes). */
   int                 main_height;
 
-  /** Muted or not. */
+  /** Muted or not. FIXME move to fader. */
   int                 mute;
 
   /** Soloed or not. */

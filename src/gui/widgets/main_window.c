@@ -63,6 +63,10 @@ static void
 on_main_window_destroy (MainWindowWidget * self,
                         gpointer user_data)
 {
+  /* stop engine and wait to finish the cycle */
+  AUDIO_ENGINE->run = 0;
+  g_usleep (80);
+
   if (PROJECT->loaded)
     {
       /* set this to NULL to stop events from

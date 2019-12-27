@@ -134,8 +134,8 @@ init_feature (
   const char* const URI,
   void* data)
 {
-	dest->URI = URI;
-	dest->data = data;
+  dest->URI = URI;
+  dest->data = data;
 }
 
 /**
@@ -269,10 +269,10 @@ create_port (
         }
     }
   lv2_port->port->lv2_port = lv2_port;
-  lv2_port->evbuf     = NULL;
-  lv2_port->buf_size  = 0;
-  lv2_port->index     = lv2_port_index;
-  lv2_port->control   = 0.0f;
+  lv2_port->evbuf = NULL;
+  lv2_port->buf_size = 0;
+  lv2_port->index = lv2_port_index;
+  lv2_port->port->control = 0.0f;
 
   const bool optional =
     lilv_port_has_property (
@@ -315,7 +315,7 @@ create_port (
         PM_LILV_NODES.core_ControlPort))
     {
       pi->type = TYPE_CONTROL;
-      lv2_port->control =
+      lv2_port->port->control =
         isnan(default_value) ?
         0.0f :
         default_value;
@@ -581,7 +581,8 @@ lv2_get_port_value (
     {
       *size = sizeof (float);
       *type = PM_URIDS.atom_Float;
-      return (const void *) &port->control;
+      g_return_val_if_fail (port->port, NULL);
+      return (const void *) &port->port->control;
     }
 
   return NULL;
@@ -608,15 +609,15 @@ lv2_control_by_symbol (
   Lv2Plugin * plugin,
   const char* sym)
 {
-	for (int i = 0;
+  for (int i = 0;
        i < plugin->controls.n_controls; ++i)
     {
-		if (!strcmp(lilv_node_as_string(plugin->controls.controls[i]->symbol),
-		            sym)) {
-			return plugin->controls.controls[i];
-		}
-	}
-	return NULL;
+    if (!strcmp(lilv_node_as_string(plugin->controls.controls[i]->symbol),
+                sym)) {
+      return plugin->controls.controls[i];
+    }
+  }
+  return NULL;
 }
 
 static void
@@ -802,9 +803,10 @@ connect_port(
   switch (port->identifier.type)
     {
     case TYPE_CONTROL:
+      g_return_if_fail (lv2_port->port);
       lilv_instance_connect_port (
         lv2_plugin->instance,
-        port_index, &lv2_port->control);
+        port_index, &lv2_port->port->control);
       break;
     case TYPE_AUDIO:
       /* connect lv2 ports to plugin port
@@ -1674,10 +1676,10 @@ lv2_plugin_instantiate (
   memcpy (
     self->options, options, sizeof (self->options));
 
-	init_feature (
+  init_feature (
     &self->options_feature,
-	  LV2_OPTIONS__options,
-	  (void*)self->options);
+    LV2_OPTIONS__options,
+    (void*)self->options);
 
   /* Create Plugin <=> UI communication buffers */
   self->ui_to_plugin_events =
@@ -1755,11 +1757,12 @@ lv2_plugin_instantiate (
           {
             Lv2Port* port =
               &self->ports[control->index];
+            g_return_val_if_fail (port->port, -1);
             g_message (
               "%s = %f",
               lv2_port_get_symbol_as_string (
                 self, port),
-              (double) port->control);
+              (double) port->port->control);
           }
       }
 
@@ -1998,10 +2001,10 @@ lv2_plugin_process (
         {
           if (!math_floats_equal (
                 (float) lv2_plugin->plugin_latency,
-                lv2_port->control, 0.001f))
+                lv2_port->port->control, 0.001f))
             {
               lv2_plugin->plugin_latency =
-                (uint32_t) lv2_port->control;
+                (uint32_t) lv2_port->port->control;
 #ifdef HAVE_JACK
               jack_recompute_total_latencies (
                 client);

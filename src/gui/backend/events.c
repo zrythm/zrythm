@@ -1382,6 +1382,10 @@ events_process (void * data)
         case ET_BPM_CHANGED:
           on_bpm_changed ();
           break;
+        case ET_CHANNEL_FADER_VAL_CHANGED:
+          channel_widget_redraw_fader (
+            ((Channel *)ev->arg)->widget);
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

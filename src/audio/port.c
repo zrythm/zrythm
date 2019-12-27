@@ -32,6 +32,7 @@
 #include "audio/pan.h"
 #include "audio/passthrough_processor.h"
 #include "audio/port.h"
+#include "gui/widgets/channel.h"
 #include "plugins/plugin.h"
 #include "plugins/lv2/lv2_ui.h"
 #include "utils/arrays.h"
@@ -298,6 +299,21 @@ port_find_from_identifier (
               else if (id->flags &
                          PORT_FLAG_STEREO_R)
                 return ch->fader.stereo_in->r;
+            }
+          break;
+        case TYPE_CONTROL:
+          if (id->flow == FLOW_INPUT)
+            {
+              if (id->flags &
+                    PORT_FLAG_AMPLITUDE)
+                {
+                  return ch->fader.amp;
+                }
+              else if (id->flags &
+                         PORT_FLAG_PAN)
+                {
+                  return ch->fader.pan;
+                }
             }
           break;
         default:
@@ -650,9 +666,12 @@ port_set_owner_fader (
 {
   g_warn_if_fail (port && fader);
 
-  port->track = fader->channel->track;
-  port->identifier.track_pos =
-    fader->channel->track->pos;
+  if (fader->channel)
+    {
+      port->track = fader->channel->track;
+      port->identifier.track_pos =
+        fader->channel->track->pos;
+    }
   port->identifier.owner_type =
     PORT_OWNER_TYPE_FADER;
 }
@@ -730,8 +749,10 @@ port_connect (
     {
       if (dest->internal_type == INTERNAL_LV2_PORT)
         {
+          g_return_val_if_fail (
+            dest->lv2_port->port, -1);
           dest->base_value =
-            dest->lv2_port->control;
+            dest->lv2_port->port->control;
         }
       /*dest->has_modulators = 1;*/
     }
@@ -849,8 +870,46 @@ port_disconnect_all (Port * port)
 }
 
 /**
+ * To be called when a control's value changes
+ * so that a message can be sent to the UI.
+ */
+static void
+port_forward_control_change_event (
+  Port * self)
+{
+  if (self->lv2_port)
+    {
+      Lv2Port * lv2_port = self->lv2_port;
+      g_return_if_fail (
+        self->plugin && self->plugin->lv2);
+      Lv2Plugin * lv2_plugin =
+        self->plugin->lv2;
+      lv2_ui_send_control_val_event_from_plugin_to_ui (
+        lv2_plugin, lv2_port);
+    }
+  else if (self->identifier.owner_type ==
+             PORT_OWNER_TYPE_FADER &&
+           self->identifier.flags &
+             PORT_FLAG_AMPLITUDE)
+    {
+      g_return_if_fail (
+        self->track && self->track->channel &&
+        self->track->channel->widget);
+      fader_update_volume_and_fader_val (
+        &self->track->channel->fader);
+      EVENTS_PUSH (
+        ET_CHANNEL_FADER_VAL_CHANGED,
+        self->track->channel);
+    }
+}
+
+/**
  * Sets the given control value to the
  * corresponding underlying structure in the Port.
+ *
+ * Note: this is only for setting the base values
+ * (eg when automating via an automation lane). For
+ * CV automations this should not be used.
  *
  * @param is_normalized Whether the given value is
  *   normalized between 0 and 1.
@@ -868,35 +927,23 @@ port_set_control_value (
   g_return_if_fail (
     self->identifier.type == TYPE_CONTROL);
 
-  if (self->lv2_port)
+  if (is_normalized)
     {
-      Lv2Port * lv2_port = self->lv2_port;
-      g_return_if_fail (
-        self->plugin && self->plugin->lv2);
-      Lv2Plugin * lv2_plugin =
-        self->plugin->lv2;
-      if (is_normalized)
-        {
-          float minf = port_get_minf (self);
-          float maxf = port_get_maxf (self);
-          self->base_value =
-            minf + val * (maxf - minf);
-        }
-      else
-        {
-          self->base_value = val;
-        }
-      self->lv2_port->control =
-        self->base_value;
-
-      if (forward_event)
-        {
-          lv2_ui_send_control_val_event_from_plugin_to_ui (
-            lv2_plugin, lv2_port);
-        }
+      float minf = port_get_minf (self);
+      float maxf = port_get_maxf (self);
+      self->base_value =
+        minf + val * (maxf - minf);
     }
   else
-    g_warn_if_reached ();
+    {
+      self->base_value = val;
+    }
+  self->control = self->base_value;
+
+  if (forward_event)
+    {
+      port_forward_control_change_event (self);
+    }
 }
 
 /**
@@ -918,21 +965,20 @@ port_get_control_value (
     {
       g_return_val_if_fail (
         self->plugin && self->plugin->lv2, 0.f);
-      if (normalize)
-        {
-          float minf = port_get_minf (self);
-          float maxf = port_get_maxf (self);
-          return
-            (self->lv2_port->control - minf) /
-            (maxf - minf);
-        }
-      else
-        {
-          return self->lv2_port->control;
-        }
+    }
+
+  if (normalize)
+    {
+      float minf = port_get_minf (self);
+      float maxf = port_get_maxf (self);
+      return
+        (self->control - minf) /
+        (maxf - minf);
     }
   else
-    g_return_val_if_reached (0.f);
+    {
+      return self->control;
+    }
 }
 
 /**
@@ -1010,12 +1056,25 @@ port_get_minf (
     case TYPE_EVENT:
       return  0.f;
     case TYPE_CONTROL:
-      /* FIXME this wont work with zrythm controls
-       * like volume and pan */
-      g_return_val_if_fail (
-        port->lv2_port &&
-        port->lv2_port->lv2_control, 0.f);
-      return port->lv2_port->lv2_control->minf;
+      switch (port->identifier.owner_type)
+        {
+        case PORT_OWNER_TYPE_PLUGIN:
+          g_return_val_if_fail (
+            port->lv2_port &&
+            port->lv2_port->lv2_control, 0.f);
+          return port->lv2_port->lv2_control->minf;
+        case PORT_OWNER_TYPE_FADER:
+          if (port->identifier.flags &
+                PORT_FLAG_AMPLITUDE)
+            return 0.f;
+          else if (port->identifier.flags &
+                PORT_FLAG_PAN)
+            return 0.f;
+          break;
+        default:
+          break;
+        }
+      break;
     default:
       break;
     }
@@ -1042,12 +1101,25 @@ port_get_maxf (
     case TYPE_EVENT:
       return  1.f;
     case TYPE_CONTROL:
-      /* FIXME this wont work with zrythm controls
-       * like volume and pan */
-      g_return_val_if_fail (
-        port->lv2_port &&
-        port->lv2_port->lv2_control, 0.f);
-      return port->lv2_port->lv2_control->maxf;
+      switch (port->identifier.owner_type)
+        {
+        case PORT_OWNER_TYPE_PLUGIN:
+          g_return_val_if_fail (
+            port->lv2_port &&
+            port->lv2_port->lv2_control, 0.f);
+          return port->lv2_port->lv2_control->maxf;
+        case PORT_OWNER_TYPE_FADER:
+          if (port->identifier.flags &
+                PORT_FLAG_AMPLITUDE)
+            return 2.f;
+          else if (port->identifier.flags &
+                PORT_FLAG_PAN)
+            return 1.f;
+          break;
+        default:
+          break;
+        }
+      break;
     default:
       break;
     }
@@ -1073,12 +1145,25 @@ port_get_zerof (
     case TYPE_EVENT:
       return 0.f;
     case TYPE_CONTROL:
-      /* FIXME this wont work with zrythm controls
-       * like volume and pan */
-      g_return_val_if_fail (
-        port->lv2_port &&
-        port->lv2_port->lv2_control, 0.f);
-      return port->lv2_port->lv2_control->minf;
+      switch (port->identifier.owner_type)
+        {
+        case PORT_OWNER_TYPE_PLUGIN:
+          g_return_val_if_fail (
+            port->lv2_port &&
+            port->lv2_port->lv2_control, 0.f);
+          return port->lv2_port->lv2_control->minf;
+        case PORT_OWNER_TYPE_FADER:
+          if (port->identifier.flags &
+                PORT_FLAG_AMPLITUDE)
+            return 0.f;
+          else if (port->identifier.flags &
+                PORT_FLAG_PAN)
+            return 0.5f;
+          break;
+        default:
+          break;
+        }
+      break;
     default:
       break;
     }
@@ -1370,9 +1455,10 @@ port_sum_signal_from_inputs (
                   TYPE_CV)
               {
                 maxf =
-                  port->lv2_port->lv2_control->maxf;
+                  port_get_maxf (port);
                 minf =
-                  port->lv2_port->lv2_control->minf;
+                  port_get_minf (port);
+
                 /*float deff =*/
                   /*port->lv2_port->lv2_control->deff;*/
                 /*port->lv2_port->control =*/
@@ -1389,8 +1475,11 @@ port_sum_signal_from_inputs (
                     first_cv = 0;
                   }
                 else
-                  val_to_use =
-                    port->lv2_port->control;
+                  {
+                    val_to_use =
+                      port->lv2_port->port->
+                        control;
+                  }
 
                 float result =
                   CLAMP (
@@ -1401,8 +1490,9 @@ port_sum_signal_from_inputs (
                           port_get_dest_index (
                             src_port, port)],
                     minf, maxf);
-                port_set_control_value (
-                  port, result, 0, 1);
+                port->control = result;
+                port_forward_control_change_event (
+                  port);
               }
           }
       }

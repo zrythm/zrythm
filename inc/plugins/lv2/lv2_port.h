@@ -53,30 +53,26 @@ typedef struct Lv2Port
   Port *          port;
 
   /** LV2 port. */
-	const LilvPort* lilv_port;
+  const LilvPort* lilv_port;
 
   /** For MIDI ports, otherwise NULL. */
-	LV2_Evbuf*      evbuf;
+  LV2_Evbuf*      evbuf;
 
   /**
    * Control widget, if applicable.
    *
    * Only used for generic UIs.
    */
-	void*           widget;
+  void*           widget;
 
   /** Custom buffer size, or 0. */
-	size_t          buf_size;
+  size_t          buf_size;
 
   /** Port index. */
-	uint32_t        index;
+  uint32_t        index;
 
   /** Pointer to control, if control. */
   Lv2Control *    lv2_control;
-
-  /** The control value if control port, otherwise
-   * 0.0f. */
-	float           control;
 
   /**
    * Whether the port received a UI event from
@@ -112,7 +108,7 @@ typedef struct Lv2Port
   int             automating;
 
   /** True for event, false for atom. */
-	int             old_api;
+  int             old_api;
 } Lv2Port;
 
 static const cyaml_schema_field_t
@@ -122,13 +118,13 @@ static const cyaml_schema_field_t
     "port_id", CYAML_FLAG_DEFAULT,
     Lv2Port, port_id, port_identifier_fields_schema),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
   lv2_port_schema =
 {
-	CYAML_VALUE_MAPPING (CYAML_FLAG_DEFAULT,
+  CYAML_VALUE_MAPPING (CYAML_FLAG_DEFAULT,
   Lv2Port, lv2_port_fields_schema),
 };
 

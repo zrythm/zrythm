@@ -69,19 +69,21 @@ typedef struct Fader
    */
   float            volume;
 
-  /**
-   * Volume in amplitude (0.0 ~ 1.5)
-   */
-  float            amp;
-
   /** Used by the phase knob (0.0 ~ 360.0). */
   float            phase;
 
-  /** (0.0 ~ 1.0) 0.5 is center. */
-  float            pan;
-
   /** 0.0 ~ 1.0 for widgets. */
   float            fader_val;
+
+  /**
+   * A control port that controls the volume in
+   * amplitude (0.0 ~ 1.5)
+   */
+  Port *           amp;
+
+  /** A control Port that controls the pan
+   * (0.0 ~ 1.0) 0.5 is center. */
+  Port *           pan;
 
   /**
    * L & R audio input ports, if audio.
@@ -120,10 +122,10 @@ typedef struct Fader
 static const cyaml_strval_t
 fader_type_strings[] =
 {
-	{ "none",           FADER_TYPE_NONE    },
-	{ "audio channel",  FADER_TYPE_AUDIO_CHANNEL   },
-	{ "midi channel",   FADER_TYPE_MIDI_CHANNEL   },
-	{ "generic",        FADER_TYPE_MIDI_CHANNEL   },
+  { "none",           FADER_TYPE_NONE    },
+  { "audio channel",  FADER_TYPE_AUDIO_CHANNEL   },
+  { "midi channel",   FADER_TYPE_MIDI_CHANNEL   },
+  { "generic",        FADER_TYPE_GENERIC   },
 };
 
 static const cyaml_schema_field_t
@@ -133,48 +135,50 @@ fader_fields_schema[] =
     "type", CYAML_FLAG_DEFAULT,
     Fader, type, fader_type_strings,
     CYAML_ARRAY_LEN (fader_type_strings)),
-	CYAML_FIELD_FLOAT (
+  CYAML_FIELD_FLOAT (
     "volume", CYAML_FLAG_DEFAULT,
     Fader, volume),
-	CYAML_FIELD_FLOAT (
-    "amp", CYAML_FLAG_DEFAULT,
-    Fader, amp),
-	CYAML_FIELD_FLOAT (
+  CYAML_FIELD_MAPPING_PTR (
+    "amp",
+    CYAML_FLAG_POINTER,
+    Fader, amp, port_fields_schema),
+  CYAML_FIELD_FLOAT (
     "phase", CYAML_FLAG_DEFAULT,
     Fader, phase),
-	CYAML_FIELD_FLOAT (
-    "pan", CYAML_FLAG_DEFAULT,
-    Fader, pan),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
+    "pan",
+    CYAML_FLAG_POINTER,
+    Fader, pan, port_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
     "midi_in",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Fader, midi_in,
     port_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "midi_out",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Fader, midi_out,
     port_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "stereo_in",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Fader, stereo_in,
     stereo_ports_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "stereo_out",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Fader, stereo_out,
     stereo_ports_fields_schema),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 fader_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-	  Fader, fader_fields_schema),
+    Fader, fader_fields_schema),
 };
 
 /**
@@ -225,6 +229,10 @@ fader_get_amp (
 float
 fader_get_fader_val (
   void * self);
+
+void
+fader_update_volume_and_fader_val (
+  Fader * self);
 
 /**
  * Clears all buffers.

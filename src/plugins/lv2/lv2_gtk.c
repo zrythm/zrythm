@@ -1615,7 +1615,9 @@ update_plugin_ui (
             plugin, ev.index,
             ev.size, ev.protocol,
             ev.protocol == 0 ?
-            (void *) &plugin->ports[ev.index].control :
+            (void *)
+              &plugin->ports[ev.index].
+                port->control :
             buf);
 
           if (ev.protocol == 0 && print_controls)

@@ -1219,14 +1219,19 @@ add_port (
   /*add_port_node (self, port);*/
   if (port->num_dests == 0 &&
       port->num_srcs == 0 &&
-      owner == PORT_OWNER_TYPE_PLUGIN)
+      (owner == PORT_OWNER_TYPE_PLUGIN ||
+       owner == PORT_OWNER_TYPE_FADER))
     {
       if (port->identifier.flow == FLOW_INPUT)
-        graph_add_initial_node (
-          self, ROUTE_NODE_TYPE_PORT, port);
+        {
+          graph_add_initial_node (
+            self, ROUTE_NODE_TYPE_PORT, port);
+        }
       else if (port->identifier.flow == FLOW_OUTPUT)
-        graph_add_terminal_node (
-          self, ROUTE_NODE_TYPE_PORT, port);
+        {
+          graph_add_terminal_node (
+            self, ROUTE_NODE_TYPE_PORT, port);
+        }
     }
   /* drop ports without sources and dests */
   else if (
@@ -1254,8 +1259,10 @@ add_port (
       !(owner ==
           PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
         port->identifier.flow == FLOW_OUTPUT))
-    graph_add_initial_node (
-      self, ROUTE_NODE_TYPE_PORT, port);
+    {
+      graph_add_initial_node (
+        self, ROUTE_NODE_TYPE_PORT, port);
+    }
   else if (port->num_dests == 0 &&
            /*port->num_srcs > 0 &&*/
            !(owner == PORT_OWNER_TYPE_PLUGIN &&
@@ -1276,11 +1283,15 @@ add_port (
            !(owner ==
                PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
              port->identifier.flow == FLOW_INPUT))
-    graph_add_terminal_node (
-      self, ROUTE_NODE_TYPE_PORT, port);
+    {
+      graph_add_terminal_node (
+        self, ROUTE_NODE_TYPE_PORT, port);
+    }
   else
-    graph_add_node (
-      self, ROUTE_NODE_TYPE_PORT, port);
+    {
+      graph_add_node (
+        self, ROUTE_NODE_TYPE_PORT, port);
+    }
 }
 
 /**
@@ -1674,6 +1685,7 @@ graph_setup (
       g_warn_if_fail (node);
       if (fader->type == FADER_TYPE_AUDIO_CHANNEL)
         {
+          /* connect ins */
           port = fader->stereo_in->l;
           node2 =
             find_node_from_port (self, port);
@@ -1682,6 +1694,16 @@ graph_setup (
           node2 =
             find_node_from_port (self, port);
           node_connect (node2, node);
+          port = fader->amp;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node2, node);
+          port = fader->pan;
+          node2 =
+            find_node_from_port (self, port);
+          node_connect (node2, node);
+
+          /* connect outs */
           port = fader->stereo_out->l;
           node2 =
             find_node_from_port (self, port);

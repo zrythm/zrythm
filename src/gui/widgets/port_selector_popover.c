@@ -166,15 +166,29 @@ create_model_for_ports (
         }
       else if (flow == FLOW_OUTPUT)
         {
-          if ((type == TYPE_AUDIO ||
-               type == TYPE_CV) &&
-              track->in_signal_type ==
-                TYPE_AUDIO)
+          if (type == TYPE_AUDIO ||
+               type == TYPE_CV)
             {
-              port = track->processor.stereo_in->l;
-              ADD_ROW;
-              port = track->processor.stereo_in->r;
-              ADD_ROW;
+              if (track->in_signal_type ==
+                    TYPE_AUDIO)
+                {
+                  port =
+                    track->processor.stereo_in->l;
+                  ADD_ROW;
+                  port =
+                    track->processor.stereo_in->r;
+                  ADD_ROW;
+                }
+
+              if (track->channel)
+                {
+                  port =
+                    track->channel->fader.amp;
+                  ADD_ROW;
+                  port =
+                    track->channel->fader.pan;
+                  ADD_ROW;
+                }
             }
           else if (type == TYPE_EVENT &&
                    track->in_signal_type ==

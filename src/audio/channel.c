@@ -693,8 +693,11 @@ channel_add_pan (void * _channel, float pan)
 {
   Channel * channel = (Channel *) _channel;
 
-  channel->fader.pan =
-    CLAMP (channel->fader.pan + pan, 0.f, 1.f);
+  port_set_control_value (
+    channel->fader.pan,
+    CLAMP (
+      channel->fader.pan->control + pan, 0.f, 1.f),
+    0, 0);
 }
 
 
@@ -1016,6 +1019,12 @@ channel_append_all_ports (
       _ADD (ch->prefader.midi_out);
     }
 
+  /* add fader amp and balance control */
+  g_return_if_fail (
+    ch->fader.amp && ch->fader.pan);
+  _ADD (ch->fader.amp);
+  _ADD (ch->fader.pan);
+
   Plugin * pl;
   if (include_plugins)
     {
@@ -1217,14 +1226,16 @@ void
 channel_set_pan (void * _channel, float pan)
 {
   Channel * channel = (Channel *) _channel;
-  channel->fader.pan = pan;
+  port_set_control_value (
+    channel->fader.pan, pan, 0, 0);
 }
 
 float
 channel_get_pan (void * _channel)
 {
   Channel * channel = (Channel *) _channel;
-  return channel->fader.pan;
+  return
+    port_get_control_value (channel->fader.pan, 0);
 }
 
 static float

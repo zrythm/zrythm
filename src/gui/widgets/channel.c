@@ -398,6 +398,15 @@ on_whole_channel_press (
     state_mask & GDK_CONTROL_MASK;
 }
 
+void
+channel_widget_redraw_fader (
+  ChannelWidget * self)
+{
+  g_return_if_fail (self->fader);
+  gtk_widget_queue_draw (
+    GTK_WIDGET (self->fader));
+}
+
 static void
 on_drag_begin (GtkGestureDrag *gesture,
                gdouble         start_x,

@@ -353,21 +353,21 @@ automatable_get_val (Automatable * a)
         {
           Lv2Control * control = a->control;
           Lv2Port* port = &control->plugin->ports[control->index];
-          return port->control;
+          g_return_val_if_fail (port->port, 0.f);
+          return port->port->control;
         }
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
-      g_return_val_if_fail (
-        a->plugin, 0.f);
+      g_return_val_if_fail (a->plugin, 0.f);
       return (float) a->plugin->enabled;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
       ch = track_get_channel (a->track);
-      return ch->fader.amp;
+      return ch->fader.amp->control;
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:
       return (float) a->track->mute;
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
       ch = track_get_channel (a->track);
-      return ch->fader.pan;
+      return ch->fader.pan->control;
     }
   g_warn_if_reached ();
   return -1;

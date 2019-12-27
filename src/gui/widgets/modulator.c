@@ -119,7 +119,7 @@ static float
 get_control_value (
   Port * port)
 {
-  return port->lv2_port->control;;
+  return port_get_control_value (port, 0);
 }
 
 /** Setter for the KnobWidget. */
@@ -128,7 +128,8 @@ set_control_value (
   Port * port,
   float  value)
 {
-  port->lv2_port->control = value;
+  port_set_control_value (
+    port, value, 0, 0);
 }
 
 ModulatorWidget *

@@ -36,7 +36,7 @@ lv2_port_get_by_symbol (
   Lv2Plugin* plugin,
   const char* sym)
 {
-	for (int i = 0; i < plugin->num_ports; ++i)
+  for (int i = 0; i < plugin->num_ports; ++i)
     {
       Lv2Port* const port =
         &plugin->ports[i];
@@ -46,9 +46,9 @@ lv2_port_get_by_symbol (
 
       if (!strcmp (port_sym, sym))
         return port;
-	}
+  }
 
-	return NULL;
+  return NULL;
 }
 
 
@@ -79,7 +79,8 @@ lv2_port_get_value_from_symbol (
     {
       *size = sizeof (float);
       *type = PM_URIDS.atom_Float;
-      return (const void *) &port->control;
+      g_return_val_if_fail (port->port, NULL);
+      return (const void *) &port->port->control;
     }
 
   return NULL;

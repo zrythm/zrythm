@@ -66,7 +66,10 @@ fader_init_loaded (
       break;
     }
 
-  fader_set_amp ((void *) self, self->amp);
+  port_set_owner_fader (self->amp, self);
+  port_set_owner_fader (self->pan, self);
+
+  fader_set_amp ((void *) self, self->amp->control);
 }
 
 /**
@@ -87,15 +90,32 @@ fader_init (
   self->type = type;
   self->channel = ch;
 
-  /* set volume, phase, pan */
+  /* set volume */
   self->volume = 0.0f;
-  self->amp = 1.0f;
+  float amp = 1.f;
+  self->amp =
+    port_new_with_type (
+      TYPE_CONTROL, FLOW_INPUT, "Amplitude");
+  port_set_control_value (self->amp, amp, 0, 0);
   self->fader_val =
-    math_get_fader_val_from_amp (self->amp);
+    math_get_fader_val_from_amp (amp);
+  port_set_owner_fader (self->amp, self);
+  self->amp->identifier.flags |=
+    PORT_FLAG_AMPLITUDE;
+
+  /* set phase */
   self->phase = 0.0f;
-  self->pan = 0.5f;
+
+  /* set pan */
+  float pan = 0.5f;
   self->l_port_db = 0.f;
   self->r_port_db = 0.f;
+  self->pan =
+    port_new_with_type (
+      TYPE_CONTROL, FLOW_INPUT, "Balance control");
+  port_set_control_value (self->pan, pan, 0, 0);
+  port_set_owner_fader (self->pan, self);
+  self->pan->identifier.flags |= PORT_FLAG_PAN;
 
   if (type == FADER_TYPE_AUDIO_CHANNEL)
     {
@@ -154,6 +174,18 @@ fader_init (
     }
 }
 
+void
+fader_update_volume_and_fader_val (
+  Fader * self)
+{
+  /* calculate volume */
+  self->volume =
+    math_amp_to_dbfs (self->amp->control);
+
+  self->fader_val =
+    math_get_fader_val_from_amp (self->amp->control);
+}
+
 /**
  * Sets the amplitude of the fader. (0.0 to 2.0)
  */
@@ -161,13 +193,10 @@ void
 fader_set_amp (void * _fader, float amp)
 {
   Fader * self = (Fader *) _fader;
-  self->amp = amp;
+  port_set_control_value (self->amp, amp, 0, 0);
 
-  /* calculate volume */
-  self->volume = math_amp_to_dbfs (amp);
-
-  self->fader_val =
-    math_get_fader_val_from_amp (amp);
+  fader_update_volume_and_fader_val (
+    self);
 }
 
 /**
@@ -181,21 +210,19 @@ fader_add_amp (
 {
   Fader * self = (Fader *) _self;
 
-  self->amp =
-    CLAMP (self->amp + amp, 0.f, 2.f);
+  float fader_amp = fader_get_amp (self);
+  fader_amp =
+    CLAMP (fader_amp + amp, 0.f, 2.f);
+  fader_set_amp (self, fader_amp);
 
-  self->fader_val =
-    math_get_fader_val_from_amp (self->amp);
-
-  self->volume =
-    math_amp_to_dbfs (self->amp);
+  fader_update_volume_and_fader_val (self);
 }
 
 float
 fader_get_amp (void * _self)
 {
   Fader * self = (Fader *) _self;
-  return self->amp;
+  return self->amp->control;
 }
 
 float
@@ -215,15 +242,16 @@ fader_set_fader_val (
   float   fader_val)
 {
   self->fader_val = fader_val;
-  self->amp =
+  float fader_amp =
     math_get_amp_val_from_fader (fader_val);
-  self->volume = math_amp_to_dbfs (self->amp);
+  fader_set_amp (self, fader_amp);
+  self->volume = math_amp_to_dbfs (fader_amp);
 
   if (self == MONITOR_FADER)
     {
       g_settings_set_double (
         S_UI, "monitor-out-vol",
-        (double) self->amp);
+        (double) fader_amp);
     }
 }
 
@@ -273,6 +301,9 @@ fader_disconnect_all (
     default:
       break;
     }
+
+  port_disconnect_all (self->amp);
+  port_disconnect_all (self->pan);
 }
 
 /**
@@ -301,14 +332,18 @@ fader_process (
 {
   /*Track * track = self->channel->track;*/
 
+  float pan =
+    port_get_control_value (self->pan, 0);
+  float amp =
+    port_get_control_value (self->amp, 0);
+
   if (self->type == FADER_TYPE_AUDIO_CHANNEL)
     {
       nframes_t end = start_frame + nframes;
       float calc_l, calc_r;
       balance_control_get_calc_lr (
         BALANCE_CONTROL_ALGORITHM_LINEAR,
-        self->pan,
-        &calc_l, &calc_r);
+        pan, &calc_l, &calc_r);
 
       while (start_frame < end)
         {
@@ -317,10 +352,10 @@ fader_process (
            * 3. apply pan */
           self->stereo_out->l->buf[start_frame] =
             self->stereo_in->l->buf[start_frame] *
-              self->amp * calc_l;
+              amp * calc_l;
           self->stereo_out->r->buf[start_frame] =
             self->stereo_in->r->buf[start_frame] *
-              self->amp * calc_r;
+              amp * calc_r;
           start_frame++;
         }
     }

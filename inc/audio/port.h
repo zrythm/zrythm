@@ -117,7 +117,8 @@ typedef enum PortFlags
    * and http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainOutput. */
   PORT_FLAG_MAIN_PORT = 0x10,
   PORT_FLAG_MANUAL_PRESS = 0x20,
-  OPT_F = 0x40,
+  PORT_FLAG_AMPLITUDE = 0x40,
+  PORT_FLAG_PAN = 0x80,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -129,7 +130,8 @@ flags_bitvals[] =
   { .name = "sidechain", .offset = 3, .bits =  1 },
   { .name = "main_port", .offset = 4, .bits = 1 },
   { .name = "manual_press", .offset = 5, .bits = 1 },
-  { .name = "opt_f", .offset = 6, .bits = 1 },
+  { .name = "amplitude", .offset = 6, .bits = 1 },
+  { .name = "pan", .offset = 7, .bits = 1 },
 };
 
 /**
@@ -280,11 +282,31 @@ typedef struct Port
    */
   void *              data;
 
+  /* TODO move these from lv2_control */
+  /** Minimum value. */
+  //float               minf;
+
+  /** Maximum value. */
+  //float               maxf;
+
+  /** Default value, if applicable. */
+  //float               maxf;
+
+  /**
+   * The control value if control port, otherwise
+   * 0.0f.
+   *
+   * FIXME for fader, this should be the
+   * fader_val (0.0 to 1.0) and not the
+   * amplitude.
+   */
+  float               control;
+
   /* ====== flags to indicate port owner ====== */
 
-  Plugin              * plugin;
-  Track             * track;
-  SampleProcessor * sample_processor;
+  Plugin *            plugin;
+  Track *             track;
+  SampleProcessor *   sample_processor;
 
   /** used when loading projects FIXME needed? */
   int                 initialized;
@@ -497,6 +519,9 @@ port_fields_schema[] =
     "internal_type", CYAML_FLAG_DEFAULT,
     Port, internal_type, port_internal_type_strings,
     CYAML_ARRAY_LEN (port_internal_type_strings)),
+  CYAML_FIELD_FLOAT (
+    "control", CYAML_FLAG_DEFAULT,
+    Port, control),
 
   CYAML_FIELD_END
 };
@@ -863,6 +888,10 @@ port_set_expose_to_alsa (
 /**
  * Sets the given control value to the
  * corresponding underlying structure in the Port.
+ *
+ * Note: this is only for setting the base values
+ * (eg when automating via an automation lane). For
+ * CV automations this should not be used.
  *
  * @param is_normalized Whether the given value is
  *   normalized between 0 and 1.

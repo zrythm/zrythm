@@ -147,6 +147,10 @@ void
 channel_widget_unblock_all_signal_handlers (
   ChannelWidget * self);
 
+void
+channel_widget_redraw_fader (
+  ChannelWidget * self);
+
 /**
  * Creates a channel widget using the given channel data.
  */

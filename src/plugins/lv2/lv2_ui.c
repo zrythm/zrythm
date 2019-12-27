@@ -145,7 +145,9 @@ lv2_ui_read_and_apply_events (
       if (ev.protocol == 0)
         {
           assert(ev.size == sizeof(float));
-          port->control = *(float*)body;
+          g_return_if_fail (port->port);
+          port_set_control_value (
+            port->port, * (float *) body, 0, 0);
           port->received_ui_event = 1;
         }
       else if (ev.protocol ==
@@ -191,7 +193,8 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
   ev->index = (uint32_t) lv2_port->index;
   ev->protocol = 0;
   ev->size = sizeof(float);
-  *(float*)ev->body = lv2_port->control;
+  g_return_if_fail (lv2_port->port);
+  *(float*)ev->body = lv2_port->port->control;
   lv2_port->automating = 0;
 
   if (zix_ring_write (
@@ -465,7 +468,7 @@ lv2_ui_init (
           lv2_gtk_ui_port_event (
             plugin, (uint32_t) i,
             sizeof(float), 0,
-            &plugin->ports[i].control);
+            &plugin->ports[i].port->control);
         }
     }
 

@@ -263,7 +263,7 @@ get_port_value (
       }
       break;
     case TYPE_CONTROL:
-      return port->lv2_port->control;
+      return port_get_control_value (port, 0);
       break;
     default:
       break;

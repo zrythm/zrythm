@@ -48,8 +48,8 @@ typedef struct Lv2Port Lv2Port;
 /* Controls */
 
 typedef struct {
-	float value;
-	char* label;
+  float value;
+  char* label;
 } Lv2ScalePoint;
 
 
@@ -58,52 +58,52 @@ typedef struct {
  * for UI updates.
  */
 typedef struct {
-	uint32_t index;
-	uint32_t protocol;
-	uint32_t size;
-	uint8_t  body[];
+  uint32_t index;
+  uint32_t protocol;
+  uint32_t size;
+  uint8_t  body[];
 } Lv2ControlChange;
 
 /** Type of plugin control. */
 typedef enum {
-	PORT,     ///< Control port
-	PROPERTY  ///< Property (set via atom message)
+  PORT,     ///< Control port
+  PROPERTY  ///< Property (set via atom message)
 } Lv2ControlType;
 
 /** Plugin control. */
 typedef struct Lv2Control
 {
-	Lv2Plugin*       plugin;
-	Lv2ControlType type;
-	LilvNode*   node;
-	LilvNode*   symbol;          ///< Symbol
-	LilvNode*   label;           ///< Human readable label
-	LV2_URID    property;        ///< Iff type == PROPERTY
-	uint32_t    index;           ///< Iff type == PORT
+  Lv2Plugin*       plugin;
+  Lv2ControlType type;
+  LilvNode*   node;
+  LilvNode*   symbol;          ///< Symbol
+  LilvNode*   label;           ///< Human readable label
+  LV2_URID    property;        ///< Iff type == PROPERTY
+  uint32_t    index;           ///< Iff type == PORT
   Lv2Port *  port; ///< cache
-	LilvNode*   group;           ///< Port/control group, or NULL
-	void*       widget;          ///< Control Widget
-	size_t      n_points;        ///< Number of scale points
-	Lv2ScalePoint* points;          ///< Scale points
-	LV2_URID    value_type;      ///< Type of control value
-	LilvNode*   min;             ///< Minimum value
+  LilvNode*   group;           ///< Port/control group, or NULL
+  void*       widget;          ///< Control Widget
+  size_t      n_points;        ///< Number of scale points
+  Lv2ScalePoint* points;          ///< Scale points
+  LV2_URID    value_type;      ///< Type of control value
+  LilvNode*   min;             ///< Minimum value
   float       minf;
-	LilvNode*   max;             ///< Maximum value
+  LilvNode*   max;             ///< Maximum value
   float       maxf;
-	LilvNode*   def;             ///< Default value
+  LilvNode*   def;             ///< Default value
   float       deff;
-	bool        is_toggle;       ///< Boolean (0 and 1 only)
-	bool        is_integer;      ///< Integer values only
-	bool        is_enumeration;  ///< Point values only
-	bool        is_logarithmic;  ///< Logarithmic scale
-	bool        is_writable;     ///< Writable (input)
-	bool        is_readable;     ///< Readable (output)
+  bool        is_toggle;       ///< Boolean (0 and 1 only)
+  bool        is_integer;      ///< Integer values only
+  bool        is_enumeration;  ///< Point values only
+  bool        is_logarithmic;  ///< Logarithmic scale
+  bool        is_writable;     ///< Writable (input)
+  bool        is_readable;     ///< Readable (output)
 } Lv2Control;
 
 typedef struct Lv2Controls
 {
-	int          n_controls;
-	Lv2Control** controls;
+  int          n_controls;
+  Lv2Control** controls;
 } Lv2Controls;
 
 Lv2Control*
@@ -120,7 +120,9 @@ lv2_add_control (
   Lv2Control* control);
 
 Lv2Control*
-lv2_get_property_control(const Lv2Controls* controls, LV2_URID property);
+lv2_get_property_control (
+  const Lv2Controls* controls,
+  LV2_URID property);
 
 /** Order scale points by value. */
 int
