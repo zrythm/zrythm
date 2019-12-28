@@ -531,6 +531,40 @@ stereo_ports_connect (
 }
 
 /**
+ * Returns the number of unlocked (user-editable)
+ * destinations.
+ */
+int
+port_get_num_unlocked_dests (Port * port)
+{
+  int res = 0;
+  for (int i = 0; i < port->num_dests; i++)
+    {
+      if (!port->dest_locked[i])
+        res++;
+    }
+  return res;
+}
+
+/**
+ * Returns the number of unlocked (user-editable)
+ * sources.
+ */
+int
+port_get_num_unlocked_srcs (Port * port)
+{
+  int res = 0;
+  for (int i = 0; i < port->num_srcs; i++)
+    {
+      Port * src = port->srcs[i];
+      int idx = port_get_dest_index (src, port);
+      if (!src->dest_locked[idx])
+        res++;
+    }
+  return res;
+}
+
+/**
  * Gathers all ports in the project and puts them
  * in the given array and size.
  */
@@ -2074,6 +2108,28 @@ port_clear_buffer (Port * port)
     {
       port->midi_events->num_events = 0;
     }
+}
+
+/**
+ * Returns if the connection from \p src to \p
+ * dest is locked or not.
+ */
+int
+port_is_connection_locked (
+  Port * src,
+  Port * dest)
+{
+  for (int i = 0; i < src->num_dests; i++)
+    {
+      if (src->dests[i] == dest)
+        {
+          if (src->dest_locked[i])
+            return 1;
+          else
+            return 0;
+        }
+    }
+  g_return_val_if_reached (0);
 }
 
 /**

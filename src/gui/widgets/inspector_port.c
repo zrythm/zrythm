@@ -86,22 +86,26 @@ get_port_str (
 #define ORANGIZE(x) \
   "<span " \
   "foreground=\"" UI_COLOR_BRIGHT_ORANGE "\">" x "</span>"
+          int num_unlocked_srcs =
+            port_get_num_unlocked_srcs (port);
           sprintf (
             buf, "%s <small><sup>"
             ORANGIZE ("%d%s")
             "</sup></small>",
             port->identifier.label,
-            port->num_srcs, star);
+            num_unlocked_srcs, star);
           return 1;
         }
       else if (port->identifier.flow == FLOW_OUTPUT)
         {
+          int num_unlocked_dests =
+            port_get_num_unlocked_dests (port);
           sprintf (
             buf, "%s <small><sup>"
             ORANGIZE ("%d%s")
             "</sup></small>",
             port->identifier.label,
-            port->num_dests, star);
+            num_unlocked_dests, star);
           return 1;
 #undef ORANGIZE
 #undef GREENIZE
@@ -178,6 +182,15 @@ on_right_click (
 }
 
 static void
+on_popover_closed (
+  GtkPopover * popover,
+  InspectorPortWidget * self)
+{
+  get_port_str (
+    self->port, self->bar_slider->prefix);
+}
+
+static void
 on_double_click (
   GtkGestureMultiPress *gesture,
   gint                  n_press,
@@ -194,6 +207,10 @@ on_double_click (
     port_connections_popover_widget_new (self);
   /*gtk_popover_popdown (GTK_POPOVER (popover));*/
   gtk_widget_show_all (GTK_WIDGET (popover));
+
+  g_signal_connect (
+    G_OBJECT (popover), "closed",
+    G_CALLBACK (on_popover_closed), self);
 }
 
 /** 250 ms */

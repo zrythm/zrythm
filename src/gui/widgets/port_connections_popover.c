@@ -67,12 +67,16 @@ port_connections_popover_widget_refresh (
             {
               port = owner->port->srcs[i];
 
-              pcr =
-                port_connection_row_widget_new (
-                  port, owner->port, 1);
-              gtk_container_add (
-                GTK_CONTAINER (self->ports_box),
-                GTK_WIDGET (pcr));
+              if (!port_is_connection_locked (
+                     port, owner->port))
+                {
+                  pcr =
+                    port_connection_row_widget_new (
+                      port, owner->port, 1);
+                  gtk_container_add (
+                    GTK_CONTAINER (self->ports_box),
+                    GTK_WIDGET (pcr));
+                }
             }
         }
       else if (owner->port->identifier.flow ==
@@ -89,12 +93,16 @@ port_connections_popover_widget_refresh (
             {
               port = owner->port->dests[i];
 
-              pcr =
-                port_connection_row_widget_new (
-                  owner->port, port, 0);
-              gtk_container_add (
-                GTK_CONTAINER (self->ports_box),
-                GTK_WIDGET (pcr));
+              if (!port_is_connection_locked (
+                     owner->port, port))
+                {
+                  pcr =
+                    port_connection_row_widget_new (
+                      owner->port, port, 0);
+                  gtk_container_add (
+                    GTK_CONTAINER (self->ports_box),
+                    GTK_WIDGET (pcr));
+                }
             }
         }
     /*}*/
@@ -235,5 +243,5 @@ port_connections_popover_widget_init (
   gtk_container_add (
     GTK_CONTAINER (self),
     GTK_WIDGET (self->main_box));
-  g_object_ref (self);
+  /*g_object_ref (self);*/
 }

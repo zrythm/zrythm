@@ -964,6 +964,19 @@ port_disconnect_dests (Port * src)
   return 0;
 }
 
+/**
+ * Returns the number of unlocked (user-editable)
+ * sources.
+ */
+int
+port_get_num_unlocked_srcs (Port * port);
+
+/**
+ * Returns the number of unlocked (user-editable)
+ * destinations.
+ */
+int
+port_get_num_unlocked_dests (Port * port);
 
 /**
  * Apply given fader value to port.
@@ -1050,6 +1063,15 @@ void
 port_set_owner_plugin (
   Port *   port,
   Plugin * pl);
+
+/**
+ * Returns if the connection from \p src to \p
+ * dest is locked or not.
+ */
+int
+port_is_connection_locked (
+  Port * src,
+  Port * dest);
 
 /**
  * Returns if the two ports are connected or not.
