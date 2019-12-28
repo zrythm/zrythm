@@ -91,6 +91,7 @@ endif
 os_darwin = false
 os_linux = false
 os_freebsd = false
+os_windows = false
 
 if host_machine.system() == 'darwin'
   os_darwin = true
@@ -98,6 +99,8 @@ elif host_machine.system() == 'linux'
   os_linux = true
 elif host_machine.system() == 'freebsd'
   os_freebsd = true
+elif host_machine.system() == 'windows'
+  os_windows = true
 endif
 
 if os_darwin
@@ -132,9 +135,25 @@ data_dir = join_paths (
 
 cc = meson.get_compiler ('c')
 
-# Check for programs
+# --- Check for programs ---
+
 find_program ('sed', required: true)
-find_program ('xdg-open')
+
+# find command to open a directory
+if os_linux or os_freebsd
+  open_dir_cmd = 'xdg-open'
+  find_program (open_dir_cmd)
+  cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
+elif os_darwin
+  open_dir_cmd = 'open'
+  find_program (open_dir_cmd)
+  cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
+elif os_windows
+  open_dir_cmd = 'explorer'
+  find_program (open_dir_cmd)
+  cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
+endif
+
 sphinx_build = find_program (
   ['sphinx-build', 'sphinx-build-3'],
   required: get_option ('user_manual'))
@@ -357,6 +376,7 @@ zrythm_deps = [
   alsa_dep,
   cyaml_dep,
   audec_dep,
+  x11_dep,
   dependency('threads'),
   dependency('lilv-0', version: '>=0.24.2'),
   dependency('samplerate', version: '>=0.1.8'),
@@ -394,12 +414,13 @@ if os_linux
 endif
 
 if os_linux or os_freebsd
-  zrythm_deps += x11_dep
   zrythm_deps += cc.find_library('fftw3_threads')
   zrythm_deps += cc.find_library('fftw3f_threads')
 endif
 
 if (os_darwin)
+  zrythm_deps += cc.find_library('fftw3_threads')
+  zrythm_deps += cc.find_library('fftw3f_threads')
   zrythm_deps += dependency (
     'appleframeworks',
     modules: [

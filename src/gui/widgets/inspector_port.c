@@ -40,6 +40,7 @@ G_DEFINE_TYPE (
   inspector_port_widget,
   GTK_TYPE_OVERLAY)
 
+#ifdef HAVE_JACK
 static void
 on_jack_toggled (
   GtkWidget * widget,
@@ -50,6 +51,7 @@ on_jack_toggled (
     gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (widget)));
 }
+#endif
 
 /**
  * Gets the label for the bar slider (port string).

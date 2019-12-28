@@ -49,11 +49,13 @@ ext_port_get_buffer (
   switch (self->type)
     {
     case EXT_PORT_TYPE_JACK:
+#ifdef HAVE_JACK
       return
         (float *)
         jack_port_get_buffer (
           self->jport,
           nframes);
+#endif
       break;
     case EXT_PORT_TYPE_ALSA:
     default:
@@ -243,7 +245,9 @@ ext_port_clone (
   ExtPort * newport =
     calloc (1, sizeof (ExtPort));
 
+#ifdef HAVE_JACK
   newport->jport = ext_port->jport;
+#endif
   if (ext_port->full_name)
     newport->full_name =
       g_strdup (ext_port->full_name);

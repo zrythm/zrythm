@@ -862,8 +862,10 @@ port_disconnect_all (Port * port)
 
   if (port->internal_type == INTERNAL_JACK_PORT)
     {
+#ifdef HAVE_JACK
       port_set_expose_to_jack (
         port, 0);
+#endif
     }
 
   return 0;
@@ -1322,8 +1324,10 @@ port_sum_signal_from_inputs (
              PORT_OWNER_TYPE_TRACK_PROCESSOR &&
            port->track->recording))
         {
+#ifdef HAVE_JACK
           port_sum_data_from_jack (
             port, start_frame, nframes);
+#endif
         }
 
       for (k = 0; k < port->num_srcs; k++)
@@ -1338,8 +1342,10 @@ port_sum_signal_from_inputs (
             nframes, 0);
         }
 
+#ifdef HAVE_JACK
       port_send_data_to_jack (
         port, start_frame, nframes);
+#endif
 
       /* send UI notification */
       if (port->midi_events->num_events > 0)
@@ -1392,8 +1398,10 @@ port_sum_signal_from_inputs (
           break;
         }
 
+#ifdef HAVE_JACK
       port_sum_data_from_jack (
         port, start_frame, nframes);
+#endif
 
       for (k = 0; k < port->num_srcs; k++)
         {
@@ -1406,8 +1414,10 @@ port_sum_signal_from_inputs (
             }
         }
 
+#ifdef HAVE_JACK
       port_send_data_to_jack (
         port, start_frame, nframes);
+#endif
 
       if (start_frame + nframes ==
             AUDIO_ENGINE->block_length)

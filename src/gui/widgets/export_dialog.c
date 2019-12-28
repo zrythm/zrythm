@@ -17,12 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Export dialog.
- */
-
 #include "audio/engine.h"
 #include "audio/exporter.h"
 #include "gui/widgets/export_dialog.h"

@@ -17,11 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * IO utils.
- */
+#include "config.h"
 
 #include <stdlib.h>
 #include <sys/types.h>
@@ -352,7 +348,7 @@ io_open_directory (
     g_file_test (path, G_FILE_TEST_IS_DIR));
   char * command =
     g_strdup_printf (
-      "xdg-open \"%s\"",
+      OPEN_DIR_CMD " \"%s\"",
       path);
   FILE* file = popen (command, "r");
   pclose(file);

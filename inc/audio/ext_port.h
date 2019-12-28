@@ -70,7 +70,9 @@ ext_port_type_strings[] =
 typedef struct ExtPort
 {
   /** JACK port. */
+#ifdef HAVE_JACK
   jack_port_t *    jport;
+#endif
 
   /** Full port name. */
   char *           full_name;

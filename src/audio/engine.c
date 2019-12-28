@@ -541,9 +541,11 @@ engine_process_prepare (
       g_message ("pause requested handled");
       TRANSPORT->play_state = PLAYSTATE_PAUSED;
       /*zix_sem_post (&TRANSPORT->paused);*/
+#ifdef HAVE_JACK
       if (self->audio_backend == AUDIO_BACKEND_JACK)
         jack_transport_stop (
           self->client);
+#endif
     }
   else if (TRANSPORT->play_state ==
            PLAYSTATE_ROLL_REQUESTED)
@@ -552,9 +554,11 @@ engine_process_prepare (
       self->remaining_latency_preroll =
         router_get_max_playback_latency (
           &MIXER->router);
+#ifdef HAVE_JACK
       if (self->audio_backend == AUDIO_BACKEND_JACK)
         jack_transport_start (
           self->client);
+#endif
     }
 
   switch (self->audio_backend)
@@ -1004,6 +1008,7 @@ engine_post_process (
     {
       transport_add_to_playhead (
         TRANSPORT, nframes);
+#ifdef HAVE_JACK
       if (self->audio_backend ==
             AUDIO_BACKEND_JACK &&
           self->transport_type ==
@@ -1013,6 +1018,7 @@ engine_post_process (
             self->client,
             (jack_nframes_t) PLAYHEAD->frames);
         }
+#endif
     }
 
   /* update max time taken (for calculating DSP
