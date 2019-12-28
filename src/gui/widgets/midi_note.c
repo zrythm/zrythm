@@ -34,8 +34,10 @@
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
@@ -223,6 +225,22 @@ midi_note_draw (
   char str[30];
   midi_note_get_val_as_string (self, str, 1);
 
+  char fontize_str[120];
+  int fontsize =
+    midi_editor_space_widget_get_font_size (
+      MW_MIDI_EDITOR_SPACE);
+  sprintf (
+    fontize_str, "<span size=\"%d\">",
+    /* subtract half a point for the padding */
+    fontsize * 1000 - 4000);
+  strcat (fontize_str, "%s</span>");
+
+  char str_to_use[120];
+  sprintf (str_to_use, fontize_str, str);
+
+  double fontsize_ratio =
+    (double) fontsize / 12.0;
+
   GdkRGBA c2;
   ui_get_contrast_color (
     &color, &c2);
@@ -237,14 +255,14 @@ midi_note_draw (
         cr,
         REGION_NAME_BOX_PADDING +
           (obj->full_rect.x - rect->x),
-        REGION_NAME_BOX_PADDING +
+        fontsize_ratio * REGION_NAME_BOX_PADDING +
           (obj->full_rect.y - rect->y));
       PangoLayout * layout = self->layout;
       z_cairo_draw_text (
         cr,
         GTK_WIDGET (
           arranger_object_get_arranger (obj)),
-        layout, str);
+        layout, str_to_use);
     }
 }
 

@@ -1395,6 +1395,10 @@ events_process (void * data)
           channel_widget_redraw_fader (
             ((Channel *)ev->arg)->widget);
           break;
+        case ET_PIANO_ROLL_KEY_HEIGHT_CHANGED:
+          midi_editor_space_widget_refresh (
+            MW_MIDI_EDITOR_SPACE);
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

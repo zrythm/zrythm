@@ -160,6 +160,14 @@ midi_editor_space_widget_refresh_labels (
   MidiEditorSpaceWidget * self,
   int               hard_refresh);
 
+/**
+ * Returns the appropriate font size based on the
+ * current pixels (height) per key.
+ */
+int
+midi_editor_space_widget_get_font_size (
+  MidiEditorSpaceWidget * self);
+
 void
 midi_editor_space_widget_refresh (
   MidiEditorSpaceWidget * self);

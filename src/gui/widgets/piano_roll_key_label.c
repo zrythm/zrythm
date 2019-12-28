@@ -21,9 +21,11 @@
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/editable_label.h"
+#include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/piano_roll_key.h"
 #include "gui/widgets/piano_roll_key_label.h"
@@ -40,6 +42,15 @@ void
 piano_roll_key_label_widget_refresh (
   PianoRollKeyLabelWidget * self)
 {
+  char fontize_str[120];
+  int fontsize =
+    midi_editor_space_widget_get_font_size (
+      MW_MIDI_EDITOR_SPACE);
+  sprintf (
+    fontize_str, "<span size=\"%d\">",
+    fontsize * 1000 - 4000);
+  strcat (fontize_str, "%s</span>");
+
   if (PIANO_ROLL->drum_mode)
     {
       gtk_stack_set_visible_child (
@@ -74,6 +85,12 @@ piano_roll_key_label_widget_refresh (
         co && chord_descriptor_is_key_in_chord (
           chord_object_get_chord_descriptor (co),
           self->descr->value % 12);
+
+      char note_name[120];
+      sprintf (
+        note_name, fontize_str,
+        self->descr->note_name_pango);
+
       if (PIANO_ROLL->highlighting ==
             PR_HIGHLIGHT_BOTH && in_chord &&
             in_scale)
@@ -104,7 +121,7 @@ piano_roll_key_label_widget_refresh (
           char * str =
             g_strdup_printf (
               "%s  <span size=\"small\" foreground=\"#F79616\">%s</span>",
-              self->descr->note_name_pango,
+              note_name,
               _("scale"));
           gtk_label_set_markup (
             self->lbl,
@@ -123,7 +140,7 @@ piano_roll_key_label_widget_refresh (
           char * str =
             g_strdup_printf (
               "%s  <span size=\"small\" foreground=\"#F79616\">%s</span>",
-              self->descr->note_name_pango,
+              note_name,
               _("chord"));
           gtk_label_set_markup (
             self->lbl,
@@ -133,8 +150,7 @@ piano_roll_key_label_widget_refresh (
       else
         {
           gtk_label_set_markup (
-            self->lbl,
-            self->descr->note_name_pango);
+            self->lbl, note_name);
           gtk_style_context_remove_class (
             gtk_widget_get_style_context (
               GTK_WIDGET (self)),

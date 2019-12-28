@@ -256,6 +256,21 @@ piano_roll_get_current_track (
   return NULL;
 }
 
+void
+piano_roll_set_notes_zoom (
+  PianoRoll * self,
+  float         notes_zoom,
+  int         fire_events)
+{
+  self->notes_zoom = notes_zoom;
+
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_PIANO_ROLL_KEY_HEIGHT_CHANGED, NULL);
+    }
+}
+
 /**
  * Sets the MIDI modifier.
  */
@@ -277,7 +292,7 @@ piano_roll_set_midi_modifier (
 void
 piano_roll_init (PianoRoll * self)
 {
-  self->notes_zoom = 3;
+  self->notes_zoom = 3.f;
 
   self->midi_modifier = MIDI_MODIFIER_VELOCITY;
 

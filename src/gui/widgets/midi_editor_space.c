@@ -175,6 +175,24 @@ on_motion (
   return FALSE;
 }
 
+static int
+on_scroll (
+  GtkWidget * widget,
+  GdkEventScroll * event,
+  MidiEditorSpaceWidget * self)
+{
+  if (event->state & GDK_CONTROL_MASK &&
+      event->state & GDK_SHIFT_MASK)
+    {
+      piano_roll_set_notes_zoom (
+        PIANO_ROLL,
+        PIANO_ROLL->notes_zoom +
+          (float) (- event->delta_y) / 4.f, 1);
+    }
+
+  return FALSE;
+}
+
 static void
 on_released (
   GtkGestureMultiPress *gesture,
@@ -253,13 +271,34 @@ midi_editor_space_widget_get_key_for_label (
 /*{*/
 /*}*/
 
+/**
+ * Returns the appropriate font size based on the
+ * current pixels (height) per key.
+ */
+int
+midi_editor_space_widget_get_font_size (
+  MidiEditorSpaceWidget * self)
+{
+  /* converted from pixels to points */
+  /* see https://websemantics.uk/articles/font-size-conversion/ */
+  if (self->px_per_key >= 16.0)
+    return 12;
+  else if (self->px_per_key >= 13.0)
+    return 10;
+  else if (self->px_per_key >= 10.0)
+    return 7;
+  else
+    return 6;
+  g_return_val_if_reached (-1);
+}
+
 void
 midi_editor_space_widget_refresh (
   MidiEditorSpaceWidget * self)
 {
   self->px_per_key =
     (double) DEFAULT_PX_PER_KEY *
-    PIANO_ROLL->notes_zoom;
+    (double) PIANO_ROLL->notes_zoom;
   self->total_key_px =
     self->px_per_key * (128.0 + 1.0);
 
@@ -433,6 +472,9 @@ midi_editor_space_widget_init (
   g_signal_connect (
     G_OBJECT(self->multipress), "released",
     G_CALLBACK (on_released),  self);
+  g_signal_connect (
+    G_OBJECT(self), "scroll-event",
+    G_CALLBACK (on_scroll),  self);
 }
 
 static void

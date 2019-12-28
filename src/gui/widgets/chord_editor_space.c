@@ -87,7 +87,8 @@ chord_editor_space_widget_setup (
   ChordEditorSpaceWidget * self)
 {
   self->px_per_key =
-    DEFAULT_PX_PER_KEY * PIANO_ROLL->notes_zoom;
+    DEFAULT_PX_PER_KEY *
+    (int) PIANO_ROLL->notes_zoom;
   self->total_key_px =
     self->px_per_key * CHORD_EDITOR->num_chords;
 

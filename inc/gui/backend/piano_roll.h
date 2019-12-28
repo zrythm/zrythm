@@ -163,7 +163,7 @@ typedef struct MidiNoteDescriptor
 typedef struct PianoRoll
 {
   /** Notes zoom level. */
-  int             notes_zoom;
+  float             notes_zoom;
 
   /** Selected MidiModifier. */
   MidiModifier    midi_modifier;
@@ -204,16 +204,16 @@ typedef struct PianoRoll
 static const cyaml_strval_t
 midi_modifier_strings[] =
 {
-	{ "Velocity",      MIDI_MODIFIER_VELOCITY    },
-	{ "Pitch Wheel",   MIDI_MODIFIER_PITCH_WHEEL   },
-	{ "Mod Wheel",     MIDI_MODIFIER_MOD_WHEEL   },
-	{ "Aftertouch",    MIDI_MODIFIER_AFTERTOUCH   },
+  { "Velocity",      MIDI_MODIFIER_VELOCITY    },
+  { "Pitch Wheel",   MIDI_MODIFIER_PITCH_WHEEL   },
+  { "Mod Wheel",     MIDI_MODIFIER_MOD_WHEEL   },
+  { "Aftertouch",    MIDI_MODIFIER_AFTERTOUCH   },
 };
 
 static const cyaml_schema_field_t
 piano_roll_fields_schema[] =
 {
-  CYAML_FIELD_INT (
+  CYAML_FIELD_FLOAT (
     "notes_zoom", CYAML_FLAG_DEFAULT,
     PianoRoll, notes_zoom),
   CYAML_FIELD_ENUM (
@@ -224,15 +224,15 @@ piano_roll_fields_schema[] =
     "drum_mode", CYAML_FLAG_DEFAULT,
     PianoRoll, drum_mode),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 piano_roll_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-		PianoRoll, piano_roll_fields_schema),
+    PianoRoll, piano_roll_fields_schema),
 };
 
 //static inline void
@@ -279,6 +279,12 @@ piano_roll_contains_current_note (
 Track *
 piano_roll_get_current_track (
   const PianoRoll * self);
+
+void
+piano_roll_set_notes_zoom (
+  PianoRoll * self,
+  float         notes_zoom,
+  int         fire_events);
 
 /**
  * Inits the PianoRoll after a Project has been
