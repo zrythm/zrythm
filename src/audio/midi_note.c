@@ -17,12 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * A MIDI note in the timeline.
- */
-
 #include "audio/midi.h"
 #include "audio/midi_note.h"
 #include "audio/position.h"
@@ -112,6 +106,73 @@ midi_note_print (
     obj->end_pos.beats,
     obj->end_pos.sixteenths,
     obj->end_pos.ticks);
+}
+
+/**
+ * Listen to the given MidiNote.
+ *
+ * @param listen Turn note on if 1, or turn it
+ *   off if 0.
+ */
+void
+midi_note_listen (
+  MidiNote * mn,
+  int        listen)
+{
+  ArrangerObject * obj =
+    (ArrangerObject *) mn;
+
+  Track * track =
+    arranger_object_get_track (obj);
+  g_return_if_fail (
+    track && track->processor.midi_in);
+  MidiEvents * events =
+    track->processor.midi_in->midi_events;
+
+  if (listen)
+    {
+      /* if note is on but pitch changed */
+      if (mn->currently_listened &&
+          mn->val != mn->last_listened_val)
+        {
+          /* create midi note off */
+          midi_events_add_note_off (
+            events, 1, mn->last_listened_val,
+            0, 1);
+
+          /* create note on at the new value */
+          midi_events_add_note_on (
+            events, 1, mn->val, mn->vel->vel,
+            1, 1);
+          mn->last_listened_val = mn->val;
+        }
+      /* if note is on and pitch is the same */
+      else if (mn->currently_listened &&
+               mn->val == mn->last_listened_val)
+        {
+          /* do nothing */
+        }
+      /* if note is not on */
+      else if (!mn->currently_listened)
+        {
+          /* turn it on */
+          midi_events_add_note_on (
+            events, 1, mn->val, mn->vel->vel,
+            1, 1);
+          mn->last_listened_val = mn->val;
+          mn->currently_listened = 1;
+        }
+    }
+  /* if turning listening off */
+  else if (mn->currently_listened)
+    {
+      /* create midi note off */
+      midi_events_add_note_off (
+        events, 1, mn->last_listened_val,
+        0, 1);
+      mn->currently_listened = 0;
+      mn->last_listened_val = 255;
+    }
 }
 
 /**

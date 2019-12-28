@@ -1770,6 +1770,8 @@ clone_midi_note (
       src->region, &src_obj->pos,
       &src_obj->end_pos,
       src->val, src->vel->vel, is_main);
+  mn->currently_listened = src->currently_listened;
+  mn->last_listened_val = src->last_listened_val;
 
   return (ArrangerObject *) mn;
 }

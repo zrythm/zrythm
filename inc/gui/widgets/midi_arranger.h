@@ -127,6 +127,21 @@ midi_arranger_calc_deltamax_for_note_movement (
   int y_delta);
 
 /**
+ * Listen to the currently selected notes.
+ *
+ * This function either turns on the notes if they
+ * are not playing, changes the notes if the pitch
+ * changed, or otherwise does nothing.
+ *
+ * @param listen Turn notes on if 1, or turn them
+ *   off if 0.
+ */
+void
+midi_arranger_listen_notes (
+  ArrangerWidget * self,
+  int              listen);
+
+/**
  * @}
  */
 

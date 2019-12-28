@@ -75,6 +75,14 @@ typedef struct MidiNote
   /** Muted or not */
   int             muted;
 
+  /** Whether or not this note is currently
+   * listened to */
+  int             currently_listened;
+
+  /** The note/pitch that is currently playing,
+   * if \ref MidiNote.currently_listened is true. */
+  uint8_t         last_listened_val;
+
   /** Cache layout for drawing the name. */
   PangoLayout *   layout;
 } MidiNote;
@@ -176,6 +184,17 @@ midi_note_get_val_as_string (
 void
 midi_note_print (
   MidiNote * mn);
+
+/**
+ * Listen to the given MidiNote.
+ *
+ * @param listen Turn note on if 1, or turn it
+ *   off if 0.
+ */
+void
+midi_note_listen (
+  MidiNote * mn,
+  int        listen);
 
 /**
  * Shifts MidiNote's position and/or value.

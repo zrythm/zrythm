@@ -494,58 +494,36 @@ midi_arranger_calc_deltamax_for_note_movement (
   return y_delta;
   /*return y_delta < 0 ? -1 : 1;*/
 }
+
 /**
- * Called when moving midi notes in drag update in arranger
- * widget for moving up/down (changing note).
+ * Listen to the currently selected notes.
+ *
+ * This function either turns on the notes if they
+ * are not playing, changes the notes if the pitch
+ * changed, or otherwise does nothing.
+ *
+ * @param listen Turn notes on if 1, or turn them
+ *   off if 0.
  */
-/*void*/
-/*midi_arranger_widget_move_items_y (*/
-  /*ArrangerWidget *self,*/
-  /*double              offset_y)*/
-/*{*/
-  /*ARRANGER_WIDGET_GET_PRIVATE(self);*/
+void
+midi_arranger_listen_notes (
+  ArrangerWidget * self,
+  int              listen)
+{
+  if (!g_settings_get_int (
+         S_UI, "listen-notes"))
+    return;
 
-  /*int y_delta;*/
-  /*[> first note selected <]*/
-  /*int first_note_selected =*/
-    /*midi_note_get_main (*/
-      /*self->start_object)->val;*/
-  /*[> note at cursor <]*/
-  /*int note_at_cursor =*/
-    /*midi_arranger_widget_get_note_at_y (*/
-      /*self->start_y + offset_y);*/
-
-  /*y_delta = note_at_cursor - first_note_selected;*/
-  /*y_delta =*/
-    /*calc_deltamax_for_note_movement (y_delta);*/
-  /*MidiNote * midi_note;*/
-  /*ArrangerObjectUpdateFlag flag =*/
-    /*AO_UPDATE_NON_TRANS;*/
-
-  /*g_message ("midi notes %d", MA_SELECTIONS->num_midi_notes);*/
-  /*int i;*/
-  /*for (i = 0; i < MA_SELECTIONS->num_midi_notes; i++)*/
-    /*{*/
-      /*midi_note =*/
-        /*midi_note_get_main (*/
-          /*MA_SELECTIONS->midi_notes[i]);*/
-      /*ArrangerObject * mn_obj =*/
-        /*(ArrangerObject *) midi_note;*/
-      /*midi_note_set_val (*/
-        /*midi_note,*/
-        /*(midi_byte_t)*/
-          /*((int) midi_note->val + y_delta),*/
-        /*flag);*/
-      /*if (Z_IS_ARRANGER_OBJECT_WIDGET (*/
-            /*mn_obj->widget))*/
-        /*{*/
-          /*arranger_object_widget_update_tooltip (*/
-            /*Z_ARRANGER_OBJECT_WIDGET (*/
-              /*mn_obj->widget), 0);*/
-        /*}*/
-    /*}*/
-/*}*/
-
+  ArrangerSelections * sel =
+    arranger_widget_get_selections (self);
+  MidiArrangerSelections * mas =
+    (MidiArrangerSelections *) sel;
+  for (int i = 0; i < mas->num_midi_notes; i++)
+    {
+      MidiNote * mn = mas->midi_notes[i];
+      midi_note_listen (mn, listen);
+    }
+}
 
 /**
  * Called on drag end.

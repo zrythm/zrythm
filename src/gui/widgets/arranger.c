@@ -1433,9 +1433,8 @@ move_items_y (
         y_delta =
           midi_arranger_calc_deltamax_for_note_movement (y_delta);
 
-        g_message ("midi notes %d", MA_SELECTIONS->num_midi_notes);
-        int i;
-        for (i = 0; i < MA_SELECTIONS->num_midi_notes; i++)
+        for (int i = 0;
+             i < MA_SELECTIONS->num_midi_notes; i++)
           {
             MidiNote * midi_note =
               MA_SELECTIONS->midi_notes[i];
@@ -1453,6 +1452,9 @@ move_items_y (
                     /*mn_obj->widget), 0);*/
               /*}*/
           }
+
+        /*midi_arranger_listen_notes (*/
+          /*self, 1);*/
       }
       break;
     default:
@@ -2708,9 +2710,15 @@ select_in_range (
 {
   int i;
 
+  ArrangerSelections * prev_sel =
+    arranger_selections_clone (
+      arranger_widget_get_selections (self));
+
   if (!delete)
-    /* deselect all */
-    arranger_widget_select_all (self, 0);
+    {
+      /* deselect all */
+      arranger_widget_select_all (self, 0);
+    }
 
   ArrangerObject * objs[800];
   int              num_objs = 0;
@@ -2852,6 +2860,10 @@ select_in_range (
                 obj, F_SELECT, F_APPEND);
             }
         }
+      midi_arranger_selections_unlisten_note_diff (
+        (MidiArrangerSelections *) prev_sel,
+        (MidiArrangerSelections *)
+        arranger_widget_get_selections (self));
       break;
     case TYPE (MIDI_MODIFIER):
       arranger_widget_get_hit_objects_in_rect (
@@ -2881,6 +2893,9 @@ select_in_range (
     default:
       break;
     }
+
+  if (prev_sel)
+    arranger_selections_free (prev_sel);
 }
 
 static void
@@ -3147,6 +3162,12 @@ drag_update (
       self, (int) (self->start_x + offset_x),
       (int) (self->start_y + offset_y));
 
+  if (self->type == TYPE (MIDI))
+    {
+      midi_arranger_listen_notes (
+        self, 1);
+    }
+
   /* update last offsets */
   self->last_offset_x = offset_x;
   self->last_offset_y = offset_y;
@@ -3366,6 +3387,8 @@ static void
 on_drag_end_midi (
   ArrangerWidget * self)
 {
+  midi_arranger_listen_notes (self, 0);
+
   MidiNote * midi_note;
   for (int i = 0;
        i < MA_SELECTIONS->num_midi_notes;

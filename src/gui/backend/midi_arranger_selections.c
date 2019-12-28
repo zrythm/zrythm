@@ -73,6 +73,37 @@ midi_arranger_selections_get_lowest_note (
 }
 
 /**
+ * Sets the listen status of notes on and off based
+ * on changes in the previous selections and the
+ * current selections.
+ */
+void
+midi_arranger_selections_unlisten_note_diff (
+  MidiArrangerSelections * prev,
+  MidiArrangerSelections * mas)
+{
+  for (int i = 0; i < prev->num_midi_notes; i++)
+    {
+      MidiNote * prev_mn = prev->midi_notes[i];
+      int found = 0;
+      for (int j = 0; j < mas->num_midi_notes; j++)
+        {
+          MidiNote * mn = mas->midi_notes[j];
+          if (midi_note_is_equal (prev_mn, mn))
+            {
+              found = 1;
+              break;
+            }
+        }
+
+      if (!found)
+        {
+          midi_note_listen (prev_mn, 0);
+        }
+    }
+}
+
+/**
  * Returns if the selections can be pasted.
  *
  * @param pos Position to paste to.
