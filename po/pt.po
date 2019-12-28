@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-12-24 22:26+0000\n"
-"PO-Revision-Date: 2019-12-19 17:00+0000\n"
+"PO-Revision-Date: 2019-12-28 13:21+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.10\n"
 
 #: src/zrythm.c:280
 msgid "Setting up main window"
@@ -253,30 +253,28 @@ msgid "note type"
 msgstr "tipo de nota"
 
 #: src/gui/widgets/inspector_port.c:149 resources/ui/bind_cc_dialog.ui:27
-#, fuzzy
 msgid "Bind MIDI CC"
-msgstr "Pista %d Can MIDI"
+msgstr "Ligar MIDI CC"
 
 #: src/gui/widgets/inspector_port.c:303
 msgid "Incoming signals"
-msgstr ""
+msgstr "Sinais de entrada"
 
 #: src/gui/widgets/inspector_port.c:304
 msgid "Outgoing signals"
-msgstr ""
+msgstr "Sinais de saída"
 
 #: src/gui/widgets/inspector_port.c:316
 msgid "Current val"
-msgstr ""
+msgstr "Val atual"
 
 #: src/gui/widgets/inspector_port.c:318
-#, fuzzy
 msgid "Min"
-msgstr "entrada"
+msgstr "Min"
 
 #: src/gui/widgets/inspector_port.c:319
 msgid "Max"
-msgstr ""
+msgstr "Max"
 
 #: src/gui/widgets/inspector_port.c:431
 msgid "Expose port to JACK"
@@ -403,9 +401,8 @@ msgstr ""
 "3. Reiniciar Zrythm"
 
 #: src/gui/widgets/bind_cc_dialog.c:94
-#, fuzzy
 msgid "Not a control change event"
-msgstr "Nenhum controle selecionado"
+msgstr "Não é um evento de mudança de controle"
 
 #: src/gui/widgets/project_assistant.c:265 src/gui/widgets/event_viewer.c:437
 #: resources/ui/create_project_dialog.ui:95
@@ -886,20 +883,19 @@ msgstr "Velocidade"
 
 #: src/gui/widgets/event_viewer.c:615
 msgid "Index"
-msgstr ""
+msgstr "Índice"
 
 #: src/gui/widgets/event_viewer.c:637
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
 #: src/gui/widgets/event_viewer.c:648
 msgid "Curviness"
-msgstr ""
+msgstr "Curvatura"
 
 #: src/gui/widgets/ports_expander.c:165
-#, fuzzy
 msgid "Controls"
-msgstr "Controlar Entradas"
+msgstr "Controles"
 
 #: src/gui/widgets/ports_expander.c:168
 msgid "Control Outs"
@@ -1521,12 +1517,11 @@ msgstr "OK"
 
 #: resources/ui/bind_cc_dialog.ui:81
 msgid "Press a key or move a knob on your MIDI device"
-msgstr ""
+msgstr "Pressione uma tecla ou mova um botão no seu aparelho MIDI"
 
 #: resources/ui/bind_cc_dialog.ui:94
-#, fuzzy
 msgid "Waiting for input..."
-msgstr "Aguardando projeto"
+msgstr "À espera de entrada..."
 
 #: resources/ui/scale_selector_window.ui:51
 msgid "Root Key"
@@ -1665,7 +1660,7 @@ msgstr "Aquário"
 
 #: resources/ui/timeline_toolbar.ui:64
 msgid "Musical mode"
-msgstr ""
+msgstr "Modo musical"
 
 #: resources/ui/timeline_toolbar.ui:87 resources/ui/editor_toolbar.ui:103
 msgid "Toggle event viewer"
