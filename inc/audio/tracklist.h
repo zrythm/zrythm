@@ -27,6 +27,7 @@
 #define __AUDIO_TRACKLIST_H__
 
 #include "audio/engine.h"
+#include "audio/track.h"
 
 /**
  * @addtogroup audio
@@ -342,6 +343,14 @@ tracklist_track_name_is_unique (
 int
 tracklist_has_soloed (
   const Tracklist * self);
+
+/**
+ * @param visible 1 for visible, 0 for invisible.
+ */
+int
+tracklist_get_num_visible_tracks (
+  Tracklist * self,
+  int         visible);
 
 /**
  * @}

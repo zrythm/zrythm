@@ -20,6 +20,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Composite widget above the tracklist.
+ */
+
 #ifndef __GUI_WIDGETS_TRACKLIST_HEADER_H__
 #define __GUI_WIDGETS_TRACKLIST_HEADER_H__
 
@@ -27,15 +33,37 @@
 
 #define TRACKLIST_HEADER_WIDGET_TYPE \
   (tracklist_header_widget_get_type ())
-G_DECLARE_FINAL_TYPE (TracklistHeaderWidget,
-                      tracklist_header_widget,
-                      Z,
-                      TRACKLIST_HEADER_WIDGET,
-                      GtkGrid)
+G_DECLARE_FINAL_TYPE (
+  TracklistHeaderWidget,
+  tracklist_header_widget,
+  Z, TRACKLIST_HEADER_WIDGET,
+  GtkGrid)
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+#define MW_TRACKLIST_HEADER \
+  (MW_TIMELINE_PANEL->tracklist_header)
 
 typedef struct _TracklistHeaderWidget
 {
-  GtkGrid                parent_instance;
+  GtkGrid             parent_instance;
+  GtkLabel *          track_count_lbl;
 } TracklistHeaderWidget;
+
+void
+tracklist_header_widget_refresh_track_count (
+  TracklistHeaderWidget * self);
+
+void
+tracklist_header_widget_setup (
+  TracklistHeaderWidget * self);
+
+/**
+ * @}
+ */
 
 #endif

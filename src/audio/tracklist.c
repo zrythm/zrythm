@@ -675,3 +675,23 @@ tracklist_has_soloed (
     }
   return 0;
 }
+
+/**
+ * @param visible 1 for visible, 0 for invisible.
+ */
+int
+tracklist_get_num_visible_tracks (
+  Tracklist * self,
+  int         visible)
+{
+  int ret = 0;
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+
+      if (track->visible == visible)
+        ret++;
+    }
+
+  return ret;
+}

@@ -77,6 +77,7 @@
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_visibility_tree.h"
 #include "gui/widgets/tracklist.h"
+#include "gui/widgets/tracklist_header.h"
 #include "gui/widgets/visibility.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -1027,6 +1028,8 @@ events_process (void * data)
               MW_TRACKLIST);
           visibility_widget_refresh (
             MW_VISIBILITY);
+          tracklist_header_widget_refresh_track_count (
+            MW_TRACKLIST_HEADER);
           break;
         case ET_CHANNEL_REMOVED:
           mixer_widget_hard_refresh (
@@ -1188,6 +1191,8 @@ events_process (void * data)
           break;
         case ET_TRACK_ADDED:
           on_track_added ((Track *) ev->arg);
+          tracklist_header_widget_refresh_track_count (
+            MW_TRACKLIST_HEADER);
           break;
         case ET_TRACK_CHANGED:
           on_track_changed ((Track *) ev->arg);
@@ -1200,6 +1205,8 @@ events_process (void * data)
               MW_TRACKLIST);
           visibility_widget_refresh (
             MW_VISIBILITY);
+          tracklist_header_widget_refresh_track_count (
+            MW_TRACKLIST_HEADER);
           break;
         case ET_TRACK_COLOR_CHANGED:
           on_track_color_changed ((Track *) ev->arg);
@@ -1240,6 +1247,8 @@ events_process (void * data)
             MW_PINNED_TIMELINE);
           track_visibility_tree_widget_refresh (
             MW_TRACK_VISIBILITY_TREE);
+          tracklist_header_widget_refresh_track_count (
+            MW_TRACKLIST_HEADER);
           break;
         case ET_UNDO_REDO_ACTION_DONE:
           home_toolbar_widget_refresh_undo_redo_buttons (

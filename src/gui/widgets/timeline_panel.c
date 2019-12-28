@@ -74,6 +74,8 @@ timeline_panel_widget_setup (
   gtk_widget_set_size_request (
     GTK_WIDGET (self->tracklist_header), -1,
     req.height);
+  tracklist_header_widget_setup (
+    self->tracklist_header);
 
   /* setup ruler */
   gtk_scrolled_window_set_hadjustment (

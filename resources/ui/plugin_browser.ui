@@ -90,6 +90,7 @@
           <object class="GtkToolbar" id="plugin_toolbar">
             <property name="visible">1</property>
             <property name="icon-size">small-toolbar</property>
+            <property name="show-arrow">0</property>
             <child>
               <object class="GtkToggleToolButton" id="toggle_instruments">
                 <property name="visible">1</property>

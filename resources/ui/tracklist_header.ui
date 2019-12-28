@@ -37,10 +37,12 @@
       </packing>
     </child>
     <child>
-      <object class="GtkLabel">
+      <object class="GtkLabel" id="track_count_lbl">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label">18/18</property>
+        <property name="margin-left">3</property>
+        <property name="margin-right">3</property>
       </object>
       <packing>
         <property name="left_attach">1</property>
@@ -54,6 +56,7 @@
         <property name="primary_icon_name">edit-find-symbolic</property>
         <property name="primary_icon_activatable">False</property>
         <property name="primary_icon_sensitive">False</property>
+        <property name="hexpand">1</property>
       </object>
       <packing>
         <property name="left_attach">3</property>

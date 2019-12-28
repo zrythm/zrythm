@@ -116,20 +116,12 @@ audio_editor_space_widget_class_init (
     klass,
     "audio_editor_space.ui");
 
-  gtk_widget_class_bind_template_child (
-    klass,
-    AudioEditorSpaceWidget,
-    arranger_scroll);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AudioEditorSpaceWidget,
-    left_box);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AudioEditorSpaceWidget,
-    arranger_viewport);
-  gtk_widget_class_bind_template_child (
-    klass,
-    AudioEditorSpaceWidget,
-    arranger);
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child ( \
+    klass, AudioEditorSpaceWidget, x)
+
+  BIND_CHILD (arranger_scroll);
+  BIND_CHILD (left_box);
+  BIND_CHILD (arranger_viewport);
+  BIND_CHILD (arranger);
 }
