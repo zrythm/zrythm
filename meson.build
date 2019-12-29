@@ -362,7 +362,9 @@ qt5_dep = dependency('Qt5Widgets', required: get_option('enable_qt5'))
 yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.24')
 sndfile_dep = dependency('sndfile', version: '>=1.0.25')
-lv2_dep = dependency('lv2', version: '>=1.14.0')
+lv2_dep = dependency(
+  'lv2', version: '>=1.16.0',
+  fallback: ['lilv', 'lv2_dep'])
 fftw3_dep = dependency('fftw3', version: '>=3.3.5')
 
 # TODO add Cantarell font as dependency
