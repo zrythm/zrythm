@@ -34,8 +34,7 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/editor_ruler.h"
-#include "gui/widgets/piano_roll_key.h"
-#include "gui/widgets/piano_roll_key_label.h"
+#include "gui/widgets/piano_roll_keys.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
 #include "utils/gtk.h"
@@ -43,12 +42,9 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (MidiEditorSpaceWidget,
-               midi_editor_space_widget,
-               GTK_TYPE_BOX)
-
-#define DRUM_MODE (PIANO_ROLL->drum_mode)
-#define DEFAULT_PX_PER_KEY 8
+G_DEFINE_TYPE (
+  MidiEditorSpaceWidget, midi_editor_space_widget,
+  GTK_TYPE_BOX)
 
 static void
 on_midi_modifier_changed (
@@ -100,81 +96,6 @@ link_scrolls (
 
 }
 
-static PianoRollKeyWidget *
-get_piano_roll_key_at_coord (
-  MidiEditorSpaceWidget * self,
-  int                     y)
-{
-  GtkWidget * key = NULL;
-  for (int i = 0; i < 128 + 128; i++)
-    {
-      if (i < 128)
-        key =
-          (GtkWidget *) self->piano_roll_keys[i];
-      else
-        key =
-          (GtkWidget *)
-          self->piano_roll_key_labels[i % 128];
-
-      if (y > 0)
-        {
-          if (ui_is_child_hit (
-                GTK_WIDGET (
-                  self->start_key),
-                GTK_WIDGET (key),
-                0, 1, 0, y, 0, 0))
-            {
-              return
-                self->piano_roll_keys[i % 128];
-            }
-        }
-      else
-        {
-          if (ui_is_child_hit (
-                GTK_WIDGET (key),
-                GTK_WIDGET (
-                  self->start_key),
-                0, 1, 0, abs (y), 0, 0))
-            {
-              /* somehow if negative we get 1 key
-               * off, adjust */
-              int idx = MAX ((i % 128) - 1, 0);
-              return
-                self->piano_roll_keys[idx % 128];
-            }
-        }
-    }
-
-  /* outside bounds, return last key */
-  return self->last_key;
-}
-
-static gboolean
-on_motion (
-  GtkWidget *widget,
-  GdkEventMotion  *event,
-  MidiEditorSpaceWidget * self)
-{
-  if (self->note_pressed &&
-      !self->note_released)
-    {
-      PianoRollKeyWidget * key =
-        get_piano_roll_key_at_coord (
-          self, (int) event->y);
-
-      if (self->last_key != key)
-        {
-          piano_roll_key_send_note_event (
-            self->last_key, 0);
-          piano_roll_key_send_note_event (
-            key, 1);
-        }
-      self->last_key = key;
-    }
-
-  return FALSE;
-}
-
 static int
 on_scroll (
   GtkWidget * widget,
@@ -184,85 +105,59 @@ on_scroll (
   if (event->state & GDK_CONTROL_MASK &&
       event->state & GDK_SHIFT_MASK)
     {
-      piano_roll_set_notes_zoom (
-        PIANO_ROLL,
-        PIANO_ROLL->notes_zoom +
-          (float) (- event->delta_y) / 4.f, 1);
+
+      double /*x = event->x, */
+             y = event->y,
+             adj_val,
+             diff;
+
+      GtkScrolledWindow * scroll =
+        self->piano_roll_keys_scroll;
+      GtkAdjustment * adj;
+
+      /* get current adjustment so we can get the
+       * difference from the cursor */
+      adj =
+        gtk_scrolled_window_get_vadjustment (
+          scroll);
+      adj_val = gtk_adjustment_get_value (adj);
+      double size_before =
+        gtk_adjustment_get_upper (adj);
+      double adj_perc = y / size_before;
+
+      /* get px diff so we can calculate the new
+       * adjustment later */
+      diff = y - adj_val;
+
+      /* scroll down, zoom out */
+      double size_after;
+      if (event->delta_y > 0)
+        {
+          piano_roll_set_notes_zoom (
+            PIANO_ROLL,
+            PIANO_ROLL->notes_zoom / 1.2f, 0);
+          size_after = size_before / 1.2;
+        }
+      else /* scroll up, zoom in */
+        {
+          piano_roll_set_notes_zoom (
+            PIANO_ROLL,
+            PIANO_ROLL->notes_zoom * 1.2f, 0);
+          size_after = size_before * 1.2;
+        }
+
+      /* refresh relevant widgets */
+      midi_editor_space_widget_refresh (self);
+
+      /* get updated adjustment and set its value
+       at the same offset as before */
+      adj =
+        gtk_scrolled_window_get_vadjustment (scroll);
+      gtk_adjustment_set_value (
+        adj, adj_perc * size_after - diff);
     }
 
-  return FALSE;
-}
-
-static void
-on_released (
-  GtkGestureMultiPress *gesture,
-  gint                  n_press,
-  gdouble               x,
-  gdouble               y,
-  MidiEditorSpaceWidget *  self)
-{
-  self->note_pressed = 0;
-  self->note_released = 1;
-  if (self->last_key)
-    piano_roll_key_send_note_event (
-      self->last_key, 0);
-  self->last_key = NULL;
-}
-
-/**
- * Refresh the labels only (for highlighting).
- *
- * @param hard_refresh Removes and radds the labels,
- *   otherwise just calls refresh on them.
- */
-void
-midi_editor_space_widget_refresh_labels (
-  MidiEditorSpaceWidget * self,
-  int                     hard_refresh)
-{
-  /* caches to avoid unnecessary refreshing */
-  static ChordObject * last_chord = NULL;
-  static ScaleObject * last_scale = NULL;
-
-  ChordObject * co =
-    chord_track_get_chord_at_playhead (
-      P_CHORD_TRACK);
-  ScaleObject * so =
-    chord_track_get_scale_at_playhead (
-      P_CHORD_TRACK);
-  if (last_chord == co &&
-      last_scale == so)
-    return;
-
-  for (int i = 0; i < 128; i++)
-    {
-      if (GTK_IS_WIDGET (
-            self->piano_roll_key_labels[i]))
-        piano_roll_key_label_widget_refresh (
-          self->piano_roll_key_labels[i]);
-    }
-
-  last_chord = co;
-  last_scale = so;
-}
-
-/**
- * Gets the PianoRollKeyWidget corresponding to the
- * given PianoRollKeyLabelWidget.
- */
-PianoRollKeyWidget *
-midi_editor_space_widget_get_key_for_label (
-  MidiEditorSpaceWidget *   self,
-  PianoRollKeyLabelWidget * label)
-{
-  PianoRollKeyWidget * key;
-  for (int i = 0; i < 128; i++)
-    {
-      key = self->piano_roll_keys[i];
-      if (label->descr == key->descr)
-        return key;
-    }
-  g_return_val_if_reached (NULL);
+  return TRUE;
 }
 
 /*static void*/
@@ -271,93 +166,12 @@ midi_editor_space_widget_get_key_for_label (
 /*{*/
 /*}*/
 
-/**
- * Returns the appropriate font size based on the
- * current pixels (height) per key.
- */
-int
-midi_editor_space_widget_get_font_size (
-  MidiEditorSpaceWidget * self)
-{
-  /* converted from pixels to points */
-  /* see https://websemantics.uk/articles/font-size-conversion/ */
-  if (self->px_per_key >= 16.0)
-    return 12;
-  else if (self->px_per_key >= 13.0)
-    return 10;
-  else if (self->px_per_key >= 10.0)
-    return 7;
-  else
-    return 6;
-  g_return_val_if_reached (-1);
-}
-
 void
 midi_editor_space_widget_refresh (
   MidiEditorSpaceWidget * self)
 {
-  self->px_per_key =
-    (double) DEFAULT_PX_PER_KEY *
-    (double) PIANO_ROLL->notes_zoom;
-  self->total_key_px =
-    self->px_per_key * (128.0 + 1.0);
-
-  /* readd the notes */
-  z_gtk_container_destroy_all_children (
-    GTK_CONTAINER (self->piano_roll_keys_box));
-
-  MidiNoteDescriptor * descr;
-  for (int i = 0; i < 128; i++)
-    {
-      if (DRUM_MODE)
-        descr = &PIANO_ROLL->drum_descriptors[i];
-      else
-        descr = &PIANO_ROLL->piano_descriptors[i];
-
-      /* skip invisible notes */
-      if (!descr->visible)
-        continue;
-
-      GtkBox * box =
-        GTK_BOX (
-          gtk_box_new (GTK_ORIENTATION_HORIZONTAL,
-                       0));
-      gtk_widget_set_visible (
-        GTK_WIDGET (box), 1);
-      /* add thin line on the bottom of each note */
-      if (i != 127)
-        z_gtk_widget_add_style_class (
-          GTK_WIDGET (box), "piano_roll_key_box");
-
-      /* add label */
-      PianoRollKeyLabelWidget * lbl =
-        piano_roll_key_label_widget_new (descr);
-      piano_roll_key_label_widget_refresh (
-        lbl);
-      gtk_box_pack_start (
-        box, GTK_WIDGET (lbl),
-        1, 1, 0);
-      gtk_widget_set_size_request (
-        GTK_WIDGET (lbl),
-        -1, (int) self->px_per_key);
-      self->piano_roll_key_labels[i] = lbl;
-
-      if (!DRUM_MODE)
-        {
-          /* add label */
-          PianoRollKeyWidget * key =
-            piano_roll_key_widget_new (descr);
-          gtk_box_pack_end (
-            box, GTK_WIDGET (key),
-            0, 1, 0);
-          self->piano_roll_keys[i] = key;
-        }
-
-      gtk_box_pack_start (
-        self->piano_roll_keys_box,
-        GTK_WIDGET (box),
-        0, 0, 0);
-    }
+  piano_roll_keys_widget_refresh (
+    self->piano_roll_keys);
 
   /* relink scrolls */
   link_scrolls (self);
@@ -406,6 +220,9 @@ midi_editor_space_widget_setup (
         GTK_WIDGET (self->modifier_arranger));
     }
 
+  piano_roll_keys_widget_setup (
+    self->piano_roll_keys);
+
   midi_editor_space_widget_refresh (self);
 
   /* scroll to note in middle */
@@ -432,8 +249,6 @@ midi_editor_space_widget_init (
   self->modifier_arranger->type =
     ARRANGER_WIDGET_TYPE_MIDI_MODIFIER;
 
-  self->last_mid_note = 63;
-
   self->arranger_and_keys_vsize_group =
     gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
   gtk_size_group_add_widget (
@@ -441,37 +256,17 @@ midi_editor_space_widget_init (
     GTK_WIDGET (self->arranger));
   gtk_size_group_add_widget (
     self->arranger_and_keys_vsize_group,
-    GTK_WIDGET (self->piano_roll_keys_box));
-
-  /*gtk_widget_set_has_window (*/
-    /*GTK_WIDGET (self->piano_roll_keys_box), TRUE);*/
-
-  /* make it able to notify */
-  gtk_widget_add_events (
-    GTK_WIDGET (self->piano_roll_keys_box),
-    GDK_ALL_EVENTS_MASK);
-
-  self->multipress =
-    GTK_GESTURE_MULTI_PRESS (
-      gtk_gesture_multi_press_new (
-        GTK_WIDGET (self->piano_roll_keys_box)));
+    GTK_WIDGET (self->piano_roll_keys));
 
   /* setup signals */
   g_signal_connect (
     G_OBJECT(self->midi_modifier_chooser),
     "changed",
     G_CALLBACK (on_midi_modifier_changed),  self);
-  g_signal_connect (
-    G_OBJECT (self->piano_roll_keys_box),
-    "motion-notify-event",
-    G_CALLBACK (on_motion), self);
   /*g_signal_connect (*/
     /*G_OBJECT (self->piano_roll_keys_box),*/
     /*"size-allocate",*/
     /*G_CALLBACK (on_keys_box_size_allocate), self);*/
-  g_signal_connect (
-    G_OBJECT(self->multipress), "released",
-    G_CALLBACK (on_released),  self);
   g_signal_connect (
     G_OBJECT(self), "scroll-event",
     G_CALLBACK (on_scroll),  self);
@@ -495,7 +290,7 @@ midi_editor_space_widget_class_init (
   BIND_CHILD (midi_modifier_chooser);
   BIND_CHILD (piano_roll_keys_scroll);
   BIND_CHILD (piano_roll_keys_viewport);
-  BIND_CHILD (piano_roll_keys_box);
+  BIND_CHILD (piano_roll_keys);
   BIND_CHILD (midi_arranger_velocity_paned);
   BIND_CHILD (arranger_scroll);
   BIND_CHILD (arranger_viewport);

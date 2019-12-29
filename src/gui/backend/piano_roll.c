@@ -135,15 +135,17 @@ init_descriptors (
 void
 piano_roll_add_current_note (
   PianoRoll * self,
-  MidiNoteDescriptor * descr)
+  int         note)
 {
-  if (!array_contains_int (self->current_notes,
-                       self->num_current_notes,
-                       descr->value))
+  if (!array_contains_int (
+         self->current_notes,
+         self->num_current_notes,
+         note))
     {
-      array_append (self->current_notes,
-                    self->num_current_notes,
-                    descr->value);
+      array_append (
+        self->current_notes,
+        self->num_current_notes,
+        note);
     }
 }
 
@@ -153,16 +155,17 @@ piano_roll_add_current_note (
 void
 piano_roll_remove_current_note (
   PianoRoll * self,
-  MidiNoteDescriptor * descr)
+  int         note)
 {
-  if (array_contains_int (self->current_notes,
-                      self->num_current_notes,
-                      descr->value))
+  if (array_contains_int (
+      self->current_notes,
+      self->num_current_notes,
+      note))
     {
       array_delete_primitive (
         self->current_notes,
         self->num_current_notes,
-        descr->value);
+        note);
     }
 }
 
@@ -173,11 +176,12 @@ piano_roll_remove_current_note (
 int
 piano_roll_contains_current_note (
   PianoRoll * self,
-  MidiNoteDescriptor * descr)
+  int         note)
 {
-  return array_contains_int (self->current_notes,
-                         self->num_current_notes,
-                         descr->value);
+  return
+    array_contains_int (
+      self->current_notes,
+      self->num_current_notes, note);
 }
 
 /**

@@ -39,6 +39,7 @@
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_note.h"
+#include "gui/widgets/piano_roll_keys.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -227,8 +228,8 @@ midi_note_draw (
 
   char fontize_str[120];
   int fontsize =
-    midi_editor_space_widget_get_font_size (
-      MW_MIDI_EDITOR_SPACE);
+    piano_roll_keys_widget_get_font_size (
+      MW_PIANO_ROLL_KEYS);
   sprintf (
     fontize_str, "<span size=\"%d\">",
     /* subtract half a point for the padding */

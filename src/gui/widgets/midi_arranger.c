@@ -32,6 +32,7 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger_bg.h"
@@ -39,7 +40,7 @@
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
-#include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/piano_roll_keys.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/timeline_bg.h"
@@ -62,7 +63,7 @@ midi_arranger_widget_get_note_at_y (double y)
 {
   double adj_y = y - 1;
   double adj_px_per_key =
-    MW_MIDI_EDITOR_SPACE->px_per_key + 1;
+    MW_PIANO_ROLL_KEYS->px_per_key + 1;
   if (PIANO_ROLL->drum_mode)
     {
       return
@@ -342,7 +343,7 @@ midi_arranger_widget_set_hovered_note (
       GdkRectangle rect;
       arranger_widget_get_visible_rect (self, &rect);
       int adj_px_per_key =
-        (int) MW_MIDI_EDITOR_SPACE->px_per_key + 1;
+        (int) MW_PIANO_ROLL_KEYS->px_per_key + 1;
       if (self->hovered_note != -1)
         {
           /* redraw the previous note area to

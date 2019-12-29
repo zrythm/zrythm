@@ -36,6 +36,7 @@
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
+#include "gui/widgets/piano_roll_keys.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/scale_object.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -976,9 +977,8 @@ arranger_object_set_full_rectangle (
         long region_start_ticks =
           region_obj->pos.total_ticks;
         Position tmp;
-        int adj_px_per_key =
-          (int)
-          MW_MIDI_EDITOR_SPACE->px_per_key + 1;
+        double adj_px_per_key =
+          MW_PIANO_ROLL_KEYS->px_per_key + 1.0;
 
         /* use absolute position */
         position_from_ticks (
@@ -989,11 +989,13 @@ arranger_object_set_full_rectangle (
           ui_pos_to_px_editor (
             &tmp, 1);
         self->full_rect.y =
-          adj_px_per_key *
-          piano_roll_find_midi_note_descriptor_by_val (
-            PIANO_ROLL, mn->val)->index;
+          (int)
+          (adj_px_per_key *
+           piano_roll_find_midi_note_descriptor_by_val (
+             PIANO_ROLL, mn->val)->index);
 
-        self->full_rect.height = adj_px_per_key;
+        self->full_rect.height =
+          (int) adj_px_per_key;
         if (PIANO_ROLL->drum_mode)
           {
             self->full_rect.width =

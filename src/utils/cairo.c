@@ -197,7 +197,13 @@ z_cairo_get_surface_from_icon_name (
           size,
           0,
           NULL);
-      g_return_val_if_fail (pixbuf, NULL);
+      if (!pixbuf)
+        {
+          g_critical (
+            "failed to load pixbuf from icon %s",
+            icon_name);
+          return NULL;
+        }
 
       surface =
         gdk_cairo_surface_create_from_pixbuf (

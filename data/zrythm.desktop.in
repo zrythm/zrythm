@@ -25,5 +25,5 @@ Exec=zrythm
 Icon=zrythm
 Type=Application
 StartupNotify=true
-Categories=AudioVideo;Audio;Sequencer;
+Categories=AudioVideo;Audio;Sequencer;X-Sound;Midi;X-Jack
 MimeType=application/x-zrythm-project

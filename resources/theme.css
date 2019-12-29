@@ -248,20 +248,20 @@ timeline-toolbar separator
   margin: 4px;
 }
 
-piano-roll-label.highlight_scale
-{
-  background-color: alpha (#662266, 0.2);
-}
+/*piano-roll-label.highlight_scale*/
+/*{*/
+  /*background-color: alpha (#662266, 0.2);*/
+/*}*/
 
-piano-roll-label.highlight_chord
-{
-  background-color: alpha (#BB22BB, 0.2);
-}
+/*piano-roll-label.highlight_chord*/
+/*{*/
+  /*background-color: alpha (#BB22BB, 0.2);*/
+/*}*/
 
-piano-roll-label.highlight_both
-{
-  background-color: alpha (#FF22FF, 0.2);
-}
+/*piano-roll-label.highlight_both*/
+/*{*/
+  /*background-color: alpha (#FF22FF, 0.2);*/
+/*}*/
 
 /* override button size from theme */
 button

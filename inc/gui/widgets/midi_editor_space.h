@@ -37,10 +37,8 @@ G_DECLARE_FINAL_TYPE (
   GtkBox)
 
 typedef struct _ArrangerWidget ArrangerWidget;
-typedef struct _PianoRollKeyLabelWidget
-  PianoRollKeyLabelWidget;
-typedef struct _PianoRollKeyWidget
-  PianoRollKeyWidget;
+typedef struct _PianoRollKeysWidget
+  PianoRollKeysWidget;
 
 /**
  * @addtogroup widgets
@@ -66,27 +64,7 @@ typedef struct _MidiEditorSpaceWidget
 
   GtkBox *             midi_notes_box;
 
-  /**
-   * Box to add piano roll keys.
-   *
-   * It should contain boxes that have
-   * PianoRollKeyLabelWidget on the left and
-   * PianoRollKeyWidget on the right.
-   *
-   * In drum mode, PianoRollKeyWidget will be set to
-   * invisible.
-   */
-  GtkBox *             piano_roll_keys_box;
-
-  PianoRollKeyWidget * piano_roll_keys[128];
-  PianoRollKeyLabelWidget *
-    piano_roll_key_labels[128];
-
-  /** Start key pressed. */
-  PianoRollKeyWidget * start_key;
-
-  /** Last key hovered. */
-  PianoRollKeyWidget * last_key;
+  PianoRollKeysWidget * piano_roll_keys;
 
   /** Piano roll. */
   GtkBox *             midi_arranger_box;
@@ -97,40 +75,8 @@ typedef struct _MidiEditorSpaceWidget
   GtkViewport *        modifier_arranger_viewport;
   ArrangerWidget *     modifier_arranger;
 
-  /**
-   * Note in the middle of the arranger (0-127).
-   *
-   * This will be used to scroll to each refresh.
-   */
-  int                  last_mid_note;
-
   GtkBox *             midi_vel_chooser_box;
   GtkComboBoxText *    midi_modifier_chooser;
-
-  /**
-   * Note pressed.
-   *
-   * Used for note presses (see
-   * MidiEditorSpaceKeyWidget).
-   */
-  int                  note_pressed;
-
-  /**
-   * Note released.
-   *
-   * Used for note presses (see
-   * MidiEditorSpaceKeyWidget).
-   */
-  int                  note_released;
-
-  /** Pixel height of each key, determined by the
-   * zoom level. */
-  double               px_per_key;
-
-  /** Pixel height of all keys combined. */
-  double               total_key_px;
-
-  GtkGestureMultiPress * multipress;
 
   /** Vertical size goup for the keys and the
    * arranger. */
@@ -149,37 +95,9 @@ midi_editor_space_widget_update_size_group (
   MidiEditorSpaceWidget * self,
   int                     visible);
 
-/**
- * Refresh the labels only (for highlighting).
- *
- * @param hard_refresh Removes and radds the labels,
- *   otherwise just calls refresh on them.
- */
-void
-midi_editor_space_widget_refresh_labels (
-  MidiEditorSpaceWidget * self,
-  int               hard_refresh);
-
-/**
- * Returns the appropriate font size based on the
- * current pixels (height) per key.
- */
-int
-midi_editor_space_widget_get_font_size (
-  MidiEditorSpaceWidget * self);
-
 void
 midi_editor_space_widget_refresh (
   MidiEditorSpaceWidget * self);
-
-/**
- * Gets the PianoRollKeyWidget corresponding to the
- * given PianoRollKeyLabelWidget.
- */
-PianoRollKeyWidget *
-midi_editor_space_widget_get_key_for_label (
-  MidiEditorSpaceWidget *   self,
-  PianoRollKeyLabelWidget * label);
 
 /**
  * @}

@@ -50,6 +50,7 @@
 #include "gui/widgets/chord_arranger.h"
 #include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/editor_selection_info.h"
 #include "gui/widgets/event_viewer.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/header_notebook.h"
@@ -63,7 +64,7 @@
 #include "gui/widgets/modulator_view.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/editor_selection_info.h"
+#include "gui/widgets/piano_roll_keys.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -199,8 +200,8 @@ on_playhead_changed (
                 arranger_widget_redraw_playhead (
                   MW_MIDI_MODIFIER_ARRANGER);
             }
-          midi_editor_space_widget_refresh_labels (
-            MW_MIDI_EDITOR_SPACE, 0);
+          piano_roll_keys_widget_refresh (
+            MW_PIANO_ROLL_KEYS);
         }
       if (MW_TIMELINE)
         {
@@ -1256,8 +1257,8 @@ events_process (void * data)
           break;
         case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
           if (MW_MIDI_EDITOR_SPACE)
-            midi_editor_space_widget_refresh_labels (
-              MW_MIDI_EDITOR_SPACE, 0);
+            piano_roll_keys_widget_refresh (
+              MW_PIANO_ROLL_KEYS);
           break;
         case ET_RULER_STATE_CHANGED:
           ruler_widget_refresh (

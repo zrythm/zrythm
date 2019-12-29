@@ -1661,6 +1661,7 @@ lv2_gtk_open_ui (
     g_signal_connect (
       G_OBJECT (window), "delete-event",
       G_CALLBACK (on_delete_event), plugin);
+  g_return_val_if_fail (plugin->lilv_plugin, -1);
   LilvNode* name =
     lilv_plugin_get_name (plugin->lilv_plugin);
   lilv_node_free (name);
@@ -1668,15 +1669,15 @@ lv2_gtk_open_ui (
   /* connect destroy signal */
   g_signal_connect (
     window, "destroy",
-    G_CALLBACK(on_window_destroy), plugin);
+    G_CALLBACK (on_window_destroy), plugin);
 
   set_window_title(plugin);
 
   GtkWidget* vbox = new_box(false, 0);
   gtk_window_set_role (
-    GTK_WINDOW(window), "plugin_ui");
+    GTK_WINDOW (window), "plugin_ui");
   gtk_container_add (
-    GTK_CONTAINER(window), vbox);
+    GTK_CONTAINER (window), vbox);
 
   if (!no_menu)
     build_menu (plugin, window, vbox);

@@ -253,7 +253,7 @@ piano_roll_schema =
 void
 piano_roll_add_current_note (
   PianoRoll * self,
-  MidiNoteDescriptor * descr);
+  int         note);
 
 /**
  * Removes the note if it exists in the array.
@@ -261,7 +261,7 @@ piano_roll_add_current_note (
 void
 piano_roll_remove_current_note (
   PianoRoll * self,
-  MidiNoteDescriptor * descr);
+  int         note);
 
 /**
  * Returns 1 if it contains the given note, 0
@@ -270,7 +270,7 @@ piano_roll_remove_current_note (
 int
 piano_roll_contains_current_note (
   PianoRoll * self,
-  MidiNoteDescriptor * descr);
+  int         note);
 
 /**
  * Returns the current track whose regions are

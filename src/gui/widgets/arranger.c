@@ -45,6 +45,7 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -52,7 +53,7 @@
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
-#include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/piano_roll_keys.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/scale_object.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -447,7 +448,7 @@ draw_midi_bg (
 {
   /* px per key adjusted for border width */
   double adj_px_per_key =
-    MW_MIDI_EDITOR_SPACE->px_per_key + 1;
+    MW_PIANO_ROLL_KEYS->px_per_key + 1.0;
   /*double adj_total_key_px =*/
     /*MW_PIANO_ROLL->total_key_px + 126;*/
 
