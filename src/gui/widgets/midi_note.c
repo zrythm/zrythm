@@ -104,7 +104,12 @@ draw_midi_note_bg (
 
   z_cairo_rounded_rectangle (
     cr, draw_x, obj->full_rect.y - rect->y,
-    draw_width, obj->full_rect.height, 1.0, 4.0);
+    draw_width, obj->full_rect.height, 1.0,
+    obj->full_rect.height / 8.0f);
+  /*cairo_rectangle (*/
+    /*cr, draw_x, obj->full_rect.y - rect->y,*/
+    /*draw_width, obj->full_rect.height);*/
+  /*cairo_fill (cr);*/
 }
 
 /**
@@ -247,7 +252,8 @@ midi_note_draw (
     &color, &c2);
   gdk_cairo_set_source_rgba (
     cr, &c2);
-  if (DEBUGGING || !PIANO_ROLL->drum_mode)
+  if ((DEBUGGING || !PIANO_ROLL->drum_mode) &&
+      fontsize > 10)
     {
       recreate_pango_layouts (
         self,

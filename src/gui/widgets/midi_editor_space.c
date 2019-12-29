@@ -38,6 +38,7 @@
 #include "gui/widgets/ruler.h"
 #include "project.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/resources.h"
 
 #include <glib/gi18n.h>
@@ -131,6 +132,8 @@ on_scroll (
 
       /* scroll down, zoom out */
       double size_after;
+      float notes_zoom_before =
+        PIANO_ROLL->notes_zoom;
       if (event->delta_y > 0)
         {
           piano_roll_set_notes_zoom (
@@ -144,6 +147,13 @@ on_scroll (
             PIANO_ROLL,
             PIANO_ROLL->notes_zoom * 1.2f, 0);
           size_after = size_before * 1.2;
+        }
+
+      if (math_floats_equal (
+            PIANO_ROLL->notes_zoom,
+            notes_zoom_before, 0.01f))
+        {
+          size_after = size_before;
         }
 
       /* refresh relevant widgets */

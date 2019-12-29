@@ -58,6 +58,7 @@
 
 #include <gtk/gtk.h>
 
+#if 0
 int
 midi_arranger_widget_get_note_at_y (double y)
 {
@@ -75,6 +76,7 @@ midi_arranger_widget_get_note_at_y (double y)
       PIANO_ROLL->piano_descriptors[
         (int)(adj_y / adj_px_per_key)].value;
 }
+#endif
 
 /**
  * Called on drag begin in parent when background is double
@@ -342,18 +344,20 @@ midi_arranger_widget_set_hovered_note (
     {
       GdkRectangle rect;
       arranger_widget_get_visible_rect (self, &rect);
-      int adj_px_per_key =
-        (int) MW_PIANO_ROLL_KEYS->px_per_key + 1;
+      double adj_px_per_key =
+        MW_PIANO_ROLL_KEYS->px_per_key + 1.0;
       if (self->hovered_note != -1)
         {
           /* redraw the previous note area to
            * unhover it */
           rect.y =
-            adj_px_per_key * (127 - self->hovered_note) - 1;
-          rect.height = adj_px_per_key;
+            (int)
+            (adj_px_per_key *
+               (127.0 - (double) self->hovered_note) -
+             1.0);
+          rect.height = (int) adj_px_per_key;
           arranger_widget_redraw_rectangle (
             self, &rect);
-          g_message ("redrawing rect at %d", rect.y);
         }
       self->hovered_note = pitch;
 
@@ -361,11 +365,12 @@ midi_arranger_widget_set_hovered_note (
         {
           /* redraw newly hovered note area */
           rect.y =
-            adj_px_per_key * (127 - pitch) - 1;
-          rect.height = adj_px_per_key;
+            (int)
+            (adj_px_per_key *
+               (127.0 - (double) pitch) - 1);
+          rect.height = (int) adj_px_per_key;
           arranger_widget_redraw_rectangle (
             self, &rect);
-          g_message ("redrawing rect at %d", rect.y);
         }
     }
 }

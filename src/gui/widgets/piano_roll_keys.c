@@ -84,8 +84,6 @@ piano_roll_keys_draw (
     (double) width - label_width;
   double px_per_key = self->px_per_key + 1.0;
 
-  g_message ("redrawing");
-
   char str[400];
 
   for (int i = 0; i < 128; i++)

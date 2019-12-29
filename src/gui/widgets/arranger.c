@@ -1427,7 +1427,8 @@ move_items_y (
            ((MidiNote *) self->start_object)->val;
         /* note at cursor */
         int note_at_cursor =
-          midi_arranger_widget_get_note_at_y (
+          piano_roll_keys_widget_get_key_from_y (
+            MW_PIANO_ROLL_KEYS,
             self->start_y + offset_y);
 
         y_delta = note_at_cursor - first_note_selected;
@@ -2269,7 +2270,8 @@ create_item (ArrangerWidget * self,
     case TYPE (MIDI):
       /* find the note and region at x,y */
       note =
-        midi_arranger_widget_get_note_at_y (start_y);
+        piano_roll_keys_widget_get_key_from_y (
+          MW_PIANO_ROLL_KEYS, start_y);
       region =
         CLIP_EDITOR->region;
 
@@ -4454,8 +4456,8 @@ on_motion (
         {
           midi_arranger_widget_set_hovered_note (
             self,
-            midi_arranger_widget_get_note_at_y (
-              event->y));
+            piano_roll_keys_widget_get_key_from_y (
+              MW_PIANO_ROLL_KEYS, event->y));
         }
       break;
     default:
@@ -4480,7 +4482,7 @@ on_focus_out (GtkWidget *widget,
                GdkEvent  *event,
                ArrangerWidget * self)
 {
-  g_message ("arranger focus out");
+  /*g_message ("arranger focus out");*/
 
   self->alt_held = 0;
   self->ctrl_held = 0;

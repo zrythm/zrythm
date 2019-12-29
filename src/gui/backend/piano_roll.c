@@ -266,6 +266,9 @@ piano_roll_set_notes_zoom (
   float         notes_zoom,
   int         fire_events)
 {
+  if (notes_zoom < 1.f || notes_zoom > 4.5f)
+    return;
+
   self->notes_zoom = notes_zoom;
 
   if (fire_events)
