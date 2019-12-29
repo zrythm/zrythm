@@ -129,6 +129,31 @@ init_descriptors (
   g_warn_if_fail (idx == 128);
 }
 
+/* 1 = black */
+static const int notes[12] = {
+    0,
+    1,
+    0,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    0 };
+
+/**
+ * Returns if the key is black.
+ */
+int
+piano_roll_is_key_black (
+  int        note)
+{
+  return notes[note % 12] == 1;
+}
+
 /**
  * Adds the note if it doesn't exist in the array.
  */

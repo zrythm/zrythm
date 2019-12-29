@@ -248,6 +248,13 @@ piano_roll_schema =
 //}
 
 /**
+ * Returns if the key is black.
+ */
+int
+piano_roll_is_key_black (
+  int        note);
+
+/**
  * Adds the note if it doesn't exist in the array.
  */
 void

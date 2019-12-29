@@ -41,21 +41,6 @@ G_DEFINE_TYPE (
 /* can also try Sans SemiBold */
 #define PIANO_ROLL_KEYS_FONT "Sans 8"
 
-/* 1 = black */
-static const int notes[12] = {
-    0,
-    1,
-    0,
-    1,
-    0,
-    0,
-    1,
-    0,
-    1,
-    0,
-    1,
-    0 };
-
 static gboolean
 piano_roll_keys_draw (
   GtkWidget * widget,
@@ -225,7 +210,7 @@ piano_roll_keys_draw (
 
           /* draw note */
           int black_note =
-            notes[i % 12] == 1;
+            piano_roll_is_key_black (i);
 
           if (black_note)
             cairo_set_source_rgb (cr, 0, 0, 0);

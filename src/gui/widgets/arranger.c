@@ -461,9 +461,25 @@ draw_midi_bg (
       /* if key is visible */
       if (y_offset > rect->y &&
           y_offset < (rect->y + rect->height))
-        draw_borders (
-          self, cr, 0, rect->width,
-          y_offset - rect->y);
+        {
+          draw_borders (
+            self, cr, 0, rect->width,
+            y_offset - rect->y);
+          if (piano_roll_is_key_black (
+                PIANO_ROLL->piano_descriptors[i].
+                  value))
+            {
+              cairo_set_source_rgba (
+                cr, 0, 0, 0, 0.2);
+                  cairo_rectangle (
+                    cr, 0,
+                    /* + 1 since the border is
+                     * bottom */
+                    (y_offset - rect->y) + 1,
+                    rect->width, adj_px_per_key);
+              cairo_fill (cr);
+            }
+        }
       if ((PIANO_ROLL->drum_mode &&
           PIANO_ROLL->drum_descriptors[i].value ==
             MW_MIDI_ARRANGER->hovered_note) ||
