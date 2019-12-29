@@ -34,7 +34,7 @@
 #include <gtk/gtk.h>
 
 #ifdef HAVE_LV2_STATE
-#    include "lv2/lv2plug.in/ns/ext/state/lv2_state.h"
+#    include "lv2/state/lv2_state.h"
 #endif
 
 #define NS_ZRYTHM "https://lv2.zrythm.org/ns/zrythm#"

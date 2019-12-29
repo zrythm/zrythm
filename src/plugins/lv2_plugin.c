@@ -71,10 +71,10 @@
 
 #include <gtk/gtk.h>
 
-#include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
-#include <lv2/lv2plug.in/ns/ext/instance-access/instance-access.h>
-#include <lv2/lv2plug.in/ns/ext/patch/patch.h>
-#include <lv2/lv2plug.in/ns/ext/time/time.h>
+#include <lv2/buf-size/buf-size.h>
+#include <lv2/instance-access/instance-access.h>
+#include <lv2/patch/patch.h>
+#include <lv2/time/time.h>
 
 #include <lilv/lilv.h>
 #include <sratom/sratom.h>

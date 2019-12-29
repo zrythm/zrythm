@@ -66,10 +66,10 @@
 
 #include <lilv/lilv.h>
 
-#include <lv2/lv2plug.in/ns/ext/data-access/data-access.h>
-#include <lv2/lv2plug.in/ns/ext/log/log.h>
-#include <lv2/lv2plug.in/ns/ext/options/options.h>
-#include <lv2/lv2plug.in/ns/ext/state/state.h>
+#include <lv2/data-access/data-access.h>
+#include <lv2/log/log.h>
+#include <lv2/options/options.h>
+#include <lv2/state/state.h>
 
 #include <sratom/sratom.h>
 

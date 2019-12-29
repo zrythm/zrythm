@@ -39,7 +39,7 @@
 #include "plugins/plugin_manager.h"
 #include "zrythm.h"
 
-#include <lv2/lv2plug.in/ns/ext/instance-access/instance-access.h>
+#include <lv2/instance-access/instance-access.h>
 
 static const bool dump = false;
 

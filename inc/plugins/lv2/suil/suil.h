@@ -32,8 +32,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "lv2/lv2plug.in/ns/lv2core/lv2.h"
-#include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
+#include "lv2/core/lv2.h"
+#include "lv2/ui/ui.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -290,7 +290,7 @@ suil_instance_extension_data(SuilInstance* instance,
 } /* extern "C" */
 #endif
 
-#include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
+#include "lv2/ui/ui.h"
 
 #define SUIL_ERRORF(fmt, ...) g_warning("suil error: " fmt, __VA_ARGS__)
 

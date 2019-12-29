@@ -23,7 +23,7 @@
  * LV2 Log feature implementations.
  */
 
-#include <lv2/lv2plug.in/ns/ext/log/log.h>
+#include <lv2/log/log.h>
 
 /**
  * @addtogroup lv2

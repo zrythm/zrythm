@@ -20,7 +20,7 @@
 #ifndef __PLUGINS_LV2_URID_H__
 #define __PLUGINS_LV2_URID_H__
 
-#include <lv2/lv2plug.in/ns/ext/urid/urid.h>
+#include <lv2/urid/urid.h>
 
 /**
  * @addtogroup lv2
