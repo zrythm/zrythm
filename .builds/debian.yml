@@ -2,9 +2,9 @@ image: debian/buster
 packages:
   - libgtk-3-dev
   - libjack-dev
-  - liblilv-dev
+  #- liblilv-dev
   - libsndfile1-dev
-  - meson
+  #- meson
   - ninja-build
   - gettext
   - sed
@@ -16,8 +16,8 @@ packages:
   - libavcodec-dev
   - libavutil-dev
   - libavformat-dev
-  - libsuil-dev
-  - lv2-dev
+  #- libsuil-dev
+  #- lv2-dev
   - libsamplerate0-dev
   - libyaml-dev
   - python3
@@ -29,7 +29,7 @@ sources:
 tasks:
   - setup: |
       cd zrythm
-      ../meson/meson.py build -Denable_tests=true -Dmanpage=true
+      ../meson/meson.py build -Denable_tests=true -Dmanpage=true -Denable_ffmpeg=true
   - build: |
       cd zrythm
       ninja -C build
