@@ -36,8 +36,6 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/editor_ruler.h"
-#include "gui/widgets/piano_roll_key.h"
-#include "gui/widgets/piano_roll_key_label.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
 #include "utils/gtk.h"

@@ -378,9 +378,21 @@ zrythm_deps = [
   audec_dep,
   x11_dep,
   dependency('threads'),
-  dependency('lilv-0', version: '>=0.24.2'),
+  dependency(
+    'lilv-0', version: '>=0.24.6',
+    fallback: ['lilv', 'lilv_dep']),
+  dependency(
+    'sratom-0',
+    fallback: ['lilv', 'sratom_dep']),
+  dependency(
+    'serd-0',
+    fallback: ['lilv', 'serd_dep']),
+  dependency(
+    'sord-0',
+    fallback: ['lilv', 'sord_dep']),
   dependency('samplerate', version: '>=0.1.8'),
   dependency('rubberband'),
+  cc.find_library('dl'),
   lv2_dep,
   fftw3_dep,
   qt5_dep,
