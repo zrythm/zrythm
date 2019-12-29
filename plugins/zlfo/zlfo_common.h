@@ -28,9 +28,9 @@
 
 #include <string.h>
 
-#include "lv2/lv2plug.in/ns/ext/atom/atom.h"
-#include "lv2/lv2plug.in/ns/ext/log/log.h"
-#include "lv2/lv2plug.in/ns/ext/urid/urid.h"
+#include "lv2/atom/atom.h"
+#include "lv2/log/log.h"
+#include "lv2/urid/urid.h"
 
 typedef struct ZLfoUris
 {

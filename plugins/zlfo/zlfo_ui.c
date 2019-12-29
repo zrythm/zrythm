@@ -45,13 +45,13 @@
 #include <pugl/pugl.h>
 #include <pugl/pugl_cairo_backend.h>
 
-#include "lv2/lv2plug.in/ns/ext/atom/atom.h"
-#include "lv2/lv2plug.in/ns/ext/atom/forge.h"
-#include "lv2/lv2plug.in/ns/ext/atom/util.h"
-#include "lv2/lv2plug.in/ns/ext/log/log.h"
-#include "lv2/lv2plug.in/ns/ext/patch/patch.h"
-#include "lv2/lv2plug.in/ns/ext/urid/urid.h"
-#include "lv2/lv2plug.in/ns/extensions/ui/ui.h"
+#include "lv2/atom/atom.h"
+#include "lv2/atom/forge.h"
+#include "lv2/atom/util.h"
+#include "lv2/log/log.h"
+#include "lv2/patch/patch.h"
+#include "lv2/urid/urid.h"
+#include "lv2/ui/ui.h"
 
 #define TITLE "ZLFO"
 
