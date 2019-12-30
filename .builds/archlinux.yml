@@ -11,6 +11,7 @@ packages:
   - alsa-lib
   - fftw
   - suil
+  - ffmpeg
   - python
   - gettext
   - sed
@@ -23,10 +24,11 @@ packages:
   - xdg-utils
 sources:
   - https://git.sr.ht/~alextee/zrythm
+  - https://github.com/mesonbuild/meson
 tasks:
   - setup: |
       cd zrythm
-      meson build -Denable_tests=true -Dmanpage=true
+      ../meson/meson.py build -Denable_tests=true -Dmanpage=true -Denable_ffmpeg=true
   - build: |
       cd zrythm
       ninja -C build

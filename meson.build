@@ -21,7 +21,7 @@ project (
   license: 'AGPLv3+',
   meson_version: '>= 0.50.0',
   default_options: [
-    'warning_level=1',
+    'warning_level=2',
     'buildtype=debug',
     'c_std=gnu11',
     ],
@@ -203,7 +203,6 @@ endforeach
 
 # Compiler flags
 test_cflags = [
-  '-Wall',
   '-Wformat=2',
   '-Wno-missing-field-initializers',
   '-Wno-unused-parameter',
@@ -237,6 +236,15 @@ common_cflags = cc.get_supported_arguments (
 if os_freebsd
   common_cflags += [
     '-I' + includedir,
+    ]
+endif
+
+if os_windows
+  common_cflags += [
+    '-mms-bitfields',
+    '-mwindows',
+    '-Wl,-Bdynamic',
+    '-Wl,-as-needed',
     ]
 endif
 
@@ -319,12 +327,6 @@ if get_option ('enable_profiling')
   test_ldflags += [ '-g', '-pg', 'no-pie' ]
 endif
 
-if not os_darwin
-  test_ldflags += [
-    '-lm',
-    ]
-endif
-
 common_ldflags = cc.get_supported_link_arguments (
   test_ldflags)
 
@@ -335,8 +337,18 @@ if os_freebsd
     ]
 endif
 
+if os_windows
+  common_ldflags += [
+    '-fno-stack-protector',
+    '-lws2_32',
+    '-static-libgcc',
+    '-static-libstdc++',
+    ]
+endif
+
 # set config defines
-libgtop_dep = dependency('libgtop-2.0', required: false)
+libgtop_dep = dependency(
+  'libgtop-2.0', required: os_windows)
 if (libgtop_dep.found ())
   cdata.set('HAVE_LIBGTOP', 1)
   cdata.set('TIME_WITH_SYS_TIME', 0)
@@ -443,6 +455,8 @@ if (os_darwin)
       'cocoa',
       'appkit',
       ])
+else
+  zrythm_deps += cc.find_library('m')
 endif
 
 # create config.h
@@ -498,37 +512,31 @@ subdir ('data')
 subdir ('doc')
 subdir ('scripts')
 
-summary = [
-  '',
-  '------',
-  'Zrythm @0@'.format(meson.project_version()),
-  '',
-  '  Build type: @0@'.format(
-    get_option('buildtype')),
-  '  Profiling: @0@'.format(
-    get_option('enable_profiling')),
-  '  Strict flags: @0@'.format(get_option('strict_flags')),
-  '  Build plugins: @0@'.format(get_option('enable_plugins')),
-  '  Build tests: @0@'.format(get_option('enable_tests')),
-  '  Build GUI tests: @0@'.format(get_option('enable_gui_tests')),
-  '  Generate developer docs: @0@'.format(get_option('gen_dev_docs')),
-  '  Build/install manpage: @0@'.format(get_option('manpage')),
-  '  Build/install user manual: @0@'.format(get_option('user_manual')),
-  '  Install DSEG font: @0@'.format(get_option('install_dseg_font')),
-  '  Coverage reports: @0@'.format(get_option('b_coverage')),
-  '  Optional libraries:',
-  '    ffmpeg: @0@'.format(get_option('enable_ffmpeg')),
-  '    Jack (not really optional at the moment): @0@'.format(jack_dep.found()),
-  '    Qt5: @0@'.format(get_option('enable_qt5')),
-  '    PortAudio (not functional at the moment): @0@'.format(get_option('enable_portaudio')),
-  '    Gtop: @0@'.format(libgtop_dep.found()),
-  '  Directories:',
-  '            prefix: @0@'.format(prefix),
-  '        includedir: @0@'.format(includedir),
-  '            libdir: @0@'.format(libdir),
-  '           datadir: @0@'.format(datadir),
-  '------',
-  ''
-]
+summary({
+  'Build type': get_option('buildtype'),
+  'Profiling': get_option('enable_profiling'),
+  'Strict flags': get_option('strict_flags'),
+  'Build plugins': get_option('enable_plugins'),
+  'Build tests': get_option('enable_tests'),
+  'Build GUI tests': get_option('enable_gui_tests'),
+  'Generate developer docs': get_option('gen_dev_docs'),
+  'Build/install manpage': get_option('manpage'),
+  'Build/install user manual': get_option('user_manual'),
+  'Install DSEG font': get_option('install_dseg_font'),
+  'Coverage reports': get_option('b_coverage'),
+  }, section: 'General')
 
-message('\n'.join(summary))
+summary({
+  'ffmpeg': get_option('enable_ffmpeg'),
+  'Jack': jack_dep.found(),
+  'Qt5': get_option('enable_qt5'),
+  'PortAudio': get_option('enable_portaudio'),
+  'Gtop': libgtop_dep.found(),
+  }, section: 'Optional libraries')
+
+summary({
+  'prefix': prefix,
+  'includedir': includedir,
+  'libdir': libdir,
+  'datadir': datadir,
+  }, section: 'Directories')
