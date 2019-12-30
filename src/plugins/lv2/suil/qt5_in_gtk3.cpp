@@ -17,8 +17,6 @@
 
 #include "config.h"
 
-#ifndef HAVE_SUIL
-
 #ifdef HAVE_QT5
 
 #include <gtk/gtk.h>
@@ -236,5 +234,3 @@ suil_wrapper_new_qt5 (SuilHost*      host,
 }  // extern "C"
 
 #endif // if HAVE_QT5
-
-#endif /* ifndef HAVE_SUIL */

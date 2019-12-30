@@ -358,9 +358,8 @@ audec_dep = dependency(
   'audec', version: '>=0.1',
   fallback: ['libaudec', 'libaudec_dep'])
 
-qt5_dep = dependency('Qt5Widgets', required: get_option('enable_qt5'))
 yaml_dep = dependency('yaml-0.1')
-gtk_dep = dependency('gtk+-3.0', version: '>=3.24')
+gtk_dep = dependency('gtk+-3.0', version: '>=3.22')
 sndfile_dep = dependency('sndfile', version: '>=1.0.25')
 lv2_dep = dependency(
   'lv2', version: '>=1.16.0', required: false)
@@ -400,7 +399,6 @@ zrythm_deps = [
   cc.find_library('dl'),
   lv2_dep,
   fftw3_dep,
-  qt5_dep,
 
   # these are needed for gentoo
   dependency('fftw3_threads', required: false),
@@ -418,7 +416,7 @@ endif
 
 if (get_option('enable_qt5'))
   cdata.set('HAVE_QT5', 1)
-  zrythm_deps += qt5_dep
+  zrythm_deps += dependency('Qt5Widgets')
 endif
 
 if (get_option('enable_portaudio'))
