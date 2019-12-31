@@ -30,7 +30,7 @@
 #include "utils/io.h"
 
 /**
- * Creates a Region for audio data.
+ * Creates a ZRegion for audio data.
  *
  * FIXME First create the
  * audio on the pool and then pass the pool id here.
@@ -43,7 +43,7 @@
  *   float array, otherwise NULL.
  * @param nframes Number of frames per channel.
  */
-AudioRegion *
+ZRegion *
 audio_region_new (
   const int        pool_id,
   const char *     filename,
@@ -53,7 +53,7 @@ audio_region_new (
   const Position * start_pos,
   const int        is_main)
 {
-  AudioRegion * self =
+  ZRegion * self =
     calloc (1, sizeof (AudioRegion));
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -132,7 +132,7 @@ audio_region_new (
  */
 AudioClip *
 audio_region_get_clip (
-  const Region * self)
+  const ZRegion * self)
 {
   g_return_val_if_fail (
     self->pool_id >= 0 &&
@@ -153,6 +153,6 @@ audio_region_get_clip (
  * Regions should be free'd using region_free.
  */
 void
-audio_region_free_members (AudioRegion * self)
+audio_region_free_members (ZRegion * self)
 {
 }

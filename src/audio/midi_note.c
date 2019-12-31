@@ -43,7 +43,7 @@
  */
 MidiNote *
 midi_note_new (
-  MidiRegion * region,
+  ZRegion * region,
   Position *   start_pos,
   Position *   end_pos,
   uint8_t      val,
@@ -73,12 +73,12 @@ midi_note_new (
 }
 
 /**
- * Sets the Region the MidiNote belongs to.
+ * Sets the ZRegion the MidiNote belongs to.
  */
 void
 midi_note_set_region (
   MidiNote * self,
-  Region *   region)
+  ZRegion *   region)
 {
   self->region = region;
   if (self->region_name)
@@ -322,7 +322,7 @@ midi_note_hit (
   MidiNote * midi_note,
   const long       gframes)
 {
-  Region * region = midi_note->region;
+  ZRegion * region = midi_note->region;
   ArrangerObject * region_obj =
     (ArrangerObject *) region;
 

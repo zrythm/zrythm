@@ -86,13 +86,13 @@ region_type_bitvals[] =
  * It is uniquely identified using its name, so it
  * must be unique throughout the Project.
  */
-typedef struct Region
+typedef struct ZRegion
 {
   /** Base struct. */
   ArrangerObject base;
 
   /**
-   * Unique Region name to be shown on the
+   * Unique ZRegion name to be shown on the
    * RegionWidget.
    */
   char *         name;
@@ -117,7 +117,7 @@ typedef struct Region
    * notes from the linked region are used
    */
   char *          linked_region_name;
-  struct Region * linked_region; ///< cache
+  struct ZRegion * linked_region; ///< cache
 
   /** Muted or not */
   int                muted;
@@ -212,50 +212,50 @@ typedef struct Region
   /** Cache layout for drawing the chord names
    * inside the region. */
   PangoLayout *      chords_layout;
-} Region;
+} ZRegion;
 
 static const cyaml_schema_field_t
   region_fields_schema[] =
 {
   CYAML_FIELD_MAPPING (
     "base", CYAML_FLAG_DEFAULT,
-    Region, base, arranger_object_fields_schema),
+    ZRegion, base, arranger_object_fields_schema),
   CYAML_FIELD_STRING_PTR (
     "name", CYAML_FLAG_POINTER,
-    Region, name,
+    ZRegion, name,
    	0, CYAML_UNLIMITED),
   CYAML_FIELD_BITFIELD (
     "type", CYAML_FLAG_DEFAULT,
-    Region, type, region_type_bitvals,
+    ZRegion, type, region_type_bitvals,
     CYAML_ARRAY_LEN (region_type_bitvals)),
 	CYAML_FIELD_INT (
     "pool_id", CYAML_FLAG_DEFAULT,
-    Region, pool_id),
+    ZRegion, pool_id),
 	CYAML_FIELD_STRING_PTR (
     "linked_region_name",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Region, linked_region_name,
+    ZRegion, linked_region_name,
     0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
     "muted", CYAML_FLAG_DEFAULT,
-    Region, muted),
+    ZRegion, muted),
   CYAML_FIELD_SEQUENCE_COUNT (
     "midi_notes", CYAML_FLAG_POINTER,
-    Region, midi_notes, num_midi_notes,
+    ZRegion, midi_notes, num_midi_notes,
     &midi_note_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
     "track_pos", CYAML_FLAG_DEFAULT,
-    Region, track_pos),
+    ZRegion, track_pos),
 	CYAML_FIELD_INT (
     "lane_pos", CYAML_FLAG_DEFAULT,
-    Region, lane_pos),
+    ZRegion, lane_pos),
   CYAML_FIELD_SEQUENCE_COUNT (
     "aps", CYAML_FLAG_POINTER,
-    Region, aps, num_aps,
+    ZRegion, aps, num_aps,
     &automation_point_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
     "chord_objects", CYAML_FLAG_POINTER,
-    Region, chord_objects, num_chord_objects,
+    ZRegion, chord_objects, num_chord_objects,
     &chord_object_schema, 0, CYAML_UNLIMITED),
 
 	CYAML_FIELD_END
@@ -264,29 +264,29 @@ static const cyaml_schema_field_t
 static const cyaml_schema_value_t
 region_schema = {
   CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
-    Region, region_fields_schema),
+    ZRegion, region_fields_schema),
 };
 
 /**
  * Only to be used by implementing structs.
  *
- * @param is_main Is main Region. If this is 1 then
+ * @param is_main Is main ZRegion. If this is 1 then
  *   arranger_object_info_init_main() is called to
  *   create 3 additional regions in obj_info.
  */
 void
 region_init (
-  Region *   region,
+  ZRegion *   region,
   const Position * start_pos,
   const Position * end_pos,
   const int        is_main);
 
 /**
- * Looks for the Region under the given name.
+ * Looks for the ZRegion under the given name.
  *
  * Warning: very expensive function.
  */
-Region *
+ZRegion *
 region_find_by_name (
   const char * name);
 
@@ -298,7 +298,7 @@ region_find_by_name (
  */
 void
 region_print (
-  const Region * region);
+  const ZRegion * region);
 
 /**
  * Returns the MidiNote matching the properties of
@@ -309,7 +309,7 @@ region_print (
  */
 MidiNote *
 region_find_midi_note (
-  Region * r,
+  ZRegion * r,
   MidiNote * _mn);
 
 /**
@@ -328,7 +328,7 @@ region_find_midi_note (
  */
 long
 region_timeline_frames_to_local (
-  Region * region,
+  ZRegion * region,
   const long     timeline_frames,
   const int      normalize);
 
@@ -337,52 +337,52 @@ region_timeline_frames_to_local (
  */
 void
 region_set_lane (
-  Region * region,
+  ZRegion * region,
   TrackLane * lane);
 
 /**
- * Generates a name for the Region, either using
+ * Generates a name for the ZRegion, either using
  * the given AutomationTrack or Track, or appending
  * to the given base name.
  */
 void
 region_gen_name (
-  Region *          region,
+  ZRegion *          region,
   const char *      base_name,
   AutomationTrack * at,
   Track *           track);
 
 /**
- * Moves the given Region to the given TrackLane.
+ * Moves the given ZRegion to the given TrackLane.
  *
  * Works with TrackLane's of other Track's as well.
  *
  * Maintains the selection status of the
- * Region.
+ * ZRegion.
  *
- * Assumes that the Region is already in a
+ * Assumes that the ZRegion is already in a
  * TrackLane.
  */
 void
 region_move_to_lane (
-  Region *    region,
+  ZRegion *    region,
   TrackLane * lane);
 
 /**
- * Moves the Region to the given Track, maintaining
- * the selection status of the Region and the
+ * Moves the ZRegion to the given Track, maintaining
+ * the selection status of the ZRegion and the
  * TrackLane position.
  *
- * Assumes that the Region is already in a
+ * Assumes that the ZRegion is already in a
  * TrackLane.
  */
 void
 region_move_to_track (
-  Region *  region,
+  ZRegion *  region,
   Track *   track);
 
 /**
- * Returns if the given Region type can exist
+ * Returns if the given ZRegion type can exist
  * in TrackLane's.
  */
 int
@@ -394,7 +394,7 @@ region_type_has_lane (
  */
 void
 region_set_automation_track (
-  Region * region,
+  ZRegion * region,
   AutomationTrack * at);
 
 /**
@@ -402,7 +402,7 @@ region_set_automation_track (
  */
 AutomationTrack *
 region_get_automation_track (
-  Region * region);
+  ZRegion * region);
 
 /**
  * Copies the data from src to dest.
@@ -412,8 +412,8 @@ region_get_automation_track (
  */
 void
 region_copy (
-  Region * src,
-  Region * dest);
+  ZRegion * src,
+  ZRegion * dest);
 
 /**
  * Returns if the position is inside the region
@@ -427,19 +427,19 @@ region_copy (
  */
 int
 region_is_hit (
-  const Region * region,
+  const ZRegion * region,
   const long     gframes,
   const int      inclusive);
 
 /**
- * Returns if any part of the Region is inside the
+ * Returns if any part of the ZRegion is inside the
  * given range, inclusive.
  *
  * FIXME move to arranger object
  */
 int
 region_is_hit_by_range (
-  const Region * region,
+  const ZRegion * region,
   const long     gframes_start,
   const long     gframes_end,
   const int      end_inclusive);
@@ -453,7 +453,7 @@ region_is_hit_by_range (
  *   NULL.
  * @param pos The position.
  */
-Region *
+ZRegion *
 region_at_position (
   Track    *        track,
   AutomationTrack * at,
@@ -465,15 +465,15 @@ region_at_position (
  * MUST be free'd.
  */
 char *
-region_generate_filename (Region * region);
+region_generate_filename (ZRegion * region);
 
 /**
- * Sets Region name (without appending anything to
+ * Sets ZRegion name (without appending anything to
  * it) to all associated regions.
  */
 void
 region_set_name (
-  Region * region,
+  ZRegion * region,
   char *   name);
 
 void
@@ -487,22 +487,22 @@ region_get_type_as_string (
  */
 void
 region_remove_midi_note (
-  Region *   region,
+  ZRegion *   region,
   MidiNote * midi_note);
 
 /**
  * Disconnects the region and anything using it.
  *
- * Does not free the Region or its children's
+ * Does not free the ZRegion or its children's
  * resources.
  */
 void
 region_disconnect (
-  Region * self);
+  ZRegion * self);
 
-SERIALIZE_INC (Region, region)
-DESERIALIZE_INC (Region, region)
-PRINT_YAML_INC (Region, region)
+SERIALIZE_INC (ZRegion, region)
+DESERIALIZE_INC (ZRegion, region)
+PRINT_YAML_INC (ZRegion, region)
 
 /**
  * @}

@@ -52,7 +52,7 @@ typedef struct TimelineSelections
   ArrangerSelections base;
 
   /** Selected TrackLane Region's. */
-  Region **          regions;
+  ZRegion **          regions;
   int                num_regions;
   size_t             regions_size;
 

@@ -59,7 +59,7 @@ typedef enum RegionCounterpart
  */
 static void
 recreate_pango_layouts (
-  Region * self,
+  ZRegion * self,
   int      width)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
@@ -93,7 +93,7 @@ recreate_pango_layouts (
  */
 static void
 draw_background (
-  Region *       self,
+  ZRegion *       self,
   cairo_t *      cr,
   GdkRectangle * rect,
   GdkRectangle * full_rect,
@@ -170,7 +170,7 @@ draw_background (
  */
 static void
 draw_loop_points (
-  Region *       self,
+  ZRegion *       self,
   cairo_t *      cr,
   GdkRectangle * rect,
   GdkRectangle * full_rect,
@@ -273,7 +273,7 @@ draw_loop_points (
  */
 static void
 draw_midi_region (
-  Region *       self,
+  ZRegion *       self,
   cairo_t *      cr,
   GdkRectangle * rect,
   GdkRectangle * full_rect,
@@ -437,7 +437,7 @@ draw_midi_region (
  */
 static void
 draw_chord_region (
-  Region *       self,
+  ZRegion *       self,
   cairo_t *      cr,
   GdkRectangle * rect,
   GdkRectangle * full_rect,
@@ -598,7 +598,7 @@ draw_chord_region (
  */
 static void
 draw_automation_region (
-  Region *       self,
+  ZRegion *       self,
   cairo_t *      cr,
   GdkRectangle * rect,
   GdkRectangle * full_rect,
@@ -806,7 +806,7 @@ draw_automation_region (
  */
 static void
 draw_audio_region (
-  Region *       self,
+  ZRegion *       self,
   cairo_t *      cr,
   GdkRectangle * rect,
   GdkRectangle * full_rect,
@@ -901,7 +901,7 @@ draw_audio_region (
  */
 static void
 draw_name (
-  Region *          self,
+  ZRegion *          self,
   cairo_t *         cr,
   GdkRectangle *    rect,
   GdkRectangle *    full_rect,
@@ -977,7 +977,7 @@ draw_name (
 }
 
 /**
- * Draws the Region in the given cairo context in
+ * Draws the ZRegion in the given cairo context in
  * relative coordinates.
  *
  * @param cr The cairo context in the region's
@@ -986,7 +986,7 @@ draw_name (
  */
 void
 region_draw (
-  Region *       self,
+  ZRegion *       self,
   cairo_t *      cr,
   GdkRectangle * rect)
 {
@@ -1071,7 +1071,7 @@ region_draw (
  */
 void
 region_get_lane_full_rect (
-  Region *       self,
+  ZRegion *       self,
   GdkRectangle * rect)
 {
   ArrangerObject * obj = (ArrangerObject *) self;

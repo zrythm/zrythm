@@ -61,7 +61,7 @@ timeline_selections_get_last_track (
       track = tmp_track; \
     }
 
-  Region * region;
+  ZRegion * region;
   for (int i = 0; i < ts->num_regions; i++)
     {
       region = ts->regions[i];
@@ -100,7 +100,7 @@ timeline_selections_get_first_track (
       track = tmp_track; \
     }
 
-  Region * region;
+  ZRegion * region;
   for (int i = 0; i < ts->num_regions; i++)
     {
       region = ts->regions[i];
@@ -142,7 +142,7 @@ get_lowest_track_pos (
       track_pos = tmp_pos; \
     }
 
-  Region * region;
+  ZRegion * region;
   for (i = 0; i < ts->num_regions; i++)
     {
       region = ts->regions[i];
@@ -176,7 +176,7 @@ timeline_selections_set_vis_track_indices (
   Track * highest_tr =
     timeline_selections_get_first_track (ts);
 
-  Region * region;
+  ZRegion * region;
   for (i = 0; i < ts->num_regions; i++)
     {
       region = ts->regions[i];
@@ -206,7 +206,7 @@ get_track_poses (
   int *                num_poses)
 {
   int i;
-  Region * region;
+  ZRegion * region;
   for (i = 0; i < ts->num_regions; i++)
     {
       region = ts->regions[i];
@@ -251,7 +251,7 @@ timeline_selections_can_be_pasted (
   const int            idx)
 {
   int i, j;
-  Region * r;
+  ZRegion * r;
   /*Marker * m;*/
   /*ScaleObject * s;*/
   int lowest_track_pos =
@@ -352,7 +352,7 @@ timeline_selections_paste_to_pos (
   int i;
   for (i = 0; i < ts->num_regions; i++)
     {
-      Region * region = ts->regions[i];
+      ZRegion * region = ts->regions[i];
       ArrangerObject * r_obj =
         (ArrangerObject *) region;
       Track * region_track =
@@ -380,7 +380,7 @@ timeline_selections_paste_to_pos (
       g_message ("region type %d", region->type);
       if (region->type == REGION_TYPE_MIDI)
         {
-          MidiRegion * mr = region;
+          ZRegion * mr = region;
           g_message ("HELLO?");
           g_message ("num midi notes here %d",
                      mr->num_midi_notes);
@@ -406,8 +406,8 @@ timeline_selections_paste_to_pos (
       /* TODO automation points */
 
       /* clone and add to track */
-      Region * cp =
-        (Region *)
+      ZRegion * cp =
+        (ZRegion *)
         arranger_object_clone (
           r_obj,
           ARRANGER_OBJECT_CLONE_COPY_MAIN);

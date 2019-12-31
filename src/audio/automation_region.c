@@ -54,14 +54,14 @@ cmpfunc (const void * _a, const void * _b)
   return (int) CLAMP (ret, -1, 1);
 }
 
-Region *
+ZRegion *
 automation_region_new (
   const Position * start_pos,
   const Position * end_pos,
   const int        is_main)
 {
-  Region * self =
-    calloc (1, sizeof (Region));
+  ZRegion * self =
+    calloc (1, sizeof (ZRegion));
 
   self->type = REGION_TYPE_AUTOMATION;
 
@@ -81,7 +81,7 @@ automation_region_new (
  */
 void
 automation_region_print_automation (
-  Region * self)
+  ZRegion * self)
 {
   AutomationPoint * ap;
   ArrangerObject * ap_obj;
@@ -99,7 +99,7 @@ automation_region_print_automation (
  */
 void
 automation_region_force_sort (
-  Region * self)
+  ZRegion * self)
 {
   /* sort by position */
   qsort (self->aps,
@@ -120,7 +120,7 @@ automation_region_force_sort (
  */
 void
 automation_region_add_ap (
-  Region *          self,
+  ZRegion *          self,
   AutomationPoint * ap)
 {
   /* add point */
@@ -153,7 +153,7 @@ automation_region_add_ap (
  */
 AutomationPoint *
 automation_region_get_prev_ap (
-  Region *          self,
+  ZRegion *          self,
   AutomationPoint * ap)
 {
   if (ap->index > 0)
@@ -168,7 +168,7 @@ automation_region_get_prev_ap (
  */
 AutomationPoint *
 automation_region_get_next_ap (
-  Region *          self,
+  ZRegion *          self,
   AutomationPoint * ap)
 {
   g_return_val_if_fail (
@@ -181,7 +181,7 @@ automation_region_get_next_ap (
 }
 
 /**
- * Removes the AutomationPoint from the Region,
+ * Removes the AutomationPoint from the ZRegion,
  * optionally freeing it.
  *
  * @param free Free the AutomationPoint after
@@ -189,7 +189,7 @@ automation_region_get_next_ap (
  */
 void
 automation_region_remove_ap (
-  Region *          self,
+  ZRegion *          self,
   AutomationPoint * ap,
   int               free)
 {
@@ -210,13 +210,13 @@ automation_region_remove_ap (
 }
 
 /**
- * Frees members only but not the Region itself.
+ * Frees members only but not the ZRegion itself.
  *
  * Regions should be free'd using region_free.
  */
 void
 automation_region_free_members (
-  Region * self)
+  ZRegion * self)
 {
   int i;
   for (i = 0; i < self->num_aps; i++)

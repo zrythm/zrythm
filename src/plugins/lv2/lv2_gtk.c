@@ -1647,8 +1647,7 @@ lv2_gtk_open_ui (
   GtkWidget* window =
     gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_icon_name (
-    GTK_WINDOW (window),
-    "zrythm");
+    GTK_WINDOW (window), "zrythm");
 
   if (g_settings_get_int (
         S_PREFERENCES, "plugin-uis-stay-on-top"))

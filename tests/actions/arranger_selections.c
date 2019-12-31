@@ -67,7 +67,7 @@ bootstrap_timeline ()
   /* Create and add a MidiRegion with a MidiNote */
   position_set_to_bar (&p1, 2);
   position_set_to_bar (&p2, 4);
-  Region * r =
+  ZRegion * r =
     midi_region_new (&p1, &p2, 1);
   Track * track =
     track_new (TRACK_TYPE_MIDI, MIDI_TRACK_NAME, 1);
@@ -236,8 +236,8 @@ check_timeline_objects_vs_original_state (
       g_assert_cmppos (&obj->pos, &p1);
       g_assert_cmppos (&obj->end_pos, &p2);
     }
-  Region * r =
-    (Region *) obj;
+  ZRegion * r =
+    (ZRegion *) obj;
   g_assert_cmpint (r->num_midi_notes, ==, 1);
   MidiNote * mn =
     r->midi_notes[0];
@@ -277,7 +277,7 @@ check_timeline_objects_vs_original_state (
       g_assert_cmppos (&obj->end_pos, &p2);
     }
   r =
-    (Region *) obj;
+    (ZRegion *) obj;
   g_assert_cmpint (r->num_aps, ==, 2);
   AutomationPoint * ap =
     r->aps[0];
@@ -484,8 +484,8 @@ check_after_move_timeline ()
   position_add_ticks (&p2_after_move, MOVE_TICKS);
   g_assert_cmppos (&obj->pos, &p1_after_move);
   g_assert_cmppos (&obj->end_pos, &p2_after_move);
-  Region * r =
-    (Region *) obj;
+  ZRegion * r =
+    (ZRegion *) obj;
   g_assert_cmpint (r->num_midi_notes, ==, 1);
   MidiNote * mn =
     r->midi_notes[0];
@@ -503,7 +503,7 @@ check_after_move_timeline ()
   g_assert_cmppos (&obj->pos, &p1_after_move);
   g_assert_cmppos (&obj->end_pos, &p2_after_move);
   r =
-    (Region *) obj;
+    (ZRegion *) obj;
   g_assert_cmpint (r->num_aps, ==, 2);
   AutomationPoint * ap =
     r->aps[0];
@@ -607,8 +607,8 @@ check_after_duplicate_timeline ()
   position_add_ticks (&p2_before_move, - MOVE_TICKS);
   g_assert_cmppos (&obj->pos, &p1_before_move);
   g_assert_cmppos (&obj->end_pos, &p2_before_move);
-  Region * r =
-    (Region *) obj;
+  ZRegion * r =
+    (ZRegion *) obj;
   g_assert_cmpint (r->num_midi_notes, ==, 1);
   MidiNote * mn =
     r->midi_notes[0];
@@ -624,7 +624,7 @@ check_after_duplicate_timeline ()
   g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmppos (&obj->end_pos, &p2);
   r =
-    (Region *) obj;
+    (ZRegion *) obj;
   g_assert_cmpint (r->num_midi_notes, ==, 1);
   mn =
     r->midi_notes[0];
@@ -654,7 +654,7 @@ check_after_duplicate_timeline ()
   g_assert_cmppos (&obj->pos, &p1_before_move);
   g_assert_cmppos (&obj->end_pos, &p2_before_move);
   r =
-    (Region *) obj;
+    (ZRegion *) obj;
   g_assert_cmpint (r->num_aps, ==, 2);
   AutomationPoint * ap =
     r->aps[0];
@@ -673,7 +673,7 @@ check_after_duplicate_timeline ()
   g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmppos (&obj->end_pos, &p2);
   r =
-    (Region *) obj;
+    (ZRegion *) obj;
   g_assert_cmpint (r->num_aps, ==, 2);
   ap = r->aps[0];
   obj = (ArrangerObject *) ap;

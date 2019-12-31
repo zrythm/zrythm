@@ -31,7 +31,7 @@
  */
 ChordObject *
 chord_object_new (
-  Region * region,
+  ZRegion * region,
   int index,
   int is_main)
 {
@@ -88,8 +88,8 @@ chord_object_find_by_pos (
 {
   /* get actual region - clone's region might be
    * an unused clone */
-  Region *r =
-    (Region *)
+  ZRegion *r =
+    (ZRegion *)
     arranger_object_find (
       (ArrangerObject *) clone->region);
   g_return_val_if_fail (r, NULL);
@@ -115,7 +115,7 @@ chord_object_find_by_pos (
 void
 chord_object_set_region (
   ChordObject * self,
-  Region *      region)
+  ZRegion *      region)
 {
   g_return_if_fail (self && region);
   self->region = region;

@@ -70,7 +70,7 @@ on_cancel_clicked (
 ExportMidiFileDialogWidget *
 export_midi_file_dialog_widget_new_for_region (
   GtkWindow * parent,
-  Region *    region)
+  ZRegion *    region)
 {
   ExportMidiFileDialogWidget * self =
     g_object_new (

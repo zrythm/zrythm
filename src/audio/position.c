@@ -398,7 +398,7 @@ position_set_min_size (
  * @param pos Position moved to.
  * @param track Track at new Position (for Region
  *   moving) FIXME needed?.
- * @param region Region at new Position (for
+ * @param region ZRegion at new Position (for
  *   MidiNote moving) FIXME needed?.
  * @param sg SnapGrid options.
  */
@@ -407,7 +407,7 @@ position_snap (
   const Position * prev_pos,
   Position * pos,
   Track    * track,
-  Region   * region,
+  ZRegion   * region,
   const SnapGrid * sg)
 {
   /* this should only be called if snap is on.

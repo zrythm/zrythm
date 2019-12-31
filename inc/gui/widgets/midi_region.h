@@ -43,13 +43,13 @@ G_DECLARE_FINAL_TYPE (
   Z, MIDI_REGION_WIDGET,
   RegionWidget);
 
-typedef struct Region MidiRegion;
+typedef struct ZRegion MidiRegion;
 
 /**
- * A widget that represents a MidiRegion in the
+ * A widget that represents a ZRegion in the
  * TimelineArrangerWidget.
  *
- * It displays the MidiNotes of the Region in
+ * It displays the MidiNotes of the ZRegion in
  * miniature size.
  */
 typedef struct _MidiRegionWidget
@@ -62,7 +62,7 @@ typedef struct _MidiRegionWidget
  */
 MidiRegionWidget *
 midi_region_widget_new (
-  Region * midi_region);
+  ZRegion * midi_region);
 
 #endif
 #endif

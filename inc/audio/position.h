@@ -106,7 +106,7 @@
 
 typedef struct SnapGrid SnapGrid;
 typedef struct Track Track;
-typedef struct Region Region;
+typedef struct ZRegion ZRegion;
 
 /**
  * A Position is made up of
@@ -302,7 +302,7 @@ position_from_ticks (
  * @param pos Position moved to.
  * @param track Track at new Position (for Region
  *   moving) FIXME needed?.
- * @param region Region at new Position (for
+ * @param region ZRegion at new Position (for
  *   MidiNote moving) FIXME needed?.
  * @param sg SnapGrid options.
  */
@@ -311,7 +311,7 @@ position_snap (
   const Position * prev_pos,
   Position * pos,
   Track    * track,
-  Region   * region,
+  ZRegion   * region,
   const SnapGrid * sg);
 
 /**

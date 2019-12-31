@@ -65,7 +65,7 @@
   ARRANGER_OBJECT_POSITION_TYPE_##x
 
 #define FOREACH_TYPE(func) \
-  func (REGION, Region, region) \
+  func (REGION, ZRegion, region) \
   func (SCALE_OBJECT, ScaleObject, scale_object) \
   func (MARKER, Marker, marker) \
   func (MIDI_NOTE, MidiNote, midi_note) \
@@ -172,8 +172,8 @@ arranger_object_get_num_loops (
 
 static void
 set_to_region_object (
-  Region * src,
-  Region * dest)
+  ZRegion * src,
+  ZRegion * dest)
 {
   g_return_if_fail (src && dest);
 }
@@ -223,7 +223,7 @@ arranger_object_set_to_object (
     {
     case TYPE (REGION):
       set_to_region_object (
-        (Region *) src, (Region *) dest);
+        (ZRegion *) src, (ZRegion *) dest);
       break;
     case TYPE (MIDI_NOTE):
       set_to_midi_note_object (
@@ -269,10 +269,10 @@ arranger_object_is_selected (
 }
 
 /**
- * If the object is part of a Region, returns it,
+ * If the object is part of a ZRegion, returns it,
  * otherwise returns NULL.
  */
-Region *
+ZRegion *
 arranger_object_get_region (
   ArrangerObject * self)
 {
@@ -667,7 +667,7 @@ init_loaded_midi_note (
 
 static void
 init_loaded_region (
-  Region * self)
+  ZRegion * self)
 {
   self->linked_region =
     region_find_by_name (
@@ -753,7 +753,7 @@ arranger_object_init_loaded (
     {
     case TYPE (REGION):
       init_loaded_region (
-        (Region *) self);
+        (ZRegion *) self);
       break;
     case TYPE (MIDI_NOTE):
       init_loaded_midi_note (
@@ -881,11 +881,11 @@ arranger_object_update_frames (
     }
 
   int i;
-  Region * r;
+  ZRegion * r;
   switch (self->type)
     {
     case TYPE (REGION):
-      r = (Region *) self;
+      r = (ZRegion *) self;
       for (i = 0; i < r->num_midi_notes; i++)
         {
           arranger_object_update_frames (
@@ -916,7 +916,7 @@ arranger_object_update_frames (
 
 static void
 add_ticks_to_region_children (
-  Region *   self,
+  ZRegion *   self,
   const long ticks)
 {
   switch (self->type)
@@ -963,7 +963,7 @@ arranger_object_add_ticks_to_children (
   if (self->type == TYPE (REGION))
     {
       add_ticks_to_region_children (
-        (Region *) self, ticks);
+        (ZRegion *) self, ticks);
     }
 }
 
@@ -1052,7 +1052,7 @@ post_deserialize_children (
 {
   if (self->type == TYPE (REGION))
     {
-      Region * r = (Region *) self;
+      ZRegion * r = (ZRegion *) self;
       MidiNote * mn;
       for (int i = 0; i < r->num_midi_notes; i++)
         {
@@ -1202,7 +1202,7 @@ arranger_object_get_track (
     {
     case TYPE (REGION):
       {
-        Region * r = (Region *) self;
+        ZRegion * r = (ZRegion *) self;
         track =
           TRACKLIST->tracks[r->track_pos];
       }
@@ -1210,7 +1210,7 @@ arranger_object_get_track (
     case TYPE (CHORD_OBJECT):
       {
         ChordObject * chord = (ChordObject *) self;
-        Region * r = chord->region;
+        ZRegion * r = chord->region;
         g_return_val_if_fail (r, NULL);
         track =
           TRACKLIST->tracks[r->track_pos];
@@ -1414,7 +1414,7 @@ arranger_object_should_orig_be_visible (
 
 static ArrangerObject *
 find_region (
-  Region * self)
+  ZRegion * self)
 {
   ArrangerObject * obj =
     (ArrangerObject *)
@@ -1436,7 +1436,7 @@ find_chord_object (
 {
   /* get actual region - clone's region might be
    * an unused clone */
-  Region * r =
+  ZRegion * r =
     region_find_by_name (clone->region_name);
   g_return_val_if_fail (r, NULL);
 
@@ -1491,7 +1491,7 @@ static ArrangerObject *
 find_automation_point (
   AutomationPoint * src)
 {
-  Region * region = src->region;
+  ZRegion * region = src->region;
   if (!region)
     {
       region =
@@ -1503,7 +1503,7 @@ find_automation_point (
   /* the src region might be an unused clone, find
    * the actual region. */
   region =
-    (Region *)
+    (ZRegion *)
     arranger_object_find (
       (ArrangerObject *) region);
 
@@ -1523,7 +1523,7 @@ static ArrangerObject *
 find_midi_note (
   MidiNote * src)
 {
-  Region * r =
+  ZRegion * r =
     region_find_by_name (src->region_name);
   g_return_val_if_fail (r, NULL);
 
@@ -1551,7 +1551,7 @@ arranger_object_find (
     {
     case TYPE (REGION):
       return
-        find_region ((Region *) self);
+        find_region ((ZRegion *) self);
     case TYPE (CHORD_OBJECT):
       return
         find_chord_object ((ChordObject *) self);
@@ -1586,7 +1586,7 @@ arranger_object_find (
 
 static ArrangerObject *
 clone_region (
-  Region *                region,
+  ZRegion *                region,
   ArrangerObjectCloneFlag flag)
 {
   int is_main = 0, i, j;
@@ -1595,17 +1595,17 @@ clone_region (
 
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
-  Region * new_region = NULL;
+  ZRegion * new_region = NULL;
   switch (region->type)
     {
     case REGION_TYPE_MIDI:
       {
-        MidiRegion * mr =
+        ZRegion * mr =
           midi_region_new (
             &r_obj->pos,
             &r_obj->end_pos,
             is_main);
-        MidiRegion * mr_orig = region;
+        ZRegion * mr_orig = region;
         if (flag == ARRANGER_OBJECT_CLONE_COPY ||
             flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
           {
@@ -1626,12 +1626,12 @@ clone_region (
               }
           }
 
-        new_region = (Region *) mr;
+        new_region = (ZRegion *) mr;
       }
     break;
     case REGION_TYPE_AUDIO:
       {
-        Region * ar =
+        ZRegion * ar =
           audio_region_new (
             region->pool_id, NULL, NULL, -1,
             0, &r_obj->pos, is_main);
@@ -1642,12 +1642,12 @@ clone_region (
     break;
     case REGION_TYPE_AUTOMATION:
       {
-        Region * ar  =
+        ZRegion * ar  =
           automation_region_new (
             &r_obj->pos,
             &r_obj->end_pos,
             is_main);
-        Region * ar_orig = region;
+        ZRegion * ar_orig = region;
 
         AutomationPoint * src_ap, * dest_ap;
 
@@ -1671,12 +1671,12 @@ clone_region (
       break;
     case REGION_TYPE_CHORD:
       {
-        Region * cr =
+        ZRegion * cr =
           chord_region_new (
             &r_obj->pos,
             &r_obj->end_pos,
             is_main);
-        Region * cr_orig = region;
+        ZRegion * cr_orig = region;
         if (flag == ARRANGER_OBJECT_CLONE_COPY ||
             flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
           {
@@ -1737,7 +1737,7 @@ arranger_object_get_name (
     {
     case ARRANGER_OBJECT_TYPE_REGION:
       {
-        Region * r = (Region *) self;
+        ZRegion * r = (ZRegion *) self;
         return r->name;
       }
       break;
@@ -1861,7 +1861,7 @@ arranger_object_clone (
     {
     case TYPE (REGION):
       new_obj =
-        clone_region ((Region *) self, flag);
+        clone_region ((ZRegion *) self, flag);
       break;
     case TYPE (MIDI_NOTE):
       new_obj =
@@ -1988,7 +1988,7 @@ arranger_object_split (
         {
           long localp_frames =
             region_timeline_frames_to_local (
-              (Region *) self, globalp.frames, 1);
+              (ZRegion *) self, globalp.frames, 1);
           position_from_frames (
             &localp, localp_frames);
         }
@@ -2016,12 +2016,12 @@ arranger_object_split (
       {
         Track * track =
           arranger_object_get_track (self);
-        Region * src_region =
-          (Region *) self;
-        Region * region1 =
-          (Region *) *r1;
-        Region * region2 =
-          (Region *) *r2;
+        ZRegion * src_region =
+          (ZRegion *) self;
+        ZRegion * region1 =
+          (ZRegion *) *r1;
+        ZRegion * region2 =
+          (ZRegion *) *r2;
         track_add_region (
           track, region1, src_region->at,
           src_region->lane_pos,
@@ -2036,7 +2036,7 @@ arranger_object_split (
       {
         MidiNote * src_midi_note =
           (MidiNote *) self;
-        Region * parent_region =
+        ZRegion * parent_region =
           src_midi_note->region;
         midi_region_add_midi_note (
           parent_region, (MidiNote *) *r1);
@@ -2066,10 +2066,10 @@ arranger_object_split (
 
   /* change to r1 if the original region was the
    * clip editor region */
-  if (CLIP_EDITOR->region == (Region *) self)
+  if (CLIP_EDITOR->region == (ZRegion *) self)
     {
       clip_editor_set_region (
-        CLIP_EDITOR, (Region *) *r1);
+        CLIP_EDITOR, (ZRegion *) *r1);
     }
 
   /* remove and free the original object */
@@ -2079,13 +2079,13 @@ arranger_object_split (
       {
         track_remove_region (
           arranger_object_get_track (self),
-          (Region *) self, F_PUBLISH_EVENTS,
+          (ZRegion *) self, F_PUBLISH_EVENTS,
           F_FREE);
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
       {
-        Region * parent_region =
+        ZRegion * parent_region =
           ((MidiNote *) self)->region;
         midi_region_remove_midi_note (
           parent_region, (MidiNote *) self,
@@ -2126,14 +2126,14 @@ arranger_object_unsplit (
       {
         track_add_region (
           arranger_object_get_track (r1),
-          (Region *) *obj, ((Region *) r1)->at,
-          ((Region *) r1)->lane_pos,
+          (ZRegion *) *obj, ((ZRegion *) r1)->at,
+          ((ZRegion *) r1)->lane_pos,
           F_GEN_NAME, F_PUBLISH_EVENTS);
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
       {
-        Region * parent_region =
+        ZRegion * parent_region =
           ((MidiNote *) r1)->region;
         midi_region_add_midi_note (
           parent_region, (MidiNote *) *obj);
@@ -2160,10 +2160,10 @@ arranger_object_unsplit (
 
   /* change to r1 if the original region was the
    * clip editor region */
-  if (CLIP_EDITOR->region == (Region *) r1)
+  if (CLIP_EDITOR->region == (ZRegion *) r1)
     {
       clip_editor_set_region (
-        CLIP_EDITOR, (Region *) *obj);
+        CLIP_EDITOR, (ZRegion *) *obj);
     }
 
   /* remove and free the original regions */
@@ -2173,10 +2173,10 @@ arranger_object_unsplit (
       {
         track_remove_region (
           arranger_object_get_track (r1),
-          (Region *) r1, F_PUBLISH_EVENTS, F_FREE);
+          (ZRegion *) r1, F_PUBLISH_EVENTS, F_FREE);
         track_remove_region (
           arranger_object_get_track (r2),
-          (Region *) r2, F_PUBLISH_EVENTS, F_FREE);
+          (ZRegion *) r2, F_PUBLISH_EVENTS, F_FREE);
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -2216,7 +2216,7 @@ arranger_object_set_name (
     case ARRANGER_OBJECT_TYPE_REGION:
       {
         arranger_object_set_string (
-          Region, self, name, name);
+          ZRegion, self, name, name);
       }
       break;
     default:
@@ -2227,7 +2227,7 @@ arranger_object_set_name (
 
 static void
 free_region (
-  Region * self)
+  ZRegion * self)
 {
   if (self->name)
     g_free (self->name);
@@ -2279,7 +2279,7 @@ arranger_object_free (
   switch (self->type)
     {
     case TYPE (REGION):
-      free_region ((Region *) self);
+      free_region ((ZRegion *) self);
       return;
     case TYPE (MIDI_NOTE):
       free_midi_note ((MidiNote *) self);

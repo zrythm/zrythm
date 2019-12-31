@@ -109,7 +109,7 @@ typedef enum PianoRollHighlighting
   PR_HIGHLIGHT_BOTH,
 } PianoRollHighlighting;
 
-typedef struct Region Region;
+typedef struct ZRegion ZRegion;
 
 /**
  * A descriptor for a MidiNote, used by the piano

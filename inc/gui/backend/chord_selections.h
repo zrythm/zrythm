@@ -86,13 +86,13 @@ chord_selections_schema = {
  * Returns if the selections can be pasted.
  *
  * @param pos Position to paste to.
- * @param region Region to paste to.
+ * @param region ZRegion to paste to.
  */
 int
 chord_selections_can_be_pasted (
   ChordSelections * ts,
   Position *        pos,
-  Region *          region);
+  ZRegion *          region);
 
 void
 chord_selections_paste_to_pos (

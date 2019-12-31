@@ -228,6 +228,46 @@
       </description>
     </key>
 
+        <!-- KEY: sfz-search-path -->
+    <key name="sfz-search-paths" type="as">
+      <default>[]</default>
+      <summary>Search paths for SFZ instruments</summary>
+      <description>
+        The search paths to scan for SFZ
+        instruments.
+      </description>
+    </key>
+
+    <!-- KEY: sf2-search-path -->
+    <key name="sf2-search-paths" type="as">
+      <default>[]</default>
+      <summary>Search paths for SF2 instruments</summary>
+      <description>
+        The search paths to scan for SF2
+        instruments.
+      </description>
+    </key>
+
+    <!-- KEY: lv2-search-path -->
+    <key name="lv2-search-paths" type="as">
+      <default>[]</default>
+      <summary>Search paths for LV2 plugins</summary>
+      <description>
+        The search paths to scan for LV2
+        plugins in.
+      </description>
+    </key>
+
+    <!-- KEY: vst-search-path -->
+    <key name="vst-search-paths" type="as">
+      <default>[]</default>
+      <summary>Search paths for VST plugins</summary>
+      <description>
+        The search paths to scan for VST
+        plugins in.
+      </description>
+    </key>
+
     <!-- KEY: edit-region-size -->
     <key name="edit-region-size" type="i">
       <default>4</default>

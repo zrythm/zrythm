@@ -31,7 +31,7 @@ typedef struct _ArrangerWidget ArrangerWidget;
 typedef struct MidiNote MidiNote;
 typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
-typedef struct Region MidiRegion;
+typedef struct ZRegion MidiRegion;
 typedef struct Channel Channel;
 
 /**
@@ -58,7 +58,7 @@ midi_arranger_widget_create_note (
   ArrangerWidget * self,
   Position * pos,
   int                  note,
-  MidiRegion * region);
+  ZRegion * region);
 
 /**
  * Called during drag_update in the parent when

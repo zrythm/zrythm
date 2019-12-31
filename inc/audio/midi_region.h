@@ -31,9 +31,9 @@
 typedef struct Track Track;
 typedef struct Position Position;
 typedef struct MidiNote MidiNote;
-typedef struct Region Region;
+typedef struct ZRegion ZRegion;
 typedef struct MidiEvents MidiEvents;
-typedef Region MidiRegion;
+typedef ZRegion MidiRegion;
 typedef void MIDI_FILE;
 
 /**
@@ -43,13 +43,13 @@ typedef void MIDI_FILE;
  */
 
 /**
- * Creates a new Region for MIDI notes.
+ * Creates a new ZRegion for MIDI notes.
  *
  * @param is_main Is main Region. If this is 1 it
  *   will create the 3 additional Regions (lane,
  *   lane_transient & main_transient).
  */
-MidiRegion *
+ZRegion *
 midi_region_new (
   const Position * start_pos,
   const Position * end_pos,
@@ -60,7 +60,7 @@ midi_region_new (
  */
 void
 midi_region_add_midi_note (
-  MidiRegion * region,
+  ZRegion * region,
   MidiNote * midi_note);
 
 /**
@@ -75,7 +75,7 @@ midi_region_add_midi_note (
  */
 MidiNote *
 midi_region_pop_unended_note (
-  MidiRegion * self,
+  ZRegion * self,
   int          pitch);
 
 /**
@@ -85,35 +85,35 @@ midi_region_pop_unended_note (
  */
 void
 midi_region_print_midi_notes (
-  Region * self);
+  ZRegion * self);
 
 /**
  * Gets first midi note
  */
 MidiNote *
 midi_region_get_first_midi_note (
-	MidiRegion * region);
+	ZRegion * region);
 
 /**
  * Gets last midi note
  */
 MidiNote *
 midi_region_get_last_midi_note (
-	MidiRegion * region);
+	ZRegion * region);
 
 /**
  * Gets highest midi note
  */
 MidiNote *
 midi_region_get_highest_midi_note (
-	MidiRegion * region);
+	ZRegion * region);
 
 /**
  * Gets lowest midi note
  */
 MidiNote *
 midi_region_get_lowest_midi_note (
-	MidiRegion * region);
+	ZRegion * region);
 
 /**
  * Removes the MIDI note from the Region.
@@ -123,7 +123,7 @@ midi_region_get_lowest_midi_note (
  */
 void
 midi_region_remove_midi_note (
-  Region *   region,
+  ZRegion *   region,
   MidiNote * midi_note,
   int        free,
   int        pub_event);
@@ -134,7 +134,7 @@ midi_region_remove_midi_note (
  */
 void
 midi_region_remove_all_midi_notes (
-  MidiRegion * region);
+  ZRegion * region);
 
 
 /**
@@ -145,12 +145,12 @@ midi_region_remove_all_midi_notes (
  */
 //MidiNote *
 //midi_region_get_midi_note_at (
-  //MidiRegion * self,
+  //ZRegion * self,
   //Position *   pos,
   //int          pitch);
 
 /**
- * Exports the Region to an existing MIDI file
+ * Exports the ZRegion to an existing MIDI file
  * instance.
  *
  * @param add_region_start Add the region start
@@ -162,13 +162,13 @@ midi_region_remove_all_midi_notes (
  */
 void
 midi_region_write_to_midi_file (
-  Region * self,
+  ZRegion * self,
   MIDI_FILE *    mf,
   const int      add_region_start,
   const int      export_full);
 
 /**
- * Exports the Region to a specified MIDI file.
+ * Exports the ZRegion to a specified MIDI file.
  *
  * @param full_path Absolute path to the MIDI file.
  * @param export_full Traverse loops and export the
@@ -178,7 +178,7 @@ midi_region_write_to_midi_file (
  */
 void
 midi_region_export_to_midi_file (
-  Region * self,
+  ZRegion * self,
   const char *   full_path,
   int            midi_version,
   const int      export_full);
@@ -189,7 +189,7 @@ midi_region_export_to_midi_file (
  */
 uint8_t
 midi_region_get_midi_ch (
-  const Region * self);
+  const ZRegion * self);
 
 /**
  * Returns a newly initialized MidiEvents with
@@ -203,7 +203,7 @@ midi_region_get_midi_ch (
  */
 MidiEvents *
 midi_region_get_as_events (
-  Region * self,
+  ZRegion * self,
   const int      add_region_start,
   const int      full);
 
@@ -214,7 +214,7 @@ midi_region_get_as_events (
  */
 void
 midi_region_free_members (
-  MidiRegion * self);
+  ZRegion * self);
 
 /**
  * @}

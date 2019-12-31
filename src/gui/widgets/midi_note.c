@@ -125,7 +125,7 @@ midi_note_draw (
   ArrangerObject * obj = (ArrangerObject *) self;
   ArrangerWidget * arranger =
     arranger_object_get_arranger (obj);
-  Region * region = self->region;
+  ZRegion * region = self->region;
   Position global_start_pos;
   midi_note_get_global_start_pos (
     self, &global_start_pos);

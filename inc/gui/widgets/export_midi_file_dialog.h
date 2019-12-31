@@ -44,8 +44,8 @@ typedef struct _ExportMidiFileDialogWidget
   /** Description to show for the region. */
   GtkLabel *           description;
 
-  /** Region, if exporting region. */
-  Region *             region;
+  /** ZRegion, if exporting region. */
+  ZRegion *             region;
 } ExportMidiFileDialogWidget;
 
 /**
@@ -54,7 +54,7 @@ typedef struct _ExportMidiFileDialogWidget
 ExportMidiFileDialogWidget *
 export_midi_file_dialog_widget_new_for_region (
   GtkWindow * parent,
-  Region *    region);
+  ZRegion *    region);
 
 #endif
 

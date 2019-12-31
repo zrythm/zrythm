@@ -39,7 +39,7 @@ track_lane_init_loaded (
   lane->regions_size =
     (size_t) lane->num_regions;
   int i;
-  Region * region;
+  ZRegion * region;
   for (i = 0; i < lane->num_regions; i++)
     {
       region = lane->regions[i];
@@ -73,7 +73,7 @@ track_lane_new (
   self->regions_size = 1;
   self->regions =
     malloc (self->regions_size *
-            sizeof (Region *));
+            sizeof (ZRegion *));
 
   self->height = TRACK_DEF_HEIGHT;
 
@@ -88,7 +88,7 @@ void
 track_lane_update_frames (
   TrackLane * self)
 {
-  Region * r;
+  ZRegion * r;
   for (int i = 0; i < self->num_regions; i++)
     {
       r = self->regions[i];
@@ -99,12 +99,12 @@ track_lane_update_frames (
 }
 
 /**
- * Adds a Region to the given TrackLane.
+ * Adds a ZRegion to the given TrackLane.
  */
 void
 track_lane_add_region (
   TrackLane * self,
-  Region *    region)
+  ZRegion *    region)
 {
   g_return_if_fail (
     region->type == REGION_TYPE_AUDIO ||
@@ -114,7 +114,7 @@ track_lane_add_region (
 
   array_double_size_if_full (
     self->regions, self->num_regions,
-    self->regions_size, Region *);
+    self->regions_size, ZRegion *);
   array_append (self->regions,
                 self->num_regions,
                 region);
@@ -166,7 +166,7 @@ track_lane_clone (
     (size_t) lane->num_regions;
   new_lane->regions =
     malloc (new_lane->regions_size *
-            sizeof (Region *));
+            sizeof (ZRegion *));
   new_lane->height =
     lane->height;
   new_lane->pos = lane->pos;
@@ -174,19 +174,19 @@ track_lane_clone (
   new_lane->solo = lane->solo;
   new_lane->midi_ch = lane->midi_ch;
 
-  Region * region, * new_region;
+  ZRegion * region, * new_region;
   new_lane->num_regions = lane->num_regions;
   new_lane->regions =
     realloc (
       new_lane->regions,
-      sizeof (Region *) *
+      sizeof (ZRegion *) *
         (size_t) lane->num_regions);
   for (int i = 0; i < lane->num_regions; i++)
     {
       /* clone region */
       region = lane->regions[i];
       new_region =
-        (Region *)
+        (ZRegion *)
         arranger_object_clone (
           (ArrangerObject *) region,
           ARRANGER_OBJECT_CLONE_COPY_MAIN);
@@ -224,7 +224,7 @@ track_lane_write_to_midi_file (
     mf, self->track_pos, textTrackName,
     self->track->name);
 
-  Region * region;
+  ZRegion * region;
   for (int i = 0; i < self->num_regions; i++)
     {
       region = self->regions[i];

@@ -65,7 +65,7 @@ arranger_selections_init_loaded (
     {
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
-      SET_OBJ (ts, Region, region);
+      SET_OBJ (ts, ZRegion, region);
       SET_OBJ (ts, ScaleObject, scale_object);
       SET_OBJ (ts, Marker, marker);
       break;
@@ -127,7 +127,7 @@ arranger_selections_init (
     {
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
-      SET_OBJ (ts, Region, region);
+      SET_OBJ (ts, ZRegion, region);
       SET_OBJ (ts, ScaleObject, scale_object);
       SET_OBJ (ts, Marker, marker);
       break;
@@ -222,7 +222,7 @@ arranger_selections_add_object (
           (TimelineSelections *) self;
         ADD_OBJ (
           sel, REGION,
-          Region, region);
+          ZRegion, region);
         ADD_OBJ (
           sel, SCALE_OBJECT,
           ScaleObject, scale_object);
@@ -285,7 +285,7 @@ arranger_selections_set_from_selections (
     {
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) dest;
-      RESET_COUNTERPART (ts, Region, region);
+      RESET_COUNTERPART (ts, ZRegion, region);
       RESET_COUNTERPART (
         ts, ScaleObject, scale_object);
       RESET_COUNTERPART (ts, Marker, marker);
@@ -355,7 +355,7 @@ arranger_selections_clone (
         (ArrangerSelections *) new_ts,
         ARRANGER_SELECTIONS_TYPE_TIMELINE);
       CLONE_OBJS (
-        src_ts, new_ts, Region, region);
+        src_ts, new_ts, ZRegion, region);
       CLONE_OBJS (
         src_ts, new_ts, ScaleObject, scale_object);
       CLONE_OBJS (
@@ -466,7 +466,7 @@ add_ticks_if_global (
  * @param pos The return value will be stored here.
  * @param global Return global (timeline) Position,
  *   otherwise returns the local (from the start
- *   of the Region) Position.
+ *   of the ZRegion) Position.
  */
 void
 arranger_selections_get_start_pos (
@@ -502,7 +502,7 @@ arranger_selections_get_start_pos (
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
       GET_START_POS (
-        ts, Region, region);
+        ts, ZRegion, region);
       GET_START_POS (
         ts, ScaleObject, scale_object);
       GET_START_POS (
@@ -542,7 +542,7 @@ arranger_selections_get_start_pos (
  * @param pos The return value will be stored here.
  * @param global Return global (timeline) Position,
  *   otherwise returns the local (from the start
- *   of the Region) Position.
+ *   of the ZRegion) Position.
  */
 void
 arranger_selections_get_end_pos (
@@ -589,7 +589,7 @@ arranger_selections_get_end_pos (
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
       GET_END_POS (
-        ts, Region, region);
+        ts, ZRegion, region);
       GET_END_POS (
         ts, ScaleObject, scale_object);
       GET_END_POS (
@@ -661,7 +661,7 @@ arranger_selections_get_first_object (
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
       GET_FIRST_OBJ (
-        ts, Region, region);
+        ts, ZRegion, region);
       GET_FIRST_OBJ (
         ts, ScaleObject, scale_object);
       GET_FIRST_OBJ (
@@ -740,7 +740,7 @@ arranger_selections_get_last_object (
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
       GET_LAST_OBJ (
-        ts, Region, region);
+        ts, ZRegion, region);
       GET_LAST_OBJ (
         ts, ScaleObject, scale_object);
       GET_LAST_OBJ (

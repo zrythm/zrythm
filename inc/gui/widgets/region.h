@@ -48,11 +48,11 @@
  */
 void
 region_get_lane_full_rect (
-  Region *       self,
+  ZRegion *       self,
   GdkRectangle * rect);
 
 /**
- * Draws the Region in the given cairo context in
+ * Draws the ZRegion in the given cairo context in
  * relative coordinates.
  *
  * @param cr The cairo context in the region's
@@ -61,7 +61,7 @@ region_get_lane_full_rect (
  */
 void
 region_draw (
-  Region *       self,
+  ZRegion *       self,
   cairo_t *      cr,
   GdkRectangle * rect);
 

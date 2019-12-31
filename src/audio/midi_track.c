@@ -66,11 +66,11 @@ typedef enum NoteProcessingType
    * point hit. */
   TYPE_TRANSPORT_LOOP,
 
-  /** Send notes off due to Region actual end
+  /** Send notes off due to ZRegion actual end
    * within this cycle. */
   TYPE_REGION_END,
 
-  /** Send all notes off due to Region loop end
+  /** Send all notes off due to ZRegion loop end
    * point crossed. */
   TYPE_REGION_LOOP_END,
 } NoteProcessingType;
@@ -81,7 +81,7 @@ typedef enum NoteProcessingType
  */
 static inline void
 send_notes_off_at (
-  Region *           region,
+  ZRegion *           region,
   MidiEvents *       midi_events,
   midi_time_t        time,
   NoteProcessingType type)
@@ -204,7 +204,7 @@ send_notes_off_at (
 
 /**
  * Add a note on event if note on exists before a
- * Region loop end point during a region loop.
+ * ZRegion loop end point during a region loop.
  */
 static inline void
 note_ons_during_region_loop (
@@ -295,7 +295,7 @@ note_ons_during_region_loop (
 }
 
 /**
- * Returns if the Region is hit in the range.
+ * Returns if the ZRegion is hit in the range.
  *
  * @param transport_loop_met Whether the transport
  *   loop point is met.
@@ -305,12 +305,12 @@ note_ons_during_region_loop (
  * @param g_start_frames Global start frames.
  * @param g_end_frames_excl Global end frames (the
  *   last frame is not part of the cycle).
- * @param inclusive Check if the Region is hit
+ * @param inclusive Check if the ZRegion is hit
  *   with counting its end point or not.
  */
 static int
 region_hit (
-  const Region * r,
+  const ZRegion * r,
   const int      transport_loop_met,
   const int      first_half,
   const long     g_start_frames,
@@ -382,7 +382,7 @@ midi_track_fill_midi_events (
   int i, j, k, kk;
   long g_end_frames;
   long r_local_pos, r_local_end_pos;
-  Region * r;
+  ZRegion * r;
   ArrangerObject * r_obj, * mn_obj;
   MidiNote * mn;
   midi_time_t time;

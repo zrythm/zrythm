@@ -18,9 +18,9 @@
  */
 
 /**
- * @addtogroup plugins
+ * \file
  *
- * @{
+ * Base plugin.
  */
 
 #ifndef __PLUGINS_BASE_PLUGIN_H__
@@ -31,6 +31,12 @@
 #include "plugins/lv2_plugin.h"
 #include "utils/types.h"
 
+/**
+ * @addtogroup plugins
+ *
+ * @{
+ */
+
 #define DUMMY_PLUGIN "Dummy Plugin"
 
 #define IS_PLUGIN_CATEGORY(p, c) \
@@ -39,6 +45,7 @@
   (g_strcmp0 (d->category,c) == 0)
 
 typedef struct Channel Channel;
+typedef struct VstPlugin VstPlugin;
 
 typedef enum PluginCategory
 {
@@ -150,6 +157,9 @@ typedef struct Plugin
    * Pointer back to plugin in its original format.
    */
   Lv2Plugin *          lv2;
+
+  /** VST plugin. */
+  VstPlugin *          vst;
 
   /** Descriptor. */
   PluginDescriptor *   descr;

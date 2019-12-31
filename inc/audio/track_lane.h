@@ -72,7 +72,7 @@ typedef struct TrackLane
   int                 solo;
 
   /** Regions in this track. */
-  Region **           regions;
+  ZRegion **           regions;
   int                 num_regions;
   size_t              regions_size;
 
@@ -154,12 +154,12 @@ track_lane_new (
   int     pos);
 
 /**
- * Adds a Region to the given TrackLane.
+ * Adds a ZRegion to the given TrackLane.
  */
 void
 track_lane_add_region (
   TrackLane * self,
-  Region *    region);
+  ZRegion *    region);
 
 /**
  * Updates the frames of each position in each child

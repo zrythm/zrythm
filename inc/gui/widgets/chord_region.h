@@ -45,15 +45,15 @@
  */
 void
 chord_region_recreate_pango_layouts (
-  Region * self);
+  ZRegion * self);
 
 #if 0
 
 /**
- * A widget that represents a ChordRegion in the
+ * A widget that represents a ZRegion in the
  * TimelineArrangerWidget.
  *
- * It displays the MidiNotes of the Region in
+ * It displays the MidiNotes of the ZRegion in
  * miniature size.
  */
 typedef struct _ChordRegionWidget
@@ -66,7 +66,7 @@ typedef struct _ChordRegionWidget
  */
 ChordRegionWidget *
 chord_region_widget_new (
-  Region * chord_region);
+  ZRegion * chord_region);
 
 #endif
 

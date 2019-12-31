@@ -79,13 +79,13 @@ on_drag_end_##sc##_##pos_name ( \
 }
 
 DEFINE_DRAG_END_POS_SET (
-  REGION, Region, region, CLIP_START_POS,
+  REGION, ZRegion, region, CLIP_START_POS,
   clip_start_pos);
 DEFINE_DRAG_END_POS_SET (
-  REGION, Region, region, LOOP_START_POS,
+  REGION, ZRegion, region, LOOP_START_POS,
   loop_start_pos);
 DEFINE_DRAG_END_POS_SET (
-  REGION, Region, region, LOOP_END_POS,
+  REGION, ZRegion, region, LOOP_END_POS,
   loop_end_pos);
 
 #define DEFINE_DRAG_END_POS_RESIZE_L( \
@@ -119,7 +119,7 @@ on_drag_end_##sc##_resize_l ( \
 }
 
 DEFINE_DRAG_END_POS_RESIZE_L (
-  Region, region);
+  ZRegion, region);
 
 #define DEFINE_DRAG_END_POS_RESIZE_R( \
   cc,sc) \
@@ -152,7 +152,7 @@ on_drag_end_##sc##_resize_r ( \
 }
 
 DEFINE_DRAG_END_POS_RESIZE_R (
-  Region, region);
+  ZRegion, region);
 
 static void
 on_drag_begin ()
@@ -250,7 +250,7 @@ timeline_selection_info_widget_refresh (
       if (Z_IS_REGION_WIDGET (fo))
         {
           REGION_WIDGET_GET_PRIVATE (fo);
-          Region * r =
+          ZRegion * r =
             region_get_main_trans_region (
               rw_prv->region);
 

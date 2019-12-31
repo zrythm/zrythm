@@ -60,7 +60,7 @@ typedef struct AutomationTrack
   int               created;
 
   /** The automation Region's. */
-  Region **         regions;
+  ZRegion **         regions;
   int               num_regions;
   size_t            regions_size;
 
@@ -144,12 +144,12 @@ automation_track_get_automation_tracklist (
   AutomationTrack * self);
 
 /**
- * Adds an automation Region to the AutomationTrack.
+ * Adds an automation ZRegion to the AutomationTrack.
  */
 void
 automation_track_add_region (
   AutomationTrack * self,
-  Region *          region);
+  ZRegion *          region);
 
 /**
  * Returns the visible y offset from the top of
@@ -209,10 +209,10 @@ automation_track_get_ap_before_pos (
   const Position *        pos);
 
 /**
- * Returns the last Region before the given
+ * Returns the last ZRegion before the given
  * Position.
  */
-Region *
+ZRegion *
 automation_track_get_region_before_pos (
   const AutomationTrack * self,
   const Position *        pos);
@@ -246,9 +246,9 @@ automation_track_get_y_px_from_normalized_val (
 //automation_track_update (AutomationTrack * at);
 
 /**
- * Gets the last Region in the AutomationTrack.
+ * Gets the last ZRegion in the AutomationTrack.
  */
-Region *
+ZRegion *
 automation_track_get_last_region (
   AutomationTrack * self);
 

@@ -41,10 +41,6 @@ suil_ui_supported(const char* host_type_uri,
   else if (!strcmp(ui_type_uri, X11_UI_URI))
 		return SUIL_WRAPPING_EMBEDDED;
 #endif
-#ifdef HAVE_QT5
-  else if (!strcmp (ui_type_uri, QT5_UI_URI))
-    return SUIL_WRAPPING_EMBEDDED;
-#endif
   else
     return SUIL_WRAPPING_UNSUPPORTED;
 }
@@ -74,17 +70,6 @@ open_wrapper(SuilHost*      host,
   if (!strcmp(ui_type_uri, WIN_UI_URI))
     {
       wrapper = suil_wrapper_new_win(host,
-                      container_type_uri,
-                      ui_type_uri,
-                      features,
-                      n_features);
-    }
-#endif
-
-#ifdef HAVE_QT5
-  if (!strcmp(ui_type_uri, QT5_UI_URI))
-    {
-      wrapper = suil_wrapper_new_qt5(host,
                       container_type_uri,
                       ui_type_uri,
                       features,

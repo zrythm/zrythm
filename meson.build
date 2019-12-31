@@ -426,11 +426,6 @@ if (get_option('enable_ffmpeg'))
   cdata.set('HAVE_FFMPEG', 1)
 endif
 
-if (get_option('enable_qt5'))
-  cdata.set('HAVE_QT5', 1)
-  zrythm_deps += dependency('Qt5Widgets')
-endif
-
 if (get_option('enable_portaudio'))
   zrythm_deps += dependency ('portaudio-2.0')
   cdata.set('HAVE_PORT_AUDIO', 1)
@@ -529,7 +524,6 @@ summary({
 summary({
   'ffmpeg': get_option('enable_ffmpeg'),
   'Jack': jack_dep.found(),
-  'Qt5': get_option('enable_qt5'),
   'PortAudio': get_option('enable_portaudio'),
   'Gtop': libgtop_dep.found(),
   }, section: 'Optional libraries')

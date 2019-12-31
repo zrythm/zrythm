@@ -35,7 +35,7 @@
 typedef struct _RegionWidget RegionWidget;
 typedef struct Channel Channel;
 typedef struct Track Track;
-typedef struct Region AudioRegion;
+typedef struct ZRegion AudioRegion;
 typedef struct AudioClip AudioClip;
 
 /**
@@ -45,7 +45,7 @@ typedef struct AudioClip AudioClip;
  */
 
 /**
- * Creates a Region for audio data.
+ * Creates a ZRegion for audio data.
  *
  * FIXME First create the
  * audio on the pool and then pass the pool id here.
@@ -58,7 +58,7 @@ typedef struct AudioClip AudioClip;
  *   float array, otherwise NULL.
  * @param nframes Number of frames per channel.
  */
-AudioRegion *
+ZRegion *
 audio_region_new (
   const int        pool_id,
   const char *     filename,
@@ -74,7 +74,7 @@ audio_region_new (
  */
 AudioClip *
 audio_region_get_clip (
-  const Region * self);
+  const ZRegion * self);
 
 /**
  * Frees members only but not the audio region itself.
@@ -82,7 +82,7 @@ audio_region_get_clip (
  * Regions should be free'd using region_free.
  */
 void
-audio_region_free_members (AudioRegion * self);
+audio_region_free_members (ZRegion * self);
 
 /**
  * @}

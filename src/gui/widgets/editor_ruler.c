@@ -71,7 +71,7 @@ editor_ruler_on_drag_update (
     {
       Position editor_pos;
       Position region_local_pos;
-      Region * r = CLIP_EDITOR->region;
+      ZRegion * r = CLIP_EDITOR->region;
       ArrangerObject * r_obj =
         (ArrangerObject *) r;
 

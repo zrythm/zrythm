@@ -56,7 +56,7 @@ clip_editor_init_loaded (
 void
 clip_editor_set_region (
   ClipEditor * self,
-  Region *     region)
+  ZRegion *     region)
 {
   int recalc_graph = 0;
   if (self->region && self->region->type ==
@@ -109,7 +109,7 @@ clip_editor_set_region (
 }
 
 /**
- * Causes the selected Region to be redrawin in the
+ * Causes the selected ZRegion to be redrawin in the
  * UI, if any.
  */
 void
@@ -124,10 +124,10 @@ clip_editor_redraw_region (
 }
 
 /**
- * Returns the Region that widgets are expected
+ * Returns the ZRegion that widgets are expected
  * to use.
  */
-Region *
+ZRegion *
 clip_editor_get_region_for_widgets (
   ClipEditor * self)
 {

@@ -52,7 +52,7 @@ velocity_draw (
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   MidiNote * mn = self->midi_note;
-  Region * region = mn->region;
+  ZRegion * region = mn->region;
   Position global_start_pos;
   midi_note_get_global_start_pos (
     mn, &global_start_pos);

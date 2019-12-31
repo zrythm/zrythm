@@ -78,7 +78,7 @@ timeline_arranger_widget_get_track_at_y (
 void
 timeline_arranger_on_export_as_midi_file_clicked (
   GtkMenuItem * menuitem,
-  Region *      r);
+  ZRegion *      r);
 
 /**
  * Returns the hit AutomationTrack at y.
@@ -98,7 +98,7 @@ timeline_arranger_widget_set_select_type (
   double           y);
 
 /**
- * Create a Region at the given Position in the
+ * Create a ZRegion at the given Position in the
  * given Track's given TrackLane.
  *
  * @param type The type of region to create.

@@ -139,7 +139,7 @@ add_from_object (
     {
     case ARRANGER_OBJECT_TYPE_REGION:
       {
-        Region * r = (Region *) obj;
+        ZRegion * r = (ZRegion *) obj;
 
         region_get_type_as_string (
           r->type, type);
@@ -393,7 +393,7 @@ create_editor_model (
 {
   /* Check what to add based on the selected
    * region */
-  Region * r = CLIP_EDITOR->region;
+  ZRegion * r = CLIP_EDITOR->region;
   g_return_val_if_fail (r, NULL);
 
   /* add data to the list */
@@ -660,7 +660,7 @@ static int
 add_editor_columns (
   EventViewerWidget * self)
 {
-  Region * r = CLIP_EDITOR->region;
+  ZRegion * r = CLIP_EDITOR->region;
   if (!r)
     return 0;
 

@@ -40,7 +40,7 @@
 #define CLIP_EDITOR (&PROJECT->clip_editor)
 #define CLIP_EDITOR_SELECTED_REGION (CLIP_EDITOR->region)
 
-typedef struct Region Region;
+typedef struct ZRegion ZRegion;
 
 /**
  * Clip editor serializable backend.
@@ -50,10 +50,10 @@ typedef struct Region Region;
  */
 typedef struct ClipEditor
 {
-  /** Region currently attached to the clip
+  /** ZRegion currently attached to the clip
    * editor. */
   char *           region_name;
-  Region *         region;
+  ZRegion *         region;
 
   /**
    * This will be set to the same as above after
@@ -61,7 +61,7 @@ typedef struct ClipEditor
    *
    * Related widgets should use this.
    */
-  Region *         region_cache;
+  ZRegion *         region_cache;
 
   PianoRoll        piano_roll;
   AudioClipEditor  audio_clip_editor;
@@ -124,18 +124,18 @@ clip_editor_init (
 void
 clip_editor_set_region (
   ClipEditor * self,
-  Region *     region);
+  ZRegion *     region);
 
 /**
- * Returns the Region that widgets are expected
+ * Returns the ZRegion that widgets are expected
  * to use.
  */
-Region *
+ZRegion *
 clip_editor_get_region_for_widgets (
   ClipEditor * self);
 
 /**
- * Causes the selected Region to be redrawin in the
+ * Causes the selected ZRegion to be redrawin in the
  * UI, if any.
  */
 void

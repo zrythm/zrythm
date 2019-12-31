@@ -37,7 +37,7 @@
 #define AUTOMATION_EDITOR \
   (&CLIP_EDITOR->automation_editor)
 
-typedef struct Region Region;
+typedef struct ZRegion ZRegion;
 
 /**
  * Backend for the automation editor.

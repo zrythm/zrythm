@@ -114,7 +114,7 @@ arranger_object_queue_redraw (
       if (track->lanes_visible &&
           self->can_have_lanes)
         {
-          Region * r = (Region *) self;
+          ZRegion * r = (ZRegion *) self;
           region_get_lane_full_rect (
             r, &full_rect);
           arranger_object_get_draw_rectangle (
@@ -677,7 +677,7 @@ arranger_object_is_resize_loop (
 
   if (self->type == ARRANGER_OBJECT_TYPE_REGION)
     {
-      Region * r = (Region *) self;
+      ZRegion * r = (ZRegion *) self;
       if (r->type == REGION_TYPE_AUDIO)
         return 1;
 
@@ -774,7 +774,7 @@ arranger_object_set_full_rectangle (
         ChordDescriptor * descr =
           CHORD_EDITOR->chords[co->index];
 
-        Region * region = co->region;
+        ZRegion * region = co->region;
         ArrangerObject * region_obj =
           (ArrangerObject *) region;
 
@@ -819,7 +819,7 @@ arranger_object_set_full_rectangle (
       {
         AutomationPoint * ap =
           (AutomationPoint *) self;
-        Region * region = ap->region;
+        ZRegion * region = ap->region;
         ArrangerObject * region_obj =
           (ArrangerObject *) region;
 
@@ -894,8 +894,8 @@ arranger_object_set_full_rectangle (
       break;
     case TYPE (REGION):
       {
-        Region * region =
-          (Region *) self;
+        ZRegion * region =
+          (ZRegion *) self;
         Track * track =
           arranger_object_get_track (self);
 
@@ -968,7 +968,7 @@ arranger_object_set_full_rectangle (
     case TYPE (MIDI_NOTE):
       {
         MidiNote * mn = (MidiNote *) self;
-        Region * region =
+        ZRegion * region =
           mn->region;
         g_return_if_fail (region);
         ArrangerObject * region_obj =
@@ -1079,7 +1079,7 @@ arranger_object_set_full_rectangle (
         MidiNote * mn = vel->midi_note;
         ArrangerObject * mn_obj =
           (ArrangerObject *) mn;
-        Region * region = mn->region;
+        ZRegion * region = mn->region;
         g_return_if_fail (region);
         ArrangerObject * region_obj =
           (ArrangerObject *) region;
@@ -1188,7 +1188,7 @@ arranger_object_draw (
       break;
     case TYPE (REGION):
       region_draw (
-        (Region *) self, cr, rect);
+        (ZRegion *) self, cr, rect);
       break;
     case TYPE (MIDI_NOTE):
       midi_note_draw (

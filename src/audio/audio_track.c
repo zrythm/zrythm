@@ -75,7 +75,7 @@ audio_track_fill_stereo_ports_from_clip (
   if (!TRANSPORT_IS_ROLLING)
     return;
 
-  Region * r;
+  ZRegion * r;
   ArrangerObject * r_obj;
   TrackLane * lane;
   for (k = 0; k < self->num_lanes; k++)

@@ -61,7 +61,7 @@
  */
 void
 region_init (
-  Region *         self,
+  ZRegion *         self,
   const Position * start_pos,
   const Position * end_pos,
   const int        is_main)
@@ -92,13 +92,13 @@ region_init (
 }
 
 /**
- * Generates a name for the Region, either using
+ * Generates a name for the ZRegion, either using
  * the given AutomationTrack or Track, or appending
  * to the given base name.
  */
 void
 region_gen_name (
-  Region *          region,
+  ZRegion *          region,
   const char *      base_name,
   AutomationTrack * at,
   Track *           track)
@@ -138,7 +138,7 @@ region_gen_name (
  */
 void
 region_set_lane (
-  Region *    self,
+  ZRegion *    self,
   TrackLane * lane)
 {
   g_return_if_fail (lane);
@@ -148,16 +148,16 @@ region_set_lane (
 }
 
 /**
- * Moves the Region to the given Track, maintaining
- * the selection status of the Region and the
+ * Moves the ZRegion to the given Track, maintaining
+ * the selection status of the ZRegion and the
  * TrackLane position.
  *
- * Assumes that the Region is already in a
+ * Assumes that the ZRegion is already in a
  * TrackLane.
  */
 void
 region_move_to_track (
-  Region *  region,
+  ZRegion *  region,
   Track *   track)
 {
   g_return_if_fail (region && track);
@@ -201,19 +201,19 @@ region_move_to_track (
 }
 
 /**
- * Moves the given Region to the given TrackLane.
+ * Moves the given ZRegion to the given TrackLane.
  *
  * Works with TrackLane's of other Track's as well.
  *
  * Maintains the selection status of the
  * Region.
  *
- * Assumes that the Region is already in a
+ * Assumes that the ZRegion is already in a
  * TrackLane.
  */
 void
 region_move_to_lane (
-  Region *    region,
+  ZRegion *    region,
   TrackLane * lane)
 {
   g_return_if_fail (region && lane);
@@ -259,7 +259,7 @@ region_move_to_lane (
  */
 void
 region_set_automation_track (
-  Region *          self,
+  ZRegion *          self,
   AutomationTrack * at)
 {
   g_return_if_fail (at);
@@ -293,7 +293,7 @@ region_get_type_as_string (
 }
 
 /**
- * Returns if the given Region type can exist
+ * Returns if the given ZRegion type can exist
  * in TrackLane's.
  */
 int
@@ -306,11 +306,11 @@ region_type_has_lane (
 }
 
 /**
- * Looks for the Region under the given name.
+ * Looks for the ZRegion under the given name.
  *
  * Warning: very expensive function.
  */
-Region *
+ZRegion *
 region_find_by_name (
   const char * name)
 {
@@ -319,7 +319,7 @@ region_find_by_name (
   AutomationTracklist * atl;
   AutomationTrack * at;
   TrackLane * lane;
-  Region * r;
+  ZRegion * r;
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
@@ -374,7 +374,7 @@ region_find_by_name (
  */
 MidiNote *
 region_find_midi_note (
-  Region * r,
+  ZRegion * r,
   MidiNote * clone)
 {
   MidiNote * mn;
@@ -395,7 +395,7 @@ region_find_midi_note (
  */
 AutomationTrack *
 region_get_automation_track (
-  Region * region)
+  ZRegion * region)
 {
   Track * track =
     arranger_object_get_track (
@@ -414,7 +414,7 @@ region_get_automation_track (
  */
 void
 region_print (
-  const Region * self)
+  const ZRegion * self)
 {
   char * str =
     g_strdup_printf (
@@ -428,12 +428,12 @@ region_print (
 }
 
 /**
- * Sets Region name (without appending anything to
+ * Sets ZRegion name (without appending anything to
  * it) to all associated regions.
  */
 void
 region_set_name (
-  Region * self,
+  ZRegion * self,
   char *   name)
 {
   arranger_object_set_name ((ArrangerObject *) self, name);
@@ -465,13 +465,13 @@ region_set_name (
  *   NULL.
  * @param pos The position.
  */
-Region *
+ZRegion *
 region_at_position (
   Track    *        track,
   AutomationTrack * at,
   Position *        pos)
 {
-  Region * region;
+  ZRegion * region;
   if (track)
     {
       TrackLane * lane;
@@ -522,7 +522,7 @@ region_at_position (
  */
 int
 region_is_hit (
-  const Region * region,
+  const ZRegion * region,
   const long     gframes,
   const int      inclusive)
 {
@@ -540,12 +540,12 @@ region_is_hit (
 }
 
 /**
- * Returns if any part of the Region is inside the
+ * Returns if any part of the ZRegion is inside the
  * given range, inclusive.
  */
 int
 region_is_hit_by_range (
-  const Region * region,
+  const ZRegion * region,
   const long     gframes_start,
   const long     gframes_end,
   const int      end_inclusive)
@@ -596,8 +596,8 @@ region_is_hit_by_range (
  */
 void
 region_copy (
-  Region * src,
-  Region * dest)
+  ZRegion * src,
+  ZRegion * dest)
 {
   g_free (dest->name);
   dest->name = g_strdup (src->name);
@@ -628,7 +628,7 @@ region_copy (
  */
 long
 region_timeline_frames_to_local (
-  Region * region,
+  ZRegion * region,
   const long     timeline_frames,
   const int      normalize)
 {
@@ -693,7 +693,7 @@ region_timeline_frames_to_local (
  * FIXME logic needs changing
  */
 char *
-region_generate_filename (Region * region)
+region_generate_filename (ZRegion * region)
 {
   return
     g_strdup_printf (
@@ -705,12 +705,12 @@ region_generate_filename (Region * region)
 /**
  * Disconnects the region and anything using it.
  *
- * Does not free the Region or its children's
+ * Does not free the ZRegion or its children's
  * resources.
  */
 void
 region_disconnect (
-  Region * self)
+  ZRegion * self)
 {
   if (CLIP_EDITOR->region == self)
     {
@@ -754,6 +754,6 @@ region_disconnect (
     }
 }
 
-SERIALIZE_SRC (Region, region)
-DESERIALIZE_SRC (Region, region)
-PRINT_YAML_SRC (Region, region)
+SERIALIZE_SRC (ZRegion, region)
+DESERIALIZE_SRC (ZRegion, region)
+PRINT_YAML_SRC (ZRegion, region)

@@ -311,8 +311,8 @@ add_object_to_project (
       break;
     case ARRANGER_OBJECT_TYPE_REGION:
       {
-        Region * r =
-          (Region *) obj;
+        ZRegion * r =
+          (ZRegion *) obj;
 
         /* add it to track */
         Track * track =
@@ -377,8 +377,8 @@ remove_object_from_project (
       break;
     case ARRANGER_OBJECT_TYPE_REGION:
       {
-        Region * r =
-          (Region *) obj;
+        ZRegion * r =
+          (ZRegion *) obj;
         track_remove_region (
           arranger_object_get_track (obj),
           r, F_PUBLISH_EVENTS, F_FREE);
@@ -468,7 +468,7 @@ do_or_undo_move (
                 obj->type ==
                 ARRANGER_OBJECT_TYPE_REGION, -1);
 
-              Region * r = (Region *) obj;
+              ZRegion * r = (ZRegion *) obj;
 
               Track * track_to_move_to =
                 tracklist_get_visible_track_after_delta (
@@ -510,7 +510,7 @@ do_or_undo_move (
                 obj->type ==
                 ARRANGER_OBJECT_TYPE_REGION, -1);
 
-              Region * r = (Region *) obj;
+              ZRegion * r = (ZRegion *) obj;
 
               Track * region_track =
                 arranger_object_get_track (obj);
@@ -558,7 +558,7 @@ move_obj_by_tracks_and_lanes (
         obj->type ==
         ARRANGER_OBJECT_TYPE_REGION);
 
-      Region * r = (Region *) obj;
+      ZRegion * r = (ZRegion *) obj;
 
       Track * track_to_move_to =
         tracklist_get_visible_track_after_delta (
@@ -572,7 +572,7 @@ move_obj_by_tracks_and_lanes (
     }
   if (lanes_diff)
     {
-      Region * r = (Region *) obj;
+      ZRegion * r = (ZRegion *) obj;
 
       Track * region_track =
         arranger_object_get_track (obj);
@@ -852,11 +852,11 @@ do_or_undo_create_or_delete (
                 case ARRANGER_OBJECT_TYPE_REGION:
                   {
                     /* remember name */
-                    Region * r =
-                      (Region *) obj;
+                    ZRegion * r =
+                      (ZRegion *) obj;
                     g_free (
-                      ((Region *) objs[i])->name);
-                    ((Region *) objs[i])->name =
+                      ((ZRegion *) objs[i])->name);
+                    ((ZRegion *) objs[i])->name =
                       g_strdup (r->name);
                   }
                   break;
@@ -940,11 +940,11 @@ do_or_undo_edit (
                   {
                   case ARRANGER_OBJECT_TYPE_REGION:
                     {
-                      Region * r =
-                        (Region *) obj;
+                      ZRegion * r =
+                        (ZRegion *) obj;
                       region_set_name (
                         r,
-                        ((Region *) dest_objs[i])->
+                        ((ZRegion *) dest_objs[i])->
                           name);
                     }
                     break;
@@ -983,8 +983,8 @@ do_or_undo_edit (
                 {
                 case ARRANGER_OBJECT_TYPE_REGION:
                   {
-                    SET_PRIMITIVE (Region, muted);
-                    SET_PRIMITIVE (Region, color);
+                    SET_PRIMITIVE (ZRegion, muted);
+                    SET_PRIMITIVE (ZRegion, color);
                   }
                   break;
                 case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -1097,8 +1097,8 @@ do_or_undo_split (
                 ARRANGER_OBJECT_TYPE_REGION)
             {
               region_set_name (
-                (Region *) obj,
-                ((Region *) objs[i])->name);
+                (ZRegion *) obj,
+                ((ZRegion *) objs[i])->name);
             }
 
           /* free the copies created in _do */

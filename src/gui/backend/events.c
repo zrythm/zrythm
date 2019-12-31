@@ -116,7 +116,7 @@ on_arranger_selections_in_transit (
       MW_TIMELINE_EVENT_VIEWER);
     if (TL_SELECTIONS->num_regions > 0)
       {
-        Region * r = TL_SELECTIONS->regions[0];
+        ZRegion * r = TL_SELECTIONS->regions[0];
         switch (r->type)
           {
           case REGION_TYPE_MIDI:
@@ -376,7 +376,7 @@ on_clip_editor_region_changed ()
 {
   /* TODO */
   /*gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);*/
-  Region * r = CLIP_EDITOR->region;
+  ZRegion * r = CLIP_EDITOR->region;
 
   if (r)
     {
@@ -885,7 +885,7 @@ on_plugin_visibility_changed (Plugin * pl)
 
 static void
 stretch_audio_region (
-  Region * region)
+  ZRegion * region)
 {
   g_return_if_fail (region);
   ArrangerObject * obj = (ArrangerObject *) region;

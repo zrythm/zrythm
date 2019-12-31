@@ -94,8 +94,8 @@ automation_region_draw_cb (
       cairo_set_source_rgba (
         ao_prv->cached_cr, 1, 1, 1, 1);
 
-      Region * r = rw_prv->region;
-      Region * main_region =
+      ZRegion * r = rw_prv->region;
+      ZRegion * main_region =
         region_get_main (r);
       int num_loops =
         arranger_object_get_num_loops (
@@ -299,7 +299,7 @@ automation_region_draw_cb (
 
 AutomationRegionWidget *
 automation_region_widget_new (
-  Region * region)
+  ZRegion * region)
 {
   AutomationRegionWidget * self =
     g_object_new (

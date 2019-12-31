@@ -51,7 +51,7 @@ typedef struct Velocity Velocity;
     (ArrangerObject *) r)
 
 /**
- * A MIDI note inside a Region shown in the
+ * A MIDI note inside a ZRegion shown in the
  * piano roll.
  */
 typedef struct MidiNote
@@ -60,7 +60,7 @@ typedef struct MidiNote
   ArrangerObject  base;
 
   /** Owner region (cache). */
-  Region *        region;
+  ZRegion *        region;
   char *          region_name;
 
   /** Velocity. */
@@ -137,7 +137,7 @@ midi_note_get_global_start_pos (
  */
 MidiNote *
 midi_note_new (
-  MidiRegion * region,
+  ZRegion * region,
   Position *   start_pos,
   Position *   end_pos,
   uint8_t      val,
@@ -145,12 +145,12 @@ midi_note_new (
   int          is_main);
 
 /**
- * Sets the Region the MidiNote belongs to.
+ * Sets the ZRegion the MidiNote belongs to.
  */
 void
 midi_note_set_region (
   MidiNote * midi_note,
-  Region *   region);
+  ZRegion *   region);
 
 void
 midi_note_set_cache_val (

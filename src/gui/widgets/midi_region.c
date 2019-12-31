@@ -89,9 +89,9 @@ midi_region_draw_cb (
       cairo_set_source_rgba (
         ao_prv->cached_cr, 1, 1, 1, 1);
 
-      MidiRegion * r =
-        (MidiRegion *) rw_prv->region;
-      Region * main_region =
+      ZRegion * r =
+        (ZRegion *) rw_prv->region;
+      ZRegion * main_region =
         region_get_main (r);
       ArrangerObject * r_obj =
         (ArrangerObject *) r;
@@ -250,7 +250,7 @@ midi_region_draw_cb (
 
 MidiRegionWidget *
 midi_region_widget_new (
-  Region * midi_region)
+  ZRegion * midi_region)
 {
   MidiRegionWidget * self =
     g_object_new (

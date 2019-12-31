@@ -95,7 +95,7 @@ typedef enum EventType
   ET_AUTOMATION_TRACK_CHANGED,
 
   /**
-   * Region (clip) to show in the piano roll
+   * ZRegion (clip) to show in the piano roll
    * changed.
    *
    * Eg., a region in the timeline was clicked.

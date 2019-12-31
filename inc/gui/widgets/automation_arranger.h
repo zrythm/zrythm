@@ -64,7 +64,7 @@ automation_arranger_widget_create_ap (
   ArrangerWidget * self,
   const Position *           pos,
   const double               start_y,
-  Region *                   region);
+  ZRegion *                   region);
 
 /**
  * Change curviness of selected curves.

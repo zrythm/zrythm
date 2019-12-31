@@ -119,7 +119,7 @@ string_contains_substr (
  * Returns a newly allocated string that is a
  * filename version of the given string.
  *
- * Example: "MIDI Region #1" -> "MIDI_Region_1".
+ * Example: "MIDI ZRegion #1" -> "MIDI_Region_1".
  */
 char *
 string_convert_to_filename (

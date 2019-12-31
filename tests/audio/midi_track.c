@@ -56,10 +56,10 @@ fixture_set_up (
 
 /**
  * Prepares a MIDI region with a note starting at
- * the Region start position and ending at the
+ * the ZRegion start position and ending at the
  * region end position.
  */
-Region *
+ZRegion *
 prepare_region_with_note_at_start_to_end (
   midi_byte_t pitch,
   midi_byte_t velocity)
@@ -78,7 +78,7 @@ prepare_region_with_note_at_start_to_end (
   };
   position_update_ticks_and_frames (&start_pos);
   position_update_ticks_and_frames (&end_pos);
-  Region * r =
+  ZRegion * r =
     midi_region_new (
       &start_pos, &end_pos, 1);
   MidiNote * mn1 =
@@ -110,7 +110,7 @@ test_fill_midi_events ()
 
   midi_byte_t pitch1 = 35;
   midi_byte_t vel1= 91;
-  Region * r =
+  ZRegion * r =
     prepare_region_with_note_at_start_to_end (
       pitch1, vel1);
   ArrangerObject * r_obj =
@@ -305,7 +305,7 @@ test_fill_midi_events ()
   /*
    * Initialization
    *
-   * Region <2.1.1.0 ~ 4.1.1.0>
+   * ZRegion <2.1.1.0 ~ 4.1.1.0>
    *   loop end 2.1.1.0
    * MidiNote <-1.1.1.1>
    */
@@ -349,7 +349,7 @@ test_fill_midi_events ()
   /*
    * Initialization
    *
-   * Region <2.1.1.0 ~ 4.1.1.0>
+   * ZRegion <2.1.1.0 ~ 4.1.1.0>
    *   loop start 1.1.1.7
    *   loop end 2.1.1.0
    * MidiNote <1.1.1.7 ~ 2.1.1.7>
@@ -412,7 +412,7 @@ test_fill_midi_events ()
   /*
    * Initialization
    *
-   * Region <2.1.1.0 ~ 3.1.1.0>
+   * ZRegion <2.1.1.0 ~ 3.1.1.0>
    *   loop end (same as midi note end)
    * MidiNote <1.1.1.0 ~ (2000 ticks later)>
    */
@@ -532,7 +532,7 @@ test_fill_midi_events ()
   /*
    * Initialization
    *
-   * Region <2.1.1.0 ~ 3.1.1.0>
+   * ZRegion <2.1.1.0 ~ 3.1.1.0>
    *   loop start <1.1.1.0>
    *   loop end (same as midi note end)
    * MidiNote <1.1.1.0 ~ (2000 ticks later)>

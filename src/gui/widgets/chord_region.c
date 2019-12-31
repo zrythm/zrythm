@@ -40,7 +40,7 @@
  */
 void
 chord_region_recreate_pango_layouts (
-  Region * self)
+  ZRegion * self)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
@@ -91,10 +91,10 @@ chord_region_draw_cb (
   gtk_render_background (
     context, cr, 0, 0, width, height);
 
-  Region * r = rw_prv->region;
+  ZRegion * r = rw_prv->region;
   ArrangerObject * r_obj =
     (ArrangerObject *) r;
-  Region * main_region =
+  ZRegion * main_region =
     region_get_main (r);
   ArrangerObject * main_region_obj =
     (ArrangerObject *) main_region;
@@ -242,7 +242,7 @@ chord_region_draw_cb (
 
 ChordRegionWidget *
 chord_region_widget_new (
-  Region * region)
+  ZRegion * region)
 {
   ChordRegionWidget * self =
     g_object_new (

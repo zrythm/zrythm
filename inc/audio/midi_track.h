@@ -29,7 +29,7 @@ typedef struct Channel Channel;
 typedef struct MidiEvents MidiEvents;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct Automatable Automatable;
-typedef struct Region MidiRegion;
+typedef struct ZRegion MidiRegion;
 
 /**
  * @addtogroup audio

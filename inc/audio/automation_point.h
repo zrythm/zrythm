@@ -94,7 +94,7 @@ typedef struct AutomationPoint
   /**
    * Pointer back to parent.
    */
-  Region *        region;
+  ZRegion *        region;
 
   /** Used in clones to identify a region instead of
    * cloning the whole Region. */
@@ -176,14 +176,14 @@ automation_point_set_fvalue (
   float             fval);
 
 /**
- * Sets the Region and the index in the
+ * Sets the ZRegion and the index in the
  * region that the AutomationPoint
  * belongs to, in all its counterparts.
  */
 void
 automation_point_set_region_and_index (
   AutomationPoint * _ap,
-  Region *          region,
+  ZRegion *          region,
   int               index);
 
 /**

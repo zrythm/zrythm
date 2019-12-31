@@ -90,7 +90,7 @@ chord_arranger_widget_create_chord (
   ArrangerWidget * self,
   const Position *      pos,
   int                   chord_index,
-  Region *              region)
+  ZRegion *              region)
 {
   self->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
@@ -216,7 +216,7 @@ chord_arranger_widget_get_chord_at_y (
   /*ChordTrack *          ct)*/
 /*{*/
   /*int i, j, k;*/
-  /*Region * r;*/
+  /*ZRegion * r;*/
   /*ChordObject * c;*/
   /*for (i = 0; i < ct->num_chord_regions; i++)*/
     /*{*/

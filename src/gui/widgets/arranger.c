@@ -64,6 +64,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/tracklist.h"
+#include "plugins/vst_plugin.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
@@ -188,7 +189,7 @@ get_playhead_px (
     }
   else if (CLIP_EDITOR->region)
     {
-      Region * r = NULL;
+      ZRegion * r = NULL;
       if (self->type == TYPE (AUTOMATION))
         {
           r =
@@ -505,7 +506,7 @@ draw_audio_bg (
   cairo_t *        cr,
   GdkRectangle *   rect)
 {
-  Region * ar = CLIP_EDITOR->region;
+  ZRegion * ar = CLIP_EDITOR->region;
   if (ar->stretching)
     {
       arranger_widget_redraw_whole (self);
@@ -1054,7 +1055,7 @@ arranger_widget_get_hit_objects_in_rect (
                        k < lane->num_regions;
                        k++)
                     {
-                      Region *r =
+                      ZRegion *r =
                         lane->regions[k];
                       obj =
                         (ArrangerObject *) r;
@@ -1086,7 +1087,7 @@ arranger_widget_get_hit_objects_in_rect (
                    j < P_CHORD_TRACK->num_chord_regions;
                    j++)
                 {
-                  ChordRegion * cr =
+                  ZRegion * cr =
                     P_CHORD_TRACK->chord_regions[j];
                   obj =
                     (ArrangerObject *) cr;
@@ -1161,7 +1162,7 @@ arranger_widget_get_hit_objects_in_rect (
       if (type == ARRANGER_OBJECT_TYPE_ALL ||
           type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
         {
-          Region * r = CLIP_EDITOR->region;
+          ZRegion * r = CLIP_EDITOR->region;
           if (!r)
             break;
 
@@ -1181,7 +1182,7 @@ arranger_widget_get_hit_objects_in_rect (
       if (type == ARRANGER_OBJECT_TYPE_ALL ||
           type == ARRANGER_OBJECT_TYPE_VELOCITY)
         {
-          Region * r = CLIP_EDITOR->region;
+          ZRegion * r = CLIP_EDITOR->region;
           if (!r)
             break;
 
@@ -1201,7 +1202,7 @@ arranger_widget_get_hit_objects_in_rect (
       if (type == ARRANGER_OBJECT_TYPE_ALL ||
           type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT)
         {
-          Region * r = CLIP_EDITOR->region;
+          ZRegion * r = CLIP_EDITOR->region;
           if (!r)
             break;
 
@@ -1221,7 +1222,7 @@ arranger_widget_get_hit_objects_in_rect (
       if (type == ARRANGER_OBJECT_TYPE_ALL ||
           type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
         {
-          Region * r = CLIP_EDITOR->region;
+          ZRegion * r = CLIP_EDITOR->region;
           if (!r)
             break;
 
@@ -1488,7 +1489,7 @@ select_all_timeline (
   int i,j,k;
 
   /* select everything else */
-  Region * r;
+  ZRegion * r;
   Track * track;
   AutomationTrack * at;
   for (i = 0; i < TRACKLIST->num_tracks; i++)
@@ -1570,8 +1571,8 @@ select_all_midi (
     return;
 
   /* select midi notes */
-  MidiRegion * mr =
-    (MidiRegion *) CLIP_EDITOR_SELECTED_REGION;
+  ZRegion * mr =
+    (ZRegion *) CLIP_EDITOR_SELECTED_REGION;
   for (int i = 0; i < mr->num_midi_notes; i++)
     {
       MidiNote * midi_note = mr->midi_notes[i];
@@ -1588,7 +1589,7 @@ select_all_chord (
   int                    select)
 {
   /* select everything else */
-  Region * r = CLIP_EDITOR->region;
+  ZRegion * r = CLIP_EDITOR->region;
   ChordObject * chord;
   for (int i = 0; i < r->num_chord_objects; i++)
     {
@@ -1622,7 +1623,7 @@ select_all_automation (
 {
   int i;
 
-  Region * region = CLIP_EDITOR->region;
+  ZRegion * region = CLIP_EDITOR->region;
 
   /* select everything else */
   AutomationPoint * ap;
@@ -1706,7 +1707,7 @@ show_context_menu_timeline (
     arranger_widget_get_hit_arranger_object (
       (ArrangerWidget *) self,
       ARRANGER_OBJECT_TYPE_REGION, x, y);
-  Region * r = (Region *) r_obj;
+  ZRegion * r = (ZRegion *) r_obj;
 
   menu = gtk_menu_new();
 
@@ -1872,6 +1873,10 @@ on_right_click (
   gdouble               y,
   ArrangerWidget *      self)
 {
+  Plugin plugin;
+  vst_plugin_new_from_path (
+    &plugin, "/gnu/store/6rfrh2jd45yismk4cf9magspdcksqwzb-zynaddsubfx-3.0.5/lib/vst/ZynAddSubFX.so");
+
   if (n_press != 1)
     return;
 
@@ -2210,7 +2215,7 @@ create_item (ArrangerWidget * self,
   Track * track = NULL;
   AutomationTrack * at = NULL;
   int note, chord_index;
-  Region * region = NULL;
+  ZRegion * region = NULL;
 
   /* get the position */
   arranger_widget_px_to_pos (
@@ -2295,7 +2300,7 @@ create_item (ArrangerWidget * self,
       if (region)
         {
           midi_arranger_widget_create_note (
-            self, &pos, note, (MidiRegion *) region);
+            self, &pos, note, (ZRegion *) region);
         }
       break;
     case TYPE (MIDI_MODIFIER):
@@ -2452,7 +2457,7 @@ on_drag_begin_handle_hit_object (
   if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
     {
       clip_editor_set_region (
-        CLIP_EDITOR, (Region *) obj);
+        CLIP_EDITOR, (ZRegion *) obj);
 
       /* if double click bring up piano roll */
       if (self->n_press == 2 &&
@@ -2799,8 +2804,8 @@ select_in_range (
       for (i = 0; i < num_objs; i++)
         {
           ArrangerObject * obj = objs[i];
-          Region * region =
-            (Region *) obj;
+          ZRegion * region =
+            (ZRegion *) obj;
 
           if (delete)
             {
@@ -3644,7 +3649,7 @@ on_drag_end_timeline (
   /*for (int i = 0; i < TL_SELECTIONS->num_regions;*/
        /*i++)*/
     /*{*/
-      /*Region * region = TL_SELECTIONS->regions[i];*/
+      /*ZRegion * region = TL_SELECTIONS->regions[i];*/
       /*region->tmp_lane = NULL;*/
     /*}*/
 
@@ -3933,7 +3938,7 @@ get_hit_timeline_object (
        * position */
       for (int i = 0; i < at->num_regions; i++)
         {
-          Region * r = at->regions[i];
+          ZRegion * r = at->regions[i];
           if (region_is_hit (r, pos.frames, 1))
             {
               return (ArrangerObject *) r;
@@ -3951,7 +3956,7 @@ get_hit_timeline_object (
        * position */
       for (int i = 0; i < lane->num_regions; i++)
         {
-          Region * r = lane->regions[i];
+          ZRegion * r = lane->regions[i];
           if (region_is_hit (r, pos.frames, 1))
             {
               return (ArrangerObject *) r;
@@ -3973,7 +3978,7 @@ get_hit_timeline_object (
               for (int j = 0; j < lane->num_regions;
                    j++)
                 {
-                  Region * r = lane->regions[j];
+                  ZRegion * r = lane->regions[j];
                   if (region_is_hit (
                         r, pos.frames, 1))
                     {

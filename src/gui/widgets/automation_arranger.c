@@ -125,7 +125,7 @@
 
       /* use transient or non transient region
        * depending on which is visible */
-      /*Region * region = ap->region;*/
+      /*ZRegion * region = ap->region;*/
       /*region =*/
         /*region_get_visible_counterpart (region);*/
       /*ArrangerObject * region_obj =*/
@@ -297,7 +297,7 @@ automation_arranger_widget_create_ap (
   ArrangerWidget * self,
   const Position *   pos,
   const double       start_y,
-  Region *           region)
+  ZRegion *           region)
 {
   AutomationTrack * at = CLIP_EDITOR->region->at;
   g_return_if_fail (at);
@@ -610,7 +610,7 @@ automation_arranger_widget_resize_curves (
 /*static void*/
 /*add_children_from_region (*/
   /*ArrangerWidget * self,*/
-  /*Region *          region)*/
+  /*ZRegion *          region)*/
 /*{*/
   /*int j,k;*/
   /*AutomationPoint * ap;*/
@@ -672,7 +672,7 @@ automation_arranger_widget_resize_curves (
   /*g_list_free (children);*/
 
   /*[> add <]*/
-  /*Region * region = CLIP_EDITOR->region;*/
+  /*ZRegion * region = CLIP_EDITOR->region;*/
   /*add_children_from_region (*/
     /*self, region);*/
 

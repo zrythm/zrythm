@@ -57,8 +57,8 @@ audio_region_draw_cb (
         (ArrangerObjectWidget *) self, &rect))
     {
       REGION_WIDGET_GET_PRIVATE (self);
-      Region * r = rw_prv->region;
-      Region * main_region =
+      ZRegion * r = rw_prv->region;
+      ZRegion * main_region =
         region_get_main (r);
       ArrangerObject * main_obj =
         (ArrangerObject *) main_region;
@@ -175,7 +175,7 @@ audio_region_draw_cb (
 
 AudioRegionWidget *
 audio_region_widget_new (
-  AudioRegion * audio_region)
+  ZRegion * audio_region)
 {
   AudioRegionWidget * self =
     g_object_new (

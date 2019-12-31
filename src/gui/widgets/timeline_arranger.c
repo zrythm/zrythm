@@ -267,7 +267,7 @@ timeline_arranger_widget_get_at_at_y (
 void
 timeline_arranger_on_export_as_midi_file_clicked (
   GtkMenuItem * menuitem,
-  Region *      r)
+  ZRegion *      r)
 {
   GtkDialog * dialog =
     GTK_DIALOG (
@@ -296,7 +296,7 @@ timeline_arranger_on_export_as_midi_file_clicked (
 }
 
 /**
- * Create a Region at the given Position in the
+ * Create a ZRegion at the given Position in the
  * given Track's given TrackLane.
  *
  * @param type The type of region to create.
@@ -323,7 +323,7 @@ timeline_arranger_widget_create_region (
     self->snap_grid);
 
   /* create a new region */
-  Region * region = NULL;
+  ZRegion * region = NULL;
   switch (type)
     {
     case REGION_TYPE_MIDI:
@@ -579,7 +579,7 @@ timeline_arranger_widget_set_select_type (
 static inline int
 snap_region_l (
   ArrangerWidget * self,
-  Region *                 region,
+  ZRegion *                 region,
   Position *               new_start_pos,
   int                      dry_run)
 {
@@ -658,7 +658,7 @@ timeline_arranger_widget_snap_regions_l (
    * pos */
   Position new_start_pos;
 
-  Region * region;
+  ZRegion * region;
   ArrangerObject * r_obj;
   int ret;
   for (int i = 0;
@@ -706,7 +706,7 @@ timeline_arranger_widget_snap_regions_l (
 static inline int
 snap_region_r (
   ArrangerWidget * self,
-  Region * region,
+  ZRegion * region,
   Position * new_end_pos,
   int        dry_run)
 {
@@ -800,7 +800,7 @@ timeline_arranger_widget_snap_regions_r (
    * pos */
   Position new_end_pos;
 
-  Region * region;
+  ZRegion * region;
   ArrangerObject * r_obj;
   int ret;
   for (int i = 0;
@@ -901,7 +901,7 @@ timeline_arranger_widget_snap_range_r (
   /*COMPARE_AND_SET (&end_obj->pos);*/
 
   /*Track * track;*/
-  /*Region * region;*/
+  /*ZRegion * region;*/
   /*ArrangerObject * r_obj;*/
   /*for (int i = 0; i < TRACKLIST->num_tracks; i++)*/
     /*{*/
@@ -956,9 +956,9 @@ timeline_arranger_move_regions_to_new_lanes (
 
   /* store selected regions because they will be
    * deselected during moving */
-  Region * regions[600];
+  ZRegion * regions[600];
   int num_regions = 0;
-  Region * region;
+  ZRegion * region;
   for (i = 0; i < TL_SELECTIONS->num_regions; i++)
     {
       regions[num_regions++] =
@@ -1029,9 +1029,9 @@ timeline_arranger_move_regions_to_new_tracks (
 
   /* store selected regions because they will be
    * deselected during moving */
-  Region * regions[600];
+  ZRegion * regions[600];
   int num_regions = 0;
-  Region * region;
+  ZRegion * region;
   ArrangerObject * r_obj;
   for (i = 0; i < TL_SELECTIONS->num_regions; i++)
     {

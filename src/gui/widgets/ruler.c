@@ -160,7 +160,7 @@ draw_regions (
       GTK_WIDGET (self));
 
   /* get a visible region */
-  Region * region = CLIP_EDITOR->region;
+  ZRegion * region = CLIP_EDITOR->region;
   g_return_if_fail (region);
   ArrangerObject * region_obj =
     (ArrangerObject *) region;
@@ -208,7 +208,7 @@ draw_regions (
     track->color.green,
     track->color.blue,
     0.5);
-  Region * other_region;
+  ZRegion * other_region;
   TrackLane * lane;
   for (int j = 0; j < track->num_lanes; j++)
     {

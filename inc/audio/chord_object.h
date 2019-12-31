@@ -61,7 +61,7 @@ typedef struct ChordObject
   int                 index;
 
   /** Pointer back to parent. */
-  Region *            region;
+  ZRegion *            region;
 
   /** Used in clones to identify a region instead of
    * cloning the whole Region. */
@@ -102,7 +102,7 @@ chord_object_schema = {
  */
 ChordObject *
 chord_object_new (
-  Region * region,
+  ZRegion * region,
   int index,
   int is_main);
 
@@ -117,7 +117,7 @@ chord_object_is_equal (
 void
 chord_object_set_region (
   ChordObject * self,
-  Region *      region);
+  ZRegion *      region);
 
 /**
  * Returns the ChordDescriptor associated with this

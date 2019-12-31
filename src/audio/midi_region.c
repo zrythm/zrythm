@@ -39,13 +39,13 @@
 
 #include "ext/midilib/src/midifile.h"
 
-MidiRegion *
+ZRegion *
 midi_region_new (
   const Position * start_pos,
   const Position * end_pos,
   int        is_main)
 {
-  MidiRegion * self =
+  ZRegion * self =
     calloc (1, sizeof (MidiRegion));
 
   self->type = REGION_TYPE_MIDI;
@@ -63,7 +63,7 @@ midi_region_new (
  */
 void
 midi_region_print_midi_notes (
-  Region * self)
+  ZRegion * self)
 {
   MidiNote * mn;
   for (int i = 0; i < self->num_midi_notes; i++)
@@ -82,7 +82,7 @@ midi_region_print_midi_notes (
  */
 void
 midi_region_add_midi_note (
-  MidiRegion * region,
+  ZRegion * region,
   MidiNote * midi_note)
 {
   midi_note_set_region (midi_note, region);
@@ -110,7 +110,7 @@ midi_region_add_midi_note (
  */
 MidiNote *
 midi_region_pop_unended_note (
-  MidiRegion * self,
+  ZRegion * self,
   int          pitch)
 {
   MidiNote * match = NULL;
@@ -144,7 +144,7 @@ midi_region_pop_unended_note (
  */
 MidiNote *
 midi_region_get_first_midi_note (
-  MidiRegion * region)
+  ZRegion * region)
 {
 	MidiNote * result = NULL;
 	for (int i = 0;
@@ -168,7 +168,7 @@ midi_region_get_first_midi_note (
  */
 MidiNote *
 midi_region_get_last_midi_note (
-  MidiRegion * region)
+  ZRegion * region)
 {
 	MidiNote * result = NULL;
 	for (int i = 0;
@@ -193,7 +193,7 @@ midi_region_get_last_midi_note (
  */
 MidiNote *
 midi_region_get_highest_midi_note (
-  MidiRegion * region)
+  ZRegion * region)
 {
 	MidiNote * result = NULL;
 	for (int i = 0;
@@ -214,7 +214,7 @@ midi_region_get_highest_midi_note (
  */
 MidiNote *
 midi_region_get_lowest_midi_note (
-  MidiRegion * region)
+  ZRegion * region)
 {
 	MidiNote * result = NULL;
 	for (int i = 0;
@@ -239,7 +239,7 @@ midi_region_get_lowest_midi_note (
  */
 void
 midi_region_remove_midi_note (
-  Region *   region,
+  ZRegion *   region,
   MidiNote * midi_note,
   int        free,
   int        pub_event)
@@ -274,7 +274,7 @@ midi_region_remove_midi_note (
 }
 
 /**
- * Exports the Region to an existing MIDI file
+ * Exports the ZRegion to an existing MIDI file
  * instance.
  *
  * @param add_region_start Add the region start
@@ -286,7 +286,7 @@ midi_region_remove_midi_note (
  */
 void
 midi_region_write_to_midi_file (
-  Region * self,
+  ZRegion * self,
   MIDI_FILE *    mf,
   const int      add_region_start,
   const int      export_full)
@@ -319,7 +319,7 @@ midi_region_write_to_midi_file (
 }
 
 /**
- * Exports the Region to a specified MIDI file.
+ * Exports the ZRegion to a specified MIDI file.
  *
  * @param full_path Absolute path to the MIDI file.
  * @param export_full Traverse loops and export the
@@ -329,7 +329,7 @@ midi_region_write_to_midi_file (
  */
 void
 midi_region_export_to_midi_file (
-  Region * self,
+  ZRegion * self,
   const char *   full_path,
   int            midi_version,
   const int      export_full)
@@ -374,7 +374,7 @@ midi_region_export_to_midi_file (
  */
 uint8_t
 midi_region_get_midi_ch (
-  const Region * self)
+  const ZRegion * self)
 {
   uint8_t ret;
   if (self->lane->midi_ch > 0)
@@ -403,7 +403,7 @@ midi_region_get_midi_ch (
  */
 MidiEvents *
 midi_region_get_as_events (
-  Region * self,
+  ZRegion * self,
   const int      add_region_start,
   const int      full)
 {
@@ -452,7 +452,7 @@ midi_region_get_as_events (
  * Regions should be free'd using region_free.
  */
 void
-midi_region_free_members (MidiRegion * self)
+midi_region_free_members (ZRegion * self)
 {
   for (int i = 0; i < self->num_midi_notes; i++)
     {

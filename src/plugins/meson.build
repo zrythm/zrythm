@@ -19,6 +19,7 @@ plugin_srcs = [
   'lv2_plugin.c',
   'plugin.c',
   'plugin_manager.c',
+  'vst_plugin.c',
   ]
 
 zrythm_srcs += files (plugin_srcs)

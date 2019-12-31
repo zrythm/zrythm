@@ -113,7 +113,7 @@ chord_track_get_chord_at_pos (
   const Track * ct,
   const Position * pos)
 {
-  Region * region =
+  ZRegion * region =
     track_get_region_at_pos (ct, pos);
 
   if (!region)

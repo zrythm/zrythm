@@ -89,7 +89,7 @@ midi_arranger_widget_create_note (
   ArrangerWidget * self,
   Position * pos,
   int                  note,
-  Region * region)
+  ZRegion * region)
 {
   ArrangerObject * region_obj =
     (ArrangerObject *) region;

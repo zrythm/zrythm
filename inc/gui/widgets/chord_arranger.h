@@ -34,7 +34,7 @@ typedef struct ChordObject ChordObject;
 typedef struct _ChordObjectWidget ChordObjectWidget;
 typedef struct SnapGrid SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
-typedef struct Region ChordRegion;
+typedef struct ZRegion ChordRegion;
 typedef struct Channel Channel;
 
 /**
@@ -59,7 +59,7 @@ chord_arranger_widget_create_chord (
   ArrangerWidget * self,
   const Position *      pos,
   int                   chord_index,
-  Region *              region);
+  ZRegion *              region);
 
 /**
  * @}

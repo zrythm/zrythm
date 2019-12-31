@@ -28,20 +28,20 @@
 #include <glib/gi18n.h>
 
 /**
- * Creates a new Region for chords.
+ * Creates a new ZRegion for chords.
  *
  * @param is_main If this is 1 it
- *   will create the additional Region (
+ *   will create the additional ZRegion (
  *   main_transient).
  */
-Region *
+ZRegion *
 chord_region_new (
   const Position * start_pos,
   const Position * end_pos,
   const int        is_main)
 {
-  Region * self =
-    calloc (1, sizeof (Region));
+  ZRegion * self =
+    calloc (1, sizeof (ZRegion));
 
   self->chord_objects_size = 1;
   self->chord_objects =
@@ -61,7 +61,7 @@ chord_region_new (
  */
 void
 chord_region_add_chord_object (
-  Region *      self,
+  ZRegion *      self,
   ChordObject * chord)
 {
   array_double_size_if_full (
@@ -83,7 +83,7 @@ chord_region_add_chord_object (
  */
 void
 chord_region_remove_chord_object (
-  Region *      self,
+  ZRegion *      self,
   ChordObject * chord,
   int           free)
 {
@@ -106,13 +106,13 @@ chord_region_remove_chord_object (
 }
 
 /**
- * Frees members only but not the Region itself.
+ * Frees members only but not the ZRegion itself.
  *
  * Regions should be free'd using region_free.
  */
 void
 chord_region_free_members (
-  Region * self)
+  ZRegion * self)
 {
   int i;
   for (i = 0; i < self->num_chord_objects; i++)

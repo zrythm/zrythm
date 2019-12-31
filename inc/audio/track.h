@@ -44,7 +44,7 @@
 
 typedef struct AutomationTracklist
   AutomationTracklist;
-typedef struct Region Region;
+typedef struct ZRegion ZRegion;
 typedef struct Position Position;
 typedef struct _TrackWidget TrackWidget;
 typedef struct Channel Channel;
@@ -232,12 +232,12 @@ typedef struct Track
   uint8_t             midi_ch;
 
   /**
-   * Region currently recording on.
+   * ZRegion currently recording on.
    *
    * This must only be set by the RecordingManager
    * and should not be touched by anything else.
    */
-  Region *            recording_region;
+  ZRegion *            recording_region;
 
   /* ==== INSTRUMENT/MIDI/AUDIO TRACK END ==== */
 
@@ -248,7 +248,7 @@ typedef struct Track
    *
    * Note: these must always be sorted by Position.
    */
-  Region **           chord_regions;
+  ZRegion **           chord_regions;
   int                 num_chord_regions;
   int                 chord_regions_size;
 
@@ -519,13 +519,13 @@ int
 track_is_selected (Track * self);
 
 /**
- * Adds a Region to the given lane or
+ * Adds a ZRegion to the given lane or
  * AutomationTrack of the track.
  *
- * The Region must be the main region (see
+ * The ZRegion must be the main region (see
  * ArrangerObjectInfo).
  *
- * @param at The AutomationTrack of this Region, if
+ * @param at The AutomationTrack of this ZRegion, if
  *   automation region.
  * @param lane_pos The position of the lane to add
  *   to, if applicable.
@@ -536,7 +536,7 @@ track_is_selected (Track * self);
 void
 track_add_region (
   Track *           track,
-  Region *          region,
+  ZRegion *          region,
   AutomationTrack * at,
   int               lane_pos,
   int               gen_name,
@@ -572,23 +572,23 @@ track_select (
 void
 track_remove_region (
   Track *  track,
-  Region * region,
+  ZRegion * region,
   int      fire_events,
   int      free);
 
 /**
  * Returns the region at the given position, or NULL.
  */
-Region *
+ZRegion *
 track_get_region_at_pos (
   const Track *    track,
   const Position * pos);
 
 /**
- * Returns the last Region in the
+ * Returns the last ZRegion in the
  * track, or NULL.
  */
-Region *
+ZRegion *
 track_get_last_region (
   Track *    track);
 

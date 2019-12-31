@@ -291,7 +291,7 @@ transport_move_playhead (
   /* send MIDI note off on currently playing timeline
    * objects */
   Track * track;
-  Region * region;
+  ZRegion * region;
   MidiNote * midi_note;
   MidiEvents * midi_events;
   TrackLane * lane;

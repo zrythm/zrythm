@@ -40,13 +40,13 @@
  * Returns if the selections can be pasted.
  *
  * @param pos Position to paste to.
- * @param region Region to paste to.
+ * @param region ZRegion to paste to.
  */
 int
 chord_selections_can_be_pasted (
   ChordSelections * ts,
   Position *        pos,
-  Region *          r)
+  ZRegion *          r)
 {
   if (!r || r->type != REGION_TYPE_CHORD)
     return 0;

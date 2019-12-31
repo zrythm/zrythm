@@ -48,7 +48,7 @@ automation_track_init_loaded (
   self->regions_size =
     (size_t) self->num_regions;
   int i;
-  Region * region;
+  ZRegion * region;
   for (i = 0; i < self->num_regions; i++)
     {
       region = self->regions[i];
@@ -72,7 +72,7 @@ automation_track_new (Automatable *   a)
   self->regions_size = 1;
   self->regions =
     malloc (self->regions_size *
-            sizeof (Region *));
+            sizeof (ZRegion *));
 
   self->height = TRACK_DEF_HEIGHT;
 
@@ -80,12 +80,12 @@ automation_track_new (Automatable *   a)
 }
 
 /**
- * Adds an automation Region to the AutomationTrack.
+ * Adds an automation ZRegion to the AutomationTrack.
  */
 void
 automation_track_add_region (
   AutomationTrack * self,
-  Region *          region)
+  ZRegion *          region)
 {
   g_return_if_fail (self);
   g_return_if_fail (
@@ -93,7 +93,7 @@ automation_track_add_region (
 
   array_double_size_if_full (
     self->regions, self->num_regions,
-    self->regions_size, Region *);
+    self->regions_size, ZRegion *);
   array_append (self->regions,
                 self->num_regions,
                 region);
@@ -110,15 +110,15 @@ automation_track_get_automation_tracklist (
 }
 
 /**
- * Returns the Region that surrounds the
+ * Returns the ZRegion that surrounds the
  * given Position, if any.
  */
-Region *
+ZRegion *
 automation_track_get_region_before_pos (
   const AutomationTrack * self,
   const Position *        pos)
 {
-  Region * region;
+  ZRegion * region;
   ArrangerObject * r_obj;
   for (int i = self->num_regions - 1;
        i >= 0; i--)
@@ -143,7 +143,7 @@ automation_track_get_ap_before_pos (
   const AutomationTrack * self,
   const Position *        pos)
 {
-  Region * r =
+  ZRegion * r =
     automation_track_get_region_before_pos (
       self, pos);
 
@@ -311,17 +311,17 @@ automation_track_get_y_px_from_normalized_val (
 }
 
 /**
- * Gets the last Region in the AutomationTrack.
+ * Gets the last ZRegion in the AutomationTrack.
  *
  * FIXME cache.
  */
-Region *
+ZRegion *
 automation_track_get_last_region (
   AutomationTrack * self)
 {
   Position pos;
   position_init (&pos);
-  Region * region, * last_region = NULL;
+  ZRegion * region, * last_region = NULL;
   ArrangerObject * r_obj;
   for (int i = 0; i < self->num_regions; i++)
     {
@@ -352,17 +352,17 @@ automation_track_clone (
   dest->num_regions = src->num_regions;
   dest->regions =
     malloc (dest->regions_size *
-            sizeof (Region *));
+            sizeof (ZRegion *));
 
   dest->automatable =
     automatable_clone (src->automatable);
 
-  Region * src_region;
+  ZRegion * src_region;
   for (int j = 0; j < src->num_regions; j++)
     {
       src_region = src->regions[j];
       dest->regions[j] =
-        (Region *)
+        (ZRegion *)
         arranger_object_clone (
           (ArrangerObject *) src_region,
           ARRANGER_OBJECT_CLONE_COPY_MAIN);

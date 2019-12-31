@@ -27,7 +27,7 @@
 
 typedef struct
 {
-  Region * midi_region;
+  ZRegion * midi_region;
 } RegionFixture;
 
 static void
@@ -66,7 +66,7 @@ test_region_is_hit ()
     &_fixture;
   fixture_set_up (fixture);
 
-  Region * r = fixture->midi_region;
+  ZRegion * r = fixture->midi_region;
   ArrangerObject * r_obj =
     (ArrangerObject *) r;
   position_update_ticks_and_frames (&r_obj->pos);
@@ -76,7 +76,7 @@ test_region_is_hit ()
   int ret;
 
   /*
-   * Position: Region start
+   * Position: ZRegion start
    *
    * Expected result:
    * Returns true either exclusive or inclusive.
@@ -91,7 +91,7 @@ test_region_is_hit ()
   g_assert_cmpint (ret, ==, 1);
 
   /*
-   * Position: Region start - 1 frame
+   * Position: ZRegion start - 1 frame
    *
    * Expected result:
    * Returns false either exclusive or inclusive.
@@ -107,7 +107,7 @@ test_region_is_hit ()
   g_assert_cmpint (ret, ==, 0);
 
   /*
-   * Position: Region end
+   * Position: ZRegion end
    *
    * Expected result:
    * Returns true for inclusive, false for not.
@@ -122,7 +122,7 @@ test_region_is_hit ()
   g_assert_cmpint (ret, ==, 1);
 
   /*
-   * Position: Region end - 1
+   * Position: ZRegion end - 1
    *
    * Expected result:
    * Returns true for both.
@@ -138,7 +138,7 @@ test_region_is_hit ()
   g_assert_cmpint (ret, ==, 1);
 
   /*
-   * Position: Region end + 1
+   * Position: ZRegion end + 1
    *
    * Expected result:
    * Returns false for both.
@@ -165,7 +165,7 @@ test_new_region ()
   Position start_pos, end_pos, tmp;
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
-  Region * region =
+  ZRegion * region =
     midi_region_new (
       &start_pos, &end_pos, 1);
   ArrangerObject * r_obj =

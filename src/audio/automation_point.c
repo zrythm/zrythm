@@ -62,14 +62,14 @@ _create_new (
 }
 
 /**
- * Sets the Region and the index in the
+ * Sets the ZRegion and the index in the
  * region that the AutomationPoint
  * belongs to, in all its counterparts.
  */
 void
 automation_point_set_region_and_index (
   AutomationPoint * ap,
-  Region *          region,
+  ZRegion *          region,
   int               index)
 {
   g_return_if_fail (ap && region);

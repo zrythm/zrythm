@@ -273,7 +273,9 @@ typedef struct Port
    * used.
    */
   PortInternalType    internal_type;
-  Lv2Port *          lv2_port; ///< used for LV2
+
+  /** Used for LV2. */
+  Lv2Port *          lv2_port;
 
   /**
    * Pointer to arbitrary data.

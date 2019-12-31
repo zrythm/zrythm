@@ -17,8 +17,11 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/** \file
- * Implementation of Plugin. */
+/**
+ * \file
+ *
+ * Implementation of Plugin.
+ */
 
 #define _GNU_SOURCE 1  /* To pick up REG_RIP */
 
@@ -39,6 +42,7 @@
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_control.h"
 #include "plugins/lv2/lv2_gtk.h"
+#include "plugins/vst_plugin.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/io.h"
@@ -131,10 +135,18 @@ plugin_new_from_descr (
     plugin_clone_descr (descr);
   plugin_init (plugin);
 
-  if (plugin->descr->protocol == PROT_LV2)
+  switch (plugin->descr->protocol)
     {
+    case PROT_LV2:
       lv2_plugin_new_from_uri (
         plugin, descr->uri);
+      break;
+    case PROT_VST:
+      vst_plugin_new_from_path (
+        plugin, descr->path);
+      break;
+    default:
+      break;
     }
 
   return plugin;
@@ -690,21 +702,44 @@ plugin_process (
 void
 plugin_open_ui (Plugin *plugin)
 {
-  if (plugin->descr->protocol == PROT_LV2)
+  switch (plugin->descr->protocol)
     {
-      Lv2Plugin * lv2_plugin = plugin->lv2;
-      if (GTK_IS_WINDOW (lv2_plugin->window))
-        {
-          gtk_window_present (
-            GTK_WINDOW (lv2_plugin->window));
-          gtk_window_set_transient_for (
-            GTK_WINDOW (lv2_plugin->window),
-            (GtkWindow *) MAIN_WINDOW);
-        }
-      else
-        {
-          lv2_gtk_open_ui (lv2_plugin);
-        }
+    case PROT_LV2:
+      {
+        Lv2Plugin * lv2_plugin = plugin->lv2;
+        if (GTK_IS_WINDOW (lv2_plugin->window))
+          {
+            gtk_window_present (
+              GTK_WINDOW (lv2_plugin->window));
+            gtk_window_set_transient_for (
+              GTK_WINDOW (lv2_plugin->window),
+              (GtkWindow *) MAIN_WINDOW);
+          }
+        else
+          {
+            lv2_gtk_open_ui (lv2_plugin);
+          }
+      }
+      break;
+    case PROT_VST:
+      {
+        VstPlugin * vst_plugin = plugin->vst;
+        if (GTK_IS_WINDOW (vst_plugin->window))
+          {
+            gtk_window_present (
+              GTK_WINDOW (vst_plugin->window));
+            gtk_window_set_transient_for (
+              GTK_WINDOW (vst_plugin->window),
+              (GtkWindow *) MAIN_WINDOW);
+          }
+        else
+          {
+            vst_plugin_open_ui (vst_plugin);
+          }
+      }
+      break;
+    default:
+      break;
     }
 }
 

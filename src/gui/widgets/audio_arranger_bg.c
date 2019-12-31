@@ -48,8 +48,8 @@ draw_audio_clip (GtkWidget * self,
                  GdkRectangle * rect)
 {
   /*g_message ("start");*/
-  AudioRegion * ar =
-    (AudioRegion *) CLIP_EDITOR->region;
+  ZRegion * ar =
+    (ZRegion *) CLIP_EDITOR->region;
   GdkRGBA * color =
     &CLIP_EDITOR->region->lane->track->color;
   cairo_set_source_rgba (cr,

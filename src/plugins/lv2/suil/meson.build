@@ -18,7 +18,6 @@
 lv2_srcs += files ([
   'suil_host.c',
   'suil_instance.c',
-  'qt5_in_gtk3.cpp',
   'x11_in_gtk3.c',
   'win_in_gtk3.cpp',
   ])

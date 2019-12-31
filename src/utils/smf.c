@@ -45,7 +45,7 @@
 /*smf_save_regions ()*/
 /*{*/
   /*[>int ret;<]*/
-  /*[>Region * region;<]*/
+  /*[>ZRegion * region;<]*/
   /*[>io_mkdir (PROJECT->regions_dir);<]*/
 
   /*[>for (int i = 0; i < PROJECT->num_regions; i++)<]*/
@@ -112,7 +112,7 @@
       /*[>MidiEvents * events = calloc (1, sizeof (MidiEvents));<]*/
       /*[>Position abs_start_pos;<]*/
       /*[>position_init (&abs_start_pos);<]*/
-      /*[>MidiRegion * midi_region = (MidiRegion *) region;<]*/
+      /*[>ZRegion * midi_region = (ZRegion *) region;<]*/
       /*[>midi_note_notes_to_events (<]*/
         /*[>midi_region->midi_notes,<]*/
         /*[>midi_region->num_midi_notes,<]*/
@@ -172,7 +172,7 @@
  */
 /*void*/
 /*smf_load_region (const char *   file,   ///< file to load*/
-                 /*MidiRegion *   midi_region)  ///< region to save midi notes in*/
+                 /*ZRegion *   midi_region)  ///< region to save midi notes in*/
 /*{*/
   /*[>smf_t *smf;<]*/
   /*[>smf_event_t *event;<]*/

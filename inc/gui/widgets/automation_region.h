@@ -42,13 +42,13 @@ G_DECLARE_FINAL_TYPE (
   Z, AUTOMATION_REGION_WIDGET,
   RegionWidget);
 
-typedef struct Region AutomationRegion;
+typedef struct ZRegion AutomationRegion;
 
 /**
- * A widget that represents a AutomationRegion in the
+ * A widget that represents a AutomationZRegion in the
  * TimelineArrangerWidget.
  *
- * It displays the MidiNotes of the Region in
+ * It displays the MidiNotes of the ZRegion in
  * miniature size.
  */
 typedef struct _AutomationRegionWidget
@@ -61,7 +61,7 @@ typedef struct _AutomationRegionWidget
  */
 AutomationRegionWidget *
 automation_region_widget_new (
-  Region * automation_region);
+  ZRegion * automation_region);
 
 #endif
 #endif

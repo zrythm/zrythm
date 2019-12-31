@@ -51,7 +51,7 @@ automation_arranger_draw_cb (
     gtk_widget_get_allocated_height (widget);
 
   /* draw automation related stuff */
-  Region * r =
+  ZRegion * r =
     clip_editor_get_region_for_widgets (
       CLIP_EDITOR);
   g_return_val_if_fail (r && r->at, FALSE);

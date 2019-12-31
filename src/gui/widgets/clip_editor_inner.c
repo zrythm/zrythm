@@ -52,7 +52,7 @@ void
 clip_editor_inner_widget_refresh (
   ClipEditorInnerWidget * self)
 {
-  Region * r = CLIP_EDITOR->region;
+  ZRegion * r = CLIP_EDITOR->region;
   ArrangerObject * r_obj =
     (ArrangerObject *) r;
   Track * track = NULL;

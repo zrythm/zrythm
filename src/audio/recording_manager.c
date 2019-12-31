@@ -202,14 +202,14 @@ handle_audio_event (
     &end_pos, end_frames);
 
   /* get the recording region */
-  Region * region = tr->recording_region;
+  ZRegion * region = tr->recording_region;
   g_return_if_fail (region);
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
 
   /* the region before the loop point, if
    * loop point is met */
-  Region * region_before_loop_end = NULL;
+  ZRegion * region_before_loop_end = NULL;
   ArrangerObject * r_obj_before_loop_end;
 
   /* the clip */
@@ -263,7 +263,7 @@ handle_audio_event (
 
       /* start new region in new lane at
        * TRANSPORT loop start */
-      Region * new_region =
+      ZRegion * new_region =
         audio_region_new (
           -1, NULL, NULL, nframes, 2,
           &TRANSPORT->loop_start_pos,
@@ -443,14 +443,14 @@ handle_midi_event (
     &end_pos, end_frames);
 
   /* get the recording region */
-  Region * region = tr->recording_region;
+  ZRegion * region = tr->recording_region;
   g_return_if_fail (region);
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
 
   /* the region before the loop point, if
    * loop point is met */
-  Region * region_before_loop_end = NULL;
+  ZRegion * region_before_loop_end = NULL;
 
   if (loop_met)
     {
@@ -469,7 +469,7 @@ handle_midi_event (
 
       /* start new region in new lane at
        * TRANSPORT loop start */
-      Region * new_region =
+      ZRegion * new_region =
         midi_region_new (
           &TRANSPORT->loop_start_pos,
           &end_pos, 1);
@@ -596,7 +596,7 @@ handle_start_recording (
   if (track_has_piano_roll (tr))
     {
       /* create region */
-      Region * region =
+      ZRegion * region =
         midi_region_new (
           &start_pos, &end_pos, 1);
       g_return_if_fail (region);
@@ -609,7 +609,7 @@ handle_start_recording (
   else if (tr->type == TRACK_TYPE_AUDIO)
     {
       /* create region */
-      Region * region =
+      ZRegion * region =
         audio_region_new (
           -1, NULL, NULL, ev->nframes, 2,
           &start_pos, 1);

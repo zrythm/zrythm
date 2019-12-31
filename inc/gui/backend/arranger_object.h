@@ -94,11 +94,11 @@ typedef enum ArrangerObjectPositionType
  */
 typedef enum ArrangerObjectCloneFlag
 {
-  /** Create a new Region to be added to a
+  /** Create a new ZRegion to be added to a
    * Track as a main Region. */
   ARRANGER_OBJECT_CLONE_COPY_MAIN,
 
-  /** Create a new Region that will not be used
+  /** Create a new ZRegion that will not be used
    * as a main Region. */
   ARRANGER_OBJECT_CLONE_COPY,
 
@@ -297,10 +297,10 @@ arranger_object_get_arranger (
   ArrangerObject * self);
 
 /**
- * If the object is part of a Region, returns it,
+ * If the object is part of a ZRegion, returns it,
  * otherwise returns NULL.
  */
-Region *
+ZRegion *
 arranger_object_get_region (
   ArrangerObject * self);
 

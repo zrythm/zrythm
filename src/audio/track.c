@@ -80,7 +80,7 @@ track_init_loaded (Track * track)
       arranger_object_init_loaded (
         (ArrangerObject *) marker);
     }
-  Region * region;
+  ZRegion * region;
   for (i = 0; i < track->num_chord_regions; i++)
     {
       region = track->chord_regions[i];
@@ -510,7 +510,7 @@ track_get_velocities_in_range (
     return;
 
   TrackLane * lane;
-  Region * region;
+  ZRegion * region;
   MidiNote * mn;
   Position global_start_pos;
   for (int i = 0; i < track->num_lanes; i++)
@@ -690,12 +690,12 @@ track_is_selected (Track * self)
  *
  * FIXME cache.
  */
-Region *
+ZRegion *
 track_get_last_region (
   Track * track)
 {
   int i, j;
-  Region * last_region = NULL, * r;
+  ZRegion * last_region = NULL, * r;
   ArrangerObject * r_obj;
   Position tmp;
   position_init (&tmp);
@@ -775,12 +775,12 @@ track_setup (Track * track)
 }
 
 /**
- * Adds a Region to the given lane of the track.
+ * Adds a ZRegion to the given lane of the track.
  *
- * The Region must be the main region (see
+ * The ZRegion must be the main region (see
  * ArrangerObjectInfo).
  *
- * @param at The AutomationTrack of this Region, if
+ * @param at The AutomationTrack of this ZRegion, if
  *   automation region.
  * @param lane_pos The position of the lane to add
  *   to, if applicable.
@@ -791,7 +791,7 @@ track_setup (Track * track)
 void
 track_add_region (
   Track * track,
-  Region * region,
+  ZRegion * region,
   AutomationTrack * at,
   int      lane_pos,
   int      gen_name,
@@ -849,7 +849,7 @@ track_add_region (
       array_double_size_if_full (
         track->chord_regions,
         track->num_chord_regions,
-        track->chord_regions_size, Region *);
+        track->chord_regions_size, ZRegion *);
       array_append (track->chord_regions,
                     track->num_chord_regions,
                     region);
@@ -995,7 +995,7 @@ track_set_automation_visible (
 void
 track_remove_region (
   Track *  track,
-  Region * region,
+  ZRegion * region,
   int      fire_events,
   int      free)
 {
@@ -1201,7 +1201,7 @@ track_get_channel (Track * track)
 /**
  * Returns the region at the given position, or NULL.
  */
-Region *
+ZRegion *
 track_get_region_at_pos (
   const Track *    track,
   const Position * pos)
@@ -1213,7 +1213,7 @@ track_get_region_at_pos (
       track->type == TRACK_TYPE_MIDI)
     {
       TrackLane * lane;
-      Region * r;
+      ZRegion * r;
       ArrangerObject * r_obj;
       for (i = 0; i < track->num_lanes; i++)
         {
@@ -1233,7 +1233,7 @@ track_get_region_at_pos (
     }
   else if (track->type == TRACK_TYPE_CHORD)
     {
-      Region * r;
+      ZRegion * r;
       ArrangerObject * r_obj;
       for (j = 0; j < track->num_chord_regions; j++)
         {

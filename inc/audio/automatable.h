@@ -20,6 +20,8 @@
 #ifndef __AUDIO_AUTOMATABLE_H__
 #define __AUDIO_AUTOMATABLE_H__
 
+#include "config.h"
+
 #include "audio/port.h"
 #include "plugins/lv2/lv2_control.h"
 #include "utils/yaml.h"
