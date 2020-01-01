@@ -41,6 +41,11 @@
 /** Plugin's entry point. */
 typedef AEffect *(*VstPluginMain)(audioMasterCallback host);
 
+typedef struct ERect
+{
+  int16_t top, left, bottom, right;
+} ERect;
+
 typedef struct VstPlugin
 {
   /** Vst plugin handle. */

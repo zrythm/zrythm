@@ -588,34 +588,22 @@ lv2_get_port_value (
   return NULL;
 }
 
-/**
- * Function to set a port value. TODO
- *
- * Used when retrieving the state.
- * FIXME is this needed?
- */
-/*static void*/
-/*lv2_set_port_value (const char * port_sym,*/
-                    /*void       * user_data,*/
-                    /*const void * value,*/
-                    /*uint32_t   * size,*/
-                    /*uint32_t   * type)*/
-/*{*/
-
-/*}*/
-
-static Lv2Control*
-lv2_control_by_symbol (
+Lv2Control*
+lv2_plugin_get_control_by_symbol (
   Lv2Plugin * plugin,
   const char* sym)
 {
   for (int i = 0;
        i < plugin->controls.n_controls; ++i)
     {
-    if (!strcmp(lilv_node_as_string(plugin->controls.controls[i]->symbol),
-                sym)) {
-      return plugin->controls.controls[i];
-    }
+      if (!strcmp (
+            lilv_node_as_string (
+              plugin->controls.controls[i]->
+                symbol),
+            sym))
+        {
+          return plugin->controls.controls[i];
+        }
   }
   return NULL;
 }
@@ -743,37 +731,6 @@ run (
     }
 
   return send_ui_updates;
-}
-
-static bool
-apply_control_arg (
-  Lv2Plugin* plugin, const char* s)
-{
-  char  sym[256];
-  float val = 0.0f;
-  if (sscanf(s, "%[^=]=%f", sym, &val) != 2)
-    {
-      g_warning ("Ignoring invalid value `%s'", s);
-      return false;
-    }
-
-  Lv2Control* control =
-    lv2_control_by_symbol (plugin, sym);
-  if (!control)
-    {
-      g_warning (
-        "Ignoring value for unknown control `%s'",
-        sym);
-      return false;
-    }
-
-  lv2_control_set_control (
-    control, sizeof(float),
-    PM_URIDS.atom_Float, &val);
-  g_message ("%s = %f",
-             sym, (double) val);
-
-  return true;
 }
 
 /**
@@ -1455,7 +1412,8 @@ lv2_plugin_instantiate (
   g_message ("Looking for supported UI...");
   self->uis =
     lilv_plugin_get_uis (self->lilv_plugin);
-  if (!PM_LILV_NODES.opts.generic_ui)
+  if (!g_settings_get_int (
+        S_PREFERENCES, "generic-plugin-uis"))
     {
       LILV_FOREACH (uis, u, self->uis)
         {
@@ -1487,8 +1445,9 @@ lv2_plugin_instantiate (
             }
         }
     }
-  else if (!PM_LILV_NODES.opts.generic_ui &&
-           PM_LILV_NODES.opts.show_ui)
+  else if (!g_settings_get_int (
+              S_PREFERENCES,
+              "generic-plugin-uis"))
     {
       self->ui =
         lilv_uis_get (
@@ -1550,10 +1509,10 @@ lv2_plugin_instantiate (
     }
 
   /* Create port and control structures */
-  create_controls(self, true);
-  create_controls(self, false);
+  create_controls (self, true);
+  create_controls (self, false);
 
-  if (PM_LILV_NODES.opts.buffer_size == 0)
+  if (self->comm_buffer_size == 0)
     {
       /* The UI ring is fed by self->output
        * ports (usually one), and the UI
@@ -1566,23 +1525,17 @@ lv2_plugin_instantiate (
        * for me, but this value might need
        * increasing to avoid overflows.
       */
-      PM_LILV_NODES.opts.buffer_size =
+      self->comm_buffer_size =
         (uint32_t)
           (AUDIO_ENGINE->midi_buf_size *
           N_BUFFER_CYCLES);
   }
 
-  if (math_doubles_equal (
-        PM_LILV_NODES.opts.update_rate,
-        0.f, 0.001f))
+  /* if no preferred refresh rate is set,
+   * use the monitor's refresh rate */
+  if (!g_settings_get_int (
+         S_PREFERENCES, "plugin-ui-refresh-rate"))
     {
-      /* Calculate a reasonable UI update frequency. */
-      /*self->ui_update_hz =*/
-        /*(float)AUDIO_ENGINE->sample_rate / */
-        /*AUDIO_ENGINE->midi_buf_size * 2.0f;*/
-      /*self->ui_update_hz =*/
-        /*MAX(25.0f, self->ui_update_hz);*/
-
       GdkDisplay * display =
         gdk_display_get_default ();
       g_warn_if_fail (display);
@@ -1607,7 +1560,8 @@ lv2_plugin_instantiate (
       /* Use user-specified UI update rate. */
       self->ui_update_hz =
         (float)
-        PM_LILV_NODES.opts.update_rate;
+        g_settings_get_int (
+          S_PREFERENCES, "plugin-ui-refresh-rate");
     }
 
   /* clamp the refresh rate to sensible limits */
@@ -1625,10 +1579,10 @@ lv2_plugin_instantiate (
     }
 
   /* The UI can only go so fast, clamp to reasonable limits */
-  PM_LILV_NODES.opts.buffer_size =
-    MAX (4096, PM_LILV_NODES.opts.buffer_size);
+  self->comm_buffer_size =
+    MAX (4096, self->comm_buffer_size);
   g_message ("Comm buffers: %d bytes",
-             PM_LILV_NODES.opts.buffer_size);
+             self->comm_buffer_size);
   g_message ("Update rate:  %.01f Hz",
              (double) self->ui_update_hz);
 
@@ -1683,9 +1637,9 @@ lv2_plugin_instantiate (
 
   /* Create Plugin <=> UI communication buffers */
   self->ui_to_plugin_events =
-    zix_ring_new (PM_LILV_NODES.opts.buffer_size);
+    zix_ring_new (self->comm_buffer_size);
   self->plugin_to_ui_events =
-    zix_ring_new (PM_LILV_NODES.opts.buffer_size);
+    zix_ring_new (self->comm_buffer_size);
   zix_ring_mlock (self->ui_to_plugin_events);
   zix_ring_mlock (self->plugin_to_ui_events);
 
@@ -1731,13 +1685,6 @@ lv2_plugin_instantiate (
   if (self->state)
     {
       lv2_state_apply_state (self, self->state);
-    }
-
-  if (PM_LILV_NODES.opts.controls)
-    {
-      for (char** c = PM_LILV_NODES.opts.controls;
-           *c; ++c)
-        apply_control_arg (self, *c);
     }
 
   /* Connect ports to buffers */

@@ -205,22 +205,7 @@ plugin_manager_init (PluginManager * self)
         }
     }
 
-  g_message ("Initializing LV2 settings...");
-  LV2_Defaults * opts = &self->lv2_nodes.opts;
-  opts->uuid = NULL;
-  opts->buffer_size = 0;
-  opts->controls = NULL;
-  opts->update_rate = 0.0;
-  opts->dump = 1;
-  opts->trace = 1;
-  opts->generic_ui = 0;
-  opts->show_hidden = 1;
-  opts->no_menu = 0;
-  opts->show_ui = 1;
-  opts->print_controls = 1;
-  opts->non_interactive = 1;
-  /* TODO add option in preferences */
-  /*opts->update_rate = 40.f;*/
+  g_message ("Caching LV2 URIs...");
 
   /* Cache URIs */
   Lv2Nodes * nodes = &self->lv2_nodes;

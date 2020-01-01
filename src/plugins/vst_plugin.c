@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -15,6 +15,23 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Copyright (C) 2011-2019 Filipe Coelho <falktx@falktx.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * For a full copy of the GNU General Public License see the doc/GPL.txt file.
  */
 
 #include "audio/engine.h"
@@ -27,6 +44,27 @@
 
 #include <dlfcn.h>
 #include <X11/Xlib.h>
+
+static void
+get_name (
+  VstPlugin * self,
+  char *      name)
+{
+  AEffect * effect = self->aeffect;
+  effect->dispatcher (
+    effect, effGetEffectName, 0, 0, name, 0.f);
+}
+
+static void
+get_param_name (
+  VstPlugin * self,
+  int         idx,
+  char *      name)
+{
+  AEffect * effect = self->aeffect;
+  effect->dispatcher (
+    effect, effGetParamName, idx, 0, name, 0.f);
+}
 
 void
 vst_plugin_new_from_path (
@@ -72,10 +110,13 @@ vst_plugin_new_from_path (
 
   vst_plugin_start (self);
 
+  char name[400];
   for (int i = 0; i < effect->numParams; i++)
     {
-      g_message ("effect %d is %f", i, (double)
-      effect->getParameter (effect, i));
+      get_param_name (self, i, name);
+      g_message (
+        "effect %s (%d) is %f", name, i,
+        (double) effect->getParameter (effect, i));
     }
 }
 
@@ -232,8 +273,20 @@ on_realize (
         effect, effEditOpen, 0, 0,
         (void *) xid, 0.f) != 0 || true)
     {
-
       XMapRaised (display, xid);
+
+      /* set size */
+      ERect * rect = NULL;
+      effect->dispatcher (
+        effect, effEditGetRect, 0, 0, &rect, 0.f);
+      if (rect)
+        {
+          int width = rect->right - rect->left;
+          int height = rect->bottom - rect->top;
+          gtk_window_set_default_size (
+            GTK_WINDOW (self->window),
+            width, height);
+        }
     }
   else
     {
@@ -291,7 +344,11 @@ vst_plugin_open_ui (
     window, "realize",
     G_CALLBACK (on_realize), self);
 
-  /*set_window_title (self);*/
+  /* set window title */
+  char name[600];
+  get_name (self, name);
+  gtk_window_set_title (
+    GTK_WINDOW (window), name);
 
   GtkWidget* vbox =
     gtk_box_new (

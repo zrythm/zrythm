@@ -117,48 +117,51 @@ typedef struct Lv2Plugin
 
   LV2_Options_Option options[6];
 
+  /** Plugin <=> UI communication buffer size. */
+  uint32_t           comm_buffer_size;
+
   /** Atom forge. */
-	LV2_Atom_Forge     forge;
+  LV2_Atom_Forge     forge;
   /** Atom serializer */
-	Sratom*            sratom;
+  Sratom*            sratom;
   /** Atom serializer for UI thread. */
-	Sratom*            ui_sratom;
+  Sratom*            ui_sratom;
   /** Port events from UI to plugin. */
-	ZixRing*           ui_to_plugin_events;
+  ZixRing*           ui_to_plugin_events;
   /** Port events from plugin to UI. */
-	ZixRing*           plugin_to_ui_events;
+  ZixRing*           plugin_to_ui_events;
   /** Buffer for readding UI port events. */
-	void*              ui_event_buf;
+  void*              ui_event_buf;
   /** Worker thread implementation. */
-	LV2_Worker  worker;
+  LV2_Worker  worker;
   /** Synchronous worker for state restore. */
-	LV2_Worker  state_worker;
+  LV2_Worker  state_worker;
   /** Lock for plugin work() method. */
-	ZixSem             work_lock;
+  ZixSem             work_lock;
   /** Exit semaphore. */
   ZixSem*            done;
   /** Temporary plugin state directory. */
-	char*              temp_dir;
+  char*              temp_dir;
   /** Plugin save directory. */
-	char*              save_dir;
+  char*              save_dir;
   /** Plugin class (RDF data). */
-	const LilvPlugin*  lilv_plugin;
+  const LilvPlugin*  lilv_plugin;
   /** Temporary storage. */
   LilvState *        state;
   /** Current preset. */
-	LilvState*         preset;
+  LilvState*         preset;
   /** All plugin UIs (RDF data). */
-	LilvUIs*           uis;
+  LilvUIs*           uis;
   /** Plugin UI (RDF data). */
-	const LilvUI*      ui;
+  const LilvUI*      ui;
   /** Plugin UI type (unwrapped). */
-	const LilvNode*    ui_type;
+  const LilvNode*    ui_type;
   /** Plugin instance (shared library). */
-	LilvInstance*      instance;
+  LilvInstance*      instance;
   /** Plugin UI host support. */
-	SuilHost*          ui_host;
+  SuilHost*          ui_host;
   /** Plugin UI instance (shared library). */
-	SuilInstance*      ui_instance;
+  SuilInstance*      ui_instance;
 
   /**
    * Window (if applicable) (GtkWindow).
@@ -166,52 +169,52 @@ typedef struct Lv2Plugin
    * This is used by both generic UIs and X11/etc
    * UIs.
    */
-	void*              window;
+  void*              window;
 
   /** ID of the delete-event signal so that we can
    * deactivate before freeing the plugin. */
   gulong             delete_event_id;
 
   /** Port array of size num_ports. */
-	Lv2Port*          ports;
-	int                num_ports;
+  Lv2Port*          ports;
+  int                num_ports;
 
   /** Available Lv2Plugin controls. */
-	Lv2Controls        controls;
+  Lv2Controls        controls;
 
   /** Latency reported by the Lv2Plugin, if any. */
-	uint32_t           plugin_latency;
+  uint32_t           plugin_latency;
 
   /** Update frequencey of the UI, in Hz (times
    * per second). */
-	float              ui_update_hz;
+  float              ui_update_hz;
 
   /** Frames since last update sent to UI. */
-	uint32_t           event_delta_t;
-	uint32_t           midi_event_id;  ///< MIDI event class ID in event context
-	bool               exit;           ///< True iff execution is finished
+  uint32_t           event_delta_t;
+  uint32_t           midi_event_id;  ///< MIDI event class ID in event context
+  bool               exit;           ///< True iff execution is finished
 
   /** Whether the plugin has its own UI. */
-	bool               has_custom_ui;
+  bool               has_custom_ui;
 
   /** Whether a plugin update is needed. */
-	bool               request_update;
-	bool               safe_restore;   ///< Plugin restore() is thread-safe
-	int                control_in;     ///< Index of control input port
+  bool               request_update;
+  bool               safe_restore;   ///< Plugin restore() is thread-safe
+  int                control_in;     ///< Index of control input port
   ZixSem exit_sem;  /**< Exit semaphore */
-	bool               externalui;     ///< True iff plugin has an external-ui
+  bool               externalui;     ///< True iff plugin has an external-ui
   LV2_External_UI_Widget* extuiptr;  ///< data structure used for external-ui
   GtkCheckMenuItem* active_preset_item;
   bool              updating;
 
   /** URI => Int map. */
-	LV2_URID_Map       map;
+  LV2_URID_Map       map;
 
   /** Int => URI map. */
-	LV2_URID_Unmap     unmap;
+  LV2_URID_Unmap     unmap;
 
   /** Environment for RDF printing. */
-	SerdEnv*           env;
+  SerdEnv*           env;
 
   /** Transport was rolling or not last cycle. */
   int                rolling;
@@ -249,13 +252,13 @@ static const cyaml_schema_field_t
     Lv2Plugin, state_file,
     0, CYAML_UNLIMITED),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
   lv2_plugin_schema =
 {
-	CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
+  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
   Lv2Plugin, lv2_plugin_fields_schema),
 };
 
@@ -346,6 +349,11 @@ int
 lv2_plugin_save_state_to_file (
   Lv2Plugin * lv2_plugin,
   const char * dir);
+
+Lv2Control*
+lv2_plugin_get_control_by_symbol (
+  Lv2Plugin * plugin,
+  const char* sym);
 
 /**
  * Saves the current state to a string (returned).

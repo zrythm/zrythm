@@ -37,109 +37,84 @@
 #define PM_SYMAP (PLUGIN_MANAGER->symap)
 #define PM_SYMAP_LOCK (PLUGIN_MANAGER->symap_lock)
 
-/**
- * LV2 default settings.
- */
-typedef struct
-{
-	char*    name;              ///< Client name
-	int      name_exact;        ///< Exit if name is taken
-	char*    uuid;              ///< Session UUID
-	char**   controls;          ///< Control values
-	uint32_t buffer_size;       ///< Plugin <= >UI communication buffer size
-
-  /** UI update rate in Hz. */
-	float    update_rate;
-	int      dump;              ///< Dump communication iff true
-	int      trace;             ///< Print trace log iff true
-	int      generic_ui;        ///< Use generic UI iff true
-	int      show_hidden;       ///< Show controls for notOnGUI ports
-	int      no_menu;           ///< Hide menu iff true
-	int      show_ui;           ///< Show non-embedded UI
-	int      print_controls;    ///< Print control changes to stdout
-	int      non_interactive;   ///< Do not listen for commands on stdin
-} LV2_Defaults;
-
 typedef struct Lv2Nodes
 {
   LilvWorld *         lilv_world;
   const LilvPlugins * lilv_plugins;
-  /** General opts. */
-  LV2_Defaults        opts;
-	LilvNode *          atom_AtomPort;
-	LilvNode *          atom_bufferType;
-	LilvNode *          atom_Chunk;
-	LilvNode *          atom_eventTransfer;
-	LilvNode *          atom_Float;
-	LilvNode *          atom_Path;
-	LilvNode *          atom_Sequence;
-	LilvNode *          atom_supports;
-	LilvNode *          bufz_coarseBlockLength;
-	LilvNode *          bufz_fixedBlockLength;
-	LilvNode *          bufz_powerOf2BlockLength;
-	LilvNode *          bufz_nominalBlockLength;
-	LilvNode *          core_AudioPort;
-	LilvNode *          core_connectionOptional;
-	LilvNode *          core_control;
-	LilvNode *          core_ControlPort;
-	LilvNode *          core_CVPort;
-	LilvNode *          core_default;
-	LilvNode *          core_designation;
-	LilvNode *          core_enumeration;
-	LilvNode *          core_freeWheeling;
-	LilvNode *          core_index;
-	LilvNode *          core_inPlaceBroken;
-	LilvNode *          core_InputPort;
-	LilvNode *          core_integer;
-	LilvNode *          core_isSideChain;
-	LilvNode *          core_minimum;
-	LilvNode *          core_maximum;
-	LilvNode *          core_name;
-	LilvNode *          core_OutputPort;
-	LilvNode *          core_reportsLatency;
-	LilvNode *          core_sampleRate;
-	LilvNode *          core_symbol;
-	LilvNode *          core_toggled;
-	LilvNode *          ev_EventPort;
-	LilvNode *          patch_Message;
-	LilvNode *          patch_readable;
-	LilvNode *          patch_writable;
-	LilvNode *          midi_MidiEvent;
-	LilvNode *          pg_element;
-	LilvNode *          pg_group;
-	LilvNode *          pprops_causesArtifacts;
-	LilvNode *          pprops_expensive;
-	LilvNode *          pprops_logarithmic;
-	LilvNode *          pprops_notAutomatic;
-	LilvNode *          pprops_notOnGUI;
-	LilvNode *          pprops_rangeSteps;
-	LilvNode *          pset_bank;
-	LilvNode *          pset_Preset;
-	LilvNode *          rdfs_comment;
-	LilvNode *          rdfs_label;
-	LilvNode *          rdfs_range;
-	LilvNode *          rsz_minimumSize;
+  LilvNode *          atom_AtomPort;
+  LilvNode *          atom_bufferType;
+  LilvNode *          atom_Chunk;
+  LilvNode *          atom_eventTransfer;
+  LilvNode *          atom_Float;
+  LilvNode *          atom_Path;
+  LilvNode *          atom_Sequence;
+  LilvNode *          atom_supports;
+  LilvNode *          bufz_coarseBlockLength;
+  LilvNode *          bufz_fixedBlockLength;
+  LilvNode *          bufz_powerOf2BlockLength;
+  LilvNode *          bufz_nominalBlockLength;
+  LilvNode *          core_AudioPort;
+  LilvNode *          core_connectionOptional;
+  LilvNode *          core_control;
+  LilvNode *          core_ControlPort;
+  LilvNode *          core_CVPort;
+  LilvNode *          core_default;
+  LilvNode *          core_designation;
+  LilvNode *          core_enumeration;
+  LilvNode *          core_freeWheeling;
+  LilvNode *          core_index;
+  LilvNode *          core_inPlaceBroken;
+  LilvNode *          core_InputPort;
+  LilvNode *          core_integer;
+  LilvNode *          core_isSideChain;
+  LilvNode *          core_minimum;
+  LilvNode *          core_maximum;
+  LilvNode *          core_name;
+  LilvNode *          core_OutputPort;
+  LilvNode *          core_reportsLatency;
+  LilvNode *          core_sampleRate;
+  LilvNode *          core_symbol;
+  LilvNode *          core_toggled;
+  LilvNode *          ev_EventPort;
+  LilvNode *          patch_Message;
+  LilvNode *          patch_readable;
+  LilvNode *          patch_writable;
+  LilvNode *          midi_MidiEvent;
+  LilvNode *          pg_element;
+  LilvNode *          pg_group;
+  LilvNode *          pprops_causesArtifacts;
+  LilvNode *          pprops_expensive;
+  LilvNode *          pprops_logarithmic;
+  LilvNode *          pprops_notAutomatic;
+  LilvNode *          pprops_notOnGUI;
+  LilvNode *          pprops_rangeSteps;
+  LilvNode *          pset_bank;
+  LilvNode *          pset_Preset;
+  LilvNode *          rdfs_comment;
+  LilvNode *          rdfs_label;
+  LilvNode *          rdfs_range;
+  LilvNode *          rsz_minimumSize;
   LilvNode *          state_threadSafeRestore;
-	LilvNode *          time_position;
-	LilvNode *          ui_external;
-	LilvNode *          ui_externalkx;
-	LilvNode *          ui_Gtk3UI;
-	LilvNode *          ui_GtkUI;
-	LilvNode *          units_db;
-	LilvNode *          units_hz;
-	LilvNode *          units_midiNote;
-	LilvNode *          units_render;
-	LilvNode *          units_unit;
-	LilvNode *          work_interface;
-	LilvNode *          work_schedule;
+  LilvNode *          time_position;
+  LilvNode *          ui_external;
+  LilvNode *          ui_externalkx;
+  LilvNode *          ui_Gtk3UI;
+  LilvNode *          ui_GtkUI;
+  LilvNode *          units_db;
+  LilvNode *          units_hz;
+  LilvNode *          units_midiNote;
+  LilvNode *          units_render;
+  LilvNode *          units_unit;
+  LilvNode *          work_interface;
+  LilvNode *          work_schedule;
 #ifdef LV2_EXTENDED
-	LilvNode *          auto_can_write_automatation;
-	LilvNode *          auto_automation_control;
-	LilvNode *          auto_automation_controlled;
-	LilvNode *          auto_automation_controller;
-	LilvNode *          inline_display_in_gui;
+  LilvNode *          auto_can_write_automatation;
+  LilvNode *          auto_automation_control;
+  LilvNode *          auto_automation_controlled;
+  LilvNode *          auto_automation_controller;
+  LilvNode *          inline_display_in_gui;
 #endif
-	LilvNode* end;  ///< NULL terminator for easy freeing of entire structure
+  LilvNode* end;  ///< NULL terminator for easy freeing of entire structure
 } Lv2Nodes;
 
 typedef struct PluginDescriptor PluginDescriptor;
@@ -158,9 +133,9 @@ typedef struct PluginManager
   Lv2Nodes               lv2_nodes;
 
   /** URI map for URID feature. */
-	Symap*                 symap;
+  Symap*                 symap;
   /** Lock for URI map. */
-	ZixSem                 symap_lock;
+  ZixSem                 symap_lock;
 
   /** URIDs. */
   Lv2URIDs               urids;

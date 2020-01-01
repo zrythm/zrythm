@@ -228,7 +228,29 @@
       </description>
     </key>
 
-        <!-- KEY: sfz-search-path -->
+    <!-- KEY: generic-plugin-uis -->
+    <key name="generic-plugin-uis" type="i">
+      <default>0</default>
+      <summary>Force generic plugin UIs</summary>
+      <description>
+        Whether to force generic plugin UIs or not.
+        If this is set to 1, custom plugin UIs will
+        be ignored.
+      </description>
+    </key>
+
+    <!-- KEY: plugin-ui-refresh-rate -->
+    <key name="plugin-ui-refresh-rate" type="i">
+      <default>0</default>
+      <summary>Plugin UI refresh rate</summary>
+      <description>
+        The refresh rate to use for the UI, in Hz.
+        If set to 0, the screen's refresh rate will
+        be used.
+      </description>
+    </key>
+
+    <!-- KEY: sfz-search-path -->
     <key name="sfz-search-paths" type="as">
       <default>[]</default>
       <summary>Search paths for SFZ instruments</summary>
