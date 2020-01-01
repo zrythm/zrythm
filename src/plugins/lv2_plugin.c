@@ -1575,7 +1575,8 @@ lv2_plugin_instantiate (
       { LV2_OPTIONS_INSTANCE, 0, 0, 0, 0, NULL }
     };
   memcpy (
-    self->options, options, sizeof (self->options));
+    self->options, options,
+    sizeof (self->options));
 
   init_feature (
     &self->options_feature,

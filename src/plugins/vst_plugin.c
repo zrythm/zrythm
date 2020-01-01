@@ -152,6 +152,7 @@ vst_plugin_new_from_descriptor (
   AEffect * effect =
     entry_point (host_callback);
   self->aeffect = effect;
+  effect->user = self;
 
   /* check plugin's magic number */
   if (effect->magic != kEffectMagic)

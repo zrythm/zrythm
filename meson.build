@@ -507,6 +507,7 @@ subdir ('data')
 subdir ('doc')
 subdir ('scripts')
 
+if meson.version() >= '0.53'
 summary({
   'Build type': get_option('buildtype'),
   'Profiling': get_option('enable_profiling'),
@@ -534,3 +535,4 @@ summary({
   'libdir': libdir,
   'datadir': datadir,
   }, section: 'Directories')
+endif
