@@ -765,7 +765,8 @@ plugin_process (
         plugin->lv2, g_start_frames, nframes);
       break;
     case PROT_VST:
-      g_warn_if_reached ();
+      vst_plugin_process (
+        plugin->vst, g_start_frames, nframes);
       break;
     default:
       break;

@@ -163,15 +163,6 @@ vst_plugin_new_from_descriptor (
 
   plugin->vst = self;
   self->plugin = plugin;
-
-  char name[400];
-  for (int i = 0; i < effect->numParams; i++)
-    {
-      get_param_name (self, i, name);
-      g_message (
-        "effect %s (%d) is %f", name, i,
-        (double) effect->getParameter (effect, i));
-    }
 }
 
 PluginDescriptor *
@@ -341,16 +332,58 @@ vst_plugin_instantiate (
   effect->dispatcher (
     effect, effMainsChanged, 0, 1, NULL, 0.0f);
 
-  /* connect audio inputs/outputs */
+  /* create and connect ports */
+  char lbl[400];
   for (int i = 0; i < effect->numInputs; i++)
     {
+      sprintf (lbl, "Audio Input %d", i);
+      Port * port =
+        port_new_with_type (
+          TYPE_AUDIO, FLOW_INPUT, lbl);
+      plugin_add_in_port (
+        self->plugin, port);
       effect->dispatcher (
         effect, effConnectInput, i, 1, NULL, 0.f);
     }
   for (int i = 0; i < effect->numOutputs; i++)
     {
+      sprintf (lbl, "Audio Output %d", i);
+      Port * port =
+        port_new_with_type (
+          TYPE_AUDIO, FLOW_OUTPUT, lbl);
+      plugin_add_out_port (
+        self->plugin, port);
       effect->dispatcher (
         effect, effConnectOutput, i, 1, NULL, 0.f);
+    }
+  for (int i = 0; i < effect->numParams; i++)
+    {
+      get_param_name (self, i, lbl);
+      Port * port =
+        port_new_with_type (
+          TYPE_CONTROL, FLOW_INPUT, lbl);
+      plugin_add_in_port (
+        self->plugin, port);
+      port->control =
+        effect->getParameter (effect, i);
+    }
+  if (self->plugin->descr->num_midi_ins > 0)
+    {
+      strcpy (lbl, "MIDI Input");
+      Port * port =
+        port_new_with_type (
+          TYPE_EVENT, FLOW_INPUT, lbl);
+      plugin_add_in_port (
+        self->plugin, port);
+    }
+  if (self->plugin->descr->num_midi_outs > 0)
+    {
+      strcpy (lbl, "MIDI Output");
+      Port * port =
+        port_new_with_type (
+          TYPE_EVENT, FLOW_OUTPUT, lbl);
+      plugin_add_out_port (
+        self->plugin, port);
     }
 
   g_message ("start process");
@@ -369,6 +402,38 @@ vst_plugin_suspend (
     effect, effMainsChanged, 0, 0, NULL, 0.0f);
 }
 
+/**
+ * Called on each GUI frame to update the GTK UI.
+ *
+ * @note This is a GSourceFunc.
+ */
+static int
+update_plugin_ui (
+  VstPlugin * self)
+{
+  if (self->window)
+    {
+      AEffect * effect = self->aeffect;
+      effect->dispatcher (
+        effect, effEditIdle, 0, 0, 0, 0);
+      return G_SOURCE_CONTINUE;
+    }
+  return G_SOURCE_REMOVE;
+}
+
+/**
+ * Called both on generic UIs and normal UIs when
+ * a plugin window is destroyed.
+ */
+static void
+on_window_destroy(
+  GtkWidget*  widget,
+  VstPlugin * self)
+{
+  self->window = NULL;
+  g_message ("destroying plugin window");
+}
+
 static void
 on_realize (
   GtkWidget * widget,
@@ -378,13 +443,21 @@ on_realize (
    * necessary */
   Window xid = 0;
   Display * display =
+    XOpenDisplay (NULL);
+  /* note: this worked for embedding */
+#if 0
     gdk_x11_display_get_xdisplay (
       gtk_widget_get_display (
         widget));
+#endif
   self->has_ui = 1;
   if (self->has_ui)
     {
       g_message ("Instantiating UI...");
+
+      /* note: works but probably not the right
+       * way */
+#if 0
       XSetWindowAttributes attr;
       attr.border_pixel = 0;
       attr.event_mask =
@@ -394,6 +467,9 @@ on_realize (
           /* display */
           display,
           /* parent */
+#if 0
+          DefaultRootWindow (display),
+#endif
           gdk_x11_window_get_xid (
             gtk_widget_get_window (
               GTK_WIDGET (widget))),
@@ -402,20 +478,45 @@ on_realize (
           CopyFromParent, InputOutput,
           CopyFromParent,
           CWBorderPixel | CWEventMask, &attr);
+#endif
 
-      /*xid =*/
-        /*gdk_x11_window_get_xid (*/
-          /*gtk_widget_get_window (*/
-            /*GTK_WIDGET (window)));*/
+      /* note doesn't work */
+#if 0
+      GdkWindowAttr attr = {
+        .width = 600,
+        .height = 600,
+        .wclass = GDK_INPUT_OUTPUT,
+        .visual = gdk_screen_get_system_visual (screen),
+        .window_type = GDK_WINDOW_CHILD,
+        .cursor = gdk_cursor_new_for_display (
+          display,
+          GDK_ARROW),
+      };
+
+      GdkWindow * gdk_window =
+        gdk_window_new (
+          gtk_widget_get_window (
+            GTK_WIDGET (window)),
+#endif
+
+      /* note: works */
+      xid =
+        gdk_x11_window_get_xid (
+          gtk_widget_get_window (
+            GTK_WIDGET (widget)));
     }
 
   AEffect * effect = self->aeffect;
   if (effect->dispatcher (
         effect, effEditOpen, 0, 0,
-        (void *) xid, 0.f) != 0 || true)
+        (void *) xid, 0.f) != 0)
     {
+      effect->dispatcher (
+        effect, effEditIdle, 0, 0, 0, 0);
       XMapRaised (display, xid);
       XFlush (display);
+      effect->dispatcher (
+        effect, effEditIdle, 0, 0, 0, 0);
 
       /* set size */
       ERect * rect = NULL;
@@ -444,11 +545,9 @@ on_realize (
     /*"Update frequency (Hz): %.01f",*/
     /*(double) self->ui_update_hz);*/
 
-#if 0
   g_timeout_add (
     (int) (1000.f / 60.f),
-    (GSourceFunc) update_plugin_ui, plugin);
-#endif
+    (GSourceFunc) update_plugin_ui, self);
 }
 
 /**
@@ -486,6 +585,9 @@ vst_plugin_open_ui (
   g_signal_connect (
     window, "realize",
     G_CALLBACK (on_realize), self);
+  g_signal_connect (
+    window, "destroy",
+    G_CALLBACK (on_window_destroy), self);
 
   /* set window title */
   char name[600];

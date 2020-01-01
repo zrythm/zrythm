@@ -507,7 +507,7 @@ subdir ('data')
 subdir ('doc')
 subdir ('scripts')
 
-if meson.version() >= '0.53'
+if meson.version().version_compare('>=0.53')
 summary({
   'Build type': get_option('buildtype'),
   'Profiling': get_option('enable_profiling'),

@@ -236,6 +236,10 @@ typedef struct Plugin
 
   /** Plugin is in deletion. */
   int                  deleting;
+
+  /** The Plugin's window TODO move here from
+   * Lv2Plugin and VstPlugin. */
+  GtkWindow *          window;
 } Plugin;
 
 static const cyaml_strval_t

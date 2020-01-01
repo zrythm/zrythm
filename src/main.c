@@ -241,8 +241,8 @@ main (int    argc,
 
 #ifdef HAVE_X11
   /* init xlib threads */
-  /*g_message ("Initing X threads...");*/
-  /*XInitThreads ();*/
+  g_message ("Initing X threads...");
+  XInitThreads ();
 #endif
 
   /* init suil */
