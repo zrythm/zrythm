@@ -1873,10 +1873,6 @@ on_right_click (
   gdouble               y,
   ArrangerWidget *      self)
 {
-  Plugin plugin;
-  vst_plugin_new_from_path (
-    &plugin, "/gnu/store/6rfrh2jd45yismk4cf9magspdcksqwzb-zynaddsubfx-3.0.5/lib/vst/ZynAddSubFX.so");
-
   if (n_press != 1)
     return;
 

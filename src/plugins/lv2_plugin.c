@@ -96,12 +96,6 @@
 */
 #define N_BUFFER_CYCLES 16
 
-/**
- * Plugin UI refresh rate limits.
- */
-#define MIN_REFRESH_RATE 30.f
-#define MAX_REFRESH_RATE 60.f
-
 static const bool show_hidden = 1;
 
 /**
@@ -627,7 +621,7 @@ create_controls (
       lilv_plugin_get_uri (plugin),
       writable ? patch_writable : patch_readable,
       NULL);
-  LILV_FOREACH(nodes, p, properties)
+  LILV_FOREACH (nodes, p, properties)
     {
       const LilvNode* property =
         lilv_nodes_get (properties, p);
@@ -721,7 +715,7 @@ run (
   uint32_t update_frames =
     (uint32_t)
     ((float) AUDIO_ENGINE->sample_rate /
-     plugin->ui_update_hz);
+     plugin->plugin->ui_update_hz);
   if (plugin->has_custom_ui &&
       plugin->window &&
       (plugin->event_delta_t > update_frames))
@@ -1531,60 +1525,13 @@ lv2_plugin_instantiate (
           N_BUFFER_CYCLES);
   }
 
-  /* if no preferred refresh rate is set,
-   * use the monitor's refresh rate */
-  if (!g_settings_get_int (
-         S_PREFERENCES, "plugin-ui-refresh-rate"))
-    {
-      GdkDisplay * display =
-        gdk_display_get_default ();
-      g_warn_if_fail (display);
-      GdkMonitor * monitor =
-        gdk_display_get_primary_monitor (display);
-      g_warn_if_fail (monitor);
-      self->ui_update_hz =
-        (float)
-        /* divide by 1000 because gdk returns the
-         * value in milli-Hz */
-          gdk_monitor_get_refresh_rate (monitor) /
-        1000.f;
-      g_warn_if_fail (
-        !math_floats_equal (
-          self->ui_update_hz, 0.f, 0.001f));
-      g_message (
-        "refresh rate returned by GDK: %.01f",
-        (double) self->ui_update_hz);
-    }
-  else
-    {
-      /* Use user-specified UI update rate. */
-      self->ui_update_hz =
-        (float)
-        g_settings_get_int (
-          S_PREFERENCES, "plugin-ui-refresh-rate");
-    }
-
-  /* clamp the refresh rate to sensible limits */
-  if (self->ui_update_hz < MIN_REFRESH_RATE ||
-      self->ui_update_hz > MAX_REFRESH_RATE)
-    {
-      g_warning (
-        "Invalid refresh rate of %.01f received, "
-        "clamping to reasonable bounds",
-        (double) self->ui_update_hz);
-      self->ui_update_hz =
-        CLAMP (
-          self->ui_update_hz, MIN_REFRESH_RATE,
-          MAX_REFRESH_RATE);
-    }
-
   /* The UI can only go so fast, clamp to reasonable limits */
   self->comm_buffer_size =
     MAX (4096, self->comm_buffer_size);
   g_message ("Comm buffers: %d bytes",
              self->comm_buffer_size);
   g_message ("Update rate:  %.01f Hz",
-             (double) self->ui_update_hz);
+             (double) self->plugin->ui_update_hz);
 
   static float samplerate = 0.f;
   static int blocklength = 0;
@@ -1624,7 +1571,7 @@ lv2_plugin_instantiate (
         PM_URIDS.ui_updateRate,
         sizeof(float),
         PM_URIDS.atom_Float,
-        &self->ui_update_hz },
+        &self->plugin->ui_update_hz },
       { LV2_OPTIONS_INSTANCE, 0, 0, 0, 0, NULL }
     };
   memcpy (

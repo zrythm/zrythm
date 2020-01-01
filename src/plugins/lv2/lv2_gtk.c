@@ -1777,10 +1777,10 @@ lv2_gtk_open_ui (
   g_message (
     "plugin window shown, adding idle timeout. "
     "Update frequency (Hz): %.01f",
-    (double) plugin->ui_update_hz);
+    (double) plugin->plugin->ui_update_hz);
 
   g_timeout_add (
-    (int) (1000.f / plugin->ui_update_hz),
+    (int) (1000.f / plugin->plugin->ui_update_hz),
     (GSourceFunc) update_plugin_ui, plugin);
 
   return 0;

@@ -86,17 +86,52 @@ get_param_name (
     effect, effGetParamName, idx, 0, name, 0.f);
 }
 
-void
-vst_plugin_new_from_path (
-  Plugin *     plugin,
-  const char * path)
+/**
+ * Host callback implementation.
+ */
+static intptr_t
+host_callback (
+  AEffect * effect,
+  int32_t   opcode,
+  int32_t   index,
+  intptr_t  value,
+  void *    ptr,
+  float     opt)
 {
-  void * handle = dlopen (path, RTLD_NOW);
+  g_message ("host callback");
+
+  switch (opcode)
+    {
+    case audioMasterVersion:
+      return kVstVersion;
+    case audioMasterIdle:
+      g_message ("idle");
+      effect->dispatcher (
+        effect, effEditIdle, 0, 0, 0, 0);
+      break;
+    // Handle other opcodes here... there will be lots of them
+    default:
+      g_message ("Plugin requested value of opcode %d", opcode);
+      break;
+  }
+  return 0;
+}
+
+void
+vst_plugin_new_from_descriptor (
+  Plugin *           plugin,
+  const PluginDescriptor * descr)
+{
+  g_return_if_fail (
+    plugin && descr &&
+    descr->protocol == PROT_VST && descr->path);
+
+  void * handle = dlopen (descr->path, RTLD_NOW);
   if (!handle)
     {
       g_warning (
         "Failed to load VST plugin from %s: %s",
-        path, dlerror ());
+        descr->path, dlerror ());
       return;
     }
 
@@ -109,13 +144,13 @@ vst_plugin_new_from_path (
     {
       g_warning (
         "Failed to get entry point from VST plugin from %s: %s",
-        path, dlerror ());
+        descr->path, dlerror ());
       return;
     }
 
   VstPlugin * self = calloc (1, sizeof (VstPlugin));
   AEffect * effect =
-    entry_point (vst_plugin_host_callback);
+    entry_point (host_callback);
   self->aeffect = effect;
 
   /* check plugin's magic number */
@@ -127,8 +162,6 @@ vst_plugin_new_from_path (
 
   plugin->vst = self;
   self->plugin = plugin;
-
-  vst_plugin_start (self);
 
   char name[400];
   for (int i = 0; i < effect->numParams; i++)
@@ -174,7 +207,7 @@ vst_plugin_create_descriptor_from_path (
 
   VstPlugin * self = calloc (1, sizeof (VstPlugin));
   AEffect * effect =
-    entry_point (vst_plugin_host_callback);
+    entry_point (host_callback);
   self->aeffect = effect;
 
   /* check plugin's magic number */
@@ -225,6 +258,9 @@ vst_plugin_create_descriptor_from_path (
       descr->category = PC_GENERATOR;
       descr->category_str = g_strdup ("Generator");
       break;
+    case kPlugCategShell:
+      g_warn_if_reached ();
+      break;
     default:
       descr->category = PC_NONE;
       descr->category_str = g_strdup ("Plugin");
@@ -240,38 +276,6 @@ vst_plugin_create_descriptor_from_path (
     }
 
   return descr;
-}
-
-/**
- * Host callback implementation.
- */
-intptr_t
-vst_plugin_host_callback (
-  AEffect * effect,
-  int32_t   opcode,
-  int32_t   index,
-  intptr_t  value,
-  void *    ptr,
-  float     opt)
-{
-  g_message ("host callback");
-
-  switch (opcode)
-    {
-    case audioMasterVersion:
-      g_message ("master version");
-      return 2400;
-    case audioMasterIdle:
-      g_message ("idle");
-      effect->dispatcher (
-        effect, effEditIdle, 0, 0, 0, 0);
-      break;
-    // Handle other opcodes here... there will be lots of them
-    default:
-      g_message ("Plugin requested value of opcode %d", opcode);
-      break;
-  }
-  return 0;
 }
 
 void
@@ -304,42 +308,55 @@ vst_plugin_process (
     self->aeffect, inputs, outputs, (int) nframes);
 }
 
-void
-vst_plugin_start (
+int
+vst_plugin_instantiate (
   VstPlugin * self)
 {
   AEffect * effect = self->aeffect;
 
-  g_message ("effOpen");
   effect->dispatcher (
-    effect, effOpen, 0, 0, NULL, 0.0f);
+    effect, effIdentify, 0, 0, NULL, 0.0f);
+  effect->dispatcher (
+    effect, effSetProcessPrecision, 0,
+    kVstProcessPrecision32, NULL, 0.0f);
 
-  g_message ("setting VST sample rate and block size");
+  g_message (
+    "setting VST sample rate and block size");
   float sampleRate = AUDIO_ENGINE->sample_rate;
   effect->dispatcher (
-    effect, effSetSampleRate, 0, 0, NULL, sampleRate);
+    effect, effSetSampleRate, 0, 0, NULL,
+    sampleRate);
   int blocksize = (int) AUDIO_ENGINE->block_length;
   effect->dispatcher (
-    effect, effSetBlockSize, 0, blocksize, NULL, 0.0f);
+    effect, effSetBlockSize, 0, blocksize, NULL,
+    0.0f);
 
-  g_message ("resume");
-  vst_plugin_resume (self);
+  g_return_val_if_fail (
+    effect->uniqueID > 0, -1);
+
+  g_message ("opening VST plugin");
+  effect->dispatcher (
+    effect, effOpen, 0, 0, NULL, 0.0f);
+  effect->dispatcher (
+    effect, effMainsChanged, 0, 1, NULL, 0.0f);
+
+  /* connect audio inputs/outputs */
+  for (int i = 0; i < effect->numInputs; i++)
+    {
+      effect->dispatcher (
+        effect, effConnectInput, i, 1, NULL, 0.f);
+    }
+  for (int i = 0; i < effect->numOutputs; i++)
+    {
+      effect->dispatcher (
+        effect, effConnectOutput, i, 1, NULL, 0.f);
+    }
 
   g_message ("start process");
   effect->dispatcher (
     self->aeffect, effStartProcess, 0, 0, NULL, 0.f);
 
-  g_message ("open ui");
-  vst_plugin_open_ui (self);
-}
-
-void
-vst_plugin_resume (
-  VstPlugin * self)
-{
-  AEffect * effect = self->aeffect;
-  effect->dispatcher (
-    effect, effMainsChanged, 0, 1, NULL, 0.0f);
+  return 0;
 }
 
 void
@@ -369,7 +386,8 @@ on_realize (
       g_message ("Instantiating UI...");
       XSetWindowAttributes attr;
       attr.border_pixel = 0;
-      attr.event_mask   = KeyPressMask|KeyReleaseMask;
+      attr.event_mask =
+        KeyPressMask | KeyReleaseMask;
       xid =
         XCreateWindow (
           /* display */
@@ -396,6 +414,7 @@ on_realize (
         (void *) xid, 0.f) != 0 || true)
     {
       XMapRaised (display, xid);
+      XFlush (display);
 
       /* set size */
       ERect * rect = NULL;
@@ -414,6 +433,7 @@ on_realize (
     {
       g_message ("No UI found, building native..");
       /* TODO */
+      return;
     }
 
   self->plugin->ui_instantiated = 1;

@@ -47,8 +47,15 @@
 #include "utils/arrays.h"
 #include "utils/io.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 
 #include <gtk/gtk.h>
+
+/**
+ * Plugin UI refresh rate limits.
+ */
+#define MIN_REFRESH_RATE 30.f
+#define MAX_REFRESH_RATE 60.f
 
 static void
 get_automation_tracks (
@@ -142,8 +149,8 @@ plugin_new_from_descr (
         plugin, descr->uri);
       break;
     case PROT_VST:
-      vst_plugin_new_from_path (
-        plugin, descr->path);
+      vst_plugin_new_from_descriptor (
+        plugin, descr);
       break;
     default:
       break;
@@ -384,6 +391,61 @@ plugin_move_automation (
       /* add to new channel */
       automation_tracklist_add_at (
         atl, at);
+    }
+}
+
+/**
+ * Sets the UI refresh rate on the Plugin.
+ */
+void
+plugin_set_ui_refresh_rate (
+  Plugin * self)
+{
+  /* if no preferred refresh rate is set,
+   * use the monitor's refresh rate */
+  if (!g_settings_get_int (
+         S_PREFERENCES, "plugin-ui-refresh-rate"))
+    {
+      GdkDisplay * display =
+        gdk_display_get_default ();
+      g_warn_if_fail (display);
+      GdkMonitor * monitor =
+        gdk_display_get_primary_monitor (display);
+      g_warn_if_fail (monitor);
+      self->ui_update_hz =
+        (float)
+        /* divide by 1000 because gdk returns the
+         * value in milli-Hz */
+          gdk_monitor_get_refresh_rate (monitor) /
+        1000.f;
+      g_warn_if_fail (
+        !math_floats_equal (
+          self->ui_update_hz, 0.f, 0.001f));
+      g_message (
+        "refresh rate returned by GDK: %.01f",
+        (double) self->ui_update_hz);
+    }
+  else
+    {
+      /* Use user-specified UI update rate. */
+      self->ui_update_hz =
+        (float)
+        g_settings_get_int (
+          S_PREFERENCES, "plugin-ui-refresh-rate");
+    }
+
+  /* clamp the refresh rate to sensible limits */
+  if (self->ui_update_hz < MIN_REFRESH_RATE ||
+      self->ui_update_hz > MAX_REFRESH_RATE)
+    {
+      g_warning (
+        "Invalid refresh rate of %.01f received, "
+        "clamping to reasonable bounds",
+        (double) self->ui_update_hz);
+      self->ui_update_hz =
+        CLAMP (
+          self->ui_update_hz, MIN_REFRESH_RATE,
+          MAX_REFRESH_RATE);
     }
 }
 
@@ -641,6 +703,8 @@ plugin_instantiate (
   g_message ("Instantiating %s...",
              pl->descr->name);
 
+  plugin_set_ui_refresh_rate (pl);
+
   switch (pl->descr->protocol)
     {
     case PROT_LV2:
@@ -654,6 +718,14 @@ plugin_instantiate (
             return -1;
           }
       }
+      break;
+    case PROT_VST:
+      if (vst_plugin_instantiate (pl->vst))
+        {
+          g_warning (
+            "VST plugin instantiation failed");
+          return -1;
+        }
       break;
     default:
       g_warn_if_reached ();
@@ -686,10 +758,17 @@ plugin_process (
           /* add midi events to input port */
     }
 
-  if (plugin->descr->protocol == PROT_LV2)
+  switch (plugin->descr->protocol)
     {
+    case PROT_LV2:
       lv2_plugin_process (
         plugin->lv2, g_start_frames, nframes);
+      break;
+    case PROT_VST:
+      g_warn_if_reached ();
+      break;
+    default:
+      break;
     }
 
   /*g_atomic_int_set (&plugin->processed, 1);*/

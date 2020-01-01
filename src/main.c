@@ -42,10 +42,12 @@
 #include <glibtop.h>
 #endif
 
-#include <suil/suil.h>
-
 #include <audec/audec.h>
+#include <suil/suil.h>
 #include <fftw3.h>
+#ifdef HAVE_X11
+#include <X11/Xlib.h>
+#endif
 
 #define BACKTRACE_SIZE 24
 
@@ -236,6 +238,12 @@ main (int    argc,
   /* install segfault handler */
   g_message ("Installing signal handler...");
   signal(SIGSEGV, handler);
+
+#ifdef HAVE_X11
+  /* init xlib threads */
+  /*g_message ("Initing X threads...");*/
+  /*XInitThreads ();*/
+#endif
 
   /* init suil */
   g_message ("Initing suil...");

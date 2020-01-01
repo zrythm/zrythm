@@ -230,6 +230,10 @@ typedef struct Plugin
    */
   int                  ui_instantiated;
 
+  /** Update frequency of the UI, in Hz (times
+   * per second). */
+  float                ui_update_hz;
+
   /** Plugin is in deletion. */
   int                  deleting;
 } Plugin;
@@ -421,6 +425,13 @@ plugin_add_unknown_port (
 Plugin *
 plugin_new_from_descr (
   const PluginDescriptor * descr);
+
+/**
+ * Sets the UI refresh rate on the Plugin.
+ */
+void
+plugin_set_ui_refresh_rate (
+  Plugin * self);
 
 /**
  * Removes the automation tracks associated with
