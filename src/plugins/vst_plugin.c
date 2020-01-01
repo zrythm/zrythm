@@ -104,6 +104,9 @@ host_callback (
     {
     case audioMasterVersion:
       return kVstVersion;
+    case audioMasterGetProductString:
+      strcpy ((char *) ptr, "Zrythm");
+      return 1;
     case audioMasterIdle:
       g_message ("idle");
       effect->dispatcher (
@@ -457,7 +460,6 @@ on_realize (
 
       /* note: works but probably not the right
        * way */
-#if 0
       XSetWindowAttributes attr;
       attr.border_pixel = 0;
       attr.event_mask =
@@ -478,7 +480,6 @@ on_realize (
           CopyFromParent, InputOutput,
           CopyFromParent,
           CWBorderPixel | CWEventMask, &attr);
-#endif
 
       /* note doesn't work */
 #if 0
@@ -500,23 +501,27 @@ on_realize (
 #endif
 
       /* note: works */
+#if 0
       xid =
         gdk_x11_window_get_xid (
           gtk_widget_get_window (
             GTK_WIDGET (widget)));
+#endif
     }
 
   AEffect * effect = self->aeffect;
+  /* for OpenGL plugins, this crashes with an error
+   * about multi-threaded X11.
+   * export LIBGL_DRI3_DISABLE=true fixes that
+   * error but causes another error.
+   * GDK_SYNCHRONIZE=1 fixes it altogether.
+   */
   if (effect->dispatcher (
         effect, effEditOpen, 0, 0,
         (void *) xid, 0.f) != 0)
     {
-      effect->dispatcher (
-        effect, effEditIdle, 0, 0, 0, 0);
       XMapRaised (display, xid);
       XFlush (display);
-      effect->dispatcher (
-        effect, effEditIdle, 0, 0, 0, 0);
 
       /* set size */
       ERect * rect = NULL;
