@@ -45,6 +45,9 @@
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
+#include "plugins/vst_plugin.h"
+#include "utils/arrays.h"
+#include "utils/io.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -69,23 +72,28 @@
  * If category not already set in the categories, add it.
  */
 static void
-add_category (char * _category)
+add_category (
+  PluginManager * self,
+  char *          category)
 {
-  if (!string_is_ascii (_category))
+  if (!string_is_ascii (category))
     {
-      g_warning ("Invalid LV2 category name, skipping...");
+      g_warning (
+        "Ignoring non-ASCII plugin category "
+        "name...");
     }
-  for (int i = 0; i < PLUGIN_MANAGER->num_plugin_categories; i++)
+  for (int i = 0;
+       i < self->num_plugin_categories; i++)
     {
-      char * category = PLUGIN_MANAGER->plugin_categories[i];
-      if (!strcmp (category, _category))
+      char * cat = self->plugin_categories[i];
+      if (!strcmp (cat, category))
         {
           return;
         }
     }
-    PLUGIN_MANAGER->plugin_categories[
-      PLUGIN_MANAGER->num_plugin_categories++] =
-        g_strdup (_category);
+  self->plugin_categories[
+    self->num_plugin_categories++] =
+      g_strdup (category);
 }
 
 static int
@@ -507,31 +515,34 @@ plugin_manager_scan_plugins (
 
   /* load all plugins with lilv */
   LilvWorld * world = LILV_WORLD;
-  const LilvPlugins * plugins =
+  const LilvPlugins * lilv_plugins =
     lilv_world_get_all_plugins (world);
-  LV2_NODES.lilv_plugins = plugins;
+  LV2_NODES.lilv_plugins = lilv_plugins;
 
   if (getenv ("NO_SCAN_PLUGINS"))
     return;
 
-  double size = (double) lilv_plugins_size (plugins);
+  double size =
+    (double) lilv_plugins_size (lilv_plugins);
 
-  /* iterate plugins */
+  /* scan LV2 */
+  g_message ("Scanning LV2 plugins...");
   unsigned int count = 0;
-  LILV_FOREACH(plugins, i, plugins)
+  LILV_FOREACH (plugins, i, lilv_plugins)
     {
       const LilvPlugin* p =
-        lilv_plugins_get (plugins, i);
+        lilv_plugins_get (lilv_plugins, i);
 
       PluginDescriptor * descriptor =
         lv2_plugin_create_descriptor_from_lilv (p);
 
       if (descriptor)
         {
-          PLUGIN_MANAGER->plugin_descriptors[
-            PLUGIN_MANAGER->num_plugins++] =
+          self->plugin_descriptors[
+            self->num_plugins++] =
               descriptor;
-          add_category (descriptor->category_str);
+          add_category (
+            self, descriptor->category_str);
         }
 
       count++;
@@ -543,19 +554,67 @@ plugin_manager_scan_plugins (
             (max_progress - start_progress);
     }
 
+  /* scan vst */
+  g_message ("Scanning VST plugins...");
+  char * vst_path =
+    g_strdup (getenv ("VST_PATH"));
+  if (!vst_path)
+    vst_path =
+      g_strdup ("/usr/lib/vst:/usr/local/lib/vst");
+   char ** paths =
+    g_strsplit (vst_path, ":", 0);
+  int path_idx = 0;
+  char * path;
+  while ((path = paths[path_idx++]) != NULL)
+    {
+      if (!g_file_test (path, G_FILE_TEST_EXISTS))
+        continue;
+
+      char ** vst_plugins =
+        io_get_files_in_dir_ending_in (
+          path, 1, ".so");
+      if (!vst_plugins)
+        continue;
+
+      char * plugin;
+      int plugin_idx = 0;
+      while ((plugin = vst_plugins[plugin_idx++]) !=
+               NULL)
+        {
+          PluginDescriptor * descriptor =
+            vst_plugin_create_descriptor_from_path (
+              plugin);
+
+          if (descriptor)
+            {
+              /*g_message ("found VST2: %s",*/
+                         /*descriptor->name);*/
+              array_append (
+                self->plugin_descriptors,
+                self->num_plugins,
+                descriptor);
+              add_category (
+                self, descriptor->category_str);
+            }
+        }
+      g_strfreev (vst_plugins);
+    }
+
+  g_free (vst_path);
+
   /* sort alphabetically */
-  qsort (PLUGIN_MANAGER->plugin_descriptors,
-         (size_t) PLUGIN_MANAGER->num_plugins,
+  qsort (self->plugin_descriptors,
+         (size_t) self->num_plugins,
          sizeof (Plugin *),
          sort_plugin_func);
-  qsort (PLUGIN_MANAGER->plugin_categories,
+  qsort (self->plugin_categories,
          (size_t)
-           PLUGIN_MANAGER->num_plugin_categories,
+           self->num_plugin_categories,
          sizeof (char *),
          sort_category_func);
 
   g_message ("%d Plugins scanned.",
-             PLUGIN_MANAGER->num_plugins);
+             self->num_plugins);
 
   /*print_plugins ();*/
 }

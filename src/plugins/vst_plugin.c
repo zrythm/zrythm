@@ -45,6 +45,16 @@
 #include <dlfcn.h>
 #include <X11/Xlib.h>
 
+static int
+can_do (
+  AEffect *    effect,
+  const char * str)
+{
+  return
+    effect->dispatcher (
+      effect, effCanDo, 0, 0, (char *) str, 0.f);
+}
+
 static void
 get_name (
   VstPlugin * self,
@@ -53,6 +63,16 @@ get_name (
   AEffect * effect = self->aeffect;
   effect->dispatcher (
     effect, effGetEffectName, 0, 0, name, 0.f);
+}
+
+static void
+get_author (
+  VstPlugin * self,
+  char *      str)
+{
+  AEffect * effect = self->aeffect;
+  effect->dispatcher (
+    effect, effGetVendorString, 0, 0, str, 0.f);
 }
 
 static void
@@ -118,6 +138,108 @@ vst_plugin_new_from_path (
         "effect %s (%d) is %f", name, i,
         (double) effect->getParameter (effect, i));
     }
+}
+
+PluginDescriptor *
+vst_plugin_create_descriptor_from_path (
+  const char * path)
+{
+  PluginDescriptor * descr =
+    calloc (1, sizeof (PluginDescriptor));
+
+  descr->path = g_strdup (path);
+  descr->protocol = PROT_VST;
+
+  void * handle = dlopen (path, RTLD_NOW);
+  if (!handle)
+    {
+      g_warning (
+        "Failed to load VST plugin from %s: %s",
+        path, dlerror ());
+      return NULL;
+    }
+
+  VstPluginMain entry_point =
+    (VstPluginMain) dlsym (handle, "VSTPluginMain");
+  if (!entry_point)
+    entry_point =
+      (VstPluginMain) dlsym (handle, "main");
+  if (!entry_point)
+    {
+      g_warning (
+        "Failed to get entry point from VST plugin from %s: %s",
+        path, dlerror ());
+      return NULL;
+    }
+
+  VstPlugin * self = calloc (1, sizeof (VstPlugin));
+  AEffect * effect =
+    entry_point (vst_plugin_host_callback);
+  self->aeffect = effect;
+
+  /* check plugin's magic number */
+  if (effect->magic != kEffectMagic)
+    {
+      g_warning ("Plugin's magic number is invalid");
+      return NULL;
+    }
+
+  char str[600];
+  get_name (self, str);
+  descr->name = g_strdup (str);
+
+  get_author (self, str);
+  descr->author = g_strdup (str);
+
+  descr->num_audio_ins = effect->numInputs;
+  descr->num_audio_outs = effect->numOutputs;
+  descr->num_ctrl_ins = effect->numParams;
+
+  if (can_do (effect, "receiveVstEvents") ||
+      can_do (effect, "receiveVstMidiEvent") ||
+      (effect->flags & effFlagsIsSynth) > 0)
+    {
+      descr->num_midi_ins = 1;
+    }
+  if (can_do (effect, "sendVstEvents") ||
+      can_do (effect, "sendVstMidiEvent"))
+    {
+      descr->num_midi_outs = 1;
+    }
+
+  /* get category */
+  const intptr_t category =
+    effect->dispatcher (
+      effect, effGetPlugCategory, 0, 0, NULL, 0.f);
+  switch (category)
+    {
+    case kPlugCategSynth:
+      descr->category = PC_INSTRUMENT;
+      descr->category_str = g_strdup ("Instrument");
+      break;
+    case kPlugCategAnalysis:
+      descr->category = PC_ANALYZER;
+      descr->category_str = g_strdup ("Analyzer");
+      break;
+    case kPlugCategGenerator:
+      descr->category = PC_GENERATOR;
+      descr->category_str = g_strdup ("Generator");
+      break;
+    default:
+      descr->category = PC_NONE;
+      descr->category_str = g_strdup ("Plugin");
+      break;
+    }
+
+  if (dlclose (handle) != 0)
+    {
+      g_warning (
+        "An error occurred closing the VST plugin "
+        "handle");
+      return NULL;
+    }
+
+  return descr;
 }
 
 /**

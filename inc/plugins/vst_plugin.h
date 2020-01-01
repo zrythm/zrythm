@@ -69,6 +69,10 @@ typedef struct VstPlugin
   gulong             delete_event_id;
 } VstPlugin;
 
+PluginDescriptor *
+vst_plugin_create_descriptor_from_path (
+  const char * path);
+
 void
 vst_plugin_new_from_path (
   Plugin *     plugin,
