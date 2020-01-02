@@ -298,7 +298,8 @@ node_process (
   if (node->type == ROUTE_NODE_TYPE_PLUGIN)
     {
       plugin_process (
-        node->pl, g_start_frames, nframes);
+        node->pl, g_start_frames, local_offset,
+        nframes);
     }
   else if (node->type == ROUTE_NODE_TYPE_FADER)
     {

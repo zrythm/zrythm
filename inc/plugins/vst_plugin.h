@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -15,6 +15,25 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+    Copyright (C) 2010 Paul Davis
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 /**
@@ -31,6 +50,8 @@
 #include "audio/port.h"
 #include "plugins/vst/vestige.h"
 #include "utils/types.h"
+
+#include <gtk/gtkx.h>
 
 #define audioMasterGetOutputSpeakerArrangement audioMasterGetSpeakerArrangement
 #define effFlagsProgramChunks (1 << 5)
@@ -94,6 +115,8 @@
 #define kVstProcessPrecision32 0
 #define kVstVersion 2400
 
+typedef struct PluginDescriptor PluginDescriptor;
+
 /**
  * @addtogroup plugins
  *
@@ -116,7 +139,9 @@ typedef struct VstPlugin
   /** Base Plugin instance (parent). */
   Plugin *           plugin;
 
-  int                has_ui;
+  /** Socket to house the plugin's X11 window in
+   * \ref VstPlugin.xid. */
+  GtkSocket *        socket;
 
   /**
    * Window (if applicable) (GtkWindow).
@@ -124,7 +149,59 @@ typedef struct VstPlugin
    * This is used by both generic UIs and X11/etc
    * UIs.
    */
-  void *             window;
+  void *             gtk_window_parent;
+
+  /** X11 XWindow (winw + lxvst). */
+  int                xid;
+
+  /* The plugin's parent X11 XWindow (LXVST/X11). */
+  int                linux_window;
+
+  /** The ID of the plugin UI window created by
+   * the plugin. */
+  int                linux_plugin_ui_window;
+
+  /** X11 UI _XEventProc. */
+  void  (* eventProc) (void * event);
+
+  /* Windows. */
+  void *             windows_window;
+
+  int width;
+  int height;
+  int wantIdle;
+
+  int voffset;
+  int hoffset;
+  int gui_shown;
+  int destroy;
+  int vst_version;
+  int has_editor;
+
+  int     program_set_without_editor;
+  int     want_program;
+  int     want_chunk;
+  int     n_pending_keys;
+  unsigned char* wanted_chunk;
+  int     wanted_chunk_size;
+  float*  want_params;
+  float*  set_params;
+
+  int     dispatcher_wantcall;
+  int     dispatcher_opcode;
+  int     dispatcher_index;
+  int     dispatcher_val;
+  void*   dispatcher_ptr;
+  float   dispatcher_opt;
+  int     dispatcher_retval;
+
+  struct VstPlugin * next;
+  pthread_mutex_t   lock;
+  pthread_mutex_t   state_lock;
+  pthread_cond_t    window_status_change;
+  pthread_cond_t    plugin_dispatcher_called;
+  pthread_cond_t    window_created;
+  int               been_activated;
 
   /** ID of the delete-event signal so that we can
    * deactivate before freeing the plugin. */
@@ -152,6 +229,7 @@ void
 vst_plugin_process (
   VstPlugin * self,
   const long  g_start_frames,
+  const nframes_t  local_offset,
   const nframes_t   nframes);
 
 void

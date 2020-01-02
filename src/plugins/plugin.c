@@ -285,6 +285,30 @@ plugin_set_channel_and_slot (
 }
 
 /**
+ * Returns if the Plugin has a supported custom
+ * UI.
+ */
+int
+plugin_has_supported_custom_ui (
+  Plugin * self)
+{
+  switch (self->descr->protocol)
+    {
+    case PROT_LV2:
+      break;
+    case PROT_VST:
+      return
+        self->vst->aeffect->flags &
+          effFlagsHasEditor;
+      break;
+    default:
+      g_return_val_if_reached (-1);
+      break;
+    }
+  g_return_val_if_reached (-1);
+}
+
+/**
  * Updates the plugin's latency.
  *
  * Calls the plugin format's get_latency()
@@ -747,6 +771,7 @@ void
 plugin_process (
   Plugin *        plugin,
   const long      g_start_frames,
+  const nframes_t  local_offset,
   const nframes_t nframes)
 {
   /* if has MIDI input port */
@@ -766,7 +791,8 @@ plugin_process (
       break;
     case PROT_VST:
       vst_plugin_process (
-        plugin->vst, g_start_frames, nframes);
+        plugin->vst, g_start_frames, local_offset,
+        nframes);
       break;
     default:
       break;
@@ -804,12 +830,12 @@ plugin_open_ui (Plugin *plugin)
     case PROT_VST:
       {
         VstPlugin * vst_plugin = plugin->vst;
-        if (GTK_IS_WINDOW (vst_plugin->window))
+        if (GTK_IS_WINDOW (vst_plugin->gtk_window_parent))
           {
             gtk_window_present (
-              GTK_WINDOW (vst_plugin->window));
+              GTK_WINDOW (vst_plugin->gtk_window_parent));
             gtk_window_set_transient_for (
-              GTK_WINDOW (vst_plugin->window),
+              GTK_WINDOW (vst_plugin->gtk_window_parent),
               (GtkWindow *) MAIN_WINDOW);
           }
         else

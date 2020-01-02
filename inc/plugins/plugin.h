@@ -527,6 +527,14 @@ plugin_move_automation (
   Channel * ch);
 
 /**
+ * Returns if the Plugin has a supported custom
+ * UI.
+ */
+int
+plugin_has_supported_custom_ui (
+  Plugin * self);
+
+/**
  * Updates the plugin's latency.
  */
 void
@@ -574,6 +582,7 @@ void
 plugin_process (
   Plugin *    plugin,
   const long  g_start_frames,
+  const nframes_t  local_offset,
   const nframes_t   nframes);
 
 /**

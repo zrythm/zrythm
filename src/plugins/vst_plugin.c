@@ -38,6 +38,7 @@
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "plugins/vst_plugin.h"
+#include "plugins/vst/vst_x11.h"
 #include "project.h"
 
 #include <gdk/gdkx.h>
@@ -109,8 +110,8 @@ host_callback (
       return 1;
     case audioMasterIdle:
       g_message ("idle");
-      effect->dispatcher (
-        effect, effEditIdle, 0, 0, 0, 0);
+      /*effect->dispatcher (*/
+        /*effect, effEditIdle, 0, 0, 0, 0);*/
       break;
     // Handle other opcodes here... there will be lots of them
     default:
@@ -277,30 +278,40 @@ void
 vst_plugin_process (
   VstPlugin * self,
   const long  g_start_frames,
+  const nframes_t  local_offset,
   const nframes_t   nframes)
 {
-  int channels = 2;
-  float ** inputs =
-    (float**)malloc(sizeof(float**) * (size_t) channels);
-  float ** outputs =
-    (float**)malloc(sizeof(float**) * (size_t) channels);
-  for(int i = 0; i < channels; i++)
+  AEffect * effect = self->aeffect;
+
+  float * inputs[effect->numInputs];
+  float * outputs[effect->numOutputs];
+  for (int i = 0; i < effect->numInputs; i++)
     {
       inputs[i] =
-        (float*)malloc(sizeof(float*) *
-          (size_t) AUDIO_ENGINE->block_length);
+        &self->plugin->in_ports[i]->
+          buf[local_offset];
+#if 0
+      memcpy (
+        &inputs[i][0],
+        &self->plugin->in_ports[i]->
+          buf[local_offset],
+        sizeof (float) * nframes);
+#endif
+    }
+  for (int i = 0; i < effect->numOutputs; i++)
+    {
       outputs[i] =
-        (float*)malloc(sizeof(float*) *
-          (size_t) AUDIO_ENGINE->block_length);
+        &self->plugin->out_ports[i]->
+          buf[local_offset];
     }
 
   /* process midi */
   void * events = NULL;
-  self->aeffect->dispatcher (
-    self->aeffect, effProcessEvents, 0, 0, events, 0.f);
+  effect->dispatcher (
+    effect, effProcessEvents, 0, 0, events, 0.f);
 
-  self->aeffect->processReplacing (
-    self->aeffect, inputs, outputs, (int) nframes);
+  effect->processReplacing (
+    effect, inputs, outputs, (int) nframes);
 }
 
 int
@@ -406,25 +417,6 @@ vst_plugin_suspend (
 }
 
 /**
- * Called on each GUI frame to update the GTK UI.
- *
- * @note This is a GSourceFunc.
- */
-static int
-update_plugin_ui (
-  VstPlugin * self)
-{
-  if (self->window)
-    {
-      AEffect * effect = self->aeffect;
-      effect->dispatcher (
-        effect, effEditIdle, 0, 0, 0, 0);
-      return G_SOURCE_CONTINUE;
-    }
-  return G_SOURCE_REMOVE;
-}
-
-/**
  * Called both on generic UIs and normal UIs when
  * a plugin window is destroyed.
  */
@@ -433,7 +425,7 @@ on_window_destroy(
   GtkWidget*  widget,
   VstPlugin * self)
 {
-  self->window = NULL;
+  self->gtk_window_parent = NULL;
   g_message ("destroying plugin window");
 }
 
@@ -442,117 +434,16 @@ on_realize (
   GtkWidget * widget,
   VstPlugin * self)
 {
-  /* Attempt to instantiate custom UI if
-   * necessary */
-  Window xid = 0;
-  Display * display =
-    XOpenDisplay (NULL);
-  /* note: this worked for embedding */
-#if 0
-    gdk_x11_display_get_xdisplay (
-      gtk_widget_get_display (
-        widget));
-#endif
-  self->has_ui = 1;
-  if (self->has_ui)
-    {
-      g_message ("Instantiating UI...");
-
-      /* note: works but probably not the right
-       * way */
-      XSetWindowAttributes attr;
-      attr.border_pixel = 0;
-      attr.event_mask =
-        KeyPressMask | KeyReleaseMask;
-      xid =
-        XCreateWindow (
-          /* display */
-          display,
-          /* parent */
-#if 0
-          DefaultRootWindow (display),
-#endif
-          gdk_x11_window_get_xid (
-            gtk_widget_get_window (
-              GTK_WIDGET (widget))),
-          /* x, y, width, height */
-          0, 0, 600, 600, 0,
-          CopyFromParent, InputOutput,
-          CopyFromParent,
-          CWBorderPixel | CWEventMask, &attr);
-
-      /* note doesn't work */
-#if 0
-      GdkWindowAttr attr = {
-        .width = 600,
-        .height = 600,
-        .wclass = GDK_INPUT_OUTPUT,
-        .visual = gdk_screen_get_system_visual (screen),
-        .window_type = GDK_WINDOW_CHILD,
-        .cursor = gdk_cursor_new_for_display (
-          display,
-          GDK_ARROW),
-      };
-
-      GdkWindow * gdk_window =
-        gdk_window_new (
-          gtk_widget_get_window (
-            GTK_WIDGET (window)),
-#endif
-
-      /* note: works */
-#if 0
-      xid =
-        gdk_x11_window_get_xid (
-          gtk_widget_get_window (
-            GTK_WIDGET (widget)));
-#endif
-    }
-
-  AEffect * effect = self->aeffect;
-  /* for OpenGL plugins, this crashes with an error
-   * about multi-threaded X11.
-   * export LIBGL_DRI3_DISABLE=true fixes that
-   * error but causes another error.
-   * GDK_SYNCHRONIZE=1 fixes it altogether.
-   */
-  if (effect->dispatcher (
-        effect, effEditOpen, 0, 0,
-        (void *) xid, 0.f) != 0)
-    {
-      XMapRaised (display, xid);
-      XFlush (display);
-
-      /* set size */
-      ERect * rect = NULL;
-      effect->dispatcher (
-        effect, effEditGetRect, 0, 0, &rect, 0.f);
-      if (rect)
-        {
-          int width = rect->right - rect->left;
-          int height = rect->bottom - rect->top;
-          gtk_window_set_default_size (
-            GTK_WINDOW (self->window),
-            width, height);
-        }
-    }
-  else
-    {
-      g_message ("No UI found, building native..");
-      /* TODO */
-      return;
-    }
+  gtk_socket_add_id (
+    self->socket, (Window) self->xid);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->socket),
+    self->width, self->height);
+  gtk_window_set_default_size (
+    GTK_WINDOW (widget),
+    self->width, self->height);
 
   self->plugin->ui_instantiated = 1;
-
-  /*g_message (*/
-    /*"plugin window shown, adding idle timeout. "*/
-    /*"Update frequency (Hz): %.01f",*/
-    /*(double) self->ui_update_hz);*/
-
-  g_timeout_add (
-    (int) (1000.f / 60.f),
-    (GSourceFunc) update_plugin_ui, self);
 }
 
 /**
@@ -563,6 +454,8 @@ void
 vst_plugin_open_ui (
   VstPlugin * self)
 {
+  vstfx_run_editor (self);
+
   GtkWidget* window =
     gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_icon_name (
@@ -574,7 +467,7 @@ vst_plugin_open_ui (
       GTK_WINDOW (window),
       GTK_WINDOW (MAIN_WINDOW));
 
-  self->window = window;
+  self->gtk_window_parent = window;
   /*self->delete_event_id =*/
     /*g_signal_connect (*/
       /*G_OBJECT (window), "delete-event",*/
@@ -600,26 +493,24 @@ vst_plugin_open_ui (
   gtk_window_set_title (
     GTK_WINDOW (window), name);
 
-  GtkWidget* vbox =
-    gtk_box_new (
-      GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_window_set_role (
     GTK_WINDOW (window), "plugin_ui");
-  gtk_container_add (
-    GTK_CONTAINER (window), vbox);
+
+  if (plugin_has_supported_custom_ui (self->plugin))
+    {
+      self->socket =
+        GTK_SOCKET (gtk_socket_new ());
+      gtk_container_add (
+        GTK_CONTAINER (window),
+        GTK_WIDGET (self->socket));
+    }
+  else
+    {
+      /* TODO create generic */
+    }
 
   gtk_window_set_resizable (
     GTK_WINDOW (window), 1);
   gtk_window_present(GTK_WINDOW(window));
   gtk_widget_show_all (GTK_WIDGET (window));
-
-  /*build_menu (self, window, vbox);*/
-
-  /* Create/show alignment to contain UI (whether
-   * custom or generic) */
-  /*GtkWidget* alignment =*/
-    /*gtk_alignment_new (0.5, 0.5, 1.0, 1.0);*/
-  /*gtk_box_pack_start (*/
-    /*GTK_BOX (vbox), alignment, TRUE, TRUE, 0);*/
-  /*gtk_widget_show (alignment);*/
 }

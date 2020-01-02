@@ -28,6 +28,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "plugins/vst/vst_x11.h"
 #include "gui/widgets/main_window.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
@@ -244,6 +245,10 @@ main (int    argc,
   g_message ("Initing X threads...");
   XInitThreads ();
 #endif
+
+  /* init VST UI engine */
+  g_message ("Initing VST UI engine...");
+  g_return_val_if_fail (vstfx_init (0) == 0, -1);;
 
   /* init suil */
   g_message ("Initing suil...");
