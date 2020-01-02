@@ -290,13 +290,6 @@ vst_plugin_process (
       inputs[i] =
         &self->plugin->in_ports[i]->
           buf[local_offset];
-#if 0
-      memcpy (
-        &inputs[i][0],
-        &self->plugin->in_ports[i]->
-          buf[local_offset],
-        sizeof (float) * nframes);
-#endif
     }
   for (int i = 0; i < effect->numOutputs; i++)
     {
@@ -306,9 +299,42 @@ vst_plugin_process (
     }
 
   /* process midi */
-  void * events = NULL;
-  effect->dispatcher (
-    effect, effProcessEvents, 0, 0, events, 0.f);
+  if (self->plugin->descr->num_midi_ins > 0)
+    {
+      Port * port =
+        self->plugin->in_ports[effect->numInputs];
+
+      if (port->midi_events->num_events > 0)
+        {
+          self->fEvents.numEvents =
+            port->midi_events->num_events;
+          self->fEvents.reserved = 0;
+          VstMidiEvent * e;
+          for (int i = 0;
+               i < port->midi_events->num_events;
+               ++i)
+            {
+              MidiEvent * ev =
+                &port->midi_events->events[i];
+              e = &self->fMidiEvents[i];
+              g_message (
+                "writing VST plugin event %d",
+                i);
+              e->type = kVstMidiType;
+              e->byteSize = sizeof (VstMidiEvent);
+              /*e.flags = kVstMidiEventIsRealtime;*/
+              e->midiData[0] =
+                (char) ev->raw_buffer[0];
+              e->midiData[1] =
+                (char) ev->raw_buffer[1];
+              e->midiData[2] =
+                (char) ev->raw_buffer[2];
+            }
+          effect->dispatcher (
+            effect, effProcessEvents, 0, 0,
+            &self->fEvents, 0.f);
+        }
+    }
 
   effect->processReplacing (
     effect, inputs, outputs, (int) nframes);
@@ -336,6 +362,13 @@ vst_plugin_instantiate (
   effect->dispatcher (
     effect, effSetBlockSize, 0, blocksize, NULL,
     0.0f);
+
+  /* initialize midi events */
+  for (int i = 0; i < kPluginMaxMidiEvents * 2; i++)
+    {
+      self->fEvents.data[i] =
+        (VstEvent *) &self->fMidiEvents[i];
+    }
 
   g_return_val_if_fail (
     effect->uniqueID > 0, -1);
@@ -370,17 +403,6 @@ vst_plugin_instantiate (
       effect->dispatcher (
         effect, effConnectOutput, i, 1, NULL, 0.f);
     }
-  for (int i = 0; i < effect->numParams; i++)
-    {
-      get_param_name (self, i, lbl);
-      Port * port =
-        port_new_with_type (
-          TYPE_CONTROL, FLOW_INPUT, lbl);
-      plugin_add_in_port (
-        self->plugin, port);
-      port->control =
-        effect->getParameter (effect, i);
-    }
   if (self->plugin->descr->num_midi_ins > 0)
     {
       strcpy (lbl, "MIDI Input");
@@ -398,6 +420,17 @@ vst_plugin_instantiate (
           TYPE_EVENT, FLOW_OUTPUT, lbl);
       plugin_add_out_port (
         self->plugin, port);
+    }
+  for (int i = 0; i < effect->numParams; i++)
+    {
+      get_param_name (self, i, lbl);
+      Port * port =
+        port_new_with_type (
+          TYPE_CONTROL, FLOW_INPUT, lbl);
+      plugin_add_in_port (
+        self->plugin, port);
+      port->control =
+        effect->getParameter (effect, i);
     }
 
   g_message ("start process");
