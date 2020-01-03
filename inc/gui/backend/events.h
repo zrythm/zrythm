@@ -165,6 +165,9 @@ typedef enum EventType
   ET_BPM_CHANGED,
   ET_CHANNEL_FADER_VAL_CHANGED,
   ET_PIANO_ROLL_KEY_HEIGHT_CHANGED,
+
+  /** Sent after the main window finishes loading. */
+  ET_MAIN_WINDOW_LOADED,
 } EventType;
 
 /**

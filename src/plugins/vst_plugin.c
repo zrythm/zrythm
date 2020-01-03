@@ -41,6 +41,7 @@
 #include "plugins/vst_plugin.h"
 #include "plugins/vst/vst_x11.h"
 #include "project.h"
+#include "utils/io.h"
 
 #include <gdk/gdkx.h>
 
@@ -196,6 +197,8 @@ vst_plugin_init_loaded (
   g_warn_if_fail (handle);
   self->aeffect = effect;
 
+  effect->user = self;
+
   for (int i = 0; i < effect->numParams; i++)
     {
       for (int j = 0;
@@ -320,6 +323,7 @@ vst_plugin_get_port_from_param_id (
   VstPlugin * self,
   int         param_id)
 {
+  g_return_val_if_fail (self, NULL);
   for (int i = 0; i < self->plugin->num_in_ports;
        i++)
     {
@@ -762,6 +766,8 @@ vst_plugin_save_state_to_file (
   char * chunk = get_base64_chunk (self, 0);
   g_return_val_if_fail (chunk, -1);
 
+  io_mkdir (dir);
+
   char * label =
     g_strdup_printf (
       "%s.base64",
@@ -769,9 +775,11 @@ vst_plugin_save_state_to_file (
   char * tmp = g_path_get_basename (dir);
   self->state_file =
     g_build_filename (tmp, label, NULL);
+  char * state_file_path =
+    g_build_filename (dir, label, NULL);
   GError *err = NULL;
   g_file_set_contents (
-    self->state_file, chunk, -1, &err);
+    state_file_path, chunk, -1, &err);
   if (err)
     {
       // Report error to user, and free error

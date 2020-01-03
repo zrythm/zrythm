@@ -1400,6 +1400,27 @@ events_process (void * data)
           midi_editor_space_widget_refresh (
             MW_MIDI_EDITOR_SPACE);
           break;
+        case ET_MAIN_WINDOW_LOADED:
+          /* show all visible plugins */
+          for (int j = 0; j < TRACKLIST->num_tracks;
+               j++)
+            {
+              Channel * ch =
+                TRACKLIST->tracks[j]->channel;
+              if (!ch)
+                continue;
+
+              for (int k = 0; k < STRIP_SIZE; k++)
+                {
+                  Plugin * pl =
+                    ch->plugins[k];
+                  if (!pl)
+                    continue;
+                  if (pl->visible)
+                    plugin_open_ui (pl);
+                }
+            }
+          break;
         default:
           g_warning (
             "event %d not implemented yet",

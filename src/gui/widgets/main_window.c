@@ -164,6 +164,9 @@ main_window_widget_refresh (
     ET_ARRANGER_SELECTIONS_CHANGED, TL_SELECTIONS);
   event_viewer_widget_refresh (
     MW_TIMELINE_EVENT_VIEWER);
+
+  EVENTS_PUSH (
+    ET_MAIN_WINDOW_LOADED, NULL);
 }
 
 static void
