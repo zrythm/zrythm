@@ -27,7 +27,7 @@ towards a stable release.
 
 ## Currently supported plugin protocols
 - LV2
-- VST 2.4 (Experimental)
+- VST2 (Experimental)
 
 ## Building and Installation
 See [INSTALL.md](INSTALL.md).

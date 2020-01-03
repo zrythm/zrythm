@@ -94,6 +94,50 @@ get_param_name (
     effect, effGetParamName, idx, 0, name, 0.f);
 }
 
+static intptr_t
+host_can_do (
+  const char * feature)
+{
+  if (!strcmp (feature, "supplyIdle"))
+    return 1;
+  if (!strcmp (feature, "sendVstEvents"))
+    return 1;
+  if (!strcmp (feature, "sendVstMidiEvent"))
+    return 1;
+  if (!strcmp (feature, "sendVstMidiEventFlagIsRealtime"))
+    return 1;
+  if (!strcmp (feature, "sendVstTimeInfo"))
+    return -1;
+  if (!strcmp (feature, "receiveVstEvents"))
+    return -1;
+  if (!strcmp (feature, "receiveVstMidiEvent"))
+    return -1;
+  if (!strcmp (feature, "receiveVstTimeInfo"))
+    return -1;
+  if (!strcmp (feature, "reportConnectionChanges"))
+    return -1;
+  if (!strcmp (feature, "acceptIOChanges"))
+    return 1;
+  if (!strcmp (feature, "sizeWindow"))
+    return 1;
+  if (!strcmp (feature, "offline"))
+    return -1;
+  if (!strcmp (feature, "openFileSelector"))
+    return -1;
+  if (!strcmp (feature, "closeFileSelector"))
+    return -1;
+  if (!strcmp (feature, "startStopProcess"))
+    return 1;
+  if (!strcmp (feature, "supportShell"))
+    return -1;
+  if (!strcmp (feature, "shellCategory"))
+    return 1;
+  if (!strcmp (feature, "NIMKPIVendorSpecificCallbacks"))
+    return -1;
+
+  g_return_val_if_reached (0);
+}
+
 /**
  * Host callback implementation.
  */
@@ -106,15 +150,22 @@ host_callback (
   void *    ptr,
   float     opt)
 {
-  g_message ("host callback");
+  g_message (
+    "host callback called with opcode %d",
+    opcode);
 
   switch (opcode)
     {
     case audioMasterVersion:
       return kVstVersion;
+    case audioMasterGetVendorString:
+      strcpy ((char *) ptr, "Alexandros Theodotou");
+      return 1;
     case audioMasterGetProductString:
       strcpy ((char *) ptr, "Zrythm");
       return 1;
+    case audioMasterGetVendorVersion:
+      return 900;
     case audioMasterCurrentId:
       return effect->uniqueID;
     case audioMasterIdle:
@@ -122,6 +173,8 @@ host_callback (
       /*effect->dispatcher (*/
         /*effect, effEditIdle, 0, 0, 0, 0);*/
       break;
+    case audioMasterCanDo:
+      return host_can_do ((const char *) ptr);
     case audioMasterAutomate:
       {
         VstPlugin * self =
@@ -193,13 +246,17 @@ load_lib (
           signal (SIGSEGV, SIG_DFL);
 
           *effect = entry_point (host_callback);
+          if (!(*effect))
+            exit (1);
           exit (0);
         }
       else
         {
           wait (&stat);
         }
-      if (!WIFEXITED (stat))
+      if ((WIFEXITED (stat) &&
+             WEXITSTATUS (stat) != 0) ||
+          !WIFEXITED (stat))
         {
           g_warning (
             "%s: Could not get entry point for "
@@ -209,9 +266,15 @@ load_lib (
           return NULL;
         }
     }
-  else
+  *effect = entry_point (host_callback);
+
+  if (!(*effect))
     {
-      *effect = entry_point (host_callback);
+      g_warning (
+        "%s: Could not get entry point for "
+        "VST plugin", path);
+      dlclose (handle);
+      return NULL;
     }
 
   /* check plugin's magic number */
