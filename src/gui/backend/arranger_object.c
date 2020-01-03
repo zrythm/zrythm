@@ -1283,6 +1283,7 @@ arranger_object_get_arranger (
 
   Track * track =
     arranger_object_get_track (self);
+  g_return_val_if_fail (track, NULL);
 
   ArrangerWidget * arranger = NULL;
   switch (self->type)

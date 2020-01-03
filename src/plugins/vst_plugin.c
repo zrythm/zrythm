@@ -35,6 +35,11 @@
  * For a full copy of the GNU General Public License see the doc/GPL.txt file.
  */
 
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/wait.h>
+#include<unistd.h>
+
 #include "audio/engine.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
@@ -142,13 +147,17 @@ host_callback (
  * Loads the VST library.
  *
  * @param[out] effect The AEffect address to fill.
+ * @param pfork Fork the process before running the
+ *   plugin's entry point. This is useful when only
+ *   extracting info from it.
  *
  * @return The library handle, or NULL if error.
  */
 static void *
 load_lib (
   const char *  path,
-  AEffect **    effect)
+  AEffect **    effect,
+  int           pfork)
 {
   void * handle = dlopen (path, RTLD_NOW);
   if (!handle)
@@ -174,7 +183,36 @@ load_lib (
       return NULL;
     }
 
-  *effect = entry_point (host_callback);
+  if (pfork)
+    {
+      int stat;
+      int is_child = (fork () == 0);
+      if (is_child)
+        {
+          /* remove the previous SIGSEGV handler */
+          signal (SIGSEGV, SIG_DFL);
+
+          *effect = entry_point (host_callback);
+          exit (0);
+        }
+      else
+        {
+          wait (&stat);
+        }
+      if (!WIFEXITED (stat))
+        {
+          g_warning (
+            "%s: Could not get entry point for "
+            "VST plugin",
+            path);
+          dlclose (handle);
+          return NULL;
+        }
+    }
+  else
+    {
+      *effect = entry_point (host_callback);
+    }
 
   /* check plugin's magic number */
   if ((*effect)->magic != kEffectMagic)
@@ -193,7 +231,7 @@ vst_plugin_init_loaded (
 {
   AEffect * effect = NULL;
   void * handle =
-    load_lib (self->plugin->descr->path, &effect);
+    load_lib (self->plugin->descr->path, &effect, 0);
   g_warn_if_fail (handle);
   self->aeffect = effect;
 
@@ -227,7 +265,7 @@ vst_plugin_new_from_descriptor (
     NULL);
 
   AEffect * effect = NULL;
-  void * handle = load_lib (descr->path, &effect);
+  void * handle = load_lib (descr->path, &effect, 0);
   g_return_val_if_fail (handle, NULL);
 
   VstPlugin * self = calloc (1, sizeof (VstPlugin));
@@ -251,7 +289,7 @@ vst_plugin_create_descriptor_from_path (
   descr->protocol = PROT_VST;
 
   AEffect * effect = NULL;
-  void * handle = load_lib (path, &effect);
+  void * handle = load_lib (path, &effect, 1);
   g_return_val_if_fail (handle, NULL);
 
   VstPlugin * self = calloc (1, sizeof (VstPlugin));

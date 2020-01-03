@@ -64,6 +64,7 @@ arranger_object_queue_redraw (
 {
   ArrangerWidget * arranger =
     arranger_object_get_arranger (self);
+  g_return_if_fail (arranger);
   GdkRectangle arranger_rect;
   arranger_widget_get_visible_rect (
     arranger, &arranger_rect);
