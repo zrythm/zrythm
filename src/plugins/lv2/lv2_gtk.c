@@ -1651,9 +1651,11 @@ lv2_gtk_open_ui (
 
   if (g_settings_get_int (
         S_PREFERENCES, "plugin-uis-stay-on-top"))
-    gtk_window_set_transient_for (
-      GTK_WINDOW (window),
-      GTK_WINDOW (MAIN_WINDOW));
+    {
+      gtk_window_set_transient_for (
+        GTK_WINDOW (window),
+        GTK_WINDOW (MAIN_WINDOW));
+    }
 
   plugin->window = window;
   plugin->delete_event_id =
@@ -1720,7 +1722,7 @@ lv2_gtk_open_ui (
 
   if (plugin->externalui && plugin->extuiptr)
     {
-      LV2_EXTERNAL_UI_SHOW(plugin->extuiptr);
+      LV2_EXTERNAL_UI_SHOW (plugin->extuiptr);
     }
   else if (plugin->ui_instance)
     {
@@ -1773,6 +1775,9 @@ lv2_gtk_open_ui (
   lv2_ui_init (plugin);
 
   plugin->plugin->ui_instantiated = 1;
+  EVENTS_PUSH (
+    ET_PLUGIN_VISIBILITY_CHANGED,
+    plugin->plugin);
 
   g_message (
     "plugin window shown, adding idle timeout. "

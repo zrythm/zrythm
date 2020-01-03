@@ -131,31 +131,31 @@ void yaml_cyaml_log_func (
 
 static const cyaml_config_t cyaml_config = {
   /** log level: DEBUG, WARNING, INFO... */
-	.log_level = CYAML_LOG_WARNING,
+  .log_level = CYAML_LOG_WARNING,
   /* use the default loggin function */
-	//.log_fn = cyaml_log,
+  //.log_fn = cyaml_log,
   .log_fn = yaml_cyaml_log_func,
   /* use the default memory allocator */
-	.mem_fn = cyaml_mem,
+  .mem_fn = cyaml_mem,
 };
 
 static const cyaml_schema_value_t
 int_schema = {
-	CYAML_VALUE_INT (
+  CYAML_VALUE_INT (
     CYAML_FLAG_DEFAULT,
     typeof (int)),
 };
 
 static const cyaml_schema_value_t
 uint8_t_schema = {
-	CYAML_VALUE_UINT (
+  CYAML_VALUE_UINT (
     CYAML_FLAG_DEFAULT,
     typeof (uint8_t)),
 };
 
 static const cyaml_schema_value_t
 float_schema = {
-	CYAML_VALUE_FLOAT (
+  CYAML_VALUE_FLOAT (
     CYAML_FLAG_DEFAULT,
     typeof (float)),
 };
@@ -163,20 +163,20 @@ float_schema = {
 static const cyaml_schema_field_t
 gdk_rgba_fields_schema[] =
 {
-	CYAML_FIELD_FLOAT (
+  CYAML_FIELD_FLOAT (
     "red", CYAML_FLAG_DEFAULT,
-	  GdkRGBA, red),
-	CYAML_FIELD_FLOAT (
+    GdkRGBA, red),
+  CYAML_FIELD_FLOAT (
     "green", CYAML_FLAG_DEFAULT,
-	  GdkRGBA, green),
-	CYAML_FIELD_FLOAT (
+    GdkRGBA, green),
+  CYAML_FIELD_FLOAT (
     "blue", CYAML_FLAG_DEFAULT,
-	  GdkRGBA, blue),
-	CYAML_FIELD_FLOAT (
+    GdkRGBA, blue),
+  CYAML_FIELD_FLOAT (
     "alpha", CYAML_FLAG_DEFAULT,
-	  GdkRGBA, alpha),
+    GdkRGBA, alpha),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 /**

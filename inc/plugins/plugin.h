@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,7 +29,11 @@
 #include "audio/automatable.h"
 #include "audio/port.h"
 #include "plugins/lv2_plugin.h"
+#include "plugins/vst_plugin.h"
 #include "utils/types.h"
+
+/* pulled in from X11 */
+#undef Bool
 
 /**
  * @addtogroup plugins
@@ -47,9 +51,12 @@
 typedef struct Channel Channel;
 typedef struct VstPlugin VstPlugin;
 
+/**
+ * Plugin category.
+ */
 typedef enum PluginCategory
 {
-  /* None specified */
+  /** None specified. */
   PC_NONE,
   PC_DELAY,
   PC_REVERB,
@@ -92,15 +99,21 @@ typedef enum PluginCategory
   PC_MIXER,
 } PluginCategory;
 
+/**
+ * Plugin protocol.
+ */
 typedef enum PluginProtocol
 {
  PROT_LV2,
  PROT_DSSI,
  PROT_LADSPA,
  PROT_VST,
- PROT_VST3
+ PROT_VST3,
 } PluginProtocol;
 
+/**
+ * 32 or 64 bit.
+ */
 typedef enum PluginArchitecture
 {
   ARCH_32,
@@ -309,14 +322,15 @@ descriptor_fields_schema[] =
     CYAML_ARRAY_LEN (plugin_architecture_strings)),
   CYAML_FIELD_ENUM (
     "protocol", CYAML_FLAG_DEFAULT,
-    PluginDescriptor, arch, plugin_protocol_strings,
+    PluginDescriptor, protocol,
+    plugin_protocol_strings,
     CYAML_ARRAY_LEN (plugin_protocol_strings)),
   CYAML_FIELD_STRING_PTR (
     "path", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     PluginDescriptor, path,
      0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
-    "uri", CYAML_FLAG_POINTER,
+    "uri", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     PluginDescriptor, uri,
      0, CYAML_UNLIMITED),
 
@@ -331,9 +345,13 @@ plugin_fields_schema[] =
     Plugin, descr,
     descriptor_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "lv2", CYAML_FLAG_POINTER,
+    "lv2", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Plugin, lv2,
     lv2_plugin_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "vst", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Plugin, vst,
+    vst_plugin_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
     "in_ports", CYAML_FLAG_POINTER,
     Plugin, in_ports, num_in_ports,
@@ -369,7 +387,8 @@ plugin_schema =
 };
 
 void
-plugin_init_loaded (Plugin * plgn);
+plugin_init_loaded (
+  Plugin * self);
 
 static inline const char *
 plugin_protocol_to_str (
@@ -603,6 +622,7 @@ plugin_is_selected (
  */
 void
 plugin_close_ui (Plugin *plugin);
+
 /**
  * (re)Generates automatables for the plugin.
  */

@@ -25,8 +25,9 @@ towards a stable release.
 
 ![screenshot](https://www.zrythm.org/static/images/dec_14_2019.png)
 
-## Currently supported plugin protocols:
+## Currently supported plugin protocols
 - LV2
+- VST 2.4 (Experimental)
 
 ## Building and Installation
 See [INSTALL.md](INSTALL.md).

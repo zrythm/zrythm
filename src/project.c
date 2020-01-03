@@ -49,6 +49,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
 #include "plugins/lv2_plugin.h"
+#include "plugins/vst_plugin.h"
 #include "utils/arrays.h"
 #include "utils/datetime.h"
 #include "utils/general.h"
@@ -933,28 +934,32 @@ project_save (
           if (!pl)
             continue;
 
-          if (pl->descr->protocol == PROT_LV2)
+          /* save state */
+          char tmp[200];
+          sprintf (
+            tmp, "%s_%d", ch->track->name, j);
+          char * state_dir_plugin =
+            g_build_filename (
+              states_dir, tmp, NULL);
+          int ret = -1;
+          switch (pl->descr->protocol)
             {
-              char * tmp =
-                g_strdup_printf (
-                  "%s_%d",
-                  ch->track->name,
-                  j);
-              char * state_dir_plugin =
-                g_build_filename (
-                  states_dir,
-                  tmp,
-                  NULL);
-              g_free (tmp);
-
-              Lv2Plugin * lv2_plugin =
-                (Lv2Plugin *)
-                pl->lv2;
-              lv2_plugin_save_state_to_file (
-                lv2_plugin,
-                state_dir_plugin);
-              g_free (state_dir_plugin);
+            case PROT_LV2:
+              ret =
+                lv2_plugin_save_state_to_file (
+                  pl->lv2, state_dir_plugin);
+              break;
+            case PROT_VST:
+              ret =
+                vst_plugin_save_state_to_file (
+                  pl->vst, state_dir_plugin);
+              break;
+            default:
+              g_warn_if_reached ();
+              break;
             }
+          g_free (state_dir_plugin);
+          g_return_val_if_fail (ret == 0, -1);
         }
     }
   g_free (states_dir);
@@ -970,17 +975,16 @@ project_save (
   g_free (yaml);
   if (err != NULL)
     {
-      // Report error to user, and free error
-      g_warning ("Unable to read file: %s",
-                 err->message);
+      g_warning (
+        "Unable to write project file: %s",
+        err->message);
       g_error_free (err);
       RETURN_ERROR;
     }
 
   if (is_backup)
     {
-      if (show_notification)
-        ui_show_notification (_("Backup saved."));
+      g_message (_("Backup saved."));
     }
   else
     {

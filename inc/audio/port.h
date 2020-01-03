@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -277,6 +277,9 @@ typedef struct Port
   /** Used for LV2. */
   Lv2Port *          lv2_port;
 
+  /** VST parameter index, if VST control port. */
+  int                vst_param_id;
+
   /**
    * Pointer to arbitrary data.
    *
@@ -524,6 +527,9 @@ port_fields_schema[] =
   CYAML_FIELD_FLOAT (
     "control", CYAML_FLAG_DEFAULT,
     Port, control),
+  CYAML_FIELD_INT (
+    "vst_param_id", CYAML_FLAG_DEFAULT,
+    Port, vst_param_id),
 
   CYAML_FIELD_END
 };

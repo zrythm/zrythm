@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -87,18 +87,33 @@ get_automation_tracks (
 }
 
 void
-plugin_init_loaded (Plugin * pl)
+plugin_init_loaded (
+  Plugin * self)
 {
-  lv2_plugin_init_loaded (pl->lv2);
-  pl->lv2->plugin = pl;
+  switch (self->descr->protocol)
+    {
+    case PROT_LV2:
+      g_return_if_fail (self->lv2);
+      self->lv2->plugin = self;
+      lv2_plugin_init_loaded (self->lv2);
+      break;
+    case PROT_VST:
+      g_return_if_fail (self->vst);
+      self->vst->plugin = self;
+      vst_plugin_init_loaded (self->vst);
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
 
-  pl->ats_size = 1;
-  pl->ats =
+  self->ats_size = 1;
+  self->ats =
     calloc (1, sizeof (AutomationTrack *));
 
-  plugin_instantiate (pl);
+  plugin_instantiate (self);
 
-  get_automation_tracks (pl);
+  get_automation_tracks (self);
 }
 
 static void
@@ -744,7 +759,8 @@ plugin_instantiate (
       }
       break;
     case PROT_VST:
-      if (vst_plugin_instantiate (pl->vst))
+      if (vst_plugin_instantiate (
+            pl->vst, !PROJECT->loaded))
         {
           g_warning (
             "VST plugin instantiation failed");
@@ -932,11 +948,17 @@ plugin_clone (
 void
 plugin_close_ui (Plugin *plugin)
 {
-  if (plugin->descr->protocol == PROT_LV2)
+  switch (plugin->descr->protocol)
     {
-      Lv2Plugin * lv2_plugin =
-        (Lv2Plugin *) plugin->lv2;
-      lv2_gtk_close_ui (lv2_plugin);
+    case PROT_LV2:
+      lv2_gtk_close_ui (plugin->lv2);
+      break;
+    case PROT_VST:
+      vst_plugin_close_ui (plugin->vst);
+      break;
+    default:
+      g_return_if_reached ();
+      break;
     }
 }
 

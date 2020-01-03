@@ -20,6 +20,7 @@
  * permission notice:
  *
  * Copyright (C) 2011-2019 Filipe Coelho <falktx@falktx.com>
+ * Copyright (C) 2010 Paul Davis
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -108,12 +109,27 @@ host_callback (
     case audioMasterGetProductString:
       strcpy ((char *) ptr, "Zrythm");
       return 1;
+    case audioMasterCurrentId:
+      return effect->uniqueID;
     case audioMasterIdle:
       g_message ("idle");
       /*effect->dispatcher (*/
         /*effect, effEditIdle, 0, 0, 0, 0);*/
       break;
-    // Handle other opcodes here... there will be lots of them
+    case audioMasterAutomate:
+      {
+        VstPlugin * self =
+          (VstPlugin *) effect->user;
+        Port * port =
+          vst_plugin_get_port_from_param_id (
+            self, index);
+        g_return_val_if_fail (port, -1);
+        port->control = opt;
+        g_message (
+          "setting %s to %f",
+          port->identifier.label, (double) opt);
+      }
+      break;
     default:
       g_message ("Plugin requested value of opcode %d", opcode);
       break;
@@ -121,64 +137,18 @@ host_callback (
   return 0;
 }
 
-void
-vst_plugin_new_from_descriptor (
-  Plugin *           plugin,
-  const PluginDescriptor * descr)
+/**
+ * Loads the VST library.
+ *
+ * @param[out] effect The AEffect address to fill.
+ *
+ * @return The library handle, or NULL if error.
+ */
+static void *
+load_lib (
+  const char *  path,
+  AEffect **    effect)
 {
-  g_return_if_fail (
-    plugin && descr &&
-    descr->protocol == PROT_VST && descr->path);
-
-  void * handle = dlopen (descr->path, RTLD_NOW);
-  if (!handle)
-    {
-      g_warning (
-        "Failed to load VST plugin from %s: %s",
-        descr->path, dlerror ());
-      return;
-    }
-
-  VstPluginMain entry_point =
-    (VstPluginMain) dlsym (handle, "VSTPluginMain");
-  if (!entry_point)
-    entry_point =
-      (VstPluginMain) dlsym (handle, "main");
-  if (!entry_point)
-    {
-      g_warning (
-        "Failed to get entry point from VST plugin from %s: %s",
-        descr->path, dlerror ());
-      return;
-    }
-
-  VstPlugin * self = calloc (1, sizeof (VstPlugin));
-  AEffect * effect =
-    entry_point (host_callback);
-  self->aeffect = effect;
-  effect->user = self;
-
-  /* check plugin's magic number */
-  if (effect->magic != kEffectMagic)
-    {
-      g_warning ("Plugin's magic number is invalid");
-      return;
-    }
-
-  plugin->vst = self;
-  self->plugin = plugin;
-}
-
-PluginDescriptor *
-vst_plugin_create_descriptor_from_path (
-  const char * path)
-{
-  PluginDescriptor * descr =
-    calloc (1, sizeof (PluginDescriptor));
-
-  descr->path = g_strdup (path);
-  descr->protocol = PROT_VST;
-
   void * handle = dlopen (path, RTLD_NOW);
   if (!handle)
     {
@@ -196,22 +166,93 @@ vst_plugin_create_descriptor_from_path (
   if (!entry_point)
     {
       g_warning (
-        "Failed to get entry point from VST plugin from %s: %s",
+        "Failed to get entry point from VST plugin "
+        "from %s: %s",
         path, dlerror ());
+      dlclose (handle);
       return NULL;
     }
 
-  VstPlugin * self = calloc (1, sizeof (VstPlugin));
-  AEffect * effect =
-    entry_point (host_callback);
-  self->aeffect = effect;
+  *effect = entry_point (host_callback);
 
   /* check plugin's magic number */
-  if (effect->magic != kEffectMagic)
+  if ((*effect)->magic != kEffectMagic)
     {
       g_warning ("Plugin's magic number is invalid");
+      dlclose (handle);
       return NULL;
     }
+
+  return handle;
+}
+
+void
+vst_plugin_init_loaded (
+  VstPlugin * self)
+{
+  AEffect * effect = NULL;
+  void * handle =
+    load_lib (self->plugin->descr->path, &effect);
+  g_warn_if_fail (handle);
+  self->aeffect = effect;
+
+  for (int i = 0; i < effect->numParams; i++)
+    {
+      for (int j = 0;
+           j < self->plugin->num_in_ports; j++)
+        {
+          Port * port = self->plugin->in_ports[j];
+          if (port->identifier.type ==
+                TYPE_CONTROL &&
+              port->vst_param_id == i)
+            {
+              effect->setParameter (
+                effect, i, port->control);
+            }
+        }
+    }
+}
+
+VstPlugin *
+vst_plugin_new_from_descriptor (
+  Plugin *                 plugin,
+  const PluginDescriptor * descr)
+{
+  g_return_val_if_fail (
+    plugin && descr &&
+    descr->protocol == PROT_VST && descr->path,
+    NULL);
+
+  AEffect * effect = NULL;
+  void * handle = load_lib (descr->path, &effect);
+  g_return_val_if_fail (handle, NULL);
+
+  VstPlugin * self = calloc (1, sizeof (VstPlugin));
+  self->aeffect = effect;
+  effect->user = self;
+
+  plugin->vst = self;
+  self->plugin = plugin;
+
+  return self;
+}
+
+PluginDescriptor *
+vst_plugin_create_descriptor_from_path (
+  const char * path)
+{
+  PluginDescriptor * descr =
+    calloc (1, sizeof (PluginDescriptor));
+
+  descr->path = g_strdup (path);
+  descr->protocol = PROT_VST;
+
+  AEffect * effect = NULL;
+  void * handle = load_lib (path, &effect);
+  g_return_val_if_fail (handle, NULL);
+
+  VstPlugin * self = calloc (1, sizeof (VstPlugin));
+  self->aeffect = effect;
 
   char str[600];
   get_name (self, str);
@@ -272,6 +313,23 @@ vst_plugin_create_descriptor_from_path (
     }
 
   return descr;
+}
+
+Port *
+vst_plugin_get_port_from_param_id (
+  VstPlugin * self,
+  int         param_id)
+{
+  for (int i = 0; i < self->plugin->num_in_ports;
+       i++)
+    {
+      Port * port = self->plugin->in_ports[i];
+      if (port->identifier.type == TYPE_CONTROL &&
+          port->vst_param_id == param_id)
+        return port;
+    }
+
+  g_return_val_if_reached (NULL);
 }
 
 void
@@ -342,7 +400,8 @@ vst_plugin_process (
 
 int
 vst_plugin_instantiate (
-  VstPlugin * self)
+  VstPlugin * self,
+  int         loading)
 {
   AEffect * effect = self->aeffect;
 
@@ -383,59 +442,90 @@ vst_plugin_instantiate (
   char lbl[400];
   for (int i = 0; i < effect->numInputs; i++)
     {
-      sprintf (lbl, "Audio Input %d", i);
-      Port * port =
-        port_new_with_type (
-          TYPE_AUDIO, FLOW_INPUT, lbl);
-      plugin_add_in_port (
-        self->plugin, port);
+      if (!loading)
+        {
+          sprintf (lbl, "Audio Input %d", i);
+          Port * port =
+            port_new_with_type (
+              TYPE_AUDIO, FLOW_INPUT, lbl);
+          plugin_add_in_port (
+            self->plugin, port);
+        }
       effect->dispatcher (
         effect, effConnectInput, i, 1, NULL, 0.f);
     }
   for (int i = 0; i < effect->numOutputs; i++)
     {
-      sprintf (lbl, "Audio Output %d", i);
-      Port * port =
-        port_new_with_type (
-          TYPE_AUDIO, FLOW_OUTPUT, lbl);
-      plugin_add_out_port (
-        self->plugin, port);
+      if (!loading)
+        {
+          sprintf (lbl, "Audio Output %d", i);
+          Port * port =
+            port_new_with_type (
+              TYPE_AUDIO, FLOW_OUTPUT, lbl);
+          plugin_add_out_port (
+            self->plugin, port);
+        }
       effect->dispatcher (
         effect, effConnectOutput, i, 1, NULL, 0.f);
     }
   if (self->plugin->descr->num_midi_ins > 0)
     {
-      strcpy (lbl, "MIDI Input");
-      Port * port =
-        port_new_with_type (
-          TYPE_EVENT, FLOW_INPUT, lbl);
-      plugin_add_in_port (
-        self->plugin, port);
+      if (!loading)
+        {
+          strcpy (lbl, "MIDI Input");
+          Port * port =
+            port_new_with_type (
+              TYPE_EVENT, FLOW_INPUT, lbl);
+          plugin_add_in_port (
+            self->plugin, port);
+        }
     }
   if (self->plugin->descr->num_midi_outs > 0)
     {
-      strcpy (lbl, "MIDI Output");
-      Port * port =
-        port_new_with_type (
-          TYPE_EVENT, FLOW_OUTPUT, lbl);
-      plugin_add_out_port (
-        self->plugin, port);
+      if (!loading)
+        {
+          strcpy (lbl, "MIDI Output");
+          Port * port =
+            port_new_with_type (
+              TYPE_EVENT, FLOW_OUTPUT, lbl);
+          plugin_add_out_port (
+            self->plugin, port);
+        }
     }
   for (int i = 0; i < effect->numParams; i++)
     {
-      get_param_name (self, i, lbl);
-      Port * port =
-        port_new_with_type (
-          TYPE_CONTROL, FLOW_INPUT, lbl);
-      plugin_add_in_port (
-        self->plugin, port);
-      port->control =
-        effect->getParameter (effect, i);
+      if (!loading)
+        {
+          get_param_name (self, i, lbl);
+          Port * port =
+            port_new_with_type (
+              TYPE_CONTROL, FLOW_INPUT, lbl);
+          port->vst_param_id = i;
+          plugin_add_in_port (
+            self->plugin, port);
+          port->control =
+            effect->getParameter (effect, i);
+        }
     }
 
-  g_message ("start process");
+  g_message (
+    "start process %s", self->plugin->descr->name);
   effect->dispatcher (
     self->aeffect, effStartProcess, 0, 0, NULL, 0.f);
+
+  /* load the parameter values. this must be done
+   * after starting processing */
+  if (loading)
+    {
+      for (int i = 0; i < effect->numParams; i++)
+        {
+          Port * port =
+            vst_plugin_get_port_from_param_id (
+              self, i);
+          effect->setParameter (
+            effect, i, port->control);
+        }
+    }
 
   return 0;
 }
@@ -447,19 +537,6 @@ vst_plugin_suspend (
   AEffect * effect = self->aeffect;
   effect->dispatcher (
     effect, effMainsChanged, 0, 0, NULL, 0.0f);
-}
-
-/**
- * Called both on generic UIs and normal UIs when
- * a plugin window is destroyed.
- */
-static void
-on_window_destroy(
-  GtkWidget*  widget,
-  VstPlugin * self)
-{
-  self->gtk_window_parent = NULL;
-  g_message ("destroying plugin window");
 }
 
 static void
@@ -477,6 +554,81 @@ on_realize (
     self->width, self->height);
 
   self->plugin->ui_instantiated = 1;
+  self->plugin->visible = 1;
+  EVENTS_PUSH (
+    ET_PLUGIN_VISIBILITY_CHANGED,
+    self->plugin);
+}
+
+void
+vst_plugin_close_ui (
+  VstPlugin * self)
+{
+  vstfx_destroy_editor (self);
+
+  if (self->gtk_window_parent)
+    {
+      gtk_widget_set_sensitive (
+        GTK_WIDGET (self->gtk_window_parent), 0);
+      gtk_window_close (
+        GTK_WINDOW (self->gtk_window_parent));
+    }
+}
+
+/**
+ * Called both on generic UIs and normal UIs when
+ * a plugin window is destroyed.
+ */
+static void
+on_window_destroy(
+  GtkWidget*  widget,
+  VstPlugin * self)
+{
+  self->gtk_window_parent = NULL;
+  g_message ("destroying VST plugin window");
+  vstfx_destroy_editor (self);
+}
+
+static void
+set_window_title (
+  VstPlugin * self)
+{
+  g_return_if_fail (
+    self && self->plugin &&
+    self->plugin->track &&
+    self->plugin->track->name);
+  const char* track_name =
+    self->plugin->track->name;
+  const char* plugin_name =
+    self->plugin->descr->name;
+  g_return_if_fail (track_name && plugin_name);
+
+  char title[500];
+  sprintf (
+    title,
+    "%s (%s)",
+    track_name, plugin_name);
+
+  /* TODO add preset if any */
+
+  gtk_window_set_title (
+    GTK_WINDOW (self->gtk_window_parent),
+    title);
+}
+
+static gboolean
+on_delete_event (
+  GtkWidget *widget,
+  GdkEvent  *event,
+  VstPlugin * self)
+{
+  self->plugin->visible = 0;
+  self->gtk_window_parent = NULL;
+  EVENTS_PUSH (
+    ET_PLUGIN_VISIBILITY_CHANGED,
+    self->plugin);
+
+  return FALSE;
 }
 
 /**
@@ -496,22 +648,13 @@ vst_plugin_open_ui (
 
   if (g_settings_get_int (
         S_PREFERENCES, "plugin-uis-stay-on-top"))
-    gtk_window_set_transient_for (
-      GTK_WINDOW (window),
-      GTK_WINDOW (MAIN_WINDOW));
+    {
+      gtk_window_set_transient_for (
+        GTK_WINDOW (window),
+        GTK_WINDOW (MAIN_WINDOW));
+    }
 
   self->gtk_window_parent = window;
-  /*self->delete_event_id =*/
-    /*g_signal_connect (*/
-      /*G_OBJECT (window), "delete-event",*/
-      /*G_CALLBACK (on_delete_event), self);*/
-
-  /* TODO get name */
-
-  /* connect destroy signal */
-  /*g_signal_connect (*/
-    /*window, "destroy",*/
-    /*G_CALLBACK (on_window_destroy), self);*/
 
   g_signal_connect (
     window, "realize",
@@ -519,12 +662,13 @@ vst_plugin_open_ui (
   g_signal_connect (
     window, "destroy",
     G_CALLBACK (on_window_destroy), self);
+  self->delete_event_id =
+    g_signal_connect (
+      G_OBJECT (window), "delete-event",
+      G_CALLBACK (on_delete_event), self);
 
   /* set window title */
-  char name[600];
-  get_name (self, name);
-  gtk_window_set_title (
-    GTK_WINDOW (window), name);
+  set_window_title (self);
 
   gtk_window_set_role (
     GTK_WINDOW (window), "plugin_ui");
@@ -546,4 +690,100 @@ vst_plugin_open_ui (
     GTK_WINDOW (window), 1);
   gtk_window_present(GTK_WINDOW(window));
   gtk_widget_show_all (GTK_WIDGET (window));
+}
+
+/**
+ * Returns a base64-encoded state.
+ *
+ * Must be free'd by caller.
+ *
+ * @param single 1 for single program, 0 for all
+ *   programs.
+ */
+static char *
+get_base64_chunk (
+  VstPlugin * self,
+  int         single)
+{
+  guchar * data;
+  int32_t data_size =
+    self->aeffect->dispatcher (
+      self->aeffect, effGetChunk,
+      single ? 1 : 0, 0, &data, 0);
+  if (data_size == 0)
+    return NULL;
+
+  return g_base64_encode (data, (gsize) data_size);
+}
+
+/**
+ * Loads the state (chunk) from \ref
+ * VstPlugin.state_file.
+ */
+int
+vst_plugin_load_state_from_file (
+  VstPlugin * self)
+{
+  if (!self->state_file)
+    return 0;
+
+  char * chunk;
+  GError *err = NULL;
+  g_file_get_contents (
+    self->state_file, &chunk, NULL, &err);
+  gsize size = 0;
+  guchar * raw_data =
+    g_base64_decode (chunk, &size);
+  int single = 0;
+  int r =
+    self->aeffect->dispatcher (
+      self->aeffect, effSetChunk, single ? 1 : 0,
+      (intptr_t) size, raw_data, 0);
+  g_free (chunk);
+  g_free (raw_data);
+
+  return r;
+}
+
+/**
+ * Saves the current state in given dir.
+ *
+ * Used when saving the project.
+ */
+int
+vst_plugin_save_state_to_file (
+  VstPlugin *  self,
+  const char * dir)
+{
+  if (!(self->aeffect->flags &
+          effFlagsProgramChunks))
+    return 0;
+
+  char * chunk = get_base64_chunk (self, 0);
+  g_return_val_if_fail (chunk, -1);
+
+  char * label =
+    g_strdup_printf (
+      "%s.base64",
+      self->plugin->descr->name);
+  char * tmp = g_path_get_basename (dir);
+  self->state_file =
+    g_build_filename (tmp, label, NULL);
+  GError *err = NULL;
+  g_file_set_contents (
+    self->state_file, chunk, -1, &err);
+  if (err)
+    {
+      // Report error to user, and free error
+      g_critical (
+        "Unable to write VST state: %s",
+        err->message);
+      g_error_free (err);
+      return -1;
+    }
+  g_free (tmp);
+  g_free (label);
+  g_free (chunk);
+
+  return 0;
 }

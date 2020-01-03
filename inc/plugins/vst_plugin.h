@@ -153,6 +153,12 @@ typedef struct VstPlugin
    * \ref VstPlugin.xid. */
   GtkSocket *        socket;
 
+  /** This is the plugin state in base64 encoding. */
+  //char *             chunk;
+
+  /** For saving/loading the state. */
+  char *             state_file;
+
   /** Taken from Carla. */
   FixedVstEvents     fEvents;
 
@@ -223,18 +229,43 @@ typedef struct VstPlugin
   gulong             delete_event_id;
 } VstPlugin;
 
+static const cyaml_schema_field_t
+  vst_plugin_fields_schema[] =
+{
+  CYAML_FIELD_STRING_PTR (
+    "state_file",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    VstPlugin, state_file,
+    0, CYAML_UNLIMITED),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  vst_plugin_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER, VstPlugin,
+    vst_plugin_fields_schema),
+};
+
+void
+vst_plugin_init_loaded (
+  VstPlugin * self);
+
 PluginDescriptor *
 vst_plugin_create_descriptor_from_path (
   const char * path);
 
-void
+VstPlugin *
 vst_plugin_new_from_descriptor (
   Plugin *                 plugin,
   const PluginDescriptor * descr);
 
 int
 vst_plugin_instantiate (
-  VstPlugin * self);
+  VstPlugin * self,
+  int         loading);
 
 void
 vst_plugin_suspend (
@@ -247,8 +278,37 @@ vst_plugin_process (
   const nframes_t  local_offset,
   const nframes_t   nframes);
 
+Port *
+vst_plugin_get_port_from_param_id (
+  VstPlugin * self,
+  int         param_id);
+
 void
 vst_plugin_open_ui (
+  VstPlugin * self);
+
+void
+vst_plugin_close_ui (
+  VstPlugin * self);
+
+/**
+ * Saves the current state in given dir.
+ *
+ * Used when saving the project.
+ */
+int
+vst_plugin_save_state_to_file (
+  VstPlugin *  self,
+  const char * dir);
+
+/**
+ * Loads the state (chunk) from \ref
+ * VstPlugin.state_file.
+ *
+ * TODO not used at the moment.
+ */
+int
+vst_plugin_load_state_from_file (
   VstPlugin * self);
 
 /**

@@ -350,8 +350,11 @@ create_port (
             PM_LILV_NODES.ev_EventPort))
     {
       pi->type = TYPE_EVENT;
-      lv2_port->port->midi_events =
-        midi_events_new (lv2_port->port);
+      if (!lv2_port->port->midi_events)
+        {
+          lv2_port->port->midi_events =
+            midi_events_new (lv2_port->port);
+        }
       lv2_port->old_api = true;
     }
   else if (lilv_port_is_a (
@@ -360,8 +363,11 @@ create_port (
             PM_LILV_NODES.atom_AtomPort))
     {
       pi->type = TYPE_EVENT;
-      lv2_port->port->midi_events =
-        midi_events_new (lv2_port->port);
+      if (!lv2_port->port->midi_events)
+        {
+          lv2_port->port->midi_events =
+            midi_events_new (lv2_port->port);
+        }
       lv2_port->old_api = false;
     }
   else if (!optional)
@@ -1984,11 +1990,7 @@ lv2_plugin_save_state_to_file (
     LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE,
     lv2_plugin->state_features);
 
-  if (!state)
-    {
-      g_warn_if_reached ();
-      return -1;
-    }
+  g_return_val_if_fail (state, -1);
 
   char * label =
     g_strdup_printf (
