@@ -19,7 +19,7 @@ More info can be found at https://www.zrythm.org
 
 # Current state
 
-Zrythm is currently in alpha. Most of the essential
+Zrythm is currently in alpha. Most essential
 DAW features are implemented and we are working
 towards a stable release.
 
