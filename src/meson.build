@@ -84,3 +84,14 @@ zrythm_exe = executable (
   objects: objects,
   install: true,
   )
+
+vst_test_exe = executable(
+  'zrythm_vst_check',
+  sources: [ vst_check_srcs ],
+  dependencies: [ zrythm_deps, ],
+  link_with: [ zrythm_lib, ],
+  include_directories: all_inc,
+  c_args: [ common_cflags ],
+  link_args: common_ldflags,
+  install: true,
+  )

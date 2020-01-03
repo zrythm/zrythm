@@ -200,8 +200,8 @@ host_callback (
  * Loads the VST library.
  *
  * @param[out] effect The AEffect address to fill.
- * @param pfork Fork the process before running the
- *   plugin's entry point. This is useful when only
+ * @param test Test the plugin first to make sure
+ *   that it won't crash. This is useful when only
  *   extracting info from it.
  *
  * @return The library handle, or NULL if error.
@@ -210,7 +210,7 @@ static void *
 load_lib (
   const char *  path,
   AEffect **    effect,
-  int           pfork)
+  int           test)
 {
   void * handle = dlopen (path, RTLD_NOW);
   if (!handle)
@@ -236,32 +236,14 @@ load_lib (
       return NULL;
     }
 
-  if (pfork)
+  if (test)
     {
-      int stat;
-      int is_child = (fork () == 0);
-      if (is_child)
-        {
-          /* remove the previous SIGSEGV handler */
-          signal (SIGSEGV, SIG_DFL);
-
-          *effect = entry_point (host_callback);
-          if (!(*effect))
-            exit (1);
-          exit (0);
-        }
-      else
-        {
-          wait (&stat);
-        }
-      if ((WIFEXITED (stat) &&
-             WEXITSTATUS (stat) != 0) ||
-          !WIFEXITED (stat))
+      char cmd[900];
+      sprintf (cmd, "zrythm_vst_check %s", path);
+      if (system (cmd) != 0)
         {
           g_warning (
-            "%s: Could not get entry point for "
-            "VST plugin",
-            path);
+            "%s: VST plugin failed the test", path);
           dlclose (handle);
           return NULL;
         }

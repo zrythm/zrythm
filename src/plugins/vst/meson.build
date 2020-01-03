@@ -18,3 +18,7 @@
 plugin_srcs += files([
   'vst_x11.c',
   ])
+
+vst_check_srcs = files([
+  'test_vst.c',
+  ])
