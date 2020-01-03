@@ -253,9 +253,13 @@ void
 vst_plugin_init_loaded (
   VstPlugin * self);
 
+/**
+ * @param test 1 if testing.
+ */
 PluginDescriptor *
 vst_plugin_create_descriptor_from_path (
-  const char * path);
+  const char * path,
+  int          test);
 
 VstPlugin *
 vst_plugin_new_from_descriptor (

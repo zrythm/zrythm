@@ -583,7 +583,7 @@ plugin_manager_scan_plugins (
         {
           PluginDescriptor * descriptor =
             vst_plugin_create_descriptor_from_path (
-              plugin);
+              plugin, 0);
 
           if (descriptor)
             {

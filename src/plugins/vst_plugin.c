@@ -323,9 +323,13 @@ vst_plugin_new_from_descriptor (
   return self;
 }
 
+/**
+ * @param test 1 if testing.
+ */
 PluginDescriptor *
 vst_plugin_create_descriptor_from_path (
-  const char * path)
+  const char * path,
+  int          test)
 {
   PluginDescriptor * descr =
     calloc (1, sizeof (PluginDescriptor));
@@ -334,7 +338,7 @@ vst_plugin_create_descriptor_from_path (
   descr->protocol = PROT_VST;
 
   AEffect * effect = NULL;
-  void * handle = load_lib (path, &effect, 1);
+  void * handle = load_lib (path, &effect, !test);
   g_return_val_if_fail (handle, NULL);
 
   VstPlugin * self = calloc (1, sizeof (VstPlugin));
