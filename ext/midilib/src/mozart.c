@@ -87,15 +87,15 @@ int i, n, r;
 }
 
 
-static BOOL mozartFileConcat(MIDI_FILE *mf, const char *fn, DWORD *last_bar_end)
+static BOOL mozartFileConcat(MIDI_FILE *mf, const char *fn, _DWORD *last_bar_end)
 {
 MIDI_FILE *mif;
 MIDI_MSG msg;
 BOOL first=TRUE;
-DWORD dt=0, last_pos=0;
+_DWORD dt=0, last_pos=0;
 int notes_up=0, notes_down=0;
 BYTE notes[128];
-DWORD end_of_last_midi_pos;
+_DWORD end_of_last_midi_pos;
 
 	midiReadInitMessage(&msg);
 	memset(notes, '\0', sizeof(notes));
@@ -111,7 +111,7 @@ DWORD end_of_last_midi_pos;
 				/* Does the first note start exactly at the start of the bar, or a little bit
 				** afterward? Whatever it is, we must maintain it.
 				*/
-				if (msg.dt > (DWORD)midiFileGetPPQN(mif)*3)
+				if (msg.dt > (_DWORD)midiFileGetPPQN(mif)*3)
 					dt = msg.dt - midiFileGetPPQN(mif)*3;		/* we know (in this case) that the first bar (or 3 three beats) is empty */
 				else
 					dt = 0;
@@ -157,7 +157,7 @@ BOOL mozartCreateMidi(const char *pFilename, MOZART_TABLE *pTable, MOZART_PREFS 
 {
 MIDI_FILE *mf;
 char str[128];
-DWORD last_bar_pos = 0;
+_DWORD last_bar_pos = 0;
 int i, part;
 	
 	if ((mf = midiFileCreate(pFilename, bOverwrite)))

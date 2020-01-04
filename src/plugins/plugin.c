@@ -544,9 +544,9 @@ plugin_descriptor_is_instrument (
   const PluginDescriptor * descr)
 {
   return
-    (descr->category > PC_NONE &&
+    (descr->category > PLUGIN_CATEGORY_NONE &&
      descr->category == PC_INSTRUMENT) ||
-    (descr->category == PC_NONE &&
+    (descr->category == PLUGIN_CATEGORY_NONE &&
      descr->num_midi_ins > 0 &&
      descr->num_audio_outs > 0);
 }
@@ -560,7 +560,7 @@ plugin_descriptor_is_effect (
 {
 
   return
-    (descr->category > PC_NONE &&
+    (descr->category > PLUGIN_CATEGORY_NONE &&
      (IS_CAT (DELAY) ||
       IS_CAT (REVERB) ||
       IS_CAT (DISTORTION) ||
@@ -598,7 +598,7 @@ plugin_descriptor_is_effect (
       IS_CAT (CONVERTER) ||
       IS_CAT (FUNCTION) ||
       IS_CAT (MIXER))) ||
-    (descr->category == PC_NONE &&
+    (descr->category == PLUGIN_CATEGORY_NONE &&
      descr->num_audio_ins > 0 &&
      descr->num_audio_outs > 0);
 }
@@ -611,8 +611,8 @@ plugin_descriptor_is_modulator (
   PluginDescriptor * descr)
 {
   return
-    (descr->category == PC_NONE ||
-     (descr->category > PC_NONE &&
+    (descr->category == PLUGIN_CATEGORY_NONE ||
+     (descr->category > PLUGIN_CATEGORY_NONE &&
       (IS_CAT (ENVELOPE) ||
        IS_CAT (GENERATOR) ||
        IS_CAT (CONSTANT) ||
@@ -632,9 +632,9 @@ plugin_descriptor_is_midi_modifier (
   PluginDescriptor * descr)
 {
   return
-    (descr->category > PC_NONE &&
+    (descr->category > PLUGIN_CATEGORY_NONE &&
      descr->category == PC_MIDI) ||
-    (descr->category == PC_NONE &&
+    (descr->category == PLUGIN_CATEGORY_NONE &&
      descr->num_midi_ins > 0 &&
      descr->num_midi_outs > 0);
 }
@@ -649,7 +649,7 @@ PluginCategory
 plugin_descriptor_string_to_category (
   const char * str)
 {
-  PluginCategory category = PC_NONE;
+  PluginCategory category = PLUGIN_CATEGORY_NONE;
 
 #define CHECK_CAT(term,cat) \
   if (g_strrstr (str, term)) \

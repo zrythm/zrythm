@@ -22,6 +22,10 @@
 
 #include "config.h"
 
+#ifdef _WIN32
+#include <winsock2.h>
+#endif
+
 #include "audio/engine.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/cpu.h"
@@ -33,7 +37,6 @@
 #include <glibtop/cpu.h>
 #include <glibtop/loadavg.h>
 #elif defined(_WIN32)
-#include <winsock2.h>
 #include <windows.h>
 #endif
 
@@ -248,7 +251,12 @@ refresh_cpu_load (
       unsigned long long totalTicksSinceLastTime = totalTicks-_previousTotalTicks;
       unsigned long long idleTicksSinceLastTime  = idleTicks-_previousIdleTicks;
 
-      self->cpu = 1.0f-((totalTicksSinceLastTime > 0) ? ((float)idleTicksSinceLastTime)/totalTicksSinceLastTime : 0);
+      self->cpu =
+        (int)
+        (1.0f - (
+          (totalTicksSinceLastTime > 0) ?
+            ((float)idleTicksSinceLastTime) /
+              totalTicksSinceLastTime : 0));
 
       _previousTotalTicks = totalTicks;
       _previousIdleTicks  = idleTicks;

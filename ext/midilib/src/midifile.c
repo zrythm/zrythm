@@ -32,7 +32,7 @@
 typedef struct 	{
 				BYTE note, chn;
 				BYTE valid, p2;
-				DWORD end_pos;
+				_DWORD end_pos;
 				} MIDI_LAST_NOTE;
 
 typedef struct 	{
@@ -40,12 +40,12 @@ typedef struct 	{
 				BYTE *pBase;
 				BYTE *pEnd;
 
-				DWORD pos;
-				DWORD dt;
+				_DWORD pos;
+				_DWORD dt;
 				/* For Reading MIDI Files */
-				DWORD sz;						/* size of whole iTrack */
+				_DWORD sz;						/* size of whole iTrack */
 				/* For Writing MIDI Files */
-				DWORD iBlockSize;				/* max size of track */
+				_DWORD iBlockSize;				/* max size of track */
 				BYTE iDefaultChannel;			/* use for write only */
 				BYTE last_status;				/* used for running status */
 
@@ -53,7 +53,7 @@ typedef struct 	{
 				} MIDI_FILE_TRACK;
 
 typedef struct 	{
-				DWORD	iHeaderSize;
+				_DWORD	iHeaderSize;
 				/**/
 				WORD	iVersion;		/* 0, 1 or 2 */
 				WORD	iNumTracks;		/* number of tracks... (will be 1 for MIDI type 0) */
@@ -66,7 +66,7 @@ typedef struct {
 
 				MIDI_HEADER			Header;
 				BYTE *ptr;			/* to whole data block */
-				DWORD file_sz;
+				_DWORD file_sz;
 
 				MIDI_FILE_TRACK		Track[MAX_MIDI_TRACKS];
 				} _MIDI_FILE;
@@ -80,10 +80,10 @@ typedef struct {
 
 #if BYTE_ORDER == BIG_ENDIAN
 #define SWAP_WORD(w)		(w)
-#define SWAP_DWORD(d)	(d)
+#define SWAP__DWORD(d)	(d)
 #else
 #define SWAP_WORD(w)		(WORD)(((w)>>8)|((w)<<8))
-#define SWAP_DWORD(d)	(DWORD)((d)>>24)|(((d)>>8)&0xff00)|(((d)<<8)&0xff0000)|(((d)<<24))
+#define SWAP__DWORD(d)	(_DWORD)((d)>>24)|(((d)>>8)&0xff00)|(((d)<<8)&0xff0000)|(((d)<<24))
 #endif
 
 #define _VAR_CAST				_MIDI_FILE *pMF = (_MIDI_FILE *)_pMF
@@ -145,7 +145,7 @@ register long value=n;
 */
 static BYTE *_midiGetPtr(_MIDI_FILE *pMF, int iTrack, int sz_reqd)
 {
-const DWORD mem_sz_inc = 8092;	/* arbitary */
+const _DWORD mem_sz_inc = 8092;	/* arbitary */
 BYTE *ptr;
 int curr_offset;
 MIDI_FILE_TRACK *pTrack = &pMF->Track[iTrack];
@@ -374,12 +374,12 @@ long size;
 				if (*(ptr+0) == 'M' && *(ptr+1) == 'T' &&
 					*(ptr+2) == 'h' && *(ptr+3) == 'd')
 					{
-					DWORD dwData;
+					_DWORD dwData;
 					WORD wData;
 					int i;
 
-					dwData = *((DWORD *)(ptr+4));
-					pMF->Header.iHeaderSize = SWAP_DWORD(dwData);
+					dwData = *((_DWORD *)(ptr+4));
+					pMF->Header.iHeaderSize = SWAP__DWORD(dwData);
 
 					wData = *((WORD *)(ptr+8));
 					pMF->Header.iVersion = (WORD)SWAP_WORD(wData);
@@ -404,8 +404,8 @@ long size;
 						{
 						pMF->Track[i].pBase = ptr;
 						pMF->Track[i].ptr = ptr+8;
-						dwData = *((DWORD *)(ptr+4));
-						pMF->Track[i].sz = SWAP_DWORD(dwData);
+						dwData = *((_DWORD *)(ptr+4));
+						pMF->Track[i].sz = SWAP__DWORD(dwData);
 						pMF->Track[i].pEnd = ptr+pMF->Track[i].sz+8;
 						ptr += pMF->Track[i].sz+8;
 						}
@@ -442,7 +442,7 @@ MIDI_END_POINT *p2 = (MIDI_END_POINT *)e2;
 	return p1->iEndPos-p2->iEndPos;
 }
 
-BOOL	midiFileFlushTrack(MIDI_FILE *_pMF, int iTrack, BOOL bFlushToEnd, DWORD dwEndTimePos)
+BOOL	midiFileFlushTrack(MIDI_FILE *_pMF, int iTrack, BOOL bFlushToEnd, _DWORD dwEndTimePos)
 {
 int sz;
 BYTE *ptr;
@@ -481,7 +481,7 @@ int num, i, mx_pts;
 		qsort(pEndPoints, mx_pts, sizeof(MIDI_END_POINT), qs_cmp_pEndPoints);
 
 		i = 0;
-		while ((dwEndTimePos >= (DWORD)pEndPoints[i].iEndPos || bFlushToEnd) && i<mx_pts)
+		while ((dwEndTimePos >= (_DWORD)pEndPoints[i].iEndPos || bFlushToEnd) && i<mx_pts)
 			{
 			ptr = _midiGetPtr(pMF, iTrack, DT_DEF);
 			if (!ptr)
@@ -563,14 +563,14 @@ BOOL	midiFileClose(MIDI_FILE *_pMF)
 		*/
 		{
 		const BYTE mthd[4] = {'M', 'T', 'h', 'd'};
-		DWORD dwData;
+		_DWORD dwData;
 		WORD wData;
 		WORD version, PPQN;
 
 			fwrite(mthd, sizeof(BYTE), 4, pMF->pFile);
 			dwData = 6;
-			if (bSwap)	dwData = SWAP_DWORD(dwData);
-			fwrite(&dwData, sizeof(DWORD), 1, pMF->pFile);
+			if (bSwap)	dwData = SWAP__DWORD(dwData);
+			fwrite(&dwData, sizeof(_DWORD), 1, pMF->pFile);
 
 			wData = (WORD)(iNumTracks==1?pMF->Header.iVersion:1);
 			if (bSwap)	version = SWAP_WORD(wData); else version = (WORD)wData;
@@ -588,15 +588,15 @@ BOOL	midiFileClose(MIDI_FILE *_pMF)
 			if (pMF->Track[i].ptr)
 				{
 				const BYTE mtrk[4] = {'M', 'T', 'r', 'k'};
-				DWORD sz, dwData;
+				_DWORD sz, dwData;
 
 				/* Write track header */
 				fwrite(&mtrk, sizeof(BYTE), 4, pMF->pFile);
 
 				/* Write data size */
 				sz = dwData = (int)(pMF->Track[i].ptr - pMF->Track[i].pBase);
-				if (bSwap)	sz = SWAP_DWORD(sz);
-				fwrite(&sz, sizeof(DWORD), 1, pMF->pFile);
+				if (bSwap)	sz = SWAP__DWORD(sz);
+				fwrite(&sz, sizeof(_DWORD), 1, pMF->pFile);
 
 				/* Write data */
 				fwrite(pMF->Track[i].pBase, sizeof(BYTE), dwData, pMF->pFile);
@@ -745,7 +745,7 @@ int dtime;
 
 BOOL	midiTrackIncTime(MIDI_FILE *_pMF, int iTrack, int iDeltaTime, BOOL bOverridePPQN)
 {
-DWORD will_end_at;
+_DWORD will_end_at;
 
 	_VAR_CAST;
 	if (!IsFilePtrValid(pMF))				return FALSE;
@@ -923,9 +923,9 @@ int		midiTrackGetEndPos(MIDI_FILE *_pMF, int iTrack)
 /*
 ** midiRead* Functions
 */
-static BYTE *_midiReadVarLen(BYTE *ptr, DWORD *num)
+static BYTE *_midiReadVarLen(BYTE *ptr, _DWORD *num)
 {
-register DWORD value;
+register _DWORD value;
 register BYTE c;
 
     if ((value = *ptr++) & 0x80)
@@ -941,7 +941,7 @@ register BYTE c;
 }
 
 
-static BOOL _midiReadTrackCopyData(MIDI_MSG *pMsg, BYTE *ptr, DWORD sz, BOOL bCopyPtrData)
+static BOOL _midiReadTrackCopyData(MIDI_MSG *pMsg, BYTE *ptr, _DWORD sz, BOOL bCopyPtrData)
 {
 	if (sz > pMsg->data_sz)
 		{
@@ -1088,7 +1088,7 @@ int sz;
 										break;
 								case	metaSetTempo:
 										{
-										DWORD us = ((*(pTrack->ptr+0))<<16)|((*(pTrack->ptr+1))<<8)|(*(pTrack->ptr+2));
+										_DWORD us = ((*(pTrack->ptr+0))<<16)|((*(pTrack->ptr+1))<<8)|(*(pTrack->ptr+2));
 										pMsg->MsgData.MetaEvent.Data.Tempo.iBPM = 60000000L/us;
 										}
 										break;

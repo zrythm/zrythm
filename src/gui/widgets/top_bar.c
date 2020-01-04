@@ -112,12 +112,13 @@ on_transport_playhead_right_click (
   if (n_press != 1)
     return;
 
-  GtkWidget *menu, *menuitem, *menuitem2;
+  GtkWidget *menu, *menuitem;
 
   menu = gtk_menu_new();
 
   /* jack transport related */
 #ifdef HAVE_JACK
+  GtkWidget * menuitem2;
   if (AUDIO_ENGINE->audio_backend ==
         AUDIO_BACKEND_JACK)
     {
@@ -191,6 +192,7 @@ on_transport_playhead_right_click (
 
   menuitem =
     gtk_separator_menu_item_new ();
+  (void) menuitem;
 
   /* display format related */
   /*gtk_menu_shell_append (*/

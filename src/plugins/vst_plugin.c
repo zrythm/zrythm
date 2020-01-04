@@ -35,23 +35,31 @@
  * For a full copy of the GNU General Public License see the doc/GPL.txt file.
  */
 
+#include "config.h"
+
 #include<stdio.h>
 #include<stdlib.h>
+#ifndef _WIN32
 #include<sys/wait.h>
+#endif
 #include<unistd.h>
 
 #include "audio/engine.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "plugins/vst_plugin.h"
+#ifdef HAVE_X11
 #include "plugins/vst/vst_x11.h"
+#endif
 #include "project.h"
 #include "utils/io.h"
 
+#ifdef HAVE_X11
 #include <gdk/gdkx.h>
+#include <X11/Xlib.h>
+#endif
 
 #include <dlfcn.h>
-#include <X11/Xlib.h>
 
 static int
 can_do (
@@ -389,7 +397,7 @@ vst_plugin_create_descriptor_from_path (
       g_warn_if_reached ();
       break;
     default:
-      descr->category = PC_NONE;
+      descr->category = PLUGIN_CATEGORY_NONE;
       descr->category_str = g_strdup ("Plugin");
       break;
     }
@@ -635,11 +643,13 @@ on_realize (
   GtkWidget * widget,
   VstPlugin * self)
 {
+#ifdef HAVE_X11
   gtk_socket_add_id (
     self->socket, (Window) self->xid);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->socket),
     self->width, self->height);
+#endif
   gtk_window_set_default_size (
     GTK_WINDOW (widget),
     self->width, self->height);
@@ -655,7 +665,9 @@ void
 vst_plugin_close_ui (
   VstPlugin * self)
 {
+#ifdef HAVE_X11
   vstfx_destroy_editor (self);
+#endif
 
   if (self->gtk_window_parent)
     {
@@ -677,7 +689,9 @@ on_window_destroy(
 {
   self->gtk_window_parent = NULL;
   g_message ("destroying VST plugin window");
+#ifdef HAVE_X11
   vstfx_destroy_editor (self);
+#endif
 }
 
 static void
@@ -730,7 +744,9 @@ void
 vst_plugin_open_ui (
   VstPlugin * self)
 {
+#ifdef HAVE_X11
   vstfx_run_editor (self);
+#endif
 
   GtkWidget* window =
     gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -766,11 +782,13 @@ vst_plugin_open_ui (
 
   if (plugin_has_supported_custom_ui (self->plugin))
     {
+#ifdef HAVE_X11
       self->socket =
         GTK_SOCKET (gtk_socket_new ());
       gtk_container_add (
         GTK_CONTAINER (window),
         GTK_WIDGET (self->socket));
+#endif
     }
   else
     {

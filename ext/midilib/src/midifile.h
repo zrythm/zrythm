@@ -41,7 +41,7 @@
 */
 typedef	unsigned char		BYTE;
 typedef	uint16_t 		WORD;
-typedef	uint32_t 		DWORD;
+typedef	uint32_t 		_DWORD;
 typedef int					BOOL;
 #ifndef TRUE
 #define TRUE	1
@@ -70,16 +70,16 @@ typedef	void 	MIDI_FILE;
 typedef struct {
 					tMIDI_MSG	iType;
 
-					DWORD		dt;		/* delta time */
-					DWORD		dwAbsPos;
-					DWORD		iMsgSize;
+					_DWORD		dt;		/* delta time */
+					_DWORD		dwAbsPos;
+					_DWORD		iMsgSize;
 
 					BOOL		bImpliedMsg;
 					tMIDI_MSG	iImpliedMsg;
 
 					/* Raw data chunk */
 					BYTE *data;		/* dynamic data block */
-					DWORD data_sz;
+					_DWORD data_sz;
 					
 					union {
 						struct {
@@ -158,7 +158,7 @@ typedef struct {
 MIDI_FILE  *midiFileCreate(const char *pFilename, BOOL bOverwriteIfExists);
 int			midiFileSetTracksDefaultChannel(MIDI_FILE *pMF, int iTrack, int iChannel);
 int			midiFileGetTracksDefaultChannel(const MIDI_FILE *pMF, int iTrack);
-BOOL		midiFileFlushTrack(MIDI_FILE *pMF, int iTrack, BOOL bFlushToEnd, DWORD dwEndTimePos);
+BOOL		midiFileFlushTrack(MIDI_FILE *pMF, int iTrack, BOOL bFlushToEnd, _DWORD dwEndTimePos);
 BOOL		midiFileSyncTracks(MIDI_FILE *pMF, int iTrack1, int iTrack2);
 int			midiFileSetPPQN(MIDI_FILE *pMF, int PPQN);
 int			midiFileGetPPQN(const MIDI_FILE *pMF);

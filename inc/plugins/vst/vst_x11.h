@@ -43,6 +43,9 @@
  * Engine for handling VST plugins on X11.
  */
 
+#include "config.h"
+
+#ifdef HAVE_X11
 #ifndef __PLUGINS_VST_VST_X11_H__
 #define __PLUGINS_VST_VST_X11_H__
 
@@ -85,3 +88,4 @@ vstfx_destroy_editor (
  */
 
 #endif
+#endif // HAVE_X11

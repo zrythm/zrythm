@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+
 #include "audio/supported_file.h"
 #include "utils/io.h"
 #include "utils/string.h"

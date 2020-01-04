@@ -57,7 +57,7 @@ typedef struct VstPlugin VstPlugin;
 typedef enum PluginCategory
 {
   /** None specified. */
-  PC_NONE,
+  PLUGIN_CATEGORY_NONE,
   PC_DELAY,
   PC_REVERB,
   PC_DISTORTION,

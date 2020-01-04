@@ -43,11 +43,6 @@ if not cyaml_dep.found()
     cyaml,
     ]
 endif
-if not audec_dep.found()
-  zrythm_link_libs += [
-    audio_decoder,
-    ]
-endif
 
 zrythm_lib = static_library (
   'zrythm-lib',

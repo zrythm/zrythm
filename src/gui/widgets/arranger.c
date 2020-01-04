@@ -558,7 +558,7 @@ draw_audio_bg (
                k < clip->channels; k++)
             {
               long index =
-                j * clip->channels + k;
+                j * (long) clip->channels + (long) k;
               g_return_if_fail (
                 index >= 0 &&
                 index <

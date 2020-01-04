@@ -19,7 +19,9 @@
 
 #include "config.h"
 
+#ifndef _WIN32
 #include <sys/mman.h>
+#endif
 #include <stdlib.h>
 
 #include "actions/actions.h"
@@ -830,6 +832,9 @@ zrythm_app_startup (
 static void
 lock_memory (void)
 {
+#ifdef _WIN32
+  /* TODO */
+#else
   /* lock down memory */
   g_message ("Locking down memory...");
   if (mlockall (MCL_CURRENT))
@@ -837,6 +842,7 @@ lock_memory (void)
       g_warning ("Cannot lock down memory: %s",
                  strerror (errno));
     }
+#endif
 }
 
 /**

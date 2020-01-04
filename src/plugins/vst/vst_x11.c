@@ -41,6 +41,10 @@
 /** VSTFX - An engine based on FST for handling linuxVST plugins **/
 /******************************************************************/
 
+#include "config.h"
+
+#ifdef HAVE_X11
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <libgen.h>
@@ -853,3 +857,4 @@ vstfx_event_loop_remove_plugin (VstPlugin* vstfx)
   }
 }
 
+#endif // HAVE_X11

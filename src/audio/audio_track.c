@@ -70,7 +70,7 @@ audio_track_fill_stereo_ports_from_clip (
   long cycle_start_frames =
     g_start_frames;
   long cycle_end_frames =
-    cycle_start_frames + nframes;
+    cycle_start_frames + (long) nframes;
 
   if (!TRANSPORT_IS_ROLLING)
     return;
@@ -133,7 +133,8 @@ audio_track_fill_stereo_ports_from_clip (
 
               /* frames to process if the region
                * ends within this cycle */
-              long frames_to_process = nframes;
+              long frames_to_process =
+                (long) nframes;
               if (cycle_end_frames >=
                     region_end_frames)
                 {
@@ -149,11 +150,11 @@ audio_track_fill_stereo_ports_from_clip (
               long current_local_frames =
                 local_frames_start;
               for (j = frames_to_skip;
-                   j < frames_to_process;
+                   (long) j < frames_to_process;
                    j++)
                 {
                   current_local_frames =
-                    local_frames_start + j;
+                    local_frames_start + (long) j;
 
                   /* if loop point hit in the
                    * cycle, go back to loop start */
@@ -168,14 +169,15 @@ audio_track_fill_stereo_ports_from_clip (
                     }
 
                   buff_index =
-                    clip->channels *
-                    (current_local_frames);
+                    (ssize_t) clip->channels *
+                    (ssize_t) current_local_frames;
 
                   /* make sure we are within the
                    * bounds of the frame array */
                   g_warn_if_fail (
                     buff_index >= 0 &&
                     buff_index +
+                      (ssize_t)
                       (clip->channels - 1) <
                         (ssize_t)
                         (clip->channels *

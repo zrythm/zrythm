@@ -20,7 +20,12 @@
 #include "config.h"
 
 #include <ctype.h>
+#ifdef _WIN32
+#include <windows.h>
+#include <dbghelp.h>
+#else
 #include <execinfo.h>
+#endif
 #include <getopt.h>
 #include <signal.h>
 #include <stdio.h>
@@ -56,6 +61,47 @@
 static void
 handler (int sig)
 {
+  char message[3000];
+  char current_line[800];
+
+#ifdef _WIN32
+  unsigned int   i;
+  void         * stack[ 100 ];
+  unsigned short frames;
+  SYMBOL_INFO  * symbol;
+  HANDLE         process;
+
+  process = GetCurrentProcess();
+
+  SymInitialize (process, NULL, TRUE);
+
+  frames =
+    CaptureStackBackTrace (0, 100, stack, NULL);
+  symbol =
+    (SYMBOL_INFO *)
+    calloc (
+      sizeof (SYMBOL_INFO) + 256 * sizeof( char ),
+      1);
+  symbol->MaxNameLen = 255;
+  symbol->SizeOfStruct = sizeof (SYMBOL_INFO);
+
+  sprintf (
+    message,
+    _("Error - Backtrace:\n"), sig);
+  for (i = 0; i < frames; i++)
+    {
+      SymFromAddr (
+        process, (DWORD64) (stack[i]), 0,
+        symbol);
+
+      sprintf (
+        current_line,
+        "%u: %s - 0x%0X\n", frames - i - 1,
+        symbol->Name, symbol->Address);
+      strcat (message, current_line);
+    }
+  free (symbol);
+#else
   void *array[BACKTRACE_SIZE];
   char ** strings;
 
@@ -63,7 +109,6 @@ handler (int sig)
   int size = backtrace (array, BACKTRACE_SIZE);
 
   /* print out all the frames to stderr */
-  char message[3000], current_line[800];
   sprintf (
     message,
     _("Error: signal %d - Backtrace:"), sig);
@@ -74,6 +119,7 @@ handler (int sig)
       strcat (message, current_line);
     }
   free (strings);
+#endif
 
   g_message ("%s", message);
 
@@ -244,11 +290,11 @@ main (int    argc,
   /* init xlib threads */
   g_message ("Initing X threads...");
   XInitThreads ();
-#endif
 
   /* init VST UI engine */
   g_message ("Initing VST UI engine...");
   g_return_val_if_fail (vstfx_init (0) == 0, -1);;
+#endif
 
   /* init suil */
   g_message ("Initing suil...");
@@ -271,7 +317,11 @@ main (int    argc,
 
   /* init random */
   g_message ("Initing random...");
+#ifdef _WIN32
+  srand ((unsigned int) time (NULL));
+#else
   srandom ((unsigned int) time (NULL));
+#endif
 
   /* init object utils */
   g_message ("Initing object utils...");

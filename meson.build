@@ -366,7 +366,8 @@ if (cyaml_dep.found ())
 endif
 audec_dep = dependency(
   'audec', version: '>=0.1',
-  fallback: ['libaudec', 'libaudec_dep'])
+  fallback: ['libaudec', 'libaudec_dep'],
+  required: true)
 
 yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.22')
@@ -429,18 +430,21 @@ if (get_option('enable_portaudio'))
   cdata.set('HAVE_PORT_AUDIO', 1)
 endif
 
+if os_windows
+  zrythm_deps += cc.find_library('dbghelp')
+  # msys2 provides a separate fftw3f entry in
+  # pkg-config
+  zrythm_deps += dependency('fftw3f')
+else
+  zrythm_deps += cc.find_library('fftw3_threads')
+  zrythm_deps += cc.find_library('fftw3f_threads')
+endif
+
 if os_linux
   zrythm_deps += cc.find_library('rt')
 endif
 
-if os_linux or os_freebsd
-  zrythm_deps += cc.find_library('fftw3_threads')
-  zrythm_deps += cc.find_library('fftw3f_threads')
-endif
-
 if (os_darwin)
-  zrythm_deps += cc.find_library('fftw3_threads')
-  zrythm_deps += cc.find_library('fftw3f_threads')
   zrythm_deps += dependency (
     'appleframeworks',
     modules: [

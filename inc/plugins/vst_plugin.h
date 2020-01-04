@@ -52,7 +52,9 @@
 #include "plugins/vst/vestige.h"
 #include "utils/types.h"
 
+#ifdef HAVE_X11
 #include <gtk/gtkx.h>
+#endif
 
 #define audioMasterGetOutputSpeakerArrangement audioMasterGetSpeakerArrangement
 #define effFlagsProgramChunks (1 << 5)
@@ -149,9 +151,11 @@ typedef struct VstPlugin
   /** Base Plugin instance (parent). */
   Plugin *           plugin;
 
+#ifdef HAVE_X11
   /** Socket to house the plugin's X11 window in
    * \ref VstPlugin.xid. */
   GtkSocket *        socket;
+#endif
 
   /** This is the plugin state in base64 encoding. */
   //char *             chunk;
@@ -216,6 +220,7 @@ typedef struct VstPlugin
   float   dispatcher_opt;
   int     dispatcher_retval;
 
+#ifdef HAVE_X11
   struct VstPlugin * next;
   pthread_mutex_t   lock;
   pthread_mutex_t   state_lock;
@@ -223,6 +228,7 @@ typedef struct VstPlugin
   pthread_cond_t    plugin_dispatcher_called;
   pthread_cond_t    window_created;
   int               been_activated;
+#endif
 
   /** ID of the delete-event signal so that we can
    * deactivate before freeing the plugin. */

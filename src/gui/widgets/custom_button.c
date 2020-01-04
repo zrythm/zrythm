@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+
 #include "gui/widgets/custom_button.h"
 #include "utils/cairo.h"
 #include "utils/ui.h"
