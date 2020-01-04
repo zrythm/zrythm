@@ -149,9 +149,7 @@ elif os_darwin
   find_program (open_dir_cmd)
   cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
 elif os_windows
-  open_dir_cmd = 'explorer'
-  find_program (open_dir_cmd)
-  cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
+  cdata.set_quoted('OPEN_DIR_CMD', 'start')
 endif
 
 sphinx_build = find_program (
@@ -348,7 +346,7 @@ endif
 
 # set config defines
 libgtop_dep = dependency(
-  'libgtop-2.0', required: os_windows)
+  'libgtop-2.0', required: false)
 if (libgtop_dep.found ())
   cdata.set('HAVE_LIBGTOP', 1)
   cdata.set('TIME_WITH_SYS_TIME', 0)

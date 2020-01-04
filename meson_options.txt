@@ -19,25 +19,19 @@ option (
   'enable_profiling',
   type: 'boolean',
   value: false,
-  description: 'Enable profiling')
+  description: 'Enable profiling with gprof')
 
 option (
   'enable_plugins',
   type: 'boolean',
   value: true,
-  description: 'Whether to build and install plugins')
+  description: 'Whether to build and install bundled plugins')
 
 option (
   'enable_tests',
   type: 'boolean',
   value: false,
   description: 'Whether to compile unit tests')
-
-option (
-  'enable_qt5',
-  type: 'boolean',
-  value: false,
-  description: 'Compile with QT5 support in suil')
 
 option (
   'enable_gui_tests',

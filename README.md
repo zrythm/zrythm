@@ -83,7 +83,7 @@ different licenses.
 ## Support
 If you would like to support this project please
 donate below or purchase a binary installer from
-<https://www.zrythm.org/en/download> - creating a DAW
+<https://www.zrythm.org/en/download.html> - creating a DAW
 takes thousands of hours of work and contributions
 enable us to spend more time working on the project.
 
@@ -93,7 +93,7 @@ enable us to spend more time working on the project.
 
 ----
 
-Copyright (C) 2018-2019 Alexandros Theodotou
+Copyright (C) 2018-2020 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
