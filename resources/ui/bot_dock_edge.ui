@@ -142,7 +142,7 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
-                <property name="icon-name">z-mathmode</property>
+                <property name="icon-name">z-insert-math-expression</property>
               </object>
               <packing>
                 <property name="expand">0</property>

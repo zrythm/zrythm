@@ -989,7 +989,7 @@ plugin_browser_widget_init (
   g_value_init (&iconval2, G_TYPE_STRING);
   g_value_init (&iconval3, G_TYPE_STRING);
   g_value_set_string (
-    &iconval1, "z-favorites");
+    &iconval1, "z-folder-favorites");
   g_value_set_string(
     &iconval2, "iconfinder_category_103432_edited");
   g_value_set_string(

@@ -139,7 +139,7 @@ set_icon_from_port_type (
   else if (type == TYPE_CONTROL)
     expander_box_widget_set_icon_name (
       Z_EXPANDER_BOX_WIDGET (self),
-      "z-step_object_Controller");
+      "z-configure");
 }
 
 /**

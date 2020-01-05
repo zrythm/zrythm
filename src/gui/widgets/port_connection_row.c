@@ -59,7 +59,7 @@ port_connection_row_widget_new (
   /* power button */
   GtkToggleButton * btn =
     z_gtk_toggle_button_new_with_icon (
-      "z-online");
+      "z-network-connect");
   gtk_toggle_button_set_active (
     btn, enabled);
   gtk_widget_set_visible (GTK_WIDGET (btn), 1);

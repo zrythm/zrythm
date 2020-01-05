@@ -69,7 +69,7 @@ G_DEFINE_TYPE (
   "z-node-type-cusp"
 #define ICON_NAME_SHOW_TRACK_LANES \
   "z-format-justify-fill"
-#define ICON_NAME_LOCK "z-object-unlocked"
+#define ICON_NAME_LOCK "z-document-decrypt"
 #define ICON_NAME_FREEZE "snowflake-o"
 #define ICON_NAME_WRITE_AUTOMATION "rw_read_write"
 #define ICON_NAME_READ_AUTOMATION "r_read"
@@ -1396,7 +1396,7 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               str,
-              "z-delete",
+              "z-edit-delete",
               0,
               NULL,
               0,
@@ -1414,7 +1414,7 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               str,
-              "z-edit-duplicate",
+              "z-edit-copy",
               0,
               NULL,
               0,
@@ -1429,7 +1429,7 @@ show_context_menu (
           menuitem =
             z_gtk_create_menu_item (
               _("Add Region"),
-              "z-gtk-add",
+              "z-list-add",
               0,
               NULL,
               0,
@@ -1442,7 +1442,7 @@ show_context_menu (
           num_selected == 1 ?
             _("Hide Track") :
             _("Hide Tracks"),
-          "z-gnumeric-column-hide",
+          "z-hint",
           0,
           NULL,
           0,

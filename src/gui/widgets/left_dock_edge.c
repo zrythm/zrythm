@@ -1,6 +1,4 @@
 /*
- * gui/widgets/left_dock_edge.c - Main window widget
- *
  * Copyright (C) 2018 Alexandros Theodotou
  *
  * This file is part of Zrythm
@@ -119,7 +117,7 @@ left_dock_edge_widget_init (
   /* setup visibility */
   img =
     gtk_image_new_from_icon_name (
-      "z-visibility",
+      "z-view-visible",
       GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_set_tooltip_text (
     img, _("Visibility"));

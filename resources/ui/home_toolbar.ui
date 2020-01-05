@@ -85,7 +85,7 @@
     <child>
       <object class="GtkToolButton" id="duplicate">
         <property name="visible">1</property>
-        <property name="icon-name">z-document-duplicate</property>
+        <property name="icon-name">z-edit-copy</property>
         <property name="action-name">win.duplicate</property>
       </object>
     </child>

@@ -5,4 +5,17 @@
 Windows
 =======
 
-Windows is not supported at the moment.
+A Windows installer is coming soon.
+
+Building with mingw64
+---------------------
+For reference, the following MSYS2/MinGW64 packages
+are needed (mingw-w64... prefix abbreviated):
+
+- cantarell-fonts
+- gtk3
+- rubberband
+- fftw
+- meson
+- gcc
+- pkg-config

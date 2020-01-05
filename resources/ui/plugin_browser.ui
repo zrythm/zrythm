@@ -105,7 +105,7 @@
             <child>
               <object class="GtkToggleToolButton" id="toggle_effects">
                 <property name="visible">1</property>
-                <property name="icon-name">z-kdenlive-show-audiothumb</property>
+                <property name="icon-name">z-view-media-visualization</property>
                 <property name="tooltip-text" translatable="true">Effects</property>
                 <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
               </object>
@@ -116,7 +116,7 @@
             <child>
               <object class="GtkToggleToolButton" id="toggle_modulators">
                 <property name="visible">1</property>
-                <property name="icon-name">z-mathmode</property>
+                <property name="icon-name">z-insert-math-expression</property>
                 <property name="tooltip-text" translatable="true">Modulators</property>
                 <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
               </object>

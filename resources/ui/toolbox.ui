@@ -37,7 +37,7 @@
           <object class="GtkImage" id="select_img">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="icon-name">z-edit-select-symbolic</property>
+            <property name="icon-name">z-edit-select</property>
           </object>
         </child>
       </object>
@@ -57,7 +57,7 @@
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="icon-name">z-editor</property>
+            <property name="icon-name">z-document-edit</property>
           </object>
         </child>
       </object>
@@ -137,7 +137,7 @@
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="icon-name">z-audio-speakers-symbolic</property>
+            <property name="icon-name">z-audio-volume-high</property>
           </object>
         </child>
       </object>

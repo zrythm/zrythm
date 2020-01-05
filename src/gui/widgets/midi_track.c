@@ -224,7 +224,7 @@ midi_track_widget_init (
     _("Show track lanes"));
   self->lock =
     z_gtk_toggle_button_new_with_icon (
-      "z-object-unlocked");
+      "z-document-decrypt");
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->lock),
     _("Lock track"));

@@ -101,7 +101,7 @@
 #define CREATE_DUPLICATE_MENU_ITEM \
   z_gtk_create_menu_item ( \
     "Duplicate", \
-    "z-document-duplicate", \
+    "z-edit-copy", \
     0, \
     NULL, \
     0, \

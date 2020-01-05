@@ -310,7 +310,7 @@ create_model_for_plugins (
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
-            0, "z-inode-directory",
+            0, "z-folder",
             1, _("Track Ports"),
             2, dummy_plugin,
             -1);

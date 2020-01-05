@@ -28,7 +28,7 @@
     <child>
       <object class="GtkToolButton" id="status_bar">
         <property name="visible">1</property>
-        <property name="icon-name">z-kt-show-statusbar</property>
+        <property name="icon-name">z-show-menu</property>
         <property name="action-name">win.toggle-status-bar</property>
       </object>
     </child>

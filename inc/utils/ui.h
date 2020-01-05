@@ -271,7 +271,7 @@ typedef enum UiOverlayAction
 #define ui_set_pencil_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-editor", \
+    "z-document-edit", \
     3, 6);
 
 #define ui_set_cut_clip_cursor(widget) \
@@ -295,13 +295,13 @@ typedef enum UiOverlayAction
 #define ui_set_speaker_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-audio-speakers-symbolic", \
+    "z-volume-high", \
     3, 6);
 
 #define ui_set_hand_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-labplot-transform-move", \
+    "z-transform-move", \
     10, 10);
 
 #define ui_set_left_resize_cursor(widget) \
