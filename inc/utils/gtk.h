@@ -282,6 +282,14 @@ z_gtk_set_tooltip_for_actionable (
   const char *    tooltip);
 
 /**
+ * Changes the size of the icon inside tool buttons.
+ */
+void
+z_gtk_tool_button_set_icon_size (
+  GtkToolButton * toolbutton,
+  GtkIconSize     icon_size);
+
+/**
  * Adds the given style class to the GtkWidget
  */
 void

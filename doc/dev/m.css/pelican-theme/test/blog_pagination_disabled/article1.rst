@@ -1,1 +1,0 @@
-../blog_pagination/article1.rst

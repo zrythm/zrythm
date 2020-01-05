@@ -460,6 +460,35 @@ z_gtk_set_tooltip_for_actionable (
 }
 
 /**
+ * Changes the size of the icon inside tool buttons.
+ */
+void
+z_gtk_tool_button_set_icon_size (
+  GtkToolButton * toolbutton,
+  GtkIconSize     icon_size)
+{
+  GtkImage * img =
+    GTK_IMAGE (
+      z_gtk_container_get_single_child (
+        GTK_CONTAINER (
+          z_gtk_container_get_single_child (
+            GTK_CONTAINER (
+              z_gtk_container_get_single_child (
+                GTK_CONTAINER (toolbutton)))))));
+  GtkImageType type =
+    gtk_image_get_storage_type (GTK_IMAGE (img));
+  g_return_if_fail (type == GTK_IMAGE_ICON_NAME);
+  const char * _icon_name;
+  gtk_image_get_icon_name (
+    GTK_IMAGE (img), &_icon_name, NULL);
+  char * icon_name = g_strdup (_icon_name);
+  gtk_image_set_from_icon_name (
+    GTK_IMAGE (img), icon_name,
+    GTK_ICON_SIZE_SMALL_TOOLBAR);
+  g_free (icon_name);
+}
+
+/**
  * Sets the ellipsize mode of each text cell
  * renderer in the combo box.
  */

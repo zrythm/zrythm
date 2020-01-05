@@ -42,6 +42,12 @@ help_toolbar_widget_init (HelpToolbarWidget * self)
   SET_TOOLTIP (donate_btn, _("Donate"));
   SET_TOOLTIP (report_a_bug_btn, _("Report a Bug"));
 #undef SET_TOOLTIP
+
+  /* these icons get extremely large on windows */
+  z_gtk_tool_button_set_icon_size (
+    self->manual, GTK_ICON_SIZE_SMALL_TOOLBAR);
+  z_gtk_tool_button_set_icon_size (
+    self->shortcuts, GTK_ICON_SIZE_SMALL_TOOLBAR);
 }
 
 static void

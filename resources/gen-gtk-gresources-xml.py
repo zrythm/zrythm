@@ -117,7 +117,6 @@ _breeze_icons = [
   'document-save-as',
   'document-send',
   'draw-eraser',
-  'distortionfx',
   'edit-select',
   'emblem-symbolic-link',
   'edit-undo',
