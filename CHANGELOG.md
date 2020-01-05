@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.341] - 2020-01-05
+- Add experimental VST2 support (X11 UIs only)
+- Previously visible plugins now open on project load
+- Fader and pan controls are now exposed as ports
+- Add option to listen to notes while dragging them in the piano roll
+- Hide uneditable port connections from the inspector
+- Show visible track count above the track list
+- Allow vertical resizing of piano roll
+- Use lilv subproject
+- Made black rows darker in piano roll
+- Allow older GTK versions (works on Debian 9)
+- Fix Windows build
+- Fix using symbolically linked icons in compiled resources
+- Updated French and Portuguese translations
+- Add Greek translation to the manual
+
 ## [0.7.295] - 2019-12-24
 - Add toggle for musical mode
 - Add separators in timeline toolbar
