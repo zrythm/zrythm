@@ -17,7 +17,7 @@
 
 project (
   'zrythm', ['c', 'cpp'],
-  version: '0.7.344',
+  version: '0.7.345',
   license: 'AGPLv3+',
   meson_version: '>= 0.50.0',
   default_options: [
@@ -503,10 +503,10 @@ ext_srcs = []
 subdir ('po')
 subdir ('ext')
 subdir ('resources')
+subdir ('data')
 subdir ('src')
 subdir ('plugins')
 subdir ('tests')
-subdir ('data')
 subdir ('doc')
 subdir ('scripts')
 

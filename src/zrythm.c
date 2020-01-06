@@ -660,10 +660,18 @@ zrythm_app_startup (
     gdk_monitor_get_scale_factor (monitor);
   g_message (
     "Monitor scale factor: %d", scale_factor);
+#ifdef _WIN32
   g_object_set (
     gtk_settings_get_default (),
-    "gtk-font-name", "Cantarell Regular 10",
-    NULL);
+    "gtk-font-name", "Segoe UI Normal 10", NULL);
+  g_object_set (
+    gtk_settings_get_default (),
+    "gtk-cursor-theme-name", "Adwaita", NULL);
+#else
+  g_object_set (
+    gtk_settings_get_default (),
+    "gtk-font-name", "Cantarell Regular 10", NULL);
+#endif
   g_message ("Theme set");
 
   /*g_object_set (gtk_settings_get_default (),*/

@@ -33,11 +33,12 @@ about_dialog_widget_new (
   GtkImage * img =
     GTK_IMAGE (
       resources_get_icon (ICON_TYPE_ZRYTHM,
-                          "z-splash-png.png"));
+                          "z-splash-daniel-v1.png"));
 
   const char * artists[] =
     {
       "Alexandros Theodotou <alex@zrythm.org>",
+      "Daniel Peterson",
       NULL
     };
   const char * authors[] =
@@ -70,7 +71,7 @@ about_dialog_widget_new (
       GTK_TYPE_ABOUT_DIALOG,
       "artists", artists,
       "authors", authors,
-      "copyright", "Copyright (C) 2018-2019 Alexandros Theodotou",
+      "copyright", "Copyright (C) 2018-2020 Alexandros Theodotou",
       "documenters", documenters,
       /*"logo-icon-name", "z",*/
       "logo", gtk_image_get_pixbuf (img),

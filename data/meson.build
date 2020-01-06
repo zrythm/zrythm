@@ -62,3 +62,5 @@ if desktop_utils.found()
     args: [desktop_file]
   )
 endif
+
+subdir('windows')

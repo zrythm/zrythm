@@ -44,10 +44,16 @@ if not cyaml_dep.found()
     ]
 endif
 
+# there are problems if added to zrythm_srcs directly
+zrythm_lib_srcs = zrythm_srcs
+if os_windows
+  zrythm_lib_srcs += win_res
+endif
+
 zrythm_lib = static_library (
   'zrythm-lib',
   sources: [
-    zrythm_srcs,
+    zrythm_lib_srcs,
     ext_srcs,
     ],
   dependencies: zrythm_deps,
