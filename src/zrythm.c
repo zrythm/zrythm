@@ -650,10 +650,21 @@ zrythm_app_startup (
   g_object_set (
     gtk_settings_get_default (),
     "gtk-application-prefer-dark-theme", 1, NULL);
+  GdkDisplay * display =
+    gdk_display_get_default ();
+  g_warn_if_fail (display);
+  GdkMonitor * monitor =
+    gdk_display_get_primary_monitor (display);
+  g_warn_if_fail (monitor);
+  int scale_factor =
+    gdk_monitor_get_scale_factor (monitor);
+  g_message (
+    "Monitor scale factor: %d", scale_factor);
   g_object_set (
     gtk_settings_get_default (),
-    "gtk-font-name", "Cantarell Regular 11", NULL);
-  g_message ("set theme");
+    "gtk-font-name", "Cantarell Regular 10",
+    NULL);
+  g_message ("Theme set");
 
   /*g_object_set (gtk_settings_get_default (),*/
                 /*"gtk-icon-theme-name",*/

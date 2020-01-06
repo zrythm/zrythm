@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.7.342] - 2020-01-05
+## [0.7.343] - 2020-01-05
 - Add experimental VST2 support (X11 UIs only)
 - Previously visible plugins now open on project load
 - Fader and pan controls are now exposed as ports
