@@ -61,6 +61,14 @@ metronome_init (
     }
   else
     {
+#ifdef WINDOWS_RELEASE
+      self->emphasis_path =
+        g_strdup (
+          "share/zrythm/samples/square_emphasis.wav");
+      self->normal_path =
+        g_strdup (
+          "share/zrythm/samples/square_normal.wav");
+#else
       self->emphasis_path =
         g_strdup (
           SAMPLES_DIR
@@ -69,6 +77,7 @@ metronome_init (
         g_strdup (
           SAMPLES_DIR
           "/square_normal.wav");
+#endif
 
       /* decode */
       AudioEncoder * enc =

@@ -17,7 +17,7 @@
 
 project (
   'zrythm', ['c', 'cpp'],
-  version: '0.7.343',
+  version: '0.7.344',
   license: 'AGPLv3+',
   meson_version: '>= 0.50.0',
   default_options: [
@@ -69,8 +69,10 @@ cdata.set_quoted (
 cdata.set_quoted (
   'CONFIGURE_LIBDIR',
   libdir)
-cdata.set_quoted (
-  'SAMPLES_DIR', samplesdir)
+if get_option ('windows_release')
+cdata.set ('WINDOWS_RELEASE', 1)
+endif
+cdata.set_quoted('SAMPLES_DIR', samplesdir)
 cdata.set (
   'MESON_SOURCE_ROOT',
   meson.source_root ())
@@ -84,8 +86,7 @@ cdata.set_quoted (
   'NEW_ISSUE_URL',
   'https://redmine.zrythm.org/projects/zrythm/issues/new')
 if (get_option ('user_manual'))
-  cdata.set_quoted (
-    'MANUAL_PATH', docdir)
+  cdata.set_quoted ('MANUAL_PATH', docdir)
 endif
 
 os_darwin = false

@@ -82,3 +82,9 @@ option (
   description: '''Install the DSEG14 font used by the
 transport meters. Packagers should turn this off and
 set the font as a dependency instead''')
+
+option (
+  'windows_release',
+  type: 'boolean',
+  value: false,
+  description: 'Turn this on when creating the installer')
