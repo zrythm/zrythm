@@ -52,12 +52,6 @@ option (
   description: 'Compile with portaudio support')
 
 option (
-  'enable_portmidi',
-  type: 'boolean',
-  value: false,
-  description: 'Compile with PortMIDI support')
-
-option (
   'gen_dev_docs',
   type: 'boolean',
   value: false,

@@ -240,9 +240,9 @@ engine_init (
       self->midi_backend = MIDI_BACKEND_JACK;
       break;
 #endif
-#ifdef HAVE_PORT_MIDI
-    case MIDI_BACKEND_PORT_MIDI:
-      self->midi_backend = MIDI_BACKEND_PORT_MIDI;
+#ifdef _WIN32
+    case MIDI_BACKEND_WINDOWS_MME:
+      self->midi_backend = MIDI_BACKEND_WINDOWS_MME;
       break;
 #endif
     default:
@@ -358,6 +358,12 @@ engine_init (
     case MIDI_BACKEND_JACK:
       mret =
         engine_jack_midi_setup (self, loading);
+      break;
+#endif
+#ifdef _WIN32
+    case MIDI_BACKEND_WINDOWS_MME:
+      mret =
+        engine_windows_mme_setup (self, loading);
       break;
 #endif
     default:

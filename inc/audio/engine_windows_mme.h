@@ -19,13 +19,13 @@
 
 #include "config.h"
 
-#ifdef HAVE_PORT_MIDI
+#ifdef _WIN32
 
-#ifndef __AUDIO_ENGINE_PM_H__
-#define __AUDIO_ENGINE_PM_H__
+#ifndef __AUDIO_ENGINE_WINDOWS_MME_H__
+#define __AUDIO_ENGINE_WINDOWS_MME_H__
 
-#include <portmidi.h>
-#include <porttime.h>
+#include <Windows.h>
+#include <mmeapi.h>
 
 typedef struct AudioEngine AudioEngine;
 
@@ -39,16 +39,16 @@ typedef struct AudioEngine AudioEngine;
  * Initialize Port MIDI.
  */
 int
-engine_pm_setup (
+engine_windows_mme_setup (
   AudioEngine * self,
   int           loading);
 
 int
-engine_pm_tear_down (
+engine_windows_mme_tear_down (
   AudioEngine * self);
 
 /**
- * Tests if PortMIDI is working properly.
+ * Tests if the engine is working properly.
  *
  * Returns 0 if ok, non-null if has errors.
  *
@@ -56,7 +56,7 @@ engine_pm_tear_down (
  * to it.
  */
 int
-engine_pm_test (
+engine_windows_mme_test (
   GtkWindow * win);
 
 /**
@@ -64,5 +64,4 @@ engine_pm_test (
  */
 
 #endif
-
-#endif // HAVE_PORT_MIDI
+#endif // _WIN32

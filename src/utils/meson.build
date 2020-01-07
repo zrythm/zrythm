@@ -38,6 +38,7 @@ util_srcs = [
   'symap.c',
   'ui.c',
   'yaml.c',
+  'windows_errors.c',
   ]
 
 zrythm_srcs += files (util_srcs)

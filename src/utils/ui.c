@@ -598,16 +598,30 @@ ui_create_audio_backends_model (void)
 static GtkTreeModel *
 ui_create_midi_backends_model (void)
 {
-  const int values[NUM_MIDI_BACKENDS] = {
+  const int values[] = {
     MIDI_BACKEND_DUMMY,
+#ifdef HAVE_ALSA
     MIDI_BACKEND_ALSA,
+#endif
+#ifdef HAVE_JACK
     MIDI_BACKEND_JACK,
+#endif
+#ifdef _WIN32
+    MIDI_BACKEND_WINDOWS_MME,
+#endif
   };
-  const gchar *labels[NUM_AUDIO_BACKENDS] = {
+  const gchar * labels[] = {
     /* TRANSLATORS: Dummy audio backend */
     _("Dummy"),
+#ifdef HAVE_ALSA
     _("ALSA Sequencer"),
+#endif
+#ifdef HAVE_JACK
     "Jack MIDI",
+#endif
+#ifdef _WIN32
+    "Windows MME",
+#endif
   };
 
   CREATE_SIMPLE_MODEL_BOILERPLATE;

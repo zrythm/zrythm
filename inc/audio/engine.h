@@ -105,7 +105,7 @@ typedef enum MidiBackend
   MIDI_BACKEND_DUMMY,
   MIDI_BACKEND_ALSA,
   MIDI_BACKEND_JACK,
-  MIDI_BACKEND_PORT_MIDI,
+  MIDI_BACKEND_WINDOWS_MME,
   NUM_MIDI_BACKENDS,
 } MidiBackend;
 
@@ -114,7 +114,7 @@ static const char * midi_backend_str[] =
   "Dummy",
   "ALSA",
   "JACK",
-  "PortMIDI",
+  "Windows MME",
   "invalid"
 };
 
@@ -315,6 +315,11 @@ typedef struct AudioEngine
   float *           pa_out_buf;
 
   PaStream *        pa_stream;
+#endif
+
+#ifdef _WIN32
+  HMIDIIN           midi_in_handles[32];
+  int               num_midi_in_handles;
 #endif
 
   /**
