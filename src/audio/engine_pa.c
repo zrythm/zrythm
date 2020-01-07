@@ -35,10 +35,104 @@
 #include <glib/gi18n.h>
 
 /**
+ * This routine will be called by the PortAudio
+ * engine when audio is needed.
+ *
+ * It may called at interrupt level on some
+ * machines so don't do anything that could mess up
+ * the system like calling malloc() or free().
+*/
+static int
+pa_stream_cb (
+  const void *                    in,
+  void *                          out,
+  unsigned long                   nframes,
+  const PaStreamCallbackTimeInfo* time_info,
+  PaStreamCallbackFlags           status_flags,
+  AudioEngine *                   self)
+{
+  engine_process (
+    self, (nframes_t) nframes);
+
+  float * outf = (float *) out;
+  for (unsigned int i = 0; i < nframes * 2; i++)
+    {
+      outf[i] = AUDIO_ENGINE->pa_out_buf[i];
+    }
+  return paContinue;
+}
+
+/**
+ * Opens a Port Audio stream.
+ */
+static PaStream *
+open_stream (AudioEngine * self)
+{
+  PaStream *stream;
+  PaError err;
+
+  for (int i = 0; i < Pa_GetHostApiCount (); i++)
+    {
+      const PaHostApiInfo * info = Pa_GetHostApiInfo (i);
+      g_message ("host api %s (%d) found",
+                 info->name,
+     i);
+    }
+  int api = Pa_GetDefaultHostApi ();
+  /*int api = 2;*/
+  g_message ("using api %s (%d)",
+    Pa_GetHostApiInfo (api)->name, api);
+
+  PaStreamParameters in_param;
+  in_param.device =
+    Pa_GetHostApiInfo (
+      api)->defaultInputDevice;
+  in_param.channelCount = 2;
+  in_param.sampleFormat = paFloat32;
+  in_param.suggestedLatency = 10.0;
+  in_param.hostApiSpecificStreamInfo = NULL;
+
+  PaStreamParameters out_param;
+  out_param.device =
+    Pa_GetHostApiInfo (
+      api)->defaultOutputDevice;
+  out_param.channelCount = 2;
+  out_param.sampleFormat = paFloat32;
+  out_param.suggestedLatency = 10.0;
+  out_param.hostApiSpecificStreamInfo = NULL;
+
+  /* Open an audio I/O stream. */
+  err =
+    Pa_OpenStream (
+      &stream,
+      /* stereo input */
+      &in_param,
+      /* stereo output */
+      &out_param,
+      self->sample_rate,
+      /* block size */
+      paFramesPerBufferUnspecified,
+      0,
+      /* callback function */
+      (PaStreamCallback *) pa_stream_cb,
+      /* user data */
+      self);
+  if (err != paNoError)
+    {
+      g_warning (
+        "error opening Port Audio stream: %s",
+        Pa_GetErrorText (err));
+      return NULL;
+    }
+
+  return stream;
+}
+
+/**
  * Set up Port Audio.
  */
 int
-pa_setup (
+engine_pa_setup (
   AudioEngine * self,
   int           loading)
 {
@@ -102,12 +196,12 @@ pa_setup (
                 sizeof (float));
     }
 
-  self->pa_stream =
-    pa_open_stream (self);
+  self->pa_stream = open_stream (self);
+  g_return_val_if_fail (self->pa_stream, -1);
 
   g_message ("Starting Port Audio stream...");
   err = Pa_StartStream( self->pa_stream );
-  if( err != paNoError )
+  if (err != paNoError)
     {
       g_warning (
         "error starting Port Audio stream: %s",
@@ -140,99 +234,6 @@ engine_pa_fill_out_bufs (
     }
 }
 
-/**
- * This routine will be called by the PortAudio
- * engine when audio is needed.
- *
- * It may called at interrupt level on some
- * machines so don't do anything that could mess up
- * the system like calling malloc() or free().
-*/
-static int
-pa_stream_cb (
-  const void *                    in,
-  void *                          out,
-  unsigned long                   nframes,
-  const PaStreamCallbackTimeInfo* time_info,
-  PaStreamCallbackFlags           status_flags,
-  AudioEngine *                   self)
-{
-  engine_process (
-    self, (nframes_t) nframes);
-
-  float * outf = (float *) out;
-  for (unsigned int i = 0; i < nframes * 2; i++)
-    {
-      outf[i] = AUDIO_ENGINE->pa_out_buf[i];
-    }
-  return paContinue;
-}
-
-/**
- * Opens a Port Audio stream.
- */
-PaStream *
-pa_open_stream (AudioEngine * self)
-{
-  PaStream *stream;
-  PaError err;
-
-  for (int i = 0; i < Pa_GetHostApiCount (); i++)
-    {
-      const PaHostApiInfo * info = Pa_GetHostApiInfo (i);
-      g_message ("host api %s (%d) found",
-                 info->name,
-		 i);
-    }
-  int api = Pa_GetDefaultHostApi ();
-  /*int api = 2;*/
-  g_message ("using api %s (%d)",
-	  Pa_GetHostApiInfo (api)->name, api);
-
-  PaStreamParameters in_param;
-  in_param.device =
-    Pa_GetHostApiInfo (
-      api)->defaultInputDevice;
-  in_param.channelCount = 2;
-  in_param.sampleFormat = paFloat32;
-  in_param.suggestedLatency = 10.0;
-  in_param.hostApiSpecificStreamInfo = NULL;
-
-  PaStreamParameters out_param;
-  out_param.device =
-    Pa_GetHostApiInfo (
-      api)->defaultOutputDevice;
-  out_param.channelCount = 2;
-  out_param.sampleFormat = paFloat32;
-  out_param.suggestedLatency = 10.0;
-  out_param.hostApiSpecificStreamInfo = NULL;
-
-  /* Open an audio I/O stream. */
-  err =
-    Pa_OpenStream(
-      &stream,
-      &in_param,          /* stereo input */
-      &out_param,          /* stereo output */
-      self->sample_rate,
-      256,        /* frames per buffer, i.e. the number
-      of sample frames that PortAudio will
-      request from the callback. Many apps
-      may want to use
-      paFramesPerBufferUnspecified, which
-      tells PortAudio to pick the best,
-      possibly changing, buffer size.*/
-      0,
-      /* this is your callback function */
-      (PaStreamCallback *) pa_stream_cb,
-      /*This is a pointer that will be passed to
-      your callback*/
-      self);
-  if( err != paNoError )
-    g_warning ("error opening Port Audio stream: %s",
-               Pa_GetErrorText (err));
-
-  return stream;
-}
 
 /**
  * Tests if PortAudio is working properly.
@@ -298,7 +299,8 @@ engine_pa_test (
  * Closes Port Audio.
  */
 void
-pa_terminate (AudioEngine * engine)
+engine_pa_tear_down (
+  AudioEngine * engine)
 {
   PaError err = Pa_StopStream( engine->pa_stream );
   if( err != paNoError )

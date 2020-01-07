@@ -388,6 +388,14 @@ z_gtk_container_get_single_child (
 }
 
 /**
+ * Returns the nth child of a container.
+ */
+GtkWidget *
+z_gtk_container_get_nth_child (
+  GtkContainer * container,
+  int            index);
+
+/**
  * Sets the ellipsize mode of each text cell
  * renderer in the combo box.
  */

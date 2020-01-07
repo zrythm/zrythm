@@ -207,7 +207,8 @@ engine_init (
 #endif
 #ifdef HAVE_PORT_AUDIO
     case AUDIO_BACKEND_PORT_AUDIO:
-      self->audio_backend = AUDIO_BACKEND_PORT_AUDIO;
+      self->audio_backend =
+        AUDIO_BACKEND_PORT_AUDIO;
       break;
 #endif
     default:
@@ -237,6 +238,11 @@ engine_init (
 #ifdef HAVE_JACK
     case MIDI_BACKEND_JACK:
       self->midi_backend = MIDI_BACKEND_JACK;
+      break;
+#endif
+#ifdef HAVE_PORT_MIDI
+    case MIDI_BACKEND_PORT_MIDI:
+      self->midi_backend = MIDI_BACKEND_PORT_MIDI;
       break;
 #endif
     default:
@@ -270,19 +276,19 @@ engine_init (
 #ifdef HAVE_ALSA
     case AUDIO_BACKEND_ALSA:
       ret =
-        alsa_setup(self, loading);
+        engine_alsa_setup(self, loading);
 	    break;
 #endif
 #ifdef HAVE_JACK
     case AUDIO_BACKEND_JACK:
       ret =
-        jack_setup (self, loading);
+        engine_jack_setup (self, loading);
       break;
 #endif
 #ifdef HAVE_PORT_AUDIO
     case AUDIO_BACKEND_PORT_AUDIO:
       ret =
-        pa_setup (self, loading);
+        engine_pa_setup (self, loading);
       break;
 #endif
     default:
@@ -293,18 +299,18 @@ engine_init (
     {
       if (!ZRYTHM_TESTING)
         {
-          char * str =
-            g_strdup_printf (
-              _("Failed to initialize the %s audio "
-                "backend. Will use the dummy backend "
-                "instead. Please check your backend "
-                "settings in the Preferences."),
-              engine_audio_backend_to_string (
-                self->audio_backend));
+          char str[600];
+          sprintf (
+            str,
+            _("Failed to initialize the %s audio "
+              "backend. Will use the dummy backend "
+              "instead. Please check your backend "
+              "settings in the Preferences."),
+            engine_audio_backend_to_string (
+              self->audio_backend));
           ui_show_message_full (
             GTK_WINDOW (MAIN_WINDOW),
             GTK_MESSAGE_WARNING, str);
-          g_free (str);
         }
 
       self->audio_backend =
@@ -345,13 +351,13 @@ engine_init (
 #ifdef HAVE_ALSA
     case MIDI_BACKEND_ALSA:
       mret =
-        alsa_midi_setup (self, loading);
+        engine_alsa_midi_setup (self, loading);
       break;
 #endif
 #ifdef HAVE_JACK
     case MIDI_BACKEND_JACK:
       mret =
-        jack_midi_setup (self, loading);
+        engine_jack_midi_setup (self, loading);
       break;
 #endif
     default:
@@ -1077,7 +1083,7 @@ engine_tear_down (
 #ifdef HAVE_JACK
   if (self->audio_backend ==
         AUDIO_BACKEND_JACK)
-    jack_tear_down (self);
+    engine_jack_tear_down (self);
 #endif
 
   /* TODO free data */

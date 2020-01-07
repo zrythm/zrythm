@@ -49,7 +49,7 @@ engine_alsa_test (
   GtkWindow * win);
 
 int
-alsa_midi_setup (
+engine_alsa_midi_setup (
   AudioEngine * self,
   int           loading);
 
@@ -75,11 +75,12 @@ engine_alsa_fill_out_bufs (
  * Sets up the audio engine to use alsa.
  */
 int
-alsa_setup (AudioEngine * self,
-            int           loading);
+engine_alsa_setup (
+  AudioEngine * self,
+  int           loading);
 
 void
-alsa_tear_down ();
+engine_alsa_tear_down (void);
 
 #endif // header guard
-#endif // __linux__
+#endif // HAVE_ALSA

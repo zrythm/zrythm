@@ -431,6 +431,12 @@ if (get_option('enable_portaudio'))
   cdata.set('HAVE_PORT_AUDIO', 1)
 endif
 
+if (get_option('enable_portmidi'))
+  zrythm_deps += cc.find_library('portmidi')
+  zrythm_deps += cc.find_library('porttime')
+  cdata.set('HAVE_PORT_MIDI', 1)
+endif
+
 if os_windows
   zrythm_deps += cc.find_library('dbghelp')
   # msys2 provides a separate fftw3f entry in
@@ -529,6 +535,7 @@ summary({
   'ffmpeg': get_option('enable_ffmpeg'),
   'Jack': jack_dep.found(),
   'PortAudio': get_option('enable_portaudio'),
+  'PortMIDI': get_option('enable_portmidi'),
   'Gtop': libgtop_dep.found(),
   }, section: 'Optional libraries')
 

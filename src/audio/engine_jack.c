@@ -371,7 +371,7 @@ shutdown_cb (void *arg)
  * Sets up the MIDI engine to use jack.
  */
 int
-jack_midi_setup (
+engine_jack_midi_setup (
   AudioEngine * self,
   int           loading)
 {
@@ -497,10 +497,8 @@ engine_jack_test (
 
   // open a client connection to the JACK server
   jack_client_t * client =
-    jack_client_open (client_name,
-                      options,
-                      &status,
-                      server_name);
+    jack_client_open (
+      client_name, options, &status,server_name);
 
   if (client)
     {
@@ -527,7 +525,7 @@ engine_jack_test (
  * Sets up the audio engine to use jack.
  */
 int
-jack_setup (AudioEngine * self,
+engine_jack_setup (AudioEngine * self,
             int           loading)
 {
   g_message ("Setting up JACK...");
@@ -716,7 +714,7 @@ engine_jack_get_error_message (
 }
 
 void
-jack_tear_down (
+engine_jack_tear_down (
   AudioEngine * self)
 {
   jack_client_close (self->client);

@@ -527,3 +527,32 @@ z_gtk_widget_add_style_class (
     gtk_widget_get_style_context (widget),
     class_name);
 }
+
+/**
+ * Returns the nth child of a container.
+ */
+GtkWidget *
+z_gtk_container_get_nth_child (
+  GtkContainer * container,
+  int            index)
+{
+  GList *children, *iter;
+  GtkWidget * widget;
+  children =
+    gtk_container_get_children (container);
+  int i = 0;
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      widget =
+        GTK_WIDGET (iter->data);
+      if (i++ == index)
+        {
+          g_list_free (children);
+          return widget;
+        }
+    }
+  g_list_free (children);
+  g_return_val_if_reached (NULL);
+}

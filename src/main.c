@@ -55,14 +55,14 @@
 #include <X11/Xlib.h>
 #endif
 
-#define BACKTRACE_SIZE 24
+#define BACKTRACE_SIZE 100
 
 /** SIGSEGV handler. */
 static void
 handler (int sig)
 {
-  char message[3000];
-  char current_line[800];
+  char message[12000];
+  char current_line[2000];
 
 #ifdef _WIN32
   unsigned int   i;
@@ -109,9 +109,10 @@ handler (int sig)
   int size = backtrace (array, BACKTRACE_SIZE);
 
   /* print out all the frames to stderr */
+  const char * signal_string = strsignal (sig);
   sprintf (
     message,
-    _("Error: signal %d - Backtrace:"), sig);
+    _("Error: %s - Backtrace:\n"), signal_string);
   strings = backtrace_symbols (array, size);
   for (int i = 0; i < size; i++)
     {
@@ -177,6 +178,29 @@ handler (int sig)
       GTK_MESSAGE_DIALOG (dialog), 1);
   gtk_label_set_selectable (
     label, 1);
+
+  /* wrap the backtrace in a scrolled window */
+  GtkBox * box =
+    GTK_BOX (
+      gtk_message_dialog_get_message_area (
+        GTK_MESSAGE_DIALOG (dialog)));
+  GtkWidget * secondary_area =
+    z_gtk_container_get_nth_child (
+      GTK_CONTAINER (box), 1);
+  gtk_container_remove (
+    GTK_CONTAINER (box), secondary_area);
+  GtkWidget * scrolled_window =
+    gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_min_content_height (
+    GTK_SCROLLED_WINDOW (scrolled_window), 360);
+  gtk_container_add (
+    GTK_CONTAINER (scrolled_window),
+    secondary_area);
+  gtk_container_add (
+    GTK_CONTAINER (box), scrolled_window);
+  gtk_widget_show_all (GTK_WIDGET (box));
+
+  /* run the dialog */
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 

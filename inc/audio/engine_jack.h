@@ -82,7 +82,7 @@ engine_jack_fill_out_bufs (
  * @param loading Loading a Project or not.
  */
 int
-jack_midi_setup (
+engine_jack_midi_setup (
   AudioEngine * self,
   int           loading);
 
@@ -92,7 +92,7 @@ jack_midi_setup (
  * @param loading Loading a Project or not.
  */
 int
-jack_setup (
+engine_jack_setup (
   AudioEngine * self,
   int           loading);
 
@@ -101,7 +101,7 @@ engine_jack_get_error_message (
   jack_status_t status);
 
 void
-jack_tear_down (
+engine_jack_tear_down (
   AudioEngine * self);
 
 int

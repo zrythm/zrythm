@@ -105,6 +105,7 @@ typedef enum MidiBackend
   MIDI_BACKEND_DUMMY,
   MIDI_BACKEND_ALSA,
   MIDI_BACKEND_JACK,
+  MIDI_BACKEND_PORT_MIDI,
   NUM_MIDI_BACKENDS,
 } MidiBackend;
 
@@ -113,6 +114,7 @@ static const char * midi_backend_str[] =
   "Dummy",
   "ALSA",
   "JACK",
+  "PortMIDI",
   "invalid"
 };
 
@@ -122,6 +124,17 @@ typedef enum AudioEngineJackTransportType
   AUDIO_ENGINE_JACK_TRANSPORT_CLIENT,
   AUDIO_ENGINE_NO_JACK_TRANSPORT,
 } AudioEngineJackTransportType;
+
+static const cyaml_strval_t
+jack_transport_type_strings[] =
+{
+  { "Timebase master",
+    AUDIO_ENGINE_JACK_TIMEBASE_MASTER    },
+  { "Transport client",
+    AUDIO_ENGINE_JACK_TRANSPORT_CLIENT    },
+  { "No JACK transport",
+    AUDIO_ENGINE_NO_JACK_TRANSPORT    },
+};
 
 /**
  * The audio engine.
@@ -138,13 +151,13 @@ typedef struct AudioEngine
 #ifdef HAVE_JACK
   /** JACK client. */
   jack_client_t *   client;
+#endif
 
   /**
    * Whether transport master/client or no
    * connection with jack transport.
    */
   AudioEngineJackTransportType transport_type;
-#endif
 
   /** Current audio backend. */
   AudioBackend      audio_backend;
@@ -338,6 +351,11 @@ typedef struct AudioEngine
 static const cyaml_schema_field_t
 engine_fields_schema[] =
 {
+  CYAML_FIELD_ENUM (
+    "transport_type", CYAML_FLAG_DEFAULT,
+    AudioEngine, transport_type,
+    jack_transport_type_strings,
+    CYAML_ARRAY_LEN (jack_transport_type_strings)),
   CYAML_FIELD_INT (
     "sample_rate", CYAML_FLAG_DEFAULT,
     AudioEngine, sample_rate),

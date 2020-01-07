@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,12 +19,13 @@
 
 #include "config.h"
 
-#ifdef HAVE_PORT_AUDIO
+#ifdef HAVE_PORT_MIDI
 
-#ifndef __AUDIO_ENGINE_PA_H__
-#define __AUDIO_ENGINE_PA_H__
+#ifndef __AUDIO_ENGINE_PM_H__
+#define __AUDIO_ENGINE_PM_H__
 
-#include <portaudio.h>
+#include <portmidi.h>
+#include <porttime.h>
 
 typedef struct AudioEngine AudioEngine;
 
@@ -35,20 +36,19 @@ typedef struct AudioEngine AudioEngine;
  */
 
 /**
- * Set up Port Audio.
+ * Initialize Port MIDI.
  */
 int
-engine_pa_setup (
+engine_pm_setup (
   AudioEngine * self,
   int           loading);
 
-void
-engine_pa_fill_out_bufs (
-  AudioEngine *   self,
-  const nframes_t nframes);
+int
+engine_pm_tear_down (
+  AudioEngine * self);
 
 /**
- * Tests if PortAudio is working properly.
+ * Tests if PortMIDI is working properly.
  *
  * Returns 0 if ok, non-null if has errors.
  *
@@ -56,18 +56,13 @@ engine_pa_fill_out_bufs (
  * to it.
  */
 int
-engine_pa_test (
+engine_pm_test (
   GtkWindow * win);
-
-/**
- * Closes Port Audio.
- */
-void
-engine_pa_tear_down (AudioEngine * engine);
 
 /**
  * @}
  */
 
 #endif
-#endif // HAVE_PORT_AUDIO
+
+#endif // HAVE_PORT_MIDI

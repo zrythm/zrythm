@@ -509,7 +509,7 @@ engine_alsa_prepare_process (
 }
 
 int
-alsa_setup (
+engine_alsa_setup (
   AudioEngine *self, int loading)
 {
   /* not working atm */
@@ -565,7 +565,7 @@ alsa_setup (
 }
 
 int
-alsa_midi_setup (
+engine_alsa_midi_setup (
   AudioEngine * self,
   int           loading)
 {
