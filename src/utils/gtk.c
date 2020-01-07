@@ -537,7 +537,6 @@ z_gtk_container_get_nth_child (
   int            index)
 {
   GList *children, *iter;
-  GtkWidget * widget;
   children =
     gtk_container_get_children (container);
   int i = 0;
@@ -545,7 +544,7 @@ z_gtk_container_get_nth_child (
        iter != NULL;
        iter = g_list_next (iter))
     {
-      widget =
+      GtkWidget * widget =
         GTK_WIDGET (iter->data);
       if (i++ == index)
         {

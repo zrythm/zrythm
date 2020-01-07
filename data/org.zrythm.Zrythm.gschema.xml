@@ -30,12 +30,13 @@
     <value nick="none" value="0"/>
     <value nick="alsa" value="1"/>
     <value nick="jack" value="2"/>
-    <value nick="port-audio" value="3"/>
+    <value nick="portaudio" value="3"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.midi-backend-enum">
     <value nick="none" value="0"/>
     <value nick="alsa" value="1"/>
     <value nick="jack" value="2"/>
+    <value nick="portmidi" value="3"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.language-enum">
     <value nick="english" value="0"/>

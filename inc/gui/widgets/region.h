@@ -38,7 +38,11 @@
  * @{
  */
 
+#ifdef _WIN32
+#define REGION_NAME_FONT "Sans SemiBold 7"
+#else
 #define REGION_NAME_FONT "Sans SemiBold 8"
+#endif
 #define REGION_NAME_PADDING_R 5
 #define REGION_NAME_BOX_PADDING 2
 #define REGION_NAME_BOX_CURVINESS 4.0
