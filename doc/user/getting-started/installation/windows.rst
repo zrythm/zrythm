@@ -5,17 +5,12 @@
 Windows
 =======
 
-A Windows installer is coming soon.
+A Windows installer is available for purchase at
+the `Download <https://www.zrythm.org/en/download.html>`_
+page on our website.
 
-Building with mingw64
----------------------
-For reference, the following MSYS2/MinGW64 packages
-are needed (mingw-w64... prefix abbreviated):
-
-- cantarell-fonts
-- gtk3
-- rubberband
-- fftw
-- meson
-- gcc
-- pkg-config
+We provide support for the installer, however we do not
+provide support for manually building Zrythm on Windows.
+If you want to try, you can find most packages needed
+from the
+`MSYS2 project <https://packages.msys2.org/>`_.

@@ -13,8 +13,8 @@ import re
 srcpath = './locale'
 for subdir, dirs, files in os.walk(srcpath):
     for file in files:
+        fullpath = os.path.join(subdir,file)
         if file.endswith('appendix.po'):
-            fullpath = os.path.join(subdir,file)
             with open(fullpath, 'r') as f :
                 filedata = f.read()
 
@@ -27,6 +27,24 @@ for subdir, dirs, files in os.walk(srcpath):
                 filedata = re.sub(
                     r'\n{2,600}',
                     '\n\n', filedata, flags=re.DOTALL)
+
+                # remove absolute directories (possible
+                # bug with new versions of sphinx-intl)
+                filedata = re.sub(
+                    r'#: .*?/doc/user/',
+                    '#: ../../', filedata, flags=re.DOTALL)
+
+                with open(fullpath, 'w') as fw:
+                  fw.write(filedata)
+        elif file.endswith('.po'):
+            with open(fullpath, 'r') as f :
+                filedata = f.read()
+
+                # remove absolute directories (possible
+                # bug with new versions of sphinx-intl)
+                filedata = re.sub(
+                    r'#: .*?/doc/user/',
+                    '#: ../../', filedata, flags=re.DOTALL)
 
                 with open(fullpath, 'w') as f:
                   f.write(filedata)

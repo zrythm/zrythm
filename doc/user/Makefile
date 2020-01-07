@@ -24,7 +24,7 @@ LANGUAGES = en de fr it es ja pt pt_BR ru zh nb_NO
 
 # Skip chinese latexpdf because it doesn't support Chinese yet
 # bundle: html epub
-bundle: html latexpdf #epub
+bundle: html latexpdf epub
 	for lang in $(LANGUAGES) ; do \
 		mkdir -p $(RENDERDIR)/$$lang && \
 		cp -R $(BUILDDIR)/$$lang/html/* $(RENDERDIR)/$$lang/ ; \
@@ -44,9 +44,10 @@ bundle: html latexpdf #epub
 gettext:
 	$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 	for lang in $(LANGUAGES) ; do \
+		echo "builddir is $(BUILDDIR)"; \
 		sphinx-intl update -p $(BUILDDIR)/gettext -l $$lang ; \
 	done
-	./remove_gfdl_from_po.py
+	./post_process_po.py
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).

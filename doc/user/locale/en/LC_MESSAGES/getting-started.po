@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-16 08:08+0000\n"
+"POT-Creation-Date: 2020-01-07 16:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -277,7 +277,45 @@ msgid "Windows"
 msgstr ""
 
 #: ../../getting-started/installation/windows.rst:8
-msgid "Windows is not supported at the moment."
+msgid "A Windows installer is coming soon."
+msgstr ""
+
+#: ../../getting-started/installation/windows.rst:11
+msgid "Building with mingw64"
+msgstr ""
+
+#: ../../getting-started/installation/windows.rst:12
+msgid ""
+"For reference, the following MSYS2/MinGW64 packages are needed "
+"(mingw-w64... prefix abbreviated):"
+msgstr ""
+
+#: ../../getting-started/installation/windows.rst:15
+msgid "cantarell-fonts"
+msgstr ""
+
+#: ../../getting-started/installation/windows.rst:16
+msgid "gtk3"
+msgstr ""
+
+#: ../../getting-started/installation/windows.rst:17
+msgid "rubberband"
+msgstr ""
+
+#: ../../getting-started/installation/windows.rst:18
+msgid "fftw"
+msgstr ""
+
+#: ../../getting-started/installation/windows.rst:19
+msgid "meson"
+msgstr ""
+
+#: ../../getting-started/installation/windows.rst:20
+msgid "gcc"
+msgstr ""
+
+#: ../../getting-started/installation/windows.rst:21
+msgid "pkg-config"
 msgstr ""
 
 #: ../../getting-started/intro.rst:6
@@ -935,5 +973,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Fedora 31 - x86_64"
+#~ msgstr ""
+
+#~ msgid "Windows is not supported at the moment."
 #~ msgstr ""
 
