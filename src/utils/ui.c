@@ -519,23 +519,29 @@ ui_get_modifier_type_from_gesture (
   enum \
   { \
     VALUE_COL, \
-    TEXT_COL \
+    TEXT_COL, \
+	ID_COL, \
   }; \
   GtkTreeIter iter; \
   GtkListStore *store; \
   gint i; \
  \
-  store = gtk_list_store_new (2, \
-                              G_TYPE_INT, \
-                              G_TYPE_STRING); \
+  store = \
+	gtk_list_store_new (3, \
+         G_TYPE_INT, \
+         G_TYPE_STRING, \
+	G_TYPE_STRING); \
  \
   int num_elements = G_N_ELEMENTS (values); \
   for (i = 0; i < num_elements; i++) \
     { \
       gtk_list_store_append (store, &iter); \
+	    char id[40]; \
+	    sprintf (id, "%d", values[i]); \
       gtk_list_store_set (store, &iter, \
                           VALUE_COL, values[i], \
                           TEXT_COL, labels[i], \
+                          ID_COL, id, \
                           -1); \
     } \
  \
@@ -693,11 +699,13 @@ ui_setup_audio_backends_combo_box (
   z_gtk_configure_simple_combo_box (
     cb, ui_create_audio_backends_model ());
 
-  gtk_combo_box_set_active (
-    GTK_COMBO_BOX (cb),
+  char id[40];
+  sprintf (id, "%d",
     g_settings_get_enum (
       S_PREFERENCES,
       "audio-backend"));
+  gtk_combo_box_set_active_id (
+    GTK_COMBO_BOX (cb), id);
 }
 
 /**
@@ -710,11 +718,13 @@ ui_setup_midi_backends_combo_box (
   z_gtk_configure_simple_combo_box (
     cb, ui_create_midi_backends_model ());
 
-  gtk_combo_box_set_active (
-    GTK_COMBO_BOX (cb),
+  char id[40];
+  sprintf (id, "%d",
     g_settings_get_enum (
       S_PREFERENCES,
       "midi-backend"));
+  gtk_combo_box_set_active_id (
+    GTK_COMBO_BOX (cb), id);
 }
 
 /**

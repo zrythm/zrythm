@@ -48,7 +48,8 @@ G_DEFINE_TYPE (PreferencesWidget,
 enum
 {
   VALUE_COL,
-  TEXT_COL
+  TEXT_COL,
+  ID_COL,
 };
 
 static void
@@ -149,11 +150,11 @@ on_ok_clicked (GtkWidget * widget,
   g_settings_set_enum (
     S_PREFERENCES,
     "audio-backend",
-    gtk_combo_box_get_active (self->audio_backend));
+    atoi (gtk_combo_box_get_active_id (self->audio_backend)));
   g_settings_set_enum (
     S_PREFERENCES,
     "midi-backend",
-    gtk_combo_box_get_active (self->midi_backend));
+    atoi (gtk_combo_box_get_active_id (self->midi_backend)));
   g_settings_set_enum (
     S_PREFERENCES,
     "language",

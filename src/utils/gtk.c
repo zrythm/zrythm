@@ -202,12 +202,15 @@ z_gtk_configure_simple_combo_box (
   enum
   {
     VALUE_COL,
-    TEXT_COL
+    TEXT_COL,
+    ID_COL,
   };
 
   GtkCellRenderer *renderer;
   gtk_combo_box_set_model (
     cb, model);
+  gtk_combo_box_set_id_column (
+    cb, ID_COL);
   gtk_cell_layout_clear (
     GTK_CELL_LAYOUT (cb));
   renderer = gtk_cell_renderer_text_new ();
