@@ -732,14 +732,14 @@ port_send_data_to_jack (
   const nframes_t nframes);
 
 /**
- * Returns a full designation of the port in the
- * format "Track/Port" or "Track/Plugin/Port".
- *
- * Must be free'd.
+ * Copies a full designation of \p self in the
+ * format "Track/Port" or "Track/Plugin/Port" in
+ * \p buf.
  */
-char *
+void
 port_get_full_designation (
-  const Port * self);
+  const Port * self,
+  char *       buf);
 
 /**
  * Gathers all ports in the project and puts them

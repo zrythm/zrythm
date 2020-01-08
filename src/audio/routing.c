@@ -149,6 +149,7 @@ static char *
 get_node_name (
   GraphNode * node)
 {
+  char str[600];
   switch (node->type)
     {
     case ROUTE_NODE_TYPE_PLUGIN:
@@ -156,36 +157,29 @@ get_node_name (
         g_strdup_printf (
           "%s (Plugin)",
           node->pl->descr->name);
-      break;
     case ROUTE_NODE_TYPE_PORT:
-      return
-        port_get_full_designation (node->port);
-      break;
+      port_get_full_designation (node->port, str);
+      return g_strdup (str);
     case ROUTE_NODE_TYPE_FADER:
       return
         g_strdup_printf (
           "%s Fader",
           node->fader->channel->track->name);
-      break;
     case ROUTE_NODE_TYPE_TRACK:
       return
         g_strdup (
           node->track->name);
-      break;
     case ROUTE_NODE_TYPE_PREFADER:
       return
         g_strdup_printf (
           "%s Pre-Fader",
           node->prefader->channel->track->name);
-      break;
     case ROUTE_NODE_TYPE_MONITOR_FADER:
       return
         g_strdup ("Monitor Fader");
-      break;
     case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
       return
         g_strdup ("Sample Processor");
-      break;
     }
   g_return_val_if_reached (NULL);
 }

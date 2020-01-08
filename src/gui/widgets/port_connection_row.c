@@ -78,19 +78,15 @@ port_connection_row_widget_new (
     1,1,0);
 
   /* bar slider */
-  char * designation =
-    is_input ?
-      port_get_full_designation (src) :
-      port_get_full_designation (dest);
-  char * label =
-    g_strdup_printf (
-      "%s ",
-      designation);
-  g_free (designation);
+  char designation[600];
+  if (is_input)
+    port_get_full_designation (src, designation);
+  else
+    port_get_full_designation (dest, designation);
+  strcat (designation, " ");
   self->slider =
     bar_slider_widget_new_port (
-      src, dest, label);
-  g_free (label);
+      src, dest, designation);
   gtk_container_add (
     GTK_CONTAINER (self->overlay),
     GTK_WIDGET (self->slider));

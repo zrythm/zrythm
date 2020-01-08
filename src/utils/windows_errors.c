@@ -21,11 +21,13 @@
 
 #include "utils/windows_errors.h"
 
+#include <gtk/gtk.h>
+
 void
 windows_errors_print_mmresult (
   MMRESULT res)
 {
-  switch (ret)
+  switch (res)
     {
     case MMSYSERR_ALLOCATED:
       g_critical (
@@ -52,7 +54,7 @@ windows_errors_print_mmresult (
         "MMSYSERR_NOMEM: The system is unable to allocate or lock memory");
       break;
     default:
-      g_warning ("Unknown error %u received");
+      g_warning ("Unknown error %u received", res);
       break;
     }
 }

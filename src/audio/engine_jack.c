@@ -185,14 +185,15 @@ autoconnect_midi_controllers (
                       self->midi_in->data)));
               if (ret)
                 {
+                  char msg[600];
+                  engine_jack_get_error_message (
+                    ret, msg);
                   g_warning (
                     "Failed connecting %s to %s:\n"
                     "%s",
                     ports[i],
-                    self->midi_in->identifier.
-                      label,
-                    engine_jack_get_error_message (
-                      ret));
+                    self->midi_in->identifier.label,
+                    msg);
                 }
               break;
             }
@@ -493,7 +494,6 @@ engine_jack_test (
   const char *server_name = NULL;
   jack_options_t options = JackNoStartServer;
   jack_status_t status;
-  char * msg;
 
   // open a client connection to the JACK server
   jack_client_t * client =
@@ -507,14 +507,13 @@ engine_jack_test (
     }
   else
     {
-      msg =
-        g_strdup_printf (
-          _("JACK Error: %s"),
-          engine_jack_get_error_message (
-            status));
-      ui_show_error_message (
-        win, msg);
-      g_free (msg);
+      char msg[500];
+      engine_jack_get_error_message (
+        status, msg);
+      char full_msg[800];
+      sprintf (
+        full_msg, "JACK Error: %s", msg);
+      ui_show_error_message (win, full_msg);
       return 1;
     }
 
@@ -544,13 +543,13 @@ engine_jack_setup (AudioEngine * self,
 
   if (!self->client)
     {
-      char * msg =
-        g_strdup_printf (
-          "JACK Error: %s",
-          engine_jack_get_error_message (status));
-      ui_show_error_message (
-        NULL, msg);
-      g_free (msg);
+      char msg[600];
+      engine_jack_get_error_message (
+        status, msg);
+      char full_msg[800];
+      sprintf (
+        full_msg, "JACK Error: %s", msg);
+      ui_show_error_message (NULL, full_msg);
 
       return -1;
     }
@@ -642,75 +641,87 @@ engine_jack_setup (AudioEngine * self,
   return 0;
 }
 
-
-const char *
+/**
+ * Copies the error message corresponding to \p
+ * status in \p msg.
+ */
+void
 engine_jack_get_error_message (
-  jack_status_t status)
+  jack_status_t status,
+  char *        msg)
 {
-  const char *
-    jack_failure =
-    /* TRANSLATORS: JACK failure messages */
-      _("Overall operation failed");
-  const char *
-    jack_invalid_option =
-      _("The operation contained an invalid or "
-      "unsupported option");
-  const char *
-    jack_name_not_unique =
-      _("The desired client name was not unique");
-  const char *
-    jack_server_failed =
-      _("Unable to connect to the JACK server");
-  const char *
-    jack_server_error =
-      _("Communication error with the JACK server");
-  const char *
-    jack_no_such_client =
-      _("Requested client does not exist");
-  const char *
-    jack_load_failure =
-      _("Unable to load internal client");
-  const char *
-    jack_init_failure =
-      _("Unable to initialize client");
-  const char *
-    jack_shm_failure =
-      _("Unable to access shared memory");
-  const char *
-    jack_version_error =
-      _("Client's protocol version does not match");
-  const char *
-    jack_backend_error =
-      _("Backend error");
-  const char *
-    jack_client_zombie =
-      _("Client zombie");
-
   if (status & JackFailure)
-    return jack_failure;
-  if (status & JackInvalidOption)
-    return jack_invalid_option;
-  if (status & JackNameNotUnique)
-    return jack_name_not_unique;
-  if (status & JackServerFailed)
-    return jack_server_failed;
-  if (status & JackServerError)
-    return jack_server_error;
-  if (status & JackNoSuchClient)
-    return jack_no_such_client;
-  if (status & JackLoadFailure)
-    return jack_load_failure;
-  if (status & JackInitFailure)
-    return jack_init_failure;
-  if (status & JackShmFailure)
-    return jack_shm_failure;
-  if (status & JackVersionError)
-    return jack_version_error;
-  if (status & JackBackendError)
-    return jack_backend_error;
-  if (status & JackClientZombie)
-    return jack_client_zombie;
-  return NULL;
+    {
+      strcpy (
+        msg,
+      /* TRANSLATORS: JACK failure messages */
+        _("Overall operation failed"));
+    }
+  else if (status & JackInvalidOption)
+    {
+      strcpy (
+        msg,
+        _("The operation contained an invalid or "
+        "unsupported option"));
+    }
+  else if (status & JackNameNotUnique)
+    {
+      strcpy (
+        msg,
+        _("The desired client name was not unique"));
+    }
+  else if (status & JackServerFailed)
+    {
+      strcpy (
+        msg,
+        _("Unable to connect to the JACK server"));
+    }
+  else if (status & JackServerError)
+    {
+      strcpy (
+        msg,
+        _("Communication error with the JACK server"));
+    }
+  else if (status & JackNoSuchClient)
+    {
+      strcpy (
+        msg,
+        _("Requested client does not exist"));
+    }
+  else if (status & JackLoadFailure)
+    {
+      strcpy (
+        msg,
+        _("Unable to load internal client"));
+    }
+  else if (status & JackInitFailure)
+    {
+      strcpy (
+        msg,
+        _("Unable to initialize client"));
+    }
+  else if (status & JackShmFailure)
+    {
+      strcpy (
+        msg,
+        _("Unable to access shared memory"));
+    }
+  else if (status & JackVersionError)
+    {
+      strcpy (
+        msg,
+        _("Client's protocol version does not match"));
+    }
+  else if (status & JackBackendError)
+    {
+      strcpy (msg, _("Backend error"));
+    }
+  else if (status & JackClientZombie)
+    {
+      strcpy (msg, _("Client zombie"));
+    }
+  else
+    g_warn_if_reached ();
 }
 
 void

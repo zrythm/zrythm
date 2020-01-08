@@ -298,6 +298,7 @@ test_strict_cflags = [
   '-Werror=int-in-bool-context',
   '-Werror=type-limits',
   '-Werror=deprecated-declarations',
+  '-Werror=format-extra-args',
   ]
 
 if cc.get_id() == 'gcc'

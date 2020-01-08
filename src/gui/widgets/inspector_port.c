@@ -315,8 +315,9 @@ bar_slider_tick_cb (
   if (now - self->last_tooltip_change > 100000)
     {
       char str[500];
-      char * full_designation =
-        port_get_full_designation (self->port);
+      char full_designation[600];
+      port_get_full_designation (
+        self->port, full_designation);
       const char * src_or_dest_str =
         self->port->identifier.flow == FLOW_INPUT ?
         _("Incoming signals") :
@@ -349,7 +350,6 @@ bar_slider_tick_cb (
       /* cleanup */
       if (cur_tooltip)
         g_free (cur_tooltip);
-      g_free (full_designation);
 
       /* remember time */
       self->last_tooltip_change = now;

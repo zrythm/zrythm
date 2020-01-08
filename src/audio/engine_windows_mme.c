@@ -29,6 +29,7 @@
 #include "audio/port.h"
 #include "project.h"
 #include "utils/ui.h"
+#include "utils/windows_errors.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -102,7 +103,7 @@ engine_windows_mme_setup (
 {
   UINT num_devs = midiInGetNumDevs ();
 
-  for (UINT i = 0; UINT < num_devs; i++)
+  for (UINT i = 0; i < num_devs; i++)
     {
       MIDIINCAPS caps;
       MMRESULT ret =
@@ -118,23 +119,50 @@ engine_windows_mme_setup (
        * to do with the midi caps */
       g_message (
         "MIDI in device detected:\n"
-        "Manufacturer ID: %u\n"
-        "Product identifier: %u\n",
-        "Driver version: %u.%u (%x)\n",
+        "Manufacturer ID: %u \n"
+        "Product identifier: %u \n"
+        "Driver version: %u . %u (%x)\n"
         "Product name: %s",
         caps.wMid, caps.wPid,
-        caps.vDriverVersion >> 8,
-        caps.vDriverVersion & 0xff,
+        (caps.vDriverVersion >> 8),
+        (caps.vDriverVersion & 0xff),
         caps.vDriverVersion, caps.szPname);
 
       ret =
         midiInOpen (
-          &self->midi_in_handles[i], i, midi_in_cb,
-          self, CALLBACK_FUNCTION);
+          &self->midi_in_handles[i], i,
+	  (DWORD_PTR) midi_in_cb,
+          (DWORD_PTR) self, CALLBACK_FUNCTION);
       if (ret != MMSYSERR_NOERROR)
         {
           windows_errors_print_mmresult (ret);
           return -1;
+        }
+
+      self->midi_headers[i].lpData =
+	      calloc (3, sizeof (char));
+      self->midi_headers[i].dwBufferLength =
+	      3 * sizeof (char);
+      self->midi_headers[i].dwFlags = 0;
+
+      ret =
+        midiInPrepareHeader (
+          self->midi_in_handles[i],
+	  &self->midi_headers[i],
+	  sizeof (MIDIHDR));
+      if (ret != MMSYSERR_NOERROR)
+        {
+          windows_errors_print_mmresult (ret);
+          return -1;
+        }
+      ret =
+        midiInAddBuffer (
+          AUDIO_ENGINE->midi_in_handles[i],
+	  &AUDIO_ENGINE->midi_headers[i],
+	  sizeof (MIDIHDR));
+      if (ret != MMSYSERR_NOERROR)
+        {
+          windows_errors_print_mmresult (ret);
         }
 
       self->num_midi_in_handles++;
@@ -162,10 +190,11 @@ engine_windows_mme_test (
 /**
  * Closes Port Audio.
  */
-void
+int
 engine_windows_mme_tear_down (
   AudioEngine * engine)
 {
+	return 0;
 }
 
 #endif // _WIN32

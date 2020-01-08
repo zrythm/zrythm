@@ -796,15 +796,11 @@ port_connect (
       /*dest->has_modulators = 1;*/
     }
 
-  char * sd =
-    port_get_full_designation (src);
-  char * dd =
-    port_get_full_designation (dest);
+  char sd[600], dd[600];
+  port_get_full_designation (src, sd);
+  port_get_full_designation (dest, dd);
   g_message (
-    "Connected port \"%s\" to \"%s\"",
-    sd, dd);
-  g_free (sd);
-  g_free (dd);
+    "Connected port \"%s\" to \"%s\"", sd, dd);
   return 0;
 }
 
@@ -854,15 +850,12 @@ port_disconnect (Port * src, Port * dest)
         }
     }
 
-  char * sd =
-    port_get_full_designation (src);
-  char * dd =
-    port_get_full_designation (dest);
+  char sd[600], dd[600];
+  port_get_full_designation (src, sd);
+  port_get_full_designation (dest, dd);
   g_message (
     "Disconnected port \"%s\" from \"%s\"",
     sd, dd);
-  g_free (sd);
-  g_free (dd);
   return 0;
 }
 
@@ -1624,17 +1617,16 @@ port_rename_backend (
   if ((!port_is_exposed_to_backend (self)))
     return;
 
-  char * str;
+  char str[600];
   switch (self->internal_type)
     {
     case INTERNAL_JACK_PORT:
 #ifdef HAVE_JACK
-      str = port_get_full_designation (self);
+      port_get_full_designation (self, str);
       jack_port_rename (
         AUDIO_ENGINE->client,
         (jack_port_t *) self->data,
         str);
-      g_free (str);
 #endif
       break;
     case INTERNAL_ALSA_SEQ_PORT:
@@ -1711,11 +1703,13 @@ port_receive_midi_events_from_jack (
     {
       MidiEvent * ev =
         &self->midi_events->events[0];
+      char designation[600];
+      port_get_full_designation (
+        self, designation);
       g_message (
         "JACK MIDI (%s): have %d events\n"
         "first event is: [%u] %hhx %hhx %hhx",
-        port_get_full_designation (self),
-        num_events,
+        designation, num_events,
         ev->time, ev->raw_buffer[0],
         ev->raw_buffer[1], ev->raw_buffer[2]);
     }
@@ -1875,40 +1869,38 @@ port_set_expose_to_jack (
   if (!type)
     g_return_if_reached ();
 
-  char * label =
-    port_get_full_designation (self);
+  char label[600];
+  port_get_full_designation (self, label);
   if (expose)
     {
       g_message (
-        "exposing port %s to JACK",
-        label);
+        "exposing port %s to JACK", label);
       if (!self->data)
         {
           self->data =
             (void *) jack_port_register (
               AUDIO_ENGINE->client,
-              label,
-              type, flags, 0);
+              label, type, flags, 0);
         }
       g_warn_if_fail (self->data);
-      g_free (label);
       self->internal_type = INTERNAL_JACK_PORT;
     }
   else
     {
       g_message (
-        "unexposing port %s from JACK",
-        label);
+        "unexposing port %s from JACK", label);
       int ret =
         jack_port_unregister (
           AUDIO_ENGINE->client,
           JACK_PORT_T (self->data));
       if (ret)
         {
+          char jack_error[600];
+          engine_jack_get_error_message (
+            (jack_status_t) ret, jack_error);
           g_warning (
             "JACK port unregister error: %s",
-            engine_jack_get_error_message (
-              (jack_status_t) ret));
+            jack_error);
         }
       self->internal_type = INTERNAL_NONE;
       self->data = NULL;
@@ -1984,8 +1976,8 @@ port_set_expose_to_alsa (
 
       if (expose)
         {
-          char * lbl =
-            port_get_full_designation (self);
+          char lbl[600];
+          port_get_full_designation (self, lbl);
 
           int id =
             snd_seq_create_simple_port (
@@ -1997,9 +1989,7 @@ port_set_expose_to_alsa (
           snd_seq_get_port_info (
             AUDIO_ENGINE->seq_handle,
             id, info);
-          self->data =
-            (void *) info;
-          g_free (lbl);
+          self->data = (void *) info;
           self->internal_type =
             INTERNAL_ALSA_SEQ_PORT;
         }
@@ -2020,14 +2010,14 @@ port_set_expose_to_alsa (
 #endif
 
 /**
- * Returns a full designation of the port in the
- * format "Track/Port" or "Track/Plugin/Port".
- *
- * Must be free'd.
+ * Copies a full designation of \p self in the
+ * format "Track/Port" or "Track/Plugin/Port" in
+ * \p buf.
  */
-char *
+void
 port_get_full_designation (
-  const Port * self)
+  const Port * self,
+  char *       buf)
 {
   const PortIdentifier * id = &self->identifier;
 
@@ -2035,33 +2025,29 @@ port_get_full_designation (
     {
     case PORT_OWNER_TYPE_BACKEND:
     case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:
-      return g_strdup (id->label);
-      break;
+      strcpy (buf, id->label);
+      return;
     case PORT_OWNER_TYPE_PLUGIN:
-      return
-        g_strdup_printf (
-          "%s/%s/%s",
-          self->plugin->track->name,
-          self->plugin->descr->name,
-          id->label);
-      break;
+      sprintf (
+        buf, "%s/%s/%s",
+        self->plugin->track->name,
+        self->plugin->descr->name,
+        id->label);
+      return;
     case PORT_OWNER_TYPE_TRACK:
     case PORT_OWNER_TYPE_TRACK_PROCESSOR:
     case PORT_OWNER_TYPE_PREFADER:
     case PORT_OWNER_TYPE_FADER:
-      return
-        g_strdup_printf (
-          "%s/%s",
-          self->track->name,
-          id->label);
-      break;
+      sprintf (
+        buf, "%s/%s",
+        self->track->name,
+        id->label);
+      return;
     case PORT_OWNER_TYPE_MONITOR_FADER:
-      return
-        g_strdup_printf (
-          "Engine/%s",
-          id->label);
+      sprintf (buf, "Engine/%s", id->label);
+      return;
     default:
-      g_return_val_if_reached (NULL);
+      g_return_if_reached ();
     }
 }
 

@@ -95,10 +95,14 @@ int
 engine_jack_setup (
   AudioEngine * self,
   int           loading);
-
-const char *
+/**
+ * Copies the error message corresponding to \p
+ * status in \p msg.
+ */
+void
 engine_jack_get_error_message (
-  jack_status_t status);
+  jack_status_t status,
+  char *        msg);
 
 void
 engine_jack_tear_down (

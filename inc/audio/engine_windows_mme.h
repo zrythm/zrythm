@@ -25,7 +25,6 @@
 #define __AUDIO_ENGINE_WINDOWS_MME_H__
 
 #include <Windows.h>
-#include <mmeapi.h>
 
 typedef struct AudioEngine AudioEngine;
 

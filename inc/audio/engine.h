@@ -318,8 +318,15 @@ typedef struct AudioEngine
 #endif
 
 #ifdef _WIN32
+  /** MIDI device interfaces for receiving
+   * MIDI input. */
   HMIDIIN           midi_in_handles[32];
+  MIDIHDR           midi_headers[32];
   int               num_midi_in_handles;
+
+  /** MIDI device interface for sending
+   * MIDI output. */
+  HMIDIOUT          midi_out_handle;
 #endif
 
   /**
