@@ -144,6 +144,15 @@ typedef struct MidiEvents
 } MidiEvents;
 
 /**
+ * Used by Windows MME.
+ */
+typedef struct MidiEventHeader
+{
+  uint64_t time;
+  size_t   size;
+} MidiEventHeader;
+
+/**
  * Inits the MidiEvents struct.
  */
 void
@@ -390,6 +399,14 @@ midi_events_free (
 void
 midi_panic_all (
   int queued);
+
+/**
+ * Returns the length of the MIDI message based on
+ * the status byte.
+ */
+int
+midi_get_msg_length (
+  uint8_t status_byte);
 
 /**
  * @}

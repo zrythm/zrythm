@@ -23,6 +23,7 @@
 
 #include <gtk/gtk.h>
 
+#if 0
 void
 windows_errors_print_mmresult (
   MMRESULT res)
@@ -58,5 +59,6 @@ windows_errors_print_mmresult (
       break;
     }
 }
+#endif
 
 #endif // _WIN32

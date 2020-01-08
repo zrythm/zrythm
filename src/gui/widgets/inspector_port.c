@@ -314,7 +314,7 @@ bar_slider_tick_cb (
   gint64 now = g_get_real_time ();
   if (now - self->last_tooltip_change > 100000)
     {
-      char str[500];
+      char str[2000];
       char full_designation[600];
       port_get_full_designation (
         self->port, full_designation);

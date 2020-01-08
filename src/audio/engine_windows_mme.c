@@ -15,6 +15,24 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Copyright (C) 2015 Tim Mayberry <mojofunk@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "config.h"
@@ -35,61 +53,66 @@
 #include <glib/gi18n.h>
 
 /**
- * MIDI in signal handler.
+ * Returns the number of MIDI devices available.
  *
- * The meaning of the dwParam1 and dwParam2 parameters
- * is specific to the message type. For more
- * information, see the topics for messages, such as
- * MIM_DATA.
- *
- * Applications should not call any multimedia
- * functions from inside the callback function, as
- * doing so can cause a deadlock. Other system
- * functions can safely be called from the callback.
- *
- * @param hMidiIn Handle to the MIDI input device.
- * @param wMsg MIDI input message.
- * @param dwInstance Instance data supplied with the midiInOpen function.
- * @param dwParam1 Message parameter.
- * @param dwParam2 Message parameter.
+ * @param input 1 for input, 0 for output.
  */
-static void
-midi_in_cb (
-  HMIDIIN   hMidiIn,
-  UINT      wMsg,
-  DWORD_PTR dwInstance,
-  DWORD_PTR dwParam1,
-  DWORD_PTR dwParam2)
+int
+engine_windows_mme_get_num_devices (
+  int input)
 {
-  g_message ("windows MIDI callback called");
-  switch (wMsg)
+  if (input)
+    return (int) midiInGetNumDevs ();
+  else
+    return (int) midiOutGetNumDevs ();
+}
+
+/**
+ * Gets the error text for a MIDI input error.
+ *
+ * @return 0 if successful, non-zero if failed.
+ */
+int
+engine_windows_mme_get_input_error (
+  MMRESULT error_code,
+  int      input,
+  char *   buf,
+  int      buf_size)
+{
+  g_return_val_if_fail (
+    error_code != MMSYSERR_NOERROR, -1);
+
+  MMRESULT result;
+  if (input)
+    midiInGetErrorText (
+      error_code, buf, buf_size);
+  else
+    midiOutGetErrorText (
+      error_code, buf, buf_size);
+  g_return_val_if_fail (
+    result == MMSYSERR_NOERROR, -1);
+
+  return 0;
+}
+
+/**
+ * Prints the error in the log.
+ */
+void
+engine_windows_mme_print_error (
+  MMRESULT error_code,
+  int      input)
+{
+  g_return_if_fail (
+    error_code != MMSYSERR_NOERROR);
+
+  char msg[600];
+  int ret =
+    engine_windows_mme_get_error (
+      error_code, input, msg, 600);
+  if (!ret)
     {
-    case MIM_OPEN:
-      g_message ("MIM_OPEN");
-      break;
-    case MIM_CLOSE:
-      g_message ("MIM_CLOSE");
-      break;
-    case MIM_DATA:
-      g_message ("MIM_DATA");
-      /* dwParam1 = dwMidiMessage
-         dwParam2 = dwTimestamp */
-      break;
-    case MIM_LONGDATA:
-      g_message ("MIM_LONGDATA");
-      break;
-    case MIM_ERROR:
-      g_message ("MIM_ERROR");
-      break;
-    case MIM_LONGERROR:
-      g_message ("MIM_LONGERROR");
-      break;
-    case MIM_MOREDATA:
-      g_message ("MIM_MOREDATA");
-      break;
-    default:
-      g_message ("unknown message");
-      break;
+      g_critical ("Windows MME error: %s", msg);
     }
 }
 
@@ -101,33 +124,10 @@ engine_windows_mme_setup (
   AudioEngine * self,
   int           loading)
 {
-  UINT num_devs = midiInGetNumDevs ();
+  int num_devs = midiInGetNumDevs ();
 
   for (UINT i = 0; i < num_devs; i++)
     {
-      MIDIINCAPS caps;
-      MMRESULT ret =
-        midiInGetDevCaps (
-          i, &caps, sizeof (MIDIINCAPS));
-      if (ret != MMSYSERR_NOERROR)
-        {
-          windows_errors_print_mmresult (ret);
-          return -1;
-        }
-
-      /* TODO see https://docs.microsoft.com/en-us/windows/win32/api/mmeapi/ns-mmeapi-midiincaps for what
-       * to do with the midi caps */
-      g_message (
-        "MIDI in device detected:\n"
-        "Manufacturer ID: %u \n"
-        "Product identifier: %u \n"
-        "Driver version: %u . %u (%x)\n"
-        "Product name: %s",
-        caps.wMid, caps.wPid,
-        (caps.vDriverVersion >> 8),
-        (caps.vDriverVersion & 0xff),
-        caps.vDriverVersion, caps.szPname);
-
       ret =
         midiInOpen (
           &self->midi_in_handles[i], i,

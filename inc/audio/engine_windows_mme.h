@@ -27,12 +27,40 @@
 #include <Windows.h>
 
 typedef struct AudioEngine AudioEngine;
+typedef struct WindowsMmeDevice WindowsMmeDevice;
 
 /**
  * @addtogroup audio
  *
  * @{
  */
+
+/**
+ * Returns the number of MIDI devices available.
+ */
+int
+engine_windows_mme_get_num_devices (
+  int input);
+
+/**
+ * Gets the error text for a MIDI input error.
+ *
+ * @return 0 if successful, non-zero if failed.
+ */
+int
+engine_windows_mme_get_error (
+  MMRESULT error_code,
+  int      input,
+  char *   buf,
+  int      buf_size);
+
+/**
+ * Prints the error in the log.
+ */
+void
+engine_windows_mme_print_error (
+  MMRESULT error_code,
+  int      input);
 
 /**
  * Initialize Port MIDI.

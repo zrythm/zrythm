@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -15,10 +15,25 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Copyright (C) 2015 Tim Mayberry <mojofunk@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-/** \file
- * MIDI functions. */
 
 #include <math.h>
 #include <stdlib.h>
@@ -866,6 +881,49 @@ midi_panic_all (
           track->processor.piano_roll->midi_events,
           queued);
     }
+}
+
+/**
+ * Returns the length of the MIDI message based on
+ * the status byte.
+ *
+ * TODO move this and other functions to utils/midi,
+ * split separate files for MidiEvents and MidiEvent.
+ */
+int
+midi_get_msg_length (
+  uint8_t status_byte)
+{
+  // define these with meaningful names
+  switch (status_byte & 0xf0) {
+  case 0x80:
+  case 0x90:
+  case 0xa0:
+  case 0xb0:
+  case 0xe0:
+    return 3;
+  case 0xc0:
+  case 0xd0:
+    return 2;
+  case 0xf0:
+    switch (status_byte) {
+    case 0xf0:
+      return 0;
+    case 0xf1:
+    case 0xf3:
+      return 2;
+    case 0xf2:
+      return 3;
+    case 0xf4:
+    case 0xf5:
+    case 0xf7:
+    case 0xfd:
+      break;
+    default:
+      return 1;
+    }
+  }
+  g_return_val_if_reached (-1);
 }
 
 /**

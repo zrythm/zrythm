@@ -24,9 +24,5 @@
 
 #include <Windows.h>
 
-void
-windows_errors_print_mmresult (
-  MMRESULT res);
-
 #endif
 #endif // _WIN32

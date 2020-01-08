@@ -80,6 +80,8 @@ audio_srcs = [
   'tracklist.c',
   'transport.c',
   'velocity.c',
+  'windows_mmcss.c',
+  'windows_mme_device.c',
   ]
 
 zrythm_srcs += files (audio_srcs)

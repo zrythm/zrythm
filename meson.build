@@ -106,6 +106,8 @@ endif
 
 if os_darwin
   add_languages('objc')
+elif os_windows
+  cdata.set ('USE_MMCSS_THREAD_PRIORITIES', 1)
 endif
 
 root_inc = include_directories ('.')
