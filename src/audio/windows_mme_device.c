@@ -40,6 +40,7 @@
 #ifdef _WIN32
 
 #include "audio/engine_windows_mme.h"
+#include "audio/midi.h"
 #include "audio/windows_mmcss.h"
 #include "audio/windows_mme_device.h"
 
@@ -52,18 +53,24 @@ windows_mme_device_new (
   MIDIOUTCAPS out_caps;
   MMRESULT ret;
   if (input)
-    ret =
-      midiInGetDevCaps (
-        i, &in_caps, sizeof (MIDIINCAPS));
+    {
+      ret =
+        midiInGetDevCaps (
+          (UINT_PTR) index, &in_caps,
+          sizeof (MIDIINCAPS));
+    }
   else
-    ret =
-      midiOutGetDevCaps (
-        i, &out_caps, sizeof (MIDIOUTCAPS));
+    {
+      ret =
+        midiOutGetDevCaps (
+          (UINT_PTR) index, &out_caps,
+          sizeof (MIDIOUTCAPS));
+    }
   if (ret != MMSYSERR_NOERROR)
     {
       engine_windows_mme_print_error (
         ret, input);
-      return -1;
+      return NULL;
     }
 
   WindowsMmeDevice * self =
@@ -125,15 +132,16 @@ enqueue_midi_msg (
     }
 
   // don't use winmme timestamps for now
-  uint64_t ts = g_get_monotonic_time ();
+  uint64_t ts =
+    (uint64_t) g_get_monotonic_time ();
 
   g_message (
     "Enqueing MIDI data device: %s "
-    "with timestamp: %ul and size %d",
-      self->name, ts, data_size);
+    "with timestamp: %llu and size %lld",
+    self->name, ts, data_size);
 
-  struct MidiEventHeader h = {
-    .h = ts, .size = data_size,
+  MidiEventHeader h = {
+    .time = ts, .size = data_size,
   };
   zix_ring_write (
     self->midi_ring,
@@ -161,7 +169,7 @@ handle_short_msg (
     }
 
   enqueue_midi_msg (
-    self, midi_data, length, timestamp);
+    self, midi_data, (size_t) length, timestamp);
 }
 
 static void
@@ -182,8 +190,8 @@ handle_sysex_msg (
       else
         {
           g_critical (
-            "ERROR: WinMME driver has returned sysex "
-            "header to us with no bytes");
+            "ERROR: WinMME driver has returned "
+            "sysex header to us with no bytes");
         }
       return;
     }
@@ -191,13 +199,15 @@ handle_sysex_msg (
   uint8_t * data = (uint8_t *) midi_header->lpData;
 
   g_message (
-    "WinMME sysex flags: %u", midi_header->dwFlags);
+    "WinMME sysex flags: %lu",
+    midi_header->dwFlags);
 
   if ((data[0] != 0xf0) ||
       (data[byte_count - 1] != 0xf7))
     {
       g_message (
-        "Discarding %u byte sysex chunk", byte_count);
+        "Discarding %llu byte sysex chunk",
+        byte_count);
     }
   else
     {
@@ -263,12 +273,14 @@ windows_mme_device_input_cb (
   DWORD_PTR dwParam1,
   DWORD_PTR dwParam2)
 {
-  EngineWindowsMmeDevice * self =
-    (EngineWindowsMmeDevice *) dwInstance;
+  WindowsMmeDevice * self =
+    (WindowsMmeDevice *) dwInstance;
+  DWORD_PTR midi_msg = dwParam1;
+  DWORD timestamp = dwParam2;
 
 #ifdef USE_MMCSS_THREAD_PRIORITIES
 
-  static HANDLE input_thread = GetCurrentThread ();
+  // static HANDLE input_thread = GetCurrentThread ();
   static int priority_boosted = 0;
 
 #if 0 // GetThreadId() is Vista or later only.
@@ -281,9 +293,9 @@ windows_mme_device_input_cb (
     // threads(thread pool) this
     // could be problematic but I haven't seen this
     // behaviour yet
-    DEBUG_THREADS (string_compose (
-        "WinMME input Thread ID Changed: was %1,
-        now %2\n", otid, ntid));
+    g_message (
+        "WinMME input Thread ID Changed: was %d"
+        "now %d\n", otid, ntid);
   }
 #endif
 
@@ -321,6 +333,10 @@ windows_mme_device_input_cb (
       // driver. I'm not sure what could be done
       // differently if that occurs
       // so just handle MIM_DATA as per normal
+      handle_short_msg (
+        self, (const uint8_t *) &midi_msg,
+        (uint32_t) timestamp);
+      break;
     case MIM_DATA:
       g_message (
         "WinMME: [%s] short msg at %u",
@@ -371,8 +387,8 @@ windows_mme_device_open (
     {
       MMRESULT result =
         midiInOpen (
-          &dev->in_handle, dev->id,
-          (DWORD_PTR) input_cb,
+          &dev->in_handle, (UINT) dev->id,
+          (DWORD_PTR) windows_mme_device_input_cb,
           (DWORD_PTR) dev,
           CALLBACK_FUNCTION | MIDI_IO_STATUS);
       if (result != MMSYSERR_NOERROR)
@@ -394,7 +410,7 @@ windows_mme_device_open (
  */
 void
 windows_mme_device_print_info (
-  WindowsMmeDevice * dev);
+  WindowsMmeDevice * dev)
 {
   g_return_if_fail (dev);
 
@@ -407,7 +423,6 @@ windows_mme_device_print_info (
     dev->manufacturer_id, dev->product_id,
     dev->driver_ver_major, dev->driver_ver_minor,
     dev->name);
-    }
 }
 
 #endif // _WIN32

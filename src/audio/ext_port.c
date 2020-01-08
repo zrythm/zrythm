@@ -48,20 +48,23 @@ ext_port_get_buffer (
 {
   switch (self->type)
     {
-    case EXT_PORT_TYPE_JACK:
 #ifdef HAVE_JACK
+    case EXT_PORT_TYPE_JACK:
       return
         (float *)
         jack_port_get_buffer (
           self->jport,
           nframes);
-#endif
       break;
+#endif
+#ifdef HAVE_ALSA
     case EXT_PORT_TYPE_ALSA:
+#endif
     default:
       g_return_val_if_reached (NULL);
       break;
     }
+g_return_val_if_reached (NULL);
 }
 
 /**

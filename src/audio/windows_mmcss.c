@@ -41,6 +41,8 @@
 
 #include "audio/windows_mmcss.h"
 
+#include <gtk/gtk.h>
+
 typedef HANDLE (WINAPI* AvSetMmThreadCharacteristicsA_t)(LPCSTR TaskName, LPDWORD TaskIndex);
 
 typedef BOOL (WINAPI* AvRevertMmThreadCharacteristics_t)(HANDLE AvrtHandle);
@@ -111,7 +113,7 @@ windows_mmcss_initialize ()
       g_warning (
         "MMCSS Unable to resolve necessary symbols, "
         "unloading avrt.dll");
-      deinitialize ();
+      windows_mmcss_deinitialize ();
     }
 
   return 0;

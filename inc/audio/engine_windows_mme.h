@@ -26,6 +26,8 @@
 
 #include <Windows.h>
 
+#include <gtk/gtk.h>
+
 typedef struct AudioEngine AudioEngine;
 typedef struct WindowsMmeDevice WindowsMmeDevice;
 

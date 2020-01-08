@@ -42,7 +42,11 @@
 #ifndef __AUDIO_WINDOWS_MME_DEVICE_H__
 #define __AUDIO_WINDOWS_MME_DEVICE_H__
 
+#include <stdint.h>
+
 #include <Windows.h>
+
+#include "zix/ring.h"
 
 typedef struct AudioEngine AudioEngine;
 
@@ -52,8 +56,8 @@ typedef struct AudioEngine AudioEngine;
  * @{
  */
 
-static const uint32_t MIDI_BUFFER_SIZE = 32768;
-static const uint32_t SYSEX_BUFFER_SIZE = 32768;
+#define MIDI_BUFFER_SIZE 32768
+#define SYSEX_BUFFER_SIZE 32768
 
 typedef struct WindowsMmeDevice
 {
@@ -61,7 +65,7 @@ typedef struct WindowsMmeDevice
   int           is_input;
 
   /** Index. */
-  unsigned int  id;
+  int           id;
 
   unsigned int  manufacturer_id;
   unsigned int  product_id;
@@ -83,8 +87,6 @@ typedef struct WindowsMmeDevice
   uint8_t       sysex_buffer[SYSEX_BUFFER_SIZE];
 
 } WindowsMmeDevice;
-
-void
 
 WindowsMmeDevice *
 windows_mme_device_new (
@@ -127,14 +129,14 @@ windows_mme_device_input_cb (
   UINT      wMsg,
   DWORD_PTR dwInstance,
   DWORD_PTR dwParam1,
-  DWORD_PTR dwParam2)
+  DWORD_PTR dwParam2);
 
 /**
  * Prints info about the device at the given ID
  * (index).
  */
 void
-windows_mme_print_device_info (
+windows_mme_device_print_info (
   WindowsMmeDevice * dev);
 
 /**

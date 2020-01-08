@@ -52,6 +52,7 @@
 #include "audio/engine_dummy.h"
 #include "audio/engine_jack.h"
 #include "audio/engine_pa.h"
+#include "audio/engine_windows_mme.h"
 #include "audio/metronome.h"
 #include "audio/midi.h"
 #include "audio/midi_mapping.h"
@@ -277,7 +278,7 @@ engine_init (
     case AUDIO_BACKEND_ALSA:
       ret =
         engine_alsa_setup(self, loading);
-	    break;
+      break;
 #endif
 #ifdef HAVE_JACK
     case AUDIO_BACKEND_JACK:
@@ -815,7 +816,7 @@ queue_metronome_events (
   transport_position_add_frames (
     TRANSPORT, &pos, nframes);
   position_add_frames (
-    &unlooped_playhead, nframes);
+    &unlooped_playhead, (long) nframes);
   int loop_crossed =
     unlooped_playhead.frames !=
     pos.frames;

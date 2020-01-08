@@ -42,6 +42,8 @@
 #ifndef __AUDIO_WINDOWS_MMCSS_H__
 #define __AUDIO_WINDOWS_MMCSS_H__
 
+#include <Windows.h>
+
 typedef enum AVRT_PRIORITY
 {
   AVRT_PRIORITY_VERYLOW = -2,

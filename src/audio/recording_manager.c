@@ -241,14 +241,14 @@ handle_audio_event (
           clip->frames,
           (size_t)
           (clip->num_frames *
-             clip->channels) *
+             (long) clip->channels) *
           sizeof (sample_t));
       region->frames =
         (sample_t *) realloc (
           region->frames,
           (size_t)
           (clip->num_frames *
-             clip->channels) *
+             (long) clip->channels) *
           sizeof (sample_t));
       region->num_frames = (size_t) clip->num_frames;
       memcpy (
@@ -265,7 +265,7 @@ handle_audio_event (
        * TRANSPORT loop start */
       ZRegion * new_region =
         audio_region_new (
-          -1, NULL, NULL, nframes, 2,
+          -1, NULL, NULL, (long) nframes, 2,
           &TRANSPORT->loop_start_pos,
           1);
       track_add_region (
@@ -293,14 +293,14 @@ handle_audio_event (
         clip->frames,
         (size_t)
         (clip->num_frames *
-           clip->channels) *
+           (long) clip->channels) *
         sizeof (sample_t));
       region->frames =
         (sample_t *) realloc (
           region->frames,
           (size_t)
           (clip->num_frames *
-             clip->channels) *
+             (long) clip->channels) *
           sizeof (sample_t));
       region->num_frames = (size_t) clip->num_frames;
       memcpy (

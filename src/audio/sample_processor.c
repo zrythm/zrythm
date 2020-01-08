@@ -101,7 +101,7 @@ sample_processor_process (
 {
   unsigned int j;
   int i;
-  long max_frames;
+  nframes_t max_frames;
   SamplePlayback * sp;
   float * l = self->stereo_out->l->buf,
         * r = self->stereo_out->r->buf;
@@ -118,8 +118,9 @@ sample_processor_process (
           /* fill in the buffer for as many frames as
            * possible */
           max_frames =
-            MIN (sp->buf_size - sp->offset,
-                 nframes - offset);
+            MIN (
+    (nframes_t) (sp->buf_size - sp->offset),
+                 (nframes_t) (nframes - offset));
           /*g_message ("already playing at %d - %d",*/
                      /*offset,*/
                      /*offset + max_frames);*/
@@ -152,7 +153,7 @@ sample_processor_process (
           /* fill in the buffer for as many frames as
            * possible */
           max_frames =
-            MIN (sp->buf_size - sp->offset,
+            MIN ((nframes_t) (sp->buf_size - sp->offset),
                  nframes - sp->start_offset);
           /*g_message ("starting at %d - %d",*/
                      /*sp->start_offset,*/

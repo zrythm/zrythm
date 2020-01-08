@@ -112,13 +112,14 @@ audio_clip_new_from_float_array (
 
   self->frames =
     calloc (
-      (size_t) (nframes * channels),
+      (size_t) (nframes * (long) channels),
       sizeof (sample_t));
   self->num_frames = nframes;
   self->channels = channels;
   self->name = g_strdup (name);
   self->pool_id = -1;
-  for (long i = 0; i < nframes * channels; i++)
+  for (long i = 0; i < nframes * (long) channels;
+		  i++)
     {
       self->frames[i] = (sample_t) arr[i];
     }
@@ -149,13 +150,14 @@ audio_clip_new_recording (
   self->channels = channels;
   self->frames =
     calloc (
-      (size_t) (nframes * self->channels),
+      (size_t) (nframes * (long) self->channels),
       sizeof (sample_t));
   self->num_frames = nframes;
   self->name = g_strdup (name);
   self->pool_id = -1;
   self->bpm = TRANSPORT->bpm;
-  for (long i = 0; i < nframes * channels; i++)
+  for (long i = 0; i < nframes * (long) channels;
+       i++)
     {
       self->frames[i] = 0.f;
     }

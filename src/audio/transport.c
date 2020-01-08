@@ -494,7 +494,7 @@ transport_frames_add_frames (
   const long        gframes,
   const nframes_t   frames)
 {
-  long new_frames = gframes + frames;
+  long new_frames = gframes + (long) frames;
 
   /* if start frames were before the loop-end point
    * and the new frames are after (loop crossed) */
@@ -551,7 +551,7 @@ transport_is_loop_point_met (
     TRANSPORT_IS_LOOPING &&
     self->loop_end_pos.frames > g_start_frames &&
     self->loop_end_pos.frames <=
-      g_start_frames + nframes)
+      g_start_frames + (long) nframes)
     {
       return
         (nframes_t)

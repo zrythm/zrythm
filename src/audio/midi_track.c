@@ -578,7 +578,7 @@ midi_track_fill_midi_events (
                     mn_obj->pos.frames >=
                       r_local_pos &&
                     mn_obj->pos.frames <
-                      r_local_pos + nframes)
+                      r_local_pos + (long) nframes)
                     {
                       g_message (
                         "normal note on");
@@ -586,7 +586,7 @@ midi_track_fill_midi_events (
                         (midi_time_t)
                         ((mn_obj->pos.frames -
                            r_local_pos) +
-                         diff_to_tp_loop_end);
+                         (long) diff_to_tp_loop_end);
                       midi_events_add_note_on (
                         midi_events,
                         midi_region_get_midi_ch (

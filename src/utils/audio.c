@@ -80,7 +80,7 @@ audio_get_num_cores ()
 #ifdef _WIN32
   SYSTEM_INFO sysinfo;
   GetSystemInfo(&sysinfo);
-  num_cores = sysinfo.dwNumberOfProcessors;
+  num_cores = (int) sysinfo.dwNumberOfProcessors;
 #endif
 
 #if defined(__linux__) || defined(__APPLE__)
@@ -107,6 +107,10 @@ audio_get_num_cores ()
           num_cores = 1;
   }
 #endif
+
+  g_message (
+      "Number of CPU cores found: %d",
+      num_cores);
 
   return num_cores;
 }

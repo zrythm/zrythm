@@ -45,9 +45,9 @@
 #include "audio/master_track.h"
 #include "audio/mixer.h"
 #include "audio/port.h"
+#include "audio/windows_mme_device.h"
 #include "project.h"
 #include "utils/ui.h"
-#include "utils/windows_errors.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -73,7 +73,7 @@ engine_windows_mme_get_num_devices (
  * @return 0 if successful, non-zero if failed.
  */
 int
-engine_windows_mme_get_input_error (
+engine_windows_mme_get_error (
   MMRESULT error_code,
   int      input,
   char *   buf,
@@ -84,11 +84,17 @@ engine_windows_mme_get_input_error (
 
   MMRESULT result;
   if (input)
+  {
+    result =
     midiInGetErrorText (
-      error_code, buf, buf_size);
+      error_code, buf, (UINT) buf_size);
+  }
   else
+  {
+    result =
     midiOutGetErrorText (
-      error_code, buf, buf_size);
+      error_code, buf, (UINT) buf_size);
+  }
   g_return_val_if_fail (
     result == MMSYSERR_NOERROR, -1);
 
@@ -124,48 +130,36 @@ engine_windows_mme_setup (
   AudioEngine * self,
   int           loading)
 {
-  int num_devs = midiInGetNumDevs ();
+  int num_devs =
+    engine_windows_mme_get_num_devices (1);
 
-  for (UINT i = 0; i < num_devs; i++)
+  for (int i = 0; i < num_devs; i++)
     {
-      ret =
-        midiInOpen (
-          &self->midi_in_handles[i], i,
-	  (DWORD_PTR) midi_in_cb,
-          (DWORD_PTR) self, CALLBACK_FUNCTION);
-      if (ret != MMSYSERR_NOERROR)
-        {
-          windows_errors_print_mmresult (ret);
-          return -1;
-        }
+      WindowsMmeDevice * dev =
+        windows_mme_device_new (
+            1, i);
+      g_return_val_if_fail (dev, -1);
+      int ret =
+      windows_mme_device_open (
+          dev);
+      g_return_val_if_fail (ret == 0, -1);
+    }
 
-      self->midi_headers[i].lpData =
-	      calloc (3, sizeof (char));
-      self->midi_headers[i].dwBufferLength =
-	      3 * sizeof (char);
-      self->midi_headers[i].dwFlags = 0;
+  num_devs =
+    engine_windows_mme_get_num_devices (0);
 
-      ret =
-        midiInPrepareHeader (
-          self->midi_in_handles[i],
-	  &self->midi_headers[i],
-	  sizeof (MIDIHDR));
-      if (ret != MMSYSERR_NOERROR)
-        {
-          windows_errors_print_mmresult (ret);
-          return -1;
-        }
-      ret =
-        midiInAddBuffer (
-          AUDIO_ENGINE->midi_in_handles[i],
-	  &AUDIO_ENGINE->midi_headers[i],
-	  sizeof (MIDIHDR));
-      if (ret != MMSYSERR_NOERROR)
-        {
-          windows_errors_print_mmresult (ret);
-        }
-
-      self->num_midi_in_handles++;
+  for (int i = 0; i < num_devs; i++)
+    {
+      WindowsMmeDevice * dev =
+        windows_mme_device_new (
+            0, i);
+      g_return_val_if_fail (dev, -1);
+      g_message ("found midi output device %s",
+          dev->name);
+      int ret =
+      windows_mme_device_open (
+          dev);
+      g_return_val_if_fail (ret == 0, -1);
     }
 
   return 0;
@@ -194,7 +188,7 @@ int
 engine_windows_mme_tear_down (
   AudioEngine * engine)
 {
-	return 0;
+  return 0;
 }
 
 #endif // _WIN32
