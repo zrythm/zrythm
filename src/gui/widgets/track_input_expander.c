@@ -315,8 +315,10 @@ setup_ext_ins_cb (
         label = port->alias2;
       else if (port->num_aliases == 1)
         label = port->alias1;
-      else
+      else if (port->short_name)
         label = port->short_name;
+      else
+        label = port->full_name;
 
       gtk_combo_box_text_append (
         GTK_COMBO_BOX_TEXT (cb),

@@ -430,6 +430,13 @@ engine_activate (
       self->midi_backend == MIDI_BACKEND_JACK)
     engine_jack_activate (self);
 #endif
+#ifdef _WIN32
+  if (self->midi_backend ==
+        MIDI_BACKEND_WINDOWS_MME)
+    {
+      engine_windows_mme_start_known_devices (self);
+    }
+#endif
 }
 
 void
@@ -859,6 +866,14 @@ engine_process (
   AudioEngine * self,
   nframes_t     _nframes)
 {
+  /* calculate timestamps (used for synchronizing
+   * external events like Windows MME MIDI) */
+  self->timestamp_start =
+    g_get_monotonic_time ();
+  self->timestamp_end =
+    self->timestamp_start +
+    (_nframes * 1000000) / self->sample_rate;
+
   /* Clear output buffers just in case we have to
    * return early */
   clear_output_buffers (self, _nframes);

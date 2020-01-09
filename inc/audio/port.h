@@ -287,6 +287,22 @@ typedef struct Port
    */
   void *              data;
 
+#ifdef _WIN32
+  /** Connections to WindowsMmeDevices.
+   *
+   * These must be pointers to \ref
+   * AudioEngine.mme_in_devs or \ref
+   * AudioEngine.mme_out_devs and must not be
+   * allocated or free'd.
+   */
+  WindowsMmeDevice *  mme_connections;
+  int                 num_mme_connections;
+
+  /** Semaphore for changing the connections
+   * atomically. */
+  ZixSem              mme_connections_sem;
+#endif
+
   /* TODO move these from lv2_control */
   /** Minimum value. */
   //float               minf;

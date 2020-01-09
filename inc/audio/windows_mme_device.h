@@ -59,6 +59,16 @@ typedef struct AudioEngine AudioEngine;
 #define MIDI_BUFFER_SIZE 32768
 #define SYSEX_BUFFER_SIZE 32768
 
+/**
+ * For readability when passing 0/1 for input
+ * and output.
+ */
+enum WindowsMmeDeviceFlow
+{
+  WINDOWS_MME_DEVICE_FLOW_INPUT,
+  WINDOWS_MME_DEVICE_FLOW_OUTPUT,
+};
+
 typedef struct WindowsMmeDevice
 {
   /** 1 for input, 0 for output. */
@@ -73,6 +83,9 @@ typedef struct WindowsMmeDevice
   unsigned int  driver_ver_minor;
 
   char *        name;
+
+  /** Whether opened or not. */
+  int           opened;
 
   /** Whether started (running) or not. */
   int           started;
@@ -100,15 +113,24 @@ windows_mme_device_new (
  * Opens a device allocated with
  * engine_windows_mme_device_new().
  *
+ * @param start Also start the device.
+ *
  * @return Non-zero if error.
  */
 int
 windows_mme_device_open (
-  WindowsMmeDevice * dev);
+  WindowsMmeDevice * dev,
+  int                start);
 
+/**
+ * Close the WindowsMmeDevice.
+ *
+ * @param free Also free the memory.
+ */
 int
 windows_mme_device_close (
-  WindowsMmeDevice * self);
+  WindowsMmeDevice * self,
+  int                free);
 
 int
 windows_mme_device_start (
@@ -147,11 +169,40 @@ windows_mme_device_input_cb (
   DWORD_PTR dwParam2);
 
 /**
+ * Dequeues a MIDI event from the queue into a
+ * MidiEvent struct.
+ *
+ * @param timestamp_start The timestamp at the start
+ *   of the processing cycle.
+ * @param timestamp_end The expected timestamp at
+ *   the end of the processing cycle.
+ */
+int
+windows_mme_device_dequeue_midi_event_struct (
+  WindowsMmeDevice * self,
+  uint64_t           timestamp_start,
+  uint64_t           timestamp_end,
+  MidiEvent *        ev);
+
+int
+windows_mme_device_dequeue_midi_event (
+  WindowsMmeDevice * self,
+  uint64_t   timestamp_start,
+  uint64_t   timestamp_end,
+  uint64_t * timestamp,
+  uint8_t *  midi_data,
+  size_t *   data_size);
+
+/**
  * Prints info about the device at the given ID
  * (index).
  */
 void
 windows_mme_device_print_info (
+  WindowsMmeDevice * dev);
+
+void
+windows_mme_device_free (
   WindowsMmeDevice * dev);
 
 /**

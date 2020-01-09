@@ -116,86 +116,11 @@ ext_port_disconnect (
   /* TODO */
 }
 
-/**
- * Collects external ports of the given type.
- *
- * @param hw Hardware or not.
- * @param ports An array of ExtPort pointers to fill
- *   in. The array should be preallocated.
- * @param size Size of the array to fill in.
- */
-void
-ext_ports_get (
-  PortType   type,
-  PortFlow   flow,
-  int        hw,
-  ExtPort ** arr,
-  int *      size)
-{
-  *size = 0;
-  switch (AUDIO_ENGINE->audio_backend)
-    {
-    case AUDIO_BACKEND_JACK:
-      {
 #ifdef HAVE_JACK
-        if (AUDIO_ENGINE->midi_backend !=
-              MIDI_BACKEND_JACK)
-          return;
-
-        long unsigned int flags = 0;
-        if (hw)
-          flags |= JackPortIsPhysical;
-        if (flow == FLOW_INPUT)
-          flags |= JackPortIsInput;
-        else if (flow == FLOW_OUTPUT)
-          flags |= JackPortIsOutput;
-        const char * jtype =
-          engine_jack_get_jack_type (type);
-        if (!jtype)
-          return;
-
-        const char ** ports =
-          jack_get_ports (
-            AUDIO_ENGINE->client,
-            NULL, jtype, flags);
-
-        if (!ports)
-          return;
-
-        int i = 0;
-        jack_port_t * jport;
-        while (ports[i] != NULL)
-          {
-            jport =
-              jack_port_by_name (
-                AUDIO_ENGINE->client,
-                ports[i]);
-
-            arr[i] =
-              ext_port_from_jack_port (jport);
-
-            i++;
-          }
-
-        jack_free (ports);
-
-        *size = i;
-#endif
-      }
-      break;
-    case AUDIO_BACKEND_ALSA:
-      break;
-    default:
-      break;
-    }
-}
-
-#ifdef HAVE_JACK
-
 /**
  * Creates an ExtPort from a JACK port.
  */
-ExtPort *
+static ExtPort *
 ext_port_from_jack_port (
   jack_port_t * jport)
 {
@@ -236,7 +161,167 @@ ext_port_from_jack_port (
   return self;
 }
 
+static void
+get_ext_ports_from_jack (
+  PortType   type,
+  PortFlow   flow,
+  int        hw,
+  ExtPort ** arr,
+  int *      size)
+{
+  long unsigned int flags = 0;
+  if (hw)
+    flags |= JackPortIsPhysical;
+  if (flow == FLOW_INPUT)
+    flags |= JackPortIsInput;
+  else if (flow == FLOW_OUTPUT)
+    flags |= JackPortIsOutput;
+  const char * jtype =
+    engine_jack_get_jack_type (type);
+  if (!jtype)
+    return;
+
+  const char ** ports =
+    jack_get_ports (
+      AUDIO_ENGINE->client,
+      NULL, jtype, flags);
+
+  if (!ports)
+    return;
+
+  int i = 0;
+  jack_port_t * jport;
+  while (ports[i] != NULL)
+    {
+      jport =
+        jack_port_by_name (
+          AUDIO_ENGINE->client,
+          ports[i]);
+
+      arr[*size + i] =
+        ext_port_from_jack_port (jport);
+
+      i++;
+    }
+
+  jack_free (ports);
+
+  *size += i;
+}
 #endif
+
+#ifdef _WIN32
+/**
+ * Creates an ExtPort from a JACK port.
+ */
+static ExtPort *
+ext_port_from_windows_mme_device (
+  WindowsMmeDevice * dev)
+{
+  ExtPort * self =
+    calloc (1, sizeof (ExtPort));
+
+  self->mme_dev = dev;
+  self->full_name = g_strdup (dev->name);
+  self->type = EXT_PORT_TYPE_WINDOWS_MME;
+
+  return self;
+}
+
+static void
+get_ext_ports_from_windows_mme (
+  PortFlow   flow,
+  ExtPort ** arr,
+  int *      size)
+{
+  WindowsMmeDevice * dev;
+  if (flow == FLOW_INPUT)
+    {
+      for (int i = 0;
+           i < AUDIO_ENGINE->num_mme_in_devs; i++);
+        {
+          dev = AUDIO_ENGINE->mme_in_devs[i];
+          g_return_if_fail (dev);
+          arr[*size + i] =
+            ext_port_from_windows_mme_device (dev);
+        }
+    }
+  else if (flow == FLOW_OUTPUT)
+    {
+      for (int i = 0;
+           i < AUDIO_ENGINE->num_mme_out_devs; i++);
+        {
+          dev = AUDIO_ENGINE->mme_out_devs[i];
+          g_return_if_fail (dev);
+          arr[*size + i] =
+            ext_port_from_windows_mme_device (dev);
+        }
+    }
+
+  *size += i;
+}
+#endif
+
+/**
+ * Collects external ports of the given type.
+ *
+ * @param hw Hardware or not.
+ * @param ports An array of ExtPort pointers to fill
+ *   in. The array should be preallocated.
+ * @param size Size of the array to fill in.
+ */
+void
+ext_ports_get (
+  PortType   type,
+  PortFlow   flow,
+  int        hw,
+  ExtPort ** arr,
+  int *      size)
+{
+  *size = 0;
+  if (type == TYPE_AUDIO)
+    {
+      switch (AUDIO_ENGINE->audio_backend)
+        {
+#ifdef HAVE_JACK
+        case AUDIO_BACKEND_JACK:
+          get_ext_ports_from_jack (
+            type, flow, hw, arr, size);
+          break;
+#endif
+#ifdef HAVE_ALSA
+        case AUDIO_BACKEND_ALSA:
+          break;
+#endif
+        default:
+          break;
+        }
+    }
+  else if (type == TYPE_EVENT)
+    {
+      switch (AUDIO_ENGINE->midi_backend)
+        {
+#ifdef HAVE_JACK
+        case MIDI_BACKEND_JACK:
+          get_ext_ports_from_jack (
+            type, flow, hw, arr, size);
+          break;
+#endif
+#ifdef HAVE_ALSA
+        case MIDI_BACKEND_ALSA:
+          break;
+#endif
+#ifdef _WIN32
+        case MIDI_BACKEND_WINDOWS_MME:
+          get_ext_ports_from_windows_mme (
+            flow, arr, size);
+          break;
+#endif
+        default:
+          break;
+        }
+    }
+}
 
 /**
  * Creates a shallow clone of the port.

@@ -512,6 +512,55 @@ channel_expose_ports_to_backend (
     }
 }
 
+#ifdef _WIN32
+/**
+ * Reconnects the given TrackProcessor's midi in.
+ */
+static void
+reconnect_windows_mme_ext_in (
+  Channel * ch,
+  Port *    in_port)
+{
+  int i = 0;
+  int ret;
+  TrackProcessor * processor =
+    &ch->track->processor;
+
+  zix_sem_wait (&in_port->mme_connections_sem);
+
+  /* disconnect current connections */
+  in_port->num_mme_connections = 0;
+
+  /* connect to all external midi ins */
+  if (ch->all_midi_ins)
+    {
+      for (int i = 0;
+           i < AUDIO_ENGINE->num_mme_in_devs; i++)
+        {
+          in_port->mme_connections[
+            in_port->num_mme_connections++] =
+              AUDIO_ENGINE->mme_in_devs[i];
+        }
+    }
+  /* connect to selected ports */
+  else
+    {
+      int num = ch->num_ext_midi_ins;
+      ExtPort ** arr = ch->ext_midi_ins;
+
+      for (i = 0; i < num; i++)
+        {
+          in_port->mme_connections[
+            in_port->num_mme_connections++] =
+              arr[i]->mme_dev;
+        }
+    }
+
+  zix_sem_post (&in_port->mme_connections_sem);
+}
+#endif
+
+#ifdef HAVE_JACK
 /**
  * Reconnects the given port (either
  * TrackProcessor's stereo in L/R or midi in).
@@ -521,7 +570,6 @@ reconnect_jack_ext_in (
   Channel * ch,
   Port *    in_port)
 {
-#ifdef HAVE_JACK
   int i = 0;
   int ret;
   TrackProcessor * processor =
@@ -627,10 +675,8 @@ reconnect_jack_ext_in (
           g_warn_if_fail (!ret);
         }
     }
-#else
-  g_return_if_reached ();
-#endif
 }
+#endif
 
 /**
  * Called when the input has changed for Midi,
@@ -643,21 +689,29 @@ channel_reconnect_ext_input_ports (
   if (ch->track->type == TRACK_TYPE_INSTRUMENT ||
       ch->track->type == TRACK_TYPE_MIDI)
     {
+      Port * midi_in =
+        ch->track->processor.midi_in;
+
       /* if the project was loaded with another
        * backend, the port might not be exposed
        * yet, so expose it */
-      port_set_expose_to_backend (
-        ch->track->processor.midi_in, 1);
+      port_set_expose_to_backend (midi_in, 1);
 
-      if (AUDIO_ENGINE->audio_backend ==
-            AUDIO_BACKEND_JACK &&
-          AUDIO_ENGINE->midi_backend ==
-            MIDI_BACKEND_JACK)
+      switch (AUDIO_ENGINE->midi_backend)
         {
 #ifdef HAVE_JACK
-          reconnect_jack_ext_in (
-            ch, ch->track->processor.midi_in);
+        case MIDI_BACKEND_JACK:
+          reconnect_jack_ext_in (ch, midi_in);
+          break;
 #endif
+#ifdef _WIN32
+        case MIDI_BACKEND_WINDOWS_MME:
+          reconnect_windows_mme_ext_in (
+            ch, midi_in);
+          break;
+#endif
+        default:
+          break;
         }
     }
   else if (ch->track->type == TRACK_TYPE_AUDIO)

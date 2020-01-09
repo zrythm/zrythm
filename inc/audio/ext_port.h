@@ -55,13 +55,15 @@ typedef enum ExtPortType
 {
   EXT_PORT_TYPE_JACK,
   EXT_PORT_TYPE_ALSA,
+  EXT_PORT_TYPE_WINDOWS_MME,
 } ExtPortType;
 
 static const cyaml_strval_t
 ext_port_type_strings[] =
 {
-	{ "jack",   EXT_PORT_TYPE_JACK    },
-	{ "alsa",   EXT_PORT_TYPE_ALSA   },
+  { "JACK",   EXT_PORT_TYPE_JACK    },
+  { "ALSA",   EXT_PORT_TYPE_ALSA   },
+  { "Windows MME",   EXT_PORT_TYPE_WINDOWS_MME   },
 };
 
 /**
@@ -87,6 +89,16 @@ typedef struct ExtPort
   char *           alias2;
 
   int              num_aliases;
+
+#ifdef _WIN32
+  /**
+   * Pointer to a WindowsMmeDevice.
+   *
+   * This must be one of the devices in AudioEngine.
+   * It must NOT be allocated or free'd.
+   */
+  WindowsMmeDevice * mme_dev;
+#endif
 
   ExtPortType      type;
 } ExtPort;
@@ -177,15 +189,6 @@ ext_port_disconnect (
   ExtPort * ext_port,
   Port *    port,
   int       src);
-
-#ifdef HAVE_JACK
-/**
- * Creates an ExtPort from a JACK port.
- */
-ExtPort *
-ext_port_from_jack_port (
-  jack_port_t * jport);
-#endif
 
 /**
  * Collects external ports of the given type.

@@ -318,15 +318,11 @@ typedef struct AudioEngine
 #endif
 
 #ifdef _WIN32
-  /** MIDI device interfaces for receiving
-   * MIDI input. */
-  HMIDIIN           midi_in_handles[32];
-  MIDIHDR           midi_headers[32];
-  int               num_midi_in_handles;
-
-  /** MIDI device interface for sending
-   * MIDI output. */
-  HMIDIOUT          midi_out_handle;
+  /** Windows MME MIDI devices. */
+  WindowsMmeDevice * mme_in_devs[60];
+  int                num_mme_in_devs;
+  WindowsMmeDevice * mme_out_devs[60];
+  int                num_mme_out_devs;
 #endif
 
   /**
@@ -340,9 +336,20 @@ typedef struct AudioEngine
   /** Pan algorithm */
   PanAlgorithm      pan_algo;
 
+  /** Time taken to process in the last cycle */
   gint64            last_time_taken;
 
+  /** Max time taken to process in the last few
+   * cycles. */
   gint64            max_time_taken;
+
+  /** Timestamp at the start of the current
+   * cycle. */
+  gint64            timestamp_start;
+
+  /** Expected timestamp at the end of the current
+   * cycle. */
+  gint64            timestamp_end;
 
   /** When first set, it is equal to the max
    * playback latency of all initial trigger

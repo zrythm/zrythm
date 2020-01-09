@@ -72,6 +72,14 @@ engine_windows_mme_setup (
   AudioEngine * self,
   int           loading);
 
+/**
+ * Rescans for MIDI devices, opens them and keeps
+ * track of them.
+ */
+void
+engine_windows_mme_rescan_devices (
+  AudioEngine * self);
+
 int
 engine_windows_mme_tear_down (
   AudioEngine * self);

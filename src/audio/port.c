@@ -117,6 +117,14 @@ port_init_loaded (Port * this)
       this->midi_ring =
         zix_ring_new (
           sizeof (MidiEvent) * (size_t) 11);
+#ifdef _WIN32
+      if (AUDIO_ENGINE->midi_backend ==
+            MIDI_BACKEND_WINDOWS_MME)
+        {
+          zix_sem_init (
+            &this->mme_connections_sem, 1);
+        }
+#endif
       break;
     case TYPE_AUDIO:
     case TYPE_CV:
@@ -484,6 +492,14 @@ port_new_with_type (
       self->midi_ring =
         zix_ring_new (
           sizeof (MidiEvent) * (size_t) 11);
+#ifdef _WIN32
+      if (AUDIO_ENGINE->midi_backend ==
+            MIDI_BACKEND_WINDOWS_MME)
+        {
+          zix_sem_init (
+            &self->mme_connections_sem, 1);
+        }
+#endif
       break;
     case TYPE_AUDIO:
     case TYPE_CV:
@@ -1350,16 +1366,30 @@ port_sum_signal_from_inputs (
        * armed for recording (if the port is owner
        * by a track), otherwise always consider
        * incoming external data */
-      if (port->identifier.owner_type !=
-            PORT_OWNER_TYPE_TRACK_PROCESSOR ||
-          (port->identifier.owner_type ==
-             PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-           port->track->recording))
+      if ((port->identifier.owner_type !=
+             PORT_OWNER_TYPE_TRACK_PROCESSOR ||
+           (port->identifier.owner_type ==
+              PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+            port->track->recording)) &&
+           port->identifier.flow == FLOW_INPUT)
         {
+          switch (AUDIO_ENGINE->midi_backend)
+            {
 #ifdef HAVE_JACK
-          port_sum_data_from_jack (
-            port, start_frame, nframes);
+            case MIDI_BACKEND_JACK:
+              port_sum_data_from_jack (
+                port, start_frame, nframes);
+              break;
 #endif
+#ifdef _WIN32
+            case MIDI_BACKEND_WINDOWS_MME:
+              port_sum_data_from_windows_mme (
+                port, start_frame, nframes);
+              break;
+#endif
+            default:
+              break;
+            }
         }
 
       for (k = 0; k < port->num_srcs; k++)
@@ -1374,10 +1404,26 @@ port_sum_signal_from_inputs (
             nframes, 0);
         }
 
+      if (port->identifier.flow == FLOW_OUTPUT)
+        {
+          switch (AUDIO_ENGINE->midi_backend)
+            {
 #ifdef HAVE_JACK
-      port_send_data_to_jack (
-        port, start_frame, nframes);
+            case MIDI_BACKEND_JACK:
+              port_send_data_to_jack (
+                port, start_frame, nframes);
+              break;
 #endif
+#ifdef _WIN32
+            case MIDI_BACKEND_WINDOWS_MME:
+              port_send_data_to_windows_mme (
+                port, start_frame, nframes);
+              break;
+#endif
+            default:
+              break;
+            }
+        }
 
       /* send UI notification */
       if (port->midi_events->num_events > 0)
@@ -1430,10 +1476,20 @@ port_sum_signal_from_inputs (
           break;
         }
 
+      if (port->identifier.flow == FLOW_INPUT)
+        {
+          switch (AUDIO_ENGINE->audio_backend)
+            {
 #ifdef HAVE_JACK
-      port_sum_data_from_jack (
-        port, start_frame, nframes);
+            case AUDIO_BACKEND_JACK:
+              port_sum_data_from_jack (
+                port, start_frame, nframes);
+              break;
 #endif
+            default:
+              break;
+            }
+        }
 
       for (k = 0; k < port->num_srcs; k++)
         {
@@ -1446,41 +1502,42 @@ port_sum_signal_from_inputs (
             }
         }
 
+      if (port->identifier.flow == FLOW_OUTPUT)
+        {
+          switch (AUDIO_ENGINE->audio_backend)
+            {
 #ifdef HAVE_JACK
-      port_send_data_to_jack (
-        port, start_frame, nframes);
+            case AUDIO_BACKEND_JACK:
+              port_send_data_to_jack (
+                port, start_frame, nframes);
+              break;
 #endif
+            default:
+              break;
+            }
+        }
 
       if (start_frame + nframes ==
             AUDIO_ENGINE->block_length)
         {
-          /*if (port->write_ring_buffers)*/
-            /*{*/
-              size_t size =
-                sizeof (float) *
-                (size_t) AUDIO_ENGINE->block_length;
-              size_t write_space_avail =
-                zix_ring_write_space (port->audio_ring);
+          size_t size =
+            sizeof (float) *
+            (size_t) AUDIO_ENGINE->block_length;
+          size_t write_space_avail =
+            zix_ring_write_space (
+              port->audio_ring);
 
-              /* move the read head 8 blocks to make
-               * space if no space avail to write */
-              if (write_space_avail / size < 1)
-                {
-                  zix_ring_skip (
-                    port->audio_ring, size * 8);
-                }
+          /* move the read head 8 blocks to make
+           * space if no space avail to write */
+          if (write_space_avail / size < 1)
+            {
+              zix_ring_skip (
+                port->audio_ring, size * 8);
+            }
 
-              zix_ring_write (
-                port->audio_ring, &port->buf[0],
-                size);
-            /*}*/
-          /*else*/
-            /*{*/
-              /*port->rms =*/
-                /*math_calculate_rms_db (*/
-                  /*&port->buf[0],*/
-                  /*AUDIO_ENGINE->block_length);*/
-            /*}*/
+          zix_ring_write (
+            port->audio_ring, &port->buf[0],
+            size);
         }
       break;
     case TYPE_CONTROL:
@@ -2006,7 +2063,102 @@ port_set_expose_to_alsa (
     }
   self->exposed_to_backend = expose;
 }
+#endif
 
+#ifdef _WIN32
+/**
+ * Sums the inputs coming in from Windows MME,
+ * before the port is processed.
+ */
+void
+port_sum_data_from_windows_mme (
+  Port * self,
+  const nframes_t start_frame,
+  const nframes_t nframes)
+{
+  g_return_if_fail (
+    self->identifier.flow == FLOW_INPUT &&
+    AUDIO_ENGINE->midi_backend ==
+      MIDI_BACKEND_WINDOWS_MME);
+
+  if (self->identifier.owner_type ==
+        PORT_OWNER_TYPE_BACKEND)
+    return;
+
+  /* append events from Windows MME if any */
+  for (int i = 0; i < self->num_mme_connections;
+       i++)
+    {
+      WindowsMmeDevice * dev =
+        self->mme_connections[i];
+
+      MidiEvent ev;
+      while (
+        windows_mme_device_dequeue_midi_event_struct (
+          dev, AUDIO_ENGINE->timestamp_start,
+          AUDIO_ENGINE->timestamp_end, &ev))
+        {
+          if (ev.time >= start_frame &&
+              ev.time < start_frame + nframes)
+            {
+              midi_byte_t channel =
+                ev.buffer[0] & 0xf;
+              if (self->identifier.owner_type ==
+                    PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+                  (self->track->type ==
+                     TRACK_TYPE_MIDI ||
+                   self->track->type ==
+                     TRACK_TYPE_INSTRUMENT) &&
+                  !self->track->channel->
+                    all_midi_channels &&
+                  !self->track->channel->
+                    midi_channels[channel])
+                {
+                  /* different channel */
+                }
+              else
+                {
+                  midi_events_add_event_from_buf (
+                    self->midi_events,
+                    ev.time, ev.buffer, 3);
+                }
+            }
+        }
+
+      if (self->midi_events->num_events > 0)
+        {
+          MidiEvent * ev =
+            &self->midi_events->events[0];
+          char designation[600];
+          port_get_full_designation (
+            self, designation);
+          g_message (
+            "MME MIDI (%s): have %d events\n"
+            "first event is: [%u] %hhx %hhx %hhx",
+            designation, num_events,
+            ev->time, ev->raw_buffer[0],
+            ev->raw_buffer[1], ev->raw_buffer[2]);
+        }
+    }
+}
+
+/**
+ * Sends the port data to Windows MME, after the
+ * port is processed.
+ */
+void
+port_send_data_to_windows_mme (
+  Port * self,
+  const nframes_t start_frame,
+  const nframes_t nframes)
+{
+  g_return_if_fail (
+    self->identifier.flow == FLOW_OUTPUT &&
+    AUDIO_ENGINE->midi_backend ==
+      MIDI_BACKEND_WINDOWS_MME);
+
+  /* TODO send midi events */
+}
 #endif
 
 /**

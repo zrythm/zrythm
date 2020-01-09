@@ -107,6 +107,102 @@ windows_mme_device_new (
   return self;
 }
 
+/**
+ * Dequeues a MIDI event from the queue into a
+ * MidiEvent struct.
+ *
+ * @param timestamp_start The timestamp at the start
+ *   of the processing cycle.
+ * @param timestamp_end The expected timestamp at
+ *   the end of the processing cycle.
+ */
+int
+windows_mme_device_dequeue_midi_event_struct (
+  WindowsMmeDevice * self,
+  uint64_t           timestamp_start,
+  uint64_t           timestamp_end,
+  MidiEvent *        ev)
+{
+  uint64_t timestamp;
+  size_t data_size;
+  int ret =
+    windows_mme_device_dequeue_midi_event (
+      self, timestamp_start, timestamp_end,
+      &timestamp, ev->raw_buffer, &data_size);
+  g_return_val_if_fail (ret == 0, ret);
+
+  /* calculate the time in frames */
+  uint64_t timestamp_interval =
+    timestamp_end - timestamp_start;
+  uint64_t timestamp_offset =
+    timestamp - timestamp_start;
+  double ratio =
+    (double) timestamp_offset /
+    (double) timestamp_interval;
+
+  ev->time =
+    (midi_time_t)
+    (ratio * (double) AUDIO_ENGINE->block_length);
+  return ret;
+}
+
+int
+windows_mme_device_dequeue_midi_event (
+  WindowsMmeDevice * self,
+  uint64_t   timestamp_start,
+  uint64_t   timestamp_end,
+  uint64_t * timestamp,
+  uint8_t *  midi_data,
+  size_t *   data_size)
+{
+  const uint32_t read_space =
+    zix_ring_read_space (self->midi_ring);
+  if (read_space <= sizeof(MidiEventHeader))
+    {
+      return -1;
+    }
+
+  struct MidiEventHeader h = { 0, 0 };
+
+  /* read event header */
+  zix_ring_read (
+    self->midi_ring, &h, sizeof (h));
+  g_return_val_if_fail (
+    read_space >= sizeof (MidiEventHeader) + h.size);
+
+  uint8_t midi_data[h.size];
+
+  if (h.time >= timestamp_end)
+    {
+      g_warning (
+        "MMEMidiInput event %lu(ms) early",
+        (h.time - timestamp_end) * 1e-3);
+      return -1;
+    }
+  else if (h.time < timestamp_start)
+    {
+      g_warning (
+        "MMEMidiInput event %lu(ms) late",
+        (timestamp_start - h.time) * 1e-3);
+    }
+
+  g_return_val_if_fail (h.size > 0);
+  if (h.size > *data_size)
+    {
+      g_warning (
+        "MMEMidiInput MIDI event too large");
+      return -1;
+    }
+
+  /* read event body */
+  zix_ring_read (
+    self->midi_ring, midi_data, h.size);
+  *timestamp = h.time;
+  *data_size = h.size;
+
+  return 0;
+}
+
 static int
 enqueue_midi_msg (
   WindowsMmeDevice * self,
@@ -216,7 +312,8 @@ handle_sysex_msg (
     }
 
   g_message (
-    "Adding sysex buffer back to WinMME buffer pool");
+    "Adding sysex buffer back to WinMME buffer "
+    "pool");
 
   midi_header->dwFlags = 0;
   midi_header->dwBytesRecorded = 0;
@@ -416,11 +513,14 @@ add_sysex_buffer (
  * Opens a device allocated with
  * engine_windows_mme_device_new().
  *
+ * @param start Also start the device.
+ *
  * @return Non-zero if error.
  */
 int
 windows_mme_device_open (
-  WindowsMmeDevice * self)
+  WindowsMmeDevice * dev,
+  int                start)
 {
   if (self->is_input)
     {
@@ -452,7 +552,12 @@ windows_mme_device_open (
       g_message (
         "Opened MIDI in device at index %u",
         self->id);
+      self->opened = 1;
     }
+
+  if (start)
+    return windows_mme_device_start (self);
+
   return 0;
 }
 
@@ -522,9 +627,15 @@ windows_mme_device_stop (
   return 0;
 }
 
+/**
+ * Close the WindowsMmeDevice.
+ *
+ * @param free Also free the memory.
+ */
 int
 windows_mme_device_close (
-  WindowsMmeDevice * self)
+  WindowsMmeDevice * self,
+  int                free)
 {
   int has_error = 0;
 
@@ -581,6 +692,12 @@ windows_mme_device_close (
     {
       g_message (
         "Closed MIDI device: %s", self->name);
+      self->opened = 0;
+    }
+
+  if (free)
+    {
+      windows_mme_device_free (self);
     }
 
   return has_error;
@@ -605,6 +722,33 @@ windows_mme_device_print_info (
     dev->manufacturer_id, dev->product_id,
     dev->driver_ver_major, dev->driver_ver_minor,
     dev->name);
+}
+
+void
+windows_mme_device_free (
+  WindowsMmeDevice * self)
+{
+  g_return_if_fail (self);
+  if (self->started)
+    {
+      g_critical (
+        "MME: Cannot free a running device");
+      return;
+    }
+  if (self->opened)
+    {
+      g_critical (
+        "MME: Please close [%s] before "
+        "freeing", self->name);
+      return;
+    }
+
+  if (self->name)
+    g_free (self->name);
+  if (self->midi_ring)
+    zix_ring_free (self->midi_ring);
+
+  free (self);
 }
 
 #endif // _WIN32

@@ -33,7 +33,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "audio/windows_mmcss.h"
 #include "plugins/vst/vst_x11.h"
 #include "gui/widgets/main_window.h"
 #include "utils/gtk.h"
@@ -310,11 +309,6 @@ main (int    argc,
   /* install segfault handler */
   g_message ("Installing signal handler...");
   signal(SIGSEGV, handler);
-
-#ifdef _WIN32
-  g_message ("Initing MMCSS...");
-  windows_mmcss_initialize ();
-#endif
 
 #ifdef HAVE_X11
   /* init xlib threads */

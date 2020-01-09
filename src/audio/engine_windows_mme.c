@@ -46,6 +46,7 @@
 #include "audio/mixer.h"
 #include "audio/port.h"
 #include "audio/windows_mme_device.h"
+#include "audio/windows_mmcss.h"
 #include "project.h"
 #include "utils/ui.h"
 
@@ -122,6 +123,114 @@ engine_windows_mme_print_error (
     }
 }
 
+int
+engine_windows_mme_start_known_devices (
+  AudioEngine * self)
+{
+  for (int i = 0; i < self->num_mme_in_devs; i++)
+    {
+      WindowsMmeDevice * dev =
+        self->mme_in_devs[i];
+      g_return-val_if_fail (
+        dev->opened == 1 && dev->started == 0);
+      int ret =
+        windows_mme_device_start (dev);
+      g_return_val_if_fail (ret == 0, -1);
+    }
+  for (int i = 0; i < self->num_mme_out_devs; i++)
+    {
+      WindowsMmeDevice * dev =
+        self->mme_out_devs[i];
+      g_return-val_if_fail (
+        dev->opened == 1 && dev->started == 0);
+      int ret =
+        windows_mme_device_start (dev);
+      g_return_val_if_fail (ret == 0, -1);
+    }
+
+  g_message ("MME devices successfully started");
+
+  return 0;
+}
+
+/**
+ * Rescans for MIDI devices, opens them and keeps
+ * track of them.
+ *
+ * @param start Whether to start receiving events
+ *   on the devices or not.
+ */
+void
+engine_windows_mme_rescan_devices (
+  AudioEngine * self,
+  int           start)
+{
+  for (int i = 0; i < self->num_mme_in_devs; i++)
+    {
+      WindowsMmeDevice * dev =
+        self->mme_in_devs[i];
+
+      if (dev->started)
+        windows_mme_device_stop (dev);
+      if (dev->opened)
+        windows_mme_device_close (dev, 0);
+      windows_mme_device_free (dev);
+    }
+  for (int i = 0; i < self->num_mme_out_devs; i++)
+    {
+      WindowsMmeDevice * dev =
+        self->mme_out_devs[i];
+
+      if (dev->started)
+        windows_mme_device_stop (dev);
+      if (dev->opened)
+        windows_mme_device_close (dev, 0);
+      windows_mme_device_free (dev);
+    }
+  self->num_mme_in_devs = 0;
+  self->num_mme_out_devs = 0;
+
+  int num_devs =
+    engine_windows_mme_get_num_devices (
+      WINDOWS_MME_DEVICE_FLOW_INPUT);
+  for (int i = 0; i < num_devs; i++)
+    {
+      WindowsMmeDevice * dev =
+        windows_mme_device_new (
+          WINDOWS_MME_DEVICE_FLOW_INPUT, i);
+      g_return_val_if_fail (dev, -1);
+      int ret =
+        windows_mme_device_open (dev, 0);
+      g_return_val_if_fail (ret == 0, -1);
+      self->mme_in_devs[
+        self->num_mme_in_devs++] = dev;
+    }
+
+  num_devs =
+    engine_windows_mme_get_num_devices (
+      WINDOWS_MME_DEVICE_FLOW_OUTPUT);
+
+  for (int i = 0; i < num_devs; i++)
+    {
+      WindowsMmeDevice * dev =
+        windows_mme_device_new (
+          WINDOWS_MME_DEVICE_FLOW_OUTPUT, i);
+      g_return_val_if_fail (dev, -1);
+      g_message ("found midi output device %s",
+          dev->name);
+      int ret =
+        windows_mme_device_open (dev, 0);
+      g_return_val_if_fail (ret == 0, -1);
+      self->mme_out_devs[
+        self->num_mme_out_devs++] = dev;
+    }
+
+  if (start)
+    {
+      engine_windows_mme_start_known_devices (self);
+    }
+}
+
 /**
  * Set up Port Audio.
  */
@@ -130,38 +239,11 @@ engine_windows_mme_setup (
   AudioEngine * self,
   int           loading)
 {
-  int num_devs =
-    engine_windows_mme_get_num_devices (1);
+  g_message ("Initing MMCSS...");
+  windows_mmcss_initialize ();
 
-  for (int i = 0; i < num_devs; i++)
-    {
-      WindowsMmeDevice * dev =
-        windows_mme_device_new (
-            1, i);
-      g_return_val_if_fail (dev, -1);
-      int ret =
-      windows_mme_device_open (dev);
-      g_return_val_if_fail (ret == 0, -1);
-      windows_mme_device_start (dev);
-      g_return_val_if_fail (ret == 0, -1);
-    }
-
-  num_devs =
-    engine_windows_mme_get_num_devices (0);
-
-  for (int i = 0; i < num_devs; i++)
-    {
-      WindowsMmeDevice * dev =
-        windows_mme_device_new (
-            0, i);
-      g_return_val_if_fail (dev, -1);
-      g_message ("found midi output device %s",
-          dev->name);
-      int ret =
-      windows_mme_device_open (
-          dev);
-      g_return_val_if_fail (ret == 0, -1);
-    }
+  g_message ("Rescanning MIDI devices...");
+  engine_windows_mme_rescan_devices (self);
 
   return 0;
 }
