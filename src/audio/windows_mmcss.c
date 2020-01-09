@@ -183,7 +183,8 @@ windows_mmcss_set_thread_characteristics (
     }
 
   g_message (
-    "Set thread characteristics to %s", task_name);
+    "MMCSS: Set thread characteristics to %s",
+    task_name);
 
   return 0;
 }

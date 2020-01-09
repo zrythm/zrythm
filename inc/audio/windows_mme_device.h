@@ -74,9 +74,12 @@ typedef struct WindowsMmeDevice
 
   char *        name;
 
+  /** Whether started (running) or not. */
+  int           started;
+
   /* ---- INPUT ---- */
   HMIDIIN       in_handle;
-  MIDIHDR       in_midi_header;
+  MIDIHDR       sysex_header;
 
   /* ---- OUTPUT ---- */
   HMIDIOUT      out_handle;
@@ -102,6 +105,18 @@ windows_mme_device_new (
 int
 windows_mme_device_open (
   WindowsMmeDevice * dev);
+
+int
+windows_mme_device_close (
+  WindowsMmeDevice * self);
+
+int
+windows_mme_device_start (
+  WindowsMmeDevice * self);
+
+int
+windows_mme_device_stop (
+  WindowsMmeDevice * self);
 
 /**
  * MIDI in signal handler.

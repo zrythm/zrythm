@@ -373,6 +373,45 @@ windows_mme_device_input_cb (
     }
 }
 
+static int
+add_sysex_buffer (
+  WindowsMmeDevice * self)
+{
+  self->sysex_header.dwBufferLength =
+    SYSEX_BUFFER_SIZE;
+  self->sysex_header.dwFlags = 0;
+  self->sysex_header.dwBytesRecorded = 0;
+  self->sysex_header.lpData =
+    (LPSTR) self->sysex_buffer;
+
+  MMRESULT result =
+    midiInPrepareHeader (
+      self->in_handle,
+      &self->sysex_header, sizeof(MIDIHDR));
+  if (result != MMSYSERR_NOERROR)
+    {
+      engine_windows_mme_print_error (result, 1);
+      return -1;
+    }
+
+  result =
+    midiInAddBuffer (
+      self->in_handle,
+      &self->sysex_header, sizeof(MIDIHDR));
+  if (result != MMSYSERR_NOERROR)
+    {
+      engine_windows_mme_print_error (result, 1);
+      return -1;
+    }
+  else
+    {
+      g_message (
+        "Added Initial WinMME sysex buffer");
+    }
+
+  return 0;
+}
+
 /**
  * Opens a device allocated with
  * engine_windows_mme_device_new().
@@ -381,27 +420,170 @@ windows_mme_device_input_cb (
  */
 int
 windows_mme_device_open (
-  WindowsMmeDevice * dev)
+  WindowsMmeDevice * self)
 {
-  if (dev->is_input)
+  if (self->is_input)
     {
-      MMRESULT result =
-        midiInOpen (
-          &dev->in_handle, (UINT) dev->id,
-          (DWORD_PTR) windows_mme_device_input_cb,
-          (DWORD_PTR) dev,
-          CALLBACK_FUNCTION | MIDI_IO_STATUS);
+      MMRESULT result;
+      if (self->is_input)
+        result =
+          midiInOpen (
+            &self->in_handle, (UINT) self->id,
+            (DWORD_PTR) windows_mme_device_input_cb,
+            (DWORD_PTR) self,
+            CALLBACK_FUNCTION | MIDI_IO_STATUS);
+      else
+        {
+          /* TODO */
+        }
       if (result != MMSYSERR_NOERROR)
         {
           engine_windows_mme_print_error (
-            result, dev->is_input);
+            result, self->is_input);
           return -1;
         }
+
+      if (add_sysex_buffer (self))
+        {
+          windows_mme_device_close (self);
+          g_return_val_if_reached (-1);
+        }
+
       g_message (
         "Opened MIDI in device at index %u",
-        dev->id);
+        self->id);
     }
   return 0;
+}
+
+int
+windows_mme_device_start (
+  WindowsMmeDevice * self)
+{
+  g_return_val_if_fail (self, -1);
+
+  if (!self->started)
+    {
+      MMRESULT result;
+      if (self->is_input)
+        result = midiInStart (self->in_handle);
+      else
+        {
+          /* TODO */
+          result = MMSYSERR_NOERROR;
+        }
+      self->started = (result == MMSYSERR_NOERROR);
+      if (!self->started)
+        {
+          engine_windows_mme_print_error (
+            result, self->is_input);
+          return -1;
+        }
+      else
+        {
+          g_message (
+            "WinMMEMidiInput: device %s started",
+            self->name);
+        }
+    }
+
+  return 0;
+}
+
+int
+windows_mme_device_stop (
+  WindowsMmeDevice * self)
+{
+  if (self->started)
+    {
+      MMRESULT result;
+      if (self->is_input)
+        result = midiInStop (self->in_handle);
+      else
+        {
+          /* TODO */
+          result = MMSYSERR_NOERROR;
+        }
+      self->started = 0;
+      if (result != MMSYSERR_NOERROR)
+        {
+          engine_windows_mme_print_error (
+            result, self->is_input);
+          return -1;
+        }
+      else
+        {
+          g_message (
+            "WinMMEMidiInput: device %s stopped",
+            self->name);
+        }
+    }
+
+  return 0;
+}
+
+int
+windows_mme_device_close (
+  WindowsMmeDevice * self)
+{
+  int has_error = 0;
+
+  MMRESULT result;
+  if (self->is_input)
+    midiInReset (self->in_handle);
+  else
+    midiOutReset (self->out_handle);
+  if (result != MMSYSERR_NOERROR)
+    {
+      engine_windows_mme_print_error (
+        result, self->is_input);
+      has_error = 1;
+    }
+
+  if (self->is_input)
+    result =
+      midiInUnprepareHeader (
+        self->in_handle,
+        &self->sysex_header, sizeof(MIDIHDR));
+  else
+    result =
+      midiOutUnprepareHeader (
+        self->out_handle,
+        &self->sysex_header, sizeof(MIDIHDR));
+  if (result != MMSYSERR_NOERROR)
+    {
+      engine_windows_mme_print_error (
+        result, self->is_input);
+      has_error = 1;
+    }
+
+  if (self->is_input)
+    result = midiInClose (self->in_handle);
+  else
+    result = midiOutClose (self->out_handle);
+  if (result != MMSYSERR_NOERROR)
+    {
+      engine_windows_mme_print_error (
+        result, self->is_input);
+      has_error = 1;
+    }
+
+  self->in_handle = NULL;
+  self->out_handle = NULL;
+
+  if (has_error)
+    {
+      g_warning (
+        "Unable to Close MIDI device: %s",
+        self->name);
+    }
+  else
+    {
+      g_message (
+        "Closed MIDI device: %s", self->name);
+    }
+
+  return has_error;
 }
 
 /**

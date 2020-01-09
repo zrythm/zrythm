@@ -140,8 +140,9 @@ engine_windows_mme_setup (
             1, i);
       g_return_val_if_fail (dev, -1);
       int ret =
-      windows_mme_device_open (
-          dev);
+      windows_mme_device_open (dev);
+      g_return_val_if_fail (ret == 0, -1);
+      windows_mme_device_start (dev);
       g_return_val_if_fail (ret == 0, -1);
     }
 
