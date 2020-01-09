@@ -301,6 +301,7 @@ test_strict_cflags = [
   '-Werror=type-limits',
   '-Werror=deprecated-declarations',
   '-Werror=format-extra-args',
+  '-Werror=format',
   ]
 
 if cc.get_id() == 'gcc'

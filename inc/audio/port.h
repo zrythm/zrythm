@@ -29,6 +29,7 @@
 
 #include "utils/types.h"
 #include "utils/yaml.h"
+#include "zix/sem.h"
 
 #ifdef HAVE_JACK
 #include <jack/jack.h>
@@ -41,6 +42,7 @@ typedef struct SampleProcessor SampleProcessor;
 typedef struct PassthroughProcessor
   PassthroughProcessor;
 typedef struct ZixRingImpl ZixRing;
+typedef struct WindowsMmeDevice WindowsMmeDevice;
 
 /**
  * @addtogroup audio
@@ -295,7 +297,7 @@ typedef struct Port
    * AudioEngine.mme_out_devs and must not be
    * allocated or free'd.
    */
-  WindowsMmeDevice *  mme_connections;
+  WindowsMmeDevice *  mme_connections[40];
   int                 num_mme_connections;
 
   /** Semaphore for changing the connections
@@ -687,6 +689,7 @@ stereo_ports_connect (
   StereoPorts * dest,
   int           locked);
 
+#ifdef HAVE_JACK
 /**
  * Receives MIDI data from the port's exposed
  * JACK port (if any) into the port.
@@ -706,46 +709,7 @@ port_receive_audio_data_from_jack (
   Port *          port,
   const nframes_t start_frames,
   const nframes_t nframes);
-
-/**
- * Sends MIDI data from the port to its exposed
- * JACK port (if any).
- */
-void
-port_send_midi_events_to_jack (
-  Port *          port,
-  const nframes_t start_frames,
-  const nframes_t nframes);
-
-/**
- * Sends audio data from the port to its exposed
- * JACK port (if any).
- */
-void
-port_send_audio_data_to_jack (
-  Port *      port,
-  const nframes_t start_frames,
-  const nframes_t nframes);
-
-/**
- * Sums the inputs coming in from JACK, before the
- * port is processed.
- */
-void
-port_sum_data_from_jack (
-  Port * port,
-  const nframes_t start_frames,
-  const nframes_t nframes);
-
-/**
- * Sends the port data to JACK, after the port
- * is processed.
- */
-void
-port_send_data_to_jack (
-  Port * self,
-  const nframes_t start_frames,
-  const nframes_t nframes);
+#endif
 
 /**
  * Copies a full designation of \p self in the

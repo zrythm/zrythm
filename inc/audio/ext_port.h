@@ -42,6 +42,8 @@
 #include <jack/jack.h>
 #endif
 
+typedef struct WindowsMmeDevice WindowsMmeDevice;
+
 /**
  * @addtogroup audio
  *
@@ -193,6 +195,10 @@ ext_port_disconnect (
 /**
  * Collects external ports of the given type.
  *
+ * @param flow The signal flow. Note that this is
+ *   inverse to what Zrythm sees. E.g., to get
+ *   MIDI inputs like MIDI keyboards, pass
+ *   \ref FLOW_OUTPUT here.
  * @param hw Hardware or not.
  * @param ports An array of ExtPort pointers to fill
  *   in. The array should be preallocated.

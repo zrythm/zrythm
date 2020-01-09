@@ -49,6 +49,7 @@
 #include "zix/ring.h"
 
 typedef struct AudioEngine AudioEngine;
+typedef struct MidiEvent MidiEvent;
 
 /**
  * @addtogroup audio
@@ -65,8 +66,8 @@ typedef struct AudioEngine AudioEngine;
  */
 enum WindowsMmeDeviceFlow
 {
-  WINDOWS_MME_DEVICE_FLOW_INPUT,
   WINDOWS_MME_DEVICE_FLOW_OUTPUT,
+  WINDOWS_MME_DEVICE_FLOW_INPUT,
 };
 
 typedef struct WindowsMmeDevice
@@ -176,6 +177,9 @@ windows_mme_device_input_cb (
  *   of the processing cycle.
  * @param timestamp_end The expected timestamp at
  *   the end of the processing cycle.
+ *
+ * @return Whether a MIDI event was dequeued or
+ * not.
  */
 int
 windows_mme_device_dequeue_midi_event_struct (
@@ -184,6 +188,10 @@ windows_mme_device_dequeue_midi_event_struct (
   uint64_t           timestamp_end,
   MidiEvent *        ev);
 
+/**
+ * @return Whether a MIDI event was dequeued or
+ * not.
+ */
 int
 windows_mme_device_dequeue_midi_event (
   WindowsMmeDevice * self,

@@ -123,6 +123,9 @@ engine_windows_mme_print_error (
     }
 }
 
+/**
+ * Starts all previously scanned devices.
+ */
 int
 engine_windows_mme_start_known_devices (
   AudioEngine * self)
@@ -131,18 +134,20 @@ engine_windows_mme_start_known_devices (
     {
       WindowsMmeDevice * dev =
         self->mme_in_devs[i];
-      g_return-val_if_fail (
-        dev->opened == 1 && dev->started == 0);
+      g_return_val_if_fail (
+        dev->opened == 1 && dev->started == 0, -1);
       int ret =
         windows_mme_device_start (dev);
       g_return_val_if_fail (ret == 0, -1);
     }
   for (int i = 0; i < self->num_mme_out_devs; i++)
     {
+	    /* skip for now */
+	    break;
       WindowsMmeDevice * dev =
         self->mme_out_devs[i];
-      g_return-val_if_fail (
-        dev->opened == 1 && dev->started == 0);
+      g_return_val_if_fail (
+        dev->opened == 1 && dev->started == 0, -1);
       int ret =
         windows_mme_device_start (dev);
       g_return_val_if_fail (ret == 0, -1);
@@ -160,7 +165,7 @@ engine_windows_mme_start_known_devices (
  * @param start Whether to start receiving events
  *   on the devices or not.
  */
-void
+int
 engine_windows_mme_rescan_devices (
   AudioEngine * self,
   int           start)
@@ -229,6 +234,8 @@ engine_windows_mme_rescan_devices (
     {
       engine_windows_mme_start_known_devices (self);
     }
+
+  return 0;
 }
 
 /**
@@ -243,7 +250,7 @@ engine_windows_mme_setup (
   windows_mmcss_initialize ();
 
   g_message ("Rescanning MIDI devices...");
-  engine_windows_mme_rescan_devices (self);
+  engine_windows_mme_rescan_devices (self, 0);
 
   return 0;
 }

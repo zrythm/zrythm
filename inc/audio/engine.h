@@ -57,6 +57,7 @@ typedef struct Plugin Plugin;
 typedef struct Tracklist Tracklist;
 typedef struct ExtPort ExtPort;
 typedef struct MidiMappings MidiMappings;
+typedef struct WindowsMmeDevice WindowsMmeDevice;
 
 /**
  * @addtogroup audio Audio

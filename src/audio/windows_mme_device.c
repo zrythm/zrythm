@@ -39,10 +39,12 @@
 
 #ifdef _WIN32
 
+#include "audio/engine.h"
 #include "audio/engine_windows_mme.h"
 #include "audio/midi.h"
 #include "audio/windows_mmcss.h"
 #include "audio/windows_mme_device.h"
+#include "project.h"
 
 WindowsMmeDevice *
 windows_mme_device_new (
@@ -115,6 +117,9 @@ windows_mme_device_new (
  *   of the processing cycle.
  * @param timestamp_end The expected timestamp at
  *   the end of the processing cycle.
+ *
+ * @return Whether a MIDI event was dequeued or
+ * not.
  */
 int
 windows_mme_device_dequeue_midi_event_struct (
@@ -129,23 +134,36 @@ windows_mme_device_dequeue_midi_event_struct (
     windows_mme_device_dequeue_midi_event (
       self, timestamp_start, timestamp_end,
       &timestamp, ev->raw_buffer, &data_size);
-  g_return_val_if_fail (ret == 0, ret);
+  if (!ret)
+	  return 0;
 
   /* calculate the time in frames */
   uint64_t timestamp_interval =
     timestamp_end - timestamp_start;
-  uint64_t timestamp_offset =
-    timestamp - timestamp_start;
+  int64_t timestamp_offset =
+    (int64_t) timestamp - (int64_t) timestamp_start;
   double ratio =
     (double) timestamp_offset /
     (double) timestamp_interval;
+#if 0
+  if (ratio < 0.001 || ratio >= 1.0)
+  {
+	  g_warning ("Event time is not within this cycle, skipping");
+	  return 0;
+  }
+#endif
 
   ev->time =
     (midi_time_t)
     (ratio * (double) AUDIO_ENGINE->block_length);
-  return ret;
+
+  return 1;
 }
 
+/**
+ * @return Whether a MIDI event was dequeued or
+ * not.
+ */
 int
 windows_mme_device_dequeue_midi_event (
   WindowsMmeDevice * self,
@@ -159,7 +177,8 @@ windows_mme_device_dequeue_midi_event (
     zix_ring_read_space (self->midi_ring);
   if (read_space <= sizeof(MidiEventHeader))
     {
-      return -1;
+	    /* defer */
+      return 0;
     }
 
   struct MidiEventHeader h = { 0, 0 };
@@ -167,32 +186,6 @@ windows_mme_device_dequeue_midi_event (
   /* read event header */
   zix_ring_read (
     self->midi_ring, &h, sizeof (h));
-  g_return_val_if_fail (
-    read_space >= sizeof (MidiEventHeader) + h.size);
-
-  uint8_t midi_data[h.size];
-
-  if (h.time >= timestamp_end)
-    {
-      g_warning (
-        "MMEMidiInput event %lu(ms) early",
-        (h.time - timestamp_end) * 1e-3);
-      return -1;
-    }
-  else if (h.time < timestamp_start)
-    {
-      g_warning (
-        "MMEMidiInput event %lu(ms) late",
-        (timestamp_start - h.time) * 1e-3);
-    }
-
-  g_return_val_if_fail (h.size > 0);
-  if (h.size > *data_size)
-    {
-      g_warning (
-        "MMEMidiInput MIDI event too large");
-      return -1;
-    }
 
   /* read event body */
   zix_ring_read (
@@ -200,7 +193,40 @@ windows_mme_device_dequeue_midi_event (
   *timestamp = h.time;
   *data_size = h.size;
 
-  return 0;
+  g_message (
+    "Denqueing MIDI data device: %s "
+    "with timestamp: %llu and size %lld",
+    self->name, h.time, h.size);
+  g_return_val_if_fail (
+		  h.size >= 1 && h.size <= 3, 1);
+  g_return_val_if_fail (
+    read_space >= sizeof (MidiEventHeader) + h.size,
+    1);
+
+  if (h.time >= timestamp_end)
+    {
+      g_warning (
+        "MMEMidiInput event %f(ms) early",
+        (h.time - timestamp_end) * 1e-3);
+      return 1;
+    }
+  else if (h.time < timestamp_start)
+    {
+      g_warning (
+        "MMEMidiInput event %f(ms) late",
+        (timestamp_start - h.time) * 1e-3);
+      return 1;
+    }
+
+  g_return_val_if_fail (h.size > 0, 0);
+  if (h.size > *data_size)
+    {
+      g_warning (
+        "MMEMidiInput MIDI event too large");
+      return 1;
+    }
+
+  return 1;
 }
 
 static int
@@ -519,7 +545,7 @@ add_sysex_buffer (
  */
 int
 windows_mme_device_open (
-  WindowsMmeDevice * dev,
+  WindowsMmeDevice * self,
   int                start)
 {
   if (self->is_input)
@@ -545,7 +571,7 @@ windows_mme_device_open (
 
       if (add_sysex_buffer (self))
         {
-          windows_mme_device_close (self);
+          windows_mme_device_close (self, 0);
           g_return_val_if_reached (-1);
         }
 
@@ -641,9 +667,9 @@ windows_mme_device_close (
 
   MMRESULT result;
   if (self->is_input)
-    midiInReset (self->in_handle);
+    result = midiInReset (self->in_handle);
   else
-    midiOutReset (self->out_handle);
+    result = midiOutReset (self->out_handle);
   if (result != MMSYSERR_NOERROR)
     {
       engine_windows_mme_print_error (

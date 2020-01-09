@@ -93,7 +93,14 @@ audio_encoder_decode (
         "An error has occurred during reading of "
         "the audio file %s", self->file);
     }
-  g_message ("num out frames %ld", self->num_out_frames);
+  g_message (
+    "num out frames "
+#ifdef _WIN32
+    "%lld",
+#else
+    "%ld",
+#endif
+    self->num_out_frames);
   audec_close (self->audec_handle);
   g_message ("--audio decoding end--");
 }

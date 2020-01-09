@@ -22,6 +22,7 @@
 #include "audio/engine.h"
 #include "audio/engine_jack.h"
 #include "audio/ext_port.h"
+#include "audio/windows_mme_device.h"
 #include "project.h"
 
 #ifdef HAVE_JACK
@@ -235,36 +236,41 @@ get_ext_ports_from_windows_mme (
   int *      size)
 {
   WindowsMmeDevice * dev;
-  if (flow == FLOW_INPUT)
+	    int i = 0;
+  if (flow == FLOW_OUTPUT)
     {
-      for (int i = 0;
-           i < AUDIO_ENGINE->num_mme_in_devs; i++);
+      for (i = 0;
+           i < AUDIO_ENGINE->num_mme_in_devs; i++)
         {
           dev = AUDIO_ENGINE->mme_in_devs[i];
           g_return_if_fail (dev);
           arr[*size + i] =
             ext_port_from_windows_mme_device (dev);
         }
+      (*size) += i;
     }
-  else if (flow == FLOW_OUTPUT)
+  else if (flow == FLOW_INPUT)
     {
-      for (int i = 0;
-           i < AUDIO_ENGINE->num_mme_out_devs; i++);
+      for (i = 0;
+           i < AUDIO_ENGINE->num_mme_out_devs; i++)
         {
           dev = AUDIO_ENGINE->mme_out_devs[i];
           g_return_if_fail (dev);
           arr[*size + i] =
             ext_port_from_windows_mme_device (dev);
         }
+      (*size) += i;
     }
-
-  *size += i;
 }
 #endif
 
 /**
  * Collects external ports of the given type.
  *
+ * @param flow The signal flow. Note that this is
+ *   inverse to what Zrythm sees. E.g., to get
+ *   MIDI inputs like MIDI keyboards, pass
+ *   \ref FLOW_OUTPUT here.
  * @param hw Hardware or not.
  * @param ports An array of ExtPort pointers to fill
  *   in. The array should be preallocated.

@@ -38,6 +38,7 @@
 #include "audio/track.h"
 #include "audio/track_processor.h"
 #include "audio/transport.h"
+#include "audio/windows_mme_device.h"
 #include "plugins/lv2_plugin.h"
 #include "plugins/lv2/lv2_gtk.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -521,11 +522,6 @@ reconnect_windows_mme_ext_in (
   Channel * ch,
   Port *    in_port)
 {
-  int i = 0;
-  int ret;
-  TrackProcessor * processor =
-    &ch->track->processor;
-
   zix_sem_wait (&in_port->mme_connections_sem);
 
   /* disconnect current connections */
@@ -548,7 +544,7 @@ reconnect_windows_mme_ext_in (
       int num = ch->num_ext_midi_ins;
       ExtPort ** arr = ch->ext_midi_ins;
 
-      for (i = 0; i < num; i++)
+      for (int i = 0; i < num; i++)
         {
           in_port->mme_connections[
             in_port->num_mme_connections++] =
