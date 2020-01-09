@@ -5,6 +5,7 @@ Zrythm
 [![builds.sr.ht status](https://builds.sr.ht/~alextee/zrythm.svg)](https://builds.sr.ht/~alextee/zrythm?)
 [![Windows build status](https://travis-ci.org/zrythm/zrythm.svg?branch=master)](https://travis-ci.org/zrythm/zrythm)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c16bdc22f6ae4e539aa6417274e71d17)](https://www.codacy.com/manual/alex-tee/zrythm)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fzrythm%2Fzrythm.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fzrythm%2Fzrythm?ref=badge_shield)
 
 Zrythm is a digital audio workstation designed to be
 featureful and easy to use. It allows limitless
@@ -80,6 +81,9 @@ individually.
 
 Some files, where specified, are licensed under
 different licenses.
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fzrythm%2Fzrythm.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fzrythm%2Fzrythm?ref=badge_large)
 
 ## Support
 If you would like to support this project please
