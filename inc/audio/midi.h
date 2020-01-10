@@ -88,7 +88,7 @@ typedef struct MidiEvent
    * wheel (0 ~ 127). */
   midi_byte_t    control;
 
-  /** MIDI channel. */
+  /** MIDI channel, starting from 1. */
   midi_byte_t    channel;
 
   /** Note value (0 ~ 127). */
@@ -382,6 +382,16 @@ void
 midi_events_sort (
   MidiEvents * self,
   const int    queued);
+
+/**
+ * Sets the given MIDI channel on all applicable
+ * MIDI events.
+ */
+void
+midi_events_set_channel (
+  MidiEvents *      self,
+  const int         queued,
+  const midi_byte_t channel);
 
 /**
  * Frees the MIDI events.

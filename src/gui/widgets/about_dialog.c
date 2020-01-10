@@ -39,6 +39,7 @@ about_dialog_widget_new (
     {
       "Alexandros Theodotou <alex@zrythm.org>",
       "Daniel Peterson",
+      "Carlos Han (C.K. Design)",
       NULL
     };
   const char * authors[] =

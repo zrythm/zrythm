@@ -64,7 +64,7 @@ midi_events_append (
   int          queued)
 {
   /* queued not implemented yet */
-  g_warn_if_fail (!queued);
+  g_return_if_fail (!queued);
 
   int dest_index = dest->num_events;
   MidiEvent * src_ev, * dest_ev;
@@ -81,6 +81,57 @@ midi_events_append (
         {
           g_warn_if_reached ();
         }
+    }
+}
+
+/**
+ * Sets the given MIDI channel on all applicable
+ * MIDI events.
+ *
+ * @param channel Channel, starting from 1.
+ */
+void
+midi_events_set_channel (
+  MidiEvents *      self,
+  const int         queued,
+  const midi_byte_t channel)
+{
+  /* queued not implemented yet */
+  g_return_if_fail (!queued);
+
+  for (int i = 0; i < self->num_events; i++)
+    {
+      MidiEvent * ev = &self->events[i];
+      ev->channel = channel;
+
+      /* do this on all MIDI events that have
+       * channels */
+#define SET_CHANNEL(byte) \
+      if ((ev->raw_buffer[0] & byte) == byte) \
+        { \
+          ev->raw_buffer[0] = \
+            (ev->raw_buffer[0] & byte) | \
+            (channel - 1); \
+          continue; \
+        }
+
+      /* skip MIDI events starting with the given
+       * byte */
+#define SKIP_CHANNEL(byte) \
+      if ((ev->raw_buffer[0] & byte) == byte) \
+        continue;
+
+      SKIP_CHANNEL (0xF0);
+      SET_CHANNEL (0xE0);
+      SET_CHANNEL (0xD0);
+      SET_CHANNEL (0xC0);
+      SET_CHANNEL (0xB0);
+      SET_CHANNEL (0xA0);
+      SET_CHANNEL (0x90);
+      SET_CHANNEL (0x80);
+
+#undef SET_CHANNEL
+#undef SKIP_CHANNEL
     }
 }
 
@@ -195,7 +246,6 @@ midi_events_delete_note_on (
     }
 
   zix_sem_post (&self->access_sem);
-  g_message ("posted delete note on");
 
   return match;
 }
