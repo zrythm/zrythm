@@ -102,7 +102,7 @@ rst_prolog = """
 # documentation.
 #
 html_theme_options = {
-    'canonical_url': 'https://docs.zrythm.org/',
+    'canonical_url': 'https://manual.zrythm.org/',
     'logo_only': True,
     'display_version': True,
     'prev_next_buttons_location': 'bottom',

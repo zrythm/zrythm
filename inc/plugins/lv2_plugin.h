@@ -94,6 +94,9 @@ typedef struct PluginDescriptor PluginDescriptor;
  * @{
  */
 
+/**
+ * LV2 plugin.
+ */
 typedef struct Lv2Plugin
 {
   LV2_Extension_Data_Feature ext_data;

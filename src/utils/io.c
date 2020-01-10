@@ -346,11 +346,9 @@ io_open_directory (
 {
   g_return_if_fail (
     g_file_test (path, G_FILE_TEST_IS_DIR));
-  char * command =
-    g_strdup_printf (
-      OPEN_DIR_CMD " \"%s\"",
-      path);
-  FILE* file = popen (command, "r");
-  pclose(file);
-  g_free (command);
+  char command[800];
+  sprintf (
+    command, OPEN_DIR_CMD " \"%s\"",
+    path);
+  system (command);
 }

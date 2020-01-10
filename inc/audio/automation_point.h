@@ -167,8 +167,6 @@ automation_point_new_float (
 
 /**
  * Updates the value and notifies interested parties.
- *
- * @param trans_only Only do transients.
  */
 void
 automation_point_set_fvalue (

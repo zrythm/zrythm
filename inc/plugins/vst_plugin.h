@@ -136,6 +136,9 @@ typedef struct ERect
 
 #define kPluginMaxMidiEvents 512
 
+/**
+ * Modified VstEvents taken from Carla.
+ */
 typedef struct FixedVstEvents
 {
   int32_t numEvents;
@@ -143,6 +146,9 @@ typedef struct FixedVstEvents
   VstEvent * data[kPluginMaxMidiEvents * 2];
 } FixedVstEvents;
 
+/**
+ * VST plugin.
+ */
 typedef struct VstPlugin
 {
   /** Vst plugin handle. */

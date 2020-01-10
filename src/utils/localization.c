@@ -88,11 +88,12 @@ localization_locale_exists (
   int num_installed_locales = 0;
 
   /* Open the command for reading. */
-  fp = popen("locale -a", "r");
-  if (fp == NULL) {
-    g_error ("localization_init: popen failed");
-    exit(1);
-  }
+  fp = popen ("locale -a", "r");
+  if (fp == NULL)
+    {
+      g_error ("localization_init: popen failed");
+      exit (1);
+    }
 
   /* Read the output a line at a time - output it. */
   while (fgets(path, sizeof(path)-1, fp) != NULL) {

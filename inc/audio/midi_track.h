@@ -57,7 +57,7 @@ midi_track_setup (Track * self);
  *   (region or transport) are smaller than nframes,
  *   so small sizes should not be allowed.
  *
- * @param g_start_frame Global start frame.
+ * @param g_start_frames Global start frame.
  * @param local_start_frame The start frame offset
  *   from 0 in this cycle.
  * @param nframes Number of frames at start
