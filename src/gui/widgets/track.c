@@ -1446,7 +1446,7 @@ show_context_menu (
           num_selected == 1 ?
             _("Hide Track") :
             _("Hide Tracks"),
-          "z-hint",
+          "z-view-hidden",
           0,
           NULL,
           0,

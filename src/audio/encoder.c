@@ -94,12 +94,7 @@ audio_encoder_decode (
         "the audio file %s", self->file);
     }
   g_message (
-    "num out frames "
-#ifdef _WIN32
-    "%lld",
-#else
-    "%ld",
-#endif
+    "num out frames %zd",
     self->num_out_frames);
   audec_close (self->audec_handle);
   g_message ("--audio decoding end--");

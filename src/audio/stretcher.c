@@ -171,7 +171,7 @@ stretcher_stretch_interleaved (
 {
   g_return_val_if_fail (in_samples, -1);
 
-  g_message ("input samples: %lu", in_samples_size);
+  g_message ("input samples: %zu", in_samples_size);
 
   /* create the de-interleaved array */
   unsigned int channels = self->channels;
@@ -289,7 +289,7 @@ stretcher_stretch_interleaved (
     }
 
   g_message (
-    "retrieved %lu samples (expected %lu)",
+    "retrieved %zu samples (expected %zu)",
     total_out_frames, out_samples_size);
   g_warn_if_fail (
     /* allow 1 sample earlier */

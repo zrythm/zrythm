@@ -1187,9 +1187,9 @@ graph_print (
       print_node (self->setup_graph_nodes[i]);
     }
   g_message (
-    "num trigger nodes %ld | "
+    "num trigger nodes %zu | "
     /*"num max trigger nodes %d | "*/
-    "num terminal nodes %lu",
+    "num terminal nodes %zu",
     self->num_setup_init_triggers,
     /*self->trigger_queue_size,*/
     self->num_setup_terminal_nodes);
