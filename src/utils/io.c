@@ -25,6 +25,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "utils/file.h"
 #include "utils/io.h"
 
 #include <gtk/gtk.h>
@@ -310,7 +311,7 @@ io_get_next_available_filepath (
   char * file_ext =
     io_file_get_ext (filepath);
   char * new_path = g_strdup (filepath);
-  while (io_file_exists (new_path))
+  while (file_exists (new_path))
     {
       if (g_file_test (
             new_path, G_FILE_TEST_IS_DIR))

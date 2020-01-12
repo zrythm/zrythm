@@ -17,6 +17,12 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Plugin manager.
+ */
+
 #ifndef __PLUGINS_PLUGIN_MANAGER_H__
 #define __PLUGINS_PLUGIN_MANAGER_H__
 
@@ -24,6 +30,15 @@
 #include "utils/symap.h"
 
 #include <lilv/lilv.h>
+
+typedef struct CachedVstDescriptors
+  CachedVstDescriptors;
+
+/**
+ * @addtogroup plugins
+ *
+ * @{
+ */
 
 #define PLUGIN_MANAGER (&ZRYTHM->plugin_manager)
 #define LV2_NODES PLUGIN_MANAGER->lv2_nodes
@@ -37,6 +52,9 @@
 #define PM_SYMAP (PLUGIN_MANAGER->symap)
 #define PM_SYMAP_LOCK (PLUGIN_MANAGER->symap_lock)
 
+/**
+ * Cached LV2 nodes.
+ */
 typedef struct Lv2Nodes
 {
   LilvWorld *         lilv_world;
@@ -132,6 +150,9 @@ typedef struct PluginManager
   int                    num_plugins;
   Lv2Nodes               lv2_nodes;
 
+  /** Cached VST descriptors */
+  CachedVstDescriptors * cached_vst_descriptors;
+
   /** URI map for URID feature. */
   Symap*                 symap;
   /** Lock for URI map. */
@@ -166,5 +187,9 @@ plugin_manager_scan_plugins (
 void
 plugin_manager_free (
   PluginManager * self);
+
+/**
+ * @}
+ */
 
 #endif

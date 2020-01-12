@@ -64,6 +64,7 @@ plugin_descriptor_copy (
   dest->protocol = src->protocol;
   dest->path = g_strdup (src->path);
   dest->uri = g_strdup (src->uri);
+  dest->ghash = src->ghash;
 }
 
 /**
@@ -249,4 +250,24 @@ plugin_descriptor_string_to_category (
 #undef CHECK_CAT
 
   return category;
+}
+
+void
+plugin_descriptor_free (
+  PluginDescriptor * self)
+{
+  if (self->author)
+    g_free (self->author);
+  if (self->name)
+    g_free (self->name);
+  if (self->website)
+    g_free (self->website);
+  if (self->category_str)
+    g_free (self->category_str);
+  if (self->path)
+    g_free (self->path);
+  if (self->uri)
+    g_free (self->uri);
+
+  free (self);
 }

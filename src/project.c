@@ -53,6 +53,7 @@
 #include "utils/arrays.h"
 #include "utils/datetime.h"
 #include "utils/general.h"
+#include "utils/file.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/smf.h"
@@ -246,7 +247,7 @@ set_and_create_next_available_backup_dir (
         }
       i++;
     } while (
-      io_file_exists (
+      file_exists (
         self->backup_dir));
   g_free (backups_dir);
 
@@ -500,10 +501,7 @@ load (
     "loading project file %s",
     project_file_path);
   g_file_get_contents (
-    project_file_path,
-    &yaml,
-    NULL,
-    &err);
+    project_file_path, &yaml, NULL, &err);
   if (err != NULL)
     {
       // Report error to user, and free error

@@ -16,6 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 plugin_srcs = files ([
+  'cached_vst_descriptors.c',
   'lv2_plugin.c',
   'plugin.c',
   'plugin_descriptor.c',

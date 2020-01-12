@@ -143,8 +143,9 @@ typedef struct PluginDescriptor
   char                 * uri;
 
   /** Hash of the plugin's bundle (.so/.ddl for VST)
-   * used when caching PluginDescriptor's. */
-  char *               md5_hash;
+   * used when caching PluginDescriptor's, obtained
+   * using g_file_hash(). */
+  unsigned int         ghash;
 } PluginDescriptor;
 
 static const cyaml_strval_t
@@ -225,13 +226,20 @@ plugin_descriptor_fields_schema[] =
     "uri", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     PluginDescriptor, uri,
      0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "md5_hash",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    PluginDescriptor, md5_hash,
-     0, CYAML_UNLIMITED),
+  CYAML_FIELD_UINT (
+    "ghash", CYAML_FLAG_DEFAULT,
+    PluginDescriptor, ghash),
 
   CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+plugin_descriptor_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    PluginDescriptor,
+    plugin_descriptor_fields_schema),
 };
 
 const char *
@@ -288,6 +296,10 @@ plugin_descriptor_is_midi_modifier (
 PluginCategory
 plugin_descriptor_string_to_category (
   const char * str);
+
+void
+plugin_descriptor_free (
+  PluginDescriptor * self);
 
 /**
  * @}

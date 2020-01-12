@@ -24,6 +24,7 @@
 #include "audio/engine.h"
 #include "project.h"
 #include "utils/audio.h"
+#include "utils/file.h"
 #include "utils/math.h"
 #include "utils/io.h"
 
@@ -178,7 +179,7 @@ audio_clip_write_to_pool (
     project_get_pool_dir (
       PROJECT);
   g_warn_if_fail (
-    io_file_exists (prj_pool_dir));
+    file_exists (prj_pool_dir));
   char * without_ext =
     io_file_strip_ext (self->name);
   char * basename =
@@ -191,7 +192,7 @@ audio_clip_write_to_pool (
       NULL);
   /*char * tmp;*/
   /*int i = 0;*/
-  /*while (io_file_exists (new_path))*/
+  /*while (file_exists (new_path))*/
     /*{*/
       /*g_free (new_path);*/
       /*tmp =*/

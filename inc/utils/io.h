@@ -33,12 +33,6 @@
  */
 
 /**
- * Returns 1 if the file/dir exists.
- */
-#define io_file_exists(file) \
-  g_file_test (file, G_FILE_TEST_EXISTS)
-
-/**
  * Gets directory part of filename. MUST be freed.
  *
  * @param filename Filename containing directory.

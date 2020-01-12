@@ -42,6 +42,7 @@
 #include <ctype.h>
 
 #include "gui/widgets/main_window.h"
+#include "plugins/cached_vst_descriptors.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_manager.h"
 #include "plugins/lv2_plugin.h"
@@ -420,7 +421,7 @@ plugin_manager_init (PluginManager * self)
     work_schedule,
     LV2_WORKER__schedule);
 #ifdef LV2_EXTENDED
-  /*nodes->auto_can_write_automatation = lilv_new_uri(world,LV2_AUTOMATE_URI__can_write);*/
+  /*nodes->auto_can_write_automation = lilv_new_uri(world,LV2_AUTOMATE_URI__can_write);*/
   /*nodes->auto_automation_control     = lilv_new_uri(world,LV2_AUTOMATE_URI__control);*/
   /*nodes->auto_automation_controlled  = lilv_new_uri(world,LV2_AUTOMATE_URI__controlled);*/
   /*nodes->auto_automation_controller  = lilv_new_uri(world,LV2_AUTOMATE_URI__controller);*/
@@ -491,6 +492,10 @@ plugin_manager_init (PluginManager * self)
   SYMAP_MAP (ui_updateRate,
              LV2_UI__updateRate);
 #undef SYMAP_MAP
+
+  /* load cached VST plugins */
+  self->cached_vst_descriptors =
+    cached_vst_descriptors_new ();
 }
 
 /**
@@ -561,7 +566,7 @@ plugin_manager_scan_plugins (
   if (!vst_path)
     vst_path =
       g_strdup ("/usr/lib/vst:/usr/local/lib/vst");
-   char ** paths =
+  char ** paths =
     g_strsplit (vst_path, ":", 0);
   int path_idx = 0;
   char * path;
@@ -582,8 +587,28 @@ plugin_manager_scan_plugins (
                NULL)
         {
           PluginDescriptor * descriptor =
-            vst_plugin_create_descriptor_from_path (
-              plugin, 0);
+            cached_vst_descriptors_get (
+              self->cached_vst_descriptors,
+              plugin);
+
+          if (descriptor)
+            {
+              g_message (
+                "Found cached VST %s",
+                descriptor->name);
+            }
+          else
+            {
+              descriptor =
+                vst_plugin_create_descriptor_from_path (
+                  plugin, 0);
+              g_message (
+                "Caching VST %s",
+                descriptor->name);
+              cached_vst_descriptors_add (
+                self->cached_vst_descriptors,
+                descriptor, 1);
+            }
 
           if (descriptor)
             {
