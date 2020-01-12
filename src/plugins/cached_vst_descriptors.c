@@ -22,6 +22,8 @@
 #include "utils/string.h"
 #include "zrythm.h"
 
+#define CACHED_VST_DESCRIPTORS_VERSION 1
+
 static char *
 get_cached_vst_descriptors_file_path (void)
 {
@@ -38,6 +40,7 @@ static void
 serialize (
   CachedVstDescriptors * self)
 {
+  self->version = CACHED_VST_DESCRIPTORS_VERSION;
   g_message ("Writing cached VST descriptors...");
   char * yaml =
     cached_vst_descriptors_serialize (self);
@@ -75,8 +78,10 @@ cached_vst_descriptors_new (void)
   if (!file_exists (path))
     {
       g_message (
-        "Cached VST descriptors file does not exist");
-      return calloc (1, sizeof (CachedVstDescriptors));
+        "Cached VST descriptors file does not "
+        "exist");
+      return
+        calloc (1, sizeof (CachedVstDescriptors));
     }
   char * yaml = NULL;
   g_file_get_contents (path, &yaml, NULL, &err);
@@ -94,7 +99,8 @@ cached_vst_descriptors_new (void)
   if (!self)
     {
       g_critical (
-        "Failed to create CachedVstDescriptors");
+        "Failed to deserialize "
+        "CachedVstDescriptors");
       g_free (err);
       g_free (yaml);
       g_free (path);
@@ -109,6 +115,7 @@ cached_vst_descriptors_new (void)
         plugin_descriptor_string_to_category (
           self->descriptors[i]->category_str);
     }
+
   return self;
 }
 
@@ -130,6 +137,33 @@ delete_file (void)
 }
 
 /**
+ * Returns if the plugin at the given path is
+ * blacklisted or not.
+ */
+int
+cached_vst_descriptors_is_blacklisted (
+  CachedVstDescriptors * self,
+  const char *           abs_path)
+{
+  for (int i = 0; i < self->num_blacklisted; i++)
+    {
+      PluginDescriptor * descr =
+        self->blacklisted[i];
+      GFile * file =
+        g_file_new_for_path (descr->path);
+      if (string_is_equal (
+            descr->path, abs_path, 0) &&
+          descr->ghash == g_file_hash (file))
+        {
+          g_object_unref (file);
+          return 1;
+        }
+      g_object_unref (file);
+    }
+  return 0;
+}
+
+/**
  * Returns the PluginDescriptor corresponding to the
  * .so/.dll file at the given path, if it exists and
  * the MD5 hash matches.
@@ -145,7 +179,8 @@ cached_vst_descriptors_get (
         self->descriptors[i];
       GFile * file =
         g_file_new_for_path (descr->path);
-      if (string_is_equal (descr->path, abs_path, 0) &&
+      if (string_is_equal (
+            descr->path, abs_path, 0) &&
           descr->ghash == g_file_hash (file))
         {
           g_object_unref (file);
@@ -154,6 +189,34 @@ cached_vst_descriptors_get (
       g_object_unref (file);
     }
   return NULL;
+}
+
+/**
+ * Appends a descriptor to the cache.
+ *
+ * @param serialize 1 to serialize the updated cache
+ *   now.
+ */
+void
+cached_vst_descriptors_blacklist (
+  CachedVstDescriptors * self,
+  const char *           abs_path,
+  int                    _serialize)
+{
+  g_return_if_fail (abs_path && self);
+
+  PluginDescriptor * new_descr =
+    calloc (1, sizeof (PluginDescriptor));
+  new_descr->path = g_strdup (abs_path);
+  GFile * file = g_file_new_for_path (abs_path);
+  new_descr->ghash = g_file_hash (file);
+  g_object_unref (file);
+  self->blacklisted[self->num_blacklisted++] =
+    new_descr;
+  if (_serialize)
+    {
+      serialize (self);
+    }
 }
 
 /**

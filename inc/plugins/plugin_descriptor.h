@@ -169,19 +169,23 @@ static const cyaml_schema_field_t
 plugin_descriptor_fields_schema[] =
 {
   CYAML_FIELD_STRING_PTR (
-    "author", CYAML_FLAG_POINTER,
+    "author",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     PluginDescriptor, author,
      0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
-    "name", CYAML_FLAG_POINTER,
+    "name",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     PluginDescriptor, name,
      0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
-    "website", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    "website",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     PluginDescriptor, website,
      0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
-    "category_str", CYAML_FLAG_POINTER,
+    "category_str",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     PluginDescriptor, category_str,
      0, CYAML_UNLIMITED),
   CYAML_FIELD_INT (

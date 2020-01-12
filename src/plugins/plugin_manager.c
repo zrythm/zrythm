@@ -599,27 +599,46 @@ plugin_manager_scan_plugins (
             }
           else
             {
-              descriptor =
-                vst_plugin_create_descriptor_from_path (
-                  plugin, 0);
-              g_message (
-                "Caching VST %s",
-                descriptor->name);
-              cached_vst_descriptors_add (
-                self->cached_vst_descriptors,
-                descriptor, 1);
-            }
+              if (
+                cached_vst_descriptors_is_blacklisted (
+                  self->cached_vst_descriptors,
+                  plugin))
+                {
+                  g_warning (
+                    "Ignoring blacklisted VST "
+                    "plugin: %s", plugin);
+                }
+              else
+                {
+                  descriptor =
+                    vst_plugin_create_descriptor_from_path (
+                      plugin, 0);
 
-          if (descriptor)
-            {
-              /*g_message ("found VST2: %s",*/
-                         /*descriptor->name);*/
-              array_append (
-                self->plugin_descriptors,
-                self->num_plugins,
-                descriptor);
-              add_category (
-                self, descriptor->category_str);
+                  if (descriptor)
+                    {
+                      array_append (
+                        self->plugin_descriptors,
+                        self->num_plugins,
+                        descriptor);
+                      add_category (
+                        self, descriptor->category_str);
+                      g_message (
+                        "Caching VST %s",
+                        descriptor->name);
+                      cached_vst_descriptors_add (
+                        self->cached_vst_descriptors,
+                        descriptor, 1);
+                    }
+                  else
+                    {
+                      g_warning (
+                        "Blacklisting VST %s",
+                        plugin);
+                      cached_vst_descriptors_blacklist (
+                        self->cached_vst_descriptors,
+                        plugin, 1);
+                    }
+                }
             }
         }
       g_strfreev (vst_plugins);
