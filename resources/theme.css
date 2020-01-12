@@ -430,12 +430,25 @@ channel expander-box
   border-color: #BBBBBB;
 }
 
+channel button.flat
+{
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
 .piano_roll_key_box,
 .chord_key
 {
   border-style: solid;
   border-bottom-width: 1px;
   border-color: alpha (grey, 0.3);
+}
+
+.header_notebook label,
+.splash label,
+statusbar
+{
+font-size: 10.5pt;
 }
 
 .thick-separator

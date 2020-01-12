@@ -49,8 +49,16 @@ header_notebook_widget_set_subtitle (
   HeaderNotebookWidget * self,
   const char * title)
 {
+  /* hack to center the title */
+  char title_w_spaces[600];
+  strcpy (title_w_spaces, title);
+  strcat (
+    title_w_spaces,
+    "                                            "
+    "                                            "
+    "    ");
   gtk_label_set_text (
-    self->prj_name_label, title);
+    self->prj_name_label, title_w_spaces);
 }
 
 static void

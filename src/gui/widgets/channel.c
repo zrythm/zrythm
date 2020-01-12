@@ -237,8 +237,6 @@ on_dnd_drag_begin (
   GdkDragContext *context,
   ChannelWidget * self)
 {
-  g_message ("dnd drag begin");
-
   Track * track = self->channel->track;
   self->selected_in_dnd = 1;
   MW_MIXER->start_drag_track = track;
@@ -413,8 +411,6 @@ on_drag_begin (GtkGestureDrag *gesture,
                gdouble         start_y,
                ChannelWidget * self)
 {
-  g_message ("drag begin ch");
-
   self->selected_in_dnd = 0;
   self->dragged = 0;
 }
@@ -425,7 +421,6 @@ on_drag_update (GtkGestureDrag * gesture,
                gdouble         offset_y,
                ChannelWidget * self)
 {
-  g_message ("drag_update");
   self->dragged = 1;
 }
 
@@ -526,6 +521,7 @@ refresh_color (ChannelWidget * self)
     &self->channel->track->color);
 }
 
+#if 0
 static void
 setup_phase_panel (ChannelWidget * self)
 {
@@ -546,6 +542,7 @@ setup_phase_panel (ChannelWidget * self)
     self->phase_reading, str);
   g_free (str);
 }
+#endif
 
 static void
 setup_meter (ChannelWidget * self)
@@ -791,7 +788,7 @@ channel_widget_new (Channel * channel)
     g_object_new (CHANNEL_WIDGET_TYPE, NULL);
   self->channel = channel;
 
-  setup_phase_panel (self);
+  /*setup_phase_panel (self);*/
   /*setup_pan (self);*/
   setup_inserts (self);
   fader_widget_setup (
@@ -855,6 +852,7 @@ channel_widget_class_init (
     klass,
     ChannelWidget,
     name);
+#if 0
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,
@@ -867,6 +865,7 @@ channel_widget_class_init (
     klass,
     ChannelWidget,
     phase_controls);
+#endif
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,

@@ -119,4 +119,11 @@ static void
 splash_window_widget_init (SplashWindowWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  GtkStyleContext *context;
+  context =
+    gtk_widget_get_style_context (
+      GTK_WIDGET (self));
+  gtk_style_context_add_class (
+    context, "splash");
 }
