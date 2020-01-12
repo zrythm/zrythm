@@ -197,12 +197,19 @@ create_tracks_action_new (
   ua->type =
 	  UA_CREATE_TRACKS;
   if (pl_descr)
-    plugin_copy_descr (pl_descr, &self->pl_descr);
+    {
+      plugin_descriptor_copy (
+        pl_descr, &self->pl_descr);
+    }
   else if (file)
-    self->file_descr =
-      supported_file_clone (file);
+    {
+      self->file_descr =
+        supported_file_clone (file);
+    }
   else
-    self->is_empty = 1;
+    {
+      self->is_empty = 1;
+    }
   self->pos = pos;
   self->type = type;
   self->num_tracks = num_tracks;

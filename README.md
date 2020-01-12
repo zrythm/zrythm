@@ -51,7 +51,7 @@ We also recommend taking a look at the
 Please submit patches and bug reports below.
 
 ## Mailing lists
-user@zrythm.org, dev@zrythm.org
+[user@zrythm.org](https://lists.zrythm.org/lists/listinfo/user), [dev@zrythm.org](https://lists.zrythm.org/lists/listinfo/dev)
 
 ## Bug Tracker
 <https://redmine.zrythm.org/projects/zrythm/issues>

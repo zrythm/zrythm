@@ -18,6 +18,7 @@
 plugin_srcs = files ([
   'lv2_plugin.c',
   'plugin.c',
+  'plugin_descriptor.c',
   'plugin_manager.c',
   'vst_plugin.c',
   ])

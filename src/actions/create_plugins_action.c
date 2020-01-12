@@ -43,7 +43,7 @@ create_plugins_action_new (
 
   self->slot = slot;
   self->track_pos = track_pos;
-  plugin_copy_descr (descr, &self->descr);
+  plugin_descriptor_copy (descr, &self->descr);
   self->num_plugins = num_plugins;
 
   for (int i = 0; i < num_plugins; i++)

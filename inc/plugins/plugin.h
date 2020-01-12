@@ -29,6 +29,7 @@
 #include "audio/automatable.h"
 #include "audio/port.h"
 #include "plugins/lv2_plugin.h"
+#include "plugins/plugin_descriptor.h"
 #include "plugins/vst_plugin.h"
 #include "utils/types.h"
 
@@ -41,124 +42,8 @@
  * @{
  */
 
-#define DUMMY_PLUGIN "Dummy Plugin"
-
-#define IS_PLUGIN_CATEGORY(p, c) \
-  (g_strcmp0 (((Plugin *)p)->descr->category, c) == 0)
-#define IS_PLUGIN_DESCR_CATEGORY(d,c) \
-  (g_strcmp0 (d->category,c) == 0)
-
 typedef struct Channel Channel;
 typedef struct VstPlugin VstPlugin;
-
-/**
- * Plugin category.
- */
-typedef enum PluginCategory
-{
-  /** None specified. */
-  PLUGIN_CATEGORY_NONE,
-  PC_DELAY,
-  PC_REVERB,
-  PC_DISTORTION,
-  PC_WAVESHAPER,
-  PC_DYNAMICS,
-  PC_AMPLIFIER,
-  PC_COMPRESSOR,
-  PC_ENVELOPE,
-  PC_EXPANDER,
-  PC_GATE,
-  PC_LIMITER,
-  PC_FILTER,
-  PC_ALLPASS_FILTER,
-  PC_BANDPASS_FILTER,
-  PC_COMB_FILTER,
-  PC_EQ,
-  PC_MULTI_EQ,
-  PC_PARA_EQ,
-  PC_HIGHPASS_FILTER,
-  PC_LOWPASS_FILTER,
-  PC_GENERATOR,
-  PC_CONSTANT,
-  PC_INSTRUMENT,
-  PC_OSCILLATOR,
-  PC_MIDI,
-  PC_MODULATOR,
-  PC_CHORUS,
-  PC_FLANGER,
-  PC_PHASER,
-  PC_SIMULATOR,
-  PC_SIMULATOR_REVERB,
-  PC_SPATIAL,
-  PC_SPECTRAL,
-  PC_PITCH,
-  PC_UTILITY,
-  PC_ANALYZER,
-  PC_CONVERTER,
-  PC_FUNCTION,
-  PC_MIXER,
-} PluginCategory;
-
-/**
- * Plugin protocol.
- */
-typedef enum PluginProtocol
-{
- PROT_LV2,
- PROT_DSSI,
- PROT_LADSPA,
- PROT_VST,
- PROT_VST3,
-} PluginProtocol;
-
-/**
- * 32 or 64 bit.
- */
-typedef enum PluginArchitecture
-{
-  ARCH_32,
-  ARCH_64
-} PluginArchitecture;
-
-/***
- * A descriptor to be implemented by all plugins
- * This will be used throughout the UI
- */
-typedef struct PluginDescriptor
-{
-  char *           author;
-  char *           name;
-  char *           website;
-  PluginCategory   category;
-  /** Lv2 plugin subcategory. */
-  char *           category_str;
-  /** Number of audio input ports. */
-  int              num_audio_ins;
-  /** Number of MIDI input ports. */
-  int              num_midi_ins;
-  /** Number of audio output ports. */
-  int              num_audio_outs;
-  /** Number of MIDI output ports. */
-  int              num_midi_outs;
-  /** Number of input control (plugin param)
-   * ports. */
-  int              num_ctrl_ins;
-  /** Number of output control (plugin param)
-   * ports. */
-  int              num_ctrl_outs;
-  /** Number of input CV ports. */
-  int              num_cv_ins;
-  /** Number of output CV ports. */
-  int              num_cv_outs;
-  /** Architecture (32/64bit). */
-  PluginArchitecture   arch;
-  /** Plugin protocol (Lv2/DSSI/LADSPA/VST...). */
-  PluginProtocol       protocol;
-  /** Path, if not an Lv2Plugin which uses URIs. */
-  char                 * path;
-  /** Lv2Plugin URI. */
-  char                 * uri;
-} PluginDescriptor;
 
 /**
  * The base plugin
@@ -255,95 +140,13 @@ typedef struct Plugin
   GtkWindow *          window;
 } Plugin;
 
-static const cyaml_strval_t
-plugin_protocol_strings[] =
-{
-  { "LV2",          PROT_LV2    },
-  { "DSSI",         PROT_DSSI   },
-  { "LADSPA",       PROT_LADSPA },
-  { "VST",          PROT_VST    },
-  { "VST3",         PROT_VST3   },
-};
-
-static const cyaml_strval_t
-plugin_architecture_strings[] =
-{
-  { "32-bit",       ARCH_32     },
-  { "64-bit",       ARCH_64     },
-};
-
-static const cyaml_schema_field_t
-descriptor_fields_schema[] =
-{
-  CYAML_FIELD_STRING_PTR (
-    "author", CYAML_FLAG_POINTER,
-    PluginDescriptor, author,
-     0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "name", CYAML_FLAG_POINTER,
-    PluginDescriptor, name,
-     0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "website", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    PluginDescriptor, website,
-     0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "category_str", CYAML_FLAG_POINTER,
-    PluginDescriptor, category_str,
-     0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "num_audio_ins", CYAML_FLAG_DEFAULT,
-    PluginDescriptor, num_audio_ins),
-  CYAML_FIELD_INT (
-    "num_audio_outs", CYAML_FLAG_DEFAULT,
-    PluginDescriptor, num_audio_outs),
-  CYAML_FIELD_INT (
-    "num_midi_ins", CYAML_FLAG_DEFAULT,
-    PluginDescriptor, num_midi_ins),
-  CYAML_FIELD_INT (
-    "num_midi_outs", CYAML_FLAG_DEFAULT,
-    PluginDescriptor, num_midi_outs),
-  CYAML_FIELD_INT (
-    "num_ctrl_ins", CYAML_FLAG_DEFAULT,
-    PluginDescriptor, num_ctrl_ins),
-  CYAML_FIELD_INT (
-    "num_ctrl_outs", CYAML_FLAG_DEFAULT,
-    PluginDescriptor, num_ctrl_outs),
-  CYAML_FIELD_INT (
-    "num_cv_ins", CYAML_FLAG_DEFAULT,
-    PluginDescriptor, num_cv_ins),
-  CYAML_FIELD_INT (
-    "num_cv_outs", CYAML_FLAG_DEFAULT,
-    PluginDescriptor, num_cv_outs),
-  CYAML_FIELD_ENUM (
-    "arch", CYAML_FLAG_DEFAULT,
-    PluginDescriptor, arch,
-    plugin_architecture_strings,
-    CYAML_ARRAY_LEN (plugin_architecture_strings)),
-  CYAML_FIELD_ENUM (
-    "protocol", CYAML_FLAG_DEFAULT,
-    PluginDescriptor, protocol,
-    plugin_protocol_strings,
-    CYAML_ARRAY_LEN (plugin_protocol_strings)),
-  CYAML_FIELD_STRING_PTR (
-    "path", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    PluginDescriptor, path,
-     0, CYAML_UNLIMITED),
-  CYAML_FIELD_STRING_PTR (
-    "uri", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    PluginDescriptor, uri,
-     0, CYAML_UNLIMITED),
-
-  CYAML_FIELD_END
-};
-
 static const cyaml_schema_field_t
 plugin_fields_schema[] =
 {
   CYAML_FIELD_MAPPING_PTR (
     "descr", CYAML_FLAG_POINTER,
     Plugin, descr,
-    descriptor_fields_schema),
+    plugin_descriptor_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
     "lv2", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Plugin, lv2,
@@ -389,24 +192,6 @@ plugin_schema =
 void
 plugin_init_loaded (
   Plugin * self);
-
-static inline const char *
-plugin_protocol_to_str (
-  PluginProtocol prot)
-{
-  for (size_t i = 0;
-       i < G_N_ELEMENTS (plugin_protocol_strings);
-       i++)
-    {
-      if (plugin_protocol_strings[i].val ==
-            (int64_t) prot)
-        {
-          return
-            plugin_protocol_strings[i].str;
-        }
-    }
-  g_return_val_if_reached (NULL);
-}
 
 /**
  * Adds an AutomationTrack to the Plugin.
@@ -468,21 +253,6 @@ plugin_remove_ats_from_automation_tracklist (
   Plugin * pl);
 
 /**
- * Clones the plugin descriptor.
- */
-void
-plugin_copy_descr (
-  const PluginDescriptor * src,
-  PluginDescriptor * dest);
-
-/**
- * Clones the plugin descriptor.
- */
-PluginDescriptor *
-plugin_clone_descr (
-  const PluginDescriptor * src);
-
-/**
  * Clones the given plugin.
  */
 Plugin *
@@ -505,35 +275,6 @@ plugin_set_channel_and_slot (
 int
 plugin_descriptor_is_instrument (
   const PluginDescriptor * descr);
-
-/**
- * Returns if the Plugin is an effect or not.
- */
-int
-plugin_descriptor_is_effect (
-  PluginDescriptor * descr);
-
-/**
- * Returns if the Plugin is a modulator or not.
- */
-int
-plugin_descriptor_is_modulator (
-  PluginDescriptor * descr);
-
-/**
- * Returns if the Plugin is a midi modifier or not.
- */
-int
-plugin_descriptor_is_midi_modifier (
-  PluginDescriptor * descr);
-
-/**
- * Returns the PluginCategory matching the given
- * string.
- */
-PluginCategory
-plugin_descriptor_string_to_category (
-  const char * str);
 
 /**
  * Moves the Plugin's automation from one Channel
