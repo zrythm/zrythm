@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.367] - 2020-01-13
+- Update Zrythm logo
+- Wrap backtrace on crash inside scrolled window
+- Convert MIDI channel of input events to the track's channel when playing live
+- Add VST descriptor caching to make scanning faster
+- Add VST blacklist for plugins that fail to load
+- Fix some memory leaks
+- Fix audio and MIDI backend selection using wrong values in different platforms
+
 ## [0.7.345] - 2020-01-05
 - Add experimental VST2 support (X11 UIs only)
 - Previously visible plugins now open on project load
