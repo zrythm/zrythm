@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+
 #include "plugins/plugin_descriptor.h"
 
 #include <gtk/gtk.h>
