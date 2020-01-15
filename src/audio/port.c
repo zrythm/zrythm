@@ -1319,11 +1319,22 @@ sum_data_from_windows_mme (
         self->mme_connections[i];
 
       MidiEvent ev;
+      gint64 cur_time = g_get_monotonic_time ();
       while (
         windows_mme_device_dequeue_midi_event_struct (
-          dev, AUDIO_ENGINE->timestamp_start,
-          AUDIO_ENGINE->timestamp_end, &ev))
+          dev, self->last_midi_dequeue,
+          cur_time, &ev))
         {
+          int is_valid =
+            ev.time >= start_frame &&
+            ev.time < start_frame + nframes;
+          if (!is_valid)
+            {
+              g_warning (
+                "Invalid event time %u", ev.time);
+              continue;
+            }
+
           if (ev.time >= start_frame &&
               ev.time < start_frame + nframes)
             {
@@ -1350,6 +1361,7 @@ sum_data_from_windows_mme (
                 }
             }
         }
+      self->last_midi_dequeue = cur_time;
 
       if (self->midi_events->num_events > 0)
         {
@@ -1361,8 +1373,8 @@ sum_data_from_windows_mme (
           g_message (
             "MME MIDI (%s): have %d events\n"
             "first event is: [%u] %hhx %hhx %hhx",
-            designation, 
-	    self->midi_events->num_events,
+            designation,
+            self->midi_events->num_events,
             ev->time, ev->raw_buffer[0],
             ev->raw_buffer[1], ev->raw_buffer[2]);
         }

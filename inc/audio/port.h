@@ -303,6 +303,10 @@ typedef struct Port
   /** Semaphore for changing the connections
    * atomically. */
   ZixSem              mme_connections_sem;
+
+  /** Last time the port finished dequeueing
+   * MIDI events. */
+  gint64              last_midi_dequeue;
 #endif
 
   /* TODO move these from lv2_control */

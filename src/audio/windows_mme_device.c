@@ -161,6 +161,8 @@ windows_mme_device_dequeue_midi_event_struct (
 }
 
 /**
+ * Dequeues a MIDI event.
+ *
  * @return Whether a MIDI event was dequeued or
  * not.
  */
@@ -182,6 +184,10 @@ windows_mme_device_dequeue_midi_event (
     }
 
   struct MidiEventHeader h = { 0, 0 };
+
+  zix_ring_peek (
+    self->midi_ring, &h, sizeof (h));
+  g_return_val_if_fail (h.time < timestamp_end, 0);
 
   /* read event header */
   zix_ring_read (

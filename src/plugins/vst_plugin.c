@@ -376,7 +376,7 @@ vst_plugin_create_descriptor_from_path (
     }
 
   /* get category */
-  if (effect->flags & effFlagsIsSynth > 0)
+  if ((effect->flags & effFlagsIsSynth) > 0)
     {
       descr->category = PC_INSTRUMENT;
       descr->category_str = g_strdup ("Instrument");
