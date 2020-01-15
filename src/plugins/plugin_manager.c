@@ -596,6 +596,12 @@ plugin_manager_scan_plugins (
               g_message (
                 "Found cached VST %s",
                 descriptor->name);
+              array_append (
+                self->plugin_descriptors,
+                self->num_plugins,
+                descriptor);
+              add_category (
+                self, descriptor->category_str);
             }
           else
             {
