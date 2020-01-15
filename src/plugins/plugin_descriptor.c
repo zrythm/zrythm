@@ -95,9 +95,11 @@ plugin_descriptor_is_instrument (
   const PluginDescriptor * descr)
 {
   return
-    (descr->category > PLUGIN_CATEGORY_NONE &&
-     descr->category == PC_INSTRUMENT) ||
-    (descr->category == PLUGIN_CATEGORY_NONE &&
+    (descr->category == PC_INSTRUMENT) ||
+    /* if VSTs are instruments their category must
+     * be INSTRUMENT, otherwise they are not */
+    (descr->protocol != PROT_VST &&
+     descr->category == PLUGIN_CATEGORY_NONE &&
      descr->num_midi_ins > 0 &&
      descr->num_audio_outs > 0);
 }

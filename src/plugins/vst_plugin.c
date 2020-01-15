@@ -376,30 +376,38 @@ vst_plugin_create_descriptor_from_path (
     }
 
   /* get category */
-  const intptr_t category =
-    effect->dispatcher (
-      effect, effGetPlugCategory, 0, 0, NULL, 0.f);
-  switch (category)
+  if (effect->flags & effFlagsIsSynth > 0)
     {
-    case kPlugCategSynth:
       descr->category = PC_INSTRUMENT;
       descr->category_str = g_strdup ("Instrument");
-      break;
-    case kPlugCategAnalysis:
-      descr->category = PC_ANALYZER;
-      descr->category_str = g_strdup ("Analyzer");
-      break;
-    case kPlugCategGenerator:
-      descr->category = PC_GENERATOR;
-      descr->category_str = g_strdup ("Generator");
-      break;
-    case kPlugCategShell:
-      g_warn_if_reached ();
-      break;
-    default:
-      descr->category = PLUGIN_CATEGORY_NONE;
-      descr->category_str = g_strdup ("Plugin");
-      break;
+    }
+  else
+    {
+      const intptr_t category =
+        effect->dispatcher (
+          effect, effGetPlugCategory, 0, 0,
+          NULL, 0.f);
+      switch (category)
+        {
+        case kPlugCategAnalysis:
+          descr->category = PC_ANALYZER;
+          descr->category_str =
+            g_strdup ("Analyzer");
+          break;
+        case kPlugCategGenerator:
+          descr->category = PC_GENERATOR;
+          descr->category_str =
+            g_strdup ("Generator");
+          break;
+        case kPlugCategShell:
+          g_warn_if_reached ();
+          break;
+        default:
+          descr->category = PLUGIN_CATEGORY_NONE;
+          descr->category_str =
+            g_strdup ("Plugin");
+          break;
+        }
     }
 
   effect->dispatcher (
