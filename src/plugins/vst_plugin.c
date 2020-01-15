@@ -402,6 +402,12 @@ vst_plugin_create_descriptor_from_path (
       break;
     }
 
+  effect->dispatcher (
+    effect, effClose, 0, 0, NULL, 0.f);
+
+  /* give the plugin some time to switch off */
+  g_usleep (1000);
+
   if (dlclose (handle) != 0)
     {
       g_warning (
