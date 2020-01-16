@@ -92,6 +92,7 @@ metronome_init (
           sizeof (float));
       self->emphasis_size = enc->num_out_frames;
       self->emphasis_channels = enc->channels;
+      g_return_if_fail (enc->channels > 0);
       for (int i = 0;
            i < enc->num_out_frames * enc->channels;
            i++)
@@ -112,6 +113,7 @@ metronome_init (
           sizeof (float));
       self->normal_size = enc->num_out_frames;
       self->normal_channels = enc->channels;
+      g_return_if_fail (enc->channels > 0);
       for (int i = 0;
            i < enc->num_out_frames * enc->channels;
            i++)

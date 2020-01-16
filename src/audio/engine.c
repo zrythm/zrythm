@@ -768,7 +768,6 @@ find_and_queue_metronome (
       end_pos->ticks == 0)
     num_bars_after--;
 
-
   Position bar_pos;
   nframes_t bar_offset;
   for (int i =
@@ -817,6 +816,14 @@ find_and_queue_metronome (
         i % TRANSPORT->beats_per_bar + 1);
       if (beat_pos.beats != 1)
         {
+          /* adjust position because even though
+           * the start and beat pos have the same
+           * ticks, their frames differ (the beat
+           * position might be before the start
+           * position in frames) */
+          if (beat_pos.frames < start_pos->frames)
+            beat_pos.frames = start_pos->frames;
+
           beat_offset =
             (nframes_t)
             (beat_pos.frames - start_pos->frames);

@@ -96,6 +96,7 @@ audio_encoder_decode (
   g_message (
     "num out frames %zd",
     self->num_out_frames);
+  self->channels = self->nfo.channels;
   audec_close (self->audec_handle);
   g_message ("--audio decoding end--");
 }

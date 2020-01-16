@@ -362,7 +362,8 @@ if (x11_dep.found ())
 endif
 alsa_dep = dependency('alsa', required: false)
 if (alsa_dep.found ())
-  cdata.set('HAVE_ALSA', 1)
+  # disable until it works
+  #cdata.set('HAVE_ALSA', 1)
 endif
 cyaml_dep = dependency(
   'libcyaml', required: false, version: '>=0.2')
@@ -432,7 +433,8 @@ endif
 
 if (get_option('enable_portaudio'))
   zrythm_deps += dependency ('portaudio-2.0')
-  cdata.set('HAVE_PORT_AUDIO', 1)
+  # disable until it works
+  #cdata.set('HAVE_PORT_AUDIO', 1)
 endif
 
 if (get_option('enable_sdl'))

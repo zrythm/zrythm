@@ -48,7 +48,7 @@ typedef enum MetronomeType MetronomeType;
 typedef struct SampleProcessor
 {
   /** An array of samples currently being played. */
-  SamplePlayback    current_samples[16];
+  SamplePlayback    current_samples[256];
   int               num_current_samples;
 
   /** The stereo out ports to be connected to the

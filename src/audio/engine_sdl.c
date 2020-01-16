@@ -47,9 +47,9 @@ sdl_callback (
 
   nframes_t num_frames =
     AUDIO_ENGINE->block_length;
-  g_message (
-    "processing for num frames %u (len %d)",
-    num_frames, len);
+  /*g_message (*/
+    /*"processing for num frames %u (len %d)",*/
+    /*num_frames, len);*/
   engine_process (self, num_frames);
 
   memset (buf, 0, (size_t) len);

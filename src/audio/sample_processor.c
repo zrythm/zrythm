@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -99,18 +99,27 @@ sample_processor_process (
   const nframes_t   offset,
   const nframes_t   nframes)
 {
-  unsigned int j;
-  int i;
+  nframes_t j;
   nframes_t max_frames;
   SamplePlayback * sp;
+  /*g_message ("num current samples %d",self->num_current_samples);*/
+  g_return_if_fail (
+    self && self->stereo_out &&
+    self->num_current_samples < 256 &&
+    self->stereo_out->l &&
+    self->stereo_out->l->buf &&
+    self->stereo_out->r &&
+    self->stereo_out->r->buf);
   float * l = self->stereo_out->l->buf,
         * r = self->stereo_out->r->buf;
+  /*g_message ("current offset %d", offset);*/
   /*g_message ("processing %d samples",*/
              /*self->num_current_samples);*/
-  for (i = self->num_current_samples - 1;
+  for (int i = self->num_current_samples - 1;
        i >= 0; i--)
     {
       sp = &self->current_samples[i];
+      g_return_if_fail (sp->channels > 0);
 
       /* if sample is already playing */
       if (sp->offset > 0)
@@ -119,8 +128,9 @@ sample_processor_process (
            * possible */
           max_frames =
             MIN (
-    (nframes_t) (sp->buf_size - sp->offset),
-                 (nframes_t) (nframes - offset));
+              (nframes_t)
+                (sp->buf_size - sp->offset),
+              (nframes_t) (nframes - offset));
           /*g_message ("already playing at %d - %d",*/
                      /*offset,*/
                      /*offset + max_frames);*/
@@ -147,14 +157,17 @@ sample_processor_process (
                 }
             }
         }
-      /* else if we can start playback in this cycle */
+      /* else if we can start playback in this
+       * cycle */
       else if (sp->start_offset >= offset)
         {
           /* fill in the buffer for as many frames as
            * possible */
           max_frames =
-            MIN ((nframes_t) (sp->buf_size - sp->offset),
-                 nframes - sp->start_offset);
+            MIN (
+              (nframes_t)
+                (sp->buf_size - sp->offset),
+              nframes - sp->start_offset);
           /*g_message ("starting at %d - %d",*/
                      /*sp->start_offset,*/
                      /*sp->start_offset + max_frames);*/
@@ -182,10 +195,21 @@ sample_processor_process (
                 }
             }
         }
+      /* if the offset is greater than the size of
+       * the sample, simply add the frames */
+      /*else if (sp->offset > sp->buf_size)*/
+        /*{*/
+          /*sp->offset += nframes;*/
+        /*}*/
 
       /* if sample finished playing */
+      /*g_message (*/
+        /*"[sample %d] start offset %u, offset %lu, buf size %lu",*/
+        /*i, sp->start_offset,*/
+        /*sp->offset, sp->buf_size);*/
       if (sp->offset >= sp->buf_size)
         {
+          /*g_message ("removed %d", i);*/
           sample_processor_remove_sample_playback (
             self, sp);
         }
@@ -193,7 +217,8 @@ sample_processor_process (
 }
 
 /**
- * Queues a metronomem tick at the given local offset.
+ * Queues a metronomem tick at the given local
+ * offset.
  */
 void
 sample_processor_queue_metronome (
@@ -203,8 +228,13 @@ sample_processor_queue_metronome (
 {
   /*g_message ("metronome queued for %d", offset);*/
   SamplePlayback * sp =
-    &self->current_samples[self->num_current_samples];
+    &self->current_samples[
+      self->num_current_samples];
 
+  g_return_if_fail (
+    offset < AUDIO_ENGINE->block_length);
+
+  /*g_message ("queuing %u", offset);*/
   if (type == METRONOME_TYPE_EMPHASIS)
     {
       sample_playback_init (
