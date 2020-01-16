@@ -71,22 +71,36 @@ open_stream (AudioEngine * self)
   PaStream *stream;
   PaError err;
 
-  for (int i = 0; i < Pa_GetHostApiCount (); i++)
+  int api_count = Pa_GetHostApiCount ();
+  for (int i = 0; i < api_count; i++)
     {
-      const PaHostApiInfo * info = Pa_GetHostApiInfo (i);
-      g_message ("host api %s (%d) found",
-                 info->name,
-     i);
+      const PaHostApiInfo * info =
+        Pa_GetHostApiInfo (i);
+      g_message (
+        "host api %s (%d) found", info->name, i);
     }
   int api = Pa_GetDefaultHostApi ();
+  const PaHostApiInfo * api_info =
+    Pa_GetHostApiInfo (api);
   /*int api = 2;*/
   g_message ("using api %s (%d)",
-    Pa_GetHostApiInfo (api)->name, api);
+    api_info->name, api);
+
+  int device_count = Pa_GetDeviceCount ();
+  for (int i = 0; i < device_count; i++)
+    {
+      const PaDeviceInfo * info =
+        Pa_GetDeviceInfo (i);
+      g_message (
+        "device %s (%d) found, "
+        "max channels (in %d, out %d)",
+        info->name, i, info->maxInputChannels,
+        info->maxOutputChannels);
+    }
 
   PaStreamParameters in_param;
   in_param.device =
-    Pa_GetHostApiInfo (
-      api)->defaultInputDevice;
+    api_info->defaultInputDevice;
   in_param.channelCount = 2;
   in_param.sampleFormat = paFloat32;
   in_param.suggestedLatency = 10.0;
@@ -94,12 +108,16 @@ open_stream (AudioEngine * self)
 
   PaStreamParameters out_param;
   out_param.device =
-    Pa_GetHostApiInfo (
-      api)->defaultOutputDevice;
+    api_info->defaultOutputDevice;
   out_param.channelCount = 2;
   out_param.sampleFormat = paFloat32;
   out_param.suggestedLatency = 10.0;
   out_param.hostApiSpecificStreamInfo = NULL;
+
+  g_message (
+    "Attempting to open PA stream with input device "
+    "%d and output device %d",
+    in_param.device, out_param.device);
 
   /* Open an audio I/O stream. */
   err =
@@ -136,11 +154,8 @@ engine_pa_setup (
   AudioEngine * self,
   int           loading)
 {
-  /* not working atm */
-  return -1;
-
   g_message ("Setting up Port Audio...");
-  PaError err = Pa_Initialize();
+  PaError err = Pa_Initialize ();
   if (err != paNoError)
     {
       g_warning ("error initializing Port Audio: %s",
