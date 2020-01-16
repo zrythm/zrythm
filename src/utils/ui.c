@@ -520,24 +520,24 @@ ui_get_modifier_type_from_gesture (
   { \
     VALUE_COL, \
     TEXT_COL, \
-	ID_COL, \
+    ID_COL, \
   }; \
   GtkTreeIter iter; \
   GtkListStore *store; \
   gint i; \
  \
   store = \
-	gtk_list_store_new (3, \
+  gtk_list_store_new (3, \
          G_TYPE_INT, \
          G_TYPE_STRING, \
-	G_TYPE_STRING); \
+  G_TYPE_STRING); \
  \
   int num_elements = G_N_ELEMENTS (values); \
   for (i = 0; i < num_elements; i++) \
     { \
       gtk_list_store_append (store, &iter); \
-	    char id[40]; \
-	    sprintf (id, "%d", values[i]); \
+      char id[40]; \
+      sprintf (id, "%d", values[i]); \
       gtk_list_store_set (store, &iter, \
                           VALUE_COL, values[i], \
                           TEXT_COL, labels[i], \
@@ -585,18 +585,30 @@ ui_create_language_model ()
 static GtkTreeModel *
 ui_create_audio_backends_model (void)
 {
-  const int values[NUM_AUDIO_BACKENDS] = {
+  const int values[] = {
     AUDIO_BACKEND_DUMMY,
+#ifdef HAVE_ALSA
     AUDIO_BACKEND_ALSA,
+#endif
+#ifdef HAVE_JACK
     AUDIO_BACKEND_JACK,
+#endif
+#ifdef HAVE_PORT_AUDIO
     AUDIO_BACKEND_PORT_AUDIO,
+#endif
   };
-  const gchar *labels[NUM_AUDIO_BACKENDS] = {
+  const gchar *labels[] = {
     /* TRANSLATORS: Dummy audio backend */
     _("Dummy"),
+#ifdef HAVE_ALSA
     "ALSA",
+#endif
+#ifdef HAVE_JACK
     "Jack",
+#endif
+#ifdef HAVE_PORT_AUDIO
     "PortAudio",
+#endif
   };
 
   CREATE_SIMPLE_MODEL_BOILERPLATE;

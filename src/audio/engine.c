@@ -163,6 +163,7 @@ init_audio (
   /*else*/
     /*{*/
     /*}*/
+  g_message ("Finished initializing audio");
 }
 
 /**
@@ -334,6 +335,14 @@ engine_init (
   init_audio (self, loading);
 
   /* connect fader to monitor out */
+  g_return_if_fail (
+    MONITOR_FADER &&
+    MONITOR_FADER->stereo_out &&
+    MONITOR_FADER->stereo_out->l &&
+    MONITOR_FADER->stereo_out->r &&
+    self->monitor_out &&
+    self->monitor_out->l &&
+    self->monitor_out->r);
   stereo_ports_connect (
     MONITOR_FADER->stereo_out,
     self->monitor_out, 1);

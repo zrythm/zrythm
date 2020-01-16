@@ -774,8 +774,7 @@ port_connect (
   Port * dest,
   const int locked)
 {
-  g_warn_if_fail (src != NULL);
-  g_warn_if_fail (dest != NULL);
+  g_warn_if_fail (src && dest);
   port_disconnect (src, dest);
   if ((src->identifier.type !=
        dest->identifier.type) &&

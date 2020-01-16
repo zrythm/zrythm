@@ -98,7 +98,7 @@ typedef struct Channel
    *
    * If all_midi_ins is enabled, these are ignored.
    */
-  ExtPort *         ext_midi_ins[32];
+  ExtPort *         ext_midi_ins[1024];
   int               num_ext_midi_ins;
 
   /** If 1, the channel will connect to all MIDI ins
@@ -117,7 +117,7 @@ typedef struct Channel
    * If all_stereo_l_ins is enabled, these are
    * ignored.
    */
-  ExtPort *         ext_stereo_l_ins[32];
+  ExtPort *         ext_stereo_l_ins[1024];
   int               num_ext_stereo_l_ins;
 
   /** If 1, the channel will connect to all
@@ -136,7 +136,7 @@ typedef struct Channel
    * If all_stereo_r_ins is enabled, these are
    * ignored.
    */
-  ExtPort *         ext_stereo_r_ins[32];
+  ExtPort *         ext_stereo_r_ins[1024];
   int               num_ext_stereo_r_ins;
 
   /** If 1, the channel will connect to all
