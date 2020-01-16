@@ -459,6 +459,10 @@ engine_activate (
       engine_windows_mme_start_known_devices (self);
     }
 #endif
+#ifdef HAVE_SDL
+  if (self->audio_backend == AUDIO_BACKEND_SDL)
+    engine_sdl_activate (self);
+#endif
 }
 
 void

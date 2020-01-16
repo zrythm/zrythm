@@ -32,7 +32,6 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_audio.h>
 
@@ -43,12 +42,24 @@ sdl_callback (
   int     len)
 {
   AudioEngine * self = (AudioEngine *) user_data;
-  g_message ("--------------------------------------------------------------processing");
-  engine_process (
-    self, (nframes_t) len);
-  for (int i = 0; i < len; i++)
+  if (!self->run)
+    return;
+
+  nframes_t num_frames =
+    AUDIO_ENGINE->block_length;
+  g_message (
+    "processing for num frames %u (len %d)",
+    num_frames, len);
+  engine_process (self, num_frames);
+
+  memset (buf, 0, (size_t) len);
+  float * float_buf = (float *) buf;
+  for (nframes_t i = 0; i < num_frames; i++)
     {
-      buf[i] = 0;
+      float_buf[i * 2] =
+        self->monitor_out->l->buf[i];
+      float_buf[i * 2 + 1] =
+        self->monitor_out->r->buf[i];
     }
 }
 
@@ -110,6 +121,10 @@ engine_sdl_setup (
     (sample_rate_t) actual_specs.freq;
   self->block_length = actual_specs.samples;
 
+  g_message (
+    "Setting sample rate to %u and buffer size to "
+    "%d", self->sample_rate, self->block_length);
+
   g_warn_if_fail (
     TRANSPORT && TRANSPORT->beats_per_bar > 1);
 
@@ -148,6 +163,20 @@ engine_sdl_setup (
           monitor_out_r);
     }
 
+  g_message ("SDL set up");
+
+  return 0;
+}
+
+void
+engine_sdl_activate (
+  AudioEngine * self)
+{
+  g_message ("Activating SDL...");
+
+  engine_realloc_port_buffers (
+    self, AUDIO_ENGINE->block_length);
+
   /* start playing */
   SDL_PauseAudioDevice (self->dev, 0);
 
@@ -168,9 +197,7 @@ engine_sdl_setup (
         break;
     }
 
-  g_message ("SDL set up");
-
-  return 0;
+  g_message ("SDL activated");
 }
 
 /**

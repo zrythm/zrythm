@@ -356,6 +356,9 @@ track_processor_process (
       for (nframes_t l = local_offset;
            l < nframes; l++)
         {
+          g_return_if_fail (
+            l < AUDIO_ENGINE->block_length);
+
           self->stereo_out->l->buf[l] +=
             self->stereo_in->l->buf[l];
           self->stereo_out->r->buf[l] +=

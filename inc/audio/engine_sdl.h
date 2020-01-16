@@ -24,8 +24,6 @@
 #ifndef __AUDIO_ENGINE_SDL_H__
 #define __AUDIO_ENGINE_SDL_H__
 
-#include <portaudio.h>
-
 typedef struct AudioEngine AudioEngine;
 
 /**
@@ -58,6 +56,10 @@ engine_sdl_fill_out_bufs (
 int
 engine_sdl_test (
   GtkWindow * win);
+
+void
+engine_sdl_activate (
+  AudioEngine * self);
 
 /**
  * Closes Port Audio.
