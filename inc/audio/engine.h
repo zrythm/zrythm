@@ -50,6 +50,10 @@
 #include <alsa/asoundlib.h>
 #endif
 
+#ifdef HAVE_SDL
+#include <SDL2/SDL_audio.h>
+#endif
+
 typedef struct StereoPorts StereoPorts;
 typedef struct Port Port;
 typedef struct Channel Channel;
@@ -326,6 +330,10 @@ typedef struct AudioEngine
   int                num_mme_in_devs;
   WindowsMmeDevice * mme_out_devs[1024];
   int                num_mme_out_devs;
+#endif
+
+#ifdef HAVE_SDL
+  SDL_AudioDeviceID  dev;
 #endif
 
   /**

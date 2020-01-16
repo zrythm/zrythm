@@ -52,6 +52,7 @@
 #include "audio/engine_dummy.h"
 #include "audio/engine_jack.h"
 #include "audio/engine_pa.h"
+#include "audio/engine_sdl.h"
 #include "audio/engine_windows_mme.h"
 #include "audio/metronome.h"
 #include "audio/midi.h"
@@ -213,6 +214,12 @@ engine_init (
         AUDIO_BACKEND_PORT_AUDIO;
       break;
 #endif
+#ifdef HAVE_SDL
+    case AUDIO_BACKEND_SDL:
+      self->audio_backend =
+        AUDIO_BACKEND_SDL;
+      break;
+#endif
     default:
       self->audio_backend = AUDIO_BACKEND_DUMMY;
       g_warn_if_reached ();
@@ -291,6 +298,12 @@ engine_init (
     case AUDIO_BACKEND_PORT_AUDIO:
       ret =
         engine_pa_setup (self, loading);
+      break;
+#endif
+#ifdef HAVE_SDL
+    case AUDIO_BACKEND_SDL:
+      ret =
+        engine_sdl_setup (self, loading);
       break;
 #endif
     default:
@@ -1082,21 +1095,26 @@ engine_fill_out_bufs (
     {
     case AUDIO_BACKEND_DUMMY:
       break;
-    case AUDIO_BACKEND_ALSA:
 #ifdef HAVE_ALSA
+    case AUDIO_BACKEND_ALSA:
       engine_alsa_fill_out_bufs (self, nframes);
-#endif
       break;
-    case AUDIO_BACKEND_JACK:
+#endif
 #ifdef HAVE_JACK
+    case AUDIO_BACKEND_JACK:
       engine_jack_fill_out_bufs (self, nframes);
-#endif
       break;
-    case AUDIO_BACKEND_PORT_AUDIO:
+#endif
 #ifdef HAVE_PORT_AUDIO
+    case AUDIO_BACKEND_PORT_AUDIO:
       engine_pa_fill_out_bufs (self, nframes);
-#endif
       break;
+#endif
+#ifdef HAVE_SDL
+    case AUDIO_BACKEND_SDL:
+      /*engine_sdl_fill_out_bufs (self, nframes);*/
+      break;
+#endif
     default:
       break;
     }
