@@ -435,6 +435,11 @@ if (get_option('enable_portaudio'))
   cdata.set('HAVE_PORT_AUDIO', 1)
 endif
 
+if (get_option('enable_sdl'))
+  zrythm_deps += dependency ('sdl2')
+  cdata.set('HAVE_SDL', 1)
+endif
+
 if os_windows
   zrythm_deps += cc.find_library('dbghelp')
   # msys2 provides a separate fftw3f entry in

@@ -89,6 +89,7 @@ typedef enum AudioBackend
   AUDIO_BACKEND_ALSA,
   AUDIO_BACKEND_JACK,
   AUDIO_BACKEND_PORT_AUDIO,
+  AUDIO_BACKEND_SDL,
   NUM_AUDIO_BACKENDS,
 } AudioBackend;
 
@@ -98,6 +99,7 @@ static const char * audio_backend_str[] =
   "ALSA",
   "JACK",
   "PortAudio",
+  "SDL2",
   "invalid"
 };
 

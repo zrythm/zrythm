@@ -52,6 +52,12 @@ option (
   description: 'Compile with portaudio support')
 
 option (
+  'enable_sdl',
+  type: 'boolean',
+  value: false,
+  description: 'Compile with SDL2 backend support')
+
+option (
   'gen_dev_docs',
   type: 'boolean',
   value: false,
