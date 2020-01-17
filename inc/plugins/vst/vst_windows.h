@@ -58,6 +58,12 @@ typedef struct VstPlugin VstPlugin;
  */
 
 /**
+ * Inits the windows VST subsystem.
+ */
+int
+vst_windows_init (void);
+
+/**
  * Packages the plugin into the given window.
  */
 int
@@ -79,6 +85,9 @@ vst_windows_run_editor (
 void
 vst_windows_destroy_editor (
   VstPlugin* vstfx);
+
+void
+vst_windows_exit (void);
 
 /**
  * @}

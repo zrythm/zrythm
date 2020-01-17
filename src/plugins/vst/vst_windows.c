@@ -55,6 +55,7 @@ static UINT_PTR idle_timer_id   = 0;
 static pthread_mutex_t plugin_mutex;
 /* Head of linked list of all FSTs */
 static VstPlugin * fst_first = NULL;
+static int              host_initialized = 0;
 
 /* GDK exports this symbol publically but for some
  * reason it's not exposed in a public API, so
@@ -62,6 +63,108 @@ static VstPlugin * fst_first = NULL;
  * see https://discourse.gnome.org/t/getting-a-win32-window-handle-from-a-gtkwindow/2480 */
 HGDIOBJ
 gdk_win32_window_get_handle (GdkWindow *window);
+
+static LRESULT WINAPI
+vstedit_wndproc (
+  HWND w,
+  UINT msg,
+  WPARAM wp,
+  LPARAM lp)
+{
+  switch (msg)
+    {
+    case WM_KEYUP:
+    case WM_KEYDOWN:
+      break;
+
+    case WM_SIZE:
+      {
+        LRESULT rv = DefWindowProcA (w, msg, wp, lp);
+        RECT rect;
+        GetClientRect(w, &rect);
+        g_message ("VST WM_SIZE.. %ld %ld %ld %ld\n", rect.top, rect.left, (rect.right - rect.left), (rect.bottom - rect.top));
+        VstPlugin * fst =
+          (VstPlugin *) GetProp (w, "fst_ptr");
+        if (fst)
+          {
+            int32_t width = (rect.right - rect.left);
+            int32_t height = (rect.bottom - rect.top);
+            if (width > 0 && height > 0)
+              {
+                /*fst->amc (fst->plugin, 15 [>audioMasterSizeWindow <], width, height, NULL, 0);*/
+              }
+          }
+        return rv;
+      }
+      break;
+    case WM_CLOSE:
+      /* we don't care about windows closing ...
+       * WM_CLOSE is used for minimizing the window.
+       * Our window has no frame so it shouldn't ever
+       * get sent - but if it does, we don't want our
+       * window to get minimized!
+       */
+      return 0;
+      break;
+
+    case WM_DESTROY:
+    case WM_NCDESTROY:
+      /* we don't care about windows being
+       * destroyed ... */
+      return 0;
+      break;
+
+    default:
+      break;
+  }
+
+  return DefWindowProcA (w, msg, wp, lp);
+}
+
+/**
+ * Inits the windows VST subsystem.
+ */
+int
+vst_windows_init (void)
+{
+  if (host_initialized) return 0;
+  HMODULE hInst;
+
+  if ((hInst = GetModuleHandleA (NULL)) == NULL)
+    {
+      g_critical ("can't get module handle");
+      return -1;
+    }
+
+  WNDCLASSEX wclass;
+
+  wclass.cbSize = sizeof(WNDCLASSEX);
+  wclass.style = (CS_HREDRAW | CS_VREDRAW);
+  wclass.hIcon = NULL;
+  wclass.hCursor = LoadCursor(0, IDC_ARROW);
+  wclass.hbrBackground =
+    (HBRUSH) GetStockObject (BLACK_BRUSH);
+  wclass.lpfnWndProc = vstedit_wndproc;
+  wclass.cbClsExtra = 0;
+  wclass.cbWndExtra = 0;
+  wclass.hInstance = hInst;
+  wclass.lpszMenuName = "MENU_FST";
+  wclass.lpszClassName = "FST";
+  wclass.hIconSm = 0;
+
+  pthread_mutex_init (&plugin_mutex, NULL);
+  host_initialized = -1;
+
+  if (!RegisterClassExA(&wclass))
+    {
+      g_critical (
+        "Error initializing windows VST subsystem: "
+        "(class registration failed");
+      return -1;
+    }
+
+  return 0;
+}
 
 static void
 move_window_into_view (
@@ -233,6 +336,25 @@ idle_timer_remove_plugin (
     }
 
   pthread_mutex_unlock (&plugin_mutex);
+}
+
+void
+vst_windows_exit (void)
+{
+#if 0
+  if (!host_initialized) return;
+  VSTState* fst;
+  // If any plugins are still open at this point, close them!
+  while ((fst = fst_first))
+    vst_windows_close (fst);
+
+  if (idle_timer_id != 0) {
+    KillTimer (NULL, idle_timer_id);
+  }
+
+  host_initialized = FALSE;
+  pthread_mutex_destroy (&plugin_mutex);
+#endif
 }
 
 void

@@ -33,6 +33,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "plugins/vst/vst_windows.h"
 #include "plugins/vst/vst_x11.h"
 #include "gui/widgets/main_window.h"
 #include "utils/gtk.h"
@@ -317,6 +318,13 @@ main (int    argc,
   /* init VST UI engine */
   g_message ("Initing VST UI engine...");
   g_return_val_if_fail (vst_x11_init (0) == 0, -1);;
+#endif
+
+#ifdef _WIN32
+  /* init VST UI engine */
+  g_message ("Initing VST UI engine...");
+  g_return_val_if_fail (
+    vst_windows_init (0) == 0, -1);;
 #endif
 
   /* init suil */
