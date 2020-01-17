@@ -83,7 +83,11 @@ vstedit_wndproc (
         LRESULT rv = DefWindowProcA (w, msg, wp, lp);
         RECT rect;
         GetClientRect(w, &rect);
-        g_message ("VST WM_SIZE.. %ld %ld %ld %ld\n", rect.top, rect.left, (rect.right - rect.left), (rect.bottom - rect.top));
+        g_message (
+          "VST WM_SIZE.. %ld %ld %ld %ld",
+          rect.top, rect.left,
+          (rect.right - rect.left),
+          (rect.bottom - rect.top));
         VstPlugin * fst =
           (VstPlugin *) GetProp (w, "fst_ptr");
         if (fst)
@@ -172,7 +176,7 @@ static void
 move_window_into_view (
   VstPlugin * self)
 {
-	g_message ("moving window into view");
+  g_message ("moving window into view");
   if (self->windows_window)
     {
       SetWindowPos (
@@ -191,12 +195,13 @@ static void
 resize_cb (
   VstPlugin * self)
 {
-	g_message ("resize cb on VST plugin");
+  g_message ("resize cb on VST plugin");
   if (self->gtk_window_parent)
     {
       int width = self->width + self->hoffset;
       int height = self->height + self->voffset;
-	g_message ("width %d height %d", width, height);
+      g_message (
+        "width %d height %d", width, height);
       gtk_widget_set_size_request (
         GTK_WIDGET (self->gtk_window_parent),
         width, height);
@@ -212,7 +217,7 @@ vst_windows_package (
   VstPlugin * self,
   GtkWindow * win)
 {
-	g_message ("package plugin");
+  g_message ("package plugin");
   self->gtk_window_parent = win;
 
   resize_cb (self);
@@ -260,7 +265,7 @@ idle_hands (
   UINT idTimer,
   DWORD dwTime)
 {
-	g_message ("idle hands started");
+  /*g_message ("idle hands started");*/
   VstPlugin * fst;
 
   pthread_mutex_lock (&plugin_mutex);
@@ -311,7 +316,7 @@ idle_hands (
     }
 
   pthread_mutex_unlock (&plugin_mutex);
-	g_message ("idle hands ended");
+  /*g_message ("idle hands ended");*/
 }
 
 static void
@@ -441,11 +446,11 @@ vst_windows_run_editor (
             (HWND) hWndHost, NULL,
             hInst, NULL) ) == NULL)
       {
-	      char error_str[1000];
-	      windows_errors_get_last_error_str (error_str);
+        char error_str[1000];
+        windows_errors_get_last_error_str (error_str);
         g_critical (
           "Cannot create editor window: %s",
-	  error_str);
+    error_str);
         return 1;
       }
     g_message ("VST window created");
@@ -488,7 +493,7 @@ vst_windows_run_editor (
       }
     else
     {
-	    g_warning ("No rect for plugin");
+      g_warning ("No rect for plugin");
     }
 
     self->been_activated = 1;
@@ -506,13 +511,13 @@ vst_windows_run_editor (
             SetTimer (
               NULL, idle_timer_id, 50,
               (TIMERPROC) idle_hands);
-	  g_message ("idle timer initialized");
+          g_message ("idle timer initialized");
         }
 
     idle_timer_add_plugin (self);
 
-	vst_windows_package (
-	  self, win);
+  vst_windows_package (
+    self, win);
   }
 
   return self->windows_window == NULL ? -1 : 0;
