@@ -55,6 +55,7 @@
 #endif
 #include "project.h"
 #include "utils/io.h"
+#include "utils/windows_errors.h"
 
 #ifdef HAVE_X11
 #include <gdk/gdkx.h>
@@ -249,20 +250,11 @@ load_lib (
   if (!handle)
     {
 #ifdef _WIN32
-      DWORD error_id =
-        GetLastError ();
-      LPSTR buf = NULL;
-      FormatMessageA (
-        FORMAT_MESSAGE_ALLOCATE_BUFFER |
-          FORMAT_MESSAGE_FROM_SYSTEM |
-          FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, error_id,
-        MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPSTR) &buf, 0, NULL);
+      char str[2000];
+      windows_errors_get_last_error_str (str);
       g_warning (
         "Failed to load VST plugin from %s: %s",
-        path, buf);
-      LocalFree (buf);
+        path, str);
 #else
       g_warning (
         "Failed to load VST plugin from %s: %s",

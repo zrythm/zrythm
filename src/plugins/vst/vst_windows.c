@@ -47,6 +47,7 @@
 #include "plugins/plugin.h"
 #include "plugins/vst_plugin.h"
 #include "plugins/vst/vst_windows.h"
+#include "utils/windows_errors.h"
 
 #include <gtk/gtk.h>
 
@@ -162,6 +163,7 @@ vst_windows_init (void)
         "(class registration failed");
       return -1;
     }
+  g_message ("VST host initialized");
 
   return 0;
 }
@@ -170,6 +172,7 @@ static void
 move_window_into_view (
   VstPlugin * self)
 {
+	g_message ("moving window into view");
   if (self->windows_window)
     {
       SetWindowPos (
@@ -188,10 +191,12 @@ static void
 resize_cb (
   VstPlugin * self)
 {
+	g_message ("resize cb on VST plugin");
   if (self->gtk_window_parent)
     {
       int width = self->width + self->hoffset;
       int height = self->height + self->voffset;
+	g_message ("width %d height %d", width, height);
       gtk_widget_set_size_request (
         GTK_WIDGET (self->gtk_window_parent),
         width, height);
@@ -207,6 +212,7 @@ vst_windows_package (
   VstPlugin * self,
   GtkWindow * win)
 {
+	g_message ("package plugin");
   self->gtk_window_parent = win;
 
   resize_cb (self);
@@ -235,6 +241,8 @@ idle_timer_add_plugin (
     }
 
   pthread_mutex_unlock (&plugin_mutex);
+
+  g_message ("plugin added to timer");
 }
 
 /**
@@ -252,6 +260,7 @@ idle_hands (
   UINT idTimer,
   DWORD dwTime)
 {
+	g_message ("idle hands started");
   VstPlugin * fst;
 
   pthread_mutex_lock (&plugin_mutex);
@@ -302,6 +311,7 @@ idle_hands (
     }
 
   pthread_mutex_unlock (&plugin_mutex);
+	g_message ("idle hands ended");
 }
 
 static void
@@ -391,6 +401,7 @@ vst_windows_run_editor (
   void * hWndHost =
     gdk_win32_window_get_handle (
       gtk_widget_get_window (win));
+  g_return_val_if_fail (hWndHost, -1);
 
   /* For safety, remove any pre-existing editor
    * window */
@@ -420,7 +431,7 @@ vst_windows_run_editor (
 
     if ((window =
            CreateWindowExA (
-             0, "VST", self->plugin->descr->name,
+             0, "FST", self->plugin->descr->name,
                hWndHost ?
                  WS_CHILD :
                  (WS_OVERLAPPEDWINDOW &
@@ -430,16 +441,21 @@ vst_windows_run_editor (
             (HWND) hWndHost, NULL,
             hInst, NULL) ) == NULL)
       {
+	      char error_str[1000];
+	      windows_errors_get_last_error_str (error_str);
         g_critical (
-          "Cannot create editor window");
+          "Cannot create editor window: %s",
+	  error_str);
         return 1;
       }
+    g_message ("VST window created");
 
     if (!SetPropA (window, "fst_ptr", self))
       {
         g_warning (
           "Cannot set fst_ptr on window");
       }
+    g_message ("VST: set window pointer");
 
     self->windows_window = window;
 
@@ -465,14 +481,19 @@ vst_windows_run_editor (
     self->aeffect->dispatcher (
       self->aeffect, effEditGetRect, 0, 0, &er, 0 );
 
-    if (er != NULL)
+    if (er)
       {
         self->width = er->right - er->left;
         self->height = er->bottom - er->top;
       }
+    else
+    {
+	    g_warning ("No rect for plugin");
+    }
 
     self->been_activated = 1;
 
+    g_message ("VST window activated");
   }
 
   if (self->windows_window)
@@ -485,9 +506,13 @@ vst_windows_run_editor (
             SetTimer (
               NULL, idle_timer_id, 50,
               (TIMERPROC) idle_hands);
+	  g_message ("idle timer initialized");
         }
 
     idle_timer_add_plugin (self);
+
+	vst_windows_package (
+	  self, win);
   }
 
   return self->windows_window == NULL ? -1 : 0;

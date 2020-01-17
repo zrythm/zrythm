@@ -24,5 +24,9 @@
 
 #include <Windows.h>
 
+void
+windows_errors_get_last_error_str (
+		char * str);
+
 #endif
 #endif // _WIN32

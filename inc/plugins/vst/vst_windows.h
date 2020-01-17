@@ -49,6 +49,8 @@
 #ifndef __PLUGINS_VST_VST_WINDOWS_H__
 #define __PLUGINS_VST_VST_WINDOWS_H__
 
+#include <gtk/gtk.h>
+
 typedef struct VstPlugin VstPlugin;
 
 /**
