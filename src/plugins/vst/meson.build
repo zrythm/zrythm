@@ -16,6 +16,7 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 plugin_srcs += files([
+  'vst_windows.c',
   'vst_x11.c',
   ])
 

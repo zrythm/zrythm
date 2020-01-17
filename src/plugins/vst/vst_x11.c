@@ -69,7 +69,7 @@
 
 static pthread_mutex_t plugin_mutex;
 
-static VstPlugin * vstfx_first = NULL;
+static VstPlugin * vst_x11_first = NULL;
 
 const char magic[] = "VSTFX Plugin State v002";
 
@@ -89,13 +89,13 @@ static pthread_t LXVST_gui_event_thread;
 
 /* forward declarations */
 int
-vstfx_launch_editor (
+vst_x11_launch_editor (
   VstPlugin* vstfx);
 int
-vstfx_create_editor (
+vst_x11_create_editor (
   VstPlugin* vstfx);
 void
-vstfx_event_loop_remove_plugin (
+vst_x11_event_loop_remove_plugin (
   VstPlugin* vstfx);
 
 #if 0
@@ -311,7 +311,7 @@ dispatch_x_events (XEvent* event, VstPlugin* vstfx)
 
         if (strcmp(message,"LaunchEditor") == 0) {
           if (event->xclient.data.l[0] == 0x0FEEDBAC) {
-            vstfx_launch_editor (vstfx);
+            vst_x11_launch_editor (vstfx);
           }
         }
 
@@ -385,7 +385,7 @@ gui_event_loop (
 
         /*Call dispatch events, with the event, for each plugin in the linked list*/
 
-        for (vstfx = vstfx_first; vstfx; vstfx = vstfx->next)
+        for (vstfx = vst_x11_first; vstfx; vstfx = vstfx->next)
         {
           pthread_mutex_lock(&vstfx->lock);
 
@@ -415,7 +415,7 @@ gui_event_loop (
 again:
       /*Parse through the linked list of plugins*/
 
-      for (vstfx = vstfx_first; vstfx; vstfx = vstfx->next)
+      for (vstfx = vst_x11_first; vstfx; vstfx = vstfx->next)
       {
         pthread_mutex_lock (&vstfx->lock);
 
@@ -431,7 +431,7 @@ again:
             vstfx->destroy = FALSE;
           }
 
-          vstfx_event_loop_remove_plugin (vstfx);
+          vst_x11_event_loop_remove_plugin (vstfx);
           vstfx->been_activated = FALSE;
           pthread_cond_signal (&vstfx->window_status_change);
           pthread_mutex_unlock (&vstfx->lock);
@@ -439,17 +439,20 @@ again:
           goto again;
         }
 
-        /*Window does not yet exist - scheduled for creation*/
+        /*Window does not yet exist - scheduled for
+         * creation*/
 
-        /* FIXME - probably safe to assume 0 is not a valid XID but not explicitly true */
+        /* FIXME - probably safe to assume 0 is not
+         * a valid XID but not explicitly true */
         if (vstfx->linux_window == 0) {
-          if (vstfx_create_editor (vstfx)) {
+          if (vst_x11_create_editor (vstfx)) {
             g_critical (
               "** ERROR ** VSTFX : Cannot create "
               "editor for plugin %s",
               vstfx->plugin->descr->name);
-            vstfx_event_loop_remove_plugin (vstfx);
-            pthread_cond_signal (&vstfx->window_status_change);
+            vst_x11_event_loop_remove_plugin (vstfx);
+            pthread_cond_signal (
+              &vstfx->window_status_change);
             pthread_mutex_unlock (&vstfx->lock);
             goto again;
           } else {
@@ -474,15 +477,19 @@ again:
             );
 
           vstfx->dispatcher_wantcall = 0;
-          pthread_cond_signal (&vstfx->plugin_dispatcher_called);
+          pthread_cond_signal (
+            &vstfx->plugin_dispatcher_called);
         }
 
-        /*Call the editor Idle function in the plugin*/
-
-        vstfx->aeffect->dispatcher (vstfx->aeffect, effEditIdle, 0, 0, NULL, 0);
+        /* Call the editor Idle function in the
+         * plugin*/
+        vstfx->aeffect->dispatcher (
+          vstfx->aeffect, effEditIdle, 0, 0,
+          NULL, 0);
 
         if(vstfx->wantIdle)
-          vstfx->aeffect->dispatcher (vstfx->aeffect, 53, 0, 0, NULL, 0);
+          vstfx->aeffect->dispatcher (
+            vstfx->aeffect, 53, 0, 0, NULL, 0);
 
         pthread_mutex_unlock (&vstfx->lock);
       }
@@ -535,7 +542,7 @@ again:
 can be accessed, it gets the UI thread running, opens a connection to X etc
 normally started in globals.cc*/
 
-int vstfx_init (void* ptr)
+int vst_x11_init (void* ptr)
 {
   g_warn_if_fail (gui_quit == 0);
   pthread_mutex_init (&plugin_mutex, NULL);
@@ -549,7 +556,7 @@ int vstfx_init (void* ptr)
   pthread_attr_init(&thread_attributes);
 
   /*Make sure the thread is joinable - this should be the default anyway -
-  so we can join to it on vstfx_exit*/
+  so we can join to it on vst_x11_exit*/
 
   pthread_attr_setdetachstate(&thread_attributes, PTHREAD_CREATE_JOINABLE);
 
@@ -596,7 +603,7 @@ int vstfx_init (void* ptr)
 
 /*The vstfx Quit function*/
 
-void vstfx_exit()
+void vst_x11_exit()
 {
   if (gui_quit) {
     return;
@@ -612,16 +619,16 @@ void vstfx_exit()
 
 /*Adds a new plugin (VSTFX) instance to the linked list*/
 
-int vstfx_run_editor (VstPlugin* vstfx)
+int vst_x11_run_editor (VstPlugin* vstfx)
 {
   pthread_mutex_lock (&plugin_mutex);
 
   /* Add the new VSTFX instance to the linked list */
 
-  if (vstfx_first == NULL) {
-    vstfx_first = vstfx;
+  if (vst_x11_first == NULL) {
+    vst_x11_first = vstfx;
   } else {
-    VstPlugin* p = vstfx_first;
+    VstPlugin* p = vst_x11_first;
 
     while (p->next) {
       p = p->next;
@@ -659,7 +666,7 @@ int vstfx_run_editor (VstPlugin* vstfx)
  * has added the plugin (editor) to the linked list.
  */
 int
-vstfx_create_editor (
+vst_x11_create_editor (
   VstPlugin* vstfx)
 {
   Window parent_window;
@@ -734,10 +741,10 @@ vstfx_create_editor (
 }
 
 int
-vstfx_launch_editor (
+vst_x11_launch_editor (
   VstPlugin* vstfx)
 {
-  /*This is the second stage of launching the editor (see vstfx_create editor)
+  /*This is the second stage of launching the editor (see vst_x11_create editor)
   we get called here in response to receiving the ClientMessage on our Window,
   therefore it's about as safe (as can be) to assume that the Window we created
   is now valid in the XServer and can be passed to the plugin in effEditOpen
@@ -803,7 +810,7 @@ vstfx_launch_editor (
   /*Not sure if we need to map the window or if the plugin will do it for us
   it should be ok because XReparentWindow generates a Map event*/
 
-  /*mark the editor as activated - mainly so that vstfx_get_XID
+  /*mark the editor as activated - mainly so that vst_x11_get_XID
   will know it is valid*/
 
   vstfx->been_activated = TRUE;
@@ -814,7 +821,7 @@ vstfx_launch_editor (
 
 /** Destroy the editor window */
 void
-vstfx_destroy_editor (VstPlugin* vstfx)
+vst_x11_destroy_editor (VstPlugin* vstfx)
 {
   pthread_mutex_lock (&vstfx->lock);
   if (vstfx->linux_window) {
@@ -829,7 +836,7 @@ vstfx_destroy_editor (VstPlugin* vstfx)
  * parsed by the event loop.
  */
 void
-vstfx_event_loop_remove_plugin (VstPlugin* vstfx)
+vst_x11_event_loop_remove_plugin (VstPlugin* vstfx)
 {
   /* This only ever gets called from within our GUI thread
      so we don't need to lock here - if we did there would be
@@ -839,7 +846,7 @@ vstfx_event_loop_remove_plugin (VstPlugin* vstfx)
   VstPlugin* p;
   VstPlugin* prev;
 
-  for (p = vstfx_first, prev = NULL; p; prev = p, p = p->next) {
+  for (p = vst_x11_first, prev = NULL; p; prev = p, p = p->next) {
     if (p == vstfx) {
       if (prev) {
         prev->next = p->next;
@@ -850,10 +857,10 @@ vstfx_event_loop_remove_plugin (VstPlugin* vstfx)
 
   // if this function is called, there must be
   // at least one plugin in the linked list
-  g_warn_if_fail (vstfx_first);
+  g_warn_if_fail (vst_x11_first);
 
-  if (vstfx_first == vstfx) {
-    vstfx_first = vstfx_first->next;
+  if (vst_x11_first == vstfx) {
+    vst_x11_first = vst_x11_first->next;
   }
 }
 

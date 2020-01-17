@@ -565,7 +565,17 @@ plugin_manager_scan_plugins (
     g_strdup (getenv ("VST_PATH"));
   if (!vst_path)
     vst_path =
+#ifdef _WIN32
+      g_strdup (
+        "C:\\Program Files\\Common Files\\VST2:"
+        "C:\\Program Files\\VSTPlugins:"
+        "C:\\Program Files\\Steinberg\\VSTPlugins:"
+        "C:\\Program Files\\Common Files\\VST2:"
+        "C:\\Program Files\\Common Files\\Steinberg\\VST2"
+        );
+#else
       g_strdup ("/usr/lib/vst:/usr/local/lib/vst");
+#endif
   char ** paths =
     g_strsplit (vst_path, ":", 0);
   int path_idx = 0;
@@ -576,8 +586,13 @@ plugin_manager_scan_plugins (
         continue;
 
       char ** vst_plugins =
+#ifdef _WIN32
+        io_get_files_in_dir_ending_in (
+          path, 1, ".dll");
+#else
         io_get_files_in_dir_ending_in (
           path, 1, ".so");
+#endif
       if (!vst_plugins)
         continue;
 

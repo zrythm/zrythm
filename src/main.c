@@ -317,7 +317,7 @@ main (int    argc,
 
   /* init VST UI engine */
   g_message ("Initing VST UI engine...");
-  g_return_val_if_fail (vstfx_init (0) == 0, -1);;
+  g_return_val_if_fail (vst_x11_init (0) == 0, -1);;
 #endif
 
   /* init suil */

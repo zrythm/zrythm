@@ -19,7 +19,7 @@
  * This file incorporates work covered by the following copyright and
  * permission notice:
  *
-    Copyright (C) 2012 Paul Davis
+    Copyright (C) 2004 Paul Davis
     Based on code by Paul Davis, Torben Hohn as part of FST
 
     This program is free software; you can redistribute it and/or modify
@@ -40,14 +40,14 @@
 /**
  * \file
  *
- * Engine for handling VST plugins on X11.
+ * Engine for handling VST plugins on windows.
  */
 
 #include "config.h"
 
-#ifdef HAVE_X11
-#ifndef __PLUGINS_VST_VST_X11_H__
-#define __PLUGINS_VST_VST_X11_H__
+#ifdef _WIN32
+#ifndef __PLUGINS_VST_VST_WINDOWS_H__
+#define __PLUGINS_VST_VST_WINDOWS_H__
 
 typedef struct VstPlugin VstPlugin;
 
@@ -58,29 +58,26 @@ typedef struct VstPlugin VstPlugin;
  */
 
 /**
- * Inits the engine.
+ * Packages the plugin into the given window.
  */
 int
-vst_x11_init (void* ptr);
-
-/**
- * Closes the engine.
- */
-void
-vst_x11_exit (void);
+vst_windows_package (
+  VstPlugin * self,
+  GtkWindow * win);
 
 /**
  * Adds a new plugin instance to the linked list.
  */
 int
-vst_x11_run_editor (
-  VstPlugin * vstfx);
+vst_windows_run_editor (
+  VstPlugin * self,
+  GtkWidget * win);
 
 /**
  * Destroy the editor window.
  */
 void
-vst_x11_destroy_editor (
+vst_windows_destroy_editor (
   VstPlugin* vstfx);
 
 /**
@@ -88,4 +85,4 @@ vst_x11_destroy_editor (
  */
 
 #endif
-#endif // HAVE_X11
+#endif // _WIN32

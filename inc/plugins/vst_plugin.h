@@ -48,6 +48,8 @@
 
 #include "config.h"
 
+#include <pthread.h>
+
 #include "audio/port.h"
 #include "plugins/vst/vestige.h"
 #include "utils/types.h"
@@ -227,14 +229,15 @@ typedef struct VstPlugin
   int     dispatcher_retval;
 
 #ifdef HAVE_X11
-  struct VstPlugin * next;
-  pthread_mutex_t   lock;
   pthread_mutex_t   state_lock;
   pthread_cond_t    window_status_change;
   pthread_cond_t    plugin_dispatcher_called;
   pthread_cond_t    window_created;
-  int               been_activated;
 #endif
+
+  struct VstPlugin * next;
+  pthread_mutex_t   lock;
+  int               been_activated;
 
   /** ID of the delete-event signal so that we can
    * deactivate before freeing the plugin. */

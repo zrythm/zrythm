@@ -50,6 +50,8 @@
 #include "plugins/vst_plugin.h"
 #ifdef HAVE_X11
 #include "plugins/vst/vst_x11.h"
+#elif _WIN32
+#include "plugins/vst/vst_windows.h"
 #endif
 #include "project.h"
 #include "utils/io.h"
@@ -204,6 +206,25 @@ host_callback (
   return 0;
 }
 
+static int
+close_lib (
+  void * handle)
+{
+#ifdef _WIN32
+  FreeLibrary ((HMODULE) handle);
+#else
+  if (dlclose (handle) != 0)
+#endif
+    {
+      g_warning (
+        "An error occurred closing the VST plugin "
+        "handle");
+      return -1;
+    }
+
+  return 0;
+}
+
 /**
  * Loads the VST library.
  *
@@ -220,27 +241,54 @@ load_lib (
   AEffect **    effect,
   int           test)
 {
+#ifdef _WIN32
+  HMODULE handle = LoadLibraryA (path);
+#else
   void * handle = dlopen (path, RTLD_NOW);
+#endif
   if (!handle)
     {
+#ifdef _WIN32
+      g_warning (
+        "Failed to load VST plugin from %s",
+        path);
+#else
       g_warning (
         "Failed to load VST plugin from %s: %s",
         path, dlerror ());
+#endif
       return NULL;
     }
 
   VstPluginMain entry_point =
-    (VstPluginMain) dlsym (handle, "VSTPluginMain");
+    (VstPluginMain)
+#ifdef _WIN32
+    GetProcAddress (handle, "VSTPluginMain");
+#else
+    dlsym (handle, "VSTPluginMain");
+#endif
   if (!entry_point)
     entry_point =
-      (VstPluginMain) dlsym (handle, "main");
+      (VstPluginMain)
+#ifdef _WIN32
+      GetProcAddress (handle, "main");
+#else
+      dlsym (handle, "main");
+#endif
   if (!entry_point)
     {
+#ifdef _WIN32
+      g_warning (
+        "Failed to get entry point from VST plugin "
+        "from %s",
+        path);
+#else
       g_warning (
         "Failed to get entry point from VST plugin "
         "from %s: %s",
         path, dlerror ());
-      dlclose (handle);
+#endif
+      close_lib (handle);
       return NULL;
     }
 
@@ -252,7 +300,7 @@ load_lib (
         {
           g_warning (
             "%s: VST plugin failed the test", path);
-          dlclose (handle);
+          close_lib (handle);
           return NULL;
         }
     }
@@ -263,15 +311,16 @@ load_lib (
       g_warning (
         "%s: Could not get entry point for "
         "VST plugin", path);
-      dlclose (handle);
+      close_lib (handle);
       return NULL;
     }
 
   /* check plugin's magic number */
   if ((*effect)->magic != kEffectMagic)
     {
-      g_warning ("Plugin's magic number is invalid");
-      dlclose (handle);
+      g_warning (
+        "Plugin's magic number is invalid");
+      close_lib (handle);
       return NULL;
     }
 
@@ -416,13 +465,8 @@ vst_plugin_create_descriptor_from_path (
   /* give the plugin some time to switch off */
   g_usleep (1000);
 
-  if (dlclose (handle) != 0)
-    {
-      g_warning (
-        "An error occurred closing the VST plugin "
-        "handle");
-      return NULL;
-    }
+  if (close_lib (handle))
+    return NULL;
 
   return descr;
 }
@@ -680,7 +724,7 @@ vst_plugin_close_ui (
   VstPlugin * self)
 {
 #ifdef HAVE_X11
-  vstfx_destroy_editor (self);
+  vst_x11_destroy_editor (self);
 #endif
 
   if (self->gtk_window_parent)
@@ -704,7 +748,7 @@ on_window_destroy(
   self->gtk_window_parent = NULL;
   g_message ("destroying VST plugin window");
 #ifdef HAVE_X11
-  vstfx_destroy_editor (self);
+  vst_x11_destroy_editor (self);
 #endif
 }
 
@@ -758,14 +802,16 @@ void
 vst_plugin_open_ui (
   VstPlugin * self)
 {
-#ifdef HAVE_X11
-  vstfx_run_editor (self);
-#endif
-
   GtkWidget* window =
     gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_icon_name (
     GTK_WINDOW (window), "zrythm");
+
+#ifdef _WIN32
+  vst_windows_run_editor (self, window);
+#elif HAVE_X11
+  vst_x11_run_editor (self);
+#endif
 
   if (g_settings_get_int (
         S_PREFERENCES, "plugin-uis-stay-on-top"))
