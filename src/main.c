@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -222,7 +222,7 @@ print_version ()
     "%s\n%s\n%s\n%s\n",
     ver,
     COMPILER, COMPILER_VERSION,
-    "Copyright (C) 2018-2019 Alexandros Theodotou",
+    "Copyright (C) 2018-2020 Alexandros Theodotou",
     "License AGPLv3+: GNU AGPL version 3 or later <https://www.gnu.org/licenses/agpl.html>",
     "This is free software: you are free to change and redistribute it.",
     "There is NO WARRANTY, to the extent permitted by law.");
@@ -294,11 +294,10 @@ main (int    argc,
   char * ver = zrythm_get_version (0);
   fprintf (
     stdout,
-    _("Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n\n"
+    _("Zrythm-%s Copyright (C) 2018-2020 Alexandros Theodotou\n\n"
     "Zrythm comes with ABSOLUTELY NO WARRANTY!\n\n"
     "This is free software, and you are welcome to redistribute it\n"
-    "under certain conditions. Look at the file `COPYING' within this\n"
-    "distribution for details.\n\n"
+    "under certain conditions. See the file `COPYING' for details.\n\n"
     "Write comments and bugs to %s\n"
     "Support this project at https://liberapay.com/Zrythm\n\n"),
     ver, ISSUE_TRACKER_URL);

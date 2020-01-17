@@ -211,7 +211,7 @@ close_lib (
   void * handle)
 {
 #ifdef _WIN32
-  FreeLibrary ((HMODULE) handle);
+  if (FreeLibrary ((HMODULE) handle) == 0)
 #else
   if (dlclose (handle) != 0)
 #endif
@@ -249,9 +249,20 @@ load_lib (
   if (!handle)
     {
 #ifdef _WIN32
+      DWORD error_id =
+        GetLastError ();
+      LPSTR buf = NULL;
+      FormatMessageA (
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+          FORMAT_MESSAGE_FROM_SYSTEM |
+          FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL, error_id,
+        MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPSTR) &buf, 0, NULL);
       g_warning (
-        "Failed to load VST plugin from %s",
-        path);
+        "Failed to load VST plugin from %s: %s",
+        path, buf);
+      LocalFree (buf);
 #else
       g_warning (
         "Failed to load VST plugin from %s: %s",
@@ -294,8 +305,9 @@ load_lib (
 
   if (test)
     {
-      char cmd[900];
-      sprintf (cmd, "zrythm_vst_check %s", path);
+      char cmd[3000];
+      sprintf (cmd, "zrythm_vst_check \"%s\"", path);
+      g_message ("running cmd: %s", cmd);
       if (system (cmd) != 0)
         {
           g_warning (
