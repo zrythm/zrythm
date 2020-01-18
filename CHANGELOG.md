@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.383] - 2020-01-18
+- Add SDL2 audio backend
+- Add experimental Windows VST support
+- Close VSTs properly before freeing the library
+- Fix non-instrument VST plugins being shown as instruments
+- Fix cached VSTs getting ignored
+- Fix Windows MME MIDI timings
+- Fix unavailable backends shown as available
+- Fix buffer overflow when more than 16 hardware audio ports exist
+- Fix metronome playback being triggered at negative offsets causing crashes
+
 ## [0.7.367] - 2020-01-13
 - Update Zrythm logo
 - Wrap backtrace on crash inside scrolled window
