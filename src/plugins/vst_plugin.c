@@ -55,6 +55,7 @@
 #endif
 #include "project.h"
 #include "utils/io.h"
+#include "utils/math.h"
 #include "utils/windows_errors.h"
 
 #ifdef HAVE_X11
@@ -118,7 +119,7 @@ host_can_do (
   if (!strcmp (feature, "sendVstMidiEventFlagIsRealtime"))
     return 1;
   if (!strcmp (feature, "sendVstTimeInfo"))
-    return -1;
+    return 1;
   if (!strcmp (feature, "receiveVstEvents"))
     return -1;
   if (!strcmp (feature, "receiveVstMidiEvent"))
@@ -128,7 +129,7 @@ host_can_do (
   if (!strcmp (feature, "reportConnectionChanges"))
     return -1;
   if (!strcmp (feature, "acceptIOChanges"))
-    return 1;
+    return -1;
   if (!strcmp (feature, "sizeWindow"))
     return 1;
   if (!strcmp (feature, "offline"))
@@ -165,6 +166,13 @@ host_callback (
     "host callback called with opcode %d",
     opcode);
 
+  VstPlugin * self = NULL;
+  if (effect)
+    {
+      self = (VstPlugin *) effect->user;
+      g_return_val_if_fail (self, -1);
+    }
+
   switch (opcode)
     {
     case audioMasterVersion:
@@ -179,6 +187,8 @@ host_callback (
       return 900;
     case audioMasterCurrentId:
       return effect->uniqueID;
+    case audioMasterGetTime:
+      return (intptr_t) &self->time_info;
     case audioMasterIdle:
       g_message ("idle");
       /*effect->dispatcher (*/
@@ -188,8 +198,6 @@ host_callback (
       return host_can_do ((const char *) ptr);
     case audioMasterAutomate:
       {
-        VstPlugin * self =
-          (VstPlugin *) effect->user;
         Port * port =
           vst_plugin_get_port_from_param_id (
             self, index);
@@ -502,6 +510,61 @@ vst_plugin_process (
 {
   AEffect * effect = self->aeffect;
 
+  /* If transport state is not as expected, then
+   * something has changed */
+  const int xport_changed =
+    self->rolling !=
+      (TRANSPORT_IS_ROLLING) ||
+    self->gframes !=
+      g_start_frames ||
+    !math_floats_equal (
+      self->bpm,
+      TRANSPORT->bpm, 0.001f);
+
+  /* Update transport state to expected values for
+   * next cycle */
+  if (TRANSPORT_IS_ROLLING)
+    {
+      self->gframes =
+        transport_frames_add_frames (
+          TRANSPORT, self->gframes,
+          nframes);
+      self->rolling = 1;
+    }
+  else
+    {
+      self->rolling = 0;
+    }
+  self->bpm = TRANSPORT->bpm;
+
+  /* prepare time info */
+  VstTimeInfo * time_info = &self->time_info;
+  time_info->flags = 0;
+  time_info->samplePos = (double) g_start_frames;
+  time_info->sampleRate =
+    (double) AUDIO_ENGINE->sample_rate;
+  time_info->tempo = (double) TRANSPORT->bpm;
+  time_info->ppqPos =
+    time_info->samplePos /
+    (time_info->sampleRate * 60.0 /
+       time_info->tempo);
+  time_info->barStartPos =
+    (double) TRANSPORT->beats_per_bar *
+    (double) (PLAYHEAD->bars - 1);
+  time_info->timeSigNumerator =
+    (int32_t) TRANSPORT->beats_per_bar;
+  time_info->timeSigDenominator =
+    (int32_t) TRANSPORT->beat_unit;
+  time_info->flags |= kVstPpqPosValid;
+  time_info->flags |= kVstTempoValid;
+  time_info->flags |= kVstBarsValid;
+  time_info->flags |= kVstTimeSigValid;
+  if (xport_changed)
+    time_info->flags |= kVstTransportChanged;
+  if (TRANSPORT_IS_ROLLING)
+    time_info->flags |= kVstTransportPlaying;
+
+  /* prepare audio bufs */
   float * inputs[effect->numInputs];
   float * outputs[effect->numOutputs];
   for (int i = 0; i < effect->numInputs; i++)

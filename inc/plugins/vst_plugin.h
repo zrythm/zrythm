@@ -176,6 +176,19 @@ typedef struct VstPlugin
 
   VstMidiEvent       fMidiEvents[kPluginMaxMidiEvents*2];
 
+  /** This should be updated during processing and
+   * sent to the plugin during sendVstTimeInfo. */
+  VstTimeInfo        time_info;
+
+  /** Last known global frames */
+  long               gframes;
+
+  /** Last known rolling status. */
+  int                rolling;
+
+  /** Last known BPM. */
+  bpm_t              bpm;
+
   /**
    * Window (if applicable) (GtkWindow).
    *
