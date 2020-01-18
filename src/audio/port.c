@@ -1417,6 +1417,20 @@ port_forward_control_change_event (
       lv2_ui_send_control_val_event_from_plugin_to_ui (
         lv2_plugin, lv2_port);
     }
+  else if (
+    self->identifier.owner_type ==
+      PORT_OWNER_TYPE_PLUGIN &&
+    self->plugin &&
+    self->plugin->descr->protocol == PROT_VST)
+    {
+      g_return_if_fail (
+        self->plugin->vst &&
+        self->plugin->vst->aeffect);
+      AEffect * effect =
+        self->plugin->vst->aeffect;
+      effect->setParameter (
+        effect, self->vst_param_id, self->control);
+    }
   else if (self->identifier.owner_type ==
              PORT_OWNER_TYPE_FADER &&
            self->identifier.flags &
@@ -1589,10 +1603,21 @@ port_get_minf (
       switch (port->identifier.owner_type)
         {
         case PORT_OWNER_TYPE_PLUGIN:
-          g_return_val_if_fail (
-            port->lv2_port &&
-            port->lv2_port->lv2_control, 0.f);
-          return port->lv2_port->lv2_control->minf;
+          g_return_val_if_fail (port->plugin, 0.f);
+          switch (port->plugin->descr->protocol)
+            {
+            case PROT_LV2:
+              g_return_val_if_fail (
+                port->lv2_port &&
+                port->lv2_port->lv2_control, 0.f);
+              return
+                port->lv2_port->lv2_control->minf;
+            case PROT_VST:
+              return 0.f;
+              break;
+            default:
+              g_return_val_if_reached (0.f);
+            }
         case PORT_OWNER_TYPE_FADER:
           if (port->identifier.flags &
                 PORT_FLAG_AMPLITUDE)
@@ -1634,10 +1659,21 @@ port_get_maxf (
       switch (port->identifier.owner_type)
         {
         case PORT_OWNER_TYPE_PLUGIN:
-          g_return_val_if_fail (
-            port->lv2_port &&
-            port->lv2_port->lv2_control, 0.f);
-          return port->lv2_port->lv2_control->maxf;
+          g_return_val_if_fail (port->plugin, 1.f);
+          switch (port->plugin->descr->protocol)
+            {
+            case PROT_LV2:
+              g_return_val_if_fail (
+                port->lv2_port &&
+                port->lv2_port->lv2_control, 1.f);
+              return
+                port->lv2_port->lv2_control->maxf;
+            case PROT_VST:
+              return 1.f;
+              break;
+            default:
+              g_return_val_if_reached (1.f);
+            }
         case PORT_OWNER_TYPE_FADER:
           if (port->identifier.flags &
                 PORT_FLAG_AMPLITUDE)
@@ -1678,10 +1714,21 @@ port_get_zerof (
       switch (port->identifier.owner_type)
         {
         case PORT_OWNER_TYPE_PLUGIN:
-          g_return_val_if_fail (
-            port->lv2_port &&
-            port->lv2_port->lv2_control, 0.f);
-          return port->lv2_port->lv2_control->minf;
+          g_return_val_if_fail (port->plugin, 0.f);
+          switch (port->plugin->descr->protocol)
+            {
+            case PROT_LV2:
+              g_return_val_if_fail (
+                port->lv2_port &&
+                port->lv2_port->lv2_control, 0.f);
+              return
+                port->lv2_port->lv2_control->minf;
+            case PROT_VST:
+              return 0.f;
+              break;
+            default:
+              g_return_val_if_reached (0.f);
+            }
         case PORT_OWNER_TYPE_FADER:
           if (port->identifier.flags &
                 PORT_FLAG_AMPLITUDE)
