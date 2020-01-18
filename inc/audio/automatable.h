@@ -84,7 +84,7 @@ typedef struct Automatable
    * FIXME use a getter, having this everywhere is
    * confusing.
    */
-  Lv2Control *     control;
+  //Lv2Control *     control;
 
   /** Associated track. */
   Track *          track;
@@ -171,6 +171,10 @@ Automatable *
 automatable_find (
   Automatable * clone);
 
+Lv2Control *
+automatable_get_lv2_control (
+  Automatable * self);
+
 Automatable *
 automatable_create_fader (Channel * channel);
 
@@ -191,6 +195,14 @@ Automatable *
 automatable_create_lv2_control (
   Plugin *       plugin,
   Lv2Control * control);
+
+/**
+ * Creates an automatable for an VST control.
+ */
+Automatable *
+automatable_create_vst_control (
+  Plugin * plugin,
+  Port *   port);
 
 Automatable *
 automatable_create_plugin_enabled (Plugin * plugin);

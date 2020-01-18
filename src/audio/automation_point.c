@@ -252,6 +252,7 @@ automation_point_set_fvalue (
   float             real_val)
 {
   Automatable * a = self->region->at->automatable;
+  g_message ("setting to %f", (double) real_val);
   float normalized_val =
     automatable_real_val_to_normalized (
       a, real_val);

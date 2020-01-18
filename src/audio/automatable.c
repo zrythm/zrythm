@@ -48,7 +48,8 @@ get_minf (Automatable * a)
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      return lilv_node_as_float (a->control->min);
+      g_return_val_if_fail (a->port, 0.f);
+      return port_get_minf (a->port);
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
@@ -66,7 +67,8 @@ get_maxf (Automatable * a)
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      return lilv_node_as_float (a->control->max);
+      g_return_val_if_fail (a->port, 1.f);
+      return port_get_maxf (a->port);
       break;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
       return 2.f;
@@ -79,8 +81,9 @@ get_maxf (Automatable * a)
   return -1;
 }
 
-static Lv2Control *
-get_lv2_control (Automatable * self)
+Lv2Control *
+automatable_get_lv2_control (
+  Automatable * self)
 {
   g_return_val_if_fail (self->port, NULL);
   g_return_val_if_fail (self->port->lv2_port, NULL);
@@ -107,7 +110,10 @@ automatable_init_loaded (Automatable * self)
       {
         self->port =
           port_find_from_identifier (self->port_id);
-        self->control = get_lv2_control (self);
+        self->plugin =
+          self->track->channel->plugins[
+            self->slot];
+        self->port->plugin = self->plugin;
       }
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
@@ -202,7 +208,7 @@ automatable_create_lv2_control (
 {
   Automatable * a = _create_blank ();
 
-  a->control = control;
+  /*a->control = control;*/
   Lv2Port * port =
     &control->plugin->ports[control->index];
   a->port = port->port;
@@ -216,6 +222,33 @@ automatable_create_lv2_control (
   a->slot = plugin->slot;
   a->label =
     g_strdup (lv2_control_get_label (control));
+  a->minf = get_minf (a);
+  a->maxf = get_maxf (a);
+  a->sizef = a->maxf - a->minf;
+
+  return a;
+}
+
+/**
+ * Creates an automatable for an VST control.
+ */
+Automatable *
+automatable_create_vst_control (
+  Plugin * plugin,
+  Port *   port)
+{
+  Automatable * a = _create_blank ();
+
+  a->port = port;
+  a->port_id = calloc (1, sizeof (PortIdentifier));
+  port_identifier_copy (
+    &a->port->identifier, a->port_id);
+
+  /*a->index = control->index;*/
+  a->type = AUTOMATABLE_TYPE_PLUGIN_CONTROL;
+  a->track = plugin->track;
+  a->slot = plugin->slot;
+  a->label = g_strdup (port->identifier.label);
   a->minf = get_minf (a);
   a->maxf = get_maxf (a);
   a->sizef = a->maxf - a->minf;
@@ -265,12 +298,18 @@ automatable_is_bool (Automatable * a)
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      if (a->control->value_type ==
-          a->control->plugin->forge.Bool)
-        {
-          return 1;
-        }
-      return 0;
+      {
+        Lv2Control * control =
+          automatable_get_lv2_control (a);
+        g_return_val_if_fail (control, 0);
+        if (control->value_type ==
+              control->plugin->forge.Bool)
+          {
+            return 1;
+          }
+        return 0;
+      }
+      break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:
       return 1;
@@ -311,12 +350,17 @@ automatable_is_float (Automatable * a)
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      if (a->control->value_type ==
-          a->control->plugin->forge.Float)
-        {
-          return 1;
-        }
-      return 0;
+      {
+        Lv2Control * control =
+          automatable_get_lv2_control (a);
+        g_return_val_if_fail (control, 0);
+        if (control->value_type ==
+              control->plugin->forge.Float)
+          {
+            return 1;
+          }
+        return 0;
+      }
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:
@@ -341,22 +385,25 @@ float
 automatable_get_val (Automatable * a)
 {
   g_return_val_if_fail (a, 0.f);
-  Plugin * plugin;
   Channel * ch;
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
       g_return_val_if_fail (
         a->port && a->port->plugin, 0.f);
-      plugin = a->port->plugin;
-      if (plugin->descr->protocol == PROT_LV2)
-        {
-          Lv2Control * control = a->control;
-          Lv2Port* port = &control->plugin->ports[control->index];
-          g_return_val_if_fail (port->port, 0.f);
-          return port->port->control;
-        }
-      break;
+      /*plugin = a->port->plugin;*/
+      return a->port->control;
+      /*if (plugin->descr->protocol == PROT_LV2)*/
+        /*{*/
+          /*Lv2Control * control =*/
+            /*automatable_get_lv2_control (a);*/
+          /*g_return_val_if_fail (control, 0.f);*/
+          /*Lv2Port* port =*/
+            /*&control->plugin->ports[*/
+              /*control->index];*/
+          /*g_return_val_if_fail (port->port, 0.f);*/
+          /*return port->port->control;*/
+        /*}*/
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
       g_return_val_if_fail (a->plugin, 0.f);
       return (float) a->plugin->enabled;
@@ -387,27 +434,40 @@ automatable_normalized_val_to_real (
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
       plugin = a->port->plugin;
-      if (plugin->descr->protocol == PROT_LV2)
+      switch (plugin->descr->protocol)
         {
-          Lv2Control * ctrl = a->control;
-          float real_val;
-          if (ctrl->is_logarithmic)
-            {
-              /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-              real_val =
-                a->minf *
-                  powf (a->maxf / a->minf, val);
-            }
-          else if (ctrl->is_toggle)
-            {
-              real_val = val >= 0.5f ? 1.f : 0.f;
-            }
-          else
-            {
-              real_val =
-                a->minf + val * (a->maxf - a->minf);
-            }
-          return real_val;
+        case PROT_LV2:
+          {
+            Lv2Control * ctrl =
+              automatable_get_lv2_control (a);
+            g_return_val_if_fail (ctrl, 0.f);
+            float real_val;
+            if (ctrl->is_logarithmic)
+              {
+                /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
+                real_val =
+                  a->minf *
+                    powf (a->maxf / a->minf, val);
+              }
+            else if (ctrl->is_toggle)
+              {
+                real_val = val >= 0.5f ? 1.f : 0.f;
+              }
+            else
+              {
+                real_val =
+                  a->minf + val * (a->maxf - a->minf);
+              }
+            return real_val;
+          }
+          break;
+        case PROT_VST:
+          /* no change for now */
+          return val;
+          break;
+        default:
+          g_warn_if_reached ();
+          break;
         }
       g_warn_if_reached ();
       break;
@@ -438,31 +498,45 @@ automatable_real_val_to_normalized (
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      g_return_val_if_fail (
+        a->port && a->port->plugin, 0.f);
       plugin = a->port->plugin;
-      if (plugin->descr->protocol == PROT_LV2)
+      switch (plugin->descr->protocol)
         {
-          Lv2Control * ctrl = a->control;
-          float normalized_val;
-          if (ctrl->is_logarithmic)
-            {
-              /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-              normalized_val =
-                logf (real_val / a->minf) /
-                (a->maxf / a->minf);
-            }
-          else if (ctrl->is_toggle)
-            {
-              normalized_val = real_val;
-            }
-          else
-            {
-              normalized_val =
-                (a->sizef -
-                  (a->maxf - real_val)) / a->sizef;
-            }
-          return normalized_val;
+        case PROT_LV2:
+          {
+            Lv2Control * ctrl =
+              automatable_get_lv2_control (a);
+            g_return_val_if_fail (ctrl, 0.f);
+            float normalized_val;
+            if (ctrl->is_logarithmic)
+              {
+                /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
+                normalized_val =
+                  logf (real_val / a->minf) /
+                  (a->maxf / a->minf);
+              }
+            else if (ctrl->is_toggle)
+              {
+                normalized_val = real_val;
+              }
+            else
+              {
+                normalized_val =
+                  (a->sizef -
+                    (a->maxf - real_val)) / a->sizef;
+              }
+            return normalized_val;
+          }
+          break;
+        case PROT_VST:
+          /* vst is already normalized */
+          return real_val;
+          break;
+        default:
+          g_return_val_if_reached (0.f);
         }
-      g_warn_if_reached ();
+      g_return_val_if_reached (0.f);
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
       return real_val;
@@ -502,40 +576,60 @@ automatable_set_val_from_normalized (
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
+      g_return_if_fail (
+        a->port && a->port->plugin);
       plugin = a->port->plugin;
-      if (plugin->descr->protocol == PROT_LV2)
+      switch (plugin->descr->protocol)
         {
-          Lv2Control * ctrl = a->control;
-          float real_val;
-          if (ctrl->is_logarithmic)
-            {
-              /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-              real_val =
-                a->minf *
-                  powf (a->maxf / a->minf, val);
-            }
-          else if (ctrl->is_toggle)
-            {
-              real_val = val >= 0.5f ? 1.f : 0.f;
-            }
-          else
-            {
-              real_val =
-                a->minf + val * (a->maxf - a->minf);
-            }
+        case PROT_LV2:
+          {
+            Lv2Control * ctrl =
+              automatable_get_lv2_control (a);
+            g_return_if_fail (ctrl);
+            float real_val;
+            if (ctrl->is_logarithmic)
+              {
+                /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
+                real_val =
+                  a->minf *
+                    powf (a->maxf / a->minf, val);
+              }
+            else if (ctrl->is_toggle)
+              {
+                real_val = val >= 0.5f ? 1.f : 0.f;
+              }
+            else
+              {
+                real_val =
+                  a->minf + val * (a->maxf - a->minf);
+              }
 
-          if (!math_floats_equal (
-                port_get_control_value (
-                  a->port, 0), real_val, 0.001f))
-            EVENTS_PUSH (
-              ET_AUTOMATION_VALUE_CHANGED, a);
+            if (!math_floats_equal (
+                  port_get_control_value (
+                    a->port, 0), real_val, 0.001f))
+              EVENTS_PUSH (
+                ET_AUTOMATION_VALUE_CHANGED, a);
 
-          port_set_control_value (
-            a->port, real_val, 0, 1);
-          ctrl->plugin->
-            ports[ctrl->index].automating =
-              automating;
-          a->port->base_value = real_val;
+            port_set_control_value (
+              a->port, real_val, 0, 1);
+            ctrl->plugin->
+              ports[ctrl->index].automating =
+                automating;
+            a->port->base_value = real_val;
+          }
+          break;
+        case PROT_VST:
+          {
+            /* no change for now */
+            float real_val = val;
+            a->port->base_value = real_val;
+            port_set_control_value (
+              a->port, real_val, 0, 1);
+          }
+          break;
+        default:
+          g_warn_if_reached ();
+          break;
         }
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:

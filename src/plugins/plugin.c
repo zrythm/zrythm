@@ -469,24 +469,52 @@ plugin_generate_automation_tracks (
     plugin, at);
 
   /* add plugin control automatables */
-  if (plugin->descr->protocol == PROT_LV2)
+  switch (plugin->descr->protocol)
     {
-      Lv2Plugin * lv2_plugin = (Lv2Plugin *) plugin->lv2;
-      for (int j = 0; j < lv2_plugin->controls.n_controls; j++)
-        {
-          Lv2Control * control =
-            lv2_plugin->controls.controls[j];
-          a =
-            automatable_create_lv2_control (
-              plugin, control);
-          at = automation_track_new (a);
-          plugin_add_automation_track (
-            plugin, at);
-        }
-    }
-  else
-    {
-      g_warning ("Plugin protocol not supported yet (gen automatables)");
+    case PROT_LV2:
+      {
+        Lv2Plugin * lv2_plugin = plugin->lv2;
+        for (int j = 0;
+             j < lv2_plugin->controls.n_controls;
+             j++)
+          {
+            Lv2Control * control =
+              lv2_plugin->controls.controls[j];
+            a =
+              automatable_create_lv2_control (
+                plugin, control);
+            at = automation_track_new (a);
+            plugin_add_automation_track (
+              plugin, at);
+          }
+      }
+      break;
+    case PROT_VST:
+      {
+        VstPlugin * vst = plugin->vst;
+        g_return_if_fail (vst && vst->aeffect);
+        for (int i = 0;
+             i < plugin->num_in_ports; i++)
+          {
+            Port * port = plugin->in_ports[i];
+            if (port->identifier.type !=
+                  TYPE_CONTROL)
+              continue;
+
+            a =
+              automatable_create_vst_control (
+                plugin, port);
+            at = automation_track_new (a);
+            plugin_add_automation_track (
+              plugin, at);
+          }
+      }
+      break;
+    default:
+      g_warning (
+        "%s: Plugin protocol not supported yet",
+        __func__);
+      break;
     }
 }
 
