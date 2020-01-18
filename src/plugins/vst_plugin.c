@@ -356,6 +356,38 @@ load_lib (
   return handle;
 }
 
+/**
+ * Copies the parameter values.
+ */
+void
+vst_plugin_copy_params (
+  VstPlugin * dest,
+  VstPlugin * src)
+{
+  g_return_if_fail (dest && src && dest->aeffect);
+  AEffect * effect = dest->aeffect;
+
+  for (int i = 0; i < effect->numParams; i++)
+    {
+      for (int j = 0;
+           j < dest->plugin->num_in_ports; j++)
+        {
+          Port * port = dest->plugin->in_ports[j];
+          Port * src_port =
+            src->plugin->in_ports[j];
+          if (port->identifier.type ==
+                TYPE_CONTROL &&
+              port->vst_param_id == i)
+            {
+              port->control = src_port->control;
+              effect->getParameter (effect, i);
+              effect->setParameter (
+                effect, i, port->control);
+            }
+        }
+    }
+}
+
 void
 vst_plugin_init_loaded (
   VstPlugin * self)

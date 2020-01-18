@@ -148,6 +148,7 @@ Port *
 port_find_from_identifier (
   PortIdentifier * id)
 {
+  g_return_val_if_fail (id, NULL);
   Track * tr;
   Channel * ch;
   Plugin * pl;

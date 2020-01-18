@@ -294,6 +294,14 @@ vst_plugin_new_from_descriptor (
   Plugin *                 plugin,
   const PluginDescriptor * descr);
 
+/**
+ * Copies the parameter values.
+ */
+void
+vst_plugin_copy_params (
+  VstPlugin * dest,
+  VstPlugin * src);
+
 int
 vst_plugin_instantiate (
   VstPlugin * self,

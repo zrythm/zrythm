@@ -61,6 +61,8 @@ static void
 get_automation_tracks (
   Plugin * self)
 {
+  g_return_if_fail (self->track);
+
   AutomationTracklist * atl =
     track_get_automation_tracklist (self->track);
   AutomationTrack * at;
@@ -304,10 +306,13 @@ plugin_update_latency (
  * Adds a port of the given type to the Plugin.
  */
 #define ADD_PORT(type) \
-  if (pl->num_##type##_ports == \
+  while (pl->num_##type##_ports >= \
         (int) pl->type##_ports_size) \
     { \
-      pl->type##_ports_size *= 2; \
+      if (pl->type##_ports_size == 0) \
+        pl->type##_ports_size = 1; \
+      else \
+        pl->type##_ports_size *= 2; \
       pl->type##_ports = \
         realloc ( \
           pl->type##_ports, \
@@ -706,6 +711,7 @@ plugin_clone (
        * I think you can use   lilv_state_restore (lilv_state_new_from_instance (..), ...)
        * and skip  lilv_state_new_from_file() ; lilv_state_save ()
        * lilv_state_new_from_instance() handles files and externals, too */
+
       /* save state to file */
       char * tmp =
         g_strdup_printf (
@@ -746,6 +752,21 @@ plugin_clone (
 
       /* delete the state file */
       io_remove (pl->lv2->state_file);
+    }
+  else if (pl->descr->protocol == PROT_VST)
+    {
+      /* create a new plugin with same descriptor */
+      clone = plugin_new_from_descr (pl->descr);
+      g_return_val_if_fail (
+        clone && clone->vst, NULL);
+
+      /* instantiate */
+      int ret = plugin_instantiate (clone);
+      g_return_val_if_fail (!ret, NULL);
+
+      /* copy the parameter values from the
+       * original plugin */
+      vst_plugin_copy_params (clone->vst, pl->vst);
     }
   g_return_val_if_fail (
     pl->num_in_ports || pl->num_out_ports, NULL);
@@ -1304,3 +1325,6 @@ plugin_free (Plugin *plugin)
 
   free (plugin);
 }
+
+SERIALIZE_SRC (Plugin, plugin);
+DESERIALIZE_SRC (Plugin, plugin);

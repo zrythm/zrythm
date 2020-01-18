@@ -103,7 +103,6 @@ automatable_get_lv2_control (
 void
 automatable_init_loaded (Automatable * self)
 {
-
   switch (self->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:

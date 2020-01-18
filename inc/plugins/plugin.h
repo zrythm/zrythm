@@ -435,4 +435,7 @@ plugin_free (Plugin *plugin);
  * @}
  */
 
+SERIALIZE_INC (Plugin, plugin);
+DESERIALIZE_INC (Plugin, plugin);
+
 #endif
