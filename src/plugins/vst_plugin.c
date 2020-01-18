@@ -162,10 +162,6 @@ host_callback (
   void *    ptr,
   float     opt)
 {
-  g_message (
-    "host callback called with opcode %d",
-    opcode);
-
   VstPlugin * self = NULL;
   if (effect)
     {
@@ -190,9 +186,30 @@ host_callback (
     case audioMasterGetTime:
       return (intptr_t) &self->time_info;
     case audioMasterIdle:
-      g_message ("idle");
-      /*effect->dispatcher (*/
-        /*effect, effEditIdle, 0, 0, 0, 0);*/
+      g_message (
+        "calling VST plugin idle (requested)");
+      effect->dispatcher (
+        effect, effEditIdle, 0, 0, 0, 0);
+      break;
+    case audioMasterBeginEdit:
+      {
+        Port * port =
+          vst_plugin_get_port_from_param_id (
+            self, index);
+        g_message (
+          "grabbing %s",
+          port->identifier.label);
+      }
+      break;
+    case audioMasterEndEdit:
+      {
+        Port * port =
+          vst_plugin_get_port_from_param_id (
+            self, index);
+        g_message (
+          "ungrabbing %s",
+          port->identifier.label);
+      }
       break;
     case audioMasterCanDo:
       return host_can_do ((const char *) ptr);
