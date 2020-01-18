@@ -6,6 +6,7 @@
     <property name="can_focus">False</property>
     <property name="default_width">280</property>
     <property name="type_hint">dialog</property>
+    <property name="icon_name">zrythm</property>
     <child>
       <placeholder/>
     </child>

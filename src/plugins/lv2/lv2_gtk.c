@@ -1673,6 +1673,8 @@ lv2_gtk_open_ui (
     G_CALLBACK (on_window_destroy), plugin);
 
   set_window_title(plugin);
+  gtk_window_set_icon_name (
+    GTK_WINDOW (window), "zrythm");
 
   GtkWidget* vbox = new_box(false, 0);
   gtk_window_set_role (

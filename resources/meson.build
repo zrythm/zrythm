@@ -34,7 +34,7 @@ zrythm_resources = gnome.compile_resources (
 
 # install app icon
 install_data (
-  join_paths ('icons', 'zrythm', 'z_frame_8.svg'),
+  join_paths ('icons', 'zrythm', 'zrythm.svg'),
   install_dir:
     join_paths (
       datadir, 'icons', 'hicolor', 'scalable',

@@ -717,6 +717,9 @@ zrythm_app_startup (
   g_object_unref (css_provider);
   g_message ("set default css provider");
 
+  /* set default window icon */
+  gtk_window_set_default_icon_name ("zrythm");
+
   /* show splash screen */
   splash =
     splash_window_widget_new (ZRYTHM_APP (app));

@@ -34,6 +34,7 @@
     <property name="default_height">300</property>
     <property name="decorated">False</property>
     <property name="deletable">False</property>
+    <property name="icon_name">zrythm</property>
     <child>
       <placeholder/>
     </child>

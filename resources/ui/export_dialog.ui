@@ -28,6 +28,7 @@
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
     <property name="urgency_hint">True</property>
+    <property name="icon_name">zrythm</property>
     <child>
       <placeholder/>
     </child>

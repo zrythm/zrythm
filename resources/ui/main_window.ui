@@ -27,6 +27,7 @@
     <property name="can_focus">True</property>
     <property name="window_position">center</property>
     <property name="gravity">center</property>
+    <property name="icon_name">zrythm</property>
     <signal name="destroy" handler="on_main_window_destroy" swapped="no"/>
     <signal name="window-state-event" handler="on_state_changed" swapped="no"/>
     <child>
