@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 08:08+0000\n"
-"PO-Revision-Date: 2019-09-09 17:25+0000\n"
+"PO-Revision-Date: 2020-01-20 08:22+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
-"/manualgetting-started/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.11-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../getting-started/additional-resources.rst:6
@@ -45,33 +46,29 @@ msgid ""
 "<https://redmine.zrythm.org/projects/zrythm/issues>`_. You can use this "
 "to report bugs or give feedback."
 msgstr ""
+"課題トラッカーは我らの`Redmine インスタンス <https://redmine.zrythm.org/projects/zrythm/"
+"issues>`_にあります。これを使用して、バグを報告したり、フィードバックを書いたりできます。"
 
 #: ../../getting-started/additional-resources.rst:20
 msgid "Source Code"
 msgstr "ソースコード"
 
 #: ../../getting-started/additional-resources.rst:21
-#, fuzzy
 msgid ""
 "Zrythm's source code can be found on our `CGit instance "
 "<https://git.zrythm.org/cgit/zrythm/>`_."
 msgstr ""
-"Zrythmのソースコードは私たちの `CGitインスタンス "
-"<https://git.zrythm.org/cgit/zrythm/>`_、または`GNU Savannahのミラーリポジトリ "
-"<http://git.savannah.nongnu.org/cgit/zrythm.git> `_にあります。"
+"Zrythmのソースコードは我らの `CGitインスタンス <https://git.zrythm.org/cgit/zrythm/>`_にあります。"
 
 #: ../../getting-started/additional-resources.rst:25
 msgid "Older Versions"
 msgstr "旧バージョン"
 
 #: ../../getting-started/additional-resources.rst:26
-#, fuzzy
 msgid ""
 "Older releases of Zrythm can be found on the `Releases page "
 "<https://www.zrythm.org/releases>`_"
-msgstr ""
-"Zrythmの旧リリースは、`Savannah downloads "
-"<https://download.savannah.nongnu.org/releases/zrythm/>`_に提供されています"
+msgstr "Zrythmの旧リリースは、`リリースページ <https://www.zrythm.org/releases>`_にあります"
 
 #: ../../getting-started/getting-plugins.rst:6
 msgid "Getting Plugins"
@@ -847,4 +844,3 @@ msgstr ""
 
 #~ msgid "Fedora 31 - x86_64"
 #~ msgstr ""
-
