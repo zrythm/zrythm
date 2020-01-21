@@ -166,6 +166,37 @@ plugin_manager_init (PluginManager * self)
   self->lv2_nodes.lilv_world = world;
 
   /* load all installed plugins on system */
+#ifdef _WIN32
+  LilvNode * lv2_path =
+    lilv_new_string (
+      world,
+      /* lilv has its dirsep set to \\\\ and
+       * its pathsep to ; */
+      "%APPDATA%\\\\LV2;"
+      "%COMMONPROGRAMFILES%\\\\LV2");
+  g_return_if_fail (lv2_path);
+  lilv_world_set_option (
+    world, LILV_OPTION_LV2_PATH, lv2_path);
+#else
+  LilvNode * lv2_path = NULL;
+  char * env_lv2_path = getenv ("LV2_PATH");
+  if (env_lv2_path)
+    {
+      lv2_path =
+        lilv_new_string (world, env_lv2_path);
+    }
+  else
+    {
+      lv2_path =
+        lilv_new_string (
+          world,
+          "~/.lv2:/usr/local/" LIBDIR_NAME
+          "/lv2:/usr/" LIBDIR_NAME "/lv2");
+    }
+  g_return_if_fail (lv2_path);
+  lilv_world_set_option (
+    world, LILV_OPTION_LV2_PATH, lv2_path);
+#endif
   lilv_world_load_all (world);
 
   /*load bundled plugins */
@@ -222,30 +253,18 @@ plugin_manager_init (PluginManager * self)
   nodes->key = lilv_new_uri (world, val);
 
   /* in alphabetical order */
+  ADD_LV2_NODE (atom_AtomPort, LV2_ATOM__AtomPort);
   ADD_LV2_NODE (
-    atom_AtomPort,
-    LV2_ATOM__AtomPort);
+    atom_bufferType, LV2_ATOM__bufferType);
+  ADD_LV2_NODE (atom_Chunk, LV2_ATOM__Chunk);
   ADD_LV2_NODE (
-    atom_bufferType,
-    LV2_ATOM__bufferType);
+    atom_eventTransfer, LV2_ATOM__eventTransfer);
+  ADD_LV2_NODE (atom_Float, LV2_ATOM__Float);
+  ADD_LV2_NODE (atom_Path, LV2_ATOM__Path);
   ADD_LV2_NODE (
-    atom_Chunk,
-    LV2_ATOM__Chunk);
+    atom_Sequence, LV2_ATOM__Sequence);
   ADD_LV2_NODE (
-    atom_eventTransfer,
-    LV2_ATOM__eventTransfer);
-  ADD_LV2_NODE (
-    atom_Float,
-    LV2_ATOM__Float);
-  ADD_LV2_NODE (
-    atom_Path,
-    LV2_ATOM__Path);
-  ADD_LV2_NODE (
-    atom_Sequence,
-    LV2_ATOM__Sequence);
-  ADD_LV2_NODE (
-    atom_supports,
-    LV2_ATOM__supports);
+    atom_supports, LV2_ATOM__supports);
   ADD_LV2_NODE (
     bufz_coarseBlockLength,
     "http://lv2plug.in/ns/ext/buf-size#coarseBlockLength");
@@ -259,71 +278,51 @@ plugin_manager_init (PluginManager * self)
     bufz_nominalBlockLength,
     "http://lv2plug.in/ns/ext/buf-size#nominalBlockLength");
   ADD_LV2_NODE (
-    core_AudioPort,
-    LV2_CORE__AudioPort);
+    core_AudioPort, LV2_CORE__AudioPort);
   ADD_LV2_NODE (
     core_connectionOptional,
     LV2_CORE__connectionOptional);
   ADD_LV2_NODE (
-    core_control,
-    LV2_CORE__control);
+    core_control, LV2_CORE__control);
   ADD_LV2_NODE (
-    core_ControlPort,
-    LV2_CORE__ControlPort);
+    core_ControlPort, LV2_CORE__ControlPort);
   ADD_LV2_NODE (
-    core_CVPort,
-    LV2_CORE__CVPort);
+    core_CVPort, LV2_CORE__CVPort);
   ADD_LV2_NODE (
-    core_default,
-    LV2_CORE__default);
+    core_default, LV2_CORE__default);
   ADD_LV2_NODE (
-    core_designation,
-    LV2_CORE__designation);
+    core_designation, LV2_CORE__designation);
   ADD_LV2_NODE (
-    core_enumeration,
-    LV2_CORE__enumeration);
+    core_enumeration, LV2_CORE__enumeration);
   ADD_LV2_NODE (
-    core_freeWheeling,
-    LV2_CORE__freeWheeling);
+    core_freeWheeling, LV2_CORE__freeWheeling);
   ADD_LV2_NODE (
-    core_index,
-    LV2_CORE__index);
+    core_index, LV2_CORE__index);
   ADD_LV2_NODE (
-    core_inPlaceBroken,
-    LV2_CORE__inPlaceBroken);
+    core_inPlaceBroken, LV2_CORE__inPlaceBroken);
   ADD_LV2_NODE (
-    core_InputPort,
-    LV2_CORE__InputPort);
+    core_InputPort, LV2_CORE__InputPort);
   ADD_LV2_NODE (
-    core_integer,
-    LV2_CORE__integer);
+    core_integer, LV2_CORE__integer);
   ADD_LV2_NODE (
     core_isSideChain,
     LV2_CORE_PREFIX "isSideChain");
   ADD_LV2_NODE (
-    core_maximum,
-    LV2_CORE__maximum);
+    core_maximum, LV2_CORE__maximum);
   ADD_LV2_NODE (
-    core_minimum,
-    LV2_CORE__minimum);
+    core_minimum, LV2_CORE__minimum);
   ADD_LV2_NODE (
-    core_name,
-    LV2_CORE__name);
+    core_name, LV2_CORE__name);
   ADD_LV2_NODE (
-    core_OutputPort,
-    LV2_CORE__OutputPort);
+    core_OutputPort, LV2_CORE__OutputPort);
   ADD_LV2_NODE (
-    core_reportsLatency,
-    LV2_CORE__reportsLatency);
+    core_reportsLatency, LV2_CORE__reportsLatency);
   ADD_LV2_NODE (
-    core_sampleRate,
-    LV2_CORE__sampleRate);
+    core_sampleRate, LV2_CORE__sampleRate);
   ADD_LV2_NODE (
-    core_symbol,
-    LV2_CORE__symbol);
+    core_symbol, LV2_CORE__symbol);
   ADD_LV2_NODE (
-    core_toggled,
-    LV2_CORE__toggled);
+    core_toggled, LV2_CORE__toggled);
   ADD_LV2_NODE (
     ev_EventPort,
     LV2_EVENT__EventPort);
@@ -364,20 +363,15 @@ plugin_manager_init (PluginManager * self)
     pprops_rangeSteps,
     LV2_PORT_PROPS__rangeSteps);
   ADD_LV2_NODE (
-    pset_bank,
-    LV2_PRESETS__bank);
+    pset_bank, LV2_PRESETS__bank);
   ADD_LV2_NODE (
-    pset_Preset,
-    LV2_PRESETS__Preset);
+    pset_Preset, LV2_PRESETS__Preset);
   ADD_LV2_NODE (
-    rdfs_comment,
-    LILV_NS_RDFS "comment");
+    rdfs_comment, LILV_NS_RDFS "comment");
   ADD_LV2_NODE (
-    rdfs_label,
-    LILV_NS_RDFS "label");
+    rdfs_label, LILV_NS_RDFS "label");
   ADD_LV2_NODE (
-    rdfs_range,
-    LILV_NS_RDFS "range");
+    rdfs_range, LILV_NS_RDFS "range");
   ADD_LV2_NODE (
     rsz_minimumSize,
     LV2_RESIZE_PORT__minimumSize);
@@ -385,41 +379,25 @@ plugin_manager_init (PluginManager * self)
     state_threadSafeRestore,
     LV2_STATE__threadSafeRestore);
   ADD_LV2_NODE (
-    time_position,
-    LV2_TIME__Position);
+    time_position, LV2_TIME__Position);
   ADD_LV2_NODE (
     ui_external,
     "http://lv2plug.in/ns/extensions/ui#external");
   ADD_LV2_NODE (
     ui_externalkx,
-    "http://kxstudio.sf.net/ns/lv2ext/external-ui#Widget");
+    "http://kxstudio.sf.net/ns/lv2ext/"
+    "external-ui#Widget");
+  ADD_LV2_NODE (ui_Gtk3UI, LV2_UI__Gtk3UI);
+  ADD_LV2_NODE (ui_GtkUI, LV2_UI__GtkUI);
+  ADD_LV2_NODE (units_db, LV2_UNITS__db);
+  ADD_LV2_NODE (units_hz, LV2_UNITS__hz);
+  ADD_LV2_NODE (units_midiNote, LV2_UNITS__midiNote);
+  ADD_LV2_NODE (units_render, LV2_UNITS__render);
+  ADD_LV2_NODE (units_unit, LV2_UNITS__unit);
   ADD_LV2_NODE (
-    ui_Gtk3UI,
-    LV2_UI__Gtk3UI);
+    work_interface, LV2_WORKER__interface);
   ADD_LV2_NODE (
-    ui_GtkUI,
-    LV2_UI__GtkUI);
-  ADD_LV2_NODE (
-    units_db,
-    LV2_UNITS__db);
-  ADD_LV2_NODE (
-    units_hz,
-    LV2_UNITS__hz);
-  ADD_LV2_NODE (
-    units_midiNote,
-    LV2_UNITS__midiNote);
-  ADD_LV2_NODE (
-    units_render,
-    LV2_UNITS__render);
-  ADD_LV2_NODE (
-    units_unit,
-    LV2_UNITS__unit);
-  ADD_LV2_NODE (
-    work_interface,
-    LV2_WORKER__interface);
-  ADD_LV2_NODE (
-    work_schedule,
-    LV2_WORKER__schedule);
+    work_schedule, LV2_WORKER__schedule);
 #ifdef LV2_EXTENDED
   /*nodes->auto_can_write_automation = lilv_new_uri(world,LV2_AUTOMATE_URI__can_write);*/
   /*nodes->auto_automation_control     = lilv_new_uri(world,LV2_AUTOMATE_URI__control);*/
@@ -435,62 +413,47 @@ plugin_manager_init (PluginManager * self)
   self->urids.target = \
     symap_map (self->symap, uri);
 
-  SYMAP_MAP (atom_Float,
-             LV2_ATOM__Float);
-  SYMAP_MAP (atom_Int,
-             LV2_ATOM__Int);
-  SYMAP_MAP (atom_Object,
-             LV2_ATOM__Object);
-  SYMAP_MAP (atom_Path,
-             LV2_ATOM__Path);
-  SYMAP_MAP (atom_String,
-             LV2_ATOM__String);
-  SYMAP_MAP (atom_eventTransfer,
-             LV2_ATOM__eventTransfer);
-  SYMAP_MAP (bufsz_maxBlockLength,
-             LV2_BUF_SIZE__maxBlockLength);
-  SYMAP_MAP (bufsz_minBlockLength,
-             LV2_BUF_SIZE__minBlockLength);
-  SYMAP_MAP (bufsz_sequenceSize,
-             LV2_BUF_SIZE__sequenceSize);
-  SYMAP_MAP (log_Error,
-             LV2_LOG__Error);
-  SYMAP_MAP (log_Trace,
-             LV2_LOG__Trace);
-  SYMAP_MAP (log_Warning,
-             LV2_LOG__Warning);
-  SYMAP_MAP (midi_MidiEvent,
-             LV2_MIDI__MidiEvent);
-  SYMAP_MAP (param_sampleRate,
-             LV2_PARAMETERS__sampleRate);
-  SYMAP_MAP (patch_Get,
-             LV2_PATCH__Get);
-  SYMAP_MAP (patch_Put,
-             LV2_PATCH__Put);
-  SYMAP_MAP (patch_Set,
-             LV2_PATCH__Set);
-  SYMAP_MAP (patch_body,
-             LV2_PATCH__body);
-  SYMAP_MAP (patch_property,
-             LV2_PATCH__property);
-  SYMAP_MAP (patch_value,
-             LV2_PATCH__value);
-  SYMAP_MAP (time_Position,
-             LV2_TIME__Position);
-  SYMAP_MAP (time_barBeat,
-             LV2_TIME__barBeat);
-  SYMAP_MAP (time_beatUnit,
-             LV2_TIME__beatUnit);
-  SYMAP_MAP (time_beatsPerBar,
-             LV2_TIME__beatsPerBar);
-  SYMAP_MAP (time_beatsPerMinute,
-             LV2_TIME__beatsPerMinute);
-  SYMAP_MAP (time_frame,
-             LV2_TIME__frame);
-  SYMAP_MAP (time_speed,
-             LV2_TIME__speed);
-  SYMAP_MAP (ui_updateRate,
-             LV2_UI__updateRate);
+  SYMAP_MAP (atom_Float, LV2_ATOM__Float);
+  SYMAP_MAP (atom_Int, LV2_ATOM__Int);
+  SYMAP_MAP (atom_Object, LV2_ATOM__Object);
+  SYMAP_MAP (atom_Path, LV2_ATOM__Path);
+  SYMAP_MAP (atom_String, LV2_ATOM__String);
+  SYMAP_MAP (
+    atom_eventTransfer, LV2_ATOM__eventTransfer);
+  SYMAP_MAP (
+    bufsz_maxBlockLength,
+    LV2_BUF_SIZE__maxBlockLength);
+  SYMAP_MAP (
+    bufsz_minBlockLength,
+    LV2_BUF_SIZE__minBlockLength);
+  SYMAP_MAP (
+    bufsz_sequenceSize,
+    LV2_BUF_SIZE__sequenceSize);
+  SYMAP_MAP ( log_Error, LV2_LOG__Error);
+  SYMAP_MAP (log_Trace, LV2_LOG__Trace);
+  SYMAP_MAP (log_Warning, LV2_LOG__Warning);
+  SYMAP_MAP (midi_MidiEvent, LV2_MIDI__MidiEvent);
+  SYMAP_MAP (
+    param_sampleRate,
+    LV2_PARAMETERS__sampleRate);
+  SYMAP_MAP (patch_Get, LV2_PATCH__Get);
+  SYMAP_MAP (patch_Put, LV2_PATCH__Put);
+  SYMAP_MAP (patch_Set, LV2_PATCH__Set);
+  SYMAP_MAP (patch_body, LV2_PATCH__body);
+  SYMAP_MAP (patch_property, LV2_PATCH__property);
+  SYMAP_MAP (patch_value, LV2_PATCH__value);
+  SYMAP_MAP (time_Position, LV2_TIME__Position);
+  SYMAP_MAP (time_barBeat, LV2_TIME__barBeat);
+  SYMAP_MAP (time_beatUnit, LV2_TIME__beatUnit);
+  SYMAP_MAP (
+    time_beatsPerBar,
+    LV2_TIME__beatsPerBar);
+  SYMAP_MAP (
+    time_beatsPerMinute,
+    LV2_TIME__beatsPerMinute);
+  SYMAP_MAP (time_frame, LV2_TIME__frame);
+  SYMAP_MAP (time_speed, LV2_TIME__speed);
+  SYMAP_MAP (ui_updateRate, LV2_UI__updateRate);
 #undef SYMAP_MAP
 
   /* load cached VST plugins */
@@ -561,29 +524,32 @@ plugin_manager_scan_plugins (
 
   /* scan vst */
   g_message ("Scanning VST plugins...");
+#ifdef _WIN32
+  char ** paths =
+    g_settings_get_strv (
+      S_PREFERENCES, "vst-search-paths-windows");
+  g_return_if_fail (paths);
+#else
   char * vst_path =
     g_strdup (getenv ("VST_PATH"));
   if (!vst_path)
     vst_path =
-#ifdef _WIN32
       g_strdup (
-        "C:\\Program Files\\Common Files\\VST2:"
-        "C:\\Program Files\\VSTPlugins:"
-        "C:\\Program Files\\Steinberg\\VSTPlugins:"
-        "C:\\Program Files\\Common Files\\VST2:"
-        "C:\\Program Files\\Common Files\\Steinberg\\VST2"
-        );
-#else
-      g_strdup ("/usr/lib/vst:/usr/local/lib/vst");
-#endif
+        "~/.vst:~/vst:"
+        "/usr/" LIBDIR_NAME "/vst:"
+        "/usr/local/" LIBDIR_NAME "/vst");
   char ** paths =
     g_strsplit (vst_path, ":", 0);
+  g_free (vst_path);
+#endif
   int path_idx = 0;
   char * path;
   while ((path = paths[path_idx++]) != NULL)
     {
       if (!g_file_test (path, G_FILE_TEST_EXISTS))
         continue;
+
+      g_message ("scanning for VSTs in %s", path);
 
       char ** vst_plugins =
 #ifdef _WIN32
@@ -665,7 +631,7 @@ plugin_manager_scan_plugins (
       g_strfreev (vst_plugins);
     }
 
-  g_free (vst_path);
+  g_strfreev (paths);
 
   /* sort alphabetically */
   qsort (self->plugin_descriptors,

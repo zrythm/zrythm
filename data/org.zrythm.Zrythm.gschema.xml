@@ -272,23 +272,18 @@
       </description>
     </key>
 
-    <!-- KEY: lv2-search-path -->
-    <key name="lv2-search-paths" type="as">
-      <default>[]</default>
-      <summary>Search paths for LV2 plugins</summary>
-      <description>
-        The search paths to scan for LV2
-        plugins in.
-      </description>
-    </key>
-
-    <!-- KEY: vst-search-path -->
-    <key name="vst-search-paths" type="as">
-      <default>[]</default>
+    <!-- KEY: vst-search-path-windows -->
+    <key name="vst-search-paths-windows" type="as">
+      <default>[ "C:\\Program Files\\Common Files\\VST2",
+        "C:\\Program Files\\VSTPlugins",
+        "C:\\Program Files\\Steinberg\\VSTPlugins",
+        "C:\\Program Files\\Common Files\\VST2",
+        "C:\\Program Files\\Common Files\\Steinberg\\VST2" ]</default>
       <summary>Search paths for VST plugins</summary>
       <description>
         The search paths to scan for VST
-        plugins in.
+        plugins in. Duplicate paths will be
+        deduplicated.
       </description>
     </key>
 

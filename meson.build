@@ -64,11 +64,11 @@ cdata.set_quoted (
   'COMPILER_VERSION',
   meson.get_compiler('c').version())
 cdata.set_quoted (
-  'CONFIGURE_DATADIR',
-  datadir)
+  'CONFIGURE_DATADIR', datadir)
 cdata.set_quoted (
-  'CONFIGURE_LIBDIR',
-  libdir)
+  'LIBDIR_NAME', get_option ('libdir'))
+cdata.set_quoted (
+  'CONFIGURE_LIBDIR', libdir)
 if get_option ('windows_release')
 cdata.set ('WINDOWS_RELEASE', 1)
 endif
