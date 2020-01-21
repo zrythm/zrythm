@@ -668,7 +668,7 @@ vst_plugin_process (
     }
 
   effect->processReplacing (
-    effect, inputs, outputs, (int) nframes);
+    effect, inputs, outputs, (int32_t) nframes);
 }
 
 int

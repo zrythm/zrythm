@@ -29,14 +29,23 @@ static gpointer
 process_cb (gpointer data)
 {
   AudioEngine * self = (AudioEngine *) data;
+
+  gulong sleep_time =
+    (gulong)
+    (((double) self->block_length /
+       self->sample_rate) *
+       1000.0 * 1000);
+
+  g_message (
+    "Running dummy audio engine for first time");
+
   while (1)
     {
+      if (self->stop_dummy_audio_thread)
+        break;
+
       engine_process (self, self->block_length);
-      g_usleep (
-        ((gulong)
-         (((double) self->block_length /
-           self->sample_rate) *
-           1000.0 * 1000)));
+      g_usleep (sleep_time);
     }
 
   return NULL;
@@ -94,10 +103,6 @@ engine_dummy_setup (
           monitor_out_l, monitor_out_r);
     }
 
-  g_thread_new ("process_cb",
-                process_cb,
-                self);
-
   g_message ("Dummy Engine set up");
 
   return 0;
@@ -125,4 +130,32 @@ engine_dummy_midi_setup (
     /*}*/
 
   return 0;
+}
+
+int
+engine_dummy_activate (
+  AudioEngine * self)
+{
+  g_message ("Activating dummy audio engine");
+
+  self->stop_dummy_audio_thread = 0;
+  self->dummy_audio_thread =
+    g_thread_new (
+      "process_cb", process_cb, self);
+
+  return 0;
+}
+
+void
+engine_dummy_tear_down (
+  AudioEngine * self)
+{
+  g_message ("stopping dummy audio DSP thread");
+
+  self->stop_dummy_audio_thread = 1;
+
+  /* wait for the thread to stop */
+  g_thread_join (self->dummy_audio_thread);
+
+  g_thread_unref (self->dummy_audio_thread);
 }

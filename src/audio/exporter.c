@@ -92,12 +92,15 @@ export_audio (
   SF_INFO sfinfo;
   memset (&sfinfo, 0, sizeof (sfinfo));
 
+#define EXPORT_CHANNELS 2
+
   if (info->format == AUDIO_FORMAT_FLAC)
     {
       sfinfo.format = SF_FORMAT_FLAC;
     }
   else if (info->format == AUDIO_FORMAT_WAV)
     {
+      g_message ("FORMAT WAV");
       sfinfo.format = SF_FORMAT_WAV;
     }
   else if (info->format == AUDIO_FORMAT_OGG)
@@ -109,15 +112,14 @@ export_audio (
       char * format =
         exporter_stringize_audio_format (
           info->format);
-      char * str =
-        g_strdup_printf (
-          "Format %s not supported yet",
-          format);
+      char str[600];
+      sprintf (
+        str, "Format %s not supported yet",
+        format);
+      /* FIXME this is not the GTK thread */
       ui_show_error_message (
-        MAIN_WINDOW,
-        str);
+        MAIN_WINDOW, str);
       g_free (format);
-      g_free (str);
 
       return;
     }
@@ -131,16 +133,19 @@ export_audio (
     {
       sfinfo.format =
         sfinfo.format | SF_FORMAT_PCM_16;
+      g_message ("PCM 16");
     }
   else if (info->depth == BIT_DEPTH_24)
     {
       sfinfo.format =
         sfinfo.format | SF_FORMAT_PCM_24;
+      g_message ("PCM 24");
     }
   else if (info->depth == BIT_DEPTH_32)
     {
       sfinfo.format =
         sfinfo.format | SF_FORMAT_PCM_32;
+      g_message ("PCM 32");
     }
 
   if (info->time_range ==
@@ -172,7 +177,7 @@ export_audio (
 
   sfinfo.samplerate =
     (int) AUDIO_ENGINE->sample_rate;
-  sfinfo.channels = 2;
+  sfinfo.channels = EXPORT_CHANNELS;
 
   if (!sf_format_check (&sfinfo))
     {
@@ -188,211 +193,226 @@ export_audio (
   SNDFILE * sndfile =
     sf_open (info->file_uri, SFM_WRITE, &sfinfo);
 
-  if (sndfile)
-    {
-      sf_set_string (
-        sndfile,
-        SF_STR_TITLE,
-        PROJECT->title);
-      sf_set_string (
-        sndfile,
-        SF_STR_SOFTWARE,
-        "Zrythm");
-      sf_set_string (
-        sndfile,
-        SF_STR_ARTIST,
-        info->artist);
-      sf_set_string (
-        sndfile,
-        SF_STR_GENRE,
-        info->genre);
-
-      Position prev_playhead_pos;
-      /* position to start at */
-      POSITION_INIT_ON_STACK (start_pos);
-      /* position to stop at */
-      POSITION_INIT_ON_STACK (stop_pos);
-      position_set_to_pos (
-        &prev_playhead_pos,
-        &TRANSPORT->playhead_pos);
-      if (info->time_range ==
-            TIME_RANGE_SONG)
-        {
-          ArrangerObject * start =
-            (ArrangerObject *)
-            marker_track_get_start_marker (
-              P_MARKER_TRACK);
-          ArrangerObject * end =
-            (ArrangerObject *)
-            marker_track_get_end_marker (
-              P_MARKER_TRACK);
-          position_set_to_pos (
-            &TRANSPORT->playhead_pos,
-            &start->pos);
-          position_set_to_pos (
-            &start_pos,
-            &start->pos);
-          position_set_to_pos (
-            &stop_pos,
-            &end->pos);
-        }
-      else if (info->time_range ==
-                 TIME_RANGE_LOOP)
-        {
-          position_set_to_pos (
-            &TRANSPORT->playhead_pos,
-            &TRANSPORT->loop_start_pos);
-          position_set_to_pos (
-            &start_pos,
-            &TRANSPORT->loop_start_pos);
-          position_set_to_pos (
-            &stop_pos,
-            &TRANSPORT->loop_end_pos);
-        }
-      Play_State prev_play_state =
-        TRANSPORT->play_state;
-      TRANSPORT->play_state =
-        PLAYSTATE_ROLLING;
-
-      /* set jack freewheeling mode */
-#ifdef HAVE_JACK
-      if (AUDIO_ENGINE->audio_backend ==
-            AUDIO_BACKEND_JACK)
-        {
-          jack_set_freewheel (
-            AUDIO_ENGINE->client, 1);
-        }
-#endif
-
-      zix_sem_wait (
-        &AUDIO_ENGINE->port_operation_lock);
-
-      nframes_t nframes;
-      g_return_if_fail (
-        stop_pos.frames >= 1 ||
-        start_pos.frames >= 0);
-      const unsigned long total_frames =
-        (unsigned long)
-        ((stop_pos.frames - 1) -
-         start_pos.frames);
-      sf_count_t covered = 0;
-      float out_ptr[AUDIO_ENGINE->nframes * 2];
-      do
-        {
-          /* calculate number of frames to process
-           * this time */
-          nframes =
-            (nframes_t)
-            MIN (
-              (stop_pos.frames - 1) -
-                TRANSPORT->playhead_pos.frames,
-              (long) AUDIO_ENGINE->nframes);
-
-          /* run process code */
-          engine_process_prepare (
-            AUDIO_ENGINE,
-            nframes);
-          router_start_cycle (
-            &MIXER->router, nframes,
-            0, PLAYHEAD);
-          engine_post_process (
-            AUDIO_ENGINE, nframes);
-
-          /* by this time, the Master channel should
-           * have its Stereo Out ports filled.
-           * pass its buffers to the output */
-          for (nframes_t i = 0; i < nframes; i++)
-            {
-              out_ptr[i * 2] =
-                P_MASTER_TRACK->channel->
-                  stereo_out->l->buf[i];
-              out_ptr[i * 2 + 1] =
-                P_MASTER_TRACK->channel->
-                  stereo_out->r->buf[i];
-            }
-
-          covered += nframes;
-          g_warn_if_fail (
-            covered ==
-              TRANSPORT->playhead_pos.frames);
-
-          /* write the frames for the current
-           * cycle */
-          sf_writef_float (
-            sndfile, out_ptr, nframes);
-
-          /* seek to the next position in the file */
-          sf_seek (
-            sndfile, nframes, SEEK_CUR);
-
-          info->progress =
-            (double)
-            (TRANSPORT->playhead_pos.frames -
-              start_pos.frames) /
-            (double) total_frames;
-        } while (
-          TRANSPORT->playhead_pos.frames <
-          stop_pos.frames - 1);
-
-      g_warn_if_fail (
-        covered == (sf_count_t) total_frames);
-
-      info->progress = 1.0;
-
-      /* set jack freewheeling mode */
-#ifdef HAVE_JACK
-      if (AUDIO_ENGINE->audio_backend ==
-            AUDIO_BACKEND_JACK)
-        {
-          jack_set_freewheel (
-            AUDIO_ENGINE->client, 0);
-        }
-#endif
-
-      zix_sem_post (
-        &AUDIO_ENGINE->port_operation_lock);
-
-      TRANSPORT->play_state = prev_play_state;
-      position_set_to_pos (
-        &TRANSPORT->playhead_pos,
-        &prev_playhead_pos);
-
-      sf_close (sndfile);
-    }
-  else
+  if (!sndfile)
     {
       int error = sf_error (NULL);
-      char * error_str = NULL;
+      char error_str[600];
       switch (error)
         {
         case 1:
-          error_str =
-            g_strdup ("Unrecognized format");
+          strcpy (error_str, "Unrecognized format");
           break;
         case 2:
-          error_str =
-            g_strdup ("System error");
+          strcpy (error_str, "System error");
           break;
         case 3:
-          error_str =
-            g_strdup ("Malformed file");
+          strcpy (error_str, "Malformed file");
           break;
         case 4:
-          error_str =
-            g_strdup ("Unsupported encoding");
+          strcpy (error_str, "Unsupported encoding");
           break;
         default:
           g_warn_if_reached ();
           return;
         }
 
-      g_warning ("Couldn't open SNDFILE %s:\n%s",
-                 info->file_uri,
-                 error_str);
-      g_free (error_str);
+      g_warning (
+        "Couldn't open SNDFILE %s:\n%s",
+        info->file_uri, error_str);
 
       return;
     }
+
+  sf_set_string (
+    sndfile,
+    SF_STR_TITLE,
+    PROJECT->title);
+  sf_set_string (
+    sndfile,
+    SF_STR_SOFTWARE,
+    "Zrythm");
+  sf_set_string (
+    sndfile,
+    SF_STR_ARTIST,
+    info->artist);
+  sf_set_string (
+    sndfile,
+    SF_STR_GENRE,
+    info->genre);
+
+  Position prev_playhead_pos;
+  /* position to start at */
+  POSITION_INIT_ON_STACK (start_pos);
+  /* position to stop at */
+  POSITION_INIT_ON_STACK (stop_pos);
+  position_set_to_pos (
+    &prev_playhead_pos,
+    &TRANSPORT->playhead_pos);
+  if (info->time_range ==
+        TIME_RANGE_SONG)
+    {
+      ArrangerObject * start =
+        (ArrangerObject *)
+        marker_track_get_start_marker (
+          P_MARKER_TRACK);
+      ArrangerObject * end =
+        (ArrangerObject *)
+        marker_track_get_end_marker (
+          P_MARKER_TRACK);
+      position_set_to_pos (
+        &TRANSPORT->playhead_pos,
+        &start->pos);
+      position_set_to_pos (
+        &start_pos,
+        &start->pos);
+      position_set_to_pos (
+        &stop_pos,
+        &end->pos);
+    }
+  else if (info->time_range ==
+             TIME_RANGE_LOOP)
+    {
+      position_set_to_pos (
+        &TRANSPORT->playhead_pos,
+        &TRANSPORT->loop_start_pos);
+      position_set_to_pos (
+        &start_pos,
+        &TRANSPORT->loop_start_pos);
+      position_set_to_pos (
+        &stop_pos,
+        &TRANSPORT->loop_end_pos);
+    }
+  Play_State prev_play_state =
+    TRANSPORT->play_state;
+  TRANSPORT->play_state =
+    PLAYSTATE_ROLLING;
+
+  /* set jack freewheeling mode */
+#ifdef HAVE_JACK
+  if (AUDIO_ENGINE->audio_backend ==
+        AUDIO_BACKEND_JACK)
+    {
+      jack_set_freewheel (
+        AUDIO_ENGINE->client, 1);
+    }
+#endif
+
+  zix_sem_wait (
+    &AUDIO_ENGINE->port_operation_lock);
+
+  nframes_t nframes;
+  g_return_if_fail (
+    stop_pos.frames >= 1 ||
+    start_pos.frames >= 0);
+  const unsigned long total_frames =
+    (unsigned long)
+    ((stop_pos.frames - 1) -
+     start_pos.frames);
+  sf_count_t covered = 0;
+  float out_ptr[
+    AUDIO_ENGINE->nframes * EXPORT_CHANNELS];
+  do
+    {
+      /* calculate number of frames to process
+       * this time */
+      nframes =
+        (nframes_t)
+        MIN (
+          (stop_pos.frames - 1) -
+            TRANSPORT->playhead_pos.frames,
+          (long) AUDIO_ENGINE->nframes);
+
+      /* run process code */
+      engine_process_prepare (
+        AUDIO_ENGINE,
+        nframes);
+      router_start_cycle (
+        &MIXER->router, nframes,
+        0, PLAYHEAD);
+      engine_post_process (
+        AUDIO_ENGINE, nframes);
+
+      /* by this time, the Master channel should
+       * have its Stereo Out ports filled.
+       * pass its buffers to the output */
+      for (nframes_t i = 0; i < nframes; i++)
+        {
+          out_ptr[i * 2] =
+            P_MASTER_TRACK->channel->
+              stereo_out->l->buf[i];
+          out_ptr[i * 2 + 1] =
+            P_MASTER_TRACK->channel->
+              stereo_out->r->buf[i];
+        }
+
+      /* seek to the write position in the file */
+      if (covered != 0)
+        {
+          sf_count_t seek_cnt =
+            sf_seek (
+              sndfile, covered,
+              SEEK_SET | SFM_WRITE);
+
+          /* wav is weird for some reason */
+          if ((sfinfo.format & SF_FORMAT_WAV) == 0)
+            {
+              if (seek_cnt < 0)
+                {
+                  char err[256];
+                  sf_error_str (
+                    0, err, sizeof (err) - 1);
+                  g_message (
+                    "Error seeking file: %s", err);
+                }
+              g_warn_if_fail (seek_cnt == covered);
+            }
+        }
+
+      /* write the frames for the current
+       * cycle */
+      sf_count_t written_frames =
+        sf_writef_float (
+          sndfile, out_ptr, nframes);
+      g_warn_if_fail (written_frames == nframes);
+
+      covered += nframes;
+      g_warn_if_fail (
+        covered ==
+          TRANSPORT->playhead_pos.frames);
+
+      info->progress =
+        (double)
+        (TRANSPORT->playhead_pos.frames -
+          start_pos.frames) /
+        (double) total_frames;
+    } while (
+      TRANSPORT->playhead_pos.frames <
+      stop_pos.frames - 1);
+
+  g_warn_if_fail (
+    covered == (sf_count_t) total_frames);
+
+  info->progress = 1.0;
+
+  /* set jack freewheeling mode */
+#ifdef HAVE_JACK
+  if (AUDIO_ENGINE->audio_backend ==
+        AUDIO_BACKEND_JACK)
+    {
+      jack_set_freewheel (
+        AUDIO_ENGINE->client, 0);
+    }
+#endif
+
+  zix_sem_post (
+    &AUDIO_ENGINE->port_operation_lock);
+
+  TRANSPORT->play_state = prev_play_state;
+  position_set_to_pos (
+    &TRANSPORT->playhead_pos,
+    &prev_playhead_pos);
+
+  sf_close (sndfile);
 }
 
 static void

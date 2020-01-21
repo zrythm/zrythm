@@ -337,6 +337,14 @@ typedef struct AudioEngine
 #endif
 
   /**
+   * Dummy audio DSP processing thread.
+   */
+  GThread *         dummy_audio_thread;
+
+  /** Set to 1 to stop the dummy audio thread. */
+  int               stop_dummy_audio_thread;
+
+  /**
    * Timeline metadata like BPM, time signature, etc.
    */
   Transport         transport;

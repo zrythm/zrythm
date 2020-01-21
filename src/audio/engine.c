@@ -452,6 +452,10 @@ engine_activate (
       self->midi_backend == MIDI_BACKEND_JACK)
     engine_jack_activate (self);
 #endif
+  if (self->audio_backend == AUDIO_BACKEND_DUMMY)
+    {
+      engine_dummy_activate (self);
+    }
 #ifdef _WIN32
   if (self->midi_backend ==
         MIDI_BACKEND_WINDOWS_MME)
@@ -1145,6 +1149,11 @@ engine_tear_down (
         AUDIO_BACKEND_JACK)
     engine_jack_tear_down (self);
 #endif
+  if (self->audio_backend ==
+        AUDIO_BACKEND_DUMMY)
+    {
+      engine_dummy_tear_down (self);
+    }
 
   /* TODO free data */
 }

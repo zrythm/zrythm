@@ -42,4 +42,12 @@ engine_dummy_midi_setup (
   AudioEngine * self,
   int           loading);
 
+int
+engine_dummy_activate (
+  AudioEngine * self);
+
+void
+engine_dummy_tear_down (
+  AudioEngine * self);
+
 #endif

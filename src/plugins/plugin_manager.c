@@ -625,7 +625,7 @@ plugin_manager_scan_plugins (
                   self->cached_vst_descriptors,
                   plugin))
                 {
-                  g_warning (
+                  g_message (
                     "Ignoring blacklisted VST "
                     "plugin: %s", plugin);
                 }
