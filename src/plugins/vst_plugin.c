@@ -684,17 +684,6 @@ vst_plugin_instantiate (
     effect, effSetProcessPrecision, 0,
     kVstProcessPrecision32, NULL, 0.0f);
 
-  g_message (
-    "setting VST sample rate and block size");
-  float sampleRate = AUDIO_ENGINE->sample_rate;
-  effect->dispatcher (
-    effect, effSetSampleRate, 0, 0, NULL,
-    sampleRate);
-  int blocksize = (int) AUDIO_ENGINE->block_length;
-  effect->dispatcher (
-    effect, effSetBlockSize, 0, blocksize, NULL,
-    0.0f);
-
   /* initialize midi events */
   for (int i = 0; i < kPluginMaxMidiEvents * 2; i++)
     {
@@ -710,6 +699,18 @@ vst_plugin_instantiate (
     effect, effOpen, 0, 0, NULL, 0.0f);
   effect->dispatcher (
     effect, effMainsChanged, 0, 1, NULL, 0.0f);
+
+  float sampleRate = AUDIO_ENGINE->sample_rate;
+  effect->dispatcher (
+    effect, effSetSampleRate, 0, 0, NULL,
+    sampleRate);
+  int blocksize = (int) AUDIO_ENGINE->block_length;
+  effect->dispatcher (
+    effect, effSetBlockSize, 0, blocksize, NULL,
+    0.0f);
+  g_message (
+    "set VST sample rate to %f and block size "
+    "to %d", (double) sampleRate, blocksize);
 
   /* create and connect ports */
   char lbl[400];
