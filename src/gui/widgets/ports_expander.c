@@ -49,15 +49,17 @@ ports_expander_widget_refresh (
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin->descr->
-                  num_ctrl_ins > 0);
+                self->plugin &&
+                  self->plugin->descr->
+                    num_ctrl_ins > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin->descr->
-                  num_ctrl_outs > 0);
+                self->plugin &&
+                  self->plugin->descr->
+                    num_ctrl_outs > 0);
             }
         }
       else if (self->type == TYPE_AUDIO)
@@ -66,15 +68,17 @@ ports_expander_widget_refresh (
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin->descr->
-                  num_audio_ins > 0);
+                self->plugin &&
+                  self->plugin->descr->
+                    num_audio_ins > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin->descr->
-                  num_audio_outs > 0);
+                self->plugin &&
+                  self->plugin->descr->
+                    num_audio_outs > 0);
             }
         }
       else if (self->type == TYPE_EVENT)
@@ -83,15 +87,17 @@ ports_expander_widget_refresh (
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin->descr->
-                  num_midi_ins > 0);
+                self->plugin &&
+                  self->plugin->descr->
+                    num_midi_ins > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin->descr->
-                  num_midi_outs > 0);
+                self->plugin &&
+                  self->plugin->descr->
+                    num_midi_outs > 0);
             }
         }
       else if (self->type == TYPE_CV)
@@ -100,15 +106,17 @@ ports_expander_widget_refresh (
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin->descr->
-                  num_cv_ins > 0);
+                self->plugin &&
+                  self->plugin->descr->
+                    num_cv_ins > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
-                self->plugin->descr->
-                  num_cv_outs > 0);
+                self->plugin &&
+                  self->plugin->descr->
+                    num_cv_outs > 0);
             }
         }
     }
@@ -219,7 +227,7 @@ ports_expander_widget_setup_plugin (
 
   InspectorPortWidget * ip;
   Port * port;
-  if (type == TYPE_CONTROL &&
+  if (pl && type == TYPE_CONTROL &&
       flow == FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
@@ -232,8 +240,8 @@ ports_expander_widget_setup_plugin (
           ADD_SINGLE (port);
         }
     }
-  else if (type == TYPE_CONTROL &&
-      flow == FLOW_OUTPUT)
+  else if (pl && type == TYPE_CONTROL &&
+           flow == FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
@@ -245,8 +253,8 @@ ports_expander_widget_setup_plugin (
           ADD_SINGLE (port);
         }
     }
-  else if (type == TYPE_CV &&
-      flow == FLOW_INPUT)
+  else if (pl && type == TYPE_CV &&
+           flow == FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
@@ -258,8 +266,8 @@ ports_expander_widget_setup_plugin (
           ADD_SINGLE (port);
         }
     }
-  else if (type == TYPE_CV &&
-      flow == FLOW_OUTPUT)
+  else if (pl && type == TYPE_CV &&
+           flow == FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
@@ -271,8 +279,8 @@ ports_expander_widget_setup_plugin (
           ADD_SINGLE (port);
         }
     }
-  else if (type == TYPE_AUDIO &&
-      flow == FLOW_INPUT)
+  else if (pl && type == TYPE_AUDIO &&
+           flow == FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
@@ -284,8 +292,8 @@ ports_expander_widget_setup_plugin (
           ADD_SINGLE (port);
         }
     }
-  else if (type == TYPE_AUDIO &&
-      flow == FLOW_OUTPUT)
+  else if (pl && type == TYPE_AUDIO &&
+           flow == FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
@@ -297,8 +305,8 @@ ports_expander_widget_setup_plugin (
           ADD_SINGLE (port);
         }
     }
-  else if (type == TYPE_EVENT &&
-      flow == FLOW_INPUT)
+  else if (pl && type == TYPE_EVENT &&
+           flow == FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
@@ -310,8 +318,8 @@ ports_expander_widget_setup_plugin (
           ADD_SINGLE (port);
         }
     }
-  else if (type == TYPE_EVENT &&
-      flow == FLOW_OUTPUT)
+  else if (pl && type == TYPE_EVENT &&
+           flow == FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
@@ -325,8 +333,7 @@ ports_expander_widget_setup_plugin (
     }
 #undef ADD_SINGLE
 
-  ports_expander_widget_refresh (
-    self);
+  ports_expander_widget_refresh (self);
 }
 
 /**

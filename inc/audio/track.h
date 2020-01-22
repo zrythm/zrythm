@@ -70,6 +70,12 @@ typedef void MIDI_FILE;
 #define TRACK_MIN_HEIGHT 24
 #define TRACK_DEF_HEIGHT 48
 
+#define TRACK_MAGIC 21890135
+#define IS_TRACK(tr) (tr && tr->magic == TRACK_MAGIC)
+
+/**
+ * The Track's type.
+ */
 typedef enum TrackType
 {
   /**
@@ -314,6 +320,8 @@ typedef struct Track
    * MIDI output singals).
    */
   PortType             out_signal_type;
+
+  int                  magic;
 
 } Track;
 

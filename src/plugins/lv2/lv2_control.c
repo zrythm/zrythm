@@ -346,8 +346,7 @@ lv2_control_get_from_port (
 {
   /* get the plugin. if loading a project, plugin
    * will be null so use the indices */
-  Plugin * pl =
-    port->port->plugin;
+  Plugin * pl = port_get_plugin (port->port, 1);
   if (!pl)
     pl =
       TRACKLIST->tracks[

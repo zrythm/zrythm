@@ -381,9 +381,17 @@ plugin_move_automation (
     {
       at = prev_atl->ats[i];
 
-      if (!at->automatable->port ||
-          at->automatable->port->plugin != pl)
+      Port * port = at->automatable->port;
+      if (!port)
         continue;
+      if (port->identifier.owner_type ==
+            PORT_OWNER_TYPE_PLUGIN)
+        {
+          Plugin * port_pl =
+            port_get_plugin (port, 1);
+          if (port_pl != pl)
+            continue;
+        }
 
       /* delete from prev channel */
       automation_tracklist_delete_at (
@@ -983,10 +991,6 @@ plugin_connect_to_prefader (
   int i, last_index;
   Port * out_port;
   PortType type = ch->track->out_signal_type;
-
-  Plugin * last_pl =
-    channel_get_last_plugin (ch);
-  g_return_if_fail (last_pl == pl);
 
   if (type == TYPE_EVENT)
     {

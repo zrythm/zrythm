@@ -343,17 +343,19 @@ node_process (
         }
 
       /* if channel stereo out port */
-      else if (port->track &&
-          port->identifier.owner_type ==
-            PORT_OWNER_TYPE_TRACK &&
-          port->identifier.flow == FLOW_OUTPUT)
+      else if (
+        port->identifier.owner_type ==
+          PORT_OWNER_TYPE_TRACK &&
+        port->identifier.flow == FLOW_OUTPUT)
         {
+          Track * track = port_get_track (port, 1);
+
           /* if muted clear it */
-          if (port->track->mute ||
+          if (track->mute ||
                 (tracklist_has_soloed (
                   TRACKLIST) &&
-                   !port->track->solo &&
-                   port->track != P_MASTER_TRACK))
+                   !track->solo &&
+                   track != P_MASTER_TRACK))
             {
               port_clear_buffer (port);
             }
@@ -1579,10 +1581,16 @@ graph_setup (
     {
       port = ports[i];
       g_warn_if_fail (port);
-      if (port->deleting ||
-          (port->plugin &&
-           port->plugin->deleting))
+      if (port->deleting)
         continue;
+      if (port->identifier.owner_type ==
+            PORT_OWNER_TYPE_PLUGIN)
+        {
+          Plugin * port_pl =
+            port_get_plugin (port, 1);
+          if (port_pl->deleting)
+            continue;
+        }
 
       add_port (
         self, port, drop_unnecessary_ports);
@@ -1770,7 +1778,7 @@ graph_setup (
             { \
               port = pl->in_ports[k]; \
               g_warn_if_fail ( \
-                port->plugin != NULL); \
+                port_get_plugin (port, 1) != NULL); \
               node2 = \
                 find_node_from_port (self, port); \
               node_connect (node2, node); \
@@ -1779,7 +1787,7 @@ graph_setup (
             { \
               port = pl->out_ports[k]; \
               g_warn_if_fail ( \
-                port->plugin != NULL); \
+                port_get_plugin (port, 1) != NULL); \
               node2 = \
                 find_node_from_port (self, port); \
               node_connect (node, node2); \
@@ -1804,11 +1812,16 @@ graph_setup (
   for (i = 0; i < num_ports; i++)
     {
       port = ports[i];
-      g_warn_if_fail (port);
-      if (port->deleting ||
-          (port->plugin &&
-           port->plugin->deleting))
+      if (port->deleting)
         continue;
+      if (port->identifier.owner_type ==
+            PORT_OWNER_TYPE_PLUGIN)
+        {
+          Plugin * port_pl =
+            port_get_plugin (port, 1);
+          if (port_pl->deleting)
+            continue;
+        }
 
       connect_port (
         self, port);

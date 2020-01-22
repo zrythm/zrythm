@@ -56,6 +56,8 @@
 void
 track_init_loaded (Track * track)
 {
+  track->magic = TRACK_MAGIC;
+
   int i,j;
   TrackLane * lane;
   for (j = 0; j < track->num_lanes; j++)
@@ -144,6 +146,7 @@ track_init (
   self->visible = 1;
   self->main_height = TRACK_DEF_HEIGHT;
   self->midi_ch = 1;
+  self->magic = TRACK_MAGIC;
   track_add_lane (self);
 }
 

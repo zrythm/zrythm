@@ -331,8 +331,18 @@ typedef struct Port
 
   /* ====== flags to indicate port owner ====== */
 
-  Plugin *            plugin;
-  Track *             track;
+  /**
+   * Temporary plugin pointer (used when the
+   * plugin doesn't exist yet in its supposed slot).
+   */
+  Plugin *            tmp_plugin;
+
+  /**
+   * Temporary track (used when the track doesn't
+   * exist yet in its supposed position).
+   */
+  //Track *             tmp_track;
+
   SampleProcessor *   sample_processor;
 
   /** used when loading projects FIXME needed? */
@@ -722,8 +732,8 @@ port_receive_audio_data_from_jack (
  */
 void
 port_get_full_designation (
-  const Port * self,
-  char *       buf);
+  Port * self,
+  char * buf);
 
 /**
  * Gathers all ports in the project and puts them
@@ -733,6 +743,16 @@ void
 port_get_all (
   Port ** ports,
   int *   size);
+
+Track *
+port_get_track (
+  const Port * self,
+  int          warn_if_fail);
+
+Plugin *
+port_get_plugin (
+  Port * self,
+  int    warn_if_fail);
 
 /**
  * Returns the index of the destination in the dest
@@ -838,7 +858,7 @@ port_is_exposed_to_backend (
  */
 void
 port_rename_backend (
-  const Port * self);
+  Port * self);
 
 #ifdef HAVE_JACK
 /**

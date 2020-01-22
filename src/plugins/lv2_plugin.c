@@ -236,7 +236,6 @@ create_port (
       lv2_port->port =
         port_new_with_type (type, flow, port_name);
       g_free (port_name);
-      lv2_port->port->plugin = lv2_plugin->plugin;
 
       Port * port = lv2_port->port;
 
@@ -244,16 +243,12 @@ create_port (
        * to it (eg when cloning) */
       if (lv2_plugin->plugin->track)
         {
-          port->track =
-            lv2_plugin->plugin->track;
-
           port_set_owner_plugin (
             port, lv2_plugin->plugin);
         }
       else
         {
           Plugin * pl = lv2_plugin->plugin;
-          port->plugin = pl;
           port->identifier.track_pos =
             pl->track_pos;
           port->identifier.plugin_slot =
@@ -487,7 +482,7 @@ lv2_create_or_init_ports (
         {
           Lv2Port * lv2_port = &self->ports[i];
           Port * port = lv2_port->port;
-          port->plugin = self->plugin;
+          port->tmp_plugin = self->plugin;
           if (port->identifier.flow == FLOW_INPUT)
             {
               plugin_add_in_port (

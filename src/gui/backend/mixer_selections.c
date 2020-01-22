@@ -238,6 +238,7 @@ mixer_selections_clone (
 
   ms->num_slots = src->num_slots;
   ms->track_pos = src->track_pos;
+  g_return_val_if_fail (src->track, NULL);
   ms->track = track_clone (src->track);
 
   return ms;

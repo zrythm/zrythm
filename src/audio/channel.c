@@ -1473,6 +1473,12 @@ channel_remove_plugin (
        * entirely */
       if (deleting_plugin)
         {
+          if (plugin_is_selected (plugin))
+            {
+              mixer_selections_remove_slot (
+                MIXER_SELECTIONS, plugin->slot,
+                F_PUBLISH_EVENTS);
+            }
           if (plugin->descr->protocol == PROT_LV2)
             {
               Lv2Plugin * lv2_plugin =

@@ -112,14 +112,14 @@ automatable_init_loaded (Automatable * self)
         self->plugin =
           self->track->channel->plugins[
             self->slot];
-        self->port->plugin = self->plugin;
+        self->port->identifier.plugin_slot =
+          self->slot;
       }
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
       {
         self->plugin =
-          self->track->channel->plugins[
-            self->slot];
+          self->track->channel->plugins[self->slot];
       }
       break;
     default:
@@ -388,8 +388,7 @@ automatable_get_val (Automatable * a)
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      g_return_val_if_fail (
-        a->port && a->port->plugin, 0.f);
+      g_return_val_if_fail (a->port, 0.f);
       /*plugin = a->port->plugin;*/
       return a->port->control;
       /*if (plugin->descr->protocol == PROT_LV2)*/
@@ -432,7 +431,7 @@ automatable_normalized_val_to_real (
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      plugin = a->port->plugin;
+      plugin = port_get_plugin (a->port, 1);
       switch (plugin->descr->protocol)
         {
         case PROT_LV2:
@@ -471,7 +470,7 @@ automatable_normalized_val_to_real (
       g_warn_if_reached ();
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
-      plugin = a->port->plugin;
+      plugin = port_get_plugin (a->port, 1);
       return val > 0.5f;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
       return
@@ -497,9 +496,8 @@ automatable_real_val_to_normalized (
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      g_return_val_if_fail (
-        a->port && a->port->plugin, 0.f);
-      plugin = a->port->plugin;
+      g_return_val_if_fail (a->port, 0.f);
+      plugin = port_get_plugin (a->port, 1);
       switch (plugin->descr->protocol)
         {
         case PROT_LV2:
@@ -575,9 +573,8 @@ automatable_set_val_from_normalized (
   switch (a->type)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
-      g_return_if_fail (
-        a->port && a->port->plugin);
-      plugin = a->port->plugin;
+      g_return_if_fail (a->port);
+      plugin = port_get_plugin (a->port, 1);
       switch (plugin->descr->protocol)
         {
         case PROT_LV2:
@@ -632,7 +629,7 @@ automatable_set_val_from_normalized (
         }
       break;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
-      plugin = a->port->plugin;
+      plugin = port_get_plugin (a->port, 1);
       if (plugin->enabled != (val > 0.5f))
         EVENTS_PUSH (
           ET_AUTOMATION_VALUE_CHANGED, a);

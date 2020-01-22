@@ -23,6 +23,7 @@
 
 #include "actions/copy_plugins_action.h"
 #include "actions/create_plugins_action.h"
+#include "actions/delete_plugins_action.h"
 #include "actions/move_plugins_action.h"
 #include "actions/undoable_action.h"
 #include "actions/undo_manager.h"
@@ -401,6 +402,53 @@ select_ctrl_pl_ch (
   /*UI_GET_STATE_MASK (gesture);*/
 /*}*/
 
+/**
+ * Selects the given plugin (either adds it to
+ * selections or makes it the only selection).
+ *
+ * @param ctrl Whether Control is held down or not.
+ */
+static void
+select_plugin (
+  ChannelSlotWidget * self,
+  int                 ctrl)
+{
+  int pl = 0, ch = 0;
+
+  /* if plugin exists */
+  if (self->channel->plugins[
+        self->slot_index])
+    pl = 1;
+
+  /* if same channel as selections */
+  if (MIXER_SELECTIONS->track &&
+      self->channel ==
+        MIXER_SELECTIONS->track->channel)
+    ch = 1;
+
+  if (!ctrl && !pl && !ch)
+    select_no_ctrl_no_pl_no_ch (self);
+  else if (!ctrl && !pl && ch)
+    select_no_ctrl_no_pl_ch (self);
+  else if (!ctrl && pl && !ch)
+    select_no_ctrl_pl_no_ch (self);
+  else if (!ctrl && pl && ch)
+    select_no_ctrl_pl_ch (self);
+  else if (ctrl && !pl && !ch)
+    select_ctrl_no_pl_no_ch (self);
+  else if (ctrl && !pl && ch)
+    select_ctrl_no_pl_ch (self);
+  else if (ctrl && pl && !ch)
+    select_ctrl_pl_no_ch (self);
+  else if (ctrl && pl && ch)
+    select_ctrl_pl_ch (self);
+
+  /* select channel */
+  tracklist_selections_select_single (
+    TRACKLIST_SELECTIONS,
+    self->channel->track);
+}
+
 static void
 drag_end (GtkGestureDrag *gesture,
                gdouble         offset_x,
@@ -433,43 +481,12 @@ drag_end (GtkGestureDrag *gesture,
     }
   else if (self->n_press == 1)
     {
-      int ctrl = 0, pl = 0, ch = 0;
+      int ctrl = 0;
       /* if control click */
       if (state_mask & GDK_CONTROL_MASK)
         ctrl = 1;
 
-      /* if plugin exists */
-      if (self->channel->plugins[
-            self->slot_index])
-        pl = 1;
-
-      /* if same channel as selections */
-      if (MIXER_SELECTIONS->track &&
-          self->channel ==
-            MIXER_SELECTIONS->track->channel)
-        ch = 1;
-
-      if (!ctrl && !pl && !ch)
-        select_no_ctrl_no_pl_no_ch (self);
-      else if (!ctrl && !pl && ch)
-        select_no_ctrl_no_pl_ch (self);
-      else if (!ctrl && pl && !ch)
-        select_no_ctrl_pl_no_ch (self);
-      else if (!ctrl && pl && ch)
-        select_no_ctrl_pl_ch (self);
-      else if (ctrl && !pl && !ch)
-        select_ctrl_no_pl_no_ch (self);
-      else if (ctrl && !pl && ch)
-        select_ctrl_no_pl_ch (self);
-      else if (ctrl && pl && !ch)
-        select_ctrl_pl_no_ch (self);
-      else if (ctrl && pl && ch)
-        select_ctrl_pl_ch (self);
-
-      /* select channel */
-      tracklist_selections_select_single (
-        TRACKLIST_SELECTIONS,
-        self->channel->track);
+      select_plugin (self, ctrl);
 
       /*self->deselected = 0;*/
       /*self->reselected = 0;*/
@@ -488,6 +505,19 @@ multipress_pressed (
 
   PROJECT->last_selection =
     SELECTION_TYPE_PLUGIN;
+}
+
+static void
+on_plugin_delete (
+  GtkMenuItem *       menu_item,
+  ChannelSlotWidget * self)
+{
+  UndoableAction * ua =
+    delete_plugins_action_new (
+      MIXER_SELECTIONS, self->channel->track,
+      self->slot_index);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  EVENTS_PUSH (ET_PLUGINS_REMOVED, self->channel);
 }
 
 static void
@@ -532,8 +562,16 @@ show_context_menu (
   ADD_TO_SHELL;
   menuitem = CREATE_PASTE_MENU_ITEM;
   ADD_TO_SHELL;
-  menuitem = CREATE_DELETE_MENU_ITEM;
-  ADD_TO_SHELL;
+  /* if plugin exists */
+  if (self->channel->plugins[self->slot_index])
+    {
+      /* add delete item */
+      menuitem = CREATE_DELETE_MENU_ITEM;
+      g_signal_connect (
+        G_OBJECT (menuitem), "activate",
+        G_CALLBACK (on_plugin_delete), self);
+      ADD_TO_SHELL;
+    }
   CREATE_SEPARATOR;
   ADD_TO_SHELL;
   menuitem = CREATE_CLEAR_SELECTION_MENU_ITEM;
@@ -560,6 +598,11 @@ on_right_click (GtkGestureMultiPress *gesture,
 {
   if (n_press != 1)
     return;
+
+  GdkModifierType mod =
+    ui_get_state_mask (GTK_GESTURE (gesture));
+
+  select_plugin (self, mod & GDK_CONTROL_MASK);
 
   show_context_menu (self);
 }

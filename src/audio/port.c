@@ -60,19 +60,9 @@ port_init_loaded (Port * this)
   switch (id->owner_type) \
     { \
     case PORT_OWNER_TYPE_PLUGIN: \
-      port->track = \
-        TRACKLIST->tracks[id->track_pos]; \
-      g_warn_if_fail (port->track); \
-      port->plugin = \
-        port->track->channel->plugins[ \
-          id->plugin_slot]; \
-      g_warn_if_fail (port->plugin); \
       break; \
     case PORT_OWNER_TYPE_TRACK: \
     case PORT_OWNER_TYPE_TRACK_PROCESSOR: \
-      port->track = \
-        TRACKLIST->tracks[id->track_pos]; \
-      g_warn_if_fail (port->track); \
       break; \
     default: \
       break; \
@@ -663,8 +653,6 @@ port_set_owner_plugin (
 {
   g_warn_if_fail (port && pl);
 
-  port->plugin = pl;
-  port->track = pl->track;
   port->identifier.track_pos = pl->track->pos;
   port->identifier.plugin_slot = pl->slot;
   port->identifier.owner_type =
@@ -694,7 +682,6 @@ port_set_owner_track (
 {
   g_warn_if_fail (port && track);
 
-  port->track = track;
   port->identifier.track_pos = track->pos;
   port->identifier.owner_type =
     PORT_OWNER_TYPE_TRACK;
@@ -725,7 +712,6 @@ port_set_owner_fader (
 
   if (fader->channel)
     {
-      port->track = fader->channel->track;
       port->identifier.track_pos =
         fader->channel->track->pos;
     }
@@ -743,7 +729,6 @@ port_set_owner_prefader (
 {
   g_warn_if_fail (port && fader);
 
-  port->track = fader->channel->track;
   port->identifier.track_pos =
     fader->channel->track->pos;
   port->identifier.owner_type =
@@ -813,11 +798,16 @@ port_connect (
       /*dest->has_modulators = 1;*/
     }
 
+#if 0
   char sd[600], dd[600];
   port_get_full_designation (src, sd);
   port_get_full_designation (dest, dd);
   g_message (
     "Connected port \"%s\" to \"%s\"", sd, dd);
+#endif
+  g_message (
+    "Connected port \"%s\" to \"%s\"",
+    src->identifier.label, dest->identifier.label);
   return 0;
 }
 
@@ -867,12 +857,17 @@ port_disconnect (Port * src, Port * dest)
         }
     }
 
+#if 0
   char sd[600], dd[600];
   port_get_full_designation (src, sd);
   port_get_full_designation (dest, dd);
   g_message (
     "Disconnected port \"%s\" from \"%s\"",
     sd, dd);
+#endif
+  g_message (
+    "Disconnected port \"%s\" from \"%s\"",
+    src->identifier.label, dest->identifier.label);
   return 0;
 }
 
@@ -950,16 +945,18 @@ port_receive_midi_events_from_jack (
         {
           midi_byte_t channel =
             jack_ev.buffer[0] & 0xf;
+          Track * track =
+            port_get_track (self, 0);
           if (self->identifier.owner_type ==
                 PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-              (self->track->type ==
-                 TRACK_TYPE_MIDI ||
-               self->track->type ==
-                 TRACK_TYPE_INSTRUMENT) &&
-              !self->track->channel->
-                all_midi_channels &&
-              !self->track->channel->
-                midi_channels[channel])
+              (track->type ==
+                   TRACK_TYPE_MIDI ||
+                 track->type ==
+                   TRACK_TYPE_INSTRUMENT) &&
+                !track->channel->
+                  all_midi_channels &&
+                !track->channel->
+                  midi_channels[channel])
             {
               /* different channel */
             }
@@ -1340,15 +1337,17 @@ sum_data_from_windows_mme (
             {
               midi_byte_t channel =
                 ev.raw_buffer[0] & 0xf;
+              Track * track =
+                port_get_track (self, 0);
               if (self->identifier.owner_type ==
                     PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-                  (self->track->type ==
+                  (track->type ==
                      TRACK_TYPE_MIDI ||
-                   self->track->type ==
+                   track->type ==
                      TRACK_TYPE_INSTRUMENT) &&
-                  !self->track->channel->
+                  !track->channel->
                     all_midi_channels &&
-                  !self->track->channel->
+                  !track->channel->
                     midi_channels[channel])
                 {
                   /* different channel */
@@ -1411,40 +1410,41 @@ port_forward_control_change_event (
   if (self->lv2_port)
     {
       Lv2Port * lv2_port = self->lv2_port;
-      g_return_if_fail (
-        self->plugin && self->plugin->lv2);
-      Lv2Plugin * lv2_plugin =
-        self->plugin->lv2;
+      Plugin * pl = port_get_plugin (self, 1);
+      g_return_if_fail (pl && pl->lv2);
+      Lv2Plugin * lv2_plugin = pl->lv2;
       lv2_ui_send_control_val_event_from_plugin_to_ui (
         lv2_plugin, lv2_port);
     }
   else if (
     self->identifier.owner_type ==
-      PORT_OWNER_TYPE_PLUGIN &&
-    self->plugin &&
-    self->plugin->descr->protocol == PROT_VST)
+      PORT_OWNER_TYPE_PLUGIN)
     {
-      g_return_if_fail (
-        self->plugin->vst &&
-        self->plugin->vst->aeffect);
-      AEffect * effect =
-        self->plugin->vst->aeffect;
-      effect->setParameter (
-        effect, self->vst_param_id, self->control);
+      Plugin * pl = port_get_plugin (self, 1);
+      if (pl && pl->descr->protocol == PROT_VST)
+        {
+          g_return_if_fail (
+            pl->vst && pl->vst->aeffect);
+          AEffect * effect = pl->vst->aeffect;
+          effect->setParameter (
+            effect, self->vst_param_id,
+            self->control);
+        }
     }
   else if (self->identifier.owner_type ==
              PORT_OWNER_TYPE_FADER &&
            self->identifier.flags &
              PORT_FLAG_AMPLITUDE)
     {
+      Track * track = port_get_track (self, 1);
       g_return_if_fail (
-        self->track && self->track->channel &&
-        self->track->channel->widget);
+        track && track->channel &&
+        track->channel->widget);
       fader_update_volume_and_fader_val (
-        &self->track->channel->fader);
+        &track->channel->fader);
       EVENTS_PUSH (
         ET_CHANNEL_FADER_VAL_CHANGED,
-        self->track->channel);
+        track->channel);
     }
 }
 
@@ -1508,8 +1508,8 @@ port_get_control_value (
 
   if (self->lv2_port)
     {
-      g_return_val_if_fail (
-        self->plugin && self->plugin->lv2, 0.f);
+      Plugin * pl = port_get_plugin (self, 1);
+      g_return_val_if_fail (pl && pl->lv2, 0.f);
     }
 
   if (normalize)
@@ -1604,21 +1604,25 @@ port_get_minf (
       switch (port->identifier.owner_type)
         {
         case PORT_OWNER_TYPE_PLUGIN:
-          g_return_val_if_fail (port->plugin, 0.f);
-          switch (port->plugin->descr->protocol)
-            {
-            case PROT_LV2:
-              g_return_val_if_fail (
-                port->lv2_port &&
-                port->lv2_port->lv2_control, 0.f);
-              return
-                port->lv2_port->lv2_control->minf;
-            case PROT_VST:
-              return 0.f;
-              break;
-            default:
-              g_return_val_if_reached (0.f);
-            }
+          {
+            Plugin * pl = port_get_plugin (port, 1);
+            g_return_val_if_fail (pl, 0.f);
+            switch (pl->descr->protocol)
+              {
+              case PROT_LV2:
+                g_return_val_if_fail (
+                  port->lv2_port &&
+                  port->lv2_port->lv2_control, 0.f);
+                return
+                  port->lv2_port->lv2_control->minf;
+              case PROT_VST:
+                return 0.f;
+                break;
+              default:
+                g_return_val_if_reached (0.f);
+              }
+          }
+          break;
         case PORT_OWNER_TYPE_FADER:
           if (port->identifier.flags &
                 PORT_FLAG_AMPLITUDE)
@@ -1660,21 +1664,25 @@ port_get_maxf (
       switch (port->identifier.owner_type)
         {
         case PORT_OWNER_TYPE_PLUGIN:
-          g_return_val_if_fail (port->plugin, 1.f);
-          switch (port->plugin->descr->protocol)
-            {
-            case PROT_LV2:
-              g_return_val_if_fail (
-                port->lv2_port &&
-                port->lv2_port->lv2_control, 1.f);
-              return
-                port->lv2_port->lv2_control->maxf;
-            case PROT_VST:
-              return 1.f;
-              break;
-            default:
-              g_return_val_if_reached (1.f);
-            }
+          {
+            Plugin * pl = port_get_plugin (port, 1);
+            g_return_val_if_fail (pl, 1.f);
+            switch (pl->descr->protocol)
+              {
+              case PROT_LV2:
+                g_return_val_if_fail (
+                  port->lv2_port &&
+                  port->lv2_port->lv2_control, 1.f);
+                return
+                  port->lv2_port->lv2_control->maxf;
+              case PROT_VST:
+                return 1.f;
+                break;
+              default:
+                g_return_val_if_reached (1.f);
+              }
+          }
+          break;
         case PORT_OWNER_TYPE_FADER:
           if (port->identifier.flags &
                 PORT_FLAG_AMPLITUDE)
@@ -1715,21 +1723,25 @@ port_get_zerof (
       switch (port->identifier.owner_type)
         {
         case PORT_OWNER_TYPE_PLUGIN:
-          g_return_val_if_fail (port->plugin, 0.f);
-          switch (port->plugin->descr->protocol)
-            {
-            case PROT_LV2:
-              g_return_val_if_fail (
-                port->lv2_port &&
-                port->lv2_port->lv2_control, 0.f);
-              return
-                port->lv2_port->lv2_control->minf;
-            case PROT_VST:
-              return 0.f;
-              break;
-            default:
-              g_return_val_if_reached (0.f);
-            }
+          {
+            Plugin * pl = port_get_plugin (port, 1);
+            g_return_val_if_fail (pl, 0.f);
+            switch (pl->descr->protocol)
+              {
+              case PROT_LV2:
+                g_return_val_if_fail (
+                  port->lv2_port &&
+                  port->lv2_port->lv2_control, 0.f);
+                return
+                  port->lv2_port->lv2_control->minf;
+              case PROT_VST:
+                return 0.f;
+                break;
+              default:
+                g_return_val_if_reached (0.f);
+              }
+          }
+          break;
         case PORT_OWNER_TYPE_FADER:
           if (port->identifier.flags &
                 PORT_FLAG_AMPLITUDE)
@@ -1898,7 +1910,7 @@ port_sum_signal_from_inputs (
              PORT_OWNER_TYPE_TRACK_PROCESSOR ||
            (port->identifier.owner_type ==
               PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-            port->track->recording)) &&
+            port_get_track (port, 1)->recording)) &&
            port->identifier.flow == FLOW_INPUT)
         {
           switch (AUDIO_ENGINE->midi_backend)
@@ -1966,7 +1978,8 @@ port_sum_signal_from_inputs (
           if (port->identifier.owner_type ==
                 PORT_OWNER_TYPE_TRACK_PROCESSOR)
             {
-              port->track->trigger_midi_activity = 1;
+              Track * tr = port_get_track (port, 1);
+              tr->trigger_midi_activity = 1;
             }
         }
 
@@ -2197,7 +2210,7 @@ port_is_exposed_to_backend (
  */
 void
 port_rename_backend (
-  const Port * self)
+  Port * self)
 {
   if ((!port_is_exposed_to_backend (self)))
     return;
@@ -2228,9 +2241,10 @@ port_rename_backend (
  */
 void
 port_get_full_designation (
-  const Port * self,
-  char *       buf)
+  Port * self,
+  char * buf)
 {
+  g_return_if_fail (self && buf);
   const PortIdentifier * id = &self->identifier;
 
   switch (id->owner_type)
@@ -2240,20 +2254,25 @@ port_get_full_designation (
       strcpy (buf, id->label);
       return;
     case PORT_OWNER_TYPE_PLUGIN:
-      sprintf (
-        buf, "%s/%s/%s",
-        self->plugin->track->name,
-        self->plugin->descr->name,
-        id->label);
+      {
+        Plugin * pl = port_get_plugin (self, 1);
+        g_return_if_fail (pl && pl->track);
+        sprintf (
+          buf, "%s/%s/%s",
+          pl->track->name, pl->descr->name,
+          id->label);
+      }
       return;
     case PORT_OWNER_TYPE_TRACK:
     case PORT_OWNER_TYPE_TRACK_PROCESSOR:
     case PORT_OWNER_TYPE_PREFADER:
     case PORT_OWNER_TYPE_FADER:
-      sprintf (
-        buf, "%s/%s",
-        self->track->name,
-        id->label);
+      {
+        Track * tr = port_get_track (self, 1);
+        g_return_if_fail (IS_TRACK (tr));
+        sprintf (
+          buf, "%s/%s", tr->name, id->label);
+      }
       return;
     case PORT_OWNER_TYPE_MONITOR_FADER:
       sprintf (buf, "Engine/%s", id->label);
@@ -2333,6 +2352,59 @@ port_is_connection_locked (
         }
     }
   g_return_val_if_reached (0);
+}
+
+Track *
+port_get_track (
+  const Port * self,
+  int   warn_if_fail)
+{
+  g_return_val_if_fail (self && TRACKLIST, NULL);
+
+  Track * track =
+    TRACKLIST->tracks[self->identifier.track_pos];
+  if (warn_if_fail)
+    {
+      g_return_val_if_fail (track, NULL);
+    }
+  return track;
+}
+
+Plugin *
+port_get_plugin (
+  Port * self,
+  int   warn_if_fail)
+{
+  g_return_val_if_fail (self, NULL);
+
+  Track * track =
+    port_get_track (self, 0);
+  if (!track && self->tmp_plugin)
+    return self->tmp_plugin;
+  if (!track || !track->channel)
+    {
+      if (warn_if_fail)
+        {
+          g_warning ("No track found for port");
+        }
+      return NULL;
+    }
+
+  Plugin * pl =
+    track->channel->plugins[
+      self->identifier.plugin_slot];
+  if (!pl && self->tmp_plugin)
+    return self->tmp_plugin;
+  if (warn_if_fail)
+    {
+      g_return_val_if_fail (pl, NULL);
+    }
+
+  /* unset \ref Port.tmp_plugin if a Plugin was
+   * found */
+  self->tmp_plugin = NULL;
+
+  return pl;
 }
 
 /**

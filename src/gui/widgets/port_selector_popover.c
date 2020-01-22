@@ -293,18 +293,20 @@ create_model_for_plugins (
     {
       /* skip track ports if the owner port is
        * a track port of the same track */
+      Track * port_track =
+        port_get_track (self->port, 0);
       if (!((self->port->identifier.owner_type ==
              PORT_OWNER_TYPE_TRACK &&
-           self->port->track == track) ||
+           port_track == track) ||
           (self->port->identifier.owner_type ==
              PORT_OWNER_TYPE_FADER &&
-           self->port->track == track) ||
+           port_track == track) ||
           (self->port->identifier.owner_type ==
              PORT_OWNER_TYPE_PREFADER &&
-           self->port->track == track) ||
+           port_track == track) ||
           (self->port->identifier.owner_type ==
              PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-           self->port->track == track)))
+           port_track == track)))
         {
           // Add a new row to the model
           gtk_list_store_append (list_store, &iter);

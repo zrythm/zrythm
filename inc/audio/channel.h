@@ -49,6 +49,11 @@
  * @{
  */
 
+/** Magic number to identify channels. */
+#define CHANNEL_MAGIC 8431676
+#define IS_CHANNEL(tr) \
+  (tr && tr->magic == CHANNEL_MAGIC)
+
 #define FOREACH_STRIP for (int i = 0; i < STRIP_SIZE; i++)
 #define FOREACH_AUTOMATABLE(ch) for (int i = 0; i < ch->num_automatables; i++)
 #define MAX_FADER_AMP 1.42f
@@ -188,6 +193,9 @@ typedef struct Channel
 
   /** Track associated with this channel. */
   Track *          track;
+
+  /** This must be set to CHANNEL_MAGIC TODO. */
+  int              magic;
 
   /** The channel widget. */
   ChannelWidget *  widget;

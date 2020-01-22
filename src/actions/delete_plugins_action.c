@@ -97,7 +97,7 @@ delete_plugins_action_undo (
 
   mixer_recalc_graph (MIXER);
 
-  EVENTS_PUSH (ET_PLUGINS_ADDED, NULL);
+  EVENTS_PUSH (ET_PLUGINS_ADDED, ch);
 
   return 0;
 }

@@ -35,52 +35,37 @@ inspector_plugin_widget_show (
   InspectorPluginWidget * self,
   MixerSelections *       ms)
 {
-  /* show info for first track */
+  /* show info for first plugin */
+  Plugin * pl = NULL;
   if (ms->num_slots > 0)
     {
-      Plugin * pl = ms->plugins[0];
-
-      ports_expander_widget_setup_plugin (
-        self->ctrl_ins,
-        FLOW_INPUT,
-        TYPE_CONTROL,
-        pl);
-      ports_expander_widget_setup_plugin (
-        self->ctrl_outs,
-        FLOW_OUTPUT,
-        TYPE_CONTROL,
-        pl);
-      ports_expander_widget_setup_plugin (
-        self->midi_ins,
-        FLOW_INPUT,
-        TYPE_EVENT,
-        pl);
-      ports_expander_widget_setup_plugin (
-        self->midi_outs,
-        FLOW_OUTPUT,
-        TYPE_EVENT,
-        pl);
-      ports_expander_widget_setup_plugin (
-        self->audio_ins,
-        FLOW_INPUT,
-        TYPE_AUDIO,
-        pl);
-      ports_expander_widget_setup_plugin (
-        self->audio_outs,
-        FLOW_OUTPUT,
-        TYPE_AUDIO,
-        pl);
-      ports_expander_widget_setup_plugin (
-        self->cv_ins,
-        FLOW_INPUT,
-        TYPE_CV,
-        pl);
-      ports_expander_widget_setup_plugin (
-        self->cv_outs,
-        FLOW_OUTPUT,
-        TYPE_CV,
-        pl);
+      pl = ms->plugins[0];
     }
+
+  ports_expander_widget_setup_plugin (
+    self->ctrl_ins, FLOW_INPUT,
+    TYPE_CONTROL, pl);
+  ports_expander_widget_setup_plugin (
+    self->ctrl_outs, FLOW_OUTPUT,
+    TYPE_CONTROL, pl);
+  ports_expander_widget_setup_plugin (
+    self->midi_ins, FLOW_INPUT,
+    TYPE_EVENT, pl);
+  ports_expander_widget_setup_plugin (
+    self->midi_outs, FLOW_OUTPUT,
+    TYPE_EVENT, pl);
+  ports_expander_widget_setup_plugin (
+    self->audio_ins, FLOW_INPUT,
+    TYPE_AUDIO, pl);
+  ports_expander_widget_setup_plugin (
+    self->audio_outs, FLOW_OUTPUT,
+    TYPE_AUDIO, pl);
+  ports_expander_widget_setup_plugin (
+    self->cv_ins, FLOW_INPUT,
+    TYPE_CV, pl);
+  ports_expander_widget_setup_plugin (
+    self->cv_outs, FLOW_OUTPUT,
+    TYPE_CV, pl);
 }
 
 static void

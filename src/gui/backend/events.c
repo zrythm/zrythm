@@ -55,6 +55,7 @@
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/header_notebook.h"
 #include "gui/widgets/home_toolbar.h"
+#include "gui/widgets/inspector_track.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -436,6 +437,7 @@ on_modulator_added (Modulator * modulator)
 static void
 on_plugins_removed (Channel * ch)
 {
+  /* redraw slots */
   ChannelSlotWidget * csw;
   for (int i = 0; i < STRIP_SIZE; i++)
     {
@@ -447,6 +449,9 @@ on_plugins_removed (Channel * ch)
       gtk_widget_queue_draw (
         GTK_WIDGET (csw));
     }
+
+  /* change inspector page */
+  inspector_widget_refresh (MW_INSPECTOR);
 }
 
 static void
@@ -1270,6 +1275,9 @@ events_process (void * data)
           on_automation_track_added (
             (AutomationTrack *) ev->arg);
           break;
+        case ET_PLUGINS_ADDED:
+          on_plugins_removed ((Channel *)ev->arg);
+          break;
         case ET_PLUGIN_ADDED:
           on_plugin_added (
             (Plugin *) ev->arg);
@@ -1420,6 +1428,9 @@ events_process (void * data)
                     plugin_open_ui (pl);
                 }
             }
+          break;
+        case ET_AUTOMATION_TRACKLIST_AT_REMOVED:
+          /* TODO */
           break;
         default:
           g_warning (
