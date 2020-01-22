@@ -20,7 +20,7 @@ help:
 
 .PHONY: bundle
 
-LANGUAGES = en de fr it es ja pt pt_BR ru zh nb_NO
+LANGUAGES = en en_GB de fr it es ja pt pt_BR ru zh nb_NO
 
 # Skip chinese latexpdf because it doesn't support Chinese yet
 # bundle: html epub

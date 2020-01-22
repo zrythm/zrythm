@@ -1,0 +1,104 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-12-16 15:23+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../chords-and-scales/intro.rst:6
+msgid "Chords and Scales"
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:6
+msgid "Overview"
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:8
+msgid ""
+"Chords and scales can be used to easily try out various chords and to "
+"make it easier to follow chord progressions."
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:12
+msgid "Chord Pad"
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:14
+msgid ""
+"The chord pad contains 12 pads (1 for each key on a piano keyboard) that "
+"can be used to trigger chords. The chord pad can be found in the bottom "
+"panel."
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:18
+#: ../../chords-and-scales/overview.rst:74
+msgid "This is a TODO feature."
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:21
+msgid "Chord Track"
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:23
+msgid ""
+"Chord regions and scale objects can be created inside the chord track, "
+"and these can then be used to dictate what chord and scale is active "
+"when. For example, you can specify a chord progression as follows."
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:33
+msgid "Chord region and scale inside the chord track in the timeline."
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:40
+msgid "Chord objects inside the chord region above."
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:43
+msgid "Highlighting"
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:45
+msgid ""
+"You can then use highlighting inside MIDI regions to highlight the notes "
+"corresponding to the scale, chord, or both at the position of the "
+"playhead."
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:53
+msgid "Chord highlighting."
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:59
+msgid "Scale highlighting."
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:65
+msgid "Scale and chord highlighting."
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:68
+msgid "Live Audition"
+msgstr ""
+
+#: ../../chords-and-scales/overview.rst:70
+msgid ""
+"You can route the output of the chord track to a MIDI or Instrument track"
+" for live auditioning of the chord track's events."
+msgstr ""
+
+#~ msgid "TODO"
+#~ msgstr ""
+

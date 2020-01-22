@@ -1,0 +1,985 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-01-13 16:05+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../getting-started/additional-resources.rst:6
+msgid "Additional Resources"
+msgstr ""
+
+#: ../../getting-started/additional-resources.rst:9
+msgid "IRC/Matrix"
+msgstr ""
+
+#: ../../getting-started/additional-resources.rst:10
+msgid ""
+"We offer support on IRC at ``#zrythm`` on Freenode. Matrix users can use "
+"``#zrythmdaw:matrix.org``."
+msgstr ""
+
+#: ../../getting-started/additional-resources.rst:14
+msgid "Issue Tracker"
+msgstr ""
+
+#: ../../getting-started/additional-resources.rst:15
+msgid ""
+"The issue tracker can be found on our `Redmine instance "
+"<https://redmine.zrythm.org/projects/zrythm/issues>`_. You can use this "
+"to report bugs or give feedback."
+msgstr ""
+
+#: ../../getting-started/additional-resources.rst:20
+msgid "Source Code"
+msgstr ""
+
+#: ../../getting-started/additional-resources.rst:21
+msgid ""
+"Zrythm's source code can be found on our `CGit instance "
+"<https://git.zrythm.org/cgit/zrythm/>`_."
+msgstr ""
+
+#: ../../getting-started/additional-resources.rst:25
+msgid "Older Versions"
+msgstr ""
+
+#: ../../getting-started/additional-resources.rst:26
+msgid ""
+"Older releases of Zrythm can be found on the `Releases page "
+"<https://www.zrythm.org/releases>`_"
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:6
+msgid "Getting Plugins"
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:8
+msgid ""
+"Zrythm ships with a few bundled plugins to help you get started "
+"(currently only ZLFO), but you should install some plugins like "
+"synthesizers and effects before you can make music."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:13
+msgid ""
+"Fortunately, there are many plugins to choose from. This guide will show "
+"you a few ways you can install plugins."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:16
+msgid ""
+"If you are on Debian/Ubuntu, we highly recommend using the `KXstudio "
+"repositories <https://kx.studio/>`_, since there are many plugins that "
+"can easily be installed via apt."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:20
+msgid ""
+"If you are on Arch GNU/Linux, we recommend installing the `lv2-plugins "
+"<https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ group, or you "
+"can hand-pick the plugins you want from there."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:25
+msgid "If you are not sure where to start, please read on."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:28
+msgid "Recommended Plugin Bundles"
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:30
+msgid ""
+"`DISTRHO Ports <https://distrho.sourceforge.io/ports.php>`_ provides a "
+"good variety of synths and effects that can help you get you started "
+"making music right away."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:34
+msgid ""
+"`ZAM Plugins <http://www.zamaudio.com/?p=976>`_ is an effects pack that "
+"contains all the basic effects like Delay, Reverb, Compression, EQ, "
+"Saturation, etc."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:38
+msgid "`LSP <https://lsp-plug.in/>`_ has a lot of useful effects."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:40
+msgid ""
+"`OpenAV <http://openavproductions.com>`_ has effects and instruments "
+"worth checking out."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:43
+msgid ""
+"`X42 Plugins <http://x42-plugins.com/x42/>`_ has many MIDI effect and "
+"meter plugins."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:47
+msgid "Synths"
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:49
+msgid "`Helm <https://tytel.org/helm/>`_ is an excellent subtractive synth."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:51
+msgid ""
+"`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synth that is "
+"closely modeled on the Yamaha DX7."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:54
+msgid ""
+"`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-fusion.html>`_ is a "
+"powerful additive/subtractive synth that can synthesize a wide variety of"
+" sounds."
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:59
+msgid "Percussion Generators"
+msgstr ""
+
+#: ../../getting-started/getting-plugins.rst:61
+msgid ""
+"`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a kick drum "
+"synthesizer that can also synthesize other types of percussion."
+msgstr ""
+
+#: ../../getting-started/installation/freebsd.rst:6
+msgid "FreeBSD"
+msgstr ""
+
+#: ../../getting-started/installation/freebsd.rst:9
+#: ../../getting-started/installation/gnu-linux.rst:11
+msgid "Installer"
+msgstr ""
+
+#: ../../getting-started/installation/freebsd.rst:10
+msgid ""
+"We plan to add FreeBSD support to the installer mentioned in :ref:`gnu-"
+"with-linux-installer`."
+msgstr ""
+
+#: ../../getting-started/installation/freebsd.rst:13
+#: ../../getting-started/installation/gnu-linux.rst:26
+msgid ""
+"This is the easiest and recommended way to install the latest version for"
+" most users, and we provide support for it."
+msgstr ""
+
+#: ../../getting-started/installation/freebsd.rst:18
+msgid "Port"
+msgstr ""
+
+#: ../../getting-started/installation/freebsd.rst:19
+msgid ""
+"You can install the `zrythm port "
+"<https://www.freshports.org/audio/zrythm/>`_ but it may be old and "
+"missing features and optimizations."
+msgstr ""
+
+#: ../../getting-started/installation/freebsd.rst:23
+#: ../../getting-started/installation/gnu-linux.rst:41
+msgid "Manual Installation"
+msgstr ""
+
+#: ../../getting-started/installation/freebsd.rst:24
+msgid "See :ref:`gnu-with-linux-manual-installation`."
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:6
+msgid "GNU with Linux"
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:12
+msgid ""
+"You can install the latest version of Zrythm for your distro using an "
+"installer from the `Download <https://www.zrythm.org/en/download.html>`_ "
+"page on our website."
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:18
+msgid "The installer supports the following distros (and derivatives):"
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:21
+msgid "**Ubuntu 18.10, 19.04, 19.10** - amd64"
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:22
+msgid "**Debian 10** - amd64"
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:23
+msgid "**Arch Linux** - x86_64"
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:24
+msgid "**Fedora 31** - x86_64"
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:31
+msgid "Distro Package"
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:32
+msgid ""
+"If your distribution provides a Zrythm package you can install it from "
+"there, but it will likely be an older version than the one we provide and"
+" it may be missing optimizations or features that we include with the "
+"installer."
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:42
+msgid ""
+"If you are an advanced user and prefer to build Zrythm yourself, Zrythm "
+"uses the Meson build system, so the procedure to build and install is as "
+"follows:"
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:52
+msgid "See the ``INSTALL.md`` file for more information."
+msgstr ""
+
+#: ../../getting-started/installation/intro.rst:6
+msgid "Installation"
+msgstr ""
+
+#: ../../getting-started/installation/macos.rst:6
+msgid "MacOS"
+msgstr ""
+
+#: ../../getting-started/installation/macos.rst:8
+msgid ""
+"Install from source manually as mentioned in :ref:`gnu-with-linux-manual-"
+"installation`. No support is offered at the moment."
+msgstr ""
+
+#: ../../getting-started/installation/windows.rst:6
+msgid "Windows"
+msgstr ""
+
+#: ../../getting-started/installation/windows.rst:8
+msgid ""
+"A Windows installer is available for purchase at the `Download "
+"<https://www.zrythm.org/en/download.html>`_ page on our website."
+msgstr ""
+
+#: ../../getting-started/installation/windows.rst:12
+msgid ""
+"We provide support for the installer, however we do not provide support "
+"for manually building Zrythm on Windows. If you want to try, you can find"
+" most packages needed from the `MSYS2 project "
+"<https://packages.msys2.org/>`_."
+msgstr ""
+
+#: ../../getting-started/intro.rst:6
+msgid "Getting Started"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:6
+msgid "System Requirements"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:9
+msgid "Minimum Requirements"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:12
+#: ../../getting-started/system-requirements/intro.rst:31
+msgid "Hardware"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:13
+msgid "x86_64, i686 or ARM processor"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:16
+msgid "Operating System"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:17
+msgid "Unix-compatible OS"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:20
+#: ../../getting-started/system-requirements/intro.rst:38
+msgid "Software"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:21
+msgid "GTK 3.24 or higher"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:22
+msgid "A working JACK setup"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:25
+msgid "Recommended"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:26
+msgid ""
+"We recommend running a fairly modern machine with the following specs so "
+"you can take full advantage of Zrythm."
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:32
+msgid "A fast processor"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:33
+msgid "Large enough monitor"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:34
+msgid "Audio interface"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:35
+msgid "MIDI keyboard"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:39
+msgid ""
+"A JACK patchbay such as `QjackCtl <https://qjackctl.sourceforge.io/>`_, "
+"`Catia <https://kx.studio/Applications:Catia>`_ and `Ingen "
+"<https://drobilla.net/software/ingen>`_"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:45
+msgid "Audio Interface"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:46
+msgid ""
+"An Audio Interface is recommended as it offers low latency and better "
+"quality (especially if recording audio)."
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:50
+msgid "JACK"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:51
+msgid ""
+"JACK needs to be set up and configured before running Zrythm. We "
+"recommend using `Cadence "
+"<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, as it makes "
+"the process very easy."
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:56
+msgid "Open Cadence"
+msgstr ""
+
+#: ../../getting-started/system-requirements/intro.rst:61
+msgid "Click Configure and select your Audio Interface"
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:6
+msgid "Overview"
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:8
+msgid ""
+"Zrythm is a digital audio workstation designed to be featureful and easy "
+"to use."
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:13
+msgid "Limitless automation"
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:12
+msgid ""
+"You can automate almost anything with automation events using straight "
+"lines, ramps and curves, or with CV signals from LFO and envelope "
+"plugins."
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:15
+msgid "LV2 plugins"
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:16
+msgid "Supports the free LV2 plugin format."
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:17
+msgid "JACK support"
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:18
+msgid "JACK aware, with support for JACK transport."
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:20
+msgid "Chord assistance"
+msgstr ""
+
+#: ../../getting-started/zrythm-overview.rst:20
+msgid ""
+"Has a chord pad for trying out chords in a scale and a chord track to "
+"help with chord progressions."
+msgstr ""
+
+#~ msgid "Here are a few terms you should be aware of when using Zrythm."
+#~ msgstr ""
+
+#~ msgid "Clips"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Like Ableton and Bitwig, Zrythm is "
+#~ "based on Clips. This is what a "
+#~ "Clip looks like in the arranger."
+#~ msgstr ""
+
+#~ msgid "Clips are edited in the Editor Panel. In this case, the clip is looped."
+#~ msgstr ""
+
+#~ msgid "The Timeline is where the song is arranged. Also known as Arranger."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Track is a single slot in "
+#~ "the Timeline containing various Clips "
+#~ "and Automation. It may contain various"
+#~ " lanes, such as Automation Lanes."
+#~ msgstr ""
+
+#~ msgid "The Tracklist contains all of the Tracks in the project."
+#~ msgstr ""
+
+#~ msgid "The Mixer contains all of the Channels in the Project."
+#~ msgstr ""
+
+#~ msgid "A range is a selection of time between two positions."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm is a highly automated Digital "
+#~ "Audio Workstation (DAW) designed to be"
+#~ " featureful and intuitive to use. "
+#~ "Zrythm sets itself apart from other "
+#~ "DAWs by allowing extensive automation "
+#~ "via built-in LFOs and envelopes "
+#~ "and intuitive MIDI or audio editing "
+#~ "and arranging via clips."
+#~ msgstr ""
+
+#~ msgid "PeerTube"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm has a `PeerTube instance "
+#~ "<https://video.zrythm.org>`_ open for all "
+#~ "GNU/Linux audio users, regardless of "
+#~ "their DAW of choice."
+#~ msgstr ""
+
+#~ msgid "Forum"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If this manual is not enough, feel"
+#~ " free to post on the `official "
+#~ "forums`_"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "We offer support on IRC at "
+#~ "`#zrythm on Freenode "
+#~ "<webchat.freenode.net/?channels=zrythm>`_. Matrix users"
+#~ " can use `#freenode_#zrythm:matrix.org "
+#~ "<https://riot.im/#/room/#freenode_#zrythm:matrix.org>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The issue tracker can be found at"
+#~ " `https://git.zrythm.org/zrythm/zrythm/issues "
+#~ "<https://git.zrythm.org/zrythm/zrythm/issues>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm's source code can be found "
+#~ "at `https://git.zrythm.org/zrythm/zrythm "
+#~ "<https://git.zrythm.org/zrythm/zrythm>`_ or in the"
+#~ " mirror repository at `GNU Savannah "
+#~ "<http://git.savannah.nongnu.org/cgit/zrythm.git>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you are on Arch GNU/Linux "
+#~ "you're in luck, because you can "
+#~ "just download the entire `pro-audio "
+#~ "<https://www.archlinux.org/groups/x86_64/pro-audio/>`_ or"
+#~ " `lv2-plugins "
+#~ "<https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ groups,"
+#~ " or you can just hand-pick the"
+#~ " plugins you want from there."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "You might also want to check out"
+#~ " `X42 Plugins <http://x42-plugins.com/x42/>`_, "
+#~ "which has A LOT of MIDI effect "
+#~ "and meter plugins."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm is a highly automated Digital "
+#~ "Audio Workstation (DAW) designed to be"
+#~ " featureful and intuitive to use. "
+#~ "Zrythm sets itself apart from other "
+#~ "DAWs by allowing extensive automation "
+#~ "via built-in LFOs and envelopes "
+#~ "(Modulators) and intuitive MIDI or audio"
+#~ " editing and arranging via clips."
+#~ msgstr ""
+
+#~ msgid "KX Studios"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Thanks to falktx, Zrythm will also "
+#~ "be available in the `KX Studio "
+#~ "repos <http://kxstudio.linuxaudio.org/>`_ for Debian"
+#~ " users"
+#~ msgstr ""
+
+#~ msgid "LibraZik"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For French speaking users, Zrythm is "
+#~ "fully translated and available in "
+#~ "`LibraZik <https://librazik.tuxfamily.org/>`_."
+#~ msgstr ""
+
+#~ msgid "https://download.savannah.nongnu.org/releases/zrythm/"
+#~ msgstr ""
+
+#~ msgid "Basic Concepts and Terminology"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Here are a few terms you should"
+#~ " be aware of when using Zrythm. "
+#~ "They are explained further in their "
+#~ "corresponding chapters."
+#~ msgstr ""
+
+#~ msgid "Regions"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Region (Clip) is a container for"
+#~ " MIDI Notes or audio. This is "
+#~ "what a Region looks like in the"
+#~ " arranger."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Regions are edited in the Editor "
+#~ "Panel. In this case, the clip is"
+#~ " looped."
+#~ msgstr ""
+
+#~ msgid "Timeline"
+#~ msgstr ""
+
+#~ msgid "The Timeline is where the song is arranged, also known as Arranger."
+#~ msgstr ""
+
+#~ msgid "Track"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Track is a single slot in "
+#~ "the Timeline containing various Regions "
+#~ "and Automation. It may contain various"
+#~ " lanes, such as Automation Lanes. "
+#~ "There are some special tracks like "
+#~ "the Chord Track and the Marker "
+#~ "Track that contain chords and markers"
+#~ " respectively."
+#~ msgstr ""
+
+#~ msgid "Tracklist"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The Tracklist contains all of the "
+#~ "Tracks in the project. It is split"
+#~ " into the top (pinned) Tracklist and"
+#~ " the bottom (main) Tracklist."
+#~ msgstr ""
+
+#~ msgid "Channel"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A Channel is a single slot in "
+#~ "the Mixer. Most types of Tracks "
+#~ "have a corresponding Channel."
+#~ msgstr ""
+
+#~ msgid "Mixer"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The Mixer contains all of the "
+#~ "Channels in the Project and is "
+#~ "used to mix the audio signals from"
+#~ " each Channel."
+#~ msgstr ""
+
+#~ msgid "Range"
+#~ msgstr ""
+
+#~ msgid "A Range is a selection of time between two positions."
+#~ msgstr ""
+
+#~ msgid "MIDI Note"
+#~ msgstr ""
+
+#~ msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
+#~ msgstr ""
+
+#~ msgid "You will be presented with the following"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For Arch GNU/Linux users, Zrythm is "
+#~ "also available in the AUR under "
+#~ "`zrythm <https://aur.archlinux.org/packages/zrythm/>`_ and"
+#~ " `zrythm-git <https://aur.archlinux.org/packages"
+#~ "/zrythm-git/>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "We don't know yet. The oldest "
+#~ "machine tested on was T400 and it"
+#~ " was a bit laggy. If you have"
+#~ " any experiences with older machines "
+#~ "please let us know."
+#~ msgstr ""
+
+#~ msgid "Recommended Requirements"
+#~ msgstr ""
+
+#~ msgid "We recommend running a fairly modern machine."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm is a highly automated Digital "
+#~ "Audio Workstation (DAW) designed to be"
+#~ " featureful and intuitive to use. "
+#~ "Zrythm sets itself apart from other "
+#~ "DAWs by allowing extensive automation "
+#~ "via built-in LFOs and envelopes ("
+#~ " Modulators) and intuitive MIDI or "
+#~ "audio editing and arranging via loopable"
+#~ " clips."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "In the usual Composing -> Mixing "
+#~ "-> Mastering workflow, Zrythm puts the"
+#~ " most focus on the Composing part."
+#~ " It allows musicians to quickly lay"
+#~ " down and process their musical ideas"
+#~ " without taking too much time for "
+#~ "unnecessary work."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For Fedora users, ycollect maintains a"
+#~ " Zrythm package in `copr "
+#~ "<https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/>`_"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The issue tracker can be found on"
+#~ " `Savannah "
+#~ "<https://savannah.nongnu.org/support/?group=zrythm>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm's source code can be found "
+#~ "on our `CGit instance "
+#~ "<https://git.zrythm.org/cgit/zrythm/>`_ or in the"
+#~ " mirror repository at `GNU Savannah "
+#~ "<http://git.savannah.nongnu.org/cgit/zrythm.git>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Older releases of Zrythm can be "
+#~ "found on `Savannah downloads "
+#~ "<https://download.savannah.nongnu.org/releases/zrythm/>`_"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Until Zrythm ships with its own "
+#~ "bundled plugins, you must install some"
+#~ " plugins like synthesizers and effects "
+#~ "before you can make music."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you are on Debian/Ubuntu, we "
+#~ "highly recommend checking out the "
+#~ "`KXstudio repositories <https://kx.studio/>`_, since"
+#~ " there are many plugins that can "
+#~ "easily be installed via apt."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If you are on Arch GNU/Linux "
+#~ "you're in luck, because you can "
+#~ "just download the entire `pro-audio "
+#~ "<https://www.archlinux.org/groups/x86_64/pro-audio/>`_ or"
+#~ " `lv2-plugins "
+#~ "<https://www.archlinux.org/groups/x86_64/lv2-plugins/>`_ groups,"
+#~ " or you can hand-pick the "
+#~ "plugins you want from there."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "`DISTRHO Ports "
+#~ "<https://distrho.sourceforge.io/ports.php>`_ provides a"
+#~ " good variety of synths and a "
+#~ "few effects that can get you "
+#~ "started for music making right away."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "`OpenAV <http://openavproductions.com>`_ has some"
+#~ " nice plugins worth checking out."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "You might also want to check out"
+#~ " `X42 Plugins <http://x42-plugins.com/x42/>`_, "
+#~ "which has **A LOT** of MIDI effect"
+#~ " and meter plugins."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "`Helm <https://tytel.org/helm/>`_ is an "
+#~ "excellent subtractive synth that should "
+#~ "be on everyone's toolbox."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-"
+#~ "fusion.html>`_, the alternative front-end "
+#~ "to ZynAddSubFX is one of the most"
+#~ " powerful synths in existance."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "`GeonKick <https://gitlab.com/iurie/geonkick>`_ is a"
+#~ " great kick drum synthesizer that can"
+#~ " also synthesize other types of "
+#~ "percussion."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Thanks to Yuri, Zrythm is packaged "
+#~ "for FreeBSD and the package can be"
+#~ " found at `FreshPorts "
+#~ "<https://www.freshports.org/audio/zrythm/>`_."
+#~ msgstr ""
+
+#~ msgid "GNU/Linux"
+#~ msgstr ""
+
+#~ msgid "Official Builds"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "You can install the latest version "
+#~ "of Zrythm for your distro `here "
+#~ "<https://software.opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This is the recommended way to "
+#~ "install the latest version for most "
+#~ "users."
+#~ msgstr ""
+
+#~ msgid "Flatpak"
+#~ msgstr ""
+
+#~ msgid "Flatpak builds are coming soon."
+#~ msgstr ""
+
+#~ msgid "AppImage"
+#~ msgstr ""
+
+#~ msgid "AppImage builds are coming soon."
+#~ msgstr ""
+
+#~ msgid "Fedora"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For Fedora users, ycollet maintains a"
+#~ " Zrythm package in `copr "
+#~ "<https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/>`_"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm is available in `LibraZik 2 "
+#~ "<https://librazik.tuxfamily.org/>`_ for testing."
+#~ msgstr ""
+
+#~ msgid "AUR"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For Arch GNU/Linux users, Zrythm is "
+#~ "available in the AUR under `zrythm "
+#~ "<https://aur.archlinux.org/packages/zrythm/>`_ and "
+#~ "`zrythm-git <https://aur.archlinux.org/packages/zrythm-"
+#~ "git/>`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm uses the Meson build system, "
+#~ "so the procedure to build and "
+#~ "install is as follows:"
+#~ msgstr ""
+
+#~ msgid "See the ``meson.options`` file for installation options."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Install from source in the same "
+#~ "way as for GNU/Linux. No support "
+#~ "is offered."
+#~ msgstr ""
+
+#~ msgid "http://www.upgradefromwindows.com"
+#~ msgstr ""
+
+#~ msgid "Unix-compatible OS"
+#~ msgstr ""
+
+#~ msgid "GTK 3.22 or later"
+#~ msgstr ""
+
+#~ msgid "A JACK patchbay such as Carla or Catia"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm is a digital audio workstation"
+#~ " designed to be featureful and easy"
+#~ " to use. It has the following "
+#~ "features."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Allows you to automate almost anything"
+#~ " with automation events using straight "
+#~ "lines, ramps and curves, or with "
+#~ "CV signals from LFO and envelope "
+#~ "plugins."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "We plan to add FreeBSD support to"
+#~ " the installer mentioned in `GNU with"
+#~ " Linux`_."
+#~ msgstr ""
+
+#~ msgid "See `GNU with Linux`_."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Install from source manually as "
+#~ "mentioned in `GNU with Linux`_. No "
+#~ "support is offered at the moment."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The installer supports the following "
+#~ "distros (and derivatives): - Ubuntu "
+#~ "18.10, 19.04, 19.10 - amd64 - "
+#~ "Debian 10 - amd64 - Arch Linux "
+#~ "- x86_64 - Fedora 31 - x86_64"
+#~ msgstr ""
+
+#~ msgid "Any Unix-compatible OS"
+#~ msgstr ""
+
+#~ msgid "Ubuntu 18.10, 19.04, 19.10 - amd64"
+#~ msgstr ""
+
+#~ msgid "Debian 10 - amd64"
+#~ msgstr ""
+
+#~ msgid "Arch Linux - x86_64"
+#~ msgstr ""
+
+#~ msgid "Fedora 31 - x86_64"
+#~ msgstr ""
+
+#~ msgid "Windows is not supported at the moment."
+#~ msgstr ""
+
+#~ msgid "A Windows installer is coming soon."
+#~ msgstr ""
+
+#~ msgid "Building with mingw64"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For reference, the following MSYS2/MinGW64 "
+#~ "packages are needed (mingw-w64... prefix "
+#~ "abbreviated):"
+#~ msgstr ""
+
+#~ msgid "cantarell-fonts"
+#~ msgstr ""
+
+#~ msgid "gtk3"
+#~ msgstr ""
+
+#~ msgid "rubberband"
+#~ msgstr ""
+
+#~ msgid "fftw"
+#~ msgstr ""
+
+#~ msgid "meson"
+#~ msgstr ""
+
+#~ msgid "gcc"
+#~ msgstr ""
+
+#~ msgid "pkg-config"
+#~ msgstr ""
+

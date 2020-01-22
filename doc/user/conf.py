@@ -143,6 +143,7 @@ html_context = {
         'current_version': '{0}'.format(release),
         'languages':
                 [('en', 'English'),
+                 ('en_GB', 'English UK'),
                  ('fr', 'Français'),
                  ('it', 'Italiano'),
                  ('es', "Español"),
