@@ -7,25 +7,27 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-07 16:40+0000\n"
-"PO-Revision-Date: 2019-07-02 08:02+0000\n"
-"Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
+"POT-Creation-Date: 2019-12-16 09:57+0000\n"
+"PO-Revision-Date: 2020-01-22 19:47+0000\n"
+"Last-Translator: yu zhang <zhangyu201510@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/manualappendix/zh_Hans/>\n"
 "Language: zh\n"
-"Language-Team: Chinese (Simplified) "
-"<https://hosted.weblate.org/projects/zrythm/manualappendix/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.11-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../appendix/intro.rst:6
 msgid "Appendix"
-msgstr ""
+msgstr "附录"
 
 #: ../../appendix/menu-actions.rst:6
+#, fuzzy
 msgid "Menu Actions"
-msgstr ""
+msgstr "操作菜单"
 
 #: ../../appendix/shortcut-keys.rst:6
 msgid "Shortcut Keys"
@@ -45,7 +47,7 @@ msgstr ""
 
 #: ../../appendix/troubleshooting.rst:8
 msgid "TODO"
-msgstr ""
+msgstr "确定"
 
 #~ msgid ""
 #~ "The app icon is missing Run `sudo"
@@ -78,4 +80,3 @@ msgstr ""
 #~ "Run `sudo touch /usr/share/icons/hicolor` and"
 #~ " `sudo gtk-update-icon-cache`"
 #~ msgstr ""
-
