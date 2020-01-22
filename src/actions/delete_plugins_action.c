@@ -33,12 +33,12 @@ delete_plugins_action_new (
   Track *           tr,
   int               slot)
 {
-	DeletePluginsAction * self =
+  DeletePluginsAction * self =
     calloc (1, sizeof (
-    	DeletePluginsAction));
+      DeletePluginsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UA_DELETE_PLUGINS;
+    UA_DELETE_PLUGINS;
 
   self->tr_pos = tr->pos;
   self->slot = slot;
@@ -49,7 +49,7 @@ delete_plugins_action_new (
 
 int
 delete_plugins_action_do (
-	DeletePluginsAction * self)
+  DeletePluginsAction * self)
 {
   Channel * ch =
     TRACKLIST->tracks[self->tr_pos]->channel;
@@ -73,7 +73,7 @@ delete_plugins_action_do (
  */
 int
 delete_plugins_action_undo (
-	DeletePluginsAction * self)
+  DeletePluginsAction * self)
 {
   Plugin * pl;
   Channel * ch =
@@ -104,7 +104,7 @@ delete_plugins_action_undo (
 
 char *
 delete_plugins_action_stringize (
-	DeletePluginsAction * self)
+  DeletePluginsAction * self)
 {
   if (self->ms->num_slots == 1)
     return g_strdup_printf (
@@ -117,7 +117,7 @@ delete_plugins_action_stringize (
 
 void
 delete_plugins_action_free (
-	DeletePluginsAction * self)
+  DeletePluginsAction * self)
 {
   mixer_selections_free (self->ms);
 

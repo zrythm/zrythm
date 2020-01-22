@@ -67,6 +67,7 @@ typedef struct _MainWindowWidget
   CenterDockWidget *       center_dock;
   BotBarWidget *           bot_bar;
   int                      is_maximized;
+  int                      is_fullscreen;
   int                      height;
   int                      width;
   GtkAccelGroup *          accel_group;

@@ -1127,14 +1127,14 @@ activate_fullscreen (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  if (MAIN_WINDOW->is_maximized)
+  if (MAIN_WINDOW->is_fullscreen)
     {
-      gtk_window_unmaximize (
+      gtk_window_unfullscreen (
         GTK_WINDOW (MAIN_WINDOW));
     }
   else
     {
-      gtk_window_maximize (
+      gtk_window_fullscreen (
         GTK_WINDOW (MAIN_WINDOW));
     }
 }

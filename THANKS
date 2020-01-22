@@ -27,10 +27,18 @@ Thanks:
    * Assistance with LV2 and audio-related code
  Eli Schwartz
    * Help with meson, packaging and various things
+ rghvdberg
+   * Testing and ideas
+ vinceliuice
+   * Author of the GTK+ matcha theme we use
+ Breeze icons contributors
+   * Many icons we use
+ Paul Davis
+   * Useful code we borrowed from Ardour
 
 ----
 
-Copyright (C) 2019 Alexandros Theodotou
+Copyright (C) 2019-2020 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
