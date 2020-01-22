@@ -795,9 +795,19 @@ plugin_close_ui (Plugin *plugin)
   switch (plugin->descr->protocol)
     {
     case PROT_LV2:
+      if (GTK_IS_WIDGET (
+            plugin->lv2->window))
+        g_signal_handler_disconnect (
+          plugin->lv2->window,
+          plugin->lv2->delete_event_id);
       lv2_gtk_close_ui (plugin->lv2);
       break;
     case PROT_VST:
+      if (GTK_IS_WIDGET (
+            plugin->vst->gtk_window_parent))
+        g_signal_handler_disconnect (
+          plugin->vst->gtk_window_parent,
+          plugin->vst->delete_event_id);
       vst_plugin_close_ui (plugin->vst);
       break;
     default:

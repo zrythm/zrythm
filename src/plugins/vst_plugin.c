@@ -163,10 +163,9 @@ host_callback (
   float     opt)
 {
   VstPlugin * self = NULL;
-  if (effect)
+  if (effect && effect->user)
     {
       self = (VstPlugin *) effect->user;
-      g_return_val_if_fail (self, -1);
     }
 
   switch (opcode)
@@ -722,6 +721,7 @@ vst_plugin_instantiate (
           Port * port =
             port_new_with_type (
               TYPE_AUDIO, FLOW_INPUT, lbl);
+          port->tmp_plugin = self->plugin;
           plugin_add_in_port (
             self->plugin, port);
         }
@@ -736,6 +736,7 @@ vst_plugin_instantiate (
           Port * port =
             port_new_with_type (
               TYPE_AUDIO, FLOW_OUTPUT, lbl);
+          port->tmp_plugin = self->plugin;
           plugin_add_out_port (
             self->plugin, port);
         }
@@ -750,6 +751,7 @@ vst_plugin_instantiate (
           Port * port =
             port_new_with_type (
               TYPE_EVENT, FLOW_INPUT, lbl);
+          port->tmp_plugin = self->plugin;
           plugin_add_in_port (
             self->plugin, port);
         }
@@ -762,6 +764,7 @@ vst_plugin_instantiate (
           Port * port =
             port_new_with_type (
               TYPE_EVENT, FLOW_OUTPUT, lbl);
+          port->tmp_plugin = self->plugin;
           plugin_add_out_port (
             self->plugin, port);
         }
@@ -775,6 +778,7 @@ vst_plugin_instantiate (
             port_new_with_type (
               TYPE_CONTROL, FLOW_INPUT, lbl);
           port->vst_param_id = i;
+          port->tmp_plugin = self->plugin;
           plugin_add_in_port (
             self->plugin, port);
           port->control =
@@ -785,7 +789,8 @@ vst_plugin_instantiate (
   g_message (
     "start process %s", self->plugin->descr->name);
   effect->dispatcher (
-    self->aeffect, effStartProcess, 0, 0, NULL, 0.f);
+    self->aeffect, effStartProcess, 0, 0,
+    NULL, 0.f);
 
   /* load the parameter values. this must be done
    * after starting processing */

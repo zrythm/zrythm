@@ -1479,18 +1479,8 @@ channel_remove_plugin (
                 MIXER_SELECTIONS, plugin->slot,
                 F_PUBLISH_EVENTS);
             }
-          if (plugin->descr->protocol == PROT_LV2)
-            {
-              Lv2Plugin * lv2_plugin =
-                (Lv2Plugin *)
-                plugin->lv2;
-              if (GTK_IS_WIDGET (
-                    lv2_plugin->window))
-                g_signal_handler_disconnect (
-                  lv2_plugin->window,
-                  lv2_plugin->delete_event_id);
-              lv2_gtk_close_ui (lv2_plugin);
-            }
+          /* close the UI */
+          plugin_close_ui (plugin);
           plugin_disconnect (plugin);
           free_later (plugin, plugin_free);
         }
