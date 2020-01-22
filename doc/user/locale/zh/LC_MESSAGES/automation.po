@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-12 12:26+0100\n"
-"PO-Revision-Date: 2019-08-08 15:23+0000\n"
-"Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
+"PO-Revision-Date: 2020-01-22 19:47+0000\n"
+"Last-Translator: yu zhang <zhangyu201510@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/manualautomation/zh_Hans/>\n"
 "Language: zh\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.8-dev\n"
+"X-Generator: Weblate 3.11-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../automation/automation-lanes.rst:2
@@ -85,7 +85,7 @@ msgstr ""
 #: ../../automation/automation-lanes.rst:38
 #: ../../automation/automation-lanes.rst:43
 msgid "TODO"
-msgstr ""
+msgstr "确定"
 
 #: ../../automation/automation-lanes.rst:41
 msgid "Editing Curves"
