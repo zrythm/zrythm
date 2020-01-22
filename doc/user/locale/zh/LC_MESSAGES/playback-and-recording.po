@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-07 14:27+0000\n"
-"Last-Translator: Elizabeth Sherrock <lizzyd710@gmail.com>\n"
+"PO-Revision-Date: 2020-01-22 19:47+0000\n"
+"Last-Translator: yu zhang <zhangyu201510@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"zrythm/manualplayback-and-recording/zh_Hans/>\n"
 "Language: zh\n"
-"Language-Team: Chinese (Simplified) "
-"<https://hosted.weblate.org/projects/zrythm/manualplayback-and-"
-"recording/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.11-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../playback-and-recording/arming-for-recording.rst:19
@@ -31,7 +31,7 @@ msgstr ""
 #: ../../playback-and-recording/recording-midi.rst:21
 #: ../../playback-and-recording/transport-controls.rst:47
 msgid "TODO"
-msgstr ""
+msgstr "确定"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:19
 msgid "BPM and Time Signatures"
@@ -240,4 +240,3 @@ msgstr ""
 
 #~ msgid "Zrythm uses the following format for positions::"
 #~ msgstr ""
-
