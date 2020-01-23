@@ -17,11 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * Preferences window.
- */
+#include <locale.h>
 
 #include "audio/engine.h"
 #include "gui/widgets/midi_controller_mb.h"
@@ -57,42 +53,29 @@ on_language_changed (
   GtkComboBox *widget,
   PreferencesWidget * self)
 {
-  UiLanguage lang =
+  LocalizationLanguage lang =
     gtk_combo_box_get_active (widget);
 
   /* if locale exists */
-  char * match =
-    localization_locale_exists (lang);
+  char * code = localization_locale_exists (lang);
+  char * match = setlocale (LC_ALL, code);
+
   if (match)
     {
       gtk_widget_set_visible (
         GTK_WIDGET (self->locale_not_available),
         F_NOT_VISIBLE);
-      g_free (match);
     }
   /* locale doesn't exist */
   else
     {
       /* show warning */
-      char * template =
-        _("A locale for the language you have selected is \
-not available. Please enable one first using \
-the steps below and try again.\n\
-1. Uncomment any locale starting with the \
-language code <b>%s</b> in <b>/etc/locale.gen</b> (needs \
-root privileges)\n\
-2. Run <b>locale-gen</b> as root\n\
-3. Restart Zrythm");
-      char * code =
-      localization_get_string_code (lang);
       char * str =
-        g_strdup_printf (
-          template,
-          code);
+        ui_get_locale_not_available_string (lang);
       gtk_label_set_markup (
-        self->locale_not_available,
-        str);
+        self->locale_not_available, str);
       g_free (str);
+
       gtk_widget_set_visible (
         GTK_WIDGET (self->locale_not_available),
         F_VISIBLE);

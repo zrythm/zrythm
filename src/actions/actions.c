@@ -162,8 +162,8 @@ activate_manual (
   gpointer       user_data)
 {
 #ifdef MANUAL_PATH
-  UiLanguage lang =
-    (UiLanguage)
+  LocalizationLanguage lang =
+    (LocalizationLanguage)
     g_settings_get_enum (
       S_PREFERENCES,
       "language");

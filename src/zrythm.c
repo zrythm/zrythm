@@ -528,8 +528,7 @@ static void on_prompt_for_project (
             GTK_WINDOW (dialog),
             _("License Information"));
           gtk_window_set_icon_name (
-            GTK_WINDOW (dialog),
-            "zrythm");
+            GTK_WINDOW (dialog), "zrythm");
           gtk_dialog_run (GTK_DIALOG (dialog));
           gtk_widget_destroy (dialog);
 

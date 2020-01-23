@@ -334,7 +334,7 @@ load_lib (
       g_return_val_if_fail (prog, NULL);
       sprintf (
         cmd, "%s \"%s\"", prog, path);
-#else // if not WINDOWS_RELASE
+#else // if not WINDOWS_RELEASE
       sprintf (
         cmd, "zrythm_vst_check.exe \"%s\"", path);
 #endif

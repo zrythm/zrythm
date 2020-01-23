@@ -195,15 +195,13 @@ on_language_changed (
   GtkComboBox *widget,
   FirstRunAssistantWidget * self)
 {
-  UiLanguage lang =
-    (UiLanguage)
+  LocalizationLanguage lang =
+    (LocalizationLanguage)
     gtk_combo_box_get_active (widget);
 
   /* update settings */
   g_settings_set_enum (
-    S_PREFERENCES,
-    "language",
-    (int) lang);
+    S_PREFERENCES, "language", (int) lang);
 
   /* if locale exists */
   if (localization_init ())
@@ -229,25 +227,12 @@ on_language_changed (
         0);
 
       /* show warning */
-      char * template =
-        _("A locale for the language you have selected is \
-not available. Please enable one first using \
-the steps below and try again.\n\
-1. Uncomment any locale starting with the \
-language code <b>%s</b> in <b>/etc/locale.gen</b> (needs \
-root privileges)\n\
-2. Run <b>locale-gen</b> as root\n\
-3. Restart Zrythm");
-      char * code =
-      localization_get_string_code (lang);
       char * str =
-        g_strdup_printf (
-          template,
-          code);
+        ui_get_locale_not_available_string (lang);
       gtk_label_set_markup (
-        self->locale_not_available,
-        str);
+        self->locale_not_available, str);
       g_free (str);
+
       gtk_widget_set_visible (
         GTK_WIDGET (self->locale_not_available),
         F_VISIBLE);

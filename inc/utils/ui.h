@@ -27,6 +27,8 @@
 #ifndef __UTILS_UI_H__
 #define __UTILS_UI_H__
 
+#include "utils/localization.h"
+
 #include <gtk/gtk.h>
 
 typedef struct Position Position;
@@ -524,6 +526,16 @@ ui_setup_pan_algo_combo_box (
 void
 ui_setup_pan_law_combo_box (
   GtkComboBox * cb);
+
+/**
+ * Returns the "a locale for the language you have
+ * selected..." text based on the given language.
+ *
+ * Must be free'd by caller.
+ */
+char *
+ui_get_locale_not_available_string (
+  LocalizationLanguage lang);
 
 /**
  * Returns the contrasting color (variation of

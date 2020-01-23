@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include <math.h>
 
 #include "audio/engine.h"
@@ -556,19 +558,19 @@ ui_get_modifier_type_from_gesture (
 static GtkTreeModel *
 ui_create_language_model ()
 {
-  const int values[NUM_UI_LANGUAGES] = {
-    UI_ENGLISH,
-    UI_GERMAN,
-    UI_FRENCH,
-    UI_ITALIAN,
-    UI_NORWEGIAN,
-    UI_SPANISH,
-    UI_JAPANESE,
-    UI_PORTUGUESE,
-    UI_RUSSIAN,
-    UI_CHINESE,
+  const int values[NUM_LL_LANGUAGES] = {
+    LL_ENGLISH,
+    LL_GERMAN,
+    LL_FRENCH,
+    LL_ITALIAN,
+    LL_NORWEGIAN,
+    LL_SPANISH,
+    LL_JAPANESE,
+    LL_PORTUGUESE,
+    LL_RUSSIAN,
+    LL_CHINESE,
   };
-  const gchar *labels[NUM_UI_LANGUAGES] = {
+  const gchar *labels[NUM_LL_LANGUAGES] = {
     _("English [en]"),
     _("German [de]"),
     _("French [fr]"),
@@ -779,6 +781,42 @@ ui_setup_pan_law_combo_box (
     g_settings_get_enum (
       S_PREFERENCES,
       "pan-law"));
+}
+
+/**
+ * Returns the "a locale for the language you have
+ * selected..." text based on the given language.
+ *
+ * Must be free'd by caller.
+ */
+char *
+ui_get_locale_not_available_string (
+  LocalizationLanguage lang)
+{
+  /* show warning */
+#ifdef _WIN32
+  char * template =
+    _("A locale for the language you have \
+selected (%s) is not available. Please install one first \
+and restart Zrythm");
+#else
+  char * template =
+    _("A locale for the language you have selected is \
+not available. Please enable one first using \
+the steps below and try again.\n\
+1. Uncomment any locale starting with the \
+language code <b>%s</b> in <b>/etc/locale.gen</b> (needs \
+root privileges)\n\
+2. Run <b>locale-gen</b> as root\n\
+3. Restart Zrythm");
+#endif
+
+  const char * code =
+    localization_get_string_code (lang);
+  char * str =
+    g_strdup_printf (template, code);
+
+  return str;
 }
 
 /**

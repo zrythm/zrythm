@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,41 +36,6 @@
 #include <glib/gi18n.h>
 
 /**
- * Returns the character string code for the
- * language (e.g. "fr").
- */
-char *
-localization_get_string_code (
-  UiLanguage lang)
-{
-  switch (lang)
-    {
-    case UI_ENGLISH:
-      return g_strdup ("en");
-    case UI_GERMAN:
-      return g_strdup ("de");
-    case UI_FRENCH:
-      return g_strdup ("fr");
-    case UI_ITALIAN:
-      return g_strdup ("it");
-    case UI_NORWEGIAN:
-      return g_strdup ("nb_NO");
-    case UI_SPANISH:
-      return g_strdup ("es");
-    case UI_JAPANESE:
-      return g_strdup ("ja");
-    case UI_PORTUGUESE:
-      return g_strdup ("pt");
-    case UI_RUSSIAN:
-      return g_strdup ("ru");
-    case UI_CHINESE:
-      return g_strdup ("zh");
-    default:
-      g_return_val_if_reached (NULL);
-    }
-}
-
-/**
  * Returns the first locale found matching the given
  * language, or NULL if a locale for the given
  * language does not exist.
@@ -79,8 +44,14 @@ localization_get_string_code (
  */
 char *
 localization_locale_exists (
-  UiLanguage lang)
+  LocalizationLanguage lang)
 {
+#ifdef _WIN32
+  const char * _code =
+    localization_get_string_code (lang);
+  return g_strdup (_code);
+#endif
+
   /* get available locales on the system */
   FILE *fp;
   char path[1035];
@@ -106,7 +77,7 @@ localization_locale_exists (
   pclose (fp);
 
 #define IS_MATCH(caps,code) \
-  case UI_##caps: \
+  case LL_##caps: \
     match = string_array_contains_substr ( \
           installed_locales, \
           num_installed_locales, \
@@ -133,6 +104,12 @@ localization_locale_exists (
 
 #undef IS_MATCH
 
+  match = g_strdup (match);
+  for (int i = 0; i < num_installed_locales; i++)
+    {
+      g_free (installed_locales[i]);
+    }
+
   return match;
 }
 
@@ -146,51 +123,54 @@ localization_locale_exists (
 int
 localization_init ()
 {
-#ifdef _WIN32
-  /* TODO */
-  setlocale (LC_ALL, "C");
-#else
-
   /* get selected locale */
   GSettings * prefs =
     g_settings_new ("org.zrythm.Zrythm.preferences");
-  UiLanguage lang =
+  LocalizationLanguage lang =
     g_settings_get_enum (
       prefs,
       "language");
   g_object_unref (G_OBJECT (prefs));
 
-  char * match =
-    localization_locale_exists (lang);
+  char * code = localization_locale_exists (lang);
+  char * match = setlocale (LC_ALL, code);
 
   if (match)
     {
-      g_message ("setting locale to %s",
-                 match);
-      setlocale (LC_ALL, match);
-      g_free (match);
+      g_message (
+        "setting locale to %s (found %s)",
+        code, match);
+      char buf[120];
+      sprintf (buf, "LANG=%s", code);
+      putenv (buf);
     }
   else
     {
-      g_warning ("No locale for selected language is "
-                 "installed, using default");
+      g_warning (
+        "No locale for \"%s\" is "
+        "installed, using default", code);
       setlocale (LC_ALL, "C");
     }
-#endif
 
-#ifdef _WIN32
-  bindtextdomain (
-    GETTEXT_PACKAGE, "share/locale");
+  /* bind text domain */
+#ifdef WINDOWS_RELEASE
+  bindtextdomain (GETTEXT_PACKAGE, "share/locale");
 #else
   bindtextdomain (
     GETTEXT_PACKAGE, CONFIGURE_DATADIR "/locale");
 #endif
+
+  /* set domain codeset */
+#ifdef _WIN32
+  bind_textdomain_codeset (GETTEXT_PACKAGE, "1252");
+#else
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+#endif
+
+  /* set domain */
   textdomain (GETTEXT_PACKAGE);
 
-#ifdef _WIN32
-  return 1;
-#else
+  g_free (code);
+
   return match != NULL;
-#endif
 }

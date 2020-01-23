@@ -27,34 +27,47 @@
 #ifndef __UTILS_LOCALIZATION_H__
 #define __UTILS_LOCALIZATION_H__
 
+#include <gtk/gtk.h>
+
 /**
  * @addtogroup utils
  *
  * @{
  */
 
-typedef enum UiLanguage
+typedef enum LocalizationLanguage
 {
-  UI_ENGLISH,
-  UI_GERMAN,
-  UI_FRENCH,
-  UI_ITALIAN,
-  UI_NORWEGIAN,
-  UI_SPANISH,
-  UI_JAPANESE,
-  UI_PORTUGUESE,
-  UI_RUSSIAN,
-  UI_CHINESE,
-  NUM_UI_LANGUAGES,
-} UiLanguage;
+  LL_ENGLISH,
+  LL_GERMAN,
+  LL_FRENCH,
+  LL_ITALIAN,
+  LL_NORWEGIAN,
+  LL_SPANISH,
+  LL_JAPANESE,
+  LL_PORTUGUESE,
+  LL_RUSSIAN,
+  LL_CHINESE,
+  NUM_LL_LANGUAGES,
+} LocalizationLanguage;
+
+static const char * language_strings[] = {
+  "en", "de", "fr", "it", "nb_NO", "es",
+  "ja", "pt", "ru", "zh", };
 
 /**
  * Returns the character string code for the
  * language (e.g. "fr").
  */
-char *
+static inline const char *
 localization_get_string_code (
-  UiLanguage lang);
+  LocalizationLanguage lang)
+{
+  g_return_val_if_fail (
+    lang >= LL_ENGLISH && lang < NUM_LL_LANGUAGES,
+    NULL);
+
+  return language_strings[lang];
+}
 
 /**
  * Returns the first locale found matching the given
@@ -65,7 +78,7 @@ localization_get_string_code (
  */
 char *
 localization_locale_exists (
-  UiLanguage lang);
+  LocalizationLanguage lang);
 
 /**
  * Sets the locale to the currently selected one and
