@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -133,16 +133,18 @@ ui_show_message_full (
   GtkDialogFlags flags =
     GTK_DIALOG_DESTROY_WITH_PARENT;
   GtkWidget * dialog =
-    gtk_message_dialog_new (parent_window,
-      flags,
-      type,
-      GTK_BUTTONS_CLOSE,
-      "%s",
-      message);
+    gtk_message_dialog_new (
+      parent_window, flags, type,
+      GTK_BUTTONS_CLOSE, "%s", message);
   gtk_window_set_title (
     GTK_WINDOW (dialog), "Zrythm");
   gtk_window_set_icon_name (
     GTK_WINDOW (dialog), "zrythm");
+  if (parent_window)
+    {
+      gtk_window_set_transient_for (
+        GTK_WINDOW (dialog), parent_window);
+    }
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 }

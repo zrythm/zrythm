@@ -383,7 +383,12 @@ first_run_assistant_widget_init (
   g_signal_connect (
     G_OBJECT (self->reset), "clicked",
     G_CALLBACK (on_reset_clicked), self);
+#ifdef _WIN32
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->test_backends), 0);
+#else
   g_signal_connect (
     G_OBJECT (self->test_backends), "clicked",
     G_CALLBACK (on_test_backends_clicked), self);
+#endif
 }
