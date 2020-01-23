@@ -213,16 +213,19 @@ host_callback (
     case audioMasterCanDo:
       return host_can_do ((const char *) ptr);
     case audioMasterAutomate:
-      {
-        Port * port =
-          vst_plugin_get_port_from_param_id (
-            self, index);
-        g_return_val_if_fail (port, -1);
-        port->control = opt;
-        g_message (
-          "setting %s to %f",
-          port->identifier.label, (double) opt);
-      }
+      /* some plugins call this during the test
+       * for some reason */
+      if (self)
+        {
+          Port * port =
+            vst_plugin_get_port_from_param_id (
+              self, index);
+          g_return_val_if_fail (port, -1);
+          port->control = opt;
+          g_message (
+            "setting %s to %f",
+            port->identifier.label, (double) opt);
+        }
       break;
     default:
       g_message ("Plugin requested value of opcode %d", opcode);

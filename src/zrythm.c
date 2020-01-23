@@ -365,22 +365,41 @@ init_thread (
 {
   set_progress_status (
     ZRYTHM,
-    _("Initializing symap"),
+    _("Initializing settings"),
     0.0);
+  settings_init (&ZRYTHM->settings);
+
+  ZRYTHM->debug =
+    env_get_int ("ZRYTHM_DEBUG", 0);
+  /* init zrythm folders ~/Zrythm */
+  set_progress_status (
+    ZRYTHM,
+    _("Initializing Zrythm directories"),
+    0.01);
+  init_dirs_and_files ();
+  init_recent_projects ();
+  init_templates ();
+
+  /* init log */
+  set_progress_status (
+    ZRYTHM,
+    _("Initializing logging system"),
+    0.02);
+  log_init ();
+
+  set_progress_status (
+    ZRYTHM,
+    _("Initializing symap"),
+    0.03);
   ZRYTHM->symap = symap_new ();
+
   set_progress_status (
     ZRYTHM,
     _("Initializing caches"),
     0.05);
   CAIRO_CACHES = z_cairo_caches_new ();
   UI_CACHES = ui_caches_new ();
-  set_progress_status (
-    ZRYTHM,
-    _("Initializing settings"),
-    0.1);
-  settings_init (&ZRYTHM->settings);
-  ZRYTHM->debug =
-    env_get_int ("ZRYTHM_DEBUG", 0);
+
   set_progress_status (
     ZRYTHM,
     _("Initializing plugin manager"),
@@ -527,22 +546,6 @@ static void on_prompt_for_project (
 
           return;
         }
-
-      /* init zrythm folders ~/Zrythm */
-      set_progress_status (
-        ZRYTHM,
-        _("Initializing Zrythm directories"),
-        0.7);
-      init_dirs_and_files ();
-      init_recent_projects ();
-      init_templates ();
-
-      /* init log */
-      set_progress_status (
-        ZRYTHM,
-        _("Initializing logging system"),
-        0.75);
-      log_init ();
 
       set_progress_status (
         ZRYTHM,
