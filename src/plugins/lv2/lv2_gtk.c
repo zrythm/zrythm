@@ -1663,9 +1663,6 @@ lv2_gtk_open_ui (
       G_OBJECT (window), "delete-event",
       G_CALLBACK (on_delete_event), plugin);
   g_return_val_if_fail (plugin->lilv_plugin, -1);
-  LilvNode* name =
-    lilv_plugin_get_name (plugin->lilv_plugin);
-  lilv_node_free (name);
 
   /* connect destroy signal */
   g_signal_connect (
@@ -1701,12 +1698,17 @@ lv2_gtk_open_ui (
     {
       if (plugin->externalui)
         {
-          g_message ("Instantiating external UI...");
+          g_message (
+            "Instantiating external UI...");
 
           LV2_External_UI_Host extui;
           extui.ui_closed = on_external_ui_closed;
+          LilvNode* name =
+            lilv_plugin_get_name (
+              plugin->lilv_plugin);
           extui.plugin_human_id =
             lilv_node_as_string (name);
+          lilv_node_free (name);
           lv2_ui_instantiate (
             plugin,
             lilv_node_as_uri (plugin->ui_type),
