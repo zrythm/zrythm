@@ -1481,6 +1481,7 @@ channel_remove_plugin (
             }
           /* close the UI */
           plugin_close_ui (plugin);
+
           plugin_disconnect (plugin);
           free_later (plugin, plugin_free);
         }

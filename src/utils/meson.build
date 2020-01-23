@@ -36,6 +36,7 @@ util_srcs = [
   'stack.c',
   'string.c',
   'symap.c',
+  'system.c',
   'ui.c',
   'yaml.c',
   'windows_errors.c',

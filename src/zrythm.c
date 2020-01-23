@@ -670,17 +670,15 @@ zrythm_app_startup (
   g_object_set (
     gtk_settings_get_default (),
     "gtk-cursor-theme-name", "Adwaita", NULL);
+  /*g_object_set (*/
+    /*gtk_settings_get_default (),*/
+    /*"gtk-icon-theme-name", "breeze-dark", NULL);*/
 #else
   g_object_set (
     gtk_settings_get_default (),
     "gtk-font-name", "Cantarell Regular 10", NULL);
 #endif
   g_message ("Theme set");
-
-  /*g_object_set (gtk_settings_get_default (),*/
-                /*"gtk-icon-theme-name",*/
-                /*"breeze-dark",*/
-                /*NULL);*/
 
   gtk_icon_theme_add_resource_path (
     gtk_icon_theme_get_default (),

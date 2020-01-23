@@ -78,6 +78,9 @@ ext_port_clear_buffer (
 {
   float * buf =
     ext_port_get_buffer (ext_port, nframes);
+  if (!buf)
+    return;
+
   g_message ("clearing buffer of %p", ext_port);
 
   memset (

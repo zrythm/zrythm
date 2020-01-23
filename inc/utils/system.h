@@ -17,29 +17,31 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "plugins/vst_plugin.h"
+/**
+ * \file
+ *
+ * System utils.
+ */
 
-#include <gtk/gtk.h>
+#ifndef __UTILS_SYSTEM_H__
+#define __UTILS_SYSTEM_H__
+
+/**
+ * @addtogroup utils
+ *
+ * @{
+ */
+
+/**
+ * Runs the given command in the background, waits for
+ * it to finish and returns its exit code.
+ */
 int
-main (int    argc,
-      char **argv)
-{
-  g_message (
-    "Running VST check on %s...", argv[1]);
+system_run_cmd (
+  const char * cmd);
 
-  PluginDescriptor * descr =
-    vst_plugin_create_descriptor_from_path (
-      argv[1], 1);
+/**
+ * @}
+ */
 
-  if (!descr)
-    return -1;
-
-  /* sleep to wait for crashes */
-  g_usleep (10000);
-
-  g_message (
-    "zrythm_vst_check: Plugin %s passed",
-    argv[1]);
-
-  return 0;
-}
+#endif

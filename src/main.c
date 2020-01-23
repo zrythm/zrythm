@@ -304,6 +304,11 @@ main (int    argc,
     ver, ISSUE_TRACKER_URL);
   g_free (ver);
 
+  char * cur_dir = g_get_current_dir ();
+  g_message (
+    "Running Zrythm in %s", cur_dir);
+  g_free (cur_dir);
+
   g_message ("GTK_THEME=%s", getenv ("GTK_THEME"));
 
   /* install segfault handler */

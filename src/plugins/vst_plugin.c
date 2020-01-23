@@ -56,6 +56,7 @@
 #include "project.h"
 #include "utils/io.h"
 #include "utils/math.h"
+#include "utils/system.h"
 #include "utils/windows_errors.h"
 
 #ifdef HAVE_X11
@@ -325,9 +326,24 @@ load_lib (
   if (test)
     {
       char cmd[3000];
-      sprintf (cmd, "zrythm_vst_check \"%s\"", path);
+#ifdef _WIN32
+#ifdef WINDOWS_RELEASE
+      char * prog =
+        g_find_program_in_path (
+          "zrythm_vst_check.exe");
+      g_return_val_if_fail (prog, NULL);
+      sprintf (
+        cmd, "%s \"%s\"", prog, path);
+#else // if not WINDOWS_RELASE
+      sprintf (
+        cmd, "zrythm_vst_check.exe \"%s\"", path);
+#endif
+#else // if not _WIN32
+      sprintf (
+        cmd, "zrythm_vst_check \"%s\"", path);
+#endif
       g_message ("running cmd: %s", cmd);
-      if (system (cmd) != 0)
+      if (system_run_cmd (cmd) != 0)
         {
           g_warning (
             "%s: VST plugin failed the test", path);
