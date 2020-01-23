@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.425] - 2020-01-23
+- Add undoable plugin delete action
+- Send time info to VST plugins
+- Make VST parameters editable from the inspector
+- Make VST parameters automatable
+- Hardcode standard LV2 and VST paths
+- Start logging earlier during initialization
+- Add English UK translation
+- Update Chinese and Japanese translations
+- Fix VST plugin window not getting closed when plugin is deleted
+- Fix crash when cloning VST plugins
+- Fix window and exe icons not showing on Windows
+- Fix KX studio LV2 UIs crashing on load
+- Fix VST scanning not working on Windows
+- Fix localization not working on Windows
+- Fix broken WAV export
+- Fix VSTs not receiving correct sample rate and block length
+- Fix fullscreen action
+
 ## [0.7.383] - 2020-01-18
 - Add SDL2 audio backend
 - Add experimental Windows VST support
