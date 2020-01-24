@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:23+0000\n"
-"PO-Revision-Date: 2019-12-17 16:21+0000\n"
+"PO-Revision-Date: 2020-01-24 15:57+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualchords-and-scales/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.11-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../chords-and-scales/intro.rst:6
@@ -36,7 +36,6 @@ msgid ""
 msgstr "コードとスケールを使用して、さまざまなコードを簡単に試聴でき、コード進行を追跡しやすくすることができます。"
 
 #: ../../chords-and-scales/overview.rst:12
-#, fuzzy
 msgid "Chord Pad"
 msgstr "コードパッド"
 
