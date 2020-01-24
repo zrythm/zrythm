@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-09 00:34+0100\n"
-"PO-Revision-Date: 2020-01-24 15:57+0000\n"
+"PO-Revision-Date: 2020-01-24 23:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualmixing/ja/>\n"
@@ -101,7 +101,7 @@ msgstr ""
 
 #: ../../mixing/routing/ports.rst:6
 msgid "Ports"
-msgstr ""
+msgstr "ポート"
 
 #: ../../mixing/routing/routing-overview.rst:6
 msgid "Routing Overview"
