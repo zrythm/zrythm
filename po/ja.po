@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-12-24 22:26+0000\n"
-"PO-Revision-Date: 2020-01-24 15:57+0000\n"
+"PO-Revision-Date: 2020-01-24 23:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -626,7 +626,7 @@ msgstr "コレクション"
 
 #: src/gui/widgets/plugin_browser.c:1013
 msgid "Category"
-msgstr "項目"
+msgstr "カテゴリー"
 
 #: src/gui/widgets/plugin_browser.c:1023
 msgid "Protocol"
@@ -945,7 +945,7 @@ msgstr "グループ"
 
 #: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1261
 msgid "Instrument"
-msgstr "音源"
+msgstr "インストゥルメント"
 
 #: src/gui/widgets/route_target_selector_popover.c:227
 #: src/gui/widgets/route_target_selector_popover.c:396
@@ -959,7 +959,7 @@ msgstr "%sへルーティング中"
 
 #: src/gui/widgets/file_browser_window.c:38
 msgid "File Browser"
-msgstr "ファイルブラウザー"
+msgstr "ファイルブラウザ"
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
@@ -2171,7 +2171,7 @@ msgstr "目印の名称"
 
 #: resources/ui/header_notebook.ui:37
 msgid "Home"
-msgstr "ホーム"
+msgstr "編集"
 
 #: resources/ui/header_notebook.ui:74
 msgid "View"
