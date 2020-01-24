@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2020-01-24 15:57+0000\n"
+"PO-Revision-Date: 2020-01-24 23:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/ja/>\n"
@@ -434,11 +434,11 @@ msgstr ""
 
 #: ../../editing/overview.rst:12
 msgid "Automation Editor"
-msgstr ""
+msgstr "オートメーションエディター"
 
 #: ../../editing/overview.rst:13
 msgid "Chord Editor"
-msgstr ""
+msgstr "コードエディター"
 
 #: ../../editing/overview.rst:15
 msgid ""
@@ -479,7 +479,7 @@ msgstr ""
 #: ../../editing/piano-roll-editing/ruler.rst:6
 #: ../../editing/timeline/ruler.rst:6
 msgid "Ruler"
-msgstr ""
+msgstr "ルーラー"
 
 #: ../../editing/piano-roll-editing/selection-info-bar.rst:6
 msgid "Selection Info Bar"
@@ -607,7 +607,7 @@ msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:28
 msgid "Not used at the moment."
-msgstr ""
+msgstr "現時点では使用されていません。"
 
 #: ../../editing/snapping-grid-options.rst:29
 msgid "Length"
