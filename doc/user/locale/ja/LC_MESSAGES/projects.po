@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 07:46+0000\n"
-"PO-Revision-Date: 2019-09-09 17:25+0000\n"
+"PO-Revision-Date: 2020-01-24 23:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualprojects/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/manualprojects/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.11-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../projects/intro.rst:6
@@ -38,58 +39,58 @@ msgstr ""
 
 #: ../../projects/project-info.rst:14
 msgid "Project Structure"
-msgstr ""
+msgstr "プロジェクト構造"
 
 #: ../../projects/project-info.rst:38
 msgid "backups"
-msgstr ""
+msgstr "バックアップ"
 
 #: ../../projects/project-info.rst:39
 msgid "Regular backups taken automatically by Zrythm"
-msgstr ""
+msgstr "Zrythm によって自動的にバックアップされる定期的なバックアップ"
 
 #: ../../projects/project-info.rst:40
 msgid "myproject.bak"
-msgstr ""
+msgstr "myproject.bak"
 
 #: ../../projects/project-info.rst:41
 msgid "An example backup project"
-msgstr ""
+msgstr "バックアップ プロジェクトの例"
 
 #: ../../projects/project-info.rst:43
+#, fuzzy
 msgid "states"
-msgstr ""
+msgstr "states"
 
 #: ../../projects/project-info.rst:43
 msgid "Contains plugin states at the time of save (for LV2)"
-msgstr ""
+msgstr "保存時のプラグインの状態を含む(LV2用)"
 
 #: ../../projects/project-info.rst:46
 msgid "exports"
-msgstr ""
+msgstr "exports"
 
 #: ../../projects/project-info.rst:46
 msgid "Default directory for exporting files related to the project"
-msgstr ""
+msgstr "プロジェクトに関連するファイルをエクスポートするためのデフォルトディレクトリ"
 
 #: ../../projects/project-info.rst:49
 msgid "pool"
-msgstr ""
+msgstr "pool"
 
 #: ../../projects/project-info.rst:49
 msgid ""
 "Used by Zrythm to store and load files used by the Project, such as audio"
 " files"
-msgstr ""
+msgstr "Zrythm がオーディオ ファイルなどのプロジェクトで使用するファイルを格納およびロードするために使用します。"
 
 #: ../../projects/project-info.rst:51
-#, fuzzy
 msgid "project.yml"
-msgstr "プロジェクト"
+msgstr "project.yml"
 
 #: ../../projects/project-info.rst:52
 msgid "The Project file"
-msgstr ""
+msgstr "プロジェクト ファイル"
 
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
@@ -112,11 +113,10 @@ msgid ""
 msgstr "プロジェクトファイル構造に変更がない場合は、以前のバージョンからのプロジェクトを開く可能性がありますが、これは保証されませんので、以前のバージョンを使用して作成されたプロジェクトを開きたい場合は、Zrythmのそのバージョンをインストールしてください。"
 
 #: ../../projects/project-management-and-compatibility.rst:28
-#, fuzzy
 msgid ""
 "Each project file will mention the version of Zrythm it was made with and"
 " the date it was saved"
-msgstr "各プロジェクト ファイルには、作成された Zrythm のバージョンと日付が記載されます。"
+msgstr "各プロジェクトファイルには、それが作られたZrythmのバージョンとそれが保存された日付が記載されます"
 
 #: ../../projects/saving-loading.rst:6
 msgid "Saving & Loading"
@@ -337,4 +337,3 @@ msgstr "バックアップは、プロジェクト・ディレクトリの``back
 #~ "Zrythm "
 #~ "が最初に起動すると、プロジェクトを読み込むか、新しいプロジェクトを作成するかを選択します。デフォルトでは、Zrythm は"
 #~ " ~/ユーザー名/Zrythm を使用して新しいプロジェクトを作成します。"
-
