@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:32+0000\n"
-"PO-Revision-Date: 2020-01-24 15:57+0000\n"
+"PO-Revision-Date: 2020-01-24 22:46+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/ja/>\n"
@@ -22,21 +22,21 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:6
 msgid "File Browser"
-msgstr ""
+msgstr "ファイルブラウザ"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 msgid ""
 "The File Browser makes it easy to navigate through files on your computer"
 " or through your custom collections."
-msgstr ""
+msgstr "ファイル ブラウザを使用すると、パソコン上のファイルやカスタム コレクションを簡単にナビゲードすることができます。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:12
 msgid "This is a work in progress."
-msgstr ""
+msgstr "これはTODOです"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:15
 msgid "Filtering"
-msgstr ""
+msgstr "フィルタリング"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:17
 #: ../../plugins-files/audio-midi-files/file-browser.rst:22
@@ -45,21 +45,21 @@ msgstr "TODO"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:20
 msgid "Collections"
-msgstr ""
+msgstr "コレクション"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:25
 msgid "Importing Files"
-msgstr ""
+msgstr "ファイルのインポート"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:27
 msgid ""
 "Files are imported by either double clicking them in the browser or "
 "dragging and dropping them into a track."
-msgstr ""
+msgstr "ファイルは、ブラウザでダブルクリックするか、トラックにドラッグアンドドロップしてインポートされます。"
 
 #: ../../plugins-files/audio-midi-files/intro.rst:6
 msgid "Audio & MIDI Files"
-msgstr ""
+msgstr "オーディオと MIDI ファイル"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:6
 msgid "Overview"
@@ -71,48 +71,50 @@ msgid ""
 " imported by dragging and dropping from your computer or from the File "
 "Browser into a track."
 msgstr ""
+"Zrythm は、プロジェクトに MIDI ファイルとオーディオ "
+"ファイルをインポートできます。ファイルは、コンピュータまたはファイルブラウザからトラックにドラッグアンドドロップすることでインポートできます。"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:14
 msgid "Supported Audio Formats"
-msgstr ""
+msgstr "対応されているオーディオファイル形式"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:15
 msgid "Zrythm supports OGG, FLAC, WAV and MP3."
-msgstr ""
+msgstr "Zrythm は OGG、FLAC、WAV、および MP3 をサポートしています。"
 
 #: ../../plugins-files/intro.rst:6
 msgid "Plugins & Files"
-msgstr ""
+msgstr "プラグインとファイル"
 
 #: ../../plugins-files/plugins/inspector-page.rst:6
 msgid "Inspector Page"
-msgstr ""
+msgstr "インスペクターページ"
 
 #: ../../plugins-files/plugins/inspector-page.rst:8
 msgid ""
 "When a Plugin is selected in the Mixer, its page will appear in the "
 "Inspector as follows."
-msgstr ""
+msgstr "ミキサーでプラグインを選択すると、そのページがインスペクタに次のように表示されます。"
 
 #: ../../plugins-files/plugins/inspector-page.rst:14
 msgid ""
 "This page will display information about the Plugin and its ports and "
 "allow you to make changes."
-msgstr ""
+msgstr "このページには、プラグインとそのポートに関する情報が表示され、変更を行うことができます。"
 
 #: ../../plugins-files/plugins/inspector-page.rst:19
 msgid "Changing Values"
-msgstr ""
+msgstr "値の変更"
 
 #: ../../plugins-files/plugins/inspector-page.rst:21
 msgid ""
 "The values of control ports can be changed by clicking and dragging "
 "inside the bar."
-msgstr ""
+msgstr "コントロールポートの値は、バー内をクリックしてドラッグすることで変更できます。"
 
 #: ../../plugins-files/plugins/inspector-page.rst:25
 msgid "Connections"
-msgstr ""
+msgstr "接続"
 
 #: ../../plugins-files/plugins/inspector-page.rst:27
 msgid ""
@@ -120,22 +122,24 @@ msgid ""
 "route anything-to-anything. For example, you can route an LFO's CV output"
 " to a filter plugin's cutoff parameter."
 msgstr ""
+"互換性のあるポートは相互に接続できます。これにより、何でもルーティングできます。例えば、LFOのCV出力をフィルタプラグインのカットオフパラメータにルーテ"
+"ィングできます。"
 
 #: ../../plugins-files/plugins/inspector-page.rst:32
 msgid ""
 "The number in orange indicates how many ports are currently connected to "
 "each port."
-msgstr ""
+msgstr "オレンジ色の数字は、現在各ポートに接続されているポートの数を示します。"
 
 #: ../../plugins-files/plugins/inspector-page.rst:35
 msgid ""
 "By double clicking the port, you can select a port to connect it to, or "
 "edit existing connections."
-msgstr ""
+msgstr "ポートをダブルクリックすると、接続するポートを選択したり、既存の接続を編集したりできます。"
 
 #: ../../plugins-files/plugins/inspector-page.rst:41
 msgid "For more information about ports, see the next section."
-msgstr ""
+msgstr "ポートの詳細については、次のセクションを参照してください。"
 
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
@@ -143,103 +147,106 @@ msgstr "プラグイン"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:6
 msgid "Plugin Browser"
-msgstr ""
+msgstr "プラグインブラウザ"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:8
 msgid ""
 "The Plugin Browser makes it easy to browse and filter Plugins installed "
 "on your computer."
-msgstr ""
+msgstr "プラグインブラウザを使用すると、コンピュータにインストールされているプラグインを簡単に閲覧してフィルタリングできます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:15
 msgid "Filters Tab"
-msgstr ""
+msgstr "[フィルター]タブ"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:16
 msgid ""
 "The filters tab at the top allows you to select how to filter the "
 "Plugins. There are 3 tabs:"
-msgstr ""
+msgstr "上部のフィルタータブでは、プラグインをフィルターする方法を選択できます。3つのタブがあります:"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:21
 msgid "Collection"
-msgstr ""
+msgstr "コレクション"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:20
 msgid ""
 "This tab contains your collections. You can create collections such as "
 "\"MySynths\" and filter by the selected collections."
 msgstr ""
+"このタブには、コレクションが含まれています。\"MySynths\" などのコレクションを作成し、選択したコレクションでフィルター処理できます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:24
 msgid "Category"
-msgstr ""
+msgstr "カテゴリー"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:24
 msgid ""
 "Filter Plugins by category based on the plugin metadata, such as "
 "\"Delay\", \"Distortion\", etc."
-msgstr ""
+msgstr "「ディレー」、「ディストーション」などのプラグインメタデータに基づくカテゴリ別のプラグインフィルタ"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:28
 msgid "Protocol"
-msgstr ""
+msgstr "プロトコル"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:27
 msgid "Allows you to filter plugins based their protocol (LV2 or VST)."
-msgstr ""
+msgstr "プロトコル (LV2 または VST) 別にプラグインをフィルタリングできます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Collections and Protocols are not operational at the moment."
-msgstr ""
+msgstr "コレクションとプロトコルは、現時点では動作しません。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Filter Buttons"
-msgstr ""
+msgstr "フィルター ボタン"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:34
 msgid ""
 "Additionally to the above, you can filter plugins based on their type. "
 "The following types exist:"
-msgstr ""
+msgstr "上記に加えて、タイプに基づいてプラグインをフィルタリングできます。次のタイプがあります。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "Instrument"
-msgstr ""
+msgstr "インストゥルメント"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "These plugins will create an instrument track when added to the project."
-msgstr ""
+msgstr "これらのプラグインは、プロジェクトに追加されたときに音源トラックを作成します。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:42
 msgid "Effects"
-msgstr ""
+msgstr "エフェクト"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:41
 msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
 "in the mixer or can be instantiated to create new bus tracks."
 msgstr ""
+"これらのプラグインは、ミキサー内の既存のチャンネルの挿入スロットにドラッグすることができ、または新しいバストラックを作成するためにインスタンス化することが"
+"できます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:45
 msgid "Modulators"
-msgstr ""
+msgstr "モジュレーター"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:45
 msgid ""
 "These plugins output CV signals and can be used to modulate other plugin "
 "or track parameters."
-msgstr ""
+msgstr "これらのプラグインはCV信号を出力し、他のプラグインやトラックパラメータを変調するために使用することができます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:51
 msgid "MIDI Effects"
-msgstr ""
+msgstr "MIDIエフェクト"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:48
 msgid ""
 "These plugins modify incoming MIDI signals and can be used in the MIDI "
 "signal chain of an Instrument or MIDI track (coming soon)."
-msgstr ""
+msgstr "これらのプラグインは、着信MIDI信号を変更し、音源またはMIDIトラックのMIDI信号チェーンで使用することができます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:54
 msgid ""
@@ -248,18 +255,20 @@ msgid ""
 "number of audio, MIDI, control and CV input and output ports a Plugin "
 "has."
 msgstr ""
+"Zrythmはプラグインのメタデータを調べて、プラグインがどのタイプであるかを判断します。それだけでは不十分な場合、Zrythmはプラグインのオーディオ、"
+"MIDI、コントロール、CV入出力ポートの数に基づいて判断します。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:63
 msgid "Instantiating Plugins"
-msgstr ""
+msgstr "プラグインのインスタンス化"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:64
 msgid "There are a couple of ways to instantiate plugins:"
-msgstr ""
+msgstr "プラグインをインスタンス化する方法はいくつかあります。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:67
 msgid "Drag-n-Drop"
-msgstr ""
+msgstr "ドラッグアンドドロップ"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:69
 msgid ""
@@ -267,68 +276,70 @@ msgid ""
 "Tracklist or into empty space in the Mixer to create a new track using "
 "that plugin."
 msgstr ""
+"選択したプラグインをトラックリスト内の空きスペースにドラッグアンドドロップするか、ミキサーの空きスペースにドロップして、そのプラグインを使用して新しいトラ"
+"ックを作成できます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:79
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or"
 " replace the previous plugin."
-msgstr ""
+msgstr "または、ミキサースロットにプラグインをドラッグして追加したり、前のプラグインを置き換えたりすることもできます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:85
 msgid "If the plugin is a modulator, you can drop it into the Modulators Tab."
-msgstr ""
+msgstr "プラグインがモジュレーターの場合は、モジュレータタブにドロップできます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:89
 msgid ""
 "The Modulators tab is a work-in-progress. For the time being, you can use"
 " them as regular effects."
-msgstr ""
+msgstr "[モジュレータ] タブはTODOです。当分の間、通常のエフェクトとして使用することができます。"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:93
 msgid "Double Click/Enter"
-msgstr ""
+msgstr "ダブルクリック/リターン"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:95
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
-msgstr ""
+msgstr "プラグインをダブルクリックするか、それを選択し、そのプラグインを使用して新しいトラックを作成するためにキーボードのリターンキーを押します。"
 
 #: ../../plugins-files/plugins/plugin-window.rst:6
 msgid "Plugin Window"
-msgstr ""
+msgstr "プラグインウィンドウ"
 
 #: ../../plugins-files/plugins/plugin-window.rst:8
 msgid ""
 "When Plugin UIs are opened, a window such as the following will be "
 "displayed, if the plugin ships with its own UI."
-msgstr ""
+msgstr "プラグイン UI が表示されると、プラグインが独自の UI がある場合、次のようなウィンドウが表示されます。"
 
 #: ../../plugins-files/plugins/plugin-window.rst:15
 msgid ""
 "If the plugin does not ship with its own UI, the following generic UI "
 "will be generated for it."
-msgstr ""
+msgstr "プラグインが独自の UI を持たない場合は、次の汎用 UI が生成されます。"
 
 #: ../../plugins-files/plugins/plugin-window.rst:22
 msgid "Some plugin UIs cannot be wrapped and will be opened in separate windows."
-msgstr ""
+msgstr "一部のプラグインUIはラップできず、別のウィンドウで開かれます。"
 
 #: ../../plugins-files/plugins/ports.rst:6
 msgid "Ports"
-msgstr ""
+msgstr "ポート"
 
 #: ../../plugins-files/plugins/ports.rst:8
 msgid ""
 "Plugins expose Ports that are used internally to route MIDI and audio "
 "signals to/from and externally for automation."
-msgstr ""
+msgstr "プラグインは、MIDIおよびオーディオ信号の送受信や外部へのルーティングに内部的に使用されるポートを公開し、オートメーションを行います。"
 
 #: ../../plugins-files/plugins/ports.rst:12
 msgid ""
 "A Port can only be an Input Port or an Output Port and can have one of "
 "the following types."
-msgstr ""
+msgstr "ポートは入力ポートまたは出力ポートのみで、次のいずれかの種類に所属します。"
 
 #: ../../plugins-files/plugins/ports.rst:18
 msgid "Audio"
@@ -340,30 +351,33 @@ msgid ""
 "Plugins will have at least two of these as inputs for Left and Right, and"
 " at least two as outputs."
 msgstr ""
+"この種類のポートは、生のオーディオ信号を受信または送信します。通常、エフェクトプラグインは、左と右の入力として少なくとも2つ、出力として少なくとも2つを持"
+"つことになります。"
 
 #: ../../plugins-files/plugins/ports.rst:22
 msgid "Event"
-msgstr ""
+msgstr "イベント"
 
 #: ../../plugins-files/plugins/ports.rst:21
 msgid ""
 "Event Ports are mainly used for routing MIDI signals. Instrument Plugins "
 "will have at least one Event Port."
-msgstr ""
+msgstr "イベントポートは主にMIDI信号のルーティングに使用されます。音源プラグインには、少なくとも1つのイベントポートがあります。"
 
 #: ../../plugins-files/plugins/ports.rst:26
 msgid "Control"
-msgstr ""
+msgstr "コントロール"
 
 #: ../../plugins-files/plugins/ports.rst:25
 msgid ""
 "Control Ports are Plugin parameters that are usually shown inside the "
 "Plugin's UI. These can be automated in automation lanes."
 msgstr ""
+"コントロールポートは、通常プラグインのUI内に表示されるプラグインパラメータです。これらはオートメーションレーンでオートーメートすることができます。"
 
 #: ../../plugins-files/plugins/ports.rst:34
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../plugins-files/plugins/ports.rst:29
 msgid ""
@@ -372,6 +386,8 @@ msgid ""
 "at least one CV output Port which can be routed to Plugin Control Ports "
 "for automation."
 msgstr ""
+"CV ポートはプラグインに供給または放出される連続信号であり、主にモジュレータによって使用されます。各モジュレータには、オートメーションのためにプラグイン"
+"のコントロールポートにルーティングできる少なくとも1つのCV出力ポートがあります。"
 
 #: ../../plugins-files/plugins/ports.rst:36
 msgid ""
@@ -379,20 +395,22 @@ msgid ""
 " of CV ports. CV output Ports may be routed to both CV input Ports and "
 "Control input Ports."
 msgstr ""
+"通常、CV ポートを除いて、同じタイプのポートのみを接続できます。CV 出力ポートは、CV "
+"入力ポートとコントロール入力ポートの両方にルーティングできます。"
 
 #: ../../plugins-files/plugins/ports.rst:41
 msgid "Output Ports may only be routed to Input Ports and vice versa."
-msgstr ""
+msgstr "出力ポートは入力ポートにのみルーティングできます。"
 
 #: ../../plugins-files/plugins/ports.rst:45
 msgid ""
 "Tracks/channels also have their own ports, for example for the fader, "
 "pan, and enabled status (on/off)."
-msgstr ""
+msgstr "トラック/チャンネルには、フェーダー、パン、有効ステータス(オン/オフ)など、独自のポートもあります。"
 
 #: ../../plugins-files/plugins/scanning.rst:6
 msgid "Scanning for Plugins"
-msgstr ""
+msgstr "プラグインのスキャン"
 
 #: ../../plugins-files/plugins/scanning.rst:8
 msgid ""
@@ -400,16 +418,18 @@ msgid ""
 "until it is closed. Zrythm supports both LV2 and VST plugins, although "
 "LV2 is the recommended standard."
 msgstr ""
+"Zrythmは起動時にプラグインをスキャンし、閉じられるまでそれらのプラグインを覚えています。Zrythm は LV2 と VST "
+"の両方のプラグインを対応していますが、LV2 は推奨される標準です。"
 
 #: ../../plugins-files/plugins/scanning.rst:13
 msgid ""
 "Plugin scanning can be disableld by passing NO_SCAN_PLUGINS=1 when "
 "running Zrythm."
-msgstr ""
+msgstr "Zrythm の実行時に NO_SCAN_PLUGINS=1 を渡すことにより、プラグインのスキャンを無効にできます。"
 
 #: ../../plugins-files/plugins/scanning.rst:17
 msgid "LV2 Scan"
-msgstr ""
+msgstr "LV2 スキャン"
 
 #: ../../plugins-files/plugins/scanning.rst:19
 msgid ""
@@ -418,30 +438,33 @@ msgid ""
 "bypass this behavior by passing the ``LV2_PATH`` environment variable to "
 "specify custom paths. For example, ``LV2_PATH=~/custom-lv2-dir zrythm``."
 msgstr ""
+"Zrythm は、`ここ <https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_ "
+"で指定された標準パス内のLV2プラグインをスキャンします。この動作を回避するには、``LV2_PATH`` の環境変数を渡してカスタム "
+"パスを指定します。たとえば、``LV2_PATH=~/custom-lv2-dir zrythm`` を指定します。"
 
 #: ../../plugins-files/plugins/scanning.rst:26
 msgid "VST Scan"
-msgstr ""
+msgstr "VST スキャン"
 
 #: ../../plugins-files/plugins/scanning.rst:28
 msgid "On UNIX, Zrythm will scan for VST plugins in the following paths."
-msgstr ""
+msgstr "UNIX では、Zrythm は次のパスで VST プラグインをスキャンします。"
 
 #: ../../plugins-files/plugins/scanning.rst:31
 msgid "``~/.vst``"
-msgstr ""
+msgstr "``~/.vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:32
 msgid "``~/vst``"
-msgstr ""
+msgstr "``~/vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:33
 msgid "``/usr/local/lib/vst``"
-msgstr ""
+msgstr "``/usr/local/lib/vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:34
 msgid "``/usr/lib/vst``"
-msgstr ""
+msgstr "``/usr/lib/vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:36
 msgid ""
@@ -449,10 +472,12 @@ msgid ""
 "variable to specify custom paths. For example, ``VST_PATH=~/custom-vst-"
 "dir zrythm``."
 msgstr ""
+"この動作を回避するには、``VST_PATH`` の環境変数を渡してカスタム パスを指定します。たとえば、``VST_PATH=~/custom-vst-"
+"dir zrythm``."
 
 #: ../../plugins-files/plugins/scanning.rst:40
 msgid "``lib`` will be replaced with ``lib64`` depending on your system."
-msgstr ""
+msgstr "``lib`` は、ディストロに応じて ``lib64`` に置き換えられます。"
 
 #: ../../plugins-files/plugins/scanning.rst:43
 msgid ""
@@ -460,22 +485,25 @@ msgid ""
 "plug-in locations on Windows <https://helpcenter.steinberg.de/hc/en-"
 "us/articles/115000177084-VST-plug-in-locations-on-Windows>`_."
 msgstr ""
+"Windows では、Zrythm は、``VST plug-in locations on Windows "
+"<https://helpcenter.steinberg.de/hc/en-us/articles/115000177084-VST-plug-in-"
+"locations-on-Windows>`_ で指定されたパス内のプラグインをスキャンします。"
 
 #: ../../plugins-files/plugins/scanning.rst:46
 msgid "``C:\\Program Files\\VSTPlugins``"
-msgstr ""
+msgstr "``C:\\Program Files\\VSTPlugins``"
 
 #: ../../plugins-files/plugins/scanning.rst:47
 msgid "``C:\\Program Files\\Steinberg\\VSTPlugins``"
-msgstr ""
+msgstr "``C:\\Program Files\\Steinberg\\VSTPlugins``"
 
 #: ../../plugins-files/plugins/scanning.rst:48
 msgid "``C:\\Program Files\\Common Files\\VST2``"
-msgstr ""
+msgstr "``C:\\Program Files\\Common Files\\VST2``"
 
 #: ../../plugins-files/plugins/scanning.rst:49
 msgid "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
-msgstr ""
+msgstr "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
 
 #: ../../plugins-files/plugins/scanning.rst:51
 msgid ""
@@ -485,6 +513,9 @@ msgid ""
 " start-up, and you can delete or edit this file to force a re-scan of "
 "previously scanned plugins."
 msgstr ""
+"VST プラグインのスキャンには時間がかかるため、Zrythm はスキャンされた VST プラグインを記憶し、この情報を ``<<ZRYTHM "
+"パス>>/cached_vst_descriptors.yaml`` に保存します。新しいプラグインは、各起動時にスキャンされ、以前にスキャンされたプラグ"
+"インの再スキャンを強制するには、このファイルを削除または編集することができます。"
 
 #~ msgid ""
 #~ "When a Plugin is selected in the"
