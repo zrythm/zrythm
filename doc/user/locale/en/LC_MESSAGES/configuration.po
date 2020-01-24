@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-19 17:07+0000\n"
+"POT-Creation-Date: 2020-01-24 12:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,18 +81,18 @@ msgid ""
 "differs."
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:15
+#: ../../configuration/device-setup/intro.rst:16
 msgid ""
 "Zrythm will auto-scan and allow you to connect to input devices for "
 "recording through the Track Inspector, as below, and in most cases you "
 "don't need to use any external tools or auto-connect mechanism."
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:24
+#: ../../configuration/device-setup/intro.rst:25
 msgid "Auto-Connecting Devices"
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:26
+#: ../../configuration/device-setup/intro.rst:27
 msgid ""
 "For other types of devices that are not linked to specific tracks, such "
 "as devices that send global MIDI messages and devices that control the "
@@ -100,30 +100,30 @@ msgid ""
 "to on launch."
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:32
+#: ../../configuration/device-setup/intro.rst:33
 msgid "This is a TODO feature"
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:35
+#: ../../configuration/device-setup/intro.rst:36
 msgid "JACK"
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:37
+#: ../../configuration/device-setup/intro.rst:38
 msgid ""
 "When using the JACK audio and MIDI backend, Zrythm exposes ports to JACK,"
 " so devices can be attached there using a tool like Catia. Note that for "
 "MIDI, devices might need to be bridged to JACK using ``a2jmidid``."
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:43
+#: ../../configuration/device-setup/intro.rst:44
 msgid "An example configuration looks like this (in Catia inside Cadence)"
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:49
+#: ../../configuration/device-setup/intro.rst:50
 msgid "ALSA"
 msgstr ""
 
-#: ../../configuration/device-setup/intro.rst:51
+#: ../../configuration/device-setup/intro.rst:52
 msgid "A tool like Catia can be used to connect MIDI devices to Zrythm."
 msgstr ""
 
@@ -180,7 +180,7 @@ msgid ""
 "Zrythm supports multiple audio and MIDI backend engines. JACK is the "
 "recommended one for both, but it takes some time to set up if this is "
 "your first time using it. If you don't want to use JACK for some reason "
-"you can select other backends such as ALSA."
+"you can select other backends such as ALSA or SDL2."
 msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:52
@@ -195,22 +195,18 @@ msgid ""
 "want to use it with the JACK audio backend."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:59
-msgid "Only JACK works at the moment."
-msgstr ""
-
-#: ../../configuration/first-run-wizard.rst:62
+#: ../../configuration/first-run-wizard.rst:60
 msgid "MIDI Devices"
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:67
+#: ../../configuration/first-run-wizard.rst:65
 msgid ""
 "These are the discovered devices that will be auto-connected and ready to"
 " use every time you run Zrythm. Click \"Rescan\" to scan for devices "
 "again."
 msgstr ""
 
-#: ../../configuration/first-run-wizard.rst:71
+#: ../../configuration/first-run-wizard.rst:69
 msgid ""
 "All of the settings mentioned here are also available in the preferences "
 "(Ctr+Shift+P or File->Preferences), so don't worry if you selected the "
@@ -247,17 +243,17 @@ msgid "Audio"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:20
-#: ../../configuration/preferences/intro.rst:68
+#: ../../configuration/preferences/intro.rst:69
 msgid "GUI"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:21
-#: ../../configuration/preferences/intro.rst:59
+#: ../../configuration/preferences/intro.rst:60
 msgid "Plugins"
 msgstr ""
 
 #: ../../configuration/preferences/intro.rst:22
-#: ../../configuration/preferences/intro.rst:74
+#: ../../configuration/preferences/intro.rst:75
 msgid "Projects"
 msgstr ""
 
@@ -285,7 +281,7 @@ msgstr ""
 msgid "MIDI devices to auto-connect to when Zrythm starts."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:49
+#: ../../configuration/preferences/intro.rst:50
 msgid "Pan Algorithm"
 msgstr ""
 
@@ -294,66 +290,67 @@ msgid ""
 "The panning algorithm to use. See the graph below for the different "
 "curves as you move the pan from left to right. We recommend leaving it as"
 " the default (Sine). See https://www.cs.cmu.edu/~music/icm-"
-"online/readings/panlaws/index.html for more information."
+"online/readings/panlaws/index.html for more information. This is not used"
+" at the moment."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:48
+#: ../../configuration/preferences/intro.rst:49
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:52
+#: ../../configuration/preferences/intro.rst:53
 msgid "Pan Law"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:52
+#: ../../configuration/preferences/intro.rst:53
 msgid "This is not used at the moment."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:56
+#: ../../configuration/preferences/intro.rst:57
 msgid "Zrythm Path"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:55
+#: ../../configuration/preferences/intro.rst:56
 msgid ""
 "The path to save projects, temporary files, and other non-project "
 "specific files."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:62
+#: ../../configuration/preferences/intro.rst:63
 msgid "Always open plugin UIs"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:62
+#: ../../configuration/preferences/intro.rst:63
 msgid "Always show the plugin UI when instantiating plugins."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:65
+#: ../../configuration/preferences/intro.rst:66
 msgid "Keep plugin UIs on top"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:65
+#: ../../configuration/preferences/intro.rst:66
 msgid "Whether to always keep plugin UIs above other Zrythm windows or not."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:71
+#: ../../configuration/preferences/intro.rst:72
 msgid "Language"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:71
+#: ../../configuration/preferences/intro.rst:72
 msgid "The language that the Zrythm interface uses."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:78
+#: ../../configuration/preferences/intro.rst:79
 msgid "Autosave Interval"
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:77
+#: ../../configuration/preferences/intro.rst:78
 msgid ""
 "The amount of time to wait before auto-saving a backup of the current "
 "project, in minutes. Setting this to 0 will turn it off."
 msgstr ""
 
-#: ../../configuration/preferences/intro.rst:80
+#: ../../configuration/preferences/intro.rst:81
 msgid "Changing some of these settings requires a restart of Zrythm."
 msgstr ""
 
@@ -671,5 +668,30 @@ msgstr ""
 #~ "avoid. We recommend leaving this to "
 #~ "-3dB. See https://en.wikipedia.org/wiki/Pan_law for"
 #~ " more details."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Zrythm supports multiple audio and MIDI"
+#~ " backend engines. JACK is the "
+#~ "recommended one for both, but it "
+#~ "takes some time to set up if "
+#~ "this is your first time using it."
+#~ " If you don't want to use JACK"
+#~ " for some reason you can select "
+#~ "other backends such as ALSA."
+#~ msgstr ""
+
+#~ msgid "Only JACK works at the moment."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The panning algorithm to use. See "
+#~ "the graph below for the different "
+#~ "curves as you move the pan from"
+#~ " left to right. We recommend leaving"
+#~ " it as the default (Sine). See "
+#~ "https://www.cs.cmu.edu/~music/icm-"
+#~ "online/readings/panlaws/index.html for more "
+#~ "information."
 #~ msgstr ""
 

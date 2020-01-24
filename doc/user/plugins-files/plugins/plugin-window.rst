@@ -1,5 +1,5 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Plugin Window
@@ -18,3 +18,6 @@ for it.
 
 .. image:: /_static/img/haas_plugin_window.png
    :align: center
+
+.. note:: Some plugin UIs cannot be wrapped and will
+   be opened in separate windows.

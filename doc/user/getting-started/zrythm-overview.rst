@@ -12,8 +12,9 @@ Limitless automation
   You can automate almost anything with automation
   events using straight lines, ramps and curves,
   or with CV signals from LFO and envelope plugins.
-LV2 plugins
-  Supports the free LV2 plugin format.
+LV2 and VST plugins
+  Supports the free LV2 plugin format, with added support
+  for VST.
 JACK support
   JACK aware, with support for JACK transport.
 Chord assistance

@@ -28,6 +28,16 @@ There are various kinds of Tracks suited for
 different purposes, explained in the following
 sections.
 
+.. important:: In Zrythm, group tracks are used for
+   grouping signals (direct routing), FX/bus tracks are
+   used for effects/sends, and folder tracks are used for
+   putting tracks under the same folder and doing
+   common operations. This is different from what many
+   other DAWs do, so please keep this in mind.
+
+   If you have used Cubase before, you might find this easy
+   to get used to.
+
 Track Interface
 ---------------
 

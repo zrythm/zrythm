@@ -5,6 +5,8 @@
 Loop Points and Markers
 =======================
 
+.. _loop-points-and-markers:
+
 Loop Points
 -----------
 

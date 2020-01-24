@@ -8,7 +8,8 @@ Device Setup
 Connecting MIDI and Audio Devices
 ---------------------------------
 
-On Linux-based platforms, Zrythm works with both ALSA and JACK as
+On Linux-based platforms, Zrythm works with both ALSA
+and JACK as
 available backends. Depending on the selected backend, the
 configuration differs.
 

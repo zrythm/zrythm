@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-16 07:46+0000\n"
+"POT-Creation-Date: 2020-01-24 13:54+0000\n"
 "PO-Revision-Date: 2019-12-19 16:46+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
-"manualzrythm-interface/de/>\n"
 "Language: de\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm"
+"/manualzrythm-interface/de/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -222,8 +221,8 @@ msgid "Links for reporting bugs, donating, chatting, etc."
 msgstr "Links zum Melden von Fehlern, zum Spenden und Chatten, etc."
 
 #: ../../zrythm-interface/intro.rst:6
-msgid "Zrythm's Interface"
-msgstr "Zrythms Oberfläche"
+msgid "Interface"
+msgstr ""
 
 #: ../../zrythm-interface/mini-timeline.rst:6
 msgid "Timeline Minimap"
@@ -368,11 +367,11 @@ msgstr ""
 "bleibt, und eine scrollbare Zeitachse darunter. Auf diese Weise können "
 "Sie Spuren anheften, die Sie immer oben sichtbar haben möchten."
 
-#: ../../zrythm-interface/tracklist.rst:6
+#: ../../zrythm-interface/tracklist.rst:8
 msgid "Tracklist"
 msgstr "Spurenliste"
 
-#: ../../zrythm-interface/tracklist.rst:8
+#: ../../zrythm-interface/tracklist.rst:10
 msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
@@ -433,11 +432,13 @@ msgstr ""
 " oder indem man mit dem Cursor über sie fährt und scrollt"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
-msgid "Zrythm Interface Overview"
+#, fuzzy
+msgid "Interface Overview"
 msgstr "Zrythms Oberflächenübersicht"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:8
-msgid "Zrythm's interface is split into various sub-modules:"
+#, fuzzy
+msgid "The Zrythm interface is split into various sub-modules:"
 msgstr "Zrythms Oberfläche ist aufgeteilt in verschiedene Untermodule:"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:13
@@ -519,8 +520,8 @@ msgid ""
 "The status bar is a helpful bar in the bottom of the window that displays"
 " information about the current project."
 msgstr ""
-"Die Statusleiste ist eine hilfreiche Leiste im unteren Teil des Fensters, "
-"die Informationen über das aktuelle Projekt anzeigt."
+"Die Statusleiste ist eine hilfreiche Leiste im unteren Teil des Fensters,"
+" die Informationen über das aktuelle Projekt anzeigt."
 
 #~ msgid "Channel Overview"
 #~ msgstr "Kanalübersicht"
@@ -604,3 +605,7 @@ msgstr ""
 
 #~ msgid "WIP"
 #~ msgstr "WIP"
+
+#~ msgid "Zrythm's Interface"
+#~ msgstr "Zrythms Oberfläche"
+

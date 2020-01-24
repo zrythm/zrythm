@@ -9,7 +9,7 @@ Getting Started
    :maxdepth: 4
 
    zrythm-overview
-   system-requirements/intro
+   system-requirements
    installation/intro
    getting-plugins
    additional-resources

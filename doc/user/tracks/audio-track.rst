@@ -52,7 +52,7 @@ recording.
 Sends
 ~~~~~
 
-These are similar to :ref:`audio-track-sends`.
+TODO
 
 Lanes
 -----

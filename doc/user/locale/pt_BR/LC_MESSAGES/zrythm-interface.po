@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-16 07:46+0000\n"
+"POT-Creation-Date: 2020-01-24 13:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -183,7 +183,7 @@ msgid "Links for reporting bugs, donating, chatting, etc."
 msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
-msgid "Zrythm's Interface"
+msgid "Interface"
 msgstr ""
 
 #: ../../zrythm-interface/mini-timeline.rst:6
@@ -299,11 +299,11 @@ msgid ""
 "always be visible at the top."
 msgstr ""
 
-#: ../../zrythm-interface/tracklist.rst:6
+#: ../../zrythm-interface/tracklist.rst:8
 msgid "Tracklist"
 msgstr ""
 
-#: ../../zrythm-interface/tracklist.rst:8
+#: ../../zrythm-interface/tracklist.rst:10
 msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
@@ -358,11 +358,11 @@ msgid ""
 msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
-msgid "Zrythm Interface Overview"
+msgid "Interface Overview"
 msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:8
-msgid "Zrythm's interface is split into various sub-modules:"
+msgid "The Zrythm interface is split into various sub-modules:"
 msgstr ""
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:13
@@ -527,5 +527,14 @@ msgstr ""
 #~ " in the bottom of the program "
 #~ "that shows tips based on the "
 #~ "currently hovered-over item."
+#~ msgstr ""
+
+#~ msgid "Zrythm's Interface"
+#~ msgstr ""
+
+#~ msgid "Zrythm Interface Overview"
+#~ msgstr ""
+
+#~ msgid "Zrythm's interface is split into various sub-modules:"
 #~ msgstr ""
 

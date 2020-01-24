@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-13 16:05+0000\n"
+"POT-Creation-Date: 2020-01-24 12:22+0000\n"
 "PO-Revision-Date: 2019-12-27 11:16+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language: fr\n"
@@ -223,7 +223,7 @@ msgstr ""
 " dans :ref:`gnu-with-linux-installer`."
 
 #: ../../getting-started/installation/freebsd.rst:13
-#: ../../getting-started/installation/gnu-linux.rst:26
+#: ../../getting-started/installation/gnu-linux.rst:28
 msgid ""
 "This is the easiest and recommended way to install the latest version for"
 " most users, and we provide support for it."
@@ -247,7 +247,7 @@ msgstr ""
 "manquer de fonctionnalités et d'optimisations."
 
 #: ../../getting-started/installation/freebsd.rst:23
-#: ../../getting-started/installation/gnu-linux.rst:41
+#: ../../getting-started/installation/gnu-linux.rst:43
 msgid "Manual Installation"
 msgstr "Installation manuelle"
 
@@ -274,26 +274,37 @@ msgid "The installer supports the following distros (and derivatives):"
 msgstr "L'installateur prend en charge les distros (et dérivés) suivantes :"
 
 #: ../../getting-started/installation/gnu-linux.rst:21
-msgid "**Ubuntu 18.10, 19.04, 19.10** - amd64"
+#, fuzzy
+msgid "**Ubuntu 18.04 & 19.04** - amd64"
 msgstr "**Ubuntu 18.10, 19.04, 19.10** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:22
-msgid "**Debian 10** - amd64"
+#, fuzzy
+msgid "**LinuxMint 19.3** - amd64"
 msgstr "**Debian 10** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:23
+#, fuzzy
+msgid "**Debian 9 & 10** - amd64"
+msgstr "**Debian 10** - amd64"
+
+#: ../../getting-started/installation/gnu-linux.rst:24
 msgid "**Arch Linux** - x86_64"
 msgstr "**Arch Linux** - x86_64"
 
-#: ../../getting-started/installation/gnu-linux.rst:24
+#: ../../getting-started/installation/gnu-linux.rst:25
 msgid "**Fedora 31** - x86_64"
 msgstr "**Fedora 31** - x86_64"
 
-#: ../../getting-started/installation/gnu-linux.rst:31
+#: ../../getting-started/installation/gnu-linux.rst:26
+msgid "**OpenSUSE Tumbleweed** - x86_64"
+msgstr ""
+
+#: ../../getting-started/installation/gnu-linux.rst:33
 msgid "Distro Package"
 msgstr "Paquet de distro"
 
-#: ../../getting-started/installation/gnu-linux.rst:32
+#: ../../getting-started/installation/gnu-linux.rst:34
 msgid ""
 "If your distribution provides a Zrythm package you can install it from "
 "there, but it will likely be an older version than the one we provide and"
@@ -305,7 +316,7 @@ msgstr ""
 "celle que nous fournissons et il peut manquer des optimisations ou des "
 "fonctionnalités que nous incluons avec l'installateur."
 
-#: ../../getting-started/installation/gnu-linux.rst:42
+#: ../../getting-started/installation/gnu-linux.rst:44
 msgid ""
 "If you are an advanced user and prefer to build Zrythm yourself, Zrythm "
 "uses the Meson build system, so the procedure to build and install is as "
@@ -315,7 +326,7 @@ msgstr ""
 " vous-même, Zrythm utilise le système de construction Meson, donc la "
 "procédure à suivre pour construire et installer est la suivante :"
 
-#: ../../getting-started/installation/gnu-linux.rst:52
+#: ../../getting-started/installation/gnu-linux.rst:54
 msgid "See the ``INSTALL.md`` file for more information."
 msgstr "Voir le fichier ``INSTALL.md`` pour davantage d'informations."
 
@@ -362,49 +373,37 @@ msgstr ""
 msgid "Getting Started"
 msgstr "Pour commencer"
 
-#: ../../getting-started/system-requirements/intro.rst:6
+#: ../../getting-started/system-requirements.rst:6
 msgid "System Requirements"
 msgstr "Configuration système requise"
 
-#: ../../getting-started/system-requirements/intro.rst:9
+#: ../../getting-started/system-requirements.rst:9
 msgid "Minimum Requirements"
 msgstr "Minimum requis"
 
-#: ../../getting-started/system-requirements/intro.rst:12
-#: ../../getting-started/system-requirements/intro.rst:31
+#: ../../getting-started/system-requirements.rst:12
+#: ../../getting-started/system-requirements.rst:26
 msgid "Hardware"
 msgstr "Matériel"
 
-#: ../../getting-started/system-requirements/intro.rst:13
+#: ../../getting-started/system-requirements.rst:13
 msgid "x86_64, i686 or ARM processor"
 msgstr "processeur x86_64, i686 ou ARM"
 
-#: ../../getting-started/system-requirements/intro.rst:16
+#: ../../getting-started/system-requirements.rst:16
 msgid "Operating System"
 msgstr "Système d'exploitation"
 
-#: ../../getting-started/system-requirements/intro.rst:17
-msgid "Unix-compatible OS"
+#: ../../getting-started/system-requirements.rst:17
+#, fuzzy
+msgid "Unix-compatible OS or Windows"
 msgstr "SE compatible-unix"
 
-#: ../../getting-started/system-requirements/intro.rst:20
-#: ../../getting-started/system-requirements/intro.rst:38
-msgid "Software"
-msgstr "Logiciel"
-
-#: ../../getting-started/system-requirements/intro.rst:21
-msgid "GTK 3.24 or higher"
-msgstr "GTK 3.24 ou suivant"
-
-#: ../../getting-started/system-requirements/intro.rst:22
-msgid "A working JACK setup"
-msgstr "Une configuration JACK qui fonctionne"
-
-#: ../../getting-started/system-requirements/intro.rst:25
+#: ../../getting-started/system-requirements.rst:20
 msgid "Recommended"
 msgstr "Recommandé"
 
-#: ../../getting-started/system-requirements/intro.rst:26
+#: ../../getting-started/system-requirements.rst:21
 msgid ""
 "We recommend running a fairly modern machine with the following specs so "
 "you can take full advantage of Zrythm."
@@ -413,26 +412,31 @@ msgstr ""
 "spécifications suivantes pour que vous puissiez profiter pleinement de "
 "Zrythm."
 
-#: ../../getting-started/system-requirements/intro.rst:32
+#: ../../getting-started/system-requirements.rst:27
 msgid "A fast processor"
 msgstr "Un processeur rapide"
 
-#: ../../getting-started/system-requirements/intro.rst:33
+#: ../../getting-started/system-requirements.rst:28
 msgid "Large enough monitor"
 msgstr "Un moniteur assez large"
 
-#: ../../getting-started/system-requirements/intro.rst:34
+#: ../../getting-started/system-requirements.rst:29
 msgid "Audio interface"
 msgstr "Interface audio"
 
-#: ../../getting-started/system-requirements/intro.rst:35
+#: ../../getting-started/system-requirements.rst:30
 msgid "MIDI keyboard"
 msgstr "Clavier MIDI"
 
-#: ../../getting-started/system-requirements/intro.rst:39
+#: ../../getting-started/system-requirements.rst:33
+msgid "Software"
+msgstr "Logiciel"
+
+#: ../../getting-started/system-requirements.rst:34
+#, fuzzy
 msgid ""
 "A JACK patchbay such as `QjackCtl <https://qjackctl.sourceforge.io/>`_, "
-"`Catia <https://kx.studio/Applications:Catia>`_ and `Ingen "
+"`Catia <https://kx.studio/Applications:Catia>`_ or `Ingen "
 "<https://drobilla.net/software/ingen>`_"
 msgstr ""
 "Une baie de brassage JACK comme `QjackCtl "
@@ -440,11 +444,11 @@ msgstr ""
 "<https://kx.studio/Applications:Catia>`_ et `Ingen "
 "<https://drobilla.net/software/ingen>`_"
 
-#: ../../getting-started/system-requirements/intro.rst:45
+#: ../../getting-started/system-requirements.rst:40
 msgid "Audio Interface"
 msgstr "Interface audio"
 
-#: ../../getting-started/system-requirements/intro.rst:46
+#: ../../getting-started/system-requirements.rst:41
 msgid ""
 "An Audio Interface is recommended as it offers low latency and better "
 "quality (especially if recording audio)."
@@ -452,29 +456,16 @@ msgstr ""
 "Une interface audio est recommandée car elle offre une faible latence et "
 "une meilleure qualité (en particulier lors de l'enregistrement audio)."
 
-#: ../../getting-started/system-requirements/intro.rst:50
+#: ../../getting-started/system-requirements.rst:45
 msgid "JACK"
 msgstr "JACK"
 
-#: ../../getting-started/system-requirements/intro.rst:51
+#: ../../getting-started/system-requirements.rst:46
 msgid ""
-"JACK needs to be set up and configured before running Zrythm. We "
-"recommend using `Cadence "
-"<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, as it makes "
-"the process very easy."
+"When using JACK, JACK needs to be set up and configured before running "
+"Zrythm. You will find lots of information online about how to configure "
+"JACK, so we will skip this part."
 msgstr ""
-"JACK doit être configuré avant de lancer Zrythm. Nous recommandons "
-"d'utiliser `Cadence "
-"<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, car cela rend "
-"le processus très facile."
-
-#: ../../getting-started/system-requirements/intro.rst:56
-msgid "Open Cadence"
-msgstr "Ouvrir Cadence"
-
-#: ../../getting-started/system-requirements/intro.rst:61
-msgid "Click Configure and select your Audio Interface"
-msgstr "Cliquez sur Configurer et sélectionnez votre interface audio"
 
 #: ../../getting-started/zrythm-overview.rst:6
 msgid "Overview"
@@ -502,27 +493,29 @@ msgstr ""
 " en utilisant des lignes droites, des rampes et des courbes, ou avec des "
 "signaux CV provenant de LFO et de greffons d'enveloppe."
 
-#: ../../getting-started/zrythm-overview.rst:15
-msgid "LV2 plugins"
+#: ../../getting-started/zrythm-overview.rst:16
+#, fuzzy
+msgid "LV2 and VST plugins"
 msgstr "Greffons LV2"
 
 #: ../../getting-started/zrythm-overview.rst:16
-msgid "Supports the free LV2 plugin format."
+#, fuzzy
+msgid "Supports the free LV2 plugin format, with added support for VST."
 msgstr "Prend en charge le format de greffon libre LV2."
 
-#: ../../getting-started/zrythm-overview.rst:17
+#: ../../getting-started/zrythm-overview.rst:18
 msgid "JACK support"
 msgstr "Support JACK"
 
-#: ../../getting-started/zrythm-overview.rst:18
+#: ../../getting-started/zrythm-overview.rst:19
 msgid "JACK aware, with support for JACK transport."
 msgstr "Prise en compte de JACK, avec prise en charge du transport JACK."
 
-#: ../../getting-started/zrythm-overview.rst:20
+#: ../../getting-started/zrythm-overview.rst:21
 msgid "Chord assistance"
 msgstr "Assistance aux accords"
 
-#: ../../getting-started/zrythm-overview.rst:20
+#: ../../getting-started/zrythm-overview.rst:21
 msgid ""
 "Has a chord pad for trying out chords in a scale and a chord track to "
 "help with chord progressions."
@@ -1011,4 +1004,29 @@ msgstr ""
 
 #~ msgid "pkg-config"
 #~ msgstr ""
+
+#~ msgid "GTK 3.24 or higher"
+#~ msgstr "GTK 3.24 ou suivant"
+
+#~ msgid "A working JACK setup"
+#~ msgstr "Une configuration JACK qui fonctionne"
+
+#~ msgid ""
+#~ "JACK needs to be set up and "
+#~ "configured before running Zrythm. We "
+#~ "recommend using `Cadence "
+#~ "<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, as"
+#~ " it makes the process very easy."
+#~ msgstr ""
+#~ "JACK doit être configuré avant de "
+#~ "lancer Zrythm. Nous recommandons d'utiliser"
+#~ " `Cadence "
+#~ "<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, car"
+#~ " cela rend le processus très facile."
+
+#~ msgid "Open Cadence"
+#~ msgstr "Ouvrir Cadence"
+
+#~ msgid "Click Configure and select your Audio Interface"
+#~ msgstr "Cliquez sur Configurer et sélectionnez votre interface audio"
 

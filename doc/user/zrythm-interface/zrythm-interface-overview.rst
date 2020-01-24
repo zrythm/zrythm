@@ -2,10 +2,10 @@
    Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
-Zrythm Interface Overview
-=========================
+Interface Overview
+==================
 
-Zrythm's interface is split into various sub-modules:
+The Zrythm interface is split into various sub-modules:
 
 .. image:: /_static/img/ui_annotated_general.png
 

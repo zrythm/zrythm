@@ -47,7 +47,7 @@ Zrythm supports multiple audio and MIDI backend engines.
 JACK is the recommended one for both, but it takes some time
 to set up if this is your first time using it. If you don't
 want to use JACK for some reason you can select other backends
-such as ALSA.
+such as ALSA or SDL2.
 
 Click :zbutton:`Test` to try connecting to the backend to see if it is
 functional.
@@ -55,8 +55,6 @@ functional.
 .. note:: JACK MIDI requires a JACK server to be running,
    which means you probably want to use it with the JACK audio
    backend.
-
-.. note:: Only JACK works at the moment.
 
 MIDI Devices
 ------------

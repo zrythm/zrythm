@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-16 07:46+0000\n"
+"POT-Creation-Date: 2020-01-24 13:54+0000\n"
 "PO-Revision-Date: 2019-12-19 16:46+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"manualzrythm-interface/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm"
+"/manualzrythm-interface/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.10-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
@@ -218,8 +217,8 @@ msgid "Links for reporting bugs, donating, chatting, etc."
 msgstr "Ligações para reportar bugs, doar, conversar, etc."
 
 #: ../../zrythm-interface/intro.rst:6
-msgid "Zrythm's Interface"
-msgstr "Interface de Zrythm"
+msgid "Interface"
+msgstr ""
 
 #: ../../zrythm-interface/mini-timeline.rst:6
 msgid "Timeline Minimap"
@@ -364,11 +363,11 @@ msgstr ""
 "topo e uma cronologia rolável abaixo dela. Desta forma, pode fixar faixas"
 " que deseja que estejam sempre visíveis no topo."
 
-#: ../../zrythm-interface/tracklist.rst:6
+#: ../../zrythm-interface/tracklist.rst:8
 msgid "Tracklist"
 msgstr "Lista de faixas"
 
-#: ../../zrythm-interface/tracklist.rst:8
+#: ../../zrythm-interface/tracklist.rst:10
 msgid ""
 "The Tracklist contains all of the Tracks in the project. It is split into"
 " the top (pinned) Tracklist and the bottom (main) Tracklist."
@@ -432,11 +431,13 @@ msgstr ""
 "ou pairando sobre eles com o cursor e rolando"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:6
-msgid "Zrythm Interface Overview"
+#, fuzzy
+msgid "Interface Overview"
 msgstr "Visão Geral Da Interface Zrythm"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:8
-msgid "Zrythm's interface is split into various sub-modules:"
+#, fuzzy
+msgid "The Zrythm interface is split into various sub-modules:"
 msgstr "A interface do Zrythm está dividida em vários submódulos:"
 
 #: ../../zrythm-interface/zrythm-interface-overview.rst:13
@@ -597,3 +598,7 @@ msgstr ""
 
 #~ msgid "WIP"
 #~ msgstr "WIP"
+
+#~ msgid "Zrythm's Interface"
+#~ msgstr "Interface de Zrythm"
+

@@ -40,6 +40,7 @@ Pan Algorithm
   default (Sine).
   See https://www.cs.cmu.edu/~music/icm-online/readings/panlaws/index.html
   for more information.
+  This is not used at the moment.
 
   .. figure:: /_static/img/pan_algorithms.png
      :figwidth: image

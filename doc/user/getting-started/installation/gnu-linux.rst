@@ -18,10 +18,12 @@ on our website.
 The installer supports the following
 distros (and derivatives):
 
-- **Ubuntu 18.10, 19.04, 19.10** - amd64
-- **Debian 10** - amd64
+- **Ubuntu 18.04 & 19.04** - amd64
+- **LinuxMint 19.3** - amd64
+- **Debian 9 & 10** - amd64
 - **Arch Linux** - x86_64
 - **Fedora 31** - x86_64
+- **OpenSUSE Tumbleweed** - x86_64
 
 This is the easiest and recommended way to install
 the latest version for most users, and we provide

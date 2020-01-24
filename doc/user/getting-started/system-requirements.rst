@@ -14,12 +14,7 @@ Hardware
 
 Operating System
 ~~~~~~~~~~~~~~~~
-- Unix-compatible OS
-
-Software
-~~~~~~~~
-- GTK 3.24 or higher
-- A working JACK setup
+- Unix-compatible OS or Windows
 
 Recommended
 -----------
@@ -38,7 +33,7 @@ Software
 ~~~~~~~~
 - A JACK patchbay such as
   `QjackCtl <https://qjackctl.sourceforge.io/>`_,
-  `Catia <https://kx.studio/Applications:Catia>`_ and
+  `Catia <https://kx.studio/Applications:Catia>`_ or
   `Ingen <https://drobilla.net/software/ingen>`_
 
 Audio Interface
@@ -48,17 +43,7 @@ low latency and better quality (especially if recording audio).
 
 JACK
 ----
-JACK needs to be set up and configured before running Zrythm.
-We recommend using
-`Cadence <http://kxstudio.linuxaudio.org/Applications%3ACadence>`_,
-as it makes the process very easy.
-
-* Open Cadence
-
-.. image:: /_static/img/cadence.png
-   :align: center
-
-* Click Configure and select your Audio Interface
-
-.. image:: /_static/img/cadence-driver.png
-   :align: center
+When using JACK, JACK needs to be set up and configured
+before running Zrythm. You will find lots of information
+online about how to configure JACK, so we will skip this
+part.

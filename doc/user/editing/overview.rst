@@ -1,23 +1,21 @@
 .. This is part of the Zrythm Manual.
-   Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+   Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
    See the file index.rst for copying conditions.
 
 Overview
 ========
 
-Editing refers to any work done in the arrangers:
+Editing refers to any work done in the timeline arranger
+and the following editors.
 
-- Timeline
-- Piano Roll
+- Piano Roll (MIDI Editor)
+- Automation Editor
 - Chord Editor
 
-Tools
------
-In addition to their own unique features, each
-arranger shares the following global tools.
+While each editor has its own toolbar to assist with
+various operations, there is a global Edit section in the
+top toolbar that has common features shared by each
+editor.
 
-The Timeline is the arranger shown in the
-top part of the screen by default, and the
-Piano Roll is brought up by clicking on the
-Editor tab on the bottom of the screen or by
-double-clicking a region.
+.. image:: /_static/img/edit-section.png
+   :align: center
