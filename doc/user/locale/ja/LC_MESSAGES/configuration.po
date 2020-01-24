@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 12:22+0000\n"
-"PO-Revision-Date: 2019-08-13 15:24+0000\n"
+"PO-Revision-Date: 2020-01-24 15:57+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.11-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -24,14 +25,13 @@ msgid "Additional Settings"
 msgstr "その他の設定"
 
 #: ../../configuration/additional-settings.rst:8
-#, fuzzy
 msgid ""
 "Zrythm stores all of its configuration using the GSettings mechanism, "
 "which comes with the ``gsettings`` command for changing settings from the"
 " command line, or the optional GUI tool ``dconf-editor``."
 msgstr ""
-"Zrythm は、コマンド ラインから設定を変更するための ``gsettings``コマンドが付属する GSettings "
-"メカニズムを使用して、すべての設定を格納します。"
+"Zrythm は GSettings メカニズムを使用してすべての設定を保存します。コマンドラインから設定を変更するための ``gsettings`` "
+"コマンド、またはオプションの GUI ツール ``dconf-editor``を使用することで設定値を変更できます。"
 
 #: ../../configuration/additional-settings.rst:14
 msgid ""
@@ -43,7 +43,7 @@ msgstr "通常、これらの設定のほとんどは Zrythm の UI 内に存在
 
 #: ../../configuration/additional-settings.rst:23
 msgid "Using gsettings"
-msgstr ""
+msgstr "gsettingsの使用方法"
 
 #: ../../configuration/additional-settings.rst:25
 msgid ""
@@ -52,13 +52,12 @@ msgid ""
 msgstr "変更可能な設定を確認するには、または`'gsettings``の使用方法の詳細については``man gsettings``を参照してください。"
 
 #: ../../configuration/additional-settings.rst:28
-#, fuzzy
 msgid ""
 "As an example, to change the audio backend you would do ``gsettings set "
 "org.zrythm.Zrythm.preferences audio-backend \"jack\"``"
 msgstr ""
 "例として、オーディオバックエンドを変更するには、``gsettings set set org.zrythm.preferences audio-"
-"backend \"jack\"``を利用します"
+"backend \"jack\"``を実行します"
 
 #: ../../configuration/additional-settings.rst:31
 msgid "You can use the range option to get a list of the available values:"
@@ -66,13 +65,13 @@ msgstr "``range``オプションを使用して、使用可能な値のリスト
 
 #: ../../configuration/additional-settings.rst:39
 msgid "Using dconf-editor"
-msgstr ""
+msgstr "dconf-editorの場合"
 
 #: ../../configuration/additional-settings.rst:41
 msgid ""
 "Install and run dconf-editor, and navigate to ``org.zrythm.Zrythm``. All "
 "the settings can be found there."
-msgstr ""
+msgstr "dconf-editor をインストールして実行し、``org.zrythm.Zrythm`` に移動します。すべての設定はそこにあります。"
 
 #: ../../configuration/device-setup/intro.rst:6
 msgid "Device Setup"
@@ -83,14 +82,13 @@ msgid "Connecting MIDI and Audio Devices"
 msgstr "MIDI とオーディオ デバイスの接続"
 
 #: ../../configuration/device-setup/intro.rst:11
-#, fuzzy
 msgid ""
 "On Linux-based platforms, Zrythm works with both ALSA and JACK as "
 "available backends. Depending on the selected backend, the configuration "
 "differs."
 msgstr ""
-"Linuxでは、Zrythm は ALSA と JACK "
-"の両方を使用可能なバックエンドとして扱います。選択したバックエンドによって設定方法が異なります。"
+"Linuxベースのプラットフォームでは、Zrythmは利用可能なバックエンドとしてALSAとJACKの両方で動作します。選択したバックエンドに応じて、設定"
+"が異なります。"
 
 #: ../../configuration/device-setup/intro.rst:16
 msgid ""
@@ -98,6 +96,8 @@ msgid ""
 "recording through the Track Inspector, as below, and in most cases you "
 "don't need to use any external tools or auto-connect mechanism."
 msgstr ""
+"Zrythmは自動スキャンを行い、以下のようにトラックインスペクタを介して録音するための入力デバイスに接続することができ、ほとんどの場合、外部ツールや自動"
+"接続メカニズムを使用する必要がありません。"
 
 #: ../../configuration/device-setup/intro.rst:25
 msgid "Auto-Connecting Devices"
@@ -110,10 +110,12 @@ msgid ""
 "transport, Zrythm has an option to select these devices to auto-connect "
 "to on launch."
 msgstr ""
+"グローバル MIDI メッセージを送信するデバイスやトランスポートを制御するデバイスなど、特定のトラックにリンクされていない他のタイプのデバイスの場合、"
+"Zrythm では、起動時に自動接続するデバイスを選択できます。"
 
 #: ../../configuration/device-setup/intro.rst:33
 msgid "This is a TODO feature"
-msgstr ""
+msgstr "これはTODO機能です"
 
 #: ../../configuration/device-setup/intro.rst:36
 msgid "JACK"
@@ -170,23 +172,25 @@ msgid "You must have a locale for the language you want to use enabled."
 msgstr "使用する言語のロケールを有効にする必要があります。"
 
 #: ../../configuration/first-run-wizard.rst:25
-#, fuzzy
 msgid ""
 "This is usually not a problem since you are probably already using the "
 "correct locale for your language. In case a locale cannot be found, you "
 "will see a message telling you the steps to enable it."
-msgstr "言語に対して正しいロケールを既に使用しているため、通常は問題になりません。ロケールが見つからない場合は、有効にする手順を伝えるメッセージが表示されます。"
+msgstr ""
+"おそらくすでにあなたの言語に適したロケールを使用しているので、これは通常問題ではありません。ロケールが見つからない場合は、有効にする手順を示すメッセージが"
+"表示されます。"
 
 #: ../../configuration/first-run-wizard.rst:31
 msgid "Path"
 msgstr "パス"
 
 #: ../../configuration/first-run-wizard.rst:36
-#, fuzzy
 msgid ""
 "This is the path where Zrythm will save projects, temporary files, "
 "exported audio, etc. The default is \"zrythm\" in the user's directory."
-msgstr "これは、Zrythmがプロジェクト、一時ファイル、エクスポートされたオーディオなどを保存するために使用するパスです。デフォルトは、ユーザーのディレクトリに「zrythm」です。"
+msgstr ""
+"Zrythmがプロジェクト、一時ファイル、エクスポートしたオーディオなどを保存するパスです。デフォルトは、ユーザーのディレクトリ内の "
+"``zrythm``です。"
 
 #: ../../configuration/first-run-wizard.rst:41
 msgid "Audio/MIDI Backends"
@@ -199,6 +203,8 @@ msgid ""
 "your first time using it. If you don't want to use JACK for some reason "
 "you can select other backends such as ALSA or SDL2."
 msgstr ""
+"Zrythmは、複数のオーディオおよびMIDIバックエンドエンジンをサポートしています。JACKは両方に推奨されるものですが、初めて使用する場合は設定に時"
+"間がかかります。何らかの理由で JACK を使用しない場合は、ALSA や SDL2 などの他のバックエンドを選択できます。"
 
 #: ../../configuration/first-run-wizard.rst:52
 msgid ""
@@ -252,16 +258,16 @@ msgstr ""
 msgid ""
 "The Preferences dialog is split into the following sections, which are "
 "explained below:"
-msgstr ""
+msgstr "[環境設定]ダイアログは、以下のセクションに分かれています。"
 
 #: ../../configuration/preferences/intro.rst:18
 #: ../../configuration/preferences/intro.rst:25
 msgid "General"
-msgstr ""
+msgstr "全般"
 
 #: ../../configuration/preferences/intro.rst:19
 msgid "Audio"
-msgstr ""
+msgstr "オーディオ"
 
 #: ../../configuration/preferences/intro.rst:20
 #: ../../configuration/preferences/intro.rst:69
@@ -271,42 +277,40 @@ msgstr "GUI"
 #: ../../configuration/preferences/intro.rst:21
 #: ../../configuration/preferences/intro.rst:60
 msgid "Plugins"
-msgstr ""
+msgstr "プラグイン"
 
 #: ../../configuration/preferences/intro.rst:22
 #: ../../configuration/preferences/intro.rst:75
 msgid "Projects"
-msgstr ""
+msgstr "プロジェクト"
 
 #: ../../configuration/preferences/intro.rst:28
-#, fuzzy
 msgid "Audio Backend"
-msgstr "オーディオ/MIDI バックエンド"
+msgstr "オーディオバックエンド"
 
 #: ../../configuration/preferences/intro.rst:28
 msgid "The backend to use for the audio engine."
-msgstr ""
+msgstr "オーディオ エンジンに使用するバックエンド。"
 
 #: ../../configuration/preferences/intro.rst:31
-#, fuzzy
 msgid "MIDI Backend"
-msgstr "バックエンド"
+msgstr "MIDIバックエンド"
 
 #: ../../configuration/preferences/intro.rst:31
 msgid "The MIDI backend to use for the audio engine."
-msgstr ""
+msgstr "オーディオエンジンに使用する MIDI バックエンド。"
 
 #: ../../configuration/preferences/intro.rst:34
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "MIDIコントローラー"
 
 #: ../../configuration/preferences/intro.rst:34
 msgid "MIDI devices to auto-connect to when Zrythm starts."
-msgstr ""
+msgstr "Zrythmの起動時に自動接続するMIDIデバイス。"
 
 #: ../../configuration/preferences/intro.rst:50
 msgid "Pan Algorithm"
-msgstr ""
+msgstr "パンの計算法"
 
 #: ../../configuration/preferences/intro.rst:37
 msgid ""
@@ -316,66 +320,70 @@ msgid ""
 "online/readings/panlaws/index.html for more information. This is not used"
 " at the moment."
 msgstr ""
+"使用するパン アルゴリズム。パンを左から右に移動する際のカーブの違いについては、下のグラフを参照してください。デフォルト (Sine) "
+"のままにすることをお勧めします。詳細については、https://www.cs.cmu.edu/~music/icm-online/readings/"
+"panlaws/index.htmlを参照してください。これは現時点では使用されていません。"
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
-msgstr ""
+msgstr "パンアルゴリズム (:blue:`正弦`, :red:`平方根`, :green:`線形`)."
 
 #: ../../configuration/preferences/intro.rst:53
 msgid "Pan Law"
-msgstr ""
+msgstr "パン法"
 
 #: ../../configuration/preferences/intro.rst:53
 msgid "This is not used at the moment."
-msgstr ""
+msgstr "これは現時点では使用されていません。"
 
 #: ../../configuration/preferences/intro.rst:57
 msgid "Zrythm Path"
-msgstr ""
+msgstr "Zrythmパス"
 
 #: ../../configuration/preferences/intro.rst:56
 msgid ""
 "The path to save projects, temporary files, and other non-project "
 "specific files."
-msgstr ""
+msgstr "プロジェクト、一時ファイル、およびその他の非プロジェクト固有のファイルを保存するパス。"
 
 #: ../../configuration/preferences/intro.rst:63
 msgid "Always open plugin UIs"
-msgstr ""
+msgstr "プラグインUIを常に開く"
 
 #: ../../configuration/preferences/intro.rst:63
 msgid "Always show the plugin UI when instantiating plugins."
-msgstr ""
+msgstr "プラグインをインスタンス化する際には、常にプラグインの UI を表示します。"
 
 #: ../../configuration/preferences/intro.rst:66
 msgid "Keep plugin UIs on top"
-msgstr ""
+msgstr "プラグインUIを常に一番上に表示します"
 
 #: ../../configuration/preferences/intro.rst:66
 msgid "Whether to always keep plugin UIs above other Zrythm windows or not."
-msgstr ""
+msgstr "常に他のZrythmウィンドウの上にプラグインのUIを表示するかどうか。"
 
 #: ../../configuration/preferences/intro.rst:72
 msgid "Language"
-msgstr ""
+msgstr "言語"
 
 #: ../../configuration/preferences/intro.rst:72
+#, fuzzy
 msgid "The language that the Zrythm interface uses."
-msgstr ""
+msgstr "Zrythm インターフェイスが使用する言語。"
 
 #: ../../configuration/preferences/intro.rst:79
 msgid "Autosave Interval"
-msgstr ""
+msgstr "自動保存間隔"
 
 #: ../../configuration/preferences/intro.rst:78
 msgid ""
 "The amount of time to wait before auto-saving a backup of the current "
 "project, in minutes. Setting this to 0 will turn it off."
-msgstr ""
+msgstr "現在のプロジェクトのバックアップを自動保存するまでの待機時間 (分単位)。これを 0 に設定すると、オフになります。"
 
 #: ../../configuration/preferences/intro.rst:81
 msgid "Changing some of these settings requires a restart of Zrythm."
-msgstr ""
+msgstr "これらの設定の一部の変更を適用するには、Zrythm を再起動する必要があります。"
 
 #~ msgid ""
 #~ "Zrythm exposes ports to JACK. Devices"
@@ -662,4 +670,3 @@ msgstr ""
 #~ "online/readings/panlaws/index.html for more "
 #~ "information."
 #~ msgstr ""
-
