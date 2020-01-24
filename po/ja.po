@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-12-24 22:26+0000\n"
-"PO-Revision-Date: 2019-12-17 16:21+0000\n"
+"PO-Revision-Date: 2020-01-24 14:09+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 3.11-dev\n"
 
 #: src/zrythm.c:280
 msgid "Setting up main window"
@@ -65,9 +65,8 @@ msgid "Initializing logging system"
 msgstr "ログシステムを初期化中"
 
 #: src/zrythm.c:547
-#, fuzzy
 msgid "Waiting for project"
-msgstr "プロジェクトを読み込み中"
+msgstr "プロジェクトを待機中"
 
 #: src/project.c:366 src/gui/widgets/route_target_selector_popover.c:147
 #: src/audio/track.c:1276
@@ -122,7 +121,7 @@ msgstr ""
 "ださい。"
 
 #: src/main.c:164
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
@@ -137,18 +136,18 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "Website https://www.zrythm.org\n"
 msgstr ""
-"使用法: zrythm [ オプション ] [ プロジェクト名 ]\n"
+"Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
-"オプション：\n"
-"  -h, --help このヘルプを表示して終了する\n"
-"  -v,  --version バージョン情報を出力と終了\n"
+"Options:\n"
+"  -h, --help      display this help and exit\n"
+"  -v, --version   output version information and exit\n"
 "\n"
-"例：\n"
-"  zrythm は正常に実行されます。\n"
+"Examples:\n"
+"  zrythm          run normally\n"
 "\n"
-"https://savannah.nongnu.org/support/?group=zrythmにコメントやバグを書き込む\n"
-"このプロジェクトをサポートhttps://liberapay.com/Zrythm\n"
-"ウェブサイトhttps://www.zrythm.org\n"
+"Write comments and bugs to %s\n"
+"Support this project at https://liberapay.com/Zrythm\n"
+"Website https://www.zrythm.org\n"
 
 #: src/main.c:224
 #, c-format
@@ -165,6 +164,17 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
+"Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
+"\n"
+"Zrythm comes with ABSOLUTELY NO WARRANTY!\n"
+"\n"
+"This is free software, and you are welcome to redistribute it\n"
+"under certain conditions. Look at the file `COPYING' within this\n"
+"distribution for details.\n"
+"\n"
+"Write comments and bugs to %s\n"
+"Support this project at https://liberapay.com/Zrythm\n"
+"\n"
 
 #: src/plugins/plugin_manager.c:199
 msgid "Error loading LV2 bundle dir: "
@@ -244,30 +254,28 @@ msgid "note type"
 msgstr "音符の種類"
 
 #: src/gui/widgets/inspector_port.c:149 resources/ui/bind_cc_dialog.ui:27
-#, fuzzy
 msgid "Bind MIDI CC"
-msgstr "レーン%d Midi Ch"
+msgstr "MIDI CC をバインドする"
 
 #: src/gui/widgets/inspector_port.c:303
 msgid "Incoming signals"
-msgstr ""
+msgstr "信号入力"
 
 #: src/gui/widgets/inspector_port.c:304
 msgid "Outgoing signals"
-msgstr ""
+msgstr "信号出力"
 
 #: src/gui/widgets/inspector_port.c:316
 msgid "Current val"
-msgstr ""
+msgstr "現値"
 
 #: src/gui/widgets/inspector_port.c:318
-#, fuzzy
 msgid "Min"
-msgstr "入力"
+msgstr "最小値"
 
 #: src/gui/widgets/inspector_port.c:319
 msgid "Max"
-msgstr ""
+msgstr "最大値"
 
 #: src/gui/widgets/inspector_port.c:431
 msgid "Expose port to JACK"
@@ -393,9 +401,8 @@ msgstr ""
 "3. Restart Zrythm"
 
 #: src/gui/widgets/bind_cc_dialog.c:94
-#, fuzzy
 msgid "Not a control change event"
-msgstr "コントロールが選択されていません"
+msgstr "コントロール変更イベントではありません"
 
 #: src/gui/widgets/project_assistant.c:265 src/gui/widgets/event_viewer.c:437
 #: resources/ui/create_project_dialog.ui:95
@@ -416,9 +423,8 @@ msgid "Blank project"
 msgstr "空白のプロジェクト"
 
 #: src/gui/widgets/project_assistant.c:675
-#, fuzzy
 msgid "Project Assistant"
-msgstr "プロジェクトが保存されました。"
+msgstr "プロジェクトアシスタント"
 
 #: src/gui/widgets/left_dock_edge.c:105
 msgid "Inspector"
@@ -672,9 +678,8 @@ msgid "position"
 msgstr "位置"
 
 #: src/gui/widgets/timeline_arranger.c:502
-#, fuzzy
 msgid "Custom Marker"
-msgstr "マーカー"
+msgstr "カスタムマーカー"
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "Chat (Matrix)"
@@ -822,9 +827,8 @@ msgid "Scale"
 msgstr "スケール"
 
 #: src/gui/widgets/event_viewer.c:114
-#, fuzzy
 msgid "MIDI note"
-msgstr "MIDI入力"
+msgstr "MIDI音符"
 
 #: src/gui/widgets/event_viewer.c:117 src/gui/widgets/event_viewer.c:585
 #: src/audio/region.c:290 src/audio/track.c:1279
@@ -833,9 +837,8 @@ msgid "Chord"
 msgstr "和音"
 
 #: src/gui/widgets/event_viewer.c:120
-#, fuzzy
 msgid "Automation point"
-msgstr "オートメーション"
+msgstr "オートメーションポイント"
 
 #: src/gui/widgets/event_viewer.c:448 resources/ui/chord_selector_window.ui:238
 #: resources/ui/file_browser.ui:84 resources/ui/snap_grid_popover.ui:127
@@ -863,14 +866,12 @@ msgid "End"
 msgstr "終わり"
 
 #: src/gui/widgets/event_viewer.c:522
-#, fuzzy
 msgid "Note"
-msgstr "ルート音符"
+msgstr "音符"
 
 #: src/gui/widgets/event_viewer.c:533
-#, fuzzy
 msgid "Pitch"
-msgstr "ピッチベンド"
+msgstr "ピッチ"
 
 #: src/gui/widgets/event_viewer.c:544 resources/ui/midi_editor_space.ui:144
 #: resources/ui/chord_editor_space.ui:152
