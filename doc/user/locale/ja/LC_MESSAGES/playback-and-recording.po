@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2019-08-12 00:18+0000\n"
+"PO-Revision-Date: 2020-01-24 23:02+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualplayback-and-recording/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm"
-"/manualplayback-and-recording/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.11-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../playback-and-recording/arming-for-recording.rst:19
@@ -38,7 +39,7 @@ msgstr ""
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:22
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:24
 msgid ""
@@ -141,7 +142,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:25
 msgid "Playhead"
-msgstr ""
+msgstr "再生ヘッド"
 
 #: ../../playback-and-recording/overview.rst:26
 msgid "The Playhead is the current position in the song."
@@ -239,4 +240,3 @@ msgstr "メトロノーム"
 
 #~ msgid "Zrythm uses the following format for positions::"
 #~ msgstr ""
-
