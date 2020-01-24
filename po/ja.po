@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-12-24 22:26+0000\n"
-"PO-Revision-Date: 2020-01-24 14:09+0000\n"
+"PO-Revision-Date: 2020-01-24 15:57+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -881,20 +881,19 @@ msgstr "ベロシティ"
 
 #: src/gui/widgets/event_viewer.c:615
 msgid "Index"
-msgstr ""
+msgstr "インデックス"
 
 #: src/gui/widgets/event_viewer.c:637
 msgid "Value"
-msgstr ""
+msgstr "値"
 
 #: src/gui/widgets/event_viewer.c:648
 msgid "Curviness"
-msgstr ""
+msgstr "曲線"
 
 #: src/gui/widgets/ports_expander.c:165
-#, fuzzy
 msgid "Controls"
-msgstr "入力コントロール"
+msgstr "コントロール"
 
 #: src/gui/widgets/ports_expander.c:168
 msgid "Control Outs"
@@ -1057,11 +1056,11 @@ msgstr "トラックを非表示にする"
 
 #: src/gui/widgets/track.c:1455
 msgid "Pin/Unpin Track"
-msgstr ""
+msgstr "トラックを固定/固定解除"
 
 #: src/gui/widgets/track.c:1456
 msgid "Pin/Unpin Tracks"
-msgstr ""
+msgstr "トラックを固定/固定解除"
 
 #: src/gui/widgets/track.c:1471
 msgid "Track MIDI Ch"
@@ -1240,7 +1239,7 @@ msgstr "サンプルプロセッサ"
 #. TODO
 #: src/audio/scale.c:563 src/audio/scale.c:597
 msgid "Unimplemented"
-msgstr ""
+msgstr "未実装"
 
 #: src/audio/fader.c:105
 msgid "Fader in"
@@ -1313,9 +1312,8 @@ msgid "Client zombie"
 msgstr "クライアントゾンビ"
 
 #: src/actions/arranger_selections.c:1364
-#, fuzzy
 msgid "Edit arranger object(s)"
-msgstr "オブジェクトを編集"
+msgstr "アレンジャーオブジェクトを編集"
 
 #: src/actions/create_plugins_action.c:139
 #, c-format
@@ -1343,16 +1341,15 @@ msgstr "プロジェクトの新規作成"
 
 #: src/actions/actions.c:551
 msgid "Yes"
-msgstr ""
+msgstr "はい"
 
 #: src/actions/actions.c:553
-#, fuzzy
 msgid "No"
-msgstr "無し"
+msgstr "いいえ"
 
 #: src/actions/actions.c:558
 msgid "Any unsaved changes to the current project will be lost. Continue?"
-msgstr ""
+msgstr "現在のプロジェクトに保存されていない変更は失われます。続行しますか？"
 
 #: src/actions/actions.c:654
 msgid "Save Project"
@@ -1487,7 +1484,7 @@ msgstr "MIDIバックエンド"
 
 #: resources/ui/first_run_assistant.ui:192 resources/ui/preferences.ui:124
 msgid "Audio Backend"
-msgstr "オーディオのバックエンド"
+msgstr "オーディオバックエンド"
 
 #: resources/ui/first_run_assistant.ui:229
 msgid "Test"
@@ -1513,12 +1510,11 @@ msgstr "OK"
 
 #: resources/ui/bind_cc_dialog.ui:81
 msgid "Press a key or move a knob on your MIDI device"
-msgstr ""
+msgstr "MIDIデバイスのキーを押すか、ノブを回してください"
 
 #: resources/ui/bind_cc_dialog.ui:94
-#, fuzzy
 msgid "Waiting for input..."
-msgstr "プロジェクトを読み込み中"
+msgstr "入力を待機中..."
 
 #: resources/ui/scale_selector_window.ui:51
 msgid "Root Key"
@@ -1533,7 +1529,6 @@ msgstr "C"
 #: resources/ui/scale_selector_window.ui:93
 #: resources/ui/chord_selector_window.ui:91
 #: resources/ui/chord_selector_window.ui:535
-#, fuzzy
 msgid "D♭"
 msgstr "D♭"
 
@@ -1621,7 +1616,7 @@ msgstr "クリエーター"
 #: resources/ui/scale_selector_window.ui:358
 #: resources/ui/chord_selector_window.ui:876
 msgid "TODO keyboard"
-msgstr ""
+msgstr "TODO キーボード"
 
 #: resources/ui/scale_selector_window.ui:368
 #: resources/ui/chord_selector_window.ui:886 resources/ui/export_dialog.ui:250
@@ -1649,22 +1644,20 @@ msgid "Modulators"
 msgstr "モジュレーター"
 
 #: resources/ui/bot_dock_edge.ui:193
-#, fuzzy
 msgid "Chord Pad"
 msgstr "コードパッド"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
-msgstr ""
+msgstr "フィッシュボウル"
 
 #: resources/ui/timeline_toolbar.ui:64
 msgid "Musical mode"
-msgstr ""
+msgstr "ミュージカルモード"
 
 #: resources/ui/timeline_toolbar.ui:87 resources/ui/editor_toolbar.ui:103
-#, fuzzy
 msgid "Toggle event viewer"
-msgstr "イベント ビューア"
+msgstr "イベント ビューアの表示を切り替える"
 
 #: resources/ui/project_assistant.ui:27
 msgid "Select Project"
@@ -1820,7 +1813,7 @@ msgstr "一般のショートカットキー"
 
 #: resources/ui/shortcuts.ui:36 resources/ui/preferences.ui:265
 msgid "General"
-msgstr "一般"
+msgstr "全般"
 
 #: resources/ui/shortcuts.ui:54
 msgid "Toggle Fullscreen"
@@ -2052,6 +2045,8 @@ msgid ""
 "points), or \"Full region\" to save the whole region as Zrythm would play it "
 "(traversing loops)."
 msgstr ""
+"元のリージョンを保存するには「ベースリージョン」を選択し(ループ/クリップ開始ポイントなし)、Zrythmが再生するように領域全体を保存する場合は「領域全"
+"体」を選択してください(ループをトラバース)。"
 
 #: resources/ui/export_midi_file_dialog.ui:120
 msgid "Base region"
@@ -2136,12 +2131,11 @@ msgstr "イベント ビューア"
 
 #: resources/ui/automation_track.ui:31
 msgid "Control this automation track is for"
-msgstr ""
+msgstr "このオートメーショントラックが制御するコントロール"
 
 #: resources/ui/automation_track.ui:43
-#, fuzzy
 msgid "Mute automation track"
-msgstr "オートメーションを書く"
+msgstr "オートメーショントラックをミュート"
 
 #: resources/ui/automation_track.ui:83
 msgid "RW"
@@ -2358,11 +2352,11 @@ msgstr "接続する MIDI バックエンド"
 
 #: resources/ui/preferences.ui:193
 msgid "Pan Algorithm"
-msgstr "パンアルゴリズム"
+msgstr "パンの計算法"
 
 #: resources/ui/preferences.ui:204
 msgid "Pan Law"
-msgstr "Pan Law"
+msgstr "パン法"
 
 #: resources/ui/preferences.ui:215
 msgid "The pan algorithm to use"
@@ -2386,7 +2380,7 @@ msgstr "プラグイン"
 
 #: resources/ui/preferences.ui:290
 msgid "Always open plugin UIs"
-msgstr "常にプラグインUIを開く"
+msgstr "プラグインUIを常に開く"
 
 #: resources/ui/preferences.ui:294
 msgid "Always show the plugin UI when instantiating a plugin"
@@ -2394,11 +2388,11 @@ msgstr "プラグインをインスタンス化する際は、常にプラグイ
 
 #: resources/ui/preferences.ui:306
 msgid "Keep plugin UIs on top"
-msgstr "プラグインの UI を常に一番上に表示"
+msgstr "プラグインUIを常に一番上に表示します"
 
 #: resources/ui/preferences.ui:310
 msgid "Keep plugin UI windows on top of the main window"
-msgstr ""
+msgstr "プラグインUIウィンドウを常にメインウィンドウの上に配置する"
 
 #: resources/ui/preferences.ui:345
 msgid "Main Window"
@@ -2429,13 +2423,10 @@ msgid "Autosave interval"
 msgstr "自動保存間隔"
 
 #: resources/ui/preferences.ui:481
-#, fuzzy
 msgid ""
 "Set the interval to auto-save project backups, in minutes. Setting this to 0 "
 "will disable auto-save"
-msgstr ""
-"プロジェクトのバックアップを自動保存する間隔を分単位で設定します。これを0に設"
-"定すると、自動保存が無効になります"
+msgstr "プロジェクトのバックアップを自動保存する間隔を分単位で設定します。これを 0 に設定すると、自動保存が無効になります"
 
 #: data/zrythm.desktop.in:21
 msgid "Digital Audio Workstation"
