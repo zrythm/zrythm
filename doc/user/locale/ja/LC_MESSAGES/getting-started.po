@@ -34,7 +34,7 @@ msgid ""
 "``#zrythmdaw:matrix.org``."
 msgstr ""
 "IRC "
-"(Freenode)の``#zrythm``、またはMatrixの``#zrythmdaw:matrix.org``でユーザ・サポートを提供しています。"
+"(Freenode)の ``#zrythm``、またはMatrixの ``#zrythmdaw:matrix.org`` でユーザ・サポートを提供しています。"
 
 #: ../../getting-started/additional-resources.rst:14
 msgid "Issue Tracker"
@@ -46,8 +46,8 @@ msgid ""
 "<https://redmine.zrythm.org/projects/zrythm/issues>`_. You can use this "
 "to report bugs or give feedback."
 msgstr ""
-"課題トラッカーは我らの`Redmine インスタンス "
-"<https://redmine.zrythm.org/projects/zrythm/issues>`_にあります。これを使用して、バグを報告したり、フィードバックを書いたりできます。"
+"課題トラッカーはZrythmの `Redmine インスタンス "
+"<https://redmine.zrythm.org/projects/zrythm/issues>`_ にあります。これを使用して、バグを報告したり、フィードバックを書いたりできます。"
 
 #: ../../getting-started/additional-resources.rst:20
 msgid "Source Code"
@@ -58,8 +58,8 @@ msgid ""
 "Zrythm's source code can be found on our `CGit instance "
 "<https://git.zrythm.org/cgit/zrythm/>`_."
 msgstr ""
-"Zrythmのソースコードは我らの `CGitインスタンス "
-"<https://git.zrythm.org/cgit/zrythm/>`_にあります。"
+"ZrythmのソースコードはZrythmの `CGitインスタンス "
+"<https://git.zrythm.org/cgit/zrythm/>`_ にあります。"
 
 #: ../../getting-started/additional-resources.rst:25
 msgid "Older Versions"
@@ -69,7 +69,7 @@ msgstr "旧バージョン"
 msgid ""
 "Older releases of Zrythm can be found on the `Releases page "
 "<https://www.zrythm.org/releases>`_"
-msgstr "Zrythmの旧リリースは、`リリースページ <https://www.zrythm.org/releases>`_にあります"
+msgstr "Zrythmの旧リリースは、`リリースページ <https://www.zrythm.org/releases>`_ にあります"
 
 #: ../../getting-started/getting-plugins.rst:6
 msgid "Getting Plugins"
@@ -97,7 +97,7 @@ msgid ""
 "can easily be installed via apt."
 msgstr ""
 "Debian/Ubuntu を使用している場合は、apt 経由で簡単にインストールできるプラグインが多数存在するため、`KXstudio リポジトリ "
-"<https://kx.studio/>`_を使用することを強くお勧めします。"
+"<https://kx.studio/>`_ を使用することを強くお勧めします。"
 
 #: ../../getting-started/getting-plugins.rst:20
 msgid ""
@@ -106,7 +106,7 @@ msgid ""
 "can hand-pick the plugins you want from there."
 msgstr ""
 "Arch GNU/Linuxを使用している場合は、`lv2-plugins <https://www.archlinux.org/groups/"
-"x86_64/lv2-plugins/>`_グループをインストールするか、そこから必要なプラグインを手動で選ぶことをお勧めします。"
+"x86_64/lv2-plugins/>`_ グループをインストールするか、そこから必要なプラグインを手動で選ぶことをお勧めします。"
 
 #: ../../getting-started/getting-plugins.rst:25
 msgid "If you are not sure where to start, please read on."
@@ -123,7 +123,7 @@ msgid ""
 "making music right away."
 msgstr ""
 "`DISTRHO Ports <https://distrho.sourceforge.io/"
-"ports.php>`_は、さまざまなシンセと、すぐに音楽を作り始めるためのいくつかのエフェクトを提供しています。"
+"ports.php>`_ は、さまざまなシンセと、すぐに音楽を作り始めるためのいくつかのエフェクトを提供しています。"
 
 #: ../../getting-started/getting-plugins.rst:34
 msgid ""
@@ -131,25 +131,25 @@ msgid ""
 "contains all the basic effects like Delay, Reverb, Compression, EQ, "
 "Saturation, etc."
 msgstr ""
-"`ZAMプラグイン<http://www.zamaudio.com/?p=976> "
-"`_はDelay、Reverb、Compression、EQ、Saturationなどの基本的なエフェクトをすべて含むエフェクトパックです。"
+"`ZAM プラグイン <http://www.zamaudio.com/?p=976>"
+"`_ はDelay、Reverb、Compression、EQ、Saturationなどの基本的なエフェクトをすべて含むエフェクトパックです。"
 
 #: ../../getting-started/getting-plugins.rst:38
 msgid "`LSP <https://lsp-plug.in/>`_ has a lot of useful effects."
-msgstr "`LSP <https://lsp-plug.in/> `_にはたくさんの便利な効果があります。"
+msgstr "`LSP <https://lsp-plug.in/>`_ にはたくさんの便利な効果があります。"
 
 #: ../../getting-started/getting-plugins.rst:40
 msgid ""
 "`OpenAV <http://openavproductions.com>`_ has effects and instruments "
 "worth checking out."
-msgstr "`OpenAV <http://openavproductions.com>`_にはいろんなな使いやすいプラグインがあります。"
+msgstr "`OpenAV <http://openavproductions.com>`_ にはいろんなな使いやすいプラグインがあります。"
 
 #: ../../getting-started/getting-plugins.rst:43
 msgid ""
 "`X42 Plugins <http://x42-plugins.com/x42/>`_ has many MIDI effect and "
 "meter plugins."
 msgstr ""
-"`X42プラグイン <http://x42-plugins.com/x42/>`_には、多くのMIDIエフェクトとメータープラグインがあります。"
+"`X42プラグイン <http://x42-plugins.com/x42/>`_ には、多くのMIDIエフェクトとメータープラグインがあります。"
 
 #: ../../getting-started/getting-plugins.rst:47
 msgid "Synths"
@@ -157,13 +157,13 @@ msgstr "シンセサイザー"
 
 #: ../../getting-started/getting-plugins.rst:49
 msgid "`Helm <https://tytel.org/helm/>`_ is an excellent subtractive synth."
-msgstr "`Helm <https://tytel.org/helm/>`_は優れた減算シンセです。"
+msgstr "`Helm <https://tytel.org/helm/>`_ は優れた減算シンセです。"
 
 #: ../../getting-started/getting-plugins.rst:51
 msgid ""
 "`Dexed <http://asb2m10.github.io/dexed/>`_ Dexed is an FM synth that is "
 "closely modeled on the Yamaha DX7."
-msgstr "`Dexed <http://asb2m10.github.io/dexed/>`_DexedはヤマハDX7を綿密にモデル化したFMシンセです。"
+msgstr "`Dexed <http://asb2m10.github.io/dexed/>`_ DexedはヤマハDX7を綿密にモデル化したFMシンセです。"
 
 #: ../../getting-started/getting-plugins.rst:54
 msgid ""
@@ -172,7 +172,7 @@ msgid ""
 " sounds."
 msgstr ""
 "`ZynFusion <http://zynaddsubfx.sourceforge.net/zyn-"
-"fusion.html>`_は、さまざまなサウンドを合成できる強力な加算/減算シンセです。"
+"fusion.html>`_ は、さまざまなサウンドを合成できる強力な加算/減算シンセです。"
 
 #: ../../getting-started/getting-plugins.rst:59
 msgid "Percussion Generators"
@@ -184,7 +184,7 @@ msgid ""
 "synthesizer that can also synthesize other types of percussion."
 msgstr ""
 "`GeonKick <https://gitlab.com/iurie/"
-"geonkick>`_は、他の種類のパーカッションも合成できるキックドラムシンセサイザーです。"
+"geonkick>`_ は、他の種類のパーカッションも合成できるキックドラムシンセサイザーです。"
 
 #: ../../getting-started/installation/freebsd.rst:6
 msgid "FreeBSD"
@@ -219,7 +219,7 @@ msgid ""
 "missing features and optimizations."
 msgstr ""
 "`zrythm port <https://www.freshports.org/audio/zrythm/"
-">`_をインストールできますが、古いもので機能や最適化が欠けている可能性があります。"
+">`_ をインストールできますが、古いもので機能や最適化が欠けている可能性があります。"
 
 #: ../../getting-started/installation/freebsd.rst:23
 #: ../../getting-started/installation/gnu-linux.rst:43
@@ -228,7 +228,7 @@ msgstr "手動インストール"
 
 #: ../../getting-started/installation/freebsd.rst:24
 msgid "See :ref:`gnu-with-linux-manual-installation`."
-msgstr ":ref:`gnu-with-linux-manual-installation`を参照してください。"
+msgstr ":ref:`gnu-with-linux-manual-installation` を参照してください。"
 
 #: ../../getting-started/installation/gnu-linux.rst:6
 msgid "GNU with Linux"
@@ -240,8 +240,8 @@ msgid ""
 "installer from the `Download <https://www.zrythm.org/en/download.html>`_ "
 "page on our website."
 msgstr ""
-"Zrythmのウェブサイトの`ダウンロード <https://www.zrythm.org/ja/"
-"download.html>`_ページのインストーラーを使用して、ご使用されているディストリビューション用の Zrythm "
+"Zrythmのウェブサイトの `ダウンロード <https://www.zrythm.org/ja/"
+"download.html>`_ ページのインストーラーを使用して、ご使用されているディストリビューション用の Zrythm "
 "の最新バージョンをインストールできます。"
 
 #: ../../getting-started/installation/gnu-linux.rst:18
@@ -297,7 +297,7 @@ msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:54
 msgid "See the ``INSTALL.md`` file for more information."
-msgstr "詳細については、``INSTALL.md``ファイルを参照してください。"
+msgstr "詳細については、``INSTALL.md`` ファイルを参照してください。"
 
 #: ../../getting-started/installation/intro.rst:6
 msgid "Installation"
@@ -313,7 +313,7 @@ msgid ""
 "installation`. No support is offered at the moment."
 msgstr ""
 ":ref:`gnu-with-linux-manual-"
-"installation`に記載されているように、ソースからインストールします。現時点ではサポートは提供されません。"
+"installation` に記載されているように、ソースからインストールします。現時点ではサポートは提供されません。"
 
 #: ../../getting-started/installation/windows.rst:6
 msgid "Windows"
@@ -325,7 +325,7 @@ msgid ""
 "<https://www.zrythm.org/en/download.html>`_ page on our website."
 msgstr ""
 "Windows インストーラーは、`ダウンロード <https://www.zrythm.org/ja/"
-"download.html>`_ページで購入できます。"
+"download.html>`_ ページで購入できます。"
 
 #: ../../getting-started/installation/windows.rst:12
 msgid ""
@@ -335,7 +335,7 @@ msgid ""
 "<https://packages.msys2.org/>`_."
 msgstr ""
 "インストーラーのサポートは提供していますが、WindowsでZrythmを手動でビルドすることはサポートしていません。試してみたい場合は、 "
-"`MSYS2プロジェクト<https://packages.msys2.org/>`_から必要なほとんどのパッケージを取得できます。"
+"`MSYS2プロジェクト <https://packages.msys2.org/>`_ から必要なほとんどのパッケージを取得できます。"
 
 #: ../../getting-started/intro.rst:6
 msgid "Getting Started"
@@ -403,8 +403,8 @@ msgid ""
 "<https://drobilla.net/software/ingen>`_"
 msgstr ""
 "`QjackCtl <https://qjackctl.sourceforge.io/>`_、`Catia <https://kx.studio/"
-"Applications:Catia>`_または`Ingen <https://drobilla.net/software/"
-"ingen>`_などのJACKパッチベイ"
+"Applications:Catia>`_ または `Ingen <https://drobilla.net/software/"
+"ingen>`_ などのJACKパッチベイ"
 
 #: ../../getting-started/system-requirements.rst:40
 msgid "Audio Interface"
@@ -649,49 +649,6 @@ msgstr "スケールでコードを試聴できるコードパッドと、コー
 #~ msgid "A Range is a selection of time between two positions."
 #~ msgstr "レンジは、2つの位置間の時間の選択です。"
 
-#~ msgid "MIDI Note"
-#~ msgstr ""
-
-#~ msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
-#~ msgstr ""
-
-#~ msgid "You will be presented with the following"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "For Arch GNU/Linux users, Zrythm is "
-#~ "also available in the AUR under "
-#~ "`zrythm <https://aur.archlinux.org/packages/zrythm/>`_ and"
-#~ " `zrythm-git <https://aur.archlinux.org/packages"
-#~ "/zrythm-git/>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "We don't know yet. The oldest "
-#~ "machine tested on was T400 and it"
-#~ " was a bit laggy. If you have"
-#~ " any experiences with older machines "
-#~ "please let us know."
-#~ msgstr ""
-
-#~ msgid "Recommended Requirements"
-#~ msgstr "おすすめなプラグインバンドル"
-
-#~ msgid "We recommend running a fairly modern machine."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Zrythm is a highly automated Digital "
-#~ "Audio Workstation (DAW) designed to be"
-#~ " featureful and intuitive to use. "
-#~ "Zrythm sets itself apart from other "
-#~ "DAWs by allowing extensive automation "
-#~ "via built-in LFOs and envelopes ("
-#~ " Modulators) and intuitive MIDI or "
-#~ "audio editing and arranging via loopable"
-#~ " clips."
-#~ msgstr ""
-
 #~ msgid ""
 #~ "In the usual Composing -> Mixing "
 #~ "-> Mastering workflow, Zrythm puts the"
@@ -745,18 +702,6 @@ msgstr "スケールでコードを試聴できるコードパッドと、コー
 #~ msgid "Official Builds"
 #~ msgstr "公式ビルド"
 
-#~ msgid ""
-#~ "You can install the latest version "
-#~ "of Zrythm for your distro `here "
-#~ "<https://software.opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This is the recommended way to "
-#~ "install the latest version for most "
-#~ "users."
-#~ msgstr ""
-
 #~ msgid "Flatpak"
 #~ msgstr "Flatpak"
 
@@ -766,125 +711,14 @@ msgstr "スケールでコードを試聴できるコードパッドと、コー
 #~ msgid "AppImage"
 #~ msgstr "AppImage"
 
-#~ msgid "AppImage builds are coming soon."
-#~ msgstr ""
-
 #~ msgid "Fedora"
 #~ msgstr "Fedora"
-
-#~ msgid ""
-#~ "For Fedora users, ycollet maintains a"
-#~ " Zrythm package in `copr "
-#~ "<https://copr.fedorainfracloud.org/coprs/ycollet/linuxmao/>`_"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Zrythm is available in `LibraZik 2 "
-#~ "<https://librazik.tuxfamily.org/>`_ for testing."
-#~ msgstr ""
 
 #~ msgid "AUR"
 #~ msgstr "AUR"
 
-#~ msgid ""
-#~ "For Arch GNU/Linux users, Zrythm is "
-#~ "available in the AUR under `zrythm "
-#~ "<https://aur.archlinux.org/packages/zrythm/>`_ and "
-#~ "`zrythm-git <https://aur.archlinux.org/packages/zrythm-"
-#~ "git/>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Install from source in the same "
-#~ "way as for GNU/Linux. No support "
-#~ "is offered."
-#~ msgstr ""
-
-#~ msgid "http://www.upgradefromwindows.com"
-#~ msgstr ""
-
 #~ msgid "GTK 3.22 or later"
 #~ msgstr "GTK 3.22以降"
-
-#~ msgid "A JACK patchbay such as Carla or Catia"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Zrythm is a digital audio workstation"
-#~ " designed to be featureful and easy"
-#~ " to use. It has the following "
-#~ "features."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Allows you to automate almost anything"
-#~ " with automation events using straight "
-#~ "lines, ramps and curves, or with "
-#~ "CV signals from LFO and envelope "
-#~ "plugins."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "We plan to add FreeBSD support to"
-#~ " the installer mentioned in `GNU with"
-#~ " Linux`_."
-#~ msgstr ""
-
-#~ msgid "See `GNU with Linux`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Install from source manually as "
-#~ "mentioned in `GNU with Linux`_. No "
-#~ "support is offered at the moment."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The installer supports the following "
-#~ "distros (and derivatives): - Ubuntu "
-#~ "18.10, 19.04, 19.10 - amd64 - "
-#~ "Debian 10 - amd64 - Arch Linux "
-#~ "- x86_64 - Fedora 31 - x86_64"
-#~ msgstr ""
-
-#~ msgid "Ubuntu 18.10, 19.04, 19.10 - amd64"
-#~ msgstr ""
-
-#~ msgid "Debian 10 - amd64"
-#~ msgstr ""
-
-#~ msgid "Arch Linux - x86_64"
-#~ msgstr ""
-
-#~ msgid "Fedora 31 - x86_64"
-#~ msgstr ""
-
-#~ msgid "**Ubuntu 18.10, 19.04, 19.10** - amd64"
-#~ msgstr ""
-
-#~ msgid "**Debian 10** - amd64"
-#~ msgstr ""
-
-#~ msgid "GTK 3.24 or higher"
-#~ msgstr ""
-
-#~ msgid "A working JACK setup"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "A JACK patchbay such as `QjackCtl "
-#~ "<https://qjackctl.sourceforge.io/>`_, `Catia "
-#~ "<https://kx.studio/Applications:Catia>`_ and `Ingen "
-#~ "<https://drobilla.net/software/ingen>`_"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "JACK needs to be set up and "
-#~ "configured before running Zrythm. We "
-#~ "recommend using `Cadence "
-#~ "<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, as"
-#~ " it makes the process very easy."
-#~ msgstr ""
 
 #~ msgid "Open Cadence"
 #~ msgstr "Cadenceを実行"

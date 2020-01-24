@@ -31,7 +31,7 @@ msgid ""
 " command line, or the optional GUI tool ``dconf-editor``."
 msgstr ""
 "Zrythm は GSettings メカニズムを使用してすべての設定を保存します。コマンドラインから設定を変更するための ``gsettings`` "
-"コマンド、またはオプションの GUI ツール ``dconf-editor``を使用することで設定値を変更できます。"
+"コマンド、またはオプションの GUI ツール ``dconf-editor`` を使用することで設定値を変更できます。"
 
 #: ../../configuration/additional-settings.rst:14
 msgid ""
@@ -43,13 +43,13 @@ msgstr "通常、これらの設定のほとんどは Zrythm の UI 内に存在
 
 #: ../../configuration/additional-settings.rst:23
 msgid "Using gsettings"
-msgstr "gsettingsの使用方法"
+msgstr "gsettingsの場合"
 
 #: ../../configuration/additional-settings.rst:25
 msgid ""
 "To see what settings are available and for info on how to use "
 "``gsettings`` see ``man gsettings``."
-msgstr "変更可能な設定を確認するには、または`'gsettings``の使用方法の詳細については``man gsettings``を参照してください。"
+msgstr "変更可能な設定を確認するには、または ``gsettings`` の使用方法の詳細については ``man gsettings`` を参照してください。"
 
 #: ../../configuration/additional-settings.rst:28
 msgid ""
@@ -57,11 +57,11 @@ msgid ""
 "org.zrythm.Zrythm.preferences audio-backend \"jack\"``"
 msgstr ""
 "例として、オーディオバックエンドを変更するには、``gsettings set set org.zrythm.preferences audio-"
-"backend \"jack\"``を実行します"
+"backend \"jack\"`` を実行します"
 
 #: ../../configuration/additional-settings.rst:31
 msgid "You can use the range option to get a list of the available values:"
-msgstr "``range``オプションを使用して、使用可能な値のリストを取得できます。"
+msgstr "``range`` オプションを使用して、使用可能な値のリストを取得できます。"
 
 #: ../../configuration/additional-settings.rst:39
 msgid "Using dconf-editor"
@@ -190,7 +190,7 @@ msgid ""
 "exported audio, etc. The default is \"zrythm\" in the user's directory."
 msgstr ""
 "Zrythmがプロジェクト、一時ファイル、エクスポートしたオーディオなどを保存するパスです。デフォルトは、ユーザーのディレクトリ内の "
-"``zrythm``です。"
+"``zrythm`` です。"
 
 #: ../../configuration/first-run-wizard.rst:41
 msgid "Audio/MIDI Backends"
@@ -210,7 +210,7 @@ msgstr ""
 msgid ""
 "Click :zbutton:`Test` to try connecting to the backend to see if it is "
 "functional."
-msgstr ":zbutton:`テスト`をクリックしますと、バックエンドが機能しているかどうかを確認できます。"
+msgstr ":zbutton:`テスト` をクリックしますと、バックエンドが機能しているかどうかを確認できます。"
 
 #: ../../configuration/first-run-wizard.rst:55
 msgid ""
@@ -252,7 +252,7 @@ msgid ""
 "that can be accessed by clicking the gear icon or by ``Ctrl+Shift+P``."
 msgstr ""
 "Zrythm "
-"には、歯車アイコンをクリックするか、``Ctrl+Shift+P``をクリックしてアクセスできるすべてのグローバル設定を含む環境設定ダイアログがあります。"
+"には、歯車アイコンをクリックするか、``Ctrl+Shift+P`` をクリックしてアクセスできるすべてのグローバル設定を含む環境設定ダイアログがあります。"
 
 #: ../../configuration/preferences/intro.rst:15
 msgid ""
@@ -367,7 +367,6 @@ msgid "Language"
 msgstr "言語"
 
 #: ../../configuration/preferences/intro.rst:72
-#, fuzzy
 msgid "The language that the Zrythm interface uses."
 msgstr "Zrythm インターフェイスが使用する言語。"
 
@@ -384,58 +383,6 @@ msgstr "現在のプロジェクトのバックアップを自動保存するま
 #: ../../configuration/preferences/intro.rst:81
 msgid "Changing some of these settings requires a restart of Zrythm."
 msgstr "これらの設定の一部の変更を適用するには、Zrythm を再起動する必要があります。"
-
-#~ msgid ""
-#~ "Zrythm exposes ports to JACK. Devices"
-#~ " can be attached there. Note that "
-#~ "for MIDI, devices need to be "
-#~ "bridged using ``a2jmidid``."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Zrythm supports multiple audio and MIDI"
-#~ " backend engines. JACK is the "
-#~ "recommended one for both, but it "
-#~ "takes some time to set up if "
-#~ "this is your first time using it."
-#~ " If you don't want to use JACK"
-#~ " for some reason you can select "
-#~ "other backends such as PortAudio."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "It appears that a kind person has"
-#~ " packaged Zrythm at `FreshPorts "
-#~ "<https://www.freshports.org/audio/zrythm/>`_."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Thanks to falktx, Zrythm is also "
-#~ "available in the `KX Studio repos "
-#~ "<http://kxstudio.linuxaudio.org/>`_ for Debian users"
-#~ msgstr ""
-
-#~ msgid "The usual GNU toolchain procedure applies::"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Type ``./configure --help`` for available "
-#~ "options. We recommend using ``--enable-"
-#~ "qt5 --enable-ffmpeg`` to get the "
-#~ "most functionality."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Use the installer from the `main "
-#~ "website <https://www.zrythm.org>`_. Note that "
-#~ "while it may run, it is not "
-#~ "fully functional yet on Windows."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Report any bugs at the `Issue "
-#~ "Tracker <https://git.zrythm.org/zrythm/zrythm>`_."
-#~ msgstr ""
 
 #~ msgid "FreeBSD"
 #~ msgstr "FreeBSD"
@@ -533,17 +480,6 @@ msgstr "これらの設定の一部の変更を適用するには、Zrythm を�
 #~ "yet fully functional on MacOS."
 #~ msgstr ""
 
-#~ msgid ""
-#~ "If you find any bugs please "
-#~ "`report them <https://git.zrythm.org/zrythm/zrythm>`_."
-#~ msgstr ""
-
-#~ msgid "Windows"
-#~ msgstr ""
-
-#~ msgid "http://www.upgradefromwindows.com"
-#~ msgstr ""
-
 #~ msgid "System Requirements"
 #~ msgstr "システム要件"
 
@@ -558,9 +494,6 @@ msgstr "これらの設定の一部の変更を適用するには、Zrythm を�
 #~ "please let us know."
 #~ msgstr ""
 
-#~ msgid "Recommended Requirements"
-#~ msgstr ""
-
 #~ msgid "We recommend running a fairly modern machine."
 #~ msgstr "かなり近代的なパソコンを使用することをお勧めします。"
 
@@ -572,14 +505,6 @@ msgstr "これらの設定の一部の変更を適用するには、Zrythm を�
 #~ "it offers low latency and better "
 #~ "quality (especially if recording audio)."
 #~ msgstr "オーディオインターフェイスは、低レイテンシとより良い品質を提供します(特にオーディオを録音する場合)ので、お勧めします。"
-
-#~ msgid ""
-#~ "JACK needs to be set up and "
-#~ "configured before running Zrythm. We "
-#~ "recommend using `Cadence "
-#~ "<http://kxstudio.linuxaudio.org/Applications%3ACadence>`_, as"
-#~ " it makes the process very easy."
-#~ msgstr ""
 
 #~ msgid "Open Cadence"
 #~ msgstr "Cadenceを実効する"
@@ -599,50 +524,8 @@ msgstr "これらの設定の一部の変更を適用するには、Zrythm を�
 #~ msgid "Overview"
 #~ msgstr "概要"
 
-#~ msgid ""
-#~ "The Preferences dialog is split into "
-#~ "the following sections, which are "
-#~ "explained in the next chapters:"
-#~ msgstr ""
-
 #~ msgid "Audio"
 #~ msgstr "オーディオ"
-
-#~ msgid ""
-#~ "The Preferences dialog is split into "
-#~ "the following sections, which are "
-#~ "explained below: - General - Audio "
-#~ "- GUI - Plugins - Projects"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The panning algorithm to use. We "
-#~ "recommend leaving it as the default "
-#~ "(Sine). See https://www.cs.cmu.edu/~music/icm-"
-#~ "online/readings/panlaws/index.html for more "
-#~ "information."
-#~ msgstr ""
-
-#~ msgid "Blue: sine, red: square root, green: linear"
-#~ msgstr ""
-
-#~ msgid "Pan algorithms ( :blue:`sine`, red: square root, green: linear)."
-#~ msgstr ""
-
-#~ msgid "See https://en.wikipedia.org/wiki/Pan_law."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This is how much to attennuate the"
-#~ " signal when the pan is in the"
-#~ " center. Without this, the signal "
-#~ "would be louder when pan is in "
-#~ "the center and more silent on the"
-#~ " sides, which you likely want to "
-#~ "avoid. We recommend leaving this to "
-#~ "-3dB. See https://en.wikipedia.org/wiki/Pan_law for"
-#~ " more details."
-#~ msgstr ""
 
 #~ msgid ""
 #~ "Zrythm supports multiple audio and MIDI"
@@ -656,17 +539,3 @@ msgstr "これらの設定の一部の変更を適用するには、Zrythm を�
 #~ msgstr ""
 #~ "Zrythmは、複数のオーディオおよびMIDIバックエンドエンジンをサポートしています。JACKは両方に推奨されますが、初めて使用する場合は設定に時間がかかります。何らかの理由で"
 #~ " JACK を使用したくない場合は、ALSA などの他のバックエンドを選択できます。"
-
-#~ msgid "Only JACK works at the moment."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The panning algorithm to use. See "
-#~ "the graph below for the different "
-#~ "curves as you move the pan from"
-#~ " left to right. We recommend leaving"
-#~ " it as the default (Sine). See "
-#~ "https://www.cs.cmu.edu/~music/icm-"
-#~ "online/readings/panlaws/index.html for more "
-#~ "information."
-#~ msgstr ""
