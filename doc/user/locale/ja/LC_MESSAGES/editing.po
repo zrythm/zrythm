@@ -8,20 +8,21 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2019-07-07 03:09+0000\n"
+"PO-Revision-Date: 2020-01-24 15:57+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualediting/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/manualediting/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.11-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../editing/clip-editors/intro.rst:6
 msgid "Clip Editors"
-msgstr ""
+msgstr "クリップエディター"
 
 #: ../../editing/clip-editors/intro.rst:8
 #: ../../editing/piano-roll-editing/arranger.rst:9
@@ -38,24 +39,24 @@ msgstr "TODO"
 
 #: ../../editing/common-operations.rst:6
 msgid "Common Operations"
-msgstr ""
+msgstr "共通操作"
 
 #: ../../editing/common-operations.rst:8
 msgid ""
 "These operations are common to most editors, and behave similarly to what"
 " you should be used to from other applications."
-msgstr ""
+msgstr "これらの操作はほとんどのエディターに共通であり、他のアプリケーションから使用する操作と同様に動作します。"
 
 #: ../../editing/common-operations.rst:13
 msgid "Undo/Redo"
-msgstr ""
+msgstr "元に戻す/やり直す"
 
 #: ../../editing/common-operations.rst:14
 msgid ""
 "Most actions in Zrythm are undoable, which means that you can go back to "
 "the state before that action was made, or you can come back to a state "
 "that you undo'ed from."
-msgstr ""
+msgstr "Zrythm のほとんどのアクションは元に戻すことができます。"
 
 #: ../../editing/common-operations.rst:18
 msgid ""
@@ -888,4 +889,3 @@ msgstr ""
 
 #~ msgid "For more details about track operations, see the Tracks section."
 #~ msgstr ""
-
