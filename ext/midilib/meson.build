@@ -18,4 +18,5 @@
 midilib = static_library (
   'midilib',
   join_paths ('src', 'midifile.c'),
+  join_paths ('src', 'midiutil.c'),
   )

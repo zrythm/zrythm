@@ -176,7 +176,7 @@ typedef struct Zrythm
   GThread *               init_thread;
 
   /** Status text to be used in the splash screen. */
-  char                    status[200];
+  char                    status[800];
 
   /** Semaphore for setting the progress in the
    * splash screen from a non-gtk thread. */

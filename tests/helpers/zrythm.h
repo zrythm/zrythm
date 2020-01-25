@@ -123,7 +123,7 @@ test_helper_zrythm_init ()
     F_NO_RECALC_GRAPH);
   TRACKLIST->master_track = track;
   tracklist_selections_add_track (
-    TRACKLIST_SELECTIONS, track);
+    TRACKLIST_SELECTIONS, track, 0);
 }
 
 /**

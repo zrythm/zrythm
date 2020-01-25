@@ -263,8 +263,7 @@ on_dnd_drag_begin (
         { }
       else if (ctrl && !selected)
         tracklist_selections_add_track (
-          TRACKLIST_SELECTIONS,
-          track);
+          TRACKLIST_SELECTIONS, track, 1);
     }
 }
 
@@ -453,17 +452,17 @@ on_btn_release (GtkWidget *widget,
             track);
         }
       else if (!ctrl && selected)
-        { }
+        {
+        }
       else if (ctrl && !selected)
-        tracklist_selections_add_track (
-          TRACKLIST_SELECTIONS,
-          track);
+        {
+          tracklist_selections_add_track (
+            TRACKLIST_SELECTIONS, track, 1);
+        }
       else if (ctrl && selected && !self->dragged)
         {
           tracklist_selections_remove_track (
-            TRACKLIST_SELECTIONS,
-            track);
-
+            TRACKLIST_SELECTIONS, track, 1);
         }
     }
 
@@ -476,7 +475,7 @@ on_record_toggled (GtkToggleButton * btn,
 {
   track_set_recording (
     self->channel->track,
-    gtk_toggle_button_get_active (btn));
+    gtk_toggle_button_get_active (btn), 1);
 }
 
 static void
@@ -496,7 +495,7 @@ on_mute_toggled (GtkToggleButton * btn,
   track_set_muted (
     self->channel->track,
     gtk_toggle_button_get_active (btn),
-    1);
+    1, 1);
 }
 
 /*static void*/

@@ -65,8 +65,7 @@ audio_region_new (
   const float *    frames,
   const long       nframes,
   const channels_t channels,
-  const Position * start_pos,
-  const int        is_main);
+  const Position * start_pos);
 
 /**
  * Returns the audio clip associated with the

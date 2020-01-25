@@ -185,7 +185,7 @@ midi_arranger_selections_paste_to_pos (
           (ArrangerObject *) midi_note,
           ARRANGER_OBJECT_CLONE_COPY_MAIN);
       midi_region_add_midi_note (
-        cp->region, cp);
+        cp->region, cp, 1);
     }
 #undef DIFF
 }

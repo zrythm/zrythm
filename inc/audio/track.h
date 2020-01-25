@@ -489,9 +489,11 @@ track_type_has_channel (
  * to the undo stack.
  */
 void
-track_set_muted (Track * track,
-                 int     mute,
-                 int     trigger_undo);
+track_set_muted (
+  Track * track,
+  int     mute,
+  int     trigger_undo,
+  int     fire_events);
 
 /**
  * Returns the full visible height (main height +
@@ -509,7 +511,8 @@ track_get_full_visible_height (
 void
 track_set_recording (
   Track *   track,
-  int       recording);
+  int       recording,
+  int       fire_events);
 
 /**
  * Sets track soloed and optionally adds the action

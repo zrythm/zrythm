@@ -87,21 +87,32 @@ on_file_chooser_file_activated (
   g_message ("activated file type %d, abs path %s",
              file->type,
              abs_path);
-  if (file->type == FILE_TYPE_WAV ||
-      file->type == FILE_TYPE_OGG ||
-      file->type == FILE_TYPE_FLAC ||
-      file->type == FILE_TYPE_MP3 ||
-      file->type == FILE_TYPE_MIDI)
-    {
-      UndoableAction * ua =
-        create_tracks_action_new (
-          TRACK_TYPE_AUDIO,
-          NULL,
-          file,
-          TRACKLIST->num_tracks,
-          1);
 
+  UndoableAction * ua = NULL;
+  switch (file->type)
+    {
+    case FILE_TYPE_WAV:
+    case FILE_TYPE_OGG:
+    case FILE_TYPE_FLAC:
+    case FILE_TYPE_MP3:
+      ua =
+        create_tracks_action_new (
+          TRACK_TYPE_AUDIO, NULL, file,
+          TRACKLIST->num_tracks, 1);
       undo_manager_perform (UNDO_MANAGER, ua);
+      break;
+    case FILE_TYPE_MIDI:
+      ua =
+        create_tracks_action_new (
+          TRACK_TYPE_MIDI, NULL, file,
+          TRACKLIST->num_tracks,
+          /* the number of tracks
+           * to create depends on the MIDI file */
+          -1);
+      undo_manager_perform (UNDO_MANAGER, ua);
+      break;
+    default:
+      break;
     }
 
   g_free (abs_path);

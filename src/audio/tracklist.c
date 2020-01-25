@@ -590,7 +590,7 @@ tracklist_remove_track (
     track->pos == idx);
 
   tracklist_selections_remove_track (
-    TRACKLIST_SELECTIONS, track);
+    TRACKLIST_SELECTIONS, track, publish_events);
   array_delete (
     self->tracks,
     self->num_tracks,

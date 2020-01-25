@@ -102,7 +102,8 @@ tracklist_selections_paste_at_pos (
 void
 tracklist_selections_add_track (
   TracklistSelections * self,
-  Track *               track);
+  Track *               track,
+  int                   fire_events);
 
 /**
  * Returns if the Track is selected or not.
@@ -115,7 +116,8 @@ tracklist_selections_contains_track (
 void
 tracklist_selections_remove_track (
   TracklistSelections * ts,
-  Track *               track);
+  Track *               track,
+  int                   fire_events);
 
 /**
  * Selects a single track after clearing the

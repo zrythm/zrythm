@@ -89,6 +89,12 @@ math_dbfs_to_amp (
 #define math_doubles_equal math_floats_equal
 
 /**
+ * Rounds a double to an int.
+ */
+#define math_round_double_to_int(x) \
+  ((int) (x + 0.5 - (x < 0)))
+
+/**
  * Initializes coefficients to be used later.
  */
 void

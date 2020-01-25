@@ -97,7 +97,8 @@ tracklist_selections_get_lowest_track (
 void
 tracklist_selections_add_track (
   TracklistSelections * self,
-  Track *               track)
+  Track *               track,
+  int                   fire_events)
 {
   if (!array_contains (self->tracks,
                       self->num_tracks,
@@ -107,18 +108,20 @@ tracklist_selections_add_track (
                     self->num_tracks,
                     track);
 
-      EVENTS_PUSH (ET_TRACK_CHANGED,
-                   track);
-      EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
-                   NULL);
+      if (fire_events)
+        {
+          EVENTS_PUSH (ET_TRACK_CHANGED,
+                       track);
+          EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
+                       NULL);
+        }
     }
 
   /* if recording is not already
    * on, turn these on */
   if (!track->recording && track->channel)
     {
-      track_set_recording (
-        track, 1);
+      track_set_recording (track, 1, fire_events);
       track->channel->record_set_automatically =
         1;
     }
@@ -142,7 +145,7 @@ tracklist_selections_select_all (
       if (track->visible || !visible_only)
         {
           tracklist_selections_add_track (
-            ts, track);
+            ts, track, 0);
         }
     }
 
@@ -153,15 +156,19 @@ tracklist_selections_select_all (
 void
 tracklist_selections_remove_track (
   TracklistSelections * ts,
-  Track *               track)
+  Track *               track,
+  int                   fire_events)
 {
   if (!array_contains (
         ts->tracks, ts->num_tracks, track))
     {
-      EVENTS_PUSH (ET_TRACK_CHANGED,
-                   track);
-      EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
-                   NULL);
+      if (fire_events)
+        {
+          EVENTS_PUSH (ET_TRACK_CHANGED,
+                       track);
+          EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
+                       NULL);
+        }
       return;
     }
 
@@ -171,8 +178,7 @@ tracklist_selections_remove_track (
   if (track->channel &&
       track->channel->record_set_automatically)
     {
-      track_set_recording (
-        track, 0);
+      track_set_recording (track, 0, fire_events);
       track->channel->record_set_automatically = 0;
     }
 
@@ -229,7 +235,7 @@ tracklist_selections_select_single (
     {
       _track = ts->tracks[i];
       tracklist_selections_remove_track (
-        ts, _track);
+        ts, _track, 0);
 
       /* FIXME what if the track is deleted */
       EVENTS_PUSH (ET_TRACK_CHANGED,
@@ -237,7 +243,7 @@ tracklist_selections_select_single (
     }
 
   tracklist_selections_add_track (
-    ts, track);
+    ts, track, 0);
 
   EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED,
                NULL);

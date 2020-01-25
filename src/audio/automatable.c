@@ -652,7 +652,7 @@ automatable_set_val_from_normalized (
         EVENTS_PUSH (
           ET_AUTOMATION_VALUE_CHANGED, a);
       track_set_muted (
-        a->track, val > 0.5f, 0);
+        a->track, val > 0.5f, 0, 1);
       break;
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
       ch = track_get_channel (a->track);

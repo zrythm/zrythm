@@ -80,12 +80,12 @@ prepare_region_with_note_at_start_to_end (
   position_update_ticks_and_frames (&end_pos);
   ZRegion * r =
     midi_region_new (
-      &start_pos, &end_pos, 1);
+      &start_pos, &end_pos);
   MidiNote * mn1 =
     midi_note_new (
       r, &start_pos, &end_pos, pitch, velocity, 1);
   midi_region_add_midi_note (
-    r, mn1);
+    r, mn1, 0);
 
   return r;
 }

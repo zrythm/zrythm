@@ -137,10 +137,14 @@ typedef struct ZRegion
   size_t          midi_notes_size;
 
   /**
-   * Unended notes started in recording with MIDI NOTE ON
-   * signal but haven't received a NOTE OFF yet
+   * Unended notes started in recording with
+   * MIDI NOTE ON
+   * signal but haven't received a NOTE OFF yet.
+   *
+   * This is also used temporarily when reading
+   * from MIDI files.
    */
-  MidiNote *      unended_notes[40];
+  MidiNote *      unended_notes[12000];
   int             num_unended_notes;
 
   /* ==== MIDI REGION END ==== */
@@ -269,17 +273,12 @@ region_schema = {
 
 /**
  * Only to be used by implementing structs.
- *
- * @param is_main Is main ZRegion. If this is 1 then
- *   arranger_object_info_init_main() is called to
- *   create 3 additional regions in obj_info.
  */
 void
 region_init (
   ZRegion *   region,
   const Position * start_pos,
-  const Position * end_pos,
-  const int        is_main);
+  const Position * end_pos);
 
 /**
  * Looks for the ZRegion under the given name.
@@ -474,7 +473,8 @@ region_generate_filename (ZRegion * region);
 void
 region_set_name (
   ZRegion * region,
-  char *   name);
+  char *    name,
+  int       fire_events);
 
 void
 region_get_type_as_string (

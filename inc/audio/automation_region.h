@@ -42,16 +42,11 @@ typedef struct ZRegion ZRegion;
 
 /**
  * Creates a new ZRegion for automation.
- *
- * @param is_main If this is 1 it
- *   will create the additional ZRegion (
- *   main_transient).
  */
 ZRegion *
 automation_region_new (
   const Position * start_pos,
-  const Position * end_pos,
-  const int        is_main);
+  const Position * end_pos);
 
 /**
  * Prints the automation in this Region.

@@ -68,7 +68,7 @@ bootstrap_timeline ()
   position_set_to_bar (&p1, 2);
   position_set_to_bar (&p2, 4);
   ZRegion * r =
-    midi_region_new (&p1, &p2, 1);
+    midi_region_new (&p1, &p2);
   Track * track =
     track_new (TRACK_TYPE_MIDI, MIDI_TRACK_NAME, 1);
   tracklist_append_track (
@@ -83,8 +83,7 @@ bootstrap_timeline ()
   /* add a midi note to the region */
   MidiNote * mn =
     midi_note_new (r, &p1, &p2, MN_VAL, MN_VEL, 1);
-  midi_region_add_midi_note (
-    r, mn);
+  midi_region_add_midi_note (r, mn, 0);
   g_assert_true (mn->region == r);
   arranger_selections_add_object (
     (ArrangerSelections *) MA_SELECTIONS,
@@ -93,7 +92,7 @@ bootstrap_timeline ()
   /* Create and add an automation region with
    * 2 AutomationPoint's */
   r =
-    automation_region_new (&p1, &p2, 1);
+    automation_region_new (&p1, &p2);
   AutomationTracklist * atl =
     track_get_automation_tracklist (P_MASTER_TRACK);
   Automatable * a =
@@ -130,7 +129,7 @@ bootstrap_timeline ()
   /* Create and add a chord region with
    * 2 Chord's */
   r =
-    chord_region_new (&p1, &p2, 1);
+    chord_region_new (&p1, &p2);
   track_add_region (
     P_CHORD_TRACK, r, NULL, 0, 1, 0);
   arranger_selections_add_object (

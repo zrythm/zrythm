@@ -75,9 +75,17 @@ object_pool_return (
   void *       obj)
 {
   zix_sem_wait (&self->access_sem);
-  self->obj_available[self->num_obj_available++] =
-    obj;
+  int fail = 0;
+  if (self->num_obj_available == self->max_objects)
+    fail = 1;
+  else
+    {
+      self->obj_available[
+        self->num_obj_available++] =
+          obj;
+    }
   zix_sem_post (&self->access_sem);
+  g_return_if_fail (fail == 0);
 }
 
 void

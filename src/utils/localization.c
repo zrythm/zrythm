@@ -128,8 +128,7 @@ localization_init ()
     g_settings_new ("org.zrythm.Zrythm.preferences");
   LocalizationLanguage lang =
     g_settings_get_enum (
-      prefs,
-      "language");
+      prefs, "language");
   g_object_unref (G_OBJECT (prefs));
 
   char * code = localization_locale_exists (lang);
@@ -140,9 +139,11 @@ localization_init ()
       g_message (
         "setting locale to %s (found %s)",
         code, match);
+#ifdef _WIN32
       char buf[120];
       sprintf (buf, "LANG=%s", code);
       putenv (buf);
+#endif
     }
   else
     {

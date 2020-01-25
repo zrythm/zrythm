@@ -57,8 +57,7 @@ cmpfunc (const void * _a, const void * _b)
 ZRegion *
 automation_region_new (
   const Position * start_pos,
-  const Position * end_pos,
-  const int        is_main)
+  const Position * end_pos)
 {
   ZRegion * self =
     calloc (1, sizeof (ZRegion));
@@ -71,7 +70,7 @@ automation_region_new (
             sizeof (AutomationPoint *));
 
   region_init (
-    self, start_pos, end_pos, is_main);
+    self, start_pos, end_pos);
 
   return self;
 }

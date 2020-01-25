@@ -466,17 +466,9 @@ drag_end (GtkGestureDrag *gesture,
       g_message ("opening plugin ");
       if (pl)
         {
-          if (pl->descr->protocol == PROT_LV2)
-            {
-              pl->visible = !pl->visible;
-              EVENTS_PUSH (
-                ET_PLUGIN_VISIBILITY_CHANGED,
-                pl);
-            }
-          else
-            {
-              plugin_open_ui (pl);
-            }
+          pl->visible = !pl->visible;
+          EVENTS_PUSH (
+            ET_PLUGIN_VISIBILITY_CHANGED, pl);
         }
     }
   else if (self->n_press == 1)

@@ -42,8 +42,7 @@ fixture_set_up (
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 6);
   fixture->region =
-    midi_region_new (
-      &start_pos, &end_pos, 1);
+    midi_region_new (&start_pos, &end_pos);
 }
 
 static void

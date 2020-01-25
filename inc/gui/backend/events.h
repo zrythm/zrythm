@@ -65,6 +65,8 @@ typedef struct Zrythm Zrythm;
 /** The event queue. */
 #define EVENTS (ZRYTHM->event_queue)
 
+#define EVENTS_MAX 2000
+
 typedef enum EventType
 {
   /* arranger objects */

@@ -372,7 +372,7 @@ create_default (Project * self)
     F_NO_RECALC_GRAPH);
   TRACKLIST->master_track = track;
   tracklist_selections_add_track (
-    TRACKLIST_SELECTIONS, track);
+    TRACKLIST_SELECTIONS, track, 0);
   self->last_selection = SELECTION_TYPE_TRACK;
 
   /* create untitled project */

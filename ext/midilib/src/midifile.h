@@ -26,7 +26,7 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-/* 
+/*
 ** All functions start with one of the following prefixes:
 **		midiFile*		For non-GM features that relate to the file, and have
 **						no use once the file has been created, i.e. CreateFile
@@ -80,7 +80,7 @@ typedef struct {
 					/* Raw data chunk */
 					BYTE *data;		/* dynamic data block */
 					_DWORD data_sz;
-					
+
 					union {
 						struct {
 								int			iNote;
@@ -149,7 +149,7 @@ typedef struct {
 				/* State information - Please treat these as private*/
 				tMIDI_MSG	iLastMsgType;
 				BYTE		iLastMsgChnl;
-	
+
 				} MIDI_MSG;
 
 /*
@@ -204,4 +204,3 @@ void		midiReadFreeMessage(MIDI_MSG *pMsg);
 
 
 #endif /* _MIDIFILE_H */
-

@@ -984,10 +984,15 @@ clean_duplicates_and_copy (
           already_exists = 1;
 
       if (already_exists)
-        object_pool_return (
-          ZRYTHM->event_obj_pool, event);
+        {
+          object_pool_return (
+            ZRYTHM->event_obj_pool, event);
+        }
       else
-        array_append (events, (*num_events), event);
+        {
+          array_append (
+            events, (*num_events), event);
+        }
     }
 }
 
@@ -1015,6 +1020,12 @@ events_process (void * data)
   /*g_message ("starting processing");*/
   for (i = 0; i < num_events; i++)
     {
+      if (i > 30)
+        {
+          g_message (
+            "more than 30 UI events processed!");
+        }
+
       ev = events[i];
       if (ev->type < 0)
         {
@@ -1140,8 +1151,8 @@ events_process (void * data)
 
           ruler_widget_refresh (
             (RulerWidget *) MW_RULER);
-          /*timeline_arranger_widget_set_size (*/
-            /*MW_TIMELINE);*/
+          ruler_widget_refresh (
+            (RulerWidget *) EDITOR_RULER);
           timeline_minimap_widget_refresh (
             MW_TIMELINE_MINIMAP);
           break;
@@ -1484,10 +1495,11 @@ events_init (
 
   obj_pool =
     object_pool_new (
-      create_event_obj, 200);
+      create_event_obj, EVENTS_MAX);
   queue = mpmc_queue_new ();
   mpmc_queue_reserve (
-    queue, (size_t) 200);
+    queue,
+    (size_t) EVENTS_MAX * sizeof (ZEvent *));
 
   zrythm->event_queue = queue;
   ZRYTHM->event_obj_pool = obj_pool;

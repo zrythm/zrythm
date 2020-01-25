@@ -20,6 +20,7 @@
 #include "actions/create_tracks_action.h"
 #include "audio/audio_region.h"
 #include "audio/channel.h"
+#include "audio/midi_file.h"
 #include "audio/midi_region.h"
 #include "audio/mixer.h"
 #include "audio/supported_file.h"
@@ -29,6 +30,8 @@
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/ui.h"
+
+#include <ext/midilib/src/midifile.h>
 
 #include <glib/gi18n.h>
 
@@ -65,7 +68,7 @@ create (
           F_NO_PUBLISH_EVENTS,
           F_NO_RECALC_GRAPH);
     }
-  else
+  else // track is not empty
     {
       Plugin * pl = NULL;
 
@@ -130,11 +133,8 @@ create (
 
       if (add_to_project)
         tracklist_insert_track (
-          TRACKLIST,
-          track,
-          track->pos,
-          F_NO_PUBLISH_EVENTS,
-          F_NO_RECALC_GRAPH);
+          TRACKLIST, track, track->pos,
+          F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
       if (track->channel && pl)
         {
@@ -158,13 +158,36 @@ create (
                 NULL :
                 self->file_descr->abs_path,
               NULL, 0, 0,
-              &start_pos, 1);
+              &start_pos);
           if (!add_to_project)
             self->pool_id =
               ar->pool_id;
           track_add_region (
             track, ar, NULL, 0, F_GEN_NAME,
             F_PUBLISH_EVENTS);
+        }
+      else if (self->type == TRACK_TYPE_MIDI)
+        {
+          /* create a MIDI region from the MIDI
+           * file & add to track */
+          Position start_pos;
+          position_set_to_pos (
+            &start_pos, PLAYHEAD);
+          ZRegion * mr =
+            midi_region_new_from_midi_file (
+              &start_pos,
+              self->file_descr->abs_path,
+              idx);
+          if (mr)
+            {
+              track_add_region (
+                track, mr, NULL, 0,
+                /* name was already generated based
+                 * on the track name in the MIDI
+                 * file */
+                F_NO_GEN_NAME,
+                F_NO_PUBLISH_EVENTS);
+            }
         }
 
       if (pl && g_settings_get_int (
@@ -189,13 +212,12 @@ create_tracks_action_new (
   int                pos,
   int                num_tracks)
 {
-	CreateTracksAction * self =
+  CreateTracksAction * self =
     calloc (1, sizeof (
-    	CreateTracksAction));
+      CreateTracksAction));
 
   UndoableAction * ua = (UndoableAction *) self;
-  ua->type =
-	  UA_CREATE_TRACKS;
+  ua->type = UA_CREATE_TRACKS;
   if (pl_descr)
     {
       plugin_descriptor_copy (
@@ -212,7 +234,18 @@ create_tracks_action_new (
     }
   self->pos = pos;
   self->type = type;
-  self->num_tracks = num_tracks;
+
+  /* calculate number of tracks */
+  if (file && type == TRACK_TYPE_MIDI)
+    {
+      self->num_tracks =
+        midi_file_get_num_tracks (
+          self->file_descr->abs_path);
+    }
+  else
+    {
+      self->num_tracks = num_tracks;
+    }
   for (int i = 0; i < num_tracks; i++)
     {
       /* create clones for reference */
@@ -224,7 +257,7 @@ create_tracks_action_new (
 
 int
 create_tracks_action_do (
-	CreateTracksAction * self)
+  CreateTracksAction * self)
 {
   int ret;
   for (int i = 0; i < self->num_tracks; i++)
@@ -245,7 +278,7 @@ create_tracks_action_do (
  */
 int
 create_tracks_action_undo (
-	CreateTracksAction * self)
+  CreateTracksAction * self)
 {
   Track * track;
   for (int i = 0; i < self->num_tracks; i++)
@@ -272,7 +305,7 @@ create_tracks_action_undo (
 
 char *
 create_tracks_action_stringize (
-	CreateTracksAction * self)
+  CreateTracksAction * self)
 {
   char * type =
     track_stringize_type (
@@ -293,7 +326,7 @@ create_tracks_action_stringize (
 
 void
 create_tracks_action_free (
-	CreateTracksAction * self)
+  CreateTracksAction * self)
 {
   if (self->file_descr)
     supported_file_free (self->file_descr);

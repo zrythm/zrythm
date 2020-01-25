@@ -46,8 +46,7 @@ typedef struct ZRegion ZRegion;
 ZRegion *
 chord_region_new (
   const Position * start_pos,
-  const Position * end_pos,
-  const int        is_main);
+  const Position * end_pos);
 
 /**
  * Adds a ChordObject to the Region.

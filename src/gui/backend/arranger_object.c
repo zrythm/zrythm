@@ -1590,9 +1590,7 @@ clone_region (
   ZRegion *                region,
   ArrangerObjectCloneFlag flag)
 {
-  int is_main = 0, i, j;
-  if (flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
-    is_main = 1;
+  int i, j;
 
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
@@ -1603,9 +1601,7 @@ clone_region (
       {
         ZRegion * mr =
           midi_region_new (
-            &r_obj->pos,
-            &r_obj->end_pos,
-            is_main);
+            &r_obj->pos, &r_obj->end_pos);
         ZRegion * mr_orig = region;
         if (flag == ARRANGER_OBJECT_CLONE_COPY ||
             flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
@@ -1623,7 +1619,7 @@ clone_region (
                     ARRANGER_OBJECT_CLONE_COPY_MAIN);
 
                 midi_region_add_midi_note (
-                  mr, mn);
+                  mr, mn, 0);
               }
           }
 
@@ -1635,7 +1631,7 @@ clone_region (
         ZRegion * ar =
           audio_region_new (
             region->pool_id, NULL, NULL, -1,
-            0, &r_obj->pos, is_main);
+            0, &r_obj->pos);
 
         new_region = ar;
         new_region->pool_id = region->pool_id;
@@ -1645,9 +1641,7 @@ clone_region (
       {
         ZRegion * ar  =
           automation_region_new (
-            &r_obj->pos,
-            &r_obj->end_pos,
-            is_main);
+            &r_obj->pos, &r_obj->end_pos);
         ZRegion * ar_orig = region;
 
         AutomationPoint * src_ap, * dest_ap;
@@ -1674,9 +1668,7 @@ clone_region (
       {
         ZRegion * cr =
           chord_region_new (
-            &r_obj->pos,
-            &r_obj->end_pos,
-            is_main);
+            &r_obj->pos, &r_obj->end_pos);
         ZRegion * cr_orig = region;
         if (flag == ARRANGER_OBJECT_CLONE_COPY ||
             flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
@@ -2040,9 +2032,9 @@ arranger_object_split (
         ZRegion * parent_region =
           src_midi_note->region;
         midi_region_add_midi_note (
-          parent_region, (MidiNote *) *r1);
+          parent_region, (MidiNote *) *r1, 1);
         midi_region_add_midi_note (
-          parent_region, (MidiNote *) *r2);
+          parent_region, (MidiNote *) *r2, 1);
       }
       break;
     default:
@@ -2137,7 +2129,7 @@ arranger_object_unsplit (
         ZRegion * parent_region =
           ((MidiNote *) r1)->region;
         midi_region_add_midi_note (
-          parent_region, (MidiNote *) *obj);
+          parent_region, (MidiNote *) *obj, 1);
       }
       break;
     default:
@@ -2203,8 +2195,9 @@ arranger_object_unsplit (
  */
 void
 arranger_object_set_name (
-  ArrangerObject *         self,
-  const char *             name)
+  ArrangerObject * self,
+  const char *     name,
+  int              fire_events)
 {
   switch (self->type)
     {
@@ -2223,7 +2216,11 @@ arranger_object_set_name (
     default:
       break;
     }
-  EVENTS_PUSH (ET_ARRANGER_OBJECT_CHANGED, self);
+  if (fire_events)
+    {
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CHANGED, self);
+    }
 }
 
 static void

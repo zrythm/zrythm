@@ -43,8 +43,7 @@ fixture_set_up (
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
   fixture->midi_region =
-    midi_region_new (
-      &start_pos, &end_pos, 1);
+    midi_region_new (&start_pos, &end_pos);
 }
 
 static void
@@ -166,8 +165,7 @@ test_new_region ()
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
   ZRegion * region =
-    midi_region_new (
-      &start_pos, &end_pos, 1);
+    midi_region_new (&start_pos, &end_pos);
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
 

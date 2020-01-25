@@ -745,8 +745,9 @@ arranger_object_unsplit (
  */
 void
 arranger_object_set_name (
-  ArrangerObject *         self,
-  const char *             name);
+  ArrangerObject * self,
+  const char *     name,
+  int              fire_events);
 
 /**
  * @}

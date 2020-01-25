@@ -38,6 +38,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/top_bar.h"
+#include "utils/math.h"
 
 #include <gtk/gtk.h>
 
@@ -361,6 +362,19 @@ transport_set_metronome_enabled (
   const int   enabled)
 {
   self->metronome_enabled = enabled;
+}
+
+/**
+ * Returns the PPQN (Parts/Ticks Per Quarter Note).
+ */
+int
+transport_get_ppqn (
+  Transport * self)
+{
+  double res =
+    (double) self->ticks_per_beat *
+    ((double) self->beat_unit / 4.0);
+  return math_round_double_to_int (res);
 }
 
 /**

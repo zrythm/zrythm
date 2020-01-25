@@ -120,7 +120,7 @@ midi_arranger_widget_create_note (
 
   /* add it to region */
   midi_region_add_midi_note (
-    region, midi_note);
+    region, midi_note, 1);
 
   /*arranger_object_gen_widget (midi_note_obj);*/
 

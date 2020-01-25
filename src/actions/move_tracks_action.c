@@ -76,7 +76,7 @@ move_tracks_action_do (
           TRACKLIST_SELECTIONS, track);
       else
         tracklist_selections_add_track (
-          TRACKLIST_SELECTIONS, track);
+          TRACKLIST_SELECTIONS, track, 0);
     }
 
   mixer_recalc_graph (MIXER);
@@ -109,7 +109,7 @@ move_tracks_action_undo (
           TRACKLIST_SELECTIONS, track);
       else
         tracklist_selections_add_track (
-          TRACKLIST_SELECTIONS, track);
+          TRACKLIST_SELECTIONS, track, 0);
     }
 
   mixer_recalc_graph (MIXER);

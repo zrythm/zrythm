@@ -44,24 +44,53 @@ typedef void MIDI_FILE;
 
 /**
  * Creates a new ZRegion for MIDI notes.
- *
- * @param is_main Is main Region. If this is 1 it
- *   will create the 3 additional Regions (lane,
- *   lane_transient & main_transient).
  */
 ZRegion *
 midi_region_new (
   const Position * start_pos,
-  const Position * end_pos,
-  int        is_main);
+  const Position * end_pos);
 
 /**
- * Adds midi note to region
+ * Creates a MIDI region from the given MIDI
+ * file path, starting at the given Position.
+ *
+ * @param idx The index of this track, starting from
+ *   0. This will be sequential, ie, if idx 1 is
+ *   requested and the MIDI file only has tracks
+ *   5 and 7, it will use track 7.
+ */
+ZRegion *
+midi_region_new_from_midi_file (
+  const Position * start_pos,
+  const char *     abs_path,
+  int              idx);
+
+/**
+ * Adds the MidiNote to the given ZRegion.
+ *
+ * @param pub_events Publish UI events or not.
  */
 void
 midi_region_add_midi_note (
-  ZRegion * region,
-  MidiNote * midi_note);
+  ZRegion *  region,
+  MidiNote * midi_note,
+  int        pub_events);
+
+/**
+ * Starts an unended note with the given pitch and
+ * velocity and adds it to \ref ZRegion.midi_notes.
+ *
+ * @param end_pos If this is NULL, it will be set to
+ *   1 tick after the start_pos.
+ */
+void
+midi_region_start_unended_note (
+  ZRegion *  self,
+  Position * start_pos,
+  Position * end_pos,
+  int        pitch,
+  int        vel,
+  int        pub_events);
 
 /**
  * Returns the midi note with the given pitch from
@@ -76,7 +105,7 @@ midi_region_add_midi_note (
 MidiNote *
 midi_region_pop_unended_note (
   ZRegion * self,
-  int          pitch);
+  int       pitch);
 
 /**
  * Prints the MidiNotes in the Region.

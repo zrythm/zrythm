@@ -66,7 +66,7 @@ on_response (
         (TimelineSelections *) after;
       arranger_object_set_name (
         (ArrangerObject *) tl_after->markers[0],
-        text);
+        text, 1);
 
       UndoableAction * ua =
         arranger_selections_action_new_edit (

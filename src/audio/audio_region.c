@@ -50,8 +50,7 @@ audio_region_new (
   const float *    frames,
   const long       nframes,
   const channels_t channels,
-  const Position * start_pos,
-  const int        is_main)
+  const Position * start_pos)
 {
   ZRegion * self =
     calloc (1, sizeof (AudioRegion));
@@ -118,9 +117,9 @@ audio_region_new (
 
   /* init */
   region_init (
-    self, start_pos, &obj->end_pos, is_main);
+    self, start_pos, &obj->end_pos);
 
-  if (is_main && !recording)
+  if (!recording)
     audio_clip_write_to_pool (clip);
 
   return self;

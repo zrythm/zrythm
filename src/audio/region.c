@@ -54,17 +54,12 @@
 
 /**
  * Only to be used by implementing structs.
- *
- * @param is_main Is main Region. If this is 1 then
- *   arranger_object_info_init_main() is called to
- *   create 3 additional regions in obj_info.
  */
 void
 region_init (
   ZRegion *         self,
   const Position * start_pos,
-  const Position * end_pos,
-  const int        is_main)
+  const Position * end_pos)
 {
   ArrangerObject * obj =
     (ArrangerObject *) self;
@@ -98,7 +93,7 @@ region_init (
  */
 void
 region_gen_name (
-  ZRegion *          region,
+  ZRegion *         region,
   const char *      base_name,
   AutomationTrack * at,
   Track *           track)
@@ -127,8 +122,7 @@ region_gen_name (
                          orig_name,
                          count++);
     }
-  region_set_name (
-    region, name);
+  region_set_name (region, name, 0);
   g_free (name);
   g_free (orig_name);
 }
@@ -434,9 +428,11 @@ region_print (
 void
 region_set_name (
   ZRegion * self,
-  char *   name)
+  char *   name,
+  int      fire_events)
 {
-  arranger_object_set_name ((ArrangerObject *) self, name);
+  arranger_object_set_name (
+    (ArrangerObject *) self, name, fire_events);
 
   for (int i = 0; i < self->num_midi_notes; i++)
     {

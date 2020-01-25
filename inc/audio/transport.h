@@ -383,6 +383,13 @@ transport_set_ebeat_unit (
   BeatUnit bu);
 
 /**
+ * Returns the PPQN (Parts/Ticks Per Quarter Note).
+ */
+int
+transport_get_ppqn (
+  Transport * self);
+
+/**
  * Returns the number of processable frames until
  * and excluding the loop end point as a positive
  * number (>= 1) if the loop point was met between

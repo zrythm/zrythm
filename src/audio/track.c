@@ -115,7 +115,8 @@ track_init_loaded (Track * track)
  */
 static void
 track_add_lane (
-  Track * self)
+  Track * self,
+  int     fire_events)
 {
   g_return_if_fail (self);
   array_double_size_if_full (
@@ -126,8 +127,11 @@ track_add_lane (
   self->lanes[self->num_lanes++] =
     track_lane_new (self, self->num_lanes);
 
-  EVENTS_PUSH (ET_TRACK_LANE_ADDED,
-               self->lanes[self->num_lanes - 1]);
+  if (fire_events)
+    {
+      EVENTS_PUSH (ET_TRACK_LANE_ADDED,
+                   self->lanes[self->num_lanes - 1]);
+    }
 }
 
 /**
@@ -147,7 +151,7 @@ track_init (
   self->main_height = TRACK_DEF_HEIGHT;
   self->midi_ch = 1;
   self->magic = TRACK_MAGIC;
-  track_add_lane (self);
+  track_add_lane (self, 0);
 }
 
 /**
@@ -365,19 +369,19 @@ track_select (
       else
         {
           tracklist_selections_add_track (
-            TRACKLIST_SELECTIONS, self);
+            TRACKLIST_SELECTIONS, self, fire_events);
         }
     }
   else
     {
       tracklist_selections_remove_track (
-        TRACKLIST_SELECTIONS, self);
+        TRACKLIST_SELECTIONS, self, fire_events);
     }
 
   if (fire_events)
     {
-      EVENTS_PUSH (ET_TRACK_CHANGED,
-                   self);
+      EVENTS_PUSH (
+        ET_TRACK_CHANGED, self);
     }
 }
 
@@ -388,7 +392,8 @@ track_select (
 void
 track_set_recording (
   Track *   track,
-  int       recording)
+  int       recording,
+  int       fire_events)
 {
   Channel * channel =
     track_get_channel (track);
@@ -430,8 +435,11 @@ track_set_recording (
 
   track->recording = recording;
 
-  EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
-               track);
+  if (fire_events)
+    {
+      EVENTS_PUSH (ET_TRACK_STATE_CHANGED,
+                   track);
+    }
 }
 
 /**
@@ -442,7 +450,8 @@ void
 track_set_muted (
   Track * track,
   int     mute,
-  int     trigger_undo)
+  int     trigger_undo,
+  int     fire_events)
 {
   if (trigger_undo)
     {
@@ -461,8 +470,12 @@ track_set_muted (
   else
     {
       track->mute = mute;
-      EVENTS_PUSH (
-        ET_TRACK_STATE_CHANGED, track);
+
+      if (fire_events)
+        {
+          EVENTS_PUSH (
+            ET_TRACK_STATE_CHANGED, track);
+        }
     }
 }
 
@@ -875,7 +888,7 @@ track_create_missing_lanes (
 {
   while (track->num_lanes < pos + 2)
     {
-      track_add_lane (track);
+      track_add_lane (track, 0);
     }
 }
 

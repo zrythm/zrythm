@@ -286,7 +286,7 @@ add_object_to_project (
 
         /* add it to the region */
         midi_region_add_midi_note (
-          mn->region, mn);
+          mn->region, mn, 1);
       }
       break;
     case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
@@ -689,7 +689,7 @@ do_or_undo_duplicate (
             {
               arranger_object_set_name (
                 objs[i],
-                arranger_object_get_name (obj));
+                arranger_object_get_name (obj), 0);
             }
         }
       else
@@ -945,7 +945,7 @@ do_or_undo_edit (
                       region_set_name (
                         r,
                         ((ZRegion *) dest_objs[i])->
-                          name);
+                          name, 0);
                     }
                     break;
                   case ARRANGER_OBJECT_TYPE_MARKER:
@@ -1098,7 +1098,7 @@ do_or_undo_split (
             {
               region_set_name (
                 (ZRegion *) obj,
-                ((ZRegion *) objs[i])->name);
+                ((ZRegion *) objs[i])->name, 0);
             }
 
           /* free the copies created in _do */

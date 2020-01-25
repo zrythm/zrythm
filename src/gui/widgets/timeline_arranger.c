@@ -329,19 +329,19 @@ timeline_arranger_widget_create_region (
     case REGION_TYPE_MIDI:
       region =
         midi_region_new (
-          pos, &end_pos, 1);
+          pos, &end_pos);
       break;
     case REGION_TYPE_AUDIO:
       break;
     case REGION_TYPE_CHORD:
       region =
         chord_region_new (
-          pos, &end_pos, 1);
+          pos, &end_pos);
       break;
     case REGION_TYPE_AUTOMATION:
       region =
         automation_region_new (
-          pos, &end_pos, 1);
+          pos, &end_pos);
       break;
     }
 

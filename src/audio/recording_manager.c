@@ -266,8 +266,7 @@ handle_audio_event (
       ZRegion * new_region =
         audio_region_new (
           -1, NULL, NULL, (long) nframes, 2,
-          &TRANSPORT->loop_start_pos,
-          1);
+          &TRANSPORT->loop_start_pos);
       track_add_region (
         tr, new_region, NULL,
         region->lane_pos + 1, F_GEN_NAME,
@@ -472,7 +471,7 @@ handle_midi_event (
       ZRegion * new_region =
         midi_region_new (
           &TRANSPORT->loop_start_pos,
-          &end_pos, 1);
+          &end_pos);
       track_add_region (
         tr, new_region, NULL,
         region->lane_pos + 1, F_GEN_NAME,
@@ -522,19 +521,9 @@ handle_midi_event (
     {
       case MIDI_EVENT_TYPE_NOTE_ON:
         g_return_if_fail (region);
-        mn =
-          midi_note_new (
-            region, &start_pos,
-            &end_pos,
-            mev->note_pitch,
-            mev->velocity, 1);
-        midi_region_add_midi_note (
-          region, mn);
-
-        /* add to unended notes */
-        array_append (
-          region->unended_notes,
-          region->num_unended_notes, mn);
+        midi_region_start_unended_note (
+          region, &start_pos, &end_pos,
+          mev->note_pitch, mev->velocity, 1);
         break;
       case MIDI_EVENT_TYPE_NOTE_OFF:
         g_return_if_fail (region);
@@ -598,7 +587,7 @@ handle_start_recording (
       /* create region */
       ZRegion * region =
         midi_region_new (
-          &start_pos, &end_pos, 1);
+          &start_pos, &end_pos);
       g_return_if_fail (region);
       track_add_region (
         tr, region, NULL, tr->num_lanes - 1,
@@ -612,7 +601,7 @@ handle_start_recording (
       ZRegion * region =
         audio_region_new (
           -1, NULL, NULL, ev->nframes, 2,
-          &start_pos, 1);
+          &start_pos);
       g_return_if_fail (region);
       track_add_region (
         tr, region, NULL, tr->num_lanes - 1,

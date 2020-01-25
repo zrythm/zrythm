@@ -180,7 +180,7 @@ plugin_manager_init (PluginManager * self)
 #else
   LilvNode * lv2_path = NULL;
   char * env_lv2_path = getenv ("LV2_PATH");
-  if (env_lv2_path)
+  if (env_lv2_path && (strlen (env_lv2_path) > 0))
     {
       lv2_path =
         lilv_new_string (world, env_lv2_path);
@@ -532,7 +532,7 @@ plugin_manager_scan_plugins (
 #else
   char * vst_path =
     g_strdup (getenv ("VST_PATH"));
-  if (!vst_path)
+  if (!vst_path || (strlen (vst_path) == 0))
     vst_path =
       g_strdup (
         "~/.vst:~/vst:"

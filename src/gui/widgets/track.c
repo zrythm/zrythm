@@ -1848,8 +1848,7 @@ on_drag_begin (GtkGestureDrag *gesture,
             { }
           else if (ctrl && !selected)
             tracklist_selections_add_track (
-              TRACKLIST_SELECTIONS,
-              track);
+              TRACKLIST_SELECTIONS, track, 1);
         }
     }
 
@@ -2113,7 +2112,7 @@ track_widget_on_mute_toggled (
   TrackWidget * self)
 {
   track_set_muted (
-    self->track, !self->track->mute, 1);
+    self->track, !self->track->mute, 1, 1);
 }
 
 void
@@ -2127,7 +2126,7 @@ track_widget_on_record_toggled (
   g_return_if_fail (chan);
 
   /* toggle record flag */
-  track_set_recording (track, !track->recording);
+  track_set_recording (track, !track->recording, 1);
   chan->record_set_automatically = 0;
   g_message ("recording %d, %s",
              track->recording,
