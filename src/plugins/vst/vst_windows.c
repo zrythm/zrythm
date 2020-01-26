@@ -112,6 +112,27 @@ vstedit_wndproc (
       return 0;
       break;
 
+    case WM_PAINT:
+      /*
+      g_message ("paint");
+      {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(w, &ps);
+
+        // All painting occurs here, between BeginPaint and EndPaint.
+
+        FillRect(hdc, &ps.rcPaint, (HBRUSH) GetStockObject (BLACK_BRUSH));
+
+        EndPaint(w, &ps);
+      }
+      */
+      break;
+
+    case WM_CREATE:
+      /*SetLayeredWindowAttributes (
+        w, RGB (0,0,0), NULL, LWA_COLORKEY);*/
+      break;
+
     case WM_DESTROY:
     case WM_NCDESTROY:
       /* we don't care about windows being
@@ -145,10 +166,10 @@ vst_windows_init (void)
 
   wclass.cbSize = sizeof(WNDCLASSEX);
   wclass.style = (CS_HREDRAW | CS_VREDRAW);
-  wclass.hIcon = NULL;
+  wclass.hIcon = LoadIcon (0, IDI_APPLICATION);
   wclass.hCursor = LoadCursor(0, IDC_ARROW);
   wclass.hbrBackground =
-    (HBRUSH) GetStockObject (BLACK_BRUSH);
+    (HBRUSH) CreateSolidBrush (RGB(0,0,0));
   wclass.lpfnWndProc = vstedit_wndproc;
   wclass.cbClsExtra = 0;
   wclass.cbWndExtra = 0;
@@ -434,17 +455,18 @@ vst_windows_run_editor (
         return 1;
       }
 
-    if ((window =
-           CreateWindowExA (
-             0, "FST", self->plugin->descr->name,
-               hWndHost ?
-                 WS_CHILD :
-                 (WS_OVERLAPPEDWINDOW &
-                  ~WS_THICKFRAME & ~WS_MAXIMIZEBOX),
-            CW_USEDEFAULT, CW_USEDEFAULT,
-            CW_USEDEFAULT, CW_USEDEFAULT,
-            (HWND) hWndHost, NULL,
-            hInst, NULL) ) == NULL)
+    window =
+     CreateWindowExA (
+       0, "FST", self->plugin->descr->name,
+         hWndHost ?
+           WS_CHILD & ~WS_EX_TRANSPARENT :
+           (WS_OVERLAPPEDWINDOW &
+            ~WS_THICKFRAME & ~WS_MAXIMIZEBOX),
+      CW_USEDEFAULT, CW_USEDEFAULT,
+      CW_USEDEFAULT, CW_USEDEFAULT,
+      (HWND) hWndHost, NULL,
+      hInst, NULL);
+    if (!window)
       {
         char error_str[1000];
         windows_errors_get_last_error_str (error_str);
@@ -517,7 +539,7 @@ vst_windows_run_editor (
     idle_timer_add_plugin (self);
 
   vst_windows_package (
-    self, win);
+    self, GTK_WINDOW (win));
   }
 
   return self->windows_window == NULL ? -1 : 0;

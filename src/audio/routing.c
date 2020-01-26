@@ -1916,3 +1916,52 @@ router_init (
 
   self->graph = NULL;
 }
+
+/**
+ * Returns if the current thread is a
+ * processing thread.
+ */
+int
+router_is_processing_thread (
+  Router * self)
+{
+  for (int j = 0;
+       j < self->graph->num_threads; j++)
+    {
+#ifdef HAVE_JACK
+      if (AUDIO_ENGINE->audio_backend ==
+            AUDIO_BACKEND_JACK)
+        {
+          if (pthread_equal (
+                pthread_self (),
+                self->graph->threads[j].jthread))
+            return 1;
+        }
+#endif
+#ifndef HAVE_JACK
+      if (pthread_equal (
+            pthread_self (),
+            self->graph->threads[j].pthread))
+        return 1;
+#endif
+    }
+
+#ifdef HAVE_JACK
+  if (AUDIO_ENGINE->audio_backend ==
+        AUDIO_BACKEND_JACK)
+    {
+      if (pthread_equal (
+            pthread_self (),
+            self->graph->main_thread.jthread))
+        return 1;
+    }
+#endif
+#ifndef HAVE_JACK
+  if (pthread_equal (
+        pthread_self (),
+        self->graph->main_thread.pthread))
+    return 1;
+#endif
+
+  return 0;
+}

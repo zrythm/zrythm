@@ -169,7 +169,7 @@ host_callback (
       self = (VstPlugin *) effect->user;
     }
 
-  switch (opcode)
+  switch ((int) opcode)
     {
     case audioMasterVersion:
       return kVstVersion;
@@ -181,6 +181,23 @@ host_callback (
       return 1;
     case audioMasterGetVendorVersion:
       return 900;
+    case audioMasterWantMidi:
+      /* deprecated */
+      break;
+    case audioMasterGetCurrentProcessLevel:
+      if (router_is_processing_thread (
+            &MIXER->router))
+        {
+          if (AUDIO_ENGINE->run)
+            return kVstProcessLevelRealtime;
+          else
+            return kVstProcessLevelOffline;
+        }
+      else
+        {
+          return kVstProcessLevelUser;
+        }
+      break;
     case audioMasterCurrentId:
       return effect->uniqueID;
     case audioMasterGetTime:
@@ -343,7 +360,7 @@ load_lib (
         cmd, "zrythm_vst_check \"%s\"", path);
 #endif
       g_message ("running cmd: %s", cmd);
-      if (system_run_cmd (cmd) != 0)
+      if (system_run_cmd (cmd, 10000) != 0)
         {
           g_warning (
             "%s: VST plugin failed the test", path);

@@ -290,6 +290,14 @@ nframes_t
 router_get_max_playback_latency (
   Router * router);
 
+/**
+ * Returns if the current thread is a
+ * processing thread.
+ */
+int
+router_is_processing_thread (
+  Router * router);
+
 void
 graph_print (
   Graph * graph);
