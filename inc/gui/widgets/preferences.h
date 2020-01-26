@@ -57,6 +57,11 @@ typedef struct _PreferencesWidget
   /** Zrythm path chooser. */
   GtkFileChooserButton *   zpath_fc;
 
+  GtkBox *             audio_backend_opts_box;
+  GtkComboBox *        buffer_size_cb;
+  GtkComboBox *        samplerate_cb;
+  GtkComboBoxText *        device_name_cb;
+
 #ifdef _WIN32
   GtkLabel *           vst_paths_label;
   GtkEntry *           vst_paths_entry;

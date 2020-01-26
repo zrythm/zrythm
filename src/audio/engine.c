@@ -1155,6 +1155,70 @@ engine_fill_out_bufs (
 }
 
 /**
+ * Returns the int value correesponding to the
+ * given AudioEngineBufferSize.
+ */
+int
+engine_buffer_size_enum_to_int (
+  AudioEngineBufferSize buffer_size)
+{
+  switch (buffer_size)
+    {
+    case AUDIO_ENGINE_BUFFER_SIZE_16:
+      return 16;
+    case AUDIO_ENGINE_BUFFER_SIZE_32:
+      return 32;
+    case AUDIO_ENGINE_BUFFER_SIZE_64:
+      return 64;
+    case AUDIO_ENGINE_BUFFER_SIZE_128:
+      return 128;
+    case AUDIO_ENGINE_BUFFER_SIZE_256:
+      return 256;
+    case AUDIO_ENGINE_BUFFER_SIZE_512:
+      return 512;
+    case AUDIO_ENGINE_BUFFER_SIZE_1024:
+      return 1024;
+    case AUDIO_ENGINE_BUFFER_SIZE_2048:
+      return 2048;
+    case AUDIO_ENGINE_BUFFER_SIZE_4096:
+      return 4096;
+    default:
+      break;
+    }
+  g_return_val_if_reached (-1);
+}
+
+/**
+ * Returns the int value correesponding to the
+ * given AudioEngineSamplerate.
+ */
+int
+engine_samplerate_enum_to_int (
+  AudioEngineSamplerate samplerate)
+{
+  switch (samplerate)
+    {
+    case AUDIO_ENGINE_SAMPLERATE_22050:
+      return 22050;
+    case AUDIO_ENGINE_SAMPLERATE_32000:
+      return 32000;
+    case AUDIO_ENGINE_SAMPLERATE_44100:
+      return 44100;
+    case AUDIO_ENGINE_SAMPLERATE_48000:
+      return 48000;
+    case AUDIO_ENGINE_SAMPLERATE_88200:
+      return 88200;
+    case AUDIO_ENGINE_SAMPLERATE_96000:
+      return 96000;
+    case AUDIO_ENGINE_SAMPLERATE_192000:
+      return 192000;
+    default:
+      break;
+    }
+  g_return_val_if_reached (-1);
+}
+
+/**
  * Closes any connections and free's data.
  */
 void

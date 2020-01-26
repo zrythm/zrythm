@@ -22,6 +22,7 @@
 #include <math.h>
 
 #include "audio/engine.h"
+#include "audio/engine_sdl.h"
 #include "audio/pan.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
@@ -693,6 +694,48 @@ ui_create_pan_law_model (void)
   CREATE_SIMPLE_MODEL_BOILERPLATE;
 }
 
+static GtkTreeModel *
+ui_create_buffer_size_model (void)
+{
+  const int values[NUM_AUDIO_ENGINE_BUFFER_SIZES] = {
+    AUDIO_ENGINE_BUFFER_SIZE_16,
+    AUDIO_ENGINE_BUFFER_SIZE_32,
+    AUDIO_ENGINE_BUFFER_SIZE_64,
+    AUDIO_ENGINE_BUFFER_SIZE_128,
+    AUDIO_ENGINE_BUFFER_SIZE_256,
+    AUDIO_ENGINE_BUFFER_SIZE_512,
+    AUDIO_ENGINE_BUFFER_SIZE_1024,
+    AUDIO_ENGINE_BUFFER_SIZE_2048,
+    AUDIO_ENGINE_BUFFER_SIZE_4096,
+  };
+  const gchar *labels[NUM_AUDIO_ENGINE_BUFFER_SIZES] = {
+    "16", "32", "64", "128", "256", "512",
+    "1024", "2048", "4096",
+  };
+
+  CREATE_SIMPLE_MODEL_BOILERPLATE;
+}
+
+static GtkTreeModel *
+ui_create_samplerate_model (void)
+{
+  const int values[NUM_AUDIO_ENGINE_SAMPLERATES] = {
+    AUDIO_ENGINE_SAMPLERATE_22050,
+    AUDIO_ENGINE_SAMPLERATE_32000,
+    AUDIO_ENGINE_SAMPLERATE_44100,
+    AUDIO_ENGINE_SAMPLERATE_48000,
+    AUDIO_ENGINE_SAMPLERATE_88200,
+    AUDIO_ENGINE_SAMPLERATE_96000,
+    AUDIO_ENGINE_SAMPLERATE_192000,
+  };
+  const gchar *labels[NUM_AUDIO_ENGINE_BUFFER_SIZES] = {
+    "22050", "32000", "44100", "48000",
+    "88200", "96000", "192000",
+  };
+
+  CREATE_SIMPLE_MODEL_BOILERPLATE;
+}
+
 /**
  * Sets up a combo box to have a selection of
  * languages.
@@ -817,6 +860,92 @@ root privileges)\n\
     g_strdup_printf (template, code);
 
   return str;
+}
+
+/**
+ * Sets up a pan law combo box.
+ */
+void
+ui_setup_buffer_size_combo_box (
+  GtkComboBox * cb)
+{
+  z_gtk_configure_simple_combo_box (
+    cb, ui_create_buffer_size_model ());
+
+  char id[40];
+  sprintf (id, "%d",
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "buffer-size"));
+  gtk_combo_box_set_active_id (
+    GTK_COMBO_BOX (cb), id);
+}
+
+/**
+ * Sets up a pan law combo box.
+ */
+void
+ui_setup_samplerate_combo_box (
+  GtkComboBox * cb)
+{
+  z_gtk_configure_simple_combo_box (
+    cb, ui_create_samplerate_model ());
+
+  char id[40];
+  sprintf (id, "%d",
+    g_settings_get_enum (
+      S_PREFERENCES,
+      "samplerate"));
+  gtk_combo_box_set_active_id (
+    GTK_COMBO_BOX (cb), id);
+}
+
+/**
+ * Sets up a pan law combo box.
+ */
+void
+ui_setup_device_name_combo_box (
+  GtkComboBoxText * cb)
+{
+  AudioBackend backend =
+    (AudioBackend)
+    g_settings_get_enum (
+      S_PREFERENCES, "audio-backend");
+  switch (backend)
+    {
+#ifdef HAVE_SDL
+    case AUDIO_BACKEND_SDL:
+      {
+        char * names[1024];
+        int num_names;
+        engine_sdl_get_device_names (
+          AUDIO_ENGINE, 0, names, &num_names);
+        for (int i = 0; i < num_names; i++)
+          {
+            gtk_combo_box_text_append (
+              cb, NULL, names[i]);
+          }
+        char * current_device =
+          g_settings_get_string (
+            S_PREFERENCES,
+            "sdl-audio-device-name");
+        for (int i = 0; i < num_names; i++)
+          {
+            if (string_is_equal (
+                  names[i], current_device, 0))
+              {
+                gtk_combo_box_set_active (
+                  GTK_COMBO_BOX (cb), i);
+              }
+            g_free (names[i]);
+          }
+          g_free (current_device);
+      }
+      break;
+#endif
+    default:
+      break;
+    }
 }
 
 /**

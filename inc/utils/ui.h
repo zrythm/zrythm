@@ -528,6 +528,27 @@ ui_setup_pan_law_combo_box (
   GtkComboBox * cb);
 
 /**
+ * Sets up a pan law combo box.
+ */
+void
+ui_setup_buffer_size_combo_box (
+  GtkComboBox * cb);
+
+/**
+ * Sets up a pan law combo box.
+ */
+void
+ui_setup_samplerate_combo_box (
+  GtkComboBox * cb);
+
+/**
+ * Sets up a pan law combo box.
+ */
+void
+ui_setup_device_name_combo_box (
+  GtkComboBoxText * cb);
+
+/**
  * Sets up the VST paths entry.
  */
 void

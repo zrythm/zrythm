@@ -40,6 +40,19 @@ engine_sdl_setup (
   AudioEngine * self,
   int           loading);
 
+/**
+ * Returns a list of names inside \ref names that
+ * must be free'd.
+ *
+ * @param input 1 for input, 0 for output.
+ */
+void
+engine_sdl_get_device_names (
+  AudioEngine * self,
+  int           input,
+  char **       names,
+  int *         num_names);
+
 void
 engine_sdl_fill_out_bufs (
   AudioEngine *   self,

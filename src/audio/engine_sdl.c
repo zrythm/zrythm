@@ -72,6 +72,31 @@ sdl_callback (
 }
 
 /**
+ * Returns a list of names inside \ref names that
+ * must be free'd.
+ *
+ * @param input 1 for input, 0 for output.
+ */
+void
+engine_sdl_get_device_names (
+  AudioEngine * self,
+  int           input,
+  char **       names,
+  int *         num_names)
+{
+  *num_names =
+    SDL_GetNumAudioDevices (input);
+  for (int i = 0; i < *num_names; i++)
+    {
+      names[i] =
+        g_strdup (
+          SDL_GetAudioDeviceName (i, input));
+      g_message (
+        "Output audio device %d: %s", i, names[i]);
+    }
+}
+
+/**
  * Set up Port Audio.
  */
 int
@@ -92,10 +117,18 @@ engine_sdl_setup (
 
   SDL_AudioSpec req_specs;
   memset (&req_specs, 0, sizeof (req_specs));
-  req_specs.freq = 48000;
+  req_specs.freq =
+    engine_samplerate_enum_to_int (
+      (AudioEngineSamplerate)
+      g_settings_get_enum (
+        S_PREFERENCES, "samplerate"));
   req_specs.format = AUDIO_F32SYS;
   req_specs.channels = 2;
-  req_specs.samples = 1024;
+  req_specs.samples =
+    engine_buffer_size_enum_to_int (
+      (AudioEngineBufferSize)
+      g_settings_get_enum (
+        S_PREFERENCES, "buffer-size"));
   req_specs.callback =
     (SDL_AudioCallback) sdl_callback;
   req_specs.userdata = self;
@@ -108,10 +141,22 @@ engine_sdl_setup (
         i, SDL_GetAudioDeviceName (i, 0));
     }
 
+  char * out_device =
+    g_settings_get_string (
+      S_PREFERENCES, "sdl-audio-device-name");
+  if (!out_device || strlen (out_device) < 1)
+    {
+      out_device = NULL;
+    }
+  g_message (
+    "Attempting to open device [%s] with sample "
+    "rate %d and buffer size %d",
+    out_device, req_specs.freq, req_specs.samples);
+
   SDL_AudioSpec actual_specs;
   self->dev =
     SDL_OpenAudioDevice (
-      NULL, 0, &req_specs, &actual_specs,
+      out_device, 0, &req_specs, &actual_specs,
       SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
   if (self->dev == 0)
     {
@@ -121,7 +166,7 @@ engine_sdl_setup (
       return -1;
     }
   g_message (
-    "[SDL] Opened output device %d",
+    "[SDL] Opened output device (ID %d)",
     (int) self->dev);
 
   /* Set audio engine properties */

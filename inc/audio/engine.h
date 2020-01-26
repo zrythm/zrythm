@@ -81,6 +81,38 @@ typedef struct WindowsMmeDevice WindowsMmeDevice;
   (AUDIO_ENGINE->midi_editor_manual_press-> \
   midi_events)
 
+/**
+ * Buffer sizes to be used in combo boxes.
+ */
+typedef enum AudioEngineBufferSize
+{
+  AUDIO_ENGINE_BUFFER_SIZE_16,
+  AUDIO_ENGINE_BUFFER_SIZE_32,
+  AUDIO_ENGINE_BUFFER_SIZE_64,
+  AUDIO_ENGINE_BUFFER_SIZE_128,
+  AUDIO_ENGINE_BUFFER_SIZE_256,
+  AUDIO_ENGINE_BUFFER_SIZE_512,
+  AUDIO_ENGINE_BUFFER_SIZE_1024,
+  AUDIO_ENGINE_BUFFER_SIZE_2048,
+  AUDIO_ENGINE_BUFFER_SIZE_4096,
+  NUM_AUDIO_ENGINE_BUFFER_SIZES,
+} AudioEngineBufferSize;
+
+/**
+ * Samplerates to be used in comboboxes.
+ */
+typedef enum AudioEngineSamplerate
+{
+  AUDIO_ENGINE_SAMPLERATE_22050,
+  AUDIO_ENGINE_SAMPLERATE_32000,
+  AUDIO_ENGINE_SAMPLERATE_44100,
+  AUDIO_ENGINE_SAMPLERATE_48000,
+  AUDIO_ENGINE_SAMPLERATE_88200,
+  AUDIO_ENGINE_SAMPLERATE_96000,
+  AUDIO_ENGINE_SAMPLERATE_192000,
+  NUM_AUDIO_ENGINE_SAMPLERATES,
+} AudioEngineSamplerate;
+
 //typedef struct MIDI_Controller
 //{
   //jack_midi_event_t    in_event[30];
@@ -521,6 +553,22 @@ void
 engine_fill_out_bufs (
   AudioEngine *   self,
   const nframes_t nframes);
+
+/**
+ * Returns the int value correesponding to the
+ * given AudioEngineBufferSize.
+ */
+int
+engine_buffer_size_enum_to_int (
+  AudioEngineBufferSize buffer_size);
+
+/**
+ * Returns the int value correesponding to the
+ * given AudioEngineSamplerate.
+ */
+int
+engine_samplerate_enum_to_int (
+  AudioEngineSamplerate samplerate);
 
 /**
  * Returns 1 if the port is an engine port or

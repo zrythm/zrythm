@@ -174,6 +174,28 @@ on_ok_clicked (GtkWidget * widget,
     self->vst_paths_entry);
 #endif
 
+#ifdef HAVE_SDL
+  AudioBackend backend =
+    (AudioBackend)
+    g_settings_get_enum (
+      S_PREFERENCES, "audio-backend");
+  if (backend == AUDIO_BACKEND_SDL)
+    {
+      g_settings_set_enum (
+        S_PREFERENCES, "samplerate",
+        gtk_combo_box_get_active (
+          self->samplerate_cb));
+      g_settings_set_enum (
+        S_PREFERENCES, "buffer-size",
+        gtk_combo_box_get_active (
+          self->buffer_size_cb));
+      g_settings_set_string (
+        S_PREFERENCES, "sdl-audio-device-name",
+        gtk_combo_box_text_get_active_text (
+          self->device_name_cb));
+    }
+#endif
+
   /* set path */
   GFile * file =
     gtk_file_chooser_get_file (
@@ -209,6 +231,19 @@ preferences_widget_new ()
   midi_controller_mb_widget_setup (
     self->midi_controllers);
   setup_autosave_spinbutton (self);
+
+#ifdef HAVE_SDL
+  if (gtk_widget_get_visible (
+        GTK_WIDGET (self->audio_backend_opts_box)))
+    {
+      ui_setup_device_name_combo_box (
+        self->device_name_cb);
+      ui_setup_buffer_size_combo_box (
+        self->buffer_size_cb);
+      ui_setup_samplerate_combo_box (
+        self->samplerate_cb);
+    }
+#endif
 
 #ifdef _WIN32
   /* setup vst_paths */
@@ -252,6 +287,10 @@ gtk_widget_class_bind_template_child ( \
   BIND_CHILD (keep_plugin_uis_on_top);
   BIND_CHILD (zpath_fc);
   BIND_CHILD (autosave_spin);
+  BIND_CHILD (audio_backend_opts_box);
+  BIND_CHILD (buffer_size_cb);
+  BIND_CHILD (samplerate_cb);
+  BIND_CHILD (device_name_cb);
 #ifdef _WIN32
   BIND_CHILD (vst_paths_label);
   BIND_CHILD (vst_paths_entry);
@@ -274,6 +313,17 @@ preferences_widget_init (
   g_type_ensure (MIDI_CONTROLLER_MB_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  AudioBackend backend =
+    (AudioBackend)
+    g_settings_get_enum (
+      S_PREFERENCES, "audio-backend");
+  if (backend == AUDIO_BACKEND_SDL)
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->audio_backend_opts_box),
+        1);
+    }
 
 #ifdef _WIN32
   gtk_widget_set_visible (

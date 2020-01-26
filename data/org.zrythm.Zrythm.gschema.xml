@@ -106,6 +106,26 @@
     <value nick="sqrt" value="1"/>
     <value nick="sine" value="2"/>
   </enum>
+  <enum id="org.zrythm.Zrythm.preferences.buffer-size-enum">
+    <value nick="16" value="0"/>
+    <value nick="32" value="1"/>
+    <value nick="64" value="2"/>
+    <value nick="128" value="3"/>
+    <value nick="256" value="4"/>
+    <value nick="512" value="5"/>
+    <value nick="1024" value="6"/>
+    <value nick="2048" value="7"/>
+    <value nick="4096" value="8"/>
+  </enum>
+  <enum id="org.zrythm.Zrythm.preferences.samplerate-enum">
+    <value nick="22050" value="0"/>
+    <value nick="32000" value="1"/>
+    <value nick="44100" value="2"/>
+    <value nick="48000" value="3"/>
+    <value nick="88200" value="4"/>
+    <value nick="96000" value="5"/>
+    <value nick="192000" value="6"/>
+  </enum>
 
   <!-- GENERAL schema -->
   <schema id="org.zrythm.Zrythm.general"
@@ -153,7 +173,36 @@
       <default>"jack"</default>
       <summary>Audio Backend</summary>
       <description>
-        The audio back end to use
+        The audio back end to use.
+      </description>
+    </key>
+
+    <!-- KEY: sdl-audio-device-name -->
+    <key name="sdl-audio-device-name" type="s">
+      <default>""</default>
+      <summary>SDL audio device name</summary>
+      <description>
+        The name of the SDL audio device to open.
+      </description>
+    </key>
+
+    <!-- KEY: samplerate -->
+    <key name="samplerate" enum="org.zrythm.Zrythm.preferences.samplerate-enum">
+      <default>"48000"</default>
+      <summary>Samplerate</summary>
+      <description>
+        Samplerate to pass to the backend, if not
+        JACK.
+      </description>
+    </key>
+
+    <!-- KEY: buffer-size -->
+    <key name="buffer-size" enum="org.zrythm.Zrythm.preferences.buffer-size-enum">
+      <default>"512"</default>
+      <summary>Buffer size</summary>
+      <description>
+        Buffer size to pass to the backend, if not
+        JACK.
       </description>
     </key>
 
