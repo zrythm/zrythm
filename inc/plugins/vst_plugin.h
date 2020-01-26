@@ -186,6 +186,12 @@ typedef struct VstPlugin
   /** Last known rolling status. */
   int                rolling;
 
+  /** Program index, if program name exists. */
+  int                program_index;
+
+  /** Program name, to be used when loading. */
+  char *             program_name;
+
   /** Last known BPM. */
   bpm_t              bpm;
 
@@ -264,6 +270,14 @@ static const cyaml_schema_field_t
     "state_file",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     VstPlugin, state_file,
+    0, CYAML_UNLIMITED),
+  CYAML_FIELD_INT (
+    "program_index", CYAML_FLAG_DEFAULT,
+    VstPlugin, program_index),
+  CYAML_FIELD_STRING_PTR (
+    "program_name",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    VstPlugin, program_name,
     0, CYAML_UNLIMITED),
 
   CYAML_FIELD_END

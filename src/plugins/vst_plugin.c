@@ -429,9 +429,28 @@ vst_plugin_init_loaded (
 {
   AEffect * effect = NULL;
   void * handle =
-    load_lib (self->plugin->descr->path, &effect, 0);
+    load_lib (
+      self->plugin->descr->path, &effect, 0);
   g_warn_if_fail (handle);
   self->aeffect = effect;
+
+  /* load program if any */
+  if (self->program_name &&
+        effect->numPrograms > 0 &&
+        self->program_index >= 0 &&
+        self->program_index < effect->numPrograms)
+    {
+      self->aeffect->dispatcher (
+        self->aeffect, effSetProgram,
+        0, self->program_index, NULL, 0.f);
+
+      char prog_name[600];
+      self->aeffect->dispatcher (
+        self->aeffect, effGetProgramName,
+        0, 0, prog_name, 0.f);
+      g_message (
+        "loaded VST program %s", prog_name);
+    }
 
   effect->user = self;
 
@@ -1082,6 +1101,37 @@ vst_plugin_save_state_to_file (
   VstPlugin *  self,
   const char * dir)
 {
+  /* save the program */
+  if (self->aeffect->numPrograms > 0)
+    {
+      char prog_name[600];
+      self->aeffect->dispatcher (
+        self->aeffect, effGetProgramName,
+        0, 0, prog_name, 0.f);
+      self->program_name = g_strdup (prog_name);
+      self->program_index =
+        (int)
+        self->aeffect->dispatcher (
+          self->aeffect, effGetProgram, 0, 0,
+          NULL, 0.f);
+      g_message (
+        "VST prog name is %s", self->program_name);
+    }
+
+  /* save the parameters just in case because we
+   * get no notification when the program changes */
+  for (int i = 0; i < self->aeffect->numParams;
+       i++)
+    {
+      Port * port =
+        vst_plugin_get_port_from_param_id (
+          self, i);
+      g_return_val_if_fail (port, -1);
+      port->control =
+        self->aeffect->getParameter (
+          self->aeffect, i);
+    }
+
   if (!(self->aeffect->flags &
           effFlagsProgramChunks))
     return 0;

@@ -1925,6 +1925,9 @@ int
 router_is_processing_thread (
   Router * self)
 {
+  if (!self || !self->graph)
+    return 0;
+
   for (int j = 0;
        j < self->graph->num_threads; j++)
     {
