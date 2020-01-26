@@ -169,6 +169,10 @@ on_ok_clicked (GtkWidget * widget,
         self->autosave_spin));
   midi_controller_mb_widget_save_settings (
     self->midi_controllers);
+#ifdef _WIN32
+  ui_update_vst_paths_from_entry (
+    self->vst_paths_entry);
+#endif
 
   /* set path */
   GFile * file =
@@ -206,6 +210,12 @@ preferences_widget_new ()
     self->midi_controllers);
   setup_autosave_spinbutton (self);
 
+#ifdef _WIN32
+  /* setup vst_paths */
+  ui_setup_vst_paths_entry (
+    self->vst_paths_entry);
+#endif
+
   char * dir = zrythm_get_dir (ZRYTHM);
   gtk_file_chooser_set_current_folder (
     GTK_FILE_CHOOSER (self->zpath_fc),
@@ -242,6 +252,10 @@ gtk_widget_class_bind_template_child ( \
   BIND_CHILD (keep_plugin_uis_on_top);
   BIND_CHILD (zpath_fc);
   BIND_CHILD (autosave_spin);
+#ifdef _WIN32
+  BIND_CHILD (vst_paths_label);
+  BIND_CHILD (vst_paths_entry);
+#endif
 
   gtk_widget_class_bind_template_callback (
     klass,
@@ -260,6 +274,13 @@ preferences_widget_init (
   g_type_ensure (MIDI_CONTROLLER_MB_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+#ifdef _WIN32
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->vst_paths_label), 1);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->vst_paths_entry), 1);
+#endif
 
   g_signal_connect (
     G_OBJECT (self->language), "changed",

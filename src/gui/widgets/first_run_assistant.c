@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -50,9 +50,8 @@ on_reset_clicked (
 {
   g_message ("reset");
   char * dir =
-    g_build_filename (io_get_home_dir (),
-                      "zrythm",
-                      NULL);
+    g_build_filename (
+      io_get_home_dir (), "zrythm", NULL);
   gtk_file_chooser_select_filename (
     GTK_FILE_CHOOSER (self->fc_btn),
     dir);
@@ -163,15 +162,11 @@ on_audio_backend_changed (
   GtkComboBox *widget,
   FirstRunAssistantWidget * self)
 {
-  AudioBackend ab =
-    (AudioBackend)
-    gtk_combo_box_get_active (widget);
-
   /* update settings */
   g_settings_set_enum (
     S_PREFERENCES,
     "audio-backend",
-    (int) ab);
+    atoi (gtk_combo_box_get_active_id (widget)));
 }
 
 static void
@@ -179,15 +174,11 @@ on_midi_backend_changed (
   GtkComboBox *widget,
   FirstRunAssistantWidget * self)
 {
-  MidiBackend mb =
-    (MidiBackend)
-    gtk_combo_box_get_active (widget);
-
   /* update settings */
   g_settings_set_enum (
     S_PREFERENCES,
     "midi-backend",
-    (int) mb);
+    atoi (gtk_combo_box_get_active_id (widget)));
 }
 
 static void
@@ -260,6 +251,17 @@ on_file_set (
   g_free (str2);
 }
 
+#ifdef _WIN32
+static void
+on_vst_paths_changed (
+  GtkEditable * editable,
+  FirstRunAssistantWidget * self)
+{
+  ui_update_vst_paths_from_entry (
+    self->vst_paths_entry);
+}
+#endif
+
 FirstRunAssistantWidget *
 first_run_assistant_widget_new (
   GtkWindow * parent)
@@ -281,15 +283,20 @@ first_run_assistant_widget_new (
   ui_setup_midi_backends_combo_box (
     self->midi_backend);
 
+#ifdef _WIN32
+  /* setup vst_paths */
+  ui_setup_vst_paths_entry (self->vst_paths_entry);
+#endif
+
   /* set zrythm dir */
   char * dir;
   dir = zrythm_get_dir (ZRYTHM);
   if (strlen (dir) == 0)
     {
       g_free (dir);
-      dir = g_build_filename (io_get_home_dir (),
-                        "zrythm",
-                        NULL);
+      dir =
+        g_build_filename (
+          io_get_home_dir (), "zrythm", NULL);
     }
   io_mkdir (dir);
   gtk_file_chooser_set_current_folder (
@@ -338,6 +345,10 @@ first_run_assistant_widget_class_init (
   BIND (fc_btn);
   BIND (reset);
   BIND (test_backends);
+#ifdef _WIN32
+  BIND (vst_paths_label);
+  BIND (vst_paths_entry);
+#endif
 
 #undef BIND
 }
@@ -349,6 +360,15 @@ first_run_assistant_widget_init (
   g_type_ensure (MIDI_CONTROLLER_MB_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+#ifdef _WIN32
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->vst_paths_label), 1);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->vst_paths_entry), 1);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->test_backends), 0);
+#endif
 
   g_signal_connect (
     G_OBJECT (self->language_cb), "changed",
@@ -369,8 +389,9 @@ first_run_assistant_widget_init (
     G_OBJECT (self->reset), "clicked",
     G_CALLBACK (on_reset_clicked), self);
 #ifdef _WIN32
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->test_backends), 0);
+  g_signal_connect (
+    G_OBJECT (self->vst_paths_entry), "changed",
+    G_CALLBACK (on_vst_paths_changed), self);
 #else
   g_signal_connect (
     G_OBJECT (self->test_backends), "clicked",

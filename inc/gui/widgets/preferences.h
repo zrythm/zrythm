@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -56,6 +56,11 @@ typedef struct _PreferencesWidget
 
   /** Zrythm path chooser. */
   GtkFileChooserButton *   zpath_fc;
+
+#ifdef _WIN32
+  GtkLabel *           vst_paths_label;
+  GtkEntry *           vst_paths_entry;
+#endif
 } PreferencesWidget;
 
 PreferencesWidget *

@@ -528,6 +528,21 @@ ui_setup_pan_law_combo_box (
   GtkComboBox * cb);
 
 /**
+ * Sets up the VST paths entry.
+ */
+void
+ui_setup_vst_paths_entry (
+  GtkEntry * entry);
+
+/**
+ * Updates the the VST paths in the gsettings from
+ * the text in the entry.
+ */
+void
+ui_update_vst_paths_from_entry (
+  GtkEntry * entry);
+
+/**
  * Returns the "a locale for the language you have
  * selected..." text based on the given language.
  *

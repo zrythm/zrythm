@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -27,11 +27,11 @@
 
 #define FIRST_RUN_ASSISTANT_WIDGET_TYPE \
   (first_run_assistant_widget_get_type ())
-G_DECLARE_FINAL_TYPE (FirstRunAssistantWidget,
-                      first_run_assistant_widget,
-                      Z,
-                      FIRST_RUN_ASSISTANT_WIDGET,
-                      GtkAssistant)
+G_DECLARE_FINAL_TYPE (
+  FirstRunAssistantWidget,
+  first_run_assistant_widget,
+  Z, FIRST_RUN_ASSISTANT_WIDGET,
+  GtkAssistant)
 
 typedef struct _MidiControllerMbWidget
   MidiControllerMbWidget;
@@ -46,6 +46,8 @@ typedef struct _FirstRunAssistantWidget
   GtkButton *          test_backends;
   GtkComboBox *        audio_backend;
   GtkComboBox *        midi_backend;
+  GtkLabel *           vst_paths_label;
+  GtkEntry *           vst_paths_entry;
 } FirstRunAssistantWidget;
 
 /**
