@@ -70,15 +70,21 @@ clip_editor_set_region (
         F_DISCONNECT, F_NO_RECALC_GRAPH);
       recalc_graph = 1;
     }
-  if (region->type == REGION_TYPE_MIDI)
+  if (region) /* new region exists */
     {
-      Track * track =
-        arranger_object_get_track (
-          (ArrangerObject *) region);
-      channel_reattach_midi_editor_manual_press_port (
-        track_get_channel (track),
-        F_CONNECT, F_NO_RECALC_GRAPH);
-      recalc_graph = 1;
+      if (region->type == REGION_TYPE_MIDI)
+        {
+          Track * track =
+            arranger_object_get_track (
+              (ArrangerObject *) region);
+          channel_reattach_midi_editor_manual_press_port (
+            track_get_channel (track),
+            F_CONNECT, F_NO_RECALC_GRAPH);
+          recalc_graph = 1;
+        }
+    }
+  else /* new region is NULL */
+    {
     }
 
   if (recalc_graph)
@@ -100,7 +106,11 @@ clip_editor_set_region (
       g_free (self->region_name);
       self->region_name = NULL;
     }
-  self->region_name = g_strdup (region->name);
+
+  if (region && region->name)
+    {
+      self->region_name = g_strdup (region->name);
+    }
 
   self->region_changed = 1;
 

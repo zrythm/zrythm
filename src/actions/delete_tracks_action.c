@@ -68,6 +68,7 @@ delete_tracks_action_do (
     }
 
   EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
+  EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED, NULL);
 
   mixer_recalc_graph (MIXER);
 

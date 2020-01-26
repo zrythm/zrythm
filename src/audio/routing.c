@@ -1446,9 +1446,9 @@ static void
 graph_rechain (
   Graph * self)
 {
-  g_warn_if_fail (
-    g_atomic_int_get (
-      &self->terminal_refcnt) == 0);
+  /*g_warn_if_fail (*/
+    /*g_atomic_int_get (*/
+      /*&self->terminal_refcnt) == 0);*/
   g_warn_if_fail (
     g_atomic_int_get (
       &self->trigger_queue_size) == 0);

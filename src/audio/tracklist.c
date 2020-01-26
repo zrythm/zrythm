@@ -581,6 +581,16 @@ tracklist_remove_track (
   g_message ("removing %s",
              track->name);
 
+  /* clear the editor region if it exists and
+   * belongs to this track */
+  if (CLIP_EDITOR->region &&
+      arranger_object_get_track (
+        (ArrangerObject *) CLIP_EDITOR->region) ==
+          track)
+    {
+      clip_editor_set_region (CLIP_EDITOR, NULL);
+    }
+
   int idx =
     array_index_of (
       self->tracks,
