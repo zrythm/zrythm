@@ -405,13 +405,17 @@ init_thread (
     _("Initializing plugin manager"),
     0.2);
   plugin_manager_init (&ZRYTHM->plugin_manager);
-  set_progress_status (
-    ZRYTHM,
-    _("Scanning plugins"),
-    0.4);
-  plugin_manager_scan_plugins (
-    &ZRYTHM->plugin_manager,
-    0.7, &ZRYTHM->progress);
+  if (!g_settings_get_int (
+         S_GENERAL, "first-run"))
+    {
+      set_progress_status (
+        ZRYTHM,
+        _("Scanning plugins"),
+        0.4);
+      plugin_manager_scan_plugins (
+        &ZRYTHM->plugin_manager,
+        0.7, &ZRYTHM->progress);
+    }
 
   ZRYTHM->init_finished = 1;
 
@@ -442,6 +446,22 @@ idle_func (
   return G_SOURCE_CONTINUE;
 }
 
+/**
+ * Thread that scans for plugins after the first
+ * run.
+ */
+static void *
+scan_plugins_after_first_run_thread (
+  gpointer data)
+{
+  plugin_manager_scan_plugins (
+    &ZRYTHM->plugin_manager,
+    0.7, &ZRYTHM->progress);
+
+  ZRYTHM->init_finished = 1;
+
+  return NULL;
+}
 
 static void
 on_first_run_assistant_apply (
@@ -452,10 +472,21 @@ on_first_run_assistant_apply (
   g_settings_set_int (
     S_GENERAL, "first-run", 0);
 
-  g_action_group_activate_action (
-  G_ACTION_GROUP (zrythm_app),
-  "prompt_for_project",
-  NULL);
+  /* start plugin scanning in another thread */
+  ZRYTHM->init_thread =
+    g_thread_new (
+      "scan_plugins_after_first_run_thread",
+      (GThreadFunc)
+      scan_plugins_after_first_run_thread,
+      ZRYTHM);
+
+  /* set a source func in the main GTK thread to
+   * check when scanning finished */
+  ZRYTHM->init_finished = 0;
+  g_idle_add ((GSourceFunc) idle_func, ZRYTHM);
+
+  gtk_widget_set_visible (
+    GTK_WIDGET (first_run_assistant), 0);
 
   /* close the first run assistant if it ran
    * before */
