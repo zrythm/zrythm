@@ -90,6 +90,8 @@
 #include "utils/stack.h"
 #include "zrythm.h"
 
+#include <glib/gi18n.h>
+
 static void
 redraw_all_arranger_bgs ()
 {
@@ -1442,6 +1444,13 @@ events_process (void * data)
           break;
         case ET_AUTOMATION_TRACKLIST_AT_REMOVED:
           /* TODO */
+          break;
+        case ET_TRIAL_LIMIT_REACHED:
+          ui_show_message_full (
+            GTK_WINDOW (MAIN_WINDOW),
+            GTK_MESSAGE_INFO,
+            _("Trial limit has been reached. "
+            "Zrythm will now go silent"));
           break;
         default:
           g_warning (

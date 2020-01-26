@@ -17,6 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -1062,6 +1064,13 @@ send_audio_data_to_jack (
   for (unsigned int i = start_frames;
        i < start_frames + nframes; i++)
     {
+#ifdef TRIAL_VER
+      if (AUDIO_ENGINE->limit_reached)
+        {
+          out[i] = 0;
+          continue;
+        }
+#endif
       out[i] = port->buf[i];
     }
 }

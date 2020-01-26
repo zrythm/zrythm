@@ -156,6 +156,11 @@ init_audio (
 
   control_room_init (CONTROL_ROOM, loading);
 
+#ifdef TRIAL_VER
+  self->zrythm_start_time =
+    g_get_monotonic_time ();
+#endif
+
   /*if (loading)*/
     /*{*/
       /*stereo_ports_init_loaded (self->stereo_in);*/
@@ -1036,6 +1041,20 @@ engine_process (
 
   /* run post-process code */
   engine_post_process (self, nframes);
+
+#ifdef TRIAL_VER
+  /* go silent if limit reached */
+  if (self->timestamp_start -
+        self->zrythm_start_time > 6000000)
+    {
+      if (!self->limit_reached)
+        {
+          EVENTS_PUSH (
+            ET_TRIAL_LIMIT_REACHED, NULL);
+          self->limit_reached = 1;
+        }
+    }
+#endif
 
   /*
    * processing finished, return 0 (OK)

@@ -384,6 +384,16 @@ typedef struct AudioEngine
   /** Last MIDI CC captured. */
   midi_byte_t       last_cc[3];
 
+#ifdef TRIAL_VER
+  /** Time at start to keep track if trial limit
+   * is reached. */
+  gint64            zrythm_start_time;
+
+  /** Flag to keep track of the first time the
+   * limit is reached. */
+  int               limit_reached;
+#endif
+
 } AudioEngine;
 
 static const cyaml_schema_field_t

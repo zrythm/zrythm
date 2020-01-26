@@ -144,8 +144,8 @@ audio_midi_backend_selection_validate (
       return;
     }
 
-  ui_show_error_message (
-    self,
+  ui_show_message_full (
+    GTK_WINDOW (self), GTK_MESSAGE_INFO,
     _("The selected backends are operational"));
   return;
 }

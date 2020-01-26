@@ -539,6 +539,14 @@ activate_new (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
+#ifdef TRIAL_VER
+  ui_show_error_message (
+    MAIN_WINDOW,
+    _("Creating new projects is disabled. Please "
+    "restart Zrythm to start a new project"));
+  return;
+#endif
+
   GtkWidget *dialog;
   GtkDialogFlags flags =
     GTK_DIALOG_MODAL |
@@ -604,6 +612,13 @@ activate_open (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
+#ifdef TRIAL_VER
+  ui_show_error_message (
+    MAIN_WINDOW,
+    _("Loading is disabled in the trial version"));
+  return;
+#endif
+
   GtkDialog * dialog =
     dialogs_get_open_project_dialog (
       GTK_WINDOW (MAIN_WINDOW));
@@ -625,17 +640,23 @@ activate_save (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-   if (!PROJECT->dir ||
-       !PROJECT->title)
-     {
-       activate_save_as (action,
-                         variant,
-                         user_data);
-       return;
-     }
-   g_message ("%s project dir", PROJECT->dir);
+#ifdef TRIAL_VER
+  ui_show_error_message (
+    MAIN_WINDOW,
+    _("Saving is disabled in the trial version"));
+  return;
+#endif
 
-   project_save (PROJECT, PROJECT->dir, 0, 1);
+  if (!PROJECT->dir ||
+      !PROJECT->title)
+    {
+      activate_save_as (
+        action, variant, user_data);
+      return;
+    }
+  g_message ("%s project dir", PROJECT->dir);
+
+  project_save (PROJECT, PROJECT->dir, 0, 1);
 }
 
 void
@@ -643,6 +664,13 @@ activate_save_as (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
+#ifdef TRIAL_VER
+  ui_show_error_message (
+    MAIN_WINDOW,
+    _("Saving is disabled in the trial version"));
+  return;
+#endif
+
   GtkWidget *dialog;
   GtkFileChooser *chooser;
   GtkFileChooserAction _action =

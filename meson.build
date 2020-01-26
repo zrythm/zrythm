@@ -69,8 +69,11 @@ cdata.set_quoted (
   'LIBDIR_NAME', get_option ('libdir'))
 cdata.set_quoted (
   'CONFIGURE_LIBDIR', libdir)
+if get_option ('trial_ver')
+  cdata.set('TRIAL_VER', 1)
+endif
 if get_option ('windows_release')
-cdata.set ('WINDOWS_RELEASE', 1)
+  cdata.set ('WINDOWS_RELEASE', 1)
 endif
 cdata.set_quoted('SAMPLES_DIR', samplesdir)
 cdata.set (
