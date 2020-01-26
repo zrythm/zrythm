@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 12:22+0000\n"
-"PO-Revision-Date: 2019-12-24 22:28+0000\n"
+"PO-Revision-Date: 2020-01-26 13:21+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/fr/>\n"
 "Language: fr\n"
-"Language-Team: French "
-"<https://hosted.weblate.org/projects/zrythm/manualconfiguration/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.11-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -236,6 +237,11 @@ msgid ""
 "your first time using it. If you don't want to use JACK for some reason "
 "you can select other backends such as ALSA or SDL2."
 msgstr ""
+"Zrythm prend en charge plusieurs moteurs dorsaux audio et MIDI. JACK est "
+"celui qui est recommandé pour les deux, mais il faut un certain temps pour "
+"le configurer si c'est la première fois que vous l'utilisez. Si vous ne "
+"voulez pas utiliser JACK pour une raison quelconque, vous pouvez "
+"sélectionner d'autres dorsaux tels que ALSA ou SDL2."
 
 #: ../../configuration/first-run-wizard.rst:52
 msgid ""
@@ -355,7 +361,6 @@ msgid "Pan Algorithm"
 msgstr "Algorithme de panoramique"
 
 #: ../../configuration/preferences/intro.rst:37
-#, fuzzy
 msgid ""
 "The panning algorithm to use. See the graph below for the different "
 "curves as you move the pan from left to right. We recommend leaving it as"
@@ -363,11 +368,11 @@ msgid ""
 "online/readings/panlaws/index.html for more information. This is not used"
 " at the moment."
 msgstr ""
-"L'algorithme de panoramique à utiliser. Voir le graphique ci-dessous pour"
-" les différentes courbes lorsque vous déplacez le panoramique de gauche à"
-" droite. Nous vous recommandons de le laisser par défaut (Sinus). Voir "
-"https://www.cs.cmu.edu/~music/icm-online/readings/panlaws/index.html pour"
-" plus d'informations."
+"L'algorithme de panoramique à utiliser. Voir le graphique ci-dessous pour "
+"les différentes courbes lorsque vous déplacez le panoramique de gauche à "
+"droite. Nous recommandons de laisser celui par défaut (Sinus). Voir "
+"https://www.cs.cmu.edu/~music/icm-online/readings/panlaws/index.html pour "
+"plus d'informations. Ça n'est pas utilisé pour le moment."
 
 #: ../../configuration/preferences/intro.rst:49
 msgid "Pan algorithms (:blue:`sine`, :red:`square root`, :green:`linear`)."
@@ -780,4 +785,3 @@ msgstr "Modifier certains de ces paramètres nécessite un redémarrage de Zryth
 
 #~ msgid "Only JACK works at the moment."
 #~ msgstr "Seul JACK fonctionne pour le moment."
-

@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2019-12-31 12:21+0000\n"
+"PO-Revision-Date: 2020-01-26 13:21+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/fr/>\n"
 "Language: fr\n"
-"Language-Team: French "
-"<https://hosted.weblate.org/projects/zrythm/manualtracks/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 3.11-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -786,10 +787,17 @@ msgid ""
 "putting tracks under the same folder and doing common operations. This is"
 " different from what many other DAWs do, so please keep this in mind."
 msgstr ""
+"Dans Zrythm, les pistes de groupe sont utilisées pour regrouper les signaux ("
+"routage direct), les pistes FX/bus sont utilisées pour les effets/envois, et "
+"les pistes de dossier sont utilisées pour placer les pistes sous un même "
+"dossier et faire des opérations communes. Ceci est différent de ce que font "
+"de nombreux autres STAN, alors gardez bien cela à l'esprit."
 
 #: ../../tracks/overview.rst:38
 msgid "If you have used Cubase before, you might find this easy to get used to."
 msgstr ""
+"Si vous avez déjà utilisé Cubase, il vous sera probablement facile de vous y "
+"habituer."
 
 #: ../../tracks/overview.rst:42
 msgid "Track Interface"
@@ -1098,4 +1106,3 @@ msgstr "Visibilité de piste"
 
 #~ msgid "These are similar to :ref:`audio-track-sends`."
 #~ msgstr "Celles-ci sont similaires aux :ref:`audio-track-sends`."
-

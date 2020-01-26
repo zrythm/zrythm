@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 12:22+0000\n"
-"PO-Revision-Date: 2020-01-24 12:21+0000\n"
+"PO-Revision-Date: 2020-01-26 13:21+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualgetting-started/fr/>\n"
@@ -275,19 +275,16 @@ msgid "The installer supports the following distros (and derivatives):"
 msgstr "L'installateur prend en charge les distros (et dérivés) suivantes :"
 
 #: ../../getting-started/installation/gnu-linux.rst:21
-#, fuzzy
 msgid "**Ubuntu 18.04 & 19.04** - amd64"
-msgstr "**Ubuntu 18.10, 19.04, 19.10** - amd64"
+msgstr "**Ubuntu 18.10 & 19.04** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:22
-#, fuzzy
 msgid "**LinuxMint 19.3** - amd64"
-msgstr "**Debian 10** - amd64"
+msgstr "**LinuxMint 19.3** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:23
-#, fuzzy
 msgid "**Debian 9 & 10** - amd64"
-msgstr "**Debian 10** - amd64"
+msgstr "**Debian 9 & 10** - amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:24
 msgid "**Arch Linux** - x86_64"
@@ -299,7 +296,7 @@ msgstr "**Fedora 31** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:26
 msgid "**OpenSUSE Tumbleweed** - x86_64"
-msgstr ""
+msgstr "**OpenSUSE Tumbleweed** - x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:33
 msgid "Distro Package"
@@ -398,9 +395,8 @@ msgid "Operating System"
 msgstr "Système d'exploitation"
 
 #: ../../getting-started/system-requirements.rst:17
-#, fuzzy
 msgid "Unix-compatible OS or Windows"
-msgstr "SE compatible-unix"
+msgstr "SE compatible-unix ou Windows"
 
 #: ../../getting-started/system-requirements.rst:20
 msgid "Recommended"
@@ -436,15 +432,13 @@ msgid "Software"
 msgstr "Logiciel"
 
 #: ../../getting-started/system-requirements.rst:34
-#, fuzzy
 msgid ""
 "A JACK patchbay such as `QjackCtl <https://qjackctl.sourceforge.io/>`_, "
 "`Catia <https://kx.studio/Applications:Catia>`_ or `Ingen "
 "<https://drobilla.net/software/ingen>`_"
 msgstr ""
-"Une baie de brassage JACK comme `QjackCtl "
-"<https://qjackctl.sourceforge.io/>`_, `Catia "
-"<https://kx.studio/Applications:Catia>`_ et `Ingen "
+"Une baie de brassage JACK comme `QjackCtl <https://qjackctl.sourceforge.io/>`"
+"_, `Catia <https://kx.studio/Applications:Catia>`_ ou `Ingen "
 "<https://drobilla.net/software/ingen>`_"
 
 #: ../../getting-started/system-requirements.rst:40
@@ -469,6 +463,9 @@ msgid ""
 "Zrythm. You will find lots of information online about how to configure "
 "JACK, so we will skip this part."
 msgstr ""
+"Lorsque vous utilisez JACK, il faut le configurer avant de lancer Zrythm. "
+"Vous trouverez de nombreuses informations en ligne sur la façon de "
+"configurer JACK, nous allons donc sauter cette partie."
 
 #: ../../getting-started/zrythm-overview.rst:6
 msgid "Overview"
@@ -497,14 +494,14 @@ msgstr ""
 "signaux CV provenant de LFO et de greffons d'enveloppe."
 
 #: ../../getting-started/zrythm-overview.rst:16
-#, fuzzy
 msgid "LV2 and VST plugins"
-msgstr "Greffons LV2"
+msgstr "Greffons LV2 et VST"
 
 #: ../../getting-started/zrythm-overview.rst:16
-#, fuzzy
 msgid "Supports the free LV2 plugin format, with added support for VST."
-msgstr "Prend en charge le format de greffon libre LV2."
+msgstr ""
+"Prend en charge le format de greffon libre LV2, avec un support "
+"supplémentaire pour VST."
 
 #: ../../getting-started/zrythm-overview.rst:18
 msgid "JACK support"
