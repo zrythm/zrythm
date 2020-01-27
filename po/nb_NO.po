@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2019-12-24 22:26+0000\n"
+"POT-Creation-Date: 2020-01-27 12:58+0000\n"
 "PO-Revision-Date: 2019-09-09 17:25+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/zrythm/"
@@ -19,67 +19,67 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 3.9-dev\n"
 
-#: src/zrythm.c:280
+#: src/zrythm.c:282
 #, fuzzy
 msgid "Setting up main window"
 msgstr "Setter opp bakende"
 
-#: src/zrythm.c:319
+#: src/zrythm.c:321
 msgid "Loading project"
 msgstr "Laster prosjekt"
 
-#: src/zrythm.c:348
+#: src/zrythm.c:350
 #, fuzzy
 msgid "Initializing main window"
 msgstr "Henter lydmotoren"
 
-#: src/zrythm.c:366
-#, fuzzy
-msgid "Initializing symap"
-msgstr "Igangsetter…"
-
-#: src/zrythm.c:371
-#, fuzzy
-msgid "Initializing caches"
-msgstr "Henter lydmotoren"
-
-#: src/zrythm.c:377
+#: src/zrythm.c:368
 msgid "Initializing settings"
 msgstr "Henter innstillingene"
 
-#: src/zrythm.c:384
-msgid "Initializing plugin manager"
-msgstr "Henter programtilleggsbehandleren"
-
-#: src/zrythm.c:389
-msgid "Scanning plugins"
-msgstr ""
-
-#: src/zrythm.c:508
-msgid "License Information"
-msgstr ""
-
-#: src/zrythm.c:532
+#: src/zrythm.c:377
 #, fuzzy
 msgid "Initializing Zrythm directories"
 msgstr "Henter innstillingene"
 
-#: src/zrythm.c:541
+#: src/zrythm.c:386
 #, fuzzy
 msgid "Initializing logging system"
 msgstr "Henter innstillingene"
 
-#: src/zrythm.c:547
+#: src/zrythm.c:392
+#, fuzzy
+msgid "Initializing symap"
+msgstr "Igangsetter…"
+
+#: src/zrythm.c:398
+#, fuzzy
+msgid "Initializing caches"
+msgstr "Henter lydmotoren"
+
+#: src/zrythm.c:405
+msgid "Initializing plugin manager"
+msgstr "Henter programtilleggsbehandleren"
+
+#: src/zrythm.c:413
+msgid "Scanning plugins"
+msgstr ""
+
+#: src/zrythm.c:560
+msgid "License Information"
+msgstr ""
+
+#: src/zrythm.c:582
 #, fuzzy
 msgid "Waiting for project"
 msgstr "Laster prosjekt"
 
-#: src/project.c:366 src/gui/widgets/route_target_selector_popover.c:147
-#: src/audio/track.c:1276
+#: src/project.c:368 src/gui/widgets/route_target_selector_popover.c:147
+#: src/audio/track.c:1292
 msgid "Master"
 msgstr ""
 
-#: src/project.c:468
+#: src/project.c:470
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -87,37 +87,42 @@ msgid ""
 "Use the newer backup?"
 msgstr ""
 
-#: src/project.c:534
+#: src/project.c:533
 #, c-format
 msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
 "work correctly."
 msgstr ""
 
-#: src/project.c:549
+#: src/project.c:548
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 
-#: src/project.c:983
+#: src/project.c:986
 msgid "Backup saved."
 msgstr ""
 
-#: src/project.c:990
+#: src/project.c:993
 msgid "Project saved."
 msgstr "Prosjekt lagret."
 
-#: src/main.c:66
+#: src/main.c:91
 #, c-format
-msgid "Error: signal %d - Backtrace:"
+msgid "Error - Backtrace:\n"
 msgstr ""
 
-#: src/main.c:114
+#: src/main.c:116
+#, c-format
+msgid "Error: %s - Backtrace:\n"
+msgstr ""
+
+#: src/main.c:165
 #, c-format
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
 msgstr ""
 
-#: src/main.c:164
+#: src/main.c:238
 #, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
@@ -134,23 +139,22 @@ msgid ""
 "Website https://www.zrythm.org\n"
 msgstr ""
 
-#: src/main.c:224
+#: src/main.c:298
 #, c-format
 msgid ""
-"Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
+"Zrythm-%s Copyright (C) 2018-2020 Alexandros Theodotou\n"
 "\n"
 "Zrythm comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
 "This is free software, and you are welcome to redistribute it\n"
-"under certain conditions. Look at the file `COPYING' within this\n"
-"distribution for details.\n"
+"under certain conditions. See the file `COPYING' for details.\n"
 "\n"
 "Write comments and bugs to %s\n"
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
 
-#: src/plugins/plugin_manager.c:199
+#: src/plugins/plugin_manager.c:239
 msgid "Error loading LV2 bundle dir: "
 msgstr ""
 
@@ -159,14 +163,14 @@ msgid "Save State"
 msgstr "Lagringstilstand"
 
 #: src/plugins/lv2/lv2_gtk.c:156 src/plugins/lv2/lv2_gtk.c:584
-#: src/utils/dialogs.c:41 src/utils/dialogs.c:71 src/actions/actions.c:657
+#: src/utils/dialogs.c:41 src/utils/dialogs.c:71 src/actions/actions.c:685
 #: resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "_Avbryt"
 
-#: src/plugins/lv2/lv2_gtk.c:157 src/actions/actions.c:659
+#: src/plugins/lv2/lv2_gtk.c:157 src/actions/actions.c:687
 msgid "_Save"
 msgstr "_Lagre"
 
@@ -212,11 +216,11 @@ msgstr "Prosjekt uten tittel"
 msgid "INPUTS"
 msgstr "INNGANGER"
 
-#: src/gui/widgets/port_connections_popover.c:84
+#: src/gui/widgets/port_connections_popover.c:88
 msgid "OUTPUTS"
 msgstr "UTGANGER"
 
-#: src/gui/widgets/port_connections_popover.c:189
+#: src/gui/widgets/port_connections_popover.c:197
 msgid "Add"
 msgstr "Legg til"
 
@@ -229,33 +233,33 @@ msgstr "notelengde"
 msgid "note type"
 msgstr "Notetype"
 
-#: src/gui/widgets/inspector_port.c:149 resources/ui/bind_cc_dialog.ui:27
+#: src/gui/widgets/inspector_port.c:155 resources/ui/bind_cc_dialog.ui:27
 #, fuzzy
 msgid "Bind MIDI CC"
 msgstr "MIDI"
 
-#: src/gui/widgets/inspector_port.c:303
+#: src/gui/widgets/inspector_port.c:323
 msgid "Incoming signals"
 msgstr ""
 
-#: src/gui/widgets/inspector_port.c:304
+#: src/gui/widgets/inspector_port.c:324
 msgid "Outgoing signals"
 msgstr ""
 
-#: src/gui/widgets/inspector_port.c:316
+#: src/gui/widgets/inspector_port.c:336
 msgid "Current val"
 msgstr ""
 
-#: src/gui/widgets/inspector_port.c:318
+#: src/gui/widgets/inspector_port.c:338
 #, fuzzy
 msgid "Min"
 msgstr "inn"
 
-#: src/gui/widgets/inspector_port.c:319
+#: src/gui/widgets/inspector_port.c:339
 msgid "Max"
 msgstr ""
 
-#: src/gui/widgets/inspector_port.c:431
+#: src/gui/widgets/inspector_port.c:450
 msgid "Expose port to JACK"
 msgstr ""
 
@@ -274,7 +278,7 @@ msgstr "Stereo ut"
 msgid "Track Properties"
 msgstr "Sporegenskaper"
 
-#: src/gui/widgets/channel.c:977
+#: src/gui/widgets/channel.c:984
 msgid "Inserts"
 msgstr ""
 
@@ -288,59 +292,59 @@ msgstr "MIDI-bakende"
 msgid "All Audio Inputs"
 msgstr "Lydinnganger"
 
-#: src/gui/widgets/track_input_expander.c:334
+#: src/gui/widgets/track_input_expander.c:336
 #, fuzzy
 msgid "No inputs"
 msgstr "Ingen innganger"
 
-#: src/gui/widgets/track_input_expander.c:337
+#: src/gui/widgets/track_input_expander.c:339
 msgid "MIDI inputs for recording"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:345
+#: src/gui/widgets/track_input_expander.c:347
 #, fuzzy
 msgid "No left input"
 msgstr "Ingen innganger"
 
-#: src/gui/widgets/track_input_expander.c:346
+#: src/gui/widgets/track_input_expander.c:348
 #, fuzzy
 msgid "No right input"
 msgstr "Ingen innganger"
 
-#: src/gui/widgets/track_input_expander.c:349
+#: src/gui/widgets/track_input_expander.c:351
 #, c-format
 msgid "Audio input (%s) for recording"
 msgstr ""
 
 #. TRANSLATORS: Left and Right
-#: src/gui/widgets/track_input_expander.c:351
+#: src/gui/widgets/track_input_expander.c:353
 msgid "L"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:351
+#: src/gui/widgets/track_input_expander.c:353
 #: resources/ui/automation_track.ui:100
 msgid "R"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:421
+#: src/gui/widgets/track_input_expander.c:423
 msgid "All Channels"
 msgstr "Alle kanaler"
 
-#: src/gui/widgets/track_input_expander.c:430
+#: src/gui/widgets/track_input_expander.c:432
 #, c-format
 msgid "Channel %s"
 msgstr "Kanal %s"
 
-#: src/gui/widgets/track_input_expander.c:445
+#: src/gui/widgets/track_input_expander.c:447
 msgid "No channel"
 msgstr "Ingen kanal"
 
-#: src/gui/widgets/track_input_expander.c:485
+#: src/gui/widgets/track_input_expander.c:487
 #, fuzzy
 msgid "MIDI channel to filter to"
 msgstr "Kanal %s"
 
-#: src/gui/widgets/track_input_expander.c:631
+#: src/gui/widgets/track_input_expander.c:633
 #, fuzzy
 msgid "Inputs"
 msgstr "Innganger"
@@ -356,42 +360,25 @@ msgstr "Velg…"
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr "Klikk for automatisk tilkobling av MIDI-kontrollere"
 
-#: src/gui/widgets/first_run_assistant.c:89
-#: src/gui/widgets/first_run_assistant.c:124
+#: src/gui/widgets/first_run_assistant.c:88
+#: src/gui/widgets/first_run_assistant.c:123
 #, fuzzy
 msgid "JACK functionality is disabled"
 msgstr "JACK-funksjonalitet avskrudd"
 
-#: src/gui/widgets/first_run_assistant.c:106
+#: src/gui/widgets/first_run_assistant.c:105
 #, fuzzy
 msgid "PortAudio functionality is disabled"
 msgstr "PortAudio-funksjonalitet avskrudd"
 
-#: src/gui/widgets/first_run_assistant.c:143
+#: src/gui/widgets/first_run_assistant.c:142
 msgid "Backend combination not supported"
 msgstr "Bakende-kombinasjon støttes ikke"
 
-#: src/gui/widgets/first_run_assistant.c:149
+#: src/gui/widgets/first_run_assistant.c:148
 #, fuzzy
 msgid "The selected backends are operational"
 msgstr "Valgte bakender er i virke"
-
-#: src/gui/widgets/first_run_assistant.c:233 src/gui/widgets/preferences.c:77
-#, fuzzy, c-format
-msgid ""
-"A locale for the language you have selected is not available. Please enable "
-"one first using the steps below and try again.\n"
-"1. Uncomment any locale starting with the language code <b>%s</b> in <b>/etc/"
-"locale.gen</b> (needs root privileges)\n"
-"2. Run <b>locale-gen</b> as root\n"
-"3. Restart Zrythm"
-msgstr ""
-"Lokalitet for språket du har valgt mangler. Skru på en først ved å utføre "
-"disse stegene, og prøv så igjen.\n"
-"1. Kommenter ut enhver lokalitet som starter med språkkoden <b>%s</b> i <b>/"
-"etc/locale.gen</b> (superbrukertilgang kreves)\n"
-"2. kjør <b>locale-gen</b> som superbruker\n"
-"3. Start Zrythm på ny"
 
 #: src/gui/widgets/bind_cc_dialog.c:94
 #, fuzzy
@@ -399,12 +386,12 @@ msgid "Not a control change event"
 msgstr "Inget klipp valgt"
 
 #: src/gui/widgets/project_assistant.c:265 src/gui/widgets/event_viewer.c:437
-#: resources/ui/create_project_dialog.ui:95
+#: resources/ui/create_project_dialog.ui:96
 msgid "Name"
 msgstr "Navn"
 
 #: src/gui/widgets/project_assistant.c:275
-#: resources/ui/first_run_assistant.ui:144
+#: resources/ui/first_run_assistant.ui:165
 msgid "Path"
 msgstr "Sti"
 
@@ -422,12 +409,12 @@ msgstr "Laster prosjekt"
 msgid "Project Assistant"
 msgstr "Prosjekt lagret."
 
-#: src/gui/widgets/left_dock_edge.c:105
+#: src/gui/widgets/left_dock_edge.c:103
 msgid "Inspector"
 msgstr "Inspektør"
 
-#: src/gui/widgets/left_dock_edge.c:125
-#: resources/ui/chord_selector_window.ui:682
+#: src/gui/widgets/left_dock_edge.c:123
+#: resources/ui/chord_selector_window.ui:683
 msgid "Visibility"
 msgstr "Synlighet"
 
@@ -443,31 +430,31 @@ msgstr ""
 msgid "Playhead [Jack Client]"
 msgstr ""
 
-#: src/gui/widgets/top_bar.c:127
+#: src/gui/widgets/top_bar.c:128
 msgid "Become JACK Transport master"
 msgstr ""
 
-#: src/gui/widgets/top_bar.c:146
+#: src/gui/widgets/top_bar.c:147
 msgid "Sync to JACK Transport"
 msgstr ""
 
-#: src/gui/widgets/top_bar.c:169
+#: src/gui/widgets/top_bar.c:170
 msgid "Unlink JACK Transport"
 msgstr ""
 
-#: src/gui/widgets/top_bar.c:228
+#: src/gui/widgets/top_bar.c:230
 msgid "playhead"
 msgstr ""
 
-#: src/gui/widgets/top_bar.c:262
+#: src/gui/widgets/top_bar.c:264
 msgid "JACK Transport client"
 msgstr ""
 
-#: src/gui/widgets/top_bar.c:282
+#: src/gui/widgets/top_bar.c:284
 msgid "JACK Timebase master"
 msgstr ""
 
-#: src/gui/widgets/top_bar.c:375
+#: src/gui/widgets/top_bar.c:377
 msgid "time sig."
 msgstr ""
 
@@ -484,7 +471,7 @@ msgstr "Ingen port valgt"
 msgid "These ports cannot be connected"
 msgstr ""
 
-#: src/gui/widgets/port_selector_popover.c:300
+#: src/gui/widgets/port_selector_popover.c:316
 msgid "Track Ports"
 msgstr "Sporporter"
 
@@ -498,15 +485,15 @@ msgstr "Posisjon"
 msgid "No object selected"
 msgstr "Inget objekt valgt"
 
-#: src/gui/widgets/inspector.c:166
+#: src/gui/widgets/inspector.c:164
 msgid "Track properties"
 msgstr "Sporegenskaper"
 
-#: src/gui/widgets/inspector.c:176
+#: src/gui/widgets/inspector.c:174
 msgid "Editor properties"
 msgstr ""
 
-#: src/gui/widgets/inspector.c:186
+#: src/gui/widgets/inspector.c:184
 #, fuzzy
 msgid "Plugin properties"
 msgstr "Programtilleggsutforsker"
@@ -557,12 +544,12 @@ msgstr "Legg til _MIDI-spor"
 msgid "Add Audio Track"
 msgstr "Lyd-bakende"
 
-#: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1270
+#: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1286
 #, fuzzy
 msgid "Audio Bus"
 msgstr "Lydutganger"
 
-#: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1273
+#: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1289
 #, fuzzy
 msgid "MIDI Bus"
 msgstr "MIDI-utganger"
@@ -572,12 +559,12 @@ msgstr "MIDI-utganger"
 msgid "Add Bus Track"
 msgstr "%s spor"
 
-#: src/gui/widgets/drag_dest_box.c:512 src/audio/track.c:1282
+#: src/gui/widgets/drag_dest_box.c:512 src/audio/track.c:1298
 #, fuzzy
 msgid "Audio Group"
 msgstr "Lydutganger"
 
-#: src/gui/widgets/drag_dest_box.c:523 src/audio/track.c:1285
+#: src/gui/widgets/drag_dest_box.c:523 src/audio/track.c:1301
 #, fuzzy
 msgid "MIDI Group"
 msgstr "MIDI-utgang"
@@ -624,10 +611,23 @@ msgstr ""
 msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
 
-#: src/gui/widgets/channel_slot.c:133 src/gui/widgets/channel_slot.c:148
-#: src/gui/widgets/channel_slot.c:751
+#: src/gui/widgets/channel_slot.c:134 src/gui/widgets/channel_slot.c:149
+#: src/gui/widgets/channel_slot.c:786
 msgid "empty slot"
 msgstr ""
+
+#: src/gui/widgets/piano_roll_keys.c:136
+msgid "both"
+msgstr "begge"
+
+#: src/gui/widgets/piano_roll_keys.c:152
+msgid "scale"
+msgstr "skala"
+
+#: src/gui/widgets/piano_roll_keys.c:168
+#, fuzzy
+msgid "chord"
+msgstr "Akkorder"
 
 #: src/gui/widgets/plugin_browser.c:1003 resources/ui/file_browser.ui:63
 msgid "Collection"
@@ -641,11 +641,11 @@ msgstr "Kategori"
 msgid "Protocol"
 msgstr "Protokoll"
 
-#: src/gui/widgets/about_dialog.c:78
+#: src/gui/widgets/about_dialog.c:80
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr "inngående automasjon i intuitiv digital lyd-arbeidsstasjon"
 
-#: src/gui/widgets/about_dialog.c:82
+#: src/gui/widgets/about_dialog.c:84
 msgid "Website"
 msgstr "Nettside"
 
@@ -807,34 +807,21 @@ msgstr "Inget klipp valgt"
 msgid "Snap/Grid options"
 msgstr ""
 
-#: src/gui/widgets/header_notebook.c:82
+#: src/gui/widgets/header_notebook.c:90
 #, fuzzy
 msgid "About Zrythm"
 msgstr "Sett opp Zrythm"
 
-#: src/gui/widgets/header_notebook.c:83 resources/ui/shortcuts.ui:40
+#: src/gui/widgets/header_notebook.c:91 resources/ui/shortcuts.ui:40
 #: resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "Innstillinger"
-
-#: src/gui/widgets/piano_roll_key_label.c:89
-msgid "both"
-msgstr "begge"
-
-#: src/gui/widgets/piano_roll_key_label.c:108
-msgid "scale"
-msgstr "skala"
-
-#: src/gui/widgets/piano_roll_key_label.c:127
-#, fuzzy
-msgid "chord"
-msgstr "Akkorder"
 
 #: src/gui/widgets/live_waveform.c:197
 msgid "Live waveform indicator"
 msgstr ""
 
-#: src/gui/widgets/clip_editor_inner.c:196
+#: src/gui/widgets/clip_editor_inner.c:194
 msgid "Select a region..."
 msgstr ""
 
@@ -843,7 +830,7 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1288
+#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1304
 #, fuzzy
 msgid "Marker"
 msgstr "Markører"
@@ -859,7 +846,7 @@ msgid "MIDI note"
 msgstr "MIDI-bakende"
 
 #: src/gui/widgets/event_viewer.c:117 src/gui/widgets/event_viewer.c:585
-#: src/audio/region.c:290 src/audio/track.c:1279
+#: src/audio/region.c:284 src/audio/track.c:1295
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "Akkord"
@@ -869,7 +856,7 @@ msgstr "Akkord"
 msgid "Automation point"
 msgstr "Flytt automasjon"
 
-#: src/gui/widgets/event_viewer.c:448 resources/ui/chord_selector_window.ui:238
+#: src/gui/widgets/event_viewer.c:448 resources/ui/chord_selector_window.ui:239
 #: resources/ui/file_browser.ui:84 resources/ui/snap_grid_popover.ui:127
 #, fuzzy
 msgid "Type"
@@ -909,7 +896,7 @@ msgstr "Basstone"
 msgid "Pitch"
 msgstr ""
 
-#: src/gui/widgets/event_viewer.c:544 resources/ui/midi_editor_space.ui:144
+#: src/gui/widgets/event_viewer.c:544 resources/ui/midi_editor_space.ui:133
 #: resources/ui/chord_editor_space.ui:152
 #: resources/ui/automation_editor_space.ui:115
 msgid "Velocity"
@@ -927,61 +914,61 @@ msgstr ""
 msgid "Curviness"
 msgstr ""
 
-#: src/gui/widgets/ports_expander.c:165
+#: src/gui/widgets/ports_expander.c:173
 #, fuzzy
 msgid "Controls"
 msgstr "Kontrollinnganger"
 
-#: src/gui/widgets/ports_expander.c:168
+#: src/gui/widgets/ports_expander.c:176
 #, fuzzy
 msgid "Control Outs"
 msgstr "Kontrollutganger"
 
-#: src/gui/widgets/ports_expander.c:171
+#: src/gui/widgets/ports_expander.c:179
 #, fuzzy
 msgid "Audio Ins"
 msgstr "Lydinnganger"
 
-#: src/gui/widgets/ports_expander.c:174
+#: src/gui/widgets/ports_expander.c:182
 #, fuzzy
 msgid "Audio Outs"
 msgstr "Lydutganger"
 
-#: src/gui/widgets/ports_expander.c:177
+#: src/gui/widgets/ports_expander.c:185
 #, fuzzy
 msgid "MIDI Ins"
 msgstr "MIDI-innganger"
 
-#: src/gui/widgets/ports_expander.c:180
+#: src/gui/widgets/ports_expander.c:188
 #, fuzzy
 msgid "MIDI Outs"
 msgstr "MIDI-utganger"
 
-#: src/gui/widgets/ports_expander.c:183
+#: src/gui/widgets/ports_expander.c:191
 #, fuzzy
 msgid "CV Ins"
 msgstr "CV-innganger"
 
-#: src/gui/widgets/ports_expander.c:186
+#: src/gui/widgets/ports_expander.c:194
 #, fuzzy
 msgid "CV Outs"
 msgstr "CV-utganger"
 
-#: src/gui/widgets/ports_expander.c:355
+#: src/gui/widgets/ports_expander.c:362
 #, fuzzy
 msgid "Sends"
 msgstr "Bakender"
 
-#: src/gui/widgets/ports_expander.c:362
+#: src/gui/widgets/ports_expander.c:369
 msgid "Stereo In"
 msgstr "Stereoinngang"
 
-#: src/gui/widgets/ports_expander.c:369
+#: src/gui/widgets/ports_expander.c:376
 #, fuzzy
 msgid "MIDI In"
 msgstr "MIDI-bakende"
 
-#: src/gui/widgets/ports_expander.c:377
+#: src/gui/widgets/ports_expander.c:384
 #, fuzzy
 msgid "MIDI Out"
 msgstr "MIDI-utgang"
@@ -990,7 +977,7 @@ msgstr "MIDI-utgang"
 msgid "Group"
 msgstr "Gruppe"
 
-#: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1261
+#: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1277
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -1083,75 +1070,79 @@ msgstr "Veksle bunnpanel"
 msgid "Toggle Right Panel"
 msgstr "Veksle høyre panel"
 
-#: src/gui/widgets/track.c:515 src/audio/track_lane.c:68
+#: src/gui/widgets/track.c:519 src/audio/track_lane.c:68
 #, c-format
 msgid "Lane %d"
 msgstr ""
 
-#: src/gui/widgets/track.c:1392
+#: src/gui/widgets/track.c:1396
 msgid "_Delete Track"
 msgstr "_Slett spor"
 
-#: src/gui/widgets/track.c:1395
+#: src/gui/widgets/track.c:1399
 #, fuzzy
 msgid "_Delete Tracks"
 msgstr "_Slett spor"
 
-#: src/gui/widgets/track.c:1410
+#: src/gui/widgets/track.c:1414
 msgid "_Duplicate Track"
 msgstr "_Dupliser spor"
 
-#: src/gui/widgets/track.c:1413
+#: src/gui/widgets/track.c:1417
 #, fuzzy
 msgid "_Duplicate Tracks"
 msgstr "_Dupliser spor"
 
-#: src/gui/widgets/track.c:1431
+#: src/gui/widgets/track.c:1435
 msgid "Add Region"
 msgstr "Legg til region"
 
-#: src/gui/widgets/track.c:1443
+#: src/gui/widgets/track.c:1447
 #, fuzzy
 msgid "Hide Track"
 msgstr "Flytt spor"
 
-#: src/gui/widgets/track.c:1444
+#: src/gui/widgets/track.c:1448
 #, fuzzy
 msgid "Hide Tracks"
 msgstr "Spor"
 
-#: src/gui/widgets/track.c:1455
+#: src/gui/widgets/track.c:1459
 msgid "Pin/Unpin Track"
 msgstr ""
 
-#: src/gui/widgets/track.c:1456
+#: src/gui/widgets/track.c:1460
 msgid "Pin/Unpin Tracks"
 msgstr ""
 
-#: src/gui/widgets/track.c:1471
+#: src/gui/widgets/track.c:1475
 #, fuzzy
 msgid "Track MIDI Ch"
 msgstr "MIDI"
 
-#: src/gui/widgets/track.c:1482 src/gui/widgets/track.c:1540
+#: src/gui/widgets/track.c:1486 src/gui/widgets/track.c:1544
 #, fuzzy, c-format
 msgid "%sMIDI Channel %d"
 msgstr "Kanal %s"
 
-#: src/gui/widgets/track.c:1518
+#: src/gui/widgets/track.c:1522
 #, fuzzy, c-format
 msgid "Lane %d MIDI Ch"
 msgstr "MIDI"
 
-#: src/gui/widgets/track.c:1535
+#: src/gui/widgets/track.c:1539
 #, c-format
 msgid "%sInherit"
 msgstr ""
 
-#: src/gui/widgets/fader.c:336
+#: src/gui/widgets/fader.c:333
 #, fuzzy
 msgid "Fader"
 msgstr "Overgangstoning"
+
+#: src/gui/backend/events.c:1452
+msgid "Trial limit has been reached. Zrythm will now go silent"
+msgstr ""
 
 #: src/utils/dialogs.c:43
 msgid "_Open"
@@ -1169,70 +1160,94 @@ msgstr ""
 msgid "Error instantiating plugin. Please see log for details."
 msgstr ""
 
-#: src/utils/ui.c:564
+#: src/utils/ui.c:575
 msgid "English [en]"
 msgstr "Engelsk [en]"
 
-#: src/utils/ui.c:565
+#: src/utils/ui.c:576
 msgid "German [de]"
 msgstr "Tysk [de]"
 
-#: src/utils/ui.c:566
+#: src/utils/ui.c:577
 msgid "French [fr]"
 msgstr "Fransk [fr]"
 
-#: src/utils/ui.c:567
+#: src/utils/ui.c:578
 msgid "Italian [it]"
 msgstr "Italiensk [it]"
 
-#: src/utils/ui.c:568
+#: src/utils/ui.c:579
 #, fuzzy
 msgid "Norwegian [nb]"
 msgstr "Norsk bokmål [nb]"
 
-#: src/utils/ui.c:569
+#: src/utils/ui.c:580
 msgid "Spanish [es]"
 msgstr "Spansk [es]"
 
-#: src/utils/ui.c:570
+#: src/utils/ui.c:581
 msgid "Japanese [ja]"
 msgstr "Japansk [ja]"
 
-#: src/utils/ui.c:571
+#: src/utils/ui.c:582
 msgid "Portuguese [pt]"
 msgstr "Portugisisk [pt]"
 
-#: src/utils/ui.c:572
+#: src/utils/ui.c:583
 msgid "Russian [ru]"
 msgstr "Russisk [ru]"
 
-#: src/utils/ui.c:573
+#: src/utils/ui.c:584
 #, fuzzy
 msgid "Chinese [zh]"
 msgstr "Kinesisk [zh]"
 
 #. TRANSLATORS: Dummy audio backend
-#: src/utils/ui.c:590 src/utils/ui.c:608
+#: src/utils/ui.c:610 src/utils/ui.c:644
 msgid "Dummy"
 msgstr ""
 
-#: src/utils/ui.c:609
+#: src/utils/ui.c:646
 msgid "ALSA Sequencer"
 msgstr ""
 
 #. TRANSLATORS: Pan algorithm
-#: src/utils/ui.c:627
+#: src/utils/ui.c:670
 msgid "Linear"
 msgstr "Lineær"
 
-#: src/utils/ui.c:628
+#: src/utils/ui.c:671
 #, fuzzy
 msgid "Square Root"
 msgstr "Kvadratrot"
 
-#: src/utils/ui.c:629
+#: src/utils/ui.c:672
 msgid "Sine (Equal Power)"
 msgstr "Sinus (lik effekt)"
+
+#: src/utils/ui.c:842
+#, c-format
+msgid ""
+"A locale for the language you have selected (%s) is not available. Please "
+"install one first and restart Zrythm"
+msgstr ""
+
+#: src/utils/ui.c:847
+#, fuzzy, c-format
+msgid ""
+"A locale for the language you have selected is not available. Please enable "
+"one first using the steps below and try again.\n"
+"1. Uncomment any locale starting with the language code <b>%s</b> in <b>/etc/"
+"locale.gen</b> (needs root privileges)\n"
+"2. Run <b>locale-gen</b> as root\n"
+"3. Restart Zrythm"
+msgstr ""
+"Lokalitet for språket du har valgt mangler. Skru på en først ved å utføre "
+"disse stegene, og prøv så igjen.\n"
+"1. Kommenter ut enhver lokalitet som starter med språkkoden <b>%s</b> i <b>/"
+"etc/locale.gen</b> (superbrukertilgang kreves)\n"
+"2. kjør <b>locale-gen</b> som superbruker\n"
+"3. Start Zrythm på ny"
 
 #: src/audio/track_processor.c:205
 msgid "Piano Roll"
@@ -1248,33 +1263,33 @@ msgstr "Akkorder"
 msgid "Markers"
 msgstr "Markører"
 
-#: src/audio/engine_pa.c:256 src/audio/engine_pa.c:276
-#: src/audio/engine_pa.c:287
+#: src/audio/engine_pa.c:272 src/audio/engine_pa.c:292
+#: src/audio/engine_pa.c:303
 #, c-format
 msgid "PortAudio Error: %s"
 msgstr "PortAudio-feil: %s"
 
-#: src/audio/region.c:281 src/audio/track.c:1267
+#: src/audio/region.c:275 src/audio/track.c:1283
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/region.c:284 src/audio/track.c:1264
+#: src/audio/region.c:278 src/audio/track.c:1280
 msgid "Audio"
 msgstr "Lyd"
 
-#: src/audio/region.c:287
+#: src/audio/region.c:281
 #, fuzzy
 msgid "Automation"
 msgstr "Flytt automasjon"
 
-#: src/audio/engine.c:298
+#: src/audio/engine.c:325
 #, c-format
 msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
 
-#: src/audio/engine.c:367
+#: src/audio/engine.c:407
 #, c-format
 msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
@@ -1311,77 +1326,72 @@ msgstr ""
 msgid "Unimplemented"
 msgstr "Ikke implementert"
 
-#: src/audio/fader.c:105
+#: src/audio/fader.c:125
 msgid "Fader in"
 msgstr ""
 
-#: src/audio/fader.c:114
+#: src/audio/fader.c:134
 msgid "Fader out"
 msgstr ""
 
-#: src/audio/fader.c:126
+#: src/audio/fader.c:146
 #, fuzzy
 msgid "MIDI fader in"
 msgstr "MIDI-bakende"
 
-#: src/audio/fader.c:139
+#: src/audio/fader.c:159
 msgid "MIDI fader out"
 msgstr ""
 
-#: src/audio/engine_jack.c:514
-#, c-format
-msgid "JACK Error: %s"
-msgstr "JACK-feil: %s"
-
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:655
+#: src/audio/engine_jack.c:658
 msgid "Overall operation failed"
 msgstr ""
 
-#: src/audio/engine_jack.c:658
+#: src/audio/engine_jack.c:664
 msgid "The operation contained an invalid or unsupported option"
 msgstr "Operasjonen inneholdet et ugyldig eller ustøttet valg"
 
-#: src/audio/engine_jack.c:662
+#: src/audio/engine_jack.c:671
 #, fuzzy
 msgid "The desired client name was not unique"
 msgstr "Ønsket klientnavn er ikke unikt"
 
-#: src/audio/engine_jack.c:665
+#: src/audio/engine_jack.c:677
 msgid "Unable to connect to the JACK server"
 msgstr "Kunne ikke koble til JACK-tjeneren"
 
-#: src/audio/engine_jack.c:668
+#: src/audio/engine_jack.c:683
 msgid "Communication error with the JACK server"
 msgstr "Kommunikasjonsfeil med JACK-tjeneren"
 
-#: src/audio/engine_jack.c:671
+#: src/audio/engine_jack.c:689
 msgid "Requested client does not exist"
 msgstr "Forespurt klient finnes ikke"
 
-#: src/audio/engine_jack.c:674
+#: src/audio/engine_jack.c:695
 msgid "Unable to load internal client"
 msgstr "Kunne ikke laste inn intern klient"
 
-#: src/audio/engine_jack.c:677
+#: src/audio/engine_jack.c:701
 msgid "Unable to initialize client"
 msgstr "Kunne ikke igangsette klient"
 
-#: src/audio/engine_jack.c:680
+#: src/audio/engine_jack.c:707
 #, fuzzy
 msgid "Unable to access shared memory"
 msgstr "Fikk ikke tilgang til delt minne"
 
-#: src/audio/engine_jack.c:683
+#: src/audio/engine_jack.c:713
 #, fuzzy
 msgid "Client's protocol version does not match"
 msgstr "Klientens protokollversjon samsvarer ikke"
 
-#: src/audio/engine_jack.c:686
+#: src/audio/engine_jack.c:717
 msgid "Backend error"
 msgstr "Bakende-feil"
 
-#: src/audio/engine_jack.c:689
+#: src/audio/engine_jack.c:721
 msgid "Client zombie"
 msgstr ""
 
@@ -1400,34 +1410,48 @@ msgstr "Opprett %s"
 msgid "Create %d %ss"
 msgstr "Opprett %d %s-er"
 
-#: src/actions/delete_tracks_action.c:113
+#: src/actions/delete_tracks_action.c:114
 msgid "Delete Track"
 msgstr "Slett spor"
 
-#: src/actions/delete_tracks_action.c:116
+#: src/actions/delete_tracks_action.c:117
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "Slett %d spor"
 
-#: src/actions/actions.c:548 resources/ui/project_assistant.ui:86
+#: src/actions/actions.c:545
+msgid ""
+"Creating new projects is disabled. Please restart Zrythm to start a new "
+"project"
+msgstr ""
+
+#: src/actions/actions.c:556 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
 msgid "Create new project"
 msgstr "Nytt prosjekt"
 
-#: src/actions/actions.c:551
+#: src/actions/actions.c:559
 msgid "Yes"
 msgstr ""
 
-#: src/actions/actions.c:553
+#: src/actions/actions.c:561
 #, fuzzy
 msgid "No"
 msgstr "Ingen"
 
-#: src/actions/actions.c:558
+#: src/actions/actions.c:566
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
 
-#: src/actions/actions.c:654
+#: src/actions/actions.c:618
+msgid "Loading is disabled in the trial version"
+msgstr ""
+
+#: src/actions/actions.c:646 src/actions/actions.c:670
+msgid "Saving is disabled in the trial version"
+msgstr ""
+
+#: src/actions/actions.c:682
 msgid "Save Project"
 msgstr "Lagre prosjekt"
 
@@ -1484,22 +1508,22 @@ msgstr "Flytt spor"
 msgid "Move %d Tracks"
 msgstr "Flytt %d spor"
 
-#: src/actions/create_tracks_action.c:54
+#: src/actions/create_tracks_action.c:57
 #, fuzzy, c-format
 msgid "%s Track"
 msgstr "%s spor"
 
-#: src/actions/create_tracks_action.c:117
+#: src/actions/create_tracks_action.c:120
 #, c-format
 msgid "Error instantiating plugin %s. Please see log for details."
 msgstr ""
 
-#: src/actions/create_tracks_action.c:276
+#: src/actions/create_tracks_action.c:316
 #, c-format
 msgid "Create %s Track"
 msgstr "Opprett %s spor"
 
-#: src/actions/create_tracks_action.c:279
+#: src/actions/create_tracks_action.c:319
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "Opprett %d %s spor"
@@ -1528,7 +1552,7 @@ msgstr ""
 "Denne guiden vil veilede deg gjennom grunnleggende oppsett av Zrythm. Velg "
 "språk først."
 
-#: resources/ui/first_run_assistant.ui:89 resources/ui/preferences.ui:398
+#: resources/ui/first_run_assistant.ui:89 resources/ui/preferences.ui:519
 msgid "Language"
 msgstr "Språk"
 
@@ -1550,36 +1574,40 @@ msgstr "Tilbakestill"
 msgid "Resets the path to the default"
 msgstr "Tilbakestiller sti til forvalg"
 
-#: resources/ui/first_run_assistant.ui:161
+#: resources/ui/first_run_assistant.ui:145
+msgid "Choose the paths to scan for VST2 plugins (or accept the default)"
+msgstr ""
+
+#: resources/ui/first_run_assistant.ui:182
 msgid "Select the audio and MIDI engine backends to use"
 msgstr ""
 
-#: resources/ui/first_run_assistant.ui:179 resources/ui/preferences.ui:170
+#: resources/ui/first_run_assistant.ui:200 resources/ui/preferences.ui:170
 msgid "MIDI Backend"
 msgstr "MIDI-bakende"
 
-#: resources/ui/first_run_assistant.ui:192 resources/ui/preferences.ui:124
+#: resources/ui/first_run_assistant.ui:213 resources/ui/preferences.ui:124
 msgid "Audio Backend"
 msgstr "Lyd-bakende"
 
-#: resources/ui/first_run_assistant.ui:229
+#: resources/ui/first_run_assistant.ui:250
 msgid "Test"
 msgstr "Test"
 
-#: resources/ui/first_run_assistant.ui:233
+#: resources/ui/first_run_assistant.ui:254
 msgid "Tests the backends"
 msgstr "Tester bakendene"
 
-#: resources/ui/first_run_assistant.ui:244
+#: resources/ui/first_run_assistant.ui:265
 msgid "Backends"
 msgstr "Bakender"
 
-#: resources/ui/bind_cc_dialog.ui:45 resources/ui/create_project_dialog.ui:37
-#: resources/ui/export_dialog.ui:45 resources/ui/preferences.ui:58
+#: resources/ui/bind_cc_dialog.ui:45 resources/ui/create_project_dialog.ui:38
+#: resources/ui/export_dialog.ui:46 resources/ui/preferences.ui:58
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:23
+#: resources/ui/bind_cc_dialog.ui:58 resources/ui/create_project_dialog.ui:24
 #: resources/ui/export_progress_dialog.ui:39 resources/ui/preferences.ui:44
 msgid "OK"
 msgstr "OK"
@@ -1598,74 +1626,74 @@ msgid "Root Key"
 msgstr ""
 
 #: resources/ui/scale_selector_window.ui:80
-#: resources/ui/chord_selector_window.ui:78
-#: resources/ui/chord_selector_window.ui:522
+#: resources/ui/chord_selector_window.ui:79
+#: resources/ui/chord_selector_window.ui:523
 msgid "C"
 msgstr "C"
 
 #: resources/ui/scale_selector_window.ui:93
-#: resources/ui/chord_selector_window.ui:91
-#: resources/ui/chord_selector_window.ui:535
+#: resources/ui/chord_selector_window.ui:92
+#: resources/ui/chord_selector_window.ui:536
 msgid "D♭"
 msgstr "D♭"
 
 #: resources/ui/scale_selector_window.ui:106
-#: resources/ui/chord_selector_window.ui:104
-#: resources/ui/chord_selector_window.ui:548
+#: resources/ui/chord_selector_window.ui:105
+#: resources/ui/chord_selector_window.ui:549
 msgid "D"
 msgstr "D"
 
 #: resources/ui/scale_selector_window.ui:119
-#: resources/ui/chord_selector_window.ui:117
-#: resources/ui/chord_selector_window.ui:561
+#: resources/ui/chord_selector_window.ui:118
+#: resources/ui/chord_selector_window.ui:562
 msgid "E♭"
 msgstr "E♭"
 
 #: resources/ui/scale_selector_window.ui:132
-#: resources/ui/chord_selector_window.ui:130
-#: resources/ui/chord_selector_window.ui:574
+#: resources/ui/chord_selector_window.ui:131
+#: resources/ui/chord_selector_window.ui:575
 msgid "E"
 msgstr "E"
 
 #: resources/ui/scale_selector_window.ui:145
-#: resources/ui/chord_selector_window.ui:143
-#: resources/ui/chord_selector_window.ui:587
+#: resources/ui/chord_selector_window.ui:144
+#: resources/ui/chord_selector_window.ui:588
 msgid "F"
 msgstr "F"
 
 #: resources/ui/scale_selector_window.ui:158
-#: resources/ui/chord_selector_window.ui:156
-#: resources/ui/chord_selector_window.ui:600
+#: resources/ui/chord_selector_window.ui:157
+#: resources/ui/chord_selector_window.ui:601
 msgid "F♯"
 msgstr "F♯"
 
 #: resources/ui/scale_selector_window.ui:171
-#: resources/ui/chord_selector_window.ui:169
-#: resources/ui/chord_selector_window.ui:613
+#: resources/ui/chord_selector_window.ui:170
+#: resources/ui/chord_selector_window.ui:614
 msgid "G"
 msgstr "G"
 
 #: resources/ui/scale_selector_window.ui:184
-#: resources/ui/chord_selector_window.ui:182
-#: resources/ui/chord_selector_window.ui:626
+#: resources/ui/chord_selector_window.ui:183
+#: resources/ui/chord_selector_window.ui:627
 msgid "A♭"
 msgstr "A♭"
 
 #: resources/ui/scale_selector_window.ui:197
-#: resources/ui/chord_selector_window.ui:195
-#: resources/ui/chord_selector_window.ui:639
+#: resources/ui/chord_selector_window.ui:196
+#: resources/ui/chord_selector_window.ui:640
 msgid "A"
 msgstr ""
 
 #: resources/ui/scale_selector_window.ui:210
-#: resources/ui/chord_selector_window.ui:208
-#: resources/ui/chord_selector_window.ui:652
+#: resources/ui/chord_selector_window.ui:209
+#: resources/ui/chord_selector_window.ui:653
 msgid "B♭"
 msgstr ""
 
 #: resources/ui/scale_selector_window.ui:223
-#: resources/ui/chord_selector_window.ui:221
-#: resources/ui/chord_selector_window.ui:665
+#: resources/ui/chord_selector_window.ui:222
+#: resources/ui/chord_selector_window.ui:666
 msgid "B"
 msgstr ""
 
@@ -1686,18 +1714,18 @@ msgid "Harmonic Minor"
 msgstr ""
 
 #: resources/ui/scale_selector_window.ui:342
-#: resources/ui/chord_selector_window.ui:746
+#: resources/ui/chord_selector_window.ui:747
 #, fuzzy
 msgid "Creator"
 msgstr "Opprett %s"
 
 #: resources/ui/scale_selector_window.ui:358
-#: resources/ui/chord_selector_window.ui:876
+#: resources/ui/chord_selector_window.ui:877
 msgid "TODO keyboard"
 msgstr ""
 
 #: resources/ui/scale_selector_window.ui:368
-#: resources/ui/chord_selector_window.ui:886 resources/ui/export_dialog.ui:250
+#: resources/ui/chord_selector_window.ui:887 resources/ui/export_dialog.ui:251
 msgid "Custom"
 msgstr "Egendefinert"
 
@@ -1760,133 +1788,133 @@ msgstr "Fjerner valgt prosjekt fra listen"
 msgid "Select a template"
 msgstr "Velg en mappe"
 
-#: resources/ui/chord_selector_window.ui:51
+#: resources/ui/chord_selector_window.ui:52
 msgid "Root Note"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:264
+#: resources/ui/chord_selector_window.ui:265
 msgid "maj"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:277
+#: resources/ui/chord_selector_window.ui:278
 #, fuzzy
 msgid "min"
 msgstr "inn"
 
-#: resources/ui/chord_selector_window.ui:290
+#: resources/ui/chord_selector_window.ui:291
 msgid "dim"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:303
+#: resources/ui/chord_selector_window.ui:304
 msgid "sus4"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:316
+#: resources/ui/chord_selector_window.ui:317
 msgid "sus2"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:329
+#: resources/ui/chord_selector_window.ui:330
 msgid "aug"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:346
+#: resources/ui/chord_selector_window.ui:347
 msgid "Accent"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:374
+#: resources/ui/chord_selector_window.ui:375
 msgid "7"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:387
+#: resources/ui/chord_selector_window.ui:388
 msgid "j7"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:400
+#: resources/ui/chord_selector_window.ui:401
 msgid "♭9"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:413
+#: resources/ui/chord_selector_window.ui:414
 msgid "9"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:426
+#: resources/ui/chord_selector_window.ui:427
 msgid "♯9"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:439
+#: resources/ui/chord_selector_window.ui:440
 msgid "11"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:452
+#: resources/ui/chord_selector_window.ui:453
 msgid "♭5/♯11"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:465
+#: resources/ui/chord_selector_window.ui:466
 msgid "♯5/♭13"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:478
+#: resources/ui/chord_selector_window.ui:479
 msgid "6/13"
 msgstr "6/13"
 
-#: resources/ui/chord_selector_window.ui:495
+#: resources/ui/chord_selector_window.ui:496
 msgid "Bass Note"
 msgstr "Basstone"
 
-#: resources/ui/chord_selector_window.ui:700
+#: resources/ui/chord_selector_window.ui:701
 msgid "All"
 msgstr "Alle"
 
-#: resources/ui/chord_selector_window.ui:716
+#: resources/ui/chord_selector_window.ui:717
 msgid "In scale"
 msgstr "I skala"
 
-#: resources/ui/chord_selector_window.ui:767
+#: resources/ui/chord_selector_window.ui:768
 msgid "I"
 msgstr "I"
 
-#: resources/ui/chord_selector_window.ui:781
+#: resources/ui/chord_selector_window.ui:782
 msgid "II"
 msgstr "II"
 
-#: resources/ui/chord_selector_window.ui:795
+#: resources/ui/chord_selector_window.ui:796
 msgid "III"
 msgstr "III"
 
-#: resources/ui/chord_selector_window.ui:809
+#: resources/ui/chord_selector_window.ui:810
 msgid "IV"
 msgstr "IV"
 
-#: resources/ui/chord_selector_window.ui:823
+#: resources/ui/chord_selector_window.ui:824
 msgid "V"
 msgstr "V"
 
-#: resources/ui/chord_selector_window.ui:837
+#: resources/ui/chord_selector_window.ui:838
 msgid "VI"
 msgstr "VI"
 
-#: resources/ui/chord_selector_window.ui:851
+#: resources/ui/chord_selector_window.ui:852
 msgid "VII"
 msgstr "VII"
 
-#: resources/ui/chord_selector_window.ui:865
+#: resources/ui/chord_selector_window.ui:866
 msgid "Diatonic"
 msgstr ""
 
-#: resources/ui/chord_selector_window.ui:897
+#: resources/ui/chord_selector_window.ui:898
 msgid "TODO"
 msgstr "GJENSTÅR"
 
-#: resources/ui/chord_selector_window.ui:907
+#: resources/ui/chord_selector_window.ui:908
 msgid "Circle of Fifths"
 msgstr ""
 
-#: resources/ui/create_project_dialog.ui:69
+#: resources/ui/create_project_dialog.ui:70
 #, fuzzy
 msgid "Parent directory"
 msgstr "Åpne prosjekt"
 
-#: resources/ui/create_project_dialog.ui:82
+#: resources/ui/create_project_dialog.ui:83
 msgid "Select parent directory to save the project in"
 msgstr ""
 
@@ -1895,7 +1923,7 @@ msgstr ""
 msgid "Global Shortcuts"
 msgstr "Programvide snarveier"
 
-#: resources/ui/shortcuts.ui:36 resources/ui/preferences.ui:265
+#: resources/ui/shortcuts.ui:36 resources/ui/preferences.ui:372
 msgid "General"
 msgstr "Generelt"
 
@@ -2056,17 +2084,17 @@ msgstr "Skann på ny"
 msgid "Scan again for MIDI controllers"
 msgstr "Se etter MIDI-kontrollere igjen"
 
-#: resources/ui/midi_editor_space.ui:145 resources/ui/chord_editor_space.ui:153
+#: resources/ui/midi_editor_space.ui:134 resources/ui/chord_editor_space.ui:153
 #: resources/ui/automation_editor_space.ui:116
 msgid "Pitch Wheel"
 msgstr ""
 
-#: resources/ui/midi_editor_space.ui:146 resources/ui/chord_editor_space.ui:154
+#: resources/ui/midi_editor_space.ui:135 resources/ui/chord_editor_space.ui:154
 #: resources/ui/automation_editor_space.ui:117
 msgid "Mod Wheel"
 msgstr ""
 
-#: resources/ui/midi_editor_space.ui:147 resources/ui/chord_editor_space.ui:155
+#: resources/ui/midi_editor_space.ui:136 resources/ui/chord_editor_space.ui:155
 #: resources/ui/automation_editor_space.ui:118
 msgid "Aftertouch"
 msgstr ""
@@ -2196,11 +2224,11 @@ msgstr "Tilbake"
 msgid "Forward"
 msgstr "Forover"
 
-#: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:238
+#: resources/ui/transport_controls.ui:122 resources/ui/export_dialog.ui:239
 msgid "Loop"
 msgstr "Gjenta"
 
-#: resources/ui/splash.ui:65
+#: resources/ui/splash.ui:66
 #, fuzzy
 msgid "Initializing..."
 msgstr "Igangsetter…"
@@ -2268,8 +2296,8 @@ msgid "Marker name"
 msgstr "Markører"
 
 #: resources/ui/header_notebook.ui:37
-msgid "Home"
-msgstr "Hjem"
+msgid "Edit"
+msgstr ""
 
 #: resources/ui/header_notebook.ui:74
 msgid "View"
@@ -2279,7 +2307,7 @@ msgstr "Vis"
 msgid "Help"
 msgstr "Hjelp"
 
-#: resources/ui/header_notebook.ui:146
+#: resources/ui/header_notebook.ui:147
 msgid "Project name"
 msgstr "Prosjektnavn"
 
@@ -2323,35 +2351,35 @@ msgstr "MIDI i aktivitet"
 msgid "Export As..."
 msgstr "Eksporter som…"
 
-#: resources/ui/export_dialog.ui:59
+#: resources/ui/export_dialog.ui:60
 msgid "Export"
 msgstr "Eksporter"
 
-#: resources/ui/export_dialog.ui:86
+#: resources/ui/export_dialog.ui:87
 msgid "Artist"
 msgstr "Artist"
 
-#: resources/ui/export_dialog.ui:97
+#: resources/ui/export_dialog.ui:98
 msgid "Genre"
 msgstr "Sjanger"
 
-#: resources/ui/export_dialog.ui:108 data/zrythm.desktop.in:20
+#: resources/ui/export_dialog.ui:109 data/zrythm.desktop.in:20
 msgid "Zrythm"
 msgstr "Zrythm"
 
-#: resources/ui/export_dialog.ui:119
+#: resources/ui/export_dialog.ui:120
 msgid "Electronic"
 msgstr "Elektronisk"
 
-#: resources/ui/export_dialog.ui:130
+#: resources/ui/export_dialog.ui:131
 msgid "Format"
 msgstr "Format"
 
-#: resources/ui/export_dialog.ui:149
+#: resources/ui/export_dialog.ui:150
 msgid "Dither"
 msgstr ""
 
-#: resources/ui/export_dialog.ui:176
+#: resources/ui/export_dialog.ui:177
 msgid ""
 "The following files will be created:\n"
 "\n"
@@ -2369,32 +2397,32 @@ msgstr ""
 "\n"
 "/home/alex/Zrythm/Projects/project1/exports/20181023"
 
-#: resources/ui/export_dialog.ui:194
+#: resources/ui/export_dialog.ui:195
 #, fuzzy
 msgid "Output Files"
 msgstr "Utdatafiler"
 
-#: resources/ui/export_dialog.ui:206
+#: resources/ui/export_dialog.ui:207
 msgid "Filename Pattern"
 msgstr "Filnavnsmønster"
 
-#: resources/ui/export_dialog.ui:226
+#: resources/ui/export_dialog.ui:227
 msgid "Song"
 msgstr "Sang"
 
-#: resources/ui/export_dialog.ui:264
+#: resources/ui/export_dialog.ui:265
 msgid "Time Range"
 msgstr "Tidsområde"
 
-#: resources/ui/export_dialog.ui:276
+#: resources/ui/export_dialog.ui:277
 msgid "Tracks"
 msgstr "Spor"
 
-#: resources/ui/export_dialog.ui:297
+#: resources/ui/export_dialog.ui:298
 msgid "Bit depth"
 msgstr "Bitdybde"
 
-#: resources/ui/main_window.ui:119
+#: resources/ui/main_window.ui:120
 msgid "This is an app-notification. Click the button to dismiss"
 msgstr ""
 
@@ -2456,81 +2484,97 @@ msgstr "MIDI-kontrollere"
 msgid "The MIDI backend to connect to"
 msgstr ""
 
-#: resources/ui/preferences.ui:193
+#: resources/ui/preferences.ui:192
 msgid "Pan Algorithm"
 msgstr ""
 
-#: resources/ui/preferences.ui:204
+#: resources/ui/preferences.ui:202
 msgid "Pan Law"
 msgstr ""
 
-#: resources/ui/preferences.ui:215
+#: resources/ui/preferences.ui:212
 msgid "The pan algorithm to use"
 msgstr ""
 
-#: resources/ui/preferences.ui:227
+#: resources/ui/preferences.ui:223
 msgid "The pan law to use"
 msgstr ""
 
-#: resources/ui/preferences.ui:239
+#: resources/ui/preferences.ui:235
 #, fuzzy
 msgid "Zrythm path"
 msgstr "Zrythm"
 
-#: resources/ui/preferences.ui:250
+#: resources/ui/preferences.ui:246
 msgid "The global Zrythm working path for non-project related files"
 msgstr ""
 
-#: resources/ui/preferences.ui:280 resources/ui/preferences.ui:329
+#: resources/ui/preferences.ui:267
+msgid "Device Name"
+msgstr ""
+
+#: resources/ui/preferences.ui:302
+msgid "Buffer Size"
+msgstr ""
+
+#: resources/ui/preferences.ui:326
+msgid "Samplerate"
+msgstr ""
+
+#: resources/ui/preferences.ui:387 resources/ui/preferences.ui:456
 msgid "Plugins"
 msgstr "Programtillegg"
 
-#: resources/ui/preferences.ui:290
+#: resources/ui/preferences.ui:397
 msgid "Always open plugin UIs"
 msgstr "Alltid åpne programtilleggsgrensenitt"
 
-#: resources/ui/preferences.ui:294
+#: resources/ui/preferences.ui:401
 msgid "Always show the plugin UI when instantiating a plugin"
 msgstr ""
 
-#: resources/ui/preferences.ui:306
+#: resources/ui/preferences.ui:413
 msgid "Keep plugin UIs on top"
 msgstr ""
 
-#: resources/ui/preferences.ui:310
+#: resources/ui/preferences.ui:417
 msgid "Keep plugin UI windows on top of the main window"
 msgstr ""
 
-#: resources/ui/preferences.ui:345
+#: resources/ui/preferences.ui:430
+msgid "VST2 Paths"
+msgstr ""
+
+#: resources/ui/preferences.ui:472
 msgid "Main Window"
 msgstr "Hovedvindu"
 
-#: resources/ui/preferences.ui:368
+#: resources/ui/preferences.ui:489
 msgid "Editing"
 msgstr ""
 
-#: resources/ui/preferences.ui:384
+#: resources/ui/preferences.ui:505
 msgid "Interface"
 msgstr "Grensesnitt"
 
-#: resources/ui/preferences.ui:409
+#: resources/ui/preferences.ui:530
 msgid "The language of the Zrythm interface"
 msgstr "Språk for Zrythm-grensesnittet"
 
-#: resources/ui/preferences.ui:441
+#: resources/ui/preferences.ui:562
 msgid "GUI"
 msgstr "Grafisk grensesnitt"
 
-#: resources/ui/preferences.ui:458 resources/ui/preferences.ui:504
+#: resources/ui/preferences.ui:579 resources/ui/preferences.ui:625
 #, fuzzy
 msgid "Projects"
 msgstr "Prosjekt"
 
-#: resources/ui/preferences.ui:470
+#: resources/ui/preferences.ui:591
 msgid "Autosave interval"
 msgstr ""
 
-#: resources/ui/preferences.ui:481
+#: resources/ui/preferences.ui:602
 msgid ""
 "Set the interval to auto-save project backups, in minutes. Setting this to 0 "
 "will disable auto-save"
@@ -2546,8 +2590,18 @@ msgstr "inngående automasjon og intuitiv digital lyd-arbeidsstasjon"
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:26
-msgid "zrythm"
-msgstr "zrythm"
+msgid "z_frame_8"
+msgstr ""
+
+#, c-format
+#~ msgid "JACK Error: %s"
+#~ msgstr "JACK-feil: %s"
+
+#~ msgid "Home"
+#~ msgstr "Hjem"
+
+#~ msgid "zrythm"
+#~ msgstr "zrythm"
 
 #, c-format
 #~ msgid "Cannot locate property %s in class %s"
