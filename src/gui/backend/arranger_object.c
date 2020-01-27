@@ -678,6 +678,22 @@ init_loaded_region (
     {
     case REGION_TYPE_AUDIO:
       {
+        AudioClip * clip =
+          audio_region_get_clip (self);
+
+        /* copy the clip frames to the cache. */
+        self->frames =
+          malloc (
+            sizeof (float) *
+              (size_t) clip->num_frames *
+              clip->channels);
+        self->num_frames =
+          (size_t) clip->num_frames;
+        memcpy (
+          &self->frames[0], &clip->frames[0],
+          sizeof (float) *
+            (size_t) clip->num_frames *
+            clip->channels);
       }
       break;
     case REGION_TYPE_MIDI:
