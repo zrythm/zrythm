@@ -113,15 +113,18 @@ ext_port_fields_schema[] =
     ExtPort, full_name,
    	0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
-    "short_name", CYAML_FLAG_POINTER,
+    "short_name",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ExtPort, short_name,
    	0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
-    "alias1", CYAML_FLAG_POINTER,
+    "alias1",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ExtPort, alias1,
    	0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
-    "alias2", CYAML_FLAG_POINTER,
+    "alias2",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ExtPort, alias2,
    	0, CYAML_UNLIMITED),
   CYAML_FIELD_INT (
