@@ -1323,6 +1323,11 @@ sum_data_from_windows_mme (
     {
       WindowsMmeDevice * dev =
         self->mme_connections[i];
+      if (!dev)
+        {
+          g_warn_if_reached ();
+          continue;
+        }
 
       MidiEvent ev;
       gint64 cur_time = g_get_monotonic_time ();

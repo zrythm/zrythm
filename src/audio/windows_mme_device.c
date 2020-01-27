@@ -128,6 +128,8 @@ windows_mme_device_dequeue_midi_event_struct (
   uint64_t           timestamp_end,
   MidiEvent *        ev)
 {
+  g_return_val_if_fail (self, 0);
+
   uint64_t timestamp;
   size_t data_size;
   int ret =
@@ -135,7 +137,7 @@ windows_mme_device_dequeue_midi_event_struct (
       self, timestamp_start, timestamp_end,
       &timestamp, ev->raw_buffer, &data_size);
   if (!ret)
-	  return 0;
+    return 0;
 
   /* calculate the time in frames */
   uint64_t timestamp_interval =
@@ -148,8 +150,8 @@ windows_mme_device_dequeue_midi_event_struct (
 #if 0
   if (ratio < 0.001 || ratio >= 1.0)
   {
-	  g_warning ("Event time is not within this cycle, skipping");
-	  return 0;
+    g_warning ("Event time is not within this cycle, skipping");
+    return 0;
   }
 #endif
 
@@ -175,11 +177,13 @@ windows_mme_device_dequeue_midi_event (
   uint8_t *  midi_data,
   size_t *   data_size)
 {
+  g_return_val_if_fail (self, 0);
+
   const uint32_t read_space =
     zix_ring_read_space (self->midi_ring);
   if (read_space <= sizeof(MidiEventHeader))
     {
-	    /* defer */
+      /* defer */
       return 0;
     }
 
@@ -204,7 +208,7 @@ windows_mme_device_dequeue_midi_event (
     "with timestamp: %llu and size %lld",
     self->name, h.time, h.size);
   g_return_val_if_fail (
-		  h.size >= 1 && h.size <= 3, 1);
+      h.size >= 1 && h.size <= 3, 1);
   g_return_val_if_fail (
     read_space >= sizeof (MidiEventHeader) + h.size,
     1);

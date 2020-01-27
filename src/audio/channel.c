@@ -546,6 +546,11 @@ reconnect_windows_mme_ext_in (
 
       for (int i = 0; i < num; i++)
         {
+          if (!arr[i]->mme_dev)
+            {
+              g_warn_if_reached ();
+              continue;
+            }
           in_port->mme_connections[
             in_port->num_mme_connections++] =
               arr[i]->mme_dev;
