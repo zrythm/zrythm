@@ -299,7 +299,7 @@ setup_ext_ins_cb (
     "separator", "separator");
 
   /* get all inputs */
-  ExtPort * ports[60];
+  ExtPort * ports[600];
   int       num_ports;
   ext_ports_get (
     midi ? TYPE_EVENT : TYPE_AUDIO,
