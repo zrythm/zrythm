@@ -51,6 +51,7 @@ locales = [
   'en', 'en_GB', 'de', 'fr', 'ja', 'pt', 'pt_BR',
   'nb_NO']
 
+
 cdata = configuration_data ()
 cdata.set_quoted (
   'PACKAGE_VERSION',
@@ -148,15 +149,13 @@ find_program ('sed', required: true)
 # find command to open a directory
 if os_linux or os_freebsd
   open_dir_cmd = 'xdg-open'
-  find_program (open_dir_cmd)
-  cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
 elif os_darwin
   open_dir_cmd = 'open'
-  find_program (open_dir_cmd)
-  cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
 elif os_windows
-  cdata.set_quoted('OPEN_DIR_CMD', 'start')
+  open_dir_cmd = 'explorer.exe'
 endif
+find_program (open_dir_cmd)
+cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
 
 sphinx_build = find_program (
   ['sphinx-build', 'sphinx-build-3'],

@@ -211,16 +211,24 @@ windows_mme_device_dequeue_midi_event (
 
   if (h.time >= timestamp_end)
     {
-      g_warning (
+      /* this will never be reached but keep just
+       * for reference */
+      g_critical (
         "MMEMidiInput event %f(ms) early",
         (h.time - timestamp_end) * 1e-3);
       return 1;
     }
   else if (h.time < timestamp_start)
     {
+      /* this is a bug that needs to be fixed some
+       * time, but for now just clamp */
       g_warning (
-        "MMEMidiInput event %f(ms) late",
+        "MMEMidiInput event %f(ms) late (it should "
+        "have been included in the previous cycle). "
+        "setting its time to 0 in the current cycle "
+        "to compensate",
         (timestamp_start - h.time) * 1e-3);
+      *timestamp = timestamp_start;
       return 1;
     }
 

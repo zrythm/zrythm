@@ -89,6 +89,12 @@ char *
 string_get_substr_before_backup_ext (
   const char * str);
 
+char *
+string_replace (
+  const char * str,
+  const char * from,
+  const char * to);
+
 /**
  * @}
  */

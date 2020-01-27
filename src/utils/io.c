@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -19,6 +19,10 @@
 
 #include "config.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -27,6 +31,8 @@
 
 #include "utils/file.h"
 #include "utils/io.h"
+#include "utils/string.h"
+#include "utils/system.h"
 
 #include <gtk/gtk.h>
 
@@ -347,9 +353,26 @@ io_open_directory (
 {
   g_return_if_fail (
     g_file_test (path, G_FILE_TEST_IS_DIR));
+
   char command[800];
+#ifdef _WIN32
+  char * canonical_path =
+    g_canonicalize_filename (path, NULL);
+  char * new_path =
+    string_replace (
+      canonical_path, "\\", "\\\\");
+  g_free (canonical_path);
+  sprintf (
+    command, OPEN_DIR_CMD " \"%s\"",
+    new_path);
+#else
   sprintf (
     command, OPEN_DIR_CMD " \"%s\"",
     path);
+#endif
   system (command);
+  g_message ("executed: %s", command);
+#ifdef _WIN32
+  g_free (new_path);
+#endif
 }

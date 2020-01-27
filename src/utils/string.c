@@ -168,3 +168,17 @@ string_get_substr_before_backup_ext (
   g_strfreev (parts);
   return part;
 }
+
+char *
+string_replace (
+  const char * str,
+  const char * from,
+  const char * to)
+{
+  char ** split =
+    g_strsplit (str, from, -1);
+  char * new_str =
+    g_strjoinv (to, split);
+  g_strfreev (split);
+  return new_str;
+}
