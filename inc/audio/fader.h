@@ -258,10 +258,12 @@ fader_disconnect_all (
   Fader * self);
 
 /**
- * Copy the struct members from source to dest.
+ * Copy the fader values from source to dest.
+ *
+ * Used when cloning channels.
  */
 void
-fader_copy (
+fader_copy_values (
   Fader * src,
   Fader * dest);
 

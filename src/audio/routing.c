@@ -184,6 +184,35 @@ get_node_name (
   g_return_val_if_reached (NULL);
 }
 
+static void *
+node_get_pointer (
+  GraphNode * node)
+{
+  switch (node->type)
+    {
+    case ROUTE_NODE_TYPE_PORT:
+      return node->port;
+      break;
+    case ROUTE_NODE_TYPE_PLUGIN:
+      return node->pl;
+      break;
+    case ROUTE_NODE_TYPE_TRACK:
+      return node->track;
+      break;
+    case ROUTE_NODE_TYPE_FADER:
+    case ROUTE_NODE_TYPE_MONITOR_FADER:
+      return node->fader;
+      break;
+    case ROUTE_NODE_TYPE_PREFADER:
+      return node->prefader;
+      break;
+    case ROUTE_NODE_TYPE_SAMPLE_PROCESSOR:
+      return node->sample_processor;
+      break;
+    }
+  g_return_val_if_reached (NULL);
+}
+
 static void
 print_node (
   GraphNode * node)
@@ -195,6 +224,7 @@ print_node (
       return;
     }
 
+  (void) node_get_pointer;
   char * name = get_node_name (node);
   char * str1 =
     g_strdup_printf (
@@ -1097,6 +1127,8 @@ static inline void
 graph_reached_terminal_node (
   Graph *  self)
 {
+  g_return_if_fail (self->terminal_refcnt >= 0);
+
   if (g_atomic_int_dec_and_test (
         &self->terminal_refcnt))
     {

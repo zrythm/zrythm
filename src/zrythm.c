@@ -299,7 +299,7 @@ on_setup_main_window (
       PROJECT->last_autosave_time =
         g_get_monotonic_time ();
       g_timeout_add_seconds (
-        5, project_autosave_cb, NULL);
+        3, project_autosave_cb, NULL);
     }
 
   splash_window_widget_close (splash);

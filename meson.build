@@ -149,12 +149,13 @@ find_program ('sed', required: true)
 # find command to open a directory
 if os_linux or os_freebsd
   open_dir_cmd = 'xdg-open'
+  find_program (open_dir_cmd)
 elif os_darwin
   open_dir_cmd = 'open'
+  find_program (open_dir_cmd)
 elif os_windows
   open_dir_cmd = 'explorer.exe'
 endif
-find_program (open_dir_cmd)
 cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
 
 sphinx_build = find_program (

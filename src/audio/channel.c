@@ -1847,7 +1847,7 @@ channel_clone (
 
   clone->fader.channel = clone;
   clone->prefader.channel = clone;
-  fader_copy (&ch->fader, &clone->fader);
+  fader_copy_values (&ch->fader, &clone->fader);
 
 #undef COPY_MEMBER
 

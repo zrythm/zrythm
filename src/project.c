@@ -721,8 +721,9 @@ project_autosave_cb (
       PROJECT->dir &&
       PROJECT->datetime_str)
     {
-      gint cur_time = g_get_monotonic_time ();
-      unsigned int microsec_to_autosave =
+      gint64 cur_time = g_get_monotonic_time ();
+      gint64 microsec_to_autosave =
+        (gint64)
         g_settings_get_uint (
           S_PREFERENCES, "autosave-interval") * 60 *
           1000000 -
