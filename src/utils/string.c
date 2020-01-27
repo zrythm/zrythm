@@ -28,6 +28,8 @@
 int
 string_is_ascii (const char * string)
 {
+  return g_str_is_ascii (string);
+#if 0
   unsigned long i;
   if (!string || strlen (string) == 0)
     return 0;
@@ -40,6 +42,7 @@ string_is_ascii (const char * string)
         }
     }
   return 1;
+#endif
 }
 
 /**

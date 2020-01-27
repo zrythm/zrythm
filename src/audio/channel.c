@@ -462,7 +462,7 @@ channel_init_loaded (Channel * ch)
 
   /* init plugins */
   Plugin * pl;
-  for (unsigned int i = 0; i < STRIP_SIZE; i++)
+  for (int i = 0; i < STRIP_SIZE; i++)
     {
       pl = ch->plugins[i];
       if (!pl)
@@ -470,6 +470,7 @@ channel_init_loaded (Channel * ch)
 
       pl->track_pos = ch->track->pos;
       pl->track = ch->track;
+      pl->slot = i;
       plugin_init_loaded (pl);
     }
 }

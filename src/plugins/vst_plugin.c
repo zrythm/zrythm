@@ -1108,14 +1108,24 @@ vst_plugin_save_state_to_file (
       self->aeffect->dispatcher (
         self->aeffect, effGetProgramName,
         0, 0, prog_name, 0.f);
-      self->program_name = g_strdup (prog_name);
-      self->program_index =
-        (int)
-        self->aeffect->dispatcher (
-          self->aeffect, effGetProgram, 0, 0,
-          NULL, 0.f);
-      g_message (
-        "VST prog name is %s", self->program_name);
+      if (g_str_is_ascii (prog_name))
+        {
+          self->program_name = g_strdup (prog_name);
+          self->program_index =
+            (int)
+            self->aeffect->dispatcher (
+              self->aeffect, effGetProgram, 0, 0,
+              NULL, 0.f);
+          g_message (
+            "VST prog name is %s",
+            self->program_name);
+        }
+      else
+        {
+          g_message (
+            "skipping non-ascii VST prog name %s",
+            prog_name);
+        }
     }
 
   /* save the parameters just in case because we

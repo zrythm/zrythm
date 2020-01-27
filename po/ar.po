@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-01-27 12:58+0000\n"
+"POT-Creation-Date: 2020-01-27 14:09+0000\n"
 "PO-Revision-Date: 2019-11-01 13:18+0000\n"
 "Last-Translator: AymenStudios <aymencarbonaro@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/zrythm/zrythm/ar/"
@@ -69,7 +69,7 @@ msgid "Waiting for project"
 msgstr "انتظار المشروع"
 
 #: src/project.c:368 src/gui/widgets/route_target_selector_popover.c:147
-#: src/audio/track.c:1292
+#: src/audio/track.c:1297
 msgid "Master"
 msgstr ""
 
@@ -515,11 +515,11 @@ msgstr ""
 msgid "Add Audio Track"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1286
+#: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1291
 msgid "Audio Bus"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1289
+#: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1294
 msgid "MIDI Bus"
 msgstr ""
 
@@ -527,11 +527,11 @@ msgstr ""
 msgid "Add Bus Track"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:512 src/audio/track.c:1298
+#: src/gui/widgets/drag_dest_box.c:512 src/audio/track.c:1303
 msgid "Audio Group"
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:523 src/audio/track.c:1301
+#: src/gui/widgets/drag_dest_box.c:523 src/audio/track.c:1306
 msgid "MIDI Group"
 msgstr ""
 
@@ -574,7 +574,7 @@ msgid "The level to set other channels to when Listen is enabled on a channel"
 msgstr ""
 
 #: src/gui/widgets/channel_slot.c:134 src/gui/widgets/channel_slot.c:149
-#: src/gui/widgets/channel_slot.c:786
+#: src/gui/widgets/channel_slot.c:787
 msgid "empty slot"
 msgstr ""
 
@@ -776,7 +776,7 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1304
+#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1309
 msgid "Marker"
 msgstr ""
 
@@ -790,7 +790,7 @@ msgid "MIDI note"
 msgstr ""
 
 #: src/gui/widgets/event_viewer.c:117 src/gui/widgets/event_viewer.c:585
-#: src/audio/region.c:284 src/audio/track.c:1295
+#: src/audio/region.c:284 src/audio/track.c:1300
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr ""
@@ -902,7 +902,7 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
-#: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1277
+#: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1282
 msgid "Instrument"
 msgstr ""
 
@@ -1162,11 +1162,11 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr ""
 
-#: src/audio/region.c:275 src/audio/track.c:1283
+#: src/audio/region.c:275 src/audio/track.c:1288
 msgid "MIDI"
 msgstr ""
 
-#: src/audio/region.c:278 src/audio/track.c:1280
+#: src/audio/region.c:278 src/audio/track.c:1285
 msgid "Audio"
 msgstr ""
 

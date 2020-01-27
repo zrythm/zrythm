@@ -194,7 +194,8 @@ on_drag_data_received (
       const guchar *my_data =
         gtk_selection_data_get_data (data);
       memcpy (
-        &received_pl, my_data, sizeof (received_pl));
+        &received_pl, my_data,
+        sizeof (received_pl));
       pl =
         TRACKLIST->tracks[received_pl->track_pos]->
         channel->plugins[received_pl->slot];

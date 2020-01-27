@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-01-27 12:58+0000\n"
+"POT-Creation-Date: 2020-01-27 14:09+0000\n"
 "PO-Revision-Date: 2020-01-24 12:21+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
@@ -70,7 +70,7 @@ msgid "Waiting for project"
 msgstr "En attente du projet"
 
 #: src/project.c:368 src/gui/widgets/route_target_selector_popover.c:147
-#: src/audio/track.c:1292
+#: src/audio/track.c:1297
 msgid "Master"
 msgstr "Master"
 
@@ -545,11 +545,11 @@ msgstr "Ajouter une piste _MIDI"
 msgid "Add Audio Track"
 msgstr "Ajouter une piste audio"
 
-#: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1286
+#: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1291
 msgid "Audio Bus"
 msgstr "Bus audio"
 
-#: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1289
+#: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1294
 msgid "MIDI Bus"
 msgstr "Bus MIDI"
 
@@ -557,11 +557,11 @@ msgstr "Bus MIDI"
 msgid "Add Bus Track"
 msgstr "Ajouter une piste de bus"
 
-#: src/gui/widgets/drag_dest_box.c:512 src/audio/track.c:1298
+#: src/gui/widgets/drag_dest_box.c:512 src/audio/track.c:1303
 msgid "Audio Group"
 msgstr "Groupe audio"
 
-#: src/gui/widgets/drag_dest_box.c:523 src/audio/track.c:1301
+#: src/gui/widgets/drag_dest_box.c:523 src/audio/track.c:1306
 msgid "MIDI Group"
 msgstr "Groupe MIDI"
 
@@ -606,7 +606,7 @@ msgstr ""
 "un canal"
 
 #: src/gui/widgets/channel_slot.c:134 src/gui/widgets/channel_slot.c:149
-#: src/gui/widgets/channel_slot.c:786
+#: src/gui/widgets/channel_slot.c:787
 msgid "empty slot"
 msgstr "emplacement libre"
 
@@ -809,7 +809,7 @@ msgstr "Sélectionner une région..."
 msgid "Region"
 msgstr "Région"
 
-#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1304
+#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1309
 msgid "Marker"
 msgstr "Marqueur"
 
@@ -823,7 +823,7 @@ msgid "MIDI note"
 msgstr "Note MIDI"
 
 #: src/gui/widgets/event_viewer.c:117 src/gui/widgets/event_viewer.c:585
-#: src/audio/region.c:284 src/audio/track.c:1295
+#: src/audio/region.c:284 src/audio/track.c:1300
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "Accord"
@@ -935,7 +935,7 @@ msgstr "Sortie MIDI"
 msgid "Group"
 msgstr "Groupe"
 
-#: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1277
+#: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1282
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -1204,11 +1204,11 @@ msgstr "Marqueurs"
 msgid "PortAudio Error: %s"
 msgstr "Erreur de PortAudio: %s"
 
-#: src/audio/region.c:275 src/audio/track.c:1283
+#: src/audio/region.c:275 src/audio/track.c:1288
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/region.c:278 src/audio/track.c:1280
+#: src/audio/region.c:278 src/audio/track.c:1285
 msgid "Audio"
 msgstr "Audio"
 
