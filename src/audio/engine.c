@@ -1045,7 +1045,7 @@ engine_process (
 #ifdef TRIAL_VER
   /* go silent if limit reached */
   if (self->timestamp_start -
-        self->zrythm_start_time > 6000000)
+        self->zrythm_start_time > 600000000)
     {
       if (!self->limit_reached)
         {

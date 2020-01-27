@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.474] - 2020-01-27
+- Add MIDI file import
+- Add timeout when scanning for VST plugins
+- Add VST2 path selection for Windows
+- Add samplerate, device and buffer size options for SDL2 backend
+- Add flag to compile a trial version
+- Fix VST preset changes not remembered during saving
+- Don't scan for plugins before the welcome dialog has been completed
+- Fix piano roll remaining opened when its region's track is deleted
+- Fix Windows MME MIDI events getting dropped if they are late
+- Fix crash when creating an audio track when more than 60 audio inputs exist
+- Fix crash when loading projects with audio files
+- Fix audio track duplication warnings
+- Fix autosave not working
+- Fix crash when selecting Windows MME device in track inputs
+- Fix crash when dragging plugins in mixer after loading a project
+- Add editing info to the manual
+- Update French, Japanese translations
+
 ## [0.7.425] - 2020-01-23
 - Add undoable plugin delete action
 - Send time info to VST plugins
