@@ -290,6 +290,7 @@ on_setup_main_window (
   mixer_recalc_graph (MIXER);
   g_atomic_int_set (&AUDIO_ENGINE->run, 1);
 
+#ifndef TRIAL_VER
   /* add timeout for auto-saving projects */
   unsigned int autosave_interval =
     g_settings_get_uint (
@@ -301,6 +302,7 @@ on_setup_main_window (
       g_timeout_add_seconds (
         3, project_autosave_cb, NULL);
     }
+#endif
 
   splash_window_widget_close (splash);
 }
