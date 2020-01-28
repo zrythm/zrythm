@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-01-27 14:09+0000\n"
+"POT-Creation-Date: 2020-01-28 21:43+0000\n"
 "PO-Revision-Date: 2020-01-22 19:47+0000\n"
 "Last-Translator: yu zhang <zhangyu201510@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -23,52 +23,52 @@ msgstr ""
 msgid "Setting up main window"
 msgstr ""
 
-#: src/zrythm.c:321
+#: src/zrythm.c:323
 msgid "Loading project"
 msgstr ""
 
-#: src/zrythm.c:350
+#: src/zrythm.c:352
 msgid "Initializing main window"
 msgstr ""
 
-#: src/zrythm.c:368
+#: src/zrythm.c:370
 msgid "Initializing settings"
 msgstr ""
 
-#: src/zrythm.c:377
+#: src/zrythm.c:379
 msgid "Initializing Zrythm directories"
 msgstr ""
 
-#: src/zrythm.c:386
+#: src/zrythm.c:388
 msgid "Initializing logging system"
 msgstr ""
 
-#: src/zrythm.c:392
+#: src/zrythm.c:394
 msgid "Initializing symap"
 msgstr ""
 
-#: src/zrythm.c:398
+#: src/zrythm.c:400
 msgid "Initializing caches"
 msgstr ""
 
-#: src/zrythm.c:405
+#: src/zrythm.c:407
 msgid "Initializing plugin manager"
 msgstr ""
 
-#: src/zrythm.c:413
+#: src/zrythm.c:415
 msgid "Scanning plugins"
 msgstr ""
 
-#: src/zrythm.c:560
+#: src/zrythm.c:562
 msgid "License Information"
 msgstr ""
 
-#: src/zrythm.c:582
+#: src/zrythm.c:584
 msgid "Waiting for project"
 msgstr ""
 
 #: src/project.c:368 src/gui/widgets/route_target_selector_popover.c:147
-#: src/audio/track.c:1297
+#: src/audio/track.c:1292
 msgid "Master"
 msgstr ""
 
@@ -512,12 +512,12 @@ msgstr ""
 msgid "Add Audio Track"
 msgstr "乐器"
 
-#: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1291
+#: src/gui/widgets/drag_dest_box.c:478 src/audio/track.c:1286
 #, fuzzy
 msgid "Audio Bus"
 msgstr "音讯"
 
-#: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1294
+#: src/gui/widgets/drag_dest_box.c:489 src/audio/track.c:1289
 msgid "MIDI Bus"
 msgstr ""
 
@@ -526,12 +526,12 @@ msgstr ""
 msgid "Add Bus Track"
 msgstr "乐器"
 
-#: src/gui/widgets/drag_dest_box.c:512 src/audio/track.c:1303
+#: src/gui/widgets/drag_dest_box.c:512 src/audio/track.c:1298
 #, fuzzy
 msgid "Audio Group"
 msgstr "音讯"
 
-#: src/gui/widgets/drag_dest_box.c:523 src/audio/track.c:1306
+#: src/gui/widgets/drag_dest_box.c:523 src/audio/track.c:1301
 msgid "MIDI Group"
 msgstr ""
 
@@ -777,7 +777,7 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1309
+#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1304
 msgid "Marker"
 msgstr ""
 
@@ -791,7 +791,7 @@ msgid "MIDI note"
 msgstr ""
 
 #: src/gui/widgets/event_viewer.c:117 src/gui/widgets/event_viewer.c:585
-#: src/audio/region.c:284 src/audio/track.c:1300
+#: src/audio/region.c:284 src/audio/track.c:1295
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr ""
@@ -905,7 +905,7 @@ msgstr ""
 msgid "Group"
 msgstr "音讯"
 
-#: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1282
+#: src/gui/widgets/route_target_selector_popover.c:168 src/audio/track.c:1277
 msgid "Instrument"
 msgstr "乐器"
 
@@ -1069,76 +1069,81 @@ msgstr ""
 msgid "Error instantiating plugin. Please see log for details."
 msgstr ""
 
-#: src/utils/ui.c:575
+#: src/utils/ui.c:576
 msgid "English [en]"
 msgstr "英文 [en]"
 
-#: src/utils/ui.c:576
+#: src/utils/ui.c:577
+#, fuzzy
+msgid "English UK [en_GB]"
+msgstr "英文 [en]"
+
+#: src/utils/ui.c:578
 msgid "German [de]"
 msgstr "德文 [de]"
 
-#: src/utils/ui.c:577
+#: src/utils/ui.c:579
 msgid "French [fr]"
 msgstr "法文 [fr]"
 
-#: src/utils/ui.c:578
+#: src/utils/ui.c:580
 msgid "Italian [it]"
 msgstr "意大利文 [it]"
 
-#: src/utils/ui.c:579
-msgid "Norwegian [nb]"
+#: src/utils/ui.c:581
+msgid "Norwegian [nb_NO]"
 msgstr ""
 
-#: src/utils/ui.c:580
+#: src/utils/ui.c:582
 msgid "Spanish [es]"
 msgstr "西班牙文 [es]"
 
-#: src/utils/ui.c:581
+#: src/utils/ui.c:583
 msgid "Japanese [ja]"
 msgstr "日文 [ja]"
 
-#: src/utils/ui.c:582
+#: src/utils/ui.c:584
 msgid "Portuguese [pt]"
 msgstr ""
 
-#: src/utils/ui.c:583
+#: src/utils/ui.c:585
 msgid "Russian [ru]"
 msgstr ""
 
-#: src/utils/ui.c:584
+#: src/utils/ui.c:586
 msgid "Chinese [zh]"
 msgstr ""
 
 #. TRANSLATORS: Dummy audio backend
-#: src/utils/ui.c:610 src/utils/ui.c:644
+#: src/utils/ui.c:612 src/utils/ui.c:646
 msgid "Dummy"
 msgstr ""
 
-#: src/utils/ui.c:646
+#: src/utils/ui.c:648
 msgid "ALSA Sequencer"
 msgstr ""
 
 #. TRANSLATORS: Pan algorithm
-#: src/utils/ui.c:670
+#: src/utils/ui.c:672
 msgid "Linear"
 msgstr ""
 
-#: src/utils/ui.c:671
+#: src/utils/ui.c:673
 msgid "Square Root"
 msgstr ""
 
-#: src/utils/ui.c:672
+#: src/utils/ui.c:674
 msgid "Sine (Equal Power)"
 msgstr ""
 
-#: src/utils/ui.c:842
+#: src/utils/ui.c:844
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
 "install one first and restart Zrythm"
 msgstr ""
 
-#: src/utils/ui.c:847
+#: src/utils/ui.c:849
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -1167,11 +1172,11 @@ msgstr ""
 msgid "PortAudio Error: %s"
 msgstr ""
 
-#: src/audio/region.c:275 src/audio/track.c:1288
+#: src/audio/region.c:275 src/audio/track.c:1283
 msgid "MIDI"
 msgstr ""
 
-#: src/audio/region.c:278 src/audio/track.c:1285
+#: src/audio/region.c:278 src/audio/track.c:1280
 msgid "Audio"
 msgstr "音讯"
 
@@ -2444,12 +2449,9 @@ msgstr ""
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:26
-msgid "z_frame_8"
-msgstr ""
-
 #, fuzzy
-#~ msgid "zrythm"
-#~ msgstr "Zrythm"
+msgid "zrythm"
+msgstr "Zrythm"
 
 #~ msgid "Output"
 #~ msgstr "输出"

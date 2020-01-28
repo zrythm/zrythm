@@ -44,8 +44,11 @@ bundle: html latexpdf #epub
 gettext:
 	$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 	for lang in $(LANGUAGES) ; do \
-		echo "builddir is $(BUILDDIR)"; \
-		sphinx-intl update -p $(BUILDDIR)/gettext -l $$lang ; \
+		if [[ "x$$lang" == "xen" ]] ; then \
+		  echo "sphinx-intl: skipping english (default)" ; \
+		else \
+			sphinx-intl update -p $(BUILDDIR)/gettext -l $$lang ; \
+		fi \
 	done
 	./post_process_po.py
 
@@ -58,7 +61,11 @@ gettext:
 			echo "skipping $@ $$lang" ; \
 		else \
 			echo "$@ $$lang" ; \
-			SPHINXOPTS="-D language=$$lang" && \
-			$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)/$$lang" $(SPHINXOPTS) $$SPHINXOPTS $(O) ; \
+			if [[ "x$$lang" == "xen" ]] ; then \
+				$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)/$$lang" $(SPHINXOPTS) $$SPHINXOPTS $(O) ; \
+			else \
+				SPHINXOPTS="-D language=$$lang" && \
+					$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)/$$lang" $(SPHINXOPTS) $$SPHINXOPTS $(O) ; \
+			fi \
 		fi \
 	done

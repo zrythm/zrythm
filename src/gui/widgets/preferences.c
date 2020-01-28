@@ -56,6 +56,15 @@ on_language_changed (
   LocalizationLanguage lang =
     gtk_combo_box_get_active (widget);
 
+  /* english is the default */
+  if (lang == LL_ENGLISH)
+    {
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->locale_not_available),
+        F_NOT_VISIBLE);
+      return;
+    }
+
   /* if locale exists */
   char * code = localization_locale_exists (lang);
   char * match = setlocale (LC_ALL, code);

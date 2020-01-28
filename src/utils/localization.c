@@ -87,7 +87,7 @@ localization_locale_exists (
   char * match = NULL;
   switch (lang)
     {
-    IS_MATCH(ENGLISH,"en_");
+    IS_MATCH(ENGLISH_UK,"en_GB");
     IS_MATCH(GERMAN,"de_");
     IS_MATCH(FRENCH,"fr_");
     IS_MATCH(ITALIAN,"it_");
@@ -130,6 +130,12 @@ localization_init ()
     g_settings_get_enum (
       prefs, "language");
   g_object_unref (G_OBJECT (prefs));
+
+  if (lang == LL_ENGLISH)
+    {
+      setlocale (LC_ALL, "C");
+      return 1;
+    }
 
   char * code = localization_locale_exists (lang);
   char * match = setlocale (LC_ALL, code);

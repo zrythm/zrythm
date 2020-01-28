@@ -38,6 +38,7 @@
 typedef enum LocalizationLanguage
 {
   LL_ENGLISH,
+  LL_ENGLISH_UK,
   LL_GERMAN,
   LL_FRENCH,
   LL_ITALIAN,
@@ -51,7 +52,7 @@ typedef enum LocalizationLanguage
 } LocalizationLanguage;
 
 static const char * language_strings[] = {
-  "en", "de", "fr", "it", "nb_NO", "es",
+  "en", "en_GB", "de", "fr", "it", "nb_NO", "es",
   "ja", "pt", "ru", "zh", };
 
 /**

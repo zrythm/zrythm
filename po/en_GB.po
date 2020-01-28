@@ -1998,7 +1998,7 @@ msgstr ""
 #: resources/ui/inspector_master.ui:67 resources/ui/inspector_ap.ui:67
 #: resources/ui/inspector_midi.ui:67
 msgid "Color"
-msgstr ""
+msgstr "Colour"
 
 #: resources/ui/inspector_master.ui:101 resources/ui/inspector_ap.ui:101
 #: resources/ui/inspector_midi.ui:101 resources/ui/snap_grid_popover.ui:88

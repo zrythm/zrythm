@@ -561,6 +561,7 @@ ui_create_language_model ()
 {
   const int values[NUM_LL_LANGUAGES] = {
     LL_ENGLISH,
+    LL_ENGLISH_UK,
     LL_GERMAN,
     LL_FRENCH,
     LL_ITALIAN,
@@ -573,10 +574,11 @@ ui_create_language_model ()
   };
   const gchar *labels[NUM_LL_LANGUAGES] = {
     _("English [en]"),
+    _("English UK [en_GB]"),
     _("German [de]"),
     _("French [fr]"),
     _("Italian [it]"),
-    _("Norwegian [nb]"),
+    _("Norwegian [nb_NO]"),
     _("Spanish [es]"),
     _("Japanese [ja]"),
     _("Portuguese [pt]"),

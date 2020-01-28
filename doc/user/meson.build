@@ -17,6 +17,8 @@
 
 if (sphinx_build.found())
 
+# note: this is not used at the moment.
+# `ninja -C build bundle_manual` is used instead
 foreach lang : locales
   html_manual = custom_target (
     'html-manual-' + lang,
