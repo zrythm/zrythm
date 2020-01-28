@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2019-12-24 22:26+0000\n"
-"PO-Revision-Date: 2020-01-24 12:21+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2020-01-28 21:56+0000\n"
+"Last-Translator: Samuel Aubert <baohm26@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -739,11 +739,11 @@ msgstr "Supprimer"
 
 #: src/gui/widgets/home_toolbar.c:130
 msgid "Clear Selection"
-msgstr "Nettoyer la sélection"
+msgstr "Déselectionner"
 
 #: src/gui/widgets/home_toolbar.c:132
 msgid "Select All"
-msgstr "Sélectionner tout"
+msgstr "Tout sélectionner"
 
 #: src/gui/widgets/home_toolbar.c:134
 msgid "Loop Selection"
