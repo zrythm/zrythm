@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2020-01-26 13:21+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2020-01-28 21:57+0000\n"
+"Last-Translator: Samuel Aubert <baohm26@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/fr/>\n"
 "Language: fr\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/intro.rst:6
 msgid "Clip Editors"
-msgstr ""
+msgstr "Éditeurs de clip"
 
 #: ../../editing/clip-editors/intro.rst:8
 #: ../../editing/piano-roll-editing/arranger.rst:9
@@ -46,10 +46,13 @@ msgid ""
 "These operations are common to most editors, and behave similarly to what"
 " you should be used to from other applications."
 msgstr ""
+"Ces opérations sont communes à la plupart des éditeurs et se comportent de "
+"manière similaire à ce à quoi vous devriez être habitué avec d'autres "
+"applications."
 
 #: ../../editing/common-operations.rst:13
 msgid "Undo/Redo"
-msgstr ""
+msgstr "Défaire/Refaire"
 
 #: ../../editing/common-operations.rst:14
 msgid ""
@@ -57,6 +60,9 @@ msgid ""
 "the state before that action was made, or you can come back to a state "
 "that you undo'ed from."
 msgstr ""
+"La plupart des actions dans Zrythm sont annulables, ce qui signifie que vous "
+"pouvez retourner dans l'état où vous étiez avant que cette action ne soit "
+"faite, ou vous pouvez revenir dans un état dont vous vous êtes défait."
 
 #: ../../editing/common-operations.rst:18
 msgid ""
@@ -65,18 +71,28 @@ msgid ""
 "exist). Pressing the Redo button will create the note again, and you can "
 "go back between Undo and Redo as many times as you want."
 msgstr ""
+"Par exemple, si vous créez une note MIDI et que vous appuyez sur Défaire, la "
+"note MIDI sera supprimée (Zrythm revient à l'état où la note MIDI n'existait "
+"pas). En appuyant sur le bouton Refaire, la note sera à nouveau créée, et "
+"vous pourrez revenir entre Défaire et Refaire autant de fois que vous le "
+"souhaitez."
 
 #: ../../editing/common-operations.rst:24
 msgid ""
 "The shortcuts for undo and redo are :zbutton:`Control` + :zbutton:`Z` to "
 "Undo and :zbutton:`Control` + :zbutton:`Shift` + :zbutton:`Z` to Redo."
 msgstr ""
+"Les raccourcis pour annuler et refaire sont :zbutton:`Control` + :zbutton:`Z`"
+" pour Défaire et :zbutton:`Control` + :zbutton:`Shift` + :zbutton:`Z` pour "
+"Refaire."
 
 #: ../../editing/common-operations.rst:28
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be "
 "deleted."
 msgstr ""
+"Si vous annuler puis effectuez une nouvelle action, l'historique de Refaire "
+"sera supprimé."
 
 #: ../../editing/common-operations.rst:32
 #, fuzzy
@@ -85,7 +101,7 @@ msgstr "Autres opérations"
 
 #: ../../editing/common-operations.rst:34
 msgid "Cut"
-msgstr ""
+msgstr "Couper"
 
 #: ../../editing/common-operations.rst:35
 msgid ""
@@ -93,46 +109,58 @@ msgid ""
 "that they can be pasted elsewhere. The shortcut for cutting is "
 ":zbutton:`Control` + :zbutton:`X`."
 msgstr ""
+"Supprime et copie les objets sélectionnés et les enregistre dans le presse-"
+"papiers afin qu'ils puissent être collés plus tard. Le raccourci pour couper "
+"est :zbutton:`Control` + :zbutton:`X`."
 
 #: ../../editing/common-operations.rst:41
 msgid "Copy"
-msgstr ""
+msgstr "Copier"
 
 #: ../../editing/common-operations.rst:42
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
 "elsewhere. The shortcut for copying is :zbutton:`Control` + :zbutton:`C`."
 msgstr ""
+"Copie les objets sélectionnés vers le presse-papiers afin qu'ils puissent "
+"être collés ailleurs. Le raccourci pour copier est :zbutton:`Control` + "
+":zbutton:`C`."
 
 #: ../../editing/common-operations.rst:48
 msgid "Paste"
-msgstr ""
+msgstr "Coller"
 
 #: ../../editing/common-operations.rst:49
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
 "position. The shortcut for pasting is :zbutton:`Control` + :zbutton:`V`."
 msgstr ""
+"Colle les objets du presse-papiers à l'emplacement de la tête de lecture. Le "
+"raccourci pour coller est :zbutton:`Control` + :zbutton:`V`."
 
 #: ../../editing/common-operations.rst:55
 msgid "Duplicate"
-msgstr ""
+msgstr "Dupliquer"
 
 #: ../../editing/common-operations.rst:56
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
 "duplicating is :zbutton:`Control` + :zbutton:`D`."
 msgstr ""
+"Crée une copie adjacente aux objets sélectionnés. Le raccourci pour "
+"dupliquer est :zbutton:`Control` + :zbutton:`D`."
 
 #: ../../editing/common-operations.rst:61
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
 #: ../../editing/common-operations.rst:62
 msgid ""
 "Delete the selected objects. You can also press :zbutton:`Delete` on your"
 " keyboard to do this."
 msgstr ""
+"Supprime les objets sélectionnés. Vous pouvez aussi utiliser la touche "
+":zbutton:`Supprimer` de votre clavier."
 
 #: ../../editing/common-operations.rst:67
 #, fuzzy
@@ -140,17 +168,16 @@ msgid "Selections"
 msgstr "Outil de sélection"
 
 #: ../../editing/common-operations.rst:69
-#, fuzzy
 msgid "Clear Selection"
-msgstr "Faire des sélections"
+msgstr "Déselectionner"
 
 #: ../../editing/common-operations.rst:70
 msgid "Clear current selection (unselect all objects)."
-msgstr ""
+msgstr "Désélectionne la sélection actuelle. (Désélectionne tous les objets)."
 
 #: ../../editing/common-operations.rst:73
 msgid "Select All"
-msgstr ""
+msgstr "Tout sélectionner"
 
 #: ../../editing/common-operations.rst:74
 msgid "Select all objects in the current editor."
@@ -165,11 +192,12 @@ msgid ""
 "Place the loop markers around the selection. The shortcut for this is "
 ":zbutton:`Control` + :zbutton:`L`."
 msgstr ""
+"Place les repères de boucle aux extrémités de la sélection. Le raccourci "
+"pour cela est :zbutton:`Control` + :zbutton:`L`."
 
 #: ../../editing/edit-modes.rst:6
-#, fuzzy
 msgid "Edit Modes"
-msgstr "Mode d'édition"
+msgstr "Modes d'édition"
 
 #: ../../editing/edit-modes.rst:8
 msgid ""
