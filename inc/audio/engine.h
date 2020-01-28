@@ -29,6 +29,7 @@
 #include "config.h"
 
 #include "audio/control_room.h"
+#include "audio/ext_port.h"
 #include "audio/mixer.h"
 #include "audio/pan.h"
 #include "audio/pool.h"
@@ -232,7 +233,7 @@ typedef struct AudioEngine
    * since they are user settings and not project
    * related.
    */
-  ExtPort *         hw_stereo_outs[1024];
+  ExtPort *         hw_stereo_outs[EXT_PORTS_MAX];
   int               num_hw_stereo_outs;
 
   /**
@@ -248,7 +249,7 @@ typedef struct AudioEngine
    * They should only be used in audio tracks as
    * default recording input.
    */
-  ExtPort *         hw_stereo_ins[1024];
+  ExtPort *         hw_stereo_ins[EXT_PORTS_MAX];
   int               num_hw_stereo_ins;
 
   /** MIDI Clock in TODO. */

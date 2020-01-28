@@ -175,7 +175,7 @@ on_ext_input_changed (
           ch->all_stereo_r_ins = 0;
         }
 
-      ExtPort * ports[60];
+      ExtPort * ports[EXT_PORTS_MAX];
       int       num_ports;
       ext_ports_get (
         midi ? TYPE_EVENT : TYPE_AUDIO,
@@ -299,7 +299,7 @@ setup_ext_ins_cb (
     "separator", "separator");
 
   /* get all inputs */
-  ExtPort * ports[600];
+  ExtPort * ports[EXT_PORTS_MAX];
   int       num_ports;
   ext_ports_get (
     midi ? TYPE_EVENT : TYPE_AUDIO,

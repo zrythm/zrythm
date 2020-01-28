@@ -51,6 +51,13 @@ typedef struct WindowsMmeDevice WindowsMmeDevice;
  */
 
 /**
+ * Maximum external ports.
+ *
+ * Used for fixed-size arrays.
+ */
+#define EXT_PORTS_MAX 1024
+
+/**
  * External port type.
  */
 typedef enum ExtPortType

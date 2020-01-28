@@ -45,7 +45,7 @@ get_controllers (
   char ** controllers,
   int *   num_controllers)
 {
-  ExtPort * ports[100];
+  ExtPort * ports[EXT_PORTS_MAX];
   int size = 0;
   ext_ports_get (
     TYPE_EVENT, FLOW_OUTPUT, 1, ports, &size);
