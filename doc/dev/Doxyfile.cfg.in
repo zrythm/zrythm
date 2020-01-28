@@ -816,6 +816,7 @@ INPUT                  = \
   @MESON_SOURCE_ROOT@/doc/dev/cyaml_schemas.h \
   @MESON_SOURCE_ROOT@/doc/dev/release_checklist.h \
   @MESON_SOURCE_ROOT@/doc/dev/weblate.h \
+  @MESON_SOURCE_ROOT@/doc/dev/windows-build.md \
   @MESON_SOURCE_ROOT@/CONTRIBUTING.md \
   @MESON_SOURCE_ROOT@/doc/dev/group_defs.dox \
   @MESON_SOURCE_ROOT@/INSTALL.md @MESON_SOURCE_ROOT@/git-packaging-hooks/README.md

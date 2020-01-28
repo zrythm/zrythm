@@ -29,7 +29,7 @@
  * at each tab above.
  *
  * A good starting point would be to check the
- * Modules above
+ * Pages and Modules above
  *
  * The main structs to look at would be Project
  * and Zrythm (inc/project.h and inc/zrythm.h)
@@ -38,10 +38,4 @@
  *
  * If you would like to contribute please review
  * the \ref md_CONTRIBUTING
- *
- * \section pages Pages
- * - \subpage processing_cycle
- * - \subpage cyaml_schemas
- * - \subpage release_checklist
- * - \subpage weblate
  */
