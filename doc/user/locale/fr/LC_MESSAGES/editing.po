@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2020-01-28 21:56+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2020-01-28 21:57+0000\n"
+"Last-Translator: Samuel Aubert <baohm26@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/fr/>\n"
 "Language: fr\n"
@@ -109,46 +109,58 @@ msgid ""
 "that they can be pasted elsewhere. The shortcut for cutting is "
 ":zbutton:`Control` + :zbutton:`X`."
 msgstr ""
+"Supprime et copie les objets sélectionnés et les enregistre dans le presse-"
+"papiers afin qu'ils puissent être collés plus tard. Le raccourci pour couper "
+"est :zbutton:`Control` + :zbutton:`X`."
 
 #: ../../editing/common-operations.rst:41
 msgid "Copy"
-msgstr ""
+msgstr "Copier"
 
 #: ../../editing/common-operations.rst:42
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
 "elsewhere. The shortcut for copying is :zbutton:`Control` + :zbutton:`C`."
 msgstr ""
+"Copie les objets sélectionnés vers le presse-papiers afin qu'ils puissent "
+"être collés ailleurs. Le raccourci pour copier est :zbutton:`Control` + "
+":zbutton:`C`."
 
 #: ../../editing/common-operations.rst:48
 msgid "Paste"
-msgstr ""
+msgstr "Coller"
 
 #: ../../editing/common-operations.rst:49
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
 "position. The shortcut for pasting is :zbutton:`Control` + :zbutton:`V`."
 msgstr ""
+"Colle les objets du presse-papiers à l'emplacement de la tête de lecture. Le "
+"raccourci pour coller est :zbutton:`Control` + :zbutton:`V`."
 
 #: ../../editing/common-operations.rst:55
 msgid "Duplicate"
-msgstr ""
+msgstr "Dupliquer"
 
 #: ../../editing/common-operations.rst:56
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
 "duplicating is :zbutton:`Control` + :zbutton:`D`."
 msgstr ""
+"Crée une copie adjacente aux objets sélectionnés. Le raccourci pour "
+"dupliquer est :zbutton:`Control` + :zbutton:`D`."
 
 #: ../../editing/common-operations.rst:61
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
 #: ../../editing/common-operations.rst:62
 msgid ""
 "Delete the selected objects. You can also press :zbutton:`Delete` on your"
 " keyboard to do this."
 msgstr ""
+"Supprime les objets sélectionnés. Vous pouvez aussi utiliser la touche "
+":zbutton:`Supprimer` de votre clavier."
 
 #: ../../editing/common-operations.rst:67
 #, fuzzy
@@ -156,17 +168,16 @@ msgid "Selections"
 msgstr "Outil de sélection"
 
 #: ../../editing/common-operations.rst:69
-#, fuzzy
 msgid "Clear Selection"
-msgstr "Faire des sélections"
+msgstr "Déselectionner"
 
 #: ../../editing/common-operations.rst:70
 msgid "Clear current selection (unselect all objects)."
-msgstr ""
+msgstr "Désélectionne la sélection actuelle. (Désélectionne tous les objets)."
 
 #: ../../editing/common-operations.rst:73
 msgid "Select All"
-msgstr ""
+msgstr "Tout sélectionner"
 
 #: ../../editing/common-operations.rst:74
 msgid "Select all objects in the current editor."
@@ -181,11 +192,12 @@ msgid ""
 "Place the loop markers around the selection. The shortcut for this is "
 ":zbutton:`Control` + :zbutton:`L`."
 msgstr ""
+"Place les repères de boucle aux extrémités de la sélection. Le raccourci "
+"pour cela est :zbutton:`Control` + :zbutton:`L`."
 
 #: ../../editing/edit-modes.rst:6
-#, fuzzy
 msgid "Edit Modes"
-msgstr "Mode d'édition"
+msgstr "Modes d'édition"
 
 #: ../../editing/edit-modes.rst:8
 msgid ""
