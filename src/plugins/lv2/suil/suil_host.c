@@ -60,9 +60,6 @@ suil_host_free(SuilHost* host)
 void
 suil_init(int* argc, char*** argv, SuilArg key, ...)
 {
-#ifdef HAVE_X11
-  XInitThreads ();
-#endif
 }
 
 #endif /* ifndef HAVE_SUIL */

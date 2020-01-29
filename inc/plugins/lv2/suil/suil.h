@@ -364,6 +364,14 @@ suil_wrapper_new_qt5 (SuilHost*      host,
                  const char*    ui_type_uri,
                  LV2_Feature*** features,
                  unsigned       n_features);
+
+/** Prototype for suil_wrapper_new in each wrapper module. */
+SuilWrapper*
+suil_wrapper_new_win (SuilHost*      host,
+                 const char*    host_type_uri,
+                 const char*    ui_type_uri,
+                 LV2_Feature*** features,
+                 unsigned       n_features);
 #ifdef __cplusplus
 } // end extern "C"
 #endif

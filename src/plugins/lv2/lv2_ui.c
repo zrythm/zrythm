@@ -385,21 +385,23 @@ lv2_ui_instantiate (
         NULL
       };
 
-      plugin->ui_instance = suil_instance_new(
-        plugin->ui_host,
-        plugin,
-        native_ui_type,
-        lilv_node_as_uri(lilv_plugin_get_uri(plugin->lilv_plugin)),
-        lilv_node_as_uri(lilv_ui_get_uri(plugin->ui)),
-        lilv_node_as_uri(plugin->ui_type),
-        bundle_path,
-        binary_path,
-        ui_features);
+      plugin->ui_instance =
+        suil_instance_new (
+          plugin->ui_host, plugin,
+          native_ui_type,
+          lilv_node_as_uri (
+            lilv_plugin_get_uri (
+              plugin->lilv_plugin)),
+          lilv_node_as_uri (
+            lilv_ui_get_uri (plugin->ui)),
+          lilv_node_as_uri (plugin->ui_type),
+          bundle_path, binary_path, ui_features);
 
       if (plugin->ui_instance)
         {
           plugin->extuiptr =
-            suil_instance_get_widget((SuilInstance*)plugin->ui_instance);
+            suil_instance_get_widget (
+              (SuilInstance*)plugin->ui_instance);
       }
       else
         {

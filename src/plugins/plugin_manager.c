@@ -166,18 +166,7 @@ plugin_manager_init (PluginManager * self)
   self->lv2_nodes.lilv_world = world;
 
   /* load all installed plugins on system */
-#ifdef _WIN32
-  LilvNode * lv2_path =
-    lilv_new_string (
-      world,
-      /* lilv has its dirsep set to \\\\ and
-       * its pathsep to ; */
-      "%APPDATA%\\\\LV2;"
-      "%COMMONPROGRAMFILES%\\\\LV2");
-  g_return_if_fail (lv2_path);
-  lilv_world_set_option (
-    world, LILV_OPTION_LV2_PATH, lv2_path);
-#else
+#ifndef _WIN32
   LilvNode * lv2_path = NULL;
   char * env_lv2_path = getenv ("LV2_PATH");
   if (env_lv2_path && (strlen (env_lv2_path) > 0))
@@ -200,6 +189,7 @@ plugin_manager_init (PluginManager * self)
   lilv_world_load_all (world);
 
   /*load bundled plugins */
+#ifndef _WIN32
   GError * err;
   const char * path =
     CONFIGURE_LIBDIR "/zrythm/lv2";
@@ -244,6 +234,7 @@ plugin_manager_init (PluginManager * self)
           g_free (msg);
         }
     }
+#endif
 
   g_message ("Caching LV2 URIs...");
 
@@ -521,6 +512,7 @@ plugin_manager_scan_plugins (
           ((double) count / size) *
             (max_progress - start_progress);
     }
+  g_message ("Scanned %d LV2 plugins", count);
 
   /* scan vst */
   g_message ("Scanning VST plugins...");

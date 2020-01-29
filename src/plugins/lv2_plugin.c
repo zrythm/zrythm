@@ -1250,7 +1250,7 @@ lv2_plugin_instantiate (
 
   GError * err = NULL;
   char * templ =
-    g_dir_make_tmp ("self->XXXXXX", &err);
+    g_dir_make_tmp ("lv2_self_XXXXXX", &err);
   if (!templ)
     {
       g_warning (

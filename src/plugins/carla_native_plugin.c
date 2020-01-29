@@ -976,7 +976,8 @@ create_ports (
           self, i);
       PortFlow flow;
       flow =
-        param->hints & NATIVE_PARAMETER_IS_OUTPUT ?
+        (param->hints &
+           NATIVE_PARAMETER_IS_OUTPUT) ?
         FLOW_OUTPUT : FLOW_INPUT;
       port =
         port_new_with_type (

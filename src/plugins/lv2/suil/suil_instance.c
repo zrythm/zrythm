@@ -33,7 +33,7 @@ suil_ui_supported(const char* host_type_uri,
 	};
 	if (!strcmp(GTK3_UI_URI, ui_type_uri))
 		return SUIL_WRAPPING_NATIVE;
-#ifdef WINDOWS
+#ifdef _WIN32
   else if (!strcmp(ui_type_uri, WIN_UI_URI))
 		return SUIL_WRAPPING_EMBEDDED;
 #endif
@@ -66,7 +66,7 @@ open_wrapper(SuilHost*      host,
 #endif
 
   /* TODO write wrapper */
-#ifdef SUIL_WITH_WIN_IN_GTK3
+#ifdef _WIN32
   if (!strcmp(ui_type_uri, WIN_UI_URI))
     {
       wrapper = suil_wrapper_new_win(host,

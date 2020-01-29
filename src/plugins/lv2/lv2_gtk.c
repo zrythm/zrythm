@@ -1736,8 +1736,10 @@ lv2_gtk_open_ui (
           suil_instance_get_widget (
             plugin->ui_instance));
 
+#ifndef _WIN32
       gtk_container_add (
         GTK_CONTAINER (alignment), widget);
+#endif
       gtk_window_set_resizable (
         GTK_WINDOW (window),
         lv2_ui_is_resizable(plugin));

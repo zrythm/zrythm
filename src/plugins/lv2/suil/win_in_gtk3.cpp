@@ -18,7 +18,7 @@
 
 #include "config.h"
 
-#ifdef WINDOWS
+#ifdef _WIN32
 
 #include <string.h>
 
@@ -32,7 +32,7 @@
 #    define WM_MOUSEHWHEEL 0x020E
 #endif
 
-#include "./suil_internal.h"
+#include <suil/suil.h>
 
 #include "lv2/options/options.h"
 #include "lv2/urid/urid.h"
@@ -80,9 +80,13 @@ suil_win_size_allocate(GtkWidget* widget, GtkAllocation* allocation)
 	SuilWinWrapper* const self = SUIL_WIN_WRAPPER(widget);
 	g_return_if_fail(self != NULL);
 
-	widget->allocation = *allocation;
-	if (gtk_widget_get_realized(widget)) {
-		gdk_window_move_resize(widget->window,
+  gtk_widget_set_allocation (
+    widget, allocation);
+	if (gtk_widget_get_realized(widget))
+    {
+      GdkWindow * gdk_window =
+        gtk_widget_get_window (widget);
+		gdk_window_move_resize(gdk_window,
 		                       allocation->x, allocation->y,
 		                       allocation->width, allocation->height);
 
@@ -127,7 +131,8 @@ suil_win_wrapper_idle(void* data)
 static int
 wrapper_resize(LV2UI_Feature_Handle handle, int width, int height)
 {
-	gtk_drawing_area_size(GTK_DRAWING_AREA(handle), width, height);
+	gtk_widget_set_size_request (
+    GTK_WIDGET(handle), width, height);
 	return 0;
 }
 
@@ -183,13 +188,12 @@ wrapper_free(SuilWrapper* wrapper)
 		}
 
 		gdk_window_remove_filter(wrap->flt_win, event_filter, wrapper->impl);
-		gtk_object_destroy(GTK_OBJECT(wrap));
+		gtk_widget_destroy (GTK_WIDGET(wrap));
 	}
 }
 
-SUIL_LIB_EXPORT
 SuilWrapper*
-suil_wrapper_new(SuilHost*      host,
+suil_wrapper_new_win (SuilHost*      host,
                  const char*    host_type_uri,
                  const char*    ui_type_uri,
                  LV2_Feature*** features,
