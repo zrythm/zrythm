@@ -119,6 +119,8 @@ inc_inc = include_directories ('inc')
 ext_inc = include_directories ('ext')
 midilib_inc = include_directories (
   join_paths ('ext', 'midilib'))
+carla_native_plugin_inc = include_directories (
+  join_paths ('ext', 'carla'))
 cyaml_inc = include_directories (
   join_paths ('ext', 'libcyaml', 'include'))
 zix_inc = include_directories (
@@ -129,6 +131,7 @@ all_inc = [
   root_inc,
   inc_inc,
   ext_inc,
+  carla_native_plugin_inc,
   midilib_inc,
   cyaml_inc,
   zix_inc,
@@ -378,6 +381,12 @@ audec_dep = dependency(
   fallback: ['libaudec', 'libaudec_dep'],
   required: true)
 
+carla_native_plugin_dep = dependency(
+  'carla-native-plugin',
+  required: get_option('enable_carla'))
+carla_utils_dep = dependency(
+  'carla-utils',
+  required: get_option('enable_carla'))
 yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.22')
 sndfile_dep = dependency('sndfile', version: '>=1.0.25')
@@ -426,6 +435,42 @@ zrythm_deps = [
 
   libm,
 ]
+
+if (get_option('enable_carla'))
+  cdata.set('HAVE_CARLA', 1)
+  # workaround because carla's pc files are broken
+  carla_includedir = carla_native_plugin_dep.get_pkgconfig_variable('includedir')
+  carla_libdir = carla_native_plugin_dep.get_pkgconfig_variable('libdir')
+  carla_native_plugin_dep = declare_dependency(
+    link_args: [
+      '-Wl,-rpath=' + carla_libdir,
+      '-L' + carla_libdir,
+      '-lcarla_native-plugin',
+      ],
+    compile_args: [
+      '-DREAL_BUILD',
+      '-I' + carla_includedir,
+      '-I' + join_paths (carla_includedir, 'includes'),
+      ])
+  # workaround because carla's pc files are broken
+  carla_includedir = carla_utils_dep.get_pkgconfig_variable('includedir')
+  carla_libdir = carla_utils_dep.get_pkgconfig_variable('libdir')
+  carla_utils_dep = declare_dependency(
+    link_args: [
+      '-Wl,-rpath=' + carla_libdir,
+      '-L' + carla_libdir,
+      '-lcarla_utils',
+      ],
+    compile_args: [
+      '-DREAL_BUILD',
+      '-I' + carla_includedir,
+      '-I' + join_paths (carla_includedir, 'includes'),
+      '-I' + join_paths (carla_includedir, 'utils'),
+      ])
+  zrythm_deps += [
+    carla_native_plugin_dep,
+    carla_utils_dep, ]
+endif
 
 if (get_option('enable_ffmpeg'))
   zrythm_deps += dependency('libavcodec')

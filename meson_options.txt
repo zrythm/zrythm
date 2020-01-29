@@ -58,6 +58,12 @@ option (
   description: 'Compile with SDL2 backend support')
 
 option (
+  'enable_carla',
+  type: 'boolean',
+  value: false,
+  description: 'Use Carla to wrap some plugins')
+
+option (
   'gen_dev_docs',
   type: 'boolean',
   value: false,

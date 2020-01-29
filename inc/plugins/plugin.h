@@ -26,8 +26,13 @@
 #ifndef __PLUGINS_BASE_PLUGIN_H__
 #define __PLUGINS_BASE_PLUGIN_H__
 
+#include "config.h"
+
 #include "audio/automatable.h"
 #include "audio/port.h"
+#ifdef HAVE_CARLA
+#include "plugins/carla_native_plugin.h"
+#endif
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/vst_plugin.h"
@@ -58,6 +63,11 @@ typedef struct Plugin
 
   /** VST plugin. */
   VstPlugin *          vst;
+
+#ifdef HAVE_CARLA
+  /** Pointer to Carla native plugin. */
+  CarlaNativePlugin *  carla;
+#endif
 
   /** Descriptor. */
   PluginDescriptor *   descr;

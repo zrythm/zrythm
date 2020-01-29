@@ -26,6 +26,8 @@
 #ifndef __PLUGINS_PLUGIN_DESCRIPTOR_H__
 #define __PLUGINS_PLUGIN_DESCRIPTOR_H__
 
+#include "config.h"
+
 #include "utils/yaml.h"
 
 /**
@@ -141,6 +143,11 @@ typedef struct PluginDescriptor
   char                 * path;
   /** Lv2Plugin URI. */
   char                 * uri;
+#ifdef HAVE_CARLA
+  /** 1 if this plugin is to be instantiated
+   * through Carla. */
+  int              open_with_carla;
+#endif
 
   /** Hash of the plugin's bundle (.so/.ddl for VST)
    * used when caching PluginDescriptor's, obtained

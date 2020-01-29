@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -15,18 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-plugin_srcs = files ([
-  'cached_vst_descriptors.c',
-  'carla_native_plugin.c',
-  'lv2_plugin.c',
-  'plugin.c',
-  'plugin_descriptor.c',
-  'plugin_manager.c',
-  'vst_plugin.c',
+plugin_srcs += files([
+  'carla_engine_interface.cpp',
+  'carla_plugin_interface.cpp',
   ])
-
-subdir ('carla')
-subdir ('lv2')
-subdir ('vst')
-
-zrythm_srcs += plugin_srcs

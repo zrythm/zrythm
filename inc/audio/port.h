@@ -282,6 +282,11 @@ typedef struct Port
   /** VST parameter index, if VST control port. */
   int                vst_param_id;
 
+  /** Index of the control parameter (for Carla
+   * plugin ports). */
+  uint32_t           carla_param_id;
+
+
   /**
    * Pointer to arbitrary data.
    *

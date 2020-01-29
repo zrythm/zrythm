@@ -159,19 +159,31 @@ plugin_new_from_descr (
     plugin_descriptor_clone (descr);
   plugin_init (plugin);
 
-  switch (plugin->descr->protocol)
+#ifdef HAVE_CARLA
+  if (descr->open_with_carla)
     {
-    case PROT_LV2:
-      lv2_plugin_new_from_uri (
-        plugin, descr->uri);
-      break;
-    case PROT_VST:
-      vst_plugin_new_from_descriptor (
-        plugin, descr);
-      break;
-    default:
-      break;
+      carla_native_plugin_new_from_descriptor (
+        plugin);
     }
+  else
+    {
+#endif
+      switch (plugin->descr->protocol)
+        {
+        case PROT_LV2:
+          lv2_plugin_new_from_uri (
+            plugin, descr->uri);
+          break;
+        case PROT_VST:
+          vst_plugin_new_from_descriptor (
+            plugin, descr);
+          break;
+        default:
+          break;
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
 
   return plugin;
 }
@@ -251,7 +263,11 @@ plugin_set_channel_and_slot (
       port_set_owner_plugin (port, pl);
     }
 
-  if (pl->descr->protocol == PROT_LV2)
+  if (
+#ifdef HAVE_CARLA
+    !pl->descr->open_with_carla &&
+#endif
+      pl->descr->protocol == PROT_LV2)
     {
       lv2_plugin_update_port_identifiers (
         pl->lv2);
@@ -292,7 +308,11 @@ void
 plugin_update_latency (
   Plugin * pl)
 {
-  if (pl->descr->protocol == PROT_LV2)
+  if (
+#ifdef HAVE_CARLA
+    !pl->descr->open_with_carla &&
+#endif
+      pl->descr->protocol == PROT_LV2)
     {
       pl->latency =
         lv2_plugin_get_latency (pl->lv2);
@@ -321,6 +341,7 @@ plugin_update_latency (
     } \
   port->identifier.port_index = \
     pl->num_##type##_ports; \
+  port_set_owner_plugin (port, pl); \
   array_append ( \
     pl->type##_ports, \
     pl->num_##type##_ports, \
@@ -482,53 +503,79 @@ plugin_generate_automation_tracks (
     plugin, at);
 
   /* add plugin control automatables */
-  switch (plugin->descr->protocol)
+#ifdef HAVE_CARLA
+  if (plugin->descr->open_with_carla)
     {
-    case PROT_LV2:
-      {
-        Lv2Plugin * lv2_plugin = plugin->lv2;
-        for (int j = 0;
-             j < lv2_plugin->controls.n_controls;
-             j++)
-          {
-            Lv2Control * control =
-              lv2_plugin->controls.controls[j];
-            a =
-              automatable_create_lv2_control (
-                plugin, control);
-            at = automation_track_new (a);
-            plugin_add_automation_track (
-              plugin, at);
-          }
-      }
-      break;
-    case PROT_VST:
-      {
-        VstPlugin * vst = plugin->vst;
-        g_return_if_fail (vst && vst->aeffect);
-        for (int i = 0;
-             i < plugin->num_in_ports; i++)
-          {
-            Port * port = plugin->in_ports[i];
-            if (port->identifier.type !=
-                  TYPE_CONTROL)
-              continue;
-
-            a =
-              automatable_create_vst_control (
-                plugin, port);
-            at = automation_track_new (a);
-            plugin_add_automation_track (
-              plugin, at);
-          }
-      }
-      break;
-    default:
-      g_warning (
-        "%s: Plugin protocol not supported yet",
-        __func__);
-      break;
+       for (uint32_t i = 0;
+            i <
+              carla_native_plugin_get_param_count (
+                plugin->carla);
+            i++)
+         {
+           const NativeParameter * param =
+             carla_native_plugin_get_param_info (
+               plugin->carla, i);
+           a =
+             automatable_create_carla_control (
+              plugin, param);
+           at = automation_track_new (a);
+           plugin_add_automation_track (
+             plugin, at);
+         }
     }
+  else
+    {
+#endif
+      switch (plugin->descr->protocol)
+        {
+        case PROT_LV2:
+          {
+            Lv2Plugin * lv2_plugin = plugin->lv2;
+            for (int j = 0;
+                 j < lv2_plugin->controls.n_controls;
+                 j++)
+              {
+                Lv2Control * control =
+                  lv2_plugin->controls.controls[j];
+                a =
+                  automatable_create_lv2_control (
+                    plugin, control);
+                at = automation_track_new (a);
+                plugin_add_automation_track (
+                  plugin, at);
+              }
+          }
+          break;
+        case PROT_VST:
+          {
+            VstPlugin * vst = plugin->vst;
+            g_return_if_fail (vst && vst->aeffect);
+            for (int i = 0;
+                 i < plugin->num_in_ports; i++)
+              {
+                Port * port = plugin->in_ports[i];
+                if (port->identifier.type !=
+                      TYPE_CONTROL)
+                  continue;
+
+                a =
+                  automatable_create_vst_control (
+                    plugin, port);
+                at = automation_track_new (a);
+                plugin_add_automation_track (
+                  plugin, at);
+              }
+          }
+          break;
+        default:
+          g_warning (
+            "%s: Plugin protocol not supported yet",
+            __func__);
+          break;
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
 }
 
 /**
@@ -572,34 +619,46 @@ plugin_instantiate (
 
   plugin_set_ui_refresh_rate (pl);
 
-  switch (pl->descr->protocol)
+#ifdef HAVE_CARLA
+  if (pl->descr->open_with_carla)
     {
-    case PROT_LV2:
-      {
-        g_message ("state file: %s",
-                   pl->lv2->state_file);
-        if (lv2_plugin_instantiate (
-              pl->lv2, NULL))
-          {
-            g_warning ("lv2 instantiate failed");
-            return -1;
-          }
-      }
-      break;
-    case PROT_VST:
-      if (vst_plugin_instantiate (
-            pl->vst, !PROJECT->loaded))
-        {
-          g_warning (
-            "VST plugin instantiation failed");
-          return -1;
-        }
-      break;
-    default:
-      g_warn_if_reached ();
-      return -1;
-      break;
+      carla_native_plugin_instantiate (
+        pl->carla);
     }
+  else
+    {
+#endif
+      switch (pl->descr->protocol)
+        {
+        case PROT_LV2:
+          {
+            g_message ("state file: %s",
+                       pl->lv2->state_file);
+            if (lv2_plugin_instantiate (
+                  pl->lv2, NULL))
+              {
+                g_warning ("lv2 instantiate failed");
+                return -1;
+              }
+          }
+          break;
+        case PROT_VST:
+          if (vst_plugin_instantiate (
+                pl->vst, !PROJECT->loaded))
+            {
+              g_warning (
+                "VST plugin instantiation failed");
+              return -1;
+            }
+          break;
+        default:
+          g_warn_if_reached ();
+          return -1;
+          break;
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
   pl->enabled = 1;
 
   return 0;
@@ -621,26 +680,40 @@ plugin_process (
   /* if has MIDI input port */
   if (plugin->descr->num_midi_ins > 0)
     {
-      /* if recording, write MIDI events to the region TODO */
+      /* if recording, write MIDI events to the
+       * region TODO */
 
-        /* if there is a midi note in this buffer range TODO */
-          /* add midi events to input port */
+        /* if there is a midi note in this buffer
+         * range TODO */
+        /* add midi events to input port */
     }
 
-  switch (plugin->descr->protocol)
+#ifdef HAVE_CARLA
+  if (plugin->descr->open_with_carla)
     {
-    case PROT_LV2:
-      lv2_plugin_process (
-        plugin->lv2, g_start_frames, nframes);
-      break;
-    case PROT_VST:
-      vst_plugin_process (
-        plugin->vst, g_start_frames, local_offset,
-        nframes);
-      break;
-    default:
-      break;
+      carla_native_plugin_proces (
+        plugin->carla, g_start_frames, nframes);
     }
+  else
+    {
+#endif
+      switch (plugin->descr->protocol)
+        {
+        case PROT_LV2:
+          lv2_plugin_process (
+            plugin->lv2, g_start_frames, nframes);
+          break;
+        case PROT_VST:
+          vst_plugin_process (
+            plugin->vst, g_start_frames,
+            local_offset, nframes);
+          break;
+        default:
+          break;
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
 
   /*g_atomic_int_set (&plugin->processed, 1);*/
   /*zix_sem_post (&plugin->processed_sem);*/
@@ -652,45 +725,57 @@ plugin_process (
 void
 plugin_open_ui (Plugin *plugin)
 {
-  switch (plugin->descr->protocol)
+#ifdef HAVE_CARLA
+  if (plugin->descr->open_with_carla)
     {
-    case PROT_LV2:
-      {
-        Lv2Plugin * lv2_plugin = plugin->lv2;
-        if (GTK_IS_WINDOW (lv2_plugin->window))
-          {
-            gtk_window_present (
-              GTK_WINDOW (lv2_plugin->window));
-            gtk_window_set_transient_for (
-              GTK_WINDOW (lv2_plugin->window),
-              (GtkWindow *) MAIN_WINDOW);
-          }
-        else
-          {
-            lv2_gtk_open_ui (lv2_plugin);
-          }
-      }
-      break;
-    case PROT_VST:
-      {
-        VstPlugin * vst_plugin = plugin->vst;
-        if (GTK_IS_WINDOW (vst_plugin->gtk_window_parent))
-          {
-            gtk_window_present (
-              GTK_WINDOW (vst_plugin->gtk_window_parent));
-            gtk_window_set_transient_for (
-              GTK_WINDOW (vst_plugin->gtk_window_parent),
-              (GtkWindow *) MAIN_WINDOW);
-          }
-        else
-          {
-            vst_plugin_open_ui (vst_plugin);
-          }
-      }
-      break;
-    default:
-      break;
+      carla_native_plugin_open_ui (
+        plugin->carla, 1);
     }
+  else
+    {
+#endif
+      switch (plugin->descr->protocol)
+        {
+        case PROT_LV2:
+          {
+            Lv2Plugin * lv2_plugin = plugin->lv2;
+            if (GTK_IS_WINDOW (lv2_plugin->window))
+              {
+                gtk_window_present (
+                  GTK_WINDOW (lv2_plugin->window));
+                gtk_window_set_transient_for (
+                  GTK_WINDOW (lv2_plugin->window),
+                  (GtkWindow *) MAIN_WINDOW);
+              }
+            else
+              {
+                lv2_gtk_open_ui (lv2_plugin);
+              }
+          }
+          break;
+        case PROT_VST:
+          {
+            VstPlugin * vst_plugin = plugin->vst;
+            if (GTK_IS_WINDOW (vst_plugin->gtk_window_parent))
+              {
+                gtk_window_present (
+                  GTK_WINDOW (vst_plugin->gtk_window_parent));
+                gtk_window_set_transient_for (
+                  GTK_WINDOW (vst_plugin->gtk_window_parent),
+                  (GtkWindow *) MAIN_WINDOW);
+              }
+            else
+              {
+                vst_plugin_open_ui (vst_plugin);
+              }
+          }
+          break;
+        default:
+          break;
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
 }
 
 /**
@@ -792,28 +877,40 @@ plugin_clone (
 void
 plugin_close_ui (Plugin *plugin)
 {
-  switch (plugin->descr->protocol)
+#ifdef HAVE_CARLA
+  if (plugin->descr->open_with_carla)
     {
-    case PROT_LV2:
-      if (GTK_IS_WIDGET (
-            plugin->lv2->window))
-        g_signal_handler_disconnect (
-          plugin->lv2->window,
-          plugin->lv2->delete_event_id);
-      lv2_gtk_close_ui (plugin->lv2);
-      break;
-    case PROT_VST:
-      if (GTK_IS_WIDGET (
-            plugin->vst->gtk_window_parent))
-        g_signal_handler_disconnect (
-          plugin->vst->gtk_window_parent,
-          plugin->vst->delete_event_id);
-      vst_plugin_close_ui (plugin->vst);
-      break;
-    default:
-      g_return_if_reached ();
-      break;
+      carla_native_plugin_open_ui (
+        plugin->carla, 0);
     }
+  else
+    {
+#endif
+      switch (plugin->descr->protocol)
+        {
+        case PROT_LV2:
+          if (GTK_IS_WIDGET (
+                plugin->lv2->window))
+            g_signal_handler_disconnect (
+              plugin->lv2->window,
+              plugin->lv2->delete_event_id);
+          lv2_gtk_close_ui (plugin->lv2);
+          break;
+        case PROT_VST:
+          if (GTK_IS_WIDGET (
+                plugin->vst->gtk_window_parent))
+            g_signal_handler_disconnect (
+              plugin->vst->gtk_window_parent,
+              plugin->vst->delete_event_id);
+          vst_plugin_close_ui (plugin->vst);
+          break;
+        default:
+          g_return_if_reached ();
+          break;
+        }
+#ifdef HAVE_CARLA
+    }
+#endif
 }
 
 /**

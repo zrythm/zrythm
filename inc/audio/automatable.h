@@ -26,6 +26,10 @@
 #include "plugins/lv2/lv2_control.h"
 #include "utils/yaml.h"
 
+#ifdef HAVE_CARLA
+#include "CarlaNativePlugin.h"
+#endif
+
 #define IS_AUTOMATABLE_LV2_CONTROL(x) x->type == AUTOMATABLE_TYPE_PLUGIN_CONTROL && \
                                    x->control
 #define IS_AUTOMATABLE_CH_FADER(x) x->type == AUTOMATABLE_TYPE_CHANNEL_FADER
@@ -74,17 +78,6 @@ typedef struct Automatable
    * It is a pointer so it can be NULL.
    */
   PortIdentifier * port_id;
-
-  /**
-   * Pointer to the control, if LV2 plugin.
-   *
-   * When loading, this can be fetched using the
-   * port.
-   *
-   * FIXME use a getter, having this everywhere is
-   * confusing.
-   */
-  //Lv2Control *     control;
 
   /** Associated track. */
   Track *          track;
@@ -203,6 +196,17 @@ Automatable *
 automatable_create_vst_control (
   Plugin * plugin,
   Port *   port);
+
+#ifdef HAVE_CARLA
+/**
+ * Creates an automatable for a Carla native
+ * plugin control.
+ */
+Automatable *
+automatable_create_carla_control (
+  Plugin *                plugin,
+  const NativeParameter * param);
+#endif
 
 Automatable *
 automatable_create_plugin_enabled (Plugin * plugin);
