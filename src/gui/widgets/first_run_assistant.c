@@ -251,7 +251,7 @@ on_file_set (
   g_free (str2);
 }
 
-#ifdef _WIN32
+#ifdef _WOE32
 static void
 on_vst_paths_changed (
   GtkEditable * editable,
@@ -283,7 +283,7 @@ first_run_assistant_widget_new (
   ui_setup_midi_backends_combo_box (
     self->midi_backend);
 
-#ifdef _WIN32
+#ifdef _WOE32
   /* setup vst_paths */
   ui_setup_vst_paths_entry (self->vst_paths_entry);
 #endif
@@ -345,7 +345,7 @@ first_run_assistant_widget_class_init (
   BIND (fc_btn);
   BIND (reset);
   BIND (test_backends);
-#ifdef _WIN32
+#ifdef _WOE32
   BIND (vst_paths_label);
   BIND (vst_paths_entry);
 #endif
@@ -361,7 +361,7 @@ first_run_assistant_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-#ifdef _WIN32
+#ifdef _WOE32
   gtk_widget_set_visible (
     GTK_WIDGET (self->vst_paths_label), 1);
   gtk_widget_set_visible (
@@ -388,7 +388,7 @@ first_run_assistant_widget_init (
   g_signal_connect (
     G_OBJECT (self->reset), "clicked",
     G_CALLBACK (on_reset_clicked), self);
-#ifdef _WIN32
+#ifdef _WOE32
   g_signal_connect (
     G_OBJECT (self->vst_paths_entry), "changed",
     G_CALLBACK (on_vst_paths_changed), self);

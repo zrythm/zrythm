@@ -37,7 +37,7 @@
 
 #include "config.h"
 
-#ifdef _WIN32
+#ifdef _WOE32
 
 #include "audio/channel.h"
 #include "audio/engine.h"
@@ -281,4 +281,4 @@ engine_windows_mme_tear_down (
   return 0;
 }
 
-#endif // _WIN32
+#endif // _WOE32

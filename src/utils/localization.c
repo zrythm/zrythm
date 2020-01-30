@@ -46,7 +46,7 @@ char *
 localization_locale_exists (
   LocalizationLanguage lang)
 {
-#ifdef _WIN32
+#ifdef _WOE32
   const char * _code =
     localization_get_string_code (lang);
   return g_strdup (_code);
@@ -145,7 +145,7 @@ localization_init ()
       g_message (
         "setting locale to %s (found %s)",
         code, match);
-#ifdef _WIN32
+#ifdef _WOE32
       char buf[120];
       sprintf (buf, "LANG=%s", code);
       putenv (buf);
@@ -168,7 +168,7 @@ localization_init ()
 #endif
 
   /* set domain codeset */
-#ifdef _WIN32
+#ifdef _WOE32
   bind_textdomain_codeset (GETTEXT_PACKAGE, "1252");
 #else
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");

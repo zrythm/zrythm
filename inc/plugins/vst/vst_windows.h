@@ -45,7 +45,7 @@
 
 #include "config.h"
 
-#ifdef _WIN32
+#ifdef _WOE32
 #ifndef __PLUGINS_VST_VST_WINDOWS_H__
 #define __PLUGINS_VST_VST_WINDOWS_H__
 
@@ -96,4 +96,4 @@ vst_windows_exit (void);
  */
 
 #endif
-#endif // _WIN32
+#endif // _WOE32

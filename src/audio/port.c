@@ -110,7 +110,7 @@ port_init_loaded (Port * this)
       this->midi_ring =
         zix_ring_new (
           sizeof (MidiEvent) * (size_t) 11);
-#ifdef _WIN32
+#ifdef _WOE32
       if (AUDIO_ENGINE->midi_backend ==
             MIDI_BACKEND_WINDOWS_MME)
         {
@@ -486,7 +486,7 @@ port_new_with_type (
       self->midi_ring =
         zix_ring_new (
           sizeof (MidiEvent) * (size_t) 11);
-#ifdef _WIN32
+#ifdef _WOE32
       if (AUDIO_ENGINE->midi_backend ==
             MIDI_BACKEND_WINDOWS_MME)
         {
@@ -1297,7 +1297,7 @@ port_set_expose_to_alsa (
 }
 #endif
 
-#ifdef _WIN32
+#ifdef _WOE32
 /**
  * Sums the inputs coming in from Windows MME,
  * before the port is processed.
@@ -1935,7 +1935,7 @@ port_sum_signal_from_inputs (
                 port, start_frame, nframes);
               break;
 #endif
-#ifdef _WIN32
+#ifdef _WOE32
             case MIDI_BACKEND_WINDOWS_MME:
               sum_data_from_windows_mme (
                 port, start_frame, nframes);
@@ -1968,7 +1968,7 @@ port_sum_signal_from_inputs (
                 port, start_frame, nframes);
               break;
 #endif
-#ifdef _WIN32
+#ifdef _WOE32
             case MIDI_BACKEND_WINDOWS_MME:
               send_data_to_windows_mme (
                 port, start_frame, nframes);

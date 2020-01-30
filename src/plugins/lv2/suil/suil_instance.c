@@ -33,7 +33,7 @@ suil_ui_supported(const char* host_type_uri,
 	};
 	if (!strcmp(GTK3_UI_URI, ui_type_uri))
 		return SUIL_WRAPPING_NATIVE;
-#ifdef _WIN32
+#ifdef _WOE32
   else if (!strcmp(ui_type_uri, WIN_UI_URI))
 		return SUIL_WRAPPING_EMBEDDED;
 #endif
@@ -66,7 +66,7 @@ open_wrapper(SuilHost*      host,
 #endif
 
   /* TODO write wrapper */
-#ifdef _WIN32
+#ifdef _WOE32
   if (!strcmp(ui_type_uri, WIN_UI_URI))
     {
       wrapper = suil_wrapper_new_win(host,
@@ -247,7 +247,7 @@ suil_instance_free(SuilInstance* instance)
 
 		// Close libraries and free everything
 		if (instance->wrapper) {
-#ifndef _WIN32
+#ifndef _WOE32
 			// Never unload modules on windows, causes mysterious segfaults
 			/*dlclose(instance->wrapper->lib);*/
 #endif

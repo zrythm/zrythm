@@ -37,7 +37,7 @@
 
 #include "config.h"
 
-#ifdef _WIN32
+#ifdef _WOE32
 
 #include "audio/engine.h"
 #include "audio/engine_windows_mme.h"
@@ -795,4 +795,4 @@ windows_mme_device_free (
   free (self);
 }
 
-#endif // _WIN32
+#endif // _WOE32

@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#ifdef _WIN32
+#ifdef _WOE32
 #include <windows.h>
 #endif
 
@@ -355,7 +355,7 @@ io_open_directory (
     g_file_test (path, G_FILE_TEST_IS_DIR));
 
   char command[800];
-#ifdef _WIN32
+#ifdef _WOE32
   char * canonical_path =
     g_canonicalize_filename (path, NULL);
   char * new_path =
@@ -372,7 +372,7 @@ io_open_directory (
 #endif
   system (command);
   g_message ("executed: %s", command);
-#ifdef _WIN32
+#ifdef _WOE32
   g_free (new_path);
 #endif
 }

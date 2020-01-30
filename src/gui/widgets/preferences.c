@@ -178,7 +178,7 @@ on_ok_clicked (GtkWidget * widget,
         self->autosave_spin));
   midi_controller_mb_widget_save_settings (
     self->midi_controllers);
-#ifdef _WIN32
+#ifdef _WOE32
   ui_update_vst_paths_from_entry (
     self->vst_paths_entry);
 #endif
@@ -254,7 +254,7 @@ preferences_widget_new ()
     }
 #endif
 
-#ifdef _WIN32
+#ifdef _WOE32
   /* setup vst_paths */
   ui_setup_vst_paths_entry (
     self->vst_paths_entry);
@@ -300,7 +300,7 @@ gtk_widget_class_bind_template_child ( \
   BIND_CHILD (buffer_size_cb);
   BIND_CHILD (samplerate_cb);
   BIND_CHILD (device_name_cb);
-#ifdef _WIN32
+#ifdef _WOE32
   BIND_CHILD (vst_paths_label);
   BIND_CHILD (vst_paths_entry);
 #endif
@@ -334,7 +334,7 @@ preferences_widget_init (
         1);
     }
 
-#ifdef _WIN32
+#ifdef _WOE32
   gtk_widget_set_visible (
     GTK_WIDGET (self->vst_paths_label), 1);
   gtk_widget_set_visible (

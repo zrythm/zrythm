@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifdef _WIN32
+#ifdef _WOE32
 
 #ifndef __UTILS_WINDOWS_ERRORS_H__
 #define __UTILS_WINDOWS_ERRORS_H__
@@ -29,4 +29,4 @@ windows_errors_get_last_error_str (
 		char * str);
 
 #endif
-#endif // _WIN32
+#endif // _WOE32

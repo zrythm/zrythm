@@ -1771,7 +1771,7 @@ lv2_gtk_open_ui (
       /* suil already adds the widget to the
        * container in win_in_gtk3 but it doesn't
        * in x11_in_gtk3 */
-#ifndef _WIN32
+#ifndef _WOE32
       gtk_container_add (
         GTK_CONTAINER (plugin->alignment), widget);
 #endif

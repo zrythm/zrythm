@@ -637,7 +637,7 @@ ui_create_midi_backends_model (void)
 #ifdef HAVE_JACK
     MIDI_BACKEND_JACK,
 #endif
-#ifdef _WIN32
+#ifdef _WOE32
     MIDI_BACKEND_WINDOWS_MME,
 #endif
   };
@@ -650,7 +650,7 @@ ui_create_midi_backends_model (void)
 #ifdef HAVE_JACK
     "Jack MIDI",
 #endif
-#ifdef _WIN32
+#ifdef _WOE32
     "Windows MME",
 #endif
   };
@@ -839,7 +839,7 @@ ui_get_locale_not_available_string (
   LocalizationLanguage lang)
 {
   /* show warning */
-#ifdef _WIN32
+#ifdef _WOE32
   char * template =
     _("A locale for the language you have \
 selected (%s) is not available. Please install one first \

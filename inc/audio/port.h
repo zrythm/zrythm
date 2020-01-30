@@ -294,7 +294,7 @@ typedef struct Port
    */
   void *              data;
 
-#ifdef _WIN32
+#ifdef _WOE32
   /** Connections to WindowsMmeDevices.
    *
    * These must be pointers to \ref

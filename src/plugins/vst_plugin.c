@@ -39,7 +39,7 @@
 
 #include<stdio.h>
 #include<stdlib.h>
-#ifndef _WIN32
+#ifndef _WOE32
 #include<sys/wait.h>
 #endif
 #include<unistd.h>
@@ -50,7 +50,7 @@
 #include "plugins/vst_plugin.h"
 #ifdef HAVE_X11
 #include "plugins/vst/vst_x11.h"
-#elif _WIN32
+#elif _WOE32
 #include "plugins/vst/vst_windows.h"
 #endif
 #include "project.h"
@@ -256,7 +256,7 @@ static int
 close_lib (
   void * handle)
 {
-#ifdef _WIN32
+#ifdef _WOE32
   if (FreeLibrary ((HMODULE) handle) == 0)
 #else
   if (dlclose (handle) != 0)
@@ -287,14 +287,14 @@ load_lib (
   AEffect **    effect,
   int           test)
 {
-#ifdef _WIN32
+#ifdef _WOE32
   HMODULE handle = LoadLibraryA (path);
 #else
   void * handle = dlopen (path, RTLD_NOW);
 #endif
   if (!handle)
     {
-#ifdef _WIN32
+#ifdef _WOE32
       char str[2000];
       windows_errors_get_last_error_str (str);
       g_warning (
@@ -310,7 +310,7 @@ load_lib (
 
   VstPluginMain entry_point =
     (VstPluginMain)
-#ifdef _WIN32
+#ifdef _WOE32
     GetProcAddress (handle, "VSTPluginMain");
 #else
     dlsym (handle, "VSTPluginMain");
@@ -318,14 +318,14 @@ load_lib (
   if (!entry_point)
     entry_point =
       (VstPluginMain)
-#ifdef _WIN32
+#ifdef _WOE32
       GetProcAddress (handle, "main");
 #else
       dlsym (handle, "main");
 #endif
   if (!entry_point)
     {
-#ifdef _WIN32
+#ifdef _WOE32
       g_warning (
         "Failed to get entry point from VST plugin "
         "from %s",
@@ -343,7 +343,7 @@ load_lib (
   if (test)
     {
       char cmd[3000];
-#ifdef _WIN32
+#ifdef _WOE32
 #ifdef WINDOWS_RELEASE
       char * prog =
         g_find_program_in_path (
@@ -355,7 +355,7 @@ load_lib (
       sprintf (
         cmd, "zrythm_vst_check.exe \"%s\"", path);
 #endif
-#else // if not _WIN32
+#else // if not _WOE32
       sprintf (
         cmd, "zrythm_vst_check \"%s\"", path);
 #endif
@@ -984,7 +984,7 @@ vst_plugin_open_ui (
   gtk_window_set_icon_name (
     GTK_WINDOW (window), "zrythm");
 
-#ifdef _WIN32
+#ifdef _WOE32
   vst_windows_run_editor (self, window);
 #elif HAVE_X11
   vst_x11_run_editor (self);

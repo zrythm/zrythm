@@ -77,7 +77,7 @@ audio_get_num_cores ()
   if (num_cores > 0)
     return num_cores;
 
-#ifdef _WIN32
+#ifdef _WOE32
   SYSTEM_INFO sysinfo;
   GetSystemInfo(&sysinfo);
   num_cores = (int) sysinfo.dwNumberOfProcessors;

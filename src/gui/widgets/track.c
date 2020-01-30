@@ -76,7 +76,7 @@ G_DEFINE_TYPE (
 #define ICON_NAME_PLUS "plus"
 #define ICON_NAME_MINUS "minus"
 
-#ifdef _WIN32
+#ifdef _WOE32
 #define NAME_FONT "9"
 #else
 #define NAME_FONT "10"

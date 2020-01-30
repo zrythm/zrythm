@@ -166,7 +166,7 @@ plugin_manager_init (PluginManager * self)
   self->lv2_nodes.lilv_world = world;
 
   /* load all installed plugins on system */
-#ifndef _WIN32
+#ifndef _WOE32
   LilvNode * lv2_path = NULL;
   char * env_lv2_path = getenv ("LV2_PATH");
   if (env_lv2_path && (strlen (env_lv2_path) > 0))
@@ -189,7 +189,7 @@ plugin_manager_init (PluginManager * self)
   lilv_world_load_all (world);
 
   /*load bundled plugins */
-#ifndef _WIN32
+#ifndef _WOE32
   GError * err;
   const char * path =
     CONFIGURE_LIBDIR "/zrythm/lv2";
@@ -516,7 +516,7 @@ plugin_manager_scan_plugins (
 
   /* scan vst */
   g_message ("Scanning VST plugins...");
-#ifdef _WIN32
+#ifdef _WOE32
   char ** paths =
     g_settings_get_strv (
       S_PREFERENCES, "vst-search-paths-windows");
@@ -544,7 +544,7 @@ plugin_manager_scan_plugins (
       g_message ("scanning for VSTs in %s", path);
 
       char ** vst_plugins =
-#ifdef _WIN32
+#ifdef _WOE32
         io_get_files_in_dir_ending_in (
           path, 1, ".dll");
 #else

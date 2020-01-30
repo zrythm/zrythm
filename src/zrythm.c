@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#ifndef _WIN32
+#ifndef _WOE32
 #include <sys/mman.h>
 #endif
 #include <stdlib.h>
@@ -695,7 +695,7 @@ zrythm_app_startup (
     gdk_monitor_get_scale_factor (monitor);
   g_message (
     "Monitor scale factor: %d", scale_factor);
-#ifdef _WIN32
+#ifdef _WOE32
   g_object_set (
     gtk_settings_get_default (),
     "gtk-font-name", "Segoe UI Normal 10", NULL);
@@ -887,7 +887,7 @@ zrythm_app_startup (
 static void
 lock_memory (void)
 {
-#ifdef _WIN32
+#ifdef _WOE32
   /* TODO */
 #else
   /* lock down memory */
@@ -952,7 +952,7 @@ zrythm_app_init (ZrythmApp * _app)
 {
   g_message ("initing zrythm app");
 
-#ifdef _WIN32
+#ifdef _WOE32
 #else
   /* prefer x11 backend because plugin UIs need it to load */
   gdk_set_allowed_backends ("x11,*");

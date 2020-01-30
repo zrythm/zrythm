@@ -39,7 +39,7 @@
 
 #include "config.h"
 
-#ifdef _WIN32
+#ifdef _WOE32
 
 #include <windows.h>
 #include <pthread.h>

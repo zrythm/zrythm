@@ -38,7 +38,7 @@
  * @{
  */
 
-#ifdef _WIN32
+#ifdef _WOE32
 #define REGION_NAME_FONT "Sans SemiBold 7"
 #else
 #define REGION_NAME_FONT "Sans SemiBold 8"

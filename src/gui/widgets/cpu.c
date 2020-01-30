@@ -22,7 +22,7 @@
 
 #include "config.h"
 
-#ifdef _WIN32
+#ifdef _WOE32
 #include <winsock2.h>
 #endif
 
@@ -36,7 +36,7 @@
 #include <glibtop.h>
 #include <glibtop/cpu.h>
 #include <glibtop/loadavg.h>
-#elif defined(_WIN32)
+#elif defined(_WOE32)
 #include <windows.h>
 #endif
 
@@ -190,7 +190,7 @@ refresh_dsp_load (
 static long double a[4], b[4] = {0,0,0,0}, loadavg;
 #endif
 
-#ifdef _WIN32
+#ifdef _WOE32
 static unsigned long long
 FileTimeToInt64 (const FILETIME * ft)
 {
@@ -234,7 +234,7 @@ refresh_cpu_load (
   b[2] = a[2];
   b[3] = a[3];
   /* ========== end ========= */
-#elif defined(_WIN32)
+#elif defined(_WOE32)
   FILETIME idleTime, kernelTime, userTime;
 
   if (GetSystemTimes (

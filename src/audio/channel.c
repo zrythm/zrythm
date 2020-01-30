@@ -514,7 +514,7 @@ channel_expose_ports_to_backend (
     }
 }
 
-#ifdef _WIN32
+#ifdef _WOE32
 /**
  * Reconnects the given TrackProcessor's midi in.
  */
@@ -706,7 +706,7 @@ channel_reconnect_ext_input_ports (
           reconnect_jack_ext_in (ch, midi_in);
           break;
 #endif
-#ifdef _WIN32
+#ifdef _WOE32
         case MIDI_BACKEND_WINDOWS_MME:
           reconnect_windows_mme_ext_in (
             ch, midi_in);

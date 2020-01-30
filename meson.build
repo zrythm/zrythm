@@ -252,6 +252,7 @@ if os_windows
     '-mwindows',
     '-Wl,-Bdynamic',
     '-Wl,-as-needed',
+    '-D_WOE32=1',
     ]
 endif
 

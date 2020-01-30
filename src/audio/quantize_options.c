@@ -225,7 +225,7 @@ quantize_options_quantize_position (
   const int lower = - (int) self->rand_ticks;
   int rand_ticks =
     (int)
-#ifdef _WIN32
+#ifdef _WOE32
     (rand() %
 #else
     (random() %

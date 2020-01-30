@@ -20,7 +20,7 @@
 #include "config.h"
 
 #include <ctype.h>
-#ifdef _WIN32
+#ifdef _WOE32
 #include <windows.h>
 #include <dbghelp.h>
 #else
@@ -65,7 +65,7 @@ handler (int sig)
   char message[12000];
   char current_line[2000];
 
-#ifdef _WIN32
+#ifdef _WOE32
   unsigned int   i;
   void         * stack[ 100 ];
   unsigned short frames;
@@ -325,7 +325,7 @@ main (int    argc,
   g_return_val_if_fail (vst_x11_init (0) == 0, -1);;
 #endif
 
-#ifdef _WIN32
+#ifdef _WOE32
   /* init VST UI engine */
   g_message ("Initing VST UI engine...");
   g_return_val_if_fail (
@@ -353,7 +353,7 @@ main (int    argc,
 
   /* init random */
   g_message ("Initing random...");
-#ifdef _WIN32
+#ifdef _WOE32
   srand ((unsigned int) time (NULL));
 #else
   srandom ((unsigned int) time (NULL));

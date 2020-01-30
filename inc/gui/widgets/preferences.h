@@ -62,7 +62,7 @@ typedef struct _PreferencesWidget
   GtkComboBox *        samplerate_cb;
   GtkComboBoxText *        device_name_cb;
 
-#ifdef _WIN32
+#ifdef _WOE32
   GtkLabel *           vst_paths_label;
   GtkEntry *           vst_paths_entry;
 #endif

@@ -357,7 +357,7 @@ typedef struct AudioEngine
   PaStream *        pa_stream;
 #endif
 
-#ifdef _WIN32
+#ifdef _WOE32
   /** Windows MME MIDI devices. */
   WindowsMmeDevice * mme_in_devs[1024];
   int                num_mme_in_devs;

@@ -37,7 +37,7 @@
 
 #include "config.h"
 
-#ifdef _WIN32
+#ifdef _WOE32
 
 #include "audio/windows_mmcss.h"
 
@@ -232,4 +232,4 @@ windows_mmcss_set_thread_priority (
   return 0;
 }
 
-#endif // _WIN32
+#endif // _WOE32

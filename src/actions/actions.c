@@ -219,7 +219,7 @@ activate_bugreport (GSimpleAction *action,
                 GVariant      *variant,
                 gpointer       user_data)
 {
-#ifdef _WIN32
+#ifdef _WOE32
   ShellExecute (
     0, (LPCSTR)"open",
     (LPCSTR) NEW_ISSUE_URL,

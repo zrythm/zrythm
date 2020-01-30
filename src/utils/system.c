@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifdef _WIN32
+#ifdef _WOE32
 #include <windows.h>
 #endif
 
@@ -41,7 +41,7 @@ system_fork_with_timer (
   int   sec,
   int * exit_code)
 {
-#ifdef _WIN32
+#ifdef _WOE32
 #else /* FIXME */
   pid_t pid = fork ();
   if (pid != 0) // parent
@@ -99,7 +99,7 @@ system_run_cmd (
   const char * cmd,
   long         ms_timer)
 {
-#ifdef _WIN32
+#ifdef _WOE32
   STARTUPINFO si;
   PROCESS_INFORMATION pi;
   ZeroMemory( &si, sizeof(si) );

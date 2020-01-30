@@ -214,7 +214,7 @@ get_ext_ports_from_jack (
 }
 #endif
 
-#ifdef _WIN32
+#ifdef _WOE32
 /**
  * Creates an ExtPort from a JACK port.
  */
@@ -320,7 +320,7 @@ ext_ports_get (
         case MIDI_BACKEND_ALSA:
           break;
 #endif
-#ifdef _WIN32
+#ifdef _WOE32
         case MIDI_BACKEND_WINDOWS_MME:
           get_ext_ports_from_windows_mme (
             flow, arr, size);
@@ -345,7 +345,7 @@ ext_port_clone (
 #ifdef HAVE_JACK
   newport->jport = ext_port->jport;
 #endif
-#ifdef _WIN32
+#ifdef _WOE32
   newport->mme_dev = ext_port->mme_dev;
 #endif
   if (ext_port->full_name)

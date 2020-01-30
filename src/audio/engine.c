@@ -254,7 +254,7 @@ engine_init (
       self->midi_backend = MIDI_BACKEND_JACK;
       break;
 #endif
-#ifdef _WIN32
+#ifdef _WOE32
     case MIDI_BACKEND_WINDOWS_MME:
       self->midi_backend = MIDI_BACKEND_WINDOWS_MME;
       break;
@@ -388,7 +388,7 @@ engine_init (
         engine_jack_midi_setup (self, loading);
       break;
 #endif
-#ifdef _WIN32
+#ifdef _WOE32
     case MIDI_BACKEND_WINDOWS_MME:
       mret =
         engine_windows_mme_setup (self, loading);
@@ -461,7 +461,7 @@ engine_activate (
     {
       engine_dummy_activate (self);
     }
-#ifdef _WIN32
+#ifdef _WOE32
   if (self->midi_backend ==
         MIDI_BACKEND_WINDOWS_MME)
     {

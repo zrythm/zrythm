@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#ifdef _WIN32
+#ifdef _WOE32
 
 #ifndef __AUDIO_ENGINE_WINDOWS_MME_H__
 #define __AUDIO_ENGINE_WINDOWS_MME_H__
@@ -112,4 +112,4 @@ engine_windows_mme_test (
  */
 
 #endif
-#endif // _WIN32
+#endif // _WOE32
