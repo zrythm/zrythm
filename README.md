@@ -26,16 +26,21 @@ towards a stable release.
 
 ![screenshot](https://www.zrythm.org/static/images/dec_14_2019.png)
 
-## Currently supported plugin protocols
-- LV2
-- VST2 (Experimental)
+### Supported plugin protocols
+- LV2, VST2 (Experimental)
+
+### Supported backends
+- Audio: JACK, SDL2
+- MIDI: JACK, Windows MME
+
+### Supported platforms
+- GNU/Linux, FreeBSD, Windows
 
 ## Building and Installation
 See [INSTALL.md](INSTALL.md).
 
 ## Using
-At the moment, Zrythm works with [JACK](https://jackaudio.org) (recommended)
-~~and ALSA~~. For more information on using Zrythm see the
+See the
 [user manual](http://manual.zrythm.org/), which is
 also available in PDF, epub and HTML-zip.
 
