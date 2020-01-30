@@ -655,7 +655,7 @@ port_set_owner_plugin (
 {
   g_warn_if_fail (port && pl);
 
-  port->identifier.track_pos = pl->track->pos;
+  port->identifier.track_pos = pl->track_pos;
   port->identifier.plugin_slot = pl->slot;
   port->identifier.owner_type =
     PORT_OWNER_TYPE_PLUGIN;
