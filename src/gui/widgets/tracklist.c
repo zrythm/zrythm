@@ -310,7 +310,7 @@ tracklist_widget_hard_refresh (
     {
       Track * track = self->tracklist->tracks[i];
 
-      if (!track->pinned || !track->visible)
+      if (!track->pinned)
         continue;
 
       /* create widget */
@@ -337,7 +337,7 @@ tracklist_widget_hard_refresh (
     {
       Track * track = self->tracklist->tracks[i];
 
-      if (track->pinned || !track->visible)
+      if (track->pinned)
         continue;
 
       /* create widget */

@@ -129,10 +129,10 @@ lv2_evbuf_next(LV2_Evbuf_Iterator iter)
   LV2_Evbuf* evbuf  = iter.evbuf;
   uint32_t   offset = iter.offset;
   uint32_t   size;
-        size = ((LV2_Atom_Event*)
-                ((char*)LV2_ATOM_CONTENTS(LV2_Atom_Sequence, &evbuf->atom)
-                 + offset))->body.size;
-        offset += lv2_evbuf_pad_size(sizeof(LV2_Atom_Event) + size);
+  size = ((LV2_Atom_Event*)
+          ((char*)LV2_ATOM_CONTENTS(LV2_Atom_Sequence, &evbuf->atom)
+           + offset))->body.size;
+  offset += lv2_evbuf_pad_size(sizeof(LV2_Atom_Event) + size);
 
   LV2_Evbuf_Iterator next = { evbuf, offset };
   return next;
