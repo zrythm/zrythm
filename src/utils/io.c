@@ -365,6 +365,7 @@ io_open_directory (
   sprintf (
     command, OPEN_DIR_CMD " \"%s\"",
     new_path);
+  g_free (new_path);
 #else
   sprintf (
     command, OPEN_DIR_CMD " \"%s\"",
@@ -372,7 +373,4 @@ io_open_directory (
 #endif
   system (command);
   g_message ("executed: %s", command);
-#ifdef _WOE32
-  g_free (new_path);
-#endif
 }

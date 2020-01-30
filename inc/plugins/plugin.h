@@ -369,6 +369,20 @@ plugin_is_selected (
   Plugin * pl);
 
 /**
+ * Returns the event ports in the plugin.
+ *
+ * @param ports Array to fill in. Must be large
+ *   enough.
+ *
+ * @return The number of ports in the array.
+ */
+int
+plugin_get_event_ports (
+  Plugin * pl,
+  Port **  ports,
+  int      input);
+
+/**
  * Process hide ui
  */
 void

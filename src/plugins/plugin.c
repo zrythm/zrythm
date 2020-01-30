@@ -922,6 +922,50 @@ plugin_close_ui (Plugin *plugin)
 }
 
 /**
+ * Returns the event ports in the plugin.
+ *
+ * @param ports Array to fill in. Must be large
+ *   enough.
+ *
+ * @return The number of ports in the array.
+ */
+int
+plugin_get_event_ports (
+  Plugin * pl,
+  Port **  ports,
+  int      input)
+{
+  g_return_val_if_fail (pl && ports, -1);
+
+  int index = 0;
+
+  if (input)
+    {
+      for (int i = 0; i < pl->num_in_ports; i++)
+        {
+          Port * port = pl->in_ports[i];
+          if (port->identifier.type == TYPE_EVENT)
+            {
+              ports[index++] = port;
+            }
+        }
+    }
+  else
+    {
+      for (int i = 0; i < pl->num_out_ports; i++)
+        {
+          Port * port = pl->out_ports[i];
+          if (port->identifier.type == TYPE_EVENT)
+            {
+              ports[index++] = port;
+            }
+        }
+    }
+
+  return index;
+}
+
+/**
  * Connect the output Ports of the given source
  * Plugin to the input Ports of the given
  * destination Plugin.

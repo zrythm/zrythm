@@ -1854,7 +1854,7 @@ lv2_plugin_process (
                   MidiEvent * ev =
                     &port->midi_events->events[i];
                   g_message (
-                    "writing plugin event %d",
+                    "writing plugin input event %d",
                     i);
                   midi_event_print (ev);
                   lv2_evbuf_write (
@@ -1867,12 +1867,6 @@ lv2_plugin_process (
           midi_events_clear (
             port->midi_events, 0);
       }
-      else if (port->identifier.type == TYPE_EVENT)
-        {
-          /* Clear event output for plugin to
-           * write to */
-          lv2_evbuf_reset (lv2_port->evbuf, false);
-        }
     }
   lv2_plugin->request_update = false;
 
@@ -1913,8 +1907,6 @@ lv2_plugin_process (
                  FLOW_OUTPUT &&
                port->identifier.type == TYPE_EVENT)
           {
-            void* buf = NULL;
-
             for (LV2_Evbuf_Iterator iter =
                    lv2_evbuf_begin(lv2_port->evbuf);
                  lv2_evbuf_is_valid(iter);
@@ -1929,7 +1921,7 @@ lv2_plugin_process (
                   &type, &size, &body);
 
                 /* if midi event */
-                if (buf && type ==
+                if (body && type ==
                     PM_URIDS.
                       midi_MidiEvent)
                   {
@@ -1949,6 +1941,11 @@ lv2_plugin_process (
                       type, size, body);
                   }
               }
+
+            /* Clear event output for plugin to
+             * write to next cycle */
+            lv2_evbuf_reset (
+              lv2_port->evbuf, false);
           }
         else if (
           send_ui_updates &&

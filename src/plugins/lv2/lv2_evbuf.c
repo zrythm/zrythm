@@ -26,16 +26,16 @@
 #include <gtk/gtk.h>
 
 struct LV2_Evbuf_Impl {
-	uint32_t       capacity;
-	uint32_t       atom_Chunk;
-	uint32_t       atom_Sequence;
+  uint32_t       capacity;
+  uint32_t       atom_Chunk;
+  uint32_t       atom_Sequence;
               LV2_Atom_Sequence atom;
 };
 
 static inline uint32_t
 lv2_evbuf_pad_size(uint32_t size)
 {
-	return (size + 7) & (~7);
+  return (size + 7) & (~7);
 }
 
 LV2_Evbuf*
@@ -43,20 +43,20 @@ lv2_evbuf_new(uint32_t       capacity,
               uint32_t       atom_Chunk,
               uint32_t       atom_Sequence)
 {
-	// FIXME: memory must be 64-bit aligned
-	LV2_Evbuf* evbuf = (LV2_Evbuf*)malloc(
-		sizeof(LV2_Atom_Sequence) + capacity);
-	evbuf->capacity      = capacity;
-	evbuf->atom_Chunk    = atom_Chunk;
-	evbuf->atom_Sequence = atom_Sequence;
-	lv2_evbuf_reset(evbuf, true);
-	return evbuf;
+  // FIXME: memory must be 64-bit aligned
+  LV2_Evbuf* evbuf = (LV2_Evbuf*)malloc(
+    sizeof(LV2_Atom_Sequence) + capacity);
+  evbuf->capacity      = capacity;
+  evbuf->atom_Chunk    = atom_Chunk;
+  evbuf->atom_Sequence = atom_Sequence;
+  lv2_evbuf_reset(evbuf, true);
+  return evbuf;
 }
 
 void
 lv2_evbuf_free(LV2_Evbuf* evbuf)
 {
-	free(evbuf);
+  free(evbuf);
 }
 
 void
@@ -78,59 +78,64 @@ lv2_evbuf_reset(LV2_Evbuf* evbuf, bool input)
 uint32_t
 lv2_evbuf_get_size(LV2_Evbuf* evbuf)
 {
-        assert(evbuf->atom.atom.type != evbuf->atom_Sequence
-               || evbuf->atom.atom.size >= sizeof(LV2_Atom_Sequence_Body));
-        return evbuf->atom.atom.type == evbuf->atom_Sequence
-                ? evbuf->atom.atom.size - sizeof(LV2_Atom_Sequence_Body)
-                : 0;
-	return 0;
+  g_return_val_if_fail (
+    evbuf->atom.atom.type !=
+      evbuf->atom_Sequence ||
+    evbuf->atom.atom.size >=
+      sizeof(LV2_Atom_Sequence_Body), 0);
+  return
+    evbuf->atom.atom.type ==
+      evbuf->atom_Sequence ?
+      evbuf->atom.atom.size -
+        sizeof(LV2_Atom_Sequence_Body) : 0;
+
+  return 0;
 }
 
-void*
+void *
 lv2_evbuf_get_buffer(LV2_Evbuf* evbuf)
 {
-              return &evbuf->atom;
-	return NULL;
+  return &evbuf->atom;
 }
 
 LV2_Evbuf_Iterator
 lv2_evbuf_begin(LV2_Evbuf* evbuf)
 {
-	LV2_Evbuf_Iterator iter = { evbuf, 0 };
-	return iter;
+  LV2_Evbuf_Iterator iter = { evbuf, 0 };
+  return iter;
 }
 
 LV2_Evbuf_Iterator
 lv2_evbuf_end(LV2_Evbuf* evbuf)
 {
-	const uint32_t           size = lv2_evbuf_get_size(evbuf);
-	const LV2_Evbuf_Iterator iter = { evbuf, lv2_evbuf_pad_size(size) };
-	return iter;
+  const uint32_t           size = lv2_evbuf_get_size(evbuf);
+  const LV2_Evbuf_Iterator iter = { evbuf, lv2_evbuf_pad_size(size) };
+  return iter;
 }
 
 bool
 lv2_evbuf_is_valid(LV2_Evbuf_Iterator iter)
 {
-	return iter.offset < lv2_evbuf_get_size(iter.evbuf);
+  return iter.offset < lv2_evbuf_get_size(iter.evbuf);
 }
 
 LV2_Evbuf_Iterator
 lv2_evbuf_next(LV2_Evbuf_Iterator iter)
 {
-	if (!lv2_evbuf_is_valid(iter)) {
-		return iter;
-	}
+  if (!lv2_evbuf_is_valid(iter)) {
+    return iter;
+  }
 
-	LV2_Evbuf* evbuf  = iter.evbuf;
-	uint32_t   offset = iter.offset;
-	uint32_t   size;
+  LV2_Evbuf* evbuf  = iter.evbuf;
+  uint32_t   offset = iter.offset;
+  uint32_t   size;
         size = ((LV2_Atom_Event*)
                 ((char*)LV2_ATOM_CONTENTS(LV2_Atom_Sequence, &evbuf->atom)
                  + offset))->body.size;
         offset += lv2_evbuf_pad_size(sizeof(LV2_Atom_Event) + size);
 
-	LV2_Evbuf_Iterator next = { evbuf, offset };
-	return next;
+  LV2_Evbuf_Iterator next = { evbuf, offset };
+  return next;
 }
 
 bool
