@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2020-01-28 21:57+0000\n"
-"Last-Translator: Samuel Aubert <baohm26@gmail.com>\n"
+"PO-Revision-Date: 2020-01-31 12:50+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/fr/>\n"
 "Language: fr\n"
@@ -163,9 +163,8 @@ msgstr ""
 ":zbutton:`Supprimer` de votre clavier."
 
 #: ../../editing/common-operations.rst:67
-#, fuzzy
 msgid "Selections"
-msgstr "Outil de sélection"
+msgstr "Sélections"
 
 #: ../../editing/common-operations.rst:69
 msgid "Clear Selection"
@@ -185,7 +184,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:77
 msgid "Loop Selection"
-msgstr ""
+msgstr "Sélection de la boucle"
 
 #: ../../editing/common-operations.rst:78
 msgid ""
@@ -548,9 +547,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/quantization.rst:15
-#, fuzzy
 msgid "Quantize"
-msgstr "Quantification"
+msgstr "Quantifier"
 
 #: ../../editing/quantization.rst:16
 msgid ""
