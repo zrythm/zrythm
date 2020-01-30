@@ -717,7 +717,7 @@ run (
     (uint32_t)
     ((float) AUDIO_ENGINE->sample_rate /
      plugin->plugin->ui_update_hz);
-  if (plugin->has_custom_ui &&
+  if (lv2_plugin_has_custom_ui (plugin) &&
       plugin->window &&
       (plugin->event_delta_t > update_frames))
     {
@@ -1424,19 +1424,22 @@ lv2_plugin_instantiate (
               g_message ("Found UI: %s", pt);
             }
           if (lilv_ui_is_supported (
-                this_ui,
-                suil_ui_supported,
+                this_ui, suil_ui_supported,
                 PM_LILV_NODES.ui_Gtk3UI,
                 &self->ui_type))
             {
               /* TODO: Multiple UI support */
-              g_message ("UI is supported");
+              g_message (
+                "UI is supported for wrapping with "
+                "suil");
               self->ui = this_ui;
               break;
             }
           else
             {
-              g_message ("UI unsupported by suil");
+              g_message (
+                "UI unsupported for wrapping with "
+                "suil");
             }
         }
     }
@@ -1449,12 +1452,13 @@ lv2_plugin_instantiate (
           self->uis, lilv_uis_begin (self->uis));
     }
 
+  /* no wrappable UI found */
   if (!self->ui)
     {
       g_message (
-        "Native UI not found, looking for "
+        "Wrappable UI not found, looking for "
         "external");
-      LILV_FOREACH(uis, u, self->uis)
+      LILV_FOREACH (uis, u, self->uis)
         {
           const LilvUI* ui =
             lilv_uis_get (self->uis, u);
@@ -1469,8 +1473,9 @@ lv2_plugin_instantiate (
                     pt, KX_EXTERNAL_UI_WIDGET))
                 {
                   g_message ("Found UI: %s", pt);
-                  g_message ("External KX UI selected");
-                  self->externalui = true;
+                  g_message (
+                    "External KX UI selected");
+                  self->has_external_ui = 1;
                   self->ui = ui;
                   self->ui_type =
                     PM_LILV_NODES.ui_externalkx;
@@ -1482,7 +1487,7 @@ lv2_plugin_instantiate (
                   g_message ("Found UI: %s", pt);
                   g_message (
                     "External UI selected");
-                  self->externalui = true;
+                  self->has_external_ui = 1;
                   self->ui_type =
                     PM_LILV_NODES.ui_external;
                   self->ui = ui;
@@ -1666,9 +1671,6 @@ lv2_plugin_instantiate (
   g_message ("Activating instance...");
   lilv_instance_activate (self->instance);
   g_message ("Instance activated");
-
-  /* Discover UI */
-  self->has_custom_ui = self->ui != NULL;
 
   return 0;
 }

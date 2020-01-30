@@ -114,7 +114,7 @@ size_request (
  * a plugin window is destroyed.
  */
 static void
-on_window_destroy(
+on_window_destroy (
   GtkWidget* widget,
   gpointer   data)
 {
@@ -142,6 +142,7 @@ on_window_destroy(
     }
 
   suil_instance_free (plugin->ui_instance);
+  plugin->ui_instance = NULL;
 }
 
 static void
@@ -1529,8 +1530,10 @@ build_menu (
 void
 on_external_ui_closed(void* controller)
 {
-  Lv2Plugin* jalv = (Lv2Plugin *) controller;
-  lv2_gtk_close_ui (jalv);
+  g_message ("External LV2 UI closed");
+  Lv2Plugin* self = (Lv2Plugin *) controller;
+  self->plugin->visible = 0;
+  lv2_gtk_close_ui (self);
 }
 
 gboolean
@@ -1556,14 +1559,15 @@ update_plugin_ui (
   Lv2Plugin * plugin)
 {
   /* Check quit flag and close if set. */
-  if (zix_sem_try_wait(&plugin->exit_sem))
+  if (zix_sem_try_wait (&plugin->exit_sem))
     {
-      lv2_gtk_close_ui(plugin);
+      lv2_gtk_close_ui (plugin);
       return G_SOURCE_REMOVE;
     }
 
   /* Emit UI events. */
-  if (plugin->window)
+  if (plugin->plugin->visible && (
+      plugin->window || plugin->external_ui_widget))
     {
       Lv2ControlChange ev;
       const size_t  space =
@@ -1632,22 +1636,35 @@ update_plugin_ui (
             }
       }
 
-      if (plugin->externalui && plugin->extuiptr) {
-              LV2_EXTERNAL_UI_RUN(plugin->extuiptr);
-      }
+      if (plugin->has_external_ui &&
+          plugin->external_ui_widget)
+        {
+          plugin->external_ui_widget->run (
+            plugin->external_ui_widget);
+        }
     }
 
   return G_SOURCE_CONTINUE;
 }
 
-int
-lv2_gtk_open_ui (
+/**
+ * Create a wrapper GTK window to either wrap
+ * plugin UIs using suil or for adding generic
+ * controls.
+ *
+ * @return The GtkAlignment to wrap the plugin
+ *   in.
+ */
+GtkWidget *
+create_wrapper_window (
   Lv2Plugin* plugin)
 {
   GtkWidget* window =
     gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_icon_name (
     GTK_WINDOW (window), "zrythm");
+
+  plugin->window = (void *) window;
 
   if (g_settings_get_int (
         S_PREFERENCES, "plugin-uis-stay-on-top"))
@@ -1657,19 +1674,12 @@ lv2_gtk_open_ui (
         GTK_WINDOW (MAIN_WINDOW));
     }
 
-  plugin->window = window;
-  plugin->delete_event_id =
-    g_signal_connect (
-      G_OBJECT (window), "delete-event",
-      G_CALLBACK (on_delete_event), plugin);
-  g_return_val_if_fail (plugin->lilv_plugin, -1);
-
   /* connect destroy signal */
   g_signal_connect (
     window, "destroy",
     G_CALLBACK (on_window_destroy), plugin);
 
-  set_window_title(plugin);
+  set_window_title (plugin);
   gtk_window_set_icon_name (
     GTK_WINDOW (window), "zrythm");
 
@@ -1690,13 +1700,33 @@ lv2_gtk_open_ui (
     GTK_BOX (vbox), alignment, TRUE, TRUE, 0);
   gtk_widget_show (alignment);
 
+  plugin->vbox = vbox;
+
+  return alignment;
+}
+
+int
+lv2_gtk_open_ui (
+  Lv2Plugin* plugin)
+{
+  /* create a window if necessary */
+  if (plugin->has_external_ui)
+    {
+      plugin->alignment = NULL;
+    }
+  else
+    {
+      plugin->alignment =
+        create_wrapper_window (plugin);
+    }
+
   /* Attempt to instantiate custom UI if
    * necessary */
   if (plugin->ui &&
       !g_settings_get_int (
         S_PREFERENCES, "generic-plugin-uis"))
     {
-      if (plugin->externalui)
+      if (plugin->has_external_ui)
         {
           g_message (
             "Instantiating external UI...");
@@ -1718,40 +1748,49 @@ lv2_gtk_open_ui (
         {
           g_message ("Instantiating UI...");
           lv2_ui_instantiate (
-            plugin,
-            LV2_UI__Gtk3UI,
-            alignment);
+            plugin, LV2_UI__Gtk3UI,
+            plugin->alignment);
         }
     }
 
-  if (plugin->externalui && plugin->extuiptr)
+  /* present the window */
+  if (plugin->has_external_ui &&
+      plugin->external_ui_widget)
     {
-      LV2_EXTERNAL_UI_SHOW (plugin->extuiptr);
+      plugin->external_ui_widget->show (
+        plugin->external_ui_widget);
     }
   else if (plugin->ui_instance)
     {
-      g_message ("Creating window for UI...");
+      g_message ("Creating suil window for UI...");
       GtkWidget* widget =
         GTK_WIDGET (
           suil_instance_get_widget (
             plugin->ui_instance));
 
+      /* suil already adds the widget to the
+       * container in win_in_gtk3 but it doesn't
+       * in x11_in_gtk3 */
 #ifndef _WIN32
       gtk_container_add (
-        GTK_CONTAINER (alignment), widget);
+        GTK_CONTAINER (plugin->alignment), widget);
 #endif
       gtk_window_set_resizable (
-        GTK_WINDOW (window),
-        lv2_ui_is_resizable(plugin));
-      gtk_widget_show_all(vbox);
-      gtk_widget_grab_focus(widget);
-      gtk_window_present(GTK_WINDOW(window));
+        GTK_WINDOW (plugin->window),
+        lv2_ui_is_resizable (plugin));
+      gtk_widget_show_all (plugin->vbox);
+      gtk_widget_grab_focus (widget);
+      gtk_window_present (
+        GTK_WINDOW (plugin->window));
     }
   else
     {
-      g_message ("No UI found, building native..");
+      g_message (
+        "No UI found, creating generic GTK "
+        "window..");
       GtkWidget* controls =
-        build_control_widget (plugin, window);
+        build_control_widget (
+          plugin, plugin->window);
       GtkWidget* scroll_win =
         gtk_scrolled_window_new (NULL, NULL);
       gtk_scrolled_window_add_with_viewport (
@@ -1760,23 +1799,42 @@ lv2_gtk_open_ui (
         GTK_SCROLLED_WINDOW (scroll_win),
         GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
       gtk_container_add (
-        GTK_CONTAINER (alignment), scroll_win);
-      gtk_widget_show_all(vbox);
+        GTK_CONTAINER (plugin->alignment),
+        scroll_win);
+      gtk_widget_show_all(plugin->vbox);
 
       GtkRequisition controls_size, box_size;
-      size_request (GTK_WIDGET(controls), &controls_size);
-      size_request (GTK_WIDGET(vbox), &box_size);
+      size_request (
+        GTK_WIDGET (controls), &controls_size);
+      size_request (
+        GTK_WIDGET (plugin->vbox), &box_size);
 
       gtk_window_set_default_size (
-        GTK_WINDOW(window),
+        GTK_WINDOW (plugin->window),
         MAX (
           MAX (
             box_size.width,
             controls_size.width) + 24,
           640),
         box_size.height + controls_size.height);
-      gtk_window_present (GTK_WINDOW(window));
+      gtk_window_present (
+        GTK_WINDOW (plugin->window));
   }
+
+  /* connect signals if needed */
+  if (plugin->has_external_ui)
+    {
+      plugin->window = NULL;
+    }
+  else
+    {
+      plugin->delete_event_id =
+        g_signal_connect (
+          G_OBJECT (plugin->window), "delete-event",
+          G_CALLBACK (on_delete_event), plugin);
+      g_return_val_if_fail (
+        plugin->lilv_plugin, -1);
+    }
 
   lv2_ui_init (plugin);
 
@@ -1801,6 +1859,7 @@ int
 lv2_gtk_close_ui (
   Lv2Plugin* plugin)
 {
+  g_message ("%s called", __func__);
   if (plugin->window)
     {
       gtk_widget_set_sensitive (
@@ -1817,6 +1876,15 @@ lv2_gtk_close_ui (
       /*gtk_widget_destroy (*/
         /*GTK_WIDGET (plugin->window));*/
     }
+
+  if (plugin->has_external_ui &&
+      plugin->external_ui_widget)
+    {
+      g_message ("hiding external UI");
+      plugin->external_ui_widget->hide (
+        plugin->external_ui_widget);
+    }
+
   return TRUE;
 }
 

@@ -739,7 +739,15 @@ plugin_open_ui (Plugin *plugin)
         case PROT_LV2:
           {
             Lv2Plugin * lv2_plugin = plugin->lv2;
-            if (GTK_IS_WINDOW (lv2_plugin->window))
+            if (lv2_plugin->has_external_ui &&
+                lv2_plugin->external_ui_widget)
+              {
+                lv2_plugin->external_ui_widget->
+                  show (
+                    lv2_plugin->external_ui_widget);
+              }
+            else if (
+              GTK_IS_WINDOW (lv2_plugin->window))
               {
                 gtk_window_present (
                   GTK_WINDOW (lv2_plugin->window));

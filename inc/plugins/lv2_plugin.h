@@ -174,6 +174,12 @@ typedef struct Lv2Plugin
    */
   void*              window;
 
+  /** Alignment for wrapping the plugin in, when
+   * using suil. */
+  GtkWidget *     alignment;
+  /** Vbox containing the above alignment. */
+  GtkWidget *     vbox;
+
   /** ID of the delete-event signal so that we can
    * deactivate before freeing the plugin. */
   gulong             delete_event_id;
@@ -201,8 +207,13 @@ typedef struct Lv2Plugin
   bool               safe_restore;   ///< Plugin restore() is thread-safe
   int                control_in;     ///< Index of control input port
   ZixSem exit_sem;  /**< Exit semaphore */
-  bool               externalui;     ///< True iff plugin has an external-ui
-  LV2_External_UI_Widget* extuiptr;  ///< data structure used for external-ui
+
+  /** Whether the plugin has an external UI. */
+  int               has_external_ui;
+
+  /** Data structure used for external UIs. */
+  LV2_External_UI_Widget* external_ui_widget;
+
   GtkCheckMenuItem* active_preset_item;
   bool              updating;
 
@@ -287,6 +298,13 @@ Lv2Plugin *
 lv2_plugin_new_from_uri (
   Plugin    *  plugin,
   const char * uri);
+
+static inline int
+lv2_plugin_has_custom_ui (
+  Lv2Plugin * self)
+{
+  return self->ui != NULL;
+}
 
 /**
  * Instantiate the plugin.

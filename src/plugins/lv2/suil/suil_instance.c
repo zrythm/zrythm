@@ -224,7 +224,7 @@ suil_instance_new(SuilHost*                 host,
 void
 suil_instance_free(SuilInstance* instance)
 {
-  g_message ("freeing %p", instance);
+  g_message ("freeing suil instance %p", instance);
 	if (instance) {
 		for (unsigned i = 0; instance->features[i]; ++i) {
 			free(instance->features[i]);

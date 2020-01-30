@@ -113,7 +113,7 @@ lv2_ui_read_and_apply_events (
   Lv2Plugin * plugin,
   uint32_t nframes)
 {
-  if (!plugin->has_custom_ui)
+  if (!lv2_plugin_has_custom_ui (plugin))
     {
       return;
     }
@@ -341,7 +341,7 @@ lv2_ui_instantiate (
       (SuilPortWriteFunc)
       lv2_ui_send_event_from_ui_to_plugin,
       get_port_index, NULL, NULL);
-  plugin->extuiptr = NULL;
+  plugin->external_ui_widget = NULL;
 
   const char* bundle_uri =
     lilv_node_as_uri (
@@ -361,7 +361,7 @@ lv2_ui_instantiate (
           LV2_UI__idleInterface, NULL
   };
 
-  if (plugin->externalui)
+  if (plugin->has_external_ui)
     {
       const LV2_Feature external_lv_feature = {
         LV2_EXTERNAL_UI_DEPRECATED_URI, parent
@@ -371,10 +371,11 @@ lv2_ui_instantiate (
       };
       const LV2_Feature instance_feature = {
         LV2_INSTANCE_ACCESS_URI,
-        lilv_instance_get_handle(plugin->instance)
+        lilv_instance_get_handle (plugin->instance)
       };
       const LV2_Feature* ui_features[] = {
-        &plugin->map_feature, &plugin->unmap_feature,
+        &plugin->map_feature,
+        &plugin->unmap_feature,
         &instance_feature,
         &data_feature,
         &idle_feature,
@@ -399,18 +400,17 @@ lv2_ui_instantiate (
 
       if (plugin->ui_instance)
         {
-          plugin->extuiptr =
+          plugin->external_ui_widget =
             suil_instance_get_widget (
               (SuilInstance*)plugin->ui_instance);
       }
       else
         {
-          plugin->externalui = false;
+          plugin->has_external_ui = 0;
         }
     }
   else
     {
-
       const LV2_Feature parent_feature = {
               LV2_UI__parent, parent
       };
