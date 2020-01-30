@@ -238,6 +238,15 @@ typedef struct Track
   uint8_t             midi_ch;
 
   /**
+   * If set to 1, the input received will not be
+   * changed to the selected MIDI channel.
+   *
+   * If this is 0, all input received will have its
+   * channel changed to the selected MIDI channel.
+   */
+  int                 passthrough_midi_input;
+
+  /**
    * ZRegion currently recording on.
    *
    * This must only be set by the RecordingManager
@@ -366,6 +375,9 @@ track_fields_schema[] =
   CYAML_FIELD_INT (
     "main_height", CYAML_FLAG_DEFAULT,
     Track, main_height),
+  CYAML_FIELD_INT (
+    "passthrough_midi_input", CYAML_FLAG_DEFAULT,
+    Track, passthrough_midi_input),
   CYAML_FIELD_INT (
     "mute", CYAML_FLAG_DEFAULT,
     Track, mute),

@@ -368,9 +368,12 @@ track_processor_process (
     case TYPE_EVENT:
       /* change the MIDI channel on the midi input
        * to the channel set on the track */
-      midi_events_set_channel (
-        self->midi_in->midi_events, 0,
-        self->track->midi_ch);
+      if (!self->track->passthrough_midi_input)
+        {
+          midi_events_set_channel (
+            self->midi_in->midi_events, 0,
+            self->track->midi_ch);
+        }
       midi_events_append (
         self->midi_in->midi_events,
         self->midi_out->midi_events, local_offset,

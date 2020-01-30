@@ -1363,6 +1363,15 @@ on_midi_ch_selected (
 }
 
 static void
+on_passthrough_input_toggled (
+  GtkCheckMenuItem * menu_item,
+  Track *            track)
+{
+  track->passthrough_midi_input =
+    gtk_check_menu_item_get_active (menu_item);
+}
+
+static void
 show_context_menu (
   TrackWidget * self,
   double        y)
@@ -1479,6 +1488,36 @@ show_context_menu (
       gtk_widget_set_visible (
         GTK_WIDGET (submenu), 1);
       GtkMenuItem * submenu_item;
+
+      /* add passthrough checkbox */
+      submenu_item =
+        GTK_MENU_ITEM (
+          gtk_check_menu_item_new_with_label (
+            _("Passthrough input")));
+      gtk_check_menu_item_set_active (
+        GTK_CHECK_MENU_ITEM (submenu_item),
+        track->passthrough_midi_input);
+      g_signal_connect (
+        G_OBJECT (submenu_item), "toggled",
+        G_CALLBACK (on_passthrough_input_toggled),
+        track);
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (submenu),
+        GTK_WIDGET (submenu_item));
+      gtk_widget_set_visible (
+        GTK_WIDGET (submenu_item), 1);
+
+      /* add separator */
+      submenu_item =
+        GTK_MENU_ITEM (
+          gtk_separator_menu_item_new ());
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL (submenu),
+        GTK_WIDGET (submenu_item));
+      gtk_widget_set_visible (
+        GTK_WIDGET (submenu_item), 1);
+
+      /* add each MIDI ch */
       for (int i = 1; i <= 16; i++)
         {
           char * lbl =
