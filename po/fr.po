@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-01-28 21:43+0000\n"
-"PO-Revision-Date: 2020-01-28 21:56+0000\n"
-"Last-Translator: Samuel Aubert <baohm26@gmail.com>\n"
+"PO-Revision-Date: 2020-01-31 12:50+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -1079,7 +1079,7 @@ msgstr "Charriots"
 
 #: src/gui/backend/events.c:1452
 msgid "Trial limit has been reached. Zrythm will now go silent"
-msgstr ""
+msgstr "La limite des essais a été atteinte. Zrythm va maintenant se taire"
 
 #: src/utils/dialogs.c:43
 msgid "_Open"
@@ -1104,9 +1104,8 @@ msgid "English [en]"
 msgstr "Anglais [en]"
 
 #: src/utils/ui.c:577
-#, fuzzy
 msgid "English UK [en_GB]"
-msgstr "Anglais [en]"
+msgstr "Anglais UK [en_GB]"
 
 #: src/utils/ui.c:578
 msgid "German [de]"
@@ -1172,6 +1171,8 @@ msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
 "install one first and restart Zrythm"
 msgstr ""
+"Il n'y a pas de locale pour la langue que vous avez sélectionnée (%s). "
+"Veuillez en installer une d'abord et redémarrer Zrythm"
 
 #: src/utils/ui.c:849
 #, c-format
@@ -1364,6 +1365,8 @@ msgid ""
 "Creating new projects is disabled. Please restart Zrythm to start a new "
 "project"
 msgstr ""
+"La création de nouveaux projets est désactivée. Veuillez redémarrer Zrythm "
+"pour commencer un nouveau projet"
 
 #: src/actions/actions.c:556 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
@@ -1386,11 +1389,11 @@ msgstr ""
 
 #: src/actions/actions.c:618
 msgid "Loading is disabled in the trial version"
-msgstr ""
+msgstr "Le chargement est désactivé dans la version d'essai"
 
 #: src/actions/actions.c:646 src/actions/actions.c:670
 msgid "Saving is disabled in the trial version"
-msgstr ""
+msgstr "La sauvegarde est désactivée dans la version d'essai"
 
 #: src/actions/actions.c:682
 msgid "Save Project"
@@ -1519,11 +1522,10 @@ msgid "Resets the path to the default"
 msgstr "Réinitialiser l'emplacement par défaut"
 
 #: resources/ui/first_run_assistant.ui:145
-#, fuzzy
 msgid "Choose the paths to scan for VST2 plugins (or accept the default)"
 msgstr ""
-"Ensuite, choisissez l'emplacement à utiliser pour enregistrer les fichiers "
-"temporaires et les projets (ou accepter l'emplacement par défaut)"
+"Choisissez les chemins à scanner pour les greffons LV2 (ou accepter le "
+"défaut)"
 
 #: resources/ui/first_run_assistant.ui:182
 msgid "Select the audio and MIDI engine backends to use"
@@ -2223,9 +2225,8 @@ msgid "Marker name"
 msgstr "Nom du marqueur"
 
 #: resources/ui/header_notebook.ui:37
-#, fuzzy
 msgid "Edit"
-msgstr "Éditeur"
+msgstr "Éditer"
 
 #: resources/ui/header_notebook.ui:74
 msgid "View"
@@ -2437,16 +2438,15 @@ msgstr ""
 
 #: resources/ui/preferences.ui:267
 msgid "Device Name"
-msgstr ""
+msgstr "Nom de périphérique"
 
 #: resources/ui/preferences.ui:302
 msgid "Buffer Size"
-msgstr ""
+msgstr "Taille de tampon"
 
 #: resources/ui/preferences.ui:326
-#, fuzzy
 msgid "Samplerate"
-msgstr "Processeur d'échantillon"
+msgstr "Taux d'échantillonnage"
 
 #: resources/ui/preferences.ui:387 resources/ui/preferences.ui:456
 msgid "Plugins"
@@ -2473,7 +2473,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:430
 msgid "VST2 Paths"
-msgstr ""
+msgstr "Chemins VST2"
 
 #: resources/ui/preferences.ui:472
 msgid "Main Window"
