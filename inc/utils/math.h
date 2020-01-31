@@ -81,12 +81,23 @@ math_dbfs_to_amp (
 /**
  * Checks if 2 doubles are equal.
  *
- * @param epsilon The allowed differene.
+ * @param epsilon The allowed difference.
  */
-#define math_floats_equal(a,b,e) \
+#define math_floats_equal_epsilon(a,b,e) \
   ((a) > (b) ? (a) - (b) < e : (b) - (a) < e)
 
-#define math_doubles_equal math_floats_equal
+/**
+ * Checks if 2 doubles are equal.
+ */
+#define math_floats_equal(a,b) \
+  ((a) > (b) ? \
+   (a) - (b) < FLT_EPSILON : \
+   (b) - (a) < FLT_EPSILON)
+
+#define math_doubles_equal(a,b) \
+  ((a) > (b) ? \
+   (a) - (b) < DBL_EPSILON : \
+   (b) - (a) < DBL_EPSILON)
 
 /**
  * Rounds a double to an int.

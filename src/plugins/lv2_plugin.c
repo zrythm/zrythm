@@ -689,7 +689,7 @@ run (
   const nframes_t nframes)
 {
   /* Read and apply control change events from UI */
-  if (plugin->window)
+  if (plugin->plugin->visible)
     lv2_ui_read_and_apply_events (plugin, nframes);
 
   /* Run plugin for this cycle */
@@ -718,7 +718,7 @@ run (
     ((float) AUDIO_ENGINE->sample_rate /
      plugin->plugin->ui_update_hz);
   if (lv2_plugin_has_custom_ui (plugin) &&
-      plugin->window &&
+      plugin->plugin->visible &&
       (plugin->event_delta_t > update_frames))
     {
       send_ui_updates = true;
@@ -1700,8 +1700,7 @@ lv2_plugin_process (
     lv2_plugin->gframes !=
       g_start_frames ||
     !math_floats_equal (
-      lv2_plugin->bpm,
-      TRANSPORT->bpm, 0.001f);
+      lv2_plugin->bpm, TRANSPORT->bpm);
 
   /* let the plugin know if transport state
    * changed */
@@ -1893,7 +1892,7 @@ lv2_plugin_process (
         {
           if (!math_floats_equal (
                 (float) lv2_plugin->plugin_latency,
-                lv2_port->port->control, 0.001f))
+                lv2_port->port->control))
             {
               lv2_plugin->plugin_latency =
                 (uint32_t) lv2_port->port->control;
@@ -1932,7 +1931,7 @@ lv2_plugin_process (
                   }
 
                 /* if UI is instantiated */
-                if (lv2_plugin->window &&
+                if (lv2_plugin->plugin->visible &&
                     !lv2_port->old_api)
                   {
                     /* forward event to UI */

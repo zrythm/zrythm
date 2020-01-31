@@ -26,6 +26,10 @@
 #ifndef __PLUGINS_LV2_LV2_STATE_H__
 #define __PLUGINS_LV2_LV2_STATE_H__
 
+#include "config.h"
+
+#include <lv2/state/state.h>
+
 /**
  * @addtogroup lv2
  *

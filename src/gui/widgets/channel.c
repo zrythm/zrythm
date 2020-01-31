@@ -109,7 +109,7 @@ channel_widget_update_meter_reading (
   double val =
     (channel_get_current_l_db (channel) +
       channel_get_current_r_db (channel)) / 2;
-  if (math_doubles_equal (val, prev, 0.001))
+  if (math_doubles_equal (val, prev))
     return G_SOURCE_CONTINUE;
   char * string;
   if (val < -100.)

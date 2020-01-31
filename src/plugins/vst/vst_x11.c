@@ -646,9 +646,11 @@ int vst_x11_run_editor (VstPlugin* vstfx)
 
   pthread_mutex_lock (&vstfx->lock);
 
-  if (!vstfx->linux_window) {
-    pthread_cond_wait (&vstfx->window_status_change, &vstfx->lock);
-  }
+  if (!vstfx->linux_window)
+    {
+      pthread_cond_wait (
+        &vstfx->window_status_change, &vstfx->lock);
+    }
 
   pthread_mutex_unlock (&vstfx->lock);
 

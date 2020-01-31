@@ -71,7 +71,7 @@ tick_cb (
     self->info->progress);
 
   if (math_doubles_equal (
-        self->info->progress, 1.0, 0.0001))
+        self->info->progress, 1.0))
     {
       gtk_widget_set_visible (
         GTK_WIDGET (self->ok), 1);

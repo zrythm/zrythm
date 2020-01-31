@@ -116,7 +116,7 @@ automation_point_draw (
               automation_point_y) -
             rect->y;
 
-          if (math_doubles_equal (l, 0.0, 0.01))
+          if (math_doubles_equal (l, 0.0))
             {
               cairo_move_to (
                 cr,

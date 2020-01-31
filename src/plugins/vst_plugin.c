@@ -47,6 +47,7 @@
 #include "audio/engine.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
+#include "plugins/plugin_gtk.h"
 #include "plugins/vst_plugin.h"
 #ifdef HAVE_X11
 #include "plugins/vst/vst_x11.h"
@@ -620,9 +621,7 @@ vst_plugin_process (
       (TRANSPORT_IS_ROLLING) ||
     self->gframes !=
       g_start_frames ||
-    !math_floats_equal (
-      self->bpm,
-      TRANSPORT->bpm, 0.001f);
+    !math_floats_equal (self->bpm, TRANSPORT->bpm);
 
   /* Update transport state to expected values for
    * next cycle */
@@ -904,71 +903,10 @@ vst_plugin_close_ui (
   vst_x11_destroy_editor (self);
 #endif
 
-  if (self->gtk_window_parent)
+  if (self->plugin->visible)
     {
-      gtk_widget_set_sensitive (
-        GTK_WIDGET (self->gtk_window_parent), 0);
-      gtk_window_close (
-        GTK_WINDOW (self->gtk_window_parent));
+      plugin_gtk_close_window (self->plugin);
     }
-}
-
-/**
- * Called both on generic UIs and normal UIs when
- * a plugin window is destroyed.
- */
-static void
-on_window_destroy(
-  GtkWidget*  widget,
-  VstPlugin * self)
-{
-  self->gtk_window_parent = NULL;
-  g_message ("destroying VST plugin window");
-#ifdef HAVE_X11
-  vst_x11_destroy_editor (self);
-#endif
-}
-
-static void
-set_window_title (
-  VstPlugin * self)
-{
-  g_return_if_fail (
-    self && self->plugin &&
-    self->plugin->track &&
-    self->plugin->track->name);
-  const char* track_name =
-    self->plugin->track->name;
-  const char* plugin_name =
-    self->plugin->descr->name;
-  g_return_if_fail (track_name && plugin_name);
-
-  char title[500];
-  sprintf (
-    title,
-    "%s (%s)",
-    track_name, plugin_name);
-
-  /* TODO add preset if any */
-
-  gtk_window_set_title (
-    GTK_WINDOW (self->gtk_window_parent),
-    title);
-}
-
-static gboolean
-on_delete_event (
-  GtkWidget *widget,
-  GdkEvent  *event,
-  VstPlugin * self)
-{
-  self->plugin->visible = 0;
-  self->gtk_window_parent = NULL;
-  EVENTS_PUSH (
-    ET_PLUGIN_VISIBILITY_CHANGED,
-    self->plugin);
-
-  return FALSE;
 }
 
 /**
@@ -979,13 +917,11 @@ void
 vst_plugin_open_ui (
   VstPlugin * self)
 {
-  GtkWidget* window =
-    gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_icon_name (
-    GTK_WINDOW (window), "zrythm");
+  plugin_gtk_create_window (self->plugin);
 
 #ifdef _WOE32
-  vst_windows_run_editor (self, window);
+  vst_windows_run_editor (
+    self, self->plugin->window);
 #elif HAVE_X11
   vst_x11_run_editor (self);
 #endif
@@ -994,28 +930,14 @@ vst_plugin_open_ui (
         S_PREFERENCES, "plugin-uis-stay-on-top"))
     {
       gtk_window_set_transient_for (
-        GTK_WINDOW (window),
+        GTK_WINDOW (self->plugin->window),
         GTK_WINDOW (MAIN_WINDOW));
     }
 
-  self->gtk_window_parent = window;
-
+  /*self->gtk_window_parent = window;*/
   g_signal_connect (
-    window, "realize",
+    self->plugin->window, "realize",
     G_CALLBACK (on_realize), self);
-  g_signal_connect (
-    window, "destroy",
-    G_CALLBACK (on_window_destroy), self);
-  self->delete_event_id =
-    g_signal_connect (
-      G_OBJECT (window), "delete-event",
-      G_CALLBACK (on_delete_event), self);
-
-  /* set window title */
-  set_window_title (self);
-
-  gtk_window_set_role (
-    GTK_WINDOW (window), "plugin_ui");
 
   if (plugin_has_supported_custom_ui (self->plugin))
     {
@@ -1023,8 +945,10 @@ vst_plugin_open_ui (
       self->socket =
         GTK_SOCKET (gtk_socket_new ());
       gtk_container_add (
-        GTK_CONTAINER (window),
+        GTK_CONTAINER (self->plugin->ev_box),
         GTK_WIDGET (self->socket));
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->socket), 1);
 #endif
     }
   else
@@ -1033,9 +957,11 @@ vst_plugin_open_ui (
     }
 
   gtk_window_set_resizable (
-    GTK_WINDOW (window), 1);
-  gtk_window_present(GTK_WINDOW(window));
-  gtk_widget_show_all (GTK_WIDGET (window));
+    GTK_WINDOW (self->plugin->window), 1);
+  gtk_window_present (
+    GTK_WINDOW (self->plugin->window));
+  gtk_widget_show_all (
+    GTK_WIDGET (self->plugin->window));
 }
 
 /**

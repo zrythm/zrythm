@@ -183,7 +183,7 @@ lv2_ui_send_control_val_event_from_plugin_to_ui (
   Lv2Plugin *  lv2_plugin,
   Lv2Port *    lv2_port)
 {
-  if (!lv2_plugin->window)
+  if (!lv2_plugin->plugin->visible)
     return;
 
   char buf[sizeof(Lv2ControlChange) +

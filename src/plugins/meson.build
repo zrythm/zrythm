@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -21,6 +21,7 @@ plugin_srcs = files ([
   'lv2_plugin.c',
   'plugin.c',
   'plugin_descriptor.c',
+  'plugin_gtk.c',
   'plugin_manager.c',
   'vst_plugin.c',
   ])

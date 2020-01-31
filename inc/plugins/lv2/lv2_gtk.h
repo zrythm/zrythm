@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -43,6 +43,14 @@
 
 typedef struct Lv2Plugin Lv2Plugin;
 typedef struct Lv2Control Lv2Control;
+typedef struct PluginGtkPresetMenu
+  PluginGtkPresetMenu;
+
+#include <stdint.h>
+
+#include <gtk/gtk.h>
+
+#include <lilv/lilv.h>
 
 /**
  * @addtogroup plugins
@@ -62,6 +70,10 @@ lv2_gtk_ui_port_event(
   uint32_t    protocol,
   const void* buffer);
 
+/**
+ * Called by generic UI callbacks when e.g. a slider
+ * changes value.
+ */
 void
 lv2_gtk_set_float_control (
   const Lv2Control* control,
@@ -74,6 +86,45 @@ lv2_gtk_open_ui (
 int
 lv2_gtk_close_ui (
   Lv2Plugin* plugin);
+
+/**
+ * To be called by plugin_gtk both on generic UIs
+ * and normal UIs when a plugin window is destroyed.
+ */
+void
+lv2_gtk_on_window_destroy (
+  Lv2Plugin * plugin);
+
+PluginGtkPresetMenu*
+lv2_gtk_get_bank_menu (
+  Lv2Plugin* plugin,
+  PluginGtkPresetMenu* menu,
+  const LilvNode* bank);
+
+void
+lv2_gtk_on_save_activate (
+  Lv2Plugin * plugin);
+
+int
+lv2_gtk_add_preset_to_menu (
+  Lv2Plugin*      plugin,
+  const LilvNode* node,
+  const LilvNode* title,
+  void*           data);
+
+void
+lv2_gtk_on_save_preset_activate (
+  GtkWidget* widget,
+  Lv2Plugin * plugin);
+
+GtkWidget*
+lv2_gtk_build_control_widget (
+  Lv2Plugin* plugin, GtkWindow* window);
+
+void
+lv2_gtk_on_delete_preset_activate (
+  GtkWidget* widget,
+  Lv2Plugin * plugin);
 
 /**
  * @}

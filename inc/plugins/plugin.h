@@ -145,9 +145,43 @@ typedef struct Plugin
   /** Plugin is in deletion. */
   int                  deleting;
 
-  /** The Plugin's window TODO move here from
-   * Lv2Plugin and VstPlugin. */
+  /** Active preset item, if wrapped or generic
+   * UI. */
+  GtkCheckMenuItem* active_preset_item;
+
+  /**
+   * The Plugin's window.
+   *
+   * This is used for both generic UIs and for
+   * X11/Windows when plugins are wrapped.
+   *
+   * All VST plugin UIs are wrapped.
+   *
+   * LV2 plugin UIs
+   * are only not wrapped when they have external
+   * UIs. In that case, this must be NULL.
+   */
   GtkWindow *          window;
+
+  /** The GdkWindow of this widget should be
+   * somewhere inside \ref Plugin.window and will
+   * be used for wrapping plugin UIs in. */
+  GtkEventBox *        ev_box;
+
+  /** Vbox containing the above ev_box for wrapping,
+   * or used for packing generic UI controls. */
+  GtkBox *             vbox;
+
+  /** ID of the delete-event signal for \ref
+   * Plugin.window so that we can
+   * deactivate before freeing the plugin. */
+  gulong             delete_event_id;
+
+#ifdef _WOE32
+  /** A black decoration-less window that follows
+   * the wrapped plugin's window on Windows. */
+  GtkWindow *          black_window;
+#endif
 } Plugin;
 
 static const cyaml_schema_field_t
@@ -359,7 +393,8 @@ plugin_process (
  * Process show ui
  */
 void
-plugin_open_ui (Plugin *plugin);
+plugin_open_ui (
+  Plugin *plugin);
 
 /**
  * Returns if Plugin exists in MixerSelections.

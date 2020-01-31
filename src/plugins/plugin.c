@@ -450,7 +450,7 @@ plugin_set_ui_refresh_rate (
         1000.f;
       g_warn_if_fail (
         !math_floats_equal (
-          self->ui_update_hz, 0.f, 0.001f));
+          self->ui_update_hz, 0.f));
       g_message (
         "refresh rate returned by GDK: %.01f",
         (double) self->ui_update_hz);
@@ -734,52 +734,47 @@ plugin_open_ui (Plugin *plugin)
   else
     {
 #endif
-      switch (plugin->descr->protocol)
+      if (GTK_IS_WINDOW (plugin->window))
         {
-        case PROT_LV2:
-          {
-            Lv2Plugin * lv2_plugin = plugin->lv2;
-            if (lv2_plugin->has_external_ui &&
-                lv2_plugin->external_ui_widget)
+          gtk_window_present (
+            GTK_WINDOW (plugin->window));
+          gtk_window_set_transient_for (
+            GTK_WINDOW (plugin->window),
+            (GtkWindow *) MAIN_WINDOW);
+        }
+      else
+        {
+          switch (plugin->descr->protocol)
+            {
+            case PROT_LV2:
               {
-                lv2_plugin->external_ui_widget->
-                  show (
-                    lv2_plugin->external_ui_widget);
+                Lv2Plugin * lv2_plugin =
+                  plugin->lv2;
+                if (lv2_plugin->has_external_ui &&
+                    lv2_plugin->external_ui_widget)
+                  {
+                    lv2_plugin->
+                      external_ui_widget->
+                        show (
+                        lv2_plugin->
+                          external_ui_widget);
+                  }
+                else
+                  {
+                    lv2_gtk_open_ui (lv2_plugin);
+                  }
               }
-            else if (
-              GTK_IS_WINDOW (lv2_plugin->window))
+              break;
+            case PROT_VST:
               {
-                gtk_window_present (
-                  GTK_WINDOW (lv2_plugin->window));
-                gtk_window_set_transient_for (
-                  GTK_WINDOW (lv2_plugin->window),
-                  (GtkWindow *) MAIN_WINDOW);
-              }
-            else
-              {
-                lv2_gtk_open_ui (lv2_plugin);
-              }
-          }
-          break;
-        case PROT_VST:
-          {
-            VstPlugin * vst_plugin = plugin->vst;
-            if (GTK_IS_WINDOW (vst_plugin->gtk_window_parent))
-              {
-                gtk_window_present (
-                  GTK_WINDOW (vst_plugin->gtk_window_parent));
-                gtk_window_set_transient_for (
-                  GTK_WINDOW (vst_plugin->gtk_window_parent),
-                  (GtkWindow *) MAIN_WINDOW);
-              }
-            else
-              {
+                VstPlugin * vst_plugin =
+                  plugin->vst;
                 vst_plugin_open_ui (vst_plugin);
               }
-          }
-          break;
-        default:
-          break;
+              break;
+            default:
+              break;
+            }
         }
 #ifdef HAVE_CARLA
     }
@@ -894,22 +889,19 @@ plugin_close_ui (Plugin *plugin)
   else
     {
 #endif
+      if (GTK_IS_WINDOW (plugin->window))
+        {
+          g_signal_handler_disconnect (
+            plugin->window,
+            plugin->delete_event_id);
+        }
+
       switch (plugin->descr->protocol)
         {
         case PROT_LV2:
-          if (GTK_IS_WIDGET (
-                plugin->lv2->window))
-            g_signal_handler_disconnect (
-              plugin->lv2->window,
-              plugin->lv2->delete_event_id);
           lv2_gtk_close_ui (plugin->lv2);
           break;
         case PROT_VST:
-          if (GTK_IS_WIDGET (
-                plugin->vst->gtk_window_parent))
-            g_signal_handler_disconnect (
-              plugin->vst->gtk_window_parent,
-              plugin->vst->delete_event_id);
           vst_plugin_close_ui (plugin->vst);
           break;
         default:

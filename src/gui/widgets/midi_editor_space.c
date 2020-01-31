@@ -151,7 +151,7 @@ on_scroll (
 
       if (math_floats_equal (
             PIANO_ROLL->notes_zoom,
-            notes_zoom_before, 0.01f))
+            notes_zoom_before))
         {
           size_after = size_before;
         }

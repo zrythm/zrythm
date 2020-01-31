@@ -166,24 +166,6 @@ typedef struct Lv2Plugin
   /** Plugin UI instance (shared library). */
   SuilInstance*      ui_instance;
 
-  /**
-   * Window (if applicable) (GtkWindow).
-   *
-   * This is used by both generic UIs and X11/etc
-   * UIs.
-   */
-  void*              window;
-
-  /** Alignment for wrapping the plugin in, when
-   * using suil. */
-  GtkWidget *     alignment;
-  /** Vbox containing the above alignment. */
-  GtkWidget *     vbox;
-
-  /** ID of the delete-event signal so that we can
-   * deactivate before freeing the plugin. */
-  gulong             delete_event_id;
-
   /** Port array of size num_ports. */
   Lv2Port*          ports;
   int                num_ports;
@@ -214,7 +196,6 @@ typedef struct Lv2Plugin
   /** Data structure used for external UIs. */
   LV2_External_UI_Widget* external_ui_widget;
 
-  GtkCheckMenuItem* active_preset_item;
   bool              updating;
 
   /** URI => Int map. */

@@ -33,10 +33,6 @@
 
 #include <gtk/gtk.h>
 
-#ifdef HAVE_LV2_STATE
-#    include "lv2/state/lv2_state.h"
-#endif
-
 #define NS_ZRYTHM "https://lv2.zrythm.org/ns/zrythm#"
 #define NS_RDF  "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define NS_RDFS "http://www.w3.org/2000/01/rdf-schema#"
@@ -209,7 +205,7 @@ set_port_value (
         sizeof(fvalue), 0, &fvalue);
     }
 
-  if (plugin->window)
+  if (plugin->plugin->visible)
     {
       // Update UI
       char buf[sizeof(Lv2ControlChange) + sizeof(fvalue)];

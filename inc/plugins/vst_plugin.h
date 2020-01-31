@@ -201,7 +201,7 @@ typedef struct VstPlugin
    * This is used by both generic UIs and X11/etc
    * UIs.
    */
-  void *             gtk_window_parent;
+  //void *             gtk_window_parent;
 
   /** X11 XWindow (winw + lxvst). */
   int                xid;
@@ -209,14 +209,14 @@ typedef struct VstPlugin
   /* The plugin's parent X11 XWindow (LXVST/X11). */
   int                linux_window;
 
-  /** The ID of the plugin UI window created by
+  /** The X11 ID of the plugin UI window created by
    * the plugin. */
   int                linux_plugin_ui_window;
 
   /** X11 UI _XEventProc. */
   void  (* eventProc) (void * event);
 
-  /* Windows. */
+  /* Native Windows window handle. */
   void *             windows_window;
 
   int width;

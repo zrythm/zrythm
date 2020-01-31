@@ -90,7 +90,7 @@ automation_point_is_equal (
   return
     position_is_equal (&a_obj->pos, &b_obj->pos) &&
     math_floats_equal (
-      a->fvalue, b->fvalue, 0.001f);
+      a->fvalue, b->fvalue);
 }
 
 /**
@@ -347,7 +347,7 @@ automation_point_set_curviness (
   const int         curve_up)
 {
   if (math_doubles_equal (
-        self->curviness, curviness, 0.001))
+        self->curviness, curviness))
     return;
 
   self->curviness = curviness;

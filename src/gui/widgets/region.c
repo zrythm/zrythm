@@ -773,7 +773,7 @@ draw_automation_region (
                         break;
 
                       if (math_doubles_equal (
-                            k, 0.0, 0.001))
+                            k, 0.0))
                         {
                           cairo_move_to (
                             cr,

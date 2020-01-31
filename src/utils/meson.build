@@ -25,6 +25,7 @@ util_srcs = [
   'env.c',
   'gtk.c',
   'io.c',
+  'lilv.c',
   'localization.c',
   'log.c',
   'math.c',

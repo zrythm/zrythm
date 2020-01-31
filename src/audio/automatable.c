@@ -634,7 +634,7 @@ automatable_set_val_from_normalized (
 
             if (!math_floats_equal (
                   port_get_control_value (
-                    a->port, 0), real_val, 0.001f))
+                    a->port, 0), real_val))
               EVENTS_PUSH (
                 ET_AUTOMATION_VALUE_CHANGED, a);
 
@@ -671,7 +671,7 @@ automatable_set_val_from_normalized (
       ch = track_get_channel (a->track);
       if (!math_floats_equal (
             fader_get_fader_val (
-              &ch->fader), val, 0.001f))
+              &ch->fader), val))
         EVENTS_PUSH (
           ET_AUTOMATION_VALUE_CHANGED, a);
       fader_set_amp (
@@ -689,7 +689,7 @@ automatable_set_val_from_normalized (
     case AUTOMATABLE_TYPE_CHANNEL_PAN:
       ch = track_get_channel (a->track);
       if (!math_floats_equal (
-            channel_get_pan (ch), val, 0.001f))
+            channel_get_pan (ch), val))
         EVENTS_PUSH (
           ET_AUTOMATION_VALUE_CHANGED, a);
       channel_set_pan (ch, val);
