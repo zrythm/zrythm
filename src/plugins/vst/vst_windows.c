@@ -217,14 +217,14 @@ resize_cb (
   VstPlugin * self)
 {
   g_message ("resize cb on VST plugin");
-  if (self->gtk_window_parent)
+  if (self->plugin->window)
     {
       int width = self->width + self->hoffset;
       int height = self->height + self->voffset;
       g_message (
         "width %d height %d", width, height);
       gtk_widget_set_size_request (
-        GTK_WIDGET (self->gtk_window_parent),
+        GTK_WIDGET (self->plugin->window),
         width, height);
       move_window_into_view (self);
     }
@@ -239,7 +239,7 @@ vst_windows_package (
   GtkWindow * win)
 {
   g_message ("package plugin");
-  self->gtk_window_parent = win;
+  self->plugin->window = win;
 
   resize_cb (self);
 

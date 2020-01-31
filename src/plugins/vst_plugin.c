@@ -921,7 +921,7 @@ vst_plugin_open_ui (
 
 #ifdef _WOE32
   vst_windows_run_editor (
-    self, self->plugin->window);
+    self, GTK_WIDGET (self->plugin->window));
 #elif HAVE_X11
   vst_x11_run_editor (self);
 #endif
@@ -929,9 +929,20 @@ vst_plugin_open_ui (
   if (g_settings_get_int (
         S_PREFERENCES, "plugin-uis-stay-on-top"))
     {
+#ifdef _WOE32
+      gtk_window_set_transient_for (
+        GTK_WINDOW (self->plugin->window),
+        GTK_WINDOW (
+          self->plugin->black_window));
+      gtk_window_set_transient_for (
+        GTK_WINDOW (
+          self->plugin->black_window),
+        GTK_WINDOW (MAIN_WINDOW));
+#else
       gtk_window_set_transient_for (
         GTK_WINDOW (self->plugin->window),
         GTK_WINDOW (MAIN_WINDOW));
+#endif
     }
 
   /*self->gtk_window_parent = window;*/

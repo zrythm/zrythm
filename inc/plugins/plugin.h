@@ -181,6 +181,14 @@ typedef struct Plugin
   /** A black decoration-less window that follows
    * the wrapped plugin's window on Windows. */
   GtkWindow *          black_window;
+
+  /**
+   * Set to 1 to avoid recursive signals
+   * being fired.
+   *
+   * See plugin_gtk.c
+   */
+  int                black_window_shown_manually;
 #endif
 } Plugin;
 

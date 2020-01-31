@@ -462,7 +462,7 @@ load (
 
           GtkWidget * dialog =
             gtk_message_dialog_new (
-              GTK_WINDOW (MAIN_WINDOW),
+              NULL,
               GTK_DIALOG_MODAL |
                 GTK_DIALOG_DESTROY_WITH_PARENT,
               GTK_MESSAGE_INFO,
@@ -470,6 +470,11 @@ load (
               _("Newer backup found:\n  %s.\n"
                 "Use the newer backup?"),
               PROJECT->backup_dir);
+          gtk_window_set_title (
+            GTK_WINDOW (dialog),
+            _("Backup found"));
+          gtk_window_set_icon_name (
+            GTK_WINDOW (dialog), "zrythm");
           gtk_widget_set_visible (
             GTK_WIDGET (MAIN_WINDOW), 0);
           int res =
