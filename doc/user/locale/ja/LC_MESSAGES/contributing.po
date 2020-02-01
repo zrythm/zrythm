@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:30+0000\n"
-"PO-Revision-Date: 2019-08-18 16:24+0000\n"
+"PO-Revision-Date: 2020-02-02 21:50+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"manualcontributing/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/zrythm/manualcontributing/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.11-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../contributing/intro.rst:6
@@ -24,9 +25,8 @@ msgid "Contributing"
 msgstr "貢献"
 
 #: ../../contributing/intro.rst:9
-#, fuzzy
 msgid "Coding"
-msgstr "ビットコイン"
+msgstr "コーディング"
 
 #: ../../contributing/intro.rst:11
 msgid ""
@@ -39,7 +39,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:18
 msgid "Artwork and Themes"
-msgstr ""
+msgstr "アートワークとテーマ"
 
 #: ../../contributing/intro.rst:20
 msgid ""
@@ -361,4 +361,3 @@ msgstr ""
 
 #~ msgid "Contributing Overview"
 #~ msgstr "貢献"
-
