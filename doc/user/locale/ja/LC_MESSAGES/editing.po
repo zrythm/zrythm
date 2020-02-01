@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2020-01-24 23:02+0000\n"
+"PO-Revision-Date: 2020-02-02 21:50+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/ja/>\n"
@@ -464,7 +464,7 @@ msgstr ""
 
 #: ../../editing/piano-roll-editing/highlighting.rst:6
 msgid "Highlighting"
-msgstr ""
+msgstr "ハイライト"
 
 #: ../../editing/piano-roll-editing/highlighting.rst:8
 msgid ""
