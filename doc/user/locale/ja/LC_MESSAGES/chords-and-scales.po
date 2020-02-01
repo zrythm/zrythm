@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:23+0000\n"
-"PO-Revision-Date: 2020-01-24 15:57+0000\n"
+"PO-Revision-Date: 2020-02-02 21:50+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualchords-and-scales/ja/>\n"
@@ -29,7 +29,6 @@ msgid "Overview"
 msgstr "概要"
 
 #: ../../chords-and-scales/overview.rst:8
-#, fuzzy
 msgid ""
 "Chords and scales can be used to easily try out various chords and to "
 "make it easier to follow chord progressions."
@@ -65,15 +64,15 @@ msgstr ""
 
 #: ../../chords-and-scales/overview.rst:33
 msgid "Chord region and scale inside the chord track in the timeline."
-msgstr ""
+msgstr "タイムラインのコードトラック内のコードリージョンとスケール。"
 
 #: ../../chords-and-scales/overview.rst:40
 msgid "Chord objects inside the chord region above."
-msgstr ""
+msgstr "上のコードリージョン内のコードオブジェクト。"
 
 #: ../../chords-and-scales/overview.rst:43
 msgid "Highlighting"
-msgstr ""
+msgstr "ハイライト"
 
 #: ../../chords-and-scales/overview.rst:45
 msgid ""
@@ -81,28 +80,30 @@ msgid ""
 "corresponding to the scale, chord, or both at the position of the "
 "playhead."
 msgstr ""
+"すると、MIDI リージョン内でハイライト表示を使用して、再生ヘッドの位置でのスケール、コード、またはその両方に対応するノートをハイライト表示できます。"
 
 #: ../../chords-and-scales/overview.rst:53
 msgid "Chord highlighting."
-msgstr ""
+msgstr "コードの強調表示"
 
 #: ../../chords-and-scales/overview.rst:59
 msgid "Scale highlighting."
-msgstr ""
+msgstr "スケールの強調表示"
 
 #: ../../chords-and-scales/overview.rst:65
 msgid "Scale and chord highlighting."
-msgstr ""
+msgstr "スケールとコードの強調表示"
 
 #: ../../chords-and-scales/overview.rst:68
 msgid "Live Audition"
-msgstr ""
+msgstr "生オーディション"
 
 #: ../../chords-and-scales/overview.rst:70
 msgid ""
 "You can route the output of the chord track to a MIDI or Instrument track"
 " for live auditioning of the chord track's events."
 msgstr ""
+"コードトラックの出力をMIDIまたはインストゥルメントトラックにルーティングして、コードトラックのイベントのライブオーディションを行うことができます。"
 
 #~ msgid "TODO"
 #~ msgstr "TODO"
