@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2020-01-31 12:50+0000\n"
+"PO-Revision-Date: 2020-02-02 21:50+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/fr/>\n"
@@ -95,9 +95,8 @@ msgstr ""
 "sera supprimé."
 
 #: ../../editing/common-operations.rst:32
-#, fuzzy
 msgid "Object Operations"
-msgstr "Autres opérations"
+msgstr "Opérations sur les objets"
 
 #: ../../editing/common-operations.rst:34
 msgid "Cut"
@@ -180,7 +179,7 @@ msgstr "Tout sélectionner"
 
 #: ../../editing/common-operations.rst:74
 msgid "Select all objects in the current editor."
-msgstr ""
+msgstr "Sélectionnez tous les objets dans l'éditeur actuel."
 
 #: ../../editing/common-operations.rst:77
 msgid "Loop Selection"
@@ -205,15 +204,18 @@ msgid ""
 "signifies a separate edit mode, and Zrythm offers the following edit "
 "modes."
 msgstr ""
+"Lorsque vous travaillerez dans chaque éditeur, vous utiliserez très "
+"probablement les outils de curseur fournis par Zrythm pour créer, modifier "
+"et supprimer des objets. Chaque curseur signifie un mode d'édition distinct, "
+"et Zrythm propose les modes d'édition suivants."
 
 #: ../../editing/edit-modes.rst:17
-#, fuzzy
 msgid "Select/Stretch Mode"
-msgstr "Mode de sélection"
+msgstr "Mode de sélection/étirement"
 
 #: ../../editing/edit-modes.rst:18
 msgid "This can be toggled to switch between Select and Stretch."
-msgstr ""
+msgstr "Ceci peut être basculé entre Sélection et Étirement."
 
 #: ../../editing/edit-modes.rst:20
 msgid ""
@@ -221,17 +223,23 @@ msgid ""
 " objects. This is the most common mode and the most common operations can"
 " be accomplished by just using this."
 msgstr ""
+"En mode Sélection, vous pouvez sélectionner des objets et les déplacer, les "
+"cloner et les redimensionner. C'est le mode le plus courant et les "
+"opérations les plus courantes peuvent être effectuées en utilisant "
+"uniquement ce mode."
 
 #: ../../editing/edit-modes.rst:25
 msgid ""
 "Stretch mode is similar to the Select mode, with the exception that when "
 "you resize objects, their contents will be stretched to fit the new size."
 msgstr ""
+"Le mode d'étirement est similaire au mode de sélection, sauf que lorsque "
+"vous redimensionnez des objets, leur contenu sera étiré pour s'adapter à la "
+"nouvelle taille."
 
 #: ../../editing/edit-modes.rst:30
-#, fuzzy
 msgid "Selecting Objects"
-msgstr "Sélectionner des Pistes"
+msgstr "Sélectionner des objets"
 
 #: ../../editing/edit-modes.rst:31
 msgid ""
@@ -239,10 +247,16 @@ msgid ""
 " keep dragging to make a selection, or :zbutton:`Control`-click to "
 "add/remove objects to/from the selection."
 msgstr ""
+"Pour sélectionner des objets, vous pouvez soit cliquer sur eux, soit cliquer "
+"dans un espace vide et continuer à faire glisser pour effectuer une "
+"sélection, soit :zbutton:`Control`-clic pour ajouter/supprimer des objets à/"
+"depuis la sélection."
 
 #: ../../editing/edit-modes.rst:36
 msgid "Selected objects will have brighter color than non-selected objects."
 msgstr ""
+"Les objets sélectionnés auront une couleur plus vive que les objets non "
+"sélectionnés."
 
 #: ../../editing/edit-modes.rst:40
 msgid "Moving and Cloning Objects"
