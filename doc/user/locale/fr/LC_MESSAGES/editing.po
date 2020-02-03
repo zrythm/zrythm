@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2020-02-02 21:50+0000\n"
+"PO-Revision-Date: 2020-02-05 10:50+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/fr/>\n"
@@ -260,7 +260,7 @@ msgstr ""
 
 #: ../../editing/edit-modes.rst:40
 msgid "Moving and Cloning Objects"
-msgstr ""
+msgstr "Déplacement et clonage d'objets"
 
 #: ../../editing/edit-modes.rst:41
 msgid ""
@@ -270,16 +270,23 @@ msgid ""
 "the selected objects. This is an efficient way to quickly clone multiple "
 "objects."
 msgstr ""
+"Pour déplacer des objets, cliquez sur un objet sélectionné et continuez à "
+"faire glisser votre curseur jusqu'à l'endroit où vous voulez le déplacer. En "
+"maintenant enfoncé :zbutton:`Ctrl` pendant que vous faites cela, vous "
+"créerez des doublons (clones) des objets sélectionnés. C'est un moyen "
+"efficace de cloner rapidement plusieurs objets."
 
 #: ../../editing/edit-modes.rst:48
 msgid "Resizing Objects"
-msgstr ""
+msgstr "Redimensionnement d'objets"
 
 #: ../../editing/edit-modes.rst:49
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized "
 "by clicking and dragging their edges."
 msgstr ""
+"Les objets qui ont une longueur, tels que les régions et les notes MIDI, "
+"peuvent être redimensionnés en cliquant et en faisant glisser leurs bords."
 
 #: ../../editing/edit-modes.rst:52
 msgid ""
@@ -287,6 +294,10 @@ msgid ""
 "the bottom half of the object will allow you to resize the object by "
 "repeating it, instead of just resizing it."
 msgstr ""
+"Sur les objets qui peuvent être répétés, comme les régions, le déplacement "
+"du curseur sur la moitié inférieure de l'objet vous permettra de "
+"redimensionner l'objet en le répétant, au lieu de simplement le "
+"redimensionner."
 
 #: ../../editing/edit-modes.rst:57
 msgid ""
@@ -294,16 +305,24 @@ msgid ""
 "them instead of repeat them, their length must be changed or their clip "
 "markers must be moved so that they are not repeated anymore."
 msgstr ""
+"Lors du redimensionnement, les objets déjà répétés ne peuvent être que "
+"répétés. Pour les redimensionner au lieu de les répéter, il faut modifier "
+"leur longueur ou déplacer leurs marqueurs de clip afin qu'ils ne soient plus "
+"répétés."
 
 #: ../../editing/edit-modes.rst:65
 msgid "Cutting Objects"
-msgstr ""
+msgstr "Découpage d'objets"
 
 #: ../../editing/edit-modes.rst:66
+#, fuzzy
 msgid ""
 "You can :zbutton:`Alt`-click inside objects to break them up. Holding "
 "down :zbutton:`Shift` while doing this will bypass snapping."
 msgstr ""
+"Vous pouvez :zbutton:`Alt`-clic à l'intérieur des objets pour les "
+"décomposer. Si vous maintenez :zbutton:`Shift` enfoncé pendant que vous "
+"faites cela, ceci évitera le \"snapping\"."
 
 #: ../../editing/edit-modes.rst:71
 msgid "Edit Mode"
@@ -316,6 +335,11 @@ msgid ""
 "Edit mode this is accomplished by single clicking and dragging, which is "
 "more efficient when creating a large number of objects."
 msgstr ""
+"Ce mode est utilisé pour créer ou supprimer rapidement des objets. Alors "
+"qu'en mode Sélection, vous pouvez toujours créer des objets en double-"
+"cliquant et en glissant, en mode Édition, cela se fait par simple clic et "
+"glissement, ce qui est plus efficace lorsque vous créez un grand nombre "
+"d'objets."
 
 #: ../../editing/edit-modes.rst:78
 msgid ""
@@ -323,11 +347,13 @@ msgid ""
 "multiple objects in a row (where applicable) with a length specified by "
 "the snap settings corresponding to each editor."
 msgstr ""
+"Maintenir :zbutton:`Ctrl` enfoncé tout en cliquant vous permettra de créer "
+"plusieurs objets à la suite (le cas échéant) avec une longueur spécifiée par "
+"les paramètres d'accrochage correspondant à chaque éditeur."
 
 #: ../../editing/edit-modes.rst:84
-#, fuzzy
 msgid "Cut Mode"
-msgstr "Mode de sélection"
+msgstr "Mode de découpe"
 
 #: ../../editing/edit-modes.rst:85
 msgid ""
@@ -335,35 +361,39 @@ msgid ""
 "objects`, with the exception that you can just click instead of "
 ":zbutton:`Alt`-clicking."
 msgstr ""
+"Le mode de découpe se comporte de la même manière que ce qui est mentionné "
+"dans :ref:`cutting-objects`, à l'exception du fait que vous pouvez "
+"simplement cliquer au lieu de :zbutton:`Alt`-clic."
 
 #: ../../editing/edit-modes.rst:90
-#, fuzzy
 msgid "Erase Mode"
-msgstr "Outil d'effacement"
+msgstr "Mode d'effacement"
 
 #: ../../editing/edit-modes.rst:91
-#, fuzzy
 msgid ""
 "You can just click on objects to delete them, or click and drag to make a"
 " selection, deleting all objects inside it."
 msgstr ""
-"Pour sélectionner des objets en mode de sélection, cliquez et glissez "
-"pour créer un rectangle de sélection."
+"Vous pouvez simplement cliquer sur les objets pour les supprimer, ou cliquer "
+"et glisser pour faire une sélection, en supprimant tous les objets à "
+"l'intérieur."
 
 #: ../../editing/edit-modes.rst:95
 msgid "Ramp Mode"
-msgstr ""
+msgstr "Mode rampe"
 
 #: ../../editing/edit-modes.rst:96
 msgid ""
 "This mode is currently only used for editing velocities for MIDI notes. "
 "You can click and drag in the velocity editor to create velocity ramps."
 msgstr ""
+"Ce mode n'est actuellement utilisé que pour l'édition des vélocités des "
+"notes MIDI. Vous pouvez cliquer et faire glisser dans l'éditeur de vélocité "
+"pour créer des rampes de vélocité."
 
 #: ../../editing/edit-modes.rst:101
-#, fuzzy
 msgid "Audition Mode"
-msgstr "Mode d'édition"
+msgstr "Mode d'audition"
 
 #: ../../editing/edit-modes.rst:102
 msgid "This is a TODO feature."
@@ -478,15 +508,16 @@ msgid "Overview"
 msgstr "Vue générale"
 
 #: ../../editing/overview.rst:8
-#, fuzzy
 msgid ""
 "Editing refers to any work done in the timeline arranger and the "
 "following editors."
-msgstr "L'édition fait référence à tout travail effectué dans les arrangeurs :"
+msgstr ""
+"L'édition désigne tout travail effectué dans l'arrangeur de la ligne "
+"temporelle et les éditeurs suivants."
 
 #: ../../editing/overview.rst:11
 msgid "Piano Roll (MIDI Editor)"
-msgstr ""
+msgstr "Piano roll (éditeur MIDI)"
 
 #: ../../editing/overview.rst:12
 msgid "Automation Editor"
@@ -502,6 +533,10 @@ msgid ""
 "there is a global Edit section in the top toolbar that has common "
 "features shared by each editor."
 msgstr ""
+"Bien que chaque éditeur dispose de sa propre barre d'outils pour faciliter "
+"les différentes opérations, il y a une section d'édition globale dans la "
+"barre d'outils du haut qui présente des caractéristiques communes à chaque "
+"éditeur."
 
 #: ../../editing/piano-roll-editing/arranger.rst:6
 #: ../../editing/timeline/arranger.rst:6
@@ -559,6 +594,8 @@ msgid ""
 "Objects can be quantized to specified positions by using the Quantize and"
 " Quick-Quantize actions."
 msgstr ""
+"Les objets peuvent être quantifiés à des positions spécifiques en utilisant "
+"les actions de quantification et de quantification rapide."
 
 #: ../../editing/quantization.rst:15
 msgid "Quantize"
@@ -569,35 +606,40 @@ msgid ""
 "Clicking the Quantize button will open up a popup that will let you "
 "specify the settings to quantize the current selection with."
 msgstr ""
+"Cliquer sur le bouton \"Quantifier\" ouvre une fenêtre contextuelle qui vous "
+"permet de spécifier les paramètres pour quantifier la sélection actuelle."
 
 #: ../../editing/quantization.rst:23
-#, fuzzy
 msgid "Quantize to"
-msgstr "Quantification"
+msgstr "Quantifier à"
 
 #: ../../editing/quantization.rst:24
 msgid "Select the note length and type to quantize to."
-msgstr ""
+msgstr "Sélectionnez la longueur et le type de note à quantifier."
 
 #: ../../editing/quantization.rst:26
 msgid "Adjust"
-msgstr ""
+msgstr "Ajuster"
 
 #: ../../editing/quantization.rst:26
 msgid ""
 "Select if you want to quantize the start positions, the end positions (on"
 " objects that have length), or both."
 msgstr ""
+"Choisissez si vous voulez quantifier les positions de départ, les positions "
+"de fin (sur les objets qui ont une longueur), ou les deux."
 
 #: ../../editing/quantization.rst:30
 msgid "Amount"
-msgstr ""
+msgstr "Quantité"
 
 #: ../../editing/quantization.rst:29
 msgid ""
 "Select the amount to quantize by. 100% will quantize to the given options"
 " fully, while 0% will perform no quantization."
 msgstr ""
+"Sélectionnez le montant à quantifier. 100% quantifiera entièrement les "
+"options données, tandis que 0% n'effectuera aucune quantification."
 
 #: ../../editing/quantization.rst:32
 msgid "Swing"
