@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2020-02-05 10:50+0000\n"
+"PO-Revision-Date: 2020-02-07 16:50+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/fr/>\n"
@@ -643,36 +643,40 @@ msgstr ""
 
 #: ../../editing/quantization.rst:32
 msgid "Swing"
-msgstr ""
+msgstr "Swing"
 
 #: ../../editing/quantization.rst:33
 msgid "Select a swing amount."
-msgstr ""
+msgstr "Sélectionnez une quantité de swing."
 
 #: ../../editing/quantization.rst:37
-#, fuzzy
 msgid "Randomization"
-msgstr "Quantification"
+msgstr "Aléation"
 
 #: ../../editing/quantization.rst:35
 msgid ""
 "This will randomize the resulting positions by the given amount of ticks,"
 " and is useful for adding a \"human feel\" to quantized events."
 msgstr ""
+"Cela randomisera les positions résultantes en fonction du nombre de tics, et "
+"est utile pour ajouter une \"sensation humaine\" aux événements quantifiés."
 
 #: ../../editing/quantization.rst:39
 msgid ""
 "Clicking Quantize will perform the quantization and save the settings for"
 " quick quantization with Quick-Quantize."
 msgstr ""
+"Cliquer sur Quantifier effectuera une quantification et sauvegardera les "
+"paramètres pour une quantification rapide avec Quantifer-rapidement."
 
 #: ../../editing/quantization.rst:43
 msgid "Quick-Quantize"
-msgstr ""
+msgstr "Quantifer-rapidement"
 
 #: ../../editing/quantization.rst:44
 msgid "This will perform quantization based on the last known settings."
 msgstr ""
+"La quantification sera effectuée sur la base des derniers réglages connus."
 
 #: ../../editing/snapping-and-grid-options.rst:6
 #: ../../editing/snapping-grid-options.rst:6
@@ -707,7 +711,7 @@ msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:27
 msgid "Adaptive Grid"
-msgstr ""
+msgstr "Grille adaptative"
 
 #: ../../editing/snapping-grid-options.rst:28
 msgid "Not used at the moment."
@@ -715,24 +719,23 @@ msgstr "Inutilisé pour le moment."
 
 #: ../../editing/snapping-grid-options.rst:29
 msgid "Length"
-msgstr ""
+msgstr "Longueur"
 
 #: ../../editing/snapping-grid-options.rst:30
 msgid "Note length to snap to."
-msgstr ""
+msgstr "Longueur de note à laquelle s'accrocher."
 
 #: ../../editing/snapping-grid-options.rst:31
 msgid "Note Type"
-msgstr ""
+msgstr "Type de note"
 
 #: ../../editing/snapping-grid-options.rst:32
 msgid "Note type for the note length (normal/dotted/triplet)"
-msgstr ""
+msgstr "Type de note pour la longueur de note (normale/pointée/triolet)"
 
 #: ../../editing/timeline/event-viewer.rst:6
-#, fuzzy
 msgid "Event Viewer"
-msgstr "Vue générale"
+msgstr "Afficheur d'événement"
 
 #: ../../editing/timeline/intro.rst:6
 msgid "Timeline"
@@ -744,6 +747,9 @@ msgid ""
 "timeline section consists of the tracklist on the left and the "
 "ruler/arranger on the right side."
 msgstr ""
+"L'édition dans la ligne temporelle est la façon de travailler la plus "
+"courante à l'intérieur de Zrythm. La section de la ligne temporelle se "
+"compose de la liste des pistes à gauche et de la règle/arrangeur à droite."
 
 #: ../../editing/timeline/overview.rst:12
 msgid "Tracklist"
@@ -755,6 +761,9 @@ msgid ""
 " of total tracks is shown, as well as a search box for searching tracks "
 "by name (not operational at the moment)."
 msgstr ""
+"En haut de la liste des pistes, le nombre de pistes visibles par rapport au "
+"nombre total de pistes est indiqué, ainsi qu'une boîte de recherche pour la "
+"recherche de pistes par leur nom (non opérationnelle pour le moment)."
 
 #: ../../editing/timeline/overview.rst:22
 msgid "The rest of the tracklist is briefly touched upon at :ref:`tracklist`."
