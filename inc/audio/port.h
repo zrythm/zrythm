@@ -129,6 +129,15 @@ typedef enum PortFlags
    * This is only applicable for LV2 Atom ports.
    */
   PORT_FLAG_WANT_POSITION = 1 << 8,
+
+  /**
+   * Trigger ports will be set to 0 at the end of
+   * each cycle.
+   *
+   * This mostly applies to LV2 Control Input
+   * ports.
+   */
+  PORT_FLAG_TRIGGER = 1 << 9,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -143,6 +152,7 @@ flags_bitvals[] =
   { .name = "amplitude", .offset = 6, .bits = 1 },
   { .name = "pan", .offset = 7, .bits = 1 },
   { .name = "want_position", .offset = 8, .bits = 1 },
+  { .name = "trigger", .offset = 9, .bits = 1 },
 };
 
 /**

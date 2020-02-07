@@ -106,6 +106,7 @@ typedef struct Lv2Nodes
   LilvNode *          pprops_notAutomatic;
   LilvNode *          pprops_notOnGUI;
   LilvNode *          pprops_rangeSteps;
+  LilvNode *          pprops_trigger;
   LilvNode *          pset_bank;
   LilvNode *          pset_Preset;
   LilvNode *          rdfs_comment;

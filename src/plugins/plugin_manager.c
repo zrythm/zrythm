@@ -354,6 +354,8 @@ plugin_manager_init (PluginManager * self)
     pprops_rangeSteps,
     LV2_PORT_PROPS__rangeSteps);
   ADD_LV2_NODE (
+    pprops_trigger, LV2_PORT_PROPS__trigger);
+  ADD_LV2_NODE (
     pset_bank, LV2_PRESETS__bank);
   ADD_LV2_NODE (
     pset_Preset, LV2_PRESETS__Preset);

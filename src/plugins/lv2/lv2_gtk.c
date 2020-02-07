@@ -1276,6 +1276,7 @@ update_plugin_ui (
             plugin->plugin_to_ui_events,
             (char*)buf, ev.size);
 
+#if 0
           if (ev.protocol ==
                 PM_URIDS.atom_eventTransfer)
             {
@@ -1295,6 +1296,7 @@ update_plugin_ui (
                 atom->size, str);
               free(str);
             }
+#endif
 
           lv2_gtk_ui_port_event (
             plugin, ev.index,

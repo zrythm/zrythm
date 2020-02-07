@@ -323,6 +323,15 @@ create_port (
           lv2_port->lv2_control =
             port_control;
         }
+
+      /* set whether trigger or not */
+      if (lilv_port_has_property (
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
+            PM_LILV_NODES.pprops_trigger))
+        {
+          pi->flags |= PORT_FLAG_TRIGGER;
+        }
     }
   else if (lilv_port_is_a (
              lv2_plugin->lilv_plugin,
@@ -1714,6 +1723,19 @@ lv2_plugin_process (
       g_start_frames ||
     !math_floats_equal (
       lv2_plugin->bpm, TRANSPORT->bpm);
+# if 0
+  if (xport_changed)
+    {
+      g_message (
+        "xport changed lv2_plugin_rolling %d, "
+        "gframes vs g start frames %ld %ld, "
+        "bpm %f %f",
+        lv2_plugin->rolling,
+        lv2_plugin->gframes, g_start_frames,
+        (double) lv2_plugin->bpm,
+        (double) TRANSPORT->bpm);
+    }
+#endif
 
   /* let the plugin know if transport state
    * changed */
@@ -1782,6 +1804,7 @@ lv2_plugin_process (
     }
   else
     {
+      lv2_plugin->gframes = g_start_frames;
       lv2_plugin->rolling = 0;
     }
   lv2_plugin->bpm = TRANSPORT->bpm;
@@ -1963,7 +1986,6 @@ lv2_plugin_process (
               }
           }
     }
-
 }
 
 int

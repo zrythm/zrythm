@@ -715,6 +715,19 @@ plugin_process (
     }
 #endif
 
+  /* turn off any trigger input controls */
+  for (int i = 0; i < plugin->num_in_ports; i++)
+    {
+      Port * port = plugin->in_ports[i];
+      if (port->identifier.type == TYPE_CONTROL &&
+          port->identifier.flags &
+            PORT_FLAG_TRIGGER &&
+          !math_floats_equal (port->control, 0.f))
+        {
+          port_set_control_value (port, 0.f, 0, 1);
+        }
+    }
+
   /*g_atomic_int_set (&plugin->processed, 1);*/
   /*zix_sem_post (&plugin->processed_sem);*/
 }
