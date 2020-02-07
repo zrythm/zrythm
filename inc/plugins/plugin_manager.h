@@ -113,7 +113,7 @@ typedef struct Lv2Nodes
   LilvNode *          rdfs_range;
   LilvNode *          rsz_minimumSize;
   LilvNode *          state_threadSafeRestore;
-  LilvNode *          time_position;
+  LilvNode *          time_Position;
   LilvNode *          ui_external;
   LilvNode *          ui_externalkx;
   LilvNode *          ui_Gtk3UI;

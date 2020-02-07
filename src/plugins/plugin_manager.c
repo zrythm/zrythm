@@ -370,7 +370,7 @@ plugin_manager_init (PluginManager * self)
     state_threadSafeRestore,
     LV2_STATE__threadSafeRestore);
   ADD_LV2_NODE (
-    time_position, LV2_TIME__Position);
+    time_Position, LV2_TIME__Position);
   ADD_LV2_NODE (
     ui_external,
     "http://lv2plug.in/ns/extensions/ui#external");

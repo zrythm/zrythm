@@ -65,9 +65,9 @@ typedef enum BeatUnit
 
 typedef enum {
   PLAYSTATE_ROLL_REQUESTED,
-	PLAYSTATE_ROLLING,
-	PLAYSTATE_PAUSE_REQUESTED,
-	PLAYSTATE_PAUSED
+  PLAYSTATE_ROLLING,
+  PLAYSTATE_PAUSE_REQUESTED,
+  PLAYSTATE_PAUSED
 } Play_State;
 
 /**
@@ -139,13 +139,13 @@ typedef struct Transport
   nframes_t          position;
 
   /** Transport tempo in beats per minute. */
-	bpm_t              bpm;
+  bpm_t              bpm;
 
   /** Used when changing the BPM. */
-	bpm_t              prev_bpm;
+  bpm_t              prev_bpm;
 
   /** Transport speed (0=stop, 1=play). */
-	int               rolling;
+  int               rolling;
 
   /** Looping or not. */
   int               loop;
@@ -165,17 +165,17 @@ typedef struct Transport
    */
   //int               starting_recording;
 
-	ZixSem             paused;         ///< Paused signal from process thread
+  ZixSem             paused;         ///< Paused signal from process thread
   Play_State         play_state;     ///< play state
 } Transport;
 
 static const cyaml_strval_t
 beat_unit_strings[] =
 {
-	{ "2",      BEAT_UNIT_2    },
-	{ "4",      BEAT_UNIT_4    },
-	{ "8",      BEAT_UNIT_8    },
-	{ "16",     BEAT_UNIT_16   },
+  { "2",      BEAT_UNIT_2    },
+  { "4",      BEAT_UNIT_4    },
+  { "8",      BEAT_UNIT_8    },
+  { "16",     BEAT_UNIT_16   },
 };
 
 static const cyaml_schema_field_t
@@ -231,15 +231,15 @@ transport_fields_schema[] =
     "recording", CYAML_FLAG_DEFAULT,
     Transport, recording),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 transport_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-	  Transport, transport_fields_schema),
+    Transport, transport_fields_schema),
 };
 
 /**

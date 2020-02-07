@@ -287,26 +287,25 @@ get_y_normalized (
   if (curve_up)
     x = 1.0 - x;
 
-  double val;
+  double val = -1.0;
   switch (CURVE_ALGO)
     {
     case AP_CURVE_ALGORITHM_EXPONENT:
       val =
         pow (x, curviness);
-      if (curve_up)
-        val = 1.0 - val;
-      return val;
+      break;
     case AP_CURVE_ALGORITHM_SUPERELLIPSE:
       val =
         pow (
           1.0 - pow (x, curviness),
           (1.0 / curviness));
-      if (curve_up)
-        val = 1.0 - val;
-      return val;
+      break;
     }
-
-  g_return_val_if_reached (-1.0);
+  if (curve_up)
+    {
+      val = 1.0 - val;
+    }
+  return val;
 }
 
 /**
@@ -351,7 +350,7 @@ automation_point_set_curviness (
     return;
 
   self->curviness = curviness;
-  self->curve_up = curve_up;;
+  self->curve_up = curve_up;
   /*ArrangerObject * obj = (ArrangerObject *) self;*/
   /*if (Z_IS_ARRANGER_OBJECT_WIDGET (obj->widget))*/
     /*{*/

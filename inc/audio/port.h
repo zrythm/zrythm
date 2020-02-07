@@ -110,17 +110,25 @@ typedef enum PortOwnerType
  */
 typedef enum PortFlags
 {
-  PORT_FLAG_STEREO_L = 0x01,
-  PORT_FLAG_STEREO_R = 0x02,
-  PORT_FLAG_PIANO_ROLL = 0x04,
+  PORT_FLAG_STEREO_L = 1 << 0,
+  PORT_FLAG_STEREO_R = 1 << 1,
+  PORT_FLAG_PIANO_ROLL = 1 << 2,
   /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#sideChainOf. */
-  PORT_FLAG_SIDECHAIN = 0x08,
+  PORT_FLAG_SIDECHAIN = 1 << 3,
   /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainInput
    * and http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainOutput. */
-  PORT_FLAG_MAIN_PORT = 0x10,
-  PORT_FLAG_MANUAL_PRESS = 0x20,
-  PORT_FLAG_AMPLITUDE = 0x40,
-  PORT_FLAG_PAN = 0x80,
+  PORT_FLAG_MAIN_PORT = 1 << 4,
+  PORT_FLAG_MANUAL_PRESS = 1 << 5,
+  PORT_FLAG_AMPLITUDE = 1 << 6,
+  PORT_FLAG_PAN = 1 << 7,
+
+  /**
+   * Whether the port wants to receive position
+   * events.
+   *
+   * This is only applicable for LV2 Atom ports.
+   */
+  PORT_FLAG_WANT_POSITION = 1 << 8,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -134,6 +142,7 @@ flags_bitvals[] =
   { .name = "manual_press", .offset = 5, .bits = 1 },
   { .name = "amplitude", .offset = 6, .bits = 1 },
   { .name = "pan", .offset = 7, .bits = 1 },
+  { .name = "want_position", .offset = 8, .bits = 1 },
 };
 
 /**
@@ -479,8 +488,7 @@ port_identifier_fields_schema[] =
 {
   CYAML_FIELD_STRING_PTR (
     "label", CYAML_FLAG_POINTER,
-    PortIdentifier, label,
-     0, CYAML_UNLIMITED),
+    PortIdentifier, label, 0, CYAML_UNLIMITED),
   CYAML_FIELD_ENUM (
     "owner_type", CYAML_FLAG_DEFAULT,
     PortIdentifier, owner_type,

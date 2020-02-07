@@ -190,13 +190,17 @@ typedef struct Lv2Plugin
   int                control_in;     ///< Index of control input port
   ZixSem exit_sem;  /**< Exit semaphore */
 
+  /** Whether the plugin has at least 1 atom port
+   * that supports position. */
+  int                want_position;
+
   /** Whether the plugin has an external UI. */
-  int               has_external_ui;
+  int                has_external_ui;
 
   /** Data structure used for external UIs. */
   LV2_External_UI_Widget* external_ui_widget;
 
-  bool              updating;
+  bool               updating;
 
   /** URI => Int map. */
   LV2_URID_Map       map;

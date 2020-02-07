@@ -525,6 +525,11 @@ load (
 
   Project * prj = project_deserialize (yaml);
   g_free (yaml);
+  if (!prj)
+    {
+      g_critical ("Failed to load project");
+      return -1;
+    }
   prj->backup_dir =
     g_strdup (PROJECT->backup_dir);
 

@@ -116,7 +116,8 @@ static const cyaml_schema_field_t
 {
   CYAML_FIELD_MAPPING (
     "port_id", CYAML_FLAG_DEFAULT,
-    Lv2Port, port_id, port_identifier_fields_schema),
+    Lv2Port, port_id,
+    port_identifier_fields_schema),
 
   CYAML_FIELD_END
 };

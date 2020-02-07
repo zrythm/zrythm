@@ -158,10 +158,12 @@ create_port (
   lv2_port->lilv_port =
     lilv_plugin_get_port_by_index (
       lv2_plugin->lilv_plugin, lv2_port_index);
-  const LilvNode* sym =
-    lilv_port_get_symbol (
+  LilvNode * name_node =
+    lilv_port_get_name (
       lv2_plugin->lilv_plugin,
       lv2_port->lilv_port);
+  const char * name_str =
+    lilv_node_as_string (name_node);
   if (port_exists)
     {
       lv2_port->port =
@@ -175,8 +177,6 @@ create_port (
     }
   else
     {
-      char * port_name =
-        g_strdup (lilv_node_as_string (sym));
       PortType type = 0;
       PortFlow flow = 0;
 
@@ -234,8 +234,7 @@ create_port (
         }
 
       lv2_port->port =
-        port_new_with_type (type, flow, port_name);
-      g_free (port_name);
+        port_new_with_type (type, flow, name_str);
 
       Port * port = lv2_port->port;
 
@@ -364,11 +363,23 @@ create_port (
             midi_events_new (lv2_port->port);
         }
       lv2_port->old_api = false;
+
+      /* set want position flag */
+      if (lilv_port_supports_event (
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
+            PM_LILV_NODES.time_Position))
+        {
+          pi->flags |= PORT_FLAG_WANT_POSITION;
+          lv2_plugin->want_position = 1;
+        }
     }
   else if (!optional)
     {
-      g_warning ("Mandatory lv2_port at %d has unknown data type",
-               lv2_port_index);
+      g_warning (
+        "Mandatory lv2_port at %d has unknown "
+        "data type",
+        lv2_port_index);
       return -1;
     }
 
@@ -381,7 +392,9 @@ create_port (
       lv2_port->buf_size =
         (size_t) lilv_node_as_int(min_size);
     }
-  lilv_node_free(min_size);
+
+  lilv_node_free (min_size);
+  lilv_node_free (name_node);
 
   return 0;
 }
@@ -1706,7 +1719,7 @@ lv2_plugin_process (
    * changed */
   uint8_t   pos_buf[256];
   LV2_Atom * lv2_pos = (LV2_Atom*) pos_buf;
-  if (xport_changed)
+  if (xport_changed && lv2_plugin->want_position)
     {
       /* Build an LV2 position object to report
        * change to plugin */
@@ -1720,52 +1733,39 @@ lv2_plugin_process (
       LV2_Atom_Forge * forge = &lv2_plugin->forge;
       LV2_Atom_Forge_Frame frame;
       lv2_atom_forge_object (
-        forge,
-        &frame,
-        0,
+        forge, &frame, 0,
         PM_URIDS.time_Position);
       lv2_atom_forge_key (
-        forge,
-        PM_URIDS.time_frame);
+        forge, PM_URIDS.time_frame);
       lv2_atom_forge_long (
-        forge,
-        g_start_frames);
+        forge, g_start_frames);
       lv2_atom_forge_key (
-        forge,
-        PM_URIDS.time_speed);
+        forge, PM_URIDS.time_speed);
       lv2_atom_forge_float (
         forge,
         TRANSPORT->play_state == PLAYSTATE_ROLLING ?
           1.0 : 0.0);
       lv2_atom_forge_key (
-        forge,
-        PM_URIDS.time_barBeat);
+        forge, PM_URIDS.time_barBeat);
       lv2_atom_forge_float (
         forge,
-        (float) start_pos.beats - 1 +
+        ((float) start_pos.beats - 1) +
         ((float) start_pos.ticks /
           (float) TRANSPORT->ticks_per_beat));
       lv2_atom_forge_key (
-        forge,
-        PM_URIDS.time_bar);
+        forge, PM_URIDS.time_bar);
       lv2_atom_forge_long (
-        forge,
-        start_pos.bars - 1);
+        forge, start_pos.bars - 1);
       lv2_atom_forge_key (
-        forge,
-        PM_URIDS.time_beatUnit);
+        forge, PM_URIDS.time_beatUnit);
       lv2_atom_forge_int (
-        forge,
-        TRANSPORT->beat_unit);
+        forge, TRANSPORT->beat_unit);
       lv2_atom_forge_key (
-        forge,
-        PM_URIDS.time_beatsPerBar);
+        forge, PM_URIDS.time_beatsPerBar);
       lv2_atom_forge_float (
-        forge,
-        (float) TRANSPORT->beats_per_bar);
+        forge, (float) TRANSPORT->beats_per_bar);
       lv2_atom_forge_key (
-        forge,
-        PM_URIDS.time_beatsPerMinute);
+        forge, PM_URIDS.time_beatsPerMinute);
       lv2_atom_forge_float (
         forge, TRANSPORT->bpm);
     }
@@ -1819,7 +1819,9 @@ lv2_plugin_process (
            * applicable */
           LV2_Evbuf_Iterator iter =
             lv2_evbuf_begin (lv2_port->evbuf);
-          if (xport_changed)
+          if (xport_changed &&
+              port->identifier.flags &
+                PORT_FLAG_WANT_POSITION)
             {
               lv2_evbuf_write (
                 &iter, 0, 0,

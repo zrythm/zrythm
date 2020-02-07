@@ -59,15 +59,15 @@ chord_editor_fields_schema[] =
   ChordEditor, chords, num_chords,
   &chord_descriptor_schema, 0, CYAML_UNLIMITED),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 chord_editor_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-		ChordEditor, chord_editor_fields_schema),
+    ChordEditor, chord_editor_fields_schema),
 };
 
 /**

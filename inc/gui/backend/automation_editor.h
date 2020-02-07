@@ -54,15 +54,15 @@ automation_editor_fields_schema[] =
     "fixme", CYAML_FLAG_DEFAULT,
     AutomationEditor, fixme),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 automation_editor_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-		AutomationEditor,
+    AutomationEditor,
     automation_editor_fields_schema),
 };
 
