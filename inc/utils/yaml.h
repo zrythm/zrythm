@@ -126,12 +126,13 @@
  */
 void yaml_cyaml_log_func (
   cyaml_log_t  level,
+  void *       ctxt,
   const char * format,
   va_list      args);
 
 static const cyaml_config_t cyaml_config = {
   /** log level: DEBUG, WARNING, INFO... */
-  .log_level = CYAML_LOG_WARNING,
+  .log_level = CYAML_LOG_INFO,
   /* use the default loggin function */
   //.log_fn = cyaml_log,
   .log_fn = yaml_cyaml_log_func,

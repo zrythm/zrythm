@@ -121,8 +121,6 @@ midilib_inc = include_directories (
   join_paths ('ext', 'midilib'))
 carla_native_plugin_inc = include_directories (
   join_paths ('ext', 'carla'))
-cyaml_inc = include_directories (
-  join_paths ('ext', 'libcyaml', 'include'))
 zix_inc = include_directories (
   join_paths ('ext', 'zix'))
 suil_inc = include_directories (
@@ -133,7 +131,6 @@ all_inc = [
   ext_inc,
   carla_native_plugin_inc,
   midilib_inc,
-  cyaml_inc,
   zix_inc,
   suil_inc,
   ]
@@ -373,9 +370,10 @@ if (alsa_dep.found ())
   #cdata.set('HAVE_ALSA', 1)
 endif
 cyaml_dep = dependency(
-  'libcyaml', required: false, version: '>=0.2')
-if (cyaml_dep.found ())
-  cdata.set('HAVE_CYAML', 1)
+  'libcyaml', required: false, version: '=1.0.0')
+if not cyaml_dep.found()
+  cyaml_proj = subproject('libcyaml')
+  cyaml_dep = cyaml_proj.get_variable('zrythm_cyaml_dep')
 endif
 audec_dep = dependency(
   'audec', version: '>=0.1',
@@ -388,7 +386,6 @@ carla_native_plugin_dep = dependency(
 carla_utils_dep = dependency(
   'carla-utils',
   required: get_option('enable_carla'))
-yaml_dep = dependency('yaml-0.1')
 gtk_dep = dependency('gtk+-3.0', version: '>=3.22')
 sndfile_dep = dependency('sndfile', version: '>=1.0.25')
 lv2_dep = dependency(
@@ -403,7 +400,6 @@ fftw3_dep = dependency('fftw3', version: '>=3.3.5')
 
 zrythm_deps = [
   jack_dep,
-  yaml_dep,
   gtk_dep,
   sndfile_dep,
   libgtop_dep,

@@ -28,6 +28,7 @@
  */
 void yaml_cyaml_log_func (
   cyaml_log_t  lvl,
+  void *       ctxt,
   const char * fmt,
   va_list      ap)
 {

@@ -37,7 +37,4 @@ lv2_lib = static_library (
   dependencies: zrythm_deps,
   include_directories: all_inc,
   c_args: [ common_cflags ],
-  link_with: [
-    cyaml,
-    ]
   )

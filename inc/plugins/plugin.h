@@ -236,8 +236,7 @@ static const cyaml_schema_value_t
 plugin_schema =
 {
   CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL |
-    CYAML_FLAG_ALLOW_NULL_PTR,
+    CYAML_FLAG_POINTER_NULL_STR,
     Plugin, plugin_fields_schema),
 };
 
