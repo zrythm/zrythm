@@ -174,3 +174,4 @@ results*
 
 # subprojects
 subprojects/**/*
+!subprojects/*.wrap
