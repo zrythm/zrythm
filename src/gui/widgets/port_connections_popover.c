@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -87,7 +87,7 @@ port_connections_popover_widget_refresh (
                 {
                   pcr =
                     port_connection_row_widget_new (
-                      port, owner->port, 1);
+                      self, port, owner->port, 1);
                   gtk_container_add (
                     GTK_CONTAINER (self->ports_box),
                     GTK_WIDGET (pcr));
@@ -113,7 +113,7 @@ port_connections_popover_widget_refresh (
                 {
                   pcr =
                     port_connection_row_widget_new (
-                      owner->port, port, 0);
+                      self, owner->port, port, 0);
                   gtk_container_add (
                     GTK_CONTAINER (self->ports_box),
                     GTK_WIDGET (pcr));

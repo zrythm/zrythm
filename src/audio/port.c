@@ -2000,13 +2000,19 @@ port_sum_signal_from_inputs (
       for (k = 0; k < port->num_srcs; k++)
         {
           src_port = port->srcs[k];
-          g_warn_if_fail (
-            src_port->identifier.type ==
-              TYPE_EVENT);
-          midi_events_append (
-            src_port->midi_events,
-            port->midi_events, start_frame,
-            nframes, 0);
+          int dest_idx =
+            port_get_dest_index (
+              src_port, port);
+          if (src_port->dest_enabled[dest_idx])
+            {
+              g_warn_if_fail (
+                src_port->identifier.type ==
+                  TYPE_EVENT);
+              midi_events_append (
+                src_port->midi_events,
+                port->midi_events, start_frame,
+                nframes, 0);
+            }
         }
 
       if (port->identifier.flow == FLOW_OUTPUT)
@@ -2101,6 +2107,11 @@ port_sum_signal_from_inputs (
       for (k = 0; k < port->num_srcs; k++)
         {
           src_port = port->srcs[k];
+          int dest_idx =
+            port_get_dest_index (
+              src_port, port);
+          if (!src_port->dest_enabled[dest_idx])
+            continue;
 
           float minf, maxf, depth_range;
           maxf =
@@ -2172,6 +2183,12 @@ port_sum_signal_from_inputs (
         for (k = 0; k < port->num_srcs; k++)
           {
             src_port = port->srcs[k];
+            int dest_idx =
+              port_get_dest_index (
+                src_port, port);
+            if (!src_port->dest_enabled[
+                   dest_idx])
+              continue;
 
             if (src_port->identifier.type ==
                   TYPE_CV)

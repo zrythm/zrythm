@@ -66,12 +66,13 @@ static const cyaml_schema_field_t
     ChordSelections, base,
     arranger_selections_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "chord_objects", CYAML_FLAG_POINTER,
+    "chord_objects",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ChordSelections, chord_objects,
     num_chord_objects,
     &chord_object_schema, 0, CYAML_UNLIMITED),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t

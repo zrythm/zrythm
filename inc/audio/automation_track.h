@@ -103,7 +103,8 @@ static const cyaml_schema_field_t
     AutomationTrack, automatable,
     automatable_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "regions", CYAML_FLAG_POINTER,
+    "regions",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     AutomationTrack, regions, num_regions,
     &region_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (

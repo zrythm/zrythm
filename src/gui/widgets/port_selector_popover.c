@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -324,7 +324,14 @@ create_model_for_plugins (
       for (int i = 0; i < STRIP_SIZE; i++)
         {
           pl = ch->plugins[i];
-          if (!pl)
+
+          /* skip if no plugin or the plugin is the
+           * port's plugin */
+          if (!pl ||
+              (self->port->identifier.owner_type ==
+                 PORT_OWNER_TYPE_PLUGIN &&
+               pl ==
+                 port_get_plugin (self->port, 1)))
             continue;
 
           // Add a new row to the model
@@ -522,10 +529,7 @@ port_selector_popover_widget_new (
 
   self->track_model =
     create_model_for_tracks (self);
-  tree_view_setup (
-    self,
-    self->track_model,
-    1);
+  tree_view_setup (self, self->track_model, 1);
 
   self->plugin_model =
     create_model_for_plugins (self, NULL);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,19 +21,46 @@
 #include "gui/widgets/bar_slider.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/port_connection_row.h"
+#include "gui/widgets/port_connections_popover.h"
 #include "utils/gtk.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
-G_DEFINE_TYPE (PortConnectionRowWidget,
-               port_connection_row_widget,
-               GTK_TYPE_EVENT_BOX)
+G_DEFINE_TYPE (
+  PortConnectionRowWidget,
+  port_connection_row_widget,
+  GTK_TYPE_EVENT_BOX)
+
+static void
+on_enable_toggled (
+  GtkToggleButton *         btn,
+  PortConnectionRowWidget * self)
+{
+  int dest_idx =
+    port_get_dest_index (self->src, self->dest);
+  self->src->dest_enabled[dest_idx] =
+    gtk_toggle_button_get_active (btn);
+  port_connections_popover_widget_refresh (
+    self->parent);
+}
+
+static void
+on_del_clicked (
+  GtkButton *               btn,
+  PortConnectionRowWidget * self)
+{
+  port_disconnect (self->src, self->dest);
+  port_connections_popover_widget_refresh (
+    self->parent);
+}
 
 /**
  * Creates the popover.
  */
 PortConnectionRowWidget *
 port_connection_row_widget_new (
+  PortConnectionsPopoverWidget * parent,
   Port * src,
   Port * dest,
   int    is_input)
@@ -45,6 +72,7 @@ port_connection_row_widget_new (
   self->src = src;
   self->dest = dest;
   self->is_input = is_input;
+  self->parent = parent;
 
   /* get connection locked/enabled */
   int dest_idx = port_get_dest_index (src, dest);
@@ -60,12 +88,16 @@ port_connection_row_widget_new (
   GtkToggleButton * btn =
     z_gtk_toggle_button_new_with_icon (
       "z-network-connect");
-  gtk_toggle_button_set_active (
-    btn, enabled);
+  gtk_toggle_button_set_active (btn, enabled);
   gtk_widget_set_visible (GTK_WIDGET (btn), 1);
   gtk_box_pack_start (
-    GTK_BOX (box), GTK_WIDGET (btn),
-    0,0,0);
+    GTK_BOX (box), GTK_WIDGET (btn), 0, 0, 0);
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (btn),
+    _("Enable/disable connection"));
+  g_signal_connect (
+    G_OBJECT (btn), "toggled",
+    G_CALLBACK (on_enable_toggled), self);
 
   /* create overlay */
   self->overlay =
@@ -91,12 +123,26 @@ port_connection_row_widget_new (
     GTK_CONTAINER (self->overlay),
     GTK_WIDGET (self->slider));
 
+  /* delete connection button */
+  self->delete_btn =
+    GTK_BUTTON (
+      gtk_button_new_from_icon_name (
+        "z-edit-delete", GTK_ICON_SIZE_BUTTON));
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->delete_btn), 1);
   gtk_container_add (
-    GTK_CONTAINER (self),
-    box);
+    GTK_CONTAINER (box),
+    GTK_WIDGET (self->delete_btn));
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self->delete_btn),
+    _("Delete connection"));
+  g_signal_connect (
+    G_OBJECT (self->delete_btn), "clicked",
+    G_CALLBACK (on_del_clicked), self);
 
-  gtk_widget_set_sensitive (
-    box, !locked);
+  gtk_container_add (GTK_CONTAINER (self), box);
+
+  gtk_widget_set_sensitive (box, !locked);
 
   return self;
 }

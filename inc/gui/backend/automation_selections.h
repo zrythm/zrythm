@@ -62,12 +62,13 @@ static const cyaml_schema_field_t
     AutomationSelections, base,
     arranger_selections_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "automation_points", CYAML_FLAG_POINTER,
+    "automation_points",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     AutomationSelections, automation_points,
     num_automation_points,
     &automation_point_schema, 0, CYAML_UNLIMITED),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t

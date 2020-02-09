@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -32,6 +32,8 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _KnobWidget KnobWidget;
 typedef struct _BarSliderWidget BarSliderWidget;
+typedef struct _PortConnectionsPopoverWidget
+  PortConnectionsPopoverWidget;
 
 typedef struct _PortConnectionRowWidget
 {
@@ -51,8 +53,12 @@ typedef struct _PortConnectionRowWidget
    * widgets. */
   GtkOverlay *     overlay;
 
+  GtkButton *      delete_btn;
+
   /** The slider. */
   BarSliderWidget * slider;
+
+  PortConnectionsPopoverWidget * parent;
 } PortConnectionRowWidget;
 
 /**
@@ -60,6 +66,7 @@ typedef struct _PortConnectionRowWidget
  */
 PortConnectionRowWidget *
 port_connection_row_widget_new (
+  PortConnectionsPopoverWidget * parent,
   Port * src,
   Port * dest,
   int    is_input);

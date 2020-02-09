@@ -63,7 +63,8 @@ static const cyaml_schema_field_t
 audio_pool_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
-    "clips", CYAML_FLAG_POINTER,
+    "clips",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     AudioPool, clips, num_clips,
     &audio_clip_schema, 0, CYAML_UNLIMITED),
 

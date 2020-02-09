@@ -63,12 +63,13 @@ static const cyaml_schema_field_t
     MidiArrangerSelections, base,
     arranger_selections_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "midi_notes", CYAML_FLAG_POINTER,
+    "midi_notes",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     MidiArrangerSelections, midi_notes,
     num_midi_notes,
     &midi_note_schema, 0, CYAML_UNLIMITED),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t

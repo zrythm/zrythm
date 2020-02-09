@@ -91,7 +91,7 @@ static const cyaml_schema_field_t
   automation_tracklist_fields_schema[] =
 {
   CYAML_FIELD_SEQUENCE_COUNT (
-    "ats", CYAML_FLAG_POINTER,
+    "ats", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     AutomationTracklist, ats, num_ats,
     &automation_track_schema, 0, CYAML_UNLIMITED),
 

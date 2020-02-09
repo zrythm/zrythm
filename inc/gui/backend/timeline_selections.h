@@ -79,16 +79,19 @@ static const cyaml_schema_field_t
     TimelineSelections, base,
     arranger_selections_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "regions", CYAML_FLAG_POINTER,
+    "regions",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     TimelineSelections, regions, num_regions,
     &region_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "scale_objects", CYAML_FLAG_POINTER,
+    "scale_objects",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     TimelineSelections, scale_objects,
     num_scale_objects,
     &scale_object_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "markers", CYAML_FLAG_POINTER,
+    "markers",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     TimelineSelections, markers, num_markers,
     &marker_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (

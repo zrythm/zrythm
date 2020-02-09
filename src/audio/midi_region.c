@@ -90,9 +90,7 @@ midi_region_print_midi_notes (
   for (int i = 0; i < self->num_midi_notes; i++)
     {
       mn = self->midi_notes[i];
-
-      g_message ("Note at %d",
-                 i);
+      g_message ("Note at %d", i);
       midi_note_print (mn);
     }
 }
@@ -114,9 +112,9 @@ midi_region_add_midi_note (
   array_double_size_if_full (
     region->midi_notes, region->num_midi_notes,
     region->midi_notes_size, MidiNote *)
-  array_append (region->midi_notes,
-                region->num_midi_notes,
-                midi_note);
+  array_append (
+    region->midi_notes, region->num_midi_notes,
+    midi_note);
 
   if (pub_events)
     {
