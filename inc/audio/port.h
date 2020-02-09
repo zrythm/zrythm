@@ -138,6 +138,12 @@ typedef enum PortFlags
    * ports.
    */
   PORT_FLAG_TRIGGER = 1 << 9,
+
+  /** Whether the port is a toggle (on/off). */
+  PORT_FLAG_TOGGLE = 1 << 10,
+
+  /** Whether the port is an integer. */
+  PORT_FLAG_INTEGER = 1 << 11,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -294,6 +300,16 @@ typedef struct Port
    * used.
    */
   PortInternalType    internal_type;
+
+  /**
+   * Minimum, maximum and zero values for this
+   * port.
+   *
+   * These only apply to control and CV ports.
+   */
+  float               minf;
+  float               maxf;
+  float               zerof;
 
   /** Used for LV2. */
   Lv2Port *          lv2_port;
@@ -582,6 +598,15 @@ port_fields_schema[] =
   CYAML_FIELD_FLOAT (
     "control", CYAML_FLAG_DEFAULT,
     Port, control),
+  CYAML_FIELD_FLOAT (
+    "minf", CYAML_FLAG_DEFAULT,
+    Port, minf),
+  CYAML_FIELD_FLOAT (
+    "maxf", CYAML_FLAG_DEFAULT,
+    Port, maxf),
+  CYAML_FIELD_FLOAT (
+    "zerof", CYAML_FLAG_DEFAULT,
+    Port, zerof),
   CYAML_FIELD_INT (
     "vst_param_id", CYAML_FLAG_DEFAULT,
     Port, vst_param_id),

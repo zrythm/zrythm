@@ -45,6 +45,10 @@
 
 #include <gtk/gtk.h>
 
+/* TODO all this should be merged with Port, or
+ * make a native Zrythm "Control" as an optional
+ * member under Port. */
+
 int
 scale_point_cmp (
   const void * _a,

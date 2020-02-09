@@ -256,11 +256,12 @@ create_port (
             PORT_OWNER_TYPE_PLUGIN;
         }
     }
-  lv2_port->port->lv2_port = lv2_port;
+  Port * port = lv2_port->port;
+  port->lv2_port = lv2_port;
   lv2_port->evbuf = NULL;
   lv2_port->buf_size = 0;
   lv2_port->index = lv2_port_index;
-  lv2_port->port->control = 0.0f;
+  port->control = 0.0f;
 
   const bool optional =
     lilv_port_has_property (
@@ -345,6 +346,37 @@ create_port (
              lv2_port->lilv_port,
              PM_LILV_NODES.core_CVPort))
     {
+      LilvNode * def;
+      LilvNode * min;
+      LilvNode * max;
+      lilv_port_get_range (
+        lv2_plugin->lilv_plugin,
+        lv2_port->lilv_port, &def, &min, &max);
+      if (def)
+        {
+          lilv_node_free (def);
+        }
+      if (max)
+        {
+          port->maxf =
+            lilv_node_as_float (max);
+          lilv_node_free (max);
+        }
+      else
+        {
+          port->maxf = 1.f;
+        }
+      if (min)
+        {
+          port->minf =
+            lilv_node_as_float (min);
+          lilv_node_free (min);
+        }
+      else
+        {
+          port->minf = - 1.f;
+        }
+      port->zerof = 0.f;
       pi->type = TYPE_CV;
     }
   else if (lilv_port_is_a (

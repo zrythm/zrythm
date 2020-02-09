@@ -1611,6 +1611,23 @@ port_get_minf (
     case TYPE_AUDIO:
       return 0.f;
     case TYPE_CV:
+      switch (port->identifier.owner_type)
+        {
+        case PORT_OWNER_TYPE_PLUGIN:
+          {
+            Plugin * pl = port_get_plugin (port, 1);
+            g_return_val_if_fail (pl, 0.f);
+            switch (pl->descr->protocol)
+              {
+              case PROT_LV2:
+                return port->minf;
+              default:
+                break;
+              }
+          }
+        default:
+          break;
+        }
       return -1.f;
     case TYPE_EVENT:
       return  0.f;
@@ -1671,6 +1688,23 @@ port_get_maxf (
     case TYPE_AUDIO:
       return 2.f;
     case TYPE_CV:
+      switch (port->identifier.owner_type)
+        {
+        case PORT_OWNER_TYPE_PLUGIN:
+          {
+            Plugin * pl = port_get_plugin (port, 1);
+            g_return_val_if_fail (pl, 0.f);
+            switch (pl->descr->protocol)
+              {
+              case PROT_LV2:
+                return port->maxf;
+              default:
+                break;
+              }
+          }
+        default:
+          break;
+        }
       return 1.f;
     case TYPE_EVENT:
       return  1.f;
@@ -1730,6 +1764,23 @@ port_get_zerof (
     case TYPE_AUDIO:
       return 0.f;
     case TYPE_CV:
+      switch (port->identifier.owner_type)
+        {
+        case PORT_OWNER_TYPE_PLUGIN:
+          {
+            Plugin * pl = port_get_plugin (port, 1);
+            g_return_val_if_fail (pl, 0.f);
+            switch (pl->descr->protocol)
+              {
+              case PROT_LV2:
+                return port->zerof;
+              default:
+                break;
+              }
+          }
+        default:
+          break;
+        }
       return 0.f;
     case TYPE_EVENT:
       return 0.f;
@@ -2023,6 +2074,7 @@ port_sum_signal_from_inputs (
         }
       break;
     case TYPE_AUDIO:
+    case TYPE_CV:
       if (noroll)
         {
           memset (
@@ -2050,10 +2102,26 @@ port_sum_signal_from_inputs (
         {
           src_port = port->srcs[k];
 
+          float minf, maxf, depth_range;
+          maxf =
+            port_get_maxf (port);
+          minf =
+            port_get_minf (port);
+          depth_range =
+            (maxf - minf) / 2.f;
+
           /* sum the signals */
           for (l = start_frame; l < nframes; l++)
             {
-              port->buf[l] += src_port->buf[l];
+              port->buf[l] =
+                CLAMP (
+                  port->buf[l] +
+                    depth_range *
+                      src_port->buf[l] *
+                      src_port->multipliers[
+                        port_get_dest_index (
+                          src_port, port)],
+                  minf, maxf);
             }
         }
 
@@ -2330,8 +2398,9 @@ port_print_connections_all ()
 void
 port_clear_buffer (Port * port)
 {
-  if (port->identifier.type == TYPE_AUDIO &&
-        port->buf)
+  PortIdentifier * pi = &port->identifier;
+  if ((pi->type == TYPE_AUDIO ||
+       pi->type == TYPE_CV) && port->buf)
     {
       memset (
         port->buf, 0,
