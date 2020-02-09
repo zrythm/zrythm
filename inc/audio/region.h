@@ -244,7 +244,8 @@ static const cyaml_schema_field_t
     "muted", CYAML_FLAG_DEFAULT,
     ZRegion, muted),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "midi_notes", CYAML_FLAG_POINTER,
+    "midi_notes",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ZRegion, midi_notes, num_midi_notes,
     &midi_note_schema, 0, CYAML_UNLIMITED),
 	CYAML_FIELD_INT (
@@ -254,11 +255,12 @@ static const cyaml_schema_field_t
     "lane_pos", CYAML_FLAG_DEFAULT,
     ZRegion, lane_pos),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "aps", CYAML_FLAG_POINTER,
+    "aps", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ZRegion, aps, num_aps,
     &automation_point_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "chord_objects", CYAML_FLAG_POINTER,
+    "chord_objects",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ZRegion, chord_objects, num_chord_objects,
     &chord_object_schema, 0, CYAML_UNLIMITED),
 

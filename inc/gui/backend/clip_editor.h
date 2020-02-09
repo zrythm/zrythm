@@ -80,7 +80,7 @@ clip_editor_fields_schema[] =
     "region_name",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ClipEditor, region_name,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
   CYAML_FIELD_MAPPING (
     "piano_roll", CYAML_FLAG_DEFAULT,
     ClipEditor, piano_roll,
@@ -94,15 +94,15 @@ clip_editor_fields_schema[] =
     ClipEditor, chord_editor,
     chord_editor_fields_schema),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 clip_editor_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-		ClipEditor, clip_editor_fields_schema),
+    ClipEditor, clip_editor_fields_schema),
 };
 
 /**

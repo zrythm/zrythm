@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -48,6 +48,18 @@ _free_later (
  */
 void
 object_utils_init (void);
+
+/**
+ * Frees memory and sets the pointer to NULL.
+ */
+#define free_and_null(ptr) \
+  { free (*ptr); *ptr = NULL; }
+
+/**
+ * Frees memory and sets the pointer to NULL.
+ */
+#define g_free_and_null(ptr) \
+  { g_free (*ptr); *ptr = NULL; }
 
 /**
  * @}

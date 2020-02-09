@@ -440,7 +440,7 @@ engine_fields_schema[] =
   CYAML_FIELD_INT (
     "sample_rate", CYAML_FLAG_DEFAULT,
     AudioEngine, sample_rate),
-  CYAML_FIELD_INT (
+  CYAML_FIELD_FLOAT (
     "frames_per_tick", CYAML_FLAG_DEFAULT,
     AudioEngine, frames_per_tick),
   CYAML_FIELD_MAPPING (

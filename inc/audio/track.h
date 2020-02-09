@@ -398,15 +398,18 @@ track_fields_schema[] =
     Track, lanes, num_lanes,
     &track_lane_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "chord_regions", CYAML_FLAG_POINTER,
+    "chord_regions",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Track, chord_regions, num_chord_regions,
     &region_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "scales", CYAML_FLAG_POINTER,
+    "scales",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Track, scales, num_scales,
     &scale_object_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "markers", CYAML_FLAG_POINTER,
+    "markers",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Track, markers, num_markers,
     &marker_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_MAPPING_PTR (

@@ -1216,10 +1216,6 @@ channel_new (
     calloc (self->ats_size,
             sizeof (AutomationTrack *));
 
-  self->plugins =
-    calloc (
-      STRIP_SIZE, sizeof (Plugin *));
-
   /* autoconnect to all midi ins and midi chans */
   self->all_midi_ins = 1;
   self->all_midi_channels = 1;
