@@ -458,6 +458,7 @@ add_depends (
       self->parentnodes,
       (size_t) (self->init_refcount) *
         sizeof (GraphNode *));
+
   self->parentnodes[self->init_refcount - 1] =
     src;
 }
@@ -1403,6 +1404,11 @@ set_node_playback_latency (
   for (int i = 0; i < node->init_refcount; i++)
     {
       parent = node->parentnodes[i];
+#if 0
+      g_message ("adding playback latency from node to parent:");
+      print_node (node);
+      print_node (parent);
+#endif
       set_node_playback_latency (
         parent, node->playback_latency);
     }

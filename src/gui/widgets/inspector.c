@@ -52,20 +52,20 @@ inspector_widget_refresh (
   if (PROJECT->last_selection ==
         SELECTION_TYPE_TRACK)
     {
+      gtk_stack_set_visible_child (
+        GTK_STACK (self->stack),
+        GTK_WIDGET (self->track));
       inspector_track_widget_show_tracks (
         self->track,
         TRACKLIST_SELECTIONS);
-      gtk_stack_set_visible_child (
-        self->stack,
-        GTK_WIDGET (self->track));
     }
   else if (PROJECT->last_selection ==
            SELECTION_TYPE_PLUGIN)
     {
+      gtk_stack_set_visible_child (
+        GTK_STACK (self->stack), GTK_WIDGET (self->plugin));
       inspector_plugin_widget_show (
         self->plugin, MIXER_SELECTIONS);
-      gtk_stack_set_visible_child (
-        self->stack, GTK_WIDGET (self->plugin));
     }
 }
 
