@@ -152,16 +152,6 @@ track_init (
   self->midi_ch = 1;
   self->magic = TRACK_MAGIC;
   track_add_lane (self, 0);
-
-  self->chord_regions =
-    calloc (1, sizeof (Region *));
-  self->chord_regions_size = 1;
-  self->scales =
-    calloc (1, sizeof (ScaleObject *));
-  self->scales_size = 1;
-  self->markers =
-    calloc (1, sizeof (Marker *));
-  self->markers_size = 1;
 }
 
 /**
@@ -1134,13 +1124,6 @@ track_free (Track * track)
       GTK_IS_WIDGET (track->widget))
     gtk_widget_destroy (
       GTK_WIDGET (track->widget));
-
-  if (track->scales)
-    free (track->scales);
-  if (track->markers)
-    free (track->markers);
-  if (track->chord_regions)
-    free (track->chord_regions);
 
   free (track);
 }
