@@ -1486,6 +1486,9 @@ port_set_control_value (
   g_return_if_fail (
     self->identifier.type == TYPE_CONTROL);
 
+  PortIdentifier * id = &self->identifier;
+
+  /* set the base value */
   if (is_normalized)
     {
       float minf = port_get_minf (self);
@@ -1497,6 +1500,18 @@ port_set_control_value (
     {
       self->base_value = val;
     }
+
+  /* adjust if toggled or integer */
+  if (id->flags & PORT_FLAG_TOGGLE)
+    {
+      self->base_value = val > 0.001f;
+    }
+  else if (id->flags & PORT_FLAG_INTEGER)
+    {
+      self->base_value =
+        math_round_float_to_int (val);
+    }
+
   self->control = self->base_value;
 
   if (forward_event)

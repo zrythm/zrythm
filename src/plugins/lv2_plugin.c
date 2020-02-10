@@ -325,13 +325,27 @@ create_port (
             port_control;
         }
 
-      /* set whether trigger or not */
+      /* set port flags */
       if (lilv_port_has_property (
             lv2_plugin->lilv_plugin,
             lv2_port->lilv_port,
             PM_LILV_NODES.pprops_trigger))
         {
           pi->flags |= PORT_FLAG_TRIGGER;
+        }
+      if (lilv_port_has_property (
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
+            PM_LILV_NODES.core_toggled))
+        {
+          pi->flags |= PORT_FLAG_TOGGLE;
+        }
+      else if (lilv_port_has_property (
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
+            PM_LILV_NODES.core_integer))
+        {
+          pi->flags |= PORT_FLAG_INTEGER;
         }
     }
   else if (lilv_port_is_a (
