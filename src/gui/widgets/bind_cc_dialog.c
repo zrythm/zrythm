@@ -124,7 +124,8 @@ finalize (
 }
 
 static void
-bind_cc_dialog_widget_class_init (BindCcDialogWidgetClass * _klass)
+bind_cc_dialog_widget_class_init (
+  BindCcDialogWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
@@ -144,7 +145,8 @@ bind_cc_dialog_widget_class_init (BindCcDialogWidgetClass * _klass)
 }
 
 static void
-bind_cc_dialog_widget_init (BindCcDialogWidget * self)
+bind_cc_dialog_widget_init (
+  BindCcDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
-widget_srcs = [
+widget_srcs = files([
   'about_dialog.c',
   'arranger.c',
   'arranger_object.c',
@@ -145,9 +145,9 @@ widget_srcs = [
   'velocity.c',
   'view_toolbar.c',
   'visibility.c',
-  ]
+  ])
 
-#subdir ('dzl')
+subdir ('dialogs')
 
 widgets_lib = static_library (
   'zrythm-widgets-lib',

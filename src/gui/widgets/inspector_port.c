@@ -25,6 +25,7 @@
 #include "audio/port.h"
 #include "gui/widgets/bar_slider.h"
 #include "gui/widgets/bind_cc_dialog.h"
+#include "gui/widgets/dialogs/port_info.h"
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/port_connections_popover.h"
 #include "project.h"
@@ -115,6 +116,17 @@ get_port_str (
 }
 
 static void
+on_view_info_activate (
+  GtkMenuItem *         menuitem,
+  InspectorPortWidget * self)
+{
+  PortInfoDialogWidget * dialog =
+    port_info_dialog_widget_new (self->port);
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 on_bind_midi_cc (
   GtkMenuItem *         menuitem,
   InspectorPortWidget * self)
@@ -159,6 +171,15 @@ show_context_menu (
       gtk_menu_shell_append (
         GTK_MENU_SHELL(menu), menuitem);
     }
+
+  menuitem =
+    gtk_menu_item_new_with_label (
+      _("View info"));
+  g_signal_connect (
+    menuitem, "activate",
+    G_CALLBACK (on_view_info_activate), self);
+  gtk_menu_shell_append (
+    GTK_MENU_SHELL (menu), menuitem);
 
   gtk_widget_show_all (menu);
 
@@ -383,14 +404,14 @@ inspector_port_widget_new (
 
   if (has_str)
     {
-      float minf = port_get_minf (port);
-      float maxf = port_get_maxf (port);
+      float minf = port->minf;
+      float maxf = port->maxf;
       if (port->identifier.type == TYPE_AUDIO)
         {
           /* use fader val for audio */
           maxf = 1.f;
         }
-      float zerof = port_get_zerof (port);
+      float zerof = port->zerof;
       int editable = 0;
       if (port->identifier.type == TYPE_CONTROL)
         editable = 1;

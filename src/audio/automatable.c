@@ -49,8 +49,7 @@ get_minf (Automatable * a)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
       g_return_val_if_fail (a->port, 0.f);
-      return port_get_minf (a->port);
-      break;
+      return a->port->minf;
     case AUTOMATABLE_TYPE_PLUGIN_ENABLED:
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
     case AUTOMATABLE_TYPE_CHANNEL_MUTE:
@@ -68,7 +67,7 @@ get_maxf (Automatable * a)
     {
     case AUTOMATABLE_TYPE_PLUGIN_CONTROL:
       g_return_val_if_fail (a->port, 1.f);
-      return port_get_maxf (a->port);
+      return a->port->maxf;
       break;
     case AUTOMATABLE_TYPE_CHANNEL_FADER:
       return 2.f;

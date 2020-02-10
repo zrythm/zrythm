@@ -144,10 +144,14 @@ typedef enum PortFlags
 
   /** Whether the port is an integer. */
   PORT_FLAG_INTEGER = 1 << 11,
+
+  /** Whether port is for letting the plugin know
+   * that we are in freewheeling (export) mode. */
+  PORT_FLAG_FREEWHEEL = 1 << 12,
 } PortFlags;
 
 static const cyaml_bitdef_t
-flags_bitvals[] =
+port_flags_bitvals[] =
 {
   { .name = "stereo_l", .offset =  0, .bits =  1 },
   { .name = "stereo_r", .offset =  1, .bits =  1 },
@@ -159,6 +163,9 @@ flags_bitvals[] =
   { .name = "pan", .offset = 7, .bits = 1 },
   { .name = "want_position", .offset = 8, .bits = 1 },
   { .name = "trigger", .offset = 9, .bits = 1 },
+  { .name = "toggle", .offset = 10, .bits = 1 },
+  { .name = "integer", .offset = 11, .bits = 1 },
+  { .name = "freewheel", .offset = 12, .bits = 1 },
 };
 
 /**
@@ -305,11 +312,23 @@ typedef struct Port
    * Minimum, maximum and zero values for this
    * port.
    *
-   * These only apply to control and CV ports.
+   * Note that for audio, this is the amp (0 - 2)
+   * and not the actual values.
    */
   float               minf;
   float               maxf;
+
+  /**
+   * The zero position of the port.
+   *
+   * For example, in balance controls, this will
+   * be the middle. In audio ports, this will be
+   * 0 amp (silence), etc.
+   */
   float               zerof;
+
+  /** Default value, only used for controls. */
+  float               deff;
 
   /** Used for LV2. */
   Lv2Port *          lv2_port;
@@ -530,8 +549,8 @@ port_identifier_fields_schema[] =
     CYAML_ARRAY_LEN (port_flow_strings)),
   CYAML_FIELD_BITFIELD (
     "flags", CYAML_FLAG_DEFAULT,
-    PortIdentifier, flags, flags_bitvals,
-    CYAML_ARRAY_LEN (flags_bitvals)),
+    PortIdentifier, flags, port_flags_bitvals,
+    CYAML_ARRAY_LEN (port_flags_bitvals)),
   CYAML_FIELD_INT (
     "track_pos", CYAML_FLAG_DEFAULT,
     PortIdentifier, track_pos),
@@ -607,6 +626,9 @@ port_fields_schema[] =
   CYAML_FIELD_FLOAT (
     "zerof", CYAML_FLAG_DEFAULT,
     Port, zerof),
+  CYAML_FIELD_FLOAT (
+    "deff", CYAML_FLAG_DEFAULT,
+    Port, deff),
   CYAML_FIELD_INT (
     "vst_param_id", CYAML_FLAG_DEFAULT,
     Port, vst_param_id),
@@ -843,38 +865,6 @@ port_get_multiplier_by_index (
 {
   return port->multipliers[idx];
 }
-
-/**
- * Returns the minimum possible value for this
- * port.
- *
- * Note that for Audio we should consider the
- * amp (0.0 and 2.0).
- */
-float
-port_get_minf (
-  Port * self);
-
-/**
- * Returns the maximum possible value for this
- * port.
- *
- * Note that for Audio we should consider the
- * amp (0.0 and 2.0).
- */
-float
-port_get_maxf (
-  Port * self);
-
-/**
- * Returns the zero value for the given port.
- *
- * Note that for Audio we should consider the
- * amp (0.0 and 2.0).
- */
-float
-port_get_zerof (
-  Port * self);
 
 /**
  * Deletes port, doing required cleanup and updating counters.

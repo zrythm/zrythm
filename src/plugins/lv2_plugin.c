@@ -336,6 +336,13 @@ create_port (
       if (lilv_port_has_property (
             lv2_plugin->lilv_plugin,
             lv2_port->lilv_port,
+            PM_LILV_NODES.core_freeWheeling))
+        {
+          pi->flags |= PORT_FLAG_FREEWHEEL;
+        }
+      if (lilv_port_has_property (
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
             PM_LILV_NODES.core_toggled))
         {
           pi->flags |= PORT_FLAG_TOGGLE;
@@ -366,10 +373,6 @@ create_port (
       lilv_port_get_range (
         lv2_plugin->lilv_plugin,
         lv2_port->lilv_port, &def, &min, &max);
-      if (def)
-        {
-          lilv_node_free (def);
-        }
       if (max)
         {
           port->maxf =
@@ -389,6 +392,16 @@ create_port (
       else
         {
           port->minf = - 1.f;
+        }
+      if (def)
+        {
+          port->deff =
+            lilv_node_as_float (def);
+          lilv_node_free (def);
+        }
+      else
+        {
+          port->deff = port->minf;
         }
       port->zerof = 0.f;
       pi->type = TYPE_CV;
@@ -1860,7 +1873,8 @@ lv2_plugin_process (
     {
       Lv2Port * lv2_port = &lv2_plugin->ports[p];
       Port * port = lv2_port->port;
-      if (port->identifier.type == TYPE_AUDIO)
+      PortIdentifier * id = &port->identifier;
+      if (id->type == TYPE_AUDIO)
         {
           /* connect lv2 ports to plugin port
            * buffers */
@@ -1868,7 +1882,7 @@ lv2_plugin_process (
             lv2_plugin->instance,
             (uint32_t) p, port->buf);
         }
-      else if (port->identifier.type == TYPE_CV)
+      else if (id->type == TYPE_CV)
         {
           /* connect plugin port directly to a
            * CV buffer in the port. according to
@@ -1878,9 +1892,8 @@ lv2_plugin_process (
             lv2_plugin->instance,
             (uint32_t) p, port->buf);
         }
-      else if (
-        port->identifier.type == TYPE_EVENT &&
-        port->identifier.flow == FLOW_INPUT)
+      else if (id->type == TYPE_EVENT &&
+               id->flow == FLOW_INPUT)
         {
           lv2_evbuf_reset(lv2_port->evbuf, true);
 
@@ -1889,8 +1902,7 @@ lv2_plugin_process (
           LV2_Evbuf_Iterator iter =
             lv2_evbuf_begin (lv2_port->evbuf);
           if (xport_changed &&
-              port->identifier.flags &
-                PORT_FLAG_WANT_POSITION)
+              id->flags & PORT_FLAG_WANT_POSITION)
             {
               lv2_evbuf_write (
                 &iter, 0, 0,
@@ -1936,7 +1948,23 @@ lv2_plugin_process (
             }
           midi_events_clear (
             port->midi_events, 0);
-      }
+        }
+      else if (id->type == TYPE_CONTROL &&
+               id->flow == FLOW_INPUT)
+        {
+          /* let the plugin know if freewheeling */
+          if (id->flags & PORT_FLAG_FREEWHEEL)
+            {
+              if (AUDIO_ENGINE->exporting)
+                {
+                  port->control = port->maxf;
+                }
+              else
+                {
+                  port->control = port->minf;
+                }
+            }
+        }
     }
   lv2_plugin->request_update = false;
 

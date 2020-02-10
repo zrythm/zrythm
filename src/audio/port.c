@@ -481,6 +481,7 @@ port_new_with_type (
   switch (type)
     {
     case TYPE_EVENT:
+      self->maxf = 1.f;
       self->midi_events =
         midi_events_new (self);
       self->midi_ring =
@@ -495,8 +496,24 @@ port_new_with_type (
         }
 #endif
       break;
+    case TYPE_CONTROL:
+      self->minf = 0.f;
+      self->maxf = 1.f;
+      self->zerof = 0.f;
+      break;
     case TYPE_AUDIO:
+      self->minf = 0.f;
+      self->maxf = 2.f;
+      self->zerof = 0.f;
+      self->audio_ring =
+        zix_ring_new (
+          sizeof (float) *
+          (size_t) AUDIO_ENGINE->block_length * 11);
+      break;
     case TYPE_CV:
+      self->minf = -1.f;
+      self->maxf = 1.f;
+      self->zerof = 0.f;
       self->audio_ring =
         zix_ring_new (
           sizeof (float) *
@@ -712,13 +729,26 @@ port_set_owner_fader (
 {
   g_warn_if_fail (port && fader);
 
+  PortIdentifier * id = &port->identifier;
+
   if (fader->channel)
     {
-      port->identifier.track_pos =
-        fader->channel->track->pos;
+      id->track_pos = fader->channel->track->pos;
     }
-  port->identifier.owner_type =
-    PORT_OWNER_TYPE_FADER;
+  id->owner_type = PORT_OWNER_TYPE_FADER;
+
+  if (id->flags & PORT_FLAG_AMPLITUDE)
+    {
+      port->minf = 0.f;
+      port->maxf = 2.f;
+      port->zerof = 0.f;
+    }
+  else if (id->flags & PORT_FLAG_PAN)
+    {
+      port->minf = 0.f;
+      port->maxf = 1.f;
+      port->zerof = 0.5f;
+    }
 }
 
 /**
@@ -1491,8 +1521,8 @@ port_set_control_value (
   /* set the base value */
   if (is_normalized)
     {
-      float minf = port_get_minf (self);
-      float maxf = port_get_maxf (self);
+      float minf = self->minf;
+      float maxf = self->maxf;
       self->base_value =
         minf + val * (maxf - minf);
     }
@@ -1543,8 +1573,8 @@ port_get_control_value (
 
   if (normalize)
     {
-      float minf = port_get_minf (self);
-      float maxf = port_get_maxf (self);
+      float minf = self->minf;
+      float maxf = self->maxf;
       return
         (self->control - minf) /
         (maxf - minf);
@@ -1608,236 +1638,6 @@ port_get_rms_db (
       &buf[start_index],
       (size_t) n_cycles *
         AUDIO_ENGINE->block_length);
-}
-
-/**
- * Returns the minimum possible value for this
- * port.
- *
- * Note that for Audio we should consider the
- * amp (0.0 and 2.0).
- */
-float
-port_get_minf (
-  Port * port)
-{
-  switch (port->identifier.type)
-    {
-    case TYPE_AUDIO:
-      return 0.f;
-    case TYPE_CV:
-      switch (port->identifier.owner_type)
-        {
-        case PORT_OWNER_TYPE_PLUGIN:
-          {
-            Plugin * pl = port_get_plugin (port, 1);
-            g_return_val_if_fail (pl, 0.f);
-            switch (pl->descr->protocol)
-              {
-              case PROT_LV2:
-                return port->minf;
-              default:
-                break;
-              }
-          }
-        default:
-          break;
-        }
-      return -1.f;
-    case TYPE_EVENT:
-      return  0.f;
-    case TYPE_CONTROL:
-      switch (port->identifier.owner_type)
-        {
-        case PORT_OWNER_TYPE_PLUGIN:
-          {
-            Plugin * pl = port_get_plugin (port, 1);
-            g_return_val_if_fail (pl, 0.f);
-            switch (pl->descr->protocol)
-              {
-              case PROT_LV2:
-                g_return_val_if_fail (
-                  port->lv2_port &&
-                  port->lv2_port->lv2_control, 0.f);
-                return
-                  port->lv2_port->lv2_control->minf;
-              case PROT_VST:
-                return 0.f;
-                break;
-              default:
-                g_return_val_if_reached (0.f);
-              }
-          }
-          break;
-        case PORT_OWNER_TYPE_FADER:
-          if (port->identifier.flags &
-                PORT_FLAG_AMPLITUDE)
-            return 0.f;
-          else if (port->identifier.flags &
-                PORT_FLAG_PAN)
-            return 0.f;
-          break;
-        default:
-          break;
-        }
-      break;
-    default:
-      break;
-    }
-  g_return_val_if_reached (0.f);
-}
-
-/**
- * Returns the maximum possible value for this
- * port.
- *
- * Note that for Audio we should consider the
- * amp (0.0 and 2.0).
- */
-float
-port_get_maxf (
-  Port * port)
-{
-  switch (port->identifier.type)
-    {
-    case TYPE_AUDIO:
-      return 2.f;
-    case TYPE_CV:
-      switch (port->identifier.owner_type)
-        {
-        case PORT_OWNER_TYPE_PLUGIN:
-          {
-            Plugin * pl = port_get_plugin (port, 1);
-            g_return_val_if_fail (pl, 0.f);
-            switch (pl->descr->protocol)
-              {
-              case PROT_LV2:
-                return port->maxf;
-              default:
-                break;
-              }
-          }
-        default:
-          break;
-        }
-      return 1.f;
-    case TYPE_EVENT:
-      return  1.f;
-    case TYPE_CONTROL:
-      switch (port->identifier.owner_type)
-        {
-        case PORT_OWNER_TYPE_PLUGIN:
-          {
-            Plugin * pl = port_get_plugin (port, 1);
-            g_return_val_if_fail (pl, 1.f);
-            switch (pl->descr->protocol)
-              {
-              case PROT_LV2:
-                g_return_val_if_fail (
-                  port->lv2_port &&
-                  port->lv2_port->lv2_control, 1.f);
-                return
-                  port->lv2_port->lv2_control->maxf;
-              case PROT_VST:
-                return 1.f;
-                break;
-              default:
-                g_return_val_if_reached (1.f);
-              }
-          }
-          break;
-        case PORT_OWNER_TYPE_FADER:
-          if (port->identifier.flags &
-                PORT_FLAG_AMPLITUDE)
-            return 2.f;
-          else if (port->identifier.flags &
-                PORT_FLAG_PAN)
-            return 1.f;
-          break;
-        default:
-          break;
-        }
-      break;
-    default:
-      break;
-    }
-  g_return_val_if_reached (0.f);
-}
-
-/**
- * Returns the zero value for the given port.
- *
- * Note that for Audio we should consider the
- * amp (0.0 and 2.0).
- */
-float
-port_get_zerof (
-  Port * port)
-{
-  switch (port->identifier.type)
-    {
-    case TYPE_AUDIO:
-      return 0.f;
-    case TYPE_CV:
-      switch (port->identifier.owner_type)
-        {
-        case PORT_OWNER_TYPE_PLUGIN:
-          {
-            Plugin * pl = port_get_plugin (port, 1);
-            g_return_val_if_fail (pl, 0.f);
-            switch (pl->descr->protocol)
-              {
-              case PROT_LV2:
-                return port->zerof;
-              default:
-                break;
-              }
-          }
-        default:
-          break;
-        }
-      return 0.f;
-    case TYPE_EVENT:
-      return 0.f;
-    case TYPE_CONTROL:
-      switch (port->identifier.owner_type)
-        {
-        case PORT_OWNER_TYPE_PLUGIN:
-          {
-            Plugin * pl = port_get_plugin (port, 1);
-            g_return_val_if_fail (pl, 0.f);
-            switch (pl->descr->protocol)
-              {
-              case PROT_LV2:
-                g_return_val_if_fail (
-                  port->lv2_port &&
-                  port->lv2_port->lv2_control, 0.f);
-                return
-                  port->lv2_port->lv2_control->minf;
-              case PROT_VST:
-                return 0.f;
-                break;
-              default:
-                g_return_val_if_reached (0.f);
-              }
-          }
-          break;
-        case PORT_OWNER_TYPE_FADER:
-          if (port->identifier.flags &
-                PORT_FLAG_AMPLITUDE)
-            return 0.f;
-          else if (port->identifier.flags &
-                PORT_FLAG_PAN)
-            return 0.5f;
-          break;
-        default:
-          break;
-        }
-      break;
-    default:
-      break;
-    }
-  g_return_val_if_reached (0.f);
 }
 
 /**
@@ -2129,10 +1929,8 @@ port_sum_signal_from_inputs (
             continue;
 
           float minf, maxf, depth_range;
-          maxf =
-            port_get_maxf (port);
-          minf =
-            port_get_minf (port);
+          maxf = port->maxf;
+          minf = port->minf;
           depth_range =
             (maxf - minf) / 2.f;
 
@@ -2208,10 +2006,8 @@ port_sum_signal_from_inputs (
             if (src_port->identifier.type ==
                   TYPE_CV)
               {
-                maxf =
-                  port_get_maxf (port);
-                minf =
-                  port_get_minf (port);
+                maxf = port->maxf;
+                minf = port->minf;
 
                 /*float deff =*/
                   /*port->lv2_port->lv2_control->deff;*/
