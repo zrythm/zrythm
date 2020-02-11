@@ -343,6 +343,13 @@ create_port (
       if (lilv_port_has_property (
             lv2_plugin->lilv_plugin,
             lv2_port->lilv_port,
+            PM_LILV_NODES.core_reportsLatency))
+        {
+          pi->flags |= PORT_FLAG_REPORTS_LATENCY;
+        }
+      if (lilv_port_has_property (
+            lv2_plugin->lilv_plugin,
+            lv2_port->lilv_port,
             PM_LILV_NODES.core_toggled))
         {
           pi->flags |= PORT_FLAG_TOGGLE;
@@ -1731,22 +1738,24 @@ lv2_plugin_instantiate (
 
   /* Print initial control values */
   if (DEBUGGING)
-    for (i = 0; i < self->controls.n_controls; ++i)
-      {
-        Lv2Control* control =
-          self->controls.controls[i];
-        if (control->type == PORT)
-          {
-            Lv2Port* port =
-              &self->ports[control->index];
-            g_return_val_if_fail (port->port, -1);
-            g_message (
-              "%s = %f",
-              lv2_port_get_symbol_as_string (
-                self, port),
-              (double) port->port->control);
-          }
-      }
+    {
+      for (i = 0; i < self->controls.n_controls; ++i)
+        {
+          Lv2Control* control =
+            self->controls.controls[i];
+          if (control->type == PORT)
+            {
+              Lv2Port* port =
+                &self->ports[control->index];
+              g_return_val_if_fail (port->port, -1);
+              g_message (
+                "%s = %f",
+                lv2_port_get_symbol_as_string (
+                  self, port),
+                (double) port->port->control);
+            }
+        }
+    }
 
   /* Activate plugin */
   g_message ("Activating instance...");
@@ -1982,83 +1991,101 @@ lv2_plugin_process (
       Lv2Port* const lv2_port =
         &lv2_plugin->ports[p];
       port = lv2_port->port;
-      if (port->identifier.flow == FLOW_OUTPUT &&
-          port->identifier.type == TYPE_CONTROL &&
-          lilv_port_has_property (
-            lv2_plugin->lilv_plugin,
-            lv2_port->lilv_port,
-            PM_LILV_NODES.core_reportsLatency))
+      PortIdentifier * pi = &port->identifier;
+      switch (pi->type)
         {
-          if (!math_floats_equal (
-                (float) lv2_plugin->plugin_latency,
-                lv2_port->port->control))
+        case TYPE_CONTROL:
+          if (pi->flow == FLOW_OUTPUT)
             {
-              lv2_plugin->plugin_latency =
-                (uint32_t) lv2_port->port->control;
+              if (pi->flags &
+                    PORT_FLAG_REPORTS_LATENCY)
+                {
+                  if (!math_floats_equal (
+                        (float)
+                        lv2_plugin->plugin_latency,
+                        lv2_port->port->control))
+                    {
+                      lv2_plugin->plugin_latency =
+                        (uint32_t)
+                        lv2_port->port->control;
 #ifdef HAVE_JACK
-              jack_recompute_total_latencies (
-                client);
+                      jack_recompute_total_latencies (
+                        client);
 #endif
+                    }
+                }
+              /* NEWWW */
+              /* if UI is instantiated */
+              if (send_ui_updates &&
+                  lv2_plugin->plugin->visible &&
+                  !lv2_port->received_ui_event)
+                {
+                  /* forward event to UI */
+                  lv2_ui_send_control_val_event_from_plugin_to_ui (
+                    lv2_plugin, lv2_port);
+                }
+              /* NEWWW END */
             }
+          if (send_ui_updates)
+            {
+              /* ignore ports that received a UI
+               * event at the start of a cycle
+               * (otherwise these causes trembling
+               * while changing them) */
+              if (lv2_port->received_ui_event)
+                {
+                  lv2_port->received_ui_event = 0;
+                  continue;
+                }
+            }
+          break;
+        case TYPE_EVENT:
+          if (pi->flow == FLOW_OUTPUT)
+            {
+              for (LV2_Evbuf_Iterator iter =
+                     lv2_evbuf_begin (
+                       lv2_port->evbuf);
+                   lv2_evbuf_is_valid(iter);
+                   iter = lv2_evbuf_next (iter))
+                {
+                  // Get event from LV2 buffer
+                  uint32_t frames, subframes,
+                           type, size;
+                  uint8_t* body;
+                  lv2_evbuf_get (
+                    iter, &frames, &subframes,
+                    &type, &size, &body);
+
+                  /* if midi event */
+                  if (body && type ==
+                      PM_URIDS.
+                        midi_MidiEvent)
+                    {
+                      /* Write MIDI event to port */
+                      midi_events_add_event_from_buf (
+                        lv2_port->port->midi_events,
+                        frames, body, (int) size);
+                    }
+
+                  /* if UI is instantiated */
+                  if (lv2_plugin->plugin->visible &&
+                      !lv2_port->old_api)
+                    {
+                      /* forward event to UI */
+                      lv2_ui_send_event_from_plugin_to_ui (
+                        lv2_plugin, (uint32_t) p,
+                        type, size, body);
+                    }
+                }
+
+              /* Clear event output for plugin to
+               * write to next cycle */
+              lv2_evbuf_reset (
+                lv2_port->evbuf, false);
+            }
+        default:
+          break;
         }
-      else if (port->identifier.flow ==
-                 FLOW_OUTPUT &&
-               port->identifier.type == TYPE_EVENT)
-          {
-            for (LV2_Evbuf_Iterator iter =
-                   lv2_evbuf_begin(lv2_port->evbuf);
-                 lv2_evbuf_is_valid(iter);
-                 iter = lv2_evbuf_next(iter))
-              {
-                // Get event from LV2 buffer
-                uint32_t frames, subframes,
-                         type, size;
-                uint8_t* body;
-                lv2_evbuf_get (
-                  iter, &frames, &subframes,
-                  &type, &size, &body);
-
-                /* if midi event */
-                if (body && type ==
-                    PM_URIDS.
-                      midi_MidiEvent)
-                  {
-                    /* Write MIDI event to port */
-                    midi_events_add_event_from_buf (
-                      lv2_port->port->midi_events,
-                      frames, body, (int) size);
-                  }
-
-                /* if UI is instantiated */
-                if (lv2_plugin->plugin->visible &&
-                    !lv2_port->old_api)
-                  {
-                    /* forward event to UI */
-                    lv2_ui_send_event_from_plugin_to_ui (
-                      lv2_plugin, (uint32_t) p,
-                      type, size, body);
-                  }
-              }
-
-            /* Clear event output for plugin to
-             * write to next cycle */
-            lv2_evbuf_reset (
-              lv2_port->evbuf, false);
-          }
-        else if (
-          send_ui_updates &&
-          port->identifier.type == TYPE_CONTROL)
-          {
-            /* ignore ports that received a UI
-             * event at the start of a cycle
-             * (otherwise these causes trembling
-             * while changing them) */
-            if (lv2_port->received_ui_event)
-              {
-                lv2_port->received_ui_event = 0;
-                continue;
-              }
-          }
     }
 }
 

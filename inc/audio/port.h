@@ -148,6 +148,8 @@ typedef enum PortFlags
   /** Whether port is for letting the plugin know
    * that we are in freewheeling (export) mode. */
   PORT_FLAG_FREEWHEEL = 1 << 12,
+
+  PORT_FLAG_REPORTS_LATENCY = 1 << 13,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -166,6 +168,7 @@ port_flags_bitvals[] =
   { .name = "toggle", .offset = 10, .bits = 1 },
   { .name = "integer", .offset = 11, .bits = 1 },
   { .name = "freewheel", .offset = 12, .bits = 1 },
+  { .name = "reports_latency", .offset = 13, .bits = 1 },
 };
 
 /**
