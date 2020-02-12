@@ -176,11 +176,26 @@ plugin_manager_init (PluginManager * self)
     }
   else
     {
-      lv2_path =
-        lilv_new_string (
-          world,
-          "~/.lv2:/usr/local/" LIBDIR_NAME
-          "/lv2:/usr/" LIBDIR_NAME "/lv2");
+      if (string_is_equal (
+            LIBDIR_NAME, "lib", 0))
+        {
+          lv2_path =
+            lilv_new_string (
+              world,
+              "~/.lv2:/usr/local/lib/lv2:"
+              "/usr/lib/lv2");
+        }
+      else
+        {
+          lv2_path =
+            lilv_new_string (
+              world,
+              "~/.lv2:/usr/local/" LIBDIR_NAME
+              "/lv2:/usr/" LIBDIR_NAME "/lv2:"
+              /* some distros report the wrong
+               * LIBDIR_NAME so hardcode these */
+              "/usr/local/lib/lv2:/usr/lib/lv2");
+        }
     }
   g_return_if_fail (lv2_path);
   lilv_world_set_option (
