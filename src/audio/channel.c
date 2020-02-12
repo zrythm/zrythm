@@ -408,6 +408,7 @@ channel_init_loaded (Channel * ch)
   g_warn_if_fail (ch->track);
 
   ch->ats_size = 1;
+  ch->magic = CHANNEL_MAGIC;
   ch->ats =
     calloc (1, sizeof (AutomationTrack *));
 
@@ -1208,6 +1209,8 @@ channel_new (
   g_return_val_if_fail (track, NULL);
 
   Channel * self = calloc (1, sizeof (Channel));
+
+  self->magic = CHANNEL_MAGIC;
 
   self->track = track;
 

@@ -469,6 +469,7 @@ on_window_destroy (
   Plugin *    plugin)
 {
   plugin->window = NULL;
+  g_return_if_fail (IS_PLUGIN (plugin));
   g_message (
     "destroying window for %s",
     plugin->descr->name);

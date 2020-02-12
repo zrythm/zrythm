@@ -65,6 +65,8 @@ typedef struct Position Position;
 #define UI_COLOR_HIGHLIGHT_CHORD "#BB22BB"
 #define UI_COLOR_HIGHLIGHT_BOTH "#FF22FF"
 
+#define UI_DELETE_ICON_NAME "z-edit-delete"
+
 static const GdkRGBA UI_COLOR_BLACK = {
   0, 0, 0, 1
 };

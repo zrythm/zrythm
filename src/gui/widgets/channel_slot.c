@@ -549,17 +549,17 @@ show_context_menu (
   gtk_menu_shell_append ( \
     GTK_MENU_SHELL(menu), GTK_WIDGET (menuitem))
 
-  menuitem = CREATE_CUT_MENU_ITEM;
+  menuitem = CREATE_CUT_MENU_ITEM (NULL);
   ADD_TO_SHELL;
-  menuitem = CREATE_COPY_MENU_ITEM;
+  menuitem = CREATE_COPY_MENU_ITEM (NULL);
   ADD_TO_SHELL;
-  menuitem = CREATE_PASTE_MENU_ITEM;
+  menuitem = CREATE_PASTE_MENU_ITEM (NULL);
   ADD_TO_SHELL;
   /* if plugin exists */
   if (self->channel->plugins[self->slot_index])
     {
       /* add delete item */
-      menuitem = CREATE_DELETE_MENU_ITEM;
+      menuitem = CREATE_DELETE_MENU_ITEM (NULL);
       g_signal_connect (
         G_OBJECT (menuitem), "activate",
         G_CALLBACK (on_plugin_delete), self);
@@ -567,9 +567,9 @@ show_context_menu (
     }
   CREATE_SEPARATOR;
   ADD_TO_SHELL;
-  menuitem = CREATE_CLEAR_SELECTION_MENU_ITEM;
+  menuitem = CREATE_CLEAR_SELECTION_MENU_ITEM (NULL);
   ADD_TO_SHELL;
-  menuitem = CREATE_SELECT_ALL_MENU_ITEM;
+  menuitem = CREATE_SELECT_ALL_MENU_ITEM (NULL);
   ADD_TO_SHELL;
 
 #undef ADD_TO_SHELL

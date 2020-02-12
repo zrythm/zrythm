@@ -41,14 +41,18 @@
 /* pulled in from X11 */
 #undef Bool
 
+typedef struct Channel Channel;
+typedef struct VstPlugin VstPlugin;
+
 /**
  * @addtogroup plugins
  *
  * @{
  */
 
-typedef struct Channel Channel;
-typedef struct VstPlugin VstPlugin;
+#define PLUGIN_MAGIC 43198683
+#define IS_PLUGIN(tr) \
+  (tr && tr->magic == PLUGIN_MAGIC)
 
 /**
  * The base plugin
@@ -190,6 +194,8 @@ typedef struct Plugin
    */
   int                black_window_shown_manually;
 #endif
+
+  int                 magic;
 } Plugin;
 
 static const cyaml_schema_field_t

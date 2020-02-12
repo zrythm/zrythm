@@ -126,7 +126,9 @@ arranger_selections_action_new_create_or_delete (
   if (create)
     ua->type = UA_CREATE_ARRANGER_SELECTIONS;
   else
-    ua->type = UA_DELETE_ARRANGER_SELECTIONS;
+    {
+      ua->type = UA_DELETE_ARRANGER_SELECTIONS;
+    }
 
   return ua;
 }

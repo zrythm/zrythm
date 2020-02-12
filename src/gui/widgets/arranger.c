@@ -1774,22 +1774,31 @@ show_context_menu_midi (
 
   menu = gtk_menu_new();
 
-  menu_item = CREATE_CUT_MENU_ITEM;
+  menu_item =
+    CREATE_CUT_MENU_ITEM ("win.cut");
   APPEND_TO_MENU;
-  menu_item = CREATE_COPY_MENU_ITEM;
+  menu_item =
+    CREATE_COPY_MENU_ITEM ("win.copy");
   APPEND_TO_MENU;
-  menu_item = CREATE_PASTE_MENU_ITEM;
+  menu_item =
+    CREATE_PASTE_MENU_ITEM ("win.paste");
   APPEND_TO_MENU;
-  menu_item = CREATE_DELETE_MENU_ITEM;
+  menu_item =
+    CREATE_DELETE_MENU_ITEM ("win.delete");
   APPEND_TO_MENU;
-  menu_item = CREATE_DUPLICATE_MENU_ITEM;
+  menu_item =
+    CREATE_DUPLICATE_MENU_ITEM ("win.duplicate");
   APPEND_TO_MENU;
   menu_item =
     GTK_MENU_ITEM (gtk_separator_menu_item_new ());
   APPEND_TO_MENU;
-  menu_item = CREATE_CLEAR_SELECTION_MENU_ITEM;
+  menu_item =
+    CREATE_CLEAR_SELECTION_MENU_ITEM (
+      "win.clear-selection");
   APPEND_TO_MENU;
-  menu_item = CREATE_SELECT_ALL_MENU_ITEM;
+  menu_item =
+    CREATE_SELECT_ALL_MENU_ITEM (
+      "win.select-all");
   APPEND_TO_MENU;
 
 #undef APPEND_TO_MENU

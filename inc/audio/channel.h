@@ -194,7 +194,7 @@ typedef struct Channel
   /** Track associated with this channel. */
   Track *          track;
 
-  /** This must be set to CHANNEL_MAGIC TODO. */
+  /** This must be set to CHANNEL_MAGIC. */
   int              magic;
 
   /** The channel widget. */

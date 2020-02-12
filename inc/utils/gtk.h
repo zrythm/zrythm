@@ -44,68 +44,47 @@
   gtk_clipboard_get_default ( \
     gdk_display_get_default ())
 
-#define CREATE_CUT_MENU_ITEM \
+#define CREATE_CUT_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
     "Cu_t", \
     "z-edit-cut", \
-    0, \
-    NULL, \
-    0, \
-    "win.cut")
+    0, NULL, 0, action)
 
-#define CREATE_COPY_MENU_ITEM \
+#define CREATE_COPY_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
     "_Copy", \
     "z-edit-copy", \
-    0, \
-    NULL, \
-    0, \
-    "win.copy")
+    0, NULL, 0, action)
 
-#define CREATE_PASTE_MENU_ITEM \
+#define CREATE_PASTE_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
     "_Paste", \
     "z-edit-paste", \
-    0, \
-    NULL, \
-    0, \
-    "win.paste")
+    0, NULL, 0, action)
 
-#define CREATE_DELETE_MENU_ITEM \
+#define CREATE_DELETE_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
     "_Delete", \
     "z-edit-delete", \
-    0, \
-    NULL, \
-    0, \
-    "win.delete")
+    0, NULL, 0, action)
 
-#define CREATE_CLEAR_SELECTION_MENU_ITEM \
+#define CREATE_CLEAR_SELECTION_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
     "Cle_ar Selection", \
     "z-edit-clear", \
-    0, \
-    NULL, \
-    0, \
-    "win.clear-selection")
+    0, NULL, 0, action)
 
-#define CREATE_SELECT_ALL_MENU_ITEM \
+#define CREATE_SELECT_ALL_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
     "Select A_ll", \
     "z-edit-select-all", \
-    0, \
-    NULL, \
-    0, \
-    "win.select-all")
+    0, NULL, 0, action)
 
-#define CREATE_DUPLICATE_MENU_ITEM \
+#define CREATE_DUPLICATE_MENU_ITEM(action) \
   z_gtk_create_menu_item ( \
     "Duplicate", \
     "z-edit-copy", \
-    0, \
-    NULL, \
-    0, \
-    "win.duplicate")
+    0, NULL, 0, action)
 
 #define z_gtk_assistant_set_current_page_complete( \
   assistant, complete) \

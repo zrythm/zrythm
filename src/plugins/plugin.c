@@ -127,6 +127,7 @@ plugin_init (
   plugin->unknown_ports_size = 1;
   plugin->ats_size = 1;
   plugin->slot = -1;
+  plugin->magic = PLUGIN_MAGIC;
 
   plugin->in_ports =
     calloc (1, sizeof (Port *));
@@ -882,6 +883,7 @@ plugin_clone (
 
   g_return_val_if_fail (clone, NULL);
   clone->slot = pl->slot;
+  clone->magic = PLUGIN_MAGIC;
   clone->track_pos = pl->track_pos;
 
   return clone;
