@@ -150,6 +150,9 @@ typedef enum PortFlags
   PORT_FLAG_FREEWHEEL = 1 << 12,
 
   PORT_FLAG_REPORTS_LATENCY = 1 << 13,
+
+  /** Port should not be visible to users. */
+  PORT_FLAG_NOT_ON_GUI = 1 << 14,
 } PortFlags;
 
 static const cyaml_bitdef_t
@@ -169,6 +172,7 @@ port_flags_bitvals[] =
   { .name = "integer", .offset = 11, .bits = 1 },
   { .name = "freewheel", .offset = 12, .bits = 1 },
   { .name = "reports_latency", .offset = 13, .bits = 1 },
+  { .name = "not_on_gui", .offset = 14, .bits = 1 },
 };
 
 /**

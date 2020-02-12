@@ -458,6 +458,14 @@ create_port (
       return -1;
     }
 
+  if (lilv_port_has_property (
+        lv2_plugin->lilv_plugin,
+        lv2_port->lilv_port,
+        PM_LILV_NODES.pprops_notOnGUI))
+    {
+      pi->flags |= PORT_FLAG_NOT_ON_GUI;
+    }
+
   LilvNode* min_size = lilv_port_get(
             lv2_plugin->lilv_plugin,
             lv2_port->lilv_port,

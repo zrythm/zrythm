@@ -175,7 +175,7 @@ ports_expander_widget_setup_plugin (
       flow == FLOW_OUTPUT)
     strcpy (fullstr, _("Control Outs"));
   else if (type == TYPE_AUDIO &&
-      flow == FLOW_INPUT)
+           flow == FLOW_INPUT)
     strcpy (fullstr, _("Audio Ins"));
   else if (type == TYPE_AUDIO &&
       flow == FLOW_OUTPUT)
@@ -227,14 +227,16 @@ ports_expander_widget_setup_plugin (
 
   InspectorPortWidget * ip;
   Port * port;
+  PortIdentifier * pi;
   if (pl && type == TYPE_CONTROL &&
       flow == FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
-          if (port->identifier.type
-                != TYPE_CONTROL)
+          pi = &port->identifier;
+          if (pi->type != TYPE_CONTROL ||
+              pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           ADD_SINGLE (port);
@@ -246,8 +248,9 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
-          if (port->identifier.type
-                != TYPE_CONTROL)
+          pi = &port->identifier;
+          if (pi->type != TYPE_CONTROL ||
+              pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           ADD_SINGLE (port);
@@ -259,8 +262,9 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
-          if (port->identifier.type
-                != TYPE_CV)
+          pi = &port->identifier;
+          if (pi->type != TYPE_CV ||
+              pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           ADD_SINGLE (port);
@@ -272,8 +276,9 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
-          if (port->identifier.type
-                != TYPE_CV)
+          pi = &port->identifier;
+          if (pi->type != TYPE_CV ||
+              pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           ADD_SINGLE (port);
@@ -285,8 +290,9 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
-          if (port->identifier.type
-                != TYPE_AUDIO)
+          pi = &port->identifier;
+          if (pi->type != TYPE_AUDIO ||
+              pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           ADD_SINGLE (port);
@@ -298,8 +304,9 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
-          if (port->identifier.type
-                != TYPE_AUDIO)
+          pi = &port->identifier;
+          if (pi->type != TYPE_AUDIO ||
+              pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           ADD_SINGLE (port);
@@ -311,8 +318,9 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
-          if (port->identifier.type
-                != TYPE_EVENT)
+          pi = &port->identifier;
+          if (pi->type != TYPE_EVENT ||
+              pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           ADD_SINGLE (port);
@@ -324,8 +332,9 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
-          if (port->identifier.type
-                != TYPE_EVENT)
+          pi = &port->identifier;
+          if (pi->type != TYPE_EVENT ||
+              pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
 
           ADD_SINGLE (port);

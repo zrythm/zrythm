@@ -208,15 +208,18 @@ plugin_fields_schema[] =
     Plugin, vst,
     vst_plugin_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "in_ports", CYAML_FLAG_POINTER,
+    "in_ports",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Plugin, in_ports, num_in_ports,
     &port_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "out_ports", CYAML_FLAG_POINTER,
+    "out_ports",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Plugin, out_ports, num_out_ports,
     &port_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_SEQUENCE_COUNT (
-    "unknown_ports", CYAML_FLAG_POINTER,
+    "unknown_ports",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Plugin, unknown_ports, num_unknown_ports,
     &port_schema, 0, CYAML_UNLIMITED),
   CYAML_FIELD_INT (
