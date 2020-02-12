@@ -41,6 +41,8 @@ ports_expander_widget_refresh (
   PortsExpanderWidget * self)
 {
   /* set visibility */
+  /* FIXME the port counts used don't take into
+   * account invisible (notOnGUI) ports */
   if (self->owner_type == PORT_OWNER_TYPE_PLUGIN)
     {
       if (self->type == TYPE_CONTROL)
