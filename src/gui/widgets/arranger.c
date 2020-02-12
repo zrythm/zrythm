@@ -168,8 +168,15 @@ draw_arranger_object (
 
       arranger_object_set_full_rectangle (
         obj, self);
-      arranger_object_draw (
-        obj, self, cr, rect);
+
+      /* only draw if the object's rectangle is
+       * hit by the drawable region */
+      if (ui_rectangle_overlap (
+            &obj->full_rect, rect))
+        {
+          arranger_object_draw (
+            obj, self, cr, rect);
+        }
     }
 }
 
@@ -979,7 +986,7 @@ arranger_widget_set_cursor (
 /**
  * Fills in the given array with the ArrangerObject's
  * of the given type that appear in the given
- * ranger.
+ * range.
  *
  * @param rect The rectangle to search in.
  * @param type The type of arranger objects to find,
@@ -1003,8 +1010,12 @@ arranger_widget_get_hit_objects_in_rect (
     obj, self); \
   if (arranger_object_get_arranger (obj) == \
         self && \
-      ui_rectangle_overlap ( \
-        &obj->full_rect, rect)) \
+      (ui_rectangle_overlap ( \
+         &obj->full_rect, rect) || \
+       (arranger_object_should_orig_be_visible ( \
+          obj) && \
+        ui_rectangle_overlap ( \
+          &obj->transient->full_rect, rect)))) \
     { \
       array[*array_size] = obj; \
       (*array_size)++; \
