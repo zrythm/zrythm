@@ -608,7 +608,7 @@ plugin_manager_scan_plugins (
                         descriptor->name);
                       cached_vst_descriptors_add (
                         self->cached_vst_descriptors,
-                        descriptor, 1);
+                        descriptor, 0);
                     }
                   else
                     {
@@ -617,10 +617,15 @@ plugin_manager_scan_plugins (
                         plugin);
                       cached_vst_descriptors_blacklist (
                         self->cached_vst_descriptors,
-                        plugin, 1);
+                        plugin, 0);
                     }
                 }
             }
+        }
+      if (plugin_idx > 0)
+        {
+          cached_vst_descriptors_serialize_to_file (
+            self->cached_vst_descriptors);
         }
       g_strfreev (vst_plugins);
     }

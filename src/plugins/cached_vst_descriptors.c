@@ -36,8 +36,8 @@ get_cached_vst_descriptors_file_path (void)
       "cached_vst_descriptors.yaml", NULL);
 }
 
-static void
-serialize (
+void
+cached_vst_descriptors_serialize_to_file (
   CachedVstDescriptors * self)
 {
   self->version = CACHED_VST_DESCRIPTORS_VERSION;
@@ -215,7 +215,7 @@ cached_vst_descriptors_blacklist (
     new_descr;
   if (_serialize)
     {
-      serialize (self);
+      cached_vst_descriptors_serialize_to_file (self);
     }
 }
 
@@ -241,7 +241,7 @@ cached_vst_descriptors_add (
 
   if (_serialize)
     {
-      serialize (self);
+      cached_vst_descriptors_serialize_to_file (self);
     }
 }
 

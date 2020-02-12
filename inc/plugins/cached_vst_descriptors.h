@@ -81,6 +81,10 @@ cached_vst_descriptors_schema =
 CachedVstDescriptors *
 cached_vst_descriptors_new (void);
 
+void
+cached_vst_descriptors_serialize_to_file (
+  CachedVstDescriptors * self);
+
 /**
  * Returns if the plugin at the given path is
  * blacklisted or not.

@@ -1307,6 +1307,7 @@ update_plugin_ui (
                 port->control :
             buf);
 
+#if 0
           if (ev.protocol == 0)
             {
               float val = * (float *) buf;
@@ -1317,6 +1318,7 @@ update_plugin_ui (
                   &plugin->ports[ev.index]),
                 (double) val);
             }
+#endif
       }
 
       if (plugin->has_external_ui &&
