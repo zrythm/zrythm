@@ -83,8 +83,15 @@ metronome_init (
       AudioEncoder * enc =
         audio_encoder_new_from_file (
           self->emphasis_path);
-      audio_encoder_decode (
-        enc, 0);
+      if (!enc)
+        {
+          g_critical (
+            "Failed to load samples for metronome "
+            "from %s",
+            self->emphasis_path);
+          return;
+        }
+      audio_encoder_decode (enc, 0);
       self->emphasis =
         calloc (
           (size_t)

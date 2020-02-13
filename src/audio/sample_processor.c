@@ -226,6 +226,9 @@ sample_processor_queue_metronome (
   MetronomeType     type,
   nframes_t         offset)
 {
+  g_return_if_fail (
+    METRONOME->emphasis && METRONOME->normal);
+
   /*g_message ("metronome queued for %d", offset);*/
   SamplePlayback * sp =
     &self->current_samples[
