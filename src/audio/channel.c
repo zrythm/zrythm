@@ -984,8 +984,7 @@ channel_update_output (
     }
 
   ch->output = output;
-  g_message ("setting output %s",
-             output->name);
+  ch->output_pos = output->pos;
 
   mixer_recalc_graph (MIXER);
 
