@@ -159,9 +159,13 @@ draw_regions (
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
-  /* get a visible region */
+  /* get a visible region - the clip editor
+   * region is removed temporarily while moving
+   * regions so this could be NULL */
   ZRegion * region = CLIP_EDITOR->region;
-  g_return_if_fail (region);
+  if (!region)
+    return;
+
   ArrangerObject * region_obj =
     (ArrangerObject *) region;
 

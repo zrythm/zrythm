@@ -287,11 +287,11 @@ midi_note_set_val (
         track->processor.piano_roll->midi_events;
 
       zix_sem_wait (&midi_events->access_sem);
+      TrackLane * lane =
+        region_get_lane (midi_note->region);
       midi_events_add_note_off (
-        midi_events,
-        midi_note->region->lane->midi_ch,
-        midi_note->val,
-        0, 1);
+        midi_events, lane->midi_ch,
+        midi_note->val, 0, 1);
       zix_sem_post (&midi_events->access_sem);
     }
 

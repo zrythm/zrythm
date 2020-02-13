@@ -1125,7 +1125,7 @@ track_free (Track * track)
     gtk_widget_destroy (
       GTK_WIDGET (track->widget));
 
-  free (track);
+  object_zero_and_free (track);
 }
 
 /**

@@ -144,8 +144,8 @@ arranger_selections_init (
       cs = (ChordSelections *) self;
       SET_OBJ (cs, ChordObject, chord_object);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 
 #undef SET_OBJ
@@ -182,8 +182,8 @@ arranger_selections_add_object (
       g_return_if_fail (
         obj->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT);
       break;
-		default:
-			g_return_if_reached();
+    default:
+      g_return_if_reached();
     }
 
 #define ADD_OBJ(sel,caps,cc,sc) \
@@ -255,8 +255,8 @@ arranger_selections_add_object (
           AutomationPoint, automation_point);
         }
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 #undef ADD_OBJ
 }
@@ -304,8 +304,8 @@ arranger_selections_set_from_selections (
       RESET_COUNTERPART (
         cs, ChordObject, chord_object);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 
 #undef RESET_COUNTERPART
@@ -395,8 +395,8 @@ arranger_selections_clone (
       CLONE_OBJS (
         src_cs, new_cs, ChordObject, chord_object);
       return ((ArrangerSelections *) new_cs);
-		default:
-			g_return_val_if_reached (NULL);
+    default:
+      g_return_val_if_reached (NULL);
     }
 
   g_return_val_if_reached (NULL);
@@ -436,8 +436,8 @@ arranger_selections_has_any (
       cs = (ChordSelections *) self;
       return
         cs->num_chord_objects > 0;
-		default:
-			g_return_val_if_reached (-1);
+    default:
+      g_return_val_if_reached (-1);
     }
 
   g_return_val_if_reached (-1);
@@ -529,8 +529,8 @@ arranger_selections_get_start_pos (
       add_ticks_if_global (
         self, global, pos);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 
 #undef GET_START_POS
@@ -616,8 +616,8 @@ arranger_selections_get_end_pos (
       add_ticks_if_global (
         self, global, pos);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 
 #undef GET_END_POS
@@ -682,8 +682,8 @@ arranger_selections_get_first_object (
       GET_FIRST_OBJ (
         cs, ChordObject, chord_object);
       break;
-		default:
-			g_return_val_if_reached (NULL);
+    default:
+      g_return_val_if_reached (NULL);
     }
 
   return ret_obj;
@@ -761,8 +761,8 @@ arranger_selections_get_last_object (
       GET_LAST_OBJ (
         cs, ChordObject, chord_object);
       break;
-		default:
-			g_return_val_if_reached (NULL);
+    default:
+      g_return_val_if_reached (NULL);
     }
 
   return ret_obj;
@@ -841,8 +841,8 @@ arranger_selections_set_cache_poses (
       SET_CACHE_POS (
         cs, chord_object);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 
 #undef SET_CACHE_POS
@@ -903,8 +903,8 @@ arranger_selections_add_ticks (
       ADD_TICKS (
         cs, chord_object);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 
 #undef ADD_TICKS
@@ -970,8 +970,8 @@ arranger_selections_clear (
       REMOVE_OBJS (
         cs, chord_object);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 
 #undef REMOVE_OBJS
@@ -1023,8 +1023,8 @@ arranger_selections_get_num_objects (
       ADD_OBJ (
         cs, chord_object);
       break;
-		default:
-			g_return_val_if_reached (-1);
+    default:
+      g_return_val_if_reached (-1);
     }
 #undef ADD_OBJ
 
@@ -1079,8 +1079,8 @@ arranger_selections_post_deserialize (
       POST_DESERIALIZE (
         cs, chord_object);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 
 #undef POST_DESERIALIZE
@@ -1122,8 +1122,8 @@ arranger_selections_free (
       free (cs->chord_objects);
       free (cs);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 }
 
@@ -1292,8 +1292,8 @@ arranger_selections_contains_object (
               cs->num_chord_objects, obj);
         }
       break;
-		default:
-			g_return_val_if_reached (0);
+    default:
+      g_return_val_if_reached (0);
     }
 
   g_return_val_if_reached (0);
@@ -1353,8 +1353,8 @@ arranger_selections_remove_object (
       REMOVE_OBJ (
         cs, CHORD_OBJECT, chord_object);
       break;
-		default:
-			g_return_if_reached ();
+    default:
+      g_return_if_reached ();
     }
 #undef REMOVE_OBJ
 }
@@ -1421,8 +1421,8 @@ arranger_selections_get_all_objects (
       ADD_OBJ (
         cs, chord_object);
       break;
-		default:
-			g_return_val_if_reached (NULL);
+    default:
+      g_return_val_if_reached (NULL);
     }
 #undef ADD_OBJ
 

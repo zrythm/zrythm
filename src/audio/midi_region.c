@@ -783,10 +783,11 @@ midi_region_get_midi_ch (
   const ZRegion * self)
 {
   uint8_t ret;
-  if (self->lane->midi_ch > 0)
-    ret = self->lane->midi_ch;
+  TrackLane * lane = region_get_lane (self);
+  if (lane->midi_ch > 0)
+    ret = lane->midi_ch;
   else
-    ret = self->lane->track->midi_ch;
+    ret = lane->track->midi_ch;
 
   g_warn_if_fail (ret > 0);
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -18,7 +18,7 @@
 project (
   'zrythm', ['c', 'cpp'],
   version: '0.7.474',
-  license: 'AGPLv3+',
+  license: 'AGPL-3-or-later',
   meson_version: '>= 0.50.0',
   default_options: [
     'warning_level=2',
@@ -486,6 +486,11 @@ endif
 if (get_option('enable_sdl'))
   zrythm_deps += dependency ('sdl2')
   cdata.set('HAVE_SDL', 1)
+endif
+
+if (get_option('enable_guile'))
+  guile_dep = dependency ('guile-3.0')
+  cdata.set('HAVE_GUILE', 1)
 endif
 
 if os_windows

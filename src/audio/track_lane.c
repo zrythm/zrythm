@@ -45,7 +45,7 @@ track_lane_init_loaded (
       region = lane->regions[i];
       ArrangerObject * r_obj =
         (ArrangerObject *) region;
-      region->lane = lane;
+      region_set_lane (region, lane);
       arranger_object_init_loaded (r_obj);
     }
 }

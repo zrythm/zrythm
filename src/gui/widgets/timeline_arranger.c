@@ -973,8 +973,7 @@ timeline_arranger_move_regions_to_new_lanes (
   for (i = 0; i < num_regions; i++)
     {
       region = regions[i];
-      TrackLane * lane = region->lane;
-      if (lane->pos + diff < 0)
+      if (region->lane_pos + diff < 0)
         {
           compatible = 0;
           break;
@@ -991,7 +990,7 @@ timeline_arranger_move_regions_to_new_lanes (
   for (i = 0; i < num_regions; i++)
     {
       region = regions[i];
-      TrackLane * lane = region->lane;
+      TrackLane * lane = region_get_lane (region);
       g_return_val_if_fail (region && lane, -1);
 
       TrackLane * lane_to_move_to = NULL;

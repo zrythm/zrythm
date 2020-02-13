@@ -106,3 +106,9 @@ option (
   type: 'boolean',
   value: false,
   description: 'Whether this is a trial version with limited functionality')
+
+option (
+  'enable_guile',
+  type: 'boolean',
+  value: false,
+  description: 'Enable guile scripting interface')

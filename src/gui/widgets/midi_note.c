@@ -170,7 +170,9 @@ midi_note_draw (
     }
   else
     {
-      color = region->lane->track->color;
+      Track * track =
+        arranger_object_get_track (obj);
+      color = track->color;
     }
 
   /* draw notes of main region */

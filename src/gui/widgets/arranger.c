@@ -520,7 +520,9 @@ draw_audio_bg (
       return;
     }
   ArrangerObject * obj = (ArrangerObject *) ar;
-  GdkRGBA * color = &ar->lane->track->color;
+  TrackLane * lane = region_get_lane (ar);
+  g_return_if_fail (lane);
+  GdkRGBA * color = &lane->track->color;
   cairo_set_source_rgba (
     cr, color->red + 0.3, color->green + 0.3,
     color->blue + 0.3, 0.9);
@@ -2825,9 +2827,11 @@ select_in_range (
 
           if (delete)
             {
+              Track * track =
+                arranger_object_get_track (obj);
               /* delete the enclosed region */
               track_remove_region (
-                region->lane->track, region,
+                track, region,
                 F_PUBLISH_EVENTS, F_FREE);
             }
           else

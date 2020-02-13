@@ -36,6 +36,7 @@
 #include "plugins/vst/vst_windows.h"
 #include "plugins/vst/vst_x11.h"
 #include "gui/widgets/main_window.h"
+#include "guile/guile.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/objects.h"
@@ -308,6 +309,10 @@ main (int    argc,
   g_message (
     "Running Zrythm in %s", cur_dir);
   g_free (cur_dir);
+
+#ifdef HAVE_GUILE
+  guile_init (argc, argv);
+#endif
 
   g_message ("GTK_THEME=%s", getenv ("GTK_THEME"));
 

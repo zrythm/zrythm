@@ -59,6 +59,24 @@ typedef enum ArrangerObjectType
   ARRANGER_OBJECT_TYPE_VELOCITY,
 } ArrangerObjectType;
 
+/**
+ * ArrangerObject flags.
+ */
+typedef enum ArrangerObjectFlags
+{
+  /** This object is not a project object, but an
+   * object used temporarily eg. when undoing/
+   * redoing. */
+  ARRANGER_OBJECT_FLAG_NON_PROJECT = 1 << 0,
+
+} ArrangerObjectFlags;
+
+static const cyaml_bitdef_t
+arranger_object_flags_bitvals[] =
+{
+  { .name = "non_project", .offset =  0, .bits =  1 },
+};
+
 static const cyaml_strval_t
 arranger_object_type_strings[] =
 {
@@ -125,6 +143,9 @@ typedef struct ArrangerObject
   /** 1 if the start Position is a global (timeline)
    * Position. */
   int                is_pos_global;
+
+  /** Flags. */
+  ArrangerObjectFlags  flags;
 
   /**
    * Position (or start Position if the object
@@ -235,6 +256,12 @@ arranger_object_fields_schema[] =
     ArrangerObject, type,
     arranger_object_type_strings,
     CYAML_ARRAY_LEN (arranger_object_type_strings)),
+  CYAML_FIELD_BITFIELD (
+    "flags", CYAML_FLAG_DEFAULT,
+    ArrangerObject, flags,
+    arranger_object_flags_bitvals,
+    CYAML_ARRAY_LEN (
+      arranger_object_flags_bitvals)),
 	CYAML_FIELD_INT (
     "can_have_lanes", CYAML_FLAG_DEFAULT,
     ArrangerObject, can_have_lanes),

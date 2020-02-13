@@ -38,7 +38,7 @@ static ArrangerSelectionsAction *
 _create_action (
   ArrangerSelections * sel)
 {
-	ArrangerSelectionsAction * self =
+  ArrangerSelectionsAction * self =
     calloc (1, sizeof (ArrangerSelectionsAction));
 
   self->sel = arranger_selections_clone (sel);
@@ -69,9 +69,9 @@ get_actual_arranger_selections (
       return
         (ArrangerSelections *)
         CHORD_SELECTIONS;
-		default:
-			g_return_val_if_reached (NULL);
-			break;
+    default:
+      g_return_val_if_reached (NULL);
+      break;
     }
 
   g_return_val_if_reached (NULL);
@@ -347,6 +347,10 @@ add_object_to_project (
               F_PUBLISH_EVENTS);
             break;
           }
+        /* if region, also set is as the clip
+         * editor region */
+        clip_editor_set_region (
+          CLIP_EDITOR, r);
       }
       break;
     default:
@@ -424,7 +428,7 @@ remove_object_from_project (
  */
 static int
 do_or_undo_move (
-	ArrangerSelectionsAction * self,
+  ArrangerSelectionsAction * self,
   const int                  _do)
 {
   int size = 0;
@@ -517,7 +521,7 @@ do_or_undo_move (
               Track * region_track =
                 arranger_object_get_track (obj);
               int new_lane_pos =
-                r->lane->pos + delta_lanes;
+                r->lane_pos + delta_lanes;
               g_return_val_if_fail (
                 new_lane_pos >= 0, -1);
               track_create_missing_lanes (
@@ -569,8 +573,16 @@ move_obj_by_tracks_and_lanes (
           tracks_diff);
 
       /* shift the actual object by tracks */
-      region_move_to_track (
-        r, track_to_move_to);
+      if (obj->flags &
+            ARRANGER_OBJECT_FLAG_NON_PROJECT)
+        {
+          r->track_pos = track_to_move_to->pos;
+        }
+      else
+        {
+          region_move_to_track (
+            r, track_to_move_to);
+        }
     }
   if (lanes_diff)
     {
@@ -582,14 +594,22 @@ move_obj_by_tracks_and_lanes (
         r->lane_pos + lanes_diff;
       g_return_if_fail (
         new_lane_pos >= 0);
-      track_create_missing_lanes (
-        region_track, new_lane_pos);
-      TrackLane * lane_to_move_to =
-        region_track->lanes[new_lane_pos];
 
       /* shift the actual object by lanes */
-      region_move_to_lane (
-        r, lane_to_move_to);
+      if (obj->flags &
+            ARRANGER_OBJECT_FLAG_NON_PROJECT)
+        {
+          r->lane_pos = new_lane_pos;
+        }
+      else
+        {
+          track_create_missing_lanes (
+            region_track, new_lane_pos);
+          TrackLane * lane_to_move_to =
+            region_track->lanes[new_lane_pos];
+          region_move_to_lane (
+            r, lane_to_move_to);
+        }
     }
 }
 
@@ -600,7 +620,7 @@ move_obj_by_tracks_and_lanes (
  */
 static int
 do_or_undo_duplicate (
-	ArrangerSelectionsAction * self,
+  ArrangerSelectionsAction * self,
   const int                  _do)
 {
   int size = 0;
@@ -626,6 +646,9 @@ do_or_undo_duplicate (
 
   for (int i = 0; i < size; i++)
     {
+      objs[i]->flags |=
+        ARRANGER_OBJECT_FLAG_NON_PROJECT;
+
       ArrangerObject * obj;
       if (_do)
         {
@@ -802,7 +825,7 @@ do_or_undo_duplicate (
  */
 static int
 do_or_undo_create_or_delete (
-	ArrangerSelectionsAction * self,
+  ArrangerSelectionsAction * self,
   const int                  _do,
   const int                  create)
 {
@@ -908,7 +931,7 @@ do_or_undo_create_or_delete (
  */
 static int
 do_or_undo_edit (
-	ArrangerSelectionsAction * self,
+  ArrangerSelectionsAction * self,
   const int                  _do)
 {
   int size = 0;
@@ -1049,7 +1072,7 @@ do_or_undo_edit (
  */
 static int
 do_or_undo_split (
-	ArrangerSelectionsAction * self,
+  ArrangerSelectionsAction * self,
   const int                  _do)
 {
   int size = 0;
@@ -1129,7 +1152,7 @@ do_or_undo_split (
  */
 static int
 do_or_undo_resize (
-	ArrangerSelectionsAction * self,
+  ArrangerSelectionsAction * self,
   const int                  _do)
 {
   int size = 0;
@@ -1200,7 +1223,7 @@ do_or_undo_resize (
  */
 static int
 do_or_undo_quantize (
-	ArrangerSelectionsAction * self,
+  ArrangerSelectionsAction * self,
   const int                  _do)
 {
   int size = 0;
@@ -1361,14 +1384,14 @@ arranger_selections_action_undo (
 
 char *
 arranger_selections_action_stringize (
-	ArrangerSelectionsAction * self)
+  ArrangerSelectionsAction * self)
 {
   return g_strdup (_("Edit arranger object(s)"));
 }
 
 void
 arranger_selections_action_free (
-	ArrangerSelectionsAction * self)
+  ArrangerSelectionsAction * self)
 {
   arranger_selections_free_full (self->sel);
 

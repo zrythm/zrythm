@@ -93,8 +93,9 @@ velocity_draw (
     }
   else
     {
-      color =
-        region->lane->track->color;
+      Track * track =
+        arranger_object_get_track (obj);
+      color = track->color;
     }
 
   /* draw velocities of main region */

@@ -57,6 +57,7 @@
 #include "utils/cairo.h"
 #include "utils/flags.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 
 #define TYPE(x) \
   ARRANGER_OBJECT_TYPE_##x
@@ -670,8 +671,9 @@ init_loaded_region (
   ZRegion * self)
 {
   self->linked_region =
-    region_find_by_name (
-      self->linked_region_name);
+    region_find_by_name (self->linked_region_name);
+
+  self->magic = REGION_MAGIC;
 
   int i;
   switch (self->type)
@@ -741,11 +743,7 @@ init_loaded_region (
       break;
     }
 
-  if (region_type_has_lane (self->type))
-    {
-      region_set_lane (self, self->lane);
-    }
-  else if (self->type == REGION_TYPE_AUTOMATION)
+  if (self->type == REGION_TYPE_AUTOMATION)
     {
       region_set_automation_track (
         self, self->at);
@@ -1717,18 +1715,8 @@ clone_region (
   new_region->name = g_strdup (region->name);
 
   /* set track to NULL and remember track pos */
-  new_region->lane = NULL;
-  new_region->track_pos = -1;
   new_region->lane_pos = region->lane_pos;
-  if (region->lane)
-    {
-      new_region->track_pos =
-        region->lane->track_pos;
-    }
-  else
-    {
-      new_region->track_pos = region->track_pos;
-    }
+  new_region->track_pos = region->track_pos;
   new_region->at_index = region->at_index;
 
   return (ArrangerObject *) new_region;
@@ -2263,7 +2251,7 @@ free_region (
 
 #undef FREE_R
 
-  free (self);
+  object_zero_and_free (self);
 }
 
 static void

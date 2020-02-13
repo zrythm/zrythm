@@ -84,6 +84,8 @@ region_init (
   position_init (&obj->loop_start_pos);
   obj->loop_end_pos.frames = length;
   self->linked_region_name = NULL;
+
+  self->magic = REGION_MAGIC;
 }
 
 /**
@@ -136,7 +138,6 @@ region_set_lane (
   TrackLane * lane)
 {
   g_return_if_fail (lane);
-  self->lane = lane;
   self->lane_pos = lane->pos;
   self->track_pos = lane->track_pos;
 }
@@ -152,7 +153,7 @@ region_set_lane (
 void
 region_move_to_track (
   ZRegion *  region,
-  Track *   track)
+  Track *    track)
 {
   g_return_if_fail (region && track);
 
@@ -231,10 +232,12 @@ region_move_to_lane (
     F_NO_PUBLISH_EVENTS);
 
   /* reset the clip editor region because
-   * track_remove clears it */
+   * track_remove_region clears it */
   if (is_clip_editor_region)
-    clip_editor_set_region (
-      CLIP_EDITOR, region);
+    {
+      clip_editor_set_region (
+        CLIP_EDITOR, region);
+    }
 
   arranger_object_select (
     (ArrangerObject *) region, selected,
@@ -297,6 +300,25 @@ region_type_has_lane (
   return
     type == REGION_TYPE_MIDI ||
     type == REGION_TYPE_AUDIO;
+}
+
+TrackLane *
+region_get_lane (
+  const ZRegion * self)
+{
+  Track * track =
+    arranger_object_get_track (
+      (ArrangerObject *) self);
+  g_return_val_if_fail (track, NULL);
+  if (self->lane_pos < track->num_lanes)
+    {
+      TrackLane * lane =
+        track->lanes[self->lane_pos];
+      g_return_val_if_fail (lane, NULL);
+      return lane;
+    }
+
+  g_return_val_if_reached (NULL);
 }
 
 /**
@@ -691,10 +713,12 @@ region_timeline_frames_to_local (
 char *
 region_generate_filename (ZRegion * region)
 {
+  Track * track =
+    arranger_object_get_track (
+      (ArrangerObject *) region);
   return
     g_strdup_printf (
-      REGION_PRINTF_FILENAME,
-      region->lane->track->name,
+      REGION_PRINTF_FILENAME, track->name,
       region->name);
 }
 

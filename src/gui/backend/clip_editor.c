@@ -114,8 +114,8 @@ clip_editor_set_region (
 
   self->region_changed = 1;
 
-  EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED,
-               NULL);
+  EVENTS_PUSH (
+    ET_CLIP_EDITOR_REGION_CHANGED, NULL);
 }
 
 /**

@@ -1877,7 +1877,7 @@ graph_setup (
         self->setup_terminal_nodes[ii], 0);
     }
 
-  graph_print (self);
+  /*graph_print (self);*/
 
   if (rechain)
     graph_rechain (self);

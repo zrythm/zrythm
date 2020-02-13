@@ -28,6 +28,7 @@ endif
 subdir('actions')
 subdir('audio')
 subdir('gui')
+subdir('guile')
 subdir('plugins')
 subdir('settings')
 subdir('utils')
@@ -38,10 +39,8 @@ zrythm_link_libs = [
   midilib,
   ]
 
-if not cyaml_dep.found()
-  zrythm_link_libs += [
-    cyaml,
-    ]
+if get_option('enable_guile')
+  zrythm_link_libs += guilelib
 endif
 
 # there are problems if added to zrythm_srcs directly

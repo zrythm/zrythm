@@ -50,10 +50,30 @@ void
 object_utils_init (void);
 
 /**
- * Frees memory and sets the pointer to NULL.
+ * Zero's out the struct pointed to by \ref ptr.
+ *
+ * @param ptr A pointer to a struct.
  */
-#define free_and_null(ptr) \
-  { free (*ptr); *ptr = NULL; }
+#define object_set_to_zero(ptr) \
+ memset (ptr, 0, sizeof (*(ptr)))
+
+/**
+ * Zero's out a struct pointed to by \ref ptr and
+ * frees the object.
+ */
+#define object_zero_and_free(ptr) \
+  object_set_to_zero (ptr); \
+  free (ptr)
+
+/**
+ * Frees memory, sets the pointer to NULL and
+ * zero's out the struct.
+ *
+ * @param ptr A pointer to a pointer to be free'd.
+ */
+#define object_free_zero_and_null(ptr) \
+  { object_set_to_zero (*ptr); \
+    free (*ptr); *ptr = NULL; }
 
 /**
  * Frees memory and sets the pointer to NULL.
