@@ -35,6 +35,19 @@ G_DECLARE_FINAL_TYPE (
   GtkEventBox)
 
 /**
+ * Getter prototype.
+ */
+typedef const char * (*EditableLabelWidgetTextGetter) (
+  void * object);
+
+/**
+ * Setter prototype.
+ */
+typedef void (*EditableLabelWidgetTextSetter) (
+  void *       object,
+  const char * text);
+
+/**
  * A label that shows a popover when clicked.
  */
 typedef struct _EditableLabelWidget
@@ -48,13 +61,17 @@ typedef struct _EditableLabelWidget
   GtkEntry *        entry;
 
   /** Getter. */
-  const char * (*getter)(void *);
+  EditableLabelWidgetTextGetter getter;
 
   /** Setter. */
-  void (*setter)(void *, const char *);
+  EditableLabelWidgetTextSetter setter;
 
   /** Object to call get/set with. */
   void *            object;
+
+  /** Whether this is a temporary widget for just
+   * showing the popover. */
+  int               is_temp;
 
   /** Multipress for the label. */
   GtkGestureMultiPress * mp;
@@ -68,6 +85,17 @@ editable_label_widget_show_popover (
   EditableLabelWidget * self);
 
 /**
+ * Shows a popover without the need of an editable
+ * label.
+ */
+void
+editable_label_widget_show_popover_for_widget (
+  GtkWidget * parent,
+  void *      object,
+  EditableLabelWidgetTextGetter getter,
+  EditableLabelWidgetTextSetter setter);
+
+/**
  * Sets up an existing EditableLabelWidget.
  *
  * @param get_val Getter function.
@@ -75,20 +103,11 @@ editable_label_widget_show_popover (
  * @param object Object to call get/set with.
  */
 void
-_editable_label_widget_setup (
+editable_label_widget_setup (
   EditableLabelWidget * self,
   void *                object,
-  const char * (*get_val)(void *),
-  void (*set_val)(void *, const char *));
-
-#define \
-editable_label_widget_setup( \
-  self,object,getter,setter) \
-  _editable_label_widget_setup ( \
-    self, \
-    (void *) object, \
-    (const char * (*) (void *)) getter, \
-    (void (*) (void *, const char *)) setter);
+  EditableLabelWidgetTextGetter getter,
+  EditableLabelWidgetTextSetter setter);
 
 /**
  * Returns a new instance of EditableLabelWidget.
@@ -99,18 +118,10 @@ editable_label_widget_setup( \
  * @param width Label width in chars.
  */
 EditableLabelWidget *
-_editable_label_widget_new (
+editable_label_widget_new (
   void *                object,
-  const char * (*get_val)(void *),
-  void (*set_val)(void *, const char *),
+  EditableLabelWidgetTextGetter getter,
+  EditableLabelWidgetTextSetter setter,
   int                    width);
-
-#define \
-editable_label_widget_new(object,getter,setter,lbl) \
-  _editable_label_widget_new ( \
-    (void *) object, \
-    (const char * (*) (void *)) getter, \
-    (void (*) (void *, const char *)) setter, \
-    lbl)
 
 #endif

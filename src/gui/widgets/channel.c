@@ -799,7 +799,8 @@ channel_widget_new (Channel * channel)
   setup_channel_icon (self);
   editable_label_widget_setup (
     self->name, self->channel->track,
-    track_get_name, track_set_name);
+    (EditableLabelWidgetTextGetter) track_get_name,
+    (EditableLabelWidgetTextSetter) track_set_name);
   route_target_selector_widget_setup (
     self->output, self->channel);
   channel_widget_refresh (self);

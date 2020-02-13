@@ -52,7 +52,9 @@ track_properties_expander_widget_refresh (
 
   editable_label_widget_setup (
     self->name,
-    track, track_get_name, track_set_name);
+    track,
+    (EditableLabelWidgetTextGetter) track_get_name,
+    (EditableLabelWidgetTextSetter) track_set_name);
 }
 
 /**

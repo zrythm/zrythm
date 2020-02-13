@@ -1657,6 +1657,24 @@ on_right_click (
     }
 }
 
+/**
+ * Shows a popover for editing the track name.
+ */
+static void
+show_edit_name_popover (
+  TrackWidget * self)
+{
+  /*GtkWidget * popover =*/
+    /*gtk_popover_new (GTK_WIDGET (self));*/
+
+  /*gtk_container_add (*/
+
+  editable_label_widget_show_popover_for_widget (
+    GTK_WIDGET (self), self->track,
+    (EditableLabelWidgetTextGetter) track_get_name,
+    (EditableLabelWidgetTextSetter) track_set_name);
+}
+
 static void
 multipress_pressed (
   GtkGestureMultiPress *gesture,
@@ -1669,6 +1687,12 @@ multipress_pressed (
    * property */
   /*if (!gtk_widget_has_focus (GTK_WIDGET (self)))*/
     /*gtk_widget_grab_focus (GTK_WIDGET (self));*/
+
+  if (n_press == 2)
+    {
+      /* show popup to edit the name */
+      show_edit_name_popover (self);
+    }
 
   GdkModifierType state_mask =
     ui_get_state_mask (GTK_GESTURE (gesture));

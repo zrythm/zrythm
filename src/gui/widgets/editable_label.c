@@ -37,7 +37,7 @@ on_entry_activated (
 {
   (*self->setter) (
     self->object,
-    gtk_entry_get_text (self->entry));
+    gtk_entry_get_text (entry));
   gtk_widget_set_visible (
     GTK_WIDGET (self->popover), 0);
 }
@@ -48,6 +48,11 @@ on_popover_closed (
   EditableLabelWidget * self)
 {
   gtk_widget_destroy (GTK_WIDGET (popover));
+
+  if (self->is_temp)
+    {
+      g_object_unref (self);
+    }
 }
 
 /**
@@ -87,6 +92,55 @@ editable_label_widget_show_popover (
 }
 
 /**
+ * Shows a popover without the need of an editable
+ * label.
+ */
+void
+editable_label_widget_show_popover_for_widget (
+  GtkWidget * parent,
+  void *      object,
+  EditableLabelWidgetTextGetter getter,
+  EditableLabelWidgetTextSetter setter)
+{
+  EditableLabelWidget * self =
+    g_object_new (
+      EDITABLE_LABEL_WIDGET_TYPE, NULL);
+
+  self->object = object;
+  self->getter = getter;
+  self->setter = setter;
+  self->is_temp = 1;
+
+  g_object_ref (self);
+
+  self->popover =
+    GTK_POPOVER (
+      gtk_popover_new (GTK_WIDGET (parent)));
+  GtkEntry * entry =
+    GTK_ENTRY (gtk_entry_new ());
+  self->entry = entry;
+  gtk_widget_set_visible (
+    GTK_WIDGET (entry), 1);
+  gtk_entry_set_text (
+    self->entry, (*getter) (object));
+
+  gtk_container_add (
+    GTK_CONTAINER (self->popover),
+    GTK_WIDGET (entry));
+
+  g_signal_connect (
+    G_OBJECT (self->entry), "activate",
+    G_CALLBACK (on_entry_activated), self);
+  g_signal_connect (
+    G_OBJECT (self->popover), "closed",
+    G_CALLBACK (on_popover_closed), self);
+
+  gtk_popover_popup (self->popover);
+  gtk_entry_set_text (
+    self->entry, (*getter) (object));
+}
+
+/**
  * Multipress handler.
  */
 static void
@@ -111,7 +165,7 @@ editable_label_widget_on_mp_press (
  * @param object Object to call get/set with.
  */
 void
-_editable_label_widget_setup (
+editable_label_widget_setup (
   EditableLabelWidget * self,
   void *                object,
   const char * (*get_val)(void *),
@@ -138,7 +192,7 @@ _editable_label_widget_setup (
  * @param width Label width in chars.
  */
 EditableLabelWidget *
-_editable_label_widget_new (
+editable_label_widget_new (
   void *                object,
   const char * (*get_val)(void *),
   void (*set_val)(void *, const char *),
