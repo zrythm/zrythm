@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-01-28 21:43+0000\n"
-"PO-Revision-Date: 2019-06-10 14:40+0000\n"
+"PO-Revision-Date: 2020-02-15 22:50+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7-dev\n"
+"X-Generator: Weblate 3.11-dev\n"
 
 #: src/zrythm.c:282
 msgid "Setting up main window"
-msgstr ""
+msgstr "Ajustar ventana principal"
 
 #: src/zrythm.c:323
 msgid "Loading project"
-msgstr ""
+msgstr "Cargando proyecto"
 
 #: src/zrythm.c:352
 msgid "Initializing main window"
-msgstr ""
+msgstr "Iniciando ventana principal"
 
 #: src/zrythm.c:370
 msgid "Initializing settings"
-msgstr ""
+msgstr "Iniciando configuración"
 
 #: src/zrythm.c:379
 msgid "Initializing Zrythm directories"
-msgstr ""
+msgstr "Iniciando directorios de Zrythm"
 
 #: src/zrythm.c:388
 msgid "Initializing logging system"
@@ -49,15 +49,15 @@ msgstr ""
 
 #: src/zrythm.c:400
 msgid "Initializing caches"
-msgstr ""
+msgstr "Iniciando cachés"
 
 #: src/zrythm.c:407
 msgid "Initializing plugin manager"
-msgstr ""
+msgstr "Iniciando gestor de plugins"
 
 #: src/zrythm.c:415
 msgid "Scanning plugins"
-msgstr ""
+msgstr "Escaneando plugins"
 
 #: src/zrythm.c:562
 msgid "License Information"
