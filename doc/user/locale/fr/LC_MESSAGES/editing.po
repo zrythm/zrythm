@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2020-02-07 16:50+0000\n"
+"PO-Revision-Date: 2020-02-12 12:35+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/fr/>\n"
@@ -315,14 +315,13 @@ msgid "Cutting Objects"
 msgstr "Découpage d'objets"
 
 #: ../../editing/edit-modes.rst:66
-#, fuzzy
 msgid ""
 "You can :zbutton:`Alt`-click inside objects to break them up. Holding "
 "down :zbutton:`Shift` while doing this will bypass snapping."
 msgstr ""
 "Vous pouvez :zbutton:`Alt`-clic à l'intérieur des objets pour les "
 "décomposer. Si vous maintenez :zbutton:`Shift` enfoncé pendant que vous "
-"faites cela, ceci évitera le \"snapping\"."
+"faites cela, ceci évitera l'accrochage magnétique."
 
 #: ../../editing/edit-modes.rst:71
 msgid "Edit Mode"
@@ -685,29 +684,36 @@ msgstr "Options d'accrochage et de grille"
 
 #: ../../editing/snapping-grid-options.rst:9
 msgid "Snap Toggles"
-msgstr ""
+msgstr "Basculer l'accrochage magnétique"
 
 #: ../../editing/snapping-grid-options.rst:10
 msgid ""
 "Zrythm will snap according to the setting currently specified by the snap"
 " toolbar buttons."
 msgstr ""
+"Zrythm accrochera magnétiquement selon le paramètre actuellement spécifié "
+"par les boutons de la barre d'outils d'accrochage magnétique."
 
 #: ../../editing/snapping-grid-options.rst:16
 msgid ""
 "These are not operational at the moment and Zrythm will snap by default. "
 "Use Shift to bypass snapping for now."
 msgstr ""
+"Ceux-ci ne sont pas opérationnels pour le moment et Zrythm s'accrochera "
+"magnétiquement par défaut. Utilisez Shift pour court-circuiter l'accrochage "
+"magnétique pour l'instant."
 
 #: ../../editing/snapping-grid-options.rst:20
 msgid "Snap and Grid"
-msgstr ""
+msgstr "Accrochage magnétique et grille"
 
 #: ../../editing/snapping-grid-options.rst:21
 msgid ""
 "When snapping, Zrythm will follow the settings specified by the snap/grid"
 " widget on each editor."
 msgstr ""
+"Lors de l’accrochage magnétique, Zrythm suivra les paramètres spécifiés par "
+"le widget accrochage/grille de chaque éditeur."
 
 #: ../../editing/snapping-grid-options.rst:27
 msgid "Adaptive Grid"
@@ -768,6 +774,7 @@ msgstr ""
 #: ../../editing/timeline/overview.rst:22
 msgid "The rest of the tracklist is briefly touched upon at :ref:`tracklist`."
 msgstr ""
+"Le reste de la liste de pistes est brièvement évoqué à :ref:`tracklist`."
 
 #: ../../editing/timeline/overview.rst:25
 msgid ""
@@ -776,21 +783,29 @@ msgid ""
 "the top, and this is useful for chord progressions and markers, so you "
 "can always see them."
 msgstr ""
+"La liste des pistes est divisée entre les pistes épinglées en haut et les "
+"pistes non épinglées en bas. Vous pouvez épingler les pistes pour les coller "
+"en haut, ce qui est utile pour les progressions d'accords et les marqueurs, "
+"de sorte que vous pouvez toujours les voir."
 
 #: ../../editing/timeline/overview.rst:31
 msgid "For more details about track operations, see the :ref:`tracks` section."
 msgstr ""
+"Pour plus de détails sur les opérations de piste, voir la section "
+":ref:`tracks`."
 
 #: ../../editing/timeline/overview.rst:35
-#, fuzzy
 msgid "Ruler/Arranger"
-msgstr "Arrangeur"
+msgstr "Règle/arrangeur"
 
 #: ../../editing/timeline/overview.rst:36
 msgid ""
 "This section contains the timeline events and various ruler markers. It "
 "is similarly split to match the tracklist on the left."
 msgstr ""
+"Cette section contient les événements de la ligne de temps et divers "
+"marqueurs de règle. Elle est divisée de la même manière pour correspondre à "
+"la liste de pistes sur la gauche."
 
 #: ../../editing/timeline/ruler.rst:8
 msgid ""
@@ -798,10 +813,13 @@ msgid ""
 "loop points and markers available are discussed in :ref:`loop-points-and-"
 "markers`."
 msgstr ""
+"La règle est principalement utilisée pour contrôler le bouclage et la "
+"lecture. Les différents points de bouclage et marqueurs disponibles sont "
+"présentés dans :ref:`loop-points-and-markers`."
 
 #: ../../editing/timeline/ruler.rst:16
 msgid "Changing the Playhead Position"
-msgstr ""
+msgstr "Changer la position de la tête de lecture"
 
 #: ../../editing/timeline/ruler.rst:17
 msgid ""
@@ -809,10 +827,14 @@ msgid ""
 "the ruler (avoiding the top part, which is used for selecting ranges). "
 "Hold :zbutton:`Shift` to bypass snapping."
 msgstr ""
+"Pour changer la position de la tête de lecture, cliquez, ou cliquez et "
+"glissez à l'intérieur de la règle (en évitant la partie supérieure, qui sert "
+"à sélectionner les plages). Maintenez :zbutton:`Shift` pour court-circuiter "
+"l’accrochage magnétique."
 
 #: ../../editing/timeline/ruler.rst:22
 msgid "Setting the Cue Point"
-msgstr ""
+msgstr "Définir le point de repère"
 
 #: ../../editing/timeline/ruler.rst:23
 msgid ""
@@ -820,20 +842,28 @@ msgid ""
 "return to when playback is stopped. Hold :zbutton:`Shift` to bypass "
 "snapping."
 msgstr ""
+"Double-cliquez à l'intérieur de la règle pour fixer le point de repère. "
+"Celui-ci sera utilisé pour revenir au moment où la lecture est arrêtée. "
+"Maintenez :zbutton:`Shift` pour court-circuiter l'accrochage magnétique."
 
 #: ../../editing/timeline/ruler.rst:28
 msgid "Changing the Loop Region"
-msgstr ""
+msgstr "Changer la région de la boucle"
 
 #: ../../editing/timeline/ruler.rst:29
 msgid ""
 "To change the loop region (green area), click and drag the green arrows "
 "on the left and right. Hold :zbutton:`Shift` to bypass snapping."
 msgstr ""
+"Pour changer la région de la boucle (zone verte), cliquez et faites glisser "
+"les flèches vertes à gauche et à droite. Maintenez :zbutton:`Shift` pour "
+"court-circuiter l'accrochage magnétique."
 
 #: ../../editing/timeline/toolbar.rst:8
 msgid "The timeline has its own toolbar for timeline-specific operations."
 msgstr ""
+"La ligne de temps a sa propre barre d'outils pour les opérations spécifiques "
+"à elle."
 
 #: ../../editing/timeline/toolbar.rst:14
 msgid ""
@@ -841,14 +871,17 @@ msgid ""
 "section. For details about snapping and quantization, see the previous "
 "pages."
 msgstr ""
+"Il contient une section d'accrochage magnétique, une section de "
+"quantification et une section de région audio. Pour plus de détails sur "
+"l'accrochage magnétique et la quantification, voir les pages précédentes."
 
 #: ../../editing/timeline/toolbar.rst:19
 msgid "Audio Region Section"
-msgstr ""
+msgstr "Section de région audio"
 
 #: ../../editing/timeline/toolbar.rst:21
 msgid "Musical Mode"
-msgstr ""
+msgstr "Mode musical"
 
 #: ../../editing/timeline/toolbar.rst:22
 msgid ""
@@ -857,6 +890,11 @@ msgid ""
 "the BPM will cause audio regions to be repeated accordingly to match the "
 "new BPM without being time-stretched."
 msgstr ""
+"Lorsque cette fonction est activée, les régions audio seront automatiquement "
+"étirées pour correspondre au nouveau BPM, chaque fois que le BPM change. Si "
+"cette fonction est désactivée, la modification du BPM entraînera la "
+"répétition des régions audio en fonction du nouveau BPM, sans que être "
+"étirées."
 
 #~ msgid "Piano Roll Editing"
 #~ msgstr "Édition piano-roll"
