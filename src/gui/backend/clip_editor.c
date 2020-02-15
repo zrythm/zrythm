@@ -31,6 +31,10 @@
 #include "audio/channel.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/widgets/arranger_object.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/clip_editor.h"
+#include "gui/widgets/main_window.h"
 #include "audio/track.h"
 #include "project.h"
 #include "utils/flags.h"
@@ -114,8 +118,13 @@ clip_editor_set_region (
 
   self->region_changed = 1;
 
-  EVENTS_PUSH (
-    ET_CLIP_EDITOR_REGION_CHANGED, NULL);
+  if (MW_CLIP_EDITOR)
+    {
+      clip_editor_widget_on_region_changed (
+        MW_CLIP_EDITOR);
+    }
+  /*EVENTS_PUSH (*/
+    /*ET_CLIP_EDITOR_REGION_CHANGED, NULL);*/
 }
 
 /**
@@ -142,11 +151,11 @@ clip_editor_get_region (
   if (!self->has_region)
     return NULL;
 
-  ZRegion * region =
-    region_find (&self->region_id);
+  ZRegion * region = region_find (&self->region_id);
   return region;
 }
 
+#if 0
 /**
  * Returns the ZRegion that widgets are expected
  * to use.
@@ -159,6 +168,7 @@ clip_editor_get_region_for_widgets (
     region_find (&self->region_id_cache);
   return region;
 }
+#endif
 
 void
 clip_editor_init (ClipEditor * self)

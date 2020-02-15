@@ -338,43 +338,7 @@ on_track_added (Track * track)
   EVENTS_PUSH (ET_REFRESH_ARRANGER, NULL);
 }
 
-/**
- * Called when setting clip editor region using
- * g_idle_add to give the widgets time to have
- * widths.
- */
-static int
-refresh_editor_ruler_and_arranger ()
-{
-  if (!ui_is_widget_revealed (EDITOR_RULER))
-    {
-      g_usleep (1000);
-      return TRUE;
-    }
-
-  /* ruler must be refreshed first to get the
-   * correct px when calling ui_* functions */
-  ruler_widget_refresh (
-    (RulerWidget *) EDITOR_RULER);
-
-  /* remove all previous children and add new */
-  arranger_widget_redraw_whole (
-    Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
-  arranger_widget_redraw_whole (
-    Z_ARRANGER_WIDGET (
-      MW_MIDI_MODIFIER_ARRANGER));
-  arranger_widget_redraw_whole (
-    Z_ARRANGER_WIDGET (
-      MW_AUTOMATION_ARRANGER));
-  arranger_widget_redraw_whole (
-    Z_ARRANGER_WIDGET (
-      MW_CHORD_ARRANGER));
-
-  CLIP_EDITOR->region_changed = 0;
-
-  return FALSE;
-}
-
+#if 0
 static void
 on_clip_editor_region_changed ()
 {
@@ -409,6 +373,7 @@ on_clip_editor_region_changed ()
       CLIP_EDITOR->had_region = 0;
     }
 }
+#endif
 
 static void
 on_automation_value_changed (
@@ -1201,7 +1166,7 @@ events_process (void * data)
           on_playhead_changed (1);
           break;
         case ET_CLIP_EDITOR_REGION_CHANGED:
-          on_clip_editor_region_changed ();
+          /*on_clip_editor_region_changed ();*/
           break;
         case ET_TRACK_AUTOMATION_VISIBILITY_CHANGED:
           tracklist_widget_update_track_visibility (

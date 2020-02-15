@@ -18,9 +18,23 @@
  */
 
 #include "gui/backend/clip_editor.h"
+#include "gui/widgets/arranger.h"
+#include "gui/widgets/automation_arranger.h"
+#include "gui/widgets/automation_editor_space.h"
+#include "gui/widgets/bot_dock_edge.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_arranger.h"
+#include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/editor_toolbar.h"
+#include "gui/widgets/editor_ruler.h"
+#include "gui/widgets/main_window.h"
+#include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_editor_space.h"
+#include "gui/widgets/midi_modifier_arranger.h"
+#include "gui/widgets/ruler.h"
+#include "project.h"
 #include "utils/resources.h"
 
 G_DEFINE_TYPE (ClipEditorWidget,
@@ -37,6 +51,74 @@ clip_editor_widget_setup (
   gtk_stack_set_visible_child (
     GTK_STACK (self),
     GTK_WIDGET (self->no_selection_label));
+}
+
+/**
+ * Called when setting clip editor region using
+ * g_idle_add to give the widgets time to have
+ * widths.
+ */
+static int
+refresh_editor_ruler_and_arranger ()
+{
+  if (!ui_is_widget_revealed (EDITOR_RULER))
+    {
+      g_usleep (1000);
+      return TRUE;
+    }
+
+  /* ruler must be refreshed first to get the
+   * correct px when calling ui_* functions */
+  ruler_widget_refresh (
+    (RulerWidget *) EDITOR_RULER);
+
+  /* remove all previous children and add new */
+  arranger_widget_redraw_whole (
+    Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
+  arranger_widget_redraw_whole (
+    Z_ARRANGER_WIDGET (
+      MW_MIDI_MODIFIER_ARRANGER));
+  arranger_widget_redraw_whole (
+    Z_ARRANGER_WIDGET (
+      MW_AUTOMATION_ARRANGER));
+  arranger_widget_redraw_whole (
+    Z_ARRANGER_WIDGET (
+      MW_CHORD_ARRANGER));
+
+  CLIP_EDITOR->region_changed = 0;
+
+  return FALSE;
+}
+
+/**
+ * To be called when the region changes.
+ */
+void
+clip_editor_widget_on_region_changed (
+  ClipEditorWidget * self)
+{
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
+
+  if (r)
+    {
+      gtk_stack_set_visible_child (
+        GTK_STACK (self),
+        GTK_WIDGET (self->main_box));
+
+      clip_editor_inner_widget_refresh (
+        MW_CLIP_EDITOR_INNER);
+
+      g_idle_add (
+        refresh_editor_ruler_and_arranger,
+        NULL);
+    }
+  else
+    {
+      gtk_stack_set_visible_child (
+        GTK_STACK (self),
+        GTK_WIDGET (self->no_selection_label));
+    }
 }
 
 static void

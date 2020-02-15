@@ -60,7 +60,7 @@ typedef struct ClipEditor
    *
    * Related widgets should use this.
    */
-  RegionIdentifier  region_id_cache;
+  //RegionIdentifier  region_id_cache;
 
   /** Whether \ref region_id is a valid region. */
   int              has_region;
@@ -71,7 +71,7 @@ typedef struct ClipEditor
    *
    * FIXME explain when this should be set.
    */
-  int              had_region;
+  //int              had_region;
 
   PianoRoll        piano_roll;
   AudioClipEditor  audio_clip_editor;
@@ -139,6 +139,7 @@ ZRegion *
 clip_editor_get_region (
   ClipEditor * self);
 
+#if 0
 /**
  * Returns the ZRegion that widgets are expected
  * to use.
@@ -146,6 +147,7 @@ clip_editor_get_region (
 ZRegion *
 clip_editor_get_region_for_widgets (
   ClipEditor * self);
+#endif
 
 /**
  * Causes the selected ZRegion to be redrawin in the

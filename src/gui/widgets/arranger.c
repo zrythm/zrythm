@@ -189,7 +189,7 @@ static int
 get_playhead_px (
   ArrangerWidget * self)
 {
-  ZRegion * region =
+  ZRegion * clip_editor_region =
     clip_editor_get_region (CLIP_EDITOR);
 
   /* get frames */
@@ -198,24 +198,27 @@ get_playhead_px (
     {
       frames = PLAYHEAD->frames;
     }
-  else if (region)
+  else if (clip_editor_region)
     {
       ZRegion * r = NULL;
-      if (self->type == TYPE (AUTOMATION))
+
+      if (self->type ==
+            ARRANGER_WIDGET_TYPE_AUTOMATION)
         {
-          /* if clip editor region currently
-           * changed to another type, skip this */
-          if (region->id.type !=
+          /* for some reason hidden arrangers
+           * try to call this */
+          if (clip_editor_region->id.type !=
                 REGION_TYPE_AUTOMATION)
             {
-              g_message (
-                "clip editor region currently "
-                "being changed");
+              /*g_warning (*/
+                /*"%p clip editor region currently "*/
+                /*"being changed", self);*/
               return 0;
             }
 
           AutomationTrack * at =
-            region_get_automation_track (region);
+            region_get_automation_track (
+              clip_editor_region);
           r =
             region_at_position (
               NULL, at, PLAYHEAD);
@@ -226,7 +229,7 @@ get_playhead_px (
             region_at_position (
               arranger_object_get_track (
                 (ArrangerObject *)
-                region),
+                clip_editor_region),
               NULL, PLAYHEAD);
         }
       Position tmp;

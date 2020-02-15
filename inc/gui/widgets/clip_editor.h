@@ -66,4 +66,11 @@ void
 clip_editor_widget_setup (
   ClipEditorWidget * self);
 
+/**
+ * To be called when the region changes.
+ */
+void
+clip_editor_widget_on_region_changed (
+  ClipEditorWidget * self);
+
 #endif

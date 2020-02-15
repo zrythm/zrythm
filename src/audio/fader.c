@@ -91,7 +91,8 @@ fader_init (
   g_return_if_fail (self);
 
   self->type = type;
-  if (type == FADER_TYPE_AUDIO_CHANNEL)
+  if (type == FADER_TYPE_AUDIO_CHANNEL ||
+      type == FADER_TYPE_MIDI_CHANNEL)
     self->track_pos = ch->track_pos;
 
   /* set volume */
@@ -106,7 +107,8 @@ fader_init (
   port_set_owner_fader (self->amp, self);
   self->amp->id.flags |=
     PORT_FLAG_AMPLITUDE;
-  if (type == FADER_TYPE_AUDIO_CHANNEL)
+  if (type == FADER_TYPE_AUDIO_CHANNEL ||
+      type == FADER_TYPE_MIDI_CHANNEL)
     {
       self->amp->id.flags |=
         PORT_FLAG_CHANNEL_FADER;
