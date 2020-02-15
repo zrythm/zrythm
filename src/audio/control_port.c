@@ -73,7 +73,7 @@ control_port_normalized_val_to_real (
             else if (ctrl->is_toggle)
               {
                 real_val =
-                  normalized_val >= 0.5f ? 1.f : 0.f;
+                  normalized_val >= 0.001f ? 1.f : 0.f;
               }
             else
               {
@@ -220,7 +220,7 @@ control_port_set_val_from_normalized (
               }
             else if (ctrl->is_toggle)
               {
-                real_val = val >= 0.5f ? 1.f : 0.f;
+                real_val = val >= 0.001f ? 1.f : 0.f;
               }
             else
               {

@@ -94,6 +94,9 @@ typedef struct TrackProcessor
 
   /** Position of parent Track. */
   int              track_pos;
+
+  /** Pointer to parent track. */
+  Track *          track;
 } TrackProcessor;
 
 static const cyaml_schema_field_t

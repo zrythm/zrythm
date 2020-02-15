@@ -51,13 +51,13 @@ track_processor_init_loaded (
     {
     case TYPE_AUDIO:
       port_set_owner_track_processor (
-        self->stereo_in->l, tr);
+        self->stereo_in->l, self);
       port_set_owner_track_processor (
-        self->stereo_in->r, tr);
+        self->stereo_in->r, self);
       port_set_owner_track_processor (
-        self->stereo_out->l, tr);
+        self->stereo_out->l, self);
       port_set_owner_track_processor (
-        self->stereo_out->r, tr);
+        self->stereo_out->r, self);
       break;
     case TYPE_EVENT:
       if (track_has_piano_roll (tr))
@@ -65,7 +65,7 @@ track_processor_init_loaded (
           self->piano_roll->id.flags =
             PORT_FLAG_PIANO_ROLL;
           port_set_owner_track_processor (
-            self->piano_roll, tr);
+            self->piano_roll, self);
           self->piano_roll->midi_events =
             midi_events_new (
               self->piano_roll);
@@ -77,9 +77,9 @@ track_processor_init_loaded (
         midi_events_new (
           self->midi_out);
       port_set_owner_track_processor (
-        self->midi_in, tr);
+        self->midi_in, self);
       port_set_owner_track_processor (
-        self->midi_out, tr);
+        self->midi_out, self);
       break;
     default:
       break;
@@ -116,8 +116,7 @@ init_midi_port (
       flow,
       str);
 
-  Track * track = track_processor_get_track (self);
-  port_set_owner_track_processor (*port, track);
+  port_set_owner_track_processor (*port, self);
 }
 
 /**
@@ -162,10 +161,8 @@ init_stereo_out_ports (
       r = port_new_with_type (TYPE_AUDIO, flow, str);
     }
 
-  Track * track =
-    track_processor_get_track (self);
-  port_set_owner_track_processor (l, track);
-  port_set_owner_track_processor (r, track);
+  port_set_owner_track_processor (l, self);
+  port_set_owner_track_processor (r, self);
 
   *sp =
     stereo_ports_new_from_existing (l, r);
@@ -203,8 +200,7 @@ track_processor_init (
           self->piano_roll->id.flags =
             PORT_FLAG_PIANO_ROLL;
           port_set_owner_track_processor (
-            self->piano_roll,
-            tr);
+            self->piano_roll, self);
         }
       break;
     case TYPE_AUDIO:
@@ -279,6 +275,9 @@ Track *
 track_processor_get_track (
   TrackProcessor * self)
 {
+  return self->track;
+
+#if 0
   g_return_val_if_fail (
     self &&
     self->track_pos < TRACKLIST->num_tracks, NULL);
@@ -287,6 +286,7 @@ track_processor_get_track (
   g_return_val_if_fail (track, NULL);
 
   return track;
+#endif
 }
 
 /**

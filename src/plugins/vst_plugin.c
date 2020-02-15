@@ -605,6 +605,26 @@ vst_plugin_get_port_from_param_id (
   g_return_val_if_reached (NULL);
 }
 
+/**
+ * Gets this VST plugin's designated MIDI input
+ * port.
+ */
+Port *
+vst_plugin_get_midi_input_port (
+  VstPlugin * self)
+{
+  g_return_val_if_fail (self, NULL);
+  for (int i = 0; i < self->plugin->num_in_ports;
+       i++)
+    {
+      Port * port = self->plugin->in_ports[i];
+      if (port->id.type == TYPE_EVENT &&
+          port->id.flow == FLOW_INPUT)
+        return port;
+    }
+  g_return_val_if_reached (NULL);
+}
+
 void
 vst_plugin_process (
   VstPlugin * self,
@@ -686,7 +706,7 @@ vst_plugin_process (
   if (self->plugin->descr->num_midi_ins > 0)
     {
       Port * port =
-        self->plugin->in_ports[effect->numInputs];
+        vst_plugin_get_midi_input_port (self);
 
       if (port->midi_events->num_events > 0)
         {

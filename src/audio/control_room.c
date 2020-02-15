@@ -55,7 +55,7 @@ control_room_init (
     {
       fader_init (
         &self->monitor_fader,
-        FADER_TYPE_AUDIO_CHANNEL,
+        FADER_TYPE_MONITOR,
         NULL);
     }
 

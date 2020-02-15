@@ -203,6 +203,17 @@ get_playhead_px (
       ZRegion * r = NULL;
       if (self->type == TYPE (AUTOMATION))
         {
+          /* if clip editor region currently
+           * changed to another type, skip this */
+          if (region->id.type !=
+                REGION_TYPE_AUTOMATION)
+            {
+              g_message (
+                "clip editor region currently "
+                "being changed");
+              return 0;
+            }
+
           AutomationTrack * at =
             region_get_automation_track (region);
           r =
@@ -2276,10 +2287,9 @@ create_item (ArrangerWidget * self,
       at =
         timeline_arranger_widget_get_at_at_y (
           self, start_y);
-      if (!at)
-        track =
-          timeline_arranger_widget_get_track_at_y (
-            self, start_y);
+      track =
+        timeline_arranger_widget_get_track_at_y (
+          self, start_y);
 
       /* creating automation point */
       if (at)

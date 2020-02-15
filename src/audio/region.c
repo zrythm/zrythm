@@ -422,6 +422,7 @@ region_get_automation_track (
     arranger_object_get_track (
       (ArrangerObject *) region);
   g_return_val_if_fail (
+    IS_TRACK (track) &&
     track->automation_tracklist.num_ats >
      region->id.at_idx, NULL);
 

@@ -203,6 +203,15 @@ typedef struct Channel
    * channels end up staying on record mode.
    */
   int                  record_set_automatically;
+
+  /**
+   * Pointer back to Track.
+   *
+   * This is an exception to most other objects
+   * since each channel is always fixed to the same
+   * track.
+   */
+  Track *          track;
 } Channel;
 
 static const cyaml_schema_field_t

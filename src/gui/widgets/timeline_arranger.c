@@ -329,8 +329,12 @@ timeline_arranger_widget_create_region (
     case REGION_TYPE_MIDI:
       region =
         midi_region_new (
-          pos, &end_pos, track->pos, lane->pos,
-          lane->num_regions);
+          pos, &end_pos, track->pos,
+          /* create on lane 0 if creating in main
+           * track */
+          lane ? lane->pos : 0,
+          lane ? lane->num_regions :
+            track->lanes[0]->num_regions);
       break;
     case REGION_TYPE_AUDIO:
       break;

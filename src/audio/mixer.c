@@ -65,8 +65,7 @@ mixer_recalc_graph (
   if (!router->graph)
     {
       router_init (router);
-      router->graph =
-        graph_new (router);
+      router->graph = graph_new (router);
       graph_setup (router->graph, 1, 1);
       graph_start (router->graph);
       return;

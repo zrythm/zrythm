@@ -65,8 +65,12 @@ typedef struct ClipEditor
   /** Whether \ref region_id is a valid region. */
   int              has_region;
 
-  /** Whether \ref region_id_cache is a valid
-   * region. */
+  /**
+   * Whether \ref region_id_cache is a valid
+   * region.
+   *
+   * FIXME explain when this should be set.
+   */
   int              had_region;
 
   PianoRoll        piano_roll;

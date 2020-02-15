@@ -82,7 +82,8 @@ plugin_init_loaded (
 
   plugin_instantiate (self);
 
-  plugin_generate_automation_tracks (self);
+  Track * track = plugin_get_track (self);
+  plugin_generate_automation_tracks (self, track);
 }
 
 static void
@@ -109,11 +110,14 @@ plugin_init (
   plugin_add_in_port (plugin, port);
   port->id.flags |=
     PORT_FLAG_PLUGIN_ENABLED;
+  port->id.flags |=
+    PORT_FLAG_TOGGLE;
   port->minf = 0.f;
   port->maxf = 1.f;
   port->zerof = 0.1f;
   port->deff = 1.f;
   port->control = 1.f;
+  plugin->enabled = port;
 }
 
 /**
@@ -472,16 +476,21 @@ plugin_set_ui_refresh_rate (
  * Generates automatables for the plugin.
  *
  * Plugin must be instantiated already.
+ *
+ * @param track The Track this plugin belongs to.
+ *   This is passed because the track might not be
+ *   in the project yet so we can't fetch it
+ *   through indices.
  */
 void
 plugin_generate_automation_tracks (
-  Plugin * self)
+  Plugin * self,
+  Track *  track)
 {
   g_message (
     "generating automation tracks for %s...",
     self->descr->name);
 
-  Track * track = plugin_get_track (self);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   for (int i = 0; i < self->num_in_ports; i++)

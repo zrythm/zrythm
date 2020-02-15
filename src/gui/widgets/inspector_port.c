@@ -112,6 +112,10 @@ get_port_str (
 #undef GREENIZE
         }
     }
+  else
+    {
+      g_warn_if_reached ();
+    }
   return 0;
 }
 

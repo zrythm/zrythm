@@ -41,6 +41,7 @@ fader_init_loaded (
   switch (self->type)
     {
     case FADER_TYPE_AUDIO_CHANNEL:
+    case FADER_TYPE_MONITOR:
       port_set_owner_fader (
         self->stereo_in->l, self);
       port_set_owner_fader (
@@ -87,21 +88,29 @@ fader_init (
   FaderType type,
   Channel * ch)
 {
+  g_return_if_fail (self);
+
   self->type = type;
-  self->track_pos = ch->track_pos;
+  if (type == FADER_TYPE_AUDIO_CHANNEL)
+    self->track_pos = ch->track_pos;
 
   /* set volume */
   self->volume = 0.0f;
   float amp = 1.f;
   self->amp =
     port_new_with_type (
-      TYPE_CONTROL, FLOW_INPUT, _("Amplitude"));
+      TYPE_CONTROL, FLOW_INPUT, _("Volume"));
   port_set_control_value (self->amp, amp, 0, 0);
   self->fader_val =
     math_get_fader_val_from_amp (amp);
   port_set_owner_fader (self->amp, self);
   self->amp->id.flags |=
     PORT_FLAG_AMPLITUDE;
+  if (type == FADER_TYPE_AUDIO_CHANNEL)
+    {
+      self->amp->id.flags |=
+        PORT_FLAG_CHANNEL_FADER;
+    }
 
   /* set phase */
   self->phase = 0.0f;
@@ -118,13 +127,14 @@ fader_init (
   self->balance->id.flags |=
     PORT_FLAG_STEREO_BALANCE;
 
-  if (type == FADER_TYPE_AUDIO_CHANNEL)
+  if (type == FADER_TYPE_AUDIO_CHANNEL ||
+      type == FADER_TYPE_MONITOR)
     {
       /* stereo in */
       self->stereo_in =
         stereo_ports_new_generic (
         1, _("Fader in"),
-        ch ?
+        type == FADER_TYPE_AUDIO_CHANNEL ?
           PORT_OWNER_TYPE_FADER :
           PORT_OWNER_TYPE_MONITOR_FADER,
         self);
@@ -133,8 +143,7 @@ fader_init (
       self->stereo_out =
         stereo_ports_new_generic (
         0, _("Fader out"),
-        /* FIXME just create another type */
-        ch ?
+        type == FADER_TYPE_AUDIO_CHANNEL ?
           PORT_OWNER_TYPE_FADER :
           PORT_OWNER_TYPE_MONITOR_FADER,
         self);
@@ -294,6 +303,7 @@ fader_clear_buffers (
   switch (self->type)
     {
     case FADER_TYPE_AUDIO_CHANNEL:
+    case FADER_TYPE_MONITOR:
       port_clear_buffer (self->stereo_in->l);
       port_clear_buffer (self->stereo_in->r);
       port_clear_buffer (self->stereo_out->l);
@@ -318,6 +328,7 @@ fader_disconnect_all (
   switch (self->type)
     {
     case FADER_TYPE_AUDIO_CHANNEL:
+    case FADER_TYPE_MONITOR:
       port_disconnect_all (self->stereo_in->l);
       port_disconnect_all (self->stereo_in->r);
       port_disconnect_all (self->stereo_out->l);
@@ -372,7 +383,8 @@ fader_process (
   float amp =
     port_get_control_value (self->amp, 0);
 
-  if (self->type == FADER_TYPE_AUDIO_CHANNEL)
+  if (self->type == FADER_TYPE_AUDIO_CHANNEL ||
+      self->type == FADER_TYPE_MONITOR)
     {
       nframes_t end = start_frame + nframes;
       float calc_l, calc_r;

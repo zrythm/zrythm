@@ -89,17 +89,23 @@ track_init_loaded (Track * track)
     }
 
   /* init loaded channel */
-  Channel * ch;
   if (track->channel)
     {
-      ch = track->channel;
-      channel_init_loaded (ch);
+      track->processor.track = track;
+      track_processor_init_loaded (
+        &track->processor);
+
+      track->channel->track = track;
+      channel_init_loaded (track->channel);
     }
 
   /* set track to automation tracklist */
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
-  automation_tracklist_init_loaded (atl);
+  if (atl)
+    {
+      automation_tracklist_init_loaded (atl);
+    }
 }
 
 /**
@@ -143,6 +149,7 @@ track_init (
   self->main_height = TRACK_DEF_HEIGHT;
   self->midi_ch = 1;
   self->processor.track_pos = self->pos;
+  self->processor.track = self;
   self->magic = TRACK_MAGIC;
   track_add_lane (self, 0);
 
@@ -156,6 +163,8 @@ track_init (
     PORT_FLAG_CHANNEL_MUTE;
   self->mute->id.flags |=
     PORT_FLAG_TOGGLE;
+  port_set_owner_track (
+    self->mute, self);
 }
 
 /**

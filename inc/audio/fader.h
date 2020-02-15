@@ -44,6 +44,9 @@ typedef enum FaderType
 {
   FADER_TYPE_NONE,
 
+  /** Audio fader for the monitor. */
+  FADER_TYPE_MONITOR,
+
   /** Audio fader for Channel's. */
   FADER_TYPE_AUDIO_CHANNEL,
 
@@ -123,6 +126,7 @@ static const cyaml_strval_t
 fader_type_strings[] =
 {
   { "none",           FADER_TYPE_NONE    },
+  { "monitor channel", FADER_TYPE_MONITOR   },
   { "audio channel",  FADER_TYPE_AUDIO_CHANNEL   },
   { "midi channel",   FADER_TYPE_MIDI_CHANNEL   },
   { "generic",        FADER_TYPE_GENERIC   },

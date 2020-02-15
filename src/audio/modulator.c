@@ -42,7 +42,8 @@ modulator_new (
       descr, track->pos, 0);
   g_warn_if_fail (self->plugin);
   self->plugin->id.track_pos = track->pos;
-  plugin_generate_automation_tracks (self->plugin);
+  plugin_generate_automation_tracks (
+    self->plugin, track);
   int ret = plugin_instantiate (self->plugin);
   g_warn_if_fail (!ret);
 

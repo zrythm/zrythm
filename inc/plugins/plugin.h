@@ -350,12 +350,17 @@ plugin_update_latency (
 /**
  * Generates automatables for the plugin.
  *
+ * The plugin must be instantiated already.
  *
- * Plugin must be instantiated already.
+ * @param track The Track this plugin belongs to.
+ *   This is passed because the track might not be
+ *   in the project yet so we can't fetch it
+ *   through indices.
  */
 void
 plugin_generate_automation_tracks (
-  Plugin * plugin);
+  Plugin * plugin,
+  Track *  track);
 
 /**
  * Loads the plugin from its state file.

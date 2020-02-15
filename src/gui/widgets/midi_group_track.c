@@ -115,9 +115,8 @@ midi_group_track_widget_refresh_buttons (
 
   g_signal_handler_block (
     self->mute, tw_prv->mute_toggled_handler_id);
-      gtk_toggle_button_set_active (
-        self->mute,
-        tw_prv->track->mute);
+  gtk_toggle_button_set_active (
+    self->mute, track_get_muted (tw_prv->track));
   g_signal_handler_unblock (
     self->mute, tw_prv->mute_toggled_handler_id);
 }

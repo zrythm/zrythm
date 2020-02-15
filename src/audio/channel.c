@@ -418,8 +418,6 @@ channel_init_loaded (Channel * ch)
   ch->prefader.track_pos = track->pos;
   ch->fader.track_pos = track->pos;
 
-  track_processor_init_loaded (
-    &track->processor);
   passthrough_processor_init_loaded (
     &ch->prefader);
   fader_init_loaded (&ch->fader);
@@ -944,6 +942,9 @@ Track *
 channel_get_track (
   Channel * self)
 {
+  return self->track;
+
+#if 0
   g_return_val_if_fail (
     self && self->track_pos < TRACKLIST->num_tracks,
     NULL);
@@ -952,6 +953,7 @@ channel_get_track (
   g_return_val_if_fail (track, NULL);
 
   return track;
+#endif
 }
 
 Track *
@@ -1134,9 +1136,8 @@ init_stereo_out_ports (
         str);
     }
 
-  Track * track = channel_get_track (self);
-  port_set_owner_track (l, track);
-  port_set_owner_track (r, track);
+  port_set_owner_track_from_channel (l, self);
+  port_set_owner_track_from_channel (r, self);
 
   *sp =
     stereo_ports_new_from_existing (l, r);
@@ -1186,6 +1187,7 @@ channel_new (
 
   self->magic = CHANNEL_MAGIC;
   self->track_pos = track->pos;
+  self->track = track;
 
   /* autoconnect to all midi ins and midi chans */
   self->all_midi_ins = 1;
@@ -1584,7 +1586,8 @@ channel_add_plugin (
   track->active = prev_active;
 
   if (gen_automatables)
-    plugin_generate_automation_tracks (plugin);
+    plugin_generate_automation_tracks (
+      plugin, track);
 
   EVENTS_PUSH (ET_PLUGIN_ADDED,
                plugin);

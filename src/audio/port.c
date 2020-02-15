@@ -265,6 +265,9 @@ port_find_from_identifier (
                 return ch->stereo_out->r;
             }
           break;
+        case TYPE_CONTROL:
+          if (id->flags & PORT_FLAG_CHANNEL_MUTE)
+            return tr->mute;
         default:
           break;
         }
@@ -689,11 +692,25 @@ port_set_owner_track (
  * Sets the owner track & its ID.
  */
 void
-port_set_owner_track_processor (
+port_set_owner_track_from_channel (
   Port *    port,
-  Track *   track)
+  Channel * ch)
 {
-  port_set_owner_track (port, track);
+  g_warn_if_fail (port && ch);
+
+  port->id.track_pos = ch->track_pos;
+  port->id.owner_type = PORT_OWNER_TYPE_TRACK;
+}
+
+/**
+ * Sets the owner track & its ID.
+ */
+void
+port_set_owner_track_processor (
+  Port *           port,
+  TrackProcessor * track_processor)
+{
+  port->id.track_pos = track_processor->track_pos;
   port->id.owner_type =
     PORT_OWNER_TYPE_TRACK_PROCESSOR;
 }
@@ -710,13 +727,17 @@ port_set_owner_fader (
 
   PortIdentifier * id = &port->id;
 
-  Channel * ch = fader_get_channel (fader);
-  if (ch)
+  if (fader->type == FADER_TYPE_AUDIO_CHANNEL ||
+      fader->type == FADER_TYPE_MIDI_CHANNEL)
     {
-      Track * track = channel_get_track (ch);
-      id->track_pos = track->pos;
+      id->track_pos = fader->track_pos;
+      id->owner_type = PORT_OWNER_TYPE_FADER;
     }
-  id->owner_type = PORT_OWNER_TYPE_FADER;
+  else
+    {
+      id->owner_type =
+        PORT_OWNER_TYPE_MONITOR_FADER;
+    }
 
   if (id->flags & PORT_FLAG_AMPLITUDE)
     {
@@ -742,9 +763,7 @@ port_set_owner_prefader (
 {
   g_warn_if_fail (port && fader);
 
-  Track * track =
-    passthrough_processor_get_track (fader);
-  port->id.track_pos = track->pos;
+  port->id.track_pos = fader->track_pos;
   port->id.owner_type =
     PORT_OWNER_TYPE_PREFADER;
 }
@@ -1746,9 +1765,9 @@ stereo_ports_new_generic (
       break;
     case PORT_OWNER_TYPE_TRACK_PROCESSOR:
       port_set_owner_track_processor (
-        ports->l, (Track *) owner);
+        ports->l, (TrackProcessor *) owner);
       port_set_owner_track_processor (
-        ports->r, (Track *) owner);
+        ports->r, (TrackProcessor *) owner);
       break;
     case PORT_OWNER_TYPE_SAMPLE_PROCESSOR:
       port_set_owner_sample_processor (

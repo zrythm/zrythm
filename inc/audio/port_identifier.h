@@ -169,7 +169,7 @@ port_flags_bitvals[] =
   { .name = "plugin_enabled", .offset = 15, .bits = 1 },
   { .name = "plugin_control", .offset = 16, .bits = 1 },
   { .name = "channel_mute", .offset = 17, .bits = 1 },
-  { .name = "channel_fader", .offset = 17, .bits = 1 },
+  { .name = "channel_fader", .offset = 18, .bits = 1 },
 };
 
 /**

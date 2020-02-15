@@ -47,6 +47,7 @@ typedef struct Lv2Port Lv2Port;
 typedef struct Channel Channel;
 typedef struct Track Track;
 typedef struct SampleProcessor SampleProcessor;
+typedef struct TrackProcessor TrackProcessor;
 typedef enum PanAlgorithm PanAlgorithm;
 typedef enum PanLaw PanLaw;
 
@@ -820,9 +821,17 @@ port_set_owner_track (
  * Sets the owner track & its ID.
  */
 void
-port_set_owner_track_processor (
+port_set_owner_track_from_channel (
   Port *    port,
-  Track *   track);
+  Channel * ch);
+
+/**
+ * Sets the owner track & its ID.
+ */
+void
+port_set_owner_track_processor (
+  Port *           port,
+  TrackProcessor * track_processor);
 
 /**
  * Sets the owner sample processor.

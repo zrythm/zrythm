@@ -395,6 +395,10 @@ on_clip_editor_region_changed ()
       g_idle_add (
         refresh_editor_ruler_and_arranger,
         NULL);
+
+      region_identifier_copy (
+        &CLIP_EDITOR->region_id_cache, &r->id);
+      CLIP_EDITOR->had_region = 1;
     }
   else
     {
@@ -402,10 +406,8 @@ on_clip_editor_region_changed ()
         GTK_STACK (MW_CLIP_EDITOR),
         GTK_WIDGET (
           MW_CLIP_EDITOR->no_selection_label));
+      CLIP_EDITOR->had_region = 0;
     }
-
-  region_identifier_copy (
-    &CLIP_EDITOR->region_id_cache, &r->id);
 }
 
 static void

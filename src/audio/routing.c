@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -268,8 +268,8 @@ node_process (
   GraphNode * node,
   const nframes_t   nframes)
 {
-  /*g_message ("processing %s",*/
-             /*get_node_name (node));*/
+  /*g_message (*/
+    /*"processing %s", get_node_name (node));*/
   int noroll = 0;
 
   nframes_t local_offset =
@@ -389,7 +389,7 @@ node_process (
           Track * track = port_get_track (port, 1);
 
           /* if muted clear it */
-          if (track->mute ||
+          if (track_get_muted (track) ||
                 (tracklist_has_soloed (
                   TRACKLIST) &&
                    !track->solo &&
@@ -1881,7 +1881,16 @@ graph_setup (
         self->setup_terminal_nodes[ii], 0);
     }
 
-  /*graph_print (self);*/
+  /* ========================
+   * set up caches to tracks, channels, plugins,
+   * automation tracks, etc.
+   *
+   * this is because indices can be changed by the
+   * GUI thread while the graph is running
+   * TODO
+   * ======================== */
+
+  graph_print (self);
 
   if (rechain)
     graph_rechain (self);

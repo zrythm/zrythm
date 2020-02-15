@@ -346,6 +346,14 @@ vst_plugin_close_ui (
   VstPlugin * self);
 
 /**
+ * Gets this VST plugin's designated MIDI input
+ * port.
+ */
+Port *
+vst_plugin_get_midi_input_port (
+  VstPlugin * self);
+
+/**
  * Saves the current state in given dir.
  *
  * Used when saving the project.

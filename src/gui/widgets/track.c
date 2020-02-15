@@ -428,7 +428,8 @@ draw_buttons (
       else if (string_is_equal (
                 cb->icon_name,
                 ICON_NAME_MUTE, 1) &&
-               self->track->mute)
+               track_get_muted (
+                 self->track))
         {
           state =
             CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
