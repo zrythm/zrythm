@@ -932,8 +932,10 @@ on_timeline_clipboard_received (
       arranger_selections_post_deserialize (
         (ArrangerSelections *) mas);
 
+      ZRegion * region =
+        clip_editor_get_region (CLIP_EDITOR);
       if (midi_arranger_selections_can_be_pasted (
-            mas, PLAYHEAD, CLIP_EDITOR->region))
+            mas, PLAYHEAD, region))
         {
           g_message ("pasting midi selections");
           midi_arranger_selections_paste_to_pos (
@@ -967,8 +969,10 @@ on_timeline_clipboard_received (
       arranger_selections_post_deserialize (
         (ArrangerSelections *) mas);
 
+      ZRegion * region =
+        clip_editor_get_region (CLIP_EDITOR);
       if (chord_selections_can_be_pasted (
-            mas, PLAYHEAD, CLIP_EDITOR->region))
+            mas, PLAYHEAD, region))
         {
           g_message ("pasting midi selections");
           chord_selections_paste_to_pos (

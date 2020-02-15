@@ -78,7 +78,7 @@ passthrough_processor_init (
   PassthroughProcessorType type,
   Channel * ch)
 {
-  self->channel = ch;
+  self->track_pos = ch->track_pos;
   self->type = type;
 
   self->l_port_db = 0.f;
@@ -156,6 +156,19 @@ passthrough_processor_clear_buffers (
     default:
       break;
     }
+}
+
+Track *
+passthrough_processor_get_track (
+  PassthroughProcessor * self)
+{
+  g_return_val_if_fail (
+    self->track_pos < TRACKLIST->num_tracks, NULL);
+  Track * track =
+    TRACKLIST->tracks[self->track_pos];
+  g_return_val_if_fail (IS_TRACK (track), NULL);
+
+  return track;
 }
 
 /**

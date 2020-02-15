@@ -23,6 +23,7 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/track.h"
 #include "project.h"
+#include "utils/flags.h"
 
 #include <glib/gi18n.h>
 
@@ -79,7 +80,9 @@ edit_tracks_action_do (EditTracksAction * self)
           track->solo = self->solo_new;
           break;
         case EDIT_TRACK_ACTION_TYPE_MUTE:
-          track->mute = self->mute_new;
+          track_set_muted (
+            track, self->mute_new,
+            0, F_NO_PUBLISH_EVENTS);
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
           g_return_val_if_fail (ch, -1);
@@ -123,7 +126,9 @@ edit_tracks_action_undo (
           track->solo = !self->solo_new;
           break;
         case EDIT_TRACK_ACTION_TYPE_MUTE:
-          track->mute = !self->mute_new;
+          track_set_muted (
+            track, !self->mute_new,
+            0, F_NO_PUBLISH_EVENTS);
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
           g_return_val_if_fail (ch, -1);

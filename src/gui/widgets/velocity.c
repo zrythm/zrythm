@@ -51,8 +51,9 @@ velocity_draw (
   GdkRectangle * rect)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
-  MidiNote * mn = self->midi_note;
-  ZRegion * region = mn->region;
+  MidiNote * mn = velocity_get_midi_note (self);
+  ZRegion * region =
+    arranger_object_get_region (obj);
   Position global_start_pos;
   midi_note_get_global_start_pos (
     mn, &global_start_pos);
@@ -99,7 +100,7 @@ velocity_draw (
     }
 
   /* draw velocities of main region */
-  if (region == CLIP_EDITOR->region)
+  if (region == clip_editor_get_region (CLIP_EDITOR))
     {
       gdk_cairo_set_source_rgba (cr, &color);
       if (velocity_is_selected (self))

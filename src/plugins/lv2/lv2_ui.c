@@ -464,13 +464,13 @@ lv2_ui_init (
   // Set initial control port values
   for (int i = 0; i < plugin->num_ports; ++i)
     {
-      if (plugin->ports[i].port->identifier.type ==
-          TYPE_CONTROL)
+      Port * port = plugin->ports[i].port;
+      if (port->id.type == TYPE_CONTROL)
         {
           lv2_gtk_ui_port_event (
             plugin, (uint32_t) i,
             sizeof(float), 0,
-            &plugin->ports[i].port->control);
+            &port->control);
         }
     }
 

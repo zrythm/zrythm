@@ -52,7 +52,8 @@ void
 clip_editor_inner_widget_refresh (
   ClipEditorInnerWidget * self)
 {
-  ZRegion * r = CLIP_EDITOR->region;
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj =
     (ArrangerObject *) r;
   Track * track = NULL;
@@ -88,7 +89,7 @@ clip_editor_inner_widget_refresh (
         automation_editor_space_widget_update_size_group (
           self->automation_editor_space, 0);
 
-      switch (r->type)
+      switch (r->id.type)
         {
         case REGION_TYPE_MIDI:
           gtk_stack_set_visible_child (

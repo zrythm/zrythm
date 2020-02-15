@@ -69,7 +69,7 @@ port_connections_popover_widget_refresh (
   /*if (owner->port->identifier.owner_type ==*/
         /*PORT_OWNER_TYPE_PLUGIN)*/
     /*{*/
-      if (owner->port->identifier.flow == FLOW_INPUT)
+      if (owner->port->id.flow == FLOW_INPUT)
         {
           if (GTK_IS_LABEL (self->title))
             {
@@ -94,7 +94,7 @@ port_connections_popover_widget_refresh (
                 }
             }
         }
-      else if (owner->port->identifier.flow ==
+      else if (owner->port->id.flow ==
                  FLOW_OUTPUT)
         {
           if (GTK_IS_LABEL (self->title))

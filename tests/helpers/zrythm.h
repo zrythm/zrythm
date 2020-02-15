@@ -98,15 +98,14 @@ test_helper_zrythm_init ()
   undo_manager_init (&PROJECT->undo_manager);
 
   /* init pinned tracks */
-  Track * track =
-    chord_track_new ();
+  Track * track = chord_track_new (0);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
   track->pinned = 1;
   TRACKLIST->chord_track = track;
   track =
-    marker_track_default ();
+    marker_track_default (1);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
@@ -116,7 +115,7 @@ test_helper_zrythm_init ()
   /* add master channel to mixer and tracklist */
   track =
     track_new (
-      TRACK_TYPE_MASTER, _("Master"),
+      TRACK_TYPE_MASTER, 2, "Master",
       F_WITHOUT_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,

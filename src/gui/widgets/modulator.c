@@ -66,8 +66,8 @@ modulator_graph_draw (
     {
       port = pl->out_ports[i];
 
-      if (port->identifier.type != TYPE_CV ||
-          port->identifier.flow != FLOW_OUTPUT)
+      if (port->id.type != TYPE_CV ||
+          port->id.flow != FLOW_OUTPUT)
         continue;
 
       maxf = 1.f;
@@ -161,8 +161,8 @@ modulator_widget_new (
     {
       port = modulator->plugin->in_ports[i];
 
-      if (port->identifier.type != TYPE_CONTROL ||
-          port->identifier.flow != FLOW_INPUT)
+      if (port->id.type != TYPE_CONTROL ||
+          port->id.flow != FLOW_INPUT)
         continue;
 
 
@@ -177,7 +177,7 @@ modulator_widget_new (
           port->lv2_port->lv2_control->minf);
       KnobWithNameWidget * knob_with_name =
         knob_with_name_widget_new (
-          port->identifier.label,
+          port->id.label,
           knob);
 
       array_append (self->knobs,

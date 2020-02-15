@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -25,6 +25,7 @@
 #include "audio/channel.h"
 #include "audio/chord_region.h"
 #include "audio/chord_track.h"
+#include "audio/control_port.h"
 #include "audio/instrument_track.h"
 #include "audio/marker_track.h"
 #include "audio/midi_region.h"
@@ -188,21 +189,25 @@ static int
 get_playhead_px (
   ArrangerWidget * self)
 {
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+
   /* get frames */
   long frames = 0;
   if (self->type == TYPE (TIMELINE))
     {
       frames = PLAYHEAD->frames;
     }
-  else if (CLIP_EDITOR->region)
+  else if (region)
     {
       ZRegion * r = NULL;
       if (self->type == TYPE (AUTOMATION))
         {
+          AutomationTrack * at =
+            region_get_automation_track (region);
           r =
             region_at_position (
-              NULL, CLIP_EDITOR->region->at,
-              PLAYHEAD);
+              NULL, at, PLAYHEAD);
         }
       else
         {
@@ -210,7 +215,7 @@ get_playhead_px (
             region_at_position (
               arranger_object_get_track (
                 (ArrangerObject *)
-                CLIP_EDITOR->region),
+                region),
               NULL, PLAYHEAD);
         }
       Position tmp;
@@ -381,12 +386,13 @@ draw_timeline_bg (
               float normalized_val =
                 automation_track_get_normalized_val_at_pos (
                   at, PLAYHEAD);
+              Port * port =
+                automation_track_get_port (at);
               if (normalized_val < 0.f)
                 normalized_val =
-                  automatable_real_val_to_normalized (
-                    at->automatable,
-                    automatable_get_val (
-                      at->automatable));
+                  control_port_real_val_to_normalized (
+                    port,
+                    control_port_get_val (port));
 
               int y_px =
                 automation_track_get_y_px_from_normalized_val (
@@ -513,7 +519,8 @@ draw_audio_bg (
   cairo_t *        cr,
   GdkRectangle *   rect)
 {
-  ZRegion * ar = CLIP_EDITOR->region;
+  ZRegion * ar =
+    clip_editor_get_region (CLIP_EDITOR);
   if (ar->stretching)
     {
       arranger_widget_redraw_whole (self);
@@ -521,8 +528,10 @@ draw_audio_bg (
     }
   ArrangerObject * obj = (ArrangerObject *) ar;
   TrackLane * lane = region_get_lane (ar);
+  Track * track =
+    track_lane_get_track (lane);
   g_return_if_fail (lane);
-  GdkRGBA * color = &lane->track->color;
+  GdkRGBA * color = &track->color;
   cairo_set_source_rgba (
     cr, color->red + 0.3, color->green + 0.3,
     color->blue + 0.3, 0.9);
@@ -1175,7 +1184,8 @@ arranger_widget_get_hit_objects_in_rect (
       if (type == ARRANGER_OBJECT_TYPE_ALL ||
           type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
         {
-          ZRegion * r = CLIP_EDITOR->region;
+          ZRegion * r =
+            clip_editor_get_region (CLIP_EDITOR);
           if (!r)
             break;
 
@@ -1195,7 +1205,8 @@ arranger_widget_get_hit_objects_in_rect (
       if (type == ARRANGER_OBJECT_TYPE_ALL ||
           type == ARRANGER_OBJECT_TYPE_VELOCITY)
         {
-          ZRegion * r = CLIP_EDITOR->region;
+          ZRegion * r =
+            clip_editor_get_region (CLIP_EDITOR);
           if (!r)
             break;
 
@@ -1215,7 +1226,8 @@ arranger_widget_get_hit_objects_in_rect (
       if (type == ARRANGER_OBJECT_TYPE_ALL ||
           type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT)
         {
-          ZRegion * r = CLIP_EDITOR->region;
+          ZRegion * r =
+            clip_editor_get_region (CLIP_EDITOR);
           if (!r)
             break;
 
@@ -1235,7 +1247,8 @@ arranger_widget_get_hit_objects_in_rect (
       if (type == ARRANGER_OBJECT_TYPE_ALL ||
           type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
         {
-          ZRegion * r = CLIP_EDITOR->region;
+          ZRegion * r =
+            clip_editor_get_region (CLIP_EDITOR);
           if (!r)
             break;
 
@@ -1319,12 +1332,14 @@ get_fvalue_at_y (
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
 
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
   g_return_val_if_fail (
-    CLIP_EDITOR->region &&
-    CLIP_EDITOR->region->type ==
-      REGION_TYPE_AUTOMATION, -1.f);
-  Automatable * a =
-    CLIP_EDITOR->region->at->automatable;
+    region &&
+      region->id.type == REGION_TYPE_AUTOMATION,
+    -1.f);
+  AutomationTrack * at =
+    region_get_automation_track (region);
 
   /* get ratio from widget */
   float widget_value = height - (float) y;
@@ -1332,9 +1347,10 @@ get_fvalue_at_y (
     CLAMP (
       widget_value / height,
       0.f, 1.f);
+  Port * port = automation_track_get_port (at);
   float automatable_value =
-    automatable_normalized_val_to_real (
-      a, widget_ratio);
+    control_port_normalized_val_to_real (
+      port, widget_ratio);
 
   return automatable_value;
 }
@@ -1398,9 +1414,13 @@ move_items_y (
           self, self->start_y);
         TrackLane * last_lane = NULL;
         if (old_lane)
-          last_lane =
-            old_lane->track->lanes[
-              old_lane->pos + self->lane_diff];
+          {
+            Track * old_lane_track =
+              track_lane_get_track (old_lane);
+            last_lane =
+              old_lane_track->lanes[
+                old_lane->pos + self->lane_diff];
+          }
 
         /* if new track is equal, move lanes or
          * automation lanes */
@@ -1580,15 +1600,15 @@ select_all_midi (
   ArrangerWidget *  self,
   int               select)
 {
-  if (!CLIP_EDITOR->region)
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (!region)
     return;
 
   /* select midi notes */
-  ZRegion * mr =
-    (ZRegion *) CLIP_EDITOR_SELECTED_REGION;
-  for (int i = 0; i < mr->num_midi_notes; i++)
+  for (int i = 0; i < region->num_midi_notes; i++)
     {
-      MidiNote * midi_note = mr->midi_notes[i];
+      MidiNote * midi_note = region->midi_notes[i];
       arranger_object_select (
         (ArrangerObject *) midi_note,
         select, F_APPEND);
@@ -1602,7 +1622,8 @@ select_all_chord (
   int                    select)
 {
   /* select everything else */
-  ZRegion * r = CLIP_EDITOR->region;
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   ChordObject * chord;
   for (int i = 0; i < r->num_chord_objects; i++)
     {
@@ -1636,7 +1657,8 @@ select_all_automation (
 {
   int i;
 
-  ZRegion * region = CLIP_EDITOR->region;
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
 
   /* select everything else */
   AutomationPoint * ap;
@@ -1726,7 +1748,7 @@ show_context_menu_timeline (
 
   if (r)
     {
-      if (r->type == REGION_TYPE_MIDI)
+      if (r->id.type == REGION_TYPE_MIDI)
         {
           menuitem =
             gtk_menu_item_new_with_label (
@@ -2312,7 +2334,7 @@ create_item (ArrangerWidget * self,
         piano_roll_keys_widget_get_key_from_y (
           MW_PIANO_ROLL_KEYS, start_y);
       region =
-        CLIP_EDITOR->region;
+        clip_editor_get_region (CLIP_EDITOR);
 
       /* create a note */
       if (region)
@@ -2330,7 +2352,7 @@ create_item (ArrangerWidget * self,
         chord_arranger_widget_get_chord_at_y (
           start_y);
       region =
-        CLIP_EDITOR->region;
+        clip_editor_get_region (CLIP_EDITOR);
 
       /* create a chord object */
       if (region)
@@ -2342,7 +2364,7 @@ create_item (ArrangerWidget * self,
       break;
     case TYPE (AUTOMATION):
       region =
-        CLIP_EDITOR->region;
+        clip_editor_get_region (CLIP_EDITOR);
 
       if (region)
         {
@@ -2782,11 +2804,13 @@ select_in_range (
           ArrangerObject * obj = objs[i];
           ChordObject * co =
             (ChordObject *) objs[i];
+          ZRegion * region =
+            region_find (&co->region_id);
 
           if (delete)
             {
               chord_region_remove_chord_object (
-                co->region, co, F_FREE);
+                region, co, F_FREE);
             }
           else
             {
@@ -2804,10 +2828,12 @@ select_in_range (
           ArrangerObject * obj = objs[i];
           AutomationPoint * ap =
             (AutomationPoint *) objs[i];
+          ZRegion * region =
+            region_find (&ap->region_id);
 
           if (delete)
             automation_region_remove_ap (
-              ap->region, ap, F_FREE);
+              region, ap, F_FREE);
           else
             {
               arranger_object_select (
@@ -2891,11 +2917,13 @@ select_in_range (
           ArrangerObject * obj = objs[i];
           MidiNote * mn =
             (MidiNote *) obj;
+          ZRegion * region =
+            region_find (&mn->region_id);
 
           if (delete)
             {
               midi_region_remove_midi_note (
-                mn->region, mn,
+                region, mn,
                 F_NO_FREE, F_PUBLISH_EVENTS);
             }
           else
@@ -2918,18 +2946,21 @@ select_in_range (
           ArrangerObject * obj = objs[i];
           Velocity * vel =
             (Velocity *) obj;
+          MidiNote * mn =
+            velocity_get_midi_note (vel);
+          ZRegion * region =
+            arranger_object_get_region (obj);
 
           if (delete)
             {
               midi_region_remove_midi_note (
-                vel->midi_note->region,
-                vel->midi_note,
-                F_NO_FREE, F_PUBLISH_EVENTS);
+                region, mn, F_NO_FREE,
+                F_PUBLISH_EVENTS);
             }
           else
             {
               arranger_object_select (
-                (ArrangerObject *) vel->midi_note,
+                (ArrangerObject *) mn,
                 F_SELECT, F_APPEND);
             }
         }

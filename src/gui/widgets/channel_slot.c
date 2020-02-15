@@ -197,16 +197,17 @@ on_drag_data_received (
         &received_pl, my_data,
         sizeof (received_pl));
       pl =
-        TRACKLIST->tracks[received_pl->track_pos]->
-        channel->plugins[received_pl->slot];
+        plugin_find (&received_pl->id);
       g_warn_if_fail (pl);
-      g_warn_if_fail (pl->track);
 
       /* if plugin not at original position */
-      if (self->channel != pl->track->channel ||
+      Channel * ch =
+        plugin_get_channel (pl);
+      Track * track =
+        channel_get_track (ch);
+      if (self->channel != ch ||
           self->slot_index !=
-            channel_get_plugin_index (
-              pl->track->channel, pl))
+            channel_get_plugin_index (ch, pl))
         {
           /* determine if moving or copying */
           GdkDragAction action =
@@ -219,16 +220,14 @@ on_drag_data_received (
               ua =
                 copy_plugins_action_new (
                   MIXER_SELECTIONS,
-                  self->channel->track,
-                  self->slot_index);
+                  track, self->slot_index);
             }
           else if (action == GDK_ACTION_MOVE)
             {
               ua =
                 move_plugins_action_new (
                   MIXER_SELECTIONS,
-                  self->channel->track,
-                  self->slot_index);
+                  track, self->slot_index);
             }
           g_warn_if_fail (ua);
 
@@ -248,7 +247,7 @@ on_drag_data_received (
 
       UndoableAction * ua =
         create_plugins_action_new (
-          descr, self->channel->track->pos,
+          descr, self->channel->track_pos,
           self->slot_index, 1);
 
       undo_manager_perform (
@@ -422,9 +421,8 @@ select_plugin (
     pl = 1;
 
   /* if same channel as selections */
-  if (MIXER_SELECTIONS->track &&
-      self->channel ==
-        MIXER_SELECTIONS->track->channel)
+  if (self->channel->track_pos ==
+        MIXER_SELECTIONS->track_pos)
     ch = 1;
 
   if (!ctrl && !pl && !ch)
@@ -445,9 +443,10 @@ select_plugin (
     select_ctrl_pl_ch (self);
 
   /* select channel */
+  Track * track =
+    channel_get_track (self->channel);
   tracklist_selections_select_single (
-    TRACKLIST_SELECTIONS,
-    self->channel->track);
+    TRACKLIST_SELECTIONS, track);
 }
 
 static void
@@ -505,10 +504,11 @@ on_plugin_delete (
   GtkMenuItem *       menu_item,
   ChannelSlotWidget * self)
 {
+  Track * track =
+    channel_get_track (self->channel);
   UndoableAction * ua =
     delete_plugins_action_new (
-      MIXER_SELECTIONS, self->channel->track,
-      self->slot_index);
+      MIXER_SELECTIONS, track, self->slot_index);
   undo_manager_perform (UNDO_MANAGER, ua);
   EVENTS_PUSH (ET_PLUGINS_REMOVED, self->channel);
 }

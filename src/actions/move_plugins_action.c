@@ -41,17 +41,19 @@ move_plugins_action_new (
 	  UA_MOVE_PLUGINS;
 
   self->to_slot = to_slot;
-  g_warn_if_fail (ms->plugins[0]->track);
-  self->from_track_pos =
-    ms->plugins[0]->track->pos;
+  Track * pl_track =
+    plugin_get_track (ms->plugins[0]);
+  g_warn_if_fail (pl_track);
+  self->from_track_pos = pl_track->pos;
   if (to_tr)
     self->to_track_pos = to_tr->pos;
   else
     self->is_new_channel = 1;
 
   self->ms = mixer_selections_clone (ms);
-  g_warn_if_fail (ms->plugins[0]->slot ==
-                  self->ms->plugins[0]->slot);
+  g_warn_if_fail (
+    ms->plugins[0]->id.slot ==
+      self->ms->plugins[0]->id.slot);
 
   return ua;
 }
@@ -81,9 +83,11 @@ move_plugins_action_do (
     {
       /* get the plugin */
       pl =
-        from_ch->plugins[self->ms->plugins[i]->slot];
+        from_ch->plugins[
+          self->ms->plugins[i]->id.slot];
       g_warn_if_fail (
-        pl && pl->track == from_ch->track);
+        pl &&
+        pl->id.track_pos == from_ch->track_pos);
 
       /* get difference in slots */
       /*diff = self->ms->slots[i] - highest_slot;*/
@@ -131,11 +135,12 @@ move_plugins_action_undo (
 
       /* move plugin to its original slot */
       mixer_move_plugin (
-        MIXER, pl, ch, self->ms->plugins[i]->slot);
+        MIXER, pl, ch,
+        self->ms->plugins[i]->id.slot);
 
       /* add to mixer selections */
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, ch, pl->slot);
+        MIXER_SELECTIONS, ch, pl->id.slot);
     }
 
   return 0;

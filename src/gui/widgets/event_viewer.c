@@ -142,7 +142,7 @@ add_from_object (
         ZRegion * r = (ZRegion *) obj;
 
         region_get_type_as_string (
-          r->type, type);
+          r->id.type, type);
         position_stringize (
           &obj->pos, start_pos);
         position_stringize (
@@ -393,11 +393,12 @@ create_editor_model (
 {
   /* Check what to add based on the selected
    * region */
-  ZRegion * r = CLIP_EDITOR->region;
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   g_return_val_if_fail (r, NULL);
 
   /* add data to the list */
-  switch (r->type)
+  switch (r->id.type)
     {
     case REGION_TYPE_MIDI:
       return create_midi_model (self);
@@ -660,22 +661,23 @@ static int
 add_editor_columns (
   EventViewerWidget * self)
 {
-  ZRegion * r = CLIP_EDITOR->region;
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
   if (!r)
     return 0;
 
   /* if the region type is the same no need to
    * remove/readd columns */
-  if (self->region_type == r->type)
+  if (self->region_type == r->id.type)
     return 1;
   else
-    self->region_type = r->type;
+    self->region_type = r->id.type;
 
   /* first remove existing columns */
   z_gtk_tree_view_remove_all_columns (
     self->treeview);
 
-  switch (r->type)
+  switch (r->id.type)
     {
     case REGION_TYPE_MIDI:
       append_midi_columns (self);

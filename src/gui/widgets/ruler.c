@@ -162,7 +162,8 @@ draw_regions (
   /* get a visible region - the clip editor
    * region is removed temporarily while moving
    * regions so this could be NULL */
-  ZRegion * region = CLIP_EDITOR->region;
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
   if (!region)
     return;
 
@@ -249,10 +250,12 @@ get_loop_start_rect (
   rect->x = 0;
   if (self->type == TYPE (EDITOR))
     {
-      if (CLIP_EDITOR->region)
+      ZRegion * region =
+        clip_editor_get_region (CLIP_EDITOR);
+      if (region)
         {
           ArrangerObject * region_obj =
-            (ArrangerObject *) CLIP_EDITOR->region;
+            (ArrangerObject *) region;
           long start_ticks =
             position_to_ticks (
               &region_obj->pos);
@@ -317,10 +320,12 @@ get_loop_end_rect (
   rect->x = 0;
   if (self->type == TYPE (EDITOR))
     {
-      if (CLIP_EDITOR->region)
+      ZRegion * region =
+        clip_editor_get_region (CLIP_EDITOR);
+      if (region)
         {
           ArrangerObject * region_obj =
-            (ArrangerObject *) CLIP_EDITOR->region;
+            (ArrangerObject *) region;
           long start_ticks =
             position_to_ticks (
               &region_obj->pos);
@@ -386,10 +391,12 @@ get_clip_start_rect (
 {
   if (self->type == TYPE (EDITOR))
     {
-      if (CLIP_EDITOR->region)
+      ZRegion * region =
+        clip_editor_get_region (CLIP_EDITOR);
+      if (region)
         {
           ArrangerObject * region_obj =
-            (ArrangerObject *) CLIP_EDITOR->region;
+            (ArrangerObject *) region;
           long start_ticks =
             position_to_ticks (
               &region_obj->pos);

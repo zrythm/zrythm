@@ -19,6 +19,7 @@
 
 #include "audio/chord_region.h"
 #include "audio/chord_object.h"
+#include "audio/chord_track.h"
 #include "gui/backend/events.h"
 #include "project.h"
 #include "utils/arrays.h"
@@ -30,14 +31,13 @@
 /**
  * Creates a new ZRegion for chords.
  *
- * @param is_main If this is 1 it
- *   will create the additional ZRegion (
- *   main_transient).
+ * @param idx Index inside chord track.
  */
 ZRegion *
 chord_region_new (
   const Position * start_pos,
-  const Position * end_pos)
+  const Position * end_pos,
+  int              idx)
 {
   ZRegion * self =
     calloc (1, sizeof (ZRegion));
@@ -47,10 +47,11 @@ chord_region_new (
     malloc (self->chord_objects_size *
             sizeof (ChordObject *));
 
-  self->type = REGION_TYPE_CHORD;
+  self->id.type = REGION_TYPE_CHORD;
 
   region_init (
-    self, start_pos, end_pos);
+    self, start_pos, end_pos, P_CHORD_TRACK->pos,
+    0, idx);
 
   return self;
 }

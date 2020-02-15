@@ -48,7 +48,8 @@ typedef struct Track MarkerTrack;
  * Creates the default marker track.
  */
 MarkerTrack *
-marker_track_default (void);
+marker_track_default (
+  int   track_pos);
 
 /**
  * Inits the marker track.

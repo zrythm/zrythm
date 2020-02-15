@@ -48,7 +48,7 @@ chord_selections_can_be_pasted (
   Position *        pos,
   ZRegion *          r)
 {
-  if (!r || r->type != REGION_TYPE_CHORD)
+  if (!r || r->id.type != REGION_TYPE_CHORD)
     return 0;
 
   ArrangerObject * r_obj =
@@ -64,15 +64,16 @@ chord_selections_paste_to_pos (
   ChordSelections * ts,
   Position *        playhead)
 {
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (
-    CLIP_EDITOR->region &&
-    CLIP_EDITOR->region->type == REGION_TYPE_CHORD);
+    region && region->id.type == REGION_TYPE_CHORD);
 
   /* get region-local pos */
   Position pos;
   pos.frames =
     region_timeline_frames_to_local (
-      CLIP_EDITOR->region, playhead->frames, 0);
+      region, playhead->frames, 0);
   position_from_frames (&pos, pos.frames);
   long pos_ticks = position_to_ticks (&pos);
 
@@ -98,9 +99,9 @@ chord_selections_paste_to_pos (
       chord = ts->chord_objects[i];
       ArrangerObject * chord_obj =
         (ArrangerObject *) chord;
-      chord->region = CLIP_EDITOR->region;
-      chord->region_name =
-        g_strdup (CLIP_EDITOR->region->name);
+      region_identifier_copy (
+        &chord->region_id,
+        &CLIP_EDITOR->region_id);
 
       curr_ticks =
         position_to_ticks (&chord_obj->pos);
@@ -113,8 +114,10 @@ chord_selections_paste_to_pos (
         arranger_object_clone (
           chord_obj,
           ARRANGER_OBJECT_CLONE_COPY_MAIN);
+      region =
+        chord_object_get_region (cp);
       chord_region_add_chord_object (
-        cp->region, cp);
+        region, cp);
     }
 #undef DIFF
 }

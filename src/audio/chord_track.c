@@ -46,11 +46,12 @@ chord_track_init (
  * Creates a new chord track.
  */
 ChordTrack *
-chord_track_new ()
+chord_track_new (
+  int     track_pos)
 {
   ChordTrack * self =
     track_new (
-      TRACK_TYPE_CHORD, _("Chords"),
+      TRACK_TYPE_CHORD, track_pos, _("Chords"),
       F_WITHOUT_LANE);
 
   gdk_rgba_parse (&self->color, "#0328fa");
@@ -71,7 +72,6 @@ chord_track_add_scale (
   g_warn_if_fail (
     track->type == TRACK_TYPE_CHORD && scale);
 
-  scale_object_set_track (scale, track);
   array_double_size_if_full (
     track->scales, track->num_scales,
     track->scales_size, ScaleObject *);

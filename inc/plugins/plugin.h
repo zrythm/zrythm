@@ -35,6 +35,7 @@
 #endif
 #include "plugins/lv2_plugin.h"
 #include "plugins/plugin_descriptor.h"
+#include "plugins/plugin_identifier.h"
 #include "plugins/vst_plugin.h"
 #include "utils/types.h"
 
@@ -43,6 +44,7 @@
 
 typedef struct Channel Channel;
 typedef struct VstPlugin VstPlugin;
+typedef struct AutomationTrack AutomationTrack;
 
 /**
  * @addtogroup plugins
@@ -60,6 +62,8 @@ typedef struct VstPlugin VstPlugin;
  */
 typedef struct Plugin
 {
+  PluginIdentifier     id;
+
   /**
    * Pointer back to plugin in its original format.
    */
@@ -76,57 +80,24 @@ typedef struct Plugin
   /** Descriptor. */
   PluginDescriptor *   descr;
 
-  /** Ports coming in as input, for seralization. */
-  //PortIdentifier *    in_port_ids;
-
   /** Ports coming in as input. */
   Port **             in_ports;
   int                 num_in_ports;
   size_t              in_ports_size;
-
-  /** Outgoing port identifiers for serialization. */
-  //PortIdentifier *    out_port_ids;
 
   /** Outgoing ports. */
   Port **             out_ports;
   int                 num_out_ports;
   size_t              out_ports_size;
 
-  /** Ports with unknown direction (not used). */
-  //PortIdentifier *    unknown_port_ids;
-  Port **             unknown_ports;
-  int                 num_unknown_ports;
-  size_t              unknown_ports_size;
-
-  /** The Channel this plugin belongs to. */
-  Track              * track;
-  int                  track_pos;
-
-  /**
-   * A subset of the automation tracks in the
-   * automation tracklist of the track this plugin
-   * is in.
-   *
-   * These are not meant to be serialized and are
-   * used when e.g. moving plugins.
-   */
-  AutomationTrack **  ats;
-  int                 num_ats;
-  size_t              ats_size;
-
-  /**
-   * The slot this plugin is at in its channel.
-   */
-  int                  slot;
-
-  /** Enabled or not. */
-  int                  enabled;
+  /** Control for plugin enabled. */
+  Port *              enabled;
 
   /** Whether plugin UI is opened or not. */
-  int                  visible;
+  int                 visible;
 
   /** The latency in samples. */
-  nframes_t            latency;
+  nframes_t           latency;
 
   /**
    * UI has been instantiated or not.
@@ -201,6 +172,10 @@ typedef struct Plugin
 static const cyaml_schema_field_t
 plugin_fields_schema[] =
 {
+  CYAML_FIELD_MAPPING (
+    "id", CYAML_FLAG_DEFAULT,
+    Plugin, id,
+    plugin_identifier_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
     "descr", CYAML_FLAG_POINTER,
     Plugin, descr,
@@ -223,20 +198,13 @@ plugin_fields_schema[] =
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Plugin, out_ports, num_out_ports,
     &port_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "unknown_ports",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    Plugin, unknown_ports, num_unknown_ports,
-    &port_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "enabled", CYAML_FLAG_DEFAULT,
-    Plugin, enabled),
+  CYAML_FIELD_MAPPING_PTR (
+    "enabled",
+    CYAML_FLAG_POINTER,
+    Plugin, enabled, port_fields_schema),
   CYAML_FIELD_INT (
     "visible", CYAML_FLAG_DEFAULT,
     Plugin, visible),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
-    Plugin, track_pos),
 
   CYAML_FIELD_END
 };
@@ -278,27 +246,33 @@ plugin_add_out_port (
   Port *   port);
 
 /**
- * Adds an unknown port to the plugin's list.
- */
-void
-plugin_add_unknown_port (
-  Plugin * pl,
-  Port *   port);
-
-/**
  * Creates/initializes a plugin and its internal
  * plugin (LV2, etc.)
  * using the given descriptor.
+ *
+ * @param track_pos The expected position of the
+ *   track the plugin will be in.
+ * @param slot The expected slot the plugin will
+ *   be in.
  */
 Plugin *
 plugin_new_from_descr (
-  const PluginDescriptor * descr);
+  const PluginDescriptor * descr,
+  int                      track_pos,
+  int                      slot);
 
 /**
  * Sets the UI refresh rate on the Plugin.
  */
 void
 plugin_set_ui_refresh_rate (
+  Plugin * self);
+
+/**
+ * Gets the enable/disable port for this plugin.
+ */
+Port *
+plugin_get_enabled_port (
   Plugin * self);
 
 /**
@@ -353,6 +327,18 @@ plugin_move_automation (
 int
 plugin_has_supported_custom_ui (
   Plugin * self);
+
+Channel *
+plugin_get_channel (
+  Plugin * self);
+
+Track *
+plugin_get_track (
+  Plugin * self);
+
+Plugin *
+plugin_find (
+  PluginIdentifier * id);
 
 /**
  * Updates the plugin's latency.

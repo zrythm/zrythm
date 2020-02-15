@@ -48,7 +48,10 @@ typedef void MIDI_FILE;
 ZRegion *
 midi_region_new (
   const Position * start_pos,
-  const Position * end_pos);
+  const Position * end_pos,
+  int              track_pos,
+  int              lane_pos,
+  int              idx_inside_lane);
 
 /**
  * Creates a MIDI region from the given MIDI
@@ -63,6 +66,9 @@ ZRegion *
 midi_region_new_from_midi_file (
   const Position * start_pos,
   const char *     abs_path,
+  int              track_pos,
+  int              lane_pos,
+  int              idx_inside_lane,
   int              idx);
 
 /**

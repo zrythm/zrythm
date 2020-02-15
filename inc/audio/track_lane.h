@@ -76,9 +76,6 @@ typedef struct TrackLane
   int                 num_regions;
   size_t              regions_size;
 
-  /** Pointer back to the owner Track. */
-  Track *             track;
-
   /** Position of owner Track in the Tracklist. */
   int                 track_pos;
 
@@ -145,7 +142,8 @@ track_lane_init_loaded (
  * Creates a new TrackLane at the given pos in the
  * given Track.
  *
- * @param track The Track to create the TrackLane for.
+ * @param track The Track to create the TrackLane
+ *   for.
  * @param pos The position (index) in the Track that
  *   this lane will be placed in.
  */
@@ -173,15 +171,11 @@ track_lane_update_frames (
 /**
  * Sets the track position to the lane and all its
  * members recursively.
- *
- * @param set_pointers Sets the Track pointers as
- *   well.
  */
 void
 track_lane_set_track_pos (
   TrackLane * self,
-  const int   pos,
-  const int   set_pointers);
+  const int   pos);
 
 /**
  * Clones the TrackLane.
@@ -197,8 +191,12 @@ track_lane_clone (
  */
 void
 track_lane_write_to_midi_file (
-  const TrackLane * self,
-  MIDI_FILE *       mf);
+  TrackLane * self,
+  MIDI_FILE * mf);
+
+Track *
+track_lane_get_track (
+  TrackLane * self);
 
 /**
  * Frees the TrackLane.

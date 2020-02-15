@@ -354,9 +354,9 @@ lv2_control_get_from_port (
   if (!pl)
     pl =
       TRACKLIST->tracks[
-        port->port->identifier.track_pos]->
+        port->port->id.track_pos]->
           channel->plugins[
-            port->port->identifier.plugin_slot];
+            port->port->id.plugin_slot];
 
   Lv2Plugin * plgn =
     pl->lv2;

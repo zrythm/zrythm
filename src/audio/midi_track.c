@@ -106,8 +106,7 @@ send_notes_off_at (
            * first */
           midi_events_add_note_off (
             midi_events,
-            midi_region_get_midi_ch (
-              mn->region),
+            midi_region_get_midi_ch (region),
             mn->val,
             time, 1);
         }
@@ -159,10 +158,8 @@ send_notes_off_at (
               {
                 midi_events_add_note_off (
                   midi_events,
-                  midi_region_get_midi_ch (
-                    mn->region),
-                  mn->val,
-                  time, 1);
+                  midi_region_get_midi_ch (region),
+                  mn->val, time, 1);
               }
           }
       }
@@ -191,10 +188,8 @@ send_notes_off_at (
               {
                 midi_events_add_note_off (
                   midi_events,
-                  midi_region_get_midi_ch (
-                    mn->region),
-                  mn->val,
-                  time, 1);
+                  midi_region_get_midi_ch (region),
+                  mn->val, time, 1);
               }
           }
       }
@@ -222,10 +217,11 @@ note_ons_during_region_loop (
   if (r_local_end_pos > r_local_pos)
     return;
 
-  ArrangerObject * r_obj =
-    (ArrangerObject *) mn->region;
   ArrangerObject * mn_obj =
     (ArrangerObject *) mn;
+  ZRegion * region =
+    arranger_object_get_region (mn_obj);
+  ArrangerObject * r_obj = (ArrangerObject *) region;
 
   /* get frames till r loop end */
   long frames_till_r_loop_end =
@@ -257,7 +253,7 @@ note_ons_during_region_loop (
         (mn_obj->pos.frames - r_local_pos);
       midi_events_add_note_on (
         midi_events,
-        midi_region_get_midi_ch (mn->region),
+        midi_region_get_midi_ch (region),
         mn->val, mn->vel->vel, time, 1);
       g_warn_if_fail (
         time < local_start_frame + nframes);
@@ -285,7 +281,7 @@ note_ons_during_region_loop (
            r_local_pos);
       midi_events_add_note_on (
         midi_events,
-        midi_region_get_midi_ch (mn->region),
+        midi_region_get_midi_ch (region),
         mn->val, mn->vel->vel, time, 1);
       g_warn_if_fail (
         time < local_start_frame + nframes);
@@ -590,7 +586,7 @@ midi_track_fill_midi_events (
                       midi_events_add_note_on (
                         midi_events,
                         midi_region_get_midi_ch (
-                          mn->region),
+                          r),
                         mn->val,
                         mn->vel->vel,
                         time, 1);
@@ -633,7 +629,7 @@ midi_track_fill_midi_events (
                       midi_events_add_note_off (
                         midi_events,
                         midi_region_get_midi_ch (
-                          mn->region),
+                          r),
                         mn->val,
                         time, 1);
                       g_warn_if_fail (

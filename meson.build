@@ -266,6 +266,7 @@ test_strict_cflags = [
   '-Werror=overlength-strings',
   '-Werror=stringop-truncation',
   '-Werror=missing-declarations',
+  '-Werror=int-to-pointer-cast',
   #'-Werror=redundant-decls',
   '-Werror=shadow',
   '-Werror=undef',

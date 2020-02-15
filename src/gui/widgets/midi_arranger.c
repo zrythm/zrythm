@@ -114,7 +114,7 @@ midi_arranger_widget_create_note (
     midi_note_new (
       region, &local_pos, &local_pos,
       (midi_byte_t) note,
-      VELOCITY_DEFAULT, 1);
+      VELOCITY_DEFAULT);
   ArrangerObject * midi_note_obj =
     (ArrangerObject *) midi_note;
 
@@ -252,7 +252,8 @@ midi_arranger_widget_snap_midi_notes_l (
   int                 dry_run)
 {
   ArrangerObject * r_obj =
-    (ArrangerObject *) CLIP_EDITOR->region;
+    (ArrangerObject *)
+    clip_editor_get_region (CLIP_EDITOR);
 
   /* get delta with first clicked note's start
    * pos */
@@ -292,12 +293,14 @@ midi_arranger_widget_snap_midi_notes_l (
         r_obj->pos.total_ticks);
 
       /* snap the global pos */
+      ZRegion * clip_editor_region =
+        clip_editor_get_region (CLIP_EDITOR);
       if (SNAP_GRID_ANY_SNAP (
             self->snap_grid) &&
           !self->shift_held)
         position_snap (
           NULL, &new_global_start_pos,
-          NULL, CLIP_EDITOR->region,
+          NULL, clip_editor_region,
           self->snap_grid);
 
       /* convert it back to a local pos */
@@ -395,7 +398,8 @@ midi_arranger_widget_snap_midi_notes_r (
   int                 dry_run)
 {
   ArrangerObject * r_obj =
-    (ArrangerObject *) CLIP_EDITOR->region;
+    (ArrangerObject *)
+    clip_editor_get_region (CLIP_EDITOR);
 
   /* get delta with first clicked notes's end
    * pos */

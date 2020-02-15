@@ -78,9 +78,6 @@ arranger_selections_init_loaded (
             (ArrangerObject *) mn;
           arranger_object_update_frames (
             mn_obj);
-          mn->region =
-            region_find_by_name (mn->region_name);
-          g_warn_if_fail (mn->region);
           mas->midi_notes[i] =
             (MidiNote *)
             arranger_object_find (mn_obj);
@@ -239,7 +236,9 @@ arranger_selections_add_object (
               ARRANGER_OBJECT_TYPE_VELOCITY)
           {
             Velocity * vel = (Velocity *) obj;
-            obj = (ArrangerObject *) vel->midi_note;
+            obj =
+              (ArrangerObject *)
+              velocity_get_midi_note (vel);
           }
         ADD_OBJ (
           sel, MIDI_NOTE,
@@ -1245,11 +1244,13 @@ arranger_selections_contains_object (
             {
               Velocity * vel =
                 (Velocity *) obj;
+              MidiNote * mn =
+                velocity_get_midi_note (vel);
               return
                 array_contains (
                   mas->midi_notes,
                   mas->num_midi_notes,
-                  vel->midi_note);
+                  mn);
             }
             break;
           case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -1338,7 +1339,9 @@ arranger_selections_remove_object (
             ARRANGER_OBJECT_TYPE_VELOCITY)
         {
           Velocity * vel = (Velocity *) obj;
-          obj = (ArrangerObject *) vel->midi_note;
+          obj =
+            (ArrangerObject *)
+            velocity_get_midi_note (vel);
         }
       REMOVE_OBJ (
         mas, MIDI_NOTE, midi_note);

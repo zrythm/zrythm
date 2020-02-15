@@ -1,0 +1,332 @@
+/*
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
+ *
+ * This file is part of Zrythm
+ *
+ * Zrythm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Zrythm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ *
+ * Port identifier.
+ */
+
+#ifndef __AUDIO_PORT_IDENTIFIER_H__
+#define __AUDIO_PORT_IDENTIFIER_H__
+
+#include "utils/string.h"
+#include "utils/yaml.h"
+
+/**
+ * @addtogroup audio
+ *
+ * @{
+ */
+
+/**
+ * Direction of the signal.
+ */
+typedef enum PortFlow {
+  FLOW_UNKNOWN,
+  FLOW_INPUT,
+  FLOW_OUTPUT
+} PortFlow;
+
+/**
+ * Type of signals the Port handles.
+ */
+typedef enum PortType {
+  TYPE_UNKNOWN,
+  TYPE_CONTROL,
+  TYPE_AUDIO,
+  TYPE_EVENT,
+  TYPE_CV
+} PortType;
+
+/**
+ * Type of owner.
+ */
+typedef enum PortOwnerType
+{
+  //PORT_OWNER_TYPE_NONE,
+  PORT_OWNER_TYPE_BACKEND,
+  PORT_OWNER_TYPE_PLUGIN,
+  PORT_OWNER_TYPE_TRACK,
+  PORT_OWNER_TYPE_PREFADER,
+
+  /* track fader */
+  PORT_OWNER_TYPE_FADER,
+
+  /* monitor fader */
+  PORT_OWNER_TYPE_MONITOR_FADER,
+
+  /* TrackProcessor. */
+  PORT_OWNER_TYPE_TRACK_PROCESSOR,
+
+  PORT_OWNER_TYPE_SAMPLE_PROCESSOR,
+} PortOwnerType;
+
+/**
+ * Port flags.
+ */
+typedef enum PortFlags
+{
+  PORT_FLAG_STEREO_L = 1 << 0,
+  PORT_FLAG_STEREO_R = 1 << 1,
+  PORT_FLAG_PIANO_ROLL = 1 << 2,
+  /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#sideChainOf. */
+  PORT_FLAG_SIDECHAIN = 1 << 3,
+  /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainInput
+   * and http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainOutput. */
+  PORT_FLAG_MAIN_PORT = 1 << 4,
+  PORT_FLAG_MANUAL_PRESS = 1 << 5,
+  PORT_FLAG_AMPLITUDE = 1 << 6,
+
+  /**
+   * Port controls the stereo balance.
+   *
+   * This is used in channels for the balance
+   * control.
+   */
+  PORT_FLAG_STEREO_BALANCE = 1 << 7,
+
+  /**
+   * Whether the port wants to receive position
+   * events.
+   *
+   * This is only applicable for LV2 Atom ports.
+   */
+  PORT_FLAG_WANT_POSITION = 1 << 8,
+
+  /**
+   * Trigger ports will be set to 0 at the end of
+   * each cycle.
+   *
+   * This mostly applies to LV2 Control Input
+   * ports.
+   */
+  PORT_FLAG_TRIGGER = 1 << 9,
+
+  /** Whether the port is a toggle (on/off). */
+  PORT_FLAG_TOGGLE = 1 << 10,
+
+  /** Whether the port is an integer. */
+  PORT_FLAG_INTEGER = 1 << 11,
+
+  /** Whether port is for letting the plugin know
+   * that we are in freewheeling (export) mode. */
+  PORT_FLAG_FREEWHEEL = 1 << 12,
+
+  /** Used for plugin ports. */
+  PORT_FLAG_REPORTS_LATENCY = 1 << 13,
+
+  /** Port should not be visible to users. */
+  PORT_FLAG_NOT_ON_GUI = 1 << 14,
+
+  /** Port is a switch for plugin enabled. */
+  PORT_FLAG_PLUGIN_ENABLED = 1 << 15,
+
+  /** Port is a plugin control. */
+  PORT_FLAG_PLUGIN_CONTROL = 1 << 16,
+
+  /** Port is for channel mute. */
+  PORT_FLAG_CHANNEL_MUTE = 1 << 17,
+
+  /** Port is for channel fader. */
+  PORT_FLAG_CHANNEL_FADER = 1 << 18,
+} PortFlags;
+
+static const cyaml_bitdef_t
+port_flags_bitvals[] =
+{
+  { .name = "stereo_l", .offset =  0, .bits =  1 },
+  { .name = "stereo_r", .offset =  1, .bits =  1 },
+  { .name = "piano_roll", .offset = 2, .bits = 1 },
+  { .name = "sidechain", .offset = 3, .bits =  1 },
+  { .name = "main_port", .offset = 4, .bits = 1 },
+  { .name = "manual_press", .offset = 5, .bits = 1 },
+  { .name = "amplitude", .offset = 6, .bits = 1 },
+  { .name = "stereo_balance", .offset = 7, .bits = 1 },
+  { .name = "want_position", .offset = 8, .bits = 1 },
+  { .name = "trigger", .offset = 9, .bits = 1 },
+  { .name = "toggle", .offset = 10, .bits = 1 },
+  { .name = "integer", .offset = 11, .bits = 1 },
+  { .name = "freewheel", .offset = 12, .bits = 1 },
+  { .name = "reports_latency", .offset = 13, .bits = 1 },
+  { .name = "not_on_gui", .offset = 14, .bits = 1 },
+  { .name = "plugin_enabled", .offset = 15, .bits = 1 },
+  { .name = "plugin_control", .offset = 16, .bits = 1 },
+  { .name = "channel_mute", .offset = 17, .bits = 1 },
+  { .name = "channel_fader", .offset = 17, .bits = 1 },
+};
+
+/**
+ * Struct used to identify Ports in the project.
+ *
+ * This should include some members of the original
+ * struct enough to identify the port. To be used
+ * for sources and dests.
+ *
+ * This must be filled in before saving and read from
+ * while loading to fill in the srcs/dests.
+ */
+typedef struct PortIdentifier
+{
+  /** Human readable label. */
+  char *              label;
+  /** Owner type. */
+  PortOwnerType       owner_type;
+  /** Data type (e.g. AUDIO). */
+  PortType            type;
+  /** Flow (IN/OUT). */
+  PortFlow            flow;
+  /** Flags (e.g. is side chain). */
+  PortFlags           flags;
+
+  /** Index of Plugin in the Channel. */
+  int                 plugin_slot;
+
+  /** Index of Track in the Tracklist. */
+  int                 track_pos;
+  /** Index (e.g. in plugin's output ports). */
+  int                 port_index;
+} PortIdentifier;
+
+static const cyaml_strval_t
+port_flow_strings[] =
+{
+  { "unknown",       FLOW_UNKNOWN    },
+  { "input",         FLOW_INPUT   },
+  { "output",        FLOW_OUTPUT   },
+};
+
+static const cyaml_strval_t
+port_owner_type_strings[] =
+{
+  { "backend",   PORT_OWNER_TYPE_BACKEND    },
+  { "plugin",    PORT_OWNER_TYPE_PLUGIN   },
+  { "track",     PORT_OWNER_TYPE_TRACK   },
+  { "pre-fader", PORT_OWNER_TYPE_PREFADER   },
+  { "fader",     PORT_OWNER_TYPE_FADER   },
+  { "track processor",
+    PORT_OWNER_TYPE_TRACK_PROCESSOR   },
+  { "monitor fader",
+    PORT_OWNER_TYPE_MONITOR_FADER },
+  { "sample processor",
+    PORT_OWNER_TYPE_SAMPLE_PROCESSOR },
+};
+
+static const cyaml_strval_t
+port_type_strings[] =
+{
+  { "unknown",       TYPE_UNKNOWN    },
+  { "control",       TYPE_CONTROL   },
+  { "audio",         TYPE_AUDIO   },
+  { "event",         TYPE_EVENT   },
+  { "cv",            TYPE_CV   },
+};
+
+static const cyaml_schema_field_t
+port_identifier_fields_schema[] =
+{
+  CYAML_FIELD_STRING_PTR (
+    "label", CYAML_FLAG_POINTER,
+    PortIdentifier, label, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_ENUM (
+    "owner_type", CYAML_FLAG_DEFAULT,
+    PortIdentifier, owner_type,
+    port_owner_type_strings,
+    CYAML_ARRAY_LEN (port_owner_type_strings)),
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    PortIdentifier, type, port_type_strings,
+    CYAML_ARRAY_LEN (port_type_strings)),
+  CYAML_FIELD_ENUM (
+    "flow", CYAML_FLAG_DEFAULT,
+    PortIdentifier, flow, port_flow_strings,
+    CYAML_ARRAY_LEN (port_flow_strings)),
+  CYAML_FIELD_BITFIELD (
+    "flags", CYAML_FLAG_DEFAULT,
+    PortIdentifier, flags, port_flags_bitvals,
+    CYAML_ARRAY_LEN (port_flags_bitvals)),
+  CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    PortIdentifier, track_pos),
+  CYAML_FIELD_INT (
+    "plugin_slot", CYAML_FLAG_DEFAULT,
+    PortIdentifier, plugin_slot),
+  CYAML_FIELD_INT (
+    "port_index", CYAML_FLAG_DEFAULT,
+    PortIdentifier, port_index),
+
+  CYAML_FIELD_END,
+};
+
+static const cyaml_schema_value_t
+port_identifier_schema = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    PortIdentifier, port_identifier_fields_schema),
+};
+
+static const cyaml_schema_value_t
+port_identifier_schema_default = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_DEFAULT,
+    PortIdentifier, port_identifier_fields_schema),
+};
+
+static inline void
+port_identifier_copy (
+  PortIdentifier * dest,
+  PortIdentifier * src)
+{
+  if (dest->label)
+    g_free (dest->label);
+  dest->label = g_strdup (src->label);
+  dest->owner_type = src->owner_type;
+  dest->type = src->type;
+  dest->flow = src->flow;
+  dest->flags = src->flags;
+  dest->plugin_slot = src->plugin_slot;
+  dest->track_pos = src->track_pos;
+  dest->port_index = src->port_index;
+}
+
+/**
+ * Returns if the 2 PortIdentifier's are equal.
+ */
+static inline int
+port_identifier_is_equal (
+  PortIdentifier * src,
+  PortIdentifier * dest)
+{
+  return
+    string_is_equal (
+      dest->label, src->label, 0) &&
+    dest->owner_type == src->owner_type &&
+    dest->type == src->type &&
+    dest->flow == src->flow &&
+    dest->flags == src->flags &&
+    dest->plugin_slot == src->plugin_slot &&
+    dest->track_pos == src->track_pos &&
+    dest->port_index == src->port_index;
+}
+
+/**
+ * @}
+ */
+
+#endif

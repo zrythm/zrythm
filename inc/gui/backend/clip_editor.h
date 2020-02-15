@@ -26,6 +26,7 @@
 #ifndef __GUI_BACKEND_CLIP_EDITOR_H__
 #define __GUI_BACKEND_CLIP_EDITOR_H__
 
+#include "audio/region_identifier.h"
 #include "gui/backend/audio_clip_editor.h"
 #include "gui/backend/automation_editor.h"
 #include "gui/backend/chord_editor.h"
@@ -38,7 +39,6 @@
  */
 
 #define CLIP_EDITOR (&PROJECT->clip_editor)
-#define CLIP_EDITOR_SELECTED_REGION (CLIP_EDITOR->region)
 
 typedef struct ZRegion ZRegion;
 
@@ -52,8 +52,7 @@ typedef struct ClipEditor
 {
   /** ZRegion currently attached to the clip
    * editor. */
-  char *           region_name;
-  ZRegion *         region;
+  RegionIdentifier  region_id;
 
   /**
    * This will be set to the same as above after
@@ -61,7 +60,14 @@ typedef struct ClipEditor
    *
    * Related widgets should use this.
    */
-  ZRegion *         region_cache;
+  RegionIdentifier  region_id_cache;
+
+  /** Whether \ref region_id is a valid region. */
+  int              has_region;
+
+  /** Whether \ref region_id_cache is a valid
+   * region. */
+  int              had_region;
 
   PianoRoll        piano_roll;
   AudioClipEditor  audio_clip_editor;
@@ -76,11 +82,10 @@ typedef struct ClipEditor
 static const cyaml_schema_field_t
 clip_editor_fields_schema[] =
 {
-  CYAML_FIELD_STRING_PTR (
-    "region_name",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ClipEditor, region_name,
-     0, CYAML_UNLIMITED),
+  CYAML_FIELD_MAPPING (
+    "region_id", CYAML_FLAG_DEFAULT,
+    ClipEditor, region_id,
+    region_identifier_fields_schema),
   CYAML_FIELD_MAPPING (
     "piano_roll", CYAML_FLAG_DEFAULT,
     ClipEditor, piano_roll,
@@ -125,6 +130,10 @@ void
 clip_editor_set_region (
   ClipEditor * self,
   ZRegion *     region);
+
+ZRegion *
+clip_editor_get_region (
+  ClipEditor * self);
 
 /**
  * Returns the ZRegion that widgets are expected

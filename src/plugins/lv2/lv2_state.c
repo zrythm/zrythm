@@ -67,8 +67,8 @@ get_port_value (
     lv2_port_get_by_symbol (
       plugin, port_symbol);
   if (port &&
-      port->port->identifier.flow == FLOW_INPUT &&
-      port->port->identifier.type == TYPE_CONTROL)
+      port->port->id.flow == FLOW_INPUT &&
+      port->port->id.type == TYPE_CONTROL)
     {
       *size = sizeof(float);
       *type = plugin->forge.Float;

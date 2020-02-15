@@ -246,15 +246,12 @@ add_object_to_project (
           (AutomationPoint *) obj;
 
         /* find the region */
-        ap->region =
-          region_find_by_name (
-            ap->region_name);
-        g_return_if_fail (
-          ap->region);
+        ZRegion * region =
+          region_find (&ap->region_id);
+        g_return_if_fail (region);
 
         /* add it to the region */
-        automation_region_add_ap (
-          ap->region, ap);
+        automation_region_add_ap (region, ap);
       }
       break;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
@@ -263,15 +260,13 @@ add_object_to_project (
           (ChordObject *) obj;
 
         /* find the region */
-        chord->region =
-          region_find_by_name (
-            chord->region_name);
-        g_return_if_fail (
-          chord->region);
+        ZRegion * region =
+          region_find (&chord->region_id);
+        g_return_if_fail (region);
 
         /* add it to the region */
         chord_region_add_chord_object (
-          chord->region, chord);
+          region, chord);
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -280,15 +275,13 @@ add_object_to_project (
           (MidiNote *) obj;
 
         /* find the region */
-        mn->region =
-          region_find_by_name (
-            mn->region_name);
-        g_return_if_fail (
-          mn->region);
+        ZRegion * region =
+          region_find (&mn->region_id);
+        g_return_if_fail (region);
 
         /* add it to the region */
         midi_region_add_midi_note (
-          mn->region, mn, 1);
+          region, mn, 1);
       }
       break;
     case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
@@ -318,16 +311,15 @@ add_object_to_project (
 
         /* add it to track */
         Track * track =
-          TRACKLIST->tracks[
-            r->track_pos];
-        switch (r->type)
+          TRACKLIST->tracks[r->id.track_pos];
+        switch (r->id.type)
           {
           case REGION_TYPE_AUTOMATION:
             {
               AutomationTrack * at =
                 track->
                   automation_tracklist.
-                    ats[r->at_index];
+                    ats[r->id.at_idx];
               track_add_region (
                 track, r, at, -1,
                 F_GEN_NAME,
@@ -342,7 +334,7 @@ add_object_to_project (
             break;
           default:
             track_add_region (
-              track, r, NULL, r->lane_pos,
+              track, r, NULL, r->id.lane_pos,
               F_GEN_NAME,
               F_PUBLISH_EVENTS);
             break;
@@ -369,16 +361,20 @@ remove_object_from_project (
       {
         AutomationPoint * ap =
           (AutomationPoint *) obj;
+        ZRegion * region =
+          arranger_object_get_region (obj);
         automation_region_remove_ap (
-          ap->region, ap, F_FREE);
+          region, ap, F_FREE);
       }
       break;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
       {
         ChordObject * chord =
           (ChordObject *) obj;
+        ZRegion * region =
+          arranger_object_get_region (obj);
         chord_region_remove_chord_object (
-          chord->region, chord, F_FREE);
+          region, chord, F_FREE);
       }
       break;
     case ARRANGER_OBJECT_TYPE_REGION:
@@ -411,8 +407,10 @@ remove_object_from_project (
       {
         MidiNote * mn =
           (MidiNote *) obj;
+        ZRegion * region =
+          arranger_object_get_region (obj);
         midi_region_remove_midi_note (
-          mn->region, mn, F_FREE,
+          region, mn, F_FREE,
           F_NO_PUBLISH_EVENTS);
       }
       break;
@@ -521,7 +519,7 @@ do_or_undo_move (
               Track * region_track =
                 arranger_object_get_track (obj);
               int new_lane_pos =
-                r->lane_pos + delta_lanes;
+                r->id.lane_pos + delta_lanes;
               g_return_val_if_fail (
                 new_lane_pos >= 0, -1);
               track_create_missing_lanes (
@@ -576,7 +574,7 @@ move_obj_by_tracks_and_lanes (
       if (obj->flags &
             ARRANGER_OBJECT_FLAG_NON_PROJECT)
         {
-          r->track_pos = track_to_move_to->pos;
+          r->id.track_pos = track_to_move_to->pos;
         }
       else
         {
@@ -591,7 +589,7 @@ move_obj_by_tracks_and_lanes (
       Track * region_track =
         arranger_object_get_track (obj);
       int new_lane_pos =
-        r->lane_pos + lanes_diff;
+        r->id.lane_pos + lanes_diff;
       g_return_if_fail (
         new_lane_pos >= 0);
 
@@ -599,7 +597,7 @@ move_obj_by_tracks_and_lanes (
       if (obj->flags &
             ARRANGER_OBJECT_FLAG_NON_PROJECT)
         {
-          r->lane_pos = new_lane_pos;
+          r->id.lane_pos = new_lane_pos;
         }
       else
         {
@@ -869,9 +867,12 @@ do_or_undo_create_or_delete (
                   {
                     AutomationPoint * ap =
                       (AutomationPoint *) obj;
+                    ZRegion * region =
+                      arranger_object_get_region (
+                        obj);
                     automation_point_set_region_and_index (
                       (AutomationPoint *) objs[i],
-                      ap->region, ap->index);
+                      region, ap->index);
                   }
                   break;
                 case ARRANGER_OBJECT_TYPE_REGION:

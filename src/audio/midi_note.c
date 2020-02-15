@@ -37,9 +37,7 @@
 #include "utils/string.h"
 
 /**
- * @param is_main Is main MidiNote. If this is 1 then
- *   arranger_object_info_init_main() is called to
- *   create a transient midi note in obj_info.
+ * Creates a new MidiNote.
  */
 MidiNote *
 midi_note_new (
@@ -47,8 +45,7 @@ midi_note_new (
   Position *   start_pos,
   Position *   end_pos,
   uint8_t      val,
-  uint8_t      vel,
-  int          is_main)
+  uint8_t      vel)
 {
   g_return_val_if_fail (region, NULL);
 
@@ -62,12 +59,13 @@ midi_note_new (
   obj->type = ARRANGER_OBJECT_TYPE_MIDI_NOTE;
   obj->has_length = 1;
 
-  self->region = region;
-  self->region_name =
-    g_strdup (region->name);
+  region_identifier_copy (
+    &self->region_id, &region->id);
   self->val = val;
   self->vel =
-    velocity_new (self, vel, is_main);
+    velocity_new (self, vel);
+
+  arranger_object_init (obj);
 
   return self;
 }
@@ -80,10 +78,8 @@ midi_note_set_region (
   MidiNote * self,
   ZRegion *   region)
 {
-  self->region = region;
-  if (self->region_name)
-    g_free (self->region_name);
-  self->region_name = g_strdup (region->name);
+  region_identifier_copy (
+    &self->region_id, &region->id);
 }
 
 /**
@@ -194,8 +190,8 @@ midi_note_is_equal (
       &src_obj->end_pos, &dest_obj->end_pos) &&
     src->val == dest->val &&
     src->muted == dest->muted &&
-    string_is_equal (
-      src->region->name, dest->region->name, 0);
+    region_identifier_is_equal (
+      &src->region_id, &dest->region_id);
 }
 
 /**
@@ -212,7 +208,8 @@ midi_note_get_global_start_pos (
   ArrangerObject * self_obj =
     (ArrangerObject *) self;
   ArrangerObject * region_obj =
-    (ArrangerObject *) self->region;
+    (ArrangerObject *)
+    arranger_object_get_region (self_obj);
   position_set_to_pos (
     pos, &self_obj->pos);
   position_add_ticks (
@@ -276,8 +273,11 @@ midi_note_set_val (
         midi_note, PLAYHEAD->frames) &&
       TRANSPORT_IS_ROLLING)
     {
+      ZRegion * region =
+        arranger_object_get_region (
+          (ArrangerObject *) midi_note);
       ArrangerObject * r_obj =
-        (ArrangerObject *) midi_note->region;
+        (ArrangerObject *) region;
       g_return_if_fail (r_obj);
       Track * track =
         arranger_object_get_track (r_obj);
@@ -288,7 +288,7 @@ midi_note_set_val (
 
       zix_sem_wait (&midi_events->access_sem);
       TrackLane * lane =
-        region_get_lane (midi_note->region);
+        region_get_lane (region);
       midi_events_add_note_off (
         midi_events, lane->midi_ch,
         midi_note->val, 0, 1);
@@ -313,16 +313,25 @@ midi_note_shift_pitch (
     self, self->val);
 }
 
+ZRegion *
+midi_note_get_region (
+  MidiNote * self)
+{
+  return region_find (&self->region_id);
+}
+
 /**
  * Returns if the MIDI note is hit at given pos (in
  * the timeline).
  */
 int
 midi_note_hit (
-  MidiNote * midi_note,
+  MidiNote * self,
   const long       gframes)
 {
-  ZRegion * region = midi_note->region;
+  ZRegion * region =
+    arranger_object_get_region (
+      (ArrangerObject *) self);
   ArrangerObject * region_obj =
     (ArrangerObject *) region;
 
@@ -341,7 +350,7 @@ midi_note_hit (
    * boundary */
   /* FIXME ok? it was < and >= before */
   ArrangerObject * midi_note_obj =
-    (ArrangerObject *) midi_note;
+    (ArrangerObject *) self;
   if (midi_note_obj->pos.frames <= local_pos &&
       midi_note_obj->end_pos.frames > local_pos)
     return 1;

@@ -53,12 +53,12 @@ on_ok_clicked (
     }
 
   Port * src = NULL, * dest = NULL;
-  if (self->port->identifier.flow == FLOW_INPUT)
+  if (self->port->id.flow == FLOW_INPUT)
     {
       src = self->selected_port;
       dest = self->port;
     }
-  else if (self->port->identifier.flow ==
+  else if (self->port->id.flow ==
              FLOW_OUTPUT)
     {
       src = self->port;
@@ -113,8 +113,8 @@ create_model_for_ports (
                         G_TYPE_STRING,
                         G_TYPE_POINTER);
 
-  PortType type = self->port->identifier.type;
-  PortFlow flow = self->port->identifier.flow;
+  PortType type = self->port->id.type;
+  PortFlow flow = self->port->id.flow;
 
 /* Add a new row to the model if not already
 * in the destinations */
@@ -131,7 +131,7 @@ create_model_for_ports (
       gtk_list_store_set ( \
         list_store, &iter, \
         0, "z-plugins", \
-        1, port->identifier.label, \
+        1, port->id.label, \
         2, port, \
         -1); \
     }
@@ -186,7 +186,7 @@ create_model_for_ports (
                     track->channel->fader.amp;
                   ADD_ROW;
                   port =
-                    track->channel->fader.pan;
+                    track->channel->fader.balance;
                   ADD_ROW;
                 }
             }
@@ -208,8 +208,8 @@ create_model_for_ports (
             {
               port = pl->out_ports[i];
 
-              if ((port->identifier.type != type) &&
-                  !(port->identifier.type == TYPE_CV &&
+              if ((port->id.type != type) &&
+                  !(port->id.type == TYPE_CV &&
                    type == TYPE_CONTROL))
                 continue;
 
@@ -223,9 +223,9 @@ create_model_for_ports (
             {
               port = pl->in_ports[i];
 
-              if ((port->identifier.type != type) &&
+              if ((port->id.type != type) &&
                   !(type == TYPE_CV &&
-                   port->identifier.type == TYPE_CONTROL))
+                   port->id.type == TYPE_CONTROL))
                 continue;
 
               ADD_ROW;
@@ -289,22 +289,24 @@ create_model_for_plugins (
                         G_TYPE_STRING,
                         G_TYPE_POINTER);
 
+  Port * port = self->port;
+  PortIdentifier * id = &port->id;
   if (track)
     {
       /* skip track ports if the owner port is
        * a track port of the same track */
       Track * port_track =
-        port_get_track (self->port, 0);
-      if (!((self->port->identifier.owner_type ==
+        port_get_track (port, 0);
+      if (!((id->owner_type ==
              PORT_OWNER_TYPE_TRACK &&
            port_track == track) ||
-          (self->port->identifier.owner_type ==
+          (id->owner_type ==
              PORT_OWNER_TYPE_FADER &&
            port_track == track) ||
-          (self->port->identifier.owner_type ==
+          (id->owner_type ==
              PORT_OWNER_TYPE_PREFADER &&
            port_track == track) ||
-          (self->port->identifier.owner_type ==
+          (id->owner_type ==
              PORT_OWNER_TYPE_TRACK_PROCESSOR &&
            port_track == track)))
         {
@@ -328,7 +330,7 @@ create_model_for_plugins (
           /* skip if no plugin or the plugin is the
            * port's plugin */
           if (!pl ||
-              (self->port->identifier.owner_type ==
+              (id->owner_type ==
                  PORT_OWNER_TYPE_PLUGIN &&
                pl ==
                  port_get_plugin (self->port, 1)))

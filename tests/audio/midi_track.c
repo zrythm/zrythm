@@ -45,6 +45,7 @@ fixture_set_up (
   self->midi_track =
     track_new (
       TRACK_TYPE_MIDI,
+      TRACKLIST->num_tracks,
       "Test MIDI Track 1",
       F_WITH_LANE);
   Port * port =
@@ -61,6 +62,7 @@ fixture_set_up (
  */
 ZRegion *
 prepare_region_with_note_at_start_to_end (
+  Track * track,
   midi_byte_t pitch,
   midi_byte_t velocity)
 {
@@ -80,10 +82,10 @@ prepare_region_with_note_at_start_to_end (
   position_update_ticks_and_frames (&end_pos);
   ZRegion * r =
     midi_region_new (
-      &start_pos, &end_pos);
+      &start_pos, &end_pos, track->pos, 0, 0);
   MidiNote * mn1 =
     midi_note_new (
-      r, &start_pos, &end_pos, pitch, velocity, 1);
+      r, &start_pos, &end_pos, pitch, velocity);
   midi_region_add_midi_note (
     r, mn1, 0);
 
@@ -112,7 +114,7 @@ test_fill_midi_events ()
   midi_byte_t vel1= 91;
   ZRegion * r =
     prepare_region_with_note_at_start_to_end (
-      pitch1, vel1);
+      track, pitch1, vel1);
   ArrangerObject * r_obj =
     (ArrangerObject *) r;
   track_add_region (

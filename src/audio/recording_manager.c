@@ -51,7 +51,8 @@ recording_manager_handle_recording (
   const nframes_t  local_offset,
   const nframes_t  nframes)
 {
-  Track * tr = track_processor->track;
+  Track * tr =
+    track_processor_get_track (track_processor);
 
   if (!TRANSPORT->recording ||
       !tr->recording ||
@@ -263,13 +264,18 @@ handle_audio_event (
 
       /* start new region in new lane at
        * TRANSPORT loop start */
+      int new_lane_pos = region->id.lane_pos + 1;
       ZRegion * new_region =
         audio_region_new (
           -1, NULL, NULL, (long) nframes, 2,
-          &TRANSPORT->loop_start_pos);
+          &TRANSPORT->loop_start_pos, tr->pos,
+          new_lane_pos,
+          tr->num_lanes > new_lane_pos ?
+            tr->lanes[new_lane_pos]->num_regions :
+            0);
       track_add_region (
         tr, new_region, NULL,
-        region->lane_pos + 1, F_GEN_NAME,
+        new_lane_pos, F_GEN_NAME,
         F_PUBLISH_EVENTS);
       region = new_region;
 
@@ -468,13 +474,17 @@ handle_midi_event (
 
       /* start new region in new lane at
        * TRANSPORT loop start */
+      int new_lane_pos = region->id.lane_pos + 1;
       ZRegion * new_region =
         midi_region_new (
           &TRANSPORT->loop_start_pos,
-          &end_pos);
+          &end_pos, tr->pos, new_lane_pos,
+          tr->num_lanes > new_lane_pos ?
+            tr->lanes[new_lane_pos]->num_regions :
+            0);
       track_add_region (
         tr, new_region, NULL,
-        region->lane_pos + 1, F_GEN_NAME,
+        new_lane_pos, F_GEN_NAME,
         F_PUBLISH_EVENTS);
       region = new_region;
     }
@@ -585,12 +595,15 @@ handle_start_recording (
   if (track_has_piano_roll (tr))
     {
       /* create region */
+      int new_lane_pos = tr->num_lanes - 1;
       ZRegion * region =
         midi_region_new (
-          &start_pos, &end_pos);
+          &start_pos, &end_pos, tr->pos,
+          new_lane_pos,
+          tr->lanes[new_lane_pos]->num_regions);
       g_return_if_fail (region);
       track_add_region (
-        tr, region, NULL, tr->num_lanes - 1,
+        tr, region, NULL, new_lane_pos,
         F_GEN_NAME, F_PUBLISH_EVENTS);
 
       tr->recording_region = region;
@@ -598,13 +611,15 @@ handle_start_recording (
   else if (tr->type == TRACK_TYPE_AUDIO)
     {
       /* create region */
+      int new_lane_pos = tr->num_lanes - 1;
       ZRegion * region =
         audio_region_new (
           -1, NULL, NULL, ev->nframes, 2,
-          &start_pos);
+          &start_pos, tr->pos, new_lane_pos,
+          tr->lanes[new_lane_pos]->num_regions);
       g_return_if_fail (region);
       track_add_region (
-        tr, region, NULL, tr->num_lanes - 1,
+        tr, region, NULL, new_lane_pos,
         F_GEN_NAME, F_PUBLISH_EVENTS);
 
       tr->recording_region = region;

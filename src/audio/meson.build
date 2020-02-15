@@ -32,6 +32,7 @@ audio_srcs = [
   'chord_region.c',
   'chord_track.c',
   'clip.c',
+  'control_port.c',
   'control_room.c',
   'encoder.c',
   'engine.c',

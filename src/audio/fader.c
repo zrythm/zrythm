@@ -67,7 +67,7 @@ fader_init_loaded (
     }
 
   port_set_owner_fader (self->amp, self);
-  port_set_owner_fader (self->pan, self);
+  port_set_owner_fader (self->balance, self);
 
   fader_set_amp ((void *) self, self->amp->control);
 }
@@ -88,34 +88,35 @@ fader_init (
   Channel * ch)
 {
   self->type = type;
-  self->channel = ch;
+  self->track_pos = ch->track_pos;
 
   /* set volume */
   self->volume = 0.0f;
   float amp = 1.f;
   self->amp =
     port_new_with_type (
-      TYPE_CONTROL, FLOW_INPUT, "Amplitude");
+      TYPE_CONTROL, FLOW_INPUT, _("Amplitude"));
   port_set_control_value (self->amp, amp, 0, 0);
   self->fader_val =
     math_get_fader_val_from_amp (amp);
   port_set_owner_fader (self->amp, self);
-  self->amp->identifier.flags |=
+  self->amp->id.flags |=
     PORT_FLAG_AMPLITUDE;
 
   /* set phase */
   self->phase = 0.0f;
 
   /* set pan */
-  float pan = 0.5f;
-  self->l_port_db = 0.f;
-  self->r_port_db = 0.f;
-  self->pan =
+  float balance = 0.5f;
+  self->balance =
     port_new_with_type (
-      TYPE_CONTROL, FLOW_INPUT, "Balance control");
-  port_set_control_value (self->pan, pan, 0, 0);
-  port_set_owner_fader (self->pan, self);
-  self->pan->identifier.flags |= PORT_FLAG_PAN;
+      TYPE_CONTROL, FLOW_INPUT,
+      _("Balance control"));
+  port_set_control_value (
+    self->balance, balance, 0, 0);
+  port_set_owner_fader (self->balance, self);
+  self->balance->id.flags |=
+    PORT_FLAG_STEREO_BALANCE;
 
   if (type == FADER_TYPE_AUDIO_CHANNEL)
     {
@@ -255,6 +256,34 @@ fader_set_fader_val (
     }
 }
 
+Channel *
+fader_get_channel (
+  Fader * self)
+{
+  Track * track = fader_get_track (self);
+  g_return_val_if_fail (IS_TRACK (track), NULL);
+
+  Channel * ch =
+    track_get_channel (track);
+  g_return_val_if_fail (IS_CHANNEL (ch), NULL);
+
+  return ch;
+}
+
+Track *
+fader_get_track (
+  Fader * self)
+{
+  g_return_val_if_fail (
+    self && self->track_pos < TRACKLIST->num_tracks,
+    NULL);
+  Track * track =
+    TRACKLIST->tracks[self->track_pos];
+  g_return_val_if_fail (IS_TRACK (track), NULL);
+
+  return track;
+}
+
 /**
  * Clears all buffers.
  */
@@ -303,7 +332,7 @@ fader_disconnect_all (
     }
 
   port_disconnect_all (self->amp);
-  port_disconnect_all (self->pan);
+  port_disconnect_all (self->balance);
 }
 
 /**
@@ -320,7 +349,7 @@ fader_copy_values (
   dest->phase = src->phase;
   dest->fader_val = src->fader_val;
   dest->amp->control = src->amp->control;
-  dest->pan->control = src->pan->control;
+  dest->balance->control = src->balance->control;
 }
 
 /**
@@ -339,7 +368,7 @@ fader_process (
   /*Track * track = self->channel->track;*/
 
   float pan =
-    port_get_control_value (self->pan, 0);
+    port_get_control_value (self->balance, 0);
   float amp =
     port_get_control_value (self->amp, 0);
 

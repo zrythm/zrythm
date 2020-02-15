@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,9 +31,6 @@ void
 mixer_selections_init_loaded (
   MixerSelections * ms)
 {
-  ms->track =
-    TRACKLIST->tracks[ms->track_pos];
-  g_warn_if_fail (ms->track);
 }
 
 /**
@@ -86,6 +83,24 @@ mixer_selections_get_lowest_slot (
   return max;
 }
 
+/**
+ * Get current Track.
+ */
+Track *
+mixer_selections_get_track (
+  MixerSelections * self)
+{
+  if (!self->has_any)
+    return NULL;
+
+  g_return_val_if_fail (
+    self &&
+    self->track_pos < TRACKLIST->num_tracks, NULL);
+  Track * track =
+    TRACKLIST->tracks[self->track_pos];
+  g_return_val_if_fail (track, NULL);
+  return track;
+}
 
 /**
  * Adds a slot to the selections.
@@ -101,30 +116,26 @@ mixer_selections_add_slot (
   Channel *         ch,
   int               slot)
 {
-  if (!ms->track ||
-      ch != ms->track->channel)
+  if (!ms->has_any ||
+      ch->track_pos != ms->track_pos)
     {
       mixer_selections_clear (
         ms, F_NO_PUBLISH_EVENTS);
-      ms->track_pos = ch->track->pos;
-      ms->track = ch->track;
+      ms->track_pos = ch->track_pos;
     }
+  ms->has_any = 1;
 
   if (array_contains_int (
-        ms->slots,
-        ms->num_slots,
-        slot))
+        ms->slots, ms->num_slots, slot))
     return;
 
   array_double_append (
-    ms->slots,
-    ms->plugins,
-    ms->num_slots,
-    slot,
-    ch->plugins[slot]);
+    ms->slots, ms->plugins, ms->num_slots,
+    slot, ch->plugins[slot]);
 
-  EVENTS_PUSH (ET_MIXER_SELECTIONS_CHANGED,
-               ch->plugins[slot]);
+  EVENTS_PUSH (
+    ET_MIXER_SELECTIONS_CHANGED,
+    ch->plugins[slot]);
 }
 
 /**
@@ -145,7 +156,7 @@ mixer_selections_remove_slot (
 
   if (ms->num_slots == 0)
     {
-      ms->track = NULL;
+      ms->has_any = 0;
       ms->track_pos = -1;
     }
 
@@ -178,13 +189,17 @@ mixer_selections_contains_plugin (
   MixerSelections * ms,
   Plugin *          pl)
 {
-  if (ms->track != pl->track)
+  if (ms->track_pos != pl->id.track_pos)
     return 0;
 
+  Track * track =
+    mixer_selections_get_track (ms);
   for (int i = 0; i < ms->num_slots; i++)
-    if (ms->track->channel->plugins[
-          ms->slots[i]] == pl)
-      return 1;
+    {
+      if (track->channel->plugins[
+            ms->slots[i]] == pl)
+        return 1;
+    }
 
   return 0;
 }
@@ -232,14 +247,12 @@ mixer_selections_clone (
         plugin_clone (src->plugins[i]);
       ms->slots[i] = src->slots[i];
       g_return_val_if_fail (
-        ms->plugins[i]->slot ==
-          src->plugins[i]->slot, NULL);
+        ms->plugins[i]->id.slot ==
+          src->plugins[i]->id.slot, NULL);
     }
 
   ms->num_slots = src->num_slots;
   ms->track_pos = src->track_pos;
-  g_return_val_if_fail (src->track, NULL);
-  ms->track = track_clone (src->track);
 
   return ms;
 }

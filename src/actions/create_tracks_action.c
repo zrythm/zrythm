@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,6 +47,7 @@ create (
   int                  add_to_project)
 {
   Track * track;
+  int pos = self->pos + idx;
 
   if (self->is_empty)
     {
@@ -59,14 +60,11 @@ create (
 
       track =
         track_new (
-          self->type, label, F_WITH_LANE);
+          self->type, pos, label, F_WITH_LANE);
       if (add_to_project)
         tracklist_insert_track (
-          TRACKLIST,
-          track,
-          self->pos + idx,
-          F_NO_PUBLISH_EVENTS,
-          F_NO_RECALC_GRAPH);
+          TRACKLIST, track, pos,
+          F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
     }
   else // track is not empty
     {
@@ -80,9 +78,9 @@ create (
               self->file_descr->abs_path);
           track =
             track_new (
-              self->type, basename, F_WITH_LANE);
+              self->type, pos, basename,
+              F_WITH_LANE);
           g_free (basename);
-          track->pos = self->pos + idx;
         }
       else if (self->file_descr &&
                self->type == TRACK_TYPE_MIDI)
@@ -92,9 +90,9 @@ create (
               self->file_descr->abs_path);
           track =
             track_new (
-              self->type, basename, F_WITH_LANE);
+              self->type, pos, basename,
+              F_WITH_LANE);
           g_free (basename);
-          track->pos = self->pos + idx;
         }
       /* at this point we can assume it has a
        * plugin */
@@ -102,16 +100,12 @@ create (
         {
           track =
             track_new (
-              self->type, self->pl_descr.name,
+              self->type, pos, self->pl_descr.name,
               F_WITH_LANE);
-          track->pos = self->pos + idx;
 
           pl=
             plugin_new_from_descr (
-              &self->pl_descr);
-          pl->slot = 0;
-          pl->track = track;
-          pl->track_pos = track->pos;
+              &self->pl_descr, track->pos, 0);
 
           if (plugin_instantiate (pl) < 0)
             {
@@ -139,9 +133,10 @@ create (
       if (track->channel && pl)
         {
           channel_add_plugin (
-            track->channel, pl->slot, pl,
+            track->channel, pl->id.slot, pl,
             1, 1, F_NO_RECALC_GRAPH);
-          g_warn_if_fail (pl->track == track);
+          g_warn_if_fail (
+            pl->id.track_pos == track->pos);
         }
 
       if (self->type == TRACK_TYPE_AUDIO)
@@ -158,7 +153,7 @@ create (
                 NULL :
                 self->file_descr->abs_path,
               NULL, 0, 0,
-              &start_pos);
+              &start_pos, pos, 0, 0);
           if (!add_to_project)
             self->pool_id =
               ar->pool_id;
@@ -177,7 +172,7 @@ create (
             midi_region_new_from_midi_file (
               &start_pos,
               self->file_descr->abs_path,
-              idx);
+              pos, 0, 0, idx);
           if (mr)
             {
               track_add_region (

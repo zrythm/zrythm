@@ -57,12 +57,6 @@ typedef struct ScaleObject
 
   MusicalScale *  scale;
 
-  /** Position of Track this ScaleObject is in. */
-  int             track_pos;
-
-  /** Cache. */
-  Track *         track;
-
   /** Cache layout for drawing the name. */
   PangoLayout *      layout;
 } ScaleObject;
@@ -101,14 +95,6 @@ int
 scale_object_is_equal (
   ScaleObject * a,
   ScaleObject * b);
-
-/**
- * Sets the Track of the scale.
- */
-void
-scale_object_set_track (
-  ScaleObject * self,
-  Track *  track);
 
 /**
  * @}

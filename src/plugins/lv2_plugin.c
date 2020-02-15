@@ -236,25 +236,8 @@ create_port (
       lv2_port->port =
         port_new_with_type (type, flow, name_str);
 
-      Port * port = lv2_port->port;
-
-      /* the plugin might not have a track assigned
-       * to it (eg when cloning) */
-      if (lv2_plugin->plugin->track)
-        {
-          port_set_owner_plugin (
-            port, lv2_plugin->plugin);
-        }
-      else
-        {
-          Plugin * pl = lv2_plugin->plugin;
-          port->identifier.track_pos =
-            pl->track_pos;
-          port->identifier.plugin_slot =
-            pl->slot;
-          port->identifier.owner_type =
-            PORT_OWNER_TYPE_PLUGIN;
-        }
+      port_set_owner_plugin (
+        lv2_port->port, lv2_plugin->plugin);
     }
   Port * port = lv2_port->port;
   port->lv2_port = lv2_port;
@@ -270,7 +253,7 @@ create_port (
       PM_LILV_NODES.core_connectionOptional);
 
   PortIdentifier * pi =
-    &lv2_port->port->identifier;
+    &lv2_port->port->id;
 
   /* Set the lv2_port flow (input or output) */
   if (lilv_port_is_a (
@@ -496,7 +479,7 @@ lv2_plugin_init_loaded (Lv2Plugin * lv2_plgn)
       g_warn_if_fail (
         port_identifier_is_equal (
           &lv2_port->port_id,
-          &lv2_port->port->identifier));
+          &lv2_port->port->id));
     }
 }
 
@@ -579,12 +562,12 @@ lv2_create_or_init_ports (
           Lv2Port * lv2_port = &self->ports[i];
           Port * port = lv2_port->port;
           port->tmp_plugin = self->plugin;
-          if (port->identifier.flow == FLOW_INPUT)
+          if (port->id.flow == FLOW_INPUT)
             {
               plugin_add_in_port (
                 self->plugin, port);
             }
-          else if (port->identifier.flow ==
+          else if (port->id.flow ==
                    FLOW_OUTPUT)
             {
               plugin_add_out_port (
@@ -594,8 +577,8 @@ lv2_create_or_init_ports (
           /* remember the identifier for
            * saving/loading */
           port_identifier_copy (
-            &port->identifier,
-            &lv2_port->port_id);
+            &lv2_port->port_id,
+            &port->id);
         }
     }
 
@@ -614,7 +597,7 @@ lv2_plugin_allocate_port_buffers (
       Lv2Port* const lv2_port =
         &plugin->ports[i];
       Port* port     = lv2_port->port;
-      switch (port->identifier.type)
+      switch (port->id.type)
         {
         case TYPE_EVENT:
           {
@@ -838,8 +821,8 @@ connect_port(
 
   /* Connect unsupported ports to NULL (known to
    * be optional by this point) */
-  if (port->identifier.flow == FLOW_UNKNOWN ||
-      port->identifier.type == TYPE_UNKNOWN)
+  if (port->id.flow == FLOW_UNKNOWN ||
+      port->id.type == TYPE_UNKNOWN)
     {
       lilv_instance_connect_port(
         lv2_plugin->instance,
@@ -848,7 +831,7 @@ connect_port(
     }
 
   /* Connect the port based on its type */
-  switch (port->identifier.type)
+  switch (port->id.type)
     {
     case TYPE_CONTROL:
       g_return_if_fail (lv2_port->port);
@@ -1890,7 +1873,7 @@ lv2_plugin_process (
     {
       Lv2Port * lv2_port = &lv2_plugin->ports[p];
       Port * port = lv2_port->port;
-      PortIdentifier * id = &port->identifier;
+      PortIdentifier * id = &port->id;
       if (id->type == TYPE_AUDIO)
         {
           /* connect lv2 ports to plugin port
@@ -1999,7 +1982,7 @@ lv2_plugin_process (
       Lv2Port* const lv2_port =
         &lv2_plugin->ports[p];
       port = lv2_port->port;
-      PortIdentifier * pi = &port->identifier;
+      PortIdentifier * pi = &port->id;
       switch (pi->type)
         {
         case TYPE_CONTROL:
@@ -2155,8 +2138,8 @@ lv2_plugin_update_port_identifiers (
     {
       port = &self->ports[i];
       port_identifier_copy (
-        &port->port->identifier,
-        &port->port_id);
+        &port->port_id,
+        &port->port->id);
     }
 }
 

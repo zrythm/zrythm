@@ -37,6 +37,7 @@ fixture_set_up (
   fixture->ins_track =
     track_new (
       TRACK_TYPE_INSTRUMENT,
+      TRACKLIST->num_tracks,
       "Test Instrument Track 1",
       F_WITH_LANE);
 }

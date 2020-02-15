@@ -216,7 +216,7 @@ host_callback (
             self, index);
         g_message (
           "grabbing %s",
-          port->identifier.label);
+          port->id.label);
       }
       break;
     case audioMasterEndEdit:
@@ -226,7 +226,7 @@ host_callback (
             self, index);
         g_message (
           "ungrabbing %s",
-          port->identifier.label);
+          port->id.label);
       }
       break;
     case audioMasterCanDo:
@@ -243,7 +243,7 @@ host_callback (
           port->control = opt;
           g_message (
             "setting %s to %f",
-            port->identifier.label, (double) opt);
+            port->id.label, (double) opt);
         }
       break;
     default:
@@ -411,7 +411,7 @@ vst_plugin_copy_params (
           Port * port = dest->plugin->in_ports[j];
           Port * src_port =
             src->plugin->in_ports[j];
-          if (port->identifier.type ==
+          if (port->id.type ==
                 TYPE_CONTROL &&
               port->vst_param_id == i)
             {
@@ -461,7 +461,7 @@ vst_plugin_init_loaded (
            j < self->plugin->num_in_ports; j++)
         {
           Port * port = self->plugin->in_ports[j];
-          if (port->identifier.type ==
+          if (port->id.type ==
                 TYPE_CONTROL &&
               port->vst_param_id == i)
             {
@@ -597,7 +597,7 @@ vst_plugin_get_port_from_param_id (
        i++)
     {
       Port * port = self->plugin->in_ports[i];
-      if (port->identifier.type == TYPE_CONTROL &&
+      if (port->id.type == TYPE_CONTROL &&
           port->vst_param_id == param_id)
         return port;
     }

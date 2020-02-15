@@ -36,10 +36,12 @@ modulator_new (
   Modulator * self = calloc (1, sizeof (Modulator));
 
   self->track = track;
-  self->plugin = plugin_new_from_descr (descr);
+  self->plugin =
+    plugin_new_from_descr (
+      /* FIXME pass correct slot */
+      descr, track->pos, 0);
   g_warn_if_fail (self->plugin);
-  self->plugin->track = track;
-  self->plugin->track_pos = track->pos;
+  self->plugin->id.track_pos = track->pos;
   plugin_generate_automation_tracks (self->plugin);
   int ret = plugin_instantiate (self->plugin);
   g_warn_if_fail (!ret);

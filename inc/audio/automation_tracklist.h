@@ -82,7 +82,7 @@ typedef struct AutomationTracklist
    *
    * This should be set during initialization.
    */
-  Track *                      track;
+  int               track_pos;
 
   AutomationTracklistWidget *  widget;
 } AutomationTracklist;
@@ -94,6 +94,9 @@ static const cyaml_schema_field_t
     "ats", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     AutomationTracklist, ats, num_ats,
     &automation_track_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    AutomationTracklist, track_pos),
 
 	CYAML_FIELD_END
 };
@@ -179,6 +182,16 @@ automation_tracklist_remove_at (
   int                   free);
 
 /**
+ * Removes the AutomationTrack's associated with
+ * this channel from the AutomationTracklist in the
+ * corresponding Track.
+ */
+void
+automation_tracklist_remove_channel_ats (
+  AutomationTracklist * self,
+  Channel *             ch);
+
+/**
  * Clones the automation tracklist elements from
  * src to dest.
  */
@@ -189,12 +202,12 @@ automation_tracklist_clone (
 
 /**
  * Returns the AutomationTrack corresponding to the
- * given Automatable.
+ * given Port.
  */
 AutomationTrack *
-automation_tracklist_get_at_from_automatable (
+automation_tracklist_get_at_from_port (
   AutomationTracklist * self,
-  Automatable *         a);
+  Port *                port);
 
 /**
  * Sets the index of the AutomationTrack and swaps

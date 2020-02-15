@@ -82,8 +82,9 @@ channel_widget_update_meter_reading (
     }
 
   /* TODO */
-  if (channel->track->out_signal_type ==
-        TYPE_EVENT)
+  Track * track =
+    channel_get_track (channel);
+  if (track->out_signal_type == TYPE_EVENT)
     {
       gtk_label_set_text (
         widget->meter_reading, "-∞");
@@ -142,7 +143,8 @@ on_drag_data_received (
   ChannelWidget * self)
 {
   g_message ("drag data received");
-  Track * this = self->channel->track;
+  Track * this =
+    channel_get_track (self->channel);
 
   /* determine if moving or copying */
   GdkDragAction action =
@@ -237,7 +239,8 @@ on_dnd_drag_begin (
   GdkDragContext *context,
   ChannelWidget * self)
 {
-  Track * track = self->channel->track;
+  Track * track =
+    channel_get_track (self->channel);
   self->selected_in_dnd = 1;
   MW_MIXER->start_drag_track = track;
 
@@ -424,14 +427,16 @@ on_drag_update (GtkGestureDrag * gesture,
 }
 
 static gboolean
-on_btn_release (GtkWidget *widget,
-               GdkEventButton  *event,
-               ChannelWidget * self)
+on_btn_release (
+  GtkWidget *      widget,
+  GdkEventButton * event,
+  ChannelWidget *  self)
 {
   if (self->dragged || self->selected_in_dnd)
     return FALSE;
 
-  Track * track = self->channel->track;
+  Track * track =
+    channel_get_track (self->channel);
   if (self->n_press == 1)
     {
       int ctrl = 0, selected = 0;
@@ -470,30 +475,37 @@ on_btn_release (GtkWidget *widget,
 }
 
 static void
-on_record_toggled (GtkToggleButton * btn,
-                   ChannelWidget *   self)
+on_record_toggled (
+  GtkToggleButton * btn,
+  ChannelWidget *   self)
 {
+  Track * track =
+    channel_get_track (self->channel);
   track_set_recording (
-    self->channel->track,
+    track,
     gtk_toggle_button_get_active (btn), 1);
 }
 
 static void
-on_solo_toggled (GtkToggleButton * btn,
-                 ChannelWidget *   self)
+on_solo_toggled (
+  GtkToggleButton * btn,
+  ChannelWidget *   self)
 {
+  Track * track =
+    channel_get_track (self->channel);
   track_set_soloed (
-    self->channel->track,
-    gtk_toggle_button_get_active (btn),
-    1);
+    track,
+    gtk_toggle_button_get_active (btn), 1);
 }
 
 static void
 on_mute_toggled (GtkToggleButton * btn,
                  ChannelWidget * self)
 {
+  Track * track =
+    channel_get_track (self->channel);
   track_set_muted (
-    self->channel->track,
+    track,
     gtk_toggle_button_get_active (btn),
     1, 1);
 }
@@ -515,9 +527,10 @@ on_mute_toggled (GtkToggleButton * btn,
 static void
 refresh_color (ChannelWidget * self)
 {
+  Track * track =
+    channel_get_track (self->channel);
   color_area_widget_set_color (
-    self->color,
-    &self->channel->track->color);
+    self->color, &track->color);
 }
 
 #if 0
@@ -547,7 +560,9 @@ static void
 setup_meter (ChannelWidget * self)
 {
   MeterType type = METER_TYPE_DB;
-  switch (self->channel->track->out_signal_type)
+  Track * track =
+    channel_get_track (self->channel);
+  switch (track->out_signal_type)
     {
     case TYPE_EVENT:
       type = METER_TYPE_MIDI;
@@ -623,25 +638,27 @@ setup_inserts (ChannelWidget * self)
 static void
 setup_channel_icon (ChannelWidget * self)
 {
-  switch (self->channel->track->type)
+  Track * track =
+    channel_get_track (self->channel);
+  switch (track->type)
     {
     case TRACK_TYPE_INSTRUMENT:
     case TRACK_TYPE_MIDI:
-      resources_set_image_icon (self->icon,
-                                ICON_TYPE_ZRYTHM,
-                                "instrument.svg");
+      resources_set_image_icon (
+        self->icon, ICON_TYPE_ZRYTHM,
+        "instrument.svg");
       break;
     case TRACK_TYPE_AUDIO:
-      resources_set_image_icon (self->icon,
-                                ICON_TYPE_ZRYTHM,
-                                "audio.svg");
+      resources_set_image_icon (
+        self->icon, ICON_TYPE_ZRYTHM,
+        "audio.svg");
       break;
     case TRACK_TYPE_AUDIO_BUS:
     case TRACK_TYPE_AUDIO_GROUP:
     case TRACK_TYPE_MASTER:
-      resources_set_image_icon (self->icon,
-                                ICON_TYPE_ZRYTHM,
-                                "bus.svg");
+      resources_set_image_icon (
+        self->icon, ICON_TYPE_ZRYTHM,
+        "bus.svg");
       break;
     default:
       break;
@@ -658,13 +675,11 @@ refresh_output (ChannelWidget * self)
 static void
 refresh_name (ChannelWidget * self)
 {
-  g_warn_if_fail (self->channel->track->name);
-  char * label =
-    self->channel->track->name;
-
+  Track * track =
+    channel_get_track (self->channel);
+  g_warn_if_fail (track->name);
   gtk_label_set_text (
-    GTK_LABEL (self->name->label),
-    label);
+    GTK_LABEL (self->name->label), track->name);
 }
 
 /**
@@ -680,15 +695,13 @@ refresh_name (ChannelWidget * self)
 static void
 setup_pan (ChannelWidget * self)
 {
-  self->pan = pan_widget_new (channel_get_pan,
-                              channel_set_pan,
-                              self->channel,
-                              12);
-  gtk_box_pack_start (self->pan_box,
-                       GTK_WIDGET (self->pan),
-                       Z_GTK_NO_EXPAND,
-                       Z_GTK_FILL,
-                       0);
+  self->pan =
+    pan_widget_new (
+      channel_get_pan, channel_set_pan,
+      self->channel, 12);
+  gtk_box_pack_start (
+    self->pan_box, GTK_WIDGET (self->pan),
+    Z_GTK_NO_EXPAND, Z_GTK_FILL, 0);
 }
 
 void
@@ -697,15 +710,14 @@ channel_widget_refresh_buttons (
 {
   channel_widget_block_all_signal_handlers (
     self);
+  Track * track =
+    channel_get_track (self->channel);
   gtk_toggle_button_set_active (
-    self->record,
-    self->channel->track->recording);
+    self->record, track->recording);
   gtk_toggle_button_set_active (
-    self->solo,
-    self->channel->track->solo);
+    self->solo, track->solo);
   gtk_toggle_button_set_active (
-    self->mute,
-    self->channel->track->mute);
+    self->mute, track_get_muted (track));
   channel_widget_unblock_all_signal_handlers (
     self);
 }
@@ -720,18 +732,19 @@ channel_widget_refresh (ChannelWidget * self)
 {
   refresh_name (self);
   refresh_output (self);
-  channel_widget_update_meter_reading (self, NULL, NULL);
+  channel_widget_update_meter_reading (
+    self, NULL, NULL);
   channel_widget_refresh_buttons (self);
   refresh_color (self);
 
-  if (track_is_selected (
-        self->channel->track))
+  Track * track =
+    channel_get_track (self->channel);
+  if (track_is_selected (track))
     {
       /* set selected or not */
       gtk_widget_set_state_flags (
         GTK_WIDGET (self),
-        GTK_STATE_FLAG_SELECTED,
-        0);
+        GTK_STATE_FLAG_SELECTED, 0);
     }
   else
     {
@@ -797,8 +810,10 @@ channel_widget_new (Channel * channel)
   setup_meter (self);
   setup_pan (self);
   setup_channel_icon (self);
+  Track * track =
+    channel_get_track (self->channel);
   editable_label_widget_setup (
-    self->name, self->channel->track,
+    self->name, track,
     (EditableLabelWidgetTextGetter) track_get_name,
     (EditableLabelWidgetTextSetter) track_set_name);
   route_target_selector_widget_setup (

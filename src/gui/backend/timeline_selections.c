@@ -146,7 +146,7 @@ get_lowest_track_pos (
   for (i = 0; i < ts->num_regions; i++)
     {
       region = ts->regions[i];
-      CHECK_POS (region->track_pos);
+      CHECK_POS (region->id.track_pos);
     }
   if (ts->num_scale_objects > 0)
     {
@@ -180,10 +180,10 @@ timeline_selections_set_vis_track_indices (
   for (i = 0; i < ts->num_regions; i++)
     {
       region = ts->regions[i];
-      region->track_pos =
+      region->id.track_pos =
         tracklist_get_visible_track_diff (
           TRACKLIST, highest_tr,
-          TRACKLIST->tracks[region->track_pos]);
+          TRACKLIST->tracks[region->id.track_pos]);
     }
   if (ts->num_scale_objects > 0)
     ts->chord_track_vis_index =
@@ -210,12 +210,12 @@ get_track_poses (
   for (i = 0; i < ts->num_regions; i++)
     {
       region = ts->regions[i];
-      g_warn_if_fail (region->track_pos >= 0);
+      g_warn_if_fail (region->id.track_pos >= 0);
       if (!array_contains_int (
-            poses, *num_poses, region->track_pos))
+            poses, *num_poses, region->id.track_pos))
         {
           array_append (
-            poses, *num_poses, region->track_pos);
+            poses, *num_poses, region->id.track_pos);
         }
     }
   if (ts->num_scale_objects > 0)
@@ -291,17 +291,17 @@ timeline_selections_can_be_pasted (
         {
           /*[> get region at this ts_pos <]*/
           r = ts->regions[j];
-          if (r->track_pos != ts_pos)
+          if (r->id.track_pos != ts_pos)
             continue;
 
            /*check if this track can host this*/
            /*region*/
           if (!track_type_can_host_region_type (
-                tr->type, r->type))
+                tr->type, r->id.type))
             {
               g_message (
                 "track %s cant host region type %d",
-                tr->name, r->type);
+                tr->name, r->id.type);
               return 0;
             }
         }
@@ -357,7 +357,7 @@ timeline_selections_paste_to_pos (
         (ArrangerObject *) region;
       Track * region_track =
         tracklist_get_visible_track_after_delta (
-          TRACKLIST, track, region->track_pos);
+          TRACKLIST, track, region->id.track_pos);
       g_return_if_fail (region_track);
 
       /* update positions */
@@ -377,11 +377,9 @@ timeline_selections_paste_to_pos (
              ts->regions[0]->num_midi_notes);
 
       /* same for midi notes */
-      g_message ("region type %d", region->type);
-      if (region->type == REGION_TYPE_MIDI)
+      if (region->id.type == REGION_TYPE_MIDI)
         {
           ZRegion * mr = region;
-          g_message ("HELLO?");
           g_message ("num midi notes here %d",
                      mr->num_midi_notes);
           for (int j = 0; j < mr->num_midi_notes; j++)
@@ -413,7 +411,7 @@ timeline_selections_paste_to_pos (
           ARRANGER_OBJECT_CLONE_COPY_MAIN);
       /* FIXME does not with automation regions */
       track_add_region (
-        region_track, cp, NULL, region->lane_pos,
+        region_track, cp, NULL, region->id.lane_pos,
         F_GEN_NAME, F_PUBLISH_EVENTS);
 
       /* select it */

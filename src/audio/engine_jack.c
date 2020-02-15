@@ -192,7 +192,7 @@ autoconnect_midi_controllers (
                     "Failed connecting %s to %s:\n"
                     "%s",
                     ports[i],
-                    self->midi_in->identifier.label,
+                    self->midi_in->id.label,
                     msg);
                 }
               break;
@@ -604,9 +604,9 @@ engine_jack_setup (AudioEngine * self,
         FLOW_OUTPUT,
         monitor_out_r_str);
 
-      monitor_out_l->identifier.owner_type =
+      monitor_out_l->id.owner_type =
         PORT_OWNER_TYPE_BACKEND;
-      monitor_out_r->identifier.owner_type =
+      monitor_out_r->id.owner_type =
         PORT_OWNER_TYPE_BACKEND;
 
       self->monitor_out =

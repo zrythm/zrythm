@@ -93,9 +93,9 @@ engine_dummy_setup (
         FLOW_OUTPUT,
         monitor_out_r_str);
 
-      monitor_out_l->identifier.owner_type =
+      monitor_out_l->id.owner_type =
         PORT_OWNER_TYPE_BACKEND;
-      monitor_out_r->identifier.owner_type =
+      monitor_out_r->id.owner_type =
         PORT_OWNER_TYPE_BACKEND;
 
       self->monitor_out =

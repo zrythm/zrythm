@@ -67,7 +67,6 @@ track_lane_new (
 
   self->name = g_strdup_printf (_("Lane %d"), pos);
   self->pos = pos;
-  self->track = track;
   self->track_pos = track->pos;
 
   self->regions_size = 1;
@@ -107,8 +106,8 @@ track_lane_add_region (
   ZRegion *    region)
 {
   g_return_if_fail (
-    region->type == REGION_TYPE_AUDIO ||
-    region->type == REGION_TYPE_MIDI);
+    region->id.type == REGION_TYPE_AUDIO ||
+    region->id.type == REGION_TYPE_MIDI);
 
   region_set_lane (region, self);
 
@@ -130,16 +129,9 @@ track_lane_add_region (
 void
 track_lane_set_track_pos (
   TrackLane * self,
-  const int   pos,
-  const int   set_pointers)
+  const int   pos)
 {
   self->track_pos = pos;
-  if (set_pointers)
-    {
-      g_warn_if_fail (
-        TRACKLIST && TRACKLIST->tracks[pos]);
-      self->track = TRACKLIST->tracks[pos];
-    }
 
   for (int i = 0; i < self->num_regions; i++)
     {
@@ -201,13 +193,28 @@ track_lane_clone (
   return new_lane;
 }
 
+Track *
+track_lane_get_track (
+  TrackLane * self)
+{
+  g_return_val_if_fail (self, NULL);
+
+  if (self->track_pos >= TRACKLIST->num_tracks)
+    g_return_val_if_reached (NULL);
+
+  Track * track = TRACKLIST->tracks[self->track_pos];
+  g_return_val_if_fail (track, NULL);
+
+  return track;
+}
+
 /**
  * Writes the lane to the given MIDI file.
  */
 void
 track_lane_write_to_midi_file (
-  const TrackLane * self,
-  MIDI_FILE *       mf)
+  TrackLane * self,
+  MIDI_FILE * mf)
 {
   /* All data is written out to _tracks_ not
    * channels. We therefore
@@ -219,10 +226,12 @@ track_lane_write_to_midi_file (
   midiFileSetTracksDefaultChannel (
     mf, self->track_pos, MIDI_CHANNEL_1);
 
+  Track * track = track_lane_get_track (self);
+
   /* add track name */
   midiTrackAddText (
     mf, self->track_pos, textTrackName,
-    self->track->name);
+    track->name);
 
   ZRegion * region;
   for (int i = 0; i < self->num_regions; i++)

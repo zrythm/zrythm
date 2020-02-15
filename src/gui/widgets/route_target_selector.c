@@ -38,14 +38,14 @@ static void
 set_label (RouteTargetSelectorWidget * self)
 {
   if (self->channel &&
-      self->channel->output)
+      self->channel->has_output)
     {
-      Track * track = self->channel->output;
+      Track * track =
+        channel_get_output_track (self->channel);
       g_return_if_fail (track->name);
 
       gtk_label_set_text (
-        self->label,
-        track->name);
+        self->label, track->name);
     }
   else
     {
@@ -70,9 +70,11 @@ route_target_selector_widget_refresh (
     GTK_MENU_BUTTON (self), NULL);
   self->popover = NULL;
 
+  Track * track = NULL;
+  if (self->channel)
+    track =  channel_get_track (self->channel);
   g_return_if_fail (
-    !self->channel ||
-    (self->channel && self->channel->track));
+    !self->channel || (self->channel && track));
 
   /* if unroutable */
   if (!self->channel)
@@ -82,9 +84,7 @@ route_target_selector_widget_refresh (
         _("Cannot be routed"));
     }
   /* if routed by default and cannot be changed */
-  else if (
-      self->channel->track->type ==
-        TRACK_TYPE_MASTER)
+  else if (track->type == TRACK_TYPE_MASTER)
     {
       gtk_widget_set_tooltip_text (
         GTK_WIDGET (self->box),

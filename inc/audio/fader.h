@@ -81,9 +81,9 @@ typedef struct Fader
    */
   Port *           amp;
 
-  /** A control Port that controls the pan
+  /** A control Port that controls the balance
    * (0.0 ~ 1.0) 0.5 is center. */
-  Port *           pan;
+  Port *           balance;
 
   /**
    * L & R audio input ports, if audio.
@@ -115,8 +115,8 @@ typedef struct Fader
 
   FaderType        type;
 
-  /** Owner channel, if channel fader. */
-  Channel *        channel;
+  /** Track position, if channel fader. */
+  int              track_pos;
 } Fader;
 
 static const cyaml_strval_t
@@ -146,9 +146,9 @@ fader_fields_schema[] =
     "phase", CYAML_FLAG_DEFAULT,
     Fader, phase),
   CYAML_FIELD_MAPPING_PTR (
-    "pan",
+    "balance",
     CYAML_FLAG_POINTER,
-    Fader, pan, port_fields_schema),
+    Fader, balance, port_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
     "midi_in",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
@@ -169,6 +169,9 @@ fader_fields_schema[] =
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     Fader, stereo_out,
     stereo_ports_fields_schema),
+  CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    Fader, track_pos),
 
   CYAML_FIELD_END
 };
@@ -229,6 +232,14 @@ fader_get_amp (
 float
 fader_get_fader_val (
   void * self);
+
+Channel *
+fader_get_channel (
+  Fader * self);
+
+Track *
+fader_get_track (
+  Fader * self);
 
 void
 fader_update_volume_and_fader_val (

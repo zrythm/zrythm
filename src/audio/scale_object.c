@@ -43,6 +43,8 @@ scale_object_new (
 
   self->scale = descr;
 
+  arranger_object_init (obj);
+
   return self;
 }
 
@@ -59,16 +61,3 @@ scale_object_is_equal (
     position_is_equal (&obj_a->pos, &obj_b->pos) &&
     musical_scale_is_equal (a->scale, b->scale);
 }
-
-/**
- * Sets the Track of the scale.
- */
-void
-scale_object_set_track (
-  ScaleObject * self,
-  Track *  track)
-{
-  self->track = track;
-  self->track_pos = track->pos;
-}
-

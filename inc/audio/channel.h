@@ -43,6 +43,8 @@
 #include <jack/jack.h>
 #endif
 
+typedef struct AutomationTrack AutomationTrack;
+
 /**
  * @addtogroup audio
  *
@@ -57,9 +59,6 @@
 #define FOREACH_STRIP for (int i = 0; i < STRIP_SIZE; i++)
 #define FOREACH_AUTOMATABLE(ch) for (int i = 0; i < ch->num_automatables; i++)
 #define MAX_FADER_AMP 1.42f
-#define channel_get_fader_automatable(ch) \
-  channel_get_automatable (\
-    ch, AUTOMATABLE_TYPE_CHANNEL_FADER)
 
 typedef struct _ChannelWidget ChannelWidget;
 typedef struct Track Track;
@@ -80,17 +79,6 @@ typedef struct Channel
    * channels.
    */
   Plugin *         plugins[STRIP_SIZE];
-
-  /**
-   * A subset of the automation tracks in the
-   * automation tracklist of the track of this
-   * channel.
-   *
-   * These are not meant to be serialized.
-   */
-  AutomationTrack ** ats;
-  int                num_ats;
-  size_t             ats_size;
 
   /**
    * External MIDI inputs that are currently
@@ -186,13 +174,19 @@ typedef struct Channel
    */
   StereoPorts *    stereo_out;
 
-  /** Output channel to route signal to. */
-  Track *          output;
-  /** For serializing. */
+  /**
+   * Whether or not output_pos corresponds to
+   * a Track or not.
+   *
+   * If not, the channel is routed to the engine.
+   */
+  int              has_output;
+
+  /** Output track. */
   int              output_pos;
 
   /** Track associated with this channel. */
-  Track *          track;
+  int              track_pos;
 
   /** This must be set to CHANNEL_MAGIC. */
   int              magic;
@@ -239,6 +233,9 @@ channel_fields_schema[] =
   CYAML_FIELD_INT (
     "output_pos", CYAML_FLAG_DEFAULT,
     Channel, output_pos),
+  CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    Channel, track_pos),
   CYAML_FIELD_SEQUENCE_COUNT (
     "ext_midi_ins", CYAML_FLAG_DEFAULT,
     Channel, ext_midi_ins, num_ext_midi_ins,
@@ -392,15 +389,6 @@ channel_new (
   Track * track);
 
 /**
- * Removes the AutomationTrack's associated with
- * this channel from the AutomationTracklist in the
- * corresponding Track.
- */
-void
-channel_remove_ats_from_automation_tracklist (
-  Channel * ch);
-
-/**
  * The process function prototype.
  * Channels must implement this.
  * It is used to perform processing of the audio signal at every cycle.
@@ -438,6 +426,14 @@ channel_add_plugin (
   int       confirm,
   int       gen_automatables,
   int       recalc_graph);
+
+Track *
+channel_get_track (
+  Channel * self);
+
+Track *
+channel_get_output_track (
+  Channel * self);
 
 /**
  * Updates the output of the Channel (where the
@@ -500,21 +496,13 @@ Plugin *
 channel_get_first_plugin (Channel * channel);
 
 /**
- * Convenience function to get the fader automatable of the channel.
- */
-Automatable *
-channel_get_automatable (
-  Channel *       channel,
-  AutomatableType type);
-
-/**
  * Convenience function to get the automation track
  * of the given type for the channel.
  */
 AutomationTrack *
 channel_get_automation_track (
   Channel *       channel,
-  AutomatableType type);
+  PortFlags       type);
 
 /**
  * Generates automatables for the channel.

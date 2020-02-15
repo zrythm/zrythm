@@ -49,10 +49,12 @@ bot_dock_edge_widget_setup (
 
   /* set event viewer visibility */
   int visibility = 0;
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
   if (
     g_settings_get_int (
       S_UI, "editor-event-viewer-visible") &&
-    CLIP_EDITOR->region)
+    region)
     {
       visibility = 1;
     }

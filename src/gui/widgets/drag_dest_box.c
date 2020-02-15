@@ -324,8 +324,7 @@ on_drag_data_received (
       memcpy (
         &received_pl, my_data, sizeof (received_pl));
       Plugin * pl =
-        TRACKLIST->tracks[received_pl->track_pos]->
-          channel->plugins[received_pl->slot];
+        plugin_find (&received_pl->id);
       g_warn_if_fail (pl);
 
       /* determine if moving or copying */

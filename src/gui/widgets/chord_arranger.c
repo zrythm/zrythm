@@ -108,7 +108,7 @@ chord_arranger_widget_create_chord (
   /* create a new chord */
   ChordObject * chord =
     chord_object_new (
-      CLIP_EDITOR->region, chord_index, 1);
+      region, chord_index, 1);
   ArrangerObject * chord_obj =
     (ArrangerObject *) chord;
 

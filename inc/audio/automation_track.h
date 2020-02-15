@@ -22,6 +22,7 @@
 
 #include "audio/automatable.h"
 #include "audio/automation_point.h"
+#include "audio/port.h"
 #include "audio/position.h"
 #include "audio/region.h"
 
@@ -31,7 +32,6 @@ typedef struct Port Port;
 typedef struct _AutomationTrackWidget
   AutomationTrackWidget;
 typedef struct Track Track;
-typedef struct Automatable Automatable;
 typedef struct AutomationTracklist
   AutomationTracklist;
 typedef struct CustomButtonWidget
@@ -42,18 +42,9 @@ typedef struct AutomationTrack
   /** Index in parent AutomationTracklist. */
   int               index;
 
-  /**
-   * Details about the automatable this automation
-   * track is for.
-   */
-  Automatable *     automatable;
-
-  /**
-   * Owner track.
-   *
-   * For convenience only.
-   */
-  Track *           track;
+  /** Identifier of the Port this AutomationTrack
+   * is for. */
+  PortIdentifier    port_id;
 
   /** Whether it has been created by the user
    * yet or not. */
@@ -94,36 +85,35 @@ typedef struct AutomationTrack
 static const cyaml_schema_field_t
   automation_track_fields_schema[] =
 {
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "index", CYAML_FLAG_DEFAULT,
     AutomationTrack, index),
-  CYAML_FIELD_MAPPING_PTR (
-    "automatable",
-    CYAML_FLAG_DEFAULT,
-    AutomationTrack, automatable,
-    automatable_fields_schema),
+  CYAML_FIELD_MAPPING (
+    "port_id", CYAML_FLAG_DEFAULT,
+    AutomationTrack, port_id,
+    port_identifier_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
     "regions",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     AutomationTrack, regions, num_regions,
     &region_schema, 0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "created", CYAML_FLAG_DEFAULT,
     AutomationTrack, created),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "visible", CYAML_FLAG_DEFAULT,
     AutomationTrack, visible),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "height", CYAML_FLAG_DEFAULT,
     AutomationTrack, height),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
   automation_track_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
     AutomationTrack,
     automation_track_fields_schema),
@@ -135,10 +125,11 @@ automation_track_init_loaded (
 
 /**
  * Creates an automation track for the given
- * automatable.
+ * Port.
  */
 AutomationTrack *
-automation_track_new (Automatable *  automatable);
+automation_track_new (
+  Port * port);
 
 AutomationTracklist *
 automation_track_get_automation_tracklist (
@@ -177,6 +168,7 @@ automation_track_set_index (
   AutomationTrack * self,
   int               index);
 
+#if 0
 /**
  * Sets the automatable to the automation track and
  * updates the GUI
@@ -187,6 +179,7 @@ void
 automation_track_set_automatable (
   AutomationTrack * automation_track,
   Automatable *     a);
+#endif
 
 /**
  * Clones the AutomationTrack.
@@ -194,6 +187,10 @@ automation_track_set_automatable (
 AutomationTrack *
 automation_track_clone (
   AutomationTrack * src);
+
+Track *
+automation_track_get_track (
+  AutomationTrack * self);
 
 /**
  * Frees the automation track.
@@ -239,6 +236,10 @@ int
 automation_track_get_y_px_from_normalized_val (
   AutomationTrack * self,
   float             normalized_val);
+
+Port *
+automation_track_get_port (
+  AutomationTrack * self);
 
 /**
  * Updates automation track & its GUI

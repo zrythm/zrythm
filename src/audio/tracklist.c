@@ -583,10 +583,11 @@ tracklist_remove_track (
 
   /* clear the editor region if it exists and
    * belongs to this track */
-  if (CLIP_EDITOR->region &&
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (region &&
       arranger_object_get_track (
-        (ArrangerObject *) CLIP_EDITOR->region) ==
-          track)
+        (ArrangerObject *) region) == track)
     {
       clip_editor_set_region (CLIP_EDITOR, NULL);
     }

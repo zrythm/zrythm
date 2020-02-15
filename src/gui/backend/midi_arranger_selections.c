@@ -115,7 +115,7 @@ midi_arranger_selections_can_be_pasted (
   Position *               pos,
   ZRegion *                 r)
 {
-  if (!r || r->type != REGION_TYPE_MIDI)
+  if (!r || r->id.type != REGION_TYPE_MIDI)
     return 0;
 
   ArrangerObject * r_obj =
@@ -131,15 +131,16 @@ midi_arranger_selections_paste_to_pos (
   MidiArrangerSelections * ts,
   Position *               playhead)
 {
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (
-    CLIP_EDITOR->region &&
-    CLIP_EDITOR->region->type == REGION_TYPE_MIDI);
+    region && region->id.type == REGION_TYPE_MIDI);
 
   /* get region-local pos */
   Position pos;
   pos.frames =
     region_timeline_frames_to_local (
-      CLIP_EDITOR->region, playhead->frames, 0);
+      region, playhead->frames, 0);
   position_from_frames (&pos, pos.frames);
   long pos_ticks = position_to_ticks (&pos);
 
@@ -164,9 +165,6 @@ midi_arranger_selections_paste_to_pos (
       MidiNote * midi_note = ts->midi_notes[i];
       ArrangerObject * mn_obj =
         (ArrangerObject *) midi_note;
-      midi_note->region = CLIP_EDITOR->region;
-      midi_note->region_name =
-        g_strdup (CLIP_EDITOR->region->name);
 
       /* update positions */
       curr_ticks =
@@ -184,8 +182,9 @@ midi_arranger_selections_paste_to_pos (
         arranger_object_clone (
           (ArrangerObject *) midi_note,
           ARRANGER_OBJECT_CLONE_COPY_MAIN);
-      midi_region_add_midi_note (
-        cp->region, cp, 1);
+      region =
+        region_find (&cp->region_id);
+      midi_region_add_midi_note (region, cp, 1);
     }
 #undef DIFF
 }

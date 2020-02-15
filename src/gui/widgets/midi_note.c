@@ -125,7 +125,8 @@ midi_note_draw (
   ArrangerObject * obj = (ArrangerObject *) self;
   ArrangerWidget * arranger =
     arranger_object_get_arranger (obj);
-  ZRegion * region = self->region;
+  ZRegion * region =
+    arranger_object_get_region (obj);
   Position global_start_pos;
   midi_note_get_global_start_pos (
     self, &global_start_pos);
@@ -176,7 +177,7 @@ midi_note_draw (
     }
 
   /* draw notes of main region */
-  if (region == CLIP_EDITOR->region)
+  if (region == clip_editor_get_region (CLIP_EDITOR))
     {
       /* get color */
       ui_get_arranger_object_color (

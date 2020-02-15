@@ -329,19 +329,22 @@ timeline_arranger_widget_create_region (
     case REGION_TYPE_MIDI:
       region =
         midi_region_new (
-          pos, &end_pos);
+          pos, &end_pos, track->pos, lane->pos,
+          lane->num_regions);
       break;
     case REGION_TYPE_AUDIO:
       break;
     case REGION_TYPE_CHORD:
       region =
         chord_region_new (
-          pos, &end_pos);
+          pos, &end_pos,
+          P_CHORD_TRACK->num_chord_regions);
       break;
     case REGION_TYPE_AUTOMATION:
       region =
         automation_region_new (
-          pos, &end_pos);
+          pos, &end_pos, track->pos, at->index,
+          at->num_regions);
       break;
     }
 
@@ -973,7 +976,7 @@ timeline_arranger_move_regions_to_new_lanes (
   for (i = 0; i < num_regions; i++)
     {
       region = regions[i];
-      if (region->lane_pos + diff < 0)
+      if (region->id.lane_pos + diff < 0)
         {
           compatible = 0;
           break;
@@ -998,10 +1001,11 @@ timeline_arranger_move_regions_to_new_lanes (
         lane->pos +  diff;
       g_return_val_if_fail (
         new_lane_pos >= 0, -1);
+      Track * track = track_lane_get_track (lane);
       track_create_missing_lanes (
-        lane->track, new_lane_pos);
+        track, new_lane_pos);
       lane_to_move_to =
-        lane->track->lanes[new_lane_pos];
+        track->lanes[new_lane_pos];
       g_warn_if_fail (lane_to_move_to);
 
       region_move_to_lane (
@@ -1059,7 +1063,7 @@ timeline_arranger_move_regions_to_new_tracks (
            visible->type) ||
         /* do not allow moving automation tracks
          * to other tracks for now */
-        region->type == REGION_TYPE_AUTOMATION)
+        region->id.type == REGION_TYPE_AUTOMATION)
         {
           compatible = 0;
           break;

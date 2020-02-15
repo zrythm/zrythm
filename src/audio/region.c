@@ -20,6 +20,7 @@
 #include "audio/audio_region.h"
 #include "audio/automation_region.h"
 #include "audio/chord_region.h"
+#include "audio/chord_track.h"
 #include "audio/channel.h"
 #include "audio/clip.h"
 #include "audio/midi_note.h"
@@ -59,14 +60,21 @@ void
 region_init (
   ZRegion *         self,
   const Position * start_pos,
-  const Position * end_pos)
+  const Position * end_pos,
+  int              track_pos,
+  int              lane_pos_or_at_idx,
+  int              idx_inside_lane_or_at)
 {
+  self->id.track_pos = track_pos;
+  self->id.lane_pos = lane_pos_or_at_idx;
+  self->id.at_idx = lane_pos_or_at_idx;
+  self->id.idx = idx_inside_lane_or_at;
+
   ArrangerObject * obj =
     (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_REGION;
   obj->can_have_lanes =
-    region_type_has_lane (
-      self->type);
+    region_type_has_lane (self->id.type);
   obj->has_length = 1;
   obj->can_loop = 1;
   position_set_to_pos (
@@ -83,8 +91,8 @@ region_init (
     &obj->loop_end_pos, length);
   position_init (&obj->loop_start_pos);
   obj->loop_end_pos.frames = length;
-  self->linked_region_name = NULL;
 
+  arranger_object_init (obj);
   self->magic = REGION_MAGIC;
 }
 
@@ -100,8 +108,6 @@ region_gen_name (
   AutomationTrack * at,
   Track *           track)
 {
-  int count = 1;
-
   /* Name to try to assign */
   char * orig_name = NULL;
   if (base_name)
@@ -111,21 +117,11 @@ region_gen_name (
     orig_name =
       g_strdup_printf (
         "%s - %s",
-        track->name, at->automatable->label);
+        track->name, at->port_id.label);
   else
     orig_name = g_strdup (track->name);
 
-  char * name = g_strdup (orig_name);
-  while (region_find_by_name (name))
-    {
-      g_free (name);
-      name =
-        g_strdup_printf ("%s %d",
-                         orig_name,
-                         count++);
-    }
-  region_set_name (region, name, 0);
-  g_free (name);
+  region_set_name (region, orig_name, 0);
   g_free (orig_name);
 }
 
@@ -138,8 +134,8 @@ region_set_lane (
   TrackLane * lane)
 {
   g_return_if_fail (lane);
-  self->lane_pos = lane->pos;
-  self->track_pos = lane->track_pos;
+  self->id.lane_pos = lane->pos;
+  self->id.track_pos = lane->track_pos;
 }
 
 /**
@@ -169,7 +165,7 @@ region_move_to_track (
 
   /* create lanes if they don't exist */
   track_create_missing_lanes (
-    track, region->lane_pos);
+    track, region->id.lane_pos);
 
   /* remove the region from its old track */
   track_remove_region (
@@ -179,10 +175,10 @@ region_move_to_track (
   /* add the region to its new track */
   track_add_region (
     track, region, NULL,
-    region->lane_pos, F_NO_GEN_NAME,
+    region->id.lane_pos, F_NO_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   region_set_lane (
-    region, track->lanes[region->lane_pos]);
+    region, track->lanes[region->id.lane_pos]);
 
   /* reselect if necessary */
   arranger_object_select (
@@ -220,16 +216,16 @@ region_move_to_lane (
 
   int selected = region_is_selected (region);
   int is_clip_editor_region =
-    region == CLIP_EDITOR->region;
+    region == clip_editor_get_region (CLIP_EDITOR);
 
+  Track * lane_track =
+    track_lane_get_track (lane);
   track_remove_region (
-    region_track,
-    region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
+    region_track, region,
+    F_NO_PUBLISH_EVENTS, F_NO_FREE);
   track_add_region (
-    lane->track, region, NULL,
-    lane->pos,
-    F_NO_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    lane_track, region, NULL, lane->pos,
+    F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
 
   /* reset the clip editor region because
    * track_remove_region clears it */
@@ -244,7 +240,7 @@ region_move_to_lane (
     F_APPEND);
   region_set_lane (region, lane);
   g_warn_if_fail (
-    lane->pos == region->lane_pos);
+    lane->pos == region->id.lane_pos);
 
   track_create_missing_lanes (
     region_track, lane->pos);
@@ -256,13 +252,14 @@ region_move_to_lane (
  */
 void
 region_set_automation_track (
-  ZRegion *          self,
+  ZRegion *         self,
   AutomationTrack * at)
 {
   g_return_if_fail (at);
-  self->at = at;
-  self->at_index = at->index;
-  self->track_pos = at->track->pos;
+  self->id.at_idx = at->index;
+  Track * track =
+    automation_track_get_track (at);
+  self->id.track_pos = track->pos;
 }
 
 void
@@ -310,10 +307,10 @@ region_get_lane (
     arranger_object_get_track (
       (ArrangerObject *) self);
   g_return_val_if_fail (track, NULL);
-  if (self->lane_pos < track->num_lanes)
+  if (self->id.lane_pos < track->num_lanes)
     {
       TrackLane * lane =
-        track->lanes[self->lane_pos];
+        track->lanes[self->id.lane_pos];
       g_return_val_if_fail (lane, NULL);
       return lane;
     }
@@ -322,63 +319,71 @@ region_get_lane (
 }
 
 /**
- * Looks for the ZRegion under the given name.
- *
- * Warning: very expensive function.
+ * Looks for the ZRegion matching the identifier.
  */
 ZRegion *
-region_find_by_name (
-  const char * name)
+region_find (
+  RegionIdentifier * id)
 {
-  int i, j, k;
-  Track * track;
-  AutomationTracklist * atl;
-  AutomationTrack * at;
-  TrackLane * lane;
-  ZRegion * r;
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
+  Track * track = NULL;
+  TrackLane * lane = NULL;
+  AutomationTrack * at = NULL;
+  if (id->type == REGION_TYPE_MIDI ||
+      id->type == REGION_TYPE_AUDIO)
     {
-      track = TRACKLIST->tracks[i];
-      atl = &track->automation_tracklist;
-      g_warn_if_fail (track);
+      if (id->track_pos >= TRACKLIST->num_tracks)
+        g_return_val_if_reached (NULL);
+      track =  TRACKLIST->tracks[id->track_pos];
+      g_return_val_if_fail (track, NULL);
 
-      for (k = 0; k < track->num_lanes; k++)
-        {
-          lane = track->lanes[k];
+      if (id->lane_pos >= track->num_lanes)
+        g_return_val_if_reached (NULL);
+      lane = track->lanes[id->lane_pos];
+      g_return_val_if_fail (lane, NULL);
 
-          for (j = 0; j < lane->num_regions; j++)
-            {
-              r = lane->regions[j];
-              if (!g_strcmp0 (r->name, name))
-                return r;
-            }
-        }
+      if (id->idx >= lane->num_regions)
+        g_return_val_if_reached (NULL);
+      ZRegion * region = lane->regions[id->idx];
+      g_return_val_if_fail (region, NULL);
 
-      if (track->type == TRACK_TYPE_CHORD)
-        {
-          for (j = 0; j < track->num_chord_regions;
-               j++)
-            {
-              r = track->chord_regions[j];
-              if (!g_strcmp0 (r->name, name))
-                return r;
-            }
-        }
+      return region;
+    }
+  else if (id->type == REGION_TYPE_AUTOMATION)
+    {
+      if (id->track_pos >= TRACKLIST->num_tracks)
+        g_return_val_if_reached (NULL);
+      track = TRACKLIST->tracks[id->track_pos];
+      g_return_val_if_fail (track, NULL);
 
-      for (j = 0; j < atl->num_ats; j++)
-        {
-          at = atl->ats[j];
+      AutomationTracklist * atl =
+        &track->automation_tracklist;
+      if (id->at_idx >= atl->num_ats)
+        g_return_val_if_reached (NULL);
+      at = atl->ats[id->at_idx];
+      g_return_val_if_fail (at, NULL);
 
-          for (k = 0; k < at->num_regions; k++)
-            {
-              r = at->regions[k];
-              if (!g_strcmp0 (r->name, name))
-                return r;
-            }
-        }
+      if (id->idx >= at->num_regions)
+        g_return_val_if_reached (NULL);
+      ZRegion * region = at->regions[id->idx];
+      g_return_val_if_fail (region, NULL);
+
+      return region;
+    }
+  else if (id->type == REGION_TYPE_CHORD)
+    {
+      track = P_CHORD_TRACK;
+      g_return_val_if_fail (track, NULL);
+
+      if (id->idx >= track->num_chord_regions)
+        g_return_val_if_reached (NULL);
+      ZRegion * region =
+        track->chord_regions[id->idx];
+      g_return_val_if_fail (region, NULL);
+
+      return region;
     }
 
-  return NULL;
+  g_return_val_if_reached (NULL);
 }
 
 /**
@@ -418,11 +423,11 @@ region_get_automation_track (
       (ArrangerObject *) region);
   g_return_val_if_fail (
     track->automation_tracklist.num_ats >
-    region->at_index, NULL);
+     region->id.at_idx, NULL);
 
   return
     track->automation_tracklist.ats[
-      region->at_index];
+      region->id.at_idx];
 }
 
 /**
@@ -436,9 +441,9 @@ region_print (
     g_strdup_printf (
       "%s [%s] - track pos %d - lane pos %d",
       self->name,
-      region_type_bitvals[self->type].name,
-      self->track_pos,
-      self->lane_pos);
+      region_type_bitvals[self->id.type].name,
+      self->id.track_pos,
+      self->id.lane_pos);
   g_message ("%s", str);
   g_free (str);
 }
@@ -732,11 +737,12 @@ void
 region_disconnect (
   ZRegion * self)
 {
-  if (CLIP_EDITOR->region == self)
+  ZRegion * clip_editor_region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (clip_editor_region == self)
     {
-      CLIP_EDITOR->region = NULL;
-      EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED,
-                   NULL);
+      clip_editor_set_region (
+        CLIP_EDITOR, NULL);
     }
   if (TL_SELECTIONS)
     {

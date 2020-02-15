@@ -1087,7 +1087,7 @@ carla_native_plugin_get_port_from_param (
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       port = pl->in_ports[i];
-      if (port->identifier.type != TYPE_CONTROL)
+      if (port->id.type != TYPE_CONTROL)
         continue;
 
       if (param ==
@@ -1098,7 +1098,7 @@ carla_native_plugin_get_port_from_param (
   for (int i = 0; i < pl->num_out_ports; i++)
     {
       port = pl->out_ports[i];
-      if (port->identifier.type != TYPE_CONTROL)
+      if (port->id.type != TYPE_CONTROL)
         continue;
 
       if (param ==

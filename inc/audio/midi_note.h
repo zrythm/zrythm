@@ -59,9 +59,8 @@ typedef struct MidiNote
   /** Base struct. */
   ArrangerObject  base;
 
-  /** Owner region (cache). */
-  ZRegion *        region;
-  char *          region_name;
+  /** Parent region. */
+  RegionIdentifier region_id;
 
   /** Velocity. */
   Velocity *      vel;
@@ -83,6 +82,9 @@ typedef struct MidiNote
    * if \ref MidiNote.currently_listened is true. */
   uint8_t         last_listened_val;
 
+  /** Index in the parent region. */
+  int             pos;
+
   /** Cache layout for drawing the name. */
   PangoLayout *   layout;
 } MidiNote;
@@ -103,11 +105,13 @@ static const cyaml_schema_field_t
   CYAML_FIELD_INT (
     "muted", CYAML_FLAG_DEFAULT,
     MidiNote, muted),
-  CYAML_FIELD_STRING_PTR (
-    "region_name",
-    CYAML_FLAG_OPTIONAL | CYAML_FLAG_POINTER,
-    MidiNote, region_name,
-     0, CYAML_UNLIMITED),
+  CYAML_FIELD_INT (
+    "pos", CYAML_FLAG_DEFAULT,
+    MidiNote, pos),
+  CYAML_FIELD_MAPPING (
+    "region_id", CYAML_FLAG_DEFAULT,
+    MidiNote, region_id,
+    region_identifier_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -131,18 +135,15 @@ midi_note_get_global_start_pos (
   Position * pos);
 
 /**
- * @param is_main Is main MidiNote. If this is 1 then
- *   arranger_object_info_init_main() is called to
- *   create a transient midi note in obj_info.
+ * Creates a new MidiNote.
  */
 MidiNote *
 midi_note_new (
-  ZRegion * region,
+  ZRegion *    region,
   Position *   start_pos,
   Position *   end_pos,
   uint8_t      val,
-  uint8_t      vel,
-  int          is_main);
+  uint8_t      vel);
 
 /**
  * Sets the ZRegion the MidiNote belongs to.
@@ -238,6 +239,10 @@ void
 midi_note_set_val (
   MidiNote *    midi_note,
   const uint8_t val);
+
+ZRegion *
+midi_note_get_region (
+  MidiNote * self);
 
 /**
  * @}

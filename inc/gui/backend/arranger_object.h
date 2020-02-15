@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,6 +40,12 @@ typedef struct _ArrangerObjectWidget
  *
  * @{
  */
+
+#define ARRANGER_OBJECT_MAGIC 347616554
+#define IS_ARRANGER_OBJECT(tr) \
+  (tr && \
+   ((ArrangerObject *) tr)->magic == \
+     ARRANGER_OBJECT_MAGIC)
 
 /**
  * The type of the object.
@@ -237,6 +243,8 @@ typedef struct ArrangerObject
    */
   ArrangerObject *   main;
 
+  int                magic;
+
   /** 1 when hovering over the object. */
   //int                hover;
 
@@ -373,6 +381,10 @@ arranger_object_should_orig_be_visible (
  */
 ArrangerObject *
 arranger_object_get_object (
+  ArrangerObject * self);
+
+void
+arranger_object_init (
   ArrangerObject * self);
 
 /**

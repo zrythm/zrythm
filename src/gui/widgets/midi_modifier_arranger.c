@@ -156,7 +156,8 @@ midi_modifier_arranger_widget_ramp (
     F_PADDING);
 
   ArrangerObject * region_obj =
-    (ArrangerObject *) CLIP_EDITOR->region;
+    (ArrangerObject *)
+    clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (region_obj);
 
   /* find enclosed velocities */
@@ -186,8 +187,10 @@ midi_modifier_arranger_widget_ramp (
   for (int i = 0; i < num_velocities; i++)
     {
       vel = velocities[i];
+      MidiNote * mn =
+        velocity_get_midi_note (vel);
       midi_note_get_global_start_pos (
-        vel->midi_note, &start_pos);
+        mn, &start_pos);
       px =
         ui_pos_to_px_editor (
           &start_pos, F_PADDING);

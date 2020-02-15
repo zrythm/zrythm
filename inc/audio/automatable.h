@@ -20,6 +20,7 @@
 #ifndef __AUDIO_AUTOMATABLE_H__
 #define __AUDIO_AUTOMATABLE_H__
 
+#if 0
 #include "config.h"
 
 #include "audio/port.h"
@@ -46,6 +47,9 @@ typedef struct AutomationTrack AutomationTrack;
  * @{
  */
 
+/**
+ * FIXME make these ports.
+ */
 typedef enum AutomatableType
 {
   AUTOMATABLE_TYPE_PLUGIN_CONTROL,
@@ -79,17 +83,11 @@ typedef struct Automatable
    */
   PortIdentifier * port_id;
 
-  /** Associated track. */
-  Track *          track;
-
   /** Used when saving/loading projects. */
-  int              track_id;
+  int              track_pos;
 
   /** Slot, if plugin automation. */
   int              slot;
-  /** Plugin, for convenience, if plugin
-   * automation. */
-  Plugin *         plugin;
 
   /** Human friendly label. */
   char *           label;
@@ -131,6 +129,9 @@ automatable_fields_schema[] =
   CYAML_FIELD_INT (
     "slot", CYAML_FLAG_DEFAULT,
     Automatable, slot),
+  CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    Automatable, track_pos),
   CYAML_FIELD_STRING_PTR (
     "label", CYAML_FLAG_POINTER,
     Automatable, label,
@@ -207,6 +208,10 @@ automatable_create_carla_control (
   Plugin *                plugin,
   const NativeParameter * param);
 #endif
+
+Track *
+automatable_get_track (
+  Automatable * self);
 
 Automatable *
 automatable_create_plugin_enabled (Plugin * plugin);
@@ -290,4 +295,5 @@ automatable_free (Automatable * automatable);
  * @}
  */
 
+#endif
 #endif /* __AUDIO_AUTOMATABLE_H__ */

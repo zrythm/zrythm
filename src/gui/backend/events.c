@@ -120,7 +120,7 @@ on_arranger_selections_in_transit (
     if (TL_SELECTIONS->num_regions > 0)
       {
         ZRegion * r = TL_SELECTIONS->regions[0];
-        switch (r->type)
+        switch (r->id.type)
           {
           case REGION_TYPE_MIDI:
             arranger_widget_redraw_whole (
@@ -304,12 +304,13 @@ on_automation_track_added (
     /*automation_tracklist_widget_refresh (*/
       /*atl->widget);*/
 
-  g_return_if_fail (
-    at->track);
-  if (Z_IS_TRACK_WIDGET (at->track->widget))
+  Track * track =
+    automation_track_get_track (at);
+  g_return_if_fail (track);
+  if (Z_IS_TRACK_WIDGET (track->widget))
     {
       TrackWidget * tw =
-        (TrackWidget *) at->track->widget;
+        (TrackWidget *) track->widget;
       track_widget_update_size (tw);
     }
 
@@ -379,7 +380,8 @@ on_clip_editor_region_changed ()
 {
   /* TODO */
   /*gtk_notebook_set_current_page (MAIN_WINDOW->bot_notebook, 0);*/
-  ZRegion * r = CLIP_EDITOR->region;
+  ZRegion * r =
+    clip_editor_get_region (CLIP_EDITOR);
 
   if (r)
     {
@@ -402,12 +404,13 @@ on_clip_editor_region_changed ()
           MW_CLIP_EDITOR->no_selection_label));
     }
 
-  CLIP_EDITOR->region_cache = r;
+  region_identifier_copy (
+    &CLIP_EDITOR->region_id_cache, &r->id);
 }
 
 static void
 on_automation_value_changed (
-  Automatable * a)
+  Port * port)
 {
   /*AutomationTrack * at =*/
     /*automatable_get_automation_track (a);*/
@@ -419,7 +422,8 @@ on_automation_value_changed (
 static void
 on_plugin_added (Plugin * plugin)
 {
-  Track * track = plugin->track;
+  Track * track =
+    plugin_get_track (plugin);
   /*AutomationTracklist * automation_tracklist =*/
     /*track_get_automation_tracklist (track);*/
   if (track && track->widget)
@@ -857,21 +861,22 @@ on_plugin_visibility_changed (Plugin * pl)
   else if (!pl->visible)
     plugin_close_ui (pl);
 
-  if (pl->track->type ==
+  Track * track = plugin_get_track (pl);
+  if (track->type ==
       TRACK_TYPE_INSTRUMENT &&
-      pl->track->widget &&
+      track->widget &&
       Z_IS_TRACK_WIDGET (
-        pl->track->widget))
-    track_widget_force_redraw (pl->track->widget);
+        track->widget))
+    track_widget_force_redraw (track->widget);
 
-  if (pl->track->channel->widget &&
+  if (track->channel->widget &&
       Z_IS_CHANNEL_WIDGET (
-        pl->track->channel->widget))
+        track->channel->widget))
     gtk_widget_queue_draw (
       GTK_WIDGET (
-        pl->track->channel->widget->inserts[
+        track->channel->widget->inserts[
           channel_get_plugin_index (
-            pl->track->channel, pl)]));
+            track->channel, pl)]));
 }
 
 /*static int*/
@@ -1160,7 +1165,7 @@ events_process (void * data)
           break;
         case ET_AUTOMATION_VALUE_CHANGED:
           on_automation_value_changed (
-            (Automatable *) ev->arg);
+            (Port *) ev->arg);
           break;
         case ET_RANGE_SELECTION_CHANGED:
           on_range_selection_changed ();

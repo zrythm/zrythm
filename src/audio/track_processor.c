@@ -44,7 +44,8 @@ void
 track_processor_init_loaded (
   TrackProcessor * self)
 {
-  Track * tr = self->track;
+  Track * tr =
+    track_processor_get_track (self);
 
   switch (tr->in_signal_type)
     {
@@ -61,7 +62,7 @@ track_processor_init_loaded (
     case TYPE_EVENT:
       if (track_has_piano_roll (tr))
         {
-          self->piano_roll->identifier.flags =
+          self->piano_roll->id.flags =
             PORT_FLAG_PIANO_ROLL;
           port_set_owner_track_processor (
             self->piano_roll, tr);
@@ -115,8 +116,8 @@ init_midi_port (
       flow,
       str);
 
-  port_set_owner_track_processor (
-    *port, self->track);
+  Track * track = track_processor_get_track (self);
+  port_set_owner_track_processor (*port, track);
 }
 
 /**
@@ -154,27 +155,20 @@ init_stereo_out_ports (
   else
     {
       strcat (str, " L");
-      l = port_new_with_type (
-        TYPE_AUDIO,
-        flow,
-        str);
+      l = port_new_with_type (TYPE_AUDIO, flow, str);
 
       str[10] = '\0';
       strcat (str, " R");
-      r = port_new_with_type (
-        TYPE_AUDIO,
-        flow,
-        str);
+      r = port_new_with_type (TYPE_AUDIO, flow, str);
     }
 
-  port_set_owner_track_processor (
-    l, self->track);
-  port_set_owner_track_processor (
-    r, self->track);
+  Track * track =
+    track_processor_get_track (self);
+  port_set_owner_track_processor (l, track);
+  port_set_owner_track_processor (r, track);
 
   *sp =
-    stereo_ports_new_from_existing (
-      l, r);
+    stereo_ports_new_from_existing (l, r);
 }
 
 /**
@@ -188,8 +182,6 @@ track_processor_init (
   TrackProcessor * self,
   Track *          tr)
 {
-  self->track = tr;
-
   self->l_port_db = 0.f;
   self->r_port_db = 0.f;
 
@@ -208,7 +200,7 @@ track_processor_init (
               TYPE_EVENT,
               FLOW_INPUT,
               str);
-          self->piano_roll->identifier.flags =
+          self->piano_roll->id.flags =
             PORT_FLAG_PIANO_ROLL;
           port_set_owner_track_processor (
             self->piano_roll,
@@ -233,7 +225,9 @@ void
 track_processor_clear_buffers (
   TrackProcessor * self)
 {
-  switch (self->track->in_signal_type)
+  Track * track =
+    track_processor_get_track (self);
+  switch (track->in_signal_type)
     {
     case TYPE_AUDIO:
       port_clear_buffer (self->stereo_in->l);
@@ -244,7 +238,7 @@ track_processor_clear_buffers (
     case TYPE_EVENT:
       port_clear_buffer (self->midi_in);
       port_clear_buffer (self->midi_out);
-      if (track_has_piano_roll (self->track))
+      if (track_has_piano_roll (track))
         port_clear_buffer (self->piano_roll);
       break;
     default:
@@ -260,7 +254,9 @@ void
 track_processor_disconnect_all (
   TrackProcessor * self)
 {
-  switch (self->track->in_signal_type)
+  Track * track =
+    track_processor_get_track (self);
+  switch (track->in_signal_type)
     {
     case TYPE_AUDIO:
       port_disconnect_all (self->stereo_in->l);
@@ -271,12 +267,26 @@ track_processor_disconnect_all (
     case TYPE_EVENT:
       port_disconnect_all (self->midi_in);
       port_disconnect_all (self->midi_out);
-      if (track_has_piano_roll (self->track))
+      if (track_has_piano_roll (track))
         port_disconnect_all (self->piano_roll);
       break;
     default:
       break;
     }
+}
+
+Track *
+track_processor_get_track (
+  TrackProcessor * self)
+{
+  g_return_val_if_fail (
+    self &&
+    self->track_pos < TRACKLIST->num_tracks, NULL);
+  Track * track =
+    TRACKLIST->tracks[self->track_pos];
+  g_return_val_if_fail (track, NULL);
+
+  return track;
 }
 
 /**
@@ -293,7 +303,7 @@ track_processor_process (
   const nframes_t  local_offset,
   const nframes_t  nframes)
 {
-  Track * tr = self->track;
+  Track * tr = track_processor_get_track (self);
 
   /* set the audio clip contents to stereo out */
   if (tr->type == TRACK_TYPE_AUDIO)
@@ -368,11 +378,11 @@ track_processor_process (
     case TYPE_EVENT:
       /* change the MIDI channel on the midi input
        * to the channel set on the track */
-      if (!self->track->passthrough_midi_input)
+      if (!tr->passthrough_midi_input)
         {
           midi_events_set_channel (
             self->midi_in->midi_events, 0,
-            self->track->midi_ch);
+            tr->midi_ch);
         }
       midi_events_append (
         self->midi_in->midi_events,
@@ -393,10 +403,10 @@ void
 track_processor_disconnect_from_prefader (
   TrackProcessor * self)
 {
-  Track * tr = self->track;
+  Track * tr = track_processor_get_track (self);
   PassthroughProcessor * prefader =
     &tr->channel->prefader;
-  switch (self->track->in_signal_type)
+  switch (tr->in_signal_type)
     {
     case TYPE_AUDIO:
       if (tr->out_signal_type == TYPE_AUDIO)
@@ -431,7 +441,7 @@ void
 track_processor_connect_to_prefader (
   TrackProcessor * self)
 {
-  Track * tr = self->track;
+  Track * tr = track_processor_get_track (self);
   PassthroughProcessor * prefader =
     &tr->channel->prefader;
 
@@ -464,7 +474,7 @@ track_processor_disconnect_from_plugin (
   TrackProcessor * self,
   Plugin         * pl)
 {
-  Track * tr = self->track;
+  Track * tr = track_processor_get_track (self);
 
   int i;
   Port * in_port;
@@ -476,7 +486,7 @@ track_processor_disconnect_from_plugin (
 
       if (type == TYPE_AUDIO)
         {
-          if (in_port->identifier.type !=
+          if (in_port->id.type !=
                 TYPE_AUDIO)
             continue;
 
@@ -495,8 +505,7 @@ track_processor_disconnect_from_plugin (
         }
       else if (type == TYPE_EVENT)
         {
-          if (in_port->identifier.type !=
-                TYPE_EVENT)
+          if (in_port->id.type != TYPE_EVENT)
             continue;
 
           if (ports_connected (
@@ -516,7 +525,7 @@ track_processor_connect_to_plugin (
   TrackProcessor * self,
   Plugin         * pl)
 {
-  Track * tr = self->track;
+  Track * tr = track_processor_get_track (self);
   int last_index, num_ports_to_connect, i;
   Port * in_port;
 
@@ -526,10 +535,8 @@ track_processor_connect_to_plugin (
       for (i = 0; i < pl->num_in_ports; i++)
         {
           in_port = pl->in_ports[i];
-          if (in_port->identifier.type ==
-                TYPE_EVENT &&
-              in_port->identifier.flow ==
-                FLOW_INPUT)
+          if (in_port->id.type == TYPE_EVENT &&
+              in_port->id.flow == FLOW_INPUT)
             {
               port_connect (
                 self->midi_out, in_port, 1);
@@ -558,8 +565,7 @@ track_processor_connect_to_plugin (
               in_port =
                 pl->in_ports[
                   last_index];
-              if (in_port->identifier.type ==
-                    TYPE_AUDIO)
+              if (in_port->id.type == TYPE_AUDIO)
                 {
                   if (i == 0)
                     {
@@ -590,7 +596,8 @@ void
 track_processor_free_members (
   TrackProcessor * self)
 {
-  switch (self->track->in_signal_type)
+  Track * track = track_processor_get_track (self);
+  switch (track->in_signal_type)
     {
     case TYPE_AUDIO:
       port_free (self->stereo_in->l);
@@ -598,7 +605,7 @@ track_processor_free_members (
       break;
     case TYPE_EVENT:
       port_free (self->midi_in);
-      if (track_has_piano_roll (self->track))
+      if (track_has_piano_roll (track))
         port_free (self->piano_roll);
       break;
     default:

@@ -75,6 +75,13 @@
   func (AUTOMATION_POINT, AutomationPoint, \
         automation_point)
 
+void
+arranger_object_init (
+  ArrangerObject * self)
+{
+  self->magic = ARRANGER_OBJECT_MAGIC;
+}
+
 /**
  * Returns the ArrangerSelections corresponding
  * to the given object type.
@@ -277,40 +284,45 @@ ZRegion *
 arranger_object_get_region (
   ArrangerObject * self)
 {
+  RegionIdentifier * id = NULL;
   switch (self->type)
     {
     case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
       {
         AutomationPoint * ap =
           (AutomationPoint *) self;
-        return ap->region;
+        id = &ap->region_id;
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
       {
         MidiNote * mn =
           (MidiNote *) self;
-        return mn->region;
+        id = &mn->region_id;
       }
       break;
     case ARRANGER_OBJECT_TYPE_VELOCITY:
       {
         Velocity * vel =
           (Velocity *) self;
-        return vel->midi_note->region;
+        id = &vel->region_id;
       }
       break;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
       {
         ChordObject * co =
           (ChordObject *) self;
-        return co->region;
+        id = &co->region_id;
       }
       break;
     default:
+      return NULL;
       break;
     }
-  return NULL;
+
+  ZRegion * region = region_find (id);
+
+  return region;
 }
 
 /**
@@ -660,8 +672,6 @@ static void
 init_loaded_midi_note (
   MidiNote * self)
 {
-  midi_note_set_region (self, self->region);
-  self->vel->midi_note = self;
   arranger_object_init_loaded (
     (ArrangerObject *) self->vel);
 }
@@ -670,13 +680,10 @@ static void
 init_loaded_region (
   ZRegion * self)
 {
-  self->linked_region =
-    region_find_by_name (self->linked_region_name);
-
   self->magic = REGION_MAGIC;
 
   int i;
-  switch (self->type)
+  switch (self->id.type)
     {
     case REGION_TYPE_AUDIO:
       {
@@ -704,7 +711,6 @@ init_loaded_region (
         for (i = 0; i < self->num_midi_notes; i++)
           {
             mn = self->midi_notes[i];
-            mn->region = self;
             arranger_object_init_loaded (
               (ArrangerObject *) mn);
           }
@@ -719,7 +725,6 @@ init_loaded_region (
              i++)
           {
             chord = self->chord_objects[i];
-            chord->region = self;
             arranger_object_init_loaded (
               (ArrangerObject *) chord);
           }
@@ -733,7 +738,6 @@ init_loaded_region (
         for (i = 0; i < self->num_aps; i++)
           {
             ap = self->aps[i];
-            ap->region = self;
             arranger_object_init_loaded (
               (ArrangerObject *) ap);
           }
@@ -741,12 +745,6 @@ init_loaded_region (
           (size_t) self->num_aps;
       }
       break;
-    }
-
-  if (self->type == REGION_TYPE_AUTOMATION)
-    {
-      region_set_automation_track (
-        self, self->at);
     }
 }
 
@@ -773,33 +771,8 @@ arranger_object_init_loaded (
       init_loaded_midi_note (
         (MidiNote *) self);
       break;
-    case TYPE (AUTOMATION_POINT):
-      {
-        AutomationPoint * ap =
-          (AutomationPoint *) self;
-        automation_point_set_region_and_index (
-          ap, ap->region, ap->index);
-      }
-      break;
-    case TYPE (VELOCITY):
-      {
-        Velocity * vel =
-          (Velocity *) self;
-        velocity_set_midi_note (
-          vel, vel->midi_note);
-      }
-      break;
-    case TYPE (CHORD_OBJECT):
-      {
-        ChordObject * co = (ChordObject *) self;
-        co->region =
-          region_find_by_name (
-            co->region_name);
-      }
-      break;
-    case TYPE (SCALE_OBJECT):
-      break;
     default:
+      /* nothing needed */
       break;
     }
 }
@@ -933,7 +906,7 @@ add_ticks_to_region_children (
   ZRegion *   self,
   const long ticks)
 {
-  switch (self->type)
+  switch (self->id.type)
     {
     case REGION_TYPE_MIDI:
       for (int i = 0; i < self->num_midi_notes; i++)
@@ -1071,7 +1044,6 @@ post_deserialize_children (
       for (int i = 0; i < r->num_midi_notes; i++)
         {
           mn = r->midi_notes[i];
-          mn->region = r;
           arranger_object_post_deserialize (
             (ArrangerObject *) mn);
         }
@@ -1218,23 +1190,20 @@ arranger_object_get_track (
       {
         ZRegion * r = (ZRegion *) self;
         track =
-          TRACKLIST->tracks[r->track_pos];
+          TRACKLIST->tracks[r->id.track_pos];
       }
       break;
     case TYPE (CHORD_OBJECT):
       {
         ChordObject * chord = (ChordObject *) self;
-        ZRegion * r = chord->region;
-        g_return_val_if_fail (r, NULL);
         track =
-          TRACKLIST->tracks[r->track_pos];
+          TRACKLIST->tracks[
+            chord->region_id.track_pos];
       }
       break;
     case TYPE (SCALE_OBJECT):
       {
-        ScaleObject * scale = (ScaleObject *) self;
-        track =
-          TRACKLIST->tracks[scale->track_pos];
+        return P_CHORD_TRACK;
       }
       break;
     case TYPE (MARKER):
@@ -1251,29 +1220,28 @@ arranger_object_get_track (
         AutomationTrack * at =
           automation_point_get_automation_track (
             ap);
+        track =
+          automation_track_get_track (at);
         g_return_val_if_fail (
-          at && at->track, NULL);
-        track = at->track;
+         track, NULL);
       }
       break;
     case TYPE (MIDI_NOTE):
       {
         MidiNote * mn = (MidiNote *) self;
-        g_return_val_if_fail (
-          mn->region, NULL);
         track =
-          TRACKLIST->tracks[mn->region->track_pos];
+          TRACKLIST->tracks[
+            mn->region_id.track_pos];
       }
       break;
     case TYPE (VELOCITY):
       {
         Velocity * vel = (Velocity *) self;
-        g_return_val_if_fail (
-          vel->midi_note && vel->midi_note->region,
-          NULL);
+        MidiNote * mn =
+          velocity_get_midi_note (vel);
         track =
           TRACKLIST->tracks[
-            vel->midi_note->region->track_pos];
+            mn->region_id.track_pos];
       }
       break;
     default:
@@ -1433,7 +1401,7 @@ find_region (
 {
   ArrangerObject * obj =
     (ArrangerObject *)
-    region_find_by_name (self->name);
+    region_find (&self->id);
   ArrangerObject * self_obj =
     (ArrangerObject *) self;
   g_warn_if_fail (
@@ -1452,7 +1420,7 @@ find_chord_object (
   /* get actual region - clone's region might be
    * an unused clone */
   ZRegion * r =
-    region_find_by_name (clone->region_name);
+    region_find (&clone->region_id);
   g_return_val_if_fail (r, NULL);
 
   ChordObject * chord;
@@ -1506,21 +1474,9 @@ static ArrangerObject *
 find_automation_point (
   AutomationPoint * src)
 {
-  ZRegion * region = src->region;
-  if (!region)
-    {
-      region =
-        region_find_by_name (
-          src->region_name);
-    }
+  ZRegion * region =
+    region_find (&src->region_id);
   g_return_val_if_fail (region, NULL);
-
-  /* the src region might be an unused clone, find
-   * the actual region. */
-  region =
-    (ZRegion *)
-    arranger_object_find (
-      (ArrangerObject *) region);
 
   int i;
   AutomationPoint * ap;
@@ -1539,7 +1495,7 @@ find_midi_note (
   MidiNote * src)
 {
   ZRegion * r =
-    region_find_by_name (src->region_name);
+    region_find (&src->region_id);
   g_return_val_if_fail (r, NULL);
 
   for (int i = 0; i < r->num_midi_notes; i++)
@@ -1589,7 +1545,7 @@ arranger_object_find (
           (Velocity *) self;
         MidiNote * mn =
           (MidiNote *)
-          find_midi_note (clone->midi_note);
+          velocity_get_midi_note (clone);
         g_return_val_if_fail (mn && mn->vel, NULL);
         return (ArrangerObject *) mn->vel;
       }
@@ -1609,13 +1565,16 @@ clone_region (
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
   ZRegion * new_region = NULL;
-  switch (region->type)
+  switch (region->id.type)
     {
     case REGION_TYPE_MIDI:
       {
         ZRegion * mr =
           midi_region_new (
-            &r_obj->pos, &r_obj->end_pos);
+            &r_obj->pos, &r_obj->end_pos,
+            region->id.track_pos,
+            region->id.lane_pos,
+            region->id.idx);
         ZRegion * mr_orig = region;
         if (flag == ARRANGER_OBJECT_CLONE_COPY ||
             flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
@@ -1623,8 +1582,9 @@ clone_region (
             for (i = 0;
                  i < mr_orig->num_midi_notes; i++)
               {
-                mr_orig->midi_notes[i]->region =
-                  mr_orig;
+                region_identifier_copy (
+                  &mr_orig->midi_notes[i]->region_id,
+                  &mr_orig->id);
                 MidiNote * mn =
                   (MidiNote *)
                   arranger_object_clone (
@@ -1645,7 +1605,10 @@ clone_region (
         ZRegion * ar =
           audio_region_new (
             region->pool_id, NULL, NULL, -1,
-            0, &r_obj->pos);
+            0, &r_obj->pos,
+            region->id.track_pos,
+            region->id.lane_pos,
+            region->id.idx);
 
         new_region = ar;
         new_region->pool_id = region->pool_id;
@@ -1655,7 +1618,10 @@ clone_region (
       {
         ZRegion * ar  =
           automation_region_new (
-            &r_obj->pos, &r_obj->end_pos);
+            &r_obj->pos, &r_obj->end_pos,
+            region->id.track_pos,
+            region->id.at_idx,
+            region->id.idx);
         ZRegion * ar_orig = region;
 
         AutomationPoint * src_ap, * dest_ap;
@@ -1682,7 +1648,8 @@ clone_region (
       {
         ZRegion * cr =
           chord_region_new (
-            &r_obj->pos, &r_obj->end_pos);
+            &r_obj->pos, &r_obj->end_pos,
+            region->id.idx);
         ZRegion * cr_orig = region;
         if (flag == ARRANGER_OBJECT_CLONE_COPY ||
             flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
@@ -1715,9 +1682,9 @@ clone_region (
   new_region->name = g_strdup (region->name);
 
   /* set track to NULL and remember track pos */
-  new_region->lane_pos = region->lane_pos;
-  new_region->track_pos = region->track_pos;
-  new_region->at_index = region->at_index;
+  region_identifier_copy (
+    &new_region->id, &region->id);
+  new_region->id.at_idx = region->id.at_idx;
 
   return (ArrangerObject *) new_region;
 }
@@ -1755,18 +1722,15 @@ clone_midi_note (
   MidiNote *              src,
   ArrangerObjectCloneFlag flag)
 {
-  g_return_val_if_fail (src->region, NULL);
-
-  int is_main =
-    flag == ARRANGER_OBJECT_CLONE_COPY_MAIN;
-
   ArrangerObject * src_obj =
     (ArrangerObject *) src;
+  ZRegion * region =
+    midi_note_get_region (src);
   MidiNote * mn =
     midi_note_new (
-      src->region, &src_obj->pos,
+      region, &src_obj->pos,
       &src_obj->end_pos,
-      src->val, src->vel->vel, is_main);
+      src->val, src->vel->vel);
   mn->currently_listened = src->currently_listened;
   mn->last_listened_val = src->last_listened_val;
 
@@ -1782,9 +1746,11 @@ clone_chord_object (
   if (flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
     is_main = 1;
 
+  ZRegion * region =
+    chord_object_get_region (src);
   ChordObject * chord =
     chord_object_new (
-      src->region, src->index, is_main);
+      region, src->index, is_main);
 
   return (ArrangerObject *) chord;
 }
@@ -1887,12 +1853,11 @@ arranger_object_clone (
     case TYPE (VELOCITY):
       {
         Velocity * src = (Velocity *) self;
-        int is_main =
-          flag == ARRANGER_OBJECT_CLONE_COPY_MAIN;
+        MidiNote * mn =
+          velocity_get_midi_note (src);
         new_obj =
           (ArrangerObject *)
-          velocity_new (
-            src->midi_note, src->vel, is_main);
+          velocity_new (mn, src->vel);
       }
       break;
     default:
@@ -2019,13 +1984,15 @@ arranger_object_split (
           (ZRegion *) *r1;
         ZRegion * region2 =
           (ZRegion *) *r2;
+        AutomationTrack * at =
+          region_get_automation_track (src_region);
         track_add_region (
-          track, region1, src_region->at,
-          src_region->lane_pos,
+          track, region1, at,
+          src_region->id.lane_pos,
           F_GEN_NAME, F_PUBLISH_EVENTS);
         track_add_region (
-          track, region2, src_region->at,
-          src_region->lane_pos,
+          track, region2, at,
+          src_region->id.lane_pos,
           F_GEN_NAME, F_PUBLISH_EVENTS);
       }
       break;
@@ -2034,7 +2001,7 @@ arranger_object_split (
         MidiNote * src_midi_note =
           (MidiNote *) self;
         ZRegion * parent_region =
-          src_midi_note->region;
+          midi_note_get_region (src_midi_note);
         midi_region_add_midi_note (
           parent_region, (MidiNote *) *r1, 1);
         midi_region_add_midi_note (
@@ -2063,7 +2030,9 @@ arranger_object_split (
 
   /* change to r1 if the original region was the
    * clip editor region */
-  if (CLIP_EDITOR->region == (ZRegion *) self)
+  ZRegion * clip_editor_region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (clip_editor_region == (ZRegion *) self)
     {
       clip_editor_set_region (
         CLIP_EDITOR, (ZRegion *) *r1);
@@ -2083,7 +2052,8 @@ arranger_object_split (
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
       {
         ZRegion * parent_region =
-          ((MidiNote *) self)->region;
+          midi_note_get_region (
+            ((MidiNote *) self));
         midi_region_remove_midi_note (
           parent_region, (MidiNote *) self,
           F_FREE, F_PUBLISH_EVENTS);
@@ -2121,17 +2091,21 @@ arranger_object_unsplit (
     {
     case ARRANGER_OBJECT_TYPE_REGION:
       {
+        ZRegion * r1_region = (ZRegion *) r1;
+        AutomationTrack * at =
+          region_get_automation_track (r1_region);
         track_add_region (
           arranger_object_get_track (r1),
-          (ZRegion *) *obj, ((ZRegion *) r1)->at,
-          ((ZRegion *) r1)->lane_pos,
+          (ZRegion *) *obj, at,
+          ((ZRegion *) r1)->id.lane_pos,
           F_GEN_NAME, F_PUBLISH_EVENTS);
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
       {
         ZRegion * parent_region =
-          ((MidiNote *) r1)->region;
+          midi_note_get_region (
+            ((MidiNote *) r1));
         midi_region_add_midi_note (
           parent_region, (MidiNote *) *obj, 1);
       }
@@ -2157,7 +2131,9 @@ arranger_object_unsplit (
 
   /* change to r1 if the original region was the
    * clip editor region */
-  if (CLIP_EDITOR->region == (ZRegion *) r1)
+  ZRegion * clip_editor_region =
+    clip_editor_get_region (CLIP_EDITOR);
+  if (clip_editor_region == (ZRegion *) r1)
     {
       clip_editor_set_region (
         CLIP_EDITOR, (ZRegion *) *obj);
@@ -2178,12 +2154,18 @@ arranger_object_unsplit (
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
       {
+        MidiNote * mn1 = (MidiNote *) r1;
+        MidiNote * mn2 = (MidiNote *) r2;
+        ZRegion * region1 =
+          midi_note_get_region (mn1);
+        ZRegion * region2 =
+          midi_note_get_region (mn2);
         midi_region_remove_midi_note (
-          ((MidiNote *) r1)->region,
-          (MidiNote *) r1, F_PUBLISH_EVENTS, F_FREE);
+          region1, mn1,
+          F_PUBLISH_EVENTS, F_FREE);
         midi_region_remove_midi_note (
-          ((MidiNote *) r2)->region,
-          (MidiNote *) r2, F_PUBLISH_EVENTS, F_FREE);
+          region2, mn2,
+          F_PUBLISH_EVENTS, F_FREE);
       }
       break;
     default:
@@ -2241,7 +2223,7 @@ free_region (
     sc##_region_free_members (self); \
   break
 
-  switch (self->type)
+  switch (self->id.type)
     {
       FREE_R (MIDI, midi);
       FREE_R (AUDIO, audio);
@@ -2261,9 +2243,6 @@ free_midi_note (
   g_return_if_fail (self->vel);
   arranger_object_free (
     (ArrangerObject *) self->vel);
-
-  if (self->region_name)
-    g_free (self->region_name);
 
   if (G_IS_OBJECT (self->layout))
     g_object_unref (self->layout);
@@ -2296,8 +2275,6 @@ arranger_object_free (
     case TYPE (CHORD_OBJECT):
       {
         ChordObject * co = (ChordObject *) self;
-        if (co->region_name)
-          g_free (co->region_name);
         free (co);
       }
       return;
@@ -2312,8 +2289,6 @@ arranger_object_free (
       {
         AutomationPoint * ap =
           (AutomationPoint *) self;
-        if (ap->region_name)
-          g_free (ap->region_name);
         free (ap);
       }
       return;

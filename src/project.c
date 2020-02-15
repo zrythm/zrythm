@@ -348,14 +348,14 @@ create_default (Project * self)
 
   /* init pinned tracks */
   Track * track =
-    chord_track_new ();
+    chord_track_new (0);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
   track->pinned = 1;
   TRACKLIST->chord_track = track;
   track =
-    marker_track_default ();
+    marker_track_default (1);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
@@ -365,7 +365,7 @@ create_default (Project * self)
   /* add master channel to mixer and tracklist */
   track =
     track_new (
-      TRACK_TYPE_MASTER, _("Master"),
+      TRACK_TYPE_MASTER, 2, _("Master"),
       F_WITHOUT_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
@@ -946,7 +946,7 @@ project_save (
           /* save state */
           char tmp[200];
           sprintf (
-            tmp, "%s_%d", ch->track->name, j);
+            tmp, "%s_%d", track->name, j);
           char * state_dir_plugin =
             g_build_filename (
               states_dir, tmp, NULL);

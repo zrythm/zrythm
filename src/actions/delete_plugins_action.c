@@ -89,7 +89,7 @@ delete_plugins_action_undo (
       /* FIXME automation track info is completely
        * lost*/
       channel_add_plugin (
-        ch, self->ms->plugins[i]->slot, pl,
+        ch, self->ms->plugins[i]->id.slot, pl,
         F_NO_CONFIRM,
         F_GEN_AUTOMATABLES,
         F_NO_RECALC_GRAPH);

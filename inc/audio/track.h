@@ -204,8 +204,14 @@ typedef struct Track
   /** Height of the main part (without lanes). */
   int                 main_height;
 
-  /** Muted or not. FIXME move to fader. */
-  int                 mute;
+  /**
+   * Control port for muting the (channel)
+   * fader.
+   *
+   * It is here instead of in Fader because some
+   * tracks don't have channels.
+   */
+  Port *              mute;
 
   /** Soloed or not. */
   int                 solo;
@@ -378,9 +384,10 @@ track_fields_schema[] =
   CYAML_FIELD_INT (
     "passthrough_midi_input", CYAML_FLAG_DEFAULT,
     Track, passthrough_midi_input),
-  CYAML_FIELD_INT (
-    "mute", CYAML_FLAG_DEFAULT,
-    Track, mute),
+  CYAML_FIELD_MAPPING_PTR (
+    "mute",
+    CYAML_FLAG_POINTER,
+    Track, mute, port_fields_schema),
   CYAML_FIELD_INT (
     "solo", CYAML_FLAG_DEFAULT,
     Track, solo),
@@ -470,12 +477,14 @@ track_init (
  * If the TrackType is one that needs a Channel,
  * then a Channel is also created for the track.
  *
+ * @param pos Position in the Tracklist.
  * @param with_lane Init the Track with a lane.
  */
 Track *
 track_new (
   TrackType type,
-  char * label,
+  int       pos,
+  char *    label,
   const int with_lane);
 
 /**
@@ -517,6 +526,13 @@ track_set_muted (
  */
 int
 track_get_full_visible_height (
+  Track * self);
+
+/**
+ * Returns if the track is muted.
+ */
+int
+track_get_muted (
   Track * self);
 
 /**
@@ -573,8 +589,8 @@ track_add_region (
  */
 void
 track_write_to_midi_file (
-  const Track * self,
-  MIDI_FILE *   mf);
+  Track *     self,
+  MIDI_FILE * mf);
 
 /**
  * Appends the Track to the selections.
@@ -677,14 +693,6 @@ track_get_automation_tracklist (Track * track);
  */
 Channel *
 track_get_channel (Track * track);
-
-/**
- * Wrapper for track types that have fader automatables.
- *
- * Otherwise returns NULL.
- */
-Automatable *
-track_get_fader_automatable (Track * track);
 
 /**
  * Updates position in the tracklist and also

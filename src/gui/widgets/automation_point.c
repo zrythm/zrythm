@@ -48,9 +48,11 @@ automation_point_draw (
 {
   ArrangerObject * obj =
     (ArrangerObject *) ap;
+  ZRegion * region =
+    arranger_object_get_region (obj);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
-      ap->region, ap);
+      region, ap);
   ArrangerObject * next_obj =
     (ArrangerObject *) next_ap;
   ArrangerWidget * arranger =

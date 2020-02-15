@@ -289,13 +289,14 @@ send_note_event (
   int                   note,
   int                   on)
 {
+  ZRegion * region =
+    clip_editor_get_region (CLIP_EDITOR);
   if (on)
     {
       /* add note on event */
       midi_events_add_note_on (
         MANUAL_PRESS_EVENTS,
-        midi_region_get_midi_ch (
-          CLIP_EDITOR->region),
+        midi_region_get_midi_ch (region),
         (midi_byte_t) note, 90, 1, 1);
 
       piano_roll_add_current_note (
@@ -306,8 +307,7 @@ send_note_event (
       /* add note off event */
       midi_events_add_note_off (
         MANUAL_PRESS_EVENTS,
-        midi_region_get_midi_ch (
-          CLIP_EDITOR->region),
+        midi_region_get_midi_ch (region),
         (midi_byte_t) note, 1, 1);
 
       piano_roll_remove_current_note (

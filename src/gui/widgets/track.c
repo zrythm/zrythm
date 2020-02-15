@@ -17,10 +17,10 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/automatable.h"
 #include "audio/automation_track.h"
 #include "audio/audio_bus_track.h"
 #include "audio/audio_group_track.h"
+#include "audio/control_port.h"
 #include "audio/master_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -673,7 +673,7 @@ draw_automation (
             /*at->index, at->automatable->label);*/
           custom_button_widget_set_text (
             cb, self->layout,
-            at->automatable->label);
+            at->port_id.label);
           at->num_top_left_buttons = 1;
         }
       if (at->num_top_right_buttons == 0)
@@ -789,10 +789,12 @@ draw_automation (
       /* draw automation value */
       PangoLayout * layout = self->layout;
       char str[50];
+      Port * port =
+        automation_track_get_port (at);
       sprintf (
         str, "%.2f",
         (double)
-        automatable_get_val (at->automatable));
+        control_port_get_val (port));
       cb = at->top_left_buttons[0];
       cairo_move_to (
         cr,
@@ -1796,8 +1798,8 @@ multipress_released (
                 cb->icon_name, ICON_NAME_PLUS, 1))
             {
               AutomationTracklist * atl =
-                track_get_automation_tracklist (
-                  at->track);
+                automation_track_get_automation_tracklist (
+                  at);
               g_return_if_fail (atl);
               AutomationTrack * new_at =
                 automation_tracklist_get_first_invisible_at (

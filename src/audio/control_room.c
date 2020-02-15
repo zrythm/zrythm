@@ -39,16 +39,16 @@ control_room_init (
   if (loading)
     {
       self->monitor_fader.stereo_in->
-        l->identifier.owner_type =
+        l->id.owner_type =
         PORT_OWNER_TYPE_MONITOR_FADER;
       self->monitor_fader.stereo_in->
-        r->identifier.owner_type =
+        r->id.owner_type =
         PORT_OWNER_TYPE_MONITOR_FADER;
       self->monitor_fader.stereo_out->
-        l->identifier.owner_type =
+        l->id.owner_type =
         PORT_OWNER_TYPE_MONITOR_FADER;
       self->monitor_fader.stereo_out->
-        r->identifier.owner_type =
+        r->id.owner_type =
         PORT_OWNER_TYPE_MONITOR_FADER;
     }
   else

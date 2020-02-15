@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include "audio/midi_note.h"
+#include "audio/region.h"
 #include "audio/velocity.h"
 #include "gui/widgets/velocity.h"
 #include "utils/types.h"
@@ -32,8 +33,7 @@
 Velocity *
 velocity_new (
   MidiNote *    midi_note,
-  const uint8_t vel,
-  const int     is_main)
+  const uint8_t vel)
 {
   Velocity * self =
     calloc (1, sizeof (Velocity));
@@ -43,7 +43,11 @@ velocity_new (
   obj->type = ARRANGER_OBJECT_TYPE_VELOCITY;
 
   self->vel = vel;
-  self->midi_note = midi_note;
+  self->note_pos = midi_note->pos;
+  region_identifier_copy (
+    &self->region_id, &midi_note->region_id);
+
+  arranger_object_init (obj);
 
   return self;
 }
@@ -56,7 +60,7 @@ velocity_set_midi_note (
   Velocity * self,
   MidiNote * midi_note)
 {
-  self->midi_note = midi_note;
+  self->note_pos = midi_note->pos;
 }
 
 /**
@@ -69,8 +73,7 @@ velocity_is_equal (
 {
   return
     src->vel == dest->vel &&
-    midi_note_is_equal (
-      src->midi_note, dest->midi_note);
+    src->note_pos == dest->note_pos;
 }
 
 /**
@@ -101,9 +104,8 @@ velocity_set_val (
 
   /* re-set the midi note value to set a note off
    * event */
-  midi_note_set_val (
-    self->midi_note,
-    self->midi_note->val);
+  MidiNote * note = velocity_get_midi_note (self);
+  midi_note_set_val (note, note->val);
 }
 
 /**
@@ -118,4 +120,18 @@ velocity_shift (
   self->vel =
     (midi_byte_t)
     ((int) self->vel + delta);
+}
+
+/**
+ * Returns the owner MidiNote.
+ */
+MidiNote *
+velocity_get_midi_note (
+  Velocity * self)
+{
+  g_return_val_if_fail (self, NULL);
+  ZRegion * region =
+    region_find (&self->region_id);
+  g_return_val_if_fail (region, NULL);
+  return region->midi_notes[self->note_pos];
 }

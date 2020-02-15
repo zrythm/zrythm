@@ -161,19 +161,26 @@ get_node_name (
       port_get_full_designation (node->port, str);
       return g_strdup (str);
     case ROUTE_NODE_TYPE_FADER:
-      return
-        g_strdup_printf (
-          "%s Fader",
-          node->fader->channel->track->name);
+      {
+        Track * track =
+          fader_get_track (node->fader);
+        return
+          g_strdup_printf (
+            "%s Fader", track->name);
+      }
     case ROUTE_NODE_TYPE_TRACK:
       return
         g_strdup (
           node->track->name);
     case ROUTE_NODE_TYPE_PREFADER:
-      return
-        g_strdup_printf (
-          "%s Pre-Fader",
-          node->prefader->channel->track->name);
+      {
+        Track * track =
+          passthrough_processor_get_track (
+            node->prefader);
+        return
+          g_strdup_printf (
+            "%s Pre-Fader", track->name);
+      }
     case ROUTE_NODE_TYPE_MONITOR_FADER:
       return
         g_strdup ("Monitor Fader");
@@ -361,6 +368,7 @@ node_process (
       /* decide what to do based on what port it
        * is */
       Port * port = node->port;
+      PortIdentifier * id = &port->id;
 
       /* if midi editor manual press */
       if (port == AUDIO_ENGINE->
@@ -374,9 +382,9 @@ node_process (
 
       /* if channel stereo out port */
       else if (
-        port->identifier.owner_type ==
+        id->owner_type ==
           PORT_OWNER_TYPE_TRACK &&
-        port->identifier.flow == FLOW_OUTPUT)
+        id->flow == FLOW_OUTPUT)
         {
           Track * track = port_get_track (port, 1);
 
@@ -1243,8 +1251,9 @@ add_port (
   Port * port,
   const int    drop_if_unnecessary)
 {
+  PortIdentifier * id = &port->id;
   PortOwnerType owner =
-    port->identifier.owner_type;
+    port->id.owner_type;
 
   /*add_port_node (self, port);*/
   if (port->num_dests == 0 &&
@@ -1252,12 +1261,12 @@ add_port (
       (owner == PORT_OWNER_TYPE_PLUGIN ||
        owner == PORT_OWNER_TYPE_FADER))
     {
-      if (port->identifier.flow == FLOW_INPUT)
+      if (id->flow == FLOW_INPUT)
         {
           graph_add_initial_node (
             self, ROUTE_NODE_TYPE_PORT, port);
         }
-      else if (port->identifier.flow == FLOW_OUTPUT)
+      else if (id->flow == FLOW_OUTPUT)
         {
           graph_add_terminal_node (
             self, ROUTE_NODE_TYPE_PORT, port);
@@ -1277,18 +1286,18 @@ add_port (
     }
   else if (port->num_srcs == 0 &&
       !(owner == PORT_OWNER_TYPE_PLUGIN &&
-        port->identifier.flow == FLOW_OUTPUT) &&
+        id->flow == FLOW_OUTPUT) &&
       !(owner == PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-        port->identifier.flow == FLOW_OUTPUT) &&
+        id->flow == FLOW_OUTPUT) &&
       !(owner == PORT_OWNER_TYPE_FADER &&
-        port->identifier.flow == FLOW_OUTPUT) &&
+        id->flow == FLOW_OUTPUT) &&
       !(owner == PORT_OWNER_TYPE_MONITOR_FADER &&
-        port->identifier.flow == FLOW_OUTPUT) &&
+        id->flow == FLOW_OUTPUT) &&
       !(owner == PORT_OWNER_TYPE_PREFADER &&
-        port->identifier.flow == FLOW_OUTPUT) &&
+        id->flow == FLOW_OUTPUT) &&
       !(owner ==
           PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
-        port->identifier.flow == FLOW_OUTPUT))
+        id->flow == FLOW_OUTPUT))
     {
       graph_add_initial_node (
         self, ROUTE_NODE_TYPE_PORT, port);
@@ -1296,23 +1305,18 @@ add_port (
   else if (port->num_dests == 0 &&
            /*port->num_srcs > 0 &&*/
            !(owner == PORT_OWNER_TYPE_PLUGIN &&
-             port->identifier.flow ==
-               FLOW_INPUT) &&
+             id->flow == FLOW_INPUT) &&
            !(owner == PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-             port->identifier.flow ==
-               FLOW_INPUT) &&
+             id->flow == FLOW_INPUT) &&
            !(owner == PORT_OWNER_TYPE_FADER &&
-             port->identifier.flow ==
-               FLOW_INPUT) &&
+             id->flow == FLOW_INPUT) &&
            !(owner == PORT_OWNER_TYPE_MONITOR_FADER &&
-             port->identifier.flow ==
-               FLOW_INPUT) &&
+             id->flow == FLOW_INPUT) &&
            !(owner == PORT_OWNER_TYPE_PREFADER &&
-             port->identifier.flow ==
-               FLOW_INPUT) &&
+             id->flow == FLOW_INPUT) &&
            !(owner ==
                PORT_OWNER_TYPE_SAMPLE_PROCESSOR &&
-             port->identifier.flow == FLOW_INPUT))
+             id->flow == FLOW_INPUT))
     {
       graph_add_terminal_node (
         self, ROUTE_NODE_TYPE_PORT, port);
@@ -1621,7 +1625,7 @@ graph_setup (
       g_warn_if_fail (port);
       if (port->deleting)
         continue;
-      if (port->identifier.owner_type ==
+      if (port->id.owner_type ==
             PORT_OWNER_TYPE_PLUGIN)
         {
           Plugin * port_pl =
@@ -1762,7 +1766,7 @@ graph_setup (
       node2 =
         find_node_from_port (self, port);
       node_connect (node2, node);
-      port = fader->pan;
+      port = fader->balance;
       node2 =
         find_node_from_port (self, port);
       node_connect (node2, node);
@@ -1852,7 +1856,7 @@ graph_setup (
       port = ports[i];
       if (port->deleting)
         continue;
-      if (port->identifier.owner_type ==
+      if (port->id.owner_type ==
             PORT_OWNER_TYPE_PLUGIN)
         {
           Plugin * port_pl =

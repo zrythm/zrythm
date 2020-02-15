@@ -82,22 +82,24 @@ create_model_for_routes (
                 track->type ==
                   TRACK_TYPE_MIDI_GROUP))
         {
-          if (self->owner->channel &&
-              track !=
-                self->owner->
-                  channel->track &&
-              track->in_signal_type ==
-                self->owner->
-                  channel->track->out_signal_type)
+          if (self->owner->channel)
             {
-              // Add a new row to the model
-              gtk_list_store_append (
-                list_store, &iter);
-              gtk_list_store_set (
-                list_store, &iter,
-                0, track->name,
-                1, track,
-                -1);
+              Track * owner_track =
+                channel_get_track (
+                  self->owner->channel);
+              if (track != owner_track &&
+                  track->in_signal_type ==
+                    owner_track->out_signal_type)
+                {
+                  // Add a new row to the model
+                  gtk_list_store_append (
+                    list_store, &iter);
+                  gtk_list_store_set (
+                    list_store, &iter,
+                    0, track->name,
+                    1, track,
+                    -1);
+                }
             }
         }
       else if (type ==
@@ -105,18 +107,22 @@ create_model_for_routes (
                track->type ==
                  TRACK_TYPE_INSTRUMENT)
         {
-          if (self->owner->channel &&
-              track !=
-                self->owner->channel->track)
+          if (self->owner->channel)
             {
-              // Add a new row to the model
-              gtk_list_store_append (
-                list_store, &iter);
-              gtk_list_store_set (
-                list_store, &iter,
-                0, track->name,
-                1, track,
-                -1);
+              Track * owner_track =
+                channel_get_track (
+                  self->owner->channel);
+              if (track != owner_track)
+                {
+                  // Add a new row to the model
+                  gtk_list_store_append (
+                    list_store, &iter);
+                  gtk_list_store_set (
+                    list_store, &iter,
+                    0, track->name,
+                    1, track,
+                    -1);
+                }
             }
         }
     }
@@ -137,9 +143,9 @@ create_model_for_types (
                                    G_TYPE_STRING,
                                    G_TYPE_INT);
 
-  if (self->owner->channel->track->
-        out_signal_type ==
-      TYPE_AUDIO)
+  Track * track =
+    channel_get_track (self->owner->channel);
+  if (track->out_signal_type == TYPE_AUDIO)
     {
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
@@ -156,8 +162,9 @@ create_model_for_types (
     1, ROUTE_TARGET_TYPE_GROUP,
     -1);
 
-  TrackType type =
-    self->owner->channel->track->type;
+  Track * owner_track =
+    channel_get_track (self->owner->channel);
+  TrackType type = owner_track->type;
   if (type == TRACK_TYPE_MIDI ||
       type == TRACK_TYPE_MIDI_GROUP ||
       type == TRACK_TYPE_MIDI_BUS)
@@ -305,13 +312,17 @@ on_closed (
   gtk_widget_destroy (GTK_WIDGET (self));
 
   /* if new track selected, update routing */
-  if (self->new_track &&
-      self->new_track !=
-        self->owner->channel->output)
+  if (self->new_track)
     {
-      channel_update_output (
-        self->owner->channel,
-        self->new_track);
+      Track * output_track =
+        channel_get_output_track (
+          self->owner->channel);
+      if (self->new_track != output_track)
+        {
+          channel_update_output (
+            self->owner->channel,
+            self->new_track);
+        }
     }
 
   route_target_selector_widget_refresh (
@@ -331,8 +342,10 @@ select_group_func (
   gtk_tree_model_get (
     model, iter, 1, &iter_track, -1);
 
-  if (iter_track ==
-        self->owner->channel->output)
+  Track * output_track =
+    channel_get_output_track (
+      self->owner->channel);
+  if (iter_track == output_track)
     {
       GtkTreeSelection * rts =
         gtk_tree_view_get_selection (
@@ -369,9 +382,9 @@ route_target_selector_popover_widget_new (
     GTK_CONTAINER (self->type_treeview_box),
     GTK_WIDGET (self->type_treeview));
 
-  if (self->owner->channel->track->
-        out_signal_type ==
-      TYPE_AUDIO)
+  Track * track =
+    channel_get_track (self->owner->channel);
+  if (track->out_signal_type == TYPE_AUDIO)
     {
       self->route_model =
         create_model_for_routes (
@@ -380,13 +393,11 @@ route_target_selector_popover_widget_new (
   else
     {
       self->route_model =
-        create_model_for_routes (
-          self, -1);
+        create_model_for_routes (self, -1);
     }
   self->route_treeview =
     tree_view_create (
-      self,
-      self->route_model);
+      self, self->route_model);
   gtk_container_add (
     GTK_CONTAINER (self->route_treeview_box),
     GTK_WIDGET (self->route_treeview));
@@ -397,15 +408,16 @@ route_target_selector_popover_widget_new (
 
   /* select output */
   if (self->owner->channel &&
-      self->owner->channel->output)
+      self->owner->channel->has_output)
     {
-      Track * track =
-        self->owner->channel->output;
+      Track * output_track =
+        channel_get_output_track (
+          self->owner->channel);
 
       GtkTreePath *path;
       GtkTreeIter iter;
 
-      if (track->type == TRACK_TYPE_MASTER)
+      if (output_track->type == TRACK_TYPE_MASTER)
         {
           /* select Master group */
           path =

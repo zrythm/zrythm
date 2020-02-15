@@ -43,7 +43,6 @@ automation_tracklist_init_loaded (
   for (j = 0; j < self->num_ats; j++)
     {
       at = self->ats[j];
-      at->track = self->track;
       automation_track_init_loaded (at);
     }
 }
@@ -63,7 +62,6 @@ automation_tracklist_add_at (
     self->num_ats,
     at);
 
-  at->track = self->track;
   at->index = self->num_ats - 1;
 }
 
@@ -91,7 +89,7 @@ automation_tracklist_init (
   AutomationTracklist * self,
   Track *               track)
 {
-  self->track = track;
+  self->track_pos = track->pos;
 
   g_message ("initing automation tracklist...");
 
@@ -324,7 +322,7 @@ automation_tracklist_set_at_index (
         new_at, prev_index);
 
       g_message ("new pos %s (%d)",
-        new_at->automatable->label, new_at->index);
+        new_at->port_id.label, new_at->index);
     }
 }
 
@@ -342,8 +340,8 @@ automation_tracklist_update_track_pos (
   int i;
   for (i = 0; i < self->num_ats; i++)
     {
-      self->ats[i]->track = track;
-      self->ats[i]->automatable->track = track;
+      self->ats[i]->port_id.track_pos =
+        track->pos;
     }
 }
 
@@ -412,24 +410,26 @@ automation_tracklist_get_visible_tracks (
 
 /**
  * Returns the AutomationTrack corresponding to the
- * given Automatable.
+ * given Port.
  */
 AutomationTrack *
-automation_tracklist_get_at_from_automatable (
+automation_tracklist_get_at_from_port (
   AutomationTracklist * self,
-  Automatable *         a)
+  Port *                port)
 {
   AutomationTrack * at;
   for (int i = 0; i < self->num_ats; i++)
     {
       at = self->ats[i];
-      if (at->automatable == a)
+      Port * at_port =
+        automation_track_get_port (at);
+      if (at_port == port)
         {
           return at;
         }
     }
-  g_warn_if_reached ();
-  return NULL;
+
+  g_return_val_if_reached (NULL);
 }
 
 /**

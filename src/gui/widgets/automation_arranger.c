@@ -35,6 +35,7 @@
 #include "audio/channel.h"
 #include "audio/chord_object.h"
 #include "audio/chord_track.h"
+#include "audio/control_port.h"
 #include "audio/instrument_track.h"
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
@@ -95,8 +96,12 @@ automation_arranger_widget_create_ap (
   const double       start_y,
   ZRegion *           region)
 {
-  AutomationTrack * at = CLIP_EDITOR->region->at;
+  AutomationTrack * at =
+    region_get_automation_track (region);
   g_return_if_fail (at);
+  Port * port =
+    automation_track_get_port (at);
+  g_return_if_fail (port);
 
   self->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
@@ -115,11 +120,11 @@ automation_arranger_widget_create_ap (
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
   /* do height - because it's uside down */
-	float normalized_val =
-		(float) ((height - start_y) / height);
+  float normalized_val =
+    (float) ((height - start_y) / height);
   float value =
-    automatable_normalized_val_to_real (
-      at->automatable, normalized_val);
+    control_port_normalized_val_to_real (
+      port, normalized_val);
 
   self->action =
     UI_OVERLAY_ACTION_CREATING_MOVING;
@@ -136,7 +141,7 @@ automation_arranger_widget_create_ap (
 
   /* add it to automation track */
   automation_region_add_ap (
-    CLIP_EDITOR->region, ap);
+    region, ap);
 
   /* set position to all counterparts */
   arranger_object_set_position (

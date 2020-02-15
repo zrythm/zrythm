@@ -45,7 +45,7 @@ set_values (
 {
   self->port = port;
 
-  PortIdentifier * id = &port->identifier;
+  PortIdentifier * id = &port->id;
 
   char tmp[600];
   gtk_label_set_text (

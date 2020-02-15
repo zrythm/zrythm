@@ -47,6 +47,7 @@
 #include "audio/automation_track.h"
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
+#include "audio/control_port.h"
 #include "audio/engine.h"
 #include "audio/engine_alsa.h"
 #include "audio/engine_dummy.h"
@@ -123,9 +124,8 @@ init_midi (
           TYPE_EVENT,
           FLOW_INPUT,
           "MIDI Editor Manual Press");
-      self->midi_editor_manual_press->
-        identifier.flags |=
-          PORT_FLAG_MANUAL_PRESS;
+      self->midi_editor_manual_press->id.flags |=
+        PORT_FLAG_MANUAL_PRESS;
 
       /* init midi in */
       self->midi_in =
@@ -693,9 +693,10 @@ engine_process_prepare (
            * positive */
           if (val >= 0.f)
             {
-              automatable_set_val_from_normalized (
-                at->automatable,
-                val, 1);
+              Port * port =
+                automation_track_get_port (at);
+              control_port_set_val_from_normalized (
+                port, val, 1);
             }
         }
     }

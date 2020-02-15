@@ -43,8 +43,6 @@ clip_editor_init_loaded (
   ClipEditor * self)
 {
   g_message ("Initializing loaded Clip Editor...");
-  self->region =
-    region_find_by_name (self->region_name);
   piano_roll_init_loaded (&self->piano_roll);
 }
 
@@ -59,20 +57,24 @@ clip_editor_set_region (
   ZRegion *     region)
 {
   int recalc_graph = 0;
-  if (self->region && self->region->type ==
-        REGION_TYPE_MIDI)
+  if (self->has_region)
     {
-      Track * track =
-        arranger_object_get_track (
-          (ArrangerObject *) self->region);
-      channel_reattach_midi_editor_manual_press_port (
-        track_get_channel (track),
-        F_DISCONNECT, F_NO_RECALC_GRAPH);
-      recalc_graph = 1;
+      ZRegion * self_region =
+        region_find (&self->region_id);
+      if (self_region->id.type == REGION_TYPE_MIDI)
+        {
+          Track * track =
+            arranger_object_get_track (
+              (ArrangerObject *) self_region);
+          channel_reattach_midi_editor_manual_press_port (
+            track_get_channel (track),
+            F_DISCONNECT, F_NO_RECALC_GRAPH);
+          recalc_graph = 1;
+        }
     }
   if (region) /* new region exists */
     {
-      if (region->type == REGION_TYPE_MIDI)
+      if (region->id.type == REGION_TYPE_MIDI)
         {
           Track * track =
             arranger_object_get_track (
@@ -92,24 +94,22 @@ clip_editor_set_region (
 
   /* if first time showing a region, show the
    * event viewer as necessary */
-  if (!self->region && region)
+  if (!self->has_region && region)
     {
       EVENTS_PUSH (
         ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED,
         NULL);
     }
 
-  self->region = region;
-
-  if (self->region_name)
+  if (region)
     {
-      g_free (self->region_name);
-      self->region_name = NULL;
+      self->has_region = 1;
+      region_identifier_copy (
+        &self->region_id, &region->id);
     }
-
-  if (region && region->name)
+  else
     {
-      self->region_name = g_strdup (region->name);
+      self->has_region = 0;
     }
 
   self->region_changed = 1;
@@ -126,11 +126,25 @@ void
 clip_editor_redraw_region (
   ClipEditor * self)
 {
-  if (self->region)
+  if (self->has_region)
     {
+      ZRegion * region =
+        clip_editor_get_region (self);
       arranger_object_queue_redraw (
-        (ArrangerObject *) self->region);
+        (ArrangerObject *) region);
     }
+}
+
+ZRegion *
+clip_editor_get_region (
+  ClipEditor * self)
+{
+  if (!self->has_region)
+    return NULL;
+
+  ZRegion * region =
+    region_find (&self->region_id);
+  return region;
 }
 
 /**
@@ -141,13 +155,14 @@ ZRegion *
 clip_editor_get_region_for_widgets (
   ClipEditor * self)
 {
-  return self->region_cache;
+  ZRegion * region =
+    region_find (&self->region_id_cache);
+  return region;
 }
 
 void
 clip_editor_init (ClipEditor * self)
 {
-  self->region_name = NULL;
   piano_roll_init (&self->piano_roll);
   audio_clip_editor_init (&self->audio_clip_editor);
   chord_editor_init (&self->chord_editor);

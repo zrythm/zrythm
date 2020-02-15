@@ -42,7 +42,8 @@ fixture_set_up (
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 6);
   fixture->region =
-    midi_region_new (&start_pos, &end_pos);
+    midi_region_new (
+      &start_pos, &end_pos, 0, 0, 0);
 }
 
 static void
@@ -61,7 +62,7 @@ test_new_midi_note ()
     midi_note_new (
       fixture->region,
       &start_pos, &end_pos, val,
-      VELOCITY_DEFAULT, 1);
+      VELOCITY_DEFAULT);
   ArrangerObject * mn_obj =
     (ArrangerObject *) mn;
 
@@ -77,18 +78,19 @@ test_new_midi_note ()
   g_assert_cmpint (mn->val, ==, val);
   g_assert_false (mn->muted);
 
+  ZRegion * region =
+    arranger_object_get_region (
+      (ArrangerObject *) mn);
   ZRegion * r_clone =
     (ZRegion *)
     arranger_object_clone (
-      (ArrangerObject *) mn->region,
+      (ArrangerObject *) region,
       ARRANGER_OBJECT_CLONE_COPY);
   midi_note_set_region (mn, r_clone);
 
-  g_assert_true (
-    mn->region == r_clone);
-  g_assert_cmpstr (
-    r_clone->name, ==,
-    mn->region_name);
+  g_assert_cmpint (
+    region_identifier_is_equal (
+      &mn->region_id, &r_clone->id), ==, 1);
 
   MidiNote * mn_clone =
     (MidiNote *)

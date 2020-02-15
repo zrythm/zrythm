@@ -30,6 +30,7 @@
 
 #include "audio/chord_descriptor.h"
 #include "audio/position.h"
+#include "audio/region_identifier.h"
 #include "gui/backend/arranger_object.h"
 #include "utils/yaml.h"
 
@@ -60,12 +61,8 @@ typedef struct ChordObject
    * (0 topmost). */
   int                 index;
 
-  /** Pointer back to parent. */
-  ZRegion *            region;
-
-  /** Used in clones to identify a region instead of
-   * cloning the whole Region. */
-  char *              region_name;
+  /** Parent region ID. */
+  RegionIdentifier    region_id;
 
   /** Cache layout for drawing the name. */
   PangoLayout *      layout;
@@ -81,11 +78,10 @@ static const cyaml_schema_field_t
   CYAML_FIELD_INT (
     "index", CYAML_FLAG_DEFAULT,
     ChordObject, index),
-  CYAML_FIELD_STRING_PTR (
-    "region_name",
-    CYAML_FLAG_OPTIONAL | CYAML_FLAG_POINTER,
-    ChordObject, region_name,
-     0, CYAML_UNLIMITED),
+  CYAML_FIELD_MAPPING (
+    "region_id", CYAML_FLAG_DEFAULT,
+    ChordObject, region_id,
+    region_identifier_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -134,6 +130,10 @@ chord_object_get_chord_descriptor (
 ChordObject *
 chord_object_find_by_pos (
   ChordObject * clone);
+
+ZRegion *
+chord_object_get_region (
+  ChordObject * self);
 
 /**
  * @}

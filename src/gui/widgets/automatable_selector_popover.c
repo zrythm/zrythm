@@ -44,20 +44,16 @@ static int
 update_info_label (
   AutomatableSelectorPopoverWidget * self)
 {
-  if (self->selected_automatable)
+  if (self->selected_port)
     {
-      Automatable * a = self->selected_automatable;
-      char * val_type =
-        automatable_stringize_value_type (a);
+      Port * port = self->selected_port;
 
       char * label =
         g_strdup_printf (
-        "%s\nType: %s\nMin: %f\n"
-        "Max: %f",
-        a->label,
-        val_type ? val_type : "Unknown",
-        (double) a->minf,
-        (double) a->maxf);
+        "%s\nMin: %f\nMax: %f",
+        port->id.label,
+        (double) port->minf,
+        (double) port->maxf);
 
       gtk_label_set_text (
         self->info, label);
@@ -89,25 +85,25 @@ select_automatable (
   gtk_tree_selection_select_iter (sel, &iter);
 
   /* select current automatable */
-  if (self->selected_automatable)
+  if (self->selected_port)
     {
       sel =
         gtk_tree_view_get_selection (
           GTK_TREE_VIEW (
-            self->automatable_treeview));
+            self->port_treeview));
 
       /* find the iter corresponding to the
        * automatable */
       int valid =
         gtk_tree_model_get_iter_first (
-          self->automatable_model, &iter);
+          self->port_model, &iter);
       while (valid)
         {
-          Automatable * a;
+          Port * port;
           gtk_tree_model_get (
-            self->automatable_model, &iter, 2,
-            &a, -1);
-          if (a == self->selected_automatable)
+            self->port_model, &iter, 2,
+            &port, -1);
+          if (port == self->selected_port)
             {
               gtk_tree_selection_select_iter (
                 sel, &iter);
@@ -115,7 +111,7 @@ select_automatable (
             }
           valid =
             gtk_tree_model_iter_next (
-              self->automatable_model, &iter);
+              self->port_model, &iter);
         }
     }
 
@@ -123,7 +119,7 @@ select_automatable (
 }
 
 static GtkTreeModel *
-create_model_for_automatables (
+create_model_for_ports (
   AutomatableSelectorPopoverWidget * self,
   AutomatableSelectorType            type)
 {
@@ -136,81 +132,71 @@ create_model_for_automatables (
       3, G_TYPE_STRING, G_TYPE_STRING,
       G_TYPE_POINTER);
 
-  g_message ("creating model for automatables");
-
   Track * track =
-    self->owner->track;
-  AutomationTrack * at;
-  if (type == AS_TYPE_CHANNEL)
+    automation_track_get_track (self->owner);
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  for (int i = 0; i < atl->num_ats; i++)
     {
-  g_message ("creating model for automatables CHANNEL: num ats %d", track->channel->num_ats);
-      for (int i = 0;
-           i < track->channel->num_ats; i++)
+      AutomationTrack * at = atl->ats[i];
+
+      char icon_name[256];
+
+      Port * port = NULL;
+      if (type == AS_TYPE_CHANNEL)
         {
-          /* get selected automation track */
-          at =
-            track->channel->ats[i];
+          /* skip non-channel automation tracks */
+          port =
+            automation_track_get_port (at);
+          if (!(port->id.flags &
+                  PORT_FLAG_CHANNEL_MUTE ||
+                port->id.flags &
+                  PORT_FLAG_CHANNEL_FADER ||
+                port->id.flags &
+                  PORT_FLAG_STEREO_BALANCE))
+            continue;
 
-          g_message ("checking %s",
-            at->automatable->label);
-
-           /*if this automation track is not already*/
-           /*in a visible lane*/
-          if (!at->created || !at->visible ||
-              at == self->owner)
-            {
-              Automatable * a = at->automatable;
-
-              // Add a new row to the model
-              gtk_list_store_append (list_store, &iter);
-              gtk_list_store_set (
-                list_store, &iter,
-                0, "z-text-x-csrc",
-                1, a->label,
-                2, a,
-                -1);
-            }
+          strcpy (icon_name, "z-text-x-csrc");
         }
-    }
-  else if (type > AS_TYPE_CHANNEL)
-    {
-      Plugin * plugin =
-        track->channel->plugins[type - 1];
-
-      if (plugin)
+      else if (type > AS_TYPE_CHANNEL)
         {
-          for (int j = 0;
-               j < plugin->num_ats; j++)
-            {
-              /* get selected automation track */
-              at =
-                plugin->ats[j];
+          Plugin * plugin =
+            track->channel->plugins[type - 1];
+          if (!plugin)
+            continue;
 
-               /*if this automation track is not already*/
-               /*in a visible lane*/
-              if (!at->created || !at->visible ||
-                  at == self->owner)
-                {
-                  Automatable * a =
-                    at->automatable;
+          /* skip non-plugin automation tracks */
+          port =
+            automation_track_get_port (at);
+          if (!(port->id.flags &
+                  PORT_FLAG_PLUGIN_CONTROL))
+            continue;
 
-                  // Add a new row to the model
-                  gtk_list_store_append (
-                    list_store, &iter);
-                  gtk_list_store_set (
-                    list_store, &iter,
-                    0, "z-plugins",
-                    1, a->label,
-                    2, a,
-                    -1);
-                }
-            }
+          strcpy (icon_name, "z-plugins");
+        }
+
+      if (!port)
+        continue;
+
+      /* if this automation track is not
+       * already in a visible lane */
+      if (!at->created || !at->visible ||
+          at == self->owner)
+        {
+          /* add a new row to the model */
+          gtk_list_store_append (
+            list_store, &iter);
+          gtk_list_store_set (
+            list_store, &iter,
+            0, icon_name,
+            1, port->id.label,
+            2, port,
+            -1);
         }
     }
 
   return GTK_TREE_MODEL (list_store);
 }
-
 
 static GtkTreeModel *
 create_model_for_types (
@@ -234,7 +220,7 @@ create_model_for_types (
     -1);
 
   Track * track =
-    self->owner->track;
+    automation_track_get_track (self->owner);
 
   for (int i = 0; i < STRIP_SIZE; i++)
     {
@@ -242,9 +228,10 @@ create_model_for_types (
 
       if (plugin)
         {
-          char * label =
-            g_strdup_printf (
-              "[%d] %s", i, plugin->descr->name);
+          char label[600];
+          sprintf (
+            label, "[%d] %s",
+            i, plugin->descr->name);
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
             list_store, &iter,
@@ -252,7 +239,6 @@ create_model_for_types (
             1, label,
             2, AS_TYPE_PLUGIN_0 + i,
             -1);
-          g_free (label);
         }
     }
 
@@ -301,36 +287,34 @@ on_selection_changed (
                                     &value);
           self->selected_type =
             g_value_get_int (&value);
-          self->automatable_model =
-            create_model_for_automatables (
+          self->port_model =
+            create_model_for_ports (
               self, self->selected_type);
-          self->automatable_treeview =
+          self->port_treeview =
             tree_view_create (
               self,
-              self->automatable_model);
+              self->port_model);
           z_gtk_container_destroy_all_children (
             GTK_CONTAINER (
-              self->automatable_treeview_box));
+              self->port_treeview_box));
           gtk_container_add (
             GTK_CONTAINER (
-              self->automatable_treeview_box),
+              self->port_treeview_box),
             GTK_WIDGET (
-              self->automatable_treeview));
+              self->port_treeview));
 
-          self->selected_automatable = NULL;
+          self->selected_port = NULL;
           update_info_label (self);
         }
       else if (model ==
-                 self->automatable_model)
+                 self->port_model)
         {
-          gtk_tree_model_get_value (model,
-                                    &iter,
-                                    2,
-                                    &value);
-          Automatable * a =
+          gtk_tree_model_get_value (
+            model, &iter, 2, &value);
+          Port * port =
             g_value_get_pointer (&value);
 
-          self->selected_automatable = a;
+          self->selected_port = port;
           update_info_label (self);
         }
     }
@@ -392,24 +376,25 @@ on_closed (
   gpointer                          user_data)
 {
   /* if the selected automatable changed */
-  if (self->selected_automatable &&
-      self->owner->automatable !=
-        self->selected_automatable)
+  Port * at_port =
+    automation_track_get_port (self->owner);
+  if (self->selected_port &&
+      at_port != self->selected_port)
     {
       /* set the previous automation track
        * invisible */
       self->owner->visible = 0;
 
-      g_message ("selected at: %s",
-        self->selected_automatable->label);
+      g_message ("selected port: %s",
+        self->selected_port->id.label);
 
       /* swap indices */
       AutomationTracklist * atl =
         automation_track_get_automation_tracklist (
           self->owner);
       AutomationTrack * selected_at =
-        automation_tracklist_get_at_from_automatable (
-          atl, self->selected_automatable);
+        automation_tracklist_get_at_from_port (
+          atl, self->selected_port);
       g_return_if_fail (selected_at);
       automation_tracklist_set_at_index (
         atl, self->owner, selected_at->index, 0);
@@ -441,16 +426,23 @@ automatable_selector_popover_widget_new (
 
   /* set selected type */
   self->selected_type = AS_TYPE_CHANNEL;
-  Automatable * a = self->owner->automatable;
-  if (a->type >=
-        AUTOMATABLE_TYPE_CHANNEL_FADER)
-    self->selected_type = AS_TYPE_CHANNEL;
-  else if (a->slot > -1)
-    self->selected_type =
-      AS_TYPE_PLUGIN_0 + a->slot;
+  Port * port =
+    automation_track_get_port (self->owner);
+  PortIdentifier * id = &port->id;
+  if (id->flags & PORT_FLAG_CHANNEL_MUTE ||
+      id->flags & PORT_FLAG_CHANNEL_FADER ||
+      id->flags & PORT_FLAG_STEREO_BALANCE)
+    {
+      self->selected_type = AS_TYPE_CHANNEL;
+    }
+  else if (id->flags & PORT_FLAG_PLUGIN_CONTROL)
+    {
+      self->selected_type =
+        AS_TYPE_PLUGIN_0 + id->plugin_slot;
+    }
 
   /* set selected automatable */
-  self->selected_automatable = a;
+  self->selected_port = port;
 
   /* create model/treeview for types */
   self->type_model =
@@ -463,17 +455,17 @@ automatable_selector_popover_widget_new (
     GTK_CONTAINER (self->type_treeview_box),
     GTK_WIDGET (self->type_treeview));
 
-  /* create model/treeview for automatables */
-  self->automatable_model =
-    create_model_for_automatables (
+  /* create model/treeview for ports */
+  self->port_model =
+    create_model_for_ports (
       self, self->selected_type);
-  self->automatable_treeview =
+  self->port_treeview =
     tree_view_create (
       self,
-      self->automatable_model);
+      self->port_model);
   gtk_container_add (
-    GTK_CONTAINER (self->automatable_treeview_box),
-    GTK_WIDGET (self->automatable_treeview));
+    GTK_CONTAINER (self->port_treeview_box),
+    GTK_WIDGET (self->port_treeview));
 
   /* select the automatable */
   self->selecting_manually = 1;
@@ -497,7 +489,7 @@ automatable_selector_popover_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     AutomatableSelectorPopoverWidget,
-    automatable_treeview_box);
+    port_treeview_box);
   gtk_widget_class_bind_template_child (
     klass,
     AutomatableSelectorPopoverWidget,

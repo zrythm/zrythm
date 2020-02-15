@@ -50,14 +50,17 @@ audio_region_new (
   const float *    frames,
   const long       nframes,
   const channels_t channels,
-  const Position * start_pos)
+  const Position * start_pos,
+  int              track_pos,
+  int              lane_pos,
+  int              idx_inside_lane)
 {
   ZRegion * self =
     calloc (1, sizeof (AudioRegion));
   ArrangerObject * obj =
     (ArrangerObject *) self;
 
-  self->type = REGION_TYPE_AUDIO;
+  self->id.type = REGION_TYPE_AUDIO;
   self->pool_id = -1;
 
   AudioClip * clip = NULL;
@@ -117,7 +120,8 @@ audio_region_new (
 
   /* init */
   region_init (
-    self, start_pos, &obj->end_pos);
+    self, start_pos, &obj->end_pos, track_pos,
+    lane_pos, idx_inside_lane);
 
   if (!recording)
     audio_clip_write_to_pool (clip);
@@ -135,7 +139,7 @@ audio_region_get_clip (
 {
   g_return_val_if_fail (
     self->pool_id >= 0 &&
-    self->type == REGION_TYPE_AUDIO,
+    self->id.type == REGION_TYPE_AUDIO,
     NULL);
 
   AudioClip * clip =

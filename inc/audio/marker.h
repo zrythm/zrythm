@@ -82,9 +82,6 @@ typedef struct Marker
   /** Position of Track this ChordObject is in. */
   int            track_pos;
 
-  /** Cache. */
-  Track *        track;
-
   /** Cache layout for drawing the name. */
   PangoLayout *      layout;
 } Marker;

@@ -34,12 +34,12 @@ create_plugins_action_new (
   int       slot,
   int       num_plugins)
 {
-	CreatePluginsAction * self =
+  CreatePluginsAction * self =
     calloc (1, sizeof (
-    	CreatePluginsAction));
+      CreatePluginsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UA_CREATE_PLUGINS;
+    UA_CREATE_PLUGINS;
 
   self->slot = slot;
   self->track_pos = track_pos;
@@ -50,7 +50,7 @@ create_plugins_action_new (
     {
       self->plugins[i] =
         plugin_new_from_descr (
-          &self->descr);
+          &self->descr, track_pos, slot + i);
     }
 
   return ua;
@@ -58,7 +58,7 @@ create_plugins_action_new (
 
 int
 create_plugins_action_do (
-	CreatePluginsAction * self)
+  CreatePluginsAction * self)
 {
   Plugin * pl;
   Channel * ch =
@@ -69,7 +69,9 @@ create_plugins_action_do (
     {
       /* create new plugin */
       pl =
-        plugin_new_from_descr (&self->descr);
+        plugin_new_from_descr (
+          &self->descr, self->track_pos,
+          self->slot + i);
       g_return_val_if_fail (pl, -1);
 
       /* set track */
@@ -108,7 +110,7 @@ create_plugins_action_do (
  */
 int
 create_plugins_action_undo (
-	CreatePluginsAction * self)
+  CreatePluginsAction * self)
 {
   Channel * ch =
     TRACKLIST->tracks[self->track_pos]->channel;
@@ -132,7 +134,7 @@ create_plugins_action_undo (
 
 char *
 create_plugins_action_stringize (
-	CreatePluginsAction * self)
+  CreatePluginsAction * self)
 {
   if (self->num_plugins == 1)
     return g_strdup_printf (
@@ -147,7 +149,7 @@ create_plugins_action_stringize (
 
 void
 create_plugins_action_free (
-	CreatePluginsAction * self)
+  CreatePluginsAction * self)
 {
   free (self);
 }

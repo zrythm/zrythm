@@ -67,13 +67,16 @@ bootstrap_timeline ()
   /* Create and add a MidiRegion with a MidiNote */
   position_set_to_bar (&p1, 2);
   position_set_to_bar (&p2, 4);
-  ZRegion * r =
-    midi_region_new (&p1, &p2);
   Track * track =
-    track_new (TRACK_TYPE_MIDI, MIDI_TRACK_NAME, 1);
+    track_new (
+      TRACK_TYPE_MIDI, TRACKLIST->num_tracks,
+      MIDI_TRACK_NAME, 1);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS,
     F_NO_RECALC_GRAPH);
+  ZRegion * r =
+    midi_region_new (
+      &p1, &p2, track->pos, MIDI_REGION_LANE, 0);
   track_add_region (
     track, r, NULL, MIDI_REGION_LANE, 1, 0);
   arranger_selections_add_object (
@@ -82,26 +85,24 @@ bootstrap_timeline ()
 
   /* add a midi note to the region */
   MidiNote * mn =
-    midi_note_new (r, &p1, &p2, MN_VAL, MN_VEL, 1);
+    midi_note_new (r, &p1, &p2, MN_VAL, MN_VEL);
   midi_region_add_midi_note (r, mn, 0);
-  g_assert_true (mn->region == r);
+  g_assert_true (
+    region_identifier_is_equal (
+      &mn->region_id, &r->id));
   arranger_selections_add_object (
     (ArrangerSelections *) MA_SELECTIONS,
     (ArrangerObject *) mn);
 
   /* Create and add an automation region with
    * 2 AutomationPoint's */
-  r =
-    automation_region_new (&p1, &p2);
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (P_MASTER_TRACK);
-  Automatable * a =
-    channel_get_automatable (
-      P_MASTER_TRACK->channel,
-      AUTOMATABLE_TYPE_CHANNEL_PAN);
   AutomationTrack * at =
-    automation_tracklist_get_at_from_automatable (
-      atl, a);
+    channel_get_automation_track (
+      P_MASTER_TRACK->channel,
+      PORT_FLAG_STEREO_BALANCE);
+  r =
+    automation_region_new (
+      &p1, &p2, P_MASTER_TRACK->pos, at->index, 0);
   track_add_region (
     P_MASTER_TRACK, r, at, 0, 1, 0);
   arranger_selections_add_object (
@@ -129,7 +130,7 @@ bootstrap_timeline ()
   /* Create and add a chord region with
    * 2 Chord's */
   r =
-    chord_region_new (&p1, &p2);
+    chord_region_new (&p1, &p2, 0);
   track_add_region (
     P_CHORD_TRACK, r, NULL, 0, 1, 0);
   arranger_selections_add_object (
@@ -246,20 +247,18 @@ check_timeline_objects_vs_original_state (
   g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
   g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmppos (&obj->end_pos, &p2);
-  g_assert_true (mn->region == r);
+  g_assert_true (
+    region_identifier_is_equal (
+      &mn->region_id, &r->id));
 
   /* check automation region */
   AutomationTracklist * atl =
     track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
-  Automatable * a =
-    channel_get_automatable (
-      P_MASTER_TRACK->channel,
-      AUTOMATABLE_TYPE_CHANNEL_PAN);
-  g_assert_nonnull (a);
   AutomationTrack * at =
-    automation_tracklist_get_at_from_automatable (
-      atl, a);
+    channel_get_automation_track (
+      P_MASTER_TRACK->channel,
+      PORT_FLAG_STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
   obj =
@@ -351,14 +350,10 @@ check_timeline_objects_deleted ()
   AutomationTracklist * atl =
     track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
-  Automatable * a =
-    channel_get_automatable (
-      P_MASTER_TRACK->channel,
-      AUTOMATABLE_TYPE_CHANNEL_PAN);
-  g_assert_nonnull (a);
   AutomationTrack * at =
-    automation_tracklist_get_at_from_automatable (
-      atl, a);
+    channel_get_automation_track (
+      P_MASTER_TRACK->channel,
+      PORT_FLAG_STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 0);
 
@@ -494,7 +489,9 @@ check_after_move_timeline ()
   g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
   g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmppos (&obj->end_pos, &p2);
-  g_assert_true (mn->region == r);
+  g_assert_true (
+    region_identifier_is_equal (
+      &mn->region_id, &r->id));
 
   /* check automation region */
   obj =
@@ -638,14 +635,10 @@ check_after_duplicate_timeline ()
   AutomationTracklist * atl =
     track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
-  Automatable * a =
-    channel_get_automatable (
-      P_MASTER_TRACK->channel,
-      AUTOMATABLE_TYPE_CHANNEL_PAN);
-  g_assert_nonnull (a);
   AutomationTrack * at =
-    automation_tracklist_get_at_from_automatable (
-      atl, a);
+    channel_get_automation_track (
+      P_MASTER_TRACK->channel,
+      PORT_FLAG_STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 2);
   obj =

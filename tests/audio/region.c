@@ -43,7 +43,8 @@ fixture_set_up (
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
   fixture->midi_region =
-    midi_region_new (&start_pos, &end_pos);
+    midi_region_new (
+      &start_pos, &end_pos, 0, 0, 0);
 }
 
 static void
@@ -68,8 +69,10 @@ test_region_is_hit ()
   ZRegion * r = fixture->midi_region;
   ArrangerObject * r_obj =
     (ArrangerObject *) r;
-  position_update_ticks_and_frames (&r_obj->pos);
-  position_update_ticks_and_frames (&r_obj->end_pos);
+  position_update_ticks_and_frames (
+    &r_obj->pos);
+  position_update_ticks_and_frames (
+    &r_obj->end_pos);
 
   Position pos;
   int ret;
@@ -165,13 +168,14 @@ test_new_region ()
   position_set_to_bar (&start_pos, 2);
   position_set_to_bar (&end_pos, 4);
   ZRegion * region =
-    midi_region_new (&start_pos, &end_pos);
+    midi_region_new (
+      &start_pos, &end_pos, 0, 0, 0);
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
 
   g_assert_nonnull (region);
   g_assert_true (
-    region->type == REGION_TYPE_MIDI);
+    region->id.type == REGION_TYPE_MIDI);
   g_assert_true (
     position_is_equal (
       &start_pos, &r_obj->pos));

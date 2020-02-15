@@ -63,14 +63,12 @@ track_init_loaded (Track * track)
   for (j = 0; j < track->num_lanes; j++)
     {
       lane = track->lanes[j];
-      lane->track = track;
       track_lane_init_loaded (lane);
     }
   ScaleObject * scale;
   for (i = 0; i < track->num_scales; i++)
     {
       scale = track->scales[i];
-      scale->track = track;
       arranger_object_init_loaded (
         (ArrangerObject *) scale);
     }
@@ -78,7 +76,6 @@ track_init_loaded (Track * track)
   for (i = 0; i < track->num_markers; i++)
     {
       marker = track->markers[i];
-      marker->track = track;
       arranger_object_init_loaded (
         (ArrangerObject *) marker);
     }
@@ -86,7 +83,7 @@ track_init_loaded (Track * track)
   for (i = 0; i < track->num_chord_regions; i++)
     {
       region = track->chord_regions[i];
-      region->track_pos = track->pos;
+      region->id.track_pos = track->pos;
       arranger_object_init_loaded (
         (ArrangerObject *) region);
     }
@@ -96,17 +93,12 @@ track_init_loaded (Track * track)
   if (track->channel)
     {
       ch = track->channel;
-      ch->track = track;
       channel_init_loaded (ch);
-      g_message (
-        "track %s (ch %p) %p %p", track->name,
-        track->channel, ch->track, track);
     }
 
   /* set track to automation tracklist */
-  AutomationTracklist * atl;
-  atl = &track->automation_tracklist;
-  atl->track = track;
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
   automation_tracklist_init_loaded (atl);
 }
 
@@ -150,8 +142,20 @@ track_init (
   self->visible = 1;
   self->main_height = TRACK_DEF_HEIGHT;
   self->midi_ch = 1;
+  self->processor.track_pos = self->pos;
   self->magic = TRACK_MAGIC;
   track_add_lane (self, 0);
+
+  /* set mute control */
+  self->mute =
+    port_new_with_type (
+      TYPE_CONTROL, FLOW_INPUT, _("Mute"));
+  port_set_control_value (
+    self->mute, 0.f, 0, 0);
+  self->mute->id.flags |=
+    PORT_FLAG_CHANNEL_MUTE;
+  self->mute->id.flags |=
+    PORT_FLAG_TOGGLE;
 }
 
 /**
@@ -161,17 +165,20 @@ track_init (
  * If the TrackType is one that needs a Channel,
  * then a Channel is also created for the track.
  *
+ * @param pos Position in the Tracklist.
  * @param with_lane Init the Track with a lane.
  */
 Track *
 track_new (
   TrackType type,
-  char * label,
+  int       pos,
+  char *    label,
   const int with_lane)
 {
   Track * track =
     calloc (1, sizeof (Track));
 
+  track->pos = pos;
   track_init (track, with_lane);
 
   track->name = g_strdup (label);
@@ -253,11 +260,9 @@ track_new (
     }
 
   automation_tracklist_init (
-    &track->automation_tracklist,
-    track);
+    &track->automation_tracklist, track);
 
   /* if should have channel */
-  Channel * ch;
   switch (type)
     {
     case TRACK_TYPE_MASTER:
@@ -268,13 +273,10 @@ track_new (
     case TRACK_TYPE_AUDIO_GROUP:
     case TRACK_TYPE_MIDI_BUS:
     case TRACK_TYPE_MIDI_GROUP:
-      ch =
+      track->channel =
         channel_new (track);
-      track->channel = ch;
-
-      ch->track = track;
-
-      channel_generate_automation_tracks (ch);
+      channel_generate_automation_tracks (
+        track->channel);
       break;
     case TRACK_TYPE_CHORD:
     case TRACK_TYPE_MARKER:
@@ -293,7 +295,8 @@ track_clone (Track * track)
   int j;
   Track * new_track =
     track_new (
-      track->type, track->name, F_WITHOUT_LANE);
+      track->type, track->pos, track->name,
+      F_WITHOUT_LANE);
 
 #define COPY_MEMBER(a) \
   new_track->a = track->a
@@ -316,7 +319,6 @@ track_clone (Track * track)
       Channel * ch =
         channel_clone (track->channel, new_track);
       new_track->channel = ch;
-      ch->track = new_track;
     }
 
   TrackLane * lane, * new_lane;
@@ -332,7 +334,7 @@ track_clone (Track * track)
        lane = track->lanes[j];
        new_lane =
          track_lane_clone (lane);
-       new_lane->track = new_track;
+       new_lane->track_pos = new_track->pos;
        new_track->lanes[j] = new_lane;
     }
 
@@ -383,6 +385,16 @@ track_select (
       EVENTS_PUSH (
         ET_TRACK_CHANGED, self);
     }
+}
+
+/**
+ * Returns if the track is muted.
+ */
+int
+track_get_muted (
+  Track * self)
+{
+  return self->mute->control > 0.001f;
 }
 
 /**
@@ -469,7 +481,9 @@ track_set_muted (
     }
   else
     {
-      track->mute = mute;
+      port_set_control_value (
+        track->mute, mute ? 1.f : 0.f,
+        0, fire_events);
 
       if (fire_events)
         {
@@ -672,8 +686,8 @@ track_set_soloed (
  */
 void
 track_write_to_midi_file (
-  const Track * self,
-  MIDI_FILE *   mf)
+  Track *     self,
+  MIDI_FILE * mf)
 {
   g_return_if_fail (
     track_has_piano_roll (self));
@@ -813,9 +827,9 @@ track_add_region (
   int      gen_name,
   int      fire_events)
 {
-  if (region->type == REGION_TYPE_AUTOMATION)
+  if (region->id.type == REGION_TYPE_AUTOMATION)
     {
-      track = at->track;
+      track = automation_track_get_track (at);
     }
   g_warn_if_fail (track);
 
@@ -826,7 +840,7 @@ track_add_region (
     }
 
   int add_lane = 0, add_at = 0, add_chord = 0;
-  switch (region->type)
+  switch (region->id.type)
     {
     case REGION_TYPE_MIDI:
       add_lane = 1;
@@ -953,7 +967,7 @@ track_set_pos (
   for (int i = 0; i < track->num_lanes; i++)
     {
       track_lane_set_track_pos (
-        track->lanes[i], pos, 1);
+        track->lanes[i], pos);
     }
   automation_tracklist_update_track_pos (
     &track->automation_tracklist, track);
@@ -970,7 +984,7 @@ track_set_pos (
       for (int i = 0; i < num_ports; i++)
         {
           g_warn_if_fail (ports[i]);
-          ports[i]->identifier.track_pos = pos;
+          ports[i]->id.track_pos = pos;
         }
     }
 }
@@ -1017,25 +1031,25 @@ track_remove_region (
 {
   region_disconnect (region);
 
-  g_warn_if_fail (region->lane_pos >= 0);
+  g_warn_if_fail (region->id.lane_pos >= 0);
 
-  if (region_type_has_lane (region->type))
+  if (region_type_has_lane (region->id.type))
     {
+      TrackLane * lane =
+        region_get_lane (region);
       array_delete (
-        track->lanes[region->lane_pos]->
-          regions,
-        track->lanes[region->lane_pos]->
-          num_regions,
+        lane->regions, lane->num_regions,
         region);
     }
-  else if (region->type == REGION_TYPE_CHORD)
+  else if (region->id.type == REGION_TYPE_CHORD)
     {
       array_delete (
         track->chord_regions,
         track->num_chord_regions,
         region);
     }
-  else if (region->type == REGION_TYPE_AUTOMATION)
+  else if (region->id.type ==
+             REGION_TYPE_AUTOMATION)
     {
       AutomationTrack * at =
         region_get_automation_track (region);
@@ -1153,36 +1167,6 @@ track_get_automation_tracklist (Track * track)
         }
     default:
       g_warn_if_reached ();
-      break;
-    }
-
-  return NULL;
-}
-
-/**
- * Wrapper for track types that have fader automatables.
- *
- * Otherwise returns NULL.
- */
-Automatable *
-track_get_fader_automatable (Track * track)
-{
-  switch (track->type)
-    {
-    case TRACK_TYPE_CHORD:
-      break;
-    case TRACK_TYPE_AUDIO_BUS:
-    case TRACK_TYPE_AUDIO_GROUP:
-    case TRACK_TYPE_MIDI_BUS:
-    case TRACK_TYPE_MIDI_GROUP:
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_INSTRUMENT:
-        {
-          ChannelTrack * bt = (ChannelTrack *) track;
-          return channel_get_fader_automatable (bt->channel);
-        }
-    default:
       break;
     }
 

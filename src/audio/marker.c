@@ -42,6 +42,8 @@ marker_new (
   self->type = MARKER_TYPE_CUSTOM;
   position_set_bar (&obj->pos, 1);
 
+  arranger_object_init (obj);
+
   return self;
 }
 
@@ -53,7 +55,6 @@ marker_set_track (
   Marker * marker,
   Track *  track)
 {
-  marker->track = track;
   marker->track_pos = track->pos;
 }
 

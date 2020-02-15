@@ -65,14 +65,19 @@
 ZRegion *
 midi_region_new (
   const Position * start_pos,
-  const Position * end_pos)
+  const Position * end_pos,
+  int              track_pos,
+  int              lane_pos,
+  int              idx_inside_lane)
 {
   ZRegion * self =
     calloc (1, sizeof (MidiRegion));
 
-  self->type = REGION_TYPE_MIDI;
+  self->id.type = REGION_TYPE_MIDI;
 
-  region_init (self, start_pos, end_pos);
+  region_init (
+    self, start_pos, end_pos, track_pos,
+    lane_pos, idx_inside_lane);
 
    return self;
 }
@@ -311,11 +316,15 @@ ZRegion *
 midi_region_new_from_midi_file (
   const Position * start_pos,
   const char *     abs_path,
+  int              track_pos,
+  int              lane_pos,
+  int              idx_inside_lane,
   int              idx)
 {
   ZRegion * self =
     calloc (1, sizeof (MidiRegion));
-  self->type = REGION_TYPE_MIDI;
+
+  self->id.type = REGION_TYPE_MIDI;
 
   MIDI_FILE * mf =
     midiFileOpen (abs_path);
@@ -335,7 +344,9 @@ midi_region_new_from_midi_file (
   Position end_pos;
   position_from_ticks (
     &end_pos, start_pos->total_ticks + 1);
-  region_init (self, start_pos, &end_pos);
+  region_init (
+    self, start_pos, &end_pos, track_pos,
+    lane_pos, idx_inside_lane);
 
   midiReadInitMessage (&msg);
   iNum = midiReadGetNumTracks(mf);
@@ -670,7 +681,7 @@ midi_region_start_unended_note (
 
   MidiNote * mn =
     midi_note_new (
-      self, start_pos, &end_pos, pitch, vel, 1);
+      self, start_pos, &end_pos, pitch, vel);
   midi_region_add_midi_note (self, mn, pub_events);
 
   /* add to unended notes */
@@ -787,7 +798,10 @@ midi_region_get_midi_ch (
   if (lane->midi_ch > 0)
     ret = lane->midi_ch;
   else
-    ret = lane->track->midi_ch;
+    {
+      Track * track = track_lane_get_track (lane);
+      ret = track->midi_ch;
+    }
 
   g_warn_if_fail (ret > 0);
 

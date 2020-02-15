@@ -30,6 +30,7 @@
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
 #include "audio/position.h"
+#include "audio/region_identifier.h"
 #include "gui/backend/arranger_object.h"
 #include "utils/yaml.h"
 
@@ -59,68 +60,6 @@ typedef struct _AudioClipWidget AudioClipWidget;
     (ArrangerObject *) r)
 
 /**
- * Type of Region.
- *
- * Bitfield instead of plain enum so multiple
- * values can be passed to some functions (eg to
- * collect all Regions of the given types in a
- * Track).
- */
-typedef enum RegionType
-{
-  REGION_TYPE_MIDI = 0x01,
-  REGION_TYPE_AUDIO = 0x02,
-  REGION_TYPE_AUTOMATION = 0x04,
-  REGION_TYPE_CHORD = 0x08,
-} RegionType;
-
-static const cyaml_bitdef_t
-region_type_bitvals[] =
-{
-  { .name = "midi", .offset =  0, .bits =  1 },
-  { .name = "audio", .offset =  1, .bits =  1 },
-  { .name = "automation", .offset = 2, .bits = 1 },
-  { .name = "chord", .offset = 3, .bits = 1 },
-};
-
-/**
- * Index/identifier for a Region, so we can
- * get Region objects quickly with it without
- * searching by name.
- */
-typedef struct RegionIdentifier
-{
-  int   track_pos;
-  int   lane_pos;
-
-  /** Index in lane. */
-  int   idx;
-} RegionIdentifier;
-
-static const cyaml_schema_field_t
-region_identifier_fields_schema[] =
-{
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
-    RegionIdentifier, track_pos),
-  CYAML_FIELD_INT (
-    "lane_pos", CYAML_FLAG_DEFAULT,
-    RegionIdentifier, lane_pos),
-  CYAML_FIELD_INT (
-    "idx", CYAML_FLAG_DEFAULT,
-    RegionIdentifier, idx),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t
-region_identifier_schema = {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
-    RegionIdentifier,
-    region_identifier_fields_schema),
-};
-
-/**
  * A region (clip) is an object on the timeline that
  * contains either MidiNote's or AudioClip's.
  *
@@ -132,33 +71,20 @@ typedef struct ZRegion
   /** Base struct. */
   ArrangerObject base;
 
-  /** Unique ID TODO. */
+  /** Unique ID. */
   RegionIdentifier id;
 
   /** Name to be shown on the widget. */
   char *         name;
 
-  RegionType     type;
-
-  /**
-   * Owner Track position.
-   *
-   * Used in actions after cloning.
-   */
-  int            track_pos;
-
-  /** Owner lane. */
-  //TrackLane *    lane;
-  int            lane_pos;
-
   /**
    * Linked parent region.
    *
-   * Either the midi notes from this region, or the midi
-   * notes from the linked region are used
+   * Either the midi notes from this region,
+   * or the midi notes from the linked region
+   * are used.
    */
-  char *          linked_region_name;
-  struct ZRegion * linked_region; ///< cache
+  RegionIdentifier  linked_region_id;
 
   /** Muted or not */
   int                muted;
@@ -226,20 +152,6 @@ typedef struct ZRegion
   int                num_aps;
   size_t             aps_size;
 
-  /**
-   * Pointer back to the AutomationTrack.
-   *
-   * This doesn't have to be serialized - during
-   * loading, you can traverse the AutomationTrack's
-   * automation Region's and set it.
-   */
-  AutomationTrack *  at;
-
-  /**
-   * Used when undo/redoing.
-   */
-  int                at_index;
-
   /* ==== AUTOMATION REGION END ==== */
 
   /* ==== CHORD REGION ==== */
@@ -275,18 +187,13 @@ static const cyaml_schema_field_t
     "name", CYAML_FLAG_POINTER,
     ZRegion, name,
      0, CYAML_UNLIMITED),
-  CYAML_FIELD_BITFIELD (
-    "type", CYAML_FLAG_DEFAULT,
-    ZRegion, type, region_type_bitvals,
-    CYAML_ARRAY_LEN (region_type_bitvals)),
   CYAML_FIELD_INT (
     "pool_id", CYAML_FLAG_DEFAULT,
     ZRegion, pool_id),
-  CYAML_FIELD_STRING_PTR (
-    "linked_region_name",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ZRegion, linked_region_name,
-    0, CYAML_UNLIMITED),
+  CYAML_FIELD_MAPPING (
+    "linked_region_id", CYAML_FLAG_DEFAULT,
+    ZRegion, linked_region_id,
+    region_identifier_fields_schema),
   CYAML_FIELD_INT (
     "muted", CYAML_FLAG_DEFAULT,
     ZRegion, muted),
@@ -295,12 +202,6 @@ static const cyaml_schema_field_t
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ZRegion, midi_notes, num_midi_notes,
     &midi_note_schema, 0, CYAML_UNLIMITED),
-  CYAML_FIELD_INT (
-    "track_pos", CYAML_FLAG_DEFAULT,
-    ZRegion, track_pos),
-  CYAML_FIELD_INT (
-    "lane_pos", CYAML_FLAG_DEFAULT,
-    ZRegion, lane_pos),
   CYAML_FIELD_SEQUENCE_COUNT (
     "aps", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ZRegion, aps, num_aps,
@@ -327,19 +228,20 @@ void
 region_init (
   ZRegion *   region,
   const Position * start_pos,
-  const Position * end_pos);
+  const Position * end_pos,
+  int              track_pos,
+  int              lane_pos,
+  int              idx_inside_lane);
 
 /**
- * Looks for the ZRegion under the given name.
- *
- * Warning: very expensive function.
+ * Looks for the ZRegion matching the identifier.
  */
 ZRegion *
-region_find_by_name (
-  const char * name);
+region_find (
+  RegionIdentifier * id);
 
 #define region_set_track_pos(_r,_pos) \
-  _r->track_pos = _pos
+  _r->id.track_pos = _pos
 
 /**
  * Print region info for debugging.

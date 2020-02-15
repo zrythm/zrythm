@@ -1001,7 +1001,7 @@ region_draw (
     {
       if (i == REGION_COUNTERPART_LANE)
         {
-          if (!region_type_has_lane (self->type))
+          if (!region_type_has_lane (self->id.type))
             break;
 
           Track * track =
@@ -1010,7 +1010,7 @@ region_draw (
             break;
 
           TrackLane * lane =
-            track->lanes[self->lane_pos];
+            track->lanes[self->id.lane_pos];
           g_return_if_fail (lane);
 
           /* set full rectangle */
@@ -1033,7 +1033,7 @@ region_draw (
       draw_background (
         self, cr, rect, &full_rect, &draw_rect, i);
 
-      switch (self->type)
+      switch (self->id.type)
         {
         case REGION_TYPE_MIDI:
           draw_midi_region (
@@ -1083,7 +1083,7 @@ region_get_lane_full_rect (
   g_return_if_fail (track && track->lanes_visible);
 
   TrackLane * lane =
-    track->lanes[self->lane_pos];
+    track->lanes[self->id.lane_pos];
   g_return_if_fail (lane);
 
   *rect = obj->full_rect;

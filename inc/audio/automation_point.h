@@ -27,10 +27,11 @@
 #define __AUDIO_AUTOMATION_POINT_H__
 
 #include "audio/position.h"
+#include "audio/region_identifier.h"
 #include "gui/backend/arranger_object.h"
 #include "utils/types.h"
 
-typedef struct Automatable Automatable;
+typedef struct Port Port;
 typedef struct AutomationTrack AutomationTrack;
 typedef struct _AutomationPointWidget
 AutomationPointWidget;
@@ -79,10 +80,6 @@ typedef struct AutomationPoint
   /** Normalized value (0 to 1) used as a cache. */
   float           normalized_val;
 
-  /* @note These are not used at the moment. */
-  int             bvalue; ///< boolean value
-  int             svalue; ///< step value
-
   /** Whether the curve tilts upwards FIXME does
    * not work at the  moment. */
   int             curve_up;
@@ -91,18 +88,10 @@ typedef struct AutomationPoint
    * whether it tilts up or down. */
   double          curviness;
 
-  /**
-   * Pointer back to parent.
-   */
-  ZRegion *        region;
+  /** Parent region. */
+  RegionIdentifier region_id;
 
-  /** Used in clones to identify a region instead of
-   * cloning the whole Region. */
-  char *          region_name;
-
-  /** Index in the region, for faster
-   * performance when getting ap before/after
-   * curve. */
+  /** Index in the region. */
   int             index;
 } AutomationPoint;
 
@@ -113,12 +102,6 @@ automation_point_fields_schema[] =
     "base", CYAML_FLAG_DEFAULT,
     AutomationPoint, base,
     arranger_object_fields_schema),
-  CYAML_FIELD_INT (
-    "svalue", CYAML_FLAG_DEFAULT,
-    AutomationPoint, svalue),
-  CYAML_FIELD_INT (
-    "bvalue", CYAML_FLAG_DEFAULT,
-    AutomationPoint, bvalue),
   CYAML_FIELD_FLOAT (
     "fvalue", CYAML_FLAG_DEFAULT,
     AutomationPoint, fvalue),
@@ -134,11 +117,10 @@ automation_point_fields_schema[] =
   CYAML_FIELD_FLOAT (
     "curviness", CYAML_FLAG_DEFAULT,
     AutomationPoint, curviness),
-  CYAML_FIELD_STRING_PTR (
-    "region_name",
-    CYAML_FLAG_OPTIONAL | CYAML_FLAG_POINTER,
-    AutomationPoint, region_name,
-     0, CYAML_UNLIMITED),
+  CYAML_FIELD_MAPPING (
+    "region_id", CYAML_FLAG_DEFAULT,
+    AutomationPoint, region_id,
+    region_identifier_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -207,11 +189,11 @@ automation_point_set_curviness (
 	const int         curve_up);
 
 /**
- * Convenience function to return the Automatable
+ * Convenience function to return the control port
  * that this AutomationPoint is for.
  */
-Automatable *
-automation_point_get_automatable (
+Port *
+automation_point_get_port (
   AutomationPoint * self);
 
 /**

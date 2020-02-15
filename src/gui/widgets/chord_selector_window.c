@@ -537,7 +537,7 @@ chord_selector_window_widget_new (
 
   ArrangerObject * region_obj =
     (ArrangerObject *)
-    CLIP_EDITOR->region;
+    clip_editor_get_region (CLIP_EDITOR);
   g_return_val_if_fail (region_obj, NULL);
 
   self->scale =

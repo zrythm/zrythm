@@ -28,6 +28,7 @@
 
 #include <stdint.h>
 
+#include "audio/region_identifier.h"
 #include "gui/backend/arranger_object.h"
 
 #include <cyaml/cyaml.h>
@@ -65,12 +66,11 @@ typedef struct Velocity
    * the start of actions. */
   uint8_t          cache_vel;
 
-  /**
-   * Owner.
-   *
-   * For convenience only.
-   */
-  MidiNote *       midi_note;
+  /** ID of the region the midi note is in. */
+  RegionIdentifier region_id;
+
+  /** Index of the midi note in the region. */
+  int              note_pos;
 } Velocity;
 
 static const cyaml_schema_field_t
@@ -83,6 +83,13 @@ velocity_fields_schema[] =
   CYAML_FIELD_UINT (
     "vel", CYAML_FLAG_DEFAULT,
     Velocity, vel),
+  CYAML_FIELD_MAPPING (
+    "region_id", CYAML_FLAG_DEFAULT,
+    Velocity, region_id,
+    region_identifier_fields_schema),
+  CYAML_FIELD_INT (
+    "note_pos", CYAML_FLAG_DEFAULT,
+    Velocity, note_pos),
 
   CYAML_FIELD_END
 };
@@ -100,8 +107,7 @@ velocity_schema = {
 Velocity *
 velocity_new (
   MidiNote *    midi_note,
-  const uint8_t vel,
-  const int     is_main);
+  const uint8_t vel);
 
 /**
  * Sets the MidiNote the Velocity belongs to.
@@ -146,6 +152,13 @@ void
 velocity_set_val (
   Velocity *    self,
   const int     val);
+
+/**
+ * Returns the owner MidiNote.
+ */
+MidiNote *
+velocity_get_midi_note (
+  Velocity * self);
 
 /**
  * @}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -47,8 +47,8 @@ typedef struct MixerSelections
   /** Channel selected. */
   int       track_pos;
 
-  /** Cache. */
-  Track * track;
+  /** Whether any slot is selected. */
+  int       has_any;
 } MixerSelections;
 
 static const cyaml_schema_field_t
@@ -59,17 +59,22 @@ static const cyaml_schema_field_t
     MixerSelections, slots,
     num_slots,
     &int_schema, 0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "track_pos", CYAML_FLAG_DEFAULT,
     MixerSelections, track_pos),
+  CYAML_FIELD_INT (
+    "has_any", CYAML_FLAG_DEFAULT,
+    MixerSelections, has_any),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 mixer_selections_schema = {
-  CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
-    MixerSelections, mixer_selections_fields_schema),
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    MixerSelections,
+    mixer_selections_fields_schema),
 };
 
 void
@@ -113,6 +118,13 @@ mixer_selections_paste_to_slot (
   MixerSelections * ts,
   Channel *         ch,
   int               slot);
+
+/**
+ * Get current Track.
+ */
+Track *
+mixer_selections_get_track (
+  MixerSelections * self);
 
 /**
  * Returns if the slot is selected or not.

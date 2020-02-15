@@ -45,11 +45,12 @@ marker_track_init (
  * Creates the default marker track.
  */
 MarkerTrack *
-marker_track_default ()
+marker_track_default (
+  int   track_pos)
 {
   Track * self =
     track_new (
-      TRACK_TYPE_MARKER, _("Markers"),
+      TRACK_TYPE_MARKER, track_pos, _("Markers"),
       F_WITHOUT_LANE);
 
   /* add start and end markers */

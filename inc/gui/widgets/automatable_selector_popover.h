@@ -34,6 +34,12 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _AutomatableSelectorButtonWidget
   AutomatableSelectorButtonWidget;
 
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
 typedef enum AutomatableSelectorType
 {
   AS_TYPE_CHANNEL,
@@ -48,6 +54,10 @@ typedef enum AutomatableSelectorType
   AS_TYPE_PLUGIN_8,
 } AutomatableSelectorType;
 
+/**
+ * A popover for selecting the automation track
+ * to automate.
+ */
 typedef struct _AutomatableSelectorPopoverWidget
 {
   GtkPopover              parent_instance;
@@ -58,9 +68,9 @@ typedef struct _AutomatableSelectorPopoverWidget
   GtkBox *                type_treeview_box;
   GtkTreeView *           type_treeview;
   GtkTreeModel *          type_model;
-  GtkBox *                automatable_treeview_box;
-  GtkTreeView *           automatable_treeview;
-  GtkTreeModel *          automatable_model;
+  GtkBox *                port_treeview_box;
+  GtkTreeView *           port_treeview;
+  GtkTreeModel *          port_model;
 
   GtkLabel *              info;
 
@@ -71,13 +81,13 @@ typedef struct _AutomatableSelectorPopoverWidget
   AutomatableSelectorType selected_type;
 
   /**
-   * The selected Automatable will be stored here
+   * The selected Port will be stored here
    * and passed to the button when closing so that
    * it can hide the current AutomationTrack and
    * create/show the one corresponding to this
    * Automatable.
    */
-  Automatable *           selected_automatable;
+  Port *       selected_port;
 } AutomatableSelectorPopoverWidget;
 
 /**
@@ -86,5 +96,9 @@ typedef struct _AutomatableSelectorPopoverWidget
 AutomatableSelectorPopoverWidget *
 automatable_selector_popover_widget_new (
   AutomationTrack * owner);
+
+/**
+ * @}
+ */
 
 #endif

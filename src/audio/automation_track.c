@@ -41,9 +41,6 @@ void
 automation_track_init_loaded (
   AutomationTrack * self)
 {
-  self->automatable->track = self->track;
-  automatable_init_loaded (self->automatable);
-
   /* init regions */
   self->regions_size =
     (size_t) self->num_regions;
@@ -52,22 +49,20 @@ automation_track_init_loaded (
   for (i = 0; i < self->num_regions; i++)
     {
       region = self->regions[i];
-      region->at = self;
       arranger_object_init_loaded (
         (ArrangerObject *) region);
     }
 }
 
 AutomationTrack *
-automation_track_new (Automatable *   a)
+automation_track_new (
+  Port * port)
 {
-  g_warn_if_fail (a->track);
-
   AutomationTrack * self =
     calloc (1, sizeof (AutomationTrack));
 
-  self->track = a->track;
-  self->automatable = a;
+  port_identifier_copy (
+    &self->port_id, &port->id);
 
   self->regions_size = 1;
   self->regions =
@@ -89,7 +84,7 @@ automation_track_add_region (
 {
   g_return_if_fail (self);
   g_return_if_fail (
-    region->type == REGION_TYPE_AUTOMATION);
+    region->id.type == REGION_TYPE_AUTOMATION);
 
   array_double_size_if_full (
     self->regions, self->num_regions,
@@ -105,8 +100,10 @@ AutomationTracklist *
 automation_track_get_automation_tracklist (
   AutomationTrack * self)
 {
+  Track * track =
+    automation_track_get_track (self);
   return
-    track_get_automation_tracklist (self->track);
+    track_get_automation_tracklist (track);
 }
 
 /**
@@ -169,6 +166,32 @@ automation_track_get_ap_before_pos (
   return NULL;
 }
 
+Track *
+automation_track_get_track (
+  AutomationTrack * self)
+{
+  g_return_val_if_fail (
+    self &&
+      self->port_id.track_pos <
+        TRACKLIST->num_tracks,
+    NULL);
+  Track * track =
+    TRACKLIST->tracks[self->port_id.track_pos];
+  g_return_val_if_fail (track, NULL);
+
+  return track;
+}
+
+Port *
+automation_track_get_port (
+  AutomationTrack * self)
+{
+  Port * port =
+    port_find_from_identifier (&self->port_id);
+
+  return port;
+}
+
 /**
  * Sets the index of the AutomationTrack in the
  * AutomationTracklist.
@@ -183,10 +206,11 @@ automation_track_set_index (
   for (int i = 0; i < self->num_regions; i++)
     {
       g_return_if_fail (self->regions[i]);
-      self->regions[i]->at_index = index;
+      self->regions[i]->id.at_idx = index;
     }
 
-  Track * track = self->track;
+  Track * track =
+    automation_track_get_track (self);
   if (self->top_left_buttons[0] &&
       track && track->widget &&
       track->widget->layout)
@@ -196,7 +220,7 @@ automation_track_set_index (
           /*"%d - %s",*/
           "%s",
           /*self->index, */
-          self->automatable->label);
+          self->port_id.label);
       custom_button_widget_set_text (
         self->top_left_buttons[0],
         track->widget->layout, text);
@@ -228,13 +252,15 @@ automation_track_get_normalized_val_at_pos (
   if (!ap)
     return -1.f;
 
+  ZRegion * region =
+    arranger_object_get_region (ap_obj);
   long localp =
     region_timeline_frames_to_local (
-      ap->region, pos->frames, 1);
+      region, pos->frames, 1);
 
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
-      ap->region, ap);
+      region, ap);
   ArrangerObject * next_ap_obj =
     (ArrangerObject *) next_ap;
   /*g_message ("prev fvalue %f next %f",*/
@@ -354,8 +380,8 @@ automation_track_clone (
     malloc (dest->regions_size *
             sizeof (ZRegion *));
 
-  dest->automatable =
-    automatable_clone (src->automatable);
+  port_identifier_copy (
+    &dest->port_id, &src->port_id);
 
   ZRegion * src_region;
   for (int j = 0; j < src->num_regions; j++)

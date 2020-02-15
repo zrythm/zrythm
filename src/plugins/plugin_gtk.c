@@ -114,9 +114,10 @@ plugin_gtk_set_window_title (
   Plugin *    plugin,
   GtkWindow * window)
 {
-  g_return_if_fail (
-    plugin && plugin->descr && plugin->track);
-  const char* track_name = plugin->track->name;
+  g_return_if_fail (plugin && plugin->descr);
+  Track * track =
+    plugin_get_track (plugin);
+  const char* track_name = track->name;
   const char* plugin_name = plugin->descr->name;
   g_return_if_fail (
     track_name && plugin_name && window);

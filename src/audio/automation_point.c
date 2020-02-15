@@ -27,6 +27,7 @@
 #include "audio/automation_region.h"
 #include "audio/automation_track.h"
 #include "audio/channel.h"
+#include "audio/control_port.h"
 #include "audio/instrument_track.h"
 #include "audio/port.h"
 #include "audio/position.h"
@@ -58,6 +59,8 @@ _create_new (
 
   self->index = -1;
 
+  arranger_object_init (obj);
+
   return self;
 }
 
@@ -69,12 +72,12 @@ _create_new (
 void
 automation_point_set_region_and_index (
   AutomationPoint * ap,
-  ZRegion *          region,
+  ZRegion *         region,
   int               index)
 {
   g_return_if_fail (ap && region);
-  ap->region = region;
-  ap->region_name = g_strdup (region->name);
+  region_identifier_copy (
+    &ap->region_id, &region->id);
   ap->index = index;
 }
 
@@ -229,9 +232,12 @@ automation_point_curves_up (
 {
   g_return_val_if_fail (self, -1);
 
+  ZRegion * region =
+    arranger_object_get_region (
+      (ArrangerObject *) self);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
-      self->region, self);
+      region, self);
 
   if (!next_ap)
     return 0;
@@ -251,17 +257,21 @@ automation_point_set_fvalue (
   AutomationPoint * self,
   float             real_val)
 {
-  Automatable * a = self->region->at->automatable;
+  Port * port =
+    automation_point_get_port (self);
   g_message ("setting to %f", (double) real_val);
   float normalized_val =
-    automatable_real_val_to_normalized (
-      a, real_val);
+    control_port_real_val_to_normalized (
+      port, real_val);
   self->normalized_val = normalized_val;
   self->fvalue = real_val;
 
-  g_return_if_fail (self->region);
-  automatable_set_val_from_normalized (
-    a, normalized_val, 1);
+  ZRegion * region =
+    arranger_object_get_region (
+      (ArrangerObject *) self);
+  g_return_if_fail (region);
+  control_port_set_val_from_normalized (
+    port, normalized_val, 1);
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_CHANGED, self);
@@ -321,9 +331,12 @@ automation_point_get_normalized_value_in_curve (
   AutomationPoint * self,
   double            x)
 {
+  ZRegion * region =
+    arranger_object_get_region (
+      (ArrangerObject *) self);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (
-      self->region, self);
+      region, self);
 
   double dy;
 
@@ -360,18 +373,21 @@ automation_point_set_curviness (
 }
 
 /**
- * Convenience function to return the Automatable
+ * Convenience function to return the control port
  * that this AutomationPoint is for.
  */
-Automatable *
-automation_point_get_automatable (
+Port *
+automation_point_get_port (
   AutomationPoint * self)
 {
   AutomationTrack * at =
     automation_point_get_automation_track (self);
   g_return_val_if_fail (at, NULL);
+  Port * port =
+    automation_track_get_port (at);
+  g_return_val_if_fail (port, NULL);
 
-  return at->automatable;
+  return port;
 }
 
 /**
@@ -403,7 +419,10 @@ AutomationTrack *
 automation_point_get_automation_track (
   AutomationPoint * self)
 {
-  g_return_val_if_fail (
-    self && self->region, NULL);
-  return region_get_automation_track (self->region);
+  g_return_val_if_fail (self, NULL);
+  ZRegion * region =
+    arranger_object_get_region (
+      (ArrangerObject *) self);
+  g_return_val_if_fail (region, NULL);
+  return region_get_automation_track (region);
 }

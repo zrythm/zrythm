@@ -64,13 +64,13 @@ get_port_str (
   Port * port,
   char * buf)
 {
-  if (port->identifier.owner_type ==
+  if (port->id.owner_type ==
         PORT_OWNER_TYPE_PLUGIN ||
-      port->identifier.owner_type ==
+      port->id.owner_type ==
         PORT_OWNER_TYPE_FADER ||
-      port->identifier.owner_type ==
+      port->id.owner_type ==
         PORT_OWNER_TYPE_TRACK ||
-      port->identifier.owner_type ==
+      port->id.owner_type ==
         PORT_OWNER_TYPE_PREFADER)
     {
       int num_midi_mappings = 0;
@@ -82,7 +82,7 @@ get_port_str (
 
       const char * star =
         (num_midi_mappings > 0 ? "*" : "");
-      if (port->identifier.flow == FLOW_INPUT)
+      if (port->id.flow == FLOW_INPUT)
         {
 #define ORANGIZE(x) \
   "<span " \
@@ -93,11 +93,11 @@ get_port_str (
             buf, "%s <small><sup>"
             ORANGIZE ("%d%s")
             "</sup></small>",
-            port->identifier.label,
+            port->id.label,
             num_unlocked_srcs, star);
           return 1;
         }
-      else if (port->identifier.flow == FLOW_OUTPUT)
+      else if (port->id.flow == FLOW_OUTPUT)
         {
           int num_unlocked_dests =
             port_get_num_unlocked_dests (port);
@@ -105,7 +105,7 @@ get_port_str (
             buf, "%s <small><sup>"
             ORANGIZE ("%d%s")
             "</sup></small>",
-            port->identifier.label,
+            port->id.label,
             num_unlocked_dests, star);
           return 1;
 #undef ORANGIZE
@@ -159,7 +159,7 @@ show_context_menu (
 
   menu = gtk_menu_new();
 
-  if (self->port->identifier.type ==
+  if (self->port->id.type ==
         TYPE_CONTROL)
     {
       menuitem =
@@ -242,7 +242,7 @@ get_port_value (
   InspectorPortWidget * self)
 {
   Port * port = self->port;
-  switch (port->identifier.type)
+  switch (port->id.type)
     {
     case TYPE_AUDIO:
       {
@@ -340,7 +340,7 @@ bar_slider_tick_cb (
       port_get_full_designation (
         self->port, full_designation);
       const char * src_or_dest_str =
-        self->port->identifier.flow == FLOW_INPUT ?
+        self->port->id.flow == FLOW_INPUT ?
         _("Incoming signals") :
         _("Outgoing signals");
       sprintf (
@@ -351,7 +351,7 @@ bar_slider_tick_cb (
         "%s: <b>%f</b>",
         full_designation,
         src_or_dest_str,
-        self->port->identifier.flow == FLOW_INPUT ?
+        self->port->id.flow == FLOW_INPUT ?
           self->port->num_srcs :
           self->port->num_dests,
         _("Current val"),
@@ -394,7 +394,7 @@ inspector_port_widget_new (
 
   char str[200];
   int has_str = 0;
-  if (!port->identifier.label)
+  if (!port->id.label)
     {
       g_warning ("No port label");
       goto inspector_port_new_end;
@@ -406,14 +406,14 @@ inspector_port_widget_new (
     {
       float minf = port->minf;
       float maxf = port->maxf;
-      if (port->identifier.type == TYPE_AUDIO)
+      if (port->id.type == TYPE_AUDIO)
         {
           /* use fader val for audio */
           maxf = 1.f;
         }
       float zerof = port->zerof;
       int editable = 0;
-      if (port->identifier.type == TYPE_CONTROL)
+      if (port->id.type == TYPE_CONTROL)
         editable = 1;
       self->bar_slider =
         _bar_slider_widget_new (
@@ -445,9 +445,9 @@ inspector_port_widget_new (
   if (AUDIO_ENGINE->audio_backend ==
         AUDIO_BACKEND_JACK)
     {
-      if (port->identifier.type ==
+      if (port->id.type ==
             TYPE_AUDIO ||
-          port->identifier.type ==
+          port->id.type ==
             TYPE_EVENT)
         {
           self->jack =

@@ -92,48 +92,51 @@ typedef struct TrackProcessor
   float            l_port_db;
   float            r_port_db;
 
-  /** Pointer back to owner Track. */
-  Track *          track;
+  /** Position of parent Track. */
+  int              track_pos;
 } TrackProcessor;
 
 static const cyaml_schema_field_t
 track_processor_fields_schema[] =
 {
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "midi_in",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     TrackProcessor, midi_in,
     port_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "midi_out",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     TrackProcessor, midi_out,
     port_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "piano_roll",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     TrackProcessor, piano_roll,
     port_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "stereo_in",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     TrackProcessor, stereo_in,
     stereo_ports_fields_schema),
-	CYAML_FIELD_MAPPING_PTR (
+  CYAML_FIELD_MAPPING_PTR (
     "stereo_out",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     TrackProcessor, stereo_out,
     stereo_ports_fields_schema),
+  CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    TrackProcessor, track_pos),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 track_processor_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-	  TrackProcessor, track_processor_fields_schema),
+    TrackProcessor, track_processor_fields_schema),
 };
 
 /**
@@ -167,6 +170,10 @@ track_processor_clear_buffers (
  */
 void
 track_processor_disconnect_all (
+  TrackProcessor * self);
+
+Track *
+track_processor_get_track (
   TrackProcessor * self);
 
 /**

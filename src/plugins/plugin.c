@@ -33,6 +33,7 @@
 
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
+#include "audio/control_port.h"
 #include "audio/engine.h"
 #include "audio/track.h"
 #include "audio/transport.h"
@@ -50,43 +51,13 @@
 #include "utils/math.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 /**
  * Plugin UI refresh rate limits.
  */
 #define MIN_REFRESH_RATE 30.f
 #define MAX_REFRESH_RATE 60.f
-
-static void
-get_automation_tracks (
-  Plugin * self)
-{
-  g_return_if_fail (self->track);
-
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (self->track);
-  AutomationTrack * at;
-  for (int i = 0; i < atl->num_ats; i++)
-    {
-      at = atl->ats[i];
-
-      if (at->automatable->type !=
-            AUTOMATABLE_TYPE_PLUGIN_CONTROL &&
-          at->automatable->type !=
-            AUTOMATABLE_TYPE_PLUGIN_ENABLED)
-        continue;
-
-      array_double_size_if_full (
-        self->ats,
-        self->num_ats,
-        self->ats_size,
-        AutomationTrack *);
-      array_append (
-        self->ats,
-        self->num_ats,
-        at);
-    }
-}
 
 void
 plugin_init_loaded (
@@ -109,40 +80,40 @@ plugin_init_loaded (
       break;
     }
 
-  self->ats_size = 1;
-  self->ats =
-    calloc (1, sizeof (AutomationTrack *));
-
   plugin_instantiate (self);
 
-  get_automation_tracks (self);
+  plugin_generate_automation_tracks (self);
 }
 
 static void
 plugin_init (
-  Plugin * plugin)
+  Plugin * plugin,
+  int      track_pos,
+  int      slot)
 {
   plugin->in_ports_size = 1;
   plugin->out_ports_size = 1;
-  plugin->unknown_ports_size = 1;
-  plugin->ats_size = 1;
-  plugin->slot = -1;
+  plugin->id.track_pos = track_pos;
+  plugin->id.slot = slot;
   plugin->magic = PLUGIN_MAGIC;
 
   plugin->in_ports =
     calloc (1, sizeof (Port *));
-  /*plugin->in_port_ids =*/
-    /*calloc (1, sizeof (PortIdentifier));*/
   plugin->out_ports =
     calloc (1, sizeof (Port *));
-  /*plugin->out_port_ids =*/
-    /*calloc (1, sizeof (PortIdentifier));*/
-  plugin->unknown_ports =
-    calloc (1, sizeof (Port *));
-  /*plugin->unknown_port_ids =*/
-    /*calloc (1, sizeof (PortIdentifier));*/
-  plugin->ats =
-    calloc (1, sizeof (AutomationTrack *));
+
+  /* add enabled port */
+  Port * port =
+    port_new_with_type (
+      TYPE_CONTROL, FLOW_INPUT, _("Enabled"));
+  plugin_add_in_port (plugin, port);
+  port->id.flags |=
+    PORT_FLAG_PLUGIN_ENABLED;
+  port->minf = 0.f;
+  port->maxf = 1.f;
+  port->zerof = 0.1f;
+  port->deff = 1.f;
+  port->control = 1.f;
 }
 
 /**
@@ -152,13 +123,15 @@ plugin_init (
  */
 Plugin *
 plugin_new_from_descr (
-  const PluginDescriptor * descr)
+  const PluginDescriptor * descr,
+  int                      track_pos,
+  int                      slot)
 {
   Plugin * plugin = calloc (1, sizeof (Plugin));
 
   plugin->descr =
     plugin_descriptor_clone (descr);
-  plugin_init (plugin);
+  plugin_init (plugin, track_pos, slot);
 
 #ifdef HAVE_CARLA
   if (descr->open_with_carla)
@@ -200,36 +173,26 @@ void
 plugin_remove_ats_from_automation_tracklist (
   Plugin * pl)
 {
-  for (int i = 0; i < pl->num_ats; i++)
-    {
-      automation_tracklist_remove_at (
-        &pl->track->automation_tracklist,
-        pl->ats[i], F_NO_FREE);
-    }
-}
-
-/**
- * Adds an AutomationTrack to the Plugin.
- */
-void
-plugin_add_automation_track (
-  Plugin * self,
-  AutomationTrack * at)
-{
-  g_warn_if_fail (self->track);
-
-  array_double_size_if_full (
-    self->ats,
-    self->num_ats,
-    self->ats_size,
-    AutomationTrack *);
-  array_append (
-    self->ats,
-    self->num_ats,
-    at);
+  Track * track = plugin_get_track (pl);
   AutomationTracklist * atl =
-    track_get_automation_tracklist (self->track);
-  automation_tracklist_add_at (atl, at);
+    track_get_automation_tracklist (track);
+  for (int i = 0; i < atl->num_ats; i++)
+    {
+      AutomationTrack * at = atl->ats[i];
+      Port * port =
+        automation_track_get_port (at);
+      if (port->id.owner_type ==
+            PORT_OWNER_TYPE_PLUGIN)
+        {
+          Plugin * port_pl =
+            port_get_plugin (port, 1);
+          if (port_pl == pl)
+            {
+              automation_tracklist_remove_at (
+                atl, at, F_NO_FREE);
+            }
+        }
+    }
 }
 
 /**
@@ -242,9 +205,8 @@ plugin_set_channel_and_slot (
   Channel * ch,
   int       slot)
 {
-  pl->track = ch->track;
-  pl->track_pos = ch->track->pos;
-  pl->slot = slot;
+  pl->id.track_pos = ch->track_pos;
+  pl->id.slot = slot;
 
   int i;
   Port * port;
@@ -256,11 +218,6 @@ plugin_set_channel_and_slot (
   for (i = 0; i < pl->num_out_ports; i++)
     {
       port = pl->out_ports[i];
-      port_set_owner_plugin (port, pl);
-    }
-  for (i = 0; i < pl->num_unknown_ports; i++)
-    {
-      port = pl->unknown_ports[i];
       port_set_owner_plugin (port, pl);
     }
 
@@ -297,6 +254,47 @@ plugin_has_supported_custom_ui (
       break;
     }
   g_return_val_if_reached (-1);
+}
+
+Track *
+plugin_get_track (
+  Plugin * self)
+{
+  g_return_val_if_fail (
+    self &&
+      self->id.track_pos < TRACKLIST->num_tracks,
+    NULL);
+  Track * track =
+    TRACKLIST->tracks[self->id.track_pos];
+  g_return_val_if_fail (track, NULL);
+
+  return track;
+}
+
+Channel *
+plugin_get_channel (
+  Plugin * self)
+{
+  Track * track = plugin_get_track (self);
+  g_return_val_if_fail (track, NULL);
+  Channel * ch = track->channel;
+  g_return_val_if_fail (ch, NULL);
+
+  return ch;
+}
+
+Plugin *
+plugin_find (
+  PluginIdentifier * id)
+{
+  Plugin plugin;
+  plugin_identifier_copy (
+    &plugin.id, id);
+  Channel * ch = plugin_get_channel (&plugin);
+  Plugin * ret = ch->plugins[id->slot];
+  g_return_val_if_fail (ret, NULL);
+
+  return ret;
 }
 
 /**
@@ -340,7 +338,7 @@ plugin_update_latency (
           sizeof (Port *) * \
             pl->type##_ports_size); \
     } \
-  port->identifier.port_index = \
+  port->id.port_index = \
     pl->num_##type##_ports; \
   port_set_owner_plugin (port, pl); \
   array_append ( \
@@ -369,17 +367,6 @@ plugin_add_out_port (
 {
   ADD_PORT (out);
 }
-
-/**
- * Adds an unknown port to the plugin's list.
- */
-void
-plugin_add_unknown_port (
-  Plugin * pl,
-  Port *   port)
-{
-  ADD_PORT (unknown);
-}
 #undef ADD_PORT
 
 /**
@@ -392,21 +379,23 @@ plugin_move_automation (
   Channel * prev_ch,
   Channel * ch)
 {
+  Track * prev_track =
+    channel_get_track (prev_ch);
   AutomationTracklist * prev_atl =
-    &prev_ch->track->automation_tracklist;
+    track_get_automation_tracklist (prev_track);
+  Track * track =
+    channel_get_track (ch);
   AutomationTracklist * atl =
-    &ch->track->automation_tracklist;
+    track_get_automation_tracklist (track);
 
-  int i;
-  AutomationTrack * at;
-  for (i = 0; i < prev_atl->num_ats; i++)
+  for (int i = 0; i < prev_atl->num_ats; i++)
     {
-      at = prev_atl->ats[i];
-
-      Port * port = at->automatable->port;
+      AutomationTrack * at = prev_atl->ats[i];
+      Port * port =
+        automation_track_get_port (at);
       if (!port)
         continue;
-      if (port->identifier.owner_type ==
+      if (port->id.owner_type ==
             PORT_OWNER_TYPE_PLUGIN)
         {
           Plugin * port_pl =
@@ -420,8 +409,7 @@ plugin_move_automation (
         prev_atl, at, F_NO_FREE);
 
       /* add to new channel */
-      automation_tracklist_add_at (
-        atl, at);
+      automation_tracklist_add_at (atl, at);
     }
 }
 
@@ -483,100 +471,45 @@ plugin_set_ui_refresh_rate (
 /**
  * Generates automatables for the plugin.
  *
- *
  * Plugin must be instantiated already.
  */
 void
 plugin_generate_automation_tracks (
-  Plugin * plugin)
+  Plugin * self)
 {
-  g_message ("generating automatables for %s...",
-             plugin->descr->name);
+  g_message (
+    "generating automation tracks for %s...",
+    self->descr->name);
 
-  AutomationTrack * at;
-  Automatable * a;
+  Track * track = plugin_get_track (self);
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  for (int i = 0; i < self->num_in_ports; i++)
+  {
+    Port * port = self->in_ports[i];
+    if (port->id.type != TYPE_CONTROL)
+      continue;
 
-  /* add plugin enabled automatable */
-  a =
-    automatable_create_plugin_enabled (plugin);
-  at = automation_track_new (a);
-  plugin_add_automation_track (
-    plugin, at);
+    AutomationTrack * at =
+      automation_track_new (port);
+    automation_tracklist_add_at (atl, at);
+  }
+}
 
-  /* add plugin control automatables */
-#ifdef HAVE_CARLA
-  if (plugin->descr->open_with_carla)
+/**
+ * Gets the enable/disable port for this plugin.
+ */
+Port *
+plugin_get_enabled_port (
+  Plugin * self)
+{
+  for (int i = 0; i < self->num_in_ports; i++)
     {
-       for (uint32_t i = 0;
-            i <
-              carla_native_plugin_get_param_count (
-                plugin->carla);
-            i++)
-         {
-           const NativeParameter * param =
-             carla_native_plugin_get_param_info (
-               plugin->carla, i);
-           a =
-             automatable_create_carla_control (
-              plugin, param);
-           at = automation_track_new (a);
-           plugin_add_automation_track (
-             plugin, at);
-         }
+      Port * port = self->in_ports[i];
+      if (port->id.flags & PORT_FLAG_PLUGIN_ENABLED)
+        return port;
     }
-  else
-    {
-#endif
-      switch (plugin->descr->protocol)
-        {
-        case PROT_LV2:
-          {
-            Lv2Plugin * lv2_plugin = plugin->lv2;
-            for (int j = 0;
-                 j < lv2_plugin->controls.n_controls;
-                 j++)
-              {
-                Lv2Control * control =
-                  lv2_plugin->controls.controls[j];
-                a =
-                  automatable_create_lv2_control (
-                    plugin, control);
-                at = automation_track_new (a);
-                plugin_add_automation_track (
-                  plugin, at);
-              }
-          }
-          break;
-        case PROT_VST:
-          {
-            VstPlugin * vst = plugin->vst;
-            g_return_if_fail (vst && vst->aeffect);
-            for (int i = 0;
-                 i < plugin->num_in_ports; i++)
-              {
-                Port * port = plugin->in_ports[i];
-                if (port->identifier.type !=
-                      TYPE_CONTROL)
-                  continue;
-
-                a =
-                  automatable_create_vst_control (
-                    plugin, port);
-                at = automation_track_new (a);
-                plugin_add_automation_track (
-                  plugin, at);
-              }
-          }
-          break;
-        default:
-          g_warning (
-            "%s: Plugin protocol not supported yet",
-            __func__);
-          break;
-        }
-#ifdef HAVE_CARLA
-    }
-#endif
+  g_return_val_if_reached (NULL);
 }
 
 /**
@@ -588,22 +521,17 @@ plugin_set_track (
   Track * tr)
 {
   g_return_if_fail (tr);
-  pl->track = tr;
-  pl->track_pos = tr->pos;
+  pl->id.track_pos = tr->pos;
 
   /* set port identifier track poses */
   int i;
   for (i = 0; i < pl->num_in_ports; i++)
     {
-      /*pl->in_port_ids[i].track_pos = tr->pos;*/
+      pl->in_ports[i]->id.track_pos = tr->pos;
     }
   for (i = 0; i < pl->num_out_ports; i++)
     {
-      /*pl->out_port_ids[i].track_pos = tr->pos;*/
-    }
-  for (i = 0; i < pl->num_unknown_ports; i++)
-    {
-      /*pl->unknown_port_ids[i].track_pos = tr->pos;*/
+      pl->out_ports[i]->id.track_pos = tr->pos;
     }
 }
 
@@ -660,7 +588,8 @@ plugin_instantiate (
 #ifdef HAVE_CARLA
     }
 #endif
-  pl->enabled = 1;
+  control_port_set_val_from_normalized (
+    pl->enabled, 1.f, 0);
 
   return 0;
 }
@@ -720,8 +649,8 @@ plugin_process (
   for (int i = 0; i < plugin->num_in_ports; i++)
     {
       Port * port = plugin->in_ports[i];
-      if (port->identifier.type == TYPE_CONTROL &&
-          port->identifier.flags &
+      if (port->id.type == TYPE_CONTROL &&
+          port->id.flags &
             PORT_FLAG_TRIGGER &&
           !math_floats_equal (port->control, 0.f))
         {
@@ -845,7 +774,10 @@ plugin_clone (
         pl->lv2->state_file, NULL);
 
       /* create a new plugin with same descriptor */
-      clone = plugin_new_from_descr (pl->descr);
+      clone =
+        plugin_new_from_descr (
+          pl->descr, pl->id.track_pos,
+          pl->id.slot);
       g_return_val_if_fail (
         clone && clone->lv2, NULL);
 
@@ -866,7 +798,10 @@ plugin_clone (
   else if (pl->descr->protocol == PROT_VST)
     {
       /* create a new plugin with same descriptor */
-      clone = plugin_new_from_descr (pl->descr);
+      clone =
+        plugin_new_from_descr (
+          pl->descr, pl->id.track_pos,
+          pl->id.slot);
       g_return_val_if_fail (
         clone && clone->vst, NULL);
 
@@ -882,9 +817,9 @@ plugin_clone (
     pl->num_in_ports || pl->num_out_ports, NULL);
 
   g_return_val_if_fail (clone, NULL);
-  clone->slot = pl->slot;
+  clone->id.slot = pl->id.slot;
+  clone->id.track_pos = pl->id.track_pos;
   clone->magic = PLUGIN_MAGIC;
-  clone->track_pos = pl->track_pos;
 
   return clone;
 }
@@ -951,7 +886,7 @@ plugin_get_event_ports (
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           Port * port = pl->in_ports[i];
-          if (port->identifier.type == TYPE_EVENT)
+          if (port->id.type == TYPE_EVENT)
             {
               ports[index++] = port;
             }
@@ -962,7 +897,7 @@ plugin_get_event_ports (
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           Port * port = pl->out_ports[i];
-          if (port->identifier.type == TYPE_EVENT)
+          if (port->id.type == TYPE_EVENT)
             {
               ports[index++] = port;
             }
@@ -996,14 +931,14 @@ plugin_connect_to_plugin (
         {
           out_port = src->out_ports[i];
 
-          if (out_port->identifier.type == TYPE_AUDIO)
+          if (out_port->id.type == TYPE_AUDIO)
             {
               for (j = 0;
                    j < dest->num_in_ports; j++)
                 {
                   in_port = dest->in_ports[j];
 
-                  if (in_port->identifier.type == TYPE_AUDIO)
+                  if (in_port->id.type == TYPE_AUDIO)
                     {
                       port_connect (
                         out_port,
@@ -1026,7 +961,7 @@ done1:
         {
           out_port = src->out_ports[i];
 
-          if (out_port->identifier.type == TYPE_AUDIO)
+          if (out_port->id.type == TYPE_AUDIO)
             {
               for (j = 0;
                    j < dest->num_in_ports;
@@ -1034,7 +969,7 @@ done1:
                 {
                   in_port = dest->in_ports[j];
 
-                  if (in_port->identifier.type == TYPE_AUDIO)
+                  if (in_port->id.type == TYPE_AUDIO)
                     {
                       port_connect (
                         out_port,
@@ -1055,14 +990,14 @@ done1:
         {
           in_port = dest->in_ports[i];
 
-          if (in_port->identifier.type == TYPE_AUDIO)
+          if (in_port->id.type == TYPE_AUDIO)
             {
               for (j = 0;
                    j < src->num_out_ports; j++)
                 {
                   out_port = src->out_ports[j];
 
-                  if (out_port->identifier.type == TYPE_AUDIO)
+                  if (out_port->id.type == TYPE_AUDIO)
                     {
                       port_connect (
                         out_port,
@@ -1091,7 +1026,7 @@ done2:
         {
           out_port = src->out_ports[i];
 
-          if (out_port->identifier.type == TYPE_AUDIO)
+          if (out_port->id.type == TYPE_AUDIO)
             {
               for (;
                    last_index <
@@ -1100,7 +1035,7 @@ done2:
                 {
                   in_port =
                     dest->in_ports[last_index];
-                  if (in_port->identifier.type == TYPE_AUDIO)
+                  if (in_port->id.type == TYPE_AUDIO)
                     {
                       port_connect (
                         out_port,
@@ -1124,14 +1059,14 @@ done2:
     {
       out_port = src->out_ports[i];
 
-      if (out_port->identifier.type == TYPE_EVENT)
+      if (out_port->id.type == TYPE_EVENT)
         {
           for (j = 0;
                j < dest->num_in_ports; j++)
             {
               in_port = dest->in_ports[j];
 
-              if (in_port->identifier.type == TYPE_EVENT)
+              if (in_port->id.type == TYPE_EVENT)
                 {
                   port_connect (
                     out_port,
@@ -1156,16 +1091,18 @@ plugin_connect_to_prefader (
 {
   int i, last_index;
   Port * out_port;
-  PortType type = ch->track->out_signal_type;
+  Track * track =
+    channel_get_track (ch);
+  PortType type = track->out_signal_type;
 
   if (type == TYPE_EVENT)
     {
       for (i = 0; i < pl->num_out_ports; i++)
         {
           out_port = pl->out_ports[i];
-          if (out_port->identifier.type ==
+          if (out_port->id.type ==
                 TYPE_EVENT &&
-              out_port->identifier.flow ==
+              out_port->id.flow ==
                 FLOW_OUTPUT)
             {
               port_connect (
@@ -1183,7 +1120,7 @@ plugin_connect_to_prefader (
             {
               out_port = pl->out_ports[i];
 
-              if (out_port->identifier.type ==
+              if (out_port->id.type ==
                     TYPE_AUDIO)
                 {
                   port_connect (
@@ -1204,7 +1141,7 @@ plugin_connect_to_prefader (
             {
               out_port = pl->out_ports[i];
 
-              if (out_port->identifier.type !=
+              if (out_port->id.type !=
                     TYPE_AUDIO)
                 continue;
 
@@ -1239,13 +1176,14 @@ plugin_disconnect_from_prefader (
 {
   int i;
   Port * out_port;
-  PortType type = ch->track->out_signal_type;
+  Track * track = channel_get_track (ch);
+  PortType type = track->out_signal_type;
 
   for (i = 0; i < pl->num_out_ports; i++)
     {
       out_port = pl->out_ports[i];
       if (type == TYPE_AUDIO &&
-          out_port->identifier.type == TYPE_AUDIO)
+          out_port->id.type == TYPE_AUDIO)
         {
           if (ports_connected (
                 out_port,
@@ -1261,7 +1199,7 @@ plugin_disconnect_from_prefader (
               ch->prefader.stereo_in->r);
         }
       else if (type == TYPE_EVENT &&
-               out_port->identifier.type ==
+               out_port->id.type ==
                  TYPE_EVENT)
         {
           if (ports_connected (
@@ -1295,14 +1233,14 @@ plugin_disconnect_from_plugin (
         {
           out_port = src->out_ports[i];
 
-          if (out_port->identifier.type == TYPE_AUDIO)
+          if (out_port->id.type == TYPE_AUDIO)
             {
               for (j = 0;
                    j < dest->num_in_ports; j++)
                 {
                   in_port = dest->in_ports[j];
 
-                  if (in_port->identifier.type == TYPE_AUDIO)
+                  if (in_port->id.type == TYPE_AUDIO)
                     {
                       port_disconnect (
                         out_port,
@@ -1325,7 +1263,7 @@ done1:
         {
           out_port = src->out_ports[i];
 
-          if (out_port->identifier.type == TYPE_AUDIO)
+          if (out_port->id.type == TYPE_AUDIO)
             {
               for (j = 0;
                    j < dest->num_in_ports;
@@ -1333,7 +1271,7 @@ done1:
                 {
                   in_port = dest->in_ports[j];
 
-                  if (in_port->identifier.type == TYPE_AUDIO)
+                  if (in_port->id.type == TYPE_AUDIO)
                     {
                       port_disconnect (
                         out_port,
@@ -1354,14 +1292,14 @@ done1:
         {
           in_port = dest->in_ports[i];
 
-          if (in_port->identifier.type == TYPE_AUDIO)
+          if (in_port->id.type == TYPE_AUDIO)
             {
               for (j = 0;
                    j < src->num_out_ports; j++)
                 {
                   out_port = src->out_ports[j];
 
-                  if (out_port->identifier.type == TYPE_AUDIO)
+                  if (out_port->id.type == TYPE_AUDIO)
                     {
                       port_disconnect (
                         out_port,
@@ -1390,7 +1328,7 @@ done2:
         {
           out_port = src->out_ports[i];
 
-          if (out_port->identifier.type == TYPE_AUDIO)
+          if (out_port->id.type == TYPE_AUDIO)
             {
               for (;
                    last_index <
@@ -1399,7 +1337,7 @@ done2:
                 {
                   in_port =
                     dest->in_ports[last_index];
-                  if (in_port->identifier.type == TYPE_AUDIO)
+                  if (in_port->id.type == TYPE_AUDIO)
                     {
                       port_disconnect (
                         out_port,
@@ -1421,14 +1359,14 @@ done2:
     {
       out_port = src->out_ports[i];
 
-      if (out_port->identifier.type == TYPE_EVENT)
+      if (out_port->id.type == TYPE_EVENT)
         {
           for (j = 0;
                j < dest->num_in_ports; j++)
             {
               in_port = dest->in_ports[j];
 
-              if (in_port->identifier.type ==
+              if (in_port->id.type ==
                     TYPE_EVENT)
                 {
                   port_disconnect (
@@ -1487,11 +1425,6 @@ plugin_free (Plugin *plugin)
   /* delete automation tracks */
   plugin_remove_ats_from_automation_tracklist (
     plugin);
-  for (int i = 0; i < plugin->num_ats; i++)
-    {
-      automation_track_free (plugin->ats[i]);
-    }
-  free (plugin->ats);
 
   free (plugin);
 }

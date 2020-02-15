@@ -48,8 +48,7 @@ midi_mappings_bind (
     mapping->key, buf, sizeof (midi_byte_t) * 3);
   /*mapping->device_port =*/
     /*ext_port_clone (device_port);*/
-  mapping->dest_id =
-    dest_port->identifier;
+  mapping->dest_id = dest_port->id;
   mapping->dest = dest_port;
   self->num_mappings++;
 
@@ -58,7 +57,7 @@ midi_mappings_bind (
     buf, str);
   g_message (
     "bounded MIDI mapping from %s to %s",
-    str, dest_port->identifier.label);
+    str, dest_port->id.label);
 }
 
 /**

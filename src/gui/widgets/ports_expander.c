@@ -236,7 +236,7 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
-          pi = &port->identifier;
+          pi = &port->id;
           if (pi->type != TYPE_CONTROL ||
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
@@ -250,7 +250,7 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
-          pi = &port->identifier;
+          pi = &port->id;
           if (pi->type != TYPE_CONTROL ||
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
@@ -264,7 +264,7 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
-          pi = &port->identifier;
+          pi = &port->id;
           if (pi->type != TYPE_CV ||
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
@@ -278,7 +278,7 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
-          pi = &port->identifier;
+          pi = &port->id;
           if (pi->type != TYPE_CV ||
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
@@ -292,7 +292,7 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
-          pi = &port->identifier;
+          pi = &port->id;
           if (pi->type != TYPE_AUDIO ||
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
@@ -306,7 +306,7 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
-          pi = &port->identifier;
+          pi = &port->id;
           if (pi->type != TYPE_AUDIO ||
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
@@ -320,7 +320,7 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_in_ports; i++)
         {
           port = pl->in_ports[i];
-          pi = &port->identifier;
+          pi = &port->id;
           if (pi->type != TYPE_EVENT ||
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
@@ -334,7 +334,7 @@ ports_expander_widget_setup_plugin (
       for (int i = 0; i < pl->num_out_ports; i++)
         {
           port = pl->out_ports[i];
-          pi = &port->identifier;
+          pi = &port->id;
           if (pi->type != TYPE_EVENT ||
               pi->flags & PORT_FLAG_NOT_ON_GUI)
             continue;
