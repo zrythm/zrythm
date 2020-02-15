@@ -38,6 +38,7 @@
 #include "audio/track.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "zrythm.h"
 
 /**
  * Inits the ClipEditor after a Project is loaded.
@@ -118,7 +119,7 @@ clip_editor_set_region (
 
   self->region_changed = 1;
 
-  if (MW_CLIP_EDITOR)
+  if (ZRYTHM_HAVE_UI && MW_CLIP_EDITOR)
     {
       clip_editor_widget_on_region_changed (
         MW_CLIP_EDITOR);

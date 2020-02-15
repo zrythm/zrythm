@@ -307,6 +307,14 @@ region_gen_name (
   Track *           track);
 
 /**
+ * To be called every time the identifier changes
+ * to update the region's children.
+ */
+void
+region_update_identifier (
+  ZRegion * self);
+
+/**
  * Moves the given ZRegion to the given TrackLane.
  *
  * Works with TrackLane's of other Track's as well.

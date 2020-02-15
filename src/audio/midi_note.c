@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -41,13 +41,13 @@
  */
 MidiNote *
 midi_note_new (
-  ZRegion * region,
+  RegionIdentifier * region_id,
   Position *   start_pos,
   Position *   end_pos,
   uint8_t      val,
   uint8_t      vel)
 {
-  g_return_val_if_fail (region, NULL);
+  g_return_val_if_fail (region_id, NULL);
 
   MidiNote * self =
     calloc (1, sizeof (MidiNote));
@@ -60,7 +60,7 @@ midi_note_new (
   obj->has_length = 1;
 
   region_identifier_copy (
-    &self->region_id, &region->id);
+    &self->region_id, region_id);
   self->val = val;
   self->vel =
     velocity_new (self, vel);
@@ -71,15 +71,17 @@ midi_note_new (
 }
 
 /**
- * Sets the ZRegion the MidiNote belongs to.
+ * Sets the region the MidiNote belongs to.
  */
 void
-midi_note_set_region (
+midi_note_set_region_and_index (
   MidiNote * self,
-  ZRegion *   region)
+  ZRegion *   region,
+  int        idx)
 {
   region_identifier_copy (
     &self->region_id, &region->id);
+  self->pos = idx;
 }
 
 /**

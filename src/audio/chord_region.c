@@ -71,7 +71,8 @@ chord_region_add_chord_object (
     self->chord_objects, self->num_chord_objects,
     chord);
 
-  chord_object_set_region (chord, self);
+  chord_object_set_region_and_index (
+    chord, self, self->num_chord_objects - 1);
 
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, chord);
 }

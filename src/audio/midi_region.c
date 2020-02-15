@@ -112,14 +112,14 @@ midi_region_add_midi_note (
   MidiNote * midi_note,
   int        pub_events)
 {
-  midi_note_set_region (midi_note, region);
-
   array_double_size_if_full (
     region->midi_notes, region->num_midi_notes,
     region->midi_notes_size, MidiNote *)
   array_append (
     region->midi_notes, region->num_midi_notes,
     midi_note);
+  midi_note_set_region_and_index (
+    midi_note, region, region->num_midi_notes - 1);
 
   if (pub_events)
     {
@@ -681,7 +681,7 @@ midi_region_start_unended_note (
 
   MidiNote * mn =
     midi_note_new (
-      self, start_pos, &end_pos, pitch, vel);
+      &self->id, start_pos, &end_pos, pitch, vel);
   midi_region_add_midi_note (self, mn, pub_events);
 
   /* add to unended notes */

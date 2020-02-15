@@ -315,11 +315,8 @@ tracklist_append_track (
   int         recalc_graph)
 {
   tracklist_insert_track (
-    self,
-    track,
-    self->num_tracks,
-    publish_events,
-    recalc_graph);
+    self, track, self->num_tracks,
+    publish_events, recalc_graph);
 }
 
 int

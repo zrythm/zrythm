@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -94,6 +94,7 @@ automation_track_add_region (
                 region);
 
   region_set_automation_track (region, self);
+  region->id.idx = self->num_regions - 1;
 }
 
 AutomationTracklist *

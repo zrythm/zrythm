@@ -872,8 +872,7 @@ track_add_region (
 
       g_warn_if_fail (track->lanes[lane_pos]);
       track_lane_add_region (
-        track->lanes[lane_pos],
-        region);
+        track->lanes[lane_pos], region);
     }
 
   if (add_at)
@@ -889,9 +888,10 @@ track_add_region (
         track->chord_regions,
         track->num_chord_regions,
         track->chord_regions_size, ZRegion *);
-      array_append (track->chord_regions,
-                    track->num_chord_regions,
-                    region);
+      array_append (
+        track->chord_regions,
+        track->num_chord_regions, region);
+      region->id.idx = track->num_chord_regions - 1;
     }
 
   if (fire_events)

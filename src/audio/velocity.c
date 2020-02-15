@@ -43,9 +43,7 @@ velocity_new (
   obj->type = ARRANGER_OBJECT_TYPE_VELOCITY;
 
   self->vel = vel;
-  self->note_pos = midi_note->pos;
-  region_identifier_copy (
-    &self->region_id, &midi_note->region_id);
+  self->midi_note = midi_note;
 
   arranger_object_init (obj);
 
@@ -60,7 +58,7 @@ velocity_set_midi_note (
   Velocity * self,
   MidiNote * midi_note)
 {
-  self->note_pos = midi_note->pos;
+  self->midi_note = midi_note;
 }
 
 /**
@@ -73,7 +71,10 @@ velocity_is_equal (
 {
   return
     src->vel == dest->vel &&
-    src->note_pos == dest->note_pos;
+    src->midi_note->pos == dest->midi_note->pos &&
+    region_identifier_is_equal (
+      &src->midi_note->region_id,
+      &dest->midi_note->region_id);
 }
 
 /**
@@ -129,9 +130,13 @@ MidiNote *
 velocity_get_midi_note (
   Velocity * self)
 {
+  return self->midi_note;
+
+#if 0
   g_return_val_if_fail (self, NULL);
   ZRegion * region =
     region_find (&self->region_id);
   g_return_val_if_fail (region, NULL);
   return region->midi_notes[self->note_pos];
+#endif
 }

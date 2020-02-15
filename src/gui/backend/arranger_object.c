@@ -305,7 +305,7 @@ arranger_object_get_region (
       {
         Velocity * vel =
           (Velocity *) self;
-        id = &vel->region_id;
+        id = &vel->midi_note->region_id;
       }
       break;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
@@ -457,6 +457,61 @@ arranger_object_is_position_valid (
     }
 
   return is_valid;
+}
+
+/**
+ * Copies the identifier from src to dest.
+ */
+void
+arranger_object_copy_identifier (
+  ArrangerObject * dest,
+  ArrangerObject * src)
+{
+  g_return_if_fail (dest->type == src->type);
+  switch (dest->type)
+    {
+    case TYPE (REGION):
+      {
+        ZRegion * dest_r = (ZRegion *) dest;
+        ZRegion * src_r = (ZRegion *) src;
+        region_identifier_copy (
+          &dest_r->id, &src_r->id);
+      }
+      break;
+    case TYPE (MIDI_NOTE):
+      {
+        MidiNote * destmn = (MidiNote *) dest;
+        MidiNote * srcmn = (MidiNote *) src;
+        region_identifier_copy (
+          &destmn->region_id, &srcmn->region_id);
+        destmn->pos = srcmn->pos;
+      }
+      break;
+    case TYPE (AUTOMATION_POINT):
+      {
+        AutomationPoint * destap =
+          (AutomationPoint *) dest;
+        AutomationPoint * srcap =
+          (AutomationPoint *) src;
+        region_identifier_copy (
+          &destap->region_id, &srcap->region_id);
+        destap->index = srcap->index;
+      }
+      break;
+    case TYPE (CHORD_OBJECT):
+      {
+        ChordObject * destap =
+          (ChordObject *) dest;
+        ChordObject * srcap =
+          (ChordObject *) src;
+        region_identifier_copy (
+          &destap->region_id, &srcap->region_id);
+        destap->index = srcap->index;
+      }
+      break;
+    default:
+      break;
+    }
 }
 
 /**
@@ -1724,11 +1779,9 @@ clone_midi_note (
 {
   ArrangerObject * src_obj =
     (ArrangerObject *) src;
-  ZRegion * region =
-    midi_note_get_region (src);
   MidiNote * mn =
     midi_note_new (
-      region, &src_obj->pos,
+      &src->region_id, &src_obj->pos,
       &src_obj->end_pos,
       src->val, src->vel->vel);
   mn->currently_listened = src->currently_listened;
@@ -1746,11 +1799,9 @@ clone_chord_object (
   if (flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
     is_main = 1;
 
-  ZRegion * region =
-    chord_object_get_region (src);
   ChordObject * chord =
     chord_object_new (
-      region, src->index, is_main);
+      &src->region_id, src->index, is_main);
 
   return (ArrangerObject *) chord;
 }

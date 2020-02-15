@@ -575,6 +575,14 @@ arranger_object_stringize_type (
   ArrangerObjectType type);
 
 /**
+ * Copies the identifier from src to dest.
+ */
+void
+arranger_object_copy_identifier (
+  ArrangerObject * dest,
+  ArrangerObject * src);
+
+/**
  * Moves the object by the given amount of
  * ticks.
  *

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -114,9 +114,11 @@ track_lane_add_region (
   array_double_size_if_full (
     self->regions, self->num_regions,
     self->regions_size, ZRegion *);
-  array_append (self->regions,
-                self->num_regions,
-                region);
+  array_append (
+    self->regions, self->num_regions,
+    region);
+  region->id.lane_pos = self->pos;
+  region->id.idx = self->num_regions - 1;
 }
 
 /**
@@ -135,8 +137,10 @@ track_lane_set_track_pos (
 
   for (int i = 0; i < self->num_regions; i++)
     {
-      region_set_track_pos (
-        self->regions[i], pos);
+      ZRegion * region = self->regions[i];
+      region_set_track_pos (region, pos);
+      region->id.lane_pos = self->pos;
+      region_update_identifier (region);
     }
 }
 

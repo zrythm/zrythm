@@ -66,11 +66,8 @@ typedef struct Velocity
    * the start of actions. */
   uint8_t          cache_vel;
 
-  /** ID of the region the midi note is in. */
-  RegionIdentifier region_id;
-
-  /** Index of the midi note in the region. */
-  int              note_pos;
+  /** Pointer back to the MIDI note. */
+  MidiNote *       midi_note;
 } Velocity;
 
 static const cyaml_schema_field_t
@@ -83,13 +80,6 @@ velocity_fields_schema[] =
   CYAML_FIELD_UINT (
     "vel", CYAML_FLAG_DEFAULT,
     Velocity, vel),
-  CYAML_FIELD_MAPPING (
-    "region_id", CYAML_FLAG_DEFAULT,
-    Velocity, region_id,
-    region_identifier_fields_schema),
-  CYAML_FIELD_INT (
-    "note_pos", CYAML_FLAG_DEFAULT,
-    Velocity, note_pos),
 
   CYAML_FIELD_END
 };

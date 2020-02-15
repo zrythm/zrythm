@@ -387,6 +387,48 @@ region_find (
 }
 
 /**
+ * To be called every time the identifier changes
+ * to update the region's children.
+ */
+void
+region_update_identifier (
+  ZRegion * self)
+{
+  switch (self->id.type)
+    {
+    case REGION_TYPE_AUDIO:
+      break;
+    case REGION_TYPE_MIDI:
+      for (int i = 0; i < self->num_midi_notes; i++)
+        {
+          MidiNote * mn = self->midi_notes[i];
+          midi_note_set_region_and_index (
+            mn, self, i);
+        }
+      break;
+    case REGION_TYPE_AUTOMATION:
+      for (int i = 0; i < self->num_aps; i++)
+        {
+          AutomationPoint * ap = self->aps[i];
+          automation_point_set_region_and_index (
+            ap, self, i);
+        }
+      break;
+    case REGION_TYPE_CHORD:
+      for (int i = 0; i < self->num_chord_objects;
+           i++)
+        {
+          ChordObject * co = self->chord_objects[i];
+          chord_object_set_region_and_index (
+            co, self, i);
+        }
+      break;
+    default:
+      break;
+    }
+}
+
+/**
  * Returns the MidiNote matching the properties of
  * the given MidiNote.
  *
@@ -462,22 +504,7 @@ region_set_name (
   arranger_object_set_name (
     (ArrangerObject *) self, name, fire_events);
 
-  for (int i = 0; i < self->num_midi_notes; i++)
-    {
-      midi_note_set_region (
-        self->midi_notes[i], self);
-    }
-  for (int i = 0; i < self->num_chord_objects; i++)
-    {
-      chord_object_set_region (
-        self->chord_objects[i], self);
-    }
-  for (int i = 0; i < self->num_aps; i++)
-    {
-      automation_point_set_region_and_index (
-        self->aps[i], self,
-        self->aps[i]->index);
-    }
+  region_update_identifier (self);
 }
 
 /**

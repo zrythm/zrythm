@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -31,7 +31,7 @@
  */
 ChordObject *
 chord_object_new (
-  ZRegion * region,
+  RegionIdentifier * region_id,
   int index,
   int is_main)
 {
@@ -44,7 +44,7 @@ chord_object_new (
 
   self->index = index;
   region_identifier_copy (
-    &self->region_id, &region->id);
+    &self->region_id, region_id);
 
   arranger_object_init (obj);
 
@@ -109,15 +109,17 @@ chord_object_find_by_pos (
 }
 
 /**
- * Sets the Track of the chord.
+ * Sets the region and index of the chord.
  */
 void
-chord_object_set_region (
+chord_object_set_region_and_index (
   ChordObject * self,
-  ZRegion *     region)
+  ZRegion *     region,
+  int           idx)
 {
   region_identifier_copy (
     &self->region_id, &region->id);
+  self->index = idx;
 }
 
 ZRegion *

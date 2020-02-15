@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -139,19 +139,20 @@ midi_note_get_global_start_pos (
  */
 MidiNote *
 midi_note_new (
-  ZRegion *    region,
+  RegionIdentifier * region_id,
   Position *   start_pos,
   Position *   end_pos,
   uint8_t      val,
   uint8_t      vel);
 
 /**
- * Sets the ZRegion the MidiNote belongs to.
+ * Sets the region the MidiNote belongs to.
  */
 void
-midi_note_set_region (
-  MidiNote * midi_note,
-  ZRegion *   region);
+midi_note_set_region_and_index (
+  MidiNote * self,
+  ZRegion *   region,
+  int        idx);
 
 void
 midi_note_set_cache_val (

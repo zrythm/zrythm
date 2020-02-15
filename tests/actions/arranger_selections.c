@@ -79,13 +79,19 @@ bootstrap_timeline ()
       &p1, &p2, track->pos, MIDI_REGION_LANE, 0);
   track_add_region (
     track, r, NULL, MIDI_REGION_LANE, 1, 0);
+  g_assert_cmpint (r->id.track_pos, ==, track->pos);
+  g_assert_cmpint (
+    r->id.lane_pos, ==, MIDI_REGION_LANE);
+  g_assert_cmpint (
+    r->id.type, ==, REGION_TYPE_MIDI);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
 
   /* add a midi note to the region */
   MidiNote * mn =
-    midi_note_new (r, &p1, &p2, MN_VAL, MN_VEL);
+    midi_note_new (
+      &r->id, &p1, &p2, MN_VAL, MN_VEL);
   midi_region_add_midi_note (r, mn, 0);
   g_assert_true (
     region_identifier_is_equal (
@@ -105,6 +111,11 @@ bootstrap_timeline ()
       &p1, &p2, P_MASTER_TRACK->pos, at->index, 0);
   track_add_region (
     P_MASTER_TRACK, r, at, 0, 1, 0);
+  g_assert_cmpint (
+    r->id.track_pos, ==, P_MASTER_TRACK->pos);
+  g_assert_cmpint (r->id.at_idx, ==, at->index);
+  g_assert_cmpint (
+    r->id.type, ==, REGION_TYPE_AUTOMATION);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
@@ -139,8 +150,7 @@ bootstrap_timeline ()
 
   /* add 2 chorsd to the region */
   ChordObject * c =
-    chord_object_new (
-      r, 0, 1);
+    chord_object_new (&r->id, 0, 1);
   chord_region_add_chord_object (
     r, c);
   arranger_object_pos_setter (
@@ -149,8 +159,7 @@ bootstrap_timeline ()
     (ArrangerSelections *) CHORD_SELECTIONS,
     (ArrangerObject *) c);
   c =
-    chord_object_new (
-      r, 0, 1);
+    chord_object_new (&r->id, 0, 1);
   chord_region_add_chord_object (
     r, c);
   arranger_object_pos_setter (

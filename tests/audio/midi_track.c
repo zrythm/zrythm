@@ -48,6 +48,8 @@ fixture_set_up (
       TRACKLIST->num_tracks,
       "Test MIDI Track 1",
       F_WITH_LANE);
+  tracklist_append_track (
+    TRACKLIST, self->midi_track, 0, 1);
   Port * port =
     port_new_with_type (
       TYPE_EVENT, FLOW_INPUT, "Test Port");
@@ -85,7 +87,7 @@ prepare_region_with_note_at_start_to_end (
       &start_pos, &end_pos, track->pos, 0, 0);
   MidiNote * mn1 =
     midi_note_new (
-      r, &start_pos, &end_pos, pitch, velocity);
+      &r->id, &start_pos, &end_pos, pitch, velocity);
   midi_region_add_midi_note (
     r, mn1, 0);
 

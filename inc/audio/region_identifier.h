@@ -121,6 +121,7 @@ region_identifier_is_equal (
     a->idx == b->idx &&
     a->track_pos == b->track_pos &&
     a->lane_pos == b->lane_pos &&
+    a->at_idx == b->at_idx &&
     a->type == b->type;
 }
 
@@ -132,6 +133,7 @@ region_identifier_copy (
   dest->idx = src->idx;
   dest->track_pos = src->track_pos;
   dest->lane_pos = src->lane_pos;
+  dest->at_idx = src->at_idx;
   dest->type = src->type;
 }
 

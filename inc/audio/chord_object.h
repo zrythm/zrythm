@@ -98,7 +98,7 @@ chord_object_schema = {
  */
 ChordObject *
 chord_object_new (
-  ZRegion * region,
+  RegionIdentifier * region_id,
   int index,
   int is_main);
 
@@ -108,12 +108,13 @@ chord_object_is_equal (
   ChordObject * b);
 
 /**
- * Sets the Track of the chord.
+ * Sets the region and index of the chord.
  */
 void
-chord_object_set_region (
+chord_object_set_region_and_index (
   ChordObject * self,
-  ZRegion *      region);
+  ZRegion *     region,
+  int           idx);
 
 /**
  * Returns the ChordDescriptor associated with this

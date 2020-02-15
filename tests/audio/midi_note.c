@@ -60,7 +60,7 @@ test_new_midi_note ()
   position_set_to_bar (&end_pos, 3);
   MidiNote * mn =
     midi_note_new (
-      fixture->region,
+      &fixture->region->id,
       &start_pos, &end_pos, val,
       VELOCITY_DEFAULT);
   ArrangerObject * mn_obj =
@@ -86,7 +86,7 @@ test_new_midi_note ()
     arranger_object_clone (
       (ArrangerObject *) region,
       ARRANGER_OBJECT_CLONE_COPY);
-  midi_note_set_region (mn, r_clone);
+  midi_note_set_region_and_index (mn, r_clone, 0);
 
   g_assert_cmpint (
     region_identifier_is_equal (

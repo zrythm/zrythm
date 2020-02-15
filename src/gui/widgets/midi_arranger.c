@@ -112,7 +112,7 @@ midi_arranger_widget_create_note (
   /* create midi note */
   MidiNote * midi_note =
     midi_note_new (
-      region, &local_pos, &local_pos,
+      &region->id, &local_pos, &local_pos,
       (midi_byte_t) note,
       VELOCITY_DEFAULT);
   ArrangerObject * midi_note_obj =

@@ -339,10 +339,10 @@ add_object_to_project (
               F_PUBLISH_EVENTS);
             break;
           }
+
         /* if region, also set is as the clip
          * editor region */
-        clip_editor_set_region (
-          CLIP_EDITOR, r);
+        clip_editor_set_region (CLIP_EDITOR, r);
       }
       break;
     default:
@@ -703,7 +703,7 @@ do_or_undo_duplicate (
           /* add to track */
           add_object_to_project (obj);
 
-          /* remember the new name */
+          /* remember the new name and identifier */
           if (!string_is_equal (
                 arranger_object_get_name (
                   obj),
@@ -714,6 +714,8 @@ do_or_undo_duplicate (
                 objs[i],
                 arranger_object_get_name (obj), 0);
             }
+          arranger_object_copy_identifier (
+            objs[i], obj);
         }
       else
         {
@@ -861,34 +863,8 @@ do_or_undo_create_or_delete (
                 obj, F_SELECT, F_APPEND);
 
               /* remember new info */
-              switch (obj->type)
-                {
-                case ARRANGER_OBJECT_TYPE_AUTOMATION_POINT:
-                  {
-                    AutomationPoint * ap =
-                      (AutomationPoint *) obj;
-                    ZRegion * region =
-                      arranger_object_get_region (
-                        obj);
-                    automation_point_set_region_and_index (
-                      (AutomationPoint *) objs[i],
-                      region, ap->index);
-                  }
-                  break;
-                case ARRANGER_OBJECT_TYPE_REGION:
-                  {
-                    /* remember name */
-                    ZRegion * r =
-                      (ZRegion *) obj;
-                    g_free (
-                      ((ZRegion *) objs[i])->name);
-                    ((ZRegion *) objs[i])->name =
-                      g_strdup (r->name);
-                  }
-                  break;
-                default:
-                  break;
-                }
+              arranger_object_copy_identifier (
+                objs[i], obj);
             }
 
           /* if undoing */
