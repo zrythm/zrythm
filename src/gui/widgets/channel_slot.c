@@ -459,10 +459,10 @@ drag_end (GtkGestureDrag *gesture,
     ui_get_state_mask (
       GTK_GESTURE (gesture));
 
+  Plugin * pl =
+    self->channel->plugins[self->slot_index];
   if (self->n_press == 2)
     {
-      Plugin * pl =
-        self->channel->plugins[self->slot_index];
       g_message ("opening plugin ");
       if (pl)
         {
@@ -482,6 +482,12 @@ drag_end (GtkGestureDrag *gesture,
 
       /*self->deselected = 0;*/
       /*self->reselected = 0;*/
+    }
+
+  if (pl)
+    {
+      self->channel->widget->last_plugin_press =
+        g_get_monotonic_time ();
     }
 }
 

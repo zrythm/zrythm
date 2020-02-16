@@ -1122,7 +1122,9 @@ events_process (void * data)
            * tracklist selection changed by
            * clicking on a track */
           if (PROJECT->last_selection ==
-                SELECTION_TYPE_TRACK)
+                SELECTION_TYPE_TRACK ||
+              PROJECT->last_selection ==
+                SELECTION_TYPE_PLUGIN)
             inspector_widget_refresh (MW_INSPECTOR);
           mixer_widget_soft_refresh (MW_MIXER);
           break;

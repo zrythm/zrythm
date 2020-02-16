@@ -439,6 +439,14 @@ on_btn_release (
     channel_get_track (self->channel);
   if (self->n_press == 1)
     {
+      gint64 cur_time = g_get_monotonic_time ();
+      if (cur_time - self->last_plugin_press >
+            1000)
+        {
+          PROJECT->last_selection =
+            SELECTION_TYPE_TRACK;
+        }
+
       int ctrl = 0, selected = 0;
 
       if (event->state & GDK_CONTROL_MASK)

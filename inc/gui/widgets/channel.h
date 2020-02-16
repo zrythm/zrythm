@@ -109,6 +109,14 @@ typedef struct _ChannelWidget
   Channel             * channel;
 
   /**
+   * Last time a plugin was pressed.
+   *
+   * This is to detect when a channel was selected
+   * without clicking a plugin.
+   */
+  gint64              last_plugin_press;
+
+  /**
    * Signal handler IDs.
    */
   gulong              record_toggled_handler_id;
