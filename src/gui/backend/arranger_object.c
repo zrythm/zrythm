@@ -727,8 +727,7 @@ static void
 init_loaded_midi_note (
   MidiNote * self)
 {
-  arranger_object_init_loaded (
-    (ArrangerObject *) self->vel);
+  self->vel->midi_note = self;
 }
 
 static void

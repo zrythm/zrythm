@@ -119,6 +119,7 @@ track_lane_add_region (
     region);
   region->id.lane_pos = self->pos;
   region->id.idx = self->num_regions - 1;
+  region_update_identifier (region);
 }
 
 /**

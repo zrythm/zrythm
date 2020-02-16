@@ -16,5 +16,6 @@
 # along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
 
 widget_srcs += files([
+  'arranger_object_info.c',
   'port_info.c',
   ])

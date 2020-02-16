@@ -641,6 +641,7 @@ arranger_object_set_full_rectangle (
         Velocity * vel = (Velocity *) self;
         MidiNote * mn =
           velocity_get_midi_note (vel);
+        g_return_if_fail (mn);
         ArrangerObject * mn_obj =
           (ArrangerObject *) mn;
         ZRegion * region =

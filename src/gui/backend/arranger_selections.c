@@ -49,6 +49,7 @@ arranger_selections_init_loaded (
   ChordSelections * cs;
   MidiArrangerSelections * mas;
   AutomationSelections * as;
+  self->magic = ARRANGER_SELECTIONS_MAGIC;
 
 #define SET_OBJ(sel,cc,sc) \
   for (i = 0; i < sel->num_##sc##s; i++) \
@@ -109,6 +110,7 @@ arranger_selections_init (
   ArrangerSelectionsType type)
 {
   self->type = type;
+  self->magic = ARRANGER_SELECTIONS_MAGIC;
 
   TimelineSelections * ts;
   ChordSelections * cs;

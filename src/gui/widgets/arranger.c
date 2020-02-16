@@ -1037,8 +1037,10 @@ arranger_widget_get_hit_objects_in_rect (
         self && \
       (ui_rectangle_overlap ( \
          &obj->full_rect, rect) || \
+       /* also check original (transient) */ \
        (arranger_object_should_orig_be_visible ( \
           obj) && \
+        obj->transient && \
         ui_rectangle_overlap ( \
           &obj->transient->full_rect, rect)))) \
     { \
@@ -1783,81 +1785,6 @@ show_context_menu_timeline (
 }
 
 static void
-show_context_menu_midi (
-  ArrangerWidget * self,
-  gdouble              x,
-  gdouble              y)
-{
-  GtkWidget *menu;
-  GtkMenuItem * menu_item;
-
-  ArrangerObject * mn_obj =
-    arranger_widget_get_hit_arranger_object (
-      self, ARRANGER_OBJECT_TYPE_MIDI_NOTE, x, y);
-  MidiNote * mn = (MidiNote *) mn_obj;
-
-  if (mn)
-    {
-      int selected =
-        arranger_object_is_selected (
-          mn_obj);
-      if (!selected)
-        {
-          arranger_object_select (
-            mn_obj,
-            F_SELECT, F_NO_APPEND);
-        }
-    }
-  else
-    {
-      arranger_widget_select_all (
-        (ArrangerWidget *) self, F_NO_SELECT);
-      arranger_selections_clear (
-        (ArrangerSelections *) MA_SELECTIONS);
-    }
-
-#define APPEND_TO_MENU \
-  gtk_menu_shell_append ( \
-    GTK_MENU_SHELL (menu), \
-    GTK_WIDGET (menu_item))
-
-  menu = gtk_menu_new();
-
-  menu_item =
-    CREATE_CUT_MENU_ITEM ("win.cut");
-  APPEND_TO_MENU;
-  menu_item =
-    CREATE_COPY_MENU_ITEM ("win.copy");
-  APPEND_TO_MENU;
-  menu_item =
-    CREATE_PASTE_MENU_ITEM ("win.paste");
-  APPEND_TO_MENU;
-  menu_item =
-    CREATE_DELETE_MENU_ITEM ("win.delete");
-  APPEND_TO_MENU;
-  menu_item =
-    CREATE_DUPLICATE_MENU_ITEM ("win.duplicate");
-  APPEND_TO_MENU;
-  menu_item =
-    GTK_MENU_ITEM (gtk_separator_menu_item_new ());
-  APPEND_TO_MENU;
-  menu_item =
-    CREATE_CLEAR_SELECTION_MENU_ITEM (
-      "win.clear-selection");
-  APPEND_TO_MENU;
-  menu_item =
-    CREATE_SELECT_ALL_MENU_ITEM (
-      "win.select-all");
-  APPEND_TO_MENU;
-
-#undef APPEND_TO_MENU
-
-  gtk_widget_show_all(menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
-}
-
-static void
 show_context_menu_audio (
   ArrangerWidget * self,
   gdouble              x,
@@ -1906,7 +1833,7 @@ show_context_menu (
       show_context_menu_timeline (self, x, y);
       break;
     case TYPE (MIDI):
-      show_context_menu_midi (self, x, y);
+      midi_arranger_show_context_menu (self, x, y);
       break;
     case TYPE (MIDI_MODIFIER):
       show_context_menu_midi_modifier (self, x, y);
@@ -4583,7 +4510,7 @@ on_grab_broken (GtkWidget *widget,
 {
   /*GdkEventGrabBroken * ev =*/
     /*(GdkEventGrabBroken *) event;*/
-  g_warning ("arranger grab broken");
+  g_message ("arranger grab broken");
   return FALSE;
 }
 

@@ -921,6 +921,16 @@ draw_name (
   char str[200];
   strcpy (str, self->name);
 
+  if (DEBUGGING)
+    {
+      ZRegion * clip_editor_region =
+        clip_editor_get_region (CLIP_EDITOR);
+      if (clip_editor_region == self)
+        {
+          strcat (str, " (CLIP EDITOR)");
+        }
+    }
+
   /* draw dark bg behind text */
   recreate_pango_layouts (
     self,

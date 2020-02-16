@@ -32,6 +32,7 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/dialogs/arranger_object_info.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
@@ -57,6 +58,7 @@
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #if 0
 int
@@ -535,170 +537,102 @@ midi_arranger_listen_notes (
     }
 }
 
-/**
- * Called on drag end.
- *
- * Sets default cursors back and sets the start midi note
- * to NULL if necessary.
- */
-/*void*/
-/*midi_arranger_widget_on_drag_end (*/
-  /*ArrangerWidget * self)*/
-/*{*/
-  /*ARRANGER_WIDGET_GET_PRIVATE (self);*/
+static void
+on_view_info (
+  GtkMenuItem * menuitem,
+  ArrangerObject * mn_obj)
+{
+  ArrangerObjectInfoDialogWidget * dialog =
+    arranger_object_info_dialog_widget_new (
+      mn_obj);
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
 
-  /*MidiNote * midi_note;*/
-  /*for (int i = 0;*/
-       /*i < MA_SELECTIONS->num_midi_notes;*/
-       /*i++)*/
-    /*{*/
-      /*midi_note =*/
-        /*MA_SELECTIONS->midi_notes[i];*/
-      /*ArrangerObject * mn_obj =*/
-        /*(ArrangerObject *) midi_note;*/
+void
+midi_arranger_show_context_menu (
+  ArrangerWidget * self,
+  gdouble          x,
+  gdouble          y)
+{
+  GtkWidget *menu;
+  GtkMenuItem * menu_item;
 
-      /*if (Z_IS_ARRANGER_OBJECT_WIDGET (*/
-            /*mn_obj->widget))*/
-        /*{*/
-          /*arranger_object_widget_update_tooltip (*/
-            /*Z_ARRANGER_OBJECT_WIDGET (*/
-              /*mn_obj->widget), 0);*/
-        /*}*/
+  ArrangerObject * mn_obj =
+    arranger_widget_get_hit_arranger_object (
+      self, ARRANGER_OBJECT_TYPE_MIDI_NOTE, x, y);
+  MidiNote * mn = (MidiNote *) mn_obj;
 
-      /*EVENTS_PUSH (*/
-        /*ET_ARRANGER_OBJECT_CREATED, midi_note);*/
-    /*}*/
+#define APPEND_TO_MENU \
+  gtk_menu_shell_append ( \
+    GTK_MENU_SHELL (menu), \
+    GTK_WIDGET (menu_item))
 
-  /*switch (self->action)*/
-    /*{*/
-    /*case UI_OVERLAY_ACTION_RESIZING_L:*/
-    /*{*/
-      /*ArrangerObject * trans_note =*/
-        /*arranger_object_get_main_trans (*/
-          /*MA_SELECTIONS->midi_notes[0]);*/
-      /*UndoableAction * ua =*/
-        /*arranger_selections_action_new_resize (*/
-          /*(ArrangerSelections *) MA_SELECTIONS,*/
-          /*ARRANGER_SELECTIONS_ACTION_RESIZE_L,*/
-          /*trans_note->pos.total_ticks -*/
-          /*trans_note->cache_pos.total_ticks);*/
-      /*undo_manager_perform (*/
-        /*UNDO_MANAGER, ua);*/
-      /*arranger_selections_reset_counterparts (*/
-        /*(ArrangerSelections *) MA_SELECTIONS, 1);*/
-    /*}*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_RESIZING_R:*/
-    /*{*/
-      /*ArrangerObject * trans_note =*/
-        /*arranger_object_get_main_trans (*/
-          /*MA_SELECTIONS->midi_notes[0]);*/
-      /*UndoableAction * ua =*/
-        /*arranger_selections_action_new_resize (*/
-          /*(ArrangerSelections *) MA_SELECTIONS,*/
-          /*ARRANGER_SELECTIONS_ACTION_RESIZE_R,*/
-          /*trans_note->end_pos.total_ticks -*/
-          /*trans_note->cache_end_pos.total_ticks);*/
-      /*undo_manager_perform (*/
-        /*UNDO_MANAGER, ua);*/
-      /*arranger_selections_reset_counterparts (*/
-        /*(ArrangerSelections *) MA_SELECTIONS, 1);*/
-    /*}*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_STARTING_MOVING:*/
-    /*{*/
-      /* if something was clicked with ctrl without
-       * moving*/
-      /*if (self->ctrl_held)*/
-        /*if (self->start_object &&*/
-            /*arranger_object_is_selected (*/
-              /*self->start_object))*/
-          /*{*/
-            /*[> deselect it <]*/
-            /*arranger_object_select (*/
-              /*self->start_object,*/
-              /*F_NO_SELECT, F_APPEND);*/
-          /*}*/
-    /*}*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_MOVING:*/
-    /*{*/
-      /*ArrangerObject * note_obj =*/
-        /*arranger_object_get_main (*/
-          /*MA_SELECTIONS->midi_notes[0]);*/
-      /*MidiNote * mn =*/
-        /*(MidiNote *) note_obj;*/
-      /*long ticks_diff =*/
-        /*note_obj->pos.total_ticks -*/
-          /*note_obj->cache_pos.total_ticks;*/
-      /*int pitch_diff =*/
-        /*mn->val - mn->cache_val;*/
-      /*UndoableAction * ua =*/
-        /*arranger_selections_action_new_move_midi (*/
-          /*MA_SELECTIONS, ticks_diff, pitch_diff);*/
-      /*undo_manager_perform (*/
-        /*UNDO_MANAGER, ua);*/
-      /*arranger_selections_reset_counterparts (*/
-        /*(ArrangerSelections *) MA_SELECTIONS, 1);*/
-    /*}*/
-      /*break;*/
-    /*[> if copy/link-moved <]*/
-    /*case UI_OVERLAY_ACTION_MOVING_COPY:*/
-    /*case UI_OVERLAY_ACTION_MOVING_LINK:*/
-    /*{*/
-      /*ArrangerObject * note_obj =*/
-        /*arranger_object_get_main (*/
-          /*MA_SELECTIONS->midi_notes[0]);*/
-      /*MidiNote * mn =*/
-        /*(MidiNote *) note_obj;*/
-      /*long ticks_diff =*/
-        /*note_obj->pos.total_ticks -*/
-          /*note_obj->cache_pos.total_ticks;*/
-      /*int pitch_diff =*/
-        /*mn->val - mn->cache_val;*/
-      /*arranger_selections_reset_counterparts (*/
-        /*(ArrangerSelections *) MA_SELECTIONS, 0);*/
-      /*UndoableAction * ua =*/
-        /*(UndoableAction *)*/
-        /*arranger_selections_action_new_duplicate_midi (*/
-          /*(ArrangerSelections *) MA_SELECTIONS,*/
-          /*ticks_diff,*/
-          /*pitch_diff);*/
-      /*undo_manager_perform (*/
-        /*UNDO_MANAGER, ua);*/
-    /*}*/
-      /*break;*/
-    /*case UI_OVERLAY_ACTION_NONE:*/
-    /*{*/
-      /*arranger_selections_clear (*/
-        /*(ArrangerSelections *) MA_SELECTIONS);*/
-    /*}*/
-      /*break;*/
-    /*[> something was created <]*/
-    /*case UI_OVERLAY_ACTION_CREATING_RESIZING_R:*/
-    /*{*/
-      /*UndoableAction * ua =*/
-        /*arranger_selections_action_new_create (*/
-          /*(ArrangerSelections *) MA_SELECTIONS);*/
-      /*undo_manager_perform (*/
-        /*UNDO_MANAGER, ua);*/
-    /*}*/
-      /*break;*/
-    /*[> if didn't click on something <]*/
-    /*default:*/
-    /*{*/
-    /*}*/
-      /*break;*/
-    /*}*/
+  menu = gtk_menu_new();
 
-  /*self->start_object = NULL;*/
-  /*[>if (self->start_midi_note_clone)<]*/
-    /*[>{<]*/
-      /*[>midi_note_free (self->start_midi_note_clone);<]*/
-      /*[>self->start_midi_note_clone = NULL;<]*/
-    /*[>}<]*/
+  if (mn)
+    {
+      int selected =
+        arranger_object_is_selected (
+          mn_obj);
+      if (!selected)
+        {
+          arranger_object_select (
+            mn_obj,
+            F_SELECT, F_NO_APPEND);
+        }
 
-  /*EVENTS_PUSH (*/
-    /*ET_ARRANGER_SELECTIONS_CHANGED, MA_SELECTIONS);*/
-/*}*/
+      menu_item =
+        CREATE_CUT_MENU_ITEM ("win.cut");
+      APPEND_TO_MENU;
+      menu_item =
+        CREATE_COPY_MENU_ITEM ("win.copy");
+      APPEND_TO_MENU;
+      menu_item =
+        CREATE_PASTE_MENU_ITEM ("win.paste");
+      APPEND_TO_MENU;
+      menu_item =
+        CREATE_DELETE_MENU_ITEM ("win.delete");
+      APPEND_TO_MENU;
+      menu_item =
+        CREATE_DUPLICATE_MENU_ITEM (
+          "win.duplicate");
+      APPEND_TO_MENU;
+      menu_item =
+        GTK_MENU_ITEM (
+          gtk_separator_menu_item_new ());
+      APPEND_TO_MENU;
+      menu_item =
+        GTK_MENU_ITEM (
+          gtk_menu_item_new_with_label(
+            _("View info")));
+      g_signal_connect (
+        menu_item, "activate",
+        G_CALLBACK (on_view_info), mn_obj);
+      APPEND_TO_MENU;
+    }
+  else
+    {
+      arranger_widget_select_all (
+        (ArrangerWidget *) self, F_NO_SELECT);
+      arranger_selections_clear (
+        (ArrangerSelections *) MA_SELECTIONS);
+    }
+  menu_item =
+    GTK_MENU_ITEM (gtk_separator_menu_item_new ());
+  APPEND_TO_MENU;
+  menu_item =
+    CREATE_CLEAR_SELECTION_MENU_ITEM (
+      "win.clear-selection");
+  APPEND_TO_MENU;
+  menu_item =
+    CREATE_SELECT_ALL_MENU_ITEM (
+      "win.select-all");
+  APPEND_TO_MENU;
 
+#undef APPEND_TO_MENU
+
+  gtk_widget_show_all (menu);
+
+  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
+}

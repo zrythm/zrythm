@@ -544,6 +544,8 @@ do_or_undo_move (
     get_actual_arranger_selections (self);
   EVENTS_PUSH (
     ET_ARRANGER_SELECTIONS_CHANGED, sel);
+  EVENTS_PUSH (
+    ET_ARRANGER_SELECTIONS_MOVED, sel);
 
   self->first_run = 0;
 
@@ -808,7 +810,7 @@ do_or_undo_duplicate (
   else
     {
       EVENTS_PUSH (
-        ET_ARRANGER_SELECTIONS_REMOVED, sel->type);
+        ET_ARRANGER_SELECTIONS_REMOVED, sel);
     }
 
   self->first_run = 0;
@@ -891,7 +893,7 @@ do_or_undo_create_or_delete (
   else
     {
       EVENTS_PUSH (
-        ET_ARRANGER_SELECTIONS_REMOVED, sel->type);
+        ET_ARRANGER_SELECTIONS_REMOVED, sel);
     }
 
   self->first_run = 0;

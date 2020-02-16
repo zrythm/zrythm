@@ -141,6 +141,12 @@ midi_arranger_listen_notes (
   ArrangerWidget * self,
   int              listen);
 
+void
+midi_arranger_show_context_menu (
+  ArrangerWidget * self,
+  gdouble          x,
+  gdouble          y);
+
 /**
  * @}
  */

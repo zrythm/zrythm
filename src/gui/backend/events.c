@@ -439,22 +439,16 @@ refresh_for_selections_type (
       break;
     case ARRANGER_SELECTIONS_TYPE_MIDI:
       clip_editor_redraw_region (CLIP_EDITOR);
-      gtk_widget_queue_allocate (
-        GTK_WIDGET (MW_CHORD_ARRANGER));
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
       break;
     case ARRANGER_SELECTIONS_TYPE_CHORD:
       clip_editor_redraw_region (CLIP_EDITOR);
-      gtk_widget_queue_allocate (
-        GTK_WIDGET (MW_CHORD_ARRANGER));
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
       break;
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
       clip_editor_redraw_region (CLIP_EDITOR);
-      gtk_widget_queue_allocate (
-        GTK_WIDGET (MW_AUTOMATION_ARRANGER));
       event_viewer_widget_refresh (
         MW_EDITOR_EVENT_VIEWER);
       break;
@@ -489,9 +483,64 @@ on_arranger_selections_changed (
 }
 
 static void
+arranger_selections_change_redraw_everything (
+  ArrangerSelections * sel)
+{
+  switch (sel->type)
+    {
+    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+      arranger_widget_redraw_whole (
+        MW_TIMELINE);
+      arranger_widget_redraw_whole (
+        MW_PINNED_TIMELINE);
+      event_viewer_widget_refresh (
+        MW_TIMELINE_EVENT_VIEWER);
+      arranger_widget_redraw_whole (
+        MW_MIDI_ARRANGER);
+      arranger_widget_redraw_whole (
+        MW_MIDI_MODIFIER_ARRANGER);
+      arranger_widget_redraw_whole (
+        MW_CHORD_ARRANGER);
+      arranger_widget_redraw_whole (
+        MW_AUTOMATION_ARRANGER);
+      ruler_widget_redraw_whole (
+        EDITOR_RULER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_MIDI:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      arranger_widget_redraw_whole (
+        MW_MIDI_ARRANGER);
+      arranger_widget_redraw_whole (
+        MW_MIDI_MODIFIER_ARRANGER);
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_CHORD:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      arranger_widget_redraw_whole (
+        MW_CHORD_ARRANGER);
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
+    case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+      clip_editor_redraw_region (CLIP_EDITOR);
+      arranger_widget_redraw_whole (
+        MW_AUTOMATION_ARRANGER);
+      event_viewer_widget_refresh (
+        MW_EDITOR_EVENT_VIEWER);
+      break;
+    default:
+      g_return_if_reached ();
+    }
+}
+
+static void
 on_arranger_selections_created (
   ArrangerSelections * sel)
 {
+  arranger_selections_change_redraw_everything (
+    sel);
+#if 0
   arranger_selections_redraw (sel);
   switch (sel->type)
     {
@@ -517,12 +566,25 @@ on_arranger_selections_created (
     default:
       g_return_if_reached ();
     }
+#endif
+}
+
+static void
+on_arranger_selections_moved (
+  ArrangerSelections * sel)
+{
+  arranger_selections_change_redraw_everything (
+    sel);
 }
 
 static void
 on_arranger_selections_removed (
-  ArrangerSelectionsType type)
+  ArrangerSelections * sel)
 {
+  arranger_selections_change_redraw_everything (
+    sel);
+
+#if 0
   switch (type)
     {
     case ARRANGER_SELECTIONS_TYPE_TIMELINE:
@@ -559,6 +621,7 @@ on_arranger_selections_removed (
     default:
       g_return_if_reached ();
     }
+#endif
 }
 
 static void
@@ -1040,15 +1103,19 @@ events_process (void * data)
           break;
         case ET_ARRANGER_SELECTIONS_CHANGED:
           on_arranger_selections_changed (
-            (ArrangerSelections *) ev->arg);
+            ARRANGER_SELECTIONS (ev->arg));
           break;
         case ET_ARRANGER_SELECTIONS_CREATED:
           on_arranger_selections_created (
-            (ArrangerSelections *) ev->arg);
+            ARRANGER_SELECTIONS (ev->arg));
           break;
         case ET_ARRANGER_SELECTIONS_REMOVED:
           on_arranger_selections_removed (
-            (ArrangerSelectionsType) ev->arg);
+            ARRANGER_SELECTIONS (ev->arg));
+          break;
+        case ET_ARRANGER_SELECTIONS_MOVED:
+          on_arranger_selections_moved (
+            ARRANGER_SELECTIONS (ev->arg));
           break;
         case ET_TRACKLIST_SELECTIONS_CHANGED:
           /* only refresh the inspector if the

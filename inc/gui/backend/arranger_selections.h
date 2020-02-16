@@ -32,6 +32,12 @@
 typedef struct ArrangerObject ArrangerObject;
 typedef struct Position Position;
 
+#define ARRANGER_SELECTIONS_MAGIC 35867752
+#define IS_ARRANGER_SELECTIONS(tr) \
+  ((tr) && (tr)->magic == ARRANGER_SELECTIONS_MAGIC)
+#define ARRANGER_SELECTIONS(x) \
+  arranger_selections_cast (x)
+
 /**
  * @addtogroup gui_backend
  *
@@ -51,18 +57,20 @@ typedef struct ArrangerSelections
 {
   /** Type of selections. */
   ArrangerSelectionsType type;
+
+  int                    magic;
 } ArrangerSelections;
 
 static const cyaml_strval_t
 arranger_selections_type_strings[] =
 {
-	{ "Chord",
+  { "Chord",
     ARRANGER_SELECTIONS_TYPE_CHORD    },
-	{ "Timeline",
+  { "Timeline",
     ARRANGER_SELECTIONS_TYPE_TIMELINE   },
-	{ "MIDI",
+  { "MIDI",
     ARRANGER_SELECTIONS_TYPE_MIDI },
-	{ "Automation",
+  { "Automation",
     ARRANGER_SELECTIONS_TYPE_AUTOMATION   },
 };
 
@@ -76,7 +84,7 @@ arranger_selections_fields_schema[] =
     CYAML_ARRAY_LEN (
       arranger_selections_type_strings)),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
@@ -85,6 +93,17 @@ arranger_selections_schema = {
     CYAML_FLAG_POINTER, ArrangerSelections,
     arranger_selections_fields_schema),
 };
+
+static inline ArrangerSelections *
+arranger_selections_cast (void * sel)
+{
+  if (!IS_ARRANGER_SELECTIONS (
+        (ArrangerSelections *) sel))
+    {
+      g_warning ("%s", __func__);
+    }
+  return (ArrangerSelections *) sel;
+}
 
 /**
  * Inits the selections after loading a project.
