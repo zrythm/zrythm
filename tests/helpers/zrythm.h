@@ -84,45 +84,10 @@ test_helper_zrythm_init ()
   ZRYTHM->testing = 1;
   ZRYTHM->have_ui = 0;
   PROJECT = calloc (1, sizeof (Project));
-  AUDIO_ENGINE->block_length = 256;
-
-  project_init_selections (PROJECT);
-
-  AUDIO_ENGINE->audio_backend =
-    AUDIO_BACKEND_DUMMY;
-  AUDIO_ENGINE->midi_backend =
-    MIDI_BACKEND_DUMMY;
-  engine_init (AUDIO_ENGINE, 0);
-  engine_update_frames_per_tick (
-    AUDIO_ENGINE, 4, 140, 44000);
-  undo_manager_init (&PROJECT->undo_manager);
-
-  /* init pinned tracks */
-  Track * track = chord_track_new (0);
-  tracklist_append_track (
-    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
-    F_NO_RECALC_GRAPH);
-  track->pinned = 1;
-  TRACKLIST->chord_track = track;
-  track =
-    marker_track_default (1);
-  tracklist_append_track (
-    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
-    F_NO_RECALC_GRAPH);
-  track->pinned = 1;
-  TRACKLIST->marker_track = track;
-
-  /* add master channel to mixer and tracklist */
-  track =
-    track_new (
-      TRACK_TYPE_MASTER, 2, "Master",
-      F_WITHOUT_LANE);
-  tracklist_append_track (
-    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
-    F_NO_RECALC_GRAPH);
-  TRACKLIST->master_track = track;
-  tracklist_selections_add_track (
-    TRACKLIST_SELECTIONS, track, 0);
+  ZRYTHM->create_project_path =
+    g_dir_make_tmp (
+      "zrythm_test_project_XXXXXX", NULL);
+  project_load (NULL, 0);
 }
 
 /**

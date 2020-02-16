@@ -424,9 +424,12 @@ create_default (Project * self)
       g_atomic_int_set (&AUDIO_ENGINE->run, 1);
     }
 
-  header_notebook_widget_set_subtitle (
-    MW_HEADER_NOTEBOOK,
-    PROJECT->title);
+  if (ZRYTHM_HAVE_UI)
+    {
+      header_notebook_widget_set_subtitle (
+        MW_HEADER_NOTEBOOK,
+        PROJECT->title);
+    }
 }
 
 /**
@@ -997,16 +1000,22 @@ project_save (
     }
   else
     {
-      zrythm_add_to_recent_projects (
-        ZRYTHM, project_file_path);
+      if (!ZRYTHM_TESTING)
+        {
+          zrythm_add_to_recent_projects (
+            ZRYTHM, project_file_path);
+        }
       if (show_notification)
         ui_show_notification (_("Project saved."));
     }
   g_free (project_file_path);
 
-  header_notebook_widget_set_subtitle (
-    MW_HEADER_NOTEBOOK,
-    PROJECT->title);
+  if (ZRYTHM_HAVE_UI)
+    {
+      header_notebook_widget_set_subtitle (
+        MW_HEADER_NOTEBOOK,
+        PROJECT->title);
+    }
 
   g_free (dir);
 

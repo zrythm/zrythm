@@ -27,6 +27,15 @@ if get_option ('enable_tests')
   test_env.set ('G_DEBUG', 'gc-friendly')
   test_env.set ('MALLOC_CHECK', '2')
 
+  test_cflags = [
+    '-DTESTS_SRCDIR="' +
+      meson.current_source_dir () +
+      '"',
+    '-DTESTS_BUILDDIR="' +
+      meson.current_build_dir () +
+      '"',
+  ]
+
   test_link_args = [
     '-fPIC',
   ]
@@ -64,6 +73,7 @@ if get_option ('enable_tests')
         ],
       c_args : [
         common_cflags,
+        test_cflags,
         ],
       dependencies : [
         zrythm_deps,

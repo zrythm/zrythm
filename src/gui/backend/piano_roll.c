@@ -328,12 +328,15 @@ piano_roll_init (PianoRoll * self)
 
   self->midi_modifier = MIDI_MODIFIER_VELOCITY;
 
-  self->highlighting =
-    g_settings_get_enum (
-      S_UI, "piano-roll-highlight");
-  self->midi_modifier =
-    g_settings_get_enum (
-      S_UI, "piano-roll-midi-modifier");
+  if (!ZRYTHM_TESTING)
+    {
+      self->highlighting =
+        g_settings_get_enum (
+          S_UI, "piano-roll-highlight");
+      self->midi_modifier =
+        g_settings_get_enum (
+          S_UI, "piano-roll-midi-modifier");
+    }
 
   init_descriptors (self);
 }

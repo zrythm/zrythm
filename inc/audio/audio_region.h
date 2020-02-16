@@ -51,7 +51,8 @@ typedef struct AudioClip AudioClip;
  * audio on the pool and then pass the pool id here.
  *
  * @param pool_id The pool ID. This is used when
- *   creating clone regions (non-main).
+ *   creating clone regions (non-main) and must be
+ *   -1 when creating a new clip.
  * @param filename Filename, if loading from
  *   file, otherwise NULL.
  * @param frames Float array, if loading from
