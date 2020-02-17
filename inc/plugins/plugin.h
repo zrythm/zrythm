@@ -262,6 +262,15 @@ plugin_new_from_descr (
   int                      slot);
 
 /**
+ * Create a dummy plugin for tests.
+ */
+Plugin *
+plugin_new_dummy (
+  PluginCategory cat,
+  int            track_pos,
+  int            slot);
+
+/**
  * Sets the UI refresh rate on the Plugin.
  */
 void

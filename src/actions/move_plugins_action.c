@@ -33,12 +33,12 @@ move_plugins_action_new (
   Track *    to_tr,
   int        to_slot)
 {
-	MovePluginsAction * self =
+  MovePluginsAction * self =
     calloc (1, sizeof (
-    	MovePluginsAction));
+      MovePluginsAction));
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UA_MOVE_PLUGINS;
+    UA_MOVE_PLUGINS;
 
   self->to_slot = to_slot;
   Track * pl_track =
@@ -60,7 +60,7 @@ move_plugins_action_new (
 
 int
 move_plugins_action_do (
-	MovePluginsAction * self)
+  MovePluginsAction * self)
 {
   Plugin * pl;
   Channel * from_ch =
@@ -107,7 +107,7 @@ move_plugins_action_do (
 
 int
 move_plugins_action_undo (
-	MovePluginsAction * self)
+  MovePluginsAction * self)
 {
   Plugin * pl;
 
@@ -148,7 +148,7 @@ move_plugins_action_undo (
 
 char *
 move_plugins_action_stringize (
-	MovePluginsAction * self)
+  MovePluginsAction * self)
 {
   if (self->ms->num_slots == 1)
     return g_strdup_printf (
@@ -162,7 +162,7 @@ move_plugins_action_stringize (
 
 void
 move_plugins_action_free (
-	MovePluginsAction * self)
+  MovePluginsAction * self)
 {
   free (self);
 }

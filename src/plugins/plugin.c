@@ -167,6 +167,31 @@ plugin_new_from_descr (
 }
 
 /**
+ * Create a dummy plugin for tests.
+ */
+Plugin *
+plugin_new_dummy (
+  PluginCategory cat,
+  int            track_pos,
+  int            slot)
+{
+  Plugin * self = calloc (1, sizeof (Plugin));
+
+  self->descr =
+    calloc (1, sizeof (PluginDescriptor));
+  PluginDescriptor * descr = self->descr;
+  descr->author = g_strdup ("Hoge");
+  descr->name = g_strdup ("Dummy Plugin");
+  descr->category = cat;
+  descr->category_str =
+    g_strdup ("Dummy Plugin Category");
+
+  plugin_init (self, track_pos, slot);
+
+  return self;
+}
+
+/**
  * Removes the automation tracks associated with
  * this plugin from the automation tracklist in the
  * corresponding track.
@@ -424,6 +449,12 @@ void
 plugin_set_ui_refresh_rate (
   Plugin * self)
 {
+  if (ZRYTHM_TESTING)
+    {
+      self->ui_update_hz = 30.f;
+      return;
+    }
+
   /* if no preferred refresh rate is set,
    * use the monitor's refresh rate */
   if (!g_settings_get_int (

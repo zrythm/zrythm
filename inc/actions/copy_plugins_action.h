@@ -68,19 +68,19 @@ copy_plugins_action_new (
 
 int
 copy_plugins_action_do (
-	CopyPluginsAction * self);
+  CopyPluginsAction * self);
 
 int
 copy_plugins_action_undo (
-	CopyPluginsAction * self);
+  CopyPluginsAction * self);
 
 char *
 copy_plugins_action_stringize (
-	CopyPluginsAction * self);
+  CopyPluginsAction * self);
 
 void
 copy_plugins_action_free (
-	CopyPluginsAction * self);
+  CopyPluginsAction * self);
 
 /**
  * @}

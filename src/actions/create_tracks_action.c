@@ -185,7 +185,8 @@ create (
             }
         }
 
-      if (pl && g_settings_get_int (
+      if (pl && !ZRYTHM_TESTING &&
+          g_settings_get_int (
             S_PREFERENCES,
             "open-plugin-uis-on-instantiate") &&
           add_to_project)
@@ -199,6 +200,11 @@ create (
   return 0;
 }
 
+/**
+ * Creates a new CreateTracksAction.
+ *
+ * @param pos Position to make the tracks at.
+ */
 UndoableAction *
 create_tracks_action_new (
   TrackType          type,

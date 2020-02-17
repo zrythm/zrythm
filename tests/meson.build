@@ -17,6 +17,8 @@
 
 if get_option ('enable_tests')
 
+  subdir('eg-amp.lv2')
+
   test_env = environment ()
   test_env.set (
     'G_TEST_SRC_ROOT_DIR', meson.source_root ())
@@ -26,6 +28,8 @@ if get_option ('enable_tests')
     'G_TEST_BUILDDIR', meson.current_build_dir ())
   test_env.set ('G_DEBUG', 'gc-friendly')
   test_env.set ('MALLOC_CHECK', '2')
+  test_env.set ('VST_PATH', '/tmp/zrythm_vst')
+  test_env.set ('LV2_PATH', '/tmp/zrythm_lv2')
 
   test_cflags = [
     '-DTESTS_SRCDIR="' +
@@ -51,6 +55,12 @@ if get_option ('enable_tests')
     ['audio/track', true],
     ['utils/arrays', true],
     ]
+
+  if os_linux
+    tests += [
+      ['actions/mixer_selections', true],
+      ]
+  endif
 
   if get_option ('enable_gui_tests')
     tests += [
@@ -83,10 +93,9 @@ if get_option ('enable_tests')
       include_directories : all_inc,
     )
 
-    suite = ['zrythm']
     test (
       test_name, exe,
-      env: test_env, suite: suite,
+      env: test_env, suite: _test[0].split('/')[0],
       is_parallel: parallel)
   endforeach
 

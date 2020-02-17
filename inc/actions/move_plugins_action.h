@@ -61,18 +61,18 @@ move_plugins_action_new (
 
 int
 move_plugins_action_do (
-	MovePluginsAction * self);
+  MovePluginsAction * self);
 
 int
 move_plugins_action_undo (
-	MovePluginsAction * self);
+  MovePluginsAction * self);
 
 char *
 move_plugins_action_stringize (
-	MovePluginsAction * self);
+  MovePluginsAction * self);
 
 void
 move_plugins_action_free (
-	MovePluginsAction * self);
+  MovePluginsAction * self);
 
 #endif

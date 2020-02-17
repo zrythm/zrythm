@@ -73,6 +73,11 @@ typedef struct CreateTracksAction
   int              pool_id;
 } CreateTracksAction;
 
+/**
+ * Creates a new CreateTracksAction.
+ *
+ * @param pos Position to make the tracks at.
+ */
 UndoableAction *
 create_tracks_action_new (
   TrackType          type,

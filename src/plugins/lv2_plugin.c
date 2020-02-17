@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1486,7 +1486,8 @@ lv2_plugin_instantiate (
   g_message ("Looking for supported UI...");
   self->uis =
     lilv_plugin_get_uis (self->lilv_plugin);
-  if (!g_settings_get_int (
+  if (!ZRYTHM_TESTING &&
+      !g_settings_get_int (
         S_PREFERENCES, "generic-plugin-uis"))
     {
       LILV_FOREACH (uis, u, self->uis)
@@ -1522,7 +1523,8 @@ lv2_plugin_instantiate (
             }
         }
     }
-  else if (!g_settings_get_int (
+  else if (!ZRYTHM_TESTING &&
+           !g_settings_get_int (
               S_PREFERENCES,
               "generic-plugin-uis"))
     {

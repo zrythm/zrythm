@@ -89,11 +89,13 @@ typedef enum PluginCategory
  */
 typedef enum PluginProtocol
 {
- PROT_LV2,
- PROT_DSSI,
- PROT_LADSPA,
- PROT_VST,
- PROT_VST3,
+  /** Dummy protocol for tests. */
+  PROT_DUMMY,
+  PROT_LV2,
+  PROT_DSSI,
+  PROT_LADSPA,
+  PROT_VST,
+  PROT_VST3,
 } PluginProtocol;
 
 /**

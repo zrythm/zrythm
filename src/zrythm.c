@@ -69,6 +69,9 @@ static GApplication * app;
 static FirstRunAssistantWidget * first_run_assistant;
 static ProjectAssistantWidget * assistant;
 
+/** Zrythm directory used during unit tests. */
+static char * testing_dir = NULL;
+
 /**
  * Sets the current status and progress percentage
  * during loading.
@@ -99,12 +102,24 @@ char *
 zrythm_get_dir (
   Zrythm * self)
 {
+  if (ZRYTHM_TESTING)
+    {
+      if (testing_dir)
+        return testing_dir;
+      else
+        {
+          testing_dir =
+            g_dir_make_tmp (
+              "zrythm_test_dir_XXXXXX", NULL);
+          return testing_dir;
+        }
+    }
+
   g_warn_if_fail (S_PREFERENCES != NULL);
 
   char * dir =
     g_settings_get_string (
-      S_GENERAL,
-      "dir");
+      S_GENERAL, "dir");
   return dir;
 }
 
