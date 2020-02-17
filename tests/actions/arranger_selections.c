@@ -312,8 +312,7 @@ select_audio_and_midi_regions_only ()
  */
 static void
 check_timeline_objects_vs_original_state (
-  const int check_selections,
-  const int is_duplicate_action)
+  const int check_selections)
 {
   if (check_selections)
     {
@@ -349,17 +348,8 @@ check_timeline_objects_vs_original_state (
   ArrangerObject * obj =
     (ArrangerObject *)
     midi_track->lanes[MIDI_REGION_LANE]->regions[0];
-  if (is_duplicate_action)
-    {
-      g_assert_cmppos (&obj->pos, &p1_before_move);
-      g_assert_cmppos (
-        &obj->end_pos, &p2_before_move);
-    }
-  else
-    {
-      g_assert_cmppos (&obj->pos, &p1);
-      g_assert_cmppos (&obj->end_pos, &p2);
-    }
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->end_pos, &p2);
   ZRegion * r = (ZRegion *) obj;
   g_assert_cmpint (r->num_midi_notes, ==, 1);
   MidiNote * mn = r->midi_notes[0];
@@ -380,14 +370,7 @@ check_timeline_objects_vs_original_state (
     (ArrangerObject *)
     audio_track->lanes[AUDIO_REGION_LANE]->
       regions[0];
-  if (is_duplicate_action)
-    {
-      g_assert_cmppos (&obj->pos, &p1_before_move);
-    }
-  else
-    {
-      g_assert_cmppos (&obj->pos, &p1);
-    }
+  g_assert_cmppos (&obj->pos, &p1);
 
   /* check automation region */
   AutomationTracklist * atl =
@@ -401,17 +384,8 @@ check_timeline_objects_vs_original_state (
   g_assert_cmpint (at->num_regions, ==, 1);
   obj =
     (ArrangerObject *) at->regions[0];
-  if (is_duplicate_action)
-    {
-      g_assert_cmppos (&obj->pos, &p1_before_move);
-      g_assert_cmppos (
-        &obj->end_pos, &p2_before_move);
-    }
-  else
-    {
-      g_assert_cmppos (&obj->pos, &p1);
-      g_assert_cmppos (&obj->end_pos, &p2);
-    }
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->end_pos, &p2);
   r =
     (ZRegion *) obj;
   g_assert_cmpint (r->num_aps, ==, 2);
@@ -434,14 +408,7 @@ check_timeline_objects_vs_original_state (
   obj =
     (ArrangerObject *) P_MARKER_TRACK->markers[2];
   Marker * m = (Marker *) obj;
-  if (is_duplicate_action)
-    {
-      g_assert_cmppos (&obj->pos, &p1_before_move);
-    }
-  else
-    {
-      g_assert_cmppos (&obj->pos, &p1);
-    }
+  g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmpstr (m->name, ==, MARKER_NAME);
 
   /* check scale object */
@@ -451,14 +418,7 @@ check_timeline_objects_vs_original_state (
     (ArrangerObject *)
     P_CHORD_TRACK->scales[0];
   ScaleObject * s = (ScaleObject *) obj;
-  if (is_duplicate_action)
-    {
-      g_assert_cmppos (&obj->pos, &p1_before_move);
-    }
-  else
-    {
-      g_assert_cmppos (&obj->pos, &p1);
-    }
+  g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmpint (
     s->scale->type, ==, MUSICAL_SCALE_TYPE);
   g_assert_cmpint (
@@ -530,7 +490,7 @@ test_create_timeline ()
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) MA_SELECTIONS), ==, 1);
-  check_timeline_objects_vs_original_state (1, 0);
+  check_timeline_objects_vs_original_state (1);
 
   /* undo and check that the objects are deleted */
   undo_manager_undo (UNDO_MANAGER);
@@ -545,7 +505,7 @@ test_create_timeline ()
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1, 0);
+  check_timeline_objects_vs_original_state (1);
 }
 
 static void
@@ -577,7 +537,7 @@ test_delete_timeline ()
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1, 0);
+  check_timeline_objects_vs_original_state (1);
 
   /* redo and check that the objects are gone */
   undo_manager_redo (UNDO_MANAGER);
@@ -603,7 +563,7 @@ test_delete_timeline ()
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1, 0);
+  check_timeline_objects_vs_original_state (1);
 }
 
 /**
@@ -843,7 +803,7 @@ test_move_timeline ()
           (ArrangerSelections *) TL_SELECTIONS), ==,
         i ? 2 : TOTAL_TL_SELECTIONS);
       check_timeline_objects_vs_original_state (
-        i ? 0 : 1, 0);
+        i ? 0 : 1);
 
       /* redo and check that the objects are moved
        * again */
@@ -868,18 +828,23 @@ test_move_timeline ()
           (ArrangerSelections *) TL_SELECTIONS), ==,
         TOTAL_TL_SELECTIONS);
       check_timeline_objects_vs_original_state (
-        1, 0);
+        1);
     }
 }
 
+/**
+ * @param new_tracks Whether midi/audio regions
+ *   were moved to new tracks.
+ */
 static void
-check_after_duplicate_timeline ()
+check_after_duplicate_timeline (
+  int  new_tracks)
 {
   /* check */
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
-    TOTAL_TL_SELECTIONS);
+    new_tracks ? 2 : TOTAL_TL_SELECTIONS);
 
   Track * midi_track =
     tracklist_find_track_by_name (
@@ -889,47 +854,50 @@ check_after_duplicate_timeline ()
     tracklist_find_track_by_name (
       TRACKLIST, AUDIO_TRACK_NAME);
   g_assert_nonnull (audio_track);
+  Track * new_midi_track =
+    tracklist_find_track_by_name (
+      TRACKLIST, TARGET_MIDI_TRACK_NAME);
+  g_assert_nonnull (midi_track);
+  Track * new_audio_track =
+    tracklist_find_track_by_name (
+      TRACKLIST, TARGET_AUDIO_TRACK_NAME);
+  g_assert_nonnull (audio_track);
 
-  /* check midi region */
-  g_assert_cmpint (
-    midi_track->lanes[MIDI_REGION_LANE]->
-      num_regions, ==, 2);
-  ArrangerObject * obj =
+  /* check prev midi region */
+  ArrangerObject * obj;
+  if (new_tracks)
+    {
+      g_assert_cmpint (
+        midi_track->lanes[MIDI_REGION_LANE]->
+          num_regions, ==, 1);
+      g_assert_cmpint (
+        new_midi_track->lanes[MIDI_REGION_LANE]->
+          num_regions, ==, 1);
+    }
+  else
+    {
+      g_assert_cmpint (
+        midi_track->lanes[MIDI_REGION_LANE]->
+          num_regions, ==, 2);
+    }
+  obj =
     (ArrangerObject *)
-    midi_track->lanes[MIDI_REGION_LANE]->regions[0];
+    midi_track->lanes[MIDI_REGION_LANE]->
+      regions[0];
   Position p1_before_move, p2_before_move;
   p1_before_move = p1;
   p2_before_move = p2;
-  position_add_ticks (&p1_before_move, - MOVE_TICKS);
-  position_add_ticks (&p2_before_move, - MOVE_TICKS);
   g_assert_cmppos (&obj->pos, &p1_before_move);
   g_assert_cmppos (&obj->end_pos, &p2_before_move);
-  ZRegion * r =
-    (ZRegion *) obj;
+  ZRegion * r = (ZRegion *) obj;
+  g_assert_cmpint (
+    r->id.track_pos, ==, midi_track->pos);
+  g_assert_cmpint (
+    r->id.lane_pos, ==, MIDI_REGION_LANE);
+  g_assert_cmpint (r->id.idx, ==, 0);
   g_assert_cmpint (r->num_midi_notes, ==, 1);
-  MidiNote * mn =
-    r->midi_notes[0];
-  obj =
-    (ArrangerObject *) mn;
-  g_assert_true (
-    region_identifier_is_equal (
-      &mn->region_id, &r->id));
-  g_assert_cmpuint (mn->val, ==, MN_VAL);
-  g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
-  g_assert_cmppos (&obj->pos, &p1);
-  g_assert_cmppos (&obj->end_pos, &p2);
-  obj =
-    (ArrangerObject *)
-    midi_track->lanes[MIDI_REGION_LANE]->regions[1];
-  g_assert_cmppos (&obj->pos, &p1);
-  g_assert_cmppos (&obj->end_pos, &p2);
-  r =
-    (ZRegion *) obj;
-  g_assert_cmpint (r->num_midi_notes, ==, 1);
-  mn =
-    r->midi_notes[0];
-  obj =
-    (ArrangerObject *) mn;
+  MidiNote * mn = r->midi_notes[0];
+  obj = (ArrangerObject *) mn;
   g_assert_true (
     region_identifier_is_equal (
       &mn->region_id, &r->id));
@@ -938,128 +906,280 @@ check_after_duplicate_timeline ()
   g_assert_cmppos (&obj->pos, &p1);
   g_assert_cmppos (&obj->end_pos, &p2);
 
-  /* check audio region */
+  /* check new midi region */
+  if (new_tracks)
+    {
+      obj =
+        (ArrangerObject *)
+        new_midi_track->lanes[MIDI_REGION_LANE]->
+          regions[0];
+    }
+  else
+    {
+      obj =
+        (ArrangerObject *)
+        midi_track->lanes[MIDI_REGION_LANE]->
+          regions[1];
+    }
+  Position p1_after_move, p2_after_move;
+  p1_after_move = p1;
+  p2_after_move = p2;
+  position_add_ticks (
+    &p1_after_move, MOVE_TICKS);
+  position_add_ticks (
+    &p2_after_move, MOVE_TICKS);
+  g_assert_cmppos (&obj->pos, &p1_after_move);
+  g_assert_cmppos (&obj->end_pos, &p2_after_move);
+  r = (ZRegion *) obj;
+  if (new_tracks)
+    {
+      g_assert_cmpint (
+        r->id.track_pos, ==, new_midi_track->pos);
+      g_assert_cmpint (r->id.idx, ==, 0);
+    }
+  else
+    {
+      g_assert_cmpint (
+        r->id.track_pos, ==, midi_track->pos);
+      g_assert_cmpint (r->id.idx, ==, 1);
+    }
   g_assert_cmpint (
-    audio_track->lanes[AUDIO_REGION_LANE]->
-      num_regions, ==, 2);
+    r->id.lane_pos, ==, MIDI_REGION_LANE);
+  g_assert_cmpint (r->num_midi_notes, ==, 1);
+  if (new_tracks)
+    {
+      g_assert_cmpint (
+        r->id.track_pos, ==, new_midi_track->pos);
+    }
+  else
+    {
+      g_assert_cmpint (
+        r->id.track_pos, ==, midi_track->pos);
+    }
+  g_assert_cmpint (
+    r->id.lane_pos, ==, MIDI_REGION_LANE);
+  mn = r->midi_notes[0];
+  obj = (ArrangerObject *) mn;
+  g_assert_true (
+    region_identifier_is_equal (
+      &mn->region_id, &r->id));
+  g_assert_cmpuint (mn->val, ==, MN_VAL);
+  g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
+  g_assert_cmppos (&obj->pos, &p1);
+  g_assert_cmppos (&obj->end_pos, &p2);
+
+  /* check prev audio region */
+  if (new_tracks)
+    {
+      g_assert_cmpint (
+        audio_track->lanes[AUDIO_REGION_LANE]->
+          num_regions, ==, 1);
+      g_assert_cmpint (
+        new_audio_track->lanes[AUDIO_REGION_LANE]->
+          num_regions, ==, 1);
+    }
+  else
+    {
+      g_assert_cmpint (
+        audio_track->lanes[AUDIO_REGION_LANE]->
+          num_regions, ==, 2);
+    }
   obj =
     (ArrangerObject *)
     audio_track->lanes[AUDIO_REGION_LANE]->
     regions[0];
-  p1_before_move = p1;
-  position_add_ticks (
-    &p1_before_move, - MOVE_TICKS);
   g_assert_cmppos (&obj->pos, &p1_before_move);
+  r = (ZRegion *) obj;
+  g_assert_cmpint (
+    r->id.track_pos, ==, audio_track->pos);
+  g_assert_cmpint (r->id.idx, ==, 0);
+  g_assert_cmpint (
+    r->id.lane_pos, ==, AUDIO_REGION_LANE);
 
-  /* check automation region */
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (P_MASTER_TRACK);
-  g_assert_nonnull (atl);
-  AutomationTrack * at =
-    channel_get_automation_track (
-      P_MASTER_TRACK->channel,
-      PORT_FLAG_STEREO_BALANCE);
-  g_assert_nonnull (at);
-  g_assert_cmpint (at->num_regions, ==, 2);
-  obj =
-    (ArrangerObject *) at->regions[0];
-  g_assert_cmppos (&obj->pos, &p1_before_move);
-  g_assert_cmppos (&obj->end_pos, &p2_before_move);
-  r =
-    (ZRegion *) obj;
-  g_assert_cmpint (r->num_aps, ==, 2);
-  AutomationPoint * ap =
-    r->aps[0];
-  obj = (ArrangerObject *) ap;
-  g_assert_cmppos (&obj->pos, &p1);
-  g_assert_cmpfloat_with_epsilon (
-    ap->fvalue, AP_VAL1, 0.000001f);
-  ap =
-    r->aps[1];
-  obj = (ArrangerObject *) ap;
-  g_assert_cmppos (&obj->pos, &p2);
-  g_assert_cmpfloat_with_epsilon (
-    ap->fvalue, AP_VAL2, 0.000001f);
-  obj =
-    (ArrangerObject *) at->regions[1];
-  g_assert_cmppos (&obj->pos, &p1);
-  g_assert_cmppos (&obj->end_pos, &p2);
-  r =
-    (ZRegion *) obj;
-  g_assert_cmpint (r->num_aps, ==, 2);
-  ap = r->aps[0];
-  obj = (ArrangerObject *) ap;
-  g_assert_cmppos (&obj->pos, &p1);
-  g_assert_cmpfloat_with_epsilon (
-    ap->fvalue, AP_VAL1, 0.000001f);
-  ap = r->aps[1];
-  obj = (ArrangerObject *) ap;
-  g_assert_cmppos (&obj->pos, &p2);
-  g_assert_cmpfloat_with_epsilon (
-    ap->fvalue, AP_VAL2, 0.000001f);
+  /* check new audio region */
+  if (new_tracks)
+    {
+      obj =
+        (ArrangerObject *)
+        new_audio_track->lanes[AUDIO_REGION_LANE]->
+        regions[0];
+    }
+  else
+    {
+      obj =
+        (ArrangerObject *)
+        audio_track->lanes[AUDIO_REGION_LANE]->
+        regions[1];
+    }
+  g_assert_cmppos (&obj->pos, &p1_after_move);
+  r = (ZRegion *) obj;
+  g_assert_cmpint (
+    r->id.lane_pos, ==, AUDIO_REGION_LANE);
+  if (new_tracks)
+    {
+      g_assert_cmpint (
+        r->id.track_pos, ==, new_audio_track->pos);
+    }
+  else
+    {
+      g_assert_cmpint (
+        r->id.track_pos, ==, audio_track->pos);
+    }
 
-  /* check marker */
-  g_assert_cmpint (
-    P_MARKER_TRACK->num_markers, ==, 4);
-  obj =
-    (ArrangerObject *) P_MARKER_TRACK->markers[2];
-  Marker * m = (Marker *) obj;
-  g_assert_cmppos (&obj->pos, &p1_before_move);
-  g_assert_cmpstr (m->name, ==, MARKER_NAME);
-  obj =
-    (ArrangerObject *) P_MARKER_TRACK->markers[3];
-  m = (Marker *) obj;
-  g_assert_cmppos (&obj->pos, &p1);
-  g_assert_cmpstr (m->name, ==, MARKER_NAME);
+  if (!new_tracks)
+    {
+      /* check automation region */
+      AutomationTracklist * atl =
+        track_get_automation_tracklist (P_MASTER_TRACK);
+      g_assert_nonnull (atl);
+      AutomationTrack * at =
+        channel_get_automation_track (
+          P_MASTER_TRACK->channel,
+          PORT_FLAG_STEREO_BALANCE);
+      g_assert_nonnull (at);
+      g_assert_cmpint (at->num_regions, ==, 2);
+      obj =
+        (ArrangerObject *) at->regions[0];
+      g_assert_cmppos (
+        &obj->pos, &p1_before_move);
+      g_assert_cmppos (
+        &obj->end_pos, &p2_before_move);
+      r =
+        (ZRegion *) obj;
+      g_assert_cmpint (r->num_aps, ==, 2);
+      AutomationPoint * ap =
+        r->aps[0];
+      obj = (ArrangerObject *) ap;
+      g_assert_cmppos (&obj->pos, &p1);
+      g_assert_cmpfloat_with_epsilon (
+        ap->fvalue, AP_VAL1, 0.000001f);
+      ap =
+        r->aps[1];
+      obj = (ArrangerObject *) ap;
+      g_assert_cmppos (&obj->pos, &p2);
+      g_assert_cmpfloat_with_epsilon (
+        ap->fvalue, AP_VAL2, 0.000001f);
+      obj =
+        (ArrangerObject *) at->regions[1];
+      g_assert_cmppos (
+        &obj->pos, &p1_after_move);
+      g_assert_cmppos (
+        &obj->end_pos, &p2_after_move);
+      r =
+        (ZRegion *) obj;
+      g_assert_cmpint (r->num_aps, ==, 2);
+      ap = r->aps[0];
+      obj = (ArrangerObject *) ap;
+      g_assert_cmppos (&obj->pos, &p1);
+      g_assert_cmpfloat_with_epsilon (
+        ap->fvalue, AP_VAL1, 0.000001f);
+      ap = r->aps[1];
+      obj = (ArrangerObject *) ap;
+      g_assert_cmppos (&obj->pos, &p2);
+      g_assert_cmpfloat_with_epsilon (
+        ap->fvalue, AP_VAL2, 0.000001f);
 
-  /* check scale object */
-  g_assert_cmpint (
-    P_CHORD_TRACK->num_scales, ==, 2);
-  obj =
-    (ArrangerObject *)
-    P_CHORD_TRACK->scales[0];
-  ScaleObject * s = (ScaleObject *) obj;
-  g_assert_cmppos (&obj->pos, &p1_before_move);
-  g_assert_cmpint (
-    s->scale->type, ==, MUSICAL_SCALE_TYPE);
-  g_assert_cmpint (
-    s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
-  obj =
-    (ArrangerObject *)
-    P_CHORD_TRACK->scales[1];
-  s = (ScaleObject *) obj;
-  g_assert_cmppos (&obj->pos, &p1);
-  g_assert_cmpint (
-    s->scale->type, ==, MUSICAL_SCALE_TYPE);
-  g_assert_cmpint (
-    s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
+      /* check marker */
+      g_assert_cmpint (
+        P_MARKER_TRACK->num_markers, ==, 4);
+      obj =
+        (ArrangerObject *) P_MARKER_TRACK->markers[2];
+      Marker * m = (Marker *) obj;
+      g_assert_cmppos (&obj->pos, &p1_before_move);
+      g_assert_cmpstr (m->name, ==, MARKER_NAME);
+      obj =
+        (ArrangerObject *) P_MARKER_TRACK->markers[3];
+      m = (Marker *) obj;
+      g_assert_cmppos (&obj->pos, &p1_after_move);
+      g_assert_cmpstr (m->name, ==, MARKER_NAME);
+
+      /* check scale object */
+      g_assert_cmpint (
+        P_CHORD_TRACK->num_scales, ==, 2);
+      obj =
+        (ArrangerObject *)
+        P_CHORD_TRACK->scales[0];
+      ScaleObject * s = (ScaleObject *) obj;
+      g_assert_cmppos (&obj->pos, &p1_before_move);
+      g_assert_cmpint (
+        s->scale->type, ==, MUSICAL_SCALE_TYPE);
+      g_assert_cmpint (
+        s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
+      obj =
+        (ArrangerObject *)
+        P_CHORD_TRACK->scales[1];
+      s = (ScaleObject *) obj;
+      g_assert_cmppos (&obj->pos, &p1_after_move);
+      g_assert_cmpint (
+        s->scale->type, ==, MUSICAL_SCALE_TYPE);
+      g_assert_cmpint (
+        s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
+    }
 }
 
 static void
 test_duplicate_timeline ()
 {
-  /* do duplicate */
-  UndoableAction * ua =
-    arranger_selections_action_new_duplicate_timeline (
-      TL_SELECTIONS, MOVE_TICKS, 0, 0);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  /* when i == 1 we are moving to new tracks */
+  for (int i = 0; i < 2; i++)
+    {
+      rebootstrap_timeline ();
+      int track_diff =  i ? 2 : 0;
+      if (track_diff)
+        {
+          select_audio_and_midi_regions_only ();
+          Track * midi_track =
+            tracklist_find_track_by_name (
+              TRACKLIST, MIDI_TRACK_NAME);
+          Track * audio_track =
+            tracklist_find_track_by_name (
+              TRACKLIST, AUDIO_TRACK_NAME);
+          Track * new_midi_track =
+            tracklist_find_track_by_name (
+              TRACKLIST, TARGET_MIDI_TRACK_NAME);
+          Track * new_audio_track =
+            tracklist_find_track_by_name (
+              TRACKLIST, TARGET_AUDIO_TRACK_NAME);
+          region_move_to_track (
+            midi_track->lanes[MIDI_REGION_LANE]->
+              regions[0],
+            new_midi_track);
+          region_move_to_track (
+            audio_track->lanes[AUDIO_REGION_LANE]->
+              regions[0],
+            new_audio_track);
+        }
+      /* do move ticks */
+      arranger_selections_add_ticks (
+        (ArrangerSelections *) TL_SELECTIONS,
+        MOVE_TICKS, 0);
 
-  /* check */
-  check_after_duplicate_timeline ();
+      /* do duplicate */
+      UndoableAction * ua =
+        arranger_selections_action_new_duplicate_timeline (
+          TL_SELECTIONS, MOVE_TICKS,
+          i > 0 ? 2 : 0, 0);
+      undo_manager_perform (UNDO_MANAGER, ua);
 
-  /* undo and check that the objects are at their
-   * original state*/
-  undo_manager_undo (UNDO_MANAGER);
-  check_timeline_objects_vs_original_state (0, 1);
+      /* check */
+      check_after_duplicate_timeline (i);
 
-  /* redo and check that the objects are moved
-   * again */
-  undo_manager_redo (UNDO_MANAGER);
-  check_after_duplicate_timeline ();
+      /* undo and check that the objects are at
+       * their original state*/
+      undo_manager_undo (UNDO_MANAGER);
+      check_timeline_objects_vs_original_state (
+        0);
 
-  /* undo again to prepare for next test */
-  undo_manager_undo (UNDO_MANAGER);
-  check_timeline_objects_vs_original_state (0, 1);
+      /* redo and check that the objects are moved
+       * again */
+      undo_manager_redo (UNDO_MANAGER);
+      check_after_duplicate_timeline (i);
+
+      /* undo again to prepare for next test */
+      undo_manager_undo (UNDO_MANAGER);
+      check_timeline_objects_vs_original_state (
+        0);
+    }
 }
 
 int

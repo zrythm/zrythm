@@ -663,7 +663,8 @@ do_or_undo_duplicate (
             {
               obj =
                 arranger_object_find (objs[i]);
-              g_return_val_if_fail (obj, -1);
+              g_return_val_if_fail (
+                IS_ARRANGER_OBJECT (obj), -1);
 
               /* ticks */
               if (self->ticks)
@@ -708,27 +709,13 @@ do_or_undo_duplicate (
 
           /* add to track */
           add_object_to_project (obj);
-
-          /* remember the new name and identifier */
-          if (!string_is_equal (
-                arranger_object_get_name (
-                  obj),
-                arranger_object_get_name (
-                  objs[i]), 0))
-            {
-              arranger_object_set_name (
-                objs[i],
-                arranger_object_get_name (obj), 0);
-            }
-          arranger_object_copy_identifier (
-            objs[i], obj);
         }
       else
         {
           /* find the actual object */
-          obj =
-            arranger_object_find (objs[i]);
-          g_return_val_if_fail (obj, -1);
+          obj = arranger_object_find (objs[i]);
+          g_return_val_if_fail (
+            IS_ARRANGER_OBJECT (obj), -1);
 
           /* remove it */
           remove_object_from_project (obj);
@@ -756,16 +743,16 @@ do_or_undo_duplicate (
                 obj, delta_tracks, 0);
             }
 
-          /* FIXME check is it okay to not shift
-           * the clone too? */
+          /* also shift the copy */
+          move_obj_by_tracks_and_lanes (
+            objs[i], delta_tracks, 0);
         }
 
       if (delta_pitch != 0)
         {
           if (_do)
             {
-              MidiNote * mn =
-                (MidiNote *) obj;
+              MidiNote * mn = (MidiNote *) obj;
 
               /* shift the actual object */
               midi_note_shift_pitch (
@@ -787,7 +774,9 @@ do_or_undo_duplicate (
                 obj, 0, delta_lanes);
             }
 
-          /* FIXME ok to not shift clone too? */
+          /* also shift the copy */
+          move_obj_by_tracks_and_lanes (
+            objs[i], 0, delta_lanes);
         }
 
       if (delta_chords != 0)
@@ -800,6 +789,10 @@ do_or_undo_duplicate (
           /* select it */
           arranger_object_select (
             obj, F_SELECT, F_APPEND);
+
+          /* remember the identifier */
+          arranger_object_copy_identifier (
+            objs[i], obj);
         }
     }
   free (objs);
