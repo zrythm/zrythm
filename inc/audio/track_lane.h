@@ -161,6 +161,14 @@ track_lane_add_region (
   ZRegion *    region);
 
 /**
+ * Removes all objects recursively from the track
+ * lane.
+ */
+void
+track_lane_clear (
+  TrackLane * self);
+
+/**
  * Updates the frames of each position in each child
  * of the track recursively.
  */

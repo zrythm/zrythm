@@ -95,6 +95,7 @@ automation_track_add_region (
 
   region_set_automation_track (region, self);
   region->id.idx = self->num_regions - 1;
+  region_update_identifier (region);
 }
 
 AutomationTracklist *
@@ -165,6 +166,23 @@ automation_track_get_ap_before_pos (
     }
 
   return NULL;
+}
+
+/**
+ * Removes all arranger objects recursively.
+ */
+void
+automation_track_clear (
+  AutomationTrack * self)
+{
+  for (int i = self->num_regions - 1; i >= 0; i--)
+    {
+      ZRegion * region = self->regions[i];
+      Track * track =
+        automation_track_get_track (self);
+      track_remove_region (
+        track, region, 0, 1);
+    }
 }
 
 Track *

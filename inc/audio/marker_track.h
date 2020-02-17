@@ -69,6 +69,15 @@ marker_track_add_marker (
   Marker *      marker);
 
 /**
+ * Removes all objects from the marker track.
+ *
+ * Mainly used in testing.
+ */
+void
+marker_track_clear (
+  MarkerTrack * self);
+
+/**
  * Removes a marker, optionally freeing it.
  */
 void

@@ -346,6 +346,20 @@ automation_tracklist_update_track_pos (
 }
 
 /**
+ * Removes all arranger objects recursively.
+ */
+void
+automation_tracklist_clear (
+  AutomationTracklist * self)
+{
+  for (int i = self->num_ats - 1; i >= 0; i--)
+    {
+      AutomationTrack * at = self->ats[i];
+      automation_track_clear (at);
+    }
+}
+
+/**
  * Clones the automation tracklist elements from
  * src to dest.
  */
@@ -481,6 +495,8 @@ automation_tracklist_remove_at (
   AutomationTrack *     at,
   int                   free)
 {
+  automation_track_clear (at);
+
   array_delete (
     self->ats, self->num_ats, at);
 

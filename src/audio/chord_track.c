@@ -135,6 +135,27 @@ chord_track_get_chord_at_pos (
 }
 
 /**
+ * Removes all objects from the chord track.
+ *
+ * Mainly used in testing.
+ */
+void
+chord_track_clear (
+  ChordTrack * self)
+{
+  for (int i = 0; i < self->num_scales; i++)
+    {
+      ScaleObject * scale = self->scales[i];
+      chord_track_remove_scale (self, scale, 1);
+    }
+  for (int i = 0; i < self->num_chord_regions; i++)
+    {
+      ZRegion * region = self->chord_regions[i];
+      track_remove_region (self, region, 0, 1);
+    }
+}
+
+/**
  * Removes a scale from the chord Track.
  */
 void

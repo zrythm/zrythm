@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -53,11 +53,22 @@
 
 #define TOTAL_TL_SELECTIONS 6
 
+#define MIDI_REGION_NAME "Midi region"
+#define AUDIO_REGION_NAME "Audio region"
 #define MIDI_TRACK_NAME "Midi track"
 #define AUDIO_TRACK_NAME "Audio track"
 
+/* initial positions */
 #define MIDI_REGION_LANE 2
 #define AUDIO_REGION_LANE 3
+
+/* target positions */
+#define TARGET_MIDI_TRACK_NAME "Target midi tr"
+#define TARGET_AUDIO_TRACK_NAME "Target audio tr"
+
+/* TODO test moving lanes */
+#define TARGET_MIDI_REGION_LANE 0
+#define TARGET_AUDIO_REGION_LANE 5
 
 Position p1, p2;
 
@@ -65,8 +76,20 @@ Position p1, p2;
  * Bootstraps the test with test data.
  */
 static void
-bootstrap_timeline ()
+rebootstrap_timeline ()
 {
+  /* remove any previous work */
+  chord_track_clear (P_CHORD_TRACK);
+  marker_track_clear (P_MARKER_TRACK);
+  for (int i = TRACKLIST->num_tracks - 1;
+       i >= 3; i--)
+    {
+      Track * track = TRACKLIST->tracks[i];
+      tracklist_remove_track (
+        TRACKLIST, track, 1, 1, 0, 0);
+    }
+  track_clear (P_MASTER_TRACK);
+
   /* Create and add a MidiRegion with a MidiNote */
   position_set_to_bar (&p1, 2);
   position_set_to_bar (&p2, 4);
@@ -82,6 +105,7 @@ bootstrap_timeline ()
       &p1, &p2, track->pos, MIDI_REGION_LANE, 0);
   track_add_region (
     track, r, NULL, MIDI_REGION_LANE, 1, 0);
+  region_set_name (r, MIDI_REGION_NAME, 0);
   g_assert_cmpint (r->id.track_pos, ==, track->pos);
   g_assert_cmpint (
     r->id.lane_pos, ==, MIDI_REGION_LANE);
@@ -215,8 +239,13 @@ bootstrap_timeline ()
     audio_region_new (
       -1, audio_file_path, NULL, 0, 0,
       &p1, track->pos, AUDIO_REGION_LANE, 0);
+  AudioClip * clip =
+    audio_region_get_clip (r);
+  g_assert_cmpint (clip->num_frames, >, 290000);
+  g_assert_cmpint (clip->num_frames, <, 294000);
   track_add_region (
     track, r, NULL, AUDIO_REGION_LANE, 1, 0);
+  region_set_name (r, AUDIO_REGION_NAME, 0);
   g_assert_cmpint (r->id.track_pos, ==, track->pos);
   g_assert_cmpint (
     r->id.lane_pos, ==, AUDIO_REGION_LANE);
@@ -225,6 +254,54 @@ bootstrap_timeline ()
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
+
+  /* create the target tracks */
+  track =
+    track_new (
+      TRACK_TYPE_MIDI, TRACKLIST->num_tracks,
+      TARGET_MIDI_TRACK_NAME, 1);
+  tracklist_append_track (
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
+    F_NO_RECALC_GRAPH);
+  track =
+    track_new (
+      TRACK_TYPE_AUDIO, TRACKLIST->num_tracks,
+      TARGET_AUDIO_TRACK_NAME, 1);
+  tracklist_append_track (
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
+    F_NO_RECALC_GRAPH);
+}
+
+static void
+select_audio_and_midi_regions_only ()
+{
+  arranger_selections_clear (
+    (ArrangerSelections *) TL_SELECTIONS);
+  g_assert_cmpint (
+    TL_SELECTIONS->num_regions, ==, 0);
+
+  Track * midi_track =
+    tracklist_find_track_by_name (
+      TRACKLIST, MIDI_TRACK_NAME);
+  g_assert_nonnull (midi_track);
+  arranger_selections_add_object (
+    (ArrangerSelections *) TL_SELECTIONS,
+    (ArrangerObject *)
+    midi_track->lanes[MIDI_REGION_LANE]->
+      regions[0]);
+  g_assert_cmpint (
+    TL_SELECTIONS->num_regions, ==, 1);
+  Track * audio_track =
+    tracklist_find_track_by_name (
+      TRACKLIST, AUDIO_TRACK_NAME);
+  g_assert_nonnull (audio_track);
+  arranger_selections_add_object (
+    (ArrangerSelections *) TL_SELECTIONS,
+    (ArrangerObject *)
+    audio_track->lanes[AUDIO_REGION_LANE]->
+      regions[0]);
+  g_assert_cmpint (
+    TL_SELECTIONS->num_regions, ==, 2);
 }
 
 /**
@@ -529,18 +606,68 @@ test_delete_timeline ()
   check_timeline_objects_vs_original_state (1, 0);
 }
 
+/**
+ * Checks the objects after moving.
+ *
+ * @param new_tracks Whether objects were moved to
+ *   new tracks or in the same track.
+ */
 static void
-check_after_move_timeline ()
+check_after_move_timeline (
+  int new_tracks)
 {
   /* check */
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
-    TOTAL_TL_SELECTIONS);
+    new_tracks ? 2 : TOTAL_TL_SELECTIONS);
+
+  /* get tracks */
+  Track * midi_track_before =
+    tracklist_find_track_by_name (
+      TRACKLIST, MIDI_TRACK_NAME);
+  g_assert_nonnull (midi_track_before);
+  g_assert_cmpint (midi_track_before->pos, >, 0);
+  Track * audio_track_before =
+    tracklist_find_track_by_name (
+      TRACKLIST, AUDIO_TRACK_NAME);
+  g_assert_nonnull (audio_track_before);
+  g_assert_cmpint (audio_track_before->pos, >, 0);
+  Track * midi_track_after =
+    tracklist_find_track_by_name (
+      TRACKLIST, TARGET_MIDI_TRACK_NAME);
+  g_assert_nonnull (midi_track_after);
+  g_assert_cmpint (
+    midi_track_after->pos, >,
+    midi_track_before->pos);
+  Track * audio_track_after =
+    tracklist_find_track_by_name (
+      TRACKLIST, TARGET_AUDIO_TRACK_NAME);
+  g_assert_nonnull (audio_track_after);
+  g_assert_cmpint (
+    audio_track_after->pos, >,
+    audio_track_before->pos);
 
   /* check midi region */
-  ArrangerObject * obj =
-    (ArrangerObject *) TL_SELECTIONS->regions[0];
+  ArrangerObject * obj;
+  if (new_tracks)
+    {
+      obj =
+        (ArrangerObject *)
+        midi_track_after->
+          lanes[MIDI_REGION_LANE]->regions[0];
+    }
+  else
+    {
+      obj =
+        (ArrangerObject *)
+        midi_track_before->
+          lanes[MIDI_REGION_LANE]->regions[0];
+    }
+  ZRegion * r = (ZRegion *) obj;
+  g_assert_true (IS_REGION (obj));
+  g_assert_cmpint (
+    r->id.type, ==, REGION_TYPE_MIDI);
   Position p1_after_move, p2_after_move;
   p1_after_move = p1;
   p2_after_move = p2;
@@ -548,8 +675,22 @@ check_after_move_timeline ()
   position_add_ticks (&p2_after_move, MOVE_TICKS);
   g_assert_cmppos (&obj->pos, &p1_after_move);
   g_assert_cmppos (&obj->end_pos, &p2_after_move);
-  ZRegion * r =
-    (ZRegion *) obj;
+  if (new_tracks)
+    {
+      Track * tmp =
+        arranger_object_get_track (obj);
+      g_assert_true (tmp == midi_track_after);
+      g_assert_cmpint (
+        r->id.track_pos, ==, midi_track_after->pos);
+    }
+  else
+    {
+      Track * tmp =
+        arranger_object_get_track (obj);
+      g_assert_true (tmp == midi_track_before);
+      g_assert_cmpint (
+        r->id.track_pos, ==, midi_track_before->pos);
+    }
   g_assert_cmpint (r->num_midi_notes, ==, 1);
   MidiNote * mn =
     r->midi_notes[0];
@@ -565,91 +706,170 @@ check_after_move_timeline ()
 
   /* check audio region */
   obj =
-    (ArrangerObject *) TL_SELECTIONS->regions[3];
+    (ArrangerObject *)
+    TL_SELECTIONS->regions[new_tracks ? 1 : 3];
   p1_after_move = p1;
   position_add_ticks (&p1_after_move, MOVE_TICKS);
   g_assert_cmppos (&obj->pos, &p1_after_move);
+  r = (ZRegion *) obj;
+  g_assert_true (IS_REGION (obj));
+  g_assert_cmpint (
+    r->id.type, ==, REGION_TYPE_AUDIO);
+  if (new_tracks)
+    {
+      Track * tmp =
+        arranger_object_get_track (obj);
+      g_assert_true (tmp == audio_track_after);
+      g_assert_cmpint (
+        r->id.track_pos, ==,
+        audio_track_after->pos);
+    }
+  else
+    {
+      Track * tmp =
+        arranger_object_get_track (obj);
+      g_assert_true (tmp == audio_track_before);
+      g_assert_cmpint (
+        r->id.track_pos, ==,
+        audio_track_before->pos);
+    }
 
-  /* check automation region */
-  obj =
-    (ArrangerObject *) TL_SELECTIONS->regions[1];
-  g_assert_cmppos (&obj->pos, &p1_after_move);
-  g_assert_cmppos (&obj->end_pos, &p2_after_move);
-  r =
-    (ZRegion *) obj;
-  g_assert_cmpint (r->num_aps, ==, 2);
-  AutomationPoint * ap =
-    r->aps[0];
-  obj = (ArrangerObject *) ap;
-  g_assert_cmppos (&obj->pos, &p1);
-  g_assert_cmpfloat_with_epsilon (
-    ap->fvalue, AP_VAL1, 0.000001f);
-  ap =
-    r->aps[1];
-  obj = (ArrangerObject *) ap;
-  g_assert_cmppos (&obj->pos, &p2);
-  g_assert_cmpfloat_with_epsilon (
-    ap->fvalue, AP_VAL2, 0.000001f);
+  if (!new_tracks)
+    {
+      /* check automation region */
+      obj =
+        (ArrangerObject *)
+        TL_SELECTIONS->regions[1];
+      g_assert_cmppos (&obj->pos, &p1_after_move);
+      g_assert_cmppos (
+        &obj->end_pos, &p2_after_move);
+      r =
+        (ZRegion *) obj;
+      g_assert_cmpint (r->num_aps, ==, 2);
+      AutomationPoint * ap =
+        r->aps[0];
+      obj = (ArrangerObject *) ap;
+      g_assert_cmppos (&obj->pos, &p1);
+      g_assert_cmpfloat_with_epsilon (
+        ap->fvalue, AP_VAL1, 0.000001f);
+      ap =
+        r->aps[1];
+      obj = (ArrangerObject *) ap;
+      g_assert_cmppos (&obj->pos, &p2);
+      g_assert_cmpfloat_with_epsilon (
+        ap->fvalue, AP_VAL2, 0.000001f);
 
-  /* check marker */
-  g_assert_cmpint (
-    TL_SELECTIONS->num_markers, ==, 1);
-  obj =
-    (ArrangerObject *) TL_SELECTIONS->markers[0];
-  Marker * m = (Marker *) obj;
-  g_assert_cmppos (&obj->pos, &p1_after_move);
-  g_assert_cmpstr (m->name, ==, MARKER_NAME);
+      /* check marker */
+      g_assert_cmpint (
+        TL_SELECTIONS->num_markers, ==, 1);
+      obj =
+        (ArrangerObject *)
+        TL_SELECTIONS->markers[0];
+      Marker * m = (Marker *) obj;
+      g_assert_cmppos (&obj->pos, &p1_after_move);
+      g_assert_cmpstr (m->name, ==, MARKER_NAME);
 
-  /* check scale object */
-  g_assert_cmpint (
-    TL_SELECTIONS->num_scale_objects, ==, 1);
-  obj =
-    (ArrangerObject *)
-    TL_SELECTIONS->scale_objects[0];
-  ScaleObject * s = (ScaleObject *) obj;
-  g_assert_cmppos (&obj->pos, &p1_after_move);
-  g_assert_cmpint (
-    s->scale->type, ==, MUSICAL_SCALE_TYPE);
-  g_assert_cmpint (
-    s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
+      /* check scale object */
+      g_assert_cmpint (
+        TL_SELECTIONS->num_scale_objects, ==, 1);
+      obj =
+        (ArrangerObject *)
+        TL_SELECTIONS->scale_objects[0];
+      ScaleObject * s = (ScaleObject *) obj;
+      g_assert_cmppos (&obj->pos, &p1_after_move);
+      g_assert_cmpint (
+        s->scale->type, ==, MUSICAL_SCALE_TYPE);
+      g_assert_cmpint (
+        s->scale->root_key, ==,
+        MUSICAL_SCALE_ROOT);
+    }
 }
 
+/**
+ * Tests the move action.
+ *
+ * @param new_tracks Whether to move objects to new
+ *   tracks or in the same track.
+ */
 static void
 test_move_timeline ()
 {
-  /* do move ticks */
-  arranger_selections_add_ticks (
-    (ArrangerSelections *) TL_SELECTIONS, MOVE_TICKS,
-    0);
-  UndoableAction * ua =
-    arranger_selections_action_new_move_timeline (
-      TL_SELECTIONS, MOVE_TICKS, 0, 0);
-  undo_manager_perform (UNDO_MANAGER, ua);
+  /* when i == 1 we are moving to new tracks */
+  for (int i = 0; i < 2; i++)
+    {
+      int track_diff =  i ? 2 : 0;
+      if (track_diff)
+        {
+          select_audio_and_midi_regions_only ();
+          Track * midi_track =
+            tracklist_find_track_by_name (
+              TRACKLIST, MIDI_TRACK_NAME);
+          Track * audio_track =
+            tracklist_find_track_by_name (
+              TRACKLIST, AUDIO_TRACK_NAME);
+          Track * new_midi_track =
+            tracklist_find_track_by_name (
+              TRACKLIST, TARGET_MIDI_TRACK_NAME);
+          Track * new_audio_track =
+            tracklist_find_track_by_name (
+              TRACKLIST, TARGET_AUDIO_TRACK_NAME);
+          region_move_to_track (
+            midi_track->lanes[MIDI_REGION_LANE]->
+              regions[0],
+            new_midi_track);
+          region_move_to_track (
+            audio_track->lanes[AUDIO_REGION_LANE]->
+              regions[0],
+            new_audio_track);
+        }
+      /* do move ticks */
+      arranger_selections_add_ticks (
+        (ArrangerSelections *) TL_SELECTIONS,
+        MOVE_TICKS, 0);
 
-  /* check */
-  check_after_move_timeline ();
+      UndoableAction * ua =
+        arranger_selections_action_new_move_timeline (
+          TL_SELECTIONS, MOVE_TICKS, track_diff, 0);
+      undo_manager_perform (UNDO_MANAGER, ua);
 
-  /* undo and check that the objects are at their
-   * original state*/
-  undo_manager_undo (UNDO_MANAGER);
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) TL_SELECTIONS), ==,
-    TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1, 0);
+      /* check */
+      check_after_move_timeline (i);
 
-  /* redo and check that the objects are moved
-   * again */
-  undo_manager_redo (UNDO_MANAGER);
-  check_after_move_timeline ();
+      /* undo and check that the objects are at
+       * their original state*/
+      undo_manager_undo (UNDO_MANAGER);
+      g_assert_cmpint (
+        arranger_selections_get_num_objects (
+          (ArrangerSelections *) TL_SELECTIONS), ==,
+        i ? 2 : TOTAL_TL_SELECTIONS);
+      check_timeline_objects_vs_original_state (
+        i ? 0 : 1, 0);
 
-  /* undo again to prepare for next test */
-  undo_manager_undo (UNDO_MANAGER);
-  g_assert_cmpint (
-    arranger_selections_get_num_objects (
-      (ArrangerSelections *) TL_SELECTIONS), ==,
-    TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1, 0);
+      /* redo and check that the objects are moved
+       * again */
+      undo_manager_redo (UNDO_MANAGER);
+      check_after_move_timeline (i);
+
+      /* undo again to prepare for next test */
+      undo_manager_undo (UNDO_MANAGER);
+      if (track_diff)
+        {
+          g_assert_cmpint (
+            arranger_selections_get_num_objects (
+              (ArrangerSelections *)
+              /* 2 regions */
+              TL_SELECTIONS), ==, 2);
+
+          /* rebootstrap */
+          rebootstrap_timeline ();
+        }
+      g_assert_cmpint (
+        arranger_selections_get_num_objects (
+          (ArrangerSelections *) TL_SELECTIONS), ==,
+        TOTAL_TL_SELECTIONS);
+      check_timeline_objects_vs_original_state (
+        1, 0);
+    }
 }
 
 static void
@@ -851,7 +1071,7 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
-  bootstrap_timeline ();
+  rebootstrap_timeline ();
   g_test_add_func (
     TEST_PREFIX "test create timeline",
     (GTestFunc) test_create_timeline);

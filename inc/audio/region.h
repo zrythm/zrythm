@@ -51,7 +51,8 @@ typedef struct _AudioClipWidget AudioClipWidget;
 
 #define REGION_MAGIC 93075327
 #define IS_REGION(tr) \
-  (tr && tr->magic == REGION_MAGIC)
+  ((ZRegion *) tr && \
+   ((ZRegion *) tr)->magic == REGION_MAGIC)
 
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
 
@@ -111,7 +112,7 @@ typedef struct ZRegion
    * This is also used temporarily when reading
    * from MIDI files.
    */
-  MidiNote *      unended_notes[12000];
+  MidiNote *      unended_notes[1200];
   int             num_unended_notes;
 
   /* ==== MIDI REGION END ==== */

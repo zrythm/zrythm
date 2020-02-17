@@ -146,6 +146,25 @@ marker_track_add_marker (
 }
 
 /**
+ * Removes all objects from the marker track.
+ *
+ * Mainly used in testing.
+ */
+void
+marker_track_clear (
+  MarkerTrack * self)
+{
+  for (int i = 0; i < self->num_markers; i++)
+    {
+      Marker * marker = self->markers[i];
+      if (marker->type == MARKER_TYPE_START ||
+          marker->type == MARKER_TYPE_END)
+        continue;
+      marker_track_remove_marker (self, marker, 1);
+    }
+}
+
+/**
  * Removes a marker, optionally freeing it.
  */
 void

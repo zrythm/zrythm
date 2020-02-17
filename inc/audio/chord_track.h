@@ -108,6 +108,15 @@ chord_track_get_scale_at_pos (
   const Position * pos);
 
 /**
+ * Removes all objects from the chord track.
+ *
+ * Mainly used in testing.
+ */
+void
+chord_track_clear (
+  ChordTrack * self);
+
+/**
  * Frees the chord Track.
  */
 void

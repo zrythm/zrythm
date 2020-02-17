@@ -607,6 +607,13 @@ track_select (
   int     fire_events);
 
 /**
+ * Removes all objects recursively from the track.
+ */
+void
+track_clear (
+  Track * self);
+
+/**
  * Removes the region from the track.
  *
  * @pararm free Also free the Region.

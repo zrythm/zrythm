@@ -210,6 +210,13 @@ automation_tracklist_get_at_from_port (
   Port *                port);
 
 /**
+ * Removes all objects recursively.
+ */
+void
+automation_tracklist_clear (
+  AutomationTracklist * self);
+
+/**
  * Sets the index of the AutomationTrack and swaps
  * it with the AutomationTrack at that index or
  * pushes the other AutomationTrack's down.

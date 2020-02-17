@@ -854,7 +854,8 @@ arranger_selections_set_cache_poses (
  * amount of ticks.
  *
  * @param use_cached_pos Add the ticks to the cached
- *   Position's instead of the current Position's.
+ *   Position's instead of the current Position's
+ *   FIXME this is not used anymore.
  * @param ticks Ticks to add.
  */
 void

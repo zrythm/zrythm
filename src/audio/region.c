@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -153,6 +153,9 @@ region_move_to_track (
 {
   g_return_if_fail (region && track);
 
+  /*g_message ("moving region %s to track %s",*/
+    /*region->name, track->name);*/
+
   Track * region_track =
     arranger_object_get_track (
       (ArrangerObject *) region);
@@ -162,10 +165,11 @@ region_move_to_track (
     return;
 
   int selected = region_is_selected (region);
+  int lane_pos = region->id.lane_pos;
 
   /* create lanes if they don't exist */
   track_create_missing_lanes (
-    track, region->id.lane_pos);
+    track, lane_pos);
 
   /* remove the region from its old track */
   track_remove_region (
@@ -174,11 +178,15 @@ region_move_to_track (
 
   /* add the region to its new track */
   track_add_region (
-    track, region, NULL,
-    region->id.lane_pos, F_NO_GEN_NAME,
+    track, region, NULL, lane_pos, F_NO_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
+  g_warn_if_fail (region->id.lane_pos == lane_pos);
+  g_warn_if_fail (
+    track->lanes[lane_pos]->num_regions > 0 &&
+    track->lanes[lane_pos]->regions[
+      region->id.idx] == region);
   region_set_lane (
-    region, track->lanes[region->id.lane_pos]);
+    region, track->lanes[lane_pos]);
 
   /* reselect if necessary */
   arranger_object_select (

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -480,12 +480,16 @@ do_or_undo_move (
                   arranger_object_get_track (obj),
                   delta_tracks);
 
-              /* shift the actual object by tracks */
+              /* shift the actual object by
+               * tracks */
               region_move_to_track (
                 r, track_to_move_to);
 
-              /* FIXME check is it okay to not shift
-               * the clone too? */
+              /* remember info in identifier */
+              ZRegion * r_clone =
+                (ZRegion *) objs[i];
+              region_identifier_copy (
+                &r_clone->id, &r->id);
             }
 
           if (delta_pitch != 0)

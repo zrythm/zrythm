@@ -216,6 +216,13 @@ automation_track_get_region_before_pos (
   const Position *        pos);
 
 /**
+ * Removes all objects recursively.
+ */
+void
+automation_track_clear (
+  AutomationTrack * self);
+
+/**
  * Returns the actual parameter value at the given
  * position.
  *

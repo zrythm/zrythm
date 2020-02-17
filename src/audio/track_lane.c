@@ -198,6 +198,24 @@ track_lane_clone (
   return new_lane;
 }
 
+/**
+ * Removes all objects recursively from the track
+ * lane.
+ */
+void
+track_lane_clear (
+  TrackLane * self)
+{
+  Track * track = track_lane_get_track (self);
+  g_return_if_fail (track);
+  for (int i = self->num_regions - 1; i >= 0; i--)
+    {
+      ZRegion * region = self->regions[i];
+      track_remove_region (
+        track, region, 0, 1);
+    }
+}
+
 Track *
 track_lane_get_track (
   TrackLane * self)

@@ -1027,6 +1027,26 @@ track_set_automation_visible (
 }
 
 /**
+ * Removes all arranger objects recursively.
+ */
+void
+track_clear (
+  Track * self)
+{
+  /* remove lane regions */
+  for (int i = 0; i < self->num_lanes; i++)
+    {
+      TrackLane * lane = self->lanes[i];
+      track_lane_clear (lane);
+    }
+
+  /* remove automation regions */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (self);
+  automation_tracklist_clear (atl);
+}
+
+/**
  * Only removes the region from the track.
  *
  * @pararm free Also free the Region.

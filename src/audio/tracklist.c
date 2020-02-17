@@ -589,11 +589,12 @@ tracklist_remove_track (
       clip_editor_set_region (CLIP_EDITOR, NULL);
     }
 
+  /* remove/deselect all objects */
+  track_clear (track);
+
   int idx =
     array_index_of (
-      self->tracks,
-      self->num_tracks,
-      track);
+      self->tracks, self->num_tracks, track);
   g_warn_if_fail (
     track->pos == idx);
 
