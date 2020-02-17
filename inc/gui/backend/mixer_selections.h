@@ -39,7 +39,7 @@ typedef struct MixerSelections
   /** Slots selected. */
   int       slots[60];
 
-  /** Cache. */
+  /** Cache, used in actions. */
   Plugin *  plugins[60];
 
   int       num_slots;

@@ -41,19 +41,14 @@ move_plugins_action_new (
     UA_MOVE_PLUGINS;
 
   self->to_slot = to_slot;
-  Track * pl_track =
-    plugin_get_track (ms->plugins[0]);
-  g_warn_if_fail (pl_track);
-  self->from_track_pos = pl_track->pos;
+  self->from_track_pos = ms->track_pos;
   if (to_tr)
     self->to_track_pos = to_tr->pos;
   else
     self->is_new_channel = 1;
 
   self->ms = mixer_selections_clone (ms);
-  g_warn_if_fail (
-    ms->plugins[0]->id.slot ==
-      self->ms->plugins[0]->id.slot);
+  g_warn_if_fail (ms->slots[0] == self->ms->slots[0]);
 
   return ua;
 }

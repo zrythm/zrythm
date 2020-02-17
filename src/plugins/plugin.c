@@ -63,6 +63,8 @@ void
 plugin_init_loaded (
   Plugin * self)
 {
+  self->magic = PLUGIN_MAGIC;
+
   switch (self->descr->protocol)
     {
     case PROT_LV2:
@@ -406,7 +408,8 @@ void
 plugin_move_automation (
   Plugin *  pl,
   Channel * prev_ch,
-  Channel * ch)
+  Channel * ch,
+  int       new_slot)
 {
   Track * prev_track =
     channel_get_track (prev_ch);
@@ -422,23 +425,32 @@ plugin_move_automation (
       AutomationTrack * at = prev_atl->ats[i];
       Port * port =
         automation_track_get_port (at);
+        g_message ("before port %s", port->id.label);
       if (!port)
         continue;
       if (port->id.owner_type ==
             PORT_OWNER_TYPE_PLUGIN)
         {
+          g_message ("port %s", port->id.label);
           Plugin * port_pl =
             port_get_plugin (port, 1);
           if (port_pl != pl)
             continue;
         }
+      else
+        continue;
 
       /* delete from prev channel */
       automation_tracklist_delete_at (
         prev_atl, at, F_NO_FREE);
+      g_message ("deleted %s ", port->id.label);
 
       /* add to new channel */
       automation_tracklist_add_at (atl, at);
+
+      /* update the automation track port
+       * identifier */
+      at->port_id.plugin_slot = new_slot;
     }
 }
 

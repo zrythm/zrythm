@@ -44,8 +44,8 @@ typedef struct CopyPluginsAction
    * Channel or not. */
   int              is_new_channel;
 
-  /** Track position to copy to, if existing, or track
-   * position copied to, when undoing. */
+  /** Track position to copy to, if existing, or
+   * track position copied to, when undoing. */
   int              track_pos;
 
   /** Clones of the original Plugins.
@@ -60,6 +60,12 @@ typedef struct CopyPluginsAction
   MixerSelections * ms;
 } CopyPluginsAction;
 
+/**
+ * Create a new CopyPluginsAction.
+ *
+ * @param slot Starting slot to copy plugins to.
+ * @param tr Track to copy to.
+ */
 UndoableAction *
 copy_plugins_action_new (
   MixerSelections * ms,

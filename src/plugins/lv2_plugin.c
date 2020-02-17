@@ -440,6 +440,7 @@ create_port (
         lv2_port_index);
       return -1;
     }
+  pi->flags |= PORT_FLAG_PLUGIN_CONTROL;
 
   if (lilv_port_has_property (
         lv2_plugin->lilv_plugin,

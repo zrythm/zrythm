@@ -144,15 +144,16 @@ mixer_move_plugin (
         return;
     }
 
-  /* remove plugin from its channel */
   int prev_slot = pl->id.slot;
   Channel * prev_ch = plugin_get_channel (pl);
-  channel_remove_plugin (
-    prev_ch, prev_slot, 0, 0, F_NO_RECALC_GRAPH);
 
   /* move plugin's automation from src to dest */
   plugin_move_automation (
-    pl, prev_ch, ch);
+    pl, prev_ch, ch, slot);
+
+  /* remove plugin from its channel */
+  channel_remove_plugin (
+    prev_ch, prev_slot, 0, 0, F_NO_RECALC_GRAPH);
 
   /* add plugin to its new channel */
   channel_add_plugin (

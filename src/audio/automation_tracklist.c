@@ -63,6 +63,14 @@ automation_tracklist_add_at (
     at);
 
   at->index = self->num_ats - 1;
+  at->port_id.track_pos = self->track_pos;
+
+  /* move automation track regions */
+  for (int i = 0; i < at->num_regions; i++)
+    {
+      ZRegion * region = at->regions[i];
+      region_set_automation_track (region, at);
+    }
 }
 
 void
@@ -72,9 +80,7 @@ automation_tracklist_delete_at (
   int                   free)
 {
   array_delete (
-    self->ats,
-    self->num_ats,
-    at);
+    self->ats, self->num_ats, at);
 
   if (free)
     free_later (at, automation_track_free);

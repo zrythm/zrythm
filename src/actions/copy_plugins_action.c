@@ -27,6 +27,12 @@
 
 #include <glib/gi18n.h>
 
+/**
+ * Create a new CopyPluginsAction.
+ *
+ * @param slot Starting slot to copy plugins to.
+ * @param tr Track to copy to.
+ */
 UndoableAction *
 copy_plugins_action_new (
   MixerSelections * ms,
@@ -103,6 +109,7 @@ copy_plugins_action_do (
     }
   g_return_val_if_fail (ch, -1);
 
+  mixer_selections_clear (MIXER_SELECTIONS, 0);
 
   for (int i = 0; i < self->ms->num_slots; i++)
     {
@@ -110,12 +117,18 @@ copy_plugins_action_do (
       pl = plugin_clone (self->ms->plugins[i]);
 
       /* add it to the channel */
+      int new_slot = self->slot + i;
       channel_add_plugin (
-        ch, self->slot + i, pl, 1, 1,
+        ch, new_slot, pl, 1, 1,
         F_NO_RECALC_GRAPH);
 
+      /* select it */
+      mixer_selections_add_slot (
+        MIXER_SELECTIONS, ch, new_slot);
+
       /* show it if necessary */
-      if (g_settings_get_int (
+      if (ZRYTHM_HAVE_UI &&
+          g_settings_get_int (
             S_PREFERENCES,
             "open-plugin-uis-on-instantiate"))
         {
@@ -127,8 +140,7 @@ copy_plugins_action_do (
 
   mixer_recalc_graph (MIXER);
 
-  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED,
-               ch);
+  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
 
   return 0;
 }

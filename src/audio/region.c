@@ -264,10 +264,20 @@ region_set_automation_track (
   AutomationTrack * at)
 {
   g_return_if_fail (at);
+
+  /*int is_clip_editor_region = 0;*/
+  if (region_identifier_is_equal (
+        &self->id, &CLIP_EDITOR->region_id))
+    {
+      /*is_clip_editor_region = 1;*/
+      clip_editor_set_region (CLIP_EDITOR, NULL);
+    }
   self->id.at_idx = at->index;
   Track * track =
     automation_track_get_track (at);
   self->id.track_pos = track->pos;
+
+  region_update_identifier (self);
 }
 
 void

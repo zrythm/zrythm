@@ -327,7 +327,8 @@ void
 plugin_move_automation (
   Plugin *  pl,
   Channel * prev_ch,
-  Channel * ch);
+  Channel * ch,
+  int       new_slot);
 
 /**
  * Returns if the Plugin has a supported custom

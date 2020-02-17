@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -64,13 +64,11 @@ clip_editor_set_region (
   int recalc_graph = 0;
   if (self->has_region)
     {
-      ZRegion * self_region =
-        region_find (&self->region_id);
-      if (self_region->id.type == REGION_TYPE_MIDI)
+      if (self->region_id.type == REGION_TYPE_MIDI)
         {
           Track * track =
-            arranger_object_get_track (
-              (ArrangerObject *) self_region);
+            TRACKLIST->tracks[
+              self->region_id.track_pos];
           channel_reattach_midi_editor_manual_press_port (
             track_get_channel (track),
             F_DISCONNECT, F_NO_RECALC_GRAPH);

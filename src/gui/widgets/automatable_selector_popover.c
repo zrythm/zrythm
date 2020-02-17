@@ -168,8 +168,8 @@ create_model_for_ports (
           /* skip non-plugin automation tracks */
           port =
             automation_track_get_port (at);
-          if (!(port->id.flags &
-                  PORT_FLAG_PLUGIN_CONTROL))
+          if (port->id.owner_type !=
+                PORT_OWNER_TYPE_PLUGIN)
             continue;
 
           strcpy (icon_name, "z-plugins");

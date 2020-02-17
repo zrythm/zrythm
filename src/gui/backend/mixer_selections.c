@@ -192,12 +192,9 @@ mixer_selections_contains_plugin (
   if (ms->track_pos != pl->id.track_pos)
     return 0;
 
-  Track * track =
-    mixer_selections_get_track (ms);
   for (int i = 0; i < ms->num_slots; i++)
     {
-      if (track->channel->plugins[
-            ms->slots[i]] == pl)
+      if (ms->slots[i] == pl->id.slot)
         return 1;
     }
 
@@ -243,12 +240,12 @@ mixer_selections_clone (
 
   for (i = 0; i < src->num_slots; i++)
     {
-      ms->plugins[i] =
-        plugin_clone (src->plugins[i]);
+      Plugin * pl =
+        TRACKLIST->tracks[src->track_pos]->
+          channel->plugins[src->slots[i]];
+      g_return_val_if_fail (pl, NULL);
+      ms->plugins[i] = plugin_clone (pl);
       ms->slots[i] = src->slots[i];
-      g_return_val_if_fail (
-        ms->plugins[i]->id.slot ==
-          src->plugins[i]->id.slot, NULL);
     }
 
   ms->num_slots = src->num_slots;

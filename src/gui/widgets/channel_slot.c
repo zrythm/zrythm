@@ -196,18 +196,15 @@ on_drag_data_received (
       memcpy (
         &received_pl, my_data,
         sizeof (received_pl));
-      pl =
-        plugin_find (&received_pl->id);
+      pl = plugin_find (&received_pl->id);
       g_warn_if_fail (pl);
 
       /* if plugin not at original position */
-      Channel * ch =
+      Channel * orig_ch =
         plugin_get_channel (pl);
-      Track * track =
-        channel_get_track (ch);
-      if (self->channel != ch ||
+      if (self->channel != orig_ch ||
           self->slot_index !=
-            channel_get_plugin_index (ch, pl))
+            channel_get_plugin_index (orig_ch, pl))
         {
           /* determine if moving or copying */
           GdkDragAction action =
@@ -220,14 +217,16 @@ on_drag_data_received (
               ua =
                 copy_plugins_action_new (
                   MIXER_SELECTIONS,
-                  track, self->slot_index);
+                  self->channel->track,
+                  self->slot_index);
             }
           else if (action == GDK_ACTION_MOVE)
             {
               ua =
                 move_plugins_action_new (
                   MIXER_SELECTIONS,
-                  track, self->slot_index);
+                  self->channel->track,
+                  self->slot_index);
             }
           g_warn_if_fail (ua);
 

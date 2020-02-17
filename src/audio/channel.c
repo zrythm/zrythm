@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex and zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex and zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -1434,50 +1434,49 @@ channel_remove_plugin (
   int recalc_graph)
 {
   Plugin * plugin = channel->plugins[pos];
-  if (plugin)
-    {
-      Track * track = channel_get_track (channel);
-      g_message (
-        "Removing %s from %s:%d",
-        plugin->descr->name, track->name, pos);
-
-      channel_disconnect_plugin_from_strip (
-        channel, pos, plugin);
-
-      /* if deleting plugin disconnect the plugin
-       * entirely */
-      if (deleting_plugin)
-        {
-          if (plugin_is_selected (plugin))
-            {
-              mixer_selections_remove_slot (
-                MIXER_SELECTIONS, plugin->id.slot,
-                F_PUBLISH_EVENTS);
-            }
-          /* close the UI */
-          plugin_close_ui (plugin);
-
-          plugin_disconnect (plugin);
-          free_later (plugin, plugin_free);
-        }
-
-      channel->plugins[pos] = NULL;
-
-      /* if not deleting plugin (moving, etc.) just
-       * disconnect its connections to the prev/
-       * next slot or the channel if first/last */
-      /*else*/
-        /*{*/
-          /*channel_disconnect_plugin_from_strip (*/
-            /*channel, pos, plugin);*/
-        /*}*/
-    }
+  g_return_if_fail (plugin);
 
   if (!deleting_plugin)
     {
       plugin_remove_ats_from_automation_tracklist (
         plugin);
     }
+
+  Track * track = channel_get_track (channel);
+  g_message (
+    "Removing %s from %s:%d",
+    plugin->descr->name, track->name, pos);
+
+  channel_disconnect_plugin_from_strip (
+    channel, pos, plugin);
+
+  /* if deleting plugin disconnect the plugin
+   * entirely */
+  if (deleting_plugin)
+    {
+      if (plugin_is_selected (plugin))
+        {
+          mixer_selections_remove_slot (
+            MIXER_SELECTIONS, plugin->id.slot,
+            F_PUBLISH_EVENTS);
+        }
+      /* close the UI */
+      plugin_close_ui (plugin);
+
+      plugin_disconnect (plugin);
+      free_later (plugin, plugin_free);
+    }
+
+  channel->plugins[pos] = NULL;
+
+  /* if not deleting plugin (moving, etc.) just
+   * disconnect its connections to the prev/
+   * next slot or the channel if first/last */
+  /*else*/
+    /*{*/
+      /*channel_disconnect_plugin_from_strip (*/
+        /*channel, pos, plugin);*/
+    /*}*/
 
   if (recalc_graph)
     mixer_recalc_graph (MIXER);
@@ -1532,8 +1531,11 @@ channel_add_plugin (
     }
 
   /* free current plugin */
-  channel_remove_plugin (
-    channel, pos, 1, 0, F_NO_RECALC_GRAPH);
+  if (channel->plugins[pos])
+    {
+      channel_remove_plugin (
+        channel, pos, 1, 0, F_NO_RECALC_GRAPH);
+    }
 
   g_message (
     "Inserting %s at %s:%d",

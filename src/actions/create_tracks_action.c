@@ -185,7 +185,7 @@ create (
             }
         }
 
-      if (pl && !ZRYTHM_TESTING &&
+      if (pl && ZRYTHM_HAVE_UI &&
           g_settings_get_int (
             S_PREFERENCES,
             "open-plugin-uis-on-instantiate") &&
