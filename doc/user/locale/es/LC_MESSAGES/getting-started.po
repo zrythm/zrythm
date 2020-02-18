@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 12:22+0000\n"
-"PO-Revision-Date: 2019-05-08 23:57+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-02-19 12:28+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish <https://translate.zrythm.org/projects/zrythm"
-"/manual-getting-started/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.11\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../getting-started/additional-resources.rst:6
@@ -171,7 +172,7 @@ msgstr ""
 #: ../../getting-started/installation/freebsd.rst:9
 #: ../../getting-started/installation/gnu-linux.rst:11
 msgid "Installer"
-msgstr ""
+msgstr "Instalador"
 
 #: ../../getting-started/installation/freebsd.rst:10
 msgid ""
@@ -270,7 +271,7 @@ msgstr ""
 
 #: ../../getting-started/installation/intro.rst:6
 msgid "Installation"
-msgstr ""
+msgstr "Instalación"
 
 #: ../../getting-started/installation/macos.rst:6
 msgid "MacOS"
@@ -399,7 +400,7 @@ msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:13
 msgid "Limitless automation"
-msgstr ""
+msgstr "Automatización sin límites"
 
 #: ../../getting-started/zrythm-overview.rst:12
 msgid ""
@@ -1013,4 +1014,3 @@ msgstr ""
 
 #~ msgid "Supports the free LV2 plugin format."
 #~ msgstr ""
-
