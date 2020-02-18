@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-01-28 21:43+0000\n"
-"PO-Revision-Date: 2020-02-15 22:50+0000\n"
-"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
+"PO-Revision-Date: 2020-02-19 12:28+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 3.11\n"
 
 #: src/zrythm.c:282
 msgid "Setting up main window"
@@ -1439,7 +1439,7 @@ msgstr ""
 
 #: resources/ui/first_run_assistant.ui:89 resources/ui/preferences.ui:519
 msgid "Language"
-msgstr ""
+msgstr "Idioma"
 
 #: resources/ui/first_run_assistant.ui:107
 msgid ""
