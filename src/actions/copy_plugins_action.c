@@ -111,6 +111,15 @@ copy_plugins_action_do (
 
   mixer_selections_clear (MIXER_SELECTIONS, 0);
 
+  /* get previous track */
+  Track * prev_track =
+    mixer_selections_get_track (self->ms);
+  g_return_val_if_fail (prev_track, -1);
+  AutomationTracklist * prev_atl =
+    track_get_automation_tracklist (prev_track);
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+
   for (int i = 0; i < self->ms->num_slots; i++)
     {
       /* clone the clone */
@@ -121,6 +130,53 @@ copy_plugins_action_do (
       channel_add_plugin (
         ch, new_slot, pl, 1, 1,
         F_NO_RECALC_GRAPH);
+
+      /* copy the automation regions from the
+       * original plugin */
+      for (int j = 0; j < prev_atl->num_ats; j++)
+        {
+          /* get the previous at */
+          AutomationTrack * prev_at =
+            prev_atl->ats[j];
+          if (prev_at->num_regions == 0 ||
+              prev_at->port_id.owner_type !=
+                PORT_OWNER_TYPE_PLUGIN ||
+              prev_at->port_id.plugin_slot !=
+                self->ms->slots[i])
+            continue;
+
+          /* find the corresponding at in the new
+           * track */
+          for (int k = 0; k < atl->num_ats; k++)
+            {
+              AutomationTrack * at = atl->ats[k];
+
+              if (at->port_id.owner_type !=
+                    PORT_OWNER_TYPE_PLUGIN ||
+                  at->port_id.plugin_slot !=
+                    new_slot ||
+                  at->port_id.port_index !=
+                    prev_at->port_id.port_index)
+                continue;
+
+              /* copy the automation regions */
+              for (int l = 0;
+                   l < prev_at->num_regions; l++)
+                {
+                  ZRegion * prev_region =
+                    prev_at->regions[l];
+                  ZRegion * new_region =
+                    (ZRegion *)
+                    arranger_object_clone (
+                      (ArrangerObject *)
+                      prev_region,
+                      ARRANGER_OBJECT_CLONE_COPY_MAIN);
+                  track_add_region (
+                    track, new_region, at, -1, 0, 0);
+                }
+              break;
+            }
+        }
 
       /* select it */
       mixer_selections_add_slot (

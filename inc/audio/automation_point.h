@@ -135,17 +135,12 @@ automation_point_schema = {
 /**
  * Creates an AutomationPoint in the given
  * AutomationTrack at the given Position.
- *
- * @param is_main Whether this AutomationPoint will
- *   be the main counterpart (see
- *   ArrangerObjectInfo).
  */
 AutomationPoint *
 automation_point_new_float (
   const float         value,
   const float         normalized_val,
-  const Position *    pos,
-  int                 is_main);
+  const Position *    pos);
 
 /**
  * Updates the value and notifies interested parties.

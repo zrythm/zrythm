@@ -132,7 +132,7 @@ automation_arranger_widget_create_ap (
   /* create a new ap */
   AutomationPoint * ap =
     automation_point_new_float (
-      value, normalized_val, &local_pos, F_MAIN);
+      value, normalized_val, &local_pos);
   ArrangerObject * ap_obj =
     (ArrangerObject *) ap;
 

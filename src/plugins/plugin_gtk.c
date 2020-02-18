@@ -353,7 +353,7 @@ plugin_gtk_new_label (
 {
   GtkWidget*  label = gtk_label_new(NULL);
   const char* fmt   = title ? "<span font_weight=\"bold\">%s</span>" : "%s:";
-  gchar*      str   = g_markup_printf_escaped(fmt, text);
+  gchar * str = g_markup_printf_escaped(fmt, text);
   gtk_label_set_markup (GTK_LABEL(label), str);
   g_free(str);
   gtk_label_set_xalign (

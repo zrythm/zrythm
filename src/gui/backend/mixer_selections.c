@@ -249,6 +249,7 @@ mixer_selections_clone (
     }
 
   ms->num_slots = src->num_slots;
+  ms->has_any = src->has_any;
   ms->track_pos = src->track_pos;
 
   return ms;

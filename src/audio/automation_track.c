@@ -224,8 +224,10 @@ automation_track_set_index (
 
   for (int i = 0; i < self->num_regions; i++)
     {
-      g_return_if_fail (self->regions[i]);
-      self->regions[i]->id.at_idx = index;
+      ZRegion * region = self->regions[i];
+      g_return_if_fail (region);
+      region->id.at_idx = index;
+      region_update_identifier (region);
     }
 
   Track * track =

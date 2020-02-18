@@ -82,6 +82,8 @@ get_port_str (
 
       const char * star =
         (num_midi_mappings > 0 ? "*" : "");
+      char * port_label =
+        g_markup_escape_text (port->id.label, -1);
       if (port->id.flow == FLOW_INPUT)
         {
 #define ORANGIZE(x) \
@@ -93,7 +95,7 @@ get_port_str (
             buf, "%s <small><sup>"
             ORANGIZE ("%d%s")
             "</sup></small>",
-            port->id.label,
+            port_label,
             num_unlocked_srcs, star);
           return 1;
         }
@@ -105,12 +107,13 @@ get_port_str (
             buf, "%s <small><sup>"
             ORANGIZE ("%d%s")
             "</sup></small>",
-            port->id.label,
+            port_label,
             num_unlocked_dests, star);
           return 1;
 #undef ORANGIZE
 #undef GREENIZE
         }
+      g_free (port_label);
     }
   else
     {
@@ -343,6 +346,8 @@ bar_slider_tick_cb (
       char full_designation[600];
       port_get_full_designation (
         self->port, full_designation);
+      char * full_designation_escaped =
+        g_markup_escape_text (full_designation, -1);
       const char * src_or_dest_str =
         self->port->id.flow == FLOW_INPUT ?
         _("Incoming signals") :
@@ -353,7 +358,7 @@ bar_slider_tick_cb (
         "%s: <b>%f</b>\n"
         "%s: <b>%f</b> | "
         "%s: <b>%f</b>",
-        full_designation,
+        full_designation_escaped,
         src_or_dest_str,
         self->port->id.flow == FLOW_INPUT ?
           self->port->num_srcs :
@@ -362,6 +367,7 @@ bar_slider_tick_cb (
         (double) get_port_value (self),
         _("Min"), (double) self->minf,
         _("Max"), (double) self->maxf);
+      g_free (full_designation_escaped);
 
       /* if the tooltip changed, update it */
       char * cur_tooltip =

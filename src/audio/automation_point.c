@@ -104,8 +104,7 @@ AutomationPoint *
 automation_point_new_float (
   const float         value,
   const float         normalized_val,
-  const Position *    pos,
-  int                 is_main)
+  const Position *    pos)
 {
   AutomationPoint * self =
     _create_new (pos);

@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/arranger_selections.h"
 #include "actions/create_tracks_action.h"
 #include "actions/copy_plugins_action.h"
 #include "actions/move_plugins_action.h"
@@ -81,6 +82,7 @@ test_move_plugins ()
     tracklist_selections_contains_track (
       TRACKLIST_SELECTIONS, track));
 
+  /* check identifiers */
   Channel * ch = track->channel;
   g_assert_nonnull (ch);
   Plugin * pl = ch->plugins[0];
@@ -89,6 +91,83 @@ test_move_plugins ()
   g_assert_cmpint (pl->id.slot, ==, 0);
   g_assert_true (
     ch == plugin_get_channel (pl));
+
+  /* check that automation tracks are created */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  g_assert_nonnull (atl);
+  g_assert_cmpint (atl->num_ats, ==, 5);
+  AutomationTrack * at = atl->ats[3];
+  g_assert_nonnull (at);
+  g_assert_cmpint (
+    at->port_id.owner_type, ==,
+    PORT_OWNER_TYPE_PLUGIN);
+  g_assert_true (
+    at->port_id.flags & PORT_FLAG_PLUGIN_ENABLED);
+  at = atl->ats[4];
+  g_assert_nonnull (at);
+  g_assert_cmpint (
+    at->port_id.owner_type, ==,
+    PORT_OWNER_TYPE_PLUGIN);
+  g_assert_true (
+    at->port_id.flags & PORT_FLAG_PLUGIN_CONTROL);
+
+  /* add some automation */
+  Position start_pos, end_pos;
+  position_set_to_bar (&start_pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * region =
+    automation_region_new (
+      &start_pos, &end_pos, track->pos, at->index,
+      0);
+  track_add_region (
+    track, region, at, -1, 1, 0);
+  arranger_object_select (
+    (ArrangerObject *) region, 1, 0);
+  action =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, action);
+  g_assert_cmpint (at->num_regions, ==, 1);
+  g_assert_cmpint (
+    at->regions[0]->id.track_pos, ==, track->pos);
+  g_assert_cmpint (
+    at->regions[0]->id.at_idx, ==, at->index);
+  g_assert_cmpint (
+    at->regions[0]->id.idx, ==, 0);
+  Position ap1_pos, ap2_pos;
+  position_set_to_bar (&ap1_pos, 1);
+  position_set_to_bar (&ap2_pos, 2);
+  AutomationPoint * ap =
+    automation_point_new_float (
+      -50.f, 0, &ap1_pos);
+  automation_region_add_ap (region, ap);
+  arranger_object_select (
+    (ArrangerObject *) ap, 1, 0);
+  action =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, action);
+  g_assert_cmpint (region->num_aps, ==, 1);
+  g_assert_cmpint (region->aps[0]->index, ==, 0);
+  g_assert_true (
+    region_identifier_is_equal (
+      &region->id, &region->aps[0]->region_id));
+  ap =
+    automation_point_new_float (
+      -30.f, 0, &ap2_pos);
+  automation_region_add_ap (region, ap);
+  arranger_object_select (
+    (ArrangerObject *) ap, 1, 0);
+  action =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, action);
+  g_assert_cmpint (region->num_aps, ==, 2);
+  g_assert_cmpint (region->aps[1]->index, ==, 1);
+  g_assert_true (
+    region_identifier_is_equal (
+      &region->id, &region->aps[1]->region_id));
 
   /* select plugin and duplicate to next slot in
    * a new track */
@@ -124,6 +203,16 @@ test_move_plugins ()
     MIXER_SELECTIONS->track_pos, ==, 4);
   g_assert_cmpint (
     MIXER_SELECTIONS->slots[0], ==, 1);
+
+  /* check that the automation was copied
+   * correctly */
+  atl = track_get_automation_tracklist (new_track);
+  g_assert_cmpint (atl->num_ats, ==, 5);
+  at = atl->ats[4];
+  g_assert_nonnull (at);
+  g_assert_cmpint (at->index, ==, 4);
+  g_assert_cmpint (at->num_regions, ==, 1);
+  region = at->regions[0];
 
   /* copy the new plugin to the slot below */
   action =

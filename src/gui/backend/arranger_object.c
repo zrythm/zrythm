@@ -1690,7 +1690,7 @@ clone_region (
               automation_point_new_float (
                 src_ap->fvalue,
                 src_ap->normalized_val,
-                &src_ap_obj->pos, F_MAIN);
+                &src_ap_obj->pos);
             automation_region_add_ap (
               ar, dest_ap);
           }
@@ -1842,16 +1842,12 @@ clone_automation_point (
   AutomationPoint *       src,
   ArrangerObjectCloneFlag flag)
 {
-  int is_main = 0;
-  if (flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
-    is_main = 1;
-
   ArrangerObject * src_obj =
     (ArrangerObject *) src;
   AutomationPoint * ap =
     automation_point_new_float (
       src->fvalue, src->normalized_val,
-			&src_obj->pos, is_main);
+      &src_obj->pos);
 
   return (ArrangerObject *) ap;
 }
