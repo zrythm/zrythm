@@ -224,8 +224,6 @@ check_after_step6 ()
   /* check that there are 2 plugins in the track
    * now (slot 1 and 2) */
   g_assert_cmpint (
-    MIXER_SELECTIONS->num_slots, ==, 2);
-  g_assert_cmpint (
     MIXER_SELECTIONS->track_pos, ==, 4);
   g_assert_cmpint (
     MIXER_SELECTIONS->slots[0], ==, 2);
@@ -539,6 +537,27 @@ test_move_plugins ()
   /* undo adding a track with a plugin */
   undo_manager_undo (UNDO_MANAGER);
   check_initial_state ();
+
+  /* -------- redo everything -------- */
+
+  undo_manager_redo (UNDO_MANAGER);
+  check_after_step1 ();
+  undo_manager_redo (UNDO_MANAGER);
+  check_after_step2 ();
+  undo_manager_redo (UNDO_MANAGER);
+  check_after_step3 ();
+  undo_manager_redo (UNDO_MANAGER);
+  check_after_step4 ();
+  undo_manager_redo (UNDO_MANAGER);
+  check_after_step5 ();
+  undo_manager_redo (UNDO_MANAGER);
+  check_after_step6 ();
+  undo_manager_redo (UNDO_MANAGER);
+  check_after_step7 ();
+  undo_manager_redo (UNDO_MANAGER);
+  check_after_step8 ();
+  undo_manager_redo (UNDO_MANAGER);
+  check_after_step9 ();
 }
 
 int
