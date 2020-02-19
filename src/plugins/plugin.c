@@ -199,28 +199,31 @@ plugin_new_dummy (
  * corresponding track.
  *
  * Used e.g. when moving plugins.
+ *
+ * @param free_ats Also free the ats.
  */
 void
 plugin_remove_ats_from_automation_tracklist (
-  Plugin * pl)
+  Plugin * pl,
+  int      free_ats)
 {
   Track * track = plugin_get_track (pl);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
-  for (int i = 0; i < atl->num_ats; i++)
+  for (int i = atl->num_ats - 1; i >= 0; i--)
     {
       AutomationTrack * at = atl->ats[i];
       Port * port =
         automation_track_get_port (at);
       if (port->id.owner_type ==
-            PORT_OWNER_TYPE_PLUGIN)
+            PORT_OWNER_TYPE_PLUGIN ||
+          port->id.flags &
+            PORT_FLAG_PLUGIN_CONTROL)
         {
-          Plugin * port_pl =
-            port_get_plugin (port, 1);
-          if (port_pl == pl)
+          if (port->id.plugin_slot == pl->id.slot)
             {
               automation_tracklist_remove_at (
-                atl, at, F_NO_FREE);
+                atl, at, free_ats);
             }
         }
     }
@@ -415,23 +418,23 @@ plugin_move_automation (
     channel_get_track (prev_ch);
   AutomationTracklist * prev_atl =
     track_get_automation_tracklist (prev_track);
-  Track * track =
-    channel_get_track (ch);
+  Track * track = channel_get_track (ch);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
 
-  for (int i = 0; i < prev_atl->num_ats; i++)
+  for (int i = prev_atl->num_ats - 1; i >= 0; i--)
     {
       AutomationTrack * at = prev_atl->ats[i];
       Port * port =
         automation_track_get_port (at);
-        g_message ("before port %s", port->id.label);
+        /*g_message (*/
+          /*"before port %s", port->id.label);*/
       if (!port)
         continue;
       if (port->id.owner_type ==
             PORT_OWNER_TYPE_PLUGIN)
         {
-          g_message ("port %s", port->id.label);
+          /*g_message ("port %s", port->id.label);*/
           Plugin * port_pl =
             port_get_plugin (port, 1);
           if (port_pl != pl)
@@ -443,7 +446,8 @@ plugin_move_automation (
       /* delete from prev channel */
       automation_tracklist_delete_at (
         prev_atl, at, F_NO_FREE);
-      g_message ("deleted %s ", port->id.label);
+      /*g_message ("deleted %s, num ats after for track %s: %d", port->id.label, prev_ch->track->name,*/
+        /*prev_atl->num_ats);*/
 
       /* add to new channel */
       automation_tracklist_add_at (atl, at);
@@ -1473,10 +1477,6 @@ plugin_free (Plugin *plugin)
   ports_remove (
     plugin->out_ports,
     &plugin->num_out_ports);
-
-  /* delete automation tracks */
-  plugin_remove_ats_from_automation_tracklist (
-    plugin);
 
   free (plugin);
 }

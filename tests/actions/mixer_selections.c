@@ -213,6 +213,11 @@ test_move_plugins ()
   g_assert_cmpint (at->index, ==, 4);
   g_assert_cmpint (at->num_regions, ==, 1);
   region = at->regions[0];
+  g_assert_cmpint (region->num_aps, ==, 2);
+  g_assert_cmpint (
+    region->id.track_pos, ==, new_track->pos);
+  g_assert_cmpint (region->id.at_idx, ==, 4);
+  g_assert_cmpint (region->id.idx, ==, 0);
 
   /* copy the new plugin to the slot below */
   action =
@@ -233,6 +238,19 @@ test_move_plugins ()
   g_assert_cmpint (
     slot2_plugin->id.track_pos, ==, 4);
   g_assert_cmpint (slot2_plugin->id.slot, ==, 2);
+
+  /* check that the automation was copied too */
+  g_assert_cmpint (atl->num_ats, ==, 7);
+  at = atl->ats[6];
+  g_assert_nonnull (at);
+  g_assert_cmpint (at->index, ==, 6);
+  g_assert_cmpint (at->num_regions, ==, 1);
+  region = at->regions[0];
+  g_assert_cmpint (region->num_aps, ==, 2);
+  g_assert_cmpint (
+    region->id.track_pos, ==, new_track->pos);
+  g_assert_cmpint (region->id.at_idx, ==, 6);
+  g_assert_cmpint (region->id.idx, ==, 0);
 
   /* select the plugin above too and copy both to
    * the previous track at slot 5 */
@@ -270,6 +288,59 @@ test_move_plugins ()
     ch->plugins[6]->id.track_pos, ==, track->pos);
   g_assert_cmpint (
     ch->plugins[6]->id.slot, ==, 6);
+
+  /* check that the automations were copied too */
+  atl = track_get_automation_tracklist (track);
+  g_assert_cmpint (atl->num_ats, ==, 9);
+  at = atl->ats[8];
+  g_assert_nonnull (at);
+  g_assert_cmpint (at->index, ==, 8);
+  g_assert_cmpint (at->num_regions, ==, 1);
+  region = at->regions[0];
+  g_assert_cmpint (region->num_aps, ==, 2);
+  g_assert_cmpint (
+    region->id.track_pos, ==, track->pos);
+  g_assert_cmpint (region->id.at_idx, ==, 8);
+  g_assert_cmpint (region->id.idx, ==, 0);
+
+  /* move the plugins to slot 7 and 8 in the next
+   * track */
+  action =
+    move_plugins_action_new (
+      MIXER_SELECTIONS, new_track, 7);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  /* verify that they were moved there */
+  g_assert_cmpint (
+    MIXER_SELECTIONS->num_slots, ==, 2);
+  g_assert_true (MIXER_SELECTIONS->has_any);
+  g_assert_cmpint (
+    MIXER_SELECTIONS->track_pos, ==, new_track->pos);
+  g_assert_null (ch->plugins[5]);
+  g_assert_null (ch->plugins[6]);
+  g_assert_nonnull (new_ch->plugins[7]);
+  g_assert_nonnull (new_ch->plugins[8]);
+
+  /* verify that the automation was moved too */
+  atl = track_get_automation_tracklist (new_track);
+  g_assert_cmpint (atl->num_ats, ==, 11);
+  at =
+    automation_tracklist_get_plugin_at (
+      atl, 7, "Gain");
+  g_assert_nonnull (at);
+  g_assert_cmpint (at->num_regions, ==, 1);
+  region = at->regions[0];
+  g_assert_cmpint (region->num_aps, ==, 2);
+  g_assert_cmpint (
+    region->id.track_pos, ==, new_track->pos);
+  g_assert_cmpint (region->id.at_idx, ==, at->index);
+  g_assert_cmpint (region->id.idx, ==, 0);
+  ap = region->aps[0];
+  g_assert_true (
+    region_identifier_is_equal (
+      &region->id, &ap->region_id));
+
+  /* delete these 2 plugins */
 }
 
 int

@@ -1436,11 +1436,8 @@ channel_remove_plugin (
   Plugin * plugin = channel->plugins[pos];
   g_return_if_fail (plugin);
 
-  if (!deleting_plugin)
-    {
-      plugin_remove_ats_from_automation_tracklist (
-        plugin);
-    }
+  plugin_remove_ats_from_automation_tracklist (
+    plugin, deleting_plugin);
 
   Track * track = channel_get_track (channel);
   g_message (

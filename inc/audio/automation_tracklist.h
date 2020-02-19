@@ -232,6 +232,18 @@ automation_tracklist_set_at_index (
   int                   index,
   int                   push_down);
 
+/**
+ * Gets the automation track with the given label.
+ *
+ * Only works for plugin port labels and mainly
+ * used in tests.
+ */
+AutomationTrack *
+automation_tracklist_get_plugin_at (
+  AutomationTracklist * self,
+  const int             plugin_slot,
+  const char *          label);
+
 AutomationTrack *
 automation_tracklist_get_first_invisible_at (
   AutomationTracklist * self);

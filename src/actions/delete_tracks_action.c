@@ -30,13 +30,13 @@ UndoableAction *
 delete_tracks_action_new (
   TracklistSelections * tls)
 {
-	DeleteTracksAction * self =
+  DeleteTracksAction * self =
     calloc (1, sizeof (
-    	DeleteTracksAction));
+      DeleteTracksAction));
 
   UndoableAction * ua = (UndoableAction *) self;
   ua->type =
-	  UA_DELETE_TRACKS;
+    UA_DELETE_TRACKS;
 
   self->tls = tracklist_selections_clone (tls);
   tracklist_selections_sort (self->tls);
@@ -46,7 +46,7 @@ delete_tracks_action_new (
 
 int
 delete_tracks_action_do (
-	DeleteTracksAction * self)
+  DeleteTracksAction * self)
 {
   Track * track;
 
@@ -80,7 +80,7 @@ delete_tracks_action_do (
  */
 int
 delete_tracks_action_undo (
-	DeleteTracksAction * self)
+  DeleteTracksAction * self)
 {
   Track * track;
   for (int i = 0; i < self->tls->num_tracks; i++)
@@ -108,7 +108,7 @@ delete_tracks_action_undo (
 
 char *
 delete_tracks_action_stringize (
-	DeleteTracksAction * self)
+  DeleteTracksAction * self)
 {
   if (self->tls->num_tracks == 1)
     return g_strdup (_("Delete Track"));
@@ -120,7 +120,7 @@ delete_tracks_action_stringize (
 
 void
 delete_tracks_action_free (
-	DeleteTracksAction * self)
+  DeleteTracksAction * self)
 {
   tracklist_selections_free (self->tls);
   free (self);

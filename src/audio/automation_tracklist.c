@@ -77,13 +77,44 @@ void
 automation_tracklist_delete_at (
   AutomationTracklist * self,
   AutomationTrack *     at,
-  int                   free)
+  int                   free_at)
 {
   array_delete (
     self->ats, self->num_ats, at);
 
-  if (free)
-    free_later (at, automation_track_free);
+  if (free_at)
+    {
+      free_later (at, automation_track_free);
+    }
+}
+
+/**
+ * Gets the automation track with the given label.
+ *
+ * Only works for plugin port labels and mainly
+ * used in tests.
+ */
+AutomationTrack *
+automation_tracklist_get_plugin_at (
+  AutomationTracklist * self,
+  const int             plugin_slot,
+  const char *          label)
+{
+  for (int i = 0; i < self->num_ats; i++)
+    {
+      AutomationTrack * at = self->ats[i];
+      g_return_val_if_fail (at, NULL);
+
+      if (at->port_id.owner_type ==
+            PORT_OWNER_TYPE_PLUGIN &&
+          plugin_slot == at->port_id.plugin_slot &&
+          string_is_equal (
+            label, at->port_id.label, 0))
+        {
+          return at;
+        }
+    }
+  g_return_val_if_reached (NULL);
 }
 
 /**

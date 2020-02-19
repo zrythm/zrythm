@@ -19,6 +19,10 @@
 
 #include "gui/backend/events.h"
 #include "gui/backend/mixer_selections.h"
+#include "gui/widgets/center_dock.h"
+#include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/inspector.h"
+#include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
@@ -161,8 +165,11 @@ mixer_selections_remove_slot (
     }
 
   if (publish_events)
-    EVENTS_PUSH (ET_MIXER_SELECTIONS_CHANGED,
-                 NULL);
+    {
+      inspector_widget_refresh (MW_INSPECTOR);
+      EVENTS_PUSH (ET_MIXER_SELECTIONS_CHANGED,
+                   NULL);
+    }
 }
 
 

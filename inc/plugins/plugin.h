@@ -290,10 +290,13 @@ plugin_get_enabled_port (
  * corresponding track.
  *
  * Used e.g. when moving plugins.
+ *
+ * @param free_ats Also free the ats.
  */
 void
 plugin_remove_ats_from_automation_tracklist (
-  Plugin * pl);
+  Plugin * pl,
+  int      free_ats);
 
 /**
  * Clones the given plugin.
