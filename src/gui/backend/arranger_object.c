@@ -1848,6 +1848,8 @@ clone_automation_point (
     automation_point_new_float (
       src->fvalue, src->normalized_val,
       &src_obj->pos);
+  region_identifier_copy (
+    &ap->region_id, &src->region_id);
 
   return (ArrangerObject *) ap;
 }

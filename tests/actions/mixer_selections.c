@@ -69,19 +69,18 @@ rebootstrap ()
 }
 
 static void
+check_initial_state ()
+{
+  g_assert_cmpint (TRACKLIST->num_tracks, ==, 3);
+}
+
+static void
 check_after_step1 ()
 {
   g_assert_cmpint (TRACKLIST->num_tracks, ==, 4);
 
-  /* check if track is selected */
-  Track * track = TRACKLIST->tracks[3];
-  g_assert_cmpint (track->pos, ==, 3);
-  g_assert_nonnull (track);
-  g_assert_true (
-    tracklist_selections_contains_track (
-      TRACKLIST_SELECTIONS, track));
-
   /* check identifiers */
+  Track * track = TRACKLIST->tracks[TRACK_POS];
   Channel * ch = track->channel;
   g_assert_nonnull (ch);
   Plugin * pl = ch->plugins[0];
@@ -225,7 +224,7 @@ check_after_step6 ()
   /* check that there are 2 plugins in the track
    * now (slot 1 and 2) */
   g_assert_cmpint (
-    MIXER_SELECTIONS->num_slots, ==, 1);
+    MIXER_SELECTIONS->num_slots, ==, 2);
   g_assert_cmpint (
     MIXER_SELECTIONS->track_pos, ==, 4);
   g_assert_cmpint (
@@ -290,15 +289,16 @@ check_after_step7 ()
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   g_assert_cmpint (atl->num_ats, ==, 9);
-  AutomationTrack * at = atl->ats[8];
+  AutomationTrack * at =
+    automation_tracklist_get_plugin_at (
+      atl, 5, "Gain");
   g_assert_nonnull (at);
-  g_assert_cmpint (at->index, ==, 8);
   g_assert_cmpint (at->num_regions, ==, 1);
   ZRegion * region = at->regions[0];
   g_assert_cmpint (region->num_aps, ==, 2);
   g_assert_cmpint (
     region->id.track_pos, ==, track->pos);
-  g_assert_cmpint (region->id.at_idx, ==, 8);
+  g_assert_cmpint (region->id.at_idx, ==, at->index);
   g_assert_cmpint (region->id.idx, ==, 0);
 }
 
@@ -369,8 +369,9 @@ check_after_step9 ()
 static void
 test_move_plugins ()
 {
+  check_initial_state ();
+
   /* create a track with a plugin */
-  g_assert_cmpint (TRACKLIST->num_tracks, ==, 3);
   UndoableAction * action =
     create_tracks_action_new (
       TRACK_TYPE_AUDIO_BUS,
@@ -378,11 +379,17 @@ test_move_plugins ()
       3, 1);
   undo_manager_perform (UNDO_MANAGER, action);
 
+  /* check if track is selected */
+  Track * track = TRACKLIST->tracks[TRACK_POS];
+  g_assert_cmpint (track->pos, ==, 3);
+  g_assert_nonnull (track);
+  g_assert_true (
+    tracklist_selections_contains_track (
+      TRACKLIST_SELECTIONS, track));
+
   check_after_step1 ();
 
   /* add some automation */
-  Track * track =
-    TRACKLIST->tracks[TRACK_POS];
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   AutomationTrack * at = atl->ats[4];
@@ -431,16 +438,17 @@ test_move_plugins ()
       AUTOMATION_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, action);
 
-  check_after_step4 ();
-
-  /* select plugin and duplicate to next slot in
-   * a new track */
+  /* select the plugin */
   Channel * ch = track->channel;
   Plugin * pl = ch->plugins[0];
   mixer_selections_add_slot (
     MIXER_SELECTIONS, ch, pl->id.slot);
   g_assert_cmpint (
     MIXER_SELECTIONS->num_slots, ==, 1);
+
+  check_after_step4 ();
+
+  /* duplicate to next slot in a new track */
   action =
     copy_plugins_action_new (
       MIXER_SELECTIONS, NULL, 1);
@@ -457,10 +465,7 @@ test_move_plugins ()
       MIXER_SELECTIONS, new_track, 2);
   undo_manager_perform (UNDO_MANAGER, action);
 
-  check_after_step6 ();
-
-  /* select the plugin above too and copy both to
-   * the previous track at slot 5 */
+  /* select the plugin above too */
   g_assert_cmpint (
     MIXER_SELECTIONS->num_slots, ==, 1);
   g_assert_true (MIXER_SELECTIONS->has_any);
@@ -468,6 +473,10 @@ test_move_plugins ()
     MIXER_SELECTIONS, new_ch, 1);
   g_assert_cmpint (
     MIXER_SELECTIONS->num_slots, ==, 2);
+
+  check_after_step6 ();
+
+  /* copy both to the previous track at slot 5 */
   action =
     copy_plugins_action_new (
       MIXER_SELECTIONS, track, 5);
@@ -502,7 +511,34 @@ test_move_plugins ()
 
   /* undo moving plugins from track 3 to track 4 */
   undo_manager_undo (UNDO_MANAGER);
-  /*check_after_step7 ();*/
+  check_after_step7 ();
+
+  /* undo copy both plugins to the previous track
+   * at slot 5 */
+  undo_manager_undo (UNDO_MANAGER);
+  check_after_step6 ();
+
+  /* undo copying the plugin to the slot below it */
+  undo_manager_undo (UNDO_MANAGER);
+  check_after_step5 ();
+
+  /* undo duplicating to next slot in a new track */
+  undo_manager_undo (UNDO_MANAGER);
+  check_after_step4 ();
+
+  /* undo adding automation points */
+  undo_manager_undo (UNDO_MANAGER);
+  check_after_step3 ();
+  undo_manager_undo (UNDO_MANAGER);
+  check_after_step2 ();
+
+  /* undo adding automation region */
+  undo_manager_undo (UNDO_MANAGER);
+  check_after_step1 ();
+
+  /* undo adding a track with a plugin */
+  undo_manager_undo (UNDO_MANAGER);
+  check_initial_state ();
 }
 
 int

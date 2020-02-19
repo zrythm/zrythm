@@ -984,16 +984,25 @@ track_set_pos (
   /* update port identifier track positions */
   if (track->channel)
     {
+      Channel * ch = track->channel;
       Port * ports[80000];
       int    num_ports = 0;
       channel_append_all_ports (
-        track->channel,
-        ports, &num_ports, 1);
+        ch, ports, &num_ports, 1);
 
       for (int i = 0; i < num_ports; i++)
         {
           g_warn_if_fail (ports[i]);
           ports[i]->id.track_pos = pos;
+        }
+
+      for (int i = 0; i < STRIP_SIZE; i++)
+        {
+          Plugin * pl = ch->plugins[i];
+          if (pl)
+            {
+              pl->id.track_pos = pos;
+            }
         }
     }
 }

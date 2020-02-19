@@ -98,6 +98,9 @@ copy_plugins_action_do (
 
       EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
 
+      /* remember track pos */
+      self->track_pos = track->pos;
+
       ch = track->channel;
     }
   else
@@ -208,39 +211,45 @@ int
 copy_plugins_action_undo (
   CopyPluginsAction * self)
 {
-  Track * tr =
-    TRACKLIST->tracks[self->track_pos];
+  Track * tr = TRACKLIST->tracks[self->track_pos];
+  Channel * ch = tr->channel;
   g_warn_if_fail (tr);
 
   /* if a new channel was created just delete the
    * channel */
   if (self->is_new_channel)
     {
-
       tracklist_remove_track (
-        TRACKLIST,
-        tr,
-        F_REMOVE_PL,
-        F_FREE,
-        F_PUBLISH_EVENTS,
-        F_RECALC_GRAPH);
+        TRACKLIST, tr, F_REMOVE_PL, F_FREE,
+        F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+    }
+  /* no new channel, delete each plugin */
+  else
+    {
+      g_warn_if_fail (ch);
 
-      return 0;
+      for (int i = 0; i < self->ms->num_slots; i++)
+        {
+          channel_remove_plugin (
+            ch, self->slot + i, 1, 0,
+            F_NO_RECALC_GRAPH);
+        }
     }
 
-  /* no new channel, delete each plugin */
-  Channel * ch = tr->channel;
-  g_warn_if_fail (ch);
-
+  /* reselect the previous plugins */
+  Channel * prev_ch =
+    TRACKLIST->tracks[self->ms->track_pos]->
+      channel;
   for (int i = 0; i < self->ms->num_slots; i++)
     {
-      channel_remove_plugin (
-        ch, self->slot + i, 1, 0,
-        F_NO_RECALC_GRAPH);
+      mixer_selections_add_slot (
+        MIXER_SELECTIONS, prev_ch,
+        self->ms->slots[i]);
+      /*g_message ("readding slot %d",*/
+        /*self->ms->slots[i]);*/
     }
 
-  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED,
-               ch);
+  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
 
   mixer_recalc_graph (MIXER);
 
