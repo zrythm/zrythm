@@ -1080,10 +1080,18 @@ track_remove_region (
   else if (region->id.type ==
              REGION_TYPE_AUTOMATION)
     {
-      AutomationTrack * at =
-        region_get_automation_track (region);
-      array_delete (
-        at->regions, at->num_regions, region);
+      AutomationTracklist * atl =
+        &track->automation_tracklist;
+      for (int i = 0; i < atl->num_ats; i++)
+        {
+          AutomationTrack * at = atl->ats[i];
+          if (at->index == region->id.at_idx)
+            {
+              array_delete (
+                at->regions, at->num_regions,
+                region);
+            }
+        }
     }
 
   if (free)

@@ -29,9 +29,7 @@
 
 UndoableAction *
 delete_plugins_action_new (
-  MixerSelections * ms,
-  Track *           tr,
-  int               slot)
+  MixerSelections * ms)
 {
   DeletePluginsAction * self =
     calloc (1, sizeof (
@@ -40,8 +38,8 @@ delete_plugins_action_new (
   ua->type =
     UA_DELETE_PLUGINS;
 
-  self->tr_pos = tr->pos;
-  self->slot = slot;
+  /*self->tr_pos = tr->pos;*/
+  /*self->slot = slot;*/
   self->ms = mixer_selections_clone (ms);
 
   return ua;
@@ -52,14 +50,14 @@ delete_plugins_action_do (
   DeletePluginsAction * self)
 {
   Channel * ch =
-    TRACKLIST->tracks[self->tr_pos]->channel;
+    TRACKLIST->tracks[self->ms->track_pos]->channel;
   g_return_val_if_fail (ch, -1);
 
   for (int i = 0; i < self->ms->num_slots; i++)
     {
       /* remove the plugin at given slot */
       channel_remove_plugin (
-        ch, self->slot + i, 1, 0,
+        ch, self->ms->plugins[i]->id.slot, 1, 0,
         F_NO_RECALC_GRAPH);
     }
 
@@ -77,7 +75,7 @@ delete_plugins_action_undo (
 {
   Plugin * pl;
   Channel * ch =
-    TRACKLIST->tracks[self->tr_pos]->channel;
+    TRACKLIST->tracks[self->ms->track_pos]->channel;
   g_return_val_if_fail (ch, -1);
 
   for (int i = 0; i < self->ms->num_slots; i++)
@@ -93,6 +91,11 @@ delete_plugins_action_undo (
         F_NO_CONFIRM,
         F_GEN_AUTOMATABLES,
         F_NO_RECALC_GRAPH);
+
+      /* select the plugin */
+      mixer_selections_add_slot (
+        MIXER_SELECTIONS, ch,
+        self->ms->plugins[i]->id.slot);
     }
 
   mixer_recalc_graph (MIXER);

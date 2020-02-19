@@ -20,6 +20,7 @@
 #include "actions/arranger_selections.h"
 #include "actions/create_tracks_action.h"
 #include "actions/copy_plugins_action.h"
+#include "actions/delete_plugins_action.h"
 #include "actions/move_plugins_action.h"
 #include "actions/undoable_action.h"
 #include "audio/audio_region.h"
@@ -35,6 +36,11 @@
 #include "tests/helpers/zrythm.h"
 
 #include <glib.h>
+
+#define TRACK_POS 3
+#define NEW_TRACK_POS 4
+
+static Position start_pos, end_pos, ap1_pos, ap2_pos;
 
 /**
  * Bootstraps the test with test data.
@@ -58,20 +64,13 @@ rebootstrap ()
   double progress = 0;
   plugin_manager_scan_plugins (
     PLUGIN_MANAGER, 1.0, &progress);
-  g_assert_cmpint (PLUGIN_MANAGER->num_plugins, ==, 1);
+  g_assert_cmpint (
+    PLUGIN_MANAGER->num_plugins, ==, 1);
 }
 
 static void
-test_move_plugins ()
+check_after_step1 ()
 {
-  /* create a track with a plugin */
-  g_assert_cmpint (TRACKLIST->num_tracks, ==, 3);
-  UndoableAction * action =
-    create_tracks_action_new (
-      TRACK_TYPE_AUDIO_BUS,
-      PLUGIN_MANAGER->plugin_descriptors[0], NULL,
-      3, 1);
-  undo_manager_perform (UNDO_MANAGER, action);
   g_assert_cmpint (TRACKLIST->num_tracks, ==, 4);
 
   /* check if track is selected */
@@ -111,88 +110,83 @@ test_move_plugins ()
     PORT_OWNER_TYPE_PLUGIN);
   g_assert_true (
     at->port_id.flags & PORT_FLAG_PLUGIN_CONTROL);
+}
 
-  /* add some automation */
-  Position start_pos, end_pos;
-  position_set_to_bar (&start_pos, 2);
-  position_set_to_bar (&end_pos, 4);
-  ZRegion * region =
-    automation_region_new (
-      &start_pos, &end_pos, track->pos, at->index,
-      0);
-  track_add_region (
-    track, region, at, -1, 1, 0);
-  arranger_object_select (
-    (ArrangerObject *) region, 1, 0);
-  action =
-    arranger_selections_action_new_create (
-      TL_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, action);
+static void
+check_after_step2 ()
+{
+  Track * track =
+    TRACKLIST->tracks[TRACK_POS];
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  AutomationTrack * at = atl->ats[4];
+
   g_assert_cmpint (at->num_regions, ==, 1);
+  ZRegion * region = at->regions[0];
   g_assert_cmpint (
-    at->regions[0]->id.track_pos, ==, track->pos);
+    region->id.track_pos, ==, track->pos);
   g_assert_cmpint (
-    at->regions[0]->id.at_idx, ==, at->index);
+    region->id.at_idx, ==, at->index);
   g_assert_cmpint (
-    at->regions[0]->id.idx, ==, 0);
-  Position ap1_pos, ap2_pos;
-  position_set_to_bar (&ap1_pos, 1);
-  position_set_to_bar (&ap2_pos, 2);
-  AutomationPoint * ap =
-    automation_point_new_float (
-      -50.f, 0, &ap1_pos);
-  automation_region_add_ap (region, ap);
-  arranger_object_select (
-    (ArrangerObject *) ap, 1, 0);
-  action =
-    arranger_selections_action_new_create (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, action);
+    region->id.idx, ==, 0);
+}
+
+static void
+check_after_step3 ()
+{
+  Track * track =
+    TRACKLIST->tracks[TRACK_POS];
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  AutomationTrack * at = atl->ats[4];
+  ZRegion * region = at->regions[0];
+
   g_assert_cmpint (region->num_aps, ==, 1);
   g_assert_cmpint (region->aps[0]->index, ==, 0);
   g_assert_true (
     region_identifier_is_equal (
       &region->id, &region->aps[0]->region_id));
-  ap =
-    automation_point_new_float (
-      -30.f, 0, &ap2_pos);
-  automation_region_add_ap (region, ap);
-  arranger_object_select (
-    (ArrangerObject *) ap, 1, 0);
-  action =
-    arranger_selections_action_new_create (
-      AUTOMATION_SELECTIONS);
-  undo_manager_perform (UNDO_MANAGER, action);
+}
+
+static void
+check_after_step4 ()
+{
+  Track * track =
+    TRACKLIST->tracks[TRACK_POS];
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  AutomationTrack * at = atl->ats[4];
+  ZRegion * region = at->regions[0];
+
   g_assert_cmpint (region->num_aps, ==, 2);
   g_assert_cmpint (region->aps[1]->index, ==, 1);
   g_assert_true (
     region_identifier_is_equal (
       &region->id, &region->aps[1]->region_id));
+}
 
-  /* select plugin and duplicate to next slot in
-   * a new track */
-  mixer_selections_add_slot (
-    MIXER_SELECTIONS, ch, pl->id.slot);
-  g_assert_cmpint (
-    MIXER_SELECTIONS->num_slots, ==, 1);
-  action =
-    copy_plugins_action_new (
-      MIXER_SELECTIONS, NULL, 1);
-  undo_manager_perform (UNDO_MANAGER, action);
+static void
+check_after_step5 ()
+{
+  Track * track =
+    TRACKLIST->tracks[TRACK_POS];
+  Track * new_track =
+    TRACKLIST->tracks[NEW_TRACK_POS];
+  Channel * ch = track->channel;
+  Channel * new_ch = new_track->channel;
 
   /* check that new track is created and the
    * identifiers are correct */
   g_assert_cmpint (TRACKLIST->num_tracks, ==, 5);
-  Track * new_track = TRACKLIST->tracks[4];
   g_assert_nonnull (new_track);
   g_assert_true (
     new_track->type == TRACK_TYPE_INSTRUMENT ||
     new_track->type == TRACK_TYPE_AUDIO_BUS);
-  Channel * new_ch = new_track->channel;
   g_assert_nonnull (new_ch);
   Plugin * new_pl = new_ch->plugins[1];
   g_assert_nonnull (new_pl);
   g_assert_null (new_ch->plugins[0]);
+  Plugin * pl = ch->plugins[0];
   g_assert_cmpint (pl->id.track_pos, ==, 3);
   g_assert_cmpint (pl->id.slot, ==, 0);
   g_assert_cmpint (new_pl->id.track_pos, ==, 4);
@@ -206,24 +200,27 @@ test_move_plugins ()
 
   /* check that the automation was copied
    * correctly */
-  atl = track_get_automation_tracklist (new_track);
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (new_track);
   g_assert_cmpint (atl->num_ats, ==, 5);
-  at = atl->ats[4];
+  AutomationTrack * at = atl->ats[4];
   g_assert_nonnull (at);
   g_assert_cmpint (at->index, ==, 4);
   g_assert_cmpint (at->num_regions, ==, 1);
-  region = at->regions[0];
+  ZRegion * region = at->regions[0];
   g_assert_cmpint (region->num_aps, ==, 2);
   g_assert_cmpint (
     region->id.track_pos, ==, new_track->pos);
   g_assert_cmpint (region->id.at_idx, ==, 4);
   g_assert_cmpint (region->id.idx, ==, 0);
+}
 
-  /* copy the new plugin to the slot below */
-  action =
-    copy_plugins_action_new (
-      MIXER_SELECTIONS, new_track, 2);
-  undo_manager_perform (UNDO_MANAGER, action);
+static void
+check_after_step6 ()
+{
+  Track * new_track =
+    TRACKLIST->tracks[NEW_TRACK_POS];
+  Channel * new_ch = new_track->channel;
 
   /* check that there are 2 plugins in the track
    * now (slot 1 and 2) */
@@ -240,31 +237,31 @@ test_move_plugins ()
   g_assert_cmpint (slot2_plugin->id.slot, ==, 2);
 
   /* check that the automation was copied too */
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (new_track);
   g_assert_cmpint (atl->num_ats, ==, 7);
-  at = atl->ats[6];
+  AutomationTrack * at = atl->ats[6];
   g_assert_nonnull (at);
   g_assert_cmpint (at->index, ==, 6);
   g_assert_cmpint (at->num_regions, ==, 1);
-  region = at->regions[0];
+  ZRegion * region = at->regions[0];
   g_assert_cmpint (region->num_aps, ==, 2);
   g_assert_cmpint (
     region->id.track_pos, ==, new_track->pos);
   g_assert_cmpint (region->id.at_idx, ==, 6);
   g_assert_cmpint (region->id.idx, ==, 0);
+}
 
-  /* select the plugin above too and copy both to
-   * the previous track at slot 5 */
-  g_assert_cmpint (
-    MIXER_SELECTIONS->num_slots, ==, 1);
-  g_assert_true (MIXER_SELECTIONS->has_any);
-  mixer_selections_add_slot (
-    MIXER_SELECTIONS, new_ch, 1);
-  g_assert_cmpint (
-    MIXER_SELECTIONS->num_slots, ==, 2);
-  action =
-    copy_plugins_action_new (
-      MIXER_SELECTIONS, track, 5);
-  undo_manager_perform (UNDO_MANAGER, action);
+static void
+check_after_step7 ()
+{
+  Track * track =
+    TRACKLIST->tracks[TRACK_POS];
+  Track * new_track =
+    TRACKLIST->tracks[NEW_TRACK_POS];
+  Channel * ch =
+    TRACKLIST->tracks[TRACK_POS]->channel;
+  Channel * new_ch = new_track->channel;
 
   /* verify that they were copied there */
   g_assert_cmpint (
@@ -290,25 +287,29 @@ test_move_plugins ()
     ch->plugins[6]->id.slot, ==, 6);
 
   /* check that the automations were copied too */
-  atl = track_get_automation_tracklist (track);
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
   g_assert_cmpint (atl->num_ats, ==, 9);
-  at = atl->ats[8];
+  AutomationTrack * at = atl->ats[8];
   g_assert_nonnull (at);
   g_assert_cmpint (at->index, ==, 8);
   g_assert_cmpint (at->num_regions, ==, 1);
-  region = at->regions[0];
+  ZRegion * region = at->regions[0];
   g_assert_cmpint (region->num_aps, ==, 2);
   g_assert_cmpint (
     region->id.track_pos, ==, track->pos);
   g_assert_cmpint (region->id.at_idx, ==, 8);
   g_assert_cmpint (region->id.idx, ==, 0);
+}
 
-  /* move the plugins to slot 7 and 8 in the next
-   * track */
-  action =
-    move_plugins_action_new (
-      MIXER_SELECTIONS, new_track, 7);
-  undo_manager_perform (UNDO_MANAGER, action);
+static void
+check_after_step8 ()
+{
+  Track * new_track =
+    TRACKLIST->tracks[NEW_TRACK_POS];
+  Channel * ch =
+    TRACKLIST->tracks[TRACK_POS]->channel;
+  Channel * new_ch = new_track->channel;
 
   /* verify that they were moved there */
   g_assert_cmpint (
@@ -322,25 +323,180 @@ test_move_plugins ()
   g_assert_nonnull (new_ch->plugins[8]);
 
   /* verify that the automation was moved too */
-  atl = track_get_automation_tracklist (new_track);
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (new_track);
   g_assert_cmpint (atl->num_ats, ==, 11);
-  at =
+  AutomationTrack * at =
     automation_tracklist_get_plugin_at (
       atl, 7, "Gain");
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
-  region = at->regions[0];
+  ZRegion * region = at->regions[0];
   g_assert_cmpint (region->num_aps, ==, 2);
   g_assert_cmpint (
     region->id.track_pos, ==, new_track->pos);
   g_assert_cmpint (region->id.at_idx, ==, at->index);
   g_assert_cmpint (region->id.idx, ==, 0);
-  ap = region->aps[0];
+  AutomationPoint * ap = region->aps[0];
   g_assert_true (
     region_identifier_is_equal (
       &region->id, &ap->region_id));
+}
+
+static void
+check_after_step9 ()
+{
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (
+      TRACKLIST->tracks[NEW_TRACK_POS]);
+
+  /* verify that they were deleted along with their
+   * automation */
+  g_assert_cmpint (
+    MIXER_SELECTIONS->num_slots, ==, 0);
+  g_assert_true (!MIXER_SELECTIONS->has_any);
+  g_assert_cmpint (atl->num_ats, ==, 7);
+  g_test_expect_message (
+    NULL, G_LOG_LEVEL_CRITICAL,
+    "* should not be reached*");
+  AutomationTrack * at =
+    automation_tracklist_get_plugin_at (
+      atl, 7, "Gain");
+  (void) at;
+  g_test_assert_expected_messages ();
+}
+
+static void
+test_move_plugins ()
+{
+  /* create a track with a plugin */
+  g_assert_cmpint (TRACKLIST->num_tracks, ==, 3);
+  UndoableAction * action =
+    create_tracks_action_new (
+      TRACK_TYPE_AUDIO_BUS,
+      PLUGIN_MANAGER->plugin_descriptors[0], NULL,
+      3, 1);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  check_after_step1 ();
+
+  /* add some automation */
+  Track * track =
+    TRACKLIST->tracks[TRACK_POS];
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  AutomationTrack * at = atl->ats[4];
+  position_set_to_bar (&start_pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * region =
+    automation_region_new (
+      &start_pos, &end_pos, track->pos, at->index,
+      0);
+  track_add_region (
+    track, region, at, -1, 1, 0);
+  arranger_object_select (
+    (ArrangerObject *) region, 1, 0);
+  action =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  check_after_step2 ();
+
+  position_set_to_bar (&ap1_pos, 1);
+  position_set_to_bar (&ap2_pos, 2);
+  AutomationPoint * ap =
+    automation_point_new_float (
+      -50.f, 0, &ap1_pos);
+  automation_region_add_ap (region, ap);
+  arranger_object_select (
+    (ArrangerObject *) ap, 1, 0);
+  action =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  check_after_step3 ();
+
+  ap =
+    automation_point_new_float (
+      -30.f, 0, &ap2_pos);
+  automation_region_add_ap (region, ap);
+  arranger_object_select (
+    (ArrangerObject *) ap, 1, 0);
+  action =
+    arranger_selections_action_new_create (
+      AUTOMATION_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  check_after_step4 ();
+
+  /* select plugin and duplicate to next slot in
+   * a new track */
+  Channel * ch = track->channel;
+  Plugin * pl = ch->plugins[0];
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, ch, pl->id.slot);
+  g_assert_cmpint (
+    MIXER_SELECTIONS->num_slots, ==, 1);
+  action =
+    copy_plugins_action_new (
+      MIXER_SELECTIONS, NULL, 1);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  check_after_step5 ();
+
+  /* copy the new plugin to the slot below */
+  Track * new_track =
+    TRACKLIST->tracks[NEW_TRACK_POS];
+  Channel * new_ch = new_track->channel;
+  action =
+    copy_plugins_action_new (
+      MIXER_SELECTIONS, new_track, 2);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  check_after_step6 ();
+
+  /* select the plugin above too and copy both to
+   * the previous track at slot 5 */
+  g_assert_cmpint (
+    MIXER_SELECTIONS->num_slots, ==, 1);
+  g_assert_true (MIXER_SELECTIONS->has_any);
+  mixer_selections_add_slot (
+    MIXER_SELECTIONS, new_ch, 1);
+  g_assert_cmpint (
+    MIXER_SELECTIONS->num_slots, ==, 2);
+  action =
+    copy_plugins_action_new (
+      MIXER_SELECTIONS, track, 5);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  check_after_step7 ();
+
+  /* move the plugins to slot 7 and 8 in the next
+   * track */
+  action =
+    move_plugins_action_new (
+      MIXER_SELECTIONS, new_track, 7);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  check_after_step8 ();
 
   /* delete these 2 plugins */
+  action =
+    delete_plugins_action_new (MIXER_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  check_after_step9 ();
+
+  /* -------- start undoing everything -------- */
+
+  /* undo deleting the plugins */
+  undo_manager_undo (UNDO_MANAGER);
+
+  /* verify that they exist along with their
+   * automation */
+  /*check_after_step8 ();*/
 }
 
 int

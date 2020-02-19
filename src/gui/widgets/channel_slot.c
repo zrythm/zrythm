@@ -509,11 +509,8 @@ on_plugin_delete (
   GtkMenuItem *       menu_item,
   ChannelSlotWidget * self)
 {
-  Track * track =
-    channel_get_track (self->channel);
   UndoableAction * ua =
-    delete_plugins_action_new (
-      MIXER_SELECTIONS, track, self->slot_index);
+    delete_plugins_action_new (MIXER_SELECTIONS);
   undo_manager_perform (UNDO_MANAGER, ua);
   EVENTS_PUSH (ET_PLUGINS_REMOVED, self->channel);
 }
