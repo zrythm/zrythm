@@ -589,6 +589,44 @@ track_processor_connect_to_plugin (
     }
 }
 
+void
+track_processor_set_track_pos (
+  TrackProcessor * self,
+  int              pos)
+{
+  self->track_pos = pos;
+
+  if (self->stereo_in)
+    {
+      port_update_track_pos (
+        self->stereo_in->l, pos);
+      port_update_track_pos (
+        self->stereo_in->r, pos);
+    }
+  if (self->stereo_out)
+    {
+      port_update_track_pos (
+        self->stereo_out->l, pos);
+      port_update_track_pos (
+        self->stereo_out->r, pos);
+    }
+  if (self->midi_in)
+    {
+      port_update_track_pos (
+        self->midi_in, pos);
+    }
+  if (self->midi_out)
+    {
+      port_update_track_pos (
+        self->midi_out, pos);
+    }
+  if (self->piano_roll)
+    {
+      port_update_track_pos (
+        self->piano_roll, pos);
+    }
+}
+
 /**
  * Frees the members of the TrackProcessor.
  */

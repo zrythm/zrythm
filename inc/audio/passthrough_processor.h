@@ -216,6 +216,14 @@ passthrough_processor_process (
   const nframes_t nframes);
 
 /**
+ * Updates the track pos of the fader.
+ */
+void
+passthrough_processor_update_track_pos (
+  PassthroughProcessor * self,
+  int     pos);
+
+/**
  * @}
  */
 

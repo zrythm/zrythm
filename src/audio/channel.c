@@ -1601,6 +1601,54 @@ channel_add_plugin (
 }
 
 /**
+ * Updates the track position in the channel and
+ * all related ports and identifiers.
+ */
+void
+channel_update_track_pos (
+  Channel * self,
+  int       pos)
+{
+  self->track_pos = pos;
+
+  Port * ports[80000];
+  int    num_ports = 0;
+  channel_append_all_ports (
+    self, ports, &num_ports, 1);
+
+  for (int i = 0; i < num_ports; i++)
+    {
+      g_warn_if_fail (ports[i]);
+      port_update_track_pos (ports[i], pos);
+    }
+
+  for (int i = 0; i < STRIP_SIZE; i++)
+    {
+      Plugin * pl = self->plugins[i];
+      if (pl)
+        {
+          plugin_set_track_pos (pl, pos);
+        }
+    }
+
+  if (self->midi_out)
+    {
+      port_update_track_pos (self->midi_out, pos);
+    }
+  if (self->stereo_out)
+    {
+      port_update_track_pos (
+        self->stereo_out->l, pos);
+      port_update_track_pos (
+        self->stereo_out->r, pos);
+    }
+
+  fader_update_track_pos (&self->fader, pos);
+  passthrough_processor_update_track_pos (
+    &self->prefader, pos);
+}
+
+/**
  * Returns the index of the last active slot.
  */
 int

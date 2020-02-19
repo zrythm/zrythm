@@ -981,29 +981,16 @@ track_set_pos (
   automation_tracklist_update_track_pos (
     &track->automation_tracklist, track);
 
+  track->mute->id.track_pos = pos;
+  track_processor_set_track_pos (
+    &track->processor, pos);
+  track->processor.track = track;
+
   /* update port identifier track positions */
   if (track->channel)
     {
       Channel * ch = track->channel;
-      Port * ports[80000];
-      int    num_ports = 0;
-      channel_append_all_ports (
-        ch, ports, &num_ports, 1);
-
-      for (int i = 0; i < num_ports; i++)
-        {
-          g_warn_if_fail (ports[i]);
-          ports[i]->id.track_pos = pos;
-        }
-
-      for (int i = 0; i < STRIP_SIZE; i++)
-        {
-          Plugin * pl = ch->plugins[i];
-          if (pl)
-            {
-              pl->id.track_pos = pos;
-            }
-        }
+      channel_update_track_pos (ch, pos);
     }
 }
 

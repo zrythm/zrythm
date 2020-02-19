@@ -585,6 +585,23 @@ port_get_dest_index (
 }
 
 /**
+ * Returns the index of the source in the source
+ * array.
+ */
+static inline int
+port_get_src_index (
+  Port * port,
+  Port * src)
+{
+  for (int i = 0; i < port->num_srcs; i++)
+    {
+      if (port->srcs[i] == src)
+        return i;
+    }
+  g_return_val_if_reached (-1);
+}
+
+/**
  * Set the multiplier for a destination by its
  * index in the dest array.
  */
@@ -770,6 +787,15 @@ port_get_num_unlocked_srcs (Port * port);
  */
 int
 port_get_num_unlocked_dests (Port * port);
+
+/**
+ * Updates the track pos on a track port and
+ * all its source/destination identifiers.
+ */
+void
+port_update_track_pos (
+  Port * port,
+  int    pos);
 
 /**
  * Apply given fader value to port.

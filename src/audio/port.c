@@ -988,6 +988,44 @@ port_disconnect_all (Port * port)
   return 0;
 }
 
+/**
+ * Updates the track pos on a track port and
+ * all its source/destination identifiers.
+ */
+void
+port_update_track_pos (
+  Port * self,
+  int    pos)
+{
+  self->id.track_pos = pos;
+  for (int i = 0; i < self->num_srcs; i++)
+    {
+      Port * src = self->srcs[i];
+      int dest_idx =
+        port_get_dest_index (src, self);
+      src->dest_ids[dest_idx].track_pos = pos;
+      g_warn_if_fail (
+        src->dests[dest_idx] == self);
+    }
+  for (int i = 0; i < self->num_dests; i++)
+    {
+      Port * dest = self->dests[i];
+      int src_idx =
+        port_get_src_index (dest, self);
+      dest->src_ids[src_idx].track_pos = pos;
+      dest->srcs[src_idx]->id.track_pos = pos;
+      g_warn_if_fail (
+        dest->srcs[src_idx] == self);
+    }
+
+  if (self->lv2_port)
+    {
+      Lv2Port * port = self->lv2_port;
+      port_identifier_copy (
+        &port->port_id, &self->id);
+    }
+}
+
 #ifdef HAVE_JACK
 void
 port_receive_midi_events_from_jack (
@@ -2330,8 +2368,7 @@ port_get_plugin (
 {
   g_return_val_if_fail (self, NULL);
 
-  Track * track =
-    port_get_track (self, 0);
+  Track * track = port_get_track (self, 0);
   if (!track && self->tmp_plugin)
     return self->tmp_plugin;
   if (!track || !track->channel)

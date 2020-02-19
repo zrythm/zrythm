@@ -366,6 +366,48 @@ fader_copy_values (
 }
 
 /**
+ * Updates the track pos of the fader.
+ */
+void
+fader_update_track_pos (
+  Fader * self,
+  int     pos)
+{
+  self->track_pos = pos;
+
+  if (self->amp)
+    {
+      port_update_track_pos (self->amp, pos);
+    }
+  if (self->balance)
+    {
+      port_update_track_pos (self->balance, pos);
+    }
+  if (self->stereo_in)
+    {
+      port_update_track_pos (
+        self->stereo_in->l, pos);
+      port_update_track_pos (
+        self->stereo_in->r, pos);
+    }
+  if (self->stereo_out)
+    {
+      port_update_track_pos (
+        self->stereo_out->l, pos);
+      port_update_track_pos (
+        self->stereo_out->r, pos);
+    }
+  if (self->midi_in)
+    {
+      port_update_track_pos (self->midi_in, pos);
+    }
+  if (self->midi_out)
+    {
+      port_update_track_pos (self->midi_out, pos);
+    }
+}
+
+/**
  * Process the Fader.
  *
  * @param start_frame The local offset in this

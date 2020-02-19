@@ -568,26 +568,39 @@ plugin_get_enabled_port (
 }
 
 /**
+ * To be called when changes to the plugin
+ * identifier were made, so we can update all
+ * children recursively.
+ */
+void
+plugin_update_identifier (
+  Plugin * self)
+{
+  /* set port identifier track poses */
+  int i;
+  for (i = 0; i < self->num_in_ports; i++)
+    {
+      port_update_track_pos (
+        self->in_ports[i], self->id.track_pos);
+    }
+  for (i = 0; i < self->num_out_ports; i++)
+    {
+      port_update_track_pos (
+        self->out_ports[i], self->id.track_pos);
+    }
+}
+
+/**
  * Sets the track and track_pos on the plugin.
  */
 void
-plugin_set_track (
+plugin_set_track_pos (
   Plugin * pl,
-  Track * tr)
+  int      pos)
 {
-  g_return_if_fail (tr);
-  pl->id.track_pos = tr->pos;
+  pl->id.track_pos = pos;
 
-  /* set port identifier track poses */
-  int i;
-  for (i = 0; i < pl->num_in_ports; i++)
-    {
-      pl->in_ports[i]->id.track_pos = tr->pos;
-    }
-  for (i = 0; i < pl->num_out_ports; i++)
-    {
-      pl->out_ports[i]->id.track_pos = tr->pos;
-    }
+  plugin_update_identifier (pl);
 }
 
 /**

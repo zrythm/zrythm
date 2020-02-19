@@ -547,6 +547,15 @@ channel_remove_plugin (
   int recalc_graph);
 
 /**
+ * Updates the track position in the channel and
+ * all related ports and identifiers.
+ */
+void
+channel_update_track_pos (
+  Channel * self,
+  int       pos);
+
+/**
  * Clones the channel recursively.
  *
  * @param track The track to use for getting the name.

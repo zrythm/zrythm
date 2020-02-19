@@ -675,7 +675,7 @@ events_process (void * data)
           }
           break;
         case RECORDING_EVENT_TYPE_START_RECORDING:
-          /*g_message ("-------- START_RECORDING");*/
+          g_message ("-------- START_RECORDING");
           handle_start_recording (ev);
           break;
         default:

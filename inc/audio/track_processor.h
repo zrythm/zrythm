@@ -231,6 +231,11 @@ track_processor_connect_to_plugin (
   TrackProcessor * self,
   Plugin         * pl);
 
+void
+track_processor_set_track_pos (
+  TrackProcessor * self,
+  int              pos);
+
 /**
  * Frees the members of the TrackProcessor.
  */

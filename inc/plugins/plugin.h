@@ -354,6 +354,15 @@ plugin_find (
   PluginIdentifier * id);
 
 /**
+ * To be called when changes to the plugin
+ * identifier were made, so we can update all
+ * children recursively.
+ */
+void
+plugin_update_identifier (
+  Plugin * self);
+
+/**
  * Updates the plugin's latency.
  */
 void
@@ -392,9 +401,9 @@ plugin_instantiate (Plugin * plugin);
  * Sets the track and track_pos on the plugin.
  */
 void
-plugin_set_track (
+plugin_set_track_pos (
   Plugin * pl,
-  Track * tr);
+  int      pos);
 
 /**
  * Process plugin.
