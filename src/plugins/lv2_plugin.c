@@ -344,6 +344,44 @@ create_port (
         {
           pi->flags |= PORT_FLAG_INTEGER;
         }
+
+      LilvNode * def;
+      LilvNode * min;
+      LilvNode * max;
+      lilv_port_get_range (
+        lv2_plugin->lilv_plugin,
+        lv2_port->lilv_port, &def, &min, &max);
+      if (max)
+        {
+          port->maxf =
+            lilv_node_as_float (max);
+          lilv_node_free (max);
+        }
+      else
+        {
+          port->maxf = 1.f;
+        }
+      if (min)
+        {
+          port->minf =
+            lilv_node_as_float (min);
+          lilv_node_free (min);
+        }
+      else
+        {
+          port->minf = 0.f;
+        }
+      if (def)
+        {
+          port->deff =
+            lilv_node_as_float (def);
+          lilv_node_free (def);
+        }
+      else
+        {
+          port->deff = port->minf;
+        }
+      port->zerof = port->minf;
     }
   else if (lilv_port_is_a (
              lv2_plugin->lilv_plugin,
