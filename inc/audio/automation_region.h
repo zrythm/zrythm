@@ -70,8 +70,9 @@ automation_region_force_sort (
  */
 void
 automation_region_add_ap (
-  ZRegion *          self,
-  AutomationPoint * ap);
+  ZRegion *         self,
+  AutomationPoint * ap,
+  int               pub_events);
 
 /**
  * Returns the AutomationPoint before the given

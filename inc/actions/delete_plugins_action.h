@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -37,17 +37,20 @@ typedef struct DeletePluginsAction
 {
   UndoableAction  parent_instance;
 
-  /** Slot to start deleting from. */
-  //int              slot;
-
-  /** Track to delete from. */
-  //int              tr_pos;
-
   /** Plugin clones.
    *
    * These must not be used in the project. They must
    * be cloned again before using. */
   MixerSelections * ms;
+
+  /**
+   * Automation tracks associated with the plugins.
+   *
+   * These are used when undoing so we can readd
+   * the automation events.
+   */
+  AutomationTrack * ats[9][8000];
+  int               num_ats[9];
 } DeletePluginsAction;
 
 UndoableAction *
@@ -56,19 +59,19 @@ delete_plugins_action_new (
 
 int
 delete_plugins_action_do (
-	DeletePluginsAction * self);
+  DeletePluginsAction * self);
 
 int
 delete_plugins_action_undo (
-	DeletePluginsAction * self);
+  DeletePluginsAction * self);
 
 char *
 delete_plugins_action_stringize (
-	DeletePluginsAction * self);
+  DeletePluginsAction * self);
 
 void
 delete_plugins_action_free (
-	DeletePluginsAction * self);
+  DeletePluginsAction * self);
 
 /**
  * @}

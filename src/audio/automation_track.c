@@ -398,8 +398,8 @@ automation_track_clone (
   dest->regions_size = (size_t) src->num_regions;
   dest->num_regions = src->num_regions;
   dest->regions =
-    malloc (dest->regions_size *
-            sizeof (ZRegion *));
+    malloc (
+      dest->regions_size * sizeof (ZRegion *));
 
   port_identifier_copy (
     &dest->port_id, &src->port_id);

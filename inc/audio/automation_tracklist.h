@@ -142,7 +142,9 @@ automation_tracklist_update_frames (
   AutomationTracklist * self);
 
 /**
- * Finds visible tracks and puts them in given array.
+ * Gets the currently visible AutomationTrack's
+ * (regardless of whether the automation tracklist
+ * is visible in the UI or not.
  */
 void
 automation_tracklist_get_visible_tracks (

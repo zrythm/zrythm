@@ -141,7 +141,7 @@ automation_arranger_widget_create_ap (
 
   /* add it to automation track */
   automation_region_add_ap (
-    region, ap);
+    region, ap, F_PUBLISH_EVENTS);
 
   /* set position to all counterparts */
   arranger_object_set_position (

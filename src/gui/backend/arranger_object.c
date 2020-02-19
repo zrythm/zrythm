@@ -1692,7 +1692,7 @@ clone_region (
                 src_ap->normalized_val,
                 &src_ap_obj->pos);
             automation_region_add_ap (
-              ar, dest_ap);
+              ar, dest_ap, F_NO_PUBLISH_EVENTS);
           }
 
         new_region = ar;

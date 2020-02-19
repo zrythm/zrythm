@@ -123,8 +123,9 @@ automation_region_force_sort (
  */
 void
 automation_region_add_ap (
-  ZRegion *          self,
-  AutomationPoint * ap)
+  ZRegion *         self,
+  AutomationPoint * ap,
+  int               pub_events)
 {
   /* add point */
   array_double_size_if_full (
@@ -145,8 +146,11 @@ automation_region_add_ap (
         self->aps[i], self, i);
     }
 
-  EVENTS_PUSH (
-    ET_ARRANGER_OBJECT_CREATED, ap);
+  if (pub_events)
+    {
+      EVENTS_PUSH (
+        ET_ARRANGER_OBJECT_CREATED, ap);
+    }
 }
 
 

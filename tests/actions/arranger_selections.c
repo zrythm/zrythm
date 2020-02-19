@@ -152,7 +152,7 @@ rebootstrap_timeline ()
     automation_point_new_float (
       AP_VAL1, AP_VAL1, &p1);
   automation_region_add_ap (
-    r, ap);
+    r, ap, F_NO_PUBLISH_EVENTS);
   arranger_selections_add_object (
     (ArrangerSelections *) AUTOMATION_SELECTIONS,
     (ArrangerObject *) ap);
@@ -160,7 +160,7 @@ rebootstrap_timeline ()
     automation_point_new_float (
       AP_VAL2, AP_VAL1, &p2);
   automation_region_add_ap (
-    r, ap);
+    r, ap, F_NO_PUBLISH_EVENTS);
   arranger_selections_add_object (
     (ArrangerSelections *) AUTOMATION_SELECTIONS,
     (ArrangerObject *) ap);

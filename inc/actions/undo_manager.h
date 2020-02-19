@@ -48,10 +48,12 @@ void
 undo_manager_redo (UndoManager * self);
 
 /**
- * Performs the action and pushes it to the undo stack.
+ * Performs the action and pushes it to the undo
+ * stack.
  */
 void
-undo_manager_perform (UndoManager *    self,
-                      UndoableAction * action);
+undo_manager_perform (
+  UndoManager *    self,
+  UndoableAction * action);
 
 #endif

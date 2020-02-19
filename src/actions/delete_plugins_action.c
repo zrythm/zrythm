@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -38,9 +38,28 @@ delete_plugins_action_new (
   ua->type =
     UA_DELETE_PLUGINS;
 
-  /*self->tr_pos = tr->pos;*/
-  /*self->slot = slot;*/
   self->ms = mixer_selections_clone (ms);
+
+  /* clone the automation tracks */
+  Track * track =
+    TRACKLIST->tracks[self->ms->track_pos];
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  for (int j = 0; j < self->ms->num_slots; j++)
+    {
+      int slot = self->ms->slots[j];
+      for (int i = 0; i < atl->num_ats; i++)
+        {
+          AutomationTrack * at = atl->ats[i];
+          if (at->port_id.owner_type !=
+                PORT_OWNER_TYPE_PLUGIN ||
+              at->port_id.plugin_slot != slot)
+            continue;
+
+          self->ats[j][self->num_ats[j]++] =
+            automation_track_clone (at);
+        }
+    }
 
   return ua;
 }
@@ -66,6 +85,31 @@ delete_plugins_action_do (
   return 0;
 }
 
+static void
+copy_regions (
+  AutomationTrack * dest,
+  AutomationTrack * src)
+{
+  dest->regions_size = (size_t) src->num_regions;
+  dest->num_regions = src->num_regions;
+  dest->regions =
+    realloc (
+      dest->regions,
+      dest->regions_size * sizeof (ZRegion *));
+
+  for (int j = 0; j < src->num_regions; j++)
+    {
+      ZRegion * src_region = src->regions[j];
+      dest->regions[j] =
+        (ZRegion *)
+        arranger_object_clone (
+          (ArrangerObject *) src_region,
+          ARRANGER_OBJECT_CLONE_COPY_MAIN);
+      region_set_automation_track (
+        dest->regions[j], dest);
+    }
+}
+
 /**
  * Deletes the plugin.
  */
@@ -74,23 +118,48 @@ delete_plugins_action_undo (
   DeletePluginsAction * self)
 {
   Plugin * pl;
-  Channel * ch =
-    TRACKLIST->tracks[self->ms->track_pos]->channel;
+  Track * track =
+    TRACKLIST->tracks[self->ms->track_pos];
+  Channel * ch = track->channel;
   g_return_val_if_fail (ch, -1);
 
   for (int i = 0; i < self->ms->num_slots; i++)
     {
+      int slot = self->ms->slots[i];
+
       /* clone the clone */
       pl = plugin_clone (self->ms->plugins[i]);
 
+      g_return_val_if_fail (
+        self->ms->plugins[i]->id.slot == slot, -1);
+
       /* add plugin to channel at original slot */
-      /* FIXME automation track info is completely
-       * lost*/
       channel_add_plugin (
-        ch, self->ms->plugins[i]->id.slot, pl,
+        ch, slot, pl,
         F_NO_CONFIRM,
         F_GEN_AUTOMATABLES,
         F_NO_RECALC_GRAPH);
+
+      /* copy automation */
+      AutomationTracklist * atl =
+        track_get_automation_tracklist (track);
+      for (int k = 0; k < self->ms->num_slots; k++)
+        {
+          for (int j = 0; j < self->num_ats[k]; j++)
+            {
+              AutomationTrack * cloned_at =
+                self->ats[k][j];
+
+              /* find corresponding automation
+               * track in track and copy regions */
+              AutomationTrack * actual_at =
+                automation_tracklist_get_plugin_at (
+                  atl, slot,
+                  cloned_at->port_id.label);
+
+              copy_regions (actual_at, cloned_at);
+            }
+        }
 
       /* select the plugin */
       mixer_selections_add_slot (
@@ -123,6 +192,15 @@ delete_plugins_action_free (
   DeletePluginsAction * self)
 {
   mixer_selections_free (self->ms);
+
+  for (int i = 0; i < self->ms->num_slots; i++)
+    {
+      for (int j = 0; j < self->num_ats[i]; j++)
+        {
+          AutomationTrack * at = self->ats[i][j];
+          automation_track_free (at);
+        }
+    }
 
   free (self);
 }

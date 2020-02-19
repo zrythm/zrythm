@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -438,6 +438,11 @@ automation_tracklist_update_frames (
     }
 }
 
+/**
+ * Gets the currently visible AutomationTrack's
+ * (regardless of whether the automation tracklist
+ * is visible in the UI or not.
+ */
 void
 automation_tracklist_get_visible_tracks (
   AutomationTracklist * self,
@@ -452,9 +457,16 @@ automation_tracklist_get_visible_tracks (
       at = self->ats[i];
       if (at->created && at->visible)
         {
-          array_append (visible_tracks,
-                        *num_visible,
-                        at);
+          if (visible_tracks)
+            {
+              array_append (
+                visible_tracks, *num_visible,
+                at);
+            }
+          else
+            {
+              (*num_visible)++;
+            }
         }
     }
 }
@@ -536,6 +548,31 @@ automation_tracklist_remove_at (
 
   array_delete (
     self->ats, self->num_ats, at);
+
+  /* if the deleted at was the last visible/created
+   * at, make the next one visible */
+  int num_visible;
+  automation_tracklist_get_visible_tracks (
+    self, NULL, &num_visible);
+  if (num_visible == 0)
+    {
+      AutomationTrack * first_invisible_at =
+        automation_tracklist_get_first_invisible_at (
+          self);
+      if (first_invisible_at)
+        {
+          if (!first_invisible_at->created)
+            first_invisible_at->created = 1;
+          first_invisible_at->visible = 1;
+
+          if (ZRYTHM_HAVE_UI)
+            {
+              EVENTS_PUSH (
+                ET_AUTOMATION_TRACK_ADDED,
+                first_invisible_at);
+            }
+        }
+    }
 
   if (free)
     free_later (at, automation_track_free);

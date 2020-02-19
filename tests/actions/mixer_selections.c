@@ -408,7 +408,8 @@ test_move_plugins ()
   AutomationPoint * ap =
     automation_point_new_float (
       -50.f, 0, &ap1_pos);
-  automation_region_add_ap (region, ap);
+  automation_region_add_ap (
+    region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, 1, 0);
   action =
@@ -421,7 +422,8 @@ test_move_plugins ()
   ap =
     automation_point_new_float (
       -30.f, 0, &ap2_pos);
-  automation_region_add_ap (region, ap);
+  automation_region_add_ap (
+    region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) ap, 1, 0);
   action =
@@ -496,7 +498,11 @@ test_move_plugins ()
 
   /* verify that they exist along with their
    * automation */
-  /*check_after_step8 ();*/
+  check_after_step8 ();
+
+  /* undo moving plugins from track 3 to track 4 */
+  undo_manager_undo (UNDO_MANAGER);
+  /*check_after_step7 ();*/
 }
 
 int

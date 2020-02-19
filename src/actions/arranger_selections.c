@@ -251,7 +251,8 @@ add_object_to_project (
         g_return_if_fail (region);
 
         /* add it to the region */
-        automation_region_add_ap (region, ap);
+        automation_region_add_ap (
+          region, ap, F_NO_PUBLISH_EVENTS);
       }
       break;
     case ARRANGER_OBJECT_TYPE_CHORD_OBJECT:
