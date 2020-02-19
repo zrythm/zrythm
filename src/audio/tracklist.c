@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -598,6 +598,13 @@ tracklist_remove_track (
   g_warn_if_fail (
     track->pos == idx);
 
+  if (track->channel)
+    {
+      channel_disconnect (
+        track->channel,
+        rm_pl, F_NO_RECALC_GRAPH);
+    }
+
   tracklist_selections_remove_track (
     TRACKLIST_SELECTIONS, track, publish_events);
   array_delete (
@@ -611,13 +618,6 @@ tracklist_remove_track (
   for (int i = 0;
        i < self->num_tracks; i++)
     track_set_pos (track, i);
-
-  if (track->channel)
-    {
-      channel_disconnect (
-        track->channel,
-        rm_pl, F_NO_RECALC_GRAPH);
-    }
 
   if (free)
     {

@@ -1435,6 +1435,8 @@ channel_remove_plugin (
 {
   Plugin * plugin = channel->plugins[pos];
   g_return_if_fail (plugin);
+  g_warn_if_fail (
+    plugin->id.track_pos == channel->track_pos);
 
   plugin_remove_ats_from_automation_tracklist (
     plugin, deleting_plugin);
@@ -1457,6 +1459,7 @@ channel_remove_plugin (
             MIXER_SELECTIONS, plugin->id.slot,
             F_PUBLISH_EVENTS);
         }
+
       /* close the UI */
       plugin_close_ui (plugin);
 

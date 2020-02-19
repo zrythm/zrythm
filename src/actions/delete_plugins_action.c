@@ -163,13 +163,24 @@ delete_plugins_action_undo (
 
       /* select the plugin */
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, ch,
-        self->ms->plugins[i]->id.slot);
+        MIXER_SELECTIONS, ch, pl->id.slot);
+
+      /* show it if it was visible before */
+      if (ZRYTHM_HAVE_UI &&
+          self->ms->plugins[i]->visible)
+        {
+      g_message ("visible plugin at %d",
+        pl->id.slot);
+          pl->visible = 1;
+          EVENTS_PUSH (
+            ET_PLUGIN_VISIBILITY_CHANGED, pl);
+        }
     }
 
   mixer_recalc_graph (MIXER);
 
   EVENTS_PUSH (ET_PLUGINS_ADDED, ch);
+  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
 
   return 0;
 }

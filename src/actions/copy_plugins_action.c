@@ -185,15 +185,13 @@ copy_plugins_action_do (
       mixer_selections_add_slot (
         MIXER_SELECTIONS, ch, new_slot);
 
-      /* show it if necessary */
+      /* show it if it was visible before */
       if (ZRYTHM_HAVE_UI &&
-          g_settings_get_int (
-            S_PREFERENCES,
-            "open-plugin-uis-on-instantiate"))
+          self->ms->plugins[i]->visible)
         {
           pl->visible = 1;
-          EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED,
-                       pl);
+          EVENTS_PUSH (
+            ET_PLUGIN_VISIBILITY_CHANGED, pl);
         }
     }
 

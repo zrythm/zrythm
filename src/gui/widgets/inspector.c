@@ -63,7 +63,8 @@ inspector_widget_refresh (
            SELECTION_TYPE_PLUGIN)
     {
       gtk_stack_set_visible_child (
-        GTK_STACK (self->stack), GTK_WIDGET (self->plugin));
+        GTK_STACK (self->stack),
+        GTK_WIDGET (self->plugin));
       inspector_plugin_widget_show (
         self->plugin, MIXER_SELECTIONS);
     }

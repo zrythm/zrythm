@@ -213,14 +213,13 @@ plugin_remove_ats_from_automation_tracklist (
   for (int i = atl->num_ats - 1; i >= 0; i--)
     {
       AutomationTrack * at = atl->ats[i];
-      Port * port =
-        automation_track_get_port (at);
-      if (port->id.owner_type ==
+      if (at->port_id.owner_type ==
             PORT_OWNER_TYPE_PLUGIN ||
-          port->id.flags &
+          at->port_id.flags &
             PORT_FLAG_PLUGIN_CONTROL)
         {
-          if (port->id.plugin_slot == pl->id.slot)
+          if (at->port_id.plugin_slot ==
+                pl->id.slot)
             {
               automation_tracklist_remove_at (
                 atl, at, free_ats);
@@ -788,8 +787,7 @@ plugin_is_selected (
   Plugin * pl)
 {
   return mixer_selections_contains_plugin (
-    MIXER_SELECTIONS,
-    pl);
+    MIXER_SELECTIONS, pl);
 }
 
 /**
@@ -876,6 +874,7 @@ plugin_clone (
   clone->id.slot = pl->id.slot;
   clone->id.track_pos = pl->id.track_pos;
   clone->magic = PLUGIN_MAGIC;
+  clone->visible = pl->visible;
 
   return clone;
 }

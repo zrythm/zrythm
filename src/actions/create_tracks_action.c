@@ -265,6 +265,8 @@ create_tracks_action_do (
     {
       ret = create (self, i, 1);
       g_return_val_if_fail (!ret, -1);
+
+      /* TODO select each plugin that was selected */
     }
 
   EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
@@ -289,10 +291,8 @@ create_tracks_action_undo (
       g_return_val_if_fail (track, -1);
 
       tracklist_remove_track (
-        TRACKLIST,
-        track,
-        F_REMOVE_PL,
-        F_FREE,
+        TRACKLIST, track,
+        F_REMOVE_PL, F_FREE,
         F_NO_PUBLISH_EVENTS,
         F_NO_RECALC_GRAPH);
     }

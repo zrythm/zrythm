@@ -48,7 +48,8 @@ move_plugins_action_new (
     self->is_new_channel = 1;
 
   self->ms = mixer_selections_clone (ms);
-  g_warn_if_fail (ms->slots[0] == self->ms->slots[0]);
+  g_warn_if_fail (
+    ms->slots[0] == self->ms->slots[0]);
 
   return ua;
 }
@@ -60,10 +61,51 @@ move_plugins_action_do (
   Plugin * pl;
   Channel * from_ch =
     TRACKLIST->tracks[self->from_track_pos]->channel;
-  Channel * to_ch =
-    TRACKLIST->tracks[self->to_track_pos]->channel;
   g_return_val_if_fail (from_ch, -1);
-  g_return_val_if_fail (to_ch, -1);
+  Channel * to_ch = NULL;
+  if (self->is_new_channel)
+    {
+      /* get the clone */
+      Plugin * clone_pl = self->ms->plugins[0];
+
+      /* add the plugin to a new track */
+      char * str =
+        g_strdup_printf (
+          "%s (Copy)",
+          clone_pl->descr->name);
+      Track * new_track =
+        track_new (
+          plugin_descriptor_is_instrument (
+            clone_pl->descr) ?
+          TRACK_TYPE_INSTRUMENT :
+          TRACK_TYPE_AUDIO_BUS,
+          TRACKLIST->num_tracks, str,
+          F_WITH_LANE);
+      g_free (str);
+      g_return_val_if_fail (new_track, -1);
+
+      /* create a track and add it to
+       * tracklist */
+      tracklist_insert_track (
+        TRACKLIST, new_track,
+        TRACKLIST->num_tracks,
+        F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
+
+      EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
+
+      /* remember track pos */
+      self->to_track_pos = new_track->pos;
+
+      to_ch = new_track->channel;
+    }
+  else
+    {
+      to_ch =
+        TRACKLIST->tracks[self->to_track_pos]->
+          channel;
+      g_return_val_if_fail (to_ch, -1);
+    }
 
   /*int highest_slot =*/
     /*mixer_selections_get_highest_slot (self->ms);*/
@@ -84,10 +126,6 @@ move_plugins_action_do (
         pl &&
         pl->id.track_pos == from_ch->track_pos);
 
-      /* get difference in slots */
-      /*diff = self->ms->slots[i] - highest_slot;*/
-      /*g_return_val_if_fail (diff > -1, -1);*/
-
       /* move and select plugin to to_slot + diff */
       to_slot = self->to_slot + i;
       mixer_move_plugin (
@@ -96,6 +134,8 @@ move_plugins_action_do (
       mixer_selections_add_slot (
         MIXER_SELECTIONS, to_ch, to_slot);
     }
+
+  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, to_ch);
 
   return 0;
 }
@@ -114,8 +154,7 @@ move_plugins_action_undo (
 
   /* get the channel the plugins were moved to */
   Channel * current_ch =
-    TRACKLIST->tracks[
-      self->to_track_pos]->channel;
+    TRACKLIST->tracks[self->to_track_pos]->channel;
   g_return_val_if_fail (current_ch, -1);
 
   /* clear selections to readd each plugin moved */
@@ -137,6 +176,16 @@ move_plugins_action_undo (
       mixer_selections_add_slot (
         MIXER_SELECTIONS, ch, pl->id.slot);
     }
+
+  if (self->is_new_channel)
+    {
+      tracklist_remove_track (
+        TRACKLIST, current_ch->track, F_REMOVE_PL,
+        F_FREE, F_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
+    }
+
+  EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);
 
   return 0;
 }
