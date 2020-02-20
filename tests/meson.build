@@ -54,6 +54,7 @@ if get_option ('enable_tests')
     ['audio/region', true],
     ['audio/track', true],
     ['utils/arrays', true],
+    ['utils/general', true],
     ]
 
   if os_linux

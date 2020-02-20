@@ -23,6 +23,7 @@ util_srcs = [
   'dialogs.c',
   'dictionary.c',
   'env.c',
+  'general.c',
   'gtk.c',
   'io.c',
   'lilv.c',

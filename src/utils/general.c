@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,33 +17,26 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * General utils.
- */
-
-#ifndef __UTILS_GENERAL_H__
-#define __UTILS_GENERAL_H__
-
-/**
- * @addtogroup utils
- *
- * @{
- */
-
-#define RETURN_OK return 0;
-#define RETURN_ERROR return 1;
+#include "utils/general.h"
 
 /**
  * From https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightLinear.
  */
 unsigned int
 utils_get_uint_from_bitfield_val (
-  unsigned int bitfield);
+  unsigned int bitfield)
+{
+  /* 32-bit word input to count zero bits on
+   * right */
+  unsigned int v = bitfield;
+  unsigned int c = 32; // c will be the number of zero bits on the right
+  v &= (unsigned int) (- (signed) (v));
+  if (v) c--;
+  if (v & 0x0000FFFF) c -= 16;
+  if (v & 0x00FF00FF) c -= 8;
+  if (v & 0x0F0F0F0F) c -= 4;
+  if (v & 0x33333333) c -= 2;
+  if (v & 0x55555555) c -= 1;
 
-/**
- * @}
- */
-
-#endif
+  return c;
+}

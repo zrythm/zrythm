@@ -29,6 +29,7 @@
 #ifndef __AUDIO_REGION_IDENTIFIER_H__
 #define __AUDIO_REGION_IDENTIFIER_H__
 
+#include "utils/general.h"
 #include "utils/yaml.h"
 
 /**
@@ -141,25 +142,13 @@ static inline const char *
 region_identifier_get_region_type_name (
   RegionType type)
 {
-  switch (type)
-    {
-    case REGION_TYPE_MIDI:
-      return
-        region_type_bitvals[0].name;
-    case REGION_TYPE_AUDIO:
-      return
-        region_type_bitvals[1].name;
-    case REGION_TYPE_AUTOMATION:
-      return
-        region_type_bitvals[2].name;
-    case REGION_TYPE_CHORD:
-      return
-        region_type_bitvals[3].name;
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-  g_return_val_if_reached (NULL);
+  g_return_val_if_fail (
+    type >= REGION_TYPE_MIDI &&
+      type <= REGION_TYPE_CHORD, NULL);
+
+  return
+    region_type_bitvals[
+      utils_get_uint_from_bitfield_val (type)].name;
 }
 
 static inline void
