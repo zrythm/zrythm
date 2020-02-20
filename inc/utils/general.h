@@ -24,5 +24,10 @@
  *
  */
 
+#ifndef __UTILS_GENERAL_H__
+#define __UTILS_GENERAL_H__
+
 #define RETURN_OK return 0;
 #define RETURN_ERROR return 1;
+
+#endif

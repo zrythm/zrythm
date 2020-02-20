@@ -54,6 +54,11 @@ typedef struct RecordingManager
    * allocation.
    */
   ObjectPool *       event_obj_pool;
+
+  /** Recorded region identifiers, to be used for
+   * creating the undoable actions. */
+  RegionIdentifier   recorded_ids[8000];
+  int                num_recorded_ids;
 } RecordingManager;
 
 /**

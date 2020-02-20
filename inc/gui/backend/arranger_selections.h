@@ -129,8 +129,8 @@ arranger_selections_add_object (
   ArrangerObject *     obj);
 
 /**
- * Sets the values of each object in the dest selections
- * to the values in the src selections.
+ * Sets the values of each object in the dest
+ * selections to the values in the src selections.
  */
 void
 arranger_selections_set_from_selections (

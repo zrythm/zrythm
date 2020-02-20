@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/backend/arranger_object.h"
+#include "actions/arranger_selections.h"
 #include "audio/audio_region.h"
 #include "audio/clip.h"
 #include "audio/engine.h"
@@ -25,6 +25,7 @@
 #include "audio/recording_manager.h"
 #include "audio/track.h"
 #include "audio/transport.h"
+#include "gui/backend/arranger_object.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"
@@ -32,6 +33,71 @@
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
+
+/**
+ * Adds the region's identifier to the recorded
+ * identifiers (to be used for creating the undoable
+ * action when recording stops.
+ */
+static void
+add_recorded_id (
+  RecordingManager * self,
+  ZRegion *          region)
+{
+  /*region_identifier_print (&region->id);*/
+  region_identifier_copy (
+    &self->recorded_ids[self->num_recorded_ids],
+    &region->id);
+  self->num_recorded_ids++;
+}
+
+static void
+on_stop_recording (
+  RecordingManager * self)
+{
+  g_message ("----- stopped recording");
+
+  /* cache the current selections */
+  ArrangerSelections * prev_selections =
+    arranger_selections_clone (
+      (ArrangerSelections *) TL_SELECTIONS);
+
+  /* select all the recorded regions */
+  arranger_selections_clear (
+    (ArrangerSelections *) TL_SELECTIONS);
+  for (int i = 0; i < self->num_recorded_ids; i++)
+    {
+      RegionIdentifier * id = &self->recorded_ids[i];
+      /*region_identifier_print (id);*/
+      ZRegion * region = region_find (id);
+      g_return_if_fail (region);
+      arranger_selections_add_object (
+        (ArrangerSelections *) TL_SELECTIONS,
+        (ArrangerObject *) region);
+    }
+
+  /* perform the create action */
+  UndoableAction * action =
+    arranger_selections_action_new_create (
+      TL_SELECTIONS);
+  undo_manager_perform (UNDO_MANAGER, action);
+
+  /* restore the selections */
+  arranger_selections_clear (
+    (ArrangerSelections *) TL_SELECTIONS);
+  int num_objs;
+  ArrangerObject ** objs =
+    arranger_selections_get_all_objects (
+      prev_selections, &num_objs);
+  for (int i = 0; i < num_objs; i++)
+    {
+      ArrangerObject * obj =
+        arranger_object_find (objs[i]);
+      g_return_if_fail (obj);
+      arranger_object_select (
+        obj, F_SELECT, F_APPEND);
+    }
+}
 
 /**
  * Handles the recording logic inside the process
@@ -278,6 +344,8 @@ handle_audio_event (
         new_lane_pos, F_GEN_NAME,
         F_PUBLISH_EVENTS);
       region = new_region;
+      add_recorded_id (
+        RECORDING_MANAGER, new_region);
 
       clip =
         audio_region_get_clip (region);
@@ -486,6 +554,8 @@ handle_midi_event (
         tr, new_region, NULL,
         new_lane_pos, F_GEN_NAME,
         F_PUBLISH_EVENTS);
+      add_recorded_id (
+        RECORDING_MANAGER, new_region);
       region = new_region;
     }
   else /* loop not met */
@@ -607,6 +677,7 @@ handle_start_recording (
         F_GEN_NAME, F_PUBLISH_EVENTS);
 
       tr->recording_region = region;
+      add_recorded_id (RECORDING_MANAGER, region);
     }
   else if (tr->type == TRACK_TYPE_AUDIO)
     {
@@ -623,6 +694,7 @@ handle_start_recording (
         F_GEN_NAME, F_PUBLISH_EVENTS);
 
       tr->recording_region = region;
+      add_recorded_id (RECORDING_MANAGER, region);
     }
 }
 
@@ -666,16 +738,26 @@ events_process (void * data)
           handle_audio_event (ev);
           break;
         case RECORDING_EVENT_TYPE_STOP_RECORDING:
-          /*g_message ("-------- STOP RECORDING");*/
+          g_message ("-------- STOP RECORDING");
           {
             Track * track =
               track_get_from_name (ev->track_name);
             g_warn_if_fail (track);
+            if (self->is_recording == 1)
+              {
+                on_stop_recording (self);
+              }
+            self->is_recording = 0;
             track->recording_region = NULL;
           }
           break;
         case RECORDING_EVENT_TYPE_START_RECORDING:
           g_message ("-------- START_RECORDING");
+          if (!self->is_recording)
+            {
+              self->num_recorded_ids = 0;
+            }
+          self->is_recording = 1;
           handle_start_recording (ev);
           break;
         default:

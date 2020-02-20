@@ -47,10 +47,10 @@
  */
 typedef enum RegionType
 {
-  REGION_TYPE_MIDI = 0x01,
-  REGION_TYPE_AUDIO = 0x02,
-  REGION_TYPE_AUTOMATION = 0x04,
-  REGION_TYPE_CHORD = 0x08,
+  REGION_TYPE_MIDI = 1 << 0,
+  REGION_TYPE_AUDIO = 1 << 1,
+  REGION_TYPE_AUTOMATION = 1 << 2,
+  REGION_TYPE_CHORD = 1 << 3,
 } RegionType;
 
 static const cyaml_bitdef_t
@@ -135,6 +135,45 @@ region_identifier_copy (
   dest->lane_pos = src->lane_pos;
   dest->at_idx = src->at_idx;
   dest->type = src->type;
+}
+
+static inline const char *
+region_identifier_get_region_type_name (
+  RegionType type)
+{
+  switch (type)
+    {
+    case REGION_TYPE_MIDI:
+      return
+        region_type_bitvals[0].name;
+    case REGION_TYPE_AUDIO:
+      return
+        region_type_bitvals[1].name;
+    case REGION_TYPE_AUTOMATION:
+      return
+        region_type_bitvals[2].name;
+    case REGION_TYPE_CHORD:
+      return
+        region_type_bitvals[3].name;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+  g_return_val_if_reached (NULL);
+}
+
+static inline void
+region_identifier_print (
+  const RegionIdentifier * self)
+{
+  g_message (
+    "Region identifier: "
+    "type: %s, track pos %d, lane pos %d, "
+    "at index %d, index %d",
+    region_identifier_get_region_type_name (
+      self->type),
+    self->track_pos, self->lane_pos, self->at_idx,
+    self->idx);
 }
 
 /**

@@ -1027,8 +1027,8 @@ region_draw (
           region_get_lane_full_rect (
             self, &full_rect);
 
-          g_message ("drawing lane %s",
-            self->name);
+          /*g_message ("drawing lane %s",*/
+            /*self->name);*/
         }
       else if (i == REGION_COUNTERPART_MAIN)
         {
