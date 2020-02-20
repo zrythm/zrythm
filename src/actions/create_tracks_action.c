@@ -284,7 +284,7 @@ create_tracks_action_undo (
   CreateTracksAction * self)
 {
   Track * track;
-  for (int i = 0; i < self->num_tracks; i++)
+  for (int i = self->num_tracks - 1; i >= 0; i--)
     {
       track =
         TRACKLIST->tracks[self->pos + i];

@@ -2006,8 +2006,16 @@ port_sum_signal_from_inputs (
             continue;
 
           float minf, maxf, depth_range;
-          maxf = port->maxf;
-          minf = port->minf;
+          if (port->id.type ==  TYPE_AUDIO)
+            {
+              minf = -1.f;
+              maxf = 1.f;
+            }
+          else if (port->id.type == TYPE_CV)
+            {
+              maxf = port->maxf;
+              minf = port->minf;
+            }
           depth_range =
             (maxf - minf) / 2.f;
 

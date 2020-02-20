@@ -149,6 +149,8 @@ live_waveform_draw_cb (
           lbuf[lstart_index + i],
           rbuf[rstart_index + i]);
 
+      val = - val;
+
       cairo_line_to (
         cr, width * ((double) i / nframes),
         half_height + val * half_height);

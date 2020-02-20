@@ -240,6 +240,9 @@ channel_fields_schema[] =
     Channel, stereo_out,
     stereo_ports_fields_schema),
   CYAML_FIELD_INT (
+    "has_output", CYAML_FLAG_DEFAULT,
+    Channel, has_output),
+  CYAML_FIELD_INT (
     "output_pos", CYAML_FLAG_DEFAULT,
     Channel, output_pos),
   CYAML_FIELD_INT (
