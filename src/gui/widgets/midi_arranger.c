@@ -81,8 +81,8 @@ midi_arranger_widget_get_note_at_y (double y)
 #endif
 
 /**
- * Called on drag begin in parent when background is double
- * clicked (i.e., a note is created).
+ * Called on drag begin in parent when background is
+ * double clicked (i.e., a note is created).
  * @param pos The absolute position in the piano
  *   roll.
  */

@@ -3465,15 +3465,16 @@ on_drag_end_midi (
       /* if something was clicked with ctrl without
        * moving*/
       if (self->ctrl_held)
-        if (self->start_object &&
-            arranger_object_is_selected (
-              self->start_object))
-          {
-            /* deselect it */
-            arranger_object_select (
-              self->start_object,
-              F_NO_SELECT, F_APPEND);
-          }
+        {
+          if (self->start_object &&
+              self->start_object_was_selected)
+            {
+              /* deselect it */
+              arranger_object_select (
+                self->start_object,
+                F_NO_SELECT, F_APPEND);
+            }
+        }
     }
       break;
     case UI_OVERLAY_ACTION_MOVING:
@@ -3562,8 +3563,7 @@ on_drag_end_chord (
         if (self->ctrl_held)
           {
             if (self->start_object &&
-                arranger_object_is_selected (
-                  self->start_object))
+                self->start_object_was_selected)
               {
                 /*[> deselect it <]*/
                 arranger_object_select (
