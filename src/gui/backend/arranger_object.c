@@ -612,6 +612,10 @@ arranger_object_move (
 {
   if (arranger_object_type_has_length (self->type))
     {
+      long length_frames =
+        arranger_object_get_length_in_frames (
+          self);
+
       /* start pos */
       Position tmp;
       if (use_cached_pos)
@@ -628,14 +632,16 @@ arranger_object_move (
         F_NO_CACHED, F_NO_VALIDATE);
 
       /* end pos */
+#if 0
       if (use_cached_pos)
         position_set_to_pos (
           &tmp, &self->cache_end_pos);
       else
         position_set_to_pos (
           &tmp, &self->end_pos);
-      position_add_ticks (
-        &tmp, ticks);
+#endif
+      position_add_frames (
+        &tmp, length_frames);
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_END,
