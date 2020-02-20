@@ -931,7 +931,13 @@ channel_update_output (
       break;
     }
 
-  ch->output_pos = output->pos;
+  if (output)
+    {
+      ch->has_output = 1;
+      ch->output_pos = output->pos;
+    }
+  else
+    ch->has_output = 0;
 
   mixer_recalc_graph (MIXER);
 
