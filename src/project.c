@@ -947,9 +947,12 @@ project_save (
             continue;
 
           /* save state */
-          char tmp[200];
+          char tr_name[900];
+          io_escape_dir_name (
+            tr_name, track->name);
+          char tmp[980];
           sprintf (
-            tmp, "%s_%d", track->name, j);
+            tmp, "%s_%d", tr_name, j);
           char * state_dir_plugin =
             g_build_filename (
               states_dir, tmp, NULL);

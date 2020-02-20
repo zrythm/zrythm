@@ -2142,11 +2142,12 @@ lv2_plugin_save_state_to_file (
 
   g_return_val_if_fail (state, -1);
 
+  char * escaped_name =
+    plugin_get_escaped_name (lv2_plugin->plugin);
   char * label =
     g_strdup_printf (
-      "%s.ttl",
-      lv2_plugin->plugin->descr->name);
-  /* FIXME check for return value */
+      "%s.ttl", escaped_name);
+  g_free (escaped_name);
   int rc =
     lilv_state_save (
       LILV_WORLD, &lv2_plugin->map,

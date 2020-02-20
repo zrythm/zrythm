@@ -519,6 +519,18 @@ plugin_set_ui_refresh_rate (
 }
 
 /**
+ * Returns the escaped name of the plugin.
+ */
+char *
+plugin_get_escaped_name (
+  Plugin * pl)
+{
+  char tmp[900];
+  io_escape_dir_name (tmp, pl->descr->name);
+  return g_strdup (tmp);
+}
+
+/**
  * Generates automatables for the plugin.
  *
  * Plugin must be instantiated already.
@@ -819,10 +831,12 @@ plugin_clone (
        * lilv_state_new_from_instance() handles files and externals, too */
 
       /* save state to file */
+      char * escaped_name =
+        plugin_get_escaped_name (pl);
       char * tmp =
         g_strdup_printf (
-          "tmp_%s_XXXXXX",
-          pl->descr->name);
+          "tmp_%s_XXXXXX", escaped_name);
+      g_free (escaped_name);
       char * states_dir =
         project_get_states_dir (
           PROJECT, PROJECT->backup_dir != NULL);

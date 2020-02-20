@@ -374,3 +374,35 @@ io_open_directory (
   system (command);
   g_message ("executed: %s", command);
 }
+
+/**
+ * Returns a clone of the given string after
+ * removing forbidden characters.
+ */
+void
+io_escape_dir_name (
+  char *       dest,
+  const char * dir)
+{
+  int len = strlen (dir);
+  strcpy (dest, dir);
+  for (int i = len - 1; i >= 0; i--)
+    {
+      if (dest[i] == '/' ||
+          dest[i] == '>' ||
+          dest[i] == '<' ||
+          dest[i] == '|' ||
+          dest[i] == ':' ||
+          dest[i] == '&' ||
+          dest[i] == '(' ||
+          dest[i] == ')' ||
+          dest[i] == ';' ||
+          dest[i] == '\\')
+        {
+          for (int j = i; j < len; j++)
+            {
+              dest[j] = dest[j + 1];
+            }
+        }
+    }
+}

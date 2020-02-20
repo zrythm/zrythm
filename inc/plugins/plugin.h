@@ -334,6 +334,13 @@ plugin_move_automation (
   int       new_slot);
 
 /**
+ * Returns the escaped name of the plugin.
+ */
+char *
+plugin_get_escaped_name (
+  Plugin * pl);
+
+/**
  * Returns if the Plugin has a supported custom
  * UI.
  */

@@ -150,6 +150,15 @@ io_open_directory (
   const char * path);
 
 /**
+ * Returns a clone of the given string after
+ * removing forbidden characters.
+ */
+void
+io_escape_dir_name (
+  char *       dest,
+  const char * dir);
+
+/**
  * @}
  */
 
