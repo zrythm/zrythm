@@ -616,6 +616,9 @@ arranger_object_print (
  * Moves the object by the given amount of
  * ticks.
  *
+ * FIXME remove use_cached_pos and find what is
+ * using it.
+ *
  * @param use_cached_pos Add the ticks to the cached
  *   Position instead of its current Position.
  */
@@ -647,16 +650,29 @@ arranger_object_move (
         F_NO_CACHED, F_NO_VALIDATE);
 
       /* end pos */
-#if 0
-      if (use_cached_pos)
-        position_set_to_pos (
-          &tmp, &self->cache_end_pos);
+      if (self->type == TYPE (REGION))
+        {
+          /* audio regions need the exact
+           * number of frames to match the clip.
+           *
+           * this should be used for all
+           * objects but currently moving objects
+           * before 1.1.1.1 causes bugs hence this
+           * (temporary) if statement */
+          position_add_frames (
+            &tmp, length_frames);
+        }
       else
-        position_set_to_pos (
-          &tmp, &self->end_pos);
-#endif
-      position_add_frames (
-        &tmp, length_frames);
+        {
+          if (use_cached_pos)
+            position_set_to_pos (
+              &tmp, &self->cache_end_pos);
+          else
+            position_set_to_pos (
+              &tmp, &self->end_pos);
+          position_add_ticks (
+            &tmp, ticks);
+        }
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_END,
