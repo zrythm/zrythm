@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -120,47 +120,6 @@ chord_selections_paste_to_pos (
         region, cp);
     }
 #undef DIFF
-}
-
-static int
-sort_chords (
-  const void * _a,
-  const void * _b)
-{
-  ChordObject * a =
-    *(ChordObject * const *) _a;
-  ChordObject * b =
-    *(ChordObject * const *)_b;
-
-  /* region index doesn't really matter */
-  return a->index - b->index;
-}
-
-static int
-sort_chords_desc (
-  const void * a,
-  const void * b)
-{
-  return - sort_chords (a, b);
-}
-
-/**
- * Sorts the selections by their indices (eg, for
- * regions, their track indices, then the lane
- * indices, then the index in the lane).
- *
- * @param desc Descending or not.
- */
-void
-chord_selections_sort_by_indices (
-  ChordSelections * self,
-  int               desc)
-{
-  qsort (
-    self->chord_objects,
-    (size_t) self->num_chord_objects,
-    sizeof (ChordObject *),
-    desc ? sort_chords_desc : sort_chords);
 }
 
 SERIALIZE_SRC (

@@ -73,47 +73,6 @@ automation_selections_paste_to_pos (
 #undef DIFF
 }
 
-static int
-sort_aps (
-  const void * _a,
-  const void * _b)
-{
-  AutomationPoint * a =
-    *(AutomationPoint * const *) _a;
-  AutomationPoint * b =
-    *(AutomationPoint * const *)_b;
-
-  /* region index doesn't really matter */
-  return a->index - b->index;
-}
-
-static int
-sort_aps_desc (
-  const void * a,
-  const void * b)
-{
-  return - sort_aps (a, b);
-}
-
-/**
- * Sorts the selections by their indices (eg, for
- * regions, their track indices, then the lane
- * indices, then the index in the lane).
- *
- * @param desc Descending or not.
- */
-void
-automation_selections_sort_by_indices (
-  AutomationSelections * self,
-  int                  desc)
-{
-  qsort (
-    self->automation_points,
-    (size_t) self->num_automation_points,
-    sizeof (AutomationPoint *),
-    desc ? sort_aps_desc : sort_aps);
-}
-
 SERIALIZE_SRC (
   AutomationSelections, automation_selections)
 DESERIALIZE_SRC (
