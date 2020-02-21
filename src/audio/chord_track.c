@@ -75,9 +75,9 @@ chord_track_add_scale (
   array_double_size_if_full (
     track->scales, track->num_scales,
     track->scales_size, ScaleObject *);
-  array_append (track->scales,
-                track->num_scales,
-                scale);
+  array_append (
+    track->scales, track->num_scales, scale);
+  scale->index = track->num_scales - 1;
 
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, scale);
 }
@@ -173,6 +173,8 @@ chord_track_remove_scale (
     self->scales, self->num_scales, scale);
   if (free)
     free_later (scale, arranger_object_free);
+
+  scale->index = -1;
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_REMOVED,

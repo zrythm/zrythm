@@ -189,6 +189,47 @@ midi_arranger_selections_paste_to_pos (
 #undef DIFF
 }
 
+static int
+sort_midi_notes_func (
+  const void * _a,
+  const void * _b)
+{
+  MidiNote * a =
+    *(MidiNote * const *) _a;
+  MidiNote * b =
+    *(MidiNote * const *)_b;
+
+  /* region index doesn't really matter */
+  return a->pos - b->pos;
+}
+
+static int
+sort_midi_notes_desc (
+  const void * a,
+  const void * b)
+{
+  return - sort_midi_notes_func (a, b);
+}
+
+/**
+ * Sorts the selections by their indices (eg, for
+ * regions, their track indices, then the lane
+ * indices, then the index in the lane).
+ *
+ * @param desc Descending or not.
+ */
+void
+midi_arranger_selections_sort_by_indices (
+  MidiArrangerSelections * self,
+  int                  desc)
+{
+  qsort (
+    self->midi_notes, (size_t) self->num_midi_notes,
+    sizeof (MidiNote *),
+    desc ? sort_midi_notes_desc :
+      sort_midi_notes_func);
+}
+
 SERIALIZE_SRC (MidiArrangerSelections,
                midi_arranger_selections)
 DESERIALIZE_SRC (MidiArrangerSelections,

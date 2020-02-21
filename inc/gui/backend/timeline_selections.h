@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -134,6 +134,18 @@ timeline_selections_get_last_track (
 void
 timeline_selections_set_vis_track_indices (
   TimelineSelections * ts);
+
+/**
+ * Sorts the selections by their indices (eg, for
+ * regions, their track indices, then the lane
+ * indices, then the index in the lane).
+ *
+ * @param desc Descending or not.
+ */
+void
+timeline_selections_sort_by_indices (
+  TimelineSelections * sel,
+  int                  desc);
 
 /**
  * Returns if the selections can be pasted.

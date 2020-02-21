@@ -79,7 +79,8 @@ typedef struct Marker
   /** Name of Marker to be displayed in the UI. */
   char *            name;
 
-  /** Position of Track this ChordObject is in. */
+  /** Position of the marker track this marker is
+   * in. */
   int               track_pos;
 
   /** Index in the track. */

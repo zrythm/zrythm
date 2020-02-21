@@ -406,6 +406,50 @@ arranger_selections_clone (
 }
 
 /**
+ * Sorts the selections by their indices (eg, for
+ * regions, their track indices, then the lane
+ * indices, then the index in the lane).
+ *
+ * @param desc Descending or not.
+ */
+void
+arranger_selections_sort_by_indices (
+  ArrangerSelections * self,
+  int                  desc)
+{
+  TimelineSelections * ts;
+  ChordSelections * cs;
+  MidiArrangerSelections * mas;
+  AutomationSelections * as;
+  switch (self->type)
+    {
+    case TYPE (TIMELINE):
+      ts = (TimelineSelections *) self;
+      timeline_selections_sort_by_indices (
+        ts, desc);
+      break;
+    case TYPE (MIDI):
+      mas = (MidiArrangerSelections *) self;
+      midi_arranger_selections_sort_by_indices (
+        mas, desc);
+      break;
+    case TYPE (AUTOMATION):
+      as = (AutomationSelections *) self;
+      automation_selections_sort_by_indices (
+        as, desc);
+      break;
+    case TYPE (CHORD):
+      cs = (ChordSelections *) self;
+      chord_selections_sort_by_indices (
+        cs, desc);
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+}
+
+/**
  * Returns if there are any selections.
  */
 int

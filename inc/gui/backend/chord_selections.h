@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -99,6 +99,18 @@ void
 chord_selections_paste_to_pos (
   ChordSelections * ts,
   Position *        playhead);
+
+/**
+ * Sorts the selections by their indices (eg, for
+ * regions, their track indices, then the lane
+ * indices, then the index in the lane).
+ *
+ * @param desc Descending or not.
+ */
+void
+chord_selections_sort_by_indices (
+  ChordSelections * self,
+  int               desc);
 
 SERIALIZE_INC (ChordSelections,
                chord_selections)

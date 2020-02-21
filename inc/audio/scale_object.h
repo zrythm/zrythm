@@ -57,6 +57,8 @@ typedef struct ScaleObject
 
   MusicalScale *  scale;
 
+  int             index;
+
   /** Cache layout for drawing the name. */
   PangoLayout *      layout;
 } ScaleObject;
@@ -68,6 +70,9 @@ static const cyaml_schema_field_t
     "base", CYAML_FLAG_DEFAULT,
     ScaleObject, base,
     arranger_object_fields_schema),
+  CYAML_FIELD_INT (
+    "index", CYAML_FLAG_DEFAULT,
+    ScaleObject, index),
   CYAML_FIELD_MAPPING_PTR (
     "scale", CYAML_FLAG_POINTER,
     ScaleObject, scale,

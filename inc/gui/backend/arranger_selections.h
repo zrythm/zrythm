@@ -138,6 +138,18 @@ arranger_selections_set_from_selections (
   ArrangerSelections * src);
 
 /**
+ * Sorts the selections by their indices (eg, for
+ * regions, their track indices, then the lane
+ * indices, then the index in the lane).
+ *
+ * @param desc Descending or not.
+ */
+void
+arranger_selections_sort_by_indices (
+  ArrangerSelections * sel,
+  int                  desc);
+
+/**
  * Clone the struct for copying, undoing, etc.
  */
 ArrangerSelections *

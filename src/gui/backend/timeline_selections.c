@@ -472,6 +472,130 @@ timeline_selections_paste_to_pos (
 #undef DIFF
 }
 
+static int
+sort_regions_func (
+  const void * _a,
+  const void * _b)
+{
+  ZRegion * a =
+    *(ZRegion * const *) _a;
+  ZRegion * b =
+    *(ZRegion * const *)_b;
+  if (a->id.track_pos < b->id.track_pos)
+    return -1;
+  else if (a->id.track_pos > b->id.track_pos)
+    return 1;
+
+  int have_lane =
+    region_type_has_lane (a->id.type);
+  /* order doesn't matter in this case */
+  if (have_lane !=
+        region_type_has_lane (b->id.type))
+    return -1;
+
+  if (have_lane)
+    {
+      if (a->id.lane_pos < b->id.lane_pos)
+        {
+          return -1;
+        }
+      else if (a->id.lane_pos > b->id.lane_pos)
+        {
+          return 1;
+        }
+    }
+  else if (a->id.type == REGION_TYPE_AUTOMATION &&
+           b->id.type == REGION_TYPE_AUTOMATION)
+    {
+      if (a->id.at_idx < b->id.at_idx)
+        {
+          return -1;
+        }
+      else if (a->id.at_idx > b->id.at_idx)
+        {
+          return 1;
+        }
+    }
+
+  return a->id.idx - b->id.idx;
+}
+
+static int
+sort_scales_func (
+  const void * _a,
+  const void * _b)
+{
+  ScaleObject * a =
+    *(ScaleObject * const *) _a;
+  ScaleObject * b =
+    *(ScaleObject * const *)_b;
+  return a->index - b->index;
+}
+
+static int
+sort_markers_func (
+  const void * _a,
+  const void * _b)
+{
+  Marker * a =
+    *(Marker * const *) _a;
+  Marker * b =
+    *(Marker * const *)_b;
+  return a->index - b->index;
+}
+
+static int
+sort_regions_desc (
+  const void * a,
+  const void * b)
+{
+  return - sort_regions_func (a, b);
+}
+
+static int
+sort_scales_desc (
+  const void * a,
+  const void * b)
+{
+  return - sort_scales_func (a, b);
+}
+
+static int
+sort_markers_desc (
+  const void * a,
+  const void * b)
+{
+  return - sort_markers_func (a, b);
+}
+
+/**
+ * Sorts the selections by their indices (eg, for
+ * regions, their track indices, then the lane
+ * indices, then the index in the lane).
+ *
+ * @param desc Descending or not.
+ */
+void
+timeline_selections_sort_by_indices (
+  TimelineSelections * self,
+  int                  desc)
+{
+  qsort (
+    self->regions, (size_t) self->num_regions,
+    sizeof (ZRegion *),
+    desc ? sort_regions_desc : sort_regions_func);
+  qsort (
+    self->scale_objects,
+    (size_t) self->num_scale_objects,
+    sizeof (ScaleObject *),
+    desc ? sort_scales_desc : sort_scales_func);
+  qsort (
+    self->markers,
+    (size_t) self->num_markers,
+    sizeof (Marker *),
+    desc ? sort_markers_desc : sort_markers_func);
+}
+
 SERIALIZE_SRC (
   TimelineSelections, timeline_selections)
 DESERIALIZE_SRC (

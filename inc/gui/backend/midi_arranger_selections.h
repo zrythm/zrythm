@@ -115,6 +115,18 @@ midi_arranger_selections_paste_to_pos (
   MidiArrangerSelections * ts,
   Position *               playhead);
 
+/**
+ * Sorts the selections by their indices (eg, for
+ * regions, their track indices, then the lane
+ * indices, then the index in the lane).
+ *
+ * @param desc Descending or not.
+ */
+void
+midi_arranger_selections_sort_by_indices (
+  MidiArrangerSelections * self,
+  int                  desc);
+
 SERIALIZE_INC (MidiArrangerSelections,
                midi_arranger_selections)
 DESERIALIZE_INC (MidiArrangerSelections,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -83,6 +83,18 @@ void
 automation_selections_paste_to_pos (
   AutomationSelections * ts,
   Position *           pos);
+
+/**
+ * Sorts the selections by their indices (eg, for
+ * regions, their track indices, then the lane
+ * indices, then the index in the lane).
+ *
+ * @param desc Descending or not.
+ */
+void
+automation_selections_sort_by_indices (
+  AutomationSelections * self,
+  int                  desc);
 
 SERIALIZE_INC (AutomationSelections,
                automation_selections)

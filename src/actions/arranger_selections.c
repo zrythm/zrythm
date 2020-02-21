@@ -628,6 +628,8 @@ do_or_undo_duplicate (
   ArrangerSelectionsAction * self,
   const int                  _do)
 {
+  arranger_selections_sort_by_indices (
+    self->sel, _do ? 0 : 1);
   int size = 0;
   ArrangerObject ** objs =
     arranger_selections_get_all_objects (
@@ -829,6 +831,16 @@ do_or_undo_create_or_delete (
   const int                  create)
 {
   int size = 0;
+  if (create)
+    {
+      arranger_selections_sort_by_indices (
+        self->sel, _do ? 0 : 1);
+    }
+  else
+    {
+      arranger_selections_sort_by_indices (
+        self->sel, _do ? 1 : 0);
+    }
   ArrangerObject ** objs =
     arranger_selections_get_all_objects (
       self->sel, &size);
