@@ -43,12 +43,10 @@ cache:
     - /C/tools/msys64
 
 script:
-  # hack to disable plugins
-  - $mingw64 sed -i -e '27s/true/false/' meson_options.txt
   # hack to enable tests
-  - $mingw64 sed -i -e '32s/false/true/' meson_options.txt
+  - $mingw64 sed -i -e '27s/false/true/' meson_options.txt
   # hack to enable sdl
-  - $mingw64 sed -i -e '57s/false/true/' meson_options.txt
+  - $mingw64 sed -i -e '50s/false/true/' meson_options.txt
   - $mingw64 meson build
   - $mingw64 ninja -C build
   - $mingw64 ninja -C build test
