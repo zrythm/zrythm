@@ -152,6 +152,14 @@
         save projects and other files in.</description>
     </key>
 
+    <key name="install-dir" type="s">
+      <default>""</default>
+      <summary>Installation directory</summary>
+      <description>This is the directory Zrythm
+        is installed in. Currently only used on
+        Windows.</description>
+    </key>
+
     <key name="last-project-dir" type="s">
       <default>""</default>
       <summary>Last project directory</summary>

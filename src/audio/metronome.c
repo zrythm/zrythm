@@ -62,12 +62,17 @@ metronome_init (
   else
     {
 #ifdef WINDOWS_RELEASE
+      char * install_dir =
+        g_settings_get_string ("install-dir");
       self->emphasis_path =
-        g_strdup (
-          "share/zrythm/samples/square_emphasis.wav");
+        g_build_filename (
+          install_dir, "share", "zrythm", "samples",
+          "square_emphasis.wav");
       self->normal_path =
-        g_strdup (
-          "share/zrythm/samples/square_normal.wav");
+        g_build_filename (
+          install_dir, "share", "zrythm", "samples",
+          "square_normal.wav");
+      g_free (install_dir);
 #else
       self->emphasis_path =
         g_strdup (
