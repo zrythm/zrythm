@@ -56,26 +56,20 @@ marker_track_default (
   /* add start and end markers */
   Marker * marker;
   Position pos;
-  marker =
-    marker_new (_("start"), 1);
+  marker = marker_new (_("start"));
   ArrangerObject * m_obj =
     (ArrangerObject *) marker;
   position_set_to_bar (&pos, 1);
-  arranger_object_pos_setter (
-    m_obj, &pos);
+  arranger_object_pos_setter (m_obj, &pos);
   marker->type = MARKER_TYPE_START;
-  marker_track_add_marker (
-    self, marker);
-  marker =
-    marker_new (_("end"), 1);
+  marker_track_add_marker (self, marker);
+  marker = marker_new (_("end"));
   m_obj =
     (ArrangerObject *) marker;
   position_set_to_bar (&pos, 129);
-  arranger_object_pos_setter (
-    m_obj, &pos);
+  arranger_object_pos_setter (m_obj, &pos);
   marker->type = MARKER_TYPE_END;
-  marker_track_add_marker (
-    self, marker);
+  marker_track_add_marker (self, marker);
 
   return self;
 }
@@ -140,6 +134,7 @@ marker_track_add_marker (
   array_append (track->markers,
                 track->num_markers,
                 marker);
+  marker->index = track->num_markers - 1;
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_CREATED, marker);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,8 +29,7 @@
  */
 Marker *
 marker_new (
-  const char * name,
-  int          is_main)
+  const char * name)
 {
   Marker * self = calloc (1, sizeof (Marker));
 

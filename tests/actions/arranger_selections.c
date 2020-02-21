@@ -196,10 +196,10 @@ rebootstrap_timeline ()
     (ArrangerObject *) c);
 
   /* create and add a Marker */
-  Marker * m =
-    marker_new (MARKER_NAME, 1);
+  Marker * m = marker_new (MARKER_NAME);
   marker_track_add_marker (
     P_MARKER_TRACK, m);
+  g_assert_cmpint (m->index, ==, 2);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) m);

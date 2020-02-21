@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -505,8 +505,7 @@ timeline_arranger_widget_create_marker (
 
   /* create a new marker */
   Marker * marker =
-    marker_new (
-      _("Custom Marker"), 1);
+    marker_new (_("Custom Marker"));
   ArrangerObject * marker_obj =
     (ArrangerObject *) marker;
 

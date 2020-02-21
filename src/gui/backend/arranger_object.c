@@ -509,6 +509,21 @@ arranger_object_copy_identifier (
         destap->index = srcap->index;
       }
       break;
+    case TYPE (MARKER):
+      {
+        Marker * dest_marker =
+          (Marker *) dest;
+        Marker * src_marker =
+          (Marker *) src;
+        dest_marker->track_pos =
+          src_marker->track_pos;
+        dest_marker->index =
+          src_marker->index;
+        if (dest_marker->name)
+          g_free (dest_marker->name);
+        dest_marker->name =
+          g_strdup (src_marker->name);
+      }
     default:
       break;
     }
@@ -1483,15 +1498,12 @@ find_chord_object (
     region_find (&clone->region_id);
   g_return_val_if_fail (r, NULL);
 
-  ChordObject * chord;
-  for (int i = 0; i < r->num_chord_objects; i++)
-    {
-      chord = r->chord_objects[i];
-      if (chord_object_is_equal (
-            chord, clone))
-        return (ArrangerObject *) chord;
-    }
-  return NULL;
+  g_return_val_if_fail (
+    r && r->num_chord_objects > clone->index, NULL);
+
+  return
+    (ArrangerObject *)
+    r->chord_objects[clone->index];
 }
 
 static ArrangerObject *
@@ -1517,17 +1529,16 @@ static ArrangerObject *
 find_marker (
   Marker * clone)
 {
-  for (int i = 0;
-       i < P_MARKER_TRACK->num_markers; i++)
-    {
-      if (marker_is_equal (
-            P_MARKER_TRACK->markers[i],
-            clone))
-        return
-          (ArrangerObject *)
-          P_MARKER_TRACK->markers[i];
-    }
-  return NULL;
+  g_return_val_if_fail (
+    P_MARKER_TRACK->num_markers > clone->index,
+    NULL);
+
+  Marker * marker =
+    P_MARKER_TRACK->markers[clone->index];
+  g_warn_if_fail (
+    marker_is_equal (marker, clone));
+
+  return (ArrangerObject *) marker;
 }
 
 static ArrangerObject *
@@ -1536,18 +1547,15 @@ find_automation_point (
 {
   ZRegion * region =
     region_find (&src->region_id);
-  g_return_val_if_fail (region, NULL);
+  g_return_val_if_fail (
+    region && region->num_aps > src->index, NULL);
 
-  int i;
-  AutomationPoint * ap;
-  for (i = 0; i < region->num_aps; i++)
-    {
-      ap = region->aps[i];
-      if (automation_point_is_equal (src, ap))
-        return (ArrangerObject *) ap;
-    }
+  AutomationPoint * ap =
+    region->aps[src->index];
+  g_return_val_if_fail (
+    automation_point_is_equal (src, ap), NULL);
 
-  return NULL;
+  return (ArrangerObject *) ap;
 }
 
 static ArrangerObject *
@@ -1556,15 +1564,12 @@ find_midi_note (
 {
   ZRegion * r =
     region_find (&src->region_id);
-  g_return_val_if_fail (r, NULL);
+  g_return_val_if_fail (
+    r && r->num_midi_notes > src->pos, NULL);
 
-  for (int i = 0; i < r->num_midi_notes; i++)
-    {
-      if (midi_note_is_equal (
-            r->midi_notes[i], src))
-        return (ArrangerObject *) r->midi_notes[i];
-    }
-  return NULL;
+  return
+    (ArrangerObject *)
+    r->midi_notes[src->pos];
 }
 
 /**
@@ -1791,6 +1796,7 @@ clone_midi_note (
       src->val, src->vel->vel);
   mn->currently_listened = src->currently_listened;
   mn->last_listened_val = src->last_listened_val;
+  mn->pos = src->pos;
 
   return (ArrangerObject *) mn;
 }
@@ -1833,12 +1839,9 @@ clone_marker (
   Marker *                src,
   ArrangerObjectCloneFlag flag)
 {
-  int is_main = 0;
-  if (flag == ARRANGER_OBJECT_CLONE_COPY_MAIN)
-    is_main = 1;
-
-  Marker * marker =
-    marker_new (src->name, is_main);
+  Marker * marker = marker_new (src->name);
+  marker->index = src->index;
+  marker->track_pos = src->track_pos;
 
   return (ArrangerObject *) marker;
 }
@@ -1856,6 +1859,7 @@ clone_automation_point (
       &src_obj->pos);
   region_identifier_copy (
     &ap->region_id, &src->region_id);
+  ap->index = src->index;
 
   return (ArrangerObject *) ap;
 }

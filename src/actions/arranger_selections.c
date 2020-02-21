@@ -798,8 +798,7 @@ do_or_undo_duplicate (
     }
   free (objs);
 
-  sel =
-    get_actual_arranger_selections (self);
+  sel = get_actual_arranger_selections (self);
   if (_do)
     {
       EVENTS_PUSH (

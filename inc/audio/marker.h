@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -60,9 +60,9 @@ typedef enum MarkerType
 static const cyaml_strval_t
 marker_type_strings[] =
 {
-	{ "start",     MARKER_TYPE_START    },
-	{ "end",       MARKER_TYPE_END   },
-	{ "custom",    MARKER_TYPE_CUSTOM   },
+  { "start",     MARKER_TYPE_START    },
+  { "end",       MARKER_TYPE_END   },
+  { "custom",    MARKER_TYPE_CUSTOM   },
 };
 
 /**
@@ -80,7 +80,10 @@ typedef struct Marker
   char *            name;
 
   /** Position of Track this ChordObject is in. */
-  int            track_pos;
+  int               track_pos;
+
+  /** Index in the track. */
+  int               index;
 
   /** Cache layout for drawing the name. */
   PangoLayout *      layout;
@@ -96,13 +99,19 @@ static const cyaml_schema_field_t
   CYAML_FIELD_STRING_PTR (
     "name", CYAML_FLAG_POINTER,
     Marker, name,
-   	0, CYAML_UNLIMITED),
+    0, CYAML_UNLIMITED),
+  CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    Marker, track_pos),
+  CYAML_FIELD_INT (
+    "index", CYAML_FLAG_DEFAULT,
+    Marker, index),
   CYAML_FIELD_ENUM (
     "type", CYAML_FLAG_DEFAULT,
     Marker, type, marker_type_strings,
     CYAML_ARRAY_LEN (marker_type_strings)),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
@@ -117,8 +126,7 @@ marker_schema = {
  */
 Marker *
 marker_new (
-  const char * name,
-  int          is_main);
+  const char * name);
 
 /**
  * Returns if the two Marker's are equal.
