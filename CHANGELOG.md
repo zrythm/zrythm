@@ -1,6 +1,45 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.572] - 2020-02-21
+- Add option to passthrough MIDI channel on MIDI tracks and lanes
+- Add delete button in port connections
+- Add hack for showing a dark window behind plugin windows on Windows (temporary solution for plugins with transparent backgrounds)
+- Add port info and object info dialogs
+- Refactor arranger objects to use indices instead of pointers
+- Add ability to double-click on tracks to rename
+- Add tests for audio regions and moving regions to other tracks
+- Add tests for plugin operations
+- Copy/move automation to the new track if plugin is moved/cloned
+- Allow moving plugins to empty space to create a new track
+- Show port name instead of port symbol in the inspector for LV2 plugins
+- Only send time info to LV2 plugins that want it
+- Only serialize VST descriptors at the end of the scan instead of after each scanned plugin
+- Support LV2 trigger, toggle, notOnGui and integer port properties
+- Connection multipliers now apply to audio and CV ports too
+- Recording audio or MIDI data is now undoable
+- Convert channel mute, volume and stereo balance to automatable control ports
+- Remove bundled libcyaml and use a meson wrap instead
+- Fix crash when clicking Add to add a port connection
+- Fix crash when handling state files for plugins with illegal chars in their name
+- Fix audio regions getting resized by a few samples when moved
+- Fix undo causing a crash after importing MIDI files
+- Fix live waveform display showing the opposite values (upside down)
+- Fix ctrl+clicking unselected objects not selecting them
+- Fix crash when loading a project with duplicated tracks
+- Fix incorrectly allowing plugin ports to connect to ports of the same plugin
+- Fix bug with hiding and showing tracks
+- Fix missing icon on GNU/Linux and FreeBSD
+- Fix LV2 plugin support on Windows
+- Fix arranger objects getting deleted when deleting a plugin from the mixer
+- Fix original regions not getting shown when ctrl-dragged regions move out of sight
+- Fix LV2 plugins not getting scanned properly on Ubuntu 19.10
+- Fix crash when metronome samples are not found
+- Fix channel direct outs not getting stored properly
+- Fix support for LV2 external UIs
+- Fix crash when selecting audio input
+- Update Spanish, Japanese, French translations
+
 ## [0.7.474] - 2020-01-27
 - Add MIDI file import
 - Add timeout when scanning for VST plugins

@@ -17,7 +17,7 @@
 
 project (
   'zrythm', ['c', 'cpp'],
-  version: '0.7.474',
+  version: '0.7.572',
   license: 'AGPL-3-or-later',
   meson_version: '>= 0.50.0',
   default_options: [
