@@ -32,8 +32,6 @@ gnome = import('gnome')
 prefix = get_option ('prefix')
 bindir = join_paths (prefix, get_option('bindir'))
 libdir = join_paths (prefix, get_option ('libdir'))
-lv2dir = join_paths (libdir, 'lv2')
-lv2zpluginsdir = join_paths (lv2dir, 'ZPlugins')
 libexecdir = join_paths (prefix, get_option ('libexecdir'))
 includedir = join_paths (prefix, get_option('includedir'))
 datadir = join_paths (prefix, get_option('datadir'))
@@ -568,7 +566,6 @@ subdir ('ext')
 subdir ('resources')
 subdir ('data')
 subdir ('src')
-subdir ('plugins')
 subdir ('tests')
 subdir ('doc')
 subdir ('scripts')
@@ -578,7 +575,6 @@ summary({
   'Build type': get_option('buildtype'),
   'Profiling': get_option('enable_profiling'),
   'Strict flags': get_option('strict_flags'),
-  'Build plugins': get_option('enable_plugins'),
   'Build tests': get_option('enable_tests'),
   'Build GUI tests': get_option('enable_gui_tests'),
   'Generate developer docs': get_option('gen_dev_docs'),

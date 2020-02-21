@@ -22,12 +22,6 @@ option (
   description: 'Enable profiling with gprof')
 
 option (
-  'enable_plugins',
-  type: 'boolean',
-  value: true,
-  description: 'Whether to build and install bundled plugins')
-
-option (
   'enable_tests',
   type: 'boolean',
   value: false,

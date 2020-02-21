@@ -1,5 +1,0 @@
-.waf*/
-build/
-.lock-waf*
-__pycache__
-*.pyc
