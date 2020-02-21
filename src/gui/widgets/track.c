@@ -2178,7 +2178,8 @@ track_widget_on_mute_toggled (
   TrackWidget * self)
 {
   track_set_muted (
-    self->track, !self->track->mute, 1, 1);
+    self->track,
+    !track_get_muted (self->track), 1, 1);
 }
 
 void
