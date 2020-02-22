@@ -406,3 +406,19 @@ io_escape_dir_name (
         }
     }
 }
+
+#ifdef _WOE32
+char *
+io_get_registry_string_val (
+  const char * path)
+{
+  char value[8192];
+  DWORD BufferSize = 8192;
+  RegGetValue (
+    HKEY_LOCAL_MACHINE,
+    "Software\\Zrythm\\Zrythm\\Settings", path,
+    RRF_RT_ANY, NULL, (PVOID) &value, &BufferSize);
+  g_message ("reg value: %s", value);
+  return g_strdup (value);
+}
+#endif

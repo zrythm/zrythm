@@ -24,6 +24,8 @@
 #ifndef __UTILS_IO_H__
 #define __UTILS_IO_H__
 
+#include "config.h"
+
 #include <stdio.h>
 
 /**
@@ -157,6 +159,12 @@ void
 io_escape_dir_name (
   char *       dest,
   const char * dir);
+
+#ifdef _WOE32
+char *
+io_get_registry_string_val (
+  const char * path);
+#endif
 
 /**
  * @}

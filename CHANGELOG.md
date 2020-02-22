@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.7.572] - 2020-02-21
+## [0.7.573] - 2020-02-21
 - Add option to passthrough MIDI channel on MIDI tracks and lanes
 - Add delete button in port connections
 - Add hack for showing a dark window behind plugin windows on Windows (temporary solution for plugins with transparent backgrounds)

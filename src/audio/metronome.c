@@ -23,6 +23,7 @@
 #include "audio/encoder.h"
 #include "audio/metronome.h"
 #include "utils/audio.h"
+#include "utils/io.h"
 #include "zrythm.h"
 
 #include <gtk/gtk.h>
@@ -63,25 +64,23 @@ metronome_init (
     {
 #ifdef WINDOWS_RELEASE
       char * install_dir =
-        g_settings_get_string ("install-dir");
+        io_get_registry_string_val ("InstallPath");
       self->emphasis_path =
         g_build_filename (
           install_dir, "share", "zrythm", "samples",
-          "square_emphasis.wav");
+          "square_emphasis.wav", NULL);
       self->normal_path =
         g_build_filename (
           install_dir, "share", "zrythm", "samples",
-          "square_normal.wav");
+          "square_normal.wav", NULL);
       g_free (install_dir);
 #else
       self->emphasis_path =
-        g_strdup (
-          SAMPLES_DIR
-          "/square_emphasis.wav");
+        g_build_filename (
+          SAMPLES_DIR, "square_emphasis.wav", NULL);
       self->normal_path =
-        g_strdup (
-          SAMPLES_DIR
-          "/square_normal.wav");
+        g_build_filename (
+          SAMPLES_DIR, "square_normal.wav", NULL);
 #endif
 
       /* decode */
