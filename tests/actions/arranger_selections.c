@@ -241,8 +241,8 @@ rebootstrap_timeline ()
       &p1, track->pos, AUDIO_REGION_LANE, 0);
   AudioClip * clip =
     audio_region_get_clip (r);
-  g_assert_cmpint (clip->num_frames, >, 290000);
-  g_assert_cmpint (clip->num_frames, <, 294000);
+  g_assert_cmpint (clip->num_frames, >, 151000);
+  g_assert_cmpint (clip->num_frames, <, 152000);
   track_add_region (
     track, r, NULL, AUDIO_REGION_LANE, 1, 0);
   region_set_name (r, AUDIO_REGION_NAME, 0);

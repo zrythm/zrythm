@@ -20,6 +20,8 @@
 #ifndef __AUDIO_EXPORT_H__
 #define __AUDIO_EXPORT_H__
 
+#include "audio/position.h"
+
 /**
  * @addtogroup audio
  *
@@ -78,7 +80,11 @@ typedef struct ExportSettings
   Position          custom_start;
   Position          custom_end;
 
-  /** The previous loop status (on/off). */
+  /**
+   * The previous loop status (on/off).
+   *
+   * This is set internally.
+   */
   int               prev_loop;
 
   /**
@@ -110,7 +116,7 @@ exporter_stringize_audio_format (
  *
  * TODO move some things into functions.
  */
-void
+int
 exporter_export (ExportSettings * info);
 
 /**

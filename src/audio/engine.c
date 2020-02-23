@@ -190,7 +190,7 @@ engine_init (
   /* get audio backend */
   AudioBackend ab_code =
     ZRYTHM_TESTING ?
-      self->audio_backend :
+      AUDIO_BACKEND_DUMMY :
       (AudioBackend)
       g_settings_get_enum (
         S_PREFERENCES,
@@ -234,7 +234,7 @@ engine_init (
   /* get midi backend */
   MidiBackend mb_code =
     ZRYTHM_TESTING ?
-      self->midi_backend :
+      MIDI_BACKEND_DUMMY :
       (MidiBackend)
       g_settings_get_enum (
         S_PREFERENCES,

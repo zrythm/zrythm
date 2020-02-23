@@ -44,7 +44,8 @@ if get_option ('enable_tests')
     '-fPIC',
   ]
 
-  # path, is parallel
+  # 0: path
+  # 1: is parallel
   tests = [
     ['actions/arranger_selections', true],
     ['audio/automation_track', true],
@@ -67,6 +68,12 @@ if get_option ('enable_tests')
     tests += [
       ['gui/widgets/region', false],
       ['gui/widgets/track', false],
+      ]
+  endif
+
+  if (chromaprint_dep.found ())
+    tests += [
+      ['audio/exporter', true],
       ]
   endif
 

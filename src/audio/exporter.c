@@ -50,7 +50,7 @@
 
 #include <sndfile.h>
 
-#define	AMPLITUDE	(1.0 * 0x7F000000)
+#define  AMPLITUDE  (1.0 * 0x7F000000)
 
 /**
  * Returns the audio format as string.
@@ -85,7 +85,7 @@ exporter_stringize_audio_format (
   g_return_val_if_reached (NULL);
 }
 
-static void
+static int
 export_audio (
   ExportSettings * info)
 {
@@ -121,7 +121,7 @@ export_audio (
         MAIN_WINDOW, str);
       g_free (format);
 
-      return;
+      return -1;
     }
 
   if (info->format == AUDIO_FORMAT_OGG)
@@ -184,7 +184,7 @@ export_audio (
       ui_show_error_message (
         MAIN_WINDOW,
         "SF INFO invalid");
-      return;
+      return - 1;
     }
 
   char * dir = io_get_dir (info->file_uri);
@@ -213,32 +213,24 @@ export_audio (
           break;
         default:
           g_warn_if_reached ();
-          return;
+          return - 1;
         }
 
       g_warning (
         "Couldn't open SNDFILE %s:\n%s",
         info->file_uri, error_str);
 
-      return;
+      return - 1;
     }
 
   sf_set_string (
-    sndfile,
-    SF_STR_TITLE,
-    PROJECT->title);
+    sndfile, SF_STR_TITLE, PROJECT->title);
   sf_set_string (
-    sndfile,
-    SF_STR_SOFTWARE,
-    "Zrythm");
+    sndfile, SF_STR_SOFTWARE, "Zrythm");
   sf_set_string (
-    sndfile,
-    SF_STR_ARTIST,
-    info->artist);
+    sndfile, SF_STR_ARTIST, info->artist);
   sf_set_string (
-    sndfile,
-    SF_STR_GENRE,
-    info->genre);
+    sndfile, SF_STR_GENRE, info->genre);
 
   Position prev_playhead_pos;
   /* position to start at */
@@ -301,16 +293,16 @@ export_audio (
     &AUDIO_ENGINE->port_operation_lock);
 
   nframes_t nframes;
-  g_return_if_fail (
+  g_return_val_if_fail (
     stop_pos.frames >= 1 ||
-    start_pos.frames >= 0);
+    start_pos.frames >= 0, -1);
   const unsigned long total_frames =
     (unsigned long)
     ((stop_pos.frames - 1) -
      start_pos.frames);
   sf_count_t covered = 0;
   float out_ptr[
-    AUDIO_ENGINE->nframes * EXPORT_CHANNELS];
+    AUDIO_ENGINE->block_length * EXPORT_CHANNELS];
   do
     {
       /* calculate number of frames to process
@@ -320,15 +312,14 @@ export_audio (
         MIN (
           (stop_pos.frames - 1) -
             TRANSPORT->playhead_pos.frames,
-          (long) AUDIO_ENGINE->nframes);
+          (long) AUDIO_ENGINE->block_length);
+      g_return_val_if_fail (nframes > 0, -1);
 
       /* run process code */
       engine_process_prepare (
-        AUDIO_ENGINE,
-        nframes);
+        AUDIO_ENGINE, nframes);
       router_start_cycle (
-        &MIXER->router, nframes,
-        0, PLAYHEAD);
+        &MIXER->router, nframes, 0, PLAYHEAD);
       engine_post_process (
         AUDIO_ENGINE, nframes);
 
@@ -413,17 +404,22 @@ export_audio (
     &prev_playhead_pos);
 
   sf_close (sndfile);
+
+  g_message (
+    "successfully exported to %s", info->file_uri);
+
+  return 0;
 }
 
-static void
+static int
 export_midi (
   ExportSettings * info)
 {
   MIDI_FILE *mf;
 
   int i;
-	if ((mf = midiFileCreate (info->file_uri, TRUE)))
-		{
+  if ((mf = midiFileCreate (info->file_uri, TRUE)))
+    {
       /* Write tempo information out to track 1 */
       midiSongAddTempo (
         mf, 1, (int) TRANSPORT->bpm);
@@ -456,6 +452,8 @@ export_midi (
       midiFileClose(mf);
     }
   info->progress = 1.0;
+
+  return 0;
 }
 
 /**
@@ -464,16 +462,16 @@ export_midi (
  *
  * TODO move some things into functions.
  */
-void
+int
 exporter_export (ExportSettings * info)
 {
   if (info->format == AUDIO_FORMAT_MIDI)
     {
-      export_midi (info);
+      return export_midi (info);
     }
   else
     {
-      export_audio (info);
+      return export_audio (info);
     }
 }
 

@@ -61,9 +61,6 @@ void
 mixer_recalc_graph (
   Mixer * mixer)
 {
-  if (ZRYTHM_TESTING)
-    return;
-
   Router * router = &mixer->router;
   if (!router->graph)
     {

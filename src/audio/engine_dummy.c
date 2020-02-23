@@ -62,14 +62,12 @@ engine_dummy_setup (
   self->block_length  = 256;
   self->midi_buf_size = 4096;
 
-  g_warn_if_fail (TRANSPORT &&
-                  TRANSPORT->beats_per_bar > 1);
+  g_warn_if_fail (
+    TRANSPORT && TRANSPORT->beats_per_bar > 1);
 
   engine_update_frames_per_tick (
-    self,
-    TRANSPORT->beats_per_bar,
-    TRANSPORT->bpm,
-    self->sample_rate);
+    self, TRANSPORT->beats_per_bar,
+    TRANSPORT->bpm, self->sample_rate);
 
   /* create ports */
   Port * monitor_out_l, * monitor_out_r;

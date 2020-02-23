@@ -668,7 +668,7 @@ load (
     MW_HEADER_NOTEBOOK,
     PROJECT->title);
 
-  RETURN_OK;
+  return 0;
 }
 
 /**
@@ -882,6 +882,8 @@ project_get_project_file_path (
  *   will be saved as <original filename>.bak<num>.
  * @param show_notification Show a notification
  *   in the UI that the project was saved.
+ *
+ * @return Non-zero if error.
  */
 int
 project_save (

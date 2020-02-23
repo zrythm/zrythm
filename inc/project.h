@@ -329,6 +329,8 @@ project_load (
  *   will be saved as <original filename>.bak<num>.
  * @param show_notification Show a notification
  *   in the UI that the project was saved.
+ *
+ * @return Non-zero if error.
  */
 int
 project_save (

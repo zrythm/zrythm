@@ -396,6 +396,12 @@ if not lv2_dep.found()
 endif
 fftw3_dep = dependency('fftw3', version: '>=3.3.5')
 
+chromaprint_dep = dependency (
+  'libchromaprint', required: false)
+if (chromaprint_dep.found ())
+  cdata.set('HAVE_CHROMAPRINT', 1)
+endif
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -424,6 +430,7 @@ zrythm_deps = [
   dependency('rubberband'),
   cc.find_library('dl'),
   lv2_dep,
+  chromaprint_dep,
   fftw3_dep,
 
   # these are needed for gentoo
