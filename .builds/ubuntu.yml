@@ -16,6 +16,7 @@ packages:
   - libavcodec-dev
   - libavutil-dev
   - libavformat-dev
+  - libchromaprint-dev
   #- libsuil-dev
   #- lv2-dev
   - libsamplerate0-dev

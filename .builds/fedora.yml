@@ -5,6 +5,7 @@ packages:
   - pkgconfig
   - gtk3-devel
   - python3
+  - libchromaprint-devel
   - lilv-devel
   - lv2-devel
   - libsndfile-devel

@@ -2,6 +2,7 @@ image: archlinux
 packages:
   - meson
   - gtk3
+  - chromaprint
   - lilv
   - libx11
   - jack

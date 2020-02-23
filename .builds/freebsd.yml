@@ -3,6 +3,7 @@ packages:
   - gettext-tools
   - meson
   - ninja
+  - chromaprint
   - python36
   - gtk-update-icon-cache
   - pkgconf
