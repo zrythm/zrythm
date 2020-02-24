@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -24,6 +24,7 @@
 #include "gui/widgets/marker_dialog.h"
 #include "gui/widgets/marker.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/resources.h"
 
 #include <gtk/gtk.h>
@@ -56,6 +57,8 @@ on_response (
         (ArrangerSelections *) TL_SELECTIONS,
         (ArrangerObject *) self->marker);
 
+      /* prepare the before/after selections to
+       * create the undoable action */
       ArrangerSelections * before =
         arranger_selections_clone (
           (ArrangerSelections *) TL_SELECTIONS);
@@ -66,7 +69,7 @@ on_response (
         (TimelineSelections *) after;
       arranger_object_set_name (
         (ArrangerObject *) tl_after->markers[0],
-        text, 1);
+        text, F_NO_PUBLISH_EVENTS);
 
       UndoableAction * ua =
         arranger_selections_action_new_edit (
@@ -78,6 +81,12 @@ on_response (
         before);
       arranger_selections_free_full (
         after);
+
+      /* the action doesn't actually run the first
+       * time, so change the name manually */
+      arranger_object_set_name (
+        (ArrangerObject *) self->marker, text,
+        F_PUBLISH_EVENTS);
     }
 
   gtk_widget_destroy (GTK_WIDGET (self));
@@ -113,8 +122,7 @@ marker_dialog_widget_new (
 
   /* setup text */
   gtk_entry_set_text (
-    self->entry,
-    self->marker->name);
+    self->entry, self->marker->name);
 
   return self;
 }

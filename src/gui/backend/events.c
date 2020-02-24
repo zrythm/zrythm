@@ -462,23 +462,18 @@ on_arranger_selections_changed (
   ArrangerSelections * sel)
 {
   int size = 0;
-  /*ArrangerObject ** objs =*/
-    /*arranger_selections_get_all_objects (*/
-      /*sel, &size);*/
+  ArrangerObject ** objs =
+    arranger_selections_get_all_objects (
+      sel, &size);
   for (int i = 0; i < size; i++)
     {
-      /*ArrangerObject * obj = objs[i];*/
-      /*g_warn_if_fail (*/
-        /*arranger_object_is_main (obj));*/
-      /*ArrangerObjectWidget * obj_w =*/
-        /*arranger_object_get_widget (obj);*/
-      /*if (!obj_w)*/
-        /*continue;*/
-      /*arranger_object_widget_force_redraw (obj_w);*/
+      ArrangerObject * obj = objs[i];
+      g_return_if_fail (IS_ARRANGER_OBJECT (obj));
+
+      arranger_object_queue_redraw (obj);
     }
 
   refresh_for_selections_type (sel->type);
-
   inspector_widget_refresh (MW_INSPECTOR);
 }
 
@@ -720,7 +715,7 @@ static void
 on_arranger_object_changed (
   ArrangerObject * obj)
 {
-  g_return_if_fail (obj);
+  g_return_if_fail (IS_ARRANGER_OBJECT (obj));
 
   /* parent region, if any */
   ArrangerObject * parent_r_obj =

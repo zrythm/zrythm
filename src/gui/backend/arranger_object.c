@@ -2259,6 +2259,7 @@ arranger_object_set_name (
   const char *     name,
   int              fire_events)
 {
+  g_return_if_fail (IS_ARRANGER_OBJECT (self));
   switch (self->type)
     {
     case ARRANGER_OBJECT_TYPE_MARKER:

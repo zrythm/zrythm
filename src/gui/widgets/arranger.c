@@ -50,6 +50,7 @@
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/inspector.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/marker_dialog.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
@@ -2451,6 +2452,18 @@ on_drag_begin_handle_hit_object (
             MW_BOT_FOLDABLE_NOTEBOOK, 1);
 
           SHOW_CLIP_EDITOR;
+        }
+    }
+  /* if open marker dialog if double click on
+   * marker */
+  else if (obj->type == ARRANGER_OBJECT_TYPE_MARKER)
+    {
+      if (self->n_press == 2 && !self->ctrl_held)
+        {
+          MarkerDialogWidget * dialog =
+            marker_dialog_widget_new (
+              (Marker *) obj);
+          gtk_widget_show_all (GTK_WIDGET (dialog));
         }
     }
 
