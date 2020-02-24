@@ -22,6 +22,7 @@
 
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_bar.h"
+#include "utils/gtk.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 
@@ -217,20 +218,30 @@ drag_update (
   gdouble         offset_y,
   BalanceControlWidget *     self)
 {
+  double sensitivity = 0.005;
+
+  /* lower sensitivity if shift held */
+  GdkModifierType mask;
+  z_gtk_widget_get_mask (
+    GTK_WIDGET (self), &mask);
+  if (mask & GDK_SHIFT_MASK)
+    {
+      sensitivity = 0.002;
+    }
+
   offset_y = - offset_y;
   int use_y =
     fabs (offset_y - self->last_y) >
     fabs (offset_x - self->last_x);
-  float diff =
-    0.005f *
-    (float)
-      (use_y ?
+  double diff =
+    sensitivity *
+    (use_y ?
        offset_y - self->last_y :
        offset_x - self->last_x);
 
   float new_val =
     CLAMP (
-      GET_VAL + diff, 0.0f, 1.0f);
+      GET_VAL + (float) diff, 0.0f, 1.0f);
 
   SET_VAL (new_val);
   self->last_x = offset_x;

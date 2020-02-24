@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -23,6 +23,7 @@
 #include "audio/fader.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/fader.h"
+#include "utils/gtk.h"
 #include "utils/math.h"
 
 #include <glib/gi18n.h>
@@ -207,23 +208,37 @@ drag_begin (GtkGestureDrag *gesture,
 }
 
 static void
-drag_update (GtkGestureDrag * gesture,
-               gdouble         offset_x,
-               gdouble         offset_y,
-               gpointer        user_data)
+drag_update (
+  GtkGestureDrag * gesture,
+  gdouble         offset_x,
+  gdouble         offset_y,
+  gpointer        user_data)
 {
   FaderWidget * self = (FaderWidget *) user_data;
   offset_y = - offset_y;
+
   /*int use_y = abs(offset_y - self->last_y) > abs(offset_x - self->last_x);*/
   int use_y = 1;
+
   /*double multiplier = 0.005;*/
   double diff =
-    use_y ? offset_y - self->last_y :
-    offset_x - self->last_x;
+    use_y ?
+      offset_y - self->last_y :
+      offset_x - self->last_x;
   double height =
     gtk_widget_get_allocated_height (
       GTK_WIDGET (self));
   double adjusted_diff = diff / height;
+
+  /* lower sensitivity if shift held */
+  GdkModifierType mask;
+  z_gtk_widget_get_mask (
+    GTK_WIDGET (self), &mask);
+  if (mask & GDK_SHIFT_MASK)
+    {
+      adjusted_diff *= 0.4;
+    }
+
   double new_fader_val =
     CLAMP (
       (double) self->fader->fader_val +
