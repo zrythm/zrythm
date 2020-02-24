@@ -125,8 +125,8 @@ plugin_gtk_set_window_title (
   char title[500];
   sprintf (
     title,
-    "%s (%s)",
-    track_name, plugin_name);
+    "%s (%s #%d)",
+    plugin_name, track_name, plugin->id.slot);
 
   switch (plugin->descr->protocol)
     {
