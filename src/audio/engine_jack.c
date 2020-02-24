@@ -312,10 +312,27 @@ process_cb (
       (AudioEngine *) data, nframes);
 }
 
+/**
+ * Client-supplied function that is called whenever
+ * an xrun has occured.
+ *
+ * @see jack_get_xrun_delayed_usecs()
+ *
+ * @return zero on success, non-zero on error
+ */
 static int
-xrun_cb (void *arg)
+xrun_cb (
+  AudioEngine * self)
 {
-  ui_show_notification_idle ("XRUN occurred");
+  gint64 cur_time = g_get_monotonic_time ();
+  if (cur_time - self->last_xrun_notification >
+        6000000)
+    {
+      ui_show_notification_idle (
+        _("XRUN occurred - check your JACK "
+        "configuration"));
+      self->last_xrun_notification = cur_time;
+    }
 
   return 0;
 }
@@ -564,17 +581,17 @@ engine_jack_setup (AudioEngine * self,
 
   /* set jack callbacks */
   jack_set_process_callback (
-    self->client, &process_cb, self);
+    self->client, process_cb, self);
   jack_set_buffer_size_callback (
-    self->client, &buffer_size_cb, self);
+    self->client, buffer_size_cb, self);
   jack_set_sample_rate_callback (
     self->client,
     (JackSampleRateCallback) sample_rate_cb,
     self);
   jack_set_xrun_callback (
-    self->client, &xrun_cb, self->client);
+    self->client, (JackXRunCallback) xrun_cb, self);
   jack_on_shutdown (
-    self->client, &shutdown_cb, self);
+    self->client, shutdown_cb, self);
   jack_set_timebase_callback (
     self->client, 0, timebase_cb, self);
   /*jack_set_latency_callback(client, &jack_latency_cb, arg);*/

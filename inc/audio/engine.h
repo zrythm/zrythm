@@ -417,6 +417,15 @@ typedef struct AudioEngine
   /** Last MIDI CC captured. */
   midi_byte_t       last_cc[3];
 
+  /**
+   * Last time an XRUN notification was shown.
+   *
+   * This is to prevent multiple XRUN notifications
+   * being shown so quickly that Zrythm becomes
+   * unusable.
+   */
+  gint64            last_xrun_notification;
+
 #ifdef TRIAL_VER
   /** Time at start to keep track if trial limit
    * is reached. */
