@@ -51,9 +51,29 @@ activate_about (GSimpleAction *action,
  * Show preferences window.
  */
 void
-activate_preferences (GSimpleAction *action,
-                      GVariant      *variant,
-                      gpointer       user_data);
+activate_preferences (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+/**
+ * Show preferences window.
+ */
+void
+activate_log (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
+/**
+ * Show preferences window.
+ */
+void
+activate_scripting_interface (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data);
+
 /**
  * Activate audition mode.
  */

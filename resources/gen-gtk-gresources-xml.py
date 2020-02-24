@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-#  Copyright (C) 2018-2019 Alexandros Theodotou
+#  Copyright (C) 2018-2020 Alexandros Theodotou
 #
 #  This file is part of Zrythm
 #
@@ -94,6 +94,7 @@ icons_dir = 'icons/breeze-icons'
 # NOTE: do not put symlinks here, find the original
 # icon name
 _breeze_icons = [
+  'amarok_scripts',
   'application-ogg',
   'application-msword',
   'application-x-m4',
@@ -160,6 +161,7 @@ _breeze_icons = [
   'text-x-csrc',
   'tools-report-bug',
   'view-fullscreen',
+  'view-list-text',
   'view-media-visualization',
   'view-visible',
   'view-hidden',

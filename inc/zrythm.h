@@ -31,6 +31,7 @@
 #include "gui/backend/events.h"
 #include "plugins/plugin_manager.h"
 #include "settings/settings.h"
+#include "utils/log.h"
 
 #include <gtk/gtk.h>
 
@@ -175,12 +176,23 @@ typedef struct Zrythm
   /** Initialization thread. */
   GThread *               init_thread;
 
+  /**
+   * The GTK thread where the main GUI loop runs.
+   *
+   * This is stored for identification purposes
+   * in other threads.
+   */
+  GThread *               gtk_thread;
+
   /** Status text to be used in the splash screen. */
   char                    status[800];
 
   /** Semaphore for setting the progress in the
    * splash screen from a non-gtk thread. */
   ZixSem                  progress_status_lock;
+
+  /** Log settings. */
+  Log                     log;
 
   /** Flag to set when initialization has
    * finished. */

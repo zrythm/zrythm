@@ -495,8 +495,10 @@ if (get_option('enable_sdl'))
 endif
 
 if (get_option('enable_guile'))
-  guile_dep = dependency ('guile-3.0')
+  zrythm_deps += dependency ('guile-3.0')
+  zrythm_deps += dependency ('gtksourceview-3.0')
   cdata.set('HAVE_GUILE', 1)
+  cdata.set('HAVE_GTK_SOURCE_VIEW', 1)
 endif
 
 if os_windows

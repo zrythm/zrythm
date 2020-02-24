@@ -80,6 +80,7 @@ widget_srcs = files([
   'knob_with_name.c',
   'left_dock_edge.c',
   'live_waveform.c',
+  'log_viewer.c',
   'main_window.c',
   'marker.c',
   'marker_dialog.c',

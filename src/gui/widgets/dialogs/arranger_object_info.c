@@ -17,12 +17,6 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * \file
- *
- * ArrangerObjectInfo dialog.
- */
-
 #include "gui/backend/arranger_object.h"
 #include "gui/widgets/dialogs/arranger_object_info.h"
 #include "project.h"

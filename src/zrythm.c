@@ -402,7 +402,7 @@ init_thread (
     ZRYTHM,
     _("Initializing logging system"),
     0.02);
-  log_init ();
+  log_init (LOG);
 
   set_progress_status (
     ZRYTHM,
@@ -942,6 +942,7 @@ zrythm_app_new (void)
   ZRYTHM = self->zrythm;
   ZRYTHM->project = calloc (1, sizeof (Project));
   ZRYTHM->have_ui = 1;
+  ZRYTHM->gtk_thread = g_thread_self ();
 
   /* add shutdown handler */
   g_signal_connect (
@@ -986,7 +987,10 @@ zrythm_app_init (ZrythmApp * _app)
     { "bugreport", activate_bugreport },
     { "donate", activate_donate },
     { "iconify", activate_iconify },
+    { "log", activate_log },
     { "preferences", activate_preferences },
+    { "scripting-interface",
+      activate_scripting_interface },
     { "quit", activate_quit },
     { "shortcuts", activate_shortcuts },
   };

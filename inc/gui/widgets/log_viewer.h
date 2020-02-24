@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+ * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,42 +17,47 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __UTILS_LOG_H__
-#define __UTILS_LOG_H__
+/**
+ * \file
+ *
+ * Log viewer.
+ */
+
+#ifndef __GUI_WIDGETS_LOG_VIEWER_H__
+#define __GUI_WIDGETS_LOG_VIEWER_H__
 
 #include <gtk/gtk.h>
 
-typedef struct _LogViewerWidget LogViewerWidget;
+#define LOG_VIEWER_WIDGET_TYPE \
+  (log_viewer_widget_get_type ())
+G_DECLARE_FINAL_TYPE (
+  LogViewerWidget, log_viewer_widget,
+  Z, LOG_VIEWER_WIDGET,
+  GtkWindow)
 
 /**
- * @addtogroup utils
+ * @addtogroup widgets
  *
  * @{
  */
 
-#define LOG (&ZRYTHM->log)
-
-typedef struct Log
+/**
+ * Log viewer.
+ */
+typedef struct _LogViewerWidget
 {
-  FILE * logfile;
+  GtkWindow         parent_instance;
 
-  /* Buffers to fill in */
-  GtkTextBuffer * messages_buf;
-  GtkTextBuffer * warnings_buf;
-  GtkTextBuffer * critical_buf;
+  GtkScrolledWindow * scrolled_win;
+  GtkTextView *     text_view;
 
-  /** Currently opened log viewer. */
-  LogViewerWidget * viewer;
-} Log;
+} LogViewerWidget;
 
 /**
- * Initializes logging to a file.
- *
- * This can be called from any thread.
+ * Creates a log viewer widget.
  */
-void
-log_init (
-  Log * self);
+LogViewerWidget *
+log_viewer_widget_new (void);
 
 /**
  * @}

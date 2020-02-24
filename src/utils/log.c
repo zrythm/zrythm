@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex@zrythm.org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex@zrythm.org>
  *
  * This file is part of Zrythm
  *
@@ -24,8 +24,6 @@
 #include <glib/gprintf.h>
 #include <glib/gstdio.h>
 
-static FILE * logfile;
-
 /**
  * Log writer.
  */
@@ -34,30 +32,51 @@ log_writer (
   GLogLevelFlags log_level,
   const GLogField *fields,
   gsize n_fields,
-  gpointer user_data)
+  Log * self)
 {
   /* write to file */
   char * str =
     g_log_writer_format_fields (
       log_level, fields, n_fields, 0);
   g_fprintf (
-    logfile, "%s\n", str);
+    self->logfile, "%s\n", str);
+  fflush (self->logfile);
+
+  if (g_thread_self () == ZRYTHM->gtk_thread)
+    {
+      /* write to each buffer */
+      GtkTextIter iter;
+      gtk_text_buffer_get_end_iter (
+        self->messages_buf, &iter);
+      gtk_text_buffer_insert (
+        self->messages_buf, &iter, str, -1);
+      gtk_text_buffer_get_end_iter (
+        self->messages_buf, &iter);
+      gtk_text_buffer_insert (
+        self->messages_buf, &iter, "\n", -1);
+    }
+  else
+    {
+      /* TODO queue the message and then unqueue it
+       * above when in the gtk thread */
+    }
+
   g_free (str);
-  fflush (logfile);
 
   /* call the default log writer */
-  return g_log_writer_default (
-    log_level,
-    fields,
-    n_fields,
-    user_data);
+  return
+    g_log_writer_default (
+      log_level, fields, n_fields, self);
 }
 
 /**
  * Initializes logging to a file.
+ *
+ * This can be called from any thread.
  */
 void
-log_init ()
+log_init (
+  Log * self)
 {
   /* open file to write to */
   GDateTime * datetime =
@@ -72,15 +91,16 @@ log_init ()
       ZRYTHM->log_dir,
       G_DIR_SEPARATOR_S,
       str_datetime);
-  logfile =
+  self->logfile =
     g_fopen (str, "a");
-  g_return_if_fail (logfile);
+  g_return_if_fail (self->logfile);
   g_free (str);
   g_free (str_datetime);
   g_date_time_unref (datetime);
 
+  /* init buffers */
+  self->messages_buf = gtk_text_buffer_new (NULL);
+
   g_log_set_writer_func (
-    log_writer,
-    NULL,
-    NULL);
+    (GLogWriterFunc) log_writer, self, NULL);
 }

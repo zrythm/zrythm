@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -55,6 +55,7 @@
 #include "gui/widgets/file_browser_window.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/left_dock_edge.h"
+#include "gui/widgets/log_viewer.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_modifier_arranger.h"
@@ -279,9 +280,10 @@ activate_shortcuts (GSimpleAction *action,
  * Show preferences window.
  */
 void
-activate_preferences (GSimpleAction *action,
-                      GVariant      *variant,
-                      gpointer       user_data)
+activate_preferences (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
 {
   PreferencesWidget * widget =
     preferences_widget_new ();
@@ -290,6 +292,50 @@ activate_preferences (GSimpleAction *action,
     GTK_WINDOW (MAIN_WINDOW));
   gtk_widget_set_visible (GTK_WIDGET (widget),
                           1);
+}
+
+/**
+ * Show log window.
+ */
+void
+activate_log (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+  if (GTK_IS_WINDOW (LOG->viewer))
+    {
+      gtk_window_present (
+        GTK_WINDOW (LOG->viewer));
+    }
+  else
+    {
+      LOG->viewer = log_viewer_widget_new ();
+      gtk_window_set_transient_for (
+        GTK_WINDOW (LOG->viewer),
+        GTK_WINDOW (MAIN_WINDOW));
+      gtk_widget_set_visible (
+        GTK_WIDGET (LOG->viewer), 1);
+    }
+}
+
+/**
+ * Show scripting interface.
+ */
+void
+activate_scripting_interface (
+  GSimpleAction *action,
+  GVariant      *variant,
+  gpointer       user_data)
+{
+#if 0
+  ScriptingDialogWidget * widget =
+    scripting_dialog_widget_new ();
+  gtk_window_set_transient_for (
+    GTK_WINDOW (widget),
+    GTK_WINDOW (MAIN_WINDOW));
+  gtk_widget_set_visible (GTK_WIDGET (widget), 1);
+#endif
 }
 
 /**
