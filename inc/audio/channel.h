@@ -345,16 +345,18 @@ channel_get_phase (void * channel);
 
 
 void
-channel_set_pan (void * _channel, float pan);
+channel_set_balance_control (
+  void * _channel, float pan);
 
 /**
  * Adds to (or subtracts from) the pan.
  */
 void
-channel_add_pan (void * _channel, float pan);
+channel_add_balance_control (
+  void * _channel, float pan);
 
 float
-channel_get_pan (void * _channel);
+channel_get_balance_control (void * _channel);
 
 float
 channel_get_current_l_db (void * _channel);

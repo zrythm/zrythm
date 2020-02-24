@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,11 +29,10 @@ typedef struct _ExpanderBoxWidget ExpanderBoxWidget;
 
 #define CHANNEL_WIDGET_TYPE \
   (channel_widget_get_type ())
-G_DECLARE_FINAL_TYPE (ChannelWidget,
-                      channel_widget,
-                      Z,
-                      CHANNEL_WIDGET,
-                      GtkEventBox)
+G_DECLARE_FINAL_TYPE (
+  ChannelWidget, channel_widget,
+  Z, CHANNEL_WIDGET,
+  GtkEventBox)
 
 typedef struct _ColorAreaWidget ColorAreaWidget;
 typedef struct _KnobWidget KnobWidget;
@@ -42,7 +41,7 @@ typedef struct Channel Channel;
 typedef struct _ChannelSlotWidget ChannelSlotWidget;
 typedef struct _RouteTargetSelectorWidget
   RouteTargetSelectorWidget;
-typedef struct _PanWidget PanWidget;
+typedef struct _BalanceControlWidget BalanceControlWidget;
 typedef struct _EditableLabelWidget
   EditableLabelWidget;
 
@@ -77,8 +76,8 @@ typedef struct _ChannelWidget
   GtkToggleButton           * mute;
   GtkToggleButton     * record;
   GtkBox              * meter_area;  ///< vertical including reading
-  GtkBox *            pan_box;
-  PanWidget *         pan;
+  GtkBox *            balance_control_box;
+  BalanceControlWidget * balance_control;
   FaderWidget         * fader;
   MeterWidget         * meter_l;
   MeterWidget         * meter_r;

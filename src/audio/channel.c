@@ -729,7 +729,8 @@ channel_reconnect_ext_input_ports (
  * Adds to (or subtracts from) the pan.
  */
 void
-channel_add_pan (void * _channel, float pan)
+channel_add_balance_control (
+  void * _channel, float pan)
 {
   Channel * channel = (Channel *) _channel;
 
@@ -1253,7 +1254,9 @@ channel_get_phase (void * _channel)
 }
 
 void
-channel_set_pan (void * _channel, float pan)
+channel_set_balance_control (
+  void * _channel,
+  float pan)
 {
   Channel * channel = (Channel *) _channel;
   port_set_control_value (
@@ -1261,7 +1264,8 @@ channel_set_pan (void * _channel, float pan)
 }
 
 float
-channel_get_pan (void * _channel)
+channel_get_balance_control (
+  void * _channel)
 {
   Channel * channel = (Channel *) _channel;
   return

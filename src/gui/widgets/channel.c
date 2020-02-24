@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -39,7 +39,7 @@
 #include "gui/widgets/fader.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/mixer.h"
-#include "gui/widgets/pan.h"
+#include "gui/widgets/balance_control.h"
 #include "gui/widgets/route_target_selector.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
@@ -701,14 +701,15 @@ refresh_name (ChannelWidget * self)
 /*}*/
 
 static void
-setup_pan (ChannelWidget * self)
+setup_balance_control (ChannelWidget * self)
 {
-  self->pan =
-    pan_widget_new (
-      channel_get_pan, channel_set_pan,
+  self->balance_control =
+    balance_control_widget_new (
+      channel_get_balance_control, channel_set_balance_control,
       self->channel, 12);
   gtk_box_pack_start (
-    self->pan_box, GTK_WIDGET (self->pan),
+    self->balance_control_box,
+    GTK_WIDGET (self->balance_control),
     Z_GTK_NO_EXPAND, Z_GTK_FILL, 0);
 }
 
@@ -809,14 +810,13 @@ channel_widget_new (Channel * channel)
   self->channel = channel;
 
   /*setup_phase_panel (self);*/
-  /*setup_pan (self);*/
   setup_inserts (self);
   fader_widget_setup (
     self->fader,
     &self->channel->fader,
     40);
   setup_meter (self);
-  setup_pan (self);
+  setup_balance_control (self);
   setup_channel_icon (self);
   Track * track =
     channel_get_track (self->channel);
@@ -940,7 +940,7 @@ channel_widget_class_init (
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,
-    pan_box);
+    balance_control_box);
   gtk_widget_class_bind_template_child (
     klass,
     ChannelWidget,

@@ -387,7 +387,7 @@ scale-object:hover,
 marker:hover,
 fader:hover,
 channel-slot:hover:not(:selected),
-pan:hover,
+balance-control:hover,
 ruler-playhead:hover,
 arranger-playhed:hover,
 automation-point:hover

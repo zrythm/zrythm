@@ -95,7 +95,8 @@ edit_tracks_action_do (EditTracksAction * self)
           g_return_val_if_fail (ch, -1);
           /* FIXME this is not really gonna work for
            * multi tracks either */
-          channel_add_pan (ch, self->pan_delta);
+          channel_add_balance_control (
+            ch, self->pan_delta);
           break;
         }
 
@@ -141,7 +142,8 @@ edit_tracks_action_undo (
           g_return_val_if_fail (ch, -1);
           /* FIXME this is not really gonna work for
            * multi tracks either */
-          channel_add_pan (ch, - self->pan_delta);
+          channel_add_balance_control (
+            ch, - self->pan_delta);
           break;
         }
       EVENTS_PUSH (ET_TRACK_STATE_CHANGED,

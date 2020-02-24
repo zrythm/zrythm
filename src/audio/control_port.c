@@ -302,12 +302,12 @@ control_port_set_val_from_normalized (
       Track * track = port_get_track (self, 1);
       Channel * ch = track_get_channel (track);
       if (!math_floats_equal (
-            channel_get_pan (ch), val))
+            channel_get_balance_control (ch), val))
         {
           EVENTS_PUSH (
             ET_AUTOMATION_VALUE_CHANGED, self);
         }
-      channel_set_pan (ch, val);
+      channel_set_balance_control (ch, val);
     }
   else
     {

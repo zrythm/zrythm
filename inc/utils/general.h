@@ -43,6 +43,19 @@ utils_get_uint_from_bitfield_val (
   unsigned int bitfield);
 
 /**
+ * Getter prototype for float values.
+ */
+typedef float (*GenericFloatGetter) (
+  void * object);
+
+/**
+ * Setter prototype for float values.
+ */
+typedef void (*GenericFloatSetter) (
+  void * object,
+  float  val);
+
+/**
  * @}
  */
 
