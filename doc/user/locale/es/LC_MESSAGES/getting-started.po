@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 12:22+0000\n"
-"PO-Revision-Date: 2020-02-19 12:28+0000\n"
+"PO-Revision-Date: 2020-02-26 11:33+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualgetting-started/es/>\n"
@@ -17,26 +17,28 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../getting-started/additional-resources.rst:6
 msgid "Additional Resources"
-msgstr ""
+msgstr "Recursos adicionales"
 
 #: ../../getting-started/additional-resources.rst:9
 msgid "IRC/Matrix"
-msgstr ""
+msgstr "IRC y Matrix"
 
 #: ../../getting-started/additional-resources.rst:10
 msgid ""
 "We offer support on IRC at ``#zrythm`` on Freenode. Matrix users can use "
 "``#zrythmdaw:matrix.org``."
 msgstr ""
+"Ofrecemos asistencia por IRC en ``#zrythm`` en Freenode. Los usuarios de "
+"Matrix pueden emplear ``#zrythmdaw:matrix.org``."
 
 #: ../../getting-started/additional-resources.rst:14
 msgid "Issue Tracker"
-msgstr ""
+msgstr "Seguimiento de defectos"
 
 #: ../../getting-started/additional-resources.rst:15
 msgid ""
@@ -47,7 +49,7 @@ msgstr ""
 
 #: ../../getting-started/additional-resources.rst:20
 msgid "Source Code"
-msgstr "Código Fuente"
+msgstr "Código fuente"
 
 #: ../../getting-started/additional-resources.rst:21
 msgid ""
@@ -57,7 +59,7 @@ msgstr ""
 
 #: ../../getting-started/additional-resources.rst:25
 msgid "Older Versions"
-msgstr ""
+msgstr "Versiones anteriores"
 
 #: ../../getting-started/additional-resources.rst:26
 msgid ""
@@ -67,7 +69,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:6
 msgid "Getting Plugins"
-msgstr ""
+msgstr "Conseguir complementos"
 
 #: ../../getting-started/getting-plugins.rst:8
 msgid ""
@@ -102,7 +104,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:28
 msgid "Recommended Plugin Bundles"
-msgstr ""
+msgstr "Paquetes de complementos recomendados"
 
 #: ../../getting-started/getting-plugins.rst:30
 msgid ""
@@ -157,7 +159,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:59
 msgid "Percussion Generators"
-msgstr ""
+msgstr "Generadores de percusiones"
 
 #: ../../getting-started/getting-plugins.rst:61
 msgid ""
@@ -167,7 +169,7 @@ msgstr ""
 
 #: ../../getting-started/installation/freebsd.rst:6
 msgid "FreeBSD"
-msgstr ""
+msgstr "FreeBSD"
 
 #: ../../getting-started/installation/freebsd.rst:9
 #: ../../getting-started/installation/gnu-linux.rst:11
@@ -186,6 +188,8 @@ msgid ""
 "This is the easiest and recommended way to install the latest version for"
 " most users, and we provide support for it."
 msgstr ""
+"Esta constituye la manera más sencilla de instalar la versión más reciente, "
+"y es la que recomendamos para la mayoría de los usuarios."
 
 #: ../../getting-started/installation/freebsd.rst:18
 msgid "Port"
@@ -201,7 +205,7 @@ msgstr ""
 #: ../../getting-started/installation/freebsd.rst:23
 #: ../../getting-started/installation/gnu-linux.rst:43
 msgid "Manual Installation"
-msgstr ""
+msgstr "Instalación manual"
 
 #: ../../getting-started/installation/freebsd.rst:24
 msgid "See :ref:`gnu-with-linux-manual-installation`."
@@ -209,7 +213,7 @@ msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:6
 msgid "GNU with Linux"
-msgstr ""
+msgstr "GNU más Linux"
 
 #: ../../getting-started/installation/gnu-linux.rst:12
 msgid ""
@@ -220,35 +224,35 @@ msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:18
 msgid "The installer supports the following distros (and derivatives):"
-msgstr ""
+msgstr "El instalador admite las distribuciones siguientes (y sus derivadas):"
 
 #: ../../getting-started/installation/gnu-linux.rst:21
 msgid "**Ubuntu 18.04 & 19.04** - amd64"
-msgstr ""
+msgstr "**Ubuntu 18.04 y 19.04**, amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:22
 msgid "**LinuxMint 19.3** - amd64"
-msgstr ""
+msgstr "**Linux Mint 19.3**, amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:23
 msgid "**Debian 9 & 10** - amd64"
-msgstr ""
+msgstr "**Debian 9 y 10**, amd64"
 
 #: ../../getting-started/installation/gnu-linux.rst:24
 msgid "**Arch Linux** - x86_64"
-msgstr ""
+msgstr "**Arch Linux**, x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:25
 msgid "**Fedora 31** - x86_64"
-msgstr ""
+msgstr "**Fedora 31**, x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:26
 msgid "**OpenSUSE Tumbleweed** - x86_64"
-msgstr ""
+msgstr "**OpenSUSE Tumbleweed**, x86_64"
 
 #: ../../getting-started/installation/gnu-linux.rst:33
 msgid "Distro Package"
-msgstr ""
+msgstr "Paquete de distribución"
 
 #: ../../getting-started/installation/gnu-linux.rst:34
 msgid ""
@@ -257,6 +261,10 @@ msgid ""
 " it may be missing optimizations or features that we include with the "
 "installer."
 msgstr ""
+"Si su distribución proporciona un paquete de Zrythm, puede utilizarlo para "
+"obtener el programa, pero es probable que contenga una versión antigua o que "
+"carezca de determinadas optimizaciones o características que nuestro "
+"instalador incluye."
 
 #: ../../getting-started/installation/gnu-linux.rst:44
 msgid ""
@@ -267,7 +275,7 @@ msgstr ""
 
 #: ../../getting-started/installation/gnu-linux.rst:54
 msgid "See the ``INSTALL.md`` file for more information."
-msgstr ""
+msgstr "Consulte el archivo ``INSTALL.md`` para obtener más información."
 
 #: ../../getting-started/installation/intro.rst:6
 msgid "Installation"
@@ -275,7 +283,7 @@ msgstr "Instalación"
 
 #: ../../getting-started/installation/macos.rst:6
 msgid "MacOS"
-msgstr ""
+msgstr "macOS"
 
 #: ../../getting-started/installation/macos.rst:8
 msgid ""
@@ -285,13 +293,15 @@ msgstr ""
 
 #: ../../getting-started/installation/windows.rst:6
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #: ../../getting-started/installation/windows.rst:8
 msgid ""
 "A Windows installer is available for purchase at the `Download "
 "<https://www.zrythm.org/en/download.html>`_ page on our website."
 msgstr ""
+"Puede comprarse un instalador para Windows a través de la página de `"
+"descargas <https://www.zrythm.org/es/download.html>`_ de nuestro sitio web."
 
 #: ../../getting-started/installation/windows.rst:12
 msgid ""
@@ -303,62 +313,64 @@ msgstr ""
 
 #: ../../getting-started/intro.rst:6
 msgid "Getting Started"
-msgstr ""
+msgstr "Primeros pasos"
 
 #: ../../getting-started/system-requirements.rst:6
 msgid "System Requirements"
-msgstr ""
+msgstr "Requisitos del sistema"
 
 #: ../../getting-started/system-requirements.rst:9
 msgid "Minimum Requirements"
-msgstr ""
+msgstr "Requisitos mínimos"
 
 #: ../../getting-started/system-requirements.rst:12
 #: ../../getting-started/system-requirements.rst:26
 msgid "Hardware"
-msgstr ""
+msgstr "Soporte físico"
 
 #: ../../getting-started/system-requirements.rst:13
 msgid "x86_64, i686 or ARM processor"
-msgstr ""
+msgstr "Procesador x86_64, i686 o ARM"
 
 #: ../../getting-started/system-requirements.rst:16
 msgid "Operating System"
-msgstr ""
+msgstr "Sistema operativo"
 
 #: ../../getting-started/system-requirements.rst:17
 msgid "Unix-compatible OS or Windows"
-msgstr ""
+msgstr "Compatible con Unix o Windows"
 
 #: ../../getting-started/system-requirements.rst:20
 msgid "Recommended"
-msgstr ""
+msgstr "Recomendaciones"
 
 #: ../../getting-started/system-requirements.rst:21
 msgid ""
 "We recommend running a fairly modern machine with the following specs so "
 "you can take full advantage of Zrythm."
 msgstr ""
+"Recomendamos el uso de un equipo relativamente moderno que se ajuste a las "
+"especificaciones siguientes para poder aprovechar plenamente el programa."
 
 #: ../../getting-started/system-requirements.rst:27
 msgid "A fast processor"
-msgstr ""
+msgstr "Un procesador veloz"
 
 #: ../../getting-started/system-requirements.rst:28
 msgid "Large enough monitor"
-msgstr ""
+msgstr "Un monitor grande"
 
 #: ../../getting-started/system-requirements.rst:29
 msgid "Audio interface"
-msgstr ""
+msgstr "Interfaz de audio"
 
 #: ../../getting-started/system-requirements.rst:30
 msgid "MIDI keyboard"
-msgstr ""
+msgstr "Teclado MIDI"
 
 #: ../../getting-started/system-requirements.rst:33
 msgid "Software"
-msgstr ""
+msgstr "Soporte lógico"
 
 #: ../../getting-started/system-requirements.rst:34
 msgid ""
@@ -369,7 +381,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:40
 msgid "Audio Interface"
-msgstr ""
+msgstr "Interfaz de audio"
 
 #: ../../getting-started/system-requirements.rst:41
 msgid ""
@@ -379,7 +391,7 @@ msgstr ""
 
 #: ../../getting-started/system-requirements.rst:45
 msgid "JACK"
-msgstr ""
+msgstr "JACK"
 
 #: ../../getting-started/system-requirements.rst:46
 msgid ""
@@ -390,13 +402,15 @@ msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Generalidades"
 
 #: ../../getting-started/zrythm-overview.rst:8
 msgid ""
 "Zrythm is a digital audio workstation designed to be featureful and easy "
 "to use."
 msgstr ""
+"Zrythm es una estación de trabajo de audio digital diseñada para ser "
+"funcional y fácil de utilizar."
 
 #: ../../getting-started/zrythm-overview.rst:13
 msgid "Limitless automation"
@@ -411,7 +425,7 @@ msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:16
 msgid "LV2 and VST plugins"
-msgstr ""
+msgstr "Complementos LV2 y VST"
 
 #: ../../getting-started/zrythm-overview.rst:16
 msgid "Supports the free LV2 plugin format, with added support for VST."
@@ -419,7 +433,7 @@ msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:18
 msgid "JACK support"
-msgstr ""
+msgstr "Admite JACK"
 
 #: ../../getting-started/zrythm-overview.rst:19
 msgid "JACK aware, with support for JACK transport."
@@ -427,7 +441,7 @@ msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:21
 msgid "Chord assistance"
-msgstr ""
+msgstr "Asistencia armónica"
 
 #: ../../getting-started/zrythm-overview.rst:21
 msgid ""
