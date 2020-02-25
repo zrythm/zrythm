@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-02-26 11:34+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualplayback-and-recording/es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../playback-and-recording/arming-for-recording.rst:19
@@ -129,7 +132,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:19
 msgid "Overview"
-msgstr ""
+msgstr "Generalidades"
 
 #: ../../playback-and-recording/overview.rst:21
 msgid ""
@@ -159,7 +162,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording-audio.rst:19
 msgid "Recording Audio"
-msgstr ""
+msgstr "Grabación de audio"
 
 #: ../../playback-and-recording/recording-automation.rst:19
 msgid "Recording Automation"
@@ -167,7 +170,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording-midi.rst:19
 msgid "Recording MIDI"
-msgstr ""
+msgstr "Grabación de MIDI"
 
 #: ../../playback-and-recording/transport-controls.rst:19
 msgid "Transport Controls"
@@ -233,8 +236,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:45
 msgid "Metronome"
-msgstr ""
+msgstr "Metrónomo"
 
 #~ msgid "Zrythm uses the following format for positions::"
 #~ msgstr ""
-
