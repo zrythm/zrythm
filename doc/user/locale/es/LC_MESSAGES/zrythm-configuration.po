@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-24 18:35+0100\n"
-"PO-Revision-Date: 2020-02-19 12:28+0000\n"
+"PO-Revision-Date: 2020-02-26 11:33+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-configuration/es/>\n"
@@ -17,16 +17,16 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.6.0\n"
 
 #: ../../zrythm-configuration/device-setup/intro.rst:2
 msgid "Device Setup"
-msgstr ""
+msgstr "Configuración de dispositivos"
 
 #: ../../zrythm-configuration/device-setup/intro.rst:5
 msgid "Connecting MIDI and Audio Devices"
-msgstr ""
+msgstr "Conexión de dispositivos MIDI y de audio"
 
 #: ../../zrythm-configuration/device-setup/intro.rst:6
 msgid ""
@@ -83,7 +83,7 @@ msgstr ""
 
 #: ../../zrythm-configuration/installation/intro.rst:23
 msgid "Manual Installation"
-msgstr ""
+msgstr "Instalación manual"
 
 #: ../../zrythm-configuration/installation/intro.rst:24
 msgid "The usual GNU toolchain procedure applies::"
@@ -109,11 +109,11 @@ msgstr ""
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:2
 msgid "System Requirements"
-msgstr ""
+msgstr "Requisitos del sistema"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:5
 msgid "Minimum Requirements"
-msgstr ""
+msgstr "Requisitos mínimos"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:6
 msgid ""
@@ -132,7 +132,7 @@ msgstr ""
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:13
 msgid "Audio Interface"
-msgstr ""
+msgstr "Interfaz de audio"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:14
 msgid ""
@@ -142,7 +142,7 @@ msgstr ""
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:17
 msgid "JACK"
-msgstr ""
+msgstr "JACK"
 
 #: ../../zrythm-configuration/system-requirements/intro.rst:18
 msgid ""
