@@ -89,13 +89,18 @@ header_notebook_widget_init (
     tooltip)
   SET_TOOLTIP (z_icon, _("About Zrythm"));
   SET_TOOLTIP (preferences, _("Preferences"));
+  SET_TOOLTIP (log_viewer, _("Log viewer"));
+  SET_TOOLTIP (
+    scripting_interface, _("Scripting interface"));
 #undef SET_TOOLTIP
 }
 
 static void
-header_notebook_widget_class_init (HeaderNotebookWidgetClass * _klass)
+header_notebook_widget_class_init (
+  HeaderNotebookWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass =
+    GTK_WIDGET_CLASS (_klass);
 
   resources_set_class_template (
     klass, "header_notebook.ui");
@@ -114,6 +119,8 @@ header_notebook_widget_class_init (HeaderNotebookWidgetClass * _klass)
   BIND_CHILD (prj_name_label);
   BIND_CHILD (z_icon);
   BIND_CHILD (preferences);
+  BIND_CHILD (log_viewer);
+  BIND_CHILD (scripting_interface);
 
 #undef BIND_CHILD
 }

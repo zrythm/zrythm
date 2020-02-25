@@ -155,7 +155,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolButton" id="view_scripting_interface">
+          <object class="GtkToolButton" id="scripting_interface">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="action_name">app.scripting-interface</property>
@@ -167,7 +167,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolButton" id="view_log">
+          <object class="GtkToolButton" id="log_viewer">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="action_name">app.log</property>

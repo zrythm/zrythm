@@ -59,6 +59,8 @@ typedef struct _HeaderNotebookWidget
   HelpToolbarWidget * help_toolbar;
 
   GtkToolButton *     preferences;
+  GtkToolButton *     log_viewer;
+  GtkToolButton *     scripting_interface;
   GtkToolButton *     z_icon;
   GtkLabel *          prj_name_label;
 } HeaderNotebookWidget;
