@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 12:22+0000\n"
-"PO-Revision-Date: 2020-02-19 12:28+0000\n"
+"PO-Revision-Date: 2020-02-26 11:33+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/es/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -71,11 +71,11 @@ msgstr ""
 
 #: ../../configuration/device-setup/intro.rst:6
 msgid "Device Setup"
-msgstr ""
+msgstr "Configuración de dispositivos"
 
 #: ../../configuration/device-setup/intro.rst:9
 msgid "Connecting MIDI and Audio Devices"
-msgstr ""
+msgstr "Conexión de dispositivos MIDI y de audio"
 
 #: ../../configuration/device-setup/intro.rst:11
 msgid ""
@@ -109,7 +109,7 @@ msgstr ""
 
 #: ../../configuration/device-setup/intro.rst:36
 msgid "JACK"
-msgstr ""
+msgstr "JACK"
 
 #: ../../configuration/device-setup/intro.rst:38
 msgid ""
@@ -248,17 +248,17 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:20
 #: ../../configuration/preferences/intro.rst:69
 msgid "GUI"
-msgstr ""
+msgstr "IGU"
 
 #: ../../configuration/preferences/intro.rst:21
 #: ../../configuration/preferences/intro.rst:60
 msgid "Plugins"
-msgstr ""
+msgstr "Complementos"
 
 #: ../../configuration/preferences/intro.rst:22
 #: ../../configuration/preferences/intro.rst:75
 msgid "Projects"
-msgstr ""
+msgstr "Proyectos"
 
 #: ../../configuration/preferences/intro.rst:28
 msgid "Audio Backend"
@@ -278,7 +278,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:34
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "Controladores MIDI"
 
 #: ../../configuration/preferences/intro.rst:34
 msgid "MIDI devices to auto-connect to when Zrythm starts."
@@ -321,7 +321,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:63
 msgid "Always open plugin UIs"
-msgstr ""
+msgstr "Siempre abrir IU de los complementos"
 
 #: ../../configuration/preferences/intro.rst:63
 msgid "Always show the plugin UI when instantiating plugins."
