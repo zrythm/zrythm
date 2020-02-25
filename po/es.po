@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-01-28 21:43+0000\n"
-"PO-Revision-Date: 2020-02-19 12:28+0000\n"
+"PO-Revision-Date: 2020-02-26 11:33+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: src/zrythm.c:282
 msgid "Setting up main window"
-msgstr "Ajustar ventana principal"
+msgstr "Configurando ventana principal"
 
 #: src/zrythm.c:323
 msgid "Loading project"
@@ -41,31 +41,31 @@ msgstr "Iniciando directorios de Zrythm"
 
 #: src/zrythm.c:388
 msgid "Initializing logging system"
-msgstr ""
+msgstr "Iniciando sistema de registros"
 
 #: src/zrythm.c:394
 msgid "Initializing symap"
-msgstr ""
+msgstr "Iniciando symap"
 
 #: src/zrythm.c:400
 msgid "Initializing caches"
-msgstr "Iniciando cachés"
+msgstr "Iniciando antememorias"
 
 #: src/zrythm.c:407
 msgid "Initializing plugin manager"
-msgstr "Iniciando gestor de plugins"
+msgstr "Iniciando gestor de complementos"
 
 #: src/zrythm.c:415
 msgid "Scanning plugins"
-msgstr "Escaneando plugins"
+msgstr "Analizando complementos"
 
 #: src/zrythm.c:562
 msgid "License Information"
-msgstr ""
+msgstr "Información sobre la licencia"
 
 #: src/zrythm.c:584
 msgid "Waiting for project"
-msgstr ""
+msgstr "Esperando un proyecto"
 
 #: src/project.c:368 src/gui/widgets/route_target_selector_popover.c:147
 #: src/audio/track.c:1292
@@ -79,6 +79,9 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"Se encontró una copia de respaldo más reciente:\n"
+"  %s.\n"
+"¿Quiere utilizar la copia más reciente?"
 
 #: src/project.c:533
 #, c-format
@@ -86,34 +89,40 @@ msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
 "work correctly."
 msgstr ""
+"Este proyecto se creó con una versión distinta de Zrythm (%s). Puede que no "
+"funcione adecuadamente."
 
 #: src/project.c:548
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
+"No se pudo cargar el proyecto. Revise los registros para obtener más "
+"información."
 
 #: src/project.c:986
 msgid "Backup saved."
-msgstr ""
+msgstr "Se guardó una copia de respaldo."
 
 #: src/project.c:993
 msgid "Project saved."
-msgstr ""
+msgstr "Se guardó el proyecto."
 
 #: src/main.c:91
 #, c-format
 msgid "Error - Backtrace:\n"
-msgstr ""
+msgstr "Error. Seguimiento regresivo:\n"
 
 #: src/main.c:116
 #, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr ""
+msgstr "Error: %s. Seguimiento regresivo:\n"
 
 #: src/main.c:165
 #, c-format
 msgid ""
 "Zrythm has crashed. Please help us fix this by %ssubmitting a bug report%s."
 msgstr ""
+"Zrythm se cerró repentinamente. Ayude a corregirlo %sinformándonos del "
+"problema%s."
 
 #: src/main.c:238
 #, c-format
@@ -131,6 +140,18 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "Website https://www.zrythm.org\n"
 msgstr ""
+"Uso: zrythm [ OPCIONES ] [ NOMBRE-DE-PROYECTO ]\n"
+"\n"
+"Opciones:\n"
+"  -h, --help      mostrar esta ayuda y salir\n"
+"  -v, --version   mostrar información de versión y salir\n"
+"\n"
+"Ejemplos:\n"
+"  zrythm          ejecutarlo con normalidad\n"
+"\n"
+"Envíe sus comentarios e informes de defecto a %s\n"
+"Apoye este proyecto en https://liberapay.com/Zrythm\n"
+"Sitio web https://www.zrythm.org\n"
 
 #: src/main.c:298
 #, c-format
@@ -153,7 +174,7 @@ msgstr ""
 
 #: src/plugins/lv2/lv2_gtk.c:153
 msgid "Save State"
-msgstr ""
+msgstr "Guardar estado"
 
 #: src/plugins/lv2/lv2_gtk.c:156 src/plugins/lv2/lv2_gtk.c:584
 #: src/utils/dialogs.c:41 src/utils/dialogs.c:71 src/actions/actions.c:685
@@ -161,19 +182,19 @@ msgstr ""
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
-msgstr "_ Cancelar"
+msgstr "_Cancelar"
 
 #: src/plugins/lv2/lv2_gtk.c:157 src/actions/actions.c:687
 msgid "_Save"
-msgstr "_ Guardar"
+msgstr "_Guardar"
 
 #: src/plugins/lv2/lv2_gtk.c:484
 msgid "URI (Optional):"
-msgstr ""
+msgstr "URI (opcional):"
 
 #: src/plugins/lv2/lv2_gtk.c:488
 msgid "_Prefix plugin name"
-msgstr ""
+msgstr "_Prefijar nombre de complemento"
 
 #: src/plugins/lv2/lv2_gtk.c:579
 msgid "Delete Preset?"
@@ -182,7 +203,7 @@ msgstr ""
 #: src/plugins/lv2/lv2_gtk.c:585 src/utils/dialogs.c:69
 #: resources/ui/port_selector_popover.ui:227 resources/ui/marker_dialog.ui:61
 msgid "_OK"
-msgstr ""
+msgstr "_Aceptar"
 
 #: src/plugins/lv2/lv2_gtk.c:798
 msgid "Unknown widget type for value"
@@ -203,7 +224,7 @@ msgstr "Proyecto sin Título"
 
 #: src/gui/widgets/create_project_dialog.c:122
 msgid "Untitled Project"
-msgstr "Proyecto sin Título"
+msgstr "Proyecto sin título"
 
 #: src/gui/widgets/port_connections_popover.c:62
 msgid "INPUTS"
@@ -255,7 +276,7 @@ msgstr ""
 
 #: src/gui/widgets/track_properties_expander.c:96
 msgid "Track Name"
-msgstr ""
+msgstr "Nombre de pista"
 
 #: src/gui/widgets/track_properties_expander.c:108
 msgid "Direct Out"
@@ -384,7 +405,7 @@ msgstr "Proyecto sin Título"
 
 #: src/gui/widgets/left_dock_edge.c:103
 msgid "Inspector"
-msgstr ""
+msgstr "Inspector"
 
 #: src/gui/widgets/left_dock_edge.c:123
 #: resources/ui/chord_selector_window.ui:683
@@ -602,6 +623,7 @@ msgstr ""
 #: src/gui/widgets/about_dialog.c:80
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
+"una estación de trabajo digital para audio altamente automatizada e intuitiva"
 
 #: src/gui/widgets/about_dialog.c:84
 msgid "Website"
@@ -770,7 +792,7 @@ msgstr ""
 #: src/gui/widgets/event_viewer.c:105 resources/ui/inspector_master.ui:31
 #: resources/ui/inspector_ap.ui:31 resources/ui/inspector_midi.ui:31
 msgid "Region"
-msgstr ""
+msgstr "Región"
 
 #: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1304
 msgid "Marker"
@@ -848,7 +870,7 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:173
 msgid "Controls"
-msgstr ""
+msgstr "Controles"
 
 #: src/gui/widgets/ports_expander.c:176
 msgid "Control Outs"
@@ -961,7 +983,7 @@ msgstr ""
 
 #: src/gui/widgets/view_toolbar.c:44
 msgid "Fullscreen"
-msgstr ""
+msgstr "Pantalla completa"
 
 #: src/gui/widgets/view_toolbar.c:45
 msgid "Toggle Left Panel"
@@ -1167,7 +1189,7 @@ msgstr ""
 
 #: src/audio/region.c:275 src/audio/track.c:1283
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: src/audio/region.c:278 src/audio/track.c:1280
 msgid "Audio"
@@ -1626,11 +1648,11 @@ msgstr ""
 
 #: resources/ui/bot_dock_edge.ui:119
 msgid "Mixer"
-msgstr ""
+msgstr "Mezclador"
 
 #: resources/ui/bot_dock_edge.ui:156
 msgid "Modulators"
-msgstr ""
+msgstr "Moduladores"
 
 #: resources/ui/bot_dock_edge.ui:193
 msgid "Chord Pad"
@@ -1830,7 +1852,7 @@ msgstr ""
 
 #: resources/ui/shortcuts.ui:99 resources/ui/header_notebook.ui:55
 msgid "Project"
-msgstr ""
+msgstr "Proyecto"
 
 #: resources/ui/shortcuts.ui:111
 msgid "Open a project"
@@ -2066,7 +2088,7 @@ msgstr ""
 
 #: resources/ui/port_selector_popover.ui:61
 msgid "Track"
-msgstr ""
+msgstr "Pista"
 
 #: resources/ui/port_selector_popover.ui:114
 msgid "Plugin"
@@ -2150,27 +2172,27 @@ msgstr ""
 
 #: resources/ui/file_browser.ui:107
 msgid "Location"
-msgstr ""
+msgstr "Ubicación"
 
 #: resources/ui/marker_dialog.ui:94
 msgid "Marker name"
-msgstr ""
+msgstr "Nombre de marcador"
 
 #: resources/ui/header_notebook.ui:37
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: resources/ui/header_notebook.ui:74
 msgid "View"
-msgstr ""
+msgstr "Ver"
 
 #: resources/ui/header_notebook.ui:93
 msgid "Help"
-msgstr ""
+msgstr "Ayuda"
 
 #: resources/ui/header_notebook.ui:147
 msgid "Project name"
-msgstr ""
+msgstr "Nombre del proyecto"
 
 #: resources/ui/quantize_dialog.ui:7
 msgid "Quantize Options"
@@ -2190,7 +2212,7 @@ msgstr ""
 
 #: resources/ui/quantize_dialog.ui:183
 msgid "Amount"
-msgstr ""
+msgstr "Cantidad"
 
 #: resources/ui/quantize_dialog.ui:223
 msgid "Swing"
@@ -2198,11 +2220,11 @@ msgstr ""
 
 #: resources/ui/quantize_dialog.ui:251
 msgid "Randomization"
-msgstr ""
+msgstr "Aleatorización"
 
 #: resources/ui/top_bar.ui:31
 msgid "Metronome"
-msgstr ""
+msgstr "Metrónomo"
 
 #: resources/ui/top_bar.ui:87
 msgid "MIDI in activity"
@@ -2210,23 +2232,23 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:27
 msgid "Export As..."
-msgstr ""
+msgstr "Exportar como…"
 
 #: resources/ui/export_dialog.ui:60
 msgid "Export"
-msgstr ""
+msgstr "Exportar"
 
 #: resources/ui/export_dialog.ui:87
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: resources/ui/export_dialog.ui:98
 msgid "Genre"
-msgstr ""
+msgstr "Género"
 
 #: resources/ui/export_dialog.ui:109 data/zrythm.desktop.in:20
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: resources/ui/export_dialog.ui:120
 msgid "Electronic"
@@ -2234,7 +2256,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:131
 msgid "Format"
-msgstr ""
+msgstr "Formato"
 
 #: resources/ui/export_dialog.ui:150
 msgid "Dither"
@@ -2253,7 +2275,7 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:195
 msgid "Output Files"
-msgstr ""
+msgstr "Archivos de salida"
 
 #: resources/ui/export_dialog.ui:207
 msgid "Filename Pattern"
@@ -2261,23 +2283,24 @@ msgstr ""
 
 #: resources/ui/export_dialog.ui:227
 msgid "Song"
-msgstr ""
+msgstr "Canción"
 
 #: resources/ui/export_dialog.ui:265
 msgid "Time Range"
-msgstr ""
+msgstr "Intervalo temporal"
 
 #: resources/ui/export_dialog.ui:277
 msgid "Tracks"
-msgstr ""
+msgstr "Pistas"
 
 #: resources/ui/export_dialog.ui:298
 msgid "Bit depth"
-msgstr ""
+msgstr "Profundidad de bits"
 
 #: resources/ui/main_window.ui:120
 msgid "This is an app-notification. Click the button to dismiss"
 msgstr ""
+"Esta es una notificación de la aplicación. Pulse en el botón para descartarla"
 
 #: resources/ui/clip_editor.ui:30
 msgid "No clip selected"
@@ -2321,7 +2344,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:110
 msgid "Engine"
-msgstr ""
+msgstr "Motor"
 
 #: resources/ui/preferences.ui:135
 msgid "The audio backend to connect to"
@@ -2329,7 +2352,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:148
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "Controladores MIDI"
 
 #: resources/ui/preferences.ui:181
 msgid "The MIDI backend to connect to"
@@ -2353,7 +2376,7 @@ msgstr ""
 
 #: resources/ui/preferences.ui:235
 msgid "Zrythm path"
-msgstr ""
+msgstr "Ruta de Zrythm"
 
 #: resources/ui/preferences.ui:246
 msgid "The global Zrythm working path for non-project related files"
@@ -2361,23 +2384,23 @@ msgstr ""
 
 #: resources/ui/preferences.ui:267
 msgid "Device Name"
-msgstr ""
+msgstr "Nombre del dispositivo"
 
 #: resources/ui/preferences.ui:302
 msgid "Buffer Size"
-msgstr ""
+msgstr "Tamaño de memoria intermedia"
 
 #: resources/ui/preferences.ui:326
 msgid "Samplerate"
-msgstr ""
+msgstr "Tasa de muestreo"
 
 #: resources/ui/preferences.ui:387 resources/ui/preferences.ui:456
 msgid "Plugins"
-msgstr ""
+msgstr "Complementos"
 
 #: resources/ui/preferences.ui:397
 msgid "Always open plugin UIs"
-msgstr ""
+msgstr "Siempre abrir IU de los complementos"
 
 #: resources/ui/preferences.ui:401
 msgid "Always show the plugin UI when instantiating a plugin"
@@ -2397,32 +2420,31 @@ msgstr ""
 
 #: resources/ui/preferences.ui:472
 msgid "Main Window"
-msgstr ""
+msgstr "Ventana principal"
 
 #: resources/ui/preferences.ui:489
 msgid "Editing"
-msgstr ""
+msgstr "Edición"
 
 #: resources/ui/preferences.ui:505
 msgid "Interface"
-msgstr ""
+msgstr "Interfaz"
 
 #: resources/ui/preferences.ui:530
 msgid "The language of the Zrythm interface"
-msgstr ""
+msgstr "La lengua de la interfaz de Zrythm"
 
 #: resources/ui/preferences.ui:562
 msgid "GUI"
-msgstr ""
+msgstr "IGU"
 
 #: resources/ui/preferences.ui:579 resources/ui/preferences.ui:625
-#, fuzzy
 msgid "Projects"
-msgstr "Proyecto sin Título"
+msgstr "Proyectos"
 
 #: resources/ui/preferences.ui:591
 msgid "Autosave interval"
-msgstr ""
+msgstr "Lapso de guardado automático"
 
 #: resources/ui/preferences.ui:602
 msgid ""
@@ -2432,7 +2454,7 @@ msgstr ""
 
 #: data/zrythm.desktop.in:21
 msgid "Digital Audio Workstation"
-msgstr ""
+msgstr "Estación de trabajo de audio digital"
 
 #: data/zrythm.desktop.in:23
 msgid "highly automated and intuitive digital audio workstation"
