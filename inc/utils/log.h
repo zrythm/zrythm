@@ -23,6 +23,7 @@
 #include <gtk/gtk.h>
 
 typedef struct _LogViewerWidget LogViewerWidget;
+typedef struct MPMCQueue MPMCQueue;
 
 /**
  * @addtogroup utils
@@ -40,6 +41,10 @@ typedef struct Log
   GtkTextBuffer * messages_buf;
   GtkTextBuffer * warnings_buf;
   GtkTextBuffer * critical_buf;
+
+  /** Message queue, for when messages are sent
+   * from a non-gtk thread. */
+  MPMCQueue *     mqueue;
 
   /** Currently opened log viewer. */
   LogViewerWidget * viewer;

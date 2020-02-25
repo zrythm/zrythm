@@ -17,6 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "utils/mpmc_queue.h"
 #include "utils/log.h"
 #include "zrythm.h"
 
@@ -24,8 +25,47 @@
 #include <glib/gprintf.h>
 #include <glib/gstdio.h>
 
+#define MESSAGES_MAX 1000
+
+/**
+ * Write a log message to the log file and to each
+ * buffer.
+ */
+static int
+write_str (
+  Log *          self,
+  GLogLevelFlags log_level,
+  char *         str)
+{
+  /* write to file */
+  g_fprintf (
+    self->logfile, "%s\n", str);
+  fflush (self->logfile);
+
+  /* write to each buffer */
+  GtkTextIter iter;
+  gtk_text_buffer_get_end_iter (
+    self->messages_buf, &iter);
+  gtk_text_buffer_insert (
+    self->messages_buf, &iter, str, -1);
+  gtk_text_buffer_get_end_iter (
+    self->messages_buf, &iter);
+  gtk_text_buffer_insert (
+    self->messages_buf, &iter, "\n", -1);
+
+  return 0;
+}
+
 /**
  * Log writer.
+ *
+ * If a message is logged from the GTK thread,
+ * the message is written immediately, otherwise it
+ * is saved to the queue.
+ *
+ * The queue is only popped when there is a new
+ * message in the GTK thread, so the messages will
+ * stay in the queue until then.
  */
 static GLogWriterOutput
 log_writer (
@@ -34,34 +74,32 @@ log_writer (
   gsize n_fields,
   Log * self)
 {
-  /* write to file */
   char * str =
     g_log_writer_format_fields (
       log_level, fields, n_fields, 0);
-  g_fprintf (
-    self->logfile, "%s\n", str);
-  fflush (self->logfile);
 
   if (g_thread_self () == ZRYTHM->gtk_thread)
     {
-      /* write to each buffer */
-      GtkTextIter iter;
-      gtk_text_buffer_get_end_iter (
-        self->messages_buf, &iter);
-      gtk_text_buffer_insert (
-        self->messages_buf, &iter, str, -1);
-      gtk_text_buffer_get_end_iter (
-        self->messages_buf, &iter);
-      gtk_text_buffer_insert (
-        self->messages_buf, &iter, "\n", -1);
+      /* write queued messages */
+      char * queued_str;
+      while (
+        mpmc_queue_dequeue (
+          self->mqueue, (void *) &queued_str))
+        {
+          write_str (self, log_level, queued_str);
+          g_free (queued_str);
+        }
+
+      /* write current message */
+      write_str (self, log_level, str);
+      g_free (str);
     }
   else
     {
-      /* TODO queue the message and then unqueue it
-       * above when in the gtk thread */
+      /* queue the message */
+      mpmc_queue_push_back (
+        self->mqueue, (void *) str);
     }
-
-  g_free (str);
 
   /* call the default log writer */
   return
@@ -100,6 +138,12 @@ log_init (
 
   /* init buffers */
   self->messages_buf = gtk_text_buffer_new (NULL);
+
+  /* init the message queue */
+  self->mqueue = mpmc_queue_new ();
+  mpmc_queue_reserve (
+    self->mqueue,
+    (size_t) MESSAGES_MAX * sizeof (char *));
 
   g_log_set_writer_func (
     (GLogWriterFunc) log_writer, self, NULL);
