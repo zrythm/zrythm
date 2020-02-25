@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:54+0000\n"
-"PO-Revision-Date: 2020-02-19 12:28+0000\n"
+"PO-Revision-Date: 2020-02-26 11:33+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/es/>\n"
@@ -17,12 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.11\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
 msgid "Basic Concepts and Terminology"
-msgstr ""
+msgstr "Conceptos básicos y terminología"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:8
 msgid ""
@@ -32,7 +32,7 @@ msgstr ""
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
 msgid "Region"
-msgstr ""
+msgstr "Región"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
 msgid ""
@@ -48,7 +48,7 @@ msgstr ""
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
 msgid "Track"
-msgstr ""
+msgstr "Pista"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:28
 msgid ""
@@ -60,7 +60,7 @@ msgstr ""
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:39
 msgid "Channel"
-msgstr ""
+msgstr "Canal"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
 msgid ""
@@ -71,23 +71,25 @@ msgstr ""
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
 msgid "Range"
-msgstr ""
+msgstr "Intervalo"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:50
 msgid "A Range is a selection of time between two positions."
-msgstr ""
+msgstr "Un intervalo es una selección de tiempo entre dos posiciones."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:56
 msgid "MIDI Note"
-msgstr ""
+msgstr "Nota MIDI"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:57
 msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
+"Las notas MIDI se emplean para desencadenar instrumentos virtuales (o "
+"físicos)."
 
 #: ../../zrythm-interface/editors.rst:6
 msgid "Editors"
-msgstr ""
+msgstr "Editores"
 
 #: ../../zrythm-interface/editors.rst:8
 msgid ""
@@ -109,7 +111,7 @@ msgstr ""
 
 #: ../../zrythm-interface/editors.rst:24
 msgid "Automation Editor"
-msgstr ""
+msgstr "Editor de automatización"
 
 #: ../../zrythm-interface/editors.rst:26
 msgid ""
@@ -121,7 +123,7 @@ msgstr ""
 
 #: ../../zrythm-interface/editors.rst:35
 msgid "Chord Editor"
-msgstr ""
+msgstr "Editor de acordes"
 
 #: ../../zrythm-interface/editors.rst:37
 msgid "The Chord Editor is used for editing Chord Regions."
@@ -133,7 +135,7 @@ msgstr ""
 
 #: ../../zrythm-interface/global-menus.rst:6
 msgid "Global Menus"
-msgstr ""
+msgstr "Menús globales"
 
 #: ../../zrythm-interface/global-menus.rst:8
 msgid "Zrythm has the following global menus at the top of its interface."
@@ -141,11 +143,11 @@ msgstr ""
 
 #: ../../zrythm-interface/global-menus.rst:14
 msgid "Zrythm icon"
-msgstr ""
+msgstr "Icono de Zrythm"
 
 #: ../../zrythm-interface/global-menus.rst:14
 msgid "Clicking this will show the About dialog"
-msgstr ""
+msgstr "Al pulsarlo se mostrará el cuadro de diálogo Acerca de"
 
 #: ../../zrythm-interface/global-menus.rst:17
 msgid "Home"
@@ -159,7 +161,7 @@ msgstr ""
 
 #: ../../zrythm-interface/global-menus.rst:20
 msgid "Project"
-msgstr ""
+msgstr "Proyecto"
 
 #: ../../zrythm-interface/global-menus.rst:20
 msgid ""
@@ -169,7 +171,7 @@ msgstr ""
 
 #: ../../zrythm-interface/global-menus.rst:23
 msgid "View"
-msgstr ""
+msgstr "Ver"
 
 #: ../../zrythm-interface/global-menus.rst:23
 msgid ""
@@ -179,15 +181,15 @@ msgstr ""
 
 #: ../../zrythm-interface/global-menus.rst:25
 msgid "Help"
-msgstr ""
+msgstr "Ayuda"
 
 #: ../../zrythm-interface/global-menus.rst:26
 msgid "Links for reporting bugs, donating, chatting, etc."
-msgstr ""
+msgstr "Enlaces para informar de defectos, donar, charlar, etcétera."
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
-msgstr ""
+msgstr "Interfaz"
 
 #: ../../zrythm-interface/mini-timeline.rst:6
 msgid "Timeline Minimap"
@@ -202,7 +204,7 @@ msgstr ""
 
 #: ../../zrythm-interface/mixer.rst:6
 msgid "Mixer"
-msgstr ""
+msgstr "Mezclador"
 
 #: ../../zrythm-interface/mixer.rst:8
 msgid ""
@@ -210,10 +212,13 @@ msgid ""
 "project are shown. The Mixer is used to mix the audio signals from each "
 "Channel."
 msgstr ""
+"La pestaña Mezclador contiene el mezclador, donde se muestran todos los "
+"canales visibles del proyecto. El mezclador puede utilizarse para mezclar "
+"las señales auditivas provenientes de cada canal."
 
 #: ../../zrythm-interface/ruler.rst:6
 msgid "Ruler"
-msgstr ""
+msgstr "Regla"
 
 #: ../../zrythm-interface/ruler.rst:8
 msgid ""
@@ -227,6 +232,8 @@ msgid ""
 "The ruler will display more or less information depending on the current "
 "zoom level. It will also display the following markers/ indicators."
 msgstr ""
+"La regla mostrará más o menos información en función del nivel de escala "
+"actual. Asimismo mostrará los marcadores/indicadores siguientes."
 
 #: ../../zrythm-interface/ruler.rst:19
 msgid "Cue point"
@@ -238,7 +245,7 @@ msgstr ""
 
 #: ../../zrythm-interface/ruler.rst:21
 msgid "Playhead position"
-msgstr ""
+msgstr "Posición del cabezal"
 
 #: ../../zrythm-interface/ruler.rst:22
 msgid "Shown as a grey, down-facing arrow."
