@@ -3,27 +3,30 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:30+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-02-26 11:34+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualcontributing/es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../contributing/intro.rst:6
 msgid "Contributing"
-msgstr ""
+msgstr "Contribuir"
 
 #: ../../contributing/intro.rst:9
 msgid "Coding"
-msgstr ""
+msgstr "Programación"
 
 #: ../../contributing/intro.rst:11
 msgid ""
@@ -36,7 +39,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:18
 msgid "Artwork and Themes"
-msgstr ""
+msgstr "Arte visual y temas"
 
 #: ../../contributing/intro.rst:20
 msgid ""
@@ -57,7 +60,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:34
 msgid "Testing"
-msgstr ""
+msgstr "Puesta a prueba"
 
 #: ../../contributing/intro.rst:36
 msgid ""
@@ -75,7 +78,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:47
 msgid "Translation"
-msgstr ""
+msgstr "Traducción"
 
 #: ../../contributing/intro.rst:49
 msgid ""
@@ -91,7 +94,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:55
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: ../../contributing/intro.rst:56
 msgid "The actual Zrythm program"
@@ -99,7 +102,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:57
 msgid "website"
-msgstr ""
+msgstr "sitio web"
 
 #: ../../contributing/intro.rst:58
 msgid "The Zrythm website (https://www.zrythm.org)"
@@ -111,7 +114,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:60
 msgid "Sections of this manual"
-msgstr ""
+msgstr "Secciones de este manual"
 
 #: ../../contributing/intro.rst:62
 msgid ""
@@ -123,7 +126,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:70
 msgid "Editing this Manual"
-msgstr ""
+msgstr "Editar este manual"
 
 #: ../../contributing/intro.rst:72
 msgid ""
@@ -143,7 +146,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:82
 msgid "Donations"
-msgstr ""
+msgstr "Donaciones"
 
 #: ../../contributing/intro.rst:84
 msgid ""
@@ -362,4 +365,3 @@ msgstr ""
 
 #~ msgid "Contributing Overview"
 #~ msgstr ""
-
