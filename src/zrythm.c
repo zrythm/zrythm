@@ -72,6 +72,10 @@ static ProjectAssistantWidget * assistant;
 /** Zrythm directory used during unit tests. */
 static char * testing_dir = NULL;
 
+/** These are declared extern in zrythm.h. */
+Zrythm * zrythm;
+ZrythmApp * zrythm_app;
+
 /**
  * Sets the current status and progress percentage
  * during loading.

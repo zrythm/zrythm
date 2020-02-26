@@ -211,6 +211,7 @@ test_cflags = [
   '-Wno-sequence-point',
   '-Wignored-qualifiers',
   '-Wno-cast-function-type',
+  '-fno-common',
   ]
 
 if (get_option ('buildtype') == 'release')

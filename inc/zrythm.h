@@ -223,14 +223,11 @@ struct _ZrythmApp
   Zrythm *            zrythm;
 };
 
-extern Zrythm * zrythm;
-extern ZrythmApp * zrythm_app;
-
 /**
  * Global variable, should be available to all files.
  */
-Zrythm * zrythm;
-ZrythmApp * zrythm_app;
+extern Zrythm * zrythm;
+extern ZrythmApp * zrythm_app;
 
 ZrythmApp *
 zrythm_app_new (void);
