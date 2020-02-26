@@ -11,19 +11,31 @@ Translators
 French
   * Nicolas Faure
   * Olivier Humbert
+  * Samuel Aubert
 
-German
+German:
   * Silvério Santos
   * Waui
+  * André Menrath
 
-Norwegian Bokmal
+Greek:
+  * Alexandros Theodotou
+
+Italian:
+  * Swann Martinet
+
+Japanese:
+  * Alexandros Theodotou
+
+Norwegian Bokmal:
   * Allan Nordhøy
 
-Polish
+Polish:
   * WaldiS
 
-Portuguese
+Portuguese:
   * Silvério Santos
+  * Manuela Silva
 
-Italian
- 	* Swann Martinet
+Spanish:
+  * Adolfo Jayme-Barrientos
