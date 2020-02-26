@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-02-26 11:34+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualediting/es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../editing/clip-editors/intro.rst:6
@@ -391,7 +394,7 @@ msgstr ""
 
 #: ../../editing/intro.rst:6
 msgid "Editing"
-msgstr ""
+msgstr "Edición"
 
 #: ../../editing/making-selections/intro.rst:6
 msgid "Making Selections"
@@ -417,7 +420,7 @@ msgstr ""
 #: ../../editing/piano-roll-editing/overview.rst:6
 #: ../../editing/timeline/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Generalidades"
 
 #: ../../editing/overview.rst:8
 msgid ""
@@ -431,11 +434,11 @@ msgstr ""
 
 #: ../../editing/overview.rst:12
 msgid "Automation Editor"
-msgstr ""
+msgstr "Editor de automatización"
 
 #: ../../editing/overview.rst:13
 msgid "Chord Editor"
-msgstr ""
+msgstr "Editor de acordes"
 
 #: ../../editing/overview.rst:15
 msgid ""
@@ -476,7 +479,7 @@ msgstr ""
 #: ../../editing/piano-roll-editing/ruler.rst:6
 #: ../../editing/timeline/ruler.rst:6
 msgid "Ruler"
-msgstr ""
+msgstr "Regla"
 
 #: ../../editing/piano-roll-editing/selection-info-bar.rst:6
 msgid "Selection Info Bar"
@@ -527,7 +530,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:30
 msgid "Amount"
-msgstr ""
+msgstr "Cantidad"
 
 #: ../../editing/quantization.rst:29
 msgid ""
@@ -545,7 +548,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:37
 msgid "Randomization"
-msgstr ""
+msgstr "Aleatorización"
 
 #: ../../editing/quantization.rst:35
 msgid ""
@@ -885,4 +888,3 @@ msgstr ""
 
 #~ msgid "For more details about track operations, see the Tracks section."
 #~ msgstr ""
-

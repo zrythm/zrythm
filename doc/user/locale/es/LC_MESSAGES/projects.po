@@ -3,27 +3,30 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 07:46+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-02-26 11:33+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualprojects/es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../projects/intro.rst:6
 msgid "Projects"
-msgstr ""
+msgstr "Proyectos"
 
 #: ../../projects/project-info.rst:6
 msgid "Project Info"
-msgstr ""
+msgstr "Información del proyecto"
 
 #: ../../projects/project-info.rst:8
 msgid ""
@@ -34,11 +37,11 @@ msgstr ""
 
 #: ../../projects/project-info.rst:14
 msgid "Project Structure"
-msgstr ""
+msgstr "Estructura del proyecto"
 
 #: ../../projects/project-info.rst:38
 msgid "backups"
-msgstr ""
+msgstr "copias de respaldo"
 
 #: ../../projects/project-info.rst:39
 msgid "Regular backups taken automatically by Zrythm"
@@ -54,7 +57,7 @@ msgstr ""
 
 #: ../../projects/project-info.rst:43
 msgid "states"
-msgstr ""
+msgstr "estados"
 
 #: ../../projects/project-info.rst:43
 msgid "Contains plugin states at the time of save (for LV2)"
@@ -84,11 +87,11 @@ msgstr ""
 
 #: ../../projects/project-info.rst:52
 msgid "The Project file"
-msgstr ""
+msgstr "El archivo de proyecto"
 
 #: ../../projects/project-management-and-compatibility.rst:6
 msgid "Project Management and Compatibility"
-msgstr ""
+msgstr "Gestión de proyectos y compatibilidad"
 
 #: ../../projects/project-management-and-compatibility.rst:8
 msgid ""
@@ -118,7 +121,7 @@ msgstr ""
 
 #: ../../projects/saving-loading.rst:9
 msgid "Loading Projects"
-msgstr ""
+msgstr "Carga de proyectos"
 
 #: ../../projects/saving-loading.rst:11
 msgid ""
@@ -134,7 +137,7 @@ msgstr ""
 
 #: ../../projects/saving-loading.rst:22
 msgid "Creating Projects"
-msgstr ""
+msgstr "Creación de proyectos"
 
 #: ../../projects/saving-loading.rst:24
 msgid ""
@@ -179,7 +182,7 @@ msgstr ""
 
 #: ../../projects/saving-loading.rst:56
 msgid "Automatic Backups"
-msgstr ""
+msgstr "Copias de respaldo automáticas"
 
 #: ../../projects/saving-loading.rst:58
 msgid ""
@@ -325,4 +328,3 @@ msgstr ""
 #~ "version of Zrythm it was made with"
 #~ " and a date"
 #~ msgstr ""
-

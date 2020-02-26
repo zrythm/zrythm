@@ -3,41 +3,47 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-12 20:16+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-02-26 11:34+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualexporting/es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../exporting/intro.rst:6
 msgid "Exporting"
-msgstr ""
+msgstr "Exportación"
 
 #: ../../exporting/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Generalidades"
 
 #: ../../exporting/overview.rst:8
 msgid ""
 "The Export dialog below is used to export the project or part of the "
 "project into audio or MIDI files."
 msgstr ""
+"El cuadro de diálogo Exportar, mostrado más abajo, puede emplearse para "
+"exportar el proyecto, sea en su totalidad o parcialmente, como archivos de "
+"sonido o MIDI."
 
 #: ../../exporting/overview.rst:15
 msgid "Fields"
-msgstr ""
+msgstr "Campos"
 
 #: ../../exporting/overview.rst:18
 msgid "Artist and Genre"
-msgstr ""
+msgstr "Artista y Género"
 
 #: ../../exporting/overview.rst:20
 msgid ""
@@ -47,11 +53,12 @@ msgstr ""
 
 #: ../../exporting/overview.rst:25
 msgid "Format"
-msgstr ""
+msgstr "Formato"
 
 #: ../../exporting/overview.rst:27
 msgid "The format to export to. Currently, the following formats are supported"
 msgstr ""
+"El formato al cual exportar. Actualmente se admiten los formatos siguientes"
 
 #: ../../exporting/overview.rst:30
 msgid "FLAC - .FLAC"
@@ -83,7 +90,7 @@ msgstr ""
 
 #: ../../exporting/overview.rst:42
 msgid "Bit Depth"
-msgstr ""
+msgstr "Profundidad de bits"
 
 #: ../../exporting/overview.rst:44
 msgid ""
@@ -94,7 +101,7 @@ msgstr ""
 
 #: ../../exporting/overview.rst:49
 msgid "Time Range"
-msgstr ""
+msgstr "Intervalo temporal"
 
 #: ../../exporting/overview.rst:51
 msgid ""
@@ -126,4 +133,3 @@ msgstr ""
 
 #~ msgid "Exporting the Mixdown"
 #~ msgstr ""
-

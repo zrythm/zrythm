@@ -3,27 +3,30 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-09 00:34+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-02-26 11:33+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"manualmixing/es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../mixing/channels/channel-overview.rst:6
 msgid "Channel Overview"
-msgstr ""
+msgstr "Generalidades de los canales"
 
 #: ../../mixing/channels/controls.rst:6
 msgid "Controls"
-msgstr ""
+msgstr "Controles"
 
 #: ../../mixing/channels/fader.rst:6
 msgid "Fader"
@@ -31,7 +34,7 @@ msgstr ""
 
 #: ../../mixing/channels/intro.rst:6
 msgid "Channels"
-msgstr ""
+msgstr "Canales"
 
 #: ../../mixing/channels/meters.rst:6 ../../mixing/meters.rst:6
 msgid "Meters"
@@ -43,11 +46,11 @@ msgstr ""
 
 #: ../../mixing/groups.rst:6
 msgid "Groups"
-msgstr ""
+msgstr "Grupos"
 
 #: ../../mixing/intro.rst:6
 msgid "Mixing"
-msgstr ""
+msgstr "Mezcla"
 
 #: ../../mixing/meters.rst:8
 msgid ""
@@ -114,4 +117,3 @@ msgstr ""
 
 #~ msgid "TODO"
 #~ msgstr ""
-
