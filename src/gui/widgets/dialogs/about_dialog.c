@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/about_dialog.h"
+#include "gui/widgets/dialogs/about_dialog.h"
 #include "utils/resources.h"
 #include "zrythm.h"
 

@@ -509,6 +509,7 @@ vst_plugin_create_descriptor_from_path (
 
   descr->path = g_strdup (path);
   descr->protocol = PROT_VST;
+  descr->arch = ARCH_64;
 
   AEffect * effect = NULL;
   void * handle = load_lib (path, &effect, !test);

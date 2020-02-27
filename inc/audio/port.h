@@ -57,6 +57,12 @@ typedef enum PanLaw PanLaw;
  * @{
  */
 
+#define PORT_MAGIC 456861194
+#define IS_PORT(tr) \
+  (tr && \
+   ((Port *) tr)->magic == \
+     PORT_MAGIC)
+
 #define MAX_DESTINATIONS 600
 #define FOREACH_SRCS(port) \
   for (int i = 0; i < port->num_srcs; i++)
@@ -337,6 +343,9 @@ typedef struct Port
    * should have one ring for each reader.
    */
   ZixRing *           midi_ring;
+
+  /** Magic number to identify that this is a Port. */
+  int                 magic;
 } Port;
 
 static const cyaml_strval_t

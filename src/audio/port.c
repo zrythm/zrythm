@@ -58,6 +58,8 @@
 void
 port_init_loaded (Port * this)
 {
+  this->magic = PORT_MAGIC;
+
 #define SET_FIELDS_FROM_ID(id,port) \
   switch (id->owner_type) \
     { \
@@ -183,10 +185,10 @@ port_find_from_identifier (
     case PORT_OWNER_TYPE_PLUGIN:
       tr =
         TRACKLIST->tracks[id->track_pos];
-      g_warn_if_fail (tr);
+      g_warn_if_fail (IS_TRACK (tr));
       pl =
         tr->channel->plugins[id->plugin_slot];
-      g_warn_if_fail (pl);
+      g_warn_if_fail (IS_PLUGIN (pl));
       switch (id->flow)
         {
         case FLOW_INPUT:
@@ -429,6 +431,7 @@ _port_new (
 
   port->id.plugin_slot = -1;
   port->id.track_pos = -1;
+  port->magic = PORT_MAGIC;
 
   port->num_dests = 0;
   g_warn_if_fail (

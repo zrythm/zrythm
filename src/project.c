@@ -655,6 +655,9 @@ load (
   PROJECT->loaded = 1;
   g_message ("project loaded");
 
+  /* recalculate the routing graph */
+  mixer_recalc_graph (MIXER);
+
   /* mimic behavior when starting the app */
   if (loading_while_running)
     {

@@ -819,6 +819,8 @@ nframes_t
 router_get_max_playback_latency (
   Router * router)
 {
+  g_return_val_if_fail (
+    router && router->graph, 0);
   router->max_playback_latency =
     graph_get_max_playback_latency (
       router->graph);

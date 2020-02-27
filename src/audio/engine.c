@@ -452,6 +452,8 @@ void
 engine_activate (
   AudioEngine * self)
 {
+  g_message ("activating engine...");
+
 #ifdef HAVE_JACK
   if (self->audio_backend == AUDIO_BACKEND_JACK &&
       self->midi_backend == MIDI_BACKEND_JACK)

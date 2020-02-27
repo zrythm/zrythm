@@ -426,6 +426,7 @@ plugin_move_automation (
       AutomationTrack * at = prev_atl->ats[i];
       Port * port =
         automation_track_get_port (at);
+      g_return_if_fail (IS_PORT (port));
         /*g_message (*/
           /*"before port %s", port->id.label);*/
       if (!port)

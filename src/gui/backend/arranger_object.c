@@ -851,6 +851,7 @@ arranger_object_init_loaded (
   /* init positions */
   self->cache_pos = self->pos;
   self->cache_end_pos = self->end_pos;
+  self->magic = ARRANGER_OBJECT_MAGIC;
 
   switch (self->type)
     {
