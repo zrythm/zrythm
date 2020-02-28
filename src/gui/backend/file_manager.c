@@ -82,12 +82,12 @@ load_files_from_location (
 
   /* create special parent dir entry */
   fd = calloc (1, sizeof (SupportedFile));
-  g_message ("pre path %s",
-             location->path);
+  /*g_message ("pre path %s",*/
+             /*location->path);*/
   fd->abs_path =
     io_path_get_parent_dir (location->path);
-  g_message ("after path %s",
-             fd->abs_path);
+  /*g_message ("after path %s",*/
+             /*fd->abs_path);*/
   fd->type = FILE_TYPE_PARENT_DIR;
   fd->hidden = 0;
   fd->label = g_strdup ("..");

@@ -363,9 +363,9 @@ on_row_activated (GtkTreeView       *tree_view,
   SupportedFile * descr =
     g_value_get_pointer (&value);
 
-  g_message ("activated file type %d, abs path %s",
-             descr->type,
-             descr->abs_path);
+  /*g_message ("activated file type %d, abs path %s",*/
+             /*descr->type,*/
+             /*descr->abs_path);*/
   if (descr->type == FILE_TYPE_DIR ||
       descr->type == FILE_TYPE_PARENT_DIR)
     {
@@ -538,6 +538,25 @@ add_scroll_window (GtkTreeView * tree_view)
   return scrolled_window;
 }
 
+static int
+on_realize (
+  GtkWidget * widget,
+  PanelFileBrowserWidget * self)
+{
+  /*g_message ("file browser realized");*/
+
+  /* set divider position */
+  int divider_pos =
+    g_settings_get_int (
+      S_UI,
+      "browser-divider-position");
+  gtk_paned_set_position (
+    GTK_PANED (self), divider_pos);
+  /*self->first_time_position_set = 1;*/
+
+  return FALSE;
+}
+
 
 /**
  * Creates a GtkTreeView using the given model,
@@ -578,14 +597,6 @@ panel_file_browser_widget_new ()
 
   gtk_label_set_xalign (self->file_info, 0);
 
-  /* set divider position */
-  /*int divider_pos =*/
-    /*g_settings_get_int (*/
-      /*S_UI,*/
-      /*"browser-divider-position");*/
-  gtk_paned_set_position (GTK_PANED (self),
-                          40);
-
   /* create each tree */
   create_tree_view_add_to_expander (
     self,
@@ -598,10 +609,10 @@ panel_file_browser_widget_new ()
   self->locations_tree_model =
     create_model_for_locations ();
   GtkScrolledWindow * scrolled_window =
-  create_tree_view_add_to_expander (
-    self,
-    self->locations_tree_model,
-    GTK_EXPANDER (self->locations_exp));
+    create_tree_view_add_to_expander (
+      self,
+      self->locations_tree_model,
+      GTK_EXPANDER (self->locations_exp));
 
   /* expand locations by default */
   gtk_expander_set_expanded (
@@ -630,6 +641,18 @@ panel_file_browser_widget_new ()
                       file_scroll_window,
                       1, 1, 0);
   gtk_widget_show_all (file_scroll_window);
+
+  /* set divider position */
+  /*int divider_pos =*/
+    /*g_settings_get_int (*/
+      /*S_UI,*/
+      /*"browser-divider-position");*/
+  gtk_paned_set_position (GTK_PANED (self),
+                          40);
+
+  g_signal_connect (
+    G_OBJECT (self), "realize",
+    G_CALLBACK (on_realize), self);
 
   return self;
 }

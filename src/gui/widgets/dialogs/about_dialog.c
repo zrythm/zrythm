@@ -32,8 +32,8 @@ about_dialog_widget_new (
 {
   GtkImage * img =
     GTK_IMAGE (
-      resources_get_icon (ICON_TYPE_ZRYTHM,
-                          "z-splash-daniel-v1.png"));
+      resources_get_icon (
+        ICON_TYPE_ZRYTHM, "z-splash-png.png"));
 
   const char * artists[] =
     {

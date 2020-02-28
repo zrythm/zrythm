@@ -33,7 +33,7 @@
       <object class="GtkGrid" id="browser_top">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="vexpand">True</property>
+        <property name="vexpand">0</property>
         <child>
           <object class="GtkSearchEntry" id="browser_search">
             <property name="visible">True</property>
@@ -125,6 +125,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
+        <property name="vexpand">1</property>
         <child>
           <object class="GtkLabel" id="file_info">
             <property name="visible">True</property>

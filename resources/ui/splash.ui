@@ -51,7 +51,7 @@
               <object class="GtkImage" id="img">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="icon_name">z-splash-daniel-v1</property>
+                <property name="icon_name">z-splash-png</property>
                 <property name="icon_size">0</property>
               </object>
               <packing>
