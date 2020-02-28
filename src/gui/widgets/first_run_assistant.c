@@ -78,34 +78,24 @@ audio_midi_backend_selection_validate (
   /* test audio backends */
   switch (ab)
     {
-    case AUDIO_BACKEND_JACK:
 #ifdef HAVE_JACK
+    case AUDIO_BACKEND_JACK:
       if (engine_jack_test (GTK_WINDOW (self)))
         return;
-#else
-      ui_show_error_message (
-        self,
-        _("JACK functionality is disabled"));
-      return;
-#endif
       break;
-    case AUDIO_BACKEND_ALSA:
+#endif
 #ifdef HAVE_ALSA
+    case AUDIO_BACKEND_ALSA:
       if (engine_alsa_test (GTK_WINDOW (self)))
         return;
-#endif
       break;
-    case AUDIO_BACKEND_PORT_AUDIO:
+#endif
 #ifdef HAVE_PORT_AUDIO
+    case AUDIO_BACKEND_PORT_AUDIO:
       if (engine_pa_test (GTK_WINDOW (self)))
         return;
-#else
-      ui_show_error_message (
-        self,
-        _("PortAudio functionality is disabled"));
-      return;
-#endif
       break;
+#endif
     default:
       break;
     }
@@ -113,28 +103,23 @@ audio_midi_backend_selection_validate (
   /* test MIDI backends */
   switch (mb)
     {
-    case MIDI_BACKEND_JACK:
 #ifdef HAVE_JACK
+    case MIDI_BACKEND_JACK:
       if (engine_jack_test (GTK_WINDOW (self)))
         return;
-#else
-      ui_show_error_message (
-        self,
-        _("JACK functionality is disabled"));
-      return;
-#endif
       break;
-    case MIDI_BACKEND_ALSA:
+#endif
 #ifdef HAVE_ALSA
+    case MIDI_BACKEND_ALSA:
       if (engine_alsa_test (GTK_WINDOW (self)))
         return;
-#endif
       break;
+#endif
     default:
       break;
     }
 
-  if (ab == AUDIO_BACKEND_ALSA &&
+  if (ab != AUDIO_BACKEND_JACK &&
       mb == MIDI_BACKEND_JACK)
     {
       ui_show_error_message (
@@ -174,11 +159,26 @@ on_midi_backend_changed (
   GtkComboBox *widget,
   FirstRunAssistantWidget * self)
 {
+  AudioBackend ab =
+    g_settings_get_enum (
+      S_PREFERENCES, "audio-backend");
+  MidiBackend mb =
+    (MidiBackend)
+    atoi (gtk_combo_box_get_active_id (widget));
+  if (ab != AUDIO_BACKEND_JACK &&
+      mb == MIDI_BACKEND_JACK)
+    {
+      ui_show_error_message (
+        self,
+        _("JACK MIDI can only be used with JACK "
+        "audio"));
+      gtk_combo_box_set_active (widget, 0);
+      return;
+    }
+
   /* update settings */
   g_settings_set_enum (
-    S_PREFERENCES,
-    "midi-backend",
-    atoi (gtk_combo_box_get_active_id (widget)));
+    S_PREFERENCES, "midi-backend", mb);
 }
 
 static void
@@ -320,6 +320,31 @@ first_run_assistant_widget_new (
   gtk_window_set_keep_above (
     GTK_WINDOW (self), 1);
 
+  g_signal_connect (
+    G_OBJECT (self->audio_backend), "changed",
+    G_CALLBACK (on_audio_backend_changed), self);
+  g_signal_connect (
+    G_OBJECT (self->midi_backend), "changed",
+    G_CALLBACK (on_midi_backend_changed), self);
+  g_signal_connect (
+    G_OBJECT (self->language_cb), "changed",
+    G_CALLBACK (on_language_changed), self);
+  g_signal_connect (
+    G_OBJECT (self->fc_btn), "file-set",
+    G_CALLBACK (on_file_set), self);
+  g_signal_connect (
+    G_OBJECT (self->reset), "clicked",
+    G_CALLBACK (on_reset_clicked), self);
+#ifdef _WOE32
+  g_signal_connect (
+    G_OBJECT (self->vst_paths_entry), "changed",
+    G_CALLBACK (on_vst_paths_changed), self);
+#else
+  g_signal_connect (
+    G_OBJECT (self->test_backends), "clicked",
+    G_CALLBACK (on_test_backends_clicked), self);
+#endif
+
   return self;
 }
 
@@ -373,28 +398,4 @@ first_run_assistant_widget_init (
   g_signal_connect (
     G_OBJECT (self->language_cb), "changed",
     G_CALLBACK (on_language_changed), self);
-  g_signal_connect (
-    G_OBJECT (self->audio_backend), "changed",
-    G_CALLBACK (on_audio_backend_changed), self);
-  g_signal_connect (
-    G_OBJECT (self->midi_backend), "changed",
-    G_CALLBACK (on_midi_backend_changed), self);
-  g_signal_connect (
-    G_OBJECT (self->language_cb), "changed",
-    G_CALLBACK (on_language_changed), self);
-  g_signal_connect (
-    G_OBJECT (self->fc_btn), "file-set",
-    G_CALLBACK (on_file_set), self);
-  g_signal_connect (
-    G_OBJECT (self->reset), "clicked",
-    G_CALLBACK (on_reset_clicked), self);
-#ifdef _WOE32
-  g_signal_connect (
-    G_OBJECT (self->vst_paths_entry), "changed",
-    G_CALLBACK (on_vst_paths_changed), self);
-#else
-  g_signal_connect (
-    G_OBJECT (self->test_backends), "clicked",
-    G_CALLBACK (on_test_backends_clicked), self);
-#endif
 }

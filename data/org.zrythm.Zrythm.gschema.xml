@@ -41,15 +41,16 @@
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.language-enum">
     <value nick="english" value="0"/>
-    <value nick="german" value="1"/>
-    <value nick="french" value="2"/>
-    <value nick="italian" value="3"/>
-    <value nick="norwegian" value="4"/>
-    <value nick="spanish" value="5"/>
-    <value nick="japanese" value="6"/>
-    <value nick="portuguese" value="7"/>
-    <value nick="russian" value="8"/>
-    <value nick="chinese" value="9"/>
+    <value nick="english_uk" value="1"/>
+    <value nick="german" value="2"/>
+    <value nick="french" value="3"/>
+    <value nick="italian" value="4"/>
+    <value nick="norwegian" value="5"/>
+    <value nick="spanish" value="6"/>
+    <value nick="japanese" value="7"/>
+    <value nick="portuguese" value="8"/>
+    <value nick="russian" value="9"/>
+    <value nick="chinese" value="10"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.export-time-range-enum">
     <value nick="song" value="0"/>
