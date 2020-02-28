@@ -422,6 +422,13 @@ init_thread (
 
   set_progress_status (
     ZRYTHM,
+    _("Initializing file manager"),
+    0.15);
+  file_manager_init (&ZRYTHM->file_manager);
+  file_manager_load_files (&ZRYTHM->file_manager);
+
+  set_progress_status (
+    ZRYTHM,
     _("Initializing plugin manager"),
     0.2);
   plugin_manager_init (&ZRYTHM->plugin_manager);

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-24 12:22+0000\n"
+"POT-Creation-Date: 2020-02-28 11:51+0000\n"
 "PO-Revision-Date: 2019-09-22 21:28+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language: de\n"
@@ -359,14 +359,6 @@ msgstr ""
 "Du kannst die neueste Version von Zrythm für deine Distro `hier "
 "<https://software.opensuse.org//download.html?project=home%3Aalextee&package=zrythm>`_"
 " installieren"
-
-#: ../../getting-started/installation/windows.rst:12
-msgid ""
-"We provide support for the installer, however we do not provide support "
-"for manually building Zrythm on Windows. If you want to try, you can find"
-" most packages needed from the `MSYS2 project "
-"<https://packages.msys2.org/>`_."
-msgstr ""
 
 #: ../../getting-started/intro.rst:6
 msgid "Getting Started"
@@ -1050,4 +1042,14 @@ msgstr ""
 
 #~ msgid "Click Configure and select your Audio Interface"
 #~ msgstr "Klick Konfigurieren und wähle dein Audiointerface"
+
+#~ msgid ""
+#~ "We provide support for the installer,"
+#~ " however we do not provide support"
+#~ " for manually building Zrythm on "
+#~ "Windows. If you want to try, you"
+#~ " can find most packages needed from"
+#~ " the `MSYS2 project "
+#~ "<https://packages.msys2.org/>`_."
+#~ msgstr ""
 

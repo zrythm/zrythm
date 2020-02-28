@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-08 12:22+0100\n"
+"POT-Creation-Date: 2020-02-28 11:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "Translators"
 msgstr ""
 
-#: ../../credits/intro.rst:13
+#: ../../credits/intro.rst:14
 msgid "French"
 msgstr ""
 
@@ -37,49 +37,98 @@ msgstr ""
 msgid "Olivier Humbert"
 msgstr ""
 
-#: ../../credits/intro.rst:17
-msgid "German"
+#: ../../credits/intro.rst:14
+msgid "Samuel Aubert"
 msgstr ""
 
-#: ../../credits/intro.rst:16 ../../credits/intro.rst:26
+#: ../../credits/intro.rst:19
+msgid "German:"
+msgstr ""
+
+#: ../../credits/intro.rst:17
+#: ../../credits/intro.rst:37
 msgid "Silvério Santos"
 msgstr ""
 
-#: ../../credits/intro.rst:17
+#: ../../credits/intro.rst:18
 msgid "Waui"
 msgstr ""
 
-#: ../../credits/intro.rst:20
-msgid "Norwegian Bokmal"
+#: ../../credits/intro.rst:19
+msgid "André Menrath"
 msgstr ""
 
-#: ../../credits/intro.rst:20
-msgid "Allan Nordhøy"
+#: ../../credits/intro.rst:22
+msgid "Greek:"
 msgstr ""
 
-#: ../../credits/intro.rst:23
-msgid "Polish"
+#: ../../credits/intro.rst:22
+#: ../../credits/intro.rst:28
+msgid "Alexandros Theodotou"
 msgstr ""
 
-#: ../../credits/intro.rst:23
-msgid "WaldiS"
+#: ../../credits/intro.rst:25
+msgid "Italian:"
 msgstr ""
 
-#: ../../credits/intro.rst:26
-msgid "Portuguese"
+#: ../../credits/intro.rst:25
+msgid "Swann Martinet"
 msgstr ""
 
 #: ../../credits/intro.rst:28
-msgid "Italian"
+msgid "Japanese:"
 msgstr ""
 
-#: ../../credits/intro.rst:29
-msgid "Swann Martinet"
+#: ../../credits/intro.rst:31
+msgid "Norwegian Bokmal:"
+msgstr ""
+
+#: ../../credits/intro.rst:31
+msgid "Allan Nordhøy"
+msgstr ""
+
+#: ../../credits/intro.rst:34
+msgid "Polish:"
+msgstr ""
+
+#: ../../credits/intro.rst:34
+msgid "WaldiS"
+msgstr ""
+
+#: ../../credits/intro.rst:38
+msgid "Portuguese:"
+msgstr ""
+
+#: ../../credits/intro.rst:38
+msgid "Manuela Silva"
+msgstr ""
+
+#: ../../credits/intro.rst:40
+msgid "Spanish:"
+msgstr ""
+
+#: ../../credits/intro.rst:41
+msgid "Adolfo Jayme-Barrientos"
 msgstr ""
 
 #~ msgid "Portuguese:"
 #~ msgstr ""
 
 #~ msgid "Italian:"
+#~ msgstr ""
+
+#~ msgid "German"
+#~ msgstr ""
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr ""
+
+#~ msgid "Polish"
+#~ msgstr ""
+
+#~ msgid "Portuguese"
+#~ msgstr ""
+
+#~ msgid "Italian"
 #~ msgstr ""
 

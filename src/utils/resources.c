@@ -52,16 +52,18 @@ resources_get_icon (IconType     icon_type,
                    icon_dir,
                    filename);
   g_free (icon_dir);
-  GtkWidget * icon = gtk_image_new_from_resource (path);
+  GtkWidget * icon =
+    gtk_image_new_from_resource (path);
   gtk_widget_set_visible (icon, 1);
   g_free (path);
   return icon;
 }
 
 void
-resources_set_image_icon (GtkImage *   img,
-                          IconType     icon_type,
-                          const char * filename)
+resources_set_image_icon (
+  GtkImage *   img,
+  IconType     icon_type,
+  const char * filename)
 {
   char * icon_dir = get_icon_type_str (icon_type);
   char * path = g_strdup_printf ("%s%s%s/%s",

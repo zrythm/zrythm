@@ -96,6 +96,7 @@ widget_srcs = files([
   'mixer.c',
   'modulator.c',
   'modulator_view.c',
+  'panel_file_browser.c',
   'piano_roll_keys.c',
   'plugin_browser.c',
   'port_connection_row.c',

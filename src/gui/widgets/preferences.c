@@ -142,11 +142,15 @@ on_ok_clicked (GtkWidget * widget,
   g_settings_set_enum (
     S_PREFERENCES,
     "audio-backend",
-    atoi (gtk_combo_box_get_active_id (self->audio_backend)));
+    atoi (
+      gtk_combo_box_get_active_id (
+        self->audio_backend)));
   g_settings_set_enum (
     S_PREFERENCES,
     "midi-backend",
-    atoi (gtk_combo_box_get_active_id (self->midi_backend)));
+    atoi (
+      gtk_combo_box_get_active_id (
+        self->midi_backend)));
   g_settings_set_enum (
     S_PREFERENCES,
     "language",

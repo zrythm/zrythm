@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -29,6 +29,7 @@
 #include "audio/metronome.h"
 #include "audio/snap_grid.h"
 #include "gui/backend/events.h"
+#include "gui/backend/file_manager.h"
 #include "plugins/plugin_manager.h"
 #include "settings/settings.h"
 #include "utils/log.h"
@@ -151,6 +152,9 @@ typedef struct Zrythm
 
   /** Recording manager. */
   RecordingManager *      recording_manager;
+
+  /** File manager. */
+  FileManager             file_manager;
 
   /**
    * String interner for internal things.

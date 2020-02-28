@@ -22,6 +22,7 @@
 #include "gui/widgets/control_room.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/main_window.h"
+#include "gui/widgets/panel_file_browser.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "project.h"
@@ -109,9 +110,34 @@ right_dock_edge_widget_init (
   gtk_widget_set_visible (
     GTK_WIDGET (box), 1);
   gtk_notebook_prepend_page (
-    notebook,
-    GTK_WIDGET (box),
-    img);
+    notebook, GTK_WIDGET (box), img);
+
+  /* add file browser */
+  self->file_browser =
+    panel_file_browser_widget_new ();
+  GdkPixbuf * pixbuf =
+    gtk_icon_theme_load_icon_for_scale (
+      gtk_icon_theme_get_default (),
+      /* the scale only accepts integers and we want
+       * 24, but if we pass 24 and 1 a different
+       * icon is loaded, so load the 12 icon and
+       * scale it 2 times */
+      "z-media-optical-audio", 12, 2,
+      GTK_ICON_LOOKUP_FORCE_SIZE, NULL);
+  img =
+    gtk_image_new_from_pixbuf (pixbuf);
+  gtk_widget_set_tooltip_text (
+    img, _("File Browser"));
+  box =
+    GTK_BOX (
+      gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_container_add (
+    GTK_CONTAINER (box),
+    GTK_WIDGET (self->file_browser));
+  gtk_widget_set_visible (
+    GTK_WIDGET (box), 1);
+  gtk_notebook_append_page (
+    notebook, GTK_WIDGET (box), img);
 
   /* add control room */
   self->control_room =

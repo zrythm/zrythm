@@ -111,6 +111,10 @@ on_drag_motion (
 
       return TRUE;
     }
+  else if (target == GET_ATOM (TARGET_ENTRY_SUPPORTED_FILE))
+    {
+      return TRUE;
+    }
   else if (target ==
            GET_ATOM (TARGET_ENTRY_PLUGIN_DESCR))
     {
@@ -180,47 +184,61 @@ on_drag_data_received (
   if (target == GDK_NONE)
     return;
 
-  if (target == GET_ATOM (TARGET_ENTRY_URI_LIST))
+#define IS_URI_LIST \
+  (target == GET_ATOM (TARGET_ENTRY_URI_LIST))
+#define IS_SUPPORTED_FILE \
+  (target == GET_ATOM (TARGET_ENTRY_SUPPORTED_FILE))
+
+  if (IS_URI_LIST || IS_SUPPORTED_FILE)
     {
-      char * filepath = NULL;
-
-      char ** uris =
-        gtk_selection_data_get_uris (data);
-      if (uris)
-        {
-          char * uri;
-          int i = 0;
-          while ((uri = uris[i++]) != NULL)
-            {
-              /* strip "file://" */
-              if (!string_contains_substr (
-                    uri, "file://", 0))
-                continue;
-
-              if (filepath)
-                g_free (filepath);
-              GError * err = NULL;
-              filepath =
-                g_filename_from_uri (
-                  uri, NULL, &err);
-              if (err)
-                {
-                  g_warning (
-                    "%s", err->message);
-                }
-
-              /* only accept 1 file for now */
-              break;
-            }
-          g_strfreev (uris);
-        }
-
       SupportedFile * file = NULL;
-      if (filepath)
+      if (IS_SUPPORTED_FILE)
         {
-          file =
-            supported_file_new_from_path (filepath);
-          g_free (filepath);
+          const guchar *my_data =
+            gtk_selection_data_get_data (data);
+          memcpy (&file, my_data, sizeof (file));
+        }
+      else
+        {
+          char * filepath = NULL;
+          char ** uris =
+            gtk_selection_data_get_uris (data);
+          if (uris)
+            {
+              char * uri;
+              int i = 0;
+              while ((uri = uris[i++]) != NULL)
+                {
+                  /* strip "file://" */
+                  if (!string_contains_substr (
+                        uri, "file://", 0))
+                    continue;
+
+                  if (filepath)
+                    g_free (filepath);
+                  GError * err = NULL;
+                  filepath =
+                    g_filename_from_uri (
+                      uri, NULL, &err);
+                  if (err)
+                    {
+                      g_warning (
+                        "%s", err->message);
+                    }
+
+                  /* only accept 1 file for now */
+                  break;
+                }
+              g_strfreev (uris);
+            }
+
+          if (filepath)
+            {
+              file =
+                supported_file_new_from_path (
+                  filepath);
+              g_free (filepath);
+            }
         }
 
       if (file)
@@ -246,7 +264,10 @@ on_drag_data_received (
                   _("Unsupported file type %s"),
                   descr);
               g_free (descr);
-              supported_file_free (file);
+              if (IS_URI_LIST)
+                {
+                  supported_file_free (file);
+                }
               ui_show_error_message (
                 MAIN_WINDOW, msg);
               return;
@@ -259,7 +280,10 @@ on_drag_data_received (
               file,
               TRACKLIST->num_tracks,
               1);
-          supported_file_free (file);
+          if (IS_URI_LIST)
+            {
+              supported_file_free (file);
+            }
 
           undo_manager_perform (UNDO_MANAGER, ua);
           return;
@@ -293,11 +317,8 @@ on_drag_data_received (
 
           UndoableAction * ua =
             create_tracks_action_new (
-              tt,
-              pd,
-              NULL,
-              TRACKLIST->num_tracks,
-              1);
+              tt, pd, NULL,
+              TRACKLIST->num_tracks, 1);
 
           undo_manager_perform (UNDO_MANAGER, ua);
         }
@@ -306,9 +327,7 @@ on_drag_data_received (
           Track * track =
             TRACKLIST_SELECTIONS->tracks[0];
           Modulator * modulator =
-            modulator_new (
-              pd,
-              track);
+            modulator_new (pd, track);
           track_add_modulator (
             track, modulator);
         }
@@ -383,6 +402,9 @@ on_drag_data_received (
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
+
+#undef IS_SUPPORTED_FILE
+#undef IS_URI_LIST
 }
 
 static void
@@ -626,6 +648,8 @@ drag_dest_box_widget_new (
     g_strdup (TARGET_ENTRY_PLUGIN_DESCR);
   char * entry_uri_list =
     g_strdup (TARGET_ENTRY_URI_LIST);
+  char * entry_supported_file =
+    g_strdup (TARGET_ENTRY_SUPPORTED_FILE);
   char * entry_plugin =
     g_strdup (TARGET_ENTRY_PLUGIN);
   GtkTargetEntry entries[] = {
@@ -641,6 +665,10 @@ drag_dest_box_widget_new (
     {
       entry_uri_list, GTK_TARGET_OTHER_APP,
       symap_map (ZSYMAP, TARGET_ENTRY_URI_LIST),
+    },
+    {
+      entry_supported_file, GTK_TARGET_SAME_APP,
+      symap_map (ZSYMAP, TARGET_ENTRY_SUPPORTED_FILE),
     },
     {
       entry_plugin, GTK_TARGET_SAME_APP,

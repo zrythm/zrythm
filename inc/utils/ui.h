@@ -124,6 +124,9 @@ typedef struct UiCaches
  */
 #define TARGET_ENTRY_PLUGIN_DESCR "PLUGIN_DESCR"
 
+/** For SupportedFile pointers. */
+#define TARGET_ENTRY_SUPPORTED_FILE "SUPPORTED_FILE"
+
 /** Plugin ID, used to move/copy plugins. */
 #define TARGET_ENTRY_PLUGIN "PLUGIN"
 

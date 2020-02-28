@@ -37,6 +37,8 @@ typedef enum FileType
   FILE_TYPE_OGG,
   FILE_TYPE_WAV,
   FILE_TYPE_DIR,
+  /** Special entry ".." for the parent dir. */
+  FILE_TYPE_PARENT_DIR,
   FILE_TYPE_OTHER,
   NUM_FILE_TYPES,
 } FileType;
@@ -51,6 +53,12 @@ typedef struct SupportedFile
 
   /** Type of file. */
   FileType       type;
+
+  /** Human readable label. */
+  char *          label;
+
+  /** Hidden or not. */
+  int             hidden;
 
   /** MIDI file, if midi. */
   //MidiFile *     midi_file;

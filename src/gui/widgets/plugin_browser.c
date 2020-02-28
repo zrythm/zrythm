@@ -346,12 +346,13 @@ on_selection_changed (
 }
 
 static void
-on_drag_data_get (GtkWidget        *widget,
-               GdkDragContext   *context,
-               GtkSelectionData *data,
-               guint             info,
-               guint             time,
-               gpointer          user_data)
+on_drag_data_get (
+  GtkWidget        *widget,
+  GdkDragContext   *context,
+  GtkSelectionData *data,
+  guint             info,
+  guint             time,
+  gpointer          user_data)
 {
   GtkTreeView * tv = GTK_TREE_VIEW (user_data);
   PluginDescriptor * descr =
@@ -597,11 +598,12 @@ tree_view_setup (
         G_CALLBACK (on_drag_data_get), tree_view);
     }
 
+  GtkTreeSelection * sel =
+    gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (tree_view));
   g_signal_connect (
-    G_OBJECT (
-      gtk_tree_view_get_selection (
-        GTK_TREE_VIEW (tree_view))), "changed",
-     G_CALLBACK (on_selection_changed), self);
+    G_OBJECT (sel), "changed",
+    G_CALLBACK (on_selection_changed), self);
 }
 
 static void

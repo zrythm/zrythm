@@ -39,6 +39,8 @@ supported_file_new_from_path (
   self->abs_path = g_strdup (path);
   self->type =
     supported_file_get_type (path);
+  self->label =
+    g_path_get_basename (path);
 
   g_warn_if_fail (
     self->type >= FILE_TYPE_MIDI &&
@@ -130,6 +132,9 @@ supported_file_type_get_description (
     case FILE_TYPE_DIR:
       return g_strdup ("Directory");
       break;
+    case FILE_TYPE_PARENT_DIR:
+      return g_strdup ("Parent directory");
+      break;
     case FILE_TYPE_OTHER:
       return g_strdup ("Other");
       break;
@@ -205,6 +210,9 @@ supported_file_type_get_ext (
     case FILE_TYPE_WAV:
       return g_strdup ("wav");
       break;
+    case FILE_TYPE_PARENT_DIR:
+      return NULL;
+      break;
     case FILE_TYPE_DIR:
       return NULL;
       break;
@@ -223,7 +231,10 @@ void
 supported_file_free (
   SupportedFile * self)
 {
-  g_free (self->abs_path);
+  if (self->abs_path)
+    g_free (self->abs_path);
+  if (self->label)
+    g_free (self->label);
 
   free (self);
 }

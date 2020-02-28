@@ -50,12 +50,14 @@ typedef struct _PluginBrowserWidget
 typedef struct _FileBrowserWidget FileBrowserWidget;
 typedef struct _ControlRoomWidget ControlRoomWidget;
 typedef struct _FoldableNotebookWidget FoldableNotebookWidget;
+typedef struct _PanelFileBrowserWidget PanelFileBrowserWidget;
 
 typedef struct _RightDockEdgeWidget
 {
   GtkBox                   parent_instance;
   FoldableNotebookWidget * right_notebook;
   PluginBrowserWidget *    plugin_browser;
+  PanelFileBrowserWidget * file_browser;
   ControlRoomWidget *      control_room;
 } RightDockEdgeWidget;
 
