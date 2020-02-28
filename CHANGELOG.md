@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.001] - 2020-02-28
+- Show plugin slot in the window name
+- Only show 1 XRUN message per 6 seconds
+- Allow using shift to set more precise values in faders and balance widgets
+- Add log viewer
+- Only write logs in the GTK thread (possibly fixes occasional XRUNS)
+- Don't allow JACK MIDI to be selected with non-JACK audio backend
+- Bring back original file browser
+- Update splash screen and about menu graphics
+- Add export test
+- New Spanish translations
+- Fix track positions on other tracks not getting updated after deleting a track
+- Fix routing graph not being recalculated after loading a project
+- Fix automation tracks getting duplicated on project load
+- Fix build failure with -fno-common
+- Fix markers not being renamable
+
 ## [0.7.573] - 2020-02-21
 - Add option to passthrough MIDI channel on MIDI tracks and lanes
 - Add delete button in port connections
