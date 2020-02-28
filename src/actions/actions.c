@@ -328,10 +328,6 @@ activate_scripting_interface (
   GVariant      *variant,
   gpointer       user_data)
 {
-  char * uri_escaped =
-    g_uri_escape_string (
-      "https://www.gnu.org/software/guile/",
-      NULL, FALSE);
   GtkWidget * dialog =
     gtk_message_dialog_new_with_markup (
       GTK_WINDOW (MAIN_WINDOW),
@@ -342,7 +338,7 @@ activate_scripting_interface (
       _("Scripting extensibility with "
       "<a href=\"%s\">GNU Guile</a> "
       "is coming soon!"),
-      uri_escaped);
+      "https://www.gnu.org/software/guile");
   gtk_window_set_transient_for (
     GTK_WINDOW (dialog),
     GTK_WINDOW (MAIN_WINDOW));
