@@ -1079,6 +1079,7 @@ events_process (void * data)
             MW_VISIBILITY);
           tracklist_header_widget_refresh_track_count (
             MW_TRACKLIST_HEADER);
+          inspector_widget_refresh (MW_INSPECTOR);
           break;
         case ET_CHANNEL_REMOVED:
           mixer_widget_hard_refresh (

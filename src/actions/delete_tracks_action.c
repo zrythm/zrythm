@@ -54,16 +54,14 @@ delete_tracks_action_do (
     {
       /* get track from pos */
       track =
-        TRACKLIST->tracks[self->tls->tracks[i]->pos];
+        TRACKLIST->tracks[
+          self->tls->tracks[i]->pos];
       g_return_val_if_fail (track, -1);
 
       /* remove it */
       tracklist_remove_track (
-        TRACKLIST,
-        track,
-        F_REMOVE_PL,
-        F_FREE,
-        F_NO_PUBLISH_EVENTS,
+        TRACKLIST, track, F_REMOVE_PL,
+        F_FREE, F_NO_PUBLISH_EVENTS,
         F_NO_RECALC_GRAPH);
     }
 

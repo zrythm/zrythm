@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -358,12 +358,16 @@ ports_expander_widget_setup_track (
   Track *                    tr,
   PortsExpanderTrackPortType type)
 {
-  self->track = tr;
   self->owner_type = PORT_OWNER_TYPE_TRACK;
+  self->track = tr;
+
   /*PortType in_type =*/
     /*self->track->in_signal_type;*/
-  PortType out_type =
-    self->track->out_signal_type;
+  PortType out_type;
+  if (tr)
+    out_type = self->track->out_signal_type;
+  else
+    out_type = TYPE_AUDIO;
 
   switch (type)
     {
@@ -418,44 +422,48 @@ ports_expander_widget_setup_track (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), \
     GTK_WIDGET (ip))
 
-  InspectorPortWidget * ip;
-  switch (type)
+
+  if (tr)
     {
-    case PE_TRACK_PORT_TYPE_SENDS:
-      if (out_type == TYPE_AUDIO)
+      InspectorPortWidget * ip;
+      switch (type)
         {
+        case PE_TRACK_PORT_TYPE_SENDS:
+          if (out_type == TYPE_AUDIO)
+            {
+              ADD_SINGLE (
+                tr->channel->prefader.stereo_out->l);
+              ADD_SINGLE (
+                tr->channel->prefader.stereo_out->r);
+              ADD_SINGLE (
+                tr->channel->fader.stereo_out->l);
+              ADD_SINGLE (
+                tr->channel->fader.stereo_out->r);
+            }
+          else if (out_type == TYPE_EVENT)
+            {
+              ADD_SINGLE (
+                tr->channel->prefader.midi_out);
+              ADD_SINGLE (
+                tr->channel->fader.midi_out);
+            }
+          break;
+          break;
+        case PE_TRACK_PORT_TYPE_STEREO_IN:
           ADD_SINGLE (
-            tr->channel->prefader.stereo_out->l);
+            tr->processor.stereo_in->l);
           ADD_SINGLE (
-            tr->channel->prefader.stereo_out->r);
+            tr->processor.stereo_in->r);
+          break;
+        case PE_TRACK_PORT_TYPE_MIDI_IN:
           ADD_SINGLE (
-            tr->channel->fader.stereo_out->l);
+            tr->processor.midi_in);
+          break;
+        case PE_TRACK_PORT_TYPE_MIDI_OUT:
           ADD_SINGLE (
-            tr->channel->fader.stereo_out->r);
+            tr->channel->midi_out);
+          break;
         }
-      else if (out_type == TYPE_EVENT)
-        {
-          ADD_SINGLE (
-            tr->channel->prefader.midi_out);
-          ADD_SINGLE (
-            tr->channel->fader.midi_out);
-        }
-      break;
-      break;
-    case PE_TRACK_PORT_TYPE_STEREO_IN:
-      ADD_SINGLE (
-        tr->processor.stereo_in->l);
-      ADD_SINGLE (
-        tr->processor.stereo_in->r);
-      break;
-    case PE_TRACK_PORT_TYPE_MIDI_IN:
-      ADD_SINGLE (
-        tr->processor.midi_in);
-      break;
-    case PE_TRACK_PORT_TYPE_MIDI_OUT:
-      ADD_SINGLE (
-        tr->channel->midi_out);
-      break;
     }
 
 #undef ADD_SINGLE

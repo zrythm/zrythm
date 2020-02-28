@@ -148,22 +148,6 @@ tracklist_contains_chord_track (
   return 0;
 }
 
-static Track *
-get_track_by_name (
-  Tracklist * self,
-  const char * name)
-{
-  Track * track;
-  for (int i = 0; i < self->num_tracks; i++)
-    {
-      track = self->tracks[i];
-      if (g_strcmp0 (track->name, name) == 0)
-        return track;
-    }
-  return NULL;
-
-}
-
 void
 tracklist_print_tracks (
   Tracklist * self)
@@ -185,37 +169,7 @@ set_track_name (
   Tracklist * self,
   Track * track)
 {
-  int count = 1;
   char * new_label = g_strdup (track->name);
-  while (get_track_by_name (self, new_label))
-    {
-      int orig_says_copy =
-        g_str_has_suffix (track->name, "(Copy)");
-      g_free (new_label);
-
-      if (orig_says_copy && count == 1)
-        {
-          new_label =
-            g_strdup_printf (
-              "%.*s (Copy %d)",
-              (int) strlen (track->name) - 6,
-              track->name,
-              count);
-        }
-      else if (count == 1)
-        {
-          new_label =
-            g_strdup_printf (
-              "%s (Copy)", track->name);
-        }
-      else
-        {
-          new_label =
-            g_strdup_printf (
-              "%s (Copy %d)", track->name, count);
-        }
-      count++;
-    }
   track->name = new_label;
 }
 
@@ -578,6 +532,13 @@ tracklist_remove_track (
   g_message ("removing %s",
              track->name);
 
+  Track * prev_visible =
+    tracklist_get_prev_visible_track (
+      TRACKLIST, track);
+  Track * next_visible =
+    tracklist_get_next_visible_track (
+      TRACKLIST, track);
+
   /* clear the editor region if it exists and
    * belongs to this track */
   ZRegion * region =
@@ -608,16 +569,26 @@ tracklist_remove_track (
   tracklist_selections_remove_track (
     TRACKLIST_SELECTIONS, track, publish_events);
   array_delete (
-    self->tracks,
-    self->num_tracks,
-    track);
+    self->tracks, self->num_tracks, track);
+
+  /* if it was the only track selected, select
+   * the next one */
+  if (TRACKLIST_SELECTIONS->num_tracks == 0 &&
+      (prev_visible || next_visible))
+    {
+      tracklist_selections_add_track (
+        TRACKLIST_SELECTIONS,
+        next_visible ? next_visible : prev_visible,
+        publish_events);
+    }
 
   track_set_pos (track, -1);
 
   /* move all other tracks */
-  for (int i = 0;
-       i < self->num_tracks; i++)
-    track_set_pos (track, i);
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      track_set_pos (self->tracks[i], i);
+    }
 
   if (free)
     {

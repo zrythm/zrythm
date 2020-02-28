@@ -526,6 +526,20 @@ track_get_from_name (
   g_return_val_if_reached (NULL);
 }
 
+Track *
+track_find_by_name (
+  const char * name)
+{
+  Track * track;
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      track = TRACKLIST->tracks[i];
+      if (g_strcmp0 (track->name, name) == 0)
+        return track;
+    }
+  return NULL;
+}
+
 /**
  * Fills in the array with all the velocities in
  * the project that are within or outside the

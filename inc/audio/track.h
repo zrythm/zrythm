@@ -336,6 +336,9 @@ typedef struct Track
    */
   PortType             out_signal_type;
 
+  /** User comments. */
+  char *               comment;
+
   int                  magic;
 
 } Track;
@@ -443,6 +446,11 @@ track_fields_schema[] =
   CYAML_FIELD_UINT (
     "midi_ch", CYAML_FLAG_DEFAULT,
     Track, midi_ch),
+  CYAML_FIELD_STRING_PTR (
+    "comment",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    Track, comment,
+     0, CYAML_UNLIMITED),
 
   CYAML_FIELD_END
 };
@@ -730,6 +738,10 @@ track_has_inputs (
     track->type == TRACK_TYPE_INSTRUMENT ||
     track->type == TRACK_TYPE_AUDIO;
 }
+
+Track *
+track_find_by_name (
+  const char * name);
 
 /**
  * Fills in the array with all the velocities in

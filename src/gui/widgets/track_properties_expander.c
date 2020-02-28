@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,21 +40,25 @@ track_properties_expander_widget_refresh (
   TrackPropertiesExpanderWidget * self,
   Track *                         track)
 {
-  g_return_if_fail (self && track);
+  g_return_if_fail (self);
   self->track = track;
 
-  if (track_type_has_channel (track->type))
+  if (track)
     {
-      g_return_if_fail (self->direct_out);
-      route_target_selector_widget_refresh (
-        self->direct_out, track->channel);
-    }
+      if (track_type_has_channel (track->type))
+        {
+          g_return_if_fail (self->direct_out);
+          route_target_selector_widget_refresh (
+            self->direct_out, track->channel);
+        }
 
-  editable_label_widget_setup (
-    self->name,
-    track,
-    (EditableLabelWidgetTextGetter) track_get_name,
-    (EditableLabelWidgetTextSetter) track_set_name);
+      editable_label_widget_setup (
+        self->name, track,
+        (EditableLabelWidgetTextGetter)
+        track_get_name,
+        (EditableLabelWidgetTextSetter)
+        track_set_name);
+    }
 }
 
 /**

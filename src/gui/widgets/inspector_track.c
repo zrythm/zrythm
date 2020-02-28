@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,7 +40,7 @@ inspector_track_widget_show_tracks (
   TracklistSelections *  tls)
 {
   /* show info for first track */
-  Track * track;
+  Track * track = NULL;
   if (tls->num_tracks > 0)
     {
       track = tls->tracks[0];
@@ -106,6 +106,18 @@ inspector_track_widget_show_tracks (
           /*gtk_widget_set_visible (*/
             /*GTK_WIDGET (self->midi_out), 0);*/
         }
+    }
+  else /* no tracks selected */
+    {
+      track_properties_expander_widget_refresh (
+        self->instrument_track_info, NULL);
+      ports_expander_widget_setup_track (
+        self->sends,
+        track, PE_TRACK_PORT_TYPE_SENDS);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->sends), 0);
+      gtk_widget_set_visible (
+        GTK_WIDGET (self->inputs), 0);
     }
 }
 

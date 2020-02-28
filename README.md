@@ -96,7 +96,6 @@ enable us to spend more time working on the project.
 - [liberapay.com/Zrythm](https://liberapay.com/Zrythm)
 - [patreon.com/alex_tee](https://www.patreon.com/alex_tee)
 - [paypal.me/zrythm](https://paypal.me/zrythm)
-- [bountysource.com/teams/zrythmdaw](https://www.bountysource.com/teams/zrythmdaw)
 
 ----
 
