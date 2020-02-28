@@ -1066,6 +1066,7 @@ channel_append_all_ports (
     ch->fader.amp && ch->fader.balance);
   _ADD (ch->fader.amp);
   _ADD (ch->fader.balance);
+  _ADD (ch->track->mute);
 
   Plugin * pl;
   if (include_plugins)
@@ -1508,6 +1509,7 @@ channel_remove_plugin (
  *   automatables.
  *   To be used when creating a new plugin only.
  * @param recalc_graph Recalculate mixer graph.
+ * @param pub_events Publish events.
  *
  * @return 1 if plugin added, 0 if not.
  */
@@ -1518,7 +1520,8 @@ channel_add_plugin (
   Plugin *  plugin,
   int       confirm,
   int       gen_automatables,
-  int       recalc_graph)
+  int       recalc_graph,
+  int       pub_events)
 {
   int i;
   Track * track = channel_get_track (channel);
@@ -1601,8 +1604,10 @@ channel_add_plugin (
     plugin_generate_automation_tracks (
       plugin, track);
 
-  EVENTS_PUSH (ET_PLUGIN_ADDED,
-               plugin);
+  if (pub_events)
+    {
+      EVENTS_PUSH (ET_PLUGIN_ADDED, plugin);
+    }
 
   if (recalc_graph)
     mixer_recalc_graph (MIXER);
@@ -1827,7 +1832,8 @@ channel_clone (
             plugin_clone (ch->plugins[i]);
           channel_add_plugin (
             clone, i, clone_pl, F_NO_CONFIRM,
-            F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH);
+            F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
+            F_NO_PUBLISH_EVENTS);
         }
     }
 

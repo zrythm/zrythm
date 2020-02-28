@@ -138,7 +138,8 @@ delete_plugins_action_undo (
         ch, slot, pl,
         F_NO_CONFIRM,
         F_GEN_AUTOMATABLES,
-        F_NO_RECALC_GRAPH);
+        F_NO_RECALC_GRAPH,
+        F_NO_PUBLISH_EVENTS);
 
       /* copy automation */
       AutomationTracklist * atl =

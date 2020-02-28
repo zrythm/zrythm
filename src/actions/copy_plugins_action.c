@@ -132,7 +132,7 @@ copy_plugins_action_do (
       int new_slot = self->slot + i;
       channel_add_plugin (
         ch, new_slot, pl, 1, 1,
-        F_NO_RECALC_GRAPH);
+        F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
       /* copy the automation regions from the
        * original plugin */

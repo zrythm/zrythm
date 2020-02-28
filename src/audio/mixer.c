@@ -154,7 +154,8 @@ mixer_move_plugin (
 
   /* add plugin to its new channel */
   channel_add_plugin (
-    ch, slot, pl, 0, 0, F_RECALC_GRAPH);
+    ch, slot, pl, 0, 0, F_RECALC_GRAPH,
+    F_PUBLISH_EVENTS);
 
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, prev_ch);
   EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, ch);

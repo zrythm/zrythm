@@ -84,8 +84,8 @@ plugin_init_loaded (
 
   plugin_instantiate (self);
 
-  Track * track = plugin_get_track (self);
-  plugin_generate_automation_tracks (self, track);
+  /*Track * track = plugin_get_track (self);*/
+  /*plugin_generate_automation_tracks (self, track);*/
 }
 
 static void

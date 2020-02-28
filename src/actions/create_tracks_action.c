@@ -134,7 +134,8 @@ create (
         {
           channel_add_plugin (
             track->channel, pl->id.slot, pl,
-            1, 1, F_NO_RECALC_GRAPH);
+            1, 1, F_NO_RECALC_GRAPH,
+            F_NO_PUBLISH_EVENTS);
           g_warn_if_fail (
             pl->id.track_pos == track->pos);
         }

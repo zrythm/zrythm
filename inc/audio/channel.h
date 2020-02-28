@@ -429,6 +429,7 @@ channel_process (Channel * channel);
  *   automatables.
  *   To be used when creating a new plugin only.
  * @param recalc_graph Recalculate mixer graph.
+ * @param pub_events Publish events.
  *
  * @return 1 if plugin added, 0 if not.
  */
@@ -439,7 +440,8 @@ channel_add_plugin (
   Plugin *  plugin,
   int       confirm,
   int       gen_automatables,
-  int       recalc_graph);
+  int       recalc_graph,
+  int       pub_events);
 
 Track *
 channel_get_track (
