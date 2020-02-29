@@ -1418,42 +1418,126 @@ expose_to_rtmidi (
   Port * self,
   int    expose)
 {
-#if 0
+  char lbl[600];
+  port_get_full_designation (self, lbl);
   if (expose)
     {
-      char lbl[600];
-      port_get_full_designation (self, lbl);
+#if 0
 
-      g_return_if_fail (
-        AUDIO_ENGINE->seq_handle);
+      if (self->id.flow == FLOW_INPUT)
+        {
+          self->rtmidi_in =
+            rtmidi_in_create (
+#ifdef _WOE32
+              RTMIDI_API_WINDOWS_MM,
+#elif defined(__APPLE__)
+              RTMIDI_API_MACOSX_CORE,
+#else
+              RTMIDI_API_LINUX_ALSA,
+#endif
+              "Zrythm",
+              AUDIO_ENGINE->midi_buf_size);
 
-      int id =
-        snd_seq_create_simple_port (
-          AUDIO_ENGINE->seq_handle,
-          lbl, flags,
-          SND_SEQ_PORT_TYPE_APPLICATION);
-      g_return_if_fail (id >= 0);
-      snd_seq_port_info_t * info;
-      snd_seq_port_info_malloc (&info);
-      snd_seq_get_port_info (
-        AUDIO_ENGINE->seq_handle,
-        id, info);
-      self->data = (void *) info;
-      self->internal_type =
-        INTERNAL_ALSA_SEQ_PORT;
+          /* don't ignore any messages */
+          rtmidi_in_ignore_types (
+            self->rtmidi_in, 0, 0, 0);
+
+          rtmidi_open_port (
+            self->rtmidi_in, 1, lbl);
+        }
+#endif
+      g_message ("exposing %s", lbl);
     }
   else
     {
-      snd_seq_delete_port (
-        AUDIO_ENGINE->seq_handle,
-        snd_seq_port_info_get_port (
-          (snd_seq_port_info_t *)
-            self->data));
-      self->internal_type = INTERNAL_NONE;
-      self->data = NULL;
-    }
+#if 0
+      if (self->id.flow == FLOW_INPUT &&
+          self->rtmidi_in)
+        {
+          rtmidi_close_port (self->rtmidi_in);
+          self->rtmidi_in = NULL;
+        }
 #endif
+      g_message ("unexposing %s", lbl);
+    }
   self->exposed_to_backend = expose;
+}
+
+/**
+ * Sums the inputs coming in from RtMidi
+ * before the port is processed.
+ */
+static void
+sum_data_from_rtmidi (
+  Port * self,
+  const nframes_t start_frame,
+  const nframes_t nframes)
+{
+  g_return_if_fail (
+    self->id.flow == FLOW_INPUT &&
+    AUDIO_ENGINE->midi_backend ==
+      MIDI_BACKEND_RTMIDI);
+
+  unsigned char raw[1024];
+  memset (raw, 0, sizeof (raw));
+  for (int i = 0; i < self->num_rtmidi_ins; i++)
+    {
+      while (1)
+        {
+          size_t size = 1024;
+          double ev_time =
+            rtmidi_in_get_message (
+              self->rtmidi_ins[i], &raw[0], &size);
+          g_warn_if_fail (
+            self->rtmidi_ins[i]->ok);
+          if (size > 0)
+            {
+              g_message (
+                "received event of size %lu at %f: %#x %#x %#x",
+                size, ev_time, raw[0], raw[1], raw[2]);
+            }
+          else
+            break;
+
+          midi_byte_t channel = raw[0] & 0xf;
+          Track * track = port_get_track (self, 0);
+          if (self->id.owner_type ==
+                PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+              (track->type ==
+                 TRACK_TYPE_MIDI ||
+               track->type ==
+                 TRACK_TYPE_INSTRUMENT) &&
+              !track->channel->
+                all_midi_channels &&
+              !track->channel->
+                midi_channels[channel])
+            {
+              /* different channel */
+            }
+          else
+            {
+              midi_events_add_event_from_buf (
+                self->midi_events,
+                0, raw, (int) size);
+            }
+        }
+    }
+
+  if (self->midi_events->num_events > 0)
+    {
+      MidiEvent * ev =
+        &self->midi_events->events[0];
+      char designation[600];
+      port_get_full_designation (
+        self, designation);
+      g_message (
+        "MME MIDI (%s): have %d events\n"
+        "first event is: [%u] %hhx %hhx %hhx",
+        designation,
+        self->midi_events->num_events,
+        ev->time, ev->raw_buffer[0],
+        ev->raw_buffer[1], ev->raw_buffer[2]);
+    }
 }
 #endif
 
@@ -1934,6 +2018,12 @@ port_sum_signal_from_inputs (
 #ifdef _WOE32
             case MIDI_BACKEND_WINDOWS_MME:
               sum_data_from_windows_mme (
+                port, start_frame, nframes);
+              break;
+#endif
+#ifdef HAVE_RTMIDI
+            case MIDI_BACKEND_RTMIDI:
+              sum_data_from_rtmidi (
                 port, start_frame, nframes);
               break;
 #endif

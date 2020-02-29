@@ -55,10 +55,6 @@
 #include <SDL2/SDL_audio.h>
 #endif
 
-#ifdef HAVE_RTMIDI
-#include <rtmidi/rtmidi_c.h>
-#endif
-
 typedef struct StereoPorts StereoPorts;
 typedef struct Port Port;
 typedef struct Channel Channel;
@@ -373,11 +369,6 @@ typedef struct AudioEngine
 
 #ifdef HAVE_SDL
   SDL_AudioDeviceID dev;
-#endif
-
-#ifdef HAVE_RTMIDI
-  RtMidiInPtr       rtmidi_in;
-  RtMidiOutPtr      rtmidi_out;
 #endif
 
   /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -42,6 +42,10 @@
 #include <jack/jack.h>
 #endif
 
+#ifdef HAVE_RTMIDI
+#include <rtmidi/rtmidi_c.h>
+#endif
+
 typedef struct WindowsMmeDevice WindowsMmeDevice;
 
 /**
@@ -65,6 +69,7 @@ typedef enum ExtPortType
   EXT_PORT_TYPE_JACK,
   EXT_PORT_TYPE_ALSA,
   EXT_PORT_TYPE_WINDOWS_MME,
+  EXT_PORT_TYPE_RTMIDI,
 } ExtPortType;
 
 static const cyaml_strval_t
@@ -73,6 +78,7 @@ ext_port_type_strings[] =
   { "JACK",   EXT_PORT_TYPE_JACK    },
   { "ALSA",   EXT_PORT_TYPE_ALSA   },
   { "Windows MME",   EXT_PORT_TYPE_WINDOWS_MME   },
+  { "RtMidi",   EXT_PORT_TYPE_RTMIDI   },
 };
 
 /**
@@ -109,6 +115,11 @@ typedef struct ExtPort
   WindowsMmeDevice * mme_dev;
 #endif
 
+#ifdef HAVE_RTMIDI
+  /** RtMidi port index. */
+  unsigned int     rtmidi_id;
+#endif
+
   ExtPortType      type;
 } ExtPort;
 
@@ -118,22 +129,22 @@ ext_port_fields_schema[] =
   CYAML_FIELD_STRING_PTR (
     "full_name", CYAML_FLAG_POINTER,
     ExtPort, full_name,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
     "short_name",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ExtPort, short_name,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
     "alias1",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ExtPort, alias1,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
   CYAML_FIELD_STRING_PTR (
     "alias2",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ExtPort, alias2,
-   	0, CYAML_UNLIMITED),
+     0, CYAML_UNLIMITED),
   CYAML_FIELD_INT (
     "num_aliases", CYAML_FLAG_DEFAULT,
     ExtPort, num_aliases),
@@ -142,15 +153,15 @@ ext_port_fields_schema[] =
     ExtPort, type, ext_port_type_strings,
     CYAML_ARRAY_LEN (ext_port_type_strings)),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 ext_port_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-	  ExtPort, ext_port_fields_schema),
+    ExtPort, ext_port_fields_schema),
 };
 
 /**

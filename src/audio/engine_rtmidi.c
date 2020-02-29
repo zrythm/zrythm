@@ -73,10 +73,64 @@ engine_rtmidi_setup (
   int           loading)
 {
   self->midi_buf_size = 4096;
+  (void) midi_in_cb;
 
-  g_message ("setting up Rtmidi...");
+  g_message ("Rtmidi set up");
 
-  self->rtmidi_in =
+  return 0;
+}
+
+static RtMidiInPtr
+create_port (
+  AudioEngine * self)
+{
+  RtMidiInPtr midi_in =
+    rtmidi_in_create (
+#ifdef _WOE32
+      RTMIDI_API_WINDOWS_MM,
+#elif defined(__APPLE__)
+      RTMIDI_API_MACOSX_CORE,
+#else
+      RTMIDI_API_LINUX_ALSA,
+#endif
+      "Zrythm",
+      self->midi_buf_size);
+  return midi_in;
+}
+
+static void
+free_port (RtMidiInPtr port)
+{
+  rtmidi_in_free (port);
+}
+
+/**
+ * Gets the number of input ports (devices).
+ */
+unsigned int
+engine_rtmidi_get_num_in_ports (
+  AudioEngine * self)
+{
+  RtMidiPtr ptr = create_port (self);
+  unsigned int num_ports =
+    rtmidi_get_port_count (ptr);
+  free_port (ptr);
+  return num_ports;
+}
+
+/**
+ * Creates an input port, optinally opening it with
+ * the given device ID (from rtmidi port count) and
+ * label.
+ */
+RtMidiPtr
+engine_rtmidi_create_in_port (
+  AudioEngine * self,
+  int           open_port,
+  unsigned int  device_id,
+  const char *  label)
+{
+  RtMidiInPtr midi_in =
     rtmidi_in_create (
 #ifdef _WOE32
       RTMIDI_API_WINDOWS_MM,
@@ -88,22 +142,17 @@ engine_rtmidi_setup (
       "Zrythm",
       self->midi_buf_size);
 
-  rtmidi_open_virtual_port (
-    self->rtmidi_in, "Zrythm MIDI in");
-  rtmidi_open_virtual_port (
-    self->rtmidi_in, "Zrythm MIDI in2");
+  if (open_port)
+    {
+      /* don't ignore any messages */
+      /*rtmidi_in_ignore_types (midi_in, 0, 0, 0);*/
 
-  rtmidi_in_set_callback (
-    self->rtmidi_in,
-    (RtMidiCCallback) midi_in_cb, self);
+      char lbl[800];
+      sprintf (lbl, "%s [%u]", label, device_id);
+      rtmidi_open_port (midi_in, device_id, lbl);
+    }
 
-  /* don't ignore any messages */
-  rtmidi_in_ignore_types (
-    self->rtmidi_in, 0, 0, 0);
-
-  g_message ("Rtmidi set up");
-
-  return 0;
+  return midi_in;
 }
 
 /**

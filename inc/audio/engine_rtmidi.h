@@ -55,6 +55,25 @@ engine_rtmidi_setup (
   AudioEngine * self,
   int           loading);
 
+/**
+ * Gets the number of input ports (devices).
+ */
+unsigned int
+engine_rtmidi_get_num_in_ports (
+  AudioEngine * self);
+
+/**
+ * Creates an input port, optinally opening it with
+ * the given device ID (from rtmidi port count) and
+ * label.
+ */
+RtMidiPtr
+engine_rtmidi_create_in_port (
+  AudioEngine * self,
+  int           open_port,
+  unsigned int  device_id,
+  const char *  label);
+
 void
 engine_rtmidi_tear_down (
   AudioEngine * self);

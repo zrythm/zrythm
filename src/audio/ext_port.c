@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,6 +21,7 @@
 
 #include "audio/engine.h"
 #include "audio/engine_jack.h"
+#include "audio/engine_rtmidi.h"
 #include "audio/ext_port.h"
 #include "audio/windows_mme_device.h"
 #include "project.h"
@@ -61,6 +62,9 @@ ext_port_get_buffer (
 #ifdef HAVE_ALSA
     case EXT_PORT_TYPE_ALSA:
 #endif
+#ifdef HAVE_RTMIDI
+    case EXT_PORT_TYPE_RTMIDI:
+#endif
     default:
       g_return_val_if_reached (NULL);
       break;
@@ -83,9 +87,7 @@ ext_port_clear_buffer (
 
   g_message ("clearing buffer of %p", ext_port);
 
-  memset (
-    buf, 0,
-    nframes * sizeof (float));
+  memset (buf, 0, nframes * sizeof (float));
 }
 
 /**
@@ -267,6 +269,55 @@ get_ext_ports_from_windows_mme (
 }
 #endif
 
+#ifdef HAVE_RTMIDI
+/**
+ * Creates an ExtPort from a RtMidi port.
+ */
+static ExtPort *
+ext_port_from_rtmidi (
+  unsigned int id)
+{
+  ExtPort * self =
+    calloc (1, sizeof (ExtPort));
+
+  RtMidiPtr ptr =
+    engine_rtmidi_create_in_port (
+      AUDIO_ENGINE, 0, 0, NULL);
+  self->rtmidi_id = id;
+  self->full_name =
+    g_strdup (rtmidi_get_port_name (ptr, id));
+  self->type = EXT_PORT_TYPE_RTMIDI;
+  rtmidi_in_free (ptr);
+
+  return self;
+}
+
+static void
+get_ext_ports_from_rtmidi (
+  PortFlow   flow,
+  ExtPort ** arr,
+  int *      size)
+{
+  if (flow == FLOW_OUTPUT)
+    {
+      unsigned int num_ports =
+        engine_rtmidi_get_num_in_ports (
+          AUDIO_ENGINE);
+      unsigned int i;
+      for (i = 0; i < num_ports; i++)
+        {
+          arr[*size + (int) i] =
+            ext_port_from_rtmidi (i);
+        }
+      (*size) += (int) i;
+    }
+  else if (flow == FLOW_INPUT)
+    {
+      *size = 0;
+    }
+}
+#endif
+
 /**
  * Collects external ports of the given type.
  *
@@ -323,6 +374,12 @@ ext_ports_get (
 #ifdef _WOE32
         case MIDI_BACKEND_WINDOWS_MME:
           get_ext_ports_from_windows_mme (
+            flow, arr, size);
+          break;
+#endif
+#ifdef HAVE_RTMIDI
+        case MIDI_BACKEND_RTMIDI:
+          get_ext_ports_from_rtmidi (
             flow, arr, size);
           break;
 #endif

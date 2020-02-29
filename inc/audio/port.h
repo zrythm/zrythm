@@ -35,6 +35,10 @@
 #include <jack/jack.h>
 #endif
 
+#ifdef HAVE_RTMIDI
+#include <rtmidi/rtmidi_c.h>
+#endif
+
 typedef struct Plugin Plugin;
 typedef struct MidiEvents MidiEvents;
 typedef struct Fader Fader;
@@ -213,6 +217,9 @@ typedef struct Port
    * Pointer to arbitrary data.
    *
    * Use internal_type to check what data it is.
+   *
+   * FIXME just add the various data structs here
+   * and remove this ambiguity.
    */
   void *              data;
 
@@ -235,6 +242,21 @@ typedef struct Port
   /** Last time the port finished dequeueing
    * MIDI events. */
   gint64              last_midi_dequeue;
+#endif
+
+#ifdef HAVE_RTMIDI
+  /**
+   * RtMidi pointers for input ports.
+   *
+   * Each RtMidi port represents a device, and this
+   * Port can be connected to multiple devices.
+   */
+  RtMidiInPtr         rtmidi_ins[128];
+  int                 num_rtmidi_ins;
+
+  /** RtMidi pointers for output ports. */
+  RtMidiOutPtr        rtmidi_outs[128];
+  int                 num_rtmidi_outs;
 #endif
 
   /**

@@ -28,6 +28,7 @@
 #include "audio/automation_tracklist.h"
 #include "audio/channel.h"
 #include "audio/engine_jack.h"
+#include "audio/engine_rtmidi.h"
 #include "audio/ext_port.h"
 #include "audio/instrument_track.h"
 #include "audio/master_track.h"
@@ -662,6 +663,72 @@ reconnect_jack_ext_in (
 }
 #endif
 
+#ifdef HAVE_RTMIDI
+/**
+ * Reconnects the given port (either
+ * TrackProcessor's stereo in L/R or midi in).
+ */
+static void
+reconnect_rtmidi_ext_in (
+  Channel * ch,
+  Port *    in_port)
+{
+  int i = 0;
+  Track * track =
+    channel_get_track (ch);
+  TrackProcessor * processor =
+    &track->processor;
+  const int is_midi_in =
+    in_port == processor->midi_in;
+  if (!is_midi_in)
+    return;
+
+  char lbl[600];
+  port_get_full_designation (in_port, lbl);
+
+  /* disconnect */
+  for (i = 0; i < in_port->num_rtmidi_ins; i++)
+    {
+      rtmidi_close_port (in_port->rtmidi_ins[i]);
+      rtmidi_in_free (in_port->rtmidi_ins[i]);
+    }
+  in_port->num_rtmidi_ins = 0;
+
+  /* connect to all external midi ins */
+  if (ch->all_midi_ins)
+    {
+      unsigned int num_ports =
+        engine_rtmidi_get_num_in_ports (
+          AUDIO_ENGINE);
+
+      for (unsigned int j = 0; j < num_ports; j++)
+        {
+          in_port->rtmidi_ins[
+            in_port->num_rtmidi_ins++] =
+              engine_rtmidi_create_in_port (
+                AUDIO_ENGINE, 1, j, lbl);
+        }
+    }
+  /* connect to selected ports */
+  else
+    {
+      int num = 0;
+      ExtPort ** arr = NULL;
+      num = ch->num_ext_midi_ins;
+      arr = ch->ext_midi_ins;
+
+      for (i = 0; i < num; i++)
+        {
+          in_port->rtmidi_ins[
+            in_port->num_rtmidi_ins++] =
+              engine_rtmidi_create_in_port (
+                AUDIO_ENGINE, 1,
+                arr[i]->rtmidi_id, lbl);
+        }
+    }
+}
+#endif
+
 /**
  * Called when the input has changed for Midi,
  * Instrument or Audio tracks.
@@ -694,6 +761,11 @@ channel_reconnect_ext_input_ports (
         case MIDI_BACKEND_WINDOWS_MME:
           reconnect_windows_mme_ext_in (
             ch, midi_in);
+          break;
+#endif
+#ifdef HAVE_RTMIDI
+        case MIDI_BACKEND_RTMIDI:
+          reconnect_rtmidi_ext_in (ch, midi_in);
           break;
 #endif
         default:
