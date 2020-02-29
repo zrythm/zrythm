@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2020-02-26 11:34+0000\n"
+"PO-Revision-Date: 2020-03-01 10:34+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/es/>\n"
@@ -39,7 +39,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:6
 msgid "Common Operations"
-msgstr ""
+msgstr "Operaciones habituales"
 
 #: ../../editing/common-operations.rst:8
 msgid ""
@@ -49,7 +49,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:13
 msgid "Undo/Redo"
-msgstr ""
+msgstr "Deshacer y rehacer"
 
 #: ../../editing/common-operations.rst:14
 msgid ""
@@ -77,14 +77,16 @@ msgid ""
 "If you Undo and then perform a new action, the Redo history will be "
 "deleted."
 msgstr ""
+"Si efectúa una operación de deshacer y luego realiza una acción nueva, se "
+"eliminará el historial de Rehacer."
 
 #: ../../editing/common-operations.rst:32
 msgid "Object Operations"
-msgstr ""
+msgstr "Operaciones sobre objetos"
 
 #: ../../editing/common-operations.rst:34
 msgid "Cut"
-msgstr ""
+msgstr "Cortar"
 
 #: ../../editing/common-operations.rst:35
 msgid ""
@@ -95,7 +97,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:41
 msgid "Copy"
-msgstr ""
+msgstr "Copiar"
 
 #: ../../editing/common-operations.rst:42
 msgid ""
@@ -105,7 +107,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:48
 msgid "Paste"
-msgstr ""
+msgstr "Pegar"
 
 #: ../../editing/common-operations.rst:49
 msgid ""
@@ -115,7 +117,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:55
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplicar"
 
 #: ../../editing/common-operations.rst:56
 msgid ""
@@ -125,7 +127,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:61
 msgid "Delete"
-msgstr ""
+msgstr "Eliminar"
 
 #: ../../editing/common-operations.rst:62
 msgid ""
@@ -139,7 +141,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:69
 msgid "Clear Selection"
-msgstr ""
+msgstr "Vaciar selección"
 
 #: ../../editing/common-operations.rst:70
 msgid "Clear current selection (unselect all objects)."
@@ -147,7 +149,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:73
 msgid "Select All"
-msgstr ""
+msgstr "Seleccionar todo"
 
 #: ../../editing/common-operations.rst:74
 msgid "Select all objects in the current editor."
@@ -155,7 +157,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:77
 msgid "Loop Selection"
-msgstr ""
+msgstr "Bucle con selección"
 
 #: ../../editing/common-operations.rst:78
 msgid ""
@@ -520,7 +522,7 @@ msgstr ""
 
 #: ../../editing/quantization.rst:26
 msgid "Adjust"
-msgstr ""
+msgstr "Ajustar"
 
 #: ../../editing/quantization.rst:26
 msgid ""
@@ -611,7 +613,7 @@ msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:29
 msgid "Length"
-msgstr ""
+msgstr "Duración"
 
 #: ../../editing/snapping-grid-options.rst:30
 msgid "Note length to snap to."
@@ -627,7 +629,7 @@ msgstr ""
 
 #: ../../editing/timeline/event-viewer.rst:6
 msgid "Event Viewer"
-msgstr ""
+msgstr "Visor de sucesos"
 
 #: ../../editing/timeline/intro.rst:6
 msgid "Timeline"
@@ -642,7 +644,7 @@ msgstr ""
 
 #: ../../editing/timeline/overview.rst:12
 msgid "Tracklist"
-msgstr ""
+msgstr "Lista de pistas"
 
 #: ../../editing/timeline/overview.rst:17
 msgid ""
