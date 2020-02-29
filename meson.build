@@ -491,7 +491,13 @@ if (get_option('enable_portaudio'))
 endif
 
 if (get_option('enable_rtmidi'))
-  zrythm_deps += dependency ('rtmidi')
+  rtmidi_dep = dependency ('rtmidi', required: false)
+  if not rtmidi_dep.found()
+    rtmidi_proj = subproject('rtmidi')
+    rtmidi_dep = rtmidi_proj.get_variable(
+      'zrythm_rtmidi_dep')
+  endif
+  zrythm_deps += rtmidi_dep
   cdata.set('HAVE_RTMIDI', 1)
 endif
 
