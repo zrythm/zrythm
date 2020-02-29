@@ -1378,13 +1378,17 @@ port_set_expose_to_alsa (
           char lbl[600];
           port_get_full_designation (self, lbl);
 
+          g_return_if_fail (
+            AUDIO_ENGINE->seq_handle);
+
           int id =
             snd_seq_create_simple_port (
               AUDIO_ENGINE->seq_handle,
               lbl, flags,
               SND_SEQ_PORT_TYPE_APPLICATION);
           g_return_if_fail (id >= 0);
-          snd_seq_port_info_t * info = NULL;
+          snd_seq_port_info_t * info;
+          snd_seq_port_info_malloc (&info);
           snd_seq_get_port_info (
             AUDIO_ENGINE->seq_handle,
             id, info);

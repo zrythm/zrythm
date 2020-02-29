@@ -374,12 +374,12 @@ audio_thread (void * _self)
   int err;
   err =
     snd_pcm_open(
-      &self->playback_handle, "default",
+      &self->playback_handle, "plughw:0,0",
       SND_PCM_STREAM_PLAYBACK, 0);
   if (err < 0)
     g_warning (
-      "Cannot open audio device: %s",
-      snd_strerror (err));
+      "%s [ALSA]: Cannot open audio device: %s",
+      __func__, snd_strerror (err));
 
   /* set hw params */
   err =
@@ -398,14 +398,6 @@ audio_thread (void * _self)
       snd_strerror (err));
   set_sw_params (self);
   g_warn_if_fail (self->block_length > 0);
-
-  engine_realloc_port_buffers (
-    self, self->block_length);
-  engine_update_frames_per_tick (
-    self,
-    TRANSPORT->beats_per_bar,
-    TRANSPORT->bpm,
-    self->sample_rate);
 
   g_usleep (8000);
 
@@ -562,7 +554,7 @@ engine_alsa_setup (
     }
 
   /* wait for the thread to initialize */
-  g_usleep (1000);
+  g_usleep (100000);
 
   g_message ("ALSA setup complete");
 
@@ -588,7 +580,7 @@ engine_alsa_midi_setup (
     &midi_thread, self);
 
   /* wait for the thread to initialize the seq */
-  g_usleep (1000);
+  g_usleep (100000);
 
   return 0;
 }

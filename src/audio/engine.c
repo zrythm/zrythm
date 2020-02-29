@@ -439,9 +439,16 @@ engine_init (
     }
   else
     {
-      self->pool =
-        audio_pool_new ();
+      self->pool = audio_pool_new ();
     }
+
+  engine_realloc_port_buffers (
+    self, self->block_length);
+  engine_update_frames_per_tick (
+    self,
+    TRANSPORT->beats_per_bar,
+    TRANSPORT->bpm,
+    self->sample_rate);
 }
 
 /**
