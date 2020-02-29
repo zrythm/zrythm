@@ -2042,8 +2042,11 @@ lv2_plugin_process (
                         (uint32_t)
                         lv2_port->port->control;
 #ifdef HAVE_JACK
-                      jack_recompute_total_latencies (
-                        client);
+                      if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
+                        {
+                          jack_recompute_total_latencies (
+                            client);
+                        }
 #endif
                     }
                 }

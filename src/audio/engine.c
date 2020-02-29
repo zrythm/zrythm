@@ -365,9 +365,6 @@ engine_init (
     MONITOR_FADER->stereo_out,
     self->monitor_out, 1);
 
-  /* init midi */
-  init_midi (self, loading);
-
   /* set up midi */
   int mret = 0;
   switch (self->midi_backend)
@@ -420,6 +417,9 @@ engine_init (
         MIDI_BACKEND_DUMMY;
       engine_dummy_midi_setup (self, loading);
     }
+
+  /* init midi */
+  init_midi (self, loading);
 
   self->buf_size_set = false;
 

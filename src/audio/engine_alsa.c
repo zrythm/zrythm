@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -453,13 +453,16 @@ midi_thread (void * _self)
 {
   AudioEngine * self = (AudioEngine *) _self;
 
-  int err;
-
-  if ((err = snd_seq_open (
-        &self->seq_handle,
-        "default", SND_SEQ_OPEN_DUPLEX, 0)) < 0)
-    g_warning ("Error opening ALSA sequencer: %s",
-               snd_strerror (err));
+  int err =
+    snd_seq_open (
+      &self->seq_handle, "default",
+      SND_SEQ_OPEN_DUPLEX, 0);
+  if (err < 0)
+    {
+      g_warning (
+        "Error opening ALSA sequencer: %s",
+        snd_strerror (err));
+    }
 
   snd_seq_set_client_name (
     self->seq_handle, "Zrythm");
@@ -512,8 +515,7 @@ int
 engine_alsa_setup (
   AudioEngine *self, int loading)
 {
-  /* not working atm */
-  return -1;
+  g_message ("setting up ALSA...");
 
   self->block_length = 512;
   self->sample_rate = 44100;
@@ -538,9 +540,9 @@ engine_alsa_setup (
       TYPE_AUDIO, FLOW_OUTPUT,
       "ALSA Monitor Out / R");
 
-  monitor_out_l->identifier.owner_type =
+  monitor_out_l->id.owner_type =
     PORT_OWNER_TYPE_BACKEND;
-  monitor_out_r->identifier.owner_type =
+  monitor_out_r->id.owner_type =
     PORT_OWNER_TYPE_BACKEND;
 
   self->monitor_out =
@@ -559,6 +561,9 @@ engine_alsa_setup (
       return -1;
     }
 
+  /* wait for the thread to initialize */
+  g_usleep (1000);
+
   g_message ("ALSA setup complete");
 
   return 0;
@@ -569,20 +574,21 @@ engine_alsa_midi_setup (
   AudioEngine * self,
   int           loading)
 {
-  /* not working atm */
-  return -1;
-
   /*if (loading)*/
     /*{*/
     /*}*/
   /*else*/
     /*{*/
     /*}*/
+  g_message ("creating ALSA midi thread");
 
   pthread_t thread_id;
   pthread_create (
     &thread_id, NULL,
     &midi_thread, self);
+
+  /* wait for the thread to initialize the seq */
+  g_usleep (1000);
 
   return 0;
 }

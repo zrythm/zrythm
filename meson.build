@@ -366,8 +366,7 @@ if (x11_dep.found ())
 endif
 alsa_dep = dependency('alsa', required: false)
 if (alsa_dep.found ())
-  # disable until it works
-  #cdata.set('HAVE_ALSA', 1)
+  cdata.set('HAVE_ALSA', 1)
 endif
 cyaml_dep = dependency(
   'libcyaml', required: false, version: '=1.0.1')
