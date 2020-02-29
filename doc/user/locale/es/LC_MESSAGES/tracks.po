@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2020-02-26 11:34+0000\n"
+"PO-Revision-Date: 2020-03-01 10:34+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/es/>\n"
@@ -197,7 +197,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:57
 #: ../../tracks/overview.rst:73
 msgid "Inputs"
-msgstr ""
+msgstr "Entradas"
 
 #: ../../tracks/audio-track.rst:49
 msgid "Left and right audio input sources used when recording."
