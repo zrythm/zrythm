@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-12 12:58+0100\n"
-"PO-Revision-Date: 2020-02-26 11:34+0000\n"
+"PO-Revision-Date: 2020-03-01 10:34+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualplayback-and-recording/es/>\n"
@@ -88,7 +88,7 @@ msgstr ""
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:22
 msgid "Loop Points"
-msgstr ""
+msgstr "Puntos de bucle"
 
 #: ../../playback-and-recording/loop-points-and-markers.rst:27
 msgid "Cue Point"
@@ -192,7 +192,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:28
 msgid "Play"
-msgstr ""
+msgstr "Reproducir"
 
 #: ../../playback-and-recording/transport-controls.rst:27
 msgid ""
@@ -202,7 +202,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:31
 msgid "Stop"
-msgstr ""
+msgstr "Detener"
 
 #: ../../playback-and-recording/transport-controls.rst:31
 msgid "Pauses playback. If clicked twice, goes back to the Cue point."
@@ -226,7 +226,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:42
 msgid "Loop"
-msgstr ""
+msgstr "Bucle"
 
 #: ../../playback-and-recording/transport-controls.rst:40
 msgid ""
