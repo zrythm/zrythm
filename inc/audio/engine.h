@@ -55,6 +55,10 @@
 #include <SDL2/SDL_audio.h>
 #endif
 
+#ifdef HAVE_RTMIDI
+#include <rtmidi/rtmidi_c.h>
+#endif
+
 typedef struct StereoPorts StereoPorts;
 typedef struct Port Port;
 typedef struct Channel Channel;
@@ -146,6 +150,7 @@ typedef enum MidiBackend
   MIDI_BACKEND_ALSA,
   MIDI_BACKEND_JACK,
   MIDI_BACKEND_WINDOWS_MME,
+  MIDI_BACKEND_RTMIDI,
   NUM_MIDI_BACKENDS,
 } MidiBackend;
 
@@ -155,6 +160,7 @@ static const char * midi_backend_str[] =
   "ALSA",
   "JACK",
   "Windows MME",
+  "Rtmidi",
   "invalid"
 };
 
@@ -366,7 +372,12 @@ typedef struct AudioEngine
 #endif
 
 #ifdef HAVE_SDL
-  SDL_AudioDeviceID  dev;
+  SDL_AudioDeviceID dev;
+#endif
+
+#ifdef HAVE_RTMIDI
+  RtMidiInPtr       rtmidi_in;
+  RtMidiOutPtr      rtmidi_out;
 #endif
 
   /**

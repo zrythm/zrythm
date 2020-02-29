@@ -527,6 +527,304 @@ stereo_ports_new_from_existing (
   return sp;
 }
 
+#ifdef HAVE_JACK
+void
+port_receive_midi_events_from_jack (
+  Port *      self,
+  const nframes_t         start_frame,
+  const nframes_t   nframes)
+{
+  if (self->internal_type !=
+        INTERNAL_JACK_PORT ||
+      self->id.type !=
+        TYPE_EVENT)
+    return;
+
+  void * port_buf =
+    jack_port_get_buffer (
+      JACK_PORT_T (self->data), nframes);
+  uint32_t num_events =
+    jack_midi_get_event_count (port_buf);
+
+  jack_midi_event_t jack_ev;
+  for(unsigned i = 0; i < num_events; i++)
+    {
+      jack_midi_event_get (
+        &jack_ev, port_buf, i);
+
+      if (jack_ev.time >= start_frame &&
+          jack_ev.time < start_frame + nframes)
+        {
+          midi_byte_t channel =
+            jack_ev.buffer[0] & 0xf;
+          Track * track =
+            port_get_track (self, 0);
+          if (self->id.owner_type ==
+                PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+              (track->type ==
+                   TRACK_TYPE_MIDI ||
+                 track->type ==
+                   TRACK_TYPE_INSTRUMENT) &&
+                !track->channel->
+                  all_midi_channels &&
+                !track->channel->
+                  midi_channels[channel])
+            {
+              /* different channel */
+            }
+          else
+            {
+              /*g_message (*/
+                /*"JACK MIDI (%s): adding events "*/
+                /*"from buffer:\n"*/
+                /*"[%u] %hhx %hhx %hhx",*/
+                /*port_get_full_designation (self),*/
+                /*jack_ev.time,*/
+                /*jack_ev.buffer[0],*/
+                /*jack_ev.buffer[1],*/
+                /*jack_ev.buffer[2]);*/
+              midi_events_add_event_from_buf (
+                self->midi_events,
+                jack_ev.time, jack_ev.buffer,
+                (int) jack_ev.size);
+            }
+        }
+    }
+
+  if (self->midi_events->num_events > 0)
+    {
+      MidiEvent * ev =
+        &self->midi_events->events[0];
+      char designation[600];
+      port_get_full_designation (
+        self, designation);
+      g_message (
+        "JACK MIDI (%s): have %d events\n"
+        "first event is: [%u] %hhx %hhx %hhx",
+        designation, num_events,
+        ev->time, ev->raw_buffer[0],
+        ev->raw_buffer[1], ev->raw_buffer[2]);
+    }
+}
+
+void
+port_receive_audio_data_from_jack (
+  Port *      port,
+  const nframes_t         start_frames,
+  const nframes_t   nframes)
+{
+  if (port->internal_type !=
+        INTERNAL_JACK_PORT ||
+      port->id.type != TYPE_AUDIO)
+    return;
+
+  float * in;
+  in =
+    (float *)
+    jack_port_get_buffer (
+      JACK_PORT_T (port->data),
+      AUDIO_ENGINE->nframes);
+
+  for (unsigned int i = start_frames;
+       i < start_frames + nframes; i++)
+    {
+      port->buf[i] += in[i];
+    }
+}
+
+static void
+send_midi_events_to_jack (
+  Port *      port,
+  const nframes_t         start_frames,
+  const nframes_t   nframes)
+{
+  if (port->internal_type !=
+        INTERNAL_JACK_PORT ||
+      port->id.type !=
+        TYPE_EVENT)
+    return;
+
+  midi_events_copy_to_jack (
+    port->midi_events,
+    jack_port_get_buffer (
+      JACK_PORT_T (port->data),
+      AUDIO_ENGINE->nframes));
+}
+
+static void
+send_audio_data_to_jack (
+  Port *      port,
+  const nframes_t         start_frames,
+  const nframes_t         nframes)
+{
+  if (port->internal_type !=
+        INTERNAL_JACK_PORT ||
+      port->id.type != TYPE_AUDIO)
+    return;
+
+  float * out;
+  out =
+    (float *)
+    jack_port_get_buffer (
+      JACK_PORT_T (port->data),
+      AUDIO_ENGINE->nframes);
+
+  for (unsigned int i = start_frames;
+       i < start_frames + nframes; i++)
+    {
+#ifdef TRIAL_VER
+      if (AUDIO_ENGINE->limit_reached)
+        {
+          out[i] = 0;
+          continue;
+        }
+#endif
+      out[i] = port->buf[i];
+    }
+}
+
+/**
+ * Sums the inputs coming in from JACK, before the
+ * port is processed.
+ */
+static void
+sum_data_from_jack (
+  Port * self,
+  const nframes_t start_frame,
+  const nframes_t nframes)
+{
+  if (self->id.owner_type ==
+        PORT_OWNER_TYPE_BACKEND ||
+      self->internal_type !=
+        INTERNAL_JACK_PORT ||
+      self->id.flow !=
+        FLOW_INPUT ||
+      AUDIO_ENGINE->audio_backend !=
+        AUDIO_BACKEND_JACK ||
+      AUDIO_ENGINE->midi_backend !=
+        MIDI_BACKEND_JACK)
+    return;
+
+  /* append events from JACK if any */
+  port_receive_midi_events_from_jack (
+    self, start_frame, nframes);
+
+  /* audio */
+  port_receive_audio_data_from_jack (
+    self, start_frame, nframes);
+}
+
+/**
+ * Sends the port data to JACK, after the port
+ * is processed.
+ */
+static void
+send_data_to_jack (
+  Port * self,
+  const nframes_t start_frame,
+  const nframes_t nframes)
+{
+  if (self->internal_type !=
+        INTERNAL_JACK_PORT ||
+      self->id.flow !=
+        FLOW_OUTPUT ||
+      AUDIO_ENGINE->audio_backend !=
+        AUDIO_BACKEND_JACK ||
+      AUDIO_ENGINE->midi_backend !=
+        MIDI_BACKEND_JACK)
+    return;
+
+  /* send midi events */
+  send_midi_events_to_jack (
+    self, start_frame, nframes);
+
+  /* send audio data */
+  send_audio_data_to_jack (
+    self, start_frame, nframes);
+}
+
+/**
+ * Sets whether to expose the port to JACk and
+ * exposes it or removes it from JACK.
+ */
+static void
+expose_to_jack (
+  Port * self,
+  int    expose)
+{
+  enum JackPortFlags flags;
+  if (self->id.flow == FLOW_INPUT)
+    flags = JackPortIsInput;
+  else if (self->id.flow == FLOW_OUTPUT)
+    flags = JackPortIsOutput;
+  else
+    g_return_if_reached ();
+
+  const char * type =
+    engine_jack_get_jack_type (
+      self->id.type);;
+  if (!type)
+    g_return_if_reached ();
+
+  char label[600];
+  port_get_full_designation (self, label);
+  if (expose)
+    {
+      g_message (
+        "exposing port %s to JACK", label);
+      if (!self->data)
+        {
+          self->data =
+            (void *) jack_port_register (
+              AUDIO_ENGINE->client,
+              label, type, flags, 0);
+        }
+      g_warn_if_fail (self->data);
+      self->internal_type = INTERNAL_JACK_PORT;
+    }
+  else
+    {
+      g_message (
+        "unexposing port %s from JACK", label);
+      int ret =
+        jack_port_unregister (
+          AUDIO_ENGINE->client,
+          JACK_PORT_T (self->data));
+      if (ret)
+        {
+          char jack_error[600];
+          engine_jack_get_error_message (
+            (jack_status_t) ret, jack_error);
+          g_warning (
+            "JACK port unregister error: %s",
+            jack_error);
+        }
+      self->internal_type = INTERNAL_NONE;
+      self->data = NULL;
+    }
+
+  self->exposed_to_backend = expose;
+}
+
+#if 0
+/**
+ * Returns the JACK port attached to this port,
+ * if any.
+ */
+static jack_port_t *
+get_internal_jack_port (
+  Port * port)
+{
+  if (port->internal_type ==
+        INTERNAL_JACK_PORT &&
+      port->data)
+    return (jack_port_t *) port->data;
+  else
+    return NULL;
+}
+#endif
+#endif /* HAVE_JACK */
+
 /**
  * Connects the internal ports using
  * port_connect().
@@ -983,7 +1281,7 @@ port_disconnect_all (Port * port)
   if (port->internal_type == INTERNAL_JACK_PORT)
     {
 #ifdef HAVE_JACK
-      port_set_expose_to_jack (
+      expose_to_jack (
         port, 0);
 #endif
     }
@@ -1029,303 +1327,6 @@ port_update_track_pos (
     }
 }
 
-#ifdef HAVE_JACK
-void
-port_receive_midi_events_from_jack (
-  Port *      self,
-  const nframes_t         start_frame,
-  const nframes_t   nframes)
-{
-  if (self->internal_type !=
-        INTERNAL_JACK_PORT ||
-      self->id.type !=
-        TYPE_EVENT)
-    return;
-
-  void * port_buf =
-    jack_port_get_buffer (
-      JACK_PORT_T (self->data), nframes);
-  uint32_t num_events =
-    jack_midi_get_event_count (port_buf);
-
-  jack_midi_event_t jack_ev;
-  for(unsigned i = 0; i < num_events; i++)
-    {
-      jack_midi_event_get (
-        &jack_ev, port_buf, i);
-
-      if (jack_ev.time >= start_frame &&
-          jack_ev.time < start_frame + nframes)
-        {
-          midi_byte_t channel =
-            jack_ev.buffer[0] & 0xf;
-          Track * track =
-            port_get_track (self, 0);
-          if (self->id.owner_type ==
-                PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-              (track->type ==
-                   TRACK_TYPE_MIDI ||
-                 track->type ==
-                   TRACK_TYPE_INSTRUMENT) &&
-                !track->channel->
-                  all_midi_channels &&
-                !track->channel->
-                  midi_channels[channel])
-            {
-              /* different channel */
-            }
-          else
-            {
-              /*g_message (*/
-                /*"JACK MIDI (%s): adding events "*/
-                /*"from buffer:\n"*/
-                /*"[%u] %hhx %hhx %hhx",*/
-                /*port_get_full_designation (self),*/
-                /*jack_ev.time,*/
-                /*jack_ev.buffer[0],*/
-                /*jack_ev.buffer[1],*/
-                /*jack_ev.buffer[2]);*/
-              midi_events_add_event_from_buf (
-                self->midi_events,
-                jack_ev.time, jack_ev.buffer,
-                (int) jack_ev.size);
-            }
-        }
-    }
-
-  if (self->midi_events->num_events > 0)
-    {
-      MidiEvent * ev =
-        &self->midi_events->events[0];
-      char designation[600];
-      port_get_full_designation (
-        self, designation);
-      g_message (
-        "JACK MIDI (%s): have %d events\n"
-        "first event is: [%u] %hhx %hhx %hhx",
-        designation, num_events,
-        ev->time, ev->raw_buffer[0],
-        ev->raw_buffer[1], ev->raw_buffer[2]);
-    }
-}
-
-void
-port_receive_audio_data_from_jack (
-  Port *      port,
-  const nframes_t         start_frames,
-  const nframes_t   nframes)
-{
-  if (port->internal_type !=
-        INTERNAL_JACK_PORT ||
-      port->id.type != TYPE_AUDIO)
-    return;
-
-  float * in;
-  in =
-    (float *)
-    jack_port_get_buffer (
-      JACK_PORT_T (port->data),
-      AUDIO_ENGINE->nframes);
-
-  for (unsigned int i = start_frames;
-       i < start_frames + nframes; i++)
-    {
-      port->buf[i] += in[i];
-    }
-}
-
-static void
-send_midi_events_to_jack (
-  Port *      port,
-  const nframes_t         start_frames,
-  const nframes_t   nframes)
-{
-  if (port->internal_type !=
-        INTERNAL_JACK_PORT ||
-      port->id.type !=
-        TYPE_EVENT)
-    return;
-
-  midi_events_copy_to_jack (
-    port->midi_events,
-    jack_port_get_buffer (
-      JACK_PORT_T (port->data),
-      AUDIO_ENGINE->nframes));
-}
-
-static void
-send_audio_data_to_jack (
-  Port *      port,
-  const nframes_t         start_frames,
-  const nframes_t         nframes)
-{
-  if (port->internal_type !=
-        INTERNAL_JACK_PORT ||
-      port->id.type != TYPE_AUDIO)
-    return;
-
-  float * out;
-  out =
-    (float *)
-    jack_port_get_buffer (
-      JACK_PORT_T (port->data),
-      AUDIO_ENGINE->nframes);
-
-  for (unsigned int i = start_frames;
-       i < start_frames + nframes; i++)
-    {
-#ifdef TRIAL_VER
-      if (AUDIO_ENGINE->limit_reached)
-        {
-          out[i] = 0;
-          continue;
-        }
-#endif
-      out[i] = port->buf[i];
-    }
-}
-
-/**
- * Sums the inputs coming in from JACK, before the
- * port is processed.
- */
-static void
-sum_data_from_jack (
-  Port * self,
-  const nframes_t start_frame,
-  const nframes_t nframes)
-{
-  if (self->id.owner_type ==
-        PORT_OWNER_TYPE_BACKEND ||
-      self->internal_type !=
-        INTERNAL_JACK_PORT ||
-      self->id.flow !=
-        FLOW_INPUT ||
-      AUDIO_ENGINE->audio_backend !=
-        AUDIO_BACKEND_JACK ||
-      AUDIO_ENGINE->midi_backend !=
-        MIDI_BACKEND_JACK)
-    return;
-
-  /* append events from JACK if any */
-  port_receive_midi_events_from_jack (
-    self, start_frame, nframes);
-
-  /* audio */
-  port_receive_audio_data_from_jack (
-    self, start_frame, nframes);
-}
-
-/**
- * Sends the port data to JACK, after the port
- * is processed.
- */
-static void
-send_data_to_jack (
-  Port * self,
-  const nframes_t start_frame,
-  const nframes_t nframes)
-{
-  if (self->internal_type !=
-        INTERNAL_JACK_PORT ||
-      self->id.flow !=
-        FLOW_OUTPUT ||
-      AUDIO_ENGINE->audio_backend !=
-        AUDIO_BACKEND_JACK ||
-      AUDIO_ENGINE->midi_backend !=
-        MIDI_BACKEND_JACK)
-    return;
-
-  /* send midi events */
-  send_midi_events_to_jack (
-    self, start_frame, nframes);
-
-  /* send audio data */
-  send_audio_data_to_jack (
-    self, start_frame, nframes);
-}
-
-/**
- * Sets whether to expose the port to JACk and
- * exposes it or removes it from JACK.
- */
-void
-port_set_expose_to_jack (
-  Port * self,
-  int    expose)
-{
-  enum JackPortFlags flags;
-  if (self->id.flow == FLOW_INPUT)
-    flags = JackPortIsInput;
-  else if (self->id.flow == FLOW_OUTPUT)
-    flags = JackPortIsOutput;
-  else
-    g_return_if_reached ();
-
-  const char * type =
-    engine_jack_get_jack_type (
-      self->id.type);;
-  if (!type)
-    g_return_if_reached ();
-
-  char label[600];
-  port_get_full_designation (self, label);
-  if (expose)
-    {
-      g_message (
-        "exposing port %s to JACK", label);
-      if (!self->data)
-        {
-          self->data =
-            (void *) jack_port_register (
-              AUDIO_ENGINE->client,
-              label, type, flags, 0);
-        }
-      g_warn_if_fail (self->data);
-      self->internal_type = INTERNAL_JACK_PORT;
-    }
-  else
-    {
-      g_message (
-        "unexposing port %s from JACK", label);
-      int ret =
-        jack_port_unregister (
-          AUDIO_ENGINE->client,
-          JACK_PORT_T (self->data));
-      if (ret)
-        {
-          char jack_error[600];
-          engine_jack_get_error_message (
-            (jack_status_t) ret, jack_error);
-          g_warning (
-            "JACK port unregister error: %s",
-            jack_error);
-        }
-      self->internal_type = INTERNAL_NONE;
-      self->data = NULL;
-    }
-
-  self->exposed_to_backend = expose;
-}
-
-/**
- * Returns the JACK port attached to this port,
- * if any.
- */
-jack_port_t *
-port_get_internal_jack_port (
-  Port * port)
-{
-  if (port->internal_type ==
-        INTERNAL_JACK_PORT &&
-      port->data)
-    return (jack_port_t *) port->data;
-  else
-    return NULL;
-}
-
-#endif
-
 #ifdef HAVE_ALSA
 
 /**
@@ -1354,8 +1355,8 @@ port_find_by_alsa_seq_id (
   g_return_val_if_reached (NULL);
 }
 
-void
-port_set_expose_to_alsa (
+static void
+expose_to_alsa (
   Port * self,
   int    expose)
 {
@@ -1407,6 +1408,51 @@ port_set_expose_to_alsa (
           self->data = NULL;
         }
     }
+  self->exposed_to_backend = expose;
+}
+#endif
+
+#ifdef HAVE_RTMIDI
+static void
+expose_to_rtmidi (
+  Port * self,
+  int    expose)
+{
+#if 0
+  if (expose)
+    {
+      char lbl[600];
+      port_get_full_designation (self, lbl);
+
+      g_return_if_fail (
+        AUDIO_ENGINE->seq_handle);
+
+      int id =
+        snd_seq_create_simple_port (
+          AUDIO_ENGINE->seq_handle,
+          lbl, flags,
+          SND_SEQ_PORT_TYPE_APPLICATION);
+      g_return_if_fail (id >= 0);
+      snd_seq_port_info_t * info;
+      snd_seq_port_info_malloc (&info);
+      snd_seq_get_port_info (
+        AUDIO_ENGINE->seq_handle,
+        id, info);
+      self->data = (void *) info;
+      self->internal_type =
+        INTERNAL_ALSA_SEQ_PORT;
+    }
+  else
+    {
+      snd_seq_delete_port (
+        AUDIO_ENGINE->seq_handle,
+        snd_seq_port_info_get_port (
+          (snd_seq_port_info_t *)
+            self->data));
+      self->internal_type = INTERNAL_NONE;
+      self->data = NULL;
+    }
+#endif
   self->exposed_to_backend = expose;
 }
 #endif
@@ -2160,11 +2206,11 @@ port_set_expose_to_backend (
     {
       switch (AUDIO_ENGINE->audio_backend)
         {
-        case AUDIO_BACKEND_JACK:
 #ifdef HAVE_JACK
-          port_set_expose_to_jack (self, expose);
-#endif
+        case AUDIO_BACKEND_JACK:
+          expose_to_jack (self, expose);
           break;
+#endif
         default:
           break;
         }
@@ -2173,16 +2219,21 @@ port_set_expose_to_backend (
     {
       switch (AUDIO_ENGINE->midi_backend)
         {
-        case MIDI_BACKEND_JACK:
 #ifdef HAVE_JACK
-          port_set_expose_to_jack (self, expose);
-#endif
+        case MIDI_BACKEND_JACK:
+          expose_to_jack (self, expose);
           break;
-        case MIDI_BACKEND_ALSA:
+#endif
 #ifdef HAVE_ALSA
-          port_set_expose_to_alsa (self, expose);
-#endif
+        case MIDI_BACKEND_ALSA:
+          expose_to_alsa (self, expose);
           break;
+#endif
+#ifdef HAVE_RTMIDI
+        case MIDI_BACKEND_RTMIDI:
+          expose_to_rtmidi (self, expose);
+          break;
+#endif
         default:
           break;
         }

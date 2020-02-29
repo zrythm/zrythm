@@ -254,6 +254,8 @@ on_midi_event (
         port_find_by_alsa_seq_id (
           ev->dest.port);
 
+      g_return_val_if_fail (port, -1);
+
       zix_sem_wait (
         &port->midi_events->access_sem);
 
@@ -471,6 +473,7 @@ midi_thread (void * _self)
   snd_seq_poll_descriptors (
     self->seq_handle, pfds,
     (unsigned int) seq_nfds, POLLIN);
+
   while (1)
     {
       if (poll (pfds, (nfds_t) seq_nfds, 1000) > 0)
@@ -479,6 +482,11 @@ midi_thread (void * _self)
             {
                if (pfds[l1].revents > 0)
                  {
+                   if (!PROJECT->loaded ||
+                       !AUDIO_ENGINE->run)
+                     {
+                       g_usleep (1000);
+                     }
                    on_midi_event (self);
                  }
             }

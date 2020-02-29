@@ -496,7 +496,7 @@ channel_expose_ports_to_backend (
 
 #ifdef _WOE32
 /**
- * Reconnects the given TrackProcessor's midi in.
+ * Reconnects the given Channel's midi in.
  */
 static void
 reconnect_windows_mme_ext_in (

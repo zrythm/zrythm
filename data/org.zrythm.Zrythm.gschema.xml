@@ -38,6 +38,7 @@
     <value nick="alsa" value="1"/>
     <value nick="jack" value="2"/>
     <value nick="windows-mme" value="3"/>
+    <value nick="rtmidi" value="4"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.language-enum">
     <value nick="english" value="0"/>

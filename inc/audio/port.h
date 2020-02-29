@@ -217,7 +217,8 @@ typedef struct Port
   void *              data;
 
 #ifdef _WOE32
-  /** Connections to WindowsMmeDevices.
+  /**
+   * Connections to WindowsMmeDevices.
    *
    * These must be pointers to \ref
    * AudioEngine.mme_in_devs or \ref
@@ -667,26 +668,6 @@ void
 port_rename_backend (
   Port * self);
 
-#ifdef HAVE_JACK
-/**
- * Sets whether to expose the port to JACk and
- * exposes it or removes it from JACK.
- */
-void
-port_set_expose_to_jack (
-  Port * self,
-  int    expose);
-
-/**
- * Returns the JACK port attached to this port,
- * if any.
- */
-jack_port_t *
-port_get_internal_jack_port (
-  Port * port);
-
-#endif
-
 #ifdef HAVE_ALSA
 
 /**
@@ -696,12 +677,6 @@ port_get_internal_jack_port (
 Port *
 port_find_by_alsa_seq_id (
   const int id);
-
-void
-port_set_expose_to_alsa (
-  Port * self,
-  int    expose);
-
 #endif
 
 /**

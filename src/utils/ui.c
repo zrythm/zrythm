@@ -640,6 +640,9 @@ ui_create_midi_backends_model (void)
 #ifdef _WOE32
     MIDI_BACKEND_WINDOWS_MME,
 #endif
+#ifdef HAVE_RTMIDI
+    MIDI_BACKEND_RTMIDI,
+#endif
   };
   const gchar * labels[] = {
     /* TRANSLATORS: Dummy audio backend */
@@ -652,6 +655,9 @@ ui_create_midi_backends_model (void)
 #endif
 #ifdef _WOE32
     "Windows MME",
+#endif
+#ifdef HAVE_RTMIDI
+    "Rtmidi",
 #endif
   };
 

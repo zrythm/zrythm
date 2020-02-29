@@ -86,8 +86,8 @@ typedef struct Channel
    * unless all_midi_ins is enabled.
    *
    * These should be serialized every time and
-   * if all_midi_ins is not enabled, connected to
-   * when the project gets loaded.
+   * connected to when the project gets loaded
+   * if \ref Channel.all_midi_ins is not enabled.
    *
    * If all_midi_ins is enabled, these are ignored.
    */

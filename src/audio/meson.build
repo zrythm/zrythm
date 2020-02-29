@@ -40,6 +40,7 @@ audio_srcs = [
   'engine_dummy.c',
   'engine_jack.c',
   'engine_pa.c',
+  'engine_rtmidi.c',
   'engine_sdl.c',
   'engine_windows_mme.c',
   'exporter.c',

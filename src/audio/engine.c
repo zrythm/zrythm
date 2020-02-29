@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -53,6 +53,7 @@
 #include "audio/engine_dummy.h"
 #include "audio/engine_jack.h"
 #include "audio/engine_pa.h"
+#include "audio/engine_rtmidi.h"
 #include "audio/engine_sdl.h"
 #include "audio/engine_windows_mme.h"
 #include "audio/metronome.h"
@@ -259,6 +260,11 @@ engine_init (
       self->midi_backend = MIDI_BACKEND_WINDOWS_MME;
       break;
 #endif
+#ifdef HAVE_RTMIDI
+    case MIDI_BACKEND_RTMIDI:
+      self->midi_backend = MIDI_BACKEND_RTMIDI;
+      break;
+#endif
     default:
       self->midi_backend = MIDI_BACKEND_DUMMY;
       g_warn_if_reached ();
@@ -391,6 +397,12 @@ engine_init (
         engine_windows_mme_setup (self, loading);
       break;
 #endif
+#ifdef HAVE_RTMIDI
+    case MIDI_BACKEND_RTMIDI:
+      mret =
+        engine_rtmidi_setup (self, loading);
+      break;
+#endif
     default:
       g_warn_if_reached ();
       break;
@@ -424,12 +436,12 @@ engine_init (
   self->buf_size_set = false;
 
   metronome_init (METRONOME);
-  sample_processor_init (SAMPLE_PROCESSOR);
+  sample_processor_init (&self->sample_processor);
 
   /* connect the sample processor to the engine
    * output */
   stereo_ports_connect (
-    SAMPLE_PROCESSOR->stereo_out,
+    self->sample_processor.stereo_out,
     self->control_room.monitor_fader.stereo_in, 1);
 
   /** init audio pool */
@@ -475,6 +487,13 @@ engine_activate (
         MIDI_BACKEND_WINDOWS_MME)
     {
       engine_windows_mme_start_known_devices (self);
+    }
+#endif
+#ifdef HAVE_RTMIDI
+  if (self->midi_backend ==
+        MIDI_BACKEND_RTMIDI)
+    {
+      engine_rtmidi_activate (self);
     }
 #endif
 #ifdef HAVE_SDL

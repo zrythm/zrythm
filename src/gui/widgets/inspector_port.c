@@ -47,7 +47,7 @@ on_jack_toggled (
   GtkWidget * widget,
   InspectorPortWidget * self)
 {
-  port_set_expose_to_jack (
+  port_set_expose_to_backend (
     self->port,
     gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (widget)));

@@ -46,6 +46,12 @@ option (
   description: 'Compile with portaudio support')
 
 option (
+  'enable_rtmidi',
+  type: 'boolean',
+  value: false,
+  description: 'Compile with Rtmidi support')
+
+option (
   'enable_sdl',
   type: 'boolean',
   value: false,
