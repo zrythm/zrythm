@@ -323,19 +323,14 @@ tracklist_get_visible_track_diff (
 
 /**
  * Returns 1 if the track name is not taken.
+ *
+ * @param track_to_skip Track to skip when searching.
  */
-static inline int
+int
 tracklist_track_name_is_unique (
-  Tracklist * self,
-  const char * name)
-{
-  for (int i = 0; i < self->num_tracks; i++)
-    {
-      if (!g_strcmp0 (name, self->tracks[i]->name))
-        return 0;
-    }
-  return 1;
-}
+  Tracklist *  self,
+  const char * name,
+  Track *      track_to_skip);
 
 /**
  * Returns if the tracklist has soloed tracks.

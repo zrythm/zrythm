@@ -56,6 +56,7 @@ if get_option ('enable_tests')
     ['audio/track', true],
     ['utils/arrays', true],
     ['utils/general', true],
+    ['utils/string', true],
     ]
 
   if os_linux

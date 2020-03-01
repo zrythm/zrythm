@@ -96,6 +96,22 @@ string_replace (
   const char * to);
 
 /**
+ * Returns the integer found at the end of a string
+ * like "My String 3" -> 3, or -1 if no number is
+ * found.
+ *
+ * See https://www.debuggex.com/cheatsheet/regex/pcre
+ * for more info.
+ *
+ * @param str_without_num A buffer to save the
+ *   string without the number (including the space).
+ */
+int
+string_get_int_after_last_space (
+  const char * str,
+  char *       str_without_num);
+
+/**
  * @}
  */
 

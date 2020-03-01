@@ -429,6 +429,7 @@ zrythm_deps = [
     fallback: ['lilv', 'sord_dep']),
   dependency('samplerate', version: '>=0.1.8'),
   dependency('rubberband'),
+  dependency ('libpcre'),
   cc.find_library('dl'),
   lv2_dep,
   chromaprint_dep,

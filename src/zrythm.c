@@ -462,6 +462,8 @@ idle_func (
 {
   if (self->init_finished)
     {
+      log_init_writer_idle (&self->log);
+
       g_action_group_activate_action (
         G_ACTION_GROUP (zrythm_app),
         "prompt_for_project",

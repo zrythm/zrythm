@@ -24,6 +24,7 @@
 
 typedef struct _LogViewerWidget LogViewerWidget;
 typedef struct MPMCQueue MPMCQueue;
+typedef struct ObjectPool ObjectPool;
 
 /**
  * @addtogroup utils
@@ -46,9 +47,21 @@ typedef struct Log
    * from a non-gtk thread. */
   MPMCQueue *     mqueue;
 
+  /** Object pool for the queue. */
+  ObjectPool *    obj_pool;
+
   /** Currently opened log viewer. */
   LogViewerWidget * viewer;
 } Log;
+
+/**
+ * Initializes logging to a file.
+ *
+ * This must be called from the GTK thread.
+ */
+void
+log_init_writer_idle (
+  Log * self);
 
 /**
  * Initializes logging to a file.

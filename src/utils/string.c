@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <pcre.h>
+
 int
 string_is_ascii (const char * string)
 {
@@ -184,4 +186,101 @@ string_replace (
     g_strjoinv (to, split);
   g_strfreev (split);
   return new_str;
+}
+
+/**
+ * Returns the integer found at the end of a string
+ * like "My String 3" -> 3, or -1 if no number is
+ * found.
+ *
+ * See https://www.debuggex.com/cheatsheet/regex/pcre
+ * for more info.
+ *
+ * @param str_without_num A buffer to save the
+ *   string without the number (including the space).
+ */
+int
+string_get_int_after_last_space (
+  const char * str,
+  char *       str_without_num)
+{
+  int OVECCOUNT = 60;
+  const char *error;
+  int   erroffset;
+  pcre *re;
+  int   rc;
+  int   i;
+  int   ovector[OVECCOUNT];
+
+  const char *regex = "(.*) ([\\d]+)";
+
+  re =
+    pcre_compile (
+      /* pattern */
+      regex,
+      /* options */
+      0,
+      /* error message */
+      &error,
+      /* error offset */
+      &erroffset,
+      /* use default character tables */
+      0);
+
+  if (!re)
+    {
+      g_error (
+        "pcre_compile failed (offset: %d), %s",
+        erroffset, error);
+      return -1;
+    }
+
+  rc =
+    pcre_exec (
+      re, /* the compiled pattern */
+      0,  /* no extra data - pattern was not studied */
+      str, /* the string to match */
+      strlen(str), /* the length of the string */
+      0,   /* start at offset 0 in the subject */
+      0,   /* default options */
+      ovector, /* output vector for substring information */
+      OVECCOUNT); /* number of elements in the output vector */
+
+  if (rc < 0)
+    {
+      switch (rc)
+        {
+        case PCRE_ERROR_NOMATCH:
+          g_message ("String %s didn't match", str);
+          break;
+
+        default:
+          g_message (
+            "Error while matching \"%s\": %d",
+            str, rc);
+          break;
+        }
+      free (re);
+      return -1;
+    }
+
+  for (i = 0; i < rc; i++)
+    {
+      g_message (
+        "%2d: %.*s", i,
+        ovector[2 * i + 1] - ovector[2 * i],
+        str + ovector[2 * i]);
+    }
+
+  if (str_without_num)
+    {
+      i = rc - 2;
+      sprintf (
+        str_without_num, "%.*s",
+        ovector[2 * i + 1] - ovector[2 * i],
+        str + ovector[2 * i]);
+    }
+
+  i = rc - 1;
+  return atoi (str + ovector[i * 2]);
 }

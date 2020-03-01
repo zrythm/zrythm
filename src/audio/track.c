@@ -1438,6 +1438,7 @@ track_update_frames (
 const char *
 track_get_name (Track * track)
 {
+#if 0
   if (DEBUGGING)
     {
       return
@@ -1445,51 +1446,88 @@ track_get_name (Track * track)
           "%d %s",
           track->pos, track->name);
     }
+#endif
   return track->name;
+}
+
+/**
+ * Setter to be used by the UI.
+ */
+void
+track_set_name_with_events (
+  Track *      track,
+  const char * name)
+{
+  track_set_name (track, name, F_PUBLISH_EVENTS);
 }
 
 /**
  * Setter for the track name.
  *
- * If the track name is duplicate, it discards the
- * new name.
+ * If a track with that name already exists, it
+ * adds a number at the end.
  *
  * Must only be called from the GTK thread.
  */
 void
 track_set_name (
-  Track * track,
-  const char *  name)
+  Track *      track,
+  const char * _name,
+  int          pub_events)
 {
-  if (tracklist_track_name_is_unique (
-        TRACKLIST, name))
+  char name[800];
+  strcpy (name, _name);
+  while (!tracklist_track_name_is_unique (
+            TRACKLIST, name, track))
     {
-      if (track->name)
-        g_free (track->name);
-      track->name =
-        g_strdup (name);
-
-      if (track->channel)
+      g_message ("trying %s start", name);
+      char name_without_num[780];
+      int ending_num =
+        string_get_int_after_last_space (
+          name, name_without_num);
+      if (ending_num == -1)
         {
-          /* update external ports */
-          Port * ports[10000];
-          int    num_ports = 0;
-          channel_append_all_ports (
-            track->channel, ports, &num_ports, 1);
-          Port * port;
-          for (int i = 0; i < num_ports; i++)
-            {
-              port = ports[i];
+          /* append 1 at the end */
+          strcat (name, " 1");
+        }
+      else
+        {
+          /* add 1 to the number at the end */
+          sprintf (
+            name, "%s %d",
+            name_without_num, ending_num + 1);
+        }
+      g_message ("trying %s end", name);
+    }
 
-              if (port_is_exposed_to_backend (
-                    port))
-                {
-                  port_rename_backend (port);
-                }
+  if (track->name)
+    g_free (track->name);
+  track->name =
+    g_strdup (name);
+
+  if (track->channel)
+    {
+      /* update external ports */
+      Port * ports[10000];
+      int    num_ports = 0;
+      channel_append_all_ports (
+        track->channel, ports, &num_ports, 1);
+      Port * port;
+      for (int i = 0; i < num_ports; i++)
+        {
+          port = ports[i];
+
+          if (port_is_exposed_to_backend (
+                port))
+            {
+              port_rename_backend (port);
             }
         }
+    }
 
-      EVENTS_PUSH (ET_TRACK_NAME_CHANGED,
-                   track);
+  if (pub_events)
+    {
+      EVENTS_PUSH (
+        ET_TRACK_NAME_CHANGED, track);
     }
 }

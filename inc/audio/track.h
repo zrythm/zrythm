@@ -768,15 +768,26 @@ const char *
 track_get_name (Track * track);
 
 /**
+ * Setter to be used by the UI.
+ */
+void
+track_set_name_with_events (
+  Track *      track,
+  const char * name);
+
+/**
  * Setter for the track name.
  *
- * If the track name is duplicate, it discards the
- * new name.
+ * If a track with that name already exists, it
+ * adds a number at the end.
+ *
+ * Must only be called from the GTK thread.
  */
 void
 track_set_name (
-  Track * track,
-  const char *  name);
+  Track *      track,
+  const char * _name,
+  int          pub_events);
 
 /**
  * Returns the Track from the Project matching

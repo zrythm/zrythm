@@ -19,6 +19,7 @@
 
 #include "utils/mpmc_queue.h"
 #include "utils/log.h"
+#include "utils/object_pool.h"
 #include "zrythm.h"
 
 #include <glib.h>
@@ -26,6 +27,12 @@
 #include <glib/gstdio.h>
 
 #define MESSAGES_MAX 1000
+
+typedef struct LogEvent
+{
+  char *         message;
+  GLogLevelFlags log_level;
+} LogEvent;
 
 /**
  * Write a log message to the log file and to each
@@ -56,6 +63,26 @@ write_str (
   return 0;
 }
 
+static int
+idle_cb (
+  Log * self)
+{
+  /* write queued messages */
+  LogEvent * ev;
+  while (
+    mpmc_queue_dequeue (
+      self->mqueue, (void *) &ev))
+    {
+      write_str (self, ev->log_level, ev->message);
+      g_free (ev->message);
+      ev->message = NULL;
+      object_pool_return (
+        LOG->obj_pool, ev);
+    }
+
+  return G_SOURCE_CONTINUE;
+}
+
 /**
  * Log writer.
  *
@@ -78,33 +105,38 @@ log_writer (
     g_log_writer_format_fields (
       log_level, fields, n_fields, 0);
 
-  if (g_thread_self () == ZRYTHM->gtk_thread)
-    {
-      /* write queued messages */
-      char * queued_str;
-      while (
-        mpmc_queue_dequeue (
-          self->mqueue, (void *) &queued_str))
-        {
-          write_str (self, log_level, queued_str);
-          g_free (queued_str);
-        }
-
-      /* write current message */
-      write_str (self, log_level, str);
-      g_free (str);
-    }
-  else
-    {
-      /* queue the message */
-      mpmc_queue_push_back (
-        self->mqueue, (void *) str);
-    }
+  /* queue the message */
+  LogEvent * ev =
+    (LogEvent *)
+    object_pool_get (LOG->obj_pool);
+  ev->log_level = log_level;
+  ev->message = str;
+  mpmc_queue_push_back (
+    self->mqueue, (void *) ev);
 
   /* call the default log writer */
   return
     g_log_writer_default (
       log_level, fields, n_fields, self);
+}
+
+/**
+ * Initializes logging to a file.
+ *
+ * This must be called from the GTK thread.
+ */
+void
+log_init_writer_idle (
+  Log * self)
+{
+  g_idle_add (
+    (GSourceFunc) idle_cb, self);
+}
+
+static void *
+create_log_event_obj (void)
+{
+  return calloc (1, sizeof (LogEvent));
 }
 
 /**
@@ -138,6 +170,11 @@ log_init (
 
   /* init buffers */
   self->messages_buf = gtk_text_buffer_new (NULL);
+
+  /* init the object pool for log events */
+  self->obj_pool =
+    object_pool_new (
+      create_log_event_obj, EVENTS_MAX);
 
   /* init the message queue */
   self->mqueue = mpmc_queue_new ();

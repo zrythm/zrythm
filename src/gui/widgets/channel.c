@@ -823,7 +823,8 @@ channel_widget_new (Channel * channel)
   editable_label_widget_setup (
     self->name, track,
     (EditableLabelWidgetTextGetter) track_get_name,
-    (EditableLabelWidgetTextSetter) track_set_name);
+    (EditableLabelWidgetTextSetter)
+    track_set_name_with_events);
   route_target_selector_widget_setup (
     self->output, self->channel);
   channel_widget_refresh (self);

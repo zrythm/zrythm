@@ -164,15 +164,6 @@ tracklist_print_tracks (
   g_message ("------ end ------");
 }
 
-static void
-set_track_name (
-  Tracklist * self,
-  Track * track)
-{
-  char * new_label = g_strdup (track->name);
-  track->name = new_label;
-}
-
 /**
  * Adds given track to given spot in tracklist.
  *
@@ -187,8 +178,7 @@ tracklist_insert_track (
   int         publish_events,
   int         recalc_graph)
 {
-  /* FIXME do it externally */
-  set_track_name (self, track);
+  track_set_name (track, track->name, 0);
 
   /* if adding at the end, append it, otherwise
    * insert it */
@@ -636,6 +626,26 @@ tracklist_move_track (
 
   if (publish_events)
     EVENTS_PUSH (ET_TRACKS_MOVED, NULL);
+}
+
+/**
+ * Returns 1 if the track name is not taken.
+ *
+ * @param track_to_skip Track to skip when searching.
+ */
+int
+tracklist_track_name_is_unique (
+  Tracklist *  self,
+  const char * name,
+  Track *      track_to_skip)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      if (!g_strcmp0 (name, self->tracks[i]->name) &&
+          self->tracks[i] != track_to_skip)
+        return 0;
+    }
+  return 1;
 }
 
 /**
