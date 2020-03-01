@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-02-26 13:10+0000\n"
-"PO-Revision-Date: 2020-01-24 23:02+0000\n"
+"PO-Revision-Date: 2020-03-01 10:33+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 
 #: src/zrythm.c:301
 msgid "Setting up main window"
@@ -85,9 +85,8 @@ msgstr ""
 "新しいバックアップを使用しますか?"
 
 #: src/project.c:478
-#, fuzzy
 msgid "Backup found"
-msgstr "バックアップが保存されました。"
+msgstr "バックアップが見つかりました"
 
 #: src/project.c:546
 #, c-format
@@ -113,14 +112,14 @@ msgid "Project saved."
 msgstr "プロジェクトが保存されました。"
 
 #: src/main.c:92
-#, fuzzy, c-format
+#, c-format
 msgid "Error - Backtrace:\n"
-msgstr "エラー: シグナル %d - バックトレース:"
+msgstr "エラー - バックトレース:\n"
 
 #: src/main.c:117
-#, fuzzy, c-format
+#, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr "エラー: シグナル %d - バックトレース:"
+msgstr "エラー: %s - バックトレース:\n"
 
 #: src/main.c:166
 #, c-format
@@ -160,7 +159,7 @@ msgstr ""
 "Website https://www.zrythm.org\n"
 
 #: src/main.c:299
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Zrythm-%s Copyright (C) 2018-2020 Alexandros Theodotou\n"
 "\n"
@@ -173,13 +172,12 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"Zrythm-%s Copyright (C) 2018-2019 Alexandros Theodotou\n"
+"Zrythm-%s Copyright (C) 2018-2020 Alexandros Theodotou\n"
 "\n"
 "Zrythm comes with ABSOLUTELY NO WARRANTY!\n"
 "\n"
 "This is free software, and you are welcome to redistribute it\n"
-"under certain conditions. Look at the file `COPYING' within this\n"
-"distribution for details.\n"
+"under certain conditions. See the file `COPYING' for details.\n"
 "\n"
 "Write comments and bugs to %s\n"
 "Support this project at https://liberapay.com/Zrythm\n"
@@ -191,7 +189,7 @@ msgstr "LV2バンドルディレクトリの読み込みエラー： "
 
 #: src/plugins/plugin.c:111
 msgid "Enabled"
-msgstr ""
+msgstr "有効"
 
 #: src/plugins/plugin_gtk.c:79 src/plugins/lv2/lv2_gtk.c:96
 msgid "Save State"
@@ -272,9 +270,8 @@ msgid "Bind MIDI CC"
 msgstr "MIDI CC をバインドする"
 
 #: src/gui/widgets/inspector_port.c:184 src/gui/widgets/midi_arranger.c:608
-#, fuzzy
 msgid "View info"
-msgstr "スナップ/グリッドオプション"
+msgstr "詳細を見る"
 
 #: src/gui/widgets/inspector_port.c:353
 msgid "Incoming signals"
@@ -301,9 +298,8 @@ msgid "Expose port to JACK"
 msgstr "JACKへのポートの公開"
 
 #: src/gui/widgets/log_viewer.c:85
-#, fuzzy
 msgid "Log Viewer"
-msgstr "イベント ビューア"
+msgstr "ログビューア"
 
 #: src/gui/widgets/track_properties_expander.c:98
 msgid "Track Name"
@@ -805,13 +801,13 @@ msgid "Snap/Grid options"
 msgstr "スナップ/グリッド設定"
 
 #: src/gui/widgets/port_connection_row.c:97
+#, fuzzy
 msgid "Enable/disable connection"
-msgstr ""
+msgstr "接続を有効/無効にする"
 
 #: src/gui/widgets/port_connection_row.c:138
-#, fuzzy
 msgid "Delete connection"
-msgstr "接続"
+msgstr "接続を削除"
 
 #: src/gui/widgets/header_notebook.c:90
 msgid "About Zrythm"
@@ -823,13 +819,12 @@ msgid "Preferences"
 msgstr "設定"
 
 #: src/gui/widgets/header_notebook.c:92
-#, fuzzy
 msgid "Log viewer"
-msgstr "イベント ビューアの表示を切り替える"
+msgstr "ログビューア"
 
 #: src/gui/widgets/header_notebook.c:94
 msgid "Scripting interface"
-msgstr ""
+msgstr "スクリプトインタフェース"
 
 #: src/gui/widgets/live_waveform.c:199
 msgid "Live waveform indicator"
@@ -974,7 +969,7 @@ msgstr "グループ"
 
 #: src/gui/widgets/route_target_selector_popover.c:175 src/audio/track.c:1295
 msgid "Instrument"
-msgstr "インストゥルメント"
+msgstr "音源"
 
 #: src/gui/widgets/route_target_selector_popover.c:234
 #: src/gui/widgets/route_target_selector_popover.c:407
@@ -1097,7 +1092,7 @@ msgstr "トラックのMIDI Ch"
 
 #: src/gui/widgets/track.c:1499
 msgid "Passthrough input"
-msgstr ""
+msgstr "パススルー入力"
 
 #: src/gui/widgets/track.c:1528 src/gui/widgets/track.c:1586
 #, c-format
@@ -1119,27 +1114,25 @@ msgid "Fader"
 msgstr "フェーダー"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:109
-#, fuzzy
 msgid "Arranger object info"
-msgstr "アレンジャーオブジェクトを編集"
+msgstr "アレンジャーオブジェクト詳細"
 
 #: src/gui/widgets/dialogs/port_info.c:59
 #, c-format
 msgid "%.1f to %.1f"
-msgstr ""
+msgstr "%.1f から %.1f"
 
 #: src/gui/widgets/dialogs/port_info.c:73
 msgid "N/A"
-msgstr ""
+msgstr "なし"
 
 #: src/gui/widgets/dialogs/port_info.c:134
-#, fuzzy
 msgid "Port info"
-msgstr "ポート"
+msgstr "ポート詳細"
 
 #: src/gui/backend/events.c:1488
 msgid "Trial limit has been reached. Zrythm will now go silent"
-msgstr ""
+msgstr "試用制限に達しました。 Zrythmはサイレントになります"
 
 #: src/utils/dialogs.c:43
 msgid "_Open"
@@ -1162,9 +1155,8 @@ msgid "English [en]"
 msgstr "英語[en]"
 
 #: src/utils/ui.c:577
-#, fuzzy
 msgid "English UK [en_GB]"
-msgstr "英語[en]"
+msgstr "英語[en_GB]"
 
 #: src/utils/ui.c:578
 msgid "German [de]"
@@ -1179,9 +1171,8 @@ msgid "Italian [it]"
 msgstr "イタリア語[it]"
 
 #: src/utils/ui.c:581
-#, fuzzy
 msgid "Norwegian [nb_NO]"
-msgstr "ノルウェー語 [nb]"
+msgstr "ノルウェー語 [nb_NO]"
 
 #: src/utils/ui.c:582
 msgid "Spanish [es]"
@@ -1230,7 +1221,7 @@ msgstr "正弦波（イコールパワー）"
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
 "install one first and restart Zrythm"
-msgstr ""
+msgstr "選択した言語のロケール（%s）は利用できません。ロケールをインストールして、Zrythmを再起動してください"
 
 #: src/utils/ui.c:849
 #, c-format
@@ -1333,11 +1324,11 @@ msgstr "未実装"
 
 #: src/audio/fader.c:103
 msgid "Volume"
-msgstr ""
+msgstr "音量"
 
 #: src/audio/fader.c:125
 msgid "Balance control"
-msgstr ""
+msgstr "バランスコントロール"
 
 #: src/audio/fader.c:138
 msgid "Fader in"
@@ -1357,7 +1348,7 @@ msgstr "MIDIフェーダー出力"
 
 #: src/audio/engine_jack.c:332
 msgid "XRUN occurred - check your JACK configuration"
-msgstr ""
+msgstr "XRUNが発生しました - JACKの設定を確認してください"
 
 #. TRANSLATORS: JACK failure messages
 #: src/audio/engine_jack.c:675
@@ -1435,13 +1426,13 @@ msgstr "%d個のトラックを削除"
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is coming soon!"
-msgstr ""
+msgstr "<a href=\"%s\">GNU Guile </a>によるスクリプト拡張機能はまもなく登場します！"
 
 #: src/actions/actions.c:611
 msgid ""
 "Creating new projects is disabled. Please restart Zrythm to start a new "
 "project"
-msgstr ""
+msgstr "新しいプロジェクトの作成は無効です。 Zrythmを再起動して新しいプロジェクトを開始してください"
 
 #: src/actions/actions.c:622 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
@@ -1462,11 +1453,11 @@ msgstr "現在のプロジェクトに保存されていない変更は失われ
 
 #: src/actions/actions.c:684
 msgid "Loading is disabled in the trial version"
-msgstr ""
+msgstr "試用版では読み込みが無効になっています"
 
 #: src/actions/actions.c:712 src/actions/actions.c:736
 msgid "Saving is disabled in the trial version"
-msgstr ""
+msgstr "試用版では保存が無効になっています"
 
 #: src/actions/actions.c:748
 msgid "Save Project"
@@ -1592,11 +1583,8 @@ msgid "Resets the path to the default"
 msgstr "パスを初期値に再設定します"
 
 #: resources/ui/first_run_assistant.ui:145
-#, fuzzy
 msgid "Choose the paths to scan for VST2 plugins (or accept the default)"
-msgstr ""
-"次に、一時ファイルとプロジェクトの保存に使用する場所を選択します（またはデ"
-"フォルトを受け入れます）"
+msgstr "VST2プラグインをスキャンするパスを選択します（またはデフォルトを受け入れます）"
 
 #: resources/ui/first_run_assistant.ui:182
 msgid "Select the audio and MIDI engine backends to use"
@@ -1642,10 +1630,9 @@ msgstr "入力を待機中..."
 
 #: resources/ui/log_viewer.ui:25
 msgid "Log Level"
-msgstr ""
+msgstr "ログレベル"
 
 #: resources/ui/log_viewer.ui:76
-#, fuzzy
 msgid "Save As..."
 msgstr "名前を付けて保存"
 
@@ -2139,12 +2126,11 @@ msgstr "スケールを強制する"
 
 #: resources/ui/arranger_object_info_dialog.ui:100
 msgid "Owner"
-msgstr ""
+msgstr "オーナー"
 
 #: resources/ui/arranger_object_info_dialog.ui:178
-#, fuzzy
 msgid "Arranger Object Info"
-msgstr "アレンジャーオブジェクトを編集"
+msgstr "アレンジャーオブジェクトの詳細"
 
 #: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
 #: resources/ui/inspector_midi.ui:43
@@ -2172,32 +2158,28 @@ msgid "Muted"
 msgstr "ミュート"
 
 #: resources/ui/port_info_dialog.ui:100
-#, fuzzy
 msgid "Full designation"
-msgstr "リージョン全体"
+msgstr "完全指定名"
 
 #: resources/ui/port_info_dialog.ui:114
-#, fuzzy
 msgid "Range"
-msgstr "時間の範囲"
+msgstr "範囲"
 
 #: resources/ui/port_info_dialog.ui:128
 msgid "Flags"
-msgstr ""
+msgstr "フラグ"
 
 #: resources/ui/port_info_dialog.ui:197
 msgid "Default value"
-msgstr ""
+msgstr "デフォルト値"
 
 #: resources/ui/port_info_dialog.ui:222
-#, fuzzy
 msgid "Current value"
 msgstr "現値"
 
 #: resources/ui/port_info_dialog.ui:268
-#, fuzzy
 msgid "Port Info"
-msgstr "トラック情報"
+msgstr "ポートの詳細"
 
 #: resources/ui/track_lane.ui:34
 msgid "Lane 1"
@@ -2553,16 +2535,15 @@ msgstr "プロジェクト以外の関連ファイル用のグローバル Zryth
 
 #: resources/ui/preferences.ui:267
 msgid "Device Name"
-msgstr ""
+msgstr "デバイス名"
 
 #: resources/ui/preferences.ui:302
 msgid "Buffer Size"
-msgstr ""
+msgstr "バッファサイズ"
 
 #: resources/ui/preferences.ui:326
-#, fuzzy
 msgid "Samplerate"
-msgstr "サンプルプロセッサ"
+msgstr "サンプルレート"
 
 #: resources/ui/preferences.ui:387 resources/ui/preferences.ui:456
 msgid "Plugins"
@@ -2586,7 +2567,7 @@ msgstr "プラグインUIウィンドウを常にメインウィンドウの上�
 
 #: resources/ui/preferences.ui:430
 msgid "VST2 Paths"
-msgstr ""
+msgstr "VST2のパス"
 
 #: resources/ui/preferences.ui:472
 msgid "Main Window"

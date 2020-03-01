@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:32+0000\n"
-"PO-Revision-Date: 2020-01-24 22:46+0000\n"
+"PO-Revision-Date: 2020-03-01 10:34+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:6
@@ -210,7 +210,7 @@ msgstr "上記に加えて、タイプに基づいてプラグインをフィル
 
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "Instrument"
-msgstr "インストゥルメント"
+msgstr "音源"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "These plugins will create an instrument track when added to the project."

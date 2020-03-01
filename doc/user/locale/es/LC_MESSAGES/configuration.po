@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 12:22+0000\n"
-"PO-Revision-Date: 2020-02-26 11:33+0000\n"
+"PO-Revision-Date: 2020-03-01 10:34+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualconfiguration/es/>\n"
@@ -222,7 +222,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:6
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencias"
 
 #: ../../configuration/preferences/intro.rst:8
 msgid ""
@@ -243,7 +243,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:19
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../../configuration/preferences/intro.rst:20
 #: ../../configuration/preferences/intro.rst:69

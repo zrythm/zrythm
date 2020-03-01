@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:54+0000\n"
-"PO-Revision-Date: 2020-02-26 11:33+0000\n"
+"PO-Revision-Date: 2020-03-01 10:34+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/es/>\n"
@@ -311,7 +311,7 @@ msgstr ""
 
 #: ../../zrythm-interface/tracklist.rst:8
 msgid "Tracklist"
-msgstr ""
+msgstr "Lista de pistas"
 
 #: ../../zrythm-interface/tracklist.rst:10
 msgid ""

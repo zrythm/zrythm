@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:32+0000\n"
-"PO-Revision-Date: 2020-02-26 11:34+0000\n"
+"PO-Revision-Date: 2020-03-01 10:34+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/es/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:6
 msgid "File Browser"
-msgstr ""
+msgstr "Gestor de archivos"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 msgid ""
@@ -143,7 +143,7 @@ msgstr "Complementos"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:6
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Explorador de complementos"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:8
 msgid ""
@@ -205,7 +205,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "Instrument"
-msgstr ""
+msgstr "Instrumento"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "These plugins will create an instrument track when added to the project."
@@ -332,7 +332,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/ports.rst:18
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../../plugins-files/plugins/ports.rst:16
 msgid ""
