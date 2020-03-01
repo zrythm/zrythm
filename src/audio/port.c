@@ -1687,7 +1687,7 @@ sum_data_from_windows_mme (
                 {
                   midi_events_add_event_from_buf (
                     self->midi_events,
-                    ev.time, ev.raw_buffer, 3);
+                    ev.time, ev.raw_buffer, 3, 0);
                 }
             }
         }

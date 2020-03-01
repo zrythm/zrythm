@@ -62,7 +62,8 @@ about_dialog_widget_new (
       "Allan Nordhøy <epost@anotheragency.no>\n"
       "WaldiS <admin@sto.ugu.pl>\n"
       "Silvério Santos\n"
-      "Swann Martinet";
+      "Swann Martinet\n"
+      "Adolfo Jayme Barrientos";
 
   char * version =
     zrythm_get_version (1);

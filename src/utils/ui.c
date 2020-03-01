@@ -657,7 +657,7 @@ ui_create_midi_backends_model (void)
     "Windows MME",
 #endif
 #ifdef HAVE_RTMIDI
-    "Rtmidi",
+    "RtMidi",
 #endif
   };
 
