@@ -518,6 +518,7 @@ midi_events_copy_to_jack (
 
 /**
  * Adds a note off event to the given MidiEvents.
+ * FIXME should be wrapped in access sem?
  *
  * @param channel MIDI channel starting from 1.
  * @param queued Add to queued events instead.
@@ -754,7 +755,8 @@ midi_events_add_event_from_buf (
   MidiEvents *  self,
   midi_time_t   time,
   midi_byte_t * buf,
-  int           buf_size)
+  int           buf_size,
+  int           queued)
 {
   midi_byte_t type = buf[0] & 0xf0;
   midi_byte_t channel =
@@ -767,14 +769,14 @@ midi_events_add_event_from_buf (
         channel,
         buf[1],
         buf[2],
-        time, 0);
+        time, queued);
       break;
     case MIDI_CH1_NOTE_OFF:
       midi_events_add_note_off (
         self,
         channel,
         buf[1],
-        time, 0);
+        time, queued);
       break;
     case MIDI_SYSTEM_MESSAGE:
       /* ignore active sensing */
@@ -789,7 +791,7 @@ midi_events_add_event_from_buf (
         self,
         1, buf[1],
         buf[2],
-        time, 0);
+        time, queued);
       break;
     default:
       print_unknown_event_message (

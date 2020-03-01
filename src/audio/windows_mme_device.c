@@ -187,7 +187,7 @@ windows_mme_device_dequeue_midi_event (
       return 0;
     }
 
-  struct MidiEventHeader h = { 0, 0 };
+  MidiEventHeader h = { 0, 0 };
 
   zix_ring_peek (
     self->midi_ring, &h, sizeof (h));

@@ -71,6 +71,7 @@ audio_srcs = [
   'recording_manager.c',
   'region.c',
   'routing.c',
+  'rtmidi_device.c',
   'sample_playback.c',
   'sample_processor.c',
   'scale.c',

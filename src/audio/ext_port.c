@@ -23,6 +23,7 @@
 #include "audio/engine_jack.h"
 #include "audio/engine_rtmidi.h"
 #include "audio/ext_port.h"
+#include "audio/rtmidi_device.h"
 #include "audio/windows_mme_device.h"
 #include "project.h"
 
@@ -280,14 +281,14 @@ ext_port_from_rtmidi (
   ExtPort * self =
     calloc (1, sizeof (ExtPort));
 
-  RtMidiPtr ptr =
-    engine_rtmidi_create_in_port (
-      AUDIO_ENGINE, 0, 0, NULL);
+  RtMidiDevice * dev =
+    rtmidi_device_new (1, id, NULL);
   self->rtmidi_id = id;
   self->full_name =
-    g_strdup (rtmidi_get_port_name (ptr, id));
+    g_strdup (
+      rtmidi_get_port_name (dev->in_handle, id));
   self->type = EXT_PORT_TYPE_RTMIDI;
-  rtmidi_in_free (ptr);
+  rtmidi_device_free (dev);
 
   return self;
 }

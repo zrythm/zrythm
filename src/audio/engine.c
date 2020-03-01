@@ -646,16 +646,16 @@ engine_process_prepare (
 
   switch (self->audio_backend)
     {
-    case AUDIO_BACKEND_JACK:
 #ifdef HAVE_JACK
+    case AUDIO_BACKEND_JACK:
       engine_jack_prepare_process (self);
-#endif
       break;
-    case AUDIO_BACKEND_ALSA:
+#endif
 #ifdef HAVE_ALSA
+    case AUDIO_BACKEND_ALSA:
       engine_alsa_prepare_process (self);
-#endif
       break;
+#endif
     default:
       break;
     }
@@ -673,7 +673,8 @@ engine_process_prepare (
   /* reset all buffers */
   fader_clear_buffers (MONITOR_FADER);
   port_clear_buffer (self->midi_in);
-  port_clear_buffer (self->midi_editor_manual_press);
+  port_clear_buffer (
+    self->midi_editor_manual_press);
   port_clear_buffer (self->monitor_out->l);
   port_clear_buffer (self->monitor_out->r);
 

@@ -942,8 +942,6 @@ project_save (
       if (!ch)
         continue;
 
-      channel_prepare_for_serialization (ch);
-
       for (j = 0; j < STRIP_SIZE; j++)
         {
           pl = ch->plugins[j];

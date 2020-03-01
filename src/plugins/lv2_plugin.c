@@ -2100,7 +2100,7 @@ lv2_plugin_process (
                       /* Write MIDI event to port */
                       midi_events_add_event_from_buf (
                         lv2_port->port->midi_events,
-                        frames, body, (int) size);
+                        frames, body, (int) size, 0);
                     }
 
                   /* if UI is instantiated */

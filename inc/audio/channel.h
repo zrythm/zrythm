@@ -373,13 +373,6 @@ channel_set_current_r_db (
   Channel * channel, float val);
 
 /**
- * Prepares the Channel for serialization.
- */
-void
-channel_prepare_for_serialization (
-  Channel * ch);
-
-/**
  * Sets fader to 0.0.
  */
 void

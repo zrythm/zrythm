@@ -34,6 +34,7 @@
 #include "audio/pan.h"
 #include "audio/passthrough_processor.h"
 #include "audio/port.h"
+#include "audio/rtmidi_device.h"
 #include "audio/windows_mme_device.h"
 #include "gui/widgets/channel.h"
 #include "plugins/plugin.h"
@@ -586,7 +587,7 @@ port_receive_midi_events_from_jack (
               midi_events_add_event_from_buf (
                 self->midi_events,
                 jack_ev.time, jack_ev.buffer,
-                (int) jack_ev.size);
+                (int) jack_ev.size, 0);
             }
         }
     }
@@ -1478,47 +1479,42 @@ sum_data_from_rtmidi (
     AUDIO_ENGINE->midi_backend ==
       MIDI_BACKEND_RTMIDI);
 
-  unsigned char raw[1024];
-  memset (raw, 0, sizeof (raw));
   for (int i = 0; i < self->num_rtmidi_ins; i++)
     {
-      while (1)
+      RtMidiDevice * dev = self->rtmidi_ins[i];
+      MidiEvent * ev;
+      for (int j = 0; j < dev->events->num_events;
+           j++)
         {
-          size_t size = 1024;
-          double ev_time =
-            rtmidi_in_get_message (
-              self->rtmidi_ins[i], &raw[0], &size);
-          g_warn_if_fail (
-            self->rtmidi_ins[i]->ok);
-          if (size > 0)
-            {
-              g_message (
-                "received event of size %lu at %f: %#x %#x %#x",
-                size, ev_time, raw[0], raw[1], raw[2]);
-            }
-          else
-            break;
+          ev = &dev->events->events[j];
 
-          midi_byte_t channel = raw[0] & 0xf;
-          Track * track = port_get_track (self, 0);
-          if (self->id.owner_type ==
-                PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-              (track->type ==
-                 TRACK_TYPE_MIDI ||
-               track->type ==
-                 TRACK_TYPE_INSTRUMENT) &&
-              !track->channel->
-                all_midi_channels &&
-              !track->channel->
-                midi_channels[channel])
+          if (ev->time >= start_frame &&
+              ev->time < start_frame + nframes)
             {
-              /* different channel */
-            }
-          else
-            {
-              midi_events_add_event_from_buf (
-                self->midi_events,
-                0, raw, (int) size);
+              midi_byte_t channel =
+                ev->raw_buffer[0] & 0xf;
+              Track * track =
+                port_get_track (self, 0);
+              if (self->id.owner_type ==
+                    PORT_OWNER_TYPE_TRACK_PROCESSOR &&
+                  (track->type ==
+                       TRACK_TYPE_MIDI ||
+                     track->type ==
+                       TRACK_TYPE_INSTRUMENT) &&
+                    !track->channel->
+                      all_midi_channels &&
+                    !track->channel->
+                      midi_channels[channel])
+                {
+                  /* different channel */
+                }
+              else
+                {
+                  midi_events_add_event_from_buf (
+                    self->midi_events,
+                    ev->time, ev->raw_buffer,
+                    3, 0);
+                }
             }
         }
     }
@@ -1531,10 +1527,9 @@ sum_data_from_rtmidi (
       port_get_full_designation (
         self, designation);
       g_message (
-        "MME MIDI (%s): have %d events\n"
+        "RtMidi (%s): have %d events\n"
         "first event is: [%u] %hhx %hhx %hhx",
-        designation,
-        self->midi_events->num_events,
+        designation, self->midi_events->num_events,
         ev->time, ev->raw_buffer[0],
         ev->raw_buffer[1], ev->raw_buffer[2]);
     }
@@ -1656,6 +1651,75 @@ send_data_to_windows_mme (
   /* TODO send midi events */
 }
 #endif
+
+/**
+ * Dequeue the midi events from the ring
+ * buffers into \ref RtMidiDevice.events.
+ */
+void
+port_prepare_rtmidi_events (
+  Port * self)
+{
+  g_return_if_fail (
+    self->id.flow == FLOW_INPUT &&
+    AUDIO_ENGINE->midi_backend ==
+      MIDI_BACKEND_RTMIDI);
+
+  gint64 cur_time = g_get_monotonic_time ();
+  for (int i = 0; i < self->num_rtmidi_ins; i++)
+    {
+      RtMidiDevice * dev = self->rtmidi_ins[i];
+
+      /* clear the events */
+      midi_events_clear (dev->events, 0);
+
+      uint32_t read_space = 0;
+      zix_sem_wait (&dev->midi_ring_sem);
+      do
+        {
+          read_space =
+            zix_ring_read_space (dev->midi_ring);
+          if (read_space <= sizeof(MidiEventHeader))
+            {
+              /* no more events */
+              break;
+            }
+
+          /* peek the next event header to check
+           * the time */
+          MidiEventHeader h = { 0, 0 };
+          zix_ring_peek (
+            dev->midi_ring, &h, sizeof (h));
+          g_return_if_fail (h.size > 0);
+
+          /* read event header */
+          zix_ring_read (
+            dev->midi_ring, &h, sizeof (h));
+
+          /* read event body */
+          midi_byte_t raw[h.size];
+          zix_ring_read (
+            dev->midi_ring, raw, sizeof (raw));
+
+          /* calculate event timestamp */
+          gint64 length =
+            cur_time - self->last_midi_dequeue;
+          midi_time_t ev_time =
+            (midi_time_t)
+            (((double) h.time / (double) length) *
+            (double) AUDIO_ENGINE->block_length);
+          g_return_if_fail (
+            ev_time < AUDIO_ENGINE->block_length);
+
+          midi_events_add_event_from_buf (
+            dev->events,
+            ev_time, raw, (int) h.size, 0);
+        } while (
+            read_space > sizeof (MidiEventHeader));
+      zix_sem_post (&dev->midi_ring_sem);
+    }
+  self->last_midi_dequeue = cur_time;
+}
 
 /**
  * To be called when a control's value changes

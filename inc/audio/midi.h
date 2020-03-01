@@ -144,7 +144,8 @@ typedef struct MidiEvents
 } MidiEvents;
 
 /**
- * Used by Windows MME.
+ * Used by Windows MME and RtMidi when adding events
+ * to the ring.
  */
 typedef struct MidiEventHeader
 {
@@ -253,7 +254,8 @@ midi_events_add_event_from_buf (
   MidiEvents *  self,
   midi_time_t   time,
   midi_byte_t * buf,
-  int           buf_size);
+  int           buf_size,
+  int           queued);
 
 /**
  * Adds a note off event to the given MidiEvents.

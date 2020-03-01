@@ -36,6 +36,7 @@
 #include "audio/mixer.h"
 #include "audio/modulator.h"
 #include "audio/pan.h"
+#include "audio/rtmidi_device.h"
 #include "audio/track.h"
 #include "audio/track_processor.h"
 #include "audio/transport.h"
@@ -357,18 +358,15 @@ channel_prepare_process (Channel * self)
 {
   Plugin * plugin;
   int i,j;
-  Track * tr =
-    channel_get_track (self);
-  PortType out_type =
-    tr->out_signal_type;
+  Track * tr = channel_get_track (self);
+  PortType out_type = tr->out_signal_type;
 
   /* clear buffers */
   track_processor_clear_buffers (
     &tr->processor);
   passthrough_processor_clear_buffers (
     &self->prefader);
-  fader_clear_buffers (
-    &self->fader);
+  fader_clear_buffers (&self->fader);
 
   if (out_type == TYPE_AUDIO)
     {
@@ -398,11 +396,22 @@ channel_prepare_process (Channel * self)
         }
     }
 
-  /* copy the cached MIDI events to the MIDI events
-   * in the MIDI in port */
   if (tr->in_signal_type == TYPE_EVENT)
-    midi_events_dequeue (
-      tr->processor.midi_in->midi_events);
+    {
+      /* extract the midi events from the ring
+       * buffer */
+      if (AUDIO_ENGINE->midi_backend ==
+            MIDI_BACKEND_RTMIDI)
+        {
+          port_prepare_rtmidi_events (
+            tr->processor.midi_in);
+        }
+
+      /* copy the cached MIDI events to the
+       * MIDI events in the MIDI in port */
+      midi_events_dequeue (
+        tr->processor.midi_in->midi_events);
+    }
 }
 
 void
@@ -689,8 +698,8 @@ reconnect_rtmidi_ext_in (
   /* disconnect */
   for (i = 0; i < in_port->num_rtmidi_ins; i++)
     {
-      rtmidi_close_port (in_port->rtmidi_ins[i]);
-      rtmidi_in_free (in_port->rtmidi_ins[i]);
+      rtmidi_device_close (
+        in_port->rtmidi_ins[i], 1);
     }
   in_port->num_rtmidi_ins = 0;
 
@@ -703,10 +712,12 @@ reconnect_rtmidi_ext_in (
 
       for (unsigned int j = 0; j < num_ports; j++)
         {
+          RtMidiDevice * dev =
+            rtmidi_device_new (1, j, in_port);
           in_port->rtmidi_ins[
             in_port->num_rtmidi_ins++] =
-              engine_rtmidi_create_in_port (
-                AUDIO_ENGINE, 1, j, lbl);
+              dev;
+          rtmidi_device_open (dev, 1);
         }
     }
   /* connect to selected ports */
@@ -719,11 +730,13 @@ reconnect_rtmidi_ext_in (
 
       for (i = 0; i < num; i++)
         {
+          RtMidiDevice * dev =
+            rtmidi_device_new (
+              1, arr[i]->rtmidi_id, in_port);
           in_port->rtmidi_ins[
             in_port->num_rtmidi_ins++] =
-              engine_rtmidi_create_in_port (
-                AUDIO_ENGINE, 1,
-                arr[i]->rtmidi_id, lbl);
+              dev;
+          rtmidi_device_open (dev, 1);
         }
     }
 }
@@ -1160,15 +1173,6 @@ channel_append_all_ports (
     }
 #undef ADD_PLUGIN_PORTS
 #undef _ADD
-}
-
-/**
- * Prepares the Channel for serialization.
- */
-void
-channel_prepare_for_serialization (
-  Channel * ch)
-{
 }
 
 /**

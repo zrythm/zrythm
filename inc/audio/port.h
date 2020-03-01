@@ -52,6 +52,7 @@ typedef struct Channel Channel;
 typedef struct Track Track;
 typedef struct SampleProcessor SampleProcessor;
 typedef struct TrackProcessor TrackProcessor;
+typedef struct RtMidiDevice RtMidiDevice;
 typedef enum PanAlgorithm PanAlgorithm;
 typedef enum PanLaw PanLaw;
 
@@ -238,11 +239,15 @@ typedef struct Port
   /** Semaphore for changing the connections
    * atomically. */
   ZixSem              mme_connections_sem;
-
-  /** Last time the port finished dequeueing
-   * MIDI events. */
-  gint64              last_midi_dequeue;
 #endif
+
+  /**
+   * Last time the port finished dequeueing
+   * MIDI events.
+   *
+   * Used for some backends only.
+   */
+  gint64              last_midi_dequeue;
 
 #ifdef HAVE_RTMIDI
   /**
@@ -251,11 +256,11 @@ typedef struct Port
    * Each RtMidi port represents a device, and this
    * Port can be connected to multiple devices.
    */
-  RtMidiInPtr         rtmidi_ins[128];
+  RtMidiDevice *      rtmidi_ins[128];
   int                 num_rtmidi_ins;
 
   /** RtMidi pointers for output ports. */
-  RtMidiOutPtr        rtmidi_outs[128];
+  RtMidiDevice *      rtmidi_outs[128];
   int                 num_rtmidi_outs;
 #endif
 
@@ -466,12 +471,12 @@ static const cyaml_schema_field_t
     StereoPorts, r,
     port_fields_schema),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
   stereo_ports_schema = {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
     StereoPorts, stereo_ports_fields_schema),
 };
@@ -657,6 +662,14 @@ port_get_multiplier_by_index (
 {
   return port->multipliers[idx];
 }
+
+/**
+ * Dequeue the midi events from the ring
+ * buffers into \ref RtMidiDevice.events.
+ */
+void
+port_prepare_rtmidi_events (
+  Port * self);
 
 /**
  * Deletes port, doing required cleanup and updating counters.
