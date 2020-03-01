@@ -502,6 +502,18 @@ if (get_option('enable_rtmidi'))
   cdata.set('HAVE_RTMIDI', 1)
 endif
 
+if (get_option('enable_rtaudio'))
+  rtaudio_dep = dependency (
+    'rtaudio', required: false)
+  if not rtaudio_dep.found()
+    rtaudio_proj = subproject('rtaudio')
+    rtaudio_dep = rtaudio_proj.get_variable(
+      'zrythm_rtaudio_dep')
+  endif
+  zrythm_deps += rtaudio_dep
+  cdata.set('HAVE_RTAUDIO', 1)
+endif
+
 if (get_option('enable_sdl'))
   zrythm_deps += dependency ('sdl2')
   cdata.set('HAVE_SDL', 1)
@@ -607,9 +619,14 @@ summary({
   }, section: 'General')
 
 summary({
-  'ffmpeg': get_option('enable_ffmpeg'),
+  'FFmpeg': get_option('enable_ffmpeg'),
   'Jack': jack_dep.found(),
   'PortAudio': get_option('enable_portaudio'),
+  'RtMidi': get_option('enable_rtmidi'),
+  'RtAudio': get_option('enable_rtaudio'),
+  'SDL': get_option('enable_sdl'),
+  'Carla': get_option('enable_carla'),
+  'Guile': get_option('enable_guile'),
   'Gtop': libgtop_dep.found(),
   }, section: 'Optional libraries')
 

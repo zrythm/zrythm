@@ -49,7 +49,13 @@ option (
   'enable_rtmidi',
   type: 'boolean',
   value: false,
-  description: 'Compile with Rtmidi support')
+  description: 'Compile with RtMidi support')
+
+option (
+  'enable_rtaudio',
+  type: 'boolean',
+  value: false,
+  description: 'Compile with RtAudio support')
 
 option (
   'enable_sdl',
@@ -62,6 +68,12 @@ option (
   type: 'boolean',
   value: false,
   description: 'Use Carla to wrap some plugins')
+
+option (
+  'enable_guile',
+  type: 'boolean',
+  value: false,
+  description: 'Enable guile scripting interface')
 
 option (
   'gen_dev_docs',
@@ -106,9 +118,3 @@ option (
   type: 'boolean',
   value: false,
   description: 'Whether this is a trial version with limited functionality')
-
-option (
-  'enable_guile',
-  type: 'boolean',
-  value: false,
-  description: 'Enable guile scripting interface')
