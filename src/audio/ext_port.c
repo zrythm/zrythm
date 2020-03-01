@@ -406,6 +406,9 @@ ext_port_clone (
 #ifdef _WOE32
   newport->mme_dev = ext_port->mme_dev;
 #endif
+#ifdef HAVE_RTMIDI
+  newport->rtmidi_id = ext_port->rtmidi_id;
+#endif
   if (ext_port->full_name)
     newport->full_name =
       g_strdup (ext_port->full_name);

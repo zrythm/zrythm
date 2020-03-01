@@ -1480,7 +1480,6 @@ track_set_name (
   while (!tracklist_track_name_is_unique (
             TRACKLIST, name, track))
     {
-      g_message ("trying %s start", name);
       char name_without_num[780];
       int ending_num =
         string_get_int_after_last_space (
@@ -1497,7 +1496,6 @@ track_set_name (
             name, "%s %d",
             name_without_num, ending_num + 1);
         }
-      g_message ("trying %s end", name);
     }
 
   if (track->name)

@@ -46,10 +46,14 @@ midi_in_cb (
 
   /* generate timestamp */
   gint64 cur_time = g_get_monotonic_time ();
-  gint64 ts = cur_time - self->port->last_midi_dequeue;
+  gint64 ts =
+    cur_time - self->port->last_midi_dequeue;
   g_return_if_fail (ts >= 0);
-  g_message ("message received of size %lu at %ld",
-    message_size, ts);
+  char portname[900];
+  port_get_full_designation (self->port, portname);
+  g_message (
+    "[%s] message received of size %lu at %ld",
+    portname, message_size, ts);
 
   /* add to ring buffer */
   MidiEventHeader h = {
@@ -118,11 +122,20 @@ rtmidi_device_open (
   RtMidiDevice * self,
   int            start)
 {
+  g_message ("opening rtmidi device");
   char designation[800];
-  port_get_full_designation (self->port, designation);
+  port_get_full_designation (
+    self->port, designation);
   char lbl[1200];
   sprintf (lbl, "%s [%u]", designation, self->id);
   rtmidi_open_port (self->in_handle, self->id, lbl);
+  if (!self->in_handle->ok)
+    {
+      g_warning (
+        "An error occurred opening the RtMidi "
+        "device: %s", self->in_handle->msg);
+      return -1;
+    }
 
   if (start)
     {
@@ -140,8 +153,11 @@ rtmidi_device_open (
 int
 rtmidi_device_close (
   RtMidiDevice * self,
-  int            free)
+  int            free_device)
 {
+  g_message ("closing rtmidi device");
+  rtmidi_device_stop (self);
+
   if (self->is_input)
     {
       rtmidi_close_port (self->in_handle);
@@ -151,6 +167,11 @@ rtmidi_device_close (
       rtmidi_close_port (self->out_handle);
     }
 
+  if (free_device)
+    {
+      rtmidi_device_free (self);
+    }
+
   return 0;
 }
 
@@ -158,12 +179,22 @@ int
 rtmidi_device_start (
   RtMidiDevice * self)
 {
+  g_message ("starting rtmidi device");
   if (self->is_input)
     {
       rtmidi_in_set_callback (
         self->in_handle,
         (RtMidiCCallback) midi_in_cb, self);
+      if (!self->in_handle->ok)
+        {
+          g_warning (
+            "An error occurred setting the RtMidi "
+            "device callback: %s",
+            self->in_handle->msg);
+          return -1;
+        }
     }
+  self->started = 1;
 
   return 0;
 }
@@ -172,10 +203,12 @@ int
 rtmidi_device_stop (
   RtMidiDevice * self)
 {
+  g_message ("stopping rtmidi device");
   if (self->is_input)
     {
       rtmidi_in_cancel_callback (self->in_handle);
     }
+  self->started = 0;
 
   return 0;
 }

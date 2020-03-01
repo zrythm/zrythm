@@ -1279,13 +1279,22 @@ port_disconnect_all (Port * port)
       port_disconnect (port, dest);
     }
 
+#ifdef HAVE_JACK
   if (port->internal_type == INTERNAL_JACK_PORT)
     {
-#ifdef HAVE_JACK
-      expose_to_jack (
-        port, 0);
-#endif
+      expose_to_jack (port, 0);
     }
+#endif
+
+#ifdef HAVE_RTMIDI
+  for (int i = port->num_rtmidi_ins - 1; i >= 0;
+       i--)
+    {
+      rtmidi_device_close (
+        port->rtmidi_ins[i], 1);
+      port->num_rtmidi_ins--;
+    }
+#endif
 
   return 0;
 }
@@ -2693,7 +2702,8 @@ port_apply_pan (
 }
 
 /**
- * Deletes port, doing required cleanup and updating counters.
+ * Deletes port, doing required cleanup and
+ * updating counters.
  */
 void
 port_free (Port * port)
@@ -2710,6 +2720,12 @@ port_free (Port * port)
     zix_ring_free (port->audio_ring);
   if (port->midi_ring)
     zix_ring_free (port->midi_ring);
+
+  for (int i = 0; i < port->num_rtmidi_ins; i++)
+    {
+      rtmidi_device_close (
+        port->rtmidi_ins[i], 1);
+    }
 
   free (port);
 }

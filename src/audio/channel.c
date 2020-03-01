@@ -730,6 +730,8 @@ reconnect_rtmidi_ext_in (
 
       for (i = 0; i < num; i++)
         {
+          g_message ("RTMIDI id %d",
+            arr[i]->rtmidi_id);
           RtMidiDevice * dev =
             rtmidi_device_new (
               1, arr[i]->rtmidi_id, in_port);
