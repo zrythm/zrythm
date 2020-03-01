@@ -663,6 +663,7 @@ port_get_multiplier_by_index (
   return port->multipliers[idx];
 }
 
+#ifdef HAVE_RTMIDI
 /**
  * Dequeue the midi events from the ring
  * buffers into \ref RtMidiDevice.events.
@@ -670,6 +671,7 @@ port_get_multiplier_by_index (
 void
 port_prepare_rtmidi_events (
   Port * self);
+#endif
 
 /**
  * Deletes port, doing required cleanup and updating counters.

@@ -31,7 +31,7 @@ towards a stable release.
 
 ### Supported backends
 - Audio: JACK, SDL2
-- MIDI: JACK, Windows MME
+- MIDI: JACK, WindowsMME, RtMidi (Windows MME/ALSA/CoreMIDI)
 
 ### Supported platforms
 - GNU/Linux, FreeBSD, Windows

@@ -1543,6 +1543,75 @@ sum_data_from_rtmidi (
         ev->raw_buffer[1], ev->raw_buffer[2]);
     }
 }
+
+/**
+ * Dequeue the midi events from the ring
+ * buffers into \ref RtMidiDevice.events.
+ */
+void
+port_prepare_rtmidi_events (
+  Port * self)
+{
+  g_return_if_fail (
+    self->id.flow == FLOW_INPUT &&
+    AUDIO_ENGINE->midi_backend ==
+      MIDI_BACKEND_RTMIDI);
+
+  gint64 cur_time = g_get_monotonic_time ();
+  for (int i = 0; i < self->num_rtmidi_ins; i++)
+    {
+      RtMidiDevice * dev = self->rtmidi_ins[i];
+
+      /* clear the events */
+      midi_events_clear (dev->events, 0);
+
+      uint32_t read_space = 0;
+      zix_sem_wait (&dev->midi_ring_sem);
+      do
+        {
+          read_space =
+            zix_ring_read_space (dev->midi_ring);
+          if (read_space <= sizeof(MidiEventHeader))
+            {
+              /* no more events */
+              break;
+            }
+
+          /* peek the next event header to check
+           * the time */
+          MidiEventHeader h = { 0, 0 };
+          zix_ring_peek (
+            dev->midi_ring, &h, sizeof (h));
+          g_return_if_fail (h.size > 0);
+
+          /* read event header */
+          zix_ring_read (
+            dev->midi_ring, &h, sizeof (h));
+
+          /* read event body */
+          midi_byte_t raw[h.size];
+          zix_ring_read (
+            dev->midi_ring, raw, sizeof (raw));
+
+          /* calculate event timestamp */
+          gint64 length =
+            cur_time - self->last_midi_dequeue;
+          midi_time_t ev_time =
+            (midi_time_t)
+            (((double) h.time / (double) length) *
+            (double) AUDIO_ENGINE->block_length);
+          g_return_if_fail (
+            ev_time < AUDIO_ENGINE->block_length);
+
+          midi_events_add_event_from_buf (
+            dev->events,
+            ev_time, raw, (int) h.size, 0);
+        } while (
+            read_space > sizeof (MidiEventHeader));
+      zix_sem_post (&dev->midi_ring_sem);
+    }
+  self->last_midi_dequeue = cur_time;
+}
 #endif
 
 #ifdef _WOE32
@@ -1660,75 +1729,6 @@ send_data_to_windows_mme (
   /* TODO send midi events */
 }
 #endif
-
-/**
- * Dequeue the midi events from the ring
- * buffers into \ref RtMidiDevice.events.
- */
-void
-port_prepare_rtmidi_events (
-  Port * self)
-{
-  g_return_if_fail (
-    self->id.flow == FLOW_INPUT &&
-    AUDIO_ENGINE->midi_backend ==
-      MIDI_BACKEND_RTMIDI);
-
-  gint64 cur_time = g_get_monotonic_time ();
-  for (int i = 0; i < self->num_rtmidi_ins; i++)
-    {
-      RtMidiDevice * dev = self->rtmidi_ins[i];
-
-      /* clear the events */
-      midi_events_clear (dev->events, 0);
-
-      uint32_t read_space = 0;
-      zix_sem_wait (&dev->midi_ring_sem);
-      do
-        {
-          read_space =
-            zix_ring_read_space (dev->midi_ring);
-          if (read_space <= sizeof(MidiEventHeader))
-            {
-              /* no more events */
-              break;
-            }
-
-          /* peek the next event header to check
-           * the time */
-          MidiEventHeader h = { 0, 0 };
-          zix_ring_peek (
-            dev->midi_ring, &h, sizeof (h));
-          g_return_if_fail (h.size > 0);
-
-          /* read event header */
-          zix_ring_read (
-            dev->midi_ring, &h, sizeof (h));
-
-          /* read event body */
-          midi_byte_t raw[h.size];
-          zix_ring_read (
-            dev->midi_ring, raw, sizeof (raw));
-
-          /* calculate event timestamp */
-          gint64 length =
-            cur_time - self->last_midi_dequeue;
-          midi_time_t ev_time =
-            (midi_time_t)
-            (((double) h.time / (double) length) *
-            (double) AUDIO_ENGINE->block_length);
-          g_return_if_fail (
-            ev_time < AUDIO_ENGINE->block_length);
-
-          midi_events_add_event_from_buf (
-            dev->events,
-            ev_time, raw, (int) h.size, 0);
-        } while (
-            read_space > sizeof (MidiEventHeader));
-      zix_sem_post (&dev->midi_ring_sem);
-    }
-  self->last_midi_dequeue = cur_time;
-}
 
 /**
  * To be called when a control's value changes
@@ -2721,11 +2721,13 @@ port_free (Port * port)
   if (port->midi_ring)
     zix_ring_free (port->midi_ring);
 
+#ifdef HAVE_RTMIDI
   for (int i = 0; i < port->num_rtmidi_ins; i++)
     {
       rtmidi_device_close (
         port->rtmidi_ins[i], 1);
     }
+#endif
 
   free (port);
 }

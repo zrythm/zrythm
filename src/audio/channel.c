@@ -398,6 +398,7 @@ channel_prepare_process (Channel * self)
 
   if (tr->in_signal_type == TYPE_EVENT)
     {
+#ifdef HAVE_RTMIDI
       /* extract the midi events from the ring
        * buffer */
       if (AUDIO_ENGINE->midi_backend ==
@@ -406,6 +407,7 @@ channel_prepare_process (Channel * self)
           port_prepare_rtmidi_events (
             tr->processor.midi_in);
         }
+#endif
 
       /* copy the cached MIDI events to the
        * MIDI events in the MIDI in port */
