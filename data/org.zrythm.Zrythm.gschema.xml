@@ -32,6 +32,7 @@
     <value nick="jack" value="2"/>
     <value nick="portaudio" value="3"/>
     <value nick="sdl" value="4"/>
+    <value nick="rtaudio" value="5"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.midi-backend-enum">
     <value nick="none" value="0"/>
@@ -193,6 +194,15 @@
       <summary>SDL audio device name</summary>
       <description>
         The name of the SDL audio device to open.
+      </description>
+    </key>
+
+    <!-- KEY: rtaudio-audio-device-name -->
+    <key name="rtaudio-audio-device-name" type="s">
+      <default>""</default>
+      <summary>RtAudio device name</summary>
+      <description>
+        The name of the RtAudio device to open.
       </description>
     </key>
 

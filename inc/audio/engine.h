@@ -55,6 +55,10 @@
 #include <SDL2/SDL_audio.h>
 #endif
 
+#ifdef HAVE_RTAUDIO
+#include <rtaudio/rtaudio_c.h>
+#endif
+
 typedef struct StereoPorts StereoPorts;
 typedef struct Port Port;
 typedef struct Channel Channel;
@@ -127,6 +131,7 @@ typedef enum AudioBackend
   AUDIO_BACKEND_JACK,
   AUDIO_BACKEND_PORT_AUDIO,
   AUDIO_BACKEND_SDL,
+  AUDIO_BACKEND_RTAUDIO,
   NUM_AUDIO_BACKENDS,
 } AudioBackend;
 
@@ -137,6 +142,7 @@ static const char * audio_backend_str[] =
   "JACK",
   "PortAudio",
   "SDL2",
+  "RtAudio",
   "invalid"
 };
 
@@ -369,6 +375,10 @@ typedef struct AudioEngine
 
 #ifdef HAVE_SDL
   SDL_AudioDeviceID dev;
+#endif
+
+#ifdef HAVE_RTAUDIO
+  rtaudio_t         rtaudio;
 #endif
 
   /**

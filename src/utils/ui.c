@@ -606,6 +606,9 @@ ui_create_audio_backends_model (void)
 #ifdef HAVE_SDL
     AUDIO_BACKEND_SDL,
 #endif
+#ifdef HAVE_RTAUDIO
+    AUDIO_BACKEND_RTAUDIO,
+#endif
   };
   const gchar *labels[] = {
     /* TRANSLATORS: Dummy audio backend */
@@ -621,6 +624,9 @@ ui_create_audio_backends_model (void)
 #endif
 #ifdef HAVE_SDL
     "SDL2",
+#endif
+#ifdef HAVE_RTAUDIO
+    "RtAudio",
 #endif
   };
 

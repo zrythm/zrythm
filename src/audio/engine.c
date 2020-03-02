@@ -53,6 +53,7 @@
 #include "audio/engine_dummy.h"
 #include "audio/engine_jack.h"
 #include "audio/engine_pa.h"
+#include "audio/engine_rtaudio.h"
 #include "audio/engine_rtmidi.h"
 #include "audio/engine_sdl.h"
 #include "audio/engine_windows_mme.h"
@@ -222,8 +223,12 @@ engine_init (
 #endif
 #ifdef HAVE_SDL
     case AUDIO_BACKEND_SDL:
-      self->audio_backend =
-        AUDIO_BACKEND_SDL;
+      self->audio_backend = AUDIO_BACKEND_SDL;
+      break;
+#endif
+#ifdef HAVE_RTAUDIO
+    case AUDIO_BACKEND_RTAUDIO:
+      self->audio_backend = AUDIO_BACKEND_RTAUDIO;
       break;
 #endif
     default:
@@ -315,6 +320,12 @@ engine_init (
     case AUDIO_BACKEND_SDL:
       ret =
         engine_sdl_setup (self, loading);
+      break;
+#endif
+#ifdef HAVE_RTAUDIO
+    case AUDIO_BACKEND_RTAUDIO:
+      ret =
+        engine_rtaudio_setup (self, loading);
       break;
 #endif
     default:
@@ -499,6 +510,10 @@ engine_activate (
 #ifdef HAVE_SDL
   if (self->audio_backend == AUDIO_BACKEND_SDL)
     engine_sdl_activate (self);
+#endif
+#ifdef HAVE_RTAUDIO
+  if (self->audio_backend == AUDIO_BACKEND_RTAUDIO)
+    engine_rtaudio_activate (self);
 #endif
 }
 
@@ -1177,6 +1192,10 @@ engine_fill_out_bufs (
 #ifdef HAVE_SDL
     case AUDIO_BACKEND_SDL:
       /*engine_sdl_fill_out_bufs (self, nframes);*/
+      break;
+#endif
+#ifdef HAVE_RTAUDIO
+    case AUDIO_BACKEND_RTAUDIO:
       break;
 #endif
     default:
