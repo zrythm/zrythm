@@ -281,8 +281,9 @@ engine_rtaudio_get_device_names (
   int *         num_names)
 {
   rtaudio_t rtaudio = create_rtaudio (self);
-  *num_names = rtaudio_device_count (rtaudio);
-  for (int i = 0; i < *num_names; i++)
+  int num_devs = rtaudio_device_count (rtaudio);
+  *num_names = 0;
+  for (int i = 0; i < num_devs; i++)
     {
       rtaudio_device_info_t dev_nfo =
         rtaudio_get_device_info (rtaudio, i);
@@ -290,20 +291,20 @@ engine_rtaudio_get_device_names (
           (dev_nfo.input_channels > 0 ||
            dev_nfo.duplex_channels > 0))
         {
-          names[i] = g_strdup (dev_nfo.name);
+          names[(*num_names)++] = g_strdup (dev_nfo.name);
         }
       else if (!input &&
                (dev_nfo.output_channels > 0 ||
                 dev_nfo.duplex_channels > 0))
         {
-          names[i] = g_strdup (dev_nfo.name);
+          names[(*num_names)++] = g_strdup (dev_nfo.name);
         }
       else
         {
           continue;
         }
       g_message (
-        "RtAudio device %d: %s", i, names[i]);
+        "RtAudio device %d: %s", i, names[*num_names - 1]);
     }
 }
 

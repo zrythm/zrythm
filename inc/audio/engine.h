@@ -162,7 +162,7 @@ static const char * midi_backend_str[] =
   "ALSA",
   "JACK",
   "Windows MME",
-  "Rtmidi",
+  "RtMidi",
   "invalid"
 };
 

@@ -732,6 +732,10 @@ zrythm_app_startup (
   /*g_object_set (*/
     /*gtk_settings_get_default (),*/
     /*"gtk-icon-theme-name", "breeze-dark", NULL);*/
+#elif defined(__APPLE__)
+  g_object_set (
+    gtk_settings_get_default (),
+    "gtk-font-name", "Regular 10", NULL);
 #else
   g_object_set (
     gtk_settings_get_default (),

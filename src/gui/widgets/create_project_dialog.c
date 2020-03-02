@@ -108,6 +108,7 @@ create_project_dialog_widget_new ()
       CREATE_PROJECT_DIALOG_WIDGET_TYPE,
       "title", _("Create New Project"),
       "icon-name", "zrythm",
+      "window-position", GTK_WIN_POS_CENTER,
       NULL);
 
   char * str =

@@ -30,8 +30,8 @@ towards a stable release.
 - LV2, VST2 (Experimental)
 
 ### Supported backends
-- Audio: JACK, SDL2
-- MIDI: JACK, WindowsMME, RtMidi (Windows MME/ALSA/CoreMIDI)
+- Audio: JACK, SDL2, RtAudio (ALSA/WASAPI/CoreAudio)
+- MIDI: JACK, WindowsMME, RtMidi (ALSA sequencer/Windows MME/CoreMIDI)
 
 ### Supported platforms
 - GNU/Linux, FreeBSD, Windows
