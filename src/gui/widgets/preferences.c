@@ -49,6 +49,53 @@ enum
 };
 
 static void
+setup_audio_devices (
+  PreferencesWidget * self)
+{
+  AudioBackend prev_backend =
+    g_settings_get_enum (
+      S_PREFERENCES, "audio-backend");
+  g_settings_set_enum (
+    S_PREFERENCES, "audio-backend",
+    atoi (
+      gtk_combo_box_get_active_id (
+        self->audio_backend)));
+
+  AudioBackend backend =
+    (AudioBackend)
+    g_settings_get_enum (
+      S_PREFERENCES, "audio-backend");
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->audio_backend_opts_box),
+    backend == AUDIO_BACKEND_SDL ||
+      backend == AUDIO_BACKEND_RTAUDIO);
+
+#if defined(HAVE_SDL) || defined(HAVE_RTAUDIO)
+  if (gtk_widget_get_visible (
+        GTK_WIDGET (self->audio_backend_opts_box)))
+    {
+      ui_setup_device_name_combo_box (
+        self->device_name_cb);
+      ui_setup_buffer_size_combo_box (
+        self->buffer_size_cb);
+      ui_setup_samplerate_combo_box (
+        self->samplerate_cb);
+    }
+#endif
+
+  g_settings_set_enum (
+    S_PREFERENCES, "audio-backend", prev_backend);
+}
+
+static void
+on_audio_backend_changed (
+  GtkComboBox *widget,
+  PreferencesWidget * self)
+{
+  setup_audio_devices (self);
+}
+
+static void
 on_language_changed (
   GtkComboBox *widget,
   PreferencesWidget * self)
@@ -187,12 +234,13 @@ on_ok_clicked (GtkWidget * widget,
     self->vst_paths_entry);
 #endif
 
-#ifdef HAVE_SDL
+#if defined(HAVE_SDL) || defined(HAVE_RTAUDIO)
   AudioBackend backend =
     (AudioBackend)
     g_settings_get_enum (
       S_PREFERENCES, "audio-backend");
-  if (backend == AUDIO_BACKEND_SDL)
+  if (backend == AUDIO_BACKEND_SDL ||
+      backend == AUDIO_BACKEND_RTAUDIO)
     {
       g_settings_set_enum (
         S_PREFERENCES, "samplerate",
@@ -202,10 +250,20 @@ on_ok_clicked (GtkWidget * widget,
         S_PREFERENCES, "buffer-size",
         gtk_combo_box_get_active (
           self->buffer_size_cb));
-      g_settings_set_string (
-        S_PREFERENCES, "sdl-audio-device-name",
-        gtk_combo_box_text_get_active_text (
-          self->device_name_cb));
+      if (backend == AUDIO_BACKEND_SDL)
+        {
+          g_settings_set_string (
+            S_PREFERENCES, "sdl-audio-device-name",
+            gtk_combo_box_text_get_active_text (
+              self->device_name_cb));
+        }
+      else if (backend == AUDIO_BACKEND_RTAUDIO)
+        {
+          g_settings_set_string (
+            S_PREFERENCES, "rtaudio-audio-device-name",
+            gtk_combo_box_text_get_active_text (
+              self->device_name_cb));
+        }
     }
 #endif
 
@@ -245,18 +303,7 @@ preferences_widget_new ()
     self->midi_controllers);
   setup_autosave_spinbutton (self);
 
-#ifdef HAVE_SDL
-  if (gtk_widget_get_visible (
-        GTK_WIDGET (self->audio_backend_opts_box)))
-    {
-      ui_setup_device_name_combo_box (
-        self->device_name_cb);
-      ui_setup_buffer_size_combo_box (
-        self->buffer_size_cb);
-      ui_setup_samplerate_combo_box (
-        self->samplerate_cb);
-    }
-#endif
+  setup_audio_devices (self);
 
 #ifdef _WOE32
   /* setup vst_paths */
@@ -327,17 +374,6 @@ preferences_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  AudioBackend backend =
-    (AudioBackend)
-    g_settings_get_enum (
-      S_PREFERENCES, "audio-backend");
-  if (backend == AUDIO_BACKEND_SDL)
-    {
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->audio_backend_opts_box),
-        1);
-    }
-
 #ifdef _WOE32
   gtk_widget_set_visible (
     GTK_WIDGET (self->vst_paths_label), 1);
@@ -348,4 +384,7 @@ preferences_widget_init (
   g_signal_connect (
     G_OBJECT (self->language), "changed",
     G_CALLBACK (on_language_changed), self);
+  g_signal_connect (
+    G_OBJECT (self->audio_backend), "changed",
+    G_CALLBACK (on_audio_backend_changed), self);
 }

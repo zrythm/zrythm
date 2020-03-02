@@ -47,6 +47,19 @@ engine_rtaudio_activate (
   AudioEngine * self);
 
 /**
+ * Returns a list of names inside \ref names that
+ * must be free'd.
+ *
+ * @param input 1 for input, 0 for output.
+ */
+void
+engine_rtaudio_get_device_names (
+  AudioEngine * self,
+  int           input,
+  char **       names,
+  int *         num_names);
+
+/**
  * Tests if the backend is working properly.
  *
  * Returns 0 if ok, non-null if has errors.

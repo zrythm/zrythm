@@ -22,6 +22,7 @@
 #include <math.h>
 
 #include "audio/engine.h"
+#include "audio/engine_rtaudio.h"
 #include "audio/engine_sdl.h"
 #include "audio/pan.h"
 #include "gui/widgets/bot_bar.h"
@@ -925,36 +926,47 @@ ui_setup_device_name_combo_box (
     (AudioBackend)
     g_settings_get_enum (
       S_PREFERENCES, "audio-backend");
+
+  gtk_combo_box_text_remove_all (cb);
+
+#define SETUP_DEVICES(type) \
+  { \
+    char * names[1024]; \
+    int num_names; \
+    engine_##type##_get_device_names ( \
+      AUDIO_ENGINE, 0, names, &num_names); \
+    for (int i = 0; i < num_names; i++) \
+      { \
+        gtk_combo_box_text_append ( \
+          cb, NULL, names[i]); \
+      } \
+    char * current_device = \
+      g_settings_get_string ( \
+        S_PREFERENCES, \
+        #type "-audio-device-name"); \
+    for (int i = 0; i < num_names; i++) \
+      { \
+        if (string_is_equal ( \
+              names[i], current_device, 0)) \
+          { \
+            gtk_combo_box_set_active ( \
+              GTK_COMBO_BOX (cb), i); \
+          } \
+        g_free (names[i]); \
+      } \
+    g_free (current_device); \
+  }
+
   switch (backend)
     {
 #ifdef HAVE_SDL
     case AUDIO_BACKEND_SDL:
-      {
-        char * names[1024];
-        int num_names;
-        engine_sdl_get_device_names (
-          AUDIO_ENGINE, 0, names, &num_names);
-        for (int i = 0; i < num_names; i++)
-          {
-            gtk_combo_box_text_append (
-              cb, NULL, names[i]);
-          }
-        char * current_device =
-          g_settings_get_string (
-            S_PREFERENCES,
-            "sdl-audio-device-name");
-        for (int i = 0; i < num_names; i++)
-          {
-            if (string_is_equal (
-                  names[i], current_device, 0))
-              {
-                gtk_combo_box_set_active (
-                  GTK_COMBO_BOX (cb), i);
-              }
-            g_free (names[i]);
-          }
-          g_free (current_device);
-      }
+      SETUP_DEVICES (sdl);
+      break;
+#endif
+#ifdef HAVE_RTAUDIO
+    case AUDIO_BACKEND_RTAUDIO:
+      SETUP_DEVICES (rtaudio);
       break;
 #endif
     default:

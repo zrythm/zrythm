@@ -47,7 +47,7 @@ audio_cb (
     }
 
   if (!self->run)
-    return;
+    return 0;
 
   nframes_t num_frames = (nframes_t) nframes;
   engine_process (self, num_frames);
@@ -82,6 +82,30 @@ error_cb (
   g_critical ("RtAudio error: %s", msg);
 }
 
+static rtaudio_t
+create_rtaudio (
+  AudioEngine * self)
+{
+  rtaudio_t rtaudio =
+    rtaudio_create (
+#ifdef _WOE32
+      RTAUDIO_API_WINDOWS_WASAPI
+#elif defined(__APPLE__)
+      RTAUDIO_API_MACOSX_CORE
+#else
+      RTAUDIO_API_LINUX_ALSA
+#endif
+      );
+  if (rtaudio_error (rtaudio))
+    {
+      g_critical (
+        "RtAudio: %s", rtaudio_error (rtaudio));
+      return NULL;
+    }
+
+  return rtaudio;
+}
+
 /**
  * Set up the engine.
  */
@@ -93,21 +117,9 @@ engine_rtaudio_setup (
   g_message (
     "Setting up RtAudio %s...", rtaudio_version ());
 
-  self->rtaudio =
-    rtaudio_create (
-#ifdef _WOE32
-      RTAUDIO_API_WINDOWS_WASAPI
-#elif defined(__APPLE__)
-      RTAUDIO_API_MACOSX_CORE
-#else
-      RTAUDIO_API_LINUX_ALSA
-#endif
-      );
-  if (rtaudio_error (self->rtaudio))
+  self->rtaudio = create_rtaudio (self);
+  if (!self->rtaudio)
     {
-      g_critical (
-        "RtAudio: %s",
-        rtaudio_error (self->rtaudio));
       return -1;
     }
 
@@ -187,8 +199,6 @@ engine_rtaudio_setup (
       &stream_opts, (rtaudio_error_cb_t) error_cb);
   if (ret)
     {
-      char err_str[8000];
-      get_error (ret, err_str);
       g_critical (
         "An error occurred opening the RtAudio "
         "stream: %s", rtaudio_error (self->rtaudio));
@@ -258,11 +268,36 @@ engine_rtaudio_test (
 }
 
 /**
+ * Returns a list of names inside \ref names that
+ * must be free'd.
+ *
+ * @param input 1 for input, 0 for output.
+ */
+void
+engine_rtaudio_get_device_names (
+  AudioEngine * self,
+  int           input,
+  char **       names,
+  int *         num_names)
+{
+  rtaudio_t rtaudio = create_rtaudio (self);
+  *num_names = rtaudio_device_count (rtaudio);
+  for (int i = 0; i < *num_names; i++)
+    {
+      rtaudio_device_info_t dev_nfo =
+        rtaudio_get_device_info (rtaudio, i);
+      names[i] = g_strdup (dev_nfo.name);
+      g_message (
+        "RtAudio device %d: %s", i, names[i]);
+    }
+}
+
+/**
  * Closes the engine.
  */
 void
 engine_rtaudio_tear_down (
-  AudioEngine * engine)
+  AudioEngine * self)
 {
   rtaudio_close_stream (self->rtaudio);
 }
