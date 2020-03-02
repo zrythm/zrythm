@@ -24,7 +24,7 @@
  */
 
 #ifndef __GUI_WIDGETS_DIALOGS_PORT_INFO_H__
-#define __GUI_WIDGETS_DIALOGSPORT_INFO_H__
+#define __GUI_WIDGETS_DIALOGS_PORT_INFO_H__
 
 #include <gtk/gtk.h>
 

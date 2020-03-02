@@ -286,7 +286,22 @@ engine_rtaudio_get_device_names (
     {
       rtaudio_device_info_t dev_nfo =
         rtaudio_get_device_info (rtaudio, i);
-      names[i] = g_strdup (dev_nfo.name);
+      if (input &&
+          (dev_nfo.input_channels > 0 ||
+           dev_nfo.duplex_channels > 0))
+        {
+          names[i] = g_strdup (dev_nfo.name);
+        }
+      else if (!input &&
+               (dev_nfo.output_channels > 0 ||
+                dev_nfo.duplex_channels > 0))
+        {
+          names[i] = g_strdup (dev_nfo.name);
+        }
+      else
+        {
+          continue;
+        }
       g_message (
         "RtAudio device %d: %s", i, names[i]);
     }

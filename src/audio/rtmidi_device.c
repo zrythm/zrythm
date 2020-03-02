@@ -93,6 +93,13 @@ rtmidi_device_new (
 #endif
           "Zrythm",
           AUDIO_ENGINE->midi_buf_size);
+      if (!self->in_handle->ok)
+        {
+          g_warning (
+            "An error occurred creating an RtMidi "
+            "in handle: %s", self->in_handle->msg);
+          return NULL;
+        }
     }
   else
     {

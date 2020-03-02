@@ -5,7 +5,9 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
-os: windows
+os:
+  - windows
+  - osx
 language: c
 
 before_install:
@@ -26,6 +28,12 @@ before_install:
         export PATH=/C/tools/msys64/mingw64/bin:$PATH
         export MAKE=mingw32-make  # so that Autotools can find it
         ;;
+      osx)
+        brew update
+        brew install fftw gtk+3 meson libsamplerate \
+          ffmpeg libyaml libsndfile rubberband
+          sdl2 chromaprint
+        ;;
     esac
 
 before_cache:
@@ -43,10 +51,16 @@ cache:
     - /C/tools/msys64
 
 script:
-  # hack to enable tests
-  - $mingw64 sed -i -e '27s/false/true/' meson_options.txt
-  # hack to enable sdl
-  - $mingw64 sed -i -e '63s/false/true/' meson_options.txt
-  - $mingw64 meson build
-  - $mingw64 ninja -C build
-  - $mingw64 ninja -C build test
+  - if [ $TRAVIS_OS_NAME = 'osx' ]; then
+      meson build -Denable_sdl=true -Denable_rtaudio=true -Denable_rtmidi=true
+      ninja -C build
+      ninja -C build install
+    else
+      # hack to enable tests
+      $mingw64 sed -i -e '27s/false/true/' meson_options.txt
+      # hack to enable sdl
+      $mingw64 sed -i -e '63s/false/true/' meson_options.txt
+      $mingw64 meson build
+      $mingw64 ninja -C build
+      $mingw64 ninja -C build test
+    fi
