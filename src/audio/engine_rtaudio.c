@@ -46,6 +46,31 @@ audio_cb (
       g_warning ("XRUN in RtAudio");
     }
 
+  if (!self->run)
+    return;
+
+  nframes_t num_frames = (nframes_t) nframes;
+  engine_process (self, num_frames);
+
+  memset (
+    out_buf, 0,
+    (size_t) (nframes * 2) * sizeof (float));
+  for (nframes_t i = 0; i < num_frames; i++)
+    {
+#ifdef TRIAL_VER
+      if (self->limit_reached)
+        {
+          out_buf[i * 2] = 0;
+          out_buf[i * 2 + 1] = 0;
+          continue;
+        }
+#endif
+      out_buf[i * 2] =
+        self->monitor_out->l->buf[i];
+      out_buf[i * 2 + 1] =
+        self->monitor_out->r->buf[i];
+    }
+
   return 0;
 }
 
@@ -55,49 +80,6 @@ error_cb (
   const char *    msg)
 {
   g_critical ("RtAudio error: %s", msg);
-}
-
-static void
-get_error (
-  int    code,
-  char * str)
-{
-  switch (code)
-    {
-    case RTAUDIO_ERROR_WARNING:
-      strcpy (str, "A non-critical error.");
-      break;
-    case RTAUDIO_ERROR_DEBUG_WARNING:
-      strcpy (str, "-critical error which might be useful for debugging.");
-      break;
-    case RTAUDIO_ERROR_UNSPECIFIED:
-      strcpy (str, "default, unspecified error type.");
-      break;
-    case RTAUDIO_ERROR_NO_DEVICES_FOUND:
-      strcpy (str, "ces found on system.");
-      break;
-    case RTAUDIO_ERROR_INVALID_DEVICE:
-      strcpy (str, "alid device ID was specified.");
-      break;
-    case RTAUDIO_ERROR_MEMORY_ERROR:
-      strcpy (str, "rror occured during memory allocation.");
-      break;
-    case RTAUDIO_ERROR_INVALID_PARAMETER:
-      strcpy (str, "lid parameter was specified to a function.");
-      break;
-    case RTAUDIO_ERROR_INVALID_USE:
-      strcpy (str, "function was called incorrectly.");
-      break;
-    case RTAUDIO_ERROR_DRIVER_ERROR:
-      strcpy (str, "stem driver error occured.");
-      break;
-    case RTAUDIO_ERROR_SYSTEM_ERROR:
-      strcpy (str, "stem error occured.");
-      break;
-    case RTAUDIO_ERROR_THREAD_ERROR:
-      strcpy (str, "read error occured.");
-      break;
-    }
 }
 
 /**
@@ -209,7 +191,7 @@ engine_rtaudio_setup (
       get_error (ret, err_str);
       g_critical (
         "An error occurred opening the RtAudio "
-        "stream: %s", err_str);
+        "stream: %s", rtaudio_error (self->rtaudio));
       return -1;
     }
   self->block_length = buffer_size;
@@ -249,18 +231,13 @@ engine_rtaudio_setup (
 }
 
 void
-engine_rtaudio_fill_out_bufs (
-  AudioEngine *   self,
-  const nframes_t nframes)
-{
-}
-
-void
 engine_rtaudio_activate (
   AudioEngine * self)
 {
   engine_realloc_port_buffers (
     self, AUDIO_ENGINE->block_length);
+
+  rtaudio_start_stream (self->rtaudio);
 
   g_message ("RtAudio activated");
 }
@@ -287,6 +264,7 @@ void
 engine_rtaudio_tear_down (
   AudioEngine * engine)
 {
+  rtaudio_close_stream (self->rtaudio);
 }
 
 #endif // HAVE_RTAUDIO

@@ -43,11 +43,6 @@ engine_rtaudio_setup (
   int           loading);
 
 void
-engine_rtaudio_fill_out_bufs (
-  AudioEngine *   self,
-  const nframes_t nframes);
-
-void
 engine_rtaudio_activate (
   AudioEngine * self);
 

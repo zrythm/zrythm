@@ -53,11 +53,6 @@ engine_sdl_get_device_names (
   char **       names,
   int *         num_names);
 
-void
-engine_sdl_fill_out_bufs (
-  AudioEngine *   self,
-  const nframes_t nframes);
-
 /**
  * Tests if PortAudio is working properly.
  *
