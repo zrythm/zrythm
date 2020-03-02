@@ -512,10 +512,10 @@ engine_jack_test (
   jack_options_t options = JackNoStartServer;
   jack_status_t status;
 
-  // open a client connection to the JACK server
+  /* open a client connection to the JACK server */
   jack_client_t * client =
     jack_client_open (
-      client_name, options, &status,server_name);
+      client_name, options, &status, server_name);
 
   if (client)
     {

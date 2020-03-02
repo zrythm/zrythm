@@ -30,9 +30,7 @@ before_install:
         ;;
       osx)
         brew update
-        brew install fftw gtk+3 meson libsamplerate \
-          ffmpeg libyaml libsndfile rubberband
-          sdl2 chromaprint
+        brew install fftw meson libsamplerate sdl2 chromaprint libgtop lilv librsvg gtk+3
         ;;
     esac
 
@@ -51,7 +49,8 @@ cache:
     - /C/tools/msys64
 
 script:
-  - if [ $TRAVIS_OS_NAME = 'osx' ]; then
+- |-
+    if [ $TRAVIS_OS_NAME = 'osx' ]; then
       meson build -Denable_sdl=true -Denable_rtaudio=true -Denable_rtmidi=true
       ninja -C build
       ninja -C build install

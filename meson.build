@@ -360,9 +360,11 @@ if (libgtop_dep.found ())
   cdata.set('HAVE_LIBGTOP', 1)
   cdata.set('TIME_WITH_SYS_TIME', 0)
 endif
-x11_dep = dependency('x11', required: false)
-if (x11_dep.found ())
-  cdata.set('HAVE_X11', 1)
+if not os_darwin
+  x11_dep = dependency('x11', required: false)
+  if (x11_dep.found ())
+    cdata.set('HAVE_X11', 1)
+  endif
 endif
 alsa_dep = dependency('alsa', required: false)
 if (alsa_dep.found ())
@@ -413,7 +415,6 @@ zrythm_deps = [
   alsa_dep,
   cyaml_dep,
   audec_dep,
-  x11_dep,
   dependency('threads'),
   dependency(
     'lilv-0', version: '>=0.24.6',
@@ -550,6 +551,7 @@ if (os_darwin)
       ])
 else
   zrythm_deps += cc.find_library('m')
+  zrythm_deps += x11_dep
 endif
 
 # create config.h
