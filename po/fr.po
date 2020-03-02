@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-02-26 13:10+0000\n"
-"PO-Revision-Date: 2020-01-31 12:50+0000\n"
+"PO-Revision-Date: 2020-03-03 20:33+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -86,9 +86,8 @@ msgstr ""
 "Utiliser la sauvegarde la plus récente  ?"
 
 #: src/project.c:478
-#, fuzzy
 msgid "Backup found"
-msgstr "Sauvegarde sauvegardée."
+msgstr "Sauvegarde trouvée"
 
 #: src/project.c:546
 #, c-format
@@ -192,7 +191,7 @@ msgstr "Erreur lors du chargement du répertoire bundle LV2: "
 
 #: src/plugins/plugin.c:111
 msgid "Enabled"
-msgstr ""
+msgstr "Activé"
 
 #: src/plugins/plugin_gtk.c:79 src/plugins/lv2/lv2_gtk.c:96
 msgid "Save State"
@@ -273,9 +272,8 @@ msgid "Bind MIDI CC"
 msgstr "Lier un CC MIDI"
 
 #: src/gui/widgets/inspector_port.c:184 src/gui/widgets/midi_arranger.c:608
-#, fuzzy
 msgid "View info"
-msgstr "Accrocher/Options de la grille"
+msgstr "Voir les infos"
 
 #: src/gui/widgets/inspector_port.c:353
 msgid "Incoming signals"
@@ -302,7 +300,6 @@ msgid "Expose port to JACK"
 msgstr "Exposer le port à JACK"
 
 #: src/gui/widgets/log_viewer.c:85
-#, fuzzy
 msgid "Log Viewer"
 msgstr "Afficheur d'événement"
 
@@ -811,12 +808,11 @@ msgstr "Accrocher/options de la grille"
 
 #: src/gui/widgets/port_connection_row.c:97
 msgid "Enable/disable connection"
-msgstr ""
+msgstr "Active/désactive la connexion"
 
 #: src/gui/widgets/port_connection_row.c:138
-#, fuzzy
 msgid "Delete connection"
-msgstr "Connexions"
+msgstr "Effacer la connexion"
 
 #: src/gui/widgets/header_notebook.c:90
 msgid "About Zrythm"
@@ -828,13 +824,12 @@ msgid "Preferences"
 msgstr "Préférences"
 
 #: src/gui/widgets/header_notebook.c:92
-#, fuzzy
 msgid "Log viewer"
-msgstr "Basculer l'afficheur d'événement"
+msgstr "Afficheur d'événement"
 
 #: src/gui/widgets/header_notebook.c:94
 msgid "Scripting interface"
-msgstr ""
+msgstr "Interface de scriptage"
 
 #: src/gui/widgets/live_waveform.c:199
 msgid "Live waveform indicator"
@@ -1102,7 +1097,7 @@ msgstr "Piste MIDI Ca"
 
 #: src/gui/widgets/track.c:1499
 msgid "Passthrough input"
-msgstr ""
+msgstr "Entrée de traversement"
 
 #: src/gui/widgets/track.c:1528 src/gui/widgets/track.c:1586
 #, c-format
@@ -1124,23 +1119,21 @@ msgid "Fader"
 msgstr "Charriots"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:109
-#, fuzzy
 msgid "Arranger object info"
-msgstr "Modifier le(s) objet(s) de l'arrangeur"
+msgstr "Infos sur l'objet de l'arrangeur"
 
 #: src/gui/widgets/dialogs/port_info.c:59
 #, c-format
 msgid "%.1f to %.1f"
-msgstr ""
+msgstr "%.1f pour %.1f"
 
 #: src/gui/widgets/dialogs/port_info.c:73
 msgid "N/A"
-msgstr ""
+msgstr "Sans objet"
 
 #: src/gui/widgets/dialogs/port_info.c:134
-#, fuzzy
 msgid "Port info"
-msgstr "Port"
+msgstr "Info du port"
 
 #: src/gui/backend/events.c:1488
 msgid "Trial limit has been reached. Zrythm will now go silent"
@@ -1343,11 +1336,11 @@ msgstr "Non-implémenté"
 
 #: src/audio/fader.c:103
 msgid "Volume"
-msgstr ""
+msgstr "Volume"
 
 #: src/audio/fader.c:125
 msgid "Balance control"
-msgstr ""
+msgstr "Contrôle de la balance"
 
 #: src/audio/fader.c:138
 msgid "Fader in"
@@ -1367,7 +1360,7 @@ msgstr "Sortie fader MIDI"
 
 #: src/audio/engine_jack.c:332
 msgid "XRUN occurred - check your JACK configuration"
-msgstr ""
+msgstr "Un XRUN est survenu - vérifier votre configuration JACK"
 
 #. TRANSLATORS: JACK failure messages
 #: src/audio/engine_jack.c:675
@@ -1446,6 +1439,8 @@ msgstr "Supprimer %d Pistes"
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is coming soon!"
 msgstr ""
+"L'extensibilité des scripts avec <a href=\"%s\">GNU Guile</a> arrive bientôt "
+"!"
 
 #: src/actions/actions.c:611
 msgid ""
@@ -1659,12 +1654,11 @@ msgstr "En attente d'une entrée..."
 
 #: resources/ui/log_viewer.ui:25
 msgid "Log Level"
-msgstr ""
+msgstr "Niveau de journalisation"
 
 #: resources/ui/log_viewer.ui:76
-#, fuzzy
 msgid "Save As..."
-msgstr "Sauvegarder sous"
+msgstr "Sauvegarder sous..."
 
 #: resources/ui/scale_selector_window.ui:51
 msgid "Root Key"
@@ -2156,12 +2150,11 @@ msgstr "Appliquer l'échelle"
 
 #: resources/ui/arranger_object_info_dialog.ui:100
 msgid "Owner"
-msgstr ""
+msgstr "Propriétaire"
 
 #: resources/ui/arranger_object_info_dialog.ui:178
-#, fuzzy
 msgid "Arranger Object Info"
-msgstr "Modifier le(s) objet(s) de l'arrangeur"
+msgstr "Infos sur l'objet de l'arrangeur"
 
 #: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
 #: resources/ui/inspector_midi.ui:43
@@ -2189,32 +2182,28 @@ msgid "Muted"
 msgstr "Muet"
 
 #: resources/ui/port_info_dialog.ui:100
-#, fuzzy
 msgid "Full designation"
-msgstr "Région complète"
+msgstr "Désignation complète"
 
 #: resources/ui/port_info_dialog.ui:114
-#, fuzzy
 msgid "Range"
-msgstr "Plage temporelle"
+msgstr "Plage"
 
 #: resources/ui/port_info_dialog.ui:128
 msgid "Flags"
-msgstr ""
+msgstr "Fanions"
 
 #: resources/ui/port_info_dialog.ui:197
 msgid "Default value"
-msgstr ""
+msgstr "Valeur par défaut"
 
 #: resources/ui/port_info_dialog.ui:222
-#, fuzzy
 msgid "Current value"
 msgstr "Valeur actuelle"
 
 #: resources/ui/port_info_dialog.ui:268
-#, fuzzy
 msgid "Port Info"
-msgstr "Information sur la piste"
+msgstr "Information sur le port"
 
 #: resources/ui/track_lane.ui:34
 msgid "Lane 1"
