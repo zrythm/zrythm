@@ -35,6 +35,39 @@
 
 #include <glib/gi18n.h>
 
+#ifdef _WOE32
+#define CODESET "1252"
+#else
+#define CODESET "UTF-8"
+#endif
+
+#ifdef MAC_RELEASE
+#include "CoreFoundation/CoreFoundation.h"
+#include <unistd.h>
+#include <libgen.h>
+#endif
+
+static char *
+get_match (
+ char **      installed_locales,
+ int          num_installed_locales,
+ const char * prefix,
+ const char * suffix)
+{
+  for (int i = 0; i < num_installed_locales; i++)
+    {
+      if (
+        g_str_match_string (
+          prefix, installed_locales[i], 0) &&
+        g_str_match_string (
+          suffix, installed_locales[i], 0))
+        {
+          return installed_locales[i];
+        }
+    }
+  return NULL;
+}
+
 /**
  * Returns the first locale found matching the given
  * language, or NULL if a locale for the given
@@ -55,7 +88,7 @@ localization_locale_exists (
   /* get available locales on the system */
   FILE *fp;
   char path[1035];
-  char * installed_locales[3000];
+  char * installed_locales[8000];
   int num_installed_locales = 0;
 
   /* Open the command for reading. */
@@ -78,10 +111,10 @@ localization_locale_exists (
 
 #define IS_MATCH(caps,code) \
   case LL_##caps: \
-    match = string_array_contains_substr ( \
-          installed_locales, \
-          num_installed_locales, \
-          code); \
+    match = \
+      get_match ( \
+        installed_locales, num_installed_locales, \
+        code, CODESET); \
     break;
 
   char * match = NULL;
@@ -145,7 +178,7 @@ localization_init ()
       g_message (
         "setting locale to %s (found %s)",
         code, match);
-#ifdef _WOE32
+#if defined(_WOE32) || defined(__APPLE__)
       char buf[120];
       sprintf (buf, "LANG=%s", code);
       putenv (buf);
@@ -160,19 +193,31 @@ localization_init ()
     }
 
   /* bind text domain */
-#ifdef WINDOWS_RELEASE
+#if defined(WINDOWS_RELEASE)
   bindtextdomain (GETTEXT_PACKAGE, "share/locale");
+#elif defined(MAC_RELEASE)
+  CFBundleRef bundle =
+    CFBundleGetMainBundle ();
+  CFURLRef bundleURL =
+    CFBundleCopyBundleURL (bundle);
+  char path[PATH_MAX];
+  Boolean success =
+    CFURLGetFileSystemRepresentation (
+      bundleURL, TRUE, (UInt8 *)path, PATH_MAX);
+  g_return_val_if_fail (success, 0);
+  CFRelease (bundleURL);
+  g_message ("bundle path: %s", path);
+  char localedir[PATH_MAX];
+  sprintf (localedir, "%s/../share/locale", path);
+  bindtextdomain (
+    GETTEXT_PACKAGE, localedir);
 #else
   bindtextdomain (
     GETTEXT_PACKAGE, CONFIGURE_DATADIR "/locale");
 #endif
 
   /* set domain codeset */
-#ifdef _WOE32
-  bind_textdomain_codeset (GETTEXT_PACKAGE, "1252");
-#else
-  bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-#endif
+  bind_textdomain_codeset (GETTEXT_PACKAGE, CODESET);
 
   /* set domain */
   textdomain (GETTEXT_PACKAGE);

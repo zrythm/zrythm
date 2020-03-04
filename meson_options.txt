@@ -114,6 +114,12 @@ option (
   description: 'Turn this on when creating the installer')
 
 option (
+  'mac_release',
+  type: 'boolean',
+  value: false,
+  description: 'Turn this on when creating the installer')
+
+option (
   'trial_ver',
   type: 'boolean',
   value: false,

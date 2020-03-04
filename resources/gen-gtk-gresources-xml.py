@@ -118,6 +118,7 @@ _breeze_icons = [
   'document-save-as',
   'document-send',
   'draw-eraser',
+  'edit-find',
   'edit-select',
   'emblem-symbolic-link',
   'edit-undo',
@@ -132,6 +133,7 @@ _breeze_icons = [
   'folder-favorites',
   'format-justify-fill',
   'list-add',
+  'list-remove',
   'help-about',
   'input-keyboard',
   'kdenlive-show-markers',
@@ -188,8 +190,9 @@ for cat in ['actions', 'animations', 'applets', 'apps', 'categories', 'devices',
         for f in get_files(full_src_dir, '.svg'):
           if (f == (icon_name + '.svg')):
             icon_path = os.path.join(full_src_dir,f)
-            alias = os.path.join(full_alias_dir,'z-' + f)
-            xml += '    <file alias=\"{0}\">{1}</file>\n'.format(alias,remove_prefix(icon_path, srcdir + os.sep))
+            for pref in ['z-', '']:
+              alias = os.path.join(full_alias_dir, pref + f)
+              xml += '    <file alias=\"{0}\">{1}</file>\n'.format(alias,remove_prefix(icon_path, srcdir + os.sep))
 
 xml += '''
   <file>theme.css</file>

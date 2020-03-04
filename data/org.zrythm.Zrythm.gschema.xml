@@ -42,17 +42,17 @@
     <value nick="rtmidi" value="4"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.language-enum">
-    <value nick="english" value="0"/>
-    <value nick="english_uk" value="1"/>
-    <value nick="german" value="2"/>
-    <value nick="french" value="3"/>
-    <value nick="italian" value="4"/>
-    <value nick="norwegian" value="5"/>
-    <value nick="spanish" value="6"/>
-    <value nick="japanese" value="7"/>
-    <value nick="portuguese" value="8"/>
-    <value nick="russian" value="9"/>
-    <value nick="chinese" value="10"/>
+    <value nick="en" value="0"/>
+    <value nick="en_GB" value="1"/>
+    <value nick="de" value="2"/>
+    <value nick="fr" value="3"/>
+    <value nick="it" value="4"/>
+    <value nick="no_NB" value="5"/>
+    <value nick="es" value="6"/>
+    <value nick="ja" value="7"/>
+    <value nick="pt" value="8"/>
+    <value nick="ru" value="9"/>
+    <value nick="zh" value="10"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.export-time-range-enum">
     <value nick="song" value="0"/>
@@ -271,7 +271,7 @@
     <!-- Selected language -->
     <key name="language"
       enum="org.zrythm.Zrythm.preferences.language-enum">
-      <default>"english"</default>
+      <default>"en"</default>
       <summary>UI interface language</summary>
       <description>
         The interface language.

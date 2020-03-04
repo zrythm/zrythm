@@ -37,16 +37,25 @@ install_data (
   install_dir: samplesdir)
 
 # Desktop launcher and description file.
-desktop_file = i18n.merge_file (
-  input: 'zrythm.desktop.in',
-  output: 'zrythm.desktop',
-  type: 'desktop',
-  po_dir: '../po',
-  install: true,
-  install_dir: join_paths (
-    datadir,
-    'applications'),
-)
+if os_linux or os_freebsd
+  desktop_file = i18n.merge_file (
+    input: 'zrythm.desktop.in',
+    output: 'zrythm.desktop',
+    type: 'desktop',
+    po_dir: '../po',
+    install: true,
+    install_dir: join_paths (
+      datadir,
+      'applications'),
+  )
+  desktop_utils = find_program (
+    'desktop-file-validate', required: false)
+  if desktop_utils.found()
+    test('Validate desktop file', desktop_utils,
+      args: [desktop_file]
+    )
+  endif
+endif
 
 # Zrythm project MIME type
 install_data (
@@ -54,13 +63,5 @@ install_data (
   install_dir:
     join_paths (
       [datadir, 'mime/packages']))
-
-desktop_utils = find_program (
-  'desktop-file-validate', required: false)
-if desktop_utils.found()
-  test('Validate desktop file', desktop_utils,
-    args: [desktop_file]
-  )
-endif
 
 subdir('windows')

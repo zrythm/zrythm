@@ -12,7 +12,6 @@ language: c
 
 before_install:
 - |-
-  set -e
   case $TRAVIS_OS_NAME in
     windows)
       [[ ! -f C:/tools/msys64/msys2_shell.cmd ]] && rm -rf C:/tools/msys64
@@ -31,7 +30,9 @@ before_install:
       ;;
     osx)
       brew update
-      brew install fftw meson libsamplerate sdl2 chromaprint libgtop lilv librsvg gtk+3
+      # use || true because it returns 1
+      brew install fftw meson libsamplerate sdl2 chromaprint libgtop lilv librsvg gtk+3 || true
+      brew link --overwrite python
       ;;
   esac
 
@@ -54,7 +55,7 @@ script:
   if [ $TRAVIS_OS_NAME = 'osx' ]; then
     meson build -Denable_sdl=true -Denable_rtaudio=true -Denable_rtmidi=true
     ninja -C build
-    ninja -C build install
+    ninja -C build test
   else
     # hack to enable tests
     $mingw64 sed -i -e '27s/false/true/' meson_options.txt

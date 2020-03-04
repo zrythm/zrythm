@@ -722,7 +722,7 @@ zrythm_app_startup (
     gdk_monitor_get_scale_factor (monitor);
   g_message (
     "Monitor scale factor: %d", scale_factor);
-#ifdef _WOE32
+#if defined(_WOE32)
   g_object_set (
     gtk_settings_get_default (),
     "gtk-font-name", "Segoe UI Normal 10", NULL);
@@ -736,6 +736,14 @@ zrythm_app_startup (
   g_object_set (
     gtk_settings_get_default (),
     "gtk-font-name", "Regular 10", NULL);
+  /* explicitly set font scaling to 1.00 (for some
+   * reason, a different value is used by default).
+   * this was taken from the GtkInspector visual.c
+   * code */
+  /* TODO add an option to change the font scaling */
+  g_object_set (
+    gtk_settings_get_default (),
+    "gtk-xft-dpi", (int) (1.00 * 96 * 1024), NULL);
 #else
   g_object_set (
     gtk_settings_get_default (),
