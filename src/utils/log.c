@@ -129,8 +129,8 @@ void
 log_init_writer_idle (
   Log * self)
 {
-  g_idle_add (
-    (GSourceFunc) idle_cb, self);
+  g_timeout_add_seconds (
+    3, (GSourceFunc) idle_cb, self);
 }
 
 static void *
