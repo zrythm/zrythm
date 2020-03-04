@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.038] - 2020-03-04
+- Add RtAudio support
+- MacOS release
+
 ## [0.8.001] - 2020-02-28
 - Show plugin slot in the window name
 - Only show 1 XRUN message per 6 seconds
