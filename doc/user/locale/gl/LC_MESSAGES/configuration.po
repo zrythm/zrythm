@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
+"manualconfiguration/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../configuration/additional-settings.rst:6
@@ -163,7 +166,7 @@ msgstr ""
 
 #: ../../configuration/first-run-wizard.rst:31
 msgid "Path"
-msgstr ""
+msgstr "Ruta"
 
 #: ../../configuration/first-run-wizard.rst:36
 msgid ""
@@ -219,7 +222,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:6
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencias"
 
 #: ../../configuration/preferences/intro.rst:8
 msgid ""
@@ -236,30 +239,30 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:18
 #: ../../configuration/preferences/intro.rst:25
 msgid "General"
-msgstr ""
+msgstr "Xeral"
 
 #: ../../configuration/preferences/intro.rst:19
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../../configuration/preferences/intro.rst:20
 #: ../../configuration/preferences/intro.rst:69
 msgid "GUI"
-msgstr ""
+msgstr "GUI"
 
 #: ../../configuration/preferences/intro.rst:21
 #: ../../configuration/preferences/intro.rst:60
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: ../../configuration/preferences/intro.rst:22
 #: ../../configuration/preferences/intro.rst:75
 msgid "Projects"
-msgstr ""
+msgstr "Proxectos"
 
 #: ../../configuration/preferences/intro.rst:28
 msgid "Audio Backend"
-msgstr ""
+msgstr "Backend de Audio"
 
 #: ../../configuration/preferences/intro.rst:28
 msgid "The backend to use for the audio engine."
@@ -267,7 +270,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:31
 msgid "MIDI Backend"
-msgstr ""
+msgstr "Backend de MIDI"
 
 #: ../../configuration/preferences/intro.rst:31
 msgid "The MIDI backend to use for the audio engine."
@@ -275,7 +278,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:34
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "Controladores MIDI"
 
 #: ../../configuration/preferences/intro.rst:34
 msgid "MIDI devices to auto-connect to when Zrythm starts."
@@ -283,7 +286,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:50
 msgid "Pan Algorithm"
-msgstr ""
+msgstr "Algoritmo de Panorama"
 
 #: ../../configuration/preferences/intro.rst:37
 msgid ""
@@ -300,7 +303,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:53
 msgid "Pan Law"
-msgstr ""
+msgstr "Regra de Panorama"
 
 #: ../../configuration/preferences/intro.rst:53
 msgid "This is not used at the moment."
@@ -318,7 +321,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:63
 msgid "Always open plugin UIs"
-msgstr ""
+msgstr "Sempre abrir as UIs dos plugins"
 
 #: ../../configuration/preferences/intro.rst:63
 msgid "Always show the plugin UI when instantiating plugins."
@@ -326,7 +329,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:66
 msgid "Keep plugin UIs on top"
-msgstr ""
+msgstr "Manter as UIs dos plugins sempre enriba"
 
 #: ../../configuration/preferences/intro.rst:66
 msgid "Whether to always keep plugin UIs above other Zrythm windows or not."
@@ -334,7 +337,7 @@ msgstr ""
 
 #: ../../configuration/preferences/intro.rst:72
 msgid "Language"
-msgstr ""
+msgstr "Idioma"
 
 #: ../../configuration/preferences/intro.rst:72
 msgid "The language that the Zrythm interface uses."
@@ -353,4 +356,3 @@ msgstr ""
 #: ../../configuration/preferences/intro.rst:81
 msgid "Changing some of these settings requires a restart of Zrythm."
 msgstr ""
-
