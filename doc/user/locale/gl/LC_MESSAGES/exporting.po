@@ -3,87 +3,96 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
+"manualexporting/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../exporting/intro.rst:6
 msgid "Exporting"
-msgstr ""
+msgstr "Exportación"
 
 #: ../../exporting/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Información xeral"
 
 #: ../../exporting/overview.rst:8
 msgid ""
 "The Export dialog below is used to export the project or part of the "
 "project into audio or MIDI files."
 msgstr ""
+"O diálogo de Exportar de abaixo emprégase para exportar o proxecto ou parte "
+"do mesmo en ficheiros de audio ou MIDI."
 
 #: ../../exporting/overview.rst:15
 msgid "Fields"
-msgstr ""
+msgstr "Campos"
 
 #: ../../exporting/overview.rst:18
 msgid "Artist and Genre"
-msgstr ""
+msgstr "Artista e Xénero"
 
 #: ../../exporting/overview.rst:20
 msgid ""
 "These will be included as metadata to the exported file if the format "
 "supports it. The title used will be the project title."
 msgstr ""
+"Estes serán incluídos como metadatos no ficheiro exportado se o formato o "
+"permite. O título utilizado será o do proxecto."
 
 #: ../../exporting/overview.rst:25
 msgid "Format"
-msgstr ""
+msgstr "Formato"
 
 #: ../../exporting/overview.rst:27
 msgid "The format to export to. Currently, the following formats are supported"
 msgstr ""
+"O formato ao que exportar. Ata o de agora, están dispoñibles os seguintes "
+"formatos"
 
 #: ../../exporting/overview.rst:30
 msgid "FLAC - .FLAC"
-msgstr ""
+msgstr "FLAC - .FLAC"
 
 #: ../../exporting/overview.rst:31
 msgid "OGG (Vorbis) - .ogg"
-msgstr ""
+msgstr "OGG (Vorbis) - .ogg"
 
 #: ../../exporting/overview.rst:32
 msgid "WAV - .wav"
-msgstr ""
+msgstr "WAV - .wav"
 
 #: ../../exporting/overview.rst:33
 msgid "MP3 - .mp3"
-msgstr ""
+msgstr "MP3 - .mp3"
 
 #: ../../exporting/overview.rst:34
 msgid "MIDI - .mid"
-msgstr ""
+msgstr "MIDI - .mid"
 
 #: ../../exporting/overview.rst:37
 msgid "Dither"
-msgstr ""
+msgstr "Dither"
 
 #: ../../exporting/overview.rst:39
 msgid "TODO"
-msgstr ""
+msgstr "TODO"
 
 #: ../../exporting/overview.rst:42
 msgid "Bit Depth"
-msgstr ""
+msgstr "Profundidade de Bits"
 
 #: ../../exporting/overview.rst:44
 msgid ""
@@ -91,10 +100,12 @@ msgid ""
 "the bit depth the larger the file will be, but it will have better "
 "quality."
 msgstr ""
+"Esta é a profundidade de bits que se empregará ao exportar o audio. Canto "
+"máis alta sexa, máis pesado será o arquivo e mellor calidade terá."
 
 #: ../../exporting/overview.rst:49
 msgid "Time Range"
-msgstr ""
+msgstr "Intervalo de Tempo"
 
 #: ../../exporting/overview.rst:51
 msgid ""
@@ -102,22 +113,27 @@ msgid ""
 "(defined by the start/end markers), the current loop range or a custom "
 "time range."
 msgstr ""
+"O intervalo de tempo a exportar. Podes escoller exportar a canción ao "
+"completo (definida polos marcadores inicio/fin), o bucle actual ou un "
+"intervalo de tempo personalizado."
 
 #: ../../exporting/overview.rst:56
 msgid "Filename Pattern"
-msgstr ""
+msgstr "Patrón do Nome dos Arquivos"
 
 #: ../../exporting/overview.rst:58
 msgid "The pattern to use as the name of the file."
-msgstr ""
+msgstr "O patrón a usar como nome do arquivo."
 
 #: ../../exporting/overview.rst:61
 msgid "Open Exported Directory"
-msgstr ""
+msgstr "Abrir Directorio de Exportación"
 
 #: ../../exporting/overview.rst:62
 msgid ""
 "Once export is completed, a dialog will appear with an option to open the"
 " directory the file was saved in using your default file browser program."
 msgstr ""
-
+"Unha vez se rematou a exportación, aparecerá un diálogo cunha opción para "
+"abrir o directorio no que foi gardado o ficheiro empregando o teu explorador "
+"por defecto."
