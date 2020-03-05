@@ -34,7 +34,7 @@ towards a stable release.
 - MIDI: JACK, WindowsMME, RtMidi (ALSA sequencer/Windows MME/CoreMIDI)
 
 ### Supported platforms
-- GNU/Linux, FreeBSD, Windows
+- GNU/Linux, FreeBSD, Windows, MacOS
 
 ## Building and Installation
 See [INSTALL.md](INSTALL.md).
@@ -94,7 +94,6 @@ takes thousands of hours of work and contributions
 enable us to spend more time working on the project.
 
 - [liberapay.com/Zrythm](https://liberapay.com/Zrythm)
-- [patreon.com/alex_tee](https://www.patreon.com/alex_tee)
 - [paypal.me/zrythm](https://paypal.me/zrythm)
 
 ----
