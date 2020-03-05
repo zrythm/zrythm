@@ -3,23 +3,26 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
+"manualplugins-files/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:6
 msgid "File Browser"
-msgstr ""
+msgstr "Navegador de ficheiros"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:8
 msgid ""
@@ -38,7 +41,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:17
 #: ../../plugins-files/audio-midi-files/file-browser.rst:22
 msgid "TODO"
-msgstr ""
+msgstr "TODO"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:20
 msgid "Collections"
@@ -60,7 +63,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Información xeral"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:8
 msgid ""
@@ -136,11 +139,11 @@ msgstr ""
 
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:6
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Navegador de Plugins"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:8
 msgid ""
@@ -160,7 +163,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:21
 msgid "Collection"
-msgstr ""
+msgstr "Colección"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:20
 msgid ""
@@ -170,7 +173,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:24
 msgid "Category"
-msgstr ""
+msgstr "Categoría"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:24
 msgid ""
@@ -180,7 +183,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:28
 msgid "Protocol"
-msgstr ""
+msgstr "Protocolo"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:27
 msgid "Allows you to filter plugins based their protocol (LV2 or VST)."
@@ -202,7 +205,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "Instrument"
-msgstr ""
+msgstr "Instrumento"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "These plugins will create an instrument track when added to the project."
@@ -220,7 +223,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:45
 msgid "Modulators"
-msgstr ""
+msgstr "Moduladores"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:45
 msgid ""
@@ -313,7 +316,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/ports.rst:6
 msgid "Ports"
-msgstr ""
+msgstr "Portos"
 
 #: ../../plugins-files/plugins/ports.rst:8
 msgid ""
@@ -329,7 +332,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/ports.rst:18
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../../plugins-files/plugins/ports.rst:16
 msgid ""
@@ -482,4 +485,3 @@ msgid ""
 " start-up, and you can delete or edit this file to force a re-scan of "
 "previously scanned plugins."
 msgstr ""
-
