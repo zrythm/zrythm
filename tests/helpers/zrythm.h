@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,7 +30,7 @@
 #include "audio/engine_dummy.h"
 #include "audio/marker_track.h"
 #include "audio/tracklist.h"
-#include "project.h"
+#include <project.h>
 #include "utils/cairo.h"
 #include "utils/objects.h"
 #include "utils/flags.h"

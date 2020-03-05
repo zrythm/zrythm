@@ -729,7 +729,7 @@ All notable changes to this project will be documented in this file.
 
 ----
 
-Copyright (C) 2019 Alexandros Theodotou
+Copyright (C) 2019-2020 Alexandros Theodotou
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
