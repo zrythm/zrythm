@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
+"manualtracks/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../tracks/audio-track.rst:6
@@ -44,7 +47,7 @@ msgstr ""
 #: ../../tracks/instrument-track.rst:21
 #: ../../tracks/midi-track.rst:22
 msgid "Record"
-msgstr ""
+msgstr "Gravar"
 
 #: ../../tracks/audio-track.rst:18
 #: ../../tracks/instrument-track.rst:22
@@ -82,7 +85,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:23
 #: ../../tracks/midi-track.rst:27
 msgid "Mute"
-msgstr ""
+msgstr "Silenciar"
 
 #: ../../tracks/audio-track.rst:22
 #: ../../tracks/bus-track-audio.rst:20
@@ -114,7 +117,7 @@ msgstr ""
 #: ../../tracks/instrument-track.rst:34
 #: ../../tracks/midi-track.rst:33
 msgid "Not used at the moment."
-msgstr ""
+msgstr "Sen uso polo de agora."
 
 #: ../../tracks/audio-track.rst:29
 #: ../../tracks/instrument-track.rst:37
@@ -158,7 +161,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:32
 #: ../../tracks/midi-track.rst:40
 msgid "Inspector"
-msgstr ""
+msgstr "Inspeccionar"
 
 #: ../../tracks/audio-track.rst:41
 #: ../../tracks/bus-track-audio.rst:35
@@ -181,7 +184,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:44
 #: ../../tracks/midi-track.rst:52
 msgid "Direct Out"
-msgstr ""
+msgstr "Saída Directa"
 
 #: ../../tracks/audio-track.rst:44
 msgid "The track to route the output of the audio track to."
@@ -192,7 +195,7 @@ msgstr ""
 #: ../../tracks/midi-track.rst:57
 #: ../../tracks/overview.rst:73
 msgid "Inputs"
-msgstr ""
+msgstr "Entradas"
 
 #: ../../tracks/audio-track.rst:49
 msgid "Left and right audio input sources used when recording."
@@ -207,14 +210,14 @@ msgstr ""
 #: ../../tracks/midi-track.rst:71
 #: ../../tracks/overview.rst:79
 msgid "Sends"
-msgstr ""
+msgstr "Envíos"
 
 #: ../../tracks/audio-track.rst:55
 #: ../../tracks/midi-track.rst:128
 #: ../../tracks/midi-track.rst:136
 #: ../../tracks/track-visibility.rst:8
 msgid "TODO"
-msgstr ""
+msgstr "TODO"
 
 #: ../../tracks/audio-track.rst:58
 #: ../../tracks/instrument-track.rst:73
@@ -265,7 +268,7 @@ msgstr ""
 #: ../../tracks/master-track.rst:40
 #: ../../tracks/midi-track.rst:49
 msgid "Track Name"
-msgstr ""
+msgstr "Nome da Pista"
 
 #: ../../tracks/bus-track-audio.rst:38
 #: ../../tracks/bus-track-midi.rst:38
@@ -305,7 +308,7 @@ msgstr ""
 #: ../../tracks/chord-track.rst:6
 #: ../../tracks/track-types.rst:79
 msgid "Chord Track"
-msgstr ""
+msgstr "Pista de Acordes"
 
 #: ../../tracks/chord-track.rst:8
 msgid ""
@@ -491,7 +494,7 @@ msgstr ""
 
 #: ../../tracks/intro.rst:8
 msgid "Tracks"
-msgstr ""
+msgstr "Pistas"
 
 #: ../../tracks/marker-track.rst:6
 #: ../../tracks/track-types.rst:88
@@ -648,7 +651,7 @@ msgstr ""
 
 #: ../../tracks/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Información xeral"
 
 #: ../../tracks/overview.rst:8
 msgid ""
@@ -881,4 +884,3 @@ msgstr ""
 #: ../../tracks/track-visibility.rst:6
 msgid "Track Visibility"
 msgstr ""
-
