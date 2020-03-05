@@ -312,11 +312,17 @@ int
 main (int    argc,
       char **argv)
 {
+#define OPT_VERSION 'v'
+#define OPT_HELP 'h'
+#define OPT_RESET_TO_FACTORY 6492
+
   int c, option_index;
   static struct option long_options[] =
     {
-      {"version", no_argument, 0, 'v'},
-      {"help", no_argument, 0, 'h'},
+      {"version", no_argument, 0, OPT_VERSION},
+      {"help", no_argument, 0, OPT_HELP},
+      {"reset-to-factory", no_argument,
+        0, OPT_RESET_TO_FACTORY},
       {0, 0, 0, 0}
     };
   opterr = 0;
@@ -334,16 +340,21 @@ main (int    argc,
 
       switch (c)
         {
-        case 'v':
+        case OPT_VERSION:
           print_version ();
           return 0;
-        case 'h':
+        case OPT_HELP:
           print_help ();
+          return 0;
+          break;
+        case OPT_RESET_TO_FACTORY:
+          settings_reset_to_factory (1, 1);
           return 0;
           break;
         case '?':
           /* getopt_long already printed an error
            * message */
+          fprintf (stderr, _("Unknown option\n"));
           return 1;
         default:
           abort ();

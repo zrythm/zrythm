@@ -181,7 +181,7 @@
     <!-- KEY: audio-backend -->
     <key name="audio-backend"
       enum="org.zrythm.Zrythm.preferences.audio-backend-enum">
-      <default>"jack"</default>
+      <default>"none"</default>
       <summary>Audio Backend</summary>
       <description>
         The audio back end to use.
@@ -251,7 +251,7 @@
     <!-- KEY: midi-backend -->
     <key name="midi-backend"
       enum="org.zrythm.Zrythm.preferences.midi-backend-enum">
-      <default>"jack"</default>
+      <default>"none"</default>
       <summary>MIDI Backend</summary>
       <description>
         The MIDI backend to use

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,10 +17,22 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Zrythm settings.
+ */
+
 #ifndef __SETTINGS_SETTINGS_H__
 #define __SETTINGS_SETTINGS_H__
 
 #include <gtk/gtk.h>
+
+/**
+ * @addtogroup project Settings
+ *
+ * @{
+ */
 
 #define GSETTINGS_ZRYTHM_PREFIX "org.zrythm.Zrythm"
 #define SETTINGS (&ZRYTHM->settings)
@@ -68,5 +80,28 @@ typedef struct Settings
  */
 void
 settings_init (Settings * self);
+
+/**
+ * Resets settings to defaults.
+ *
+ * @param print_stdout Print the result to
+ *   stdout.
+ * @param exit_on_finish Exit with a code on
+ *   finish.
+ */
+void
+settings_reset_to_factory (
+  int print_stdout,
+  int exit_on_finish);
+
+/**
+ * Frees settings.
+ */
+void
+settings_free_members (Settings * self);
+
+/**
+ * @}
+ */
 
 #endif

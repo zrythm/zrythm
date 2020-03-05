@@ -76,6 +76,15 @@ object_utils_init (void);
     free (*ptr); *ptr = NULL; }
 
 /**
+ * Frees memory, sets the pointer to NULL and
+ * zero's out the struct.
+ *
+ * @param ptr A pointer to a pointer to be free'd.
+ */
+#define g_object_unref_and_null(ptr) \
+  { g_object_unref (ptr); ptr = NULL; }
+
+/**
  * Frees memory and sets the pointer to NULL.
  */
 #define g_free_and_null(ptr) \
