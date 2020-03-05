@@ -16,5 +16,6 @@ resources/icons/fatcow/** linguist-vendored
 resources/icons/font-awesome/** linguist-vendored
 resources/icons/fork-awesome/** linguist-vendored
 resources/icons/gnome-builder/** linguist-vendored
+git-packaging-hooks/** linguist-vendored
 
 inc/**/*.h linguist-language=C
