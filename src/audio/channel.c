@@ -420,8 +420,7 @@ void
 channel_init_loaded (Channel * ch)
 {
   g_message ("initing channel");
-  Track * track =
-    channel_get_track (ch);
+  Track * track = channel_get_track (ch);
   g_warn_if_fail (track);
 
   ch->magic = CHANNEL_MAGIC;
@@ -1038,18 +1037,21 @@ Track *
 channel_get_track (
   Channel * self)
 {
-  return self->track;
+  if (self->track)
+    return self->track;
+  else
+    {
+      g_return_val_if_fail (
+        self &&
+          self->track_pos < TRACKLIST->num_tracks,
+        NULL);
+      Track * track =
+        TRACKLIST->tracks[self->track_pos];
+      g_return_val_if_fail (track, NULL);
+      self->track = track;
 
-#if 0
-  g_return_val_if_fail (
-    self && self->track_pos < TRACKLIST->num_tracks,
-    NULL);
-  Track * track =
-    TRACKLIST->tracks[self->track_pos];
-  g_return_val_if_fail (track, NULL);
-
-  return track;
-#endif
+      return track;
+    }
 }
 
 Track *
