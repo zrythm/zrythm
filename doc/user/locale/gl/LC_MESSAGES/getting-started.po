@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
+"manualgetting-started/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../getting-started/additional-resources.rst:6
@@ -186,7 +189,7 @@ msgstr ""
 
 #: ../../getting-started/installation/freebsd.rst:18
 msgid "Port"
-msgstr ""
+msgstr "Porto"
 
 #: ../../getting-started/installation/freebsd.rst:19
 msgid ""
@@ -379,7 +382,7 @@ msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Información xeral"
 
 #: ../../getting-started/zrythm-overview.rst:8
 msgid ""
@@ -389,7 +392,7 @@ msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:13
 msgid "Limitless automation"
-msgstr ""
+msgstr "Automatización ilimitada"
 
 #: ../../getting-started/zrythm-overview.rst:12
 msgid ""
@@ -416,11 +419,10 @@ msgstr ""
 
 #: ../../getting-started/zrythm-overview.rst:21
 msgid "Chord assistance"
-msgstr ""
+msgstr "Asistente de acordes"
 
 #: ../../getting-started/zrythm-overview.rst:21
 msgid ""
 "Has a chord pad for trying out chords in a scale and a chord track to "
 "help with chord progressions."
 msgstr ""
-
