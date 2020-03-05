@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-#  Copyright (C) 2018-2020 Alexandros Theodotou
+#  Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 #  This file is part of Zrythm
 #
