@@ -3,49 +3,58 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
+"manualzrythm-interface/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:6
 msgid "Basic Concepts and Terminology"
-msgstr ""
+msgstr "Conceptos Básicos e Terminoloxía"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:8
 msgid ""
 "Here are a few terms you should be aware of when using Zrythm. They are "
 "explained further in their corresponding chapters."
 msgstr ""
+"A continuación, algúns termos que deberías coñecer ao empregar Zrythm. Están "
+"explicados máis fondamente nos capítulos correspondentes."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:11
 msgid "Region"
-msgstr ""
+msgstr "Rexión"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:12
 msgid ""
 "A Region (Clip) is a container for MIDI Notes, audio or other events. "
 "Regions can be repeated, like below."
 msgstr ""
+"Unha Rexión (Clip) é un contedor para Notas MIDI, audio ou outros eventos. "
+"As rexións poden ser repetidas, como a continuación."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:19
 msgid ""
 "The content of the Regions can be edited in an Editor, such as the Piano "
 "Roll, found in the Editor tab in the bottom panel."
 msgstr ""
+"O contido das Rexións pode ser editado nun Editor, como o Piano Roll, na "
+"lapela Editor do panel inferior."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:27
 msgid "Track"
-msgstr ""
+msgstr "Pista"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:28
 msgid ""
@@ -54,10 +63,14 @@ msgid ""
 " are some special tracks like the Chord Track and the Marker Track that "
 "contain chords and markers respectively."
 msgstr ""
+"Unha pista é un oco independente da Liña de Tempo que contén varias Rexións "
+"e Automatización. Pode conter varias envolventes, como as Envolventes de "
+"Automatización. Algunhas pistas especiais como a Pista de Acordes e a Pista "
+"de Marcadores conteñen acordes e marcadores, respectivamente."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:39
 msgid "Channel"
-msgstr ""
+msgstr "Canle"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:40
 msgid ""
@@ -65,36 +78,42 @@ msgid ""
 "corresponding Channel, which is used for adjusting the Track's volume, "
 "pan and other settings."
 msgstr ""
+"Unha Canle é unha peza independente no Mesturador. A meirande parte das "
+"Pistas teñen a súa Canle correspondente, que se emprega para axustar o "
+"volume da Pista, o panorama e outras configuracións."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:49
 msgid "Range"
-msgstr ""
+msgstr "Intervalo"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:50
 msgid "A Range is a selection of time between two positions."
-msgstr ""
+msgstr "Un Intervalo é unha selección de tempo entre dúas posicións."
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:56
 msgid "MIDI Note"
-msgstr ""
+msgstr "Nota MIDI"
 
 #: ../../zrythm-interface/basic-concepts-and-terminology.rst:57
 msgid "MIDI Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
+"As Notas MIDI úsanse para disparar instrumentos virtuais ou de hardware."
 
 #: ../../zrythm-interface/editors.rst:6
 msgid "Editors"
-msgstr ""
+msgstr "Editores"
 
 #: ../../zrythm-interface/editors.rst:8
 msgid ""
 "Zrythm has various editors for editing the various events in the Timeline"
 " in detail. These editors appear in the Editor tab in the bottom panel."
 msgstr ""
+"Zrythm ten varios editores para editar os diversos eventos da Liña de Tempo "
+"en detalle. Estes editores aparecen na lapela Editor no panel superior."
 
 #: ../../zrythm-interface/editors.rst:13
 msgid "Piano Roll"
-msgstr ""
+msgstr "Piano Roll"
 
 #: ../../zrythm-interface/editors.rst:15
 msgid ""
@@ -103,10 +122,14 @@ msgid ""
 "Region is selected, the Editor tab will display the Piano Roll, allowing "
 "you to edit that region."
 msgstr ""
+"O Piano Roll, ou Arranxo de MIDI, é o editor usado máis frecuentemente. "
+"Pódese utilizar para editar rexións MIDI, que conteñen notas MIDI. Cando "
+"unha Rexión MIDI está seleccionada, a lapela Editor amosará o Piano Roll, "
+"permitíndoche editar esa rexión."
 
 #: ../../zrythm-interface/editors.rst:24
 msgid "Automation Editor"
-msgstr ""
+msgstr "Editor de Automatizacións"
 
 #: ../../zrythm-interface/editors.rst:26
 msgid ""
@@ -118,7 +141,7 @@ msgstr ""
 
 #: ../../zrythm-interface/editors.rst:35
 msgid "Chord Editor"
-msgstr ""
+msgstr "Editor de Acordes"
 
 #: ../../zrythm-interface/editors.rst:37
 msgid "The Chord Editor is used for editing Chord Regions."
@@ -146,7 +169,7 @@ msgstr ""
 
 #: ../../zrythm-interface/global-menus.rst:17
 msgid "Home"
-msgstr ""
+msgstr "Inicio"
 
 #: ../../zrythm-interface/global-menus.rst:17
 msgid ""
@@ -156,7 +179,7 @@ msgstr ""
 
 #: ../../zrythm-interface/global-menus.rst:20
 msgid "Project"
-msgstr ""
+msgstr "Proxecto"
 
 #: ../../zrythm-interface/global-menus.rst:20
 msgid ""
@@ -166,7 +189,7 @@ msgstr ""
 
 #: ../../zrythm-interface/global-menus.rst:23
 msgid "View"
-msgstr ""
+msgstr "Ver"
 
 #: ../../zrythm-interface/global-menus.rst:23
 msgid ""
@@ -176,7 +199,7 @@ msgstr ""
 
 #: ../../zrythm-interface/global-menus.rst:25
 msgid "Help"
-msgstr ""
+msgstr "Axuda"
 
 #: ../../zrythm-interface/global-menus.rst:26
 msgid "Links for reporting bugs, donating, chatting, etc."
@@ -184,7 +207,7 @@ msgstr ""
 
 #: ../../zrythm-interface/intro.rst:6
 msgid "Interface"
-msgstr ""
+msgstr "Interface"
 
 #: ../../zrythm-interface/mini-timeline.rst:6
 msgid "Timeline Minimap"
@@ -199,7 +222,7 @@ msgstr ""
 
 #: ../../zrythm-interface/mixer.rst:6
 msgid "Mixer"
-msgstr ""
+msgstr "Mesturador"
 
 #: ../../zrythm-interface/mixer.rst:8
 msgid ""
@@ -210,7 +233,7 @@ msgstr ""
 
 #: ../../zrythm-interface/ruler.rst:6
 msgid "Ruler"
-msgstr ""
+msgstr "Regra"
 
 #: ../../zrythm-interface/ruler.rst:8
 msgid ""
@@ -282,7 +305,7 @@ msgstr ""
 
 #: ../../zrythm-interface/timeline.rst:6
 msgid "Timeline"
-msgstr ""
+msgstr "Liña de Tempo"
 
 #: ../../zrythm-interface/timeline.rst:8
 msgid ""
@@ -301,7 +324,7 @@ msgstr ""
 
 #: ../../zrythm-interface/tracklist.rst:8
 msgid "Tracklist"
-msgstr ""
+msgstr "Lista de pistas"
 
 #: ../../zrythm-interface/tracklist.rst:10
 msgid ""
@@ -329,7 +352,7 @@ msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:16
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ../../zrythm-interface/transport-bar.rst:17
 msgid "Song tempo (beats per minute)"
@@ -337,7 +360,7 @@ msgstr ""
 
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid "Playhead"
-msgstr ""
+msgstr "Cabeza de reprodución"
 
 #: ../../zrythm-interface/transport-bar.rst:19
 msgid "Current playhead position, in bars.beats.sixteenths.ticks"
@@ -432,4 +455,3 @@ msgid ""
 "The status bar is a helpful bar in the bottom of the window that displays"
 " information about the current project."
 msgstr ""
-
