@@ -54,6 +54,7 @@ if get_option ('enable_tests')
     ['audio/position', true],
     ['audio/region', true],
     ['audio/track', true],
+    ['project', true],
     ['utils/arrays', true],
     ['utils/general', true],
     ['utils/string', true],

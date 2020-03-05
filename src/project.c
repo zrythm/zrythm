@@ -282,6 +282,37 @@ project_sanity_check (Project * self)
   /* TODO */
 }
 
+/* macro to clean previous main window */
+#define DESTROY_PREV_MAIN_WINDOW \
+  MainWindowWidget * mww = MAIN_WINDOW; \
+  MAIN_WINDOW = NULL; \
+  ZRYTHM->event_queue = NULL; \
+  if (ZRYTHM_HAVE_UI && GTK_IS_WIDGET (mww)) \
+    { \
+      g_message ( \
+        "destroying previous main window..."); \
+      gtk_widget_destroy (GTK_WIDGET (mww)); \
+    }
+
+#define RECREATE_MAIN_WINDOW \
+  if (loading_while_running && \
+      ZRYTHM_HAVE_UI) \
+    { \
+      g_message ("recreating main window..."); \
+      MAIN_WINDOW = \
+        main_window_widget_new (zrythm_app); \
+    }
+
+#define REFRESH_MAIN_WINDOW \
+  /* mimic behavior when starting the app */ \
+  if (loading_while_running && \
+      ZRYTHM_HAVE_UI) \
+    { \
+      events_init (ZRYTHM); \
+      main_window_widget_refresh (MAIN_WINDOW); \
+      g_atomic_int_set (&AUDIO_ENGINE->run, 1); \
+    }
+
 /**
  * Initializes the selections in the project.
  *
@@ -324,13 +355,7 @@ create_default (Project * self)
       PROJECT = calloc (1, sizeof (Project));
       self = PROJECT;
 
-      MainWindowWidget * mww = MAIN_WINDOW;
-      MAIN_WINDOW = NULL;
-      ZRYTHM->event_queue = NULL;
-
-      g_message ("destroying previous main "
-                 "window...");
-      gtk_widget_destroy (GTK_WIDGET (mww));
+      DESTROY_PREV_MAIN_WINDOW;
     }
 
   /* initialize selections */
@@ -379,12 +404,7 @@ create_default (Project * self)
   create_and_set_dir_and_title (
     self, ZRYTHM->create_project_path);
 
-  if (loading_while_running)
-    {
-      g_message ("recreating main window...");
-      MAIN_WINDOW =
-        main_window_widget_new (zrythm_app);
-    }
+  RECREATE_MAIN_WINDOW;
 
   self->loaded = 1;
 
@@ -415,14 +435,7 @@ create_default (Project * self)
   position_set_to_bar (
     &PROJECT->range_2, 1);
 
-  /* mimic behavior when starting the app */
-  if (loading_while_running)
-    {
-      events_init (ZRYTHM);
-      main_window_widget_refresh (MAIN_WINDOW);
-
-      g_atomic_int_set (&AUDIO_ENGINE->run, 1);
-    }
+  REFRESH_MAIN_WINDOW;
 
   if (ZRYTHM_HAVE_UI)
     {
@@ -577,13 +590,7 @@ load (
       tear_down (PROJECT);
       PROJECT = prj;
 
-      MainWindowWidget * mww = MAIN_WINDOW;
-      MAIN_WINDOW = NULL;
-      ZRYTHM->event_queue = NULL;
-
-      g_message ("destroying previous main "
-                 "window...");
-      gtk_widget_destroy (GTK_WIDGET (mww));
+      DESTROY_PREV_MAIN_WINDOW;
     }
 
   g_message ("initing loaded structures");
@@ -642,12 +649,7 @@ load (
   quantize_options_update_quantize_points (
     &PROJECT->quantize_opts_editor);
 
-  if (loading_while_running)
-    {
-      g_message ("recreating main window...");
-      MAIN_WINDOW =
-        main_window_widget_new (zrythm_app);
-    }
+  RECREATE_MAIN_WINDOW;
 
   /* sanity check */
   project_sanity_check (PROJECT);
@@ -658,18 +660,14 @@ load (
   /* recalculate the routing graph */
   mixer_recalc_graph (MIXER);
 
-  /* mimic behavior when starting the app */
-  if (loading_while_running)
+  REFRESH_MAIN_WINDOW;
+
+  if (ZRYTHM_HAVE_UI)
     {
-      events_init (ZRYTHM);
-      main_window_widget_refresh (MAIN_WINDOW);
-
-      g_atomic_int_set (&AUDIO_ENGINE->run, 1);
+      header_notebook_widget_set_subtitle (
+        MW_HEADER_NOTEBOOK,
+        PROJECT->title);
     }
-
-  header_notebook_widget_set_subtitle (
-    MW_HEADER_NOTEBOOK,
-    PROJECT->title);
 
   return 0;
 }

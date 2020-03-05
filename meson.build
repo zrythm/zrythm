@@ -47,7 +47,7 @@ docdir = join_paths (datadir, 'doc', 'zrythm')
 # foreach
 locales = [
   'en', 'en_GB', 'de', 'fr', 'ja', 'pt', 'pt_BR',
-  'nb_NO']
+  'nb_NO', 'gl' ]
 
 
 cdata = configuration_data ()

@@ -217,9 +217,12 @@ void
 piano_roll_init_loaded (
   PianoRoll * self)
 {
-  self->highlighting =
-    g_settings_get_enum (
-      S_UI, "piano-roll-highlight");
+  if (!ZRYTHM_TESTING)
+    {
+      self->highlighting =
+        g_settings_get_enum (
+          S_UI, "piano-roll-highlight");
+    }
 
   init_descriptors (self);
 }

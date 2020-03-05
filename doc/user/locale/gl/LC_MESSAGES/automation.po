@@ -1,0 +1,94 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019-2020 Alexandros Theodotou
+# This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Zrythm 0.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-05 19:31+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../automation/automation-lanes.rst:6
+msgid "Automation Lanes"
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:8
+msgid ""
+"Tracks which have automatable controls, such as Fader, Pan and parameters"
+" of Plugins they contain will have an option to show their Automation "
+"Lanes."
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:13
+msgid ""
+"You can choose which parameter you want to automate in each Automation "
+"Lane."
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:17
+msgid "Types of Automatable Parameters"
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:19
+msgid ""
+"Zrythm will draw the automation differently depending on the type of the "
+"parameter being automated. The following types of parameters exist."
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:28
+msgid "Float"
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:25
+msgid ""
+"Parameters with a Float type can have a value of any decimal within their"
+" given range and are the most common ones. Zrythm will draw editable "
+"curves for these types of parameters."
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:32
+msgid "Step"
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:31
+msgid ""
+"Step parameters have values that can only be changed in increments. "
+"Zrythm will draw ladders for these types of parameters."
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:37
+msgid "Boolean"
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:35
+msgid ""
+"These types of parameters only have two values: On or Off. Zrythm will "
+"draw a big square for these."
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:40
+msgid "Automation Points"
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:42
+#: ../../automation/automation-lanes.rst:47
+msgid "TODO"
+msgstr ""
+
+#: ../../automation/automation-lanes.rst:45
+msgid "Editing Curves"
+msgstr ""
+
+#: ../../automation/intro.rst:8
+msgid "Automation"
+msgstr ""
+
