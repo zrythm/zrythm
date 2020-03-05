@@ -3,23 +3,26 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
+"manualediting/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../editing/clip-editors/intro.rst:6
 msgid "Clip Editors"
-msgstr ""
+msgstr "Editores de Clips"
 
 #: ../../editing/clip-editors/intro.rst:8
 #: ../../editing/piano-roll-editing/arranger.rst:9
@@ -31,21 +34,23 @@ msgstr ""
 #: ../../editing/timeline/arranger.rst:8
 #: ../../editing/timeline/event-viewer.rst:8
 msgid "TODO"
-msgstr ""
+msgstr "TODO"
 
 #: ../../editing/common-operations.rst:6
 msgid "Common Operations"
-msgstr ""
+msgstr "Operacións Comúns"
 
 #: ../../editing/common-operations.rst:8
 msgid ""
 "These operations are common to most editors, and behave similarly to what"
 " you should be used to from other applications."
 msgstr ""
+"Estas operacións son frecuentes na meirande parte dos editores e compórtanse "
+"de xeito similar ao que farían noutras aplicacións."
 
 #: ../../editing/common-operations.rst:13
 msgid "Undo/Redo"
-msgstr ""
+msgstr "Desfacer/Refacer"
 
 #: ../../editing/common-operations.rst:14
 msgid ""
@@ -53,6 +58,8 @@ msgid ""
 "the state before that action was made, or you can come back to a state "
 "that you undo'ed from."
 msgstr ""
+"A maioría das accións en Zrythm pódense desfacer, o que quere dicir que "
+"podes volver ao estado anterior á acción ou á inversa."
 
 #: ../../editing/common-operations.rst:18
 msgid ""
@@ -61,26 +68,34 @@ msgid ""
 "exist). Pressing the Redo button will create the note again, and you can "
 "go back between Undo and Redo as many times as you want."
 msgstr ""
+"Por exemplo, se creas unha nota MIDI e premes desfacer, a nota borrarase ("
+"Zrythm volve ao estado no que esa nota MIDI non existía). Premendo o botón "
+"de Refacer, volverás a crear a nota, e podes Facer e Desfacer canto che pete."
 
 #: ../../editing/common-operations.rst:24
 msgid ""
 "The shortcuts for undo and redo are :zbutton:`Control` + :zbutton:`Z` to "
 "Undo and :zbutton:`Control` + :zbutton:`Shift` + :zbutton:`Z` to Redo."
 msgstr ""
+"Os atallos de teclado para desfacer e refacer son :zbutton:`Control` + "
+":zbutton:`Z` para Desfacer e :zbutton:`Control` + :zbutton:`Shift` + "
+":zbutton:`Z` para Refacer."
 
 #: ../../editing/common-operations.rst:28
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be "
 "deleted."
 msgstr ""
+"Se Desfás e a continuación fas unha acción nova, o historial de Refacer "
+"borrarase."
 
 #: ../../editing/common-operations.rst:32
 msgid "Object Operations"
-msgstr ""
+msgstr "Operacións con Obxectos"
 
 #: ../../editing/common-operations.rst:34
 msgid "Cut"
-msgstr ""
+msgstr "Cortar"
 
 #: ../../editing/common-operations.rst:35
 msgid ""
@@ -88,80 +103,93 @@ msgid ""
 "that they can be pasted elsewhere. The shortcut for cutting is "
 ":zbutton:`Control` + :zbutton:`X`."
 msgstr ""
+"Elimina e copia os obxectos seleccionados e gárdaos no portapapeis para que "
+"poidan ser pegados noutro sitio. O atallo para cortar é :zbutton:`Control` + "
+":zbutton:`X`."
 
 #: ../../editing/common-operations.rst:41
 msgid "Copy"
-msgstr ""
+msgstr "Copiar"
 
 #: ../../editing/common-operations.rst:42
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
 "elsewhere. The shortcut for copying is :zbutton:`Control` + :zbutton:`C`."
 msgstr ""
+"Copia os obxectos seleccionados no portapapeis para que podan ser pegados "
+"noutro sitio. O atallo para copiar é :zbutton:`Control` + :zbutton:`C`."
 
 #: ../../editing/common-operations.rst:48
 msgid "Paste"
-msgstr ""
+msgstr "Pegar"
 
 #: ../../editing/common-operations.rst:49
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
 "position. The shortcut for pasting is :zbutton:`Control` + :zbutton:`V`."
 msgstr ""
+"Pega os obxectos no portapapeis na posición actual da cabeza de reprodución. "
+"O atallo para pegar é :zbutton:`Control` + :zbutton:`V`."
 
 #: ../../editing/common-operations.rst:55
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplicar"
 
 #: ../../editing/common-operations.rst:56
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
 "duplicating is :zbutton:`Control` + :zbutton:`D`."
 msgstr ""
+"Crea unha copia adxacente aos obxectos seleccionados. O atallo para duplicar "
+"é :zbutton:`Control` + :zbutton:`D`."
 
 #: ../../editing/common-operations.rst:61
 msgid "Delete"
-msgstr ""
+msgstr "Eliminar"
 
 #: ../../editing/common-operations.rst:62
 msgid ""
 "Delete the selected objects. You can also press :zbutton:`Delete` on your"
 " keyboard to do this."
 msgstr ""
+"Elimina os obxectos seleccionados. Tamén podes premer :zbutton:`Delete` no "
+"teu teclado."
 
 #: ../../editing/common-operations.rst:67
 msgid "Selections"
-msgstr ""
+msgstr "Seleccións"
 
 #: ../../editing/common-operations.rst:69
 msgid "Clear Selection"
-msgstr ""
+msgstr "Soltar Selección"
 
 #: ../../editing/common-operations.rst:70
 msgid "Clear current selection (unselect all objects)."
-msgstr ""
+msgstr "Desfai a selección actual (deselecciona tódolos obxectos)."
 
 #: ../../editing/common-operations.rst:73
 msgid "Select All"
-msgstr ""
+msgstr "Seleccionar Todo"
 
 #: ../../editing/common-operations.rst:74
 msgid "Select all objects in the current editor."
-msgstr ""
+msgstr "Selecciona tódolos obxectos no editor actual."
 
 #: ../../editing/common-operations.rst:77
 msgid "Loop Selection"
-msgstr ""
+msgstr "Bucle coa Selección"
 
 #: ../../editing/common-operations.rst:78
 msgid ""
 "Place the loop markers around the selection. The shortcut for this is "
 ":zbutton:`Control` + :zbutton:`L`."
 msgstr ""
+"Coloca os marcadores de bucle ao redor da selección. O atallo para isto é "
+":zbutton:`Control` + :zbutton:`L`."
 
 #: ../../editing/edit-modes.rst:6
 msgid "Edit Modes"
-msgstr ""
+msgstr "Modos de Edición"
 
 #: ../../editing/edit-modes.rst:8
 msgid ""
@@ -170,14 +198,18 @@ msgid ""
 "signifies a separate edit mode, and Zrythm offers the following edit "
 "modes."
 msgstr ""
+"Cando traballes en cada editor, empregarás principalmente as ferramentas de "
+"cursor de Zrythm para crear, editar e eliminar obxectos. Cada cursor "
+"representa un modo de edición distinto e Zrythm ofrece os seguintes modos de "
+"edición."
 
 #: ../../editing/edit-modes.rst:17
 msgid "Select/Stretch Mode"
-msgstr ""
+msgstr "Seleccionar/Modo Estirar"
 
 #: ../../editing/edit-modes.rst:18
 msgid "This can be toggled to switch between Select and Stretch."
-msgstr ""
+msgstr "Pódese alternar entre Seleccionar e Estirar."
 
 #: ../../editing/edit-modes.rst:20
 msgid ""
@@ -185,16 +217,22 @@ msgid ""
 " objects. This is the most common mode and the most common operations can"
 " be accomplished by just using this."
 msgstr ""
+"No modo Seleccionar, podes facer seleccións de obxectos e mover, clonar e "
+"modificar a duración dos obxectos. Este é o modo máis común e as operacións "
+"máis frecuentes pódense resolver neste modo."
 
 #: ../../editing/edit-modes.rst:25
 msgid ""
 "Stretch mode is similar to the Select mode, with the exception that when "
 "you resize objects, their contents will be stretched to fit the new size."
 msgstr ""
+"O modo Estirar é similar ao modo Seleccionar, coa excepción de que cando "
+"modificas a duración dos obxectos, o contido será estendido para encaixar na "
+"largura nova."
 
 #: ../../editing/edit-modes.rst:30
 msgid "Selecting Objects"
-msgstr ""
+msgstr "Seleccionar Obxectos"
 
 #: ../../editing/edit-modes.rst:31
 msgid ""
@@ -202,14 +240,19 @@ msgid ""
 " keep dragging to make a selection, or :zbutton:`Control`-click to "
 "add/remove objects to/from the selection."
 msgstr ""
+"Para seleccionar obxectos, podes tanto facer clic neles, clic nun espazo "
+"baleiro e manter premido para facer unha selección, ou :zbutton:`Control`-"
+"clic para engadir ou desbotar obxectos da selección."
 
 #: ../../editing/edit-modes.rst:36
 msgid "Selected objects will have brighter color than non-selected objects."
 msgstr ""
+"Os obxectos seleccionados terán unha cor máis brillante que os non "
+"seleccionados."
 
 #: ../../editing/edit-modes.rst:40
 msgid "Moving and Cloning Objects"
-msgstr ""
+msgstr "Mover e Clonar Obxectos"
 
 #: ../../editing/edit-modes.rst:41
 msgid ""
@@ -219,16 +262,22 @@ msgid ""
 "the selected objects. This is an efficient way to quickly clone multiple "
 "objects."
 msgstr ""
+"Para mover obxectos, fai clic nun obxecto seleccionado e arrástrao co cursor "
+"ao emprazamento que desexes. Mantendo premido :zbutton:`Control` mentres fas "
+"isto creará duplicados (clons) do obxecto seleccionado. Este é un xeito "
+"eficiente de clonar múltiples obxectos rapidamente."
 
 #: ../../editing/edit-modes.rst:48
 msgid "Resizing Objects"
-msgstr ""
+msgstr "Redimensionar Obxectos"
 
 #: ../../editing/edit-modes.rst:49
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized "
 "by clicking and dragging their edges."
 msgstr ""
+"Os obxectos que teñen unha duración, como as rexións e as notas MIDI, "
+"pódense redimensionar facendo clic e arrastrando os seus bordes."
 
 #: ../../editing/edit-modes.rst:52
 msgid ""
@@ -236,6 +285,9 @@ msgid ""
 "the bottom half of the object will allow you to resize the object by "
 "repeating it, instead of just resizing it."
 msgstr ""
+"Nos obxectos que poden ser repetidos, como as rexións, mover o cursor na "
+"metade inferior do obxecto permitirache redimensionar o obxecto repetíndoo "
+"en vez de simplemente cambiándolle a largura."
 
 #: ../../editing/edit-modes.rst:57
 msgid ""
@@ -243,20 +295,26 @@ msgid ""
 "them instead of repeat them, their length must be changed or their clip "
 "markers must be moved so that they are not repeated anymore."
 msgstr ""
+"Redimensionando, os obxectos que xa foron repetidos só poden ser repetidos. "
+"Para modificarlles o tamaño en vez de repetilos, a súa duración ten que ser "
+"mudada ou os seus marcadores de clip teñen que se eliminar para que non se "
+"repitan máis."
 
 #: ../../editing/edit-modes.rst:65
 msgid "Cutting Objects"
-msgstr ""
+msgstr "Recortar Obxectos"
 
 #: ../../editing/edit-modes.rst:66
 msgid ""
 "You can :zbutton:`Alt`-click inside objects to break them up. Holding "
 "down :zbutton:`Shift` while doing this will bypass snapping."
 msgstr ""
+"Podes :zbutton:`Alt` -clic dentro dos obxectos para partilos. Mantendo "
+"premido :zbutton:`Shift` mentres o fas, evitará o axuste."
 
 #: ../../editing/edit-modes.rst:71
 msgid "Edit Mode"
-msgstr ""
+msgstr "Modo Edición"
 
 #: ../../editing/edit-modes.rst:72
 msgid ""
@@ -265,6 +323,10 @@ msgid ""
 "Edit mode this is accomplished by single clicking and dragging, which is "
 "more efficient when creating a large number of objects."
 msgstr ""
+"Este modo emprégase para crear ou eliminar obxectos rapidamente. Mentres no "
+"modo Seleccionar podes crear obxectos con dobre clic e arrastrando, no modo "
+"Edición isto faise cun só clic e arrastrando, sendo moito máis eficiente "
+"para crear unha morea de obxectos."
 
 #: ../../editing/edit-modes.rst:78
 msgid ""
@@ -272,10 +334,13 @@ msgid ""
 "multiple objects in a row (where applicable) with a length specified by "
 "the snap settings corresponding to each editor."
 msgstr ""
+"Mantendo premido :zbutton:`Control` mentres fas clic permitirache crear "
+"múltiples obxectos dunha vez (onde se poida) coa duración especificada pola "
+"configuración de axustes correspondente a cada editor."
 
 #: ../../editing/edit-modes.rst:84
 msgid "Cut Mode"
-msgstr ""
+msgstr "Modo Cortar"
 
 #: ../../editing/edit-modes.rst:85
 msgid ""
@@ -283,158 +348,168 @@ msgid ""
 "objects`, with the exception that you can just click instead of "
 ":zbutton:`Alt`-clicking."
 msgstr ""
+"O Modo Cortar funciona parecido ao mencionado en :ref:`cutting-objects`, coa "
+"diferenza de que podes simplemente facer clic no canto de :zbutton`Alt`-clic."
 
 #: ../../editing/edit-modes.rst:90
 msgid "Erase Mode"
-msgstr ""
+msgstr "Modo Borrar"
 
 #: ../../editing/edit-modes.rst:91
 msgid ""
 "You can just click on objects to delete them, or click and drag to make a"
 " selection, deleting all objects inside it."
 msgstr ""
+"Podes simplemente facer clic nos obxectos para os borrar, ou clic e "
+"arrastrar para facer unha selección, eliminando tódolos obxectos no seu "
+"interior."
 
 #: ../../editing/edit-modes.rst:95
 msgid "Ramp Mode"
-msgstr ""
+msgstr "Modo Rampla"
 
 #: ../../editing/edit-modes.rst:96
 msgid ""
 "This mode is currently only used for editing velocities for MIDI notes. "
 "You can click and drag in the velocity editor to create velocity ramps."
 msgstr ""
+"Este modo é exclusivo para editar a intensidade (vel.) das notas MIDI. Podes "
+"facer clic e arrastrar no editor da intensidade para crear ramplas de "
+"intensidade."
 
 #: ../../editing/edit-modes.rst:101
 msgid "Audition Mode"
-msgstr ""
+msgstr "Modo Audición"
 
 #: ../../editing/edit-modes.rst:102
 msgid "This is a TODO feature."
-msgstr ""
+msgstr "Esta é unha característica TODO."
 
 #: ../../editing/editing-basics/creating-midi-notes.rst:6
 msgid "Creating MIDI Notes"
-msgstr ""
+msgstr "Crear notas MIDI"
 
 #: ../../editing/editing-basics/creating-midi-notes.rst:8
 msgid "MIDI notes are created by double-clicking and dragging."
-msgstr ""
+msgstr "As notas MIDI créanse facendo dobre clic e arrastrando."
 
 #: ../../editing/editing-basics/creating-regions.rst:6
 msgid "Creating Regions"
-msgstr ""
+msgstr "Crear Rexións"
 
 #: ../../editing/editing-basics/creating-regions.rst:8
 msgid "Regions are created by double clicking and dragging."
-msgstr ""
+msgstr "As Rexións créanse facendo dobre clic e arrastrando."
 
 #: ../../editing/editing-basics/intro.rst:6
 msgid "Editing Basics"
-msgstr ""
+msgstr "Edición Básica"
 
 #: ../../editing/editing-basics/midi-modifiers.rst:6
 msgid "MIDI Modifiers"
-msgstr ""
+msgstr "Modificadores MIDI"
 
 #: ../../editing/editing-basics/midi-note-context-menu.rst:6
 msgid "MIDI Note Context Menu"
-msgstr ""
+msgstr "Menú Contextual das Notas MIDI"
 
 #: ../../editing/editing-basics/midi-note-editing-operations.rst:6
 msgid "MIDI Note Editing Operations"
-msgstr ""
+msgstr "Operacións de Edición das Notas MIDI"
 
 #: ../../editing/editing-basics/moving-midi-notes.rst:6
 msgid "Moving MIDI Notes"
-msgstr ""
+msgstr "Mover Notas MIDI"
 
 #: ../../editing/editing-basics/moving-regions.rst:6
 msgid "Moving Regions"
-msgstr ""
+msgstr "Mover Rexións"
 
 #: ../../editing/editing-basics/moving-regions.rst:8
 msgid "Selected regions can be moved by clicking and dragging."
-msgstr ""
+msgstr "As rexións seleccionadas pódense mover facendo clic e arrastrando."
 
 #: ../../editing/editing-basics/region-context-menu.rst:6
 msgid "Region Context Menu"
-msgstr ""
+msgstr "Menú Contextual das Rexións"
 
 #: ../../editing/editing-basics/region-editing-operations.rst:6
 msgid "Region Editing Operations"
-msgstr ""
+msgstr "Operacións de Edición das Rexións"
 
 #: ../../editing/editing-selections/editing-automation.rst:6
 msgid "Editing Automation"
-msgstr ""
+msgstr "Edición de Automatizacións"
 
 #: ../../editing/editing-selections/editing-midi-notes.rst:6
 msgid "Editing MIDI Notes"
-msgstr ""
+msgstr "Edición de Notas MIDI"
 
 #: ../../editing/editing-selections/editing-regions.rst:6
 msgid "Editing Regions"
-msgstr ""
+msgstr "Edición de Rexións"
 
 #: ../../editing/editing-selections/editing-tracks.rst:6
 msgid "Editing Tracks"
-msgstr ""
+msgstr "Edición de Pistas"
 
 #: ../../editing/editing-selections/intro.rst:6
 msgid "Editing Selections"
-msgstr ""
+msgstr "Edición de Seleccións"
 
 #: ../../editing/fades-and-crossfades.rst:6
 msgid "Fades and Cross-Fades"
-msgstr ""
+msgstr "Fundidos e Fundidos Cruzados"
 
 #: ../../editing/intro.rst:6
 msgid "Editing"
-msgstr ""
+msgstr "Edición"
 
 #: ../../editing/making-selections/intro.rst:6
 msgid "Making Selections"
-msgstr ""
+msgstr "Facer Seleccións"
 
 #: ../../editing/making-selections/selecting-automation.rst:6
 msgid "Selecting Automation"
-msgstr ""
+msgstr "Seleccionar Automatizacións"
 
 #: ../../editing/making-selections/selecting-midi-notes.rst:6
 msgid "Selecting MIDI Notes"
-msgstr ""
+msgstr "Seleccionar Notas MIDI"
 
 #: ../../editing/making-selections/selecting-regions.rst:6
 msgid "Selecting Regions"
-msgstr ""
+msgstr "Seleccionar Rexións"
 
 #: ../../editing/making-selections/selecting-tracks.rst:6
 msgid "Selecting Tracks"
-msgstr ""
+msgstr "Seleccionar Pistas"
 
 #: ../../editing/overview.rst:6
 #: ../../editing/piano-roll-editing/overview.rst:6
 #: ../../editing/timeline/overview.rst:6
 msgid "Overview"
-msgstr ""
+msgstr "Información xeral"
 
 #: ../../editing/overview.rst:8
 msgid ""
 "Editing refers to any work done in the timeline arranger and the "
 "following editors."
 msgstr ""
+"Edición fai referencia a calquera traballo feito no arranxo da liña de tempo "
+"e os editores seguintes."
 
 #: ../../editing/overview.rst:11
 msgid "Piano Roll (MIDI Editor)"
-msgstr ""
+msgstr "Piano Roll (Editor MIDI)"
 
 #: ../../editing/overview.rst:12
 msgid "Automation Editor"
-msgstr ""
+msgstr "Editor de Automatizacións"
 
 #: ../../editing/overview.rst:13
 msgid "Chord Editor"
-msgstr ""
+msgstr "Editor de Acordes"
 
 #: ../../editing/overview.rst:15
 msgid ""
@@ -442,191 +517,216 @@ msgid ""
 "there is a global Edit section in the top toolbar that has common "
 "features shared by each editor."
 msgstr ""
+"Mentres cada editor ten a súa propia barra de ferramentas para varias "
+"operacións, hai unha sección xeral Editar na barra superior que ten funcións "
+"compartidas por cada editor."
 
 #: ../../editing/piano-roll-editing/arranger.rst:6
 #: ../../editing/timeline/arranger.rst:6
 msgid "Arranger"
-msgstr ""
+msgstr "Arranxo"
 
 #: ../../editing/piano-roll-editing/drum-view.rst:6
 msgid "Drum View"
-msgstr ""
+msgstr "Vista de Percusión"
 
 #: ../../editing/piano-roll-editing/drum-view.rst:8
 msgid ""
 "The Piano Roll can be switched to Drum View which is suitable for editing"
 " drums."
 msgstr ""
+"O Piano Roll pódese alternar a Vista de Percusión, máis axeitada para editar "
+"baterías."
 
 #: ../../editing/piano-roll-editing/highlighting.rst:6
 msgid "Highlighting"
-msgstr ""
+msgstr "Remarcar"
 
 #: ../../editing/piano-roll-editing/highlighting.rst:8
 msgid ""
 "Zrythm can highlight notes in the Piano Roll based on the current Chord "
 "or Scale."
 msgstr ""
+"Zrythm pode resaltar notas no Piano Roll baseándose no Acorde ou Escala "
+"determinado."
 
 #: ../../editing/piano-roll-editing/intro.rst:6
 msgid "Piano Roll"
-msgstr ""
+msgstr "Piano Roll"
 
 #: ../../editing/piano-roll-editing/ruler.rst:6
 #: ../../editing/timeline/ruler.rst:6
 msgid "Ruler"
-msgstr ""
+msgstr "Regra"
 
 #: ../../editing/piano-roll-editing/selection-info-bar.rst:6
 msgid "Selection Info Bar"
-msgstr ""
+msgstr "Barra de Información da Selección"
 
 #: ../../editing/piano-roll-editing/toolbar.rst:6
 #: ../../editing/timeline/toolbar.rst:6
 msgid "Toolbar"
-msgstr ""
+msgstr "Barra de Ferramentas"
 
 #: ../../editing/quantization.rst:6
 msgid "Quantization"
-msgstr ""
+msgstr "Cuantización"
 
 #: ../../editing/quantization.rst:8
 msgid ""
 "Objects can be quantized to specified positions by using the Quantize and"
 " Quick-Quantize actions."
 msgstr ""
+"Os obxectos pódense cuantizar a posicións específicas mediante as accións "
+"Cuantizar e Cuantizar Rápido."
 
 #: ../../editing/quantization.rst:15
 msgid "Quantize"
-msgstr ""
+msgstr "Cuantizar"
 
 #: ../../editing/quantization.rst:16
 msgid ""
 "Clicking the Quantize button will open up a popup that will let you "
 "specify the settings to quantize the current selection with."
 msgstr ""
+"Facendo Clic no botón Cuantizar abrirá unha ventá emerxente que che "
+"permitirá especificar os axustes de cuantización da selección."
 
 #: ../../editing/quantization.rst:23
 msgid "Quantize to"
-msgstr ""
+msgstr "Cuantizar a"
 
 #: ../../editing/quantization.rst:24
 msgid "Select the note length and type to quantize to."
-msgstr ""
+msgstr "Selecciona a duración da nota e o tipo ao que cuantizar."
 
 #: ../../editing/quantization.rst:26
 msgid "Adjust"
-msgstr ""
+msgstr "Axustar"
 
 #: ../../editing/quantization.rst:26
 msgid ""
 "Select if you want to quantize the start positions, the end positions (on"
 " objects that have length), or both."
 msgstr ""
+"Selecciona se queres cuantizar as posicións de inicio, as finais (en "
+"obxectos con duración), ou ámbalas dúas."
 
 #: ../../editing/quantization.rst:30
 msgid "Amount"
-msgstr ""
+msgstr "Cantidade"
 
 #: ../../editing/quantization.rst:29
 msgid ""
 "Select the amount to quantize by. 100% will quantize to the given options"
 " fully, while 0% will perform no quantization."
 msgstr ""
+"Selecciona a cantidade pola que cuantizar. 100% cuantizará ás opcións "
+"especificadas por completo, mentres que o 0% non aplicará cuantización."
 
 #: ../../editing/quantization.rst:32
 msgid "Swing"
-msgstr ""
+msgstr "Swing"
 
 #: ../../editing/quantization.rst:33
 msgid "Select a swing amount."
-msgstr ""
+msgstr "Selecciona a cantidade de swing."
 
 #: ../../editing/quantization.rst:37
 msgid "Randomization"
-msgstr ""
+msgstr "Aleatorización"
 
 #: ../../editing/quantization.rst:35
 msgid ""
 "This will randomize the resulting positions by the given amount of ticks,"
 " and is useful for adding a \"human feel\" to quantized events."
 msgstr ""
+"Isto fará aleatorias as posicións resultantes segundo a cantidade de ticks "
+"indicados, e é útil para engadir un \"toque humano\" aos eventos cuantizados."
 
 #: ../../editing/quantization.rst:39
 msgid ""
 "Clicking Quantize will perform the quantization and save the settings for"
 " quick quantization with Quick-Quantize."
 msgstr ""
+"Facendo clic en Cuantizar executará a cuantización e gardará a configuración "
+"para a cuantización rápida con Cuantizar Rápido."
 
 #: ../../editing/quantization.rst:43
 msgid "Quick-Quantize"
-msgstr ""
+msgstr "Cuantizar Rápido"
 
 #: ../../editing/quantization.rst:44
 msgid "This will perform quantization based on the last known settings."
-msgstr ""
+msgstr "Executará a cuantización baseándose na última configuración aplicada."
 
 #: ../../editing/snapping-grid-options.rst:6
 msgid "Snapping and Grid Options"
-msgstr ""
+msgstr "Axuste e Opcións da Grade"
 
 #: ../../editing/snapping-grid-options.rst:9
 msgid "Snap Toggles"
-msgstr ""
+msgstr "Alternar Axuste"
 
 #: ../../editing/snapping-grid-options.rst:10
 msgid ""
 "Zrythm will snap according to the setting currently specified by the snap"
 " toolbar buttons."
 msgstr ""
+"Zrythm axustará de acordo á configuración especificada nos botóns da barra "
+"de ferramentas de axuste."
 
 #: ../../editing/snapping-grid-options.rst:16
 msgid ""
 "These are not operational at the moment and Zrythm will snap by default. "
 "Use Shift to bypass snapping for now."
 msgstr ""
+"Estes non son operativos polo de agora e Zrythm axustará por defecto. "
+"Utiliza a tecla Shift para anular o axuste polo de agora."
 
 #: ../../editing/snapping-grid-options.rst:20
 msgid "Snap and Grid"
-msgstr ""
+msgstr "Axuste e Grade"
 
 #: ../../editing/snapping-grid-options.rst:21
 msgid ""
 "When snapping, Zrythm will follow the settings specified by the snap/grid"
 " widget on each editor."
 msgstr ""
+"Durante o axuste, Zrythm seguirá a configuración especificada polo "
+"complemento Axuste/Grade de cada editor."
 
 #: ../../editing/snapping-grid-options.rst:27
 msgid "Adaptive Grid"
-msgstr ""
+msgstr "Grade Adaptativa"
 
 #: ../../editing/snapping-grid-options.rst:28
 msgid "Not used at the moment."
-msgstr ""
+msgstr "Sen uso polo de agora."
 
 #: ../../editing/snapping-grid-options.rst:29
 msgid "Length"
-msgstr ""
+msgstr "Duración"
 
 #: ../../editing/snapping-grid-options.rst:30
 msgid "Note length to snap to."
-msgstr ""
+msgstr "Duración da nota á que axustar."
 
 #: ../../editing/snapping-grid-options.rst:31
 msgid "Note Type"
-msgstr ""
+msgstr "Tipo de Nota"
 
 #: ../../editing/snapping-grid-options.rst:32
 msgid "Note type for the note length (normal/dotted/triplet)"
-msgstr ""
+msgstr "Tipo de nota para a lonxitude (normal/punteada/triplete)"
 
 #: ../../editing/timeline/event-viewer.rst:6
 msgid "Event Viewer"
-msgstr ""
+msgstr "Visor de Eventos"
 
 #: ../../editing/timeline/intro.rst:6
 msgid "Timeline"
-msgstr ""
+msgstr "Liña de Tempo"
 
 #: ../../editing/timeline/overview.rst:7
 msgid ""
@@ -634,10 +734,13 @@ msgid ""
 "timeline section consists of the tracklist on the left and the "
 "ruler/arranger on the right side."
 msgstr ""
+"Editar na liña de tempo é a tarefa máis común dentro de Zrythm. A sección "
+"liña de tempo está composta pola lista de pistas na esquerda e a regla/"
+"arranxo do lado dereito."
 
 #: ../../editing/timeline/overview.rst:12
 msgid "Tracklist"
-msgstr ""
+msgstr "Lista de pistas"
 
 #: ../../editing/timeline/overview.rst:17
 msgid ""
@@ -645,10 +748,13 @@ msgid ""
 " of total tracks is shown, as well as a search box for searching tracks "
 "by name (not operational at the moment)."
 msgstr ""
+"Na parte superior da lista de pistas, amósase o número de pistas visibles "
+"sobre o número de pistas totais, xunto cunha caixa de busca para procurar as "
+"pistas polo nome (non operativa polo de agora)."
 
 #: ../../editing/timeline/overview.rst:22
 msgid "The rest of the tracklist is briefly touched upon at :ref:`tracklist`."
-msgstr ""
+msgstr "O resto da lista de pistas coméntase por enriba en :ref:`tracklist`."
 
 #: ../../editing/timeline/overview.rst:25
 msgid ""
@@ -657,20 +763,29 @@ msgid ""
 "the top, and this is useful for chord progressions and markers, so you "
 "can always see them."
 msgstr ""
+"A lista de pistas divídese entre as pistas ancoradas na parte de arriba e as "
+"non ancoradas abaixo. Podes ancorar pistas para facelas manterse arriba, o "
+"que é útil para as progresións de acordes e marcadores, para poder velas "
+"sempre."
 
 #: ../../editing/timeline/overview.rst:31
 msgid "For more details about track operations, see the :ref:`tracks` section."
 msgstr ""
+"Para máis detalles das operacións con pistas, podes botar unha ollada á "
+"sección :ref:`tracks`."
 
 #: ../../editing/timeline/overview.rst:35
 msgid "Ruler/Arranger"
-msgstr ""
+msgstr "Regra/Arranxo"
 
 #: ../../editing/timeline/overview.rst:36
 msgid ""
 "This section contains the timeline events and various ruler markers. It "
 "is similarly split to match the tracklist on the left."
 msgstr ""
+"Esta sección contén os eventos da liña de tempo e varios marcadores da "
+"regra. Divídese de xeito similar para coincidir coa lista de pistas da "
+"esquerda."
 
 #: ../../editing/timeline/ruler.rst:8
 msgid ""
@@ -678,10 +793,13 @@ msgid ""
 "loop points and markers available are discussed in :ref:`loop-points-and-"
 "markers`."
 msgstr ""
+"A regra emprégase fundamentalmente para controlar os bucles e a reprodución. "
+"Os distintos puntos de bucle e marcadores dispoñibles coméntanse en :ref"
+":`loop-points-and-markers`."
 
 #: ../../editing/timeline/ruler.rst:16
 msgid "Changing the Playhead Position"
-msgstr ""
+msgstr "Modificar a Posición da Cabeza de Reprodución"
 
 #: ../../editing/timeline/ruler.rst:17
 msgid ""
@@ -689,10 +807,13 @@ msgid ""
 "the ruler (avoiding the top part, which is used for selecting ranges). "
 "Hold :zbutton:`Shift` to bypass snapping."
 msgstr ""
+"Para cambiar a posición da cabeza de reprodución, fai clic, ou fai clic e "
+"arrastra dentro da regra (evitando a parte superior, adicada á selección de "
+"tramos). Preme :zbutton:`Shift`para evitar o axuste."
 
 #: ../../editing/timeline/ruler.rst:22
 msgid "Setting the Cue Point"
-msgstr ""
+msgstr "Configurando o Punto de Referencia"
 
 #: ../../editing/timeline/ruler.rst:23
 msgid ""
@@ -700,20 +821,27 @@ msgid ""
 "return to when playback is stopped. Hold :zbutton:`Shift` to bypass "
 "snapping."
 msgstr ""
+"Fai dobre clic dentro da regra para establecer o punto de referencia. Aquí "
+"volverase cando a reprodución se deteña. Preme :zbutton:`Shift`para evitar o "
+"axuste."
 
 #: ../../editing/timeline/ruler.rst:28
 msgid "Changing the Loop Region"
-msgstr ""
+msgstr "Cambiando a Rexión en Bucle"
 
 #: ../../editing/timeline/ruler.rst:29
 msgid ""
 "To change the loop region (green area), click and drag the green arrows "
 "on the left and right. Hold :zbutton:`Shift` to bypass snapping."
 msgstr ""
+"Para mudar a rexión en bucle (área verde), fai clic e arrastra as frechas "
+"verdes na esquerda e a dereita. Preme :zbutton:`Shift`para evitar o axuste."
 
 #: ../../editing/timeline/toolbar.rst:8
 msgid "The timeline has its own toolbar for timeline-specific operations."
 msgstr ""
+"A liña de tempo ten a súa propia barra de ferramentas para operacións "
+"específicas da liña de tempo."
 
 #: ../../editing/timeline/toolbar.rst:14
 msgid ""
@@ -721,14 +849,17 @@ msgid ""
 "section. For details about snapping and quantization, see the previous "
 "pages."
 msgstr ""
+"Contén unha sección de axuste, de cuantización e de rexión de audio. Para "
+"máis detalles sobre o axuste e a cuantización, consulta as páxinas "
+"anteriores."
 
 #: ../../editing/timeline/toolbar.rst:19
 msgid "Audio Region Section"
-msgstr ""
+msgstr "Sección de Rexión de Audio"
 
 #: ../../editing/timeline/toolbar.rst:21
 msgid "Musical Mode"
-msgstr ""
+msgstr "Modo Musical"
 
 #: ../../editing/timeline/toolbar.rst:22
 msgid ""
@@ -737,4 +868,7 @@ msgid ""
 "the BPM will cause audio regions to be repeated accordingly to match the "
 "new BPM without being time-stretched."
 msgstr ""
-
+"Cando estea activo, as rexións de audio estiraranse automáticamente para "
+"encaixar nos BPM do proxecto, cada vez que o tempo mude. Se está apagado, "
+"modificar os BPM do proxecto fará que as rexións de audio se repitan para "
+"encaixar no tempo novo, pero sen se estirar."
