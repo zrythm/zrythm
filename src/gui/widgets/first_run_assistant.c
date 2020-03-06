@@ -304,7 +304,15 @@ first_run_assistant_widget_new (
     dir);
   g_settings_set_string (
     S_GENERAL, "dir", dir);
+
+  /* set the last project dir to the default one */
+  char * projects_dir  =
+    g_build_filename (
+      dir, ZRYTHM_PROJECTS_DIR, NULL);
+  g_settings_set_string (
+    S_GENERAL, "last-project-dir", projects_dir);
   g_free (dir);
+  g_free (projects_dir);
 
   /*g_message (*/
     /*"n pages %d",*/

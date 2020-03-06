@@ -313,6 +313,7 @@ main (int    argc,
 {
 #define OPT_VERSION 'v'
 #define OPT_HELP 'h'
+#define OPT_PRINT_SETTINGS 'p'
 #define OPT_RESET_TO_FACTORY 6492
 
   int c, option_index;
@@ -320,6 +321,8 @@ main (int    argc,
     {
       {"version", no_argument, 0, OPT_VERSION},
       {"help", no_argument, 0, OPT_HELP},
+      {"print-settings", no_argument, 0,
+        OPT_PRINT_SETTINGS},
       {"reset-to-factory", no_argument,
         0, OPT_RESET_TO_FACTORY},
       {0, 0, 0, 0}
@@ -330,7 +333,7 @@ main (int    argc,
     {
       c =
         getopt_long (
-          argc, argv, "vh",
+          argc, argv, "vhp",
           long_options, &option_index);
 
       /* Detect the end of the options. */
@@ -344,6 +347,10 @@ main (int    argc,
           return 0;
         case OPT_HELP:
           print_help ();
+          return 0;
+          break;
+        case OPT_PRINT_SETTINGS:
+          settings_print ();
           return 0;
           break;
         case OPT_RESET_TO_FACTORY:

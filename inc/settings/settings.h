@@ -84,15 +84,19 @@ settings_init (Settings * self);
 /**
  * Resets settings to defaults.
  *
- * @param print_stdout Print the result to
- *   stdout.
  * @param exit_on_finish Exit with a code on
  *   finish.
  */
 void
 settings_reset_to_factory (
-  int print_stdout,
+  int confirm,
   int exit_on_finish);
+
+/**
+ * Prints the current settings.
+ */
+void
+settings_print (void);
 
 /**
  * Frees settings.

@@ -51,16 +51,26 @@ settings_init (Settings * self)
 }
 
 static int
-reset_schema (
+print_or_reset_schema (
   GSettingsSchema * schema,
-  const char *      schema_str)
+  const char *      schema_str,
+  int               print_only)
 {
   GSettings * settings =
     g_settings_new (schema_str);
   char ** keys =
     g_settings_schema_list_keys (schema);
 
-  printf (_("Resetting schema %s...\n"), schema_str);
+  if (print_only)
+    {
+      printf (
+        _("Schema %s\n"), schema_str);
+    }
+  else
+    {
+      printf (
+        _("Resetting schema %s...\n"), schema_str);
+    }
 
   int i = 0;
   char * key;
@@ -69,20 +79,31 @@ reset_schema (
       GSettingsSchemaKey * schema_key =
         g_settings_schema_get_key (schema, key);
       g_return_val_if_fail (schema_key, -1);
-      GVariant * val =
-        g_settings_schema_key_get_default_value (
-          schema_key);
-      g_return_val_if_fail (val, -1);
-      char * var_str = g_variant_print (val, 0);
-      printf (
-        /* TRANSLATORS: please keep the spaces */
-        _("  resetting %s to %s\n"), key, var_str);
-      int ret =
-        g_settings_set_value (settings, key, val);
-      if (!ret)
+      if (print_only)
         {
-          g_warning ("Failed to set value");
-          return -1;
+          GVariant * val =
+            g_settings_get_value (settings, key);
+          char * var_str = g_variant_print (val, 0);
+          printf (
+            "  %s=%s\n", key, var_str);
+        }
+      else
+        {
+          GVariant * val =
+            g_settings_schema_key_get_default_value (
+              schema_key);
+          g_return_val_if_fail (val, -1);
+          char * var_str = g_variant_print (val, 0);
+          printf (
+            /* TRANSLATORS: please keep the spaces */
+            _("  resetting %s to %s\n"), key, var_str);
+          int ret =
+            g_settings_set_value (settings, key, val);
+          if (!ret)
+            {
+              g_warning ("Failed to set value");
+              return -1;
+            }
         }
     }
 
@@ -90,33 +111,14 @@ reset_schema (
 }
 
 /**
- * Resets settings to defaults.
- *
- * @param print_stdout Print the result to
- *   stdout.
- * @param exit_on_finish Exit with a code on
- *   finish.
+ * @param print_only Only print the settings without
+ *   resetting.
  */
-void
-settings_reset_to_factory (
-  int print_stdout,
+static int
+print_or_reset (
+  int print_only,
   int exit_on_finish)
 {
-  printf (
-    _("This will reset Zrythm to factory settings. "
-    "You will lose all your preferences. Type 'y' "
-    "to continue: "));
-  char c = getchar ();
-  if (c != 'y')
-    {
-      if (print_stdout)
-        printf (_("Aborting...\n"));
-      if (exit_on_finish)
-        exit (0);
-
-      return;
-    }
-
   GSettingsSchemaSource * source =
     g_settings_schema_source_get_default ();
   char ** non_relocatable;
@@ -134,22 +136,26 @@ settings_reset_to_factory (
               source, schema_str, 1);
           if (!schema)
             {
-              if (print_stdout)
+              fprintf (
+                stderr,
+                _("Failed to find schema %s. Zrythm is likely not installed"),
+                schema_str);
+              if (exit_on_finish)
+                exit (1);
+              else
+                return -1;
+            }
+          if (print_or_reset_schema (
+                schema, schema_str, print_only))
+            {
+              if (print_only)
                 {
                   fprintf (
                     stderr,
-                    _("Failed to find schema %s. Zrythm is likely not installed"),
+                    _("Failed to view schema %s"),
                     schema_str);
                 }
-              if (exit_on_finish)
-                {
-                  exit (1);
-                }
-              g_return_if_reached ();
-            }
-          if (reset_schema (schema, schema_str))
-            {
-              if (print_stdout)
+              else
                 {
                   fprintf (
                     stderr,
@@ -157,26 +163,62 @@ settings_reset_to_factory (
                     schema_str);
                 }
               if (exit_on_finish)
-                {
-                  exit (1);
-                }
-              g_return_if_reached ();
+                exit (1);
+              else
+                return -1;
             }
         }
     }
 
-  g_settings_sync ();
+  if (!print_only)
+    {
+      g_settings_sync ();
+    }
 
-  if (print_stdout)
+  return 0;
+}
+
+/**
+ * Resets settings to defaults.
+ *
+ * @param exit_on_finish Exit with a code on
+ *   finish.
+ */
+void
+settings_reset_to_factory (
+  int confirm,
+  int exit_on_finish)
+{
+  if (confirm)
     {
       printf (
-        _("Reset to factory settings successful\n"));
+        _("This will reset Zrythm to factory settings. "
+        "You will lose all your preferences. Type 'y' "
+        "to continue: "));
+      char c = getchar ();
+      if (c != 'y')
+        {
+          printf (_("Aborting...\n"));
+          if (exit_on_finish)
+            exit (0);
+
+          return;
+        }
     }
 
-  if (exit_on_finish)
-    {
-      exit (0);
-    }
+  print_or_reset (0, exit_on_finish);
+
+  printf (
+    _("Reset to factory settings successful\n"));
+}
+
+/**
+ * Prints the current settings.
+ */
+void
+settings_print (void)
+{
+  print_or_reset (1, 0);
 }
 
 /**
