@@ -3,62 +3,65 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
+"manualmixing/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../mixing/channels/channel-overview.rst:6
 msgid "Channel Overview"
-msgstr ""
+msgstr "Información das Canles"
 
 #: ../../mixing/channels/controls.rst:6
 msgid "Controls"
-msgstr ""
+msgstr "Controis"
 
 #: ../../mixing/channels/fader.rst:6
 msgid "Fader"
-msgstr ""
+msgstr "Fader"
 
 #: ../../mixing/channels/intro.rst:6
 msgid "Channels"
-msgstr ""
+msgstr "Canles"
 
 #: ../../mixing/channels/meters.rst:6
 #: ../../mixing/meters.rst:6
 msgid "Meters"
-msgstr ""
+msgstr "Medidores"
 
 #: ../../mixing/channels/plugin-strip.rst:6
 msgid "Plugin Strip"
-msgstr ""
+msgstr "Restra de Plugins"
 
 #: ../../mixing/groups.rst:6
 msgid "Groups"
-msgstr ""
+msgstr "Grupos"
 
 #: ../../mixing/intro.rst:6
 msgid "Mixing"
-msgstr ""
+msgstr "Mestura"
 
 #: ../../mixing/meters.rst:8
 msgid ""
 "Meters display the current RMS peaks at the end of the channel's "
 "processing."
-msgstr ""
+msgstr "O Medidor amosa os picos RMS actuais ao final do procesado da canle."
 
 #: ../../mixing/mixdown.rst:6
 msgid "Mixdown"
-msgstr ""
+msgstr "Mestura"
 
 #: ../../mixing/mixdown.rst:8
 msgid ""
@@ -66,10 +69,13 @@ msgid ""
 " The mixdown can be the loop range or the range between the song start "
 "and end markers."
 msgstr ""
+"O diálogo 'Ficheiro -> Exportar Como' pódese utilizar para exportar a "
+"mestura ou a canción. A mestura pode ser un bucle ou un intervalo entre os "
+"marcadores do inicio e fin da canción."
 
 #: ../../mixing/panning.rst:6
 msgid "Panning"
-msgstr ""
+msgstr "Panorama"
 
 #: ../../mixing/panning.rst:8
 msgid ""
@@ -77,6 +83,9 @@ msgid ""
 "supports Linear Pan, Square Root Pan and Sine Law Pan, with a Pan Law of "
 "-6dB, -3dB, or 0dB."
 msgstr ""
+"As canles poden ser paneadas á Esquerda ou á Dereita arrastrando o control "
+"do Panorama. Zrythm permite Panorama Lineal, de Raíz Cadrada e de Regra do "
+"Seno de -6dB, -3d-b ou 0dB."
 
 #: ../../mixing/panning.rst:12
 msgid ""
@@ -84,32 +93,34 @@ msgid ""
 "default is Sine Law with -3dB. If you don't understand what these mean, "
 "it's best to leave them to their default values."
 msgstr ""
+"Estas opcións pódense configurar na xanela de Preferencias. Por defecto é a "
+"Regra do Seno con -3dB. Se non entendes o que isto quere dicir, é mellor que "
+"o deixes cos valores por defecto."
 
 #: ../../mixing/routing/buses.rst:6
 msgid "Buses"
-msgstr ""
+msgstr "Buses"
 
 #: ../../mixing/routing/insert-effects.rst:6
 msgid "Insert Effects"
-msgstr ""
+msgstr "Inserir Efectos"
 
 #: ../../mixing/routing/intro.rst:6
 msgid "Routing"
-msgstr ""
+msgstr "Rutas"
 
 #: ../../mixing/routing/ports.rst:6
 msgid "Ports"
-msgstr ""
+msgstr "Portos"
 
 #: ../../mixing/routing/routing-overview.rst:6
 msgid "Routing Overview"
-msgstr ""
+msgstr "Información das Rutas"
 
 #: ../../mixing/routing/send-effects.rst:6
 msgid "Send Effects"
-msgstr ""
+msgstr "Enviar Efectos"
 
 #: ../../mixing/sidechaining.rst:6
 msgid "Sidechaining"
-msgstr ""
-
+msgstr "Facendo Sidechain"
