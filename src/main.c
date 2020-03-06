@@ -271,7 +271,7 @@ print_version ()
 #ifdef HAVE_SDL
     "    +sdl2\n"
 #endif
-    "%s\n%s\n%s\n%s\n",
+    "\n%s\n%s\n%s\n",
 #ifdef TRIAL_VER
     /* TRANSLATORS: please keep the space at the
      * end */
@@ -282,9 +282,9 @@ print_version ()
     ver,
     COMPILER, COMPILER_VERSION,
     "Copyright © 2018-2020 Alexandros Theodotou",
-    "License AGPLv3+: GNU AGPL version 3 or later <https://www.gnu.org/licenses/agpl.html>",
-    "This is free software: you are free to change and redistribute it.",
-    "There is NO WARRANTY, to the extent permitted by law.");
+    "This is free software; see the source for copying conditions.",
+    "There is NO "
+    "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
   g_free (ver);
 }
 
@@ -295,13 +295,12 @@ print_help ()
     stdout,
     _("Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n\n"
     "Options:\n"
-    "  -h, --help      display this help and exit\n"
-    "  -v, --version   output version information and exit\n\n"
+    "  -h, --help      display this help message and exit\n"
+    "  -v, --version   output version information and exit\n"
+    "  --reset-to-factory  reset to factory settings\n\n"
     "Examples:\n"
-    "  zrythm          run normally\n\n"
-    "Write comments and bugs to %s\n"
-    "Support this project at https://liberapay.com/Zrythm\n"
-    "Website https://www.zrythm.org\n"),
+    "  zrythm -v       print version\n\n"
+    "Report bugs to %s\n"),
     ISSUE_TRACKER_URL);
 }
 

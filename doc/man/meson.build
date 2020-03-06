@@ -18,6 +18,7 @@
 if (help2man.found())
 manpage = custom_target (
   'manpage',
+  input: 'zrythm.h2m',
   output: 'zrythm.1',
   depends: zrythm_exe,
   command: [
@@ -25,6 +26,8 @@ manpage = custom_target (
     '-s',
     '1',
     '-N',
+    '-i',
+    '@INPUT@',
     '-o',
     '@OUTPUT@',
     '-n',
