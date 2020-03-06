@@ -82,6 +82,8 @@ get_actual_arranger_selections (
  * objects.
  *
  * @param move 1 to move, 0 to duplicate.
+ * @param already_moved If this is true, the first
+ *   DO will do nothing.
  */
 UndoableAction *
 arranger_selections_action_new_move_or_duplicate (
@@ -91,7 +93,8 @@ arranger_selections_action_new_move_or_duplicate (
   const int            delta_chords,
   const int            delta_pitch,
   const int            delta_tracks,
-  const int            delta_lanes)
+  const int            delta_lanes,
+  const int            already_moved)
 {
   ArrangerSelectionsAction * self =
     _create_action (sel);
@@ -100,6 +103,9 @@ arranger_selections_action_new_move_or_duplicate (
     ua->type = UA_MOVE_ARRANGER_SELECTIONS;
   else
     ua->type = UA_DUPLICATE_ARRANGER_SELECTIONS;
+
+  if (!already_moved)
+    self->first_run = 0;
 
   self->ticks = ticks;
   self->delta_chords = delta_chords;

@@ -187,6 +187,8 @@ arranger_selections_action_new_delete(sel) \
  * objects.
  *
  * @param move 1 to move, 0 to duplicate.
+ * @param already_moved If this is true, the first
+ *   DO will do nothing.
  */
 UndoableAction *
 arranger_selections_action_new_move_or_duplicate (
@@ -196,64 +198,75 @@ arranger_selections_action_new_move_or_duplicate (
   const int            delta_chords,
   const int            delta_pitch,
   const int            delta_tracks,
-  const int            delta_lanes);
+  const int            delta_lanes,
+  const int            already_moved);
 
 #define \
 arranger_selections_action_new_move( \
-  sel,ticks,chords,pitch,tracks,lanes) \
+  sel,ticks,chords,pitch,tracks,lanes, \
+  already_moved) \
   arranger_selections_action_new_move_or_duplicate ( \
     (ArrangerSelections *) sel, 1, ticks, chords, \
-    pitch, tracks, lanes)
+    pitch, tracks, lanes, already_moved)
 #define \
 arranger_selections_action_new_duplicate( \
-  sel,ticks,chords,pitch,tracks,lanes) \
+  sel,ticks,chords,pitch,tracks,lanes, \
+  already_moved) \
   arranger_selections_action_new_move_or_duplicate ( \
     (ArrangerSelections *) sel, 0, ticks, chords, \
-    pitch, tracks, lanes)
+    pitch, tracks, lanes, already_moved)
 
 #define \
 arranger_selections_action_new_move_timeline( \
-  sel,ticks,delta_tracks,delta_lanes) \
+  sel,ticks,delta_tracks,delta_lanes, \
+  already_moved) \
   arranger_selections_action_new_move ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes)
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, \
+    already_moved)
 #define \
 arranger_selections_action_new_duplicate_timeline( \
-  sel,ticks,delta_tracks,delta_lanes) \
+  sel,ticks,delta_tracks,delta_lanes, \
+  already_moved) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes)
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, \
+    already_moved)
 
 #define \
 arranger_selections_action_new_move_midi( \
-  sel,ticks,delta_pitch) \
+  sel,ticks,delta_pitch, already_moved) \
   arranger_selections_action_new_move ( \
-    sel, ticks, 0, delta_pitch, 0, 0)
+    sel, ticks, 0, delta_pitch, 0, 0, \
+    already_moved)
 #define \
 arranger_selections_action_new_duplicate_midi( \
-  sel,ticks,delta_pitch) \
+  sel,ticks,delta_pitch, already_moved) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, delta_pitch, 0, 0)
+    sel, ticks, 0, delta_pitch, 0, 0, \
+    already_moved)
 
 #define \
 arranger_selections_action_new_move_chord( \
-  sel,ticks,delta_chords) \
+  sel,ticks,delta_chords, already_moved) \
   arranger_selections_action_new_move ( \
-    sel, ticks, delta_chords, 0, 0, 0)
+    sel, ticks, delta_chords, 0, 0, 0, \
+    already_moved)
 #define \
 arranger_selections_action_new_duplicate_chord( \
-  sel,ticks,delta_chords) \
+  sel,ticks,delta_chords, already_moved) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, delta_chords, 0, 0, 0)
+    sel, ticks, delta_chords, 0, 0, 0, \
+    already_moved)
 
 #define \
 arranger_selections_action_new_move_automation( \
-  sel,ticks) \
+  sel,ticks, already_moved) \
   arranger_selections_action_new_move ( \
-    sel, ticks, 0, 0, 0, 0)
+    sel, ticks, 0, 0, 0, 0, already_moved)
 #define \
 arranger_selections_action_new_duplicate_automation( \
-  sel,ticks) \
+  sel,ticks, already_moved) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, 0, 0, 0)
+    sel, ticks, 0, 0, 0, 0, already_moved)
 
 /**
  * Creates a new action for editing properties

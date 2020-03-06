@@ -444,9 +444,15 @@ arranger_widget_get_snap_grid (
   ArrangerWidget * self);
 
 /**
- * Called from MainWindowWidget because the
+ * Called from MainWindowWidget because some
  * events don't reach here.
  */
+gboolean
+arranger_widget_on_key_action (
+  GtkWidget *widget,
+  GdkEventKey *event,
+  ArrangerWidget * self);
+
 gboolean
 arranger_widget_on_key_release (
   GtkWidget *widget,

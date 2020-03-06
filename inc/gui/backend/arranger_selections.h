@@ -313,6 +313,10 @@ arranger_selections_remove_object (
   ArrangerSelections * self,
   ArrangerObject *     obj);
 
+long
+arranger_selections_get_length_in_ticks (
+  ArrangerSelections * self);
+
 ArrangerSelections *
 arranger_selections_get_for_type (
   ArrangerSelectionsType type);

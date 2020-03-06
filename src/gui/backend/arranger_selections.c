@@ -33,6 +33,7 @@
 #include "gui/widgets/arranger_object.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/flags.h"
 
 #define TYPE(x) \
   (ARRANGER_SELECTIONS_TYPE_##x)
@@ -1594,6 +1595,21 @@ arranger_selections_remove_object (
       g_return_if_reached ();
     }
 #undef REMOVE_OBJ
+}
+
+long
+arranger_selections_get_length_in_ticks (
+  ArrangerSelections * self)
+{
+  g_return_val_if_fail (self, 0);
+
+  Position p1, p2;
+  arranger_selections_get_start_pos (
+    self, &p1, F_GLOBAL);
+  arranger_selections_get_end_pos (
+    self, &p2, F_GLOBAL);
+
+  return p2.total_ticks - p1.total_ticks;
 }
 
 /**

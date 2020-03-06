@@ -455,7 +455,8 @@ test_move_timeline ()
 
       UndoableAction * ua =
         arranger_selections_action_new_move_timeline (
-          TL_SELECTIONS, MOVE_TICKS, track_diff, 0);
+          TL_SELECTIONS, MOVE_TICKS, track_diff, 0,
+          F_ALREADY_MOVED);
       undo_manager_perform (UNDO_MANAGER, ua);
 
       /* check */
@@ -824,7 +825,7 @@ test_duplicate_timeline ()
       UndoableAction * ua =
         arranger_selections_action_new_duplicate_timeline (
           TL_SELECTIONS, MOVE_TICKS,
-          i > 0 ? 2 : 0, 0);
+          i > 0 ? 2 : 0, 0, F_ALREADY_MOVED);
       undo_manager_perform (UNDO_MANAGER, ua);
 
       /* check */

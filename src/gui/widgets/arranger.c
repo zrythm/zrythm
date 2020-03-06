@@ -1990,7 +1990,6 @@ arranger_widget_on_key_release (
   GdkEventKey *event,
   ArrangerWidget * self)
 {
-  g_message ("key release %d", event->keyval);
   self->key_is_pressed = 0;
 
   const guint keyval = event->keyval;
@@ -2030,55 +2029,6 @@ arranger_widget_on_key_release (
       self->action =
         UI_OVERLAY_ACTION_MOVING;
     }
-  else if (ACTION_IS (NONE))
-    {
-      ArrangerSelections * sel =
-        arranger_widget_get_selections (self);
-
-      if (arranger_selections_has_any (sel))
-        {
-          SnapGrid * sg =
-            arranger_widget_get_snap_grid (self);
-          int move_ticks =
-            snap_grid_get_note_ticks (
-              sg->note_length, sg->note_type);
-          (void) move_ticks;
-
-          /* check arrow movement */
-          if (keyval == GDK_KEY_Left)
-            {
-              if (self->ctrl_held)
-                {
-                  /*UndoableAction * action =*/
-                    /*arranger_selections_action_new_move (*/
-                      /*sel, - move_ticks, 0, 0,*/
-                      /*0, 0);*/
-                  /*undo_manager_perform (*/
-                    /*UNDO_MANAGER, action);*/
-                }
-            }
-          else if (keyval == GDK_KEY_Right)
-            {
-              if (self->ctrl_held)
-                {
-                  /*UndoableAction * action =*/
-                    /*arranger_selections_action_new_move (*/
-                      /*sel, move_ticks, 0, 0, 0, 0);*/
-                  /*undo_manager_perform (*/
-                    /*UNDO_MANAGER, action);*/
-
-                }
-            }
-          else if (keyval == GDK_KEY_Down)
-            {
-              g_message ("move down");
-            }
-          else if (keyval == GDK_KEY_Up)
-            {
-              g_message ("move up");
-            }
-        }
-    }
 
   if (self->type == TYPE (TIMELINE))
     {
@@ -2094,14 +2044,16 @@ arranger_widget_on_key_release (
   return TRUE;
 }
 
-static gboolean
-on_key_action (
+/**
+ * Called from MainWindowWidget because some
+ * events don't reach here.
+ */
+gboolean
+arranger_widget_on_key_action (
   GtkWidget *widget,
   GdkEventKey *event,
   ArrangerWidget * self)
 {
-  int num = 0;
-
   const guint keyval = event->keyval;
 
   if (z_gtk_keyval_is_ctrl (keyval))
@@ -2116,78 +2068,6 @@ on_key_action (
   if (z_gtk_keyval_is_alt (keyval))
     {
       self->alt_held = 1;
-    }
-
-  switch (self->type)
-    {
-    case TYPE (MIDI):
-    {
-      num =
-        MA_SELECTIONS->num_midi_notes;
-      if (event->state & GDK_CONTROL_MASK &&
-          event->type == GDK_KEY_PRESS &&
-          event->keyval == GDK_KEY_d &&
-          num > 0)
-        {
-          /*UndoableAction * duplicate_action =*/
-            /*duplicate_midi_arranger_selections_action_new ();*/
-          /*undo_manager_perform (*/
-            /*UNDO_MANAGER, duplicate_action);*/
-          return FALSE;
-        }
-      if (event->type == GDK_KEY_PRESS &&
-          event->keyval == GDK_KEY_Up &&
-          num > 0)
-        {
-          UndoableAction * shift_up_action =
-            arranger_selections_action_new_move_midi (
-              MA_SELECTIONS, 0, 1);
-          undo_manager_perform (
-          UNDO_MANAGER, shift_up_action);
-          return TRUE;
-        }
-      if (event->type == GDK_KEY_PRESS &&
-          event->keyval == GDK_KEY_Down &&
-          num > 0)
-        {
-          UndoableAction * shift_down_action =
-            arranger_selections_action_new_move_midi (
-              MA_SELECTIONS, 0, -1);
-          undo_manager_perform (
-          UNDO_MANAGER, shift_down_action);
-          return TRUE;
-        }
-      if (event->type == GDK_KEY_PRESS &&
-          event->keyval == GDK_KEY_Left &&
-          num > 0)
-        {
-          /*UndoableAction * shift_left_action =*/
-            /*move_midi_arranger_selections_action_new (-1);*/
-          /*undo_manager_perform (*/
-          /*UNDO_MANAGER, shift_left_action);*/
-          return TRUE;
-        }
-      if (event->type == GDK_KEY_PRESS &&
-          event->keyval == GDK_KEY_Right &&
-          num > 0)
-        {
-          /*UndoableAction * shift_right_action =*/
-            /*move_midi_arranger_selections_pos_action_new (1);*/
-          /*undo_manager_perform (*/
-          /*UNDO_MANAGER, shift_right_action);*/
-        }
-    }
-      break;
-    case TYPE (TIMELINE):
-    case TYPE (MIDI_MODIFIER):
-    case TYPE (AUDIO):
-    case TYPE (CHORD):
-    case TYPE (AUTOMATION):
-    {
-    }
-      break;
-    default:
-      break;
     }
 
   if (ACTION_IS (STARTING_MOVING))
@@ -2209,6 +2089,134 @@ on_key_action (
     {
       self->action =
         UI_OVERLAY_ACTION_MOVING;
+    }
+  else if (ACTION_IS (NONE))
+    {
+      ArrangerSelections * sel =
+        arranger_widget_get_selections (self);
+
+      if (arranger_selections_has_any (sel))
+        {
+          SnapGrid * sg =
+            arranger_widget_get_snap_grid (self);
+          int move_ticks =
+            snap_grid_get_note_ticks (
+              sg->note_length, sg->note_type);
+          (void) move_ticks;
+
+          /* check arrow movement */
+          if (keyval == GDK_KEY_Left)
+            {
+              UndoableAction * action =
+                arranger_selections_action_new_move (
+                  sel, - move_ticks, 0, 0,
+                  0, 0, F_NOT_ALREADY_MOVED);
+              undo_manager_perform (
+                UNDO_MANAGER, action);
+            }
+          else if (keyval == GDK_KEY_Right)
+            {
+              UndoableAction * action =
+                arranger_selections_action_new_move (
+                  sel, move_ticks, 0, 0, 0, 0,
+                  F_NOT_ALREADY_MOVED);
+              undo_manager_perform (
+                UNDO_MANAGER, action);
+            }
+          else if (keyval == GDK_KEY_Down)
+            {
+              UndoableAction * action;
+              if (self == MW_MIDI_ARRANGER ||
+                  self == MW_MIDI_MODIFIER_ARRANGER)
+                {
+                  action =
+                    arranger_selections_action_new_move (
+                      sel, 0, 0, -1, 0, 0,
+                      F_NOT_ALREADY_MOVED);
+                  undo_manager_perform (
+                    UNDO_MANAGER, action);
+                }
+              else if (self == MW_CHORD_ARRANGER)
+                {
+                  action =
+                    arranger_selections_action_new_move (
+                      sel, 0, -1, 0, 0, 0,
+                      F_NOT_ALREADY_MOVED);
+                  undo_manager_perform (
+                    UNDO_MANAGER, action);
+                }
+              else if (self == MW_TIMELINE)
+                {
+                  /* TODO check if can be moved */
+                  /*action =*/
+                    /*arranger_selections_action_new_move (*/
+                      /*sel, 0, -1, 0, 0, 0);*/
+                  /*undo_manager_perform (*/
+                    /*UNDO_MANAGER, action);*/
+                }
+            }
+          else if (keyval == GDK_KEY_Up)
+            {
+              UndoableAction * action;
+              if (self == MW_MIDI_ARRANGER ||
+                  self == MW_MIDI_MODIFIER_ARRANGER)
+                {
+                  action =
+                    arranger_selections_action_new_move (
+                      sel, 0, 0, 1, 0, 0,
+                      F_NOT_ALREADY_MOVED);
+                  undo_manager_perform (
+                    UNDO_MANAGER, action);
+                }
+              else if (self == MW_CHORD_ARRANGER)
+                {
+                  action =
+                    arranger_selections_action_new_move (
+                      sel, 0, 1, 0, 0, 0,
+                      F_NOT_ALREADY_MOVED);
+                  undo_manager_perform (
+                    UNDO_MANAGER, action);
+                }
+              else if (self == MW_TIMELINE)
+                {
+                  /* TODO check if can be moved */
+                  /*action =*/
+                    /*arranger_selections_action_new_move (*/
+                      /*sel, 0, 1, 0, 0, 0);*/
+                  /*undo_manager_perform (*/
+                    /*UNDO_MANAGER, action);*/
+                }
+            }
+          else if (
+              event->state & GDK_CONTROL_MASK &&
+              event->type == GDK_KEY_PRESS &&
+              event->keyval == GDK_KEY_d)
+            {
+              long length =
+                arranger_selections_get_length_in_ticks (
+                  sel);
+              UndoableAction * action;
+              if (self == MW_MIDI_ARRANGER ||
+                  self == MW_MIDI_MODIFIER_ARRANGER)
+                {
+                  action =
+                    arranger_selections_action_new_duplicate_midi (
+                      sel, length, 0,
+                      F_NOT_ALREADY_MOVED);
+                  undo_manager_perform (
+                    UNDO_MANAGER, action);
+                }
+              else if (self == MW_TIMELINE)
+                {
+                  action =
+                    arranger_selections_action_new_duplicate_timeline (
+                      sel, length, 0, 0,
+                      F_NOT_ALREADY_MOVED);
+                  undo_manager_perform (
+                    UNDO_MANAGER, action);
+                }
+            }
+        }
     }
 
   if (self->type == TYPE (TIMELINE))
@@ -3576,7 +3584,8 @@ on_drag_end_midi (
         ((MidiNote *) obj->transient)->val;
       UndoableAction * ua =
         arranger_selections_action_new_move_midi (
-          MA_SELECTIONS, ticks_diff, pitch_diff);
+          MA_SELECTIONS, ticks_diff, pitch_diff,
+          F_ALREADY_MOVED);
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
@@ -3597,8 +3606,7 @@ on_drag_end_midi (
         (UndoableAction *)
         arranger_selections_action_new_duplicate_midi (
           (ArrangerSelections *) MA_SELECTIONS,
-          ticks_diff,
-          pitch_diff);
+          ticks_diff, pitch_diff, F_ALREADY_MOVED);
       undo_manager_perform (
         UNDO_MANAGER, ua);
     }
@@ -3670,9 +3678,8 @@ on_drag_end_chord (
         UndoableAction * ua =
           (UndoableAction *)
           arranger_selections_action_new_move_chord (
-            CHORD_SELECTIONS,
-            ticks_diff,
-            0);
+            CHORD_SELECTIONS, ticks_diff,
+            0, F_ALREADY_MOVED);
         undo_manager_perform (
           UNDO_MANAGER, ua);
       }
@@ -3688,8 +3695,8 @@ on_drag_end_chord (
         UndoableAction * ua =
           (UndoableAction *)
           arranger_selections_action_new_duplicate_chord (
-            CHORD_SELECTIONS,
-            ticks_diff, 0);
+            CHORD_SELECTIONS, ticks_diff,
+            0, F_ALREADY_MOVED);
         undo_manager_perform (
           UNDO_MANAGER, ua);
       }
@@ -3830,10 +3837,9 @@ on_drag_end_timeline (
           obj->transient->pos.total_ticks;
         UndoableAction * ua =
           arranger_selections_action_new_move_timeline (
-            TL_SELECTIONS,
-            ticks_diff,
+            TL_SELECTIONS, ticks_diff,
             self->visible_track_diff,
-            self->lane_diff);
+            self->lane_diff, F_ALREADY_MOVED);
         undo_manager_perform (
           UNDO_MANAGER, ua);
       }
@@ -3849,10 +3855,9 @@ on_drag_end_timeline (
         UndoableAction * ua =
           (UndoableAction *)
           arranger_selections_action_new_duplicate_timeline (
-            TL_SELECTIONS,
-            ticks_diff,
+            TL_SELECTIONS, ticks_diff,
             self->visible_track_diff,
-            self->lane_diff);
+            self->lane_diff, F_ALREADY_MOVED);
         undo_manager_perform (
           UNDO_MANAGER, ua);
       }
@@ -4640,7 +4645,8 @@ arranger_widget_setup (
     G_CALLBACK (on_scroll), self);
   g_signal_connect (
     G_OBJECT (self), "key-press-event",
-    G_CALLBACK (on_key_action), self);
+    G_CALLBACK (arranger_widget_on_key_action),
+    self);
   g_signal_connect (
     G_OBJECT (self), "key-release-event",
     G_CALLBACK (arranger_widget_on_key_release),

@@ -100,4 +100,7 @@
 #define F_SHRINK 1
 #define F_NO_SHRINK 0
 
+#define F_ALREADY_MOVED 1
+#define F_NOT_ALREADY_MOVED 0
+
 #endif

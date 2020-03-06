@@ -231,7 +231,16 @@ on_key_release (
   GdkEventKey *event,
   MainWindowWidget * self)
 {
-  g_message ("main window release");
+  return FALSE;
+}
+
+static gboolean
+on_key_action (
+  GtkWidget *widget,
+  GdkEventKey *event,
+  ArrangerWidget * self)
+{
+  g_message ("main window key press");
 
   if (!z_gtk_keyval_is_arrow (event->keyval))
     return FALSE;
@@ -239,7 +248,7 @@ on_key_release (
   if (Z_IS_ARRANGER_WIDGET (
         MAIN_WINDOW->last_focused))
     {
-      arranger_widget_on_key_release (
+      arranger_widget_on_key_action (
         widget, event,
         Z_ARRANGER_WIDGET (
           MAIN_WINDOW->last_focused));
@@ -407,6 +416,9 @@ main_window_widget_init (MainWindowWidget * self)
     G_CALLBACK (on_close_notification_clicked),
     NULL);
 
+  g_signal_connect (
+    G_OBJECT (self), "key-press-event",
+    G_CALLBACK (on_key_action), self);
   g_signal_connect (
     G_OBJECT (self), "key-release-event",
     G_CALLBACK (on_key_release), self);

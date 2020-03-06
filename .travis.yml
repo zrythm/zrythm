@@ -79,7 +79,6 @@ script:
       ninja -C build
       ninja -C build test
       ninja -C build coverage-text
-      #bash <(curl -s https://codecov.io/bash)
       coveralls -e ext -e tests -e subprojects -e doc -e build/resources -b build --gcov-options '\-lp'
       ;;
   esac
