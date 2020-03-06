@@ -23,16 +23,28 @@ packages:
   - lv2
   - rubberband
   - xdg-utils
+  - lcov
+  - gcovr
 sources:
   - https://git.sr.ht/~alextee/zrythm
   - https://github.com/mesonbuild/meson
+secrets:
+  - ffff20bf-6fd3-40d6-b26a-92f6c8dc1fcf
 tasks:
   - setup: |
       cd zrythm
-      ../meson/meson.py build -Denable_tests=true -Dmanpage=true -Denable_ffmpeg=true
+      ../meson/meson.py build -Denable_tests=true -Dmanpage=true -Denable_ffmpeg=true -Db_coverage=true
   - build: |
       cd zrythm
       ninja -C build
   - test: |
       cd zrythm
       ninja -C build test
+      ninja -C build coverage-text
+      cat build/meson-logs/coverage.txt
+      bash <(curl -s https://codecov.io/bash) -t $(cat ~/.codecov_token | tr '\n' '')
+  - install: |
+      cd zrythm
+      DESTDIR=/tmp ninja -C build install
+  - deploy: |
+      echo TODO

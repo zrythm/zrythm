@@ -108,6 +108,12 @@ transport meters. Packagers should turn this off and
 set the font as a dependency instead''')
 
 option (
+  'install_bash_completion',
+  type: 'boolean',
+  value: false,
+  description: 'Install bash completion')
+
+option (
   'windows_release',
   type: 'boolean',
   value: false,

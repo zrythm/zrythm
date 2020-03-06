@@ -56,6 +56,7 @@ script:
     meson build -Denable_sdl=true -Denable_rtaudio=true -Denable_rtmidi=true
     ninja -C build
     ninja -C build test
+    ninja -C build install
   else
     # hack to enable tests
     $mingw64 sed -i -e '27s/false/true/' meson_options.txt
