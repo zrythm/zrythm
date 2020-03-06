@@ -3,27 +3,30 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
+"manualcontributing/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../contributing/intro.rst:6
 msgid "Contributing"
-msgstr ""
+msgstr "Contribuír ao proxecto"
 
 #: ../../contributing/intro.rst:9
 msgid "Coding"
-msgstr ""
+msgstr "Programando"
 
 #: ../../contributing/intro.rst:11
 msgid ""
@@ -33,10 +36,14 @@ msgid ""
 "information about how to contribute code and various guidelines to "
 "follow."
 msgstr ""
+"Por favor, bótalle unha ollada á `Guía para Contribuír <https://docs.zrythm."
+"org/md_CONTRIBUTING.html>`_e comproba os `Documentos para Desenvolvedores "
+"<https://docs.zrythm.org/>`_. Aí atoparás unha morea de información sobre "
+"como contribuír con código e varias indicacións a ter en conta."
 
 #: ../../contributing/intro.rst:18
 msgid "Artwork and Themes"
-msgstr ""
+msgstr "Arte e Temas"
 
 #: ../../contributing/intro.rst:20
 msgid ""
@@ -45,6 +52,10 @@ msgid ""
 "contribute artwork such as icons, please discuss with us first as icon "
 "preferences are very subjective."
 msgstr ""
+"Zrythm emprega principalmente un tema CSS e fai uso de varias iconas, "
+"algunhas personalizadas e outras obtidas doutros temas. Se che gustaría "
+"contribuír con deseños como iconas, por favor coméntanolo antes posto que as "
+"preferencias de iconas son moi subxectivas."
 
 #: ../../contributing/intro.rst:26
 msgid ""
@@ -54,10 +65,14 @@ msgid ""
 "Overview <https://developer.gnome.org/gtk3/stable/chap-css-"
 "overview.html>`_ section in the GTK+3 docs."
 msgstr ""
+"Para facer temas, podes botarlle unha ollada a https://git.zrythm.org/cgit/"
+"zrythm/tree/resources/theme.css para obter unha idea de como funciona CSS en "
+"GTK+3. Tamén recomendamos mirar `CSS Overview <https://developer.gnome.org/"
+"gtk3/stable/chap-css-overview.html>`_ na sección dos GTK+3 docs."
 
 #: ../../contributing/intro.rst:34
 msgid "Testing"
-msgstr ""
+msgstr "Facendo probas"
 
 #: ../../contributing/intro.rst:36
 msgid ""
@@ -66,16 +81,23 @@ msgid ""
 "feedback on `Redmine "
 "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
 msgstr ""
+"Actualmente temos unha escaseza de testers e estariamos encantados de contar "
+"contigo para axudarnos a probar as últimas características de Zrythm e "
+"reportar erros e as túas devolucións en `Redmine <https://redmine.zrythm.org/"
+"projects/zrythm/issues>`_."
 
 #: ../../contributing/intro.rst:42
 msgid ""
 "The latest development branch for new features is ``development`` in our "
 "`git repository <https://git.zrythm.org/cgit/zrythm>`_."
 msgstr ""
+"A última versión de desenvolvemento de novas características é "
+"``development`` no noso `repositorio git <https://git.zrythm.org/cgit/"
+"zrythm>`_."
 
 #: ../../contributing/intro.rst:47
 msgid "Translation"
-msgstr ""
+msgstr "Tradución"
 
 #: ../../contributing/intro.rst:49
 msgid ""
@@ -84,34 +106,37 @@ msgid ""
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ to get "
 "started."
 msgstr ""
+"Zrythm ten dispoñible a tradución en Hosted Weblate. Visita a `páxina do "
+"proxecto Zrythm <https://hosted.weblate.org/engage/zrythm/"
+"?utm_source=widget>`_ para comezar."
 
 #: ../../contributing/intro.rst:52
 msgid "The Zrythm translation project contains the following components:"
-msgstr ""
+msgstr "O proxecto de tradución de Zrythm conta cos seguintes compoñentes:"
 
 #: ../../contributing/intro.rst:55
 msgid "Zrythm"
-msgstr ""
+msgstr "Zrythm"
 
 #: ../../contributing/intro.rst:56
 msgid "The actual Zrythm program"
-msgstr ""
+msgstr "O programa Zrythm"
 
 #: ../../contributing/intro.rst:57
 msgid "website"
-msgstr ""
+msgstr "A páxina web"
 
 #: ../../contributing/intro.rst:58
 msgid "The Zrythm website (https://www.zrythm.org)"
-msgstr ""
+msgstr "A páxina web de Zrythm (https://www.zrythm.org)"
 
 #: ../../contributing/intro.rst:60
 msgid "Manual - *"
-msgstr ""
+msgstr "O Manual - *"
 
 #: ../../contributing/intro.rst:60
 msgid "Sections of this manual"
-msgstr ""
+msgstr "Seccións deste manual"
 
 #: ../../contributing/intro.rst:62
 msgid ""
@@ -120,30 +145,38 @@ msgid ""
 "see the `official documentation "
 "<https://docs.weblate.org/en/latest/user/translating.html>`_."
 msgstr ""
+"Fai clic no proxecto no que che gustaría traballar e selecciona o idioma na "
+"pantalla seguinte. Para máis información sobre como empregar Weblate, por "
+"favor mira a `documentación oficial <https://docs.weblate.org/en/latest/user/"
+"translating.html>`_."
 
 #: ../../contributing/intro.rst:70
 msgid "Editing this Manual"
-msgstr ""
+msgstr "Editar este Manual"
 
 #: ../../contributing/intro.rst:72
 msgid ""
 "Click on the ``View Source`` button at the top of the page to find which "
 "file the page exists in."
 msgstr ""
+"Fai clic no botón ``View Source`` na parte de arriba da páxina para atopar "
+"que páxinas existen dentro."
 
 #: ../../contributing/intro.rst:75
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
 msgstr ""
+"Precisas de ter `Sphinx <https://www.sphinx-doc.org/en/master/>`_ instalado "
+"para compliar este manual."
 
 #: ../../contributing/intro.rst:79
 msgid "TODO: add build instructions"
-msgstr ""
+msgstr "TODO: engadir instrucións para compilar"
 
 #: ../../contributing/intro.rst:82
 msgid "Donations"
-msgstr ""
+msgstr "Donativos"
 
 #: ../../contributing/intro.rst:84
 msgid ""
@@ -152,4 +185,7 @@ msgid ""
 "Alternatively, you can purchase Zrythm binaries at "
 "https://www.zrythm.org/en/download.html"
 msgstr ""
-
+"Temos un `Patreon <https://www.patreon.com/alex_tee>`_ e unha conta de `"
+"LiberaPay <https://liberapay.com/Zrythm>`_ para donativos recorrentes. Se o "
+"prefires, podes mercar os paquetes binarios de Zryth en https://www.zrythm."
+"org/en/download.html"
