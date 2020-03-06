@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+# Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
 #
 # This file is part of Zrythm
 #
@@ -57,39 +57,3 @@ if not os.environ.get('DESTDIR'):
 
     if shutil.which('update-gdk-pixbuf-loaders') is not None:
         subprocess.call(['update-gdk-pixbuf-loaders'])
-
-# create hard links for fonts for user manual to
-# make size smaller
-#
-# symlinks don't work because of CORS
-#
-# the first argument will be true if the
-# "install user manual" option is set
-if (sys.argv[1] == 'true'):
-    en_parent_dir = os.path.join(docdir, 'en')
-    for lang in ['de', 'fr', 'ja', 'pt', 'pt_BR',
-            'nb_NO']:
-        # dir containing en, fr, de, etc.
-        parent_dir = os.path.join(docdir, lang)
-        fonts_dir = os.path.join (parent_dir, '_static', 'fonts')
-        en_fonts_dir = os.path.join (en_parent_dir, '_static', 'fonts')
-        if (os.path.exists(fonts_dir)):
-            shutil.rmtree(fonts_dir)
-            os.mkdir(fonts_dir)
-        for dirpath, dirnames, filenames in os.walk(en_fonts_dir):
-            for filename in filenames:
-                localdir = dirpath.replace(en_fonts_dir, '')
-                if (len(localdir) > 0 and
-                        localdir.startswith(os.path.sep)):
-                    localdir = localdir[len(os.path.sep):]
-                os.makedirs(
-                    os.path.join(
-                        fonts_dir, localdir),
-                    exist_ok=True)
-                os.link(
-                    os.path.join(
-                        en_fonts_dir, localdir,
-                        filename),
-                    os.path.join(
-                        fonts_dir, localdir,
-                        filename))

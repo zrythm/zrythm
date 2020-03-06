@@ -44,15 +44,18 @@
   <enum id="org.zrythm.Zrythm.preferences.language-enum">
     <value nick="en" value="0"/>
     <value nick="en_GB" value="1"/>
-    <value nick="de" value="2"/>
-    <value nick="fr" value="3"/>
-    <value nick="it" value="4"/>
-    <value nick="no_NB" value="5"/>
-    <value nick="es" value="6"/>
-    <value nick="ja" value="7"/>
-    <value nick="pt" value="8"/>
-    <value nick="ru" value="9"/>
-    <value nick="zh" value="10"/>
+    <value nick="gl" value="2"/>
+    <value nick="de" value="3"/>
+    <value nick="fr" value="4"/>
+    <value nick="it" value="5"/>
+    <value nick="nb_NO" value="6"/>
+    <value nick="es" value="7"/>
+    <value nick="ja" value="8"/>
+    <value nick="pl" value="9"/>
+    <value nick="pt" value="10"/>
+    <value nick="pt_BR" value="11"/>
+    <value nick="ru" value="12"/>
+    <value nick="zh" value="13"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.export-time-range-enum">
     <value nick="song" value="0"/>

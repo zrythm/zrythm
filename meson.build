@@ -46,9 +46,10 @@ docdir = join_paths (datadir, 'doc', 'zrythm')
 # Used for building manpages, manual, etc., using
 # foreach
 locales = [
-  'en', 'en_GB', 'de', 'fr', 'ja', 'pt', 'pt_BR',
-  'nb_NO', 'gl' ]
-
+  'en', 'en_GB', 'gl', 'de', 'fr', 'it',
+  'nb_NO', 'es', 'ja',
+  'pl', 'pt', 'pt_BR',
+  'ru', 'zh' ]
 
 cdata = configuration_data ()
 cdata.set_quoted (
@@ -167,6 +168,8 @@ help2man = find_program (
   required: get_option ('manpage'))
 stoat = find_program (
   ['stoat'], required: false)
+python3 = find_program (
+  ['python3', 'python'])
 
 check_headers = [
   'unistd.h',
@@ -594,10 +597,6 @@ add_project_link_arguments (
   language: [ 'c', 'cpp' ],
   )
 
-meson.add_install_script (
-  join_paths ('scripts', 'meson_post_install.py'),
-  '@0@'.format(get_option('user_manual')))
-
 ext_srcs = []
 
 subdir ('po')
@@ -608,6 +607,12 @@ subdir ('src')
 subdir ('tests')
 subdir ('doc')
 subdir ('scripts')
+
+meson.add_install_script (
+  python3.path(),
+  join_paths (
+    meson.current_source_dir (),
+    'scripts', 'meson_post_install.py'))
 
 if meson.version().version_compare('>=0.53')
 summary({

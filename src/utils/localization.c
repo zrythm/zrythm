@@ -121,13 +121,16 @@ localization_locale_exists (
   switch (lang)
     {
     IS_MATCH(ENGLISH_UK,"en_GB");
+    IS_MATCH(GALICIAN,"gl_");
     IS_MATCH(GERMAN,"de_");
     IS_MATCH(FRENCH,"fr_");
     IS_MATCH(ITALIAN,"it_");
     IS_MATCH(NORWEGIAN,"nb_");
     IS_MATCH(SPANISH,"es_");
     IS_MATCH(JAPANESE,"ja_");
+    IS_MATCH(POLISH,"pl_");
     IS_MATCH(PORTUGUESE,"pt_");
+    IS_MATCH(PORTUGUESE_BR,"pt_BR");
     IS_MATCH(RUSSIAN,"ru_");
     IS_MATCH(CHINESE,"zh_");
     default:
