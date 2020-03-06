@@ -1985,8 +1985,7 @@ on_key_release_action (
       self->alt_held = 0;
     }
 
-  if (self->action ==
-        UI_OVERLAY_ACTION_STARTING_MOVING)
+  if (ACTION_IS (STARTING_MOVING))
     {
       if (self->ctrl_held)
         self->action =
@@ -1995,13 +1994,11 @@ on_key_release_action (
         self->action =
           UI_OVERLAY_ACTION_MOVING;
     }
-  else if (self->action ==
-             UI_OVERLAY_ACTION_MOVING &&
+  else if (ACTION_IS (MOVING) &&
            self->ctrl_held)
     self->action =
       UI_OVERLAY_ACTION_MOVING_COPY;
-  else if (self->action ==
-             UI_OVERLAY_ACTION_MOVING_COPY &&
+  else if (ACTION_IS (MOVING_COPY) &&
            !self->ctrl_held)
     self->action =
       UI_OVERLAY_ACTION_MOVING;
