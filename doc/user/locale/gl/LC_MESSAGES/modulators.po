@@ -3,40 +3,43 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
+"manualmodulators/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../modulators/adding-modulators.rst:6
 msgid "Adding Modulators"
-msgstr ""
+msgstr "Engadir Moduladores"
 
 #: ../../modulators/adding-modulators.rst:8
 msgid "Modulators are Plugins that have at least one CV output port."
-msgstr ""
+msgstr "Os Moduladores son Plugins que teñen polo menos un porto de saída CV."
 
 #: ../../modulators/adding-modulators.rst:11
 #: ../../modulators/routing-modulators.rst:8
 msgid "TODO"
-msgstr ""
+msgstr "TODO"
 
 #: ../../modulators/intro.rst:6
 msgid "Modulators"
-msgstr ""
+msgstr "Moduladores"
 
 #: ../../modulators/modulators-tab.rst:6
 msgid "Modulators Tab"
-msgstr ""
+msgstr "Lapela de Moduladores"
 
 #: ../../modulators/modulators-tab.rst:8
 msgid ""
@@ -44,8 +47,10 @@ msgid ""
 "of Modulators. Modulators are associated with Tracks, so each Track will "
 "have its own list of Modulators."
 msgstr ""
+"Zrythm, ten unha lapela de Moduladores no panel inferior que pode albergar "
+"Moduladores ilimitados. Os Moduladores asócianse ás Pistas, polo que cada "
+"Pista terá a súa propia lista de Moduladores."
 
 #: ../../modulators/routing-modulators.rst:6
 msgid "Routing Modulators"
-msgstr ""
-
+msgstr "Rutas dos Moduladores"
