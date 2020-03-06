@@ -64,4 +64,11 @@ install_data (
     join_paths (
       [datadir, 'mime/packages']))
 
+# install bash completion
+install_data (
+  'zrythm-completion.bash',
+  install_dir: '/etc/bash_completion.d',
+  install_mode: 'r--r--r--',
+  rename: 'zrythm')
+
 subdir('windows')
