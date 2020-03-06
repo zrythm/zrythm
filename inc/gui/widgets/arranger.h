@@ -439,4 +439,18 @@ arranger_widget_redraw_rectangle (
   ArrangerWidget * self,
   GdkRectangle *   rect);
 
+SnapGrid *
+arranger_widget_get_snap_grid (
+  ArrangerWidget * self);
+
+/**
+ * Called from MainWindowWidget because the
+ * events don't reach here.
+ */
+gboolean
+arranger_widget_on_key_release (
+  GtkWidget *widget,
+  GdkEventKey *event,
+  ArrangerWidget * self);
+
 #endif

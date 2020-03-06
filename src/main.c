@@ -296,8 +296,9 @@ print_help ()
     _("Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n\n"
     "Options:\n"
     "  -h, --help      display this help message and exit\n"
-    "  -v, --version   output version information and exit\n"
-    "  --reset-to-factory  reset to factory settings\n\n"
+    "  -p, --print-settings  print current settings\n"
+    "  --reset-to-factory  reset to factory settings\n"
+    "  -v, --version   output version information and exit\n\n"
     "Examples:\n"
     "  zrythm -v       print version\n\n"
     "Report bugs to %s\n"),

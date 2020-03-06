@@ -332,6 +332,20 @@ z_gtk_keyval_is_ctrl (
 }
 
 /**
+ * Returns if the keyval is an arrow key.
+ */
+static inline int
+z_gtk_keyval_is_arrow (
+  const guint keyval)
+{
+  return
+    keyval == GDK_KEY_Left ||
+    keyval == GDK_KEY_Right ||
+    keyval == GDK_KEY_Down ||
+    keyval == GDK_KEY_Up;
+}
+
+/**
  * Returns if the keyval is a Shift key.
  */
 static inline int

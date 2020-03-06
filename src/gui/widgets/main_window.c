@@ -138,11 +138,11 @@ main_window_widget_refresh (
 
   // set icons
   GtkWidget * image =
-    resources_get_icon (ICON_TYPE_ZRYTHM,
-                        "zrythm.svg");
+    resources_get_icon (
+      ICON_TYPE_ZRYTHM, "zrythm.svg");
   gtk_window_set_icon (
-          GTK_WINDOW (self),
-          gtk_image_get_pixbuf (GTK_IMAGE (image)));
+    GTK_WINDOW (self),
+    gtk_image_get_pixbuf (GTK_IMAGE (image)));
 
   /* setup top and bot bars */
   top_bar_widget_refresh (self->top_bar);
@@ -223,6 +223,30 @@ main_window_widget_class_init (
 
   gtk_widget_class_set_css_name (klass,
                                  "main-window");
+}
+
+static gboolean
+on_key_release (
+  GtkWidget *widget,
+  GdkEventKey *event,
+  MainWindowWidget * self)
+{
+  g_message ("main window release");
+
+  if (!z_gtk_keyval_is_arrow (event->keyval))
+    return FALSE;
+
+  if (Z_IS_ARRANGER_WIDGET (
+        MAIN_WINDOW->last_focused))
+    {
+      arranger_widget_on_key_release (
+        widget, event,
+        Z_ARRANGER_WIDGET (
+          MAIN_WINDOW->last_focused));
+    }
+
+  /* stop other handlers */
+  return TRUE;
 }
 
 static void
@@ -367,10 +391,8 @@ main_window_widget_init (MainWindowWidget * self)
   };
 
   g_action_map_add_action_entries (
-    G_ACTION_MAP (self),
-    actions,
-    G_N_ELEMENTS (actions),
-    self);
+    G_ACTION_MAP (self), actions,
+    G_N_ELEMENTS (actions), self);
 
   g_type_ensure (HEADER_NOTEBOOK_WIDGET_TYPE);
   g_type_ensure (TOP_BAR_WIDGET_TYPE);
@@ -384,4 +406,8 @@ main_window_widget_init (MainWindowWidget * self)
     "clicked",
     G_CALLBACK (on_close_notification_clicked),
     NULL);
+
+  g_signal_connect (
+    G_OBJECT (self), "key-release-event",
+    G_CALLBACK (on_key_release), self);
 }

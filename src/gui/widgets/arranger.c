@@ -1009,6 +1009,25 @@ arranger_widget_set_cursor (
     }
 }
 
+SnapGrid *
+arranger_widget_get_snap_grid (
+  ArrangerWidget * self)
+{
+  if (self == MW_MIDI_MODIFIER_ARRANGER ||
+      self == MW_MIDI_ARRANGER ||
+      self == MW_AUTOMATION_ARRANGER ||
+      self == MW_AUDIO_ARRANGER ||
+      self == MW_CHORD_ARRANGER)
+    {
+      return SNAP_GRID_MIDI;
+    }
+  else if (self == MW_TIMELINE)
+    {
+      return SNAP_GRID_TIMELINE;
+    }
+  g_return_val_if_reached (NULL);
+}
+
 /**
  * Fills in the given array with the ArrangerObject's
  * of the given type that appear in the given
@@ -1961,12 +1980,17 @@ auto_scroll (
   return;
 }
 
-static gboolean
-on_key_release_action (
+/**
+ * Called from MainWindowWidget because the
+ * events don't reach here.
+ */
+gboolean
+arranger_widget_on_key_release (
   GtkWidget *widget,
   GdkEventKey *event,
   ArrangerWidget * self)
 {
+  g_message ("key release %d", event->keyval);
   self->key_is_pressed = 0;
 
   const guint keyval = event->keyval;
@@ -1996,12 +2020,65 @@ on_key_release_action (
     }
   else if (ACTION_IS (MOVING) &&
            self->ctrl_held)
-    self->action =
-      UI_OVERLAY_ACTION_MOVING_COPY;
+    {
+      self->action =
+        UI_OVERLAY_ACTION_MOVING_COPY;
+    }
   else if (ACTION_IS (MOVING_COPY) &&
            !self->ctrl_held)
-    self->action =
-      UI_OVERLAY_ACTION_MOVING;
+    {
+      self->action =
+        UI_OVERLAY_ACTION_MOVING;
+    }
+  else if (ACTION_IS (NONE))
+    {
+      ArrangerSelections * sel =
+        arranger_widget_get_selections (self);
+
+      if (arranger_selections_has_any (sel))
+        {
+          SnapGrid * sg =
+            arranger_widget_get_snap_grid (self);
+          int move_ticks =
+            snap_grid_get_note_ticks (
+              sg->note_length, sg->note_type);
+          (void) move_ticks;
+
+          /* check arrow movement */
+          if (keyval == GDK_KEY_Left)
+            {
+              if (self->ctrl_held)
+                {
+                  /*UndoableAction * action =*/
+                    /*arranger_selections_action_new_move (*/
+                      /*sel, - move_ticks, 0, 0,*/
+                      /*0, 0);*/
+                  /*undo_manager_perform (*/
+                    /*UNDO_MANAGER, action);*/
+                }
+            }
+          else if (keyval == GDK_KEY_Right)
+            {
+              if (self->ctrl_held)
+                {
+                  /*UndoableAction * action =*/
+                    /*arranger_selections_action_new_move (*/
+                      /*sel, move_ticks, 0, 0, 0, 0);*/
+                  /*undo_manager_perform (*/
+                    /*UNDO_MANAGER, action);*/
+
+                }
+            }
+          else if (keyval == GDK_KEY_Down)
+            {
+              g_message ("move down");
+            }
+          else if (keyval == GDK_KEY_Up)
+            {
+              g_message ("move up");
+            }
+        }
+    }
 
   if (self->type == TYPE (TIMELINE))
     {
@@ -4496,6 +4573,8 @@ on_focus (
 {
   MAIN_WINDOW->last_focused = widget;
 
+  g_message ("FOCUSED");
+
   return FALSE;
 }
 
@@ -4504,7 +4583,7 @@ on_focus_out (GtkWidget *widget,
                GdkEvent  *event,
                ArrangerWidget * self)
 {
-  /*g_message ("arranger focus out");*/
+  g_message ("arranger focus out");
 
   self->alt_held = 0;
   self->ctrl_held = 0;
@@ -4564,7 +4643,8 @@ arranger_widget_setup (
     G_CALLBACK (on_key_action), self);
   g_signal_connect (
     G_OBJECT (self), "key-release-event",
-    G_CALLBACK (on_key_release_action), self);
+    G_CALLBACK (arranger_widget_on_key_release),
+    self);
   g_signal_connect (
     G_OBJECT(self), "motion-notify-event",
     G_CALLBACK (on_motion),  self);
@@ -4591,6 +4671,9 @@ arranger_widget_setup (
     /*GTK_WIDGET (self),*/
     /*(GtkTickCallback) arranger_tick_cb,*/
     /*self, NULL);*/
+
+  gtk_widget_set_focus_on_click (
+    GTK_WIDGET (self), 1);
 }
 
 /**

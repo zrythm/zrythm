@@ -3,9 +3,9 @@ Zrythm
 
 [![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
 [![builds.sr.ht status](https://builds.sr.ht/~alextee/zrythm.svg)](https://builds.sr.ht/~alextee/zrythm?)
-[![Windows build status](https://travis-ci.org/zrythm/zrythm.svg?branch=master)](https://travis-ci.org/zrythm/zrythm)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c16bdc22f6ae4e539aa6417274e71d17)](https://www.codacy.com/manual/alex-tee/zrythm)
-[![Code coverage](https://codecov.io/gh/zrythm/zrythm/branch/master/graph/badge.svg)](https://codecov.io/gh/zrythm/zrythm)
+[![travis build status](https://img.shields.io/travis/zrythm/zrythm?label=travis%20build)](https://travis-ci.org/zrythm/zrythm)
+[![code grade](https://img.shields.io/codacy/grade/c16bdc22f6ae4e539aa6417274e71d17)](https://www.codacy.com/manual/alex-tee/zrythm)
+[![code coverage](https://img.shields.io/coveralls/github/zrythm/zrythm)](https://coveralls.io/github/zrythm/zrythm)
 
 Zrythm is a digital audio workstation designed to be
 featureful and easy to use. It allows limitless

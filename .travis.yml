@@ -39,6 +39,7 @@ before_install:
     linux)
       sudo apt-get install -y libgtk-3-dev libjack-dev libsndfile1-dev ninja-build gettext sed help2man python3-sphinx ladspa-sdk libfftw3-dev libasound2-dev libavcodec-dev libavutil-dev libavformat-dev libchromaprint-dev libsamplerate0-dev libyaml-dev librubberband-dev python3 xdg-utils git lcov
       git clone https://github.com/mesonbuild/meson /tmp/meson
+      pip install --user gcovr cpp-coveralls
       ;;
   esac
 
@@ -78,6 +79,7 @@ script:
       ninja -C build
       ninja -C build test
       ninja -C build coverage-text
-      bash <(curl -s https://codecov.io/bash)
+      #bash <(curl -s https://codecov.io/bash)
+      coveralls -e ext -e tests -e subprojects -e doc -e build/resources -b build --gcov-options '\-lp'
       ;;
   esac
