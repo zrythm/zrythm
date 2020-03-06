@@ -3,23 +3,26 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2020-03-07 09:53+0000\n"
+"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
+"manualautomation/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../automation/automation-lanes.rst:6
 msgid "Automation Lanes"
-msgstr ""
+msgstr "Envolventes de Automatización"
 
 #: ../../automation/automation-lanes.rst:8
 msgid ""
@@ -27,26 +30,34 @@ msgid ""
 " of Plugins they contain will have an option to show their Automation "
 "Lanes."
 msgstr ""
+"As Pistas que teñen controles automatizables, como Fader, Panorama e "
+"parámetros dos Plugins que conteñen terán unha opción para amosar as súas "
+"Envolventes de Automatización."
 
 #: ../../automation/automation-lanes.rst:13
 msgid ""
 "You can choose which parameter you want to automate in each Automation "
 "Lane."
 msgstr ""
+"Podes escoller que parámetro queres automatizar en cada Envolvente de "
+"Automatización."
 
 #: ../../automation/automation-lanes.rst:17
 msgid "Types of Automatable Parameters"
-msgstr ""
+msgstr "Tipos de Parámetros Automatizables"
 
 #: ../../automation/automation-lanes.rst:19
 msgid ""
 "Zrythm will draw the automation differently depending on the type of the "
 "parameter being automated. The following types of parameters exist."
 msgstr ""
+"Zrythm debuxará a automatización de xeito diferente dependendo do tipo de "
+"parámetro que se estea a automatizar. Os tipos de parámetros existentes son "
+"os seguintes."
 
 #: ../../automation/automation-lanes.rst:28
 msgid "Float"
-msgstr ""
+msgstr "Flotante"
 
 #: ../../automation/automation-lanes.rst:25
 msgid ""
@@ -54,41 +65,47 @@ msgid ""
 " given range and are the most common ones. Zrythm will draw editable "
 "curves for these types of parameters."
 msgstr ""
+"Os parámetros co tipo Flotante poden ter un valor decimal calquera dentro "
+"dun rango e son os máis comúns. Zrythm debuxará curvas editables para este "
+"tipo de parámetros."
 
 #: ../../automation/automation-lanes.rst:32
 msgid "Step"
-msgstr ""
+msgstr "Pasos"
 
 #: ../../automation/automation-lanes.rst:31
 msgid ""
 "Step parameters have values that can only be changed in increments. "
 "Zrythm will draw ladders for these types of parameters."
 msgstr ""
+"Os parámetros de Pasos teñen valores que só se poden cambiar por "
+"incrementos. Zrythm debuxará escaleiras para este tipo de parámetros."
 
 #: ../../automation/automation-lanes.rst:37
 msgid "Boolean"
-msgstr ""
+msgstr "Booleanos"
 
 #: ../../automation/automation-lanes.rst:35
 msgid ""
 "These types of parameters only have two values: On or Off. Zrythm will "
 "draw a big square for these."
 msgstr ""
+"Este tipo de parámetros só teñen dous valores: Acendido ou Apagado. Zrythm "
+"debuxará un cadrado grande para estes."
 
 #: ../../automation/automation-lanes.rst:40
 msgid "Automation Points"
-msgstr ""
+msgstr "Puntos de Automatización"
 
 #: ../../automation/automation-lanes.rst:42
 #: ../../automation/automation-lanes.rst:47
 msgid "TODO"
-msgstr ""
+msgstr "TODO"
 
 #: ../../automation/automation-lanes.rst:45
 msgid "Editing Curves"
-msgstr ""
+msgstr "Edición de Curvas"
 
 #: ../../automation/intro.rst:8
 msgid "Automation"
-msgstr ""
-
+msgstr "Automatización"
