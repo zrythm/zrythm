@@ -5,10 +5,12 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
+language: c
 os:
   - windows
   - osx
-language: c
+  - linux
+dist: bionic
 
 before_install:
 - |-
@@ -34,6 +36,10 @@ before_install:
       brew install fftw meson libsamplerate sdl2 chromaprint libgtop lilv librsvg gtk+3 || true
       brew link --overwrite python
       ;;
+    linux)
+      sudo apt-get install -y libgtk-3-dev libjack-dev libsndfile1-dev ninja-build gettext sed help2man python3-sphinx ladspa-sdk libfftw3-dev libasound2-dev libavcodec-dev libavutil-dev libavformat-dev libchromaprint-dev libsamplerate0-dev libyaml-dev librubberband-dev python3 xdg-utils git lcov
+      git clone https://github.com/mesonbuild/meson /tmp/meson
+      ;;
   esac
 
 before_cache:
@@ -52,17 +58,26 @@ cache:
 
 script:
 - |-
-  if [ $TRAVIS_OS_NAME = 'osx' ]; then
-    meson build -Denable_sdl=true -Denable_rtaudio=true -Denable_rtmidi=true
-    ninja -C build
-    ninja -C build test
-    ninja -C build install
-  else
-    # hack to enable tests
-    $mingw64 sed -i -e '27s/false/true/' meson_options.txt
-    # hack to enable sdl
-    $mingw64 sed -i -e '63s/false/true/' meson_options.txt
-    $mingw64 meson build
-    $mingw64 ninja -C build
-    $mingw64 ninja -C build test
-  fi
+  case $TRAVIS_OS_NAME in
+    osx)
+      meson build -Denable_sdl=true -Denable_rtaudio=true -Denable_rtmidi=true
+      ninja -C build
+      ninja -C build test
+      ;;
+    windows)
+      # hack to enable tests
+      $mingw64 sed -i -e '27s/false/true/' meson_options.txt
+      # hack to enable sdl
+      $mingw64 sed -i -e '63s/false/true/' meson_options.txt
+      $mingw64 meson build
+      $mingw64 ninja -C build
+      $mingw64 ninja -C build test
+      ;;
+    linux)
+      /tmp/meson/meson.py build -Denable_tests=true -Db_coverage=true
+      ninja -C build
+      ninja -C build test
+      ninja -C build coverage-text
+      bash <(curl -s https://codecov.io/bash)
+      ;;
+  esac

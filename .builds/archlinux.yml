@@ -42,9 +42,6 @@ tasks:
       ninja -C build test
       ninja -C build coverage-text
       cat build/meson-logs/coverage.txt
-      bash <(curl -s https://codecov.io/bash) -t $(cat ~/.codecov_token | tr '\n' '')
   - install: |
       cd zrythm
       DESTDIR=/tmp ninja -C build install
-  - deploy: |
-      echo TODO
