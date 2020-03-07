@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"PO-Revision-Date: 2020-03-07 13:49+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/gl/>\n"
@@ -29,14 +29,16 @@ msgid ""
 "The File Browser makes it easy to navigate through files on your computer"
 " or through your custom collections."
 msgstr ""
+"O Navegador de Ficheiros simplifica navegar entre os arquivos na túa "
+"computadora ou as túas coleccións persoais."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:12
 msgid "This is a work in progress."
-msgstr ""
+msgstr "Isto é un traballo en proceso."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:15
 msgid "Filtering"
-msgstr ""
+msgstr "Filtrado"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:17
 #: ../../plugins-files/audio-midi-files/file-browser.rst:22
@@ -45,21 +47,23 @@ msgstr "TODO"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:20
 msgid "Collections"
-msgstr ""
+msgstr "Coleccións"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:25
 msgid "Importing Files"
-msgstr ""
+msgstr "Importar Ficheiros"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:27
 msgid ""
 "Files are imported by either double clicking them in the browser or "
 "dragging and dropping them into a track."
 msgstr ""
+"Os Ficheiros pódense importar facendo dobre clic neles no navegador ou "
+"arrastrándoos a unha pista."
 
 #: ../../plugins-files/audio-midi-files/intro.rst:6
 msgid "Audio & MIDI Files"
-msgstr ""
+msgstr "Ficheiros de Audio e MIDI"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:6
 msgid "Overview"
@@ -71,48 +75,57 @@ msgid ""
 " imported by dragging and dropping from your computer or from the File "
 "Browser into a track."
 msgstr ""
+"Zrythm pode importar ficheiros de Audio e MIDI aos proxectos. Os arquivos "
+"pódense importar arrastrándoos da túa computadora ou dende o Navegador de "
+"Ficheiros a unha pista."
 
 #: ../../plugins-files/audio-midi-files/overview.rst:14
 msgid "Supported Audio Formats"
-msgstr ""
+msgstr "Formatos de Audio Admitidos"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:15
 msgid "Zrythm supports OGG, FLAC, WAV and MP3."
-msgstr ""
+msgstr "Zrythm admite OGG, FLAC, WAV e MP3."
 
 #: ../../plugins-files/intro.rst:6
 msgid "Plugins & Files"
-msgstr ""
+msgstr "Plugins e Ficheiros"
 
 #: ../../plugins-files/plugins/inspector-page.rst:6
 msgid "Inspector Page"
-msgstr ""
+msgstr "Páxina do Inspector"
 
 #: ../../plugins-files/plugins/inspector-page.rst:8
 msgid ""
 "When a Plugin is selected in the Mixer, its page will appear in the "
 "Inspector as follows."
 msgstr ""
+"Cando un Plugin está seleccionado no Mesturador, a súa páxina aparecerá no "
+"Inspector como a continuación."
 
 #: ../../plugins-files/plugins/inspector-page.rst:14
 msgid ""
 "This page will display information about the Plugin and its ports and "
 "allow you to make changes."
 msgstr ""
+"Esta páxina amosará información sobre o Plugin e os seus portos e "
+"permitirache facer cambios."
 
 #: ../../plugins-files/plugins/inspector-page.rst:19
 msgid "Changing Values"
-msgstr ""
+msgstr "Modificando Valores"
 
 #: ../../plugins-files/plugins/inspector-page.rst:21
 msgid ""
 "The values of control ports can be changed by clicking and dragging "
 "inside the bar."
 msgstr ""
+"Os valores dos portos de control pódense modificar facendo clic e "
+"arrastrando dentro da barra."
 
 #: ../../plugins-files/plugins/inspector-page.rst:25
 msgid "Connections"
-msgstr ""
+msgstr "Conectores"
 
 #: ../../plugins-files/plugins/inspector-page.rst:27
 msgid ""
@@ -120,22 +133,29 @@ msgid ""
 "route anything-to-anything. For example, you can route an LFO's CV output"
 " to a filter plugin's cutoff parameter."
 msgstr ""
+"Os portos compatibles pódense conectar entre si. Isto permíteche dirixir "
+"calquera cousa a calquera cousa. Por exemplo, podes dirixir a saída CV dun "
+"LFO ao parámetro de cutoff dun plugin de filtro."
 
 #: ../../plugins-files/plugins/inspector-page.rst:32
 msgid ""
 "The number in orange indicates how many ports are currently connected to "
 "each port."
 msgstr ""
+"O número laranxa indica cantos portos están conectados a cada porto no "
+"momento."
 
 #: ../../plugins-files/plugins/inspector-page.rst:35
 msgid ""
 "By double clicking the port, you can select a port to connect it to, or "
 "edit existing connections."
 msgstr ""
+"Facendo dobre clic no porto, podes seleccionar un porto ao que o conectar, "
+"ou editar as conexións existentes."
 
 #: ../../plugins-files/plugins/inspector-page.rst:41
 msgid "For more information about ports, see the next section."
-msgstr ""
+msgstr "Para máis información sobre os portos, bota un ollo á sección seguinte."
 
 #: ../../plugins-files/plugins/intro.rst:6
 msgid "Plugins"
@@ -150,16 +170,20 @@ msgid ""
 "The Plugin Browser makes it easy to browse and filter Plugins installed "
 "on your computer."
 msgstr ""
+"O Navegador de Plugins fai doado explorar e filtrar Plugins instalados na "
+"túa computadora."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:15
 msgid "Filters Tab"
-msgstr ""
+msgstr "Lapela de Filtros"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:16
 msgid ""
 "The filters tab at the top allows you to select how to filter the "
 "Plugins. There are 3 tabs:"
 msgstr ""
+"A lapela de filtros de arriba permíteche seleccionar como filtrar os "
+"Plugins. Hai tres lapelas:"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:21
 msgid "Collection"
@@ -170,6 +194,8 @@ msgid ""
 "This tab contains your collections. You can create collections such as "
 "\"MySynths\" and filter by the selected collections."
 msgstr ""
+"Esta lapela contén as túas coleccións. Podes crear coleccións como \""
+"OsMeusSintetizadores\" e filtrar pola colección escollida."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:24
 msgid "Category"
@@ -180,6 +206,8 @@ msgid ""
 "Filter Plugins by category based on the plugin metadata, such as "
 "\"Delay\", \"Distortion\", etc."
 msgstr ""
+"Filtrar Plugins por categoría baseándose nos metadatos dos plugins, como \""
+"Delay\", \"Distorsión\", etc."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:28
 msgid "Protocol"
@@ -187,21 +215,23 @@ msgstr "Protocolo"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:27
 msgid "Allows you to filter plugins based their protocol (LV2 or VST)."
-msgstr ""
+msgstr "Permíteche filtrar plugins baseándote no seu protocolo (LV2 ou VST)."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Collections and Protocols are not operational at the moment."
-msgstr ""
+msgstr "Coleccións e Protocolos non funcionan polo de agora."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Filter Buttons"
-msgstr ""
+msgstr "Botóns de Filtrado"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:34
 msgid ""
 "Additionally to the above, you can filter plugins based on their type. "
 "The following types exist:"
 msgstr ""
+"Complementando o anterior, podes filtrar plugins baseándote no seu tipo. "
+"Existen os seguintes tipos:"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "Instrument"
@@ -210,16 +240,19 @@ msgstr "Instrumento"
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "These plugins will create an instrument track when added to the project."
 msgstr ""
+"Estes plugins crearán unha pista de instrumento cando os engadas ao proxecto."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:42
 msgid "Effects"
-msgstr ""
+msgstr "Efectos"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:41
 msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
 "in the mixer or can be instantiated to create new bus tracks."
 msgstr ""
+"Estes plugins pódense arrastrar aos ocos dos canais presentes no mesturador "
+"ou poden ser iniciados para crear novas pistas bus."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:45
 msgid "Modulators"
@@ -230,16 +263,21 @@ msgid ""
 "These plugins output CV signals and can be used to modulate other plugin "
 "or track parameters."
 msgstr ""
+"Estes plugins sacan sinais CV que poden ser empregadas para modular outros "
+"plugins ou parámetros das pistas."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:51
 msgid "MIDI Effects"
-msgstr ""
+msgstr "Efectos MIDI"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:48
 msgid ""
 "These plugins modify incoming MIDI signals and can be used in the MIDI "
 "signal chain of an Instrument or MIDI track (coming soon)."
 msgstr ""
+"Estes plugins modifican os sinais entrantes de MIDI e poden ser empregados "
+"na cadea de sinal MIDI dun Instrumento ou dunha pista MIDI (pronto "
+"dispoñible)."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:54
 msgid ""
@@ -248,18 +286,21 @@ msgid ""
 "number of audio, MIDI, control and CV input and output ports a Plugin "
 "has."
 msgstr ""
+"Zrythm busca nos metadatos do Plugin para determinar que tipo de Plugin é. "
+"Se iso non é dabondo, Zrythm toma a decisión baseándose no número de portos "
+"de entrada e saída de audio, MIDI, control e CV que ten."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:63
 msgid "Instantiating Plugins"
-msgstr ""
+msgstr "Iniciar Plugins"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:64
 msgid "There are a couple of ways to instantiate plugins:"
-msgstr ""
+msgstr "Hai un par de xeitos de iniciar plugins:"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:67
 msgid "Drag-n-Drop"
-msgstr ""
+msgstr "Arrastrar e soltar"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:69
 msgid ""
@@ -267,52 +308,66 @@ msgid ""
 "Tracklist or into empty space in the Mixer to create a new track using "
 "that plugin."
 msgstr ""
+"Podes arrastrar e soltar o plugin desexado nun espazo baleiro na Lista de "
+"Pistas ou do Mesturador para crear unha pista nova empregando ese plugin."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:79
 msgid ""
 "Alternatively, you can drag the plugin on a mixer slot to add it there or"
 " replace the previous plugin."
 msgstr ""
+"Alternativamente, podes arrastrar o plugin a un oco do mesturador para "
+"engadilo aí ou substituír outro plugin."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:85
 msgid "If the plugin is a modulator, you can drop it into the Modulators Tab."
-msgstr ""
+msgstr "Se o plugin é un modulador, podes soltalo na Lapela de Moduladores."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:89
 msgid ""
 "The Modulators tab is a work-in-progress. For the time being, you can use"
 " them as regular effects."
 msgstr ""
+"Os Moduladores son un traballo en proceso. Polo de agora, pódelos empregar "
+"como efectos normais."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:93
 msgid "Double Click/Enter"
-msgstr ""
+msgstr "Dobre Clic/Intro"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:95
 msgid ""
 "Double click on the plugin or select it and press the return key on your "
 "keyboard to create a new track using that plugin."
 msgstr ""
+"Facendo dobre clic nun plugin ou seleccionándoo e premendo a tecla retroceso "
+"do teu teclado podes crear unha nova pista empregando ese plugin."
 
 #: ../../plugins-files/plugins/plugin-window.rst:6
 msgid "Plugin Window"
-msgstr ""
+msgstr "Xanela do Plugin"
 
 #: ../../plugins-files/plugins/plugin-window.rst:8
 msgid ""
 "When Plugin UIs are opened, a window such as the following will be "
 "displayed, if the plugin ships with its own UI."
 msgstr ""
+"Cando a Interface Gráfica do Plugin está aberta, unha xanela como a seguinte "
+"aparecerá, se o plugin conta coa súa propia UI."
 
 #: ../../plugins-files/plugins/plugin-window.rst:15
 msgid ""
 "If the plugin does not ship with its own UI, the following generic UI "
 "will be generated for it."
 msgstr ""
+"Se o plugin non conta coa súa propia Interface, xeraráselle a seguinte UI "
+"xenérica."
 
 #: ../../plugins-files/plugins/plugin-window.rst:22
 msgid "Some plugin UIs cannot be wrapped and will be opened in separate windows."
 msgstr ""
+"As Interfaces Gráficas dalgúns plugins non poden ser axustadas, polo que se "
+"abrirán en xanelas separadas."
 
 #: ../../plugins-files/plugins/ports.rst:6
 msgid "Ports"
@@ -323,12 +378,16 @@ msgid ""
 "Plugins expose Ports that are used internally to route MIDI and audio "
 "signals to/from and externally for automation."
 msgstr ""
+"Os plugins amosan os Portos que empregan internamente para dirixir sinais de "
+"audio e MIDI cara/dende eles e externamente para a automatización."
 
 #: ../../plugins-files/plugins/ports.rst:12
 msgid ""
 "A Port can only be an Input Port or an Output Port and can have one of "
 "the following types."
 msgstr ""
+"Un Porto só pode ser un Porto de Entrada ou de Saída e pode ter un dos "
+"seguintes tipos."
 
 #: ../../plugins-files/plugins/ports.rst:18
 msgid "Audio"
