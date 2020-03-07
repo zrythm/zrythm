@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-02-26 13:10+0000\n"
 "PO-Revision-Date: 2020-03-07 22:21+0000\n"
-"Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
+"Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "gl/>\n"
 "Language: gl\n"
@@ -2632,4 +2632,4 @@ msgstr "unha estación de traballo de audio dixital intuitiva e moi automatizada
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: data/zrythm.desktop.in:26
 msgid "zrythm"
-msgstr ""
+msgstr "zrythm"
