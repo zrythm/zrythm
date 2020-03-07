@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-02-26 13:10+0000\n"
-"PO-Revision-Date: 2020-03-07 13:49+0000\n"
+"PO-Revision-Date: 2020-03-07 22:21+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "gl/>\n"
@@ -357,20 +357,20 @@ msgstr "R"
 
 #: src/gui/widgets/track_input_expander.c:423
 msgid "All Channels"
-msgstr "Tódolos Canais"
+msgstr "Tódalas Canles"
 
 #: src/gui/widgets/track_input_expander.c:432
 #, c-format
 msgid "Channel %s"
-msgstr "Canal %s"
+msgstr "Canle %s"
 
 #: src/gui/widgets/track_input_expander.c:447
 msgid "No channel"
-msgstr "Sen canal"
+msgstr "Sen canle"
 
 #: src/gui/widgets/track_input_expander.c:487
 msgid "MIDI channel to filter to"
-msgstr "Canal MIDI a filtrar"
+msgstr "Canle MIDI a filtrar"
 
 #: src/gui/widgets/track_input_expander.c:633
 msgid "Inputs"
@@ -591,12 +591,12 @@ msgstr "Gravar"
 
 #: src/gui/widgets/instrument_track.c:253 src/gui/widgets/midi_track.c:218
 msgid "Show automation lanes"
-msgstr "Amosar canles de automatización"
+msgstr "Amosar estaxes de automatización"
 
 #: src/gui/widgets/instrument_track.c:259 src/gui/widgets/audio_track.c:205
 #: src/gui/widgets/midi_track.c:224
 msgid "Show track lanes"
-msgstr "Amosar canles da pista"
+msgstr "Amosar estaxes da pista"
 
 #: src/gui/widgets/instrument_track.c:265 src/gui/widgets/midi_track.c:230
 msgid "Lock track"
@@ -616,7 +616,7 @@ msgstr "Nivel da atenuación de escoita"
 
 #: src/gui/widgets/control_room.c:75
 msgid "The level to set other channels to when Listen is enabled on a channel"
-msgstr "Nivel aplicado a outros canais cando Escoitar está activado nun canal"
+msgstr "Nivel aplicado a outras canles cando Escoitar está activado nunha canle"
 
 #: src/gui/widgets/channel_slot.c:134 src/gui/widgets/channel_slot.c:149
 #: src/gui/widgets/channel_slot.c:789
@@ -649,7 +649,7 @@ msgstr "Protocolo"
 
 #: src/gui/widgets/about_dialog.c:80
 msgid "a highly automated and intuitive digital audio workstation"
-msgstr "unha moi automatizada e intuitiva estación de traballo de audio dixital"
+msgstr "unha estación de traballo de audio dixital intuitiva e moi automatizada"
 
 #: src/gui/widgets/about_dialog.c:84
 msgid "Website"
@@ -784,7 +784,7 @@ msgstr "Ruta ao motor"
 
 #: src/gui/widgets/route_target_selector.c:98
 msgid "Select channel to route signal to"
-msgstr "Seleccionar canal para dirixir o sinal"
+msgstr "Seleccionar unha canle á que lle dirixir o sinal"
 
 #: src/gui/widgets/route_target_selector.c:175
 msgid "Stereo Out"
@@ -1045,7 +1045,7 @@ msgstr "Alternar Panel Dereito"
 #: src/gui/widgets/track.c:520 src/audio/track_lane.c:68
 #, c-format
 msgid "Lane %d"
-msgstr "Canle %d"
+msgstr "Estaxe %d"
 
 #: src/gui/widgets/track.c:1408
 msgid "_Delete Track"
@@ -1094,12 +1094,12 @@ msgstr "Entrada de paso"
 #: src/gui/widgets/track.c:1528 src/gui/widgets/track.c:1586
 #, c-format
 msgid "%sMIDI Channel %d"
-msgstr "%sCanal MIDI %d"
+msgstr "%sCanle MIDI %d"
 
 #: src/gui/widgets/track.c:1564
 #, c-format
 msgid "Lane %d MIDI Ch"
-msgstr "Canle %d MIDI Ch"
+msgstr "Estaxe %d MIDI Ch"
 
 #: src/gui/widgets/track.c:1581
 #, c-format
@@ -1112,7 +1112,7 @@ msgstr "Fader"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:109
 msgid "Arranger object info"
-msgstr "Información do obxecto do Arranxo"
+msgstr "Información do obxecto do Arranxador"
 
 #: src/gui/widgets/dialogs/port_info.c:59
 #, c-format
@@ -1402,7 +1402,7 @@ msgstr "Cliente zombie"
 
 #: src/actions/arranger_selections.c:1377
 msgid "Edit arranger object(s)"
-msgstr "Editar obxecto(s) do Arranxo"
+msgstr "Editar obxecto(s) do Arranxador"
 
 #: src/actions/create_plugins_action.c:140
 #, c-format
@@ -2094,7 +2094,7 @@ msgstr "Controladores atopados"
 
 #: resources/ui/midi_controller_popover.ui:79
 msgid "Rescan"
-msgstr "Re-escanear"
+msgstr "Escanear de novo"
 
 #: resources/ui/midi_controller_popover.ui:83
 msgid "Scan again for MIDI controllers"
@@ -2139,7 +2139,7 @@ msgstr "Propietario"
 
 #: resources/ui/arranger_object_info_dialog.ui:178
 msgid "Arranger Object Info"
-msgstr "Información do Obxecto do Arranxo"
+msgstr "Información do Obxecto do Arranxador"
 
 #: resources/ui/inspector_master.ui:43 resources/ui/inspector_ap.ui:43
 #: resources/ui/inspector_midi.ui:43
@@ -2192,7 +2192,7 @@ msgstr "Información do Porto"
 
 #: resources/ui/track_lane.ui:34
 msgid "Lane 1"
-msgstr "Canle 1"
+msgstr "Estaxe 1"
 
 #: resources/ui/export_midi_file_dialog.ui:36
 msgid "Select MIDI file"
