@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: 2020-03-07 13:49+0000\n"
+"PO-Revision-Date: 2020-03-07 22:21+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
 "manualtracks/gl/>\n"
@@ -125,13 +125,13 @@ msgstr "Sen uso polo de agora."
 #: ../../tracks/instrument-track.rst:37
 #: ../../tracks/midi-track.rst:34
 msgid "Show Lanes"
-msgstr "Amosar Canles"
+msgstr "Amosar Estaxes"
 
 #: ../../tracks/audio-track.rst:30
 #: ../../tracks/instrument-track.rst:38
 #: ../../tracks/midi-track.rst:35
 msgid "Toggles the visibility of lanes."
-msgstr "Alterna a visibilidade das canles."
+msgstr "Alterna a visibilidade das estaxes."
 
 #: ../../tracks/audio-track.rst:32
 #: ../../tracks/bus-track-audio.rst:26
@@ -226,7 +226,7 @@ msgstr "TODO"
 #: ../../tracks/instrument-track.rst:73
 #: ../../tracks/midi-track.rst:87
 msgid "Lanes"
-msgstr "Canles"
+msgstr "Estaxes"
 
 #: ../../tracks/audio-track.rst:60
 #: ../../tracks/instrument-track.rst:75
@@ -461,7 +461,7 @@ msgid ""
 "created from instrument plugins."
 msgstr ""
 "A pista de instrumento emprégase para sintetizadores e outros instrumentos. "
-"O primeiro instrumento na serie do canal dunha pista de instrumentos ten que "
+"O primeiro instrumento na serie da canle dunha pista de instrumentos ten que "
 "ser un plugin de instrumento. Isto faise de xeito automático cando as pistas "
 "de instrumento se crean dende plugins de instrumento."
 
@@ -601,8 +601,8 @@ msgid ""
 "signals)."
 msgstr ""
 "As pistas MIDI, ao contrario que as de instrumento, producen saída de MIDI, "
-"polo que as series dos seus canais só poden ter efectos MIDI (plugins que "
-"modifican sinais MIDI)."
+"polo que as series das súas canles só poden ter efectos MIDI (plugins que "
+"modifican os sinais MIDI)."
 
 #: ../../tracks/midi-track.rst:49
 msgid "The name of the track. You can double click to change it."
@@ -624,15 +624,15 @@ msgstr ""
 
 #: ../../tracks/midi-track.rst:66
 msgid "Input Channel"
-msgstr "Canal de Entrada"
+msgstr "Canle de Entrada"
 
 #: ../../tracks/midi-track.rst:64
 msgid ""
 "The MIDI channel(s) to listen to for recording MIDI events. This acts as "
 "a filter so MIDI events on channels not selected will be ignored."
 msgstr ""
-"O canal(is) MIDI que escoitar para gravar eventos MIDI. Isto funciona como "
-"un filtro, de xeito que os eventos MIDI nos canais non seleccionados serán "
+"A(s) canle(s) MIDI que escoitar para gravar eventos MIDI. Isto funciona como "
+"un filtro, de xeito que os eventos MIDI nas canles non seleccionados serán "
 "ignorados."
 
 #: ../../tracks/midi-track.rst:74
@@ -669,10 +669,10 @@ msgid ""
 "all regions you create will be created in lane 1. Additional lanes will "
 "be auto-created and deleted as you add regions to each lane."
 msgstr ""
-"A pista MIDI pode ter múltiples canles para gardar rexións. Por defecto, "
-"tódalas rexións que crees estarán na canle 1. Canles adicionais serán "
+"A pista MIDI pode ter múltiples estaxes para gardar rexións. Por defecto, "
+"tódalas rexións que crees estarán na estaxe 1. Estaxes adicionais serán "
 "creadas automaticamente e eliminadas segundo vaias engadindo rexións a cada "
-"canle."
+"estaxe."
 
 #: ../../tracks/midi-track.rst:97
 msgid ""
@@ -681,15 +681,15 @@ msgid ""
 "Lanes are also useful for generally organizing your regions. For example "
 "you can keep high notes in lane 1 and bass notes in lane 2."
 msgstr ""
-"As canles son útiles durante a gravación, posto que cada vez que a "
-"reprodución entra en bucle comezará a gravar nunha nova canle e silenciará a "
-"rexión da canle anterior. As canles son tamén útiles para a organización "
-"xeral das túas rexións. Por exemplo, podes manter as notas agudas na canle 1 "
-"e as graves na canle 2."
+"As estaxes son útiles durante a gravación, posto que cada vez que a "
+"reprodución entra en bucle comezará a gravar nunha nova estaxe e silenciará "
+"a rexión da estaxe anterior. As estaxes son tamén útiles para a organización "
+"xeral das túas rexións. Por exemplo, podes manter as notas agudas na estaxe "
+"1 e as graves na estaxe 2."
 
 #: ../../tracks/midi-track.rst:105
 msgid "Lanes can be made visible by clicking the \"hamburger\" icon."
-msgstr "As canles amósanse facendo clic na icona coa \"hamburguesa\"."
+msgstr "As estaxes amósanse facendo clic na icona coa \"hamburguesa\"."
 
 #: ../../tracks/midi-track.rst:113
 msgid ""
@@ -699,7 +699,7 @@ msgid ""
 "MIDI track."
 msgstr ""
 "As pistas de automatización úsanse para crear eventos automatizados para "
-"varios parámetros da pista MIDI e de calquera plugin no seu canal. Para "
+"varios parámetros da pista MIDI e de calquera plugin na súa canle. Para "
 "amosar as pistas de automatización, fai clic na icona envolventes da pista "
 "MIDI."
 
@@ -741,7 +741,7 @@ msgid ""
 "Most types of tracks have a corresponding channel that appears in the "
 "mixer."
 msgstr ""
-"A meirande parte das pistas teñen o seu canal correspondente que aparece no "
+"A meirande parte das pistas teñen a súa canle correspondente que aparece no "
 "mesturador."
 
 #: ../../tracks/overview.rst:21
@@ -749,8 +749,8 @@ msgid ""
 "Each track has its own page in the inspector section, which is shown when"
 " selecting a Track."
 msgstr ""
-"Cada pista ten a súa propia páxina na sección inspector, que aparece cando "
-"seleccionas unha Pista."
+"Cada pista ten a súa propia páxina na sección de inspección, que aparece "
+"cando seleccionas unha Pista."
 
 #: ../../tracks/overview.rst:27
 msgid ""
@@ -789,10 +789,10 @@ msgid ""
 "automation will have an option to display automation tracks as above."
 msgstr ""
 "Cada pista ten unha cor, unha icona (correspondente ao seu tipo) un nome e "
-"varios botóns. As pistas que poden ter canles, como as de instrumento, terán "
-"tamén unha opción para dispoñer cada canle como arriba. As pistas que se "
-"poden automatizar, terán unha opción para amosar as pistas de automatización "
-"como arriba."
+"varios botóns. As pistas que poden ter estaxes, como as de instrumento, "
+"terán tamén unha opción para dispoñer cada estaxe como arriba. As pistas que "
+"se poden automatizar, terán unha opción para amosar as pistas de "
+"automatización como arriba."
 
 #: ../../tracks/overview.rst:53
 msgid ""
@@ -905,7 +905,7 @@ msgid ""
 "A Track that contains regions containing MIDI notes. It also has "
 "automation lanes for automating its components."
 msgstr ""
-"Unha pista que contén rexións con notas MIDI. Tamén ten canles de "
+"Unha pista que contén rexións con notas MIDI. Tamén ten estaxes de "
 "automatización para automatizar os seus compoñentes."
 
 #: ../../tracks/track-types.rst:16
