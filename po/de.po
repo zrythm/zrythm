@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
-"POT-Creation-Date: 2020-02-26 13:10+0000\n"
+"POT-Creation-Date: 2020-03-07 22:22+0000\n"
 "PO-Revision-Date: 2019-10-29 19:53+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
@@ -19,60 +19,65 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 3.9.1\n"
 
-#: src/zrythm.c:301
+#: src/zrythm.c:300
 msgid "Setting up main window"
 msgstr "Richte Hauptfenster ein"
 
-#: src/zrythm.c:342
+#: src/zrythm.c:341
 msgid "Loading project"
 msgstr "Lade Projekt"
 
-#: src/zrythm.c:371
+#: src/zrythm.c:370
 msgid "Initializing main window"
 msgstr "Initialisiere Hauptfenster"
 
-#: src/zrythm.c:389
+#: src/zrythm.c:388
 msgid "Initializing settings"
 msgstr "Initialisiere Einstellungen"
 
-#: src/zrythm.c:398
+#: src/zrythm.c:397
 msgid "Initializing Zrythm directories"
 msgstr "Initialisiere Zrythm-Verzeichnisse"
 
-#: src/zrythm.c:407
+#: src/zrythm.c:406
 msgid "Initializing logging system"
 msgstr "Initialisiere das Protokollierungssystem"
 
-#: src/zrythm.c:413
+#: src/zrythm.c:412
 msgid "Initializing symap"
 msgstr "Initialisieren von symap"
 
-#: src/zrythm.c:419
+#: src/zrythm.c:418
 msgid "Initializing caches"
 msgstr "Initialisiere Caches"
 
-#: src/zrythm.c:426
+#: src/zrythm.c:425
+#, fuzzy
+msgid "Initializing file manager"
+msgstr "Initialisiere Plugin-Manager"
+
+#: src/zrythm.c:432
 msgid "Initializing plugin manager"
 msgstr "Initialisiere Plugin-Manager"
 
-#: src/zrythm.c:434
+#: src/zrythm.c:440
 msgid "Scanning plugins"
 msgstr "Scanne nach Plugins"
 
-#: src/zrythm.c:581
+#: src/zrythm.c:589
 msgid "License Information"
 msgstr "Lizenzinformationen"
 
-#: src/zrythm.c:603
+#: src/zrythm.c:611
 msgid "Waiting for project"
 msgstr "Warte auf das Projekt"
 
-#: src/project.c:368 src/gui/widgets/route_target_selector_popover.c:153
-#: src/audio/track.c:1310
+#: src/project.c:393 src/gui/widgets/route_target_selector_popover.c:153
+#: src/audio/track.c:1324
 msgid "Master"
 msgstr "Master"
 
-#: src/project.c:473
+#: src/project.c:486
 #, c-format
 msgid ""
 "Newer backup found:\n"
@@ -83,12 +88,12 @@ msgstr ""
 "  %s.\n"
 "Die neuere Sicherung verwenden?"
 
-#: src/project.c:478
+#: src/project.c:491
 #, fuzzy
 msgid "Backup found"
 msgstr "Sicherung gespeichert."
 
-#: src/project.c:546
+#: src/project.c:559
 #, c-format
 msgid ""
 "This project was created with a different version of Zrythm (%s). It may not "
@@ -97,17 +102,17 @@ msgstr ""
 "Dieses Projekt wurde mit einer anderen Version von Zrythm (%s) erstellt. Es "
 "funktioniert möglicherweise nicht richtig."
 
-#: src/project.c:561
+#: src/project.c:574
 msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "Das Projekt konnte nicht geladen werden. Bitte überprüfen Sie die Protokolle "
 "für weitere Informationen."
 
-#: src/project.c:1004
+#: src/project.c:1003
 msgid "Backup saved."
 msgstr "Sicherung gespeichert."
 
-#: src/project.c:1014
+#: src/project.c:1013
 msgid "Project saved."
 msgstr "Projekt gespeichert."
 
@@ -129,21 +134,27 @@ msgstr ""
 "Zrythm ist abgestürzt. Hilf uns bitte, das zu beheben und %sreiche eine "
 "Fehlermeldung ein%s."
 
-#: src/main.c:239
-#, c-format
+#. TRANSLATORS: please keep the space at the
+#. * end
+#: src/main.c:278
+msgid "(trial) "
+msgstr ""
+
+#: src/main.c:296
+#, fuzzy, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
 "Options:\n"
-"  -h, --help      display this help and exit\n"
+"  -h, --help      display this help message and exit\n"
+"  -p, --print-settings  print current settings\n"
+"  --reset-to-factory  reset to factory settings\n"
 "  -v, --version   output version information and exit\n"
 "\n"
 "Examples:\n"
-"  zrythm          run normally\n"
+"  zrythm -v       print version\n"
 "\n"
-"Write comments and bugs to %s\n"
-"Support this project at https://liberapay.com/Zrythm\n"
-"Website https://www.zrythm.org\n"
+"Report bugs to %s\n"
 msgstr ""
 "Benutzung: zrythm [ OPTIONEN] [ PROJEKTNAME ]\n"
 "\n"
@@ -158,7 +169,14 @@ msgstr ""
 "Unterstütze dieses Projekt auf https://liberapay.com/Zrythm\n"
 "Webseite https://www.zrythm.org\n"
 
-#: src/main.c:299
+#. getopt_long already printed an error
+#. * message
+#: src/main.c:364
+#, c-format
+msgid "Unknown option\n"
+msgstr ""
+
+#: src/main.c:374
 #, fuzzy, c-format
 msgid ""
 "Zrythm-%s Copyright (C) 2018-2020 Alexandros Theodotou\n"
@@ -199,14 +217,14 @@ msgstr "Status speichern"
 
 #: src/plugins/plugin_gtk.c:82 src/plugins/lv2/lv2_gtk.c:99
 #: src/plugins/lv2/lv2_gtk.c:347 src/utils/dialogs.c:41 src/utils/dialogs.c:71
-#: src/actions/actions.c:751 resources/ui/export_midi_file_dialog.ui:54
+#: src/actions/actions.c:748 resources/ui/export_midi_file_dialog.ui:54
 #: resources/ui/port_selector_popover.ui:213 resources/ui/marker_dialog.ui:47
 #: resources/ui/quantize_dialog.ui:38
 msgid "_Cancel"
 msgstr "_Abbrechen"
 
 #: src/plugins/plugin_gtk.c:83 src/plugins/lv2/lv2_gtk.c:100
-#: src/actions/actions.c:753
+#: src/actions/actions.c:750
 msgid "_Save"
 msgstr "_Speichern"
 
@@ -243,7 +261,7 @@ msgstr "Schließen"
 msgid "Create New Project"
 msgstr "Neues Projekt erstellen"
 
-#: src/gui/widgets/create_project_dialog.c:122
+#: src/gui/widgets/create_project_dialog.c:123
 msgid "Untitled Project"
 msgstr "Unbenanntes Projekt"
 
@@ -307,19 +325,19 @@ msgstr "Port für JACK freigeben"
 msgid "Log Viewer"
 msgstr "Ereignisanzeige"
 
-#: src/gui/widgets/track_properties_expander.c:98
+#: src/gui/widgets/track_properties_expander.c:102
 msgid "Track Name"
 msgstr "Spurname"
 
-#: src/gui/widgets/track_properties_expander.c:110
+#: src/gui/widgets/track_properties_expander.c:114
 msgid "Direct Out"
 msgstr "Direct Out"
 
-#: src/gui/widgets/track_properties_expander.c:123
+#: src/gui/widgets/track_properties_expander.c:127
 msgid "Track Properties"
 msgstr "Spureigenschaften"
 
-#: src/gui/widgets/channel.c:1008
+#: src/gui/widgets/channel.c:1009
 msgid "Inserts"
 msgstr "Inserts"
 
@@ -392,22 +410,17 @@ msgstr "Wähle…"
 msgid "Click to enable MIDI controllers to be connected automatically"
 msgstr "Klick um Midi-Controller automatisch verbinden zu lassen"
 
-#: src/gui/widgets/first_run_assistant.c:88
-#: src/gui/widgets/first_run_assistant.c:123
-msgid "JACK functionality is disabled"
-msgstr "JACK-Funktionalität ist deaktiviert"
-
-#: src/gui/widgets/first_run_assistant.c:105
-msgid "PortAudio functionality is disabled"
-msgstr "PortAudio-Funktionalität ist deaktiviert"
-
-#: src/gui/widgets/first_run_assistant.c:142
+#: src/gui/widgets/first_run_assistant.c:127
 msgid "Backend combination not supported"
 msgstr "Backendkombination wird nicht unterstützt"
 
-#: src/gui/widgets/first_run_assistant.c:148
+#: src/gui/widgets/first_run_assistant.c:133
 msgid "The selected backends are operational"
 msgstr "Die gewählten Backends sind betriebsfähig"
+
+#: src/gui/widgets/first_run_assistant.c:173
+msgid "JACK MIDI can only be used with JACK audio"
+msgstr ""
 
 #: src/gui/widgets/bind_cc_dialog.c:94
 #, fuzzy
@@ -551,44 +564,44 @@ msgstr "Position"
 msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "Taktangabe – Schläge pro Takt / Schlageinheit"
 
-#: src/gui/widgets/drag_dest_box.c:246
+#: src/gui/widgets/drag_dest_box.c:264
 #, c-format
 msgid "Unsupported file type %s"
 msgstr "Nicht unterstützter Dateityp %s"
 
-#: src/gui/widgets/drag_dest_box.c:271
+#: src/gui/widgets/drag_dest_box.c:295
 msgid "No file found"
 msgstr "Keine Datei gefunden"
 
-#: src/gui/widgets/drag_dest_box.c:452
+#: src/gui/widgets/drag_dest_box.c:474
 msgid "Add _MIDI Track"
 msgstr "_MIDI-Spur hinzufügen"
 
-#: src/gui/widgets/drag_dest_box.c:464
+#: src/gui/widgets/drag_dest_box.c:486
 msgid "Add Audio Track"
 msgstr "Audiospur hinzufügen"
 
-#: src/gui/widgets/drag_dest_box.c:477 src/audio/track.c:1304
+#: src/gui/widgets/drag_dest_box.c:499 src/audio/track.c:1318
 msgid "Audio Bus"
 msgstr "Audio-Bus"
 
-#: src/gui/widgets/drag_dest_box.c:488 src/audio/track.c:1307
+#: src/gui/widgets/drag_dest_box.c:510 src/audio/track.c:1321
 msgid "MIDI Bus"
 msgstr "MIDI-Bus"
 
-#: src/gui/widgets/drag_dest_box.c:500
+#: src/gui/widgets/drag_dest_box.c:522
 msgid "Add Bus Track"
 msgstr "Busspur hinzufügen"
 
-#: src/gui/widgets/drag_dest_box.c:511 src/audio/track.c:1316
+#: src/gui/widgets/drag_dest_box.c:533 src/audio/track.c:1330
 msgid "Audio Group"
 msgstr "Audiogruppe"
 
-#: src/gui/widgets/drag_dest_box.c:522 src/audio/track.c:1319
+#: src/gui/widgets/drag_dest_box.c:544 src/audio/track.c:1333
 msgid "MIDI Group"
 msgstr "MIDI-Gruppe"
 
-#: src/gui/widgets/drag_dest_box.c:534
+#: src/gui/widgets/drag_dest_box.c:556
 msgid "Add Group Track"
 msgstr "Gruppenspur hinzufügen"
 
@@ -645,25 +658,18 @@ msgstr "Skala"
 msgid "chord"
 msgstr "Akkord"
 
-#: src/gui/widgets/plugin_browser.c:1003 resources/ui/file_browser.ui:63
+#: src/gui/widgets/plugin_browser.c:1005 resources/ui/panel_file_browser.ui:63
+#: resources/ui/file_browser.ui:63
 msgid "Collection"
 msgstr "Sammlung"
 
-#: src/gui/widgets/plugin_browser.c:1013
+#: src/gui/widgets/plugin_browser.c:1015
 msgid "Category"
 msgstr "Kategorie"
 
-#: src/gui/widgets/plugin_browser.c:1023
+#: src/gui/widgets/plugin_browser.c:1025
 msgid "Protocol"
 msgstr "Protokoll"
-
-#: src/gui/widgets/about_dialog.c:80
-msgid "a highly automated and intuitive digital audio workstation"
-msgstr "eine hochautomatisierte und intuitive Digital Audio Workstation"
-
-#: src/gui/widgets/about_dialog.c:84
-msgid "Website"
-msgstr "Webseite"
 
 #: src/gui/widgets/export_progress_dialog.c:81
 msgid "Exported"
@@ -726,57 +732,62 @@ msgstr "Spenden"
 msgid "Report a Bug"
 msgstr "Einen Fehler melden"
 
-#: src/gui/widgets/home_toolbar.c:57 src/gui/widgets/home_toolbar.c:116
+#: src/gui/widgets/home_toolbar.c:59 src/gui/widgets/home_toolbar.c:118
 #: resources/ui/home_toolbar.ui:34
 msgid "Undo"
 msgstr "Rückgängig machen"
 
-#: src/gui/widgets/home_toolbar.c:58 src/gui/widgets/home_toolbar.c:118
+#: src/gui/widgets/home_toolbar.c:60 src/gui/widgets/home_toolbar.c:120
 #: resources/ui/home_toolbar.ui:47
 msgid "Redo"
 msgstr "Wiederherstellen"
 
-#: src/gui/widgets/home_toolbar.c:120
+#: src/gui/widgets/home_toolbar.c:122
 msgid "Cut"
 msgstr "Ausschneiden"
 
-#: src/gui/widgets/home_toolbar.c:122
+#: src/gui/widgets/home_toolbar.c:124
 msgid "Copy"
 msgstr "Kopieren"
 
-#: src/gui/widgets/home_toolbar.c:124
+#: src/gui/widgets/home_toolbar.c:126
 msgid "Paste"
 msgstr "Einfügen"
 
-#: src/gui/widgets/home_toolbar.c:126
+#: src/gui/widgets/home_toolbar.c:128
 msgid "Duplicate"
 msgstr "Duplizieren"
 
-#: src/gui/widgets/home_toolbar.c:128
+#: src/gui/widgets/home_toolbar.c:130
 msgid "Delete"
 msgstr "Löschen"
 
-#: src/gui/widgets/home_toolbar.c:130
+#: src/gui/widgets/home_toolbar.c:132
 msgid "Clear Selection"
 msgstr "Auswahl aufheben"
 
-#: src/gui/widgets/home_toolbar.c:132
+#: src/gui/widgets/home_toolbar.c:134
 msgid "Select All"
 msgstr "Alles auswählen"
 
-#: src/gui/widgets/home_toolbar.c:134
+#: src/gui/widgets/home_toolbar.c:136
 msgid "Loop Selection"
 msgstr "Auswahl in Schleife wiedergeben"
 
-#: src/gui/widgets/right_dock_edge.c:102
+#: src/gui/widgets/right_dock_edge.c:103
 msgid "Plugin Browser"
 msgstr "Erweiterungsbrowser"
 
-#: src/gui/widgets/right_dock_edge.c:124
+#: src/gui/widgets/right_dock_edge.c:130
+#: src/gui/widgets/file_browser_window.c:38
+msgid "File Browser"
+msgstr "Dateibrowser"
+
+#: src/gui/widgets/right_dock_edge.c:150
 msgid "Control Room"
 msgstr "Kontrollraum"
 
-#: src/gui/widgets/right_dock_edge.c:151
+#: src/gui/widgets/right_dock_edge.c:177
 msgid "Show file browser"
 msgstr "Dateibrowser anzeigen"
 
@@ -817,25 +828,25 @@ msgstr ""
 msgid "Delete connection"
 msgstr "Objekt(e) löschen"
 
-#: src/gui/widgets/header_notebook.c:90
+#: src/gui/widgets/header_notebook.c:87
 msgid "About Zrythm"
 msgstr "Über Zrythm"
 
-#: src/gui/widgets/header_notebook.c:91 resources/ui/shortcuts.ui:40
+#: src/gui/widgets/header_notebook.c:88 resources/ui/shortcuts.ui:40
 #: resources/ui/preferences.ui:27
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: src/gui/widgets/header_notebook.c:92
+#: src/gui/widgets/header_notebook.c:89
 #, fuzzy
 msgid "Log viewer"
 msgstr "Ereignisanzeige ein-/ausblenden"
 
-#: src/gui/widgets/header_notebook.c:94
+#: src/gui/widgets/header_notebook.c:91
 msgid "Scripting interface"
 msgstr ""
 
-#: src/gui/widgets/live_waveform.c:199
+#: src/gui/widgets/live_waveform.c:201
 msgid "Live waveform indicator"
 msgstr "Live-Wellenformanzeige"
 
@@ -848,7 +859,7 @@ msgstr "Wähle eine Region aus…"
 msgid "Region"
 msgstr "Region"
 
-#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1322
+#: src/gui/widgets/event_viewer.c:108 src/audio/track.c:1336
 msgid "Marker"
 msgstr "Marker"
 
@@ -862,7 +873,7 @@ msgid "MIDI note"
 msgstr "MIDI-Note"
 
 #: src/gui/widgets/event_viewer.c:117 src/gui/widgets/event_viewer.c:586
-#: src/audio/region.c:302 src/audio/track.c:1313
+#: src/audio/region.c:302 src/audio/track.c:1327
 #: resources/ui/editor_toolbar.ui:58
 msgid "Chord"
 msgstr "Akkord"
@@ -873,8 +884,8 @@ msgstr "Automatisierungspunkt"
 
 #: src/gui/widgets/event_viewer.c:449 resources/ui/chord_selector_window.ui:239
 #: resources/ui/arranger_object_info_dialog.ui:114
-#: resources/ui/port_info_dialog.ui:161 resources/ui/file_browser.ui:84
-#: resources/ui/snap_grid_popover.ui:127
+#: resources/ui/port_info_dialog.ui:161 resources/ui/panel_file_browser.ui:84
+#: resources/ui/file_browser.ui:84 resources/ui/snap_grid_popover.ui:127
 msgid "Type"
 msgstr "Typ"
 
@@ -957,19 +968,19 @@ msgstr "CV-Eingänge"
 msgid "CV Outs"
 msgstr "CV-Ausgänge"
 
-#: src/gui/widgets/ports_expander.c:373
+#: src/gui/widgets/ports_expander.c:377
 msgid "Sends"
 msgstr "Sendet"
 
-#: src/gui/widgets/ports_expander.c:380
+#: src/gui/widgets/ports_expander.c:384
 msgid "Stereo In"
 msgstr "Stereo-Eingang"
 
-#: src/gui/widgets/ports_expander.c:387
+#: src/gui/widgets/ports_expander.c:391
 msgid "MIDI In"
 msgstr "MIDI-Eingang"
 
-#: src/gui/widgets/ports_expander.c:395
+#: src/gui/widgets/ports_expander.c:399
 msgid "MIDI Out"
 msgstr "MIDI-Ausgang"
 
@@ -977,7 +988,7 @@ msgstr "MIDI-Ausgang"
 msgid "Group"
 msgstr "Gruppe"
 
-#: src/gui/widgets/route_target_selector_popover.c:175 src/audio/track.c:1295
+#: src/gui/widgets/route_target_selector_popover.c:175 src/audio/track.c:1309
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -990,10 +1001,6 @@ msgstr "Kein Output ausgewählt"
 #, c-format
 msgid "Routing to %s"
 msgstr "Route zu %s"
-
-#: src/gui/widgets/file_browser_window.c:38
-msgid "File Browser"
-msgstr "Dateibrowser"
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
@@ -1142,7 +1149,15 @@ msgstr ""
 msgid "Port info"
 msgstr "Port"
 
-#: src/gui/backend/events.c:1488
+#: src/gui/widgets/dialogs/about_dialog.c:81
+msgid "a highly automated and intuitive digital audio workstation"
+msgstr "eine hochautomatisierte und intuitive Digital Audio Workstation"
+
+#: src/gui/widgets/dialogs/about_dialog.c:85
+msgid "Website"
+msgstr "Webseite"
+
+#: src/gui/backend/events.c:1489
 msgid "Trial limit has been reached. Zrythm will now go silent"
 msgstr ""
 
@@ -1165,82 +1180,82 @@ msgid "Error instantiating plugin. Please see log for details."
 msgstr ""
 "Fehler beim Instanziieren der Erweiterung. Bitte siehe Log für Details."
 
-#: src/utils/ui.c:576
+#: src/utils/ui.c:577
 msgid "English [en]"
 msgstr "Englisch [en]"
 
-#: src/utils/ui.c:577
+#: src/utils/ui.c:578
 #, fuzzy
 msgid "English UK [en_GB]"
 msgstr "Englisch [en]"
 
-#: src/utils/ui.c:578
+#: src/utils/ui.c:579
 msgid "German [de]"
 msgstr "Deutsch [de]"
 
-#: src/utils/ui.c:579
+#: src/utils/ui.c:580
 msgid "French [fr]"
 msgstr "Französisch [fr]"
 
-#: src/utils/ui.c:580
+#: src/utils/ui.c:581
 msgid "Italian [it]"
 msgstr "Italienisch [it]"
 
-#: src/utils/ui.c:581
+#: src/utils/ui.c:582
 #, fuzzy
 msgid "Norwegian [nb_NO]"
 msgstr "Norwegisch [nb]"
 
-#: src/utils/ui.c:582
+#: src/utils/ui.c:583
 msgid "Spanish [es]"
 msgstr "Spanisch [es]"
 
-#: src/utils/ui.c:583
+#: src/utils/ui.c:584
 msgid "Japanese [ja]"
 msgstr "Japanisch [ja]"
 
-#: src/utils/ui.c:584
+#: src/utils/ui.c:585
 msgid "Portuguese [pt]"
 msgstr "Portugiesisch [pt]"
 
-#: src/utils/ui.c:585
+#: src/utils/ui.c:586
 msgid "Russian [ru]"
 msgstr "Russisch [ru]"
 
-#: src/utils/ui.c:586
+#: src/utils/ui.c:587
 msgid "Chinese [zh]"
 msgstr "Chinesisch [zh]"
 
 #. TRANSLATORS: Dummy audio backend
-#: src/utils/ui.c:612 src/utils/ui.c:646
+#: src/utils/ui.c:616 src/utils/ui.c:656
 msgid "Dummy"
 msgstr "Dummy"
 
-#: src/utils/ui.c:648
+#: src/utils/ui.c:658
 msgid "ALSA Sequencer"
 msgstr "ALSA-Sequenzer"
 
 #. TRANSLATORS: Pan algorithm
-#: src/utils/ui.c:672
+#: src/utils/ui.c:685
 msgid "Linear"
 msgstr "Linear"
 
-#: src/utils/ui.c:673
+#: src/utils/ui.c:686
 msgid "Square Root"
 msgstr "Quadratwurzel"
 
-#: src/utils/ui.c:674
+#: src/utils/ui.c:687
 msgid "Sine (Equal Power)"
 msgstr "Sinus (Gleiche Leistung)"
 
-#: src/utils/ui.c:844
+#: src/utils/ui.c:857
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
 "install one first and restart Zrythm"
 msgstr ""
 
-#: src/utils/ui.c:849
+#: src/utils/ui.c:862
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -1257,6 +1272,54 @@ msgstr ""
 "Sprachcode <b>%s</b>  beginnen (benötigt Root-Privilegien)\n"
 "2. Führe  <b>locale-gen</b> als Root aus\n"
 "3. Starte Zrythm neu"
+
+#: src/settings/settings.c:71
+#, c-format
+msgid "Schema %s\n"
+msgstr ""
+
+#: src/settings/settings.c:76
+#, c-format
+msgid "Resetting schema %s...\n"
+msgstr ""
+
+#. TRANSLATORS: please keep the spaces
+#: src/settings/settings.c:103
+#, c-format
+msgid "  resetting %s to %s\n"
+msgstr ""
+
+#: src/settings/settings.c:145
+#, c-format
+msgid "Failed to find schema %s. Zrythm is likely not installed"
+msgstr ""
+
+#: src/settings/settings.c:159
+#, fuzzy, c-format
+msgid "Failed to view schema %s"
+msgstr "Fehler beim Suchen der Eigenschaft %s in %s"
+
+#: src/settings/settings.c:166
+#, fuzzy, c-format
+msgid "Failed to reset schema %s"
+msgstr "Fehler beim Suchen der Eigenschaft %s in %s"
+
+#: src/settings/settings.c:199
+#, c-format
+msgid ""
+"This will reset Zrythm to factory settings. You will lose all your "
+"preferences. Type 'y' to continue: "
+msgstr ""
+
+#: src/settings/settings.c:205
+#, fuzzy, c-format
+msgid "Aborting...\n"
+msgstr "Exportieren....."
+
+#: src/settings/settings.c:216
+#, c-format
+msgid "Reset to factory settings successful\n"
+msgstr ""
 
 #: src/audio/track_processor.c:194
 msgid "Piano Roll"
@@ -1276,11 +1339,11 @@ msgstr "Marker"
 msgid "PortAudio Error: %s"
 msgstr "PortAudio-Fehler: %s"
 
-#: src/audio/region.c:293 src/audio/track.c:1301
+#: src/audio/region.c:293 src/audio/track.c:1315
 msgid "MIDI"
 msgstr "MIDI"
 
-#: src/audio/region.c:296 src/audio/track.c:1298
+#: src/audio/region.c:296 src/audio/track.c:1312
 msgid "Audio"
 msgstr "Audio"
 
@@ -1288,7 +1351,7 @@ msgstr "Audio"
 msgid "Automation"
 msgstr "Automatisierung"
 
-#: src/audio/engine.c:325
+#: src/audio/engine.c:342
 #, c-format
 msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
@@ -1298,7 +1361,7 @@ msgstr ""
 "das Dummy-Backend. Bitte überprüfen Sie Ihre Backend-Einstellungen in den "
 "Einstellungen."
 
-#: src/audio/engine.c:407
+#: src/audio/engine.c:427
 #, c-format
 msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
@@ -1308,7 +1371,7 @@ msgstr ""
 "das Dummy-Backend. Bitte überprüfen Sie Ihre Backend-Einstellungen in den "
 "Einstellungen."
 
-#: src/audio/engine_alsa.c:340
+#: src/audio/engine_alsa.c:342
 #, c-format
 msgid "ALSA Error: %s"
 msgstr "ALSA-Fehler: %s"
@@ -1419,7 +1482,7 @@ msgstr "Backend-Fehler"
 msgid "Client zombie"
 msgstr "Client-Zombie"
 
-#: src/actions/arranger_selections.c:1377
+#: src/actions/arranger_selections.c:1387
 msgid "Edit arranger object(s)"
 msgstr "Arrangeur-Objekt(e) bearbeiten"
 
@@ -1433,55 +1496,55 @@ msgstr "Erstelle %s"
 msgid "Create %d %ss"
 msgstr "Erstelle %d %ss"
 
-#: src/actions/delete_tracks_action.c:114
+#: src/actions/delete_tracks_action.c:112
 msgid "Delete Track"
 msgstr "Spur löschen"
 
-#: src/actions/delete_tracks_action.c:117
+#: src/actions/delete_tracks_action.c:115
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "Lösche %d Tracks"
 
-#: src/actions/actions.c:342
+#: src/actions/actions.c:339
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is coming soon!"
 msgstr ""
 
-#: src/actions/actions.c:611
+#: src/actions/actions.c:608
 msgid ""
 "Creating new projects is disabled. Please restart Zrythm to start a new "
 "project"
 msgstr ""
 
-#: src/actions/actions.c:622 resources/ui/project_assistant.ui:86
+#: src/actions/actions.c:619 resources/ui/project_assistant.ui:86
 #: resources/ui/shortcuts.ui:104
 msgid "Create new project"
 msgstr "Neues Projekt erstellen"
 
-#: src/actions/actions.c:625
+#: src/actions/actions.c:622
 msgid "Yes"
 msgstr "Ja"
 
-#: src/actions/actions.c:627
+#: src/actions/actions.c:624
 msgid "No"
 msgstr "Nein"
 
-#: src/actions/actions.c:632
+#: src/actions/actions.c:629
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
 "Alle nicht gespeicherten Änderungen am aktuellen Projekt gehen verloren. "
 "Fortfahren?"
 
-#: src/actions/actions.c:684
+#: src/actions/actions.c:681
 msgid "Loading is disabled in the trial version"
 msgstr ""
 
-#: src/actions/actions.c:712 src/actions/actions.c:736
+#: src/actions/actions.c:709 src/actions/actions.c:733
 msgid "Saving is disabled in the trial version"
 msgstr ""
 
-#: src/actions/actions.c:748
+#: src/actions/actions.c:745
 msgid "Save Project"
 msgstr "Projekt speichern"
 
@@ -1550,21 +1613,21 @@ msgstr ""
 "Fehler beim Instanziieren der Erweiterung %s. Siehe für Details bitte in das "
 "Log."
 
-#: src/actions/create_tracks_action.c:317
+#: src/actions/create_tracks_action.c:318
 #, c-format
 msgid "Create %s Track"
 msgstr "%s Spur erstellen"
 
-#: src/actions/create_tracks_action.c:320
+#: src/actions/create_tracks_action.c:321
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "Erstelle %d %s Spuren"
 
-#: src/actions/delete_plugins_action.c:194
+#: src/actions/delete_plugins_action.c:199
 msgid "Delete Plugin"
 msgstr "Erweiterung löschen"
 
-#: src/actions/delete_plugins_action.c:197
+#: src/actions/delete_plugins_action.c:202
 #, c-format
 msgid "Delete %d Plugins"
 msgstr "%d Erweiterungen löschen"
@@ -2268,6 +2331,10 @@ msgstr "Format 1"
 msgid "Track name"
 msgstr "Spurname"
 
+#: resources/ui/panel_file_browser.ui:107 resources/ui/file_browser.ui:107
+msgid "Location"
+msgstr "Ort"
+
 #: resources/ui/port_selector_popover.ui:36
 msgid "Select a port..."
 msgstr "Wähle einen Port…"
@@ -2355,10 +2422,6 @@ msgstr "Automatisierungsspur entfernen"
 #: resources/ui/automation_track.ui:164
 msgid "Add automation track"
 msgstr "Automatisierungsspur hinzufügen"
-
-#: resources/ui/file_browser.ui:107
-msgid "Location"
-msgstr "Ort"
 
 #: resources/ui/marker_dialog.ui:94
 msgid "Marker name"
@@ -2666,6 +2729,12 @@ msgstr "eine hochautomatisierte und intuitive digitale Audioworkstation"
 msgid "zrythm"
 msgstr "zrythm"
 
+#~ msgid "JACK functionality is disabled"
+#~ msgstr "JACK-Funktionalität ist deaktiviert"
+
+#~ msgid "PortAudio functionality is disabled"
+#~ msgstr "PortAudio-Funktionalität ist deaktiviert"
+
 #, c-format
 #~ msgid "JACK Error: %s"
 #~ msgstr "JACK-Fehler: %s"
@@ -2676,10 +2745,6 @@ msgstr "zrythm"
 #, c-format
 #~ msgid "Cannot locate property %s in class %s"
 #~ msgstr "Eigenschaft %s in der Klasse %s kann nicht lokalisiert werden"
-
-#, c-format
-#~ msgid "Failed to find property %s in %s"
-#~ msgstr "Fehler beim Suchen der Eigenschaft %s in %s"
 
 #, c-format
 #~ msgid "Failed to find property %s in %s or parent %s"

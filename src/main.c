@@ -371,7 +371,7 @@ main (int    argc,
   char * ver = zrythm_get_version (0);
   fprintf (
     stdout,
-    _("Zrythm-%s Copyright © 2018-2020 Alexandros Theodotou\n\n"
+    _("Zrythm-%s Copyright (C) 2018-2020 Alexandros Theodotou\n\n"
     "Zrythm comes with ABSOLUTELY NO WARRANTY!\n\n"
     "This is free software, and you are welcome to redistribute it\n"
     "under certain conditions. See the file `COPYING' for details.\n\n"
