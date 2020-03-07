@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-02-26 13:10+0000\n"
-"PO-Revision-Date: 2020-03-01 10:33+0000\n"
+"PO-Revision-Date: 2020-03-07 09:52+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -750,7 +750,7 @@ msgstr "削除"
 
 #: src/gui/widgets/home_toolbar.c:130
 msgid "Clear Selection"
-msgstr "選択範囲を解除"
+msgstr "選択をクリア"
 
 #: src/gui/widgets/home_toolbar.c:132
 msgid "Select All"
@@ -758,7 +758,7 @@ msgstr "すべてを選択"
 
 #: src/gui/widgets/home_toolbar.c:134
 msgid "Loop Selection"
-msgstr "選択範囲のをループする"
+msgstr "ループ選択"
 
 #: src/gui/widgets/right_dock_edge.c:102
 msgid "Plugin Browser"
