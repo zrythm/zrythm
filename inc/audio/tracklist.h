@@ -104,12 +104,13 @@ static const cyaml_schema_field_t
     Tracklist, tracks, num_tracks,
     &track_schema, 0, CYAML_UNLIMITED),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
-tracklist_schema = {
-  CYAML_VALUE_MAPPING(CYAML_FLAG_POINTER,
+  tracklist_schema =
+{
+  YAML_VALUE_PTR (
     Tracklist, tracklist_fields_schema),
 };
 

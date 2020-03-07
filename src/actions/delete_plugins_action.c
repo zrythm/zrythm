@@ -56,7 +56,7 @@ delete_plugins_action_new (
               at->port_id.plugin_slot != slot)
             continue;
 
-          self->ats[j][self->num_ats[j]++] =
+          self->ats[self->num_ats++] =
             automation_track_clone (at);
         }
     }
@@ -146,10 +146,14 @@ delete_plugins_action_undo (
         track_get_automation_tracklist (track);
       for (int k = 0; k < self->ms->num_slots; k++)
         {
-          for (int j = 0; j < self->num_ats[k]; j++)
+          for (int j = 0; j < self->num_ats; j++)
             {
               AutomationTrack * cloned_at =
-                self->ats[k][j];
+                self->ats[j];
+
+              if (cloned_at->port_id.plugin_slot !=
+                    self->ms->slots[k])
+                continue;
 
               /* find corresponding automation
                * track in track and copy regions */
@@ -205,13 +209,10 @@ delete_plugins_action_free (
 {
   mixer_selections_free (self->ms);
 
-  for (int i = 0; i < self->ms->num_slots; i++)
+  for (int j = 0; j < self->num_ats; j++)
     {
-      for (int j = 0; j < self->num_ats[i]; j++)
-        {
-          AutomationTrack * at = self->ats[i][j];
-          automation_track_free (at);
-        }
+      AutomationTrack * at = self->ats[j];
+      automation_track_free (at);
     }
 
   free (self);

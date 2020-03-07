@@ -26,6 +26,8 @@
 #ifndef __UNDO_UNDOABLE_ACTION_H__
 #define __UNDO_UNDOABLE_ACTION_H__
 
+#include "utils/yaml.h"
+
 /**
  * @addtogroup actions
  *
@@ -72,6 +74,47 @@ typedef enum UndoableActionType
 
 } UndoableActionType;
 
+static const cyaml_strval_t
+undoable_action_type_strings[] =
+{
+  { "Create tracks",
+    UA_CREATE_TRACKS },
+  { "Move tracks",
+    UA_MOVE_TRACKS },
+  { "Edit tracks",
+    UA_EDIT_TRACKS },
+  { "Copy tracks",
+    UA_COPY_TRACKS },
+  { "Delete tracks",
+    UA_DELETE_TRACKS },
+  { "Create plugins",
+    UA_CREATE_PLUGINS },
+  { "Move plugins",
+    UA_MOVE_PLUGINS },
+  { "Edit plugins",
+    UA_EDIT_PLUGINS },
+  { "Copy plugins",
+    UA_COPY_PLUGINS },
+  { "Delete plugins",
+    UA_DELETE_PLUGINS },
+  { "Create arranger selections",
+    UA_CREATE_ARRANGER_SELECTIONS },
+  { "Move arranger selections",
+    UA_MOVE_ARRANGER_SELECTIONS },
+  { "Resize arranger selections",
+    UA_RESIZE_ARRANGER_SELECTIONS },
+  { "Split arranger selections",
+    UA_SPLIT_ARRANGER_SELECTIONS },
+  { "Edit arranger selections",
+    UA_EDIT_ARRANGER_SELECTIONS },
+  { "Duplicate arranger selections",
+    UA_DUPLICATE_ARRANGER_SELECTIONS },
+  { "Delete arranger selections",
+    UA_DELETE_ARRANGER_SELECTIONS },
+  { "Quantize arranger selections",
+    UA_QUANTIZE_ARRANGER_SELECTIONS },
+};
+
 typedef struct UndoableAction
 {
   UndoableActionType         type;
@@ -82,6 +125,29 @@ typedef struct UndoableAction
    */
   char *                      label;
 } UndoableAction;
+
+static const cyaml_schema_field_t
+  undoable_action_fields_schema[] =
+{
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    UndoableAction, type,
+    undoable_action_type_strings,
+    CYAML_ARRAY_LEN (undoable_action_type_strings)),
+  CYAML_FIELD_STRING_PTR (
+    "label", CYAML_FLAG_POINTER,
+    UndoableAction, label,
+    0, CYAML_UNLIMITED),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  undoable_action_schema =
+{
+  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
+    UndoableAction, undoable_action_fields_schema),
+};
 
 /**
  * Performs the action.

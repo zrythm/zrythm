@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,8 +21,9 @@
 #define __UNDO_DELETE_TRACKS_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "plugins/plugin.h"
+#include "gui/backend/tracklist_selections.h"
 #include "audio/track.h"
+#include "plugins/plugin.h"
 
 /**
  * @addtogroup actions
@@ -40,6 +41,29 @@ typedef struct DeleteTracksAction
   /** Clone of the TracklistSelections to delete. */
   TracklistSelections * tls;
 } DeleteTracksAction;
+
+static const cyaml_schema_field_t
+  delete_tracks_action_fields_schema[] =
+{
+  CYAML_FIELD_MAPPING (
+    "parent_instance", CYAML_FLAG_DEFAULT,
+    DeleteTracksAction, parent_instance,
+    undoable_action_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "tls", CYAML_FLAG_POINTER,
+    DeleteTracksAction, tls,
+    tracklist_selections_fields_schema),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  delete_tracks_action_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER, DeleteTracksAction,
+    delete_tracks_action_fields_schema),
+};
 
 UndoableAction *
 delete_tracks_action_new (

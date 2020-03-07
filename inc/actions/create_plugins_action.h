@@ -46,17 +46,50 @@ typedef struct CreatePluginsAction
 
   /** Plugins for ID remembering.
    *
-   * Do not necessarily have to be Plugin (can be int)
+   * Do not necessarily have to be Plugin (can be
+   * int)
    * but let's go with it for now. */
   Plugin *         plugins[60];
+  int              num_plugins;
 
   /**
    * PluginDescriptor to use when creating.
    */
   PluginDescriptor descr;
-
-  int              num_plugins;
 } CreatePluginsAction;
+
+static const cyaml_schema_field_t
+  create_plugins_action_fields_schema[] =
+{
+  CYAML_FIELD_MAPPING (
+    "parent_instance", CYAML_FLAG_DEFAULT,
+    CreatePluginsAction, parent_instance,
+    undoable_action_fields_schema),
+  CYAML_FIELD_INT (
+    "slot", CYAML_FLAG_DEFAULT,
+    CreatePluginsAction, slot),
+  CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    CreatePluginsAction, track_pos),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "plugins", CYAML_FLAG_DEFAULT,
+    CreatePluginsAction, plugins, num_plugins,
+    &plugin_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_MAPPING (
+    "descr", CYAML_FLAG_DEFAULT,
+    CreatePluginsAction, descr,
+    plugin_descriptor_fields_schema),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  create_plugins_action_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER, CreatePluginsAction,
+    create_plugins_action_fields_schema),
+};
 
 UndoableAction *
 create_plugins_action_new (

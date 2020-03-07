@@ -91,12 +91,12 @@
  * elements accordingly.
  */
 #define array_delete(array,size,element) \
-  for (int ii = 0; ii < size; ii++) \
+  for (size_t ii = 0; ii < (size_t) size; ii++) \
     { \
       if ((void *) array[ii] == (void *) element) \
         { \
           --size; \
-          for (int jj = ii; jj < size; jj++) \
+          for (size_t jj = ii; jj < (size_t) size; jj++) \
             { \
               array[jj] = array[jj + 1]; \
             } \

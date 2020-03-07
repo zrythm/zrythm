@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,6 +21,7 @@
 #define __UNDO_MOVE_PLUGINS_ACTION_H__
 
 #include "actions/undoable_action.h"
+#include "gui/backend/mixer_selections.h"
 
 typedef struct Plugin Plugin;
 typedef struct Track Track;
@@ -52,6 +53,41 @@ typedef struct MovePluginsAction
    */
   MixerSelections * ms;
 } MovePluginsAction;
+
+static const cyaml_schema_field_t
+  move_plugins_action_fields_schema[] =
+{
+  CYAML_FIELD_MAPPING (
+    "parent_instance", CYAML_FLAG_DEFAULT,
+    MovePluginsAction, parent_instance,
+    undoable_action_fields_schema),
+  CYAML_FIELD_INT (
+    "to_slot", CYAML_FLAG_DEFAULT,
+    MovePluginsAction, to_slot),
+  CYAML_FIELD_INT (
+    "to_track_pos", CYAML_FLAG_DEFAULT,
+    MovePluginsAction, to_track_pos),
+  CYAML_FIELD_INT (
+    "from_track_pos", CYAML_FLAG_DEFAULT,
+    MovePluginsAction, from_track_pos),
+  CYAML_FIELD_INT (
+    "is_new_channel", CYAML_FLAG_DEFAULT,
+    MovePluginsAction, is_new_channel),
+  CYAML_FIELD_MAPPING_PTR (
+    "ms", CYAML_FLAG_POINTER,
+    MovePluginsAction, ms,
+    mixer_selections_fields_schema),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  move_plugins_action_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER, MovePluginsAction,
+    move_plugins_action_fields_schema),
+};
 
 UndoableAction *
 move_plugins_action_new (

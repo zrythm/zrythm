@@ -19,26 +19,21 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "actions/undoable_action.h"
+#include "actions/undo_stack.h"
+#include "actions/undo_manager.h"
 #include "gui/widgets/header_notebook.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"
-#include "actions/undoable_action.h"
-#include "actions/undo_manager.h"
 #include "project.h"
-
-#define MAX_UNDO_STACK_LENGTH 64
+#include "utils/stack.h"
 
 void
 undo_manager_init (UndoManager * self)
 {
   g_message ("Initializing undo manager...");
-  self->undo_stack =
-    stack_new (MAX_UNDO_STACK_LENGTH);
-  self->redo_stack =
-    stack_new (MAX_UNDO_STACK_LENGTH);
-  self->undo_stack->top = -1;
-  self->redo_stack->top = -1;
-  stack_is_empty (self->undo_stack);
+  self->undo_stack = undo_stack_new ();
+  self->redo_stack = undo_stack_new ();
 }
 
 /**
@@ -47,11 +42,13 @@ undo_manager_init (UndoManager * self)
 void
 undo_manager_undo (UndoManager * self)
 {
-  g_warn_if_fail (!stack_is_empty (self->undo_stack));
+  g_warn_if_fail (
+    !undo_stack_is_empty (self->undo_stack));
 
   /* pop the action from the undo stack and undo it */
   UndoableAction * action =
-    (UndoableAction *) stack_pop (self->undo_stack);
+    (UndoableAction *)
+    undo_stack_pop (self->undo_stack);
   /* if error return. this should never happen and
    * anything that happens afterwards is undefined */
   if (undoable_action_undo (action))
@@ -61,17 +58,17 @@ undo_manager_undo (UndoManager * self)
     }
 
   /* if the redo stack is full, delete the last element */
-  if (stack_is_full (self->redo_stack))
+  if (undo_stack_is_full (self->redo_stack))
     {
       UndoableAction * action_to_delete =
-        (UndoableAction *) stack_pop_last (
+        (UndoableAction *)
+        undo_stack_pop_last (
           self->redo_stack);
       undoable_action_free (action_to_delete);
     }
 
   /* push action to the redo stack */
-  STACK_PUSH (self->redo_stack,
-              action);
+  undo_stack_push (self->redo_stack, action);
 }
 
 /**
@@ -81,11 +78,13 @@ void
 undo_manager_redo (UndoManager * self)
 {
   g_warn_if_fail (
-    !stack_is_empty (self->redo_stack));
+    !undo_stack_is_empty (self->redo_stack));
 
-  /* pop the action from the redo stack and execute it */
+  /* pop the action from the redo stack and execute
+   * it */
   UndoableAction * action =
-    (UndoableAction *) stack_pop (self->redo_stack);
+    (UndoableAction *)
+    undo_stack_pop (self->redo_stack);
 
   /* if error return. this should never happen and
    * anything that happens afterwards is undefined */
@@ -95,18 +94,19 @@ undo_manager_redo (UndoManager * self)
       return;
     }
 
-  /* if the undo stack is full, delete the last element */
-  if (stack_is_full (self->undo_stack))
+  /* if the undo stack is full, delete the last
+   * element */
+  if (undo_stack_is_full (self->undo_stack))
     {
       UndoableAction * action_to_delete =
-        (UndoableAction *) stack_pop_last (
+        (UndoableAction *)
+        undo_stack_pop_last (
           self->undo_stack);
       undoable_action_free (action_to_delete);
     }
 
   /* push action to the undo stack */
-  STACK_PUSH (self->undo_stack,
-              action);
+  undo_stack_push (self->undo_stack, action);
 }
 
 /**
@@ -124,9 +124,8 @@ undo_manager_perform (UndoManager *    self,
       return;
     }
 
-  STACK_PUSH (self->undo_stack,
-              action);
-  self->redo_stack->top = -1;
+  undo_stack_push (self->undo_stack, action);
+  self->redo_stack->stack->top = -1;
   if (MAIN_WINDOW && MW_HEADER_NOTEBOOK &&
       MW_HOME_TOOLBAR)
     home_toolbar_widget_refresh_undo_redo_buttons (

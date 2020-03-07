@@ -229,6 +229,16 @@
       </description>
     </key>
 
+    <!-- KEY: undo-stack-length -->
+    <key name="undo-stack-length" type="i">
+      <default>128</default>
+      <summary>Undo stack length</summary>
+      <description>
+        Maximum undo history stack length. Set to -1
+        for unlimited.
+      </description>
+    </key>
+
     <!-- KEY: pan-algorithm -->
     <key name="pan-algo"
       enum="org.zrythm.Zrythm.preferences.pan-algo-enum">

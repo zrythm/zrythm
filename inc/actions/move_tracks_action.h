@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -22,6 +22,7 @@
 
 #include "actions/undoable_action.h"
 #include "audio/track.h"
+#include "gui/backend/tracklist_selections.h"
 
 /**
  * @addtogroup actions
@@ -40,6 +41,32 @@ typedef struct MoveTracksAction
 
   TracklistSelections * tls;
 } MoveTracksAction;
+
+static const cyaml_schema_field_t
+  move_tracks_action_fields_schema[] =
+{
+  CYAML_FIELD_MAPPING (
+    "parent_instance", CYAML_FLAG_DEFAULT,
+    MoveTracksAction, parent_instance,
+    undoable_action_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "tls", CYAML_FLAG_POINTER,
+    MoveTracksAction, tls,
+    tracklist_selections_fields_schema),
+  CYAML_FIELD_INT (
+    "pos", CYAML_FLAG_DEFAULT,
+    MoveTracksAction, pos),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  move_tracks_action_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER, MoveTracksAction,
+    move_tracks_action_fields_schema),
+};
 
 /**
  * Move tracks to given position.

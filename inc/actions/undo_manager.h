@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -17,20 +17,53 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ *
+ * Undo manager.
+ */
+
 #ifndef __UNDO_UNDO_MANAGER_H__
 #define __UNDO_UNDO_MANAGER_H__
 
-#include "utils/stack.h"
+#include "actions/undo_stack.h"
+
+/**
+ * @addtogroup actions
+ *
+ * @{
+ */
 
 #define UNDO_MANAGER (&PROJECT->undo_manager)
 
-typedef struct UndoableAction UndoableAction;
-
+/**
+ * Undo manager.
+ */
 typedef struct UndoManager
 {
-  Stack *   undo_stack;
-  Stack *   redo_stack;
+  UndoStack *   undo_stack;
+  UndoStack *   redo_stack;
 } UndoManager;
+
+static const cyaml_schema_field_t
+  undo_manager_fields_schema[] =
+{
+  YAML_FIELD_MAPPING_PTR (
+    UndoManager, undo_stack,
+    undo_stack_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    UndoManager, redo_stack,
+    undo_stack_fields_schema),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  undo_manager_schema =
+{
+  YAML_VALUE_PTR (
+    UndoManager, undo_manager_fields_schema),
+};
 
 void
 undo_manager_init (UndoManager * self);
@@ -55,5 +88,9 @@ void
 undo_manager_perform (
   UndoManager *    self,
   UndoableAction * action);
+
+/**
+ * @}
+ */
 
 #endif

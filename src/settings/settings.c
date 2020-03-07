@@ -48,6 +48,10 @@ settings_init (Settings * self)
   self->ui =
     g_settings_new (
       GSETTINGS_ZRYTHM_PREFIX ".ui");
+
+  g_return_if_fail (
+    self->root && self->general &&
+    self->preferences && self->ui);
 }
 
 static int

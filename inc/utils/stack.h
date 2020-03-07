@@ -39,13 +39,33 @@
 #define STACK_PUSH(s, element) \
   stack_push (s, (void *) element)
 
+/**
+ * Stack implementation.
+ *
+ */
 typedef struct Stack
 {
   void **           elements;
+
+  /**
+   * Max stack size, or -1 for unlimited.
+   *
+   * If the stack has a fixed length, it will be
+   * real-time safe. If it has unlimited length,
+   * it will not be real-time safe.
+   */
   int               max_length;
+
+  /** Index of the top of the stack. */
   volatile gint     top;
 } Stack;
 
+/**
+ * Creates a new stack of the given size.
+ *
+ * @param length Stack size. If -1, the stack will
+ *   have unlimited size.
+ */
 Stack *
 stack_new (int length);
 
@@ -76,6 +96,10 @@ stack_pop (Stack * s);
  */
 void *
 stack_pop_last (Stack * s);
+
+void
+stack_free_members (
+  Stack * s);
 
 /**
  * @}

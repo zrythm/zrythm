@@ -18,6 +18,7 @@
  */
 
 #include "actions/undo_manager.h"
+#include "actions/undo_stack.h"
 #include "actions/undoable_action.h"
 #include "gui/accel.h"
 #include "gui/widgets/export_dialog.h"
@@ -28,6 +29,7 @@
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
+#include "utils/stack.h"
 
 #include <glib/gi18n.h>
 
@@ -45,10 +47,10 @@ home_toolbar_widget_refresh_undo_redo_buttons (
 
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->undo),
-    !stack_is_empty (UNDO_MANAGER->undo_stack));
+    !undo_stack_is_empty (UNDO_MANAGER->undo_stack));
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->redo),
-    !stack_is_empty (UNDO_MANAGER->redo_stack));
+    !undo_stack_is_empty (UNDO_MANAGER->redo_stack));
 
 #define SET_TOOLTIP(x, tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
@@ -56,7 +58,7 @@ home_toolbar_widget_refresh_undo_redo_buttons (
     _(tooltip))
   char * undo = _("Undo");
   char * redo = _("Redo");
-  if (stack_is_empty (UNDO_MANAGER->undo_stack))
+  if (undo_stack_is_empty (UNDO_MANAGER->undo_stack))
     {
       SET_TOOLTIP (undo, undo);
     }
@@ -64,7 +66,7 @@ home_toolbar_widget_refresh_undo_redo_buttons (
     {
       UndoableAction * ua =
         (UndoableAction *)
-        stack_peek (UNDO_MANAGER->undo_stack);
+        undo_stack_peek (UNDO_MANAGER->undo_stack);
       char * undo2 =
         undoable_action_stringize (ua);
       undo =
@@ -73,7 +75,7 @@ home_toolbar_widget_refresh_undo_redo_buttons (
       g_free (undo2);
       g_free (undo);
     }
-  if (stack_is_empty (UNDO_MANAGER->redo_stack))
+  if (undo_stack_is_empty (UNDO_MANAGER->redo_stack))
     {
       SET_TOOLTIP (redo, redo);
     }
@@ -81,7 +83,7 @@ home_toolbar_widget_refresh_undo_redo_buttons (
     {
       UndoableAction * ua =
         (UndoableAction *)
-        stack_peek (UNDO_MANAGER->redo_stack);
+        undo_stack_peek (UNDO_MANAGER->redo_stack);
       char * redo2 =
         undoable_action_stringize (ua);
       redo =

@@ -111,14 +111,14 @@ static const cyaml_schema_field_t
     "rand_ticks", CYAML_FLAG_DEFAULT,
     QuantizeOptions, rand_ticks),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
 quantize_options_schema = {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
-	  QuantizeOptions, quantize_options_fields_schema),
+    QuantizeOptions, quantize_options_fields_schema),
 };
 
 void

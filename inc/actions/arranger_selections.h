@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -30,6 +30,10 @@
 
 #include "actions/undoable_action.h"
 #include "audio/position.h"
+#include "gui/backend/automation_selections.h"
+#include "gui/backend/chord_selections.h"
+#include "gui/backend/midi_arranger_selections.h"
+#include "gui/backend/timeline_selections.h"
 
 typedef struct ArrangerSelections ArrangerSelections;
 typedef struct ArrangerObject ArrangerObject;
@@ -52,6 +56,19 @@ typedef enum ArrangerSelectionsActionResizeType
   ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP,
   ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
 } ArrangerSelectionsActionResizeType;
+
+static const cyaml_strval_t
+arranger_selections_action_resize_type_strings[] =
+{
+  { "Resize L",
+    ARRANGER_SELECTIONS_ACTION_RESIZE_L },
+  { "Resize R",
+    ARRANGER_SELECTIONS_ACTION_RESIZE_R },
+  { "Resize L (loop)",
+    ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP },
+  { "Resize R (loop)",
+    ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP },
+};
 
 /**
  * Type used when the action is an EDIT action.
@@ -90,6 +107,19 @@ typedef enum ArrangerSelectionsActionEditType
   //ARRANGER_SELECTIONS_ACTION_EDIT_RAMP,
 } ArrangerSelectionsActionEditType;
 
+static const cyaml_strval_t
+arranger_selections_action_edit_type_strings[] =
+{
+  { "Name",
+    ARRANGER_SELECTIONS_ACTION_EDIT_NAME },
+  { "Pos",
+    ARRANGER_SELECTIONS_ACTION_EDIT_POS },
+  { "Primitive",
+    ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE },
+  { "Scale",
+    ARRANGER_SELECTIONS_ACTION_EDIT_SCALE },
+};
+
 /**
  * The action.
  */
@@ -101,7 +131,8 @@ typedef struct ArrangerSelectionsAction
   ArrangerSelections * sel;
 
   /** A clone of the ArrangerSelections after the
-   * change (used in the EDIT action. */
+   * change (used in the EDIT action and
+   * quantize). */
   ArrangerSelections * sel_after;
 
   /** Type of edit action, if an Edit action. */
@@ -133,6 +164,10 @@ typedef struct ArrangerSelectionsAction
   ArrangerObject *     r1[800];
   ArrangerObject *     r2[800];
 
+  /** Number of split objects inside r1 and r2
+   * each. */
+  int                  num_split_objs;
+
   /**
    * If this is 1, the first "do" call does
    * nothing in some cases.
@@ -143,10 +178,6 @@ typedef struct ArrangerSelectionsAction
 
   /** QuantizeOptions clone, if quantizing. */
   QuantizeOptions *    opts;
-
-  /** ArrangerSelections clone with quantized
-   * positions. */
-  ArrangerSelections * quantized_sel;
 
   /** The original velocities when ramping. */
   uint8_t *            vel_before;
@@ -160,7 +191,117 @@ typedef struct ArrangerSelectionsAction
    * like a region name change.
    */
   ArrangerObject *     obj;
+
+  /* --- below for serialization only --- */
+  ChordSelections *    chord_sel;
+  ChordSelections *    chord_sel_after;
+  TimelineSelections * tl_sel;
+  TimelineSelections * tl_sel_after;
+  MidiArrangerSelections * ma_sel;
+  MidiArrangerSelections * ma_sel_after;
+  AutomationSelections * automation_sel;
+  AutomationSelections * automation_sel_after;
+
+  /* arranger objects that can be split */
+  ZRegion *            region_r1[800];
+  ZRegion *            region_r2[800];
+  MidiNote *           mn_r1[800];
+  MidiNote *           mn_r2[800];
+
+  /* single objects */
+  ZRegion *            region;
+  MidiNote *           midi_note;
+  ScaleObject *        scale;
+  Marker *             marker;
+
 } ArrangerSelectionsAction;
+
+static const cyaml_schema_field_t
+  arranger_selections_action_fields_schema[] =
+{
+  CYAML_FIELD_MAPPING (
+    "parent_instance", CYAML_FLAG_DEFAULT,
+    ArrangerSelectionsAction, parent_instance,
+    undoable_action_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "chord_sel", CYAML_FLAG_POINTER,
+    ArrangerSelectionsAction, chord_sel,
+    chord_selections_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "tl_sel", CYAML_FLAG_POINTER,
+    ArrangerSelectionsAction, tl_sel,
+    timeline_selections_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "ma_sel", CYAML_FLAG_POINTER,
+    ArrangerSelectionsAction, ma_sel,
+    midi_arranger_selections_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "automation_sel", CYAML_FLAG_POINTER,
+    ArrangerSelectionsAction, automation_sel,
+    automation_selections_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "chord_sel_after", CYAML_FLAG_POINTER,
+    ArrangerSelectionsAction, chord_sel_after,
+    chord_selections_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "tl_sel_after", CYAML_FLAG_POINTER,
+    ArrangerSelectionsAction, tl_sel_after,
+    timeline_selections_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "ma_sel_after", CYAML_FLAG_POINTER,
+    ArrangerSelectionsAction, ma_sel_after,
+    midi_arranger_selections_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "automation_sel_after", CYAML_FLAG_POINTER,
+    ArrangerSelectionsAction, automation_sel_after,
+    automation_selections_fields_schema),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "region_r1", CYAML_FLAG_DEFAULT,
+    ArrangerSelectionsAction, region_r1,
+    num_split_objs,
+    &region_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "region_r2", CYAML_FLAG_DEFAULT,
+    ArrangerSelectionsAction, region_r2,
+    num_split_objs,
+    &region_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "mn_r1", CYAML_FLAG_DEFAULT,
+    ArrangerSelectionsAction, mn_r1,
+    num_split_objs,
+    &midi_note_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "mn_r2", CYAML_FLAG_DEFAULT,
+    ArrangerSelectionsAction, mn_r2,
+    num_split_objs,
+    &midi_note_schema, 0, CYAML_UNLIMITED),
+  CYAML_FIELD_MAPPING_PTR (
+    "region", CYAML_FLAG_POINTER,
+    ArrangerSelectionsAction, region,
+    region_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "midi_note", CYAML_FLAG_POINTER,
+    ArrangerSelectionsAction, midi_note,
+    midi_note_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "scale", CYAML_FLAG_POINTER,
+    ArrangerSelectionsAction, scale,
+    scale_object_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "marker", CYAML_FLAG_POINTER,
+    ArrangerSelectionsAction, marker,
+    marker_fields_schema),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  arranger_selections_action_schema =
+{
+  YAML_VALUE_PTR (
+    ArrangerSelections,
+    arranger_selections_fields_schema),
+};
 
 /**
  * Creates a new action for creating/deleting objects.

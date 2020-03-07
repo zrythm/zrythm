@@ -29,6 +29,7 @@ action_srcs = [
   'move_plugins_action.c',
   'move_tracks_action.c',
   'undoable_action.c',
+  'undo_stack.c',
   'undo_manager.c',
 ]
 

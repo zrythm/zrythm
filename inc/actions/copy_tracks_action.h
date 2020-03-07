@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,6 +21,7 @@
 #define __UNDO_COPY_TRACKS_ACTION_H__
 
 #include "actions/undoable_action.h"
+#include "gui/backend/tracklist_selections.h"
 
 typedef struct TracklistSelections
   TracklistSelections;
@@ -37,6 +38,32 @@ typedef struct CopyTracksAction
   /** Position to copy to. */
   int                   pos;
 } CopyTracksAction;
+
+static const cyaml_schema_field_t
+  copy_tracks_action_fields_schema[] =
+{
+  CYAML_FIELD_MAPPING (
+    "parent_instance", CYAML_FLAG_DEFAULT,
+    CopyTracksAction, parent_instance,
+    undoable_action_fields_schema),
+  CYAML_FIELD_MAPPING_PTR (
+    "tls", CYAML_FLAG_POINTER,
+    CopyTracksAction, tls,
+    tracklist_selections_fields_schema),
+  CYAML_FIELD_INT (
+    "pos", CYAML_FLAG_DEFAULT,
+    CopyTracksAction, pos),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  copy_tracks_action_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER, CopyTracksAction,
+    copy_tracks_action_fields_schema),
+};
 
 UndoableAction *
 copy_tracks_action_new (

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -40,17 +40,32 @@ stack_is_empty (Stack * s)
 int
 stack_is_full (Stack * s)
 {
+  if (s->max_length == -1)
+    return 0;
   return stack_size (s) == s->max_length;
 }
 
+/**
+ * Creates a new stack of the given size.
+ *
+ * @param length Stack size. If -1, the stack will
+ *   have unlimited size.
+ */
 Stack *
 stack_new (int length)
 {
   Stack * self = calloc (1, sizeof (Stack));
 
-  self->elements =
-    calloc ((size_t) length, sizeof (void *));
-  self->max_length = length;
+  if (length == -1)
+    {
+      self->max_length = -1;
+    }
+  else
+    {
+      self->elements =
+        calloc ((size_t) length, sizeof (void *));
+      self->max_length = length;
+    }
   self->top = -1;
 
   return self;
@@ -77,8 +92,9 @@ stack_peek_last (Stack * s)
 }
 
 void
-stack_push (Stack *    s,
-            void *     element)
+stack_push (
+  Stack *    s,
+  void *     element)
 {
   if (stack_is_full (s))
     g_warning ("stack is full, cannot push");
@@ -86,6 +102,13 @@ stack_push (Stack *    s,
     {
       gint top = g_atomic_int_get (&s->top);
       g_atomic_int_inc (&s->top);
+      if (s->max_length == -1)
+        {
+          s->elements =
+            realloc (
+              s->elements,
+              (size_t) (top + 2) * sizeof (void *));
+        }
       s->elements[top + 1] = element;
     }
 }
@@ -120,4 +143,12 @@ stack_pop_last (Stack * s)
   g_atomic_int_dec_and_test (&s->top);
 
   return element;
+}
+
+void
+stack_free_members (
+  Stack * s)
+{
+  if (s->elements)
+    free (s->elements);
 }

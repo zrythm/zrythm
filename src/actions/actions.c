@@ -82,6 +82,7 @@
 #include "utils/io.h"
 #include "utils/localization.h"
 #include "utils/resources.h"
+#include "utils/stack.h"
 #include "utils/string.h"
 
 #include <gtk/gtk.h>
@@ -817,7 +818,8 @@ activate_undo (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  if (stack_is_empty (UNDO_MANAGER->undo_stack))
+  if (undo_stack_is_empty (
+        UNDO_MANAGER->undo_stack))
     return;
   undo_manager_undo (UNDO_MANAGER);
 
@@ -830,7 +832,8 @@ activate_redo (GSimpleAction *action,
                   GVariant      *variant,
                   gpointer       user_data)
 {
-  if (stack_is_empty (UNDO_MANAGER->redo_stack))
+  if (undo_stack_is_empty (
+        UNDO_MANAGER->redo_stack))
     return;
   undo_manager_redo (UNDO_MANAGER);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -72,6 +72,45 @@ typedef struct CreateTracksAction
    */
   int              pool_id;
 } CreateTracksAction;
+
+static const cyaml_schema_field_t
+  create_tracks_action_fields_schema[] =
+{
+  CYAML_FIELD_MAPPING (
+    "parent_instance", CYAML_FLAG_DEFAULT,
+    CreateTracksAction, parent_instance,
+    undoable_action_fields_schema),
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    CreateTracksAction, type, track_type_strings,
+    CYAML_ARRAY_LEN (track_type_strings)),
+  CYAML_FIELD_MAPPING (
+    "pl_descr", CYAML_FLAG_DEFAULT,
+    CreateTracksAction, pl_descr,
+    plugin_descriptor_fields_schema),
+  CYAML_FIELD_INT (
+    "is_empty", CYAML_FLAG_DEFAULT,
+    CreateTracksAction, is_empty),
+  CYAML_FIELD_INT (
+    "pos", CYAML_FLAG_DEFAULT,
+    CreateTracksAction, pos),
+  CYAML_FIELD_INT (
+    "num_tracks", CYAML_FLAG_DEFAULT,
+    CreateTracksAction, num_tracks),
+  CYAML_FIELD_INT (
+    "pool_id", CYAML_FLAG_DEFAULT,
+    CreateTracksAction, pool_id),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  create_tracks_action_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER, CreateTracksAction,
+    create_tracks_action_fields_schema),
+};
 
 /**
  * Creates a new CreateTracksAction.

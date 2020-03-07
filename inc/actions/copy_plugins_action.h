@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,6 +21,7 @@
 #define __UNDO_COPY_PLUGINS_ACTION_H__
 
 #include "actions/undoable_action.h"
+#include "gui/backend/mixer_selections.h"
 #include "plugins/plugin.h"
 
 /**
@@ -59,6 +60,38 @@ typedef struct CopyPluginsAction
    */
   MixerSelections * ms;
 } CopyPluginsAction;
+
+static const cyaml_schema_field_t
+  copy_plugins_action_fields_schema[] =
+{
+  CYAML_FIELD_MAPPING (
+    "parent_instance", CYAML_FLAG_DEFAULT,
+    CopyPluginsAction, parent_instance,
+    undoable_action_fields_schema),
+  CYAML_FIELD_INT (
+    "slot", CYAML_FLAG_DEFAULT,
+    CopyPluginsAction, slot),
+  CYAML_FIELD_INT (
+    "is_new_channel", CYAML_FLAG_DEFAULT,
+    CopyPluginsAction, is_new_channel),
+  CYAML_FIELD_INT (
+    "track_pos", CYAML_FLAG_DEFAULT,
+    CopyPluginsAction, track_pos),
+  CYAML_FIELD_MAPPING_PTR (
+    "ms", CYAML_FLAG_POINTER,
+    CopyPluginsAction, ms,
+    mixer_selections_fields_schema),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  copy_plugins_action_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER, CopyPluginsAction,
+    copy_plugins_action_fields_schema),
+};
 
 /**
  * Create a new CopyPluginsAction.

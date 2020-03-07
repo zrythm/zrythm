@@ -183,6 +183,10 @@ arranger_selections_action_new_split (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_SPLIT_ARRANGER_SELECTIONS;
 
+  ArrangerObject ** objs =
+    arranger_selections_get_all_objects (
+      self->sel, &self->num_split_objs);
+  free (objs);
   self->pos = *pos;
   position_update_ticks_and_frames (&self->pos);
 
@@ -229,7 +233,7 @@ arranger_selections_action_new_quantize (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_QUANTIZE_ARRANGER_SELECTIONS;
 
-  self->quantized_sel =
+  self->sel_after =
     arranger_selections_clone (sel);
   self->opts = quantize_options_clone (opts);
 
@@ -1226,7 +1230,7 @@ do_or_undo_quantize (
       self->sel, &size);
   ArrangerObject ** quantized_objs =
     arranger_selections_get_all_objects (
-      self->quantized_sel, &size);
+      self->sel_after, &size);
 
   for (int i = 0; i < size; i++)
     {

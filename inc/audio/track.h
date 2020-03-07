@@ -388,8 +388,7 @@ track_fields_schema[] =
     "passthrough_midi_input", CYAML_FLAG_DEFAULT,
     Track, passthrough_midi_input),
   CYAML_FIELD_MAPPING_PTR (
-    "mute",
-    CYAML_FLAG_POINTER,
+    "mute", CYAML_FLAG_POINTER,
     Track, mute, port_fields_schema),
   CYAML_FIELD_INT (
     "solo", CYAML_FLAG_DEFAULT,

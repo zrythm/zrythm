@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,6 +21,7 @@
 #define __UNDO_EDIT_TRACKS_ACTION_H__
 
 #include "actions/undoable_action.h"
+#include "gui/backend/tracklist_selections.h"
 
 typedef enum EditTracksActionType
 {
@@ -29,6 +30,19 @@ typedef enum EditTracksActionType
   EDIT_TRACK_ACTION_TYPE_VOLUME,
   EDIT_TRACK_ACTION_TYPE_PAN,
 } EditTracksActionType;
+
+static const cyaml_strval_t
+  edit_tracks_action_type_strings[] =
+{
+  { "solo",
+    EDIT_TRACK_ACTION_TYPE_SOLO    },
+  { "mute",
+    EDIT_TRACK_ACTION_TYPE_MUTE    },
+  { "volume",
+    EDIT_TRACK_ACTION_TYPE_VOLUME    },
+  { "pan",
+    EDIT_TRACK_ACTION_TYPE_PAN    },
+};
 
 typedef struct Track Track;
 typedef struct TracklistSelections
@@ -60,6 +74,50 @@ typedef struct EditTracksAction
   /* -------------- end DELTAS ------------- */
 
 } EditTracksAction;
+
+static const cyaml_schema_field_t
+  edit_tracks_action_fields_schema[] =
+{
+  CYAML_FIELD_MAPPING (
+    "parent_instance", CYAML_FLAG_DEFAULT,
+    EditTracksAction, parent_instance,
+    undoable_action_fields_schema),
+  CYAML_FIELD_ENUM (
+    "type", CYAML_FLAG_DEFAULT,
+    EditTracksAction, type,
+    edit_tracks_action_type_strings,
+    CYAML_ARRAY_LEN (
+      edit_tracks_action_type_strings)),
+  CYAML_FIELD_MAPPING_PTR (
+    "tls", CYAML_FLAG_POINTER,
+    EditTracksAction, tls,
+    tracklist_selections_fields_schema),
+  CYAML_FIELD_INT (
+    "main_track_pos", CYAML_FLAG_DEFAULT,
+    EditTracksAction, main_track_pos),
+  CYAML_FIELD_INT (
+    "solo_new", CYAML_FLAG_DEFAULT,
+    EditTracksAction, solo_new),
+  CYAML_FIELD_INT (
+    "mute_new", CYAML_FLAG_DEFAULT,
+    EditTracksAction, mute_new),
+  CYAML_FIELD_FLOAT (
+    "vol_delta", CYAML_FLAG_DEFAULT,
+    EditTracksAction, vol_delta),
+  CYAML_FIELD_FLOAT (
+    "pan_delta", CYAML_FLAG_DEFAULT,
+    EditTracksAction, pan_delta),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  edit_tracks_action_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER, EditTracksAction,
+    edit_tracks_action_fields_schema),
+};
 
 /**
  * All-in-one constructor.

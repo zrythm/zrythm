@@ -37,6 +37,75 @@
  */
 
 /**
+ * Mapping embedded inside the struct.
+ */
+#define YAML_FIELD_MAPPING_EMBEDDED( \
+  owner,member,schema) \
+  CYAML_FIELD_MAPPING ( \
+    #member, CYAML_FLAG_DEFAULT, owner, member, \
+    schema)
+
+/**
+ * Mapping pointer to a struct.
+ */
+#define YAML_FIELD_MAPPING_PTR( \
+  owner,member,schema) \
+  CYAML_FIELD_MAPPING ( \
+    #member, CYAML_FLAG_POINTER, owner, member, \
+    schema)
+
+/**
+ * Fixed-width array of pointers with variable count.
+ *
+ * @code@
+ * MyStruct * my_structs[MAX_STRUCTS];
+ * int        num_my_structs;
+ * @endcode@
+ */
+#define YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT( \
+  owner,member,schema) \
+  CYAML_FIELD_SEQUENCE_COUNT ( \
+    #member, CYAML_FLAG_DEFAULT, \
+    owner, member, num_##member, \
+    &schema, 0, CYAML_UNLIMITED)
+
+/**
+ * Dynamic-width (reallocated) array of pointers
+ * with variable count.
+ *
+ * @code@
+ * AutomationTrack ** ats;
+ * int                num_ats;
+ * int                ats_size;
+ * @endcode@
+ */
+#define YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT( \
+  owner,member,schema) \
+  CYAML_FIELD_SEQUENCE_COUNT ( \
+    #member, CYAML_FLAG_POINTER, \
+    owner, member, num_##member, \
+    &schema, 0, CYAML_UNLIMITED)
+
+/**
+ * Schema to be used as a pointer.
+ */
+#define YAML_VALUE_PTR( \
+  cc,fields_schema) \
+  CYAML_VALUE_MAPPING ( \
+    CYAML_FLAG_POINTER, cc, fields_schema)
+
+/**
+ * Schema to be used for arrays of structs directly
+ * (not as pointers).
+ *
+ * For every other case, use the PTR above.
+ */
+#define YAML_VALUE_DEFAULT( \
+  cc,fields_schema) \
+  CYAML_VALUE_MAPPING ( \
+    CYAML_FLAG_DEFAULT, cc, fields_schema)
+
+/**
  * Serializes to XML.
  *
  * MUST be free'd.
