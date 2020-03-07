@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: 2020-03-07 09:53+0000\n"
+"PO-Revision-Date: 2020-03-07 13:49+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
 "manualautomation/gl/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../automation/automation-lanes.rst:6
 msgid "Automation Lanes"
-msgstr "Envolventes de Automatización"
+msgstr "Canles de Automatización"
 
 #: ../../automation/automation-lanes.rst:8
 msgid ""
@@ -32,14 +32,14 @@ msgid ""
 msgstr ""
 "As Pistas que teñen controles automatizables, como Fader, Panorama e "
 "parámetros dos Plugins que conteñen terán unha opción para amosar as súas "
-"Envolventes de Automatización."
+"Canles de Automatización."
 
 #: ../../automation/automation-lanes.rst:13
 msgid ""
 "You can choose which parameter you want to automate in each Automation "
 "Lane."
 msgstr ""
-"Podes escoller que parámetro queres automatizar en cada Envolvente de "
+"Podes escoller que parámetro queres automatizar en cada Canle de "
 "Automatización."
 
 #: ../../automation/automation-lanes.rst:17
