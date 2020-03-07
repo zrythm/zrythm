@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-24 13:30+0000\n"
-"PO-Revision-Date: 2020-02-02 21:50+0000\n"
+"PO-Revision-Date: 2020-03-07 09:52+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../editing/clip-editors/intro.rst:6
@@ -65,6 +65,9 @@ msgid ""
 "exist). Pressing the Redo button will create the note again, and you can "
 "go back between Undo and Redo as many times as you want."
 msgstr ""
+"たとえば、MIDI ノートを作成して「元に戻す」を押すと、MIDI ノートは削除されます(Zrythm は MIDI "
+"ノートが存在しなかった状態に戻ります)。[やり直し] ボタンを押すと、MIDI "
+"ノートが再び作成され、元に戻す操作とやり直しの間に何度でも戻ることができます。"
 
 #: ../../editing/common-operations.rst:24
 msgid ""
@@ -76,15 +79,15 @@ msgstr ""
 msgid ""
 "If you Undo and then perform a new action, the Redo history will be "
 "deleted."
-msgstr ""
+msgstr "元に戻して新しい操作を実行すると、やり直し履歴は削除されます。"
 
 #: ../../editing/common-operations.rst:32
 msgid "Object Operations"
-msgstr ""
+msgstr "オブジェクト操作"
 
 #: ../../editing/common-operations.rst:34
 msgid "Cut"
-msgstr ""
+msgstr "切り取り"
 
 #: ../../editing/common-operations.rst:35
 msgid ""
@@ -95,77 +98,83 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:41
 msgid "Copy"
-msgstr ""
+msgstr "コピー"
 
 #: ../../editing/common-operations.rst:42
 msgid ""
 "Copy the selected objects to the clipboard so that they can be pasted "
 "elsewhere. The shortcut for copying is :zbutton:`Control` + :zbutton:`C`."
 msgstr ""
+"選択したオブジェクトをクリップボードにコピーして、他の場所に貼り付けることができます。コピーのショートカットは :zbutton:`Control` + "
+":zbutton:`C` です。"
 
 #: ../../editing/common-operations.rst:48
 msgid "Paste"
-msgstr ""
+msgstr "貼り付け"
 
 #: ../../editing/common-operations.rst:49
 msgid ""
 "Paste the objects currently in the clipboard to the current playhead "
 "position. The shortcut for pasting is :zbutton:`Control` + :zbutton:`V`."
 msgstr ""
+"クリップボードに置かれているオブジェクトを再生ヘッド位置に貼り付けます。貼り付けのショートカットは次のとおりです。 :zbutton:`Control` "
+"+ :zbutton:`V`"
 
 #: ../../editing/common-operations.rst:55
 msgid "Duplicate"
-msgstr ""
+msgstr "複製"
 
 #: ../../editing/common-operations.rst:56
 msgid ""
 "Create a copy of the selected objects adjacent to them. The shortcut for "
 "duplicating is :zbutton:`Control` + :zbutton:`D`."
 msgstr ""
+"コピーを作成し、選択したオブジェクトに隣接します。 複製のショートカットは :zbutton:`Control`+:zbutton:`D` です。"
 
 #: ../../editing/common-operations.rst:61
 msgid "Delete"
-msgstr ""
+msgstr "削除"
 
 #: ../../editing/common-operations.rst:62
 msgid ""
 "Delete the selected objects. You can also press :zbutton:`Delete` on your"
 " keyboard to do this."
-msgstr ""
+msgstr "選択したオブジェクトを削除します。キーボードの :zbutton:`Delete` を押してこれを行うこともできます。"
 
 #: ../../editing/common-operations.rst:67
 msgid "Selections"
-msgstr ""
+msgstr "選択範囲"
 
 #: ../../editing/common-operations.rst:69
 msgid "Clear Selection"
-msgstr ""
+msgstr "選択をクリア"
 
 #: ../../editing/common-operations.rst:70
 msgid "Clear current selection (unselect all objects)."
-msgstr ""
+msgstr "現在の選択を解除します(すべてのオブジェクトの選択を解除)。"
 
 #: ../../editing/common-operations.rst:73
 msgid "Select All"
-msgstr ""
+msgstr "すべてを選択"
 
 #: ../../editing/common-operations.rst:74
 msgid "Select all objects in the current editor."
-msgstr ""
+msgstr "現在のエディタですべてのオブジェクトを選択します。"
 
 #: ../../editing/common-operations.rst:77
 msgid "Loop Selection"
-msgstr ""
+msgstr "ループ選択"
 
 #: ../../editing/common-operations.rst:78
 msgid ""
 "Place the loop markers around the selection. The shortcut for this is "
 ":zbutton:`Control` + :zbutton:`L`."
 msgstr ""
+"選択範囲の周囲にループマーカーを配置します。このショートカットは次のとおりです。 :zbutton:`コントロール` + :zbutton:`L`"
 
 #: ../../editing/edit-modes.rst:6
 msgid "Edit Modes"
-msgstr ""
+msgstr "編集モード"
 
 #: ../../editing/edit-modes.rst:8
 msgid ""
@@ -174,14 +183,16 @@ msgid ""
 "signifies a separate edit mode, and Zrythm offers the following edit "
 "modes."
 msgstr ""
+"各エディタで作業する場合、Zrythm が提供するカーソル "
+"ツールを使用してオブジェクトを作成、編集、削除する場合がほとんどです。各カーソルは個別の編集モードを示し、Zrythm は次の編集モードを提供します。"
 
 #: ../../editing/edit-modes.rst:17
 msgid "Select/Stretch Mode"
-msgstr ""
+msgstr "選択/ストレッチ モード"
 
 #: ../../editing/edit-modes.rst:18
 msgid "This can be toggled to switch between Select and Stretch."
-msgstr ""
+msgstr "これを切り替えて、選択とストレッチを切り替えることができます。"
 
 #: ../../editing/edit-modes.rst:20
 msgid ""
@@ -189,16 +200,18 @@ msgid ""
 " objects. This is the most common mode and the most common operations can"
 " be accomplished by just using this."
 msgstr ""
+"選択モードでは、オブジェクトの選択やオブジェクトの移動、複製、サイズ変更ができます。これは最も一般的なモードであり、最も一般的な操作は、これを使用するだけ"
+"で実行できます。"
 
 #: ../../editing/edit-modes.rst:25
 msgid ""
 "Stretch mode is similar to the Select mode, with the exception that when "
 "you resize objects, their contents will be stretched to fit the new size."
-msgstr ""
+msgstr "ストレッチ モードは選択モードと似ていますが、オブジェクトのサイズを変更すると、その内容が新しいサイズに合わせて拡大されます。"
 
 #: ../../editing/edit-modes.rst:30
 msgid "Selecting Objects"
-msgstr ""
+msgstr "オブジェクトの選択"
 
 #: ../../editing/edit-modes.rst:31
 msgid ""
@@ -209,11 +222,11 @@ msgstr ""
 
 #: ../../editing/edit-modes.rst:36
 msgid "Selected objects will have brighter color than non-selected objects."
-msgstr ""
+msgstr "選択したオブジェクトは、選択されていないオブジェクトよりも明るい色になります。"
 
 #: ../../editing/edit-modes.rst:40
 msgid "Moving and Cloning Objects"
-msgstr ""
+msgstr "オブジェクトの移動と複製"
 
 #: ../../editing/edit-modes.rst:41
 msgid ""
@@ -226,13 +239,13 @@ msgstr ""
 
 #: ../../editing/edit-modes.rst:48
 msgid "Resizing Objects"
-msgstr ""
+msgstr "オブジェクトのサイズ変更"
 
 #: ../../editing/edit-modes.rst:49
 msgid ""
 "Objects that have length, such as regions and MIDI notes, can be resized "
 "by clicking and dragging their edges."
-msgstr ""
+msgstr "リージョンや MIDI ノートなどの長さを持つオブジェクトは、その端をクリックしてドラッグすることでサイズ変更できます。"
 
 #: ../../editing/edit-modes.rst:52
 msgid ""
@@ -240,6 +253,8 @@ msgid ""
 "the bottom half of the object will allow you to resize the object by "
 "repeating it, instead of just resizing it."
 msgstr ""
+"クリップなど、繰り返し可能なオブジェクトでは、オブジェクトの下半分にカーソルを移動すると、オブジェクトのサイズを変更するのではなく、オブジェクトの内容を繰"
+"り返してサイズ変更できます。"
 
 #: ../../editing/edit-modes.rst:57
 msgid ""
@@ -247,10 +262,12 @@ msgid ""
 "them instead of repeat them, their length must be changed or their clip "
 "markers must be moved so that they are not repeated anymore."
 msgstr ""
+"サイズ変更の場合、既に繰り返されているオブジェクトは繰り返ししかできません。繰り返しではなくサイズを変更するには、長さを変更するか、クリップマーカーを移動"
+"して繰り返し表示しないようにする必要があります。"
 
 #: ../../editing/edit-modes.rst:65
 msgid "Cutting Objects"
-msgstr ""
+msgstr "オブジェクトの切り取り"
 
 #: ../../editing/edit-modes.rst:66
 msgid ""
@@ -260,7 +277,7 @@ msgstr ""
 
 #: ../../editing/edit-modes.rst:71
 msgid "Edit Mode"
-msgstr ""
+msgstr "編集モード"
 
 #: ../../editing/edit-modes.rst:72
 msgid ""
@@ -269,6 +286,8 @@ msgid ""
 "Edit mode this is accomplished by single clicking and dragging, which is "
 "more efficient when creating a large number of objects."
 msgstr ""
+"このモードは、オブジェクトを素早く作成または削除するために使用されます。ダブルクリックとドラッグで選択モードでオブジェクトを作成することはできますが、"
+"編集モードではクリックとドラッグを 1 回だけ行うことで、多数のオブジェクトを作成する場合の方が効率的です。"
 
 #: ../../editing/edit-modes.rst:78
 msgid ""
@@ -279,7 +298,7 @@ msgstr ""
 
 #: ../../editing/edit-modes.rst:84
 msgid "Cut Mode"
-msgstr ""
+msgstr "カットモード"
 
 #: ../../editing/edit-modes.rst:85
 msgid ""
@@ -290,7 +309,7 @@ msgstr ""
 
 #: ../../editing/edit-modes.rst:90
 msgid "Erase Mode"
-msgstr ""
+msgstr "消去モード"
 
 #: ../../editing/edit-modes.rst:91
 msgid ""
