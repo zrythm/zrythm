@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: 2020-03-07 13:49+0000\n"
+"PO-Revision-Date: 2020-03-07 22:21+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
 "manualplugins-files/gl/>\n"
@@ -93,7 +93,7 @@ msgstr "Plugins e Ficheiros"
 
 #: ../../plugins-files/plugins/inspector-page.rst:6
 msgid "Inspector Page"
-msgstr "Páxina do Inspector"
+msgstr "Páxina de Inspección"
 
 #: ../../plugins-files/plugins/inspector-page.rst:8
 msgid ""
@@ -251,7 +251,7 @@ msgid ""
 "These plugins can be dragged into the insert slots of existing channels "
 "in the mixer or can be instantiated to create new bus tracks."
 msgstr ""
-"Estes plugins pódense arrastrar aos ocos dos canais presentes no mesturador "
+"Estes plugins pódense arrastrar aos ocos das canles presentes no mesturador "
 "ou poden ser iniciados para crear novas pistas bus."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:45
@@ -399,30 +399,37 @@ msgid ""
 "Plugins will have at least two of these as inputs for Left and Right, and"
 " at least two as outputs."
 msgstr ""
+"Os portos deste tipo reciben ou envían sinais de audio sen procesar. "
+"Xeralmente, os Plugins de Efectos terán polo menos dous destes portos como "
+"entradas Esquerda e Dereita, e polo menos outros dous como saídas."
 
 #: ../../plugins-files/plugins/ports.rst:22
 msgid "Event"
-msgstr ""
+msgstr "Evento"
 
 #: ../../plugins-files/plugins/ports.rst:21
 msgid ""
 "Event Ports are mainly used for routing MIDI signals. Instrument Plugins "
 "will have at least one Event Port."
 msgstr ""
+"Os Portos de Evento utilízanse principalmente para dirixir sinais MIDI. Os "
+"Plugins de Instrumento teñen polo menos un Porto de Evento."
 
 #: ../../plugins-files/plugins/ports.rst:26
 msgid "Control"
-msgstr ""
+msgstr "Control"
 
 #: ../../plugins-files/plugins/ports.rst:25
 msgid ""
 "Control Ports are Plugin parameters that are usually shown inside the "
 "Plugin's UI. These can be automated in automation lanes."
 msgstr ""
+"Os Portos de Control son parámetros dos Plugins xeralmente amosados na súa "
+"Interface Gráfica. Poden ser automatizados en estaxes de automatización."
 
 #: ../../plugins-files/plugins/ports.rst:34
 msgid "CV"
-msgstr ""
+msgstr "CV"
 
 #: ../../plugins-files/plugins/ports.rst:29
 msgid ""
@@ -431,6 +438,10 @@ msgid ""
 "at least one CV output Port which can be routed to Plugin Control Ports "
 "for automation."
 msgstr ""
+"Os Portos CV son sinais continuos que poden ser enviados a ou emitidos por "
+"Plugins, empregándose fundamentalmente polos Moduladores. Cada Modulador ten "
+"polo menos un Porto de saída CV que pode ser enviado aos Portos de Control "
+"dos Plugins para a automatización."
 
 #: ../../plugins-files/plugins/ports.rst:36
 msgid ""
@@ -438,20 +449,25 @@ msgid ""
 " of CV ports. CV output Ports may be routed to both CV input Ports and "
 "Control input Ports."
 msgstr ""
+"Polo xeral, só se poden conectar Portos do mesmo tipo, coa excepción dos "
+"Portos CV. Os Portos de Saída CV pódense dirixir tanto a Portos de Entrada "
+"CV como a Portos de Entrada de Control."
 
 #: ../../plugins-files/plugins/ports.rst:41
 msgid "Output Ports may only be routed to Input Ports and vice versa."
-msgstr ""
+msgstr "Os Portos de Saída só se poden dirixir a Portos de Entrada e viceversa."
 
 #: ../../plugins-files/plugins/ports.rst:45
 msgid ""
 "Tracks/channels also have their own ports, for example for the fader, "
 "pan, and enabled status (on/off)."
 msgstr ""
+"As Pistas/Canles tamén teñen os seus propios portos, por exemplo para o "
+"fader, o panorama, e o estado da activación (acendido/apagado)."
 
 #: ../../plugins-files/plugins/scanning.rst:6
 msgid "Scanning for Plugins"
-msgstr ""
+msgstr "Escanear Plugins"
 
 #: ../../plugins-files/plugins/scanning.rst:8
 msgid ""
@@ -459,16 +475,21 @@ msgid ""
 "until it is closed. Zrythm supports both LV2 and VST plugins, although "
 "LV2 is the recommended standard."
 msgstr ""
+"Zrythm escanea os plugins no arranque e lembrará eses plugins ata que o "
+"peches. Zrythm admite tanto LV2 como VST plugins, aínda que LV2 é o estándar "
+"aconsellado."
 
 #: ../../plugins-files/plugins/scanning.rst:13
 msgid ""
 "Plugin scanning can be disableld by passing NO_SCAN_PLUGINS=1 when "
 "running Zrythm."
 msgstr ""
+"O escaneo de plugins pódese desactivar mediante NO_SCAN_PLUGINS=1 no "
+"arranque de Zrythm."
 
 #: ../../plugins-files/plugins/scanning.rst:17
 msgid "LV2 Scan"
-msgstr ""
+msgstr "Escanear LV2"
 
 #: ../../plugins-files/plugins/scanning.rst:19
 msgid ""
@@ -477,30 +498,35 @@ msgid ""
 "bypass this behavior by passing the ``LV2_PATH`` environment variable to "
 "specify custom paths. For example, ``LV2_PATH=~/custom-lv2-dir zrythm``."
 msgstr ""
+"Zrythm escaneará os plugins LV2 nos directorios especificados `aquí "
+"<https://lv2plug.in/pages/filesystem-hierarchy-standard.html>`_. Podes "
+"obviar esta característica mediante a variable da contorna``LV2_PATH`` para "
+"especificar directorios personalizados. Por exemplo, ``LV2_PATH=~/custom-lv2-"
+"dir zrythm``."
 
 #: ../../plugins-files/plugins/scanning.rst:26
 msgid "VST Scan"
-msgstr ""
+msgstr "Escanear VST"
 
 #: ../../plugins-files/plugins/scanning.rst:28
 msgid "On UNIX, Zrythm will scan for VST plugins in the following paths."
-msgstr ""
+msgstr "En UNIX, Zrythm escaneará os plugins VST nos seguintes directorios."
 
 #: ../../plugins-files/plugins/scanning.rst:31
 msgid "``~/.vst``"
-msgstr ""
+msgstr "``~/.vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:32
 msgid "``~/vst``"
-msgstr ""
+msgstr "``~/vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:33
 msgid "``/usr/local/lib/vst``"
-msgstr ""
+msgstr "``/usr/local/lib/vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:34
 msgid "``/usr/lib/vst``"
-msgstr ""
+msgstr "``/usr/lib/vst``"
 
 #: ../../plugins-files/plugins/scanning.rst:36
 msgid ""
@@ -508,10 +534,13 @@ msgid ""
 "variable to specify custom paths. For example, ``VST_PATH=~/custom-vst-"
 "dir zrythm``."
 msgstr ""
+"Podes obviar este comportamento mediante a variable da contorna ``VST_PATH`` "
+"para especificar directorios personalizados. Por exemplo ``VST_PATH=~/custom-"
+"vst-dir zrythm``."
 
 #: ../../plugins-files/plugins/scanning.rst:40
 msgid "``lib`` will be replaced with ``lib64`` depending on your system."
-msgstr ""
+msgstr "``lib`` substituirase por ``lib64`` dependendo do teu sistema."
 
 #: ../../plugins-files/plugins/scanning.rst:43
 msgid ""
@@ -519,22 +548,25 @@ msgid ""
 "plug-in locations on Windows <https://helpcenter.steinberg.de/hc/en-"
 "us/articles/115000177084-VST-plug-in-locations-on-Windows>`_."
 msgstr ""
+"En Windows, Zrythm escaneará os plugins nos directorios especificados en `"
+"VST plug-in locations on Windows <https://helpcenter.steinberg.de/hc/en-us/"
+"articles/115000177084-VST-plug-in-locations-on-Windows>`_."
 
 #: ../../plugins-files/plugins/scanning.rst:46
 msgid "``C:\\Program Files\\VSTPlugins``"
-msgstr ""
+msgstr "``C:\\Program Files\\VSTPlugins``"
 
 #: ../../plugins-files/plugins/scanning.rst:47
 msgid "``C:\\Program Files\\Steinberg\\VSTPlugins``"
-msgstr ""
+msgstr "``C:\\Program Files\\Steinberg\\VSTPlugins``"
 
 #: ../../plugins-files/plugins/scanning.rst:48
 msgid "``C:\\Program Files\\Common Files\\VST2``"
-msgstr ""
+msgstr "``C:\\Program Files\\Common Files\\VST2``"
 
 #: ../../plugins-files/plugins/scanning.rst:49
 msgid "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
-msgstr ""
+msgstr "``C:\\Program Files\\Common Files\\Steinberg\\VST2``"
 
 #: ../../plugins-files/plugins/scanning.rst:51
 msgid ""
@@ -544,3 +576,8 @@ msgid ""
 " start-up, and you can delete or edit this file to force a re-scan of "
 "previously scanned plugins."
 msgstr ""
+"Dado que escanear plugins VST leva moito tempo, Zrythm lembrará os VST "
+"escaneados e gardará esta información en ``<<ZRYTHM "
+"PATH>>/cached_vst_descriptors.yaml``. Os novos plugins escanearanse en cada "
+"arranque do programa, e podes eliminar ou editar este ficheiro para forzar "
+"un re-escaneo dos plugins previamente detectados."
