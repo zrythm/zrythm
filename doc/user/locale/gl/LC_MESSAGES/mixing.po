@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: 2020-03-07 13:49+0000\n"
+"PO-Revision-Date: 2020-03-07 22:21+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
 "manualmixing/gl/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../mixing/channels/channel-overview.rst:6
 msgid "Channel Overview"
-msgstr "Información dos Canais"
+msgstr "Información das Canles"
 
 #: ../../mixing/channels/controls.rst:6
 msgid "Controls"
@@ -34,7 +34,7 @@ msgstr "Fader"
 
 #: ../../mixing/channels/intro.rst:6
 msgid "Channels"
-msgstr "Canais"
+msgstr "Canles"
 
 #: ../../mixing/channels/meters.rst:6
 #: ../../mixing/meters.rst:6
@@ -57,7 +57,7 @@ msgstr "Mestura"
 msgid ""
 "Meters display the current RMS peaks at the end of the channel's "
 "processing."
-msgstr "O Medidor amosa os picos RMS actuais ao final do procesado do canal."
+msgstr "O Medidor amosa os picos RMS actuais ao final do procesado da canle."
 
 #: ../../mixing/mixdown.rst:6
 msgid "Mixdown"
@@ -83,7 +83,7 @@ msgid ""
 "supports Linear Pan, Square Root Pan and Sine Law Pan, with a Pan Law of "
 "-6dB, -3dB, or 0dB."
 msgstr ""
-"Os canais poden ser paneados á Esquerda ou á Dereita arrastrando o control "
+"As canles poden ser paneadas á Esquerda ou á Dereita arrastrando o control "
 "do Panorama. Zrythm permite Panorama Lineal, de Raíz Cadrada e de Regra do "
 "Seno de -6dB, -3d-b ou 0dB."
 
