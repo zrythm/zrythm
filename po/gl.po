@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-02-26 13:10+0000\n"
-"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"PO-Revision-Date: 2020-03-07 13:49+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "gl/>\n"
@@ -357,20 +357,20 @@ msgstr "R"
 
 #: src/gui/widgets/track_input_expander.c:423
 msgid "All Channels"
-msgstr "Tódalas Canles"
+msgstr "Tódolos Canais"
 
 #: src/gui/widgets/track_input_expander.c:432
 #, c-format
 msgid "Channel %s"
-msgstr "Canle %s"
+msgstr "Canal %s"
 
 #: src/gui/widgets/track_input_expander.c:447
 msgid "No channel"
-msgstr "Sen canle"
+msgstr "Sen canal"
 
 #: src/gui/widgets/track_input_expander.c:487
 msgid "MIDI channel to filter to"
-msgstr "Canle MIDI a filtrar"
+msgstr "Canal MIDI a filtrar"
 
 #: src/gui/widgets/track_input_expander.c:633
 msgid "Inputs"
@@ -424,7 +424,7 @@ msgstr "Último Modificado"
 
 #: src/gui/widgets/project_assistant.c:527
 msgid "Blank project"
-msgstr "Proxecto en branco"
+msgstr "Proxecto Baleiro"
 
 #: src/gui/widgets/project_assistant.c:675
 msgid "Project Assistant"
@@ -574,15 +574,15 @@ msgstr "Engadir Pista Bus"
 
 #: src/gui/widgets/drag_dest_box.c:511 src/audio/track.c:1316
 msgid "Audio Group"
-msgstr "Grupo de Audio"
+msgstr "Audio Agrupado"
 
 #: src/gui/widgets/drag_dest_box.c:522 src/audio/track.c:1319
 msgid "MIDI Group"
-msgstr "Grupo MIDI"
+msgstr "MIDI Agrupado"
 
 #: src/gui/widgets/drag_dest_box.c:534
 msgid "Add Group Track"
-msgstr "Engadir Pista de Grupo"
+msgstr "Engadir Pista Agrupada"
 
 #: src/gui/widgets/instrument_track.c:219 src/gui/widgets/midi_track.c:190
 #: resources/ui/transport_controls.ui:36
@@ -591,12 +591,12 @@ msgstr "Gravar"
 
 #: src/gui/widgets/instrument_track.c:253 src/gui/widgets/midi_track.c:218
 msgid "Show automation lanes"
-msgstr "Amosar envolventes de automatización"
+msgstr "Amosar canles de automatización"
 
 #: src/gui/widgets/instrument_track.c:259 src/gui/widgets/audio_track.c:205
 #: src/gui/widgets/midi_track.c:224
 msgid "Show track lanes"
-msgstr "Amosar envolventes da pista"
+msgstr "Amosar canles da pista"
 
 #: src/gui/widgets/instrument_track.c:265 src/gui/widgets/midi_track.c:230
 msgid "Lock track"
@@ -616,7 +616,7 @@ msgstr "Nivel da atenuación de escoita"
 
 #: src/gui/widgets/control_room.c:75
 msgid "The level to set other channels to when Listen is enabled on a channel"
-msgstr "Nivel aplicado a outras canles cando Escoitar está activado nunha canle"
+msgstr "Nivel aplicado a outros canais cando Escoitar está activado nun canal"
 
 #: src/gui/widgets/channel_slot.c:134 src/gui/widgets/channel_slot.c:149
 #: src/gui/widgets/channel_slot.c:789
@@ -784,7 +784,7 @@ msgstr "Ruta ao motor"
 
 #: src/gui/widgets/route_target_selector.c:98
 msgid "Select channel to route signal to"
-msgstr "Seleccionar canle para ruta da sinal"
+msgstr "Seleccionar canal para dirixir o sinal"
 
 #: src/gui/widgets/route_target_selector.c:175
 msgid "Stereo Out"
@@ -1045,7 +1045,7 @@ msgstr "Alternar Panel Dereito"
 #: src/gui/widgets/track.c:520 src/audio/track_lane.c:68
 #, c-format
 msgid "Lane %d"
-msgstr "Envolvente %d"
+msgstr "Canle %d"
 
 #: src/gui/widgets/track.c:1408
 msgid "_Delete Track"
@@ -1094,12 +1094,12 @@ msgstr "Entrada de paso"
 #: src/gui/widgets/track.c:1528 src/gui/widgets/track.c:1586
 #, c-format
 msgid "%sMIDI Channel %d"
-msgstr "%sCanle MIDI %d"
+msgstr "%sCanal MIDI %d"
 
 #: src/gui/widgets/track.c:1564
 #, c-format
 msgid "Lane %d MIDI Ch"
-msgstr "Envolvente %d MIDI Ch"
+msgstr "Canle %d MIDI Ch"
 
 #: src/gui/widgets/track.c:1581
 #, c-format
@@ -1490,11 +1490,11 @@ msgstr "Mover %d Plugins"
 
 #: src/actions/edit_tracks_action.c:167
 msgid "Solo Track"
-msgstr "Pista Soa"
+msgstr "Pista a Solo"
 
 #: src/actions/edit_tracks_action.c:170
 msgid "Unsolo Track"
-msgstr "Pista Non Soa"
+msgstr "Pista a Non Solo"
 
 #: src/actions/edit_tracks_action.c:174
 msgid "Mute Track"
@@ -1510,7 +1510,7 @@ msgstr "Cambiar Fader"
 
 #: src/actions/edit_tracks_action.c:183
 msgid "Change Pan"
-msgstr "Cambiar Pan"
+msgstr "Cambiar Panorama"
 
 #: src/actions/move_tracks_action.c:128
 msgid "Move Track"
@@ -1635,7 +1635,7 @@ msgstr "Aperta unha tecla ou move un mando no teu dispositivo MIDI"
 
 #: resources/ui/bind_cc_dialog.ui:94
 msgid "Waiting for input..."
-msgstr "Agardando pola sinal de entrada..."
+msgstr "Agardando polo sinal de entrada..."
 
 #: resources/ui/log_viewer.ui:25
 msgid "Log Level"
@@ -2192,7 +2192,7 @@ msgstr "Información do Porto"
 
 #: resources/ui/track_lane.ui:34
 msgid "Lane 1"
-msgstr "Envolvente 1"
+msgstr "Canle 1"
 
 #: resources/ui/export_midi_file_dialog.ui:36
 msgid "Select MIDI file"
