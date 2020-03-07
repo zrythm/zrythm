@@ -560,31 +560,37 @@ ui_get_modifier_type_from_gesture (
 static GtkTreeModel *
 ui_create_language_model ()
 {
-  const int values[NUM_LL_LANGUAGES] = {
-    LL_ENGLISH,
-    LL_ENGLISH_UK,
-    LL_GERMAN,
-    LL_FRENCH,
-    LL_ITALIAN,
-    LL_NORWEGIAN,
-    LL_SPANISH,
-    LL_JAPANESE,
-    LL_PORTUGUESE,
-    LL_RUSSIAN,
-    LL_CHINESE,
-  };
-  const gchar *labels[NUM_LL_LANGUAGES] = {
-    _("English [en]"),
-    _("English UK [en_GB]"),
-    _("German [de]"),
-    _("French [fr]"),
-    _("Italian [it]"),
-    _("Norwegian [nb_NO]"),
-    _("Spanish [es]"),
-    _("Japanese [ja]"),
-    _("Portuguese [pt]"),
-    _("Russian [ru]"),
-    _("Chinese [zh]"),
+  int values[NUM_LL_LANGUAGES];
+  for (int i = 0; i < NUM_LL_LANGUAGES; i++)
+    {
+      values[i] = i;
+    }
+  const char * labels[NUM_LL_LANGUAGES] = {
+    "اَلْعَرَبِيَّةُ‎",
+    "Czech",
+    "Dansk",
+    "Deutsch",
+    "English",
+    "English UK",
+    "Ελληνικά",
+    "Español",
+    "Eeti",
+    "Suomi",
+    "Français",
+    "Gaelic",
+    "Galego",
+    "हिन्दी",
+    "Italiano",
+    "日本語",
+    "한국어",
+    "Bokmål",
+    "Nederlands",
+    "Polski",
+    "Português",
+    "Português BR",
+    "русский",
+    "Svenska",
+    "中文",
   };
 
   CREATE_SIMPLE_MODEL_BOILERPLATE;

@@ -42,20 +42,31 @@
     <value nick="rtmidi" value="4"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.language-enum">
-    <value nick="en" value="0"/>
-    <value nick="en_GB" value="1"/>
-    <value nick="gl" value="2"/>
+    <value nick="ar" value="0"/>
+    <value nick="cs" value="1"/>
+    <value nick="da" value="2"/>
     <value nick="de" value="3"/>
-    <value nick="fr" value="4"/>
-    <value nick="it" value="5"/>
-    <value nick="nb_NO" value="6"/>
+    <value nick="en" value="4"/>
+    <value nick="en_GB" value="5"/>
+    <value nick="el" value="6"/>
     <value nick="es" value="7"/>
-    <value nick="ja" value="8"/>
-    <value nick="pl" value="9"/>
-    <value nick="pt" value="10"/>
-    <value nick="pt_BR" value="11"/>
-    <value nick="ru" value="12"/>
-    <value nick="zh" value="13"/>
+    <value nick="et" value="8"/>
+    <value nick="fi" value="9"/>
+    <value nick="fr" value="10"/>
+    <value nick="gd" value="11"/>
+    <value nick="gl" value="12"/>
+    <value nick="hi" value="13"/>
+    <value nick="it" value="14"/>
+    <value nick="ja" value="15"/>
+    <value nick="ko" value="16"/>
+    <value nick="nb_NO" value="17"/>
+    <value nick="nl" value="18"/>
+    <value nick="pl" value="19"/>
+    <value nick="pt" value="20"/>
+    <value nick="pt_BR" value="21"/>
+    <value nick="ru" value="22"/>
+    <value nick="sv" value="23"/>
+    <value nick="zh" value="24"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.export-time-range-enum">
     <value nick="song" value="0"/>

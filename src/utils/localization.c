@@ -37,8 +37,10 @@
 
 #ifdef _WOE32
 #define CODESET "1252"
+#define ALT_CODESET "1252"
 #else
 #define CODESET "UTF-8"
+#define ALT_CODESET "UTF8"
 #endif
 
 #ifdef MAC_RELEASE
@@ -52,20 +54,44 @@ get_match (
  char **      installed_locales,
  int          num_installed_locales,
  const char * prefix,
- const char * suffix)
+ const char * codeset)
 {
+  GString * codeset_gstring;
+  codeset_gstring = g_string_new (codeset);
+  char * upper =
+    g_string_free (
+      g_string_ascii_up (codeset_gstring), 0);
+  codeset_gstring = g_string_new (codeset);
+  char * lower =
+    g_string_free (
+      g_string_ascii_down (codeset_gstring), 0);
+  char * first_upper = g_strdup (lower);
+  first_upper[0] = g_ascii_toupper (lower[0]);
+
+  char * ret = NULL;
   for (int i = 0; i < num_installed_locales; i++)
     {
-      if (
-        g_str_match_string (
-          prefix, installed_locales[i], 0) &&
-        g_str_match_string (
-          suffix, installed_locales[i], 0))
+      char * installed_locale = installed_locales[i];
+      if (g_str_has_prefix (
+            installed_locale, prefix))
         {
-          return installed_locales[i];
+          if (g_str_has_suffix (
+                installed_locale, upper) ||
+              g_str_has_suffix (
+                installed_locale, lower) ||
+              g_str_has_suffix (
+                installed_locale, first_upper))
+            {
+              ret = installed_locales[i];
+              break;
+            }
         }
     }
-  return NULL;
+  g_free (upper);
+  g_free (lower);
+  g_free (first_upper);
+
+  return ret;
 }
 
 /**
@@ -115,24 +141,46 @@ localization_locale_exists (
       get_match ( \
         installed_locales, num_installed_locales, \
         code, CODESET); \
-    break;
+    if (!match) \
+      { \
+        match = \
+          get_match ( \
+            installed_locales, \
+            num_installed_locales, \
+            code, ALT_CODESET); \
+      } \
+    break
 
   char * match = NULL;
   switch (lang)
     {
-    IS_MATCH(ENGLISH_UK,"en_GB");
-    IS_MATCH(GALICIAN,"gl_");
-    IS_MATCH(GERMAN,"de_");
-    IS_MATCH(FRENCH,"fr_");
-    IS_MATCH(ITALIAN,"it_");
-    IS_MATCH(NORWEGIAN,"nb_");
-    IS_MATCH(SPANISH,"es_");
-    IS_MATCH(JAPANESE,"ja_");
-    IS_MATCH(POLISH,"pl_");
-    IS_MATCH(PORTUGUESE,"pt_");
-    IS_MATCH(PORTUGUESE_BR,"pt_BR");
-    IS_MATCH(RUSSIAN,"ru_");
-    IS_MATCH(CHINESE,"zh_");
+    IS_MATCH (AR, "ar_");
+    IS_MATCH (CS, "cs_");
+    IS_MATCH (DA, "da_");
+    IS_MATCH (DE, "de_");
+    /* break order here */
+    IS_MATCH (EN_GB, "en_GB");
+    IS_MATCH (EN, "en_");
+    IS_MATCH (EL, "el_");
+    IS_MATCH (ES, "es_");
+    IS_MATCH (ET, "et_");
+    IS_MATCH (FI, "fi_");
+    IS_MATCH (FR, "fr_");
+    IS_MATCH (GD, "gd_");
+    IS_MATCH (GL, "gl_");
+    IS_MATCH (HI, "hi_");
+    IS_MATCH (IT, "it_");
+    IS_MATCH (JA, "ja_");
+    IS_MATCH (KO, "ko_");
+    IS_MATCH (NB_NO, "nb_NO");
+    IS_MATCH (NL, "nl_");
+    IS_MATCH (PL, "pl_");
+    /* break order here */
+    IS_MATCH (PT_BR, "pt_BR");
+    IS_MATCH (PT, "pt_");
+    IS_MATCH (RU, "ru_");
+    IS_MATCH (SV, "sv_");
+    IS_MATCH (ZH, "zh_");
     default:
       g_warn_if_reached ();
       break;
@@ -167,17 +215,22 @@ localization_init ()
       prefs, "language");
   g_object_unref (G_OBJECT (prefs));
 
-  if (lang == LL_ENGLISH)
+  g_message ("preferred lang: \"%s\"",
+    language_strings[lang]);
+
+  if (lang == LL_EN)
     {
+      g_message ("setting locale to default");
       setlocale (LC_ALL, "C");
       return 1;
     }
 
   char * code = localization_locale_exists (lang);
-  char * match = setlocale (LC_ALL, code);
 
-  if (match)
+  char * match = NULL;
+  if (code)
     {
+      match = setlocale (LC_ALL, code);
       g_message (
         "setting locale to %s (found %s)",
         code, match);
@@ -186,12 +239,14 @@ localization_init ()
       sprintf (buf, "LANG=%s", code);
       putenv (buf);
 #endif
+      g_free (code);
     }
   else
     {
       g_warning (
         "No locale for \"%s\" is "
-        "installed, using default", code);
+        "installed, using default",
+        language_strings[lang]);
       setlocale (LC_ALL, "C");
     }
 
@@ -224,8 +279,6 @@ localization_init ()
 
   /* set domain */
   textdomain (GETTEXT_PACKAGE);
-
-  g_free (code);
 
   return match != NULL;
 }

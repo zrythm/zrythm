@@ -37,27 +37,61 @@
 
 typedef enum LocalizationLanguage
 {
-  LL_ENGLISH,
-  LL_ENGLISH_UK,
-  LL_GALICIAN,
-  LL_GERMAN,
-  LL_FRENCH,
-  LL_ITALIAN,
-  LL_NORWEGIAN,
-  LL_SPANISH,
-  LL_JAPANESE,
-  LL_POLISH,
-  LL_PORTUGUESE,
-  LL_PORTUGUESE_BR,
-  LL_RUSSIAN,
-  LL_CHINESE,
+  LL_AR,
+  LL_CS,
+  LL_DA,
+  LL_DE,
+  LL_EN,
+  LL_EN_GB,
+  LL_EL,
+  LL_ES,
+  LL_ET,
+  LL_FI,
+  LL_FR,
+  LL_GD,
+  LL_GL,
+  LL_HI,
+  LL_IT,
+  LL_JA,
+  LL_KO,
+  LL_NB_NO,
+  LL_NL,
+  LL_PL,
+  LL_PT,
+  LL_PT_BR,
+  LL_RU,
+  LL_SV,
+  LL_ZH,
   NUM_LL_LANGUAGES,
 } LocalizationLanguage;
 
 static const char * language_strings[] = {
-  "en", "en_GB", "gl", "de", "fr",
-  "it", "nb_NO", "es",
-  "ja", "pl", "pt", "pt_BR", "ru", "zh", };
+  "ar",
+  "cs",
+  "da",
+  "de",
+  "en",
+  "en_GB",
+  "el",
+  "es",
+  "et",
+  "fi",
+  "fr",
+  "gd",
+  "gl",
+  "hi",
+  "it",
+  "ja",
+  "ko",
+  "nb_NO",
+  "nl",
+  "pl",
+  "pt",
+  "pt_BR",
+  "ru",
+  "sv",
+  "zh",
+};
 
 /**
  * Returns the character string code for the
@@ -68,7 +102,7 @@ localization_get_string_code (
   LocalizationLanguage lang)
 {
   g_return_val_if_fail (
-    lang >= LL_ENGLISH && lang < NUM_LL_LANGUAGES,
+    lang >= 0 && lang < NUM_LL_LANGUAGES,
     NULL);
 
   return language_strings[lang];

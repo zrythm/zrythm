@@ -104,7 +104,7 @@ on_language_changed (
     gtk_combo_box_get_active (widget);
 
   /* english is the default */
-  if (lang == LL_ENGLISH)
+  if (lang == LL_EN)
     {
       gtk_widget_set_visible (
         GTK_WIDGET (self->locale_not_available),

@@ -159,9 +159,6 @@ io_path_get_parent_dir (const char * path)
 
   g_strfreev (parts);
 
-  g_message ("parent dir for %s is %s",
-             path,
-             new_str);
   return new_str;
 }
 

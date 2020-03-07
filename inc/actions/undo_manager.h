@@ -89,6 +89,10 @@ undo_manager_perform (
   UndoManager *    self,
   UndoableAction * action);
 
+void
+undo_manager_prepare_for_serialization (
+  UndoManager * self);
+
 /**
  * @}
  */
