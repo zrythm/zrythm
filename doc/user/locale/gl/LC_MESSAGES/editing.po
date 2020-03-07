@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"PO-Revision-Date: 2020-03-07 22:21+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
 "manualediting/gl/>\n"
@@ -496,8 +496,8 @@ msgid ""
 "Editing refers to any work done in the timeline arranger and the "
 "following editors."
 msgstr ""
-"Edición fai referencia a calquera traballo feito no arranxo da liña de tempo "
-"e os editores seguintes."
+"Edición fai referencia a calquera traballo feito no arranxador da liña de "
+"tempo e os editores seguintes."
 
 #: ../../editing/overview.rst:11
 msgid "Piano Roll (MIDI Editor)"
@@ -524,7 +524,7 @@ msgstr ""
 #: ../../editing/piano-roll-editing/arranger.rst:6
 #: ../../editing/timeline/arranger.rst:6
 msgid "Arranger"
-msgstr "Arranxo"
+msgstr "Arranxador"
 
 #: ../../editing/piano-roll-editing/drum-view.rst:6
 msgid "Drum View"
@@ -736,7 +736,7 @@ msgid ""
 msgstr ""
 "Editar na liña de tempo é a tarefa máis común dentro de Zrythm. A sección "
 "liña de tempo está composta pola lista de pistas na esquerda e a regla/"
-"arranxo do lado dereito."
+"arranxador do lado dereito."
 
 #: ../../editing/timeline/overview.rst:12
 msgid "Tracklist"
@@ -776,7 +776,7 @@ msgstr ""
 
 #: ../../editing/timeline/overview.rst:35
 msgid "Ruler/Arranger"
-msgstr "Regra/Arranxo"
+msgstr "Regra/Arranxador"
 
 #: ../../editing/timeline/overview.rst:36
 msgid ""
