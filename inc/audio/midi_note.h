@@ -117,9 +117,10 @@ static const cyaml_schema_field_t
 };
 
 static const cyaml_schema_value_t
-midi_note_schema = {
+  midi_note_schema =
+{
   CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    CYAML_FLAG_POINTER_NULL_STR,
     MidiNote, midi_note_fields_schema),
 };
 

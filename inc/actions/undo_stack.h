@@ -37,6 +37,8 @@
 #include "actions/edit_tracks_action.h"
 #include "actions/move_plugins_action.h"
 #include "actions/move_tracks_action.h"
+#include "utils/stack.h"
+#include "utils/yaml.h"
 
 typedef struct Stack Stack;
 
@@ -108,39 +110,41 @@ typedef struct UndoStack
 static const cyaml_schema_field_t
   undo_stack_fields_schema[] =
 {
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, as_actions,
     arranger_selections_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, copy_plugins_actions,
     copy_plugins_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, copy_tracks_actions,
     copy_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, create_plugins_actions,
     create_plugins_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, create_tracks_actions,
     create_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, delete_plugins_actions,
     delete_plugins_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, delete_tracks_actions,
     delete_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, edit_plugins_actions,
     edit_plugins_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, edit_tracks_actions,
     edit_tracks_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, move_plugins_actions,
     move_plugins_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL (
     UndoStack, move_tracks_actions,
     move_tracks_action_schema),
+  YAML_FIELD_MAPPING_PTR (
+    UndoStack, stack, stack_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -151,6 +155,10 @@ static const cyaml_schema_value_t
   YAML_VALUE_PTR (
     UndoStack, undo_stack_fields_schema),
 };
+
+void
+undo_stack_init_loaded (
+  UndoStack * self);
 
 /**
  * Creates a new stack for undoable actions.

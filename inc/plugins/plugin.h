@@ -210,7 +210,7 @@ plugin_fields_schema[] =
 };
 
 static const cyaml_schema_value_t
-plugin_schema =
+  plugin_schema =
 {
   CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER_NULL_STR,

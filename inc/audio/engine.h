@@ -488,8 +488,7 @@ engine_fields_schema[] =
     "control_room", CYAML_FLAG_DEFAULT,
     AudioEngine, control_room,
     control_room_fields_schema),
-  CYAML_FIELD_MAPPING_PTR (
-    "pool", CYAML_FLAG_POINTER,
+  YAML_FIELD_MAPPING_PTR (
     AudioEngine, pool,
     audio_pool_fields_schema),
 

@@ -65,20 +65,31 @@ static const cyaml_schema_value_t
     UndoManager, undo_manager_fields_schema),
 };
 
+/**
+ * Inits the undo manager by creating or
+ * populating the undo/redo stacks.
+ *
+ * @param loading True if this is a loaded project,
+ *   false if a new project.
+ */
 void
-undo_manager_init (UndoManager * self);
+undo_manager_init (
+  UndoManager * self,
+  int           loading);
 
 /**
  * Undo last action.
  */
 void
-undo_manager_undo (UndoManager * self);
+undo_manager_undo (
+  UndoManager * self);
 
 /**
  * Redo last undone action.
  */
 void
-undo_manager_redo (UndoManager * self);
+undo_manager_redo (
+  UndoManager * self);
 
 /**
  * Performs the action and pushes it to the undo

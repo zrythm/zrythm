@@ -23,6 +23,121 @@
 #include "utils/stack.h"
 #include "zrythm.h"
 
+void
+undo_stack_init_loaded (
+  UndoStack * self)
+{
+  /* use the remembered max length instead of the
+   * one in settings so they match */
+  int undo_stack_length = self->stack->max_length;
+  stack_free (self->stack);
+  self->stack =
+    stack_new (undo_stack_length);
+  self->stack->top = -1;
+
+#define DO_SIMPLE(cc,sc) \
+  /* if there are still actions of this type */ \
+  if (sc##_actions_idx < self->num_##sc##_actions) \
+    { \
+      cc##Action * a = \
+        self->sc##_actions[sc##_actions_idx]; \
+      UndoableAction * ua = \
+        (UndoableAction *) a; \
+      if (self->stack->top + 1 == ua->stack_idx) \
+        { \
+          undo_stack_push (self, ua); \
+          sc##_actions_idx++; \
+        } \
+    }
+
+  size_t as_actions_idx = 0;
+  size_t copy_plugins_actions_idx = 0;
+  size_t copy_tracks_actions_idx = 0;
+  size_t create_plugins_actions_idx = 0;
+  size_t create_tracks_actions_idx = 0;
+  size_t delete_plugins_actions_idx = 0;
+  size_t delete_tracks_actions_idx = 0;
+  size_t edit_plugins_actions_idx = 0;
+  size_t edit_tracks_actions_idx = 0;
+  size_t move_plugins_actions_idx = 0;
+  size_t move_tracks_actions_idx = 0;
+
+  size_t i = 0;
+  while (i < self->num_as_actions ||
+         i < self->num_copy_plugins_actions ||
+         i < self->num_copy_tracks_actions ||
+         i < self->num_create_plugins_actions ||
+         i < self->num_create_tracks_actions ||
+         i < self->num_delete_plugins_actions ||
+         i < self->num_delete_tracks_actions ||
+         i < self->num_edit_plugins_actions ||
+         i < self->num_edit_tracks_actions ||
+         i < self->num_move_plugins_actions ||
+         i < self->num_move_tracks_actions)
+    {
+      /* if there are still actions of this type */
+      if (as_actions_idx < self->num_as_actions)
+        {
+          ArrangerSelectionsAction * a =
+            self->as_actions[as_actions_idx];
+          UndoableAction * ua =
+            (UndoableAction *) a;
+
+          if (self->stack->top + 1 == ua->stack_idx)
+            {
+#define DO_SELECTIONS(sc) \
+  if (a->sc##_sel) \
+    { \
+      a->sel = \
+        (ArrangerSelections *) \
+        a->sc##_sel; \
+      a->sel_after = \
+        (ArrangerSelections *) \
+        a->sc##_sel_after; \
+    }
+              DO_SELECTIONS (chord);
+              DO_SELECTIONS (tl);
+              DO_SELECTIONS (ma);
+              DO_SELECTIONS (automation);
+
+              for (int j = 0; j < a->num_split_objs; j++)
+                {
+                  if (a->region_r1[j])
+                    {
+                      a->r1[j] =
+                        (ArrangerObject *)
+                        a->region_r1[j];
+                      a->r2[j] =
+                        (ArrangerObject *)
+                        a->region_r2[j];
+                    }
+                  else if (a->mn_r1[j])
+                    {
+                      a->r1[j] =
+                        (ArrangerObject *) a->mn_r1[j];
+                      a->r2[j] =
+                        (ArrangerObject *) a->mn_r2[j];
+                    }
+                }
+              undo_stack_push (self, ua);
+              as_actions_idx++;
+            }
+        }
+      DO_SIMPLE (CopyPlugins, copy_plugins)
+      DO_SIMPLE (CopyTracks, copy_tracks)
+      DO_SIMPLE (CreatePlugins, create_plugins)
+      DO_SIMPLE (CreateTracks, create_tracks)
+      DO_SIMPLE (DeletePlugins, delete_plugins)
+      DO_SIMPLE (DeleteTracks, delete_tracks)
+      DO_SIMPLE (EditPlugins, edit_plugins)
+      DO_SIMPLE (EditTracks, edit_tracks)
+      DO_SIMPLE (MovePlugins, move_plugins)
+      DO_SIMPLE (MoveTracks, move_tracks)
+
+      i++;
+    }
+}
+
 UndoStack *
 undo_stack_new (void)
 {
@@ -54,10 +169,12 @@ undo_stack_push (
   UndoStack *      self,
   UndoableAction * action)
 {
+  g_message ("pushed to undo/redo stack");
+
   /* push to stack */
   STACK_PUSH (self->stack, action);
 
-  /* remember the action */
+  action->stack_idx = self->stack->top;
 
   /* CAPS, CamelCase, snake_case */
 #define APPEND_ELEMENT(caps,cc,sc) \

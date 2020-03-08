@@ -362,7 +362,7 @@ create_default (Project * self)
   project_init_selections (self);
 
   engine_init (&self->audio_engine, 0);
-  undo_manager_init (&self->undo_manager);
+  undo_manager_init (&self->undo_manager, 0);
 
   /* init midi mappings */
   self->midi_mappings = midi_mappings_new ();
@@ -599,7 +599,7 @@ load (
   /* re-update paths for the newly loaded project */
   set_dir (prj, dir);
 
-  undo_manager_init (&PROJECT->undo_manager);
+  undo_manager_init (&PROJECT->undo_manager, 1);
   engine_init (AUDIO_ENGINE, 1);
 
   char * filepath_noext = g_path_get_basename (dir);

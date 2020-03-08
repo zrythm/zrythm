@@ -33,6 +33,143 @@
 
 #include <glib/gi18n.h>
 
+/**
+ * Sets the selections used when serializing.
+ *
+ * @param clone Clone the given selections first.
+ * @param is_after If the selections should be set
+ *   to \ref ArrangerSelectionsAction.sel_after.
+ */
+static void
+set_selections (
+  ArrangerSelectionsAction * self,
+  ArrangerSelections *       _sel,
+  int                        clone,
+  int                        is_after)
+{
+  ArrangerSelections * sel = _sel;
+  if (clone)
+    {
+      sel = arranger_selections_clone (_sel);
+    }
+
+  if (is_after)
+    {
+      self->sel_after = sel;
+    }
+  else
+    {
+      self->sel = sel;
+    }
+
+#define SET_SEL(cc,sc) \
+  if (is_after) \
+    self->sc##_sel_after = \
+      (cc##Selections *) sel; \
+  else \
+    self->sc##_sel = \
+      (cc##Selections *) sel; \
+  break
+
+  switch (sel->type)
+    {
+    case ARRANGER_SELECTIONS_TYPE_CHORD:
+      SET_SEL (Chord, chord);
+    case ARRANGER_SELECTIONS_TYPE_TIMELINE:
+      SET_SEL (Timeline, tl);
+    case ARRANGER_SELECTIONS_TYPE_MIDI:
+      SET_SEL (MidiArranger, ma);
+    case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
+      SET_SEL (Automation, automation);
+    default:
+      g_return_if_reached ();
+    }
+
+#undef SET_SEL
+}
+
+static void
+set_split_objects (
+  ArrangerSelectionsAction * self,
+  int                        i,
+  ArrangerObject *           _r1,
+  ArrangerObject *           _r2,
+  int                        clone)
+{
+  ArrangerObject * r1 = _r1,
+                 * r2 = _r2;
+  if (clone)
+    {
+      r1 =
+        arranger_object_clone (
+          _r1, ARRANGER_OBJECT_CLONE_COPY);
+      r2 =
+        arranger_object_clone (
+          _r2, ARRANGER_OBJECT_CLONE_COPY);
+    }
+  self->r1[i] = r1;
+  self->r2[i] = r2;
+
+  switch (r1->type)
+    {
+    case ARRANGER_OBJECT_TYPE_REGION:
+      self->region_r1[i] = (ZRegion *) r1;
+      self->region_r2[i] = (ZRegion *) r2;
+      break;
+    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+      self->mn_r1[i] = (MidiNote *) r1;
+      self->mn_r2[i] = (MidiNote *) r2;
+      break;
+    default:
+      g_return_if_reached ();
+    }
+}
+
+static void
+free_split_objects (
+  ArrangerSelectionsAction * self,
+  int                        i)
+{
+  arranger_object_free (
+    self->r1[i]);
+  arranger_object_free (
+    self->r2[i]);
+
+  self->r1[i] = NULL;
+  self->r2[i] = NULL;
+  self->mn_r1[i] = NULL;
+  self->mn_r2[i] = NULL;
+  self->region_r1[i] = NULL;
+  self->region_r2[i] = NULL;
+}
+
+#if 0
+static void
+set_single_object (
+  ArrangerSelectionsAction * self,
+  ArrangerObject *           obj)
+{
+  self->obj = obj;
+
+  switch (obj->type)
+    {
+    case ARRANGER_OBJECT_TYPE_REGION:
+      self->region = (ZRegion *) obj;
+      break;
+    case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
+      self->midi_note = (MidiNote *) obj;
+      break;
+    case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
+      self->scale = (ScaleObject *) obj;
+      break;
+    case ARRANGER_OBJECT_TYPE_MARKER:
+      self->marker = (Marker *) obj;
+      break;
+    default:
+      g_return_if_reached ();
+    }
+}
+#endif
 
 static ArrangerSelectionsAction *
 _create_action (
@@ -41,7 +178,7 @@ _create_action (
   ArrangerSelectionsAction * self =
     calloc (1, sizeof (ArrangerSelectionsAction));
 
-  self->sel = arranger_selections_clone (sel);
+  set_selections (self, sel, 1, 0);
   self->first_run = 1;
 
   return self;
@@ -160,8 +297,7 @@ arranger_selections_action_new_edit (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_EDIT_ARRANGER_SELECTIONS;
 
-  self->sel_after =
-    arranger_selections_clone (sel_after);
+  set_selections (self, sel_after, 1, 1);
   self->edit_type = type;
 
   return ua;
@@ -233,8 +369,7 @@ arranger_selections_action_new_quantize (
   UndoableAction * ua = (UndoableAction *) self;
   ua->type = UA_QUANTIZE_ARRANGER_SELECTIONS;
 
-  self->sel_after =
-    arranger_selections_clone (sel);
+  set_selections (self, sel, 1, 1);
   self->opts = quantize_options_clone (opts);
 
   return ua;
@@ -1095,14 +1230,8 @@ do_or_undo_split (
 
           /* r1 and r2 are now inside the project,
            * clone them to keep copies */
-          self->r1[i] =
-            arranger_object_clone (
-              self->r1[i],
-              ARRANGER_OBJECT_CLONE_COPY);
-          self->r2[i] =
-            arranger_object_clone (
-              self->r2[i],
-              ARRANGER_OBJECT_CLONE_COPY);
+          set_split_objects (
+            self, i, self->r1[i], self->r2[i], 1);
         }
       else
         {
@@ -1125,10 +1254,7 @@ do_or_undo_split (
             }
 
           /* free the copies created in _do */
-          arranger_object_free (
-            self->r1[i]);
-          arranger_object_free (
-            self->r2[i]);
+          free_split_objects (self, i);
         }
     }
   free (objs);

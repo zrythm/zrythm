@@ -26,6 +26,14 @@
 #ifndef __AUDIO_SUPPORTED_FILE_H__
 #define __AUDIO_SUPPORTED_FILE_H__
 
+#include "utils/yaml.h"
+
+/**
+ * @addtogroup utils
+ *
+ * @{
+ */
+
 /**
  * File type.
  */
@@ -42,6 +50,27 @@ typedef enum FileType
   FILE_TYPE_OTHER,
   NUM_FILE_TYPES,
 } FileType;
+
+static const cyaml_strval_t
+  file_type_strings[] =
+{
+  { "MIDI",
+    FILE_TYPE_MIDI },
+  { "mp3",
+    FILE_TYPE_MP3 },
+  { "FLAC",
+    FILE_TYPE_FLAC },
+  { "ogg",
+    FILE_TYPE_OGG },
+  { "wav",
+    FILE_TYPE_WAV },
+  { "directory",
+    FILE_TYPE_DIR },
+  { "parent dir",
+    FILE_TYPE_PARENT_DIR },
+  { "other",
+    FILE_TYPE_OTHER },
+};
 
 /**
  * Metadata for a supported file.
@@ -66,6 +95,28 @@ typedef struct SupportedFile
   /** Audio file, if audio. */
   //AudioFile *    midi_file;
 } SupportedFile;
+
+static const cyaml_schema_field_t
+  supported_file_fields_schema[] =
+{
+  YAML_FIELD_STRING_PTR (
+    SupportedFile, abs_path),
+  YAML_FIELD_ENUM (
+    SupportedFile, type, file_type_strings),
+  YAML_FIELD_STRING_PTR (
+    SupportedFile, label),
+  YAML_FIELD_INT (
+    SupportedFile, hidden),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  supported_file_schema =
+{
+  YAML_VALUE_PTR_NULLABLE (
+    SupportedFile, supported_file_fields_schema),
+};
 
 /**
  * Creates a new SupportedFile from the given absolute
@@ -135,5 +186,9 @@ supported_file_get_type (
 void
 supported_file_free (
   SupportedFile * self);
+
+/**
+ * @}
+ */
 
 #endif

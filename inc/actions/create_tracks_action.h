@@ -21,8 +21,9 @@
 #define __UNDO_CREATE_TRACKS_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "plugins/plugin.h"
+#include "audio/supported_file.h"
 #include "audio/track.h"
+#include "plugins/plugin.h"
 
 typedef struct SupportedFile SupportedFile;
 
@@ -97,6 +98,10 @@ static const cyaml_schema_field_t
   CYAML_FIELD_INT (
     "num_tracks", CYAML_FLAG_DEFAULT,
     CreateTracksAction, num_tracks),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    CreateTracksAction, file_descr,
+    supported_file_fields_schema),
+
   CYAML_FIELD_INT (
     "pool_id", CYAML_FLAG_DEFAULT,
     CreateTracksAction, pool_id),

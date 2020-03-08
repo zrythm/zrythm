@@ -184,10 +184,8 @@ static const cyaml_schema_field_t
     "id", CYAML_FLAG_DEFAULT,
     ZRegion, id,
     region_identifier_fields_schema),
-  CYAML_FIELD_STRING_PTR (
-    "name", CYAML_FLAG_POINTER,
-    ZRegion, name,
-     0, CYAML_UNLIMITED),
+  YAML_FIELD_STRING_PTR (
+    ZRegion, name),
   CYAML_FIELD_INT (
     "pool_id", CYAML_FLAG_DEFAULT,
     ZRegion, pool_id),
@@ -217,8 +215,10 @@ static const cyaml_schema_field_t
 };
 
 static const cyaml_schema_value_t
-region_schema = {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
+  region_schema =
+{
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER_NULL_STR,
     ZRegion, region_fields_schema),
 };
 

@@ -190,7 +190,7 @@ typedef struct ArrangerSelectionsAction
    * affect a single object rather than selections,
    * like a region name change.
    */
-  ArrangerObject *     obj;
+  //ArrangerObject *     obj;
 
   /* --- below for serialization only --- */
   ChordSelections *    chord_sel;
@@ -209,10 +209,12 @@ typedef struct ArrangerSelectionsAction
   MidiNote *           mn_r2[800];
 
   /* single objects */
+#if 0
   ZRegion *            region;
   MidiNote *           midi_note;
   ScaleObject *        scale;
   Marker *             marker;
+#endif
 
 } ArrangerSelectionsAction;
 
@@ -224,35 +226,43 @@ static const cyaml_schema_field_t
     ArrangerSelectionsAction, parent_instance,
     undoable_action_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "chord_sel", CYAML_FLAG_POINTER,
+    "chord_sel",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, chord_sel,
     chord_selections_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "tl_sel", CYAML_FLAG_POINTER,
+    "tl_sel",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, tl_sel,
     timeline_selections_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "ma_sel", CYAML_FLAG_POINTER,
+    "ma_sel",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, ma_sel,
     midi_arranger_selections_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "automation_sel", CYAML_FLAG_POINTER,
+    "automation_sel",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, automation_sel,
     automation_selections_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "chord_sel_after", CYAML_FLAG_POINTER,
+    "chord_sel_after",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, chord_sel_after,
     chord_selections_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "tl_sel_after", CYAML_FLAG_POINTER,
+    "tl_sel_after",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, tl_sel_after,
     timeline_selections_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "ma_sel_after", CYAML_FLAG_POINTER,
+    "ma_sel_after",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, ma_sel_after,
     midi_arranger_selections_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "automation_sel_after", CYAML_FLAG_POINTER,
+    "automation_sel_after",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, automation_sel_after,
     automation_selections_fields_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
@@ -275,22 +285,27 @@ static const cyaml_schema_field_t
     ArrangerSelectionsAction, mn_r2,
     num_split_objs,
     &midi_note_schema, 0, CYAML_UNLIMITED),
+#if 0
   CYAML_FIELD_MAPPING_PTR (
-    "region", CYAML_FLAG_POINTER,
+    "region", CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, region,
     region_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "midi_note", CYAML_FLAG_POINTER,
+    "midi_note",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, midi_note,
     midi_note_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "scale", CYAML_FLAG_POINTER,
+    "scale",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, scale,
     scale_object_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
-    "marker", CYAML_FLAG_POINTER,
+    "marker",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     ArrangerSelectionsAction, marker,
     marker_fields_schema),
+#endif
 
   CYAML_FIELD_END
 };
@@ -298,9 +313,9 @@ static const cyaml_schema_field_t
 static const cyaml_schema_value_t
   arranger_selections_action_schema =
 {
-  YAML_VALUE_PTR (
-    ArrangerSelections,
-    arranger_selections_fields_schema),
+  YAML_VALUE_PTR_NULLABLE (
+    ArrangerSelectionsAction,
+    arranger_selections_action_fields_schema),
 };
 
 /**

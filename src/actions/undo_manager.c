@@ -1,7 +1,5 @@
 /*
- * actions/undo_redo_manager.c - Undo/Redo Manager
- *
- * Copyright (C) 2018 Alexandros Theodotou
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -28,12 +26,30 @@
 #include "project.h"
 #include "utils/stack.h"
 
+/**
+ * Inits the undo manager by creating or
+ * populating the undo/redo stacks.
+ *
+ * @param loading True if this is a loaded project,
+ *   false if a new project.
+ */
 void
-undo_manager_init (UndoManager * self)
+undo_manager_init (
+  UndoManager * self,
+  int           loading)
 {
   g_message ("Initializing undo manager...");
-  self->undo_stack = undo_stack_new ();
-  self->redo_stack = undo_stack_new ();
+
+  if (loading)
+    {
+      undo_stack_init_loaded (self->undo_stack);
+      undo_stack_init_loaded (self->redo_stack);
+    }
+  else
+    {
+      self->undo_stack = undo_stack_new ();
+      self->redo_stack = undo_stack_new ();
+    }
 }
 
 /**

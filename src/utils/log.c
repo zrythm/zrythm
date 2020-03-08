@@ -26,7 +26,7 @@
 #include <glib/gprintf.h>
 #include <glib/gstdio.h>
 
-#define MESSAGES_MAX 1000
+#define MESSAGES_MAX 80000
 
 typedef struct LogEvent
 {
@@ -174,7 +174,7 @@ log_init (
   /* init the object pool for log events */
   self->obj_pool =
     object_pool_new (
-      create_log_event_obj, EVENTS_MAX);
+      create_log_event_obj, MESSAGES_MAX);
 
   /* init the message queue */
   self->mqueue = mpmc_queue_new ();

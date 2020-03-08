@@ -152,3 +152,11 @@ stack_free_members (
   if (s->elements)
     free (s->elements);
 }
+
+void
+stack_free (
+  Stack * s)
+{
+  stack_free_members (s);
+  free (s);
+}

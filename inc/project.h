@@ -283,22 +283,25 @@ static const cyaml_schema_field_t
   CYAML_FIELD_MAPPING (
     "range_2", CYAML_FLAG_DEFAULT,
     Project, range_2, position_fields_schema),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "has_range", CYAML_FLAG_DEFAULT,
     Project, has_range),
   CYAML_FIELD_MAPPING_PTR (
     "midi_mappings", CYAML_FLAG_POINTER,
     Project, midi_mappings,
     midi_mappings_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Project, undo_manager,
+    undo_manager_fields_schema),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
   project_schema =
 {
-	CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER,
-  Project, project_fields_schema),
+  YAML_VALUE_PTR (
+    Project, project_fields_schema),
 };
 
 /**

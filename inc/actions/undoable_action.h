@@ -118,12 +118,13 @@ undoable_action_type_strings[] =
 typedef struct UndoableAction
 {
   UndoableActionType         type;
+
   /**
-   * Label for showing in the Edit menu.
+   * Index in the stack.
    *
-   * e.g. "move region(s)" -> Undo move region(s)
+   * Used during deserialization.
    */
-  char *                      label;
+  int                        stack_idx;
 } UndoableAction;
 
 static const cyaml_schema_field_t
@@ -134,10 +135,8 @@ static const cyaml_schema_field_t
     UndoableAction, type,
     undoable_action_type_strings,
     CYAML_ARRAY_LEN (undoable_action_type_strings)),
-  CYAML_FIELD_STRING_PTR (
-    "label", CYAML_FLAG_POINTER,
-    UndoableAction, label,
-    0, CYAML_UNLIMITED),
+  YAML_FIELD_INT (
+    UndoableAction, stack_idx),
 
   CYAML_FIELD_END
 };

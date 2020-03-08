@@ -28,6 +28,8 @@
 
 #include <stdlib.h>
 
+#include "utils/yaml.h"
+
 #include <gtk/gtk.h>
 
 /**
@@ -56,9 +58,30 @@ typedef struct Stack
    */
   int               max_length;
 
-  /** Index of the top of the stack. */
+  /**
+   * Index of the top of the stack.
+   *
+   * This is an index and not a count.
+   * Eg., if there is 1 element, this will be 0.
+   */
   volatile gint     top;
 } Stack;
+
+static const cyaml_schema_field_t
+  stack_fields_schema[] =
+{
+  YAML_FIELD_INT (
+    Stack, max_length),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t
+  stack_schema =
+{
+  YAML_VALUE_PTR (
+    Stack, stack_fields_schema),
+};
 
 /**
  * Creates a new stack of the given size.
@@ -99,6 +122,10 @@ stack_pop_last (Stack * s);
 
 void
 stack_free_members (
+  Stack * s);
+
+void
+stack_free (
   Stack * s);
 
 /**

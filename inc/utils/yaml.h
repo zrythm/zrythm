@@ -50,9 +50,19 @@
  */
 #define YAML_FIELD_MAPPING_PTR( \
   owner,member,schema) \
-  CYAML_FIELD_MAPPING ( \
+  CYAML_FIELD_MAPPING_PTR ( \
     #member, CYAML_FLAG_POINTER, owner, member, \
     schema)
+
+/**
+ * Mapping pointer to a struct.
+ */
+#define YAML_FIELD_MAPPING_PTR_OPTIONAL( \
+  owner,member,schema) \
+  CYAML_FIELD_MAPPING_PTR ( \
+    #member, \
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, \
+    owner, member, schema)
 
 /**
  * Fixed-width array of pointers with variable count.
@@ -87,12 +97,61 @@
     &schema, 0, CYAML_UNLIMITED)
 
 /**
+ * Dynamic-width (reallocated) array of pointers
+ * with variable count, nullable.
+ *
+ * @code@
+ * AutomationTrack ** ats;
+ * int                num_ats;
+ * int                ats_size;
+ * @endcode@
+ */
+#define YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPTIONAL( \
+  owner,member,schema) \
+  CYAML_FIELD_SEQUENCE_COUNT ( \
+    #member, \
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, \
+    owner, member, num_##member, \
+    &schema, 0, CYAML_UNLIMITED)
+
+#define YAML_FIELD_INT(owner,member) \
+  CYAML_FIELD_INT ( \
+    #member, CYAML_FLAG_DEFAULT, \
+    owner, member)
+
+#define YAML_FIELD_STRING_PTR(owner,member) \
+  CYAML_FIELD_STRING_PTR ( \
+    #member, CYAML_FLAG_POINTER, \
+    owner, member, 0, CYAML_UNLIMITED)
+
+#define YAML_FIELD_STRING_PTR_OPTIONAL(owner,member) \
+  CYAML_FIELD_STRING_PTR ( \
+    #member, \
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL, \
+    owner, member, 0, CYAML_UNLIMITED)
+
+#define YAML_FIELD_ENUM(owner,member,strings) \
+  CYAML_FIELD_ENUM ( \
+    #member, CYAML_FLAG_DEFAULT, \
+    owner, member, strings, \
+    CYAML_ARRAY_LEN (strings))
+
+/**
  * Schema to be used as a pointer.
  */
 #define YAML_VALUE_PTR( \
   cc,fields_schema) \
   CYAML_VALUE_MAPPING ( \
     CYAML_FLAG_POINTER, cc, fields_schema)
+
+/**
+ * Schema to be used as a pointer that can be
+ * NULL.
+ */
+#define YAML_VALUE_PTR_NULLABLE( \
+  cc,fields_schema) \
+  CYAML_VALUE_MAPPING ( \
+    CYAML_FLAG_POINTER_NULL_STR, cc, fields_schema)
 
 /**
  * Schema to be used for arrays of structs directly

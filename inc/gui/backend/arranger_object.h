@@ -259,11 +259,9 @@ typedef struct ArrangerObject
 static const cyaml_schema_field_t
 arranger_object_fields_schema[] =
 {
-  CYAML_FIELD_ENUM (
-    "type", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_ENUM (
     ArrangerObject, type,
-    arranger_object_type_strings,
-    CYAML_ARRAY_LEN (arranger_object_type_strings)),
+    arranger_object_type_strings),
   CYAML_FIELD_BITFIELD (
     "flags", CYAML_FLAG_DEFAULT,
     ArrangerObject, flags,
