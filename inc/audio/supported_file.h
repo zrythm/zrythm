@@ -103,7 +103,7 @@ static const cyaml_schema_field_t
     SupportedFile, abs_path),
   YAML_FIELD_ENUM (
     SupportedFile, type, file_type_strings),
-  YAML_FIELD_STRING_PTR (
+  YAML_FIELD_STRING_PTR_OPTIONAL (
     SupportedFile, label),
   YAML_FIELD_INT (
     SupportedFile, hidden),
