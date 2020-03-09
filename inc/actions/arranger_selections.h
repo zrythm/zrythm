@@ -30,6 +30,7 @@
 
 #include "actions/undoable_action.h"
 #include "audio/position.h"
+#include "audio/quantize_options.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"
 #include "gui/backend/midi_arranger_selections.h"
@@ -141,7 +142,7 @@ typedef struct ArrangerSelectionsAction
   ArrangerSelectionsActionResizeType resize_type;
 
   /** Ticks diff. */
-  long                 ticks;
+  double               ticks;
   /** Tracks moved. */
   int                  delta_tracks;
   /** Lanes moved. */
@@ -225,6 +226,32 @@ static const cyaml_schema_field_t
     "parent_instance", CYAML_FLAG_DEFAULT,
     ArrangerSelectionsAction, parent_instance,
     undoable_action_fields_schema),
+  YAML_FIELD_ENUM (
+    ArrangerSelectionsAction, edit_type,
+    arranger_selections_action_edit_type_strings),
+  YAML_FIELD_ENUM (
+    ArrangerSelectionsAction, resize_type,
+    arranger_selections_action_resize_type_strings),
+  YAML_FIELD_FLOAT (
+    ArrangerSelectionsAction, ticks),
+  YAML_FIELD_INT (
+    ArrangerSelectionsAction, delta_tracks),
+  YAML_FIELD_INT (
+    ArrangerSelectionsAction, delta_lanes),
+  YAML_FIELD_INT (
+    ArrangerSelectionsAction, delta_chords),
+  YAML_FIELD_INT (
+    ArrangerSelectionsAction, delta_pitch),
+  YAML_FIELD_INT (
+    ArrangerSelectionsAction, delta_vel),
+  YAML_FIELD_STRING_PTR_OPTIONAL (
+    ArrangerSelectionsAction, str),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ArrangerSelectionsAction, pos,
+    position_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    ArrangerSelectionsAction, opts,
+    quantize_options_fields_schema),
   CYAML_FIELD_MAPPING_PTR (
     "chord_sel",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
@@ -350,7 +377,7 @@ UndoableAction *
 arranger_selections_action_new_move_or_duplicate (
   ArrangerSelections * sel,
   const int            move,
-  const long           ticks,
+  const double         ticks,
   const int            delta_chords,
   const int            delta_pitch,
   const int            delta_tracks,
@@ -462,7 +489,7 @@ UndoableAction *
 arranger_selections_action_new_resize (
   ArrangerSelections *               sel,
   ArrangerSelectionsActionResizeType type,
-  const long                         ticks);
+  const double                       ticks);
 
 /**
  * Creates a new action fro quantizing

@@ -91,6 +91,24 @@
 #define TARGET_MIDI_REGION_LANE 0
 #define TARGET_AUDIO_REGION_LANE 5
 
+void
+test_project_save_and_reload (void)
+{
+  /* save the project */
+  int ret =
+    project_save (
+      PROJECT, PROJECT->dir, 0, 0);
+  g_assert_cmpint (ret, ==, 0);
+  char * prj_file =
+    g_build_filename (
+      PROJECT->dir, PROJECT_FILE, NULL);
+
+  /* reload it */
+  ret =
+    project_load (prj_file, 0);
+  g_assert_cmpint (ret, ==, 0);
+}
+
 /**
  * Checks that the objects are back to their original
  * state.
@@ -112,6 +130,11 @@ test_project_check_vs_original_state (
       g_assert_cmpint (
         TL_SELECTIONS->num_scale_objects, ==, 1);
     }
+
+  /* save the project and reopen it. some callers
+   * undo after this step so this checks if the undo
+   * history works after reopening the project */
+  test_project_save_and_reload ();
 
   Track * midi_track =
     tracklist_find_track_by_name (

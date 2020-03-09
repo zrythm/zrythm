@@ -102,14 +102,44 @@ math_dbfs_to_amp (
 /**
  * Rounds a double to an int.
  */
+#define math_round_double_to_type(x,type) \
+  ((type) (x + 0.5 - (x < 0.0)))
+
+/**
+ * Rounds a double to an int.
+ */
 #define math_round_double_to_int(x) \
-  ((int) (x + 0.5 - (x < 0.0)))
+  math_round_double_to_type (x,int)
+
+/**
+ * Rounds a double to a size_t.
+ */
+#define math_round_double_to_size_t(x) \
+  math_round_double_to_type (x,size_t)
+
+/**
+ * Rounds a double to a long.
+ */
+#define math_round_double_to_long(x) \
+  math_round_double_to_type (x,long)
+
+/**
+ * Rounds a float to a given type.
+ */
+#define math_round_float_to_type(x,type) \
+  ((type) (x + 0.5f - (x < 0.f)))
 
 /**
  * Rounds a float to an int.
  */
 #define math_round_float_to_int(x) \
-  ((int) (x + 0.5f - (x < 0.f)))
+  math_round_float_to_type (x,int)
+
+/**
+ * Rounds a float to a long.
+ */
+#define math_round_float_to_long(x) \
+  math_round_float_to_type (x,long)
 
 /**
  * Initializes coefficients to be used later.

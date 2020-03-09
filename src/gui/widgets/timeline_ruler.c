@@ -229,15 +229,15 @@ timeline_ruler_on_drag_update (
             fabs (offset_x),
             &diff_pos,
             0);
-          long ticks_diff =
+          double ticks_diff =
             position_to_ticks (&diff_pos);
-          long r1_ticks =
+          double r1_ticks =
             position_to_ticks (
               (&PROJECT->range_1));
-          long r2_ticks =
+          double r2_ticks =
             position_to_ticks (
               (&PROJECT->range_2));
-          long ticks_length =
+          double ticks_length =
             self->range1_first ?
             r2_ticks - r1_ticks :
             r1_ticks - r2_ticks;

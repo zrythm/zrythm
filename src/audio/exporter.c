@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -15,15 +15,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-/**
- * \file
- *
- * Audio file exporter.
- *
- * Currently used by the export dialog to export
- * the mixdown.
  */
 
 #include <stdio.h>
@@ -45,7 +36,9 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/io.h"
+#include "utils/math.h"
 #include "utils/ui.h"
+
 #include "midilib/src/midifile.h"
 
 #include <sndfile.h>
@@ -431,7 +424,8 @@ export_midi (
       /* common time: 4 crochet beats, per bar */
       midiSongAddSimpleTimeSig (
         mf, 1, TRANSPORT->beats_per_bar,
-        TRANSPORT->ticks_per_beat);
+        math_round_double_to_int (
+          TRANSPORT->ticks_per_beat));
 
       Track * track;
       for (i = 0; i < TRACKLIST->num_tracks; i++)

@@ -156,12 +156,12 @@ typedef struct _ArrangerWidget
 
   /** The absolute (not snapped) current diff in
    * ticks from the curr_pos to the start_pos. */
-  long                 curr_ticks_diff_from_start;
+  double               curr_ticks_diff_from_start;
 
   /** The adjusted diff in ticks to use for moving
    * objects starting from their cached start
    * positions. */
-  long                 adj_ticks_diff;
+  double               adj_ticks_diff;
 
   /** The absolute (not snapped) Position as of the
    * current action. */

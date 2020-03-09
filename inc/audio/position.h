@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -36,6 +36,8 @@
 
 #define TICKS_PER_QUARTER_NOTE 960
 #define TICKS_PER_SIXTEENTH_NOTE 240
+#define TICKS_PER_QUARTER_NOTE_DBL 960.0
+#define TICKS_PER_SIXTEENTH_NOTE_DBL 240.0
 #define position_add_ticks(_pos, _ticks) \
   position_from_ticks ( \
     (_pos), \
@@ -50,11 +52,7 @@
   position_set_bar (position, \
                      (position)->bars + _b)
 #define position_snap_simple(pos, sg) \
-  position_snap (0, \
-                 pos, \
-                 0, \
-                 0, \
-                 sg)
+  position_snap (0, pos, 0, 0, sg)
 
 /**
  * Compares 2 positions based on their frames.
@@ -136,9 +134,12 @@ typedef struct Position
   /** 240 ticks per sixteenth. */
   int       ticks;
 
+  /** 0.0 to 1.0 for precision. */
+  double    sub_tick;
+
   /** Cache so we don't need to call
    * position_get_ticks. */
-  long      total_ticks;
+  double    total_ticks;
 
   /** Position in frames (samples). */
   long      frames;
@@ -147,32 +148,35 @@ typedef struct Position
 static const cyaml_schema_field_t
   position_fields_schema[] =
 {
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "bars", CYAML_FLAG_DEFAULT,
     Position, bars),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "beats", CYAML_FLAG_DEFAULT,
     Position, beats),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "sixteenths", CYAML_FLAG_DEFAULT,
     Position, sixteenths),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "ticks", CYAML_FLAG_DEFAULT,
     Position, ticks),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_FLOAT (
+    "sub_tick", CYAML_FLAG_DEFAULT,
+    Position, total_ticks),
+  CYAML_FIELD_FLOAT (
     "total_ticks", CYAML_FLAG_DEFAULT,
     Position, total_ticks),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "frames", CYAML_FLAG_DEFAULT,
     Position, frames),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
   position_schema =
 {
-	CYAML_VALUE_MAPPING (
+  CYAML_VALUE_MAPPING (
     CYAML_FLAG_POINTER,
     Position, position_fields_schema),
 };
@@ -185,6 +189,7 @@ static const Position POSITION_START =
   .sixteenths = 1,
   .ticks = 0,
   .total_ticks = 0,
+  .sub_tick = 0.0,
   .frames = 0
 };
 
@@ -192,20 +197,24 @@ static const Position POSITION_START =
  * Sets position to given bar
  */
 void
-position_set_to_bar (Position * position,
-                     int        bar_no);
+position_set_to_bar (
+  Position * position,
+  int        bar_no);
 
 void
-position_set_bar (Position * position,
-                  int        bar);
+position_set_bar (
+  Position * position,
+  int        bar);
 
 void
-position_set_beat (Position * position,
-                   int        beat);
+position_set_beat (
+  Position * position,
+  int        beat);
 
 void
-position_set_sixteenth (Position * position,
-                        int        sixteenth);
+position_set_sixteenth (
+  Position * position,
+  int        sixteenth);
 
 /**
  * Sets the tick of the Position.
@@ -222,7 +231,7 @@ position_set_sixteenth (Position * position,
 void
 position_set_tick (
   Position * position,
-  long       tick);
+  double     tick);
 
 /**
  * Sorts an array of Position's.
@@ -258,11 +267,13 @@ position_to_frames (
   const Position * position);
 
 /**
- * Converts seconds to position and puts the result in the given Position.
+ * Converts seconds to position and puts the result
+ * in the given Position.
  */
 void
-position_from_seconds (Position * position,
-                       double     secs);
+position_from_seconds (
+  Position * position,
+  double     secs);
 
 static inline void
 position_from_frames (
@@ -270,8 +281,7 @@ position_from_frames (
   long       frames)
 {
   position_init (pos);
-  position_add_frames (
-    pos, frames);
+  position_add_frames (pos, frames);
 }
 
 /**
@@ -281,7 +291,7 @@ long
 position_to_ms (
   const Position * pos);
 
-long
+double
 position_to_ticks (
   const Position * pos);
 
@@ -291,7 +301,7 @@ position_to_ticks (
 void
 position_from_ticks (
   Position * pos,
-  long       ticks);
+  double     ticks);
 
 /**
  * Snaps position using given options.
@@ -359,7 +369,7 @@ position_get_midway_pos (
  * @param sg SnapGrid to snap with, or NULL to not
  *   snap.
  */
-long
+double
 position_get_ticks_diff (
   const Position * end_pos,
   const Position * start_pos,

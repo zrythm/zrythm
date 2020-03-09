@@ -34,19 +34,8 @@ test_empty_save_load ()
   int ret;
   g_assert_nonnull (PROJECT);
 
-  /* save the project */
-  ret =
-    project_save (
-      PROJECT, PROJECT->dir, 0, 0);
-  g_assert_cmpint (ret, ==, 0);
-  char * prj_file =
-    g_build_filename (
-      PROJECT->dir, PROJECT_FILE, NULL);
-
-  /* reload it */
-  ret =
-    project_load (prj_file, 0);
-  g_assert_cmpint (ret, ==, 0);
+  /* save and reload the project */
+  test_project_save_and_reload ();
 
   /* resave it */
   ret =

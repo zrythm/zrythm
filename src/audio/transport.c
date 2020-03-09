@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -59,10 +59,8 @@ transport_set_bpm (
   self->bpm = bpm;
 
   engine_update_frames_per_tick (
-    AUDIO_ENGINE,
-    self->beats_per_bar,
-    bpm,
-    AUDIO_ENGINE->sample_rate);
+    AUDIO_ENGINE, self->beats_per_bar,
+    bpm, AUDIO_ENGINE->sample_rate);
 
   /* kick off offline resampling */
   EVENTS_PUSH (ET_BPM_CHANGED, NULL);
@@ -166,28 +164,16 @@ transport_set_beat_unit (
    * it means it is a 1/2th note, so multiply 1/2
    * with the ticks per note
    */
-  self->lticks_per_beat =
-    (long)
-    (3840.0 / (double) TRANSPORT->beat_unit);
   self->ticks_per_beat =
-    (int) self->lticks_per_beat;
-  self->lticks_per_bar =
-    (long)
-    (self->lticks_per_beat * self->beats_per_bar);
+    3840.0 / (double) TRANSPORT->beat_unit;
   self->ticks_per_bar =
-    (int)
-    self->lticks_per_bar;
-  self->sixteenths_per_beat =
-    (int)
-    (16.0 / (double) self->beat_unit);
+    (self->ticks_per_beat * self->beats_per_bar);
+  self->sixteenths_per_beat = 16 / self->beat_unit;
   self->sixteenths_per_bar =
-    (int)
     (self->sixteenths_per_beat *
      self->beats_per_bar);
-  g_warn_if_fail (self->ticks_per_bar > 0);
-  g_warn_if_fail (self->ticks_per_beat > 0);
-  g_warn_if_fail (self->lticks_per_bar > 0);
-  g_warn_if_fail (self->lticks_per_beat > 0);
+  g_warn_if_fail (self->ticks_per_bar > 0.0);
+  g_warn_if_fail (self->ticks_per_beat > 0.0);
 }
 
 void
@@ -367,14 +353,14 @@ transport_set_metronome_enabled (
 /**
  * Returns the PPQN (Parts/Ticks Per Quarter Note).
  */
-int
+double
 transport_get_ppqn (
   Transport * self)
 {
   double res =
-    (double) self->ticks_per_beat *
+    self->ticks_per_beat *
     ((double) self->beat_unit / 4.0);
-  return math_round_double_to_int (res);
+  return res;
 }
 
 /**

@@ -40,13 +40,13 @@ automation_selections_paste_to_pos (
   AutomationSelections * ts,
   Position *           pos)
 {
-  long pos_ticks = position_to_ticks (pos);
+  double pos_ticks = position_to_ticks (pos);
 
   /* get pos of earliest object */
   Position start_pos;
   arranger_selections_get_start_pos (
     (ArrangerSelections *) ts, &start_pos, 0);
-  long start_pos_ticks =
+  double start_pos_ticks =
     position_to_ticks (&start_pos);
 
   /* subtract the start pos from every object and
@@ -56,7 +56,7 @@ automation_selections_paste_to_pos (
   curr_ticks = position_to_ticks (x); \
   position_from_ticks (x, pos_ticks + DIFF)
 
-  long curr_ticks;
+  double curr_ticks;
   int i;
   AutomationPoint * ap;
   ArrangerObject * ap_obj;

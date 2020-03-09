@@ -1093,7 +1093,7 @@ arranger_selections_set_cache_poses (
 void
 arranger_selections_add_ticks (
   ArrangerSelections *     self,
-  const long               ticks,
+  const double             ticks,
   const int                use_cached_pos)
 {
   int i;
@@ -1597,7 +1597,7 @@ arranger_selections_remove_object (
 #undef REMOVE_OBJ
 }
 
-long
+double
 arranger_selections_get_length_in_ticks (
   ArrangerSelections * self)
 {

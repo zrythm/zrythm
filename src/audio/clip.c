@@ -51,6 +51,8 @@ audio_clip_init_from_file (
   self->name = io_path_get_basename (full_path);
   self->channels = enc->nfo.channels;
   self->bpm = TRANSPORT->bpm;
+  /*g_message (*/
+    /*"\n\n num frames %ld \n\n", self->num_frames);*/
 
   audio_encoder_free (enc);
 }

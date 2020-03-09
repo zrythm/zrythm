@@ -18,6 +18,7 @@
  */
 
 #include "audio/position.h"
+#include "utils/math.h"
 
 #include "tests/helpers/zrythm.h"
 
@@ -27,13 +28,14 @@ test_position_from_ticks ()
   Position pos = {
     4, 4, 4, 4, 4, 4
   };
-  long ticks = 50000;
+  double ticks = 50000.0;
 
   /* assert values are correct */
   position_from_ticks (&pos, ticks);
   g_assert_cmpint (
     pos.bars, ==,
-    ticks / TRANSPORT->lticks_per_bar + 1);
+    math_round_double_to_int (
+      ticks / TRANSPORT->ticks_per_bar + 1));
   g_assert_cmpint (
     pos.bars, >, 0);
 }

@@ -615,10 +615,9 @@ snap_region_l (
           /*region_set_start_pos (*/
             /*region, new_start_pos,*/
             /*AO_UPDATE_ALL);*/
-          long diff =
+          double diff =
             position_to_ticks (new_start_pos) -
-            position_to_ticks (
-              &r_obj->pos);
+            position_to_ticks (&r_obj->pos);
           arranger_object_resize (
             r_obj, 1,
             self->action ==
@@ -653,11 +652,10 @@ timeline_arranger_widget_snap_regions_l (
 
   /* get delta with first clicked region's start
    * pos */
-  long delta;
+  double delta;
   delta =
     position_to_ticks (pos) -
-    position_to_ticks (
-      &start_r_obj->cache_pos);
+    position_to_ticks (&start_r_obj->cache_pos);
 
   /* new start pos for each region, calculated by
    * adding delta to the region's original start
@@ -740,7 +738,7 @@ snap_region_r (
         {
           /*region_set_end_pos (*/
             /*region, new_end_pos, AO_UPDATE_ALL);*/
-          long diff =
+          double diff =
             position_to_ticks (new_end_pos) -
             position_to_ticks (&r_obj->end_pos);
           arranger_object_resize (
@@ -754,14 +752,13 @@ snap_region_r (
           if (self->action ==
                 UI_OVERLAY_ACTION_CREATING_RESIZING_R)
             {
-              long full_size =
+              double full_size =
                 arranger_object_get_length_in_ticks (
                   r_obj);
               Position tmp;
               position_set_to_pos (
                 &tmp, &r_obj->loop_start_pos);
-              position_add_ticks (
-                &tmp, full_size);
+              position_add_ticks (&tmp, full_size);
 
               /* use the setters */
               arranger_object_loop_end_pos_setter (
@@ -796,10 +793,9 @@ timeline_arranger_widget_snap_regions_r (
 
   /* get delta with first clicked region's end
    * pos */
-  long delta =
+  double delta =
     position_to_ticks (pos) -
-    position_to_ticks (
-      &start_r_obj->cache_end_pos);
+    position_to_ticks (&start_r_obj->cache_end_pos);
 
   /* new end pos for each region, calculated by
    * adding delta to the region's original end
@@ -818,10 +814,8 @@ timeline_arranger_widget_snap_regions_r (
       r_obj = (ArrangerObject *) region;
 
       position_set_to_pos (
-        &new_end_pos,
-        &r_obj->cache_end_pos);
-      position_add_ticks (
-        &new_end_pos, delta);
+        &new_end_pos,&r_obj->cache_end_pos);
+      position_add_ticks (&new_end_pos, delta);
 
       ret =
         snap_region_r (

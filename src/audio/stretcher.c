@@ -39,6 +39,7 @@
 #include <stdlib.h>
 
 #include "audio/stretcher.h"
+#include "utils/math.h"
 
 #include <gtk/gtk.h>
 
@@ -217,7 +218,7 @@ stretcher_stretch_interleaved (
   float * out_samples[channels];
   size_t out_samples_size =
     (size_t)
-    ceil (
+    math_round_double_to_size_t (
       rubberband_get_time_ratio (
         self->rubberband_state) * in_samples_size);
   for (unsigned int i = 0; i < channels; i++)

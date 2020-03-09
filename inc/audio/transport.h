@@ -125,10 +125,8 @@ typedef struct Transport
   BeatUnit           ebeat_unit;
 
   /* ---------- CACHE -------------- */
-  long               lticks_per_beat;
-  long               lticks_per_bar;
-  int                ticks_per_beat;
-  int                ticks_per_bar;
+  double             ticks_per_beat;
+  double             ticks_per_bar;
   int                sixteenths_per_beat;
   int                sixteenths_per_bar;
 
@@ -385,7 +383,7 @@ transport_set_ebeat_unit (
 /**
  * Returns the PPQN (Parts/Ticks Per Quarter Note).
  */
-int
+double
 transport_get_ppqn (
   Transport * self);
 

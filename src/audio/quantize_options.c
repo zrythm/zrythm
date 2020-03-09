@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -209,7 +209,7 @@ get_next_point (
  * @return The amount of ticks moved (negative for
  *   backwards).
  */
-int
+double
 quantize_options_quantize_position (
   QuantizeOptions * self,
   Position *        pos)
@@ -221,20 +221,19 @@ quantize_options_quantize_position (
   g_return_val_if_fail (
     prev_point && next_point, 0);
 
-  const int upper = (int) self->rand_ticks;
-  const int lower = - (int) self->rand_ticks;
-  int rand_ticks =
-    (int)
+  const double upper = self->rand_ticks;
+  const double lower = - self->rand_ticks;
+  double rand_ticks =
 #ifdef _WOE32
-    (rand() %
+    fmod (rand (),
 #else
-    (random() %
+    fmod (random(),
 #endif
-      (upper - lower + 1)) +
+      (upper - lower + 1.0)) +
     lower;
 
   /* if previous point is closer */
-  long diff;
+  double diff;
   if (pos->total_ticks -
         prev_point->total_ticks <=
       next_point->total_ticks -
@@ -254,17 +253,15 @@ quantize_options_quantize_position (
 
   /* multiply by amount */
   diff =
-    (long)
-    ((float) diff * (self->amount / 100.f));
+    (diff * (double) (self->amount / 100.f));
 
   /* add random ticks */
   diff += rand_ticks;
 
   /* quantize position */
-  position_add_ticks (
-    pos, diff);
+  position_add_ticks (pos, diff);
 
-  return (int) diff;
+  return diff;
 }
 
 /**

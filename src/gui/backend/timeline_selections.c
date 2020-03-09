@@ -331,14 +331,14 @@ timeline_selections_paste_to_pos (
   arranger_selections_clear (
     (ArrangerSelections *) TL_SELECTIONS);
 
-  long pos_ticks = position_to_ticks (pos);
+  double pos_ticks = position_to_ticks (pos);
 
   /* get pos of earliest object */
   Position start_pos;
   arranger_selections_get_start_pos (
     (ArrangerSelections *) ts, &start_pos,
     F_GLOBAL);
-  long start_pos_ticks =
+  double start_pos_ticks =
     position_to_ticks (&start_pos);
 
   /* subtract the start pos from every object and
@@ -348,7 +348,7 @@ timeline_selections_paste_to_pos (
   curr_ticks = position_to_ticks (x); \
   position_from_ticks (x, pos_ticks + DIFF)
 
-  long curr_ticks;
+  double curr_ticks;
   int i;
   for (i = 0; i < ts->num_regions; i++)
     {

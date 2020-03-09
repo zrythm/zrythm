@@ -119,6 +119,11 @@
     #member, CYAML_FLAG_DEFAULT, \
     owner, member)
 
+#define YAML_FIELD_FLOAT(owner,member) \
+  CYAML_FIELD_FLOAT ( \
+    #member, CYAML_FLAG_DEFAULT, \
+    owner, member)
+
 #define YAML_FIELD_STRING_PTR(owner,member) \
   CYAML_FIELD_STRING_PTR ( \
     #member, CYAML_FLAG_POINTER, \

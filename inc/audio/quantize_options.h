@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -69,7 +69,7 @@ typedef struct QuantizeOptions
   float            swing;
 
   /** Number of ticks for randomization. */
-  unsigned int     rand_ticks;
+  double           rand_ticks;
 
   /**
    * Quantize points.
@@ -188,7 +188,7 @@ quantize_options_clone (
  * @return The amount of ticks moved (negative for
  *   backwards).
  */
-int
+double
 quantize_options_quantize_position (
   QuantizeOptions * self,
   Position *              pos);

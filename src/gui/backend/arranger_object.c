@@ -164,12 +164,12 @@ arranger_object_get_num_loops (
   long loop_start =
     self->loop_start_pos.frames -
     self->clip_start_pos.frames;
-  long curr_ticks = loop_start;
+  long curr_frames = loop_start;
 
-  while (curr_ticks < full_size)
+  while (curr_frames < full_size)
     {
       i++;
-      curr_ticks += loop_size;
+      curr_frames += loop_size;
     }
 
   if (!count_incomplete)
@@ -625,7 +625,7 @@ arranger_object_print (
 void
 arranger_object_move (
   ArrangerObject *         self,
-  const long               ticks,
+  const double             ticks,
   const int                use_cached_pos)
 {
   if (arranger_object_type_has_length (self->type))
@@ -875,7 +875,7 @@ arranger_object_init_loaded (
  *
  * (End Position - start Position).
  */
-long
+double
 arranger_object_get_length_in_ticks (
   ArrangerObject * self)
 {
@@ -904,7 +904,7 @@ arranger_object_get_length_in_frames (
 /**
  * Returns the length of the loop in ticks.
  */
-long
+double
 arranger_object_get_loop_length_in_ticks (
   ArrangerObject * self)
 {
@@ -939,6 +939,17 @@ arranger_object_update_frames (
     &self->pos);
   if (self->has_length)
     {
+      /* FIXME temporary test */
+#if 0
+      if (self == &zrythm->project->tracklist.tracks[4]->lanes[3]->regions[0]->base)
+        {
+          position_print (&self->end_pos);
+          g_message ("frames %ld", self->end_pos.frames);
+          g_warning (
+            "position to frames %ld",
+            position_to_frames (&self->end_pos));
+        }
+#endif
       position_update_ticks_and_frames (
         &self->end_pos);
     }
@@ -995,8 +1006,8 @@ arranger_object_update_frames (
 
 static void
 add_ticks_to_region_children (
-  ZRegion *   self,
-  const long ticks)
+  ZRegion *    self,
+  const double ticks)
 {
   switch (self->id.type)
     {
@@ -1037,7 +1048,7 @@ add_ticks_to_region_children (
 void
 arranger_object_add_ticks_to_children (
   ArrangerObject * self,
-  const long       ticks)
+  const double     ticks)
 {
   if (self->type == TYPE (REGION))
     {
@@ -1064,14 +1075,13 @@ arranger_object_resize (
   ArrangerObject * self,
   const int        left,
   const int        loop,
-  const long       ticks)
+  const double     ticks)
 {
   Position tmp;
   if (left)
     {
       tmp = self->pos;
-      position_add_ticks (
-        &tmp, ticks);
+      position_add_ticks (&tmp, ticks);
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_START,
@@ -1080,8 +1090,7 @@ arranger_object_resize (
       if (self->can_loop)
         {
           tmp = self->loop_end_pos;
-          position_add_ticks (
-            &tmp, - ticks);
+          position_add_ticks (&tmp, - ticks);
           arranger_object_set_position (
             self, &tmp,
             ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
@@ -1105,8 +1114,7 @@ arranger_object_resize (
   else
     {
       tmp = self->end_pos;
-      position_add_ticks (
-        &tmp, ticks);
+      position_add_ticks (&tmp, ticks);
       arranger_object_set_position (
         self, &tmp,
         ARRANGER_OBJECT_POSITION_TYPE_END,
@@ -1115,8 +1123,7 @@ arranger_object_resize (
       if (!loop && self->can_loop)
         {
           tmp = self->loop_end_pos;
-          position_add_ticks (
-            &tmp, ticks);
+          position_add_ticks (&tmp, ticks);
           arranger_object_set_position (
             self, &tmp,
             ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,

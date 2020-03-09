@@ -185,16 +185,16 @@ draw_loop_points (
   ArrangerObject * obj =
     (ArrangerObject *) self;
   Position tmp;
-  long loop_start_ticks =
+  double loop_start_ticks =
     obj->loop_start_pos.total_ticks;
-  long loop_end_ticks =
+  double loop_end_ticks =
     obj->loop_end_pos.total_ticks;
   g_warn_if_fail (
     loop_end_ticks > loop_start_ticks);
-  long loop_ticks =
+  double loop_ticks =
     arranger_object_get_loop_length_in_ticks (
       obj);
-  long clip_start_ticks =
+  double clip_start_ticks =
     obj->clip_start_pos.total_ticks;
 
   /* get x px for loop point */
@@ -287,7 +287,7 @@ draw_midi_region (
     cr, 1, 1, 1, 1);
   int num_loops =
     arranger_object_get_num_loops (obj, 1);
-  long ticks_in_region =
+  double ticks_in_region =
     arranger_object_get_length_in_ticks (obj);
   double x_start, y_start, x_end;
 
@@ -307,12 +307,12 @@ draw_midi_region (
   double y_note_size = 1.0 / y_interval;
 
   /* draw midi notes */
-  long loop_end_ticks =
+  double loop_end_ticks =
     obj->loop_end_pos.total_ticks;
-  long loop_ticks =
+  double loop_ticks =
     arranger_object_get_loop_length_in_ticks (
       obj);
-  long clip_start_ticks =
+  double clip_start_ticks =
     obj->clip_start_pos.total_ticks;
 
   for (int i = 0; i < self->num_midi_notes; i++)
@@ -323,11 +323,11 @@ draw_midi_region (
 
       /* get ratio (0.0 - 1.0) on x where midi note
        * starts & ends */
-      long mn_start_ticks =
+      double mn_start_ticks =
         position_to_ticks (&mn_obj->pos);
-      long mn_end_ticks =
+      double mn_end_ticks =
         position_to_ticks (&mn_obj->end_pos);
-      long tmp_start_ticks, tmp_end_ticks;
+      double tmp_start_ticks, tmp_end_ticks;
 
       /* if before loop end */
       if (position_is_before (
@@ -364,11 +364,11 @@ draw_midi_region (
               /* get ratios (0.0 - 1.0) of
                * where midi note is */
               x_start =
-                (double) tmp_start_ticks /
-                (double) ticks_in_region;
+                tmp_start_ticks /
+                ticks_in_region;
               x_end =
-                (double) tmp_end_ticks /
-                (double) ticks_in_region;
+                tmp_end_ticks /
+                ticks_in_region;
               y_start =
                 ((double) max_val -
                  (double) mn->val) /
@@ -449,16 +449,16 @@ draw_chord_region (
 
   int num_loops =
     arranger_object_get_num_loops (obj, 1);
-  long ticks_in_region =
+  double ticks_in_region =
     arranger_object_get_length_in_ticks (obj);
   double x_start, x_end;
 
   /* draw chords notes */
-  long loop_end_ticks =
+  double loop_end_ticks =
     obj->loop_end_pos.total_ticks;
-  long loop_ticks =
+  double loop_ticks =
     arranger_object_get_loop_length_in_ticks (obj);
-  long clip_start_ticks =
+  double clip_start_ticks =
     obj->clip_start_pos.total_ticks;
   ChordObject * co;
   ChordObject * next_co = NULL;
@@ -473,9 +473,9 @@ draw_chord_region (
 
       /* get ratio (0.0 - 1.0) on x where chord
        * starts & ends */
-      long co_start_ticks =
+      double co_start_ticks =
         co_obj->pos.total_ticks;
-      long co_end_ticks;
+      double co_end_ticks;
       if (i < self->num_chord_objects - 1)
         {
           next_co =
@@ -488,7 +488,7 @@ draw_chord_region (
       else
         co_end_ticks =
           obj->end_pos.total_ticks;
-      long tmp_start_ticks, tmp_end_ticks;
+      double tmp_start_ticks, tmp_end_ticks;
 
       /* adjust for clip start */
       /*int adjusted_mn_start_ticks =*/
@@ -537,11 +537,11 @@ draw_chord_region (
               tmp_end_ticks -= clip_start_ticks;
 
               x_start =
-                (double) tmp_start_ticks /
-                (double) ticks_in_region;
+                tmp_start_ticks /
+                ticks_in_region;
               x_end =
-                (double) tmp_end_ticks /
-                (double) ticks_in_region;
+                tmp_end_ticks /
+                ticks_in_region;
 
               /* skip if before the region */
               if (x_start < 0.0)
@@ -611,16 +611,16 @@ draw_automation_region (
   int num_loops =
     arranger_object_get_num_loops (
       obj, 1);
-  long ticks_in_region =
+  double ticks_in_region =
     arranger_object_get_length_in_ticks (obj);
   double x_start, y_start, x_end, y_end;
 
   /* draw automation */
-  long loop_end_ticks =
+  double loop_end_ticks =
     obj->loop_end_pos.total_ticks;
-  long loop_ticks =
+  double loop_ticks =
     arranger_object_get_loop_length_in_ticks (obj);
-  long clip_start_ticks =
+  double clip_start_ticks =
     obj->clip_start_pos.total_ticks;
   AutomationPoint * ap, * next_ap;
   for (int i = 0; i < self->num_aps; i++)
@@ -633,15 +633,15 @@ draw_automation_region (
       ArrangerObject * next_ap_obj =
         (ArrangerObject *) next_ap;
 
-      long ap_start_ticks =
+      double ap_start_ticks =
         ap_obj->pos.total_ticks;
-      long ap_end_ticks = ap_start_ticks;
+      double ap_end_ticks = ap_start_ticks;
       if (next_ap)
         {
           ap_end_ticks =
             next_ap_obj->pos.total_ticks;
         }
-      long tmp_start_ticks, tmp_end_ticks;
+      double tmp_start_ticks, tmp_end_ticks;
 
       /* if before loop end */
       if (position_is_before (
@@ -660,7 +660,7 @@ draw_automation_region (
               /* calculate draw endpoints */
               tmp_start_ticks =
                 ap_start_ticks +
-                loop_ticks * (long) j;
+                loop_ticks * (double) j;
 
               /* if should be clipped */
               if (next_ap &&
@@ -669,26 +669,22 @@ draw_automation_region (
                     &obj->loop_end_pos))
                 tmp_end_ticks =
                   loop_end_ticks +
-                  loop_ticks *  (long) j;
+                  loop_ticks *  (double) j;
               else
                 tmp_end_ticks =
                   ap_end_ticks +
-                  loop_ticks *  (long) j;
+                  loop_ticks *  (double) j;
 
               /* adjust for clip start */
-              tmp_start_ticks -=
-                clip_start_ticks;
-              tmp_end_ticks -=
-                clip_start_ticks;
+              tmp_start_ticks -= clip_start_ticks;
+              tmp_end_ticks -= clip_start_ticks;
 
               /* note: these are local to the
                * region */
               x_start =
-                (double) tmp_start_ticks /
-                (double) ticks_in_region;
+                tmp_start_ticks / ticks_in_region;
               x_end =
-                (double) tmp_end_ticks /
-                (double) ticks_in_region;
+                tmp_end_ticks / ticks_in_region;
 
               /* get ratio (0.0 - 1.0) on y where
                * ap is

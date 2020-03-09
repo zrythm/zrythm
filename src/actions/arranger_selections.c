@@ -28,6 +28,7 @@
 #include "gui/widgets/center_dock.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 
@@ -226,7 +227,7 @@ UndoableAction *
 arranger_selections_action_new_move_or_duplicate (
   ArrangerSelections * sel,
   const int            move,
-  const long           ticks,
+  const double         ticks,
   const int            delta_chords,
   const int            delta_pitch,
   const int            delta_tracks,
@@ -340,7 +341,7 @@ UndoableAction *
 arranger_selections_action_new_resize (
   ArrangerSelections *               sel,
   ArrangerSelectionsActionResizeType type,
-  const long                         ticks)
+  const double                       ticks)
 {
   ArrangerSelectionsAction * self =
     _create_action (sel);
@@ -580,7 +581,7 @@ do_or_undo_move (
     arranger_selections_get_all_objects (
       self->sel, &size);
 
-  long ticks =
+  double ticks =
     _do ? self->ticks : - self->ticks;
   int delta_tracks =
     _do ? self->delta_tracks : - self->delta_tracks;
@@ -601,7 +602,7 @@ do_or_undo_move (
             arranger_object_find (objs[i]);
           g_return_val_if_fail (obj, -1);
 
-          if (ticks != 0)
+          if (!math_doubles_equal (ticks, 0.0))
             {
               /* shift the actual object */
               arranger_object_move (
@@ -782,7 +783,7 @@ do_or_undo_duplicate (
   ArrangerSelections * sel =
     get_actual_arranger_selections (self);
 
-  long ticks =
+  double ticks =
     _do ? self->ticks : - self->ticks;
   int delta_tracks =
     _do ? self->delta_tracks : - self->delta_tracks;
@@ -815,7 +816,8 @@ do_or_undo_duplicate (
                 IS_ARRANGER_OBJECT (obj), -1);
 
               /* ticks */
-              if (self->ticks)
+              if (!math_doubles_equal (
+                    self->ticks, 0.0))
                 {
                   arranger_object_move (
                     obj, - self->ticks, 0);
@@ -869,8 +871,8 @@ do_or_undo_duplicate (
           remove_object_from_project (obj);
         }
 
-      if (ticks != 0)
-        {
+      /*if (ticks != 0)*/
+        /*{*/
           if (_do)
             {
               /* shift it */
@@ -881,7 +883,7 @@ do_or_undo_duplicate (
           /* also shift the copy */
           arranger_object_move (
             objs[i], ticks, F_NO_CACHED);
-        }
+        /*}*/
 
       if (delta_tracks != 0)
         {
@@ -1284,7 +1286,7 @@ do_or_undo_resize (
     arranger_selections_get_all_objects (
       self->sel, &size);
 
-  long ticks =
+  double ticks =
     _do ? self->ticks : - self->ticks;
 
   if (!self->first_run)
@@ -1379,7 +1381,7 @@ do_or_undo_quantize (
           /* quantize it */
           if (self->opts->adj_start)
             {
-              long ticks =
+              double ticks =
                 quantize_options_quantize_position (
                   self->opts, &obj->pos);
               position_add_ticks (

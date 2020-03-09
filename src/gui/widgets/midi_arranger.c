@@ -259,7 +259,7 @@ midi_arranger_widget_snap_midi_notes_l (
 
   /* get delta with first clicked note's start
    * pos */
-  long delta;
+  double delta;
   delta =
     pos->total_ticks -
     (self->start_object->
@@ -405,7 +405,7 @@ midi_arranger_widget_snap_midi_notes_r (
 
   /* get delta with first clicked notes's end
    * pos */
-  long delta =
+  double delta =
     pos->total_ticks -
     (self->start_object->
       cache_end_pos.total_ticks +

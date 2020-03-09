@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -56,6 +56,7 @@
 #include "gui/widgets/timeline_panel.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
 
@@ -339,7 +340,7 @@ midi_region_new_from_midi_file (
   unsigned int j;
   Position pos;
   MidiNote * mn;
-  long ticks;
+  double ticks;
 
   Position end_pos;
   position_from_ticks (
@@ -350,8 +351,8 @@ midi_region_new_from_midi_file (
 
   midiReadInitMessage (&msg);
   iNum = midiReadGetNumTracks(mf);
-  int ppqn = midiFileGetPPQN (mf);
-  int transport_ppqn =
+  double ppqn = (double) midiFileGetPPQN (mf);
+  double transport_ppqn =
     transport_get_ppqn (TRANSPORT);
 
   for(i = 0; i < iNum; i++)
@@ -364,7 +365,7 @@ midi_region_new_from_midi_file (
         {
           /* convert time to zrythm time */
           ticks =
-            ((int) msg.dwAbsPos * transport_ppqn) /
+            ((double) msg.dwAbsPos * transport_ppqn) /
             ppqn;
           position_from_ticks (&pos, ticks);
           g_message("dwAbsPos: %d ", msg.dwAbsPos);
@@ -776,7 +777,8 @@ midi_region_export_to_midi_file (
       /* common time: 4 crochet beats, per bar */
       midiSongAddSimpleTimeSig (
         mf, 1, TRANSPORT->beats_per_bar,
-        TRANSPORT->ticks_per_beat);
+        math_round_double_to_int (
+          TRANSPORT->ticks_per_beat));
 
       midi_region_write_to_midi_file (
         self, mf, 0, export_full);
@@ -834,10 +836,9 @@ midi_region_get_as_events (
   ArrangerObject * self_obj =
     (ArrangerObject *) self;
 
-  long region_start = 0;
+  double region_start = 0;
   if (add_region_start)
-    region_start =
-      self_obj->pos.total_ticks;
+    region_start = self_obj->pos.total_ticks;
 
   MidiNote * mn;
   for (int i = 0; i < self->num_midi_notes; i++)

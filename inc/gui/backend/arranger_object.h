@@ -268,13 +268,13 @@ arranger_object_fields_schema[] =
     arranger_object_flags_bitvals,
     CYAML_ARRAY_LEN (
       arranger_object_flags_bitvals)),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "can_have_lanes", CYAML_FLAG_DEFAULT,
     ArrangerObject, can_have_lanes),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "has_length", CYAML_FLAG_DEFAULT,
     ArrangerObject, has_length),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "can_loop", CYAML_FLAG_DEFAULT,
     ArrangerObject, can_loop),
   CYAML_FIELD_MAPPING (
@@ -306,7 +306,7 @@ arranger_object_fields_schema[] =
     ArrangerObject, fade_out_pos,
     position_fields_schema),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
@@ -590,7 +590,7 @@ arranger_object_copy_identifier (
 void
 arranger_object_move (
   ArrangerObject *         self,
-  const long               ticks,
+  const double             ticks,
   const int                use_cached_pos);
 
 /**
@@ -599,7 +599,7 @@ arranger_object_move (
  *
  * (End Position - start Position).
  */
-long
+double
 arranger_object_get_length_in_ticks (
   ArrangerObject * self);
 
@@ -616,7 +616,7 @@ arranger_object_get_length_in_frames (
 /**
  * Returns the length of the loop in ticks.
  */
-long
+double
 arranger_object_get_loop_length_in_ticks (
   ArrangerObject * self);
 
@@ -660,7 +660,7 @@ arranger_object_resize (
   ArrangerObject * self,
   const int        left,
   const int        loop,
-  const long       ticks);
+  const double     ticks);
 
 /**
  * Adds the given ticks to each included object.
@@ -668,7 +668,7 @@ arranger_object_resize (
 void
 arranger_object_add_ticks_to_children (
   ArrangerObject * self,
-  const long       ticks);
+  const double     ticks);
 
 /**
  * Not to be used anywhere besides below.

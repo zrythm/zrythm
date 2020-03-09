@@ -259,7 +259,7 @@ arranger_selections_redraw (
 void
 arranger_selections_add_ticks (
   ArrangerSelections *     self,
-  const long               ticks,
+  const double             ticks,
   const int                use_cached_pos);
 
 /**
@@ -313,7 +313,7 @@ arranger_selections_remove_object (
   ArrangerSelections * self,
   ArrangerObject *     obj);
 
-long
+double
 arranger_selections_get_length_in_ticks (
   ArrangerSelections * self);
 

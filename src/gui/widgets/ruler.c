@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou
+ * Copyright (C) 2018-2020 Alexandros Theodotou
  *
  * This file is part of Zrythm
  *
@@ -256,10 +256,9 @@ get_loop_start_rect (
         {
           ArrangerObject * region_obj =
             (ArrangerObject *) region;
-          long start_ticks =
-            position_to_ticks (
-              &region_obj->pos);
-          long loop_start_ticks =
+          double start_ticks =
+            position_to_ticks (&region_obj->pos);
+          double loop_start_ticks =
             position_to_ticks (
               &region_obj->loop_start_pos) +
             start_ticks;
@@ -326,10 +325,10 @@ get_loop_end_rect (
         {
           ArrangerObject * region_obj =
             (ArrangerObject *) region;
-          long start_ticks =
+          double start_ticks =
             position_to_ticks (
               &region_obj->pos);
-          long loop_end_ticks =
+          double loop_end_ticks =
             position_to_ticks (
               &region_obj->loop_end_pos) +
             start_ticks;
@@ -397,10 +396,10 @@ get_clip_start_rect (
         {
           ArrangerObject * region_obj =
             (ArrangerObject *) region;
-          long start_ticks =
+          double start_ticks =
             position_to_ticks (
               &region_obj->pos);
-          long clip_start_ticks =
+          double clip_start_ticks =
             position_to_ticks (
               &region_obj->clip_start_pos) +
             start_ticks;

@@ -340,7 +340,7 @@ arranger_object_set_full_rectangle (
         ArrangerObject * region_obj =
           (ArrangerObject *) region;
 
-        long region_start_ticks =
+        double region_start_ticks =
           region_obj->pos.total_ticks;
         Position tmp;
         int adj_px_per_key =
@@ -387,7 +387,7 @@ arranger_object_set_full_rectangle (
           (ArrangerObject *) region;
 
         /* use absolute position */
-        long region_start_ticks =
+        double region_start_ticks =
           region_obj->pos.total_ticks;
         Position tmp;
         position_from_ticks (
@@ -537,7 +537,7 @@ arranger_object_set_full_rectangle (
         ArrangerObject * region_obj =
           (ArrangerObject *) region;
 
-        long region_start_ticks =
+        double region_start_ticks =
           region_obj->pos.total_ticks;
         Position tmp;
         double adj_px_per_key =
@@ -651,7 +651,7 @@ arranger_object_set_full_rectangle (
           (ArrangerObject *) region;
 
         /* use absolute position */
-        long region_start_ticks =
+        double region_start_ticks =
           region_obj->pos.total_ticks;
         Position tmp;
         position_from_ticks (

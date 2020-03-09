@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -34,6 +34,7 @@
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/top_bar.h"
 #include "project.h"
+#include "utils/math.h"
 
 #include <gtk/gtk.h>
 
@@ -46,34 +47,36 @@ long
 position_to_frames (
   const Position * position)
 {
-  /*g_message ("frames per tick %f",*/
-    /*(double) AUDIO_ENGINE->frames_per_tick);*/
-  float frames =
+  double frames =
     AUDIO_ENGINE->frames_per_tick *
       (position->bars > 0 ?
-       (float) position->bars - 1.f :
-       (float) position->bars + 1.f) *
-      (float) TRANSPORT->beats_per_bar *
-      (float) TRANSPORT->ticks_per_beat;
+       (double) (position->bars - 1) :
+       (double) (position->bars + 1)) *
+      (double) TRANSPORT->beats_per_bar *
+      (double) TRANSPORT->ticks_per_beat;
   if (position->beats)
     frames +=
       (AUDIO_ENGINE->frames_per_tick *
         (position->beats > 0 ?
-         (float) position->beats - 1.f :
-         (float) position->beats + 1.f) *
-        (float) TRANSPORT->ticks_per_beat);
+         (double) (position->beats - 1) :
+         (double) (position->beats + 1)) *
+        (double) TRANSPORT->ticks_per_beat);
   if (position->sixteenths)
     frames +=
       (AUDIO_ENGINE->frames_per_tick *
         (position->sixteenths > 0 ?
-         (float) position->sixteenths - 1.f :
-         (float) position->sixteenths + 1.f) *
-        (float) TICKS_PER_SIXTEENTH_NOTE);
+         (double) (position->sixteenths - 1) :
+         (double) (position->sixteenths + 1)) *
+        (double) TICKS_PER_SIXTEENTH_NOTE);
   if (position->ticks)
     frames +=
       (AUDIO_ENGINE->frames_per_tick *
-        (float) position->ticks);
-  return (long) ceil (frames);
+        (double) position->ticks);
+  frames +=
+    AUDIO_ENGINE->frames_per_tick *
+      position->sub_tick;
+  /*g_message ("pos frames %f", frames);*/
+  return (long) math_round_double_to_long (frames);
 }
 
 static int
@@ -96,8 +99,8 @@ position_sort_array (
   Position *   array,
   const size_t size)
 {
-  qsort (array, size, sizeof (Position),
-         cmpfunc);
+  qsort (
+    array, size, sizeof (Position), cmpfunc);
 }
 
 /**
@@ -116,8 +119,9 @@ position_update_ticks_and_frames (
  * Sets position to given bar
  */
 void
-position_set_to_bar (Position * position,
-                      int        bar)
+position_set_to_bar (
+  Position * position,
+  int        bar)
 {
   if (bar < 1)
     bar = 1;
@@ -125,12 +129,14 @@ position_set_to_bar (Position * position,
   position->beats = 1;
   position->sixteenths = 1;
   position->ticks = 0;
+  position->sub_tick = 0.0;
   position_update_ticks_and_frames (position);
 }
 
 void
-position_set_bar (Position * position,
-                  int      bar)
+position_set_bar (
+  Position * position,
+  int      bar)
 {
   if (bar < 1)
     bar = 1;
@@ -168,28 +174,33 @@ position_set_beat (
 }
 
 void
-position_set_sixteenth (Position * position,
-                        int        sixteenth)
+position_set_sixteenth (
+  Position * position,
+  int        sixteenth)
 {
   while (sixteenth < 1 ||
          sixteenth > TRANSPORT->sixteenths_per_beat)
     {
       if (sixteenth < 1)
         {
-          if (position->bars == 1 && position->beats == 1)
+          if (position->bars == 1 &&
+              position->beats == 1)
             {
               sixteenth = 1;
               break;
             }
-          sixteenth += TRANSPORT->sixteenths_per_beat;
-          position_set_beat (position,
-                             position->beats - 1);
+          sixteenth +=
+            TRANSPORT->sixteenths_per_beat;
+          position_set_beat (
+            position, position->beats - 1);
         }
-      else if (sixteenth > TRANSPORT->sixteenths_per_beat)
+      else if (sixteenth >
+                 TRANSPORT->sixteenths_per_beat)
         {
-          sixteenth -= TRANSPORT->sixteenths_per_beat;
-          position_set_beat (position,
-                             position->beats + 1);
+          sixteenth -=
+            TRANSPORT->sixteenths_per_beat;
+          position_set_beat (
+            position, position->beats + 1);
         }
     }
   position->sixteenths = sixteenth;
@@ -203,33 +214,37 @@ position_set_sixteenth (Position * position,
 void
 position_set_tick (
   Position *  position,
-  long        tick)
+  double      tick)
 {
-  while (tick < 0 || tick > TICKS_PER_SIXTEENTH_NOTE - 1)
+  while (tick < 0.0 ||
+         tick >
+           (TICKS_PER_SIXTEENTH_NOTE_DBL))
     {
-      if (tick < 0)
+      if (tick < 0.0)
         {
           if (position->bars == 1 &&
               position->beats == 1 &&
               position->sixteenths == 1)
             {
-              tick = 0;
+              tick = 0.0;
               break;
             }
-          tick += TICKS_PER_SIXTEENTH_NOTE;
+          tick += (double) TICKS_PER_SIXTEENTH_NOTE;
           position_set_sixteenth (
-            position,
-            position->sixteenths - 1);
+            position, position->sixteenths - 1);
         }
-      else if (tick > TICKS_PER_SIXTEENTH_NOTE - 1)
+      else if (tick >
+                 (double)
+                 TICKS_PER_SIXTEENTH_NOTE - 1.0)
         {
-          tick -= TICKS_PER_SIXTEENTH_NOTE;
+          tick -= (double) TICKS_PER_SIXTEENTH_NOTE;
           position_set_sixteenth (
-            position,
-            position->sixteenths + 1);
+            position, position->sixteenths + 1);
         }
     }
-  position->ticks = (int) tick;
+  position->ticks = (int) floor (tick);
+  position->sub_tick =
+    tick - (double) position->ticks;
   position_update_ticks_and_frames (position);
 }
 
@@ -246,10 +261,9 @@ position_add_frames (
   long new_frames = pos->frames + frames;
   position_set_tick (
     pos,
-    pos->ticks +
-      (long)
-      ((float) frames /
-        (float) AUDIO_ENGINE->frames_per_tick));
+    (double) pos->ticks + pos->sub_tick +
+      ((double) frames /
+        AUDIO_ENGINE->frames_per_tick));
   pos->frames = new_frames;
 }
 
@@ -387,8 +401,8 @@ position_set_min_size (
   position_set_to_pos (end_pos, start_pos);
   position_add_ticks (
     end_pos,
-    snap_grid_get_note_ticks (snap->note_length,
-                              snap->note_type));
+    snap_grid_get_note_ticks (
+      snap->note_length, snap->note_type));
 }
 
 /**
@@ -451,38 +465,50 @@ position_from_seconds (
 
 }
 
-long
+double
 position_to_ticks (
   const Position * pos)
 {
   g_warn_if_fail (TRANSPORT->ticks_per_bar > 0);
-  long ticks;
+  double ticks;
   if (pos->bars > 0)
     {
-      ticks = (pos->bars - 1) *
-        TRANSPORT->ticks_per_bar;
+      ticks =
+        (double)
+        ((pos->bars - 1) * TRANSPORT->ticks_per_bar);
       if (pos->beats)
-        ticks += (pos->beats - 1) *
-          TRANSPORT->ticks_per_beat;
+        ticks +=
+          (double)
+          ((pos->beats - 1) *
+             TRANSPORT->ticks_per_beat);
       if (pos->sixteenths)
-        ticks += (pos->sixteenths - 1) *
-          TICKS_PER_SIXTEENTH_NOTE;
+        ticks +=
+          (double)
+          ((pos->sixteenths - 1) *
+            TICKS_PER_SIXTEENTH_NOTE);
       if (pos->ticks)
-        ticks += pos->ticks;
+        ticks += (double) pos->ticks;
+      ticks += pos->sub_tick;
       return ticks;
     }
   else if (pos->bars < 0)
     {
-      ticks = (pos->bars + 1) *
-        TRANSPORT->ticks_per_bar;
+      ticks =
+        (double)
+        ((pos->bars + 1) * TRANSPORT->ticks_per_bar);
       if (pos->beats)
-        ticks += (pos->beats + 1) *
-          TRANSPORT->ticks_per_beat;
+        ticks +=
+          (double)
+          ((pos->beats + 1) *
+             TRANSPORT->ticks_per_beat);
       if (pos->sixteenths)
-        ticks += (pos->sixteenths + 1) *
-          TICKS_PER_SIXTEENTH_NOTE;
+        ticks +=
+          (double)
+          ((pos->sixteenths + 1) *
+            TICKS_PER_SIXTEENTH_NOTE);
       if (pos->ticks)
         ticks += pos->ticks;
+      ticks += pos->sub_tick;
       return ticks;
     }
   else
@@ -495,11 +521,11 @@ position_to_ticks (
 inline void
 position_from_ticks (
   Position * pos,
-  long       ticks)
+  double     ticks)
 {
   g_return_if_fail (
-    TRANSPORT->lticks_per_bar > 0 &&
-    TRANSPORT->lticks_per_beat > 0 &&
+    TRANSPORT->ticks_per_bar > 0.0 &&
+    TRANSPORT->ticks_per_beat > 0.0 &&
     TICKS_PER_SIXTEENTH_NOTE > 0 &&
     AUDIO_ENGINE->frames_per_tick > 0);
   pos->total_ticks = ticks;
@@ -507,37 +533,43 @@ position_from_ticks (
     {
       pos->bars =
         (int)
-        (ticks / TRANSPORT->lticks_per_bar + 1);
+        (ticks / TRANSPORT->ticks_per_bar + 1);
       ticks =
-        ticks % TRANSPORT->lticks_per_bar;
+        fmod (ticks, TRANSPORT->ticks_per_bar);
       pos->beats =
         (int)
-        (ticks / TRANSPORT->lticks_per_beat + 1);
+        (ticks / TRANSPORT->ticks_per_beat + 1);
       ticks =
-        ticks % TRANSPORT->lticks_per_beat;
+        fmod (ticks, TRANSPORT->ticks_per_beat);
       pos->sixteenths =
         (int)
         (ticks / TICKS_PER_SIXTEENTH_NOTE + 1);
-      ticks = ticks % TICKS_PER_SIXTEENTH_NOTE;
-      pos->ticks = (int) ticks;
+      ticks =
+        fmod (
+          ticks, (double) TICKS_PER_SIXTEENTH_NOTE);
+      pos->ticks = (int) floor (ticks);
+      pos->sub_tick = ticks - pos->ticks;
     }
   else
     {
       pos->bars =
         (int)
-        (ticks / TRANSPORT->lticks_per_bar - 1);
+        (ticks / TRANSPORT->ticks_per_bar - 1);
       ticks =
-        ticks % TRANSPORT->lticks_per_bar;
+        fmod (ticks, TRANSPORT->ticks_per_bar);
       pos->beats =
         (int)
-        (ticks / TRANSPORT->lticks_per_beat - 1);
+        (ticks / TRANSPORT->ticks_per_beat - 1);
       ticks =
-        ticks % TRANSPORT->lticks_per_beat;
+        fmod (ticks, TRANSPORT->ticks_per_beat);
       pos->sixteenths =
         (int)
         (ticks / TICKS_PER_SIXTEENTH_NOTE - 1);
-      ticks = ticks % TICKS_PER_SIXTEENTH_NOTE;
-      pos->ticks = (int) ticks;
+      ticks =
+        fmod (
+          ticks, (double) TICKS_PER_SIXTEENTH_NOTE);
+      pos->ticks = (int) floor (ticks);
+      pos->sub_tick = ticks - pos->ticks;
     }
   position_update_ticks_and_frames (pos);
 }
@@ -552,12 +584,12 @@ position_get_midway_pos (
   Position * end_pos,
   Position * pos) ///< position to set to
 {
-  long end_ticks, start_ticks, ticks_diff;
+  double end_ticks, start_ticks, ticks_diff;
   start_ticks = position_to_ticks (start_pos);
   end_ticks = position_to_ticks (end_pos);
   ticks_diff = end_ticks - start_ticks;
   position_set_to_pos (pos, start_pos);
-  position_set_tick (pos, ticks_diff / 2);
+  position_set_tick (pos, ticks_diff / 2.0);
 }
 
 /**
@@ -570,19 +602,19 @@ position_get_midway_pos (
  * @param sg SnapGrid to snap with, or NULL to not
  *   snap.
  */
-long
+double
 position_get_ticks_diff (
   const Position * end_pos,
   const Position * start_pos,
   const SnapGrid * sg)
 {
-  long ticks_diff =
+  double ticks_diff =
     end_pos->total_ticks -
     start_pos->total_ticks;
-  int is_negative = ticks_diff < 0;
+  int is_negative = ticks_diff < 0.0;
   POSITION_INIT_ON_STACK (diff_pos);
   position_add_ticks (
-    &diff_pos, labs (ticks_diff));
+    &diff_pos, fabs (ticks_diff));
   if (sg && SNAP_GRID_ANY_SNAP(sg))
     position_snap (
       NULL, &diff_pos, NULL, NULL, sg);
@@ -604,11 +636,12 @@ position_stringize_allocate (
   const Position * pos)
 {
   return g_strdup_printf (
-    "%d.%d.%d.%d",
+    "%d.%d.%d.%d.%f",
     pos->bars,
     pos->beats,
     pos->sixteenths,
-    pos->ticks);
+    pos->ticks,
+    pos->sub_tick);
 }
 
 /**
@@ -621,9 +654,9 @@ position_stringize (
   char *           buf)
 {
   sprintf (
-    buf, "%d.%d.%d.%d",
+    buf, "%d.%d.%d.%d.%f",
     pos->bars, pos->beats, pos->sixteenths,
-    pos->ticks);
+    pos->ticks, pos->sub_tick);
 }
 
 /**
@@ -634,11 +667,11 @@ position_print (
   const Position * pos)
 {
   g_message (
-    "%d.%d.%d.%d",
+    "%d.%d.%d.%d.%f",
     pos->bars,
     pos->beats,
     pos->sixteenths,
-    pos->ticks);
+    pos->ticks, pos->sub_tick);
 }
 
 /**
