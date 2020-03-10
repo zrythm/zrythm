@@ -94,18 +94,6 @@ track_lane_update_frames (
       ArrangerObject * r_obj =
         (ArrangerObject *) r;
       arranger_object_update_frames (r_obj);
-
-      /* FIXME temporary test, remove */
-#if 0
-      if (self->pos == 3 && i == 0)
-        {
-          g_message ("frames per tick %f",
-            AUDIO_ENGINE->frames_per_tick);
-      g_warning (
-        "\n\n\n frames %ld \n\n\n",
-        zrythm->project->tracklist.tracks[4]->lanes[3]->regions[0]->base.end_pos.frames);
-#endif
-        }
     }
 }
 

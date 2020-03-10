@@ -213,25 +213,25 @@ position_set_sixteenth (
  */
 void
 position_set_tick (
-  Position *  position,
+  Position *  pos,
   double      tick)
 {
   while (tick < 0.0 ||
-         tick >
+         tick >=
            (TICKS_PER_SIXTEENTH_NOTE_DBL))
     {
       if (tick < 0.0)
         {
-          if (position->bars == 1 &&
-              position->beats == 1 &&
-              position->sixteenths == 1)
+          if (pos->bars == 1 &&
+              pos->beats == 1 &&
+              pos->sixteenths == 1)
             {
               tick = 0.0;
               break;
             }
           tick += (double) TICKS_PER_SIXTEENTH_NOTE;
           position_set_sixteenth (
-            position, position->sixteenths - 1);
+            pos, pos->sixteenths - 1);
         }
       else if (tick >
                  (double)
@@ -239,13 +239,19 @@ position_set_tick (
         {
           tick -= (double) TICKS_PER_SIXTEENTH_NOTE;
           position_set_sixteenth (
-            position, position->sixteenths + 1);
+            pos, pos->sixteenths + 1);
         }
     }
-  position->ticks = (int) floor (tick);
-  position->sub_tick =
-    tick - (double) position->ticks;
-  position_update_ticks_and_frames (position);
+  pos->ticks = (int) floor (tick);
+  g_warn_if_fail (
+    pos->ticks <
+      TICKS_PER_SIXTEENTH_NOTE_DBL - 0.001);
+  pos->sub_tick =
+    tick - (double) pos->ticks;
+  position_update_ticks_and_frames (pos);
+  g_warn_if_fail (
+    pos->sub_tick >= 0.0 &&
+    pos->sub_tick <= 0.9999999);
 }
 
 /**
@@ -265,6 +271,9 @@ position_add_frames (
       ((double) frames /
         AUDIO_ENGINE->frames_per_tick));
   pos->frames = new_frames;
+  g_warn_if_fail (
+    pos->sub_tick >= 0.0 &&
+    pos->sub_tick <= 0.9999999);
 }
 
 /**
@@ -489,6 +498,9 @@ position_to_ticks (
       if (pos->ticks)
         ticks += (double) pos->ticks;
       ticks += pos->sub_tick;
+      g_warn_if_fail (
+        pos->sub_tick >= 0.0 &&
+        pos->sub_tick <= 0.9999999);
       return ticks;
     }
   else if (pos->bars < 0)
@@ -509,6 +521,9 @@ position_to_ticks (
       if (pos->ticks)
         ticks += pos->ticks;
       ticks += pos->sub_tick;
+      g_warn_if_fail (
+        pos->sub_tick >= 0.0 &&
+        pos->sub_tick <= 0.9999999);
       return ticks;
     }
   else
@@ -548,7 +563,13 @@ position_from_ticks (
         fmod (
           ticks, (double) TICKS_PER_SIXTEENTH_NOTE);
       pos->ticks = (int) floor (ticks);
+      g_warn_if_fail (
+        pos->ticks <
+          TICKS_PER_SIXTEENTH_NOTE_DBL - 0.001);
       pos->sub_tick = ticks - pos->ticks;
+      g_warn_if_fail (
+        pos->sub_tick >= 0.0 &&
+        pos->sub_tick <= 0.9999999);
     }
   else
     {
@@ -569,7 +590,13 @@ position_from_ticks (
         fmod (
           ticks, (double) TICKS_PER_SIXTEENTH_NOTE);
       pos->ticks = (int) floor (ticks);
+      g_warn_if_fail (
+        pos->ticks <
+          TICKS_PER_SIXTEENTH_NOTE_DBL - 0.001);
       pos->sub_tick = ticks - pos->ticks;
+      g_warn_if_fail (
+        pos->sub_tick >= 0.0 &&
+        pos->sub_tick <= 0.9999999);
     }
   position_update_ticks_and_frames (pos);
 }
@@ -635,13 +662,9 @@ char *
 position_stringize_allocate (
   const Position * pos)
 {
-  return g_strdup_printf (
-    "%d.%d.%d.%d.%f",
-    pos->bars,
-    pos->beats,
-    pos->sixteenths,
-    pos->ticks,
-    pos->sub_tick);
+  char buf[40];
+  position_stringize (pos, buf);
+  return g_strdup (buf);
 }
 
 /**
@@ -653,10 +676,12 @@ position_stringize (
   const Position * pos,
   char *           buf)
 {
+  char str[40];
+  sprintf (str, "%f", pos->sub_tick);
   sprintf (
-    buf, "%d.%d.%d.%d.%f",
+    buf, "%d.%d.%d.%d.%s",
     pos->bars, pos->beats, pos->sixteenths,
-    pos->ticks, pos->sub_tick);
+    pos->ticks, &str[2]);
 }
 
 /**
@@ -666,12 +691,9 @@ void
 position_print (
   const Position * pos)
 {
-  g_message (
-    "%d.%d.%d.%d.%f",
-    pos->bars,
-    pos->beats,
-    pos->sixteenths,
-    pos->ticks, pos->sub_tick);
+  char buf[60];
+  position_stringize (pos, buf);
+  g_message ("%s", buf);
 }
 
 /**

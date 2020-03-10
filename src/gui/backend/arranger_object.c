@@ -939,17 +939,6 @@ arranger_object_update_frames (
     &self->pos);
   if (self->has_length)
     {
-      /* FIXME temporary test */
-#if 0
-      if (self == &zrythm->project->tracklist.tracks[4]->lanes[3]->regions[0]->base)
-        {
-          position_print (&self->end_pos);
-          g_message ("frames %ld", self->end_pos.frames);
-          g_warning (
-            "position to frames %ld",
-            position_to_frames (&self->end_pos));
-        }
-#endif
       position_update_ticks_and_frames (
         &self->end_pos);
     }

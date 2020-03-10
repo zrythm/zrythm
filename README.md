@@ -7,7 +7,7 @@ Zrythm
 [![code grade](https://img.shields.io/codacy/grade/c16bdc22f6ae4e539aa6417274e71d17)](https://www.codacy.com/manual/alex-tee/zrythm)
 [![code coverage](https://img.shields.io/coveralls/github/zrythm/zrythm)](https://coveralls.io/github/zrythm/zrythm)
 
-Zrythm is a digital audio workstation designed to be
+Zrythm™ is a digital audio workstation designed to be
 featureful and easy to use. It allows limitless
 automation, supports LV2 plugins, works with the JACK
 audio backend, provides chord assistance, is free

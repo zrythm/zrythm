@@ -148,26 +148,19 @@ typedef struct Position
 static const cyaml_schema_field_t
   position_fields_schema[] =
 {
-  CYAML_FIELD_INT (
-    "bars", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Position, bars),
-  CYAML_FIELD_INT (
-    "beats", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Position, beats),
-  CYAML_FIELD_INT (
-    "sixteenths", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Position, sixteenths),
-  CYAML_FIELD_INT (
-    "ticks", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Position, ticks),
-  CYAML_FIELD_FLOAT (
-    "sub_tick", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_FLOAT (
+    Position, sub_tick),
+  YAML_FIELD_FLOAT (
     Position, total_ticks),
-  CYAML_FIELD_FLOAT (
-    "total_ticks", CYAML_FLAG_DEFAULT,
-    Position, total_ticks),
-  CYAML_FIELD_INT (
-    "frames", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_INT (
     Position, frames),
 
   CYAML_FIELD_END
@@ -176,8 +169,7 @@ static const cyaml_schema_field_t
 static const cyaml_schema_value_t
   position_schema =
 {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
+  YAML_VALUE_PTR (
     Position, position_fields_schema),
 };
 

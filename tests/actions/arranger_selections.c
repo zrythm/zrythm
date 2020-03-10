@@ -448,15 +448,12 @@ test_move_timeline ()
               regions[0],
             new_audio_track);
         }
-      /* do move ticks */
-      arranger_selections_add_ticks (
-        (ArrangerSelections *) TL_SELECTIONS,
-        MOVE_TICKS, 0);
 
+      /* do move ticks */
       UndoableAction * ua =
         arranger_selections_action_new_move_timeline (
           TL_SELECTIONS, MOVE_TICKS, track_diff, 0,
-          F_ALREADY_MOVED);
+          F_NOT_ALREADY_MOVED);
       undo_manager_perform (UNDO_MANAGER, ua);
 
       /* check */
@@ -697,7 +694,8 @@ check_after_duplicate_timeline (
     {
       /* check automation region */
       AutomationTracklist * atl =
-        track_get_automation_tracklist (P_MASTER_TRACK);
+        track_get_automation_tracklist (
+          P_MASTER_TRACK);
       g_assert_nonnull (atl);
       AutomationTrack * at =
         channel_get_automation_track (
