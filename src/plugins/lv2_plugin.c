@@ -635,8 +635,8 @@ lv2_plugin_allocate_port_buffers (
     {
       Lv2Port* const lv2_port =
         &plugin->ports[i];
-      Port* port     = lv2_port->port;
-      switch (port->id.type)
+      g_return_if_fail (lv2_port);
+      switch (lv2_port->port_id.type)
         {
         case TYPE_EVENT:
           {
@@ -645,6 +645,7 @@ lv2_plugin_allocate_port_buffers (
               (lv2_port->buf_size > 0) ?
               lv2_port->buf_size :
               AUDIO_ENGINE->midi_buf_size;
+            g_return_if_fail (plugin->map.map);
             lv2_port->evbuf =
               lv2_evbuf_new (
                 (uint32_t) buf_size,

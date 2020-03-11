@@ -466,8 +466,6 @@ engine_init (
       self->pool = audio_pool_new ();
     }
 
-  engine_realloc_port_buffers (
-    self, self->block_length);
   engine_update_frames_per_tick (
     self,
     TRANSPORT->beats_per_bar,
@@ -484,6 +482,9 @@ engine_activate (
   AudioEngine * self)
 {
   g_message ("activating engine...");
+
+  engine_realloc_port_buffers (
+    self, self->block_length);
 
 #ifdef HAVE_JACK
   if (self->audio_backend == AUDIO_BACKEND_JACK &&

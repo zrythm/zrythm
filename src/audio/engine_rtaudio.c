@@ -244,9 +244,6 @@ void
 engine_rtaudio_activate (
   AudioEngine * self)
 {
-  engine_realloc_port_buffers (
-    self, AUDIO_ENGINE->block_length);
-
   rtaudio_start_stream (self->rtaudio);
 
   g_message ("RtAudio activated");

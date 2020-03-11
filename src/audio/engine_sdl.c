@@ -225,9 +225,6 @@ engine_sdl_activate (
 {
   g_message ("Activating SDL...");
 
-  engine_realloc_port_buffers (
-    self, AUDIO_ENGINE->block_length);
-
   /* start playing */
   SDL_PauseAudioDevice (self->dev, 0);
 
