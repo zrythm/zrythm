@@ -42,15 +42,15 @@
   position_from_ticks ( \
     (_pos), \
     (_pos)->total_ticks + _ticks)
-#define position_add_sixteenths(position, _s) \
-  position_set_sixteenth (position, \
-                     (position)->sixteenths + _s)
-#define position_add_beats(position, _b) \
-  position_set_beat (position, \
-                     (position)->beats + _b)
-#define position_add_bars(position, _b) \
-  position_set_bar (position, \
-                     (position)->bars + _b)
+#define position_add_sixteenths(_pos, _s) \
+  position_set_sixteenth ( \
+    _pos, (_pos)->sixteenths + _s)
+#define position_add_beats(_pos, _b) \
+  position_set_beat ( \
+    _pos, (_pos)->beats + _b)
+#define position_add_bars(_pos, _b) \
+  position_set_bar ( \
+    _pos, (_pos)->bars + _b)
 #define position_snap_simple(pos, sg) \
   position_snap (0, pos, 0, 0, sg)
 

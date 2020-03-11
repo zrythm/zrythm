@@ -51,8 +51,20 @@
 
 /** Compares 2 Position pointers. */
 #define g_assert_cmppos(a,b) \
-  g_assert_cmpmem ( \
-    a, sizeof (Position), b, sizeof (Position))
+  g_assert_cmpint ( \
+    (a)->bars, ==, (b)->bars); \
+  g_assert_cmpint ( \
+    (a)->beats, ==, (b)->beats); \
+  g_assert_cmpint ( \
+    (a)->sixteenths, ==, (b)->sixteenths); \
+  g_assert_cmpint ( \
+    (a)->ticks, ==, (b)->ticks); \
+  g_assert_cmpfloat_with_epsilon ( \
+    (a)->sub_tick, (b)->sub_tick, 0.0001); \
+  g_assert_cmpfloat_with_epsilon ( \
+    (a)->total_ticks, (b)->total_ticks, 0.0001); \
+  g_assert_cmpint ( \
+    (a)->frames, ==, (b)->frames)
 
 #ifndef G_APPROX_VALUE
 #define G_APPROX_VALUE(a, b, epsilon) \

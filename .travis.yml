@@ -64,7 +64,7 @@ script:
   set -e
   case $TRAVIS_OS_NAME in
     osx)
-      meson build -Denable_sdl=true -Denable_rtaudio=true -Denable_rtmidi=true
+      meson build -Denable_sdl=true -Denable_rtaudio=true -Denable_rtmidi=true -Denable_tests=true
       ninja -C build
       ninja -C build test
       ;;
