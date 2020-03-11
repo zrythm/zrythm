@@ -127,11 +127,12 @@ undo_manager_redo (UndoManager * self)
 
 /**
  * Does performs the action and pushes it to the
- * undo stack.
+ * undo stack, clearing the redo stack.
  */
 void
-undo_manager_perform (UndoManager *    self,
-                      UndoableAction * action)
+undo_manager_perform (
+  UndoManager *    self,
+  UndoableAction * action)
 {
   /* if error return */
   if (undoable_action_do (action))
@@ -141,9 +142,24 @@ undo_manager_perform (UndoManager *    self,
     }
 
   undo_stack_push (self->undo_stack, action);
-  self->redo_stack->stack->top = -1;
+
+  undo_stack_clear (self->redo_stack);
+
   if (MAIN_WINDOW && MW_HEADER_NOTEBOOK &&
       MW_HOME_TOOLBAR)
     home_toolbar_widget_refresh_undo_redo_buttons (
       MW_HOME_TOOLBAR);
+}
+
+/**
+ * Clears the undo and redo stacks.
+ */
+void
+undo_manager_clear_stacks (
+  UndoManager * self)
+{
+  g_return_if_fail (
+    self && self->undo_stack && self->redo_stack);
+  undo_stack_clear (self->undo_stack);
+  undo_stack_clear (self->redo_stack);
 }

@@ -584,11 +584,13 @@ do_or_undo_move (
   double ticks =
     _do ? self->ticks : - self->ticks;
   int delta_tracks =
-    _do ? self->delta_tracks : - self->delta_tracks;
+    _do ? self->delta_tracks :
+      - self->delta_tracks;
   int delta_lanes =
     _do ? self->delta_lanes : - self->delta_lanes;
   int delta_chords =
-    _do ? self->delta_chords : - self->delta_chords;
+    _do ? self->delta_chords :
+      - self->delta_chords;
   int delta_pitch =
     _do ? self->delta_pitch : - self->delta_pitch;
 
@@ -626,6 +628,7 @@ do_or_undo_move (
                   TRACKLIST,
                   arranger_object_get_track (obj),
                   delta_tracks);
+              g_warn_if_fail (track_to_move_to);
 
               /* shift the actual object by
                * tracks */

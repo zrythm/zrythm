@@ -105,6 +105,13 @@ undo_manager_prepare_for_serialization (
   UndoManager * self);
 
 /**
+ * Clears the undo and redo stacks.
+ */
+void
+undo_manager_clear_stacks (
+  UndoManager * self);
+
+/**
  * @}
  */
 

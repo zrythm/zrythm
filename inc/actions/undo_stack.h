@@ -173,19 +173,19 @@ undo_stack_free (
 /* --- start wrappers --- */
 
 #define undo_stack_size(x) \
-  stack_size ((x)->stack)
+  (stack_size ((x)->stack))
 
 #define undo_stack_is_empty(x) \
-  stack_is_empty ((x)->stack)
+  (stack_is_empty ((x)->stack))
 
 #define undo_stack_is_full(x) \
-  stack_is_full ((x)->stack)
+  (stack_is_full ((x)->stack))
 
 #define undo_stack_peek(x) \
-  stack_peek ((x)->stack)
+  (stack_peek ((x)->stack))
 
 #define undo_stack_peek_last(x) \
-  stack_peek_last ((x)->stack);
+  (stack_peek_last ((x)->stack))
 
 void
 undo_stack_push (
@@ -204,6 +204,10 @@ undo_stack_pop_last (
   UndoStack * self);
 
 /* --- end wrappers --- */
+
+void
+undo_stack_clear (
+  UndoStack * self);
 
 /**
  * @}

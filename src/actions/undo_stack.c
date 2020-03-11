@@ -45,7 +45,7 @@ undo_stack_init_loaded (
         (UndoableAction *) a; \
       if (self->stack->top + 1 == ua->stack_idx) \
         { \
-          undo_stack_push (self, ua); \
+          STACK_PUSH (self->stack, ua); \
           sc##_actions_idx++; \
         } \
     }
@@ -119,7 +119,7 @@ undo_stack_init_loaded (
                         (ArrangerObject *) a->mn_r2[j];
                     }
                 }
-              undo_stack_push (self, ua);
+              STACK_PUSH (self->stack, ua);
               as_actions_idx++;
             }
         }
@@ -234,7 +234,7 @@ undo_stack_push (
     }
 }
 
-static void
+static int
 remove_action (
   UndoStack *      self,
   UndoableAction * action)
@@ -246,9 +246,10 @@ remove_action (
       self->sc##_actions, \
       self->num_##sc##_actions, \
       (cc##Action *) action); \
+    removed = 1; \
     break
 
-
+  int removed = 0;
   switch (action->type)
     {
     REMOVE_ELEMENT (
@@ -283,8 +284,14 @@ remove_action (
         self->as_actions,
         self->num_as_actions,
         (ArrangerSelectionsAction *) action);
+      removed = 1;
+      g_warn_if_fail (
+        (int) self->num_as_actions <=
+          self->stack->top + 1);
       break;
     }
+
+  return removed;
 }
 
 UndoableAction *
@@ -296,7 +303,8 @@ undo_stack_pop (
     (UndoableAction *) stack_pop (self->stack);
 
   /* remove the action */
-  remove_action (self, action);
+  int removed = remove_action (self, action);
+  g_warn_if_fail (removed);
 
   /* return it */
   return action;
@@ -314,8 +322,19 @@ undo_stack_pop_last (
     (UndoableAction *) stack_pop_last (self->stack);
 
   /* remove the action */
-  remove_action (self, action);
+  int removed = remove_action (self, action);
+  g_warn_if_fail (removed);
 
   /* return it */
   return action;
+}
+
+void
+undo_stack_clear (
+  UndoStack * self)
+{
+  while (!undo_stack_is_empty (self))
+    {
+      undo_stack_pop (self);
+    }
 }

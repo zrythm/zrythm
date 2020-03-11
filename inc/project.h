@@ -166,18 +166,25 @@ typedef struct Project
   double             timeline_zoom;
   double             piano_roll_zoom;
 
+  /* ---------------------- */
+  /** FIXME move the range stuff to Transport. */
+
   /**
    * Selected range.
    *
-   * This is 2 points instead of start/end because the 2nd
-   * point can be dragged past the 1st point so the order
-   * gets swapped.
+   * This is 2 points instead of start/end because
+   * the 2nd point can be dragged past the 1st
+   * point so the order gets swapped.
    *
-   * Should be compared each time to see which one is first.
+   * Should be compared each time to see which one
+   * is first.
    */
   Position           range_1;
   Position           range_2;
-  int                has_range; ///< if 0 range is not displayed
+
+  /** Whether range should be displayed or not. */
+  int                has_range;
+  /* ---------------------- */
 
   /**
    * The audio backend

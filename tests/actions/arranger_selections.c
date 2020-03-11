@@ -78,6 +78,38 @@ select_audio_and_midi_regions_only ()
 }
 
 /**
+ * Check if the undo stack has a single element.
+ */
+static void
+check_has_single_undo ()
+{
+  g_assert_cmpint (
+    UNDO_MANAGER->undo_stack->stack->top, ==, 0);
+  g_assert_cmpint (
+    UNDO_MANAGER->redo_stack->stack->top, ==, -1);
+  g_assert_cmpint (
+    UNDO_MANAGER->undo_stack->num_as_actions, ==, 1);
+  g_assert_cmpint (
+    UNDO_MANAGER->redo_stack->num_as_actions, ==, 0);
+}
+
+/**
+ * Check if the redo stack has a single element.
+ */
+static void
+check_has_single_redo ()
+{
+  g_assert_cmpint (
+    UNDO_MANAGER->undo_stack->stack->top, ==, -1);
+  g_assert_cmpint (
+    UNDO_MANAGER->redo_stack->stack->top, ==, 0);
+  g_assert_cmpint (
+    UNDO_MANAGER->undo_stack->num_as_actions, ==, 0);
+  g_assert_cmpint (
+    UNDO_MANAGER->redo_stack->num_as_actions, ==, 1);
+}
+
+/**
  * Checks that the objects are back to their original
  * state.
  * @param check_selections Also checks that the
@@ -85,16 +117,33 @@ select_audio_and_midi_regions_only ()
  */
 static void
 check_timeline_objects_vs_original_state (
-  int check_selections)
+  int check_selections,
+  int _check_has_single_undo,
+  int _check_has_single_redo)
 {
   test_project_check_vs_original_state (
     &p1, &p2, check_selections);
+
+  /* check that undo/redo stacks have the correct
+   * counts */
+  if (_check_has_single_undo)
+    {
+      check_has_single_undo ();
+    }
+  else if (_check_has_single_redo)
+    {
+      check_has_single_redo ();
+    }
 }
 /**
  * Checks that the objects are deleted.
+ *
+ * @param creating Whether this is part of a create
+ *   test.
  */
 static void
-check_timeline_objects_deleted ()
+check_timeline_objects_deleted (
+  int creating)
 {
   g_assert_cmpint (
     arranger_selections_get_num_objects (
@@ -137,11 +186,23 @@ check_timeline_objects_deleted ()
   /* check scale object */
   g_assert_cmpint (
     P_CHORD_TRACK->num_scales, ==, 0);
+
+  if (creating)
+    {
+      check_has_single_redo ();
+    }
+  else
+    {
+      check_has_single_undo ();
+    }
 }
 
 static void
 test_create_timeline ()
 {
+  /* clear undo/redo stacks */
+  undo_manager_clear_stacks (UNDO_MANAGER);
+
   /* do create */
   UndoableAction * ua =
     arranger_selections_action_new_create (
@@ -156,14 +217,14 @@ test_create_timeline ()
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) MA_SELECTIONS), ==, 1);
-  check_timeline_objects_vs_original_state (1);
+  check_timeline_objects_vs_original_state (1, 1, 0);
 
   /* undo and check that the objects are deleted */
   undo_manager_undo (UNDO_MANAGER);
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) MA_SELECTIONS), ==, 0);
-  check_timeline_objects_deleted ();
+  check_timeline_objects_deleted (1);
 
   /* redo and check that the objects are there */
   undo_manager_redo (UNDO_MANAGER);
@@ -171,12 +232,15 @@ test_create_timeline ()
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1);
+  check_timeline_objects_vs_original_state (1, 1, 0);
 }
 
 static void
 test_delete_timeline ()
 {
+  /* clear undo/redo stacks */
+  undo_manager_clear_stacks (UNDO_MANAGER);
+
   /* do delete */
   UndoableAction * ua =
     arranger_selections_action_new_delete (
@@ -184,7 +248,7 @@ test_delete_timeline ()
   undo_manager_perform (UNDO_MANAGER, ua);
 
   /* check */
-  check_timeline_objects_deleted ();
+  check_timeline_objects_deleted (0);
   g_assert_cmpint (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) MA_SELECTIONS), ==, 0);
@@ -203,7 +267,7 @@ test_delete_timeline ()
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1);
+  check_timeline_objects_vs_original_state (1, 0, 1);
 
   /* redo and check that the objects are gone */
   undo_manager_redo (UNDO_MANAGER);
@@ -221,7 +285,7 @@ test_delete_timeline ()
     arranger_selections_get_num_objects (
       (ArrangerSelections *) AUTOMATION_SELECTIONS),
     ==, 0);
-  check_timeline_objects_deleted ();
+  check_timeline_objects_deleted (0);
 
   /* undo again to prepare for next test */
   undo_manager_undo (UNDO_MANAGER);
@@ -229,7 +293,7 @@ test_delete_timeline ()
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
     TOTAL_TL_SELECTIONS);
-  check_timeline_objects_vs_original_state (1);
+  check_timeline_objects_vs_original_state (1, 0, 1);
 }
 
 /**
@@ -247,6 +311,13 @@ check_after_move_timeline (
     arranger_selections_get_num_objects (
       (ArrangerSelections *) TL_SELECTIONS), ==,
     new_tracks ? 2 : TOTAL_TL_SELECTIONS);
+
+  /* check that undo/redo stacks have the correct
+   * counts (1 and 0) */
+  check_has_single_undo ();
+  g_assert_cmpint (
+    UNDO_MANAGER->undo_stack->as_actions[0]->
+      delta_tracks, ==, new_tracks ? 2 : 0);
 
   /* get tracks */
   Track * midi_track_before =
@@ -420,6 +491,9 @@ check_after_move_timeline (
 static void
 test_move_timeline ()
 {
+  /* clear undo/redo stacks */
+  undo_manager_clear_stacks (UNDO_MANAGER);
+
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
     {
@@ -427,27 +501,20 @@ test_move_timeline ()
       if (track_diff)
         {
           select_audio_and_midi_regions_only ();
-          Track * midi_track =
-            tracklist_find_track_by_name (
-              TRACKLIST, MIDI_TRACK_NAME);
-          Track * audio_track =
-            tracklist_find_track_by_name (
-              TRACKLIST, AUDIO_TRACK_NAME);
-          Track * new_midi_track =
-            tracklist_find_track_by_name (
-              TRACKLIST, TARGET_MIDI_TRACK_NAME);
-          Track * new_audio_track =
-            tracklist_find_track_by_name (
-              TRACKLIST, TARGET_AUDIO_TRACK_NAME);
-          region_move_to_track (
-            midi_track->lanes[MIDI_REGION_LANE]->
-              regions[0],
-            new_midi_track);
-          region_move_to_track (
-            audio_track->lanes[AUDIO_REGION_LANE]->
-              regions[0],
-            new_audio_track);
         }
+
+      /* check undo/redo stacks */
+      g_assert_cmpint (
+        UNDO_MANAGER->undo_stack->stack->top, ==, -1);
+      g_assert_cmpint (
+        UNDO_MANAGER->redo_stack->stack->top, ==,
+        i ? 0 : -1);
+      g_assert_cmpint (
+        UNDO_MANAGER->undo_stack->num_as_actions,
+          ==, 0);
+      g_assert_cmpint (
+        UNDO_MANAGER->redo_stack->num_as_actions,
+          ==, i ? 1 : 0);
 
       /* do move ticks */
       UndoableAction * ua =
@@ -466,8 +533,9 @@ test_move_timeline ()
         arranger_selections_get_num_objects (
           (ArrangerSelections *) TL_SELECTIONS), ==,
         i ? 2 : TOTAL_TL_SELECTIONS);
+
       check_timeline_objects_vs_original_state (
-        i ? 0 : 1);
+        i ? 0 : 1, 0, 1);
 
       /* redo and check that the objects are moved
        * again */
@@ -492,7 +560,7 @@ test_move_timeline ()
           (ArrangerSelections *) TL_SELECTIONS), ==,
         TOTAL_TL_SELECTIONS);
       check_timeline_objects_vs_original_state (
-        1);
+        1, 0, 1);
     }
 }
 
@@ -785,6 +853,9 @@ check_after_duplicate_timeline (
 static void
 test_duplicate_timeline ()
 {
+  /* clear undo/redo stacks */
+  undo_manager_clear_stacks (UNDO_MANAGER);
+
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
     {
@@ -833,7 +904,7 @@ test_duplicate_timeline ()
        * their original state*/
       undo_manager_undo (UNDO_MANAGER);
       check_timeline_objects_vs_original_state (
-        0);
+        0, 0, 1);
 
       /* redo and check that the objects are moved
        * again */
@@ -843,7 +914,7 @@ test_duplicate_timeline ()
       /* undo again to prepare for next test */
       undo_manager_undo (UNDO_MANAGER);
       check_timeline_objects_vs_original_state (
-        0);
+        0, 0, 1);
     }
 }
 

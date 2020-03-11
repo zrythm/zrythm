@@ -154,6 +154,4 @@ engine_dummy_tear_down (
 
   /* wait for the thread to stop */
   g_thread_join (self->dummy_audio_thread);
-
-  g_thread_unref (self->dummy_audio_thread);
 }

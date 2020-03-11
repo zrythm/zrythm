@@ -14,6 +14,7 @@ dist: bionic
 
 before_install:
 - |-
+  set -e
   case $TRAVIS_OS_NAME in
     windows)
       [[ ! -f C:/tools/msys64/msys2_shell.cmd ]] && rm -rf C:/tools/msys64
@@ -45,6 +46,7 @@ before_install:
 
 before_cache:
 - |-
+  set -e
   case $TRAVIS_OS_NAME in
     windows)
       # https://unix.stackexchange.com/a/137322/107554
@@ -59,6 +61,7 @@ cache:
 
 script:
 - |-
+  set -e
   case $TRAVIS_OS_NAME in
     osx)
       meson build -Denable_sdl=true -Denable_rtaudio=true -Denable_rtmidi=true
