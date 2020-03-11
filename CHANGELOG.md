@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.113] - 2020-03-11
+- Show capabilities with `--version`
+- Write queued logs periodically instead of on every UI cycle
+- Add `--reset-to-factory` and `--print-settings` options
+- Add bash completion script
+- Add more info to the manpage
+- Implement ctrl+D for duplicating events
+- Allow movement of events with arrow keys
+- Add all languages to the language selection with native spelling
+- Make undo history serializable and unlimited (off by default)
+- Add sub-tick precision to positions
+- Add eg-fifths to plugin tests
+- Add tests for saving/loading projects
+- Added Galician translation
+- Update Japanese translations
+- Fix crash on project load
+
 ## [0.8.038] - 2020-03-04
 - Add RtAudio support
 - MacOS release
