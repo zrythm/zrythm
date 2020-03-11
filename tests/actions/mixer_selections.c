@@ -42,16 +42,37 @@
 
 static Position start_pos, end_pos, ap1_pos, ap2_pos;
 
+typedef enum TestPluginType
+{
+  PLUGIN_TYPE_AMP,
+  PLUGIN_TYPE_FIFTHS
+} TestPluginType;
+
+static TestPluginType pl_type;
+
 /**
  * Bootstraps the test with test data.
  */
 static void
-rebootstrap ()
+rebootstrap (
+  TestPluginType type)
 {
+  pl_type = type;
+  char plugin_dir[700];
+  switch (type)
+    {
+    case PLUGIN_TYPE_AMP:
+      sprintf (plugin_dir, "eg-amp.lv2");
+      break;
+    case PLUGIN_TYPE_FIFTHS:
+      sprintf (plugin_dir, "eg-fifths.lv2");
+      break;
+    }
+
   char path_str[6000];
   sprintf (
-    path_str, "file://%s/%s",
-    TESTS_BUILDDIR, "eg-amp.lv2/");
+    path_str, "file://%s/%s/",
+    TESTS_BUILDDIR, plugin_dir);
   g_message ("path is %s", path_str);
 
   plugin_manager_init (PLUGIN_MANAGER);
@@ -66,6 +87,18 @@ rebootstrap ()
     PLUGIN_MANAGER, 1.0, &progress);
   g_assert_cmpint (
     PLUGIN_MANAGER->num_plugins, ==, 1);
+
+  /* remove any previous work */
+  chord_track_clear (P_CHORD_TRACK);
+  marker_track_clear (P_MARKER_TRACK);
+  for (int i = TRACKLIST->num_tracks - 1;
+       i >= 3; i--)
+    {
+      Track * track = TRACKLIST->tracks[i];
+      tracklist_remove_track (
+        TRACKLIST, track, 1, 1, 0, 0);
+    }
+  track_clear (P_MASTER_TRACK);
 }
 
 static void
@@ -94,7 +127,15 @@ check_after_step1 ()
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   g_assert_nonnull (atl);
-  g_assert_cmpint (atl->num_ats, ==, 5);
+  switch (pl_type)
+    {
+    case PLUGIN_TYPE_AMP:
+      g_assert_cmpint (atl->num_ats, ==, 5);
+      break;
+    case PLUGIN_TYPE_FIFTHS:
+      g_assert_cmpint (atl->num_ats, ==, 5);
+      break;
+    }
   AutomationTrack * at = atl->ats[3];
   g_assert_nonnull (at);
   g_assert_cmpint (
@@ -287,9 +328,20 @@ check_after_step7 ()
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   g_assert_cmpint (atl->num_ats, ==, 9);
-  AutomationTrack * at =
-    automation_tracklist_get_plugin_at (
-      atl, 5, "Gain");
+  AutomationTrack * at = NULL;
+  switch (pl_type)
+    {
+    case PLUGIN_TYPE_AMP:
+      at =
+        automation_tracklist_get_plugin_at (
+          atl, 5, "Gain");
+      break;
+    case PLUGIN_TYPE_FIFTHS:
+      at =
+        automation_tracklist_get_plugin_at (
+          atl, 5, "Test param");
+      break;
+    }
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
   ZRegion * region = at->regions[0];
@@ -324,9 +376,20 @@ check_after_step8 ()
   AutomationTracklist * atl =
     track_get_automation_tracklist (new_track);
   g_assert_cmpint (atl->num_ats, ==, 11);
-  AutomationTrack * at =
-    automation_tracklist_get_plugin_at (
-      atl, 7, "Gain");
+  AutomationTrack * at = NULL;
+  switch (pl_type)
+    {
+    case PLUGIN_TYPE_AMP:
+      at =
+        automation_tracklist_get_plugin_at (
+          atl, 7, "Gain");
+      break;
+    case PLUGIN_TYPE_FIFTHS:
+      at =
+        automation_tracklist_get_plugin_at (
+          atl, 7, "Test param");
+      break;
+    }
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
   ZRegion * region = at->regions[0];
@@ -357,9 +420,20 @@ check_after_step9 ()
   g_test_expect_message (
     NULL, G_LOG_LEVEL_CRITICAL,
     "* should not be reached*");
-  AutomationTrack * at =
-    automation_tracklist_get_plugin_at (
-      atl, 7, "Gain");
+  AutomationTrack * at = NULL;
+  switch (pl_type)
+    {
+    case PLUGIN_TYPE_AMP:
+      at =
+        automation_tracklist_get_plugin_at (
+          atl, 7, "Gain");
+      break;
+    case PLUGIN_TYPE_FIFTHS:
+      at =
+        automation_tracklist_get_plugin_at (
+          atl, 7, "Test param");
+      break;
+    }
   (void) at;
   g_test_assert_expected_messages ();
 }
@@ -560,6 +634,20 @@ test_move_plugins ()
   check_after_step9 ();
 }
 
+static void
+test_move_plugins_amp ()
+{
+  rebootstrap (PLUGIN_TYPE_AMP);
+  test_move_plugins ();
+}
+
+static void
+test_move_plugins_fifths ()
+{
+  rebootstrap (PLUGIN_TYPE_FIFTHS);
+  test_move_plugins ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -569,10 +657,12 @@ main (int argc, char *argv[])
 
 #define TEST_PREFIX "/actions/mixer_selections/"
 
-  rebootstrap ();
   g_test_add_func (
-    TEST_PREFIX "test move plugins",
-    (GTestFunc) test_move_plugins);
+    TEST_PREFIX "test move plugins amp",
+    (GTestFunc) test_move_plugins_amp);
+  g_test_add_func (
+    TEST_PREFIX "test move plugins fifths",
+    (GTestFunc) test_move_plugins_fifths);
 
   return g_test_run ();
 }

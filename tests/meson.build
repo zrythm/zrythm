@@ -18,6 +18,7 @@
 if get_option ('enable_tests')
 
   subdir('eg-amp.lv2')
+  subdir('eg-fifths.lv2')
 
   test_env = environment ()
   test_env.set (
