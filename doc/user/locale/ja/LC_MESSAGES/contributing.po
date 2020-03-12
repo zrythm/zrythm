@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-16 15:30+0000\n"
-"PO-Revision-Date: 2020-02-02 21:50+0000\n"
+"PO-Revision-Date: 2020-03-11 14:33+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualcontributing/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.11-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../contributing/intro.rst:6
@@ -36,6 +36,9 @@ msgid ""
 "information about how to contribute code and various guidelines to "
 "follow."
 msgstr ""
+"`Contributing Guide <https://docs.zrythm.org/md_CONTRIBUTING.html>`_ を参照し、 `"
+"Developer Docs <https://docs.zrythm.org/>`_ "
+"をご覧ください。これらには、コードを貢献する方法に関する多くの情報と、従うべきさまざまなガイドラインがあります。"
 
 #: ../../contributing/intro.rst:18
 msgid "Artwork and Themes"
@@ -48,6 +51,8 @@ msgid ""
 "contribute artwork such as icons, please discuss with us first as icon "
 "preferences are very subjective."
 msgstr ""
+"ZrythmはほぼCSSでテーマを変えられ、また、多くのアイコン、カスタマイズされたいくつかの他のテーマからのものを利用しています。アイコンなどのアートワ"
+"ークを貢献したい場合は、アイコンは非常に主観的なものなので、まず私たちと相談してください。"
 
 #: ../../contributing/intro.rst:26
 msgid ""
@@ -57,6 +62,10 @@ msgid ""
 "Overview <https://developer.gnome.org/gtk3/stable/chap-css-"
 "overview.html>`_ section in the GTK+3 docs."
 msgstr ""
+"テーマを作成するには、gtk+3 の CSS の仕組みを知るためにhttps://git.zrythm.org/cgit/zrythm/tree/"
+"resources/theme.cssを見てみましょう。また、GTK+3 ドキュメントの `CSS 概要 "
+"<https://developer.gnome.org/gtk3/stable/chap-css-overview.html>`_ "
+"セクションを見ることをお勧めします。"
 
 #: ../../contributing/intro.rst:34
 msgid "Testing"
@@ -69,15 +78,18 @@ msgid ""
 "feedback on `Redmine "
 "<https://redmine.zrythm.org/projects/zrythm/issues>`_."
 msgstr ""
+"現在、テスターが不足しており、Zrythmの最新機能のテストや、 `Redmine <https://redmine.zrythm.org/"
+"projects/zrythm/issues>` でのバグとフィードバックの報告に参加することを大歓迎です。"
 
 #: ../../contributing/intro.rst:42
 msgid ""
 "The latest development branch for new features is ``development`` in our "
 "`git repository <https://git.zrythm.org/cgit/zrythm>`_."
 msgstr ""
+"新機能の最新の開発ブランチは、 `gitリポジトリ <https://git.zrythm.org/cgit/zrythm>`_ の "
+"``develop`` です。"
 
 #: ../../contributing/intro.rst:47
-#, fuzzy
 msgid "Translation"
 msgstr "翻訳"
 
@@ -88,10 +100,12 @@ msgid ""
 "<https://hosted.weblate.org/engage/zrythm/?utm_source=widget>`_ to get "
 "started."
 msgstr ""
+"Zrythmは、Hosted Weblateで翻訳できます。 `Zrythmプロジェクトページ<https://hosted.weblate.org/"
+"engage/zrythm/?utm_source=widget>`_ にアクセスしてみてください。"
 
 #: ../../contributing/intro.rst:52
 msgid "The Zrythm translation project contains the following components:"
-msgstr ""
+msgstr "Zrythmの翻訳プロジェクトには、次のコンポーネントがあります。"
 
 #: ../../contributing/intro.rst:55
 msgid "Zrythm"
@@ -107,7 +121,7 @@ msgstr "ウェブサイト"
 
 #: ../../contributing/intro.rst:58
 msgid "The Zrythm website (https://www.zrythm.org)"
-msgstr ""
+msgstr "Zrythmのウェブサイト(https://www.zrythm.org)"
 
 #: ../../contributing/intro.rst:60
 msgid "Manual - *"

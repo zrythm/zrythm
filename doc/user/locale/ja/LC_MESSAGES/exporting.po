@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-12 20:16+0100\n"
-"PO-Revision-Date: 2019-12-17 16:21+0000\n"
+"PO-Revision-Date: 2020-03-11 14:33+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
 "manualexporting/ja/>\n"
@@ -17,12 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.10-dev\n"
+"X-Generator: Weblate 4.0-dev\n"
 "Generated-By: Babel 2.7.0\n"
 
 #: ../../exporting/intro.rst:6
 msgid "Exporting"
-msgstr ""
+msgstr "エクスポート"
 
 #: ../../exporting/overview.rst:6
 msgid "Overview"
@@ -32,53 +32,55 @@ msgstr "概要"
 msgid ""
 "The Export dialog below is used to export the project or part of the "
 "project into audio or MIDI files."
-msgstr ""
+msgstr "下のエクスポートダイアログは、プロジェクトまたはプロジェクトの一部をオーディオまたはMIDIファイルに書き出すために使用されます。"
 
 #: ../../exporting/overview.rst:15
 msgid "Fields"
-msgstr ""
+msgstr "項目"
 
 #: ../../exporting/overview.rst:18
 msgid "Artist and Genre"
-msgstr ""
+msgstr "アーティストとジャンル"
 
 #: ../../exporting/overview.rst:20
 msgid ""
 "These will be included as metadata to the exported file if the format "
 "supports it. The title used will be the project title."
 msgstr ""
+"これらは、ファイルのフォーマットでサポートされている場合、エクスポートされたファイルにメタデータとして含まれます。使用するタイトルはプロジェクトタイトルに"
+"なります。"
 
 #: ../../exporting/overview.rst:25
 msgid "Format"
-msgstr ""
+msgstr "フォーマット"
 
 #: ../../exporting/overview.rst:27
 msgid "The format to export to. Currently, the following formats are supported"
-msgstr ""
+msgstr "エクスポートする形式。現在、以下の形式がサポートされています。"
 
 #: ../../exporting/overview.rst:30
 msgid "FLAC - .FLAC"
-msgstr ""
+msgstr "FLAC - .FLAC"
 
 #: ../../exporting/overview.rst:31
 msgid "OGG (Vorbis) - .ogg"
-msgstr ""
+msgstr "OGG (Vorbis) - .ogg"
 
 #: ../../exporting/overview.rst:32
 msgid "WAV - .wav"
-msgstr ""
+msgstr "WAV - .wav"
 
 #: ../../exporting/overview.rst:33
 msgid "MP3 - .mp3"
-msgstr ""
+msgstr "MP3 - .mp3"
 
 #: ../../exporting/overview.rst:34
 msgid "MIDI - .mid"
-msgstr ""
+msgstr "MIDI - .mid"
 
 #: ../../exporting/overview.rst:37
 msgid "Dither"
-msgstr ""
+msgstr "ディザ"
 
 #: ../../exporting/overview.rst:39
 msgid "TODO"
@@ -86,43 +88,44 @@ msgstr "TODO"
 
 #: ../../exporting/overview.rst:42
 msgid "Bit Depth"
-msgstr ""
+msgstr "ビット深度"
 
 #: ../../exporting/overview.rst:44
 msgid ""
 "This is the bit depth that will be used when exporting audio. The higher "
 "the bit depth the larger the file will be, but it will have better "
 "quality."
-msgstr ""
+msgstr "これは、オーディオを書き出すときに使用されるビット深度です。ビット深度が高いほどファイルは大きくなりますが、品質は向上します。"
 
 #: ../../exporting/overview.rst:49
 msgid "Time Range"
-msgstr ""
+msgstr "時間の範囲"
 
 #: ../../exporting/overview.rst:51
 msgid ""
 "The time range to export. You can choose to export the whole song "
 "(defined by the start/end markers), the current loop range or a custom "
 "time range."
-msgstr ""
+msgstr "エクスポートする時間の範囲。曲全体(開始/終了マーカーで定義)、現在のループ範囲、またはカスタム時間の範囲をエクスポートすることができます。"
 
 #: ../../exporting/overview.rst:56
 msgid "Filename Pattern"
-msgstr ""
+msgstr "ファイル名のパターン"
 
 #: ../../exporting/overview.rst:58
 msgid "The pattern to use as the name of the file."
-msgstr ""
+msgstr "ファイルの名前として使用するパターン。"
 
 #: ../../exporting/overview.rst:61
 msgid "Open Exported Directory"
-msgstr ""
+msgstr "エクスポートされたディレクトリを開く"
 
 #: ../../exporting/overview.rst:62
 msgid ""
 "Once export is completed, a dialog will appear with an option to open the"
 " directory the file was saved in using your default file browser program."
 msgstr ""
+"エクスポートが完了すると、デフォルトのファイルブラウザプログラムを使用してファイルが保存されたディレクトリを開くオプションを含むダイアログが表示されます。"
 
 #~ msgid "Exporting MIDI Files"
 #~ msgstr ""

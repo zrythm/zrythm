@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-03-07 22:22+0000\n"
-"PO-Revision-Date: 2020-03-07 09:52+0000\n"
+"PO-Revision-Date: 2020-03-11 14:33+0000\n"
 "Last-Translator: Alexandros Theodotou <alextee@posteo.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
@@ -53,9 +53,8 @@ msgid "Initializing caches"
 msgstr "キャッシュを初期化中"
 
 #: src/zrythm.c:425
-#, fuzzy
 msgid "Initializing file manager"
-msgstr "プラグインマネージャの初期化"
+msgstr "ファイルマネージャを初期化中"
 
 #: src/zrythm.c:432
 msgid "Initializing plugin manager"
@@ -138,10 +137,10 @@ msgstr ""
 #. * end
 #: src/main.c:278
 msgid "(trial) "
-msgstr ""
+msgstr "(トライアル) "
 
 #: src/main.c:296
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
@@ -159,22 +158,22 @@ msgstr ""
 "Usage: zrythm [ OPTIONS ] [ PROJECT-NAME ]\n"
 "\n"
 "Options:\n"
-"  -h, --help      display this help and exit\n"
+"  -h, --help      display this help message and exit\n"
+"  -p, --print-settings  print current settings\n"
+"  --reset-to-factory  reset to factory settings\n"
 "  -v, --version   output version information and exit\n"
 "\n"
 "Examples:\n"
-"  zrythm          run normally\n"
+"  zrythm -v       print version\n"
 "\n"
-"Write comments and bugs to %s\n"
-"Support this project at https://liberapay.com/Zrythm\n"
-"Website https://www.zrythm.org\n"
+"Report bugs to %s\n"
 
 #. getopt_long already printed an error
 #. * message
 #: src/main.c:364
 #, c-format
 msgid "Unknown option\n"
-msgstr ""
+msgstr "オプションを認知できませんでした\n"
 
 #: src/main.c:374
 #, c-format
@@ -414,7 +413,7 @@ msgstr "選択したバックエンドが正しく動作されています"
 
 #: src/gui/widgets/first_run_assistant.c:173
 msgid "JACK MIDI can only be used with JACK audio"
-msgstr ""
+msgstr "JACK MIDIは、JACKオーディオとのみで使用できます"
 
 #: src/gui/widgets/bind_cc_dialog.c:94
 msgid "Not a control change event"
@@ -812,7 +811,6 @@ msgid "Snap/Grid options"
 msgstr "スナップ/グリッド設定"
 
 #: src/gui/widgets/port_connection_row.c:97
-#, fuzzy
 msgid "Enable/disable connection"
 msgstr "接続を有効/無効にする"
 
@@ -1260,50 +1258,50 @@ msgstr ""
 #: src/settings/settings.c:71
 #, c-format
 msgid "Schema %s\n"
-msgstr ""
+msgstr "スキーマ %s\n"
 
 #: src/settings/settings.c:76
 #, c-format
 msgid "Resetting schema %s...\n"
-msgstr ""
+msgstr "スキーマ %s をリセット中...\n"
 
 #. TRANSLATORS: please keep the spaces
 #: src/settings/settings.c:103
 #, c-format
 msgid "  resetting %s to %s\n"
-msgstr ""
+msgstr "  %s を %s にリセット中\n"
 
 #: src/settings/settings.c:145
 #, c-format
 msgid "Failed to find schema %s. Zrythm is likely not installed"
-msgstr ""
+msgstr "スキーマ %s が見つかりませんでした。Zrythmはおそらくインストールされていません"
 
 #: src/settings/settings.c:159
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to view schema %s"
-msgstr "%sでプロパティ%sが見つかりませんでした"
+msgstr "スキーマ %s を表示できませんでした"
 
 #: src/settings/settings.c:166
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reset schema %s"
-msgstr "%sでプロパティ%sが見つかりませんでした"
+msgstr "スキーマ %s をリセットできませんでした"
 
 #: src/settings/settings.c:199
 #, c-format
 msgid ""
 "This will reset Zrythm to factory settings. You will lose all your "
 "preferences. Type 'y' to continue: "
-msgstr ""
+msgstr "これにより、Zrythm が初期設定にリセットされます。すべてのプリファレンスが失われます。続行するには「y」と入力してください： "
 
 #: src/settings/settings.c:205
-#, fuzzy, c-format
+#, c-format
 msgid "Aborting...\n"
-msgstr "エクスポート中…"
+msgstr "中止しています...\n"
 
 #: src/settings/settings.c:216
 #, c-format
 msgid "Reset to factory settings successful\n"
-msgstr ""
+msgstr "初期設定にリセットされました\n"
 
 #: src/audio/track_processor.c:194
 msgid "Piano Roll"
@@ -2501,7 +2499,7 @@ msgstr "出力ファイル"
 
 #: resources/ui/export_dialog.ui:207
 msgid "Filename Pattern"
-msgstr "ファイル名パターン"
+msgstr "ファイル名のパターン"
 
 #: resources/ui/export_dialog.ui:227
 msgid "Song"
