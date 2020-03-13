@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://git.zrythm.org/zrythm/zrythm/issues\n"
 "POT-Creation-Date: 2020-03-07 22:22+0000\n"
-"PO-Revision-Date: 2020-03-11 14:33+0000\n"
+"PO-Revision-Date: 2020-03-14 19:36+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "gl/>\n"
@@ -452,7 +452,7 @@ msgstr "Visibilidade"
 
 #: src/gui/widgets/top_bar.c:43 src/gui/widgets/ruler_marker.c:169
 msgid "Playhead"
-msgstr "Cabeza de reprodución"
+msgstr "Cabeza de Reprodución"
 
 #: src/gui/widgets/top_bar.c:45
 msgid "Playhead [Jack Timebase Master]"
@@ -476,7 +476,7 @@ msgstr "Desvincular JACK Transport"
 
 #: src/gui/widgets/top_bar.c:230
 msgid "playhead"
-msgstr "cabeza de reprodución"
+msgstr "Cabeza de Reprodución"
 
 #: src/gui/widgets/top_bar.c:264
 msgid "JACK Transport client"
@@ -1361,19 +1361,19 @@ msgstr "Erro ALSA: %s"
 
 #: src/audio/passthrough_processor.c:92
 msgid "Pre-Fader in"
-msgstr "Pre-Fader de Entrada"
+msgstr "Entrada Pre-Fader"
 
 #: src/audio/passthrough_processor.c:98
 msgid "Pre-Fader out"
-msgstr "Pre-Fader de Saída"
+msgstr "Saída Pre-Fader"
 
 #: src/audio/passthrough_processor.c:106
 msgid "MIDI pre-fader in"
-msgstr "Pre-fader de entrada MIDI"
+msgstr "Entrada MIDI pre-fader"
 
 #: src/audio/passthrough_processor.c:119
 msgid "MIDI pre-fader out"
-msgstr "Pre-fader de saída MIDI"
+msgstr "Saída MIDI pre-fader"
 
 #: src/audio/sample_processor.c:38
 msgid "Sample Processor"
@@ -1398,19 +1398,19 @@ msgstr "Control de Balance"
 
 #: src/audio/fader.c:138
 msgid "Fader in"
-msgstr "Fader de Entrada"
+msgstr "Entrada do Fader"
 
 #: src/audio/fader.c:147
 msgid "Fader out"
-msgstr "Fader de Saída"
+msgstr "Saída do Fader"
 
 #: src/audio/fader.c:158
 msgid "MIDI fader in"
-msgstr "Fader de entrada MIDI"
+msgstr "Entrada MIDI do fader"
 
 #: src/audio/fader.c:171
 msgid "MIDI fader out"
-msgstr "Fader de saída MIDI"
+msgstr "Saída Midi do Fader"
 
 #: src/audio/engine_jack.c:332
 msgid "XRUN occurred - check your JACK configuration"
