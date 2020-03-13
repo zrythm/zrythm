@@ -947,7 +947,7 @@ vst_plugin_open_ui (
   vst_x11_run_editor (self);
 #endif
 
-  if (g_settings_get_int (
+  if (g_settings_get_boolean (
         S_PREFERENCES, "plugin-uis-stay-on-top"))
     {
 #ifdef _WOE32

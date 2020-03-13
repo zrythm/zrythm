@@ -421,10 +421,8 @@ on_export_clicked (
   info.dither =
     gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (self->dither));
-  g_settings_set_int (
-    S_PREFERENCES,
-    "export-dither",
-    info.dither);
+  g_settings_set_boolean (
+    S_PREFERENCES, "export-dither", info.dither);
   info.artist =
     g_strdup (
       gtk_entry_get_text (self->export_artist));
@@ -622,9 +620,8 @@ export_dialog_widget_init (
 
   gtk_toggle_button_set_active (
     GTK_TOGGLE_BUTTON (self->dither),
-    g_settings_get_int (
-      S_PREFERENCES,
-      "export-dither"));
+    g_settings_get_boolean (
+      S_PREFERENCES, "export-dither"));
 
   setup_bit_depth_combo_box (self);
   setup_formats_combo_box (self);

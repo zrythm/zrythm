@@ -927,7 +927,7 @@ stretch_audio_region (
   g_return_if_fail (region);
   ArrangerObject * obj = (ArrangerObject *) region;
 
-  if (g_settings_get_int (S_UI, "musical-mode"))
+  if (g_settings_get_boolean (S_UI, "musical-mode"))
     {
       region->stretching = 1;
 
@@ -1439,7 +1439,7 @@ events_process (void * data)
         case ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED:
           gtk_widget_set_visible (
             GTK_WIDGET (MW_EDITOR_EVENT_VIEWER),
-            g_settings_get_int (
+            g_settings_get_boolean (
               S_UI, "editor-event-viewer-visible"));
           break;
         case ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED:

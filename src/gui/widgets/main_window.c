@@ -312,7 +312,7 @@ main_window_widget_init (MainWindowWidget * self)
 
     /* musical mode */
     { "toggle-musical-mode", NULL, NULL,
-      g_settings_get_int (
+      g_settings_get_boolean (
         S_UI, "musical-mode") ?
         "true" : "false",
       change_state_musical_mode },
@@ -345,7 +345,7 @@ main_window_widget_init (MainWindowWidget * self)
 
     /* transport */
     { "toggle-metronome", NULL, NULL,
-      g_settings_get_int (
+      g_settings_get_boolean (
         S_UI, "metronome-enabled") ?
         "true" : "false",
       change_state_metronome },
@@ -379,7 +379,7 @@ main_window_widget_init (MainWindowWidget * self)
     { "toggle-drum-mode",
       activate_toggle_drum_mode },
     { "toggle-listen-notes", NULL, NULL,
-      g_settings_get_int (
+      g_settings_get_boolean (
         S_UI, "listen-notes") ?
         "true" : "false",
       change_state_listen_notes },

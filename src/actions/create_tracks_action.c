@@ -187,7 +187,7 @@ create (
         }
 
       if (pl && ZRYTHM_HAVE_UI &&
-          g_settings_get_int (
+          g_settings_get_boolean (
             S_PREFERENCES,
             "open-plugin-uis-on-instantiate") &&
           add_to_project)

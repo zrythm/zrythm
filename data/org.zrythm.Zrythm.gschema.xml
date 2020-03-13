@@ -155,8 +155,8 @@
         referenced on startup.</description>
     </key>
 
-    <key name="first-run" type="i">
-      <default>1</default>
+    <key name="first-run" type="b">
+      <default>true</default>
       <summary>First run</summary>
       <description>Whether this is the first
         run or not.</description>
@@ -324,8 +324,8 @@
     </key>
 
     <!-- KEY: open-plugin-uis-on-instantiate -->
-    <key name="open-plugin-uis-on-instantiate" type="i">
-      <default>1</default>
+    <key name="open-plugin-uis-on-instantiate" type="b">
+      <default>true</default>
       <summary>Open plugin UIs when they are instantiated</summary>
       <description>
         Open plugin UIs when they are dragged and
@@ -335,8 +335,8 @@
     </key>
 
     <!-- KEY: plugin-uis-stay-on-top -->
-    <key name="plugin-uis-stay-on-top" type="i">
-      <default>1</default>
+    <key name="plugin-uis-stay-on-top" type="b">
+      <default>true</default>
       <summary>Whether plugin UIs should always be shown on top of the main window</summary>
       <description>
         If this is set to 1, plugin UIs will always
@@ -345,8 +345,8 @@
     </key>
 
     <!-- KEY: generic-plugin-uis -->
-    <key name="generic-plugin-uis" type="i">
-      <default>0</default>
+    <key name="generic-plugin-uis" type="b">
+      <default>false</default>
       <summary>Force generic plugin UIs</summary>
       <description>
         Whether to force generic plugin UIs or not.
@@ -450,8 +450,8 @@
     </key>
 
     <!-- KEY: export dither -->
-    <key name="export-dither" type="i">
-      <default>0</default>
+    <key name="export-dither" type="b">
+      <default>false</default>
       <summary>Add dither to export</summary>
       <description>
         Add dither while exporting.
@@ -496,8 +496,8 @@
     </key>
 
     <!-- KEY: metronome-enabled -->
-    <key name="metronome-enabled" type="i">
-      <default>0</default>
+    <key name="metronome-enabled" type="b">
+      <default>false</default>
       <summary>Metronome enabled</summary>
       <description>
         Metronome is enabled or not.
@@ -505,8 +505,8 @@
     </key>
 
     <!-- KEY: musical-mode -->
-    <key name="musical-mode" type="i">
-      <default>1</default>
+    <key name="musical-mode" type="b">
+      <default>true</default>
       <summary>Musical mode on/off</summary>
       <description>
         Whether to use musical mode. If this
@@ -517,8 +517,8 @@
     </key>
 
     <!-- KEY: listen-notes -->
-    <key name="listen-notes" type="i">
-      <default>1</default>
+    <key name="listen-notes" type="b">
+      <default>true</default>
       <summary>Listen to notes on/off</summary>
       <description>
         Whether to listen to MIDI notes while
@@ -612,8 +612,8 @@
 
     <!-- KEY: timeline event viewer visible -->
     <key name="timeline-event-viewer-visible"
-         type="i">
-      <default>0</default>
+         type="b">
+      <default>false</default>
       <summary>Timeline event viewer visibility</summary>
       <description>
         Whether the timeline event viewer is visible
@@ -623,8 +623,8 @@
 
     <!-- KEY: editor event viewer visible -->
     <key name="editor-event-viewer-visible"
-         type="i">
-      <default>0</default>
+         type="b">
+      <default>false</default>
       <summary>Editor event viewer visibility</summary>
       <description>
         Whether the editor event viewer is visible

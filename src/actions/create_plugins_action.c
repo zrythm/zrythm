@@ -86,7 +86,7 @@ create_plugins_action_do (
         ch, self->slot + i, pl, 1, 1,
         F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
-      if (g_settings_get_int (
+      if (g_settings_get_boolean (
             S_PREFERENCES,
             "open-plugin-uis-on-instantiate"))
         {

@@ -1505,10 +1505,8 @@ change_state_metronome (
 
   g_simple_action_set_state (action, value);
 
-  g_settings_set_int (
-    S_UI,
-    "metronome-enabled",
-    enabled);
+  g_settings_set_boolean (
+    S_UI, "metronome-enabled", enabled);
   transport_set_metronome_enabled (
     TRANSPORT, enabled);
 }
@@ -1523,7 +1521,7 @@ change_state_musical_mode (
 
   g_simple_action_set_state (action, value);
 
-  g_settings_set_int (
+  g_settings_set_boolean (
     S_UI, "musical-mode", enabled);
 }
 
@@ -1537,7 +1535,7 @@ change_state_listen_notes (
 
   g_simple_action_set_state (action, value);
 
-  g_settings_set_int (
+  g_settings_set_boolean (
     S_UI, "listen-notes", enabled);
 }
 
@@ -1704,7 +1702,7 @@ activate_toggle_timeline_event_viewer (
     !gtk_widget_get_visible (
        GTK_WIDGET (MW_TIMELINE_EVENT_VIEWER));
 
-  g_settings_set_int (
+  g_settings_set_boolean (
     S_UI, "timeline-event-viewer-visible",
     new_visibility);
   gtk_widget_set_visible (

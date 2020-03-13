@@ -522,7 +522,7 @@ midi_arranger_listen_notes (
   ArrangerWidget * self,
   int              listen)
 {
-  if (!g_settings_get_int (
+  if (!g_settings_get_boolean (
          S_UI, "listen-notes"))
     return;
 

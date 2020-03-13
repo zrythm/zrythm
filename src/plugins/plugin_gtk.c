@@ -680,7 +680,7 @@ plugin_gtk_create_window (
     plugin);
 #endif
 
-  if (g_settings_get_int (
+  if (g_settings_get_boolean (
         S_PREFERENCES, "plugin-uis-stay-on-top"))
     {
       gtk_window_set_transient_for (

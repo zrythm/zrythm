@@ -195,6 +195,7 @@ test_export_wav ()
   settings.artist = g_strdup ("Test Artist");
   settings.genre = g_strdup ("Test Genre");
   settings.depth = BIT_DEPTH_16;
+  settings.mode = EXPORT_MODE_FULL;
   settings.time_range = TIME_RANGE_LOOP;
   char * exports_dir =
     project_get_exports_dir (PROJECT);

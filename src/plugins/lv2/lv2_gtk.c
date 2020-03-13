@@ -1351,7 +1351,7 @@ lv2_gtk_open_ui (
   /* Attempt to instantiate custom UI if
    * necessary */
   if (plugin->ui &&
-      !g_settings_get_int (
+      !g_settings_get_boolean (
         S_PREFERENCES, "generic-plugin-uis"))
     {
       if (plugin->has_external_ui)

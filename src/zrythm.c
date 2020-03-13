@@ -432,7 +432,7 @@ init_thread (
     _("Initializing plugin manager"),
     0.2);
   plugin_manager_init (&ZRYTHM->plugin_manager);
-  if (!g_settings_get_int (
+  if (!g_settings_get_boolean (
          S_GENERAL, "first-run"))
     {
       set_progress_status (
@@ -498,7 +498,7 @@ on_first_run_assistant_apply (
 {
   g_message ("apply");
 
-  g_settings_set_int (
+  g_settings_set_boolean (
     S_GENERAL, "first-run", 0);
 
   /* start plugin scanning in another thread */
@@ -557,9 +557,8 @@ static void on_prompt_for_project (
     }
   else
     {
-      if (g_settings_get_int (
-            S_GENERAL,
-            "first-run"))
+      if (g_settings_get_boolean (
+            S_GENERAL, "first-run"))
         {
           /* warranty disclaimer */
           GtkDialogFlags flags =

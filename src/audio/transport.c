@@ -108,9 +108,8 @@ transport_init (
       self->metronome_enabled =
         ZRYTHM_TESTING ?
         1 :
-        g_settings_get_int (
-          S_UI,
-          "metronome-enabled");
+        g_settings_get_boolean (
+          S_UI, "metronome-enabled");
 
       transport_set_bpm (
         self, TRANSPORT_DEFAULT_BPM);
