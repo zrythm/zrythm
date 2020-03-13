@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-05 19:31+0000\n"
-"PO-Revision-Date: 2020-03-07 22:21+0000\n"
+"PO-Revision-Date: 2020-03-14 19:36+0000\n"
 "Last-Translator: Gabino S <gvgrandio@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/zrythm/"
 "manualzrythm-interface/gl/>\n"
@@ -403,7 +403,7 @@ msgstr "Tempo da canción (pulsos por minuto)"
 
 #: ../../zrythm-interface/transport-bar.rst:18
 msgid "Playhead"
-msgstr "Cabeza de reprodución"
+msgstr "Cabeza de Reprodución"
 
 #: ../../zrythm-interface/transport-bar.rst:19
 msgid "Current playhead position, in bars.beats.sixteenths.ticks"
