@@ -135,7 +135,10 @@ on_selection_changed (GtkTreeSelection * ts,
           self->selected_file_descr = descr;
 
           char * label;
-          if (descr->type == FILE_TYPE_MP3 ||
+          if (
+#ifdef HAVE_FFMPEG
+              descr->type == FILE_TYPE_MP3 ||
+#endif
               descr->type == FILE_TYPE_FLAC ||
               descr->type == FILE_TYPE_OGG ||
               descr->type == FILE_TYPE_WAV)

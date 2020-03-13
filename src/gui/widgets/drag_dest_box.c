@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -244,7 +244,9 @@ on_drag_data_received (
       if (file)
         {
           TrackType track_type = 0;
-          if (supported_file_type_is_audio (
+          if (supported_file_type_is_supported (
+                file->type) &&
+              supported_file_type_is_audio (
                 file->type))
             {
               track_type = TRACK_TYPE_AUDIO;
@@ -275,11 +277,8 @@ on_drag_data_received (
 
           UndoableAction * ua =
             create_tracks_action_new (
-              track_type,
-              NULL,
-              file,
-              TRACKLIST->num_tracks,
-              1);
+              track_type, NULL, file,
+              TRACKLIST->num_tracks, 1);
           if (IS_URI_LIST)
             {
               supported_file_free (file);

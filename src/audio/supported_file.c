@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -56,9 +56,22 @@ int
 supported_file_type_is_supported (
   FileType type)
 {
-  return
-    supported_file_type_is_audio (type) ||
-    supported_file_type_is_midi (type);
+  if (supported_file_type_is_audio (type))
+    {
+      if (type == FILE_TYPE_FLAC ||
+          type == FILE_TYPE_OGG ||
+          type == FILE_TYPE_WAV)
+        return 1;
+
+#ifdef HAVE_FFMPEG
+      if (type == FILE_TYPE_MP3)
+        return 1;
+#endif
+    }
+  if (supported_file_type_is_midi (type))
+    return 1;
+
+  return 0;
 }
 
 /**
