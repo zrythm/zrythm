@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -353,6 +353,31 @@ tracklist_selections_paste_to_pos (
   g_warn_if_reached ();
   return;
 }
+
+void
+tracklist_selections_mark_for_bounce (
+  TracklistSelections * ts)
+{
+  engine_reset_bounce_mode (AUDIO_ENGINE);
+
+  for (int i = 0; i < ts->num_tracks; i++)
+    {
+      Track * track = ts->tracks[i];
+      track->bounce = 1;
+
+      for (int j = 0; j < track->num_lanes; j++)
+        {
+          TrackLane * lane = track->lanes[j];
+
+          for (int k = 0; k < lane->num_regions; k++)
+            {
+              ZRegion * r = lane->regions[k];
+              r->bounce = 1;
+            }
+        }
+    }
+}
+
 
 void
 tracklist_selections_free (TracklistSelections * self)

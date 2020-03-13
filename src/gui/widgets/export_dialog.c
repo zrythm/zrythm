@@ -20,7 +20,7 @@
 #include "audio/engine.h"
 #include "audio/exporter.h"
 #include "gui/widgets/export_dialog.h"
-#include "gui/widgets/export_progress_dialog.h"
+#include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "project.h"
 #include "utils/io.h"
 #include "utils/resources.h"
@@ -391,24 +391,6 @@ on_cancel_clicked (GtkButton * btn,
   /*gtk_widget_destroy (GTK_WIDGET (self));*/
 }
 
-static void *
-export_thread (
-  ExportSettings * info)
-{
-  /* stop engine and give it some time to stop
-   * running */
-  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-  g_usleep (1000);
-  AUDIO_ENGINE->exporting = 1;
-  info->prev_loop = TRANSPORT->loop;
-  TRANSPORT->loop = 0;
-
-  /* export */
-  exporter_export (info);
-
-  return NULL;
-}
-
 static void
 on_progress_dialog_closed (
   GtkDialog * dialog,
@@ -506,13 +488,13 @@ on_export_clicked (
   GThread * thread =
     g_thread_new (
       "export_thread",
-      (GThreadFunc) export_thread,
+      (GThreadFunc) exporter_generic_export_thread,
       &info);
 
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
     export_progress_dialog_widget_new (
-      &info);
+      &info, 0, 1);
   gtk_window_set_transient_for (
     GTK_WINDOW (progress_dialog),
     GTK_WINDOW (self));
@@ -562,11 +544,12 @@ export_dialog_widget_new ()
 }
 
 static void
-export_dialog_widget_class_init (ExportDialogWidgetClass * _klass)
+export_dialog_widget_class_init (
+  ExportDialogWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass,
-                                "export_dialog.ui");
+  resources_set_class_template (
+    klass, "export_dialog.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
@@ -587,12 +570,12 @@ export_dialog_widget_class_init (ExportDialogWidgetClass * _klass)
   BIND_CHILD (output_label);
 
   gtk_widget_class_bind_template_callback (
-    klass,
-    on_cancel_clicked);
+    klass, on_cancel_clicked);
 }
 
 static void
-export_dialog_widget_init (ExportDialogWidget * self)
+export_dialog_widget_init (
+  ExportDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 

@@ -36,6 +36,7 @@
 #include "audio/chord_object.h"
 #include "audio/chord_region.h"
 #include "audio/chord_track.h"
+#include "audio/exporter.h"
 #include "audio/instrument_track.h"
 #include "audio/marker_track.h"
 #include "audio/master_track.h"
@@ -52,6 +53,8 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_object.h"
 #include "gui/widgets/color_area.h"
+#include "gui/widgets/dialogs/bounce_dialog.h"
+#include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/export_midi_file_dialog.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/inspector.h"
@@ -296,15 +299,53 @@ timeline_arranger_on_export_as_midi_file_clicked (
 }
 
 void
-timeline_arranger_on_bounce_to_audio_clicked (
+timeline_arranger_on_quick_bounce_clicked (
   GtkMenuItem * menuitem,
   ZRegion *      r)
 {
-  int ret =
-    midi_region_bounce (
-      r, NULL, 1, 0);
+  ExportSettings settings;
+  timeline_selections_mark_for_bounce (
+    TL_SELECTIONS);
+  settings.mode = EXPORT_MODE_REGIONS;
+  export_settings_set_bounce_defaults (
+    &settings, NULL, r->name);
 
-  g_return_if_fail (ret == 0);
+  /* start exporting in a new thread */
+  GThread * thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) exporter_generic_export_thread,
+      &settings);
+
+  /* create a progress dialog and block */
+  ExportProgressDialogWidget * progress_dialog =
+    export_progress_dialog_widget_new (
+      &settings, 1, 0);
+  gtk_window_set_transient_for (
+    GTK_WINDOW (progress_dialog),
+    GTK_WINDOW (MAIN_WINDOW));
+  gtk_dialog_run (GTK_DIALOG (progress_dialog));
+  gtk_widget_destroy (GTK_WIDGET (progress_dialog));
+
+  g_thread_join (thread);
+
+  /* create audio track with bounced material */
+  exporter_create_audio_track_after_bounce (
+    &settings);
+
+  export_settings_free_members (&settings);
+}
+
+void
+timeline_arranger_on_bounce_clicked (
+  GtkMenuItem * menuitem,
+  ZRegion *      r)
+{
+  BounceDialogWidget * dialog =
+    bounce_dialog_widget_new (
+      BOUNCE_DIALOG_REGIONS, r->name);
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -56,6 +56,14 @@ typedef struct _ExportProgressDialogWidget
   GtkButton *          ok;
   GtkButton *          open_directory;
 
+  /** Automatically close the progress dialog when
+   * finished. */
+  int                  autoclose;
+
+  /** Whether to show the open directory button or
+   * not. */
+  int                  show_open_dir_btn;
+
   ExportSettings *     info;
 } ExportProgressDialogWidget;
 
@@ -64,7 +72,9 @@ typedef struct _ExportProgressDialogWidget
  */
 ExportProgressDialogWidget *
 export_progress_dialog_widget_new (
-  ExportSettings * info);
+  ExportSettings * info,
+  int              autoclose,
+  int              show_open_dir_btn);
 
 /**
  * @}

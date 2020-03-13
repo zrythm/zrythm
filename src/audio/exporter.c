@@ -35,6 +35,7 @@
 #include "audio/transport.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/math.h"
 #include "utils/objects.h"
@@ -260,9 +261,8 @@ export_audio (
           (ArrangerObject *)
           marker_track_get_end_marker (
             P_MARKER_TRACK);
-        position_set_to_pos (
-          &TRANSPORT->playhead_pos,
-          &start->pos);
+        transport_move_playhead (
+          &start->pos, 1);
         position_set_to_pos (
           &start_pos,
           &start->pos);
@@ -272,9 +272,8 @@ export_audio (
       }
       break;
     case TIME_RANGE_LOOP:
-      position_set_to_pos (
-        &TRANSPORT->playhead_pos,
-        &TRANSPORT->loop_start_pos);
+      transport_move_playhead (
+        &TRANSPORT->loop_start_pos, 1);
       position_set_to_pos (
         &start_pos,
         &TRANSPORT->loop_start_pos);
@@ -283,9 +282,8 @@ export_audio (
         &TRANSPORT->loop_end_pos);
       break;
     case TIME_RANGE_CUSTOM:
-      position_set_to_pos (
-        &TRANSPORT->playhead_pos,
-        &info->custom_start);
+      transport_move_playhead (
+        &info->custom_start, 1);
       position_set_to_pos (
         &start_pos,
         &info->custom_start);
@@ -497,6 +495,110 @@ export_settings_default ()
   return self;
 }
 
+/**
+ * Sets the defaults for bouncing.
+ *
+ * @note \ref ExportSettings.mode must already be
+ *   set at this point.
+ *
+ * @param filepath Path to bounce to. If NULL, this
+ *   will generate a temporary filepath.
+ * @param bounce_name Name used for the file if
+ *   \ref filepath is NULL.
+ */
+void
+export_settings_set_bounce_defaults (
+  ExportSettings * self,
+  const char *     filepath,
+  const char *     bounce_name)
+{
+  self->format = AUDIO_FORMAT_WAV;
+  self->artist = g_strdup ("");
+  self->genre = g_strdup ("");
+  self->depth = BIT_DEPTH_16;
+  self->time_range = TIME_RANGE_CUSTOM;
+  switch (self->mode)
+    {
+    case EXPORT_MODE_REGIONS:
+      arranger_selections_get_start_pos (
+        (ArrangerSelections *) TL_SELECTIONS,
+        &self->custom_start, F_GLOBAL);
+      arranger_selections_get_end_pos (
+        (ArrangerSelections *) TL_SELECTIONS,
+        &self->custom_end, F_GLOBAL);
+      break;
+    case EXPORT_MODE_TRACKS:
+    case EXPORT_MODE_FULL:
+      {
+        ArrangerObject * start =
+          (ArrangerObject *)
+          marker_track_get_start_marker (
+            P_MARKER_TRACK);
+        ArrangerObject * end =
+          (ArrangerObject *)
+          marker_track_get_end_marker (
+            P_MARKER_TRACK);
+        position_set_to_pos (
+          &self->custom_start, &start->pos);
+        position_set_to_pos (
+          &self->custom_end, &end->pos);
+      }
+      break;
+    }
+  position_add_ms (
+    &self->custom_end,
+    g_settings_get_int (
+      S_PREFERENCES, "bounce-tail"));
+
+  if (filepath)
+    {
+      self->file_uri = g_strdup (filepath);
+      return;
+    }
+  else
+    {
+      char * tmp_dir =
+        g_dir_make_tmp (
+          "zrythm_bounce_XXXXXX", NULL);
+      char filename[800];
+      sprintf (
+        filename, "%s.wav", bounce_name);
+      self->file_uri =
+        g_build_filename (
+          tmp_dir, filename, NULL);
+      g_free (tmp_dir);
+    }
+}
+
+/**
+ * Generic export thread to be used for simple
+ * exporting.
+ *
+ * See bounce_dialog for an example.
+ */
+void *
+exporter_generic_export_thread (
+  ExportSettings * info)
+{
+  /* stop engine and give it some time to stop
+   * running */
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  g_usleep (1000);
+  AUDIO_ENGINE->exporting = 1;
+  info->prev_loop = TRANSPORT->loop;
+  TRANSPORT->loop = 0;
+
+  /* export */
+  exporter_export (info);
+
+  /* restart engine */
+  AUDIO_ENGINE->exporting = 0;
+  TRANSPORT->loop = info->prev_loop;
+  g_atomic_int_set (&AUDIO_ENGINE->run, 1);
+
+  return NULL;
+}
+
 void
 export_settings_free_members (
   ExportSettings * self)
@@ -513,6 +615,50 @@ export_settings_free (
   export_settings_free_members (self);
 
   free (self);
+}
+
+/**
+ * To be called to create and perform an undoable
+ * action for creating an audio track with the
+ * bounced material.
+ */
+void
+exporter_create_audio_track_after_bounce (
+  ExportSettings * settings)
+{
+  SupportedFile * descr =
+    supported_file_new_from_path (
+      settings->file_uri);
+
+  /* find next track */
+  Track * track = NULL;
+  switch (settings->mode)
+    {
+    case EXPORT_MODE_REGIONS:
+      track =
+        timeline_selections_get_last_track (
+          TL_SELECTIONS);
+      break;
+    case EXPORT_MODE_TRACKS:
+      track =
+        tracklist_selections_get_lowest_track (
+          TRACKLIST_SELECTIONS);
+      break;
+    default:
+      g_return_if_reached ();
+    }
+
+  UndoableAction * ua =
+    create_tracks_action_new (
+      TRACK_TYPE_AUDIO, NULL,
+      descr, track->pos + 1, 1);
+  Position tmp;
+  position_set_to_pos (&tmp, PLAYHEAD);
+  transport_set_playhead_pos (
+    TRANSPORT, &settings->custom_start);
+  undo_manager_perform (UNDO_MANAGER, ua);
+  transport_set_playhead_pos (
+    TRANSPORT, &tmp);
 }
 
 /**

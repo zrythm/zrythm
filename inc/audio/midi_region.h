@@ -243,24 +243,6 @@ midi_region_get_as_events (
   const int full);
 
 /**
- * Bounces a MIDI region to audio.
- *
- * @param filepath Path to the file to bounce to
- *   (optional unless \ref bounce_to_track is 0).
- * @param bounce_to_track Whether to create a new
- *   audio track with the bounced material.
- * @param tail_ms Tail length in ms.
- *
- * @return Non-zero if fail.
- */
-int
-midi_region_bounce (
-  ZRegion *    self,
-  const char * filepath,
-  int          bounce_to_track,
-  long         tail_ms);
-
-/**
  * Frees members only but not the midi region itself.
  *
  * Regions should be free'd using region_free.

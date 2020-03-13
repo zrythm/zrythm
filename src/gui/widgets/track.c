@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -21,6 +21,7 @@
 #include "audio/audio_bus_track.h"
 #include "audio/audio_group_track.h"
 #include "audio/control_port.h"
+#include "audio/exporter.h"
 #include "audio/master_track.h"
 #include "audio/instrument_track.h"
 #include "audio/track.h"
@@ -34,6 +35,8 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/custom_button.h"
+#include "gui/widgets/dialogs/bounce_dialog.h"
+#include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/meter.h"
@@ -1375,6 +1378,56 @@ on_passthrough_input_toggled (
 }
 
 static void
+on_quick_bounce_clicked (
+  GtkMenuItem * menuitem,
+  Track *       track)
+{
+  ExportSettings settings;
+  tracklist_selections_mark_for_bounce (
+    TRACKLIST_SELECTIONS);
+  settings.mode = EXPORT_MODE_TRACKS;
+  export_settings_set_bounce_defaults (
+    &settings, NULL, track->name);
+
+  /* start exporting in a new thread */
+  GThread * thread =
+    g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) exporter_generic_export_thread,
+      &settings);
+
+  /* create a progress dialog and block */
+  ExportProgressDialogWidget * progress_dialog =
+    export_progress_dialog_widget_new (
+      &settings, 1, 0);
+  gtk_window_set_transient_for (
+    GTK_WINDOW (progress_dialog),
+    GTK_WINDOW (MAIN_WINDOW));
+  gtk_dialog_run (GTK_DIALOG (progress_dialog));
+  gtk_widget_destroy (GTK_WIDGET (progress_dialog));
+
+  g_thread_join (thread);
+
+  /* create audio track with bounced material */
+  exporter_create_audio_track_after_bounce (
+    &settings);
+
+  export_settings_free_members (&settings);
+}
+
+static void
+on_bounce_clicked (
+  GtkMenuItem * menuitem,
+  Track *       track)
+{
+  BounceDialogWidget * dialog =
+    bounce_dialog_widget_new (
+      BOUNCE_DIALOG_TRACKS, track->name);
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 show_context_menu (
   TrackWidget * self,
   double        y)
@@ -1476,6 +1529,33 @@ show_context_menu (
           0,
           "win.pin-selected-tracks");
       APPEND (menuitem);
+    }
+
+  if (track->out_signal_type == TYPE_AUDIO)
+    {
+      menuitem =
+        GTK_MENU_ITEM (
+          gtk_menu_item_new_with_label (
+            _("Quick bounce")));
+      gtk_widget_set_visible (
+        GTK_WIDGET (menuitem), 1);
+      APPEND (menuitem);
+      g_signal_connect (
+        menuitem, "activate",
+        G_CALLBACK (on_quick_bounce_clicked),
+        track);
+
+      menuitem =
+        GTK_MENU_ITEM (
+          gtk_menu_item_new_with_label (
+            _("Bounce...")));
+      gtk_widget_set_visible (
+        GTK_WIDGET (menuitem), 1);
+      APPEND (menuitem);
+      g_signal_connect (
+        menuitem, "activate",
+        G_CALLBACK (on_bounce_clicked),
+        track);
     }
 
   /* add midi channel selectors */

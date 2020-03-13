@@ -1797,18 +1797,29 @@ show_context_menu_timeline (
             G_CALLBACK (
               timeline_arranger_on_export_as_midi_file_clicked),
             r);
-
-          menuitem =
-            gtk_menu_item_new_with_label (
-              _("Bounce to audio"));
-          gtk_menu_shell_append (
-            GTK_MENU_SHELL(menu), menuitem);
-          g_signal_connect (
-            menuitem, "activate",
-            G_CALLBACK (
-              timeline_arranger_on_bounce_to_audio_clicked),
-            r);
         }
+
+      menuitem =
+        gtk_menu_item_new_with_label (
+          _("Quick bounce"));
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL(menu), menuitem);
+      g_signal_connect (
+        menuitem, "activate",
+        G_CALLBACK (
+          timeline_arranger_on_quick_bounce_clicked),
+        r);
+
+      menuitem =
+        gtk_menu_item_new_with_label (
+          _("Bounce..."));
+      gtk_menu_shell_append (
+        GTK_MENU_SHELL(menu), menuitem);
+      g_signal_connect (
+        menuitem, "activate",
+        G_CALLBACK (
+          timeline_arranger_on_bounce_clicked),
+        r);
     }
 
   gtk_widget_show_all(menu);

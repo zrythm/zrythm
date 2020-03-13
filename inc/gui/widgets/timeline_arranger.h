@@ -81,7 +81,12 @@ timeline_arranger_on_export_as_midi_file_clicked (
   ZRegion *      r);
 
 void
-timeline_arranger_on_bounce_to_audio_clicked (
+timeline_arranger_on_quick_bounce_clicked (
+  GtkMenuItem * menuitem,
+  ZRegion *      r);
+
+void
+timeline_arranger_on_bounce_clicked (
   GtkMenuItem * menuitem,
   ZRegion *      r);
 

@@ -302,6 +302,27 @@
       </description>
     </key>
 
+    <!-- KEY: bounce-with-effects -->
+    <key name="bounce-with-effects" type="b">
+      <default>true</default>
+      <summary>Bounce to audio with effects</summary>
+      <description>
+        If send to true, the effects chain will be
+        included in the bounced material.
+      </description>
+    </key>
+
+    <!-- KEY: bounce-tail -->
+    <key name="bounce-tail" type="i">
+      <default>0</default>
+      <summary>Bounce tail (ms)</summary>
+      <description>
+        Tail to allow when bouncing (for example to
+        catch reverb tails after a region finishes)
+        in milliseconds.
+      </description>
+    </key>
+
     <!-- KEY: open-plugin-uis-on-instantiate -->
     <key name="open-plugin-uis-on-instantiate" type="i">
       <default>1</default>

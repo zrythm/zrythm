@@ -136,6 +136,23 @@ typedef struct ExportSettings
 ExportSettings *
 export_settings_default (void);
 
+/**
+ * Sets the defaults for bouncing.
+ *
+ * @note \ref ExportSettings.mode must already be
+ *   set at this point.
+ *
+ * @param filepath Path to bounce to. If NULL, this
+ *   will generate a temporary filepath.
+ * @param bounce_name Name used for the file if
+ *   \ref filepath is NULL.
+ */
+void
+export_settings_set_bounce_defaults (
+  ExportSettings * self,
+  const char *     filepath,
+  const char *     bounce_name);
+
 void
 export_settings_free_members (
   ExportSettings * self);
@@ -143,6 +160,25 @@ export_settings_free_members (
 void
 export_settings_free (
   ExportSettings * self);
+
+/**
+ * Generic export thread to be used for simple
+ * exporting.
+ *
+ * See bounce_dialog for an example.
+ */
+void *
+exporter_generic_export_thread (
+  ExportSettings * info);
+
+/**
+ * To be called to create and perform an undoable
+ * action for creating an audio track with the
+ * bounced material.
+ */
+void
+exporter_create_audio_track_after_bounce (
+  ExportSettings * settings);
 
 /**
  * Returns the audio format as string.

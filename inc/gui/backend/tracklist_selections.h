@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -178,6 +178,10 @@ tracklist_selections_paste_to_pos (
 void
 tracklist_selections_sort (
   TracklistSelections * self);
+
+void
+tracklist_selections_mark_for_bounce (
+  TracklistSelections * ts);
 
 void
 tracklist_selections_free (

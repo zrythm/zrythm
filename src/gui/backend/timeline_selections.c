@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -470,6 +470,25 @@ timeline_selections_paste_to_pos (
         F_APPEND);
     }
 #undef DIFF
+}
+
+void
+timeline_selections_mark_for_bounce (
+  TimelineSelections * ts)
+{
+  engine_reset_bounce_mode (AUDIO_ENGINE);
+
+  for (int i = 0; i < ts->num_regions; i++)
+    {
+      ZRegion * r = ts->regions[i];
+      Track * track =
+        arranger_object_get_track (
+          (ArrangerObject *) r);
+      g_return_if_fail (track);
+
+      track->bounce = 1;
+      r->bounce = 1;
+    }
 }
 
 SERIALIZE_SRC (

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -94,14 +94,14 @@ static const cyaml_schema_field_t
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
     TimelineSelections, markers, num_markers,
     &marker_schema, 0, CYAML_UNLIMITED),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "chord_track_vis_index", CYAML_FLAG_DEFAULT,
     TimelineSelections, chord_track_vis_index),
-	CYAML_FIELD_INT (
+  CYAML_FIELD_INT (
     "marker_track_vis_index", CYAML_FLAG_DEFAULT,
     TimelineSelections, marker_track_vis_index),
 
-	CYAML_FIELD_END
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t
@@ -163,6 +163,10 @@ void
 timeline_selections_paste_to_pos (
   TimelineSelections * ts,
   Position *           pos);
+
+void
+timeline_selections_mark_for_bounce (
+  TimelineSelections * ts);
 
 SERIALIZE_INC (
   TimelineSelections, timeline_selections)
