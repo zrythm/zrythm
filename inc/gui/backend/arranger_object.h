@@ -146,9 +146,6 @@ typedef struct ArrangerObject
   int                can_loop;
   /** 1 if the object can fade in/out. */
   int                can_fade;
-  /** 1 if the start Position is a global (timeline)
-   * Position. */
-  int                is_pos_global;
 
   /** Flags. */
   ArrangerObjectFlags  flags;
@@ -321,6 +318,14 @@ arranger_object_schema = {
 #define arranger_object_type_has_length(type) \
   (type == ARRANGER_OBJECT_TYPE_REGION || \
    type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+
+/**
+ * Returns if the object type has a global position.
+ */
+#define arranger_object_type_has_global_pos(type) \
+  (type == ARRANGER_OBJECT_TYPE_REGION || \
+   type == ARRANGER_OBJECT_TYPE_SCALE_OBJECT || \
+   type == ARRANGER_OBJECT_TYPE_MARKER)
 
 /**
  * Gets the arranger for this arranger object.

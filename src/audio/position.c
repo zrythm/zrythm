@@ -739,6 +739,19 @@ position_get_total_beats (
     pos->bars * TRANSPORT->beats_per_bar - 1;
 }
 
+/**
+ * Changes the sign of the position.
+ *
+ * For example, 4.2.1.21 would become -4.2.1.21.
+ */
+void
+position_change_sign (
+  Position * pos)
+{
+  double ticks = pos->total_ticks;
+  position_from_ticks (pos, - ticks);
+}
+
 SERIALIZE_SRC (Position, position)
 DESERIALIZE_SRC (Position, position)
 PRINT_YAML_SRC (Position, position)

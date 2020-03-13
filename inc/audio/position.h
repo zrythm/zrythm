@@ -418,6 +418,15 @@ int
 position_get_total_beats (
   const Position * pos);
 
+/**
+ * Changes the sign of the position.
+ *
+ * For example, 4.2.1.21 would become -4.2.1.21.
+ */
+void
+position_change_sign (
+  Position * pos);
+
 SERIALIZE_INC (Position, position)
 DESERIALIZE_INC (Position, position)
 PRINT_YAML_INC (Position, position)

@@ -459,4 +459,30 @@ arranger_widget_on_key_release (
   GdkEventKey *event,
   ArrangerWidget * self);
 
+/**
+ * Scroll until the given object is visible.
+ *
+ * @param horizontal 1 for horizontal, 2 for
+ *   vertical.
+ * @param up Whether scrolling up or down.
+ * @param padding Padding pixels.
+ */
+void
+arranger_widget_scroll_until_obj (
+  ArrangerWidget * self,
+  ArrangerObject * obj,
+  int              horizontal,
+  int              up,
+  int              left,
+  double           padding);
+
+/**
+ * Returns the earliest possible position allowed
+ * in this arranger (eg, 1.1.0.0 for timeline).
+ */
+void
+arranger_widget_get_min_possible_position (
+  ArrangerWidget * self,
+  Position *       pos);
+
 #endif

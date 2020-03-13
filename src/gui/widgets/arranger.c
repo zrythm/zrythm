@@ -97,6 +97,8 @@ G_DEFINE_TYPE (
 
 #define TYPE(x) ARRANGER_WIDGET_TYPE_##x
 
+#define SCROLL_PADDING 8.0
+
 static void
 draw_selections (
   ArrangerWidget * self,
@@ -2120,22 +2122,50 @@ arranger_widget_on_key_action (
 
       if (arranger_selections_has_any (sel))
         {
-          SnapGrid * sg =
-            arranger_widget_get_snap_grid (self);
-          double move_ticks =
-            (double)
-            snap_grid_get_note_ticks (
-              sg->note_length, sg->note_type);
+          double move_ticks = 0.0;
+          if (self->ctrl_held)
+            {
+              Position tmp;
+              position_set_to_bar (&tmp, 2);
+              move_ticks = tmp.total_ticks;
+            }
+          else
+            {
+              SnapGrid * sg =
+                arranger_widget_get_snap_grid (
+                  self);
+              move_ticks =
+                (double)
+                snap_grid_get_note_ticks (
+                  sg->note_length, sg->note_type);
+            }
 
           /* check arrow movement */
           if (keyval == GDK_KEY_Left)
             {
-              UndoableAction * action =
-                arranger_selections_action_new_move (
-                  sel, - move_ticks, 0, 0,
-                  0, 0, F_NOT_ALREADY_MOVED);
-              undo_manager_perform (
-                UNDO_MANAGER, action);
+              Position min_possible_pos;
+              arranger_widget_get_min_possible_position (
+                self, &min_possible_pos);
+
+              /* get earliest object */
+              ArrangerObject * obj =
+                arranger_selections_get_first_object (
+                  sel);
+
+              if (obj->pos.total_ticks - move_ticks >= min_possible_pos.total_ticks)
+                {
+                  UndoableAction * action =
+                    arranger_selections_action_new_move (
+                      sel, - move_ticks, 0, 0,
+                      0, 0, F_NOT_ALREADY_MOVED);
+                  undo_manager_perform (
+                    UNDO_MANAGER, action);
+
+                  /* scroll left if needed */
+                  arranger_widget_scroll_until_obj (
+                    self, obj,
+                    1, 0, 1, SCROLL_PADDING);
+                }
             }
           else if (keyval == GDK_KEY_Right)
             {
@@ -2145,6 +2175,16 @@ arranger_widget_on_key_action (
                   F_NOT_ALREADY_MOVED);
               undo_manager_perform (
                 UNDO_MANAGER, action);
+
+              /* get latest object */
+              ArrangerObject * obj =
+                arranger_selections_get_last_object (
+                  sel);
+
+              /* scroll right if needed */
+              arranger_widget_scroll_until_obj (
+                self, obj,
+                1, 0, 0, SCROLL_PADDING);
             }
           else if (keyval == GDK_KEY_Down)
             {
@@ -2152,12 +2192,39 @@ arranger_widget_on_key_action (
               if (self == MW_MIDI_ARRANGER ||
                   self == MW_MIDI_MODIFIER_ARRANGER)
                 {
-                  action =
-                    arranger_selections_action_new_move (
-                      sel, 0, 0, -1, 0, 0,
-                      F_NOT_ALREADY_MOVED);
-                  undo_manager_perform (
-                    UNDO_MANAGER, action);
+                  int pitch_delta = 0;
+                  MidiNote * mn =
+                    midi_arranger_selections_get_lowest_note (
+                      MA_SELECTIONS);
+                  ArrangerObject * obj =
+                    (ArrangerObject *) mn;
+
+                  if (self->ctrl_held)
+                    {
+                      if (mn->val - 12 >= 0)
+                        pitch_delta = - 12;
+                    }
+                  else
+                    {
+                      if (mn->val - 1 >= 0)
+                        pitch_delta = - 1;
+                    }
+
+                  if (pitch_delta)
+                    {
+                      action =
+                        arranger_selections_action_new_move (
+                          sel, 0, 0, pitch_delta,
+                          0, 0,
+                          F_NOT_ALREADY_MOVED);
+                      undo_manager_perform (
+                        UNDO_MANAGER, action);
+
+                      /* scroll down if needed */
+                      arranger_widget_scroll_until_obj (
+                        self, obj,
+                        0, 0, 0, SCROLL_PADDING);
+                    }
                 }
               else if (self == MW_CHORD_ARRANGER)
                 {
@@ -2184,12 +2251,39 @@ arranger_widget_on_key_action (
               if (self == MW_MIDI_ARRANGER ||
                   self == MW_MIDI_MODIFIER_ARRANGER)
                 {
-                  action =
-                    arranger_selections_action_new_move (
-                      sel, 0, 0, 1, 0, 0,
-                      F_NOT_ALREADY_MOVED);
-                  undo_manager_perform (
-                    UNDO_MANAGER, action);
+                  int pitch_delta = 0;
+                  MidiNote * mn =
+                    midi_arranger_selections_get_highest_note (
+                      MA_SELECTIONS);
+                  ArrangerObject * obj =
+                    (ArrangerObject *) mn;
+
+                  if (self->ctrl_held)
+                    {
+                      if (mn->val + 12 < 128)
+                        pitch_delta = 12;
+                    }
+                  else
+                    {
+                      if (mn->val + 1 < 128)
+                        pitch_delta = 1;
+                    }
+
+                  if (pitch_delta)
+                    {
+                      action =
+                        arranger_selections_action_new_move (
+                          sel, 0, 0, pitch_delta,
+                          0, 0,
+                          F_NOT_ALREADY_MOVED);
+                      undo_manager_perform (
+                        UNDO_MANAGER, action);
+
+                      /* scroll up if needed */
+                      arranger_widget_scroll_until_obj (
+                        self, obj,
+                        0, 1, 0, SCROLL_PADDING);
+                    }
                 }
               else if (self == MW_CHORD_ARRANGER)
                 {
@@ -5396,6 +5490,144 @@ arranger_widget_refresh_cursor (
     }
 
   arranger_widget_set_cursor (self, ac);
+}
+
+/**
+ * Scroll until the given object is visible.
+ *
+ * @param horizontal 1 for horizontal, 2 for
+ *   vertical.
+ * @param up Whether scrolling up or down.
+ * @param padding Padding pixels.
+ */
+void
+arranger_widget_scroll_until_obj (
+  ArrangerWidget * self,
+  ArrangerObject * obj,
+  int              horizontal,
+  int              up,
+  int              left,
+  double           padding)
+{
+  GtkScrolledWindow *scroll =
+    arranger_widget_get_scrolled_window (self);
+  int scroll_width =
+    gtk_widget_get_allocated_width (
+      GTK_WIDGET (scroll));
+  int scroll_height =
+    gtk_widget_get_allocated_height (
+      GTK_WIDGET (scroll));
+  GtkAdjustment *hadj =
+    gtk_scrolled_window_get_hadjustment (
+      GTK_SCROLLED_WINDOW (scroll));
+  GtkAdjustment *vadj =
+    gtk_scrolled_window_get_vadjustment (
+      GTK_SCROLLED_WINDOW (scroll));
+  double adj_x =
+    gtk_adjustment_get_value (hadj);
+  double adj_y =
+    gtk_adjustment_get_value (vadj);
+
+  if (horizontal)
+    {
+      double start_px =
+        (double)
+        arranger_widget_pos_to_px (
+          self, &obj->pos, 1);
+      double end_px =
+        (double)
+        arranger_widget_pos_to_px (
+          self, &obj->end_pos, 1);
+
+      /* adjust px for objects with non-global
+       * positions */
+      if (!arranger_object_type_has_global_pos (
+            obj->type))
+        {
+          ArrangerObject * r_obj =
+            (ArrangerObject *)
+            clip_editor_get_region (CLIP_EDITOR);
+          g_return_if_fail (r_obj);
+          double tmp_px =
+            (double)
+            arranger_widget_pos_to_px (
+              self, &r_obj->pos, 1);
+          start_px += tmp_px;
+          end_px += tmp_px;
+        }
+
+      if (start_px <= adj_x ||
+          end_px >= adj_x + (double) scroll_width)
+        {
+          if (left)
+            {
+              gtk_adjustment_set_value (
+                hadj, start_px - padding);
+            }
+          else
+            {
+              double tmp =
+                (end_px + padding) -
+                (double) scroll_width;
+              gtk_adjustment_set_value (hadj, tmp);
+            }
+        }
+    }
+  else
+    {
+      arranger_object_set_full_rectangle (
+        obj, self);
+      double start_px = obj->full_rect.y;
+      double end_px =
+        obj->full_rect.y + obj->full_rect.height;
+      if (start_px <= adj_y ||
+          end_px >= adj_y + (double) scroll_height)
+        {
+          if (up)
+            {
+              gtk_adjustment_set_value (
+                vadj, start_px - padding);
+            }
+          else
+            {
+              double tmp =
+                (end_px + padding) -
+                (double) scroll_height;
+              gtk_adjustment_set_value (vadj, tmp);
+            }
+        }
+    }
+}
+
+/**
+ * Returns the earliest possible position allowed
+ * in this arranger (eg, 1.1.0.0 for timeline).
+ */
+void
+arranger_widget_get_min_possible_position (
+  ArrangerWidget * self,
+  Position *       pos)
+{
+  switch (self->type)
+    {
+    case TYPE (TIMELINE):
+      position_set_to_bar (pos, 1);
+      break;
+    case TYPE (MIDI):
+    case TYPE (MIDI_MODIFIER):
+    case TYPE (CHORD):
+    case TYPE (AUTOMATION):
+    case TYPE (AUDIO):
+      {
+        ZRegion * region =
+          clip_editor_get_region (CLIP_EDITOR);
+        g_return_if_fail (region);
+        position_set_to_pos (
+          pos, &((ArrangerObject *) region)->pos);
+        position_change_sign (pos);
+      }
+      break;
+    }
 }
 
 static void

@@ -465,12 +465,15 @@ ui_pos_to_px_editor (
 
 /**
  * Converts from pixels to position.
+ *
+ * @param has_padding Whether \ref px contains
+ *   padding.
  */
 void
-ui_px_to_pos_editor (double               px,
-           Position *        pos,
-           int               has_padding); ///< whether the given px contain padding
-
+ui_px_to_pos_editor (
+  double            px,
+  Position *        pos,
+  int               has_padding);
 
 /**
  * Shows a notification in the revealer.

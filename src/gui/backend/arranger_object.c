@@ -403,7 +403,8 @@ arranger_object_is_position_valid (
             position_is_after_or_equal (
               pos, &POSITION_START);
         }
-      else if (self->is_pos_global)
+      else if (arranger_object_type_has_global_pos (
+                 self->type))
         {
           is_valid =
             position_is_after_or_equal (

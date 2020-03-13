@@ -389,12 +389,6 @@ audec_dep = dependency(
   fallback: ['libaudec', 'libaudec_dep'],
   required: true)
 
-carla_native_plugin_dep = dependency(
-  'carla-native-plugin',
-  required: get_option('enable_carla'))
-carla_utils_dep = dependency(
-  'carla-utils',
-  required: get_option('enable_carla'))
 gtk_dep = dependency('gtk+-3.0', version: '>=3.22')
 sndfile_dep = dependency('sndfile', version: '>=1.0.25')
 lv2_dep = dependency(
@@ -451,6 +445,9 @@ zrythm_deps = [
 
 if (get_option('enable_carla'))
   cdata.set('HAVE_CARLA', 1)
+  carla_native_plugin_dep = dependency(
+    'carla-native-plugin')
+  carla_utils_dep = dependency('carla-utils')
   # workaround because carla's pc files are broken
   carla_includedir = carla_native_plugin_dep.get_pkgconfig_variable('includedir')
   carla_libdir = carla_native_plugin_dep.get_pkgconfig_variable('libdir')
