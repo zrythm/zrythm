@@ -137,7 +137,9 @@ handler (int sig)
       NULL);
 
   /* %23 is hash, %0A is new line */
-  char * ver = zrythm_get_version (0);
+  char ver_with_caps[2000];
+  zrythm_get_version_with_capabilities (
+    ver_with_caps);
   char * report_template =
     g_strdup_printf (
       "# Steps to reproduce\n"
@@ -147,12 +149,11 @@ handler (int sig)
       "> Please tell us what happened\n\n"
       "# What is expected?\n"
       "> What is expected to happen?\n\n"
-      "# Version\n%s\n\n"
+      "# Version\n%s\n"
       "# Other info\n"
       "> Context, distro, etc.\n\n"
       "# Backtrace\n%s\n",
-      ver, message);
-  g_free (ver);
+      ver_with_caps, message);
   char * report_template_escaped =
     g_uri_escape_string (
       report_template, NULL, FALSE);
@@ -217,75 +218,17 @@ handler (int sig)
 static void
 print_version ()
 {
-  /* get compiled capabilities */
-  char caps[1000] = "";
-#ifdef HAVE_CARLA
-  strcat (caps, "+carla ");
-#endif
-#ifdef HAVE_FFMPEG
-  strcat (caps, "+ffmpeg ");
-#endif
-#ifdef HAVE_JACK
-  strcat (caps, "+jack ");
-#endif
-#ifdef MANUAL_PATH
-  strcat (caps, "+manual ");
-#endif
-#ifdef HAVE_RTMIDI
-  strcat (caps, "+rtmidi ");
-#endif
-#ifdef HAVE_RTAUDIO
-  strcat (caps, "+rtaudio ");
-#endif
-#ifdef HAVE_SDL
-  strcat (caps, "+sdl2 ");
-#endif
-  if (strlen (caps) > 0)
-    {
-      caps[strlen (caps) - 1] = '\0';
-    }
-
-  char * ver = zrythm_get_version (0);
+  char ver_with_caps[2000];
+  zrythm_get_version_with_capabilities (
+    ver_with_caps);
   fprintf (
     stdout,
-    "Zrythm %s"
-    "%s\n  built with %s %s\n"
-#ifdef HAVE_CARLA
-    "    +carla\n"
-#endif
-#ifdef HAVE_FFMPEG
-    "    +ffmpeg\n"
-#endif
-#ifdef HAVE_JACK
-    "    +jack\n"
-#endif
-#ifdef MANUAL_PATH
-    "    +manual\n"
-#endif
-#ifdef HAVE_RTMIDI
-    "    +rtmidi\n"
-#endif
-#ifdef HAVE_RTAUDIO
-    "    +rtaudio\n"
-#endif
-#ifdef HAVE_SDL
-    "    +sdl2\n"
-#endif
-    "\n%s\n%s\n%s\n",
-#ifdef TRIAL_VER
-    /* TRANSLATORS: please keep the space at the
-     * end */
-    _("(trial) "),
-#else
-    "",
-#endif
-    ver,
-    COMPILER, COMPILER_VERSION,
+    "%s\n%s\n%s\n%s\n",
+    ver_with_caps,
     "Copyright © 2018-2020 Alexandros Theodotou",
     "This is free software; see the source for copying conditions.",
     "There is NO "
     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
-  g_free (ver);
 }
 
 static void

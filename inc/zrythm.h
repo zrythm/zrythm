@@ -257,6 +257,13 @@ zrythm_get_version (
   int with_v);
 
 /**
+ * Returns the veresion and the capabilities.
+ */
+void
+zrythm_get_version_with_capabilities (
+  char * str);
+
+/**
  * Gets the zrythm directory (by default
  * /home/user/zrythm).
  *

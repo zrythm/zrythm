@@ -655,6 +655,82 @@ zrythm_get_version (
     }
 }
 
+/**
+ * Returns the veresion and the capabilities.
+ */
+void
+zrythm_get_version_with_capabilities (
+  char * str)
+{
+  /* get compiled capabilities */
+  char caps[1000] = "";
+#ifdef HAVE_CARLA
+  strcat (caps, "+carla ");
+#endif
+#ifdef HAVE_FFMPEG
+  strcat (caps, "+ffmpeg ");
+#endif
+#ifdef HAVE_JACK
+  strcat (caps, "+jack ");
+#endif
+#ifdef MANUAL_PATH
+  strcat (caps, "+manual ");
+#endif
+#ifdef HAVE_RTMIDI
+  strcat (caps, "+rtmidi ");
+#endif
+#ifdef HAVE_RTAUDIO
+  strcat (caps, "+rtaudio ");
+#endif
+#ifdef HAVE_SDL
+  strcat (caps, "+sdl2 ");
+#endif
+  if (strlen (caps) > 0)
+    {
+      caps[strlen (caps) - 1] = '\0';
+    }
+
+  char * ver = zrythm_get_version (0);
+
+  sprintf (
+    str,
+    "Zrythm %s"
+    "%s\n  built with %s %s\n"
+#ifdef HAVE_CARLA
+    "    +carla\n"
+#endif
+#ifdef HAVE_FFMPEG
+    "    +ffmpeg\n"
+#endif
+#ifdef HAVE_JACK
+    "    +jack\n"
+#endif
+#ifdef MANUAL_PATH
+    "    +manual\n"
+#endif
+#ifdef HAVE_RTMIDI
+    "    +rtmidi\n"
+#endif
+#ifdef HAVE_RTAUDIO
+    "    +rtaudio\n"
+#endif
+#ifdef HAVE_SDL
+    "    +sdl2\n"
+#endif
+    "",
+#ifdef TRIAL_VER
+    /* TRANSLATORS: please keep the space at the
+     * end */
+    _("(trial) "),
+#else
+    "",
+#endif
+    ver,
+    COMPILER, COMPILER_VERSION);
+
+  g_free (ver);
+}
+
 /*
  * Called after startup if no filename is passed on
  * command line.
