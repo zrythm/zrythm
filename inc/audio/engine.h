@@ -135,6 +135,27 @@ typedef enum AudioBackend
   NUM_AUDIO_BACKENDS,
 } AudioBackend;
 
+/**
+ * Mode used when bouncing, either during exporting
+ * or when bouncing tracks or regions to audio.
+ */
+typedef enum BounceMode
+{
+  /** Don't bounce. */
+  BOUNCE_OFF,
+
+  /** Bounce. */
+  BOUNCE_ON,
+
+  /**
+   * Bounce if parent is bouncing.
+   *
+   * To be used on regions to bounce if their track
+   * is bouncing.
+   */
+  BOUNCE_INHERIT,
+} BounceMode;
+
 static const char * audio_backend_str[] =
 {
   "Dummy",
@@ -448,6 +469,15 @@ typedef struct AudioEngine
   int               limit_reached;
 #endif
 
+  /**
+   * If this is on, only tracks/regions marked as
+   * "for bounce" will be allowed to make sound.
+   *
+   * Automation and everything else will work as
+   * normal.
+   */
+  BounceMode        bounce_mode;
+
 } AudioEngine;
 
 static const cyaml_schema_field_t
@@ -624,6 +654,14 @@ engine_midi_backend_to_string (
 {
   return midi_backend_str[backend];
 }
+
+/**
+ * Reset the bounce mode on the engine, all tracks
+ * and regions to OFF.
+ */
+void
+engine_reset_bounce_mode (
+  AudioEngine * self);
 
 /**
  * Closes any connections and free's data.

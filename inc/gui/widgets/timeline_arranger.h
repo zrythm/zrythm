@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -77,6 +77,11 @@ timeline_arranger_widget_get_track_at_y (
 
 void
 timeline_arranger_on_export_as_midi_file_clicked (
+  GtkMenuItem * menuitem,
+  ZRegion *      r);
+
+void
+timeline_arranger_on_bounce_to_audio_clicked (
   GtkMenuItem * menuitem,
   ZRegion *      r);
 

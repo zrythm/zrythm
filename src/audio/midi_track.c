@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -369,7 +369,7 @@ region_hit (
 REALTIME
 void
 midi_track_fill_midi_events (
-  Track * track,
+  Track *         track,
   const long      g_start_frames,
   const nframes_t local_start_frame,
   nframes_t       nframes,
@@ -421,6 +421,13 @@ midi_track_fill_midi_events (
               r = lane->regions[i];
               r_obj = (ArrangerObject *) r;
               region_loop_met = 0;
+
+              /* skip if in bounce mode and the
+               * region should not be bounced */
+              if (AUDIO_ENGINE->bounce_mode !=
+                    BOUNCE_OFF &&
+                  (!r->bounce || !track->bounce))
+                continue;
 
               /* skip if region is not hit
                * (inclusive of its last point) */

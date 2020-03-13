@@ -77,6 +77,7 @@
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
   ArrangerWidget,
@@ -1788,13 +1789,24 @@ show_context_menu_timeline (
         {
           menuitem =
             gtk_menu_item_new_with_label (
-              "Export as MIDI file");
+              _("Export as MIDI file"));
           gtk_menu_shell_append (
             GTK_MENU_SHELL(menu), menuitem);
           g_signal_connect (
             menuitem, "activate",
             G_CALLBACK (
               timeline_arranger_on_export_as_midi_file_clicked),
+            r);
+
+          menuitem =
+            gtk_menu_item_new_with_label (
+              _("Bounce to audio"));
+          gtk_menu_shell_append (
+            GTK_MENU_SHELL(menu), menuitem);
+          g_signal_connect (
+            menuitem, "activate",
+            G_CALLBACK (
+              timeline_arranger_on_bounce_to_audio_clicked),
             r);
         }
     }

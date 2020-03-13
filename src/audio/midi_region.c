@@ -38,6 +38,7 @@
  */
 
 #include "audio/channel.h"
+#include "audio/exporter.h"
 #include "audio/midi.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
@@ -865,6 +866,99 @@ midi_region_get_as_events (
     events);
 
   return events;
+}
+
+/**
+ * Bounces a MIDI region to audio.
+ *
+ * @param filepath Path to the file to bounce to
+ *   (optional unless \ref bounce_to_track is 0).
+ * @param bounce_to_track Whether to create a new
+ *   audio track with the bounced material.
+ * @param tail_ms Tail length in ms.
+ *
+ * @return Non-zero if fail.
+ */
+int
+midi_region_bounce (
+  ZRegion *    self,
+  const char * filepath,
+  int          bounce_to_track,
+  long         tail_ms)
+{
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+  g_return_val_if_fail (IS_REGION (self), -1);
+
+  Track * track =
+    arranger_object_get_track (obj);
+
+  engine_reset_bounce_mode (AUDIO_ENGINE);
+  track->bounce = 1;
+  self->bounce = 1;
+
+  ExportSettings settings;
+  settings.format = AUDIO_FORMAT_WAV;
+  settings.artist = g_strdup ("");
+  settings.genre = g_strdup ("");
+  settings.depth = BIT_DEPTH_16;
+  settings.time_range = TIME_RANGE_CUSTOM;
+  settings.mode = EXPORT_MODE_REGIONS;
+  position_set_to_pos (
+    &settings.custom_start, &obj->pos);
+  position_set_to_pos (
+    &settings.custom_end, &obj->end_pos);
+  position_add_ms (
+    &settings.custom_end, tail_ms);
+  if (bounce_to_track)
+    {
+      char * tmp_dir =
+        g_dir_make_tmp (
+          "zrythm_bounce_XXXXXX", NULL);
+      char filename[800];
+      sprintf (filename, "%s.wav", self->name);
+      settings.file_uri =
+        g_build_filename (
+          tmp_dir, filename, NULL);
+      g_free (tmp_dir);
+    }
+  else
+    {
+      g_return_val_if_fail (filepath, -1);
+      settings.file_uri = g_strdup (filepath);
+    }
+
+  /* stop engine and give it some time to stop
+   * running */
+  g_atomic_int_set (&AUDIO_ENGINE->run, 0);
+  g_usleep (1000);
+  AUDIO_ENGINE->exporting = 1;
+  int ret = exporter_export (&settings);
+  AUDIO_ENGINE->exporting = 0;
+  g_atomic_int_set (&AUDIO_ENGINE->run, 1);
+  g_return_val_if_fail (ret == 0, ret);
+
+  if (bounce_to_track)
+    {
+      SupportedFile * descr =
+        supported_file_new_from_path (
+          settings.file_uri);
+      UndoableAction * ua =
+        create_tracks_action_new (
+          TRACK_TYPE_AUDIO, NULL,
+          descr, track->pos + 1, 1);
+      Position tmp;
+      position_set_to_pos (&tmp, PLAYHEAD);
+      transport_set_playhead_pos (
+        TRANSPORT, &obj->pos);
+      undo_manager_perform (UNDO_MANAGER, ua);
+      transport_set_playhead_pos (
+        TRANSPORT, &tmp);
+    }
+
+  export_settings_free_members (&settings);
+
+  return 0;
 }
 
 /**

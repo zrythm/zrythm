@@ -388,12 +388,24 @@ node_process (
         {
           Track * track = port_get_track (port, 1);
 
-          /* if muted clear it */
+          /* clear it if any of the following is
+           * true:
+           * 1. muted
+           * 2. other track(s) is soloed and this
+           *   isn't
+           * 3. bounce mode and the track is set
+           *   to BOUNCE_OFF */
           if (track_get_muted (track) ||
-                (tracklist_has_soloed (
-                  TRACKLIST) &&
-                   !track->solo &&
-                   track != P_MASTER_TRACK))
+              (tracklist_has_soloed (
+                TRACKLIST) &&
+                 !track->solo &&
+                 track != P_MASTER_TRACK) ||
+              (AUDIO_ENGINE->bounce_mode ==
+                 BOUNCE_ON &&
+               track->out_signal_type ==
+                 TYPE_AUDIO &&
+               track->type != TRACK_TYPE_MASTER &&
+               !track->bounce))
             {
               port_clear_buffer (port);
             }

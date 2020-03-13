@@ -171,6 +171,14 @@ typedef struct ZRegion
    * inside the region. */
   PangoLayout *      chords_layout;
 
+  /**
+   * Set to ON during bouncing if this
+   * region should be included.
+   *
+   * Only relevant for audio and midi regions.
+   */
+  int                bounce;
+
   int                magic;
 } ZRegion;
 

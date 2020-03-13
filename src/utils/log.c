@@ -26,7 +26,7 @@
 #include <glib/gprintf.h>
 #include <glib/gstdio.h>
 
-#define MESSAGES_MAX 80000
+#define MESSAGES_MAX 8000
 
 typedef struct LogEvent
 {
@@ -67,6 +67,9 @@ static int
 idle_cb (
   Log * self)
 {
+  if (!self || !self->mqueue)
+    return G_SOURCE_CONTINUE;
+
   /* write queued messages */
   LogEvent * ev;
   while (

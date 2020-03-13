@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -86,6 +86,14 @@ audio_track_fill_stereo_ports_from_clip (
         {
           r = lane->regions[i];
           r_obj = (ArrangerObject *) r;
+
+          /* skip if in bounce mode and the
+           * region should not be bounced */
+          if (AUDIO_ENGINE->bounce_mode !=
+                BOUNCE_OFF &&
+              (!r->bounce || !self->bounce))
+            continue;
+
           if (region_is_hit_by_range (
                 r,
                 cycle_start_frames,

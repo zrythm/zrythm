@@ -38,6 +38,10 @@ typedef enum AudioFormat
   AUDIO_FORMAT_WAV,
   AUDIO_FORMAT_MP3,
   AUDIO_FORMAT_MIDI,
+
+  /** Raw audio data. */
+  AUDIO_FORMAT_RAW,
+
   NUM_AUDIO_FORMATS,
 } AudioFormat;
 
@@ -51,6 +55,9 @@ typedef enum BitDepth
   BIT_DEPTH_32
 } BitDepth;
 
+/**
+ * Time range to export.
+ */
 typedef enum ExportTimeRange
 {
   TIME_RANGE_LOOP,
@@ -59,24 +66,44 @@ typedef enum ExportTimeRange
 } ExportTimeRange;
 
 /**
+ * Export mode.
+ *
+ * If this is anything other than
+ * \ref EXPORT_MODE_FULL, the \ref Track.bounce_mode
+ * or \ref ZRegion.bounce_mode should be set.
+ */
+typedef enum ExportMode
+{
+  /** Export everything within the range normally. */
+  EXPORT_MODE_FULL,
+
+  /** Export selected tracks within the range
+   * only. */
+  EXPORT_MODE_TRACKS,
+
+  /** Export selected regions within the range
+   * only. */
+  EXPORT_MODE_REGIONS,
+} ExportMode;
+
+/**
  * Export settings to be passed to the exporter
  * to use.
  */
 typedef struct ExportSettings
 {
   AudioFormat       format;
-  const char *      artist;
-  const char *      genre;
+  char *            artist;
+  char *            genre;
 
-  /**
-   * Bit depth (16/24/64).
-   */
+  /** Bit depth (16/24/64). */
   BitDepth          depth;
   ExportTimeRange   time_range;
 
-  /**
-   * In case of custom time range.
-   */
+  /** Export mode. */
+  ExportMode        mode;
+
+  /** Positions in case of custom time range. */
   Position          custom_start;
   Position          custom_end;
 
@@ -102,6 +129,22 @@ typedef struct ExportSettings
 } ExportSettings;
 
 /**
+ * Returns an instance of default ExportSettings.
+ *
+ * It must be free'd with export_settings_free().
+ */
+ExportSettings *
+export_settings_default (void);
+
+void
+export_settings_free_members (
+  ExportSettings * self);
+
+void
+export_settings_free (
+  ExportSettings * self);
+
+/**
  * Returns the audio format as string.
  *
  * Must be g_free()'d by caller.
@@ -113,8 +156,6 @@ exporter_stringize_audio_format (
 /**
  * Exports an audio file based on the given
  * settings.
- *
- * TODO move some things into functions.
  */
 int
 exporter_export (ExportSettings * info);

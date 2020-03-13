@@ -444,9 +444,11 @@ on_export_clicked (
     "export-dither",
     info.dither);
   info.artist =
-    gtk_entry_get_text (self->export_artist);
+    g_strdup (
+      gtk_entry_get_text (self->export_artist));
   info.genre =
-    gtk_entry_get_text (self->export_genre);
+    g_strdup (
+      gtk_entry_get_text (self->export_genre));
   g_settings_set_string (
     S_PREFERENCES,
     "export-artist",

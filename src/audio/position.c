@@ -288,9 +288,28 @@ position_to_ms (
       return 0;
     }
   return
-    (long)
-    ((1000.0 * (double) position_to_frames (pos)) /
-     ((double) AUDIO_ENGINE->sample_rate));
+    math_round_double_to_long (
+      (1000.0 * (double) position_to_frames (pos)) /
+       ((double) AUDIO_ENGINE->sample_rate));
+}
+
+long
+position_ms_to_frames (
+  long ms)
+{
+  return
+    math_round_double_to_long (
+      ((double) ms / 1000) *
+        (double) AUDIO_ENGINE->sample_rate);
+}
+
+void
+position_add_ms (
+  Position * pos,
+  long       ms)
+{
+  long frames = position_ms_to_frames (ms);
+  position_add_frames (pos, frames);
 }
 
 /**

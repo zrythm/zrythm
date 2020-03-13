@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -338,6 +338,14 @@ typedef struct Track
 
   /** User comments. */
   char *               comment;
+
+  /**
+   * Set to ON during bouncing if this
+   * track should be included.
+   *
+   * Only relevant for tracks that output audio.
+   */
+  int                  bounce;
 
   int                  magic;
 

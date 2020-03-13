@@ -84,6 +84,9 @@ object_utils_init (void);
 #define g_object_unref_and_null(ptr) \
   { g_object_unref (ptr); ptr = NULL; }
 
+#define g_free_if_exists(ptr) \
+  { if (ptr) g_free (ptr); (ptr) = NULL; }
+
 /**
  * Frees memory and sets the pointer to NULL.
  */

@@ -295,6 +295,18 @@ timeline_arranger_on_export_as_midi_file_clicked (
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
+void
+timeline_arranger_on_bounce_to_audio_clicked (
+  GtkMenuItem * menuitem,
+  ZRegion *      r)
+{
+  int ret =
+    midi_region_bounce (
+      r, NULL, 1, 0);
+
+  g_return_if_fail (ret == 0);
+}
+
 /**
  * Create a ZRegion at the given Position in the
  * given Track's given TrackLane.

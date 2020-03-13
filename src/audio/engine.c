@@ -1270,6 +1270,40 @@ engine_samplerate_enum_to_int (
 }
 
 /**
+ * Reset the bounce mode on the engine, all tracks
+ * and regions to OFF.
+ */
+void
+engine_reset_bounce_mode (
+  AudioEngine * self)
+{
+  self->bounce_mode = BOUNCE_OFF;
+
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * track = TRACKLIST->tracks[i];
+      if (track->out_signal_type != TYPE_AUDIO)
+        continue;
+
+      for (int j = 0; j < track->num_lanes; j++)
+        {
+          TrackLane * lane = track->lanes[j];
+
+          for (int k = 0; k < lane->num_regions; k++)
+            {
+              ZRegion * r = lane->regions[k];
+              if (r->id.type != REGION_TYPE_MIDI)
+                continue;
+
+              r->bounce = 0;
+            }
+        }
+
+      track->bounce = 0;
+    }
+}
+
+/**
  * Closes any connections and free's data.
  */
 void

@@ -37,6 +37,7 @@
 #include "project.h"
 #include "utils/io.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "utils/ui.h"
 
 #include "midilib/src/midifile.h"
@@ -71,6 +72,9 @@ exporter_stringize_audio_format (
     case AUDIO_FORMAT_MIDI:
       return g_strdup ("mid");
       break;
+    case AUDIO_FORMAT_RAW:
+      return g_strdup ("raw");
+      break;
     case NUM_AUDIO_FORMATS:
       break;
     }
@@ -91,9 +95,12 @@ export_audio (
     {
       sfinfo.format = SF_FORMAT_FLAC;
     }
+  else if (info->format == AUDIO_FORMAT_RAW)
+    {
+      sfinfo.format = SF_FORMAT_RAW;
+    }
   else if (info->format == AUDIO_FORMAT_WAV)
     {
-      g_message ("FORMAT WAV");
       sfinfo.format = SF_FORMAT_WAV;
     }
   else if (info->format == AUDIO_FORMAT_OGG)
@@ -141,31 +148,39 @@ export_audio (
       g_message ("PCM 32");
     }
 
-  if (info->time_range ==
-        TIME_RANGE_SONG)
+  switch (info->time_range)
     {
-      ArrangerObject * start =
-        (ArrangerObject *)
-        marker_track_get_start_marker (
-          P_MARKER_TRACK);
-      ArrangerObject * end =
-        (ArrangerObject *)
-        marker_track_get_end_marker (
-          P_MARKER_TRACK);
-      sfinfo.frames =
-        position_to_frames (
-          &end->pos) -
-        position_to_frames (
-          &start->pos);
-    }
-  else if (info->time_range ==
-             TIME_RANGE_LOOP)
-    {
+    case TIME_RANGE_SONG:
+      {
+        ArrangerObject * start =
+          (ArrangerObject *)
+          marker_track_get_start_marker (
+            P_MARKER_TRACK);
+        ArrangerObject * end =
+          (ArrangerObject *)
+          marker_track_get_end_marker (
+            P_MARKER_TRACK);
+        sfinfo.frames =
+          position_to_frames (
+            &end->pos) -
+          position_to_frames (
+            &start->pos);
+      }
+      break;
+    case TIME_RANGE_LOOP:
       sfinfo.frames =
         position_to_frames (
           &TRANSPORT->loop_end_pos) -
           position_to_frames (
             &TRANSPORT->loop_start_pos);
+      break;
+    case TIME_RANGE_CUSTOM:
+      sfinfo.frames =
+        position_to_frames (
+          &info->custom_start) -
+          position_to_frames (
+            &info->custom_end);
+      break;
     }
 
   sfinfo.samplerate =
@@ -233,30 +248,30 @@ export_audio (
   position_set_to_pos (
     &prev_playhead_pos,
     &TRANSPORT->playhead_pos);
-  if (info->time_range ==
-        TIME_RANGE_SONG)
+  switch (info->time_range)
     {
-      ArrangerObject * start =
-        (ArrangerObject *)
-        marker_track_get_start_marker (
-          P_MARKER_TRACK);
-      ArrangerObject * end =
-        (ArrangerObject *)
-        marker_track_get_end_marker (
-          P_MARKER_TRACK);
-      position_set_to_pos (
-        &TRANSPORT->playhead_pos,
-        &start->pos);
-      position_set_to_pos (
-        &start_pos,
-        &start->pos);
-      position_set_to_pos (
-        &stop_pos,
-        &end->pos);
-    }
-  else if (info->time_range ==
-             TIME_RANGE_LOOP)
-    {
+    case TIME_RANGE_SONG:
+      {
+        ArrangerObject * start =
+          (ArrangerObject *)
+          marker_track_get_start_marker (
+            P_MARKER_TRACK);
+        ArrangerObject * end =
+          (ArrangerObject *)
+          marker_track_get_end_marker (
+            P_MARKER_TRACK);
+        position_set_to_pos (
+          &TRANSPORT->playhead_pos,
+          &start->pos);
+        position_set_to_pos (
+          &start_pos,
+          &start->pos);
+        position_set_to_pos (
+          &stop_pos,
+          &end->pos);
+      }
+      break;
+    case TIME_RANGE_LOOP:
       position_set_to_pos (
         &TRANSPORT->playhead_pos,
         &TRANSPORT->loop_start_pos);
@@ -266,11 +281,26 @@ export_audio (
       position_set_to_pos (
         &stop_pos,
         &TRANSPORT->loop_end_pos);
+      break;
+    case TIME_RANGE_CUSTOM:
+      position_set_to_pos (
+        &TRANSPORT->playhead_pos,
+        &info->custom_start);
+      position_set_to_pos (
+        &start_pos,
+        &info->custom_start);
+      position_set_to_pos (
+        &stop_pos,
+        &info->custom_end);
+      break;
     }
   Play_State prev_play_state =
     TRANSPORT->play_state;
   TRANSPORT->play_state =
     PLAYSTATE_ROLLING;
+  AUDIO_ENGINE->bounce_mode =
+    info->mode == EXPORT_MODE_FULL ?
+      BOUNCE_OFF : BOUNCE_ON;
 
   /* set jack freewheeling mode */
 #ifdef HAVE_JACK
@@ -362,7 +392,8 @@ export_audio (
       covered += nframes;
       g_warn_if_fail (
         covered ==
-          TRANSPORT->playhead_pos.frames);
+          TRANSPORT->playhead_pos.frames -
+            start_pos.frames);
 
       info->progress =
         (double)
@@ -392,9 +423,9 @@ export_audio (
     &AUDIO_ENGINE->port_operation_lock);
 
   TRANSPORT->play_state = prev_play_state;
-  position_set_to_pos (
-    &TRANSPORT->playhead_pos,
-    &prev_playhead_pos);
+  AUDIO_ENGINE->bounce_mode = BOUNCE_OFF;
+  transport_move_playhead (
+    &prev_playhead_pos, 1);
 
   sf_close (sndfile);
 
@@ -451,10 +482,42 @@ export_midi (
 }
 
 /**
+ * Returns an instance of default ExportSettings.
+ *
+ * It must be free'd with export_settings_free().
+ */
+ExportSettings *
+export_settings_default ()
+{
+  ExportSettings * self =
+    calloc (1, sizeof (ExportSettings));
+
+  /* TODO */
+
+  return self;
+}
+
+void
+export_settings_free_members (
+  ExportSettings * self)
+{
+  g_free_if_exists (self->artist);
+  g_free_if_exists (self->genre);
+  g_free_if_exists (self->file_uri);
+}
+
+void
+export_settings_free (
+  ExportSettings * self)
+{
+  export_settings_free_members (self);
+
+  free (self);
+}
+
+/**
  * Exports an audio file based on the given
  * settings.
- *
- * TODO move some things into functions.
  */
 int
 exporter_export (ExportSettings * info)
