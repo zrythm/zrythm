@@ -1053,7 +1053,10 @@ track_clear (
   /* remove automation regions */
   AutomationTracklist * atl =
     track_get_automation_tracklist (self);
-  automation_tracklist_clear (atl);
+  if (atl)
+    {
+      automation_tracklist_clear (atl);
+    }
 }
 
 /**
