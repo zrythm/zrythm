@@ -48,6 +48,16 @@ typedef struct _ArrangerObjectWidget
      ARRANGER_OBJECT_MAGIC)
 
 /**
+ * Flag used in some functions.
+ */
+typedef enum ArrangerObjectResizeType
+{
+  ARRANGER_OBJECT_RESIZE_NORMAL,
+  ARRANGER_OBJECT_RESIZE_LOOP,
+  ARRANGER_OBJECT_RESIZE_FADE,
+} ArrangerObjectResizeType;
+
+/**
  * The type of the object.
  */
 typedef enum ArrangerObjectType
@@ -111,6 +121,8 @@ typedef enum ArrangerObjectPositionType
   ARRANGER_OBJECT_POSITION_TYPE_CLIP_START,
   ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
   ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
+  ARRANGER_OBJECT_POSITION_TYPE_FADE_IN,
+  ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
 } ArrangerObjectPositionType;
 
 /**
@@ -647,16 +659,13 @@ arranger_object_free (
  * @param left 1 to resize left side, 0 to resize
  *   right side.
  * @param ticks Number of ticks to resize.
- * @param loop Whether this is a loop-resize (1) or
- *   a normal resize (0). Only used if the object
- *   can have loops.
  */
 void
 arranger_object_resize (
-  ArrangerObject * self,
-  const int        left,
-  const int        loop,
-  const double     ticks);
+  ArrangerObject *         self,
+  const int                left,
+  ArrangerObjectResizeType type,
+  const double             ticks);
 
 /**
  * Adds the given ticks to each included object.

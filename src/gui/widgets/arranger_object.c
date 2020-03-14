@@ -180,6 +180,54 @@ arranger_object_is_resize_r (
 }
 
 /**
+ * Returns if the current position is for moving the
+ * fade in mark.
+ *
+ * @param x X in local coordinates.
+ */
+int
+arranger_object_is_fade_in (
+  ArrangerObject * self,
+  const int        x,
+  const int        y)
+{
+  if (!arranger_object_can_fade (self))
+    return 0;
+
+  int fade_in_px =
+    ui_pos_to_px_timeline (&self->fade_in_pos, 0);
+
+  return
+    x >= fade_in_px - ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
+    x <= fade_in_px + ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
+    y <= ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
+}
+
+/**
+ * Returns if the current position is for moving the
+ * fade out mark.
+ *
+ * @param x X in local coordinates.
+ */
+int
+arranger_object_is_fade_out (
+  ArrangerObject * self,
+  const int        x,
+  const int        y)
+{
+  if (!arranger_object_can_fade (self))
+    return 0;
+
+  int fade_out_px =
+    ui_pos_to_px_timeline (&self->fade_out_pos, 0);
+
+  return
+    x >= fade_out_px - ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
+    x <= fade_out_px + ARRANGER_OBJECT_FADE_POINT_HALFWIDTH &&
+    y <= ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
+}
+
+/**
  * Returns if the current position is for resizing
  * up (eg, Velocity).
  *

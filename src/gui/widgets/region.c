@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -801,6 +801,76 @@ draw_automation_region (
  * @param rect Arranger rectangle.
  */
 static void
+draw_fades (
+  ZRegion *      self,
+  cairo_t *      cr,
+  GdkRectangle * rect,
+  GdkRectangle * full_rect,
+  GdkRectangle * draw_rect,
+  RegionCounterpart counterpart)
+{
+  ArrangerObject * obj =
+    (ArrangerObject *) self;
+  double fade_in_ticks =
+    obj->fade_in_pos.total_ticks;
+  double fade_out_ticks =
+    obj->fade_out_pos.total_ticks;
+  g_warn_if_fail (
+    fade_out_ticks > fade_in_ticks);
+
+  /* get fade in px */
+  int x_px =
+    ui_pos_to_px_timeline (&obj->fade_in_pos, 0);
+
+  /* convert x_px to global */
+  x_px += full_rect->x;
+
+  int padding = 4;
+
+  if (/* if loop px is visible */
+      x_px >= rect->x - padding &&
+      x_px < (rect->x + rect->width) + padding)
+    {
+      gdk_cairo_set_source_rgba (
+        cr, &UI_COLORS->bright_green);
+      cairo_move_to (
+        cr, x_px - rect->x,
+        draw_rect->y - rect->y);
+      cairo_line_to (
+        cr, x_px - rect->x,
+        (draw_rect->y + draw_rect->height) -
+        rect->y);
+      cairo_stroke (cr);
+    }
+
+  /* get fade out px */
+  x_px =
+    ui_pos_to_px_timeline (&obj->fade_out_pos, 0);
+
+  /* convert x_px to global */
+  x_px += full_rect->x;
+
+  if (/* if loop px is visible */
+      x_px >= rect->x - padding &&
+      x_px < (rect->x + rect->width) + padding)
+    {
+      gdk_cairo_set_source_rgba (
+        cr, &UI_COLORS->bright_green);
+      cairo_move_to (
+        cr, x_px - rect->x,
+        draw_rect->y - rect->y);
+      cairo_line_to (
+        cr, x_px - rect->x,
+        (draw_rect->y + draw_rect->height) -
+        rect->y);
+      cairo_stroke (cr);
+    }
+}
+
+/**
+ * @param rect Arranger rectangle.
+ */
+static void
 draw_audio_region (
   ZRegion *       self,
   cairo_t *      cr,
@@ -1057,6 +1127,9 @@ region_draw (
             &draw_rect, i);
           break;
         case REGION_TYPE_AUDIO:
+          draw_fades (
+            self, cr, rect, &full_rect,
+            &draw_rect, i);
           draw_audio_region (
             self, cr, rect, &full_rect,
             &draw_rect, i);

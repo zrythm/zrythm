@@ -56,6 +56,8 @@ typedef enum ArrangerSelectionsActionResizeType
   ARRANGER_SELECTIONS_ACTION_RESIZE_R,
   ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP,
   ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
+  ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE,
+  ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE,
 } ArrangerSelectionsActionResizeType;
 
 static const cyaml_strval_t
@@ -69,6 +71,10 @@ arranger_selections_action_resize_type_strings[] =
     ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP },
   { "Resize R (loop)",
     ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP },
+  { "Resize L (fade)",
+    ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE },
+  { "Resize R (fade)",
+    ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE },
 };
 
 /**

@@ -365,6 +365,16 @@ get_position_ptr (
         return &self->cache_loop_end_pos;
       else
         return &self->loop_end_pos;
+    case ARRANGER_OBJECT_POSITION_TYPE_FADE_IN:
+      if (cached)
+        return &self->cache_fade_in_pos;
+      else
+        return &self->fade_in_pos;
+    case ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT:
+      if (cached)
+        return &self->cache_fade_out_pos;
+      else
+        return &self->fade_out_pos;
     }
   g_return_val_if_reached (NULL);
 }
@@ -1069,73 +1079,94 @@ arranger_object_add_ticks_to_children (
  * @param left 1 to resize left side, 0 to resize
  *   right side.
  * @param ticks Number of ticks to resize.
- * @param loop Whether this is a loop-resize (1) or
- *   a normal resize (0). Only used if the object
- *   can have loops.
  */
 void
 arranger_object_resize (
-  ArrangerObject * self,
-  const int        left,
-  const int        loop,
-  const double     ticks)
+  ArrangerObject *         self,
+  const int                left,
+  ArrangerObjectResizeType type,
+  const double             ticks)
 {
   Position tmp;
   if (left)
     {
-      tmp = self->pos;
-      position_add_ticks (&tmp, ticks);
-      arranger_object_set_position (
-        self, &tmp,
-        ARRANGER_OBJECT_POSITION_TYPE_START,
-        F_NO_CACHED, F_NO_VALIDATE);
-
-      if (arranger_object_type_can_loop (
-            self->type))
+      if (type == ARRANGER_OBJECT_RESIZE_FADE)
         {
-          tmp = self->loop_end_pos;
-          position_add_ticks (&tmp, - ticks);
+          tmp = self->fade_in_pos;
+          position_add_ticks (&tmp, ticks);
           arranger_object_set_position (
             self, &tmp,
-            ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
+            ARRANGER_OBJECT_POSITION_TYPE_FADE_IN,
             F_NO_CACHED, F_NO_VALIDATE);
         }
-
-      /* move containing items */
-      arranger_object_add_ticks_to_children (
-        self, - ticks);
-      if (loop &&
-          arranger_object_type_can_loop (
-            self->type))
+      else
         {
-          tmp = self->loop_start_pos;
-          position_add_ticks (
-            &tmp, - ticks);
+          tmp = self->pos;
+          position_add_ticks (&tmp, ticks);
           arranger_object_set_position (
             self, &tmp,
-            ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
+            ARRANGER_OBJECT_POSITION_TYPE_START,
             F_NO_CACHED, F_NO_VALIDATE);
+
+          if (arranger_object_type_can_loop (
+                self->type))
+            {
+              tmp = self->loop_end_pos;
+              position_add_ticks (&tmp, - ticks);
+              arranger_object_set_position (
+                self, &tmp,
+                ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
+                F_NO_CACHED, F_NO_VALIDATE);
+            }
+
+          /* move containing items */
+          arranger_object_add_ticks_to_children (
+            self, - ticks);
+          if (type == ARRANGER_OBJECT_RESIZE_LOOP &&
+              arranger_object_type_can_loop (
+                self->type))
+            {
+              tmp = self->loop_start_pos;
+              position_add_ticks (
+                &tmp, - ticks);
+              arranger_object_set_position (
+                self, &tmp,
+                ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
+                F_NO_CACHED, F_NO_VALIDATE);
+            }
         }
     }
   else
     {
-      tmp = self->end_pos;
-      position_add_ticks (&tmp, ticks);
-      arranger_object_set_position (
-        self, &tmp,
-        ARRANGER_OBJECT_POSITION_TYPE_END,
-        F_NO_CACHED, F_NO_VALIDATE);
-
-      if (!loop &&
-          arranger_object_type_can_loop (
-            self->type))
+      if (type == ARRANGER_OBJECT_RESIZE_FADE)
         {
-          tmp = self->loop_end_pos;
+          tmp = self->fade_out_pos;
           position_add_ticks (&tmp, ticks);
           arranger_object_set_position (
             self, &tmp,
-            ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
+            ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
             F_NO_CACHED, F_NO_VALIDATE);
+        }
+      else
+        {
+          tmp = self->end_pos;
+          position_add_ticks (&tmp, ticks);
+          arranger_object_set_position (
+            self, &tmp,
+            ARRANGER_OBJECT_POSITION_TYPE_END,
+            F_NO_CACHED, F_NO_VALIDATE);
+
+          if (type != ARRANGER_OBJECT_RESIZE_LOOP &&
+              arranger_object_type_can_loop (
+                self->type))
+            {
+              tmp = self->loop_end_pos;
+              position_add_ticks (&tmp, ticks);
+              arranger_object_set_position (
+                self, &tmp,
+                ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
+                F_NO_CACHED, F_NO_VALIDATE);
+            }
         }
     }
 }

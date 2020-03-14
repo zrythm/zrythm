@@ -75,11 +75,8 @@ ui_set_cursor_from_icon_name (
 
   GdkPixbuf * pixbuf =
     gtk_icon_theme_load_icon (
-      gtk_icon_theme_get_default (),
-      name,
-      18,
-      0,
-      NULL);
+      gtk_icon_theme_get_default (), name,
+      18, 0, NULL);
   if (!GDK_IS_PIXBUF (pixbuf))
     {
       g_warning ("no pixbuf for %s",
@@ -121,7 +118,7 @@ ui_set_cursor_from_name (
     gdk_cursor_new_from_name (
       gdk_display_get_default (),
       name);
-  gdk_window_set_cursor(win, cursor);
+  gdk_window_set_cursor (win, cursor);
 }
 
 /**

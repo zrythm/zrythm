@@ -1302,35 +1302,39 @@ do_or_undo_resize (
           g_return_val_if_fail (obj, -1);
 
           /* resize */
+          ArrangerObjectResizeType type;
+          int left = 0;
+          switch (self->resize_type)
+            {
+            case ARRANGER_SELECTIONS_ACTION_RESIZE_L:
+              type = ARRANGER_OBJECT_RESIZE_NORMAL;
+              left = 1;
+              break;
+            case ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP:
+              left = 1;
+              type = ARRANGER_OBJECT_RESIZE_LOOP;
+              break;
+            case ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE:
+              left = 1;
+              type = ARRANGER_OBJECT_RESIZE_FADE;
+              break;
+            case ARRANGER_SELECTIONS_ACTION_RESIZE_R:
+              type = ARRANGER_OBJECT_RESIZE_NORMAL;
+              break;
+            case ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP:
+              type = ARRANGER_OBJECT_RESIZE_LOOP;
+              break;
+            case ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE:
+              type = ARRANGER_OBJECT_RESIZE_FADE;
+              break;
+            }
           arranger_object_resize (
-            obj,
-            self->resize_type ==
-              ARRANGER_SELECTIONS_ACTION_RESIZE_L ||
-            self->resize_type ==
-              ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP ?
-              1 : 0,
-            self->resize_type ==
-              ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP ||
-            self->resize_type ==
-              ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP ?
-              F_LOOP : F_NO_LOOP,
-            ticks);
+            obj, left, type, ticks);
 
-          /* also resize the clone so we can find the
-           * actual object next time */
+          /* also resize the clone so we can find
+           * the actual object next time */
           arranger_object_resize (
-            objs[i],
-            self->resize_type ==
-              ARRANGER_SELECTIONS_ACTION_RESIZE_L ||
-            self->resize_type ==
-              ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP ?
-              1 : 0,
-            self->resize_type ==
-              ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP ||
-            self->resize_type ==
-              ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP ?
-              F_LOOP : F_NO_LOOP,
-            ticks);
+            objs[i], left, type, ticks);
         }
     }
   free (objs);

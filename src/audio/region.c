@@ -88,6 +88,11 @@ region_init (
   position_init (&obj->loop_start_pos);
   obj->loop_end_pos.frames = length;
 
+  /* set fade positions to start/end */
+  position_init (&obj->fade_in_pos);
+  position_from_frames (
+    &obj->fade_out_pos, length);
+
   arranger_object_init (obj);
   self->magic = REGION_MAGIC;
 }
@@ -675,6 +680,8 @@ region_copy (
   dest_obj->clip_start_pos = src_obj->clip_start_pos;
   dest_obj->loop_start_pos = src_obj->loop_start_pos;
   dest_obj->loop_end_pos = src_obj->loop_end_pos;
+  dest_obj->fade_in_pos = src_obj->fade_in_pos;
+  dest_obj->fade_out_pos = src_obj->fade_out_pos;
 }
 
 /**

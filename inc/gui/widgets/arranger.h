@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -71,6 +71,8 @@ typedef enum ArrangerCursor
   ARRANGER_CURSOR_GRABBING_COPY,
   ARRANGER_CURSOR_GRABBING_LINK,
   ARRANGER_CURSOR_RANGE,
+  ARRANGER_CURSOR_FADE_IN,
+  ARRANGER_CURSOR_FADE_OUT,
 } ArrangerCursor;
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
+ * Copyright (C) 2018-2020 Alexandros Theodotou <alex at zrythm dot org>
  *
  * This file is part of Zrythm
  *
@@ -225,8 +225,10 @@ typedef enum UiOverlayAction
   UI_OVERLAY_ACTION_CREATING_MOVING,
   UI_OVERLAY_ACTION_RESIZING_L,
   UI_OVERLAY_ACTION_RESIZING_L_LOOP,
+  UI_OVERLAY_ACTION_RESIZING_L_FADE,
   UI_OVERLAY_ACTION_RESIZING_R,
   UI_OVERLAY_ACTION_RESIZING_R_LOOP,
+  UI_OVERLAY_ACTION_RESIZING_R_FADE,
   UI_OVERLAY_ACTION_RESIZING_UP,
   UI_OVERLAY_ACTION_STRETCHING_L,
   UI_OVERLAY_ACTION_STRETCHING_R,
@@ -272,68 +274,67 @@ typedef enum UiOverlayAction
 #define ui_set_pointer_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-edit-select", \
-    5, 4);
+    "z-edit-select", 5, 4);
 
 #define ui_set_pencil_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-document-edit", \
-    3, 6);
+    "z-document-edit", 3, 6);
 
 #define ui_set_cut_clip_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "cut-clip", \
-    9, 6);
+    "cut-clip", 9, 6);
 
 #define ui_set_eraser_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-draw-eraser", \
-    3, 6);
+    "z-draw-eraser", 3, 6);
 
 #define ui_set_line_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-draw-line", \
-    3, 6);
+    "z-draw-line", 3, 6);
 
 #define ui_set_speaker_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-volume-high", \
-    3, 6);
+    "z-volume-high", 3, 6);
 
 #define ui_set_hand_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "z-transform-move", \
-    10, 10);
+    "z-transform-move", 10, 10);
 
 #define ui_set_left_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "left-resize", \
-    0, 10);
+    "left-resize", 0, 10);
 
 #define ui_set_left_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "left-resize-loop", \
-    0, 10);
+    "left-resize-loop", 0, 10);
 
 #define ui_set_right_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "right-resize", \
-    15, 10);
+    "right-resize", 15, 10);
 
 #define ui_set_right_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
     GTK_WIDGET (widget), \
-    "right-resize-loop", \
-    15, 10);
+    "right-resize-loop", 15, 10);
+
+#define ui_set_fade_in_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "fade-in", 11, 11);
+
+#define ui_set_fade_out_cursor(widget) \
+  ui_set_cursor_from_icon_name ( \
+    GTK_WIDGET (widget), \
+    "fade-out", 11, 11);
 
 /**
  * Sets cursor from icon name.

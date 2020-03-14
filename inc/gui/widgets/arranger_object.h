@@ -37,6 +37,33 @@
  * @{
  */
 
+#define ARRANGER_OBJECT_FADE_POINT_WIDTH 12
+#define ARRANGER_OBJECT_FADE_POINT_HALFWIDTH 6
+
+/**
+ * Returns if the current position is for moving the
+ * fade in mark.
+ *
+ * @param x X in local coordinates.
+ */
+int
+arranger_object_is_fade_in (
+  ArrangerObject * self,
+  const int        x,
+  const int        y);
+
+/**
+ * Returns if the current position is for moving the
+ * fade out mark.
+ *
+ * @param x X in local coordinates.
+ */
+int
+arranger_object_is_fade_out (
+  ArrangerObject * self,
+  const int        x,
+  const int        y);
+
 /**
  * Returns if the current position is for resizing
  * L.

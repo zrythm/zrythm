@@ -86,40 +86,8 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-/**
- * To be called from get_child_position in parent
- * widget.
- *
- * Used to allocate the overlay children.
- */
-/*void*/
-/*timeline_arranger_widget_set_allocation (*/
-  /*TimelineArrangerWidget * self,*/
-  /*GtkWidget *          widget,*/
-  /*GdkRectangle *       allocation)*/
-/*{*/
-  /*else if (Z_IS_SCALE_OBJECT_WIDGET (widget))*/
-    /*{*/
-    /*}*/
-  /*else if (Z_IS_MARKER_WIDGET (widget))*/
-    /*{*/
-    /*}*/
-/*}*/
-
-/**
- * Returns the appropriate cursor based on the
- * current hover_x and y.
- */
-/*ArrangerCursor*/
-/*timeline_arranger_widget_get_cursor (*/
-  /*ArrangerWidget * self,*/
-  /*UiOverlayAction action,*/
-  /*Tool            tool)*/
-/*{*/
-  /*ArrangerCursor ac = ARRANGER_CURSOR_SELECT;*/
-
-
-/*}*/
+#define ACTION_IS(x) \
+  (self->action == UI_OVERLAY_ACTION_##x)
 
 /**
  * Hides the cut dashed line from hovered regions
@@ -638,9 +606,9 @@ timeline_arranger_widget_set_select_type (
 static inline int
 snap_region_l (
   ArrangerWidget * self,
-  ZRegion *                 region,
-  Position *               new_start_pos,
-  int                      dry_run)
+  ZRegion *        region,
+  Position *       new_pos,
+  int              dry_run)
 {
   if (SNAP_GRID_ANY_SNAP (self->snap_grid) &&
         !self->shift_held)
@@ -649,33 +617,61 @@ snap_region_l (
         arranger_object_get_track (
           (ArrangerObject *) region);
       position_snap (
-        NULL, new_start_pos, track,
+        NULL, new_pos, track,
         NULL, self->snap_grid);
     }
 
+  ArrangerObjectResizeType type =
+    ARRANGER_OBJECT_RESIZE_NORMAL;
+  if ACTION_IS (RESIZING_L_LOOP)
+    type = ARRANGER_OBJECT_RESIZE_LOOP;
+  else if ACTION_IS (RESIZING_L_FADE)
+    type = ARRANGER_OBJECT_RESIZE_FADE;
+
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
-
+  Position cmp_pos;
+  if (type == ARRANGER_OBJECT_RESIZE_FADE)
+    {
+      cmp_pos = r_obj->fade_out_pos;
+    }
+  else
+    {
+      cmp_pos = r_obj->end_pos;
+    }
   if (position_is_after_or_equal (
-        new_start_pos, &r_obj->end_pos))
+        new_pos, &cmp_pos))
     return -1;
   else if (!dry_run)
     {
-      if (arranger_object_validate_pos (
-            r_obj, new_start_pos,
-            ARRANGER_OBJECT_POSITION_TYPE_START))
+      int is_valid = 0;
+      double diff = 0;
+
+      if (type == ARRANGER_OBJECT_RESIZE_FADE)
         {
-          /*region_set_start_pos (*/
-            /*region, new_start_pos,*/
-            /*AO_UPDATE_ALL);*/
-          double diff =
-            position_to_ticks (new_start_pos) -
+          is_valid =
+            arranger_object_validate_pos (
+              r_obj, new_pos,
+              ARRANGER_OBJECT_POSITION_TYPE_FADE_IN);
+          diff =
+            position_to_ticks (new_pos) -
+            position_to_ticks (&r_obj->fade_in_pos);
+        }
+      else
+        {
+          is_valid =
+            arranger_object_validate_pos (
+              r_obj, new_pos,
+              ARRANGER_OBJECT_POSITION_TYPE_START);
+          diff =
+            position_to_ticks (new_pos) -
             position_to_ticks (&r_obj->pos);
+        }
+
+      if (is_valid)
+        {
           arranger_object_resize (
-            r_obj, 1,
-            self->action ==
-              UI_OVERLAY_ACTION_RESIZING_L_LOOP,
-            diff);
+            r_obj, 1, type, diff);
         }
     }
 
@@ -697,8 +693,8 @@ snap_region_l (
 int
 timeline_arranger_widget_snap_regions_l (
   ArrangerWidget * self,
-  Position *               pos,
-  int                      dry_run)
+  Position *       pos,
+  int              dry_run)
 {
   ArrangerObject * start_r_obj =
     self->start_object;
@@ -706,14 +702,27 @@ timeline_arranger_widget_snap_regions_l (
   /* get delta with first clicked region's start
    * pos */
   double delta;
-  delta =
-    position_to_ticks (pos) -
-    position_to_ticks (&start_r_obj->cache_pos);
+  if (ACTION_IS (RESIZING_L_FADE))
+    {
+      delta =
+        position_to_ticks (pos) -
+        (position_to_ticks (
+           &start_r_obj->pos) +
+         position_to_ticks (
+           &start_r_obj->fade_in_pos));
+    }
+  else
+    {
+      delta =
+        position_to_ticks (pos) -
+        position_to_ticks (
+          &start_r_obj->pos);
+    }
 
   /* new start pos for each region, calculated by
    * adding delta to the region's original start
    * pos */
-  Position new_start_pos;
+  Position new_pos;
 
   ZRegion * region;
   ArrangerObject * r_obj;
@@ -728,15 +737,21 @@ timeline_arranger_widget_snap_regions_l (
       r_obj = (ArrangerObject *) region;
 
       /* caclulate new start position */
-      position_set_to_pos (
-        &new_start_pos,
-        &r_obj->cache_pos);
-      position_add_ticks (
-        &new_start_pos, delta);
+      if (ACTION_IS (RESIZING_L_FADE))
+        {
+          position_set_to_pos (
+            &new_pos, &r_obj->fade_in_pos);
+        }
+      else
+        {
+          position_set_to_pos (
+            &new_pos, &r_obj->pos);
+        }
+      position_add_ticks (&new_pos, delta);
 
       ret =
         snap_region_l (
-          self, region, &new_start_pos, dry_run);
+          self, region, &new_pos, dry_run);
 
       if (ret)
         return ret;
@@ -764,7 +779,7 @@ static inline int
 snap_region_r (
   ArrangerWidget * self,
   ZRegion * region,
-  Position * new_end_pos,
+  Position * new_pos,
   int        dry_run)
 {
   if (SNAP_GRID_ANY_SNAP (self->snap_grid) &&
@@ -774,31 +789,67 @@ snap_region_r (
         arranger_object_get_track (
           (ArrangerObject *) region);
       position_snap (
-        NULL, new_end_pos, track,
+        NULL, new_pos, track,
         NULL, self->snap_grid);
     }
 
+  ArrangerObjectResizeType type =
+    ARRANGER_OBJECT_RESIZE_NORMAL;
+  if ACTION_IS (RESIZING_R_LOOP)
+    type = ARRANGER_OBJECT_RESIZE_LOOP;
+  else if ACTION_IS (RESIZING_R_FADE)
+    type = ARRANGER_OBJECT_RESIZE_FADE;
+
   ArrangerObject * r_obj =
     (ArrangerObject *) region;
-  if (position_is_before_or_equal (
-        new_end_pos, &r_obj->pos))
-    return -1;
-  else if (!dry_run)
+  if (type == ARRANGER_OBJECT_RESIZE_FADE)
     {
-      if (arranger_object_validate_pos (
-            r_obj, new_end_pos,
-            ARRANGER_OBJECT_POSITION_TYPE_END))
+      Position tmp;
+      position_from_ticks (
+        &tmp,
+        r_obj->end_pos.total_ticks -
+          r_obj->pos.total_ticks);
+      if (position_is_before_or_equal (
+            new_pos, &r_obj->fade_in_pos) ||
+          position_is_after (new_pos, &tmp))
+        return -1;
+    }
+  else
+    {
+      if (position_is_before_or_equal (
+            new_pos, &r_obj->pos))
+        return -1;
+    }
+
+  if (!dry_run)
+    {
+      int is_valid = 0;
+      double diff = 0;
+      if (type == ARRANGER_OBJECT_RESIZE_FADE)
         {
-          /*region_set_end_pos (*/
-            /*region, new_end_pos, AO_UPDATE_ALL);*/
-          double diff =
-            position_to_ticks (new_end_pos) -
+          is_valid =
+            arranger_object_validate_pos (
+              r_obj, new_pos,
+              ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT);
+          diff =
+            position_to_ticks (new_pos) -
+            position_to_ticks (&r_obj->fade_out_pos);
+        }
+      else
+        {
+          is_valid =
+            arranger_object_validate_pos (
+              r_obj, new_pos,
+              ARRANGER_OBJECT_POSITION_TYPE_END);
+          diff =
+            position_to_ticks (new_pos) -
             position_to_ticks (&r_obj->end_pos);
+        }
+
+      if (is_valid)
+        {
           arranger_object_resize (
-            r_obj, 0,
-            self->action ==
-              UI_OVERLAY_ACTION_RESIZING_R_LOOP,
-            diff);
+            r_obj, 0, type, diff);
 
           /* if creating also set the loop points
            * appropriately */
@@ -838,22 +889,36 @@ snap_region_r (
 int
 timeline_arranger_widget_snap_regions_r (
   ArrangerWidget * self,
-  Position *               pos,
-  int                      dry_run)
+  Position *       pos,
+  int              dry_run)
 {
   ArrangerObject * start_r_obj =
     self->start_object;
 
   /* get delta with first clicked region's end
    * pos */
-  double delta =
-    position_to_ticks (pos) -
-    position_to_ticks (&start_r_obj->cache_end_pos);
+  double delta;
+  if (ACTION_IS (RESIZING_R_FADE))
+    {
+      delta =
+        position_to_ticks (pos) -
+        (position_to_ticks (
+          &start_r_obj->pos) +
+         position_to_ticks (
+           &start_r_obj->fade_out_pos));
+    }
+  else
+    {
+      delta =
+        position_to_ticks (pos) -
+        position_to_ticks (
+          &start_r_obj->end_pos);
+    }
 
   /* new end pos for each region, calculated by
    * adding delta to the region's original end
    * pos */
-  Position new_end_pos;
+  Position new_pos;
 
   ZRegion * region;
   ArrangerObject * r_obj;
@@ -866,13 +931,21 @@ timeline_arranger_widget_snap_regions_r (
         TL_SELECTIONS->regions[i];
       r_obj = (ArrangerObject *) region;
 
-      position_set_to_pos (
-        &new_end_pos,&r_obj->cache_end_pos);
-      position_add_ticks (&new_end_pos, delta);
+      if (ACTION_IS (RESIZING_R_FADE))
+        {
+          position_set_to_pos (
+            &new_pos, &r_obj->fade_out_pos);
+        }
+      else
+        {
+          position_set_to_pos (
+            &new_pos, &r_obj->end_pos);
+        }
+      position_add_ticks (&new_pos, delta);
 
       ret =
         snap_region_r (
-          self, region, &new_end_pos, dry_run);
+          self, region, &new_pos, dry_run);
 
       if (ret)
         return ret;

@@ -1006,6 +1006,12 @@ arranger_widget_set_cursor (
     case ARRANGER_CURSOR_RANGE:
       SET_CURSOR_FROM_NAME ("text");
       break;
+    case ARRANGER_CURSOR_FADE_IN:
+      SET_X_CURSOR (fade_in);
+      break;
+    case ARRANGER_CURSOR_FADE_OUT:
+      SET_X_CURSOR (fade_out);
+      break;
     default:
       g_warn_if_reached ();
       break;
@@ -2580,20 +2586,18 @@ on_drag_begin_handle_hit_object (
   self->start_pos_px = x;
 
   /* get flags */
+  int is_fade_in =
+    arranger_object_is_fade_in (obj, wx, wy);
+  int is_fade_out =
+    arranger_object_is_fade_out (obj, wx, wy);
   int is_resize_l =
-    arranger_object_is_resize_l (
-      obj, wx);
+    arranger_object_is_resize_l (obj, wx);
   int is_resize_r =
-    arranger_object_is_resize_r (
-      obj, wx);
+    arranger_object_is_resize_r (obj, wx);
   int is_resize_up =
-    arranger_object_is_resize_up (
-      obj, wx, wy);
-  g_message ("resize up %d (%d, %d)",
-    is_resize_up, wx, wy);
+    arranger_object_is_resize_up (obj, wx, wy);
   int is_resize_loop =
-    arranger_object_is_resize_loop (
-      obj, wy);
+    arranger_object_is_resize_loop (obj, wy);
   int show_cut_lines =
     arranger_object_should_show_cut_lines (
       obj, self->alt_held);
@@ -2682,7 +2686,11 @@ on_drag_begin_handle_hit_object (
           SET_ACTION (AUDITIONING);
           break;
         case TOOL_SELECT_NORMAL:
-          if (is_resize_l && is_resize_loop)
+          if (is_fade_in)
+            SET_ACTION (RESIZING_L_FADE);
+          else if (is_fade_out)
+            SET_ACTION (RESIZING_R_FADE);
+          else if (is_resize_l && is_resize_loop)
             SET_ACTION (RESIZING_L_LOOP);
           else if (is_resize_l)
             SET_ACTION (RESIZING_L);
@@ -3249,6 +3257,7 @@ drag_update (
       EVENTS_PUSH (
         ET_SELECTING_IN_ARRANGER, self);
       break;
+    case UI_OVERLAY_ACTION_RESIZING_L_FADE:
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
       /* snap selections based on new pos */
       if (self->type == TYPE (TIMELINE))
@@ -3288,6 +3297,7 @@ drag_update (
       /* TODO */
       g_message ("stretching L");
       break;
+    case UI_OVERLAY_ACTION_RESIZING_R_FADE:
     case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
       if (self->type == TYPE (TIMELINE))
         {
@@ -3871,7 +3881,6 @@ on_drag_end_timeline (
         }
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
-      if (!self->resizing_range)
         {
           ArrangerObject * obj =
             (ArrangerObject *) self->start_object;
@@ -3882,6 +3891,22 @@ on_drag_end_timeline (
             arranger_selections_action_new_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP,
+              ticks_diff);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_L_FADE:
+        {
+          ArrangerObject * obj =
+            (ArrangerObject *) self->start_object;
+          double ticks_diff =
+            obj->fade_in_pos.total_ticks -
+            obj->transient->fade_in_pos.total_ticks;
+          UndoableAction * ua =
+            arranger_selections_action_new_resize (
+              (ArrangerSelections *) TL_SELECTIONS,
+              ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE,
               ticks_diff);
           undo_manager_perform (
             UNDO_MANAGER, ua);
@@ -3916,6 +3941,22 @@ on_drag_end_timeline (
             arranger_selections_action_new_resize (
               (ArrangerSelections *) TL_SELECTIONS,
               ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
+              ticks_diff);
+          undo_manager_perform (
+            UNDO_MANAGER, ua);
+        }
+      break;
+    case UI_OVERLAY_ACTION_RESIZING_R_FADE:
+        {
+          ArrangerObject * obj =
+            (ArrangerObject *) self->start_object;
+          double ticks_diff =
+            obj->fade_out_pos.total_ticks -
+            obj->transient->fade_out_pos.total_ticks;
+          UndoableAction * ua =
+            arranger_selections_action_new_resize (
+              (ArrangerSelections *) TL_SELECTIONS,
+              ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE,
               ticks_diff);
           undo_manager_perform (
             UNDO_MANAGER, ua);
@@ -5207,6 +5248,20 @@ get_timeline_cursor (
                 {
                   if (self->alt_held)
                     return ARRANGER_CURSOR_CUT;
+                  int is_fade_in =
+                    arranger_object_is_fade_in (
+                      r_obj,
+                      (int) self->hover_x -
+                        r_obj->full_rect.x,
+                      (int) self->hover_y -
+                        r_obj->full_rect.y);
+                  int is_fade_out =
+                    arranger_object_is_fade_out (
+                      r_obj,
+                      (int) self->hover_x -
+                        r_obj->full_rect.x,
+                      (int) self->hover_y -
+                        r_obj->full_rect.y);
                   int is_resize_l =
                     arranger_object_is_resize_l (
                       r_obj,
@@ -5222,7 +5277,13 @@ get_timeline_cursor (
                       r_obj,
                       (int) self->hover_y -
                         r_obj->full_rect.y);
-                  if (is_resize_l &&
+                  if (is_fade_in)
+                    return
+                      ARRANGER_CURSOR_FADE_IN;
+                  else if (is_fade_out)
+                    return
+                      ARRANGER_CURSOR_FADE_OUT;
+                  else if (is_resize_l &&
                       is_resize_loop)
                     return
                       ARRANGER_CURSOR_RESIZING_L_LOOP;

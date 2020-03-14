@@ -323,10 +323,10 @@ handle_audio_event (
         sizeof (float) * (size_t) clip->num_frames *
         clip->channels);
 
-      arranger_object_loop_end_pos_setter (
-        r_obj, &TRANSPORT->loop_end_pos);
-      r_obj->loop_end_pos.frames =
-        TRANSPORT->loop_end_pos.frames;
+      position_from_frames (
+        &r_obj->loop_end_pos,
+        r_obj->end_pos.frames -
+          r_obj->pos.frames);
 
       /* start new region in new lane at
        * TRANSPORT loop start */
@@ -381,11 +381,12 @@ handle_audio_event (
         sizeof (float) * (size_t) clip->num_frames *
         clip->channels);
 
-      arranger_object_loop_end_pos_setter (
-        r_obj, &end_pos);
-      r_obj->loop_end_pos.frames =
-        end_pos.frames;
+      position_from_frames (
+        &r_obj->loop_end_pos,
+        r_obj->end_pos.frames -
+          r_obj->pos.frames);
     }
+  r_obj->fade_out_pos = r_obj->loop_end_pos;
 
   tr->recording_region = region;
 
