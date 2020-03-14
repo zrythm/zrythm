@@ -73,10 +73,6 @@ region_init (
   ArrangerObject * obj =
     (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_REGION;
-  obj->can_have_lanes =
-    region_type_has_lane (self->id.type);
-  obj->has_length = 1;
-  obj->can_loop = 1;
   position_set_to_pos (
     &obj->pos, start_pos);
   obj->pos.frames = start_pos->frames;

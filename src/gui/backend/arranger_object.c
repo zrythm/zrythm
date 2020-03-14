@@ -210,17 +210,17 @@ arranger_object_set_to_object (
 
   /* reset positions */
   dest->pos = src->pos;
-  if (src->has_length)
+  if (arranger_object_type_has_length (src->type))
     {
       dest->end_pos = src->end_pos;
     }
-  if (src->can_loop)
+  if (arranger_object_type_can_loop (src->type))
     {
       dest->clip_start_pos = src->clip_start_pos;
       dest->loop_start_pos = src->loop_start_pos;
       dest->loop_end_pos = src->loop_end_pos;
     }
-  if (src->can_fade)
+  if (arranger_object_can_fade (src))
     {
       dest->fade_in_pos = src->fade_in_pos;
       dest->fade_out_pos = src->fade_out_pos;
@@ -391,7 +391,8 @@ arranger_object_is_position_valid (
   switch (pos_type)
     {
     case ARRANGER_OBJECT_POSITION_TYPE_START:
-      if (self->has_length)
+      if (arranger_object_type_has_length (
+            self->type))
         {
           Position * end_pos =
             cached ?
@@ -591,7 +592,7 @@ arranger_object_print (
     arranger_object_stringize_type (self->type);
 
   char positions[500];
-  if (self->has_length)
+  if (arranger_object_type_has_length (self->type))
     {
       sprintf (
         positions, "(%d.%d.%d.%d ~ %d.%d.%d.%d)",
@@ -880,7 +881,10 @@ double
 arranger_object_get_length_in_ticks (
   ArrangerObject * self)
 {
-  g_return_val_if_fail (self->has_length, 0);
+  g_return_val_if_fail (
+    arranger_object_type_has_length (self->type),
+    0);
+
   return
     self->end_pos.total_ticks -
     self->pos.total_ticks;
@@ -896,7 +900,10 @@ long
 arranger_object_get_length_in_frames (
   ArrangerObject * self)
 {
-  g_return_val_if_fail (self->has_length, 0);
+  g_return_val_if_fail (
+    arranger_object_type_has_length (self->type),
+    0);
+
   return
     self->end_pos.frames -
     self->pos.frames;
@@ -909,7 +916,10 @@ double
 arranger_object_get_loop_length_in_ticks (
   ArrangerObject * self)
 {
-  g_return_val_if_fail (self->has_length, 0);
+  g_return_val_if_fail (
+    arranger_object_type_has_length (self->type),
+    0);
+
   return
     self->loop_end_pos.total_ticks -
     self->loop_start_pos.total_ticks;
@@ -922,7 +932,10 @@ long
 arranger_object_get_loop_length_in_frames (
   ArrangerObject * self)
 {
-  g_return_val_if_fail (self->has_length, 0);
+  g_return_val_if_fail (
+    arranger_object_type_has_length (self->type),
+    0);
+
   return
     self->loop_end_pos.frames -
     self->loop_start_pos.frames;
@@ -938,12 +951,12 @@ arranger_object_update_frames (
 {
   position_update_ticks_and_frames (
     &self->pos);
-  if (self->has_length)
+  if (arranger_object_type_has_length (self->type))
     {
       position_update_ticks_and_frames (
         &self->end_pos);
     }
-  if (self->can_loop)
+  if (arranger_object_type_can_loop (self->type))
     {
       position_update_ticks_and_frames (
         &self->clip_start_pos);
@@ -952,7 +965,7 @@ arranger_object_update_frames (
       position_update_ticks_and_frames (
         &self->loop_end_pos);
     }
-  if (self->can_fade)
+  if (arranger_object_can_fade (self))
     {
       position_update_ticks_and_frames (
         &self->fade_in_pos);
@@ -1077,7 +1090,8 @@ arranger_object_resize (
         ARRANGER_OBJECT_POSITION_TYPE_START,
         F_NO_CACHED, F_NO_VALIDATE);
 
-      if (self->can_loop)
+      if (arranger_object_type_can_loop (
+            self->type))
         {
           tmp = self->loop_end_pos;
           position_add_ticks (&tmp, - ticks);
@@ -1090,7 +1104,9 @@ arranger_object_resize (
       /* move containing items */
       arranger_object_add_ticks_to_children (
         self, - ticks);
-      if (loop && self->can_loop)
+      if (loop &&
+          arranger_object_type_can_loop (
+            self->type))
         {
           tmp = self->loop_start_pos;
           position_add_ticks (
@@ -1110,7 +1126,9 @@ arranger_object_resize (
         ARRANGER_OBJECT_POSITION_TYPE_END,
         F_NO_CACHED, F_NO_VALIDATE);
 
-      if (!loop && self->can_loop)
+      if (!loop &&
+          arranger_object_type_can_loop (
+            self->type))
         {
           tmp = self->loop_end_pos;
           position_add_ticks (&tmp, ticks);
@@ -1940,12 +1958,12 @@ arranger_object_clone (
   /* set positions */
   new_obj->pos = self->pos;
   new_obj->cache_pos = self->pos;
-  if (self->has_length)
+  if (arranger_object_type_has_length (self->type))
     {
       new_obj->end_pos = self->end_pos;
       new_obj->cache_end_pos = self->end_pos;
     }
-  if (self->can_loop)
+  if (arranger_object_type_can_loop (self->type))
     {
       new_obj->clip_start_pos = self->clip_start_pos;
       new_obj->cache_clip_start_pos =
@@ -1957,7 +1975,7 @@ arranger_object_clone (
       new_obj->cache_loop_end_pos =
         self->cache_loop_end_pos;
     }
-  if (self->can_fade)
+  if (arranger_object_can_fade (self))
     {
       new_obj->fade_in_pos = self->fade_in_pos;
       new_obj->cache_fade_in_pos =

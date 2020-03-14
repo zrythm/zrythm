@@ -113,7 +113,7 @@ arranger_object_queue_redraw (
       Track * track =
         arranger_object_get_track (self);
       if (track->lanes_visible &&
-          self->can_have_lanes)
+          arranger_object_can_have_lanes (self))
         {
           ZRegion * r = (ZRegion *) self;
           region_get_lane_full_rect (
@@ -138,7 +138,7 @@ arranger_object_is_resize_l (
   ArrangerObject * self,
   const int        x)
 {
-  if (!self->has_length)
+  if (!arranger_object_type_has_length (self->type))
     return 0;
 
   if (x < UI_RESIZE_CURSOR_SPACE)
@@ -159,7 +159,7 @@ arranger_object_is_resize_r (
   ArrangerObject * self,
   const int        x)
 {
-  if (!self->has_length)
+  if (!arranger_object_type_has_length (self->type))
     return 0;
 
   long size_frames =
@@ -233,7 +233,10 @@ arranger_object_is_resize_loop (
   ArrangerObject * self,
   const int        y)
 {
-  if (!self->has_length || !self->can_loop)
+  if (!arranger_object_type_has_length (
+        self->type) ||
+      !arranger_object_type_can_loop (
+        self->type))
     return 0;
 
   if (self->type == ARRANGER_OBJECT_TYPE_REGION)
@@ -279,7 +282,7 @@ arranger_object_should_show_cut_lines (
   ArrangerObject * self,
   int              alt_pressed)
 {
-  if (!self->has_length)
+  if (!arranger_object_type_has_length (self->type))
     return 0;
 
   switch (P_TOOL)

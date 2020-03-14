@@ -69,8 +69,8 @@
     <value nick="zh" value="24"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.export-time-range-enum">
-    <value nick="song" value="0"/>
-    <value nick="loop" value="1"/>
+    <value nick="loop" value="0"/>
+    <value nick="song" value="1"/>
     <value nick="custom" value="2"/>
   </enum>
   <enum id="org.zrythm.Zrythm.preferences.export-format-enum">

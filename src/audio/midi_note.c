@@ -57,7 +57,6 @@ midi_note_new (
   obj->pos = *start_pos;
   obj->end_pos = *end_pos;
   obj->type = ARRANGER_OBJECT_TYPE_MIDI_NOTE;
-  obj->has_length = 1;
 
   region_identifier_copy (
     &self->region_id, region_id);

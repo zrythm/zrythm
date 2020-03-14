@@ -797,7 +797,8 @@ arranger_selections_get_end_pos (
       cc * sc = (sel)->sc##s[i]; \
       ArrangerObject * obj = (ArrangerObject *) sc; \
       g_warn_if_fail (obj); \
-      if (obj->has_length) \
+      if (arranger_object_type_has_length ( \
+            obj->type)) \
         { \
           if (position_is_after ( \
                 &obj->end_pos, pos)) \
@@ -946,7 +947,8 @@ arranger_selections_get_last_object (
       cc * sc = (sel)->sc##s[i]; \
       ArrangerObject * obj = (ArrangerObject *) sc; \
       g_warn_if_fail (obj); \
-      if (obj->has_length) \
+      if (arranger_object_type_has_length ( \
+            obj->type)) \
         { \
           if (position_is_after ( \
                 &obj->end_pos, &pos)) \
@@ -1025,11 +1027,13 @@ arranger_selections_set_cache_poses (
       ArrangerObject * sc = \
         (ArrangerObject *) sel->sc##s[i]; \
       sc->cache_pos = sc->pos; \
-      if (sc->has_length) \
+      if (arranger_object_type_has_length ( \
+            sc->type)) \
         { \
           sc->cache_end_pos = sc->end_pos; \
         } \
-      if (sc->can_loop) \
+      if (arranger_object_type_can_loop ( \
+            sc->type)) \
         { \
           sc->cache_clip_start_pos =  \
             sc->clip_start_pos; \

@@ -231,6 +231,12 @@ static const cyaml_schema_value_t
 };
 
 /**
+ * Returns if the given ZRegion type can have fades.
+ */
+#define region_type_can_fade(rtype) \
+  (rtype == REGION_TYPE_AUDIO)
+
+/**
  * Only to be used by implementing structs.
  */
 void

@@ -437,32 +437,27 @@ on_export_clicked (
     S_PREFERENCES,
     "export-genre",
     info.genre);
+
+#define SET_TIME_RANGE(x) \
+  g_settings_set_enum ( \
+    S_PREFERENCES, \
+    "export-time-range", TIME_RANGE_##x); \
+  info.time_range = TIME_RANGE_##x
+
   if (gtk_toggle_button_get_active (
         self->time_range_song))
     {
-      g_settings_set_enum (
-        S_PREFERENCES,
-        "export-time-range",
-        0);
-      info.time_range = TIME_RANGE_SONG;
+      SET_TIME_RANGE (SONG);
     }
   else if (gtk_toggle_button_get_active (
              self->time_range_loop))
     {
-      g_settings_set_enum (
-        S_PREFERENCES,
-        "export-time-range",
-        1);
-      info.time_range = TIME_RANGE_LOOP;
+      SET_TIME_RANGE (LOOP);
     }
   else if (gtk_toggle_button_get_active (
              self->time_range_custom))
     {
-      g_settings_set_enum (
-        S_PREFERENCES,
-        "export-time-range",
-        2);
-      info.time_range = TIME_RANGE_CUSTOM;
+      SET_TIME_RANGE (CUSTOM);
     }
 
   char * exports_dir =

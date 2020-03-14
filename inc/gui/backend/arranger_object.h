@@ -137,16 +137,6 @@ typedef struct ArrangerObject
 {
   ArrangerObjectType type;
 
-  /** FIXME move these to a function/macro .
-   * 1 if the object is allowed to have lanes. */
-  int                can_have_lanes;
-  /** 1 if the object has a start and end pos */
-  int                has_length;
-  /** 1 if the object can loop. */
-  int                can_loop;
-  /** 1 if the object can fade in/out. */
-  int                can_fade;
-
   /** Flags. */
   ArrangerObjectFlags  flags;
 
@@ -265,41 +255,25 @@ arranger_object_fields_schema[] =
     arranger_object_flags_bitvals,
     CYAML_ARRAY_LEN (
       arranger_object_flags_bitvals)),
-  CYAML_FIELD_INT (
-    "can_have_lanes", CYAML_FLAG_DEFAULT,
-    ArrangerObject, can_have_lanes),
-  CYAML_FIELD_INT (
-    "has_length", CYAML_FLAG_DEFAULT,
-    ArrangerObject, has_length),
-  CYAML_FIELD_INT (
-    "can_loop", CYAML_FLAG_DEFAULT,
-    ArrangerObject, can_loop),
-  CYAML_FIELD_MAPPING (
-    "pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerObject, pos,
     position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "end_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerObject, end_pos,
     position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "clip_start_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerObject, clip_start_pos,
     position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "loop_start_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerObject, loop_start_pos,
     position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "loop_end_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerObject, loop_end_pos,
     position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "fade_in_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerObject, fade_in_pos,
     position_fields_schema),
-  CYAML_FIELD_MAPPING (
-    "fade_out_pos", CYAML_FLAG_DEFAULT,
+  YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerObject, fade_out_pos,
     position_fields_schema),
 
@@ -326,6 +300,23 @@ arranger_object_schema = {
   (type == ARRANGER_OBJECT_TYPE_REGION || \
    type == ARRANGER_OBJECT_TYPE_SCALE_OBJECT || \
    type == ARRANGER_OBJECT_TYPE_MARKER)
+
+/**
+ * Returns if the object is allowed to have lanes.
+ */
+#define arranger_object_can_have_lanes(_obj) \
+  ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION && \
+    region_type_has_lane ( \
+      ((ZRegion *) _obj)->id.type))
+
+/** Returns if the object can loop. */
+#define arranger_object_type_can_loop(type) \
+  (type == ARRANGER_OBJECT_TYPE_REGION)
+
+#define arranger_object_can_fade(_obj) \
+  ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION && \
+    region_type_can_fade ( \
+      ((ZRegion *) _obj)->id.type))
 
 /**
  * Gets the arranger for this arranger object.
