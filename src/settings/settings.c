@@ -90,6 +90,18 @@ print_or_reset_schema (
           char * var_str = g_variant_print (val, 0);
           printf (
             "  %s=%s\n", key, var_str);
+#if 0
+          const char * summary =
+            g_settings_schema_key_get_summary (
+              schema_key);
+          printf (
+            "    %s\n", summary);
+#endif
+          const char * description =
+            g_settings_schema_key_get_description (
+              schema_key);
+          printf (
+            "    %s\n", description);
         }
       else
         {

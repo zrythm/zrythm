@@ -41,6 +41,8 @@
 
 /**
  * The algorithm to use for curves.
+ *
+ * See https://www.desmos.com/calculator/typjsyykvb
  */
 typedef enum CurveAlgorithm
 {
@@ -86,6 +88,9 @@ static const cyaml_strval_t
     CURVE_ALGORITHM_VITAL },
 };
 
+/**
+ * Curve options.
+ */
 typedef struct CurveOptions
 {
   /** Curve algorithm to use. */
